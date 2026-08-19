@@ -1,0 +1,2904 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm,mathtools,geometry,booktabs,enumitem}
+\geometry{margin=1.1in}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{hypothesis}[theorem]{Hypothesis}
+\newtheorem{openproblem}[theorem]{Open Problem}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\w}{\omega_0}
+\newcommand{\Hw}{\mathcal{H}_{\omega}}
+\newcommand{\g}{\mathfrak{g}}
+\newcommand{\E}{\mathcal{E}}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\W}{\mathbb{W}}
+
+\title{The Physical State and Its Geometry:\\
+\large a certified, gauge-free formulation of quantum matter,\\
+from declared content to the continuum problem}
+\author{Colin Bundschu}
+\date{July 6, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A quantum theory of gauged matter is a single object, a state $\w$:
+the minimizer of a linear energy functional over a unital $*$-algebra
+of observables $\A$, an exact quotient with no gauge sector.  Every
+quantity the theory emits is a certified two-sided bracket on a conic
+linear program over the state's moment cone: a finite sum-of-squares
+certificate below, an exhibited admissible state above, sound at every
+stated budget independently of the convergence of any numerical
+process.  The width of every emission is itself a read of the state,
+its distance in the certificate's own seminorm from an exposed face of
+the cone, and Heisenberg uncertainty and the exclusion principle are
+the two graded instances of one positivity relation.
+
+From the state we construct, canonically and without choices, its
+carrier, closure ideal, modular structure, Dirichlet form and Dirac
+operator, metric, and spectral dimension and volume: time, scale,
+metric geometry, order, and frame are outputs of the state, not inputs
+to the theory.  A field--gauge correspondence identifies compact-gauge
+and CAR$\otimes$CCR content as two generating views of one dual-pair
+carrier, the Gauss law their singlet compression; on it the group's
+rank is an output of the closure ideal and, conditionally, the
+signature of spacetime is a modular output.  Space is proposed as the
+modular structure of a committed net built from the state's own
+metric, with four decisive tests specified in advance and none yet
+executed.
+
+The thermodynamic limit is proved for energy densities, with a
+finite-size gap criterion available on the stoquastic class, whose
+boundary is the fermion sign problem, stated here as an open
+structural question.  The continuum limit is reduced to a
+certification problem: refinement acts on moment bodies by exact
+linear projection, failure of certified contraction must localize at a
+genuine zero-slack state, no accumulation of certified data can decide
+between the branches, and, conditionally on a single parametric
+certificate at the Gaussian fixed point and a finite chain of step
+certificates, the continuum brackets of an asymptotically free theory
+constitute a finite, machine-verifiable problem.  The existence of the
+chain is the central conjecture: nonperturbative asymptotic freedom in
+certificate form.
+
+A fully worked instance, SU(2) gauge theory on two plaquettes,
+supplies certified spectra, closed-form geometry, and coupling towers,
+and passes the framework's first decisive test: its Weyl consistency
+requirement, certified spectral volume against the Hausdorff volume of
+the state's metric, closes exactly, both sides in closed form.
+Electrodynamic matter, with gravitation carried as a spin-2 boson
+sector, is developed as declared content of the same framework; its
+reads recover spectroscopy, order, frame, response, and the measured
+gravitational quantities, and an executed relational control in
+hydrogen exercises the emission pipeline end to end on a case where
+both numbers are independently known.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+Three commitments define this formulation.
+
+\emph{First, the state is the only unknown.}  A theory is declared by its
+content: an algebra of observables presented as an exact quotient (the
+gauge sector removed at the level of the algebra, never fixed), a
+canonical family of derivations induced by the content's symmetry, and a
+Hamiltonian element.  Everything else (the carrier Hilbert space, the
+ground representative, the flow of time, the metric, the dimension, the
+organization of matter) is constructed from the state or read from it.
+Where the construction requires an unproven statement, that statement
+appears below as a named hypothesis, conjecture, or open problem, in
+place, with the results that depend on it stated conditionally.
+
+\emph{Second, every emission is a certified two-sided bracket.}  The
+instrument never emits an estimate.  A lower bound is a sum-of-squares
+certificate over the algebra, verified as a finite exact identity; an
+upper bound is the exact evaluation of an exhibited admissible state.
+Both are valid at every stated budget regardless of how they were found;
+no optimizer's convergence is load-bearing for truth.  Emitted quantities
+are dimensionless and relational; dimensionful intermediates never leave
+the instrument.
+
+\emph{Third, nonlinearity in the state is the signature of a gauge
+mode.}  Every physical functional in this paper is linear in the state,
+an element of a convex cone, or an envelope of affine functions of the
+state (the supporting-hyperplane structure of the moment cone made
+visible); wherever a construction appeared to require a nonlinear object
+(a wavefunction, a chart, a threshold, a rescaled block field), the
+nonlinearity marked a representation artifact, and the construction is
+given here in its linear form.
+
+\subsection*{Vocabulary}
+The paper uses a small fixed working vocabulary throughout; its nearest
+standard equivalents are these.
+
+\begin{center}
+\begin{tabular}{@{}lp{0.66\textwidth}@{}}
+\toprule
+term & nearest standard reading \\
+\midrule
+content & a presented theory: algebra (exact quotient), canonical
+derivations, Hamiltonian element, budget axes \\
+budget & a declared finite truncation axis (word degree, spectral
+cutoff, band, volume) \\
+read & a derived quantity, linear (or an affine envelope) in the state \\
+emission & a certified two-sided enclosure $[L,U]$ of a read \\
+bracket & the interval $[L,U]$ itself \\
+certificate & a finite sum-of-squares identity with multipliers,
+verified in exact or interval arithmetic \\
+width & $U - L$, itself a read of the state
+(Theorem~\ref{thm:gapid}) \\
+instrument & the certification pipeline as a whole \\
+fails shut & returns no bound rather than an unsound one \\
+rung & a level of the constructive trial ladder (\S\ref{sec:ladder}) \\
+pin & an executed check against an independently known value \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Reading order}
+Sections~\ref{sec:kinematics}--\ref{sec:canonical} are the framework
+and are self-contained; a reader who wants the framework exercised can
+pass from \S\ref{sec:kinematics} directly to the worked instance of
+\S\ref{sec:instance} and its appendices.
+\S\S\ref{sec:extensivity}--\ref{sec:continuum} carry the
+complete-proof analysis of the thermodynamic and continuum questions;
+\S\ref{sec:correspondence} is classical invariant theory and Howe
+duality read into the frame; \S\ref{sec:space}, with the real-form
+discussion it carries, is the conditional register of the paper,
+committed constructions with named decisive tests and nothing
+exhibited; \S\ref{sec:subsumption} is the framework evaluated at
+electrodynamic content and can be read independently after
+\S\ref{sec:kinematics}.  Proof statuses are graded in
+\S\ref{sec:conclusion}.
+
+The paper proves what can be proved and states precisely what cannot yet
+be.  The main results are: the uncertainty hierarchy that identifies every
+emitted width with the state's distance, in the certificate's own seminorm,
+from an exposed face of the moment cone, and places Heisenberg uncertainty
+and the exclusion principle as the two graded instances of one relation
+(\S\ref{sec:uncertainty}); the constructive upper bracket, a single trial
+ladder whose reference rung is the kinetic vacuum read at the content's
+group: Haar for gauge content, quasi-free$\otimes$Gaussian for field
+content, one construction at two groups (\S\ref{sec:ladder}); the
+field--gauge correspondence, on which compact-gauge and field content
+are two generating views of one dual-pair carrier, the Gauss law is
+singlet compression, and the group's rank is an output of the state's
+closure ideal, the spacetime group entering as its complex point with
+the real form a modular output
+(\S\S\ref{sec:correspondence},~\ref{sec:space}); the canonical
+construction stack of \S\ref{sec:canonical}, including the automatic local
+factorization of
+stoquastic-class Hamiltonians in the ground carrier
+(Theorem~\ref{thm:factorization}), with the fermion sign problem
+identified as its exact scope boundary (Open Problem~\ref{op:sign}); the geometric identification and its
+falsifiable Weyl consistency requirement, verified in closed form on
+the worked instance (\S\ref{sec:geometry},
+Theorem~\ref{thm:weylinstance}); complete
+extensivity theorems for energy densities and a conditional finite-size
+gap criterion (\S\ref{sec:extensivity}); the reduction of the continuum
+problem to a finite certification problem, comprising the exactness of
+refinement (Proposition~\ref{prop:projection}), the two-dimensional
+theorem (Theorem~\ref{thm:2d}), the dichotomy and localization theorems
+(Theorems~\ref{thm:dichotomy}, \ref{thm:totaldichotomy}), the no-go
+theorem on data (Theorem~\ref{thm:nogo}), and the conditional Reduction
+Theorem (Theorem~\ref{thm:reduction}), with the central conjecture
+(Conjecture~\ref{conj:chain}) stated in minimal form
+(\S\ref{sec:continuum}); the hadronic content and its certified targets
+(\S\ref{sec:hadrons}); and electrodynamic matter developed as declared
+content, with its single-emission structure, convergence theorems,
+gravitational reads, and executed hydrogen control
+(\S\ref{sec:subsumption}).  A worked
+instance with certified numbers runs through the paper
+(\S\ref{sec:instance}).
+
+\section{Kinematics and emissions}\label{sec:kinematics}
+
+\subsection{Content}\label{sec:content}
+A theory is declared by: (i) a unital $*$-algebra $\A$, presented as an
+exact quotient so that no gauge degree of freedom exists in $\A$; for
+lattice gauge content with compact group $G$ on a declared face set, $\A$
+is the algebra of invariants (generated by loop words), and the quotient
+requires no gauge fixing and no section; (ii) the canonical derivations
+$\{X_a\}$: the action of the Lie algebra $\g$ on $\A$ induced by the
+content's group action, with kinetic form the Casimir of the action
+(unique up to the normalization quotiented below); (iii) a coupling
+$\lambda$ and a Hermitian magnetic element $M \in \A$, assembling the
+Hamiltonian $h(\lambda) = \mathrm{Cas} - \lambda M$; (iv) budget axes:
+the canonical filtrations of $\A$ by degree over the canonical generators
+and by spectral cutoff of the Casimir.  Nothing else is input.  In
+particular no Hilbert space, metric, dimension, lattice spacing,
+coordinate, or basis is declared.  The group in (i) and (ii) enters
+with the standing of a presentation, not of an independent input: on
+the correspondence of \S\ref{sec:correspondence} the same content is
+declared by its fusion functional alone, the pairing symmetry of the
+words carrying the content and the rank recovered from the closure
+ideal of the state (Proposition~\ref{prop:groupclosure}); the group is
+a choice of generators, and emissions do not depend on it (exactly at
+the worked content, Proposition~\ref{prop:prepot}; per Open
+Problem~\ref{op:dualpair} in general).
+
+\subsection{States, cones, certificates}\label{sec:cones}
+States are normalized positive linear functionals on $\A$.  At budget $b$
+a state restricts to its degree-$\le b$ moment data.  Two objects at
+budget $b$ must be held apart.  The \emph{moment body} $\mathcal S_b$
+is the set of such restrictions over admissible states.  The
+\emph{moment cone} $\mathcal M_b$ is its computable outer
+approximation: the convex
+set of degree-$\le b$ moment data satisfying the linear matrix
+inequalities expressing positivity on squares.  The inclusion
+$\mathcal S_b \subseteq \mathcal M_b$ is generally strict at finite
+$b$; its defect is exactly what Theorems~\ref{thm:gapid}
+and~\ref{thm:closure} quantify, and conflating the two objects would
+collapse the hierarchy.  Certificates are elements
+of the dual cone: finite sum-of-squares identities with multipliers over
+the declared constraint set.  An \emph{emission} is a certified interval
+$[L,U] \ni v$ for a value
+\[
+v \;=\; \inf_{\omega \in \mathcal S} \,\omega(A)
+\qquad (\text{or } \sup),
+\]
+a linear functional optimized over a convex set $\mathcal S$ of
+admissible states: $L$ from a certificate by weak duality, $U$ from an
+exhibited member of $\mathcal S$ evaluated exactly.
+
+\begin{proposition}[Weak duality; anytime validity]\label{prop:weak}
+If $A - \lambda\mathbf 1 - \sum_i \mu_i C_i = \sum_j S_j^\dagger S_j$
+holds as a finite identity in $\A$, with $C_i$ the constraint elements
+vanishing in expectation on $\mathcal S$, then $\omega(A) \ge \lambda$
+for every $\omega \in \mathcal S$.  If the identity holds up to a
+residual $R$ of bounded norm, then $\omega(A) \ge \lambda - \|R\|$.
+Both statements hold for arbitrary coefficient tuples; consequently every
+solver iterate emits a valid bound, and no convergence claim is
+load-bearing.
+\end{proposition}
+\begin{proof}
+Apply $\omega$: squares are nonnegative by positivity, constraints vanish
+by admissibility, and $|\omega(R)| \le \|R\|$ by the C$^*$ norm bound.
+\end{proof}
+
+\begin{remark}[Relation to the moment--SOS and bootstrap literatures]
+\label{rem:bootstrap}
+The lower side of every emission is a noncommutative
+moment--sum-of-squares bound, and the architecture (positivity of
+moment matrices below, exhibited states above) is shared with active
+programs: the variational reduced-density-matrix method
+\cite{coleman,mazziotti}, the Navascu\'es--Pironio--Ac\'in hierarchy
+\cite{npa}, and the Hamiltonian and lattice bootstrap
+\cite{lin,hhk,andersonkruczenski,kazakovzheng}.  That line has advanced
+well past its first papers: Euclidean lattice Yang--Mills has been
+bootstrapped at finite $N$, including SU(2) in two, three, and four
+dimensions with two-sided margins on the plaquette free energy at the
+$0.1\%$ level against Monte Carlo \cite{kazakovzhengfinite}, with
+SU(3) and abelian content following \cite{guosu3,lizhou}; matrix
+quantum mechanics has reached high-precision ground-sector correlators
+including D0-brane/BFSS content \cite{lindzero,linzhengmatrix}, whose
+gravitational content is holographic (the bounded matrix theory is
+dual to a black hole); gravitation enters the present paper in an
+unrelated and more modest sense, as declared linear spin-2 content
+with a stated exposure (\S\ref{sec:gravreads},
+Remark~\ref{rem:deser}), and no holographic claim is made anywhere;
+and
+the quantum-information side has produced ground-energy lower bounds
+and equilibrium algorithms with certified convergence guarantees
+\cite{kull,fawzi}.  The present formulation is a member of this
+family, and its worked instance (\S\ref{sec:instance}) is deliberately
+the smallest nonsolvable case, not a competitive computation.  What it
+adds is: the Hamiltonian (Kogut--Susskind) formulation posed directly
+on the gauge-invariant coordinate ring, the region constraint being
+the second fundamental theorem in person
+(\S\ref{sec:correspondence}), where the cited lattice-gauge results
+are Euclidean; the certification discipline, finite exact-rational
+identities in the lineage of \cite{peyrlparrilo} with anytime validity
+(Proposition~\ref{prop:weak}), where the cited programs report the
+output of floating-point conic solvers; the two-sided rule that every
+emission carry an exhibited admissible state on its upper side; the
+relational emission doctrine; and the superstructure of
+\S\S\ref{sec:canonical}--\ref{sec:continuum} (geometry, extensivity,
+refinement) erected on the same cone.  The finite-$N$ Euclidean SU(2)
+margins of \cite{kazakovzhengfinite} are the natural cross-community
+contact point for the Hamiltonian brackets emitted here, once the two
+formulations are related (anisotropic-limit matching).
+\end{remark}
+
+\begin{definition}[Boson word calculus]\label{def:bosoncalc}
+When the content carries bosonic (Weyl/CCR) sectors the unbounded canonical
+operators forbid a naive sum-of-squares reading, and certificate identities
+are instead required to live in the $*$-algebra of boson-polynomial words
+under the syntactic constraint that every term of positive boson degree
+appear inside an exactly matched \emph{designated square} of boson degree at
+most two per sector: a number form $b^\dagger b$ for any symplectic
+(Bogoliubov) image $b = ua + va^\dagger$ of the budgeted family (the
+original modes at $v=0$); a completed square
+\[
+-(Ba^\dagger + B^\dagger a) = \varepsilon\omega\,a^\dagger a
++ (\varepsilon\omega)^{-1}B^\dagger B
+- (\sqrt{\varepsilon\omega}\,a + B/\sqrt{\varepsilon\omega})^\dagger
+(\sqrt{\varepsilon\omega}\,a + B/\sqrt{\varepsilon\omega})
+\]
+with $B$ bounded; or a product of designated forms across commuting sectors
+($[a,b]=0$ gives $(a^\dagger a)(b^\dagger b) = (ab)^\dagger(ab)$).  The
+verifier checks the patterns exactly; residual words are boson-degree-zero,
+and the anytime bound of Proposition~\ref{prop:weak} applies to them alone.
+Admissibility carries the finite-moment proviso per sector, bounded through
+the restricted covariance's spectrum.
+\end{definition}
+
+The physical state is selected linearly: $\w$ minimizes
+$\omega \mapsto \omega(h)$ over admissible states.  The \emph{ground
+sector} is the set of admissible states saturating the certified ground
+energy; operationally it is the zero-temperature end of the completely
+passive states \cite{pusz}.  For a nondegenerate gapped ground state the
+sector is a point.
+
+\begin{hypothesis}[Regularity, per content]\label{hyp:reg}
+$h(\lambda)$ is essentially self-adjoint on the canonical core; the
+ground state is unique on the systems considered; the quadratic form
+$\E_\omega$ of \S\ref{sec:dirichlet} is closable.  These are standard and
+are verified per instance; all results below assume them where used.
+\end{hypothesis}
+
+\subsection{The upper bracket: the trial ladder}\label{sec:ladder}
+Weak duality supplies the lower side of every emission; the upper side is
+the exact evaluation of an exhibited admissible state, and it is as
+constructive as the lower.  An exhibited state meets four requirements, the
+trace of the tower's own first level: (T1) it is admissible and saturates
+the ground energy $e_0$, or averages to such a state at unchanged value
+under the content's compact symmetry; (T2) its per-covolume moments of
+local words are finite exact contractions with certified rounding
+(uncertified tails are forbidden, tails as such are not); (T3) one
+construction serves every content; (T4) no object outside the theory
+enters, the class being generated from a reference determined by the
+content by operations internal to $\A$.  The reference is one object, read
+at the content's group.
+
+\begin{proposition}[The reference rung is the kinetic vacuum]
+\label{prop:reference}
+The reference state is the ground state of the kinetic Hamiltonian
+$h(0) = \mathrm{Cas}$: the invariant vacuum of the content's symmetry,
+determined by the content alone with no choice, whose moment functional is
+that symmetry's singlet-channel fusion: the value of
+$\omega_{\mathrm{ref}}$ on a product of words is the trivial-representation
+content of the corresponding tensor product.  For compact gauge content
+this is the Haar state, its moments computed by character fusion
+$\int_G \chi_{j_1}\cdots\chi_{j_n}\,dU = \dim\mathrm{Inv}(V_{j_1}\otimes
+\cdots\otimes V_{j_n})$ (\S\ref{sec:instance}); for CAR$\otimes$CCR field
+content it is the quasi-free$\otimes$Gaussian state, its moments computed by
+Wick contraction (\S\ref{sec:subsumption}).  These are one construction at
+two groups: the pair contraction is the Heisenberg (or Clifford) group's
+singlet projector on $V\otimes V$ exactly as character orthogonality is the
+compact group's, so Wick's theorem and character fusion are the same
+operation: summing the singlet channels of a tensor product.
+\end{proposition}
+
+\begin{remark}[The compact seam]\label{rem:refseam}
+For a compact group the invariant vacuum is the tracial Haar state; for a
+noncompact field sector it is the Fock vacuum of the distinguished kinetic
+representation.  The difference is in what the vacuum \emph{is} (a trace
+versus a lowest vector), not in the construction: both are the $h(0)$
+ground state and both carry the singlet-fusion moment theorem.  This is the
+sole place the one construction touches compactness; it is not a second
+construction.  \S\ref{sec:correspondence} gives the seam structural
+form: compact and field content are the two members of a reductive dual
+pair on one carrier, and the compression between them is the Gauss law.
+\end{remark}
+
+\begin{definition}[Enrichment class and trial ladder]\label{def:ladder}
+The enrichment class $\mathfrak E$ is the automorphisms of $\A$ commuting
+with the content's symmetry and \emph{strictly local} (each local element
+maps to a local element within a finite radius), graded by radius;
+concretely they are generated by the strictly-local elements from which the
+magnetic element $M$ is built: plaquette (Wilson-loop) operators for
+gauge content, finite-radius charge-conserving circuits for field content,
+one operation with $M$ the only input.  Rung $r$ of the trial ladder is the
+orbit of the reference rung under radius-$\le r$ elements of $\mathfrak E$,
+conditioned by the character integrals of any sharp sectors; $U^*(r)$ is
+the ground-sector infimum of the read over rung $r$, non-invariant members
+averaged.  Moments are exactly evaluable at every rung: conjugation of a
+local word through a radius-$r$ element is exactly finite (a Pfaffian, a
+character fusion, or a Gaussian characteristic function, closed for
+symplectic and mixed-even gates, norm-convergent with absorbed tails
+beyond) at cost $e^{O(r)}\,\mathrm{poly}$ in the lightcone volume.
+\end{definition}
+
+\begin{proposition}[Determination]\label{prop:ladder}
+The trial ladder is the unique class satisfying (T1)--(T4) with intrinsic
+richness grading: the reference is forced by
+Proposition~\ref{prop:reference}, the operations by the trace of
+(T1)--(T4), the grading is the enrichment radius.  Each familiar
+alternative fails a named requirement.  A similarity-transformed
+expectation that is not a state evaluation emits no bound (T1); a
+non-truncating unitary transform is not exactly evaluable (T2); a
+stochastic estimator carries error bars, not certificates (T2); a tensor
+network exactly contractible only in one dimension fails (T3), and
+elsewhere its approximate contraction bounds nothing (T2); a
+density-functional model is a fitted surrogate emitting no bound (T1, T2).
+The licensing runs forward: any exhibited admissible ground-sector state
+with exactly evaluable moments emits a valid bound, on or off the ladder.
+\end{proposition}
+
+\subsection{Residual nonlinearity, classified}\label{sec:nonlinearity}
+Exactly two kinds of nonlinearity in the state survive audit, and both
+are linear structure in disguise: (i) \emph{envelopes}: $E_1(\lambda) =
+\inf_\omega[\omega(\mathrm{Cas}) - \lambda\,\omega(M)]$ is a lower
+envelope of affine functions of $\omega$; its concavity in $\lambda$ and
+the Hellmann--Feynman relation $dE_1/d\lambda = -\langle M\rangle$ are
+the supporting-hyperplane structure of the moment cone; (ii)
+\emph{content algebra}: polynomial relations among canonical generators
+(e.g.\ the cubic relation of \S\ref{sec:instance}) are algebraic geometry
+of the content, not of the state.  Anything else nonlinear (wavefunction
+representatives, field thresholds, rescaled block variables) is a chart
+and is excluded from definitions and emissions.
+
+\subsection{The uncertainty hierarchy}\label{sec:uncertainty}
+Membership in the moment cone is a hierarchy of uncertainty relations, and
+the width of every emission is a read of the state's distance from its
+boundary.  Fix the degree-$\le n$ word space $\W_n =
+\mathrm{span}\{w_\alpha\}$ ($\dagger$-closed, $w_0 = \mathbf 1$) and the
+level-$n$ moment matrix $M_n(\omega)_{\alpha\beta} = \omega(w_\alpha^\dagger
+w_\beta)$.
+
+\begin{theorem}[Generalized uncertainty at level $n$]\label{thm:uncertainty}
+Write the centered Gram $G^c_{\alpha\beta} = \omega(\delta w_\alpha^\dagger
+\,\delta w_\beta)$, $\delta w_\alpha = w_\alpha - \omega(w_\alpha)$, and
+split it into Hermitian symmetric and commutator parts $G^c = \Sigma +
+\tfrac12 K$ with $\Sigma_{\alpha\beta} = \tfrac12
+\omega(\{\delta w_\alpha^\dagger, \delta w_\beta\})$, $K_{\alpha\beta} =
+\omega([\delta w_\alpha^\dagger, \delta w_\beta])$.  Then level-$n$
+admissibility $M_n \succeq 0$ is exactly $\Sigma \succeq -\tfrac12 K$, and
+straightening the canonical relations evaluates $K$ as an affine function
+of moments of degree at most $2n-2$.  At $n=1$ on a bosonic sector $K$ is
+the central symplectic form and this is the Robertson--Schr\"odinger
+relation; at $n=1$ on a fermionic sector the anticommutator matrix is
+central and $M_1 \succeq 0$ is the Coleman constraint $0 \preceq \gamma
+\preceq \mathbf 1$.  Heisenberg uncertainty and the exclusion principle are
+the two graded instances of one statement, and level $n$ is its degree-$n$
+extension.
+\end{theorem}
+\begin{proof}
+$w_\alpha^\dagger w_\beta = \tfrac12\{w_\alpha^\dagger, w_\beta\} + \tfrac12
+[w_\alpha^\dagger, w_\beta]$ gives $G^c = \Sigma + \tfrac12 K$ after
+centering (a Schur complement in the unit entry); $\Sigma$ and $K$ are
+Hermitian, so $G^c \succeq 0 \iff \Sigma \succeq -\tfrac12 K$, identified
+with $M_n \succeq 0$ by centering.  The commutator of degree-$d_\alpha,
+d_\beta$ words straightens to degree $\le d_\alpha + d_\beta - 2 \le 2n-2$.
+\end{proof}
+
+\begin{theorem}[Gap identity]\label{thm:gapid}
+For a level-$n$ certificate with Gram $\Lambda = \sum_i c_i f_i f_i^\dagger
+\succeq 0$ (factors $F_i = \sum_\alpha (f_i)_\alpha w_\alpha \in \W_n$) and
+emitted value $\lambda$, and any admissible ground-sector state $\omega_0$
+with carrier vector $\Omega_0$,
+\[
+\omega_0(X) - \lambda = \sum_i c_i \|\pi(F_i)\Omega_0\|^2
+= \langle M_n(\omega_0),\, \Lambda\rangle_F .
+\]
+The shortfall of any certificate on the physical state is the
+$\Lambda$-weighted squared residual of the state under the certificate
+factors: the squared distance, \emph{in the certificate's own seminorm}, of
+the state from the kernel variety $\{F_i\psi = 0\}$.  The emitted width is
+this distance, not a generic numerical residue.
+\end{theorem}
+\begin{proof}
+Evaluate the certificate identity $X - \lambda\mathbf 1 - (\text{data
+multipliers}) = \sum_i c_i F_i^\dagger F_i$ in $\omega_0$: the energy and
+data multipliers vanish on the admissible ground sector, and
+$\omega_0(F_i^\dagger F_i) = \|\pi(F_i)\Omega_0\|^2 = f_i^\dagger
+M_n(\omega_0) f_i$ sums to the Frobenius pairing.
+\end{proof}
+
+\begin{theorem}[Closure is boundary contact]\label{thm:closure}
+The bracket closes at level $n$, $L_n^* = G^*$, iff the physical moment
+matrix sits on the face of the level-$n$ cone exposed by the optimal
+certificate: for an attained optimum $(\lambda^*, \Lambda^*)$, the vanishing
+pairing $\langle M_n(\omega_0^*), \Lambda^*\rangle_F = 0$ with both factors
+positive semidefinite forces $M_n(\omega_0^*)\Lambda^* = 0$, so every
+certificate factor annihilates the state.  This generalizes minimum
+uncertainty (degree-one annihilation) to a degree-$n$ hierarchy: the
+degree-one kernel states are the squeezed and coherent vacua; the
+degree-two boundary already contains the Fock states ($(a^\dagger a -
+m)|m\rangle = 0$), all squeezed states, and the even/odd cat states ($a^2 -
+\alpha^2$ annihilates the even cat), on which level-two brackets close
+exactly.  A ground state annihilated by no degree-$\le n$ system compatible
+with the multipliers has positive width at every finite certificate, and
+the tower's convergence is the statement that these residuals fall to zero
+as $n$ grows.
+\end{theorem}
+\begin{proof}
+$\Tr(AB) = 0$ for $A, B \succeq 0$ gives $AB = 0$; applied to
+Theorem~\ref{thm:gapid} at the extremal state, $f_i^\dagger M_n f_i = 0$ for
+each $c_i > 0$, i.e.\ $\|\pi(F_i)\Omega_0^*\| = 0$.  The converse is the gap
+identity read on an annihilating certificate; without attainment the
+statement holds in the supremum, and every finite certificate still emits a
+valid bound.
+\end{proof}
+
+\begin{remark}[The width is not a local defect]\label{rem:widthdefect}
+A local uncertainty defect is not the emitted width.  A two-mode Gaussian
+ground state whose global normal-mode annihilators are the certificate
+factors has certified width $4.9\times10^{-6}$ at its stated budget (the
+bracket closes as the budget grows), while the
+Robertson--Schr\"odinger defect of its reduced single mode is $\nu^2 -
+\tfrac14 = 0.1406$: Theorem~\ref{thm:gapid} governs, and its distance is
+measured in the certificate seminorm, whose active directions the
+multipliers select, never in a fixed local metric.
+\end{remark}
+
+The annihilating factors of Theorem~\ref{thm:closure} are exactly the
+degree-$\le n$ elements of the Gelfand ideal $N_\omega$ of
+\S\ref{sec:canonical}: exactness is ideal membership.  In the
+Hamiltonian-bootstrap literature the same phenomenon appears as the
+null-state condition \cite{guoli}.  The quantitative
+converse (a lower bound on the width by a fixed-metric distance to the
+exposed faces, with constants uniform over reads and budgets) is an
+error-bound question for the noncommutative hierarchy, and is not claimed.
+
+\subsection{Resolving emissions}\label{sec:resolving}
+A bracket that contains a target value confirms nothing by itself.  An
+emission \emph{resolves} a comparison only when its certified width is
+below a threshold declared in advance of the computation; thresholds may
+be tightened before a computation and never loosened after one.  All
+comparisons in this paper are subject to this rule.
+
+\subsection{Execution and cost}\label{sec:execution}
+The instrument is a constructor, not an existence argument: every emission
+is produced, and its execution has exactly four kinds of step, none of them
+a self-consistency loop.  (1) One direct-optimization stream per
+certificate pullback, a search on a merit function whose convergence is not
+load-bearing (Proposition~\ref{prop:weak}).  (2) Machine-precision
+primitives that terminate: Gauss--Hermite integrals, characteristic
+functions and Pfaffians, character fusions, linear solves.  (3) A finite
+verification pass in exact or interval arithmetic, matched patterns
+(Definition~\ref{def:bosoncalc}) checked syntactically.  (4) Monotone budget
+sweeps with warm starts.  The certificate multiplier is carried as a Gram
+$\Lambda = FF^\dagger$ with the factors transient; the scalar multipliers
+restore by closed-form least squares given $F$; the climb maximizes the
+verified emitted value, unconstrained over $F$, with rank a monotone budget
+axis.  That no step is a fixed-point iteration is what makes soundness
+independent of convergence: a valid two-sided bracket is in hand at every
+step of every stream, and the streams only narrow it.
+
+\begin{theorem}[Per-sweep optimality]\label{thm:persweep}
+With $M$ the generator-family size per covolume, the level-$n$ certificate
+identity for a fixed matrix element has $\Theta(M^{2n}/(2n)!)$
+independent coefficients up to the content's word-symmetry factor (a
+constant of the content), each verified once, and the climb's $O(M^{2n})$
+per sweep is input-linear in that count, optimal up to rank and constants.
+A conditional projection onto a commuting subalgebra acts within the fixed
+word family and does not change the count; the energy-saturation multiplier
+adds one scalar.  The counting is content-blind: each specialization of a
+content preserves the scaling class of the one it refines, paying an
+additive family count.  Total time is $I(\epsilon)\cdot O(M^{2n})$, with
+$I(\epsilon)$ the number of sweeps spent to reach emitted width
+$\epsilon$, a measured quantity carrying no a priori bound, so no
+unconditional total-time claim is made; natively sum-of-squares pieces
+(reciprocal kernels, matched boson squares) verify below the generic
+floor.
+\end{theorem}
+
+\section{Canonical structures of the state}\label{sec:canonical}
+
+Throughout, $\w$ is the ground state of declared content under
+Hypothesis~\ref{hyp:reg}.
+
+\begin{remark}[Convention on canonicity]\label{rem:convention}
+``Canonical'' below always means: determined by the content and the
+state up to an equivalence that is named at the construction and that
+acts trivially on every emission.  Emissions are values of the state on
+algebra elements; unitary equivalence of the carrier and the inner
+ambiguity of modular data leave every such value fixed, so the residual
+equivalence classes are gauge that never reaches an emission.  Wherever
+a construction below depends on more than $(\text{content}, \w)$ modulo
+such an equivalence, that dependence is stated, not absorbed into the
+word.
+\end{remark}
+
+\subsection{Carrier and closure}
+The GNS construction gives the carrier $(\pi, \Hw, \Omega)$, unique up to
+unitary equivalence.  The \emph{Gelfand ideal} $N_\omega = \{a \in \A :
+\omega(a^\dagger a) = 0\}$ is determined by the state alone.  By
+\S\ref{sec:uncertainty}, $N_\omega$ is the closure structure of the
+instrument: brackets close exactly on certificates whose factors lie in
+it.
+
+\begin{hypothesis}[Faithfulness]\label{hyp:faithful}
+$\w$ is faithful on the abelian (multiplication) subalgebra.  This is the
+chart-free residue of the classical statement ``the ground wavefunction
+is strictly positive''; it is verified on the instances considered.
+\end{hypothesis}
+
+\subsection{Modular structure}\label{sec:modular}
+For a subalgebra $\mathcal N \subseteq \pi(\A)''$ on which $\Omega$ is
+cyclic and separating, Tomita--Takesaki theory yields the modular data
+$(\Delta_{\mathcal N}, J_{\mathcal N})$ and flow, canonical up to inner
+automorphisms \cite{takesaki}.  A pure ground state is separating for no
+global type-I algebra; modular structure therefore lives on
+\emph{subalgebras}, and the admissibility criterion is internal:
+$\mathcal N$ is admissible precisely when $\mathcal N \cap N_\omega =
+\{0\}$.  Time, in this formulation, is the modular flow of admissible
+subalgebra--state pairs; it is an output.
+
+\subsection{Dirichlet form, Dirac operator, factorization}
+\label{sec:dirichlet}
+The canonical derivation is $\partial f = (X f)\,\Omega \in \Hw \otimes
+\g$, valued in the Clifford module of $(\g, \mathrm{Killing})$; the
+\emph{Dirichlet form of the state} is
+\[
+\E_\omega(f,g) \;=\; \sum_a \omega\big((X_a f)^{*}(X_a g)\big),
+\]
+manifestly linear in $\omega$.  Its generator structure is the
+Cipriani--Sauvageot theory \cite{cipriani}; the choice of first-order
+differential structure on which that theory depends is not made
+downstream: the derivations are declared content (\S\ref{sec:content}),
+so the construction is functorial in content, and its content dependence
+is the dependence every object of the theory has.  The associated Dirac
+operator $D_\omega$ satisfies $D_\omega \Omega = 0$ by construction.
+
+\begin{theorem}[Harmonicity]\label{thm:harmonicity}
+Let the content be of Dirichlet type (the class of
+Theorem~\ref{thm:factorization} below) and assume
+Hypotheses~\ref{hyp:reg}--\ref{hyp:faithful}.  Let $\omega$ be an
+admissible state whose dynamics is implemented on its carrier: a
+self-adjoint $H_\omega$ with $\Omega$ in its form domain and
+$e^{itH_\omega}\pi(a)e^{-itH_\omega} = \pi(\alpha_t(a))$ on the
+canonical core.  Then the identity
+$\E_\omega(f,g) = \langle f\Omega, (H_\omega - E_0)\, g\Omega\rangle$
+holds on the core if and only if $\omega$ is the ground state.  The
+diagonal defect at $f = g = \mathbf 1$ is $\omega(h) - E_0$: a
+nonnegative affine read of the state (the \emph{geometricity defect}
+at unit), vanishing exactly on the ground sector.
+\end{theorem}
+\begin{proof}
+If $\omega$ is the ground state, the identity is
+Theorem~\ref{thm:factorization}.  Conversely, evaluate the claimed
+identity at $f = g = \mathbf 1$: the left side vanishes because
+$X_a\mathbf 1 = 0$, and the right side is
+$\langle\Omega, (H_\omega - E_0)\Omega\rangle = \omega(h) - E_0$, so
+$\omega(h) = E_0$ and $\omega$ lies in the ground sector; uniqueness
+(Hypothesis~\ref{hyp:reg}) identifies it as the ground state.
+\end{proof}
+
+\begin{theorem}[Automatic local factorization, stoquastic class]
+\label{thm:factorization}
+Let $h = \mathrm{Cas} - \lambda M$ be of Dirichlet type with respect to
+the declared derivations: in the content's function realization, $h$ is
+an elliptic Schr\"odinger operator (Casimir Laplacians per link plus a
+real multiplication potential), so that the ground representative
+$\psi_0$ is strictly positive (Perron--Frobenius; this is
+Hypothesis~\ref{hyp:faithful} holding by theorem rather than by
+assumption, and pure gauge content is in the class).  Then, in the
+ground carrier,
+\[
+\langle f\Omega,\,(h - E_0)\,g\Omega\rangle
+= \sum_a \omega\big((X_a f)^*(X_a g)\big),
+\qquad\text{i.e.}\qquad
+h - E_0 = \sum_a L_a^{\dagger} L_a,
+\]
+with $L_a(f\Omega) = (X_a f)\Omega$ local to link $a$ and $L_a \Omega =
+0$ for every $a$.
+\end{theorem}
+\begin{proof}
+On the class stated, $e^{-th}$ is positivity improving and $\psi_0 > 0$
+(Perron--Frobenius for Schr\"odinger operators on products of compact
+group manifolds).  The ground-state (Doob) transformation, standard
+in Dirichlet-form theory \cite{fot}, then gives
+$(J_a - i(X_a\phi))(g\psi_0) = -i(X_a g)\psi_0$ for $\phi = -\log
+\psi_0$, by the Leibniz rule; summing adjoint squares yields the
+displayed identity, whose two sides are chart-free and linear in
+$\omega$, hence hold in the carrier independently of the realization.
+Locality holds because $X_a$ acts on the tensor factor of link $a$;
+$L_a\Omega = 0$ because $X_a 1 = 0$.  Domains: the identity holds on the
+canonical core, where both sides are densely defined closable quadratic
+forms; Hypothesis~\ref{hyp:reg} (essential self-adjointness and
+closability) identifies their closures, extending the identity to the
+form domains.
+\end{proof}
+
+\begin{remark}[Scope of the automatic precondition]\label{rem:scope}
+On the stoquastic class of Theorem~\ref{thm:factorization}, the ground
+carrier automatically presents the Hamiltonian as a sum of local
+positive operators each annihilating the ground vector: the structural
+precondition of the finite-size gap criteria of
+\S\ref{sec:extensivity}, which generic Hamiltonians fail.  The scope
+boundary is exactly the sign problem.  Fermionic hopping content is not
+of Dirichlet type with respect to the declared derivations; the ground
+representative of such content is not positive in any local realization
+in general, and the obstruction cannot be removed by local basis
+changes; curing non-stoquasticity is computationally hard even when
+possible \cite{bdot,mlh}.  For that content the transformation above is
+unavailable, and the identity between the ground form and the content
+Dirichlet form is not expected to hold.
+\end{remark}
+
+\begin{openproblem}[Local factorization for fermionic content]
+\label{op:sign}
+Determine for which fermionic contents the ground form admits any local
+positive decomposition $h - E_0 = \sum_x Q_x$ with $\Omega \in \ker Q_x$
+for every $x$.  This is the sign problem in carrier form.  It is not an
+item completed by additional work of a known kind: a structural
+obstruction is possible, and either an existence argument or an
+obstruction theorem would be a result.  Absent a decomposition, the
+certified finite-size gap criterion of \S\ref{sec:extensivity} does not
+apply to fermionic content at moderate coupling, and the gap program for
+such content routes through the strong-coupling regime alone
+(\S\ref{sec:gaps}).  A candidate structural criterion is
+Conjecture~\ref{conj:signfree} (\S\ref{sec:correspondence}).
+\end{openproblem}
+
+\subsection{Metric, dimension, volume, sectors}\label{sec:metricdim}
+The carr\'e du champ $\Gamma(f,g) = \tfrac12[f\,\mathfrak L g + g\,
+\mathfrak L f - \mathfrak L(fg)]$, with $\mathfrak L$ the Casimir
+Laplacian, is content-canonical.  Points are pure states of the abelian
+sector; the distance
+\[
+d(p,q) = \sup\{\,p(f) - q(f) : \Gamma(f,f) \preceq 1\,\}
+\]
+is a conic linear program in the instrument's own certificate cone
+\cite{connes}.  The counting function $N(E)$ of $D_\omega^2 = h - E_0$
+is a linear read of spectral projections; spectral dimension is a
+certified window slope of $N$; spectral volume is the Weyl coefficient,
+admissible as an emission only where Dixmier measurability (existence of
+the limit) is itself certified.  Quantum-number sectors are the gradings
+under the automorphism group of the content; all emissions are invariant
+under them.  On instances with unique ground state, $\dim\ker D_\omega =
+1$.
+
+\section{The geometric identification}\label{sec:geometry}
+
+The identification made by this formulation is: \emph{the certificate
+structure of the state, at closure, is a Dirac geometry}.  The data
+$(\A, \Hw, D_\omega)$ constitute a spectral triple only if the axioms
+hold: compact resolvent of $D_\omega$, bounded commutators $[D_\omega,
+f]$ on a dense subalgebra, regularity, and finite dimension spectrum
+\cite{connes}; a manifold requires in addition the reconstruction axioms
+\cite{connesrecon}.  None of these is assumed here.  On finite content
+they are finite-dimensional trivialities (bounded commutators are the
+finiteness of $\Gamma(f,f)$ already used by the metric), and the
+substantive questions are their uniformity along extensivity
+(\S\ref{sec:extensivity}) and refinement (\S\ref{sec:continuum}); each
+axiom is a named verification obligation per instance, on the same
+footing as Dixmier measurability in \S\ref{sec:metricdim}.  The
+identification is falsifiable at its first quantitative joint:
+
+\begin{definition}[Weyl consistency requirement]\label{def:weyl}
+For every instance, the certified spectral volume (the Weyl coefficient
+of $N(E)$, where measurable) must equal the Hausdorff volume of the
+spectrum under the metric $d$.  Failure of this equality at certified
+resolution refutes the identification for the instance.
+\end{definition}
+
+For the worked instance of \S\ref{sec:instance} both sides are in
+closed form.  The metric side (all values derived in
+Appendix~\ref{app:geometry}): the required volume is
+$(32 - 16\sqrt 2)\pi^2$, the diameter
+realization $d(\mathbf 1, (-\mathbf 1,-\mathbf 1)) = 2\sqrt2\,\pi$, and
+the one-loop distance $2\,|\arccos(x_1/2) - \arccos(x_2/2)|$.  The
+spectral side is also closed form for this instance: every eigenvalue
+and multiplicity of $D_\omega^2$ on the carrier is exact
+(Appendix~\ref{app:weyl}), so the eigenvalue count is exact arithmetic,
+the existence of the Weyl limit is proved rather than assumed (Dixmier
+measurability holds), and the comparison closes at every threshold of
+the resolution rule of \S\ref{sec:resolving}.  The comparison has been
+run, and it passes exactly:
+
+\begin{theorem}[Weyl consistency holds for the worked instance]
+\label{thm:weylinstance}
+For the content of \S\ref{sec:instance} the counting function of
+$D_\omega^2 = h - E_0$ satisfies
+\[
+N(E) \;=\; \frac{16 - 8\sqrt2}{3}\,E^{3/2} \;+\; O(E),
+\]
+and the Weyl coefficient equals the Hausdorff volume of
+Appendix~\ref{app:volume} as an algebraic identity:
+\[
+6\pi^2 \cdot \frac{16 - 8\sqrt2}{3} \;=\; (32 - 16\sqrt2)\,\pi^2 .
+\]
+The spectral dimension read is $3$, the dimension of the metric side.
+The leading coefficient is coupling-independent: $\|\lambda M\| \le
+6\lambda$ sandwiches $N_{h-E_0}$ between shifted copies of the kinetic
+counting function, so the identity holds at every declared coupling.
+Proof in Appendix~\ref{app:weyl}.
+\end{theorem}
+
+\noindent The two closed forms share no machinery: the volume is a
+triple integral of the $\Gamma$-metric's volume element, the count is
+Clebsch--Gordan combinatorics; their agreement is exactly the equality
+Definition~\ref{def:weyl} was built to test, and it is an instance of
+the equivariant Weyl law \cite{donnelly,bruningheintze}, verified
+directly.  On a commutative carrier
+the identification \emph{must} reduce to the classical Weyl law, so
+the content of the test is not the law but the normalizations: every
+constant entering either side was fixed elsewhere (the metric
+normalization by the verified carr\'e du champ of
+\S\ref{sec:instance}, the operator by the declared content, the
+quotient measure by the submersion), with no adjustable element
+remaining at the comparison.  A mismatch by any factor would have
+refuted the identification; there was none.  No result elsewhere in
+the paper depends on this outcome; the geometric identification has
+now passed its first decisive test, and the continuum program of
+\S\ref{sec:continuum} stands or falls independently.
+
+\section{Worked instance: SU(2) on two plaquettes}\label{sec:instance}
+
+\subsection{Content and algebra}
+Gauge group SU(2) on two faces sharing a boundary; the invariant algebra
+is generated by the loop characters $x = \chi(U_1)$, $y = \chi(U_2)$,
+$z = \chi(U_1 U_2)$, freely up to the classical relation defining the
+character variety
+\[
+\kappa(x,y,z) \;=\; x^2 + y^2 + z^2 - xyz - 4 \;\le\; 0,
+\qquad |x|,|y| \le 2,
+\]
+and the Hamiltonian is $h(\lambda) = C_2^{(1)} + C_2^{(2)} -
+\lambda(x+y+z)$.  All moments of the Haar state are exact rationals
+computed by character fusion; the carr\'e du champ closes on polynomials
+in $(x,y,z)$ with rational structure constants (e.g.\ $C_2\,x =
+\tfrac34 x$, $\Gamma(x,x) = (4 - x^2)/4$).
+
+\subsection{Certified spectra}
+Two-sided brackets on $E_1(\lambda)$, produced by sum-of-squares
+certificates with multipliers on the region above (lower side) and exact
+evaluation of exhibited states (upper side), verified in exact rational
+arithmetic:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+$\lambda$ & certified bracket on $E_1$ & width \\
+\midrule
+$1/16$, $1/12$ & two-sided, width $\le 10^{-15}$ & closed \\
+$1/2$ & $[-0.9548,\ -0.8836]$ & $0.071$ \\
+$2$ & $[-7.0500,\ -6.9595]$ & $0.090$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The plaquette expectation obeys the certified bounds
+$4.0031 \le \langle x{+}y{+}z\rangle_{\lambda=2} \le 6$, the lower side
+from the concavity (supporting-hyperplane) structure of
+\S\ref{sec:nonlinearity}, the upper from the exact norm.
+
+\subsection{Coupling towers}
+\emph{Weak coupling} (derived; Appendix~\ref{app:fourth}):
+\[
+E_1(\lambda) = -\tfrac{10}{3}\lambda^2
+- \tfrac{32}{9}\lambda^3 + \tfrac{551}{297}\lambda^4
++ \tfrac{172064}{9801}\lambda^5 + O(\lambda^6),
+\]
+with all coefficients exact and consistent with the certified
+brackets.  \emph{Strong coupling}
+(derived at leading orders; Appendix~\ref{app:strong}): harmonic
+expansion about the identity class in the $\Gamma$-metric gives
+normal-mode stiffnesses $3\lambda/4$ and $\lambda/4$ (three components
+each), hence
+\[
+E_1(\lambda) = -6\lambda + \tfrac32(1{+}\sqrt3)\sqrt\lambda + c_0 +
+O(\lambda^{-1/2}),
+\qquad
+E_2 - E_1 = 2\sqrt\lambda + O(1),
+\]
+gap-ratio asymptote $(E_3 - E_1)/(E_2 - E_1) \to (1+\sqrt3)/2$, plaquette
+law $\langle x{+}y{+}z\rangle = 6 - \tfrac34(1{+}\sqrt3)/\sqrt\lambda +
+O(1/\lambda)$ (consistent with Hellmann--Feynman by construction and with
+the certified bounds above); the invariant-sector selection rules place
+the swap-even excitation lowest at both ends of the coupling axis.  The
+constant term is derived in Appendix~\ref{app:strong}:
+\[
+c_0 \;=\; -\frac{126 + 13\sqrt3}{192} \;\approx\; -0.77352,
+\]
+inside the certified window $-0.79 \pm 0.05$ at $\lambda = 2$
+outright; fixing it determines subleading coefficients
+$(c_{-1}, c_{-2}) \approx (+0.07, -0.08)$ from converged variational
+values at $\lambda \in \{2, 8\}$, which then land the certified window
+$-0.83 \pm 0.04$ at $\lambda = 1/2$---one constant and two small
+corrections carrying four couplings.
+
+\section{The field--gauge correspondence: the group as output}
+\label{sec:correspondence}
+
+Proposition~\ref{prop:reference} exhibited one construction at two
+groups.  This section states the structure behind the seam of
+Remark~\ref{rem:refseam} and draws its consequence: compact-gauge
+content and CAR$\otimes$CCR field content are two generating views of a
+single carrier, related by a reductive dual pair; the Gauss law is the
+singlet compression between the views; and, on this correspondence, the
+symmetry itself moves from the input side to the output side.  The
+group's rank is recovered from the closure ideal of the reference
+state, the same object that closes brackets
+(Theorem~\ref{thm:closure}), and the existence of a symmetry becomes a
+positivity question of the type the instrument already runs.
+
+\subsection{One carrier, two generating subalgebras}
+\begin{definition}[Dual-pair carrier]\label{def:dualpaircarrier}
+Let $W = W_1 \oplus W_0$ be a $\mathbb Z_2$-graded one-particle space
+and $\mathcal F$ the Fock space carrying CAR over $W_1$ and CCR over
+$W_0$.  The quadratic words close on the orthosymplectic algebra
+$\mathfrak{osp}(W)$, the kinetic symmetry of field content (the
+Bogoliubov transformations).  A \emph{reductive dual pair} $(\g, \g')$
+is a pair of subalgebras of $\mathfrak{osp}(W)$, each the full
+commutant of the other \cite{howe}.  The distinguished vector is the
+lowest-weight vector $\Omega$ of the oscillator representation, fixed
+by the compact stabilizer that the kinetic Hamiltonian's spectral split
+determines; as in \S\ref{sec:sea-instance}, the polarization is an
+output of the content, not a choice, and no fully
+$\mathfrak{osp}$-invariant state exists to choose instead (for CCR none
+exists; for CAR it is the trace, not the Fock vacuum).
+\end{definition}
+
+The \emph{gauge view} generates from $\Omega$ by the $\g$-invariant
+words (loop words and characters); the \emph{field view} generates by
+the linear field words.  The kinetic term of the gauge view is the
+electric Casimir of $\g$; that of the field view is the quadratic
+current form $\sum_a J_a J_a$ of the dual partner; the two Casimirs of
+a dual pair are related through the number operator by Capelli-type
+identities.  Both views read one state.
+
+\begin{proposition}[Wick is fusion; the Gauss law is Haar integration]
+\label{prop:wickfusion}
+The moments of $\Omega$ on $\g$-invariant words equal the
+singlet-channel fusion of the corresponding tensor products: both sides
+evaluate the projector onto the trivial isotypic component.  The first
+fundamental theorem of invariant theory supplies the dictionary
+(pairings span the invariants of tensor powers: symmetric for
+orthogonal, antisymmetric for symplectic, mixed $V$--$\bar V$ for
+unitary content) \cite{weylbook}, and the Weingarten calculus is its
+exact finite-$N$ form: Haar integration of a word equals a signed sum
+of Wick pairings with explicit rational coefficients
+\cite{collinssniady}.  Consequently the compression
+$P = \int_G \pi(U)\, dU$ onto the singlet sector is Haar integration,
+is linear in the state, and forms no section: the gauge state is the
+field state compressed to invariant words, in the discipline of
+Remark~\ref{rem:sections}.  Provenance: classical invariant theory
+transported whole, numbered for the dependency graph
+(\S\ref{sec:conclusion}).
+\end{proposition}
+
+\subsection{Exactness and budget}
+\begin{proposition}[Prepotential exactness for SU(2)]\label{prop:prepot}
+Peter--Weyl gives $L^2(\mathrm{SU}(2)) \cong \bigoplus_j V_j \otimes
+V_j$, the number-matched singlet sector of the Fock space of two
+oscillator doublets per link, one per link end \cite{schwinger,mathur}.
+Under the identification the electric Casimir is polynomial in the
+number operator, $C_2 = (\hat N/2)(\hat N/2 + 1)$, and the loop
+characters are polynomial words in oscillator bilinears.  The unitary
+link operator itself carries $(\hat N + 1)^{-1/2}$ normalizations and
+is rational, not polynomial; the instrument's generating set is the
+polynomial intertwiner words, and the classical relation of
+\S\ref{sec:instance} is carried by the closure ideal.  The
+identification is exact: the worked instance of \S\ref{sec:instance}
+is a singlet-compressed bosonic content with no truncation.
+\end{proposition}
+
+For general compact $G$ the known exact presentations are per
+representation: rishon and quantum-link content realizes the link
+algebra on a finite-dimensional fermionic carrier exactly at fixed
+representation \cite{quantumlink}, so the representation cutoff is a
+\emph{declared budget}, and full $L^2(G)$ is its refinement limit along
+the machinery of \S\ref{sec:continuum}, a new budget axis with the same
+exact projection structure (Proposition~\ref{prop:projection}).
+
+\begin{openproblem}[The general dual-pair presentation]
+\label{op:dualpair}
+Construct, for each compact $G$ of the declared contents, the dual-pair
+carrier and singlet compression presenting $L^2(G)$-content exactly
+(SU(2) is exact above; SU(3) prepotentials with additional constraints
+are known \cite{anishetty}), and carry the canonical machinery of
+\S\ref{sec:canonical} through the compression.  This construction
+routes Open Problem~\ref{op:car} and the gauge instance through one
+object: the Dirichlet form, derivations, and $\Gamma$-calculus of the
+gauge sector become Wick-computable, and the four tests of
+Hypothesis~\ref{hyp:gma} and the gauge machinery stop being two
+machineries.
+\end{openproblem}
+
+\subsection{The group is an output of the state}
+\begin{proposition}[Group from closure]\label{prop:groupclosure}
+For the classical families ($\mathrm U(N)$, $\mathrm O(N)$,
+$\mathrm{Sp}(N)$) the moment matrix of the reference functional on
+invariant words of degree $\le b$ is the Gram matrix of the pairing
+(Brauer or partition-algebra) basis, with the rank $N$ entering only as
+a parameter; the first fundamental theorem says these words span
+\cite{weylbook}.  The family is fixed by the declared pairing symmetry
+of the words (orthogonal, symplectic, or unitary), and the rank is
+recovered from the Gelfand ideal of the functional: at integer $N$ the
+ideal is generated by the relations of the second fundamental theorem,
+the determinantal and Pfaffian identities, entering at a degree that
+reads off $N$.  Content may therefore declare the fusion functional,
+and the symmetry is read from the state by the instrument's own closure
+test (\S\ref{sec:uncertainty}) rather than declared.  For the worked
+instance the recovered relation is the Fricke cubic of
+\S\ref{sec:instance}: the region constraint the instrument has been
+carrying is the second fundamental theorem in person, its inequality
+the real (positivity) locus.
+\end{proposition}
+
+\begin{remark}[What the ideal cannot see]\label{rem:complexpoint}
+The output of Proposition~\ref{prop:groupclosure} is the
+\emph{complexification} and nothing finer.  Invariant theory sees the
+rank and the symmetry type of the invariant form, never its signature:
+the Brauer data at $\delta = 4$ with symmetric pairing carry the same
+fundamental theorems, hence the same closure ideal, for $O(4)$,
+$O(3,1)$, and $O(2,2)$: the real forms of the one complex group
+$O(4,\mathbb C)$ that preserve a real symmetric pairing.  (The
+remaining real form, the quaternionic $O^*(4)$, preserves no real
+symmetric form and corresponds to no signature; it is addressed with
+the signature question in \S\ref{sec:realform}.)  This is a scope statement, not a defect: real forms
+are classified by conjugacy classes of antilinear involutions, which no
+complex-linear moment datum can encode, and the theory's canonical
+antilinear objects are the modular conjugations of \S\ref{sec:modular}.
+The resolution of the real form is therefore a modular question and is
+taken up in \S\ref{sec:realform}, in that section's conditional
+register.  Two finer points share this boundary: the ideal fixes $O$
+rather than $SO$, the orientation word (the $\varepsilon$-tensor, a
+Pfaffian invariant) not being in the pairing image, so orientation is a
+separate declared-or-read item; and the integer output is the parameter
+$\delta$, identified with a dimension only through the read of
+\S\ref{sec:metricdim}.
+\end{remark}
+
+\begin{remark}[Quantization of symmetry as positivity]\label{rem:jones}
+Away from the integer points the fusion functional on the pairing
+algebra is generically not positive: the interpolating categories exist
+and are semisimple at generic parameter but are not unitary
+\cite{deligne}, and in the Temperley--Lieb instance positivity holds
+exactly on the Jones set $\{4\cos^2(\pi/k)\} \cup [4, \infty)$
+\cite{jones}.  The existence of a symmetry is thus a positivity
+question of the same linear-matrix-inequality type the instrument runs
+at every budget: \emph{which} groups can exist is a moment-cone
+membership, and the integrality of $N$ is an output.  At generic large
+parameter the functional degenerates to the planar (free) functional,
+the master field of the large-$N$ limit \cite{voiculescu}; the
+certified interpolation between the integer points and the planar
+functional is unexplored territory of the same cone.
+\end{remark}
+
+\subsection{A structural candidate for the sign problem}
+\begin{conjecture}[Dual-pair criterion]\label{conj:signfree}
+A fermionic content admits the local positive ground decomposition of
+Open Problem~\ref{op:sign} if and only if it is the singlet compression
+of a content in the stoquastic class of
+Theorem~\ref{thm:factorization}.  The forward half (compressions of
+stoquastic content inherit a decomposition on invariant words) is the
+tractable half and should be settled first; the converse would make
+sign-problem freedom and hidden gauge structure one property.  Either
+resolution sharpens Open Problem~\ref{op:sign} from a case list toward
+a criterion.
+\end{conjecture}
+
+\subsection{Decisive checks, specified in advance}
+None of the following has been executed.  (a) \emph{Prepotential
+re-pin}: re-derive the certified two-loop brackets of
+\S\ref{sec:instance} in prepotential words; the $E_1$ windows and the
+metric normalization $\Gamma(x,x) = (4 - x^2)/4$ must reproduce to the
+digit, the same moment problem posed in different generators, and any
+discrepancy refutes the compression as implemented.  (b) \emph{Casimir
+dictionary}: verify $C_2 = (\hat N/2)(\hat N/2 + 1)$ as a
+finite-dimensional operator identity per truncation.  (c) \emph{Rank
+drop}: the certified kernel of the degree-$\le b$ fusion Gram at
+parameter $N = 2$ must coincide with the degree-$\le b$ slice of the
+second-fundamental-theorem ideal, the executable form of
+Proposition~\ref{prop:groupclosure}.  (d) \emph{Complex-point rank
+drop}: check (c) at symmetric pairing and parameter $\delta = 4$; the
+certified kernel of the degree-$\le b$ Brauer Gram must coincide with
+the degree-$\le b$ slice of the rank-five determinantal ideal of
+$O(4,\mathbb C)$, the executable half of
+Remark~\ref{rem:complexpoint}, with no Lorentzian input anywhere in
+the computation.  Check (a) also bears on
+the strong-coupling constant of Appendix~\ref{app:strong}: in
+prepotential variables the group-manifold measure is replaced by the
+flat Fock measure, so $c_0$ becomes a normal-ordering computation on
+polynomial operators---an independent route to the derived value and a
+cross-check on the compression itself.
+
+\section{Space from the state}\label{sec:space}
+
+Space is not declared; it must be constructed from $(\A,\w)$.  The known
+theorems run from nets of subalgebras to geometry: a half-sided modular
+inclusion generates a positive-energy translation group
+\cite{wiesbrock,guidolongo};
+families satisfying geometric modular action determine spacetimes and
+isometry groups \cite{summers}; modular flow of wedge algebras
+is geometric in the free field \cite{bisognano}.  What is missing from
+the literature, and supplied here as the committed construction, is the
+map from $(\A,\w)$ to the net.
+
+\begin{remark}[Motivation for the construction; not a uniqueness
+theorem]\label{rem:exhaustion}
+The imported theorems consume two structural features: a directed
+family of nested subalgebras admitting a common cyclic separating
+vector (half-sided inclusions), and a disjointness relation, i.e.\ pairs of
+members with commuting or state-independent generation at extensive
+content (the spacelike structure of geometric modular action).  Among
+the structures the state defines in \S\ref{sec:canonical}, the ball net
+of the spectral metric supplies both from outputs alone.  The
+alternatives each lack at least one: the Gelfand ideal is a criterion,
+not an index; the modular data of the full algebra trivialize on a pure
+state; sector gradings are discrete, with no directed region structure;
+and the budget filtrations (including multi-parameter ones, which are
+genuinely partially ordered) are content-uniform, so distinct levels
+are nested and never disjoint, supplying direction without
+disjointness (partitioning the generators to manufacture disjointness
+re-declares regions, which is the input this section exists to output).
+This elimination is a survey of the structures the theory currently
+defines, not a theorem that no other index can exist; the construction
+below is therefore \emph{committed} rather than derived, and the weight
+rests on the decisive tests of Hypothesis~\ref{hyp:gma}, not on this
+remark.
+\end{remark}
+
+\begin{definition}[The ball net]\label{def:ballnet}
+For metric balls $B$ of $(\mathrm{Spec},\, d)$, let $\A(B)$ be the
+subalgebra of elements with derivation support in $B$.  $\A(B)$ is
+admissible when $\A(B) \cap N_\omega = \{0\}$ (the state separating on
+it): the closure structure decides which regions carry geometry.
+\end{definition}
+
+\begin{hypothesis}[Geometric modular action of the ball net]
+\label{hyp:gma}
+The assignment $(\A,\w) \mapsto \{\A(B)\}$ is functorial, and on
+extensive content its relative modular data satisfies geometric modular
+action, the emergent translations and isometries being those of the
+output geometry.  \emph{Scope:} on small bosonic instances the ball net
+localizes configuration space and no spatial claim is made; the spatial
+claim is made on extensive (many-body, fermionic) content.
+\end{hypothesis}
+
+Hypothesis~\ref{hyp:gma} carries four decisive tests in the free chiral
+fermion, where every answer is known and no adjustable element exists:
+the metric of the vacuum's Dirichlet form must reproduce arc length; the
+ball net must reproduce the interval net; the modular flow of a
+half-space algebra must be the known dilation flow \cite{bisognano}; and
+the translations generated by nested half-space inclusions
+\cite{wiesbrock} must be the physical ones.  Failure of any one refutes
+the hypothesis.  None of the four has been executed: each requires the
+fermionic machinery of Open Problem~\ref{op:car}, which is not yet
+built; they are specified in advance so that failure is defined before
+the machinery exists.  The division of labor is stated plainly: the
+imported theorems are standard, and the entire difficulty lives in
+their hypotheses (cyclic separating vectors, half-sided inclusions,
+geometric modular action); Hypothesis~\ref{hyp:gma} is exactly the
+assertion that the ball net meets those hypotheses on extensive
+content.  No instance of emergent geometry, not even a toy, is
+exhibited in this paper.
+
+\begin{openproblem}\label{op:car}
+Construct the quasi-free (CAR) instance of the Dirichlet-form and
+derivation machinery of \S\ref{sec:dirichlet}.  This construction is
+prerequisite both to the tests above and to all fermionic content of
+\S\ref{sec:hadrons}.  The correspondence of \S\ref{sec:correspondence}
+routes this construction and the gauge machinery through one object
+(Open Problem~\ref{op:dualpair}).
+\end{openproblem}
+
+\subsection{The spacetime group: the real form as modular output}
+\label{sec:realform}
+The correspondence of \S\ref{sec:correspondence} outputs the spacetime
+symmetry only up to complexification: invariant words see the rank and
+pairing symmetry of a form, never its signature, so the closure ideal
+at parameter $\delta = 4$ fixes $O(4,\mathbb C)$ and cannot distinguish
+its real forms (Remark~\ref{rem:complexpoint}).  Real forms of a
+complex group are classified by conjugacy classes of antilinear
+involutions, and the canonical antilinear data of this theory is the
+modular conjugation $J_{\mathcal N}$ of admissible subalgebra--state
+pairs (\S\ref{sec:modular}).  The division of the group is then exactly
+the division of the instrument: the compact real form is unitarized by
+the GNS carrier of the fusion functional, which is positive and tracial
+(the reference rung, the Euclidean side); the noncompact generators,
+the boosts that distinguish the Lorentz form, are carried by the
+modular flow of the ground sector, $\Delta^{it}$ of wedge-type members
+of the ball net, which is the content of the Bisognano--Wichmann
+theorem on the free field \cite{bisognano} and of geometric modular
+action in general \cite{summers}.  On this reading the Lorentz group is
+never a declared symmetry: the closure ideal supplies the complex
+point, the modular conjugations select the involution, and Wick
+rotation is not a contour choice but the KMS analyticity of the modular
+read (\S\ref{sec:subsumption}).  Signatures with two causal directions
+are excluded internally rather than by declaration: a half-sided
+modular inclusion generates positive energy along one causal direction
+\cite{wiesbrock}, and no second independent inclusion of modular type
+is available, so $O(2,2)$-type forms fail the hypotheses.  The
+quaternionic real form $O^*(4)$, which preserves no real symmetric
+form, is the homogeneous isometry group of no signature and therefore
+never arises as the output of geometric modular action on a metric
+ball net; it is excluded at the same step.  The
+disconnected components (parity, time reversal) are likewise
+antiunitary, $J$-type data, not new inputs.
+
+\begin{definition}[Signature consistency requirement]
+\label{def:signature}
+On extensive content satisfying Hypothesis~\ref{hyp:gma}, the
+complexification of the homogeneous isometry group produced by the
+geometric modular action of the ball net must equal the complex group
+fixed by the closure ideal of \S\ref{sec:correspondence} at parameter
+$\delta$ equal to the read spectral dimension.  Every arrow in the
+chain (state to dimension read, dimension to $\delta$, $\delta$ and
+ideal to complex point, modular conjugations to real form) is linear in
+the state or classical algebra; failure of the equality at certified
+resolution refutes the identification, exactly as
+Definition~\ref{def:weyl} refutes the geometric one.
+\end{definition}
+
+The requirement is conditional on Hypothesis~\ref{hyp:gma} and inherits
+its status: nothing here is exhibited, and the comparison is blocked on
+Open Problem~\ref{op:car} together with the four tests above, which now
+do double duty: the half-space modular flow test is simultaneously the
+test that the real form, the signature of spacetime, is an output of
+the state rather than an input to the theory.
+
+\section{Extensivity}\label{sec:extensivity}
+
+\subsection{Energy densities}
+\begin{theorem}[Certified thermodynamic densities]\label{thm:density}
+Let $H_\Lambda = \sum_{\ell \in \Lambda} C_2^{(\ell)} - \lambda
+\sum_{p \subset \Lambda} \chi_p$ on boxes $\Lambda$ (interior
+plaquettes), $G$ compact, with $c_\chi := \|\chi_p\|$ (for the SU(2)
+fundamental character $c_\chi = 2$; in general the dimension of the
+plaquette representation).  Then $e(\lambda) = \lim
+E_0(\Lambda)/|\Lambda|$ exists, and for every $\Lambda$,
+\[
+\Big|\, e(\lambda) - E_0(\Lambda)/|\Lambda| \,\Big| \;\le\;
+\frac{c_\chi\lambda\, n_\partial(\Lambda)}{|\Lambda|},
+\]
+with $n_\partial$ the exact count of boundary-crossing plaquettes per
+tile.  Certified finite-volume brackets on $E_0(\Lambda)$ therefore yield
+certified brackets on $e(\lambda)$ of width $(U - L)/|\Lambda| +
+2c_\chi\lambda\, n_\partial/|\Lambda|$.
+\end{theorem}
+\begin{proof}
+Tile $N\Lambda$ by $N$ copies: electric terms partition exactly over
+links; magnetic terms split into interior and crossing, $H_{N\Lambda} =
+\sum_i H_\Lambda^{(i)} + W_N$, where $W_N$ collects the crossing
+plaquettes, of which there are at most $N n_\partial$ (each crossing
+plaquette assigned to one of the tiles it meets), so $\|W_N\| \le
+c_\chi\lambda N n_\partial$.
+Hence $E_0(N\Lambda) \ge N E_0(\Lambda) - c_\chi\lambda N n_\partial$
+as an
+operator bound, and evaluating $H_{N\Lambda}$ in the product of copy
+ground states, $E_0(N\Lambda) \le N E_0(\Lambda) + c_\chi\lambda N
+n_\partial$.  For existence of the limit, apply the same interface
+estimate to the bipartition of a box into two sub-boxes: it shows
+$E_0(\Lambda) + c_\chi\lambda\, n_\partial(\Lambda)$ is subadditive
+under box concatenation along each axis, so Fekete's lemma gives
+convergence of $E_0(\Lambda_k)/|\Lambda_k|$ along side-doubling
+sequences; the two displayed operator bounds then sandwich an
+arbitrary box between the tilings it embeds in and those that embed in
+it, with per-volume error $c_\chi\lambda\, n_\partial/|\Lambda|$,
+which transfers the limit to arbitrary boxes and identifies it as
+box-shape independent.  Dividing the two bounds by $N|\Lambda|$ and
+letting $N \to \infty$ gives both inequalities with the same constant.
+\end{proof}
+
+\subsection{Gaps}\label{sec:gaps}
+On the stoquastic class of Theorem~\ref{thm:factorization}, which
+includes pure gauge content, $h - E_0 = \sum_x Q_x$ with $Q_x$ local,
+positive, and $\Omega \in \ker Q_x$ for all $x$: the ground carrier
+automatically presents the structure that finite-size gap criteria
+require \cite{knabe,nachtergaele}.  The quantitative content of those
+criteria is an overlap (angle) condition between local kernels, which is
+a moment read (Gram data) and hence certifiable.  For fermionic
+content the precondition is not automatic and may be obstructed (Open
+Problem~\ref{op:sign}); the criterion of this paragraph does not reach
+such content.  One transport step remains open on the stoquastic class:
+
+\begin{openproblem}[Carrier transport]\label{op:carrier}
+The decomposition of Theorem~\ref{thm:factorization} is taken in the
+carrier of the ground state of each volume.  Establish certified bounds
+transporting the kernel angles of the decomposition on a larger volume
+from moment reads on a smaller one together with a certified overlap of
+the two ground states on local elements.
+\end{openproblem}
+
+\noindent Given Open Problem~\ref{op:carrier}, the martingale argument
+of \cite{nachtergaele} yields a certified finite-size gap criterion on
+the stoquastic class: certified block gaps and certified kernel angles
+imply an explicit infinite-volume gap bound.  The strong-coupling route
+is independent of the factorization and is statistics-blind: the
+unperturbed part, electric Casimirs per link together with fermion mass
+terms, is a commuting, gapped local Hamiltonian with product ground
+state, and the magnetic and hopping terms are sums of uniformly bounded
+local perturbations, so uniform-in-volume gap persistence below an
+explicit threshold follows from the stability theory of gapped
+Hamiltonians \cite{bhm} with or without fermions; making the constants
+of that theory explicit for the present content is mechanical and
+remains to be carried out.  Finite-volume mass shifts in charged sectors
+are exponentially small in the volume once the neutral gap and
+clustering are certified, in the standard manner \cite{luscher}.
+Summarizing the reach: at strong coupling, certified infinite-volume gap
+control is available for all content; at moderate coupling it is
+available on the stoquastic class conditionally on Open
+Problem~\ref{op:carrier}, and for fermionic content it is open at the
+structural level (Open Problem~\ref{op:sign}).
+
+\subsection{Order}\label{sec:order}
+Symmetry-restricted minimization does not move a determined per-volume
+value: any invariant state is admissible for the restricted problem, and
+any restricted minimizer averages over the compact symmetry to an
+invariant state of equal per-volume value (the value being affine and
+translation covariant).  Crystalline or otherwise ordered structure is
+therefore never an input; whether the optimizing state orders is read
+from its two-point emissions.
+
+\section{Refinement and the continuum}\label{sec:continuum}
+
+The continuum object is defined relationally: two declared contents are
+equivalent when all certified reads of $(\A, \w, D_\omega)$ agree; the
+continuum theory is the equivalence class.  This section reduces the
+existence of that class, for asymptotically free gauge content, to a
+finite certification problem, and states exactly what remains.
+
+\subsection{Refinement is exact}
+\begin{proposition}\label{prop:projection}
+Budget coarsening acts on moment \emph{bodies} by exact linear
+projection: $\mathcal S_b$ is the image of $\mathcal S_{b'}$
+($b' > b$) under the restriction of moment data.  Content refinement
+(subdivision at declared coupling) composes with this projection
+through the embedding of the coarser content's algebra in the finer.
+No approximation enters the map; all dynamical content of the
+continuum question resides in the behavior of certified brackets along
+it.
+\end{proposition}
+\begin{proof}
+Restriction maps $\mathcal S_{b'}$ into $\mathcal S_b$ because a
+state's degree-$\le b'$ data restrict to its degree-$\le b$ data;
+surjectivity is immediate because every point of $\mathcal S_b$ is by
+definition the restriction of some admissible state, whose
+degree-$\le b'$ data supply a preimage.  For composition with content
+refinement: a state of the finer content restricts along the unital
+embedding to a state of the coarser, and conversely every state of the
+coarser content extends to the finer one (positive Hahn--Banach
+extension in the order-unit norm), so the coarse moment body is the
+projection of the fine one.
+\end{proof}
+
+\begin{remark}[The relaxations do not project exactly]
+\label{rem:projectionscope}
+The corresponding statement for the outer relaxations $\mathcal M_b$
+of \S\ref{sec:cones} is false in general: a level-$b$ feasible moment
+vector need not extend to a level-$b'$ feasible one.  Indeed, if it
+always did, a diagonal extraction along $b'$ (using the archimedean
+moment bounds of the compact generators, as in
+Theorem~\ref{thm:totaldichotomy}) would exhibit every level-$b$
+feasible point as the restriction of a genuine state, making every
+finite level exact and every bracket close at every degree,
+contradicting Theorem~\ref{thm:closure}.  The failure of the
+relaxations to project exactly \emph{is} the tightening of the
+hierarchy; the exactness claimed by
+Proposition~\ref{prop:projection} is a property of the bodies, and it
+is the bodies along which the trajectory of
+Definition~\ref{def:trajectory} is defined.
+\end{remark}
+
+\begin{definition}[Trajectory]\label{def:trajectory}
+The \emph{trajectory} is the locus in (content, coupling) along which
+per-step contraction certificates exist for all emitted relational
+reads: certified nesting
+\[
+\mathrm{bracket}(n{+}1) \subseteq \mathrm{bracket}(n),
+\]
+geometric in the directions transverse to the
+locus, with the declared logarithmic flow along it (the marginal
+direction of an asymptotically free coupling).  The step constraint set
+at stage $n$ is the certified bracket set emitted at stage $n{-}1$
+together with the content's region constraints; no window parameters
+exist.
+\end{definition}
+
+\begin{theorem}[Tower summation]\label{thm:tower}
+If per-step certified control holds along the trajectory with
+$\delta_n \le C\rho^n \operatorname{polylog}(n)$, $\rho < 1$, then the
+certified brackets on every emitted read converge to a limit interval
+with explicit enclosure $r_N + [-T_N, T_N]$, $T_N = \sum_{n \ge N}
+\delta_n$.
+\end{theorem}
+\begin{proof}
+The intervals form a Cauchy sequence in Hausdorff distance with exactly
+summable tail; the enclosure is the triangle inequality summed from $N$.
+\end{proof}
+
+\subsection{Two dimensions are exact}
+\begin{theorem}\label{thm:2d}
+In two dimensions with heat-kernel plaquette weights
+\[
+K_t(U) = \sum_j d_j e^{-t C_2(j)} \chi_j(U),
+\]
+subdivision of a plaquette of area $t$
+into areas $t_1 + t_2 = t$ leaves every gauge-invariant read exactly
+invariant.
+\end{theorem}
+\begin{proof}
+Character orthogonality gives $\int \chi_j(UV^\dagger)\chi_k(VW^\dagger)
+\,dV = \delta_{jk}\,\chi_j(UW^\dagger)/d_j$, hence $K_{t_1} * K_{t_2} =
+K_{t_1+t_2}$: the subdivided theory equals the original on the invariant
+algebra, and invariant reads depend on enclosed areas alone.
+\end{proof}
+
+\noindent Theorem~\ref{thm:2d} is the heat-kernel form of the exact
+solvability of two-dimensional lattice gauge theory \cite{migdal},
+transported for the dependency graph; it is the degenerate case of
+Definition~\ref{def:trajectory} (contraction ratio identically zero).
+At the opposite end of solvability, hierarchical models and free fields
+constitute the calibration class: certified contraction rates computed
+there are required to equal the known renormalization-group eigenvalues
+of those models; rigorous computer-assisted renormalization is an
+established genre \cite{lanford,koch}, of which the present certificates
+are the conic instance.  A construction that produced rates in
+disagreement with the known spectra would thereby be refuted as a
+construction, whatever its internal consistency.
+
+\subsection{Slack, dichotomy, and the anchor}
+\begin{definition}[Slack]\label{def:slack}
+For a state $\omega$, $\sigma(\omega)$ is the supremum, over certificates
+of the per-step inequality family at fixed degree, of the minimal margin.
+As a supremum of affine weak-$*$ continuous functionals, $\sigma$ is
+weak-$*$ lower semicontinuous and nonnegative on feasible states.
+\end{definition}
+
+\begin{lemma}[Uniformity on compacts]\label{lem:uniformity}
+If every state in a weak-$*$ compact set $K$ admits a certificate of
+degree $\le b$ with slack $\ge s > 0$, then finitely many certificates
+cover $K$ and a uniform budget certifies the step on all of $K$.
+\end{lemma}
+\begin{proof}
+A fixed certificate's margin is affine and weak-$*$ continuous, so slack
+$\ge s$ at a point gives margin $> s/2$ on a neighborhood; compactness
+(Banach--Alaoglu) extracts a finite subcover.
+\end{proof}
+
+\begin{lemma}[Neighborhood persistence]\label{lem:persistence}
+If $\sigma(\omega^*) = s^* > 0$ then $\sigma \ge s^*/2$ on a weak-$*$
+open neighborhood of $\omega^*$.
+\end{lemma}
+\begin{proof}
+The certificate achieving $s^*$ has affine continuous margin; its
+superlevel set at $s^*/2$ is open and lower-bounds $\sigma$.
+\end{proof}
+
+\begin{theorem}[Dichotomy]\label{thm:dichotomy}
+Along any refinement orbit $\{\omega_n\}$, either $\inf_n
+\sigma(\omega_n) > 0$, or the orbit has a weak-$*$ accumulation point
+$\omega^*$ with $\sigma(\omega^*) = 0$ exactly.
+\end{theorem}
+\begin{proof}
+If $\liminf \sigma(\omega_n) = 0$, extract a subsequence with $\sigma \to
+0$; it accumulates by compactness of the state space; lower
+semicontinuity gives $\sigma(\omega^*) \le 0$, and nonnegativity closes.
+\end{proof}
+
+\noindent A zero-slack state is one at which a transverse direction
+ceases to contract: an unanticipated criticality.  The classical failure
+mode of rigorous renormalization, uncontrolled flow away from the
+governing fixed point, is here \emph{derived} as the unique failure
+mode.
+
+The step map factorizes as (variational update) $\circ$ (restriction
+channel).  The channel half is monotone for relative entropy
+\cite{uhlmann}, and by the variational formula of \cite{kosaki} relative
+entropy is itself a supremum of affine functionals of the state, hence an
+object of the same class as $\sigma$; the variational half-step is where
+all difficulty resides.
+
+For asymptotically free content the ultraviolet tower flows toward the
+free fixed point, where the theory is exactly solvable and the slack of
+the per-step family, with the coupling retained as a bounded parameter,
+is a finite computation on free content.  If that slack is positive,
+Lemma~\ref{lem:persistence} yields an open neighborhood $N$ of the free
+profile on which a single \emph{parametric} certificate (multipliers
+polynomial in $g$ over $[0, g^*]$, in the standard manner of
+\cite{putinar,lasserre}) can certify every step, including the
+forward-invariance inequality keeping the orbit in $N$; near the free
+anchor, effective degree bounds for such certificates \cite{niesch}
+render the search decidable with explicit budget.  If the free-field
+slack is not positive at reasonable degree, the strategy of this section
+fails at its first computation; the question is settled either way by
+the computation, which has not yet been carried out.
+
+\subsection{The reduction}
+\begin{theorem}[Reduction]\label{thm:reduction}
+Suppose (i) a parametric certificate with positive slack and certified
+forward invariance exists on a neighborhood $N$ of the free profile,
+uniformly for $g \in [0, g^*]$; and (ii) a finite chain of per-step
+contraction certificates connects the declared content to $N$.  Then the
+certified brackets on every emitted relational read converge along the
+tower with explicit enclosure and uniform budget: the continuum brackets
+exist, and their existence is verified by finitely many exact-arithmetic
+identities.
+\end{theorem}
+\begin{proof}
+The finitely many chain steps carry exhibited certificates; steps beyond
+the chain are covered by the parametric certificate, whose invariance
+clause keeps the orbit in $N$ and whose contraction clause supplies
+$\delta_n$ as in Theorem~\ref{thm:tower}; that theorem closes the
+enclosure.  The budget is the maximum over a finite set.
+\end{proof}
+
+\begin{remark}[What the reduction changes]\label{rem:teeth}
+Theorem~\ref{thm:reduction} changes the \emph{type} of the continuum
+problem, from a limit statement in analysis to a finite certification,
+conditional on its hypotheses; it does not by itself reduce the
+difficulty, which is relocated intact into hypothesis (ii), the chain
+of Conjecture~\ref{conj:chain}, and into hypothesis (i), whose
+free-anchor slack computation has not been carried out.  The claim that
+the certificate language has teeth is earned only by executions; the
+unexecuted decisive computations are named in \S\ref{sec:conclusion}.
+\end{remark}
+
+\subsection{Both branches have witnesses; data cannot decide}
+\begin{lemma}[Duality]\label{lem:duality}
+On content with compact generators, the per-step feasibility problems at
+degree $\le b$ (constraint slices being certified brackets of positive
+width together with the region constraints) admit infeasibility
+witnesses: if no certificate exists, there is a normalized functional
+$\Lambda_b$, nonnegative on the truncated quadratic module.
+\end{lemma}
+\begin{proof}[Proof sketch]
+The slices have nonempty interior, so the truncated quadratic modules
+are closed \cite{powers,marshall}; conic separation yields the witness.
+For the interior point: the Haar state alone is not feasible for the
+slices (its moments generally violate the emitted brackets; in the
+worked instance $\langle x{+}y{+}z\rangle_{\mathrm{Haar}} = 0$ against
+a certified lower bound above $4$), but a convex combination
+$(1-\varepsilon)\,\omega + \varepsilon\,\omega_{\mathrm{Haar}}$ of a
+slice-feasible state with the Haar state is: faithfulness of the Haar
+state on compact content makes its moment matrices strictly positive
+definite, so the mixture is strictly interior to the positivity
+constraints, and the positive width of the bracket slices keeps the
+mixture inside them for $\varepsilon$ small.  The Slater alternative
+then applies.
+\end{proof}
+
+\begin{theorem}[Localization; total dichotomy]\label{thm:totaldichotomy}
+Fixed-degree certifiability is open in the coupling (a certificate with
+slack absorbs $O(\delta g)$ coefficient perturbations into its margin),
+so $F_b = \{g \in [0, g_c] : \text{step certificate of degree } \le b\}$
+is open and increasing in $b$.  Consequently either $\bigcup_b F_b =
+[0, g_c]$ and compactness extracts a finite chain
+(Theorem~\ref{thm:reduction}(ii) holds); or the residue $[0,g_c]
+\setminus \bigcup_b F_b$ is nonempty and compact, and at each of its
+points the witnesses $\Lambda_b$ of Lemma~\ref{lem:duality} exist for
+every $b$ and accumulate weak-$*$ on genuine states of exactly zero
+slack.  Either the chain exists, or a zero-slack obstruction state
+exists at a localized coupling: both branches of the question have
+witnesses.
+\end{theorem}
+\begin{proof}
+Openness: fix a certificate with margin $s$ at $g_0$; the inequality
+coefficients are polynomial in $g$, so for $|g - g_0|$ small the same
+certificate certifies the perturbed inequality with margin
+$s - O(|g - g_0|)$ by the residual-norm clause of
+Proposition~\ref{prop:weak}; hence $F_b$ is open, and increasing in $b$
+because certificates persist under degree enlargement.  If the $F_b$
+cover $[0, g_c]$, compactness extracts a finite subcover, hence a
+finite chain.  Otherwise fix $g^\dagger$ in the compact residue; for
+every $b$ a witness $\Lambda_b$ exists at $g^\dagger$
+(Lemma~\ref{lem:duality}).  Each $\Lambda_b$ is normalized and positive
+on squares of degree $\le b$, and Cauchy--Schwarz on the truncated
+module together with the exact norm bounds of the compact generators
+gives $|\Lambda_b(w)| \le 2^{\deg w}$ for every word of degree
+$\le b$.  For each fixed degree $d$, the restrictions of
+$\{\Lambda_b\}_{b \ge d}$ to the degree-$d$ word space therefore lie in
+a closed bounded, hence compact, set; a diagonal extraction along $b$
+yields a functional $\Lambda$ on all words, normalized, positive on
+squares of every degree, with $|\Lambda(w)| \le 2^{\deg w}$.  That
+bound makes $\Lambda$ norm-continuous on the dense polynomial
+subalgebra, so it extends to a state on the C$^*$ closure.  Finally,
+each $\Lambda_b$ assigns the step inequality a nonpositive value while
+satisfying every slice constraint (that is the witness property); the
+finitely many margins are jointly continuous in $(\Lambda, g)$, so the
+limit state assigns the step inequality a nonpositive value while lying
+in the constraint slice: a state of exactly zero slack at
+$g^\dagger$, since positive slack at the limit would, by
+Lemma~\ref{lem:persistence}, certify a weak-$*$ neighborhood meeting
+the $\Lambda_b$ and contradict their witness property.
+\end{proof}
+
+\begin{theorem}[No decision by data]\label{thm:nogo}
+The witnesses $\Lambda_b$ satisfy every slice constraint by
+construction (hence every certified bracket the instrument has emitted
+or will emit on the declared reads, up to their degree), and so does any
+limiting obstruction state.  Consequently no finite accumulation of
+certified brackets on the physical state entails the nonexistence of the
+obstruction: the branches of Theorem~\ref{thm:totaldichotomy} cannot be
+separated by bracket data alone.  They can be separated only by
+exhibition of the chain, or by a structural theorem excluding the
+obstruction.
+\end{theorem}
+
+\begin{remark}[What failure looks like]
+By Lemma~\ref{lem:duality}, failure at fixed degree is itself decidable
+and carries a witness; a sustained failure across degrees produces a
+sequence of witness functionals converging on the obstruction's own
+moment profile, which can be symmetrized and interrogated by every
+declared read.  Unsuccessful search at bounded degree is therefore
+informative; unbounded non-existence is not finitely refutable, which is
+the precise character of the remaining problem.
+\end{remark}
+
+\subsection{The central conjecture and candidate mechanisms}
+\begin{conjecture}[Existence of the chain]\label{conj:chain}
+For asymptotically free gauge content in $3{+}1$ dimensions, the finite
+chain of Theorem~\ref{thm:reduction}(ii) exists.  Equivalently
+(Theorem~\ref{thm:totaldichotomy}): no zero-slack obstruction state lies
+on the segment between the declared content and the free anchor.  This
+is nonperturbative asymptotic freedom in certificate form; upon
+exhibition of the chain, the continuum brackets of the theory exist at
+the strength of finitely many verified identities.
+\end{conjecture}
+
+Three mechanisms, each with a decisive computation in the calibration
+class, would produce or organize the chain.  \emph{(a) Curvature
+condition.}  The canonical per-step certificate is the running state's
+own geometry: transverse contraction as a uniform spectral gap of the
+state Dirichlet forms, certified by a curvature-dimension inequality
+$\Gamma_2 \ge \kappa\,\Gamma$ \cite{bakry} in the exact $\Gamma$-calculus
+of \S\ref{sec:metricdim}; whether the per-step certificates of the
+solvable controls can be taken in this form is a computation.  On
+fermionic content this mechanism inherits the scope boundary of
+Remark~\ref{rem:scope} and Open Problem~\ref{op:sign}.  \emph{(b)
+Monotone.}  A certified functional of the state, in the affine-supremum
+class of Definition~\ref{def:slack}, strictly decreasing along the
+refinement flow with quantitative strictness away from the free fixed
+point, would exclude the obstruction branch outright, and with the free
+anchor computation would imply Conjecture~\ref{conj:chain} by
+Theorem~\ref{thm:totaldichotomy}; the entropic proofs of
+renormalization-flow monotonicity \cite{casini} indicate the class in
+which to look, and the requirement here, a monotone for one flow on one
+content class, is strictly weaker than a universal theorem.  \emph{(c)
+Parametric collapse.}  If the chain's certificates can be taken with
+coefficients polynomial in $g$ over the whole segment, the chain is a
+single parametric certificate; whether the per-step certificates of the
+controls vary polynomially along the flow is a measurement.
+
+\section{Hadronic content}\label{sec:hadrons}
+
+\subsection{Fermions at declared content}
+Quark content enters as CAR sectors coupled to the gauge content, the
+Gauss law imposed by exact quotient on the invariant algebra (at declared
+lattice content the quotient is exact and requires no section, so the
+obstruction that blocks continuum nonabelian gauge fixing does not arise
+at this level).  Lattice chirality is constrained: no discretization
+carries exact chiral symmetry, doubler freedom, and locality
+simultaneously \cite{nielsen}; the class defined by the Ginsparg--Wilson
+relation $\{\gamma_5, D\} = a D\gamma_5 D$ \cite{ginsparg,luscherchiral}
+carries the exact algebraic form of chirality and is adopted as content.
+Residual parameters within the class are declared, and every emission is
+required to be stable across the declared parameter window at its stated
+resolution; parameter dependence at resolution refutes the emission, not
+the framework.
+
+\subsection{Spectral hadrons}
+Baryon and flavor numbers are canonical gradings of the content
+(\S\ref{sec:metricdim}); the mass of the lightest baryon is the
+ground-sector energy difference between grading sectors,
+\[
+m_B \;=\; E_0(B{=}1) - E_0(B{=}0),
+\]
+a spectral quantity requiring no interpolating operators, no plateau
+analysis, and no statistical estimator: both terms are certified
+brackets, and the difference inherits interval arithmetic.  Emissions
+are dimensionless ratios (e.g.\ $m_B/m_M$ against the lightest meson);
+each content parameter (quark-mass coupling) is fixed by exactly one
+declared calibration ratio, disjoint from all comparison targets, and
+electromagnetic and isospin-breaking effects are outside the stated
+resolution tier until declared otherwise.
+
+\subsection{What a hadronic emission requires}
+A certified $m_B/m_M$ at declared lattice content and coupling requires:
+the fermionic instance of the canonical machinery (Open
+Problem~\ref{op:car}); certified brackets in two grading sectors on
+volumes governed by \S\ref{sec:extensivity}, where the reach is exactly
+as summarized in \S\ref{sec:gaps}: Theorem~\ref{thm:density} is
+statistics-blind (fermionic hopping terms crossing a tile boundary are
+norm-bounded per link and mass terms partition, so the proof extends
+verbatim), the strong-coupling gap control is statistics-blind, and the
+moderate-coupling gap criterion does \emph{not} reach fermionic content
+(Open Problem~\ref{op:sign}); and, for the comparison to carry weight,
+the strong-coupling value of the ratio derived independently in advance,
+with the resolution rule of \S\ref{sec:resolving} in force.  The
+strong-coupling lattice baryon program is therefore reachable by the
+statistics-blind route; away from strong coupling, certified fermionic
+gap control is open at the structural level.  A certified
+\emph{continuum} $m_B/m_M$, the proton-to-meson ratio of the physical
+theory, requires in addition exactly the content of
+\S\ref{sec:continuum}: it exists upon Conjecture~\ref{conj:chain}
+together with the free-anchor computation, by
+Theorem~\ref{thm:reduction}, and by Theorem~\ref{thm:nogo} no
+accumulation of lattice data can substitute for that exhibition.  The
+open items between the present state of the framework and a physical
+proton mass are therefore precisely: Open Problems \ref{op:car},
+\ref{op:carrier}, and \ref{op:sign}, the explicit constants of
+\S\ref{sec:gaps}, the free-anchor computation, and
+Conjecture~\ref{conj:chain}.  These are not of one kind: all but one are
+completed by work of a known character, while Open
+Problem~\ref{op:sign}, the sign problem in carrier form, may be a
+structural obstruction rather than an unfinished task, and any account
+of the path that omits it, or lists it as routine, misstates the
+theory's position.  Nothing else stands in the path, and each item is
+stated where its mathematics lives.
+
+\section{Electrodynamic matter}
+\label{sec:subsumption}
+
+This section declares the content of electrodynamic matter, with
+gravitation carried as a spin-2 boson sector, and develops it inside the
+framework.  Historically this instance was constructed first; the general
+theory of \S\S\ref{sec:kinematics}--\ref{sec:continuum} is its closure,
+and everything below is that theory evaluated at declared content.
+
+\subsection{Content}\label{sec:qedcontent}
+The arena is $\mathbb R^3$, entering the theory exclusively through the
+coefficient data of the local dynamics (kernels, dispersions, form
+factors); this is the entire residual background.  A system is declared
+by its composition: the species present, a closed subgroup $\mathsf H
+\subseteq \mathbb R^3$ (the \emph{content group}; every closed subgroup
+is $V \oplus \Lambda$ with $V$ a subspace and $\Lambda$ a lattice in a
+complement) under which the matter distribution is homogeneous, and the
+species densities on $\mathbb R^3/\mathsf H$: bulk matter is $\mathsf H =
+\mathbb R^3$, a molecule $\mathsf H = \{0\}$.  The content group declares
+what system is studied, never how its matter organizes; no lattice,
+cell, or space group is among the data (\S\ref{sec:order}).
+
+Species are second-quantized fields.  Per charged-lepton flavor, the CAR
+algebra over
+\[
+L^2(\mathbb R^3) \otimes \mathbb C^4
+\]
+graded by electric
+charge: particles and antiparticles carried together, particle number
+not conserved, flavor charge conserved, and \emph{no positive-energy
+subspace selected at any point for any purpose}
+(\S\ref{sec:sea-instance}).  Per declared isotope, a CAR or Weyl-form CCR
+field over $L^2(\mathbb R^3) \otimes \mathbb C^{2s+1}$ with mass, charge,
+spin, and charge form factor as Hamiltonian data of the standing of the
+mass.  The photon is the transverse Weyl algebra at bandwidth (two
+polarizations).  The graviton is the transverse-traceless spin-2 Weyl
+sector, coupled to the matter stress words exactly as the photon couples
+to the charge current, with $\kappa = \sqrt{16\pi G}$ a measured datum of
+the standing of a charge; no separate gravitational theory is carried.
+Statistics are algebra identities; no symmetrization machinery exists.
+Admissible states are positive, normalized, $\mathsf H$-invariant,
+invariant under each flavor's charge $U(1)$ at the declared densities,
+neutral in total, with finite boson second moments; per-covolume
+quantities live in the density quotient of local elements modulo
+translates.  The Hamiltonian density assembles the Dirac coefficient
+matrices, the isotope dispersions, the instantaneous Coulomb interaction
+of the \emph{total} charge density (produced by the quotient below), the
+transverse current coupling, the free field energies at budget, and the
+transverse-traceless stress coupling.
+
+\begin{proposition}[Boundedness below at budget]\label{prop:qedbounded}
+At every stated budget, $\hat h \ge -C(\mathrm{budget})\,\mathbf 1$ as a
+form on the admissible class.
+\end{proposition}
+\begin{proof}
+Fermionic smeared words with bounded coefficients are bounded; kinetic
+and boson number forms are nonnegative; the reciprocal Coulomb part is a
+positive superposition of Hermitian squares of smeared total-charge
+words; the singular slice of the point-charge specialization is
+form-dominated by a declared fraction of the lepton kinetic bilinear
+(Hardy), itself bounded at bandwidth; and boson-linear couplings obey,
+mode by mode, $\pm(Ba^\dagger + B^\dagger a) \le \varepsilon\omega\,
+a^\dagger a + (\varepsilon\omega)^{-1} B^\dagger B$ with $B$ bounded,
+the first term absorbed into a fraction of the free energy over the
+budgeted band.
+\end{proof}
+
+\begin{proposition}[Two-sided transfer of kinetic truncation]
+\label{prop:kintrunc}
+If $\hat h^{(t)}$ carries, for any subset of massive species, kinetic
+dispersions truncated from below ($0 \le t(k) \le k^2/2m$ pointwise), then
+$\hat h^{(t)} \le \hat h$ as forms: every certified lower bound for the
+truncated theory transfers, while every exhibited state evaluates the full
+dispersions exactly.  Kinetic truncation costs width only, on both sides,
+never soundness.
+\end{proposition}
+
+\begin{proposition}[The photon axis is variational from above]
+\label{prop:photonaxis}
+$e_0$ is monotone nonincreasing in the photon budget: a budgeted admissible
+state extended by the vacuum on the new band evaluates the enlarged
+Hamiltonian to the same energy density.  Enlarging the budget enlarges the
+coupling, which is indefinite, so no form inequality exists; lower bounds
+are per-budget, and the behavior of anchored relational emissions along the
+axis is the measured trajectory of \S\ref{sec:uvaxis}.
+\end{proposition}
+
+\subsection{The exact abelian quotient}
+The electromagnetic phase space is reduced, never gauge fixed: the
+abelian Gauss constraint is solved exactly on $\mathbb R^3$, the
+longitudinal electric field is determined by the charge density, its
+elimination produces the instantaneous Coulomb interaction, and the
+remaining local degrees of freedom are the two transverse polarizations.
+This is a quotient with nothing selected; at $\mathsf H = \mathbb R^3$ or
+$\{0\}$ there are no cycles, hence no holonomies and no flux labels.  It is
+the $G = U(1)$ case of the exact quotient of \S\ref{sec:content}.
+
+\begin{remark}[Torus holonomies at periodic content]\label{rem:holonomy}
+At a content group $\mathsf H = V \oplus \Lambda$ with a nontrivial lattice
+$\Lambda$ of rank $d \ge 1$ the reduced configuration space carries, besides
+the local transverse modes, the finitely many global harmonic modes of the
+periodic geometry: the holonomies of the connection around the $d$ cycles
+with their conjugate momenta, and at $d \ge 2$ integer magnetic flux labels
+through the $2$-cycles.  Both dispositions are exact and cost nothing.  The
+flux labels are superselected sector data, declared with the particle
+content; the holonomy pairs are a fixed finite set of global Weyl generators
+whose contribution to every per-covolume density vanishes in the quotient,
+so no emission sees them until a flux-threading emission is wanted, when they
+are adjoined explicitly.  The blanket absence above holds only at the two
+endpoint content groups.
+\end{remark}
+
+\begin{remark}[Constraints without sections]\label{rem:sections}
+Where a constraint's solution space is not a subalgebra (the nonabelian
+gauge orbit, which admits no global section), this framework forms no
+projection at all: content is declared on the invariant algebra
+directly, as in \S\S\ref{sec:instance},~\ref{sec:hadrons}, and the
+constrained non-subalgebra projection never arises as an object of the
+theory.  The continuum question for the nonabelian sectors is then
+exactly Conjecture~\ref{conj:chain}.
+\end{remark}
+
+\subsection{The physical inner product and its reads}
+\begin{definition}[Single emission of the instance]\label{def:pip}
+The \emph{physical inner product} of the content is $\langle A, B
+\rangle = \w(A^\dagger B)$ on the word spaces: the GNS form of
+\S\ref{sec:canonical} and the moment functional of \S\ref{sec:cones},
+carried projectively (the state normalization is gauge).  Every
+certified number of the instance is a two-sided bracket on a matrix
+element of this form over the ground sector, taken directly or through a
+conditional expectation onto a translation-covariant subalgebra (which
+preserves both positivity and the per-covolume average, and is the only
+conditioning class admitted).
+\end{definition}
+
+The energy axis carries an affine gauge, the additive zero point and the
+multiplicative clock rate, whose invariants are exactly the ratios of
+sector differences.  The absolute energy is evaluation-internal; every
+emitted physical quantity is such a ratio, with the reference transition
+a measured datum that doubles as a calibration anchor.  The remaining
+reads: sector differences at distinct declared compositions; the
+structure factor $\w(\hat\rho(k)^\dagger\hat\rho(k))$, whose Bragg atoms
+are crystalline order read and never imposed (\S\ref{sec:order}); the
+frame, read from the vanishing of the momentum-density one-point; modular
+time, the admissible-subalgebra modular structure of \S\ref{sec:modular},
+exactly evaluable for quasi-free and Gaussian restrictions under a
+full-rank condition on the restricted covariance that fails shut on
+degeneracy; and the response family, the jet of the certified energy
+tube under source couplings $\hat h \mapsto \hat h + \sum_\alpha
+\theta_\alpha O_\alpha$: the gradient is the one-point read (order
+parameters and frame; Hellmann--Feynman at stationarity, envelope
+one-sided derivatives in general, degenerate optima failing shut), the
+Hessian the static susceptibilities, and time-dependent sources the
+complex-time two-point whose analyticity is the modular read.
+
+\subsection{The polarization is an output}\label{sec:sea-instance}
+The first-quantized Dirac--Coulomb many-body problem is unbounded below
+\cite{brownravenhall}.  Confronted with it, a two-sided instrument fails
+shut: no certificate exists, which is the true statement, and
+variational collapse (a disease of one-sided methods) cannot occur.
+On the charge-graded field algebra no positive-energy subspace is ever
+selected: the polarization, the projector that no-pair models fix by
+hand in representation-dependent ways, is here the level-one moment
+datum of the state, an output on the same footing as the nuclear
+covariance (phonons), the photon covariance and displacement (the
+classical field), and the Bragg content (the crystal).  These are the
+level-one reads of the reference rung (Proposition~\ref{prop:reference})
+at the field group, the quasi-free$\otimes$Gaussian data the singlet
+fusion determines, with the modular generator (the flow) the fifth.  The
+stability
+literature corroborates the direction: the no-pair model is unstable
+with the bare-Dirac electron subspace \cite{lss} and stable with the
+field-dressed one \cite{liebloss}; the physically correct polarization
+was never a prior selection but a property of the interacting state,
+which is where the physical inner product places it.  Ground states of
+the nonrelativistic quantized-field models exist at all coupling
+\cite{gll}, supplying the exhibited-state side of the brackets.
+
+\subsection{Specializations and calibration}
+Four theories, each a coefficient substitution with a declared budget
+restriction in the one above, never an approximation within the finer
+theory: full quantum electrodynamics at cutoff; the Pauli--Fierz theory
+(pair sectors frozen, nonrelativistic kinetic coefficients); the Coulomb
+theory (photon budget empty); the clamped theory (isotopes replaced by
+classical point sources at parametric positions).  Certified intervals
+of adjacent theories at shared budgets bracket, telescopically, the
+nuclear-motion content, the radiative and retardation content, and the
+relativistic and pair content; no endpoint is estimated, and in
+relational form the brackets remain certified and dimensionless.
+Isotope shifts decompose into certified field and motional parts, whose
+reversal reads nuclear charge radii.  Renormalization is budget-running
+data: one measured anchor per counterterm, no anchor anywhere else, each
+bare parameter an interval-valued datum propagated by interval
+arithmetic; calibration costs width, never soundness.
+
+\begin{proposition}[Certified approximation brackets]\label{prop:brackets}
+Certified intervals of adjacent theories at shared budgets bracket, no
+endpoint estimated: the nuclear-motion content in $[\,L_{\mathrm{Coul}} -
+U_{\mathrm{Cl}},\, U_{\mathrm{Coul}} - L_{\mathrm{Cl}}\,]$, the radiative and
+retardation content in $[\,L_{\mathrm{PF}} - U_{\mathrm{Coul}},\,
+U_{\mathrm{PF}} - L_{\mathrm{Coul}}\,]$, and the relativistic and pair
+content in $[\,L_{\mathrm{QED}} - U_{\mathrm{PF}},\, U_{\mathrm{QED}} -
+L_{\mathrm{PF}}\,]$.  The brackets compose telescopically, and in relational
+form they divide by the reference charge and stay certified and
+dimensionless.  Isotope structure sharpens along the ladder: clamped
+energies carry the form factors but not the masses, so their isotope
+differences are certified \emph{field} shifts; joint emissions carry both,
+so certified isotope shifts decompose into field and motional parts, the
+reversal reading nuclear charge radii, with the radiative bracket the
+muonic-hydrogen read.
+\end{proposition}
+
+\subsection{Convergence for this content}
+\begin{theorem}[Finite range]\label{thm:finiterange}
+For $\mathsf H$-covariant Hamiltonian densities of finite range
+satisfying Proposition~\ref{prop:qedbounded}, the certificate hierarchy
+converges: $\sup_\beta L^* = e_0$.
+\end{theorem}
+\begin{proof}[Proof outline]
+Tile $\mathsf H$ by overlapping weighted boxes; on each box the shifted
+cluster Hamiltonian, tilted by density multipliers, is a positive
+element, hence a Hermitian square whose factor is approximable by
+cluster words with certified remainder; cluster grand energies converge
+per covolume, and Legendre duality with convexity of the energy density
+in the densities, known for the Coulomb class \cite{lieblebowitz},
+closes the argument.  The functional-analytic control of the square-root
+approximation on the infinite-dimensional bosonic box sectors is the one
+step not carried out here (Open Problem~\ref{op:qedconv}).
+\end{proof}
+
+For the instantaneous interaction, the identity of Fefferman and
+de la Llave \cite{fdll},
+\[
+\frac{1}{|x-y|} \;=\; \frac1\pi \int_0^\infty \frac{dr}{r^5}
+\int_{\mathbb R^3} dz\; \mathbf 1_{B(z,r)}(x)\,\mathbf 1_{B(z,r)}(y),
+\]
+decomposes the total charge--charge interaction exactly into a
+finite-range singular part ($r < r_0$, absorbed into the cluster energies),
+a bounded one-body remainder, and for $r \ge r_0$ a part manifestly a
+positive superposition of Hermitian squares of smeared \emph{total}
+ball-charge words $\hat Q_B$, species-blind by construction, every species a
+field density.  With a spectral guard $\hat G(k) \ge g(r_0)$ on the low
+modes $k < 1/r_0$ (with $g = c_3 r_0^2,\, c_2 r_0,\, c_1 \ln r_0$ by
+noncompact dimension $3, 2, 1$), guard manipulations stay in the
+certificate class.
+
+\begin{lemma}[Mass bound]\label{lem:mass}
+For every admissible $\omega$ within unit energy of the remainder ground,
+$\int_{k<1/r_0}\hat G\,d\hat C_\omega \le C_0$, hence $\int_{k<1/r_0}
+d\hat C_\omega \le C_0/g$: the low-mode charge fluctuation the guard admits
+is $O(1/g)$.
+\end{lemma}
+
+\begin{lemma}[Phase-space integrability; kernel--measure]\label{lem:phase}
+With $W(k)$ the long-wavelength kernel, $W(k)\,dk$ is bounded on the guarded
+ball up to a logarithm at noncompact dimension one.  The $k=0$ mode is the
+exactly conserved total charge: at $\mathsf H = \{0\}$ sector sharpness
+kills its atom outright, and at noncompact $\mathsf H$ the atom is removed
+by a conditioning step at its degenerate-best instance (identically
+vanishing f-sum), carrying the status of Theorem~\ref{thm:cost}.
+\end{lemma}
+
+\begin{theorem}[Cost Theorem]\label{thm:cost}
+There are constants $K_1, K_2$ from budget data alone (local operator norms,
+the reference f-sum $\sum_s n_s q_s^2/m_s$ over charged species, the
+stripped response constant $A$) such that for every admissible $\omega$
+within unit energy of the remainder ground there is an admissible
+$\tilde\omega$ with remainder expectation at most $K_1 g^{-1}$ larger and
+deleted-part expectation at most $K_2 g^{-1}$.  Hence $\Delta_{\mathrm{reopt}}
+(r_0) \le K g(r_0)^{-1} \to 0$, and with Theorem~\ref{thm:finiterange} on
+the finite-range remainder, $\sup_\beta L^* = e_0$ at every content group,
+gapped or metallic, ordered or not.
+\end{theorem}
+\begin{proof}[Proof outline]
+Every object is a functional of the \emph{total} charge: dyadic shells with
+smeared total-charge quadratures and reference conjugates, one linear cost
+law
+\[
+\Delta E_j \le \min(\text{squeeze}, \text{condition}) + A(S-B),
+\]
+iterated squeezing with re-derived mass bounds (Lemma~\ref{lem:mass}),
+median-halving conditioning where the shell f-sum is depleted, outer-to-inner
+sweeps, $B \sim r_0^{-2}$.  The enumerated items are Open
+Problem~\ref{op:qedconv}, and each mechanism is pinned in a closed-form
+solvable model in Appendix~\ref{app:battery}.
+\end{proof}
+
+\emph{Content geometries.}  At $\mathsf H = \{0\}$ flavor-charge sharpness
+strengthens the certificate class: sharp states kill the full one-sided
+ideal $(\hat Q_\ell - q_\ell)\A + \A(\hat Q_\ell - q_\ell)$, since
+$(\hat Q_\ell - q_\ell)\Omega = 0$ in the carrier.  For noncompact
+$\mathsf H$ the constraints are density expectations, sharp nowhere, and
+only the scalar multipliers are killed; \emph{admitting the ideal there is
+unsound}.  This is the one point at which content geometries differ in the
+certificate class.
+
+\begin{proposition}[Convergence at noncompact dimension $1,2$]\label{prop:lowd}
+$\sup_\beta L^* = e_0$ at $\mathsf H = \mathbb R, \mathbb R^2$ by the proof
+of Theorem~\ref{thm:cost} with the substitutions: tiling and thermodynamic
+limit over $\mathsf H$; the Fefferman--de la Llave decomposition unchanged
+(it decomposes the interaction in $\mathbb R^3$, independent of the content
+group); the diverging guard saturations $g = c_2 r_0,\, c_1 \ln r_0$; and
+for polar slabs the slab form of the kernel, the transverse direction an
+integral, the dipole term finite and exact.  Rates degrade with decreasing
+dimension.
+\end{proposition}
+
+\begin{openproblem}\label{op:qedconv}
+The enumerated items of Theorems~\ref{thm:finiterange} and~\ref{thm:cost}:
+the bosonic-sector square-root approximation; the many-body second-order
+bookkeeping and explicit quasi-locality constants of the cost law; the
+$k=0$ conditioning step at noncompact content groups
+(Lemma~\ref{lem:phase}); the carry-over to the boson-linear (transverse)
+couplings, per frequency shell with the photon frequency the guard's
+analogue; and the low-dimension constants and slab step of
+Proposition~\ref{prop:lowd}.  Each is functional-analytic; none affects the
+certified per-budget soundness of any emission.
+\end{openproblem}
+
+\begin{theorem}[Clamped exactness at $\mathsf H = \{0\}$]
+\label{thm:clamped}
+In the clamped theory with $m$ budgeted electronic modes, the bracket
+closes at word degree $2m$: $L^* = e_0 = U^*$.
+\end{theorem}
+\begin{proof}
+Monomials of degree $\le 2m$ in the mode operators are a linear basis
+of the CAR algebra (which is $4^m$-dimensional), so the degree-$2m$
+word space is the whole algebra: the moment data at this budget are
+the functional itself, and Gram positivity over a spanning word set is
+positivity on every Hermitian square, i.e.\ the moment cone at this
+degree \emph{is} the state set.  With $P_{N'}$ the number-sector
+projectors (themselves words of degree $\le 2m$), $\hat H -
+\sum_{N'} E_0(N')\,P_{N'} \succeq 0$ is a sum of Hermitian squares of
+algebra elements, hence a certificate at this degree, giving the lower
+value $E_0(N)$ on the declared sector; the exhibited side attains it
+at full richness.
+\end{proof}
+
+\begin{remark}[The half-degree relaxation]\label{rem:clampeddegree}
+Products of two degree-$\le m$ words already span the algebra, so the
+level-$m$ relaxation determines every moment of the functional.
+Whether its positivity constraints alone are already exact (closure at
+word degree $m$ rather than $2m$) is a positivity-transfer question:
+determination of moments does not by itself imply exactness of a
+relaxation, and positivity on the squares of a spanning-product
+subspace is strictly weaker than full positivity in general.  It is
+verified where used and not claimed here.
+\end{remark}
+
+\subsection{Gravitational reads}\label{sec:gravreads}
+Every measured gravitational quantity is a read of the physical inner
+product; none is an addition to the machinery.  The sector's structure
+must be stated precisely, because a single adjective otherwise does
+invisible work.
+
+\begin{definition}[The gravitational source, exactly]
+\label{def:gravsource}
+The transverse-traceless spin-2 sector couples \emph{linearly} to the
+matter stress words.  The longitudinal sector is not a degree of
+freedom: it is fixed by its source through the gravitational Gauss law,
+exactly as the Coulomb field is fixed by the charge, and the source of
+the constraint is the total energy density \emph{including the field's
+own}, carried exactly once by the coordinate-measure mass function
+$m(r) = \int_0^r 4\pi r'^2 \rho\, dr'$: the field self-energy enters
+through the \emph{measure} (coordinate volume in place of proper
+volume), their difference being the gravitational binding energy
+exactly.  No iterated dynamical self-stress vertex is declared, and no
+nonlinear field equation is imported.  The clamped metric read is
+$g_{00} = 1 - 2Gm(r)/r$ with $g_{rr} = 1/g_{00}$; the linearity is in
+the variable $m$, not a linearization of anything.
+\end{definition}
+
+\begin{remark}[Relation to the self-coupling bootstrap]\label{rem:deser}
+A reader trained on the Fierz--Pauli-to-Einstein bootstrap
+\cite{feynmangrav,deser1970} will ask whether
+Definition~\ref{def:gravsource} is that construction.  It is not, and
+the difference matters in both directions.  The bootstrap iterates a
+coupling of the linear field to a total stress that includes the
+field's own; its conclusion is frequently cited as an unconditional
+identity between linear spin-2 and general relativity, but the
+iteration requires a choice of gravitational stress tensor at every
+step (superpotential and field-redefinition freedom), and with that
+freedom the bootstrap is a construction with inputs, not an identity
+\cite{padmanabhan,deser2010}.  The present framework does not perform
+the iteration and does not inherit the ambiguity: the field's
+self-energy enters the source exactly once, through the solved
+constraint of Definition~\ref{def:gravsource}, fixed by the same
+quotient that fixes the Coulomb interaction: there is no stress
+tensor to choose.  The comparison with general relativity is therefore
+made emission by emission, and the first place the two constructions
+could differ on a purely two-body observable is stated below as an open
+problem rather than absorbed into a bootstrap citation.
+\end{remark}
+
+The ledger of the comparison, at the orders measured.  \emph{Test-mass
+sector:} matter geodesics in the clamped read metric carry the
+perihelion advance, light deflection, gravitational redshift, and
+Shapiro delay at their measured orders.  Frame dragging is not carried
+by that metric, which is static and diagonal and has no $g_{0i}$; it is
+carried by the linear mass-current ($T^{0i}$) coupling of the same
+spin-2 sector, the channel that also supplies the retardation term
+below, and linear theory reproduces the Lense--Thirring precession at
+measured accuracy.  \emph{Two-body
+first post-Newtonian order:} the velocity structure of the
+Einstein--Infeld--Hoffmann dynamics \cite{eih} is derived within the
+sector as declared: the instantaneous exchange read gives
+$(Gm_1m_2/2r)\,[\,3(v_1^2{+}v_2^2) - 8\,v_1\!\cdot\!v_2\,]$, and the
+retardation kernel supplies exactly
+$(Gm_1m_2/2r)\,[\,v_1\!\cdot\!v_2 - (n\!\cdot\!v_1)(n\!\cdot\!v_2)\,]$,
+summing to the EIH form
+$(Gm_1m_2/2r)\,[\,3(v_1^2{+}v_2^2) - 7\,v_1\!\cdot\!v_2 -
+(n\!\cdot\!v_1)(n\!\cdot\!v_2)\,]$.  The computation is half a page and
+is given in Appendix~\ref{app:eih}, together with its abelian control:
+the identical kernel identity evaluated in the $U(1)$ sector yields the
+Darwin Lagrangian \cite{landau}, a known result.  \emph{Two-body second
+post-Newtonian order:} open, and stated as such.
+
+\begin{openproblem}[The first purely two-body self-source observable]
+\label{op:2pn}
+At second post-Newtonian order the two-body dynamics first carries a
+coefficient, linear in the symmetric mass ratio $\nu$, that no
+test-mass read and no constraint normalization determines: the $-7\nu$ of the known two-body dynamics \cite{damourschafer}.  Derive it
+within the sector as declared, from the forced-source structure of
+Definition~\ref{def:gravsource}.  Until this derivation exists, the
+gravitational sector's agreement with general relativity is
+\emph{derived} through first post-Newtonian order and the test-mass
+series, and \emph{required but not derived} at second post-Newtonian
+two-body order; a derivation producing any value other than the known
+one refutes the sector as declared.  The standard expectation is that a
+linear field with a solved constraint fails at precisely this
+coefficient; the framework does not dispute where the burden lies and
+accepts the exposure as stated.  The problem's scope includes the mass
+function of Definition~\ref{def:gravsource}: that the solved
+constraint carries the binding energy through the measure is derived at
+the leading order the comparisons above use, and asserted beyond it.
+\end{openproblem}
+
+Radiation reads are unchanged by the above: the binary-pulsar orbital
+decay is the certified emission bracket of the spin-2 sector; a
+coalescence is read from its radiation alone (radiated energy and
+angular momentum are certified quadratic brackets on the emitted
+transverse-traceless field, the final mass and spin are conservation
+reads, the ringdown is the linear spectral read of the final field).
+Because the interaction is attractive, the free-mass source problem is
+unbounded below and the instrument fails shut on it; gravitational reads
+enter through the clamped specialization, as they must for a
+self-attracting source.
+
+\subsection{An executed control}\label{sec:hydrogen}
+The certified nonrelativistic hydrogen frequency ratio
+$f(1S{-}3S)/f(1S{-}2S)$, emitted with certified width
+$2.9 \times 10^{-12}$, excludes the measured value by $+1.309 \times
+10^{-6}$; the exclusion is quantitatively the uncarried relativistic
+sector: the Dirac correction $+1.109 \times 10^{-6}$ plus the
+Lamb-shift differential.  What this exercise establishes, exactly: the
+emission pipeline (interval arithmetic, the relational
+calibration-free form of the ratio, and the exclusion semantics by
+which the specialization brackets of the ladder are read) operates end
+to end on a case where both numbers are independently known.  What it
+does not establish: the ratio at this content is Rydberg-exact, so no
+moment-cone certificate is exercised, and no claim of the theory is
+tested that was not already known analytically.  In the paper's own
+vocabulary this is a control, not a validation; the nontrivial
+certificate machinery is exercised where the instance is not exactly
+solvable, as in \S\ref{sec:instance}.
+
+\subsection{The ultraviolet axis}\label{sec:uvaxis}
+Every theorem of this section holds at stated budgets.  Whether
+certificates exist whose constants, with the calibration anchors
+re-solved at each ultraviolet budget, are uniform in the budget is the
+refinement problem of \S\ref{sec:continuum} evaluated at this content:
+renormalized limits of exactly this kind are proved for the Nelson model
+\cite{nelson}, cutoff-uniform stability constants are proved for
+nonrelativistic quantized-field matter \cite{ffg}, and the scalar
+triviality results \cite{adc} neither establish nor preclude anything
+here.  Along the axis the anchored relational emissions are certified
+intervals, so convergence or drift of the renormalized family is
+measured data; cutoff insensitivity is, on this instrument, a number
+with a proof, or it is false.  The abelian ultraviolet axis and the
+nonabelian chain of Conjecture~\ref{conj:chain} are one problem, the existence of certified contraction along refinement, posed at two
+declared contents.
+
+\section{Concluding remarks}\label{sec:conclusion}
+
+The theory is a constructor: from declared content it builds the state,
+and from the state its time, geometry, order, thermodynamics, and,
+conditionally, its continuum, each object canonical, each emission a
+verified two-sided bracket, each unproven step a named statement.  The
+proved core comprises the kinematics and soundness results
+(\S\ref{sec:kinematics}), the canonical constructions with the
+factorization and harmonicity theorems (\S\ref{sec:canonical}), the
+density theorem (\S\ref{sec:extensivity}), the exactness of refinement
+and of two dimensions, the dichotomy, localization, no-go, and reduction
+theorems (\S\ref{sec:continuum}), and the electrodynamic-matter
+theorems of \S\ref{sec:subsumption}.  Proof statuses are graded in
+place: complete proofs (the densities, tower summation, two dimensions,
+uniformity, persistence, dichotomy, localization, no-decision-by-data,
+clamped exactness, and the derivations of the appendices); complete
+proofs under stated domain hypotheses (harmonicity, factorization);
+and outlines with their deferred steps named (the finite-range
+embedding; the closedness import in the duality lemma).  The abstract
+claims completeness only where it holds.  The open surface comprises:
+the fermionic machinery of
+Open Problem~\ref{op:car}; the carrier transport of Open
+Problem~\ref{op:carrier} and the explicit stability constants of
+\S\ref{sec:gaps}; the local factorization for fermionic content of Open
+Problem~\ref{op:sign}, which unlike the others may be a structural
+obstruction rather than an unfinished construction; the dual-pair
+presentation of Open Problem~\ref{op:dualpair}, with
+Conjecture~\ref{conj:signfree} its candidate criterion for that
+boundary; the convergence
+completions of Open
+Problem~\ref{op:qedconv}; the second post-Newtonian two-body derivation
+of Open Problem~\ref{op:2pn}; Hypothesis~\ref{hyp:gma} with its four
+decisive
+free-fermion tests and the signature-consistency requirement they also
+carry (Definition~\ref{def:signature}); the free-anchor slack computation of
+\S\ref{sec:continuum}; and Conjecture~\ref{conj:chain}, whose statement
+Theorems~\ref{thm:totaldichotomy} and \ref{thm:nogo} fence exactly: both
+branches carry witnesses, no accumulation of certified data decides
+between them, and resolution comes only by exhibition of a finite
+verified object or by a structural monotone.  One decisive computation
+the framework imposed on itself has been executed and passed: the Weyl
+consistency comparison of Definition~\ref{def:weyl} on the worked
+instance closes exactly, both sides in closed form
+(Theorem~\ref{thm:weylinstance}; Appendix~\ref{app:weyl}), the first
+decisive test of the geometric identification, passed at the strength
+of an algebraic identity.  Four remain
+unexecuted, and are
+named as such: the prepotential re-pin of \S\ref{sec:correspondence},
+the certified brackets of the worked instance re-derived in dual-pair
+words with digit-level agreement required; the
+free-anchor slack computation of \S\ref{sec:continuum}; the four
+free-fermion tests of Hypothesis~\ref{hyp:gma}, blocked on Open
+Problem~\ref{op:car}; and the signature-consistency comparison of
+Definition~\ref{def:signature}, downstream of the same tests, on which
+the real form of the spacetime group is an output.  A further grading concerns provenance: several
+labeled theorems are standard facts transported into this frame and
+cited as such (the density theorem is a subadditivity argument; the
+canonical stack recombines the GNS, Tomita--Takesaki, and
+Cipriani--Sauvageot constructions; the fusion and closure propositions
+of \S\ref{sec:correspondence} are classical invariant theory and Howe
+duality); they are numbered for the
+dependency graph, not claimed as new.  What the paper offers as its own
+are the resolving-emission and exclusion discipline, the factorization
+scope with the sign problem in carrier form, the exactness of
+refinement, the total dichotomy with its no-decision corollary, the
+reduction theorem, the field--gauge correspondence read as
+group-from-closure with its dual-pair criterion and its spacetime
+reading (complex point from the ideal, real form from the modular
+conjugations), and the quotient-fixed
+gravitational reads with
+their stated exposure.  The calibration requirements of
+\S\ref{sec:continuum} likewise bind; the hadronic targets of
+\S\ref{sec:hadrons} assemble from the theorems and open statements
+above with nothing additional, which is the intended sense in which
+this document presents one theory rather than a collection of
+results.
+
+\appendix
+
+\section{Derivations for the worked instance}\label{app:derivations}
+Charts appear below as evaluation scaffolding for chart-free quantities
+(a Hausdorff volume, a distance, a spectral expansion); they enter no
+definition and no emission.
+
+\subsection{The metric}\label{app:geometry}
+On one copy of SU(2) write $U = \cos\theta + i\sin\theta\,\hat n \cdot
+\sigma$, $\theta \in [0,\pi]$, $\hat n \in S^2$.  Bi-invariance forces
+the round form $ds^2 = R^2[\,d\theta^2 + \sin^2\!\theta\,
+|d\hat n|^2\,]$, and the normalization follows from the verified
+carr\'e du champ: with $x = 2\cos\theta$,
+$\Gamma(x,x) = g^{\theta\theta}(\partial_\theta x)^2 =
+g^{\theta\theta}\, 4\sin^2\!\theta$ must equal $(4 - x^2)/4 =
+\sin^2\!\theta$, so $g^{\theta\theta} = 1/4$, i.e.\ $g_{\theta\theta} =
+R^2 = 4$.  On the invariant sector of the pair, use coordinates
+$(\theta_1, \theta_2, \beta)$ with $\beta$ the angle between the two
+axes.  Then $|\nabla \theta_i|^2 = 1/4$; the axis sphere of copy $i$
+has radius $2\sin\theta_i$, so moving axis $i$ changes $\beta$ at rate
+$|\nabla^{(i)}\beta|^2 = 1/(4\sin^2\!\theta_i)$; and the $\theta$- and
+$\beta$-gradients are mutually orthogonal (distinct tensor factors;
+radial versus tangential on each factor).  Hence
+\[
+g^{\beta\beta} = \frac{s_1^2 + s_2^2}{4\, s_1^2 s_2^2},
+\qquad
+g = \mathrm{diag}\!\Big(4,\ 4,\ \frac{4\, s_1^2 s_2^2}{s_1^2 +
+s_2^2}\Big),
+\qquad
+\sqrt{\det g} = \frac{8\, s_1 s_2}{\sqrt{s_1^2 + s_2^2}},
+\]
+with $s_i = \sin\theta_i$.
+
+\subsection{The volume}\label{app:volume}
+\[
+\mathrm{Vol} = \int_0^\pi\! d\beta \int_0^\pi\!\!\int_0^\pi
+\frac{8\, s_1 s_2}{\sqrt{s_1^2 + s_2^2}}\, d\theta_1\, d\theta_2
+= 8\pi \int_{[-1,1]^2} \frac{du\, dv}{\sqrt{2 - u^2 - v^2}}
+\]
+(substituting $u = \cos\theta_1$, $v = \cos\theta_2$).  Split the
+square into the inscribed unit disk and four corner regions.  Disk:
+$\int_0^{2\pi}\!\!\int_0^1 \rho\, d\rho\, d\varphi\,(2 -
+\rho^2)^{-1/2} = 2\pi(\sqrt2 - 1)$.  Corner (first quadrant, $u^2 + v^2
+\ge 1$): in polar form
+$J = 2\int_0^{\pi/4}\big[1 - \sqrt{\cos 2\varphi}/\cos\varphi\big]
+d\varphi$; the substitutions $s = \sin\varphi$, then $s =
+\sin\psi/\sqrt2$, give $\int_0^{\pi/4}\sqrt{\cos2\varphi}/\cos\varphi\,
+d\varphi = \sqrt2\int_0^{\pi/2}\!\cos^2\!\psi/(1+\cos^2\!\psi)\,d\psi =
+(\pi/2)(\sqrt2 - 1)$, hence $J = \pi(3/2 - \sqrt2)$.  The square
+integral is $2\pi(\sqrt2 - 1) + 4\pi(3/2 - \sqrt2) = (4 - 2\sqrt2)\pi$,
+and
+\[
+\mathrm{Vol} = 8\pi \cdot (4 - 2\sqrt2)\pi = (32 - 16\sqrt2)\,\pi^2 .
+\]
+
+\subsection{Distances}\label{app:distances}
+One loop: class functions of a single copy carry the metric
+$4\,d\theta^2$, so
+\[
+d = 2|\theta_1 - \theta_2|
+  = 2|\arccos(x_1/2) - \arccos(x_2/2)|.
+\]
+Diameter of the two-loop variety: the projection
+$(\theta_1,\theta_2,\beta) \mapsto (\theta_1,\theta_2)$ is
+metric-nonincreasing onto the flat square with metric $4(d\theta_1^2 +
+d\theta_2^2)$, giving
+\[
+d(\mathbf 1, (-\mathbf 1,-\mathbf 1))
+  \ge 2\sqrt{\pi^2 + \pi^2} = 2\sqrt2\,\pi;
+\]
+the constant-$\beta$ diagonal
+path attains this length, so equality holds.  That this pair realizes
+the diameter follows from the same comparison run upward: the
+invariant sector is a metric quotient of $S^3(2)\times S^3(2)$
+(radius-$2$ round factors), quotient maps are distance-nonincreasing,
+and the product's diameter is
+\[
+\sqrt{(2\pi)^2 + (2\pi)^2} = 2\sqrt2\,\pi,
+\]
+so no pair is farther.
+
+\subsection{The spectral side and Weyl consistency}\label{app:weyl}
+This subsection proves Theorem~\ref{thm:weylinstance}.  The general
+statement behind it is classical: the equivariant Weyl law of
+Donnelly and Br\"uning--Heintze \cite{donnelly,bruningheintze},
+by which the counting function of invariant eigenfunctions is
+governed by the volume and dimension of the orbit space.  What is
+verified here is therefore not the law but the framework: every
+normalization on both sides was fixed elsewhere, and the instance is
+computed directly in closed form.  The carrier at
+the reference is the closure of the invariant algebra in
+$L^2(\mathrm{SU}(2)^2, \mathrm{Haar})$: the
+simultaneous-conjugation-invariant sector.
+
+\emph{Multiplicities.}  Peter--Weyl gives $L^2(\mathrm{SU}(2)) =
+\bigoplus_j V_j \otimes V_j^*$, and conjugation acts on the $j$ block
+as the adjoint-type action on $\mathrm{End}(V_j) \cong V_j \otimes
+V_j^* \cong \bigoplus_{l=0}^{2j} V_l$ (integer $l$).  For the pair, the
+diagonal-conjugation invariants of the $(j_1,j_2)$ block number
+$\dim\mathrm{Inv}\big(\textstyle\bigoplus_{l_1} V_{l_1} \otimes
+\bigoplus_{l_2} V_{l_2}\big) = \#\{l : l \le \min(2j_1, 2j_2)\} =
+\min(2j_1,2j_2)+1$, at Casimir eigenvalue $j_1(j_1{+}1) +
+j_2(j_2{+}1)$.  Cross-check on the low levels: the values $0, \tfrac34,
+\tfrac32, 2$ carry multiplicities $1, 2, 2, 2$ (the words $\mathbf 1$;
+$x, y$; $z, xy$; $\chi_1(U_1), \chi_1(U_2)$), matching the spectrum
+used in the weak-coupling tower of \S\ref{sec:instance}.
+
+\emph{Exact counting function.}  Substituting $a = 2j_1{+}1$,
+$b = 2j_2{+}1 \in \mathbb N$, the eigenvalue is $(a^2 + b^2 - 2)/4$
+with multiplicity $\min(a,b)$, so
+\[
+N(E) \;=\; \sum_{a,b \ge 1,\; a^2 + b^2 \le 4E + 2} \min(a,b),
+\]
+exact arithmetic with no numerical step.
+
+\emph{Asymptotics.}  With $R^2 = 4E + 2$, comparison of the lattice sum
+with its integral costs $O(R^2)$ (the summand is bounded by $R$ and
+varies by at most $1$ per unit cell over a domain of $O(R^2)$ cells),
+and in polar coordinates
+\[
+\iint_{a,b > 0,\ a^2+b^2 \le R^2} \min(a,b)\, da\, db
+= \frac{R^3}{3}\int_0^{\pi/2} \min(\cos\varphi, \sin\varphi)\, d\varphi
+= \frac{R^3}{3}\,(2 - \sqrt2),
+\]
+since $\int_0^{\pi/2}\min(\cos,\sin) = 2\int_0^{\pi/4}\sin = 2 -
+\sqrt2$.  With $R^3 = 8E^{3/2}(1 + O(1/E))$,
+\[
+N(E) \;=\; \frac{16 - 8\sqrt2}{3}\, E^{3/2} \;+\; O(E).
+\]
+The limit exists, so Dixmier measurability holds for this instance and
+the spectral volume is admissible as an emission
+(\S\ref{sec:metricdim}).
+
+\emph{The identity.}  A three-dimensional geometry of volume $V$ has
+Weyl coefficient $V \omega_3/(2\pi)^3 = V/(6\pi^2)$, so the volume read
+from the count is $6\pi^2 \cdot (16 - 8\sqrt2)/3 = 2\pi^2(16 -
+8\sqrt2) = (32 - 16\sqrt2)\pi^2$: exactly the closed form of
+Appendix~\ref{app:volume}.  The $\sqrt2$ arises on the metric side
+from the corner integral of Appendix~\ref{app:volume} and on the
+spectral side from $\int_0^{\pi/2}\min(\cos,\sin)\,d\varphi$: two
+unrelated computations forced to one number.
+
+\emph{Coupling independence.}  For $h = \mathrm{Cas} - \lambda M$ with
+$\|M\| \le 6$, the operator inequalities $\mathrm{Cas} - 6\lambda \le
+h \le \mathrm{Cas} + 6\lambda$ give $N_{\mathrm{Cas}}(E - c) \le
+N_{h - E_0}(E) \le N_{\mathrm{Cas}}(E + c)$ with $c = 6\lambda +
+|E_0|$; bounded shifts leave the $E^{3/2}$ coefficient unchanged, so
+Theorem~\ref{thm:weylinstance} holds at every declared coupling.
+
+\begin{remark}[One-loop warm-up; finite-$E$ diagnostic]
+\label{rem:weylnumerics}
+The single-plaquette instance closes the same way in dimension one:
+eigenvalues $j(j{+}1)$ with multiplicity one give $N(E) = \#\{k \ge 1 :
+k^2 \le 4E{+}1\} \sim 2\sqrt E$, and the one-dimensional Weyl law
+$N \sim (L/\pi)\sqrt E$ reads off $L = 2\pi$, the length of $[0,\pi]$
+in the metric $4\,d\theta^2$, matching the one-loop distance formula of
+\S\ref{sec:geometry}.  As a diagnostic of the subleading (boundary)
+term in the two-loop count, the exact sum at $E = 10^6$ gives
+$N(E)/E^{3/2} = 1.5621140$ against the limit $(16-8\sqrt2)/3 =
+1.5620972$, the residual carried by the $O(E)$ term.
+\end{remark}
+
+\subsection{Strong coupling}\label{app:strong}
+Near the identity class use geodesic normal coordinates $s_i \in
+\mathbb R^3$ per loop ($\theta_i = |s_i|/2$ from $g_{\theta\theta} =
+4$).  Then $x \approx 2 - |s_1|^2/4$, $y \approx 2 - |s_2|^2/4$, and,
+since small rotations compose by adding their vectors at leading order,
+$z \approx 2 - |s_1 + s_2|^2/4$; hence
+\[
+6 - M \approx \tfrac14\big(|s_1|^2 + |s_2|^2 + |s_1 + s_2|^2\big),
+\qquad
+h + 6\lambda \approx -\Delta_{s_1} - \Delta_{s_2} + \tfrac{\lambda}{4}
+\big(s_1^2 + s_2^2 + (s_1{+}s_2)^2\big),
+\]
+with the flat Laplacians of the $\Gamma$-metric.  Per component the
+stiffness matrix is $\tfrac{\lambda}{4}
+\big(\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\big)$ with
+eigenvalues $3\lambda/4$ and $\lambda/4$; normal modes $u = (s_1 +
+s_2)/\sqrt2$, $v = (s_1 - s_2)/\sqrt2$, three components each; the
+ground energy of $-d^2/ds^2 + k s^2$ is $\sqrt k$ (spectrum
+$(2n{+}1)\sqrt k$: level spacing $2\sqrt k$, twice the zero-point
+energy), so
+\[
+E_1 + 6\lambda = 3\sqrt{3\lambda/4} + 3\sqrt{\lambda/4} =
+\tfrac32(1 + \sqrt3)\sqrt{\lambda} + O(1),
+\]
+the $O(1)$ collecting measure (drift) and quartic corrections,
+computed exactly below.  Excitations are
+priced by the level spacing $\omega = 2\sqrt k$, not the zero-point
+energy $\sqrt k$.  Single quanta of $u$ or $v$ are vectors under the
+residual diagonal SO(3) and do not lie in the invariant sector, whose
+functions are built from $|s_1|^2$, $|s_2|^2$, $s_1 \cdot s_2$; the
+lowest invariant excitation is therefore a soft-mode pair at
+$2\omega_v = 4\sqrt{\lambda/4} = 2\sqrt\lambda$, and the next is the
+mixed scalar $u \cdot v$ at $\omega_u + \omega_v =
+(1 + \sqrt3)\sqrt\lambda$.  Hence the gap-ratio asymptote
+$(1 + \sqrt3)/2$ (a ratio of spacings, insensitive to the pricing),
+and, since $v$ is odd and $v^2$ even under loop
+exchange, the swap-even ordering at strong coupling.  The virial
+theorem gives $\lambda\langle 6 - M\rangle = E_{\mathrm{harm}}/2$,
+i.e.\ $\langle M\rangle = 6 - \tfrac34(1 + \sqrt3)/\sqrt\lambda +
+O(1/\lambda)$.
+
+\paragraph{The constant term.}  The $O(1)$ term is fixed by an exact
+conjugation.  Per SU(2) factor, with $J(s) = [\sin(|s|/2)/(|s|/2)]^2$
+the Jacobian of the exponential chart, the Casimir satisfies
+\[
+C_2 \;=\; J^{-1/2}\,\big(-\Delta_{\mathrm{flat}} -
+\tfrac14\big)\,J^{1/2}
+\]
+\emph{exactly}: $J^{1/2}\chi_j = 2\sin\!\big((2j{+}1)|s|/2\big)/|s|$ is
+a flat radial eigenfunction at $((2j{+}1)/2)^2 = j(j{+}1) + \tfrac14$
+for every $j$ (verified symbolically through $2j = 6$).  Hence
+$h + 6\lambda$ is unitarily a \emph{flat} six-dimensional problem,
+\[
+h + 6\lambda \;\cong\; -\Delta_6 - \tfrac12 + \lambda W, \qquad
+W = 6 - M \text{ in normal coordinates},
+\]
+with $W$ exact trigonometry: from $\operatorname{tr}(U_1U_2) =
+2[\cos u_1 \cos u_2 - (\hat s_1 \!\cdot \hat s_2)\sin u_1 \sin u_2]$,
+$u_i = |s_i|/2$,
+\[
+W = \tfrac14\big(|s_1|^2 + |s_2|^2 + |s_1{+}s_2|^2\big)
+- \frac{|s_1|^4 + |s_2|^4}{96} - \frac{|s_1|^2|s_2|^2}{32}
+- \frac{(s_1\!\cdot s_2)(|s_1|^2 + |s_2|^2)}{48} + O(s^6),
+\]
+the quadratic part reproducing the stiffnesses above.  In the normal
+modes $u = (s_1{+}s_2)/\sqrt2$, $v = (s_1{-}s_2)/\sqrt2$ the harmonic
+ground state is the product Gaussian with per-component variances
+$\sigma_u^2 = 1/\sqrt{3\lambda}$, $\sigma_v^2 = 1/\sqrt{\lambda}$, and
+first-order perturbation theory in the quartic gives
+$\lambda\langle W_4\rangle = -(30 + 13\sqrt3)/192$; second order in
+$W_4$ and first order in $W_6$ are both $O(\lambda^{-1/2})$.  With the
+exact $-\tfrac12$ from the conjugation,
+\[
+c_0 \;=\; -\tfrac12 - \frac{30 + 13\sqrt3}{192}
+\;=\; -\frac{126 + 13\sqrt3}{192} \;\approx\; -0.77352.
+\]
+Controls: (i) the one-loop analogue of the identical mechanics
+predicts $c_0^{(1)} = -\tfrac14 - \tfrac{5}{64} = -\tfrac{21}{64}$,
+and the exact character-basis tridiagonal reproduces it to $10^{-9}$
+under a large-$\lambda$ fit; (ii) every algebraic step (trace
+identity, quartic expansion, Gaussian moments, conjugation
+eigenfunctions) verifies symbolically; (iii) converged exact-moment
+variational values at $\lambda \in \{2,4,8\}$ sit within $0.014$ of
+$c_0$ with subleading coefficients of natural size, and, with $c_0$
+fixed, the implied $(c_{-1}, c_{-2})$ postdict the certified
+$\lambda = 1/2$ window; (iv) the derived value lies inside the
+certified $\lambda = 2$ window outright.
+
+\subsection{The fourth-order weak-coupling coefficient}\label{app:fourth}
+At $\lambda = 0$ the ground state is the Haar state with $E_0 = 0$ and
+$\langle M\rangle = 0$.  The span of invariant monomials of degree
+$\le 2$ (ten elements) is invariant under the Casimir, closing by the
+$\Gamma$-calculus of \S\ref{sec:instance}, and decomposes exactly with
+eigenvalues $0, \tfrac34, \tfrac32, 2, \tfrac{11}4, 4$ and
+multiplicities $1,2,2,2,2,1$, matching the combinatorial audit
+$\min(2j_1,2j_2)+1$ of Appendix~\ref{app:weyl}.  Every intermediate
+state of fourth-order Rayleigh--Schr\"odinger perturbation theory lies
+in this span (each application of $M$ raises monomial degree by at
+most one and the path must return to the vacuum), so the fourth order
+is a finite computation in exact rational arithmetic with the reduced
+resolvent $R = -\sum_{\mu \ne 0} P_\mu/\mu$:
+\[
+E^{(4)} \;=\; \langle 0|VRVRVRV|0\rangle - E^{(2)}\,\langle
+0|VR^2V|0\rangle
+\;=\; -\tfrac{3409}{297} - \big(-\tfrac{10}{3}\big)(4)
+\;=\; \tfrac{551}{297},
+\]
+with $V = -M$ per unit coupling and $\langle 0|VR^2V|0\rangle = 4$
+exactly.  The same machinery reproduces $E^{(2)} = -\tfrac{10}{3}$ and
+$E^{(3)} = -\tfrac{32}{9}$, and an independent variational route
+(exact-moment Rayleigh--Ritz at monomial degree $\le 6$, couplings
+$\lambda \in [1/96, 1/32]$) confirms the value.
+
+The fifth order follows from the same objects by the $2n{+}1$ rule:
+with $\psi_1 = RV|0\rangle$ and $\psi_2 = RVRV|0\rangle$ (both inside
+the degree-$\le 2$ span, so no further resolvent is needed),
+\[
+E^{(5)} = \langle\psi_2|V|\psi_2\rangle
+- 2E^{(2)}\langle\psi_1|\psi_2\rangle
+- E^{(3)}\langle\psi_1|\psi_1\rangle
+= \tfrac{172064}{9801} \;\approx\; +17.5558,
+\]
+confirmed variationally: with $c_4$ fixed, the residual fit gives
+$c_5 = 17.579$, and the diagnostic ratio
+$\mathrm{resid}/\lambda^5$ marches monotonically onto the exact value
+as $\lambda \to 0$.
+
+A caution on reading coefficients off bracket data: the higher-order
+coefficients here are large, so naive fits mislead---a two-point fit
+at $\lambda \approx 1/16$ omitting the fifth order reports $c_4 +
+c_5\lambda \approx 3$ rather than $c_4 \approx 1.86$, and a joint fit
+of $(c_4, c_5)$ leaks $c_6 \approx 21$ into the fifth-order estimate.
+Certified brackets bound energies, not series coefficients; the
+coefficients must be derived, with the brackets as their check.
+
+\section{The first post-Newtonian two-body read}\label{app:eih}
+The velocity structure derived below was first obtained from
+one-graviton exchange by Iwasaki \cite{iwasaki}; the derivation is
+retained because the sector as declared (forced source, no dynamical
+self-stress vertex, Definition~\ref{def:gravsource}) must be shown
+to produce it, and because the abelian control pins the conventions.
+Between conserved sources the single-exchange kernel is unique at this
+order (gauge-dependent parts of the propagator drop against
+conservation); the propagator algebra below is evaluation scaffolding
+for a chart-free read, the two-body interaction energy.
+
+\emph{Instantaneous part.}  Worldline stress $T_i^{\mu\nu} = m_i\,
+u_i^\mu u_i^\nu/\gamma_i$ (the $1/\gamma$ from the worldline density);
+spin-2 numerator $P_{\mu\nu\rho\sigma} = \tfrac12(\eta_{\mu\rho}
+\eta_{\nu\sigma} + \eta_{\mu\sigma}\eta_{\nu\rho} -
+\eta_{\mu\nu}\eta_{\rho\sigma})$, so $T_1 P\, T_2 = \tfrac12 m_1 m_2
+[\,2(u_1 \cdot u_2)^2 - 1\,]/(\gamma_1\gamma_2)$.  Normalizing the
+static term to $Gm_1m_2/r$ and expanding $u_1 \cdot u_2 =
+\gamma_1\gamma_2(1 - v_1 \cdot v_2)$:
+\[
+\begin{aligned}
+\frac{2(u_1 \cdot u_2)^2 - 1}{\gamma_1\gamma_2}
+  &= 1 + \tfrac32(v_1^2 + v_2^2)
+     - 4\, v_1 \cdot v_2 + O(v^4), \\
+L_{\mathrm{inst}}
+  &= \frac{Gm_1m_2}{r}
+     + \frac{Gm_1m_2}{2r}
+       \big[\,3(v_1^2 + v_2^2) - 8\, v_1 \cdot v_2\,\big].
+\end{aligned}
+\]
+
+\emph{Retardation.}  $1/(k^2 - \omega^2) = 1/k^2 + \omega^2/k^4 +
+O(\omega^4)$, with $1/k^2 \leftrightarrow 1/(4\pi r)$ and $1/k^4
+\leftrightarrow -\,r/(8\pi)$.  The $\omega^2$ term between the static
+channels is $\Delta L = -\tfrac{G m_1 m_2}{2}\,\partial_t
+\partial_{t'}\, r(t,t')\big|_{t'=t}$ with $r(t,t') = |x_1(t) -
+x_2(t')|$; since $\partial_t \partial_{t'} r = -\big[v_1 \cdot v_2 -
+(n \cdot v_1)(n \cdot v_2)\big]/r$,
+\[
+\Delta L = +\frac{Gm_1m_2}{2r}\big[\,v_1 \cdot v_2 -
+(n \cdot v_1)(n \cdot v_2)\,\big].
+\]
+
+\emph{Sum.}
+\[
+L_{\mathrm{inst}} + \Delta L = \frac{Gm_1m_2}{r} +
+\frac{Gm_1m_2}{2r}\big[\,3(v_1^2 + v_2^2) - 7\, v_1 \cdot v_2 -
+(n \cdot v_1)(n \cdot v_2)\,\big],
+\]
+the Einstein--Infeld--Hoffmann velocity structure \cite{eih}.
+
+\emph{Abelian control.}  The same two lines in the $U(1)$ sector:
+current numerator $(u_1 \cdot u_2)/(\gamma_1\gamma_2) = 1 - v_1 \cdot
+v_2$ exactly, static sign reversed, retardation kernel identical.  Then
+$L = -q_1q_2/r + (q_1q_2/r)\, v_1 \cdot v_2 - (q_1q_2/2r)[\,v_1 \cdot
+v_2 - (n \cdot v_1)(n \cdot v_2)\,] = -q_1q_2/r +
+(q_1q_2/2r)[\,v_1 \cdot v_2 + (n \cdot v_1)(n \cdot v_2)\,]$: the
+Darwin Lagrangian \cite{landau}, a known result, validating the kernel
+identity and the sign conventions.
+
+\section{Executed falsifier battery}\label{app:battery}
+Every check computes a ground truth by an independent route (exact
+diagonalization, matrix logarithm, or Fock-space projection) and compares
+it to the closed form; no empirical input enters.  The closures instantiate
+Theorems~\ref{thm:gapid}--\ref{thm:closure}: where a bracket closes to
+$L^* = U^*$ the certificate factors annihilate the state, and that
+annihilation is verified.
+
+\textbf{Free-field zero.}  The level-1 optimizer of $\Tr(h\gamma)$ is the
+negative-energy projector (the Dirac sea as output) to $0$; the subtracted
+vacuum energy is $0$; the charge-graded antiparticle energies are strictly
+positive (vacuum stable), catching any grading-sign error.
+
+\textbf{van Hove.}  The completed square of
+Definition~\ref{def:bosoncalc} is an operator identity to
+$3.6\times10^{-14}$, positive-semidefinite, and the exact-diagonalization
+ground energy meets the certificate value $-\sum|B|^2/\omega$ to $0$: the
+boson word calculus verified, and tight ($L^*=U^*$).
+
+\textbf{Modular reads.}  For a two-mode Gaussian state built by a Gaussian
+unitary on a thermal state (no truncation assumption), the modular
+Hamiltonian extracted from $-\log\rho$ is quadratic (evaluability), its
+symplectic-log relation $\nu=\tfrac12\coth(g/2)$ holds, and the state is
+KMS at inverse modular temperature one; all three converge with Fock
+cutoff ($2\times10^{-3}\to6\times10^{-5}$), confirming physics rather than
+artifact.  The rank-deficiency fail-shut and the two-mode Gaussian modular
+flow (KMS to machine precision) are the temporal end-to-end pins.
+
+\textbf{Two-mode Gaussian conditional (exact, no truncation).}  (a) The
+total-charge conditional expectation commutes with the per-covolume
+average to $0.0$; a symmetry-breaking per-mode conditioning fails to
+commute at $0.41$, so the commutation test discriminates within the
+conditioning class admitted by Definition~\ref{def:pip}.  (b) The
+charge-conditioned two-point function
+from the natural-orbital closed form equals the Fock ground truth to
+$1.4\times10^{-16}$, and the certified two-sided bracket closes on the
+conditional ground energy, $L^*=U^*=e_0$, certificate gap $0$: boundary
+contact (Theorem~\ref{thm:closure}) exhibited.
+
+\textbf{Emergence (harmonic half-pin).}  Zero-point energy exact by two
+routes; the structure-factor read develops Bragg atoms at the
+reciprocal-lattice vectors with the correct Debye--Waller intensity ratio.
+Half-pin: the lattice is in the coefficients, so this tests the read, not
+order-from-disorder, which needs the interacting engine.
+
+\textbf{Cost-Theorem solvable models.}  RPA per-mode saturation (the
+variational bound saturates the exact per-mode gap; totals
+$\sim r_0^{-3}$); two-mode order structure (first-order vanishing);
+three-mode commutator fluctuation ($O(\xi^2 s^2)$); four-mode conditioning
+law ($A=2\lambda^2/\omega_2$, flat reduced densities have zero f-sum so
+conditioning is load bearing); screened incoherent weight
+($\sim r_0^{-6}$); the harmonic crystal and non-adiabatic H$_2$/HD massive
+pins; van Hove, the harmonic charge, and spin--boson/Rabi radiative pins.
+
+\begin{thebibliography}{99}
+\bibitem{pusz} W.~Pusz, S.~L.~Woronowicz, \emph{Passive states and KMS
+states for general quantum systems}, Comm. Math. Phys. \textbf{58}
+(1978) 273--290.
+\bibitem{coleman} A.~J.~Coleman, \emph{Structure of fermion density
+matrices}, Rev. Mod. Phys. \textbf{35} (1963) 668--686.
+\bibitem{mazziotti} D.~A.~Mazziotti, \emph{Realization of quantum
+chemistry without wave functions through first-order semidefinite
+programming}, Phys. Rev. Lett. \textbf{93} (2004) 213001.
+\bibitem{npa} M.~Navascu\'es, S.~Pironio, A.~Ac\'in, \emph{A convergent
+hierarchy of semidefinite programs characterizing the set of quantum
+correlations}, New J. Phys. \textbf{10} (2008) 073013.
+\bibitem{lin} H.~W.~Lin, \emph{Bootstraps to strings: solving random
+matrix models with positivity}, J. High Energy Phys. \textbf{06} (2020)
+090.
+\bibitem{hhk} X.~Han, S.~A.~Hartnoll, J.~Kruthoff, \emph{Bootstrapping
+matrix quantum mechanics}, Phys. Rev. Lett. \textbf{125} (2020) 041601.
+\bibitem{andersonkruczenski} P.~D.~Anderson, M.~Kruczenski, \emph{Loop
+equations and bootstrap methods in the lattice}, Nucl. Phys. B
+\textbf{921} (2017) 702--726.
+\bibitem{kazakovzheng} V.~Kazakov, Z.~Zheng, \emph{Bootstrap for lattice
+Yang--Mills theory}, Phys. Rev. D \textbf{107} (2023) L051501.
+\bibitem{kazakovzhengfinite} V.~Kazakov, Z.~Zheng, \emph{Bootstrap for
+finite $N$ lattice Yang--Mills theory}, J. High Energy Phys.
+\textbf{03} (2025) 099.
+\bibitem{guosu3} Y.~Guo, Z.~Li, G.~Yang, G.~Zhu, \emph{Bootstrapping
+SU(3) lattice Yang--Mills theory}, J. High Energy Phys. \textbf{12}
+(2025) 033.
+\bibitem{lizhou} Z.~Li, S.~Zhou, \emph{Bootstrapping the abelian
+lattice gauge theories}, J. High Energy Phys. \textbf{08} (2024) 154.
+\bibitem{lindzero} H.~W.~Lin, \emph{Bootstrap bounds on D0-brane
+quantum mechanics}, J. High Energy Phys. \textbf{06} (2023) 038.
+\bibitem{linzhengmatrix} H.~W.~Lin, Z.~Zheng, \emph{Bootstrapping
+ground state correlators in matrix theory.  Part I}, J. High Energy
+Phys. \textbf{01} (2025) 190.
+\bibitem{kull} I.~Kull, N.~Schuch, B.~Dive, M.~Navascu\'es,
+\emph{Lower bounds on ground-state energies of local Hamiltonians
+through the renormalization group}, Phys. Rev. X \textbf{14} (2024)
+021008.
+\bibitem{fawzi} H.~Fawzi, O.~Fawzi, S.~O.~Scalet, \emph{Certified
+algorithms for equilibrium states of local quantum Hamiltonians}, Nat.
+Commun. \textbf{15} (2024) 7394.
+\bibitem{peyrlparrilo} H.~Peyrl, P.~A.~Parrilo, \emph{Computing sum of
+squares decompositions with rational coefficients}, Theoret. Comput.
+Sci. \textbf{409} (2008) 269--281.
+\bibitem{donnelly} H.~Donnelly, \emph{G-spaces, the asymptotic splitting
+of $L^2(M)$ into irreducibles}, Math. Ann. \textbf{237} (1978) 23--40.
+\bibitem{bruningheintze} J.~Br\"uning, E.~Heintze,
+\emph{Representations of compact Lie groups and elliptic operators},
+Invent. Math. \textbf{50} (1978) 169--203.
+\bibitem{iwasaki} Y.~Iwasaki, \emph{Quantum theory of gravitation vs.\
+classical theory: fourth-order potential}, Prog. Theor. Phys.
+\textbf{46} (1971) 1587--1609.
+\bibitem{migdal} A.~A.~Migdal, \emph{Recursion equations in gauge field
+theories}, Sov. Phys. JETP \textbf{42} (1975) 413.
+\bibitem{fot} M.~Fukushima, Y.~Oshima, M.~Takeda, \emph{Dirichlet Forms
+and Symmetric Markov Processes}, 2nd ed., de Gruyter (2011).
+\bibitem{guoli} Y.~Guo, W.~Li, \emph{Solving anharmonic oscillator with
+null states: Hamiltonian bootstrap and Dyson--Schwinger equations},
+Phys. Rev. D \textbf{108} (2023) 125002.
+\bibitem{bdot} S.~Bravyi, D.~P.~DiVincenzo, R.~I.~Oliveira,
+B.~M.~Terhal, \emph{The complexity of stoquastic local Hamiltonian
+problems}, Quantum Inf. Comput. \textbf{8} (2008) 361--385.
+\bibitem{mlh} M.~Marvian, D.~A.~Lidar, I.~Hen, \emph{On the
+computational complexity of curing non-stoquastic Hamiltonians}, Nat.
+Commun. \textbf{10} (2019) 1571.
+\bibitem{howe} R.~Howe, \emph{Remarks on classical invariant theory},
+Trans. Amer. Math. Soc. \textbf{313} (1989) 539--570.
+\bibitem{weylbook} H.~Weyl, \emph{The Classical Groups: Their Invariants
+and Representations}, Princeton University Press (1939).
+\bibitem{collinssniady} B.~Collins, P.~\'Sniady, \emph{Integration with
+respect to the Haar measure on unitary, orthogonal and symplectic
+group}, Comm. Math. Phys. \textbf{264} (2006) 773--795.
+\bibitem{schwinger} J.~Schwinger, \emph{On angular momentum}, in
+\emph{Quantum Theory of Angular Momentum}, eds. L.~C.~Biedenharn,
+H.~van~Dam, Academic Press (1965) 229--279.
+\bibitem{mathur} M.~Mathur, \emph{Harmonic oscillator pre-potentials in
+SU(2) lattice gauge theory}, J. Phys. A \textbf{38} (2005)
+10015--10026.
+\bibitem{anishetty} R.~Anishetty, M.~Mathur, I.~Raychowdhury,
+\emph{Prepotential formulation of SU(3) lattice gauge theory}, J. Phys.
+A \textbf{43} (2010) 035403.
+\bibitem{quantumlink} R.~Brower, S.~Chandrasekharan, U.-J.~Wiese,
+\emph{QCD as a quantum link model}, Phys. Rev. D \textbf{60} (1999)
+094502.
+\bibitem{jones} V.~F.~R.~Jones, \emph{Index for subfactors}, Invent.
+Math. \textbf{72} (1983) 1--25.
+\bibitem{deligne} P.~Deligne, \emph{La cat\'egorie des repr\'esentations
+du groupe sym\'etrique $S_t$, lorsque $t$ n'est pas un entier naturel},
+in \emph{Algebraic Groups and Homogeneous Spaces}, TIFR Mumbai (2007)
+209--273.
+\bibitem{voiculescu} D.~Voiculescu, \emph{Limit laws for random matrices
+and free products}, Invent. Math. \textbf{104} (1991) 201--220.
+\bibitem{takesaki} M.~Takesaki, \emph{Theory of Operator Algebras II},
+Springer (2003).
+\bibitem{cipriani} F.~Cipriani, J.-L.~Sauvageot, \emph{Derivations as
+square roots of Dirichlet forms}, J. Funct. Anal. \textbf{201} (2003)
+78--120.
+\bibitem{connes} A.~Connes, \emph{Noncommutative Geometry}, Academic
+Press (1994).
+\bibitem{connesrecon} A.~Connes, \emph{On the spectral characterization
+of manifolds}, J. Noncommut. Geom. \textbf{7} (2013) 1--82.
+\bibitem{wiesbrock} H.-W.~Wiesbrock, \emph{Half-sided modular inclusions
+of von Neumann algebras}, Comm. Math. Phys. \textbf{157} (1993) 83--92.
+\bibitem{summers} D.~Buchholz, O.~Dreyer, M.~Florig, S.~J.~Summers,
+\emph{Geometric modular action and spacetime symmetry groups}, Rev.
+Math. Phys. \textbf{12} (2000) 475--560.
+\bibitem{guidolongo} D.~Guido, R.~Longo, H.-W.~Wiesbrock, \emph{Extensions
+of conformal nets and superselection structures}, Comm. Math. Phys.
+\textbf{192} (1998) 217--244.
+\bibitem{bisognano} J.~Bisognano, E.~Wichmann, \emph{On the duality
+condition for a Hermitian scalar field}, J. Math. Phys. \textbf{16}
+(1975) 985--1007.
+\bibitem{knabe} S.~Knabe, \emph{Energy gaps and elementary excitations
+for certain VBS-quantum antiferromagnets}, J. Stat. Phys. \textbf{52}
+(1988) 627--638.
+\bibitem{nachtergaele} B.~Nachtergaele, \emph{The spectral gap for some
+spin chains with discrete symmetry breaking}, Comm. Math. Phys.
+\textbf{175} (1996) 565--606.
+\bibitem{bhm} S.~Bravyi, M.~Hastings, S.~Michalakis, \emph{Topological
+quantum order: stability under local perturbations}, J. Math. Phys.
+\textbf{51} (2010) 093512.
+\bibitem{luscher} M.~L\"uscher, \emph{Volume dependence of the energy
+spectrum in massive quantum field theories I}, Comm. Math. Phys.
+\textbf{104} (1986) 177--206.
+\bibitem{lanford} O.~E.~Lanford III, \emph{A computer-assisted proof of
+the Feigenbaum conjectures}, Bull. Amer. Math. Soc. \textbf{6} (1982)
+427--434.
+\bibitem{koch} H.~Koch, P.~Wittwer, \emph{A non-Gaussian
+renormalization-group fixed point for hierarchical scalar lattice field
+theories}, Comm. Math. Phys. \textbf{106} (1986) 495--532.
+\bibitem{uhlmann} A.~Uhlmann, \emph{Relative entropy and the
+Wigner--Yanase--Dyson--Lieb concavity in an interpolation theory},
+Comm. Math. Phys. \textbf{54} (1977) 21--32.
+\bibitem{kosaki} H.~Kosaki, \emph{Relative entropy of states: a
+variational expression}, J. Operator Theory \textbf{16} (1986) 335--348.
+\bibitem{putinar} M.~Putinar, \emph{Positive polynomials on compact
+semi-algebraic sets}, Indiana Univ. Math. J. \textbf{42} (1993)
+969--984.
+\bibitem{lasserre} J.-B.~Lasserre, \emph{Global optimization with
+polynomials and the problem of moments}, SIAM J. Optim. \textbf{11}
+(2001) 796--817.
+\bibitem{niesch} J.~Nie, M.~Schweighofer, \emph{On the complexity of
+Putinar's Positivstellensatz}, J. Complexity \textbf{23} (2007)
+135--150.
+\bibitem{powers} V.~Powers, C.~Scheiderer, \emph{The moment problem for
+non-compact semialgebraic sets}, Adv. Geom. \textbf{1} (2001) 71--88.
+\bibitem{marshall} M.~Marshall, \emph{Positive Polynomials and Sums of
+Squares}, AMS Surveys \textbf{146} (2008).
+\bibitem{bakry} D.~Bakry, M.~\'Emery, \emph{Diffusions hypercontractives},
+S\'eminaire de probabilit\'es XIX, Springer LNM \textbf{1123} (1985)
+177--206.
+\bibitem{casini} H.~Casini, M.~Huerta, \emph{On the RG running of the
+entanglement entropy of a circle}, Phys. Rev. D \textbf{85} (2012)
+125016.
+\bibitem{nielsen} H.~B.~Nielsen, M.~Ninomiya, \emph{Absence of neutrinos
+on a lattice}, Nucl. Phys. B \textbf{185} (1981) 20--40.
+\bibitem{ginsparg} P.~Ginsparg, K.~Wilson, \emph{A remnant of chiral
+symmetry on the lattice}, Phys. Rev. D \textbf{25} (1982) 2649--2657.
+\bibitem{luscherchiral} M.~L\"uscher, \emph{Exact chiral symmetry,
+topological charge and related topics in lattice QCD}, Nucl. Phys. B
+Proc. Suppl. \textbf{83} (2000) 34--43.
+\bibitem{feynmangrav} R.~P.~Feynman, F.~B.~Morinigo, W.~G.~Wagner,
+\emph{Feynman Lectures on Gravitation}, Addison--Wesley (1995).
+\bibitem{deser1970} S.~Deser, \emph{Self-interaction and gauge
+invariance}, Gen. Relativ. Gravit. \textbf{1} (1970) 9--18.
+\bibitem{padmanabhan} T.~Padmanabhan, \emph{From gravitons to gravity:
+myths and reality}, Int. J. Mod. Phys. D \textbf{17} (2008) 367--398.
+\bibitem{deser2010} S.~Deser, \emph{Gravity from self-interaction
+redux}, Gen. Relativ. Gravit. \textbf{42} (2010) 641--646.
+\bibitem{eih} A.~Einstein, L.~Infeld, B.~Hoffmann, \emph{The
+gravitational equations and the problem of motion}, Ann. Math.
+\textbf{39} (1938) 65--100.
+\bibitem{damourschafer} T.~Damour, G.~Sch\"afer, \emph{Higher-order
+relativistic periastron advances and binary pulsars}, Nuovo Cimento B
+\textbf{101} (1988) 127--176.
+\bibitem{landau} L.~D.~Landau, E.~M.~Lifshitz, \emph{The Classical
+Theory of Fields}, 4th ed., Pergamon (1975).
+\bibitem{brownravenhall} G.~E.~Brown, D.~G.~Ravenhall, \emph{On the
+interaction of two electrons}, Proc. R. Soc. Lond. A \textbf{208} (1951)
+552--559.
+\bibitem{lss} E.~H.~Lieb, H.~Siedentop, J.~P.~Solovej, \emph{Stability
+and instability of relativistic electrons in classical electromagnetic
+fields}, J. Stat. Phys. \textbf{89} (1997) 37--59.
+\bibitem{liebloss} E.~H.~Lieb, M.~Loss, \emph{Stability of a model of
+relativistic quantum electrodynamics}, Comm. Math. Phys. \textbf{228}
+(2002) 561--588.
+\bibitem{gll} M.~Griesemer, E.~H.~Lieb, M.~Loss, \emph{Ground states in
+non-relativistic quantum electrodynamics}, Invent. Math. \textbf{145}
+(2001) 557--595.
+\bibitem{lieblebowitz} E.~H.~Lieb, J.~L.~Lebowitz, \emph{The
+constitution of matter: existence of thermodynamics for systems composed
+of electrons and nuclei}, Adv. Math. \textbf{9} (1972) 316--398.
+\bibitem{fdll} C.~Fefferman, R.~de la Llave, \emph{Relativistic
+stability of matter I}, Rev. Mat. Iberoam. \textbf{2} (1986) 119--213.
+\bibitem{nelson} E.~Nelson, \emph{Interaction of nonrelativistic
+particles with a quantized scalar field}, J. Math. Phys. \textbf{5}
+(1964) 1190--1197.
+\bibitem{ffg} C.~Fefferman, J.~Fr\"ohlich, G.~M.~Graf, \emph{Stability
+of ultraviolet-cutoff quantum electrodynamics with non-relativistic
+matter}, Comm. Math. Phys. \textbf{190} (1997) 309--330.
+\bibitem{adc} M.~Aizenman, H.~Duminil-Copin, \emph{Marginal triviality
+of the scaling limits of critical 4D Ising and $\varphi^4_4$ models},
+Ann. of Math. \textbf{194} (2021) 163--235.
+\end{thebibliography}
+
+\end{document}
