@@ -1,0 +1,5 @@
+/.lake/
+/axiomcheck_scratch.lean
+/decidecheck_scratch.lean
+/batterycheck_scratch.lean
+/instancecheck_scratch.lean

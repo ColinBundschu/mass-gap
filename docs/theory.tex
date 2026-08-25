@@ -1,9 +1,9 @@
 \documentclass[11pt]{article}
 \usepackage{amsmath,amssymb,amsthm}
-% Inline formulas and \pin filenames are long unbreakable boxes; give the
-% paragraph builder slack rather than hand-tuning line breaks that rot:
-% \emergencystretch absorbs the tight side, and \hbadness accepts the
-% loose last lines a pin's unbreakable box forces.
+% Inline formulas are long unbreakable boxes; give the paragraph
+% builder slack rather than hand-tuning line breaks that rot:
+% \emergencystretch absorbs the tight side, and \hbadness accepts
+% the loose last lines an unbreakable box forces.
 \emergencystretch=1.5em
 \hbadness=10000
 \usepackage[margin=1in]{geometry}
@@ -20,16 +20,14 @@
 \newtheorem{construction}{Construction}
 \newtheorem{remark}{Remark}
 
-\newcommand{\pin}[1]{\textnormal{\footnotesize[\,#1\,]}}
 \newcommand{\lam}{\lambda}
 \newcommand{\tr}{\operatorname{tr}}
 \newcommand{\Wg}{\operatorname{Wg}}
 
-
 \title{\textbf{The mass gap over the compact simple groups}}
 \date{\today}
 \author[1]{Colin Bundschu}
-\affil[1]{Department of Materials Science and Engineering, University of California, Berkeley}
+\affil[1]{University of California, Berkeley}
 \begin{document}\maketitle
 
 %=====================================================================
@@ -53,7 +51,17 @@ the \emph{gap}, the natural $g$ at $q+g=p$, one value by the sum's
 injectivity, and of two naturals exactly one of three holds, a gap
 one way, the equality $q=p$, or a gap the other way, the
 trichotomy read, a sum exceeding its first summand by
-the shape of its data. The \emph{cofactor} $c$ at $Y\,c=X$ is one
+the shape of its data. A \emph{count} reads how often a stated
+condition holds over a finite family: the naturals joined by the
+\emph{vacant read}, the sum's unit, a summand at that unit fixing
+the other member and a factor at it reading it back, the sum
+injective in each argument with the product so at an occupied
+factor, the trichotomy running with the unit below every natural,
+a count \emph{occupied} at a natural's read, and the
+\emph{difference} of two counts reading the gap at the
+trichotomy's below outcome and the vacant read at the further
+two: the counts are a carrier with the displayed sum's unit. The \emph{cofactor} $c$
+at $Y\,c=X$ is one
 value by the product's injectivity where it exists; order and
 factor statements are witness existence in this vocabulary, and a
 witness is a field of its statement: the gap a field of a stated
@@ -106,7 +114,10 @@ among the outcomes, the exceeding member's gap its margin, and the
 gap of an ordered pair of balance pairs is the cross-added data's
 own, $w$ at $(u+v')+w=u'+v$; matched lists of ground data pair
 componentwise, one balance pair per coordinate, the members equal
-exactly where every coordinate's are. The balance-pair
+exactly where every coordinate's are, and the \emph{dot} of two
+matched lists, in this carrier and in every carrier with the
+displayed sum's unit and product, is the fold of their coordinate
+products, the coordinate reads' one contraction. The balance-pair
 displays read at every datum with the displayed sum, product and
 order reads, the scalar pairs among them, and a later site may name
 a pair at a balance-pair first datum: such a composite is the
@@ -141,10 +152,12 @@ reads the form's scale and the family's: at $ad=cb$, rescaling
 both components of $[a\!:\!b]$ by $d$ and of $[c\!:\!d]$ by $b$
 yields one pair, so two pairs at the identity read one value
 against every third. The harmonic numbers are
-$H_k=\sum_{j=1}^{k}\,[1\!:\!j]$; a pair of reads is componentwise
+$H_k=\sum_{j=1}^{k}\,[1\!:\!j]$; the \emph{factorial} $k!$ is the
+product fold over the naturals from one to $k$, one at the vacant
+range; a pair of reads is componentwise
 data. Every later object reads the ground data through
 these operations.
-\pin{gate: ground\_gates.py, GD1--GD5}
+
 \end{definition}
 
 \begin{definition}[The ground polynomials]\label{def:poly}
@@ -200,7 +213,7 @@ identity per key ($(i+j)\,P_iQ_j$ collected at either weighting
 over the key pairs joining to the successor). At a monic $S$ the
 \emph{remainder lists} are the coefficient lists at the monomial
 keys below $S$'s top, sums componentwise and the product the
-convolution's remainder at the division by $S$. \pin{gate: ground\_gates.py, PY1--PY2}
+convolution's remainder at the division by $S$.
 \end{definition}
 
 \begin{definition}[The ground eliminations]\label{def:elim}
@@ -356,7 +369,7 @@ read $up+vq=1$ it reads unequal members: at $\check c$ the
 memberwise swap of $uB$, the identity maps a
 cross pair's $A$ to $(Av+\check c\,)\,q$ at $q$'s
 degree beyond $A$'s, every cross pair the sum's unit there.
-\pin{gate: ground\_gates.py, EL1--EL2}
+
 \end{definition}
 
 \begin{definition}[The deck families]\label{def:deck}
@@ -431,7 +444,22 @@ per permutation, the identity's words at the paired letters alone,
 $L=2w$, even outright; a
 transposition is odd, its inversion list its own place pair with
 two pairs per place between its two, one pair beyond an even
-family. The
+family. The permutations are the words of unit content, one
+letter at every place once, one word per permutation at the
+assignment's own reads and at the factorial's count, the
+enumeration blocking at the head letter, one block per occupied
+letter at the withdrawn content's words, the unit content folding
+one letter out per step, the product fold's own read
+(Definition~\ref{def:ground}); and the \emph{permuted display}
+of a list is its reads at a permutation's places, one entry per
+place. A
+permutation's \emph{cycles} are its orbit words, from
+each least unwalked place the iterated images to the start's
+return: a walk's members are distinct until the return, two equal
+iterates reading equal predecessors down to the start at the
+assignment's own injectivity, so each walk closes within the place
+count, every place sits on one word, and the \emph{cycle count} is
+the words' count. The
 \emph{grading} is by content: the monomial tensor at indices
 $(i_1,\dots,i_k)$ has \emph{content} the occupancy family $\mu$
 over the letters, a member letter at the count of places
@@ -1496,7 +1524,6 @@ family, the kernel list's span occupied
 (Definition~\ref{def:elim}).
 \end{lemma}
 
-
 \begin{lemma}[Strings, and the content symmetry]\label{lem:strings}
 Fix a positive root $\alpha$ and its triple
 $(E,F,H):=(E_\alpha,F_\alpha,H_\alpha)$ on
@@ -1805,8 +1832,34 @@ composite at an invariant reads its $\det G$-multiple, the identity at each $f_i
 over the list's span; the determinant sits off the sum's unit at the
 independence (Lemma~\ref{lem:lowerspan}), every read one value
 across the scale (Definition~\ref{def:ground}'s homogeneity
-principle), so the two spaces' counts read one value, two
-independent lists inside one span (Lemma~\ref{lem:lowerspan}).
+principle), and the two spaces' counts read one value at the
+correspondence's own carriers.  An invariant enters at its
+coefficient family over the two stated lists' matched member
+pairs, the moved reads one stacked linear system in the
+coefficients, each row the moved form's fold at a letter pair and
+a member pair, with its count and kernel list the elimination's
+(Definition~\ref{def:elim}).  A family whose map reads every
+listed member at the sum's unit is the unit family: per content
+the value is the second list's combination at the first list's
+weighted pairings, the second list's independence reads those
+weights back (Lemma~\ref{lem:lowerspan}), and per second member
+the weights pair the first list's group against its every member
+at the sum's unit, the perpendicular combination the unit family
+at the group's independence (Lemma~\ref{lem:lowerspan}).  An
+equivariant map enters the grid through the second list's solve,
+each value's cleared combination over that list's span at the
+graded Gram's adjugate against its determinant
+(Lemma~\ref{lem:lowerspan}; the grading splits the Gram at one
+block per occupied content, so the adjugate collects each block's
+own at the further blocks' determinants, the coevaluation's read
+at the second list), the grid's datum one block per occupied
+content, the content group's rows at the content's own values'
+solves with each member's row read at the member's place in its
+group, the moved reads at
+the sum's unit by the equivariance above and the map the
+determinants' scale of its own by the round trip: the kernel list
+and a stated map list read one count, two independent lists inside
+one span (Lemma~\ref{lem:lowerspan}).
 \emph{(ii) The full-column line, and the dual block.} The full wedge
 $w_{d_f}$ spans the block $W_{(1^{d_f})}$, the \emph{full-column
 line}: every unit at $i\ne j$
@@ -1838,7 +1891,21 @@ wedge tensored on, member for member,
 $W_\lambda\otimes W_{(1^{d_f})}\cong W_{\lambda+(1^{d_f})}$ with
 $w_{d_f}\otimes t_\lambda$ its top, and the dimension, the
 occupancies at the shifted contents, and the fused counts read the
-mapped span's; and the line reads at every power by the descent:
+mapped span's: the fused pool against a further block pairs the
+mapped members at the arrangements' join
+(Construction~\ref{con:places}), so the pair list at a shifted
+content is the content's own list mapped; a stacked raising's
+image at a mapped pair is the wedge tensored onto its image at
+the pair, the wedge factor's term the repeat's unit, and a
+tensored image reads the unit tail exactly at the further
+factor's own read, the split coordinates at the wedge's differing
+members, so the stacked raisings annihilate a coefficient
+family's combination at the mapped list exactly where they
+annihilate it at the list, the kernel data one family at the two
+pair lists (Definition~\ref{def:blockcount}) with the collections
+two lists in one span at one count (Lemma~\ref{lem:lowerspan}),
+and the count at the shifted content is the content's
+own; and the line reads at every power by the descent:
 a power's exhibit is the wedge tensored onto the prior power's,
 the column union's read, a lowering's image reading the wedge
 factor's term at the repeat's unit and the further factor's at
@@ -1871,13 +1938,101 @@ N_{(m^{d_f})}\big(W_a\otimes W_b\big)
 W_b\big)
 \]
 the Kronecker delta, one exactly at $b$ and $a^*$ differing by full
-columns,
-by (i)'s adjunction at the line $W_{(1^{d_f})}^{\otimes m}$, the
-source's top content read by (ii)'s dual block,
-and the block reads of Lemma~\ref{lem:blockirr}(ii),(iii): an
-equivariant map between irreducibles is its map space's sum's unit
-at distinct top contents
-and is a line of scalars at one.
+columns. The count is the kernel dimension of the stacked raisings
+at the stated pair list, the two blocks' spanning lists' tensors at
+complementary contents (Definition~\ref{def:blockcount};
+Lemma~\ref{lem:blockcount}(iii)), and the display is (i)'s
+adjunction at the line $W_{(1^{d_f})}^{\otimes m}$: the kernel
+families and the equivariant maps read one count through the value
+map below, (i)'s count clause at the complementary grid. A kernel
+family reads as its \emph{value map}, per argument the second
+slots' combination at the coefficients against the first slots'
+pairings, and the map is equivariant: the stacked adjacent raisings
+annihilate the family's combination, and the annihilation reaches
+every letter pair at distinct letters at the full-column content:
+the adjacent lowering's at (ii)'s line with the moved content's
+group vacant, and each further pair's at the crossed composite on
+the gap, the descent at raisings and lowerings both
+(Lemma~\ref{lem:lowerspan}), so the moved reads close at every
+such pair, the dual action at the argument against the action at
+the value, (i)'s moved reads at the exchanged letters. \emph{Off the join the kernel is the unit family.} At a
+kernel family off the unit family some value sits off the sum's
+unit: per content a value is the second group's combination at the
+first group's weighted pairings, and a family whose every value
+reads the unit tail is the unit family, the two groups'
+independence reading the weights and the perpendicular combination
+back ((i)'s count clause at the complementary groups;
+Lemma~\ref{lem:lowerspan}). The value list at the first block's
+stated members is closed at the letters inside the second block's
+span, a letter's image of a value the value at the argument's dual
+move with the moved argument's combination reading through the
+fold, so at a value off the sum's unit every $W_b$ member joins the
+value list's span (Lemma~\ref{lem:blockirr}(i)), the head among
+them; the head's group in the value list holds a value off the
+sum's unit, a combination of unit tails reading the unit tail, and
+a value off that unit reads occupied slots, the pair guard's join
+exact: $b$'s row list joins an occupied content of $W_a$ to the
+full columns, and the factors' exchange reads $a$'s row list so as
+well, the arrangements' exchange at the commuted coordinate
+products (Lemma~\ref{lem:blockcount}(iii)). The occupied contents
+sit at or above the reversals (Lemma~\ref{lem:strings}), and the
+two joins exchange the reads: at the full-column content a prefix
+of the complement joins the content's own prefix to the full
+columns' count, and at one degree a prefix of a reversal joins its
+list's complementary prefix to the degree, so the first factor's
+floor reads the occupied content at or above $a$'s reversal while
+the second factor's floor, read through the two exchanges, sits at
+or below it, and the two dominance witnesses join to the unit fold
+(Construction~\ref{con:gentable}): $b$'s row list is the
+complement's read, $b$ and $a^*$ differing by full columns.
+\emph{At the join the kernel is one line.} The first block's
+reversal member is occupied once (Lemma~\ref{lem:strings}) and is
+the dual top, every dual raising's image at the unit tail ((ii)'s
+dual block), and its value's content, the complement of the
+reversal, is the join's read of the target's own top: the value at
+the dual top sits in the head's group, the top line
+(Lemma~\ref{lem:lowerspan}), a scale of the head. A kernel family
+off the unit family holds a value off the sum's unit at the
+reversal member: the head's group read above names a first-block
+member whose content joins $b$'s row list to the full columns, as
+the reversal does at the join, and the sum's injectivity reads the
+two contents one (Definition~\ref{def:ground}), the reversal
+member occupied once; and the value map reads its coefficient
+family linearly, each coefficient entering its own weight once, so
+two families' cleared combination reads the two values' own at
+every argument (Definition~\ref{def:ground}): at that scale the
+unit the family is the unit family, two kernel families read one
+line, the cleared combination at the unit scale the unit family,
+and the count is at most one. And the kernel is occupied: the dual walk's $H$-read at a content is the partner
+pair, one value with the complement content's own at the full
+column's constant cross-added (Definition~\ref{def:ground}; (i)'s
+dual diagonal with (ii)'s line), a crossing of the walk reads the
+letter pair's site datum, two letters' reads at their gap
+(Lemma~\ref{lem:casimir}'s display), so the constant withdraws at
+the gap's cross-add; the lowering moves the letter pair down and
+the dual moves it up, the joined content riding each letter's
+round trip at the occupied read, so the two walks' contents join
+to the full columns wherever both images sit off the unit tail,
+and every crossing of the dual walk reads the complement content's
+own crossing, and the dual words' pairings at
+the reversal member fold the walk's coefficients at those reads
+(Lemma~\ref{lem:blockirr}(iv)): the dual word family at the
+reversal member and the word family at the target's top read one
+Gram at the two tops' self-pairings' scales, the source and the
+target one block at (ii)'s dual block, the dual twisted by the
+line reading the complement shape's carrier, and each dual word's
+\emph{partner word} is the word at the exchanged letters, a dual
+move at a letter pair the complement's move at the exchanged pair
+((i)'s dual action). The coevaluation at the two collected word
+families, the Gram's adjugate against its determinant weighting
+each dual word against its partner word, pairs every stacked
+raising's image against every pair at the sum's unit: a moved
+pairing is the walk's read at one further crossing, and the two
+slots' moved reads join at partners across the transpose identity
+at the exchanged letters ((i)'s coevaluation read at the two
+families); the coevaluation sits off the unit family at the
+determinant's diagonal, the collected families independent
+(Lemma~\ref{lem:lowerspan}): the count is one.
 \end{lemma}
 
 \begin{construction}[The label set]\label{con:labels}
@@ -1886,9 +2041,20 @@ $W_{\lambda+(1^{d_f})}\cong W_\lambda\otimes W_{(1^{d_f})}$
 (Lemma~\ref{lem:dualread}(ii)); each label reads one reduced shape, at
 most $r$ rows deep. The data descend to labels: $d$ is
 class-invariant (a line's tensor), and so is the fusion count at matched
-degrees, $N^{c+(1^{d_f})}_{a+(1^{d_f}),\,b}=N^c_{ab}$, the full-column
-line twisting equivariant maps, the twist undone by its dual
-(Lemma~\ref{lem:dualread}(i)); the dual label $\bar a$ is the
+degrees, $N^{c+(1^{d_f})}_{a+(1^{d_f}),\,b}=N^c_{ab}$, the fused
+counts' read at the mapped span, the pair list at the shifted
+content the content's own mapped with the kernel data one family
+(Lemma~\ref{lem:dualread}(ii)); a full column crosses the factors
+at a fixed target, the display at the factors' exchange
+(Lemma~\ref{lem:blockcount}(iii)) where the target holds a full
+column, and at a reduced target either side's count is the sum's
+unit, the mapped pool occupied at the last letter member for
+member (Lemma~\ref{lem:dualread}(ii)) with the target's group
+vacant (Lemma~\ref{lem:blockcount}(ii)); the label count at two
+representatives reads at the matched-degree lift, the degree gap a
+full-column multiple at one class with the deficient side grown by
+the gap's columns, and the sum's unit at a gap off the multiples;
+the dual label $\bar a$ is the
 class of $a^*$ (Lemma~\ref{lem:dualread}(ii)); the full columns'
 own class is the \emph{unit label} $\mathbf 1$, the unit shape's,
 its multiplicity in a product one exactly at the dual label, the
@@ -2085,7 +2251,6 @@ nonunit label the highest root at level one. The link count follows, each occupi
 contributing at least $\hat c_2(f)$ to the content.
 \end{proof}
 \end{lemma}
-
 
 \begin{theorem}[The alternant identity]\label{thm:weylchar}
 Write $\mathrm{mult}_\lambda(\nu):=\dim(W_\lambda)_\nu$ and
@@ -2506,10 +2671,11 @@ multiple of the key's coefficient count over the positive folds
 (Construction~\ref{con:sertables}), every entry at its upper side
 or equal members against the unit fold, so a dominant key at every
 coordinate beyond the unit sits at or beyond $\rho$'s own dot, the
-join at $\lambda+\rho$ capping its fold's count at
-$\langle\lambda,\rho\rangle$'s read with every simple's dot beyond
-the unit, and a member on a root's line beyond a key sits within
-the two dots' gap at the root's positive dot.
+join at $\lambda+\rho$ capping its fold at the simple dots, the
+coefficients' fold against the simples' $\rho$-dots at or below
+$\langle\lambda,\rho\rangle$'s read, and a member on a root's
+line beyond a key sits within the two dots' gap at the root's
+positive dot.
 \emph{The conclusion.} $a_\rho\,\mathrm{ch}$ is
 reflection-graded, $\mathrm{ch}$ invariant
 (Lemma~\ref{lem:strings}) and $a_\rho$ graded, so it is a
@@ -2694,6 +2860,82 @@ $w$ over the member's Weyl list at the reflection grading
 lists.
 \end{corollary}
 
+\begin{lemma}[The member count and involution]\label{lem:memberdata}
+At a member's table (Construction~\ref{con:gentable};
+Construction~\ref{con:sertables}) the fusion count and the label
+involution are constructions of the table's data, one each.
+
+\emph{(i) The multiplicity family is the recursion's one solve.}
+A block's \emph{family} reads each occupied content at its
+summand's count, and the family closes key by key down the
+$\rho$-dots from the top. The top's summand is one line with the
+occupied contents at or below the top
+(Lemma~\ref{lem:lowerspan}); every count is its dominant image's
+(Lemma~\ref{lem:strings}), the dominance walk raising at a
+lower-side simple pair with each raise's $\rho$-dot positive
+(Theorem~\ref{thm:memberchar}'s conclusion walk;
+Theorem~\ref{thm:assembly}'s pin), so a dominant image's
+$\rho$-dot sits at or beyond its orbit's every member's; and at a
+dominant content below the top the trace recursion's display
+(Lemma~\ref{lem:casimir}) reads the count's multiple of the two
+Casimir reads' gap, positive at dominant data
+(Theorem~\ref{thm:memberchar}; Lemma~\ref{lem:casfloor}'s fall
+identity), against the moved string folds' join, each moved count
+read at its dominant image of strictly larger $\rho$-dot: the
+product's injectivity reads the count off the higher keys'
+(Definition~\ref{def:ground}), the descent closes on the finite
+window at the dominant keys' $\rho$-dots capped by the top's own
+(Theorem~\ref{thm:memberchar}), and the family is the recursion's
+one solution. The member's fusion count is the member display's
+gap read at the family, the two graded sums over the member's
+Weyl list at the first factor's family
+(Corollary~\ref{cor:steinberg}); the display folds at the family:
+each occupied content's moved key, the target's shifted key
+joined to the content's balance partner, raises along the
+dominance walk to its dominant image
+(Theorem~\ref{thm:memberchar}'s conclusion walk), one letter per
+raise with the letter count reading the tie element's parity, the
+walk's word that element's reversal at one parity class
+(Construction~\ref{con:sertables}'s grading and transport), a
+walk ending at the shifted second factor naming the tie's one
+element at the regular reads (Construction~\ref{con:sertables})
+with every further end off the ties, the shifted factor its
+orbit's one dominant image, so the count is the family's fold at
+the walks' parities, one walk per occupied content; and the
+fusion row at two labels
+is the dominant targets at occupied counts, the targets at or
+below the labels' sum (the factors' contents adding over the
+tensor product, Construction~\ref{con:gentable}, each at or below
+its own top, Lemma~\ref{lem:lowerspan}).
+
+\emph{(ii) The involution is the shifted walk's read.} The dual
+action is the transposes' partner read
+(Lemma~\ref{lem:dualread}(i)'s displays at
+Construction~\ref{con:gentable}'s fields, each commutator's
+transpose the exchanged pair's with two partners composing to the
+original), so a dual block's occupied contents are the block's at
+their balance partners. The \emph{reversal} is the element at the
+full inversion list, grown one letter at a member off the list
+(Construction~\ref{con:sertables}'s creation read), its image of
+every positive member the member's partner, the list's own read,
+and its image of $\rho$ is $\rho$'s partner, the root fold's
+image at the partner list; its negated image of a dominant
+content is dominant, the coroot pairs read across the partner
+list. The reversal's image of a dominance join is the exchanged
+join at the partnered folds, so the image order flips and a
+block's occupied contents sit at or above the reversal image of
+the top, occupied once at the top's line
+(Lemma~\ref{lem:strings}; Lemma~\ref{lem:lowerspan}); the dual
+block's top is that image's partner, maximal among the dual's
+occupied contents and off the sum's unit
+(Lemma~\ref{lem:tops}(i)). So the \emph{dual label} reads at the
+shifted walk: the dual's top joined to $\rho$ is the dominant
+image of the top-with-$\rho$'s balance partner, one image at the
+regular reads (Construction~\ref{con:sertables}), and the
+involution's construction is that walk, uniqueness by
+construction.
+\end{lemma}
+
 \begin{lemma}[One box fuses up the shapes]\label{lem:pieri}
 $N^c_{\mu f}=1$ at every dominant $c=\mu+e_i$, the row's members
 exactly those targets, $f$ the
@@ -2707,7 +2949,66 @@ successor reading a repeat ($\mu_h=\mu_{h+1}$ at $h+1=i$ puts the
 raised value at its neighbor's), which the strictly decreasing
 $c+u$ misses at every $\sigma$, and a raise at a vacant successor
 keeping its own place ($\sigma=\mathrm{id}$, one count, on the
-even side), the target $\mu+e_i$ dominant exactly there.
+even side), the target $\mu+e_i$ dominant exactly there. At the
+complement's one-column shape $f^*$, the depth at the gap $g$ at
+$g+1=d_f$ (Lemma~\ref{lem:dualread}(ii)'s complement at the
+one-box shape), the contents are the full column's withdrawn
+letters, one letter withdrawn per content at one count each: a
+count read transports across the letters' exchanges through the
+shared sorted representative, so each withdrawn letter's content
+reads the top line's count, one, and a content holding a letter
+twice reads its sorted representative's count, vacant at the
+dominance cap (Lemma~\ref{lem:lowerspan};
+Lemma~\ref{lem:strings}), and the
+tie analysis reads $N^c_{\mu f^*}=1$ at every dominant $c$ at the
+join $c+e_i=\mu+(1^{d_f})$: a contribution needs
+$c+u+e_p=\sigma(\mu+u)+(1^{d_f})$ at one place $p$, the tie read
+at the inverse permutation with the displays transported across
+it, a lowering of the sorted display the flipped assignment's
+raise (Construction~\ref{con:places}'s inverse permutation): the
+display
+$c+u$ sorting the raised display $\mu+u+(1^{d_f})$ with one value
+lowered by one, a lowering at a vacant gap reading a repeat
+($\mu_p=\mu_{p+1}$ puts the lowered value at its follower's),
+which the strictly decreasing $c+u$ misses at every $\sigma$, and
+a lowering at an occupied gap keeping its own place
+($\sigma=\mathrm{id}$, one count, on the even side), the target
+dominant exactly there.
+\end{lemma}
+
+\begin{lemma}[The path count's square sum]\label{lem:pathsquare}
+The \emph{path count} $f^\lambda$ of a shape
+(Construction~\ref{con:places}) is the count of its descents to the
+unit shape by one box removed at a time, the recursion
+$f^\lambda=\sum_{\mu\to\lambda}f^\mu$ over the shapes with one box
+removed, the unit shape's count one; at $k\le d_f$, over the shapes
+of $k$ boxes,
+\[
+\sum_{|\lambda|=k}(f^\lambda)^2\;=\;k!\ .
+\]
+\begin{proof}
+On the free $\mathbb P$-space of the shapes of at most $k$ boxes,
+the unit shape among them, let $U$ add a box over the covers and
+$D$ remove one, transposes for the shape pairing, so
+$f^\lambda=\langle\lambda,U^k\mathbf 1\rangle$, the recursion read
+at $D$'s transpose. At a shape of fewer than $d_f$ rows, every
+shape below the degree $d_f$ among them, $DU=UD+\mathrm{id}$: two
+distinct shapes of one size share a cover exactly where they share
+a covered shape (their union and their intersection, one each,
+where they differ by one moved box), and one shape's addable
+corners exceed its removable ones by one (each is read off the
+distinct row lengths, the additions one more at the rows' end). So
+$D\,U^{j+1}\mathbf 1=(j+1)\,U^{j}\mathbf 1$ at every $j<d_f$ by
+induction, $D\,\mathbf 1$ the sum's unit and $U^{j}\mathbf 1$ at
+the degree $j$, and
+\[
+\sum_{|\lambda|=k}(f^\lambda)^2
+=\langle U^k\mathbf 1,U^k\mathbf 1\rangle
+=\langle U^{k-1}\mathbf 1,D\,U^k\mathbf 1\rangle
+=k\,\langle U^{k-1}\mathbf 1,U^{k-1}\mathbf 1\rangle
+=k!\ .
+\]
+\end{proof}
 \end{lemma}
 
 \begin{lemma}[The mixed power's invariants are the permutation span]
@@ -2726,46 +3027,51 @@ $\bigoplus_\mu N_\mu(M)\,(W_\mu\otimes V)$
 $N_\lambda(V^{\otimes k+1})
 =\sum_{\mu\to\lambda}N_\mu(V^{\otimes k})$, the
 unit power the scalars' line, over the shapes with
-one box removed: $N_\lambda(V^{\otimes k})=f^\lambda$, the shape
-lattice's path count, every shape of $k$ boxes at most
+one box removed: $N_\lambda(V^{\otimes k})=f^\lambda$, the path count
+(Lemma~\ref{lem:pathsquare}), every shape of $k$ boxes at most
 $k\le d_f$ rows deep.
-\emph{The invariant dimension.} The invariants of $M\otimes M^\vee$
-are the equivariant endomorphisms (Lemma~\ref{lem:dualread}(i)), and an
-equivariant map is the unit of its map space between distinct labels
-and a scalar at one
-(Lemma~\ref{lem:blockirr}(ii),(iii)), so at
-$M=V^{\otimes k}$,
-$\dim\mathrm{inv}=\sum_\lambda N_\lambda^2
-=\sum_{|\lambda|=k}(f^\lambda)^2$.
-\emph{The square sum is the factorial.} On the free $\mathbb P$-space
-of the shapes of at most $k$ boxes, the unit shape among them, let
-$U$ add a box over the covers
-and $D$ remove one, transposes for the shape pairing. Then
-$DU=UD+\mathrm{id}$: two distinct shapes of one size share a cover
-exactly where they share a covered shape (their union and their
-intersection, one each, where they differ by one moved box), and one
-shape's addable corners exceed its removable ones by one (each is read
-off the distinct row lengths, the additions one more). By induction
-$DU^{k+1}=U^{k+1}D+(k+1)\,U^{k}$ at every $k$, and with
-$f^\lambda=\langle\lambda,U^k\,\mathbf 1\rangle$ and
-$DU^{k+1}\,\mathbf 1=(k+1)\,U^{k}\,\mathbf 1$, the $U^{k+1}D$ term the
-Kronecker delta at two distinct shapes ($\langle\lambda,D\,\mathbf 1\rangle
-=\langle U\lambda,\mathbf 1\rangle$, $U\lambda$ a box deeper),
+\emph{The invariant count.} An invariant of $M\otimes M^\vee$ is
+the dual tensor's family at matched contents with every letter
+pair's Leibniz image null (Lemma~\ref{lem:dualread}(i)), its data
+one matrix per occupied content with the moved reads
+(Lemma~\ref{lem:blockirr}'s matrix families), and its form
+coordinates the matrices' entries at the contents' monomials; the
+families combine at the entries, the action's row fold reading
+each entry once (Definition~\ref{def:elim}), so a member's value,
+the moved reads and the coordinates are additive and scale-reading
+over the members. At an
+exhaustion of the power's carrier (Lemma~\ref{lem:blockcount}(i))
+every top's value under the family is a top at the top's own
+content, a raising image of the value the moved read at the top's
+null image; and a family whose every top value is the sum's unit is
+null: Lemma~\ref{lem:blockirr}(ii)'s induction reads every value
+as its member's own word at the top's value, the blocks span the
+carrier, and a null map's matrices are null at the carrier's own
+coordinate vectors. So the stacked top values map an independent
+list of invariants to an independent list inside the raising
+kernels' joined span, a null image's family null with the
+coefficients read back at the independence, and the invariants'
+count sits at or below the kernels' count
+(Lemma~\ref{lem:lowerspan}'s exchange clause), $N_\lambda$ tops per
+content (Lemma~\ref{lem:blockcount}(ii)) at kernel dimension
+$N_\lambda$ each (Definition~\ref{def:blockcount}):
 \[
-\sum_{|\lambda|=k}(f^\lambda)^2
-=\langle U^k\,\mathbf 1,\,U^k\,\mathbf 1\rangle
-=\langle\mathbf 1,\,D^kU^k\,\mathbf 1\rangle
-=k!\ ,
-\qquad
-\langle\mathbf 1,\,D^{k+1}U^{k+1}\,\mathbf 1\rangle
-=(k+1)\,\langle\mathbf 1,\,D^{k}U^{k}\,\mathbf 1\rangle
+\sum_\lambda N_\lambda^{2}
+\;=\;\sum_{|\lambda|=k}(f^\lambda)^{2}\;=\;k!
 \]
-\emph{Independence, and the span.} A place permutation is equivariant
-(the units' Leibniz sum is place-symmetric,
-Construction~\ref{con:places}), and at $k\le d_f$ the $k!$ of them are
-independent, reading distinct monomials on
-$v_1\otimes\cdots\otimes v_k$ at distinct indices: the span's
-dimension is $k!=\dim\mathrm{inv}$, so the permutations span.
+(Lemma~\ref{lem:pathsquare} at the path-count clause above).
+\emph{Independence, the span, and the Gram.} A place permutation is
+equivariant (the units' Leibniz sum is place-symmetric,
+Construction~\ref{con:places}), its family the permutation matrices
+per content, and at $k\le d_f$ the $k!$ of them are independent,
+reading distinct monomials on $v_1\otimes\cdots\otimes v_k$ at
+distinct indices; an invariant off their span would extend the
+independent list one past $k!$, against the count above: the
+permutations span. Two permutations' forms pair at the count of the
+monomials their two reads agree on, and the reads agree exactly at
+a monomial constant along each cycle of $\sigma\tau^{\mathsf T}$,
+one free letter per cycle: the Gram is
+$d_f^{\,\#\mathrm{cycles}(\sigma\tau^{\mathsf T})}$.
 \end{proof}
 \end{lemma}
 
@@ -2810,12 +3116,9 @@ $Q(\theta)=2d_f$ (Lemma~\ref{lem:casimir}): one quadratic form on the weight lat
 the form's components $\langle\lambda,\lambda+2\rho\rangle$ and
 $\langle\theta,\theta+2\rho\rangle$ rescaled by the one factor at every
 scale of the form, the pair one value across them
-(Definition~\ref{def:ground}; Proposition~\ref{prop:form}). The development runs on two
-objects, both defined on the label index alone:
-$\Delta\chi_\lambda=C_2(\lambda)\,\chi_\lambda$ and
-$\Gamma_1$, the join's datum at
-$2\,\Gamma_1(f,g)+\Delta(fg)=f\,\Delta g+g\,\Delta f$, one value by
-the doubling's injectivity.
+(Definition~\ref{def:ground}; Proposition~\ref{prop:form}). The development runs on one
+object defined on the label index alone,
+$\Delta\chi_\lambda=C_2(\lambda)\,\chi_\lambda$.
 \end{definition}
 
 \begin{proposition}[One value on the form line]\label{prop:form}
@@ -2827,7 +3130,7 @@ the unit of its map space at distinct labels and a scalar at one
 point $\xi$ of that line, a scalar pair, and rescaling the point rescales $C_2$
 with it while
 fixing every character. Hence a pair of two reads, each of degree one in the
-form, is one value at every point of the form line. Every energy-type read below ($E$, $\varepsilon_0$, $\Gamma$,
+form, is one value at every point of the form line. Every energy-type read below ($E$, $\varepsilon_0$,
 the coupling weights, the constants $c_i$) accordingly denotes its
 read against $C_2(\mathrm{adj})$, and every surviving constant is a count.
 \end{proposition}
@@ -2837,7 +3140,7 @@ Rescaling the form's point rescales $\Delta$'s block read
 $C_2(\lambda)=\langle\lambda,\lambda+2\rho\rangle$ at every $\lambda$,
 and a pair of two such reads is one value at every point, its two
 components rescaled by the one factor. A character is a label-index generator,
-defined without the form (Proposition~\ref{prop:repring}). $\Delta$, $\mathrm{content}$, $E$ and $\Gamma_1$ are each of degree
+defined without the form (Proposition~\ref{prop:repring}). $\Delta$, $\mathrm{content}$ and $E$ are each of degree
 one in the form and $\chi_\theta$, $V$, $M$ are form-free, so each displayed
 pair of two such reads is one value at every form point.
 \end{proof}
@@ -2853,10 +3156,7 @@ d_f\sum_a(X_a)_{pq}(X_a)_{rs}+\xi\,d_f\,\delta_{ps}\delta_{rq}
 at the form's
 point $\xi$; the Hermitian companions $T_a$ at $X_a=i\,T_a$ read
 $\xi$ throughout; then
-$\Delta=\sum_aX_a^{\dagger}X_a$,
-$\Gamma_1(f,g)=\sum_a(X_af)(X_ag)$, and
-$\sum_a(T_af)(T_ag)+\sum_a(X_af)(X_ag)$ is the sum's unit, so $\Gamma_1(f,f)$ at the
-$X_a$ list is a fold of squares, the $T_a$ fold its balance partner. A generator list is displayed at entries pairs over the
+$\Delta=\sum_aX_a^{\dagger}X_a$. A generator list is displayed at entries pairs over the
 ground at the formal $i$, the remainder lists at $z^2+1$
 (Definition~\ref{def:poly}): per place pair $p<q$ the swap
 combination, entry one at $(p,q)$ with its balance partner at
@@ -2871,18 +3171,13 @@ over the list against its
 metric dual, $\sum_aX_a(\cdot)X^a(\cdot)$, pair data at the Gram's
 adjugate against its determinant;
 the orthonormal spelling is that sum's evaluation.
-\pin{gate: generator\_gates.py}
-\end{definition}
 
-\begin{remark}[The pins]\label{rem:pins}
-A pin names the battery re-reading a statement's identity instances:
-each argument closes in the text, and the derivations hold with the
-batteries deleted, this remark with them.
-\end{remark}
+\end{definition}
 
 \begin{construction}[The fusion interface]\label{con:fusion}
 The calculus's outputs the chain reads are one interface, its
-fields: the \emph{label data}, a set with involution and unit; the \emph{count laws}, the fusion counts at commutativity,
+fields: the \emph{label data}, a set with its equality read,
+involution and unit, each label equal to itself at that read; the \emph{count laws}, the fusion counts at commutativity,
 associativity and the unit, with the unit read
 $N^{\mathbf 1}_{ab}=\delta_{a\bar b}$ and the Cartan strictness
 $N^{a+b}_{ab}=1$; the \emph{dimension identity}
@@ -2911,9 +3206,10 @@ of the field data, the chain reading the fields alone: the
 classification's members each enter with every field a derived
 read at their weight tables, their positive lists, alternants,
 assembly, character identity, fusion rows, pairing spans and
-defining tables the fields' own instantiations, and every chain
-derivation reads the fusion data through the fields, at every
-member at once.
+defining tables the fields' own instantiations, the count and
+involution fields at the member constructions
+(Lemma~\ref{lem:memberdata}), and every chain derivation reads
+the fusion data through the fields, at every member at once.
 \end{construction}
 
 \begin{construction}[The lattice interface]\label{con:lattice}
@@ -2929,7 +3225,8 @@ partition of the links with a transverse-cut family per direction,
 each cut crossed by its own direction's links alone; the
 \emph{translation action} on a
 torus window, permuting links, vertices and plaquettes and preserving
-directions; and the signed coordinate
+directions, two shifts composing to the keys' one composite with
+the directions' composites one map at either order; and the signed coordinate
 permutations $B_d$, permuting the link and plaquette sets with
 orientation reversal dualizing labels. The fields read at two
 instantiation families. The region fields, the links, the vertices,
@@ -2977,18 +3274,22 @@ and the window is the unit's line with their fibers:
 \mathrm{Sect}(\Lambda,C)=\mathbb P\,\mathbf 1\ \oplus
 \bigoplus_{a\in\mathrm{Idx}(\Lambda,C)}\mathrm{Fib}(a),
 \qquad
-\mathrm{Fib}(a)=\bigotimes_{v\in\mathrm{touched}(a)}\mathbb
-P^{\,\mathrm{vmult}(v,a)},
+\mathrm{Fib}(a)=\bigotimes_{v\in\mathrm{touched}(a)}\mathrm{inv}(v,a),
 \end{gathered}
 \]
 with
-$\mathrm{vmult}(v,a)$ the vertex intertwiner multiplicity, the
-invariant count of the incident labels' product, a natural at every
-occupied vertex. The
+$\mathrm{inv}(v,a)$ the vertex's intertwiner space, the incident
+labels' product's invariants at a stated independent spanning
+list, incoming links dualized (Lemma~\ref{lem:lowerspan}'s
+collected reads at Definition~\ref{def:blockcount}'s count), and
+$\mathrm{vmult}(v,a)$ its count, the vertex intertwiner
+multiplicity, a natural at every occupied vertex. The
 pairing is definitional as well: $\mathrm{gram}$ is the orthogonal direct sum
-of the unit line's pairing at one and the fibers' standard inner
-products, so positive definiteness is by
-construction rather than by a count. The windows are directed under
+of the unit line's pairing at one and the fibers' own pairings,
+per configuration the invariant lists' power pairing at the links'
+cleared block scale, one factor $[\,1:d_{a_\ell}\,]$ per support
+link: positive definiteness is by construction, the power pairing
+a coordinate fold at positive scales. The windows are directed under
 $(\Lambda,C)\le(\Lambda',C')$, the inclusions
 $\mathrm{Sect}(\Lambda,C)\hookrightarrow\mathrm{Sect}(\Lambda',C')$ are the
 summand injections mapping the unit line and each fiber to
@@ -3116,14 +3417,18 @@ $\mathrm{supp}(u)=(\Lambda_u,C_u)$
 (Proposition~\ref{prop:leastwindow}), the \emph{target window} is
 $\mathrm{Sect}_0:=\mathrm{Sect}\big(\Lambda_A\cup\Lambda_u,\
 \Phi(C_A,C_u)\big)$, its \emph{window list} the unit line's vector
-with the fibers' standard lists, orthonormal at the window pairing
-(Definition~\ref{def:carrier}), and the product $A\cdot u$ is the
-target window's element at the coordinate reads
+with the fibers' stated lists, the pairing's Gram of
+unequal-membered determinant at the lists' independence
+(Definition~\ref{def:carrier}; Lemma~\ref{lem:lowerspan}), and the
+product $A\cdot u$ is the
+target window's element at the reads
 \[
 \mathrm{gram}\big(A\cdot u,\;v\big)\;=\;\mathrm{Eval}\big(\bar A\,\bar u\,v\big)
 \qquad\text{at every window-list member }v ,
 \]
-one finite ground computation per coordinate, the right side the \emph{unit read}: $\mathrm{Eval}$ reads its
+the element the reads' solve, the adjugate column against the
+Gram's determinant (Definition~\ref{def:elim}), one finite ground
+computation per read, the right side the \emph{unit read}: $\mathrm{Eval}$ reads its
 argument's unit coordinate in the label index
 (Definition~\ref{def:carrier}), the invariant count's own read
 (Proposition~\ref{prop:repring}), a finite ground computation in the
@@ -3169,19 +3474,19 @@ of $\Lambda_A\cup\Lambda_u$ and, by Proposition~\ref{prop:fusionfinite}, at
 content at most $\Phi(C_A,C_u)$: they are summands of $\mathrm{Sect}_0$. So
 $v\mapsto\mathrm{Eval}(\bar A\bar uv)$ is of equal members on every summand beyond $\mathrm{Sect}_0$.
 
-\emph{On $\mathrm{Sect}_0$ the identity is the definition's coordinate read.} $\mathrm{Sect}_0$ is
+\emph{On $\mathrm{Sect}_0$ the identity is the definition's solved read.} $\mathrm{Sect}_0$ is
 finite-dimensional (Proposition~\ref{prop:windowfinite}) and its window list is
-orthonormal at the window pairing by construction (Definition~\ref{def:carrier}), so
-the definition's coordinate reads name the one
+independent with its pairing Gram of unequal-membered determinant
+(Definition~\ref{def:carrier}; Lemma~\ref{lem:lowerspan}), so
+the identity's reads against the list solve the one
 $x\in \mathrm{Sect}_0$ with
-$\mathrm{gram}(x,v)=\mathrm{Eval}(\bar A\bar uv)$ at every $v\in \mathrm{Sect}_0$, a step of linear
-algebra alone. The read runs at a spanning list as well: at a
-stated list spanning $\mathrm{Sect}_0$ with its pairing Gram of
-unequal-membered determinant, the identity's reads against the
-list solve the element's coordinates by the adjugate column
-against the determinant
-(Lemma~\ref{lem:genericlift}(ii); Definition~\ref{def:elim}), the
-solved element the orthonormal read's own at the one identity, so
+$\mathrm{gram}(x,v)=\mathrm{Eval}(\bar A\bar uv)$ at every $v\in \mathrm{Sect}_0$, the adjugate
+column against the determinant
+(Lemma~\ref{lem:genericlift}(ii); Definition~\ref{def:elim}); two
+stated lists spanning $\mathrm{Sect}_0$ solve one element, each
+solution reading the identity against the other's members, the
+solutions' gap at equal members against every member with its
+self-pairing that unit at the positive pairing, so
 a presentation's wiring list reads the determination at its own
 Gram. For $v$ in any larger window, $\mathrm{gram}(x,v)$ reads
 only $v$'s $\mathrm{Sect}_0$-summands, $\mathrm{gram}$ being the orthogonal direct sum, and
@@ -3255,14 +3560,53 @@ $\bigoplus_\lambda W_\lambda\otimes W_\lambda^\vee$, one block per label
 (Construction~\ref{con:labels}; the blocks and duals of
 Lemmas~\ref{lem:blockirr},~\ref{lem:dualread}),
 per window the tensor product of its links' families over the window index
-of Definition~\ref{def:carrier}, and $\mathrm{gram}$ the orthogonal direct
-sum of the blocks' standard inner products: positive definiteness is by
-construction, and the carrier sits inside isometrically, a vertex's
-intertwiner space with the restricted standard pairing.
-$\mathrm{Eval}$ extends as the per-link unit coefficient; products of
-coefficient elements decompose by the fusion data, with the evaluation
-identity $\sum_jU_{ij}\bar U_{kj}=\delta_{ik}$ the dual pairing's read; and
-a generator acts within each block (a matrix coefficient of $\lambda$
+of Definition~\ref{def:carrier}, the involution the blocks' dual
+exchange with the unit block fixed.
+$\mathrm{Eval}$ extends as the per-link unit coefficient: a product of
+coefficient elements decomposes by the fusion data, and its unit
+coefficient is the invariant line's read on both data, the vector
+datum's component at the orthogonal split
+(Lemma~\ref{lem:blockcount}(i); Lemma~\ref{lem:orthsplit}) against the
+functional datum's value on the line, the component the projection
+fold's read at the line's member (Lemma~\ref{lem:lowerspan}).  Two
+one-block elements pair at the \emph{block orthogonality},
+\[
+d_\lambda\,\mathrm{Eval}\big(\,\overline{u\otimes f}\ (u'\otimes f')\,\big)
+\;=\;\langle u,u'\rangle\,\langle f,f'\rangle\ ,
+\]
+the product a coefficient of the dual block against the block, its
+unit channel one line (Proposition~\ref{prop:repring}'s unit read;
+Lemma~\ref{lem:blockirr}(ii),(iii)) at the coevaluation's tensor, and
+the display the projection read at two adjugate identities: the
+coevaluation against a member pair reads the factors' pairing, once
+per datum, and its self-pairing reads the block's
+count against the determinants (Lemma~\ref{lem:dualread}(i)); two
+blocks' elements pair at equal members, the unit channel vacant at
+distinct labels (Proposition~\ref{prop:repring}).  The
+\emph{evaluation identity} $\sum_jU_{ij}\bar U_{kj}=\delta_{ik}$ is
+the dual pairing's read: the evaluation's tensor is invariant
+(Lemma~\ref{lem:dualread}(i)'s equivariance), so its coefficient
+family is its unit component's constants, the Kronecker read entry by
+entry.  $\mathrm{gram}$ is the orthogonal direct sum of the blocks'
+standard inner products at the cleared block scale
+$[\,1:d_\lambda\,]$: positive definiteness is by construction at the
+positive scales, the gram is the evaluation's own pairing,
+$\mathrm{gram}(x,y)=\mathrm{Eval}(\bar x\,y)$, the block orthogonality
+collected over the summands, the multiplication walks across it at a
+coefficient element $w$,
+$\mathrm{gram}(w\,x,\,y)=\mathrm{gram}(x,\,\bar w\,y)$, the products'
+exchange and regrouping at $\mathrm{Eval}$'s one value under the
+involution (Definition~\ref{def:algebra};
+Proposition~\ref{prop:algebra}), and the carrier sits inside
+isometrically at its own gram (Definition~\ref{def:carrier}): a
+configuration's state contracts the links' block coefficients at
+the vertices' invariant lists, $\mathrm{Eval}$ factors over the
+support's links at disjoint variables
+(Lemma~\ref{lem:stableentries}), and two states' pairing collects
+the block orthogonality link by link, the links' scales against
+the slot pairings' product regrouped at the vertices' lists
+(Definition~\ref{def:ground}), the fiber gram's own display.  A generator acts within each block (a matrix
+coefficient of $\lambda$
 differentiates to one), so $\mathrm{Eval}\circ X_a$ reads equal members at every argument, the
 unit block the constants' line, and the pairing integrates by parts,
 the two reads $\langle X_ax,\,y\rangle$ and $\langle x,\,X_ay\rangle$
@@ -3362,7 +3706,6 @@ segment's interior and its two ends.
 
 %=====================================================================
 
-
 %=====================================================================
 \section{The statement}
 
@@ -3397,7 +3740,13 @@ an eigenvector of $E$ with eigenvalue its content, the fold over
 $\partial p$'s links, four regardless of sharing
 (Construction~\ref{con:lattice}): that
 content is $4\,C_2(\theta)$; read against $C_2(\mathrm{adj})$
-(Proposition~\ref{prop:form}) it is $4$.
+(Proposition~\ref{prop:form}) it is $4$. On the coefficient
+carrier the module is the $\theta$-blocks' coefficient at the
+boundary's four links, each link's $\Delta_\ell$ scaling its block
+at $C_2(\theta)$ (a matrix coefficient of $\lambda$ differentiates
+to one, Construction~\ref{con:coeff}) with every further link's
+summand at the sum's unit, so the eigen-read is the four-link fold
+there as well, one count on either carrier.
 \end{proof}
 
 \begin{lemma}[The free end's level is the fundamental loop]
@@ -3466,7 +3815,7 @@ floor, and the
 contents are window-free data, so the read is one diagonal computation at
 every window.
 \end{proof}
-\pin{gate: freegerm\_gates.py, FG1--FG4}
+
 \end{lemma}
 
 \begin{definition}[The invariant]\label{def:K}
@@ -3652,6 +4001,9 @@ the permutation, the full-column line of
 Lemma~\ref{lem:dualread}(ii) the determinant representation, and
 Corollary~\ref{cor:weyldim} its dimension formula,
 Lemma~\ref{lem:pieri} the Pieri rule at one box,
+Lemma~\ref{lem:pathsquare}'s path count $f^\lambda$ the standard
+tableau count at the shape (the raised glyph the classical one,
+the unraised $f$ the fundamental label's),
 Corollary~\ref{cor:steinberg} the alternating fusion count
 (Brauer, Klimyk), and Lemma~\ref{lem:mixedinv} the Schur--Weyl
 invariant span. That reading
@@ -3705,7 +4057,10 @@ separately at the fibering (Lemma~\ref{lem:fiberdec}). What the continuum asks b
 Theorem~\ref{thm:restoration} reads the difference at every correlation as a
 multiplicity: the rings coincide at degree $2$, the multiplicity
 positive at degree $4$, so the anisotropy is
-suppressed by two degrees in the momentum.
+suppressed by two degrees in the momentum; the theorem's isotropic
+span reads classically as the $O(d)$-invariant ring, the first
+fundamental theorem for $O(d)$ the classical side's own
+identification.
 
 \item \emph{The coupling.} The pencil's parameter is the coupling. The
 free end's pencil is the electric term alone and the contact end's
@@ -3903,8 +4258,7 @@ count (Lemma~\ref{lem:corner}), so the formulation's continuum
 reading, restricted to this family, is a read of them: the corner
 cell's floor is positive, a located datum per member and direction
 count at the certificate's derived rates
-(Lemma~\ref{lem:corner}'s cell floor), the emitted records its
-pins;
+(Lemma~\ref{lem:corner}'s cell floor);
 clause~(ii)'s pair is the contact end's own value on either outcome, and
 item~4's multiplicities are the reading's symmetry half.
 
@@ -3944,7 +4298,7 @@ degree two with the direction data two powers of the spacing down;
 and the posed $\Delta>0$ is the corner floor's positivity read
 through the unit map, a located datum per member at
 the chain's direction count (the projection item's own reads)
-at the certificate's derived rates, the emitted records its pins
+at the certificate's derived rates
 (Lemma~\ref{lem:corner}'s cell floor),
 clause~(ii)'s pair the exact value at the
 contact end.
@@ -4007,12 +4361,11 @@ certificate's cell, the heights two-sided at the cell's positive
 located floor, the datum reads' closure the reconstruction's
 read (Theorem~\ref{thm:reconstruct}), and
 the gap half is the floor's clearance at the located spectral data
-(Theorem~\ref{thm:continuum}(ii)), the emitted records the
-floor's pins. The emitted
+(Theorem~\ref{thm:continuum}(ii)). The emitted
 records read at both coordinates: the assembled chains and the
 corner records read at the plaquette chain's direction count, the
 separated-sector instance at two directions and residue two
-(Lemma~\ref{lem:relfiber}'s gates), and the derivations run at
+(Lemma~\ref{lem:relfiber}), and the derivations run at
 every direction count with the stencil caps and the momentum sums
 polynomial in it (Theorem~\ref{thm:gappos}(iv)): the posed $d=3$
 is the derivations' instance at its stated coordinates, read as
@@ -4086,7 +4439,7 @@ read's symmetry closes the exchange.
 Write $f$ for the fundamental label, the one-box shape's, whose block
 is $V$ itself at the declared count $d_f$
 (Construction~\ref{con:places}), and $\bar f$ for its
-dual. Then
+dual, at the residue at or beyond one. Then
 \[
 f\otimes\bar f\;=\;\theta\oplus\mathbf 1 ,
 \qquad\text{hence}\qquad
@@ -4100,18 +4453,28 @@ multiplicity $r$, the
 product's unit-monomial count splitting as the unit line's one with
 the adjoint's, $r+1=d_f$.
 \begin{proof}
-$N^{\mathbf 1}_{f\bar f}=1$ (Proposition~\ref{prop:repring}), so the unit label occurs
-exactly once in $f\otimes\bar f$. Its complement is one block of count
-$r\,(r+2)$: the product's contents are the letter-pair moves, the
-dominant member the move at the places $(1,d_f)$,
-on the line $v_1\otimes v_{d_f}^\vee$, and the
-unit-monomial content,
-whose tops are the invariants, one line ($E_{kl}$-invariance of
-$\sum c_{ij}\,v_i\otimes v_j^\vee$ reads $\delta_{ak}c_{lb}=\delta_{bl}c_{ak}$,
-so $c$ is diagonal and constant), so the exhaustion of
-Lemma~\ref{lem:blockcount} is the unit line and one block at
-the $(1,d_f)$ move's content, the label $\theta$ (Construction~\ref{con:labels}), of
-count $r\,(r+2)$ at the join $r(r+2)+1=d_f^{\,2}$; at $r=1$ one has $\bar f\cong f$ and the block read holds. Hence
+$\bar f$ is the class of the complement $f^*$
+(Construction~\ref{con:labels}), the one-column shape at the
+complement gap, $r$ rows of one box (Lemma~\ref{lem:dualread}(ii)),
+and $\bar f\otimes f$
+exhausts by the one-box row (Lemma~\ref{lem:pieri}): the dominant
+one-box additions of $(1^{r})$ are $(2,1^{r-1})$, the label
+$\theta$ (Construction~\ref{con:labels}), and the full column
+$(1^{d_f})$, the unit label's, one block each with every further
+label vacant, and the factors exchange
+(Lemma~\ref{lem:blockcount}(iii)): $f\otimes\bar f=\theta\oplus
+\mathbf 1$. The product's contents are the factors' contents'
+sums (Construction~\ref{con:places}): the one-box block reads each
+letter once and $\bar f$'s block each withdrawn letter once
+(Lemma~\ref{lem:pieri}'s complement read), so the product reads
+the unit-monomial content at $d_f$, one per letter, and each
+letter-pair move once, a letter against a withdrawn one. The
+content refinement of Lemma~\ref{lem:blockcount}(ii) reads the
+product's occupancies as the two blocks' at their counts, and the
+full-column line is occupied at the unit-monomial content alone
+(Lemma~\ref{lem:dualread}(ii)): $\theta$'s occupancies are the
+product's with the line's withdrawn, each move once and the
+unit-monomial content at $d_f-1=r$. Hence
 $\chi_f\chi_{\bar f}=\chi_\theta+1$ (Proposition~\ref{prop:repring}), and
 $\chi_f(U)=\mathrm{tr}\,U$ reads the display.
 \end{proof}
@@ -4170,8 +4533,11 @@ by the squared Cauchy--Schwarz of the coefficient carrier's pairing
 contracting by the evaluation identity to the trace of the identity,
 $\mathrm{tr}(A^\dagger A)=\mathrm{tr}(U_4^\dagger U_4)=d_f$, times the
 pairing; at $y=\chi_f(U_{\partial p})\,x$ the display reads the
-comparison at the positive factor $\langle y,y\rangle$, which the
-order reads back (Definition~\ref{def:ground}):
+comparison at the factor $\langle y,y\rangle$: at the factor
+occupied the order reads back (Definition~\ref{def:ground}), and at
+the factor of equal members the conclusion is the pairing's own
+side read, the two self-pairings at or above the sum's unit
+(Construction~\ref{con:coeff}):
 $\langle\chi_f x,\chi_f x\rangle\le d_f^{\,2}\langle x,x\rangle$. Hence,
 with $\chi_\theta+1=|\chi_f|^2$ (Lemma~\ref{lem:adjchar}),
 \[
@@ -4191,8 +4557,17 @@ evaluation identity at the block to the identity's trace there,
 $d_\theta$ (Proposition~\ref{prop:row}'s dimension fold), and
 the order reads back as above: the multiplication's square is
 capped, $M_{\chi_\theta(U_{\partial p})}^{2}\preceq
-d_\theta^{\,2}$ as forms on every window, the term two-sided at
-$d_\theta$, the $A$-series' shifted route the display above.
+d_\theta^{\,2}$ as forms on every window; the term reads two-sided
+at $d_\theta$ by one further squared Cauchy--Schwarz at a window
+vector against its image (Construction~\ref{con:coeff}),
+$\langle x,\chi_\theta\,x\rangle^{2}$ at or below
+$\langle x,x\rangle\,\langle\chi_\theta x,\chi_\theta x\rangle$, at
+or below $d_\theta^{\,2}\,\langle x,x\rangle^{2}$ at the square's
+cap against the self-pairing's side (Construction~\ref{con:coeff}),
+and the squared comparison reads back at the trichotomy
+(Definition~\ref{def:ground}), the form and its memberwise swap
+each at or below $d_\theta\,\langle x,x\rangle$; the $A$-series'
+shifted route is the display above.
 \end{lemma}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4262,16 +4637,18 @@ Proposition~\ref{prop:algebra}),
 both moments are \emph{exact, $\beta$-free polynomial-pair atoms}:
 $[H,f]=[E,f]$, so
 \[
-\mu_1(f)=\omega\big(\Gamma(f)\big),\qquad
+\mu_1(f)=\omega\big(f^\dagger[E,f]\big),\qquad
 \mu_2(f)=\omega\big(Q_2(f)\big),\quad
 Q_2(f):=[E,f]^\dagger[E,f],
 \]
-and the requirement reads, per multiplication word, as one inequality
-between the state evaluations of two explicit character polynomials, with the
+the first display Theorem~\ref{thm:coeffone}'s exact line read at
+the state and the second the commutator's square, and the
+requirement reads, per multiplication word, as one inequality
+between two commutator reads at the state, with the
 coupling entering \emph{only} through the state:
 \[
 \boxed{\ \omega\big(Q_2(f)\big)\ \ge\ \gamma\,
-\omega\big(\Gamma(f)\big)\ }
+\omega\big(f^\dagger[E,f]\big)\ }
 \] \emph{(The multiplication family suffices.)} Both moments depend on
 $A$ only through $y=A\psi$, since $\psi$, $\tilde E$'s kernel point, gives
 $[H,A]\psi=\tilde E\,(A\psi)$ at every probe, and both sides are quadratic
@@ -4393,10 +4770,10 @@ $\psi$ and carrier elements $A$, $B$,
 \[
 \omega(\bar A\,B)\;=\;\langle A\psi,\,B\psi\rangle\ ,
 \]
-both sides the read $\mathrm{Eval}(\bar A\,B\,\psi^2)$, the left
-at the pairing identity with the involution
-invariance and the ground's own involution read, the right at
-the products' one value under commutativity
+both sides the read $\mathrm{Eval}(\bar A\,B\,\bar\psi\,\psi)$,
+the left at the pairing identity and the right at the
+involution's product read, the products' one value under
+commutativity joining the two
 (Definition~\ref{def:algebra}; Proposition~\ref{prop:algebra}):
 the pairing on the word sector is the state's, and the sector is
 $\mathrm{Sect}_\infty\,\psi$, its own image
@@ -4567,7 +4944,6 @@ count, blind to the grading.
 \end{proof}
 \end{theorem}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The integer constants}
 
@@ -4623,8 +4999,7 @@ $4\,C_2(\mathrm{adj})$, the
 carrier's own link count $E_0=4$ at the weight
 (Proposition~\ref{prop:E0}), here the weights reading
 $3\,d_f+1\,d_f$ with the $\Delta_V$ read the sum's unit
-($\Phi_{q_1}$ free of $V$)
-\pin{gate: hop\_consolidated.py, G7}. A Feshbach coefficient
+($\Phi_{q_1}$ free of $V$). A Feshbach coefficient
 (Construction~\ref{con:res}) on this
 graph reads
 \[
@@ -4695,7 +5070,7 @@ imposing polynomial-pair relations among the $\Phi_\pi$ within a factor
 list. All function-level linear algebra is
 therefore performed through the pairing's Gram (\S\ref{sec:wg}); the null
 space of that Gram is the presentation kernel, computed once per
-factor list \pin{gate: hop\_consolidated.py, the null space}. Determinant ($\varepsilon$-tensor)
+factor list. Determinant ($\varepsilon$-tensor)
 relations are invisible at the symbolic residue; this is precisely the statement that the calculus computes the
 generic theory, and it is why $r=1$ is its own window read while $r\ge2$ reads
 generically.
@@ -4749,8 +5124,8 @@ mixed pair reads the memberwise-swapped fold, its transposition term
 joining the display's left side, the contraction $\mathrm{C}_{rc}$ at
 the wiring through $\pi$, and the closed case $\pi(i)=j$ reads the
 loop value $d_f$ of the calculus (Construction~\ref{con:states}). Every
-case coefficient is the Fierz display's own read, the battery
-re-reading the identity instances: $\Delta_U\tr U=c_f\tr
+case coefficient is the Fierz display's own read; the identity
+instances: $\Delta_U\tr U=c_f\tr
 U$; the unit $\mathbf 1$ is $\Delta_U$'s kernel point on the
 presentation
 $\mathbf 1=[\,1:d_f\,]\,\tr(UU^{\dagger})$; $\Delta_U\chi_{\mathrm{adj}}
@@ -4761,7 +5136,7 @@ d_f\,\Delta_U\,s+2\,s\;=\;d_f\,(d_f+1)\,s
 d_f\,\Delta_U\,w+(d_f+2)\,w\;=\;d_f^{\,2}\,w
 \quad\text{at}\quad w=\big\langle(\tr U)^2\!:\!\tr U^2\big\rangle
 \end{gather*}
-\pin{gate: hop\_consolidated.py, G1--G4}, all cleared polynomial
+all cleared polynomial
 identities in the residue.
 \end{proof}
 
@@ -4776,7 +5151,8 @@ a daggered, all factors of both variables participating, and a factor
 pair joins the display at its dagger reads: a matched pair, two
 undaggered or two daggered, reads its transposition term on the
 display's right side, and a mixed pair on its left,
-Proposition~\ref{prop:lap}'s collection. Gates: $\Delta_L\tr U=c_f\tr U$,
+Proposition~\ref{prop:lap}'s collection. The identity
+instances: $\Delta_L\tr U=c_f\tr U$,
 $\Delta_L\chi_{\mathrm{adj}}(U)=d_f\,\chi_{\mathrm{adj}}(U)$, and the
 cross-variable graded reads,
 \begin{gather*}
@@ -4785,17 +5161,15 @@ d_f\,\Delta_L\,s+2\,s\;=\;d_f\,(d_f+1)\,s
 d_f\,\Delta_L\,w+(d_f+2)\,w\;=\;d_f^{\,2}\,w
 \quad\text{at}\quad w=\big\langle\tr U\,\tr V\!:\!\tr(UV)\big\rangle
 \end{gather*}
-\pin{gate: hop\_consolidated.py, G5--G6}; module energy
+with the module energy
 $E\chi_{\mathrm{adj}}=4d_f\,\chi_{\mathrm{adj}}$, the count
-$E_0=4$ at the weight
-\pin{gate: hop\_consolidated.py, G7}. The link translation
+$E_0=4$ at the weight. The link translation
 acts through the site conjugation at $g_s$,
 $U\mapsto U\,g_sXg_s^{\dagger}$ at the site unitary $g_s$, its
 dagger read $g_s^{\dagger}g_s=1$ the evaluation identity's
 (Construction~\ref{con:coeff}); on the fiber invariant under that
 site conjugation the conjugation is absorbed, the read the proposition
-takes, gate G6 pinning the absorbed form at the two-plaquette
-channel eigenvalues.
+takes.
 \end{proposition}
 
 \section{The pairing in the permutation presentation}\label{sec:wg}
@@ -4903,9 +5277,10 @@ monomial coefficient of the mixed power
 $V^{\otimes k}\otimes(V^{\otimes k})^\vee$, and $\mathrm{Eval}$
 reads its unit component (Construction~\ref{con:coeff}): the
 family splits orthogonally over the blocks
-(Lemma~\ref{lem:orthsplit}), so that component is
-$\sum_t\langle a,e_t\rangle\langle e_t,b\rangle$ over an orthonormal
-invariant list, the $(a,b)$ entry of the invariant projection. At
+(Lemma~\ref{lem:orthsplit}), so that component is the $(a,b)$
+entry of the invariant projection, a spanning invariant list's
+adjugate solve at its Gram, the membership residual's own read
+(Lemma~\ref{lem:lowerspan}). At
 $k\le d_f$ the invariants are the permutation span
 (Lemma~\ref{lem:mixedinv}), the projection is the span's Gram
 projection, and its entries are the displayed contraction sum at the
@@ -4967,15 +5342,14 @@ coefficient whose second member reaches the unit at the residue
 sits off the read, the occupancy its own conjunct, and a wiring
 at a crossing cycle reads at the factor list's own Gram,
 Remark~\ref{rem:kernel}'s computation. The
-battery re-reads the scheme's identity instances at the fusion
+scheme's identity instances read at the fusion
 reads of
 Proposition~\ref{prop:repring}:
 $\langle\tr U,\tr U\rangle=1$, $\langle\mathbf1,\mathbf1
 \rangle=1$, $\langle\chi_{\mathrm{adj}},\chi_{\mathrm{adj}}\rangle=1$,
 $\langle\mathbf1,\chi_{\mathrm{adj}}\rangle$ of equal members,
 $\mathrm{Eval}\big(|\tr U|^4\big)=2$, and
-$\langle(\tr U)^2,\tr U^2\rangle$ of equal members
-\pin{gate: hop\_consolidated.py, the Weingarten pairings}; and the
+$\langle(\tr U)^2,\tr U^2\rangle$ of equal members; and the
 closed form
 \[
 \Wg(\mathrm{id};S_4)=\big[\,\langle d_f^{\,4}+6:8d_f^{\,2}\rangle
@@ -4983,8 +5357,7 @@ closed form
 \qquad\text{at the gaps }k^2+g_k=d_f^{\,2},
 \]
 the gaps' existence the four-factor read's own validity ($k\le
-d_f$ at the independent span), is reproduced by the adjugate solve
-\pin{gate: hop\_consolidated.py, the Weingarten solve}. All are
+d_f$ at the independent span), is reproduced by the adjugate solve. All are
 cleared polynomial identities in the residue.
 \end{proof}
 
@@ -5023,10 +5396,8 @@ $(E\!:\!4d_f)$'s site datum has the module space as its kernel. The
 result is the Feshbach $Q$-resolvent applied to $y$.
 \end{enumerate}
 The solve's error is the sum's unit \emph{as a function}: the residual
-$w$'s self-pairing reads equal members as a polynomial pair
-\pin{gate: hop\_consolidated.py, the solve errors}.
+$w$'s self-pairing reads equal members as a polynomial pair.
 \end{construction}
-
 
 \section{The invariant problem: the $X$-sector block data}
 
@@ -5148,8 +5519,10 @@ the cofactor at $4\,d=g\,r\,(r+2)(r+3)$, the pair's second count
 equal, the dual's
 contents the balance partners
 (Lemma~\ref{lem:dualread}). At $\omega_2{+}\omega_{r-1}
-=(2,2,1^{\,e})$, at the gap $w$ at $w+2=r$, the collected
-reads multiply to the cofactor at $4\,d=(r+1)^2(r+2)\,w$.
+=(2,2,1^{\,e})$, at the gap $w$ at $w+2=r$, the six collected
+reads are $[\,r-1:2\,]$, $[\,(r+1)(r+2):r\,(r-1)\,]$, $w$,
+$[\,r\,(r+1):w\,(r-1)\,]$, $w$ and $[\,r-1:2\,]$: the
+cofactor at $4\,d=(r+1)^2(r+2)\,w$.
 
 \emph{The Casimirs} are Lemma~\ref{lem:casimir}'s bracket at the
 reduced shapes: $\hat c_2(2\theta)=[\,2r+4:r+1\,]$, the $m=2$ read of the
@@ -5225,7 +5598,8 @@ words read the rows: the \emph{height} $m$, the bottom word's
 coordinate total, is the row across the run between the reaches, a
 top row adds its tail sum, $\lambda_i=m+p_i$ at
 $p_i=\sum_{j\ge i}P_j$ for $i\le a$, and the rows below the run
-are the bottom word's prefix sums. So $q(\lambda)$ splits into the
+are the bottom word's prefix sums, $\sigma_t=\sum_{i\le t}Q_i$
+the row at the join $\ell+t=d_f$. So $q(\lambda)$ splits into the
 top rows' squares, the run term $u\,m^2$ at the \emph{run count}
 $u$, $a+b+u=r+1$, and the
 bottom rows' squares, each row a word read;
@@ -5248,10 +5622,17 @@ $g$, at the joins $i+h=a$ and $i+b+g_2=d_f$,
 \prod_{h<g\le g_2}\big[\,p_i+g\,:\,g\,\big]
 \;=\;\Big[\,\tbinom{p_i+g_2}{p_i}\,:\,\tbinom{p_i+h}{p_i}\,\Big]\ ,
 \]
-the top row's case with the bottom's its reflection,
-a pair of two integer binomials polynomial in the residue, and the finitely
-many word-against-word factors are residue-free: $d_\lambda$ is
-one polynomial pair in the residue per family.
+the top row's case at its tail sum $p_i$, with the bottom's its
+reflection, the run against $\sigma_t$ at the row gap $\tau_{t+1}$,
+$\tau_t=\sum_{i\ge t}Q_i$ the bottom tail sum at the join
+$\sigma_t+\tau_{t+1}=m$, a pair of two integer binomials
+polynomial in the residue each; a factor within one word is
+residue-free, its rows' and its positions' gaps the word's own
+data; and a cross factor, the top row $i$ against the bottom row
+$\sigma_t$, is the pair $[\,p_i+\tau_{t+1}+g\,:\,g\,]$ at the
+position gap's join $i+t+g=d_f$, one factor per key pair with
+both members linear in the residue: $d_\lambda$ is one polynomial
+pair in the residue per family.
 
 \emph{(ii) The fusion rows are word reads, one row at every
 residue.} Corollary~\ref{cor:steinberg} at the adjoint runs on
@@ -5262,7 +5643,9 @@ the unit-monomial content at $r$
 (Lemma~\ref{lem:adjchar}), so the diagonal reads the unit-monomial
 multiplicity against one odd transposition per unit gap
 $x_i-x_{i+1}=1$, and a gap reads its weight key,
-$x_i-x_{i+1}=c_i+1$ at the coordinate $c_i$: one at every key off
+$x_i-x_{i+1}=c_i+1$ at the coordinate $c_i$: the diagonal count is
+the occupied coordinates' count over the gap keys, at every shape
+of the width, and at a word pair one at every key off
 the words, beyond one at every member key. Hence, at every family
 off the vacuum,
 \[
@@ -5279,7 +5662,10 @@ an interior raise or lower collides with its neighbor, so the
 surviving moves sit within one key of the words, each target again
 a word pair at each reach grown by at most one, and each count an
 at-most-one read settled
-by the identity alignment of Lemma~\ref{lem:channels}: the row is a
+by the identity alignment of Lemma~\ref{lem:channels}: a kept
+move's count is one exactly, the identity's own tie at the moved
+display with every further permutation's tie at the raised display
+alone, at every shape of the width, and the row is a
 word read, one row at every cleared residue. A
 depth-$D$ fusion closure
 of the vacuum therefore has as members word pairs at reaches summing
@@ -5317,18 +5703,7 @@ many residues' data directly, the calculus's displays at the
 residue's label, one evaluation each; and
 Lemma~\ref{lem:channels}'s $r=1,2$
 degenerations are each their own window read.
-\pin{gate: certificate\_gates.py, RS1--RS6: the word-pair
-extraction; the lifts pinned by clearing each family's named second
-member and reading the first at degree-plus-one residues at or beyond the
-two-key reach clearance, every further residue an identity instance; the
-diagonal formula on the depth-three closure; the winding families' lifts
-against the derived closed forms, the $r=1,2$ reads among the
-instances; the charged divisor list's located roots against the
-families' clearances, the
-list a stored output with its checker; and the per-family kind records,
-dominance-ratio against located-root, each with its degree data or its
-root list, the second members checked of unequal members at every sample and the
-below-clearance residues each their own exact read}
+
 \end{lemma}
 
 \begin{lemma}[The series' window data are rank-stable]
@@ -5353,24 +5728,70 @@ factors are rank-free, and the word sum, short and long factors
 are single linear pairs in the rank, finitely many.
 
 \emph{(ii) The adjoint fusion rows are word reads, one row at
-every cleared rank.} The row's targets are the dominant
-$\lambda+\nu$ at the member's $\theta$ contents
-(Proposition~\ref{prop:row}), each a leading word at reach grown
-by at most one, a deeper tail key breaking the sorting. The
-counts close at the alignment: a contribution off the identity
-moves some coordinate of $\mu+\rho$, and beyond the word's reach
-the tail is the $\rho$ run, consecutive values at the displayed
-gaps, so a moved tail value collides with its run neighbor (the
-$\theta$ contents move a coordinate by at most the run's double
-gap, the $C$ long move's two-step read at its second
-neighbor), and a tail flip prices beyond the content reach, the
-flipped value's double against the moves' caps, the $D$ flip
-pairs at the last key's read with a further value's double: the
-surviving elements sit at the word's keys within one, the count
-one finite signed fold of the word's data, rank-free. So the
-row is one list at every rank clearing the family's reach, and a
-below-clearance rank reads its finitely many labels directly,
-the member displays' own evaluations.
+every cleared rank.} The row runs at the alignment,
+Corollary~\ref{cor:steinberg}'s member ties
+$\nu_w+w(\lambda+\rho)=c+\rho$ over the member's Weyl list at
+the $\theta$ contents (Proposition~\ref{prop:row}); the shifted
+key $\lambda+\rho$ reads the word's values against the $\rho$
+run, consecutive values at the displayed gaps, every entry
+distinct, the junction gap the last value's successor, and a
+word gap at the unit exactly at a repeated pair. An occupied
+tie's element sits below the shifted key at a natural simple
+fold, the image list's support read, the tie naming the fold as
+the two contents' gap; the kept square reads the fold against the
+key, twice the pairing at the fold's own square, with the key
+strictly dominant, every coroot pair at the member's successor;
+the tie collects the square against the target's own shifted key,
+twice the fold's pairing there the two contents' square gap, so
+the fold's length-weighted height sits at or below that gap at
+the shifted target's coroot pairs, each at or beyond one by the
+target's dominance, the contents' displayed lengths capping the
+gap at two; a simple's raise beyond one sits off the list
+outright, the raised content's square the raise's multiple of the
+letter's scaled length against the doubled $\rho$-dot at the
+raise once, the positive squares' cap at the doubled dots
+(Proposition~\ref{prop:row}) refusing every raise beyond one
+where the height cap alone admits the raise two at the length-one
+keys; and the square equation with the list's membership refuses
+every occupied solution of the finite residue beyond the
+one-letter reads: the surviving elements are the identity and the
+simple letters, each letter's fold the key's coroot multiple of
+its own root and the letters' images distinct at the strict
+dominance, one list member each. The letters read at the run: an
+adjacent exchange at its unit gap, and the last letter the
+\emph{end device}, $B$'s flip at the half value's double (the
+short root's read, one), $C$'s at the long root (two), and $D$'s
+last-pair exchange with both partners at the joined values (the
+sum root's read, one). Each count is therefore the \emph{letter
+fold}: the identity's read at the target's own content joined
+against one signed read per simple letter at the raised content,
+the raise the key's coroot multiple of the letter's root. The
+evaluations close the row. The diagonal's odd fold reads the
+letters at the key's unit coroot pairs, the vacant coroot
+support, so the diagonal is the occupied support, the word's
+distinct-value count (Proposition~\ref{prop:row}, the tower's
+display its instance). An off-diagonal target is dominant
+$\lambda+\nu$ at a content $\nu$, a leading word at reach grown
+by at most two with the sum pair at the first two tail keys the
+two-key growth; the coroot presentation clears the grown reach,
+every further key reading its displayed pair at coordinates past
+the reach, at $D$ off the last key alone, whose pair reads the two
+tail coordinates' sum (Construction~\ref{con:sertables}) and so
+reads the grown reach's own coordinate, occupied at the
+whole-growth target at the rank one beyond the boundary and vacant
+at every rank clearing the reach by four. Its count is an
+at-most-one read: one at the
+identity's tie alone, or the two ties evening at a named
+pairing, $B$'s single-box moves against the end flip, $C$'s
+tail-pair sum against the long at the exchange, and a repeated
+pair's moves against their own exchange; at $D$ the difference
+move at the last pair, its target's last coordinate one's
+balance partner, is dominant at the boundary rank alone, the
+reach clearance's least, its count one. Every fold entry is a
+word read, so the row is one list at every rank clearing the
+family's reach, $D$'s boundary rank joined by its last-pair
+member alone, and a below-clearance rank reads its finitely many
+labels directly, the member displays' own evaluations.
 
 \emph{(iii) The rank is a cell coordinate.} At fixed content
 cutoff, region and fiber, a series member's pencil entries are
@@ -5424,7 +5845,7 @@ shapes at most $k$ rows deep (the clearance; a $B_\ell$ stay
 reads at a full-depth shape, its boxes the step count's read,
 and the return closes beyond the walk's $2k$ steps, so the
 closed folds read the box moves alone), with
-$DU=UD+\mathrm{id}$ (Lemma~\ref{lem:mixedinv}'s displayed
+$DU=UD+\mathrm{id}$ (Lemma~\ref{lem:pathsquare}'s displayed
 argument at the member's shapes) and the commutator telescope
 $X^{m-1}U=U\,X^{m-1}+(m{-}1)\,X^{m-2}$ at $X:=U{+}D$, so the
 fold obeys $m_m=(m{-}1)\,m_{m-2}$ from $m_0=1$: the double
@@ -5477,7 +5898,7 @@ list at every residue with each channel entering at its count
 that lemma's own reads, so
 every quantity
 below is a sum over the channels at their counts.
-\pin{gate: fiber\_gates.py}
+
 \end{construction}
 
 \begin{theorem}[$X$-sector block data]\label{thm:xdata}
@@ -5498,9 +5919,6 @@ channel table's displayed closes (Lemma~\ref{lem:channels}); the second is
 the uniform drift of Theorem~\ref{thm:drift} at $R=\mathrm{adj}$, where
 $d_{\mathrm{adj}}=r\,(r+2)$ and $\hat c_2(\mathrm{adj})=1$ make
 $d_Rd_{\mathrm{adj}}(\hat c_2(R)+1)$ read $2\,r^2(r+2)^2$.
-\pin{gates: certificate\_gates.py, G1--G2, the block data's
-identity instances at $r=2,3,5$;
-closed\_form\_gates.py, C3, the fusion-sum spelling against its rival}.
 \end{theorem}
 
 \section{The charged anchor}
@@ -5553,18 +5971,14 @@ $\langle r+2\!:\!2i\rangle$ sum to equal members over the run
 $2\le i\le r$, so $\langle\theta,2\rho\rangle=2\,r$, the top row's
 read, the pairing's read the residue doubled. So
 $Q(m\theta)=2m^2+2mr$, and
-against $Q(\theta)=2d_f$ (Lemma~\ref{lem:casfloor}),
+against $Q(\theta)=2d_f$, the display's own $m=1$ read,
 $\hat c_2(m\theta)=[\,m\,(m+r):r+1\,]$; at $r=1$ the value is
 $[\,m^2+m:2\,]$.
 \end{proof}
-\pin{gate: weight\_gates.py, W7--W8: the tower's closed form per
-residue and box count, the $\mathrm{SU}(2)$ instances $1,3,6$ and the
-adjoint read $1$ among them}
+
 \end{proposition}
 
-
 \section{The $X$-tower matrix and the walk}
-
 
 \begin{proposition}[The $X$-tower matrix]\label{prop:row}
 On the orthonormal character index the multiplication by $\chi_\theta$
@@ -5616,8 +6030,7 @@ defect, neighbor entries one, the diagonal $c_1$ at every $m\ge1$ and
 the vacuum's the Kronecker delta at two labels: integer data, $c_1$ the
 one parameter, the shape's reads the fusion interface's own, the
 Cartan strictness and the unit read at the self-dual $\theta$
-(Construction~\ref{con:fusion})
-\pin{gate: walk\_residue\_gates.py, W11}.
+(Construction~\ref{con:fusion}).
 At a member's table the diagonal is the alignment's form read
 (Corollary~\ref{cor:steinberg}'s member ties at $a=\theta$,
 $b=c=m\theta$), the member's $\theta$ content list the root list
@@ -5732,7 +6145,7 @@ channel's value
 is $c_1$ at $c_1z_*=1$, the mass point's own witness. The two integers
 agree exactly at base two, the member-key count's two-key read
 (Proposition~\ref{prop:row}), and separate at base one, where the
-chord has two terms \pin{gate: walk\_residue\_gates.py, W11}.
+chord has two terms.
 \end{theorem}
 
 \begin{theorem}[The channel divisor]\label{thm:channeldiv}
@@ -5850,8 +6263,6 @@ member $z$,
 each factor reading the base at degree one; and the \emph{order
 count}, the pole order added to the factor list's count.
 \end{definition}
-
-
 
 \section{The cell certificate}
 
@@ -5981,11 +6392,7 @@ the cell list: the root coordinate's
 rays read their cells directly, the corner cell's rays at its own
 constancy (Lemma~\ref{lem:corner}), every further pair ray is a located
 coupling between them whose margin absorbs the sandwich's width.
-\pin{gate: gapcells\_gates.py, GC1--GC5: the emitted cells over the
-$\tau$ base with the dual comparison at the join $\sigma\tau^2=1$, identity
-instances at $r=2$}
-\pin{gate: chainassembly\_gates.py, CA1--CA5: the assembled chain's
-coverage closure at $r=2$, end to end}
+
 \end{theorem}
 
 \begin{lemma}[The rank divisors]
@@ -6043,10 +6450,7 @@ Corollary~\ref{cor:weyldim}; Corollary~\ref{cor:steinberg}), one
 evaluation each, a tied pair reading its merged level with the
 counts at the multiplicity (Lemma~\ref{lem:cellcount}'s boundary
 clause).
-\pin{gate: chainassembly\_gates.py, CA5: the emitted chains at
-ranks two and three
-re-read through their checkers; certificate\_gates.py, RS1--RS6:
-the divisor list with its stored records}
+
 \end{lemma}
 
 \begin{lemma}[The series' rank divisors]
@@ -6090,7 +6494,12 @@ shifted list reads the unit gap at the moved adjacent pair pairs
 under that pair's transposition with the long move at its second
 key, one odd letter: $\theta+e_2+e_3$ and $\omega_1+e_2+e_3$ read
 the unit fold, the word $(1,1,1)$ entering at the second fusion
-through the difference move at $(2,1)$. A displayed family's ties
+through the difference move at $(2,1)$, and the second fusion's
+two further ties close under the moved pair's transposition
+against the long move: $(2,1)+e_3+e_4$
+reads the unit fold with its target off the sector's families
+outright, and $(3)+e_2+e_3$ reads it with the word $(3,1,1)$
+entering through the two-row source at $(2,1)+e_1+e_3$. A displayed family's ties
 off the identity read off the content list, the two collision
 conditions failing at its shifted list (the moved pair's gap
 beyond one at the word's keys and the last key's read off the
@@ -6213,7 +6622,6 @@ last key's own move at the second) and $(1,1,1)$ at $2$ at
 $B_3$, with the last key's flip moves at $D_4$.
 \end{lemma}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The count certificates}
 
@@ -6298,7 +6706,42 @@ S=\Big[\begin{smallmatrix}P&B\\B^{\mathsf T}&Q\end{smallmatrix}\Big],
 B^{\mathsf T}C_P+S_P=Q\ \ \text{at the solve}\ \ P\,C_P=B ,
 \]
 $S_P$ the pivot's \emph{deflation}, its witness $C_P$ the
-adjugate column against the determinant;
+adjugate column against the determinant, a pivot at stated places
+entering at the leading position by the congruence at the places'
+permutation matrix, its transpose the witness
+(Construction~\ref{con:places}'s transpose identity at the matrix
+carrier) with the count the congruence read's own, and the determinant
+splits with the inertia at the cleared scale: each trailing row
+enters at the pivot's determinant against the leading rows'
+combination at the solve's witness column, one scale per trailing
+row, the minor's scale and combination reads
+(Definition~\ref{def:elim}) reading the scale's power at the
+deflation's order against the reduced list's determinant, the
+coupling's exchange withdrawn at the solve so the reduced list is
+block triangular with its trailing block the deflation at one
+further scale per row, and a block-triangular list's determinant is
+its diagonal blocks' product, every assignment crossing into the
+vacant slab reading an entry at the sum's unit:
+$\det P\cdot\det\big((\det P)^2S_P\big)=(\det P)^{2o}\det S$
+at $o$ the deflation's order, $\det S=\det P\cdot\det S_P$ its
+read at the off-unit scale's injectivity;
+two square lists' \emph{product}, its entries the first's rows
+against the second's columns at the coordinate fold, reads its
+determinant at the factors' own, one joined list's two reads: at
+the join of the identity's memberwise swap beside the second list
+over the first list beside a vacant block, the trailing slab
+clears against the leading rows at the first list's own
+coefficients, one combination per row with the further summands
+repeated-row reads of equal members
+(Definition~\ref{def:elim}), onto the vacant slab beside the two
+lists' product, and the cleared join's determinant is the
+block-triangular read at the swapped identity against the
+product's; the slabs' exchange, one transposition per row pair
+(Definition~\ref{def:elim}), reads the joined list block
+triangular at the factors instead, and the exchange count joins the swapped
+identity's diagonal to an even family
+(Construction~\ref{con:places}): the signs withdraw and the
+product's determinant is the determinants' product;
 inertia adds at a block diagonal outright,
 \[
 \operatorname{rev}(P\oplus Q)\;=\;
@@ -6460,9 +6903,7 @@ $u^{\mathsf T}Bu>u^{\mathsf T}Au$, the reversal's read
 off the elimination. At $(H\!:\!aG)$ that is the certificate's witness whenever
 $\mathrm{count}(a)\ge1$.
 \end{enumerate}
-\pin{gate: pencil\_count\_gates.py, P3, P5}.
 \end{theorem}
-
 
 \begin{lemma}[The count is a cell function]\label{lem:cellcount}
 Let $(H(x),G(x))$ be a symmetric pencil whose entries are polynomial in
@@ -6472,22 +6913,36 @@ $\big(H(x)\!:\!aG(x)\big)$'s site-datum determinant. Then
 $\mathrm{count}(x):=\operatorname{rev}\big(H(x)\!:\!aG(x)\big)$ is
 constant on every segment between stage points of $X$ avoiding
 $D$'s root locus (the stages of Lemma~\ref{lem:stage}), the
-avoidance's certificate the segment count of $D$'s squarefree part
-at the segment's endpoints, the sum's unit there
-(Lemma~\ref{lem:hermitesign}; the part
-Lemma~\ref{lem:stagesplit}'s squarefree read), hence on each
+avoidance's certificate the proof's pivot cover: finitely many
+subintervals chained at shared endpoints, each with a designated
+principal minor of order at most two whose determinant keeps its
+side along the subinterval at the priced side read
+(Lemma~\ref{lem:stage}) at a bound containing the subinterval, at
+order two its leading entry so as well where the determinant sits
+on its upper side, and
+beneath it the cleared deflation's own cover, the determinant's
+root-freeness the cover's read; the locus's points are located
+over $D$'s squarefree part, the division descent's iterated
+divisions with the B\'ezout witnesses the certificate data
+(Theorem~\ref{thm:windowsep}'s descent at
+Lemma~\ref{lem:stagesplit}'s squarefree read), a bracket's root
+count the segment count at the cleared variable
+(Lemma~\ref{lem:hermitesign} at Lemma~\ref{lem:deckfactor}'s
+clearing); hence the count is one integer on each
 piecewise-linearly connected cell of $X$ off that locus; and at a
 stage point of the locus adjacent to a cell whose pair is positive
 semidefinite, every pencil
-root is at least $a$.
+root is at least $a$, the point's read entering as its own split
+(Theorem~\ref{thm:certconstruct}'s certificate entry).
 \begin{proof}
 Write $S(t)$ for the pair's site datum at $H=aG+S$ along the
 segment, entries polynomial in $t$, its
 determinant with every root off the segment; the claim is by induction
-on the order. At order one the count is the side's, and a side
-exchange at two pairs would designate a root of the entry on the segment
-(Theorem~\ref{thm:certconstruct}(1)'s refinement at the side reads),
-against the roots off it. At order
+on the order. At order one the count is the side's, and the entry
+keeps its side along each piece of the cover at the priced side
+read (Lemma~\ref{lem:stage}), the endpoint value clearing the
+piece's width against the derivative's coefficient fold at a bound
+containing the piece. At order
 $N$: inertia adds at a nonsingular principal pivot of order at most $2$,
 and $S(t)$, its determinant of unequal members, has one at every $t$
 (Lemma~\ref{lem:inertia}). The principal minors of orders $1$ and $2$
@@ -6509,7 +6964,7 @@ the pivot's adjugate
 minors), the positive square fixing every
 count, with $\det P\cdot\det\big((\det P)^2S_P\big)
 =(\det P)^{2o}\,\det S$ at $o$ the deflation's order
-($k+o=N$), its
+($k+o=N$; Lemma~\ref{lem:inertia}'s split), its
 roots off the
 segment, so the
 induction reads $S_P$'s count constant, and
@@ -6525,7 +6980,6 @@ on it over an initial piece its coefficient folds name, putting a
 lower-side direction inside the cell: against the cell's count.
 \end{proof}
 \end{lemma}
-
 
 \begin{lemma}[The located stage]\label{lem:stage}
 \emph{The arithmetic.} A \emph{located root} of a polynomial over a
@@ -6560,15 +7014,18 @@ fold of $u$ over the bracket (Theorem~\ref{thm:windowsep}'s
 magnitudes), the
 witness identity read cross-multiplied floors the margin of
 $p(\varepsilon)$ at $\mathrm{margin}\cdot U_1\ge1$; and the
-\emph{priced side read}: at bracket endpoints inside the radius
-segment, two bracket points' values of $p$ differ by at most the
-bracket's width against the derivative's coefficient fold at the
-radius (Theorem~\ref{thm:windowsep}'s magnitudes, the binomial
-identity per occupied key), so an endpoint value of $p$ clearing
-that price keeps its side at every bracket point, the root's among
-them: the endpoint sides with the cleared comparison are the side
-read's certificate, $p$'s image width over the bracket priced by
-the fold. The construction closes on itself: $K(\varepsilon)$'s elements each
+\emph{priced side read}: at bracket endpoints inside a stated
+bound's segment, the bound entering at a second datum beyond the
+sum's unit, the radius segment among them at the leading
+coefficient's margin, two bracket
+points' values of $p$ differ by at most the bracket's width against
+the derivative's coefficient fold at the bound
+(Theorem~\ref{thm:windowsep}'s magnitudes, the binomial identity
+per occupied key), so an endpoint value of $p$ clearing that price
+keeps its side at every bracket point, the root's among them: the
+endpoint side with the cleared comparison is the side read's
+certificate, $p$'s image width over the bracket priced by the
+fold. The construction closes on itself: $K(\varepsilon)$'s elements each
 have their bracket (the isolating data, their image widths priced
 above) and its division reads, coefficient folds, endpoint
 evaluations and count reads
@@ -6578,10 +7035,8 @@ iterates; a finite root list enters as a \emph{tower}, one
 extension per root, each extension's polynomial over the stage the
 earlier extensions built, the extension order certificate data: a
 stored tower names its
-order, and every read runs through the arithmetic above. 
-\pin{gate: pencil\_count\_gates.py, T2: two-extension tower
-arithmetic, the equal-members read by reduction, the side read by bracket
-refinement, the unit witness by the B\'ezout read over the stage below}
+order, and every read runs through the arithmetic above.
+
 \end{lemma}
 
 \begin{lemma}[The pencil's split]\label{lem:split}
@@ -6633,6 +7088,25 @@ $(H\!:\!aG)$'s elimination datum is the displayed datum's
 balance partner, so
 $\operatorname{rev}(H\!:\!aG)=\operatorname{rev}\,
 \mathrm{diag}\big(\langle\varepsilon_j\!:\!a\rangle\,g_j\big)=\#\{j:\varepsilon_j<a\}$.
+The completed congruence returns the factorization read: the
+congruence identity's determinant collects the product read at the
+exchanged lists (Lemma~\ref{lem:inertia};
+Definition~\ref{def:elim}) to $\det S_\chi^{\,2}\,\chi(x)$ against
+the diagonal blocks' product
+$\prod_j\langle x\!:\!\varepsilon_j\rangle\,g_j$; the identity's
+linear coefficient, $S_\chi^{\mathsf T}GS_\chi$ at the diagonal of
+the scales, collects its own determinants to
+$\det S_\chi^{\,2}\,\det G$ against $\prod_jg_j$, and at a located
+root's pair data the cleared factor enters at the scale, the
+diagonal's entry $g_j\,(d_jx-n_j)$ at the root
+$[\,n_j\!:\!d_j\,]$ with the linear coefficients collecting to
+$\prod_jd_j\,g_j$ and the clearing $\prod_jd_j$ riding onto the
+factorization's first member, one value at every representative
+(Definition~\ref{def:ground}); and the shared
+factor $\det S_\chi^{\,2}$, off equal members at the unit
+congruence, withdraws at the products' one value key by key
+(Definition~\ref{def:poly}): the displayed factorization is the
+congruence certificate's own read.
 \end{proof}
 \end{lemma}
 
@@ -6775,7 +7249,12 @@ modulus $\mu$: a ball member's certificate is $\lambda_\circ$, its
 transfer factor priced through the floor by the identity
 $Y\,D_T=D\,\hat T$ at $\hat T=T+D_T$, the image
 deviation is (i)'s sandwich capped by (ii)'s certificates, and the
-center's displacement tops up to $\rho$. The graph read joins the
+center's displacement tops up to $\rho$. A ball member prices its
+form at the floor: the deviation's cap withdraws against the
+center's floor at the gram's read, the member's form at or beyond
+$y_0$'s multiple of the gram's at every vector, so every split of
+a ball member reads the upper side throughout
+(Lemma~\ref{lem:inertia}). The graph read joins the
 validity data: where it reads unequal members, the bracket comparison
 $D_*$ two-sided at $\rho$ at $Y_*=\hat Y+D_*$ is one count at the tower datum, and where
 it holds $Y_*$ is the ball's one solution of the pivot identities: two ball
@@ -6865,7 +7344,8 @@ point of margin $y=1+g$ at or beyond $B$, with $k$ the top key,
 the geometric telescope $g\sum_{i<k}y^{\,i}+1=y^{\,k}$ reads the
 tail's cap $\mathcal H\sum_{i<k}y^{\,i}$ below $c\,y^{\,k}$ at the
 radius' read $c\,g\ge\mathcal H$, so the leading term dominates
-and the evaluation reads unequal members.
+and the evaluation reads unequal members on the leading term's own
+side, the tail joined at a magnitude below the term's.
 
 \emph{The separation.} At a root $\alpha$ the unit witness
 $v(\alpha)\,S'(\alpha)=1$ reads at the magnitudes: $V$ the
@@ -7190,7 +7670,17 @@ at the crossing endpoints: the
 bracket pencil of Lemma~\ref{lem:hermitesign} at those endpoints
 reads every root of $P$ off the closed crossing segment,
 reversal-count reads throughout, with the endpoint reads $P$'s own,
-off equal members. With the band read clear, over $P$'s
+off equal members. At an integer display off the monic carrier the
+count runs at the \emph{cleared variable}: the display scales to
+the monic at the top's magnitude, each coefficient against the
+magnitude's power at its key's gap below the top's predecessor
+with the members swapped at a top on its lower side, and the
+scaled display reads its roots at the display's own rescaled by
+the magnitude, the display's evaluation and the cleared one
+composing by formula at the homogeneity principle
+(Definition~\ref{def:ground}): the segment count reads at the
+crossing endpoints rescaled to the doubled magnitude. With the
+band read clear, over $P$'s
 split at the stored tower (Lemma~\ref{lem:stagesplit}),
 \[
 p\;=\;c\ p_{\mathrm{int}}\;p_{\mathrm{ext}}\,,
@@ -7209,10 +7699,8 @@ $p$: the degrees split evenly, $m$ each.
 The definite factors are the point: they enter
 at their pair data, and every side is Lemma~\ref{lem:hermitesign}'s
 count.
-\pin{gate: fold\_gates.py, FD4: the deck factorization and the
-solvent identity, instances at scalar pairs and quadratic towers}
-\end{lemma}
 
+\end{lemma}
 
 \begin{theorem}[The pencil is a symmetric pair matrix on every window]
 \label{thm:pairpencil}
@@ -7229,8 +7717,6 @@ is symmetric there at every end-weight pair, its entries pair data at
 pair weights.
 \end{theorem}
 
-
-
 \section{The chain's invariant form}
 
 \begin{theorem}[The fiber family is a bounded chord pencil]
@@ -7242,14 +7728,18 @@ translation, its deck relation $T^2+1=t\,T$
 (Definition~\ref{def:deck}), the
 momentum-fiber pencil is a \emph{chord} pencil of
 \emph{bounded degree per grade}: the fiber enters each graded block
-through finitely many translation powers $T^{\,j}$, the power bounded
+through finitely many translation powers per direction,
+$T_i^{\,j}$ at the direction's own translation, the power bounded
 by the grade's spatial support, each transpose-paired read a
-deck-family polynomial at the chord
-(Definition~\ref{def:deck}). The chain object is therefore one algebraic
-family over the $\big(t;[\alpha\!:\!\beta]\big)$ base at the chord,
+deck-family polynomial at the direction's chord
+(Definition~\ref{def:deck}): the momentum variables are the
+chords $t_1,\dots,t_d$, one per direction, the momentum point $K$
+their list (Lemma~\ref{lem:fiberdec}). The chain object is therefore one algebraic
+family over the $\big(K;[\alpha\!:\!\beta]\big)$ base at the
+chords,
 with integral chord data; its divisor records the band, the gap, and every ``assembled'' coefficient as reads at the ends of $\mathcal C$.
 Its \emph{fiber symbol} is the family's characteristic Laurent polynomial
-$\mathcal S(z;k,r)$, the pair $(k\!:\!A(z))$'s site-datum determinant at the
+$\mathcal S(K;k,r)$, the pair $(k\!:\!A(K))$'s site-datum determinant at the
 level $k$ scalar, of finite Newton polytope by the
 localities above, with polynomial-pair coefficients in the residue;
 $A$ is the momentum fiber of a
@@ -7257,7 +7747,6 @@ symmetric pair pencil (Theorem~\ref{thm:pairpencil}), so a
 separation's block is the reversed separation's transpose, the
 symbol's own deck symmetry.
 \end{theorem}
-
 
 \begin{lemma}[The window floor fibers over momentum]\label{lem:fiberdec}
 On a torus window of odd side $L$, the fibering's family the
@@ -7339,6 +7828,21 @@ for the gram at the commuting. A \emph{fiber} is a chord block. The
 count splits with the splitting, the
 $\mathrm{LDL}^{\mathsf T}$ of a block diagonal being its blocks' at
 the concatenated lists
+(Lemma~\ref{lem:inertia}). The directions' translations commute,
+the action's one composition read
+(Construction~\ref{con:lattice}), and a chord operator is the
+join of its direction's translation with the complementary
+step's, the transpose's own witness, so the chord operators
+commute pairwise and each maps every further direction's chord
+blocks into themselves; the splitting iterates direction by
+direction within the prior steps' blocks, each step this lemma's
+own at its direction's operator,
+and the window splits orthogonally into the \emph{joint chord
+blocks}: the \emph{momentum point} $K:=(t_1,\dots,t_d)$ is the
+chord list, one coordinate per direction, each the chord $2$ or a
+located root of $P_L$ along its own direction, the
+\emph{$K$-fiber} the joint block at it, and the counts split with
+the joint splitting as with each step's
 (Lemma~\ref{lem:inertia}). The fiber counts reach the directed
 windows of Definition~\ref{def:carrier} through the decimated data,
 window-free off the unit fiber with the window entering through the
@@ -7376,8 +7880,8 @@ deck relation at the located \emph{chord}, $T^2+1=t\,T$; the
 transpose-paired reads collect at the deck families,
 $T^{\,b}+(T^{\mathsf T})^{\,b}=p_b(t)$ on the block, the plus read's
 instance at the root pair (Definition~\ref{def:deck}), so every such
-entry is a chord polynomial of bounded degree per grade
-(Theorem~\ref{thm:trigpencil}). The block is \emph{doubled}: its
+entry is a chord polynomial, its degree bounded by the grade's
+spatial support (Lemma~\ref{lem:stableentries}). The block is \emph{doubled}: its
 datum $A$ at $T=T^{\mathsf T}+A$ squares against the band read,
 $A^2+4=S^2$ at the products $T\,T^{\mathsf T}=1$ and
 $T^{\mathsf T}T=1$ collected, hence
@@ -7580,8 +8084,7 @@ operator: the sampled momenta are the chord $2$, the unit fiber,
 with $P_L$'s $m$ located
 roots, one doubled block each, every root a designated bracket
 datum at the
-separation of Theorem~\ref{thm:windowsep}
-\pin{gate: gap\_atoms\_gates.py, F10}.
+separation of Theorem~\ref{thm:windowsep}.
 \end{lemma}
 
 \begin{lemma}[The fiber index is its grading, and the pencil is
@@ -7689,7 +8192,7 @@ the stated clearance: the
 member rows at simple pairs at or beyond it are the $\theta$
 list's own, Proposition~\ref{prop:row}'s content data.
 \end{proof}
-\pin{gate: grading\_gates.py, GR1--GR2}
+
 \end{lemma}
 
 \begin{lemma}[The separated sector fibers over relative momentum]
@@ -7746,9 +8249,20 @@ H^{(\varrho)}
 \otimes G^{\otimes b}\, ,
 \]
 each summand positive semidefinite against the positive-definite
-tensor Gram; the multiset symmetry and the window compress it, a compression
+tensor Gram: a product of two tensors reads factorwise, the product
+index's fold collecting to the factors' folds' product at the ground
+identities (Definition~\ref{def:ground}), so the gram's pivot
+congruence at its positive pivots, the split at order-one blocks a
+positive-definite datum reads off its leading minors of unequal
+members (Lemma~\ref{lem:inertia}'s minor sequence), and the site
+datum's split compose
+to the summand's own congruence, its image the split's blocks at the
+pivots' positive scales, and the image's form at every vector is the
+fold of the blocks' reads at the scales, on its upper side or of
+equal members (Lemma~\ref{lem:inertia}); the multiset symmetry and
+the window compress it, a compression
 keeping the split (Lemma~\ref{lem:inertia}). So on a bracket
-with top below $\varrho\,\ell$ the extended sector's pair is
+with top at or below $\varrho\,\ell$ the extended sector's pair is
 positive semidefinite at every relative fiber, the collar is a head border, and the border rows
 between component counts are the walk-shaped border chain:
 the separated sector contributes its collar to the head and its jumps
@@ -7759,16 +8273,7 @@ relative coordinates fibered and the comparison
 Lemma~\ref{lem:cellcount}'s cell read, per relative fiber the
 single-component level's own, so the direction count enters
 through the fiber list alone (Lemma~\ref{lem:fiberdec}).
-\pin{gate: relfibre\_gates.py, RF1--RF6: the $d=2$ instance at
-$r=2$, the window sized from the locality band with the collar a
-counted nonempty datum; the beyond-band factorization against the
-tensor-sum extension, the difference supported on the collar and the
-far border rows one repeated datum; the relative fibering exact, the
-sampled momenta the chord $2$ with $P_L$'s bracketed roots and the fiber counts summing
-to the global read; the tensor-sum clearance at $2\ell$ per relative
-fiber, its validity the single-component level's own; the spectator
-caps propagating on the $d=2$ slab split; and the flat step's two
-instances, neutral and vector-charged, at the summed shift}
+
 \end{lemma}
 
 \begin{theorem}[The decimation: the counts live on the decimated head]
@@ -7804,11 +8309,35 @@ diagonal is intensive, the far plaquettes reading equal members on it
 (Lemma~\ref{lem:stableentries}): the content sum against the local
 magnetic stencil, the stencil rows one capped list
 (Lemma~\ref{lem:grading}; Lemmas~\ref{lem:fpcap},~\ref{lem:loopcap}).
-Beyond the head bound the tail block at the bracket has its adjugate
-solve, the determinant of unequal members with
-located brackets, wherever its dominance comparison holds, the pivot
-recursion telescoping on the diagonal's dominance margin, its pair
-positive semidefinite there (Lemma~\ref{lem:inertia}): at the $\alpha{=}1$ representative the
+Beyond the head bound the tail block at the bracket reads its
+\emph{dominance comparison}: per row, the off-row entries' magnitude
+fold sits at or below the diagonal's entry, $f_i\le a_{ii}$ at $f_i$
+the fold (Theorem~\ref{thm:windowsep}'s magnitude carrier), the
+comparison's gaps $d_i$ at $f_i+d_i=a_{ii}$ its witnesses.  Wherever
+it holds the peel telescopes on the comparison: at the symmetric
+datum (Theorem~\ref{thm:pairpencil}) a vector's form peels at the
+leading row, the leading square with the doubled cross fold against
+the trailing block's form, and each cross term joins its magnitude's
+squares at one square's multiple,
+\[
+2\,a\,xy+|a|\,(x^2+y^2)\;=\;|a|\,(x+y)^2\ \ \text{at $a$ its own
+magnitude, and}\ \ |a|\,\langle x\!:\!y\rangle^2\ \text{at the swap,}
+\]
+at or beyond the sum's unit by its shape, so the leading row's
+magnitudes withdraw from the trailing rows' folds into their gaps
+and the descent closes on the order: the form sits at or beyond the
+gaps' fold of squares $\sum_id_i\,x_i^2$ at every vector.  Every
+split of the block then reads the upper side throughout, its lower
+list at an occupied count naming a vector pricing the form strictly
+below the sum's unit against the fold (Lemma~\ref{lem:inertia}); at
+occupied gaps the kernel block is vacant, a kernel column's image,
+off the unit family at the congruence witness's clearing, reading
+its form at equal members against the strict floor
+(Lemma~\ref{lem:inertia}), so the determinant sits off equal members
+with located brackets and the adjugate its solve
+(Definition~\ref{def:elim}); and the count telescopes over the pivot
+recursion at the slab fold, the tail's summands each the sum's unit
+(Lemma~\ref{lem:greenprod}(ii)): at the $\alpha{=}1$ representative the
 comparison reads the content's growth against the stencil caps, the
 caps' fold linear in the stencil's term count, at most the
 per-vertex plaquette count's fold over the support's vertices
@@ -7867,11 +8396,8 @@ cell and persisting at a boundary beside a positive-semidefinite
 cell (Lemma~\ref{lem:cellcount}); the emitted record, the located root
 list with its per-cell counts and the binding read of which comparison
 binds at each boundary, is the decimation's displayed object, every entry one
-stage read of the crossing divisor (Theorem~\ref{thm:divisorid}), the
-batteries re-reading its identity instances.
-\pin{gate: fold\_gates.py, FD1--FD3; borderchain\_gates.py,
-GB1--GB5: the border chain's emitted brackets and the spectator
-certificate, identity instances at $r=2$}
+stage read of the crossing divisor (Theorem~\ref{thm:divisorid}).
+
 \end{theorem}
 
 \begin{lemma}[The charged cells]\label{lem:chargedcell}
@@ -7956,7 +8482,12 @@ fold's own derivation.
 $E$ is diagonal; $M$ fuses one link by $\theta$, whose degree is $d_f$
 (the reduced shape $(2,1^{\,u})$ at $u+2=d_f$), fixing every link's
 $d_f$-ality; a
-translation permutes the index: the fiber pencil is block diagonal over
+translation permutes the index at one charge, the relabeled
+configuration's flux through a cut its own through the cut it came
+from, the cut family's grades read along the translation, one
+term per link along the permutation with the directions kept
+(Construction~\ref{con:lattice}), the conservation reading the base
+cut's class back: the fiber pencil is block diagonal over
 the charges and its counts split (Lemma~\ref{lem:inertia}), $M$ of
 the unit charge class and the vacuum line sitting there.
 
@@ -8045,9 +8576,16 @@ exclusions are extensive, read per cut, each cut's price
 direction-free, the direction count entering at the cut families'
 list alone, and every price is a read of the member's class floor
 table, (ii)'s floors with their subadditivity folds; the
-\emph{member price} $\varpi_0$ is the least of the three price
+\emph{member price} $\varpi_0$ is the least of the two cut price
 reads below, one trichotomy fold over the member's displayed
-class data, the $d_f$-ality the class read at the matrix units. A
+class data, the $d_f$-ality the class read at the matrix units,
+each extra crossing's floor clearing the merge read, the
+unit-class read at $2d_f^{\,2}$ against $2\,(r+2)$ over the
+square's growth $d_f^{\,2}=(r+1)^2$ and the netted pair's at
+$2\,r\,(r+2)$ against $2\,(r+2)$ at the occupied factor; the
+off-cut read below prices the deviation links at their own count,
+the dressing bound's read at the excess floors rather than the
+cut count's. A
 transverse cut with two or more nonunit classes among its
 crossing multiset's members prices an excess at or above the
 \emph{merge gap}, (ii)'s subadditivity fold at the crossing pair
@@ -8138,6 +8676,8 @@ sampled momenta and the separation range alone. The magnetic datum
 at a far cell is its \emph{dressing fold}, the tower decimation's
 per-cell Schur read at the cell's stencil and the bracket's level,
 one adjugate solve per pivot (Theorem~\ref{thm:decimation}(ii)),
+each atom read at the entry's square against its gap,
+$[\,e^{2}:g\,]$, the pivot's cofactor at the coupling's two reads,
 entering the dressed diagonal at the squared magnetic weight,
 $[\,p^4:q^2\,]$ on the ray at $[\,q^2:p^2\,]$ and $\tau^4$ at the
 $\alpha{=}1$ representative: its atoms are the stencil's
@@ -8209,8 +8749,7 @@ own, and the \emph{charged cell}'s entry that divisor's first positive
 root, an output (Lemma~\ref{lem:split}). The head's level list,
 its multiplicities and its block structure are the reads of that head
 pencil, pinned per cell.
-\pin{gate: chargedcell\_gates.py, GC1--GC7;
-chargedfold\_gates.py}
+
 \end{lemma}
 
 \begin{theorem}[The cut is a flat step of the decimated counting
@@ -8229,8 +8768,9 @@ pairs: the jumps are count data on the decimated head, cell functions
 of $(t,\tau,r)$ with located boundaries (Lemma~\ref{lem:cellcount};
 Theorem~\ref{thm:decimation}), the momenta read cell by cell at one
 bracket pair each (Lemma~\ref{lem:fiberdec}), the charged sectors' counts the reads
-of Lemma~\ref{lem:chargedcell}, and clause (ii)'s value the
-$X$-sector's read (Remark~\ref{rem:certtarget}).
+of Lemma~\ref{lem:chargedcell}, and the contact pair's value the
+$X$-sector's read (Definition~\ref{def:contactpair};
+Remark~\ref{rem:certtarget}).
 
 \emph{The comparisons reach the cut.} They read
 $\mathrm{spec}(H)\subset\{\varepsilon_0\}\cup
@@ -8243,7 +8783,7 @@ list of anchored jump brackets, one pair of counts each: the cells'
 reads are the gap chain's data, each level naming its representative and
 transported across the seam at the factors of
 Lemma~\ref{lem:dualtrunc}'s identity.
-\pin{gate: flatstep\_gates.py, FS1--FS3}
+
 \end{theorem}
 
 \begin{theorem}[The ground reads are bracketed]\label{thm:groundreads}
@@ -8482,12 +9022,7 @@ disconjugacy certificate's cell the floor holds at every tail scale:
 the clearance is located there, the site counts stabilize beyond a
 scale, finitely many scale counts changing at all, and a datum's
 scale reads close within the stated widths, their scale sum one cofactor read at the upper family's rate.
-\pin{gate: corner\_gates.py, EU1--EU7, CR6--CR7, CR9: the bracket
-algebra at the gap's own gate with the beyond-gate read its
-regression, the lower family's exact reach, the ordering difference
-as the remainder's read, the scale cap's exhibits with the ground
-drift priced, and the transport and clustering displays' identity
-instances}
+
 \end{theorem}
 
 \begin{theorem}[Euclidean restoration is a count]\label{thm:restoration}
@@ -8510,15 +9045,28 @@ onto chord blocks (Lemma~\ref{lem:fiberdec}): the direction
 permutation permutes the block index $(t_1,\dots,t_d)$, and an
 orientation flip reads $T$ at $T^{\mathsf T}$, the chord operator
 $S=T+T^{\mathsf T}$ fixed with it. So the $K$-fiber's pencil and the
-$gK$-fiber's are congruent by an orthogonal map and their
-characteristic polynomials
-agree, coefficient by coefficient:
+$gK$-fiber's are congruent at the relabeling, the pencil's rows
+and columns read along one permutation of the window index, an
+orthogonal map;
+the site-datum determinant reads one value across it, the
+assignment fold reindexed along the relabeling: each assignment
+pairs with its relabeled own at the entries' product kept, the
+row and column exchanges composing at an even join
+(Definition~\ref{def:elim}'s exchanged reads at
+Construction~\ref{con:places}' descent), and their
+characteristic polynomials agree, coefficient by coefficient:
 \[
 \mathcal S(gK;k,r)\;=\;\mathcal S(K;k,r)
 \]
 with $\mathcal S$ the fiber symbol of Theorem~\ref{thm:trigpencil}. Every
-coefficient of $\mathcal S$ in $k$ is therefore a $B_d$-invariant polynomial in $K$,
-one coefficient identity per congruence. The derivation runs unchanged at every number of
+coefficient of $\mathcal S$ in $k$ is therefore one value at every
+relabeling of the chord list: a flip fixes each chord at the
+operator's own read, so $B_d$ reads the chord list through its
+direction permutations alone, and the coefficients are the
+permutation-invariant chord polynomials, one coefficient identity
+per congruence; their momentum reading is even in each coordinate,
+the deck relation's two roots exchanging at a flip with the chord
+fixed (Definition~\ref{def:deck}). The derivation runs unchanged at every number of
 arguments. A lattice symmetry permutes the label index and maps the
 fibers isometrically, an orthogonal map commuting with $H$, so at a
 window whose multiplicity reads $1$ (Theorem~\ref{thm:SO}) it reads the
@@ -8526,11 +9074,26 @@ ground line by a graded read the reads of $\omega$ are blind to:
 $\omega$ is
 $B_d$-invariant, and hence every read
 $\omega(A_1\cdots A_m)$ is $B_d$-invariant, jointly in the positions and the
-orientations $B_d$ permutes, and so is its momentum transform in
-$K^{(1)},\dots,K^{(m)}$.
+orientations $B_d$ permutes. The \emph{momentum transform} of the
+read family is its translate family read at monomials: per
+argument the translate key list $a^{(r)}$, one key per direction
+below the side, the read
+$\omega\big(T^{a^{(1)}}A_1\cdots T^{a^{(m)}}A_m\big)$ at the
+composite shifts, and the transform the occupancy family of those
+reads at the per-argument exponent lists, the translate keys'
+own matched lists (Definition~\ref{def:ground}), the momenta
+$K^{(1)},\dots,K^{(m)}$ the exponent coordinates, one list per
+argument; a lattice symmetry moves a translate read to
+the $g$-moved keys' own, the direction permutation permuting each
+argument's keys and a flip reading a key to its balance partner
+at the wrap (Lemma~\ref{lem:fiberdec}'s $T^L=1$), so the
+transform is $B_d$-invariant with the reads, the moves the
+coefficient identities.
 
 \emph{What the continuum asks is $O(d)$, and the difference is a multiplicity.}
-Two moves settle every degree: a reflection, one coordinate $K_i$
+The momenta enter as formal coordinates at the transform's own
+carrier, one matched list per argument, and two moves settle every
+degree: a reflection, one coordinate $K_i$
 read to its balance partner
 across all $m$ momenta at once, sends every monomial at an odd count
 of that coordinate to its balance partner, the coefficient's
@@ -8545,16 +9108,32 @@ already. The leading term is isotropic because the invariant ring at that degree
 is the inner products' span; the inclusion
 $B_d\text{-inv}\subseteq O(d)\text{-inv}$ at that degree is the whole of what
 the coincidence asks, and the two moves above exhibit it.
-\item \emph{Degree $4$: breaking enters.} The reflection leaves the coordinate
-indices paired, so alongside products of those quadratics the space includes the
-diagonal quartics $\sum_iK^{(r)}_iK^{(s)}_iK^{(t)}_iK^{(u)}_i$. At $m=1$ it is
-spanned by $p_2^2$ and $p_4=\sum_iK_i^4$, one of them $O(d)$-invariant:
-multiplicity $1$ at the join $1+1=2$, at every $d\ge2$. At every $m$ the quartic
-$\sum_i\big(K^{(1)}_i\big)^4$ is present and breaks $O(d)$ at $d\ge2$, so the
-multiplicity is positive there.
-\item \emph{The rate is the gap between those degrees, uniformly in $m$.} The
-leading term sits at degree $2$ and the first $O(d)$-breaking invariant at
-degree $4$, so the breaking is suppressed by two degrees in the
+\item \emph{Degree $4$: breaking enters.} The \emph{isotropic
+span} at a degree is the pairwise inner products' polynomial span,
+item 1's ring at its products, and the breaking
+\emph{multiplicity} is the independent invariants' count beyond
+it, the classical $O(d)$-invariant ring the isotropic span's
+reading in the dictionary alone: the derivations
+read the two spans and their counts. The reflection leaves the
+coordinate indices paired, so the space includes diagonal
+quartics alongside the inner products' products, and the count
+reads one of them, $p_4=\sum_i\big(K^{(1)}_i\big)^4$, every
+coordinate total four. At $m=1$ every invariant is a cleared
+combination of $p_2^2$ and $p_4$ over the balance pairs
+(Definition~\ref{def:ground}), the clearing datum two at the
+paired monomial's splitting count, $K_i^2K_j^2$ read at its two
+factor orders, and the two are independent, a combination at the
+sum's unit reading each coefficient at the quartic and the paired
+monomial in turn: multiplicity $1$ at the join $1+1=2$, at every
+$d\ge2$, with $p_4$ off the isotropic span at the paired
+coefficient. At every $m$ the quartic $p_4$ is an invariant off
+the isotropic span at $d\ge2$, its two reads at the first
+argument's own monomials, so the multiplicity is positive there.
+\item \emph{The rate is the gap between those degrees, uniformly in $m$.} An
+odd degree's every invariant reads equal members at every monomial, the
+coordinate totals joining to the degree with one member odd; so the
+leading term sits at degree $2$ and the first breaking invariant at
+degree $4$, the breaking suppressed by two degrees in the
 momentum, the gap at $2+2=4$, at
 every such family and at every $d$. What varies with $m$ is the multiplicity at
 degree $4$; the rate stays that gap.
@@ -8563,7 +9142,7 @@ Degree-$2$ isotropy therefore holds at every order and at every member, since th
 statement is about which forms exist rather than about which are small,
 and the ring at degree $2$ is the inner products' span. Restoration is a multiplicity read, and the degree-two rings'
 coincidence is exactly what the continuum asks.
-\pin{gate: euclidean\_gates.py}
+
 \end{theorem}
 
 \begin{theorem}[The continuum reads]\label{thm:continuum}
@@ -8616,7 +9195,6 @@ positive located floor, one output
 bracket (Lemma~\ref{lem:corner}'s cell floor).
 \end{theorem}
 
-
 \section{The network constituents}
 
 \begin{theorem}[Network reduction and the two-vertex coupling law]
@@ -8655,40 +9233,177 @@ w\;=\;\Big([\,1:r^2(r+2)^2\,],\ [\,c_1:r(r+2)\,],\
 over the channel list, the leading-term reads in the residue: the
 first two weights' second members exceed in degree, and the four
 channel weights read $[\,1:4\,]$ at the top
-(Theorem~\ref{thm:windowsep}'s leading terms)
-\pin{gate: fiber\_gates.py}.
+(Theorem~\ref{thm:windowsep}'s leading terms).
 (iii) \emph{The weights are the data.} The slot-two self-energy assembled from
 these weights and the network energies is
-$\sum_kw_k\,[\,q_k:2q_k+p_k\,]$ at $\hat c_2(k)=[\,p_k:q_k\,]$,
-the resolvent factor a constructed pair
-\pin{gate: fiber\_gates.py}. The recoupling
-constituent's content is the finite tetrahedral list: the within-pair $k$-middle matrix
-$\langle(\mathrm{adj},k',\mathrm{adj})|\chi_X(h_1)|
-(\mathrm{adj},k,\mathrm{adj})\rangle$, computable per entry by the
-$E_{\mathrm{link}}$ interpolant, the projection onto one Casimir value a
-polynomial in $E_{\mathrm{link}}$ (Construction~\ref{con:units}'s
-Lagrange read).
+$\sum_kw_k\,[\,q_k:2q_k+p_k\,]$ at $\hat c_2(k)=[\,p_k:q_k\,]$, the
+factor's gap the module pair's network eigenvalue against the
+module count, $3+\hat c_2(k)+3$ against $E_0=4$ at
+$\hat c_2(\mathrm{adj})=1$ ((i)'s eigenvalue;
+Proposition~\ref{prop:E0}), the resolvent factor a constructed
+pair. The recoupling constituent's content is the finite
+tetrahedral list: the within-pair middle matrix
+$\langle(\mathrm{adj},k',\mathrm{adj})|\chi_X(U_1)|
+(\mathrm{adj},k,\mathrm{adj})\rangle$ at the middle index the
+channel table's occupied Casimir values, the dual pair's shared
+value one joint block at the summed weight, computable per entry
+by the $E_{\mathrm{link}}$ interpolant, the projection onto one
+Casimir value a polynomial in $E_{\mathrm{link}}$
+(Construction~\ref{con:units}'s Lagrange read) entered cleared at
+the node differences' product, one value across the clearing
+scale (Definition~\ref{def:ground}'s homogeneity principle), at
+the channel distances' occupied gaps (Theorem~\ref{thm:xdata}).
 \end{theorem}
-
 
 \section{The drift and the divisor}
 
 \begin{theorem}[The uniform drift]\label{thm:drift}
-$C_2(R\otimes\mathrm{adj})=C_2(R)+C_2(\mathrm{adj})+2\sum_aT^a_R
-\otimes T^a_{\mathrm{adj}}$ and $\mathrm{tr}\,T^a$ of equal members
-read the cross term to equal members under the channel trace, so
-$\sum_km_kd_k\hat c_2(k)=d_Rd_{\mathrm{adj}}(\hat c_2(R)+1)$:
-\emph{the dimension-weighted fusion walk's Casimir drift is exactly
-$+1$, uniformly in $R$} ($\sum_kw_k\hat c_2(k)=2$, the channel
-table's second closure identity, Lemma~\ref{lem:channels}). With strictness (the unit label is the one label of dimension
-one: a nonunit reduced shape
-has a consecutive gap $h\ge1$ at $\lambda_{i+1}+h=\lambda_i$, whose string at
-the top has length $h+1$ (Lemma~\ref{lem:strings}), so $d_\lambda\ge2$),
-the closure datum is a
-\emph{constant} rather than a decaying
-one.
-\end{theorem}
+At every label $R$ the adjoint row reads
+$\sum_km_kd_k\hat c_2(k)=d_Rd_{\mathrm{adj}}(\hat c_2(R)+1)$, the
+fold over the row's channels at the multiplicities against the
+dimensions: \emph{the dimension-weighted fusion walk's Casimir
+drift is exactly $+1$, uniformly in $R$}
+($\sum_kw_k\hat c_2(k)=2$, the channel table's second closure
+identity, Lemma~\ref{lem:channels}). With strictness (the unit
+label is the one label of dimension one: a nonunit reduced shape
+reads an occupied head row at its positive degree against the
+withdrawn full column's vacant last row, the rows weakly
+descending (Construction~\ref{con:places}), so a consecutive row
+gap $h\ge1$ sits at some $\lambda_{i+1}+h=\lambda_i$, its gap
+factor $h+1$ against the unit display's one with every further
+factor at or beyond its left partner
+(Corollary~\ref{cor:weyldim}'s display), so $d_\lambda\ge2$), the
+closure datum is a \emph{constant} rather than a decaying one.
+\begin{proof}
+\emph{The member tier.} Trace the Casimir over
+$W_R\otimes W_\theta$ at the trace read
+(Lemma~\ref{lem:lowerspan}), one value at every orthogonal
+spanning list. At an exhaustion the blocks' lists join to one
+orthogonal spanning list, the blocks pairwise perpendicular
+(Lemma~\ref{lem:blockcount}(i),(ii)), and the fold splits per
+block at the cleared products, each block's diagonal pairings the
+scalar's multiples of the self-pairings
+(Lemma~\ref{lem:blockirr}(ii); Lemma~\ref{lem:casimir}): the
+trace reads $\sum_km_kd_k\,C_2(k)$, one summand per channel at
+its count. The tensor's operators read by the Leibniz rule and
+the Casimir's fold collects at the factors
+(Construction~\ref{con:gentable}),
+\[
+C_\otimes\;=\;C_R\otimes1+1\otimes C_\theta
++2\sum_\alpha[\,\langle\alpha,\alpha\rangle:2\,]\,
+\big(E_\alpha\otimes F_\alpha+F_\alpha\otimes E_\alpha\big)
++Z\ ,
+\]
+each root term's two orders splitting at the four arrangements
+with the one-sided pairs collecting to the factors' own folds,
+and $Z$ the diagonal fold's cross read, the form's additivity at
+the joint contents,
+$q(\mu+\nu)=q(\mu)+q(\nu)+2\,\langle\mu,\nu\rangle$ per content
+pair. The trace factorizes over the tensor list, two tensors
+pairing at the factors' pairings' product
+(Lemma~\ref{lem:blockcount}(iii)), so each term's trace is the
+factor traces' product: the two one-sided terms read
+$C_2(R)\,d_R\,d_\theta$ and $d_R\,C_2(\theta)\,d_\theta$; a root
+term's factor trace is a fold of cross-content pairings, each of
+equal members at the content sum's orthogonality
+(Construction~\ref{con:gentable}), so the root terms' traces read
+equal members; and $Z$'s trace is the double fold
+$2\sum_{\mu,\nu}\mathrm{mult}_R(\mu)\,\mathrm{mult}_\theta(\nu)\,
+\langle\mu,\nu\rangle$, the form's bilinearity collecting it to
+$2\,\langle F_R,F_\theta\rangle$ at the content folds
+$F_X:=\sum_\mu\mathrm{mult}_X(\mu)\,\mu$. The $\theta$-block's
+contents are simple folds, the root list's members with the unit
+content (Proposition~\ref{prop:row}'s content list) at each
+root's fold over the simple list
+(Construction~\ref{con:gentable}), so
+the pairing collects at the halved products to $F_R$'s coroot
+pairs, $2\,\langle F_R,\alpha_i\rangle
+=F_R(\alpha_i^\vee)\,\langle\alpha_i,\alpha_i\rangle$, and each
+reads equal members: the multiplicities are one value at every
+reflection (Lemma~\ref{lem:strings}), a content joined to its
+$s_i$-image reads the coroot pair with its balance partner, and a
+fixed content's pair is its own partner. So
+\[
+\sum_km_kd_k\,C_2(k)\;=\;d_R\,d_\theta\,
+\big(C_2(R)+C_2(\theta)\big)\ ,
+\]
+and the display clears at $C_2(\theta)=2\,(r+1)$
+(Proposition~\ref{prop:anchor}), one value across the clearing
+(Definition~\ref{def:ground}'s homogeneity principle):
+$\sum_km_kd_k\hat c_2(k)=d_Rd_\theta(\hat c_2(R)+1)$.
 
+\emph{The label calculus at the residue.} At the matrix units the
+constant family holds every consecutive coroot pair at equal
+members, so the content folds read the constant family and the
+derivation runs at the alternant display's recursion
+(Theorem~\ref{thm:weylchar}), the display at every content list
+of the block's width with a key at the count's unit reading the
+moved folds' one value. Sum the display over the recursion
+family's keys: the moved folds reindex at the move's own round
+trip, per place pair $a<b$ and per occupied target $\kappa$ the
+sources at the shifts $1\le l\le\kappa_a$, one source per
+shift at the reverse move, the second letter's weight reading the
+target's own $\kappa_b+l$ and the shifted first letter's
+$\kappa_a+l$; the two reindexed folds share the shift fold
+$\sum_{l\le\kappa_a}l$, a summand on both members fixing the
+value (Definition~\ref{def:ground}), and the summed display reads
+\[
+q(\lambda+u)\,d_\lambda
++2\sum_\kappa\mathrm{mult}(\kappa)\sum_{a<b}\kappa_a\kappa_b
+\;=\;\sum_\kappa\mathrm{mult}(\kappa)\,q(\kappa+u)
++2\sum_\kappa\mathrm{mult}(\kappa)\sum_{a<b}\kappa_a^{\,2}\ .
+\]
+The swap symmetry (Lemma~\ref{lem:strings}'s read at the matrix
+units) reads each place fold place-free, the first moment
+$M_1$, the square fold $M_2$ and the product fold $M_{11}$ one
+value per place and place pair with
+$d_f\,M_1=k_\lambda\,d_\lambda$
+at the contents' degree read, so the summed display collects to
+$q(\lambda+u)\,d_\lambda+2\,p\,M_{11}
+=d_f\,M_2+2\,U_1\,M_1+q(u)\,d_\lambda+2\,p\,M_2$ at $p$ the
+place pairs' count and $U_1$ the unit display's total. The fused
+carrier's family splits twice, over the channels at the
+exhaustion's content refinement (Lemma~\ref{lem:blockcount}(ii))
+and over the factors at the contents' addition
+(Construction~\ref{con:places}), so each moment fold reads both
+ways, the channels' counted fold against the factors' split at
+the further factor's count,
+\[
+M_1(F)=d_\theta\,M_1(R)+d_R\,M_1(\theta)\ ,\qquad
+M_2(F)=d_\theta\,M_2(R)+2\,M_1(R)\,M_1(\theta)+d_R\,M_2(\theta)\ ,
+\]
+with $M_{11}(F)$ at $M_2$'s shape, the cross read
+$2\,M_1(R)\,M_1(\theta)$ shared: the collected display at the
+fused carrier, read against the two factors' own collected
+displays at the further factors' counts, withdraws the quadratic
+folds (a summand on both members fixing the value) and leaves
+\[
+\sum_cN^c\,q(c+u)\,d_c+q(u)\,d_Rd_\theta
+\;=\;\big(q(R+u)+q(\theta+u)\big)\,d_Rd_\theta
++2\,d_f\,M_1(R)\,M_1(\theta)\ ,
+\]
+whose $d_f$-multiple reads the moments at the degree folds,
+$d_f\,M_1(R)=k_R\,d_R$ and $d_f\,M_1(\theta)=d_f\,d_\theta$ at
+$\theta$'s degree $d_f$. The square identity
+(Definition~\ref{def:c2hat}) with the row read
+$\langle\lambda,2\rho\rangle+(d_f+1)\,k_\lambda
+=2\sum_i\lambda_iu_i$ (Theorem~\ref{thm:weylchar}'s collection at
+Lemma~\ref{lem:casimir}'s fold) reads
+$d_f\,q(\mu+u)=d_fQ(\mu)+k_\mu^{\,2}+d_f(d_f+1)\,k_\mu
++d_f\,q(u)$ at every shape; every channel shares the degree
+$k_c=k_R+d_f$, the contents adding over the factors at $\theta$'s
+degree, so the dimension identity $\sum_cN^cd_c=d_Rd_\theta$
+(Lemma~\ref{lem:blockcount}(iii)) withdraws the shared reads and
+the display closes at $Q(\theta)=2d_f$
+(Lemma~\ref{lem:casimir}):
+\[
+\sum_cN^c\,d_c\,d_fQ(c)\;=\;d_Rd_\theta\,
+\big(d_fQ(R)+2d_f^{\,2}\big)\ ,
+\]
+the display's $\hat c_2$-cleared read at
+$[\,d_fQ:2d_f^{\,2}\,]$ (Definition~\ref{def:c2hat}).
+\end{proof}
+\end{theorem}
 
 \begin{theorem}[The divisor identification, and the crossing divisor]
 \label{thm:divisorid}
@@ -8696,7 +9411,8 @@ one.
 the exact fiber symbol (Theorem~\ref{thm:trigpencil}): on a window a
 level is a pencil root exactly where the determinant reads equal
 members, the
-diagonal read of Lemma~\ref{lem:split}, and the Feshbach
+factorization read of Lemma~\ref{lem:split} at the gram's
+determinant off the sum's unit, and the Feshbach
 determinant reads equal members with it, one Schur factor of the whole
 at a complement of unequal-membered determinant
 (Lemma~\ref{lem:inertia}), at every coupling
@@ -8752,7 +9468,6 @@ constant over the attached cell (Lemma~\ref{lem:cellcount}), so the
 least root sits in the bracket at multiplicity $1$ there.
 \end{theorem}
 
-
 \begin{theorem}[The scheme bridge is a count]\label{thm:bridge}
 \[
 \big[\,d_{\mathrm{adj}}\,C_2(\mathrm{adj})\;:\;d_f\,C_2(f)\,\big]
@@ -8774,7 +9489,6 @@ $r(r+2)\cdot2d_f^{\,2}=2\,d_f\cdot d_f\cdot r\,(r+2)$; the $r=2$
 evaluation is $6$.
 \end{proof}
 \end{theorem}
-
 
 \begin{definition}[The ruler excess]\label{def:excess}
 At the residue $r$ the \emph{ruler excess} is the polynomial
@@ -8839,9 +9553,8 @@ coordinate outright. The exponent is an integer at $r=1$ alone; the pairing's ow
 pole residue $r$ and the weight-$1$ tower sum $[\,r+1:r\,]H_r$ agree with it
 there and separate from $r=2$, so the residue-one instance leaves them
 together, and the construction rather than the instance is what selects.
-\pin{gate: walk\_residue\_gates.py}
-\end{theorem}
 
+\end{theorem}
 
 \begin{definition}[The contact pair]\label{def:contactpair}
 At the contact end the decimated head's counts are the walk's
@@ -8918,7 +9631,6 @@ $c_1$, a fusion multiplicity moving with the residue
 them alone.
 \end{theorem}
 
-
 \begin{theorem}[The scaling form, and the constant as a pair of reads]
 \label{thm:unitschain}
 The pencil is degree-one homogeneous in the end weights,
@@ -8951,7 +9663,7 @@ the base by $[\alpha\!:\!\beta]\mapsto[\,\alpha\!:\!\lam\beta\,]$, whose fixed p
 \emph{exactly} the two ends, so $\mathcal K$ is invariant under it: the
 bridge locates a coupling in the fundamental theory
 (Remark~\ref{rem:certtarget}).
-\pin{gate: walk\_residue\_gates.py, W10}
+
 \end{theorem}
 
 \begin{theorem}[The decomposition]\label{thm:decomp}
@@ -8994,7 +9706,6 @@ two families' invariants read one pair, and each corner output's
 comparison is one bracket at the two families' certificates,
 finite and decidable.
 \end{theorem}
-
 
 \begin{theorem}[Truncation control]\label{thm:truncation}
 At the coupling $[\alpha\!:\!\beta]$ the truncation at Casimir cutoff
@@ -9063,7 +9774,7 @@ atoms, and the window cuts approach $\mathcal K$ with a modulus rather than
 along a subsequence. The gap chain reads the modulus at the $\alpha{=}1$ representative, and the
 display is homogeneous on the ray (Proposition~\ref{prop:segment}), every
 representative's read one rescaling of it.
-\pin{gate: gap\_atoms\_gates.py, F9}
+
 \end{theorem}
 
 \begin{lemma}[The dual truncation]\label{lem:dualtrunc}
@@ -9138,9 +9849,7 @@ at every level, the reversal count blind to the positive factors
 factor with their levels. A stored level therefore names its
 representative, and a seam comparison is two reads of the one integer
 pencil at matched levels, the factors the display's.
-\pin{gate: contactdom\_gates.py, DM1--DM5;
-contactfold\_gates.py, CF1: the two-cutoff agreement, the count
-beyond every cutoff one integer at every probe level}
+
 \end{lemma}
 
 \begin{lemma}[The near-contact cell]\label{lem:contactcell}
@@ -9184,8 +9893,21 @@ floors the whole excluded block: an excluded label of the closure
 is nonunit at the unit class (the $X$-sector's own,
 Lemma~\ref{lem:chargedcell}(i)), so it moves, one move within
 the adjoint stencil descending the Casimir
-(Lemma~\ref{lem:casfloor}'s moves), and a minimal excluded label
-sits in the head, a frontier target's source; $d_\theta$ is the
+(Lemma~\ref{lem:casfloor}'s moves), the moved pair an occupied
+row read, the fundamental against its complement collecting the
+target's count through the associativity at the two one-box
+rows, the full-column summand reading the sum's unit at the
+moved target and one summand occupied, the withdrawn box's row
+read against the added one's (Lemma~\ref{lem:pieri};
+Lemma~\ref{lem:adjchar}; Construction~\ref{con:labels};
+Lemma~\ref{lem:blockcount}(iii); Lemma~\ref{lem:dualread}(ii)),
+and the moves chain at the strict descent
+(Lemma~\ref{lem:casfloor}), each step's source a member of its
+target's adjoint row, the chain's first head target inside the
+degree window at the cleared read's own bound
+(Proposition~\ref{prop:windowfinite}): every excluded label reads
+a frontier target at or below its own Casimir, $c_+$ at or below
+the whole block; $d_\theta$ is the
 magnetic form cap, kept by every principal block
 (Lemma~\ref{lem:fpcap}); and the \emph{border cap} $\varkappa_B$
 is the product of the coupling's largest row and column sums,
@@ -9221,12 +9943,7 @@ the contact end, so the contact end sits inside the contact cell and its counts 
 reads; at a level on the divisor, Lemma~\ref{lem:cellcount}'s boundary
 clause extends the positive-semidefinite cells into the closed
 endpoint.
-\pin{gate: contactcell\_gates.py, CC1--CC4: the dominance
-divisor per $(\sigma,\lambda,n)$, the head counts at pair anchors
-across the $\sigma$-cells, and the contact end's reads against the walk's
-exact values}
-\pin{gate: contactfold\_gates.py, CF1--CF5: the decimated cells
-below the dominance window, both sectors}
+
 \end{lemma}
 
 \begin{lemma}[The corner pencil]\label{lem:corner}
@@ -9245,8 +9962,10 @@ M+\eta\,\eta'_+\,G\,\big)
 \eta'=\langle\,\eta'_+\!:\!\eta'_-\,\rangle ,
 \]
 the height's members cross-added onto the pair's two sides
-(Lemma~\ref{lem:inertia}; Theorem~\ref{thm:certconstruct}), every
-entry polynomial in the scale and the height's members. The
+(Lemma~\ref{lem:inertia}; Theorem~\ref{thm:certconstruct}), the
+display cleared by the scale's square at the seam identity's
+integer pencil (Lemma~\ref{lem:dualtrunc}), every entry's weight a
+natural product of the scale's members and the height's. The
 corner's \emph{shifted scaling}: at the magnetic form
 cap $d_\theta$ (Lemma~\ref{lem:fpcap}) the shifted pencil
 $Q(\sigma):=\sigma E+S_\theta$, at $S_\theta$ the pair
@@ -9291,8 +10010,10 @@ electric weights read it at the grounds' own data
 positive-rate cap, the \emph{upper family at the contact end}: on the
 $X$-sector chain's head at the scale key, at a natural $N$ and a
 pair $\xi$ at the gap $w$ at $\xi+w=1$, the two comparisons at
-$N$ ($\xi^{2N}$ at or below $w$, the grade reach $c_r\,(4N^2+1)$
-inside the scale key's cutoff) certificate data. The \emph{grade
+$N$ (the weighted power
+$2\,d_\theta A^2(2N{+}1)^{2p}\,\xi^{4N}$ at or below $w$ at the
+count reads $A$, $p$, and the grade reach $c_r\,(4N^2+1)$ inside
+the scale key's cutoff) certificate data. The \emph{grade
 key} is the highest root's coroot pair,
 $G(\lambda):=\lambda(\theta^\vee)$, the interface's root coroot
 pair at $\theta$ (Construction~\ref{con:gentable}), one natural
@@ -9327,9 +10048,13 @@ the coefficient sums, each at or below $G$: at a fixed member
 the reads are the adjugate rows' displayed folds
 (Construction~\ref{con:sertables}), and at a series member the
 rows' magnitudes sit at or below the key (the sorted
-coordinates: the key reads the top pair's sum at $B_\ell$ and
-$D_\ell$ and the top coordinate at $C_\ell$, the last magnitude
-below its neighbor at $D_\ell$), the coordinate
+coordinates: the key telescopes over the coroot presentation's
+consecutive gaps to the top pair's sum with the last coordinate
+withdrawn at $B_\ell$, the top coordinate at $C_\ell$, and the
+top pair's sum with the next-to-last coordinate withdrawn at
+$D_\ell$, each withdrawn coordinate at or below the kept pair's
+second member at the sorted order, the last magnitude below its
+neighbor at $D_\ell$), the coordinate
 squares and the displayed key reads folding to the cap: $\hat
 c_2(\lambda)$ sits below $c_r\,(G^2+1)$ at one cleared member
 pair $c_r$. \emph{The counts}: the labels at one
@@ -9360,46 +10085,59 @@ members (Construction~\ref{con:labels}), one value per label.
 The move cap prices the magnetic read termwise at the dimension
 eigen-identity
 $\sum_\mu N^\mu_{\theta\nu}\,d_\mu=d_\theta\,d_\nu$
-(Lemma~\ref{lem:fpcap}), every summand a natural at pair weights:
+(Lemma~\ref{lem:fpcap}), every summand a natural at pair weights
+with the key's weight falling as the key rises:
 \[
 \langle\phi_\xi,\,M\,\phi_\xi\rangle+B
 \;\ge\;\xi^{2}\,d_\theta\,\langle\phi_\xi,\phi_\xi\rangle ,
 \]
 $B$ the top two key values' boundary term at the cap $d_\theta$,
-below $w$ times the vacuum's term at the stated $N$. The
+the two keys' part of the pairing priced at the counts' squares,
+below $w$ times the vacuum's term at the weighted power
+comparison. The
 electric read prices at the key's caps, $\hat c_2(\lambda)$
 below $c_r\,(G^2+1)$ with the per-key label and dimension
-counts below $A\,(G+1)^{p}$, and the weighted geometric sums
-close on two displayed reads. The power cap is one binomial read,
+counts below $A\,(G+1)^{p}$, the pairing's per-key weight the
+fold of the dimensions' squares at or below the count's own square
+$A^2(G+1)^{2p}$, and the weighted geometric sums
+close on two displayed reads. The power cap is one rising-product
+read,
 \[
-(L+1)^{\,j}\ \le\ j!\,\binom{L+j}{j}\ ,
+(L+1)^{\,j}\ \le\ (L+1)(L+2)\cdots(L+j)\ ,
 \]
-every factor $L+i$ at or beyond $L+1$; and the graded sums descend
-by Pascal's identity, at $S_j(M):=\sum_{L\le M}\binom{L+j}{j}x^{L}$
-and $x+y=1$,
+every factor $L+i$ at or beyond $L+1$; and the graded sums at the
+rising-product weights,
+$S_j(M):=\sum_{L\le M}(L+1)\cdots(L+j)\,x^{L}$ at $x+y=1$, descend
+by Pascal's identity at the rising products,
+$(L+1)\cdots(L+j+1)=L\cdots(L+j)+(j+1)\,(L+1)\cdots(L+j)$, the
+exact displays
 \[
-y\,S_{j+1}(M)\ \le\ S_j(M)\ ,
+y\,S_{j+1}(M)+(M+1)\cdots(M+j+1)\,x^{M+1}\ =\ (j+1)\,S_j(M)\ ,
 \qquad
 y\,S_0(M)+x^{M+1}\ =\ 1\ ,
 \]
-so $y^{\,j+1}S_j(M)\le1$ at every $M$. At $x=\xi^{2}$ the gap reads
+so $y^{\,j+1}S_j(M)\le j!$ at every $M$. At $x=\xi^{2}$ the gap reads
 $y=w\,(1+\xi)$ at or beyond $w$, the vacuum's unit term floors the
 pairing, and
 \[
-w^{\,p+3}\,\langle\phi_\xi,\,E\,\phi_\xi\rangle
-\;\le\;4\,c_r\,A\,(p+2)!\ \langle\phi_\xi,\phi_\xi\rangle\ :
+w^{\,2p+3}\,\langle\phi_\xi,\,E\,\phi_\xi\rangle
+\;\le\;4\,c_r\,A^2\,(2p+2)!\ \langle\phi_\xi,\phi_\xi\rangle\ :
 \]
-the rate's data are $q=p+3$ and $C_E=4\,c_r\,A\,(p+2)!$, member
-reads.
+the rate's data are $q=2p+3$ and $C_E=4\,c_r\,A^2\,(2p+2)!$,
+member reads.
 The Rayleigh read at $\phi_\xi$ then closes the drift's rate
 against the head's top root $m_+$ at its cap $d_\theta$
-(Lemma~\ref{lem:fpcap}): at the scale's $w$, the read at
-$w^{\,q+1}$ bracketing $\sigma$, one power comparison,
+(Lemma~\ref{lem:fpcap}): at the scale's $w$, the bracket
+$w^{\,q+1}\le\sigma\le(2w)^{\,q+1}$ the certificate's own read,
+one power comparison,
 \[
 g(\sigma)^{\,q+1}\;\le\;C_g^{\,q+1}\,\sigma ,
 \]
-one cross-multiplied comparison per scale at a located $C_g$ per
-member and direction count: the contact drift falls at a
+one cross-multiplied comparison per scale at the collected read
+$C_g=2^{\,q+1}C_E+2\,d_\theta+1$, the Rayleigh read joining the
+scale's electric power at the bracket's upper side to the boundary
+and gap reads with the top root's cap at the drift, a located
+$C_g$ per member and direction count: the contact drift falls at a
 certified positive rate, the halving scales' ground-level widths
 of the scale sandwich then geometric over the tail at the
 contact-drift display's weights, their sum one cofactor read
@@ -9514,14 +10252,8 @@ Lemma~\ref{lem:contactcell}'s own outputs, and the floor's is the
 certificate's, the rates derived and the gap a cut member's read,
 positive by its shape (Lemma~\ref{lem:cornerpivot}(v),(vi)), the rank
 direction at the key's bracket and the families' clearances
-(Lemma~\ref{lem:rankstable}(iii)); the emitted corner records at
-the committed members are pins, batteries re-reading these reads'
-instances.
-\pin{gate: corner\_gates.py, CG1--CG4, CR1--CR3, CR8, TL1--TL2:
-the emitted records' verify reads, the uniform scales and the
-two-sided upper family among them, the scale key's clearance
-identity with its least-natural read, and the contact drift's two
-counts at the tower head}
+(Lemma~\ref{lem:rankstable}(iii)).
+
 \end{lemma}
 
 \begin{lemma}[The corner disconjugacy certificate]\label{lem:cornerpivot}
@@ -9707,10 +10439,7 @@ scale, so one segment list runs the whole tail, and the one
 certificate settles the count at most one at every depth and every
 tail scale at once, the flat window's lower end the ground
 bracket's own (Theorem~\ref{thm:SO}).
-\pin{gate: corner\_gates.py, DC1--DC3: the at-most-one pivot
-shape on the committed head at the deepest uniform scale, the
-dominance tail's comparison at the constant list, and the
-rebound read at the located crossing}
+
 \end{lemma}
 
 \begin{lemma}[The moment folds]\label{lem:momentfold}
@@ -9793,10 +10522,14 @@ degree two: on the decimation's validity cells the decimated determinant's
 root locus is the fiber symbol's own, one Schur factor at a
 complement of unequal-membered determinant
 (Theorem~\ref{thm:divisorid}(i)); the fiber
-symbol's coefficients are $B_d$-invariant polynomials of the
-momentum at every coupling of the approach
-(Theorem~\ref{thm:restoration}, at Lemma~\ref{lem:corner}'s base);
-the degree-two invariants are the standard square's span
+symbol's coefficients are permutation-invariant polynomials of the
+chord list at every coupling of the approach
+(Theorem~\ref{thm:restoration}, at Lemma~\ref{lem:corner}'s base),
+their momentum reading even in each coordinate at the deck
+relation's exchanged roots (Definition~\ref{def:deck};
+Theorem~\ref{thm:restoration});
+the degree-two invariants at that evenness are the standard
+square's span
 (Theorem~\ref{thm:restoration}, degree $2$ at the rings'
 coincidence);
 and the direction data enter at degree four, the breaking
@@ -9834,8 +10567,7 @@ cell's, direct reads; at a level on the list,
 Lemma~\ref{lem:cellcount}'s boundary clause extends the
 positive-semidefinite cells into the closed endpoint. The free-end reading of
 Definition~\ref{def:K} is those reads.
-\pin{gate: anchor\_gates.py, AG1--AG3: the decimated symbol's
-free-end jumps against the diagonal contents}
+
 \end{lemma}
 
 \begin{lemma}[The four-point floor]\label{lem:fourpoint}
@@ -9998,7 +10730,6 @@ beyond, at every window beyond the band, the floor's data located
 member reads.
 \end{lemma}
 
-
 \section{The reconstruction}
 
 \begin{theorem}[The located reconstruction]\label{thm:reconstruct}
@@ -10052,6 +10783,5 @@ configuration of the infinite lattice's index has finite support
 (Definition~\ref{def:carrier}), so winding operators lie outside every local algebra and outside
 $\mathfrak A$ with them.
 \end{definition}
-
 
 \end{document}

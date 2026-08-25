@@ -1,4 +1,140 @@
-# mass-gap
-The mass gap over the compact simple groups
+# The mass gap over the compact simple groups
 
-[![DOI](https://zenodo.org/badge/1339955791.svg)](https://doi.org/10.5281/zenodo.22018060)
+A manuscript and its Lean 4 formalization.  The manuscript,
+[docs/theory.tex](docs/theory.tex) ([PDF](docs/theory.pdf)), states and
+derives `thm:main`, a mass gap for lattice gauge theory over every compact
+simple group, constructively over the positive naturals with the sum and the
+product; the Lean tree under [lean/](lean/) transcribes it, statement for
+statement, with an empty axiom set.  [docs/the_physical_state.tex](docs/the_physical_state.tex)
+([PDF](docs/the_physical_state.pdf)) is the companion manuscript.
+
+The tex is the authority and the Lean is its transcription: every top-level
+Lean declaration sits in a namespace named after one `\label{kind:name}` of
+`theory.tex` (`gappos.sandwich_lo` transcribes `thm:gappos`, `inertia.rev_add`
+transcribes `lem:inertia`), and the docstring at the head of each module under
+[lean/MassGap/](lean/MassGap/) states exactly which clauses of its label the
+module holds as theorems, which as decidable reads pinned by the batteries,
+and which arrive at other labels.
+
+## Status
+
+**This is not a completed formal proof of the Yang–Mills mass gap.**  What
+the tree holds at this release, read off [lean/MassGap/Main.lean](lean/MassGap/Main.lean):
+
+- `main.Member` is the classification's stated domain — the `A`-series at
+  every residue, `B_ℓ`, `C_ℓ`, `D_ℓ` at their index floors, and `G₂`, `F₄`,
+  `E₆`, `E₇`, `E₈` — with the member's weight table, derived residue, base
+  and fusion interface read off the carried datum.
+- **Clause (ii)** of `thm:main`, the contact pair `(3, H_r)`, is the
+  decidable read `main.clauseII` (`thm:closing` at the member's own base and
+  residue), decided by kernel `decide` at every committed member in
+  [lean/MassGapChecks/Main.lean](lean/MassGapChecks/Main.lean).
+- **Clause (i)**, positivity of the cut of `𝒦` at every interior coupling, is
+  not yet stated at `main`.  Its derivation tier is landed: the count
+  certificates (`lem:inertia`, `thm:certconstruct`, `lem:stage`,
+  `lem:split`, `lem:stagesplit`, `lem:hermitesign`, `lem:deckfactor`,
+  `thm:windowsep`, `lem:cellcount` with its boundary clause), the chain
+  (`lem:fiberdec`, `lem:grading`, `lem:relfiber`, `thm:decimation`,
+  `lem:chargedcell`, `thm:truncation`, `lem:dualtrunc`, `lem:contactcell`,
+  `lem:freecell`, `thm:flatstep`, `lem:speccut`, `thm:divisorid`), and
+  `thm:gappos`'s sandwich, transport, cell chain, cutoff price and window
+  cut.  The wiring of those tiers into one statement over `main.Member`
+  is the open item.
+- **Clause (iii)**, the continuum reads, is not yet stated at `main`.
+  `lem:corner`'s coordinate, shifted scaling, drift, grade-key, cap and
+  count tiers and `thm:restoration`'s first tier are landed;
+  `lem:cornerpivot`, `thm:groundreads`, `lem:momentfold`, `lem:cone`,
+  `lem:fourpoint`, `thm:continuum`, `thm:decomp` and `thm:reconstruct`
+  have no Lean yet.
+- `lem:sectorspan` and `lem:attained` (the requirement mirrors) have no Lean
+  yet.
+- `rem:dictionary`, the correspondence between the manuscript's objects and
+  the conventional formulation (the Jaffe–Witten statement among them), is
+  prose by design and is not formalized: the manuscript's own derivations
+  hold with the remark deleted.
+
+Of `theory.tex`'s 133 labels, 119 carry a Lean namespace.  The label
+calculus (Section 1: the block tier through `thm:weylchar`, `thm:assembly`,
+`thm:memberchar`, `cor:weyldim`, `cor:steinberg`, `lem:memberdata` and the
+twelve committed member tables), the fusion and lattice interfaces, the
+carrier and pencil layers, the requirement layer, the count certificates,
+the chain and the divisor tier are theorems and decidable reads at their
+modules; the module docstrings are the ledger.
+
+The snapshot is taken from the development repository at commit
+`9b0e7ce85e5e38914e7b3887a5d7a0c7680bd348` (2026-08-25).
+
+## The disciplines
+
+Every declaration of both libraries depends on the empty axiom set — no
+`propext`, `Quot.sound`, `Classical.choice`, `sorryAx`, and no native
+reflection (`native_decide`); the kernel checks everything.  The package is
+Lean core alone: `lake-manifest.json` lists no packages and no module
+imports outside `MassGap` and `MassGapChecks`.  No declaration is
+`noncomputable`, `partial`, `unsafe`, `opaque` or an `axiom`; every object
+computes by kernel reduction.  Every public `Prop`-valued definition is a
+decidable read with its `Decidable` instance beside it, consumed by a
+theorem, a further definition, or a battery.  The batteries in
+[lean/MassGapChecks/](lean/MassGapChecks/) — one check module per content
+module, 8,413 `example`s — decide the reads at committed data by kernel
+`decide`, with committed refusals isolating every load-bearing hypothesis.
+
+Counts at this release: 117 content modules and 117 check modules, 2,994
+theorems, 1,622 public definitions, 5,889 private declarations, 24,174
+constants in the environment.
+
+## Building
+
+Install [elan](https://github.com/leanprover/elan); `lean-toolchain` pins
+`leanprover/lean4:v4.32.2`, which elan fetches on first use.  Then
+
+    cd lean
+    lake build
+
+builds both libraries and every battery (239 jobs).  The build has no
+network dependency past the toolchain.  `lakefile.toml` sets
+`warningAsError`, so a `sorry` anywhere in either library is a build error
+(`declaration uses sorry`): `lake build` completing is the read that none
+exists.
+
+## Verifying the axiom claim
+
+After the build,
+
+    lake env lean AxiomCheck.lean
+
+walks every constant of both libraries with `Lean.collectAxioms` and prints
+
+    constants read: 24174
+    constants depending on axioms: 0
+
+ending in an error if any constant depends on any axiom.  A single
+declaration reads the same way in any file importing the libraries:
+
+    import MassGap
+    #print axioms main.clauseII
+    #print axioms gappos.windowCut
+
+each answering `does not depend on any axioms`.
+
+## Reading the tree
+
+- [lean/MassGap.lean](lean/MassGap.lean) lists the content modules in
+  dependency order, from `Ground` (the positive naturals with pairs as data,
+  `def:ground`) through the label calculus, the interfaces, the certificates
+  and the chain to `Main`.
+- A module's head docstring names its label and states what the module
+  holds of it; a declaration's docstring names the tex sentence it
+  transcribes.
+- [lean/MassGapChecks/](lean/MassGapChecks/) mirrors the content modules
+  file for file; a battery pins a read at committed data, and a refusal
+  (`example : ¬ …`) pins the hypothesis it isolates.
+
+## Citing
+
+Every GitHub release of this repository is archived on Zenodo under the
+concept DOI [10.5281/zenodo.22018060](https://doi.org/10.5281/zenodo.22018060),
+which resolves to the latest version; each version carries its own DOI, and
+its release notes record the development commit the snapshot was taken
+from.  The repository is licensed under the Apache License 2.0
+([LICENSE](LICENSE)).

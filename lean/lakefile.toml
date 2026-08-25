@@ -1,0 +1,12 @@
+name = "MassGap"
+defaultTargets = ["MassGap", "MassGapChecks"]
+testDriver = "MassGapChecks"
+
+[[lean_lib]]
+name = "MassGap"
+
+[[lean_lib]]
+name = "MassGapChecks"
+
+[leanOptions]
+warningAsError = true
