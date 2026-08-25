@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it using the metadata below."
+type: software
+title: "The mass gap over the compact simple groups"
+authors:
+  - family-names: Bundschu
+    given-names: Colin
+    orcid: "https://orcid.org/0000-0001-7592-9891"
+    affiliation: "University of California, Berkeley"
+repository-code: "https://github.com/ColinBundschu/mass-gap"
+doi: 10.5281/zenodo.22018060
+license: Apache-2.0
+version: 0.1.0
+date-released: 2026-08-25
+keywords:
+  - mass gap
+  - Yang-Mills
+  - lattice gauge theory
+  - compact simple groups
+  - Lean 4
+  - formal verification
+  - constructive mathematics
+abstract: >-
+  A manuscript deriving a mass gap for lattice gauge theory over every
+  compact simple group, constructively over the positive naturals, together
+  with its Lean 4 formalization: two libraries, MassGap and MassGapChecks,
+  Lean core alone, every declaration at the empty axiom set and every check
+  module decided by the kernel.  The README states which clauses of the
+  main theorem the Lean tree holds at this version and which remain open;
+  the work is not a completed formal proof of the Yang-Mills mass gap.

@@ -1,0 +1,33 @@
+name: lean
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Installs elan and the toolchain pinned by lean/lean-toolchain,
+      # then runs `lake build` in lean/; the .lake build directory is
+      # cached between runs keyed on the sources.
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: lean
+          use-mathlib-cache: false
+          build: true
+          test: false
+          lint: false
+
+      # The axiom read over every constant of both libraries: prints
+      # the count and ends in an error if any constant depends on any
+      # axiom.  The build above already refuses a `sorry` anywhere
+      # (warningAsError in lakefile.toml).
+      - name: axiom check
+        working-directory: lean
+        run: lake env lean AxiomCheck.lean

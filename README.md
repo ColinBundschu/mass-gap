@@ -1,5 +1,8 @@
 # The mass gap over the compact simple groups
 
+[![lean](https://github.com/ColinBundschu/mass-gap/actions/workflows/lean.yml/badge.svg)](https://github.com/ColinBundschu/mass-gap/actions/workflows/lean.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22018060.svg)](https://doi.org/10.5281/zenodo.22018060)
+
 A manuscript and its Lean 4 formalization.  The manuscript,
 [docs/theory.tex](docs/theory.tex) ([PDF](docs/theory.pdf)), states and
 derives `thm:main`, a mass gap for lattice gauge theory over every compact
