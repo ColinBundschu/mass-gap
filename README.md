@@ -8,8 +8,7 @@ A manuscript and its Lean 4 formalization.  The manuscript,
 derives `thm:main`, a mass gap for lattice gauge theory over every compact
 simple group, constructively over the positive naturals with the sum and the
 product; the Lean tree under [lean/](lean/) transcribes it, statement for
-statement, with an empty axiom set.  [docs/the_physical_state.tex](docs/the_physical_state.tex)
-([PDF](docs/the_physical_state.pdf)) is the companion manuscript.
+statement, with an empty axiom set.
 
 The tex is the authority and the Lean is its transcription: every top-level
 Lean declaration sits in a namespace named after one `\label{kind:name}` of
