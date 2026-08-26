@@ -21,12 +21,12 @@ and which arrive at other labels.
 
 ## Status
 
-**This is not a completed formal proof of the Yang–Mills mass gap.**  What
+**This is not a completed formal proof of the Yang-Mills mass gap.**  What
 the tree holds at this release, read off [lean/MassGap/Main.lean](lean/MassGap/Main.lean):
 
-- `main.Member` is the classification's stated domain — the `A`-series at
+- `main.Member` is the classification's stated domain, with the `A`-series at
   every residue, `B_ℓ`, `C_ℓ`, `D_ℓ` at their index floors, and `G₂`, `F₄`,
-  `E₆`, `E₇`, `E₈` — with the member's weight table, derived residue, base
+  `E₆`, `E₇`, `E₈` and the member's weight table, derived residue, base
   and fusion interface read off the carried datum.
 - **Clause (ii)** of `thm:main`, the contact pair `(3, H_r)`, is the
   decidable read `main.clauseII` (`thm:closing` at the member's own base and
@@ -52,7 +52,7 @@ the tree holds at this release, read off [lean/MassGap/Main.lean](lean/MassGap/M
 - `lem:sectorspan` and `lem:attained` (the requirement mirrors) have no Lean
   yet.
 - `rem:dictionary`, the correspondence between the manuscript's objects and
-  the conventional formulation (the Jaffe–Witten statement among them), is
+  the conventional formulation (the Jaffe-Witten statement among them), is
   prose by design and is not formalized: the manuscript's own derivations
   hold with the remark deleted.
 
@@ -69,7 +69,7 @@ The snapshot is taken from the development repository at commit
 
 ## The disciplines
 
-Every declaration of both libraries depends on the empty axiom set — no
+Every declaration of both libraries depends on the empty axiom set. Specifically, this means no
 `propext`, `Quot.sound`, `Classical.choice`, `sorryAx`, and no native
 reflection (`native_decide`); the kernel checks everything.  The package is
 Lean core alone: `lake-manifest.json` lists no packages and no module
@@ -78,9 +78,9 @@ imports outside `MassGap` and `MassGapChecks`.  No declaration is
 computes by kernel reduction.  Every public `Prop`-valued definition is a
 decidable read with its `Decidable` instance beside it, consumed by a
 theorem, a further definition, or a battery.  The batteries in
-[lean/MassGapChecks/](lean/MassGapChecks/) — one check module per content
-module, 8,413 `example`s — decide the reads at committed data by kernel
-`decide`, with committed refusals isolating every load-bearing hypothesis.
+[lean/MassGapChecks/](lean/MassGapChecks/) (one check module per content
+module, 8,413 `example`s) decide the reads at committed data by kernel
+`decide`, with committed refusals isolating every hypothesis.
 
 Counts at this release: 117 content modules and 117 check modules, 2,994
 theorems, 1,622 public definitions, 5,889 private declarations, 24,174
