@@ -25,8 +25,8 @@ and which arrive at other labels.
 the tree holds at this release, read off [lean/MassGap/Main.lean](lean/MassGap/Main.lean):
 
 - `main.Member` is the classification's stated domain, with the `A`-series at
-  every residue, `B_ℓ`, `C_ℓ`, `D_ℓ` at their index floors, and `G₂`, `F₄`,
-  `E₆`, `E₇`, `E₈` and the member's weight table, derived residue, base
+  every residue: `B_ℓ`, `C_ℓ`, `D_ℓ` at their index floors, and `G₂`, `F₄`,
+  `E₆`, `E₇`, `E₈`. The member's weight table, derived residue, base
   and fusion interface read off the carried datum.
 - **Clause (ii)** of `thm:main`, the contact pair `(3, H_r)`, is the
   decidable read `main.clauseII` (`thm:closing` at the member's own base and
