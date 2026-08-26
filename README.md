@@ -81,10 +81,6 @@ theorem, a further definition, or a battery.  The batteries in
 module, 8,413 `example`s) decide the reads at committed data by kernel
 `decide`, with committed refusals isolating every hypothesis.
 
-Counts at this release: 117 content modules and 117 check modules, 2,994
-theorems, 1,622 public definitions, 5,889 private declarations, 24,174
-constants in the environment.
-
 ## Building
 
 Install [elan](https://github.com/leanprover/elan); `lean-toolchain` pins
