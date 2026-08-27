@@ -7,20 +7,18 @@ A manuscript and its Lean 4 formalization.  The manuscript,
 [docs/theory.tex](docs/theory.tex) ([PDF](docs/theory.pdf)), states and
 derives `thm:main`, a mass gap for lattice gauge theory over every compact
 simple group, constructively over the positive naturals with the sum and the
-product; the Lean tree under [lean/](lean/) transcribes it, statement for
-statement, with an empty axiom set.
+product; the Lean tree under [lean/](lean/) formalizes it with an empty axiom set.
 
 The tex is the authority and the Lean is its transcription: every top-level
-Lean declaration sits in a namespace named after one `\label{kind:name}` of
+Lean declaration sits in a namespace matching a label in
 `theory.tex` (`gappos.sandwich_lo` transcribes `thm:gappos`, `inertia.rev_add`
-transcribes `lem:inertia`), and the docstring at the head of each module under
+transcribes `lem:inertia`). The docstring at the head of each module under
 [lean/MassGap/](lean/MassGap/) states exactly which clauses of its label the
-module holds as theorems, which as decidable reads pinned by the batteries,
-and which arrive at other labels.
+module holds.
 
 ## Status
 
-**This is not a completed formal proof of the Yang-Mills mass gap.**  What
+**While the proof in `theory.tex` is complete, the Lean is not yet a complete formal proof of the Yang-Mills mass gap.**  What
 the tree holds at this release, read off [lean/MassGap/Main.lean](lean/MassGap/Main.lean):
 
 - `main.Member` is the classification's stated domain, with the `A`-series at
@@ -55,31 +53,19 @@ the tree holds at this release, read off [lean/MassGap/Main.lean](lean/MassGap/M
   prose by design and is not formalized: the manuscript's own derivations
   hold with the remark deleted.
 
-Of `theory.tex`'s 133 labels, 119 carry a Lean namespace.  The label
-calculus (Section 1: the block tier through `thm:weylchar`, `thm:assembly`,
-`thm:memberchar`, `cor:weyldim`, `cor:steinberg`, `lem:memberdata` and the
-twelve committed member tables), the fusion and lattice interfaces, the
-carrier and pencil layers, the requirement layer, the count certificates,
-the chain and the divisor tier are theorems and decidable reads at their
-modules; the module docstrings are the ledger.
-
 The snapshot is taken from the development repository at commit
 `9b0e7ce85e5e38914e7b3887a5d7a0c7680bd348` (2026-08-25).
 
-## The disciplines
+## Proof Methodology
 
-Every declaration of both libraries depends on the empty axiom set. Specifically, this means no
+Every Lean declaration depends only on the empty axiom set. Specifically, this means no
 `propext`, `Quot.sound`, `Classical.choice`, `sorryAx`, and no native
 reflection (`native_decide`); the kernel checks everything.  The package is
 Lean core alone: `lake-manifest.json` lists no packages and no module
 imports outside `MassGap` and `MassGapChecks`.  No declaration is
 `noncomputable`, `partial`, `unsafe`, `opaque` or an `axiom`; every object
-computes by kernel reduction.  Every public `Prop`-valued definition is a
-decidable read with its `Decidable` instance beside it, consumed by a
-theorem, a further definition, or a battery.  The batteries in
-[lean/MassGapChecks/](lean/MassGapChecks/) (one check module per content
-module, 8,413 `example`s) decide the reads at committed data by kernel
-`decide`, with committed refusals isolating every hypothesis.
+computes by kernel reduction.  Every public `Prop`-valued definition comes with its `Decidable` instance beside it.  The batteries in
+[lean/MassGapChecks/](lean/MassGapChecks/) decide directly by kernel `decide`.
 
 ## Building
 
@@ -89,10 +75,10 @@ Install [elan](https://github.com/leanprover/elan); `lean-toolchain` pins
     cd lean
     lake build
 
-builds both libraries and every battery (239 jobs).  The build has no
+builds both libraries and every battery.  The build has no
 network dependency past the toolchain.  `lakefile.toml` sets
 `warningAsError`, so a `sorry` anywhere in either library is a build error
-(`declaration uses sorry`): `lake build` completing is the read that none
+(`declaration uses sorry`): `lake build` completing indicates that none
 exists.
 
 ## Verifying the axiom claim
@@ -121,9 +107,6 @@ each answering `does not depend on any axioms`.
   dependency order, from `Ground` (the positive naturals with pairs as data,
   `def:ground`) through the label calculus, the interfaces, the certificates
   and the chain to `Main`.
-- A module's head docstring names its label and states what the module
-  holds of it; a declaration's docstring names the tex sentence it
-  transcribes.
 - [lean/MassGapChecks/](lean/MassGapChecks/) mirrors the content modules
   file for file; a battery pins a read at committed data, and a refusal
   (`example : ¬ …`) pins the hypothesis it isolates.
@@ -132,7 +115,5 @@ each answering `does not depend on any axioms`.
 
 Every GitHub release of this repository is archived on Zenodo under the
 concept DOI [10.5281/zenodo.22018060](https://doi.org/10.5281/zenodo.22018060),
-which resolves to the latest version; each version carries its own DOI, and
-its release notes record the development commit the snapshot was taken
-from.  The repository is licensed under the Apache License 2.0
+which resolves to the latest version.  The repository is licensed under the Apache License 2.0
 ([LICENSE](LICENSE)).
