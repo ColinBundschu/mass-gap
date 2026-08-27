@@ -12,7 +12,7 @@ product; the Lean tree under [lean/](lean/) formalizes it with an empty axiom se
 
 The tex is the authority and the Lean is its transcription: every top-level
 Lean declaration sits in a namespace matching a label in
-`theory.tex` (`gappos.sandwich_lo` transcribes `thm:gappos`, `inertia.rev_add`
+`theory.tex` (e.g. `gappos.sandwich_lo` transcribes `thm:gappos`, `inertia.rev_add`
 transcribes `lem:inertia`). The docstring at the head of each module under
 [lean/MassGap/](lean/MassGap/) states exactly which clauses of its label the
 module holds.
