@@ -104,7 +104,7 @@ each answering `does not depend on any axioms`.
   `def:ground`) through the label calculus, the interfaces, the certificates
   and the chain to `Main`.
 - [lean/MassGapChecks/](lean/MassGapChecks/) mirrors the content modules
-  file for file; a battery pins a read at committed data, and a refusal
+  file for file. Each battery pins committed data, and a refusal
   (`example : ¬ …`) pins the hypothesis it isolates.
 
 ## Citing
