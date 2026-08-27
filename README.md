@@ -75,8 +75,7 @@ Install [elan](https://github.com/leanprover/elan); `lean-toolchain` pins
 builds both libraries and every battery.  The build has no
 network dependency past the toolchain.  `lakefile.toml` sets
 `warningAsError`, so a `sorry` anywhere in either library is a build error
-(`declaration uses sorry`): `lake build` completing indicates that none
-exists.
+(`declaration uses sorry`).
 
 ## Verifying the axiom claim
 
