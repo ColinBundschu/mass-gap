@@ -7,7 +7,8 @@ A manuscript and its Lean 4 formalization.  The manuscript,
 [docs/theory.tex](docs/theory.tex) ([PDF](docs/theory.pdf)), states and
 derives `thm:main`, a mass gap for lattice gauge theory over every compact
 simple group, constructively over the positive naturals with the sum and the
-product; the Lean tree under [lean/](lean/) formalizes it with an empty axiom set.
+product; the Lean tree under [lean/](lean/) formalizes it with an empty axiom set.  `rem:dictionary` is the correspondence between the manuscript's objects and
+  the conventional formulation (the Jaffe-Witten statement among them).
 
 The tex is the authority and the Lean is its transcription: every top-level
 Lean declaration sits in a namespace matching a label in
@@ -48,10 +49,6 @@ the tree holds at this release, read off [lean/MassGap/Main.lean](lean/MassGap/M
   have no Lean yet.
 - `lem:sectorspan` and `lem:attained` (the requirement mirrors) have no Lean
   yet.
-
-Note: `rem:dictionary` is the correspondence between the manuscript's objects and
-  the conventional formulation (the Jaffe-Witten statement among them). This is not
-  presently reflected in the Lean in any form.
 
 The snapshot is taken from the development repository at commit
 `9b0e7ce85e5e38914e7b3887a5d7a0c7680bd348` (2026-08-25).
