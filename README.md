@@ -48,17 +48,17 @@ the tree holds at this release, read off [lean/MassGap/Main.lean](lean/MassGap/M
   have no Lean yet.
 - `lem:sectorspan` and `lem:attained` (the requirement mirrors) have no Lean
   yet.
-- `rem:dictionary`, the correspondence between the manuscript's objects and
-  the conventional formulation (the Jaffe-Witten statement among them), is
-  prose by design and is not formalized: the manuscript's own derivations
-  hold with the remark deleted.
+
+Note: `rem:dictionary` is the correspondence between the manuscript's objects and
+  the conventional formulation (the Jaffe-Witten statement among them). This is not
+  presently reflected in the Lean in any form.
 
 The snapshot is taken from the development repository at commit
 `9b0e7ce85e5e38914e7b3887a5d7a0c7680bd348` (2026-08-25).
 
 ## Proof Methodology
 
-Every Lean declaration depends only on the empty axiom set. Specifically, this means no
+Every Lean declaration depends soley on the empty axiom set. Specifically, this means no
 `propext`, `Quot.sound`, `Classical.choice`, `sorryAx`, and no native
 reflection (`native_decide`); the kernel checks everything.  The package is
 Lean core alone: `lake-manifest.json` lists no packages and no module
