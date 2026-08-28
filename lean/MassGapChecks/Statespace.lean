@@ -8,7 +8,6 @@ adjoint's multiplication matrices with the unit line's ground, and
 the orthonormality tie: the probes' pairings at the committed list
 read the evaluation's deltas, `prop:repring`'s display at the
 matrix tier. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground elim statespace

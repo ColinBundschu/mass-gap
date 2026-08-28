@@ -19,7 +19,6 @@ width one where the adjoint's shape collapses onto the single
 column; its width binder is a frame, the identity standing at the
 junk widths.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places adjchar

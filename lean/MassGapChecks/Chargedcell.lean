@@ -92,7 +92,6 @@ by the side length's multiple of the floor, the divisor's witness,
 and the level list, the multiplicities and the block structure the
 reads of that head pencil, pinned per cell at one committed
 instance. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places chargedcell

@@ -303,6 +303,19 @@ instance {o1 o2 o3 o4 : Nat} (D : Poly) (ct : cellcount.DivCert)
     Decidable (extRead D ct lo hi c spH1 spB1 spH2 spB2) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
+/-- The extension read is one value across the divisor's
+representatives: the certificate conjunct carries
+(`cellcount.divRead_congr`) and the two counts read the
+certificate's own squarefree part. -/
+theorem extRead_congr {o1 o2 o3 o4 : Nat} {D D' : Poly}
+    (h : poly.oneValue D D') (ct : cellcount.DivCert)
+    (lo hi : BPair) (c : Pos) (spH1 : Split o1) (spB1 : Split o2)
+    (spH2 : Split o3) (spB2 : Split o4) :
+    extRead D ct lo hi c spH1 spB1 spH2 spB2
+      ↔ extRead D' ct lo hi c spH1 spB1 spH2 spB2 :=
+  ⟨fun hr => ⟨(cellcount.divRead_congr h ct).mp hr.1, hr.2⟩,
+   fun hr => ⟨(cellcount.divRead_congr h ct).mpr hr.1, hr.2⟩⟩
+
 /-! ## The full column's row -/
 
 /-- `lem:pieri`'s complement row at the one-box factor: the
@@ -492,7 +505,7 @@ private theorem fullCol_addS (mu : places.Shape) (d : Nat)
   have hlen : (places.addS mu (ground.unitAt d (d - 1))).length = d :=
     ground.length_zipWith (fun x y => x + y) mu (ground.unitAt d (d - 1))
       d hmu (ground.length_unitAt d (d - 1))
-  have hpd : d - 1 < d := Nat.sub_lt hd Nat.one_pos
+  have hpd : d - 1 < d := ground.subOneLt hd
   refine ground.getAt_ext 0 _ _ ?_ ?_
   · rw [hlen, ground.length_bumpAt, hmu]
   · intro k hk
@@ -523,12 +536,6 @@ private theorem rowList_bumpTop (mu : places.Shape) (d : Nat)
       (by rw [places.length_rowList, dualread.length_fulls]; exact hk),
     dualread.rowList_fulls d 1, ground.getAt_replicate 0 1 d k hk]
 
-private theorem mul_pos_split {a b : Nat} (h : 0 < a * b) :
-    0 < a ∧ 0 < b :=
-  match a, b, h with
-  | 0, _, h => by rw [Nat.zero_mul] at h; exact absurd h (Nat.lt_irrefl 0)
-  | _ + 1, 0, h => by rw [Nat.mul_zero] at h; exact absurd h (Nat.lt_irrefl 0)
-  | _ + 1, _ + 1, _ => ⟨Nat.succ_pos _, Nat.succ_pos _⟩
 
 /-- `lem:contactcell`'s moved pair as an occupied row read: at the
 letter-pair-move tie the withdrawn box's row and the added one's
@@ -547,7 +554,7 @@ private theorem moveWitness (d : Nat) (mu c : places.Shape) (m : List Nat)
       ∧ ¬ places.display c
           = (places.display mu).map (fun x => x + 1) := by
   have hdz : 0 < d := Nat.lt_of_lt_of_le Nat.zero_lt_two hd
-  have hpd : d - 1 < d := Nat.sub_lt hdz Nat.one_pos
+  have hpd : d - 1 < d := ground.subOneLt hdz
   obtain ⟨i, hi, hiv⟩ := ground.getAt_of_mem 0
     (ground.mem_of_countOf_pos 2 m (by rw [hc2]; exact Nat.succ_pos 0))
   obtain ⟨j, hj, hjv⟩ := ground.getAt_of_mem 0
@@ -822,16 +829,14 @@ theorem boxRow (d : Nat) (mu c : places.Shape) (m : List Nat)
     rw [hassoc]
     exact hRHSpos
   obtain ⟨nu, hnu, hfnu⟩ := ground.famFold_pos_mem _ _ hLHSpos
-  obtain ⟨hfa, hfb⟩ := mul_pos_split hfnu
+  obtain ⟨hfa, hfb⟩ := ground.mulPosSplit hfnu
   obtain ⟨hsz1, hwid1, hcl1, _⟩ :=
     blockcount.fusedSpan_pack (pieri.oneBox d) (pieri.complBox d)
       (by rw [hcblen, hoblen])
   rw [hoblen] at hwid1 hcl1
-  obtain ⟨w, hw, hwc⟩ := ground.mem_map_of blockcount.HVec.content _ nu
-    (ground.mem_of_dedupL hnu)
-  have hnulen : nu.length = d := by
-    rw [← hwc]
-    exact (blockcount.exhaust_top d _ hsz1 hwid1 hcl1 w hw).2.1
+  have hnulen : nu.length = d :=
+    blockcount.exhaust_width d _ hsz1 hwid1 hcl1 nu
+      (ground.mem_of_dedupL hnu)
   have hsnlen : (places.shapeOf nu).length = d := by
     rw [places.length_shapeOf]
     exact hnulen
@@ -873,12 +878,56 @@ def frontierTargets (d K : Nat) : List places.Shape :=
 
 /-- `c₊`, the least Casimir beyond the cutoff among the frontier's
 targets: the seed floor `F = ⟨4σc₊ : d_ϑ⟩`'s own numerator datum,
-the auxiliary diagonal's first member. -/
+the auxiliary diagonal's first member.  At an occupied frontier it
+sits beyond the cutoff itself (`cPlusN_beyond`). -/
 def cPlusN (d K : Nat) : Nat :=
   match frontierTargets d K with
   | [] => 0
   | h :: tl =>
     tl.foldl (fun a c => ground.natMin a (c2hat.dfQ c)) (c2hat.dfQ h)
+
+/-- Every frontier target's cleared Casimir leaves the cutoff, the
+enumeration's own filter. -/
+private theorem frontierBeyond (d K : Nat) :
+    ∀ c ∈ frontierTargets d K, K < c2hat.dfQ c := by
+  refine ground.all_of_flatMap (fun c => K < c2hat.dfQ c) _
+    (fun l x hx => ?_) _
+  exact of_decide_eq_true
+    (ground.all_of_filter (fun _ => True)
+      (fun c => decide (K < c2hat.dfQ c)) (rankstable.adjRow d l)
+      (fun _ _ => trivial) x hx).2
+
+/-- The least of a walk's Casimirs stays beyond the cutoff at a
+seed beyond it and members beyond it. -/
+private theorem foldMinBeyond (K : Nat) :
+    ∀ (l : List places.Shape) (s : Nat), K < s →
+      (∀ c ∈ l, K < c2hat.dfQ c) →
+      K < l.foldl (fun a c => ground.natMin a (c2hat.dfQ c)) s
+  | [], _, hs, _ => hs
+  | c :: t, s, hs, hall =>
+    foldMinBeyond K t (ground.natMin s (c2hat.dfQ c))
+      (ground.le_natMin hs (hall c (List.Mem.head t)))
+      (fun z hz => hall z (List.Mem.tail c hz))
+
+/-- An occupied frontier's least Casimir sits beyond its cutoff:
+every target's cleared Casimir exceeds `K`, so the fold's least
+does (`lem:corner`'s frontier family, the parenthetical's own
+read). -/
+theorem cPlusN_beyond (d K : Nat)
+    (h : frontierTargets d K ≠ []) : K < cPlusN d K := by
+  have hall := frontierBeyond d K
+  show K < (match frontierTargets d K with
+    | [] => 0
+    | hd :: tl =>
+      tl.foldl (fun a c => ground.natMin a (c2hat.dfQ c))
+        (c2hat.dfQ hd))
+  cases hft : frontierTargets d K with
+  | nil => exact absurd hft h
+  | cons hd tl =>
+    rw [hft] at hall
+    exact foldMinBeyond K tl (c2hat.dfQ hd)
+      (hall hd (List.Mem.head tl))
+      (fun z hz => hall z (List.Mem.tail hd hz))
 
 /-! The frontier landing's walk kit: an excluded unit-class label
 descends the cleared Casimir along `lem:casfloor`'s moves, each
@@ -900,12 +949,6 @@ private theorem desc_ge (l : List Nat)
   | succ p ih =>
     intro hq
     exact Nat.le_trans (hdesc p hq) (ih (Nat.lt_of_succ_lt hq))
-
-/-- The row list's head is the occupancy total, the first row
-counting every column. -/
-private theorem head_rowList : ∀ s : places.Shape, 0 < s.length →
-    ground.getAt 0 (places.rowList s) 0 = ground.sumNat s
-  | _ :: _, _ => rfl
 
 /-- The occupancy total sits at or below the degree: the first row
 already counts every column. -/
@@ -1711,7 +1754,7 @@ private theorem excludedFloorGo :
         (by rw [places.length_rowList, htlen]
             exact Nat.lt_of_le_of_lt hig
               (by rw [← hd1]; exact Nat.lt_succ_self (d - 1)))
-      have h3 := head_rowList (places.shapeOf
+      have h3 := places.rowList_head (places.shapeOf
           (ground.bumpAt (i + (g' + 1))
             (ground.dipAt i (places.rowList s))))
         (by rw [htlen]

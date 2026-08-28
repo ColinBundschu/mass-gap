@@ -8,7 +8,6 @@ occupied contents' dominance reads, and the height fold's
 instances — the `d = 2` symmetric square and the `d = 3` adjoint
 the committed blocks.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places blockcount lowerspan

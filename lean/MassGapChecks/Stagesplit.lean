@@ -27,7 +27,6 @@ off-root refusal at `3`.  The tower at
 `K(√2)(√3)` — the two-extension arithmetic's read
 `(√2·√3)² = 6` with the level-one instance `√2² = 2`, the
 equal-members read by reduction. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly stagesplit

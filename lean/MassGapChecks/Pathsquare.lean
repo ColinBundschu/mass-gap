@@ -6,7 +6,6 @@ multiset, the path counts (the standard tableau counts), the
 recursion's two reads, and the square sum at the factorial with
 the width binder's refusal.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places pathsquare

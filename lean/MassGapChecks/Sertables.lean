@@ -34,7 +34,6 @@ allowance — `invCountB 2 2` at 190 s user by kernel decide,
 compiled evaluator, the stacked matrix's elimination the whole
 cost.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground gentable sertables

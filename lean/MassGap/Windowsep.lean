@@ -102,7 +102,11 @@ magnitude — the top key's coefficient at the value's
 representative, the degree's own read. -/
 def radiusD (P : Poly) : BPair := mag (top (poly.vnorm P))
 
-private def foldPow (l : List BPair) (n d : BPair) : BPair :=
+/-- The two-base monomial fold of a coefficient list, `Σ_i l_i n^i
+d^(k-i)` at `k` the list's top key: one pass at two running
+accumulators, the powers shared, every intermediate at its
+canonical representative. -/
+def foldPow (l : List BPair) (n d : BPair) : BPair :=
   (l.reverse.foldl (fun s c =>
     (((s.1 * n).norm + (c * s.2).norm).norm, (s.2 * d).norm))
     (BPair.unit, BPair.ofPos .one)).1
@@ -287,6 +291,24 @@ theorem mag_swap (z : BPair) : mag (z.swap) = mag z := by
     rw [if_pos hgt,
       if_neg (ground.leB_not_lt (ground.leB_of_lt hgt))]
 
+
+/-- The magnitude of a rescaled datum is the magnitude's own
+rescaling, the sort blind to the shared positive factor. -/
+theorem mag_scale (z : BPair) (w : Pos) :
+    mag (z.scale w) = (mag z).scale w := by
+  by_cases h : z < z.swap
+  · have h' : z.scale w < (z.scale w).swap := BPair.scale_lt w h
+    show (if z.scale w < (z.scale w).swap then (z.scale w).swap
+        else z.scale w)
+      = (if z < z.swap then z.swap else z).scale w
+    rw [if_pos h', if_pos h]
+    rfl
+  · have h' : ¬ (z.scale w < (z.scale w).swap) := fun hh =>
+      h (BPair.lt_of_scale_lt hh)
+    show (if z.scale w < (z.scale w).swap then (z.scale w).swap
+        else z.scale w)
+      = (if z < z.swap then z.swap else z).scale w
+    rw [if_neg h', if_neg h]
 /-- The height's running maximum prices its seed and every member's
 magnitude, one trichotomy per step. -/
 private theorem heightGo : ∀ (l : Poly) (acc : BPair),
@@ -334,6 +356,14 @@ private theorem mag_cases (z : BPair) : mag z = z ∨ mag z = z.swap := by
   | false =>
     exact Or.inl (if_neg (fun hlt =>
       Bool.noConfusion ((decide_eq_true hlt).symm.trans h)))
+
+/-- The magnitude's comparison at a common factor: a bound holding at
+the datum and at its balance partner holds at the magnitude. -/
+theorem mag_mul_le {z M k : BPair} (h1 : k * z ≤ M)
+    (h2 : k * z.swap ≤ M) : k * mag z ≤ M := by
+  cases mag_cases z with
+  | inl h => rw [h]; exact h1
+  | inr h => rw [h]; exact h2
 
 /-- A datum at or above the sum's unit at both members reads its
 own balance partner: both sit at the unit. -/
@@ -455,22 +485,6 @@ theorem bpow_mono {a b : BPair} (ha : BPair.unit ≤ a) (h : a ≤ b) :
       (BPair.oneValue_symm (BPair.norm_oneValue _))
       (BPair.oneValue_symm (BPair.norm_oneValue _)) hstep
 
-/-- The power passes the product. -/
-theorem bpow_mul (a b : BPair) : ∀ k : Nat,
-    (ground.bpow (a * b) k).oneValue
-      (ground.bpow a k * ground.bpow b k)
-  | 0 => BPair.oneValue_symm (BPair.mul_one_read _)
-  | k + 1 => by
-    refine BPair.oneValue_trans (BPair.norm_oneValue _) ?_
-    refine BPair.oneValue_trans
-      (BPair.mul_congr (BPair.oneValue_refl (a * b)) (bpow_mul a b k)) ?_
-    refine BPair.oneValue_trans
-      (BPair.oneValue_of_eq
-        (BPair.mul_mul_mul_comm a b (ground.bpow a k) (ground.bpow b k))) ?_
-    exact BPair.mul_congr
-      (BPair.oneValue_symm (BPair.norm_oneValue _))
-      (BPair.oneValue_symm (BPair.norm_oneValue _))
-
 /-- The power's magnitude is the magnitude's power. -/
 theorem mag_bpow (x : BPair) : ∀ k : Nat,
     (mag (ground.bpow x k)).oneValue (ground.bpow (mag x) k)
@@ -591,6 +605,17 @@ private theorem powGo_fst (n d : BPair) : ∀ l : List BPair,
       exact BPair.oneValue_of_eq
         (mul_shuffle (ground.getAt BPair.unit t j) (ground.bpow n j)
           (ground.bpow d (t.length - 1 - j)) n)
+
+/-- The pass's value at the monomial fold over the list's keys, the
+fold's own read. -/
+theorem foldPow_read (l : List BPair) (n d : BPair) :
+    (foldPow l n d).oneValue
+      (ground.famFold BPair.add BPair.unit
+        (fun i => ground.getAt BPair.unit l i * ground.bpow n i
+          * ground.bpow d (l.length - 1 - i))
+        (List.range l.length)) :=
+  BPair.oneValue_trans (BPair.oneValue_of_eq (foldPow_eq n d l))
+    (powGo_fst n d l)
 
 /-- The magnitude read through a mapped list's entry. -/
 private theorem getAt_map_mag : ∀ (l : Poly) (i : Nat),
@@ -756,7 +781,7 @@ theorem magFold_clearVar (p : Poly) (c : Pos) (N D : BPair) :
         (ground.bpow D ((poly.vnorm p).length - 1 - i))]
   refine BPair.oneValue_trans
     (BPair.mul_congr
-      (BPair.mul_congr hm (bpow_mul N (BPair.ofPos c) i))
+      (BPair.mul_congr hm (ground.bpow_mul N (BPair.ofPos c) i))
       (BPair.oneValue_refl _)) ?_
   refine BPair.oneValue_trans (BPair.oneValue_of_eq hEq) ?_
   exact BPair.mul_congr (BPair.oneValue_symm hC) (BPair.oneValue_refl _)

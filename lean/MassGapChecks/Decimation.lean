@@ -89,15 +89,18 @@ joint tie the mathematics' own), the forged pivot list at its
 recomputed cap, and the forged third slab and third coupling each
 at its own recomputed chain, every further conjunct standing each
 time.  The two windows' shared decimated data at the spectator
-families `tridiag(3,3,3; 1,1)` and `tridiag(2,3,3; 1,1)`: the
-shared tails, the deviation sandwich, and the cap walk's two steps
-from the unit seed — the contractions `1/3, 1/2` then `3/8, 2/5`,
-the stated brackets `G` and `13/72 G` with the out caps `13/36 G`
-and `6253/115200 G` on the doubled deviations — the vacant
-certificate list refusing, the starved first-step contraction
-refusing the walk alone, and the third family's semantic share
-forgery parting both share reads at once, the two one law's faces
-(clause (i)'s own content).  The decimated count at the count
+families `tridiag(3,3,3; 1,1)` and `tridiag(3,3,4; 1,1)`, the
+perturbation at the last slab and the shared depth `w0 = 2`: the
+head pivots equal below that slab, the tail deviation
+`E = (1/88, 1/12, 1)` sandwiched down to the head at the tail
+transfer factors, and the cap walk run down the tail witnesses
+from the seed deviation `1` at the bracket `G` — the contractions
+`1/3, 1/4` then `3/8, 4/11`, the out caps `25/144 G` on the
+doubled `1/6` and `52825/2230272 G` on the doubled `1/44` — with
+the head-perturbed pair parting both reversed reads, the vacant
+certificate list refusing against the occupied walk, and the seed
+cap forged to `1/2` refusing below the seed deviation.  The
+decimated count at the count
 telescope's four-slab chain: the dropped pivots ride the ball
 around the deck pivot and the count is the head slab's own fold,
 with the parting record at the two-slab chain — the counts part
@@ -113,7 +116,6 @@ forged leading split, at a comparison boundary retagged as a jump,
 at a comparison off its straddle, and at a forged Bézout
 witness.
 -/
-set_option maxRecDepth 1000000
 set_option maxHeartbeats 16000000
 
 open ground lattice fusion elim inertia certconstruct decimation fiberdec
@@ -750,16 +752,20 @@ example : ¬ bulkRead diagB offBf xsBo rsBo [1, 1, 1, 1] AB BB YB XB
     (spOne ⟨2, 1⟩) bspsBo (spOne ⟨2, 1⟩) (spOne ⟨10, 1⟩) := by decide +kernel
 
 /-! The two windows' shared decimated data at the spectator families
-`tridiag(3,3,3; 1,1)` and `tridiag(2,3,3; 1,1)`, the perturbation at
-the first slab: the tail pivots equal beyond it, the deviation
-sandwich `D = (-1, -1/6, -1/40)` telescoping at the transfer
-factors, and the cap walk's two steps from the unit seed — the
-contractions `1/3, 1/2` at the first step and `3/8, 2/5` at the
-second, the step's out cap `13/36 G` on the doubled deviation with
-the walk's own halved bracket `13/72 G` the second step's stated
-pair, and that step's out `6253/115200 G` at the doubled `-1/20`.
-The vacant certificate list refuses against the occupied
-families. -/
+`tridiag(3,3,3; 1,1)` and `tridiag(3,3,4; 1,1)`, the perturbation at
+the last slab and the shared depth `w0 = 2`: the head pivots `3, 8/3`
+agree below that slab and the last head pivot parts at `21/8` against
+`29/8`; the tail deviation `E = (1/88, 1/12, 1)` telescopes down at
+the tail transfer factors, `E_2 = (1/3) E_3 (1/4)` and
+`E_1 = (3/8) E_2 (4/11)`; and the cap walk runs down the tail
+witnesses from the seed deviation `E_3 = 1` at the bracket `G` — the
+first step's contractions `1/3, 1/4` put the doubled `E_2 = 1/6` at
+`(1/9 + 1/16) G = 25/144 G`, and the second step's `3/8, 4/11`, read
+at the halved bracket `25/288 G`, put the doubled `E_1 = 1/44` at
+`(25/288)(9/64 + 16/121) G = 52825/2230272 G`.  The head-perturbed
+pair parts both reversed reads, the vacant certificate list refuses
+against the occupied walk, and the seed cap forged to `1/2` refuses
+below the seed deviation. -/
 
 private def diagW : List Mat := [[[⟨4, 1⟩]], [[⟨4, 1⟩]], [[⟨4, 1⟩]]]
 private def diagW' : List Mat := [[[⟨3, 1⟩]], [[⟨4, 1⟩]], [[⟨4, 1⟩]]]
@@ -779,27 +785,6 @@ private def ysW' : List greenprod.MatQ :=
 private def csW' : List greenprod.MatQ :=
   [⟨[[⟨2, 1⟩]], 2⟩, ⟨[[⟨3, 1⟩]], 5⟩]
 
-example : spectator.capStepRead ⟨[[⟨4, 1⟩]], 8⟩ ⟨[[⟨3, 1⟩]], 5⟩
-    ⟨[[⟨14, 1⟩]], 5⟩ ⟨[[⟨22, 1⟩]], 8⟩ ⟨[[⟨6, 1⟩]], 2⟩ ⟨[[⟨9, 1⟩]], 3⟩
-    GB 13 72 3 8 2 5 spKer spKer (spOne ⟨151, 1⟩) (spOne ⟨7, 1⟩)
-    (spOne ⟨480521, 1⟩) (spOne ⟨19721, 1⟩) := by decide +kernel
-
-example : windowShareRead diagW offW diagW' offW xsW rsW xsW' rsW
-    ysW csW ysW' csW' 0 [1, 1, 1] 1 1 GB
-    [((1, 3), (1, 2), spKer, spKer, spOne ⟨3, 1⟩, spKer,
-       spOne ⟨151, 1⟩, spOne ⟨7, 1⟩),
-     ((3, 8), (2, 5), spKer, spKer, spOne ⟨151, 1⟩, spOne ⟨7, 1⟩,
-       spOne ⟨480521, 1⟩, spOne ⟨19721, 1⟩)] := by decide +kernel
-
-example : ¬ @windowShareRead 1 diagW offW diagW' offW xsW rsW xsW' rsW
-    ysW csW ysW' csW' 0 [1, 1, 1] 1 1 GB [] := by decide +kernel
-example : ¬ windowShareRead diagW offW diagW' offW xsW rsW xsW' rsW
-    ysW csW ysW' csW' 0 [1, 1, 1] 1 1 GB
-    [((1, 4), (1, 2), spOne ⟨1, 8⟩, spKer, spOne ⟨3, 1⟩, spKer,
-       spOne ⟨151, 1⟩, spOne ⟨7, 1⟩),
-     ((3, 8), (2, 5), spKer, spKer, spOne ⟨151, 1⟩, spOne ⟨7, 1⟩,
-       spOne ⟨480521, 1⟩, spOne ⟨19721, 1⟩)] := by decide +kernel
-
 private def diagV : List Mat := [[[⟨4, 1⟩]], [[⟨4, 1⟩]], [[⟨5, 1⟩]]]
 private def xsV : List greenprod.MatQ :=
   [⟨[[⟨30, 1⟩]], 11⟩, ⟨[[⟨12, 1⟩]], 4⟩, ⟨[[⟨5, 1⟩]], 1⟩]
@@ -811,12 +796,61 @@ private def csV : List greenprod.MatQ :=
   [⟨[[⟨2, 1⟩]], 3⟩, ⟨[[⟨4, 1⟩]], 8⟩]
 
 example : greenprod.tailRead diagV offW xsV rsV [1, 1, 1] := by decide +kernel
+
+example : spectator.headShareRead diagW offW diagV offW ysW csW ysV csV
+    2 [1, 1, 1] := by decide +kernel
+example : spectator.tailSandwichRead diagW offW diagV offW xsW rsW xsV rsV
+    2 [1, 1, 1] := by decide +kernel
+example : ¬ spectator.tailSandwichRead diagW offW diagW' offW xsW rsW
+    xsW' rsW 2 [1, 1, 1] := by decide +kernel
+example : ¬ spectator.headShareRead diagW offW diagW' offW ysW csW
+    ysW' csW' 2 [1, 1, 1] := by decide +kernel
+
+example : spectator.capStepRead ⟨[[⟨2, 1⟩]], 3⟩ ⟨[[⟨2, 1⟩]], 4⟩
+    ⟨[[⟨12, 1⟩]], 4⟩ ⟨[[⟨9, 1⟩]], 3⟩ ⟨[[⟨5, 1⟩]], 1⟩ ⟨[[⟨4, 1⟩]], 1⟩
+    GB GB 1 1 1 3 1 4 spKer spKer spKer (spOne ⟨3, 1⟩)
+    (spOne ⟨13, 1⟩) (spOne ⟨589, 1⟩) := by decide +kernel
+
+example : windowShareRead diagW offW diagV offW xsW rsW xsV rsV
+    ysW csW ysV csV 2 0 [1, 1, 1] 1 1 [GB, GB, GB]
+    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, spOne ⟨3, 1⟩,
+       spOne ⟨13, 1⟩, spOne ⟨589, 1⟩⟩,
+     ⟨(1, 1), (3, 8), (4, 11), spKer, spKer, spOne ⟨13, 1⟩,
+       spOne ⟨589, 1⟩, spOne ⟨188057, 1⟩,
+       spOne ⟨9109145, 1⟩⟩] := by decide +kernel
+
+/-- The walk stopped at the observable's depth one: the one certificate
+over the gap of one slab reads, and the two-certificate list refuses
+there, the walk's own count. -/
+example : windowShareRead diagW offW diagV offW xsW rsW xsV rsV
+    ysW csW ysV csV 2 1 [1, 1, 1] 1 1 [GB, GB]
+    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, spOne ⟨3, 1⟩,
+       spOne ⟨13, 1⟩, spOne ⟨589, 1⟩⟩] := by decide +kernel
 example : ¬ windowShareRead diagW offW diagV offW xsW rsW xsV rsV
-    ysW csW ysV csV 0 [1, 1, 1] 1 1 GB
-    [((1, 3), (1, 2), spKer, spKer, spOne ⟨3, 1⟩, spKer,
-       spOne ⟨151, 1⟩, spOne ⟨7, 1⟩),
-     ((3, 8), (2, 5), spKer, spKer, spOne ⟨151, 1⟩, spOne ⟨7, 1⟩,
-       spOne ⟨480521, 1⟩, spOne ⟨19721, 1⟩)] := by decide +kernel
+    ysW csW ysV csV 2 1 [1, 1, 1] 1 1 [GB, GB]
+    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, spOne ⟨3, 1⟩,
+       spOne ⟨13, 1⟩, spOne ⟨589, 1⟩⟩,
+     ⟨(1, 1), (3, 8), (4, 11), spKer, spKer, spOne ⟨13, 1⟩,
+       spOne ⟨589, 1⟩, spOne ⟨188057, 1⟩,
+       spOne ⟨9109145, 1⟩⟩] := by decide +kernel
+
+example : ¬ windowShareRead diagW offW diagW' offW xsW rsW xsW' rsW
+    ysW csW ysW' csW' 2 0 [1, 1, 1] 1 1 [GB, GB, GB]
+    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, spOne ⟨3, 1⟩,
+       spOne ⟨13, 1⟩, spOne ⟨589, 1⟩⟩,
+     ⟨(1, 1), (3, 8), (4, 11), spKer, spKer, spOne ⟨13, 1⟩,
+       spOne ⟨589, 1⟩, spOne ⟨188057, 1⟩,
+       spOne ⟨9109145, 1⟩⟩] := by decide +kernel
+example : ¬ windowShareRead diagW offW diagV offW xsW rsW xsV rsV
+    ysW csW ysV csV 2 0 [1, 1, 1] 1 1 [GB, GB, GB] [] := by
+  decide +kernel
+example : ¬ windowShareRead diagW offW diagV offW xsW rsW xsV rsV
+    ysW csW ysV csV 2 0 [1, 1, 1] 1 2 [GB, GB, GB]
+    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, spOne ⟨3, 1⟩,
+       spOne ⟨13, 1⟩, spOne ⟨589, 1⟩⟩,
+     ⟨(1, 1), (3, 8), (4, 11), spKer, spKer, spOne ⟨13, 1⟩,
+       spOne ⟨589, 1⟩, spOne ⟨188057, 1⟩,
+       spOne ⟨9109145, 1⟩⟩] := by decide +kernel
 
 /-! The decimated count at the ball: the four-slab chain of the
 count telescope carries its dropped pivots `85/21, 21/5, 5` inside

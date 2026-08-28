@@ -64,6 +64,19 @@ families' one constructor. -/
 def ind (l a b : Nat) : List Nat :=
   (List.range l).map (fun k => if a ≤ k && k < b then 1 else 0)
 
+/-- The window keeps the stated length. -/
+theorem ind_len (l a b : Nat) : (ind l a b).length = l :=
+  ground.length_mapRange _ l
+
+/-- The window's entry: one on the keys of the stated interval,
+the count's unit off it. -/
+theorem ind_at (l a b k : Nat) (hk : k < l) :
+    ground.getAt 0 (ind l a b) k
+      = if a ≤ k && k < b then 1 else 0 := by
+  show ground.getAt 0 ((List.range l).map
+    (fun x => if a ≤ x && x < b then 1 else 0)) k = _
+  rw [ground.getAt_map_range 0 _ l k, if_pos hk]
+
 private def addN (v w : List Nat) : List Nat :=
   List.zipWith (fun a b => a + b) v w
 
@@ -163,9 +176,32 @@ def tableB (l : Nat) : Table :=
 def tableC (l : Nat) : Table :=
   ⟨l, lensC l, 1, cartanC l, foldsC l, longFold l 0⟩
 
+/-- The `B` table's length entry: one at the last key, two below
+it. -/
+theorem lensB_at (l i : Nat) (hi : i < l) :
+    ground.getAt 0 (tableB l).lenNums i
+      = if i + 1 == l then 1 else 2 := by
+  show ground.getAt 0 ((List.range l).map
+    (fun x => if x + 1 == l then 1 else 2)) i = _
+  rw [ground.getAt_map_range 0 _ l i, if_pos hi]
+
+/-- The `C` table's length entry: two at the last key, one below
+it. -/
+theorem lensC_at (l i : Nat) (hi : i < l) :
+    ground.getAt 0 (tableC l).lenNums i
+      = if i + 1 == l then 2 else 1 := by
+  show ground.getAt 0 ((List.range l).map
+    (fun x => if x + 1 == l then 2 else 1)) i = _
+  rw [ground.getAt_map_range 0 _ l i, if_pos hi]
+
 /-- The `D` member's table at the rank. -/
 def tableD (l : Nat) : Table :=
   ⟨l, List.replicate l 2, 1, cartanD l, foldsD l, sumFoldD l 0 1⟩
+
+/-- The `D` table's length entry: two at every key. -/
+theorem lensD_at (l i : Nat) (hi : i < l) :
+    ground.getAt 0 (tableD l).lenNums i = 2 :=
+  ground.getAt_replicate 0 2 l i hi
 
 /-! The fixed members' coordinate families and the fold descent. -/
 
@@ -839,17 +875,13 @@ theorem dotB_addR (t : gentable.Table) (F : FundData)
   exact BPair.oneValue_refl _
 
 /-- The pairing's scale at the second slot. -/
-theorem dotB_scaleR (t : gentable.Table) (F : FundData)
-    (hshape : fundShape t F) (c : BPair) (x v : List BPair)
-    (hv : v.length = t.rank) :
+theorem dotB_scaleR (F : FundData) (c : BPair) (x v : List BPair) :
     (dotB F x (elim.vecScale c v)).oneValue (c * dotB F x v) := by
   show (elim.dotP x (elim.matVec F.gram
     (elim.vecScale c v))).oneValue _
   refine BPair.oneValue_trans
     (elim.dotP_oneValue_right x _ _
-      (elim.matVec_vecScale F.gram t.rank
-        (elim.rowsLen_of_allP (fun _ hr => ground.beqEqOf hr)
-          F.gram hshape.2.1) c v hv)) ?_
+      (elim.matVec_vecScale_free F.gram c v)) ?_
   exact elim.dotP_vecScale_right x (elim.matVec F.gram v) c
 
 

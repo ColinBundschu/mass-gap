@@ -6,7 +6,6 @@ pairing by kernel `decide` at the presentation's own values —
 `⟨χ_adj, χ_adj⟩ = 1` with `⟨1, χ_adj⟩` of equal members at
 `χ_adj = |tr U|² - [1 : d_f] tr(U U†)`, `prop:wg`'s pinned
 Weingarten values read through the fiber's own display. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly genericlift states fiber

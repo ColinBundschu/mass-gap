@@ -1,6 +1,7 @@
 import MassGap.Flatstep
 import MassGap.Cellcount
 import MassGap.Truncation
+import MassGap.Decimation
 /-!
 `thm:gappos` clause (v) — the counting sandwich at a cell's two
 couplings.
@@ -60,16 +61,57 @@ monotonicity, and the spectral read closes the cut at any stated
 split of the cut's site datum (`windowCut`, landing
 `speccut.cutTie` whole through `flatstep.flat_spec` and
 `speccut.spec_to_cut`).
+
+The priced cap tier reads (v)'s cap at the identity gram: `magCap`
+and `foldCap`, the entrywise magnitude cap and the pencil's
+derivative-fold cap as decidable reads, and `capId_lo`/`capId_hi`,
+the site datum of the scaled identity against an entrywise-capped
+symmetric datum and their sum, every split positive semidefinite at
+the count's clearing `o·e ≤ ρ` — the dominance comparison priced by
+the cap over the peeled rows (`decimation.dom_quad` at the joined
+row's fold, the cap rejoined at the diagonal key) with
+`lem:inertia`'s witness refused.
+
+The closed-union tier reads (ii)'s boundary clause at the chain's
+carrier: `Piece`, a segment's root-free cell chain or a junction — a
+located boundary point at its own split with the priced tie into a
+flanking positive-semidefinite sample — with `startsAt` the anchored
+head, `closedRead` the union's decidable read, `closedHi` its top,
+`closedGaps` the committed boundaries' open gaps, and `closedPsd`
+the walk: at an anchored occupied list every point from the foot to
+the top reads positive semidefinite at any stated split, the
+pieces' own reads with the gap hypothesis the consumer's, the
+vacant order outright and the covers' brackets keeping their order
+at an occupied width.
+
+The gap tier reads (v)'s counting sandwich at a committed gap: an
+anchored margin certificate at one flank — the scaled identity's
+site datum against the anchor's evaluation, positive semidefinite —
+absorbs the width the entry price sets, and every split at every
+pair point strictly inside the gap reads positive semidefinite
+(`gapPsd_lo` at the lower flank, `gapPsd_hi` at the upper through
+the segment's magnitude read `stage.cmag_seg` and the swap-blind
+magnitude).  Per entry the two-point price `stage.evalC_gap_le`
+prices the value gap by the derivative fold against the committed
+width, the power absorbed at the strict fold base, and the
+common-clearing representatives read the priced value gap as the
+width-denominator-scaled site datum's entry over the joint clearing
+power — the committed comparison `o·(F·W)·c^K ≤ ρ·d_W` pricing the
+fold against the width with the margin absorbing it, the roaming
+factor riding both sides of the descended cap.
+
+The interior's whole read composes the tiers at one window's
+carrier ((ii) and (v) at one statement): `GapCert` a gap's
+certificate with `gapRead`/`gapsRead` the committed gaps' decidable
+reads, and `interiorPsd`: at an anchored occupied piece list whose
+gaps past the anchored head each hold their certificate, every pair
+point from the foot to the top reads every split of its evaluation
+positive semidefinite — the head gap its own vacancy at the start
+read, the point binder the consumer's own ray.
 -/
 
 namespace gappos
 open ground elim inertia certconstruct flatstep
-
-/-- The three-term sum's last two members exchange. -/
-private theorem addLR (A B C : Mat) :
-    matAdd (matAdd A B) C = matAdd (matAdd A C) B := by
-  rw [elim.matAdd_assoc A B C, elim.matAdd_comm B C,
-    elim.matAdd_assoc A C B]
 
 /-- The entrywise sum's congruence at one order, the four row frames
 the square reads' own. -/
@@ -130,7 +172,7 @@ private theorem loSite (H H' G : Mat) (rho x y : Pos) :
       (matScale rho G),
     ← elim.matAdd_assoc (matAdd H (matSwap H'))
       (matAdd (matScale y G) (matSwap (matScale y G))) (matScale rho G),
-    addLR (matAdd H (matSwap H'))
+    elim.matAdd_right_comm (matAdd H (matSwap H'))
       (matAdd (matScale y G) (matSwap (matScale y G))) (matScale rho G)]
 
 /-- The upper comparison's difference datum: the `v'`-datum against
@@ -165,7 +207,7 @@ private theorem tieLo {o : Nat} (H H' S : Mat) (hH : sqAt H o)
     addCongS H (matSwap H') (matAdd H' S) (matSwap H') hH hsw
       (elim.sqAt_matAdd o H' S hH' hS) hsw hHe
       (elim.matOne_refl (matSwap H'))
-  rw [addLR H' S (matSwap H')] at hs1
+  rw [elim.matAdd_right_comm H' S (matSwap H')] at hs1
   exact elim.matOne_trans hs1
     (elim.matAdd_nullL (matAdd H' (matSwap H')) S
       (elim.matNull_add_swap H')
@@ -181,6 +223,1556 @@ private theorem tieHi {H H' S : Mat}
   rw [elim.matSwap_matAdd H (matSwap H'), elim.matSwap_matSwap H',
     elim.matAdd_comm (matSwap H) H'] at hs
   exact hs
+
+/-- The entrywise magnitude cap (`thm:gappos`(v)'s cap pricing):
+every entry's magnitude at or below the stated bound. -/
+def magCap (e : BPair) (S : Mat) : Prop :=
+  (S.all (fun r => r.all (fun x => decide (windowsep.mag x ≤ e)))) = true
+
+instance (e : BPair) (S : Mat) : Decidable (magCap e S) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The pencil's fold cap (`thm:gappos`(v)'s cap pricing): every
+entry's derivative coefficient fold at the stated bound sits at or
+below the one committed read. -/
+def foldCap (S : split.PMat) (N D F : BPair) : Prop :=
+  (S.all (fun r => r.all (fun p => decide
+    (windowsep.magFold (poly.deriv p) N D ≤ F)))) = true
+
+instance (S : split.PMat) (N D F : BPair) :
+    Decidable (foldCap S N D F) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The cap's entry read at stated keys. -/
+private theorem magCap_entry {e : BPair} {S : Mat}
+    (hcap : magCap e S) (i j : Nat) (hi : i < S.length)
+    (hj : j < (ground.getAt ([] : List BPair) S i).length) :
+    windowsep.mag (ground.getAt BPair.unit
+      (ground.getAt ([] : List BPair) S i) j) ≤ e :=
+  of_decide_eq_true
+    (ground.all_getAt BPair.unit _
+      (ground.all_getAt ([] : List BPair) _ hcap i hi) j hj)
+
+/-- The magnitude's swapped floor: the memberwise swap of a
+magnitude sits at or below the datum. -/
+private theorem swapMag_le (z : BPair) :
+    (windowsep.mag z).swap ≤ z := by
+  have h := ground.leB_swap (windowsep.swap_le_mag z)
+  rw [ground.BPair.swap_swap] at h
+  exact h
+
+/-- The magnitudes' fold at a unit-valued companion row: the joined
+row's fold prices at the count against the cap, key by key. -/
+private theorem magSum_cap (e : BPair) : ∀ (r1 r2 : List BPair),
+    r1.length = r2.length →
+    (∀ j, j < r1.length →
+      (ground.getAt BPair.unit r1 j).oneValue BPair.unit) →
+    (∀ j, j < r2.length →
+      windowsep.mag (ground.getAt BPair.unit r2 j) ≤ e) →
+    decimation.magSum (elim.vecAdd r1 r2) ≤ BPair.ofNat r2.length * e
+  | [], [], _, _, _ => Or.inl (BPair.oneValue_symm (BPair.unit_mul e))
+  | [], _ :: _, hl, _, _ => nomatch hl
+  | _ :: _, [], hl, _, _ => nomatch hl
+  | x1 :: t1, x2 :: t2, hl, h1, h2 => by
+    have hx1 : x1.oneValue BPair.unit :=
+      h1 0 (Nat.succ_le_succ (Nat.zero_le t1.length))
+    have hx2 : windowsep.mag x2 ≤ e :=
+      h2 0 (Nat.succ_le_succ (Nat.zero_le t2.length))
+    have hrec := magSum_cap e t1 t2 (Nat.succ.inj hl)
+      (fun j hj => h1 (j + 1) (Nat.succ_le_succ hj))
+      (fun j hj => h2 (j + 1) (Nat.succ_le_succ hj))
+    have hm : (windowsep.mag (x1 + x2)).oneValue (windowsep.mag x2) :=
+      windowsep.mag_congr (BPair.oneValue_trans
+        (BPair.add_congr hx1 (BPair.oneValue_refl x2))
+        (BPair.unit_add x2))
+    show windowsep.mag (x1 + x2)
+        + decimation.magSum (elim.vecAdd t1 t2)
+      ≤ BPair.ofNat (t2.length + 1) * e
+    refine ground.leB_congr_right
+      (BPair.oneValue_symm (ground.ofNat_succ_mul t2.length e)) ?_
+    rw [BPair.add_comm (windowsep.mag (x1 + x2))
+      (decimation.magSum (elim.vecAdd t1 t2))]
+    exact ground.leB_add hrec (ground.leB_congr_left
+      (BPair.oneValue_symm hm) hx2)
+
+/-- The off-row fold at a unit-off-key first row against a capped
+second: the joined row's fold with the cap rejoined prices at the
+count against the cap, the diagonal key's own budget the join's. -/
+private theorem offFold_cap (e : BPair) : ∀ (i : Nat)
+    (r1 r2 : List BPair), r1.length = r2.length →
+    i < r1.length →
+    (∀ j, j < r1.length → ¬ j = i →
+      (ground.getAt BPair.unit r1 j).oneValue BPair.unit) →
+    (∀ j, j < r2.length →
+      windowsep.mag (ground.getAt BPair.unit r2 j) ≤ e) →
+    decimation.offFold i (elim.vecAdd r1 r2) + e
+      ≤ BPair.ofNat r2.length * e
+  | i, [], [], _, hi, _, _ => absurd hi (Nat.not_lt_zero i)
+  | _, [], _ :: _, hl, _, _, _ => nomatch hl
+  | _, _ :: _, [], hl, _, _, _ => nomatch hl
+  | 0, _ :: t1, _ :: t2, hl, _, h1, h2 => by
+    show decimation.magSum (elim.vecAdd t1 t2) + e
+      ≤ BPair.ofNat (t2.length + 1) * e
+    refine ground.leB_congr_right
+      (BPair.oneValue_symm (ground.ofNat_succ_mul t2.length e)) ?_
+    exact ground.leB_add
+      (magSum_cap e t1 t2 (Nat.succ.inj hl)
+        (fun j hj => h1 (j + 1) (Nat.succ_le_succ hj)
+          (fun hh => Nat.noConfusion hh))
+        (fun j hj => h2 (j + 1) (Nat.succ_le_succ hj)))
+      (ground.leB_refl e)
+  | i + 1, x1 :: t1, x2 :: t2, hl, hi, h1, h2 => by
+    have hx1 : x1.oneValue BPair.unit :=
+      h1 0 (Nat.succ_le_succ (Nat.zero_le t1.length))
+        (fun hh => Nat.noConfusion hh)
+    have hx2 : windowsep.mag x2 ≤ e :=
+      h2 0 (Nat.succ_le_succ (Nat.zero_le t2.length))
+    have hm : (windowsep.mag (x1 + x2)).oneValue (windowsep.mag x2) :=
+      windowsep.mag_congr (BPair.oneValue_trans
+        (BPair.add_congr hx1 (BPair.oneValue_refl x2))
+        (BPair.unit_add x2))
+    have hrec := offFold_cap e i t1 t2 (Nat.succ.inj hl)
+      (Nat.lt_of_succ_lt_succ hi)
+      (fun j hj hne => h1 (j + 1) (Nat.succ_le_succ hj)
+        (fun hh => hne (Nat.succ.inj hh)))
+      (fun j hj => h2 (j + 1) (Nat.succ_le_succ hj))
+    show windowsep.mag (x1 + x2)
+        + decimation.offFold i (elim.vecAdd t1 t2) + e
+      ≤ BPair.ofNat (t2.length + 1) * e
+    refine ground.leB_congr_right
+      (BPair.oneValue_symm (ground.ofNat_succ_mul t2.length e)) ?_
+    have hasm : decimation.offFold i (elim.vecAdd t1 t2) + e
+        + windowsep.mag (x1 + x2)
+      ≤ BPair.ofNat t2.length * e + e :=
+      ground.leB_add hrec
+        (ground.leB_congr_left (BPair.oneValue_symm hm) hx2)
+    have heq : decimation.offFold i (elim.vecAdd t1 t2) + e
+          + windowsep.mag (x1 + x2)
+        = windowsep.mag (x1 + x2)
+          + decimation.offFold i (elim.vecAdd t1 t2) + e := by
+      rw [BPair.add_comm (decimation.offFold i (elim.vecAdd t1 t2) + e)
+        (windowsep.mag (x1 + x2)),
+        BPair.add_assoc (windowsep.mag (x1 + x2))
+          (decimation.offFold i (elim.vecAdd t1 t2)) e]
+    exact ground.leB_congr_left (BPair.oneValue_of_eq heq) hasm
+
+/-- A member joined to its memberwise swap reads the sum's unit. -/
+private theorem addSwapB (x : BPair) :
+    (x + x.swap).oneValue BPair.unit := by
+  show x.fst + x.snd + Pos.one = Pos.one + (x.snd + x.fst)
+  rw [ground.add_comm x.fst x.snd,
+    ground.add_comm (x.snd + x.fst) Pos.one]
+
+/-- The scaled identity's entry at stated keys, the indicator's
+own scale. -/
+private theorem entry_scaleId (o : Nat) (rho : ground.Pos)
+    (i j : Nat) (hi : i < o) (hj : j < o) :
+    ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+        (matScale rho (idMat o)) i) j
+      = (if j = i then BPair.ofNat 1 else BPair.unit).scale rho := by
+  have hil : i < (idMat o).length := by
+    rw [show (idMat o).length = o from
+      ground.length_mapRange (elim.idRow o) o]
+    exact hi
+  have hjl : j < (ground.getAt ([] : List BPair) (idMat o) i).length := by
+    rw [inertia.idMat_row o i hi, elim.length_idRow o i]
+    exact hj
+  show ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+      ((idMat o).map (fun r => r.map (fun x => x.scale rho))) i) j
+    = (if j = i then BPair.ofNat 1 else BPair.unit).scale rho
+  rw [ground.getAt_map ([] : List BPair) ([] : List BPair)
+      (fun r => r.map (fun x => x.scale rho)) (idMat o) i hil,
+    ground.getAt_map BPair.unit BPair.unit
+      (fun x => x.scale rho) _ j hjl,
+    inertia.getAt_idMat o i j hi hj]
+
+/-- The scaled identity keeps the stated order. -/
+private theorem sqAt_scaleId (o : Nat) (rho : ground.Pos) :
+    sqAt (matScale rho (idMat o)) o :=
+  inertia.sqAt_matScale o rho (idMat o)
+    (elim.sqAt_of (inertia.idMat_len o) (inertia.idMat_rows o))
+
+/-- The symmetric datum's entry exchange at stated keys. -/
+private theorem entSym (o : Nat) (S : Mat) (hS : sqAt S o)
+    (hsym : matOneValue S (transposeM S)) (i j : Nat)
+    (hi : i < o) (hj : j < o) :
+    (ground.getAt BPair.unit
+        (ground.getAt ([] : List BPair) S i) j).oneValue
+      (ground.getAt BPair.unit
+        (ground.getAt ([] : List BPair) S j) i) := by
+  have e := poly.oneValue_getAt j
+    (elim.matOne_entries S (transposeM S) hsym i
+      (by rw [elim.sqAt_len hS]; exact hi))
+  rw [elim.getAt_transposeM BPair.unit S
+    (elim.rowsLen_of_sqAt hS) i j hi
+    (by rw [elim.sqAt_len hS]; exact hj)] at e
+  exact e
+
+/-- The joined pencil at the scaled identity keeps the entrywise
+symmetry. -/
+private theorem symAdd (o : Nat) (S : Mat) (rho : ground.Pos)
+    (hS : sqAt S o) (hsym : matOneValue S (transposeM S)) :
+    matOneValue (matAdd (matScale rho (idMat o)) S)
+      (transposeM (matAdd (matScale rho (idMat o)) S)) := by
+  have hIsq : sqAt (matScale rho (idMat o)) o := sqAt_scaleId o rho
+  have hDsq : sqAt (matAdd (matScale rho (idMat o)) S) o :=
+    elim.sqAt_matAdd o _ S hIsq hS
+  have hDr : elim.rowsLen o (matAdd (matScale rho (idMat o)) S) :=
+    elim.rowsLen_of_sqAt hDsq
+  have hDl : (matAdd (matScale rho (idMat o)) S).length = o :=
+    elim.sqAt_len hDsq
+  have hTl : (transposeM (matAdd (matScale rho (idMat o)) S)).length
+      = o := elim.transposeLen _ hDr hDl
+  have hTr : elim.rowsLen o
+      (transposeM (matAdd (matScale rho (idMat o)) S)) := by
+    have h0 := elim.rowsLen_transposeM
+      (matAdd (matScale rho (idMat o)) S)
+    rw [hDl] at h0
+    exact h0
+  refine elim.matOne_of_entries _ _ o hDl hDr hTl hTr ?_
+  intro i j hi hj
+  have hent : ∀ a b : Nat, a < o → b < o →
+      ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+          (matAdd (matScale rho (idMat o)) S) a) b
+        = (if b = a then BPair.ofNat 1 else BPair.unit).scale rho
+          + ground.getAt BPair.unit
+              (ground.getAt ([] : List BPair) S a) b := by
+    intro a b ha hb
+    rw [elim.getAt_matAdd _ S a
+        (by rw [elim.sqAt_len hIsq]; exact ha)
+        (by rw [elim.sqAt_len hS]; exact ha),
+      elim.getAt_vecAdd _ _ b
+        (by rw [elim.rowsLen_getAt _ a (elim.rowsLen_of_sqAt hIsq)
+            (by rw [elim.sqAt_len hIsq]; exact ha)]; exact hb)
+        (by rw [elim.rowsLen_getAt _ a (elim.rowsLen_of_sqAt hS)
+            (by rw [elim.sqAt_len hS]; exact ha)]; exact hb),
+      entry_scaleId o rho a b ha hb]
+  rw [elim.getAt_transposeM BPair.unit _ hDr i j hi
+      (by rw [hDl]; exact hj),
+    hent i j hi hj, hent j i hj hi]
+  refine BPair.add_congr ?_ (entSym o S hS hsym i j hi hj)
+  by_cases hji : j = i
+  · rw [hji]
+    exact BPair.oneValue_refl _
+  · rw [if_neg hji, if_neg (fun hh => hji hh.symm)]
+    exact BPair.oneValue_refl _
+
+/-- The priced cap's quadratic floor at the scaled identity: the
+joined datum's form clears the vacant fold at every stated vector,
+the dominance comparison priced by the cap. -/
+private theorem capQuad (o : Nat) (S : Mat) (e : BPair)
+    (rho : ground.Pos)
+    (hS : sqAt S o) (hsym : matOneValue S (transposeM S))
+    (hcap : magCap e S)
+    (hcl : BPair.ofNat o * e ≤ BPair.ofPos rho)
+    (u : List BPair) (hu : u.length = o) :
+    elim.dotN (List.replicate o BPair.unit)
+        (List.zipWith (· * ·) u u)
+      ≤ elim.dotN u (elim.matVec
+        (matAdd (matScale rho (idMat o)) S) u) := by
+  have hIsq := sqAt_scaleId o rho
+  have hSl : S.length = o := elim.sqAt_len hS
+  have hIl : (matScale rho (idMat o)).length = o := elim.sqAt_len hIsq
+  have hdom : ∀ i, i < o →
+      decimation.offFold i (ground.getAt ([] : List BPair)
+          (matAdd (matScale rho (idMat o)) S) i)
+        + ground.getAt BPair.unit (List.replicate o BPair.unit) i
+      ≤ ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+          (matAdd (matScale rho (idMat o)) S) i) i := by
+    intro i hi
+    have hrow := elim.getAt_matAdd (matScale rho (idMat o)) S i
+      (by rw [hIl]; exact hi) (by rw [hSl]; exact hi)
+    have hrXl : (ground.getAt ([] : List BPair)
+        (matScale rho (idMat o)) i).length = o :=
+      elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hIsq)
+        (by rw [hIl]; exact hi)
+    have hrSl : (ground.getAt ([] : List BPair) S i).length = o :=
+      elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hS)
+        (by rw [hSl]; exact hi)
+    rw [hrow, ground.getAt_replicate_self BPair.unit o i,
+      elim.getAt_vecAdd _ _ i (by rw [hrXl]; exact hi)
+        (by rw [hrSl]; exact hi),
+      entry_scaleId o rho i i hi hi, if_pos rfl]
+    have hcapRow : ∀ j, j < (ground.getAt ([] : List BPair)
+          S i).length →
+        windowsep.mag (ground.getAt BPair.unit
+          (ground.getAt ([] : List BPair) S i) j) ≤ e :=
+      fun j hj => magCap_entry hcap i j (by rw [hSl]; exact hi) hj
+    have hoff := offFold_cap e i _ _ (hrXl.trans hrSl.symm)
+      (by rw [hrXl]; exact hi)
+      (fun j hj hne => by
+        rw [entry_scaleId o rho i j hi
+          (by rw [hrXl] at hj; exact hj), if_neg hne]
+        exact BPair.oneValue_symm (ground.unitScale rho))
+      hcapRow
+    rw [hrSl] at hoff
+    have hoffr := ground.leB_trans hoff hcl
+    have hmv : decimation.offFold i (elim.vecAdd
+          (ground.getAt ([] : List BPair) (matScale rho (idMat o)) i)
+          (ground.getAt ([] : List BPair) S i))
+        ≤ BPair.ofPos rho + e.swap := by
+      refine ground.leB_congr_left ?_
+        (ground.leB_add hoffr (ground.leB_refl e.swap))
+      refine BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.add_assoc _ e e.swap)) ?_
+      exact BPair.oneValue_trans
+        (BPair.add_congr (BPair.oneValue_refl _) (addSwapB e))
+        (BPair.add_unit _)
+    have hswapii : e.swap ≤ ground.getAt BPair.unit
+        (ground.getAt ([] : List BPair) S i) i :=
+      ground.leB_trans
+        (ground.leB_swap (hcapRow i (by rw [hrSl]; exact hi)))
+        (swapMag_le _)
+    have hscale1 : (BPair.ofPos rho).oneValue
+        ((BPair.ofNat 1).scale rho) := by
+      show rho + Pos.one + Pos.one * rho
+        = (Pos.one + Pos.one) * rho + Pos.one
+      rw [ground.right_distrib Pos.one Pos.one rho,
+        ground.one_mul rho, ground.add_assoc rho Pos.one rho,
+        ground.add_comm Pos.one rho,
+        ← ground.add_assoc rho rho Pos.one]
+    refine ground.leB_congr_left
+      (BPair.oneValue_symm (BPair.add_unit _)) ?_
+    exact ground.leB_trans hmv
+      (ground.leB_add (Or.inl hscale1) hswapii)
+  have hDsq : sqAt (matAdd (matScale rho (idMat o)) S) o :=
+    elim.sqAt_matAdd o _ S hIsq hS
+  exact decimation.dom_quad
+    (matAdd (matScale rho (idMat o)) S) o
+    (List.replicate o BPair.unit) hDsq
+    (ground.length_replicate BPair.unit o)
+    (symAdd o S rho hS hsym) hdom u hu
+
+/-- The entrywise cap at the memberwise swap, the magnitudes
+swap-blind. -/
+private theorem magCap_swap {e : BPair} {S : Mat} (h : magCap e S) :
+    magCap e (elim.matSwap S) := by
+  refine ground.all_of_getAt ([] : List BPair) _ (elim.matSwap S)
+    (fun i hi => ?_)
+  have hil : i < S.length := by
+    rw [← elim.length_matSwap S]
+    exact hi
+  show (ground.getAt ([] : List BPair)
+      (S.map (fun r => r.map BPair.swap)) i).all
+      (fun x => decide (windowsep.mag x ≤ e)) = true
+  rw [ground.getAt_map ([] : List BPair) ([] : List BPair)
+    (fun r => r.map BPair.swap) S i hil]
+  refine ground.all_of_getAt BPair.unit _ _ (fun j hj => ?_)
+  have hjl : j < (ground.getAt ([] : List BPair) S i).length := by
+    rw [← ground.length_map BPair.swap
+      (ground.getAt ([] : List BPair) S i)]
+    exact hj
+  rw [ground.getAt_map BPair.unit BPair.unit BPair.swap _ j hjl,
+    windowsep.mag_swap]
+  exact ground.all_getAt BPair.unit _
+    (ground.all_getAt ([] : List BPair) _ h i hil) j hjl
+
+/-- The memberwise swap keeps the entrywise symmetry. -/
+private theorem swapSym (o : Nat) (S : Mat) (hS : sqAt S o)
+    (hsym : matOneValue S (transposeM S)) :
+    matOneValue (elim.matSwap S) (transposeM (elim.matSwap S)) := by
+  have hSsq := elim.sqAt_matSwap o S hS
+  have hDl := elim.sqAt_len hSsq
+  have hDr := elim.rowsLen_of_sqAt hSsq
+  have hTl : (transposeM (elim.matSwap S)).length = o :=
+    elim.transposeLen _ hDr hDl
+  have hTr : elim.rowsLen o (transposeM (elim.matSwap S)) := by
+    have h0 := elim.rowsLen_transposeM (elim.matSwap S)
+    rw [hDl] at h0
+    exact h0
+  refine elim.matOne_of_entries _ _ o hDl hDr hTl hTr ?_
+  intro i j hi hj
+  have hent : ∀ a b : Nat, a < o → b < o →
+      ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+          (elim.matSwap S) a) b
+        = (ground.getAt BPair.unit
+            (ground.getAt ([] : List BPair) S a) b).swap := by
+    intro a b ha hb
+    have hal : a < S.length := by
+      rw [elim.sqAt_len hS]
+      exact ha
+    have hbl : b < (ground.getAt ([] : List BPair) S a).length := by
+      rw [elim.rowsLen_getAt _ a (elim.rowsLen_of_sqAt hS) hal]
+      exact hb
+    show ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+        (S.map (fun r => r.map BPair.swap)) a) b = _
+    rw [ground.getAt_map ([] : List BPair) ([] : List BPair)
+        (fun r => r.map BPair.swap) S a hal,
+      ground.getAt_map BPair.unit BPair.unit BPair.swap _ b hbl]
+  rw [elim.getAt_transposeM BPair.unit _ hDr i j hi
+      (by rw [hDl]; exact hj),
+    hent i j hi hj, hent j i hj hi]
+  exact ground.swap_congr (entSym o S hS hsym i j hi hj)
+
+/-- (`thm:gappos`(v)'s priced cap, the upper side at the identity
+gram): the scaled identity joined to an entrywise-capped symmetric
+datum reads every split positive semidefinite at the count's
+clearing. -/
+theorem capId_hi (o : Nat) (S : Mat) (e : BPair)
+    (rho : ground.Pos) (sp : Split o)
+    (hS : sqAt S o) (hsym : matOneValue S (transposeM S))
+    (hcap : magCap e S)
+    (hcl : BPair.ofNat o * e ≤ BPair.ofPos rho)
+    (h : splitRead (matAdd (matScale rho (idMat o)) S) sp) :
+    psdAt sp := by
+  cases Nat.eq_zero_or_pos (revAt sp) with
+  | inl h0 => exact h0
+  | inr hpos =>
+    obtain ⟨u, hu, hlt⟩ := rev_witness _ sp h hpos
+    exact absurd hlt (ground.leB_not_lt
+      (ground.leB_congr_left
+        (elim.dotN_nullL (List.replicate o BPair.unit)
+          (List.zipWith (· * ·) u u) (poly.unitTail_replicate o))
+        (capQuad o S e rho hS hsym hcap hcl u hu)))
+
+/-! The gap tier (`thm:gappos`(v)'s counting sandwich at a committed
+gap): the arithmetic privates, the quadratic-form reads, the
+entrywise price at the common clearing, and the two anchored gap
+theorems. -/
+
+/-- (`thm:gappos`(v)'s priced cap, the lower side at the identity
+gram): the site datum of the scaled identity against an
+entrywise-capped symmetric datum reads every split positive
+semidefinite at the count's clearing. -/
+theorem capId_lo (o : Nat) (S : Mat) (e : BPair)
+    (rho : ground.Pos) (sp : Split o)
+    (hS : sqAt S o) (hsym : matOneValue S (transposeM S))
+    (hcap : magCap e S)
+    (hcl : BPair.ofNat o * e ≤ BPair.ofPos rho)
+    (h : splitRead (siteDatum (matScale rho (idMat o)) S) sp) :
+    psdAt sp :=
+  capId_hi o (elim.matSwap S) e rho sp
+    (elim.sqAt_matSwap o S hS) (swapSym o S hS hsym)
+    (magCap_swap hcap) hcl h
+
+/-- The natural one keeps under every power of a datum at or
+beyond it. -/
+private theorem oneLe_bpow {D : BPair} (h : BPair.ofNat 1 ≤ D) :
+    ∀ L : Nat, BPair.ofNat 1 ≤ ground.bpow D L
+  | 0 => ground.leB_refl _
+  | L + 1 => by
+    refine ground.leB_congr_right
+      (BPair.oneValue_symm (BPair.norm_oneValue (D * ground.bpow D L)))
+      ?_
+    refine ground.leB_trans h ?_
+    refine ground.leB_congr_left (BPair.mul_one_read D) ?_
+    exact ground.leB_mulR
+      (ground.leB_trans (ground.leB_of_lt (ground.unitLtOfPos _)) h)
+      (oneLe_bpow h L)
+
+/-- A summand keeping under its own join reads the further summand
+at or above the sum's unit. -/
+private theorem unitLe_of_le_add {a x : BPair} (h : a ≤ a + x) :
+    BPair.unit ≤ x := by
+  have h0 : a.fst + (a.snd + x.snd) ≤ a.fst + x.fst + a.snd := h
+  rw [← ground.add_assoc a.fst a.snd x.snd] at h0
+  rw [ground.add_comm (a.fst + a.snd) x.snd] at h0
+  rw [ground.add_comm a.fst x.fst, ground.add_assoc x.fst a.fst a.snd]
+    at h0
+  have h2 : x.snd ≤ x.fst := ground.posLeCancelR h0
+  show Pos.one + x.snd ≤ x.fst + Pos.one
+  rw [ground.add_comm Pos.one x.snd]
+  exact ground.posLeAdd h2 (Or.inl rfl)
+
+/-- The composite product exchanges. -/
+private theorem cmulComm (x y : ground.CPair) : x * y = y * x := by
+  obtain ⟨xn, xc⟩ := x
+  obtain ⟨yn, yc⟩ := y
+  show CPair.mk (xn * yn) (xc * yc) = CPair.mk (yn * xn) (yc * xc)
+  rw [BPair.mul_comm xn yn, ground.mul_comm xc yc]
+
+/-- The composite magnitude sits at or above the composite unit. -/
+private theorem cleUnitCmag (x : ground.CPair) :
+    stage.unitC ≤ stage.cmag x := by
+  obtain ⟨n, d⟩ := x
+  have h1 : stage.unitC ≤ (⟨windowsep.mag n, d⟩ : ground.CPair) := by
+    show BPair.unit.scale d ≤ (windowsep.mag n).scale Pos.one
+    refine ground.leB_congr ?_
+      (BPair.oneValue_of_eq (BPair.scale_one (windowsep.mag n)).symm)
+      (windowsep.unitLe_mag n)
+    show Pos.one + Pos.one * d = Pos.one * d + Pos.one
+    exact ground.add_comm Pos.one (Pos.one * d)
+  exact ground.CPair.le_congr
+    (ground.CPair.oneValue_refl stage.unitC)
+    (ground.CPair.oneValue_symm (stage.cmag_num n d)) h1
+
+/-- A nonnegative composite keeps under its product with a datum at
+or beyond the natural one. -/
+private theorem cleAbsorbC {x : ground.CPair} {c : BPair}
+    (hx : stage.unitC ≤ x) (hc : BPair.ofNat 1 ≤ c) :
+    x ≤ x * stage.ofB c := by
+  obtain ⟨a, b⟩ := x
+  have ha : BPair.unit ≤ a := stage.unitC_le_fst hx
+  have h1 : a * BPair.ofNat 1 ≤ a * c := ground.leB_mulR ha hc
+  show a.scale (b * Pos.one) ≤ (a * c).scale b
+  refine ground.leB_congr ?_ (BPair.oneValue_refl ((a * c).scale b))
+    (ground.leB_scale (ground.leB_congr_left
+      (BPair.mul_one_read a) h1) b)
+  refine BPair.oneValue_of_eq ?_
+  rw [ground.mul_one b]
+
+/-- The composite product keeps a second-factor comparison at a
+nonnegative first factor. -/
+private theorem cleMulC {x : ground.CPair} (hx : stage.unitC ≤ x)
+    {y y' : ground.CPair} (h : y ≤ y') : x * y ≤ x * y' := by
+  obtain ⟨a, b⟩ := x
+  obtain ⟨c, d⟩ := y
+  obtain ⟨e, f⟩ := y'
+  have ha : BPair.unit ≤ a := stage.unitC_le_fst hx
+  have h0 : c.scale f ≤ e.scale d := h
+  have h1 : (a * (c.scale f)).scale b ≤ (a * (e.scale d)).scale b :=
+    ground.leB_scale (ground.leB_mulR ha h0) b
+  show (a * c).scale (b * f) ≤ (a * e).scale (b * d)
+  refine ground.leB_congr (BPair.oneValue_of_eq ?_)
+    (BPair.oneValue_of_eq ?_) h1
+  · rw [BPair.mul_scale a c f, BPair.scale_scale,
+      ground.mul_comm f b]
+  · rw [BPair.mul_scale a e d, BPair.scale_scale,
+      ground.mul_comm d b]
+
+/-- The width from a covered point up to a further one sits at or
+above the composite unit. -/
+private theorem cleUnitAdd {u v : ground.CPair} (h : v ≤ u) :
+    stage.unitC ≤ u + ground.CPair.swap v := by
+  obtain ⟨un, uc⟩ := u
+  obtain ⟨vn, vc⟩ := v
+  have h0 : vn.scale uc ≤ un.scale vc := h
+  have h1 : BPair.unit ≤ un.scale vc + (vn.swap).scale uc := by
+    refine ground.leB_unit_add (V := (vn.swap).scale uc) ?_
+    show vn.scale uc ≤ un.scale vc
+    exact h0
+  show BPair.unit.scale (uc * vc)
+    ≤ (un.scale vc + (vn.swap).scale uc).scale Pos.one
+  refine ground.leB_congr ?_
+    (BPair.oneValue_of_eq
+      (BPair.scale_one (un.scale vc + (vn.swap).scale uc)).symm) h1
+  show Pos.one + Pos.one * (uc * vc) = Pos.one * (uc * vc) + Pos.one
+  exact ground.add_comm Pos.one (Pos.one * (uc * vc))
+
+/-- The composite sum keeps a second-summand comparison. -/
+private theorem cleAddR {x y y' : ground.CPair} (h : y ≤ y') :
+    x + y ≤ x + y' := by
+  obtain ⟨xn, xc⟩ := x
+  obtain ⟨yn, yc⟩ := y
+  obtain ⟨zn, zc⟩ := y'
+  have h0 : yn.scale zc ≤ zn.scale yc := h
+  have hcore : yn.scale (zc * (xc * xc)) ≤ zn.scale (yc * (xc * xc)) := by
+    have h1 := ground.leB_scale h0 (xc * xc)
+    rw [BPair.scale_scale, BPair.scale_scale] at h1
+    exact h1
+  have iA : zc * (xc * yc) = yc * (xc * zc) := by
+    rw [← ground.mul_assoc zc xc yc, ground.mul_comm zc xc,
+      ground.mul_assoc xc zc yc, ground.mul_comm zc yc,
+      ← ground.mul_assoc xc yc zc, ground.mul_comm xc yc,
+      ground.mul_assoc yc xc zc]
+  have iB : zc * (xc * xc) = xc * (xc * zc) := by
+    rw [ground.mul_comm zc (xc * xc), ground.mul_assoc xc xc zc]
+  have iC : yc * (xc * xc) = xc * (xc * yc) := by
+    rw [ground.mul_comm yc (xc * xc), ground.mul_assoc xc xc yc]
+  show (xn.scale yc + yn.scale xc).scale (xc * zc)
+    ≤ (xn.scale zc + zn.scale xc).scale (xc * yc)
+  refine ground.leB_congr (BPair.oneValue_of_eq ?_)
+    (BPair.oneValue_of_eq ?_)
+    (ground.leB_add
+      (ground.leB_refl (xn.scale (zc * (xc * yc)))) hcore)
+  · rw [BPair.scale_add, BPair.scale_scale, BPair.scale_scale,
+      iA, iB]
+  · rw [BPair.scale_add, BPair.scale_scale, BPair.scale_scale,
+      iC]
+
+/-- The composite memberwise swap reverses the at-or-below read. -/
+private theorem cswapLe {u v : ground.CPair} (h : u ≤ v) :
+    ground.CPair.swap v ≤ ground.CPair.swap u := by
+  obtain ⟨un, uc⟩ := u
+  obtain ⟨vn, vc⟩ := v
+  have h0 : un.scale vc ≤ vn.scale uc := h
+  show (vn.swap).scale uc ≤ (un.swap).scale vc
+  exact ground.leB_swap h0
+
+/-- The composite magnitude is blind to the memberwise swap. -/
+private theorem cmagSwapC (z : ground.CPair) :
+    (stage.cmag (ground.CPair.swap z)).oneValue (stage.cmag z) := by
+  obtain ⟨n, d⟩ := z
+  refine ground.CPair.oneValue_trans (stage.cmag_num n.swap d) ?_
+  refine ground.CPair.oneValue_trans ?_
+    (ground.CPair.oneValue_symm (stage.cmag_num n d))
+  rw [windowsep.mag_swap n]
+  exact ground.CPair.oneValue_refl _
+
+/-- The reversed gap is the gap's own memberwise swap. -/
+private theorem flipEq (x y : ground.CPair) :
+    y + ground.CPair.swap x
+      = ground.CPair.swap (x + ground.CPair.swap y) := by
+  obtain ⟨xn, xc⟩ := x
+  obtain ⟨yn, yc⟩ := y
+  show CPair.mk (yn.scale xc + (xn.swap).scale yc) (yc * xc)
+    = CPair.mk ((xn.scale yc + (yn.swap).scale xc).swap) (xc * yc)
+  rw [show (xn.scale yc + (yn.swap).scale xc).swap
+      = ((xn.scale yc).swap + ((yn.swap).scale xc).swap) from
+      (BPair.swap_add (xn.scale yc) ((yn.swap).scale xc)).symm,
+    show ((yn.swap).scale xc).swap = yn.scale xc from rfl,
+    show (xn.scale yc).swap = (xn.swap).scale yc from rfl,
+    BPair.add_comm ((xn.swap).scale yc) (yn.scale xc),
+    ground.mul_comm yc xc]
+
+/-- The form moves across the entrywise one-value read. -/
+private theorem formOne (A B : Mat) (u : List BPair)
+    (h : matOneValue A B) :
+    (quadForm A u).oneValue (quadForm B u) :=
+  elim.dotN_congrR u _ _ (elim.matVec_matOne A B u h)
+
+/-- The positive rescaling keeps the entrywise symmetry. -/
+private theorem symScale (w : ground.Pos) {o : Nat} (M : Mat)
+    (hM : sqAt M o) (hsym : matOneValue M (transposeM M)) :
+    matOneValue (matScale w M) (transposeM (matScale w M)) := by
+  have hL := inertia.sqAt_matScale o w M hM
+  have hLl := elim.sqAt_len hL
+  have hLr := elim.rowsLen_of_sqAt hL
+  have hTl : (transposeM (matScale w M)).length = o :=
+    elim.transposeLen _ hLr hLl
+  have hTr : elim.rowsLen o (transposeM (matScale w M)) := by
+    have h0 := elim.rowsLen_transposeM (matScale w M)
+    rw [hLl] at h0
+    exact h0
+  have hent : ∀ a b : Nat, a < o → b < o →
+      ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+        (matScale w M) a) b
+      = (ground.getAt BPair.unit
+          (ground.getAt ([] : List BPair) M a) b).scale w := by
+    intro a b hao hbo
+    have haM : a < M.length := by
+      rw [elim.sqAt_len hM]; exact hao
+    have hbM : b < (ground.getAt ([] : List BPair) M a).length := by
+      rw [elim.rowsLen_getAt _ a (elim.rowsLen_of_sqAt hM) haM]
+      exact hbo
+    rw [show ground.getAt ([] : List BPair) (matScale w M) a
+        = (ground.getAt ([] : List BPair) M a).map
+          (fun x => x.scale w) from
+        ground.getAt_map ([] : List BPair) ([] : List BPair)
+          _ M a haM,
+      ground.getAt_map BPair.unit BPair.unit _ _ b hbM]
+  refine elim.matOne_of_entries _ _ o hLl hLr hTl hTr ?_
+  intro i j hi hj
+  rw [elim.getAt_transposeM BPair.unit _ hLr i j hi
+      (by rw [hLl]; exact hj),
+    hent i j hi hj, hent j i hj hi]
+  exact BPair.scale_congr w (entSym o M hM hsym i j hi hj)
+
+/-- The composite lift keeps the at-or-below read. -/
+private theorem ofBLe {z z' : BPair} (h : z ≤ z') :
+    stage.ofB z ≤ stage.ofB z' := by
+  show z.scale Pos.one ≤ z'.scale Pos.one
+  exact ground.leB_scale h Pos.one
+
+/-- The fold cap's entry read. -/
+private theorem foldCap_entry {S : split.PMat} {N D F : BPair}
+    (h : foldCap S N D F) (i j : Nat) (hi : i < S.length)
+    (hj : j < (ground.getAt ([] : List poly.Poly) S i).length) :
+    windowsep.magFold (poly.deriv (ground.getAt ([] : poly.Poly)
+      (ground.getAt ([] : List poly.Poly) S i) j)) N D ≤ F :=
+  of_decide_eq_true
+    (ground.all_getAt ([] : poly.Poly) _
+      (ground.all_getAt ([] : List poly.Poly) _ h i hi) j hj)
+
+/-- The common-clearing representative reads the composite
+evaluation: the cleared value at the scaled point over the joint
+clearing power is the evaluation at the point itself. -/
+private theorem repRead (p : poly.Poly) {K : Nat} (hp : p.length ≤ K + 1)
+    (an : BPair) (ac w : ground.Pos) :
+    (⟨poly.evalClear p (an * BPair.ofPos w) (ac * w) K,
+        ground.Pos.pow (ac * w) K⟩ : ground.CPair).oneValue
+      (stage.evalC p ⟨an, ac⟩) := by
+  refine ground.CPair.oneValue_trans
+    (ground.CPair.num_oneValue
+      (BPair.oneValue_symm
+        (poly.eval_clearVar p (ac * w) K (an * BPair.ofPos w)))
+      (ground.Pos.pow (ac * w) K)) ?_
+  refine ground.CPair.oneValue_trans
+    (ground.CPair.oneValue_symm
+      (stage.evalC_read p K hp (an * BPair.ofPos w) (ac * w))) ?_
+  refine ground.CPair.oneValue_trans
+    (stage.evalC_point_congr p (ground.CPair.num_oneValue
+      (BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.mul_comm an (BPair.ofPos w)))
+        (BPair.ofPos_scale w an)) (ac * w))) ?_
+  exact stage.evalC_point_congr p
+    (ground.CPair.scale_oneValue an ac w)
+
+/-- The entry price at the common clearing (`thm:gappos`(v)'s cap
+sentence per entry): the cleared gap between the roaming point's
+value and the anchor's sits within the derivative fold's cap
+against the committed width, at the joint clearing power. -/
+private theorem capEntry (p : poly.Poly) {K : Nat} (hp : p.length ≤ K + 1)
+    (gln : BPair) (glc : ground.Pos) (grn : BPair) (grc : ground.Pos)
+    (vn : BPair) (vc : ground.Pos) (N D F : BPair)
+    (hD : BPair.unit < D)
+    (ha : stage.cmag ⟨gln, glc⟩ * stage.ofB D ≤ stage.ofB N)
+    (hb : stage.cmag ⟨grn, grc⟩ * stage.ofB D ≤ stage.ofB N)
+    (hFp : windowsep.magFold (poly.deriv p) N D ≤ F)
+    (hlv : (⟨gln, glc⟩ : ground.CPair) ≤ ⟨vn, vc⟩)
+    (hvr : (⟨vn, vc⟩ : ground.CPair) ≤ ⟨grn, grc⟩) :
+    BPair.scale (windowsep.mag
+        (poly.evalClear p (vn * BPair.ofPos glc) (vc * glc) K
+          + (poly.evalClear p (gln * BPair.ofPos vc)
+            (glc * vc) K).swap)) (grc * glc)
+      ≤ (F * (grn.scale glc + (gln.swap).scale grc)).scale
+        (ground.Pos.pow (vc * glc) K) := by
+  have hW : stage.unitC ≤ (⟨grn, grc⟩ : ground.CPair)
+      + ground.CPair.swap ⟨gln, glc⟩ :=
+    cleUnitAdd (ground.CPair.le_trans hlv hvr)
+  have hgap := stage.evalC_gap_le p ⟨gln, glc⟩ ⟨grn, grc⟩ ⟨vn, vc⟩
+    N D (ground.leB_of_lt hD) ha hb hlv hvr
+  have habs : stage.cmag (stage.evalC p ⟨vn, vc⟩
+      + ground.CPair.swap (stage.evalC p ⟨gln, glc⟩))
+      ≤ stage.ofB (windowsep.magFold (poly.deriv p) N D)
+        * ((⟨grn, grc⟩ : ground.CPair)
+          + ground.CPair.swap ⟨gln, glc⟩) :=
+    ground.CPair.le_trans
+      (cleAbsorbC (cleUnitCmag _)
+        (oneLe_bpow (ground.oneLeOfUnitLt hD)
+          ((poly.vnorm (poly.deriv p)).length - 1))) hgap
+  have hF2 : stage.ofB (windowsep.magFold (poly.deriv p) N D)
+      * ((⟨grn, grc⟩ : ground.CPair) + ground.CPair.swap ⟨gln, glc⟩)
+      ≤ stage.ofB F * ((⟨grn, grc⟩ : ground.CPair)
+        + ground.CPair.swap ⟨gln, glc⟩) := by
+    rw [cmulComm (stage.ofB (windowsep.magFold (poly.deriv p) N D))
+        ((⟨grn, grc⟩ : ground.CPair) + ground.CPair.swap ⟨gln, glc⟩),
+      cmulComm (stage.ofB F)
+        ((⟨grn, grc⟩ : ground.CPair) + ground.CPair.swap ⟨gln, glc⟩)]
+    exact cleMulC hW (ofBLe hFp)
+  have hpriced := ground.CPair.le_trans habs hF2
+  have hE : (⟨poly.evalClear p (vn * BPair.ofPos glc) (vc * glc) K
+      + (poly.evalClear p (gln * BPair.ofPos vc) (glc * vc) K).swap,
+      ground.Pos.pow (vc * glc) K⟩ : ground.CPair).oneValue
+      (stage.evalC p ⟨vn, vc⟩
+        + ground.CPair.swap (stage.evalC p ⟨gln, glc⟩)) := by
+    refine ground.CPair.oneValue_trans
+      (ground.CPair.oneValue_symm (ground.CPair.add_same
+        (poly.evalClear p (vn * BPair.ofPos glc) (vc * glc) K)
+        ((poly.evalClear p (gln * BPair.ofPos vc) (glc * vc) K).swap)
+        (ground.Pos.pow (vc * glc) K))) ?_
+    refine ground.CPair.add_congr (repRead p hp vn vc glc) ?_
+    refine ground.CPair.oneValue_trans
+      (ground.CPair.den_congr (show ground.Pos.pow (vc * glc) K
+        = ground.Pos.pow (glc * vc) K from by
+        rw [ground.mul_comm vc glc])) ?_
+    exact ground.CPair.swap_congr (repRead p hp gln glc vc)
+  have hcm : stage.cmag (⟨poly.evalClear p (vn * BPair.ofPos glc)
+      (vc * glc) K
+      + (poly.evalClear p (gln * BPair.ofPos vc) (glc * vc) K).swap,
+      ground.Pos.pow (vc * glc) K⟩ : ground.CPair)
+      ≤ stage.ofB F * ((⟨grn, grc⟩ : ground.CPair)
+        + ground.CPair.swap ⟨gln, glc⟩) :=
+    ground.CPair.le_congr
+      (stage.cmag_congr (ground.CPair.oneValue_symm hE))
+      (ground.CPair.oneValue_refl _) hpriced
+  have hnum : (⟨windowsep.mag (poly.evalClear p (vn * BPair.ofPos glc)
+      (vc * glc) K
+      + (poly.evalClear p (gln * BPair.ofPos vc) (glc * vc) K).swap),
+      ground.Pos.pow (vc * glc) K⟩ : ground.CPair)
+      ≤ stage.ofB F * ((⟨grn, grc⟩ : ground.CPair)
+        + ground.CPair.swap ⟨gln, glc⟩) :=
+    ground.CPair.le_congr (stage.cmag_num _ _)
+      (ground.CPair.oneValue_refl _) hcm
+  have h5 : BPair.scale (windowsep.mag
+        (poly.evalClear p (vn * BPair.ofPos glc) (vc * glc) K
+          + (poly.evalClear p (gln * BPair.ofPos vc)
+            (glc * vc) K).swap))
+        (Pos.one * (grc * glc))
+      ≤ (F * (grn.scale glc + (gln.swap).scale grc)).scale
+        (ground.Pos.pow (vc * glc) K) := hnum
+  rw [ground.one_mul (grc * glc)] at h5
+  exact h5
+
+/-- The site datum of two entrywise-symmetric data keeps the
+entrywise symmetry. -/
+private theorem symSite {o : Nat} (X Y : Mat)
+    (hX : sqAt X o) (hY : sqAt Y o)
+    (hsX : matOneValue X (transposeM X))
+    (hsY : matOneValue Y (transposeM Y)) :
+    matOneValue (matAdd X (elim.matSwap Y))
+      (transposeM (matAdd X (elim.matSwap Y))) := by
+  have hA : sqAt (matAdd X (elim.matSwap Y)) o :=
+    elim.sqAt_matAdd o X _ hX (elim.sqAt_matSwap o Y hY)
+  have hAl := elim.sqAt_len hA
+  have hAr := elim.rowsLen_of_sqAt hA
+  have hTl : (transposeM (matAdd X (elim.matSwap Y))).length = o :=
+    elim.transposeLen _ hAr hAl
+  have hTr : elim.rowsLen o (transposeM (matAdd X (elim.matSwap Y))) := by
+    have h0 := elim.rowsLen_transposeM (matAdd X (elim.matSwap Y))
+    rw [hAl] at h0
+    exact h0
+  have hent : ∀ a b : Nat, a < o → b < o →
+      ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+        (matAdd X (elim.matSwap Y)) a) b
+      = ground.getAt BPair.unit
+          (ground.getAt ([] : List BPair) X a) b
+        + (ground.getAt BPair.unit
+            (ground.getAt ([] : List BPair) Y a) b).swap := by
+    intro a b hao hbo
+    have haX : a < X.length := by
+      rw [elim.sqAt_len hX]; exact hao
+    have haY : a < Y.length := by
+      rw [elim.sqAt_len hY]; exact hao
+    have haS : a < (elim.matSwap Y).length := by
+      rw [elim.length_matSwap Y]; exact haY
+    have hbX : b < (ground.getAt ([] : List BPair) X a).length := by
+      rw [elim.rowsLen_getAt _ a (elim.rowsLen_of_sqAt hX) haX]
+      exact hbo
+    have hbY : b < (ground.getAt ([] : List BPair) Y a).length := by
+      rw [elim.rowsLen_getAt _ a (elim.rowsLen_of_sqAt hY) haY]
+      exact hbo
+    have hbS : b < (ground.getAt ([] : List BPair)
+        (elim.matSwap Y) a).length := by
+      rw [elim.rowsLen_getAt _ a
+        (elim.rowsLen_of_sqAt (elim.sqAt_matSwap o Y hY))
+        haS]
+      exact hbo
+    rw [elim.getAt_matAdd X (elim.matSwap Y) a haX haS,
+      elim.getAt_vecAdd _ _ b hbX hbS,
+      show ground.getAt ([] : List BPair) (elim.matSwap Y) a
+        = (ground.getAt ([] : List BPair) Y a).map BPair.swap from
+        ground.getAt_map ([] : List BPair) ([] : List BPair) _ Y a haY,
+      ground.getAt_map BPair.unit BPair.unit BPair.swap _ b hbY]
+  refine elim.matOne_of_entries _ _ o hAl hAr hTl hTr ?_
+  intro i j hi hj
+  rw [elim.getAt_transposeM BPair.unit _ hAr i j hi
+      (by rw [hAl]; exact hj),
+    hent i j hi hj, hent j i hj hi]
+  exact BPair.add_congr (entSym o X hX hsX i j hi hj)
+    (ground.swap_congr (entSym o Y hY hsY i j hi hj))
+
+/-- The rescaled datum's entrywise cap at the entries' own scaled
+magnitudes. -/
+private theorem magCap_scaleOf {o : Nat} (w : ground.Pos)
+    (S : Mat) (e : BPair) (hS : sqAt S o)
+    (h : ∀ i j : Nat, i < o → j < o →
+      BPair.scale (windowsep.mag (ground.getAt BPair.unit
+        (ground.getAt ([] : List BPair) S i) j)) w ≤ e) :
+    magCap e (matScale w S) := by
+  refine ground.all_of_getAt ([] : List BPair) _ _ (fun i hi => ?_)
+  have hiS : i < S.length := by
+    rw [← ground.length_map (fun r => r.map
+      (fun x => BPair.scale x w)) S]
+    exact hi
+  have hio : i < o := by
+    rw [← elim.sqAt_len hS]
+    exact hiS
+  refine ground.all_of_getAt BPair.unit _ _ (fun j hj => ?_)
+  have hjS : j < (ground.getAt ([] : List BPair) S i).length := by
+    rw [← ground.length_map (fun x => BPair.scale x w)
+      (ground.getAt ([] : List BPair) S i)]
+    have he : ground.getAt ([] : List BPair) (matScale w S) i
+        = (ground.getAt ([] : List BPair) S i).map
+          (fun x => BPair.scale x w) :=
+      ground.getAt_map ([] : List BPair) ([] : List BPair) _ S i hiS
+    rw [← he]
+    exact hj
+  have hjo : j < o := by
+    rw [← elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hS) hiS]
+    exact hjS
+  rw [show ground.getAt ([] : List BPair) (matScale w S) i
+      = (ground.getAt ([] : List BPair) S i).map
+        (fun x => BPair.scale x w) from
+      ground.getAt_map ([] : List BPair) ([] : List BPair) _ S i hiS,
+    ground.getAt_map BPair.unit BPair.unit _ _ j hjS]
+  show decide (windowsep.mag ((ground.getAt BPair.unit
+      (ground.getAt ([] : List BPair) S i) j).scale w) ≤ e) = true
+  rw [windowsep.mag_scale]
+  exact decide_eq_true (h i j hio hjo)
+
+/-- The gap's site datum at the common clearing is entrywise capped
+at the priced width (`thm:gappos`(v)'s cap sentence at the record's
+fold cap). -/
+private theorem gapCap {o K : Nat} (S : split.PMat)
+    (hsh : cellcount.pShapeAt S o K)
+    (gln : BPair) (glc : ground.Pos) (grn : BPair) (grc : ground.Pos)
+    (vn : BPair) (vc : ground.Pos) (N D F : BPair)
+    (hD : BPair.unit < D)
+    (ha : stage.cmag ⟨gln, glc⟩ * stage.ofB D ≤ stage.ofB N)
+    (hb : stage.cmag ⟨grn, grc⟩ * stage.ofB D ≤ stage.ofB N)
+    (hF : foldCap S N D F)
+    (hlv : (⟨gln, glc⟩ : ground.CPair) ≤ ⟨vn, vc⟩)
+    (hvr : (⟨vn, vc⟩ : ground.CPair) ≤ ⟨grn, grc⟩) :
+    magCap ((F * (grn.scale glc + (gln.swap).scale grc)).scale
+        (ground.Pos.pow (vc * glc) K))
+      (matScale (grc * glc)
+        (matAdd (cellcount.evalPC S (vn * BPair.ofPos glc)
+            (vc * glc) K)
+          (elim.matSwap (cellcount.evalPC S (gln * BPair.ofPos vc)
+            (glc * vc) K)))) := by
+  have hXsq := cellcount.evalPC_sqAt hsh (vn * BPair.ofPos glc)
+    (vc * glc)
+  have hYsq := cellcount.evalPC_sqAt hsh (gln * BPair.ofPos vc)
+    (glc * vc)
+  refine magCap_scaleOf (grc * glc) _ _
+    (elim.sqAt_matAdd o _ _ hXsq (elim.sqAt_matSwap o _ hYsq))
+    (fun i j hio hjo => ?_)
+  have hiX : i < (cellcount.evalPC S (vn * BPair.ofPos glc)
+      (vc * glc) K).length := by
+    rw [elim.sqAt_len hXsq]; exact hio
+  have hiY : i < (cellcount.evalPC S (gln * BPair.ofPos vc)
+      (glc * vc) K).length := by
+    rw [elim.sqAt_len hYsq]; exact hio
+  have hiS : i < (elim.matSwap (cellcount.evalPC S
+      (gln * BPair.ofPos vc) (glc * vc) K)).length := by
+    rw [elim.length_matSwap]; exact hiY
+  have hiP : i < S.length := by
+    rw [cellcount.pShape_len hsh]; exact hio
+  have hjX : j < (ground.getAt ([] : List BPair)
+      (cellcount.evalPC S (vn * BPair.ofPos glc) (vc * glc) K)
+        i).length := by
+    rw [elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hXsq) hiX]
+    exact hjo
+  have hjY : j < (ground.getAt ([] : List BPair)
+      (cellcount.evalPC S (gln * BPair.ofPos vc) (glc * vc) K)
+        i).length := by
+    rw [elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hYsq) hiY]
+    exact hjo
+  have hjS : j < (ground.getAt ([] : List BPair)
+      (elim.matSwap (cellcount.evalPC S (gln * BPair.ofPos vc)
+        (glc * vc) K)) i).length := by
+    rw [elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt
+      (elim.sqAt_matSwap o _ hYsq)) hiS]
+    exact hjo
+  rw [elim.getAt_matAdd _ _ i hiX hiS,
+    elim.getAt_vecAdd _ _ j hjX hjS,
+    show ground.getAt ([] : List BPair)
+        (elim.matSwap (cellcount.evalPC S (gln * BPair.ofPos vc)
+          (glc * vc) K)) i
+      = (ground.getAt ([] : List BPair)
+          (cellcount.evalPC S (gln * BPair.ofPos vc)
+            (glc * vc) K) i).map BPair.swap from
+      ground.getAt_map ([] : List BPair) ([] : List BPair) _ _ i hiY,
+    ground.getAt_map BPair.unit BPair.unit BPair.swap _ j hjY,
+    cellcount.getAt_evalPC (vn * BPair.ofPos glc) (vc * glc) K S i j,
+    cellcount.getAt_evalPC (gln * BPair.ofPos vc) (glc * vc) K S i j]
+  exact capEntry (ground.getAt ([] : poly.Poly)
+      (ground.getAt ([] : List poly.Poly) S i) j)
+    (cellcount.ent_ble hsh i j) gln glc grn grc vn vc N D F hD
+    ha hb
+    (foldCap_entry hF i j hiP (by
+      rw [elim.rowsLen_getAt _ i (cellcount.pShape_rows hsh) hiP]
+      exact hjo))
+    hlv hvr
+
+/-- The gap's read at the lower anchor (`thm:gappos`(v)'s counting
+sandwich at a committed gap): at a gap whose lower endpoint holds
+the scaled identity's margin certificate, whose endpoints hold the
+committed magnitude bounds, whose entries hold the committed fold
+cap, and whose clearing comparison prices the width below the
+margin, every split at every pair point strictly inside the gap
+reads positive semidefinite — the level's margin absorbing the
+sandwich's width. -/
+theorem gapPsd_lo {o K : Nat} (S : split.PMat)
+    (gln : BPair) (glc : ground.Pos) (grn : BPair) (grc : ground.Pos)
+    (N D F : BPair) (rhoM : ground.Pos) (spM : Split o)
+    (hsh : cellcount.pShapeAt S o K)
+    (hsym : split.pSymAt S o)
+    (hD : BPair.unit < D)
+    (ha : stage.cmag ⟨gln, glc⟩ * stage.ofB D ≤ stage.ofB N)
+    (hb : stage.cmag ⟨grn, grc⟩ * stage.ofB D ≤ stage.ofB N)
+    (hF : foldCap S N D F)
+    (hM : splitRead (siteDatum (cellcount.evalPC S gln glc K)
+      (matScale rhoM (idMat o))) spM)
+    (hMp : psdAt spM)
+    (hcl : BPair.ofNat o
+        * ((F * (grn.scale glc + (gln.swap).scale grc)).scale
+          (ground.Pos.pow glc K))
+      ≤ (BPair.ofPos rhoM).scale (grc * glc)) :
+    ∀ (vn : BPair) (vc : ground.Pos),
+    (⟨gln, glc⟩ : ground.CPair) < ⟨vn, vc⟩ →
+    (⟨vn, vc⟩ : ground.CPair) < ⟨grn, grc⟩ →
+    ∀ sp : Split o,
+    splitRead (cellcount.evalPC S vn vc K) sp → psdAt sp := by
+  intro vn vc hlv hvr sp hsp
+  cases Nat.eq_zero_or_pos (revAt sp) with
+  | inl h0 => exact h0
+  | inr hpos =>
+  obtain ⟨u, hu, hlt⟩ := rev_witness _ sp hsp hpos
+  have hlt' : quadForm (cellcount.evalPC S vn vc K) u < BPair.unit := hlt
+  have hXsq := cellcount.evalPC_sqAt hsh (vn * BPair.ofPos glc)
+    (vc * glc)
+  have hYsq := cellcount.evalPC_sqAt hsh (gln * BPair.ofPos vc)
+    (glc * vc)
+  have hGsq := cellcount.evalPC_sqAt (K := K) hsh gln glc
+  have hqX : (quadForm (cellcount.evalPC S (vn * BPair.ofPos glc) (vc * glc) K) u).oneValue
+      (ground.bpow (BPair.ofPos glc) K * quadForm (cellcount.evalPC S vn vc K) u) :=
+    BPair.oneValue_trans
+      (formOne _ _ u
+        (cellcount.evalPC_scalePoint S o K vn vc glc hsh))
+      (inertia.quadForm_scaleB (ground.bpow (BPair.ofPos glc) K) _ u)
+  have hqY : (quadForm (cellcount.evalPC S (gln * BPair.ofPos vc) (glc * vc) K) u).oneValue
+      (ground.bpow (BPair.ofPos vc) K * quadForm (cellcount.evalPC S gln glc K) u) :=
+    BPair.oneValue_trans
+      (formOne _ _ u
+        (cellcount.evalPC_scalePoint S o K gln glc vc hsh))
+      (inertia.quadForm_scaleB (ground.bpow (BPair.ofPos vc) K) _ u)
+  have hmarg : quadForm (matScale rhoM (idMat o)) u
+      ≤ quadForm (cellcount.evalPC S gln glc K) u := by
+    have hnl := inertia.psd_all _ spM hM hMp u hu
+    have hge : BPair.unit ≤ quadForm (siteDatum (cellcount.evalPC S gln glc K)
+        (matScale rhoM (idMat o))) u :=
+      ground.leB_of_not_lt hnl
+    have hge2 : BPair.unit ≤ quadForm (cellcount.evalPC S gln glc K) u
+        + (quadForm (matScale rhoM (idMat o)) u).swap :=
+      ground.leB_congr_right
+        (inertia.quadForm_site_sq hGsq (sqAt_scaleId o rhoM) hu) hge
+    have h3 := ground.leB_of_unit_add hge2
+    rw [BPair.swap_swap] at h3
+    exact h3
+  have hcap := gapCap S hsh gln glc grn grc vn vc N D F hD ha hb hF
+    (Or.inr hlv) (Or.inr hvr)
+  have hclv : BPair.ofNat o
+      * ((F * (grn.scale glc + (gln.swap).scale grc)).scale
+        (ground.Pos.pow (vc * glc) K))
+      ≤ BPair.ofPos (rhoM * ((grc * glc) * ground.Pos.pow vc K)) := by
+    have h1 := ground.leB_scale hcl (ground.Pos.pow vc K)
+    refine ground.leB_congr ?_ ?_ h1
+    · refine BPair.oneValue_of_eq ?_
+      rw [BPair.mul_scale (BPair.ofNat o) _ (ground.Pos.pow glc K),
+        BPair.scale_scale,
+        BPair.mul_scale (BPair.ofNat o) _
+          (ground.Pos.pow (vc * glc) K),
+        ground.Pos.pow_mul vc glc K,
+        ground.mul_comm (ground.Pos.pow glc K) (ground.Pos.pow vc K)]
+    · refine BPair.oneValue_trans (BPair.oneValue_of_eq
+        (BPair.scale_scale (BPair.ofPos rhoM) (grc * glc)
+          (ground.Pos.pow vc K))) ?_
+      refine BPair.oneValue_trans (BPair.oneValue_symm
+        (BPair.ofPos_scale ((grc * glc) * ground.Pos.pow vc K)
+          (BPair.ofPos rhoM))) ?_
+      refine BPair.oneValue_trans (BPair.oneValue_of_eq
+        (BPair.mul_comm
+          (BPair.ofPos ((grc * glc) * ground.Pos.pow vc K))
+          (BPair.ofPos rhoM))) ?_
+      exact BPair.ofPos_mul rhoM ((grc * glc) * ground.Pos.pow vc K)
+  have hquad := capQuad o
+    (matScale (grc * glc) (matAdd (cellcount.evalPC S (vn * BPair.ofPos glc) (vc * glc) K) (elim.matSwap (cellcount.evalPC S (gln * BPair.ofPos vc) (glc * vc) K))))
+    ((F * (grn.scale glc + (gln.swap).scale grc)).scale
+      (ground.Pos.pow (vc * glc) K))
+    (rhoM * ((grc * glc) * ground.Pos.pow vc K))
+    (inertia.sqAt_matScale o (grc * glc) _
+      (elim.sqAt_matAdd o _ _ hXsq (elim.sqAt_matSwap o _ hYsq)))
+    (symScale (grc * glc) _
+      (elim.sqAt_matAdd o _ _ hXsq (elim.sqAt_matSwap o _ hYsq))
+      (symSite _ _ hXsq hYsq
+        (cellcount.evalPC_symAt S o K (vn * BPair.ofPos glc)
+          (vc * glc) hsh hsym)
+        (cellcount.evalPC_symAt S o K (gln * BPair.ofPos vc)
+          (glc * vc) hsh hsym)))
+    hcap hclv u hu
+  have h6 : BPair.unit ≤ quadForm
+      (matAdd (matScale (rhoM * ((grc * glc) * ground.Pos.pow vc K)) (idMat o))
+        (matScale (grc * glc) (matAdd (cellcount.evalPC S (vn * BPair.ofPos glc) (vc * glc) K) (elim.matSwap (cellcount.evalPC S (gln * BPair.ofPos vc) (glc * vc) K))))) u :=
+    ground.leB_congr_left
+      (elim.dotN_nullL (List.replicate o BPair.unit)
+        (List.zipWith (· * ·) u u) (poly.unitTail_replicate o))
+      hquad
+  have h7 : BPair.unit
+      ≤ (quadForm (matScale (rhoM * ((grc * glc) * ground.Pos.pow vc K)) (idMat o)) u
+        + BPair.ofPos (grc * glc) * quadForm (cellcount.evalPC S (vn * BPair.ofPos glc) (vc * glc) K) u)
+        + (BPair.ofPos (grc * glc) * quadForm (cellcount.evalPC S (gln * BPair.ofPos vc) (glc * vc) K) u).swap := by
+    refine ground.leB_congr_right ?_ h6
+    have hinner : (quadForm (matAdd (cellcount.evalPC S (vn * BPair.ofPos glc) (vc * glc) K)
+        (elim.matSwap (cellcount.evalPC S (gln * BPair.ofPos vc) (glc * vc) K))) u).oneValue
+        (quadForm (cellcount.evalPC S (vn * BPair.ofPos glc) (vc * glc) K) u + (quadForm (cellcount.evalPC S (gln * BPair.ofPos vc) (glc * vc) K) u).swap) :=
+      inertia.quadForm_site_sq hXsq hYsq hu
+    have hws : (quadForm (matScale (grc * glc)
+        (matAdd (cellcount.evalPC S (vn * BPair.ofPos glc) (vc * glc) K) (elim.matSwap (cellcount.evalPC S (gln * BPair.ofPos vc) (glc * vc) K)))) u).oneValue
+        (BPair.ofPos (grc * glc) * quadForm (cellcount.evalPC S (vn * BPair.ofPos glc) (vc * glc) K) u
+          + (BPair.ofPos (grc * glc) * quadForm (cellcount.evalPC S (gln * BPair.ofPos vc) (glc * vc) K) u).swap) := by
+      refine BPair.oneValue_trans
+        (inertia.quadForm_ofPos (grc * glc) _ u) ?_
+      refine BPair.oneValue_trans
+        (BPair.mul_congr (BPair.oneValue_refl (BPair.ofPos (grc * glc)))
+          hinner) ?_
+      refine BPair.oneValue_of_eq ?_
+      rw [BPair.left_distrib, BPair.mul_swap]
+    refine BPair.oneValue_trans
+      (inertia.quadForm_add_sq (sqAt_scaleId o (rhoM * ((grc * glc) * ground.Pos.pow vc K)))
+        (inertia.sqAt_matScale o (grc * glc) _
+          (elim.sqAt_matAdd o _ _ hXsq (elim.sqAt_matSwap o _ hYsq)))
+        hu) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl _) hws) ?_
+    exact BPair.oneValue_of_eq (BPair.add_assoc _ _ _).symm
+  have hCle := ground.leB_of_unit_add h7
+  rw [BPair.swap_swap] at hCle
+  have hqI : (quadForm (matScale (rhoM * ((grc * glc) * ground.Pos.pow vc K)) (idMat o)) u).oneValue
+      (BPair.ofPos ((grc * glc) * ground.Pos.pow vc K)
+        * quadForm (matScale rhoM (idMat o)) u) := by
+    refine BPair.oneValue_trans
+      (inertia.quadForm_ofPos (rhoM * ((grc * glc) * ground.Pos.pow vc K)) (idMat o) u) ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_symm
+        (BPair.ofPos_mul rhoM ((grc * glc) * ground.Pos.pow vc K)))
+        (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans (BPair.oneValue_of_eq (by
+      rw [BPair.mul_comm (BPair.ofPos rhoM)
+          (BPair.ofPos ((grc * glc) * ground.Pos.pow vc K)),
+        BPair.mul_assoc])) ?_
+    exact BPair.mul_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_symm (inertia.quadForm_ofPos rhoM (idMat o) u))
+  have hAC : quadForm (matScale (rhoM * ((grc * glc) * ground.Pos.pow vc K)) (idMat o)) u
+      ≤ BPair.ofPos (grc * glc) * quadForm (cellcount.evalPC S (gln * BPair.ofPos vc) (glc * vc) K) u := by
+    have h8 : BPair.ofPos ((grc * glc) * ground.Pos.pow vc K)
+        * quadForm (matScale rhoM (idMat o)) u
+        ≤ BPair.ofPos ((grc * glc) * ground.Pos.pow vc K)
+          * quadForm (cellcount.evalPC S gln glc K) u :=
+      ground.leB_mulR
+        (ground.leB_of_lt (ground.unitLtOfPos _)) hmarg
+    refine ground.leB_congr (BPair.oneValue_symm hqI) ?_ h8
+    refine BPair.oneValue_trans
+      (BPair.mul_congr
+        (BPair.oneValue_symm
+          (BPair.ofPos_mul (grc * glc) (ground.Pos.pow vc K)))
+        (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.mul_assoc
+        (BPair.ofPos (grc * glc)) (BPair.ofPos (ground.Pos.pow vc K)) _)) ?_
+    refine BPair.mul_congr (BPair.oneValue_refl _) ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (ground.ofPos_pow vc K)
+        (BPair.oneValue_refl _)) ?_
+    exact BPair.oneValue_symm hqY
+  have hAB := ground.leB_trans hAC hCle
+  have hB : BPair.unit
+      ≤ BPair.ofPos (grc * glc) * quadForm (cellcount.evalPC S (vn * BPair.ofPos glc) (vc * glc) K) u :=
+    unitLe_of_le_add hAB
+  have hBlt : BPair.ofPos (grc * glc) * quadForm (cellcount.evalPC S (vn * BPair.ofPos glc) (vc * glc) K) u
+      < BPair.unit := by
+    have h1 := ground.ltB_mulPos hlt'
+      (ground.unitLtOfPos ((grc * glc) * ground.Pos.pow glc K))
+    refine BPair.lt_congr ?_ ?_ h1
+    · refine BPair.oneValue_trans (BPair.oneValue_of_eq
+        (BPair.mul_comm (quadForm (cellcount.evalPC S vn vc K) u)
+          (BPair.ofPos ((grc * glc) * ground.Pos.pow glc K)))) ?_
+      refine BPair.oneValue_trans
+        (BPair.mul_congr
+          (BPair.oneValue_symm
+            (BPair.ofPos_mul (grc * glc) (ground.Pos.pow glc K)))
+          (BPair.oneValue_refl _)) ?_
+      refine BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.mul_assoc
+          (BPair.ofPos (grc * glc))
+          (BPair.ofPos (ground.Pos.pow glc K)) _)) ?_
+      refine BPair.mul_congr (BPair.oneValue_refl _) ?_
+      refine BPair.oneValue_trans
+        (BPair.mul_congr (ground.ofPos_pow glc K)
+          (BPair.oneValue_refl _)) ?_
+      exact BPair.oneValue_symm hqX
+    · exact BPair.unit_mul
+        (BPair.ofPos ((grc * glc) * ground.Pos.pow glc K))
+  exact absurd hBlt (ground.leB_not_lt hB)
+
+/-- A product of two composites at or above the composite unit sits
+there. -/
+private theorem cleUnitMul {x y : ground.CPair}
+    (hx : stage.unitC ≤ x) (hy : stage.unitC ≤ y) :
+    stage.unitC ≤ x * y := by
+  obtain ⟨a, b⟩ := x
+  obtain ⟨c, d⟩ := y
+  have ha : BPair.unit ≤ a := stage.unitC_le_fst hx
+  have hc : BPair.unit ≤ c := stage.unitC_le_fst hy
+  show BPair.unit.scale (b * d) ≤ (a * c).scale Pos.one
+  refine ground.leB_congr ?_
+    (BPair.oneValue_of_eq (BPair.scale_one (a * c)).symm)
+    (ground.unitLeMul ha hc)
+  show Pos.one + Pos.one * (b * d) = Pos.one * (b * d) + Pos.one
+  exact ground.add_comm Pos.one (Pos.one * (b * d))
+
+/-- The entry price at the common clearing, the anchor at the gap's
+upper endpoint: the roaming point's magnitude bound is the
+endpoints' own through the segment read, and the width prices at
+the committed gap through the swap-blind magnitude. -/
+private theorem capEntryHi (p : poly.Poly) {K : Nat}
+    (hp : p.length ≤ K + 1)
+    (gln : BPair) (glc : ground.Pos) (grn : BPair) (grc : ground.Pos)
+    (vn : BPair) (vc : ground.Pos) (N D F : BPair)
+    (hD : BPair.unit < D)
+    (ha : stage.cmag ⟨gln, glc⟩ * stage.ofB D ≤ stage.ofB N)
+    (hb : stage.cmag ⟨grn, grc⟩ * stage.ofB D ≤ stage.ofB N)
+    (hFp : windowsep.magFold (poly.deriv p) N D ≤ F)
+    (hlv : (⟨gln, glc⟩ : ground.CPair) ≤ ⟨vn, vc⟩)
+    (hvr : (⟨vn, vc⟩ : ground.CPair) ≤ ⟨grn, grc⟩) :
+    BPair.scale (windowsep.mag
+        (poly.evalClear p (vn * BPair.ofPos grc) (vc * grc) K
+          + (poly.evalClear p (grn * BPair.ofPos vc)
+            (grc * vc) K).swap)) (grc * glc)
+      ≤ (F * (grn.scale glc + (gln.swap).scale grc)).scale
+        (ground.Pos.pow (vc * grc) K) := by
+  have hv : stage.cmag ⟨vn, vc⟩ * stage.ofB D ≤ stage.ofB N :=
+    stage.cmag_seg (ground.leB_of_lt hD) ha hb hlv hvr
+  have hgap := stage.evalC_gap_le p ⟨vn, vc⟩ ⟨grn, grc⟩ ⟨grn, grc⟩
+    N D (ground.leB_of_lt hD) hv hb hvr (ground.CPair.le_refl _)
+  have habs : stage.cmag (stage.evalC p ⟨grn, grc⟩
+      + ground.CPair.swap (stage.evalC p ⟨vn, vc⟩))
+      ≤ stage.ofB (windowsep.magFold (poly.deriv p) N D)
+        * ((⟨grn, grc⟩ : ground.CPair)
+          + ground.CPair.swap ⟨vn, vc⟩) :=
+    ground.CPair.le_trans
+      (cleAbsorbC (cleUnitCmag _)
+        (oneLe_bpow (ground.oneLeOfUnitLt hD)
+          ((poly.vnorm (poly.deriv p)).length - 1))) hgap
+  have hNpos : BPair.unit ≤ N :=
+    stage.unitC_le_fst (ground.CPair.le_trans
+      (cleUnitMul (cleUnitCmag ⟨gln, glc⟩) (by
+        show BPair.unit.scale Pos.one ≤ D.scale Pos.one
+        exact ground.leB_scale (ground.leB_of_lt hD) Pos.one)) ha)
+  have hFC : stage.unitC ≤ stage.ofB F := by
+    show BPair.unit.scale Pos.one ≤ F.scale Pos.one
+    exact ground.leB_scale
+      (ground.leB_trans (windowsep.unitLe_magFold (poly.deriv p)
+        hNpos (ground.leB_of_lt hD)) hFp) Pos.one
+  have hF2 : stage.ofB (windowsep.magFold (poly.deriv p) N D)
+      * ((⟨grn, grc⟩ : ground.CPair) + ground.CPair.swap ⟨vn, vc⟩)
+      ≤ stage.ofB F * ((⟨grn, grc⟩ : ground.CPair)
+        + ground.CPair.swap ⟨vn, vc⟩) := by
+    rw [cmulComm (stage.ofB (windowsep.magFold (poly.deriv p) N D))
+        ((⟨grn, grc⟩ : ground.CPair) + ground.CPair.swap ⟨vn, vc⟩),
+      cmulComm (stage.ofB F)
+        ((⟨grn, grc⟩ : ground.CPair) + ground.CPair.swap ⟨vn, vc⟩)]
+    exact cleMulC (cleUnitAdd hvr) (ofBLe hFp)
+  have hWm : stage.ofB F * ((⟨grn, grc⟩ : ground.CPair)
+      + ground.CPair.swap ⟨vn, vc⟩)
+      ≤ stage.ofB F * ((⟨grn, grc⟩ : ground.CPair)
+        + ground.CPair.swap ⟨gln, glc⟩) :=
+    cleMulC hFC (cleAddR (cswapLe hlv))
+  have hpriced := ground.CPair.le_trans habs
+    (ground.CPair.le_trans hF2 hWm)
+  have hE : (⟨poly.evalClear p (vn * BPair.ofPos grc) (vc * grc) K
+      + (poly.evalClear p (grn * BPair.ofPos vc) (grc * vc) K).swap,
+      ground.Pos.pow (vc * grc) K⟩ : ground.CPair).oneValue
+      (stage.evalC p ⟨vn, vc⟩
+        + ground.CPair.swap (stage.evalC p ⟨grn, grc⟩)) := by
+    refine ground.CPair.oneValue_trans
+      (ground.CPair.oneValue_symm (ground.CPair.add_same
+        (poly.evalClear p (vn * BPair.ofPos grc) (vc * grc) K)
+        ((poly.evalClear p (grn * BPair.ofPos vc) (grc * vc) K).swap)
+        (ground.Pos.pow (vc * grc) K))) ?_
+    refine ground.CPair.add_congr (repRead p hp vn vc grc) ?_
+    refine ground.CPair.oneValue_trans
+      (ground.CPair.den_congr (show ground.Pos.pow (vc * grc) K
+        = ground.Pos.pow (grc * vc) K from by
+        rw [ground.mul_comm vc grc])) ?_
+    exact ground.CPair.swap_congr (repRead p hp grn grc vc)
+  have hflip : (stage.cmag (stage.evalC p ⟨vn, vc⟩
+      + ground.CPair.swap (stage.evalC p ⟨grn, grc⟩))).oneValue
+      (stage.cmag (stage.evalC p ⟨grn, grc⟩
+        + ground.CPair.swap (stage.evalC p ⟨vn, vc⟩))) := by
+    rw [flipEq (stage.evalC p ⟨grn, grc⟩) (stage.evalC p ⟨vn, vc⟩)]
+    exact cmagSwapC _
+  have hcm : stage.cmag (⟨poly.evalClear p (vn * BPair.ofPos grc)
+      (vc * grc) K
+      + (poly.evalClear p (grn * BPair.ofPos vc) (grc * vc) K).swap,
+      ground.Pos.pow (vc * grc) K⟩ : ground.CPair)
+      ≤ stage.ofB F * ((⟨grn, grc⟩ : ground.CPair)
+        + ground.CPair.swap ⟨gln, glc⟩) :=
+    ground.CPair.le_congr
+      (ground.CPair.oneValue_symm (ground.CPair.oneValue_trans
+        (stage.cmag_congr hE) hflip))
+      (ground.CPair.oneValue_refl _) hpriced
+  have hnum : (⟨windowsep.mag (poly.evalClear p (vn * BPair.ofPos grc)
+      (vc * grc) K
+      + (poly.evalClear p (grn * BPair.ofPos vc) (grc * vc) K).swap),
+      ground.Pos.pow (vc * grc) K⟩ : ground.CPair)
+      ≤ stage.ofB F * ((⟨grn, grc⟩ : ground.CPair)
+        + ground.CPair.swap ⟨gln, glc⟩) :=
+    ground.CPair.le_congr (stage.cmag_num _ _)
+      (ground.CPair.oneValue_refl _) hcm
+  have h5 : BPair.scale (windowsep.mag
+        (poly.evalClear p (vn * BPair.ofPos grc) (vc * grc) K
+          + (poly.evalClear p (grn * BPair.ofPos vc)
+            (grc * vc) K).swap))
+        (Pos.one * (grc * glc))
+      ≤ (F * (grn.scale glc + (gln.swap).scale grc)).scale
+        (ground.Pos.pow (vc * grc) K) := hnum
+  rw [ground.one_mul (grc * glc)] at h5
+  exact h5
+
+/-- The gap's site datum at the common clearing, the anchor at the
+upper endpoint, is entrywise capped at the priced width. -/
+private theorem gapCapHi {o K : Nat} (S : split.PMat)
+    (hsh : cellcount.pShapeAt S o K)
+    (gln : BPair) (glc : ground.Pos) (grn : BPair) (grc : ground.Pos)
+    (vn : BPair) (vc : ground.Pos) (N D F : BPair)
+    (hD : BPair.unit < D)
+    (ha : stage.cmag ⟨gln, glc⟩ * stage.ofB D ≤ stage.ofB N)
+    (hb : stage.cmag ⟨grn, grc⟩ * stage.ofB D ≤ stage.ofB N)
+    (hF : foldCap S N D F)
+    (hlv : (⟨gln, glc⟩ : ground.CPair) ≤ ⟨vn, vc⟩)
+    (hvr : (⟨vn, vc⟩ : ground.CPair) ≤ ⟨grn, grc⟩) :
+    magCap ((F * (grn.scale glc + (gln.swap).scale grc)).scale
+        (ground.Pos.pow (vc * grc) K))
+      (matScale (grc * glc)
+        (matAdd (cellcount.evalPC S (vn * BPair.ofPos grc)
+            (vc * grc) K)
+          (elim.matSwap (cellcount.evalPC S (grn * BPair.ofPos vc)
+            (grc * vc) K)))) := by
+  have hXsq := cellcount.evalPC_sqAt hsh (vn * BPair.ofPos grc)
+    (vc * grc)
+  have hYsq := cellcount.evalPC_sqAt hsh (grn * BPair.ofPos vc)
+    (grc * vc)
+  refine magCap_scaleOf (grc * glc) _ _
+    (elim.sqAt_matAdd o _ _ hXsq (elim.sqAt_matSwap o _ hYsq))
+    (fun i j hio hjo => ?_)
+  have hiX : i < (cellcount.evalPC S (vn * BPair.ofPos grc)
+      (vc * grc) K).length := by
+    rw [elim.sqAt_len hXsq]; exact hio
+  have hiY : i < (cellcount.evalPC S (grn * BPair.ofPos vc)
+      (grc * vc) K).length := by
+    rw [elim.sqAt_len hYsq]; exact hio
+  have hiS : i < (elim.matSwap (cellcount.evalPC S
+      (grn * BPair.ofPos vc) (grc * vc) K)).length := by
+    rw [elim.length_matSwap]; exact hiY
+  have hiP : i < S.length := by
+    rw [cellcount.pShape_len hsh]; exact hio
+  have hjX : j < (ground.getAt ([] : List BPair)
+      (cellcount.evalPC S (vn * BPair.ofPos grc) (vc * grc) K)
+        i).length := by
+    rw [elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hXsq) hiX]
+    exact hjo
+  have hjY : j < (ground.getAt ([] : List BPair)
+      (cellcount.evalPC S (grn * BPair.ofPos vc) (grc * vc) K)
+        i).length := by
+    rw [elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hYsq) hiY]
+    exact hjo
+  have hjS : j < (ground.getAt ([] : List BPair)
+      (elim.matSwap (cellcount.evalPC S (grn * BPair.ofPos vc)
+        (grc * vc) K)) i).length := by
+    rw [elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt
+      (elim.sqAt_matSwap o _ hYsq)) hiS]
+    exact hjo
+  rw [elim.getAt_matAdd _ _ i hiX hiS,
+    elim.getAt_vecAdd _ _ j hjX hjS,
+    show ground.getAt ([] : List BPair)
+        (elim.matSwap (cellcount.evalPC S (grn * BPair.ofPos vc)
+          (grc * vc) K)) i
+      = (ground.getAt ([] : List BPair)
+          (cellcount.evalPC S (grn * BPair.ofPos vc)
+            (grc * vc) K) i).map BPair.swap from
+      ground.getAt_map ([] : List BPair) ([] : List BPair) _ _ i hiY,
+    ground.getAt_map BPair.unit BPair.unit BPair.swap _ j hjY,
+    cellcount.getAt_evalPC (vn * BPair.ofPos grc) (vc * grc) K S i j,
+    cellcount.getAt_evalPC (grn * BPair.ofPos vc) (grc * vc) K S i j]
+  exact capEntryHi (ground.getAt ([] : poly.Poly)
+      (ground.getAt ([] : List poly.Poly) S i) j)
+    (cellcount.ent_ble hsh i j) gln glc grn grc vn vc N D F hD
+    ha hb
+    (foldCap_entry hF i j hiP (by
+      rw [elim.rowsLen_getAt _ i (cellcount.pShape_rows hsh) hiP]
+      exact hjo))
+    hlv hvr
+
+/-- The gap's read at the upper anchor (`thm:gappos`(v)'s counting
+sandwich at a committed gap, the flanking sample above): at a gap
+whose upper endpoint holds the scaled identity's margin
+certificate, whose endpoints hold the committed magnitude bounds,
+whose entries hold the committed fold cap, and whose clearing
+comparison prices the width below the margin, every split at every
+pair point strictly inside the gap reads positive semidefinite. -/
+theorem gapPsd_hi {o K : Nat} (S : split.PMat)
+    (gln : BPair) (glc : ground.Pos) (grn : BPair) (grc : ground.Pos)
+    (N D F : BPair) (rhoM : ground.Pos) (spM : Split o)
+    (hsh : cellcount.pShapeAt S o K)
+    (hsym : split.pSymAt S o)
+    (hD : BPair.unit < D)
+    (ha : stage.cmag ⟨gln, glc⟩ * stage.ofB D ≤ stage.ofB N)
+    (hb : stage.cmag ⟨grn, grc⟩ * stage.ofB D ≤ stage.ofB N)
+    (hF : foldCap S N D F)
+    (hM : splitRead (siteDatum (cellcount.evalPC S grn grc K)
+      (matScale rhoM (idMat o))) spM)
+    (hMp : psdAt spM)
+    (hcl : BPair.ofNat o
+        * ((F * (grn.scale glc + (gln.swap).scale grc)).scale
+          (ground.Pos.pow grc K))
+      ≤ (BPair.ofPos rhoM).scale (grc * glc)) :
+    ∀ (vn : BPair) (vc : ground.Pos),
+    (⟨gln, glc⟩ : ground.CPair) < ⟨vn, vc⟩ →
+    (⟨vn, vc⟩ : ground.CPair) < ⟨grn, grc⟩ →
+    ∀ sp : Split o,
+    splitRead (cellcount.evalPC S vn vc K) sp → psdAt sp := by
+  intro vn vc hlv hvr sp hsp
+  cases Nat.eq_zero_or_pos (revAt sp) with
+  | inl h0 => exact h0
+  | inr hpos =>
+  obtain ⟨u, hu, hlt⟩ := rev_witness _ sp hsp hpos
+  have hlt' : quadForm (cellcount.evalPC S vn vc K) u < BPair.unit := hlt
+  have hXsq := cellcount.evalPC_sqAt hsh (vn * BPair.ofPos grc)
+    (vc * grc)
+  have hYsq := cellcount.evalPC_sqAt hsh (grn * BPair.ofPos vc)
+    (grc * vc)
+  have hGsq := cellcount.evalPC_sqAt (K := K) hsh grn grc
+  have hqX : (quadForm (cellcount.evalPC S (vn * BPair.ofPos grc) (vc * grc) K) u).oneValue
+      (ground.bpow (BPair.ofPos grc) K * quadForm (cellcount.evalPC S vn vc K) u) :=
+    BPair.oneValue_trans
+      (formOne _ _ u
+        (cellcount.evalPC_scalePoint S o K vn vc grc hsh))
+      (inertia.quadForm_scaleB (ground.bpow (BPair.ofPos grc) K) _ u)
+  have hqY : (quadForm (cellcount.evalPC S (grn * BPair.ofPos vc) (grc * vc) K) u).oneValue
+      (ground.bpow (BPair.ofPos vc) K * quadForm (cellcount.evalPC S grn grc K) u) :=
+    BPair.oneValue_trans
+      (formOne _ _ u
+        (cellcount.evalPC_scalePoint S o K grn grc vc hsh))
+      (inertia.quadForm_scaleB (ground.bpow (BPair.ofPos vc) K) _ u)
+  have hmarg : quadForm (matScale rhoM (idMat o)) u
+      ≤ quadForm (cellcount.evalPC S grn grc K) u := by
+    have hnl := inertia.psd_all _ spM hM hMp u hu
+    have hge : BPair.unit ≤ quadForm (siteDatum (cellcount.evalPC S grn grc K)
+        (matScale rhoM (idMat o))) u :=
+      ground.leB_of_not_lt hnl
+    have hge2 : BPair.unit ≤ quadForm (cellcount.evalPC S grn grc K) u
+        + (quadForm (matScale rhoM (idMat o)) u).swap :=
+      ground.leB_congr_right
+        (inertia.quadForm_site_sq hGsq (sqAt_scaleId o rhoM) hu) hge
+    have h3 := ground.leB_of_unit_add hge2
+    rw [BPair.swap_swap] at h3
+    exact h3
+  have hcap := gapCapHi S hsh gln glc grn grc vn vc N D F hD ha hb hF
+    (Or.inr hlv) (Or.inr hvr)
+  have hclv : BPair.ofNat o
+      * ((F * (grn.scale glc + (gln.swap).scale grc)).scale
+        (ground.Pos.pow (vc * grc) K))
+      ≤ BPair.ofPos (rhoM * ((grc * glc) * ground.Pos.pow vc K)) := by
+    have h1 := ground.leB_scale hcl (ground.Pos.pow vc K)
+    refine ground.leB_congr ?_ ?_ h1
+    · refine BPair.oneValue_of_eq ?_
+      rw [BPair.mul_scale (BPair.ofNat o) _ (ground.Pos.pow grc K),
+        BPair.scale_scale,
+        BPair.mul_scale (BPair.ofNat o) _
+          (ground.Pos.pow (vc * grc) K),
+        ground.Pos.pow_mul vc grc K,
+        ground.mul_comm (ground.Pos.pow grc K) (ground.Pos.pow vc K)]
+    · refine BPair.oneValue_trans (BPair.oneValue_of_eq
+        (BPair.scale_scale (BPair.ofPos rhoM) (grc * glc)
+          (ground.Pos.pow vc K))) ?_
+      refine BPair.oneValue_trans (BPair.oneValue_symm
+        (BPair.ofPos_scale ((grc * glc) * ground.Pos.pow vc K)
+          (BPair.ofPos rhoM))) ?_
+      refine BPair.oneValue_trans (BPair.oneValue_of_eq
+        (BPair.mul_comm
+          (BPair.ofPos ((grc * glc) * ground.Pos.pow vc K))
+          (BPair.ofPos rhoM))) ?_
+      exact BPair.ofPos_mul rhoM ((grc * glc) * ground.Pos.pow vc K)
+  have hquad := capQuad o
+    (matScale (grc * glc) (matAdd (cellcount.evalPC S (vn * BPair.ofPos grc) (vc * grc) K) (elim.matSwap (cellcount.evalPC S (grn * BPair.ofPos vc) (grc * vc) K))))
+    ((F * (grn.scale glc + (gln.swap).scale grc)).scale
+      (ground.Pos.pow (vc * grc) K))
+    (rhoM * ((grc * glc) * ground.Pos.pow vc K))
+    (inertia.sqAt_matScale o (grc * glc) _
+      (elim.sqAt_matAdd o _ _ hXsq (elim.sqAt_matSwap o _ hYsq)))
+    (symScale (grc * glc) _
+      (elim.sqAt_matAdd o _ _ hXsq (elim.sqAt_matSwap o _ hYsq))
+      (symSite _ _ hXsq hYsq
+        (cellcount.evalPC_symAt S o K (vn * BPair.ofPos grc)
+          (vc * grc) hsh hsym)
+        (cellcount.evalPC_symAt S o K (grn * BPair.ofPos vc)
+          (grc * vc) hsh hsym)))
+    hcap hclv u hu
+  have h6 : BPair.unit ≤ quadForm
+      (matAdd (matScale (rhoM * ((grc * glc) * ground.Pos.pow vc K)) (idMat o))
+        (matScale (grc * glc) (matAdd (cellcount.evalPC S (vn * BPair.ofPos grc) (vc * grc) K) (elim.matSwap (cellcount.evalPC S (grn * BPair.ofPos vc) (grc * vc) K))))) u :=
+    ground.leB_congr_left
+      (elim.dotN_nullL (List.replicate o BPair.unit)
+        (List.zipWith (· * ·) u u) (poly.unitTail_replicate o))
+      hquad
+  have h7 : BPair.unit
+      ≤ (quadForm (matScale (rhoM * ((grc * glc) * ground.Pos.pow vc K)) (idMat o)) u
+        + BPair.ofPos (grc * glc) * quadForm (cellcount.evalPC S (vn * BPair.ofPos grc) (vc * grc) K) u)
+        + (BPair.ofPos (grc * glc) * quadForm (cellcount.evalPC S (grn * BPair.ofPos vc) (grc * vc) K) u).swap := by
+    refine ground.leB_congr_right ?_ h6
+    have hinner : (quadForm (matAdd (cellcount.evalPC S (vn * BPair.ofPos grc) (vc * grc) K)
+        (elim.matSwap (cellcount.evalPC S (grn * BPair.ofPos vc) (grc * vc) K))) u).oneValue
+        (quadForm (cellcount.evalPC S (vn * BPair.ofPos grc) (vc * grc) K) u + (quadForm (cellcount.evalPC S (grn * BPair.ofPos vc) (grc * vc) K) u).swap) :=
+      inertia.quadForm_site_sq hXsq hYsq hu
+    have hws : (quadForm (matScale (grc * glc)
+        (matAdd (cellcount.evalPC S (vn * BPair.ofPos grc) (vc * grc) K) (elim.matSwap (cellcount.evalPC S (grn * BPair.ofPos vc) (grc * vc) K)))) u).oneValue
+        (BPair.ofPos (grc * glc) * quadForm (cellcount.evalPC S (vn * BPair.ofPos grc) (vc * grc) K) u
+          + (BPair.ofPos (grc * glc) * quadForm (cellcount.evalPC S (grn * BPair.ofPos vc) (grc * vc) K) u).swap) := by
+      refine BPair.oneValue_trans
+        (inertia.quadForm_ofPos (grc * glc) _ u) ?_
+      refine BPair.oneValue_trans
+        (BPair.mul_congr (BPair.oneValue_refl (BPair.ofPos (grc * glc)))
+          hinner) ?_
+      refine BPair.oneValue_of_eq ?_
+      rw [BPair.left_distrib, BPair.mul_swap]
+    refine BPair.oneValue_trans
+      (inertia.quadForm_add_sq (sqAt_scaleId o (rhoM * ((grc * glc) * ground.Pos.pow vc K)))
+        (inertia.sqAt_matScale o (grc * glc) _
+          (elim.sqAt_matAdd o _ _ hXsq (elim.sqAt_matSwap o _ hYsq)))
+        hu) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl _) hws) ?_
+    exact BPair.oneValue_of_eq (BPair.add_assoc _ _ _).symm
+  have hCle := ground.leB_of_unit_add h7
+  rw [BPair.swap_swap] at hCle
+  have hqI : (quadForm (matScale (rhoM * ((grc * glc) * ground.Pos.pow vc K)) (idMat o)) u).oneValue
+      (BPair.ofPos ((grc * glc) * ground.Pos.pow vc K)
+        * quadForm (matScale rhoM (idMat o)) u) := by
+    refine BPair.oneValue_trans
+      (inertia.quadForm_ofPos (rhoM * ((grc * glc) * ground.Pos.pow vc K)) (idMat o) u) ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_symm
+        (BPair.ofPos_mul rhoM ((grc * glc) * ground.Pos.pow vc K)))
+        (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans (BPair.oneValue_of_eq (by
+      rw [BPair.mul_comm (BPair.ofPos rhoM)
+          (BPair.ofPos ((grc * glc) * ground.Pos.pow vc K)),
+        BPair.mul_assoc])) ?_
+    exact BPair.mul_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_symm (inertia.quadForm_ofPos rhoM (idMat o) u))
+  have hAC : quadForm (matScale (rhoM * ((grc * glc) * ground.Pos.pow vc K)) (idMat o)) u
+      ≤ BPair.ofPos (grc * glc) * quadForm (cellcount.evalPC S (grn * BPair.ofPos vc) (grc * vc) K) u := by
+    have h8 : BPair.ofPos ((grc * glc) * ground.Pos.pow vc K)
+        * quadForm (matScale rhoM (idMat o)) u
+        ≤ BPair.ofPos ((grc * glc) * ground.Pos.pow vc K)
+          * quadForm (cellcount.evalPC S grn grc K) u :=
+      ground.leB_mulR
+        (ground.leB_of_lt (ground.unitLtOfPos _)) hmarg
+    refine ground.leB_congr (BPair.oneValue_symm hqI) ?_ h8
+    refine BPair.oneValue_trans
+      (BPair.mul_congr
+        (BPair.oneValue_symm
+          (BPair.ofPos_mul (grc * glc) (ground.Pos.pow vc K)))
+        (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.mul_assoc
+        (BPair.ofPos (grc * glc)) (BPair.ofPos (ground.Pos.pow vc K)) _)) ?_
+    refine BPair.mul_congr (BPair.oneValue_refl _) ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (ground.ofPos_pow vc K)
+        (BPair.oneValue_refl _)) ?_
+    exact BPair.oneValue_symm hqY
+  have hAB := ground.leB_trans hAC hCle
+  have hB : BPair.unit
+      ≤ BPair.ofPos (grc * glc) * quadForm (cellcount.evalPC S (vn * BPair.ofPos grc) (vc * grc) K) u :=
+    unitLe_of_le_add hAB
+  have hBlt : BPair.ofPos (grc * glc) * quadForm (cellcount.evalPC S (vn * BPair.ofPos grc) (vc * grc) K) u
+      < BPair.unit := by
+    have h1 := ground.ltB_mulPos hlt'
+      (ground.unitLtOfPos ((grc * glc) * ground.Pos.pow grc K))
+    refine BPair.lt_congr ?_ ?_ h1
+    · refine BPair.oneValue_trans (BPair.oneValue_of_eq
+        (BPair.mul_comm (quadForm (cellcount.evalPC S vn vc K) u)
+          (BPair.ofPos ((grc * glc) * ground.Pos.pow grc K)))) ?_
+      refine BPair.oneValue_trans
+        (BPair.mul_congr
+          (BPair.oneValue_symm
+            (BPair.ofPos_mul (grc * glc) (ground.Pos.pow grc K)))
+          (BPair.oneValue_refl _)) ?_
+      refine BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.mul_assoc
+          (BPair.ofPos (grc * glc))
+          (BPair.ofPos (ground.Pos.pow grc K)) _)) ?_
+      refine BPair.mul_congr (BPair.oneValue_refl _) ?_
+      refine BPair.oneValue_trans
+        (BPair.mul_congr (ground.ofPos_pow grc K)
+          (BPair.oneValue_refl _)) ?_
+      exact BPair.oneValue_symm hqX
+    · exact BPair.unit_mul
+        (BPair.ofPos ((grc * glc) * ground.Pos.pow grc K))
+  exact absurd hBlt (ground.leB_not_lt hB)
 
 /-- The sandwich's lower comparison (`thm:gappos`(v)): at couplings
 of one cell whose site datum `S` at `H = H' + S` is capped
@@ -421,6 +2013,501 @@ theorem chainPsd {o : Nat} (S : split.PMat) (K : Nat) (lo : CPair)
     (ht : splitRead (cellcount.evalPC S tn tc K) spt) : psdAt spt :=
   chainCount S K 0 lo c l h tn tc hlt hth spt ht
 
+set_option genInjectivity false in
+/-- The closed union's pieces (`thm:gappos`(ii), (v)): a segment,
+one root-free cell chain at its foot, or a junction, a located
+boundary point of the divisor at its own split with the priced tie
+into a flanking positive-semidefinite sample — the boundary clause
+of `lem:cellcount` at the chain's carrier, the chain's end
+junctions `lem:freecell`'s and `lem:contactcell`'s
+endpoint-extension clauses. -/
+inductive Piece (o : Nat) where
+  | seg (foot : ground.CPair)
+      (cells : List (ground.CPair × cellcount.Cover
+        × (BPair × ground.Pos) × Split o))
+  | junc (bn : BPair) (bc : ground.Pos) (spb : Split o)
+      (tn : BPair) (tc : ground.Pos) (spt : Split o)
+      (side : Bool) (N D : BPair)
+
+/-- The anchored start: the head piece's own point reads the stated
+foot. -/
+def startsAt {o : Nat} (lo : ground.CPair) : List (Piece o) → Prop
+  | [] => True
+  | .seg foot _ :: _ => foot.oneValue lo
+  | .junc bn bc _ _ _ _ _ _ _ :: _ =>
+      (⟨bn, bc⟩ : ground.CPair).oneValue lo
+
+instance {o : Nat} (lo : ground.CPair) (l : List (Piece o)) :
+    Decidable (startsAt lo l) :=
+  match l with
+  | [] => isTrue trivial
+  | .seg _ _ :: _ =>
+      inferInstanceAs (Decidable (ground.CPair.oneValue _ _))
+  | .junc _ _ _ _ _ _ _ _ _ :: _ =>
+      inferInstanceAs (Decidable (ground.CPair.oneValue _ _))
+
+/-- The closed union's read (`thm:gappos`(v): the pair reads across
+the cells' closed union at `lem:cellcount`'s boundary clause): per
+segment the ordering with the chain's read at the vacant count, per
+junction the ordering, the point's and the flanking sample's splits
+with the sample positive semidefinite, and the priced tie on the
+stated side — `stage.keepLower` from the point into the sample,
+`stage.keepLowerTop` from the sample up to the point. -/
+def closedRead {o : Nat} (S : split.PMat) (K : Nat) :
+    ground.CPair → List (Piece o) → Prop
+  | _, [] => True
+  | _, .seg _ [] :: _ => False
+  | lo, .seg foot (c :: cs) :: rest =>
+      lo ≤ foot
+      ∧ chainRead S K 0 foot (c :: cs)
+      ∧ closedRead S K (chainHi foot (c :: cs)) rest
+  | lo, .junc bn bc spb tn tc spt side N D :: rest =>
+      lo ≤ (⟨bn, bc⟩ : ground.CPair)
+      ∧ splitRead (cellcount.evalPC S bn bc K) spb
+      ∧ splitRead (cellcount.evalPC S tn tc K) spt
+      ∧ psdAt spt
+      ∧ (if side then
+          ((lowerList spb).all (fun u => decide
+            (stage.keepLower (cellcount.quadP S u) ⟨bn, bc⟩
+              ⟨tn, tc⟩ N D))) = true
+        else
+          ((lowerList spb).all (fun u => decide
+            (stage.keepLowerTop (cellcount.quadP S u) ⟨tn, tc⟩
+              ⟨bn, bc⟩ N D))) = true)
+      ∧ closedRead S K ⟨bn, bc⟩ rest
+
+/-- The closed read's decision, one arm per piece. -/
+def decClosedRead {o : Nat} (S : split.PMat) (K : Nat) :
+    ∀ (lo : ground.CPair) (l : List (Piece o)),
+    Decidable (closedRead S K lo l)
+  | _, [] => isTrue trivial
+  | _, .seg _ [] :: _ => isFalse (fun h => h)
+  | _, .seg foot (c :: cs) :: rest =>
+    have : Decidable (closedRead S K (chainHi foot (c :: cs)) rest) :=
+      decClosedRead S K _ rest
+    inferInstanceAs (Decidable (_ ∧ _ ∧ _))
+  | _, .junc bn bc _ _ _ _ _ _ _ :: rest =>
+    have : Decidable (closedRead S K ⟨bn, bc⟩ rest) :=
+      decClosedRead S K ⟨bn, bc⟩ rest
+    inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
+
+instance {o : Nat} (S : split.PMat) (K : Nat) (lo : ground.CPair)
+    (l : List (Piece o)) : Decidable (closedRead S K lo l) :=
+  decClosedRead S K lo l
+
+/-- The closed union's top: the last piece's own point. -/
+def closedHi {o : Nat} (lo : ground.CPair) :
+    List (Piece o) → ground.CPair
+  | [] => lo
+  | .seg foot cells :: rest => closedHi (chainHi foot cells) rest
+  | .junc bn bc _ _ _ _ _ _ _ :: rest => closedHi ⟨bn, bc⟩ rest
+
+/-- The committed boundaries' open gaps, one pair per piece: the
+running covered point against the next piece's own. -/
+def closedGaps {o : Nat} (lo : ground.CPair) :
+    List (Piece o) → List (ground.CPair × ground.CPair)
+  | [] => []
+  | .seg foot cells :: rest =>
+      (lo, foot) :: closedGaps (chainHi foot cells) rest
+  | .junc bn bc _ _ _ _ _ _ _ :: rest =>
+      (lo, ⟨bn, bc⟩) :: closedGaps ⟨bn, bc⟩ rest
+
+/-- The width's fold clears its seed. -/
+private theorem widthOf_ge : ∀ (bs : List SBlock) (k : Nat),
+    k ≤ widthOf bs k
+  | [], k => Nat.le_refl k
+  | b :: bs, k =>
+    Nat.le_trans (Nat.le_add_right k b.order)
+      (widthOf_ge bs (k + b.order))
+
+/-- Every split at the vacant order reads positive semidefinite:
+the width tie forces the block list vacant. -/
+private theorem psdZero (sp : Split 0) : psdAt sp := by
+  obtain ⟨T, Tw, blocks, kern, hw⟩ := sp
+  match blocks, hw with
+  | [], _ => rfl
+  | b :: bs, hw =>
+    have h0 : widthOf (b :: bs) kern = 0 := Nat.eq_of_beq_eq_true hw
+    have hpos : 0 < widthOf (b :: bs) kern := by
+      refine Nat.lt_of_lt_of_le ?_ (widthOf_ge bs (kern + b.order))
+      match b with
+      | .one _ =>
+        exact Nat.lt_of_lt_of_le (Nat.succ_le_succ (Nat.zero_le kern))
+          (Nat.le_refl (kern + 1))
+      | .two _ _ _ =>
+        exact Nat.lt_of_lt_of_le (Nat.succ_le_succ (Nat.zero_le kern))
+          (Nat.le_add_right (kern + 1) 1)
+    exact absurd (h0 ▸ hpos) (Nat.lt_irrefl 0)
+
+/-- A cover's bracket keeps its order at an occupied width: the
+occupied arms' priced side reads state the strict step and the tie
+arm the one value, the vacant-width arm refused. -/
+private theorem cover_le {m K : Nat} {S : split.PMat} :
+    ∀ (cov : cellcount.Cover) (lo hi : ground.CPair),
+    cellcount.coverRead S (m + 1) K lo hi cov → lo ≤ hi
+  | .done, _, _, h => Or.inl h.2
+  | .nought, _, _, h =>
+    absurd (Nat.eq_of_beq_eq_true h) (fun hh => Nat.noConfusion hh)
+  | .one b _ up _ _ _ rest, lo, hi, h => by
+    have hlb : lo < b := by
+      match up, h.2.1 with
+      | true, hk => exact hk.2.1
+      | false, hk => exact hk.2.1
+    exact ground.CPair.le_trans (Or.inr hlb)
+      (cover_le rest b hi h.2.2.2)
+  | .mixed b _ _ _ _ _ rest, lo, hi, h =>
+    ground.CPair.le_trans (Or.inr h.2.1.2.1)
+      (cover_le rest b hi h.2.2.2)
+  | .twoUp b _ _ _ _ _ _ _ _ rest, lo, hi, h =>
+    ground.CPair.le_trans (Or.inr h.2.1.2.1)
+      (cover_le rest b hi h.2.2.2.2)
+
+/-- A chain's top keeps the foot's side at an occupied width, the
+covers' brackets composing. -/
+private theorem chain_le {m K n : Nat} (S : split.PMat) :
+    ∀ (foot : ground.CPair)
+      (cells : List (ground.CPair × cellcount.Cover
+        × (BPair × ground.Pos) × Split (m + 1))),
+    chainRead S K n foot cells → foot ≤ chainHi foot cells
+  | _, [], _ => ground.CPair.le_refl _
+  | foot, (hi, cov, _, _) :: rest, h =>
+    ground.CPair.le_trans (cover_le cov foot hi h.1)
+      (chain_le S hi rest h.2.2.2.2)
+
+/-- The junction's own read: `lem:cellcount`'s boundary clause at
+the committed side. -/
+private theorem juncPsd {o K : Nat} (S : split.PMat)
+    (bn : BPair) (bc : ground.Pos) (spb : Split o) (tn : BPair)
+    (tc : ground.Pos) (spt : Split o) (side : Bool) (N D : BPair)
+    (hsh : cellcount.pShapeAt S o K)
+    (hspb : splitRead (cellcount.evalPC S bn bc K) spb)
+    (hspt : splitRead (cellcount.evalPC S tn tc K) spt)
+    (hpsdt : psdAt spt)
+    (htie : if side then
+        ((lowerList spb).all (fun u => decide
+          (stage.keepLower (cellcount.quadP S u) ⟨bn, bc⟩
+            ⟨tn, tc⟩ N D))) = true
+      else
+        ((lowerList spb).all (fun u => decide
+          (stage.keepLowerTop (cellcount.quadP S u) ⟨tn, tc⟩
+            ⟨bn, bc⟩ N D))) = true) :
+    psdAt spb := by
+  match side, htie with
+  | true, htie =>
+    exact cellcount.boundary_psd_lo S K bn bc tn tc N D spb spt
+      hsh hspb hspt hpsdt htie
+  | false, htie =>
+    exact cellcount.boundary_psd_hi S K bn bc tn tc N D spb spt
+      hsh hspb hspt hpsdt htie
+
+/-- The closed union's walk at an occupied width, the running foot
+covered: each point of the range reads its piece — a chain point the
+chain's own (`chainPsd`), a junction point the boundary clause's
+(`juncPsd` at the representative transport), a gap point the stated
+gap read — with the covered foot passing to each piece's own top. -/
+private theorem closedGo {m K : Nat} (S : split.PMat)
+    (hsh : cellcount.pShapeAt S (m + 1) K) :
+    ∀ (lo : ground.CPair) (l : List (Piece (m + 1))),
+    (∀ (vn : BPair) (vc : ground.Pos),
+      (⟨vn, vc⟩ : ground.CPair).oneValue lo →
+      ∀ sp : Split (m + 1),
+      splitRead (cellcount.evalPC S vn vc K) sp → psdAt sp) →
+    closedRead S K lo l →
+    (∀ gl gr : ground.CPair, (gl, gr) ∈ closedGaps lo l →
+      ∀ (vn : BPair) (vc : ground.Pos),
+      gl < (⟨vn, vc⟩ : ground.CPair) →
+      (⟨vn, vc⟩ : ground.CPair) < gr →
+      ∀ sp : Split (m + 1),
+      splitRead (cellcount.evalPC S vn vc K) sp → psdAt sp) →
+    ∀ (vn : BPair) (vc : ground.Pos),
+    lo ≤ (⟨vn, vc⟩ : ground.CPair) →
+    (⟨vn, vc⟩ : ground.CPair) ≤ closedHi lo l →
+    ∀ sp : Split (m + 1),
+    splitRead (cellcount.evalPC S vn vc K) sp → psdAt sp
+  | lo, [], hcov, _, _, vn, vc, hlv, hvh, sp, hsp => by
+    match hvh with
+    | Or.inl e => exact hcov vn vc e sp hsp
+    | Or.inr hvl =>
+      match hlv with
+      | Or.inl e =>
+        exact hcov vn vc (ground.CPair.oneValue_symm e) sp hsp
+      | Or.inr hlt => exact (ground.lt_asymm hlt hvl).elim
+  | lo, .seg foot cells :: rest, hcov, hcr, hgap, vn, vc, hlv, hvh,
+      sp, hsp => by
+    match cells, hcr with
+    | [], hcr => exact hcr.elim
+    | c :: cs, hcr =>
+      obtain ⟨_, hchain, hrest⟩ := hcr
+      match ground.CPair.le_total (⟨vn, vc⟩ : ground.CPair)
+          (chainHi foot (c :: cs)) with
+      | Or.inl hvtop =>
+        match ground.CPair.le_total foot ⟨vn, vc⟩ with
+        | Or.inl hfv =>
+          exact chainPsd S K foot c cs hchain vn vc hfv hvtop sp hsp
+        | Or.inr hvf =>
+          match hvf with
+          | Or.inl e =>
+            exact chainPsd S K foot c cs hchain vn vc
+              (Or.inl (ground.CPair.oneValue_symm e)) hvtop sp hsp
+          | Or.inr hvltf =>
+            match hlv with
+            | Or.inl e =>
+              exact hcov vn vc (ground.CPair.oneValue_symm e) sp hsp
+            | Or.inr hlov =>
+              exact hgap lo foot (List.Mem.head _) vn vc hlov hvltf
+                sp hsp
+      | Or.inr htopv =>
+        refine closedGo S hsh (chainHi foot (c :: cs)) rest ?_ hrest
+          (fun gl gr hm => hgap gl gr (List.Mem.tail _ hm))
+          vn vc htopv hvh sp hsp
+        intro wn wc hw spw hspw
+        have hfw : foot ≤ (⟨wn, wc⟩ : ground.CPair) := by
+          match chain_le S foot (c :: cs) hchain with
+          | Or.inl e =>
+            exact Or.inl (ground.CPair.oneValue_trans e
+              (ground.CPair.oneValue_symm hw))
+          | Or.inr hlt =>
+            exact Or.inr (ground.CPair.lt_congr
+              (ground.CPair.oneValue_refl foot)
+              (ground.CPair.oneValue_symm hw) hlt)
+        exact chainPsd S K foot c cs hchain wn wc hfw
+          (Or.inl hw) spw hspw
+  | lo, .junc bn bc spb tn tc spt side N D :: rest, hcov, hcr, hgap,
+      vn, vc, hlv, hvh, sp, hsp => by
+    obtain ⟨_, hspb, hspt, hpsdt, htie, hrest⟩ := hcr
+    have hbpsd : psdAt spb :=
+      juncPsd S bn bc spb tn tc spt side N D hsh hspb hspt hpsdt htie
+    match ground.CPair.le_total (⟨vn, vc⟩ : ground.CPair)
+        ⟨bn, bc⟩ with
+    | Or.inl hvb =>
+      match hvb with
+      | Or.inl e =>
+        exact (cellcount.evalPC_pointCongr S K vn bn vc bc
+          sp spb hsh e hsp hspb).trans hbpsd
+      | Or.inr hvltb =>
+        match hlv with
+        | Or.inl e =>
+          exact hcov vn vc (ground.CPair.oneValue_symm e) sp hsp
+        | Or.inr hlov =>
+          exact hgap lo ⟨bn, bc⟩ (List.Mem.head _) vn vc hlov hvltb
+            sp hsp
+    | Or.inr hbv =>
+      refine closedGo S hsh ⟨bn, bc⟩ rest ?_ hrest
+        (fun gl gr hm => hgap gl gr (List.Mem.tail _ hm))
+        vn vc hbv hvh sp hsp
+      intro wn wc hw spw hspw
+      exact (cellcount.evalPC_pointCongr S K wn bn wc bc
+        spw spb hsh hw hspw hspb).trans hbpsd
+
+/-- The closed union's read at every point (`thm:gappos`(ii), (v):
+the pair reads hold across the cells' closed union by
+`lem:cellcount`'s boundary clause, the gaps the stated reads): at an
+anchored occupied list, every point from the foot to the top reads
+positive semidefinite at any stated split — the pieces' own reads
+with the gap hypothesis the consumer's, and the vacant order outright. -/
+theorem closedPsd {o K : Nat} (S : split.PMat) (lo : ground.CPair)
+    (p : Piece o) (l : List (Piece o))
+    (hsh : cellcount.pShapeAt S o K)
+    (hst : startsAt lo (p :: l))
+    (hcr : closedRead S K lo (p :: l))
+    (hgap : ∀ gl gr : ground.CPair, (gl, gr) ∈ closedGaps lo (p :: l) →
+      ∀ (vn : BPair) (vc : ground.Pos),
+      gl < (⟨vn, vc⟩ : ground.CPair) →
+      (⟨vn, vc⟩ : ground.CPair) < gr →
+      ∀ sp : Split o,
+      splitRead (cellcount.evalPC S vn vc K) sp → psdAt sp) :
+    ∀ (vn : BPair) (vc : ground.Pos),
+    lo ≤ (⟨vn, vc⟩ : ground.CPair) →
+    (⟨vn, vc⟩ : ground.CPair) ≤ closedHi lo (p :: l) →
+    ∀ sp : Split o,
+    splitRead (cellcount.evalPC S vn vc K) sp → psdAt sp := by
+  match o, p, l, hsh, hst, hcr, hgap with
+  | 0, _, _, _, _, _, _ =>
+    intro _ _ _ _ sp _
+    exact psdZero sp
+  | m + 1, p, l, hsh, hst, hcr, hgap =>
+    refine closedGo S hsh lo (p :: l) ?_ hcr hgap
+    intro wn wc hw spw hspw
+    match p, hst, hcr with
+    | .seg foot cells, hst, hcr =>
+      match cells, hcr with
+      | [], hcr => exact hcr.elim
+      | c :: cs, hcr =>
+        obtain ⟨_, hchain, _⟩ := hcr
+        have hfw : foot.oneValue ⟨wn, wc⟩ :=
+          ground.CPair.oneValue_trans hst
+            (ground.CPair.oneValue_symm hw)
+        have hwtop : (⟨wn, wc⟩ : ground.CPair)
+            ≤ chainHi foot (c :: cs) := by
+          match chain_le S foot (c :: cs) hchain with
+          | Or.inl e =>
+            exact Or.inl (ground.CPair.oneValue_trans
+              (ground.CPair.oneValue_symm hfw) e)
+          | Or.inr hlt =>
+            exact Or.inr (ground.CPair.lt_congr hfw
+              (ground.CPair.oneValue_refl _) hlt)
+        exact chainPsd S K foot c cs hchain wn wc
+          (Or.inl hfw) hwtop spw hspw
+    | .junc bn bc spb tn tc spt side N D, hst, hcr =>
+      obtain ⟨_, hspb, hspt, hpsdt, htie, _⟩ := hcr
+      have hbpsd : psdAt spb :=
+        juncPsd S bn bc spb tn tc spt side N D hsh hspb hspt hpsdt
+          htie
+      have hwb : (⟨wn, wc⟩ : ground.CPair).oneValue ⟨bn, bc⟩ :=
+        ground.CPair.oneValue_trans hw
+          (ground.CPair.oneValue_symm hst)
+      exact (cellcount.evalPC_pointCongr S K wn bn wc bc
+        spw spb hsh hwb hspw hspb).trans hbpsd
+
+set_option genInjectivity false in
+/-- A gap's certificate (`thm:gappos`(v)'s counting sandwich data):
+the committed magnitude bound pair, the fold cap, the anchored
+margin certificate with its side — the lower flank at `true`, the
+upper at `false` — and the clearing weight the width comparison
+prices against. -/
+structure GapCert (o : Nat) where
+  bN : BPair
+  bD : BPair
+  bF : BPair
+  rho : ground.Pos
+  spM : Split o
+  side : Bool
+
+/-- One gap's committed reads (`thm:gappos`(v)): the strict fold
+base, the endpoints' magnitude bounds, the entries' fold cap, the
+anchored margin certificate positive semidefinite, and the clearing
+comparison pricing the width below the margin at the anchor's own
+clearing power. -/
+def gapRead {o : Nat} (S : split.PMat) (K : Nat) :
+    ground.CPair → ground.CPair → GapCert o → Prop
+  | ⟨gln, glc⟩, ⟨grn, grc⟩, c =>
+      BPair.unit < c.bD
+      ∧ stage.cmag ⟨gln, glc⟩ * stage.ofB c.bD ≤ stage.ofB c.bN
+      ∧ stage.cmag ⟨grn, grc⟩ * stage.ofB c.bD ≤ stage.ofB c.bN
+      ∧ foldCap S c.bN c.bD c.bF
+      ∧ (if c.side then
+          splitRead (siteDatum (cellcount.evalPC S gln glc K)
+            (matScale c.rho (idMat o))) c.spM
+        else
+          splitRead (siteDatum (cellcount.evalPC S grn grc K)
+            (matScale c.rho (idMat o))) c.spM)
+      ∧ psdAt c.spM
+      ∧ (if c.side then
+          BPair.ofNat o
+            * ((c.bF * (grn.scale glc + (gln.swap).scale grc)).scale
+              (ground.Pos.pow glc K))
+            ≤ (BPair.ofPos c.rho).scale (grc * glc)
+        else
+          BPair.ofNat o
+            * ((c.bF * (grn.scale glc + (gln.swap).scale grc)).scale
+              (ground.Pos.pow grc K))
+            ≤ (BPair.ofPos c.rho).scale (grc * glc))
+
+instance {o : Nat} (S : split.PMat) (K : Nat)
+    (gl gr : ground.CPair) (c : GapCert o) :
+    Decidable (gapRead S K gl gr c) :=
+  match gl, gr with
+  | ⟨_, _⟩, ⟨_, _⟩ =>
+    inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
+
+/-- The committed gaps' reads, one certificate per gap. -/
+def gapsRead {o : Nat} (S : split.PMat) (K : Nat) :
+    List (ground.CPair × ground.CPair) → List (GapCert o) → Prop
+  | [], [] => True
+  | [], _ :: _ => False
+  | _ :: _, [] => False
+  | (gl, gr) :: gs, c :: cs =>
+      gapRead S K gl gr c ∧ gapsRead S K gs cs
+
+def decGapsRead {o : Nat} (S : split.PMat) (K : Nat) :
+    ∀ (gs : List (ground.CPair × ground.CPair))
+      (cs : List (GapCert o)),
+    Decidable (gapsRead S K gs cs)
+  | [], [] => isTrue trivial
+  | [], _ :: _ => isFalse (fun h => h)
+  | _ :: _, [] => isFalse (fun h => h)
+  | (_, _) :: gs, _ :: cs =>
+    have : Decidable (gapsRead S K gs cs) := decGapsRead S K gs cs
+    inferInstanceAs (Decidable (_ ∧ _))
+
+instance {o : Nat} (S : split.PMat) (K : Nat)
+    (gs : List (ground.CPair × ground.CPair))
+    (cs : List (GapCert o)) : Decidable (gapsRead S K gs cs) :=
+  decGapsRead S K gs cs
+
+/-- Every certified gap reads its interior points positive
+semidefinite, the anchored sandwich at each gap's own side. -/
+private theorem gapsPsd {o K : Nat} (S : split.PMat)
+    (hsh : cellcount.pShapeAt S o K) (hsym : split.pSymAt S o) :
+    ∀ (gs : List (ground.CPair × ground.CPair))
+      (cs : List (GapCert o)),
+    gapsRead S K gs cs →
+    ∀ gl gr : ground.CPair, (gl, gr) ∈ gs →
+    ∀ (vn : BPair) (vc : ground.Pos),
+    gl < (⟨vn, vc⟩ : ground.CPair) →
+    (⟨vn, vc⟩ : ground.CPair) < gr →
+    ∀ sp : Split o,
+    splitRead (cellcount.evalPC S vn vc K) sp → psdAt sp
+  | [], _, _, _, _, hm, _, _, _, _, _, _ => nomatch hm
+  | _ :: _, [], hr, _, _, _, _, _, _, _, _, _ => hr.elim
+  | (⟨gln, glc⟩, ⟨grn, grc⟩) :: _, c :: _, hr, _, _, .head _,
+      vn, vc, hlv, hvr, sp, hsp => by
+    obtain ⟨hD, ha, hb, hF, hM, hMp, hcl⟩ := hr.1
+    match hside : c.side with
+    | true =>
+      rw [hside] at hM hcl
+      rw [if_pos rfl] at hM hcl
+      exact gapPsd_lo S gln glc grn grc c.bN c.bD c.bF c.rho c.spM
+        hsh hsym hD ha hb hF hM hMp hcl vn vc hlv hvr sp hsp
+    | false =>
+      rw [hside] at hM hcl
+      rw [if_neg (fun h => Bool.noConfusion h)] at hM hcl
+      exact gapPsd_hi S gln glc grn grc c.bN c.bD c.bF c.rho c.spM
+        hsh hsym hD ha hb hF hM hMp hcl vn vc hlv hvr sp hsp
+  | _ :: gs, _ :: cs, hr, gl, gr, .tail _ hm',
+      vn, vc, hlv, hvr, sp, hsp =>
+    gapsPsd S hsh hsym gs cs hr.2 gl gr hm' vn vc hlv hvr sp hsp
+
+/-- The interior's whole read at one window's carrier
+(`thm:gappos`(ii), (v): the pair reads hold across the cells' closed
+union at `lem:cellcount`'s boundary clause, with every committed gap
+handed its cut by the counting sandwich's anchored margin): at an
+anchored occupied piece list whose gaps past the anchored head each
+hold their certificate, every pair point from the foot to the top
+reads every split of its evaluation positive semidefinite — the
+anchored head gap its own vacancy at the start read, the point
+binder the consumer's own ray. -/
+theorem interiorPsd {o K : Nat} (S : split.PMat) (lo : ground.CPair)
+    (p : Piece o) (l : List (Piece o)) (cs : List (GapCert o))
+    (hsh : cellcount.pShapeAt S o K)
+    (hsym : split.pSymAt S o)
+    (hst : startsAt lo (p :: l))
+    (hcr : closedRead S K lo (p :: l))
+    (hgr : gapsRead S K (closedGaps (closedHi lo [p]) l) cs) :
+    ∀ (vn : BPair) (vc : ground.Pos),
+    lo ≤ (⟨vn, vc⟩ : ground.CPair) →
+    (⟨vn, vc⟩ : ground.CPair) ≤ closedHi lo (p :: l) →
+    ∀ sp : Split o,
+    splitRead (cellcount.evalPC S vn vc K) sp → psdAt sp := by
+  refine closedPsd S lo p l hsh hst hcr ?_
+  match p, hst, hgr with
+  | .seg foot cells, hst, hgr =>
+    intro gl gr hm vn vc h1 h2 sp hsp
+    cases hm with
+    | head =>
+      exact (ground.lt_asymm h1 (ground.CPair.lt_congr
+        (ground.CPair.oneValue_refl _) hst h2)).elim
+    | tail _ hm' =>
+      exact gapsPsd S hsh hsym _ cs hgr gl gr hm' vn vc h1 h2 sp hsp
+  | .junc bn bc spb tn tc spt side N D, hst, hgr =>
+    intro gl gr hm vn vc h1 h2 sp hsp
+    cases hm with
+    | head =>
+      exact (ground.lt_asymm h1 (ground.CPair.lt_congr
+        (ground.CPair.oneValue_refl _) hst h2)).elim
+    | tail _ hm' =>
+      exact gapsPsd S hsh hsym _ cs hgr gl gr hm' vn vc h1 h2 sp hsp
+
 /-- The cutoff's price closes at the cut (`thm:gappos`(iii)): at the
 magnetic cap and the polarization tie of `thm:truncation`, a window
 whose compression reads the cut at the level raised by the cofactor
@@ -495,7 +2582,6 @@ the cut at any stated split of the cut's site datum, the cut tie
 landed whole. -/
 theorem windowCut {n : Nat} (Et : Mat) (T Tw : SqMat n)
     (l : List (BPair × Pos × BPair)) (E0 p q : Pos) (g : Nat)
-    (hsym : matOneValue (transposeM Et) Et)
     (hd : split.diagRead Et (idMat n) T Tw l)
     (hker : split.rootsAtKernel (l.map (fun r => (r.1, r.2.1))) = g)
     (ax ay tx ty : Pos) (spa spt : Split n)
@@ -523,7 +2609,7 @@ theorem windowCut {n : Nat} (Et : Mat) (T Tw : SqMat n)
     flatstep.flat_spec (l.map (fun r => (r.1, r.2.1))) E0 p q g
       hedge hker
   refine ⟨?_, hspec,
-    hEE, hd.1, hsp, speccut.spec_to_cut Et T Tw l E0 p q hsym hd
+    hEE, hd.1, hsp, speccut.spec_to_cut Et T Tw l E0 p q hd
       hspec sp hsp⟩
   rw [show Et.length = n from elim.sqAt_len hd.1]
   exact hca.2.2.1

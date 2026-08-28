@@ -26,7 +26,6 @@ a polynomial into its own class, a landed wrap congruence
 collapsing onto a residue equality, an equal-residue pair read back
 as a congruence, and the collapse's contrapositive refusing an
 incongruent pair. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly deck

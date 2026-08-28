@@ -4,7 +4,7 @@ import MassGap.Pairpencil
 /-!
 `lem:loopcap` — the loop window's form cap at the label index.  At a
 loop window the magnetic matrix is the fusion form's own at the
-self-dual `θ` over the unit-headed label list (`loopMag_fusionMat`,
+self-dual `θ` over the unit-headed label list (`pairpencil.loopMag`,
 the two spellings one datum), so the shifted term reads the
 character's two-sided cap: unit width below and `r (r + 2)` above.
 The upper side is `lem:fpcap`'s cap at `θ`'s instance
@@ -47,13 +47,6 @@ site; `thm:truncation`'s member cap is the consumer.
 namespace loopcap
 open ground fusion elim
 
-/-- The loop window's magnetic matrix is the fusion form at the
-self-dual `θ` over the unit-headed label list, one datum. -/
-private theorem loopMag_fusionMat {L : Type} (F : fusion.Data L)
-    (ls : List L) :
-    pairpencil.loopMag F ls
-      = fpcap.fusionMat F F.theta (F.unit :: ls) := rfl
-
 /-- The shifted term's upper side at a loop window: the `θ`-cap's
 own instance, `r (r+2)` above at the interface's dimension
 (`lem:loopcap`; `lem:fpcap`'s cap at the self-dual `θ`). -/
@@ -63,9 +56,8 @@ theorem shiftUpper {L : Type} (F : fusion.Data L) (ls : List L)
     (hdim : fpcap.dimPos F (F.unit :: ls))
     (u : List ground.BPair) (hu : u.length = ls.length + 1) :
     ¬ (ground.BPair.ofNat (F.dim F.theta) * elim.dotN u u
-        < inertia.quadForm (pairpencil.loopMag F ls) u) := by
-  rw [loopMag_fusionMat F ls]
-  exact fpcap.capUpper F F.theta (F.unit :: ls) hsym hrow hdim u hu
+        < inertia.quadForm (pairpencil.loopMag F ls) u) :=
+  fpcap.capUpper F F.theta (F.unit :: ls) hsym hrow hdim u hu
 
 /-! The equality diagonal: at pairwise-distinct labels the window's
 squares collect from the positional delta's double fold, over
@@ -269,7 +261,7 @@ private theorem crossVec {L : Type} (F : fusion.Data L) (fl : L)
         (fun x => BPair.ofNat (F.count fl x y))) u) :=
     ground.map_map _ _ cs
   rw [hmap, ground.getAt_map F.unit BPair.unit _ cs c hc]
-  refine BPair.oneValue_trans (elim.dotN_dotP _ u) ?_
+  refine BPair.oneValue_trans (elim.dotN_read _ u) ?_
   rw [dotP_fold (ls.length + 1) _ u (hrow _) hu]
   refine foldB_congr_members _ _ (List.range (ls.length + 1))
     (fun i hi => ?_)
@@ -320,7 +312,6 @@ theorem shiftLower {L : Type} (F : fusion.Data L) (fl : L)
             * ground.getAt BPair.unit u j))
         (List.range (ls.length + 1)))
         (List.range (ls.length + 1))) := by
-    rw [loopMag_fusionMat F ls]
     exact fpcap.quadFold F F.theta (F.unit :: ls) u hu
   refine lowerAt (ls.length + 1) cs.length
     (fun i j => F.count F.theta

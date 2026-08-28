@@ -27,7 +27,6 @@ one and the conclusion's failure.  Clause (iv)'s tier pins
 `dim_eq` at two genuinely independent tops of one content with
 its four isolating refusals.
 -/
-set_option maxRecDepth 8192
 
 open ground places blockcount
 

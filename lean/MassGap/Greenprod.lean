@@ -82,6 +82,13 @@ def swapQ (a : MatQ) : MatQ := (matSwap a.1, a.2)
 def vecScale (w : Pos) (v : List BPair) : List BPair :=
   v.map (fun x => x.scale w)
 
+/-- The positive rescaling is the balance carrier's scale at the
+datum's own entry, entry by entry. -/
+theorem vecScale_ofPos (w : Pos) : ∀ v : List BPair,
+    poly.oneValue (vecScale w v) (elim.vecScale (BPair.ofPos w) v)
+  | [] => trivial
+  | x :: v => ⟨BPair.oneValue_symm (BPair.ofPos_scale w x), vecScale_ofPos w v⟩
+
 /-- Two cleared vectors read one value at the cross-scaled
 vectors. -/
 def vOneValueQ (a b : VecQ) : Prop :=
@@ -216,6 +223,26 @@ def decWShapeC : ∀ (Cs : List MatQ) (ns : List Nat),
 instance (Cs : List MatQ) (ns : List Nat) : Decidable (wShapeC Cs ns) :=
   decWShapeC Cs ns
 
+/-- The gram list at the slab orders: one gram per slab, square at
+its own order — the gram's slab blocks at the split
+(`lem:spectator`(ii)'s `G_i`, `def:carrier`'s orthogonal sum). -/
+def gramShape : List elim.Mat → List Nat → Prop
+  | [], [] => True
+  | [], _ :: _ => False
+  | _ :: _, [] => False
+  | G :: Gs, k :: ns => elim.sqAt G k ∧ gramShape Gs ns
+
+def decGramShape : ∀ (Gs : List elim.Mat) (ns : List Nat),
+    Decidable (gramShape Gs ns)
+  | [], [] => isTrue trivial
+  | [], _ :: _ => isFalse (fun h => h)
+  | _ :: _, [] => isFalse (fun h => h)
+  | _ :: Gs, _ :: ns =>
+    @instDecidableAnd _ _ inferInstance (decGramShape Gs ns)
+
+instance (Gs : List elim.Mat) (ns : List Nat) :
+    Decidable (gramShape Gs ns) := decGramShape Gs ns
+
 /-- The vector blocks' length walk, one length per slab. -/
 def vShape : List VecQ → List Nat → Prop
   | [], [] => True
@@ -249,6 +276,14 @@ def assemble : List Mat → List Mat → Mat
         (if r < bt.length then ground.getAt [] bt r
          else List.replicate A.length BPair.unit)
         ++ ground.getAt [] rest r)
+
+/-- The head decimated onto the depths at or below `j`, cleared by
+the pivot's clearing: the shared slab data scaled by that clearing,
+with the pivot's cleared numerator the trailing block. -/
+def headM (diag off : List Mat) (X : MatQ) (j : Nat) : Mat :=
+  assemble
+    (List.map (matScale X.2) (List.take j diag) ++ [X.1])
+    (List.map (matScale X.2) (List.take j off))
 
 /-! The two pivot recursions at solved-witness data: each witness a
 stated cleared datum, the recursion's joins the decidable reads. -/
@@ -547,6 +582,22 @@ def decTeleUpWalk : ∀ (j : Nat) (Rs : List MatQ) (us : List VecQ),
 instance (j : Nat) (Rs : List MatQ) (us : List VecQ) :
     Decidable (teleUpWalk j Rs us) := decTeleUpWalk j Rs us
 
+/-- The walk from the source anchors at any depth within the
+family: the full ascending walk restricted to the slabs at or
+beyond a depth below the witnesses' count and at or below the
+factors' count is the walk keyed at that depth. -/
+theorem teleUpWalk_anchor : ∀ (j : Nat) (Rs : List MatQ)
+    (us : List VecQ), teleUpWalk 0 Rs us →
+    j < us.length → j ≤ Rs.length → teleUpWalk j Rs us
+  | 0, _, _, h, _, _ => h
+  | _ + 1, [], _, _, _, hR => absurd hR (Nat.not_succ_le_zero _)
+  | _ + 1, _ :: _, [], _, hj, _ => absurd hj (Nat.not_lt_zero _)
+  | _ + 1, _ :: _, [_], _, hj, _ =>
+      absurd (Nat.lt_of_succ_lt_succ hj) (Nat.not_lt_zero _)
+  | j + 1, _ :: Rs, _ :: u' :: us, h, hj, hR =>
+      teleUpWalk_anchor j Rs (u' :: us) h.2
+        (Nat.lt_of_succ_lt_succ hj) (Nat.le_of_succ_le_succ hR)
+
 /-- The ascending telescope beyond the source at the slab shapes,
 the walk running over the slabs at or beyond `j`. -/
 def teleUp (Rs : List MatQ) (us : List VecQ) (j : Nat)
@@ -683,11 +734,11 @@ private def padRow (w : Nat) (rb : List BPair) : List BPair :=
   rb ++ List.replicate (w - rb.length) BPair.unit
 
 /-- The off-diagonal block at the trailing order. -/
-private def offPad (w : Nat) (B : Mat) : Mat := B.map (padRow w)
+def offPad (w : Nat) (B : Mat) : Mat := B.map (padRow w)
 
 /-- The off-diagonal block's exchange at the trailing order: the
 exchange's own rows above, rows of the sum's unit beneath. -/
-private def offT (k : Nat) (bt : Mat) (m : Nat) : Mat :=
+def offT (k : Nat) (bt : Mat) (m : Nat) : Mat :=
   (List.range m).map (fun r =>
     if r < bt.length then ground.getAt [] bt r
     else List.replicate k BPair.unit)
@@ -738,20 +789,22 @@ private theorem subLtSubR : ∀ (k m n : Nat), k ≤ m → m < n →
     exact subLtSubR k m n (Nat.le_of_succ_le_succ hk)
       (Nat.lt_of_succ_lt_succ hn)
 
-private theorem rectAt_len {B : Mat} {r c : Nat} (h : rectAt B r c) :
+/-- The rectangular shape's row count. -/
+theorem rectAt_len {B : Mat} {r c : Nat} (h : rectAt B r c) :
     B.length = r := ground.beqEq _ _ ((ground.andSplitB h).1)
 
-private theorem rectAt_rows {B : Mat} {r c : Nat} (h : rectAt B r c) :
+/-- The rectangular shape's column count, row by row. -/
+theorem rectAt_rows {B : Mat} {r c : Nat} (h : rectAt B r c) :
     rowsLen c B :=
   rowsLen_of_allP (fun _ hr => ground.beqEq _ _ hr) B
     ((ground.andSplitB h).2)
 
-private theorem sqAt_headD : ∀ (M : Mat) (m : Nat), sqAt M m →
+theorem sqAt_headD : ∀ (M : Mat) (m : Nat), sqAt M m →
     (M.headD []).length = m
   | [], _, h => sqAt_len h
   | _ :: _, _, h => (rowsLen_of_sqAt h).1
 
-private theorem offPad_len (w : Nat) (B : Mat) :
+theorem offPad_len (w : Nat) (B : Mat) :
     (offPad w B).length = B.length := ground.length_map _ B
 
 private theorem offPad_rows (w n1 : Nat) (B : Mat) (hB : rowsLen n1 B)
@@ -785,7 +838,7 @@ private theorem offT_rows (k : Nat) (bt : Mat) (m : Nat)
 
 /-- The padded off-block's exchange is the exchange padded by rows
 of the sum's unit, at an occupied slab order. -/
-private theorem transposeM_offPad (B : Mat) (k n1 m : Nat)
+theorem transposeM_offPad (B : Mat) (k n1 m : Nat)
     (hBl : B.length = k) (hBr : rowsLen n1 B) (hk : 0 < k)
     (hle : n1 ≤ m) :
     transposeM (offPad m B) = offT k (transposeM B) m := by
@@ -847,7 +900,7 @@ private theorem transposeM_offPad (B : Mat) (k n1 m : Nat)
 /-- The assembled matrix at a leading slab: the slab's block row
 against the padded off-block above, the exchange against the
 trailing assembly beneath. -/
-private theorem assemble_cons (A B : Mat) (As Bs : List Mat)
+theorem assemble_cons (A B : Mat) (As Bs : List Mat)
     (k n1 m : Nat) (hAl : A.length = k) (hk : 0 < k)
     (hBl : B.length = k) (hBr : rowsLen n1 B) (hle : n1 ≤ m)
     (hml : (assemble As Bs).length = m)
@@ -892,7 +945,7 @@ theorem slabShape_len_ns : ∀ {diag off : List Mat}
 
 /-- The slab walk ties the off-diagonal blocks to the diagonal
 blocks, one fewer. -/
-private theorem slabShape_len_off : ∀ {diag off : List Mat}
+theorem slabShape_len_off : ∀ {diag off : List Mat}
     {ns : List Nat}, slabShape diag off ns → off.length + 1 = diag.length
   | [], _, _, h => h.elim
   | _ :: _, _, [], h => h.elim
@@ -914,9 +967,18 @@ theorem qShape_len : ∀ {Xs : List MatQ} {ns : List Nat},
   | _ :: _, [], h => h.elim
   | _ :: Xs, _ :: ns, h => congrArg (· + 1) (qShape_len (Xs := Xs) (ns := ns) h.2)
 
+/-- The vector walk ties the blocks to the orders. -/
+theorem vShape_len : ∀ {us : List VecQ} {ns : List Nat},
+    vShape us ns → us.length = ns.length
+  | [], [], _ => rfl
+  | [], _ :: _, h => h.elim
+  | _ :: _, [], h => h.elim
+  | _ :: us, _ :: ns, h =>
+    congrArg (· + 1) (vShape_len (us := us) (ns := ns) h.2)
+
 /-- The tail witness walk ties the witnesses to the orders, one
 fewer. -/
-private theorem wShapeR_len : ∀ {Rs : List MatQ} {ns : List Nat},
+theorem wShapeR_len : ∀ {Rs : List MatQ} {ns : List Nat},
     wShapeR Rs ns → Rs.length + 1 = ns.length
   | [], [], h => h.elim
   | [], [_], _ => rfl
@@ -977,7 +1039,7 @@ private theorem slab_rect : ∀ {diag off : List Mat} {ns : List Nat},
 
 /-- Every slab holds a key, the walk's occupancy read at a
 stated slab. -/
-private theorem slab_pos : ∀ {diag off : List Mat} {ns : List Nat},
+theorem slab_pos : ∀ {diag off : List Mat} {ns : List Nat},
     slabShape diag off ns → ∀ (i : Nat), i < ns.length →
     0 < ground.getAt 0 ns i
   | [], _, _, h, _, _ => h.elim
@@ -1044,6 +1106,887 @@ private theorem assemble_sq : ∀ (diag off : List Mat) (ns : List Nat),
     exact rowsLen_blockJoin _ _ _ n0 (ground.sumNat nt)
       (rowsLen_of_sqAt hA)
       (offPad_rows _ _ B (rectAt_rows hB) hn1) hbtr (rowsLen_of_sqAt hIH)
+
+/-- The rescaled rows read the stated width, row by row. -/
+private theorem allScale (c : Nat) (w : Pos) : ∀ B : Mat,
+    (matScale w B).all (fun row => Nat.beq row.length c)
+      = B.all (fun row => Nat.beq row.length c)
+  | [] => rfl
+  | x :: t => by
+    show (Nat.beq (x.map (fun e => e.scale w)).length c
+        && (matScale w t).all (fun row => Nat.beq row.length c))
+      = (Nat.beq x.length c && t.all (fun row => Nat.beq row.length c))
+    rw [ground.length_map (fun e => e.scale w) x, allScale c w t]
+
+/-- The rescaling keeps the rectangular shape. -/
+private theorem rectAt_matScale (w : Pos) (B : Mat) (r c : Nat)
+    (h : rectAt B r c) : rectAt (matScale w B) r c := by
+  show (Nat.beq (matScale w B).length r
+    && (matScale w B).all (fun row => Nat.beq row.length c)) = true
+  rw [length_matScale w B, allScale c w B]
+  exact h
+
+/-- A leading slab joins a slab walk at its own key, its diagonal
+block square there and its coupling rectangular against the walk's
+leading key. -/
+private theorem slabShape_cons (A B : Mat) (D O : List Mat) (k : Nat)
+    (N : List Nat) (hk : 0 < k) (hA : sqAt A k)
+    (hB : rectAt B k (ground.getAt 0 N 0)) (h : slabShape D O N) :
+    slabShape (A :: D) (B :: O) (k :: N) := by
+  cases D with
+  | nil => exact h.elim
+  | cons A' D' =>
+    cases N with
+    | nil => exact h.elim
+    | cons k' N' => exact ⟨hk, hA, hB, h⟩
+
+/-- The decimated order list reads its leading key at the slab
+walk's own. -/
+private theorem headNs : ∀ (j : Nat) (ns : List Nat), j < ns.length →
+    ground.getAt 0 (List.take j ns ++ [ground.getAt 0 ns j]) 0
+      = ground.getAt 0 ns 0
+  | 0, _, _ => rfl
+  | _ + 1, [], h => absurd h (Nat.not_lt_zero _)
+  | _ + 1, _ :: _, _ => rfl
+
+/-- The decimated head's slab walk: the leading slabs at their own
+keys rescaled, the pivot's block the trailing slab at the depth's
+key. -/
+private theorem headShape : ∀ (j : Nat) (diag off : List Mat)
+    (ns : List Nat) (w : Pos) (P : Mat), slabShape diag off ns →
+    j < ns.length → sqAt P (ground.getAt 0 ns j) →
+    slabShape (List.map (matScale w) (List.take j diag) ++ [P])
+      (List.map (matScale w) (List.take j off))
+      (List.take j ns ++ [ground.getAt 0 ns j])
+  | 0, _, _, ns, _, _, hs, hj, hP => ⟨slab_pos hs 0 hj, hP⟩
+  | j + 1, diag, off, ns, w, P, hs, hj, hP => by
+    cases ns with
+    | nil => exact absurd hj (Nat.not_lt_zero _)
+    | cons n0 nt =>
+      have hjt : j < nt.length := Nat.lt_of_succ_lt_succ hj
+      cases diag with
+      | nil => exact hs.elim
+      | cons A As =>
+        cases off with
+        | nil =>
+          cases nt with
+          | nil => exact absurd hjt (Nat.not_lt_zero _)
+          | cons k' nt' =>
+            cases As with
+            | nil => exact hs.elim
+            | cons _ _ => exact hs.elim
+        | cons B Bs =>
+          have hIH : slabShape
+              (List.map (matScale w) (List.take j As) ++ [P])
+              (List.map (matScale w) (List.take j Bs))
+              (List.take j nt ++ [ground.getAt 0 nt j]) :=
+            headShape j As Bs nt w P (slabShape_tail hs) hjt hP
+          refine slabShape_cons _ _ _ _ n0 _
+            (slab_pos hs 0 (Nat.succ_pos _))
+            (sqAt_matScale n0 w A (slab_sq hs 0 (Nat.succ_pos _))) ?_ hIH
+          show rectAt (matScale w B) n0
+            (ground.getAt 0
+              (List.take j nt ++ [ground.getAt 0 nt j]) 0)
+          rw [headNs j nt hjt]
+          exact rectAt_matScale w B n0 (ground.getAt 0 nt 0)
+            (slab_rect hs 0 (Nat.succ_pos _))
+
+/-- The decimated head is square at the leading keys' total joined
+to the depth's own key. -/
+theorem headM_sq (diag off : List Mat) (X : MatQ) (j : Nat)
+    (ns : List Nat)
+    (hs : slabShape diag off ns) (hj : j < ns.length)
+    (hX : sqAt X.1 (ground.getAt 0 ns j)) :
+    sqAt (headM diag off X j)
+      (ground.sumNat (List.take j ns) + ground.getAt 0 ns j) := by
+  have h := assemble_sq
+    (List.map (matScale X.2) (List.take j diag) ++ [X.1])
+    (List.map (matScale X.2) (List.take j off))
+    (List.take j ns ++ [ground.getAt 0 ns j])
+    (headShape j diag off ns X.2 X.1 hs hj hX)
+  rw [ground.sumNat_append (List.take j ns) [ground.getAt 0 ns j]] at h
+  show sqAt (assemble _ _)
+    (ground.sumNat (List.take j ns) + ground.getAt 0 ns j)
+  rw [show ground.sumNat [ground.getAt 0 ns j] = ground.getAt 0 ns j from
+    Nat.add_zero _] at h
+  exact h
+
+private theorem unitTail_scaleP (w : BPair) : ∀ {r : List BPair},
+    poly.unitTail r → poly.unitTail (poly.scaleP w r)
+  | [], _ => trivial
+  | _ :: _, h => by
+    refine ⟨?_, unitTail_scaleP w h.2⟩
+    show BPair.oneValue ((w * _).norm) BPair.unit
+    refine BPair.oneValue_trans (BPair.norm_oneValue _) ?_
+    exact BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl w) h.1)
+        (BPair.mul_unit w)
+
+private theorem nullScaleB (w : BPair) : ∀ (M : Mat),
+    elim.matNull M → elim.matNull (matScaleB w M)
+  | [], _ => trivial
+  | _ :: M, h => ⟨unitTail_scaleP w h.1, nullScaleB w M h.2⟩
+
+private theorem rowScaleP (c : Pos) (w : BPair) : ∀ r : List BPair,
+    poly.oneValue ((poly.scaleP w r).map (fun x => x.scale c))
+      (poly.scaleP (w.scale c) r)
+  | [] => trivial
+  | x :: r => by
+    refine ⟨?_, rowScaleP c w r⟩
+    show (((w * x).norm).scale c).oneValue ((w.scale c * x).norm)
+    refine BPair.oneValue_trans
+      (BPair.scale_congr c (BPair.norm_oneValue _)) ?_
+    rw [← BPair.scale_mul_left w x c]
+    exact BPair.oneValue_symm (BPair.norm_oneValue _)
+
+private theorem scaleScaleB (c : Pos) (w : BPair) (M : Mat) :
+    matOneValue (matScale c (matScaleB w M))
+      (matScaleB (w.scale c) M) := by
+  show matOneValue ((M.map (poly.scaleP w)).map
+      (fun r => r.map (fun x => x.scale c)))
+    (M.map (poly.scaleP (w.scale c)))
+  rw [ground.map_map]
+  exact elim.matOne_map _ _ (fun r => rowScaleP c w r) M
+
+private theorem matScale_congrM (c : Pos) {A B : Mat}
+    (h : matOneValue A B) :
+    matOneValue (matScale c A) (matScale c B) :=
+  elim.matOne_trans (inertia.matScale_scaleB c A)
+    (elim.matOne_trans (inertia.matOne_scaleB (BPair.ofPos c) h)
+      (elim.matOne_symm (inertia.matScale_scaleB c B)))
+
+private theorem unitTailRepl {y : BPair} (hy : y.oneValue BPair.unit) :
+    ∀ n : Nat, poly.unitTail (List.replicate n y)
+  | 0 => trivial
+  | n + 1 => ⟨hy, unitTailRepl hy n⟩
+
+private theorem rowPad (c : Pos) (W : Nat) (rb : List BPair) :
+    poly.oneValue ((padRow W rb).map (fun x => x.scale c))
+      (padRow W (rb.map (fun x => x.scale c))) := by
+  show poly.oneValue
+    ((rb ++ List.replicate (W - rb.length) BPair.unit).map
+      (fun x => x.scale c))
+    (rb.map (fun x => x.scale c)
+      ++ List.replicate (W - (rb.map (fun x => x.scale c)).length)
+        BPair.unit)
+  rw [ground.map_append, ground.map_replicate, ground.length_map]
+  refine poly.oneValue_append _ _ _ _ rfl
+    (poly.oneValue_refl _) ?_
+  refine poly.unitTail_oneValue
+    (unitTailRepl ?_ (W - rb.length)) (poly.unitTail_replicate _)
+  show (BPair.unit.scale c).oneValue BPair.unit
+  show Pos.one * c + Pos.one = Pos.one + Pos.one * c
+  exact ground.add_comm _ _
+
+private theorem scalePad (c : Pos) (W : Nat) (B : Mat) :
+    matOneValue (matScale c (offPad W B))
+      (offPad W (matScale c B)) := by
+  show matOneValue ((B.map (padRow W)).map
+      (fun r => r.map (fun x => x.scale c)))
+    ((B.map (fun r => r.map (fun x => x.scale c))).map (padRow W))
+  rw [ground.map_map, ground.map_map]
+  exact elim.matOne_map _ _ (fun rb => rowPad c W rb) B
+
+private theorem rowPadCongr (W : Nat) {rb rb' : List BPair}
+    (hl : rb.length = rb'.length) (h : poly.oneValue rb rb') :
+    poly.oneValue (padRow W rb) (padRow W rb') := by
+  show poly.oneValue
+    (rb ++ List.replicate (W - rb.length) BPair.unit)
+    (rb' ++ List.replicate (W - rb'.length) BPair.unit)
+  rw [hl]
+  exact poly.oneValue_append _ _ _ _ hl h (poly.oneValue_refl _)
+
+private theorem offPadCongr (W : Nat) {n : Nat} :
+    ∀ {B B' : Mat}, rowsLen n B → rowsLen n B' →
+    matOneValue B B' → matOneValue (offPad W B) (offPad W B')
+  | [], [], _, _, _ => trivial
+  | [], _ :: _, _, _, h => h.elim
+  | _ :: _, [], _, _, h => h.elim
+  | _ :: _, _ :: _, hB, hB', h =>
+    ⟨rowPadCongr W (hB.1.trans hB'.1.symm) h.1,
+     offPadCongr W hB.2 hB'.2 h.2⟩
+
+
+private theorem tieBase (dn : BPair) (X X' : MatQ) (o : Nat)
+    (hX : sqAt X.1 o) (hX' : sqAt X'.1 o) :
+    matOneValue (matScale X.2 X'.1)
+      (matAdd (matScale X'.2 X.1)
+        (matAdd
+          (matScaleB (dn.scale (X.2 * X'.2)) (inertia.headId 0 o))
+          (inertia.trailPad 0 (addQ X' (swapQ X)).1))) := by
+  have hb : sqAt (matScale X.2 X'.1) o :=
+    inertia.sqAt_matScale o X.2 X'.1 hX'
+  have ha : sqAt (matScale X'.2 X.1) o :=
+    inertia.sqAt_matScale o X'.2 X.1 hX
+  have hc : sqAt (matScale X'.2 (matSwap X.1)) o :=
+    inertia.sqAt_matScale o X'.2 _ (elim.sqAt_matSwap o X.1 hX)
+  have hdevS : sqAt (matAdd (matScale X.2 X'.1)
+      (matScale X'.2 (matSwap X.1))) o :=
+    elim.sqAt_matAdd o _ _ hb hc
+  have hnul : elim.matNull (matScaleB (dn.scale (X.2 * X'.2))
+      (inertia.headId 0 o)) :=
+    nullScaleB _ _ (show elim.matNull (elim.nullMat o (0 + o)) from
+      elim.matNull_nullMat _ _)
+  have hz : (0 : Nat) + o = o := Nat.zero_add o
+  have hnulS : sqAt (matScaleB (dn.scale (X.2 * X'.2))
+      (inertia.headId 0 o)) o := by
+    refine elim.sqAt_of ?_ ?_
+    · show (matScaleB _ (elim.nullMat o (0 + o))).length = o
+      rw [inertia.length_scaleB, elim.length_nullMat]
+    · exact elim.rowsLen_cast hz
+        (inertia.rowsLen_scaleB _ _ _ (elim.rowsLen_nullMat _ _))
+  refine elim.matOne_symm ?_
+  show matOneValue
+    (matAdd (matScale X'.2 X.1)
+      (matAdd
+        (matScaleB (dn.scale (X.2 * X'.2)) (inertia.headId 0 o))
+        (inertia.trailPad 0
+          (matAdd (matScale X.2 X'.1)
+            (matScale X'.2 (matSwap X.1))))))
+    (matScale X.2 X'.1)
+  rw [show inertia.trailPad 0
+      (matAdd (matScale X.2 X'.1) (matScale X'.2 (matSwap X.1)))
+    = (matAdd (matScale X.2 X'.1)
+        (matScale X'.2 (matSwap X.1))).map (fun r => r) from rfl,
+    ground.map_id]
+  refine elim.matOne_trans
+    (elim.matAdd_cong2 o (matScale X'.2 X.1) _ (matScale X'.2 X.1) _
+      (elim.rowsLen_of_sqAt ha)
+      (elim.rowsLen_matAdd o _ _ (elim.rowsLen_of_sqAt hnulS)
+        (elim.rowsLen_of_sqAt hdevS))
+      (elim.rowsLen_of_sqAt ha) (elim.rowsLen_of_sqAt hdevS)
+      (elim.matOne_refl _)
+      (elim.matAdd_nullL _ _ hnul
+        ((elim.sqAt_len hnulS).trans (elim.sqAt_len hdevS).symm)
+        (elim.rowsLen_of_sqAt hnulS)
+        (elim.rowsLen_of_sqAt hdevS))) ?_
+  rw [← elim.matAdd_assoc,
+    elim.matAdd_comm (matScale X'.2 X.1) (matScale X.2 X'.1),
+    elim.matAdd_assoc, inertia.matScale_matSwap X'.2 X.1]
+  exact elim.matAdd_nullR (matScale X.2 X'.1) _ hb
+    (elim.sqAt_matAdd o _ _ ha
+      (elim.sqAt_matSwap o _ ha))
+    (elim.matNull_add_swap (matScale X'.2 X.1))
+
+private theorem tieStep (dn : BPair) (X X' : MatQ) (j : Nat)
+    (A A' B B' : Mat) (dt dt' Bs Bs' : List Mat) (nt : List Nat)
+    (n0 : Nat) {n1 : Nat} (hn0 : 0 < n0)
+    (hA : sqAt A n0) (hA' : sqAt A' n0)
+    (hB : rectAt B n0 n1) (hB' : rectAt B' n0 n1)
+    (hle : n1 ≤ ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j)
+    (hX : sqAt X.1 (ground.getAt 0 nt j))
+    (hX' : sqAt X'.1 (ground.getAt 0 nt j))
+    (hQsq : sqAt (headM dt Bs X j)
+      (ground.sumNat (List.take j nt) + ground.getAt 0 nt j))
+    (hcons : headM (A :: dt) (B :: Bs) X (j + 1)
+      = blockJoin (matScale X.2 A)
+        (offPad (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j) (matScale X.2 B))
+        (headM dt Bs X j))
+    (hcons' : headM (A' :: dt') (B' :: Bs') X' (j + 1)
+      = blockJoin (matScale X'.2 A')
+        (offPad (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j) (matScale X'.2 B'))
+        (headM dt' Bs' X' j))
+    (hIH : matOneValue (matScale X.2 (headM dt' Bs' X' j))
+      (matAdd (matScale X'.2 (headM dt Bs X j))
+        (matAdd
+          (matScaleB (dn.scale (X.2 * X'.2))
+            (inertia.headId (ground.sumNat (List.take j nt))
+              (ground.getAt 0 nt j)))
+          (inertia.trailPad (ground.sumNat (List.take j nt))
+            (addQ X' (swapQ X)).1))))
+    (htie0 : matOneValue A'
+      (matAdd A (matScaleB dn (idMat n0))))
+    (hoff0 : matOneValue B' B) :
+    matOneValue
+      (matScale X.2 (headM (A' :: dt') (B' :: Bs') X' (j + 1)))
+      (matAdd (matScale X'.2 (headM (A :: dt) (B :: Bs) X (j + 1)))
+        (matAdd
+          (matScaleB (dn.scale (X.2 * X'.2))
+            (inertia.headId
+              (n0 + ground.sumNat (List.take j nt))
+              (ground.getAt 0 nt j)))
+          (inertia.trailPad
+            (n0 + ground.sumNat (List.take j nt))
+            (addQ X' (swapQ X)).1))) := by
+  -- shapes
+  have hdev : sqAt (addQ X' (swapQ X)).1 (ground.getAt 0 nt j) :=
+    elim.sqAt_matAdd _ _ _
+      (inertia.sqAt_matScale _ X.2 X'.1 hX')
+      (inertia.sqAt_matScale _ X'.2 _ (elim.sqAt_matSwap _ X.1 hX))
+  have hOl : (offPad (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j) (matScale X.2 B)).length = n0 := by
+    show ((matScale X.2 B).map _).length = n0
+    rw [ground.length_map, length_matScale]
+    exact rectAt_len hB
+  have hOl' : (offPad (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j) (matScale X'.2 B')).length = n0 := by
+    show ((matScale X'.2 B').map _).length = n0
+    rw [ground.length_map, length_matScale]
+    exact rectAt_len hB'
+  have hOr : rowsLen (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j)
+      (offPad (ground.sumNat (List.take j nt)
+        + ground.getAt 0 nt j) (matScale X.2 B)) :=
+    offPad_rows _ n1 _
+      (rectAt_rows (rectAt_matScale X.2 B n0 n1 hB)) hle
+  have hOr' : rowsLen (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j)
+      (offPad (ground.sumNat (List.take j nt)
+        + ground.getAt 0 nt j) (matScale X'.2 B')) :=
+    offPad_rows _ n1 _
+      (rectAt_rows (rectAt_matScale X'.2 B' n0 n1 hB')) hle
+  -- the two scaled peels
+  have hL : matOneValue
+      (matScale X.2 (headM (A' :: dt') (B' :: Bs') X' (j + 1)))
+      (blockJoin (matScale X.2 (matScale X'.2 A'))
+        (matScale X.2 (offPad (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j) (matScale X'.2 B')))
+        (matScale X.2 (headM dt' Bs' X' j))) := by
+    rw [hcons']
+    exact inertia.matScale_blockJoin X.2 _ _ _ hOl' hOr'
+  have hR1 : matOneValue
+      (matScale X'.2 (headM (A :: dt) (B :: Bs) X (j + 1)))
+      (blockJoin (matScale X'.2 (matScale X.2 A))
+        (matScale X'.2 (offPad (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j) (matScale X.2 B)))
+        (matScale X'.2 (headM dt Bs X j))) := by
+    rw [hcons]
+    exact inertia.matScale_blockJoin X'.2 _ _ _ hOl hOr
+  -- the two pads peel
+  have hpeelT : matOneValue
+      (inertia.trailPad (n0 + ground.sumNat (List.take j nt))
+        (addQ X' (swapQ X)).1)
+      (blockJoin (elim.nullMat n0 n0)
+        (elim.nullMat n0 (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j))
+        (inertia.trailPad (ground.sumNat (List.take j nt))
+          (addQ X' (swapQ X)).1)) :=
+    inertia.trailPad_join _ hdev hn0
+  have hR2 : matOneValue
+      (matScaleB (dn.scale (X.2 * X'.2))
+        (inertia.headId (n0 + ground.sumNat (List.take j nt))
+          (ground.getAt 0 nt j)))
+      (blockJoin
+        (matScaleB (dn.scale (X.2 * X'.2)) (idMat n0))
+        (matScaleB (dn.scale (X.2 * X'.2))
+          (elim.nullMat n0 (ground.sumNat (List.take j nt)
+            + ground.getAt 0 nt j)))
+        (matScaleB (dn.scale (X.2 * X'.2))
+          (inertia.headId (ground.sumNat (List.take j nt))
+            (ground.getAt 0 nt j)))) :=
+    elim.matOne_trans
+      (inertia.matOne_scaleB _ (inertia.headId_join hn0))
+      (inertia.matScaleB_blockJoin _ _ _ _
+        (elim.length_nullMat n0 _) (elim.rowsLen_nullMat n0 _))
+  -- the head-block tie at the shared clearing
+  have hidsq : sqAt (idMat n0) n0 :=
+    elim.sqAt_of (inertia.idMat_len n0) (inertia.idMat_rows n0)
+  have hsProws : rowsLen n0
+      (matScaleB (dn.scale (X.2 * X'.2)) (idMat n0)) :=
+    inertia.rowsLen_scaleB _ n0 _ (inertia.idMat_rows n0)
+  have hsPlen : (matScaleB (dn.scale (X.2 * X'.2))
+      (idMat n0)).length = n0 :=
+    (inertia.length_scaleB _ _).trans (inertia.idMat_len n0)
+  have hPnrows : rowsLen n0
+      (matAdd (matScaleB (dn.scale (X.2 * X'.2)) (idMat n0))
+        (elim.nullMat n0 n0)) :=
+    elim.rowsLen_matAdd n0 _ _ hsProws (elim.rowsLen_nullMat n0 n0)
+  have htieP : matOneValue (matScale X.2 (matScale X'.2 A'))
+      (matAdd (matScale X'.2 (matScale X.2 A))
+        (matAdd (matScaleB (dn.scale (X.2 * X'.2)) (idMat n0))
+          (elim.nullMat n0 n0))) := by
+    rw [inertia.matScale_matScale X'.2 X.2 A',
+      inertia.matScale_matScale X.2 X'.2 A,
+      ground.mul_comm X'.2 X.2]
+    refine elim.matOne_trans
+      (matScale_congrM (X.2 * X'.2) htie0) ?_
+    rw [inertia.matScale_matAdd (X.2 * X'.2) A
+      (matScaleB dn (idMat n0))]
+    refine elim.matAdd_cong2 n0 _ _ _ _
+      (elim.rowsLen_mapRows _ A n0 (elim.rowsLen_of_sqAt hA))
+      (elim.rowsLen_mapRows _ _ n0
+        (inertia.rowsLen_scaleB dn n0 _ (inertia.idMat_rows n0)))
+      (elim.rowsLen_mapRows _ A n0 (elim.rowsLen_of_sqAt hA))
+      hPnrows (elim.matOne_refl _) ?_
+    refine elim.matOne_trans
+      (scaleScaleB (X.2 * X'.2) dn (idMat n0))
+      (elim.matOne_symm ?_)
+    exact elim.matAdd_nullR _ _
+      (inertia.sqAt_scaleB _ n0 _ hidsq)
+      (elim.sqAt_of (elim.length_nullMat n0 n0)
+        (elim.rowsLen_nullMat n0 n0))
+      (elim.matNull_nullMat n0 n0)
+  -- the coupling-block tie at the shared clearing
+  have hCl : matOneValue
+      (matScale X.2 (offPad (ground.sumNat (List.take j nt)
+        + ground.getAt 0 nt j) (matScale X'.2 B')))
+      (offPad (ground.sumNat (List.take j nt)
+        + ground.getAt 0 nt j) (matScale (X.2 * X'.2) B)) := by
+    refine elim.matOne_trans
+      (scalePad X.2 _ (matScale X'.2 B')) ?_
+    rw [inertia.matScale_matScale X'.2 X.2 B']
+    exact offPadCongr _
+      (rectAt_rows (rectAt_matScale (X.2 * X'.2) B' n0 n1 hB'))
+      (rectAt_rows (rectAt_matScale (X.2 * X'.2) B n0 n1 hB))
+      (matScale_congrM (X.2 * X'.2) hoff0)
+  have hCr : matOneValue
+      (matScale X'.2 (offPad (ground.sumNat (List.take j nt)
+        + ground.getAt 0 nt j) (matScale X.2 B)))
+      (offPad (ground.sumNat (List.take j nt)
+        + ground.getAt 0 nt j) (matScale (X.2 * X'.2) B)) := by
+    refine elim.matOne_trans
+      (scalePad X'.2 _ (matScale X.2 B)) ?_
+    rw [inertia.matScale_matScale X.2 X'.2 B,
+      ground.mul_comm X'.2 X.2]
+    exact elim.matOne_refl _
+  have hOlen : (matScale X'.2 (offPad (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j) (matScale X.2 B))).length = n0 :=
+    (length_matScale X'.2 _).trans hOl
+  have hOrows : rowsLen (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j)
+      (matScale X'.2 (offPad (ground.sumNat (List.take j nt)
+        + ground.getAt 0 nt j) (matScale X.2 B))) :=
+    elim.rowsLen_mapRows _ _ _ hOr
+  have hsOlen : (matScaleB (dn.scale (X.2 * X'.2))
+      (elim.nullMat n0 (ground.sumNat (List.take j nt)
+        + ground.getAt 0 nt j))).length = n0 :=
+    (inertia.length_scaleB _ _).trans (elim.length_nullMat n0 _)
+  have hsOrows : rowsLen (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j)
+      (matScaleB (dn.scale (X.2 * X'.2))
+        (elim.nullMat n0 (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j))) :=
+    inertia.rowsLen_scaleB _ _ _ (elim.rowsLen_nullMat n0 _)
+  have hNrows : rowsLen (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j)
+      (matAdd (matScaleB (dn.scale (X.2 * X'.2))
+          (elim.nullMat n0 (ground.sumNat (List.take j nt)
+            + ground.getAt 0 nt j)))
+        (elim.nullMat n0 (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j))) :=
+    elim.rowsLen_matAdd _ _ _ hsOrows (elim.rowsLen_nullMat n0 _)
+  have hNlen : (matAdd (matScaleB (dn.scale (X.2 * X'.2))
+        (elim.nullMat n0 (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j)))
+      (elim.nullMat n0 (ground.sumNat (List.take j nt)
+        + ground.getAt 0 nt j))).length = n0 :=
+    (elim.length_matAdd _ _
+      (hsOlen.trans (elim.length_nullMat n0 _).symm)).trans hsOlen
+  have habs : matOneValue
+      (matAdd (matScale X'.2 (offPad (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j) (matScale X.2 B)))
+        (matAdd (matScaleB (dn.scale (X.2 * X'.2))
+            (elim.nullMat n0 (ground.sumNat (List.take j nt)
+              + ground.getAt 0 nt j)))
+          (elim.nullMat n0 (ground.sumNat (List.take j nt)
+            + ground.getAt 0 nt j))))
+      (matScale X'.2 (offPad (ground.sumNat (List.take j nt)
+        + ground.getAt 0 nt j) (matScale X.2 B))) := by
+    rw [elim.matAdd_comm]
+    exact elim.matAdd_nullL _ _
+      (elim.matNull_matAdd
+        (nullScaleB _ _ (elim.matNull_nullMat _ n0))
+        (elim.matNull_nullMat _ n0))
+      (hNlen.trans hOlen.symm) hNrows hOrows
+  have htieC : matOneValue
+      (matScale X.2 (offPad (ground.sumNat (List.take j nt)
+        + ground.getAt 0 nt j) (matScale X'.2 B')))
+      (matAdd (matScale X'.2 (offPad (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j) (matScale X.2 B)))
+        (matAdd (matScaleB (dn.scale (X.2 * X'.2))
+            (elim.nullMat n0 (ground.sumNat (List.take j nt)
+              + ground.getAt 0 nt j)))
+          (elim.nullMat n0 (ground.sumNat (List.take j nt)
+            + ground.getAt 0 nt j)))) :=
+    elim.matOne_trans hCl
+      (elim.matOne_trans (elim.matOne_symm hCr)
+        (elim.matOne_symm habs))
+  -- the sum side at the joined order
+  have hProws : rowsLen n0 (matScale X'.2 (matScale X.2 A)) :=
+    elim.rowsLen_mapRows _ _ n0
+      (elim.rowsLen_mapRows _ A n0 (elim.rowsLen_of_sqAt hA))
+  have hPlen : (matScale X'.2 (matScale X.2 A)).length = n0 :=
+    (length_matScale _ _).trans
+      ((length_matScale _ _).trans (elim.sqAt_len hA))
+  have hPNlen : (matAdd (matScaleB (dn.scale (X.2 * X'.2))
+      (idMat n0)) (elim.nullMat n0 n0)).length = n0 :=
+    (elim.length_matAdd _ _
+      (hsPlen.trans (elim.length_nullMat n0 n0).symm)).trans hsPlen
+  have hOTrows : rowsLen n0 (transposeM
+      (matScale X'.2 (offPad (ground.sumNat (List.take j nt)
+        + ground.getAt 0 nt j) (matScale X.2 B)))) :=
+    elim.rowsLen_cast hOlen (elim.rowsLen_transposeM _)
+  have hQrows : rowsLen (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j)
+      (matScale X'.2 (headM dt Bs X j)) :=
+    elim.rowsLen_mapRows _ _ _ (elim.rowsLen_of_sqAt hQsq)
+  have hRHrows : rowsLen (n0 + (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j))
+      (matScale X'.2 (headM (A :: dt) (B :: Bs) X (j + 1))) := by
+    rw [hcons]
+    exact elim.rowsLen_mapRows _ _ _
+      (inertia.rowsLen_blockJoin _ _ _ n0 _
+        (elim.rowsLen_mapRows _ A n0 (elim.rowsLen_of_sqAt hA))
+        hOr
+        (elim.rowsLen_cast hOl (elim.rowsLen_transposeM _))
+        (elim.rowsLen_of_sqAt hQsq))
+  have hBJ1rows : rowsLen (n0 + (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j))
+      (blockJoin (matScale X'.2 (matScale X.2 A))
+        (matScale X'.2 (offPad (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j) (matScale X.2 B)))
+        (matScale X'.2 (headM dt Bs X j))) :=
+    inertia.rowsLen_blockJoin _ _ _ n0 _
+      hProws hOrows hOTrows hQrows
+  have hSBrows : rowsLen (n0 + (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j))
+      (matScaleB (dn.scale (X.2 * X'.2))
+        (inertia.headId (n0 + ground.sumNat (List.take j nt))
+          (ground.getAt 0 nt j))) :=
+    elim.rowsLen_cast
+      (Nat.add_assoc n0 (ground.sumNat (List.take j nt))
+        (ground.getAt 0 nt j))
+      (inertia.rowsLen_scaleB _ _ _
+        (elim.rowsLen_of_sqAt (inertia.headId_sq
+          (n0 + ground.sumNat (List.take j nt))
+          (ground.getAt 0 nt j))))
+  have hTProws : rowsLen (n0 + (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j))
+      (inertia.trailPad (n0 + ground.sumNat (List.take j nt))
+        (addQ X' (swapQ X)).1) :=
+    elim.rowsLen_cast
+      (Nat.add_assoc n0 (ground.sumNat (List.take j nt))
+        (ground.getAt 0 nt j))
+      (elim.rowsLen_of_sqAt (inertia.trailPad_sq _ hdev))
+  have hsQrows : rowsLen (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j)
+      (matScaleB (dn.scale (X.2 * X'.2))
+        (inertia.headId (ground.sumNat (List.take j nt))
+          (ground.getAt 0 nt j))) :=
+    inertia.rowsLen_scaleB _ _ _
+      (elim.rowsLen_of_sqAt (inertia.headId_sq
+        (ground.sumNat (List.take j nt)) (ground.getAt 0 nt j)))
+  have htQrows : rowsLen (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j)
+      (inertia.trailPad (ground.sumNat (List.take j nt))
+        (addQ X' (swapQ X)).1) :=
+    elim.rowsLen_of_sqAt (inertia.trailPad_sq _ hdev)
+  have hsOTrows : rowsLen n0 (transposeM
+      (matScaleB (dn.scale (X.2 * X'.2))
+        (elim.nullMat n0 (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j)))) :=
+    elim.rowsLen_cast hsOlen (elim.rowsLen_transposeM _)
+  have hBJ2rows : rowsLen (n0 + (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j))
+      (blockJoin
+        (matScaleB (dn.scale (X.2 * X'.2)) (idMat n0))
+        (matScaleB (dn.scale (X.2 * X'.2))
+          (elim.nullMat n0 (ground.sumNat (List.take j nt)
+            + ground.getAt 0 nt j)))
+        (matScaleB (dn.scale (X.2 * X'.2))
+          (inertia.headId (ground.sumNat (List.take j nt))
+            (ground.getAt 0 nt j)))) :=
+    inertia.rowsLen_blockJoin _ _ _ n0 _
+      hsProws hsOrows hsOTrows hsQrows
+  have hnOTrows : rowsLen n0 (transposeM
+      (elim.nullMat n0 (ground.sumNat (List.take j nt)
+        + ground.getAt 0 nt j))) :=
+    elim.rowsLen_cast (elim.length_nullMat n0 _)
+      (elim.rowsLen_transposeM _)
+  have hBJ3rows : rowsLen (n0 + (ground.sumNat (List.take j nt)
+      + ground.getAt 0 nt j))
+      (blockJoin (elim.nullMat n0 n0)
+        (elim.nullMat n0 (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j))
+        (inertia.trailPad (ground.sumNat (List.take j nt))
+          (addQ X' (swapQ X)).1)) :=
+    inertia.rowsLen_blockJoin _ _ _ n0 _
+      (elim.rowsLen_nullMat n0 n0)
+      (elim.rowsLen_nullMat n0 _) hnOTrows htQrows
+  have hsum2 : matAdd
+      (blockJoin
+        (matScaleB (dn.scale (X.2 * X'.2)) (idMat n0))
+        (matScaleB (dn.scale (X.2 * X'.2))
+          (elim.nullMat n0 (ground.sumNat (List.take j nt)
+            + ground.getAt 0 nt j)))
+        (matScaleB (dn.scale (X.2 * X'.2))
+          (inertia.headId (ground.sumNat (List.take j nt))
+            (ground.getAt 0 nt j))))
+      (blockJoin (elim.nullMat n0 n0)
+        (elim.nullMat n0 (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j))
+        (inertia.trailPad (ground.sumNat (List.take j nt))
+          (addQ X' (swapQ X)).1))
+      = blockJoin
+        (matAdd (matScaleB (dn.scale (X.2 * X'.2)) (idMat n0))
+          (elim.nullMat n0 n0))
+        (matAdd (matScaleB (dn.scale (X.2 * X'.2))
+            (elim.nullMat n0 (ground.sumNat (List.take j nt)
+              + ground.getAt 0 nt j)))
+          (elim.nullMat n0 (ground.sumNat (List.take j nt)
+            + ground.getAt 0 nt j)))
+        (matAdd (matScaleB (dn.scale (X.2 * X'.2))
+            (inertia.headId (ground.sumNat (List.take j nt))
+              (ground.getAt 0 nt j)))
+          (inertia.trailPad (ground.sumNat (List.take j nt))
+            (addQ X' (swapQ X)).1)) :=
+    inertia.matAdd_blockJoin _ _ _ _ _ _
+      hsProws (elim.rowsLen_nullMat n0 n0)
+      hsPlen (elim.length_nullMat n0 n0)
+      hsOlen (elim.length_nullMat n0 _)
+      hsOrows (elim.rowsLen_nullMat n0 _) hn0
+  have hsum1 : matAdd
+      (blockJoin (matScale X'.2 (matScale X.2 A))
+        (matScale X'.2 (offPad (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j) (matScale X.2 B)))
+        (matScale X'.2 (headM dt Bs X j)))
+      (blockJoin
+        (matAdd (matScaleB (dn.scale (X.2 * X'.2)) (idMat n0))
+          (elim.nullMat n0 n0))
+        (matAdd (matScaleB (dn.scale (X.2 * X'.2))
+            (elim.nullMat n0 (ground.sumNat (List.take j nt)
+              + ground.getAt 0 nt j)))
+          (elim.nullMat n0 (ground.sumNat (List.take j nt)
+            + ground.getAt 0 nt j)))
+        (matAdd (matScaleB (dn.scale (X.2 * X'.2))
+            (inertia.headId (ground.sumNat (List.take j nt))
+              (ground.getAt 0 nt j)))
+          (inertia.trailPad (ground.sumNat (List.take j nt))
+            (addQ X' (swapQ X)).1)))
+      = blockJoin
+        (matAdd (matScale X'.2 (matScale X.2 A))
+          (matAdd (matScaleB (dn.scale (X.2 * X'.2)) (idMat n0))
+            (elim.nullMat n0 n0)))
+        (matAdd (matScale X'.2 (offPad
+            (ground.sumNat (List.take j nt)
+              + ground.getAt 0 nt j) (matScale X.2 B)))
+          (matAdd (matScaleB (dn.scale (X.2 * X'.2))
+              (elim.nullMat n0 (ground.sumNat (List.take j nt)
+                + ground.getAt 0 nt j)))
+            (elim.nullMat n0 (ground.sumNat (List.take j nt)
+              + ground.getAt 0 nt j))))
+        (matAdd (matScale X'.2 (headM dt Bs X j))
+          (matAdd (matScaleB (dn.scale (X.2 * X'.2))
+              (inertia.headId (ground.sumNat (List.take j nt))
+                (ground.getAt 0 nt j)))
+            (inertia.trailPad (ground.sumNat (List.take j nt))
+              (addQ X' (swapQ X)).1))) :=
+    inertia.matAdd_blockJoin _ _ _ _ _ _
+      hProws hPnrows hPlen hPNlen hOlen hNlen hOrows hNrows hn0
+  have hcong : matOneValue
+      (matAdd (matScale X'.2 (headM (A :: dt) (B :: Bs) X (j + 1)))
+        (matAdd
+          (matScaleB (dn.scale (X.2 * X'.2))
+            (inertia.headId (n0 + ground.sumNat (List.take j nt))
+              (ground.getAt 0 nt j)))
+          (inertia.trailPad (n0 + ground.sumNat (List.take j nt))
+            (addQ X' (swapQ X)).1)))
+      (matAdd
+        (blockJoin (matScale X'.2 (matScale X.2 A))
+          (matScale X'.2 (offPad (ground.sumNat (List.take j nt)
+            + ground.getAt 0 nt j) (matScale X.2 B)))
+          (matScale X'.2 (headM dt Bs X j)))
+        (matAdd
+          (blockJoin
+            (matScaleB (dn.scale (X.2 * X'.2)) (idMat n0))
+            (matScaleB (dn.scale (X.2 * X'.2))
+              (elim.nullMat n0 (ground.sumNat (List.take j nt)
+                + ground.getAt 0 nt j)))
+            (matScaleB (dn.scale (X.2 * X'.2))
+              (inertia.headId (ground.sumNat (List.take j nt))
+                (ground.getAt 0 nt j))))
+          (blockJoin (elim.nullMat n0 n0)
+            (elim.nullMat n0 (ground.sumNat (List.take j nt)
+              + ground.getAt 0 nt j))
+            (inertia.trailPad (ground.sumNat (List.take j nt))
+              (addQ X' (swapQ X)).1)))) :=
+    elim.matAdd_cong2 _ _ _ _ _
+      hRHrows (elim.rowsLen_matAdd _ _ _ hSBrows hTProws)
+      hBJ1rows (elim.rowsLen_matAdd _ _ _ hBJ2rows hBJ3rows)
+      hR1
+      (elim.matAdd_cong2 _ _ _ _ _ hSBrows hTProws
+        hBJ2rows hBJ3rows hR2 hpeelT)
+  have hjoin : matOneValue
+      (blockJoin (matScale X.2 (matScale X'.2 A'))
+        (matScale X.2 (offPad (ground.sumNat (List.take j nt)
+          + ground.getAt 0 nt j) (matScale X'.2 B')))
+        (matScale X.2 (headM dt' Bs' X' j)))
+      (blockJoin
+        (matAdd (matScale X'.2 (matScale X.2 A))
+          (matAdd (matScaleB (dn.scale (X.2 * X'.2)) (idMat n0))
+            (elim.nullMat n0 n0)))
+        (matAdd (matScale X'.2 (offPad
+            (ground.sumNat (List.take j nt)
+              + ground.getAt 0 nt j) (matScale X.2 B)))
+          (matAdd (matScaleB (dn.scale (X.2 * X'.2))
+              (elim.nullMat n0 (ground.sumNat (List.take j nt)
+                + ground.getAt 0 nt j)))
+            (elim.nullMat n0 (ground.sumNat (List.take j nt)
+              + ground.getAt 0 nt j))))
+        (matAdd (matScale X'.2 (headM dt Bs X j))
+          (matAdd (matScaleB (dn.scale (X.2 * X'.2))
+              (inertia.headId (ground.sumNat (List.take j nt))
+                (ground.getAt 0 nt j)))
+            (inertia.trailPad (ground.sumNat (List.take j nt))
+              (addQ X' (swapQ X)).1)))) :=
+    inertia.blockJoin_congr _ _ _ _ _ _
+      (elim.rowsLen_mapRows _ _ n0
+        (elim.rowsLen_mapRows _ A' n0 (elim.rowsLen_of_sqAt hA')))
+      (elim.rowsLen_matAdd n0 _ _ hProws hPnrows)
+      ((length_matScale _ _).trans hOl')
+      ((elim.length_matAdd _ _ (hOlen.trans hNlen.symm)).trans hOlen)
+      (elim.rowsLen_mapRows _ _ _ hOr')
+      (elim.rowsLen_matAdd _ _ _ hOrows hNrows)
+      htieP htieC hIH
+  refine elim.matOne_trans hL
+    (elim.matOne_trans hjoin (elim.matOne_symm ?_))
+  rw [hsum2, hsum1] at hcong
+  exact hcong
+
+private theorem tieGo (dn : BPair) (X X' : MatQ) :
+    ∀ (j : Nat) (diag off diag' off' : List Mat) (ns : List Nat),
+    slabShape diag off ns → slabShape diag' off' ns →
+    j < ns.length →
+    sqAt X.1 (ground.getAt 0 ns j) →
+    sqAt X'.1 (ground.getAt 0 ns j) →
+    (∀ i, i < j → matOneValue (ground.getAt [] diag' i)
+      (matAdd (ground.getAt [] diag i)
+        (matScaleB dn (idMat (ground.getAt 0 ns i))))) →
+    (∀ i, i < j → matOneValue (ground.getAt [] off' i)
+      (ground.getAt [] off i)) →
+    matOneValue (matScale X.2 (headM diag' off' X' j))
+      (matAdd (matScale X'.2 (headM diag off X j))
+        (matAdd
+          (matScaleB (dn.scale (X.2 * X'.2))
+            (inertia.headId (ground.sumNat (List.take j ns))
+              (ground.getAt 0 ns j)))
+          (inertia.trailPad (ground.sumNat (List.take j ns))
+            (addQ X' (swapQ X)).1)))
+  | 0, _, _, _, _, ns, _, _, _, hX, hX', _, _ =>
+    tieBase dn X X' (ground.getAt 0 ns 0) hX hX'
+  | j + 1, diag, off, diag', off', ns, hs, hs', hj, hX, hX',
+      hdag, hoff => by
+    cases diag with
+    | nil => exact hs.elim
+    | cons A dt =>
+    cases ns with
+    | nil => exact hs.elim
+    | cons n0 nt =>
+    cases nt with
+    | nil =>
+      exact absurd (Nat.lt_of_succ_lt_succ hj) (Nat.not_lt_zero _)
+    | cons n1 nrest =>
+    cases dt with
+    | nil =>
+      cases off with
+      | nil => exact hs.elim
+      | cons _ _ => exact hs.elim
+    | cons A2 As =>
+    cases off with
+    | nil => exact hs.elim
+    | cons B Bs =>
+    cases diag' with
+    | nil => exact hs'.elim
+    | cons A' dt' =>
+    cases dt' with
+    | nil =>
+      cases off' with
+      | nil => exact hs'.elim
+      | cons _ _ => exact hs'.elim
+    | cons A2' As' =>
+    cases off' with
+    | nil => exact hs'.elim
+    | cons B' Bs' =>
+    -- the slab walks' conjuncts
+    have hn0 : 0 < n0 := hs.1
+    have hA : sqAt A n0 := hs.2.1
+    have hB : rectAt B n0 n1 := hs.2.2.1
+    have hst : slabShape (A2 :: As) Bs (n1 :: nrest) := hs.2.2.2
+    have hA' : sqAt A' n0 := hs'.2.1
+    have hB' : rectAt B' n0 n1 := hs'.2.2.1
+    have hst' : slabShape (A2' :: As') Bs' (n1 :: nrest) := hs'.2.2.2
+    have hjt : j < (n1 :: nrest).length := Nat.lt_of_succ_lt_succ hj
+    have hIH := tieGo dn X X' j (A2 :: As) Bs (A2' :: As') Bs'
+      (n1 :: nrest) hst hst' hjt hX hX'
+      (fun i hi => hdag (i + 1) (Nat.succ_lt_succ hi))
+      (fun i hi => hoff (i + 1) (Nat.succ_lt_succ hi))
+    -- the widths
+    have hQsq : sqAt (headM (A2 :: As) Bs X j)
+        (ground.sumNat (List.take j (n1 :: nrest))
+          + ground.getAt 0 (n1 :: nrest) j) :=
+      headM_sq _ _ X j _ hst hjt hX
+    have hQ'sq : sqAt (headM (A2' :: As') Bs' X' j)
+        (ground.sumNat (List.take j (n1 :: nrest))
+          + ground.getAt 0 (n1 :: nrest) j) :=
+      headM_sq _ _ X' j _ hst' hjt hX'
+    have hle : n1 ≤ ground.sumNat (List.take j (n1 :: nrest))
+        + ground.getAt 0 (n1 :: nrest) j :=
+      ground.headKey_le (n1 :: nrest) j hjt
+    -- the two heads peel one slab
+    have hcons : headM (A :: A2 :: As) (B :: Bs) X (j + 1)
+        = blockJoin (matScale X.2 A)
+          (offPad (ground.sumNat (List.take j (n1 :: nrest))
+            + ground.getAt 0 (n1 :: nrest) j) (matScale X.2 B))
+          (headM (A2 :: As) Bs X j) := by
+      show assemble (matScale X.2 A
+          :: (List.map (matScale X.2) (List.take j (A2 :: As))
+            ++ [X.1]))
+        (matScale X.2 B
+          :: List.map (matScale X.2) (List.take j Bs)) = _
+      exact assemble_cons _ _ _ _ n0 n1 _
+        ((length_matScale X.2 A).trans (elim.sqAt_len hA)) hn0
+        ((length_matScale X.2 B).trans (rectAt_len hB))
+        (rectAt_rows (rectAt_matScale X.2 B n0 n1 hB)) hle
+        (elim.sqAt_len hQsq) (sqAt_headD _ _ hQsq)
+    have hcons' : headM (A' :: A2' :: As') (B' :: Bs') X' (j + 1)
+        = blockJoin (matScale X'.2 A')
+          (offPad (ground.sumNat (List.take j (n1 :: nrest))
+            + ground.getAt 0 (n1 :: nrest) j) (matScale X'.2 B'))
+          (headM (A2' :: As') Bs' X' j) := by
+      show assemble (matScale X'.2 A'
+          :: (List.map (matScale X'.2) (List.take j (A2' :: As'))
+            ++ [X'.1]))
+        (matScale X'.2 B'
+          :: List.map (matScale X'.2) (List.take j Bs')) = _
+      exact assemble_cons _ _ _ _ n0 n1 _
+        ((length_matScale X'.2 A').trans (elim.sqAt_len hA')) hn0
+        ((length_matScale X'.2 B').trans (rectAt_len hB'))
+        (rectAt_rows (rectAt_matScale X'.2 B' n0 n1 hB')) hle
+        (elim.sqAt_len hQ'sq) (sqAt_headD _ _ hQ'sq)
+    exact tieStep dn X X' j A A' B B' (A2 :: As) (A2' :: As')
+      Bs Bs' (n1 :: nrest) n0 hn0 hA hA' hB hB' hle hX hX'
+      hQsq hcons hcons' hIH
+      (hdag 0 (Nat.succ_pos j)) (hoff 0 (Nat.succ_pos j))
+
+/-- Two decimated heads at one shared clearing, the couplings equal
+and each leading diagonal tied at the drift `dn`, differ by the
+drift's head identity at the leading keys' total and the pivots'
+deviation at the trailing pad, every member cross-multiplied through
+the two clearings. -/
+theorem headM_tie (diag off diag' off' : List Mat) (X X' : MatQ)
+    (j : Nat) (ns : List Nat) (dn : BPair)
+    (hs : slabShape diag off ns)
+    (hs' : slabShape diag' off' ns)
+    (hj : j < ns.length)
+    (hX : sqAt X.1 (ground.getAt 0 ns j))
+    (hX' : sqAt X'.1 (ground.getAt 0 ns j))
+    (hdag : ∀ i, i < j → matOneValue (ground.getAt [] diag' i)
+      (matAdd (ground.getAt [] diag i)
+        (matScaleB dn (idMat (ground.getAt 0 ns i)))))
+    (hoff : ∀ i, i < j → matOneValue (ground.getAt [] off' i)
+      (ground.getAt [] off i)) :
+    matOneValue (matScale X.2 (headM diag' off' X' j))
+      (matAdd (matScale X'.2 (headM diag off X j))
+        (matAdd
+          (matScaleB (dn.scale (X.2 * X'.2))
+            (inertia.headId (ground.sumNat (List.take j ns))
+              (ground.getAt 0 ns j)))
+          (inertia.trailPad (ground.sumNat (List.take j ns))
+            (addQ X' (swapQ X)).1))) :=
+  tieGo dn X X' j diag off diag' off' ns hs hs' hj hX hX' hdag hoff
 
 private theorem mulLtUnit (c : Pos) {x : BPair} (h : x < BPair.unit) :
     BPair.ofPos c * x < BPair.unit :=
@@ -1148,7 +2091,7 @@ private theorem liftMat_act : ∀ (k : Nat) (Rs : List MatQ)
 
 /-- The off-block's exchange at the trailing order splits: the
 exchange's own rows above, rows of the sum's unit beneath. -/
-private theorem offT_split (k : Nat) (bt : Mat) (m : Nat)
+theorem offT_split (k : Nat) (bt : Mat) (m : Nat)
     (h : bt.length ≤ m) :
     offT k bt m
       = bt ++ List.replicate (m - bt.length)
@@ -1175,7 +2118,7 @@ private theorem offT_split (k : Nat) (bt : Mat) (m : Nat)
 
 /-- The padded off-block's action reads the block against the
 leading part of its argument. -/
-private theorem offPad_act (w n1 : Nat) (B : Mat) (hB : rowsLen n1 B)
+theorem offPad_act (w n1 : Nat) (B : Mat) (hB : rowsLen n1 B)
     (v1 v2 : List BPair) (h1 : v1.length = n1) :
     poly.oneValue (matVec (offPad w B) (v1 ++ v2)) (matVec B v1) := by
   show poly.oneValue
@@ -1231,7 +2174,7 @@ private theorem tail_step {diag off : List Mat} {Xs Rs : List MatQ}
       (ofM (ground.getAt [] diag i)) :=
   tailSteps_at diag off Xs Rs h.2.2.2 i hi
 
-private theorem qShape_at : ∀ {Xs : List MatQ} {ns : List Nat},
+theorem qShape_at : ∀ {Xs : List MatQ} {ns : List Nat},
     qShape Xs ns → ∀ (i : Nat), i < Xs.length →
     sqAt (ground.getAt dM Xs i).1 (ground.getAt 0 ns i)
   | [], _, _, _, hi => absurd hi (Nat.not_lt_zero _)
@@ -1272,7 +2215,7 @@ private theorem polyOfEq {u v : List BPair} (h : u = v) :
 private theorem posSwap3 (a b c : Pos) : c * (a * b) = a * (b * c) := by
   rw [ground.mul_left_comm c a b, ground.mul_comm c b]
 
-private theorem vecScale_two (a b : Pos) (u : List BPair) :
+theorem vecScale_two (a b : Pos) (u : List BPair) :
     poly.oneValue
       (elim.vecScale (BPair.ofPos a) (elim.vecScale (BPair.ofPos b) u))
       (elim.vecScale (BPair.ofPos (a * b)) u) :=
@@ -1281,7 +2224,7 @@ private theorem vecScale_two (a b : Pos) (u : List BPair) :
       (elim.vecScale_vecScale (BPair.ofPos a) (BPair.ofPos b) u))
     (elim.vecScale_congr (BPair.ofPos_mul a b) u)
 
-private theorem vecScale_posEq {a b : Pos} (h : a = b) (u : List BPair) :
+theorem vecScale_posEq {a b : Pos} (h : a = b) (u : List BPair) :
     elim.vecScale (BPair.ofPos a) u = elim.vecScale (BPair.ofPos b) u :=
   congrArg (fun z => elim.vecScale (BPair.ofPos z) u) h
 
@@ -1863,7 +2806,7 @@ private theorem lift_quad (S : Mat) (X0 : MatQ) (c : Pos) (n0 m : Nat)
     (BPair.add_congr (BPair.oneValue_refl _)
       (dotN_nullR tl _ (poly.unitTail_replicate m))) ?_
   refine BPair.oneValue_trans (BPair.add_unit _) ?_
-  exact BPair.oneValue_trans (inertia.dotN_scaleFst _ x _)
+  exact BPair.oneValue_trans (elim.dotN_scaleRow_free _ x _)
     (BPair.mul_congr (BPair.oneValue_refl _)
       (elim.dotN_scaleV _ x (matVec X0.1 x)))
 
@@ -2603,7 +3546,7 @@ theorem countSplit {n : Nat} (diag off : List Mat) (Xs Rs : List MatQ)
         exact hh)
     have hlen : (complFam diag off Rs sps).length + revFold sps = n := by
       rw [hfam.2.2.2.1, hSl]
-    refine ground.natLeCancelR (complFam diag off Rs sps).length ?_
+    refine ground.leCancelR (complFam diag off Rs sps).length ?_
     rw [Nat.add_comm (revAt SP) _, Nat.add_comm (revFold sps) _, hlen]
     exact hup
   exact Nat.le_antisymm hle hge

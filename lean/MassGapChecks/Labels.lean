@@ -9,7 +9,6 @@ with the definitional route's coherence (the crown among the
 pins), the Casimir read's class invariance, and the Cartan
 equality's instances.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places labels
@@ -266,3 +265,504 @@ example : ¬ (List.zipWith (fun x y => x + y) (rowList [1, 0])
     = List.replicate ([2, 0] : Shape).length
       ((degree [2, 0] + degree [1, 0])
         / ([2, 0] : Shape).length)) := by decide +kernel
+
+/-! `prop:repring`'s exchange at the label count, landed by the
+theorem route beside a decided instance at unequal factors. -/
+
+example : labels.countL [2, 1, 0] [1, 1, 0] [2, 2, 0]
+    = labels.countL [1, 1, 0] [2, 1, 0] [2, 2, 0] := by decide +kernel
+
+example : labels.countL [2, 1, 0] [1, 1, 0] [2, 2, 0]
+    = labels.countL [1, 1, 0] [2, 1, 0] [2, 2, 0] :=
+  labels.countL_comm [2, 1, 0] [1, 1, 0] [2, 2, 0]
+    (by decide +kernel) (by decide +kernel)
+
+example : ¬ (labels.countL [0, 0] [0, 0, 2] [0, 0]
+    = labels.countL [0, 0, 2] [0, 0] [0, 0]) := by decide +kernel
+example : ¬ (labels.countL [1, 0] [0, 0, 2] [1, 0]
+    = labels.countL [0, 0, 2] [1, 0] [1, 0]) := by decide +kernel
+
+/-! The class moves at the label data: the added full columns
+against the degree, the row list and the occupancy total, and the
+dual label's own join. -/
+
+/-- The battery's label shape: three columns at descending
+occupancies. -/
+private def sTri : Shape := [2, 1, 0]
+
+example : degree (addFulls 2 sTri)
+    = degree sTri + 2 * sTri.length := by decide +kernel
+example : degree (addFulls 2 sTri)
+    = degree sTri + 2 * sTri.length :=
+  degree_addFulls 2 sTri
+
+example : rowList (addFulls 2 sTri)
+    = (rowList sTri).map (fun x => x + 2) := by decide +kernel
+example : rowList (addFulls 2 sTri)
+    = (rowList sTri).map (fun x => x + 2) :=
+  rowList_addFulls 2 sTri
+
+example : degree sTri + degree (dualL sTri)
+    = sTri.length * ground.sumNat sTri := by decide +kernel
+example : degree sTri + degree (dualL sTri)
+    = sTri.length * ground.sumNat sTri :=
+  degree_dualL_add sTri
+
+example : reduce (dualL sTri) = dualL sTri := reduce_dualL sTri
+example : dualL (addFulls 2 sTri) = dualL sTri :=
+  dualL_addFulls 2 sTri
+
+/-! The occupancy total at the added full columns reads the last
+key's own count only at an occupied width: the vacant shape
+carries no key and the added count is refused. -/
+
+example : ground.sumNat (addFulls 2 sTri)
+    = ground.sumNat sTri + 2 := by decide +kernel
+example : ¬ (ground.sumNat (addFulls 2 ([] : Shape))
+    = ground.sumNat ([] : Shape) + 2) := by decide +kernel
+
+/-! The dual pair's own join in both orientations. -/
+
+/-- The battery's join shape: three columns at a raised middle. -/
+private def sJoin : Shape := [1, 2, 0]
+
+example : List.zipWith (fun x y => x + y) (rowList sJoin)
+      ((rowList (dualL sJoin)).reverse)
+    = List.replicate sJoin.length (ground.sumNat sJoin) := by
+  decide +kernel
+example : List.zipWith (fun x y => x + y) (rowList sJoin)
+      ((rowList (dualL sJoin)).reverse)
+    = List.replicate sJoin.length (ground.sumNat sJoin) :=
+  join_dual_selfR sJoin
+
+example : List.zipWith (fun x y => x + y) (rowList (dualL sJoin))
+      ((rowList sJoin).reverse)
+    = List.replicate sJoin.length (ground.sumNat sJoin) := by
+  decide +kernel
+example : List.zipWith (fun x y => x + y) (rowList (dualL sJoin))
+      ((rowList sJoin).reverse)
+    = List.replicate sJoin.length (ground.sumNat sJoin) :=
+  join_dual_selfL sJoin
+
+/-! The label count along the class in the first argument at any
+column count, and the count at or above the target's degree. -/
+
+example : countL (addFulls 1 [1, 0]) [1, 0] [2, 0]
+    = countL [1, 0] [1, 0] [2, 0] := by decide +kernel
+example : countL (addFulls 1 [1, 1, 0]) [1, 1, 0] [1, 1, 1]
+    = countL [1, 1, 0] [1, 1, 0] [1, 1, 1] :=
+  countL_addFullsA 1 [1, 1, 0] [1, 1, 0] [1, 1, 1] rfl rfl
+
+example : countL (addFulls 1 [1, 0]) [0, 0] [0, 1]
+    = countL [1, 0] [0, 0] [0, 1] :=
+  countL_addFullsA 1 [1, 0] [0, 0] [0, 1] rfl rfl
+
+example : countL (addFulls 0 [1, 0]) [1, 0] [0, 1]
+    = countL [1, 0] [1, 0] [0, 1] :=
+  countL_addFullsA 0 [1, 0] [1, 0] [0, 1] rfl rfl
+
+example : countL [1, 0] [1, 0] [0, 0]
+    = blockcount.fusionCount [1, 0] [1, 0]
+      (addFulls ((degree [1, 0] + degree [1, 0]
+        - degree ([0, 0] : Shape)) / ([1, 0] : Shape).length)
+        [0, 0]) := by decide +kernel
+example : countL [1, 0] [1, 0] [0, 0]
+    = blockcount.fusionCount [1, 0] [1, 0]
+      (addFulls ((degree [1, 0] + degree [1, 0]
+        - degree ([0, 0] : Shape)) / ([1, 0] : Shape).length)
+        [0, 0]) :=
+  countL_geRead [1, 0] [1, 0] [0, 0] rfl rfl (by decide +kernel)
+    (by decide +kernel)
+
+/-! `prop:repring`'s two pairing collapses at the full-column
+target, each at the theorem's own route beside its decided
+equation, the floors' records beneath. -/
+
+/-- The collapse cells' one-column shape. -/
+private def sOne : Shape := [1, 0]
+
+/-- The collapse cells' complement shape. -/
+private def sComp : Shape := [0, 1]
+
+example : ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount (addFulls 0 sOne) sOne
+          (places.shapeOf mu)
+        * blockcount.fusionCount (places.shapeOf mu) sComp
+          (dualread.fulls sOne.length (2 + 0)))
+      (ground.dedupL ((blockcount.exhaust sOne.length
+        (blockcount.fusedAt (blockcount.blockSpan (addFulls 0 sOne))
+          (blockcount.blockSpan sOne))).map
+        blockcount.HVec.content))
+    = blockcount.fusionCount (addFulls 0 sOne) sOne
+      (addFulls (2 + 0 - ground.sumNat sComp) (dualL sComp)) := by
+  decide +kernel
+
+example : ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount (addFulls 0 sOne) sOne
+          (places.shapeOf mu)
+        * blockcount.fusionCount (places.shapeOf mu) sComp
+          (dualread.fulls sOne.length (2 + 0)))
+      (ground.dedupL ((blockcount.exhaust sOne.length
+        (blockcount.fusedAt (blockcount.blockSpan (addFulls 0 sOne))
+          (blockcount.blockSpan sOne))).map
+        blockcount.HVec.content))
+    = blockcount.fusionCount (addFulls 0 sOne) sOne
+      (addFulls (2 + 0 - ground.sumNat sComp) (dualL sComp)) :=
+  foldCollapseL sOne sOne sComp 0 2 rfl rfl (by decide +kernel)
+
+example : ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount (addFulls 0 sComp) sComp
+          (places.shapeOf mu)
+        * blockcount.fusionCount (places.shapeOf mu) sComp
+          (dualread.fulls sComp.length (3 + 0)))
+      (ground.dedupL ((blockcount.exhaust sComp.length
+        (blockcount.fusedAt (blockcount.blockSpan (addFulls 0 sComp))
+          (blockcount.blockSpan sComp))).map
+        blockcount.HVec.content))
+    = blockcount.fusionCount (addFulls 0 sComp) sComp
+      (addFulls (3 + 0 - ground.sumNat sComp) (dualL sComp)) :=
+  foldCollapseL sComp sComp sComp 0 3 rfl rfl
+    (by decide +kernel)
+
+example : ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount sOne sComp
+          (places.shapeOf mu)
+        * blockcount.fusionCount (addFulls 0 sOne)
+          (places.shapeOf mu) (dualread.fulls sOne.length (2 + 0)))
+      (ground.dedupL ((blockcount.exhaust sOne.length
+        (blockcount.fusedAt (blockcount.blockSpan sOne)
+          (blockcount.blockSpan sComp))).map
+        blockcount.HVec.content))
+    = blockcount.fusionCount sOne sComp
+      (addFulls (2 - ground.sumNat sOne) (dualL sOne)) := by
+  decide +kernel
+
+example : ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount sOne sComp
+          (places.shapeOf mu)
+        * blockcount.fusionCount (addFulls 0 sOne)
+          (places.shapeOf mu) (dualread.fulls sOne.length (2 + 0)))
+      (ground.dedupL ((blockcount.exhaust sOne.length
+        (blockcount.fusedAt (blockcount.blockSpan sOne)
+          (blockcount.blockSpan sComp))).map
+        blockcount.HVec.content))
+    = blockcount.fusionCount sOne sComp
+      (addFulls (2 - ground.sumNat sOne) (dualL sOne)) :=
+  foldCollapseR sOne sOne sComp 0 2 rfl rfl (by decide +kernel)
+
+/-- The vacant arm's cell: the doubled first column against the
+two vacant shapes, the occupancy total past the ambient count. -/
+private def sTwo : Shape := [2, 0]
+
+/-- The vacant arm's second shape, the width-two unit shape. -/
+private def sUnit : Shape := [0, 0]
+
+/-- The overshooting complement key's shape, its occupancy total
+past the ambient count. -/
+private def sOver : Shape := [3, 0]
+
+example : ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount sUnit sUnit
+          (places.shapeOf mu)
+        * blockcount.fusionCount (addFulls 1 sTwo)
+          (places.shapeOf mu) (dualread.fulls sTwo.length (1 + 1)))
+      (ground.dedupL ((blockcount.exhaust sTwo.length
+        (blockcount.fusedAt (blockcount.blockSpan sUnit)
+          (blockcount.blockSpan sUnit))).map
+        blockcount.HVec.content))
+    = 0 := by decide +kernel
+
+example : ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount sUnit sUnit
+          (places.shapeOf mu)
+        * blockcount.fusionCount (addFulls 1 sTwo)
+          (places.shapeOf mu) (dualread.fulls sTwo.length (1 + 1)))
+      (ground.dedupL ((blockcount.exhaust sTwo.length
+        (blockcount.fusedAt (blockcount.blockSpan sUnit)
+          (blockcount.blockSpan sUnit))).map
+        blockcount.HVec.content))
+    = 0 :=
+  foldCollapseR_vacant sTwo sUnit sUnit 1 1 rfl rfl
+    (by decide +kernel)
+
+/-! The floors' reads.  The floors `hp` and `hMa` are load-bearing
+with their committed refusals: off the degree tie an overshooting
+complement key truncates onto an occupied count while the fold
+stays vacant, parting the two sides.  At the tie held the
+overshooting key sits off the pool and both sides read the count's
+unit, the passing records beneath; and the vacant width reads the
+collapse whole, the theorem's own instance. -/
+
+example : ¬ (ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount (addFulls 0 sOne) sOne
+          (places.shapeOf mu)
+        * blockcount.fusionCount (places.shapeOf mu) sTwo
+          (dualread.fulls sOne.length (1 + 0)))
+      (ground.dedupL ((blockcount.exhaust sOne.length
+        (blockcount.fusedAt (blockcount.blockSpan (addFulls 0 sOne))
+          (blockcount.blockSpan sOne))).map
+        blockcount.HVec.content))
+    = blockcount.fusionCount (addFulls 0 sOne) sOne
+        (addFulls (1 + 0 - ground.sumNat sTwo) (dualL sTwo))) := by
+  decide +kernel
+
+example : ¬ (ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount sOne sOne
+          (places.shapeOf mu)
+        * blockcount.fusionCount (addFulls 0 sTwo)
+          (places.shapeOf mu)
+          (dualread.fulls sTwo.length (1 + 0)))
+      (ground.dedupL ((blockcount.exhaust sTwo.length
+        (blockcount.fusedAt (blockcount.blockSpan sOne)
+          (blockcount.blockSpan sOne))).map
+        blockcount.HVec.content))
+    = blockcount.fusionCount sOne sOne
+        (addFulls (1 - ground.sumNat sTwo) (dualL sTwo))) := by
+  decide +kernel
+
+example : ground.sumNat sOver > 2 + 0 := by decide +kernel
+example : degree sOne + degree sUnit + degree sOver
+    = sOne.length * 2 := by decide +kernel
+example : ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount (addFulls 0 sOne) sUnit
+          (places.shapeOf mu)
+        * blockcount.fusionCount (places.shapeOf mu) sOver
+          (dualread.fulls sOne.length (2 + 0)))
+      (ground.dedupL ((blockcount.exhaust sOne.length
+        (blockcount.fusedAt
+          (blockcount.blockSpan (addFulls 0 sOne))
+          (blockcount.blockSpan sUnit))).map
+        blockcount.HVec.content))
+    = blockcount.fusionCount (addFulls 0 sOne) sUnit
+      (addFulls (2 + 0 - ground.sumNat sOver) (dualL sOver)) := by
+  decide +kernel
+
+example : ground.sumNat sTwo > 1 := by decide +kernel
+example : ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount sUnit sUnit
+          (places.shapeOf mu)
+        * blockcount.fusionCount (addFulls 1 sTwo)
+          (places.shapeOf mu) (dualread.fulls sTwo.length (1 + 1)))
+      (ground.dedupL ((blockcount.exhaust sTwo.length
+        (blockcount.fusedAt (blockcount.blockSpan sUnit)
+          (blockcount.blockSpan sUnit))).map
+        blockcount.HVec.content))
+    = blockcount.fusionCount sUnit sUnit
+      (addFulls (1 - ground.sumNat sTwo) (dualL sTwo)) := by
+  decide +kernel
+
+example : ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount (addFulls 0 ([] : Shape)) []
+          (places.shapeOf mu)
+        * blockcount.fusionCount (places.shapeOf mu) []
+          (dualread.fulls ([] : Shape).length (0 + 0)))
+      (ground.dedupL ((blockcount.exhaust ([] : Shape).length
+        (blockcount.fusedAt
+          (blockcount.blockSpan (addFulls 0 ([] : Shape)))
+          (blockcount.blockSpan []))).map
+        blockcount.HVec.content))
+    = blockcount.fusionCount (addFulls 0 ([] : Shape)) []
+      (addFulls (0 + 0 - ground.sumNat ([] : Shape))
+        (dualL [])) :=
+  foldCollapseL [] [] [] 0 0 rfl rfl (by decide +kernel)
+
+example : ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount ([] : Shape) []
+          (places.shapeOf mu)
+        * blockcount.fusionCount (addFulls 0 ([] : Shape))
+          (places.shapeOf mu)
+          (dualread.fulls ([] : Shape).length (0 + 0)))
+      (ground.dedupL ((blockcount.exhaust ([] : Shape).length
+        (blockcount.fusedAt (blockcount.blockSpan ([] : Shape))
+          (blockcount.blockSpan []))).map
+        blockcount.HVec.content))
+    = blockcount.fusionCount ([] : Shape) []
+      (addFulls (0 - ground.sumNat ([] : Shape))
+        (dualL [])) :=
+  foldCollapseR [] [] [] 0 0 rfl rfl (by decide +kernel)
+
+/-! The class move in the target at any column count, the label
+count's own read. -/
+
+example : countL sOne sOne sComp = 1 := by decide +kernel
+example : countL sOne sOne (addFulls 2 sComp)
+    = countL sOne sOne sComp := by decide +kernel
+example : countL sOne sOne (addFulls 2 sComp)
+    = countL sOne sOne sComp :=
+  countL_addFullsC 2 sOne sOne sComp rfl rfl
+
+/-! The label count below the target's degree: the gap's full
+columns enter the first shape. -/
+
+/-- The lift's own target: the pairing's degree two full columns
+below it at the width two. -/
+private def sHi : Shape := [0, 2]
+
+example : countL sOne sOne sHi = 1 := by decide +kernel
+example : countL sOne sOne sHi
+    = blockcount.fusionCount
+      (addFulls ((degree sHi - (degree sOne + degree sOne))
+        / sOne.length) sOne) sOne sHi := by decide +kernel
+example : countL sOne sOne sHi
+    = blockcount.fusionCount
+      (addFulls ((degree sHi - (degree sOne + degree sOne))
+        / sOne.length) sOne) sOne sHi :=
+  countL_ltRead sOne sOne sHi rfl rfl (by decide +kernel)
+    (by decide +kernel)
+
+/-! The block count at a first shape lifted past the target's
+deepest key, and the isolating contrast at the refused strict
+excess: at a target whose deepest key reaches the column count the
+lifted count is occupied. -/
+
+example : ground.getAt 0 (rowList sTwo) (sOne.length - 1) < 1 := by
+  decide +kernel
+example : blockcount.fusionCount (addFulls 1 sOne) sOne sTwo = 0 := by
+  decide +kernel
+example : blockcount.fusionCount (addFulls 1 sOne) sOne sTwo = 0 :=
+  fusionCount_colOff 1 sOne sOne sTwo rfl rfl (by decide +kernel)
+    (by decide +kernel)
+example : ¬ (ground.getAt 0 (rowList sHi) (sOne.length - 1) < 1) := by
+  decide +kernel
+example : 0 < blockcount.fusionCount (addFulls 1 sOne) sOne sHi := by
+  decide +kernel
+
+/-! The letter count's positivity refused at the vacant width: the
+vacant shape carries no deepest column, its own row list reads the
+vacant key, and both the bumped and the lifted counts read one
+against the vacancy — the two widths hold, so the binder parts
+alone. -/
+
+example : ¬ 0 < ([] : Shape).length := by decide +kernel
+example : ground.getAt 0 (rowList ([] : Shape))
+    (([] : Shape).length - 1) = 0 := by decide +kernel
+example : ¬ (blockcount.fusionCount
+    (ground.bumpAt (([] : Shape).length - 1) []) [] [] = 0) := by
+  decide +kernel
+example : ¬ (blockcount.fusionCount (addFulls 1 ([] : Shape)) [] []
+    = 0) := by decide +kernel
+
+/-! The second shape's width refused at the joint lift and at the
+lift below the target: at a second shape one letter wider the two
+counts part. -/
+
+example : ¬ (([2, 0, 0] : Shape).length = ([0, 0] : Shape).length) := by
+  decide +kernel
+example : ¬ (blockcount.fusionCount (addFulls 1 ([0, 0] : Shape))
+      [2, 0, 0] (addFulls 1 sOne)
+    = blockcount.fusionCount [0, 0] [2, 0, 0] sOne) := by decide +kernel
+example : ¬ (([0, 0, 0] : Shape).length = ([0, 0] : Shape).length) := by
+  decide +kernel
+example : ¬ (countL [0, 0] [0, 0, 0] sComp
+    = blockcount.fusionCount
+      (addFulls ((degree sComp - (degree ([0, 0] : Shape)
+        + degree ([0, 0, 0] : Shape))) / ([0, 0] : Shape).length)
+        [0, 0]) [0, 0, 0] sComp) := by decide +kernel
+
+/-! The carrier bridge at the two enumerations, the degree its own
+weight. -/
+
+example : ground.famFold Nat.add 0
+      (fun e => blockcount.fusionCount sOne sOne e * degree e)
+      (allShapes sOne.length (degree sOne + degree sOne))
+    = ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount sOne sOne (places.shapeOf mu)
+        * degree (places.shapeOf mu))
+      (ground.dedupL ((blockcount.exhaust sOne.length
+        (blockcount.fusedAt (blockcount.blockSpan sOne)
+          (blockcount.blockSpan sOne))).map
+        blockcount.HVec.content)) := by decide +kernel
+example : ground.famFold Nat.add 0
+      (fun e => blockcount.fusionCount sOne sOne e * degree e)
+      (allShapes sOne.length (degree sOne + degree sOne))
+    = ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount sOne sOne (places.shapeOf mu)
+        * degree (places.shapeOf mu))
+      (ground.dedupL ((blockcount.exhaust sOne.length
+        (blockcount.fusedAt (blockcount.blockSpan sOne)
+          (blockcount.blockSpan sOne))).map
+        blockcount.HVec.content)) :=
+  bridgeFold sOne sOne rfl degree
+
+/-! The bridge's letter width refused: at a second shape one
+letter wider the enumeration's fold and the pool's part. -/
+
+example : ¬ (([1, 0, 0] : Shape).length = sOne.length) := by
+  decide +kernel
+example : ¬ (ground.famFold Nat.add 0
+      (fun e => blockcount.fusionCount sOne [1, 0, 0] e * degree e)
+      (allShapes sOne.length (degree sOne + degree ([1, 0, 0] : Shape)))
+    = ground.famFold Nat.add 0
+      (fun mu => blockcount.fusionCount sOne [1, 0, 0]
+          (places.shapeOf mu)
+        * degree (places.shapeOf mu))
+      (ground.dedupL ((blockcount.exhaust sOne.length
+        (blockcount.fusedAt (blockcount.blockSpan sOne)
+          (blockcount.blockSpan [1, 0, 0]))).map
+        blockcount.HVec.content))) := by decide +kernel
+
+/-! The associativity display at the three branches of the lift's
+guard: the target at or below the pairing's degree, above it at a
+divisible gap, and off the width's multiples with both sums
+vacant.  The three widths are frames: at a forged width the two
+sums still read one value. -/
+
+/-- The associativity display's raised target: the pairing's
+degree one full column below it at the width two. -/
+private def dLift : Shape := [1, 2]
+
+example : ground.famFold Nat.add 0
+      (fun e => steinberg.count sOne sOne e * countL e sOne sOne)
+      (allShapes sOne.length (degree sOne + degree sOne)) = 2 := by
+  decide +kernel
+example : ground.famFold Nat.add 0
+      (fun e => steinberg.count sOne sOne e * countL e sOne sOne)
+      (allShapes sOne.length (degree sOne + degree sOne))
+    = ground.famFold Nat.add 0
+      (fun f => steinberg.count sOne sOne f * countL sOne f sOne)
+      (allShapes sOne.length (degree sOne + degree sOne)) := by
+  decide +kernel
+example : ground.famFold Nat.add 0
+      (fun e => steinberg.count sOne sOne e * countL e sOne sOne)
+      (allShapes sOne.length (degree sOne + degree sOne))
+    = ground.famFold Nat.add 0
+      (fun f => steinberg.count sOne sOne f * countL sOne f sOne)
+      (allShapes sOne.length (degree sOne + degree sOne)) :=
+  countL_assoc sOne sOne sOne sOne rfl rfl rfl
+
+example : ground.famFold Nat.add 0
+      (fun e => steinberg.count sOne sOne e * countL e sOne dLift)
+      (allShapes sOne.length (degree sOne + degree sOne)) = 2 := by
+  decide +kernel
+example : ground.famFold Nat.add 0
+      (fun e => steinberg.count sOne sOne e * countL e sOne dLift)
+      (allShapes sOne.length (degree sOne + degree sOne))
+    = ground.famFold Nat.add 0
+      (fun f => steinberg.count sOne sOne f * countL sOne f dLift)
+      (allShapes sOne.length (degree sOne + degree sOne)) := by
+  decide +kernel
+example : ground.famFold Nat.add 0
+      (fun e => steinberg.count sOne sOne e * countL e sOne dLift)
+      (allShapes sOne.length (degree sOne + degree sOne))
+    = ground.famFold Nat.add 0
+      (fun f => steinberg.count sOne sOne f * countL sOne f dLift)
+      (allShapes sOne.length (degree sOne + degree sOne)) :=
+  countL_assoc sOne sOne sOne dLift rfl rfl rfl
+
+example : ¬ (degree sOne + degree sOne + degree sOne - degree sComp)
+    % sOne.length = 0 := by decide +kernel
+example : ground.famFold Nat.add 0
+      (fun e => steinberg.count sOne sOne e * countL e sOne sComp)
+      (allShapes sOne.length (degree sOne + degree sOne)) = 0 := by
+  decide +kernel
+example : ground.famFold Nat.add 0
+      (fun f => steinberg.count sOne sOne f * countL sOne f sComp)
+      (allShapes sOne.length (degree sOne + degree sOne)) = 0 := by
+  decide +kernel
+example : ground.famFold Nat.add 0
+      (fun e => steinberg.count sOne sOne e * countL e sOne sComp)
+      (allShapes sOne.length (degree sOne + degree sOne))
+    = ground.famFold Nat.add 0
+      (fun f => steinberg.count sOne sOne f * countL sOne f sComp)
+      (allShapes sOne.length (degree sOne + degree sOne)) :=
+  countL_assoc sOne sOne sOne sComp rfl rfl rfl

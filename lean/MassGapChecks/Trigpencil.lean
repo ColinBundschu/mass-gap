@@ -24,7 +24,6 @@ at `symbolAt`'s display with three refusals, the boundary
 coefficients against the one-variable minors, and the evaluation
 coherence at a stated level point with a forged point refusing.
 -/
-set_option maxRecDepth 1000000
 
 open ground elim
 

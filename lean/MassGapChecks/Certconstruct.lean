@@ -27,8 +27,16 @@ semidefinite, with the reversed difference's positive-semidefinite
 conjunct refused beside them), and the cross identity
 (`countAtPair_cross` at the level `⟨3 : 1⟩` crossed by two, one
 count at one split both ways, with the weight applied to one member
-alone refused beside it). -/
-set_option maxRecDepth 8192
+alone refused beside it), and the count-to-drift join
+(`count_below_occupied` at the one-place head `H = [3]`, the level
+`⟨1 : 1⟩` vacant against the level `⟨5 : 1⟩` occupied, with the
+occupancy binder refused at two vacant levels of the failing order
+and the vacancy binder refused at two occupied ones) with its two
+carriers beside it — the scalar certificate at the order two and
+the scalar two (`inertia.scalarSplit` at its upper-side read and
+the diagonal `diag(2, 2)`'s split) and the two levels' difference
+site at the pencil `diag(1, 3)` reading that scalar copy
+(`siteDiff_scalar`, the cross-added level order's margin two). -/
 set_option maxHeartbeats 4000000
 
 open ground elim inertia certconstruct
@@ -230,3 +238,99 @@ example : countAtPair hD (idMat 2) (3 + 2) (1 + 2) 1
 
 example : ¬ countAtPair hD (idMat 2) (3 + 2) 1 1
     (spLt ⟨1, 2⟩ ⟨2, 1⟩) := by decide +kernel
+
+/-! The count-to-drift join at the one-place head `H = [3]` over the
+unit gram (`count_below_occupied`): the level `⟨1 : 1⟩` reads the
+count nought and the level `⟨5 : 1⟩` the count one, and the
+cross-added order holds the vacant level strictly below the
+occupied one.  Each consumed binder is refused on its own — at the two vacant
+levels `⟨3 : 1⟩` and `⟨2 : 1⟩` the two counts are nought and the
+cross-added order fails, the occupancy binder's own refusal; and at
+the two occupied levels `⟨7 : 1⟩` and `⟨6 : 1⟩` the gap level's
+count is one, its vacant read refused at the same failing order. -/
+
+private def hO : Mat := [[⟨4, 1⟩]]
+
+private def spOne (a : BPair) : Split 1 :=
+  ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [.one a], 0, rfl⟩
+
+private theorem drVac : countAtPair hO (idMat 1) 1 1 0 (spOne ⟨4, 1⟩) := by
+  decide +kernel
+
+private theorem drOcc : countAtPair hO (idMat 1) 5 1 1 (spOne ⟨1, 2⟩) := by
+  decide +kernel
+
+example : (1 : Pos) + 1 < (5 : Pos) + 1 := by decide +kernel
+
+example : (1 : Pos) + 1 < (5 : Pos) + 1 :=
+  count_below_occupied hO 1 1 5 1 1 (spOne ⟨4, 1⟩) (spOne ⟨1, 2⟩)
+    drVac drOcc (Nat.le_refl 1)
+
+example : countAtPair hO (idMat 1) 3 1 0 (spOne ⟨2, 1⟩) := by decide +kernel
+example : countAtPair hO (idMat 1) 2 1 0 (spOne ⟨3, 1⟩) := by decide +kernel
+example : ¬ (1 ≤ 0) := by decide +kernel
+example : ¬ ((3 : Pos) + 1 < (2 : Pos) + 1) := by decide +kernel
+
+example : countAtPair hO (idMat 1) 6 1 1 (spOne ⟨1, 3⟩) := by decide +kernel
+example : countAtPair hO (idMat 1) 7 1 1 (spOne ⟨1, 4⟩) := by decide +kernel
+example : ¬ countAtPair hO (idMat 1) 7 1 0 (spOne ⟨1, 4⟩) := by decide +kernel
+example : ¬ ((7 : Pos) + 1 < (6 : Pos) + 1) := by decide +kernel
+
+/-! The scalar certificate at the order two and the scalar two
+(`inertia.scalarSplit`): the identity congruence with one positive
+block per key reads the upper side throughout, and every matrix of
+the gram's scalar value splits at it — the diagonal `diag(2, 2)` at
+the vacant off-diagonal. -/
+
+private def hSc : Mat := [[⟨3, 1⟩, u], [u, ⟨3, 1⟩]]
+
+example : psdAt (scalarSplit 2 2) := by decide +kernel
+example : psdAt (scalarSplit 2 2) := scalarSplit_psd 2 2
+
+example : splitRead hSc (scalarSplit 2 2) := by decide +kernel
+example : splitRead hSc (scalarSplit 2 2) :=
+  scalarSplit_read 2 hSc (by decide +kernel) (by decide +kernel)
+
+/-! The scalar-copy binder isolates: a matrix off the unit gram's
+scalar copy — occupied off the diagonal — refuses the scalar
+certificate while its shape read holds. -/
+
+example : elim.sqAt [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]] 2 := by
+  decide +kernel
+
+example : ¬ matOneValue [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
+    (matScale 2 (idMat 2)) := by decide +kernel
+
+example : ¬ splitRead [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
+    (scalarSplit 2 2) := by decide +kernel
+
+/-! The difference site at the pencil `diag(1, 3)` and the levels
+`⟨1 : 1⟩` and `⟨3 : 1⟩` (`siteDiff_scalar`): the two site matrices'
+own site reads the gram's scalar copy at the cross-added level
+order's margin two. -/
+
+example : matOneValue
+    (siteDatum
+      (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 1 (idMat 2)))
+      (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 3 (idMat 2))))
+    (matScale 2 (idMat 2)) := by decide +kernel
+
+example : matOneValue
+    (siteDatum
+      (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 1 (idMat 2)))
+      (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 3 (idMat 2))))
+    (matScale 2 (idMat 2)) :=
+  siteDiff_scalar (o := 2) hD (idMat 2) (by decide +kernel)
+    (by decide +kernel) 1 1 3 1 2 (by decide +kernel)
+
+/-! The margin binder isolates: at the same pencil and levels the
+wrong margin's scalar copy refuses the difference-site read while
+the level identity at the stated margin holds beside it. -/
+
+example : (1 : Pos) + 1 + 2 = 3 + 1 := by decide +kernel
+
+example : ¬ matOneValue
+    (siteDatum
+      (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 1 (idMat 2)))
+      (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 3 (idMat 2))))
+    (matScale 1 (idMat 2)) := by decide +kernel

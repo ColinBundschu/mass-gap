@@ -10,7 +10,6 @@ fundamental loop occupied, the single link and the all-`f` theta
 assignment refused — the degree-one endpoint and the odd parity),
 and the window index's members at stated cutoffs.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places lattice fusion carrier

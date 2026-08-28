@@ -18,7 +18,6 @@ three simple folds are pinned at their values, the gaps of the
 padded word against the leading sums, their doubles and the word's
 total at the last key or the last two keys.
 -/
-set_option maxRecDepth 8192
 
 open serstable
 

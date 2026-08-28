@@ -8,7 +8,6 @@ residues, the `A`-series' first regimes and the fixed members'
 `F_4` residue among them; and the value read `A(1) = H_r` at
 every committed member's residue.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground walkresidue

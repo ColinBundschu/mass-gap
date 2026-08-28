@@ -278,7 +278,11 @@ cofactors collects the regrouped assignment fold, the
 determinant, and against a further row's cofactors it reads equal
 members, the fold a determinant at that row repeated, so the
 list against its adjugate reads the determinant's diagonal, the
-\emph{adjugate identity}. Sylvester's identity then reads at the
+\emph{adjugate identity}, and the adjugate against the list reads
+that diagonal as well: the exchanged row and column lists read one
+determinant at every struck pair, so a column's fold against its
+own cofactors collects the exchanged assignment fold and a further
+column's reads equal members. Sylvester's identity then reads at the
 shifted bordered list: the variable $t$ joins the diagonal over
 the balance-pair polynomials, a carrier with the displayed reads
 (Definition~\ref{def:poly}), and the shifted bordered determinant
@@ -459,7 +463,11 @@ return: a walk's members are distinct until the return, two equal
 iterates reading equal predecessors down to the start at the
 assignment's own injectivity, so each walk closes within the place
 count, every place sits on one word, and the \emph{cycle count} is
-the words' count. The
+the words' count; a permutation composed between a second
+permutation and its inverse permutation walks the composed orbits
+at the images, each iterate the second permutation's image of the
+walk's own at the flipped place, one orbit word per orbit either
+way, so the cycle count is one value across the composition. The
 \emph{grading} is by content: the monomial tensor at indices
 $(i_1,\dots,i_k)$ has \emph{content} the occupancy family $\mu$
 over the letters, a member letter at the count of places
@@ -4426,8 +4434,15 @@ count, so
 and a product expanded in the label index therefore has unique coefficients.
 Third, $m\{a,b,c\}=N^{\bar c}_{ab}$, by
 $m\{a,b,c\}=\sum_dN^d_{ab}N^{\mathbf 1}_{dc}$ with
-the first read; so $m$ is symmetric in its three arguments, and that is the
-symmetry of $N$ at self-dual labels. Fourth, the involution's index
+the first read; the display reads at either pairing of the
+associativity at the unit target
+(Lemma~\ref{lem:blockcount}(iii)),
+$\sum_eN^e_{ab}N^{\mathbf 1}_{ec}=\sum_fN^f_{bc}N^{\mathbf 1}_{af}$,
+the first read keeping each sum at the dual label's summand alone,
+so $N^{\bar c}_{ab}=N^{\bar a}_{bc}$, the rotation, with the
+factors' exchange the transposition: the two generate the symmetry
+of $m$ in its three arguments, and that is the symmetry of $N$ at
+self-dual labels. Fourth, the involution's index
 read: the dual label's matrix is the transpose,
 $N^c_{\bar a\,b}=N^b_{ac}$: the triple count reads one value at
 every argument dualized, duals of blocks being blocks with the
@@ -5044,7 +5059,10 @@ states' product is the sites' concatenation: two generators
 multiply at the joined factor list, the second wiring's places
 shifted by the first list's count, the joined wiring the two
 blocks, and the coefficients multiply, the trace polynomials' own
-product. Equivalently
+product; the two block orders read one word multiset, the blocks'
+exchange a letter-preserving relabeling of the joined list with
+the joined wiring composed at it, the product's identities one
+value at either order (Remark~\ref{rem:kernel}). Equivalently
 $\pi(i)=j$ records that the row index of factor $i$ is contracted
 against the column index of factor $j$. This is the trace-polynomial
 reduction of the walled Brauer category: the Schur--Weyl dual
@@ -5221,6 +5239,14 @@ contraction sum
 \]
 (iii) the $\delta$-wirings close the permutation chains into loops, each
 loop contributing a factor $d_f$.
+The contraction sum reads the wiring's cycle words alone: the
+Gram's entry at two keys, each composed between one relabeling and
+its inverse permutation, is the two keys' own entry, the
+composition's cycle count the place composition's read
+(Construction~\ref{con:places}), and the identity key its own
+image, so the adjugate column at a composed key against the one
+determinant reads the key's own value, the solve read across the
+relabeling.
 Every output of the computation reads at one of two \emph{tags}:
 \emph{symbolic}, one polynomial pair in the residue at its
 \emph{clearance radius}, the factor count, read at every residue
@@ -6368,12 +6394,18 @@ comparisons are counting-function reads, and counts obey a coupling
 sandwich: at couplings $v,v'$ of a cell whose pencils' site datum
 $S$ at $H(v)=H(v')+S$ is
 capped two-sidedly at $\rho\,G$ (Lemma~\ref{lem:inertia}) per decimated
-head, a cap the
-decimated entries' coefficient folds price over the cell, window-free
+head: the decimated entries' derivative coefficient folds price the
+site datum entrywise over the pair distance, two points' values
+differing by at most the distance against the fold at the bound
+(Lemma~\ref{lem:stage}'s priced side read at
+Theorem~\ref{thm:windowsep}'s arithmetic), and at the head's order
+the scaled identity caps the priced datum two-sidedly where $\rho$
+clears the order's multiple of the entry price, each row's off-row
+magnitude fold within that multiple at the dominance comparison
+(Theorem~\ref{thm:decimation}(ii)), the cap window-free
 off the unit fiber and within the deck brackets on it
 (Theorem~\ref{thm:decimation}(iii); Lemma~\ref{lem:cellcount};
-Theorem~\ref{thm:windowsep}'s arithmetic, against $G$'s stored
-factorization), every count obeys
+against $G$'s stored factorization), every count obeys
 \[
 \mathrm{count}_v\langle a\!:\!\rho\rangle\ \le\ \mathrm{count}_{v'}(a)\ \le\
 \mathrm{count}_v(a+\rho)
@@ -7131,7 +7163,12 @@ unchanged). Then:
 maps $A_i$ to $X_i$ and fixes every other block: eliminating slab $L$
 touches $A_{L-1}$ alone, the entries at $i<L-1$ against $L$ off the
 band, and downward induction
-extends it, so one recursion datum holds the whole tail;
+extends it, so one recursion datum holds the whole tail, and every
+pivot is symmetric: the seed is a diagonal block of the symmetric
+datum, and at a symmetric $X_{i+1}$ the witness identity transposed
+reads $B_i=R_{i+1}^{\mathsf T}X_{i+1}$, so the withdrawn term
+$B_iR_{i+1}=R_{i+1}^{\mathsf T}X_{i+1}R_{i+1}$ is symmetric with $X_i$,
+the induction downward from the seed;
 \emph{(ii)} $\operatorname{rev}(S)=\sum_i\operatorname{rev}(X_i)$
 and $\det S=\prod_i\det X_i$, each elimination a unit-triangular
 congruence (Lemma~\ref{lem:inertia});
@@ -7179,19 +7216,59 @@ telescoping to a product form: the deviation at depth $i$ beyond the
 perturbation is $D_{w+1}$ sandwiched by the transfer factors of
 Lemma~\ref{lem:greenprod}(iii). Re-convergence of the recursion and the
 Green products' falloff are the one sandwich identity, stated twice.
-\emph{(ii) Caps propagate geometrically.} At certified pairs
+The identity reads at the reversed slab order at a stated diagonal tie
+besides: at two families with equal couplings below slab $w$,
+$B'_i=B_i$ at $i<w$, and the diagonals tied there at one datum,
+$A'_i=A_i+\delta\,1$ at $i<w$, the tail deviation $E_i$ at
+$X'_i=X_i+E_i$ obeys, at $i<w$,
+\[
+E_i\;=\;\check R_{i+1}^{\mathsf T}\,E_{i+1}\,\check R'_{i+1}
+\;+\;\delta\,1
+\]
+at the tail witnesses' transfer factors $\check R_{i+1}$ and
+$\check R'_{i+1}$, the memberwise swaps of $R_{i+1}$ and $R'_{i+1}$
+(Lemma~\ref{lem:greenprod}(iii)): the join
+$X_i+B_iR_{i+1}=A_i$ read against its primed copy at the equal
+couplings and the tie collects the deviation to
+$B_i\,(R_{i+1}+\check R'_{i+1})$ beside the tie's datum, the witness
+identity $X_{i+1}R_{i+1}=B_i^{\mathsf T}$ transposed at the symmetric
+pivot ((i)) reads $B_i=R_{i+1}^{\mathsf T}X_{i+1}$, and the two witness
+identities at the pivots read
+$X_{i+1}(R_{i+1}+\check R'_{i+1})=E_{i+1}R'_{i+1}$, so
+$E_i=R_{i+1}^{\mathsf T}E_{i+1}R'_{i+1}+\delta\,1$, the two swaps
+withdrawn in pairs and the tie's datum riding each step; at the tie's
+datum of equal members the families' data are equal below the slab,
+the head pivots equal outright at $i<w$ and the display the sandwich
+$E_i=R_{i+1}^{\mathsf T}E_{i+1}R'_{i+1}$; the deviation at depth $i$
+below the perturbation is $E_w$ sandwiched down to the head with the
+tie's datum entering once per step, and (ii)'s caps propagate along it
+at the tail factors' certificates.
+\emph{(ii) Caps propagate geometrically.} The gram's slab blocks are
+$G_i:=G[i,i]$, the cross blocks of equal members at the index's
+orthogonal sum (Definition~\ref{def:carrier}), each display's gram
+its own slab's block. At certified pairs
 $\lambda_i,\lambda'_i$ with
-$T_i^{\mathsf T}G\,T_i\preceq\lambda_i^2\,G$ and
-$T'^{\mathsf T}_iG\,T'_i\preceq\lambda'^2_i\,G$ at the two families'
+$T_i^{\mathsf T}G_i\,T_i\preceq\lambda_i^2\,G_{i+1}$ and
+$T'^{\mathsf T}_iG_i\,T'_i\preceq\lambda'^2_i\,G_{i+1}$ at the two
+families'
 transfer factors, a cap
-$D_i$ two-sided at $c_i\,G$ (Lemma~\ref{lem:inertia}) propagates to
-$2\,D_{i+1}$ two-sided at $c_i\,(\lambda_i^2+\lambda'^2_i)\,G$: at
+$D_i$ two-sided at $c_i\,G_i$ (Lemma~\ref{lem:inertia}) propagates to
+$2\,D_{i+1}$ two-sided at $c_i\,(\lambda_i^2+\lambda'^2_i)\,G_{i+1}$: at
 $u:=T_ix$ and $v:=T'_ix$, the cap's two splits at $u+v$ and at
 $u+\check v$, $\check v$ the memberwise swap, collect to
 $2\,u^{\mathsf T}D_iv$ capped two-sidedly at
-$c_i\,(u^{\mathsf T}Gu+v^{\mathsf T}Gv)$, and
+$c_i\,(u^{\mathsf T}G_iu+v^{\mathsf T}G_iv)$, and
 the certificates price the two squares. Iterating, the bracket at depth
-$i$ is named and geometric.
+$i$ is named and geometric. At the tied families ((i)'s reversed
+display) each step joins the tie's datum,
+$D_{i+1}=T_i^{\mathsf T}D_iT'_i+\delta\,1$, and at the datum's
+identity capped two-sidedly at $s\,G_{i+1}$ the display gains its read,
+$2\,D_{i+1}$ two-sided at
+$c_i\,(\lambda_i^2+\lambda'^2_i)\,G_{i+1}+2\,s\,G_{i+1}$, the two
+splits' own
+polarization at the identity's datum; iterating, the bracket is the
+seed's geometric read joined to the tie datum's fold over the steps'
+certificates, one summand per step.
 \emph{(iii) The bulk pivot is the deck-interior solvent.} At bulk data
 $A_i=A$, $B_i=B$ at $B$ of unequal-membered determinant, read in a
 congruence mapping
@@ -8811,10 +8888,11 @@ $X_{i+1}\,\psi_{i+1}+B_i^{\mathsf T}\psi_i$ the sum's unit per row
 (Lemma~\ref{lem:greenprod}(iii)'s row read), the tail pivots of
 unequal-membered determinant on the validity cells, the ground's root the decimated
 head's own (Theorem~\ref{thm:decimation}(i)); so a depth-$j$ component is
-a $j$-fold transfer image and its weight is capped geometrically,
+a $j$-fold transfer image and its weight is capped geometrically at
+the gram's slab blocks (Lemma~\ref{lem:spectator}(ii)),
 \[
-\langle\psi_{i+1},\,G\,\psi_{i+1}\rangle\ \le\
-\lambda_i^{\,2}\,\langle\psi_i,\,G\,\psi_i\rangle ,
+\langle\psi_{i+1},\,G_{i+1}\,\psi_{i+1}\rangle\ \le\
+\lambda_i^{\,2}\,\langle\psi_i,\,G_i\,\psi_i\rangle ,
 \]
 the certificates' product pricing the tail's whole weight beyond
 any depth.
@@ -8831,8 +8909,7 @@ ground's part $\varphi$ off the earlier line obeys
 \gamma'^{\,2}\,\langle\varphi,G\,\varphi\rangle\ \le\
 w^{2}\,\langle\tilde\psi,G\,\tilde\psi\rangle ,
 \qquad
-\gamma'\,w_\omega\ \le\ 4\,c_A\,w
-\quad\text{at}\quad w\le\gamma' ,
+\gamma'\,w_\omega\ \le\ 4\,c_A\,w ,
 \]
 $w_\omega$ the width of the one bracket holding the two grounds'
 reads of an observable at the head cap $c_A$: the first display is
@@ -8840,12 +8917,20 @@ the pencil identity read at $\varphi$ with the cap's polarization
 (Theorem~\ref{thm:truncation}'s display), and the second collects
 the reads' pairing members, three off-line terms each polarized at the
 cofactor pair $[\,w:\gamma'\,]$, a read the cofactor at its gram's
-weight ((i); Definition~\ref{def:ground}). Two windows sharing the
-slab data beyond depth $b$ (Lemma~\ref{lem:spectator}) instantiate
-the display: the head deviation is
-Lemma~\ref{lem:spectator}(i)'s sandwich capped by the certificates
-from depth $b$ with the tails' weights (ii)'s geometric caps, the
-roots sit within the jump bracket the decimation transports across windows
+weight ((i); Definition~\ref{def:ground}), and at $w$ beyond
+$\gamma'$ the head cap alone reads the width at twice itself, below
+the display's right side. Two windows enter at their
+own roots' site data at one shared clearing: below depth $b$ the
+couplings are equal and the diagonals tied at the roots' drift, each
+window's own data beyond (Lemma~\ref{lem:spectator}(i)'s tie), and
+the display instantiates at the head decimated onto the depths at or
+below an observable's depth $j$: the two heads differ at the drift
+along the leading diagonal and at the depth-$j$ pivot, the pivot's
+deviation the tied sandwich of Lemma~\ref{lem:spectator}(i) from
+depth $b$ down to $j$, capped by (ii)'s certificates with the tie's
+datum entering once per step over the gap $g$ at $j+g=b$, with the
+grounds' weights beyond the head priced by this theorem's (ii); the
+drift sits within the jump bracket the decimation transports across windows
 (Theorem~\ref{thm:decimation}(iii)), and the clearance is the cell's
 second-jump separation (Theorem~\ref{thm:windowsep};
 Theorem~\ref{thm:divisorid}(ii)): a ground read of a supported
@@ -8881,8 +8966,14 @@ Proposition~\ref{prop:algebra}) and the source supported at $B$'s
 reach (Lemma~\ref{lem:stableentries}); so $\hat B\psi$'s weight at
 $A$'s side rides the Green products through the $j$ separating
 slabs at the certificates (Lemma~\ref{lem:greenprod}(iii);
-Lemma~\ref{lem:spectator}(ii)) against the clearance $\gamma'$,
-and the connected pairing is that weight at $A$'s head cap, the
+Lemma~\ref{lem:spectator}(ii)) against the clearance $\gamma'$:
+$A$'s support is the split's leading slabs at their joined width,
+the weight's head part the cross-cleared sum over them priced by
+the certificates' fold at the head's side (this theorem's (ii)
+at the leading slabs), and the ride anchored at the source
+slab's own block weight with the crossing certificates pricing
+the $j$ separating steps; and the connected pairing is that
+weight at $A$'s head cap, the
 cap's polarization closing it (Theorem~\ref{thm:truncation}'s
 display): the two reads $\omega(AB)$ and $\omega(A)\,\omega(B)$
 read one value within the bracket the crossing certificates and
@@ -8892,7 +8983,7 @@ the clearance price, geometric in $j$.
 $\tilde E$ (Definition~\ref{def:pencil}) with its located gaps
 $\gamma_j$ at $\varepsilon_0+\gamma_j=\varepsilon_j$
 (Lemma~\ref{lem:split}), $\varkappa$ the largest gap, and a
-natural $N$ beyond $u\,\varkappa$ and beyond one, the \emph{lower} and
+natural $N$ beyond $u\,\varkappa$, the \emph{lower} and
 \emph{upper} members are the $N$-fold reads of two solved witnesses,
 \[
 L_N:=\ell^{\,N}\ \ \text{at}\ \ N\,G\,\ell+u\,\tilde E=N\,G,
@@ -8911,7 +9002,7 @@ cleared Bernoulli display close the bracket,
 \[
 g_\gamma\,\big(N+u\gamma\big)+u^2\gamma^2\;=\;N^2,
 \qquad
-g^{\,N}+N\,a\,b^{\,N'}\ \ge\ b^{\,N}
+g^{\,N}+N\,a\,b^{\,N'}\ \ge\ b^{\,N}\ \ge\ g^{\,N}+N\,a\,g^{\,N'}
 \quad(a+g=b,\ \ N'+1=N),
 \]
 so the members' gap is at most $[\,u^2\varkappa^2:N\,]$ at every
@@ -8969,12 +9060,13 @@ are the transfer products at the certificates
 An operator reading a region's index data alone commutes with one
 reading a disjoint region's, the fibers' factors disjoint
 (Lemma~\ref{lem:stableentries}; Lemma~\ref{lem:relfiber}(i)); so
-at an observable $A$ and its \emph{evolved probe} $U_NA\,U_N$, the
-probe reads within the reach at one bracket, the beyond-reach
-remainder's form reads capped by the width and the crossing
-certificates' geometric read, and every ordering difference
-against an observable beyond the reach is the remainder's own
-read: the commutator reads at separation beyond $N$ bands are
+at an involution-fixed observable $A$ reading the leading slabs
+alone and its \emph{evolved probe} $U_NA\,U_N$, the probe reads
+within the reach at one bracket, the beyond-reach remainder's
+form reads capped by the width and the crossing certificates'
+geometric read, and every ordering difference against an
+involution-fixed observable beyond the reach is the remainder's
+own read: the commutator reads at separation beyond $N$ bands are
 priced by the bracket alone, the certificates cell data of the
 family's parameters (Lemma~\ref{lem:spectator}(iii)).
 
@@ -10134,9 +10226,21 @@ one power comparison,
 g(\sigma)^{\,q+1}\;\le\;C_g^{\,q+1}\,\sigma ,
 \]
 one cross-multiplied comparison per scale at the collected read
-$C_g=2^{\,q+1}C_E+2\,d_\theta+1$, the Rayleigh read joining the
-scale's electric power at the bracket's upper side to the boundary
-and gap reads with the top root's cap at the drift, a located
+$C_g=2^{\,q+1}C_E+2\,d_\theta+1$, the join read at the count
+carrier: the Rayleigh read puts the count occupied at the
+assembled margin's unit shift, the scale's electric power at the
+bracket's upper side with the boundary read over the cap's weight;
+the head's first occupied level $\varepsilon_0(\sigma)$ reads the
+count vacant at its own level and at every level below; the
+monotone count read (Lemma~\ref{lem:inertia}) holds the vacant
+level strictly below the occupied one, the two levels' difference
+site certified positive semidefinite at the unit gram's scalar
+copy with the equal-level reading refused at the vacant
+certificate, so $\varepsilon_0(\sigma)$ sits at or below the
+assembled margin; the top root's cap prices $m_+$ at $d_\theta$
+(Lemma~\ref{lem:fpcap}); and the drift
+$\varepsilon_0(\sigma)+m_+=g$ obeys the margin comparison, the
+power comparison's own drift datum, a located
 $C_g$ per member and direction count: the contact drift falls at a
 certified positive rate, the halving scales' ground-level widths
 of the scale sandwich then geometric over the tail at the
@@ -10170,8 +10274,11 @@ the weight product, the two end weights' own scale.
 located roots of four families over the $(t,\eta,\eta')$ base, each
 family one of the chain's comparisons read at the substitution and
 entering the list as any boundary does (Theorem~\ref{thm:decimation}, the
-emitted record): the \emph{jump family}, the corner divisor's own
-roots at the bracket's heights; the \emph{frontier family}, the
+emitted record), the corner divisor's own root list in the scale
+beside them, the extent its first positive member: the \emph{jump
+family}, the pencil determinant's roots at the bracket's heights,
+the decimation's own jump divisors at the substitution
+(Theorem~\ref{thm:decimation}); the \emph{frontier family}, the
 decimated envelope's dominance comparison at its seed, the frontier
 Casimir's $\eta^2$-weight against the tail weight, a height at
 which the two envelope counts agree a located count of the chain
@@ -10281,8 +10388,14 @@ the induction, one cross-multiplied step per depth.
 
 \emph{(ii) The segment supersolutions are stated polynomial
 profiles.} A segment's list enters as one polynomial $V$ in the
-scale and the depth's two pair reads $m\,\eta$ and $m^{2}\eta$,
-read per depth, $v_m=V(\eta,\,m\eta,\,m^{2}\eta)$: the termwise
+scale and the depth's two pair reads $u=m\,\eta$ and
+$s=m^{2}\eta$, read per depth, $v_m=V(\eta,\,u,\,s)$; the two
+pair reads join at the relation $u^{2}=\eta\,s$, the products'
+one read at the substitution, so $V$ reads at $u$-degree at most
+one, its datum two slabs of scale polynomials at the square-scale
+key, the scale-free slab and the $u$-slab, a product's $u$-square
+term re-entering the scale-free slab at the relation's read: the
+termwise
 comparison of (i) is then one polynomial read in the depth and the
 scale, its positivity on the segment closed by the leading-term
 radius in the depth (Theorem~\ref{thm:windowsep}) with the
@@ -10290,12 +10403,12 @@ finitely many depths below the radius each one read, and the
 well's data enter at the square scale, where the probe line
 $g(\eta)$ meets the band read $2$ at a stated pair rate and the
 comparison's polynomials read the scale through the pair reads
-alone. The profiles are the recurrence's own jets: at the probe
+alone. The profiles enter as stated polynomial data at the
+recurrence's comparison: at the probe
 line's rate $q$ the diagonal reads $a_m=2+\eta\,W$ at the
 \emph{well read}, the balance pair
 \[
 W\;=\;\big\langle\,[\,4:r+1\,]\,(s+r\,u)\,:\,q\,\big\rangle ,
-\qquad u=m\,\eta,\quad s=m^{2}\eta ,
 \]
 its first member the tower's own electric read,
 $[\,4:r+1\,]\,(s+r\,u)=4\,\eta\,\hat c_2(m\theta)$ at the
@@ -10308,15 +10421,11 @@ m^{\,j}+(m{+}2)^{\,j}
 \;=\;2\,(m{+}1)^{\,j}+2\sum_{i\ge1,\ 2i\le j}\binom{j}{2i}\,(m{+}1)^{\,j-2i}
 \]
 read per monomial of the pair coordinates, so (i)'s comparison is
-the polynomial read $D[V]\le W\,V$; the jet solves $D[V]=W\,V$
-degree by degree, the leading action mapping $u^{a}s^{b+1}$ to
-$2\binom{a+2b+2}{2}\,u^{a}s^{b}$ with the $u$-pure monomials its
-kernel, so each coefficient is one pair formula in the rate and the
-residue and the jet's $u$-pure coefficients sit at its
-seed alone, uniqueness by construction; the stated-degree jet is a
+the polynomial read $D[V]\le W\,V$; a stated-degree profile is a
 supersolution exactly where the remainder $W\,V_N-D[V_N]$ and the
-jet read positive on the segment, two located divisor reads at the
-stated degree, the degree certificate data held at its statement.
+profile read positive on the segment, two located divisor reads at
+the stated degree, the degree certificate data held at its
+statement.
 The constant-floor instance is the walk's own list, the
 recurrence $U_{j}+U_{j+2}=g_i\,U_{j+1}$ at the boundary's unit seed
 $U_1=1$ read from the
@@ -10328,11 +10437,26 @@ entry read each.
 reads its pivot on the lower side; the following pivot exceeds
 its diagonal, the identity at a lower-side predecessor read on the
 exceeding side (the rebound read), and seeds the later
-segments' entry reads at the diagonal itself.
+segments' entry reads at the diagonal itself. A depth whose minor
+reads equal members re-orders within its slab at
+Lemma~\ref{lem:inertia}'s principal pivots of order at most two
+(Lemma~\ref{lem:greenprod}), the count read unchanged across the
+splice: the deep end takes the order-one kernel block, and an
+interior depth its order-two block with the following minor read
+through the spliced pair.
 
 \emph{(iv) The dominance tail.} At depths whose diagonal clears
 $2$ by a stated margin the constant list is the supersolution, and
-the pivots stay clear to the head's end.
+the pivots stay clear to the head's end; and at a stated
+\emph{allowance}, a pair, the \emph{geometric list} is one as well, each
+member the prior member's multiple at one pair of the scale's
+data, the pair's gap the allowance's read of the depth step at the
+seam depth: the neighbor sum joins the arriving member's double at
+the gap's square against the withdrawn member, so the margin's
+clearing of the squared gap's doubled price, the gap at most the
+pair's half, reads the termwise comparison at every deeper depth,
+the dominance comparison's own growth, and the constant list is
+the vacant allowance's instance.
 
 \emph{(v) The ground witness, and the lower line as the family's
 own read.} The witness family is $x_m=s\,\langle s_2\!:\!s\rangle$
@@ -10426,19 +10550,115 @@ collar's finitely many blocks read exactly, the bonds enter
 through their squares alone, and the certificate's data gain the
 center family with its pairs and the crossing split.
 
-The certificate's data are a cut member $\mu$, the segment list
+The certificate's data are one stated pair
+rate with every profile comparison read at it and the scale's
+cleared ceiling with every tail scale read under it, each datum
+its reads' validity divisor's located edge in its own direction,
+the designation's inner endpoint
+(Theorem~\ref{thm:certconstruct}), the count's line
+read at every rate at or below the stated one, the cut members'
+lines among them at their multiples of the lower rate, the
+transfer the diagonal's monotonicity in the rate, the rate
+entering the well read on its pair's second member, one
+cross-multiplied comparison per depth, the segment
+list
 with each boundary the cross-multiplied pair comparison of
-$m^{2}\eta$ against a stated pair, the jets' stated degrees, the
-crossing depth, and per segment and seam finitely many polynomial
+$m^{2}\eta$ against a stated pair and with consecutive boxes
+overlapping at the two further depths the termwise comparison
+reads, a depth inside one box's top stepping to a square scale
+inside the next box's, the profiles' stated degrees, the boundary
+seed's data, the three clearings of the boundary value, of the
+boundary comparison's object, the shifted diagonal's multiple of
+the profile against the rate's multiple of the shifted profile,
+and of the termwise comparison's scale strip, each floored past
+its origin by the ceiling's priced fold, the deep coefficients'
+fold against the ceiling's second member's powers at the stated
+degree, the floor at one power beyond the fold's and the squared
+floors' square at one beyond twice it, the origins vacant at
+the graded device's scale-free vacancy: the depth read's origin is
+the profile's own, the comparison's origins read the band
+clearing's multiples of vacant depth-read origins, the termwise
+comparison's origin is vacant at every profile and rate, the two
+origin slabs' withdrawal, and the strip's origin is the affine
+depth reads' second difference, the depth read's scale
+coefficient at a vacant slab the first inner's own joined to the
+depth's multiple of the $u$-slab's origin; the slope
+\emph{allowance}, a pair, with the dominance
+\emph{margin} and the tail's
+three scale-free comparisons, the margin located at the final
+device's floor, one cross-multiplied read, the
+margin against the allowance's squared read at the geometric
+tail's handover cap, and the gap's half cap at the ceiling, and
+per
+segment and seam the box devices' finitely many polynomial
 comparisons in the scale and the scaled depth on stated boxes,
-their reads located divisor data, the rates and the witness pair
+their reads located divisor data, the lower and upper rates and
+the witness pair
 (v)'s derived reads at the endpoint key
-(Theorem~\ref{thm:windowsep}; Lemma~\ref{lem:cellcount}): the
-well's oscillation reads at the corner scale, one read at every
-scale, so one segment list runs the whole tail, and the one
-certificate settles the count at most one at every depth and every
-tail scale at once, the flat window's lower end the ground
-bracket's own (Theorem~\ref{thm:SO}).
+(Theorem~\ref{thm:windowsep}; Lemma~\ref{lem:cellcount}). A box
+device prices a profile's depth reads from below on its box at
+the scale's \emph{cleared ceiling}, two naturals $c_{0}$, $d_{0}$
+with the scale's bound $\eta\,d_{0}\le c_{0}$ read
+cross-multiplied: the depth's read splits as the scale-free part,
+the scale-free slab's origin coefficients at the square scale,
+joined to the scaled remainder, and the remainder's cap follows the profile's
+grading one order down: its origin coefficients, the scale-free
+slab's scale coefficients with the $u$-slab's origins, read on
+the box at the chained priced side read, the scale coefficients
+above their floor's balance partner and the $u$-slab's origins at
+their squared price with the square scale the box's own
+coordinate, each comparison at its own cut list and its floor at
+or beyond the sum's unit, while its deeper
+coefficients price at the ceiling's fold through the box top's
+cleared read into the floors, the fold's power the stated
+degree's successor at the depth shift's second clearing read
+once more at the scale's bound, the floor at one power beyond
+the fold's and the squared floors' square at one beyond twice
+it, the squared fold's floor at or
+beyond the sum's unit, so the read clears the sum's unit
+wherever the scale-free part clears the floors' join at the
+chained priced side read with the remainder inside it; the box's
+data are the composite endpoints with the cut lists, the priced
+side reads' bound, the box top's cleared read, the floors and the
+shape clearing. The split follows
+the profile's grading: a profile occupied at the scale-free order
+prices there, and a profile vacant there prices at the scale
+order, the depth's leading part the depth multiple of the
+$u$-slab's origin reads joined to the scale-free slab's scale-key
+reads, one read per depth and linear in it. The depth family
+collects at two chains: every depth's square clears its square
+scale at the ceiling's cross-multiplied bound, and at origin
+reads above the sum's unit on the box a deeper multiple only
+raises the read, so the family's clearing of the tails' join
+reduces to one line, the scale-key read's above the join; piece
+by piece along one cut list the piece keeps the line's upper
+side, or the squared comparison's, the square scale's multiple
+of the origin reads' square at the ceiling's cross-multiplied
+read above the squared gap of the join to the scale-key read,
+whose read returns the depth multiple past the gap at the
+trichotomy of squares; the origin reads' positivity is the second
+chain, a vacant $u$-slab reading the first chain alone: the two
+cut lists, each piece at its one comparison's kept side, the
+device's further data at the leading part. The well's
+oscillation reads at the
+corner scale, one read at every scale, so one segment list runs
+the whole tail, and the one certificate settles the count at most
+one at every depth and every tail scale at once.  The entry reads
+chain across the segments to the crossing seam: an entry read
+crosses a seam at the crossed products' read, the outgoing
+profile's shift against the incoming profile joined at the swap to
+the incoming's shift against the outgoing, positive on the seam's
+box, the products' injectivity reading the crossed entry back at
+positive profile values; the crossing seam is the two chains'
+break at the count comparison alone, the rebound seeding the
+later chain's entry reads; the first
+lower-side pivot sits past it with the later boxes' reads running
+from below it, and the count read closes beyond it at (iii)'s
+rebound seed and (iv)'s dominance tail at the final seam's own
+read, the last profile's shift joined to the allowance's multiple
+of the step read of the profile clearing the profile on the seam's
+box, the flat window's lower
+end the ground bracket's own (Theorem~\ref{thm:SO}).
 
 \end{lemma}
 
@@ -10629,18 +10849,19 @@ identity and the outer word reads the unit label
 (Theorem~\ref{thm:network}(i); Proposition~\ref{prop:wg}), so
 $\mathrm{Eval}\big(f(U)\,g(V)\big)$ is the two unit coefficients'
 product and the graph's free moments are the per-plaquette reads
-$m_a:=\mathrm{Eval}(\chi_\theta^{\,a})$, with $m_2=1$, $m_3=c_1$
-and $m_4$ the square's pairing
-(Proposition~\ref{prop:repring}). A far insertion factorizes at
-its own links (Lemma~\ref{lem:stableentries}): a plaquette off
-the pair holds a link off the union, the union's four-cycles the
-two boundaries (the incidence count, the boundary the plaquette's
-own word), so the jet moments read the pair's insertions alone,
+$m_a:=\mathrm{Eval}(\chi_\theta^{\,a})$, with $m_0=1$, $m_1$ of
+equal members at the nonunit $\theta$, $m_2=1$, $m_3=c_1$ and
+$m_4$ the square's pairing (Proposition~\ref{prop:repring}). A far
+insertion factorizes at its own links
+(Lemma~\ref{lem:stableentries}): a plaquette off the pair holds a
+link off the union, the union's four-cycles the two boundaries (the
+incidence count, the boundary the plaquette's own word), so the jet
+moments read the pair's insertions alone,
 the far diagonal reads entering the pairing and the gram equally,
 a summand on both members fixing the value
 (Definition~\ref{def:ground}): with $T_a(k)$ the $k$-count of the
-$a$-th power ($T_1(k)$ the $\theta$ read, $T_2(k)=N^k_{\theta\theta}$,
-$T_2(\theta)=c_1$),
+$a$-th power ($T_0(k)$ the unit read, $T_1(k)$ the $\theta$ read,
+$T_2(k)=N^k_{\theta\theta}$, $T_2(\theta)=c_1$),
 the \emph{jet moments} read
 \begin{gather*}
 \hat\mu_{ab}\;:=\;m_am_b
@@ -10710,22 +10931,186 @@ E\,\hat\psi+\tau^4\,[\,\#p:4\,]\,\mathbf1+\tau^6M\psi_2
 \]
 $E\psi_1=M\mathbf1$ outright (the modules' fold, its unit
 coordinate the sum's unit) with $E\psi_2$ against $M\psi_1$ the
-join at $[\,\#p:4\,]\,\mathbf1$, so the jet solves the pencil to
-the $\tau^6$ read, and the level gap at
-the free cell's clearance (Lemma~\ref{lem:freeend};
-Lemma~\ref{lem:freecell}) prices the ground's gap from the jet,
-the transport display's pairing step
-(Theorem~\ref{thm:groundreads}(iii)); each moment's bracket
-follows at the observables' caps (Lemma~\ref{lem:loopcap}), one
-polarization each, and two windows' reads sit within the
-spectator brackets (Theorem~\ref{thm:groundreads}(iii)): the
-tail's fold is $\tau^6$ against displayed caps of the anchor
-window, the graph's band neighborhood. The \emph{cell} is the
-$\tau$-segment below the comparison's first located root
-(Theorem~\ref{thm:windowsep}), the leading read against twice the
-tail's fold: on it
-$\varkappa_4$ reads its upper side at the margin
-$[\,1:2\,]\,\tau^4c_1^{\,2}\,\langle S:[\,1:8\,]\rangle$ or
+join at $[\,\#p:4\,]\,\mathbf1$, the unit coordinate of $M\psi_1$
+at $m_2=1$ with every cross product's at $m_1$ of equal members,
+so the jet solves the pencil to the $\tau^6$ read: at $\mathbf1$
+read as $\hat\psi$ against $\tau^2\psi_1+\tau^4\psi_2$, the pencil's
+site datum $H$ at the ray reads
+\[
+H\hat\psi\;=\;\hat\varepsilon\,\hat\psi+\rho\ ,\qquad
+\rho:=\tau^6\big(\,[\,\#p:4\,]\,\psi_1+\check{(M\psi_2)}\,\big)
++\tau^8\,[\,\#p:4\,]\,\psi_2\ ,
+\]
+the \emph{jet level} $\hat\varepsilon$ the balance partner of
+$\tau^4[\,\#p:4\,]$ and $\rho$ the \emph{residual}, the check the
+memberwise swap. The window ground $\psi$ at its level
+$\varepsilon_0$, the level gap $\tilde E$
+(Definition~\ref{def:pencil}) and the \emph{clearance} $\gamma'$,
+every further root at or beyond it on the free cell
+(Lemma~\ref{lem:freeend}; Lemma~\ref{lem:freecell}), prices the
+jet's part $\varphi$ off the ground's line by the transport
+display's pairing step (Theorem~\ref{thm:groundreads}(iii)):
+$\gamma'\langle\varphi,\varphi\rangle
+\le\langle\varphi,\tilde E\varphi\rangle
+=\langle\varphi,\tilde E\hat\psi\rangle$, the ground in the gap's
+kernel, and $\tilde E\hat\psi$ reads
+$\langle\hat\varepsilon\!:\!\varepsilon_0\rangle\,\hat\psi+\rho$ at
+the identity, so
+\[
+\big(\gamma'+\langle\varepsilon_0\!:\!\hat\varepsilon\rangle\big)
+\,\langle\varphi,\varphi\rangle\;\le\;\langle\varphi,\rho\rangle\ ;
+\]
+the \emph{drift} $\langle\varepsilon_0\!:\!\hat\varepsilon\rangle$
+is floored at the magnetic member's cap $W:=\#p\,d_\theta$
+(Lemma~\ref{lem:loopcap} per term; Theorem~\ref{thm:truncation}'s
+cap at the ray's magnetic weight): the ground's level reads
+$\langle\psi,E\psi\rangle$ against $\tau^2\langle\psi,M\psi\rangle$
+over $\langle\psi,\psi\rangle$, the electric read on its upper side
+or equal members and the magnetic read capped, so $\varepsilon_0$
+sits at or beyond the balance partner of $\tau^2W$ while
+$\hat\varepsilon$ sits at or below the sum's unit, and the
+pairing's squared Cauchy--Schwarz (Construction~\ref{con:coeff})
+reads
+\[
+\langle\gamma'\!:\!\tau^2W\rangle^2\,\langle\varphi,\varphi\rangle
+\;\le\;\langle\rho,\rho\rangle
+\qquad\text{at}\quad\tau^2W<\gamma'\ .
+\]
+The residual's weight is the caps' fold. The magnetic member's
+square reads $\langle Mx,Mx\rangle\le\#p\sum_p\langle\chi_px,
+\chi_px\rangle\le W^2\langle x,x\rangle$, the count's fold of
+squares, $\#p\sum_pa_p^2=(\sum_pa_p)^2+\sum_{p<q}\langle
+a_p\!:\!a_q\rangle^2$ (Definition~\ref{def:ground}), at the
+per-term square cap (Lemma~\ref{lem:loopcap}); the first-order
+weight is $\langle\psi_1,\psi_1\rangle=[\,\#p:16\,]$
+($\langle q_p,q_p\rangle=m_2$ with the cross pairings at $m_1$'s
+square); and the solve's weight is floored at the free end's level
+$\ell:=4\,\hat c_2(f)$ (Lemma~\ref{lem:freeend}): every component
+of $\psi_2$ sits at content at or beyond $\ell$ (the
+single-plaquette channels at $4\hat c_2(k)$ over the member floor,
+Lemma~\ref{lem:casfloor}, the pair sectors at $6+\hat c_2(k)$, the
+distant products at eight), so
+$\ell\,\langle\psi_2,\psi_2\rangle\le\langle\psi_2,E\psi_2\rangle
+=\langle\psi_2,M\psi_1\rangle$ ($\psi_2$ off the unit line) and the
+squared Cauchy--Schwarz reads
+$\ell^2\langle\psi_2,\psi_2\rangle\le W^2[\,\#p:16\,]$, the
+cofactor $Z$ at $\ell^2Z=W^2[\,\#p:16\,]$ its cap. The squares'
+fold twice, $(a+b)^2\le2a^2+2b^2$, then reads
+\[
+\langle\rho,\rho\rangle\;\le\;\tau^{12}\,Q(\tau)\ ,\qquad
+Q(\tau):=4\,[\,\#p:4\,]^2[\,\#p:16\,]+4\,W^2Z
++2\,\tau^4[\,\#p:4\,]^2Z\ .
+\]
+The moments' brackets read at two states, $\omega$ the ground's
+and the \emph{jet state}
+$\hat\omega:=\langle\hat\psi,\cdot\,\hat\psi\rangle$ against
+$\langle\hat\psi,\hat\psi\rangle$, at the observable
+$A=q_1^{\,a}q_2^{\,b}$'s \emph{cap} $c_A:=d_\theta^{\,a+b}$, the loop
+cap's square iterated over the word,
+$\langle\chi_\theta x,\chi_\theta x\rangle\le d_\theta^{\,2}
+\langle x,x\rangle$ per letter, with the form two-sided at the
+count at every vector (Lemma~\ref{lem:loopcap}), both states' reads
+at or below the cap. Each moment's bracket is the transport
+display's width read at the jet as the later ground, one
+polarization each (Theorem~\ref{thm:groundreads}(iii)): at the
+pair $w$ at $w\,\langle\gamma'\!:\!\tau^2W\rangle=\gamma'\,\tau^6K(\tau)$,
+$K(\tau):=K_0+\tau^2K_1$ over the \emph{root caps}
+$K_0^{\,2}\ge4[\,\#p:4\,]^2[\,\#p:16\,]+4W^2Z$ and
+$K_1^{\,2}\ge2[\,\#p:4\,]^2Z$ (the pair $[\,x+1:2\,]$ clears every
+$x$'s square at $(x+1)^2=4x+\langle x\!:\!1\rangle^2$), the display's
+first read holds,
+$\gamma'^{\,2}\langle\varphi,\varphi\rangle
+\le w^2\langle\hat\psi,\hat\psi\rangle$ at
+$\langle\hat\psi,\hat\psi\rangle\ge1$ ($\psi_1$ and $\psi_2$ off the
+unit line), and the width reads
+\[
+\gamma'\,\big|\,\omega(A)-\hat\omega(A)\,\big|\;\le\;4\,c_A\,w\ .
+\]
+The jet state's moment is the pairing at the full jet, $P_A$
+against $G$ at
+$P_A:=\sum_{i,j}\tau^{2(i+j)}\langle\psi_i,A\psi_j\rangle$ over
+$\psi_0:=\mathbf1$ and $G:=P_{\mathbf1}$, degree eight, while the
+displayed $\hat\mu_{ab}$ reads $P_A$ against $G$ through $\tau^4$;
+the datum $N_A$ at $P_A=\hat\mu_{ab}\,G+N_A$ sits at the keys three
+to six, and $|\hat\omega(A)-\hat\mu_{ab}(\tau)|\le|N_A(\tau)|$ at
+$G\ge1$. Its keys are capped at the weights: $P_A$'s key three,
+$2\langle\psi_1,A\psi_2\rangle$, sits at or below
+$c_A([\,\#p:16\,]+Z)$ in magnitude (the polarization at weight
+one) and its key four, $\langle\psi_2,A\psi_2\rangle$, at or below
+$c_AZ$; $G$'s key two is $[\,\#p:16\,]$, its key three,
+$2\langle\psi_1,\psi_2\rangle$, sits at or below $[\,\#p:16\,]+Z$
+and its key four at or below $Z$; so at $\hat\mu_{ab}$'s three
+displayed coefficients $\hat\mu_0,\hat\mu_1,\hat\mu_2$ the magnitude
+fold reads
+\[
+|N_A(\tau)|\;\le\;\tau^6\,T_A(\tau)\ ,\qquad
+T_A:=n_3+\tau^2n_4+\tau^4n_5+\tau^6n_6
+\]
+at the key caps
+$n_3:=(c_A+|\hat\mu_0|)([\,\#p:16\,]+Z)+|\hat\mu_1|\,[\,\#p:16\,]$,
+$n_4:=(c_A+|\hat\mu_0|)\,Z+|\hat\mu_1|([\,\#p:16\,]+Z)
++|\hat\mu_2|\,[\,\#p:16\,]$,
+$n_5:=|\hat\mu_1|\,Z+|\hat\mu_2|([\,\#p:16\,]+Z)$ and
+$n_6:=|\hat\mu_2|\,Z$. The displayed moments sit at or below the
+caps below their own comparisons' first located roots: per index
+pair the magnitude fold
+$|\hat\mu_0|+\tau^2|\hat\mu_1|+\tau^4|\hat\mu_2|$ reads against
+$c_A$, at the free end $|\hat\mu_0|=m_am_b$, the unit or the sum's
+unit against $d_\theta$ at three or beyond
+(Proposition~\ref{prop:row}'s dimension fold), so the comparison
+holds there and its first located root joins the cell's list
+(Theorem~\ref{thm:windowsep}). The partition fold's bracket telescopes
+factor by factor: at a term's moment product, one factor moved
+from $\omega$'s read to $\hat\mu$'s at a time,
+$|\prod_i\mu_i-\prod_i\hat\mu_i|\le\sum_i\delta_i\prod_{j\ne i}c_j$
+at the moments' brackets $\delta_i$ and the caps, the $\omega$
+factors' the states' reads and the $\hat\mu$ factors' the displayed
+comparisons' below the cell's list; every term has
+field count four, so a factor's move at $(a_i,b_i)$ costs
+$\delta_i\,d_\theta^{\,4-a_i-b_i}$ at
+$\delta_i\le[\,4c_iw:\gamma'\,]+\tau^6T_i$, and the fold's factor
+count at the block-count weights is $75$, one per moment factor of
+every term (the one-block term one, the seven two-block terms two
+each, the six three-block terms three each at weight two, the
+four-block term four at weight six), so
+\[
+\big|\varkappa_4(\omega)-\varkappa_4(\hat\mu(\tau))\big|
+\;\le\;75\,d_\theta^{\,4}\Big([\,4w:\gamma'\,]
++\tau^6\sum_{(a,b)}T_{q_1^aq_2^b}\Big)\;=:\;\tau^6B(\tau)
+\]
+at $d_\theta^{\,4-a-b}T\le d_\theta^{\,4}T$; and the fold at the
+displayed orders reads
+$\varkappa_4(\hat\mu(\tau))=\tau^4c_1^{\,2}\langle S\!:\![\,1:8\,]
+\rangle+\tau^6R(\tau)$, $R$ the fold's keys three to eight at the
+displayed orders, the collection its keys through two. So the read
+sits within the tail's bracket of the jet's value,
+\[
+\big|\varkappa_4-\tau^4c_1^{\,2}\langle S\!:\![\,1:8\,]\rangle\big|
+\;\le\;\tau^6\,\mathrm{tail}(\tau)\ ,
+\qquad\mathrm{tail}:=B+|R|\ ,
+\]
+$|R|$ the magnitude fold of $R$'s coefficients, and two windows'
+reads sit within the spectator brackets
+(Theorem~\ref{thm:groundreads}(iii)), the anchor window the
+graph's band neighborhood. The \emph{cell} is the $\tau$-segment
+below the cell list's least located root, the displayed
+comparisons' roots joined to the comparison's
+(Theorem~\ref{thm:windowsep}), the comparison the leading read
+against twice the tail's fold at the drift's clearing,
+\[
+\langle\gamma'\!:\!\tau^2W\rangle\,c_1^{\,2}\langle S\!:\![\,1:8\,]\rangle
+\qquad\text{against}\qquad
+2\,\tau^2\Big(75\,d_\theta^{\,4}\big(4K(\tau)
++\langle\gamma'\!:\!\tau^2W\rangle\,{\textstyle\sum}T\big)
++\langle\gamma'\!:\!\tau^2W\rangle\,|R|(\tau)\Big)\ ,
+\]
+one polynomial in $\tau$, positive at the free end (the side, $8S$
+above one) and on its lower side at $\tau^2W=\gamma'$ (the left
+member of equal members against an occupied right), so the
+comparison's first root sits below $\gamma'$ against $W$ and the
+cell inside the drift's clearance outright: on it $\varkappa_4$ reads its upper
+side at the margin
+$[\,1:2\,]\,\tau^4c_1^{\,2}\,\langle S\!:\![\,1:8\,]\rangle$ or
 beyond, at every window beyond the band, the floor's data located
 member reads.
 \end{lemma}

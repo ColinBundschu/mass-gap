@@ -11,7 +11,11 @@ against `[t + 1 : 1]` beside it and the off-value refusals.
 Clause (ii) at the pencils `[[t,1],[1,t]]` and
 `[[t,1,0],[1,t,1],[0,1,t]]` — the adjugate's solved witness
 `M adj(M) = det(M) 1` with the determinants `t² - 1` and
-`t³ - 2t` occupied.  Clause (iii) at `t + 2`, `(t+1)(t+2)` and
+`t³ - 2t` occupied, decided and through the theorem route in both
+product orders, the square binder a clearance at the ragged frame
+whose missing entry sits beyond the walked keys and load-bearing
+at the wide first row, where both orders refuse.  Clause (iii) at
+`t + 2`, `(t+1)(t+2)` and
 `1 - t` — the radius clearances with the under-radius refusal, the
 settled sides, and the beyond-radius evaluation pins — with the
 side theorem itself run at `lem:rankstable`'s `2 z²` and `z - 1`,
@@ -32,7 +36,6 @@ heaviest read.  The pair adjugate's descent beside clause (ii):
 the walk adjugate against the fold adjugate at the occupied square
 frames, the occupied ragged frame's refusal, and the
 vacant-membered frame's fold-branch record. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly elim genericlift
@@ -69,6 +72,19 @@ example : detOcc m2 := by decide +kernel
 example : adjRead m3 := by decide +kernel
 example : detOcc m3 := by decide +kernel
 
+/-! The solved witness through its theorem route at the square
+frame, both product orders. -/
+
+example : adjRead m2 := adjRead_all m2 (by decide +kernel)
+
+example : split.pmatOneValue (split.pmatMul (padj m2) m2)
+    (split.pdiag (List.replicate m2.length (split.pminor m2))) :=
+  adjColRead_all m2 (by decide +kernel)
+
+example : split.pmatOneValue (split.pmatMul (padj m3) m3)
+    (split.pdiag (List.replicate m3.length (split.pminor m3))) := by
+  decide +kernel
+
 /-! The descent's adjugate against the fold's at the value, decided
 and read through the theorem's route at the decided square frame. -/
 
@@ -88,6 +104,26 @@ private def ragP3 : split.PMat :=
 
 example : ¬ split.pmatOneValue (padjD ragP3) (padj ragP3) := by
   decide +kernel
+
+/-- The solved witness at the ragged frames: `ragP3`'s missing entry
+sits beyond the walked keys, so the identity reads anyway and the
+square binder is a clearance there; at the wide first row the
+out-of-range column carries no cofactor and both product orders
+refuse, the binder load-bearing. -/
+example : adjRead ragP3 := by decide +kernel
+
+example : split.pmatOneValue (split.pmatMul (padj ragP3) ragP3)
+    (split.pdiag (List.replicate ragP3.length
+      (split.pminor ragP3))) := by decide +kernel
+
+private def ragWide : split.PMat :=
+  [[poly.one, poly.one, poly.one], [poly.one]]
+
+example : ¬ adjRead ragWide := by decide +kernel
+
+example : ¬ split.pmatOneValue (split.pmatMul (padj ragWide) ragWide)
+    (split.pdiag (List.replicate ragWide.length
+      (split.pminor ragWide))) := by decide +kernel
 
 example : topUpper [⟨3, 1⟩, ⟨2, 1⟩, ⟨5, 5⟩] := by decide +kernel
 example : topLower [⟨2, 1⟩, ⟨1, 2⟩, ⟨4, 4⟩] := by decide +kernel

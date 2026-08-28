@@ -8,7 +8,21 @@ unit set, the swap grading's parity, the content read, and the
 monomial enumerations; the column union's row read joins them with
 its width binder's two ragged refusals.  The display's own two
 reads close it: the shape read back off its display, and the full
-column's raise of every display member by one successor.
+column's raise of every display member by one successor.  The cycle
+tier closes the module: the orbit words at a wiring with the pack's
+covering and cell reads, and the cycle count at a relabeled wiring
+against the wiring's own at two cells beside their theorem routes,
+with both membership binders refused at exhibited cells and a
+forged datum reading the equality anyway.  The wiring carrier's
+position read closes it: the position with its two roundtrips at a
+three-key listing, the distinctness binder refused at a repeated
+listing, and the relabeling's two composition reads — the partner
+relabeled and the composite relabeled — decided at the three-place
+cell beside their theorem routes.
+  Membership from the entry reads closes the
+module: the enumeration member at a four-place family decided
+beside its theorem route, with the entry bound refused at an
+out-of-range family whose length and key injectivity stand.
 -/
 
 open ground places
@@ -370,3 +384,292 @@ example : ∀ t, t < 4 → ground.getAt 0 [1, 2, 0, 1] t = 0 → t = 2 :=
   fun t ht hv =>
     places.movePlaceZero 4 [1, 2, 0, 1] 1 2 (by decide +kernel) (by decide +kernel)
       t ht hv
+
+/-! The cycle tier and the relabeling transport: the orbit words at
+a wiring, the wiring relabeled through a place permutation, and the
+cycle count read either side.  The wirings and the relabelings are
+named once and consumed by term. -/
+
+private def wire6 : List Nat := [1, 2, 0, 4, 3, 5]
+
+private def relab6 : List Nat := [2, 0, 1, 4, 5, 3]
+
+private def wire5 : List Nat := [0, 1, 3, 2, 4]
+
+private def relab5 : List Nat := [1, 0, 2, 3, 4]
+
+private def wire4 : List Nat := [1, 0, 3, 2]
+
+private def wireDup : List Nat := [1, 0, 2]
+
+private def relabDup : List Nat := [0, 0, 2]
+
+private def wireOver : List Nat := [3, 0, 1]
+
+private def wireForge : List Nat := [1, 1, 0]
+
+private def relab3 : List Nat := [2, 0, 1]
+
+/-! The two wirings and their relabelings sit in the place
+enumeration. -/
+
+example : 0 < ground.countOf wire6 (places.perms 6) := by
+  decide +kernel
+
+example : 0 < ground.countOf relab6 (places.perms 6) := by
+  decide +kernel
+
+example : 0 < ground.countOf wire5 (places.perms 5) := by
+  decide +kernel
+
+example : 0 < ground.countOf relab5 (places.perms 5) := by
+  decide +kernel
+
+/-! The cycle count at a relabeled wiring is the wiring's own, at
+two cells beside their theorem routes: the six-place wiring's three
+orbit words — a three-cycle, a transposition and a fixed place —
+and the five-place wiring's four. -/
+
+example : (places.cyclesOf wire6).length = 3 := by decide +kernel
+
+example : (places.cyclesOf ((places.invPerm 6 relab6).map (fun j =>
+    ground.getAt 0 relab6 (ground.getAt 0 wire6 j)))).length = 3 := by
+  decide +kernel
+
+example : (places.cyclesOf ((places.invPerm 6 relab6).map (fun j =>
+    ground.getAt 0 relab6 (ground.getAt 0 wire6 j)))).length
+    = (places.cyclesOf wire6).length := by decide +kernel
+
+example : (places.cyclesOf ((places.invPerm 6 relab6).map (fun j =>
+    ground.getAt 0 relab6 (ground.getAt 0 wire6 j)))).length
+    = (places.cyclesOf wire6).length :=
+  places.cyclesOf_transport 6 (by decide +kernel) (by decide +kernel)
+
+example : (places.cyclesOf wire5).length = 4 := by decide +kernel
+
+example : (places.cyclesOf ((places.invPerm 5 relab5).map (fun j =>
+    ground.getAt 0 relab5 (ground.getAt 0 wire5 j)))).length = 4 := by
+  decide +kernel
+
+example : (places.cyclesOf ((places.invPerm 5 relab5).map (fun j =>
+    ground.getAt 0 relab5 (ground.getAt 0 wire5 j)))).length
+    = (places.cyclesOf wire5).length := by decide +kernel
+
+example : (places.cyclesOf ((places.invPerm 5 relab5).map (fun j =>
+    ground.getAt 0 relab5 (ground.getAt 0 wire5 j)))).length
+    = (places.cyclesOf wire5).length :=
+  places.cyclesOf_transport 5 (by decide +kernel) (by decide +kernel)
+
+/-! Both membership binders are load-bearing.  At a relabeling with
+a doubled letter the transported walk splits the repeated place off
+its own word and the count reads three against the wiring's two; at
+a wiring reaching past its own places the transported count reads
+two against three. -/
+
+example : ¬ 0 < ground.countOf relabDup (places.perms 3) := by
+  decide +kernel
+
+example : ¬ ((places.cyclesOf ((places.invPerm 3 relabDup).map
+    (fun j => ground.getAt 0 relabDup
+      (ground.getAt 0 wireDup j)))).length
+    = (places.cyclesOf wireDup).length) := by decide +kernel
+
+example : ¬ 0 < ground.countOf wireOver (places.perms 3) := by
+  decide +kernel
+
+example : ¬ ((places.cyclesOf ((places.invPerm 3 relab3).map
+    (fun j => ground.getAt 0 relab3
+      (ground.getAt 0 wireOver j)))).length
+    = (places.cyclesOf wireOver).length) := by decide +kernel
+
+/-! The refusals are the exhibited cells' own: a wiring with a
+doubled letter refuses the same binder and reads the equality
+anyway, both counts two. -/
+
+example : ¬ 0 < ground.countOf wireForge (places.perms 3) := by
+  decide +kernel
+
+example : (places.cyclesOf ((places.invPerm 3 relab3).map (fun j =>
+    ground.getAt 0 relab3 (ground.getAt 0 wireForge j)))).length
+    = (places.cyclesOf wireForge).length := by decide +kernel
+
+/-! The relabeled wiring is itself an enumeration member, and the
+partner relabeling composes back to the wiring. -/
+
+example : 0 < ground.countOf ((places.invPerm 6 relab6).map (fun j =>
+    ground.getAt 0 relab6 (ground.getAt 0 wire6 j)))
+    (places.perms 6) := by decide +kernel
+
+example : 0 < ground.countOf ((places.invPerm 6 relab6).map (fun j =>
+    ground.getAt 0 relab6 (ground.getAt 0 wire6 j)))
+    (places.perms 6) :=
+  places.transport_member 6 (by decide +kernel) (by decide +kernel)
+
+example : (places.invPerm 6 (places.invPerm 6 relab6)).map (fun j =>
+    ground.getAt 0 (places.invPerm 6 relab6)
+      (ground.getAt 0 ((places.invPerm 6 relab6).map (fun i =>
+        ground.getAt 0 relab6 (ground.getAt 0 wire6 i))) j))
+    = wire6 := by decide +kernel
+
+example : (places.invPerm 6 (places.invPerm 6 relab6)).map (fun j =>
+    ground.getAt 0 (places.invPerm 6 relab6)
+      (ground.getAt 0 ((places.invPerm 6 relab6).map (fun i =>
+        ground.getAt 0 relab6 (ground.getAt 0 wire6 i))) j))
+    = wire6 :=
+  places.transport_invol 6 (by decide +kernel) (by decide +kernel)
+
+/-! The enumeration is distinct at four places, decided beside its
+theorem route. -/
+
+example : ground.distinctList (places.perms 4) := by decide +kernel
+
+example : ground.distinctList (places.perms 4) := places.perms_distinct 4
+
+/-! The cycles' pack at the two-transposition wiring on four
+places: the orbit words are `[0, 1]` and `[2, 3]`, the flattening
+holds every place once, and the third place is covered — the
+covering read decided beside the pack's own route. -/
+
+example : places.cyclesOf wire4 = [[0, 1], [2, 3]] := by decide +kernel
+
+example : ground.countOf 2
+    ((places.cyclesOf wire4).flatMap (fun c => c)) ≤ 1 := by
+  decide +kernel
+
+example : ground.countOf 2
+    ((places.cyclesOf wire4).flatMap (fun c => c)) ≤ 1 :=
+  (places.cycles_pack 4 (by decide +kernel)).1 2
+
+example : 0 < ground.countOf 2
+    ((places.cyclesOf wire4).flatMap (fun c => c)) := by decide +kernel
+
+example : 0 < ground.countOf 2
+    ((places.cyclesOf wire4).flatMap (fun c => c)) :=
+  (places.cycles_pack 4 (by decide +kernel)).2.1 2 (by decide +kernel)
+
+/-! The pack's cell clause at the second orbit word: the word is
+occupied, its places sit below the count, it closes under the
+assignment, and every place is an iterate of the word's head — the
+iterate read pinned at the word's second place. -/
+
+example : ∃ t, 3 = places.iterP wire4 t
+    (ground.getAt 0 (ground.getAt ([] : List Nat)
+      (places.cyclesOf wire4) 1) 0) :=
+  ((places.cycles_pack 4 (by decide +kernel)).2.2
+    (ground.getAt ([] : List Nat) (places.cyclesOf wire4) 1)
+    (by decide +kernel)).2.2.2 3 (by decide +kernel)
+
+example : places.iterP wire4 1 2 = 3 := by decide +kernel
+
+example : places.iterP wire4 2 2 = 2 := by decide +kernel
+
+/-! The key's position at the wiring carrier: the position read with
+its two roundtrips at the six-place enumeration's own listing, the
+distinctness binder refused at a repeated listing, and the
+relabeling's two composition reads — the partner relabeled and the
+composite relabeled — decided at the three-place cell beside their
+theorem routes.  The listings and the words are named once and
+consumed by term. -/
+
+private def keyList : List (List Nat) := [[1, 0], [0, 1], [1, 1]]
+
+private def dupList : List (List Nat) := [[0], [0]]
+
+private def wire3 : List Nat := [1, 0, 2]
+
+private def comp3 : List Nat := [1, 2, 0]
+
+example : places.idxOf [0, 1] keyList = 1 := by decide +kernel
+
+example : places.idxOf [0, 1] keyList < keyList.length :=
+  places.idxOf_lt keyList [0, 1] (by decide +kernel)
+
+example : ground.getAt [] keyList (places.idxOf [1, 1] keyList)
+    = [1, 1] := by decide +kernel
+
+example : ground.getAt [] keyList (places.idxOf [1, 1] keyList)
+    = [1, 1] :=
+  places.getAt_idxOf keyList [1, 1] (by decide +kernel)
+
+example : places.idxOf (ground.getAt [] keyList 2) keyList = 2 := by
+  decide +kernel
+
+example : places.idxOf (ground.getAt [] keyList 2) keyList = 2 :=
+  places.idxOf_getAt keyList 2 (by decide +kernel) (by decide +kernel)
+
+/-- The distinctness binder is load-bearing: at a repeated listing
+the entry's position names the first occurrence, not the key's own
+place. -/
+example : ¬ places.idxOf (ground.getAt [] dupList 1) dupList = 1 := by
+  decide +kernel
+
+/-! The relabeling's composition reads at the three-place cell: the
+wiring `[1, 0, 2]` and the composite `[1, 2, 0]` relabeled through
+`[2, 0, 1]`. -/
+
+example : places.invPerm 3 ((places.invPerm 3 relab3).map (fun j =>
+      ground.getAt 0 relab3 (ground.getAt 0 wire3 j)))
+    = (places.invPerm 3 relab3).map (fun j =>
+      ground.getAt 0 relab3
+        (ground.getAt 0 (places.invPerm 3 wire3) j)) := by
+  decide +kernel
+
+example : places.invPerm 3 ((places.invPerm 3 relab3).map (fun j =>
+      ground.getAt 0 relab3 (ground.getAt 0 wire3 j)))
+    = (places.invPerm 3 relab3).map (fun j =>
+      ground.getAt 0 relab3
+        (ground.getAt 0 (places.invPerm 3 wire3) j)) :=
+  places.invPerm_transport 3 wire3 relab3 (by decide +kernel)
+    (by decide +kernel)
+
+example : places.expo ((places.invPerm 3 relab3).map (fun j =>
+        ground.getAt 0 relab3 (ground.getAt 0 wire3 j)))
+      ((places.invPerm 3 relab3).map (fun j =>
+        ground.getAt 0 relab3 (ground.getAt 0 comp3 j)))
+    = (places.invPerm 3 relab3).map (fun j =>
+      ground.getAt 0 relab3
+        (ground.getAt 0 (places.expo wire3 comp3) j)) := by
+  decide +kernel
+
+example : places.expo ((places.invPerm 3 relab3).map (fun j =>
+        ground.getAt 0 relab3 (ground.getAt 0 wire3 j)))
+      ((places.invPerm 3 relab3).map (fun j =>
+        ground.getAt 0 relab3 (ground.getAt 0 comp3 j)))
+    = (places.invPerm 3 relab3).map (fun j =>
+      ground.getAt 0 relab3
+        (ground.getAt 0 (places.expo wire3 comp3) j)) :=
+  places.expo_transport 3 wire3 comp3 relab3
+    (by decide +kernel) (by decide +kernel)
+
+/-! Membership from the entry reads: a family at the place count
+with its entries below that count and its keys read injectively
+is an enumeration member. -/
+
+private theorem injAt (l : List Nat) (n : Nat)
+    (h : ∀ i, i < n → ∀ j, j < n →
+      ground.getAt 0 l i = ground.getAt 0 l j → i = j) :
+    ∀ i j, i < n → j < n →
+      ground.getAt 0 l i = ground.getAt 0 l j → i = j :=
+  fun i j hi hj he => h i hi j hj he
+
+example : 0 < ground.countOf [2, 0, 3, 1] (places.perms 4) := by
+  decide +kernel
+
+example : 0 < ground.countOf [2, 0, 3, 1] (places.perms 4) :=
+  places.perm_of_reads 4 [2, 0, 3, 1] (by decide +kernel)
+    (by decide +kernel) (injAt [2, 0, 3, 1] 4 (by decide +kernel))
+
+/-- The entry bound is load-bearing: the family `[2, 0, 4, 1]`
+sits at the place count and reads its keys injectively, and its
+out-of-range entry refuses the membership. -/
+example : ([2, 0, 4, 1] : List Nat).length = 4 := by decide +kernel
+
+example : ∀ i, i < 4 → ∀ j, j < 4 →
+    ground.getAt 0 [2, 0, 4, 1] i = ground.getAt 0 [2, 0, 4, 1] j →
+    i = j := by decide +kernel
+
+example : ¬ (∀ i, i < 4 → ground.getAt 0 [2, 0, 4, 1] i < 4) := by
+  decide +kernel
+
+example : ¬ (0 < ground.countOf [2, 0, 4, 1] (places.perms 4)) := by
+  decide +kernel

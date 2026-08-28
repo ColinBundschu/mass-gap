@@ -64,7 +64,6 @@ factorial route's recorded cost, and the ceiling on any battery
 here (nothing beyond three pairs per variable), the reduction at
 the bilinear fold's seam carried and the Weingarten solve the
 floor beneath. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly genericlift states kernel lap res fiber twoplaq

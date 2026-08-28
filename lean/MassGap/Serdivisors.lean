@@ -611,28 +611,6 @@ the magnitude cap or the exhibited family. -/
 
 /-! ### The count carrier's cross read -/
 
-/-- Two count pairs at one value cross-add. -/
-private theorem crossCounts {a b c d : Nat}
-    (h : (BPair.ofCounts a b).oneValue (BPair.ofCounts c d)) :
-    a + d = c + b := by
-  have h2 : (BPair.ofCounts (a + d) (b + c)).oneValue BPair.unit :=
-    BPair.oneValue_trans (BPair.ofCounts_add a b d c)
-      (BPair.oneValue_trans (BPair.add_congr h (BPair.oneValue_refl _))
-        (BPair.oneValue_trans
-          (BPair.oneValue_symm (BPair.ofCounts_add c d d c))
-          (BPair.ofCounts_unit.mpr (Nat.add_comm c d))))
-  exact (BPair.ofCounts_unit.mp h2).trans (Nat.add_comm b c)
-
-/-- The count pair's memberwise swap exchanges its two counts. -/
-private theorem swapCounts (a b : Nat) :
-    (BPair.ofCounts a b).swap = BPair.ofCounts b a := by
-  show BPair.mk ((BPair.ofNat a).snd + (BPair.ofNat b).fst)
-      ((BPair.ofNat a).fst + (BPair.ofNat b).snd)
-    = BPair.mk ((BPair.ofNat b).fst + (BPair.ofNat a).snd)
-      ((BPair.ofNat b).snd + (BPair.ofNat a).fst)
-  rw [ground.add_comm (BPair.ofNat a).snd (BPair.ofNat b).fst,
-    ground.add_comm (BPair.ofNat a).fst (BPair.ofNat b).snd]
-
 /-! ### The moved contents' carrier -/
 
 /-- A moved content in the coroot presentation: the stated entry at
@@ -826,7 +804,7 @@ private theorem thetaOneNormNeg (l : Nat) (F : Nat → Nat) (z : List BPair)
       (poly.pnorm (sertables.posCorootV (sertables.tableB l) j))
         k).swap).oneValue
       (BPair.ofCounts (serstable.nbB l F k) (2 * F k)) := by
-    rw [← swapCounts (2 * F k) (serstable.nbB l F k)]
+    rw [← ground.BPair.ofCounts_swap (2 * F k) (serstable.nbB l F k)]
     exact ground.swap_congr (serstable.posCorootV_entry l j k F hk hje)
   refine BPair.oneValue_trans (BPair.oneValue_trans (hent k hk)
     (BPair.oneValue_symm hS)) ?_
@@ -1444,11 +1422,11 @@ private theorem termVanishMag (l k : Nat) (hk : k < l) (x : List BPair)
     (fun F hcase => ⟨k, hk, fun hc => ?_⟩)
   · obtain ⟨hlo, hhi⟩ := serstable.colB_magLe F k l hk hcase
     exact magRefute p q (2 * F k) (serstable.nbB l F k)
-      (crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx) hc))
+      (ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx) hc))
       hlo hhi hmag
   · obtain ⟨hlo, hhi⟩ := serstable.colB_magLe F k l hk hcase
     exact magRefute p q (serstable.nbB l F k) (2 * F k)
-      (crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx) hc))
+      (ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx) hc))
       hhi hlo hmag
 
 /-- The `B` sum family's entry against its two windows. -/
@@ -1492,7 +1470,7 @@ private theorem termVanishTwo (l m : Nat) (hml : m + 2 < l) (x : List BPair)
     refine hoff ?_
     have hFn : F = serstable.fDiff (m + 1) (m + 2) := by
       have hcr : 2 + serstable.nbB l F (m + 1) = 2 * F (m + 1) + 0 :=
-        crossCounts (BPair.oneValue_trans (BPair.oneValue_symm h2) c1)
+        ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm h2) c1)
       rw [nbMid l F m hmne] at hcr
       have hnat : 2 * F (m + 1) = F m + F (m + 2) + 2 :=
         (Nat.add_zero (2 * F (m + 1))).symm.trans
@@ -1502,7 +1480,7 @@ private theorem termVanishTwo (l m : Nat) (hml : m + 2 < l) (x : List BPair)
     exact c2
   · refine ⟨m + 1, hm1l, fun hc => ?_⟩
     have hcr : 2 + 2 * F (m + 1) = serstable.nbB l F (m + 1) + 0 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm h2) hc)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm h2) hc)
     rw [nbMid l F m hmne] at hcr
     exact serstable.colB_notNegTwo F m l hml hcase
       ((Nat.add_zero (F m + F (m + 2))).symm.trans
@@ -1526,7 +1504,7 @@ private theorem termVanishNegTwo (l m : Nat) (hml : m + 2 < l)
     (fun F hcase => ?_) (fun F hcase => ?_)
   · refine ⟨m + 1, hm1l, fun hc => ?_⟩
     have hcr : 0 + serstable.nbB l F (m + 1) = 2 * F (m + 1) + 2 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm h2) hc)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm h2) hc)
     rw [nbMid l F m hmne] at hcr
     exact serstable.colB_notNegTwo F m l hml hcase
       ((Nat.zero_add (F m + F (m + 2))).symm.trans hcr)
@@ -1536,7 +1514,7 @@ private theorem termVanishNegTwo (l m : Nat) (hml : m + 2 < l)
     refine hoff ?_
     have hFn : F = serstable.fDiff (m + 1) (m + 2) := by
       have hcr : 0 + 2 * F (m + 1) = serstable.nbB l F (m + 1) + 2 :=
-        crossCounts (BPair.oneValue_trans (BPair.oneValue_symm h2) c1)
+        ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm h2) c1)
       rw [nbMid l F m hmne] at hcr
       have hcr2 : 2 * F (m + 1) = F m + F (m + 2) + 2 :=
         (Nat.zero_add (2 * F (m + 1))).symm.trans hcr
@@ -1703,7 +1681,7 @@ private theorem termVanishHeadTwo (l : Nat) (hl : 3 ≤ l) (x : List BPair)
     refine hoff ?_
     have hFn : F = serstable.fDiff 0 1 := by
       have hcr : 2 + serstable.nbB l F 0 = 2 * F 0 + 0 :=
-        crossCounts (BPair.oneValue_trans (BPair.oneValue_symm h2) c1)
+        ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm h2) c1)
       rw [nbHead l F h1l] at hcr
       exact headNarrow l h1l F hcase
         ((Nat.add_zero (2 * F 0)).symm.trans
@@ -1712,7 +1690,7 @@ private theorem termVanishHeadTwo (l : Nat) (hl : 3 ≤ l) (x : List BPair)
     exact c2
   · refine ⟨0, h0l, fun hc => ?_⟩
     have hcr : 2 + 2 * F 0 = serstable.nbB l F 0 + 0 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm h2) hc)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm h2) hc)
     rw [nbHead l F h1l] at hcr
     exact headRefuse l F hcase
       ((Nat.add_zero (F 1)).symm.trans
@@ -1877,28 +1855,16 @@ private theorem foldZeroG (t : gentable.Table) (a b c T : Nat)
 
 /-! ### The sources' shifted keys and the narrow columns' reads -/
 
-/-- The leading member's shifted key at a coordinate. -/
-private theorem memRhoAt (W : List Nat) (l k : Nat) (hk : k < l) :
-    ground.getAt 0 (serstable.memberRho W l) k
-      = ground.getAt 0 W k - ground.getAt 0 W (k + 1) + 1 := by
-  show ground.getAt 0 ((serstable.member W l).map (· + 1)) k = _
-  rw [ground.getAt_map 0 0 (· + 1) (serstable.member W l) k
-    (by rw [show (serstable.member W l).length = l from
-      ground.length_mapRange _ l]; exact hk)]
-  show ground.getAt 0 ((List.range l).map
-      (fun i => ground.getAt 0 W i - ground.getAt 0 W (i + 1))) k + 1 = _
-  rw [ground.getAt_map_range 0 _ l k, if_pos hk]
-
 /-- `θ`'s shifted key at the leading coordinate. -/
 private theorem kapTh0 (l : Nat) (h : 0 < l) :
     ground.getAt 0 (serstable.memberRho [1, 1] l) 0 = 1 := by
-  rw [memRhoAt [1, 1] l 0 h]
+  rw [serstable.memberRhoAt [1, 1] l 0 h]
   rfl
 
 /-- `θ`'s shifted key at the second coordinate. -/
 private theorem kapTh1 (l : Nat) (h : 1 < l) :
     ground.getAt 0 (serstable.memberRho [1, 1] l) 1 = 2 := by
-  rw [memRhoAt [1, 1] l 1 h]
+  rw [serstable.memberRhoAt [1, 1] l 1 h]
   rfl
 
 /-- `θ`'s shifted key across the run and the tail. -/
@@ -2031,7 +1997,7 @@ private theorem termTwoBelow (l m : Nat) (hml : m + 2 < l) (x : List BPair)
   refine termVanishTwo l m hml x h2 m
     (Nat.lt_of_le_of_lt (Nat.le_add_right m 2) hml) (fun hc => hne ?_)
   rw [hz, ho] at hc
-  exact crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hm) hc)
+  exact ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hm) hc)
 
 /-- The narrow-window device at the balance partner, read at the
 key below the letter. -/
@@ -2045,7 +2011,7 @@ private theorem termNegTwoBelow (l m : Nat) (hml : m + 2 < l) (x : List BPair)
   refine termVanishNegTwo l m hml x h2 m
     (Nat.lt_of_le_of_lt (Nat.le_add_right m 2) hml) (fun hc => hne ?_)
   rw [hz, ho] at hc
-  exact crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hm) hc)
+  exact ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hm) hc)
 
 /-- The leading-window device read at the second key. -/
 private theorem termHeadAtOne (l : Nat) (hl : 3 ≤ l) (x : List BPair)
@@ -2060,7 +2026,7 @@ private theorem termHeadAtOne (l : Nat) (hl : 3 ≤ l) (x : List BPair)
   obtain ⟨hz, ho⟩ := headColOne l h2l
   refine termVanishHeadTwo l hl x h2 1 h1l (fun hc => hne ?_)
   rw [hz, ho] at hc
-  exact crossCounts (BPair.oneValue_trans (BPair.oneValue_symm h1) hc)
+  exact ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm h1) hc)
 
 /-- The leading-window device read at the rank's last key. -/
 private theorem termHeadAtTail (l q : Nat) (hl : 3 ≤ l) (h1q : 1 ≤ q)
@@ -2074,7 +2040,7 @@ private theorem termHeadAtTail (l q : Nat) (hl : 3 ≤ l) (h1q : 1 ≤ q)
   refine termVanishHeadTwo l hl x h2 (q + 1)
     (by rw [← hq]; exact Nat.lt_succ_self (q + 1)) (fun hc => hne ?_)
   rw [hz, ho] at hc
-  exact crossCounts (BPair.oneValue_trans (BPair.oneValue_symm ht) hc)
+  exact ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm ht) hc)
 
 
 /-! ### The tail's collision refusal -/
@@ -2215,16 +2181,16 @@ private theorem termVanishTail (l q : Nat) (hq : q + 2 = l) (hl : 4 ≤ l)
       (fun y => BPair.ofCounts (2 * F y) (serstable.nbB l F y))
       0 1 2 (q + 1) h0l h1l h2l hq1l (fun c0 c1 c2 c3 => ?_)
     refine hpos F hcase ?_ ?_ ?_ ?_
-    · have hx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm e0) c0)
+    · have hx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm e0) c0)
       rw [k0] at hx
       exact hx
-    · have hx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm e1) c1)
+    · have hx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm e1) c1)
       rw [k1] at hx
       exact hx
-    · have hx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm e2) c2)
+    · have hx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm e2) c2)
       rw [k2] at hx
       exact hx
-    · have hx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm et) c3)
+    · have hx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm et) c3)
       rw [kt] at hx
       exact hx
   · have k0 : serstable.nbB l F 0 = F 1 := nbHead l F h1l
@@ -2235,16 +2201,16 @@ private theorem termVanishTail (l q : Nat) (hq : q + 2 = l) (hl : 4 ≤ l)
       (fun y => BPair.ofCounts (serstable.nbB l F y) (2 * F y))
       0 1 2 (q + 1) h0l h1l h2l hq1l (fun c0 c1 c2 c3 => ?_)
     refine hneg F hcase ?_ ?_ ?_ ?_
-    · have hx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm e0) c0)
+    · have hx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm e0) c0)
       rw [k0] at hx
       exact hx
-    · have hx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm e1) c1)
+    · have hx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm e1) c1)
       rw [k1] at hx
       exact hx
-    · have hx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm e2) c2)
+    · have hx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm e2) c2)
       rw [k2] at hx
       exact hx
-    · have hx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm et) c3)
+    · have hx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm et) c3)
       rw [kt] at hx
       exact hx
 
@@ -2259,18 +2225,9 @@ private theorem ltRefute {a b : Nat} (h : a ≤ b) (hb : b < a) : False :=
 private theorem litNe (c n d : Nat) (h : c < d) : ¬ c = n + d :=
   Nat.ne_of_lt (Nat.lt_of_lt_of_le h (Nat.le_add_left d n))
 
-/-- A count at or below one is vacant or one. -/
-private theorem leOneCases {x : Nat} (h : x ≤ 1) : x = 0 ∨ x = 1 := by
-  match x with
-  | 0 => exact Or.inl rfl
-  | 1 => exact Or.inr rfl
-  | q + 2 =>
-    exact absurd h (fun hc => Nat.not_succ_le_zero q
-      (Nat.le_of_succ_le_succ hc))
-
 /-- A family's leading coordinate is vacant or one. -/
 private theorem headCases (l : Nat) (F : Nat → Nat) (hcase : famCase l F) :
-    F 0 = 0 ∨ F 0 = 1 := leOneCases (famHeadLe l F hcase)
+    F 0 = 0 ∨ F 0 = 1 := ground.leOneCases (famHeadLe l F hcase)
 
 /-- A shifted key sits off the vacant read. -/
 private theorem sucNe0 (m : Nat) : ¬ m + 1 = 0 := fun hc => Nat.noConfusion hc
@@ -2700,10 +2657,6 @@ theorem edgeB_s7 (l : Nat) (hl : 4 ≤ l) :
       exact absurd hx (fun hc => Nat.not_succ_le_zero r
         (Nat.le_of_succ_le_succ hc))
 
-/-- A leading unit's sum is off the vacant read. -/
-private theorem oneAddNeZero (x : Nat) : ¬ 1 + x = 0 :=
-  fun hc => Nat.noConfusion ((Nat.add_comm 1 x).symm.trans hc)
-
 /-- A leading unit cancels against a shifted read. -/
 private theorem oneAddCancel {x c : Nat} (h : 1 + x = c + 1) : x = c :=
   Nat.succ.inj ((Nat.add_comm 1 x).symm.trans h)
@@ -2762,7 +2715,7 @@ private theorem tailU2 (n : Nat) :
         rw [hf0] at q0 q1
         have hf1 : F 1 = 0 := by rw [Nat.zero_add] at q0; exact q0
         rw [hf1] at q1
-        exact oneAddNeZero (0 + F 2) q1
+        exact ground.oneAddNeZero (0 + F 2) q1
       | .inr hf0 =>
         rw [hf0] at q0 q1
         have hf1 : F 1 = 2 := by rw [Nat.zero_add] at q0; exact q0
@@ -2813,7 +2766,7 @@ private theorem tailU2 (n : Nat) :
         rw [hf0] at q0 q1
         have hf1 : F 1 = 0 := by rw [Nat.zero_add] at q0; exact q0
         rw [hf1] at q1
-        exact oneAddNeZero (0 + F 2) q1
+        exact ground.oneAddNeZero (0 + F 2) q1
       | .inr hf0 =>
         rw [hf0] at q0 q1
         have hf1 : F 1 = 2 := by rw [Nat.zero_add] at q0; exact q0
@@ -2970,7 +2923,7 @@ private theorem tailU3 (n : Nat) :
   · match headCases (n + 5) F hcase with
     | .inl hf0 =>
       rw [hf0] at q0
-      exact oneAddNeZero (F 1) q0
+      exact ground.oneAddNeZero (F 1) q0
     | .inr hf0 =>
       rw [hf0] at q0 q1
       have hf1 : F 1 = 1 := oneAddCancel q0
@@ -3473,7 +3426,7 @@ private theorem keySplit (n k : Nat) (hk : k < n + 2) :
 
 /-- A key sits two below its own double successor. -/
 private theorem ltPlusTwo (a : Nat) : a < a + 2 :=
-  Nat.lt_trans (Nat.lt_succ_self a) (Nat.lt_succ_self (a + 1))
+  ground.ltAddSucc a 1
 
 /-- The representative list's θ count at a displayed family, read
 through the representative. -/
@@ -3910,7 +3863,7 @@ private theorem thetaOneNormNegC (l : Nat) (F : Nat → Nat) (z : List BPair)
       (poly.pnorm (sertables.posCorootV (sertables.tableC l) j))
         k).swap).oneValue
       (BPair.ofCounts (serstable.nbC l F k) (2 * F k)) := by
-    rw [← swapCounts (2 * F k) (serstable.nbC l F k)]
+    rw [← ground.BPair.ofCounts_swap (2 * F k) (serstable.nbC l F k)]
     exact ground.swap_congr (serstable.posCorootV_entryC l j k F hk hje)
   refine BPair.oneValue_trans (BPair.oneValue_trans (hent k hk)
     (BPair.oneValue_symm hS)) ?_
@@ -3987,10 +3940,6 @@ private theorem famOneNegC (l : Nat) (F u v : Nat → Nat)
 
 /-! ### The `C` moved contents at the leading keys -/
 
-/-- A key two steps up its own successor chain. -/
-private theorem ltTwo (m : Nat) : m < m + 2 :=
-  Nat.lt_trans (Nat.lt_succ_self m) (Nat.lt_succ_self (m + 1))
-
 /-- A thrice-shifted key sits off the two read. -/
 private theorem sucNe2 (m : Nat) : ¬ m + 3 = 2 :=
   fun hc => Nat.noConfusion (Nat.succ.inj (Nat.succ.inj hc))
@@ -4056,7 +4005,7 @@ theorem cA_mem (l : Nat) (hl : 4 ≤ l) :
         rw [nbSubC (n + 4) _ (m + 1) ht hs,
           serstable.fSumC_end (n + 3) 0 1 (m + 3) hbd hmd,
           serstable.fSumC_two (n + 3) 0 1 (m + 1) (Nat.le_add_left 1 m)
-            (by rw [hmd]; exact ltTwo _),
+            (by rw [hmd]; exact ltPlusTwo _),
           serstable.fSumC_two (n + 3) 0 1 (m + 2) (Nat.le_add_left 1 (m + 1))
             (by rw [hmd]; exact Nat.lt_succ_self _)]
       · have hm3 : m + 3 < n + 4 :=
@@ -4131,7 +4080,7 @@ theorem cB_mem (l : Nat) (hl : 4 ≤ l) :
         rw [nbSubC (n + 4) _ (m + 1) ht hs,
           serstable.fLong_end (n + 3) 1 (m + 3) hmd,
           serstable.fLong_two (n + 3) 1 (m + 1) (Nat.le_add_left 1 m)
-            (by rw [hmd]; exact ltTwo _),
+            (by rw [hmd]; exact ltPlusTwo _),
           serstable.fLong_two (n + 3) 1 (m + 2) (Nat.le_add_left 1 (m + 1))
             (by rw [hmd]; exact Nat.lt_succ_self _)]
       · have hm3 : m + 3 < n + 4 :=
@@ -4192,7 +4141,7 @@ theorem cC_mem (l : Nat) (hl : 3 ≤ l) :
         rw [nbSubC (n + 3) _ m ht hs,
           serstable.fLong_end (n + 2) 0 (m + 2) hmd,
           serstable.fLong_two (n + 2) 0 m (Nat.zero_le m)
-            (by rw [hmd]; exact ltTwo _),
+            (by rw [hmd]; exact ltPlusTwo _),
           serstable.fLong_two (n + 2) 0 (m + 1) (Nat.zero_le _)
             (by rw [hmd]; exact Nat.lt_succ_self _)]
       · have hm2 : m + 2 < n + 3 :=
@@ -4344,7 +4293,7 @@ theorem cE_mem (l : Nat) (hl : 4 ≤ l) :
         rw [nbSubC (n + 4) _ (m + 2) ht hs,
           serstable.fSumC_end (n + 3) 1 2 (m + 4) hbd hmd,
           serstable.fSumC_two (n + 3) 1 2 (m + 2) (Nat.le_add_left 2 m)
-            (by rw [hmd]; exact ltTwo _),
+            (by rw [hmd]; exact ltPlusTwo _),
           serstable.fSumC_two (n + 3) 1 2 (m + 3) (Nat.le_add_left 2 (m + 1))
             (by rw [hmd]; exact Nat.lt_succ_self _)]
       · have hm4 : m + 4 < n + 4 :=
@@ -4527,7 +4476,7 @@ theorem cG_mem (l : Nat) (hl : 5 ≤ l) :
         rw [nbSubC (n + 5) _ (m + 3) ht hs,
           serstable.fSumC_end (n + 4) 2 3 (m + 5) hbd hmd,
           serstable.fSumC_two (n + 4) 2 3 (m + 3) (Nat.le_add_left 3 m)
-            (by rw [hmd]; exact ltTwo _),
+            (by rw [hmd]; exact ltPlusTwo _),
           serstable.fSumC_two (n + 4) 2 3 (m + 4)
             (Nat.le_add_left 3 (m + 1))
             (by rw [hmd]; exact Nat.lt_succ_self _)]
@@ -4636,7 +4585,7 @@ theorem cH_mem (l : Nat) (hl : 4 ≤ l) :
         rw [nbSubC (n + 4) _ (m + 2) ht hs,
           serstable.fSumC_end (n + 3) 0 2 (m + 4) hbd hmd,
           serstable.fSumC_two (n + 3) 0 2 (m + 2) (Nat.le_add_left 2 m)
-            (by rw [hmd]; exact ltTwo _),
+            (by rw [hmd]; exact ltPlusTwo _),
           serstable.fSumC_two (n + 3) 0 2 (m + 3)
             (Nat.le_add_left 2 (m + 1))
             (by rw [hmd]; exact Nat.lt_succ_self _)]
@@ -4707,11 +4656,11 @@ private theorem termVanishMagC (l k : Nat) (hk : k < l) (x : List BPair)
     (fun F hcase => ⟨k, hk, fun hc => ?_⟩)
   · obtain ⟨hlo, hhi⟩ := serstable.colC_magLe F k l hk hcase
     exact magRefute p q (2 * F k) (serstable.nbC l F k)
-      (crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx) hc))
+      (ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx) hc))
       hlo hhi hmag
   · obtain ⟨hlo, hhi⟩ := serstable.colC_magLe F k l hk hcase
     exact magRefute p q (serstable.nbC l F k) (2 * F k)
-      (crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx) hc))
+      (ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx) hc))
       hhi hlo hmag
 
 
@@ -4766,7 +4715,7 @@ private theorem cartOffC (l i j : Nat) (h1 : ¬ j = i) (h2 : ¬ j + 1 = i)
 /-- The `C` unit base's shifted key at the leading coordinate. -/
 private theorem kapW2_0 (l : Nat) (h : 0 < l) :
     ground.getAt 0 (serstable.memberRho [2] l) 0 = 3 := by
-  rw [memRhoAt [2] l 0 h]
+  rw [serstable.memberRhoAt [2] l 0 h]
   rfl
 
 /-- The `C` unit base's shifted key across the run and the tail. -/
@@ -4778,7 +4727,7 @@ private theorem kapW2 (l k : Nat) (hk1 : 1 ≤ k) (hk : k < l) :
 coordinate. -/
 private theorem kapW1_0 (l : Nat) (h : 0 < l) :
     ground.getAt 0 (serstable.memberRho [1] l) 0 = 2 := by
-  rw [memRhoAt [1] l 0 h]
+  rw [serstable.memberRhoAt [1] l 0 h]
   rfl
 
 /-- The first fundamental's shifted key across the run and the
@@ -4790,7 +4739,7 @@ private theorem kapW1 (l k : Nat) (hk1 : 1 ≤ k) (hk : k < l) :
 /-- The one-row cube's shifted key at the leading coordinate. -/
 private theorem kapW3_0 (l : Nat) (h : 0 < l) :
     ground.getAt 0 (serstable.memberRho [3] l) 0 = 4 := by
-  rw [memRhoAt [3] l 0 h]
+  rw [serstable.memberRhoAt [3] l 0 h]
   rfl
 
 /-- The one-row cube's shifted key across the run and the tail. -/
@@ -4801,13 +4750,13 @@ private theorem kapW3 (l k : Nat) (hk1 : 1 ≤ k) (hk : k < l) :
 /-- The two-row source's shifted key at the leading coordinate. -/
 private theorem kapW21_0 (l : Nat) (h : 0 < l) :
     ground.getAt 0 (serstable.memberRho [2, 1] l) 0 = 2 := by
-  rw [memRhoAt [2, 1] l 0 h]
+  rw [serstable.memberRhoAt [2, 1] l 0 h]
   rfl
 
 /-- The two-row source's shifted key at the second coordinate. -/
 private theorem kapW21_1 (l : Nat) (h : 1 < l) :
     ground.getAt 0 (serstable.memberRho [2, 1] l) 1 = 2 := by
-  rw [memRhoAt [2, 1] l 1 h]
+  rw [serstable.memberRhoAt [2, 1] l 1 h]
   rfl
 
 /-- The two-row source's shifted key across the run and the
@@ -4848,7 +4797,7 @@ private theorem termVanishTwoC (l m : Nat) (hml4 : m + 4 ≤ l)
           (2 * serstable.fLong d (m + 2) y))) :
     row.thetaCount (sertables.tableC l) x = 0 := by
   have hm2l : m + 2 < l :=
-    Nat.lt_of_lt_of_le (ltTwo (m + 2)) hml4
+    Nat.lt_of_lt_of_le (ltPlusTwo (m + 2)) hml4
   have hm3l : m + 3 < l :=
     Nat.lt_of_lt_of_le (Nat.lt_succ_self (m + 3)) hml4
   have hm1l : m + 1 < l := Nat.lt_trans (Nat.lt_succ_self (m + 1)) hm2l
@@ -4861,7 +4810,7 @@ private theorem termVanishTwoC (l m : Nat) (hml4 : m + 4 ≤ l)
   · by_cases c1 : (ground.getAt BPair.unit x (m + 1)).oneValue
         (BPair.ofCounts (2 * F (m + 1)) (serstable.nbC l F (m + 1)))
     · have hcr : 2 + serstable.nbC l F (m + 1) = 2 * F (m + 1) + 0 :=
-        crossCounts (BPair.oneValue_trans (BPair.oneValue_symm h2) c1)
+        ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm h2) c1)
       rw [nbMidC l F m hne2 hne3] at hcr
       have hnat : 2 * F (m + 1) = F m + F (m + 2) + 2 :=
         (Nat.add_zero (2 * F (m + 1))).symm.trans
@@ -4881,7 +4830,7 @@ private theorem termVanishTwoC (l m : Nat) (hml4 : m + 4 ≤ l)
   · by_cases c1 : (ground.getAt BPair.unit x (m + 1)).oneValue
         (BPair.ofCounts (serstable.nbC l F (m + 1)) (2 * F (m + 1)))
     · have hcr : 2 + 2 * F (m + 1) = serstable.nbC l F (m + 1) + 0 :=
-        crossCounts (BPair.oneValue_trans (BPair.oneValue_symm h2) c1)
+        ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm h2) c1)
       rw [nbMidC l F m hne2 hne3] at hcr
       have hnat : F m + F (m + 2) = 2 * F (m + 1) + 2 :=
         (Nat.add_zero (F m + F (m + 2))).symm.trans
@@ -4928,7 +4877,7 @@ private theorem termTailTopC (l q k0 p0 q0 : Nat) (hq : q + 2 = l)
   · by_cases c1 : (ground.getAt BPair.unit x (q + 1)).oneValue
         (BPair.ofCounts (2 * F (q + 1)) (serstable.nbC l F (q + 1)))
     · have hcr : 2 + serstable.nbC l F (q + 1) = 2 * F (q + 1) + 0 :=
-        crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hxt) c1)
+        ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hxt) c1)
       rw [nbTopC l F q hq, Nat.add_zero] at hcr
       match hcase with
       | .inl ⟨a, b, hab, hbl, hF⟩ =>
@@ -4970,7 +4919,7 @@ private theorem termTailTopC (l q k0 p0 q0 : Nat) (hq : q + 2 = l)
         by_cases hadq : a = d
         · refine ⟨k0, hk0l, fun hc => ?_⟩
           have hcr0 : p0 + serstable.nbC l F k0 = 2 * F k0 + q0 :=
-            crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx0) hc)
+            ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx0) hc)
           have hlo : ∀ j, j ≤ 2 → F j = 0 := fun j hj => by
             rw [hF]
             refine serstable.fLong_lo d a j ?_ had
@@ -5008,7 +4957,7 @@ private theorem termTailTopC (l q k0 p0 q0 : Nat) (hq : q + 2 = l)
     · exact ⟨q + 1, hq1l, c1⟩
   · refine ⟨q + 1, hq1l, fun c1 => ?_⟩
     have hcr : 2 + 2 * F (q + 1) = serstable.nbC l F (q + 1) + 0 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hxt) c1)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hxt) c1)
     rw [nbTopC l F q hq, Nat.add_zero] at hcr
     have hge : 2 ≤ F q :=
       Nat.le_trans (Nat.le_add_right 2 (2 * F (q + 1))) (Nat.le_of_eq hcr)
@@ -5069,7 +5018,7 @@ private theorem termTailSubC (l m k0 p0 q0 : Nat) (hm : m + 5 = l)
     row.thetaCount (sertables.tableC l) x = 0 := by
   have hm3l : m + 3 < l := by
     rw [← hm]
-    exact ltTwo (m + 3)
+    exact ltPlusTwo (m + 3)
   have hm4l : m + 4 < l := by
     rw [← hm]
     exact Nat.lt_succ_self (m + 4)
@@ -5096,7 +5045,7 @@ private theorem termTailSubC (l m k0 p0 q0 : Nat) (hm : m + 5 = l)
   · by_cases c1 : (ground.getAt BPair.unit x (m + 3)).oneValue
         (BPair.ofCounts (2 * F (m + 3)) (serstable.nbC l F (m + 3)))
     · have hcr : 2 + serstable.nbC l F (m + 3) = 2 * F (m + 3) + 0 :=
-        crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx3) c1)
+        ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx3) c1)
       rw [nbSubC l F (m + 2) hnem4 hm] at hcr
       have hnat : 2 * F (m + 3) = F (m + 2) + 2 * F (m + 4) + 2 :=
         (Nat.add_zero (2 * F (m + 3))).symm.trans
@@ -5111,7 +5060,7 @@ private theorem termTailSubC (l m k0 p0 q0 : Nat) (hm : m + 5 = l)
                 (Nat.le_of_lt_succ (show b < m + 5 by
                   rw [hm]; exact hbl))))
         rw [hz4] at hnat
-        match leOneCases (show F (m + 3) ≤ 1 from by
+        match ground.leOneCases (show F (m + 3) ≤ 1 from by
             rw [hF]; exact serstable.fDiff_le1 a b (m + 3)) with
         | .inl h0 =>
           rw [h0] at hnat
@@ -5140,7 +5089,7 @@ private theorem termTailSubC (l m k0 p0 q0 : Nat) (hm : m + 5 = l)
           have hcx : p0 + serstable.nbC l
               (serstable.fDiff (m + 3) (m + 4)) k0
               = 2 * serstable.fDiff (m + 3) (m + 4) k0 + q0 :=
-            crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx0) hc)
+            ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx0) hc)
           have hlo : ∀ j, j ≤ 2 → serstable.fDiff (m + 3) (m + 4) j = 0 :=
             fun j hj => serstable.fDiff_lo (m + 3) (m + 4) j
               (fun hcj => Nat.not_succ_le_self 2
@@ -5182,7 +5131,7 @@ private theorem termTailSubC (l m k0 p0 q0 : Nat) (hm : m + 5 = l)
             · have h2v : F (m + 2) = 2 := by
                 rw [hF]
                 exact serstable.fSumC_two d a b (m + 2) hb2
-                  (by rw [hdm]; exact ltTwo (m + 2))
+                  (by rw [hdm]; exact ltPlusTwo (m + 2))
               exact absurd (hz2.symm.trans h2v) (by decide +kernel)
             · have h2v : F (m + 2) = 1 := by
                 rw [hF]
@@ -5225,7 +5174,7 @@ private theorem termTailSubC (l m k0 p0 q0 : Nat) (hm : m + 5 = l)
             have h2v : F (m + 2) = 2 := by
               rw [hF]
               exact serstable.fLong_two d a (m + 2) ha2
-                (by rw [hdm]; exact ltTwo (m + 2))
+                (by rw [hdm]; exact ltPlusTwo (m + 2))
             exact absurd (hz2.symm.trans h2v) (by decide +kernel)
           have hae : a = m + 3 :=
             Nat.le_antisymm ha3 (Nat.succ_le_of_lt (Nat.lt_of_not_le hnale))
@@ -5234,7 +5183,7 @@ private theorem termTailSubC (l m k0 p0 q0 : Nat) (hm : m + 5 = l)
           have hcx : 0 + serstable.nbC l
               (serstable.fLong d (m + 3)) (m + 2)
               = 2 * serstable.fLong d (m + 3) (m + 2) + 1 :=
-            crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx2) hc)
+            ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx2) hc)
           have hgv : serstable.fLong d (m + 3) (m + 2) = 0 :=
             serstable.fLong_lo d (m + 3) (m + 2) (Nat.lt_succ_self (m + 2))
               (by rw [hdm]; exact Nat.le_succ (m + 3))
@@ -5242,7 +5191,7 @@ private theorem termTailSubC (l m k0 p0 q0 : Nat) (hm : m + 5 = l)
               (m + 2) = 2 := by
             rw [nbMidC l _ (m + 1) hnem3 hnem4,
               serstable.fLong_lo d (m + 3) (m + 1)
-                (ltTwo (m + 1))
+                (ltPlusTwo (m + 1))
                 (by rw [hdm]; exact Nat.le_succ (m + 3)),
               serstable.fLong_two d (m + 3) (m + 3) (Nat.le_refl (m + 3))
                 (by rw [hdm]; exact Nat.lt_succ_self (m + 3))]
@@ -5260,7 +5209,7 @@ private theorem termTailSubC (l m k0 p0 q0 : Nat) (hm : m + 5 = l)
   · by_cases c1 : (ground.getAt BPair.unit x (m + 3)).oneValue
         (BPair.ofCounts (serstable.nbC l F (m + 3)) (2 * F (m + 3)))
     · have hcr : 2 + 2 * F (m + 3) = serstable.nbC l F (m + 3) + 0 :=
-        crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx3) c1)
+        ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx3) c1)
       rw [nbSubC l F (m + 2) hnem4 hm] at hcr
       have hnat : F (m + 2) + 2 * F (m + 4) = 2 * F (m + 3) + 2 :=
         (Nat.add_zero (F (m + 2) + 2 * F (m + 4))).symm.trans
@@ -5303,7 +5252,7 @@ private theorem termTailSubC (l m k0 p0 q0 : Nat) (hm : m + 5 = l)
             rw [hF]
             by_cases hb2 : b ≤ m + 2
             · exact Nat.le_of_eq (serstable.fSumC_two d a b (m + 2) hb2
-                (by rw [hdm]; exact ltTwo (m + 2)))
+                (by rw [hdm]; exact ltPlusTwo (m + 2)))
             · by_cases ha2 : a ≤ m + 2
               · rw [serstable.fSumC_mid d a b (m + 2) ha2
                   (Nat.lt_of_not_le hb2) hbd]
@@ -5353,7 +5302,7 @@ private theorem termTailSubC (l m k0 p0 q0 : Nat) (hm : m + 5 = l)
             rw [hF]
             by_cases ha2 : a ≤ m + 2
             · exact Nat.le_of_eq (serstable.fLong_two d a (m + 2) ha2
-                (by rw [hdm]; exact ltTwo (m + 2)))
+                (by rw [hdm]; exact ltPlusTwo (m + 2)))
             · rw [serstable.fLong_lo d a (m + 2)
                 (Nat.lt_of_not_le ha2) had]
               exact Nat.zero_le 2
@@ -5367,7 +5316,7 @@ private theorem termTailSubC (l m k0 p0 q0 : Nat) (hm : m + 5 = l)
               exact Nat.succ_le_of_lt (Nat.lt_of_not_le ha3))
           have hcx : 0 + 2 * F (m + 4)
               = serstable.nbC l F (m + 4) + 1 :=
-            crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx4) hc)
+            ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx4) hc)
           have hnbv : serstable.nbC l F (m + 4) = 0 := by
             rw [nbTopC l F (m + 3) hm, hF]
             exact serstable.fLong_lo d a (m + 3)
@@ -5487,7 +5436,7 @@ private theorem hitLongOne (k : Nat) :
           nbSubC (k + 6) _ (m + 2) ht hs,
           serstable.fLong_end (k + 5) 1 (m + 4) hmd,
           serstable.fLong_two (k + 5) 1 (m + 2) (Nat.le_add_left 1 (m + 1))
-            (by rw [hmd]; exact ltTwo (m + 2)),
+            (by rw [hmd]; exact ltPlusTwo (m + 2)),
           serstable.fLong_two (k + 5) 1 (m + 3) (Nat.le_add_left 1 (m + 2))
             (by rw [hmd]; exact Nat.lt_succ_self (m + 3))]
       · have hm5 : m + 5 < k + 6 :=
@@ -5603,7 +5552,7 @@ private theorem hitLongTwo (k : Nat) :
           nbSubC (k + 7) _ (m + 3) ht hs,
           serstable.fLong_end (k + 6) 2 (m + 5) hmd,
           serstable.fLong_two (k + 6) 2 (m + 3) (Nat.le_add_left 2 (m + 1))
-            (by rw [hmd]; exact ltTwo (m + 3)),
+            (by rw [hmd]; exact ltPlusTwo (m + 3)),
           serstable.fLong_two (k + 6) 2 (m + 4) (Nat.le_add_left 2 (m + 2))
             (by rw [hmd]; exact Nat.lt_succ_self (m + 4))]
       · have hm6 : m + 6 < k + 7 :=
@@ -5753,7 +5702,7 @@ private theorem tailSubAt (k k0 : Nat) (hk01 : k0 ≤ 1) (u v : Nat → Nat)
       (raisedG (sertables.tableC (k + 6))
         (nuOf (k + 6) (fun i => BPair.ofCounts (u i) (v i)))
         1 (k + 4)) = 0 := by
-  have h4l : k + 4 < k + 6 := ltTwo (k + 4)
+  have h4l : k + 4 < k + 6 := ltPlusTwo (k + 4)
   have h5l : k + 5 < k + 6 := Nat.lt_succ_self (k + 5)
   have h3l : k + 3 < k + 6 := Nat.lt_trans (Nat.lt_succ_self (k + 3)) h4l
   have hk0l : k0 < k + 6 :=
@@ -5872,7 +5821,7 @@ theorem edgeC_u1 (l : Nat) (hl : 4 ≤ l) :
       match x, hx with
       | 0, _ =>
         show row.thetaCount _ (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapW2 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltTwo (k + 4))]
+        rw [kapW2 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltPlusTwo (k + 4))]
         exact tailSubAt k 0 (by decide +kernel) (fun j => if j = 1 then 1 else 0)
           (fun j => if j = 0 then 2 else 0) (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) (if_neg (sucNe0 (k + 2))) (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) (if_neg (sucNe0 (k + 3)))
           (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) (if_neg (sucNe0 (k + 4))) (by decide +kernel)
@@ -5941,7 +5890,7 @@ theorem edgeC_u2 (l : Nat) (hl : 4 ≤ l) :
       match x, hx with
       | 0, _ =>
         show row.thetaCount _ (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapW2 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltTwo (k + 4))]
+        rw [kapW2 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltPlusTwo (k + 4))]
         exact tailSubAt k 0 (by decide +kernel) (fun j => if j = 1 then 2 else 0)
           (fun j => if j = 0 then 2 else 0) (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) (if_neg (sucNe0 (k + 2))) (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) (if_neg (sucNe0 (k + 3)))
           (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) (if_neg (sucNe0 (k + 4))) (by decide +kernel)
@@ -6004,7 +5953,7 @@ theorem edgeC_u3 (l : Nat) (hl : 4 ≤ l) :
             (fun _ => 0) 1 2 2 h2l h2l 2 0 (cartDiagC (k + 6) 2))
             (BPair.ofCounts_crossed (by decide +kernel)))
           ⟨1, h1l, fun hc => ?_⟩ (fun d hld => ?_) (fun d hld => ?_)
-        · have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+        · have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 1 then 1 else 0)
               (fun _ => 0) 1 2 1 h2l h1l 0 1
               (cartDn1C (k + 6) 1 (litNe 3 k 6 (by decide +kernel))))) hc)
@@ -6017,7 +5966,7 @@ theorem edgeC_u3 (l : Nat) (hl : 4 ≤ l) :
         · have hd : d = k + 5 := (Nat.succ.inj hld).symm
           subst hd
           refine ⟨1, h1l, fun hc => ?_⟩
-          have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+          have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 1 then 1 else 0)
               (fun _ => 0) 1 2 1 h2l h1l 0 1
               (cartDn1C (k + 6) 1 (litNe 3 k 6 (by decide +kernel))))) hc)
@@ -6033,7 +5982,7 @@ theorem edgeC_u3 (l : Nat) (hl : 4 ≤ l) :
         · have hd : d = k + 5 := (Nat.succ.inj hld).symm
           subst hd
           refine ⟨3, h3l, fun hc => ?_⟩
-          have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+          have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 1 then 1 else 0)
               (fun _ => 0) 1 2 3 h2l h3l 0 1 (cartUpC (k + 6) 2))) hc)
           rw [nbMidC (k + 6) _ 2 (litNe 4 k 6 (by decide +kernel))
@@ -6058,7 +6007,7 @@ theorem edgeC_u3 (l : Nat) (hl : 4 ≤ l) :
       match x, hx with
       | 0, _ =>
         show row.thetaCount _ (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapW2 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltTwo (k + 4))]
+        rw [kapW2 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltPlusTwo (k + 4))]
         exact tailSubAt k 1 (by decide +kernel) (fun j => if j = 1 then 1 else 0)
           (fun _ => 0) (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) rfl (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) rfl
           (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) rfl (by decide +kernel)
@@ -6117,7 +6066,7 @@ theorem edgeC_u4 (l : Nat) (hl : 3 ≤ l) :
             (fun _ => 0) 1 1 1 h1l h1l 2 0 (cartDiagC (k + 6) 1))
             (BPair.ofCounts_crossed (by decide +kernel)))
           ⟨0, h0l, fun hc => ?_⟩ (fun d hld => ?_) (fun d hld => ?_)
-        · have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+        · have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 0 then 2 else 0)
               (fun _ => 0) 1 1 0 h1l h0l 0 1
               (cartDn1C (k + 6) 0 (litNe 2 k 6 (by decide +kernel))))) hc)
@@ -6128,7 +6077,7 @@ theorem edgeC_u4 (l : Nat) (hl : 3 ≤ l) :
         · have hd : d = k + 5 := (Nat.succ.inj hld).symm
           subst hd
           refine ⟨0, h0l, fun hc => ?_⟩
-          have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+          have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 0 then 2 else 0)
               (fun _ => 0) 1 1 0 h1l h0l 0 1
               (cartDn1C (k + 6) 0 (litNe 2 k 6 (by decide +kernel))))) hc)
@@ -6141,7 +6090,7 @@ theorem edgeC_u4 (l : Nat) (hl : 3 ≤ l) :
         · have hd : d = k + 5 := (Nat.succ.inj hld).symm
           subst hd
           refine ⟨2, h2l, fun hc => ?_⟩
-          have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+          have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 0 then 2 else 0)
               (fun _ => 0) 1 1 2 h1l h2l 0 1 (cartUpC (k + 6) 1))) hc)
           rw [nbMidC (k + 6) _ 1 (litNe 3 k 6 (by decide +kernel))
@@ -6166,7 +6115,7 @@ theorem edgeC_u4 (l : Nat) (hl : 3 ≤ l) :
       match x, hx with
       | 0, _ =>
         show row.thetaCount _ (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapW2 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltTwo (k + 4))]
+        rw [kapW2 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltPlusTwo (k + 4))]
         exact tailSubAt k 0 (by decide +kernel) (fun j => if j = 0 then 2 else 0)
           (fun _ => 0) (if_neg (sucNe0 (k + 2))) rfl (if_neg (sucNe0 (k + 3))) rfl
           (if_neg (sucNe0 (k + 4))) rfl (by decide +kernel)
@@ -6242,7 +6191,7 @@ theorem edgeC_w1 (l : Nat) (hl : 5 ≤ l) :
       match x, hx with
       | 0, _ =>
         show row.thetaCount _ (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapW21 (k + 6) (k + 4) (Nat.le_add_left 2 (k + 2)) (ltTwo (k + 4))]
+        rw [kapW21 (k + 6) (k + 4) (Nat.le_add_left 2 (k + 2)) (ltPlusTwo (k + 4))]
         exact tailSubAt k 0 (by decide +kernel) (fun j => if j = 2 then 1 else 0)
           (fun j => if j = 0 then 1 else if j = 1 then 1 else 0) (if_neg (sucNe2 k)) ((if_neg (sucNe0 (k + 2))).trans
         (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc)))) (if_neg (sucNe2 (k + 1))) ((if_neg (sucNe0 (k + 3))).trans
@@ -6309,7 +6258,7 @@ theorem edgeC_w2 (l : Nat) (hl : 4 ≤ l) :
             (fun _ => 0) 1 2 2 h2l h2l 2 0 (cartDiagC (k + 6) 2))
             (BPair.ofCounts_crossed (by decide +kernel)))
           ⟨1, h1l, fun hc => ?_⟩ (fun d hld => ?_) (fun d hld => ?_)
-        · have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+        · have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 1 then 1 else 0)
               (fun _ => 0) 1 2 1 h2l h1l 0 1
               (cartDn1C (k + 6) 1 (litNe 3 k 6 (by decide +kernel))))) hc)
@@ -6322,7 +6271,7 @@ theorem edgeC_w2 (l : Nat) (hl : 4 ≤ l) :
         · have hd : d = k + 5 := (Nat.succ.inj hld).symm
           subst hd
           refine ⟨1, h1l, fun hc => ?_⟩
-          have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+          have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 1 then 1 else 0)
               (fun _ => 0) 1 2 1 h2l h1l 0 1
               (cartDn1C (k + 6) 1 (litNe 3 k 6 (by decide +kernel))))) hc)
@@ -6338,7 +6287,7 @@ theorem edgeC_w2 (l : Nat) (hl : 4 ≤ l) :
         · have hd : d = k + 5 := (Nat.succ.inj hld).symm
           subst hd
           refine ⟨3, h3l, fun hc => ?_⟩
-          have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+          have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 1 then 1 else 0)
               (fun _ => 0) 1 2 3 h2l h3l 0 1 (cartUpC (k + 6) 2))) hc)
           rw [nbMidC (k + 6) _ 2 (litNe 4 k 6 (by decide +kernel))
@@ -6363,7 +6312,7 @@ theorem edgeC_w2 (l : Nat) (hl : 4 ≤ l) :
       match x, hx with
       | 0, _ =>
         show row.thetaCount _ (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapW1 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltTwo (k + 4))]
+        rw [kapW1 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltPlusTwo (k + 4))]
         exact tailSubAt k 1 (by decide +kernel) (fun j => if j = 1 then 1 else 0)
           (fun _ => 0) (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) rfl (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) rfl
           (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) rfl (by decide +kernel)
@@ -6422,7 +6371,7 @@ theorem edgeC_w3 (l : Nat) (hl : 3 ≤ l) :
             (fun _ => 0) 1 1 1 h1l h1l 2 0 (cartDiagC (k + 6) 1))
             (BPair.ofCounts_crossed (by decide +kernel)))
           ⟨0, h0l, fun hc => ?_⟩ (fun d hld => ?_) (fun d hld => ?_)
-        · have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+        · have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 0 then 2 else 0)
               (fun _ => 0) 1 1 0 h1l h0l 0 1
               (cartDn1C (k + 6) 0 (litNe 2 k 6 (by decide +kernel))))) hc)
@@ -6433,7 +6382,7 @@ theorem edgeC_w3 (l : Nat) (hl : 3 ≤ l) :
         · have hd : d = k + 5 := (Nat.succ.inj hld).symm
           subst hd
           refine ⟨0, h0l, fun hc => ?_⟩
-          have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+          have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 0 then 2 else 0)
               (fun _ => 0) 1 1 0 h1l h0l 0 1
               (cartDn1C (k + 6) 0 (litNe 2 k 6 (by decide +kernel))))) hc)
@@ -6446,7 +6395,7 @@ theorem edgeC_w3 (l : Nat) (hl : 3 ≤ l) :
         · have hd : d = k + 5 := (Nat.succ.inj hld).symm
           subst hd
           refine ⟨2, h2l, fun hc => ?_⟩
-          have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+          have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 0 then 2 else 0)
               (fun _ => 0) 1 1 2 h1l h2l 0 1 (cartUpC (k + 6) 1))) hc)
           rw [nbMidC (k + 6) _ 1 (litNe 3 k 6 (by decide +kernel))
@@ -6471,7 +6420,7 @@ theorem edgeC_w3 (l : Nat) (hl : 3 ≤ l) :
       match x, hx with
       | 0, _ =>
         show row.thetaCount _ (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapW1 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltTwo (k + 4))]
+        rw [kapW1 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltPlusTwo (k + 4))]
         exact tailSubAt k 0 (by decide +kernel) (fun j => if j = 0 then 2 else 0)
           (fun _ => 0) (if_neg (sucNe0 (k + 2))) rfl (if_neg (sucNe0 (k + 3))) rfl
           (if_neg (sucNe0 (k + 4))) rfl (by decide +kernel)
@@ -6546,7 +6495,7 @@ theorem edgeC_w4 (l : Nat) (hl : 5 ≤ l) :
       match x, hx with
       | 0, _ =>
         show row.thetaCount _ (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapW21 (k + 6) (k + 4) (Nat.le_add_left 2 (k + 2)) (ltTwo (k + 4))]
+        rw [kapW21 (k + 6) (k + 4) (Nat.le_add_left 2 (k + 2)) (ltPlusTwo (k + 4))]
         exact tailSubAt k 0 (by decide +kernel) (fun j => if j = 2 then 1 else 0)
           (fun j => if j = 0 then 1 else 0) (if_neg (sucNe2 k)) (if_neg (sucNe0 (k + 2))) (if_neg (sucNe2 (k + 1))) (if_neg (sucNe0 (k + 3)))
           (if_neg (sucNe2 (k + 2))) (if_neg (sucNe0 (k + 4))) (by decide +kernel)
@@ -6622,7 +6571,7 @@ theorem edgeC_w5 (l : Nat) (hl : 5 ≤ l) :
       match x, hx with
       | 0, _ =>
         show row.thetaCount _ (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapW21 (k + 6) (k + 4) (Nat.le_add_left 2 (k + 2)) (ltTwo (k + 4))]
+        rw [kapW21 (k + 6) (k + 4) (Nat.le_add_left 2 (k + 2)) (ltPlusTwo (k + 4))]
         exact tailSubAt k 0 (by decide +kernel) (fun j => if j = 0 then 1 else if j = 2 then 1 else 0)
           (fun j => if j = 1 then 1 else 0) ((if_neg (sucNe0 (k + 2))).trans (if_neg (sucNe2 k))) (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) ((if_neg (sucNe0 (k + 3))).trans (if_neg (sucNe2 (k + 1)))) (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc)))
           ((if_neg (sucNe0 (k + 4))).trans (if_neg (sucNe2 (k + 2)))) (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) (by decide +kernel)
@@ -6691,7 +6640,7 @@ theorem edgeC_w6 (l : Nat) (hl : 4 ≤ l) :
       match x, hx with
       | 0, _ =>
         show row.thetaCount _ (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapW3 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltTwo (k + 4))]
+        rw [kapW3 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltPlusTwo (k + 4))]
         exact tailSubAt k 0 (by decide +kernel) (fun j => if j = 1 then 2 else 0)
           (fun j => if j = 0 then 2 else 0) (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) (if_neg (sucNe0 (k + 2))) (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) (if_neg (sucNe0 (k + 3)))
           (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) (if_neg (sucNe0 (k + 4))) (by decide +kernel)
@@ -6754,7 +6703,7 @@ theorem edgeC_w7 (l : Nat) (hl : 4 ≤ l) :
             (fun _ => 0) 1 2 2 h2l h2l 2 0 (cartDiagC (k + 6) 2))
             (BPair.ofCounts_crossed (by decide +kernel)))
           ⟨1, h1l, fun hc => ?_⟩ (fun d hld => ?_) (fun d hld => ?_)
-        · have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+        · have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 1 then 1 else 0)
               (fun _ => 0) 1 2 1 h2l h1l 0 1
               (cartDn1C (k + 6) 1 (litNe 3 k 6 (by decide +kernel))))) hc)
@@ -6767,7 +6716,7 @@ theorem edgeC_w7 (l : Nat) (hl : 4 ≤ l) :
         · have hd : d = k + 5 := (Nat.succ.inj hld).symm
           subst hd
           refine ⟨1, h1l, fun hc => ?_⟩
-          have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+          have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 1 then 1 else 0)
               (fun _ => 0) 1 2 1 h2l h1l 0 1
               (cartDn1C (k + 6) 1 (litNe 3 k 6 (by decide +kernel))))) hc)
@@ -6783,7 +6732,7 @@ theorem edgeC_w7 (l : Nat) (hl : 4 ≤ l) :
         · have hd : d = k + 5 := (Nat.succ.inj hld).symm
           subst hd
           refine ⟨3, h3l, fun hc => ?_⟩
-          have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+          have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 1 then 1 else 0)
               (fun _ => 0) 1 2 3 h2l h3l 0 1 (cartUpC (k + 6) 2))) hc)
           rw [nbMidC (k + 6) _ 2 (litNe 4 k 6 (by decide +kernel))
@@ -6808,7 +6757,7 @@ theorem edgeC_w7 (l : Nat) (hl : 4 ≤ l) :
       match x, hx with
       | 0, _ =>
         show row.thetaCount _ (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapW3 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltTwo (k + 4))]
+        rw [kapW3 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltPlusTwo (k + 4))]
         exact tailSubAt k 1 (by decide +kernel) (fun j => if j = 1 then 1 else 0)
           (fun _ => 0) (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) rfl (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) rfl
           (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) rfl (by decide +kernel)
@@ -6867,7 +6816,7 @@ theorem edgeC_w8 (l : Nat) (hl : 3 ≤ l) :
             (fun _ => 0) 1 1 1 h1l h1l 2 0 (cartDiagC (k + 6) 1))
             (BPair.ofCounts_crossed (by decide +kernel)))
           ⟨0, h0l, fun hc => ?_⟩ (fun d hld => ?_) (fun d hld => ?_)
-        · have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+        · have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 0 then 2 else 0)
               (fun _ => 0) 1 1 0 h1l h0l 0 1
               (cartDn1C (k + 6) 0 (litNe 2 k 6 (by decide +kernel))))) hc)
@@ -6878,7 +6827,7 @@ theorem edgeC_w8 (l : Nat) (hl : 3 ≤ l) :
         · have hd : d = k + 5 := (Nat.succ.inj hld).symm
           subst hd
           refine ⟨0, h0l, fun hc => ?_⟩
-          have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+          have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 0 then 2 else 0)
               (fun _ => 0) 1 1 0 h1l h0l 0 1
               (cartDn1C (k + 6) 0 (litNe 2 k 6 (by decide +kernel))))) hc)
@@ -6891,7 +6840,7 @@ theorem edgeC_w8 (l : Nat) (hl : 3 ≤ l) :
         · have hd : d = k + 5 := (Nat.succ.inj hld).symm
           subst hd
           refine ⟨2, h2l, fun hc => ?_⟩
-          have hcx := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm
+          have hcx := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm
             (raisedCountC (k + 6) (fun j => if j = 0 then 2 else 0)
               (fun _ => 0) 1 1 2 h1l h2l 0 1 (cartUpC (k + 6) 1))) hc)
           rw [nbMidC (k + 6) _ 1 (litNe 3 k 6 (by decide +kernel))
@@ -6916,7 +6865,7 @@ theorem edgeC_w8 (l : Nat) (hl : 3 ≤ l) :
       match x, hx with
       | 0, _ =>
         show row.thetaCount _ (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapW3 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltTwo (k + 4))]
+        rw [kapW3 (k + 6) (k + 4) (Nat.le_add_left 1 (k + 3)) (ltPlusTwo (k + 4))]
         exact tailSubAt k 0 (by decide +kernel) (fun j => if j = 0 then 2 else 0)
           (fun _ => 0) (if_neg (sucNe0 (k + 2))) rfl (if_neg (sucNe0 (k + 3))) rfl
           (if_neg (sucNe0 (k + 4))) rfl (by decide +kernel)
@@ -7836,11 +7785,11 @@ private theorem termVanishMagD (l k : Nat) (hk : k < l)
     (fun F hcase => ⟨k, hk, fun hc => ?_⟩)
   · obtain ⟨hlo, hhi⟩ := serstable.colD_magLe F k l hk hcase
     exact magRefute p q (2 * F k) (serstable.nbD l F k)
-      (crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx) hc))
+      (ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx) hc))
       hlo hhi hmag
   · obtain ⟨hlo, hhi⟩ := serstable.colD_magLe F k l hk hcase
     exact magRefute p q (serstable.nbD l F k) (2 * F k)
-      (crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx) hc))
+      (ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx) hc))
       hhi hlo hmag
 
 /-- A three-key refutation: a content matching a column read at
@@ -7985,7 +7934,7 @@ private theorem termVanishTwoD (l m : Nat) (hml : m + 4 < l) (x : List BPair)
     refine hoff ?_
     have hFn : F = serstable.fDiff (m + 1) (m + 2) := by
       have hcr : 2 + serstable.nbD l F (m + 1) = 2 * F (m + 1) + 0 :=
-        crossCounts (BPair.oneValue_trans (BPair.oneValue_symm h2) c1)
+        ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm h2) c1)
       rw [nbDchain l F (m + 1) hml, serstable.pvD_succ F m] at hcr
       have hnat : 2 * F (m + 1) = F m + F (m + 2) + 2 :=
         (Nat.add_zero (2 * F (m + 1))).symm.trans
@@ -7995,7 +7944,7 @@ private theorem termVanishTwoD (l m : Nat) (hml : m + 4 < l) (x : List BPair)
     exact c2
   · refine ⟨m + 1, hm1l, fun hc => ?_⟩
     have hcr : 2 + 2 * F (m + 1) = serstable.nbD l F (m + 1) + 0 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm h2) hc)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm h2) hc)
     rw [nbDchain l F (m + 1) hml, serstable.pvD_succ F m] at hcr
     have hnat : F m + F (m + 2) = 2 * F (m + 1) + 2 :=
       (Nat.add_zero (F m + F (m + 2))).symm.trans
@@ -8042,7 +7991,7 @@ private theorem termTwoBelowD (l m : Nat) (hml : m + 4 < l) (x : List BPair)
   refine termVanishTwoD l m hml x h2 m
     (Nat.lt_of_le_of_lt (Nat.le_add_right m 4) hml) (fun hc => hne ?_)
   rw [hz, ho] at hc
-  exact crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hm) hc)
+  exact ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hm) hc)
 
 /-- The interior plus-two device read at a key off the narrow
 window's three: the window's column is vacant there, so an occupied
@@ -8212,7 +8161,7 @@ private theorem termVanishHeadTwoD (l : Nat) (hl : 4 ≤ l) (x : List BPair)
     refine hoff ?_
     have hFn : F = serstable.fDiff 0 1 := by
       have hcr : 2 + serstable.nbD l F 0 = 2 * F 0 + 0 :=
-        crossCounts (BPair.oneValue_trans (BPair.oneValue_symm h2) c1)
+        ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm h2) c1)
       rw [nbDchain l F 0 hc0, serstable.pvD_zero, Nat.zero_add] at hcr
       exact headNarrowD l hl F hcase
         ((Nat.add_zero (2 * F 0)).symm.trans
@@ -8221,7 +8170,7 @@ private theorem termVanishHeadTwoD (l : Nat) (hl : 4 ≤ l) (x : List BPair)
     exact c2
   · refine ⟨0, h0l, fun hc => ?_⟩
     have hcr : 2 + 2 * F 0 = serstable.nbD l F 0 + 0 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm h2) hc)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm h2) hc)
     rw [nbDchain l F 0 hc0, serstable.pvD_zero, Nat.zero_add] at hcr
     exact headRefuseD l hl F hcase
       ((Nat.add_zero (F 1)).symm.trans
@@ -8268,7 +8217,7 @@ private theorem headAtOneD (l : Nat) (hl : 5 ≤ l) (x : List BPair)
   refine termVanishHeadTwoD l (Nat.le_trans (by decide +kernel) hl) x h2 1
     (Nat.lt_of_lt_of_le (by decide +kernel) hl) (fun hc => hne ?_)
   rw [hz, ho] at hc
-  exact crossCounts (BPair.oneValue_trans (BPair.oneValue_symm h1) hc)
+  exact ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm h1) hc)
 
 /-- The leading-window device read at an occupied key past the
 second. -/
@@ -8284,24 +8233,6 @@ private theorem headAtVacD (l y : Nat) (hl : 5 ≤ l) (h2y : 2 ≤ y)
   exact BPair.oneValue_trans hc (BPair.ofCounts_unit.mpr rfl)
 
 /-! ### The `D` tail letters: the fork and the two tips -/
-
-/-- An occupied difference window opens at or below its key and
-closes above it. -/
-private theorem dOne {a b k : Nat} (h : serstable.fDiff a b k = 1) :
-    a ≤ k ∧ k < b := by
-  by_cases h1 : a ≤ k
-  · by_cases h2 : k < b
-    · exact ⟨h1, h2⟩
-    · exact absurd (h.symm.trans (serstable.fDiff_hi a b k h2))
-        (by decide +kernel)
-  · exact absurd (h.symm.trans (serstable.fDiff_lo a b k h1))
-      (by decide +kernel)
-
-/-- A doubled count is vacant only at the vacant count. -/
-private theorem twoZero {n : Nat} (h : 2 * n = 0) : n = 0 := by
-  match n with
-  | 0 => rfl
-  | q + 1 => exact absurd h (fun hc => Nat.noConfusion hc)
 
 /-- A doubled count reads two only at the unit count. -/
 private theorem twoOne {n : Nat} (h : 2 * n = 2) : n = 1 := by
@@ -8393,13 +8324,13 @@ private theorem termForkD (k k0 p0 q0 : Nat) (hk03 : k0 + 3 ≤ k + 4)
       (fun w => BPair.ofCounts (2 * F w) (serstable.nbD (k + 7) F w))
       (k + 6) (k + 5) (k + 4) k0 h6l h5l h4l hk0l (fun c6 c5 c4 c0 => ?_)
     have e6 : 0 + serstable.nbD (k + 7) F (k + 6) = 2 * F (k + 6) + 1 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx6) c6)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx6) c6)
     have e5 : 0 + serstable.nbD (k + 7) F (k + 5) = 2 * F (k + 5) + 1 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx5) c5)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx5) c5)
     have e4 : 2 + serstable.nbD (k + 7) F (k + 4) = 2 * F (k + 4) + 0 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx4) c4)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx4) c4)
     have e0 : p0 + serstable.nbD (k + 7) F k0 = 2 * F k0 + q0 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx0) c0)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx0) c0)
     rw [nb6, Nat.zero_add] at e6
     rw [nb5, Nat.zero_add] at e5
     rw [nb4, Nat.add_zero] at e4
@@ -8413,11 +8344,11 @@ private theorem termForkD (k k0 p0 q0 : Nat) (hk03 : k0 + 3 ≤ k + 4)
       rw [hf6] at e6
       have hf4 : F (k + 4) = 1 := e6
       rw [hf4] at e5
-      have hf5 : F (k + 5) = 0 := twoZero (Nat.succ.inj e5).symm
+      have hf5 : F (k + 5) = 0 := ground.twoMulZero (Nat.succ.inj e5).symm
       rw [hf4, hf5, hf6] at e4
       have hf3 : F (k + 3) = 0 := twoPlus e4
       rw [hF] at hf4 hf5 hf3
-      obtain ⟨ha4, hb4⟩ := dOne hf4
+      obtain ⟨ha4, hb4⟩ := dIn hf4
       have haa : k + 4 ≤ a := by
         match Nat.lt_or_ge (k + 3) a with
         | .inl hlt => exact hlt
@@ -8481,11 +8412,11 @@ private theorem termForkD (k k0 p0 q0 : Nat) (hk03 : k0 + 3 ≤ k + 4)
       (fun w => BPair.ofCounts (serstable.nbD (k + 7) F w) (2 * F w))
       (k + 6) (k + 5) (k + 4) h6l h5l h4l (fun c6 c5 c4 => ?_)
     have e6 : 0 + 2 * F (k + 6) = serstable.nbD (k + 7) F (k + 6) + 1 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx6) c6)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx6) c6)
     have e5 : 0 + 2 * F (k + 5) = serstable.nbD (k + 7) F (k + 5) + 1 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx5) c5)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx5) c5)
     have e4 : 2 + 2 * F (k + 4) = serstable.nbD (k + 7) F (k + 4) + 0 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx4) c4)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx4) c4)
     rw [nb6, Nat.zero_add] at e6
     rw [nb5, Nat.zero_add] at e5
     rw [nb4, Nat.add_zero] at e4
@@ -8568,11 +8499,11 @@ private theorem termSubD (k k0 p0 q0 : Nat) (hk03 : k0 + 3 ≤ k + 4)
       (fun w => BPair.ofCounts (2 * F w) (serstable.nbD (k + 7) F w))
       (k + 6) (k + 5) k0 h6l h5l hk0l (fun c6 c5 c0 => ?_)
     have e6 : 0 + serstable.nbD (k + 7) F (k + 6) = 2 * F (k + 6) + 0 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx6) c6)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx6) c6)
     have e5 : 2 + serstable.nbD (k + 7) F (k + 5) = 2 * F (k + 5) + 0 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx5) c5)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx5) c5)
     have e0 : p0 + serstable.nbD (k + 7) F k0 = 2 * F k0 + q0 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx0) c0)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx0) c0)
     rw [nb6, Nat.zero_add, Nat.add_zero] at e6
     rw [nb5, Nat.add_zero] at e5
     match hcase with
@@ -8588,7 +8519,7 @@ private theorem termSubD (k k0 p0 q0 : Nat) (hk03 : k0 + 3 ≤ k + 4)
       have hf5 : F (k + 5) = 1 :=
         twoOne (show 2 * F (k + 5) = 2 from e5.symm)
       rw [hF] at hf4 hf5
-      obtain ⟨ha5, hb5⟩ := dOne hf5
+      obtain ⟨ha5, hb5⟩ := dIn hf5
       have haa : k + 5 ≤ a := by
         match Nat.lt_or_ge (k + 4) a with
         | .inl hlt => exact hlt
@@ -8641,7 +8572,7 @@ private theorem termSubD (k k0 p0 q0 : Nat) (hk03 : k0 + 3 ≤ k + 4)
       rw [nbDsubAt (k + 7) F (k + 5) rfl, serstable.pvD_succ F (k + 4)]
     refine ⟨k + 5, h5l, fun hc => ?_⟩
     have e5 : 2 + 2 * F (k + 5) = F (k + 4) := by
-      have h := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx5) hc)
+      have h := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx5) hc)
       rw [nb5] at h
       exact h.trans (Nat.add_zero _)
     match hcase with
@@ -8707,9 +8638,9 @@ private theorem termTopD (k k0 p0 q0 : Nat) (hk03 : k0 + 3 ≤ k + 4)
       (fun w => BPair.ofCounts (2 * F w) (serstable.nbD (k + 7) F w))
       (k + 6) k0 h6l hk0l (fun c6 c0 => ?_)
     have e6 : 2 + serstable.nbD (k + 7) F (k + 6) = 2 * F (k + 6) + 0 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx6) c6)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx6) c6)
     have e0 : p0 + serstable.nbD (k + 7) F k0 = 2 * F k0 + q0 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx0) c0)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx0) c0)
     rw [nb6, Nat.add_zero] at e6
     match hcase with
     | .inl ⟨a, b, hab, hbl, hF⟩ =>
@@ -8765,7 +8696,7 @@ private theorem termTopD (k k0 p0 q0 : Nat) (hk03 : k0 + 3 ≤ k + 4)
       rw [nbDtopAt (k + 7) F (k + 6) rfl, serstable.pv2D_succ2 F (k + 4)]
     refine ⟨k + 6, h6l, fun hc => ?_⟩
     have e6 : 2 + 2 * F (k + 6) = F (k + 4) := by
-      have h := crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx6) hc)
+      have h := ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx6) hc)
       rw [nb6] at h
       exact h.trans (Nat.add_zero _)
     match hcase with
@@ -8826,7 +8757,7 @@ private theorem termForkS1 (k : Nat) (x : List BPair)
       rw [nbDtopAt (k + 7) F (k + 6) rfl, serstable.pv2D_succ2 F (k + 4)]
     refine ⟨k + 6, h6l, fun hc => ?_⟩
     have e6 : 0 + serstable.nbD (k + 7) F (k + 6) = 2 * F (k + 6) + 2 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx6) hc)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx6) hc)
     rw [nb6, Nat.zero_add] at e6
     match hcase with
     | .inl ⟨a, b, _, hbl, hF⟩ =>
@@ -8875,9 +8806,9 @@ private theorem termForkS1 (k : Nat) (x : List BPair)
       (fun w => BPair.ofCounts (serstable.nbD (k + 7) F w) (2 * F w))
       (k + 6) 0 h6l h0l (fun c6 c0 => ?_)
     have e6 : 0 + 2 * F (k + 6) = serstable.nbD (k + 7) F (k + 6) + 2 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx6) c6)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx6) c6)
     have e0 : 1 + 2 * F 0 = serstable.nbD (k + 7) F 0 + 0 :=
-      crossCounts (BPair.oneValue_trans (BPair.oneValue_symm hx0) c0)
+      ground.BPair.ofCounts_cross (BPair.oneValue_trans (BPair.oneValue_symm hx0) c0)
     rw [nb6, Nat.zero_add] at e6
     rw [nb0, Nat.add_zero] at e0
     match hcase with
@@ -9072,45 +9003,25 @@ private theorem tailForkS1D (k : Nat) (u v : Nat → Nat)
 
 /-! ### The `D` sources' shifted keys -/
 
-/-- The vector's leading word's shifted key at the leading
-coordinate. -/
-private theorem kapD21_0 (l : Nat) (h : 0 < l) :
-    ground.getAt 0 (serstable.memberRho [2, 1] l) 0 = 2 := by
-  rw [memRhoAt [2, 1] l 0 h]
-  rfl
-
-/-- The vector's leading word's shifted key at the second
-coordinate. -/
-private theorem kapD21_1 (l : Nat) (h : 1 < l) :
-    ground.getAt 0 (serstable.memberRho [2, 1] l) 1 = 2 := by
-  rw [memRhoAt [2, 1] l 1 h]
-  rfl
-
-/-- The vector's leading word's shifted key across the run and the
-tail. -/
-private theorem kapD21 (l k : Nat) (hk2 : 2 ≤ k) (hk : k < l) :
-    ground.getAt 0 (serstable.memberRho [2, 1] l) k = 1 :=
-  serstable.memberRho_run [2, 1] l k hk2 hk
-
 /-- The vector's three-box word's shifted key at the leading
 coordinate. -/
 private theorem kapD111_0 (l : Nat) (h : 0 < l) :
     ground.getAt 0 (serstable.memberRho [1, 1, 1] l) 0 = 1 := by
-  rw [memRhoAt [1, 1, 1] l 0 h]
+  rw [serstable.memberRhoAt [1, 1, 1] l 0 h]
   rfl
 
 /-- The vector's three-box word's shifted key at the second
 coordinate. -/
 private theorem kapD111_1 (l : Nat) (h : 1 < l) :
     ground.getAt 0 (serstable.memberRho [1, 1, 1] l) 1 = 1 := by
-  rw [memRhoAt [1, 1, 1] l 1 h]
+  rw [serstable.memberRhoAt [1, 1, 1] l 1 h]
   rfl
 
 /-- The vector's three-box word's shifted key at the third
 coordinate. -/
 private theorem kapD111_2 (l : Nat) (h : 2 < l) :
     ground.getAt 0 (serstable.memberRho [1, 1, 1] l) 2 = 2 := by
-  rw [memRhoAt [1, 1, 1] l 2 h]
+  rw [serstable.memberRhoAt [1, 1, 1] l 2 h]
   rfl
 
 /-- The vector's three-box word's shifted key across the run and
@@ -9897,13 +9808,13 @@ theorem edgeD_v3 (l : Nat) (hl : 3 ≤ l) :
     · intro i hi
       match i, hi with
       | 0, _ =>
-        rw [kapD21_0 (k + 7) h0l]
+        rw [kapW21_0 (k + 7) h0l]
         exact termVanishMagD (k + 7) 0 h0l _ _ _
           (raisedCountD (k + 7) (fun i => if i = 0 then 2 else 0) (fun i => if i = 1 then 1 else 0) 2 0 0 h0l h0l 2 0
             (cartDiagD (k + 7) 0))
           (Or.inl (by decide +kernel))
       | 1, _ =>
-        rw [kapD21_1 (k + 7) h1l]
+        rw [kapW21_1 (k + 7) h1l]
         exact termVanishMagD (k + 7) 1 h1l _ _ _
           (raisedCountD (k + 7) (fun i => if i = 0 then 2 else 0) (fun i => if i = 1 then 1 else 0) 2 1 1 h1l h1l 2 0
             (cartDiagD (k + 7) 1))
@@ -9917,7 +9828,7 @@ theorem edgeD_v3 (l : Nat) (hl : 3 ≤ l) :
       have hm2l : m + 2 < (k + 7) := Nat.lt_trans (Nat.lt_succ_self (m + 2)) hm3l
       have hm1 : m + 1 < (k + 7) := Nat.lt_trans (Nat.lt_succ_self (m + 1)) hm2l
       have hmlo : 1 ≤ m := Nat.le_of_succ_le_succ hm
-      rw [kapD21 (k + 7) (m + 1) hm hm1]
+      rw [kapW21 (k + 7) (m + 1) hm hm1]
       refine serstable.runVanishD (k + 7) m _ hml (nuOf_length (k + 7) _) ?_ 0 h0l
         (Or.inl (Nat.lt_of_lt_of_le (by decide +kernel) hmlo)) ?_
       · exact nuVac (k + 7)
@@ -9933,7 +9844,7 @@ theorem edgeD_v3 (l : Nat) (hl : 3 ≤ l) :
       | 0, _ =>
         show row.thetaCount _
           (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapD21 (k + 7) (k + 4) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 4 k)) hT4]
+        rw [kapW21 (k + 7) (k + 4) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 4 k)) hT4]
         exact tailForkD k 0
             (Nat.le_trans (by decide +kernel) (Nat.le_add_left 4 k))
             (fun i => if i = 0 then 2 else 0)
@@ -9948,7 +9859,7 @@ theorem edgeD_v3 (l : Nat) (hl : 3 ≤ l) :
       | 1, _ =>
         show row.thetaCount _
           (raisedG _ _ (ground.getAt 0 _ (k + 5)) (k + 5)) = 0
-        rw [kapD21 (k + 7) (k + 5) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 5 k)) hT5]
+        rw [kapW21 (k + 7) (k + 5) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 5 k)) hT5]
         exact tailSubD k 0
             (Nat.le_trans (by decide +kernel) (Nat.le_add_left 4 k))
             (fun i => if i = 0 then 2 else 0)
@@ -9961,7 +9872,7 @@ theorem edgeD_v3 (l : Nat) (hl : 3 ≤ l) :
       | 2, _ =>
         show row.thetaCount _
           (raisedG _ _ (ground.getAt 0 _ (k + 6)) (k + 6)) = 0
-        rw [kapD21 (k + 7) (k + 6) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 6 k)) hT6]
+        rw [kapW21 (k + 7) (k + 6) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 6 k)) hT6]
         exact tailTopD k 0
             (Nat.le_trans (by decide +kernel) (Nat.le_add_left 4 k))
             (fun i => if i = 0 then 2 else 0)
@@ -10009,13 +9920,13 @@ theorem edgeD_v4 (l : Nat) (hl : 4 ≤ l) :
     · intro i hi
       match i, hi with
       | 0, _ =>
-        rw [kapD21_0 (k + 7) h0l]
+        rw [kapW21_0 (k + 7) h0l]
         exact termVanishMagD (k + 7) 0 h0l _ _ _
           (raisedCountD (k + 7) (fun i => if i = 1 then 1 else 0) (fun _ => 0) 2 0 0 h0l h0l 2 0
             (cartDiagD (k + 7) 0))
           (Or.inl (by decide +kernel))
       | 1, _ =>
-        rw [kapD21_1 (k + 7) h1l]
+        rw [kapW21_1 (k + 7) h1l]
         exact termVanishMagD (k + 7) 1 h1l _ _ _
           (raisedCountD (k + 7) (fun i => if i = 1 then 1 else 0) (fun _ => 0) 2 1 1 h1l h1l 2 0
             (cartDiagD (k + 7) 1))
@@ -10028,7 +9939,7 @@ theorem edgeD_v4 (l : Nat) (hl : 4 ≤ l) :
       have hm3l : m + 3 < (k + 7) := Nat.lt_trans (Nat.lt_succ_self (m + 3)) hml
       have hm2l : m + 2 < (k + 7) := Nat.lt_trans (Nat.lt_succ_self (m + 2)) hm3l
       have hm1 : m + 1 < (k + 7) := Nat.lt_trans (Nat.lt_succ_self (m + 1)) hm2l
-      rw [kapD21 (k + 7) (m + 1) hm hm1]
+      rw [kapW21 (k + 7) (m + 1) hm hm1]
       match m, hm, hml, hm1 with
       | 0, hm, _, _ => exact absurd hm (by decide +kernel)
       | 1, _, hml, _ =>
@@ -10056,7 +9967,7 @@ theorem edgeD_v4 (l : Nat) (hl : 4 ≤ l) :
       | 0, _ =>
         show row.thetaCount _
           (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapD21 (k + 7) (k + 4) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 4 k)) hT4]
+        rw [kapW21 (k + 7) (k + 4) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 4 k)) hT4]
         exact tailForkD k 1 (Nat.le_add_left 4 k)
             (fun i => if i = 1 then 1 else 0) (fun _ => 0)
           (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) rfl
@@ -10066,7 +9977,7 @@ theorem edgeD_v4 (l : Nat) (hl : 4 ≤ l) :
       | 1, _ =>
         show row.thetaCount _
           (raisedG _ _ (ground.getAt 0 _ (k + 5)) (k + 5)) = 0
-        rw [kapD21 (k + 7) (k + 5) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 5 k)) hT5]
+        rw [kapW21 (k + 7) (k + 5) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 5 k)) hT5]
         exact tailSubD k 1 (Nat.le_add_left 4 k)
             (fun i => if i = 1 then 1 else 0) (fun _ => 0)
           (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) rfl
@@ -10075,7 +9986,7 @@ theorem edgeD_v4 (l : Nat) (hl : 4 ≤ l) :
       | 2, _ =>
         show row.thetaCount _
           (raisedG _ _ (ground.getAt 0 _ (k + 6)) (k + 6)) = 0
-        rw [kapD21 (k + 7) (k + 6) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 6 k)) hT6]
+        rw [kapW21 (k + 7) (k + 6) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 6 k)) hT6]
         exact tailTopD k 1 (Nat.le_add_left 4 k)
             (fun i => if i = 1 then 1 else 0) (fun _ => 0)
           (if_neg (fun hc => Nat.noConfusion (Nat.succ.inj hc))) rfl
@@ -10119,19 +10030,19 @@ theorem edgeD_v5 (l : Nat) (hl : 5 ≤ l) :
     · intro i hi
       match i, hi with
       | 0, _ =>
-        rw [kapD21_0 (k + 7) h0l]
+        rw [kapW21_0 (k + 7) h0l]
         exact termVanishMagD (k + 7) 0 h0l _ _ _
           (raisedCountD (k + 7) (fun i => if i = 0 then 1 else if i = 2 then 1 else 0) (fun i => if i = 1 then 1 else 0) 2 0 0 h0l h0l 2 0
             (cartDiagD (k + 7) 0))
           (Or.inl (by decide +kernel))
       | 1, _ =>
-        rw [kapD21_1 (k + 7) h1l]
+        rw [kapW21_1 (k + 7) h1l]
         exact termVanishMagD (k + 7) 1 h1l _ _ _
           (raisedCountD (k + 7) (fun i => if i = 0 then 1 else if i = 2 then 1 else 0) (fun i => if i = 1 then 1 else 0) 2 1 1 h1l h1l 2 0
             (cartDiagD (k + 7) 1))
           (Or.inl (by decide +kernel))
       | 2, _ =>
-        rw [kapD21 (k + 7) 2 (by decide +kernel) h2l]
+        rw [kapW21 (k + 7) 2 (by decide +kernel) h2l]
         exact termVanishMagD (k + 7) 2 h2l _ _ _
           (raisedCountD (k + 7) (fun i => if i = 0 then 1 else if i = 2 then 1 else 0) (fun i => if i = 1 then 1 else 0) 1 2 2 h2l h2l 2 0
             (cartDiagD (k + 7) 2))
@@ -10145,7 +10056,7 @@ theorem edgeD_v5 (l : Nat) (hl : 5 ≤ l) :
       have hm2l : m + 2 < (k + 7) := Nat.lt_trans (Nat.lt_succ_self (m + 2)) hm3l
       have hm1 : m + 1 < (k + 7) := Nat.lt_trans (Nat.lt_succ_self (m + 1)) hm2l
       have hmlo : 2 ≤ m := Nat.le_of_succ_le_succ hm
-      rw [kapD21 (k + 7) (m + 1) (Nat.le_trans (by decide +kernel) hm) hm1]
+      rw [kapW21 (k + 7) (m + 1) (Nat.le_trans (by decide +kernel) hm) hm1]
       refine serstable.runVanishD (k + 7) m _ hml (nuOf_length (k + 7) _) ?_ 0 h0l
         (Or.inl (Nat.lt_of_lt_of_le (by decide +kernel) hmlo)) ?_
       · exact nuVac (k + 7)
@@ -10163,7 +10074,7 @@ theorem edgeD_v5 (l : Nat) (hl : 5 ≤ l) :
       | 0, _ =>
         show row.thetaCount _
           (raisedG _ _ (ground.getAt 0 _ (k + 4)) (k + 4)) = 0
-        rw [kapD21 (k + 7) (k + 4) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 4 k)) hT4]
+        rw [kapW21 (k + 7) (k + 4) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 4 k)) hT4]
         exact tailForkD k 0
             (Nat.le_trans (by decide +kernel) (Nat.le_add_left 4 k))
             (fun i => if i = 0 then 1 else if i = 2 then 1 else 0)
@@ -10178,7 +10089,7 @@ theorem edgeD_v5 (l : Nat) (hl : 5 ≤ l) :
       | 1, _ =>
         show row.thetaCount _
           (raisedG _ _ (ground.getAt 0 _ (k + 5)) (k + 5)) = 0
-        rw [kapD21 (k + 7) (k + 5) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 5 k)) hT5]
+        rw [kapW21 (k + 7) (k + 5) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 5 k)) hT5]
         exact tailSubD k 0
             (Nat.le_trans (by decide +kernel) (Nat.le_add_left 4 k))
             (fun i => if i = 0 then 1 else if i = 2 then 1 else 0)
@@ -10191,7 +10102,7 @@ theorem edgeD_v5 (l : Nat) (hl : 5 ≤ l) :
       | 2, _ =>
         show row.thetaCount _
           (raisedG _ _ (ground.getAt 0 _ (k + 6)) (k + 6)) = 0
-        rw [kapD21 (k + 7) (k + 6) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 6 k)) hT6]
+        rw [kapW21 (k + 7) (k + 6) (Nat.le_trans (by decide +kernel) (Nat.le_add_left 6 k)) hT6]
         exact tailTopD k 0
             (Nat.le_trans (by decide +kernel) (Nat.le_add_left 4 k))
             (fun i => if i = 0 then 1 else if i = 2 then 1 else 0)

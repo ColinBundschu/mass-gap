@@ -1180,21 +1180,6 @@ private theorem rise_snoc (c k : Nat) :
   show ground.rise c k * ((c + k) * 1) = ground.rise c k * (c + k)
   rw [Nat.mul_one]
 
-/-- The two window slides meet: the telescope's cross-multiplied
-identity. -/
-private theorem teleId (c p u : Nat) :
-    ground.rise (c + p) u * ground.rise c p
-      = ground.rise c u * ground.rise (c + u) p := by
-  have h1 : ground.rise c (p + u)
-      = ground.rise c p * ground.rise (c + p) u :=
-    ground.rise_split c p u
-  have h2 : ground.rise c (u + p)
-      = ground.rise c u * ground.rise (c + u) p :=
-    ground.rise_split c u p
-  rw [Nat.add_comm p u] at h1
-  rw [Nat.mul_comm (ground.rise (c + p) u) (ground.rise c p)]
-  exact h1.symm.trans h2
-
 /-- The range fold of a rising window is the rising product. -/
 private theorem riseFold (c : Nat) : ∀ k : Nat,
     ground.famFold Nat.mul 1 (fun j => c + (j + 1)) (List.range k)
@@ -1347,21 +1332,9 @@ private theorem descRun_split (c y : Nat) : ∀ x : Nat,
     rw [descRun_split c y x, Nat.add_assoc x y c, Nat.add_comm y c]
 
 
-/-! The reversal kit: the product fold over a reversed family, the
-key range's own reversal, and the reflected reindexing. -/
-
-/-- The product fold reads the reversed family. -/
-private theorem famFold_rev (F : Nat → Nat) : ∀ l : List Nat,
-    ground.famFold Nat.mul 1 F l.reverse = ground.famFold Nat.mul 1 F l
-  | [] => rfl
-  | x :: t => by
-    rw [ground.reverse_cons x t,
-      ground.famFold_append Nat.mul 1 ground.mulAssoc Nat.one_mul F
-        t.reverse [x],
-      famFold_rev F t]
-    show ground.famFold Nat.mul 1 F t * (F x * 1)
-      = F x * ground.famFold Nat.mul 1 F t
-    rw [Nat.mul_one, Nat.mul_comm]
+/-! The reversal kit: the key range's own reversal and the
+reflected reindexing, the product fold's reversal the ground
+general's. -/
 
 /-- The key range's reversal is the range at the reflected key. -/
 private theorem revRange : ∀ n : Nat,
@@ -1389,7 +1362,8 @@ private theorem revFold (F G : Nat → Nat) (n : Nat)
     (h : ∀ t s : Nat, t + s + 1 = n → F t = G s) :
     ground.famFold Nat.mul 1 F (List.range n)
       = ground.famFold Nat.mul 1 G (List.range n) := by
-  rw [← famFold_rev F (List.range n), revRange n,
+  rw [← ground.famFold_rev Nat.mul 1 ground.mulAssoc Nat.one_mul
+      Nat.mul_comm F (List.range n), revRange n,
     ground.famFold_map Nat.mul 1 F (fun t => n - (t + 1)) (List.range n)]
   refine ground.famFold_congr_members Nat.mul 1 _ _ (List.range n) ?_
   intro t ht
@@ -1529,7 +1503,7 @@ private theorem topKey (p g u : Nat) :
       = ground.rise (g + 1) u * ground.rise (g + u + 1) p := by
   rw [Nat.add_comm p g, Nat.add_right_comm g p 1,
     Nat.add_right_comm g u 1]
-  exact teleId (g + 1) p u
+  exact ground.rise_rect (g + 1) p u
 
 /-! The dimension classes' joins: the block entries' reads at the
 runs' floors. -/

@@ -38,7 +38,6 @@ count nought beside them.  The forge tier carries one committed
 refusal per load-bearing binder, and the binder classification
 sits at its head.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground gentable sertables row

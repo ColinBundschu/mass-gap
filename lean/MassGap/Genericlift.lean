@@ -32,7 +32,10 @@ polynomial-matrix cofactors (`pcofac`, `padj`), the identity
 `M adj(M) = det(M) 1` the solved witness's whole verification
 (`adjRead` at `split.pmatMul` and `split.pdiag`, the instance
 deciding at the descent's adjugate `padjD` on a square frame with
-`padjD_eq` the entrywise read), the determinant
+`padjD_eq` the entrywise read), the identity a theorem at every
+square frame in both product orders (`adjRead_all`,
+`adjColRead_all`, `def:elim`'s adjugate identity at the
+polynomial carrier), the determinant
 pair off equal members the genericity read (`detOcc`, the
 per-residue Gram independence its instances), the same solve stated
 at the pair-entried carrier (`PPMat`, the first-row fold `ppminor`,
@@ -339,6 +342,136 @@ instance (m : split.PMat) : Decidable (adjRead m) :=
           (split.pmatOne_symm hD)⟩
   | isFalse _ => split.decPmatOneValue _ _
 
+/-- Clause (ii)'s solved witness as a theorem: at a square frame
+the list against its adjugate reads the determinant's diagonal,
+`def:elim`'s adjugate identity at the polynomial carrier. -/
+theorem adjRead_all (m : split.PMat)
+    (hsq : elim.rowsLen m.length m) : adjRead m := by
+  have hAh : ((padj m).headD []).length = m.length :=
+    elim.headD_len_of (padj m) m.length
+      (ground.matOf_length m.length m.length _)
+      (elim.rowsLen_matOf m.length m.length _)
+  have hAl : (split.pmatMul m (padj m)).length = m.length :=
+    ground.length_map _ m
+  have hAr : elim.rowsLen m.length (split.pmatMul m (padj m)) :=
+    elim.rowsLen_matMulO poly.polyOps m (padj m) m.length hAh
+  have hrepl : (List.replicate m.length (split.pminor m)).length
+      = m.length := ground.length_replicate _ m.length
+  have hDl : (split.pdiag
+      (List.replicate m.length (split.pminor m))).length
+      = m.length := by
+    rw [show (split.pdiag
+        (List.replicate m.length (split.pminor m))).length
+        = (List.replicate m.length (split.pminor m)).length from
+      ground.matOf_length _ _ _]
+    exact hrepl
+  refine split.pmatOne_ofGetAt (by rw [hAl, hDl]) (fun i hi => ?_)
+  rw [hAl] at hi
+  have hiA : i < (split.pmatMul m (padj m)).length := by
+    rw [hAl]
+    exact hi
+  have hrowA : (ground.getAt ([] : List poly.Poly)
+      (split.pmatMul m (padj m)) i).length = m.length :=
+    elim.rowsLen_getAt _ i hAr hiA
+  have hrowD : (ground.getAt ([] : List poly.Poly) (split.pdiag
+      (List.replicate m.length (split.pminor m))) i).length
+      = m.length := by
+    rw [show (ground.getAt ([] : List poly.Poly) (split.pdiag
+        (List.replicate m.length (split.pminor m))) i).length
+        = (List.replicate m.length (split.pminor m)).length from
+      ground.matOf_rowLength ([] : List poly.Poly) _ _ _ i
+        (by rw [hrepl]; exact hi)]
+    exact hrepl
+  refine elim.matOne_getAt _ _ (hrowA.trans hrowD.symm)
+    (fun j hj => ?_)
+  rw [hrowA] at hj
+  rw [show ground.getAt ([] : poly.Poly)
+      (ground.getAt ([] : List poly.Poly) (split.pdiag
+        (List.replicate m.length (split.pminor m))) i) j
+      = if j = i then ground.getAt ([] : poly.Poly)
+          (List.replicate m.length (split.pminor m)) i
+        else ([] : poly.Poly) from
+    ground.matOf_entry ([] : List poly.Poly) ([] : poly.Poly) _ _ _
+      i j (by rw [hrepl]; exact hi) (by rw [hrepl]; exact hj)]
+  by_cases hji : j = i
+  · rw [if_pos hji, ground.getAt_replicate ([] : poly.Poly)
+      (split.pminor m) m.length i hi, hji]
+    exact elim.adjO_row_diag (R := poly.polyRead) elim.polyLaws
+      split.pminor poly.neg elim.minorP_detP
+      (fun _ => poly.oneValue_refl _) m hsq i hi
+  · rw [if_neg hji]
+    exact elim.adjO_row_off (R := poly.polyRead) elim.polyLaws
+      split.pminor poly.neg elim.minorP_detP
+      (fun _ => poly.oneValue_refl _) m hsq i j hi hj
+      (fun he => hji he.symm)
+
+/-- Clause (ii)'s solved witness at the exchanged product order:
+the adjugate against the list reads that diagonal as well, the
+column side of `def:elim`'s adjugate identity. -/
+theorem adjColRead_all (m : split.PMat)
+    (hsq : elim.rowsLen m.length m) :
+    split.pmatOneValue (split.pmatMul (padj m) m)
+      (split.pdiag (List.replicate m.length (split.pminor m))) := by
+  have hMh : (m.headD []).length = m.length :=
+    elim.headD_len_of m m.length rfl hsq
+  have hAdjl : (padj m).length = m.length :=
+    ground.matOf_length m.length m.length _
+  have hAl : (split.pmatMul (padj m) m).length = m.length := by
+    rw [show (split.pmatMul (padj m) m).length = (padj m).length from
+      ground.length_map _ (padj m)]
+    exact hAdjl
+  have hAr : elim.rowsLen m.length (split.pmatMul (padj m) m) :=
+    elim.rowsLen_matMulO poly.polyOps (padj m) m m.length hMh
+  have hrepl : (List.replicate m.length (split.pminor m)).length
+      = m.length := ground.length_replicate _ m.length
+  have hDl : (split.pdiag
+      (List.replicate m.length (split.pminor m))).length
+      = m.length := by
+    rw [show (split.pdiag
+        (List.replicate m.length (split.pminor m))).length
+        = (List.replicate m.length (split.pminor m)).length from
+      ground.matOf_length _ _ _]
+    exact hrepl
+  refine split.pmatOne_ofGetAt (by rw [hAl, hDl]) (fun i hi => ?_)
+  rw [hAl] at hi
+  have hiA : i < (split.pmatMul (padj m) m).length := by
+    rw [hAl]
+    exact hi
+  have hrowA : (ground.getAt ([] : List poly.Poly)
+      (split.pmatMul (padj m) m) i).length = m.length :=
+    elim.rowsLen_getAt _ i hAr hiA
+  have hrowD : (ground.getAt ([] : List poly.Poly) (split.pdiag
+      (List.replicate m.length (split.pminor m))) i).length
+      = m.length := by
+    rw [show (ground.getAt ([] : List poly.Poly) (split.pdiag
+        (List.replicate m.length (split.pminor m))) i).length
+        = (List.replicate m.length (split.pminor m)).length from
+      ground.matOf_rowLength ([] : List poly.Poly) _ _ _ i
+        (by rw [hrepl]; exact hi)]
+    exact hrepl
+  refine elim.matOne_getAt _ _ (hrowA.trans hrowD.symm)
+    (fun j hj => ?_)
+  rw [hrowA] at hj
+  rw [show ground.getAt ([] : poly.Poly)
+      (ground.getAt ([] : List poly.Poly) (split.pdiag
+        (List.replicate m.length (split.pminor m))) i) j
+      = if j = i then ground.getAt ([] : poly.Poly)
+          (List.replicate m.length (split.pminor m)) i
+        else ([] : poly.Poly) from
+    ground.matOf_entry ([] : List poly.Poly) ([] : poly.Poly) _ _ _
+      i j (by rw [hrepl]; exact hi) (by rw [hrepl]; exact hj)]
+  by_cases hji : j = i
+  · rw [if_pos hji, ground.getAt_replicate ([] : poly.Poly)
+      (split.pminor m) m.length i hi, hji]
+    exact elim.adjO_col_diag (R := poly.polyRead) elim.polyLaws
+      split.pminor poly.neg elim.minorP_detP
+      (fun _ => poly.oneValue_refl _) m hsq i hi
+  · rw [if_neg hji]
+    exact elim.adjO_col_off (R := poly.polyRead) elim.polyLaws
+      split.pminor poly.neg elim.minorP_detP
+      (fun _ => poly.oneValue_refl _) m hsq i j hi hj
+      (fun he => hji he.symm)
+
 /-- The genericity read: the determinant pair off equal members,
 the per-residue Gram independence its instances. -/
 def detOcc (m : split.PMat) : Prop :=
@@ -393,17 +526,6 @@ read `c + H ≤ y · c` seeds it at the top monomial and each further
 coefficient, priced at or above the height's balance partner,
 preserves it exactly. -/
 
-/-- The ground order enters the balance carrier's positive
-data. -/
-private theorem ofPos_le {a b : Pos} (h : a ≤ b) :
-    BPair.ofPos a ≤ BPair.ofPos b :=
-  match h with
-  | Or.inl e => Or.inl (by rw [e])
-  | Or.inr ⟨g, hg⟩ => Or.inr ⟨g, by
-      show a + Pos.one + Pos.one + g = b + Pos.one + Pos.one
-      rw [ground.add_right_comm (a + Pos.one) Pos.one g,
-        ground.add_right_comm a Pos.one g, hg]⟩
-
 /-- Clause (iii)'s side theorem, the top's upper side: at or beyond
 the cleared radius a pair member with an upper leading coefficient
 evaluates strictly above the sum's unit — the leading term
@@ -422,7 +544,7 @@ theorem sideUpper : ∀ (P : poly.Poly) (an : ground.Pos),
         (BPair.mul_comm (windowsep.radiusD P) (BPair.ofPos an)))
       (BPair.oneValue_of_eq
         (BPair.mul_comm (windowsep.radiusD P) (BPair.ofPos n)))
-      (ground.leB_mulR (windowsep.unitLe_radiusD P) (ofPos_le hle))
+      (ground.leB_mulR (windowsep.unitLe_radiusD P) (ground.leB_ofPos hle))
   exact windowsep.lead_upper P (BPair.ofPos n) hx
     (ground.unitLtMul htop
       (windowsep.unitLt_bpow (ground.unitLtOfPos n) _))

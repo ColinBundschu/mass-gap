@@ -6,7 +6,6 @@ reversal fixing the adjoint shape at the small widths with the
 theorem routes beside them, the form line's unit-label count at
 one, and the width bound's refusals at the single column.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open labels adjchar form

@@ -29,7 +29,6 @@ applied whole at the full-column seed, with its length hypothesis
 isolated at the two-column seed whose closure grows past its own
 member and whose interior lowering refuses the unit tail.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places blockcount

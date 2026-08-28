@@ -28,7 +28,6 @@ and the lower endpoint's refuses at its price alone; and the price
 conjunct's own isolation at `4 - x` on `(1, 6)` at the bound
 `[6 : 1]`, the crossing losing the side while every other conjunct
 holds. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly windowsep stage

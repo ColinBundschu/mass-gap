@@ -28,7 +28,13 @@ together and the count is unchanged (`countAtPair_scale`,
 representative; and the count is monotone at a positive-semidefinite
 site difference with the pencil and the level each free to move
 (`countAtPair_mono`), `lem:inertia`'s monotone read at the
-count carrier.  A level pair crossed by one weight on both members
+count carrier.  `lem:corner`'s join read rides that monotonicity:
+the two levels' difference site is one pencil at two balance-pair
+levels and reads the gram's scalar copy, the cross-added level
+order's margin the scalar (`siteDiff_scalar`), so a level whose
+count is vacant sits at or below a level whose count is occupied
+(`count_below_occupied` at `inertia.scalarSplit`'s certificate).
+A level pair crossed by one weight on both members
 reads one count at one split (`countAtPair_cross`), the crossing's
 gram copy and that copy's swap a balanced pair at the sum's unit.
 The form fold and its decomposition stand at `inertia`, the site
@@ -227,6 +233,164 @@ theorem countAtPair_mono {o : Nat} (H H' G : Mat) (x y x' y' : Pos)
     spd sp' sp hd hpsd h'.2.2.1 h.2.2.1
   rw [h.2.2.2, h'.2.2.2] at hmono
   exact hmono
+
+/-- The two levels' difference site reads the gram's scalar copy:
+one pencil at two balance-pair levels, the cross-added level order's
+margin the scalar (`lem:corner`'s join read, the difference site at
+the monotone count read). -/
+theorem siteDiff_scalar {o : Nat} (H G : Mat) (hH : sqAt H o)
+    (hG : sqAt G o) (lx ly gx gy c : Pos)
+    (hc : lx + gy + c = gx + ly) :
+    matOneValue
+      (siteDatum
+        (siteDatum (matAdd H (matScale ly G)) (matScale lx G))
+        (siteDatum (matAdd H (matScale gy G)) (matScale gx G)))
+      (matScale c G) := by
+  have hly : ly + gx = gy + lx + c := by
+    rw [ground.add_comm ly gx, ← hc, ground.add_comm lx gy]
+  have hW : sqAt (matScale (gy + lx) G) o := sqAt_matScale o (gy + lx) G hG
+  have hcG : sqAt (matScale c G) o := sqAt_matScale o c G hG
+  have hN1 : sqAt (matAdd H (matSwap H)) o :=
+    elim.sqAt_matAdd o H (matSwap H) hH (elim.sqAt_matSwap o H hH)
+  have hN2 : sqAt (matAdd (matScale (gy + lx) G)
+      (matSwap (matScale (gy + lx) G))) o :=
+    elim.sqAt_matAdd o _ _ hW (elim.sqAt_matSwap o _ hW)
+  have hsum : sqAt (matAdd (matAdd (matScale (gy + lx) G)
+      (matSwap (matScale (gy + lx) G))) (matScale c G)) o :=
+    elim.sqAt_matAdd o _ _ hN2 hcG
+  show matOneValue
+    (matAdd (matAdd (matAdd H (matScale ly G)) (matSwap (matScale lx G)))
+      (matSwap (matAdd (matAdd H (matScale gy G))
+        (matSwap (matScale gx G)))))
+    (matScale c G)
+  rw [elim.matSwap_matAdd (matAdd H (matScale gy G))
+      (matSwap (matScale gx G)),
+    elim.matSwap_matAdd H (matScale gy G),
+    elim.matSwap_matSwap (matScale gx G),
+    elim.matAdd_shuffle (matAdd H (matScale ly G))
+      (matSwap (matScale lx G))
+      (matAdd (matSwap H) (matSwap (matScale gy G))) (matScale gx G),
+    elim.matAdd_shuffle H (matScale ly G) (matSwap H)
+      (matSwap (matScale gy G)),
+    elim.matAdd_assoc (matAdd H (matSwap H))
+      (matAdd (matScale ly G) (matSwap (matScale gy G)))
+      (matAdd (matSwap (matScale lx G)) (matScale gx G)),
+    elim.matAdd_comm (matSwap (matScale lx G)) (matScale gx G),
+    elim.matAdd_shuffle (matScale ly G) (matSwap (matScale gy G))
+      (matScale gx G) (matSwap (matScale lx G)),
+    ← matScale_addW ly gx G,
+    ← elim.matSwap_matAdd (matScale gy G) (matScale lx G),
+    ← matScale_addW gy lx G, hly, matScale_addW (gy + lx) c G,
+    elim.matAdd_assoc (matScale (gy + lx) G) (matScale c G)
+      (matSwap (matScale (gy + lx) G)),
+    elim.matAdd_comm (matScale c G) (matSwap (matScale (gy + lx) G)),
+    ← elim.matAdd_assoc (matScale (gy + lx) G)
+      (matSwap (matScale (gy + lx) G)) (matScale c G)]
+  refine elim.matOne_trans (elim.matAdd_nullL _ _
+    (elim.matNull_add_swap H)
+    ((elim.sqAt_len hN1).trans (elim.sqAt_len hsum).symm)
+    (elim.rowsLen_of_sqAt hN1) (elim.rowsLen_of_sqAt hsum)) ?_
+  exact elim.matAdd_nullL _ _
+    (elim.matNull_add_swap (matScale (gy + lx) G))
+    ((elim.sqAt_len hN2).trans (elim.sqAt_len hcG).symm)
+    (elim.rowsLen_of_sqAt hN2) (elim.rowsLen_of_sqAt hcG)
+
+/-- The two levels' difference site at equal cross-added levels is
+null: the pencil's balanced double against the collected weights'
+balanced double, every entry at the sum's unit. -/
+theorem siteDiff_null (H G : Mat) (lx ly gx gy : Pos)
+    (hc : lx + gy = gx + ly) :
+    elim.matNull
+      (siteDatum
+        (siteDatum (matAdd H (matScale ly G)) (matScale lx G))
+        (siteDatum (matAdd H (matScale gy G)) (matScale gx G))) := by
+  have hly : ly + gx = gy + lx := by
+    rw [ground.add_comm ly gx, ← hc, ground.add_comm lx gy]
+  show elim.matNull
+    (matAdd (matAdd (matAdd H (matScale ly G)) (matSwap (matScale lx G)))
+      (matSwap (matAdd (matAdd H (matScale gy G))
+        (matSwap (matScale gx G)))))
+  rw [elim.matSwap_matAdd (matAdd H (matScale gy G))
+      (matSwap (matScale gx G)),
+    elim.matSwap_matAdd H (matScale gy G),
+    elim.matSwap_matSwap (matScale gx G),
+    elim.matAdd_shuffle (matAdd H (matScale ly G))
+      (matSwap (matScale lx G))
+      (matAdd (matSwap H) (matSwap (matScale gy G))) (matScale gx G),
+    elim.matAdd_shuffle H (matScale ly G) (matSwap H)
+      (matSwap (matScale gy G)),
+    elim.matAdd_assoc (matAdd H (matSwap H))
+      (matAdd (matScale ly G) (matSwap (matScale gy G)))
+      (matAdd (matSwap (matScale lx G)) (matScale gx G)),
+    elim.matAdd_comm (matSwap (matScale lx G)) (matScale gx G),
+    elim.matAdd_shuffle (matScale ly G) (matSwap (matScale gy G))
+      (matScale gx G) (matSwap (matScale lx G)),
+    ← matScale_addW ly gx G,
+    ← elim.matSwap_matAdd (matScale gy G) (matScale lx G),
+    ← matScale_addW gy lx G, hly]
+  exact elim.matNull_matAdd (elim.matNull_add_swap H)
+    (elim.matNull_add_swap (matScale (gy + lx) G))
+
+/-- The drift sits strictly below any occupied margin at the unit
+gram: a level whose count is vacant reads strictly below a level
+whose count is occupied — the cross-added order at the difference
+site's scalar certificate, the equal-level reading refused at the
+vacant certificate (`lem:corner`'s join read; `lem:inertia`'s
+monotone count read). -/
+theorem count_below_occupied {o : Nat} (H : Mat) (gx gy lx ly : Pos)
+    (n : Nat) (spg spl : Split o)
+    (hvac : countAtPair H (idMat o) gx gy 0 spg)
+    (hocc : countAtPair H (idMat o) lx ly n spl)
+    (hn : 1 ≤ n) :
+    gx + ly < lx + gy := by
+  match ground.trich (lx + gy) (gx + ly) with
+  | .lt c hc =>
+    have hd : splitRead
+        (siteDatum
+          (siteDatum (matAdd H (matScale ly (idMat o)))
+            (matScale lx (idMat o)))
+          (siteDatum (matAdd H (matScale gy (idMat o)))
+            (matScale gx (idMat o))))
+        (inertia.scalarSplit o c) :=
+      inertia.scalarSplit_read c _
+        (sqAt_siteDatum o _ _
+          (sqAt_siteDatum o _ _
+            (elim.sqAt_matAdd o H _ hocc.1
+              (sqAt_matScale o ly (idMat o) hocc.2.1))
+            (sqAt_matScale o lx (idMat o) hocc.2.1))
+          (sqAt_siteDatum o _ _
+            (elim.sqAt_matAdd o H _ hocc.1
+              (sqAt_matScale o gy (idMat o) hocc.2.1))
+            (sqAt_matScale o gx (idMat o) hocc.2.1)))
+        (siteDiff_scalar H (idMat o) hocc.1 hocc.2.1 lx ly gx gy c hc)
+    have hmono := countAtPair_mono H H (idMat o) lx ly gx gy n 0
+      spl spg (inertia.scalarSplit o c) hd
+      (inertia.scalarSplit_psd o c) hocc hvac
+    exact absurd (Nat.le_trans hn hmono) (Nat.not_succ_le_zero 0)
+  | .eq he =>
+    have hd : splitRead
+        (siteDatum
+          (siteDatum (matAdd H (matScale ly (idMat o)))
+            (matScale lx (idMat o)))
+          (siteDatum (matAdd H (matScale gy (idMat o)))
+            (matScale gx (idMat o))))
+        (inertia.unitSplit o) :=
+      inertia.unitSplit_read _
+        (sqAt_siteDatum o _ _
+          (sqAt_siteDatum o _ _
+            (elim.sqAt_matAdd o H _ hocc.1
+              (sqAt_matScale o ly (idMat o) hocc.2.1))
+            (sqAt_matScale o lx (idMat o) hocc.2.1))
+          (sqAt_siteDatum o _ _
+            (elim.sqAt_matAdd o H _ hocc.1
+              (sqAt_matScale o gy (idMat o) hocc.2.1))
+            (sqAt_matScale o gx (idMat o) hocc.2.1)))
+        (siteDiff_null H (idMat o) lx ly gx gy he)
+    have hmono := countAtPair_mono H H (idMat o) lx ly gx gy n 0
+      spl spg (inertia.unitSplit o) hd
+      (inertia.unitSplit_psd o) hocc hvac
+    exact absurd (Nat.le_trans hn hmono) (Nat.not_succ_le_zero 0)
+  | .gt c hc => exact ⟨c, hc⟩
 
 /-- A designation's arithmetic at the levels `[ln : ld] < [hn : hd]`:
 the two counts read at a gap of at least one at their splits; the

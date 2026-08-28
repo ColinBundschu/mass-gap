@@ -51,7 +51,6 @@ vacant while the fast row reads its junk members, and at the
 width one the definitional row is occupied at the vacuum while
 the fast row is vacant.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places rankstable

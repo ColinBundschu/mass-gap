@@ -10,7 +10,6 @@ own ground), and the magnetic commutation's read at the unit
 multiplication, the interface's commutativity law the general
 statement's own site (`fusion.commLaw`; a truncated index leaks at
 its frontier, the closed sub-indices the member tier's). -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground elim coeffone

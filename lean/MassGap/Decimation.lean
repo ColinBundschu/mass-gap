@@ -49,8 +49,9 @@ bracket is the head's (`ball_count` at `spectator.ball_psd` over
 the dropped pivots, every ball member's count at the sum's unit),
 and two windows share the decimated data up to their lengths with
 the reads within the iterated cap brackets (`windowShareRead` at
-`spectator.capWalk` over the shared tails and the deviation
-sandwich).
+`spectator.capWalk` down the tail witnesses from the perturbation
+slab to the observable's depth, the head pivots shared below the
+slab).
 The divisor list's emitted record is the displayed object at its
 committed store (`DivRecord` at `Bound`, `recordRead` at
 `boundRead`): one cell per sample with its count
@@ -418,12 +419,12 @@ private theorem dom_quadGo : ∀ (n : Nat) (S : Mat) (d v : List BPair),
               exact hsymE (j + 1) 0 (Nat.succ_lt_succ hj) (Nat.succ_pos n)
             have hcolPoly :
                 poly.oneValue (elim.colHead BPair.unit rest) b :=
-              getAt_polyOne _ _ (hcl.trans hrl.symm)
+              poly.oneValue_of_entries _ _ (hcl.trans hrl.symm)
                 (fun j hj => hcol j (by rw [hcl] at hj; exact hj))
             have hmagPoly : poly.oneValue
                 ((elim.colHead BPair.unit rest).map windowsep.mag)
                 (b.map windowsep.mag) := by
-              refine getAt_polyOne _ _ ?_ ?_
+              refine poly.oneValue_of_entries _ _ ?_ ?_
               · rw [ground.length_map, ground.length_map, hcl, hrl]
               · intro j hj
                 rw [ground.length_map, hcl] at hj
@@ -707,28 +708,34 @@ instance {n o1 o2 : Nat} (diag off : List Mat) (Xs Rs : List MatQ)
   inferInstanceAs
     (Decidable (_ ∧ _ = _ ∧ _ = _ ∧ _ ∧ _ ∧ _ ∧ _))
 
-/-- Two windows share the decimated data up to their lengths: the
-shared tails, the deviation sandwich, and the iterated cap walk at
-the families' own lists from the stated seed. -/
-def windowShareRead {o : Nat} (diag off diag' off' : List Mat)
-    (Xs Rs Xs' Rs' Ys Cs Ys' Cs' : List MatQ) (w0 : Nat)
-    (ns : List Nat) (cn cd : Pos) (G : Mat)
-    (certs : List ((Pos × Pos) × (Pos × Pos)
-      × Split o × Split o × Split o × Split o × Split o × Split o)) :
+/-- Two windows share the decimated data up to their lengths, each
+window's own data beyond: the shared heads, the tail deviation's
+sandwich down from the perturbation slab, and the iterated cap walk
+down the tail witnesses at the gram list's own slab blocks, from
+the stated seed at that slab to the observable's depth `j`, one
+certificate per slab of the gap. -/
+def windowShareRead (diag off diag' off' : List Mat)
+    (Xs Rs Xs' Rs' Ys Cs Ys' Cs' : List MatQ) (w0 j : Nat)
+    (ns : List Nat) (cn cd : Pos) (Gs : List Mat)
+    (certs : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
+      × Split p.2 × Split p.2 × Split p.1 × Split p.1
+      × Split p.2 × Split p.2)) :
     Prop :=
-  spectator.tailShareRead diag off diag' off' Xs Rs Xs' Rs' w0 ns
-  ∧ spectator.sandwichRead diag off diag' off' Ys Cs Ys' Cs' w0 ns
-  ∧ spectator.capWalk G cn cd (ground.getAt dM Ys' w0)
-      (ground.getAt dM Ys w0) (Cs.drop w0) (Cs'.drop w0)
-      (Ys.drop (w0 + 1)) (Ys'.drop (w0 + 1)) certs
+  spectator.headShareRead diag off diag' off' Ys Cs Ys' Cs' w0 ns
+  ∧ spectator.tailSandwichRead diag off diag' off' Xs Rs Xs' Rs' w0 ns
+  ∧ spectator.capWalk Gs cn cd (ground.getAt dM Xs' w0)
+      (ground.getAt dM Xs w0) ((Rs.take w0).drop j).reverse
+      ((Rs'.take w0).drop j).reverse ((Xs.take w0).drop j).reverse
+      ((Xs'.take w0).drop j).reverse certs
 
-instance {o : Nat} (diag off diag' off' : List Mat)
-    (Xs Rs Xs' Rs' Ys Cs Ys' Cs' : List MatQ) (w0 : Nat)
-    (ns : List Nat) (cn cd : Pos) (G : Mat)
-    (certs : List ((Pos × Pos) × (Pos × Pos)
-      × Split o × Split o × Split o × Split o × Split o × Split o)) :
+instance (diag off diag' off' : List Mat)
+    (Xs Rs Xs' Rs' Ys Cs Ys' Cs' : List MatQ) (w0 j : Nat)
+    (ns : List Nat) (cn cd : Pos) (Gs : List Mat)
+    (certs : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
+      × Split p.2 × Split p.2 × Split p.1 × Split p.1
+      × Split p.2 × Split p.2)) :
     Decidable (windowShareRead diag off diag' off' Xs Rs Xs' Rs'
-      Ys Cs Ys' Cs' w0 ns cn cd G certs) :=
+      Ys Cs Ys' Cs' w0 j ns cn cd Gs certs) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
 /-- The ball's pivots contribute nothing to the slab fold: at each

@@ -88,7 +88,6 @@ the extent `σ₁` at the tie `16 σ₁ = 19`.  Its two refusals: the rootless b
 `[2, 3]` refusing the occupied count, and the straddle `[0, 2]`
 refusing the vacant one.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly elim inertia certconstruct contactcell
@@ -526,6 +525,15 @@ example : cPlusN 2 8 ≤ c2hat.dfQ [6, 0] :=
 example : cPlusN 3 0 ≤ c2hat.dfQ [1, 1, 0] :=
   cPlus_floors 3 0 [1, 1, 0] (by decide +kernel) rfl rfl
     (by decide +kernel) (by decide +kernel)
+
+/-! The occupied frontier's least Casimir sits beyond its cutoff at
+the same toy: `frontierTargets 2 8` is occupied and `cPlusN 2 8`
+reads `24` against the cutoff `8`, the theorem route beside its
+decided anchor. -/
+
+example : frontierTargets 2 8 ≠ [] ∧ 8 < cPlusN 2 8 := by decide +kernel
+
+example : 8 < cPlusN 2 8 := cPlusN_beyond 2 8 (by decide +kernel)
 
 /-! `dualPMat` at a one-site instance: the affine list `⟨-4 : 3σ⟩`,
 its cleared evaluation reading two at `σ = 2` and refusing there at

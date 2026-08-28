@@ -10,7 +10,6 @@ on the upper), the weight fold with its pass and failure reads,
 and the moments' spectral coherence: the cleared `μ₂ - γ μ₁` at a
 diagonal instance is the detector fold at the probe's component
 weights, `lem:split`'s weights the display's. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground elim detector

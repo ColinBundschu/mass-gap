@@ -33,7 +33,6 @@ doubled-degree invariance reads and the further Gram instances sit
 beyond the battery allowance, `gramReadB 2 2` and the sign
 vector's invariance the two kept boundary reads.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground serpairing

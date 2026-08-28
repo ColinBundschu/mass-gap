@@ -391,26 +391,6 @@ private theorem ifSplit (c : Prop) [Decidable c] (x : Nat) :
   · rw [if_neg hc, if_neg hc, Nat.zero_add]
 
 
-/-- The range fold peels its first key: the head's value against
-the shifted family. -/
-private theorem foldRange_cons (F : Nat → Nat) :
-    ∀ n : Nat, ground.famFold Nat.add 0 F (List.range (n + 1))
-      = F 0 + ground.famFold Nat.add 0 (fun j => F (j + 1)) (List.range n)
-  | 0 => rfl
-  | n + 1 => by
-    rw [ground.range_succ (n + 1),
-      ground.famFold_append Nat.add 0 Nat.add_assoc Nat.zero_add F
-        (List.range (n + 1)) [n + 1],
-      foldRange_cons F n,
-      ground.range_succ n,
-      ground.famFold_append Nat.add 0 Nat.add_assoc Nat.zero_add
-        (fun j => F (j + 1)) (List.range n) [n]]
-    show F 0 + ground.famFold Nat.add 0 (fun j => F (j + 1)) (List.range n)
-        + (F (n + 1) + 0)
-      = F 0 + (ground.famFold Nat.add 0 (fun j => F (j + 1)) (List.range n)
-        + (F (n + 1) + 0))
-    rw [Nat.add_assoc]
-
 
 
 /-- The last key of a shape with fewer boxes than letters is
@@ -472,7 +452,7 @@ private theorem guard_count (t : Shape) (n : Nat)
         (List.range n)
     rw [hz, if_neg (Nat.lt_irrefl 0)]
     rfl
-  have hcons := foldRange_cons
+  have hcons := ground.famFold_range_cons Nat.add 0
     (fun j => if 0 < ground.getAt 0 t j then 1 else 0) n
   rw [hsnoc] at hcons
   exact hcons

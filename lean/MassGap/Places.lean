@@ -19,7 +19,20 @@ The place permutations are the unit-content words (`perms`), at
 the factorial count (`length_perms`, the arrangement count's
 unit-content instance), the permuted display is `expo`, and a
 permutation's cycles are the orbit walk at the place-count fuel
-(`cycGo`, `cyclesOf`); the
+(`cycGo`, `cyclesOf`), packed by `cycles_pack` — the flattening
+covers every place exactly once and each word is occupied,
+bounded, closed under the assignment and its head's iterates
+(`iterP`) — and carried across a relabeling by
+`cyclesOf_transport`, whose relabeled wiring is again a member
+(`transport_member`) and whose partner relabeling composes back to
+the wiring (`transport_invol`), the enumeration itself distinct
+(`perms_distinct`); a key's position in a stated listing is
+`idxOf`, with its two roundtrips (`getAt_idxOf` the listing read
+there, `idxOf_getAt` the distinct listing's entry naming its own
+place, `idxOf_lt` the position's bound), and the relabeling's two
+composition reads are the partner relabeled
+(`invPerm_transport`) and the composite relabeled
+(`expo_transport`); the
 shape enumeration (`allShapes`) is complete at the width and
 degree (`mem_allShapes`), sound (`allShapes_sound`), distinct
 (`countOf_allShapes_le`), one member at the vacant degree
@@ -286,6 +299,13 @@ theorem length_rowList : ∀ s : Shape, (rowList s).length = s.length
   | _ :: t => by
     show (rowList t).length + 1 = t.length + 1
     rw [length_rowList t]
+
+/-- The row list's head is the occupancy total, the first row
+counting every column. -/
+theorem rowList_head : ∀ s : Shape, 0 < s.length →
+    ground.getAt 0 (rowList s) 0 = ground.sumNat s
+  | [], h => absurd h (Nat.lt_irrefl 0)
+  | _ :: _, _ => rfl
 
 
 /-- The row list's consecutive gap is the shape's own occupancy. -/
@@ -1164,7 +1184,7 @@ theorem rowList_full : ∀ s : Shape,
     have hlen : (b :: t).length - 1 + 1 = (a :: b :: t).length - 1 := rfl
     have hb : 0 < (b :: t).length := Nat.succ_pos t.length
     have hlt : (b :: t).length - 1 < (b :: t).length :=
-      Nat.sub_lt hb (Nat.succ_pos 0)
+      ground.subOneLt hb
     rw [← hlen]
     show (a + sumNat (ground.bumpAt ((b :: t).length - 1) (b :: t)))
         :: rowList (ground.bumpAt ((b :: t).length - 1) (b :: t))
@@ -2090,6 +2110,21 @@ occupancy. -/
 def perms (d : Nat) : List (List Nat) :=
   monomialsAt (List.replicate d 1)
 
+/-- A permutation's letter counts are the range's own: every letter
+below the count once, every letter at or beyond it absent. -/
+theorem perm_counts_range (k : Nat) {σ : List Nat}
+    (hσ : 0 < ground.countOf σ (perms k)) (x : Nat) :
+    ground.countOf x σ = ground.countOf x (List.range k) := by
+  obtain ⟨hlen, hdist, hval, hocc⟩ := perm_member_reads hσ
+  rw [ground.countOf_range x k]
+  by_cases hx : x < k
+  · rw [if_pos hx]
+    exact Nat.le_antisymm (hdist x) (hocc x hx)
+  · rw [if_neg hx]
+    match Nat.eq_zero_or_pos (ground.countOf x σ) with
+    | .inl h => exact h
+    | .inr h => exact absurd (hval x h) hx
+
 /-- The permuted display: the monomial's exponent list at a
 permutation. -/
 def expo (beta p : List Nat) : List Nat :=
@@ -2313,6 +2348,44 @@ private theorem xor_eq_false {a b : Bool} (h : xor a b = false) :
     | true => exact absurd h (fun hh => Bool.noConfusion hh)
     | false => rfl
 
+/-- A member's entry sits below the width. -/
+theorem perm_lt (m : Nat) {ρ : List Nat}
+    (hr : 0 < ground.countOf ρ (perms m)) (i : Nat)
+    (hi : i < m) : ground.getAt 0 ρ i < m := by
+  obtain ⟨hlen, _, hval, _⟩ := perm_member_reads hr
+  exact hval _ (ground.countOf_getAt_pos 0 ρ i (by
+    rw [hlen]
+    exact hi))
+
+/-- The partner assignment's entry sits below the width. -/
+theorem perm_inv_lt (m : Nat) {ρ : List Nat}
+    (hr : 0 < ground.countOf ρ (perms m)) (i : Nat)
+    (hi : i < m) :
+    ground.getAt 0 (invPerm m ρ) i < m := by
+  obtain ⟨hlen, _, _, hocc⟩ := perm_member_reads hr
+  rw [getAt_invPerm m ρ hi, ← hlen]
+  exact posOf_lt i ρ (hocc i hi)
+
+/-- The assignment reads its partner's entry back. -/
+theorem perm_right (m : Nat) {ρ : List Nat}
+    (hr : 0 < ground.countOf ρ (perms m)) (i : Nat)
+    (hi : i < m) :
+    ground.getAt 0 ρ (ground.getAt 0 (invPerm m ρ) i) = i := by
+  obtain ⟨_, _, _, hocc⟩ := perm_member_reads hr
+  rw [getAt_invPerm m ρ hi]
+  exact getAt_posOf i ρ (hocc i hi)
+
+/-- The partner reads the assignment's entry back. -/
+theorem perm_left (m : Nat) {ρ : List Nat}
+    (hr : 0 < ground.countOf ρ (perms m)) (i : Nat)
+    (hi : i < m) :
+    ground.getAt 0 (invPerm m ρ) (ground.getAt 0 ρ i) = i := by
+  obtain ⟨hlen, hdist, _, _⟩ := perm_member_reads hr
+  rw [getAt_invPerm m ρ (perm_lt m hr i hi)]
+  exact posOf_getAt hdist i (by
+    rw [hlen]
+    exact hi)
+
 /-- The composed pair reads the unit assignment: the flipped
 assignment against the assignment is the sorted display. -/
 theorem invPerm_comp (d : Nat) {q : List Nat}
@@ -2346,6 +2419,1177 @@ theorem parity_invPerm (d : Nat) {q : List Nat}
     rfl
   rw [hfalse] at hpc
   exact xor_eq_false hpc.symm
+
+/-! The orbit walk's kit: the iterated assignment with its splits
+and bound, the positional injectivity, and the pigeonhole at the
+key range — a distinct family within the alphabet is no longer
+than the alphabet. -/
+
+/-- The assignment's iterate at a count: `def:ground`'s composed
+walk, the place after the stated number of steps. -/
+def iterP (pi : List Nat) : Nat → Nat → Nat
+  | 0, j => j
+  | t + 1, j => ground.getAt 0 pi (iterP pi t j)
+
+/-- The iterate splits at its first step. -/
+theorem iterP_succ (pi : List Nat) :
+    ∀ (t j : Nat),
+      iterP pi (t + 1) j = iterP pi t (ground.getAt 0 pi j)
+  | 0, _ => rfl
+  | t + 1, j => congrArg (ground.getAt 0 pi) (iterP_succ pi t j)
+
+/-- The iterate splits at any seam. -/
+theorem iterP_add (pi : List Nat) :
+    ∀ (a b j : Nat), iterP pi (a + b) j = iterP pi a (iterP pi b j)
+  | 0, b, j => by rw [Nat.zero_add]; rfl
+  | a + 1, b, j => by
+    rw [Nat.succ_add]
+    exact congrArg (ground.getAt 0 pi) (iterP_add pi a b j)
+
+/-- The iterates stay within the key range. -/
+theorem iterP_lt (k : Nat) {π : List Nat}
+    (hπ : 0 < ground.countOf π (perms k)) :
+    ∀ (t j : Nat), j < k → iterP π t j < k := by
+  obtain ⟨hlen, _, hval, _⟩ := perm_member_reads hπ
+  intro t
+  induction t with
+  | zero => exact fun j hj => hj
+  | succ t ih =>
+    intro j hj
+    exact hval _ (ground.countOf_getAt_pos 0 π (iterP π t j)
+      (by rw [hlen]; exact ih j hj))
+
+/-- The assignment is positionally injective: one value sits at one
+place. -/
+theorem perm_inj (k : Nat) {π : List Nat}
+    (hπ : 0 < ground.countOf π (perms k)) :
+    ∀ a b, a < k → b < k →
+      ground.getAt 0 π a = ground.getAt 0 π b → a = b := by
+  obtain ⟨hlen, hdist, _, _⟩ := perm_member_reads hπ
+  intro a b ha hb he
+  have h1 := posOf_getAt hdist a (by rw [hlen]; exact ha)
+  have h2 := posOf_getAt hdist b (by rw [hlen]; exact hb)
+  rw [← h1, he, h2]
+
+/-- The cycle fold read at the walk: `cyclesOf` is the fold
+over the key range taking each unwalked place's orbit. -/
+private theorem cyclesOf_read (pi : List Nat) :
+    cyclesOf pi
+      = ((List.range pi.length).foldl (fun st i =>
+          if 0 < ground.countOf i st.2 then st
+          else
+            (st.1 ++ [cycGo pi i pi.length i],
+             st.2 ++ cycGo pi i pi.length i))
+          (([], []) : List (List Nat) × List Nat)).1 := rfl
+
+/-- The walk's pack: against a distinct emitted trace chained from
+the start and a fuel covering the range, the walk's members sit in
+the range, close under the assignment up to the start's return,
+are fresh off the trace, distinct, iterates of the entry, hold the
+entry, and reach the start's preimage — the budget forcing the
+return before the fuel runs out (the pigeonhole at the range). -/
+private theorem cycM_pack (k : Nat) {π : List Nat}
+    (hπ : 0 < ground.countOf π (perms k)) (i : Nat) :
+    ∀ (fuel : Nat) (j : Nat) (seen : List Nat), j < k →
+      (∀ x, ground.countOf x seen ≤ 1) →
+      (∀ x, 0 < ground.countOf x seen → x < k) →
+      ground.countOf j seen = 0 →
+      ground.getAt 0 (seen ++ [j]) 0 = i →
+      (∀ t, t + 1 < (seen ++ [j]).length →
+        ground.getAt 0 (seen ++ [j]) (t + 1)
+          = ground.getAt 0 π (ground.getAt 0 (seen ++ [j]) t)) →
+      k ≤ fuel + seen.length →
+      (∀ p, 0 < ground.countOf p (cycGo π i fuel j) → p < k)
+        ∧ (∀ p, 0 < ground.countOf p (cycGo π i fuel j) →
+            ground.getAt 0 π p = i
+              ∨ 0 < ground.countOf (ground.getAt 0 π p)
+                  (cycGo π i fuel j))
+        ∧ (∀ p, 0 < ground.countOf p (cycGo π i fuel j) →
+            ground.countOf p seen = 0)
+        ∧ (∀ p, ground.countOf p (cycGo π i fuel j) ≤ 1)
+        ∧ (∀ p, 0 < ground.countOf p (cycGo π i fuel j) →
+            ∃ t, p = iterP π t j)
+        ∧ 0 < ground.countOf j (cycGo π i fuel j)
+        ∧ (∃ p, 0 < ground.countOf p (cycGo π i fuel j)
+            ∧ ground.getAt 0 π p = i) := by
+  obtain ⟨hπlen, hπdist, hπval, hπocc⟩ := perm_member_reads hπ
+  intro fuel
+  induction fuel with
+  | zero =>
+    intro j seen hj hsd hsk hjf _ _ hbud
+    exfalso
+    have hlen := ground.length_le_of_distinct (seen ++ [j]) k
+      (ground.snoc_distinct hsd hjf) (ground.snoc_lt hsk hj)
+    rw [ground.length_append] at hlen
+    have hbud' : k ≤ seen.length := by
+      rw [Nat.zero_add] at hbud
+      exact hbud
+    have habs : seen.length + 1 ≤ seen.length :=
+      Nat.le_trans hlen hbud'
+    exact absurd habs (Nat.not_succ_le_self seen.length)
+  | succ fuel ih =>
+    intro j seen hj hsd hsk hjf hhead hchain hbud
+    by_cases hg : ground.getAt 0 π j = i
+    · have hstep : cycGo π i (fuel + 1) j = [j] := by
+        show j :: (if ground.getAt 0 π j == i then []
+          else cycGo π i fuel (ground.getAt 0 π j)) = [j]
+        rw [ground.eqBeqOf hg, if_pos rfl]
+      rw [hstep]
+      have hone : ∀ p : Nat,
+          ground.countOf p [j] = if p = j then 1 else 0 :=
+        fun p => (ground.countOf_cons p j ([] : List Nat)).trans
+          (Nat.add_zero _)
+      have hmem : ∀ p : Nat, 0 < ground.countOf p [j] → p = j := by
+        intro p hp
+        by_cases hpj : p = j
+        · exact hpj
+        · rw [hone p, if_neg hpj] at hp
+          exact absurd hp (Nat.lt_irrefl 0)
+      have hjj : 0 < ground.countOf j [j] := by
+        rw [hone j, if_pos rfl]
+        exact Nat.succ_pos 0
+      refine ⟨?_, ?_, ?_, ?_, ?_, hjj, ⟨j, hjj, hg⟩⟩
+      · intro p hp
+        rw [hmem p hp]
+        exact hj
+      · intro p hp
+        rw [hmem p hp]
+        exact Or.inl hg
+      · intro p hp
+        rw [hmem p hp]
+        exact hjf
+      · intro p
+        rw [hone p]
+        by_cases hpj : p = j
+        · rw [if_pos hpj]
+          exact Nat.le_refl 1
+        · rw [if_neg hpj]
+          exact Nat.le_succ 0
+      · intro p hp
+        exact ⟨0, hmem p hp⟩
+    · have hbeq : (ground.getAt 0 π j == i) = false := by
+        cases hbe : (ground.getAt 0 π j == i) with
+        | false => rfl
+        | true => exact absurd (ground.beqEqOf hbe) hg
+      have hstep : cycGo π i (fuel + 1) j
+          = j :: cycGo π i fuel (ground.getAt 0 π j) := by
+        show j :: (if ground.getAt 0 π j == i then []
+          else cycGo π i fuel (ground.getAt 0 π j)) = _
+        rw [hbeq,
+          if_neg (fun h : false = true => Bool.noConfusion h)]
+      have hj' : ground.getAt 0 π j < k :=
+        hπval _ (ground.countOf_getAt_pos 0 π j (by rw [hπlen]; exact hj))
+      have hlen_tr : (seen ++ [j]).length = seen.length + 1 := by
+        rw [ground.length_append]
+        rfl
+      have hfresh : ground.countOf (ground.getAt 0 π j)
+          (seen ++ [j]) = 0 := by
+        match Nat.eq_zero_or_pos (ground.countOf (ground.getAt 0 π j)
+            (seen ++ [j])) with
+        | .inl h => exact h
+        | .inr hpos =>
+          exfalso
+          match ground.getAt_of_mem 0
+              (ground.mem_of_countOf_pos _ _ hpos) with
+          | ⟨t, ht, hte⟩ =>
+            match t with
+            | 0 =>
+              rw [hhead] at hte
+              exact hg hte.symm
+            | s + 1 =>
+              have hchs := hchain s ht
+              have hpp : ground.getAt 0 π
+                  (ground.getAt 0 (seen ++ [j]) s)
+                  = ground.getAt 0 π j := by
+                rw [← hchs, hte]
+              have hs_lt : s < (seen ++ [j]).length :=
+                Nat.lt_of_succ_lt ht
+              have htrs_lt : ground.getAt 0 (seen ++ [j]) s < k :=
+                ground.snoc_lt hsk hj _
+                  (ground.countOf_getAt_pos 0 (seen ++ [j]) s hs_lt)
+              have hsj : ground.getAt 0 (seen ++ [j]) s = j :=
+                perm_inj k hπ _ j htrs_lt hj hpp
+              have hs_seen : s < seen.length := by
+                rw [hlen_tr] at ht
+                exact Nat.lt_of_succ_lt_succ ht
+              have hjs : 0 < ground.countOf j seen := by
+                rw [← hsj, ground.getAt_append 0 seen [j] s,
+                  if_pos hs_seen]
+                exact ground.countOf_getAt_pos 0 seen s hs_seen
+              rw [hjf] at hjs
+              exact absurd hjs (Nat.lt_irrefl 0)
+      have hhead' : ground.getAt 0
+          ((seen ++ [j]) ++ [ground.getAt 0 π j]) 0 = i := by
+        rw [ground.getAt_append 0 (seen ++ [j]) _ 0,
+          if_pos (by rw [hlen_tr]; exact Nat.succ_pos _)]
+        exact hhead
+      have hchain' : ∀ t,
+          t + 1 < ((seen ++ [j]) ++ [ground.getAt 0 π j]).length →
+          ground.getAt 0 ((seen ++ [j]) ++ [ground.getAt 0 π j]) (t + 1)
+            = ground.getAt 0 π (ground.getAt 0
+                ((seen ++ [j]) ++ [ground.getAt 0 π j]) t) := by
+        intro t ht
+        have hlen2 : ((seen ++ [j]) ++ [ground.getAt 0 π j]).length
+            = (seen ++ [j]).length + 1 := by
+          rw [ground.length_append]
+          rfl
+        by_cases hts : t + 1 < (seen ++ [j]).length
+        · rw [ground.getAt_append 0 (seen ++ [j]) _ (t + 1),
+            if_pos hts, ground.getAt_append 0 (seen ++ [j]) _ t,
+            if_pos (Nat.lt_of_succ_lt hts)]
+          exact hchain t hts
+        · have hte : t + 1 = (seen ++ [j]).length := by
+            rw [hlen2] at ht
+            exact Nat.le_antisymm (Nat.le_of_lt_succ ht)
+              (Nat.le_of_not_lt hts)
+          have htl : t < (seen ++ [j]).length := by
+            rw [← hte]
+            exact Nat.lt_succ_self t
+          have hts2 : t = seen.length := by
+            rw [hlen_tr] at hte
+            exact Nat.succ.inj hte
+          have hgj : ground.getAt 0 (seen ++ [j]) t = j := by
+            rw [ground.getAt_append 0 seen [j] t, hts2,
+              if_neg (Nat.lt_irrefl _), Nat.sub_self]
+            rfl
+          rw [ground.getAt_append 0 (seen ++ [j]) _ (t + 1),
+            if_neg (by rw [hte]; exact Nat.lt_irrefl _), hte,
+            Nat.sub_self,
+            ground.getAt_append 0 (seen ++ [j]) _ t, if_pos htl, hgj]
+          rfl
+      have hbud' : k ≤ fuel + (seen ++ [j]).length := by
+        rw [hlen_tr, Nat.add_comm seen.length 1, ← Nat.add_assoc]
+        exact hbud
+      obtain ⟨ia, ib, ic, id2, ie, ig, ihh⟩ := ih (ground.getAt 0 π j)
+        (seen ++ [j]) hj' (ground.snoc_distinct hsd hjf)
+        (ground.snoc_lt hsk hj) hfresh hhead' hchain' hbud'
+      rw [hstep]
+      have hsplit : ∀ p, 0 < ground.countOf p
+          (j :: cycGo π i fuel (ground.getAt 0 π j)) →
+          p = j ∨ 0 < ground.countOf p
+            (cycGo π i fuel (ground.getAt 0 π j)) := by
+        intro p hp
+        by_cases hpj : p = j
+        · exact Or.inl hpj
+        · rw [ground.countOf_head_ne hpj] at hp
+          exact Or.inr hp
+      refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+      · intro p hp
+        match hsplit p hp with
+        | .inl hpj =>
+          rw [hpj]
+          exact hj
+        | .inr hpc => exact ia p hpc
+      · intro p hp
+        match hsplit p hp with
+        | .inl hpj =>
+          refine Or.inr ?_
+          rw [hpj]
+          exact ground.countOf_cons_pos ig
+        | .inr hpc =>
+          match ib p hpc with
+          | .inl hpi => exact Or.inl hpi
+          | .inr hpn => exact Or.inr (ground.countOf_cons_pos hpn)
+      · intro p hp
+        match hsplit p hp with
+        | .inl hpj =>
+          rw [hpj]
+          exact hjf
+        | .inr hpc =>
+          have hz := ic p hpc
+          rw [ground.countOf_snoc] at hz
+          exact Nat.eq_zero_of_add_eq_zero_right hz
+      · intro p
+        by_cases hpj : p = j
+        · rw [hpj, ground.countOf_head]
+          match Nat.eq_zero_or_pos (ground.countOf j
+              (cycGo π i fuel (ground.getAt 0 π j))) with
+          | .inl hz =>
+            rw [hz]
+            exact Nat.le_refl 1
+          | .inr hpos =>
+            have hz := ic j hpos
+            rw [ground.countOf_snoc, if_pos rfl] at hz
+            exact Nat.noConfusion hz
+        · rw [ground.countOf_head_ne hpj]
+          exact id2 p
+      · intro p hp
+        match hsplit p hp with
+        | .inl hpj => exact ⟨0, hpj⟩
+        | .inr hpc =>
+          match ie p hpc with
+          | ⟨t, hpt⟩ =>
+            refine ⟨t + 1, ?_⟩
+            rw [iterP_succ]
+            exact hpt
+      · rw [ground.countOf_head]
+        exact Nat.succ_pos _
+      · match ihh with
+        | ⟨p, hpc, hpi⟩ => exact ⟨p, ground.countOf_cons_pos hpc, hpi⟩
+
+/-- The return: from any place the iterates come back — the walk
+reaches the start's preimage, whose image closes the orbit. -/
+private theorem iter_return (k : Nat) {π : List Nat}
+    (hπ : 0 < ground.countOf π (perms k)) (j : Nat)
+    (hj : j < k) : ∃ r, iterP π (r + 1) j = j := by
+  obtain ⟨_, _, _, _, he, _, hp, hpc, hpi⟩ := cycM_pack k hπ j k j []
+    hj (fun _ => Nat.le_succ 0)
+    (fun x hx => absurd hx (Nat.lt_irrefl 0)) rfl rfl
+    (fun t ht => absurd (Nat.lt_of_succ_lt_succ ht) (Nat.not_lt_zero t))
+    (Nat.le_refl k)
+  match he hp hpc with
+  | ⟨t, hpt⟩ =>
+    refine ⟨t, ?_⟩
+    show ground.getAt 0 π (iterP π t j) = j
+    rw [← hpt]
+    exact hpi
+
+/-- The orbit relation is symmetric: a place reading as an iterate
+reads its source back, the return closing the gap. -/
+private theorem iter_back (k : Nat) {π : List Nat}
+    (hπ : 0 < ground.countOf π (perms k)) :
+    ∀ (t j p : Nat), j < k → p = iterP π t j →
+      ∃ s, j = iterP π s p := by
+  obtain ⟨hπlen, _, hπval, _⟩ := perm_member_reads hπ
+  intro t
+  induction t with
+  | zero =>
+    intro j p _ hp
+    exact ⟨0, hp.symm⟩
+  | succ t ihb =>
+    intro j p hj hp
+    have hj' : ground.getAt 0 π j < k :=
+      hπval _ (ground.countOf_getAt_pos 0 π j (by rw [hπlen]; exact hj))
+    have hp' : p = iterP π t (ground.getAt 0 π j) := by
+      rw [← iterP_succ]
+      exact hp
+    match ihb (ground.getAt 0 π j) p hj' hp' with
+    | ⟨s, hs⟩ =>
+      match iter_return k hπ j hj with
+      | ⟨r, hr⟩ =>
+        refine ⟨r + s, ?_⟩
+        rw [iterP_add π r s p, ← hs, ← iterP_succ π r j]
+        exact hr.symm
+
+/-- The cycle fold's invariant: the visited list counts as the
+cycles' flattening, is distinct, bounded and closed under the
+assignment, and every collected cycle is occupied, bounded, closed,
+and its members the head's iterates. -/
+private def cycInv (k : Nat) (π : List Nat)
+    (st : List (List Nat) × List Nat) : Prop :=
+  (∀ q, ground.countOf q st.2
+      = ground.countOf q (st.1.flatMap (fun c => c)))
+    ∧ (∀ q, ground.countOf q st.2 ≤ 1)
+    ∧ (∀ q, 0 < ground.countOf q st.2 → q < k)
+    ∧ (∀ q, 0 < ground.countOf q st.2 →
+        0 < ground.countOf (ground.getAt 0 π q) st.2)
+    ∧ (∀ c, 0 < ground.countOf c st.1 →
+        0 < c.length
+          ∧ (∀ p, 0 < ground.countOf p c → p < k)
+          ∧ (∀ p, 0 < ground.countOf p c →
+              0 < ground.countOf (ground.getAt 0 π p) c)
+          ∧ (∀ p, 0 < ground.countOf p c →
+              ∃ t, p = iterP π t (ground.getAt 0 c 0)))
+
+/-- The visited list is closed under the iterates. -/
+private theorem visited_iter (k : Nat) (π : List Nat)
+    {st : List (List Nat) × List Nat} (hinv : cycInv k π st) :
+    ∀ (s q : Nat), 0 < ground.countOf q st.2 →
+      0 < ground.countOf (iterP π s q) st.2 := by
+  intro s
+  induction s with
+  | zero => exact fun q hq => hq
+  | succ s ihs =>
+    intro q hq
+    exact hinv.2.2.2.1 _ (ihs q hq)
+
+/-- The fold's step keeps the invariant and grows the visited list
+onto the processed key: a walked key adds its whole orbit — fresh
+off the visited list, the return reading any met place back to the
+start against the guard. -/
+private theorem cycStep_pack (k : Nat) {π : List Nat}
+    (hπ : 0 < ground.countOf π (perms k))
+    (st : List (List Nat) × List Nat) (x : Nat) (hxk : x < k)
+    (hinv : cycInv k π st) :
+    cycInv k π (if 0 < ground.countOf x st.2 then st
+        else (st.1 ++ [cycGo π x k x], st.2 ++ cycGo π x k x))
+      ∧ (∀ q, 0 < ground.countOf q st.2 →
+          0 < ground.countOf q
+            (if 0 < ground.countOf x st.2 then st
+              else (st.1 ++ [cycGo π x k x],
+                st.2 ++ cycGo π x k x)).2)
+      ∧ 0 < ground.countOf x
+          (if 0 < ground.countOf x st.2 then st
+            else (st.1 ++ [cycGo π x k x], st.2 ++ cycGo π x k x)).2 := by
+  obtain ⟨i1, i2, i3, i4, i5⟩ := hinv
+  by_cases hx : 0 < ground.countOf x st.2
+  · rw [if_pos hx]
+    exact ⟨⟨i1, i2, i3, i4, i5⟩, fun q hq => hq, hx⟩
+  · rw [if_neg hx]
+    have hxf : ground.countOf x st.2 = 0 :=
+      match Nat.eq_zero_or_pos (ground.countOf x st.2) with
+      | .inl h => h
+      | .inr h => absurd h hx
+    obtain ⟨wa, wb, _, wd, we, wg, _⟩ := cycM_pack k hπ x k x []
+      hxk (fun _ => Nat.le_succ 0)
+      (fun z hz => absurd hz (Nat.lt_irrefl 0)) rfl rfl
+      (fun t ht => absurd (Nat.lt_of_succ_lt_succ ht)
+        (Nat.not_lt_zero t))
+      (Nat.le_refl k)
+    have hhead : ground.getAt 0 (cycGo π x k x) 0 = x := by
+      match k, hxk with
+      | k' + 1, _ => rfl
+    have hdisj : ∀ p, 0 < ground.countOf p (cycGo π x k x) →
+        ground.countOf p st.2 = 0 := by
+      intro p hp
+      match Nat.eq_zero_or_pos (ground.countOf p st.2) with
+      | .inl h => exact h
+      | .inr hpos =>
+        exfalso
+        match we p hp with
+        | ⟨t, hpt⟩ =>
+          match iter_back k hπ t x p hxk hpt with
+          | ⟨s, hxs⟩ =>
+            refine hx ?_
+            rw [hxs]
+            exact visited_iter k π ⟨i1, i2, i3, i4, i5⟩ s p hpos
+    have hclosure : ∀ p, 0 < ground.countOf p (cycGo π x k x) →
+        0 < ground.countOf (ground.getAt 0 π p) (cycGo π x k x) := by
+      intro p hp
+      match wb p hp with
+      | .inl hpi =>
+        rw [hpi]
+        exact wg
+      | .inr hpn => exact hpn
+    refine ⟨⟨?_, ?_, ?_, ?_, ?_⟩, ?_, ?_⟩
+    · intro q
+      show ground.countOf q (st.2 ++ cycGo π x k x) = _
+      rw [ground.countOf_append,
+        ground.flatMap_append (fun c => c) st.1 [cycGo π x k x],
+        ground.countOf_append, i1 q]
+      refine congrArg (Nat.add _) ?_
+      show ground.countOf q (cycGo π x k x)
+        = ground.countOf q (cycGo π x k x ++ [])
+      rw [ground.countOf_append]
+      exact (Nat.add_zero _).symm
+    · intro q
+      show ground.countOf q (st.2 ++ cycGo π x k x) ≤ 1
+      rw [ground.countOf_append]
+      match Nat.eq_zero_or_pos (ground.countOf q (cycGo π x k x)) with
+      | .inl hz =>
+        rw [hz, Nat.add_zero]
+        exact i2 q
+      | .inr hp =>
+        rw [hdisj q hp, Nat.zero_add]
+        exact wd q
+    · intro q hq
+      match ground.countOf_append_split q st.2 (cycGo π x k x) hq with
+      | .inl h => exact i3 q h
+      | .inr h => exact wa q h
+    · intro q hq
+      match ground.countOf_append_split q st.2 (cycGo π x k x) hq with
+      | .inl h => exact ground.countOf_append_left _ _ (i4 q h)
+      | .inr h => exact ground.countOf_append_right _ _ (hclosure q h)
+    · intro c hc
+      have hc' : 0 < ground.countOf c st.1
+          ∨ 0 < ground.countOf c [cycGo π x k x] :=
+        ground.countOf_append_split c st.1 [cycGo π x k x] hc
+      match hc' with
+      | .inl h => exact i5 c h
+      | .inr h =>
+        have hcx : c = cycGo π x k x := by
+          by_cases hce : c = cycGo π x k x
+          · exact hce
+          · have hz : ground.countOf c [cycGo π x k x] = 0 :=
+              ground.countOf_head_ne hce []
+            rw [hz] at h
+            exact absurd h (Nat.lt_irrefl 0)
+        rw [hcx]
+        refine ⟨ground.length_pos_of_countOf wg, wa, hclosure, ?_⟩
+        rw [hhead]
+        exact we
+    · intro q hq
+      exact ground.countOf_append_left _ _ hq
+    · exact ground.countOf_append_right _ st.2 wg
+
+/-- The cycle fold's pack over any key list within the range: the
+invariant rides the fold, the visited list only grows, and every
+processed key lands in it. -/
+private theorem cyclesFold_pack (k : Nat) {π : List Nat}
+    (hπ : 0 < ground.countOf π (perms k)) :
+    ∀ (l : List Nat) (st : List (List Nat) × List Nat),
+      (∀ x, 0 < ground.countOf x l → x < k) →
+      cycInv k π st →
+      cycInv k π (l.foldl (fun st i =>
+          if 0 < ground.countOf i st.2 then st
+          else (st.1 ++ [cycGo π i k i], st.2 ++ cycGo π i k i)) st)
+        ∧ (∀ q, 0 < ground.countOf q st.2 →
+            0 < ground.countOf q (l.foldl (fun st i =>
+              if 0 < ground.countOf i st.2 then st
+              else (st.1 ++ [cycGo π i k i],
+                st.2 ++ cycGo π i k i)) st).2)
+        ∧ (∀ q, 0 < ground.countOf q l →
+            0 < ground.countOf q (l.foldl (fun st i =>
+              if 0 < ground.countOf i st.2 then st
+              else (st.1 ++ [cycGo π i k i],
+                st.2 ++ cycGo π i k i)) st).2)
+  | [], st, _, hinv =>
+    ⟨hinv, fun _ hq => hq, fun q hq => absurd hq (Nat.lt_irrefl 0)⟩
+  | x :: l, st, hlk, hinv => by
+    have hxk : x < k := hlk x (by
+      rw [ground.countOf_head]
+      exact Nat.succ_pos _)
+    obtain ⟨sinv, sgrow, sx⟩ := cycStep_pack k hπ st x hxk hinv
+    obtain ⟨finv, fgrow, fcov⟩ := cyclesFold_pack k hπ l
+      (if 0 < ground.countOf x st.2 then st
+        else (st.1 ++ [cycGo π x k x], st.2 ++ cycGo π x k x))
+      (fun z hz => hlk z (ground.countOf_cons_pos hz)) sinv
+    refine ⟨finv, ?_, ?_⟩
+    · intro q hq
+      exact fgrow q (sgrow q hq)
+    · intro q hq
+      by_cases hqx : q = x
+      · rw [hqx]
+        exact fgrow x sx
+      · rw [ground.countOf_head_ne hqx] at hq
+        exact fcov q hq
+
+/-- The cycles' pack: `cyclesOf` at an enumeration member
+covers every place exactly once — the flattening distinct and the
+range covered — and each cycle is occupied, bounded, closed under
+the assignment, and its members the head's iterates. -/
+theorem cycles_pack (k : Nat) {π : List Nat}
+    (hπ : 0 < ground.countOf π (perms k)) :
+    (∀ q, ground.countOf q
+        ((cyclesOf π).flatMap (fun c => c)) ≤ 1)
+      ∧ (∀ q, q < k →
+          0 < ground.countOf q
+            ((cyclesOf π).flatMap (fun c => c)))
+      ∧ (∀ c, 0 < ground.countOf c (cyclesOf π) →
+          0 < c.length
+            ∧ (∀ p, 0 < ground.countOf p c → p < k)
+            ∧ (∀ p, 0 < ground.countOf p c →
+                0 < ground.countOf (ground.getAt 0 π p) c)
+            ∧ (∀ p, 0 < ground.countOf p c →
+                ∃ t, p = iterP π t (ground.getAt 0 c 0))) := by
+  obtain ⟨hπlen, _, _, _⟩ := perm_member_reads hπ
+  have hread := cyclesOf_read π
+  rw [hπlen] at hread
+  obtain ⟨⟨f1, f2, _, _, f5⟩, _, fcov⟩ := cyclesFold_pack k hπ
+    (List.range k) (([], []) : List (List Nat) × List Nat)
+    (fun x hx => ground.ltOfMem hx)
+    ⟨fun _ => rfl, fun _ => Nat.le_succ 0,
+      fun _ hq => absurd hq (Nat.lt_irrefl 0),
+      fun _ hq => absurd hq (Nat.lt_irrefl 0),
+      fun _ hc => absurd hc (Nat.lt_irrefl 0)⟩
+  refine ⟨?_, ?_, ?_⟩
+  · intro q
+    rw [hread, ← f1 q]
+    exact f2 q
+  · intro q hq
+    rw [hread, ← f1 q]
+    exact fcov q (ground.countOf_range_pos hq)
+  · intro c hc
+    rw [hread] at hc
+    exact f5 c hc
+
+/-! The relabeling transport (`con:places`' composition sentence:
+a permutation composed between a second permutation and its
+inverse permutation walks the composed orbits at the images, the
+cycle count one value across the composition; consumed by
+`rem:kernel`'s gauge-mode clause): the wiring relabeled through a
+place permutation is again a wiring, the partner relabeling
+composes back to the wiring, and the cycle count is the wiring's
+own — one orbit word per orbit either side. -/
+
+/-- The place enumeration is distinct: the permutations are the
+unit-content monomials, whose enumeration lists each once. -/
+theorem perms_distinct : ∀ k : Nat, ground.distinctList (perms k) :=
+  fun k => monomialsAt_distinct (List.replicate k 1)
+
+/-- A cell's occupied key occupies the cells' flattening. -/
+private theorem flat_pos {q : Nat} :
+    ∀ (D : List (List Nat)) (i : Nat), i < D.length →
+      0 < ground.countOf q (ground.getAt ([] : List Nat) D i) →
+      0 < ground.countOf q (D.flatMap (fun c => c))
+  | [], i, hi, _ => absurd hi (Nat.not_lt_zero i)
+  | a :: t, 0, _, h => by
+    have ha : 0 < ground.countOf q a := h
+    show 0 < ground.countOf q (a ++ t.flatMap (fun c => c))
+    rw [ground.countOf_append]
+    exact Nat.lt_of_lt_of_le ha (Nat.le_add_right _ _)
+  | a :: t, i + 1, hi, h => by
+    have ht : 0 < ground.countOf q (t.flatMap (fun c => c)) :=
+      flat_pos t i (Nat.lt_of_succ_lt_succ hi) h
+    show 0 < ground.countOf q (a ++ t.flatMap (fun c => c))
+    rw [ground.countOf_append]
+    exact Nat.lt_of_lt_of_le ht (Nat.le_add_left _ _)
+
+/-- An occupied key of the flattening names its cell. -/
+private theorem flat_index {q : Nat} :
+    ∀ D : List (List Nat),
+      0 < ground.countOf q (D.flatMap (fun c => c)) →
+      ∃ i, i < D.length
+        ∧ 0 < ground.countOf q (ground.getAt ([] : List Nat) D i)
+  | [], h => absurd h (Nat.lt_irrefl 0)
+  | a :: t, h => by
+    have h' : 0 < ground.countOf q (a ++ t.flatMap (fun c => c)) :=
+      h
+    match ground.countOf_append_split q a _ h' with
+    | .inl hl => exact ⟨0, Nat.succ_pos _, hl⟩
+    | .inr hrt =>
+      match flat_index t hrt with
+      | ⟨i, hi, hq⟩ => exact ⟨i + 1, Nat.succ_lt_succ hi, hq⟩
+
+/-- Two cells sharing a key put the key twice in the flattening. -/
+private theorem two_cells {q : Nat} :
+    ∀ (D : List (List Nat)) (s s' : Nat), s < s' → s' < D.length →
+      0 < ground.countOf q (ground.getAt ([] : List Nat) D s) →
+      0 < ground.countOf q (ground.getAt ([] : List Nat) D s') →
+      2 ≤ ground.countOf q (D.flatMap (fun c => c))
+  | [], _, s', _, hs', _, _ => absurd hs' (Nat.not_lt_zero s')
+  | _ :: _, 0, 0, hlt, _, _, _ => absurd hlt (Nat.lt_irrefl 0)
+  | a :: t, 0, s' + 1, _, hs', hq, hq' => by
+    have ha : 0 < ground.countOf q a := hq
+    have ht : 0 < ground.countOf q (t.flatMap (fun c => c)) :=
+      flat_pos t s' (Nat.lt_of_succ_lt_succ hs') hq'
+    show 2 ≤ ground.countOf q (a ++ t.flatMap (fun c => c))
+    rw [ground.countOf_append]
+    exact Nat.add_le_add ha ht
+  | _ :: _, s + 1, 0, hlt, _, _, _ =>
+    absurd hlt (Nat.not_lt_zero (s + 1))
+  | a :: t, s + 1, s' + 1, hlt, hs', hq, hq' => by
+    have h2 : 2 ≤ ground.countOf q (t.flatMap (fun c => c)) :=
+      two_cells t s s' (Nat.lt_of_succ_lt_succ hlt)
+        (Nat.lt_of_succ_lt_succ hs') hq hq'
+    show 2 ≤ ground.countOf q (a ++ t.flatMap (fun c => c))
+    rw [ground.countOf_append]
+    exact Nat.le_trans h2 (Nat.le_add_left _ _)
+
+/-- The hit fold keeps a read the accumulator already holds. -/
+private theorem hitFold_keep (P : Nat → Prop) [DecidablePred P] :
+    ∀ (l : List Nat) (acc : Nat), P acc →
+      P (l.foldl (fun a i => if P i then i else a) acc)
+  | [], _, h => h
+  | i :: t, acc, h => by
+    show P (t.foldl (fun a j => if P j then j else a)
+      (if P i then i else acc))
+    by_cases hi : P i
+    · rw [if_pos hi]
+      exact hitFold_keep P t i hi
+    · rw [if_neg hi]
+      exact hitFold_keep P t acc h
+
+/-- The hit fold reads a key the family holds at the read. -/
+private theorem hitFold_hit (P : Nat → Prop) [DecidablePred P] :
+    ∀ (l : List Nat) (acc i : Nat), 0 < ground.countOf i l → P i →
+      P (l.foldl (fun a j => if P j then j else a) acc)
+  | [], _, i, hi, _ => absurd hi (Nat.lt_irrefl 0)
+  | b :: t, acc, i, hi, hpi => by
+    show P (t.foldl (fun a j => if P j then j else a)
+      (if P b then b else acc))
+    by_cases hib : i = b
+    · have hpb : P b := by rw [← hib]; exact hpi
+      rw [if_pos hpb]
+      exact hitFold_keep P t b hpb
+    · rw [ground.countOf_head_ne hib] at hi
+      exact hitFold_hit P t _ i hi hpi
+
+/-- A key occupying a cell read names a key of the cell list: past
+the list the read is the vacant cell. -/
+private theorem cellIndex_lt {q : Nat} (D : List (List Nat))
+    (i : Nat)
+    (h : 0 < ground.countOf q (ground.getAt ([] : List Nat) D i)) :
+    i < D.length := by
+  by_cases hi : i < D.length
+  · exact hi
+  · rw [ground.getAt_over ([] : List Nat) D i
+      (Nat.le_of_not_lt hi)] at h
+    exact absurd h (Nat.lt_irrefl 0)
+
+/-- A key family injective on the first list's keys and landing in
+the second's is a pigeonhole: the first list is no longer than the
+second. -/
+private theorem length_le_of_index {C D : List (List Nat)}
+    (g : Nat → Nat)
+    (hlt : ∀ s, s < C.length → g s < D.length)
+    (hinj : ∀ s s', s < C.length → s' < C.length →
+      g s = g s' → s = s') :
+    C.length ≤ D.length := by
+  have hLd : ∀ z, ground.countOf z
+      ((List.range C.length).map g) ≤ 1 := by
+    intro z
+    match Nat.eq_zero_or_pos
+        (ground.countOf z ((List.range C.length).map g)) with
+    | .inl hz =>
+      rw [hz]
+      exact Nat.zero_le 1
+    | .inr hpos =>
+      match ground.mem_map_of g (List.range C.length) z
+          (ground.mem_of_countOf_pos z _ hpos) with
+      | ⟨y, hy, hgy⟩ =>
+        have hyl : y < C.length :=
+          ground.ltOfMem (ground.countOf_pos_of_mem hy)
+        rw [ground.countOf_map_iff g (List.range C.length) z y
+          (fun v hv => ⟨fun he => hinj y v hyl (ground.ltOfMem hv)
+              (by rw [hgy]; exact he),
+            fun he => by rw [← he, hgy]⟩)]
+        exact ground.distinctList_all
+          (ground.distinctList_range C.length) y
+  have hLlt : ∀ z, 0 < ground.countOf z
+      ((List.range C.length).map g) → z < D.length := by
+    intro z hz
+    match ground.mem_map_of g (List.range C.length) z
+        (ground.mem_of_countOf_pos z _ hz) with
+    | ⟨y, hy, hgy⟩ =>
+      rw [← hgy]
+      exact hlt y (ground.ltOfMem (ground.countOf_pos_of_mem hy))
+  have hfin := ground.length_le_of_distinct
+    ((List.range C.length).map g) D.length hLd hLlt
+  rw [ground.length_map, ground.length_range] at hfin
+  exact hfin
+
+/-- A cell closed under the assignment holds every iterate of its
+members. -/
+private theorem cyc_iter {π c : List Nat}
+    (hcl : ∀ x, 0 < ground.countOf x c →
+      0 < ground.countOf (ground.getAt 0 π x) c) :
+    ∀ (t x : Nat), 0 < ground.countOf x c →
+      0 < ground.countOf (iterP π t x) c := by
+  intro t
+  induction t with
+  | zero => exact fun _ hx => hx
+  | succ t ih =>
+    intro x hx
+    exact hcl _ (ih x hx)
+
+/-- The relabeled wiring's entry: the wiring read at the partner
+relabeling's key, relabeled. -/
+private theorem getAt_relab (n : Nat) (comp r : List Nat) (i : Nat)
+    (hi : i < n) :
+    ground.getAt 0 ((invPerm n r).map (fun j =>
+        ground.getAt 0 r (ground.getAt 0 comp j))) i
+      = ground.getAt 0 r (ground.getAt 0 comp
+          (ground.getAt 0 (invPerm n r) i)) :=
+  ground.getAt_map 0 0 (fun j =>
+      ground.getAt 0 r (ground.getAt 0 comp j)) (invPerm n r) i
+    (by rw [length_invPerm]; exact hi)
+
+/-- The iterates transport along the relabeling: the relabeled
+wiring's iterate at a relabeled place is the wiring's iterate
+relabeled. -/
+private theorem iterP_transport (n : Nat) {comp r p : List Nat}
+    (hc : 0 < ground.countOf comp (perms n))
+    (hr : 0 < ground.countOf r (perms n))
+    (hpe : ∀ i, i < n → ground.getAt 0 p i
+      = ground.getAt 0 r (ground.getAt 0 comp
+          (ground.getAt 0 (invPerm n r) i))) :
+    ∀ (t x : Nat), x < n →
+      iterP p t (ground.getAt 0 r x)
+        = ground.getAt 0 r (iterP comp t x) := by
+  obtain ⟨hrlen, hrdist, hrval, _⟩ := perm_member_reads hr
+  intro t
+  induction t with
+  | zero => exact fun _ _ => rfl
+  | succ t ih =>
+    intro x hx
+    have hz : iterP comp t x < n := iterP_lt n hc t x hx
+    have hzlen : iterP comp t x < r.length := by
+      rw [hrlen]
+      exact hz
+    have hry : ground.getAt 0 r (iterP comp t x) < n :=
+      hrval _ (ground.countOf_getAt_pos 0 r _ hzlen)
+    show ground.getAt 0 p (iterP p t (ground.getAt 0 r x))
+      = ground.getAt 0 r
+          (ground.getAt 0 comp (iterP comp t x))
+    rw [ih x hx, hpe _ hry, getAt_invPerm n r hry,
+      posOf_getAt hrdist (iterP comp t x) hzlen]
+
+/-- The relabeled wiring is an enumeration member: the relabeling
+is the permuted display of the permuted display. -/
+theorem transport_member (n : Nat) {comp r : List Nat}
+    (hc : 0 < ground.countOf comp (perms n))
+    (hr : 0 < ground.countOf r (perms n)) :
+    0 < ground.countOf ((invPerm n r).map (fun j =>
+      ground.getAt 0 r (ground.getAt 0 comp j))) (perms n) := by
+  have hmap : (invPerm n r).map (fun j =>
+      ground.getAt 0 r (ground.getAt 0 comp j))
+      = expo r (expo comp (invPerm n r)) := by
+    show _ = ((invPerm n r).map (ground.getAt 0 comp)).map
+      (ground.getAt 0 r)
+    rw [ground.map_map (ground.getAt 0 comp) (ground.getAt 0 r)
+      (invPerm n r)]
+  rw [hmap]
+  exact expo_member n hr (expo_member n hc (invPerm_member n hr))
+
+/-- The partner relabeling's entry reads the wiring back. -/
+private theorem relab_back (n : Nat) {comp r p : List Nat}
+    (hc : 0 < ground.countOf comp (perms n))
+    (hr : 0 < ground.countOf r (perms n))
+    (hpe : ∀ i, i < n → ground.getAt 0 p i
+      = ground.getAt 0 r (ground.getAt 0 comp
+          (ground.getAt 0 (invPerm n r) i)))
+    (i : Nat) (hi : i < n) :
+    ground.getAt 0 (invPerm n r) (ground.getAt 0 p
+        (ground.getAt 0 (invPerm n (invPerm n r)) i))
+      = ground.getAt 0 comp i := by
+  obtain ⟨hrlen, hrdist, hrval, _⟩ := perm_member_reads hr
+  obtain ⟨hclen, _, hcval, _⟩ := perm_member_reads hc
+  have hilen : i < r.length := by
+    rw [hrlen]
+    exact hi
+  have hy : ground.getAt 0 r i < n :=
+    hrval _ (ground.countOf_getAt_pos 0 r i hilen)
+  have hci : ground.getAt 0 comp i < n :=
+    hcval _ (ground.countOf_getAt_pos 0 comp i (by
+      rw [hclen]
+      exact hi))
+  have hcilen : ground.getAt 0 comp i < r.length := by
+    rw [hrlen]
+    exact hci
+  have hz : ground.getAt 0 r (ground.getAt 0 comp i) < n :=
+    hrval _ (ground.countOf_getAt_pos 0 r _ hcilen)
+  rw [invPerm_invPerm n hr, hpe _ hy, getAt_invPerm n r hy,
+    posOf_getAt hrdist i hilen, getAt_invPerm n r hz,
+    posOf_getAt hrdist (ground.getAt 0 comp i) hcilen]
+
+/-- The partner relabeling composes to the wiring: relabeling the
+relabeled wiring through the flipped assignment reads the wiring
+back. -/
+theorem transport_invol (n : Nat) {comp r : List Nat}
+    (hc : 0 < ground.countOf comp (perms n))
+    (hr : 0 < ground.countOf r (perms n)) :
+    (invPerm n (invPerm n r)).map (fun j =>
+      ground.getAt 0 (invPerm n r)
+        (ground.getAt 0 ((invPerm n r).map (fun i =>
+          ground.getAt 0 r (ground.getAt 0 comp i))) j))
+    = comp := by
+  obtain ⟨hclen, _, _, _⟩ := perm_member_reads hc
+  refine ground.getAt_ext 0 _ _ ?_ ?_
+  · rw [ground.length_map, length_invPerm, hclen]
+  · intro i hi
+    rw [ground.length_map, length_invPerm] at hi
+    rw [ground.getAt_map 0 0 _ (invPerm n (invPerm n r)) i
+      (by rw [length_invPerm]; exact hi)]
+    exact relab_back n hc hr (getAt_relab n comp r) i hi
+
+/-- The half comparison: the wiring's cycle count is at or below
+the relabeled wiring's, each cycle's relabeled head naming its own
+cell of the relabeled wiring's cycles. -/
+private theorem cycles_le (n : Nat) {comp r p : List Nat}
+    (hc : 0 < ground.countOf comp (perms n))
+    (hr : 0 < ground.countOf r (perms n))
+    (hp : 0 < ground.countOf p (perms n))
+    (hpe : ∀ i, i < n → ground.getAt 0 p i
+      = ground.getAt 0 r (ground.getAt 0 comp
+          (ground.getAt 0 (invPerm n r) i))) :
+    (cyclesOf comp).length ≤ (cyclesOf p).length := by
+  obtain ⟨hrlen, _, hrval, _⟩ := perm_member_reads hr
+  obtain ⟨hCflat, _, hCcell⟩ := cycles_pack n hc
+  obtain ⟨_, hDcov, hDcell⟩ := cycles_pack n hp
+  have hcellMem : ∀ s, s < (cyclesOf comp).length →
+      0 < ground.countOf
+        (ground.getAt ([] : List Nat) (cyclesOf comp) s)
+        (cyclesOf comp) := fun s hs =>
+    ground.countOf_getAt_pos ([] : List Nat) (cyclesOf comp) s hs
+  have hheadMem : ∀ s, s < (cyclesOf comp).length →
+      0 < ground.countOf (ground.getAt 0
+          (ground.getAt ([] : List Nat) (cyclesOf comp) s) 0)
+        (ground.getAt ([] : List Nat) (cyclesOf comp) s) :=
+    fun s hs => ground.countOf_getAt_pos 0 _ 0
+      (hCcell _ (hcellMem s hs)).1
+  have hheadLt : ∀ s, s < (cyclesOf comp).length →
+      ground.getAt 0
+        (ground.getAt ([] : List Nat) (cyclesOf comp) s) 0 < n :=
+    fun s hs => (hCcell _ (hcellMem s hs)).2.1 _ (hheadMem s hs)
+  have hcellEq : ∀ (x s s' : Nat), s < (cyclesOf comp).length →
+      s' < (cyclesOf comp).length →
+      0 < ground.countOf x
+        (ground.getAt ([] : List Nat) (cyclesOf comp) s) →
+      0 < ground.countOf x
+        (ground.getAt ([] : List Nat) (cyclesOf comp) s') →
+      s = s' := by
+    intro x s s' hs hs' h1 h2
+    match Nat.lt_or_ge s s' with
+    | .inl hlt =>
+      exact absurd (Nat.le_trans
+        (two_cells (cyclesOf comp) s s' hlt hs' h1 h2)
+        (hCflat x)) (Nat.not_succ_le_self 1)
+    | .inr hge =>
+      match Nat.lt_or_ge s' s with
+      | .inl hlt =>
+        exact absurd (Nat.le_trans
+          (two_cells (cyclesOf comp) s' s hlt hs h2 h1)
+          (hCflat x)) (Nat.not_succ_le_self 1)
+      | .inr hge2 => exact Nat.le_antisymm hge2 hge
+  have hcross : ∀ (s s' k : Nat), s < (cyclesOf comp).length →
+      s' < (cyclesOf comp).length →
+      ground.getAt 0 r (ground.getAt 0
+          (ground.getAt ([] : List Nat) (cyclesOf comp) s') 0)
+        = iterP p k (ground.getAt 0 r (ground.getAt 0
+            (ground.getAt ([] : List Nat) (cyclesOf comp) s) 0)) →
+      s = s' := by
+    intro s s' k hs hs' hk
+    rw [iterP_transport n hc hr hpe k _ (hheadLt s hs)] at hk
+    have h1 : ground.getAt 0
+        (ground.getAt ([] : List Nat) (cyclesOf comp) s') 0
+        = iterP comp k (ground.getAt 0
+            (ground.getAt ([] : List Nat) (cyclesOf comp) s) 0) :=
+      perm_inj n hr _ _ (hheadLt s' hs')
+        (iterP_lt n hc k _ (hheadLt s hs)) hk
+    refine hcellEq _ s s' hs hs' ?_ (hheadMem s' hs')
+    rw [h1]
+    exact cyc_iter (hCcell _ (hcellMem s hs)).2.2.1 k _
+      (hheadMem s hs)
+  have hA : ∀ s, s < (cyclesOf comp).length →
+      0 < ground.countOf (ground.getAt 0 r (ground.getAt 0
+          (ground.getAt ([] : List Nat) (cyclesOf comp) s) 0))
+        (ground.getAt ([] : List Nat) (cyclesOf p)
+          ((List.range (cyclesOf p).length).foldl (fun a i =>
+            if 0 < ground.countOf (ground.getAt 0 r (ground.getAt 0
+                (ground.getAt ([] : List Nat) (cyclesOf comp) s) 0))
+                (ground.getAt ([] : List Nat) (cyclesOf p) i)
+              then i else a) (cyclesOf p).length)) := by
+    intro s hs
+    have hq : ground.getAt 0 r (ground.getAt 0
+        (ground.getAt ([] : List Nat) (cyclesOf comp) s) 0) < n :=
+      hrval _ (ground.countOf_getAt_pos 0 r _ (by
+        rw [hrlen]
+        exact hheadLt s hs))
+    match flat_index (cyclesOf p) (hDcov _ hq) with
+    | ⟨i, hi, hqi⟩ =>
+      exact hitFold_hit (fun i => 0 < ground.countOf
+          (ground.getAt 0 r (ground.getAt 0
+            (ground.getAt ([] : List Nat) (cyclesOf comp) s) 0))
+          (ground.getAt ([] : List Nat) (cyclesOf p) i))
+        (List.range (cyclesOf p).length) (cyclesOf p).length i
+        (ground.countOf_range_pos hi) hqi
+  refine length_le_of_index (fun s =>
+    (List.range (cyclesOf p).length).foldl (fun a i =>
+      if 0 < ground.countOf (ground.getAt 0 r (ground.getAt 0
+          (ground.getAt ([] : List Nat) (cyclesOf comp) s) 0))
+          (ground.getAt ([] : List Nat) (cyclesOf p) i)
+        then i else a) (cyclesOf p).length) ?_ ?_
+  · intro s hs
+    exact cellIndex_lt (cyclesOf p) _ (hA s hs)
+  · intro s s' hs hs' heq
+    have h1 := hA s hs
+    have h2 := hA s' hs'
+    rw [← heq] at h2
+    obtain ⟨_, _, _, hiter⟩ := hDcell _
+      (ground.countOf_getAt_pos ([] : List Nat) (cyclesOf p) _
+        (cellIndex_lt (cyclesOf p) _ h1))
+    obtain ⟨a, ha⟩ := hiter _ h1
+    obtain ⟨b, hb⟩ := hiter _ h2
+    match Nat.le_total a b with
+    | .inl hab =>
+      match Nat.le.dest hab with
+      | ⟨k, hk⟩ =>
+        refine hcross s s' k hs hs' ?_
+        rw [hb, ← hk, Nat.add_comm a k, iterP_add p k a, ← ha]
+    | .inr hba =>
+      match Nat.le.dest hba with
+      | ⟨k, hk⟩ =>
+        refine (hcross s' s k hs' hs ?_).symm
+        rw [ha, ← hk, Nat.add_comm b k, iterP_add p k b, ← hb]
+
+/-- The cycle count at a relabeled wiring is the wiring's own: the
+orbit words transport along the relabeling, one word per orbit
+either side. -/
+theorem cyclesOf_transport (n : Nat) {comp r : List Nat}
+    (hc : 0 < ground.countOf comp (perms n))
+    (hr : 0 < ground.countOf r (perms n)) :
+    (cyclesOf ((invPerm n r).map (fun j =>
+      ground.getAt 0 r (ground.getAt 0 comp j)))).length
+    = (cyclesOf comp).length := by
+  have hm := transport_member n hc hr
+  refine Nat.le_antisymm ?_ (cycles_le n hc hr hm
+    (getAt_relab n comp r))
+  exact cycles_le n hm (invPerm_member n hr) hc
+    (fun i hi => (relab_back n hc hr (getAt_relab n comp r)
+      i hi).symm)
+
+/-! The key's position at the wiring carrier (`con:places`'
+enumeration, one word per permutation): the position read with
+its two roundtrips, and the relabeling's composition reads — the
+partner relabeled and the composite relabeled. -/
+
+/-- The position at a head key is the leading place, past a
+refused head the tail's own beyond it. -/
+private theorem idxOf_cons (b x : List Nat) (t : List (List Nat)) :
+    idxOf x (b :: t) = if x = b then 0 else idxOf x t + 1 := by
+  by_cases hxb : x = b
+  · rw [hxb]
+    show (if (b == b) = true then 0 else idxOf b t + 1) = _
+    rw [ground.listEqBeq b, if_pos (rfl : b = b)]
+    rfl
+  · show (if (x == b) = true then 0 else idxOf x t + 1) = _
+    rw [ground.listBeqRefuse (fun _ _ hh => ground.beqEqOf hh)
+      hxb, if_neg hxb]
+    rfl
+
+/-- An occupied key's position sits inside the list. -/
+theorem idxOf_lt : ∀ (l : List (List Nat)) (x : List Nat),
+    0 < ground.countOf x l → idxOf x l < l.length
+  | [], _, h => absurd h (Nat.lt_irrefl 0)
+  | b :: t, x, h => by
+    rw [idxOf_cons b x t]
+    by_cases hxb : x = b
+    · rw [if_pos hxb]
+      exact Nat.succ_pos _
+    · rw [if_neg hxb]
+      refine Nat.succ_lt_succ (idxOf_lt t x ?_)
+      rw [← ground.countOf_head_ne hxb t]
+      exact h
+
+/-- The list read at an occupied key's position is that key. -/
+theorem getAt_idxOf : ∀ (l : List (List Nat)) (x : List Nat),
+    0 < ground.countOf x l → ground.getAt [] l (idxOf x l) = x
+  | [], _, h => absurd h (Nat.lt_irrefl 0)
+  | b :: t, x, h => by
+    rw [idxOf_cons b x t]
+    by_cases hxb : x = b
+    · rw [if_pos hxb]
+      exact hxb.symm
+    · rw [if_neg hxb]
+      show ground.getAt [] t (idxOf x t) = x
+      refine getAt_idxOf t x ?_
+      rw [← ground.countOf_head_ne hxb t]
+      exact h
+
+/-- A distinct list's entry names its own place back. -/
+theorem idxOf_getAt : ∀ (l : List (List Nat)) (i : Nat),
+    ground.distinctList l → i < l.length →
+    idxOf (ground.getAt [] l i) l = i
+  | [], _, _, hi => absurd hi (Nat.not_lt_zero _)
+  | b :: t, 0, _, _ => by
+    show idxOf b (b :: t) = 0
+    rw [idxOf_cons b b t, if_pos rfl]
+  | b :: t, i + 1, hd, hi => by
+    have hit : i < t.length := Nat.lt_of_succ_lt_succ hi
+    have hmem : 0 < ground.countOf (ground.getAt [] t i) t :=
+      ground.countOf_getAt_pos ([] : List Nat) t i hit
+    have hne : ground.getAt ([] : List Nat) t i ≠ b := by
+      intro he
+      have hb : 0 < ground.countOf b t := by
+        rw [← he]
+        exact hmem
+      have h2 : ground.countOf b (b :: t) ≤ 1 :=
+        hd b (List.Mem.head t)
+      rw [ground.countOf_head b t] at h2
+      exact absurd (Nat.le_trans (Nat.succ_le_succ hb) h2)
+        (Nat.not_succ_le_self 1)
+    have hdt : ground.distinctList t := by
+      intro x hx
+      refine Nat.le_trans ?_ (hd x (List.Mem.tail b hx))
+      rw [ground.countOf_cons x b t]
+      exact Nat.le_add_left _ _
+    show idxOf (ground.getAt ([] : List Nat) t i) (b :: t) = i + 1
+    rw [idxOf_cons b _ t, if_neg hne, idxOf_getAt t i hdt hit]
+
+/-- The relabeled wiring's partner is the partner relabeled: the
+flipped assignment travels along the relabeling. -/
+theorem invPerm_transport (k : Nat) (b ρ : List Nat)
+    (hb : 0 < ground.countOf b (perms k))
+    (hr : 0 < ground.countOf ρ (perms k)) :
+    invPerm k ((invPerm k ρ).map (fun j =>
+      ground.getAt 0 ρ (ground.getAt 0 b j)))
+    = (invPerm k ρ).map (fun j =>
+        ground.getAt 0 ρ (ground.getAt 0 (invPerm k b) j)) := by
+  obtain ⟨hrlen, hrdist, hrval, hrocc⟩ := perm_member_reads hr
+  obtain ⟨hblen, _, _, hbocc⟩ := perm_member_reads hb
+  obtain ⟨_, hcdist, _, _⟩ :=
+    perm_member_reads (transport_member k hb hr)
+  have hCl : ((invPerm k ρ).map (fun j =>
+      ground.getAt 0 ρ (ground.getAt 0 b j))).length = k := by
+    rw [ground.length_map, length_invPerm]
+  refine ground.getAt_ext 0 _ _
+    (by rw [length_invPerm, ground.length_map, length_invPerm]) ?_
+  intro i hi
+  rw [length_invPerm] at hi
+  have hul : posOf i ρ < k := by
+    rw [← hrlen]
+    exact posOf_lt i ρ (hrocc i hi)
+  have hvl : posOf (posOf i ρ) b < k := by
+    rw [← hblen]
+    exact posOf_lt _ b (hbocc _ hul)
+  have hvr : posOf (posOf i ρ) b < ρ.length := by
+    rw [hrlen]
+    exact hvl
+  have hwk : ground.getAt 0 ρ (posOf (posOf i ρ) b) < k :=
+    hrval _ (ground.countOf_getAt_pos 0 ρ _ hvr)
+  have hCw : ground.getAt 0 ((invPerm k ρ).map (fun j =>
+      ground.getAt 0 ρ (ground.getAt 0 b j)))
+      (ground.getAt 0 ρ (posOf (posOf i ρ) b)) = i := by
+    rw [getAt_relab k b ρ _ hwk, getAt_invPerm k ρ hwk,
+      posOf_getAt hrdist _ hvr,
+      getAt_posOf (posOf i ρ) b (hbocc _ hul),
+      getAt_posOf i ρ (hrocc i hi)]
+  have hkey := posOf_getAt hcdist
+    (ground.getAt 0 ρ (posOf (posOf i ρ) b)) (by rw [hCl]; exact hwk)
+  rw [hCw] at hkey
+  rw [getAt_invPerm k ((invPerm k ρ).map (fun j =>
+      ground.getAt 0 ρ (ground.getAt 0 b j))) hi,
+    ground.getAt_map 0 0 _ (invPerm k ρ) i
+      (by rw [length_invPerm]; exact hi),
+    getAt_invPerm k ρ hi, getAt_invPerm k b hul]
+  exact hkey
+
+/-- The relabeled wirings' composite is the composite relabeled:
+the relabeling carries the assignment fold. -/
+theorem expo_transport (k : Nat) (a c ρ : List Nat)
+    (hc : 0 < ground.countOf c (perms k))
+    (hr : 0 < ground.countOf ρ (perms k)) :
+    expo ((invPerm k ρ).map (fun j =>
+        ground.getAt 0 ρ (ground.getAt 0 a j)))
+      ((invPerm k ρ).map (fun j =>
+        ground.getAt 0 ρ (ground.getAt 0 c j)))
+    = (invPerm k ρ).map (fun j =>
+        ground.getAt 0 ρ (ground.getAt 0 (expo a c) j)) := by
+  obtain ⟨hrlen, hrdist, hrval, hrocc⟩ := perm_member_reads hr
+  obtain ⟨hclen, _, hcval, _⟩ := perm_member_reads hc
+  have hCl : ((invPerm k ρ).map (fun j =>
+      ground.getAt 0 ρ (ground.getAt 0 c j))).length = k := by
+    rw [ground.length_map, length_invPerm]
+  have hAl : ((invPerm k ρ).map (fun j =>
+      ground.getAt 0 ρ (ground.getAt 0 (expo a c) j))).length = k := by
+    rw [ground.length_map, length_invPerm]
+  refine ground.getAt_ext 0 _ _ ?_ ?_
+  · show (((invPerm k ρ).map (fun j =>
+        ground.getAt 0 ρ (ground.getAt 0 c j))).map
+      (ground.getAt 0 ((invPerm k ρ).map (fun j =>
+        ground.getAt 0 ρ (ground.getAt 0 a j))))).length = _
+    rw [ground.length_map, hCl, hAl]
+  · intro i hi
+    rw [show (expo ((invPerm k ρ).map (fun j =>
+        ground.getAt 0 ρ (ground.getAt 0 a j)))
+      ((invPerm k ρ).map (fun j =>
+        ground.getAt 0 ρ (ground.getAt 0 c j)))).length
+        = k from by
+      show (((invPerm k ρ).map (fun j =>
+          ground.getAt 0 ρ (ground.getAt 0 c j))).map
+        (ground.getAt 0 ((invPerm k ρ).map (fun j =>
+          ground.getAt 0 ρ (ground.getAt 0 a j))))).length = k
+      rw [ground.length_map, hCl]] at hi
+    have hul : posOf i ρ < k := by
+      rw [← hrlen]
+      exact posOf_lt i ρ (hrocc i hi)
+    have hzc : posOf i ρ < c.length := by
+      rw [hclen]
+      exact hul
+    have hzk : ground.getAt 0 c (posOf i ρ) < k :=
+      hcval _ (ground.countOf_getAt_pos 0 c _ hzc)
+    have hzr : ground.getAt 0 c (posOf i ρ) < ρ.length := by
+      rw [hrlen]
+      exact hzk
+    have hwk : ground.getAt 0 ρ (ground.getAt 0 c (posOf i ρ)) < k :=
+      hrval _ (ground.countOf_getAt_pos 0 ρ _ hzr)
+    rw [getAt_expo _ _ i (by rw [hCl]; exact hi),
+      getAt_relab k c ρ i hi, getAt_invPerm k ρ hi,
+      getAt_relab k a ρ _ hwk, getAt_invPerm k ρ hwk,
+      posOf_getAt hrdist _ hzr,
+      getAt_relab k (expo a c) ρ i hi, getAt_invPerm k ρ hi,
+      getAt_expo a c (posOf i ρ) hzc]
 
 /-! The expansion tier's enumeration reads (`def:elim`'s
 determinant fold consumes them): the unit-content enumeration
@@ -3908,6 +5152,68 @@ theorem countRangePerms (d : Nat) :
   show ground.countOf (List.range d)
     (monomialsAt (List.replicate d 1)) = 1
   rw [countOf_monomialsAt, if_pos ⟨h1, h2⟩]
+
+/-- Membership from the entry reads: a family at the place count,
+its entries below that count and its keys read injectively, is an
+enumeration member — the entries are distinct and cover the
+alphabet, so every letter's count is the range's own. -/
+theorem perm_of_reads (n : Nat) (l : List Nat) (hlen : l.length = n)
+    (hbnd : ∀ i, i < n → ground.getAt 0 l i < n)
+    (hinj : ∀ i j, i < n → j < n →
+      ground.getAt 0 l i = ground.getAt 0 l j → i = j) :
+    0 < ground.countOf l (perms n) := by
+  have hdist : ∀ x, ground.countOf x l ≤ 1 :=
+    ground.distinctList_all (ground.distinct_of_getAt_inj 0 l
+      (fun p q hp hq he =>
+        hinj p q (Nat.lt_of_lt_of_le hp (Nat.le_of_eq hlen))
+          (Nat.lt_of_lt_of_le hq (Nat.le_of_eq hlen)) he))
+  have hval : ∀ x, 0 < ground.countOf x l → x < n := by
+    intro x hx
+    match ground.getAt_of_mem 0 (ground.mem_of_countOf_pos x l hx) with
+    | ⟨k, hk, he⟩ =>
+      rw [← he]
+      exact hbnd k (Nat.lt_of_lt_of_le hk (Nat.le_of_eq hlen))
+  have hocc : ∀ x, x < n → 0 < ground.countOf x l := by
+    intro x hx
+    match Nat.eq_zero_or_pos (ground.countOf x l) with
+    | .inr hp => exact hp
+    | .inl hz =>
+      have hd2 : ∀ y, ground.countOf y (x :: l) ≤ 1 := by
+        intro y
+        rw [ground.countOf_cons]
+        by_cases hyx : y = x
+        · rw [if_pos hyx, hyx, hz]
+          exact Nat.le_refl 1
+        · rw [if_neg hyx, Nat.zero_add]
+          exact hdist y
+      have hl2 : ∀ y, 0 < ground.countOf y (x :: l) → y < n := by
+        intro y hy
+        by_cases hyx : y = x
+        · rw [hyx]
+          exact hx
+        · refine hval y ?_
+          rw [ground.countOf_cons, if_neg hyx, Nat.zero_add] at hy
+          exact hy
+      have hle := ground.length_le_of_distinct (x :: l) n hd2 hl2
+      rw [show (x :: l).length = l.length + 1 from rfl, hlen] at hle
+      exact absurd hle (Nat.not_succ_le_self n)
+  have hpr : 0 < ground.countOf (List.range n)
+      (monomialsAt (List.replicate n 1)) := by
+    show 0 < ground.countOf (List.range n) (perms n)
+    rw [countRangePerms n]
+    exact Nat.succ_pos 0
+  refine perm_member_of_counts hpr ?_ ?_
+  · rw [ground.length_range n]
+    exact hlen
+  · intro x
+    rw [ground.countOf_range x n]
+    by_cases hx : x < n
+    · rw [if_pos hx]
+      exact Nat.le_antisymm (hdist x) (hocc x hx)
+    · rw [if_neg hx]
+      match Nat.eq_zero_or_pos (ground.countOf x l) with
+      | .inl hz => exact hz
+      | .inr hp => exact absurd (hval x hp) hx
 
 /-- An adjacent exchange of the unit assignment sits in the place
 enumeration once. -/

@@ -113,6 +113,34 @@ instance (P g A B S u v u2 v2 : Poly) (cg cA cB cS : Pos)
     Decidable (sqfreeRead P g A B S u v u2 v2 cg cA cB cS c c2) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ ¬ _ ∧ _))
 
+/-- The squarefree read carries onto a one-value representative:
+every polynomial occurrence sits inside a one-value read, the
+derivative and the entrywise scale each moving across it. -/
+private theorem sqfreeRead_of {P P' : Poly}
+    (h : poly.oneValue P P') {g A B S u v u2 v2 : Poly}
+    {cg cA cB cS : Pos} {c c2 : BPair}
+    (hr : sqfreeRead P g A B S u v u2 v2 cg cA cB cS c c2) :
+    sqfreeRead P' g A B S u v u2 v2 cg cA cB cS c c2 := by
+  obtain ⟨⟨hf1, hf2, hbz⟩, hS, hc2, hb2⟩ := hr
+  refine ⟨⟨?_, ?_, ⟨hbz.1, ?_⟩⟩, ?_, hc2, hb2⟩
+  · exact poly.oneValue_trans hf1 (poly.mapScale_congr cA h)
+  · exact poly.oneValue_trans hf2
+      (poly.mapScale_congr cB (poly.deriv_congr h))
+  · refine poly.oneValue_trans ?_ hbz.2
+    exact poly.add_congr
+      (poly.mul_congr u (poly.oneValue_symm h))
+      (poly.mul_congr v (poly.deriv_congr (poly.oneValue_symm h)))
+  · exact poly.oneValue_trans hS (poly.mapScale_congr cS h)
+
+/-- The squarefree read is one value across the polynomial's
+representatives. -/
+theorem sqfreeRead_congr {P P' : Poly} (h : poly.oneValue P P')
+    (g A B S u v u2 v2 : Poly) (cg cA cB cS : Pos)
+    (c c2 : BPair) :
+    sqfreeRead P g A B S u v u2 v2 cg cA cB cS c c2
+      ↔ sqfreeRead P' g A B S u v u2 v2 cg cA cB cS c c2 :=
+  ⟨sqfreeRead_of h, sqfreeRead_of (poly.oneValue_symm h)⟩
+
 /-! The proper-factor value arithmetic, `lem:stage`'s recorded
 arrival: the value at the root against the divisor's own data. -/
 

@@ -26,7 +26,6 @@ the structural identities are the channel table's closes,
 namespace xdata
 open twoplaq
 
-set_option maxRecDepth 8192 in
 /-- The vacuum `Q`-dressing at the `U` plaquette: the magnetic
 image's component is the module state at the `U` site, and its
 deflation's residual reads its self-pairing at equal members. -/
@@ -36,7 +35,6 @@ theorem vacDressU_null : genericlift.crossNull
       (res.deflate siteQ1 [phiAdj] phiAdj))
     poly.pZero := by decide +kernel
 
-set_option maxRecDepth 8192 in
 /-- The vacuum `Q`-dressing at the `V` plaquette, the second
 site's read. -/
 theorem vacDressV_null : genericlift.crossNull

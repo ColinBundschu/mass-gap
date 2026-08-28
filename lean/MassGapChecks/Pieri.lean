@@ -14,7 +14,6 @@ off-row target's vacant read, and the depth binder's refusals at the
 vacant and the one-row widths, where the row's count is occupied
 against a vacant fusion count.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places pieri

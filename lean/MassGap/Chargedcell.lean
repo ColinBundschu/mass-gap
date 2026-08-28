@@ -119,24 +119,10 @@ columns. -/
 theorem ality_dual (d : Nat) :
     ∀ s : Shape, s.length = d →
       (degree s % d + degree (labels.dualL s) % d) % d = 0 := by
-  match d with
-  | 0 =>
-    intro s h
-    match s, h with
-    | [], _ => decide
-  | k + 1 =>
-    intro s h
-    match ground.snoc_split k s h with
-    | ⟨s', a, hs, hl⟩ =>
-      rw [hs, labels.dualL_snoc s' a, ground.modAdd,
-        degree_snoc s' a, degree_snoc s'.reverse 0,
-        Nat.zero_mul, Nat.add_zero (degree s'.reverse),
-        Nat.add_right_comm (degree s') (a * (s'.length + 1))
-          (degree s'.reverse),
-        places.degree_reverse_add s', hl,
-        Nat.mul_comm (k + 1) (sumNat s'),
-        ← ground.mulAddR (sumNat s') a (k + 1)]
-      exact ground.modMulSelf (sumNat s' + a) (k + 1)
+  intro s h
+  rw [ground.modAdd (degree s) (degree (labels.dualL s)) d,
+    labels.degree_dualL_add s, h, Nat.mul_comm d (sumNat s)]
+  exact ground.modMulSelf (sumNat s) d
 
 /-- The class additivity holds at the label calculus over every
 factor pair: a row member's reduced degree joins the factors'
@@ -1174,9 +1160,10 @@ private theorem fluxStep (n : Nat) (R : lattice.Region)
         exact Bool.noConfusion hb2
       | false => exact rfl
 
-/-- The conservation along the grades: every cut reads the base
-cut's class, the induction stepping one grade at a time. -/
-private theorem fluxDown (n : Nat) (R : lattice.Region)
+/-- The conservation along the grades: the vertex laws summed over
+one slab, the interior pairs withdrawing at the dual's join, and
+the cuts read one class by the induction along the grades. -/
+theorem fluxConserve (n : Nat) (R : lattice.Region)
     (g : Nat → Nat) (c : Nat) (a : List Shape)
     (hwell : lattice.wellRead R)
     (hcut : transCutRead R g c)
@@ -1186,22 +1173,8 @@ private theorem fluxDown (n : Nat) (R : lattice.Region)
   | 0, _ => rfl
   | x + 1, hx =>
     (fluxStep n R g c a hwell hcut hocc hwidth x hx).trans
-      (fluxDown n R g c a hwell hcut hocc hwidth x
+      (fluxConserve n R g c a hwell hcut hocc hwidth x
         (Nat.lt_trans (Nat.lt_succ_self x) hx))
-
-/-- The conservation: the vertex laws summed over one slab, the
-interior pairs withdrawing at the dual's join, and the cuts read
-one class by the induction along the grades — the flux through
-every cut of the family is the base cut's own. -/
-theorem fluxConserve (n : Nat) (R : lattice.Region) (g : Nat → Nat)
-    (c : Nat) (a : List Shape)
-    (hwell : lattice.wellRead R)
-    (hcut : transCutRead R g c)
-    (hocc : carrier.occupied (fusion.dataA n) R a = true)
-    (hwidth : (a.all (fun s => s.length == n)) = true)
-    (x : Nat) (hx : x < c) :
-    fluxAt n R g x a % n = fluxAt n R g 0 a % n :=
-  fluxDown n R g c a hwell hcut hocc hwidth x hx
 
 /-- The charge at the torus: the per-direction flux family at the
 base cut, each direction's site grading its own positional

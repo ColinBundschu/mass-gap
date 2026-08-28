@@ -11,7 +11,6 @@ binder isolated.  The coherence with `thm:chordmap` reads the
 symbol as that theorem's chord at the bound-state level, its join
 binder isolated by a refusal.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground channeldiv

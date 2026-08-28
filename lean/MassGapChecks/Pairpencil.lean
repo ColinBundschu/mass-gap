@@ -13,7 +13,6 @@ pair entries at both weights.  The window-diagonal pins read the
 committed enumerations at the carrier check module's pins through
 the named display, the theta window's at the tabulated lookup
 route. -/
-set_option maxRecDepth 1000000
 set_option maxHeartbeats 16000000
 
 open ground lattice fusion elim pairpencil

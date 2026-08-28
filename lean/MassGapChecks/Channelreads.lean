@@ -11,7 +11,6 @@ the root, a forged list at the base's cube passing the shape reads
 while both base reads refuse it — and the order count at three,
 the pole order with the factor count.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly channelreads

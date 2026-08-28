@@ -11,7 +11,6 @@ with `d_f Δ_L w + (d_f + 2) w = d_f² w` at
 `E = 3 Δ_U + Δ_L + 3 Δ_V`, the `Δ_V` read the sum's unit at the
 `V`-free state — all cleared polynomial identities in the
 residue. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly genericlift states kernel lap link

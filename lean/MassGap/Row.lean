@@ -354,8 +354,7 @@ private theorem dotB_kappa (t : Table) (F : FundData)
   refine BPair.oneValue_trans
     (dotB_addR t F hshape v _ _ hv hS hrl) ?_
   exact BPair.add_congr
-    (dotB_scaleR t F hshape (BPair.ofNat m) v (thetaV t)
-      (thetaV_length t))
+    (dotB_scaleR F (BPair.ofNat m) v (thetaV t))
     (BPair.oneValue_refl _)
 
 /-- The tie equation (`prop:row`: a tie keeps the form's square):

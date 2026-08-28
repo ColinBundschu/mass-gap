@@ -8,7 +8,6 @@ the residue the declared scalar (`con:places`) — by kernel
 root's form read, the form's simple symmetry, and the root fold's
 coroot reads.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground gentable

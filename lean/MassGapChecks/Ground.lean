@@ -23,7 +23,12 @@ reads at their theorem routes, and the refusals isolating the
 range binders and the congruence's box.  The box at stated
 per-key bounds closes it: the successor product's count and the
 member count's one-at-the-bound read, each decided beside its
-theorem route, with the vacant-bound instances beside them.
+theorem route, with the vacant-bound instances beside them.  The
+written key's read closes it: a write keeps the family's length,
+the written key reads the written value and every further key is
+kept, decided at an in-range write and at a key beyond the family
+with the key binder refused there, each landed by the theorem
+route.
 -/
 
 open ground
@@ -806,3 +811,89 @@ example : ground.countOf [1] (ground.boxAll [0])
         ∧ (∀ i, i < ([0] : List Nat).length →
             ground.getAt 0 [1] i ≤ ground.getAt 0 [0] i)
       then 1 else 0 := by decide +kernel
+
+/-! `thm:groundreads`(v)'s cleared displays: the split's square
+identity at `2 + 3 = 5` reading `3·7 + 4 = 25`, and the Bernoulli
+display's two sides at `1 + 2 = 3` and the count three — the upper
+`27 ≤ 8 + 27` at the datum's own prior power, the lower
+`8 + 12 ≤ 27` at the gap's — each decided and landed by the theorem
+route. -/
+
+example : (3 : Pos) * ((5 : Pos) + 2) + 2 * 2 = 5 * 5 := by
+  decide +kernel
+
+example : (3 : Pos) * ((5 : Pos) + 2) + 2 * 2 = 5 * 5 :=
+  Pos.sq_split 2 3 5 (by decide +kernel)
+
+example : Pos.pow (3 : Pos) 3
+    ≤ Pos.pow (2 : Pos) 3 + posOfSucc 2 * 1 * Pos.pow (3 : Pos) 2 := by
+  decide +kernel
+
+example : Pos.pow (3 : Pos) 3
+    ≤ Pos.pow (2 : Pos) 3 + posOfSucc 2 * 1 * Pos.pow (3 : Pos) 2 :=
+  Pos.bernoulli_le 1 2 3 (by decide +kernel) 2
+
+example : Pos.pow (2 : Pos) 3 + posOfSucc 2 * 1 * Pos.pow (2 : Pos) 2
+    ≤ Pos.pow (3 : Pos) 3 := by
+  decide +kernel
+
+example : Pos.pow (2 : Pos) 3 + posOfSucc 2 * 1 * Pos.pow (2 : Pos) 2
+    ≤ Pos.pow (3 : Pos) 3 :=
+  Pos.bernoulli_ge 1 2 3 (by decide +kernel) 2
+
+/-- The Bernoulli display's two sides carry their own directions: the
+lower side's display read upward refuses at the same data, the
+datum's power `27` above the gap's power joined to the count's
+multiple, `8 + 12 = 20`. -/
+example : ¬ (Pos.pow (3 : Pos) 3
+    ≤ Pos.pow (2 : Pos) 3 + posOfSucc 2 * 1 * Pos.pow (2 : Pos) 2) := by
+  decide +kernel
+
+/-! The written key's read: a write keeps the family's length, the
+written key reads the written value, and every further key is
+kept — decided at an in-range write and at a key beyond the
+family, each landed by the theorem route. -/
+
+example : (([5, 6, 7] : List Nat).set 1 9).length
+    = ([5, 6, 7] : List Nat).length := by decide +kernel
+
+example : (([5, 6, 7] : List Nat).set 4 9).length
+    = ([5, 6, 7] : List Nat).length := by decide +kernel
+
+example : (([5, 6, 7] : List Nat).set 4 9).length
+    = ([5, 6, 7] : List Nat).length := length_set 9 [5, 6, 7] 4
+
+example : getAt 0 (([5, 6, 7] : List Nat).set 1 9) 1 = 9 := by
+  decide +kernel
+
+example : getAt 0 (([5, 6, 7] : List Nat).set 0 9) 0 = 9 := by
+  decide +kernel
+
+example : getAt 0 (([5, 6, 7] : List Nat).set 2 9) 2 = 9 :=
+  getAt_set_self 0 9 [5, 6, 7] 2 (by decide +kernel)
+
+/-- The write's key binder is load-bearing: at a key beyond the
+family the write is a no-op and the key reads the vacant
+default. -/
+example : ¬ (getAt 0 (([5, 6, 7] : List Nat).set 4 9) 4 = 9) := by
+  decide +kernel
+
+example : getAt 0 (([5, 6, 7] : List Nat).set 1 9) 2 = 7 := by
+  decide +kernel
+
+example : getAt 0 (([5, 6, 7] : List Nat).set 1 9) 5 = 0 := by
+  decide +kernel
+
+example : getAt 0 (([5, 6, 7] : List Nat).set 1 9) 0
+    = getAt 0 ([5, 6, 7] : List Nat) 0 :=
+  getAt_set_ne 0 [5, 6, 7] 1 0 9 (by decide +kernel)
+
+/-! The two cleared displays' join binders refused: at the parted
+join each display parts. -/
+
+example : ¬ ((1 : Pos) + 1 = 5) := by decide +kernel
+example : ¬ ((1 : Pos) * ((5 : Pos) + 1) + 1 * 1 = 5 * 5) := by
+  decide +kernel
+example : ¬ (Pos.pow (5 : Pos) 3
+    ≤ Pos.pow (1 : Pos) 3 + posOfSucc 2 * 1 * Pos.pow (5 : Pos) 2) := by
+  decide +kernel

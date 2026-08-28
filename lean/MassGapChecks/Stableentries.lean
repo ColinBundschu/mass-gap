@@ -12,7 +12,6 @@ one concatenation, the `θ`-loop entering on the far boundary with
 the configuration kept), and the near case's changed-edge read at
 the shared link (the row splitting at that link's fusion row alone,
 the further boundary links at the unit law's `θ`). -/
-set_option maxRecDepth 1000000
 set_option maxHeartbeats 16000000
 
 open ground lattice fusion stableentries fiberdec

@@ -27,8 +27,14 @@ representative clears to its own representative
 sum componentwise at the one stated power (`clearVar_add`), the
 memberwise swap entrywise (`clearVar_neg`), and the convolution at
 the joined power, each factor within its stated power
-(`clearVar_mul`).  The division at a monic `S` is the descent from the
-top, the monic top clearing each summit, the pair `(Q, R)` at the
+(`clearVar_mul`), and the cleared evaluation reads them at the
+value: a sum's summands (`evalClear_add`), the memberwise swap's
+balance partner (`evalClear_neg`), a product's factors at the split
+powers (`evalClear_mul`), a rescaling at the scale's multiple
+(`evalClear_scaleP`) and a higher stated power at the shared
+positive power's weight (`evalClear_pow`).  The division at a
+monic `S` is the descent from the top, the monic top clearing each
+summit, the pair `(Q, R)` at the
 naming identity `P = S Q + R` with `R`'s keys below `S`'s top; a
 monic divisor enters as its below-top coefficient list, the top the
 scalar one by the shape.  That pair is one value at every solution
@@ -51,7 +57,9 @@ read `topO_getAt`), the product's top is the tops' product
 (`top_mul`) with the carrier at occupied factors one key below the
 tops' join (`length_mul`), whence the integral read: a product at
 the sum's unit puts one factor's every coefficient there
-(`unitTail_mul_of`, `of_unitTail_mul`), a factor fold reading the
+(`unitTail_mul_of`, `of_unitTail_mul`) with the shared-factor
+withdrawal beside it — a shared factor of occupied top withdraws at
+two products of one value (`pmul_cancel`) — a factor fold reading the
 unit at a value exactly where a listed factor does (`prodFold_unit`,
 `prodFoldMap_unit`) and a rescaled list evaluating to the rescaled
 value (`eval_mapScale`); the multiplicity at a monic
@@ -159,6 +167,12 @@ def powO {γ : Type} (ops : DOps γ) (x : γ) : Nat → γ
 /-- The power at a stated count, the product's fold from the
 unit. -/
 def powOf (p : Poly) : Nat → Poly := powO polyOps p
+
+/-- The natural weight at a stated count at any entry carrier, the
+sum's fold from its unit, one summand per count. -/
+def nsmulO {γ : Type} (ops : DOps γ) (x : γ) : Nat → γ
+  | 0 => ops.unit
+  | n + 1 => ops.add x (nsmulO ops x n)
 
 /-- The evaluation is the Horner read on the recursion. -/
 def eval : Poly → BPair → BPair
@@ -635,17 +649,8 @@ theorem topO_getAt {γ : Type} (ops : DOps γ) :
 
 /-! The descent's pair is one value at every solution.  The kit below
 is that theorem's own plumbing — the coefficient reads of the sum, the
-shift and the join, the difference at the balance carrier's swap, the
-descent's recursion unfolded at its fuel — and stays private to it. -/
-
-private theorem swap_unit (d : BPair) : (d.swap + d).oneValue BPair.unit := by
-  show d.snd + d.fst + Pos.one = Pos.one + (d.fst + d.snd)
-  rw [ground.add_comm d.snd d.fst, ground.add_comm Pos.one (d.fst + d.snd)]
-
-private theorem sub_add (r d : BPair) : (r + d.swap + d).oneValue r := by
-  rw [BPair.add_assoc]
-  exact BPair.oneValue_trans
-    (BPair.add_congr (BPair.oneValue_refl r) (swap_unit d)) (BPair.add_unit r)
+shift and the join, the descent's recursion unfolded at its fuel —
+and stays private to it. -/
 
 private theorem scale_unit {a : BPair} (h : a.oneValue BPair.unit) (x : BPair) :
     (a * x).oneValue BPair.unit :=
@@ -670,7 +675,9 @@ private theorem bp_cancel {x y z w : BPair} (h : (x + z).oneValue (y + w))
 
 /-! The coefficient reads: the one-value class is the keyed read. -/
 
-private theorem unitTail_of_getAt : ∀ {p : Poly},
+/-- A list whose every key reads the unit is unit-tailed, the keyed
+read's converse. -/
+theorem unitTail_of_getAt : ∀ {p : Poly},
     (∀ k : Nat, (getAt BPair.unit p k).oneValue BPair.unit) → unitTail p
   | [], _ => trivial
   | _ :: _, h => ⟨h 0, unitTail_of_getAt (fun k => h (k + 1))⟩
@@ -683,6 +690,20 @@ theorem getAt_unitTail : ∀ {p : Poly}, unitTail p → ∀ k : Nat,
   | _ :: _, h, 0 => h.1
   | _ :: _, h, k + 1 => getAt_unitTail h.2 k
 
+/-- A list off the unit tail exhibits an occupied key inside its
+count. -/
+theorem offUnit_witness : ∀ u : List BPair,
+    ¬ unitTail u →
+    ∃ p, p < u.length
+      ∧ ¬ (ground.getAt BPair.unit u p).oneValue BPair.unit
+  | [], h => absurd trivial h
+  | c :: u, h => by
+    by_cases hc : c.oneValue BPair.unit
+    · have hu : ¬ unitTail u := fun ht => h ⟨hc, ht⟩
+      obtain ⟨p, hp, hoff⟩ := offUnit_witness u hu
+      exact ⟨p + 1, Nat.succ_lt_succ hp, hoff⟩
+    · exact ⟨0, Nat.succ_pos _, hc⟩
+
 /-- A one-value read is one value at every key. -/
 theorem oneValue_getAt : ∀ (k : Nat) {p q : Poly}, oneValue p q →
     (getAt BPair.unit p k).oneValue (getAt BPair.unit q k)
@@ -694,6 +715,39 @@ theorem oneValue_getAt : ∀ (k : Nat) {p q : Poly}, oneValue p q →
   | k + 1, [], _ :: _, h => oneValue_getAt k (p := []) h.2
   | k + 1, _ :: _, [], h => oneValue_getAt k (q := []) (unitTail_oneValue h.2 trivial)
   | k + 1, _ :: _, _ :: _, h => oneValue_getAt k h.2
+
+/-- A leading part keeps a unit tail. -/
+private theorem unitTail_take : ∀ (k : Nat) {p : Poly},
+    unitTail p → unitTail (p.take k)
+  | 0, _, _ => trivial
+  | _ + 1, [], _ => trivial
+  | k + 1, _ :: _, h => ⟨h.1, unitTail_take k h.2⟩
+
+/-- A dropped part keeps a unit tail. -/
+private theorem unitTail_drop : ∀ (k : Nat) {p : Poly},
+    unitTail p → unitTail (p.drop k)
+  | 0, _, h => h
+  | _ + 1, [], _ => trivial
+  | k + 1, _ :: _, h => unitTail_drop k h.2
+
+/-- The leading part moves across the one-value read, key by
+key. -/
+theorem take_congr : ∀ (k : Nat) {p q : Poly}, oneValue p q →
+    oneValue (p.take k) (q.take k)
+  | 0, _, _, _ => trivial
+  | k + 1, [], _, h => unitTail_take (k + 1) h
+  | k + 1, _ :: _, [], h => ⟨h.1, unitTail_take k h.2⟩
+  | k + 1, _ :: _, _ :: _, h => ⟨h.1, take_congr k h.2⟩
+
+/-- The dropped part moves across the one-value read, key by
+key. -/
+theorem drop_congr : ∀ (k : Nat) {p q : Poly}, oneValue p q →
+    oneValue (p.drop k) (q.drop k)
+  | 0, _, _, h => h
+  | k + 1, [], _, h => unitTail_drop (k + 1) h
+  | k + 1, _ :: _, [], h =>
+    unitTail_oneValue (unitTail_drop k h.2) trivial
+  | k + 1, _ :: _, _ :: _, h => drop_congr k h.2
 
 /-- A list at a value-one top reads its own monic display: below
 the top the display is the list's entries, and at the top the
@@ -734,6 +788,46 @@ theorem oneValue_of_entries : ∀ u v : List BPair,
     And.intro (hent 0 (Nat.succ_pos _))
       (oneValue_of_entries u' v' (Nat.succ.inj h)
         (fun t ht => hent (t + 1) (Nat.succ_lt_succ ht)))
+
+/-- The sum's key read at any entry carrier is the keys' sum, at a
+read reflexive and symmetric with the sum's unit its unit on either
+side. -/
+theorem getAt_addLO {γ : Type} (ops : DOps γ) (R : DRead γ)
+    (hrefl : ∀ x, R.rel x x) (hsymm : ∀ {x y}, R.rel x y → R.rel y x)
+    (hunitAdd : ∀ x, R.rel (ops.add ops.unit x) x)
+    (haddUnit : ∀ x, R.rel (ops.add x ops.unit) x) :
+    ∀ (p q : List γ) (k : Nat),
+      R.rel (ground.getAt ops.unit (addLO ops p q) k)
+        (ops.add (ground.getAt ops.unit p k) (ground.getAt ops.unit q k))
+  | [], _, _ => hsymm (hunitAdd _)
+  | _ :: _, [], _ => hsymm (haddUnit _)
+  | _ :: _, _ :: _, 0 => hrefl _
+  | _ :: p, _ :: q, k + 1 => getAt_addLO ops R hrefl hsymm hunitAdd haddUnit p q k
+
+/-- A scaled list's key read at any entry carrier is the key's
+scale, at a read where a factor against the sum's unit reads the
+unit. -/
+theorem getAt_mapMul {γ : Type} (ops : DOps γ) (R : DRead γ)
+    (hrefl : ∀ x, R.rel x x) (hsymm : ∀ {x y}, R.rel x y → R.rel y x)
+    (hmulUnit : ∀ x, R.rel (ops.mul x ops.unit) ops.unit) (c : γ) :
+    ∀ (l : List γ) (k : Nat),
+      R.rel (ground.getAt ops.unit (l.map (ops.mul c)) k)
+        (ops.mul c (ground.getAt ops.unit l k))
+  | [], _ => hsymm (hmulUnit c)
+  | _ :: _, 0 => hrefl _
+  | _ :: l, k + 1 => getAt_mapMul ops R hrefl hsymm hmulUnit c l k
+
+/-- The partner list's key read at any entry carrier is the key's
+partner, at a read where the unit's partner reads the unit. -/
+theorem getAt_mapSwap {γ : Type} (ops : DOps γ) (R : DRead γ)
+    (hrefl : ∀ x, R.rel x x) (hsymm : ∀ {x y}, R.rel x y → R.rel y x)
+    (hswapUnit : R.rel (ops.swap ops.unit) ops.unit) :
+    ∀ (q : List γ) (k : Nat),
+      R.rel (ground.getAt ops.unit (q.map ops.swap) k)
+        (ops.swap (ground.getAt ops.unit q k))
+  | [], _ => hsymm hswapUnit
+  | _ :: _, 0 => hrefl _
+  | _ :: q, k + 1 => getAt_mapSwap ops R hrefl hsymm hswapUnit q k
 
 /-- The sum's key read is the keys' sum. -/
 theorem getAt_add : ∀ (p q : Poly) (k : Nat),
@@ -930,7 +1024,9 @@ def shiftUp : Nat → Poly → Poly
   | 0, p => p
   | n + 1, p => BPair.unit :: shiftUp n p
 
-private theorem len_shift : ∀ (n : Nat) (p : Poly),
+/-- The shift's key count: the vacated places joined to the
+list's own. -/
+theorem len_shift : ∀ (n : Nat) (p : Poly),
     (shiftUp n p).length = n + p.length
   | 0, _ => (Nat.zero_add _).symm
   | n + 1, p => by
@@ -968,29 +1064,35 @@ private theorem shift_cons (n : Nat) (q : Poly) :
   rw [shiftUp_shiftUp n 1 q, shiftUp_shiftUp 1 n q,
     Nat.add_comm n 1]
 
-private theorem getAt_shift_lt : ∀ (n : Nat) (p : Poly) (k : Nat), k < n →
+/-- A key below the shift reads the shifted list at the sum's
+unit. -/
+theorem getAt_shiftUp_lt : ∀ (n : Nat) (p : Poly) (k : Nat), k < n →
     getAt BPair.unit (shiftUp n p) k = BPair.unit
   | 0, _, _, h => absurd h (Nat.not_lt_zero _)
   | _ + 1, _, 0, _ => rfl
-  | n + 1, p, k + 1, h => getAt_shift_lt n p k (Nat.lt_of_succ_lt_succ h)
+  | n + 1, p, k + 1, h => getAt_shiftUp_lt n p k (Nat.lt_of_succ_lt_succ h)
 
-private theorem getAt_shift_add : ∀ (n : Nat) (p : Poly) (k : Nat),
+/-- A key at or beyond the shift reads the shifted list at the
+source's own key. -/
+theorem getAt_shiftUp_add : ∀ (n : Nat) (p : Poly) (k : Nat),
     getAt BPair.unit (shiftUp n p) (n + k) = getAt BPair.unit p k
   | 0, _, k => by rw [Nat.zero_add k]; rfl
   | n + 1, p, k => by
     rw [Nat.add_right_comm n 1 k]
     show getAt BPair.unit (shiftUp n p) (n + k) = getAt BPair.unit p k
-    exact getAt_shift_add n p k
+    exact getAt_shiftUp_add n p k
 
-private theorem unitTail_shift : ∀ (n : Nat) {p : Poly}, unitTail p →
+/-- A unit-tail list keeps its unit tail across the key shift. -/
+theorem unitTail_shiftUp : ∀ (n : Nat) {p : Poly}, unitTail p →
     unitTail (shiftUp n p)
   | 0, _, h => h
-  | n + 1, _, h => ⟨BPair.oneValue_refl _, unitTail_shift n h⟩
+  | n + 1, _, h => ⟨BPair.oneValue_refl _, unitTail_shiftUp n h⟩
 
-private theorem shift_ov : ∀ (n : Nat) {x y : Poly}, oneValue x y →
+/-- The key shift's one-value congruence. -/
+theorem shiftUp_ov : ∀ (n : Nat) {x y : Poly}, oneValue x y →
     oneValue (shiftUp n x) (shiftUp n y)
   | 0, _, _, h => h
-  | n + 1, _, _, h => ⟨BPair.oneValue_refl _, shift_ov n h⟩
+  | n + 1, _, _, h => ⟨BPair.oneValue_refl _, shiftUp_ov n h⟩
 
 private theorem append_add : ∀ (p q : Poly),
     oneValue (p ++ q) (add p (shiftUp p.length q))
@@ -1000,7 +1102,7 @@ private theorem append_add : ∀ (p q : Poly),
 
 theorem append_unit (p : Poly) {v : Poly} (h : unitTail v) :
     oneValue (p ++ v) p :=
-  oneValue_trans (append_add p v) (add_unitTail p (unitTail_shift p.length h))
+  oneValue_trans (append_add p v) (add_unitTail p (unitTail_shiftUp p.length h))
 
 /-- The memberwise swap entrywise, the negation read at the balance
 pairs. -/
@@ -1208,6 +1310,20 @@ theorem scaleP_one : ∀ p : Poly,
       (BPair.ofNat_one_mul x),
      scaleP_one p⟩
 
+/-- The rescaling keeps the key count. -/
+theorem length_scaleP (c : BPair) (p : Poly) :
+    (scaleP c p).length = p.length :=
+  ground.length_map _ p
+
+/-- The scale reads at every key, the scalar against the key's
+coefficient. -/
+theorem getAt_scaleP (c : BPair) : ∀ (p : Poly) (k : Nat),
+    (ground.getAt BPair.unit (scaleP c p) k).oneValue
+      (c * ground.getAt BPair.unit p k)
+  | [], _ => BPair.oneValue_symm (BPair.mul_unit c)
+  | _ :: _, 0 => BPair.norm_oneValue _
+  | _ :: t, k + 1 => getAt_scaleP c t k
+
 /-- A scale at the sum's own unit rescales to a unit tail, the
 scale swallowing every coefficient at its own value. -/
 theorem scaleP_null {c : BPair} (h : c.oneValue BPair.unit) :
@@ -1302,6 +1418,19 @@ theorem scaleP_congr {c d : BPair} (h : c.oneValue d) (p : Poly) :
       (BPair.oneValue_trans (BPair.mul_congr h (BPair.oneValue_refl x))
         (BPair.oneValue_symm (BPair.norm_oneValue _))))
 
+/-- A negated list's rescaling reads the rescaling's own negation. -/
+theorem scaleP_neg (c : BPair) : ∀ p : Poly,
+    oneValue (scaleP c (neg p)) (neg (scaleP c p))
+  | [] => trivial
+  | x :: p =>
+    ⟨by
+      show ((c * x.swap).norm).oneValue (((c * x).norm).swap)
+      rw [BPair.mul_swap]
+      exact BPair.oneValue_trans (BPair.norm_oneValue _)
+        (BPair.oneValue_symm
+          (ground.swap_congr (BPair.norm_oneValue _))),
+     scaleP_neg c p⟩
+
 /-- A coefficient family against a polynomial family: each
 coefficient rescales its own polynomial and the rescalings sum,
 the walk stopping at whichever family runs out. -/
@@ -1350,7 +1479,8 @@ theorem scaleDot_getAt : ∀ (r : List BPair) (u : List Poly),
     exact congrArg (fun z => add (scaleP c p) z)
       (scaleDot_getAt r u (Nat.succ.inj h))
 
-private theorem getAt_neg : ∀ (l : Poly) (k : Nat),
+/-- The memberwise swap's key read is the key's own swap. -/
+theorem getAt_neg : ∀ (l : Poly) (k : Nat),
     getAt BPair.unit (neg l) k = (getAt BPair.unit l k).swap
   | [], _ => rfl
   | _ :: _, 0 => rfl
@@ -1470,7 +1600,7 @@ private theorem map_sum (c : BPair) : ∀ q r : Poly,
 private theorem cons_ov {c d : BPair} (h1 : c.oneValue d) {p q : Poly}
     (h2 : oneValue p q) : oneValue (c :: p) (d :: q) := ⟨h1, h2⟩
 
-private theorem cons_add (x y : Poly) :
+theorem cons_unit_add (x y : Poly) :
     oneValue (BPair.unit :: add x y) (add (BPair.unit :: x) (BPair.unit :: y)) :=
   ⟨BPair.oneValue_symm (BPair.add_unit BPair.unit), oneValue_refl _⟩
 
@@ -1487,7 +1617,7 @@ theorem mul_sum : ∀ (p q r : Poly),
       (add_congr (oneValue_refl _)
         (oneValue_trans
           (cons_ov (BPair.oneValue_refl BPair.unit) (mul_sum p q r))
-          (cons_add (mul p q) (mul p r))))
+          (cons_unit_add (mul p q) (mul p r))))
       (add_shuffle _ _ _ _)
 
 theorem mul_single : ∀ (p : Poly) (a : BPair),
@@ -1503,9 +1633,10 @@ private theorem map_shift (c : BPair) : ∀ (n : Nat) (q : Poly),
   | 0, _ => oneValue_refl _
   | n + 1, q => ⟨BPair.mul_unit c, map_shift c n q⟩
 
-private theorem mul_shift : ∀ (p : Poly) (n : Nat) (q : Poly),
+/-- The key shift passes the product on its factor. -/
+theorem mul_shiftUp : ∀ (p : Poly) (n : Nat) (q : Poly),
     oneValue (mul p (shiftUp n q)) (shiftUp n (mul p q))
-  | [], n, _ => unitTail_shift n trivial
+  | [], n, _ => unitTail_shiftUp n trivial
   | c :: p, n, q => by
     show oneValue
       (add ((shiftUp n q).map (fun d => c * d))
@@ -1515,7 +1646,7 @@ private theorem mul_shift : ∀ (p : Poly) (n : Nat) (q : Poly),
       (?_ : oneValue (BPair.unit :: mul p (shiftUp n q))
         (shiftUp n (BPair.unit :: mul p q)))) (oneValue_symm (shiftUp_add n _ _))
     rw [shift_cons n (mul p q)]
-    exact ⟨BPair.oneValue_refl _, mul_shift p n q⟩
+    exact ⟨BPair.oneValue_refl _, mul_shiftUp p n q⟩
 
 private theorem mul_snoc (p q : Poly) (a : BPair) :
     oneValue (mul p (q ++ [a]))
@@ -1523,8 +1654,8 @@ private theorem mul_snoc (p q : Poly) (a : BPair) :
   oneValue_trans (mul_congr p (append_add q [a]))
     (oneValue_trans (mul_sum p q (shiftUp q.length [a]))
       (add_congr (oneValue_refl _)
-        (oneValue_trans (mul_shift p q.length [a])
-          (shift_ov q.length (mul_single p a)))))
+        (oneValue_trans (mul_shiftUp p q.length [a])
+          (shiftUp_ov q.length (mul_single p a)))))
 
 private theorem mul_len : ∀ (p q : Poly), 1 ≤ q.length → ∀ n : Nat,
     p.length + q.length ≤ n + 1 → (mul p q).length ≤ n
@@ -1664,7 +1795,7 @@ private theorem subTop_read : ∀ (A B : List BPair), B.length ≤ A.length →
       (shiftUp (A.length - B.length) B.reverse)) A.reverse
   | [], [], _ => trivial
   | a :: A, [], _ => by
-    exact add_unitTail ((a :: A).reverse) (unitTail_shift _ trivial)
+    exact add_unitTail ((a :: A).reverse) (unitTail_shiftUp _ trivial)
   | [], _ :: _, h => absurd h (Nat.not_succ_le_zero _)
   | r :: A, d :: B, h => by
     have hB : B.length ≤ A.length := Nat.le_of_succ_le_succ h
@@ -1684,7 +1815,7 @@ private theorem subTop_read : ∀ (A B : List BPair), B.length ≤ A.length →
     exact ov_split
       (by rw [add_len _ _ (hlenA.trans hlenB.symm), hlenA,
         ground.length_reverse])
-      (subTop_read A B hB) ⟨sub_add r d, trivial⟩
+      (subTop_read A B hB) ⟨BPair.add_swap_self r d, trivial⟩
 
 /-! The naming identity at the descent's output, and the cancellation
 at the monic top. -/
@@ -1818,7 +1949,7 @@ private theorem shift_top (N : Nat) (X Z R : Poly)
   constructor
   · refine unitTail_of_getAt (fun j => ?_)
     have e1 := getAt_add X (shiftUp N Z) (N + j)
-    rw [getAt_shift_add N Z j] at e1
+    rw [getAt_shiftUp_add N Z j] at e1
     have e3 : (getAt BPair.unit X (N + j) + getAt BPair.unit Z j).oneValue
         BPair.unit :=
       BPair.oneValue_trans (BPair.oneValue_symm e1)
@@ -1832,7 +1963,7 @@ private theorem shift_top (N : Nat) (X Z R : Poly)
     cases Nat.lt_or_ge k N with
     | inl hlt =>
       have e1 := getAt_add X (shiftUp N Z) k
-      rw [getAt_shift_lt N Z k hlt] at e1
+      rw [getAt_shiftUp_lt N Z k hlt] at e1
       exact BPair.oneValue_trans
         (BPair.oneValue_symm (BPair.add_unit (getAt BPair.unit X k)))
         (BPair.oneValue_trans (BPair.oneValue_symm e1) (oneValue_getAt k h))
@@ -1893,7 +2024,7 @@ theorem monic_cancel : ∀ (n : Nat) (s Q R : Poly), Q.length ≤ n →
         (monic_cancel n s Q' R hfuel hR
           (oneValue_trans (oneValue_symm
             (add_unitTail (mul (monic s) Q')
-              (unitTail_shift Q'.length (unitTail_scale ha s)))) hXR))
+              (unitTail_shiftUp Q'.length (unitTail_scale ha s)))) hXR))
         ⟨ha, trivial⟩
 
 /-- The pair `(Q, R)` is one value by the descent at the monic top:
@@ -1948,63 +2079,161 @@ def hornerRead (P : Poly) (r : BPair) : Prop :=
 instance (P : Poly) (r : BPair) : Decidable (hornerRead P r) :=
   decOneValue _ _
 
+/-- The cleared evaluation's walk along the coefficient list: the
+accumulated value `S`, the point's running power `pw` and the
+clearing's remaining count `r` advance together, a key with a
+clearing still owed charging the accumulator with one clearing
+before the key's coefficient enters against the running power, and
+the exhausted list paying the clearing that remains.  This is the
+computing read; a display reads the collection (`evalClear_read`). -/
+private def evalClearGo (ln cB : BPair) :
+    Poly → BPair → BPair → Nat → BPair
+  | [], S, _, r => (S * ground.bpow cB r).norm
+  | a :: t, S, pw, 0 =>
+    evalClearGo ln cB t (S + a * pw).norm (pw * ln).norm 0
+  | a :: t, S, pw, r + 1 =>
+    evalClearGo ln cB t (S * cB + a * pw).norm (pw * ln).norm r
+
 /-- The cleared evaluation at a composite point `[ln : c]`:
 `Σ_k p_k ln^k c^(K-k)`, the Horner read's value rescaled by the
 clearing's stated power, the homogeneity principle's spelling; the
-read is faithful exactly where `K` bounds every key. -/
+read is faithful exactly where `K` bounds every key.  The walk
+enters at the unit accumulator, the point's nought power and the
+clearing's count one beyond the stated power, the constant key's
+own step spending that one against the unit. -/
 def evalClear (p : Poly) (ln : BPair) (c : Pos) (K : Nat) : BPair :=
-  (List.range p.length).foldl (fun a k =>
-    (a + ground.getAt BPair.unit p k * ground.bpow ln k
-      * ground.bpow (BPair.ofPos c) (K - k)).norm) BPair.unit
+  match p with
+  | [] => BPair.unit
+  | _ :: _ =>
+    evalClearGo ln (BPair.ofPos c) p BPair.unit (BPair.ofPos Pos.one)
+      (K + 1)
+
+/-- The vacant list's cleared evaluation reads the sum's unit. -/
+theorem evalClear_nil (ln : BPair) (c : Pos) (K : Nat) :
+    evalClear [] ln c K = BPair.unit := rfl
+
+/-- The running power's step: the advanced power against the
+point's power at a key is the point's power at the key beyond. -/
+private theorem powStep (ln pw : BPair) (j : Nat) :
+    ((pw * ln).norm * ground.bpow ln j).oneValue
+      (pw * ground.bpow ln (j + 1)) :=
+  BPair.oneValue_trans
+    (BPair.mul_congr_left (BPair.norm_oneValue (pw * ln)))
+    (BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.mul_assoc pw ln (ground.bpow ln j)))
+      (BPair.mul_congr (BPair.oneValue_refl pw)
+        (BPair.oneValue_symm
+          (BPair.norm_oneValue (ln * ground.bpow ln j)))))
+
+/-- The walk's read: the accumulated value at the clearing's
+remaining count joined to the coefficients' fold, each key against
+the running power at its own key and the clearing at the count
+below the remainder. -/
+private theorem evalClearGo_read (ln cB : BPair) :
+    ∀ (t : Poly) (S pw : BPair) (r : Nat),
+    (evalClearGo ln cB t S pw r).oneValue
+      (S * ground.bpow cB r
+        + ground.famFold BPair.add BPair.unit
+            (fun j => ground.getAt BPair.unit t j
+              * (pw * ground.bpow ln j)
+              * ground.bpow cB (r - 1 - j))
+            (List.range t.length))
+  | [], _, _, _ =>
+    BPair.oneValue_trans (BPair.norm_oneValue _)
+      (BPair.oneValue_symm (BPair.add_unit _))
+  | a :: t, S, pw, 0 => by
+    have hze : ∀ j : Nat, 0 - 1 - j = 0 - 1 - (j + 1) := fun j => by
+      rw [ground.subSub 0 1 j, ground.subSub 0 1 (j + 1),
+        Nat.zero_sub (1 + j), Nat.zero_sub (1 + (j + 1))]
+    rw [show (a :: t).length = t.length + 1 from rfl,
+      ground.foldB_range_cons]
+    refine BPair.oneValue_trans
+      (evalClearGo_read ln cB t (S + a * pw).norm (pw * ln).norm 0) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr
+        (BPair.mul_congr_left (BPair.norm_oneValue (S + a * pw)))
+        (ground.famFold_congr_members_ov BPair.oneValue BPair.add
+          BPair.unit BPair.oneValue_refl BPair.add_congr
+          (fun j => ground.getAt BPair.unit t j
+            * ((pw * ln).norm * ground.bpow ln j)
+            * ground.bpow cB (0 - 1 - j))
+          (fun j => ground.getAt BPair.unit (a :: t) (j + 1)
+            * (pw * ground.bpow ln (j + 1))
+            * ground.bpow cB (0 - 1 - (j + 1)))
+          (List.range t.length)
+          (fun j _ =>
+            BPair.mul_congr
+              (BPair.mul_congr (BPair.oneValue_refl _) (powStep ln pw j))
+              (BPair.oneValue_of_eq
+                (congrArg (ground.bpow cB) (hze j)))))) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr
+        (BPair.oneValue_of_eq
+          (BPair.right_distrib S (a * pw) (ground.bpow cB 0)))
+        (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.add_assoc _ _ _)) ?_
+    exact BPair.add_congr (BPair.oneValue_refl _)
+      (BPair.add_congr
+        (BPair.mul_congr_left
+          (BPair.mul_congr (BPair.oneValue_refl a)
+            (BPair.oneValue_symm (BPair.mul_one_read pw))))
+        (BPair.oneValue_refl _))
+  | a :: t, S, pw, r + 1 => by
+    have hze : ∀ j : Nat, r - 1 - j = r + 1 - 1 - (j + 1) := fun j => by
+      rw [ground.subSub r 1 j, Nat.add_comm 1 j,
+        show r + 1 - 1 = r from rfl]
+    have hS : (S * cB * ground.bpow cB r).oneValue
+        (S * ground.bpow cB (r + 1)) :=
+      BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.mul_assoc S cB (ground.bpow cB r)))
+        (BPair.mul_congr (BPair.oneValue_refl S)
+          (BPair.oneValue_symm
+            (BPair.norm_oneValue (cB * ground.bpow cB r))))
+    rw [show (a :: t).length = t.length + 1 from rfl,
+      ground.foldB_range_cons]
+    refine BPair.oneValue_trans
+      (evalClearGo_read ln cB t (S * cB + a * pw).norm (pw * ln).norm r)
+      ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr
+        (BPair.mul_congr_left (BPair.norm_oneValue (S * cB + a * pw)))
+        (ground.famFold_congr_members_ov BPair.oneValue BPair.add
+          BPair.unit BPair.oneValue_refl BPair.add_congr
+          (fun j => ground.getAt BPair.unit t j
+            * ((pw * ln).norm * ground.bpow ln j)
+            * ground.bpow cB (r - 1 - j))
+          (fun j => ground.getAt BPair.unit (a :: t) (j + 1)
+            * (pw * ground.bpow ln (j + 1))
+            * ground.bpow cB (r + 1 - 1 - (j + 1)))
+          (List.range t.length)
+          (fun j _ =>
+            BPair.mul_congr
+              (BPair.mul_congr (BPair.oneValue_refl _) (powStep ln pw j))
+              (BPair.oneValue_of_eq
+                (congrArg (ground.bpow cB) (hze j)))))) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr
+        (BPair.oneValue_of_eq
+          (BPair.right_distrib (S * cB) (a * pw) (ground.bpow cB r)))
+        (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.add_congr hS (BPair.oneValue_refl _))
+        (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.add_assoc _ _ _)) ?_
+    exact BPair.add_congr (BPair.oneValue_refl _)
+      (BPair.add_congr
+        (BPair.mul_congr_left
+          (BPair.mul_congr (BPair.oneValue_refl a)
+            (BPair.oneValue_symm (BPair.mul_one_read pw))))
+        (BPair.oneValue_refl _))
 
 /-- The unit's power beyond the constant key reads the sum's unit,
 the product absorbing. -/
 private theorem bpow_unit_succ (k : Nat) :
     (ground.bpow BPair.unit (k + 1)).oneValue BPair.unit :=
   BPair.oneValue_trans (BPair.norm_oneValue _) (BPair.unit_mul _)
-
-private theorem evalClear_unit_go (p : Poly) (c : Pos) (K : Nat) :
-    ∀ j : Nat,
-    ((List.range (j + 1)).foldl (fun a k =>
-      (a + ground.getAt BPair.unit p k * ground.bpow BPair.unit k
-        * ground.bpow (BPair.ofPos c) (K - k)).norm)
-      BPair.unit).oneValue
-      (ground.bpow (BPair.ofPos c) K * ground.getAt BPair.unit p 0)
-  | 0 => by
-    show ((BPair.unit + ground.getAt BPair.unit p 0
-      * ground.bpow BPair.unit 0
-      * ground.bpow (BPair.ofPos c) (K - 0)).norm).oneValue
-      (ground.bpow (BPair.ofPos c) K * ground.getAt BPair.unit p 0)
-    refine BPair.oneValue_trans (BPair.norm_oneValue _) ?_
-    refine BPair.oneValue_trans (BPair.unit_add _) ?_
-    refine BPair.oneValue_trans
-      (BPair.mul_congr_left (BPair.mul_one_read
-        (ground.getAt BPair.unit p 0))) ?_
-    exact BPair.oneValue_of_eq (BPair.mul_comm
-      (ground.getAt BPair.unit p 0)
-      (ground.bpow (BPair.ofPos c) K))
-  | j + 1 => by
-    rw [ground.range_succ (j + 1), ground.foldl_append]
-    show ((((List.range (j + 1)).foldl (fun a k =>
-        (a + ground.getAt BPair.unit p k * ground.bpow BPair.unit k
-          * ground.bpow (BPair.ofPos c) (K - k)).norm)
-        BPair.unit)
-      + ground.getAt BPair.unit p (j + 1)
-        * ground.bpow BPair.unit (j + 1)
-        * ground.bpow (BPair.ofPos c) (K - (j + 1))).norm).oneValue
-      (ground.bpow (BPair.ofPos c) K * ground.getAt BPair.unit p 0)
-    refine BPair.oneValue_trans (BPair.norm_oneValue _) ?_
-    refine BPair.oneValue_trans
-      (BPair.add_congr (BPair.oneValue_refl _)
-        (BPair.oneValue_trans
-          (BPair.mul_congr_left
-            (BPair.oneValue_trans
-              (BPair.mul_congr (BPair.oneValue_refl _)
-                (bpow_unit_succ j))
-              (BPair.mul_unit _)))
-          (BPair.unit_mul _))) ?_
-    refine BPair.oneValue_trans (BPair.add_unit _) ?_
-    exact evalClear_unit_go p c K j
 
 /-- The cleared evaluation at the sum's unit point keeps the
 constant key alone at the clearing's stated power: every key beyond
@@ -2016,19 +2245,37 @@ theorem evalClear_unit (p : Poly) (c : Pos) (K : Nat) :
       (ground.bpow (BPair.ofPos c) K
         * ground.getAt BPair.unit p 0) := by
   match p with
-  | [] =>
-    show (BPair.unit).oneValue
-      (ground.bpow (BPair.ofPos c) K * BPair.unit)
-    exact BPair.oneValue_symm (BPair.mul_unit _)
+  | [] => exact BPair.oneValue_symm (BPair.mul_unit _)
   | q :: tl =>
-    show ((List.range (tl.length + 1)).foldl (fun a k =>
-      (a + ground.getAt BPair.unit (q :: tl) k
-        * ground.bpow BPair.unit k
-        * ground.bpow (BPair.ofPos c) (K - k)).norm)
-      BPair.unit).oneValue
-      (ground.bpow (BPair.ofPos c) K
-        * ground.getAt BPair.unit (q :: tl) 0)
-    exact evalClear_unit_go (q :: tl) c K tl.length
+    refine BPair.oneValue_trans
+      (evalClearGo_read BPair.unit (BPair.ofPos c) (q :: tl)
+        BPair.unit (BPair.ofPos Pos.one) (K + 1)) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.unit_mul _) (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans (BPair.unit_add _) ?_
+    refine ground.foldB_pick _ 0 _ (List.range (q :: tl).length)
+      (ground.countOf_range_one (Nat.succ_pos tl.length)) ?_ ?_
+    · exact BPair.oneValue_trans
+        (BPair.mul_congr_left
+          (BPair.oneValue_trans
+            (BPair.mul_congr (BPair.oneValue_refl _)
+              (BPair.mul_one_read (BPair.ofPos Pos.one)))
+            (BPair.mul_one_read _)))
+        (BPair.oneValue_of_eq (BPair.mul_comm _ _))
+    · intro x _ hx
+      match x with
+      | 0 => exact absurd rfl hx
+      | k + 1 =>
+        exact BPair.oneValue_trans
+          (BPair.mul_congr_left
+            (BPair.oneValue_trans
+              (BPair.mul_congr (BPair.oneValue_refl _)
+                (BPair.oneValue_trans
+                  (BPair.mul_congr (BPair.oneValue_refl _)
+                    (bpow_unit_succ k))
+                  (BPair.mul_unit _)))
+              (BPair.mul_unit _)))
+          (BPair.unit_mul _)
 
 /-! The convolution's own algebra at the one-value class.  The sum
 adds componentwise and the product convolves (`def:poly`), so both
@@ -2038,7 +2285,7 @@ factor's sum, a scale transports across it, and the product
 commutes and associates.  The recursion `(c + zP)Q = cQ + z(PQ)` is
 one-sided, so each read off it decomposes its second factor at the
 monomial split `c :: P = ⟨c⟩ + z P` — the constant against the
-shift — and closes on `mul_single` and `mul_shift`.  The deck
+shift — and closes on `mul_single` and `mul_shiftUp`.  The deck
 families' doubling identity (`lem:fiberdec`'s display
 `p_L = ⟨x:2⟩ P_L² + 2`) is the kit's consumer. -/
 
@@ -2049,6 +2296,28 @@ theorem add_comm (p q : Poly) : oneValue (add p q) (add q p) :=
       (BPair.oneValue_trans
         (BPair.oneValue_of_eq (BPair.add_comm _ _))
         (BPair.oneValue_symm (getAt_add q p k))))
+
+/-- The four-term exchange: two joined sums re-pair at the crossed
+members. -/
+theorem add_add_comm (a b c d : List BPair) :
+    poly.oneValue (poly.add (poly.add a b) (poly.add c d))
+      (poly.add (poly.add a c) (poly.add b d)) :=
+  poly.ov_of_getAt (fun k => by
+    refine BPair.oneValue_trans (poly.getAt_add _ _ k) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (poly.getAt_add a b k) (poly.getAt_add c d k)) ?_
+    refine BPair.oneValue_symm ?_
+    refine BPair.oneValue_trans (poly.getAt_add _ _ k) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (poly.getAt_add a c k) (poly.getAt_add b d k)) ?_
+    refine BPair.oneValue_of_eq ?_
+    rw [BPair.add_assoc, BPair.add_assoc,
+      ← BPair.add_assoc (ground.getAt BPair.unit c k)
+        (ground.getAt BPair.unit b k) (ground.getAt BPair.unit d k),
+      BPair.add_comm (ground.getAt BPair.unit c k)
+        (ground.getAt BPair.unit b k),
+      BPair.add_assoc (ground.getAt BPair.unit b k)
+        (ground.getAt BPair.unit c k) (ground.getAt BPair.unit d k)])
 
 /-- The componentwise sum's left commutation, the two AC moves'
 join. -/
@@ -2078,7 +2347,8 @@ every key. -/
 theorem add_neg : ∀ p : Poly, unitTail (add p (neg p))
   | [] => trivial
   | c :: p => ⟨BPair.oneValue_trans
-      (BPair.oneValue_of_eq (BPair.add_comm c c.swap)) (swap_unit c),
+      (BPair.oneValue_of_eq (BPair.add_comm c c.swap))
+      (BPair.swap_add_null (BPair.oneValue_refl c)),
     add_neg p⟩
 
 /-- The unit scalar's scaling reads the list itself, entry by
@@ -2129,7 +2399,7 @@ theorem sum_mul : ∀ p q r : Poly,
       (add_congr (oneValue_refl _)
         (oneValue_trans
           (cons_ov (BPair.oneValue_refl BPair.unit) (sum_mul p q r))
-          (cons_add (mul p r) (mul q r))))
+          (cons_unit_add (mul p r) (mul q r))))
       (add_shuffle _ _ _ _)
 
 /-- A scale on the left factor transports across the product. -/
@@ -2161,7 +2431,7 @@ private theorem mul_cons (q : Poly) (c : BPair) (p : Poly) :
       (show oneValue (c :: p) (add [c] (BPair.unit :: p)) from
         ⟨BPair.oneValue_symm (BPair.add_unit c), oneValue_refl p⟩))
     (oneValue_trans (mul_sum q [c] (BPair.unit :: p))
-      (add_congr (mul_single q c) (mul_shift q 1 p)))
+      (add_congr (mul_single q c) (mul_shiftUp q 1 p)))
 
 /-- The product commutes. -/
 theorem mul_comm : ∀ p q : Poly, oneValue (mul p q) (mul q p)
@@ -2195,6 +2465,14 @@ theorem mul_congr_left {p p' : Poly} (h : oneValue p p') (q : Poly) :
     oneValue (mul p q) (mul p' q) :=
   oneValue_trans (mul_comm p q)
     (oneValue_trans (mul_congr q h) (mul_comm q p'))
+
+/-- A product reads one value against its factors' canonical
+representatives. -/
+theorem mul_vnorm_ov (p q : Poly) :
+    oneValue (mul p q) (mul (vnorm p) (vnorm q)) :=
+  oneValue_trans
+    (mul_congr_left (oneValue_symm (vnorm_ov p)) q)
+    (mul_congr (vnorm p) (oneValue_symm (vnorm_ov q)))
 
 /-- The derivative from a successor key reads the derivative from the
 key joined to the list itself, `(n+1+k) p_k = (n+k) p_k + p_k`. -/
@@ -2247,12 +2525,6 @@ theorem unitTail_map_unit_mul : ∀ q : Poly,
     unitTail (q.map (fun x => BPair.unit * x))
   | [] => trivial
   | x :: q => ⟨BPair.unit_mul x, unitTail_map_unit_mul q⟩
-
-/-- The shifted sum reads the shifted summands' sum. -/
-theorem cons_unit_add (a b : Poly) :
-    oneValue (BPair.unit :: add a b)
-      (add (BPair.unit :: a) (BPair.unit :: b)) :=
-  ⟨BPair.oneValue_symm (BPair.add_unit _), oneValue_refl _⟩
 
 /-- Four summands regroup, the first joining the third pair. -/
 theorem add4_rearr (X A B C : Poly) :
@@ -2694,40 +2966,33 @@ theorem clearVar_cons (a : BPair) (t : Poly) (c : Pos)
       rw [clearVar_getAt_lt t c (K - 1) j hj, ground.subSub K 1 j,
         Nat.add_comm 1 j]
 
-/-- The accumulating sum fold at the memberwise representative
-reads its seed against the index fold. -/
-private theorem foldNorm_read (g : Nat → BPair) :
-    ∀ (l : List Nat) (acc : BPair),
-      (l.foldl (fun a j => (a + g j).norm) acc).oneValue
-        (acc + ground.famFold BPair.add BPair.unit g l)
-  | [], acc => BPair.oneValue_symm (BPair.add_unit acc)
-  | a :: t, acc => by
-    show (t.foldl (fun a j => (a + g j).norm) ((acc + g a).norm)).oneValue
-      (acc + (g a + ground.famFold BPair.add BPair.unit g t))
-    refine BPair.oneValue_trans
-      (foldNorm_read g t ((acc + g a).norm)) ?_
-    refine BPair.oneValue_trans
-      (BPair.add_congr (BPair.norm_oneValue (acc + g a))
-        (BPair.oneValue_refl _)) ?_
-    exact BPair.oneValue_of_eq
-      (BPair.add_assoc acc (g a)
-        (ground.famFold BPair.add BPair.unit g t))
-
 /-- The cleared evaluation collects to the monomial fold: the
 coefficient against the point's power and the clearing's
 complementary power, key by key. -/
-private theorem evalClear_read (p : Poly) (ln : BPair) (c : Pos)
+theorem evalClear_read (p : Poly) (ln : BPair) (c : Pos)
     (K : Nat) :
     (evalClear p ln c K).oneValue
       (ground.famFold BPair.add BPair.unit
         (fun k => ground.getAt BPair.unit p k * ground.bpow ln k
           * ground.bpow (BPair.ofPos c) (K - k))
-        (List.range p.length)) :=
-  BPair.oneValue_trans
-    (foldNorm_read (fun k => ground.getAt BPair.unit p k
-        * ground.bpow ln k * ground.bpow (BPair.ofPos c) (K - k))
-      (List.range p.length) BPair.unit)
-    (BPair.unit_add _)
+        (List.range p.length)) := by
+  match p with
+  | [] => exact BPair.oneValue_refl _
+  | a :: t =>
+  refine BPair.oneValue_trans
+    (evalClearGo_read ln (BPair.ofPos c) (a :: t) BPair.unit
+      (BPair.ofPos Pos.one) (K + 1)) ?_
+  refine BPair.oneValue_trans
+    (BPair.add_congr (BPair.unit_mul _) (BPair.oneValue_refl _)) ?_
+  refine BPair.oneValue_trans (BPair.unit_add _) ?_
+  refine ground.famFold_congr_members_ov BPair.oneValue BPair.add
+    BPair.unit BPair.oneValue_refl BPair.add_congr _ _
+    (List.range (a :: t).length) (fun j _ => ?_)
+  exact BPair.mul_congr_left
+    (BPair.mul_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.mul_comm _ _))
+        (BPair.mul_one_read _)))
 
 /-- The cleared list's Horner read is the cleared evaluation. -/
 theorem eval_clearVar (p : Poly) (c : Pos) (K : Nat) (l : BPair) :
@@ -2746,31 +3011,153 @@ theorem eval_clearVar (p : Poly) (c : Pos) (K : Nat) (l : BPair) :
     (BPair.mul_right_comm (ground.getAt BPair.unit p i)
       (ground.bpow (BPair.ofPos c) (K - i)) (ground.bpow l i))
 
-/-- A middle key's term at the end-shaped list reads the sum's
-unit: the coefficient there is a middle entry, at the sum's unit by
-the stated tail. -/
-private theorem unitTail_getAt : ∀ (mid : List BPair) (j : Nat),
-    unitTail mid → j < mid.length →
-    (ground.getAt BPair.unit mid j).oneValue BPair.unit
-  | [], j, _, hj => absurd hj (Nat.not_lt_zero j)
-  | _ :: _, 0, h, _ => h.1
-  | _ :: t, j + 1, h, hj => unitTail_getAt t j h.2 (Nat.lt_of_succ_lt_succ hj)
+/-- A one-key list's cleared read is its coefficient against the whole
+clearing. -/
+theorem evalClear_single (c ln : BPair) (cc : Pos) (N : Nat) :
+    (evalClear [c] ln cc N).oneValue
+      (c * ground.bpow (BPair.ofPos cc) N) := by
+  refine BPair.oneValue_trans (evalClear_read [c] ln cc N) ?_
+  refine BPair.oneValue_trans (BPair.add_unit _) ?_
+  exact BPair.mul_congr_left (BPair.mul_one_read c)
 
-private theorem getAt_snoc {α : Type} (d b : α) :
-    ∀ u : List α, ground.getAt d (u ++ [b]) u.length = b
-  | [] => rfl
-  | _ :: t => getAt_snoc d b t
+/-- The cleared evaluation is one value across the polynomial's
+representatives, the clearing's congruence read through the
+evaluation's. -/
+theorem evalClear_congr {p q : Poly} (h : oneValue p q)
+    (ln : BPair) (c : Pos) (K : Nat) :
+    (evalClear p ln c K).oneValue (evalClear q ln c K) :=
+  ground.BPair.oneValue_trans
+    (ground.BPair.oneValue_symm (eval_clearVar p c K ln))
+    (ground.BPair.oneValue_trans (eval_congr (clearVar_congr h c K) ln)
+      (eval_clearVar q c K ln))
 
-private theorem getAt_prefix {α : Type} (d : α) (v : List α) :
-    ∀ (u : List α) (j : Nat), j < u.length →
-      ground.getAt d (u ++ v) j = ground.getAt d u j
-  | [], _, hj => absurd hj (Nat.not_lt_zero _)
-  | _ :: _, 0, _ => rfl
-  | _ :: t, j + 1, hj => getAt_prefix d v t j (Nat.lt_of_succ_lt_succ hj)
+/-- The cleared evaluation at a scaled point: the point's numerator
+and denominator scaled by one positive read the scale's power at the
+clearing against the original evaluation, the homogeneity
+principle's display at the cleared carrier, the keys within the
+clearing power. -/
+theorem evalClear_scalePoint (p : Poly) (xN : BPair) (c w : Pos)
+    (K : Nat) (hp : p.length ≤ K + 1) :
+    (evalClear p (xN * BPair.ofPos w) (c * w) K).oneValue
+      (ground.bpow (BPair.ofPos w) K * evalClear p xN c K) := by
+  refine BPair.oneValue_trans
+    (evalClear_read p (xN * BPair.ofPos w) (c * w) K) ?_
+  refine BPair.oneValue_trans ?_
+    (BPair.mul_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_symm (evalClear_read p xN c K)))
+  refine BPair.oneValue_trans ?_
+    (ground.foldB_mul_left (ground.bpow (BPair.ofPos w) K) _
+      (List.range p.length))
+  refine ground.foldB_congr_members _ _ (List.range p.length) ?_
+  intro k hk
+  rw [ground.countOf_range k p.length] at hk
+  by_cases hklt : k < p.length
+  · have hkK : k ≤ K :=
+      Nat.le_of_lt_succ (Nat.lt_of_lt_of_le hklt hp)
+    obtain ⟨g, hg⟩ := Nat.le.dest hkK
+    have he : k + (K - k) = K := by
+      rw [← hg, ground.addSubSelfL]
+    have hWK : (ground.bpow (BPair.ofPos w) K).oneValue
+        (ground.bpow (BPair.ofPos w) k
+          * ground.bpow (BPair.ofPos w) (K - k)) := by
+      have h0 := ground.bpow_add (BPair.ofPos w) k (K - k)
+      rw [he] at h0
+      exact h0
+    refine BPair.oneValue_trans
+      (BPair.mul_congr
+        (BPair.mul_congr (BPair.oneValue_refl _)
+          (ground.bpow_mul xN (BPair.ofPos w) k))
+        (BPair.oneValue_trans
+          (ground.bpow_congr
+            (BPair.oneValue_symm (BPair.ofPos_mul c w)) (K - k))
+          (ground.bpow_mul (BPair.ofPos c) (BPair.ofPos w) (K - k)))) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq ?_)
+      (BPair.mul_congr (BPair.oneValue_symm hWK)
+        (BPair.oneValue_refl _))
+    rw [← BPair.mul_assoc (ground.getAt BPair.unit p k)
+        (ground.bpow xN k) (ground.bpow (BPair.ofPos w) k),
+      ← BPair.mul_assoc
+        (ground.getAt BPair.unit p k * ground.bpow xN k
+          * ground.bpow (BPair.ofPos w) k)
+        (ground.bpow (BPair.ofPos c) (K - k))
+        (ground.bpow (BPair.ofPos w) (K - k)),
+      BPair.mul_right_comm
+        (ground.getAt BPair.unit p k * ground.bpow xN k)
+        (ground.bpow (BPair.ofPos w) k)
+        (ground.bpow (BPair.ofPos c) (K - k)),
+      BPair.mul_assoc
+        (ground.getAt BPair.unit p k * ground.bpow xN k
+          * ground.bpow (BPair.ofPos c) (K - k))
+        (ground.bpow (BPair.ofPos w) k)
+        (ground.bpow (BPair.ofPos w) (K - k)),
+      BPair.mul_comm
+        (ground.getAt BPair.unit p k * ground.bpow xN k
+          * ground.bpow (BPair.ofPos c) (K - k))
+        (ground.bpow (BPair.ofPos w) k
+          * ground.bpow (BPair.ofPos w) (K - k))]
+  · rw [if_neg hklt] at hk
+    exact absurd hk (Nat.lt_irrefl 0)
 
-private theorem sub_self_read : ∀ n : Nat, n - n = 0
-  | 0 => rfl
-  | n + 1 => by rw [Nat.succ_sub_succ]; exact sub_self_read n
+/-- The cleared evaluation moves across the point's one-value
+read. -/
+theorem evalClear_congrPoint (p : Poly) {x y : BPair}
+    (h : x.oneValue y) (c : Pos) (K : Nat) :
+    (evalClear p x c K).oneValue (evalClear p y c K) := by
+  refine BPair.oneValue_trans (evalClear_read p x c K) ?_
+  refine BPair.oneValue_trans ?_
+    (BPair.oneValue_symm (evalClear_read p y c K))
+  refine ground.foldB_congr_members _ _ (List.range p.length) ?_
+  intro k _
+  exact BPair.mul_congr
+    (BPair.mul_congr (BPair.oneValue_refl _) (ground.bpow_congr h k))
+    (BPair.oneValue_refl _)
+
+/-- The cleared evaluation at a raised clearing power: the raise
+collects as the clearing's own power, the keys within the stated
+power. -/
+theorem evalClear_pow (p : Poly) (x : BPair) (c : Pos)
+    (K J : Nat) (hp : p.length ≤ J + 1) (hJK : J ≤ K) :
+    (evalClear p x c K).oneValue
+      (ground.bpow (BPair.ofPos c) (K - J) * evalClear p x c J) := by
+  refine BPair.oneValue_trans (evalClear_read p x c K) ?_
+  refine BPair.oneValue_trans ?_
+    (BPair.mul_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_symm (evalClear_read p x c J)))
+  refine BPair.oneValue_trans ?_
+    (ground.foldB_mul_left (ground.bpow (BPair.ofPos c) (K - J)) _
+      (List.range p.length))
+  refine ground.foldB_congr_members _ _ (List.range p.length) ?_
+  intro k hk
+  rw [ground.countOf_range k p.length] at hk
+  by_cases hklt : k < p.length
+  · have hkJ : k ≤ J :=
+      Nat.le_of_lt_succ (Nat.lt_of_lt_of_le hklt hp)
+    obtain ⟨g, hg⟩ := Nat.le.dest hkJ
+    obtain ⟨w, hw⟩ := Nat.le.dest hJK
+    have h1 : J - k = g := by
+      rw [← hg, ground.addSubSelfL]
+    have h2 : K - J = w := by
+      rw [← hw, ground.addSubSelfL]
+    have h3 : K = k + (g + w) := by
+      rw [← hw, ← hg, Nat.add_assoc]
+    have h4 : K - k = g + w := by
+      rw [h3, ground.addSubSelfL]
+    rw [h1, h2, h4]
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl _)
+        (ground.bpow_add (BPair.ofPos c) g w)) ?_
+    refine BPair.oneValue_of_eq ?_
+    rw [← BPair.mul_assoc
+        (ground.getAt BPair.unit p k * ground.bpow x k)
+        (ground.bpow (BPair.ofPos c) g)
+        (ground.bpow (BPair.ofPos c) w),
+      BPair.mul_comm
+        (ground.getAt BPair.unit p k * ground.bpow x k
+          * ground.bpow (BPair.ofPos c) g)
+        (ground.bpow (BPair.ofPos c) w)]
+  · rw [if_neg hklt] at hk
+    exact absurd hk (Nat.lt_irrefl 0)
 
 /-- The cleared evaluation at an end-shaped list: with every middle
 coefficient at the sum's unit, the constant key survives at the
@@ -2797,8 +3184,9 @@ theorem evalClear_ends (a b : BPair) (mid : List BPair)
           (mid.length + 1 - (mid.length + 1))).oneValue
       (ground.bpow ln (mid.length + 1) * b) := by
     rw [show ground.getAt BPair.unit (a :: (mid ++ [b]))
-          (mid.length + 1) = b from getAt_snoc BPair.unit b mid,
-      sub_self_read (mid.length + 1)]
+          (mid.length + 1) = b from
+        ground.getAt_append_add BPair.unit mid [b] 0,
+      Nat.sub_self (mid.length + 1)]
     exact BPair.oneValue_trans (BPair.mul_one_read _)
       (BPair.oneValue_of_eq (BPair.mul_comm b _))
   have hmids : ∀ j, 0 < ground.countOf j (List.range mid.length) →
@@ -2817,8 +3205,11 @@ theorem evalClear_ends (a b : BPair) (mid : List BPair)
     have hm : (ground.getAt BPair.unit (a :: (mid ++ [b]))
         (j + 1)).oneValue BPair.unit := by
       show (ground.getAt BPair.unit (mid ++ [b]) j).oneValue BPair.unit
-      rw [getAt_prefix BPair.unit [b] mid j hjm]
-      exact unitTail_getAt mid j hmid hjm
+      rw [show ground.getAt BPair.unit (mid ++ [b]) j
+          = ground.getAt BPair.unit mid j from
+        (ground.getAt_append BPair.unit mid [b] j).trans
+          (if_pos hjm)]
+      exact getAt_unitTail hmid j
     exact BPair.oneValue_trans
       (BPair.mul_congr_left
         (BPair.oneValue_trans (BPair.mul_congr_left hm)
@@ -3130,6 +3521,82 @@ theorem clearVar_mul (p q : Poly) (c : Pos) (K1 K2 : Nat)
       (mul (clearVar p c K1) (clearVar q c K2)) :=
   clearVar_mul_go K1 p q c K2 hp hq
 
+/-- The cleared evaluation at a sum: the summands' own, at the one
+stated power. -/
+theorem evalClear_add (p q : Poly) (ln : BPair) (c : Pos) (K : Nat) :
+    (evalClear (add p q) ln c K).oneValue
+      (evalClear p ln c K + evalClear q ln c K) :=
+  BPair.oneValue_trans
+    (BPair.oneValue_symm (eval_clearVar (add p q) c K ln))
+    (BPair.oneValue_trans (eval_congr (clearVar_add p q c K) ln)
+      (BPair.oneValue_trans
+        (eval_add (clearVar p c K) (clearVar q c K) ln)
+        (BPair.add_congr (eval_clearVar p c K ln)
+          (eval_clearVar q c K ln))))
+
+/-- The cleared evaluation at the memberwise swap: the evaluation's
+balance partner. -/
+theorem evalClear_neg (p : Poly) (ln : BPair) (c : Pos) (K : Nat) :
+    (evalClear (neg p) ln c K).oneValue
+      (evalClear p ln c K).swap :=
+  BPair.oneValue_trans
+    (BPair.oneValue_symm (eval_clearVar (neg p) c K ln))
+    (BPair.oneValue_trans
+      (BPair.oneValue_of_eq (by
+        rw [clearVar_neg p c K, eval_neg (clearVar p c K) ln]))
+      (ground.swap_congr (eval_clearVar p c K ln)))
+
+/-- The cleared evaluation at a product: the factors' own evaluations at
+the split powers, each factor within its stated power. -/
+theorem evalClear_mul (p q : Poly) (ln : BPair) (c : Pos)
+    (K1 K2 : Nat) (hp : p.length ≤ K1 + 1) (hq : q.length ≤ K2 + 1) :
+    (evalClear (mul p q) ln c (K1 + K2)).oneValue
+      (evalClear p ln c K1 * evalClear q ln c K2) :=
+  BPair.oneValue_trans
+    (BPair.oneValue_symm (eval_clearVar (mul p q) c (K1 + K2) ln))
+    (BPair.oneValue_trans
+      (eval_congr (clearVar_mul p q c K1 K2 hp hq) ln)
+      (BPair.oneValue_trans
+        (eval_mul (clearVar p c K1) (clearVar q c K2) ln)
+        (BPair.mul_congr (eval_clearVar p c K1 ln)
+          (eval_clearVar q c K2 ln))))
+
+/-- The rescaled list's clearing is the clearing's own rescaling,
+entry by entry at the stated power. -/
+private theorem clearVar_scaleP (a : BPair) (p : Poly) (c : Pos)
+    (K : Nat) :
+    oneValue (clearVar (scaleP a p) c K)
+      ((clearVar p c K).map (fun d => a * d)) :=
+  ov_of_getAt (fun k =>
+    BPair.oneValue_trans (getAt_clearVar (scaleP a p) c K k)
+      (BPair.oneValue_trans (BPair.norm_oneValue _)
+        (BPair.oneValue_trans
+          (BPair.mul_congr_left (getAt_scaleP a p k))
+          (BPair.oneValue_trans
+            (BPair.oneValue_of_eq
+              (BPair.mul_assoc a (ground.getAt BPair.unit p k)
+                (ground.bpow (BPair.ofPos c) (K - k))))
+            (BPair.oneValue_trans
+              (BPair.mul_congr (BPair.oneValue_refl a)
+                (BPair.oneValue_symm
+                  (BPair.oneValue_trans (getAt_clearVar p c K k)
+                    (BPair.norm_oneValue _))))
+              (BPair.oneValue_symm
+                (getAt_scale a (clearVar p c K) k)))))))
+
+/-- The cleared evaluation at a rescaled list: the scale's multiple
+of the list's own, at the one stated power. -/
+theorem evalClear_scaleP (a : BPair) (p : Poly) (ln : BPair) (c : Pos)
+    (K : Nat) :
+    (evalClear (scaleP a p) ln c K).oneValue (a * evalClear p ln c K) :=
+  BPair.oneValue_trans
+    (BPair.oneValue_symm (eval_clearVar (scaleP a p) c K ln))
+    (BPair.oneValue_trans
+      (eval_congr (clearVar_scaleP a p c K) ln)
+      (BPair.oneValue_trans (eval_scale (clearVar p c K) a ln)
+        (BPair.mul_congr (BPair.oneValue_refl a)
+          (eval_clearVar p c K ln))))
+
 /-- A one-key remainder list reads its own single member: at a
 stated value of the Horner read the list is that value's own
 one-key list. -/
@@ -3281,7 +3748,7 @@ private theorem getAt_mul_top : ∀ (m : Nat) (p q : Poly) (n : Nat),
         (getAt_add (mul p q')
           (shiftUp q'.length (p.map (fun d => b * d))) (q'.length + n)) ?_
       rw [ground.getAt_over BPair.unit (mul p q') (q'.length + n) hlen,
-        getAt_shift_add q'.length (p.map (fun d => b * d)) n]
+        getAt_shiftUp_add q'.length (p.map (fun d => b * d)) n]
       exact BPair.oneValue_trans (BPair.unit_add _)
         (BPair.oneValue_trans (getAt_scale b p n)
           (BPair.oneValue_of_eq
@@ -3347,6 +3814,42 @@ theorem vnorm_top {P : Poly} (h : ¬ unitTail P) :
       h
   | inr hoff => exact hoff
 
+/-- The representative's top key carries a coefficient off the sum's
+unit. -/
+theorem vnorm_len_off {Q : Poly} {m : Nat}
+    (hlen : (vnorm Q).length = m + 1) :
+    ¬ (ground.getAt BPair.unit Q m).oneValue BPair.unit := by
+  intro hu
+  have hnot : ¬ unitTail Q := by
+    intro hut
+    rw [vnorm_congr
+      (unitTail_oneValue (q := ([] : Poly)) hut trivial)] at hlen
+    exact Nat.noConfusion (show (0 : Nat) = m + 1 from hlen)
+  refine vnorm_top hnot ?_
+  show (topO ground.bpairOps (vnorm Q)).oneValue BPair.unit
+  rw [topO_getAt ground.bpairOps (vnorm Q) m hlen]
+  exact BPair.oneValue_trans
+    (oneValue_getAt m (vnorm_ov Q)) hu
+
+/-- A list vacant beyond a stated count has its representative
+inside it. -/
+theorem vnormLen_cap {q : Poly} {N : Nat}
+    (h : ∀ j, N ≤ j → (ground.getAt BPair.unit q j).oneValue BPair.unit) :
+    (vnorm q).length ≤ N := by
+  match hL : (vnorm q).length with
+  | 0 => exact Nat.zero_le _
+  | i + 1 =>
+    match Nat.lt_or_ge i N with
+    | Or.inl hlt => exact hlt
+    | Or.inr hge => exact absurd (h i hge) (vnorm_len_off hL)
+
+/-- The value's representative sits inside its list's key count, the
+cap's read at the vacant overflow. -/
+theorem vnormLen_le (q : Poly) :
+    (vnorm q).length ≤ q.length :=
+  vnormLen_cap (fun j hj =>
+    BPair.oneValue_of_eq (ground.getAt_over BPair.unit q j hj))
+
 /-- The integral read: a product at the sum's unit puts one factor's
 every coefficient there, the tops' product off the unit at two
 occupied representatives. -/
@@ -3359,15 +3862,29 @@ theorem unitTail_mul_of {p q : Poly} (h : unitTail (mul p q)) :
   have hP := vnorm_top hp
   have hQ := vnorm_top hq
   have hmul : unitTail (mul (vnorm p) (vnorm q)) :=
-    oneValue_unitTail
-      (oneValue_trans (mul_congr_left (vnorm_ov p) (vnorm q))
-        (mul_congr p (vnorm_ov q))) h
+    oneValue_unitTail (oneValue_symm (mul_vnorm_ov p q)) h
   have hz : ((top (vnorm p)) * (top (vnorm q))).oneValue BPair.unit :=
     BPair.oneValue_trans
       (BPair.oneValue_symm (top_mul (vnorm p) (vnorm q)))
       (top_unitTail hmul)
   exact ((BPair.mul_unit_iff _ _).mp hz).elim (fun x => absurd x hP)
     (fun x => absurd x hQ)
+
+/-- `def:poly`'s shared-factor withdrawal: a shared factor of
+occupied top withdraws at two products of one value, the
+difference's own factorization against the integral read. -/
+theorem pmul_cancel (d u v : Poly) (hd : ¬ unitTail d)
+    (h : oneValue (mul d u) (mul d v)) : oneValue u v := by
+  have hdiff : unitTail (add (mul d u) (neg (mul d v))) :=
+    diff_unitTail h
+  have hstep : oneValue (mul d (add u (neg v)))
+      (add (mul d u) (neg (mul d v))) := by
+    rw [neg_prod d v]
+    exact mul_sum d u (neg v)
+  have hprod : unitTail (mul d (add u (neg v))) :=
+    oneValue_unitTail hstep hdiff
+  exact ov_of_diff ((unitTail_mul_of hprod).elim
+    (fun hx => absurd hx hd) (fun hx => hx))
 
 /-- A unit-tail factor carries the product to the unit tail, either
 side. -/
@@ -3731,13 +4248,13 @@ theorem powOf_cancel_monic (s : Poly) : ∀ (N : Nat) {p q : Poly},
 private theorem getAt_smono_self (s : Bool) (n : Nat) :
     ground.getAt BPair.unit (smono s n) n
       = ground.signedAt s (BPair.ofPos .one) :=
-  getAt_shift_add n [ground.signedAt s (BPair.ofPos .one)] 0
+  getAt_shiftUp_add n [ground.signedAt s (BPair.ofPos .one)] 0
 
 /-- The signed monomial's entry off its key: the sum's unit. -/
 private theorem getAt_smono_ne (s : Bool) {n k : Nat} (h : ¬ k = n) :
     ground.getAt BPair.unit (smono s n) k = BPair.unit := by
   cases Nat.lt_or_ge k n with
-  | inl hlt => exact getAt_shift_lt n _ k hlt
+  | inl hlt => exact getAt_shiftUp_lt n _ k hlt
   | inr hge =>
     refine getAt_over BPair.unit _ k ?_
     have hl : (smono s n).length = n + 1 :=
@@ -4288,10 +4805,29 @@ def pevalC (P : PPoly) (q : Poly) (c : Pos) (K : Nat) : Poly :=
     add a (pnorm (scaleP (BPair.ofPos (Pos.powC c (K - k)))
       (mul (ground.getAt [] P k) (powOf q k))))) []
 
+/-- The outer evaluation at the unit clearing collects to the
+monomial fold: the clearing's powers withdraw, leaving the
+coefficient against the outer point's power, key by key. -/
+theorem pevalC_fold (P : PPoly) (q : Poly) (K : Nat) :
+    oneValue (pevalC P q Pos.one K)
+      (ground.famFold add []
+        (fun k => mul (ground.getAt [] P k) (powOf q k))
+        (List.range P.length)) := by
+  refine oneValue_trans
+    (ground.foldlFamO polyFoldLaws
+      (fun k => pnorm (scaleP (BPair.ofPos (Pos.powC Pos.one (K - k)))
+        (mul (ground.getAt [] P k) (powOf q k))))
+      (List.range P.length) []) ?_
+  refine oneValue_trans (polyFoldLaws.unitOp _) ?_
+  refine ground.famFold_congr_members_ov oneValue add []
+    oneValue_refl (fun h1 h2 => add_congr h1 h2) _ _
+    (List.range P.length) (fun k _ => ?_)
+  rw [Pos.powC_one]
+  exact oneValue_trans (pnorm_oneValue _) (scaleP_one _)
+
 /-- The monic linear factor at a located root, `z` against the
 root's value. -/
 def linFacM (r : BPair) : Poly := [r.swap, BPair.ofPos .one]
-
 
 private def multGo : Nat → Poly → Poly → Nat
   | 0, _, _ => 0

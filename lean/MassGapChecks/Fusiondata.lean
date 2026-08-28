@@ -1943,7 +1943,6 @@ example : countAt (fusedAt ((⟨[2, 0], [BPair.ofNat 2]⟩ : HVec)
 decided beside it, and the letter-width frame's isolating refusal.
 -/
 
-set_option maxRecDepth 100000 in
 /-- The dimension display at the two unit blocks, `fusionCount_dim`
 applied whole: the graded fold reads 1*3 + 1*1 against the two
 blocks' counts' product 2*2. -/
@@ -1957,7 +1956,6 @@ example : ground.famFold Nat.add 0
     = (blockSpan [1, 0]).length * (blockSpan [1, 0]).length :=
   fusionCount_dim [1, 0] [1, 0] (by decide +kernel)
 
-set_option maxRecDepth 100000 in
 /-- The display's summands at that instance, the two occupied
 contents' counts against their block dimensions. -/
 example : ground.famFold Nat.add 0
@@ -1969,11 +1967,9 @@ example : ground.famFold Nat.add 0
           HVec.content))
     = 4 := by decide +kernel
 
-set_option maxRecDepth 100000 in
 example : (blockSpan [1, 0]).length * (blockSpan [1, 0]).length = 4 := by
   decide +kernel
 
-set_option maxRecDepth 100000 in
 /-- The display at the exchanged second shape, `fusionCount_dim`
 applied whole. -/
 example : ground.famFold Nat.add 0
@@ -1986,7 +1982,6 @@ example : ground.famFold Nat.add 0
     = (blockSpan [1, 0]).length * (blockSpan [0, 1]).length :=
   fusionCount_dim [1, 0] [0, 1] (by decide +kernel)
 
-set_option maxRecDepth 100000 in
 example : ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 0] [0, 1] (places.shapeOf mu)
         * (blockSpan (places.shapeOf mu)).length)
@@ -1996,7 +1991,6 @@ example : ground.famFold Nat.add 0
           HVec.content))
     = 2 := by decide +kernel
 
-set_option maxRecDepth 100000 in
 /-- `hba`'s isolating refusal: at the ragged second shape `[1]` the
 display reads one against the two blocks' counts' product two, so
 the letter-width binder is load-bearing at this clause — unlike the
@@ -2035,7 +2029,6 @@ example : ¬ (∀ x ∈ blockSpan [1, 0] ++ blockSpan [2, 0],
 example : ground.sumNat (exhibit [1, 0]).content = 1
     ∧ ground.sumNat (exhibit [2, 0]).content = 2 := by decide +kernel
 
-set_option maxRecDepth 100000 in
 /-- The refuting carrier's stated data: sizes, widths, the
 carrier's closure at every distinct letter pair, and the
 independence. -/
@@ -2047,12 +2040,10 @@ example : (∀ x ∈ blockSpan [1, 0] ++ blockSpan [2, 0], sized x)
         settledAt (blockSpan [1, 0] ++ blockSpan [2, 0]) (act i j x))
     ∧ indepAll (blockSpan [1, 0] ++ blockSpan [2, 0]) := by decide +kernel
 
-set_option maxRecDepth 100000 in
 /-- The fused count at the refuting content. -/
 example : countAt (fusedAt (blockSpan [1, 0] ++ blockSpan [2, 0])
       (blockSpan [1, 0] ++ blockSpan [2, 0])) [3, 0] = 1 := by decide +kernel
 
-set_option maxRecDepth 100000 in
 /-- The per-top display at the same data, two against the fused
 count's one. -/
 example : ground.famFold Nat.add 0
@@ -2067,7 +2058,6 @@ example : ground.famFold Nat.add 0
 associativity display's two theorem-route reads beside its decided
 value. -/
 
-set_option maxRecDepth 100000 in
 /-- The expansion applied whole at the fundamental block against
 itself, the display's sum the fused count. -/
 example : countAt (fusedAt (blockSpan [1, 0]) (blockSpan [1, 0]))
@@ -2082,7 +2072,6 @@ example : countAt (fusedAt (blockSpan [1, 0]) (blockSpan [1, 0]))
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (blockSpan [1, 0])
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) [2, 0]
 
-set_option maxRecDepth 100000 in
 /-- The associativity display applied whole at three distinct
 shapes, the two exhaustion carriers distinct lists. -/
 example : ground.famFold Nat.add 0
@@ -2099,7 +2088,6 @@ example : ground.famFold Nat.add 0
         HVec.content)) :=
   fusionCount_assoc [1, 0] [2, 0] [0, 1] [1, 2] rfl rfl rfl
 
-set_option maxRecDepth 100000 in
 /-- The distinct-shape display at the second target. -/
 example : ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 0] [2, 0] (places.shapeOf mu)
@@ -2115,7 +2103,6 @@ example : ground.famFold Nat.add 0
         HVec.content)) :=
   fusionCount_assoc [1, 0] [2, 0] [0, 1] [3, 1] rfl rfl rfl
 
-set_option maxRecDepth 100000 in
 /-- The two sides' value at the first target, decided each. -/
 example : ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 0] [2, 0] (places.shapeOf mu)
@@ -2138,7 +2125,6 @@ lists and both sums read the sum's unit, the probes at
 `[1]`, `[2]`, `[1,0,0]`, `[0,1,0]`, `[2,1,0]`, `[1,1,1]` each
 reading both sides at nought. -/
 
-set_option maxRecDepth 100000 in
 /-- `hba`'s isolating refusal: the wider middle factor parts the
 two sums. -/
 example : ¬ (ground.famFold Nat.add 0
@@ -2155,7 +2141,6 @@ example : ¬ (ground.famFold Nat.add 0
         HVec.content))) := by
   rw [blockcount.span110_pin]; decide +kernel
 
-set_option maxRecDepth 100000 in
 /-- `hca`'s isolating refusal: the wider third factor parts the
 two sums. -/
 example : ¬ (ground.famFold Nat.add 0

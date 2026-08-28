@@ -240,15 +240,12 @@ five-hundred-family enumeration. -/
 
 private def tB3 : gentable.Table := tableB 3
 
-set_option maxRecDepth 2048 in
 example : ground.tabRead (fun k => decide
       (k = [BPair.unit, BPair.ofNat 1, (BPair.ofNat 1).swap])) false
     (subsetTable tB3) = 7 := by decide +kernel
-set_option maxRecDepth 2048 in
 example : subsetCount tB3
     [BPair.unit, BPair.ofNat 1, (BPair.ofNat 1).swap] false = 7 := by
   decide +kernel
-set_option maxRecDepth 2048 in
 example : subsetCount tB3
     [BPair.unit, BPair.ofNat 1, (BPair.ofNat 1).swap] true = 7 := by
   decide +kernel

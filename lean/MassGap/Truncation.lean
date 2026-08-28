@@ -56,13 +56,13 @@ def shiftSite (W s : Pos) (B G1 G2 : Mat) : Mat :=
     (inertia.matScale s B) (inertia.matScale (s * s) G2)
 
 /-- The pairing at two weighted vectors carries both weights out. -/
-private theorem bilinScale (A : Mat) (n : Nat) (hAr : rowsLen n A)
-    (c d : BPair) (u w : List BPair) (hw : w.length = n) :
+private theorem bilinScale (A : Mat) (c d : BPair)
+    (u w : List BPair) :
     (dotN (vecScale c u) (matVec A (vecScale d w))).oneValue
       (d * (c * dotN u (matVec A w))) := by
   refine BPair.oneValue_trans (dotN_read _ _) ?_
   refine BPair.oneValue_trans
-    (dotP_oneValue_right _ _ _ (matVec_vecScale A n hAr d w hw)) ?_
+    (dotP_oneValue_right _ _ _ (matVec_vecScale_free A d w)) ?_
   refine BPair.oneValue_trans (dotP_vecScale_right _ _ d) ?_
   refine BPair.mul_congr (BPair.oneValue_refl d) ?_
   rw [dotP_comm (vecScale c u) (matVec A w)]
@@ -70,17 +70,6 @@ private theorem bilinScale (A : Mat) (n : Nat) (hAr : rowsLen n A)
   refine BPair.mul_congr (BPair.oneValue_refl c) ?_
   rw [dotP_comm (matVec A w) u]
   exact BPair.oneValue_symm (dotN_read u (matVec A w))
-
-/-- The coupling's exchange at a pairing: the transpose's action
-against one vector is the datum's action against the other. -/
-private theorem crossFlip (A : Mat) (n : Nat) (hAr : rowsLen n A)
-    (u w : List BPair) (hu : u.length = n) (hw : w.length = A.length) :
-    (dotN u (matVec (transposeM A) w)).oneValue (dotN w (matVec A u)) := by
-  refine BPair.oneValue_trans (dotN_read _ _) ?_
-  refine BPair.oneValue_trans
-    (BPair.oneValue_symm (dotP_matVec_transpose n A u w hAr hu hw)) ?_
-  rw [dotP_comm (matVec A u) w]
-  exact BPair.oneValue_symm (dotN_read w (matVec A u))
 
 /-- A rescaled datum's pairing carries the ground weight out at the
 balance weighting. -/
@@ -106,13 +95,12 @@ private theorem scaleSq (w : Pos) (z : BPair) :
 
 /-- A diagonal block's read at the weighted vector is the squared
 weight's own rescaling of the block. -/
-private theorem sqRead (w : Pos) (A : Mat) (n : Nat) (hAr : rowsLen n A)
-    (u : List BPair) (hu : u.length = n) :
+private theorem sqRead (w : Pos) (A : Mat) (u : List BPair) :
     (dotN (vecScale (BPair.ofPos w) u)
         (matVec A (vecScale (BPair.ofPos w) u))).oneValue
       (dotN u (matVec (matScale (w * w) A) u)) :=
   BPair.oneValue_trans
-    (bilinScale A n hAr (BPair.ofPos w) (BPair.ofPos w) u u hu)
+    (bilinScale A (BPair.ofPos w) (BPair.ofPos w) u u)
     (BPair.oneValue_trans
       (BPair.oneValue_symm (scaleSq w (dotN u (matVec A u))))
       (BPair.oneValue_trans
@@ -293,7 +281,7 @@ theorem polar_psd {k m : Nat} (M G M1 M2 B G1 G2 : Mat) (W s : Pos)
             (matVec B (vecScale (BPair.ofPos s) y))).oneValue
           (BPair.ofPos W * dotN x (matVec (matScale s B) y)) :=
         BPair.oneValue_trans
-          (bilinScale B m hBr (BPair.ofPos W) (BPair.ofPos s) x y hy)
+          (bilinScale B (BPair.ofPos W) (BPair.ofPos s) x y)
           (BPair.oneValue_trans
             (BPair.oneValue_of_eq (hmul (dotN x (matVec B y))))
             (BPair.mul_congr (BPair.oneValue_refl _)
@@ -302,7 +290,7 @@ theorem polar_psd {k m : Nat} (M G M1 M2 B G1 G2 : Mat) (W s : Pos)
             (matVec (transposeM B) (vecScale (BPair.ofPos W) x))).oneValue
           (BPair.ofPos W * dotN x (matVec (matScale s B) y)) :=
         BPair.oneValue_trans
-          (crossFlip B m hBr (vecScale (BPair.ofPos s) y)
+          (elim.dotN_transpose_flip B m hBr (vecScale (BPair.ofPos s) y)
             (vecScale (BPair.ofPos W) x) hYl (hXl.trans hB.symm))
           hcc
       have hT : (dotN (x ++ y)
@@ -321,11 +309,11 @@ theorem polar_psd {k m : Nat} (M G M1 M2 B G1 G2 : Mat) (W s : Pos)
             x y x y hx hy hx)
           (BPair.add_congr
             (BPair.add_congr
-              (BPair.oneValue_symm (sqRead W G1 k hG1r x hx))
+              (BPair.oneValue_symm (sqRead W G1 x))
               (BPair.oneValue_refl _))
             (BPair.add_congr
-              (crossFlip (matScale s B) m hSBr y x hy (hx.trans hSBl.symm))
-              (BPair.oneValue_symm (sqRead s G2 m hG2r y hy))))
+              (elim.dotN_transpose_flip (matScale s B) m hSBr y x hy (hx.trans hSBl.symm))
+              (BPair.oneValue_symm (sqRead s G2 y))))
       have hMv : (dotN ((vecScale (BPair.ofPos W) x)
             ++ (vecScale (BPair.ofPos s) y))
             (matVec M ((vecScale (BPair.ofPos W) x)
@@ -411,6 +399,334 @@ theorem polar_psd {k m : Nat} (M G M1 M2 B G1 G2 : Mat) (W s : Pos)
             (psd_all _ spU hcap.2.2.1 hcap.2.2.2.1 _ hv'l))
       exact absurd (polarClose _ _ _ _ _ _ _ hp1 hp2
         (BPair.oneValue_symm hT) hlt (ground.unitLtOfPos W)) (fun z => z)
+
+/-- The form at a two-term combination against a symmetric datum:
+the two diagonal reads join and the two cross reads double, each
+weight carried out of its pairing. -/
+private theorem polarSym (A : Mat) (n : Nat) (hAr : rowsLen n A)
+    (hAl : A.length = n) (x y : List BPair) (hx : x.length = n)
+    (hy : y.length = n) (Axx Ayy Axy : BPair)
+    (hxx : (dotN x (matVec A x)).oneValue Axx)
+    (hyy : (dotN y (matVec A y)).oneValue Ayy)
+    (hxy : (dotN x (matVec A y)).oneValue Axy)
+    (hyx : (dotN y (matVec A x)).oneValue Axy)
+    (a b : BPair) :
+    (quadForm A (vecAdd (vecScale a x) (vecScale b y))).oneValue
+      ((a * (a * Axx) + b * (b * Ayy))
+        + (a * (b * Axy) + a * (b * Axy))) := by
+  refine BPair.oneValue_trans
+    (quadAdd A n hAr hAl (vecScale a x) (vecScale b y)
+      ((length_vecScale a x).trans hx)
+      ((length_vecScale b y).trans hy)) ?_
+  refine BPair.oneValue_trans
+    (BPair.add_congr
+      (BPair.add_congr
+        (BPair.oneValue_trans (bilinScale A a a x x)
+          (BPair.mul_congr (BPair.oneValue_refl a)
+            (BPair.mul_congr (BPair.oneValue_refl a) hxx)))
+        (BPair.oneValue_trans (bilinScale A a b x y)
+          (BPair.mul_congr (BPair.oneValue_refl b)
+            (BPair.mul_congr (BPair.oneValue_refl a) hxy))))
+      (BPair.add_congr
+        (BPair.oneValue_trans (bilinScale A b a y x)
+          (BPair.mul_congr (BPair.oneValue_refl a)
+            (BPair.mul_congr (BPair.oneValue_refl b) hyx)))
+        (BPair.oneValue_trans (bilinScale A b b y y)
+          (BPair.mul_congr (BPair.oneValue_refl b)
+            (BPair.mul_congr (BPair.oneValue_refl b) hyy))))) ?_
+  refine BPair.oneValue_of_eq ?_
+  rw [BPair.mul_left_comm b a Axy,
+    BPair.add_comm (a * (b * Axy)) (b * (b * Ayy)),
+    BPair.add_add_comm (a * (a * Axx)) (a * (b * Axy))
+      (b * (b * Ayy)) (a * (b * Axy))]
+
+/-- The form at the partner combination, the second weight entering
+at its balance partner: the diagonal reads stand and the two cross
+reads walk to their own partners. -/
+private theorem polarSymSwap (A : Mat) (n : Nat) (hAr : rowsLen n A)
+    (hAl : A.length = n) (x y : List BPair) (hx : x.length = n)
+    (hy : y.length = n) (Axx Ayy Axy : BPair)
+    (hxx : (dotN x (matVec A x)).oneValue Axx)
+    (hyy : (dotN y (matVec A y)).oneValue Ayy)
+    (hxy : (dotN x (matVec A y)).oneValue Axy)
+    (hyx : (dotN y (matVec A x)).oneValue Axy)
+    (a b : BPair) :
+    (quadForm A (vecAdd (vecScale a x) (vecScale b.swap y))).oneValue
+      ((a * (a * Axx) + b * (b * Ayy))
+        + ((a * (b * Axy)).swap + (a * (b * Axy)).swap)) := by
+  have h := polarSym A n hAr hAl x y hx hy Axx Ayy Axy hxx hyy hxy hyx
+    a b.swap
+  rw [BPair.swap_mul b Ayy, BPair.swap_mul_swap b (b * Ayy),
+    BPair.swap_mul b Axy, BPair.mul_swap a (b * Axy)] at h
+  exact h
+
+/-- The polarization's close at the two weights: the cap's two reads
+join, the diagonal reads withdrawing between them, and the doubled
+cross term prices the joined diagonal, the shared doubling
+cancelled. -/
+private theorem capClose (wn wd : Pos) (S R Sd Rd : BPair)
+    (h1 : BPair.unit ≤ BPair.ofPos wn * (S + (R + R))
+      + (BPair.ofPos wd * (Sd + (Rd + Rd))).swap)
+    (h2 : BPair.unit ≤ BPair.ofPos wn * (S + (R.swap + R.swap))
+      + BPair.ofPos wd * (Sd + (Rd.swap + Rd.swap))) :
+    Rd.scale (2 * wd) ≤ S.scale wn := by
+  rw [BPair.swap_add R R, BPair.swap_add Rd Rd] at h2
+  have hcw : ((S + (R + R)) + (S + (R + R).swap)).oneValue (S + S) := by
+    rw [BPair.add_add_comm S (R + R) S ((R + R).swap)]
+    exact BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl (S + S))
+        (BPair.oneValue_trans
+          (BPair.oneValue_of_eq (BPair.add_comm (R + R) ((R + R).swap)))
+          (BPair.swap_add_null (BPair.oneValue_refl (R + R)))))
+      (BPair.add_unit (S + S))
+  have hcv : ((Sd + (Rd + Rd)).swap + (Sd + (Rd + Rd).swap)).oneValue
+      ((Rd + Rd).swap + (Rd + Rd).swap) := by
+    rw [← BPair.swap_add Sd (Rd + Rd),
+      BPair.add_add_comm Sd.swap ((Rd + Rd).swap) Sd ((Rd + Rd).swap)]
+    exact BPair.oneValue_trans
+      (BPair.add_congr (BPair.swap_add_null (BPair.oneValue_refl Sd))
+        (BPair.oneValue_refl ((Rd + Rd).swap + (Rd + Rd).swap)))
+      (BPair.unit_add ((Rd + Rd).swap + (Rd + Rd).swap))
+  have hcol : ((BPair.ofPos wn * (S + (R + R))
+        + (BPair.ofPos wd * (Sd + (Rd + Rd))).swap)
+      + (BPair.ofPos wn * (S + (R + R).swap)
+        + BPair.ofPos wd * (Sd + (Rd + Rd).swap))).oneValue
+      (BPair.ofPos wn * (S + S)
+        + (BPair.ofPos wd * ((Rd + Rd) + (Rd + Rd))).swap) := by
+    rw [BPair.add_add_comm (BPair.ofPos wn * (S + (R + R)))
+        ((BPair.ofPos wd * (Sd + (Rd + Rd))).swap)
+        (BPair.ofPos wn * (S + (R + R).swap))
+        (BPair.ofPos wd * (Sd + (Rd + Rd).swap)),
+      ← BPair.left_distrib (BPair.ofPos wn) (S + (R + R))
+        (S + (R + R).swap),
+      ← BPair.mul_swap (BPair.ofPos wd) (Sd + (Rd + Rd)),
+      ← BPair.left_distrib (BPair.ofPos wd) ((Sd + (Rd + Rd)).swap)
+        (Sd + (Rd + Rd).swap),
+      ← BPair.mul_swap (BPair.ofPos wd) ((Rd + Rd) + (Rd + Rd)),
+      ← BPair.swap_add (Rd + Rd) (Rd + Rd)]
+    exact BPair.add_congr
+      (BPair.mul_congr (BPair.oneValue_refl (BPair.ofPos wn)) hcw)
+      (BPair.mul_congr (BPair.oneValue_refl (BPair.ofPos wd)) hcv)
+  have hle : BPair.ofPos wd * ((Rd + Rd) + (Rd + Rd))
+      ≤ BPair.ofPos wn * (S + S) :=
+    ground.leB_of_unit_add
+      (ground.leB_congr_right hcol (ground.unitLeAdd h1 h2))
+  refine ground.leB_of_scale (w := 2) ?_
+  rw [BPair.scale_scale Rd (2 * wd) 2, BPair.scale_scale S wn 2,
+    ground.mul_comm 2 wd, ground.mul_assoc wd 2 2]
+  refine ground.leB_congr ?_ ?_ hle
+  · rw [← BPair.scale_two Rd, ← BPair.scale_two (Rd.scale 2),
+      BPair.scale_scale Rd 2 2,
+      BPair.mul_scale (BPair.ofPos wd) Rd (2 * 2),
+      ← BPair.scale_scale Rd wd (2 * 2)]
+    exact BPair.scale_congr (2 * 2) (BPair.ofPos_scale wd Rd)
+  · rw [← BPair.scale_two S, BPair.mul_scale (BPair.ofPos wn) S 2,
+      ← BPair.scale_scale S wn 2]
+    exact BPair.scale_congr 2 (BPair.ofPos_scale wn S)
+
+/-- The cap's polarization at general weights: a symmetric datum capped
+two-sidedly at `[wn : wd]` times the unit gram prices the pairing of two
+vectors against the two self-pairings at any two weights, the two splits
+read at `a x + b y` and at its partner `a x + b̌ y` and summed, the
+self-terms withdrawing between the two reads. -/
+theorem cap_polar {n : Nat} (D : Mat) (wn wd : Pos) (spU spL : Split n)
+    (hcap : capAt (matScale wd D) (matScale wn (idMat n)) spU spL)
+    (x y : List BPair) (hx : x.length = n) (hy : y.length = n) (a b : BPair) :
+    ((a * b) * dotN x (matVec D y)).scale (2 * wd)
+      ≤ ((a * a) * dotN x x + (b * b) * dotN y y).scale wn := by
+  have hSq : sqAt (matScale wd D) n := hcap.1
+  have hCq : sqAt (matScale wn (idMat n)) n := hcap.2.1
+  have hDl : D.length = n := (length_matScale wd D).symm.trans (sqAt_len hSq)
+  have hDr : rowsLen n D := rowsLen_of_sqAt (sqAt_matScale_reflect wd D hSq)
+  have hsym : matOneValue (transposeM D) D :=
+    sym_of_capScale D wn wd spU spL hcap
+  have hIl : (idMat n).length = n := idMat_len n
+  have hIr : rowsLen n (idMat n) := idMat_rows n
+  have hcomm : (dotN y x).oneValue (dotN x y) :=
+    BPair.oneValue_trans (dotN_read y x)
+      (BPair.oneValue_trans (BPair.oneValue_of_eq (dotP_comm y x))
+        (BPair.oneValue_symm (dotN_read x y)))
+  have hDsym : (dotN y (matVec D x)).oneValue (dotN x (matVec D y)) :=
+    elim.dotN_sym_flip D n hDr hDl hsym x y hx hy
+  have hIxx : (dotN x (matVec (idMat n) x)).oneValue (dotN x x) :=
+    dotN_congrR x _ _ (inertia.matVec_idMat n x hx)
+  have hIyy : (dotN y (matVec (idMat n) y)).oneValue (dotN y y) :=
+    dotN_congrR y _ _ (inertia.matVec_idMat n y hy)
+  have hIxy : (dotN x (matVec (idMat n) y)).oneValue (dotN x y) :=
+    dotN_congrR x _ _ (inertia.matVec_idMat n y hy)
+  have hIyx : (dotN y (matVec (idMat n) x)).oneValue (dotN x y) :=
+    BPair.oneValue_trans (dotN_congrR y _ _ (inertia.matVec_idMat n x hx))
+      hcomm
+  have hul : (vecAdd (vecScale a x) (vecScale b y)).length = n :=
+    length_vecAdd _ _ n ((length_vecScale a x).trans hx)
+      ((length_vecScale b y).trans hy)
+  have hu'l : (vecAdd (vecScale a x) (vecScale b.swap y)).length = n :=
+    length_vecAdd _ _ n ((length_vecScale a x).trans hx)
+      ((length_vecScale b.swap y).trans hy)
+  have hIu := polarSym (idMat n) n hIr hIl x y hx hy (dotN x x) (dotN y y)
+    (dotN x y) hIxx hIyy hIxy hIyx a b
+  have hDu := polarSym D n hDr hDl x y hx hy (dotN x (matVec D x))
+    (dotN y (matVec D y)) (dotN x (matVec D y))
+    (BPair.oneValue_refl _) (BPair.oneValue_refl _) (BPair.oneValue_refl _)
+    hDsym a b
+  have hIu' := polarSymSwap (idMat n) n hIr hIl x y hx hy (dotN x x)
+    (dotN y y) (dotN x y) hIxx hIyy hIxy hIyx a b
+  have hDu' := polarSymSwap D n hDr hDl x y hx hy (dotN x (matVec D x))
+    (dotN y (matVec D y)) (dotN x (matVec D y))
+    (BPair.oneValue_refl _) (BPair.oneValue_refl _) (BPair.oneValue_refl _)
+    hDsym a b
+  have h1 : BPair.unit ≤
+      BPair.ofPos wn * ((a * (a * dotN x x) + b * (b * dotN y y))
+          + (a * (b * dotN x y) + a * (b * dotN x y)))
+        + (BPair.ofPos wd * ((a * (a * dotN x (matVec D x))
+              + b * (b * dotN y (matVec D y)))
+            + (a * (b * dotN x (matVec D y))
+              + a * (b * dotN x (matVec D y))))).swap :=
+    ground.leB_congr_right
+      (BPair.oneValue_trans (quadForm_site_sq hCq hSq hul)
+        (BPair.add_congr
+          (BPair.oneValue_trans (quadForm_ofPos wn (idMat n) _)
+            (BPair.mul_congr (BPair.oneValue_refl _) hIu))
+          (ground.swap_congr
+            (BPair.oneValue_trans (quadForm_ofPos wd D _)
+              (BPair.mul_congr (BPair.oneValue_refl _) hDu)))))
+      (ground.leB_of_not_lt
+        (psd_all _ spU hcap.2.2.1 hcap.2.2.2.1 _ hul))
+  have h2 : BPair.unit ≤
+      BPair.ofPos wn * ((a * (a * dotN x x) + b * (b * dotN y y))
+          + ((a * (b * dotN x y)).swap + (a * (b * dotN x y)).swap))
+        + BPair.ofPos wd * ((a * (a * dotN x (matVec D x))
+              + b * (b * dotN y (matVec D y)))
+            + ((a * (b * dotN x (matVec D y))).swap
+              + (a * (b * dotN x (matVec D y))).swap)) :=
+    ground.leB_congr_right
+      (BPair.oneValue_trans (quadForm_add_sq hCq hSq hu'l)
+        (BPair.add_congr
+          (BPair.oneValue_trans (quadForm_ofPos wn (idMat n) _)
+            (BPair.mul_congr (BPair.oneValue_refl _) hIu'))
+          (BPair.oneValue_trans (quadForm_ofPos wd D _)
+            (BPair.mul_congr (BPair.oneValue_refl _) hDu'))))
+      (ground.leB_of_not_lt
+        (psd_all _ spL hcap.2.2.2.2.1 hcap.2.2.2.2.2 _ hu'l))
+  rw [BPair.mul_assoc a b (dotN x (matVec D y)),
+    BPair.mul_assoc a a (dotN x x), BPair.mul_assoc b b (dotN y y)]
+  exact capClose wn wd
+    (a * (a * dotN x x) + b * (b * dotN y y))
+    (a * (b * dotN x y))
+    (a * (a * dotN x (matVec D x)) + b * (b * dotN y (matVec D y)))
+    (a * (b * dotN x (matVec D y))) h1 h2
+
+/-- The cap read at every vector of the order: the capped datum's
+form and its balance partner both sit at or below the cap's multiple
+of the self-pairing. -/
+theorem cap_read {n : Nat} (A : Mat) (cn cd : Pos)
+    (spA spA' : Split n)
+    (hA : capAt (matScale cd A) (matScale cn (idMat n)) spA spA')
+    (v : List BPair) (hv : v.length = n) :
+    (BPair.ofPos cd * inertia.quadForm A v
+        ≤ BPair.ofPos cn * dotN v v)
+      ∧ (BPair.ofPos cd * (inertia.quadForm A v).swap
+        ≤ BPair.ofPos cn * dotN v v) := by
+  have hC : (inertia.quadForm (matScale cn (idMat n)) v).oneValue
+      (BPair.ofPos cn * dotN v v) :=
+    BPair.oneValue_trans (inertia.quadForm_scale cn (idMat n) v)
+      (BPair.oneValue_trans
+        (BPair.scale_congr cn
+          (dotN_congrR v _ _ (inertia.matVec_idMat n v hv)))
+        (BPair.oneValue_symm (BPair.ofPos_scale cn (dotN v v))))
+  have hS : (inertia.quadForm (matScale cd A) v).oneValue
+      (BPair.ofPos cd * inertia.quadForm A v) :=
+    BPair.oneValue_trans (inertia.quadForm_scale cd A v)
+      (BPair.oneValue_symm (BPair.ofPos_scale cd (inertia.quadForm A v)))
+  constructor
+  · have hu : BPair.unit ≤ inertia.quadForm
+        (siteDatum (matScale cn (idMat n)) (matScale cd A)) v :=
+      ground.leB_of_not_lt
+        (inertia.psd_all _ spA hA.2.2.1 hA.2.2.2.1 v hv)
+    exact ground.leB_of_unit_add
+      (V := (BPair.ofPos cd * inertia.quadForm A v).swap)
+      (ground.leB_congr_right
+        (BPair.add_congr hC (ground.swap_congr hS))
+        (ground.leB_congr_right
+          (inertia.quadForm_site_sq hA.2.1 hA.1 hv) hu))
+  · have hu : BPair.unit ≤ inertia.quadForm
+        (matAdd (matScale cn (idMat n)) (matScale cd A)) v :=
+      ground.leB_of_not_lt
+        (inertia.psd_all _ spA' hA.2.2.2.2.1 hA.2.2.2.2.2 v hv)
+    have hstep := ground.leB_of_unit_add
+      (V := BPair.ofPos cd * inertia.quadForm A v)
+      (ground.leB_congr_right (BPair.add_congr hC hS)
+        (ground.leB_congr_right
+          (inertia.quadForm_add_sq hA.2.1 hA.1 hv) hu))
+    rw [BPair.mul_swap (BPair.ofPos cd) (inertia.quadForm A v)]
+    exact hstep
+
+/-- The cap's square read: the capped datum's image self-pairing sits
+at or below the cap's square against the vector's own, the polarization
+at the cap's own members closing it. -/
+theorem cap_sq {n : Nat} (A : Mat) (cn cd : Pos) (spA spA' : Split n)
+    (hA : capAt (matScale cd A) (matScale cn (idMat n)) spA spA')
+    (v : List BPair) (hv : v.length = n) :
+    (dotN (matVec A v) (matVec A v)).scale (cd * cd)
+      ≤ (dotN v v).scale (cn * cn) := by
+  have hAl : A.length = n :=
+    (length_matScale cd A).symm.trans (sqAt_len hA.1)
+  have hAv : (matVec A v).length = n := (matVec_length A v).trans hAl
+  have h := cap_polar A cn cd spA spA' hA (matVec A v) v hAv hv
+    (BPair.ofPos cd) (BPair.ofPos cn)
+  have eSd : ((BPair.ofPos cd * BPair.ofPos cd)
+      * dotN (matVec A v) (matVec A v)).oneValue
+      ((dotN (matVec A v) (matVec A v)).scale (cd * cd)) :=
+    BPair.oneValue_trans
+      (BPair.mul_congr (BPair.ofPos_mul cd cd)
+        (BPair.oneValue_refl (dotN (matVec A v) (matVec A v))))
+      (BPair.ofPos_scale (cd * cd) (dotN (matVec A v) (matVec A v)))
+  have eSm : ((BPair.ofPos cd * BPair.ofPos cn)
+      * dotN (matVec A v) (matVec A v)).oneValue
+      ((dotN (matVec A v) (matVec A v)).scale (cd * cn)) :=
+    BPair.oneValue_trans
+      (BPair.mul_congr (BPair.ofPos_mul cd cn)
+        (BPair.oneValue_refl (dotN (matVec A v) (matVec A v))))
+      (BPair.ofPos_scale (cd * cn) (dotN (matVec A v) (matVec A v)))
+  have eYn : ((BPair.ofPos cn * BPair.ofPos cn) * dotN v v).oneValue
+      ((dotN v v).scale (cn * cn)) :=
+    BPair.oneValue_trans
+      (BPair.mul_congr (BPair.ofPos_mul cn cn)
+        (BPair.oneValue_refl (dotN v v)))
+      (BPair.ofPos_scale (cn * cn) (dotN v v))
+  have eL : (((BPair.ofPos cd * BPair.ofPos cn)
+      * dotN (matVec A v) (matVec A v)).scale (2 * cd)).oneValue
+      ((dotN (matVec A v) (matVec A v)).scale ((cd * cn) * (2 * cd))) :=
+    BPair.oneValue_trans (BPair.scale_congr (2 * cd) eSm)
+      (BPair.oneValue_of_eq
+        (BPair.scale_scale (dotN (matVec A v) (matVec A v))
+          (cd * cn) (2 * cd)))
+  have eR : ((((BPair.ofPos cd * BPair.ofPos cd)
+        * dotN (matVec A v) (matVec A v))
+      + (BPair.ofPos cn * BPair.ofPos cn) * dotN v v).scale cn).oneValue
+      ((dotN (matVec A v) (matVec A v)).scale ((cd * cd) * cn)
+        + (dotN v v).scale ((cn * cn) * cn)) :=
+    BPair.oneValue_trans
+      (BPair.scale_congr cn (BPair.add_congr eSd eYn))
+      (BPair.oneValue_of_eq (by
+        rw [BPair.scale_add ((dotN (matVec A v) (matVec A v)).scale (cd * cd))
+            ((dotN v v).scale (cn * cn)) cn,
+          BPair.scale_scale (dotN (matVec A v) (matVec A v)) (cd * cd) cn,
+          BPair.scale_scale (dotN v v) (cn * cn) cn]))
+  have h' := ground.leB_congr eL eR h
+  have hpos : (cd * cn) * (2 * cd) = ((cd * cd) * cn) * 2 := by
+    rw [ground.mul_comm 2 cd, ← ground.mul_assoc (cd * cn) cd 2,
+      ground.mul_assoc cd cn cd, ground.mul_comm cn cd,
+      ← ground.mul_assoc cd cd cn]
+  rw [hpos, ← BPair.scale_scale (dotN (matVec A v) (matVec A v))
+      ((cd * cd) * cn) 2,
+    BPair.scale_two ((dotN (matVec A v) (matVec A v)).scale
+      ((cd * cd) * cn))] at h'
+  have hcan := ground.leB_cancelL h'
+  refine ground.leB_of_scale (w := cn) ?_
+  rw [BPair.scale_scale (dotN (matVec A v) (matVec A v)) (cd * cd) cn,
+    BPair.scale_scale (dotN v v) (cn * cn) cn]
+  exact hcan
 
 /-- `lem:inertia`'s compression at the fiber datum's site tie: the
 head block's count sits at or below the whole datum's, both counts

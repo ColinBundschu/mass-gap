@@ -31,10 +31,10 @@ folds, so the segment count reads the distinct roots inside
 (`lem:deckfactor`'s band read the instance at the deck symbol).  The
 CRT split of the pairing over a stated factor list — the trace
 additive over the blocks, a linear block the value's side read and
-a definite block the identity's — is the derivation tier at its
-recorded consumers (`lem:deckfactor`'s band read the arriving
-instance, `thm:SO`'s located signs at stored towers), the counts'
-reads the displays above.
+a definite block the identity's — is read at its consumers,
+`lem:deckfactor`'s band read and the contact cell's and the
+decimation's segment counts, each an instance of `segCountRead`,
+the counts' reads the displays above.
 -/
 
 namespace hermitesign

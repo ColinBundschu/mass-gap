@@ -8,7 +8,6 @@ display's one even count at its own key, the further keys' counts at
 the permuted displays, and the repeat read's instances at a repeated
 exponent, the two sides equal at every sampled key.
 -/
-set_option maxRecDepth 8192
 
 open ground places weylchar
 

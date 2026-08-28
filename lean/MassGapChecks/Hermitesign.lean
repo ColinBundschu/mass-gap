@@ -10,7 +10,6 @@ additive identity at `z² + 1`, settled at the three remainders `1`,
 `√`-free bracket `(351/352, 353/352)` of the root `1` — `p = z` on
 its upper side and `p = z - 3` on its lower, each at its two splits
 and closing identity, with the exchanged-identity refusals. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly elim inertia hermitesign

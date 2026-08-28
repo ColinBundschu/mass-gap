@@ -6,7 +6,6 @@ successor spelling, the evaluation at one at displayed values, and
 the geometric-derivative display over the support at residue
 instances through the classification's range.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground excess

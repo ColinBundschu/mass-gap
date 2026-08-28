@@ -19,39 +19,60 @@ module holds.
 
 ## Status
 
-While `theory.tex` provides a complete proof of the Yang-Mills mass gap, **the Lean is not yet a complete transcription of that proof.**  What
-the tree holds at this release, read off [lean/MassGap/Main.lean](lean/MassGap/Main.lean):
+`theory.tex` provides a complete proof of the Yang-Mills mass gap:
+it states and derives every clause of `thm:main`, and
+`rem:dictionary` reads the result against the conventional
+formulation, the Jaffe-Witten statement included.  The Lean tree is
+a transcription of that proof in progress: most of it is
+formalized, and this section says exactly which parts are and are
+not.  The docstring at the head of each module is the ledger of
+record for what that module holds.
 
-- `main.Member` is the classification's stated domain, with the `A`-series at
-  every residue; `B_ℓ`, `C_ℓ`, `D_ℓ` at their index floors, and `G₂`, `F₄`,
-  `E₆`, `E₇`, `E₈`. The member's weight table, derived residue, base
-  and fusion interface read off the carried datum.
-- **Clause (ii)** of `thm:main`, the contact pair `(3, H_r)`, is the
-  decidable read `main.clauseII` (`thm:closing` at the member's own base and
-  residue), decided by kernel `decide` at every committed member in
-  [lean/MassGapChecks/Main.lean](lean/MassGapChecks/Main.lean).
-- **Clause (i)**, positivity of the cut of `𝒦` at every interior coupling, is
-  not yet stated at `main`.  Its derivation tier is landed: the count
-  certificates (`lem:inertia`, `thm:certconstruct`, `lem:stage`,
-  `lem:split`, `lem:stagesplit`, `lem:hermitesign`, `lem:deckfactor`,
-  `thm:windowsep`, `lem:cellcount` with its boundary clause), the chain
+`thm:main` has three clauses, stated over `main.Member`
+([lean/MassGap/Main.lean](lean/MassGap/Main.lean)), the
+classification's stated domain: the `A`-series at every residue,
+`B_l`, `C_l`, `D_l` at their index floors, and `G2`, `F4`, `E6`,
+`E7`, `E8`, each member once.
+
+Formalized:
+
+- **Clause (i), gap positivity, is wired at `main`**: `main.clauseI`
+  reads the member's floor window at the two count-one chain reads
+  with the cross-multiplied tie, and `main.clauseI_counts` carries
+  both counts to every ray of the committed range.  Beneath it sit
+  the count certificates (`lem:inertia`, `thm:certconstruct`,
+  `lem:stage`, `lem:split`, `lem:stagesplit`, `lem:hermitesign`,
+  `lem:deckfactor`, `thm:windowsep`, `lem:cellcount`) and the chain
   (`lem:fiberdec`, `lem:grading`, `lem:relfiber`, `thm:decimation`,
-  `lem:chargedcell`, `thm:truncation`, `lem:dualtrunc`, `lem:contactcell`,
-  `lem:freecell`, `thm:flatstep`, `lem:speccut`, `thm:divisorid`), and
-  `thm:gappos`'s sandwich, transport, cell chain, cutoff price and window
-  cut.  The wiring of those tiers into one statement over `main.Member`
-  is the open item.
-- **Clause (iii)**, the continuum reads, is not yet stated at `main`.
-  `lem:corner`'s coordinate, shifted scaling, drift, grade-key, cap and
-  count tiers and `thm:restoration`'s first tier are landed;
-  `lem:cornerpivot`, `thm:groundreads`, `lem:momentfold`, `lem:cone`,
-  `lem:fourpoint`, `thm:continuum`, `thm:decomp` and `thm:reconstruct`
-  have no Lean yet.
-- `lem:sectorspan` and `lem:attained` (the requirement mirrors) have no Lean
-  yet.
+  `lem:chargedcell`, `thm:truncation`, `lem:dualtrunc`,
+  `lem:contactcell`, `lem:freecell`, `thm:flatstep`, `lem:speccut`,
+  `thm:divisorid`, `thm:gappos`).
+- **Clause (ii), the contact value `(3, H_r)`, is closed at every
+  member**: `main.clauseII` is `thm:closing`'s read at the member's
+  own base and residue, decided by kernel `decide` at every
+  committed member in
+  [lean/MassGapChecks/Main.lean](lean/MassGapChecks/Main.lean).
+- **The requirement mirrors** `lem:sectorspan` and `lem:attained`.
+- **Most of clause (iii)'s support tiers**: `lem:cornerpivot` (the
+  corner disconjugacy certificate: the walk, profile, crossing,
+  dominance, ground-witness, count and block-chain tiers),
+  `thm:groundreads` clauses (i)-(vi) with (v'), `lem:corner`'s
+  corner-count, shifted-scaling, drift, grade-key, cap and count
+  tiers, `lem:fourpoint`'s partition-fold, jet and collection
+  tiers, and `thm:restoration`'s first tier.
+
+Open (no Lean yet):
+
+- `thm:groundreads` clause (vii), the scale sandwich, and
+  `lem:corner`'s cell-floor clause.
+- `lem:momentfold`, `lem:cone`, `thm:continuum`, `thm:decomp`,
+  `thm:reconstruct`.
+- **Clause (iii)'s composite statement at `main`** (it consumes the
+  items above), and the reverse correspondence walk (every tex
+  label reached from a Lean namespace).
 
 The snapshot is taken from the development repository at commit
-`9b0e7ce85e5e38914e7b3887a5d7a0c7680bd348` (2026-08-25).
+`8c78649c9337165ee7488f97525627a7b426fd30` (2026-08-28).
 
 ## Proof Methodology
 
@@ -84,7 +105,7 @@ After the build,
 
 walks every constant of both libraries with `Lean.collectAxioms` and prints
 
-    constants read: 24174
+    constants read: 28684
     constants depending on axioms: 0
 
 ending in an error if any constant depends on any axiom.  A single

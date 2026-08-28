@@ -24,7 +24,6 @@ A designation's width clause composes here: the pencil
 polynomial's separation read at `thm:windowsep` prices
 `thm:certconstruct`'s bracket, the composition's instance beside
 the counts. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly elim inertia split

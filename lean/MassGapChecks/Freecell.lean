@@ -45,7 +45,6 @@ the extent `τ₁` at the tie `τ₁² = 3` located there.  Its two refusals: th
 bracket `[2, 3]` refusing the occupied count, and the straddle
 `[0, 2]` refusing the vacant one.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly elim inertia certconstruct contactcell freecell
@@ -216,24 +215,11 @@ private def loF : CPair := ⟨⟨1, 1⟩, 1⟩
 private def hi8 : CPair := ⟨⟨2, 1⟩, 8⟩
 private def hi4 : CPair := ⟨⟨2, 1⟩, 4⟩
 private def cvFl : cellcount.Cover :=
-  cellcount.Cover.one hi4 0 true ⟨2, 1⟩ ⟨2, 1⟩
-    (cellcount.Cover.one hi4 0 true ⟨2, 1⟩ ⟨2, 1⟩
-      (cellcount.Cover.one hi4 0 true ⟨2, 1⟩ ⟨2, 1⟩
-        cellcount.Cover.nought cellcount.Cover.done)
-      cellcount.Cover.done)
-    cellcount.Cover.done
+  cellcount.diagNest hi4 ⟨2, 1⟩ ⟨2, 1⟩ 3
 private def cvFh : cellcount.Cover :=
   cellcount.Cover.one hi8 0 false ⟨2, 1⟩ ⟨2, 1⟩
-    (cellcount.Cover.one hi8 0 true ⟨2, 1⟩ ⟨2, 1⟩
-      (cellcount.Cover.one hi8 0 true ⟨2, 1⟩ ⟨2, 1⟩
-        cellcount.Cover.nought cellcount.Cover.done)
-      cellcount.Cover.done)
-    (cellcount.Cover.one hi4 0 false ⟨2, 1⟩ ⟨2, 1⟩
-      (cellcount.Cover.one hi4 0 true ⟨2, 1⟩ ⟨2, 1⟩
-        (cellcount.Cover.one hi4 0 true ⟨2, 1⟩ ⟨2, 1⟩
-          cellcount.Cover.nought cellcount.Cover.done)
-        cellcount.Cover.done)
-      cellcount.Cover.done)
+    (cellcount.diagNest hi8 ⟨2, 1⟩ ⟨2, 1⟩ 2)
+    (cellcount.diagCover hi4 ⟨2, 1⟩ ⟨2, 1⟩ 2)
 
 private theorem covFlr : cellcount.coverRead sFl 3 2 loF hi4 cvFl := by
   decide +kernel

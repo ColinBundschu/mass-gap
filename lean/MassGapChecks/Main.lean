@@ -37,7 +37,6 @@ in one declaration, the shared enumeration one kernel evaluation
 — the module's priced pins, `Spin(5)`, `Sp(3)` and `G_2` the
 committed members with the `A`-arm's window beside them.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground gentable sertables row main lattice elim inertia fusion
@@ -238,3 +237,152 @@ the carried datum. -/
 
 example : freeend.levelRead (data (.A 0)) square 12 12 := by
   decide +kernel
+
+/-! Clause (i)'s member sweeps at the committed floor windows: the
+two count-one chains and the tie decided whole per member — the
+`A`-arm at five residues beside the series and the five fixed
+members — with the window data's enumeration ties, the committed
+magnetic matrices tied to the wiring's own walk
+(`pairpencil.loopMag`) at the walked members and the `E7` and `E8`
+walks priced at the record beside the `A`-series' fourth residue's
+(`E8`'s matrix `prop:repring`'s unit read with `prop:row`'s base at
+the self-dual θ, the tex's own values), the electric matrices at
+the standing committed level gaps with the multi-loop window's tie
+at the second `A`-arm, the counts carried to an interior ray
+through the theorem route beside its decided twin, and one refusal
+per binder: the tie at the member pair one beyond, the sample's
+split forged at the vacuum's side, the foot shifted off the free
+end, the range's top beyond the cover's priced magnitude bound, and
+the sweep at a level beyond the window's content refusing the
+count. -/
+
+example : clauseI (.A 0) := by decide +kernel
+example : clauseI (.A 1) := by decide +kernel
+example : clauseI (.A 2) := by decide +kernel
+example : clauseI (.A 3) := by decide +kernel
+example : clauseI (.A 4) := by decide +kernel
+example : clauseI (.B 1) := by decide +kernel
+example : clauseI (.B 2) := by decide +kernel
+example : clauseI (.C 0) := by decide +kernel
+example : clauseI (.C 1) := by decide +kernel
+example : clauseI (.D 0) := by decide +kernel
+example : clauseI (.D 1) := by decide +kernel
+example : clauseI .G2 := by decide +kernel
+example : clauseI .F4 := by decide +kernel
+example : clauseI .E6 := by decide +kernel
+example : clauseI .E7 := by decide +kernel
+example : clauseI .E8 := by decide +kernel
+
+/-- `Spin(5)`'s clause read, named once and consumed at its own pin
+and the theorem route's hypothesis. -/
+private theorem clB0 : clauseI (.B 0) := by decide +kernel
+
+example : clauseI (.B 0) := clB0
+
+/-! The window data: the enumeration ties at the committed orders,
+the cutoffs the floor contents' four-link reads, the magnetic
+matrices the wiring's own walks, and the electric matrices the
+standing committed level gaps. -/
+
+example : (winLabels (.A 0)).length + 1 = winO (.A 0) := by decide +kernel
+example : (winLabels (.A 1)).length + 1 = winO (.A 1) := by decide +kernel
+example : (winLabels (.A 2)).length + 1 = winO (.A 2) := by decide +kernel
+example : (winLabels (.A 3)).length + 1 = winO (.A 3) := by decide +kernel
+example : (winLabels (.A 4)).length + 1 = winO (.A 4) := by decide +kernel
+example : (winLabels (.B 0)).length + 1 = winO (.B 0) := by decide +kernel
+example : (winLabels (.B 1)).length + 1 = winO (.B 1) := by decide +kernel
+example : (winLabels (.B 2)).length + 1 = winO (.B 2) := by decide +kernel
+example : (winLabels (.C 0)).length + 1 = winO (.C 0) := by decide +kernel
+example : (winLabels (.C 1)).length + 1 = winO (.C 1) := by decide +kernel
+example : (winLabels (.D 0)).length + 1 = winO (.D 0) := by decide +kernel
+example : (winLabels (.D 1)).length + 1 = winO (.D 1) := by decide +kernel
+example : (winLabels .G2).length + 1 = winO .G2 := by decide +kernel
+example : (winLabels .F4).length + 1 = winO .F4 := by decide +kernel
+example : (winLabels .E6).length + 1 = winO .E6 := by decide +kernel
+example : (winLabels .E7).length + 1 = winO .E7 := by decide +kernel
+example : (winLabels .E8).length + 1 = winO .E8 := by decide +kernel
+
+example : winCut (.A 0) = 12 ∧ winCut (.A 1) = 32 ∧ winCut (.A 2) = 60
+    ∧ winCut (.B 0) = 40 ∧ winCut (.B 1) = 84 ∧ winCut (.B 2) = 128
+    ∧ winCut (.C 0) = 56 ∧ winCut (.C 1) = 72 ∧ winCut (.D 0) = 224
+    ∧ winCut (.D 1) = 288 ∧ winCut .G2 = 96 ∧ winCut .F4 = 96
+    ∧ winCut .E6 = 416 ∧ winCut .E7 = 456 ∧ winCut .E8 = 480 := by
+  decide +kernel
+
+example : winM (.A 0) = pairpencil.loopMag (data (.A 0))
+    (winLabels (.A 0)) := by decide +kernel
+example : winM (.A 1) = pairpencil.loopMag (data (.A 1))
+    (winLabels (.A 1)) := by decide +kernel
+example : winM (.A 2) = pairpencil.loopMag (data (.A 2))
+    (winLabels (.A 2)) := by decide +kernel
+example : winM (.B 0) = pairpencil.loopMag (data (.B 0))
+    (winLabels (.B 0)) := by decide +kernel
+example : winM (.B 1) = pairpencil.loopMag (data (.B 1))
+    (winLabels (.B 1)) := by decide +kernel
+example : winM (.B 2) = pairpencil.loopMag (data (.B 2))
+    (winLabels (.B 2)) := by decide +kernel
+example : winM (.C 0) = pairpencil.loopMag (data (.C 0))
+    (winLabels (.C 0)) := by decide +kernel
+example : winM (.C 1) = pairpencil.loopMag (data (.C 1))
+    (winLabels (.C 1)) := by decide +kernel
+example : winM (.D 0) = pairpencil.loopMag (data (.D 0))
+    (winLabels (.D 0)) := by decide +kernel
+example : winM (.D 1) = pairpencil.loopMag (data (.D 1))
+    (winLabels (.D 1)) := by decide +kernel
+example : winM .G2 = pairpencil.loopMag (data .G2)
+    (winLabels .G2) := by decide +kernel
+example : winM .F4 = pairpencil.loopMag (data .F4)
+    (winLabels .F4) := by decide +kernel
+example : winM .E6 = pairpencil.loopMag (data .E6)
+    (winLabels .E6) := by decide +kernel
+
+example : winE (.B 0) = etB := by decide +kernel
+example : winE (.C 0) = etC := by decide +kernel
+example : winE .G2 = etG := by decide +kernel
+example : winE (.A 1) = K.freeGap (data (.A 1)) square (winCut (.A 1)) := by
+  decide +kernel
+
+/-! The counts carried to the interior: the theorem route at the
+ray τ = 1/2 of `Spin(5)`'s window beside its decided twin, the
+evaluated pair the committed split's own value. -/
+
+private def spHalfB0 : Split 2 :=
+  ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [.one ⟨1, 5⟩, .one ⟨156, 1⟩], 0, rfl⟩
+
+example : splitRead (cellcount.evalPC (sweepLo (.B 0)) ⟨2, 1⟩ 2 2)
+    spHalfB0 := by decide +kernel
+
+example : revAt spHalfB0 = 1 :=
+  (clauseI_counts (.B 0) clB0 ⟨2, 1⟩ 2 (by decide +kernel)
+    (by decide +kernel)).1 spHalfB0 (by decide +kernel)
+
+/-! The refusals, one per binder. -/
+
+example : ¬ (BPair.scale (⟨2, 1⟩ : BPair) 4
+    + BPair.ofPos (4 * ground.posOfSucc (2 * winFloorN (.B 0) - 1))
+    ≤ BPair.scale (⟨winLvl (.B 0), 1⟩ : BPair) 4) := by
+  decide +kernel
+
+private def spForgeB0 : Split 2 :=
+  ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [.one ⟨2, 1⟩, .one ⟨40, 1⟩], 0, rfl⟩
+
+example : ¬ gappos.chainRead (sweepLo (.B 0)) 2 1 winFoot
+    [(winTop, winCover (.B 0), (BPair.unit, 1), spForgeB0)] := by
+  decide +kernel
+
+example : ¬ gappos.chainRead (sweepLo (.B 0)) 2 1
+    ⟨BPair.ofNat 1, 1⟩ (cellsLo (.B 0)) := by decide +kernel
+
+example : ¬ gappos.chainRead (sweepLo (.B 0)) 2 1 winFoot
+    [(⟨BPair.ofNat 2, 1⟩,
+      cellcount.diagCover ⟨BPair.ofNat 2, 1⟩ ⟨2, 1⟩ ⟨2, 1⟩ 1,
+      (BPair.unit, 1), sampleLo (.B 0))] := by decide +kernel
+
+example : ¬ cellcount.countAt
+    (freecell.freePMat (winE (.B 0)) (winM (.B 0)) (inertia.idMat 2)
+      (ground.posOfSucc (4 * winFloorN (.B 0) + 1)) 1) 2
+    BPair.unit 1 1
+    (inertia.mkSplit 2 (cellcount.evalPC
+      (freecell.freePMat (winE (.B 0)) (winM (.B 0)) (inertia.idMat 2)
+        (ground.posOfSucc (4 * winFloorN (.B 0) + 1)) 1)
+      BPair.unit 1 2)) := by decide +kernel

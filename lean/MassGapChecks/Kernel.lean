@@ -52,7 +52,6 @@ branch at `d_f = 5` on `con:res`'s adjoint-site instances.  The
 module's cost is the coherence pin's two symbolic `wg.pairPhi`
 reads at the six-factor site, the `padj (gramWg 3)` adjugate under
 kernel reduction. -/
-set_option maxRecDepth 16384
 set_option maxHeartbeats 16000000
 
 open ground poly genericlift states kernel

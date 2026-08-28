@@ -10,14 +10,14 @@ the positive rescaling fixing the count); the level gap `Ẽ` enters
 at its floor certificate, `ε₀ G + Ẽ = H` with the pair at the floor
 positive semidefinite and the ground occupied (`floorRead`,
 `gapMat` the cleared site datum), and clause (i)'s membership — the
-meet over the directed windows — is the theorem's own statement,
-arriving with the chain assembly (`thm:pairpencil`'s presentation
+meet over the directed windows — is the theorem tier's own
+statement at the chain assembly's presentation (`thm:pairpencil`
 the pencils' entry, `thm:gappos`'s tier the derivation), each
 window's test `cutRead`'s read at its certificate — the member
 instantiations reading through `thm:main`'s wiring, their windows'
 free-end reads the main check module's pins.  The compression to
-the word sector rides
-`thm:coeffone`'s arrival — at the free end the word sector is the
+the word sector reads at
+`thm:coeffone`'s exact line — at the free end the word sector is the
 window itself (`lem:freeend`), and the free-end reading closes
 here: the level gap is the electric diagonal (`freeGap`, the unit
 line at its head), the cut's pair is diagonal with the entries

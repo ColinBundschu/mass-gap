@@ -11,7 +11,6 @@ width floors, the base off two at `r = 1` and both counts at the
 sum's unit below the sector's widths; the structural identities
 are `lem:channels`' closure reads, pinned in its own battery.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open xfusion

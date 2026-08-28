@@ -23,8 +23,15 @@ datum's own at the cleared descent, `rev(S) = 0` through
 `countSplit_read`.  The vacant-slab forgery closes the module — one
 occupied scalar slab beside a slab of order `0`, the occupancy
 conjunct the isolating binder, every co-binder of the bundle decided
-beside it and the two counts parting at `0` against `1`. -/
-set_option maxRecDepth 8192
+beside it and the two counts parting at `0` against `1`.  The
+decimated head reads last — clause (i)'s head onto the depths at or
+below `j` at a two-slab instance cleared at its pivot: the head's
+own entries, its square order at the leading key joined to the
+depth's, and the two cross-scaled heads' tie display decided at an
+occupied drift and at equal members, refused at a diagonal off the
+tie, refused with the coupling read at a second window's coupling
+off the shared occupied one, and landed whole through `headM_tie`
+at the occupied drift and at the vacant depth. -/
 set_option maxHeartbeats 4000000
 
 open ground elim inertia greenprod
@@ -270,3 +277,162 @@ example : ¬ (revAt spK2 = revFold sps2) := by decide +kernel
 example : ¬ revListRead xs2 [⟨1, ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩,
     [.one ⟨3, 1⟩], 0, rfl⟩⟩] := by decide +kernel
 example : ¬ revListRead ([] : List MatQ) sps2 := by decide +kernel
+
+/-! The decimated head at the two-slab instance `tridiag(4,2;0)`
+cleared at the pivot `(5/2)`: the head's own entries, its square
+order at the leading key joined to the depth's, and clause (i)'s
+tie display decided at two drifts and refused off the tie, the
+shared certificates named once and consumed by term. -/
+
+private def diagH : List Mat := [[[⟨5, 1⟩]], [[⟨3, 1⟩]]]
+private def offH : List Mat := [[[⟨1, 1⟩]]]
+private def nsH : List Nat := [1, 1]
+private def XH : MatQ := ⟨[[⟨7, 2⟩]], 2⟩
+
+private theorem shpH : slabShape diagH offH nsH := by decide +kernel
+
+private theorem hjH : 1 < nsH.length := by decide +kernel
+
+private theorem sqXH : sqAt XH.1 (ground.getAt 0 nsH 1) := by
+  decide +kernel
+
+example : matOneValue (headM diagH offH XH 1)
+    [[⟨10, 2⟩, ⟨2, 2⟩], [⟨2, 2⟩, ⟨7, 2⟩]] := by decide +kernel
+
+example : sqAt (headM diagH offH XH 1)
+    (ground.sumNat (List.take 1 nsH) + ground.getAt 0 nsH 1) :=
+  headM_sq diagH offH XH 1 nsH shpH hjH sqXH
+
+/-! The tie's display at an occupied drift `dn = 1`: the primed
+window's depth-0 diagonal raised by the drift at the shared
+coupling, the second pivot `(8/1)`, and the two cleared heads
+cross-scaled parting at the drift's leading diagonal and at the
+cleared pivot difference. -/
+
+private def dnT : BPair := ⟨2, 1⟩
+private def diagT : List Mat := [[[⟨6, 1⟩]], [[⟨3, 1⟩]]]
+private def XT : MatQ := ⟨[[⟨9, 1⟩]], 1⟩
+
+private theorem shpT : slabShape diagT offH nsH := by decide +kernel
+
+private theorem sqXT : sqAt XT.1 (ground.getAt 0 nsH 1) := by
+  decide +kernel
+
+private theorem hdagT : ∀ i, i < 1 →
+    matOneValue (ground.getAt [] diagT i)
+      (matAdd (ground.getAt [] diagH i)
+        (matScaleB dnT (idMat (ground.getAt 0 nsH i))))
+  | 0, _ => by decide +kernel
+  | _ + 1, h => absurd (Nat.lt_of_succ_lt_succ h) (Nat.not_lt_zero _)
+
+private theorem hoffT : ∀ i, i < 1 →
+    matOneValue (ground.getAt [] offH i) (ground.getAt [] offH i)
+  | 0, _ => by decide +kernel
+  | _ + 1, h => absurd (Nat.lt_of_succ_lt_succ h) (Nat.not_lt_zero _)
+
+example : matOneValue (matScale XH.2 (headM diagT offH XT 1))
+    (matAdd (matScale XT.2 (headM diagH offH XH 1))
+      (matAdd
+        (matScaleB (dnT.scale (XH.2 * XT.2))
+          (inertia.headId (ground.sumNat (List.take 1 nsH))
+            (ground.getAt 0 nsH 1)))
+        (inertia.trailPad (ground.sumNat (List.take 1 nsH))
+          (addQ XT (swapQ XH)).1))) := by decide +kernel
+
+example : matOneValue (matScale XH.2 (headM diagT offH XT 1))
+    (matAdd (matScale XT.2 (headM diagH offH XH 1))
+      (matAdd
+        (matScaleB (dnT.scale (XH.2 * XT.2))
+          (inertia.headId (ground.sumNat (List.take 1 nsH))
+            (ground.getAt 0 nsH 1)))
+        (inertia.trailPad (ground.sumNat (List.take 1 nsH))
+          (addQ XT (swapQ XH)).1))) :=
+  headM_tie diagH offH diagT offH XH XT 1 nsH dnT
+    shpH shpT hjH sqXH sqXT hdagT hoffT
+
+/-! The tie at the vacant depth: the two pivots alone, the head
+identity at the vacant leading order, and the deviation the whole
+pad — the display decided and landed through `headM_tie`. -/
+
+example : matOneValue (matScale XH.2 (headM diagH offH XT 0))
+    (matAdd (matScale XT.2 (headM diagH offH XH 0))
+      (matAdd
+        (matScaleB (dnT.scale (XH.2 * XT.2))
+          (inertia.headId (ground.sumNat (List.take 0 nsH))
+            (ground.getAt 0 nsH 0)))
+        (inertia.trailPad (ground.sumNat (List.take 0 nsH))
+          (addQ XT (swapQ XH)).1))) := by decide +kernel
+
+example : matOneValue (matScale XH.2 (headM diagH offH XT 0))
+    (matAdd (matScale XT.2 (headM diagH offH XH 0))
+      (matAdd
+        (matScaleB (dnT.scale (XH.2 * XT.2))
+          (inertia.headId (ground.sumNat (List.take 0 nsH))
+            (ground.getAt 0 nsH 0)))
+        (inertia.trailPad (ground.sumNat (List.take 0 nsH))
+          (addQ XT (swapQ XH)).1))) :=
+  headM_tie diagH offH diagH offH XH XT 0 nsH dnT shpH shpH
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (fun i hi => absurd hi (Nat.not_lt_zero i))
+    (fun i hi => absurd hi (Nat.not_lt_zero i))
+
+/-! The drift's binder: at a depth-0 diagonal raised by two against
+the drift's one the tie hypothesis refuses, and the display refuses
+with it. -/
+
+private def diagW : List Mat := [[[⟨7, 1⟩]], [[⟨3, 1⟩]]]
+
+example : ¬ matOneValue (ground.getAt [] diagW 0)
+    (matAdd (ground.getAt [] diagH 0)
+      (matScaleB dnT (idMat (ground.getAt 0 nsH 0)))) := by decide +kernel
+
+example : ¬ matOneValue (matScale XH.2 (headM diagW offH XT 1))
+    (matAdd (matScale XT.2 (headM diagH offH XH 1))
+      (matAdd
+        (matScaleB (dnT.scale (XH.2 * XT.2))
+          (inertia.headId (ground.sumNat (List.take 1 nsH))
+            (ground.getAt 0 nsH 1)))
+        (inertia.trailPad (ground.sumNat (List.take 1 nsH))
+          (addQ XT (swapQ XH)).1))) := by decide +kernel
+
+/-! The couplings' binder: at an occupied shared coupling the tie
+display holds, and at the second window's coupling raised off the
+first's both the coupling read and the display refuse — the
+equal-couplings hypothesis isolated at an occupied instance. -/
+
+private def offO : List Mat := [[[⟨3, 1⟩]]]
+private def offO2 : List Mat := [[[⟨4, 1⟩]]]
+
+example : matOneValue (matScale XH.2 (headM diagT offO XT 1))
+    (matAdd (matScale XT.2 (headM diagH offO XH 1))
+      (matAdd
+        (matScaleB (dnT.scale (XH.2 * XT.2))
+          (inertia.headId (ground.sumNat (List.take 1 nsH))
+            (ground.getAt 0 nsH 1)))
+        (inertia.trailPad (ground.sumNat (List.take 1 nsH))
+          (addQ XT (swapQ XH)).1))) := by decide +kernel
+
+example : ¬ matOneValue (ground.getAt [] offO2 0)
+    (ground.getAt [] offO 0) := by decide +kernel
+
+example : ¬ matOneValue (matScale XH.2 (headM diagT offO2 XT 1))
+    (matAdd (matScale XT.2 (headM diagH offO XH 1))
+      (matAdd
+        (matScaleB (dnT.scale (XH.2 * XT.2))
+          (inertia.headId (ground.sumNat (List.take 1 nsH))
+            (ground.getAt 0 nsH 1)))
+        (inertia.trailPad (ground.sumNat (List.take 1 nsH))
+          (addQ XT (swapQ XH)).1))) := by decide +kernel
+
+/-! The tie's display at the equal-membered drift: the two windows
+at one diagonal, the leading identity's term at the unit scale and
+the cleared pivot difference the whole parting. -/
+
+example : matOneValue (matScale XH.2 (headM diagH offH XT 1))
+    (matAdd (matScale XT.2 (headM diagH offH XH 1))
+      (matAdd
+        (matScaleB (BPair.unit.scale (XH.2 * XT.2))
+          (inertia.headId (ground.sumNat (List.take 1 nsH))
+            (ground.getAt 0 nsH 1)))
+        (inertia.trailPad (ground.sumNat (List.take 1 nsH))
+          (addQ XT (swapQ XH)).1))) := by decide +kernel

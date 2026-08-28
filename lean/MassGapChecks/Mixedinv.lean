@@ -5,7 +5,6 @@ block count's identity with the path count at the tableau
 instances — the read decided against `def:blockcount`'s
 kernel-dimension count and run through the general theorem.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places mixedinv

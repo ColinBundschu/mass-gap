@@ -866,14 +866,9 @@ private theorem occ_split (k : Nat) (m : List Nat) :
   have hwnu : ∀ nu ∈ (blockcount.exhaust (pieri.complBox (k + 2)).length
         (fusedK k)).map blockcount.HVec.content, nu.length = k + 2 := by
     intro nu hnu
-    match ground.mem_map_of blockcount.HVec.content
-        (blockcount.exhaust (pieri.complBox (k + 2)).length
-          (fusedK k)) nu hnu with
-    | ⟨w, hw, hwc⟩ =>
-      rw [← hwc, (blockcount.exhaust_top
-          (pieri.complBox (k + 2)).length (fusedK k)
-          hsz hwid hcl w hw).2.1,
-        pieri.length_complBox]
+    rw [blockcount.exhaust_width (pieri.complBox (k + 2)).length
+        (fusedK k) hsz hwid hcl nu hnu,
+      pieri.length_complBox]
   have hcnt : ∀ c : Shape, c.length = k + 2 →
       blockcount.countAt (fusedK k) (places.rowList c)
         = (if c = theta (k + 2) then 1 else 0)

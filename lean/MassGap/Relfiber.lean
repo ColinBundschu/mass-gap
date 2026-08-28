@@ -314,10 +314,6 @@ private theorem dotP_mapMul (a b : BPair) (v z : List BPair) :
   rw [dotP_comm z v]
   exact BPair.oneValue_refl _
 
-private theorem dotP_nilR : ∀ l : List BPair, dotP l [] = BPair.unit
-  | [] => rfl
-  | _ :: _ => rfl
-
 /-- The product index's fold collects to the factors' folds'
 product (`def:ground`'s identities). -/
 theorem dotP_tensorV : ∀ (u w v z : List BPair),
@@ -327,7 +323,7 @@ theorem dotP_tensorV : ∀ (u w v z : List BPair),
     BPair.oneValue_symm (BPair.unit_mul (dotP v z))
   | a :: u, [], v, z, _ => by
     show (dotP (tensorV (a :: u) v) []).oneValue (BPair.unit * dotP v z)
-    rw [dotP_nilR]
+    rw [elim.dotP_nil_right]
     exact BPair.oneValue_symm (BPair.unit_mul (dotP v z))
   | a :: u, b :: w, v, z, hl2 => by
     show (dotP (v.map (fun y => (a * y).norm) ++ tensorV u v)
@@ -1116,7 +1112,7 @@ theorem comm_shift (nX L : Nat) (X P : Mat) (hX : sqAt X nX)
         rowsLen_cast hPt (rowsLen_matMul (inertia.idMat (l0 + 1)) P)
       have hPI : rowsLen (l0 + 1) (matMul P (inertia.idMat (l0 + 1))) :=
         rowsLen_cast
-          (by rw [inertia.transposeM_idMat (l0 + 1) hL, inertia.idMat_len])
+          (by rw [inertia.transposeM_idMat (l0 + 1), inertia.idMat_len])
           (rowsLen_matMul P (inertia.idMat (l0 + 1)))
       have hLeft : matOneValue
           (matMul (tensorM X (inertia.idMat (l0 + 1)))
@@ -1250,11 +1246,11 @@ private theorem unitRows_tensorR : ∀ (A B : Mat),
 private theorem matVec_unitRowsM : ∀ (M : Mat), unitRows M →
     ∀ c : List BPair, poly.unitTail (matVec M c)
   | [], _, _ => trivial
-  | r :: t, h, c => ⟨inertia.dotN_nullL r c h.1, matVec_unitRowsM t h.2 c⟩
+  | r :: t, h, c => ⟨elim.dotN_nullL r c h.1, matVec_unitRowsM t h.2 c⟩
 
 private theorem quadForm_unitRows (M : Mat) (h : unitRows M)
     (c : List BPair) : (inertia.quadForm M c).oneValue BPair.unit :=
-  inertia.dotN_nullR c (matVec M c) (matVec_unitRowsM M h c)
+  elim.dotN_nullR c (matVec M c) (matVec_unitRowsM M h c)
 
 private theorem unitRows_blockNil (k : Nat) :
     unitRows (inertia.blockMat [] k) :=
@@ -1274,7 +1270,7 @@ private theorem tensorRow_head (a : BPair) (m : Nat)
     (inertia.dotN_app _ _ _ _ (by rw [ground.length_map, hrb])) ?_
   refine BPair.oneValue_trans
     (BPair.add_congr (inertia.dotN_scaleRow a rb c1)
-      (inertia.dotN_nullL _ c2
+      (elim.dotN_nullL _ c2
         (tensorV_unitL _ rb (poly.unitTail_replicate m)))) ?_
   exact BPair.add_unit _
 
@@ -1290,7 +1286,7 @@ private theorem tensorRow_pad (r rb c1 c2 : List BPair)
     (inertia.dotN_app _ _ _ _ (by rw [ground.length_map, hrb])) ?_
   refine BPair.oneValue_trans
     (BPair.add_congr
-      (inertia.dotN_nullL _ c1
+      (elim.dotN_nullL _ c1
         (poly.scaleP_null (BPair.oneValue_refl BPair.unit) rb))
       (BPair.oneValue_refl _)) ?_
   exact BPair.unit_add _
@@ -1453,16 +1449,13 @@ theorem tensor_form_left {n : Nat} (G : Mat) (sp : inertia.Split n)
         rw [tensorM_length, hTwlen, hidl]
       have hPwr : rowsLen (n * N) (tensorM sp.Tw.val (inertia.idMat N)) :=
         rowsLen_tensorM n N _ _ hTwrows hidr
-      have hPt : (transposeM
-          (tensorM sp.T.val (inertia.idMat N))).length = n * N :=
-        length_transposeM _ hPr (by rw [hPl]; exact hnN)
       have hSl : (tensorM G X).length = n * N := by
         rw [tensorM_length, hGlen, hXlen]
       have hSr : rowsLen (n * N) (tensorM G X) :=
         rowsLen_tensorM n N G X hGrows hXrows
       have hSsq : sqAt (tensorM G X) (n * N) := sqAt_of hSl hSr
       have hIt : (transposeM (inertia.idMat N)).length = N := by
-        rw [inertia.transposeM_idMat N hN, hidl]
+        rw [inertia.transposeM_idMat N, hidl]
       have hIIr : rowsLen N (matMul (inertia.idMat N) (inertia.idMat N)) :=
         rowsLen_cast hIt (rowsLen_matMul _ _)
       have hcl : (matVec (tensorM sp.Tw.val (inertia.idMat N)) u).length
@@ -1499,7 +1492,7 @@ theorem tensor_form_left {n : Nat} (G : Mat) (sp : inertia.Split n)
       have hXI : matOneValue
           (matMul (transposeM (inertia.idMat N))
             (matMul X (inertia.idMat N))) X := by
-        rw [inertia.transposeM_idMat N hN]
+        rw [inertia.transposeM_idMat N]
         refine matOne_trans (elim.matMul_congrR_of (inertia.idMat N) _ _
           (elim.transposeM_congrM N _ _ hXIr hXrows (by rw [hXIl, hXlen])
             (inertia.matMul_idR N X hXrows hXlen hN hN))) ?_
@@ -1532,7 +1525,7 @@ theorem tensor_form_left {n : Nat} (G : Mat) (sp : inertia.Split n)
         refine BPair.oneValue_trans
           (inertia.congQuad (tensorM G X)
             (tensorM sp.T.val (inertia.idMat N)) (n * N) (n * N) hSsq
-            hPr hPl hPt _ hcl) ?_
+            hPr hPl _ hcl) ?_
         exact inertia.quadMatOne _ _ _ hR2
       have hScale : (inertia.quadForm (tensorM G X)
           (matVec (tensorM sp.T.val (inertia.idMat N))
@@ -1545,8 +1538,7 @@ theorem tensor_form_left {n : Nat} (G : Mat) (sp : inertia.Split n)
           (dotP_oneValue_right _ _ _ (matVec_congr (tensorM G X) _ _ hA)) ?_
         refine BPair.oneValue_trans
           (dotP_oneValue_right _ _ _
-            (matVec_vecScale (tensorM G X) (n * N) hSr
-              (minor sp.T.val) u hu)) ?_
+            (matVec_vecScale_free (tensorM G X) (minor sp.T.val) u)) ?_
         refine BPair.oneValue_trans
           (dotP_vecScale_right (vecScale (minor sp.T.val) u)
             (matVec (tensorM G X) u) (minor sp.T.val)) ?_
@@ -1645,7 +1637,7 @@ private theorem tensorRowR_head (a : BPair) (m : Nat) :
                   [h] t rfl)
                 (BPair.oneValue_trans
                   (BPair.add_congr (inertia.dotN_single a h)
-                    (inertia.dotN_nullL _ t
+                    (elim.dotN_nullL _ t
                       (poly.unitTail_replicate m)))
                   (BPair.add_unit (a * h))))))
           (tensorRowR_head a m rx cs (Nat.succ.inj hl) hcs.2)) ?_
@@ -1690,7 +1682,7 @@ private theorem tensorRowR_pad (r : List BPair) :
               (r.map (fun y => (x * y).norm)) [h] t rfl)
             (BPair.oneValue_trans
               (BPair.add_congr
-                (inertia.dotN_nullL _ [h]
+                (elim.dotN_nullL _ [h]
                   ⟨BPair.oneValue_trans (BPair.norm_oneValue _)
                     (BPair.mul_unit x), trivial⟩)
                 (BPair.oneValue_refl _))
@@ -1795,61 +1787,6 @@ private theorem quadR_step (a : BPair) (m : Nat) (D : Mat)
 
 /-! ### The block diagonal's shape and the strided fold -/
 
-private theorem rowsLen_consUnit (w : Nat) : ∀ M : Mat, rowsLen w M →
-    rowsLen (w + 1) (M.map (fun r => BPair.unit :: r))
-  | [], _ => trivial
-  | _ :: M, h =>
-    ⟨congrArg (fun z => z + 1) h.1, rowsLen_consUnit w M h.2⟩
-
-private theorem rowsLen_consUnit2 (w : Nat) : ∀ M : Mat, rowsLen w M →
-    rowsLen (w + 1 + 1)
-      (M.map (fun r => BPair.unit :: BPair.unit :: r))
-  | [], _ => trivial
-  | _ :: M, h =>
-    ⟨congrArg (fun z => z + 1 + 1) h.1, rowsLen_consUnit2 w M h.2⟩
-
-private theorem blockMat_len : ∀ (bs : List inertia.SBlock) (k : Nat),
-    (inertia.blockMat bs k).length = inertia.widthOf bs k
-  | [], k => ground.length_mapRange _ k
-  | inertia.SBlock.one a :: bs, k => by
-    rw [show inertia.widthOf (inertia.SBlock.one a :: bs) k
-        = inertia.widthOf bs k + 1 from inertia.widthOf_shift bs k 1]
-    show ((inertia.blockMat bs k).map
-      (fun r => BPair.unit :: r)).length + 1 = inertia.widthOf bs k + 1
-    rw [ground.length_map, blockMat_len bs k]
-  | inertia.SBlock.two a b d :: bs, k => by
-    rw [show inertia.widthOf (inertia.SBlock.two a b d :: bs) k
-        = inertia.widthOf bs k + 1 + 1 from
-          inertia.widthOf_shift bs k 2]
-    show ((inertia.blockMat bs k).map
-      (fun r => BPair.unit :: BPair.unit :: r)).length + 1 + 1
-      = inertia.widthOf bs k + 1 + 1
-    rw [ground.length_map, blockMat_len bs k]
-
-private theorem blockMat_rows : ∀ (bs : List inertia.SBlock) (k : Nat),
-    rowsLen (inertia.widthOf bs k) (inertia.blockMat bs k)
-  | [], k =>
-    rowsLen_map _ k (List.range k)
-      (fun _ _ => ground.length_replicate BPair.unit k)
-  | inertia.SBlock.one a :: bs, k => by
-    rw [show inertia.widthOf (inertia.SBlock.one a :: bs) k
-        = inertia.widthOf bs k + 1 from inertia.widthOf_shift bs k 1]
-    refine ⟨?_, rowsLen_consUnit _ _ (blockMat_rows bs k)⟩
-    show (List.replicate (inertia.widthOf bs k) BPair.unit).length + 1
-      = inertia.widthOf bs k + 1
-    rw [ground.length_replicate]
-  | inertia.SBlock.two a b d :: bs, k => by
-    rw [show inertia.widthOf (inertia.SBlock.two a b d :: bs) k
-        = inertia.widthOf bs k + 1 + 1 from
-          inertia.widthOf_shift bs k 2]
-    refine ⟨?_, ?_, rowsLen_consUnit2 _ _ (blockMat_rows bs k)⟩
-    · show (List.replicate (inertia.widthOf bs k) BPair.unit).length + 1 + 1
-        = inertia.widthOf bs k + 1 + 1
-      rw [ground.length_replicate]
-    · show (List.replicate (inertia.widthOf bs k) BPair.unit).length + 1 + 1
-        = inertia.widthOf bs k + 1 + 1
-      rw [ground.length_replicate]
-
 /-- The split's diagonal against a right tensor slot: at blocks all
 of order one the form is the fold over the diagonal's keys of the
 entry against the first factor's own form at the strided slice of
@@ -1881,7 +1818,7 @@ private theorem tensorR_fold (X : Mat) (N : Nat) (hXl : X.length = N)
         = inertia.widthOf bs k + 1 from inertia.widthOf_shift bs k 1]
       at hcsr
     have hstep := quadR_step a (inertia.widthOf bs k)
-      (inertia.blockMat bs k) (blockMat_len bs k) (blockMat_rows bs k)
+      (inertia.blockMat bs k) (inertia.blockMat_len bs k) (inertia.blockMat_rows bs k)
       cs hcsr X cs (hXl.trans hcsl.symm) (by rw [hcsl]; exact hXr) hcsr
     refine ground.leB_congr_right (BPair.oneValue_symm hstep) ?_
     refine ground.unitLeAdd
@@ -1937,16 +1874,13 @@ theorem tensor_form_right {n : Nat} (G : Mat) (sp : inertia.Split n)
         rw [tensorM_length, hidl, hTwlen]
       have hPwr : rowsLen (N * n) (tensorM (inertia.idMat N) sp.Tw.val) :=
         rowsLen_tensorM N n _ _ hidr hTwrows
-      have hPt : (transposeM
-          (tensorM (inertia.idMat N) sp.T.val)).length = N * n :=
-        length_transposeM _ hPr (by rw [hPl]; exact hnN)
       have hSl : (tensorM X G).length = N * n := by
         rw [tensorM_length, hXlen, hGlen]
       have hSr : rowsLen (N * n) (tensorM X G) :=
         rowsLen_tensorM N n X G hXrows hGrows
       have hSsq : sqAt (tensorM X G) (N * n) := sqAt_of hSl hSr
       have hIt : (transposeM (inertia.idMat N)).length = N := by
-        rw [inertia.transposeM_idMat N hN, hidl]
+        rw [inertia.transposeM_idMat N, hidl]
       have hTwt : (transposeM sp.Tw.val).length = n :=
         length_transposeM _ hTwrows (by rw [hTwlen]; exact hn)
       have hTt : (transposeM sp.T.val).length = n :=
@@ -1986,7 +1920,7 @@ theorem tensor_form_right {n : Nat} (G : Mat) (sp : inertia.Split n)
       have hXI : matOneValue
           (matMul (transposeM (inertia.idMat N))
             (matMul X (inertia.idMat N))) X := by
-        rw [inertia.transposeM_idMat N hN]
+        rw [inertia.transposeM_idMat N]
         refine matOne_trans (elim.matMul_congrR_of (inertia.idMat N) _ _
           (elim.transposeM_congrM N _ _ hXIr hXrows (by rw [hXIl, hXlen])
             (inertia.matMul_idR N X hXrows hXlen hN hN))) ?_
@@ -2000,7 +1934,7 @@ theorem tensor_form_right {n : Nat} (G : Mat) (sp : inertia.Split n)
       have hwidth : inertia.widthOf sp.blocks sp.kern = n :=
         Nat.eq_of_beq_eq_true sp.width
       have hBr : rowsLen n (inertia.blockMat sp.blocks sp.kern) := by
-        have h := blockMat_rows sp.blocks sp.kern
+        have h := inertia.blockMat_rows sp.blocks sp.kern
         rw [hwidth] at h
         exact h
       have hR2 : matOneValue
@@ -2031,7 +1965,7 @@ theorem tensor_form_right {n : Nat} (G : Mat) (sp : inertia.Split n)
         refine BPair.oneValue_trans
           (inertia.congQuad (tensorM X G)
             (tensorM (inertia.idMat N) sp.T.val) (N * n) (N * n) hSsq
-            hPr hPl hPt _ hcl) ?_
+            hPr hPl _ hcl) ?_
         exact inertia.quadMatOne _ _ _ hR2
       have hScale : (inertia.quadForm (tensorM X G)
           (matVec (tensorM (inertia.idMat N) sp.T.val)
@@ -2044,8 +1978,7 @@ theorem tensor_form_right {n : Nat} (G : Mat) (sp : inertia.Split n)
           (dotP_oneValue_right _ _ _ (matVec_congr (tensorM X G) _ _ hA)) ?_
         refine BPair.oneValue_trans
           (dotP_oneValue_right _ _ _
-            (matVec_vecScale (tensorM X G) (N * n) hSr
-              (minor sp.T.val) u hu)) ?_
+            (matVec_vecScale_free (tensorM X G) (minor sp.T.val) u)) ?_
         refine BPair.oneValue_trans
           (dotP_vecScale_right (vecScale (minor sp.T.val) u)
             (matVec (tensorM X G) u) (minor sp.T.val)) ?_
@@ -2088,13 +2021,6 @@ private theorem tensorM_idOne : ∀ Y : Mat,
   | ra :: Y => ⟨tensorV_idOne ra, tensorM_idOne Y⟩
 
 /-- The weighting rides out of the form fold. -/
-private theorem quadForm_scaleB (c : BPair) (M : Mat) (u : List BPair) :
-    (inertia.quadForm (inertia.matScaleB c M) u).oneValue
-      (c * inertia.quadForm M u) :=
-  BPair.oneValue_trans
-    (dotN_congrR u _ _ (inertia.matVec_scaleB c M u))
-    (elim.dotN_scaleV c u (matVec M u))
-
 private theorem tensorPow_len (G : Mat) {n : Nat} (hG : sqAt G n) :
     ∀ k : Nat, (tensorPow G k).length = n ^ k
       ∧ rowsLen (n ^ k) (tensorPow G k) := by
@@ -2290,14 +2216,14 @@ private theorem sector_floor {n : Nat} (H G : Mat) (hH : sqAt H n)
         (inertia.quadMatOne _ _ u
           (tensorM_congrL _ _ (tensorPow G k) (inertia.matScale_scaleB w G))) ?_
       rw [tensorM_scaleL]
-      exact quadForm_scaleB (BPair.ofPos w) (tensorM G (tensorPow G k)) u
+      exact inertia.quadForm_scaleB (BPair.ofPos w) (tensorM G (tensorPow G k)) u
     have hscaleR : ∀ (c : BPair),
         (inertia.quadForm
           (tensorM G (inertia.matScaleB c (tensorPow G k))) u).oneValue
           (c * inertia.quadForm (tensorM G (tensorPow G k)) u) := by
       intro c
       rw [tensorM_scaleR]
-      exact quadForm_scaleB c (tensorM G (tensorPow G k)) u
+      exact inertia.quadForm_scaleB c (tensorM G (tensorPow G k)) u
     -- (i) the single-component floor, tensored on the right
     have hTP : ¬ (inertia.quadForm
         (tensorM (inertia.siteDatum (matAdd H (inertia.matScale y G))
@@ -2361,14 +2287,14 @@ private theorem sector_floor {n : Nat} (H G : Mat) (hH : sqAt H n)
         (by rw [hv]; exact hAkr) (by rw [hv]; exact hBkl)
         (by rw [hv]; exact hBkr) ?_
       refine ground.leB_congr
-        (BPair.oneValue_symm (quadForm_scaleB _ _ v)) ?_ (ih v hv)
+        (BPair.oneValue_symm (inertia.quadForm_scaleB _ _ v)) ?_ (ih v hv)
       refine BPair.oneValue_symm ?_
       refine BPair.oneValue_trans
         (inertia.quadForm_add _ _ v (by rw [hv]; exact hs.1)
           (by rw [hv]; exact hs.2) (by rw [hv]; exact hAyl)
           (by rw [hv]; exact hAyr)) ?_
       exact BPair.add_congr (BPair.oneValue_refl _)
-        (quadForm_scaleB _ _ v)
+        (inertia.quadForm_scaleB _ _ v)
     have hMksq : sqAt (inertia.siteDatum
         (matAdd (sumPencil H G k)
           (inertia.matScaleB (BPair.ofNat k * BPair.ofPos y)
@@ -3010,14 +2936,6 @@ theorem fibProd_joinAll {L : Type} (F : fusion.Data L)
 
 /-! ### The stencil row at a separated spectator -/
 
-/-- Pointwise equal reads flatten to one image. -/
-private theorem flatMap_congr {α β : Type} (f g : α → List β)
-    (h : ∀ x, f x = g x) : ∀ l : List α, l.flatMap f = l.flatMap g
-  | [] => rfl
-  | x :: t => by
-    show f x ++ t.flatMap f = g x ++ t.flatMap g
-    rw [h x, flatMap_congr f g h t]
-
 /-- The separated spectator reads the unit's class on the
 boundary's own keys. -/
 private theorem far_unit {L : Type} (F : fusion.Data L)
@@ -3213,14 +3131,14 @@ private theorem fold_join {L : Type} [DecidableEq L]
               (fun d => acc.map (fun t => d :: t))) [[]]).map
           (fun t => ovAt F b k c :: ovK F b K t)) :=
       fun c => ground.map_map _ _ _
-    rw [flatMap_congr _ _ hstep (algebra.linkTargets F p a k)]
+    rw [ground.flatMap_congr_all _ _ hstep (algebra.linkTargets F p a k)]
     show _ = ((algebra.linkTargets F p a k).flatMap (fun c =>
         (K.foldr (fun j acc =>
           (algebra.linkTargets F p a j).flatMap
             (fun d => acc.map (fun t => d :: t))) [[]]).map
           (fun t => c :: t))).map (ovK F b (k :: K))
     rw [ground.map_flatMap]
-    refine (flatMap_congr _ _ (fun c => ?_)
+    refine (ground.flatMap_congr_all _ _ (fun c => ?_)
       (algebra.linkTargets F p a k)).symm
     show ((K.foldr (fun j acc =>
         (algebra.linkTargets F p a j).flatMap

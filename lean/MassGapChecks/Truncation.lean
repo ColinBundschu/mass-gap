@@ -40,8 +40,14 @@ against the head's one, the removed block's vacant count at nine
 refused.  The clear bracket: a forged head pencil `[5]` reads the
 sum's unit at five and one at six, the bracket occupied, while the
 full pencil reads one at five.
+
+`cap_sq` closes the module at the order-one probe
+`thm:groundreads`(v)'s growth chain carries: the head pencil `[2]`
+capped at `[3 : 1]` takes the vector `[1]` to the squared display
+`4 ≤ 9`, and the cap forged to `[1 : 1]` — below the probe's own
+value — parts the cap at its upper site datum `[-1]` and the display
+at `4 ≤ 1`.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground elim inertia certconstruct truncation
@@ -321,3 +327,35 @@ example : countAtPair pForge gHead 7 1 1 (inertia.spOne ⟨1, 2⟩) := by decide
 example : countAtPair hBracket gFull 6 1 1 (spMix u ⟨2, 1⟩ ⟨6, 1⟩) := by
   decide +kernel
 example : ¬ ((1 : Nat) = 0) := by decide +kernel
+
+/-! `thm:groundreads`(v)'s growth chain caps its probe through
+`cap_sq`: the head pencil `[2]` capped at `[3 : 1]` — the upper site
+datum `[1]` and the sum `[5]` both positive semidefinite — carries
+the order-one vector `[1]` to the squared display `4 ≤ 9`, decided
+beside the theorem route. -/
+
+private def vOne : List BPair := [⟨2, 1⟩]
+
+example : capAt (matScale 1 pHead) (matScale 3 (idMat 1))
+    (inertia.spOne ⟨2, 1⟩) (inertia.spOne ⟨6, 1⟩) := by decide +kernel
+
+example : (dotN (matVec pHead vOne) (matVec pHead vOne)).scale ((1 : Pos) * 1)
+    ≤ (dotN vOne vOne).scale ((3 : Pos) * 3) := by decide +kernel
+
+example : (dotN (matVec pHead vOne) (matVec pHead vOne)).scale ((1 : Pos) * 1)
+    ≤ (dotN vOne vOne).scale ((3 : Pos) * 3) :=
+  cap_sq pHead 3 1 (inertia.spOne ⟨2, 1⟩) (inertia.spOne ⟨6, 1⟩)
+    (by decide +kernel) vOne rfl
+
+/-- The refusal isolating `cap_sq`'s cap binder: at `[1 : 1]`, below
+the probe's own value, the upper site datum reads `[-1]` at one
+lower-side block, the cap refused and the display parting at `4`
+against `1`. -/
+example : splitRead (siteDatum (matScale 1 (idMat 1)) (matScale 1 pHead))
+    (inertia.spOne ⟨1, 2⟩) := by decide +kernel
+example : ¬ psdAt (inertia.spOne ⟨1, 2⟩) := by decide +kernel
+example : ¬ capAt (matScale 1 pHead) (matScale 1 (idMat 1))
+    (inertia.spOne ⟨1, 2⟩) (inertia.spOne ⟨4, 1⟩) := by decide +kernel
+example : ¬ ((dotN (matVec pHead vOne)
+      (matVec pHead vOne)).scale ((1 : Pos) * 1)
+    ≤ (dotN vOne vOne).scale ((1 : Pos) * 1)) := by decide +kernel

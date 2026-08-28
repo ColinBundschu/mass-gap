@@ -10,7 +10,6 @@ partner of eight), its realness read, and the adjugate identity —
 the solve's whole verification; and the cleared Fierz read decided
 whole at the fundamental width.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground generators

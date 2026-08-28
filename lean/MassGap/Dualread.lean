@@ -193,7 +193,7 @@ the two arms are the value's two reads (`tens_entry`,
 `grid_contract`), so the moved value pairs every output vector as
 the value's moved read does (`pairVal_place` at `pairVal_pair`'s
 filter collapse) and the two agree place for place at the place
-indicators (`dotP_indAt` at `elim.dotP_oneIndex`).  Off the
+indicators (`elim.dotP_idRow` at `elim.dotP_oneIndex`).  Off the
 argument's degree, at a vacant output letter, and at a vacant
 argument letter the two reads are the unit family outright.
 
@@ -4697,7 +4697,6 @@ private theorem coevKer_span (a b : Shape) (m : Nat)
     (units.matUnitAt (moveAt i (i + 1) (List.replicate a.length m))
       (List.replicate a.length m) i (i + 1))
     (places.monomialsAt (List.replicate a.length m)).length
-    (units.rowsLen_matUnitAt _ _ i (i + 1))
     (groupAt (fusedAt (blockSpan a) (blockSpan b))
       (List.replicate a.length m))
     (groupAt (fusedAt (blockSpan a) (blockSpan b))
@@ -6464,7 +6463,7 @@ theorem mapMat_read (P : List (BPair × HVec × HVec)) (mu : List Nat)
         (List.range (places.monomialsAt mu).length) r
         (by rw [ground.length_range]; exact hr),
       ground.getAt_range _ r hr]
-    refine BPair.oneValue_trans (elim.dotN_dotP _ v) ?_
+    refine BPair.oneValue_trans (elim.dotN_read _ v) ?_
     rw [elim.dotP_comm]
     refine BPair.oneValue_trans
       (elim.dotP_combo _ _ v _ hF) ?_
@@ -7781,12 +7780,6 @@ private theorem zipTrip_mem :
       exact ⟨List.Mem.tail cv (zipTrip_mem c g t hm).1,
         List.Mem.tail s (zipTrip_mem c g t hm).2⟩
 
-/-- The display's width is the factor enumeration's. -/
-private theorem pairsAt_len (A B : List HVec) (cc : List Nat) :
-    (pairsAt A B cc).length
-      = (blockcount.pairIdx A (fun v => v) B cc).length := by
-  rw [blockcount.pairsAt_pairIdx A B cc, ground.length_map]
-
 /-- The family's slots sit in the two lists at the guard. -/
 private theorem pairFam_slots (A B : List HVec) (cc : List Nat)
     (c : List BPair) (t : BPair × HVec × HVec)
@@ -8012,7 +8005,7 @@ theorem pairSolve (A B : List HVec) (cc : List Nat) (c : List BPair)
     poly.unitTail c := by
   have hcg : c.length
       = (blockcount.pairIdx A (fun v => v) B cc).length := by
-    rw [hc, pairsAt_len A B cc]
+    rw [hc, blockcount.length_pairsAtIdx A B cc]
   have he : (pairFam A B cc c).map (fun t => t.1) = c :=
     zipTrip_fst c (blockcount.pairIdx A (fun v => v) B cc) hcg
   refine he ▸ poly.unitTail_map (fun t => t.1) (pairFam A B cc c) ?_
@@ -10326,23 +10319,6 @@ private theorem dotG_dact (v z : HVec) (p q : Nat) :
     dotG_neg (act q p z).content (act q p z).coords v
   rw [dotG_comm v (dact p q z), h, BPair.swap_swap, dotG_comm]
 
-/-- A family's place read at the indicator: the pairing against the
-place indicator is the place's own entry. -/
-private theorem dotP_indAt (u : List BPair) (n k : Nat)
-    (hu : u.length = n) (hk : k < n) :
-    (elim.dotP u (elim.idRow n k)).oneValue
-      (ground.getAt BPair.unit u k) := by
-  refine BPair.oneValue_trans
-    (elim.dotP_oneIndex u (elim.idRow n k) k
-      (by rw [hu, elim.length_idRow])
-      (by rw [elim.length_idRow]; exact hk)
-      (fun j hj hjk => by
-        rw [elim.length_idRow] at hj
-        rw [elim.getAt_idRow n k j hj, if_neg hjk]
-        exact BPair.oneValue_refl BPair.unit)) ?_
-  rw [elim.getAt_idRow n k k hk, if_pos rfl]
-  exact BPair.mul_ofNat_one _
-
 /-- The moved value's place read: at an output vector over the
 moved output content the moved value pairs it as the value's own
 moved read does — the contraction's two arms read the two
@@ -10522,7 +10498,7 @@ private theorem pairVal_equiv_gen (A B : List HVec) (cc : List Nat)
   have hjoc : j < oc.length := by rw [hocw]; exact hj
   have hcG : c.length
       = (blockcount.pairIdx A (fun v => v) B cc).length := by
-    rw [hc, pairsAt_len A B cc]
+    rw [hc, blockcount.length_pairsAtIdx A B cc]
   have hszP : ∀ t ∈ pairFam A B cc c,
       sized (t.2.1 : HVec) ∧ sized (t.2.2 : HVec) := fun t ht =>
     match pairFam_slots A B cc c t ht with
@@ -10596,7 +10572,7 @@ private theorem pairVal_equiv_gen (A B : List HVec) (cc : List Nat)
       refine poly.ov_of_getAt (fun k => ?_)
       by_cases hk : k < (places.monomialsAt (moveAt i j oc)).length
       · exact BPair.oneValue_trans
-          (BPair.oneValue_symm (dotP_indAt _ _ k hLlen hk))
+          (BPair.oneValue_symm (elim.dotP_idRow _ _ k hLlen hk))
           (BPair.oneValue_trans
             (pairVal_place_gen A B cc d kA c hszA hszB hwA hwB
               hdegA hcw hcG hszP j i hj hi
@@ -10609,7 +10585,7 @@ private theorem pairVal_equiv_gen (A B : List HVec) (cc : List Nat)
                   = (places.monomialsAt (moveAt i j oc)).length from
                 elim.length_idRow _ k)
               rfl)
-            (dotP_indAt _ _ k hRlen hk))
+            (elim.dotP_idRow _ _ k hRlen hk))
       · rw [ground.getAt_over BPair.unit _ k
             (by rw [hLlen]; exact Nat.ge_of_not_lt hk),
           ground.getAt_over BPair.unit _ k
@@ -11676,6 +11652,69 @@ theorem fusionCount_addFull (a b c : Shape)
     countAt_fusedLine a b hba _,
     countAt_lineShift a.length _ hszP hwidP (places.rowList c)
       ((places.length_rowList c).trans hca)]
+
+/-- The fused count into a target whose deepest key is vacant is
+vacant at a first shape carrying a full column: the bumped shape's
+fused pool is the pool's own at the wedge tensored on
+(`countAt_fusedLine`), so every member's content is occupied at
+the deepest letter while the target's row list reads that letter
+vacant, and the content group is empty.  The width `hba` is the
+frame, both counts vacant at a forged width; the letter count's
+positivity is load-bearing with its committed refusal, the vacant
+width carrying no column at all. -/
+theorem fusionCount_bump_off (a b X : Shape)
+    (hba : b.length = a.length)
+    (hz : ground.getAt 0 (places.rowList X) (a.length - 1) = 0)
+    (hd : 0 < a.length) :
+    fusionCount (ground.bumpAt (a.length - 1) a) b X = 0 := by
+  have hbl : (ground.bumpAt (a.length - 1) a).length = a.length :=
+    ground.length_bumpAt _ a
+  have hlt : a.length - 1 < a.length := ground.subOneLt hd
+  rw [fusionCount_countAt (ground.bumpAt (a.length - 1) a) b X
+      (hba.trans hbl.symm),
+    countAt_fusedLine a b hba (places.rowList X)]
+  have hnil : groupAt
+      ((fusedAt (blockSpan a) (blockSpan b)).map
+        (fun v => tensorH (wedge a.length a.length) v))
+      (places.rowList X) = [] := by
+    refine groupAt_nil_of_not_mem _ _ ?_
+    intro hmem
+    match ground.mem_map_of HVec.content _ _ hmem with
+    | ⟨z, hz', hzc⟩ =>
+      match ground.mem_map_of
+          (fun v => tensorH (wedge a.length a.length) v) _ z hz' with
+      | ⟨v, hv, hvz⟩ =>
+        have hwv : v.content.length = a.length := by
+          match ground.mem_flatMap_of _ _ v hv with
+          | ⟨u, hu, huv⟩ =>
+            match ground.mem_map_of (tensorH u) _ v huv with
+            | ⟨w, hw, hwx⟩ =>
+              rw [← hwx]
+              exact ground.length_zipWith (fun x y => x + y) u.content
+                w.content a.length (blockSpan_width a u hu)
+                ((blockSpan_width b w hw).trans hba)
+        have hzent : ground.getAt 0 z.content (a.length - 1)
+            = ground.getAt 0
+                (wedge a.length a.length).content (a.length - 1)
+              + ground.getAt 0 v.content (a.length - 1) := by
+          rw [← hvz]
+          show ground.getAt 0
+              (List.zipWith (fun x y => x + y)
+                (wedge a.length a.length).content v.content)
+              (a.length - 1) = _
+          exact ground.getAt_zipWith 0 0 0 (fun x y => x + y)
+            (wedge a.length a.length).content v.content
+            (a.length - 1)
+            (by rw [wedge_clen]; exact hlt)
+            (by rw [hwv]; exact hlt)
+        rw [wedge_full_get a.length (a.length - 1) hlt, hzc, hz,
+          Nat.add_comm 1 (ground.getAt 0 v.content (a.length - 1))]
+          at hzent
+        exact Nat.noConfusion hzent
+  refine countAt_of_units _ _ ?_
+  intro k hk
+  rw [hnil] at hk
+  exact absurd hk (Nat.not_lt_zero k)
 
 
 /-! `lem:dualread`(iii)'s off-join arm at the value list: the first
@@ -12885,7 +12924,8 @@ private theorem pairFam_filter_add (A B : List HVec) (cc : List Nat)
           (fun t => t.2.1.content == x.content)).map
           (fun t => t.1 * elim.dotP t.2.1.coords x.coords)) :=
   pairFam_filter_addC x c c' (blockcount.pairIdx A (fun v => v) B cc)
-    (hc.trans (pairsAt_len A B cc)) (hc'.trans (pairsAt_len A B cc))
+    (hc.trans (blockcount.length_pairsAtIdx A B cc))
+    (hc'.trans (blockcount.length_pairsAtIdx A B cc))
 
 /-- The family's weights at a scaled coefficient family read the
 weights' own scale. -/
@@ -12902,7 +12942,7 @@ private theorem pairFam_filter_scale (A B : List HVec) (cc : List Nat)
   pairFam_filter_mapC x (fun y => s * y)
     (fun a p => BPair.mul_assoc s a p) c
     (blockcount.pairIdx A (fun v => v) B cc)
-    (hc.trans (pairsAt_len A B cc))
+    (hc.trans (blockcount.length_pairsAtIdx A B cc))
 
 /-- The family's weights at a coefficient family's balance partner
 read the weights' own partner. -/
@@ -12918,7 +12958,7 @@ private theorem pairFam_filter_neg (A B : List HVec) (cc : List Nat)
           (fun t => t.1 * elim.dotP t.2.1.coords x.coords)) :=
   pairFam_filter_mapC x BPair.swap (fun a p => BPair.swap_mul a p) c
     (blockcount.pairIdx A (fun v => v) B cc)
-    (hc.trans (pairsAt_len A B cc))
+    (hc.trans (blockcount.length_pairsAtIdx A B cc))
 
 /-- The family's second slots at a filtered content read the
 factor enumeration's own, the coefficients free. -/
@@ -12933,7 +12973,7 @@ private theorem pairFam_filter_rows (A B : List HVec) (cc : List Nat)
           (fun p => p.2.coords) := by
   rw [← zipTrip_filter (fun p : HVec × HVec => p.1.content == x.content)
       c (blockcount.pairIdx A (fun v => v) B cc)
-      (hc.trans (pairsAt_len A B cc)),
+      (hc.trans (blockcount.length_pairsAtIdx A B cc)),
     ground.map_map]
   rfl
 

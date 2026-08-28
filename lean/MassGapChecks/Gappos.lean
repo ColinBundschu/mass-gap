@@ -100,7 +100,6 @@ lands the cut tie whole at the edge `[8 : 1]`, beside its own
 against the ground's one — the top-count binder's refusal, the
 spectral read false there.
 -/
-set_option maxRecDepth 8192
 
 open ground elim inertia certconstruct flatstep gappos cellcount
 
@@ -643,7 +642,7 @@ private theorem crt : split.countRead et3 (idMat 3)
 example : speccut.cutTie et3 (l3.map (fun r => (r.1, r.2.1))) 4 2 1
     spCut3 :=
   windowCut et3 id3 id3 l3 4 2 1 1 (by decide +kernel)
-    (by decide +kernel) (by decide +kernel) 2 1 11 1 spWa spWt
+    (by decide +kernel) 2 1 11 1 spWa spWt
     cra crt (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     spCut3 (by decide +kernel)
@@ -659,4 +658,156 @@ example : ¬ (inertia.revAt (inertia.mkSplit 3
     (siteDatum (matScale 1 et3) (matScale 16 (idMat 3)))) = 1) := by
   decide +kernel
 example : ¬ speccut.specRead (l3.map (fun r => (r.1, r.2.1))) 4 4 1 := by
+  decide +kernel
+
+/-! The gap tier at the cell fixture: the committed gap `[2, 33/16]`
+on the positive-semidefinite carrier, the anchored margin at the
+lower endpoint — the level two against the margin one — the bound
+pair `(8, 2)`, the derivative fold capped at sixteen, and the
+clearing comparison `16 ≤ 16` at the width's own denominator. -/
+
+private def spML : Split 1 :=
+  inertia.mkSplit 1 (siteDatum (evalPC pmP ⟨3, 1⟩ 1 2)
+    (matScale 1 (idMat 1)))
+
+private theorem margL : splitRead (siteDatum (evalPC pmP ⟨3, 1⟩ 1 2)
+    (matScale 1 (idMat 1))) spML :=
+  inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
+
+example : inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨66, 1⟩ 32 2)) :=
+  gapPsd_lo pmP ⟨3, 1⟩ 1 ⟨34, 1⟩ 16 ⟨9, 1⟩ ⟨3, 1⟩ ⟨17, 1⟩ 1 spML
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    margL (by decide +kernel) (by decide +kernel)
+    ⟨66, 1⟩ 32 (by decide +kernel) (by decide +kernel) _ tgtP
+
+/-! The upper anchor at the same gap: the margin certificate at
+`33/16`'s own clearing, the level `447` against the margin `400`,
+the clearing comparison `4096 ≤ 6400`. -/
+
+private def spMH : Split 1 :=
+  inertia.mkSplit 1 (siteDatum (evalPC pmP ⟨34, 1⟩ 16 2)
+    (matScale 400 (idMat 1)))
+
+private theorem margH : splitRead (siteDatum (evalPC pmP ⟨34, 1⟩ 16 2)
+    (matScale 400 (idMat 1))) spMH :=
+  inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
+
+example : inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨66, 1⟩ 32 2)) :=
+  gapPsd_hi pmP ⟨3, 1⟩ 1 ⟨34, 1⟩ 16 ⟨9, 1⟩ ⟨3, 1⟩ ⟨17, 1⟩ 400 spMH
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    margH (by decide +kernel) (by decide +kernel)
+    ⟨66, 1⟩ 32 (by decide +kernel) (by decide +kernel) _ tgtP
+
+/-! The gap binders' refusals: the magnitude bound at a bound pair
+too small, the fold cap one below the fold, the margin beyond the
+anchor's level, and the clearing comparison at a cap one beyond
+the priced width. -/
+
+example : ¬ (stage.cmag (⟨⟨3, 1⟩, 1⟩ : CPair) * stage.ofB ⟨3, 1⟩
+    ≤ stage.ofB ⟨2, 1⟩) := by decide +kernel
+example : ¬ foldCap pmP ⟨9, 1⟩ ⟨3, 1⟩ ⟨16, 1⟩ := by decide +kernel
+example : ¬ inertia.psdAt (inertia.mkSplit 1
+    (siteDatum (evalPC pmP ⟨3, 1⟩ 1 2) (matScale 3 (idMat 1)))) := by
+  decide +kernel
+example : ¬ (BPair.ofNat 1
+    * ((⟨18, 1⟩ * ((⟨34, 1⟩ : BPair).scale 1
+        + ((⟨3, 1⟩ : BPair).swap).scale 16)).scale
+      (ground.Pos.pow 1 2))
+    ≤ (BPair.ofPos 1).scale (16 * 1)) := by decide +kernel
+
+/-! The certificate reads: the committed gap's certificate at the
+lower anchor, the zipped list read with its length refusals, and
+the strict fold base's refusal at the unit base. -/
+
+private def gcL : GapCert 1 := ⟨⟨9, 1⟩, ⟨3, 1⟩, ⟨17, 1⟩, 1, spML, true⟩
+
+example : gapRead pmP 2 clo chi gcL := by decide +kernel
+
+example : gapsRead pmP 2 [(clo, chi)] [gcL] := by decide +kernel
+example : ¬ gapsRead pmP 2 [(clo, chi)] ([] : List (GapCert 1)) := by
+  decide +kernel
+example : ¬ gapsRead pmP 2 ([] : List (CPair × CPair)) [gcL] := by
+  decide +kernel
+example : ¬ gapRead pmP 2 clo chi
+    ⟨⟨9, 1⟩, ⟨1, 1⟩, ⟨17, 1⟩, 1, spML, true⟩ := by decide +kernel
+
+/-! The interior read at the closed union: two segments' chains, the
+first ending at `33/16` and the second footed at `17/8`, the
+committed gap between them at the `33/16`-anchored certificate with
+margin `256` against the level `447` and the clearing at equality
+`32768 = 32768`; the gap's interior point `133/64` and the second
+chain's own point `17/8` each read through the theorem beside the
+decide, with the anchoring and ordering refusals. -/
+
+private def pc1 : Piece 1 :=
+  Piece.seg clo [(chi, cvP, (⟨3, 1⟩, 1),
+    inertia.mkSplit 1 (evalPC pmP ⟨3, 1⟩ 1 2))]
+
+private def cvP4 : Cover :=
+  Cover.one ⟨⟨10, 1⟩, 4⟩ 0 true ⟨4, 1⟩ ⟨2, 1⟩ Cover.nought Cover.done
+
+private def pc2 : Piece 1 :=
+  Piece.seg chi2 [(⟨⟨10, 1⟩, 4⟩, cvP4, (⟨18, 1⟩, 8),
+    inertia.mkSplit 1 (evalPC pmP ⟨18, 1⟩ 8 2))]
+
+private def gcM : GapCert 1 :=
+  ⟨⟨9, 1⟩, ⟨3, 1⟩, ⟨17, 1⟩, 256,
+    inertia.mkSplit 1 (siteDatum (evalPC pmP ⟨34, 1⟩ 16 2)
+      (matScale 256 (idMat 1))), true⟩
+
+private theorem cread2 : closedRead pmP 2 clo [pc1, pc2] := by
+  decide +kernel
+
+private theorem gread2 :
+    gapsRead pmP 2 (closedGaps (closedHi clo [pc1]) [pc2]) [gcM] := by
+  decide +kernel
+
+private theorem tgtG : splitRead (evalPC pmP ⟨134, 1⟩ 64 2)
+    (inertia.mkSplit 1 (evalPC pmP ⟨134, 1⟩ 64 2)) :=
+  inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
+
+example : inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨134, 1⟩ 64 2)) :=
+  interiorPsd pmP clo pc1 [pc2] [gcM] (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) cread2 gread2
+    ⟨134, 1⟩ 64 (by decide +kernel) (by decide +kernel) _ tgtG
+
+example : inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨134, 1⟩ 64 2)) := by
+  decide +kernel
+
+example : inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨68, 1⟩ 32 2)) :=
+  interiorPsd pmP clo pc1 [pc2] [gcM] (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) cread2 gread2
+    ⟨68, 1⟩ 32 (by decide +kernel) (by decide +kernel) _ tgt2
+
+example : ¬ startsAt chi [pc1, pc2] := by decide +kernel
+example : ¬ closedRead pmP 2 chi2 [pc1, pc2] := by decide +kernel
+example : ¬ ((⟨⟨6, 1⟩, 2⟩ : CPair) ≤ closedHi clo [pc1, pc2]) := by
+  decide +kernel
+
+/-! The junction arm at the rational-root carrier `25 - 4t²`: the
+boundary point `5/2` at its own split — the kernel's, the lower
+list vacant — with the flanking positive-semidefinite sample at
+`2`, the read passing at either tie side there, and refused at a
+sample beyond the root. -/
+
+private def pmJ : split.PMat :=
+  levelPMat [[⟨26, 1⟩]] [[⟨1, 5⟩]] [[⟨2, 1⟩]] 1 1 [BPair.unit]
+
+private def spbJ : Split 1 :=
+  inertia.mkSplit 1 (evalPC pmJ ⟨6, 1⟩ 2 2)
+private def sptJ : Split 1 :=
+  inertia.mkSplit 1 (evalPC pmJ ⟨3, 1⟩ 1 2)
+
+example : closedRead pmJ 2 ⟨⟨6, 1⟩, 2⟩
+    [Piece.junc ⟨6, 1⟩ 2 spbJ ⟨3, 1⟩ 1 sptJ true ⟨9, 1⟩ ⟨3, 1⟩] := by
+  decide +kernel
+example : closedRead pmJ 2 ⟨⟨6, 1⟩, 2⟩
+    [Piece.junc ⟨6, 1⟩ 2 spbJ ⟨3, 1⟩ 1 sptJ false ⟨9, 1⟩ ⟨3, 1⟩] := by
+  decide +kernel
+example : ¬ closedRead pmJ 2 ⟨⟨6, 1⟩, 2⟩
+    [Piece.junc ⟨6, 1⟩ 2 spbJ ⟨7, 1⟩ 2
+      (inertia.mkSplit 1 (evalPC pmJ ⟨7, 1⟩ 2 2)) true
+      ⟨9, 1⟩ ⟨3, 1⟩] := by
   decide +kernel

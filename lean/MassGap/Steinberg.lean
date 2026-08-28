@@ -359,37 +359,6 @@ private theorem tieGap_chain {y e m z w : List Nat}
     rw [ground.getAt_zipWith 0 0 0 (fun a b => a + b) w e i
       (by rw [hwy]; exact hiy) (by rw [hel]; exact hiy)]
 
-/-- The tie's composition in the other order: a solution withdrawn
-at the joined gaps splits into the two steps, the intermediate key
-the far gap joined to the solution. -/
-private theorem tieGap_chain' {y z yv e w : List Nat}
-    (h1 : ground.tieGap y z = some yv)
-    (h2 : ground.tieGap yv e = some w) :
-    ∃ m, ground.tieGap y e = some m
-      ∧ ground.tieGap m z = some w := by
-  obtain ⟨hyvl, hzl, hent1⟩ := ground.tieGap_reads y z yv h1
-  obtain ⟨hwl, hel, hent2⟩ := ground.tieGap_reads yv e w h2
-  have hwy : w.length = y.length := hwl.trans hyvl
-  have hey : e.length = y.length := hel.trans hyvl
-  have hml : (List.zipWith (fun a b => a + b) w z).length = y.length :=
-    ground.length_zipWith (fun a b => a + b) w z y.length hwy hzl
-  refine ⟨List.zipWith (fun a b => a + b) w z, ?_, ?_⟩
-  · refine ground.tieGap_make y e _ hml hey (fun i hi => ?_)
-    rw [ground.getAt_zipWith 0 0 0 (fun a b => a + b) w z i
-        (by rw [hwy]; exact hi) (by rw [hzl]; exact hi),
-      Nat.add_assoc (ground.getAt 0 w i) (ground.getAt 0 z i)
-        (ground.getAt 0 e i),
-      Nat.add_comm (ground.getAt 0 z i) (ground.getAt 0 e i),
-      ← Nat.add_assoc (ground.getAt 0 w i) (ground.getAt 0 e i)
-        (ground.getAt 0 z i),
-      hent2 i (by rw [hyvl]; exact hi)]
-    exact hent1 i hi
-  · refine ground.tieGap_make _ z w (hwy.trans hml.symm)
-      (hzl.trans hml.symm) (fun i hi => ?_)
-    have hiy : i < y.length := by rw [← hml]; exact hi
-    rw [ground.getAt_zipWith 0 0 0 (fun a b => a + b) w z i
-      (by rw [hwy]; exact hiy) (by rw [hzl]; exact hiy)]
-
 /-- The product's graded coefficient at a further withdrawal: a
 multiplicity read at a fixed gap moves the key by that gap — the
 coefficient at the moved key, the count's unit where the move is
@@ -479,7 +448,7 @@ private theorem prodCount_gapMult (mult : List Nat → Nat)
             rw [hyy] at hyve
             exact nomatch hyve.symm.trans hw
       | some w =>
-        obtain ⟨m, hm, hmz⟩ := tieGap_chain' hz hw
+        obtain ⟨m, hm, hmz⟩ := tieGap_chain hz hw
         cases hm2 : ground.tieGap y (places.expo (unitDisp d) p) with
         | none => exact nomatch hm.symm.trans hm2
         | some m2 =>
@@ -750,13 +719,9 @@ private theorem middle_channels (a b c : Shape)
         (fusedAt (blockSpan a) (blockSpan b))).map HVec.content),
       nu.length = a.length := by
     intro nu hnu
-    obtain ⟨w, hw, hwc⟩ := ground.mem_map_of HVec.content
-      (exhaust a.length (fusedAt (blockSpan a) (blockSpan b))) nu
+    exact exhaust_width a.length
+      (fusedAt (blockSpan a) (blockSpan b)) hszP hwidP hclP nu
       (ground.mem_of_dedupL hnu)
-    obtain ⟨_, hwid, _, _⟩ := exhaust_top a.length
-      (fusedAt (blockSpan a) (blockSpan b)) hszP hwidP hclP w hw
-    rw [← hwc]
-    exact hwid
   -- the coefficient over the channels
   have hsplit : ∀ side : Bool,
       weylchar.prodCount

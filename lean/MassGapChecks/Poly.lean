@@ -26,7 +26,11 @@ each decided and through its theorem.  The variable's clearing at
 Horner read against the cleared evaluation at the point four, the
 derivative of the cleared list against the derivative's clearing
 one power down, and the key count kept, each decided and through
-its theorem.  The clearing's ring reads close the module, at
+its theorem.  The shared-factor withdrawal closes the module: at the occupied
+factor `z + 2` the cofactor `z + 1` in two spellings withdraws,
+decided and through the theorem, with an off cofactor refused and
+the occupancy binder load-bearing at the vacant factor.  The
+clearing's ring reads sit before it, at
 `z² - 2` against `z + 5`: the sum componentwise at the one stated
 power, the memberwise swap entrywise, and the convolution at the
 joined power with each factor within its stated power, at the
@@ -498,3 +502,32 @@ example : (evalClear [⟨4, 1⟩, BPair.unit, ⟨3, 1⟩] ⟨4, 1⟩ 2 2).oneVal
 example : ¬ (evalClear [⟨4, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩] ⟨4, 1⟩ 2 2).oneValue
     (ground.bpow (BPair.ofPos 2) 2 * ⟨4, 1⟩
       + ground.bpow ⟨4, 1⟩ 2 * ⟨3, 1⟩) := by decide +kernel
+
+/-! `def:poly`'s shared-factor withdrawal: at the occupied factor
+`z + 2` the products of the cofactor `z + 1` in two spellings —
+`[⟨4:3⟩, ⟨5:4⟩]` against the padded `[⟨2:1⟩, ⟨2:1⟩, ⟨1:1⟩]` —
+withdraw to the cofactors' own read, decided and through the
+theorem, with an off cofactor refused; and the occupancy binder is
+load-bearing — at the vacant factor both products read the sum's
+unit while the cofactors read apart. -/
+
+private def dOcc : Poly := [⟨3, 1⟩, ⟨2, 1⟩]
+
+private def uCo : Poly := [⟨4, 3⟩, ⟨5, 4⟩]
+
+private def vCo : Poly := [⟨2, 1⟩, ⟨2, 1⟩, BPair.unit]
+
+example : oneValue (mul dOcc uCo) (mul dOcc vCo) := by decide +kernel
+
+example : oneValue uCo vCo := by decide +kernel
+
+example : oneValue uCo vCo :=
+  pmul_cancel dOcc uCo vCo (by decide +kernel) (by decide +kernel)
+
+example : ¬ oneValue (mul dOcc uCo) (mul dOcc [⟨3, 1⟩, ⟨2, 1⟩]) := by
+  decide +kernel
+
+example : ¬ (oneValue (mul ([] : Poly) one) (mul ([] : Poly) [])
+    → oneValue one ([] : Poly)) := by decide +kernel
+
+example : unitTail ([] : Poly) := by decide +kernel

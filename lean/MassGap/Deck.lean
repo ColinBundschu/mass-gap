@@ -315,11 +315,6 @@ theorem pFamN_rec : ∀ b : Nat,
     cancel_neg (pPair (ground.posOfSucc c)).1
       (poly.mul wPoly (pPair (ground.posOfSucc c)).2)
 
-private theorem mapUnit_tail : ∀ p : Poly,
-    poly.unitTail (p.map (fun d => BPair.unit * d))
-  | [] => trivial
-  | c :: p => ⟨BPair.unit_mul c, mapUnit_tail p⟩
-
 /-- The chord variable multiplies as the one-key shift. -/
 theorem mulX_read (p : Poly) :
     poly.oneValue (poly.mul wPoly p) (BPair.unit :: p) := by
@@ -328,7 +323,7 @@ theorem mulX_read (p : Poly) :
       (BPair.unit :: poly.mul [BPair.ofPos .one] p))
     (BPair.unit :: p)
   refine poly.oneValue_trans
-    (poly.unitTail_add (mapUnit_tail p) _) ?_
+    (poly.unitTail_add (poly.unitTail_map_unit_mul p) _) ?_
   exact ⟨BPair.oneValue_refl BPair.unit, poly.one_mul p⟩
 
 /-- The chord monomial splits at the linear factor: `⟨x:2⟩ q + q + q
@@ -1070,25 +1065,6 @@ own plumbing — the sum's length at a dominating member, the entry
 beyond a top, and the chord variable's one-key lift — and stays
 private to it. -/
 
-/-- The sum's length at a dominating first member. -/
-private theorem addLenL : ∀ (p q : Poly), q.length ≤ p.length →
-    (poly.add p q).length = p.length
-  | [], [], _ => rfl
-  | [], _ :: _, h => absurd h (Nat.not_succ_le_zero _)
-  | _ :: _, [], _ => rfl
-  | _ :: p, _ :: q, h => by
-    show (poly.add p q).length + 1 = p.length + 1
-    rw [addLenL p q (Nat.le_of_succ_le_succ h)]
-
-/-- The sum's length at a dominating second member. -/
-private theorem addLenR : ∀ (p q : Poly), p.length ≤ q.length →
-    (poly.add p q).length = q.length
-  | [], _, _ => rfl
-  | _ :: _, [], h => absurd h (Nat.not_succ_le_zero _)
-  | _ :: p, _ :: q, h => by
-    show (poly.add p q).length + 1 = q.length + 1
-    rw [addLenR p q (Nat.le_of_succ_le_succ h)]
-
 /-- Above the first member's top the sum reads the second member's
 own entry. -/
 private theorem getAtAddOver : ∀ (p q : Poly) (k : Nat), p.length ≤ k →
@@ -1108,7 +1084,7 @@ private theorem mulOne_len : ∀ (p : Poly), 1 ≤ p.length →
     (poly.mul poly.one p).length = p.length
   | [], h => absurd h (Nat.not_succ_le_zero _)
   | c :: t, _ =>
-    (addLenL ((c :: t).map (fun d => BPair.ofPos Pos.one * d)) [BPair.unit]
+    (poly.add_lenL ((c :: t).map (fun d => BPair.ofPos Pos.one * d)) [BPair.unit]
       (by rw [ground.length_map]; exact Nat.succ_le_succ (Nat.zero_le _))).trans
       (ground.length_map _ (c :: t))
 
@@ -1118,7 +1094,7 @@ private theorem mulW_len (p : Poly) (h : 1 ≤ p.length) :
     (poly.mul wPoly p).length = p.length + 1 := by
   have hin : (poly.mul poly.one p).length + 1 = p.length + 1 := by
     rw [mulOne_len p h]
-  refine Eq.trans (addLenR (p.map (fun d => BPair.unit * d))
+  refine Eq.trans (poly.add_lenR (p.map (fun d => BPair.unit * d))
     (BPair.unit :: poly.mul poly.one p) ?_) hin
   rw [ground.length_map]
   show p.length ≤ (poly.mul poly.one p).length + 1
@@ -1150,7 +1126,7 @@ private theorem pPair_shape : ∀ n : Nat,
     refine ⟨⟨ih.2.1, ih.2.2⟩, ⟨?_, ?_⟩⟩
     · show (poly.add (poly.mul wPoly (pPair (ground.posOfSucc n)).2)
         ((pPair (ground.posOfSucc n)).1.map BPair.swap)).length = n + 4
-      refine Eq.trans (addLenL _ _ ?_) hlen
+      refine Eq.trans (poly.add_lenL _ _ ?_) hlen
       rw [hmap, hlen]
       exact Nat.le_succ_of_le (Nat.le_succ (n + 2))
     · show (ground.getAt BPair.unit
@@ -1181,7 +1157,7 @@ private theorem pSum_shape : ∀ m : Nat,
       exact Nat.le_succ (m + 1)
     refine ⟨?_, ?_⟩
     · show (poly.add (pSum m) (pFam (ground.posOfSucc m))).length = m + 2
-      exact Eq.trans (addLenR _ _ hle) hf.1.1
+      exact Eq.trans (poly.add_lenR _ _ hle) hf.1.1
     · show (ground.getAt BPair.unit
         (poly.add (pSum m) (pFam (ground.posOfSucc m))) (m + 1)).oneValue
         (BPair.ofPos Pos.one)
@@ -1367,16 +1343,11 @@ def parityMember : Nat → BPair
   | 1 => (BPair.ofNat 1).swap
   | m + 2 => parityMember m
 
-private theorem parityMember_alt : ∀ m : Nat,
+theorem parityMember_succ : ∀ m : Nat,
     parityMember (m + 1) = (parityMember m).swap
   | 0 => rfl
   | 1 => rfl
-  | m + 2 => parityMember_alt m
-
-/-- The parity member alternates one depth at a time, the two-step
-recursion read at every successor. -/
-theorem parityMember_succ (m : Nat) :
-    parityMember (m + 1) = (parityMember m).swap := parityMember_alt m
+  | m + 2 => parityMember_succ m
 
 /-- The parity member is the product's unit or its balance
 partner. -/
@@ -1472,7 +1443,7 @@ theorem pFamN_partner (b : Nat) :
   | zero => decide
   | succ n => exact (pFamN_partnerPair n).1
 
-private theorem pSum_partnerRec : ∀ m : Nat,
+theorem pSum_partner : ∀ m : Nat,
     (poly.eval (pSum m) ((BPair.ofNat 2).swap)).oneValue (parityMember m)
   | 0 => by decide +kernel
   | m + 1 => by
@@ -1480,16 +1451,9 @@ private theorem pSum_partnerRec : ∀ m : Nat,
       (poly.eval_add (pSum m) (pFam (ground.posOfSucc m))
         ((BPair.ofNat 2).swap)) ?_
     refine BPair.oneValue_trans
-      (BPair.add_congr (pSum_partnerRec m) (pFamN_partner (m + 1))) ?_
+      (BPair.add_congr (pSum_partner m) (pFamN_partner (m + 1))) ?_
     rw [parityMember_succ m]
     exact pSum_step_arith (parityMember m)
-
-/-- The deck symbol at the partner chord reads the depth's parity
-member, the product's unit at an even depth and its balance partner
-at an odd one. -/
-theorem pSum_partner (m : Nat) :
-    (poly.eval (pSum m) ((BPair.ofNat 2).swap)).oneValue (parityMember m) :=
-  pSum_partnerRec m
 
 /-- The monic linear factor at the band's partner end, the second
 division display's own divisor (`def:poly`'s monic spelling). -/

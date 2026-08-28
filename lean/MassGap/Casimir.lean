@@ -124,7 +124,7 @@ off-unit read), and the whole self-pairing product cancels
 against `casimirM_trace`, leaving the block scalar's balance in
 counts (`traceNat` through `casBal`, the scalar's own
 square-and-pair read at `casScalar_read`'s term families, and
-`ofNatInj`).  The weights' double fold splits at the diagonal's
+`ground.BPair.ofNat_inj`).  The weights' double fold splits at the diagonal's
 delta and the pairs' two sides (`wAllSplit`), the per-pair string
 collection sums over the letter pairs to the display's two moved
 folds (`collectSum` at `strings.stringCollect`, the letter-pair
@@ -188,33 +188,6 @@ private theorem trFold_read (T L : elim.Mat) :
     (ground.foldB_foldl _ (List.range L.length) BPair.unit) ?_
   exact BPair.unit_add _
 
-/-! The matrix sum's action: the entries add row by row, so the
-action splits at every vector — the read the additivity
-consumes. -/
-
-/-- The matrix sum acts as the sum of the actions. -/
-private theorem matVec_matAdd (n : Nat) (x : List BPair)
-    (hx : x.length = n) :
-    ∀ T T' : elim.Mat, elim.rowsLen n T → elim.rowsLen n T' →
-      poly.oneValue (elim.matVec (elim.matAdd T T') x)
-        (elim.vecAdd (elim.matVec T x) (elim.matVec T' x))
-  | [], _, _, _ => trivial
-  | _ :: _, [], _, _ => trivial
-  | r :: t, s :: t', hT, hT' => by
-    show (elim.dotN (elim.vecAdd r s) x).oneValue
-        (elim.dotN r x + elim.dotN s x)
-      ∧ poly.oneValue (elim.matVec (elim.matAdd t t') x)
-        (elim.vecAdd (elim.matVec t x) (elim.matVec t' x))
-    refine ⟨?_, matVec_matAdd n x hx t t' hT.2 hT'.2⟩
-    refine BPair.oneValue_trans (elim.dotN_read _ x) ?_
-    refine BPair.oneValue_trans
-      (elim.dotP_vecAdd_left r s x
-        (Nat.le_of_eq (Eq.symm (hT.1.trans hx.symm)))
-        (Nat.le_of_eq (Eq.symm (hT'.1.trans hx.symm)))) ?_
-    exact BPair.add_congr
-      (BPair.oneValue_symm (elim.dotN_read r x))
-      (BPair.oneValue_symm (elim.dotN_read s x))
-
 /-- `lem:casimir`'s additivity: the trace fold is additive in the
 operator, the matrix sum's action splitting at every member. -/
 theorem trFold_add (n : Nat) (T T' L : elim.Mat)
@@ -242,7 +215,7 @@ theorem trFold_add (n : Nat) (T T' L : elim.Mat)
   refine BPair.mul_congr_left ?_
   refine BPair.oneValue_trans
     (elim.dotP_oneValue_right _ _ _
-      (matVec_matAdd n (getAt [] L j) hrow T T'
+      (elim.matVec_add_free n T T' (getAt [] L j)
         (elim.rowsLen_of_sqAt hT) (elim.rowsLen_of_sqAt hT'))) ?_
   refine elim.dotP_vecAdd (getAt [] L j) _ _ ?_ ?_
   · rw [elim.matVec_length, elim.sqAt_len hT, hrow]
@@ -1422,8 +1395,8 @@ theorem casimirM_top (s : Shape) :
     have hterm := termShape (places.rowList s) p q
     refine ⟨stepShape _ m2 _ hm2 hterm, ?_⟩
     refine poly.oneValue_trans
-      (matVec_matAdd (monomialsAt (places.rowList s)).length
-        (exhibit s).coords hx m2 _ hm2.2 hterm.2) ?_
+      (elim.matVec_add_free (monomialsAt (places.rowList s)).length
+        m2 _ (exhibit s).coords hm2.2 hterm.2) ?_
     rw [elim.vecScale_add]
     refine elim.polyOne_vecAdd _ _ _ _ ha2
       (termAct s p q hp hqr hx) ?_ ?_
@@ -1489,7 +1462,7 @@ private theorem foldVec (n : Nat) (x : List BPair)
 /-- The `C` family's action at a vector: the double index fold of
 the ordered pairs' composed actions. -/
 private theorem casimirM_vsum (d : Nat) (mu : List Nat)
-    (x : List BPair) (hx : x.length = (monomialsAt mu).length) :
+    (x : List BPair) :
     poly.oneValue (elim.matVec (casimirM d mu) x)
       (elim.vsum (monomialsAt mu).length
         (fun p => elim.vsum (monomialsAt mu).length
@@ -1519,7 +1492,7 @@ private theorem casimirM_vsum (d : Nat) (mu : List Nat)
               (units.matUnitAt (moveAt q p mu) mu q p)) x)) := by
     intro p m q hm
     exact ⟨stepShape _ m _ hm (termShape mu p q),
-      matVec_matAdd (monomialsAt mu).length x hx m _ hm.2
+      elim.matVec_add_free (monomialsAt mu).length m _ x hm.2
         (termShape mu p q).2⟩
   have hseed : sqShape (monomialsAt mu).length
       (List.replicate (places.monomialsAt mu).length
@@ -2292,15 +2265,6 @@ private theorem termNullB (mu : List Nat) (i j p q : Nat)
       (units.matVec_null_unocc (moveAt q p (moveAt i j mu)) mu i p
         hz x)))
 
-/-- The unit clearing reads the vector itself. -/
-private theorem scaleOne_read : ∀ v : List BPair,
-    poly.oneValue (elim.vecScale (BPair.ofNat 1) v) v
-  | [] => trivial
-  | a :: t =>
-    ⟨BPair.oneValue_trans
-      (BPair.oneValue_of_eq (BPair.mul_comm (BPair.ofNat 1) a))
-      (BPair.mul_ofNat_one a), scaleOne_read t⟩
-
 /-- The unit's letter re-raised at its vacant moved content names a
 content the raising does not reach: the matrix between them is the
 null map (`con:units`' grading). -/
@@ -2431,11 +2395,11 @@ private theorem termNullC (mu : List Nat) (i j p q : Nat)
           show BPair.ofNat (getAt 0 mu j * getAt 0 mu j) = _
           rw [hmj1]
         rw [hsq]
-        exact scaleOne_read x
+        exact elim.vecScale_one x
       have hone2 : poly.oneValue
           (elim.vecScale (BPair.ofNat (getAt 0 mu j)) x) x := by
         rw [hmj1]
-        exact scaleOne_read x
+        exact elim.vecScale_one x
       refine poly.oneValue_trans
         (elim.matVec_congr _ _ _
           (diagAt mu j hj x hx)) ?_
@@ -2923,7 +2887,7 @@ theorem casimirM_comm (d : Nat) (mu : List Nat) (i j : Nat)
           (List.range d)) := by
       refine poly.oneValue_trans
         (elim.matVec_congr _ _ _
-          (casimirM_vsum d mu x hx)) ?_
+          (casimirM_vsum d mu x)) ?_
       refine poly.oneValue_trans
         (elim.matVec_vsum (monomialsAt mu).length
           (units.matUnitAt (moveAt i j mu) mu i j)
@@ -2947,7 +2911,6 @@ theorem casimirM_comm (d : Nat) (mu : List Nat) (i j : Nat)
     -- the bridge: the right side is the double fold outright
     have hRb := casimirM_vsum d (moveAt i j mu)
       (elim.matVec (units.matUnitAt (moveAt i j mu) mu i j) x)
-      hMx
     -- the joined folds agree, the per-pair join at every member
     have hS : poly.oneValue
         (elim.vsum (monomialsAt (moveAt i j mu)).length
@@ -3299,7 +3262,7 @@ private theorem comboScale (n : Nat) (T : elim.Mat) (c : BPair)
       (elim.matVec_vecAdd T n hT _ _ hsn hcn) ?_
     refine elim.polyOne_vecAdd _ _ _ _ ?_ ?_ ?_ ?_
     · exact poly.oneValue_trans
-        (elim.matVec_vecScale T n hT a r hrn)
+        (elim.matVec_vecScale_free T a r)
         (elim.vecScale_oneValue a _ _
           (hr 0 (Nat.succ_pos G.length)))
     · exact comboScale n T c hT hTl cs G hG.2
@@ -3334,7 +3297,7 @@ private theorem spanRel_scalar (n : Nat) (T G : elim.Mat)
     refine elim.oneValue_unscale c₀ hc₀ _ _ ?_
     refine poly.oneValue_trans
       (poly.oneValue_symm
-        (elim.matVec_vecScale T n hTr c₀ y hyl)) ?_
+        (elim.matVec_vecScale_free T c₀ y)) ?_
     refine poly.oneValue_trans
       (elim.matVec_congr T _ _ hone) ?_
     refine poly.oneValue_trans
@@ -4159,23 +4122,6 @@ private theorem traceCollect (d : Nat) (nu : List Nat)
     (fun p => ground.famFold Nat.add 0 (fun q => c p q)
       (List.range d)) (prodAll R) (List.range d)
 
-/-- Two counts reading one value are equal, the converter's
-injectivity: an occupied count sits off the sum's unit, and a
-shared summand cancels at the successors. -/
-private theorem ofNatInj : ∀ {a b : Nat},
-    (BPair.ofNat a).oneValue (BPair.ofNat b) → a = b
-  | 0, 0, _ => rfl
-  | 0, _ + 1, h =>
-    absurd (BPair.oneValue_symm h)
-      (BPair.ofNat_off_unit _ (Nat.succ_pos _))
-  | _ + 1, 0, h =>
-    absurd h (BPair.ofNat_off_unit _ (Nat.succ_pos _))
-  | a + 1, b + 1, h =>
-    congrArg Nat.succ (ofNatInj
-      (ground.BPair.add_cancel (BPair.oneValue_trans
-        (BPair.oneValue_symm (BPair.ofNat_succ a))
-        (BPair.oneValue_trans h (BPair.ofNat_succ b)))))
-
 /-- `lem:casimir`'s trace balance at a content: the block scalar
 against the content's multiplicity reads the ordered pairs' trace
 weights collected, the whole self-pairing product cancelled at its
@@ -4222,7 +4168,7 @@ private theorem traceNat (lam : Shape) (i j : Nat)
           * ground.famFold Nat.add 0
               (fun ab => getAt 0 (rowList lam) ab.2)
               (pairsOf (rowList lam).length) := by
-  refine (ofNatInj (BPair.oneValue_trans
+  refine (ground.BPair.ofNat_inj (BPair.oneValue_trans
     (BPair.ofNat_add _ _) ?_)).symm
   refine BPair.oneValue_trans
     (BPair.add_congr

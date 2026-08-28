@@ -7,7 +7,6 @@ cleared traceless read `d_f Q` at the adjoint (`2 d_f²` at every
 committed count) and its neighbors, the class invariance under a
 full column, and the square identity, the join's collection.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places c2hat

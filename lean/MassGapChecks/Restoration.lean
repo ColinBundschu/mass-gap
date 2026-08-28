@@ -84,7 +84,6 @@ committed two-by-two square at the transposition, the relabeled
 square's minor reading the source's, a square one coefficient off
 refusing the entrywise reading (`lem:split`'s symbol).
 -/
-set_option maxRecDepth 1000000
 set_option maxHeartbeats 16000000
 
 open ground lattice fusion carrier fiberdec restoration elim inertia

@@ -194,7 +194,7 @@ private theorem scatter_replicate (c : ground.BPair)
     ∀ (n r : Nat), r < n →
       (units.scatterAt r c (List.replicate n ground.BPair.unit)).map
           ground.BPair.norm
-        = elim.setRow (List.replicate n ground.BPair.unit) r
+        = List.set (List.replicate n ground.BPair.unit) r
             (ground.BPair.ofPos .one)
   | 0, r, hr => absurd hr (Nat.not_lt_zero r)
   | n + 1, 0, _ => by
@@ -207,7 +207,7 @@ private theorem scatter_replicate (c : ground.BPair)
         :: (units.scatterAt r c
             (List.replicate n ground.BPair.unit)).map ground.BPair.norm
       = ground.BPair.unit
-        :: elim.setRow (List.replicate n ground.BPair.unit) r
+        :: List.set (List.replicate n ground.BPair.unit) r
             (ground.BPair.ofPos .one)
     rw [norm_unit,
       scatter_replicate c hc n r (Nat.lt_of_succ_lt_succ hr)]
@@ -236,7 +236,7 @@ private theorem foldl_zip_unit {β : Type}
     ∀ (B : List (List Nat)) (r : Nat), r < B.length → ∀ a : β,
       (∀ (a' : β) (mm : List Nat), F a' (mm, ground.BPair.unit) = a') →
       (List.zipWith (fun m x => (m, x)) B
-          (elim.setRow (List.replicate B.length ground.BPair.unit) r
+          (List.set (List.replicate B.length ground.BPair.unit) r
             (ground.BPair.ofPos .one))).foldl F a
         = F a (ground.getAt [] B r, ground.BPair.ofPos .one)
   | [], r, hr, _, _ => absurd hr (Nat.not_lt_zero r)
@@ -248,7 +248,7 @@ private theorem foldl_zip_unit {β : Type}
     exact foldl_zip_allU F hskip t _
   | b :: t, r + 1, hr, a, hskip => by
     show (List.zipWith (fun m x => (m, x)) t
-        (elim.setRow (List.replicate t.length ground.BPair.unit) r
+        (List.set (List.replicate t.length ground.BPair.unit) r
           (ground.BPair.ofPos .one))).foldl F
         (F a (b, ground.BPair.unit))
       = F a (ground.getAt [] t r, ground.BPair.ofPos .one)
@@ -262,7 +262,7 @@ private theorem tensor_row_fold (d i : Nat) (hi : i < d)
     (nu' : List Nat) (r : Nat) (hr : r < (monomialsAt nu').length)
     (mu : List Nat) (seed : List ground.BPair) :
     (List.zipWith (fun m x => (m, x)) (monomialsAt nu')
-        (elim.setRow
+        (List.set
           (List.replicate (monomialsAt nu').length ground.BPair.unit)
           r (ground.BPair.ofPos .one))).foldl
       (fun acc p =>
@@ -304,7 +304,7 @@ private theorem tensor_unit_row (d i : Nat) (hi : i < d)
     elim.idList_getAt (monomialsAt nu).length j hj]
   show (⟨List.zipWith (fun a b => a + b) nu' (unitAt d i),
       ((List.zipWith (fun m x => (m, x)) (monomialsAt nu')
-          (elim.setRow
+          (List.set
             (List.replicate (monomialsAt nu').length ground.BPair.unit)
             r (ground.BPair.ofPos .one))).foldl
         (fun acc p =>
@@ -324,7 +324,7 @@ private theorem tensor_unit_row (d i : Nat) (hi : i < d)
             (unitAt d i))).map
           (fun _ => ground.BPair.unit))).map ground.BPair.norm⟩
       : blockcount.HVec)
-    = ⟨nu, elim.setRow
+    = ⟨nu, List.set
         (List.replicate (monomialsAt nu).length ground.BPair.unit) j
         (ground.BPair.ofPos .one)⟩
   rw [hzip, tensor_row_fold d i hi nu' r hr nu _, hjr,
@@ -721,12 +721,8 @@ private theorem readGo (d : Nat) (hd : 0 < d) :
         (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
           blockcount.HVec.content)) → mu.length = d := by
       intro mu hmu
-      match ground.mem_map_of blockcount.HVec.content
-          (blockcount.exhaust d (monPool d k)) mu (hmemD mu hmu) with
-      | ⟨w, hw, hwc⟩ =>
-        rw [← hwc]
-        exact (blockcount.exhaust_top d (monPool d k) hpack.1 hpack.2.1
-          hpack.2.2.2 w hw).2.1
+      exact blockcount.exhaust_width d (monPool d k) hpack.1
+        hpack.2.1 hpack.2.2.2 mu (hmemD mu hmu)
     have hpoint : ∀ mu, 0 < ground.countOf mu
         (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
           blockcount.HVec.content)) →
@@ -861,21 +857,6 @@ private theorem expo_length (m p : List Nat) :
   show (p.map (ground.getAt 0 m)).length = p.length
   rw [ground.length_map]
 
-/-- A place permutation's counts are the key range's own: each
-letter below the count once, every further letter absent. -/
-private theorem perm_counts_range (k : Nat) {σ : List Nat}
-    (hσ : 0 < ground.countOf σ (places.perms k)) (x : Nat) :
-    ground.countOf x σ = ground.countOf x (List.range k) := by
-  obtain ⟨hlen, hdist, hval, hocc⟩ := places.perm_member_reads hσ
-  rw [ground.countOf_range x k]
-  by_cases hx : x < k
-  · rw [if_pos hx]
-    exact Nat.le_antisymm (hdist x) (hocc x hx)
-  · rw [if_neg hx]
-    match Nat.eq_zero_or_pos (ground.countOf x σ) with
-    | .inl h => exact h
-    | .inr h => exact absurd (hval x h) hx
-
 /-- The permuted display of a sized word carries the word's own
 letter counts: the display rearranges the entries. -/
 private theorem expo_content (k : Nat) {σ : List Nat}
@@ -886,7 +867,7 @@ private theorem expo_content (k : Nat) {σ : List Nat}
   rw [ground.countOf_map_famFold x (ground.getAt 0 m) σ,
     ground.famFold_relist Nat.add 0 Nat.add_comm Nat.add_assoc
       (fun q => if x = ground.getAt 0 m q then 1 else 0) σ
-      (List.range k) (perm_counts_range k hσ),
+      (List.range k) (places.perm_counts_range k hσ),
     ← ground.countOf_map_famFold x (ground.getAt 0 m) (List.range k),
     ground.range_map_getAt 0 k m hm]
 
@@ -975,7 +956,7 @@ private theorem countAct_fold (i j : Nat) :
       ground.countOf u (units.unitAct i j w)
         = ground.famFold Nat.add 0
             (fun q => if ground.getAt 0 w q = j
-                ∧ u = elim.setRow w q i then 1 else 0)
+                ∧ u = List.set w q i then 1 else 0)
             (List.range w.length)
   | [], _ => rfl
   | a :: t, u => by
@@ -984,7 +965,7 @@ private theorem countAct_fold (i j : Nat) :
           ++ (units.unitAct i j t).map (fun m => a :: m))
       = ground.famFold Nat.add 0
           (fun q => if ground.getAt 0 (a :: t) q = j
-              ∧ u = elim.setRow (a :: t) q i then 1 else 0)
+              ∧ u = List.set (a :: t) q i then 1 else 0)
           (List.range (t.length + 1))
     rw [ground.countOf_append, ground.range_cons t.length]
     show ground.countOf u (if a == j then [i :: t] else [])
@@ -993,11 +974,11 @@ private theorem countAct_fold (i j : Nat) :
       = (if a = j ∧ u = i :: t then 1 else 0)
         + ground.famFold Nat.add 0
             (fun q => if ground.getAt 0 (a :: t) q = j
-                ∧ u = elim.setRow (a :: t) q i then 1 else 0)
+                ∧ u = List.set (a :: t) q i then 1 else 0)
             ((List.range t.length).map (fun q => q + 1))
     rw [ground.famFold_map Nat.add 0
         (fun q => if ground.getAt 0 (a :: t) q = j
-            ∧ u = elim.setRow (a :: t) q i then 1 else 0)
+            ∧ u = List.set (a :: t) q i then 1 else 0)
         (fun q => q + 1) (List.range t.length)]
     have hhead : ground.countOf u (if a == j then [i :: t] else [])
         = if a = j ∧ u = i :: t then 1 else 0 := by
@@ -1016,7 +997,7 @@ private theorem countAct_fold (i j : Nat) :
         ((units.unitAct i j t).map (fun m => a :: m))
         = ground.famFold Nat.add 0
             (fun q => if ground.getAt 0 t q = j
-                ∧ u = a :: elim.setRow t q i then 1 else 0)
+                ∧ u = a :: List.set t q i then 1 else 0)
             (List.range t.length) := by
       match u with
       | [] =>
@@ -1032,7 +1013,7 @@ private theorem countAct_fold (i j : Nat) :
             (List.range t.length)
           intro q
           by_cases h1 : ground.getAt 0 t q = j
-          · by_cases h2 : u' = elim.setRow t q i
+          · by_cases h2 : u' = List.set t q i
             · rw [if_pos ⟨h1, h2⟩, if_pos ⟨h1, by rw [hba, h2]⟩]
             · rw [if_neg (fun hc => h2 hc.2),
                 if_neg (fun hc => h2 (List.cons.inj hc.2).2)]
@@ -1048,26 +1029,26 @@ private theorem countAct_fold (i j : Nat) :
 /-- The update commutes with the display: writing the permuted
 display at a place is the display of the word written at that
 place's letter. -/
-private theorem setRow_expo (k : Nat) {σ : List Nat}
+private theorem set_expo (k : Nat) {σ : List Nat}
     (hσ : 0 < ground.countOf σ (places.perms k))
     (w : List Nat) (hw : w.length = k) (q : Nat) (hq : q < k)
     (i : Nat) :
-    elim.setRow (places.expo w σ) q i
-      = places.expo (elim.setRow w (ground.getAt 0 σ q) i) σ := by
+    List.set (places.expo w σ) q i
+      = places.expo (List.set w (ground.getAt 0 σ q) i) σ := by
   obtain ⟨hlen, hdist, hval, hocc⟩ := places.perm_member_reads hσ
   have hσq : ground.getAt 0 σ q < k :=
     hval _ (ground.countOf_getAt_pos 0 σ q (by rw [hlen]; exact hq))
   refine ground.getAt_ext 0 _ _ ?_ ?_
-  · rw [elim.length_setRow, expo_length, expo_length]
+  · rw [ground.length_set, expo_length, expo_length]
   · intro t ht
-    rw [elim.length_setRow, expo_length, hlen] at ht
+    rw [ground.length_set, expo_length, hlen] at ht
     by_cases htq : t = q
     · rw [htq,
-        elim.getAt_setRow 0 i (places.expo w σ) q
+        ground.getAt_set_self 0 i (places.expo w σ) q
           (by rw [expo_length, hlen]; exact hq),
-        places.getAt_expo (elim.setRow w (ground.getAt 0 σ q) i) σ q
+        places.getAt_expo (List.set w (ground.getAt 0 σ q) i) σ q
           (by rw [hlen]; exact hq),
-        elim.getAt_setRow 0 i w (ground.getAt 0 σ q)
+        ground.getAt_set_self 0 i w (ground.getAt 0 σ q)
           (by rw [hw]; exact hσq)]
     · have hσne : ¬ ground.getAt 0 σ t = ground.getAt 0 σ q := by
         intro he
@@ -1075,11 +1056,11 @@ private theorem setRow_expo (k : Nat) {σ : List Nat}
         have h1 := places.posOf_getAt hdist t (by rw [hlen]; exact ht)
         have h2 := places.posOf_getAt hdist q (by rw [hlen]; exact hq)
         rw [← h1, he, h2]
-      rw [elim.getAt_setRow_ne 0 (places.expo w σ) q t i htq,
+      rw [ground.getAt_set_ne 0 (places.expo w σ) q t i htq,
         places.getAt_expo w σ t (by rw [hlen]; exact ht),
-        places.getAt_expo (elim.setRow w (ground.getAt 0 σ q) i) σ t
+        places.getAt_expo (List.set w (ground.getAt 0 σ q) i) σ t
           (by rw [hlen]; exact ht),
-        elim.getAt_setRow_ne 0 w (ground.getAt 0 σ q)
+        ground.getAt_set_ne 0 w (ground.getAt 0 σ q)
           (ground.getAt 0 σ t) i hσne]
 
 /-- The Leibniz count transports across the display: the outputs
@@ -1096,31 +1077,31 @@ private theorem countAct_expo (k : Nat) {σ : List Nat}
   obtain ⟨hlen, hdist, hval, hocc⟩ := places.perm_member_reads hσ
   have hpoint : ∀ q, 0 < ground.countOf q (List.range k) →
       (if ground.getAt 0 (places.expo w σ) q = j
-          ∧ places.expo u σ = elim.setRow (places.expo w σ) q i
+          ∧ places.expo u σ = List.set (places.expo w σ) q i
         then 1 else 0)
       = (if ground.getAt 0 w (ground.getAt 0 σ q) = j
-          ∧ u = elim.setRow w (ground.getAt 0 σ q) i
+          ∧ u = List.set w (ground.getAt 0 σ q) i
         then 1 else 0) := by
     intro q hq
     have hqk : q < k := ground.ltOfMem hq
     have hc1 : ground.getAt 0 (places.expo w σ) q
         = ground.getAt 0 w (ground.getAt 0 σ q) :=
       places.getAt_expo w σ q (by rw [hlen]; exact hqk)
-    have hc2 : (places.expo u σ = elim.setRow (places.expo w σ) q i)
-        ↔ (u = elim.setRow w (ground.getAt 0 σ q) i) := by
+    have hc2 : (places.expo u σ = List.set (places.expo w σ) q i)
+        ↔ (u = List.set w (ground.getAt 0 σ q) i) := by
       constructor
       · intro he
-        rw [setRow_expo k hσ w hw q hqk i] at he
+        rw [set_expo k hσ w hw q hqk i] at he
         have h2 := congrArg
           (fun z => places.expo z (places.invPerm k σ)) he
         rw [expo_roundtrip k hσ u hu,
-          expo_roundtrip k hσ (elim.setRow w (ground.getAt 0 σ q) i)
-            (by rw [elim.length_setRow, hw])] at h2
+          expo_roundtrip k hσ (List.set w (ground.getAt 0 σ q) i)
+            (by rw [ground.length_set, hw])] at h2
         exact h2
       · intro he
-        rw [he, setRow_expo k hσ w hw q hqk i]
+        rw [he, set_expo k hσ w hw q hqk i]
     by_cases h1 : ground.getAt 0 w (ground.getAt 0 σ q) = j
-    · by_cases h2 : u = elim.setRow w (ground.getAt 0 σ q) i
+    · by_cases h2 : u = List.set w (ground.getAt 0 σ q) i
       · rw [if_pos ⟨by rw [hc1]; exact h1, hc2.mpr h2⟩,
           if_pos ⟨h1, h2⟩]
       · rw [if_neg (fun hc => h2 (hc2.mp hc.2)),
@@ -1137,11 +1118,11 @@ private theorem countAct_expo (k : Nat) {σ : List Nat}
   exact Eq.trans
     (ground.famFold_getAt Nat.add 0
       (fun p => if ground.getAt 0 w p = j
-          ∧ u = elim.setRow w p i then 1 else 0) 0 σ k hlen)
+          ∧ u = List.set w p i then 1 else 0) 0 σ k hlen)
     (ground.famFold_relist Nat.add 0 Nat.add_comm Nat.add_assoc
       (fun p => if ground.getAt 0 w p = j
-          ∧ u = elim.setRow w p i then 1 else 0) σ (List.range k)
-      (perm_counts_range k hσ))
+          ∧ u = List.set w p i then 1 else 0) σ (List.range k)
+      (places.perm_counts_range k hσ))
 
 /-- The moved count across the display: the target read against the
 column's inverse display is the target's display against the column
@@ -1788,8 +1769,8 @@ identity word's row at the permutation's own column on the
 distinct-letter content, vacant elsewhere. -/
 private def probeB (d k : Nat) (σ0 mu : List Nat) : elim.Mat :=
   if mu = muStar d k then
-    elim.setRow (unitBlock mu) (places.rankOf (List.range k) mu)
-      (elim.setRow
+    List.set (unitBlock mu) (places.rankOf (List.range k) mu)
+      (List.set
         (List.replicate (places.monomialsAt mu).length
           ground.BPair.unit)
         (places.rankOf σ0 mu) (ground.BPair.ofNat 1))
@@ -1797,9 +1778,9 @@ private def probeB (d k : Nat) (σ0 mu : List Nat) : elim.Mat :=
 
 private theorem probeB_on (d k : Nat) (σ0 : List Nat) :
     probeB d k σ0 (muStar d k)
-      = elim.setRow (unitBlock (muStar d k))
+      = List.set (unitBlock (muStar d k))
           (places.rankOf (List.range k) (muStar d k))
-          (elim.setRow
+          (List.set
             (List.replicate
               (places.monomialsAt (muStar d k)).length
               ground.BPair.unit)
@@ -1814,7 +1795,7 @@ private theorem probeB_off (d k : Nat) (σ0 mu : List Nat)
 private theorem length_probeB (d k : Nat) (σ0 mu : List Nat) :
     (probeB d k σ0 mu).length = (places.monomialsAt mu).length := by
   by_cases hmu : mu = muStar d k
-  · rw [hmu, probeB_on, elim.length_setRow, length_unitBlock]
+  · rw [hmu, probeB_on, ground.length_set, length_unitBlock]
   · rw [probeB_off d k σ0 mu hmu, length_unitBlock]
 
 private theorem rowsLen_probeB (d k : Nat) (σ0 mu : List Nat) :
@@ -1822,8 +1803,8 @@ private theorem rowsLen_probeB (d k : Nat) (σ0 mu : List Nat) :
       (probeB d k σ0 mu) := by
   by_cases hmu : mu = muStar d k
   · rw [hmu, probeB_on]
-    refine elim.rowsLen_setRow _ _ _ (rowsLen_unitBlock (muStar d k)) ?_
-    rw [elim.length_setRow, ground.length_replicate]
+    refine elim.rowsLen_set _ _ _ (rowsLen_unitBlock (muStar d k)) ?_
+    rw [ground.length_set, ground.length_replicate]
   · rw [probeB_off d k σ0 mu hmu]
     exact rowsLen_unitBlock mu
 
@@ -1937,7 +1918,7 @@ private theorem dotP_probe_flat (d k : Nat) (hk : k ≤ d)
   have hr0 := places.rankOf_read (List.range k) (muStar d k)
     hcondR.1 hcondR.2
   have hcondS := cond_muStar d k σ0 h0len
-    (fun x => (perm_counts_range k h0 x).trans
+    (fun x => (places.perm_counts_range k h0 x).trans
       (ground.countOf_range x k))
   have hc0 := places.rankOf_read σ0 (muStar d k) hcondS.1 hcondS.2
   refine BPair.oneValue_trans
@@ -1960,41 +1941,41 @@ private theorem dotP_probe_flat (d k : Nat) (hk : k ≤ d)
   rw [probeB_on d k σ0]
   refine BPair.oneValue_trans
     (dotP_rows_delta (permMat σ' (muStar d k))
-      (elim.setRow (unitBlock (muStar d k))
+      (List.set (unitBlock (muStar d k))
         (places.rankOf (List.range k) (muStar d k))
-        (elim.setRow
+        (List.set
           (List.replicate
             (places.monomialsAt (muStar d k)).length
             ground.BPair.unit)
           (places.rankOf σ0 (muStar d k)) (ground.BPair.ofNat 1)))
       (places.rankOf (List.range k) (muStar d k))
-      (by rw [length_permMat, elim.length_setRow, length_unitBlock])
+      (by rw [length_permMat, ground.length_set, length_unitBlock])
       (fun s hs => by
         rw [length_permMat] at hs
         rw [elim.rowsLen_getAt (permMat σ' (muStar d k)) s
             (rowsLen_permMat σ' (muStar d k))
             (by rw [length_permMat]; exact hs)]
         by_cases hsr : s = places.rankOf (List.range k) (muStar d k)
-        · rw [hsr, elim.getAt_setRow ([] : List ground.BPair) _
+        · rw [hsr, ground.getAt_set_self ([] : List ground.BPair) _
               (unitBlock (muStar d k))
               (places.rankOf (List.range k) (muStar d k))
               (by rw [length_unitBlock]; exact hr0.1),
-            elim.length_setRow, ground.length_replicate]
-        · rw [elim.getAt_setRow_ne ([] : List ground.BPair)
+            ground.length_set, ground.length_replicate]
+        · rw [ground.getAt_set_ne ([] : List ground.BPair)
               (unitBlock (muStar d k))
               (places.rankOf (List.range k) (muStar d k)) s _ hsr,
             getAt_unitBlock (muStar d k) s hs,
             ground.length_replicate]
       )
       (fun s hs hsr => by
-        rw [elim.length_setRow, length_unitBlock] at hs
-        rw [elim.getAt_setRow_ne ([] : List ground.BPair)
+        rw [ground.length_set, length_unitBlock] at hs
+        rw [ground.getAt_set_ne ([] : List ground.BPair)
             (unitBlock (muStar d k))
             (places.rankOf (List.range k) (muStar d k)) s _ hsr,
           getAt_unitBlock (muStar d k) s hs]
         exact poly.unitTail_replicate _)
       (by rw [length_permMat]; exact hr0.1)) ?_
-  rw [elim.getAt_setRow ([] : List ground.BPair) _
+  rw [ground.getAt_set_self ([] : List ground.BPair) _
       (unitBlock (muStar d k))
       (places.rankOf (List.range k) (muStar d k))
       (by rw [length_unitBlock]; exact hr0.1)]
@@ -2002,7 +1983,7 @@ private theorem dotP_probe_flat (d k : Nat) (hk : k ≤ d)
     (elim.dotP_oneIndex
       (ground.getAt [] (permMat σ' (muStar d k))
         (places.rankOf (List.range k) (muStar d k)))
-      (elim.setRow
+      (List.set
         (List.replicate
           (places.monomialsAt (muStar d k)).length
           ground.BPair.unit)
@@ -2012,18 +1993,18 @@ private theorem dotP_probe_flat (d k : Nat) (hk : k ≤ d)
         rw [elim.rowsLen_getAt (permMat σ' (muStar d k)) _
             (rowsLen_permMat σ' (muStar d k))
             (by rw [length_permMat]; exact hr0.1),
-          elim.length_setRow, ground.length_replicate])
-      (by rw [elim.length_setRow, ground.length_replicate]; exact hc0.1)
+          ground.length_set, ground.length_replicate])
+      (by rw [ground.length_set, ground.length_replicate]; exact hc0.1)
       (fun q hq hqc => by
-        rw [elim.length_setRow, ground.length_replicate] at hq
-        rw [elim.getAt_setRow_ne ground.BPair.unit
+        rw [ground.length_set, ground.length_replicate] at hq
+        rw [ground.getAt_set_ne ground.BPair.unit
             (List.replicate
               (places.monomialsAt (muStar d k)).length
               ground.BPair.unit)
             (places.rankOf σ0 (muStar d k)) q (ground.BPair.ofNat 1) hqc,
           ground.getAt_replicate_self ground.BPair.unit _ q]
         exact BPair.oneValue_refl _)) ?_
-  rw [elim.getAt_setRow ground.BPair.unit (ground.BPair.ofNat 1)
+  rw [ground.getAt_set_self ground.BPair.unit (ground.BPair.ofNat 1)
       (List.replicate
         (places.monomialsAt (muStar d k)).length
         ground.BPair.unit)
@@ -2446,579 +2427,6 @@ private theorem pool_reads (d k : Nat) (m : List Nat)
     refine places.mem_lt_of_content d m ?_
     rw [hcd, hmus, hml, hmus]
 
-/-! The orbit walk's kit: the iterated assignment with its splits
-and bound, the positional injectivity, and the pigeonhole at the
-key range — a distinct family within the alphabet is no longer
-than the alphabet. -/
-
-/-- The iterated assignment: the place after the stated number of
-steps. -/
-private def iterP (pi : List Nat) : Nat → Nat → Nat
-  | 0, j => j
-  | t + 1, j => ground.getAt 0 pi (iterP pi t j)
-
-/-- The iterate splits at its first step. -/
-private theorem iterP_succ (pi : List Nat) :
-    ∀ (t j : Nat),
-      iterP pi (t + 1) j = iterP pi t (ground.getAt 0 pi j)
-  | 0, _ => rfl
-  | t + 1, j => congrArg (ground.getAt 0 pi) (iterP_succ pi t j)
-
-/-- The iterate splits at any seam. -/
-private theorem iterP_add (pi : List Nat) :
-    ∀ (a b j : Nat), iterP pi (a + b) j = iterP pi a (iterP pi b j)
-  | 0, b, j => by rw [Nat.zero_add]; rfl
-  | a + 1, b, j => by
-    rw [Nat.succ_add]
-    exact congrArg (ground.getAt 0 pi) (iterP_add pi a b j)
-
-/-- The iterates stay within the key range. -/
-private theorem iterP_lt (k : Nat) {π : List Nat}
-    (hπ : 0 < ground.countOf π (places.perms k)) :
-    ∀ (t j : Nat), j < k → iterP π t j < k := by
-  obtain ⟨hlen, _, hval, _⟩ := places.perm_member_reads hπ
-  intro t
-  induction t with
-  | zero => exact fun j hj => hj
-  | succ t ih =>
-    intro j hj
-    exact hval _ (ground.countOf_getAt_pos 0 π (iterP π t j)
-      (by rw [hlen]; exact ih j hj))
-
-/-- The assignment is positionally injective: one value sits at one
-place. -/
-private theorem perm_inj (k : Nat) {π : List Nat}
-    (hπ : 0 < ground.countOf π (places.perms k)) :
-    ∀ a b, a < k → b < k →
-      ground.getAt 0 π a = ground.getAt 0 π b → a = b := by
-  obtain ⟨hlen, hdist, _, _⟩ := places.perm_member_reads hπ
-  intro a b ha hb he
-  have h1 := places.posOf_getAt hdist a (by rw [hlen]; exact ha)
-  have h2 := places.posOf_getAt hdist b (by rw [hlen]; exact hb)
-  rw [← h1, he, h2]
-
-/-- The cycle fold read at the walk: `places.cyclesOf` is the fold
-over the key range taking each unwalked place's orbit. -/
-private theorem cyclesOf_read (pi : List Nat) :
-    places.cyclesOf pi
-      = ((List.range pi.length).foldl (fun st i =>
-          if 0 < ground.countOf i st.2 then st
-          else
-            (st.1 ++ [places.cycGo pi i pi.length i],
-             st.2 ++ places.cycGo pi i pi.length i))
-          (([], []) : List (List Nat) × List Nat)).1 := rfl
-
-/-- The walk's pack: against a distinct emitted trace chained from
-the start and a fuel covering the range, the walk's members sit in
-the range, close under the assignment up to the start's return,
-are fresh off the trace, distinct, iterates of the entry, hold the
-entry, and reach the start's preimage — the budget forcing the
-return before the fuel runs out (the pigeonhole at the range). -/
-private theorem cycM_pack (k : Nat) {π : List Nat}
-    (hπ : 0 < ground.countOf π (places.perms k)) (i : Nat) :
-    ∀ (fuel : Nat) (j : Nat) (seen : List Nat), j < k →
-      (∀ x, ground.countOf x seen ≤ 1) →
-      (∀ x, 0 < ground.countOf x seen → x < k) →
-      ground.countOf j seen = 0 →
-      ground.getAt 0 (seen ++ [j]) 0 = i →
-      (∀ t, t + 1 < (seen ++ [j]).length →
-        ground.getAt 0 (seen ++ [j]) (t + 1)
-          = ground.getAt 0 π (ground.getAt 0 (seen ++ [j]) t)) →
-      k ≤ fuel + seen.length →
-      (∀ p, 0 < ground.countOf p (places.cycGo π i fuel j) → p < k)
-        ∧ (∀ p, 0 < ground.countOf p (places.cycGo π i fuel j) →
-            ground.getAt 0 π p = i
-              ∨ 0 < ground.countOf (ground.getAt 0 π p)
-                  (places.cycGo π i fuel j))
-        ∧ (∀ p, 0 < ground.countOf p (places.cycGo π i fuel j) →
-            ground.countOf p seen = 0)
-        ∧ (∀ p, ground.countOf p (places.cycGo π i fuel j) ≤ 1)
-        ∧ (∀ p, 0 < ground.countOf p (places.cycGo π i fuel j) →
-            ∃ t, p = iterP π t j)
-        ∧ 0 < ground.countOf j (places.cycGo π i fuel j)
-        ∧ (∃ p, 0 < ground.countOf p (places.cycGo π i fuel j)
-            ∧ ground.getAt 0 π p = i) := by
-  obtain ⟨hπlen, hπdist, hπval, hπocc⟩ := places.perm_member_reads hπ
-  intro fuel
-  induction fuel with
-  | zero =>
-    intro j seen hj hsd hsk hjf _ _ hbud
-    exfalso
-    have hlen := ground.length_le_of_distinct (seen ++ [j]) k
-      (ground.snoc_distinct hsd hjf) (ground.snoc_lt hsk hj)
-    rw [ground.length_append] at hlen
-    have hbud' : k ≤ seen.length := by
-      rw [Nat.zero_add] at hbud
-      exact hbud
-    have habs : seen.length + 1 ≤ seen.length :=
-      Nat.le_trans hlen hbud'
-    exact absurd habs (Nat.not_succ_le_self seen.length)
-  | succ fuel ih =>
-    intro j seen hj hsd hsk hjf hhead hchain hbud
-    by_cases hg : ground.getAt 0 π j = i
-    · have hstep : places.cycGo π i (fuel + 1) j = [j] := by
-        show j :: (if ground.getAt 0 π j == i then []
-          else places.cycGo π i fuel (ground.getAt 0 π j)) = [j]
-        rw [ground.eqBeqOf hg, if_pos rfl]
-      rw [hstep]
-      have hone : ∀ p : Nat,
-          ground.countOf p [j] = if p = j then 1 else 0 :=
-        fun p => (ground.countOf_cons p j ([] : List Nat)).trans
-          (Nat.add_zero _)
-      have hmem : ∀ p : Nat, 0 < ground.countOf p [j] → p = j := by
-        intro p hp
-        by_cases hpj : p = j
-        · exact hpj
-        · rw [hone p, if_neg hpj] at hp
-          exact absurd hp (Nat.lt_irrefl 0)
-      have hjj : 0 < ground.countOf j [j] := by
-        rw [hone j, if_pos rfl]
-        exact Nat.succ_pos 0
-      refine ⟨?_, ?_, ?_, ?_, ?_, hjj, ⟨j, hjj, hg⟩⟩
-      · intro p hp
-        rw [hmem p hp]
-        exact hj
-      · intro p hp
-        rw [hmem p hp]
-        exact Or.inl hg
-      · intro p hp
-        rw [hmem p hp]
-        exact hjf
-      · intro p
-        rw [hone p]
-        by_cases hpj : p = j
-        · rw [if_pos hpj]
-          exact Nat.le_refl 1
-        · rw [if_neg hpj]
-          exact Nat.le_succ 0
-      · intro p hp
-        exact ⟨0, hmem p hp⟩
-    · have hbeq : (ground.getAt 0 π j == i) = false := by
-        cases hbe : (ground.getAt 0 π j == i) with
-        | false => rfl
-        | true => exact absurd (ground.beqEqOf hbe) hg
-      have hstep : places.cycGo π i (fuel + 1) j
-          = j :: places.cycGo π i fuel (ground.getAt 0 π j) := by
-        show j :: (if ground.getAt 0 π j == i then []
-          else places.cycGo π i fuel (ground.getAt 0 π j)) = _
-        rw [hbeq,
-          if_neg (fun h : false = true => Bool.noConfusion h)]
-      have hj' : ground.getAt 0 π j < k :=
-        hπval _ (ground.countOf_getAt_pos 0 π j (by rw [hπlen]; exact hj))
-      have hlen_tr : (seen ++ [j]).length = seen.length + 1 := by
-        rw [ground.length_append]
-        rfl
-      have hfresh : ground.countOf (ground.getAt 0 π j)
-          (seen ++ [j]) = 0 := by
-        match Nat.eq_zero_or_pos (ground.countOf (ground.getAt 0 π j)
-            (seen ++ [j])) with
-        | .inl h => exact h
-        | .inr hpos =>
-          exfalso
-          match ground.getAt_of_mem 0
-              (ground.mem_of_countOf_pos _ _ hpos) with
-          | ⟨t, ht, hte⟩ =>
-            match t with
-            | 0 =>
-              rw [hhead] at hte
-              exact hg hte.symm
-            | s + 1 =>
-              have hchs := hchain s ht
-              have hpp : ground.getAt 0 π
-                  (ground.getAt 0 (seen ++ [j]) s)
-                  = ground.getAt 0 π j := by
-                rw [← hchs, hte]
-              have hs_lt : s < (seen ++ [j]).length :=
-                Nat.lt_of_succ_lt ht
-              have htrs_lt : ground.getAt 0 (seen ++ [j]) s < k :=
-                ground.snoc_lt hsk hj _
-                  (ground.countOf_getAt_pos 0 (seen ++ [j]) s hs_lt)
-              have hsj : ground.getAt 0 (seen ++ [j]) s = j :=
-                perm_inj k hπ _ j htrs_lt hj hpp
-              have hs_seen : s < seen.length := by
-                rw [hlen_tr] at ht
-                exact Nat.lt_of_succ_lt_succ ht
-              have hjs : 0 < ground.countOf j seen := by
-                rw [← hsj, ground.getAt_append 0 seen [j] s,
-                  if_pos hs_seen]
-                exact ground.countOf_getAt_pos 0 seen s hs_seen
-              rw [hjf] at hjs
-              exact absurd hjs (Nat.lt_irrefl 0)
-      have hhead' : ground.getAt 0
-          ((seen ++ [j]) ++ [ground.getAt 0 π j]) 0 = i := by
-        rw [ground.getAt_append 0 (seen ++ [j]) _ 0,
-          if_pos (by rw [hlen_tr]; exact Nat.succ_pos _)]
-        exact hhead
-      have hchain' : ∀ t,
-          t + 1 < ((seen ++ [j]) ++ [ground.getAt 0 π j]).length →
-          ground.getAt 0 ((seen ++ [j]) ++ [ground.getAt 0 π j]) (t + 1)
-            = ground.getAt 0 π (ground.getAt 0
-                ((seen ++ [j]) ++ [ground.getAt 0 π j]) t) := by
-        intro t ht
-        have hlen2 : ((seen ++ [j]) ++ [ground.getAt 0 π j]).length
-            = (seen ++ [j]).length + 1 := by
-          rw [ground.length_append]
-          rfl
-        by_cases hts : t + 1 < (seen ++ [j]).length
-        · rw [ground.getAt_append 0 (seen ++ [j]) _ (t + 1),
-            if_pos hts, ground.getAt_append 0 (seen ++ [j]) _ t,
-            if_pos (Nat.lt_of_succ_lt hts)]
-          exact hchain t hts
-        · have hte : t + 1 = (seen ++ [j]).length := by
-            rw [hlen2] at ht
-            exact Nat.le_antisymm (Nat.le_of_lt_succ ht)
-              (Nat.le_of_not_lt hts)
-          have htl : t < (seen ++ [j]).length := by
-            rw [← hte]
-            exact Nat.lt_succ_self t
-          have hts2 : t = seen.length := by
-            rw [hlen_tr] at hte
-            exact Nat.succ.inj hte
-          have hgj : ground.getAt 0 (seen ++ [j]) t = j := by
-            rw [ground.getAt_append 0 seen [j] t, hts2,
-              if_neg (Nat.lt_irrefl _), Nat.sub_self]
-            rfl
-          rw [ground.getAt_append 0 (seen ++ [j]) _ (t + 1),
-            if_neg (by rw [hte]; exact Nat.lt_irrefl _), hte,
-            Nat.sub_self,
-            ground.getAt_append 0 (seen ++ [j]) _ t, if_pos htl, hgj]
-          rfl
-      have hbud' : k ≤ fuel + (seen ++ [j]).length := by
-        rw [hlen_tr, Nat.add_comm seen.length 1, ← Nat.add_assoc]
-        exact hbud
-      obtain ⟨ia, ib, ic, id2, ie, ig, ihh⟩ := ih (ground.getAt 0 π j)
-        (seen ++ [j]) hj' (ground.snoc_distinct hsd hjf) (ground.snoc_lt hsk hj)
-        hfresh hhead' hchain' hbud'
-      rw [hstep]
-      have hsplit : ∀ p, 0 < ground.countOf p
-          (j :: places.cycGo π i fuel (ground.getAt 0 π j)) →
-          p = j ∨ 0 < ground.countOf p
-            (places.cycGo π i fuel (ground.getAt 0 π j)) := by
-        intro p hp
-        by_cases hpj : p = j
-        · exact Or.inl hpj
-        · rw [ground.countOf_head_ne hpj] at hp
-          exact Or.inr hp
-      refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
-      · intro p hp
-        match hsplit p hp with
-        | .inl hpj =>
-          rw [hpj]
-          exact hj
-        | .inr hpc => exact ia p hpc
-      · intro p hp
-        match hsplit p hp with
-        | .inl hpj =>
-          refine Or.inr ?_
-          rw [hpj]
-          exact ground.countOf_cons_pos ig
-        | .inr hpc =>
-          match ib p hpc with
-          | .inl hpi => exact Or.inl hpi
-          | .inr hpn => exact Or.inr (ground.countOf_cons_pos hpn)
-      · intro p hp
-        match hsplit p hp with
-        | .inl hpj =>
-          rw [hpj]
-          exact hjf
-        | .inr hpc =>
-          have hz := ic p hpc
-          rw [ground.countOf_snoc] at hz
-          exact Nat.eq_zero_of_add_eq_zero_right hz
-      · intro p
-        by_cases hpj : p = j
-        · rw [hpj, ground.countOf_head]
-          match Nat.eq_zero_or_pos (ground.countOf j
-              (places.cycGo π i fuel (ground.getAt 0 π j))) with
-          | .inl hz =>
-            rw [hz]
-            exact Nat.le_refl 1
-          | .inr hpos =>
-            have hz := ic j hpos
-            rw [ground.countOf_snoc, if_pos rfl] at hz
-            exact Nat.noConfusion hz
-        · rw [ground.countOf_head_ne hpj]
-          exact id2 p
-      · intro p hp
-        match hsplit p hp with
-        | .inl hpj => exact ⟨0, hpj⟩
-        | .inr hpc =>
-          match ie p hpc with
-          | ⟨t, hpt⟩ =>
-            refine ⟨t + 1, ?_⟩
-            rw [iterP_succ]
-            exact hpt
-      · rw [ground.countOf_head]
-        exact Nat.succ_pos _
-      · match ihh with
-        | ⟨p, hpc, hpi⟩ => exact ⟨p, ground.countOf_cons_pos hpc, hpi⟩
-
-/-- The return: from any place the iterates come back — the walk
-reaches the start's preimage, whose image closes the orbit. -/
-private theorem iter_return (k : Nat) {π : List Nat}
-    (hπ : 0 < ground.countOf π (places.perms k)) (j : Nat)
-    (hj : j < k) : ∃ r, iterP π (r + 1) j = j := by
-  obtain ⟨_, _, _, _, he, _, hp, hpc, hpi⟩ := cycM_pack k hπ j k j []
-    hj (fun _ => Nat.le_succ 0)
-    (fun x hx => absurd hx (Nat.lt_irrefl 0)) rfl rfl
-    (fun t ht => absurd (Nat.lt_of_succ_lt_succ ht) (Nat.not_lt_zero t))
-    (Nat.le_refl k)
-  match he hp hpc with
-  | ⟨t, hpt⟩ =>
-    refine ⟨t, ?_⟩
-    show ground.getAt 0 π (iterP π t j) = j
-    rw [← hpt]
-    exact hpi
-
-/-- The orbit relation is symmetric: a place reading as an iterate
-reads its source back, the return closing the gap. -/
-private theorem iter_back (k : Nat) {π : List Nat}
-    (hπ : 0 < ground.countOf π (places.perms k)) :
-    ∀ (t j p : Nat), j < k → p = iterP π t j →
-      ∃ s, j = iterP π s p := by
-  obtain ⟨hπlen, _, hπval, _⟩ := places.perm_member_reads hπ
-  intro t
-  induction t with
-  | zero =>
-    intro j p _ hp
-    exact ⟨0, hp.symm⟩
-  | succ t ihb =>
-    intro j p hj hp
-    have hj' : ground.getAt 0 π j < k :=
-      hπval _ (ground.countOf_getAt_pos 0 π j (by rw [hπlen]; exact hj))
-    have hp' : p = iterP π t (ground.getAt 0 π j) := by
-      rw [← iterP_succ]
-      exact hp
-    match ihb (ground.getAt 0 π j) p hj' hp' with
-    | ⟨s, hs⟩ =>
-      match iter_return k hπ j hj with
-      | ⟨r, hr⟩ =>
-        refine ⟨r + s, ?_⟩
-        rw [iterP_add π r s p, ← hs, ← iterP_succ π r j]
-        exact hr.symm
-
-/-- The cycle fold's invariant: the visited list counts as the
-cycles' flattening, is distinct, bounded and closed under the
-assignment, and every collected cycle is occupied, bounded, closed,
-and its members the head's iterates. -/
-private def cycInv (k : Nat) (π : List Nat)
-    (st : List (List Nat) × List Nat) : Prop :=
-  (∀ q, ground.countOf q st.2
-      = ground.countOf q (st.1.flatMap (fun c => c)))
-    ∧ (∀ q, ground.countOf q st.2 ≤ 1)
-    ∧ (∀ q, 0 < ground.countOf q st.2 → q < k)
-    ∧ (∀ q, 0 < ground.countOf q st.2 →
-        0 < ground.countOf (ground.getAt 0 π q) st.2)
-    ∧ (∀ c, 0 < ground.countOf c st.1 →
-        0 < c.length
-          ∧ (∀ p, 0 < ground.countOf p c → p < k)
-          ∧ (∀ p, 0 < ground.countOf p c →
-              0 < ground.countOf (ground.getAt 0 π p) c)
-          ∧ (∀ p, 0 < ground.countOf p c →
-              ∃ t, p = iterP π t (ground.getAt 0 c 0)))
-
-/-- The visited list is closed under the iterates. -/
-private theorem visited_iter (k : Nat) (π : List Nat)
-    {st : List (List Nat) × List Nat} (hinv : cycInv k π st) :
-    ∀ (s q : Nat), 0 < ground.countOf q st.2 →
-      0 < ground.countOf (iterP π s q) st.2 := by
-  intro s
-  induction s with
-  | zero => exact fun q hq => hq
-  | succ s ihs =>
-    intro q hq
-    exact hinv.2.2.2.1 _ (ihs q hq)
-
-/-- The fold's step keeps the invariant and grows the visited list
-onto the processed key: a walked key adds its whole orbit — fresh
-off the visited list, the return reading any met place back to the
-start against the guard. -/
-private theorem cycStep_pack (k : Nat) {π : List Nat}
-    (hπ : 0 < ground.countOf π (places.perms k))
-    (st : List (List Nat) × List Nat) (x : Nat) (hxk : x < k)
-    (hinv : cycInv k π st) :
-    cycInv k π (if 0 < ground.countOf x st.2 then st
-        else (st.1 ++ [places.cycGo π x k x], st.2 ++ places.cycGo π x k x))
-      ∧ (∀ q, 0 < ground.countOf q st.2 →
-          0 < ground.countOf q
-            (if 0 < ground.countOf x st.2 then st
-              else (st.1 ++ [places.cycGo π x k x],
-                st.2 ++ places.cycGo π x k x)).2)
-      ∧ 0 < ground.countOf x
-          (if 0 < ground.countOf x st.2 then st
-            else (st.1 ++ [places.cycGo π x k x], st.2 ++ places.cycGo π x k x)).2 := by
-  obtain ⟨i1, i2, i3, i4, i5⟩ := hinv
-  by_cases hx : 0 < ground.countOf x st.2
-  · rw [if_pos hx]
-    exact ⟨⟨i1, i2, i3, i4, i5⟩, fun q hq => hq, hx⟩
-  · rw [if_neg hx]
-    have hxf : ground.countOf x st.2 = 0 :=
-      match Nat.eq_zero_or_pos (ground.countOf x st.2) with
-      | .inl h => h
-      | .inr h => absurd h hx
-    obtain ⟨wa, wb, _, wd, we, wg, _⟩ := cycM_pack k hπ x k x []
-      hxk (fun _ => Nat.le_succ 0)
-      (fun z hz => absurd hz (Nat.lt_irrefl 0)) rfl rfl
-      (fun t ht => absurd (Nat.lt_of_succ_lt_succ ht)
-        (Nat.not_lt_zero t))
-      (Nat.le_refl k)
-    have hhead : ground.getAt 0 (places.cycGo π x k x) 0 = x := by
-      match k, hxk with
-      | k' + 1, _ => rfl
-    have hdisj : ∀ p, 0 < ground.countOf p (places.cycGo π x k x) →
-        ground.countOf p st.2 = 0 := by
-      intro p hp
-      match Nat.eq_zero_or_pos (ground.countOf p st.2) with
-      | .inl h => exact h
-      | .inr hpos =>
-        exfalso
-        match we p hp with
-        | ⟨t, hpt⟩ =>
-          match iter_back k hπ t x p hxk hpt with
-          | ⟨s, hxs⟩ =>
-            refine hx ?_
-            rw [hxs]
-            exact visited_iter k π ⟨i1, i2, i3, i4, i5⟩ s p hpos
-    have hclosure : ∀ p, 0 < ground.countOf p (places.cycGo π x k x) →
-        0 < ground.countOf (ground.getAt 0 π p) (places.cycGo π x k x) := by
-      intro p hp
-      match wb p hp with
-      | .inl hpi =>
-        rw [hpi]
-        exact wg
-      | .inr hpn => exact hpn
-    refine ⟨⟨?_, ?_, ?_, ?_, ?_⟩, ?_, ?_⟩
-    · intro q
-      show ground.countOf q (st.2 ++ places.cycGo π x k x) = _
-      rw [ground.countOf_append,
-        ground.flatMap_append (fun c => c) st.1 [places.cycGo π x k x],
-        ground.countOf_append, i1 q]
-      refine congrArg (Nat.add _) ?_
-      show ground.countOf q (places.cycGo π x k x)
-        = ground.countOf q (places.cycGo π x k x ++ [])
-      rw [ground.countOf_append]
-      exact (Nat.add_zero _).symm
-    · intro q
-      show ground.countOf q (st.2 ++ places.cycGo π x k x) ≤ 1
-      rw [ground.countOf_append]
-      match Nat.eq_zero_or_pos (ground.countOf q (places.cycGo π x k x)) with
-      | .inl hz =>
-        rw [hz, Nat.add_zero]
-        exact i2 q
-      | .inr hp =>
-        rw [hdisj q hp, Nat.zero_add]
-        exact wd q
-    · intro q hq
-      match ground.countOf_append_split q st.2 (places.cycGo π x k x) hq with
-      | .inl h => exact i3 q h
-      | .inr h => exact wa q h
-    · intro q hq
-      match ground.countOf_append_split q st.2 (places.cycGo π x k x) hq with
-      | .inl h => exact ground.countOf_append_left _ _ (i4 q h)
-      | .inr h => exact ground.countOf_append_right _ _ (hclosure q h)
-    · intro c hc
-      have hc' : 0 < ground.countOf c st.1
-          ∨ 0 < ground.countOf c [places.cycGo π x k x] :=
-        ground.countOf_append_split c st.1 [places.cycGo π x k x] hc
-      match hc' with
-      | .inl h => exact i5 c h
-      | .inr h =>
-        have hcx : c = places.cycGo π x k x := by
-          by_cases hce : c = places.cycGo π x k x
-          · exact hce
-          · have hz : ground.countOf c [places.cycGo π x k x] = 0 :=
-              ground.countOf_head_ne hce []
-            rw [hz] at h
-            exact absurd h (Nat.lt_irrefl 0)
-        rw [hcx]
-        refine ⟨ground.length_pos_of_countOf wg, wa, hclosure, ?_⟩
-        rw [hhead]
-        exact we
-    · intro q hq
-      exact ground.countOf_append_left _ _ hq
-    · exact ground.countOf_append_right _ st.2 wg
-
-/-- The cycle fold's pack over any key list within the range: the
-invariant rides the fold, the visited list only grows, and every
-processed key lands in it. -/
-private theorem cyclesFold_pack (k : Nat) {π : List Nat}
-    (hπ : 0 < ground.countOf π (places.perms k)) :
-    ∀ (l : List Nat) (st : List (List Nat) × List Nat),
-      (∀ x, 0 < ground.countOf x l → x < k) →
-      cycInv k π st →
-      cycInv k π (l.foldl (fun st i =>
-          if 0 < ground.countOf i st.2 then st
-          else (st.1 ++ [places.cycGo π i k i], st.2 ++ places.cycGo π i k i)) st)
-        ∧ (∀ q, 0 < ground.countOf q st.2 →
-            0 < ground.countOf q (l.foldl (fun st i =>
-              if 0 < ground.countOf i st.2 then st
-              else (st.1 ++ [places.cycGo π i k i],
-                st.2 ++ places.cycGo π i k i)) st).2)
-        ∧ (∀ q, 0 < ground.countOf q l →
-            0 < ground.countOf q (l.foldl (fun st i =>
-              if 0 < ground.countOf i st.2 then st
-              else (st.1 ++ [places.cycGo π i k i],
-                st.2 ++ places.cycGo π i k i)) st).2)
-  | [], st, _, hinv =>
-    ⟨hinv, fun _ hq => hq, fun q hq => absurd hq (Nat.lt_irrefl 0)⟩
-  | x :: l, st, hlk, hinv => by
-    have hxk : x < k := hlk x (by
-      rw [ground.countOf_head]
-      exact Nat.succ_pos _)
-    obtain ⟨sinv, sgrow, sx⟩ := cycStep_pack k hπ st x hxk hinv
-    obtain ⟨finv, fgrow, fcov⟩ := cyclesFold_pack k hπ l
-      (if 0 < ground.countOf x st.2 then st
-        else (st.1 ++ [places.cycGo π x k x], st.2 ++ places.cycGo π x k x))
-      (fun z hz => hlk z (ground.countOf_cons_pos hz)) sinv
-    refine ⟨finv, ?_, ?_⟩
-    · intro q hq
-      exact fgrow q (sgrow q hq)
-    · intro q hq
-      by_cases hqx : q = x
-      · rw [hqx]
-        exact fgrow x sx
-      · rw [ground.countOf_head_ne hqx] at hq
-        exact fcov q hq
-
-/-- The cycles' pack: `places.cyclesOf` at an enumeration member
-covers every place exactly once — the flattening distinct and the
-range covered — and each cycle is occupied, bounded, closed under
-the assignment, and its members the head's iterates. -/
-private theorem cycles_pack (k : Nat) {π : List Nat}
-    (hπ : 0 < ground.countOf π (places.perms k)) :
-    (∀ q, ground.countOf q
-        ((places.cyclesOf π).flatMap (fun c => c)) ≤ 1)
-      ∧ (∀ q, q < k →
-          0 < ground.countOf q
-            ((places.cyclesOf π).flatMap (fun c => c)))
-      ∧ (∀ c, 0 < ground.countOf c (places.cyclesOf π) →
-          0 < c.length
-            ∧ (∀ p, 0 < ground.countOf p c → p < k)
-            ∧ (∀ p, 0 < ground.countOf p c →
-                0 < ground.countOf (ground.getAt 0 π p) c)
-            ∧ (∀ p, 0 < ground.countOf p c →
-                ∃ t, p = iterP π t (ground.getAt 0 c 0))) := by
-  obtain ⟨hπlen, _, _, _⟩ := places.perm_member_reads hπ
-  have hread := cyclesOf_read π
-  rw [hπlen] at hread
-  obtain ⟨⟨f1, f2, _, _, f5⟩, _, fcov⟩ := cyclesFold_pack k hπ
-    (List.range k) (([], []) : List (List Nat) × List Nat)
-    (fun x hx => ground.ltOfMem hx)
-    ⟨fun _ => rfl, fun _ => Nat.le_succ 0,
-      fun _ hq => absurd hq (Nat.lt_irrefl 0),
-      fun _ hq => absurd hq (Nat.lt_irrefl 0),
-      fun _ hc => absurd hc (Nat.lt_irrefl 0)⟩
-  refine ⟨?_, ?_, ?_⟩
-  · intro q
-    rw [hread, ← f1 q]
-    exact f2 q
-  · intro q hq
-    rw [hread, ← f1 q]
-    exact fcov q (ground.countOf_range_pos hq)
-  · intro c hc
-    rw [hread] at hc
-    exact f5 c hc
-
 /-! The free-letter writer: one letter per cycle scattered over the
 cycle's places builds a fixed word, and the fixed words are exactly
 the writer's images over the choice enumeration — the choices read
@@ -3027,7 +2435,7 @@ back at the cycle heads. -/
 /-- The cycle writer: one letter set at every stated place. -/
 private def setAll : List Nat → Nat → List Nat → List Nat
   | [], _, w => w
-  | p :: c, a, w => setAll c a (elim.setRow w p a)
+  | p :: c, a, w => setAll c a (List.set w p a)
 
 /-- The cycle writer keeps the width. -/
 private theorem length_setAll :
@@ -3035,8 +2443,8 @@ private theorem length_setAll :
       (setAll c a w).length = w.length
   | [], _, _ => rfl
   | p :: c, a, w => by
-    show (setAll c a (elim.setRow w p a)).length = w.length
-    rw [length_setAll c a (elim.setRow w p a), elim.length_setRow]
+    show (setAll c a (List.set w p a)).length = w.length
+    rw [length_setAll c a (List.set w p a), ground.length_set]
 
 /-- Off the cycle the writer keeps the entries. -/
 private theorem getAt_setAll_off :
@@ -3055,9 +2463,9 @@ private theorem getAt_setAll_off :
       exact Nat.noConfusion hif
     have hpc : ground.countOf p c = 0 :=
       Nat.eq_zero_of_add_eq_zero_left hp'
-    show ground.getAt 0 (setAll c a (elim.setRow w q a)) p = _
-    rw [getAt_setAll_off c a (elim.setRow w q a) p hpc,
-      elim.getAt_setRow_ne 0 w q p a hpq]
+    show ground.getAt 0 (setAll c a (List.set w q a)) p = _
+    rw [getAt_setAll_off c a (List.set w q a) p hpc,
+      ground.getAt_set_ne 0 w q p a hpq]
 
 /-- On the cycle the writer reads its letter. -/
 private theorem getAt_setAll_mem :
@@ -3066,11 +2474,11 @@ private theorem getAt_setAll_mem :
       ground.getAt 0 (setAll c a w) p = a
   | [], _, _, _, hp, _ => absurd hp (Nat.lt_irrefl 0)
   | q :: c, a, w, p, hp, hw => by
-    show ground.getAt 0 (setAll c a (elim.setRow w q a)) p = a
+    show ground.getAt 0 (setAll c a (List.set w q a)) p = a
     match Nat.eq_zero_or_pos (ground.countOf p c) with
     | .inr hpc =>
-      exact getAt_setAll_mem c a (elim.setRow w q a) p hpc
-        (by rw [elim.length_setRow]; exact hw)
+      exact getAt_setAll_mem c a (List.set w q a) p hpc
+        (by rw [ground.length_set]; exact hw)
     | .inl hz =>
       have hpq : p = q := by
         by_cases hpq : p = q
@@ -3079,8 +2487,8 @@ private theorem getAt_setAll_mem :
             rw [ground.countOf_cons, if_neg hpq, hz]
           rw [h0] at hp
           exact absurd hp (Nat.lt_irrefl 0)
-      rw [getAt_setAll_off c a (elim.setRow w q a) p hz, hpq,
-        elim.getAt_setRow 0 a w q (by rw [← hpq]; exact hw)]
+      rw [getAt_setAll_off c a (List.set w q a) p hz, hpq,
+        ground.getAt_set_self 0 a w q (by rw [← hpq]; exact hw)]
 
 /-- The free-letter writer: each cycle's places set at its own
 choice over the seed. -/
@@ -3788,9 +3196,7 @@ private theorem flat_null (d k : Nat) (hd : 0 < d)
         (ground.getAt []
           (elim.idList (places.monomialsAt mu).length) q))
       p).oneValue ground.BPair.unit := by
-    refine elim.unitTail_getAt _ p hnull ?_
-    rw [elim.matVec_length]
-    exact hp
+    exact poly.getAt_unitTail hnull p
   rw [elim.getAt_matVec (T mu) _ p hp] at hentry
   have hrow := elim.dotN_idList_entry
     (places.monomialsAt mu).length (ground.getAt [] (T mu) p)

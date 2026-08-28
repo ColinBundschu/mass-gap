@@ -227,4 +227,14 @@ theorem dotP_sq_le (u v : List BPair) (h : u.length = v.length) :
       (leB_add (leB_refl (dotP u v * dotP u v))
         (unitLeOfSide (crossSq_side u v)))))
 
+/-- The squared pairing at the fold read: two matched lists' squared
+pairing sits at or below their self-pairings' product, `dotP_sq_le`
+read at the fold. -/
+theorem dotN_sq_le (u v : List BPair) (h : u.length = v.length) :
+    dotN u v * dotN u v ≤ dotN u u * dotN v v :=
+  ground.leB_congr
+    (BPair.oneValue_symm (BPair.mul_congr (dotN_read u v) (dotN_read u v)))
+    (BPair.oneValue_symm (BPair.mul_congr (dotN_read u u) (dotN_read v v)))
+    (ground.leB_of_not_lt (dotP_sq_le u v h))
+
 end coeff

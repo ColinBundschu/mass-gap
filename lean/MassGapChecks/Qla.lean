@@ -9,7 +9,6 @@ with the exclusion's theorem route at a small support, the support
 binder's refusal at the winding string itself, and the occupancy
 conjunct's isolation at the vacant configuration.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground fusion adjchar qla

@@ -2,6 +2,9 @@ import MassGap.Certconstruct
 import MassGap.Rankstable
 import MassGap.Serstable
 import MassGap.Memberdata
+import MassGap.Divisorid
+import MassGap.Contactcell
+import MassGap.Flatstep
 /-!
 `lem:corner`'s corner count tier: toward the contact end the chain
 reads in the corner coordinate, the ray `[η² : 1]` at the scale
@@ -159,6 +162,79 @@ comparison `c³ ≤ 2bc² + a²c` off `c² + b² = 2bc + a²`
 (`level_drift`); and the rate's power close raises the drift
 comparison to the `q+1`-st power at the positive carrier's own fold
 (`ground.Pos.pow`) and cancels the scale's power (`rate_close`).
+
+The corner presentation tier carries the count's base as a
+two-variable pencil at `lem:cellcount`'s carrier: the height
+variable over the scale base, the base entry's scale polynomial
+`ed² M + en² (swap E)` at the keys nought and two against the
+seam's weight `en ed (swap G)` at key one (`cornerPP` at
+`split.ppzMat`).  Its double evaluation — the base at the scale
+point `[en : ed]` cleared at the square, the height at the
+balance-pair point — is the corner site (`cornerPP_eval`), so at
+the three data's stated orders the height-direction count of the
+evaluated presentation is the corner count itself
+(`cornerPP_count` at `cellcount.countAt`).  The cell's two located
+outputs read back at squares in the ray coordinate: the ray
+`[a : b]` sits in the extent `η₁ = [n₁ : d₁]` at the
+cross-multiplied comparison `a d₁² ≤ n₁² b` (`rayInExtent`), one
+value across the ray's representatives and across the extent's
+(`rayInExtent_ray`, `rayInExtent_ext`), and a level clears the
+floor at the level's square against the weight product at the
+floor's square (`levelClears`), which at the ray's scale tie and
+the cofactor `λ = β (η η′)` is the height against the floor
+(`level_height`).
+
+The frontier's cutoff at the scale: the scale key is the least
+natural whose `4η²` multiple clears the dimension fold against the
+window's top level and the clearance (`scaleKey`, with `scaleKey_ge`
+its own witness and `scaleKey_least` the minimality), and at that
+comparison the seed floor clears every window level at once — a
+frontier Casimir at or beyond the key and a level at or below the
+top clear by the clearance (`seedClears`).  The rate composition
+assembles one scale's data: the located drift's margin domination
+at the assembled level and cap, the bracket's two sides and the
+atoms' positive ties close the displayed rate
+`g(σ)^{q+1} ≤ C_g^{q+1} σ` at the power carrier (`corner_rate` at
+`level_drift` and `rate_close`), one cross-multiplied comparison
+per scale.  The join read at the count carrier closes the drift's
+own datum: the drift is the head's first occupied level, the count
+vacant at every level below it, and the monotone count read holds
+that level at or below the occupied margin
+(`certconstruct.count_below_occupied`); at the committed reads the
+cross-added level order is the drift comparison, the gap's
+numerator against the assembled margin at the cap's shift with the
+shared grading weight cancelling (`drift_margin`).
+
+The presentation's height section substitutes the height variable
+first, leaving the pencil's polynomial matrix in the scale variable
+alone (`cornerAtHeight` at `poly.pevalC`); the scale's own cleared
+evaluation of that section is the corner site again
+(`cornerAtHeight_eval`), so the two substitution orders read one
+matrix and the section is `thm:decimation`'s emitted record's own
+carrier.
+
+The extent and the floor: the corner divisor is `thm:divisorid`'s
+crossing read at the presentation's committed split, and an
+occupied corner divisor holds the origin at its least occupied
+degree (the height's weight carries one scale power), so the
+extent brackets the first positive root at the withdrawal — the
+vacant leading keys at the stated degree, the cofactor's constant
+occupied, and `lem:contactcell`'s bracket shape at the withdrawn
+cofactor (`extentRead`).  The floor is the flat step's height extent: the
+seam levels' window is the corner counts' at the heights, the
+scale factor withdrawing from the order (`corner_flat` at
+`corner_dual` twice with the strict cancellation).
+
+The record ties the families at committed data: the cells at their
+counted samples with the frontier's comparison bound and the
+pencil determinant's jump, the decimation's own jump divisors at
+the substitution (`decimation.DivRecord` at the height section),
+the deck family at the walk's base reads with its vacant-direction
+segment count, the tension family's unit-class drop at the matched
+stencil, the t-section at the band's own segment count
+(`deckfactor.bandClear`), and the rank direction at the member-key
+count's stability (`xfusion.c1_eq`), the batteries the reads'
+whole verification.
 -/
 
 namespace corner
@@ -597,17 +673,6 @@ top-root cap at `⟨mx : my⟩`; the drift's join is the members' own,
 `g = ⟨x + sd·mx : y + sd·my⟩` against the `sd`-cleared magnetic
 read. -/
 
-/-- The one-member site is additive in the ground datum: the summed
-datum's site is the two sites' own sum. -/
-private theorem ofPos_add (a b : Pos) :
-    (BPair.ofPos (a + b)).oneValue (BPair.ofPos a + BPair.ofPos b) := by
-  show a + b + Pos.one + (Pos.one + Pos.one)
-    = a + Pos.one + (b + Pos.one) + Pos.one
-  rw [ground.add_add_comm a Pos.one b Pos.one,
-    ground.add_assoc (a + b) Pos.one (Pos.one + Pos.one),
-    ground.add_assoc (a + b) (Pos.one + Pos.one) Pos.one,
-    ground.add_assoc Pos.one Pos.one Pos.one]
-
 /-- The contact drift: at the dual representative's ground identity
 — the cleared pencil's quadratic read at the level `⟨x:y⟩` — with
 the magnetic form at or below the top root `⟨mx:my⟩` of `(M:G)` on
@@ -684,14 +749,14 @@ theorem drift_cap {o : Nat} (E M G : Mat) (psi : List BPair)
           + BPair.ofPos (sd * my) * inertia.quadForm G psi)) := by
     refine BPair.oneValue_trans
       (BPair.add_congr (BPair.oneValue_refl _)
-        (BPair.mul_congr_left (ofPos_add y (sd * my)))) ?_
+        (BPair.mul_congr_left (BPair.ofPos_add y (sd * my)))) ?_
     rw [BPair.right_distrib, ← BPair.add_assoc, ← BPair.add_assoc]
     exact BPair.add_congr hid (BPair.oneValue_refl _)
   have hgoalR : (BPair.ofPos x * inertia.quadForm G psi
         + BPair.ofPos (sd * mx) * inertia.quadForm G psi).oneValue
       (BPair.ofPos (x + sd * mx) * inertia.quadForm G psi) := by
     rw [← BPair.right_distrib]
-    exact BPair.mul_congr_left (BPair.oneValue_symm (ofPos_add x (sd * mx)))
+    exact BPair.mul_congr_left (BPair.oneValue_symm (BPair.ofPos_add x (sd * mx)))
   exact ground.leB_congr (BPair.oneValue_symm hgoalL) hgoalR
     (ground.leB_add (ground.leB_refl _) hC)
 
@@ -884,17 +949,6 @@ theorem coeffSum_le : ∀ (t : gentable.Table) (m : List Nat),
   · intro i hi
     exact cveeRead_pos t hc i (Nat.lt_of_lt_of_le hi hlen)
 
-/-- The occupancy window is one entry per key. -/
-private theorem ind_len (l a b : Nat) : (sertables.ind l a b).length = l :=
-  ground.length_mapRange _ l
-
-/-- The occupancy window's entry: one on the keys of the stated
-interval, the count's unit off it. -/
-private theorem ind_read (l a b i : Nat) (h : i < l) :
-    ground.getAt 0 (sertables.ind l a b) i
-      = if a ≤ i && i < b then 1 else 0 :=
-  mapRange_read 0 (fun k => if a ≤ k && k < b then 1 else 0) l i h
-
 /-- The `B` table's highest-root fold at a key: the head window
 joined to the doubled tail window. -/
 private theorem thetaB_read (l i : Nat) (h : i < l) :
@@ -902,8 +956,8 @@ private theorem thetaB_read (l i : Nat) (h : i < l) :
       = (if 0 ≤ i && i < 1 then 1 else 0)
         + ((if 1 ≤ i && i < l then 1 else 0)
           + (if 1 ≤ i && i < l then 1 else 0)) := by
-  have e1 : (sertables.ind l 0 1).length = l := ind_len l 0 1
-  have e2 : (sertables.ind l 1 l).length = l := ind_len l 1 l
+  have e1 : (sertables.ind l 0 1).length = l := sertables.ind_len l 0 1
+  have e2 : (sertables.ind l 1 l).length = l := sertables.ind_len l 1 l
   have e3 : (List.zipWith (fun a b => a + b) (sertables.ind l 1 l)
       (sertables.ind l 1 l)).length = l :=
     ground.length_zipWith _ _ _ l e2 e2
@@ -915,7 +969,7 @@ private theorem thetaB_read (l i : Nat) (h : i < l) :
         (by rw [e1]; exact h) (by rw [e3]; exact h),
     ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
         (by rw [e2]; exact h) (by rw [e2]; exact h),
-    ind_read l 0 1 i h, ind_read l 1 l i h]
+    sertables.ind_at l 0 1 i h, sertables.ind_at l 1 l i h]
 
 /-- The `C` table's highest-root fold at a key: the doubled
 leading window joined to the last key's own. -/
@@ -924,8 +978,8 @@ private theorem thetaC_read (l i : Nat) (h : i < l) :
       = ((if 0 ≤ i && i < l - 1 then 1 else 0)
           + (if 0 ≤ i && i < l - 1 then 1 else 0))
         + (if l - 1 ≤ i && i < l then 1 else 0) := by
-  have e1 : (sertables.ind l 0 (l - 1)).length = l := ind_len l 0 (l - 1)
-  have e2 : (sertables.ind l (l - 1) l).length = l := ind_len l (l - 1) l
+  have e1 : (sertables.ind l 0 (l - 1)).length = l := sertables.ind_len l 0 (l - 1)
+  have e2 : (sertables.ind l (l - 1) l).length = l := sertables.ind_len l (l - 1) l
   have e3 : (List.zipWith (fun a b => a + b) (sertables.ind l 0 (l - 1))
       (sertables.ind l 0 (l - 1))).length = l :=
     ground.length_zipWith _ _ _ l e1 e1
@@ -937,7 +991,7 @@ private theorem thetaC_read (l i : Nat) (h : i < l) :
         (by rw [e3]; exact h) (by rw [e2]; exact h),
     ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
         (by rw [e1]; exact h) (by rw [e1]; exact h),
-    ind_read l 0 (l - 1) i h, ind_read l (l - 1) l i h]
+    sertables.ind_at l 0 (l - 1) i h, sertables.ind_at l (l - 1) l i h]
 
 /-- The `D` table's highest-root fold at a key, past the fork
 rank: the head window, the doubled interior window and the last
@@ -953,9 +1007,9 @@ private theorem thetaD_read (l i : Nat) (h3 : 3 ≤ l) (h : i < l) :
     have he : 1 + 1 = l := ground.beqEqOf hb
     rw [← he] at h3
     exact absurd h3 (Nat.lt_irrefl 2)
-  have e1 : (sertables.ind l 0 1).length = l := ind_len l 0 1
-  have e2 : (sertables.ind l 1 (l - 2)).length = l := ind_len l 1 (l - 2)
-  have e4 : (sertables.ind l (l - 2) l).length = l := ind_len l (l - 2) l
+  have e1 : (sertables.ind l 0 1).length = l := sertables.ind_len l 0 1
+  have e2 : (sertables.ind l 1 (l - 2)).length = l := sertables.ind_len l 1 (l - 2)
+  have e4 : (sertables.ind l (l - 2) l).length = l := sertables.ind_len l (l - 2) l
   have e3 : (List.zipWith (fun a b => a + b) (sertables.ind l 1 (l - 2))
       (sertables.ind l 1 (l - 2))).length = l :=
     ground.length_zipWith _ _ _ l e2 e2
@@ -986,22 +1040,8 @@ private theorem thetaD_read (l i : Nat) (h3 : 3 ≤ l) (h : i < l) :
         (by rw [e3]; exact h) (by rw [e4]; exact h),
     ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
         (by rw [e2]; exact h) (by rw [e2]; exact h),
-    ind_read l 0 1 i h, ind_read l 1 (l - 2) i h,
-    ind_read l (l - 2) l i h]
-
-/-- The `B` table's length list at a key: one at the last key,
-two below it. -/
-private theorem lenB_read (l i : Nat) (h : i < l) :
-    ground.getAt 0 (sertables.tableB l).lenNums i
-      = if i + 1 == l then 1 else 2 :=
-  mapRange_read 0 (fun k => if k + 1 == l then 1 else 2) l i h
-
-/-- The `C` table's length list at a key: two at the last key,
-one below it. -/
-private theorem lenC_read (l i : Nat) (h : i < l) :
-    ground.getAt 0 (sertables.tableC l).lenNums i
-      = if i + 1 == l then 2 else 1 :=
-  mapRange_read 0 (fun k => if k + 1 == l then 2 else 1) l i h
+    sertables.ind_at l 0 1 i h, sertables.ind_at l 1 (l - 2) i h,
+    sertables.ind_at l (l - 2) l i h]
 
 /-- The `A` table's halved summands, the displayed closed form in
 the rank: one at every key. -/
@@ -1032,7 +1072,7 @@ theorem cvee_B : ∀ l : Nat, 2 ≤ l → cvee (sertables.tableB l)
   · intro i hi
     rw [cvee_len (sertables.tableB l), hrk] at hi
     rw [mapRange_read 0 _ l i hi, cvee_entry (sertables.tableB l) i hi,
-      thetaB_read l i hi, lenB_read l i hi,
+      thetaB_read l i hi, sertables.lensB_at l i hi,
       show (sertables.tableB l).lenDen = 1 from rfl]
     match i, hi with
     | 0, _ =>
@@ -1064,7 +1104,7 @@ theorem cvee_C : ∀ l : Nat,
   · intro i hi
     rw [cvee_len (sertables.tableC l), hrk] at hi
     rw [cvee_entry (sertables.tableC l) i hi, thetaC_read l i hi,
-      lenC_read l i hi, ground.getAt_replicate 0 1 l i hi,
+      sertables.lensC_at l i hi, ground.getAt_replicate 0 1 l i hi,
       show (sertables.tableC l).lenDen = 1 from rfl]
     by_cases he : i + 1 = l
     · have hl1 : l - 1 = i := by
@@ -1138,14 +1178,6 @@ theorem cvee_D : ∀ l : Nat, 3 ≤ l → cvee (sertables.tableD l)
         show (0 + ((1 + 1) + 0)) * 2 / (2 * 1) = 2
         exact rfl
 
-/-- A sorted word reads at or below its entry at any earlier
-key. -/
-private theorem descMono (W : List Nat)
-    (hs : ∀ i, ground.getAt 0 W (i + 1) ≤ ground.getAt 0 W i) (s : Nat) :
-    ∀ k, ground.getAt 0 W (s + k) ≤ ground.getAt 0 W s
-  | 0 => Nat.le_refl _
-  | k + 1 => Nat.le_trans (hs (s + k)) (descMono W hs s k)
-
 /-- The sorted word's consecutive gaps telescope from a stated
 key: the collected gaps are the outer gap. -/
 private theorem tele (W : List Nat)
@@ -1164,7 +1196,7 @@ private theorem tele (W : List Nat)
         + ((ground.getAt 0 W (s + k) - ground.getAt 0 W (s + k + 1)) + 0)
       = ground.getAt 0 W s - ground.getAt 0 W (s + (k + 1))
     rw [Nat.add_zero, tele W hs s k]
-    exact ground.subJoin (hs (s + k)) (descMono W hs s k)
+    exact ground.subJoin (hs (s + k)) (ground.descChain W hs s k)
 
 /-- The gap telescope from the head key. -/
 private theorem tele0 (W : List Nat)
@@ -1177,17 +1209,6 @@ private theorem tele0 (W : List Nat)
       (fun j => ground.getAt 0 W (0 + j) - ground.getAt 0 W (0 + j + 1))
       (fun j => by rw [Nat.zero_add]) (List.range k),
     tele W hs 0 k, Nat.zero_add]
-
-/-- A range fold splits off its head key. -/
-private theorem rangePeel (F : Nat → Nat) (n : Nat) :
-    ground.famFold Nat.add 0 F (List.range (n + 1))
-      = F 0 + ground.famFold Nat.add 0 (fun j => F (j + 1))
-          (List.range n) := by
-  rw [ground.range_cons n]
-  show F 0 + ground.famFold Nat.add 0 F
-      ((List.range n).map (fun j => j + 1))
-    = F 0 + ground.famFold Nat.add 0 (fun j => F (j + 1)) (List.range n)
-  rw [ground.famFold_map Nat.add 0 F (fun j => j + 1)]
 
 /-- The key at a member, read as a range fold of the word's gaps
 against the halved summands. -/
@@ -1283,7 +1304,7 @@ theorem grade_member_B : ∀ (W : List Nat) (l : Nat),
   | 1, hcl =>
     have hz1 : ∀ k, 1 ≤ k → ground.getAt 0 W k = 0 := fun k hk =>
       ground.getAt_over 0 W k (Nat.le_trans hcl hk)
-    have hc1 : cvee (sertables.tableB 1) = [0] := by decide
+    have hc1 : cvee (sertables.tableB 1) = [0] := by decide +kernel
     show ground.dotNat (serstable.member W 1)
       (cvee (sertables.tableB 1)) = _
     rw [hc1, hz1 1 (Nat.le_refl 1)]
@@ -1323,8 +1344,8 @@ theorem grade_member_B : ∀ (W : List Nat) (l : Nat),
       exact rfl
     have hcb : ground.getAt 0 W (m + 1) ≤ ground.getAt 0 W 1 := by
       rw [Nat.add_comm m 1]
-      exact descMono W hs 1 m
-    rw [grade_indexB W m, rangePeel _ (m + 1), ground.range_succ m,
+      exact ground.descChain W hs 1 m
+    rw [grade_indexB W m, ground.famFold_range_cons Nat.add 0 _ (m + 1), ground.range_succ m,
       ground.famFold_snoc _ (List.range m) m, hmid,
       ground.famFold_mulR 2 _ (List.range m), tele W hs 1 m, hgm,
       Nat.add_comm 1 m]
@@ -1378,7 +1399,7 @@ theorem grade_member_D : ∀ (W : List Nat) (l : Nat),
   | 2, hcl, _ =>
     have hz2 : ∀ k, 2 ≤ k → ground.getAt 0 W k = 0 := fun k hk =>
       ground.getAt_over 0 W k (Nat.le_trans hcl hk)
-    have hc2 : cvee (sertables.tableD 2) = [0, 1] := by decide
+    have hc2 : cvee (sertables.tableD 2) = [0, 1] := by decide +kernel
     show ground.dotNat (serstable.member W 2)
       (cvee (sertables.tableD 2)) = _
     rw [hc2]
@@ -1431,8 +1452,8 @@ theorem grade_member_D : ∀ (W : List Nat) (l : Nat),
       exact rfl
     have hcb : ground.getAt 0 W (m + 1) ≤ ground.getAt 0 W 1 := by
       rw [Nat.add_comm m 1]
-      exact descMono W hs 1 m
-    rw [grade_indexD W m, rangePeel _ (m + 2), ground.range_succ (m + 1),
+      exact ground.descChain W hs 1 m
+    rw [grade_indexD W m, ground.famFold_range_cons Nat.add 0 _ (m + 2), ground.range_succ (m + 1),
       ground.famFold_snoc _ (List.range (m + 1)) (m + 1),
       ground.range_succ m, ground.famFold_snoc _ (List.range m) m,
       hmid, ground.famFold_mulR 2 _ (List.range m), tele W hs 1 m,
@@ -1446,13 +1467,6 @@ theorem grade_member_D : ∀ (W : List Nat) (l : Nat),
         - ground.getAt 0 W (m + 1)
     exact keyJoinD (hs (m + 1)) hcb (hs 0)
 
-/-- A join's leading part at the first side's count is that
-side. -/
-private theorem takeLen : ∀ (u v : List Nat),
-    List.take u.length (u ++ v) = u
-  | [], _ => rfl
-  | a :: u, v => congrArg (List.cons a) (takeLen u v)
-
 /-- The `A` key at a shape split off its last member: the
 prefix's total. -/
 private theorem gradeA_snoc (s : places.Shape) (x : Nat) :
@@ -1461,17 +1475,7 @@ private theorem gradeA_snoc (s : places.Shape) (x : Nat) :
     = ground.sumNat s
   rw [ground.length_append s [x]]
   show ground.sumNat (List.take s.length (s ++ [x])) = ground.sumNat s
-  rw [takeLen s [x]]
-
-/-- The full columns join at the split-off last member. -/
-private theorem addFullsSnoc (m : Nat) (s : places.Shape) (x : Nat) :
-    labels.addFulls m (s ++ [x]) = s ++ [x + m] := by
-  show (match (s ++ [x]).reverse with
-    | [] => []
-    | a :: t => ((a + m) :: t).reverse) = s ++ [x + m]
-  rw [ground.reverse_snoc s x]
-  show ((x + m) :: s.reverse).reverse = s ++ [x + m]
-  rw [ground.reverse_cons (x + m) s.reverse, ground.reverse_reverse s]
+  rw [ground.take_append_self s [x]]
 
 /-- The full-column key's occupancy moves off the read: one value
 per label. -/
@@ -1481,7 +1485,7 @@ theorem gradeA_fulls : ∀ (m : Nat) (s : places.Shape),
   | m, x :: t => by
     match ground.snoc_split t.length (x :: t) rfl with
     | ⟨s', a, hsq, _⟩ =>
-      rw [hsq, addFullsSnoc m s' a, gradeA_snoc s' (a + m),
+      rw [hsq, labels.addFulls_snoc m s' a, gradeA_snoc s' (a + m),
         gradeA_snoc s' a]
 
 /-- The reduction keeps the key, the same read. -/
@@ -1726,12 +1730,6 @@ private theorem rowKey_scale (t : gentable.Table)
       (shapeAt t hs).2.1 i))
     (BPair.oneValue_refl _)
 
-/-- An occupied count sits strictly above the sum's unit. -/
-private theorem unitLtNat : ∀ n : Nat, 0 < n →
-    BPair.unit < BPair.ofNat n
-  | 0, h => absurd h (Nat.lt_irrefl 0)
-  | n + 1, _ => ground.unitLtOfPos (ground.posOfSucc n)
-
 /-- The halved second member is occupied at an occupied key count:
 a vacant divisor truncates the first halved summand off its stated
 occupancy. -/
@@ -1758,7 +1756,7 @@ private theorem rowKey_unit (t : gentable.Table)
       (BPair.oneValue_symm (rowKey_scale t hs hsym hc i hi))
       (ground.unitLeMul (thetaDom_at t hdom i hi) (ground.unitLeOfNat _))
   refine ground.leB_unscale
-    (unitLtNat _ (denPos t hc (Nat.lt_of_le_of_lt (Nat.zero_le i) hi))) ?_
+    (unitLtNat (denPos t hc (Nat.lt_of_le_of_lt (Nat.zero_le i) hi))) ?_
   exact ground.leB_congr_left (BPair.oneValue_symm (BPair.unit_mul _)) h1
 
 /-- The key fold at any natural fold sits at or beyond the sum's
@@ -1857,7 +1855,7 @@ theorem posGrade_cap : ∀ (t : gentable.Table) (j : Nat),
             (posRow_len t hs j hj) (shapeAt t hs).1))) ?_
       exact BPair.sum_map _ (List.range t.rank)
     have hD : BPair.unit < BPair.ofNat (2 * t.lenDen) :=
-      unitLtNat _ (denPos t hc hrp)
+      unitLtNat (denPos t hc hrp)
     have hmono : foldKey t (ground.getAt ([] : List Nat) t.posFolds j)
         ≤ foldKey t t.thetaFold :=
       foldKey_mono t hs hsym hc hdom _
@@ -2080,7 +2078,7 @@ private theorem ltAddPos {a b c : Nat} (h : a ≤ b) (hc : 1 ≤ c) :
 /-- The doubled count sits at or below its square joined to the
 count's unit: the gap's own square. -/
 private theorem sqCap : ∀ K : Nat, 2 * K ≤ K * K + 1
-  | 0 => by decide
+  | 0 => by decide +kernel
   | s + 1 => by
     show 2 * (s + 1) ≤ (s + 1) * (s + 1) + 1
     rw [ground.sqJoin s, Nat.left_distrib s s 2, Nat.mul_comm s 2,
@@ -2091,7 +2089,7 @@ private theorem sqCap : ∀ K : Nat, 2 * K ≤ K * K + 1
 private theorem headBound (W : List Nat)
     (hs : ∀ i, ground.getAt 0 W (i + 1) ≤ ground.getAt 0 W i)
     (i : Nat) : ground.getAt 0 W i ≤ ground.getAt 0 W 0 := by
-  have h := descMono W hs 0 i
+  have h := ground.descChain W hs 0 i
   rw [Nat.zero_add] at h
   exact h
 
@@ -2203,7 +2201,7 @@ theorem casCap_B : ∀ (W : List Nat) (l : Nat),
     exact h0
   have h2 : 2 * (l - (i + 1)) + 1 ≤ 2 * (l - (i + 1) + 1) := by
     rw [Nat.left_distrib 2 (l - (i + 1)) 1, Nat.mul_one]
-    exact Nat.add_le_add_left (by decide) (2 * (l - (i + 1)))
+    exact Nat.add_le_add_left (by decide +kernel) (2 * (l - (i + 1)))
   exact Nat.le_trans h2 (Nat.mul_le_mul_left 2 hq)
 
 /-- The `C` series' coordinate route: the rows' magnitudes at or
@@ -2541,14 +2539,6 @@ private theorem dotP_scaleN : ∀ (u : List BPair) (a : List Nat) (F : Nat),
       (ground.leB_mul_mono (ground.unitLeOfNat b) (ground.unitLeOfNat F)
         (h 0 (Nat.succ_pos _)) (ground.leB_refl _))
 
-/-- The matrix-against-content read at a row key: the row's
-skipping fold against the content. -/
-private theorem matVec_read (G : elim.Mat) (y : List BPair) (j : Nat)
-    (hj : j < G.length) :
-    ground.getAt BPair.unit (elim.matVec G y) j
-      = elim.dotN (ground.getAt [] G j) y :=
-  ground.getAt_map ([] : List BPair) BPair.unit _ G j hj
-
 /-- The cap's strict count step: a value at or below the cleared
 product sits below `(FN + RN)(g² + 1)` at an occupied base, the
 doubled cross term priced by the key's square. -/
@@ -2641,18 +2631,18 @@ theorem c2M_cap : ∀ (t : gentable.Table) (G : elim.Mat)
             (elim.vecAdd (sertables.rhoV t) (sertables.rhoV t)))) j := by
     intro j hj
     rw [hmv] at hj
-    rw [matVec_read G _ j (by rw [hG]; exact hj)]
+    rw [elim.getAt_matVec G _ j (by rw [hG]; exact hj)]
     exact ground.leB_congr_right
-      (BPair.oneValue_symm (elim.dotN_dotP _ _)) (hrowU j hj)
+      (BPair.oneValue_symm (elim.dotN_read _ _)) (hrowU j hj)
   have hmvC : ∀ j, j < m.length → ground.getAt BPair.unit
       (elim.matVec G (elim.vecAdd (memberdata.natV m)
         (elim.vecAdd (sertables.rhoV t) (sertables.rhoV t)))) j
       ≤ BPair.ofNat (FN * ground.sumNat m + (RN + RN)) := by
     intro j hj
     rw [hm] at hj
-    rw [matVec_read G _ j (by rw [hG]; exact hj)]
+    rw [elim.getAt_matVec G _ j (by rw [hG]; exact hj)]
     exact ground.leB_congr_left
-      (BPair.oneValue_symm (elim.dotN_dotP _ _)) (hrowC j hj)
+      (BPair.oneValue_symm (elim.dotN_read _ _)) (hrowC j hj)
   have hvU : BPair.unit ≤ elim.dotP (elim.matVec G
       (elim.vecAdd (memberdata.natV m)
         (elim.vecAdd (sertables.rhoV t) (sertables.rhoV t))))
@@ -2767,14 +2757,6 @@ private theorem dotGeAt : ∀ (m Y : List Nat), m.length ≤ Y.length →
         (Nat.lt_of_succ_lt_succ hi))
       (Nat.le_add_left _ _)
 
-/-- The componentwise walk stops at its shorter side. -/
-private theorem lenZipLe {α β γ : Type} (f : α → β → γ) :
-    ∀ (u : List α) (v : List β),
-      (List.zipWith f u v).length ≤ u.length
-  | [], _ => Nat.le_refl 0
-  | _ :: _, [] => Nat.zero_le _
-  | _ :: u, _ :: v => Nat.succ_le_succ (lenZipLe f u v)
-
 /-- The pairing is monotone in its first family at the entries the
 second family reads. -/
 private theorem dotNatMonoL : ∀ (X X' Y : List Nat),
@@ -2811,7 +2793,7 @@ theorem gapAt_le : ∀ (t : gentable.Table) (v : List Nat) (j : Nat),
   refine dotNatMonoL _ _ _ (fun i hi => ?_)
   exact thetaTop_at t h j hj i
     (Nat.lt_of_lt_of_le hi
-      (Nat.le_trans (lenZipLe Nat.mul t.lenNums v)
+      (Nat.le_trans (ground.length_zipWith_le Nat.mul t.lenNums v)
         (Nat.le_of_eq (lenNums_len t hs))))
 
 /-- A mapped family's total sits at or below the count scaled by a
@@ -4253,7 +4235,7 @@ private theorem rowNat (o : Nat) (G : Nat → Nat) (v : Nat → Nat) :
       (ground.BPair.ofNat
         (ground.famFold Nat.add 0 (fun j => G j * v j)
           (List.range o))) := by
-  refine BPair.oneValue_trans (elim.dotN_dotP _ _) ?_
+  refine BPair.oneValue_trans (elim.dotN_read _ _) ?_
   rw [elim.dotP_map_pair (fun j => ground.BPair.ofNat (G j))
     (fun j => ground.BPair.ofNat (v j)) (List.range o)]
   refine BPair.oneValue_symm ?_
@@ -4291,7 +4273,7 @@ private theorem quadNat (o : Nat) (F : Nat → Nat → Nat)
             ((List.range o).map
               (fun i => ground.BPair.ofNat (v i)))) from
     ground.map_map _ _ (List.range o)]
-  refine BPair.oneValue_trans (elim.dotN_dotP _ _) ?_
+  refine BPair.oneValue_trans (elim.dotN_read _ _) ?_
   rw [elim.dotP_map_pair (fun i => ground.BPair.ofNat (v i))
     (fun i => elim.dotN ((List.range o).map
         (fun j => ground.BPair.ofNat (F i j)))
@@ -4915,12 +4897,12 @@ theorem family_ground {o : Nat}
         (trialVec o twoN a c dR gR) :=
     BPair.lt_congr (BPair.oneValue_refl _)
       (BPair.oneValue_symm hG1)
-      (unitLtNat (pairFold o twoN a c dR gR) hPpos)
+      (unitLtNat hPpos)
   refine BPair.lt_congr (BPair.oneValue_refl _) ?_
     (ground.ltB_addPos
       (ground.unitLtMul (ground.unitLtOfPos e) hQpos))
   rw [← BPair.right_distrib]
-  exact BPair.mul_congr_left (BPair.oneValue_symm (ofPos_add x e))
+  exact BPair.mul_congr_left (BPair.oneValue_symm (BPair.ofPos_add x e))
 
 /-- The gap's square identity at an ordered split: the whole's
 square joined to the gap's square reads the doubled cross term
@@ -5127,16 +5109,6 @@ theorem level_drift (p A KN KD dth sn sM a b c : Nat)
     (ground.prodOver (fun _ => 2) (List.range (2 * p + 4)))
     hB4 hC5 (sqJoinAB a b c hc) hbr
 
-/-- A shared right factor cancels off the ground order. -/
-private theorem posMulCancelR {a b c : ground.Pos}
-    (h : a * c ≤ b * c) : a ≤ b :=
-  match ground.trich a b with
-  | ground.Trich.eq e => Or.inl e
-  | ground.Trich.lt g hg => Or.inr ⟨g, hg⟩
-  | ground.Trich.gt g hg =>
-    absurd (ground.mul_lt_mul_right c
-      (show b < a from ⟨g, hg⟩)) (ground.posLtLe h)
-
 /-- The rate's power close: the drift below `C_g`'s multiple of the
 gap and the gap's power below the scale close the displayed
 comparison, one cross-multiplication (`lem:corner`'s
@@ -5150,7 +5122,7 @@ theorem rate_close (q1 : Nat) (gn gd Cg wn wd sn sd : ground.Pos)
     rw [← ground.Pos.pow_mul gn wd q1, ← ground.Pos.pow_mul Cg wn q1,
       ← ground.Pos.pow_mul (Cg * wn) gd q1]
     exact ground.Pos.pow_le hg q1
-  refine posMulCancelR (c := ground.Pos.pow wd q1) ?_
+  refine ground.le_of_mul_le (c := ground.Pos.pow wd q1) ?_
   refine ground.le_trans
     (show ground.Pos.pow gn q1 * sd * ground.Pos.pow wd q1
         ≤ ground.Pos.pow Cg q1 * ground.Pos.pow gd q1 * (ground.Pos.pow wn q1 * sd) from ?_) ?_
@@ -5175,5 +5147,1145 @@ theorem rate_close (q1 : Nat) (gn gd Cg wn wd sn sd : ground.Pos)
         (ground.Pos.pow wd q1),
       ground.mul_comm (ground.Pos.pow Cg q1) sn,
       ground.mul_comm (ground.Pos.pow gd q1) (ground.Pos.pow wd q1)]
+
+/-! `lem:corner`'s corner presentation at the two-variable pencil:
+the height variable over the scale base, the base entry the scale
+polynomial `ed² M + en² (swap E)` at the keys nought and two, the
+seam's weight `en ed (swap G)` at key one, and the pencil
+`Z(x) = x (en ed G) - (ed² M + en² swap E)` the outer pair's site
+datum over those coefficients (`baseSite`, `heightWeight`,
+`cornerPP` at `split.ppzMat`).  The double evaluation reads the
+corner site — the base at the scale point `[en : ed]` cleared at
+the square, the height at the balance-pair point `⟨η′₊ : η′₋⟩`,
+one matrix identity (`cornerPP_eval`) — so at the three data'
+stated orders the height-direction count of the evaluated
+presentation is the corner count itself (`cornerPP_count` at
+`lem:cellcount`'s `countAt`). -/
+
+/-- The corner pencil's base matrix: per entry the scale
+polynomial `ed^2 M + en^2 (swap E)` at keys 0 and 2, the pencil's
+own base presentation. -/
+private def baseSite (E M : Mat) : split.PMat :=
+  List.zipWith (List.zipWith (fun e m =>
+    [m, ground.BPair.unit, ground.BPair.swap e])) E M
+
+/-- The height's weight matrix: per entry the scale polynomial
+`en ed (swap G)` at key 1, the gram's seam weight. -/
+private def heightWeight (G : Mat) : split.PMat :=
+  G.map (fun r => r.map (fun g =>
+    [ground.BPair.unit, ground.BPair.swap g]))
+
+/-- The corner presentation: the two-variable pencil at the height
+variable over the scale base, `Z(x) = x (en ed G) - (ed^2 M
++ en^2 swap E)` at the cleared base display (`lem:corner`'s
+polynomial-pair head entries at the substitution). -/
+def cornerPP (E M G : Mat) : split.PPMat :=
+  split.ppzMat (baseSite E M) (heightWeight G)
+
+/-- A one-member site's square is the ground square's own site. -/
+private theorem bpowSq (a : Pos) :
+    (ground.bpow (BPair.ofPos a) 2).oneValue (BPair.ofPos (a * a)) := by
+  have hp : Pos.pow a 2 = a * a := Pos.pow_two a
+  have h := ground.ofPos_pow a 2
+  rw [hp] at h
+  exact BPair.oneValue_symm h
+
+/-- The height pair against the seam weight's swapped scaling: the
+pair's two members distribute onto the weight's two sides, the
+lower member on the datum and the upper on its swap. -/
+private theorem seamHeight (g : BPair) (en ed hp hm : Pos) :
+    ((⟨hp, hm⟩ : BPair) * (g.scale (en * ed)).swap).oneValue
+      (g.scale (en * ed * hm) + (g.scale (en * ed * hp)).swap) := by
+  refine BPair.oneValue_trans
+    (BPair.mul_congr_left (BPair.mk_read hp hm)) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq (BPair.right_distrib (BPair.ofPos hp)
+      (BPair.ofPos hm).swap (g.scale (en * ed)).swap)) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq
+      (BPair.add_comm (BPair.ofPos hp * (g.scale (en * ed)).swap)
+        ((BPair.ofPos hm).swap * (g.scale (en * ed)).swap))) ?_
+  refine BPair.add_congr ?_ ?_
+  · refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq
+        (BPair.swap_mul (BPair.ofPos hm) (g.scale (en * ed)).swap)) ?_
+    refine BPair.oneValue_trans
+      (ground.swap_congr
+        (BPair.ofPos_scale hm (g.scale (en * ed)).swap)) ?_
+    exact BPair.oneValue_of_eq
+      (congrArg BPair.swap
+        (congrArg BPair.swap (BPair.scale_scale g (en * ed) hm)))
+  · refine BPair.oneValue_trans
+      (BPair.ofPos_scale hp (g.scale (en * ed)).swap) ?_
+    exact BPair.oneValue_of_eq
+      (congrArg BPair.swap (BPair.scale_scale g (en * ed) hp))
+
+/-- The presentation's entry at the double evaluation: the base
+entry's two surviving keys read `en^2 e` against `ed^2 m` at the
+scale point and the seam weight reads `en ed (swap g)`, the height
+pair distributing its two members onto the two sides — the corner
+site's entry. -/
+private theorem cornerEntry (e m g : BPair) (en ed hp hm : Pos) :
+    (poly.evalClear
+        [poly.evalClear (poly.neg [m, BPair.unit, BPair.swap e])
+            (BPair.ofPos en) ed 2,
+          poly.evalClear [BPair.unit, BPair.swap g]
+            (BPair.ofPos en) ed 2]
+        ⟨hp, hm⟩ Pos.one 1).oneValue
+      (e.scale (en * en) + g.scale (en * ed * hm)
+        + (m.scale (ed * ed) + g.scale (en * ed * hp)).swap) := by
+  have hb : (poly.evalClear (poly.neg [m, BPair.unit, BPair.swap e])
+      (BPair.ofPos en) ed 2).oneValue
+      ((m.scale (ed * ed)).swap + e.scale (en * en)) := by
+    refine BPair.oneValue_trans
+      (poly.evalClear_ends m.swap e [BPair.unit]
+        ⟨BPair.oneValue_refl BPair.unit, trivial⟩
+        (BPair.ofPos en) ed) ?_
+    exact BPair.add_congr
+      (BPair.oneValue_trans (BPair.mul_congr_left (bpowSq ed))
+        (BPair.ofPos_scale (ed * ed) m.swap))
+      (BPair.oneValue_trans (BPair.mul_congr_left (bpowSq en))
+        (BPair.ofPos_scale (en * en) e))
+  have hh : (poly.evalClear [BPair.unit, BPair.swap g]
+      (BPair.ofPos en) ed 2).oneValue ((g.scale (en * ed)).swap) := by
+    have h0 : (BPair.unit * ground.bpow (BPair.ofPos en) 0
+        * ground.bpow (BPair.ofPos ed) 2).oneValue BPair.unit :=
+      BPair.oneValue_trans
+        (BPair.mul_congr_left (BPair.unit_mul _)) (BPair.unit_mul _)
+    have h1 : (BPair.swap g * ground.bpow (BPair.ofPos en) 1
+        * ground.bpow (BPair.ofPos ed) 1).oneValue
+        ((g.scale (en * ed)).swap) := by
+      refine BPair.oneValue_trans
+        (BPair.mul_congr
+          (BPair.mul_congr (BPair.oneValue_refl g.swap) (bpow_one_read _))
+          (bpow_one_read _)) ?_
+      refine BPair.oneValue_trans
+        (BPair.mul_congr_left (BPair.oneValue_of_eq
+          (BPair.mul_comm g.swap (BPair.ofPos en)))) ?_
+      refine BPair.oneValue_trans
+        (BPair.mul_congr_left (BPair.ofPos_scale en g.swap)) ?_
+      refine BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.mul_comm (g.swap.scale en)
+          (BPair.ofPos ed))) ?_
+      refine BPair.oneValue_trans
+        (BPair.ofPos_scale ed (g.swap.scale en)) ?_
+      exact BPair.oneValue_of_eq (BPair.scale_scale g.swap en ed)
+    refine BPair.oneValue_trans
+      (poly.evalClear_read [BPair.unit, BPair.swap g]
+        (BPair.ofPos en) ed 2) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr h0
+        (BPair.oneValue_trans
+          (BPair.add_congr h1 (BPair.oneValue_refl BPair.unit))
+          (BPair.add_unit _))) ?_
+    exact BPair.unit_add _
+  have hmul := seamHeight g en ed hp hm
+  refine BPair.oneValue_trans
+    (poly.evalClear_ends
+      (poly.evalClear (poly.neg [m, BPair.unit, BPair.swap e])
+        (BPair.ofPos en) ed 2)
+      (poly.evalClear [BPair.unit, BPair.swap g] (BPair.ofPos en) ed 2)
+      [] trivial ⟨hp, hm⟩ Pos.one) ?_
+  refine BPair.oneValue_trans
+    (BPair.add_congr
+      (BPair.oneValue_trans (BPair.mul_congr (bpow_one_read _) hb)
+        (BPair.oneValue_trans
+          (BPair.oneValue_of_eq (BPair.mul_comm _ _))
+          (BPair.mul_one_read _)))
+      (BPair.oneValue_trans (BPair.mul_congr (bpow_one_read _) hh) hmul)) ?_
+  refine BPair.oneValue_of_eq ?_
+  rw [← BPair.swap_add (m.scale (ed * ed)) (g.scale (en * ed * hp)),
+    BPair.add_comm (m.scale (ed * ed)).swap (e.scale (en * en)),
+    BPair.add_add_comm (e.scale (en * en)) (m.scale (ed * ed)).swap
+      (g.scale (en * ed * hm)) (g.scale (en * ed * hp)).swap]
+
+/-- One row of the double evaluation reads the corner site's row,
+the three rows' componentwise walk entry by entry. -/
+private theorem cornerRow (en ed hp hm : Pos) : ∀ rE rM rG : List BPair,
+    poly.oneValue
+      (((List.zipWith (fun h g => [poly.neg h, g])
+          (List.zipWith (fun e m =>
+              [m, ground.BPair.unit, ground.BPair.swap e]) rE rM)
+          (rG.map (fun g =>
+              [ground.BPair.unit, ground.BPair.swap g]))).map
+          (fun P => P.map (fun p =>
+            poly.evalClear p (BPair.ofPos en) ed 2))).map
+        (fun p => poly.evalClear p ⟨hp, hm⟩ Pos.one 1))
+      (List.zipWith BPair.add
+        (List.zipWith BPair.add (rE.map (fun x => x.scale (en * en)))
+          (rG.map (fun x => x.scale (en * ed * hm))))
+        ((List.zipWith BPair.add (rM.map (fun x => x.scale (ed * ed)))
+          (rG.map (fun x => x.scale (en * ed * hp)))).map BPair.swap))
+  | [], _, _ => trivial
+  | _ :: _, [], [] => trivial
+  | _ :: _, [], _ :: _ => trivial
+  | _ :: _, _ :: _, [] => trivial
+  | e :: rE, m :: rM, g :: rG =>
+    ⟨cornerEntry e m g en ed hp hm, cornerRow en ed hp hm rE rM rG⟩
+
+/-- The double evaluation reads the corner site row by row, the
+three data's componentwise walk. -/
+private theorem cornerMat (en ed hp hm : Pos) : ∀ E M G : Mat,
+    elim.matOneValue
+      (cellcount.evalPC
+        (cellcount.ppevalPC (cornerPP E M G) (BPair.ofPos en) ed 2)
+        ⟨hp, hm⟩ Pos.one 1)
+      (cornerSite E M G en ed hp hm)
+  | [], _, _ => trivial
+  | _ :: _, [], [] => trivial
+  | _ :: _, [], _ :: _ => trivial
+  | _ :: _, _ :: _, [] => trivial
+  | rE :: E, rM :: M, rG :: G =>
+    ⟨cornerRow en ed hp hm rE rM rG, cornerMat en ed hp hm E M G⟩
+
+/-- The double evaluation reads the corner site: the base at the
+scale point `[en:ed]` cleared at the square, the height at the
+balance-pair point, one matrix identity. -/
+theorem cornerPP_eval (E M G : Mat) (en ed hp hm : Pos) :
+    elim.matOneValue
+      (cellcount.evalPC
+        (cellcount.ppevalPC (cornerPP E M G)
+          (ground.BPair.ofPos en) ed 2)
+        ⟨hp, hm⟩ ground.Pos.one 1)
+      (cornerSite E M G en ed hp hm) :=
+  cornerMat en ed hp hm E M G
+
+/-- The presentation's row count at the three data's own: the
+componentwise walk's own truncation at matched counts. -/
+private theorem cornerPP_len (E M G : Mat) (o : Nat)
+    (hE : E.length = o) (hM : M.length = o) (hG : G.length = o) :
+    (cornerPP E M G).length = o :=
+  ground.length_zipWith _ _ _ o
+    (ground.length_zipWith _ E M o hE hM)
+    ((ground.length_map _ G).trans hG)
+
+/-- The presentation's rows at the three data's own width. -/
+private theorem cornerPP_rows (o : Nat) : ∀ E M G : Mat,
+    elim.rowsLen o E → elim.rowsLen o M → elim.rowsLen o G →
+    elim.rowsLen o (cornerPP E M G)
+  | [], _, _, _, _, _ => trivial
+  | _ :: _, [], _, _, _, _ => trivial
+  | _ :: _, _ :: _, [], _, _, _ => trivial
+  | rE :: E, rM :: M, rG :: G, hE, hM, hG =>
+    ⟨ground.length_zipWith _ _ _ o
+      (ground.length_zipWith _ rE rM o hE.1 hM.1)
+      ((ground.length_map _ rG).trans hG.1),
+     cornerPP_rows o E M G hE.2 hM.2 hG.2⟩
+
+/-- One evaluated row's entries are linear in the height variable:
+every entry is the outer pair's two coefficients. -/
+private theorem cornerRow_ble (ln : BPair) (c : Pos) :
+    ∀ rE rM rG : List BPair,
+    (((List.zipWith (fun h g => [poly.neg h, g])
+        (List.zipWith (fun e m =>
+            [m, ground.BPair.unit, ground.BPair.swap e]) rE rM)
+        (rG.map (fun g =>
+            [ground.BPair.unit, ground.BPair.swap g]))).map
+        (fun P => P.map (fun p => poly.evalClear p ln c 2))).all
+      (fun p => Nat.ble p.length 2)) = true
+  | [], _, _ => rfl
+  | _ :: _, [], _ => rfl
+  | _ :: _, _ :: _, [] => rfl
+  | _ :: rE, _ :: rM, _ :: rG => cornerRow_ble ln c rE rM rG
+
+/-- The base's evaluated presentation is linear in the height
+variable at every entry. -/
+private theorem cornerPP_ble (ln : BPair) (c : Pos) : ∀ E M G : Mat,
+    ((cellcount.ppevalPC (cornerPP E M G) ln c 2).all
+      (fun r => r.all (fun p => Nat.ble p.length 2))) = true
+  | [], _, _ => rfl
+  | _ :: _, [], _ => rfl
+  | _ :: _, _ :: _, [] => rfl
+  | rE :: E, rM :: M, rG :: G =>
+    ground.andIntroB (cornerRow_ble ln c rE rM rG)
+      (cornerPP_ble ln c E M G)
+
+/-- The height-direction count of the evaluated presentation is
+the corner count: the two site matrices one value at the double
+evaluation, the shape reads exchanged at the stated orders. -/
+theorem cornerPP_count {o : Nat} (E M G : Mat)
+    (en ed hp hm : Pos) (n : Nat) (sp : inertia.Split o)
+    (hE : elim.sqAt E o) (hM : elim.sqAt M o)
+    (hG : elim.sqAt G o) :
+    cellcount.countAt
+        (cellcount.ppevalPC (cornerPP E M G)
+          (ground.BPair.ofPos en) ed 2)
+        1 ⟨hp, hm⟩ ground.Pos.one n sp
+      ↔ cornerCount E M G en ed hp hm n sp := by
+  have hrows : elim.rowsLen o (cornerPP E M G) :=
+    cornerPP_rows o E M G (elim.rowsLen_of_sqAt hE)
+      (elim.rowsLen_of_sqAt hM) (elim.rowsLen_of_sqAt hG)
+  have hplen : (cellcount.ppevalPC (cornerPP E M G)
+      (BPair.ofPos en) ed 2).length = o :=
+    (ground.length_map _ _).trans
+      (cornerPP_len E M G o (elim.sqAt_len hE) (elim.sqAt_len hM)
+        (elim.sqAt_len hG))
+  have hprows : elim.rowsLen o (cellcount.ppevalPC (cornerPP E M G)
+      (BPair.ofPos en) ed 2) :=
+    elim.rowsLen_mapRowsO _ (cornerPP E M G) o hrows
+  have hshape : cellcount.pShapeAt (cellcount.ppevalPC (cornerPP E M G)
+      (BPair.ofPos en) ed 2) o 1 :=
+    cellcount.pShapeAt_of hplen hprows (cornerPP_ble _ _ E M G)
+  have hevsq : elim.sqAt (cellcount.evalPC
+      (cellcount.ppevalPC (cornerPP E M G) (BPair.ofPos en) ed 2)
+      ⟨hp, hm⟩ Pos.one 1) o :=
+    elim.sqAt_of ((ground.length_map _ _).trans hplen)
+      (elim.rowsLen_mapRowsO _ _ o hprows)
+  have hsitesq : elim.sqAt (cornerSite E M G en ed hp hm) o :=
+    inertia.sqAt_siteDatum o _ _
+      (elim.sqAt_matAdd o _ _ (inertia.sqAt_matScale o (en * en) E hE)
+        (inertia.sqAt_matScale o (en * ed * hm) G hG))
+      (elim.sqAt_matAdd o _ _ (inertia.sqAt_matScale o (ed * ed) M hM)
+        (inertia.sqAt_matScale o (en * ed * hp) G hG))
+  constructor
+  · intro h
+    exact ⟨hE, hM, hG,
+      inertia.splitRead_congr _ _ hsitesq
+        (cornerPP_eval E M G en ed hp hm) sp h.2.1,
+      h.2.2⟩
+  · intro h
+    exact ⟨hshape,
+      inertia.splitRead_congr _ _ hevsq
+        (elim.matOne_symm (cornerPP_eval E M G en ed hp hm)) sp
+        h.2.2.2.1,
+      h.2.2.2.2⟩
+
+/-! `lem:corner`'s ray coordinate read-backs: the cell's two
+located outputs read back at squares.  The ray `[a : b]` sits in
+the extent `η₁ = [n₁ : d₁]` exactly at the cross-multiplied
+comparison `a d₁² ≤ n₁² b` (`rayInExtent`), one value across the
+ray's representatives and across the extent's
+(`rayInExtent_ray`, `rayInExtent_ext`); and a level reads through
+its height at the floor `κ = [kn : kd]`, the level's square
+against the weight product at the floor's square
+(`levelClears`), which at the ray's scale tie `α ed² = en² β` and
+the cofactor `λ = β (η η′)` is the height against the floor
+(`level_height`), the two end weights' own scale withdrawing from
+the comparison. -/
+
+/-- The ray sits in the extent: the ray `[a:b]` against the
+extent `eta_1 = [n1:d1]` at the squares' cross-multiplied read
+(`lem:corner`'s ray read-back). -/
+def rayInExtent (a b n1 d1 : Pos) : Prop :=
+  a * (d1 * d1) ≤ n1 * n1 * b
+
+instance (a b n1 d1 : Pos) :
+    Decidable (rayInExtent a b n1 d1) :=
+  inferInstanceAs (Decidable (_ ≤ _))
+
+/-- The membership is one value across the ray's
+representatives. -/
+theorem rayInExtent_ray (a b a' b' n1 d1 : Pos)
+    (h : a * b' = a' * b) :
+    rayInExtent a b n1 d1 ↔ rayInExtent a' b' n1 d1 := by
+  constructor
+  · intro hle
+    refine ground.le_of_mul_le (c := b) ?_
+    have h1 : a * (d1 * d1) * b' ≤ n1 * n1 * b * b' :=
+      ground.mul_le_mul_right b' hle
+    rw [ground.mul_right_comm a (d1 * d1) b', h,
+      ground.mul_right_comm a' b (d1 * d1),
+      ground.mul_right_comm (n1 * n1) b b'] at h1
+    exact h1
+  · intro hle
+    refine ground.le_of_mul_le (c := b') ?_
+    have h1 : a' * (d1 * d1) * b ≤ n1 * n1 * b' * b :=
+      ground.mul_le_mul_right b hle
+    rw [ground.mul_right_comm a' (d1 * d1) b, ← h,
+      ground.mul_right_comm a b' (d1 * d1),
+      ground.mul_right_comm (n1 * n1) b' b] at h1
+    exact h1
+
+/-- The membership is one value across the extent's
+representatives. -/
+theorem rayInExtent_ext (a b n1 d1 n1' d1' : Pos)
+    (h : n1 * d1' = n1' * d1) :
+    rayInExtent a b n1 d1 ↔ rayInExtent a b n1' d1' := by
+  constructor
+  · intro hle
+    refine ground.le_of_mul_le (c := d1 * d1) ?_
+    have h1 : a * (d1 * d1) * (d1' * d1')
+        ≤ n1 * n1 * b * (d1' * d1') :=
+      ground.mul_le_mul_right (d1' * d1') hle
+    rw [ground.mul_right_comm a (d1 * d1) (d1' * d1'),
+      ground.mul_right_comm (n1 * n1) b (d1' * d1'),
+      ground.mul_mul_mul_comm n1 n1 d1' d1', h,
+      ← ground.mul_mul_mul_comm n1' n1' d1 d1,
+      ground.mul_right_comm (n1' * n1') (d1 * d1) b] at h1
+    exact h1
+  · intro hle
+    refine ground.le_of_mul_le (c := d1' * d1') ?_
+    have h1 : a * (d1' * d1') * (d1 * d1)
+        ≤ n1' * n1' * b * (d1 * d1) :=
+      ground.mul_le_mul_right (d1 * d1) hle
+    rw [ground.mul_right_comm a (d1' * d1') (d1 * d1),
+      ground.mul_right_comm (n1' * n1') b (d1 * d1),
+      ground.mul_mul_mul_comm n1' n1' d1 d1, ← h,
+      ← ground.mul_mul_mul_comm n1 n1 d1' d1',
+      ground.mul_right_comm (n1 * n1) (d1' * d1') b] at h1
+    exact h1
+
+/-- The level clears the floor: the level's square against the
+weight product at the floor's square, one pair comparison
+(`lem:corner`'s height read at the two end weights' own scale). -/
+def levelClears (ln ld kn kd al be : Pos) : Prop :=
+  kn * kn * (al * be) * (ld * ld) ≤ ln * ln * (kd * kd)
+
+instance (ln ld kn kd al be : Pos) :
+    Decidable (levelClears ln ld kn kd al be) :=
+  inferInstanceAs (Decidable (_ ≤ _))
+
+/-- A level reads through its height: at the ray's scale tie and
+the cofactor `lambda = be (eta eta')` the comparison is the
+height against the floor. -/
+theorem level_height (en ed hn hd ln ld kn kd al be : Pos)
+    (hray : al * (ed * ed) = en * en * be)
+    (hcof : ln * (ed * hd) = ld * (be * (en * hn))) :
+    levelClears ln ld kn kd al be ↔ kn * hd ≤ hn * kd := by
+  have q1 : kn * kn * (al * be) * (ld * ld) * (ed * ed * (hd * hd))
+      = kn * hd * (kn * hd) * (ld * ld * (be * be * (en * en))) := by
+    rw [ground.mul_mul_mul_comm (kn * kn * (al * be)) (ld * ld)
+        (ed * ed) (hd * hd),
+      ground.mul_assoc (kn * kn) (al * be) (ed * ed),
+      ground.mul_right_comm al be (ed * ed), hray,
+      ground.mul_assoc (en * en) be be,
+      ground.mul_comm (en * en) (be * be),
+      ground.mul_mul_mul_comm kn hd kn hd,
+      ground.mul_mul_mul_comm (kn * kn) (be * be * (en * en))
+        (ld * ld) (hd * hd),
+      ground.mul_mul_mul_comm (kn * kn) (hd * hd) (ld * ld)
+        (be * be * (en * en)),
+      ground.mul_comm (be * be * (en * en)) (hd * hd)]
+  have q2 : ln * ln * (kd * kd) * (ed * ed * (hd * hd))
+      = hn * kd * (hn * kd) * (ld * ld * (be * be * (en * en))) := by
+    rw [← ground.mul_mul_mul_comm ed hd ed hd,
+      ground.mul_right_comm (ln * ln) (kd * kd) (ed * hd * (ed * hd)),
+      ← ground.mul_mul_mul_comm ln (ed * hd) ln (ed * hd), hcof,
+      ground.mul_mul_mul_comm ld (be * (en * hn)) ld (be * (en * hn)),
+      ground.mul_mul_mul_comm be (en * hn) be (en * hn),
+      ground.mul_mul_mul_comm en hn en hn,
+      ground.mul_mul_mul_comm hn kd hn kd,
+      ground.mul_assoc (ld * ld) (be * be * (en * en * (hn * hn)))
+        (kd * kd),
+      ground.mul_assoc (be * be) (en * en * (hn * hn)) (kd * kd),
+      ground.mul_assoc (en * en) (hn * hn) (kd * kd),
+      ground.mul_comm (hn * hn * (kd * kd))
+        (ld * ld * (be * be * (en * en))),
+      ground.mul_assoc (ld * ld) (be * be * (en * en))
+        (hn * hn * (kd * kd)),
+      ground.mul_assoc (be * be) (en * en) (hn * hn * (kd * kd))]
+  constructor
+  · intro h
+    refine ground.posSqLe (ground.le_of_mul_le
+      (c := ld * ld * (be * be * (en * en))) ?_)
+    rw [← q1, ← q2]
+    exact ground.mul_le_mul_right (ed * ed * (hd * hd)) h
+  · intro h
+    refine ground.le_of_mul_le (c := ed * ed * (hd * hd)) ?_
+    rw [q1, q2]
+    exact ground.mul_le_mul_right (ld * ld * (be * be * (en * en)))
+      (ground.posSqMono h)
+
+/-- The flat window at the corner carrier: the seam levels' window
+is the corner counts' at the heights, the scale factor withdrawing
+from the order (`thm:flatstep` at `lem:dualtrunc`'s seam
+identity). -/
+theorem corner_flat {o : Nat} (E M G : Mat)
+    (en ed h1p h1m h2p h2m : Pos) (g : Nat)
+    (spa spt : inertia.Split o)
+    (hE : elim.sqAt E o) (hM : elim.sqAt M o) :
+    flatstep.vacFlat (cornerPencil E M en ed) G
+        (en * ed * h1p) (en * ed * h1m)
+        (en * ed * h2p) (en * ed * h2m) g spa spt
+      ↔ (cornerCount E M G en ed h1p h1m g spa
+        ∧ cornerCount E M G en ed h2p h2m g spt
+        ∧ 1 ≤ g ∧ h1p + h2m < h2p + h1m) := by
+  constructor
+  · intro h
+    match h with
+    | ⟨h1, h2, hg, hord⟩ =>
+      refine ⟨(corner_dual E M G en ed h1p h1m g spa hE hM).mpr h1,
+        (corner_dual E M G en ed h2p h2m g spt hE hM).mpr h2,
+        hg, ?_⟩
+      rw [← ground.left_distrib (en * ed) h1p h2m,
+        ← ground.left_distrib (en * ed) h2p h1m] at hord
+      rw [ground.mul_comm (en * ed) (h1p + h2m),
+        ground.mul_comm (en * ed) (h2p + h1m)] at hord
+      exact ground.lt_of_mul_lt hord
+  · intro h
+    match h with
+    | ⟨h1, h2, hg, hord⟩ =>
+      refine ⟨(corner_dual E M G en ed h1p h1m g spa hE hM).mp h1,
+        (corner_dual E M G en ed h2p h2m g spt hE hM).mp h2,
+        hg, ?_⟩
+      rw [← ground.left_distrib (en * ed) h1p h2m,
+        ← ground.left_distrib (en * ed) h2p h1m]
+      rw [ground.mul_comm (en * ed) (h1p + h2m),
+        ground.mul_comm (en * ed) (h2p + h1m)]
+      exact ground.mul_lt_mul_right (en * ed) hord
+
+/-- The corner extent's certificate: the divisor's vacant leading
+keys withdrawn at the origin's least occupied degree, the
+cofactor's constant occupied, and the bracket at the cofactor —
+the divisor's first positive root in the scale (`lem:corner`'s
+extent at `lem:contactcell`'s bracket shape). -/
+def extentRead {o1 o2 o3 o4 : Nat} (D : poly.Poly) (k : Nat)
+    (ct : cellcount.DivCert) (lo hi : ground.BPair)
+    (c : ground.Pos) (spH1 : inertia.Split o1)
+    (spB1 : inertia.Split o2) (spH2 : inertia.Split o3)
+    (spB2 : inertia.Split o4) : Prop :=
+  poly.unitTail (D.take k)
+  ∧ ¬ (ground.getAt ground.BPair.unit D k).oneValue
+      ground.BPair.unit
+  ∧ contactcell.extRead (D.drop k) ct lo hi c spH1 spB1 spH2 spB2
+
+instance {o1 o2 o3 o4 : Nat} (D : poly.Poly) (k : Nat)
+    (ct : cellcount.DivCert) (lo hi : ground.BPair)
+    (c : ground.Pos) (spH1 : inertia.Split o1)
+    (spB1 : inertia.Split o2) (spH2 : inertia.Split o3)
+    (spB2 : inertia.Split o4) :
+    Decidable (extentRead D k ct lo hi c spH1 spB1 spH2 spB2) :=
+  inferInstanceAs (Decidable (_ ∧ ¬ _ ∧ _))
+
+/-- The extent read is one value across the divisor's
+representatives: the withdrawal's two conjuncts move across the
+leading part and the key read, and the located read carries at the
+dropped part (`contactcell.extRead_congr`). -/
+theorem extentRead_congr {o1 o2 o3 o4 : Nat} {D D' : poly.Poly}
+    (h : poly.oneValue D D') (k : Nat) (ct : cellcount.DivCert)
+    (lo hi : ground.BPair) (c : ground.Pos)
+    (spH1 : inertia.Split o1) (spB1 : inertia.Split o2)
+    (spH2 : inertia.Split o3) (spB2 : inertia.Split o4) :
+    extentRead D k ct lo hi c spH1 spB1 spH2 spB2
+      ↔ extentRead D' k ct lo hi c spH1 spB1 spH2 spB2 := by
+  constructor
+  · intro ⟨h1, h2, h3⟩
+    exact ⟨poly.unitTail_oneValue_right h1 (poly.take_congr k h),
+      fun hx => h2 (ground.BPair.oneValue_trans
+        (poly.oneValue_getAt k h) hx),
+      (contactcell.extRead_congr (poly.drop_congr k h)
+        ct lo hi c spH1 spB1 spH2 spB2).mp h3⟩
+  · intro ⟨h1, h2, h3⟩
+    exact ⟨poly.unitTail_oneValue_right h1
+        (poly.take_congr k (poly.oneValue_symm h)),
+      fun hx => h2 (ground.BPair.oneValue_trans
+        (poly.oneValue_getAt k (poly.oneValue_symm h)) hx),
+      (contactcell.extRead_congr (poly.drop_congr k h)
+        ct lo hi c spH1 spB1 spH2 spB2).mpr h3⟩
+
+/-! `lem:corner`'s frontier cutoff at the scale: the scale key is
+the least natural whose `4η²` multiple clears the dimension fold
+against the window's top level and the clearance (`scaleKey`,
+`scaleKey_ge` its own witness, `scaleKey_least` the minimality),
+and at the key's comparison the seed floor `4σc₊` clears every
+window level at once — a frontier Casimir at or beyond the key and
+a level at or below the window's top (`seedClears`).  The rate
+composition assembles one scale's data: the located drift's margin
+domination at the assembled level and cap (`level_drift`), the
+bracket's two sides and the atoms' positive ties close the
+displayed rate `g(σ)^{q+1} ≤ C_g^{q+1} σ` at the power carrier
+(`corner_rate` at `rate_close`), one cross-multiplied comparison
+per scale. -/
+
+/-- The clearing quotient's comparison at its own division
+witness: the step's multiple joined to the clearance sits at or
+beyond the fold. -/
+private theorem ceilCore {K S A q r : Nat} (hA : 0 < A)
+    (hsum : A * q + r = K - S + (A - 1)) (hlt : r < A) :
+    K ≤ A * q + S := by
+  match Nat.le_total K S with
+  | Or.inl h => exact Nat.le_trans h (Nat.le_add_left S _)
+  | Or.inr h =>
+    have hr : r ≤ A - 1 := by
+      refine Nat.le_of_lt_succ ?_
+      show r < A - 1 + 1
+      rw [ground.subAdd hA]
+      exact hlt
+    have h0 : A * q + r ≤ A * q + (A - 1) :=
+      Nat.add_le_add (Nat.le_refl (A * q)) hr
+    rw [hsum] at h0
+    have h3 : K - S + S ≤ A * q + S :=
+      Nat.add_le_add (ground.leCancelR (A - 1) h0) (Nat.le_refl S)
+    rw [ground.subAdd h] at h3
+    exact h3
+
+/-- The clearing quotient is least at its own division witness:
+any step multiple clearing the fold sits at or beyond it. -/
+private theorem ceilLeastCore {K S A L q r : Nat} (hA : 0 < A)
+    (hL : K ≤ A * L + S)
+    (hsum : A * q + r = K - S + (A - 1)) : q ≤ L := by
+  have hKS : K - S ≤ A * L := by
+    match Nat.le_total K S with
+    | Or.inl h => rw [ground.subLe K S h]; exact Nat.zero_le _
+    | Or.inr h =>
+      exact ground.leCancelR S (by rw [ground.subAdd h]; exact hL)
+  match Nat.lt_or_ge L q with
+  | Or.inr h => exact h
+  | Or.inl h =>
+    have h0 : A * q ≤ A * q + r := Nat.le_add_right _ _
+    rw [hsum] at h0
+    have hfin : A * (L + 1) < A * L + A :=
+      Nat.lt_of_le_of_lt
+        (Nat.le_trans (Nat.mul_le_mul_left A h) h0)
+        (Nat.lt_of_le_of_lt
+          (Nat.add_le_add hKS (Nat.le_refl (A - 1)))
+          (Nat.add_lt_add_left (ground.subOneLt hA) (A * L)))
+    rw [Nat.mul_succ A L] at hfin
+    exact absurd hfin (Nat.lt_irrefl _)
+
+/-- The scale's step is occupied at an occupied scale numerator
+and an occupied level denominator. -/
+private theorem scalePos (en vd : Nat) (hen : 0 < en) (hvd : 0 < vd) :
+    0 < 4 * en * en * vd :=
+  Nat.mul_pos (Nat.mul_pos (Nat.mul_pos (by decide +kernel) hen) hen)
+    hvd
+
+/-- The scale key: the least natural whose `4 eta^2` multiple
+clears the dimension fold, the window's top level and the
+clearance, the cleared members' division witness (`lem:corner`'s
+boundary families, the frontier's cutoff at the scale). -/
+def scaleKey (en ed vn vd dth xp yp : Nat) : Nat :=
+  (ed * ed * (dth * vd + xp * vd + vn) - yp * (ed * ed) * vd
+    + (4 * en * en * vd - 1)) / (4 * en * en * vd)
+
+/-- The key's comparison holds at the key, its own witness. -/
+theorem scaleKey_ge (en ed vn vd dth xp yp : Nat)
+    (hen : 0 < en) (hvd : 0 < vd) :
+    ed * ed * (dth * vd + xp * vd + vn)
+      ≤ 4 * en * en * vd * scaleKey en ed vn vd dth xp yp
+        + yp * (ed * ed) * vd :=
+  ceilCore (scalePos en vd hen hvd)
+    (ground.natDivRead _ _ (scalePos en vd hen hvd)).1
+    (ground.natDivRead _ _ (scalePos en vd hen hvd)).2
+
+/-- The key is the least natural at the comparison. -/
+theorem scaleKey_least (en ed vn vd dth xp yp L : Nat)
+    (hen : 0 < en) (hvd : 0 < vd)
+    (hL : ed * ed * (dth * vd + xp * vd + vn)
+      ≤ 4 * en * en * vd * L + yp * (ed * ed) * vd) :
+    scaleKey en ed vn vd dth xp yp ≤ L :=
+  ceilLeastCore (scalePos en vd hen hvd) hL
+    (ground.natDivRead _ _ (scalePos en vd hen hvd)).1
+
+/-- The dimension fold at a window level, the level's own weight
+withdrawn from the fold's head. -/
+private theorem seedExp (E dth vd vn t : Nat) :
+    E * (dth * vd + t * vd + vn)
+      = E * (dth * vd) + E * vn + t * E * vd := by
+  rw [Nat.left_distrib E (dth * vd + t * vd) vn,
+    Nat.left_distrib E (dth * vd) (t * vd),
+    ground.mulHeadComm E t vd,
+    Nat.add_assoc (E * (dth * vd)) (t * E * vd) (E * vn),
+    Nat.add_comm (t * E * vd) (E * vn),
+    ← Nat.add_assoc (E * (dth * vd)) (E * vn) (t * E * vd)]
+
+/-- The seed floor's window clearing at the abstract weights: the
+level pair's cross-added order carries the top level's clearance
+to every level of the window. -/
+private theorem seedCore {E vd A L cp dth xp yp x y vn : Nat}
+    (hL : E * (dth * vd + xp * vd + vn) ≤ A * L + yp * E * vd)
+    (hcp : L ≤ cp) (hlev : x + yp ≤ xp + y) :
+    E * (dth * vd + x * vd + vn) ≤ A * cp + y * E * vd := by
+  have hstep : x * E * vd + yp * E * vd
+      ≤ xp * E * vd + y * E * vd := by
+    rw [ground.mulAssoc x E vd, ground.mulAssoc yp E vd,
+      ground.mulAssoc xp E vd, ground.mulAssoc y E vd,
+      ← ground.mulAddR x yp (E * vd), ← ground.mulAddR xp y (E * vd)]
+    exact Nat.mul_le_mul_right (E * vd) hlev
+  have h1 : E * (dth * vd + x * vd + vn) + yp * E * vd
+      ≤ E * (dth * vd + xp * vd + vn) + y * E * vd := by
+    rw [seedExp E dth vd vn x, seedExp E dth vd vn xp,
+      Nat.add_assoc (E * (dth * vd) + E * vn) (x * E * vd)
+        (yp * E * vd),
+      Nat.add_assoc (E * (dth * vd) + E * vn) (xp * E * vd)
+        (y * E * vd)]
+    exact Nat.add_le_add (Nat.le_refl _) hstep
+  have h2 : E * (dth * vd + xp * vd + vn) + y * E * vd
+      ≤ A * cp + yp * E * vd + y * E * vd :=
+    Nat.add_le_add
+      (Nat.le_trans hL
+        (Nat.add_le_add (Nat.mul_le_mul_left A hcp) (Nat.le_refl _)))
+      (Nat.le_refl _)
+  have h4 := Nat.le_trans h1 h2
+  rw [Nat.add_assoc (A * cp) (yp * E * vd) (y * E * vd),
+    Nat.add_comm (yp * E * vd) (y * E * vd),
+    ← Nat.add_assoc (A * cp) (y * E * vd) (yp * E * vd)] at h4
+  exact ground.leCancelR (yp * E * vd) h4
+
+/-- The seed floor clears every window level at once: at the
+key's comparison, a frontier Casimir at or beyond the key, and a
+level at or below the window's top, the floor `4 sigma c_+`
+clears the level by the clearance (`lem:corner`'s frontier
+family). -/
+theorem seedClears (en ed vn vd dth xp yp x y cp L : Nat)
+    (hL : ed * ed * (dth * vd + xp * vd + vn)
+      ≤ 4 * en * en * vd * L + yp * (ed * ed) * vd)
+    (hcp : L ≤ cp) (hlev : x + yp ≤ xp + y) :
+    ed * ed * (dth * vd + x * vd + vn)
+      ≤ 4 * en * en * vd * cp + y * (ed * ed) * vd :=
+  seedCore hL hcp hlev
+
+/-- The frontier's least Casimir clears every window level: the
+frontier's cutoff is the scale key, so an occupied frontier's
+least Casimir sits at or beyond the key
+(`contactcell.cPlusN_beyond`), and the seed floor at that Casimir
+clears every window level by the clearance (`lem:corner`'s
+frontier family, the parenthetical `c₊ ≥ Λ` at the seed floor's
+clearing). -/
+theorem frontierClears (d en ed vn vd dth xp yp x y : Nat)
+    (hen : 0 < en) (hvd : 0 < vd)
+    (hft : contactcell.frontierTargets d
+      (scaleKey en ed vn vd dth xp yp) ≠ [])
+    (hlev : x + yp ≤ xp + y) :
+    ed * ed * (dth * vd + x * vd + vn)
+      ≤ 4 * en * en * vd
+          * contactcell.cPlusN d (scaleKey en ed vn vd dth xp yp)
+        + y * (ed * ed) * vd :=
+  seedClears en ed vn vd dth xp yp x y _
+    (scaleKey en ed vn vd dth xp yp)
+    (scaleKey_ge en ed vn vd dth xp yp hen hvd)
+    (Nat.le_of_lt (contactcell.cPlusN_beyond d _ hft))
+    hlev
+
+/-- The counts' order carries onto the positive carrier at the
+atoms' ties: two positive data reading two counts sit in the
+counts' own order. -/
+private theorem posOfNatLe {u v : ground.Pos} {U V : Nat}
+    (hu : (BPair.ofPos u).oneValue (BPair.ofNat U))
+    (hv : (BPair.ofPos v).oneValue (BPair.ofNat V))
+    (h : U ≤ V) : u ≤ v := by
+  have hb : BPair.ofPos u ≤ BPair.ofPos v :=
+    ground.leB_congr (BPair.oneValue_symm hu) (BPair.oneValue_symm hv)
+      (ground.leB_ofNat h)
+  have hb' : u + Pos.one + Pos.one ≤ v + Pos.one + Pos.one := hb
+  exact ground.posLeCancelR (ground.posLeCancelR hb')
+
+/-- The atoms' ties multiply: the product of two positive data
+reads the product of their counts. -/
+private theorem mulOfNat {u v : ground.Pos} {U V : Nat}
+    (hu : (BPair.ofPos u).oneValue (BPair.ofNat U))
+    (hv : (BPair.ofPos v).oneValue (BPair.ofNat V)) :
+    (BPair.ofPos (u * v)).oneValue (BPair.ofNat (U * V)) :=
+  BPair.oneValue_trans (BPair.oneValue_symm (BPair.ofPos_mul u v))
+    (BPair.oneValue_trans (BPair.mul_congr hu hv)
+      (BPair.oneValue_symm (BPair.ofNat_mul U V)))
+
+/-- The atom's tie raises to its power: the positive datum's power
+reads its count's constant product over the key range. -/
+private theorem powOfNat {u : ground.Pos} {U : Nat}
+    (hu : (BPair.ofPos u).oneValue (BPair.ofNat U)) : ∀ n : Nat,
+    (BPair.ofPos (ground.Pos.pow u n)).oneValue
+      (BPair.ofNat (ground.prodOver (fun _ => U) (List.range n)))
+  | 0 => BPair.oneValue_refl _
+  | n + 1 => by
+    show (BPair.ofPos (u * ground.Pos.pow u n)).oneValue
+      (BPair.ofNat
+        (ground.prodOver (fun _ => U) (List.range (n + 1))))
+    rw [powStep U n]
+    exact BPair.oneValue_trans
+      (BPair.oneValue_symm (BPair.ofPos_mul u (ground.Pos.pow u n)))
+      (BPair.oneValue_trans
+        (BPair.mul_congr hu (powOfNat hu n))
+        (BPair.oneValue_trans
+          (BPair.oneValue_of_eq (BPair.mul_comm _ _))
+          (BPair.oneValue_symm
+            (BPair.ofNat_mul
+              (ground.prodOver (fun _ => U) (List.range n)) U))))
+
+/-- The drift's margin domination at the assembled level: the
+scaled margin comparison joined to the drift withdraws the shared
+summand, leaving the margin scaled below the cap's own. -/
+private theorem rateNat {w gm Y X D R : Nat}
+    (hgm : gm + Y ≤ X + D) (hdr : w * X + w * D ≤ R + w * Y) :
+    w * gm ≤ R := by
+  have h1 : w * (gm + Y) ≤ w * (X + D) := Nat.mul_le_mul_left w hgm
+  rw [Nat.left_distrib w gm Y, Nat.left_distrib w X D] at h1
+  exact ground.leCancelR (w * Y) (Nat.le_trans h1 hdr)
+
+/-- The rate composition at one scale's data: the located drift's
+margin domination at the assembled level and cap, the bracket's
+two sides, and the atoms' positive ties close `lem:corner`'s
+displayed rate `g(sigma)^{q+1} <= C_g^{q+1} sigma`, one
+cross-multiplied comparison per scale. -/
+theorem corner_rate (p A KN KD dth sn sM a b c gm : Nat)
+    (gP CgP gdP bP cP snP sMP : ground.Pos)
+    (hc : a + b = c)
+    (hgm : gm + sM * KD
+        * ground.prodOver (fun _ => b) (List.range (2 * p + 3))
+        * (a * a) * dth
+      ≤ sn * KN * (A * A) * ground.rise 1 (2 * p + 2)
+          * ground.prodOver (fun _ => c) (List.range (2 * p + 5))
+        + sM * KD
+          * ground.prodOver (fun _ => b) (List.range (2 * p + 4))
+          * c
+        + KD * ground.prodOver (fun _ => b) (List.range (2 * p + 3))
+          * (c * c) * sM * dth)
+    (hbrU : sn * ground.prodOver (fun _ => c) (List.range (2 * p + 4))
+      ≤ ground.prodOver (fun _ => 2) (List.range (2 * p + 4))
+        * ground.prodOver (fun _ => b) (List.range (2 * p + 4))
+        * sM)
+    (hbrL : ground.prodOver (fun _ => b) (List.range (2 * p + 4)) * sM
+      ≤ sn * ground.prodOver (fun _ => c) (List.range (2 * p + 4)))
+    (hgP : (ground.BPair.ofPos gP).oneValue
+      (ground.BPair.ofNat (KD * gm)))
+    (hCg : (ground.BPair.ofPos CgP).oneValue (ground.BPair.ofNat
+      (ground.prodOver (fun _ => 2) (List.range (2 * p + 4))
+          * (KN * (A * A) * ground.rise 1 (2 * p + 2))
+        + KD * (2 * dth + 1))))
+    (hgd : (ground.BPair.ofPos gdP).oneValue (ground.BPair.ofNat
+      (KD * ground.prodOver (fun _ => b) (List.range (2 * p + 3))
+        * (c * c) * sM)))
+    (hbP : (ground.BPair.ofPos bP).oneValue (ground.BPair.ofNat b))
+    (hcP : (ground.BPair.ofPos cP).oneValue (ground.BPair.ofNat c))
+    (hsn : (ground.BPair.ofPos snP).oneValue (ground.BPair.ofNat sn))
+    (hsM : (ground.BPair.ofPos sMP).oneValue (ground.BPair.ofNat sM)) :
+    ground.Pos.pow gP (2 * p + 4) * sMP
+      ≤ ground.Pos.pow CgP (2 * p + 4) * snP
+        * ground.Pos.pow gdP (2 * p + 4) := by
+  have hdr := level_drift p A KN KD dth sn sM a b c hc hbrU
+  rw [ground.mulFour (c * KD)
+      (KD * ground.prodOver (fun _ => b) (List.range (2 * p + 3))
+        * (c * c)) sM dth,
+    ground.mulAssoc
+      ((ground.prodOver (fun _ => 2) (List.range (2 * p + 4))
+            * (KN * (A * A) * ground.rise 1 (2 * p + 2))
+          + KD * (2 * dth + 1)) * b)
+      (KD * ground.prodOver (fun _ => b) (List.range (2 * p + 3))
+        * (c * c)) sM] at hdr
+  have hkey := rateNat hgm hdr
+  have hkey' : KD * gm * c
+      ≤ (ground.prodOver (fun _ => 2) (List.range (2 * p + 4))
+            * (KN * (A * A) * ground.rise 1 (2 * p + 2))
+          + KD * (2 * dth + 1)) * b
+        * (KD * ground.prodOver (fun _ => b) (List.range (2 * p + 3))
+          * (c * c) * sM) := by
+    rw [Nat.mul_comm (KD * gm) c, ← ground.mulAssoc c KD gm]
+    exact hkey
+  exact rate_close (2 * p + 4) gP gdP CgP bP cP snP sMP
+    (posOfNatLe (mulOfNat hgP hcP)
+      (mulOfNat (mulOfNat hCg hbP) hgd) hkey')
+    (posOfNatLe (mulOfNat (powOfNat hbP (2 * p + 4)) hsM)
+      (mulOfNat hsn (powOfNat hcP (2 * p + 4))) hbrL)
+
+/-- The join read at the committed data: the vacant level strictly
+below the occupied margin at its unit shift holds the first
+occupied level at or below the assembled read, the top root's cap
+prices the drift's second member, and the drift — the first
+occupied level cross-added with the top root — obeys the margin
+comparison, the shared grading weight cancelling (`lem:corner`'s
+join read, the power comparison's own drift datum). -/
+theorem drift_margin (e0 mp gm GY X E V : Nat) (gx gy lx ly : Pos)
+    (hsq : gx + ly < lx + gy)
+    (hjoin : gm = e0 + mp)
+    (hcap : mp ≤ E)
+    (hgx : (ground.BPair.ofPos gx).oneValue (ground.BPair.ofNat (e0 + GY)))
+    (hgy : (ground.BPair.ofPos gy).oneValue (ground.BPair.ofNat GY))
+    (hlx : (ground.BPair.ofPos lx).oneValue (ground.BPair.ofNat (X + 1)))
+    (hly : (ground.BPair.ofPos ly).oneValue (ground.BPair.ofNat V)) :
+    gm + V ≤ X + E := by
+  have hL : (BPair.ofPos (gx + ly)).oneValue
+      (BPair.ofNat (e0 + GY + V)) :=
+    BPair.oneValue_trans (BPair.ofPos_add gx ly)
+      (BPair.oneValue_trans (BPair.add_congr hgx hly)
+        (BPair.oneValue_symm (BPair.ofNat_add (e0 + GY) V)))
+  have hR : (BPair.ofPos (lx + gy)).oneValue
+      (BPair.ofNat (X + 1 + GY)) :=
+    BPair.oneValue_trans (BPair.ofPos_add lx gy)
+      (BPair.oneValue_trans (BPair.add_congr hlx hgy)
+        (BPair.oneValue_symm (BPair.ofNat_add (X + 1) GY)))
+  have hnat : e0 + V ≤ X := by
+    match Nat.lt_or_ge X (e0 + V) with
+    | .inr hge => exact hge
+    | .inl hlt =>
+      have h' : X + 1 + GY ≤ e0 + GY + V := by
+        rw [Nat.add_assoc e0 GY V, Nat.add_comm GY V,
+          ← Nat.add_assoc e0 V GY]
+        exact Nat.add_le_add hlt (Nat.le_refl GY)
+      exact absurd (ground.posLtLe (posOfNatLe hR hL h') hsq)
+        (fun hf => hf)
+  rw [hjoin, Nat.add_assoc e0 mp V, Nat.add_comm mp V,
+    ← Nat.add_assoc e0 V mp]
+  exact Nat.add_le_add hnat hcap
+
+/-! `lem:corner`'s height section: the presentation's height
+variable substituted first, leaving the pencil's polynomial matrix
+in the scale variable alone (`cornerAtHeight` at `poly.pevalC`).
+The scale's own cleared evaluation of that section is the corner
+site again, so the two substitution orders read one matrix
+(`cornerAtHeight_eval` beside `cornerPP_eval`), and the section is
+the emitted record's carrier (`thm:decimation`'s `DivRecord`). -/
+
+/-- The presentation's height section: the corner pencil read
+along the scale at a stated height, the record's own carrier
+(`lem:corner`'s boundary families at `thm:decimation`'s emitted
+record). -/
+def cornerAtHeight (E M G : Mat) (hp hm : Pos) : split.PMat :=
+  (cornerPP E M G).map (fun r => r.map
+    (fun P => poly.pevalC P [⟨hp, hm⟩] ground.Pos.one 1))
+
+/-- The outer pair's height substitution at one entry: the base's
+memberwise swap on its two surviving keys against the seam weight
+scaled by the height, the section's entry in the scale variable. -/
+private theorem heightEntry (e m g x : BPair) :
+    poly.oneValue
+      (poly.pevalC [poly.neg [m, BPair.unit, BPair.swap e],
+        [BPair.unit, BPair.swap g]] [x] Pos.one 1)
+      [m.swap, g.swap * x, e] := by
+  have h0 : poly.oneValue
+      (poly.pnorm (poly.scaleP (BPair.ofPos Pos.one)
+        (poly.mul (poly.neg [m, BPair.unit, BPair.swap e])
+          (poly.powOf [x] 0))))
+      [m.swap, BPair.unit, e] :=
+    poly.oneValue_trans (poly.pnorm_oneValue _)
+      (poly.oneValue_trans (poly.scaleP_one _)
+        (poly.oneValue_trans
+          (poly.mul_comm (poly.neg [m, BPair.unit, BPair.swap e])
+            poly.one)
+          (poly.one_mul (poly.neg [m, BPair.unit, BPair.swap e]))))
+  have hx : poly.oneValue (poly.powOf [x] 1) [x] :=
+    poly.oneValue_trans (poly.mul_comm [x] poly.one) (poly.one_mul [x])
+  have h1 : poly.oneValue
+      (poly.pnorm (poly.scaleP (BPair.ofPos Pos.one)
+        (poly.mul [BPair.unit, BPair.swap g] (poly.powOf [x] 1))))
+      [BPair.unit, g.swap * x] :=
+    poly.oneValue_trans (poly.pnorm_oneValue _)
+      (poly.oneValue_trans (poly.scaleP_one _)
+        (poly.oneValue_trans
+          (poly.mul_congr [BPair.unit, BPair.swap g] hx)
+          ⟨BPair.oneValue_trans
+              (BPair.add_congr (BPair.unit_mul x)
+                (BPair.oneValue_refl BPair.unit))
+              (BPair.unit_add BPair.unit),
+            BPair.add_unit (g.swap * x), trivial⟩))
+  show poly.oneValue
+    (poly.add
+      (poly.pnorm (poly.scaleP (BPair.ofPos Pos.one)
+        (poly.mul (poly.neg [m, BPair.unit, BPair.swap e])
+          (poly.powOf [x] 0))))
+      (poly.pnorm (poly.scaleP (BPair.ofPos Pos.one)
+        (poly.mul [BPair.unit, BPair.swap g] (poly.powOf [x] 1)))))
+    [m.swap, g.swap * x, e]
+  exact poly.oneValue_trans (poly.add_congr h0 h1)
+    ⟨BPair.add_unit m.swap, BPair.unit_add (g.swap * x),
+      BPair.oneValue_refl e, trivial⟩
+
+/-- The three-key list's cleared evaluation at the square: the
+three monomials at the point's powers against the clearing's
+complementary ones, the cleared variable's fold read at each
+key. -/
+private theorem evalThree (a0 a1 a2 ln : BPair) (c : Pos) :
+    (poly.evalClear [a0, a1, a2] ln c 2).oneValue
+      (a0 * ground.bpow ln 0 * ground.bpow (BPair.ofPos c) 2
+        + a1 * ground.bpow ln 1 * ground.bpow (BPair.ofPos c) 1
+        + a2 * ground.bpow ln 2 * ground.bpow (BPair.ofPos c) 0) := by
+  refine BPair.oneValue_trans
+    (BPair.oneValue_symm (poly.eval_clearVar [a0, a1, a2] c 2 ln)) ?_
+  refine BPair.oneValue_trans
+    (poly.eval_famFold (poly.clearVar [a0, a1, a2] c 2) ln) ?_
+  rw [poly.length_clearVar]
+  refine BPair.oneValue_trans
+    (ground.foldB_congr_members _
+      (fun k => ground.getAt BPair.unit [a0, a1, a2] k
+        * ground.bpow (BPair.ofPos c) (2 - k) * ground.bpow ln k)
+      (List.range 3) (fun i _ =>
+        BPair.mul_congr_left (BPair.oneValue_trans
+          (poly.getAt_clearVar [a0, a1, a2] c 2 i)
+          (BPair.norm_oneValue _)))) ?_
+  refine BPair.oneValue_trans
+    (ground.foldB_congr_members _
+      (fun k => ground.getAt BPair.unit [a0, a1, a2] k
+        * ground.bpow ln k * ground.bpow (BPair.ofPos c) (2 - k))
+      (List.range 3) (fun i _ => BPair.oneValue_of_eq
+        (BPair.mul_right_comm
+          (ground.getAt BPair.unit [a0, a1, a2] i)
+          (ground.bpow (BPair.ofPos c) (2 - i))
+          (ground.bpow ln i)))) ?_
+  show (a0 * ground.bpow ln 0 * ground.bpow (BPair.ofPos c) 2
+      + (a1 * ground.bpow ln 1 * ground.bpow (BPair.ofPos c) 1
+        + (a2 * ground.bpow ln 2 * ground.bpow (BPair.ofPos c) 0
+          + BPair.unit))).oneValue _
+  refine BPair.oneValue_trans
+    (BPair.add_congr (BPair.oneValue_refl _)
+      (BPair.add_congr (BPair.oneValue_refl _) (BPair.add_unit _))) ?_
+  exact BPair.oneValue_of_eq (BPair.add_assoc _ _ _).symm
+
+/-- The three monomials' regrouping at the entry's join: the
+constant key's swapped datum joins the top key's on the far side
+of the seam's two members. -/
+private theorem addShuffle (a b c d : BPair) :
+    c + (b + d) + a = a + b + (c + d) := by
+  rw [BPair.add_comm (c + (b + d)) a, ← BPair.add_assoc c b d,
+    BPair.add_comm c b, BPair.add_assoc b c d,
+    ← BPair.add_assoc a b (c + d)]
+
+/-- The constant key's monomial: the base's swapped magnetic entry
+at the clearing's square, the scale's own power absorbing. -/
+private theorem constKeyRead (m : BPair) (en ed : Pos) :
+    (m.swap * ground.bpow (BPair.ofPos en) 0
+      * ground.bpow (BPair.ofPos ed) 2).oneValue
+      ((m.scale (ed * ed)).swap) := by
+  refine BPair.oneValue_trans
+    (BPair.mul_congr_left (BPair.mul_one_read m.swap)) ?_
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl m.swap) (bpowSq ed)) ?_
+  exact BPair.oneValue_trans
+    (BPair.oneValue_of_eq
+      (BPair.mul_comm m.swap (BPair.ofPos (ed * ed))))
+    (BPair.ofPos_scale (ed * ed) m.swap)
+
+/-- The top key's monomial: the base's electric entry at the
+scale's square, the clearing's own power absorbing. -/
+private theorem topKeyRead (e : BPair) (en ed : Pos) :
+    (e * ground.bpow (BPair.ofPos en) 2
+      * ground.bpow (BPair.ofPos ed) 0).oneValue
+      (e.scale (en * en)) := by
+  refine BPair.oneValue_trans (BPair.mul_one_read _) ?_
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl e) (bpowSq en)) ?_
+  exact BPair.oneValue_trans
+    (BPair.oneValue_of_eq
+      (BPair.mul_comm e (BPair.ofPos (en * en))))
+    (BPair.ofPos_scale (en * en) e)
+
+/-- The middle key's monomial: the seam weight at the scale's two
+members with the height's own members already on the weight's two
+sides. -/
+private theorem midKeyRead (g : BPair) (en ed hp hm : Pos) :
+    (g.swap * (⟨hp, hm⟩ : BPair)
+      * ground.bpow (BPair.ofPos en) 1
+      * ground.bpow (BPair.ofPos ed) 1).oneValue
+      (g.scale (en * ed * hm) + (g.scale (en * ed * hp)).swap) := by
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.mul_congr (BPair.oneValue_refl _)
+      (bpow_one_read (BPair.ofPos en))) (bpow_one_read (BPair.ofPos ed))) ?_
+  have hrw : g.swap * (⟨hp, hm⟩ : BPair) * BPair.ofPos en
+        * BPair.ofPos ed
+      = (⟨hp, hm⟩ : BPair)
+        * (g.swap * (BPair.ofPos en * BPair.ofPos ed)) := by
+    rw [BPair.mul_assoc (g.swap * (⟨hp, hm⟩ : BPair))
+        (BPair.ofPos en) (BPair.ofPos ed),
+      BPair.mul_comm g.swap (⟨hp, hm⟩ : BPair),
+      BPair.mul_assoc (⟨hp, hm⟩ : BPair) g.swap
+        (BPair.ofPos en * BPair.ofPos ed)]
+  rw [hrw]
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl (⟨hp, hm⟩ : BPair))
+      (BPair.oneValue_trans
+        (BPair.mul_congr (BPair.oneValue_refl g.swap)
+          (BPair.ofPos_mul en ed))
+        (BPair.oneValue_trans
+          (BPair.oneValue_of_eq
+            (BPair.mul_comm g.swap (BPair.ofPos (en * ed))))
+          (BPair.ofPos_scale (en * ed) g.swap)))) ?_
+  exact seamHeight g en ed hp hm
+
+/-- The three monomials join to the corner site's entry: the
+electric and the seam's lower member on the datum, the magnetic and
+the seam's upper member on the swap. -/
+private theorem entryJoin (e m g : BPair) (en ed hp hm : Pos) :
+    (m.swap * ground.bpow (BPair.ofPos en) 0
+        * ground.bpow (BPair.ofPos ed) 2
+      + g.swap * (⟨hp, hm⟩ : BPair) * ground.bpow (BPair.ofPos en) 1
+        * ground.bpow (BPair.ofPos ed) 1
+      + e * ground.bpow (BPair.ofPos en) 2
+        * ground.bpow (BPair.ofPos ed) 0).oneValue
+      (e.scale (en * en) + g.scale (en * ed * hm)
+        + (m.scale (ed * ed) + g.scale (en * ed * hp)).swap) := by
+  refine BPair.oneValue_trans
+    (BPair.add_congr
+      (BPair.add_congr (constKeyRead m en ed) (midKeyRead g en ed hp hm))
+      (topKeyRead e en ed)) ?_
+  refine BPair.oneValue_of_eq ?_
+  rw [← BPair.swap_add (m.scale (ed * ed)) (g.scale (en * ed * hp))]
+  exact addShuffle _ _ _ _
+
+/-- The section's entry at the scale point: the base's two
+surviving keys read `en² e` against `ed² m`, the seam weight reads
+`en ed (swap g)` with the height's two members already distributed
+onto its two sides — the corner site's entry. -/
+private theorem cornerEntryH (e m g : BPair) (en ed hp hm : Pos) :
+    (poly.evalClear
+        (poly.pevalC [poly.neg [m, BPair.unit, BPair.swap e],
+          [BPair.unit, BPair.swap g]] [⟨hp, hm⟩] Pos.one 1)
+        (BPair.ofPos en) ed 2).oneValue
+      (e.scale (en * en) + g.scale (en * ed * hm)
+        + (m.scale (ed * ed) + g.scale (en * ed * hp)).swap) :=
+  BPair.oneValue_trans
+    (poly.evalClear_congr (heightEntry e m g (⟨hp, hm⟩ : BPair))
+      (BPair.ofPos en) ed 2)
+    (BPair.oneValue_trans
+      (evalThree m.swap (g.swap * (⟨hp, hm⟩ : BPair)) e
+        (BPair.ofPos en) ed)
+      (entryJoin e m g en ed hp hm))
+
+/-- One row of the section's evaluation reads the corner site's
+row, the three rows' componentwise walk entry by entry. -/
+private theorem cornerRowH (en ed hp hm : Pos) : ∀ rE rM rG : List BPair,
+    poly.oneValue
+      (((List.zipWith (fun h g => [poly.neg h, g])
+          (List.zipWith (fun e m =>
+              [m, ground.BPair.unit, ground.BPair.swap e]) rE rM)
+          (rG.map (fun g =>
+              [ground.BPair.unit, ground.BPair.swap g]))).map
+          (fun P => poly.pevalC P [⟨hp, hm⟩] Pos.one 1)).map
+        (fun p => poly.evalClear p (BPair.ofPos en) ed 2))
+      (List.zipWith BPair.add
+        (List.zipWith BPair.add (rE.map (fun x => x.scale (en * en)))
+          (rG.map (fun x => x.scale (en * ed * hm))))
+        ((List.zipWith BPair.add (rM.map (fun x => x.scale (ed * ed)))
+          (rG.map (fun x => x.scale (en * ed * hp)))).map BPair.swap))
+  | [], _, _ => trivial
+  | _ :: _, [], [] => trivial
+  | _ :: _, [], _ :: _ => trivial
+  | _ :: _, _ :: _, [] => trivial
+  | e :: rE, m :: rM, g :: rG =>
+    ⟨cornerEntryH e m g en ed hp hm, cornerRowH en ed hp hm rE rM rG⟩
+
+/-- The section's evaluation reads the corner site row by row, the
+three data's componentwise walk. -/
+private theorem cornerMatH (en ed hp hm : Pos) : ∀ E M G : Mat,
+    elim.matOneValue
+      (cellcount.evalPC (cornerAtHeight E M G hp hm)
+        (BPair.ofPos en) ed 2)
+      (cornerSite E M G en ed hp hm)
+  | [], _, _ => trivial
+  | _ :: _, [], [] => trivial
+  | _ :: _, [], _ :: _ => trivial
+  | _ :: _, _ :: _, [] => trivial
+  | rE :: E, rM :: M, rG :: G =>
+    ⟨cornerRowH en ed hp hm rE rM rG, cornerMatH en ed hp hm E M G⟩
+
+/-- The height section's evaluation at the scale reads the corner
+site, the two substitution orders one matrix. -/
+theorem cornerAtHeight_eval (E M G : Mat) (en ed hp hm : Pos) :
+    elim.matOneValue
+      (cellcount.evalPC (cornerAtHeight E M G hp hm)
+        (ground.BPair.ofPos en) ed 2)
+      (cornerSite E M G en ed hp hm) :=
+  cornerMatH en ed hp hm E M G
+
+/-- The section's determinant is the presentation's own at the
+height substitution: the height section's minor reads the
+two-variable minor at the height point, tying the emitted record's
+carrier to the corner presentation (`thm:decimation`'s record at
+the corner pencil). -/
+theorem cornerAtHeight_minor {o : Nat} (E M G : Mat) (hp hm : Pos)
+    (hE : elim.sqAt E o) (hM : elim.sqAt M o)
+    (hG : elim.sqAt G o) :
+    poly.oneValue
+      (split.pminor (cornerAtHeight E M G hp hm))
+      (poly.pevalC (split.ppminor (cornerPP E M G))
+        [⟨hp, hm⟩] Pos.one 1) := by
+  have hlen : (cornerPP E M G).length = o :=
+    cornerPP_len E M G o (elim.sqAt_len hE) (elim.sqAt_len hM)
+      (elim.sqAt_len hG)
+  have hrows : elim.rowsLen o (cornerPP E M G) :=
+    cornerPP_rows o E M G (elim.rowsLen_of_sqAt hE)
+      (elim.rowsLen_of_sqAt hM) (elim.rowsLen_of_sqAt hG)
+  have hsq : elim.rowsLen (cornerPP E M G).length (cornerPP E M G) := by
+    rw [hlen]
+    exact hrows
+  exact poly.oneValue_symm
+    (elim.evalC_minorPP (cornerPP E M G) [⟨hp, hm⟩] hsq)
 
 end corner

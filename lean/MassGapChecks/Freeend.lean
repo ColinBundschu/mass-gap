@@ -16,7 +16,6 @@ its occupancy the corner units'); `prop:E0`'s module is the
 attainment's `θ` instance by `attainTheta`, the definitional read in
 the content module.
 -/
-set_option maxRecDepth 8192
 
 open ground lattice fusion freeend
 

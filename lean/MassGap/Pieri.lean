@@ -910,7 +910,7 @@ theorem occ_complBox (d : Nat) (hd : 2 ≤ d) (m : List Nat) :
       Nat.zero_add] at hpre1
     have hlast : ground.getAt 0
         (applyWord (sortWord (inversions m) m) m) (k + 1) ≤ 1 := by
-      rw [← ground.getAt_reverse
+      rw [← ground.getAt_reverse (0 : Nat)
         (applyWord (sortWord (inversions m) m) m) 0 (k + 1)
         (by rw [hlms, Nat.zero_add])]
       exact hpre1
@@ -1495,13 +1495,6 @@ private theorem gapValue_rowD (s c : Shape) (hd2 : 2 ≤ s.length)
         exact Nat.succ_pos 0
       rw [hz, rowD_zero s c hd hca hno]
 
-private theorem expo_getAt (x p : List Nat) (k : Nat)
-    (hk : k < p.length) :
-    ground.getAt 0 (places.expo x p) k
-      = ground.getAt 0 x (ground.getAt 0 p k) := by
-  show ground.getAt 0 (p.map (ground.getAt 0 x)) k = _
-  rw [ground.getAt_map 0 0 (ground.getAt 0 x) p k hk]
-
 private theorem desc_map1 (v : List Nat)
     (hdv : ∀ k, k + 1 < v.length →
       ground.getAt 0 v (k + 1) < ground.getAt 0 v k) :
@@ -1538,7 +1531,7 @@ private theorem expo_inv (X p : List Nat) (d : Nat)
       (ground.getAt 0 (places.expo X p))
       (fun y => ground.getAt 0 X (ground.getAt 0 p y))
       (invPerm d p)
-      (fun y hy => expo_getAt X p y
+      (fun y hy => places.getAt_expo X p y
         (by rw [hplen]; exact hival y hy)),
     ← ground.map_map (ground.getAt 0 p) (ground.getAt 0 X)
       (invPerm d p),
@@ -1617,7 +1610,7 @@ private theorem expo_bump_inv (v p : List Nat) (d i : Nat)
       rw [ground.length_map, hqlen] at hk2
       exact hk2
     have hkq : k < (invPerm d p).length := by rw [hqlen]; exact hkd
-    rw [expo_getAt (ground.bumpAt i v) (invPerm d p) k hkq]
+    rw [places.getAt_expo (ground.bumpAt i v) (invPerm d p) k hkq]
     show ground.getAt 0 (ground.bumpAt i v)
         (ground.getAt 0 (invPerm d p) k)
       = ground.getAt 0 (ground.bumpAt (ground.getAt 0 p i)
@@ -1701,7 +1694,7 @@ private theorem gradedSums_complBox (s c : Shape)
             expo_map1 (display s) p s.length (length_display s) hp
           have hocc : 0 < ground.getAt 0
               (places.expo ((display s).map (fun x => x + 1)) p) i := by
-            rw [expo_getAt _ p i (by rw [hplen]; exact hi),
+            rw [places.getAt_expo _ p i (by rw [hplen]; exact hi),
               ground.getAt_map 0 0 (fun x => x + 1) (display s)
                 (ground.getAt 0 p i)
                 (by rw [length_display]

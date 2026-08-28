@@ -25,7 +25,6 @@ both sides decided beside the applied theorem, and the derived
 identity `count_fusion` routes the fast count onto the
 kernel-dimension count at the fundamental against the adjoint.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places sertables steinberg

@@ -397,11 +397,6 @@ private theorem ht_dipAt : ∀ (j g : Nat) (nu : List Nat),
         ((ground.getAt 0 nu j - 1) * g)]
     exact hgen
 
-private theorem lt_add_succ (a m : Nat) : a < a + (m + 1) := by
-  show a + 1 ≤ a + (m + 1)
-  rw [Nat.add_comm m 1, ← Nat.add_assoc]
-  exact Nat.le_add_right (a + 1) m
-
 private theorem add_shuffle (i k g : Nat) :
     i + (k + (g + 1) + 1) = i + 1 + k + (g + 1) := by
   show i + (k + g) + 1 + 1 = i + 1 + k + g + 1
@@ -432,13 +427,13 @@ theorem ht_moveAt_raise (i j : Nat) (mu : List Nat)
   match Nat.eq_zero_or_pos (ground.getAt 0 mu j) with
   | Or.inl hz =>
     rw [ground.dipAt_of_zero j mu hz, ht_bumpAt i (k + (gj + 1)) mu hgis]
-    exact lt_add_succ (ht mu) (k + gj)
+    exact ground.ltAddSucc (ht mu) (k + gj)
   | Or.inr hp =>
     rw [ht_bumpAt i (k + (gj + 1)) (ground.dipAt j mu)
         (by rw [ground.length_dipAt j mu]; exact hgis),
       ht_dipAt j gj mu hgjs hp,
       add_regroup (ht (ground.dipAt j mu)) gj k]
-    exact lt_add_succ (ht (ground.dipAt j mu) + gj) k
+    exact ground.ltAddSucc (ht (ground.dipAt j mu) + gj) k
 
 /-- An off-unit sized seed at the letter width closes to a pool at
 the stated data, the seed machinery assembled once: the closure's

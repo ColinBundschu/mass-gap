@@ -1894,15 +1894,6 @@ private theorem foldShift (F : Nat → Nat) (n : Nat) :
       (fun l => l + 1) (List.range n)]
   rfl
 
-private theorem sh1 (X A B Y : Nat) :
-    ((X + A) + B) + Y = (X + Y) + (A + B) := by
-  have hL : ((X + A) + B) + Y = X + (A + (B + Y)) := by
-    rw [Nat.add_assoc (X + A) B Y, Nat.add_assoc X A (B + Y)]
-  have hR : (X + Y) + (A + B) = X + (A + (B + Y)) := by
-    rw [Nat.add_assoc X Y (A + B), Nat.add_comm Y (A + B),
-      Nat.add_assoc A B Y]
-  rw [hL, hR]
-
 private theorem stepCoeff (x y l : Nat) :
     (x + 2 * (l + 1)) + y = (x + 1 + 2 * l) + (y + 1) := by
   rw [Nat.mul_succ 2 l]
@@ -2028,7 +2019,7 @@ theorem stepRead (mult : List Nat → Nat) (w : List Nat)
           (fun l => l + 1)) = _
     rw [hmb]
   rw [hgfv, hgsv, hgfm, hgsm,
-    sh1 ((ground.getAt 0 w a + 2 * 1) * mult (ground.bumpAt a w))
+    ground.addExch4 ((ground.getAt 0 w a + 2 * 1) * mult (ground.bumpAt a w))
       (ground.famFold Nat.add 0
         (fun l => (ground.getAt 0 w a + 2 * (l + 1))
           * mult (moveBy a b l (ground.bumpAt a w)))
@@ -2153,14 +2144,6 @@ private theorem moveSym {a b : Nat} (hab : a < b) (nu : List Nat)
       · rw [getAt_swapPair_ne (moveBy a b k nu) hma hmb hta htb,
           getAt_moveBy_ne a b k nu hta htb,
           getAt_moveBy_ne a b (ground.getAt 0 nu b - k) nu hta htb]
-
-private theorem predSubLt {x n : Nat} (hx : x < n) :
-    (n - 1) - x < n := by
-  match n, hx with
-  | n + 1, _ =>
-    rw [Nat.succ_sub_succ]
-    show (n - 0) - x < n + 1
-    exact Nat.lt_succ_of_le (Nat.sub_le n x)
 
 private theorem predSubSucc {x n : Nat} (hx : x < n) :
     ((n - 1) - x) + 1 = n - x := by
@@ -2368,8 +2351,8 @@ theorem boundaryRead (mult : List Nat → Nat) (nu : List Nat)
         (Nat.le_pred_of_lt (ground.ltOfMem hx)))
       (fun x hx => ground.natSubSubCancel _ x
         (Nat.le_pred_of_lt (ground.ltOfMem hx)))
-      (fun x hx => ground.countOf_range_pos (predSubLt (ground.ltOfMem hx)))
-      (fun x hx => ground.countOf_range_pos (predSubLt (ground.ltOfMem hx)))]
+      (fun x hx => ground.countOf_range_pos (ground.predSubLt (ground.ltOfMem hx)))
+      (fun x hx => ground.countOf_range_pos (ground.predSubLt (ground.ltOfMem hx)))]
     exact ground.famFold_congr_members Nat.add 0 _ _ _
       (fun j hj => by
         have hjn : j < ground.getAt 0 nu b := ground.ltOfMem hj
@@ -6462,20 +6445,6 @@ theorem sqSplit :
     exact (addCross3 (c * c) (stdSq x) (2 * (c * e))
       (2 * ground.dotNat x y) (e * e) (stdSq y)).symm
 
-private theorem permCounts {d : Nat} {p : List Nat}
-    (hp : 0 < ground.countOf p (perms d)) :
-    ∀ x, ground.countOf x p = ground.countOf x (List.range d) := by
-  obtain ⟨_, hle1, hlt, hpos⟩ := perm_member_reads hp
-  intro x
-  rw [countOf_range x d]
-  by_cases hxd : x < d
-  · rw [if_pos hxd]
-    exact Nat.le_antisymm (hle1 x) (hpos x hxd)
-  · rw [if_neg hxd]
-    by_cases hc : 0 < ground.countOf x p
-    · exact absurd (hlt x hc) hxd
-    · exact Nat.eq_zero_of_le_zero (Nat.le_of_not_lt hc)
-
 private theorem expoRange (d : Nat) :
     expo (unitDisp d) (List.range d) = unitDisp d := by
   refine ground.getAt_ext 0 _ _ ?_ ?_
@@ -6530,7 +6499,7 @@ private theorem sqPerm {d : Nat} {p : List Nat}
     rw [← h3, expoRange d]
   rw [h1, h2]
   exact ground.famFold_relist Nat.add 0 Nat.add_comm Nat.add_assoc
-    _ p (List.range d) (permCounts hp)
+    _ p (List.range d) (places.perm_counts_range _ hp)
 
 /-- The tie fold: the guarded read over the place permutations at
 a side — every collection fold below an instance at its member
@@ -9788,7 +9757,7 @@ private theorem sumExpo {d : Nat} {p : List Nat}
     rw [← h3, expoRange d]
   rw [h1, h2]
   exact ground.famFold_relist Nat.add 0 Nat.add_comm Nat.add_assoc
-    _ p (List.range d) (permCounts hp)
+    _ p (List.range d) (places.perm_counts_range _ hp)
 
 /-- The display bridge: a key whose gap against the unit display
 is the top line is the top display itself. -/
@@ -9926,19 +9895,6 @@ private def ascCount : List Nat → Nat
   | [] => 0
   | a :: t => ground.countAbove a t + ascCount t
 
-/-- The adjacent transposition is the move at its place. -/
-private theorem swapAdj_eq (i : Nat) (t : List Nat) :
-    places.swapPair i (i + 1) t = ground.adjSwap i t := by
-  have hg : i + 1 - i - 1 = 0 := by
-    rw [Nat.add_comm i 1, addSubSelfR 1 i]
-  show (if i < i + 1 then places.swapPosG i (i + 1 - i - 1) t
-      else if i + 1 < i then
-        places.swapPosG (i + 1) (i - (i + 1) - 1) t
-      else t)
-    = ground.adjSwap i t
-  rw [if_pos (Nat.lt_succ_self i), hg]
-  rfl
-
 /-- The count beyond a value as its indicator's fold over the
 family. -/
 private theorem countAbove_fold (c : Nat) : ∀ l : List Nat,
@@ -9977,7 +9933,7 @@ private theorem ascCount_swapAdj : ∀ (t : List Nat) (i : Nat),
     have hab : a < b := hlt
     have hba : ¬ b < a :=
       fun h => Nat.lt_irrefl a (Nat.lt_trans hab h)
-    rw [swapAdj_eq 0 (a :: b :: u)]
+    rw [places.swapPair_adjacent 0 (a :: b :: u)]
     show ground.countAbove b (a :: u)
         + (ground.countAbove a u + ascCount u) + 1
       = ground.countAbove a (b :: u)
@@ -9994,11 +9950,11 @@ private theorem ascCount_swapAdj : ∀ (t : List Nat) (i : Nat),
     have hiu : i + 1 < u.length := Nat.lt_of_succ_lt_succ hi
     have hlt' : ground.getAt 0 u i < ground.getAt 0 u (i + 1) :=
       hlt
-    rw [swapAdj_eq (i + 1) (a :: u)]
+    rw [places.swapPair_adjacent (i + 1) (a :: u)]
     show ground.countAbove a (ground.adjSwap i u)
         + ascCount (ground.adjSwap i u) + 1
       = ground.countAbove a u + ascCount u
-    rw [← swapAdj_eq i u, countAbove_swapAdj a i u,
+    rw [← places.swapPair_adjacent i u, countAbove_swapAdj a i u,
       Nat.add_assoc (ground.countAbove a u)
         (ascCount (places.swapPair i (i + 1) u)) 1,
       ascCount_swapAdj u i hiu hlt']
@@ -10474,11 +10430,6 @@ private theorem memAppR {α : Type} {x : α} {v : List α}
   | [] => h
   | a :: t => List.Mem.tail a (memAppR h t)
 
-private theorem memMapOf {α β : Type} (f : α → β) {x : α} :
-    ∀ {l : List α}, x ∈ l → f x ∈ l.map f
-  | _ :: t, .head _ => List.Mem.head (t.map f)
-  | b :: _, .tail _ h => List.Mem.tail (f b) (memMapOf f h)
-
 private theorem memFlat {α β : Type} (f : α → List β) {x : β} :
     ∀ {l : List α} {a : α}, a ∈ l → x ∈ f a → x ∈ l.flatMap f
   | _ :: t, _, .head _, hx => memApp hx (List.flatMap f t)
@@ -10486,15 +10437,6 @@ private theorem memFlat {α β : Type} (f : α → List β) {x : β} :
 
 private theorem memEq {α : Type} {x y : α} {l : List α}
     (h : x = y) (hx : x ∈ l) : y ∈ l := h ▸ hx
-
-private theorem countOfMem {α : Type} [DecidableEq α] {x : α} :
-    ∀ {l : List α}, x ∈ l → 0 < ground.countOf x l
-  | _ :: t, .head _ => by
-    rw [ground.countOf_head]
-    exact Nat.succ_pos _
-  | b :: t, .tail _ h => by
-    rw [ground.countOf_cons]
-    exact Nat.lt_of_lt_of_le (countOfMem h) (Nat.le_add_left _ _)
 
 /-- The pair move's exact inverse: the reversed move at the same
 shift returns the content, the raised letter lowered back and the
@@ -10554,7 +10496,7 @@ private theorem count_key_zero {d : Nat} {L : List (List Nat)}
               (ground.getAt 0 (moveBy a b (l + 1) nu) a)).map
             (fun k => k + 1)).map
           (fun k => moveBy b a k (moveBy a b (l + 1) nu)) :=
-      memMapOf _ (memMapOf _ (ground.memRange hlt))
+      ground.mem_map_to _ (ground.mem_map_to _ (ground.memRange hlt))
     have harm : nu ∈ (pairsOf d).flatMap (fun ab =>
         ((List.range
             (ground.getAt 0 (moveBy a b (l + 1) nu) ab.1)).map
@@ -10568,7 +10510,7 @@ private theorem count_key_zero {d : Nat} {L : List (List Nat)}
             (fun l => l + 1)).map
             (fun l => moveBy ab.2 ab.1 l mu)))
       exact memAppR (memFlat _ hmu harm) L
-    have hc := countOfMem hnu
+    have hc := ground.countOf_pos_of_mem hnu
     rw [hz] at hc
     exact absurd hc (Nat.lt_irrefl 0)
 

@@ -10,7 +10,6 @@ plaquette row's targets sit in the union region at the fused
 content, the far row at the two contents' sum and the shared-link
 row at its computed largest.
 -/
-set_option maxRecDepth 1000000
 set_option maxHeartbeats 16000000
 
 open ground lattice fusion leastwindow

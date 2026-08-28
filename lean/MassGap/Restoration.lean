@@ -575,22 +575,15 @@ private theorem sumNat_flatMap {α : Type} (G : α → List Nat)
 /-- A grid comparison's truth is the grids' equality, the nested
 list carrier's own decidable read. -/
 private theorem gridBeqEq :
-    ∀ {u w : List (List Nat)}, (u == w) = true → u = w
-  | [], [], _ => rfl
-  | [], _ :: _, h => Bool.noConfusion h
-  | _ :: _, [], h => Bool.noConfusion h
-  | a :: u, b :: w, h => by
-    have hs := ground.andSplitB
-      (show ((a == b) && ((u : List (List Nat)) == w)) = true from h)
-    rw [ground.listBeqEq hs.1, gridBeqEq hs.2]
+    ∀ {u w : List (List Nat)}, (u == w) = true → u = w :=
+  ground.listBeqRead (fun _ _ h =>
+    ground.listBeqRead (fun _ _ hh => ground.beqEqOf hh) h)
 
 /-- A grid's comparison against itself is true. -/
-private theorem gridEqBeq : ∀ u : List (List Nat), (u == u) = true
-  | [] => rfl
-  | a :: u => by
-    show ((a == a) && ((u : List (List Nat)) == u)) = true
-    rw [ground.listEqBeq a, gridEqBeq u]
-    rfl
+private theorem gridEqBeq :
+    ∀ u : List (List Nat), (u == u) = true :=
+  ground.listBeqIntro (fun a =>
+    ground.listBeqIntro (fun _ => ground.eqBeqOf rfl) a)
 
 /-- A row over the key range carries a transposition of two keys by
 reindexing the read. -/
@@ -1349,11 +1342,6 @@ private theorem one_or_two : ∀ {n : Nat}, 0 < n → n ≤ 2 → n = 1 ∨ n = 
     absurd (Nat.le_of_succ_le_succ (Nat.le_of_succ_le_succ h))
       (Nat.not_succ_le_zero k)
 
-/-- A joined unit is never vacant. -/
-private theorem one_add_ne_zero (x : Nat) : ¬ 1 + x = 0 := by
-  rw [Nat.add_comm]
-  exact fun h => Nat.noConfusion h
-
 /-- A fold reading its whole total at one occupied key is vacant at
 every further occupied key. -/
 private theorem fold_rest_zero {α : Type} [DecidableEq α] (F : α → Nat)
@@ -1434,7 +1422,7 @@ private theorem ind_snd_ne_zero (a x : Nat) :
     ¬ ((if a == x then 1 else 0) + (if a == a then 1 else 0) = 0) := by
   rw [ground.eqBeqOf (rfl : a = a)]
   intro hc
-  exact one_add_ne_zero (if a == x then 1 else 0)
+  exact ground.oneAddNeZero (if a == x then 1 else 0)
     (by rw [Nat.add_comm]; exact hc)
 
 /-- A two-argument indicator above the vacant names one of its
@@ -1509,7 +1497,7 @@ private theorem ipGrid_inj (m d t t' r s i k : Nat)
     · have hz := hent t htm i hid
       rw [ipEnt_at t t' i t i rfl, ipEnt_off r s k t i hc,
         ground.eqBeqOf (rfl : t = t)] at hz
-      exact absurd hz (fun hcc => one_add_ne_zero _ hcc)
+      exact absurd hz (fun hcc => ground.oneAddNeZero _ hcc)
   have hpair := pair_eq_of_ind m t t' r s ht ht'm hr hsm (fun a ha => by
     have hz := hent a ha i hid
     rw [ipEnt_at t t' i a i rfl, hik, ipEnt_at r s k a k rfl] at hz
@@ -1890,7 +1878,7 @@ each the two families read their counts off the splittings: the
 quartic's monomial holds one splitting and the cross monomial two
 (`prodIP_qu`, `prodIP_cross`).  The cross coefficient enters the
 display against its own memberwise swap, so it withdraws to the
-sum's unit at the quartic's monomial (`swap_join_read`) and doubles
+sum's unit at the quartic's monomial (`ground.BPair.add_swap_cancel`) and doubles
 at the cross monomial — the two reads the identity's two sides. -/
 
 /-- A key below the unit count is the first. -/
@@ -2559,24 +2547,6 @@ private theorem deg4_classify (d : Nat) (g : List (List Nat))
       exact ent_cross_read d (entOf g) j0 i0 (Nat.ne_of_lt hlt) hEj2 hE2
         (fun k hk h1 h2 => hrest0 k hk h2 h1)
 
-/-- A datum joined with its memberwise swap reads the sum's
-unit. -/
-private theorem add_swap_null (x : BPair) :
-    (x + x.swap).oneValue BPair.unit :=
-  BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.add_comm x x.swap))
-    (BPair.swap_add_null (BPair.oneValue_refl x))
-
-/-- A datum, a further sum and the datum's swap join to that sum's
-own read. -/
-private theorem swap_join_read (x y : BPair) :
-    (x + (y + x.swap)).oneValue y :=
-  BPair.oneValue_trans
-    (BPair.oneValue_of_eq (by
-      rw [BPair.add_comm y x.swap, ← BPair.add_assoc]))
-    (BPair.oneValue_trans
-      (BPair.add_congr (add_swap_null x) (BPair.oneValue_refl y))
-      (BPair.unit_add y))
-
 /-- The count two scales a datum to its own doubling. -/
 private theorem mul_ofNat_two (x : BPair) :
     (x * BPair.ofNat 2).oneValue (x + x) := by
@@ -2679,7 +2649,7 @@ theorem deg4_span (d : Nat) (c : List (List Nat) → BPair)
       refine BPair.oneValue_trans (BPair.add_congr htr htr) ?_
       exact BPair.oneValue_symm (BPair.oneValue_trans
         (BPair.add_congr (BPair.mul_ofNat_one _) (BPair.mul_ofNat_one _))
-        (swap_join_read _ _))
+        (ground.BPair.add_swap_cancel _ _))
     | inr hcr =>
       obtain ⟨i, j, hij, hjd, hgij⟩ := hcr
       have hid : i < d := Nat.lt_trans hij hjd

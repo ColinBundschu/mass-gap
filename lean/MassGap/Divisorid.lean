@@ -54,18 +54,6 @@ ground at the unit's line against the scaled floor (`lem:freeend`;
 namespace divisorid
 open ground elim inertia split
 
-/-- A pair against a positive datum's pair reads the pair rescaled
-by the datum. -/
-private theorem mul_ofPos (x : BPair) (d : Pos) :
-    (x * BPair.ofPos d).oneValue (x.scale d) := by
-  show x.fst * (d + Pos.one) + x.snd * Pos.one + x.snd * d
-    = x.fst * d + (x.fst * Pos.one + x.snd * (d + Pos.one))
-  rw [ground.left_distrib, ground.left_distrib, ground.mul_one,
-    ground.mul_one, ground.add_assoc (x.fst * d) x.fst x.snd,
-    ground.add_assoc (x.fst * d) (x.fst + x.snd) (x.snd * d),
-    ground.add_assoc x.fst x.snd (x.snd * d),
-    ground.add_comm x.snd (x.snd * d)]
-
 /-- The cleared linear factor reads the unit at a level exactly
 where the level ties the root. -/
 private theorem linFac_unit (n : BPair) (d : Pos) (x : BPair) :
@@ -76,7 +64,7 @@ private theorem linFac_unit (n : BPair) (d : Pos) (x : BPair) :
     exact BPair.add_congr (BPair.oneValue_refl n.swap)
       (BPair.oneValue_trans
         (BPair.mul_congr (BPair.oneValue_refl x) (poly.eval_one _ x))
-        (mul_ofPos x d))
+        (BPair.mul_ofPos x d))
   refine (BPair.unit_iff h).trans ?_
   rw [BPair.add_comm]
   exact ⟨ground.oneOfUnit, ground.unitOfOne⟩
@@ -293,7 +281,7 @@ private theorem eval_scaleP_ofPos (c : poly.Poly) (n : Pos) (t : BPair) :
       (fun x _ => BPair.norm_oneValue _)) t) ?_
   refine BPair.oneValue_trans (poly.eval_scale c (BPair.ofPos n) t) ?_
   rw [BPair.mul_comm]
-  exact mul_ofPos _ n
+  exact BPair.mul_ofPos _ n
 
 private theorem pevalB_pderivFrom (t : BPair) : ∀ (n : Pos) (P : poly.PPoly),
     poly.oneValue (poly.pevalB (pderivFrom n P) t)

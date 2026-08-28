@@ -241,7 +241,7 @@ private theorem reflAt_invol (t : gentable.Table) (i : Nat)
       (elim.matVec_comp (reflM t i) (reflM t i) v t.rank hrows hv hrows')
       (poly.oneValue_trans
         (elim.matVec_matOne _ _ v hsq)
-        (split.matVec_idMat t.rank v hv)))
+        (inertia.matVec_idMat t.rank v hv)))
   show poly.pnorm (elim.matVec (reflM t i)
     (poly.pnorm (elim.matVec (reflM t i) v))) = v
   refine Eq.trans (poly.pnorm_congr _ _ ?_ hall) hnv
@@ -339,12 +339,6 @@ theorem neg_vecAdd : ∀ u v : List BPair,
     rw [neg_vecAdd u v]
     rfl
 
-private theorem vecAdd_congr {u u' v v' : List BPair}
-    (hu : u.length = u'.length) (hv : v.length = v'.length)
-    (h1 : poly.oneValue u u') (h2 : poly.oneValue v v') :
-    poly.oneValue (elim.vecAdd u v) (elim.vecAdd u' v') :=
-  elim.polyOne_vecAdd u u' v v' h1 h2 hu hv
-
 /-- The subset fold's vector at the head-structural spelling: the
 famFold recursion's cons read is definitional, a `show` step the
 walk's structural inductions consume directly, where
@@ -417,7 +411,7 @@ private theorem matVec_unitV : ∀ (M : elim.Mat) (n k : Nat),
       (elim.dotN r (List.replicate n BPair.unit)
         :: elim.matVec M (List.replicate n BPair.unit))
       (BPair.unit :: List.replicate k BPair.unit)
-    exact ⟨BPair.oneValue_trans (elim.dotN_dotP _ _)
+    exact ⟨BPair.oneValue_trans (elim.dotN_read _ _)
         (elim.dotP_repl_unit r n),
       matVec_unitV M n k (Nat.succ.inj h)⟩
 
@@ -493,7 +487,7 @@ private theorem rho_reflM (t : gentable.Table) (F : FundData)
   refine poly.oneValue_map _ _ (List.range t.rank) (fun j hj => ?_)
   have hjr : j < t.rank :=
     ground.ltOfMemRange hj
-  refine BPair.oneValue_trans (elim.dotN_dotP _ _) ?_
+  refine BPair.oneValue_trans (elim.dotN_read _ _) ?_
   have eρ : (rhoV t) = List.replicate
       ((List.range t.rank).length) (BPair.ofNat 1) := by
     show List.replicate t.rank (BPair.ofNat 1) = _
@@ -670,7 +664,7 @@ theorem reflAt_invol' (t : gentable.Table) (i : Nat)
       (elim.matVec_comp (reflM t i) (reflM t i) v t.rank hrows hv hrows')
       (poly.oneValue_trans
         (elim.matVec_matOne _ _ v hsq)
-        (split.matVec_idMat t.rank v hv)))
+        (inertia.matVec_idMat t.rank v hv)))
   show poly.pnorm (elim.matVec (reflM t i)
     (poly.pnorm (elim.matVec (reflM t i) v))) = poly.pnorm v
   refine poly.pnorm_congr _ _ ?_ hall
@@ -1080,7 +1074,7 @@ private theorem fvCongrMem (t : gentable.Table)
         (List.replicate t.rank BPair.unit) g l)
   | [], _ => poly.oneValue_refl _
   | a :: l, h =>
-    vecAdd_congr ((hf a).trans (hg a).symm)
+    elim.vecAdd_congr2 _ _ _ _ ((hf a).trans (hg a).symm)
       ((fvLen t f hf l).trans (fvLen t g hg l).symm)
       (h a (by rw [ground.countOf_head]; exact Nat.succ_pos _))
       (fvCongrMem t f g hf hg l
@@ -1115,7 +1109,7 @@ private theorem fvFilterL (t : gentable.Table) (f : Nat → List BPair)
         (elim.vecAdd (if P a then f a
           else List.replicate t.rank BPair.unit) _)
       rw [hpa, if_pos rfl]
-      exact vecAdd_congr rfl
+      exact elim.vecAdd_congr2 _ _ _ _ rfl
         ((fvLen t f hf (List.filter P l)).trans
           (fvLen t _ hg l).symm)
         (poly.oneValue_refl _) (fvFilterL t f hf P l)
@@ -1159,7 +1153,7 @@ private theorem mvFold (t : gentable.Table) (i : Nat)
             (fun j => elim.matVec (reflM t i) (f j)) l).length :=
       ((elim.matVec_length _ _).trans (reflM_length t i)).trans
         (fvLen t _ hlam l).symm
-    exact vecAdd_congr rfl h2 (poly.oneValue_refl _)
+    exact elim.vecAdd_congr2 _ _ _ _ rfl h2 (poly.oneValue_refl _)
       (mvFold t i f hf l)
 
 /-- A key joins its own swap at the unit family. -/
@@ -1170,9 +1164,7 @@ theorem vecAdd_swap_self : ∀ v : List BPair,
   | a :: v => by
     show poly.oneValue ((a.swap + a) :: elim.vecAdd (poly.neg v) v)
       (BPair.unit :: List.replicate v.length BPair.unit)
-    refine ⟨?_, vecAdd_swap_self v⟩
-    show a.snd + a.fst + Pos.one = Pos.one + (a.fst + a.snd)
-    rw [ground.add_comm a.snd a.fst, ground.add_comm]
+    exact ⟨BPair.swap_add_null (BPair.oneValue_refl a), vecAdd_swap_self v⟩
 
 /-- The move as a sum: a family member joins the moved key back to
 the stated key exactly where the move lands at it. -/
@@ -1520,7 +1512,7 @@ private theorem chainR (t : gentable.Table) (F : FundData)
     (List.replicate t.rank BPair.unit) elim.vecAdd_comm elim.vecAdd_assoc
     (g3 t F i S) (List.range t.posFolds.length) _
     (by rw [ground.countOf_range_one hsin]; exact Nat.succ_pos 0)]
-  refine vecAdd_congr ?_ rfl ?_ (poly.oneValue_refl _)
+  refine elim.vecAdd_congr2 _ _ _ _ ?_ rfl ?_ (poly.oneValue_refl _)
   · show (g3 t F i S (ground.getAt 0 F.simplePos i)).length = _
     rw [g3_len t F i S _]
     by_cases h2 : ground.containsB S (ground.getAt 0 F.simplePos i) = true
@@ -1594,7 +1586,7 @@ private theorem chainL (t : gentable.Table) (F : FundData)
     (List.replicate t.rank BPair.unit) elim.vecAdd_comm elim.vecAdd_assoc _
     (List.range t.posFolds.length) _
     (by rw [ground.countOf_range_one hsin]; exact Nat.succ_pos 0)]
-  refine vecAdd_congr ?_ ?_ ?_ ?_
+  refine elim.vecAdd_congr2 _ _ _ _ ?_ ?_ ?_ ?_
   · show (if (if ground.getAt 0 F.simplePos i
         == ground.getAt 0 F.simplePos i then
         !(ground.containsB S (ground.getAt 0 F.simplePos i))
@@ -1680,11 +1672,11 @@ private theorem shuffle (t : gentable.Table) (P T3 : List BPair)
     rw [if_pos rfl, if_pos rfl, neg_vecAdd, poly.neg_neg,
       neg_vecAdd, poly.neg_repl, elim.vecAdd_assoc,
       ← elim.vecAdd_assoc (poly.neg P) P (poly.neg T3)]
-    refine vecAdd_congr rfl ?_ (poly.oneValue_refl _) ?_
+    refine elim.vecAdd_congr2 _ _ _ _ rfl ?_ (poly.oneValue_refl _) ?_
     · refine Eq.trans ?_ hzT.symm
       rw [vecAdd_length (hPP.trans hnT.symm)]
       exact hPP
-    · refine vecAdd_congr (hPP.trans hz.symm) rfl ?_
+    · refine elim.vecAdd_congr2 _ _ _ _ (hPP.trans hz.symm) rfl ?_
         (poly.oneValue_refl _)
       rw [show List.replicate t.rank BPair.unit
           = List.replicate P.length BPair.unit from by rw [hP]]
@@ -1692,10 +1684,10 @@ private theorem shuffle (t : gentable.Table) (P T3 : List BPair)
   | false =>
     rw [if_neg (ground.boolNe rfl), if_neg (ground.boolNe rfl),
       neg_vecAdd, poly.neg_repl, neg_vecAdd, elim.vecAdd_assoc]
-    refine vecAdd_congr rfl ?_ (poly.oneValue_refl _) ?_
+    refine elim.vecAdd_congr2 _ _ _ _ rfl ?_ (poly.oneValue_refl _) ?_
     · rw [vecAdd_length (hnP.trans hzT.symm),
         vecAdd_length (hnP.trans hnT.symm)]
-    · refine vecAdd_congr rfl (hzT.trans hnT.symm)
+    · refine elim.vecAdd_congr2 _ _ _ _ rfl (hzT.trans hnT.symm)
         (poly.oneValue_refl _) ?_
       rw [elim.vecAdd_comm]
       exact elim.vecAdd_null_right (poly.neg T3) (List.replicate t.rank BPair.unit)
@@ -1796,7 +1788,7 @@ private theorem eKey_flip (t : gentable.Table) (F : FundData)
       rw [vecAdd_length (hrho.trans hnp.symm)]
       exact hrho
     refine poly.oneValue_trans
-      (vecAdd_congr
+      (elim.vecAdd_congr2 _ _ _ _
         (((elim.matVec_length _ _).trans (reflM_length t i)).trans
           hU'.symm)
         ((ground.length_map BPair.swap _).trans
@@ -1832,7 +1824,7 @@ private theorem eKey_flip (t : gentable.Table) (F : FundData)
             (List.range t.posFolds.length)))).length = t.rank := by
       rw [vecAdd_length (hHTlen.trans hT3len.symm)]
       exact hHTlen
-    refine vecAdd_congr rfl ?_ (poly.oneValue_refl _)
+    refine elim.vecAdd_congr2 _ _ _ _ rfl ?_ (poly.oneValue_refl _)
       (poly.swapMap_oneValue (poly.oneValue_symm
         (chainL t F hi hshape S)))
     exact (poly.length_neg _).trans
@@ -1941,7 +1933,7 @@ private theorem eKey_cons (t : gentable.Table) (a : Nat)
     refine poly.oneValue_trans (foldl_vsum t S _ hZA) ?_
     rw [elim.vecAdd_assoc, elim.vecAdd_comm (posCorootV t a)
       (vsum t S), ← elim.vecAdd_assoc]
-    refine vecAdd_congr ?_ rfl
+    refine elim.vecAdd_congr2 _ _ _ _ ?_ rfl
       (poly.oneValue_symm (foldl_vsum t S _ hz))
       (poly.oneValue_refl _)
     rw [vecAdd_length (hz.trans (vsum_length t S).symm)]
@@ -1981,7 +1973,7 @@ private theorem eKey_cons (t : gentable.Table) (a : Nat)
       vecAdd_length (hX.trans hna.symm)]
     exact hrho.trans hX.symm
   · rw [elim.vecAdd_assoc, ← neg_vecAdd]
-    exact vecAdd_congr rfl (by
+    exact elim.vecAdd_congr2 _ _ _ _ rfl (by
         rw [poly.length_neg, poly.length_neg, hFA,
           vecAdd_length (hFS.trans (posCorootV_length t a).symm)]
         exact hFS.symm)
@@ -2521,7 +2513,7 @@ theorem cartanFold_add (t : gentable.Table) (a b : List Nat)
       = t.rank := (cartanFold_lenEq t _ a).trans ha
   have hab : (elim.vecAdd (cartanFold t a) (cartanFold t b)).length
       = t.rank := elim.length_vecAdd _ _ t.rank ha hb
-  refine elim.getAt_polyOne _ _ (hab.trans hc.symm) (fun j hj => ?_)
+  refine poly.oneValue_of_entries _ _ (hab.trans hc.symm) (fun j hj => ?_)
   have hjr : j < t.rank := by
     rw [hab] at hj
     exact hj
@@ -2554,7 +2546,7 @@ theorem cartanFold_null (t : gentable.Table) (c : List Nat)
     (hc : ∀ i, i < t.rank → ground.getAt 0 c i = 0) :
     poly.oneValue (cartanFold t c)
       (List.replicate t.rank BPair.unit) := by
-  refine elim.getAt_polyOne _ _
+  refine poly.oneValue_of_entries _ _
     (hcf.trans (ground.length_replicate BPair.unit t.rank).symm)
     (fun j hj => ?_)
   have hjr : j < t.rank := by
@@ -2704,7 +2696,7 @@ private theorem reflM_expand (t : gentable.Table) {i : Nat}
               else BPair.unit))) y) := by
     show ((List.range t.rank).map _).map _ = _
     rw [ground.map_map]
-  refine elim.getAt_polyOne _ _ hlen (fun j hj => ?_)
+  refine poly.oneValue_of_entries _ _ hlen (fun j hj => ?_)
   have hjr : j < t.rank := by
     rw [elim.matVec_length, reflM_length] at hj
     exact hj
@@ -2717,7 +2709,7 @@ private theorem reflM_expand (t : gentable.Table) {i : Nat}
     ground.getAt_map 0 BPair.unit _ (List.range t.rank) j
       (by rw [ground.length_range]; exact hjr),
     ground.getAt_range t.rank j hjr]
-  refine BPair.oneValue_trans (elim.dotN_dotP _ _) ?_
+  refine BPair.oneValue_trans (elim.dotN_read _ _) ?_
   refine BPair.oneValue_trans (elim.dotP_rowRange _ t.rank y hy) ?_
   rw [ground.famFold_congr_all BPair.add BPair.unit
     (fun k => BPair.add (if j == k then BPair.ofNat 1 else BPair.unit)
@@ -3038,7 +3030,7 @@ theorem rhoRead_derived (t : gentable.Table) (F : FundData)
         elim.vecAdd_assoc (imgV t F i) (List.range t.posFolds.length)
         (ground.getAt 0 F.simplePos i)
         (by rw [ground.countOf_range_one hsin]; exact Nat.succ_pos 0)]
-      refine vecAdd_congr ?_ ?_ ?_ ?_
+      refine elim.vecAdd_congr2 _ _ _ _ ?_ ?_ ?_ ?_
       · rw [imgV_len t F i, poly.length_neg, posCorootV_length]
       · rw [fvLen t (imgV t F i) (imgV_len t F i), permRest_len]
       · show poly.oneValue (if ground.getAt 0 F.simplePos i
@@ -3369,7 +3361,7 @@ theorem reflAt_fix (t : gentable.Table) (i : Nat)
     ground.length_replicate BPair.unit t.rank
   have hunit : poly.oneValue (refKick t i (getAt BPair.unit y i))
       (List.replicate t.rank BPair.unit) := by
-    refine elim.getAt_polyOne _ _ (hK.trans hz.symm) (fun j hj => ?_)
+    refine poly.oneValue_of_entries _ _ (hK.trans hz.symm) (fun j hj => ?_)
     have hjr : j < t.rank := by
       rw [hK] at hj
       exact hj
@@ -3382,7 +3374,7 @@ theorem reflAt_fix (t : gentable.Table) (i : Nat)
   · rw [elim.matVec_length, reflM_length, hy]
   · refine poly.oneValue_trans (reflM_expand t hi y hy) ?_
     exact poly.oneValue_trans
-      (vecAdd_congr rfl (hK.trans hz.symm)
+      (elim.vecAdd_congr2 _ _ _ _ rfl (hK.trans hz.symm)
         (poly.oneValue_refl y) hunit)
       (elim.vecAdd_null_right y (List.replicate t.rank BPair.unit)
         (by rw [ground.length_replicate]; exact hy)
@@ -3403,7 +3395,7 @@ theorem reflAt_shift (t : gentable.Table) (i : Nat)
     (ground.length_map _ _).trans (cartRowV_length t i)
   have hkick : poly.oneValue (refKick t i (getAt BPair.unit y i))
       (poly.neg (cartRowV t i)) := by
-    refine elim.getAt_polyOne _ _ (hK.trans hN.symm) (fun j hj => ?_)
+    refine poly.oneValue_of_entries _ _ (hK.trans hN.symm) (fun j hj => ?_)
     have hjr : j < t.rank := by
       rw [hK] at hj
       exact hj
@@ -3422,7 +3414,7 @@ theorem reflAt_shift (t : gentable.Table) (i : Nat)
   · rw [elim.matVec_length, reflM_length,
       elim.length_vecAdd y _ t.rank hy hN]
   · exact poly.oneValue_trans (reflM_expand t hi y hy)
-      (vecAdd_congr rfl (hK.trans hN.symm) (poly.oneValue_refl y) hkick)
+      (elim.vecAdd_congr2 _ _ _ _ rfl (hK.trans hN.symm) (poly.oneValue_refl y) hkick)
 
 /-! The domination displays (`thm:assembly`'s support tier): an
 occupied key's dot joins its family's or its witness fold's positive
@@ -4337,7 +4329,7 @@ private theorem subsetCountOff_vanish (t : gentable.Table)
 
 /-- The line's first key: the natural one's scale reads the member
 itself inside the norm. -/
-private theorem lineKey_one (t : gentable.Table) {j : Nat}
+theorem lineKey_one (t : gentable.Table) {j : Nat}
     (y : List BPair) (hy : y.length = t.rank) :
     poly.pnorm (elim.vecAdd y
         (elim.vecScale (BPair.ofNat 1) (posCorootV t j)))
@@ -4695,9 +4687,9 @@ theorem diagRow (t : gentable.Table) (F : FundData)
       (by rw [ground.matOf_length]; exact hln),
     ground.matOf_row ([] : List BPair) t.rank t.rank _ l hln] at hent
   refine BPair.oneValue_trans
-    (BPair.oneValue_symm (elim.dotN_dotP _ _)) ?_
+    (BPair.oneValue_symm (elim.dotN_read _ _)) ?_
   refine BPair.oneValue_trans hent ?_
-  refine BPair.oneValue_trans (elim.dotN_dotP _ _) ?_
+  refine BPair.oneValue_trans (elim.dotN_read _ _) ?_
   refine BPair.oneValue_trans
     (elim.dotP_rowRange _ t.rank v hv) ?_
   refine BPair.oneValue_trans
@@ -4753,7 +4745,7 @@ theorem simpleRow (t : gentable.Table) (F : FundData)
       = poly.pnorm (cartRowV t i) := by
   refine poly.pnorm_congr _ _ ?_ ?_
   · rw [posCorootV_length, cartRowV_length]
-  · refine elim.getAt_polyOne _ _
+  · refine poly.oneValue_of_entries _ _
       (by rw [posCorootV_length, cartRowV_length])
       (fun j hj => ?_)
     have hjr : j < t.rank := by
@@ -4891,7 +4883,7 @@ theorem dotB_dom_nonneg (t : gentable.Table) (F : FundData)
 /-- A dominant key beyond the unit dominates `ρ`'s own dot: the key
 less `ρ` sits at or above the unit at every place, and its dot joins
 `ρ`'s. -/
-private theorem dom_of_beyond (t : gentable.Table) (F : FundData)
+theorem dom_of_beyond (t : gentable.Table) (F : FundData)
     (hshape : fundShape t F) (hgram : gramRead t F)
     (hgsym : gramSymRead F) (hrr : gentable.rhoRead t)
     (y : List BPair) (hy : y.length = t.rank)
@@ -4935,7 +4927,7 @@ private theorem dom_of_beyond (t : gentable.Table) (F : FundData)
     refine BPair.oneValue_trans ?_
       (elim.dotP_addE _ (rhoV t) (gramRho t F) (hnu.trans hrho.symm))
     refine elim.dotP_oneValue_left y _ (gramRho t F) ?_
-    refine poly.oneValue_symm (elim.getAt_polyOne _ _
+    refine poly.oneValue_symm (poly.oneValue_of_entries _ _
       ((elim.length_vecAdd _ (rhoV t) t.rank hnu hrho).trans hy.symm)
       (fun j hj => ?_))
     have hjr : j < t.rank := by
@@ -5118,7 +5110,7 @@ private theorem w_beyond (t : gentable.Table) (F : FundData)
     · rw [ground.getAt_replicate_self BPair.unit t.rank j]
       exact BPair.oneValue_refl _
   have hone : poly.oneValue (elim.vecAdd y (witFold t wits k)) y := by
-    refine elim.getAt_polyOne _ _ (hlen.trans hy.symm) (fun j hj => ?_)
+    refine poly.oneValue_of_entries _ _ (hlen.trans hy.symm) (fun j hj => ?_)
     have hjr : j < t.rank := by
       rw [hlen] at hj
       exact hj
@@ -5336,14 +5328,6 @@ dominance walk to `ρ` — the counts transport at every letter
 value, and the kept form carries the key's own dot square along the
 chain. -/
 
-/-- The pairing's one-value read at the second slot, the exchange
-against the left member's own. -/
-private theorem dotP_ovR (p u u' : List BPair)
-    (h : poly.oneValue u u') :
-    (elim.dotP p u).oneValue (elim.dotP p u') := by
-  rw [elim.dotP_comm p u, elim.dotP_comm p u']
-  exact elim.dotP_oneValue_left u u' p h
-
 /-- The kept form's transport: a reflection keeps a key's own dot
 square (`con:sertables`' four-join identity at the matrices). -/
 private theorem dotB_reflAt (t : gentable.Table) (F : FundData)
@@ -5368,12 +5352,12 @@ private theorem dotB_reflAt (t : gentable.Table) (F : FundData)
     exact h
   refine BPair.oneValue_trans (elim.dotP_oneValue_left _
     (elim.matVec (reflM t i) y) _ (poly.pnorm_oneValue _)) ?_
-  refine BPair.oneValue_trans (dotP_ovR _
+  refine BPair.oneValue_trans (elim.dotP_oneValue_right _
     (elim.matVec F.gram (reflAt t i y))
     (elim.matVec F.gram (elim.matVec (reflM t i) y))
     (elim.matVec_congr F.gram _ _
       (poly.pnorm_oneValue _))) ?_
-  refine BPair.oneValue_trans (dotP_ovR _ _
+  refine BPair.oneValue_trans (elim.dotP_oneValue_right _ _
     (elim.matVec (elim.matMul F.gram (reflM t i)) y)
     (poly.oneValue_symm (elim.matVec_matMul F.gram (reflM t i)
       t.rank hSrows y hy))) ?_
@@ -5381,13 +5365,13 @@ private theorem dotB_reflAt (t : gentable.Table) (F : FundData)
     (reflM t i) y _ hSrows hy
     (by rw [elim.matVec_length, elim.length_matMul, hSlen]
         exact hshape.1)) ?_
-  refine BPair.oneValue_trans (dotP_ovR y _
+  refine BPair.oneValue_trans (elim.dotP_oneValue_right y _
     (elim.matVec (elim.matMul (elim.transposeM (reflM t i))
       (elim.matMul F.gram (reflM t i))) y)
     (poly.oneValue_symm (elim.matVec_matMul
       (elim.transposeM (reflM t i))
       (elim.matMul F.gram (reflM t i)) t.rank hMSrows y hy))) ?_
-  exact dotP_ovR y _ (elim.matVec F.gram y)
+  exact elim.dotP_oneValue_right y _ (elim.matVec F.gram y)
     (elim.matVec_matOne _ _ y (hform i hi))
 
 /-- An unbalanced key is occupied. -/

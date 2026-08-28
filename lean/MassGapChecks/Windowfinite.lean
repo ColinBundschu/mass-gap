@@ -8,7 +8,6 @@ at stated cutoffs, the fundamental loop's window at two, the two
 label loops at three, and the theta graph's two squares with the
 hexagon entering at its content's cutoff.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 16000000
 
 open ground lattice fusion windowfinite
@@ -17,7 +16,6 @@ open ground lattice fusion windowfinite
 then the two label loops. -/
 
 example : dimSect (dataA 2) square 12 = 2 := by decide +kernel
-set_option maxRecDepth 1000000 in
 example : dimSect (dataA 2) square 32 = 3 := by decide +kernel
 
 /-! The theta graph's window dimensions: the two squares' loops,

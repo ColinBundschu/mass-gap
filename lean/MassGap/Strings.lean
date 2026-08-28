@@ -472,7 +472,7 @@ private theorem raise_base (i j : Nat) (hij : ¬ i = j) (v : HVec)
 
 /-- The identity down the depth run: the exchange at the depth's
 own content with the shallower read supplied by the descent. -/
-private theorem iterAct_raiseGo (i j : Nat) (hij : ¬ i = j)
+theorem iterAct_raise (i j : Nat) (hij : ¬ i = j)
     (v : HVec) (h : Nat)
     (hgap : ground.getAt 0 v.content i
       = ground.getAt 0 v.content j + h)
@@ -527,7 +527,7 @@ private theorem iterAct_raiseGo (i j : Nat) (hij : ¬ i = j)
           = (iterAct i j b v).content := by
         rw [hstep1]
         exact moveAt_round_at i j (iterAct i j b v).content hoccu
-      have hIH := iterAct_raiseGo i j hij v h hgap hi hj hsz htop b
+      have hIH := iterAct_raise i j hij v h hgap hi hj hsz htop b
         hble
       have hMy : elim.matVec (units.matUnitAt
           (iterAct i j (b + 1) v).content
@@ -545,9 +545,7 @@ private theorem iterAct_raiseGo (i j : Nat) (hij : ¬ i = j)
         rw [hmu]
         refine poly.oneValue_trans (elim.matVec_congr _ _ _ hIH)
           (poly.oneValue_trans
-            (elim.matVec_vecScale _
-              (places.monomialsAt (iterAct i j b v).content).length
-              (units.rowsLen_matUnitAt _ _ j i) _ _ hszu) ?_)
+            (elim.matVec_vecScale_free _ _ _) ?_)
         rw [hMy]
         exact poly.oneValue_refl _
       have hlenFy : (elim.matVec (units.matUnitAt
@@ -632,23 +630,6 @@ private theorem iterAct_raiseGo (i j : Nat) (hij : ¬ i = j)
       · refine elim.unitTail_vecScale_unit ?_ _
         rw [hhb, Nat.sub_self, Nat.mul_zero]
         exact BPair.oneValue_refl BPair.unit
-
-/-- The sl2 coefficient identity at a top: the raising through the
-depth run reads the scaled shallower member, `E F^{b+1} w` the
-`(b+1)(h-b)`-multiple of `F^b w`, the crossed-scalar exchange
-folded down the depth with the top's raising the unit — the
-coefficient reading the sum's unit at the height's own depth. -/
-theorem iterAct_raise (i j : Nat) (hij : ¬ i = j) (v : HVec)
-    (h : Nat)
-    (hgap : ground.getAt 0 v.content i
-      = ground.getAt 0 v.content j + h)
-    (hi : i < v.content.length) (hj : j < v.content.length)
-    (hsz : sized v) (htop : poly.unitTail (act i j v).coords)
-    (b : Nat) (hb : b ≤ h) :
-    poly.oneValue (act i j (iterAct i j (b + 1) v)).coords
-      (elim.vecScale (BPair.ofNat ((b + 1) * (h - b)))
-        (iterAct i j b v).coords) :=
-  iterAct_raiseGo i j hij v h hgap hi hj hsz htop b hb
 
 /-- The string terminates at the height: the further lowering
 reads the sum's unit, the self-pairing collapsing through the
@@ -736,7 +717,7 @@ theorem iterAct_term (i j : Nat) (hij : ¬ i = j) (v : HVec)
 /-- The telescope down the depth run: each step's self-pairing
 against the shallower one's through the adjoint, the coefficient
 the raising's own. -/
-private theorem iterAct_selfpairGo (i j : Nat) (hij : ¬ i = j)
+theorem iterAct_selfpair (i j : Nat) (hij : ¬ i = j)
     (v : HVec) (h : Nat)
     (hgap : ground.getAt 0 v.content i
       = ground.getAt 0 v.content j + h)
@@ -812,7 +793,7 @@ private theorem iterAct_selfpairGo (i j : Nat) (hij : ¬ i = j)
             (iterAct i j b v).coords) := hr
       rw [hmu] at hr'
       exact hr'
-    have hIH := iterAct_selfpairGo i j hij v h hgap hi hj hsz htop b
+    have hIH := iterAct_selfpair i j hij v h hgap hi hj hsz htop b
       hble
     rw [hstep]
     refine BPair.oneValue_trans
@@ -845,21 +826,6 @@ private theorem iterAct_selfpairGo (i j : Nat) (hij : ¬ i = j)
         (BPair.ofNat_mul (coeffProd h b) ((b + 1) * (h - b)))
         (BPair.oneValue_of_eq (BPair.mul_comm _ _))))
 
-/-- The self-pairing's telescope: the depth-`b` member's
-self-pairing reads the coefficient product against the top's. -/
-theorem iterAct_selfpair (i j : Nat) (hij : ¬ i = j) (v : HVec)
-    (h : Nat)
-    (hgap : ground.getAt 0 v.content i
-      = ground.getAt 0 v.content j + h)
-    (hi : i < v.content.length) (hj : j < v.content.length)
-    (hsz : sized v) (htop : poly.unitTail (act i j v).coords)
-    (b : Nat) (hb : b ≤ h) :
-    (elim.dotP (iterAct i j b v).coords
-        (iterAct i j b v).coords).oneValue
-      (BPair.ofNat (coeffProd h b)
-        * elim.dotP v.coords v.coords) :=
-  iterAct_selfpairGo i j hij v h hgap hi hj hsz htop b hb
-
 
 /-! The exhaustion's semantics: every collected string is good —
 sized, at the stated gap, its top raising-free and off the sum's
@@ -890,17 +856,14 @@ instance (i j d : Nat) (pool : List HVec) (str : PairString) :
 the coefficient product's own descent, the gap at a strict
 comparison `ground.subPos`. -/
 
-private theorem coeffProd_posGo (h : Nat) : ∀ b : Nat, b ≤ h →
+/-- The coefficient product is positive through the height. -/
+theorem coeffProd_pos (h : Nat) : ∀ b : Nat, b ≤ h →
     0 < coeffProd h b
   | 0, _ => Nat.succ_pos 0
   | b + 1, hb => by
     show 0 < coeffProd h b * ((b + 1) * (h - b))
-    exact Nat.mul_pos (coeffProd_posGo h b (Nat.le_of_succ_le hb))
+    exact Nat.mul_pos (coeffProd_pos h b (Nat.le_of_succ_le hb))
       (Nat.mul_pos (Nat.succ_pos b) (ground.subPos hb))
-
-/-- The coefficient product is positive through the height. -/
-theorem coeffProd_pos (h b : Nat) (hb : b ≤ h) : 0 < coeffProd h b :=
-  coeffProd_posGo h b hb
 
 
 /-! The exhaustion's carrier kit: the family predicate over a
@@ -914,7 +877,7 @@ private theorem memAll_mapRangeL (P : HVec → Prop) (g : Nat → HVec) :
   | 0, _ => memAll_nil
   | n + 1, h => by
     rw [range_succ n, ground.map_append]
-    exact memAll_append
+    exact ground.all_of_append _ _ _
       (memAll_mapRangeL P g n
         (fun b hb => h b (Nat.lt_of_lt_of_le hb (Nat.le_succ n))))
       (memAll_cons (h n (Nat.le_refl (n + 1))) memAll_nil)
@@ -1283,7 +1246,7 @@ private theorem memPool_of_memAllSL (P : HVec → Prop) (i j : Nat) :
       ∀ v ∈ memPool i j strs, P v
   | [], _ => memAll_nil
   | str :: t, h =>
-    memAll_append
+    ground.all_of_append _ _ _
       (memAll_mapRangeL P (memberAt i j str) (str.ht + 1)
         (fun b hb => memAll_head h b (Nat.le_of_succ_le_succ hb)))
       (memPool_of_memAllSL P i j t (memAll_tail h))
@@ -1803,15 +1766,6 @@ private theorem occL_appendL (mu : List Nat) :
       = (if v.content = mu then 1 else 0) + occ mu t + occ mu b
     rw [occL_appendL mu t b, Nat.add_assoc]
 
-private theorem occL_zeroL (mu : List Nat) :
-    ∀ pool : List HVec, (∀ v ∈ pool, ¬ v.content = mu) →
-      occ mu pool = 0
-  | [], _ => rfl
-  | v :: t, h => by
-    show (if v.content = mu then 1 else 0) + occ mu t = 0
-    rw [if_neg (h v (List.Mem.head t)), Nat.zero_add,
-      occL_zeroL mu t (fun x hx => h x (List.Mem.tail v hx))]
-
 private theorem occL_posL (g : Nat → HVec) (mu : List Nat) :
     ∀ (n b : Nat), b < n → (g b).content = mu →
       0 < occ mu ((List.range n).map g)
@@ -1841,7 +1795,7 @@ private theorem occL_le1L (g : Nat → HVec) :
     rw [range_succ n, ground.map_append, occL_appendL]
     by_cases hgn : (g n).content = mu
     · have hz : occ mu ((List.range n).map g) = 0 := by
-        refine occL_zeroL mu _
+        refine blockcount.occ_off _
           (memAll_mapRangeL _ g n (fun b hb hcb => ?_))
         have hbn : b = n := hinj b n
           (Nat.lt_of_lt_of_le hb (Nat.le_succ n))
@@ -2122,7 +2076,7 @@ private theorem step_invL (s : Shape) (i j : Nat)
     (memberAt i j new) (new.ht + 1)
     (fun b _ => new_perp_depthL s i j hi hj hij strs hgood new
       hgnew.2.1 hgnew.1 hbase b)
-  refine ⟨⟨memAll_append hgood (memAll_cons hgnew memAll_nil),
+  refine ⟨⟨ground.all_of_append _ _ _ hgood (memAll_cons hgnew memAll_nil),
     ?_, ?_⟩, ?_⟩
   · intro mu
     rw [membersAt_appendL i j strs [new] mu]
@@ -2977,8 +2931,7 @@ private theorem iterAct_traceDn (i j : Nat) (hij : ¬ i = j)
     refine poly.oneValue_trans
       (elim.matVec_congr _ _ _ hraise) ?_
     refine poly.oneValue_trans
-      (elim.matVec_vecScale _ _
-        (units.rowsLen_matUnitAt _ _ j i) _ _ hmw) ?_
+      (elim.matVec_vecScale_free _ _ _) ?_
     rw [hlast, ground.subSuccAdd hb]
     exact poly.oneValue_refl _
 

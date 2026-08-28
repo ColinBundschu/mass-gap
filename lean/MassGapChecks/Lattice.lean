@@ -6,7 +6,6 @@ one-plaquette square and the theta graph of two squares sharing
 one link — the coloring, simplicity and plaquette reads with the
 incident lists' values.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground lattice

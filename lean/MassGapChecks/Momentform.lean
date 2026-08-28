@@ -8,7 +8,6 @@ gaps, `Q₂ = [E,f]†[E,f]`, and the evaluation displays at the free
 end's window: `μ₂(f) = ω(Q₂(f))` and `μ₁(f) = ω(f†[E,f])`, the
 moments reading the probe through `y = f ψ` alone at the unit
 line's ground. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground elim momentform
@@ -64,3 +63,45 @@ example : (dotN psi0.val
     (matVec (matMul (transposeM cF) (commE dg3 cF))
       psi0.val)).oneValue
     (mu1 et3 (probeVec cFs psi0)) := by decide +kernel
+
+/-! `thm:coeffone`'s commutator display at `commE_read`: the
+commutator's action on a vector is the diagonal's action of the
+multiplication's read joined to the multiplication's action of the
+diagonal's at the memberwise swap, the swap the subtraction — the
+cell at the vacant diagonal head `[0, 4]` and the cell at the
+occupied head `[1, 3]`, each landed by the theorem route beside its
+own `decide`. -/
+
+private def dgV : List Nat := [0, 4]
+
+private def dgO : List Nat := [1, 3]
+
+private def cX : Mat := [[u, ⟨2, 1⟩], [⟨2, 1⟩, u]]
+
+private def vX : List BPair := [⟨2, 1⟩, u]
+
+example : poly.oneValue (matVec (commE dgV cX) vX)
+    (poly.add
+      (matVec (diagO ground.bpairOps (dgV.map BPair.ofNat)) (matVec cX vX))
+      ((matVec cX (matVec (diagO ground.bpairOps
+        (dgV.map BPair.ofNat)) vX)).map BPair.swap)) :=
+  commE_read dgV cX vX 2 rfl ⟨rfl, rfl, trivial⟩ rfl rfl
+
+example : poly.oneValue (matVec (commE dgV cX) vX)
+    (poly.add
+      (matVec (diagO ground.bpairOps (dgV.map BPair.ofNat)) (matVec cX vX))
+      ((matVec cX (matVec (diagO ground.bpairOps
+        (dgV.map BPair.ofNat)) vX)).map BPair.swap)) := by decide +kernel
+
+example : poly.oneValue (matVec (commE dgO cX) vX)
+    (poly.add
+      (matVec (diagO ground.bpairOps (dgO.map BPair.ofNat)) (matVec cX vX))
+      ((matVec cX (matVec (diagO ground.bpairOps
+        (dgO.map BPair.ofNat)) vX)).map BPair.swap)) :=
+  commE_read dgO cX vX 2 rfl ⟨rfl, rfl, trivial⟩ rfl rfl
+
+example : poly.oneValue (matVec (commE dgO cX) vX)
+    (poly.add
+      (matVec (diagO ground.bpairOps (dgO.map BPair.ofNat)) (matVec cX vX))
+      ((matVec cX (matVec (diagO ground.bpairOps
+        (dgO.map BPair.ofNat)) vX)).map BPair.swap)) := by decide +kernel

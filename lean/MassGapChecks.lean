@@ -76,7 +76,9 @@ import MassGapChecks.Coeffone
 import MassGapChecks.Levelequiv
 import MassGapChecks.Momentdivisor
 import MassGapChecks.Statespace
+import MassGapChecks.Sectorspan
 import MassGapChecks.Speccut
+import MassGapChecks.Attained
 import MassGapChecks.Flatstep
 import MassGapChecks.Gappos
 import MassGapChecks.SO
@@ -100,10 +102,12 @@ import MassGapChecks.Serpairing
 import MassGapChecks.Assembly
 import MassGapChecks.Memberchar
 import MassGapChecks.Memberdata
+import MassGapChecks.Fourpoint
 import MassGapChecks.Truncation
 import MassGapChecks.Dualtrunc
 import MassGapChecks.Contactcell
 import MassGapChecks.Corner
+import MassGapChecks.Cornerpivot
 import MassGapChecks.Freecell
 import MassGapChecks.Bridge
 import MassGapChecks.Network
@@ -115,3 +119,4 @@ import MassGapChecks.Generators
 import MassGapChecks.Unitschain
 import MassGapChecks.Twoaction
 import MassGapChecks.Restoration
+import MassGapChecks.Groundreads

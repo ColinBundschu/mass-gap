@@ -4,12 +4,12 @@ The check module for `prop:repring`: the batteries re-read the
 label index's calculus by kernel `decide` — the unit read and the
 orthonormality at a decided window with the general theorems'
 routes and the matched width's refusal beside them, the triple
-count's symmetry at rotations and a
-transposition, the associativity fold, and the dimension identity
-at instances through the adjoint square (the deferred
-`lem:blockcount` reads at their recorded consumer).
+count's rotation at four triples by the general theorem's route
+with the two widths' refusals beside them and a transposition, the
+associativity fold, and the dimension identity at instances
+through the adjoint square (the deferred `lem:blockcount` reads at
+their recorded consumer).
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places labels repring
@@ -62,22 +62,47 @@ example : orthoRead [2, 0, 0] [2, 0, 0] :=
 example : orthoRead [1, 1, 0] [0, 1, 1] :=
   orthoRead_all [1, 1, 0] [0, 1, 1] rfl
 
-/-! The triple count's symmetry at rotations and a transposition
-(the symmetry of `N` at self-dual labels). -/
+/-! The triple count's rotation as the general theorem's own route
+at four triples, one decided end-to-end beside it, and the
+transposition by its own general (the symmetry of `N` at self-dual
+labels, the two generators). -/
 
 example : mSymRead [1, 0] [1, 0] [0, 1] := by decide +kernel
-example : mSymRead [1, 0] [2, 0] [1, 0] := by decide +kernel
-example : mSymRead [1, 0, 0] [1, 0, 0] [0, 1, 0] := by decide +kernel
-example : mSymRead [1, 1, 0] [1, 1, 0] [1, 1, 0] := by decide +kernel
+example : mSymRead [1, 0] [1, 0] [0, 1] :=
+  mSym_all [1, 0] [1, 0] [0, 1] rfl rfl
+example : mSymRead [1, 0] [2, 0] [1, 0] :=
+  mSym_all [1, 0] [2, 0] [1, 0] rfl rfl
+example : mSymRead [1, 0, 0] [1, 0, 0] [0, 1, 0] :=
+  mSym_all [1, 0, 0] [1, 0, 0] [0, 1, 0] rfl rfl
+example : mSymRead [1, 1, 0] [1, 1, 0] [1, 1, 0] :=
+  mSym_all [1, 1, 0] [1, 1, 0] [1, 1, 0] rfl rfl
 example : m3 [1, 1, 0] [1, 0, 0] [0, 1, 0]
     = m3 [1, 0, 0] [1, 1, 0] [0, 1, 0] := by decide +kernel
+example : m3 [1, 1, 0] [1, 0, 0] [0, 1, 0]
+    = m3 [1, 0, 0] [1, 1, 0] [0, 1, 0] :=
+  mSym_swap [1, 1, 0] [1, 0, 0] [0, 1, 0] rfl rfl
+example : m3 [2, 0] [1, 0] [1, 0] = m3 [1, 0] [2, 0] [1, 0] :=
+  mSym_swap [2, 0] [1, 0] [1, 0] rfl rfl
 
-/-! The associativity fold at instances. -/
+/-! The two matched widths' isolating refusals: at the second
+shape one letter wider than the first the two groupings part, and
+at the third likewise, the rotation's own binders. -/
+
+example : ¬ mSymRead [0, 0] [0, 0, 2] [0, 0] := by decide +kernel
+example : ¬ mSymRead [0, 0] [0, 0] [0, 0, 2] := by decide +kernel
+
+/-! The associativity fold at instances, one decided end-to-end
+and the rest by the general theorem's own route. -/
 
 example : assocRead [1, 0] [1, 0] [1, 0] [3, 0] := by decide +kernel
-example : assocRead [1, 0] [1, 0] [1, 0] [1, 1] := by decide +kernel
-example : assocRead [1, 0, 0] [1, 0, 0] [1, 0, 0] [1, 1, 0] := by decide +kernel
-example : assocRead [1, 0, 0] [0, 1, 0] [1, 0, 0] [1, 1, 0] := by decide +kernel
+example : assocRead [1, 0] [1, 0] [1, 0] [3, 0] :=
+  assocRead_all [1, 0] [1, 0] [1, 0] [3, 0] rfl rfl rfl
+example : assocRead [1, 0] [1, 0] [1, 0] [1, 1] :=
+  assocRead_all [1, 0] [1, 0] [1, 0] [1, 1] rfl rfl rfl
+example : assocRead [1, 0, 0] [1, 0, 0] [1, 0, 0] [1, 1, 0] :=
+  assocRead_all [1, 0, 0] [1, 0, 0] [1, 0, 0] [1, 1, 0] rfl rfl rfl
+example : assocRead [1, 0, 0] [0, 1, 0] [1, 0, 0] [1, 1, 0] :=
+  assocRead_all [1, 0, 0] [0, 1, 0] [1, 0, 0] [1, 1, 0] rfl rfl rfl
 
 /-! The dimension identity at instances, the adjoint square among
 them: `lem:blockcount`(ii)'s sum at the tensor product. -/

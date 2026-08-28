@@ -30,7 +30,6 @@ forged head pencil `[5]` reads the sum's unit at five and one at six,
 so the bracket's two ends part and no integer is pinned, while the
 full pencil reads one at five.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground elim inertia certconstruct truncation dualtrunc

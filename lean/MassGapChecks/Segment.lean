@@ -19,7 +19,6 @@ scaled site's read — isolating the two load-bearing binders), and
 the base's ray reading, two interior pairs one ray exactly at the
 cross-multiplied identity with the ends their own classes and the
 cross-class reads refused. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground elim inertia pairpencil certconstruct segment

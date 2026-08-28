@@ -53,7 +53,6 @@ consumers.
 naming frames: every matrix satisfies them at its own row count.
 -/
 
-set_option maxRecDepth 8192
 
 open ground elim relfiber fiberdec
 

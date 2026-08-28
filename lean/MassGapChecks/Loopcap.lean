@@ -37,7 +37,6 @@ and `cutForm` returns the two-sided read.  The orthogonality pin
 at `x = y = 𝟏` runs `cutSq` at the vacant contraction, the block
 orthogonality's identity instance.
 -/
-set_option maxRecDepth 1000000
 set_option maxHeartbeats 16000000
 
 open ground fusion elim loopcap

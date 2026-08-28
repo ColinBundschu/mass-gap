@@ -138,7 +138,6 @@ further factor leaves vacant the two contents part — the wedge
 carrying the move its partner has no source for — while the two
 coordinate families still read the sum's unit together.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places blockcount dualread

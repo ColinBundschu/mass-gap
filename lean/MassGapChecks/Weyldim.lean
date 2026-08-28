@@ -23,7 +23,6 @@ tier at the load-bearing binders.  The fixtures' spelling follows
 the shifted alternant's eight-member orbit are the self-contained
 copies the check-module convention takes.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places weyldim

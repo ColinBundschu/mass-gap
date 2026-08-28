@@ -382,10 +382,7 @@ private theorem andF (b : Bool) : (b && false) = false := by
 private theorem orT (b : Bool) : (b || true) = true := by cases b <;> rfl
 private theorem orF (b : Bool) : (b || false) = b := by cases b <;> rfl
 
-private theorem ltAdd (a d : Nat) : a < a + (d + 1) :=
-  Nat.succ_le_succ (Nat.le_add_right a d)
-
-private theorem neAdd (a d : Nat) : ¬ a = a + (d + 1) := Nat.ne_of_lt (ltAdd a d)
+private theorem neAdd (a d : Nat) : ¬ a = a + (d + 1) := Nat.ne_of_lt (ground.ltAddSucc a d)
 
 /-! ## The `B` Cartan column entries -/
 
@@ -637,11 +634,6 @@ theorem memberEntry (W : List Nat) (l j : Nat) (hj : j < l) :
     ground.getAt 0 W i - ground.getAt 0 W (i + 1))) j = _
   rw [ground.getAt_map_range 0 _ l j, if_pos hj]
 
-/-- The word beyond its own length reads the vacant entry. -/
-private theorem wordOver (W : List Nat) (k : Nat) (h : W.length ≤ k) :
-    ground.getAt 0 W k = 0 :=
-  ground.getAt_over 0 W k h
-
 private theorem succAdd : ∀ (a c : Nat), a + (c + 1) = a + 1 + c
   | _, 0 => rfl
   | a, c + 1 => congrArg (· + 1) (succAdd a c)
@@ -700,9 +692,9 @@ theorem corootRead_B : ∀ (W : List Nat) (l : Nat),
     · have hlen : W.length ≤ m :=
         ground.leCancelR 2 (htop ▸ hl)
       have hz1 : ground.getAt 0 W (m + 1) = 0 :=
-        wordOver W (m + 1) (Nat.le_trans hlen (Nat.le_succ m))
+        ground.getAt_over 0 W (m + 1) (Nat.le_trans hlen (Nat.le_succ m))
       have hz2 : ground.getAt 0 W (m + 2) = 0 :=
-        wordOver W (m + 2) (Nat.le_trans hlen
+        ground.getAt_over 0 W (m + 2) (Nat.le_trans hlen
           (Nat.le_trans (Nat.le_succ m) (Nat.le_succ (m + 1))))
       refine colBtop l m htop
         (fun k => ground.sumNat (List.take (k + 1) W)) _ ?_
@@ -1053,8 +1045,8 @@ theorem corootRead_C : ∀ (W : List Nat) (l : Nat),
               (Nat.le_of_eq hl2)))),
         if_pos (show l ≤ 1 + 1 from Nat.le_of_eq hl2.symm),
         ground.take_of_le W (0 + 1) (Nat.le_trans hlen (Nat.zero_le 1)),
-        sumNilOf W hlen, wordOver W 0 hlen,
-        wordOver W 1 (Nat.le_trans hlen (Nat.zero_le 1))]
+        sumNilOf W hlen, ground.getAt_over 0 W 0 hlen,
+        ground.getAt_over 0 W 1 (Nat.le_trans hlen (Nat.zero_le 1))]
     · have hl3 : 2 < l :=
         Nat.lt_of_le_of_ne (Nat.le_trans (Nat.le_add_left 2 W.length) hl)
           hl2
@@ -1084,8 +1076,8 @@ theorem corootRead_C : ∀ (W : List Nat) (l : Nat),
         if_neg (show ¬ l ≤ m + 1 from fun hc =>
           Nat.lt_irrefl l (Nat.lt_of_le_of_lt hc hj)),
         sumFull W m (Nat.le_trans hlen (Nat.le_succ m)),
-        wordOver W (m + 1) (Nat.le_trans hlen (Nat.le_succ m)),
-        wordOver W (m + 2) (Nat.le_trans hlen
+        ground.getAt_over 0 W (m + 1) (Nat.le_trans hlen (Nat.le_succ m)),
+        ground.getAt_over 0 W (m + 2) (Nat.le_trans hlen
           (Nat.le_trans (Nat.le_succ m) (Nat.le_succ (m + 1)))),
         show (0 : Nat) - 0 = 0 from rfl, Nat.mul_zero, Nat.zero_add]
       rfl
@@ -1104,8 +1096,8 @@ theorem corootRead_C : ∀ (W : List Nat) (l : Nat),
           if_pos (show l ≤ m + 2 + 1 from Nat.le_of_eq hme.symm),
           sumFull W (m + 1) (Nat.le_trans hlen (Nat.le_succ (m + 1))),
           sumFull W m hlen,
-          wordOver W (m + 1) hlen,
-          wordOver W (m + 2) (Nat.le_trans hlen (Nat.le_succ (m + 1))),
+          ground.getAt_over 0 W (m + 1) hlen,
+          ground.getAt_over 0 W (m + 2) (Nat.le_trans hlen (Nat.le_succ (m + 1))),
           show (0 : Nat) - 0 = 0 from rfl, Nat.mul_zero, Nat.zero_add,
           Nat.two_mul (2 * ground.sumNat W)]
       · have hC : m + 3 < l :=
@@ -1456,8 +1448,8 @@ theorem corootRead_D : ∀ (W : List Nat) (l : Nat),
             else 2 * ground.sumNat (List.take 1 W))
           = 2 * (ground.getAt 0 W 0 - ground.getAt 0 W 1) + 0
         rw [if_pos (Nat.le_of_eq hl2.symm), sumNilOf W hlen,
-          wordOver W 0 hlen,
-          wordOver W 1 (Nat.le_trans hlen (Nat.zero_le 1))]
+          ground.getAt_over 0 W 0 hlen,
+          ground.getAt_over 0 W 1 (Nat.le_trans hlen (Nat.zero_le 1))]
     · have hl3 : 2 < l :=
         Nat.lt_of_le_of_ne (Nat.le_trans (Nat.le_add_left 2 W.length) hl)
           hl2
@@ -1499,7 +1491,7 @@ theorem corootRead_D : ∀ (W : List Nat) (l : Nat),
             (Nat.lt_of_le_of_lt hc hl3)),
           if_pos h1l, if_pos (Nat.le_of_eq he3.symm), if_pos hl3,
           if_pos (Nat.le_trans (Nat.le_of_eq he3.symm) (Nat.le_succ 3)),
-          takeOne W, sumHead W hlen, wordOver W 1 hlen, subZero,
+          takeOne W, sumHead W hlen, ground.getAt_over 0 W 1 hlen, subZero,
           Nat.one_mul,
           ← Nat.two_mul (ground.getAt 0 W 0),
           Nat.two_mul (2 * ground.getAt 0 W 0)]
@@ -1565,9 +1557,9 @@ theorem corootRead_D : ∀ (W : List Nat) (l : Nat),
             = 2 * (ground.getAt 0 W 1 - ground.getAt 0 W 2) + 0
           rw [if_pos (Nat.le_trans (Nat.le_of_eq htop.symm)
               (Nat.le_succ 2)),
-            sumNilOf W hlen, wordOver W 1 (Nat.le_trans hlen
+            sumNilOf W hlen, ground.getAt_over 0 W 1 (Nat.le_trans hlen
               (Nat.zero_le 1)),
-            wordOver W 2 (Nat.le_trans hlen (Nat.zero_le 2))]
+            ground.getAt_over 0 W 2 (Nat.le_trans hlen (Nat.zero_le 2))]
       | succ q =>
         have ht : q + 3 = l := htop
         have hlen : W.length ≤ q + 1 := ground.leCancelR 2
@@ -1583,12 +1575,12 @@ theorem corootRead_D : ∀ (W : List Nat) (l : Nat),
                 else 2 * ground.sumNat (List.take (q + 1) W)) else 0)
         rw [if_pos (Nat.le_trans (Nat.le_of_eq ht.symm)
             (Nat.le_succ (q + 3))),
-          if_pos (ht ▸ ltAdd q 2),
+          if_pos (ht ▸ ground.ltAddSucc q 2),
           if_neg (fun hc => Nat.lt_irrefl l (Nat.lt_of_le_of_lt hc
             (ht ▸ Nat.lt_succ_self (q + 2)))),
           sumFull W q hlen,
-          wordOver W (q + 2) (Nat.le_trans hlen (Nat.le_succ (q + 1))),
-          wordOver W (q + 3) (Nat.le_trans hlen
+          ground.getAt_over 0 W (q + 2) (Nat.le_trans hlen (Nat.le_succ (q + 1))),
+          ground.getAt_over 0 W (q + 3) (Nat.le_trans hlen
             (Nat.le_trans (Nat.le_succ (q + 1)) (Nat.le_succ (q + 2)))),
           show (0 : Nat) - 0 = 0 from rfl, Nat.mul_zero, Nat.zero_add]
     · have hj2 : m + 2 < l := Nat.lt_of_le_of_ne (Nat.succ_le_of_lt hj) htop
@@ -1636,8 +1628,8 @@ theorem corootRead_D : ∀ (W : List Nat) (l : Nat),
           if_neg (fun hc => Nat.lt_irrefl (m + 3)
             (Nat.lt_of_lt_of_le hc (Nat.le_of_eq he3.symm))),
           Nat.zero_mul, sumFull W m hlen,
-          wordOver W (m + 1) hlen,
-          wordOver W (m + 2) (Nat.le_trans hlen (Nat.le_succ (m + 1))),
+          ground.getAt_over 0 W (m + 1) hlen,
+          ground.getAt_over 0 W (m + 2) (Nat.le_trans hlen (Nat.le_succ (m + 1))),
           show (0 : Nat) - 0 = 0 from rfl, Nat.mul_zero, Nat.zero_add]
         rfl
       · have hj3 : m + 3 < l :=
@@ -1683,7 +1675,7 @@ theorem corootRead_D : ∀ (W : List Nat) (l : Nat),
             if_pos hj3,
             if_pos (Nat.le_trans (Nat.le_of_eq he4.symm)
               (Nat.le_succ (m + 4))),
-            wordOver W (m + 2) hlen, subZero, Nat.one_mul,
+            ground.getAt_over 0 W (m + 2) hlen, subZero, Nat.one_mul,
             ← sumFull W (m + 1) hlen, takeStep W (m + 1),
             ← Nat.two_mul (ground.sumNat (List.take (m + 1) W)
               + ground.getAt 0 W (m + 1)),
@@ -1792,7 +1784,7 @@ private theorem cntLe (k : Nat) : ∀ d : Nat, k < d →
       foldConst 1 (k + 1),
       ground.famFold_congr_range (fun e' => if k + 1 + e' ≤ k then 1 else 0)
         (fun _ => 0) e (fun x _ => if_neg (fun hc =>
-          Nat.lt_irrefl k (Nat.lt_of_lt_of_le (ltAdd k 0)
+          Nat.lt_irrefl k (Nat.lt_of_lt_of_le (ground.ltAddSucc k 0)
             (Nat.le_trans (Nat.le_add_right (k + 1) x) hc)))),
       foldConst 0 e, Nat.one_mul, Nat.zero_mul, Nat.add_zero]
 
@@ -1812,7 +1804,7 @@ private theorem cntGt (k c : Nat) : ∀ r : Nat,
         foldConst 0 (k + 1),
         ground.famFold_congr_range (fun e' => if k < k + 1 + e' then c else 0)
           (fun _ => c) e (fun x _ => if_pos
-            (Nat.lt_of_lt_of_le (ltAdd k 0)
+            (Nat.lt_of_lt_of_le (ground.ltAddSucc k 0)
               (Nat.le_add_right (k + 1) x))),
         foldConst c e, Nat.zero_mul, Nat.zero_add,
         show k + 1 + e - (k + 1) = e from by
@@ -1835,7 +1827,7 @@ private theorem sumLe (k : Nat) : ∀ r : Nat, k < r →
         (k + 1) (fun x hx => if_pos (Nat.le_of_lt_succ hx)),
       ground.famFold_congr_range (fun e' => if k + 1 + e' ≤ k then k + 1 + e' else 0)
         (fun _ => 0) e (fun x _ => if_neg (fun hc =>
-          Nat.lt_irrefl k (Nat.lt_of_lt_of_le (ltAdd k 0)
+          Nat.lt_irrefl k (Nat.lt_of_lt_of_le (ground.ltAddSucc k 0)
             (Nat.le_trans (Nat.le_add_right (k + 1) x) hc)))),
       foldConst 0 e, Nat.zero_mul, Nat.add_zero, foldId k]
 
@@ -1880,17 +1872,6 @@ private theorem mapFoldAt (k : Nat) {α : Type} (G : α → List Nat)
 
 /-! ## The list-fold and dot reads -/
 
-private theorem foldShift (g : Nat → Nat) : ∀ n : Nat,
-    ground.famFold Nat.add 0 g (List.range (n + 1))
-      = g 0 + ground.famFold Nat.add 0 (fun i => g (i + 1)) (List.range n)
-  | 0 => rfl
-  | n + 1 => by
-    rw [ground.range_succ (n + 1),
-      ground.famFold_snoc g (List.range (n + 1)) (n + 1), foldShift g n,
-      ground.range_succ n,
-      ground.famFold_snoc (fun i => g (i + 1)) (List.range n) n,
-      Nat.add_assoc]
-
 private theorem dotIndex : ∀ (X Y : List Nat),
     ground.dotNat X Y
       = ground.famFold Nat.add 0
@@ -1912,22 +1893,12 @@ private theorem dotIndex : ∀ (X Y : List Nat),
     show a * b + ground.dotNat s t = ground.famFold Nat.add 0
       (fun i => ground.getAt 0 (a :: s) i * ground.getAt 0 (b :: t) i)
       (List.range (s.length + 1))
-    rw [foldShift (fun i => ground.getAt 0 (a :: s) i
+    rw [ground.famFold_range_cons Nat.add 0 (fun i => ground.getAt 0 (a :: s) i
         * ground.getAt 0 (b :: t) i) s.length,
       dotIndex s t]
     rfl
 
 /-! ## The occupancy windows of the root families -/
-
-/-- The occupancy window on the keys of an interval. -/
-private theorem indLen (r a b : Nat) : (sertables.ind r a b).length = r :=
-  ground.length_mapRange _ r
-
-private theorem indAt (r a b k : Nat) (hk : k < r) :
-    ground.getAt 0 (sertables.ind r a b) k = if a ≤ k && k < b then 1 else 0 := by
-  show ground.getAt 0 ((List.range r).map
-    (fun x => if a ≤ x && x < b then 1 else 0)) k = _
-  rw [ground.getAt_map_range 0 _ r k, if_pos hk]
 
 private theorem iteB {α : Type} (P : Prop) [Decidable P] (x y : α) :
     (if decide P = true then x else y) = if P then x else y := by
@@ -2015,18 +1986,18 @@ private theorem zipAt2 (u v : List Nat) (k n : Nat) (hu : u.length = n)
     (by rw [hu]; exact hk) (by rw [hv]; exact hk)
 
 private theorem diffLen (l a b : Nat) :
-    (sertables.diffFold l a b).length = l := indLen l a b
+    (sertables.diffFold l a b).length = l := sertables.ind_len l a b
 
 private theorem diffAt (l a b k : Nat) (hk : k < l) :
     ground.getAt 0 (sertables.diffFold l a b) k
-      = if a ≤ k && k < b then 1 else 0 := indAt l a b k hk
+      = if a ≤ k && k < b then 1 else 0 := sertables.ind_at l a b k hk
 
 private theorem sumBLen (l a b : Nat) :
     (sertables.sumFoldB l a b).length = l :=
   zipLen2 (sertables.ind l a b)
     (List.zipWith (fun x y => x + y) (sertables.ind l b l) (sertables.ind l b l)) l
-    (indLen l a b)
-    (zipLen2 (sertables.ind l b l) (sertables.ind l b l) l (indLen l b l) (indLen l b l))
+    (sertables.ind_len l a b)
+    (zipLen2 (sertables.ind l b l) (sertables.ind l b l) l (sertables.ind_len l b l) (sertables.ind_len l b l))
 
 private theorem sumBAt (l a b k : Nat) (hk : k < l) :
     ground.getAt 0 (sertables.sumFoldB l a b) k
@@ -2037,26 +2008,26 @@ private theorem sumBAt (l a b k : Nat) (hk : k < l) :
     (List.zipWith (fun x y => x + y) (sertables.ind l b l) (sertables.ind l b l))) k = _
   rw [zipAt2 (sertables.ind l a b)
       (List.zipWith (fun x y => x + y) (sertables.ind l b l) (sertables.ind l b l)) k l
-      (indLen l a b)
-      (zipLen2 (sertables.ind l b l) (sertables.ind l b l) l (indLen l b l) (indLen l b l))
+      (sertables.ind_len l a b)
+      (zipLen2 (sertables.ind l b l) (sertables.ind l b l) l (sertables.ind_len l b l) (sertables.ind_len l b l))
       hk,
-    zipAt2 (sertables.ind l b l) (sertables.ind l b l) k l (indLen l b l) (indLen l b l) hk,
-    indAt l a b k hk, indAt l b l k hk]
+    zipAt2 (sertables.ind l b l) (sertables.ind l b l) k l (sertables.ind_len l b l) (sertables.ind_len l b l) hk,
+    sertables.ind_at l a b k hk, sertables.ind_at l b l k hk]
 
 private theorem shortLen (l a : Nat) :
-    (sertables.shortFold l a).length = l := indLen l a l
+    (sertables.shortFold l a).length = l := sertables.ind_len l a l
 
 private theorem shortAt (l a k : Nat) (hk : k < l) :
     ground.getAt 0 (sertables.shortFold l a) k
-      = if a ≤ k && k < l then 1 else 0 := indAt l a l k hk
+      = if a ≤ k && k < l then 1 else 0 := sertables.ind_at l a l k hk
 
 private theorem sumCLen (l a b : Nat) :
     (sertables.sumFoldC l a b).length = l :=
-  zipLen2 (sertables.ind l a b) _ l (indLen l a b)
+  zipLen2 (sertables.ind l a b) _ l (sertables.ind_len l a b)
     (zipLen2 _ (sertables.ind l (l - 1) l) l
       (zipLen2 (sertables.ind l b (l - 1)) (sertables.ind l b (l - 1)) l
-        (indLen l b (l - 1)) (indLen l b (l - 1)))
-      (indLen l (l - 1) l))
+        (sertables.ind_len l b (l - 1)) (sertables.ind_len l b (l - 1)))
+      (sertables.ind_len l (l - 1) l))
 
 private theorem sumCAt (l a b k : Nat) (hk : k < l) :
     ground.getAt 0 (sertables.sumFoldC l a b) k
@@ -2068,25 +2039,25 @@ private theorem sumCAt (l a b k : Nat) (hk : k < l) :
     (List.zipWith (fun x y => x + y)
       (List.zipWith (fun x y => x + y) (sertables.ind l b (l - 1)) (sertables.ind l b (l - 1)))
       (sertables.ind l (l - 1) l))) k = _
-  rw [zipAt2 (sertables.ind l a b) _ k l (indLen l a b)
+  rw [zipAt2 (sertables.ind l a b) _ k l (sertables.ind_len l a b)
       (zipLen2 _ (sertables.ind l (l - 1) l) l
         (zipLen2 (sertables.ind l b (l - 1)) (sertables.ind l b (l - 1)) l
-          (indLen l b (l - 1)) (indLen l b (l - 1)))
-        (indLen l (l - 1) l)) hk,
+          (sertables.ind_len l b (l - 1)) (sertables.ind_len l b (l - 1)))
+        (sertables.ind_len l (l - 1) l)) hk,
     zipAt2 _ (sertables.ind l (l - 1) l) k l
       (zipLen2 (sertables.ind l b (l - 1)) (sertables.ind l b (l - 1)) l
-        (indLen l b (l - 1)) (indLen l b (l - 1)))
-      (indLen l (l - 1) l) hk,
+        (sertables.ind_len l b (l - 1)) (sertables.ind_len l b (l - 1)))
+      (sertables.ind_len l (l - 1) l) hk,
     zipAt2 (sertables.ind l b (l - 1)) (sertables.ind l b (l - 1)) k l
-      (indLen l b (l - 1)) (indLen l b (l - 1)) hk,
-    indAt l a b k hk, indAt l b (l - 1) k hk, indAt l (l - 1) l k hk]
+      (sertables.ind_len l b (l - 1)) (sertables.ind_len l b (l - 1)) hk,
+    sertables.ind_at l a b k hk, sertables.ind_at l b (l - 1) k hk, sertables.ind_at l (l - 1) l k hk]
 
 private theorem longLen (l a : Nat) :
     (sertables.longFold l a).length = l :=
   zipLen2 _ (sertables.ind l (l - 1) l) l
     (zipLen2 (sertables.ind l a (l - 1)) (sertables.ind l a (l - 1)) l
-      (indLen l a (l - 1)) (indLen l a (l - 1)))
-    (indLen l (l - 1) l)
+      (sertables.ind_len l a (l - 1)) (sertables.ind_len l a (l - 1)))
+    (sertables.ind_len l (l - 1) l)
 
 private theorem longAt (l a k : Nat) (hk : k < l) :
     ground.getAt 0 (sertables.longFold l a) k
@@ -2098,11 +2069,11 @@ private theorem longAt (l a k : Nat) (hk : k < l) :
     (sertables.ind l (l - 1) l)) k = _
   rw [zipAt2 _ (sertables.ind l (l - 1) l) k l
       (zipLen2 (sertables.ind l a (l - 1)) (sertables.ind l a (l - 1)) l
-        (indLen l a (l - 1)) (indLen l a (l - 1)))
-      (indLen l (l - 1) l) hk,
+        (sertables.ind_len l a (l - 1)) (sertables.ind_len l a (l - 1)))
+      (sertables.ind_len l (l - 1) l) hk,
     zipAt2 (sertables.ind l a (l - 1)) (sertables.ind l a (l - 1)) k l
-      (indLen l a (l - 1)) (indLen l a (l - 1)) hk,
-    indAt l a (l - 1) k hk, indAt l (l - 1) l k hk]
+      (sertables.ind_len l a (l - 1)) (sertables.ind_len l a (l - 1)) hk,
+    sertables.ind_at l a (l - 1) k hk, sertables.ind_at l (l - 1) l k hk]
 
 private theorem sumDLen (l a b : Nat) :
     (sertables.sumFoldD l a b).length = l := by
@@ -2117,13 +2088,13 @@ private theorem sumDLen (l a b : Nat) :
   cases hb : (b + 1 == l) with
   | true =>
     exact zipLen2 (sertables.ind l a (l - 2)) (sertables.ind l (l - 1) l) l
-      (indLen l a (l - 2)) (indLen l (l - 1) l)
+      (sertables.ind_len l a (l - 2)) (sertables.ind_len l (l - 1) l)
   | false =>
-    exact zipLen2 (sertables.ind l a b) _ l (indLen l a b)
+    exact zipLen2 (sertables.ind l a b) _ l (sertables.ind_len l a b)
       (zipLen2 _ (sertables.ind l (l - 2) l) l
         (zipLen2 (sertables.ind l b (l - 2)) (sertables.ind l b (l - 2)) l
-          (indLen l b (l - 2)) (indLen l b (l - 2)))
-        (indLen l (l - 2) l))
+          (sertables.ind_len l b (l - 2)) (sertables.ind_len l b (l - 2)))
+        (sertables.ind_len l (l - 2) l))
 
 private theorem sumDAtTop (l a b k : Nat) (hk : k < l) (hb : b + 1 = l) :
     ground.getAt 0 (sertables.sumFoldD l a b) k
@@ -2134,8 +2105,8 @@ private theorem sumDAtTop (l a b k : Nat) (hk : k < l) (hb : b + 1 = l) :
   show ground.getAt 0 (List.zipWith (fun x y => x + y)
     (sertables.ind l a (l - 2)) (sertables.ind l (l - 1) l)) k = _
   rw [zipAt2 (sertables.ind l a (l - 2)) (sertables.ind l (l - 1) l) k l
-      (indLen l a (l - 2)) (indLen l (l - 1) l) hk,
-    indAt l a (l - 2) k hk, indAt l (l - 1) l k hk]
+      (sertables.ind_len l a (l - 2)) (sertables.ind_len l (l - 1) l) hk,
+    sertables.ind_at l a (l - 2) k hk, sertables.ind_at l (l - 1) l k hk]
 
 private theorem sumDAtGen (l a b k : Nat) (hk : k < l) (hb : ¬ b + 1 = l) :
     ground.getAt 0 (sertables.sumFoldD l a b) k
@@ -2149,18 +2120,18 @@ private theorem sumDAtGen (l a b k : Nat) (hk : k < l) (hb : ¬ b + 1 = l) :
     (List.zipWith (fun x y => x + y)
       (List.zipWith (fun x y => x + y) (sertables.ind l b (l - 2)) (sertables.ind l b (l - 2)))
       (sertables.ind l (l - 2) l))) k = _
-  rw [zipAt2 (sertables.ind l a b) _ k l (indLen l a b)
+  rw [zipAt2 (sertables.ind l a b) _ k l (sertables.ind_len l a b)
       (zipLen2 _ (sertables.ind l (l - 2) l) l
         (zipLen2 (sertables.ind l b (l - 2)) (sertables.ind l b (l - 2)) l
-          (indLen l b (l - 2)) (indLen l b (l - 2)))
-        (indLen l (l - 2) l)) hk,
+          (sertables.ind_len l b (l - 2)) (sertables.ind_len l b (l - 2)))
+        (sertables.ind_len l (l - 2) l)) hk,
     zipAt2 _ (sertables.ind l (l - 2) l) k l
       (zipLen2 (sertables.ind l b (l - 2)) (sertables.ind l b (l - 2)) l
-        (indLen l b (l - 2)) (indLen l b (l - 2)))
-      (indLen l (l - 2) l) hk,
+        (sertables.ind_len l b (l - 2)) (sertables.ind_len l b (l - 2)))
+      (sertables.ind_len l (l - 2) l) hk,
     zipAt2 (sertables.ind l b (l - 2)) (sertables.ind l b (l - 2)) k l
-      (indLen l b (l - 2)) (indLen l b (l - 2)) hk,
-    indAt l a b k hk, indAt l b (l - 2) k hk, indAt l (l - 2) l k hk]
+      (sertables.ind_len l b (l - 2)) (sertables.ind_len l b (l - 2)) hk,
+    sertables.ind_at l a b k hk, sertables.ind_at l b (l - 2) k hk, sertables.ind_at l (l - 2) l k hk]
 
 /-! ## The root fold's key reads -/
 
@@ -2246,7 +2217,7 @@ private theorem rhoCAt (l k : Nat) (hk3 : k + 3 ≤ l) :
       = 0 + (k + 1) * (l - (k + 1))
         + ((k + 1) * (l - (k + 1)) + (k * (k + 1) + 0))
         + ((k + 1) + (k + 1) + 0) := by
-  have hk : k < l := Nat.lt_of_lt_of_le (ltAdd k 2) hk3
+  have hk : k < l := Nat.lt_of_lt_of_le (ground.ltAddSucc k 2) hk3
   have hk1 : k < l - 1 :=
     subOneGe (k + 1) l (Nat.le_trans
       (show k + 1 + 1 ≤ k + 3 from Nat.le_succ (k + 2)) hk3)
@@ -2331,7 +2302,7 @@ private theorem rhoDAt (l m k : Nat) (hm : m + 1 = l) (hk3 : k + 3 ≤ l) :
       = 0 + (k + 1) * (l - (k + 1))
         + (((k + 1) * (m - (k + 1)) + (k * (k + 1) + 0))
           + ((k + 1) + 0)) := by
-  have hk : k < l := Nat.lt_of_lt_of_le (ltAdd k 2) hk3
+  have hk : k < l := Nat.lt_of_lt_of_le (ground.ltAddSucc k 2) hk3
   have hk2 : k < l - 2 := subTwoGe (k + 1) l hk3
   have hlo2 : ¬ l - 2 ≤ k := fun hc =>
     Nat.lt_irrefl k (Nat.lt_of_lt_of_le hk2 hc)
@@ -2421,30 +2392,12 @@ private theorem rhoDAt (l m k : Nat) (hm : m + 1 = l) (hk3 : k + 3 ≤ l) :
 
 /-! ## The members' length folds and residues -/
 
-private theorem lensBAt (l i : Nat) (hi : i < l) :
-    ground.getAt 0 (sertables.tableB l).lenNums i
-      = if i + 1 == l then 1 else 2 := by
-  show ground.getAt 0 ((List.range l).map
-    (fun x => if x + 1 == l then 1 else 2)) i = _
-  rw [ground.getAt_map_range 0 _ l i, if_pos hi]
-
-private theorem lensCAt (l i : Nat) (hi : i < l) :
-    ground.getAt 0 (sertables.tableC l).lenNums i
-      = if i + 1 == l then 2 else 1 := by
-  show ground.getAt 0 ((List.range l).map
-    (fun x => if x + 1 == l then 2 else 1)) i = _
-  rw [ground.getAt_map_range 0 _ l i, if_pos hi]
-
-private theorem lensDAt (l i : Nat) (hi : i < l) :
-    ground.getAt 0 (sertables.tableD l).lenNums i = 2 :=
-  ground.getAt_replicate 0 2 l i hi
-
 private theorem resB (m : Nat) :
     gentable.residue (sertables.tableB (m + 2)) = 2 * m + 2 := by
   have hval : ground.dotNat (sertables.sumFoldB (m + 2) 0 1)
       (sertables.tableB (m + 2)).lenNums = (2 * m + 2) * 2 := by
     rw [dotIndex, sumBLen,
-      foldShift (fun i => ground.getAt 0 (sertables.sumFoldB (m + 2) 0 1) i
+      ground.famFold_range_cons Nat.add 0 (fun i => ground.getAt 0 (sertables.sumFoldB (m + 2) 0 1) i
         * ground.getAt 0 (sertables.tableB (m + 2)).lenNums i) (m + 1),
       ground.range_succ m,
       ground.famFold_snoc (fun i =>
@@ -2454,7 +2407,7 @@ private theorem resB (m : Nat) :
       ground.famFold_congr_range _ (fun _ => (4 : Nat)) m (fun i hi => by
         rw [sumBAt (m + 2) 0 1 (i + 1) (Nat.succ_lt_succ
             (Nat.lt_trans hi (Nat.lt_succ_self m))),
-          lensBAt (m + 2) (i + 1) (Nat.succ_lt_succ
+          sertables.lensB_at (m + 2) (i + 1) (Nat.succ_lt_succ
             (Nat.lt_trans hi (Nat.lt_succ_self m))),
           indValOut 0 1 (i + 1) (fun hc =>
             Nat.not_succ_le_zero i (Nat.le_of_succ_le_succ hc)),
@@ -2466,9 +2419,9 @@ private theorem resB (m : Nat) :
         rfl),
       foldConst 4 m,
       sumBAt (m + 2) 0 1 0 (Nat.zero_lt_succ _),
-      lensBAt (m + 2) 0 (Nat.zero_lt_succ _),
+      sertables.lensB_at (m + 2) 0 (Nat.zero_lt_succ _),
       sumBAt (m + 2) 0 1 (m + 1) (Nat.lt_succ_self (m + 1)),
-      lensBAt (m + 2) (m + 1) (Nat.lt_succ_self (m + 1)),
+      sertables.lensB_at (m + 2) (m + 1) (Nat.lt_succ_self (m + 1)),
       indValIn 0 1 0 (Nat.zero_lt_succ 0),
       indValLo 1 (m + 2) 0 (fun hc =>
         Nat.not_succ_le_zero 0 hc),
@@ -2500,7 +2453,7 @@ private theorem resC (m : Nat) :
       ground.famFold_congr_range _ (fun _ => (2 : Nat)) (m + 1) (fun i hi => by
         rw [longAt (m + 2) 0 i
             (Nat.lt_trans hi (Nat.lt_succ_self (m + 1))),
-          lensCAt (m + 2) i (Nat.lt_trans hi (Nat.lt_succ_self (m + 1))),
+          sertables.lensC_at (m + 2) i (Nat.lt_trans hi (Nat.lt_succ_self (m + 1))),
           indValIn 0 (m + 2 - 1) i (show i < m + 2 - 1 from hi),
           indValLo (m + 2 - 1) (m + 2) i
             (show ¬ m + 2 - 1 ≤ i from fun hc =>
@@ -2512,7 +2465,7 @@ private theorem resC (m : Nat) :
         rfl),
       foldConst 2 (m + 1),
       longAt (m + 2) 0 (m + 1) (Nat.lt_succ_self (m + 1)),
-      lensCAt (m + 2) (m + 1) (Nat.lt_succ_self (m + 1)),
+      sertables.lensC_at (m + 2) (m + 1) (Nat.lt_succ_self (m + 1)),
       indValOut 0 (m + 2 - 1) (m + 1)
         (show ¬ m + 1 < m + 2 - 1 from Nat.lt_irrefl (m + 1)),
       indValIn (m + 2 - 1) (m + 2) (m + 1) (Nat.lt_succ_self (m + 1)),
@@ -2532,7 +2485,7 @@ private theorem resD (m : Nat) :
   have hval : ground.dotNat (sertables.sumFoldD (m + 3) 0 1)
       (sertables.tableD (m + 3)).lenNums = (2 * m + 3) * 2 := by
     rw [dotIndex, sumDLen,
-      foldShift (fun i => ground.getAt 0 (sertables.sumFoldD (m + 3) 0 1) i
+      ground.famFold_range_cons Nat.add 0 (fun i => ground.getAt 0 (sertables.sumFoldD (m + 3) 0 1) i
         * ground.getAt 0 (sertables.tableD (m + 3)).lenNums i) (m + 2),
       ground.range_succ (m + 1),
       ground.famFold_snoc (fun i =>
@@ -2550,7 +2503,7 @@ private theorem resD (m : Nat) :
               (Nat.lt_trans (Nat.lt_succ_self m)
                 (Nat.lt_succ_self (m + 1)))))
             hb,
-          lensDAt (m + 3) (i + 1)
+          sertables.lensD_at (m + 3) (i + 1)
             (Nat.succ_lt_succ (Nat.lt_trans hi
               (Nat.lt_trans (Nat.lt_succ_self m)
                 (Nat.lt_succ_self (m + 1))))),
@@ -2565,15 +2518,15 @@ private theorem resD (m : Nat) :
           if_pos (Nat.le_add_left 1 i)]),
       foldConst 4 m,
       sumDAtGen (m + 3) 0 1 0 (Nat.zero_lt_succ _) hb,
-      lensDAt (m + 3) 0 (Nat.zero_lt_succ _),
+      sertables.lensD_at (m + 3) 0 (Nat.zero_lt_succ _),
       sumDAtGen (m + 3) 0 1 (m + 1)
         (Nat.lt_trans (Nat.lt_succ_self (m + 1))
           (Nat.lt_succ_self (m + 2))) hb,
-      lensDAt (m + 3) (m + 1)
+      sertables.lensD_at (m + 3) (m + 1)
         (Nat.lt_trans (Nat.lt_succ_self (m + 1))
           (Nat.lt_succ_self (m + 2))),
       sumDAtGen (m + 3) 0 1 (m + 2) (Nat.lt_succ_self (m + 2)) hb,
-      lensDAt (m + 3) (m + 2) (Nat.lt_succ_self (m + 2)),
+      sertables.lensD_at (m + 3) (m + 2) (Nat.lt_succ_self (m + 2)),
       indValIn 0 1 0 (Nat.zero_lt_succ 0),
       indValLo 1 (m + 3 - 2) 0 (fun hc => Nat.not_succ_le_zero 0 hc),
       indValLo (m + 3 - 2) (m + 3) 0
@@ -2675,7 +2628,7 @@ private theorem subStep (k l : Nat) (h : k + 2 ≤ l) :
 private theorem rhoBc (l k : Nat) (hk2 : k + 2 ≤ l) :
     ground.getAt 0 (casfloor.rhoFold (sertables.tableB l)) k
       = (k + 1) * (2 * l - (k + 1)) := by
-  have hk : k < l := Nat.lt_of_lt_of_le (ltAdd k 1) hk2
+  have hk : k < l := Nat.lt_of_lt_of_le (ground.ltAddSucc k 1) hk2
   have hD : (l - (k + 1)) + (k + 1) = l := ground.subAdd hk
   rw [rhoBAt l k hk, hSB k (l - (k + 1)) l hD]
   exact polyB k (l - (k + 1))
@@ -2683,7 +2636,7 @@ private theorem rhoBc (l k : Nat) (hk2 : k + 2 ≤ l) :
 private theorem rhoCc (l k : Nat) (hk3 : k + 3 ≤ l) :
     ground.getAt 0 (casfloor.rhoFold (sertables.tableC l)) k
       = (k + 1) * (2 * l - k) := by
-  have hk : k < l := Nat.lt_of_lt_of_le (ltAdd k 2) hk3
+  have hk : k < l := Nat.lt_of_lt_of_le (ground.ltAddSucc k 2) hk3
   have hD : (l - (k + 1)) + (k + 1) = l := ground.subAdd hk
   rw [rhoCAt l k hk3, hSC k (l - (k + 1)) l hD]
   exact polyC k (l - (k + 1))
@@ -2691,7 +2644,7 @@ private theorem rhoCc (l k : Nat) (hk3 : k + 3 ≤ l) :
 private theorem rhoDc (l m k : Nat) (hm : m + 1 = l) (hk3 : k + 3 ≤ l) :
     ground.getAt 0 (casfloor.rhoFold (sertables.tableD l)) k
       = (k + 1) * (2 * l - (k + 1 + 1)) := by
-  have hk : k < l := Nat.lt_of_lt_of_le (ltAdd k 2) hk3
+  have hk : k < l := Nat.lt_of_lt_of_le (ground.ltAddSucc k 2) hk3
   have hD : (l - (k + 1)) + (k + 1) = l := ground.subAdd hk
   have hkm : k + 1 ≤ m := by
     rw [← hm] at hk3
@@ -2757,8 +2710,8 @@ theorem memberLen (W : List Nat) (l : Nat) :
 private theorem memberZero (W : List Nat) (l x : Nat)
     (h : W.length ≤ x) : ground.getAt 0 (member W l) x = 0 := by
   by_cases hx : x < l
-  · rw [memberEntry W l x hx, wordOver W x h,
-      wordOver W (x + 1) (Nat.le_trans h (Nat.le_succ x))]
+  · rw [memberEntry W l x hx, ground.getAt_over 0 W x h,
+      ground.getAt_over 0 W (x + 1) (Nat.le_trans h (Nat.le_succ x))]
   · exact ground.getAt_over 0 (member W l) x
       (by rw [memberLen]; exact Nat.le_of_not_lt hx)
 
@@ -2830,15 +2783,6 @@ private theorem addD1 (j D : Nat) :
 private theorem addD2 (j D : Nat) :
     D + D + (j + 1) = (j + 1) + 2 * D := by
   rw [Nat.two_mul D, Nat.add_comm (j + 1) (D + D)]
-
-private theorem foldTrunc (g : Nat → Nat) (N l : Nat) (hNl : N ≤ l)
-    (hz : ∀ x, N ≤ x → g x = 0) :
-    ground.famFold Nat.add 0 g (List.range l)
-      = ground.famFold Nat.add 0 g (List.range N) := by
-  match Nat.le.dest hNl with
-  | ⟨d, hd⟩ =>
-    rw [← hd]
-    exact ground.famFold_range_mono g N hz d
 
 private theorem teleAt (W : List Nat) (H U : Nat → Nat)
     (hsa : ∀ i, ground.getAt 0 W (i + 1) ≤ ground.getAt 0 W i)
@@ -2980,12 +2924,12 @@ theorem casRead_B : ∀ (W : List Nat) (l : Nat),
   have hk2 : ∀ k, k < W.length → k + 2 ≤ l := fun k hk =>
     Nat.le_trans (Nat.le_succ (k + 2)) (hk3 k hk)
   have hkl : ∀ k, k < W.length → k < l := fun k hk =>
-    Nat.lt_of_lt_of_le (ltAdd k 1) (hk2 k hk)
+    Nat.lt_of_lt_of_le (ground.ltAddSucc k 1) (hk2 k hk)
   have hnum : casfloor.c2Num (sertables.tableB l) (endB W l)
       = casNumB W l * 2 := by
     rw [c2NumFold (sertables.tableB l) (endB W l) l 1 (foldB W l)
         (member W l) rfl rfl rfl rfl,
-      foldTrunc _ W.length l hal (fun x hx => by
+      ground.foldExtend' _ W.length l hal (fun x hx => by
         rw [memberZero W l x hx, Nat.mul_zero, Nat.zero_mul]),
       ground.famFold_congr_range _ (fun k =>
         (ground.sumNat (List.take (k + 1) W)
@@ -2994,7 +2938,7 @@ theorem casRead_B : ∀ (W : List Nat) (l : Nat),
         W.length (fun k hk => by
           rw [foldBAt W l k (hkl k hk), Nat.one_mul,
             rhoBc l k (hk2 k hk), memberEntry W l k (hkl k hk),
-            lensBAt l k (hkl k hk),
+            sertables.lensB_at l k (hkl k hk),
             ground.neBeqOf (fun hc : k + 1 = l =>
               Nat.lt_irrefl (k + 1)
                 (Nat.le_trans (hk2 k hk) (Nat.le_of_eq hc.symm)))]
@@ -3104,14 +3048,14 @@ theorem casRead_C : ∀ (W : List Nat) (l : Nat),
   have hk2 : ∀ k, k < W.length → k + 2 ≤ l := fun k hk =>
     Nat.le_trans (Nat.le_succ (k + 2)) (hk3 k hk)
   have hkl : ∀ k, k < W.length → k < l := fun k hk =>
-    Nat.lt_of_lt_of_le (ltAdd k 1) (hk2 k hk)
+    Nat.lt_of_lt_of_le (ground.ltAddSucc k 1) (hk2 k hk)
   have hne : ∀ k, k < W.length → ¬ l ≤ k + 1 := fun k hk hc =>
     Nat.lt_irrefl (k + 1) (Nat.le_trans (hk2 k hk) hc)
   have hnum : casfloor.c2Num (sertables.tableC l) (endC W l)
       = casNumC W l * 2 := by
     rw [c2NumFold (sertables.tableC l) (endC W l) l 2 (foldC W l)
         (member W l) rfl rfl rfl rfl,
-      foldTrunc _ W.length l hal (fun x hx => by
+      ground.foldExtend' _ W.length l hal (fun x hx => by
         rw [memberZero W l x hx, Nat.mul_zero, Nat.zero_mul]),
       ground.famFold_congr_range _ (fun k =>
         (ground.sumNat (List.take (k + 1) W)
@@ -3121,7 +3065,7 @@ theorem casRead_C : ∀ (W : List Nat) (l : Nat),
         W.length (fun k hk => by
           rw [foldCAt W l k (hkl k hk) (hne k hk),
             rhoCc l k (hk3 k hk), memberEntry W l k (hkl k hk),
-            lensCAt l k (hkl k hk),
+            sertables.lensC_at l k (hkl k hk),
             ground.neBeqOf (fun hc : k + 1 = l =>
               Nat.lt_irrefl (k + 1)
                 (Nat.le_trans (hk2 k hk) (Nat.le_of_eq hc.symm)))]
@@ -3184,7 +3128,7 @@ theorem casRead_D : ∀ (W : List Nat) (l : Nat),
   have hk2 : ∀ k, k < W.length → k + 2 ≤ l := fun k hk =>
     Nat.le_trans (Nat.le_succ (k + 2)) (hk3 k hk)
   have hkl : ∀ k, k < W.length → k < l := fun k hk =>
-    Nat.lt_of_lt_of_le (ltAdd k 1) (hk2 k hk)
+    Nat.lt_of_lt_of_le (ground.ltAddSucc k 1) (hk2 k hk)
   have hne : ∀ k, k < W.length → ¬ l ≤ k + 2 := fun k hk hc =>
     Nat.lt_irrefl (k + 2) (Nat.le_trans (hk3 k hk) hc)
   match Nat.le.dest (show 1 ≤ l from
@@ -3195,7 +3139,7 @@ theorem casRead_D : ∀ (W : List Nat) (l : Nat),
         = casNumD W l * 4 := by
       rw [c2NumFold (sertables.tableD l) (endD W l) l 2 (foldD W l)
           (member W l) rfl rfl rfl rfl,
-        foldTrunc _ W.length l hal (fun x hx => by
+        ground.foldExtend' _ W.length l hal (fun x hx => by
           rw [memberZero W l x hx, Nat.mul_zero, Nat.zero_mul]),
         ground.famFold_congr_range _ (fun k =>
           (ground.sumNat (List.take (k + 1) W)
@@ -3205,7 +3149,7 @@ theorem casRead_D : ∀ (W : List Nat) (l : Nat),
           W.length (fun k hk => by
             rw [foldDAt W l k (hkl k hk) (hne k hk),
               rhoDc l m k hm (hk3 k hk), memberEntry W l k (hkl k hk),
-              lensDAt l k (hkl k hk),
+              sertables.lensD_at l k (hkl k hk),
               ← Nat.left_distrib 2 (ground.sumNat (List.take (k + 1) W))
                 ((k + 1) * (2 * l - (k + 1 + 1))),
               ground.mulAssoc 2 (ground.sumNat (List.take (k + 1) W)
@@ -3667,18 +3611,9 @@ private theorem mulRev (g : Nat → Nat) : ∀ n : Nat,
       ← mulRev g n, ground.range_succ n, mulSnoc g (List.range n) n]
     exact Nat.mul_comm _ _
 
-private theorem foldlToFam {α : Type} (F : α → Nat) :
-    ∀ (L : List α) (acc : Nat),
-    L.foldl (fun a x => a * F x) acc = acc * ground.famFold Nat.mul 1 F L
-  | [], acc => (Nat.mul_one acc).symm
-  | a :: t, acc => by
-    show t.foldl (fun a x => a * F x) (acc * F a)
-      = acc * (F a * ground.famFold Nat.mul 1 F t)
-    rw [foldlToFam F t (acc * F a), ground.mulAssoc]
-
 private theorem foldlFam {α : Type} (F : α → Nat) (L : List α) :
     L.foldl (fun a x => a * F x) 1 = ground.famFold Nat.mul 1 F L := by
-  rw [foldlToFam F L 1, Nat.one_mul]
+  rw [ground.foldlProd F L 1, Nat.one_mul]
 
 /-! ## The pair family's split at the word boundary -/
 
@@ -3901,12 +3836,6 @@ private theorem mixFormD (l a i n k c : Nat) (hn : a + n = l) (hc : c + (k + 1) 
 
 /-! ## The member's window telescope -/
 
-private theorem descChain (W : List Nat)
-    (hs : ∀ i, ground.getAt 0 W (i + 1) ≤ ground.getAt 0 W i) (i : Nat) :
-    ∀ n : Nat, ground.getAt 0 W (i + n) ≤ ground.getAt 0 W i
-  | 0 => Nat.le_refl _
-  | n + 1 => Nat.le_trans (hs (i + n)) (descChain W hs i n)
-
 private theorem subChain (x y z : Nat) (h1 : y ≤ x) (h2 : z ≤ y) :
     x - y + (y - z) = x - z :=
   (subOf x z (x - y + (y - z)) (by
@@ -3935,7 +3864,7 @@ private theorem gapWindow (W v : List Nat) (l : Nat)
       addSwap (ground.getAt 0 W a - ground.getAt 0 W (a + s)) s
         (ground.getAt 0 W (a + s) - ground.getAt 0 W (a + s + 1)) 1,
       subChain (ground.getAt 0 W a) (ground.getAt 0 W (a + s))
-        (ground.getAt 0 W (a + s + 1)) (descChain W hs a s) (hs (a + s))]
+        (ground.getAt 0 W (a + s + 1)) (ground.descChain W hs a s) (hs (a + s))]
     rfl
 
 /-- A positive fold's gap against a coroot list, the weighted key
@@ -3977,22 +3906,22 @@ private theorem lensDLen (l : Nat) :
 
 private theorem lensBOff (l k : Nat) (hk : k < l) (hne : ¬ k + 1 = l) :
     ground.getAt 0 (sertables.tableB l).lenNums k = 2 := by
-  rw [lensBAt l k hk, ground.neBeqOf hne]
+  rw [sertables.lensB_at l k hk, ground.neBeqOf hne]
   rfl
 
 private theorem lensBEnd (l k : Nat) (hk : k < l) (he : k + 1 = l) :
     ground.getAt 0 (sertables.tableB l).lenNums k = 1 := by
-  rw [lensBAt l k hk, ground.eqBeqOf he]
+  rw [sertables.lensB_at l k hk, ground.eqBeqOf he]
   rfl
 
 private theorem lensCOff (l k : Nat) (hk : k < l) (hne : ¬ k + 1 = l) :
     ground.getAt 0 (sertables.tableC l).lenNums k = 1 := by
-  rw [lensCAt l k hk, ground.neBeqOf hne]
+  rw [sertables.lensC_at l k hk, ground.neBeqOf hne]
   rfl
 
 private theorem lensCEnd (l k : Nat) (hk : k < l) (he : k + 1 = l) :
     ground.getAt 0 (sertables.tableC l).lenNums k = 2 := by
-  rw [lensCAt l k hk, ground.eqBeqOf he]
+  rw [sertables.lensC_at l k hk, ground.eqBeqOf he]
   rfl
 
 /-- A `B` window below the short key: the doubled telescope. -/
@@ -4007,7 +3936,7 @@ private theorem winB (W v : List Nat) (l i s t : Nat)
       = 2 * (ground.getAt 0 W i - ground.getAt 0 W (i + s) + s) := by
   have hisl : i + s < l := by
     rw [← hl]
-    exact ltAdd (i + s) t
+    exact ground.ltAddSucc (i + s) t
   rw [ground.famFold_congr_range
       (fun e => ground.getAt 0 (sertables.tableB l).lenNums (i + e)
         * ground.getAt 0 v (i + e))
@@ -4054,7 +3983,7 @@ private theorem winC (W v : List Nat) (l i s t : Nat)
       = ground.getAt 0 W i - ground.getAt 0 W (i + s) + s := by
   have hisl : i + s < l := by
     rw [← hl]
-    exact ltAdd (i + s) t
+    exact ground.ltAddSucc (i + s) t
   rw [ground.famFold_congr_range
       (fun e => ground.getAt 0 (sertables.tableC l).lenNums (i + e)
         * ground.getAt 0 v (i + e))
@@ -4082,7 +4011,7 @@ private theorem winD (W v : List Nat) (l i s : Nat)
         * ground.getAt 0 v (i + e))
       (fun e => 2 * ground.getAt 0 v (i + e)) s
       (fun e he => by
-        rw [lensDAt l (i + e) (Nat.lt_of_lt_of_le
+        rw [sertables.lensD_at l (i + e) (Nat.lt_of_lt_of_le
           (Nat.add_lt_add_left he i) hle)]),
     ← ground.famFold_mul 2 (fun e => ground.getAt 0 v (i + e))
       (List.range s),
@@ -4158,7 +4087,7 @@ private theorem gapSumB (W v : List Nat) (l i s r : Nat)
   exact arithSumB (ground.getAt 0 W i - ground.getAt 0 W (i + s))
     (ground.getAt 0 W (i + s)) (ground.getAt 0 W i) s r
     (2 * l - 1 - i - (i + s))
-    (ground.subAdd (descChain W hsa i s))
+    (ground.subAdd (ground.descChain W hsa i s))
     (sub1c (2 * l) i (i + s) (s + (2 * r + 1)) (sumBform2 i s r l hl)).symm
 
 /-- The `B` short family's gap at a coordinate key. -/
@@ -4372,7 +4301,7 @@ private theorem gapSumB' (W v : List Nat) (l i j : Nat)
       exact hcl
     have hz : ground.getAt 0 W (i + s + t) = 0 := by
       rw [hs]
-      exact wordOver W (j + t) (Nat.le_of_succ_le
+      exact ground.getAt_over 0 W (j + t) (Nat.le_of_succ_le
         (Nat.le_of_succ_le_succ hcl2))
     rw [← hs, gapSumB W v l i s t hsa hv hvl hl hz]
 
@@ -4393,7 +4322,7 @@ private theorem gapShB' (W v : List Nat) (l i : Nat)
       rw [hl]
       exact hcl
     have hz : ground.getAt 0 W (i + t) = 0 :=
-      wordOver W (i + t) (Nat.le_of_succ_le
+      ground.getAt_over 0 W (i + t) (Nat.le_of_succ_le
         (Nat.le_of_succ_le_succ hcl2))
     exact gapShB W v l i t hsa hv hvl hl hz
 
@@ -4478,7 +4407,7 @@ private theorem gapProdB (W v : List Nat) (l : Nat)
     rw [← hn]
     exact ground.addSubSelfL W.length n
   have hzero : ∀ x, ground.getAt 0 W (W.length + x) = 0 :=
-    fun x => wordOver W (W.length + x) (Nat.le_add_right W.length x)
+    fun x => ground.getAt_over 0 W (W.length + x) (Nat.le_add_right W.length x)
   have hDsp := pairsSplit
     (fun x y => ground.getAt 0 W x - ground.getAt 0 W y + (y - x))
     W.length n
@@ -4603,7 +4532,7 @@ private theorem memberRhoLen (W : List Nat) (l : Nat) :
   show ((member W l).map (· + 1)).length = l
   rw [ground.length_map, memberLen]
 
-private theorem memberRhoAt (W : List Nat) (l k : Nat) (hk : k < l) :
+theorem memberRhoAt (W : List Nat) (l k : Nat) (hk : k < l) :
     ground.getAt 0 (memberRho W l) k
       = ground.getAt 0 W k - ground.getAt 0 W (k + 1) + 1 := by
   show ground.getAt 0 ((member W l).map (· + 1)) k = _
@@ -4798,7 +4727,7 @@ private theorem gapSumC (W v : List Nat) (l i s r : Nat)
   exact arithSumC (ground.getAt 0 W i - ground.getAt 0 W (i + s))
     (ground.getAt 0 W (i + s)) (ground.getAt 0 W i) s r
     (2 * l - i - (i + s))
-    (ground.subAdd (descChain W hsa i s))
+    (ground.subAdd (ground.descChain W hsa i s))
     (sub2 (2 * l) i (i + s) (s + (2 * r + 2)) (sumBform2 i s r l hl)).symm
 
 /-- The `C` long family's gap at a coordinate key. -/
@@ -4877,7 +4806,7 @@ private theorem gapSumC' (W v : List Nat) (l i j : Nat)
       exact hcl
     have hz : ground.getAt 0 W (i + s + t) = 0 := by
       rw [hs]
-      exact wordOver W (j + t) (Nat.le_of_succ_le
+      exact ground.getAt_over 0 W (j + t) (Nat.le_of_succ_le
         (Nat.le_of_succ_le_succ hcl2))
     rw [← hs, gapSumC W v l i s t hsa hv hvl hl hz]
 
@@ -4898,7 +4827,7 @@ private theorem gapLgC' (W v : List Nat) (l i : Nat)
       rw [hl]
       exact hcl
     have hz : ground.getAt 0 W (i + t) = 0 :=
-      wordOver W (i + t) (Nat.le_of_succ_le
+      ground.getAt_over 0 W (i + t) (Nat.le_of_succ_le
         (Nat.le_of_succ_le_succ hcl2))
     exact gapLgC W v l i t hsa hv hvl hl hz
 
@@ -4990,7 +4919,7 @@ private theorem gapProdC (W v : List Nat) (l : Nat)
     rw [← hn]
     exact ground.addSubSelfL W.length n
   have hzero : ∀ x, ground.getAt 0 W (W.length + x) = 0 :=
-    fun x => wordOver W (W.length + x) (Nat.le_add_right W.length x)
+    fun x => ground.getAt_over 0 W (W.length + x) (Nat.le_add_right W.length x)
   have hDsp := pairsSplit
     (fun x y => ground.getAt 0 W x - ground.getAt 0 W y + (y - x))
     W.length n
@@ -5263,7 +5192,7 @@ private theorem gapSumDg (W v : List Nat) (l i s r : Nat)
   exact arithSumDg (ground.getAt 0 W i - ground.getAt 0 W (i + s))
     (ground.getAt 0 W (i + s)) (ground.getAt 0 W i) s r
     (2 * l - 2 - i - (i + s))
-    (ground.subAdd (descChain W hsa i s))
+    (ground.subAdd (ground.descChain W hsa i s))
     (sub2c (2 * l) i (i + s) (s + (2 * r + 2))
       (sumDform2 i s r l hl)).symm
 
@@ -5360,8 +5289,8 @@ private theorem gapSumD' (W v : List Nat) (l i j : Nat)
       have haq : W.length ≤ i + q :=
         Nat.le_of_succ_le_succ (Nat.le_of_succ_le_succ hcl2)
       rw [← hjq', gapSumDt W v l i q hsa hv hvl hl
-        (wordOver W (i + q) haq)
-        (wordOver W (i + q + 1) (Nat.le_succ_of_le haq))]
+        (ground.getAt_over 0 W (i + q) haq)
+        (ground.getAt_over 0 W (i + q + 1) (Nat.le_succ_of_le haq))]
     · have hlt : j + 1 < l := Nat.lt_of_le_of_ne hjl hb
       match Nat.le.dest hlt with
       | ⟨r, hr⟩ =>
@@ -5377,7 +5306,7 @@ private theorem gapSumD' (W v : List Nat) (l i j : Nat)
           exact hcl
         have hz : ground.getAt 0 W (i + (q + 1) + r) = 0 := by
           rw [hjq]
-          exact wordOver W (j + r)
+          exact ground.getAt_over 0 W (j + r)
             (Nat.le_of_succ_le_succ (Nat.le_of_succ_le_succ hcl2))
         have hne : ¬ i + (q + 1) + 1 = l := by
           rw [hjq]
@@ -5466,7 +5395,7 @@ private theorem gapProdD (W v : List Nat) (l : Nat)
     rw [← hn]
     exact ground.addSubSelfL W.length n
   have hzero : ∀ x, ground.getAt 0 W (W.length + x) = 0 :=
-    fun x => wordOver W (W.length + x) (Nat.le_add_right W.length x)
+    fun x => ground.getAt_over 0 W (W.length + x) (Nat.le_add_right W.length x)
   have hDsp := pairsSplit
     (fun x y => ground.getAt 0 W x - ground.getAt 0 W y + (y - x))
     W.length n
@@ -5678,14 +5607,6 @@ private theorem foldRise (F : Nat → Nat) (c n : Nat)
       (List.range n) (fun k _ => h k)]
   exact riseFam n c
 
-/-- The rectangle: the window of `w` boxes over `g` keys reads
-either way round. -/
-private theorem riseRect (c g w : Nat) :
-    ground.rise (c + g) w * ground.rise c g
-      = ground.rise c w * ground.rise (c + w) g := by
-  rw [Nat.mul_comm (ground.rise (c + g) w) (ground.rise c g),
-    ← ground.rise_split c g w, ← ground.rise_split c w g, Nat.add_comm g w]
-
 /-- Four paired folds over one key range agree at their pointwise
 products. -/
 private theorem famFold_quad (f1 f2 f3 f4 g1 g2 g3 g4 : Nat → Nat)
@@ -5883,18 +5804,12 @@ private theorem quadKey (c1 c2 g w : Nat) :
       (ground.rise c1 g) (ground.rise c2 g),
     ground.mulMulMulComm (ground.rise (c1 + g) w) (ground.rise (c2 + g) w)
       (ground.rise c1 g) (ground.rise c2 g),
-    riseRect c1 g w, riseRect c2 g w,
+    ground.rise_rect c1 g w, ground.rise_rect c2 g w,
     ground.mulMulMulComm (ground.rise c1 w) (ground.rise (c1 + w) g)
       (ground.rise c2 w) (ground.rise (c2 + w) g),
     ← ground.mulAssoc (ground.rise c1 w * ground.rise c2 w)
       (ground.rise (c1 + w) g) (ground.rise (c2 + w) g)]
 
-
-/-- The accumulating product from the product's unit. -/
-private theorem foldlProd1 {α : Type} (g : α → Nat) (L : List α) :
-    L.foldl (fun acc x => acc * g x) 1
-      = ground.famFold Nat.mul 1 g L := by
-  rw [ground.foldlProd g L 1, Nat.one_mul]
 
 
 /-- The `B` dimension numerator as a polynomial in the rank. -/
@@ -6297,29 +6212,29 @@ private theorem crossB (W : List Nat) (l : Nat) (hal : W.length ≤ l) :
                   (fun acc2 k => acc2 * (W.length - i + k)) 1) 1))))
       * dimNumB W l
   rw [dimNumB_flat W l, dimDenB_flat W l,
-    foldlProd1 (fun p : Nat × Nat => ground.getAt 0 W p.1
+    foldlFam (fun p : Nat × Nat => ground.getAt 0 W p.1
       - ground.getAt 0 W p.2 + (p.2 - p.1)) (places.pairsOf W.length),
-    foldlProd1 (fun p : Nat × Nat => p.2 - p.1)
+    foldlFam (fun p : Nat × Nat => p.2 - p.1)
       (places.pairsOf W.length),
-    foldlProd1 (fun p : Nat × Nat => ground.getAt 0 W p.1
+    foldlFam (fun p : Nat × Nat => ground.getAt 0 W p.1
       + ground.getAt 0 W p.2 + (2 * l - 1 - p.1 - p.2))
       (places.pairsOf W.length),
-    foldlProd1 (fun p : Nat × Nat => 2 * l - 1 - p.1 - p.2)
+    foldlFam (fun p : Nat × Nat => 2 * l - 1 - p.1 - p.2)
       (places.pairsOf W.length),
-    foldlProd1 (fun i => 2 * ground.getAt 0 W i + (2 * l - 1 - 2 * i))
+    foldlFam (fun i => 2 * ground.getAt 0 W i + (2 * l - 1 - 2 * i))
       (List.range W.length),
-    foldlProd1 (fun i => 2 * l - 1 - 2 * i) (List.range W.length),
-    foldlProd1 (fun i => (List.range (ground.getAt 0 W i)).foldl
+    foldlFam (fun i => 2 * l - 1 - 2 * i) (List.range W.length),
+    foldlFam (fun i => (List.range (ground.getAt 0 W i)).foldl
       (fun acc2 k => acc2 * (W.length - i + k)) 1) (List.range W.length),
-    foldlProd1 (fun i => (List.range (l - W.length)).foldl
+    foldlFam (fun i => (List.range (l - W.length)).foldl
       (fun acc2 k => acc2 * (ground.getAt 0 W i + (W.length - i + k))) 1)
       (List.range W.length),
-    foldlProd1 (fun i => (List.range (l - W.length)).foldl
+    foldlFam (fun i => (List.range (l - W.length)).foldl
       (fun acc2 k => acc2 * (ground.getAt 0 W i + (l - i + k))) 1)
       (List.range W.length),
-    foldlProd1 (fun i => (List.range (l - W.length)).foldl
+    foldlFam (fun i => (List.range (l - W.length)).foldl
       (fun acc2 k => acc2 * (W.length - i + k)) 1) (List.range W.length),
-    foldlProd1 (fun i => (List.range (l - W.length)).foldl
+    foldlFam (fun i => (List.range (l - W.length)).foldl
       (fun acc2 k => acc2 * (l - i + k)) 1) (List.range W.length),
     ground.foldlProd (fun p : Nat × Nat => ground.getAt 0 W p.1
       + ground.getAt 0 W p.2 + (2 * l - 1 - p.1 - p.2))
@@ -6723,29 +6638,29 @@ private theorem crossC (W : List Nat) (l : Nat) (hal : W.length ≤ l) :
                   (fun acc2 k => acc2 * (W.length - i + k)) 1) 1))))
       * dimNumC W l
   rw [dimNumC_flat W l, dimDenC_flat W l,
-    foldlProd1 (fun p : Nat × Nat => ground.getAt 0 W p.1
+    foldlFam (fun p : Nat × Nat => ground.getAt 0 W p.1
       - ground.getAt 0 W p.2 + (p.2 - p.1)) (places.pairsOf W.length),
-    foldlProd1 (fun p : Nat × Nat => p.2 - p.1)
+    foldlFam (fun p : Nat × Nat => p.2 - p.1)
       (places.pairsOf W.length),
-    foldlProd1 (fun p : Nat × Nat => ground.getAt 0 W p.1
+    foldlFam (fun p : Nat × Nat => ground.getAt 0 W p.1
       + ground.getAt 0 W p.2 + (2 * l - p.1 - p.2))
       (places.pairsOf W.length),
-    foldlProd1 (fun p : Nat × Nat => 2 * l - p.1 - p.2)
+    foldlFam (fun p : Nat × Nat => 2 * l - p.1 - p.2)
       (places.pairsOf W.length),
-    foldlProd1 (fun i => ground.getAt 0 W i + (l - i))
+    foldlFam (fun i => ground.getAt 0 W i + (l - i))
       (List.range W.length),
-    foldlProd1 (fun i => l - i) (List.range W.length),
-    foldlProd1 (fun i => (List.range (ground.getAt 0 W i)).foldl
+    foldlFam (fun i => l - i) (List.range W.length),
+    foldlFam (fun i => (List.range (ground.getAt 0 W i)).foldl
       (fun acc2 k => acc2 * (W.length - i + k)) 1) (List.range W.length),
-    foldlProd1 (fun i => (List.range (l - W.length)).foldl
+    foldlFam (fun i => (List.range (l - W.length)).foldl
       (fun acc2 k => acc2 * (ground.getAt 0 W i + (W.length - i + k))) 1)
       (List.range W.length),
-    foldlProd1 (fun i => (List.range (l - W.length)).foldl
+    foldlFam (fun i => (List.range (l - W.length)).foldl
       (fun acc2 k => acc2 * (ground.getAt 0 W i + (l - i + 1 + k))) 1)
       (List.range W.length),
-    foldlProd1 (fun i => (List.range (l - W.length)).foldl
+    foldlFam (fun i => (List.range (l - W.length)).foldl
       (fun acc2 k => acc2 * (W.length - i + k)) 1) (List.range W.length),
-    foldlProd1 (fun i => (List.range (l - W.length)).foldl
+    foldlFam (fun i => (List.range (l - W.length)).foldl
       (fun acc2 k => acc2 * (l - i + 1 + k)) 1) (List.range W.length),
     ground.foldlProd (fun p : Nat × Nat => ground.getAt 0 W p.1
       + ground.getAt 0 W p.2 + (2 * l - p.1 - p.2))
@@ -7118,26 +7033,26 @@ private theorem crossD (W : List Nat) (l : Nat) (hal : W.length ≤ l) :
                 (fun acc2 k => acc2 * (W.length - i + k)) 1) 1)))
       * dimNumD W l
   rw [dimNumD_flat W l, dimDenD_flat W l,
-    foldlProd1 (fun p : Nat × Nat => ground.getAt 0 W p.1
+    foldlFam (fun p : Nat × Nat => ground.getAt 0 W p.1
       - ground.getAt 0 W p.2 + (p.2 - p.1)) (places.pairsOf W.length),
-    foldlProd1 (fun p : Nat × Nat => p.2 - p.1)
+    foldlFam (fun p : Nat × Nat => p.2 - p.1)
       (places.pairsOf W.length),
-    foldlProd1 (fun p : Nat × Nat => ground.getAt 0 W p.1
+    foldlFam (fun p : Nat × Nat => ground.getAt 0 W p.1
       + ground.getAt 0 W p.2 + (2 * l - 2 - p.1 - p.2))
       (places.pairsOf W.length),
-    foldlProd1 (fun p : Nat × Nat => 2 * l - 2 - p.1 - p.2)
+    foldlFam (fun p : Nat × Nat => 2 * l - 2 - p.1 - p.2)
       (places.pairsOf W.length),
-    foldlProd1 (fun i => (List.range (ground.getAt 0 W i)).foldl
+    foldlFam (fun i => (List.range (ground.getAt 0 W i)).foldl
       (fun acc2 k => acc2 * (W.length - i + k)) 1) (List.range W.length),
-    foldlProd1 (fun i => (List.range (l - W.length)).foldl
+    foldlFam (fun i => (List.range (l - W.length)).foldl
       (fun acc2 k => acc2 * (ground.getAt 0 W i + (W.length - i + k))) 1)
       (List.range W.length),
-    foldlProd1 (fun i => (List.range (l - W.length)).foldl
+    foldlFam (fun i => (List.range (l - W.length)).foldl
       (fun acc2 k => acc2 * (ground.getAt 0 W i + (l - i - 1 + k))) 1)
       (List.range W.length),
-    foldlProd1 (fun i => (List.range (l - W.length)).foldl
+    foldlFam (fun i => (List.range (l - W.length)).foldl
       (fun acc2 k => acc2 * (W.length - i + k)) 1) (List.range W.length),
-    foldlProd1 (fun i => (List.range (l - W.length)).foldl
+    foldlFam (fun i => (List.range (l - W.length)).foldl
       (fun acc2 k => acc2 * (l - i - 1 + k)) 1) (List.range W.length),
     ground.foldlProd (fun p : Nat × Nat => ground.getAt 0 W p.1
       + ground.getAt 0 W p.2 + (2 * l - 2 - p.1 - p.2))
@@ -7302,12 +7217,6 @@ its zipped fold's split, and Assembly's Cartan row count, diagonal
 read and simple fold pairing — so that `lem:serstable`(i)'s gap
 clause closes at one spelling of each. -/
 
-private theorem zipLenL {α β γ : Type} (g : α → β → γ) :
-    ∀ (a : List α) (b : List β), (List.zipWith g a b).length ≤ a.length
-  | [], _ => Nat.zero_le _
-  | _ :: _, [] => Nat.zero_le _
-  | _ :: s, _ :: t => Nat.succ_le_succ (zipLenL g s t)
-
 private theorem zipLenR {α β γ : Type} (g : α → β → γ) :
     ∀ (a : List α) (b : List β), (List.zipWith g a b).length ≤ b.length
   | [], _ => Nat.zero_le _
@@ -7396,7 +7305,7 @@ theorem gapAt_dotB : ∀ (t : gentable.Table) (F : sertables.FundData),
       exact (ground.mulAssoc F.scale (ground.getAt 0 t.lenNums l)
         (ground.getAt 0 v l)).symm
     · rw [ground.getAt_over 0 (List.zipWith Nat.mul t.lenNums v) l
-        (Nat.le_trans (zipLenL Nat.mul t.lenNums v)
+        (Nat.le_trans (ground.length_zipWith_le Nat.mul t.lenNums v)
           (Nat.le_of_not_lt hll)),
         ground.getAt_over 0 t.lenNums l (Nat.le_of_not_lt hll),
         Nat.mul_zero]
@@ -7592,7 +7501,7 @@ private theorem dotB_row (t : gentable.Table) (F : sertables.FundData)
   have hone : poly.oneValue
       (sertables.posCorootV t (ground.getAt 0 F.simplePos i))
       (ground.getAt [] t.cartan i) := by
-    refine elim.getAt_polyOne _ _
+    refine poly.oneValue_of_entries _ _
       ((sertables.posCorootV_length t _).trans hcl.symm) (fun j hj => ?_)
     have hjr : j < t.rank := by
       rw [sertables.posCorootV_length] at hj
@@ -7730,7 +7639,7 @@ private theorem vacContent (t : gentable.Table) (F : sertables.FundData)
     rw [if_pos rfl]
     have hone : poly.oneValue (elim.vecScale (BPair.ofNat 1)
         (ground.getAt [] t.cartan i)) (ground.getAt [] t.cartan i) := by
-      refine elim.getAt_polyOne _ _ (hXl.trans hcl.symm) (fun k hk => ?_)
+      refine poly.oneValue_of_entries _ _ (hXl.trans hcl.symm) (fun k hk => ?_)
       have hkr : k < t.rank := by rw [hXl] at hk; exact hk
       rw [elim.getAt_vecScale (BPair.ofNat 1) (ground.getAt [] t.cartan i) k
         (by rw [hcl]; exact hkr)]
@@ -8645,7 +8554,7 @@ private theorem tieFold (t : gentable.Table) (F : sertables.FundData)
     rw [hjoin] at h
     exact h
   refine ⟨ground.getAt [] wits k, hcf, hsolve, ?_, ?_⟩
-  · refine elim.getAt_polyOne _ _
+  · refine poly.oneValue_of_entries _ _
       (hnul.trans (elim.length_vecAdd nu0 _ t.rank hn0 hcf).symm)
       (fun j hj => ?_)
     have hjr : j < t.rank := by rw [hnul] at hj; exact hj
@@ -8857,16 +8766,6 @@ private theorem foldHeight (t : gentable.Table) (F : sertables.FundData)
   rw [← ground.mulAddR 2 2 F.scale] at hdb
   exact Nat.lt_irrefl _ (Nat.lt_of_lt_of_le hdb hnat)
 
-/-- Two counts reading one value are one count. -/
-private theorem ofNatEq {a b : Nat}
-    (h : (BPair.ofNat a).oneValue (BPair.ofNat b)) : a = b :=
-  Nat.le_antisymm
-    (ground.leB_ofNat_cancel
-      (ground.leB_congr_right h (ground.leB_refl _)))
-    (ground.leB_ofNat_cancel
-      (ground.leB_congr_right (BPair.oneValue_symm h)
-        (ground.leB_refl _)))
-
 /-- A fold occupied at two keys reads their two values joined. -/
 private theorem bsumPickTwo (f : Nat → BPair) (i j : Nat)
     (hij : ¬ j = i) (l : List Nat)
@@ -8906,7 +8805,7 @@ private theorem cartanFoldOne (t : gentable.Table) (c : List Nat)
     poly.oneValue (assembly.cartanFold t c)
       (elim.vecScale (BPair.ofNat (ground.getAt 0 c i))
         (ground.getAt [] t.cartan i)) := by
-  refine elim.getAt_polyOne _ _
+  refine poly.oneValue_of_entries _ _
     (hcf.trans ((elim.length_vecScale _ _).trans hcl).symm)
     (fun q hq => ?_)
   have hqr : q < t.rank := by rw [hcf] at hq; exact hq
@@ -8987,7 +8886,7 @@ private theorem oneKeyPin (t : gentable.Table) (F : sertables.FundData)
       + ground.getAt 0 c i
         * (F.scale * ground.getAt 0 t.lenNums i
           * ground.getAt 0 ρv i) :=
-    ofNatEq (BPair.oneValue_trans (BPair.oneValue_symm hsq2)
+    ground.BPair.ofNat_inj (BPair.oneValue_trans (BPair.oneValue_symm hsq2)
       (BPair.oneValue_trans hSQ
         (BPair.oneValue_trans (BPair.add_congr hdk hdk)
           (BPair.oneValue_symm (BPair.ofNat_add _ _)))))
@@ -9350,7 +9249,7 @@ private theorem twoKeyRefute (t : gentable.Table) (F : sertables.FundData)
           ground.getAt_replicate BPair.unit (BPair.ofNat 1) t.rank i0 hi0]
         exact BPair.mul_ofNat_one _
       have hlnEq : F.scale * ground.getAt 0 t.lenNums i0 = F.scale * 2 :=
-        ofNatEq (BPair.oneValue_trans (BPair.oneValue_symm hlen2)
+        ground.BPair.ofNat_inj (BPair.oneValue_trans (BPair.oneValue_symm hlen2)
           (BPair.oneValue_trans
             (sertables.dotB_congrL F _ _ _ (poly.oneValue_symm hrow))
             (BPair.oneValue_trans hrhoNu
@@ -9544,7 +9443,7 @@ private theorem tieWalk (t : gentable.Table) (F : sertables.FundData)
           (hnl.trans hcr.symm)
         refine poly.swapMap_oneValue ?_
         refine poly.oneValue_trans hone ?_
-        refine elim.getAt_polyOne _ _
+        refine poly.oneValue_of_entries _ _
           (hXl.trans (assembly.cartRowV_length t i).symm) (fun q hq => ?_)
         have hqr : q < t.rank := by rw [hXl] at hq; exact hq
         rw [elim.getAt_vecScale _ _ q (by rw [hcl i hi]; exact hqr),
@@ -9716,7 +9615,7 @@ private theorem letterKey (t : gentable.Table) (F : sertables.FundData)
   refine Eq.trans (poly.pnorm_congr _ _ ?_ ?_) rfl
   · rw [elim.length_vecAdd _ _ t.rank hrl hnul,
       elim.length_vecAdd _ _ t.rank hkl hn0]
-  · refine elim.getAt_polyOne _ _ ?_ (fun q hq => ?_)
+  · refine poly.oneValue_of_entries _ _ ?_ (fun q hq => ?_)
     · rw [elim.length_vecAdd _ _ t.rank hrl hnul,
         elim.length_vecAdd _ _ t.rank hkl hn0]
     · have hqr : q < t.rank := by
@@ -10136,7 +10035,7 @@ private theorem colB (l : Nat) (F : Nat → Nat) : ∀ j, j < l →
 
 private theorem lnB_read (l : Nat) : ∀ j, j < l →
     ground.getAt 0 (sertables.tableB l).lenNums j = lnB l j :=
-  fun j hj => lensBAt l j hj
+  fun j hj => sertables.lensB_at l j hj
 
 /-- The vacant entry's term identity: an unoccupied key carries no
 count on either side. -/
@@ -10654,7 +10553,7 @@ private theorem colC (l : Nat) (F : Nat → Nat) : ∀ j, j < l →
 
 private theorem lnC_read (l : Nat) : ∀ j, j < l →
     ground.getAt 0 (sertables.tableC l).lenNums j = lnC l j :=
-  fun j hj => lensCAt l j hj
+  fun j hj => sertables.lensC_at l j hj
 
 /-- The `C` difference family's term identity at every key. -/
 private theorem natDiffC (l a c : Nat) (hac : a ≤ c) (hcl : c + 1 < l) :
@@ -11540,10 +11439,6 @@ private theorem colD (l : Nat) (h1l : 1 < l) (F : Nat → Nat) :
           rw [if_pos hml, if_pos hj2, if_pos hj3, Nat.one_mul,
             Nat.zero_mul, Nat.add_zero, pvD_succ]
 
-private theorem lnD_read (l : Nat) : ∀ j, j < l →
-    ground.getAt 0 (sertables.tableD l).lenNums j = 2 :=
-  fun j hj => lensDAt l j hj
-
 /-- The window's entry one key below at an occupied key: vacant at
 the window's own first key and occupied beyond it. -/
 private theorem pvDiffD (a c : Nat) : ∀ j, a ≤ j → j ≤ c →
@@ -11668,7 +11563,7 @@ private theorem capDiffD (l a b : Nat) (hab : a < b) (hbl : b < l) :
     refine formCap (sertables.tableD l) l rfl (fDiff a (c + 1))
       (nbD l (fDiff a (c + 1))) (fun _ => 2)
       (fun k => (if a == k then 2 else 0) + (if c == k then 2 else 0))
-      (fun _ => 0) 4 (colD l h1l (fDiff a (c + 1))) (lnD_read l)
+      (fun _ => 0) 4 (colD l h1l (fDiff a (c + 1))) (sertables.lensD_at l)
       (natDiffD l a c hac hbl) ?_ (Nat.le_refl 4)
     rw [dfold2 l a c 2 2, if_pos hal, if_pos hcl,
       ground.famFold_rangeZero (fun _ => 0) l (fun _ _ => rfl)]
@@ -12093,7 +11988,7 @@ private theorem capSumDg (l a b : Nat) (hab : a < b) (hbl : b < l)
             + (if (if c + 1 == e then e + 1 else c + 1) == k
               then 2 else 0)))
         (fun k => if c == k then 2 else 0) 4
-        (colD (e + 2) h1l (fSumD e a (c + 1))) (lnD_read (e + 2))
+        (colD (e + 2) h1l (fSumD e a (c + 1))) (sertables.lensD_at (e + 2))
         (natSumDg e a c _ hac hce rfl) ?_ (Nat.le_refl 4)
       rw [dfold3 (e + 2) a (c + 1)
           (if c + 1 == e then e + 1 else c + 1) 2 2 2,
@@ -12340,7 +12235,7 @@ private theorem capSumDt (l a b : Nat) (hab : a < b) (hbl : b < l)
       (nbD (e + 2) (fSumDt e a)) (fun _ => 2)
       (fun k => (if (if a == e then e + 1 else a) == k then 2 else 0)
         + (if e + 1 == k then 2 else 0))
-      (fun _ => 0) 4 (colD (e + 2) h1l (fSumDt e a)) (lnD_read (e + 2))
+      (fun _ => 0) 4 (colD (e + 2) h1l (fSumDt e a)) (sertables.lensD_at (e + 2))
       (natSumDt e a _ hae rfl) ?_ (Nat.le_refl 4)
     rw [dfold2 (e + 2) (if a == e then e + 1 else a) (e + 1) 2 2,
       if_pos hpl, if_pos (Nat.lt_succ_self (e + 1)),
@@ -12881,7 +12776,7 @@ private theorem scaleKey (t : gentable.Table) (W : List Nat) (l : Nat)
       = poly.pnorm (elim.vecAdd
           (elim.vecAdd (memberV W l) (sertables.rhoV t))
           (List.replicate l BPair.unit)) := by
-    refine poly.pnorm_congr _ _ ?_ (elim.getAt_polyOne _ _ ?_ ?_)
+    refine poly.pnorm_congr _ _ ?_ (poly.oneValue_of_entries _ _ ?_ ?_)
     · rw [elim.length_vecAdd _ _ t.rank hsl hrl,
         elim.length_vecAdd _ _ t.rank hA hrep]
     · rw [elim.length_vecAdd _ _ t.rank hsl hrl,
@@ -13175,14 +13070,8 @@ private theorem domRefuse {x : BPair} (p m : Nat)
 /-- The count pair's swap exchanges the counts. -/
 private theorem swapCounts (p q : Nat) :
     ((BPair.ofCounts p q).swap).oneValue (BPair.ofCounts q p) := by
-  show (BPair.ofCounts p q).snd + (BPair.ofCounts q p).snd
-    = (BPair.ofCounts q p).fst + (BPair.ofCounts p q).fst
-  show (BPair.ofNat p).snd + (BPair.ofNat q).fst
-      + ((BPair.ofNat q).snd + (BPair.ofNat p).fst)
-    = (BPair.ofNat q).fst + (BPair.ofNat p).snd
-      + ((BPair.ofNat p).fst + (BPair.ofNat q).snd)
-  rw [ground.add_comm (BPair.ofNat p).snd (BPair.ofNat q).fst,
-    ground.add_comm (BPair.ofNat q).snd (BPair.ofNat p).fst]
+  rw [ground.BPair.ofCounts_swap p q]
+  exact BPair.oneValue_refl _
 
 /-- The target's entry at a key beyond the word: the member's
 vacant entry withdraws and the entry is the content's own. -/
@@ -15536,28 +15425,17 @@ theorem foldsB_cases (l j : Nat)
       exact ⟨fDiff a l, by rw [← he]; rfl,
         Or.inr (Or.inr ⟨a, hal, rfl⟩)⟩
 
-/-- A value at or below one is vacant or one. -/
-private theorem valDich : ∀ {A : Nat}, A ≤ 1 → A = 0 ∨ A = 1
-  | 0, _ => Or.inl rfl
-  | 1, _ => Or.inr rfl
-  | _ + 2, h => absurd (Nat.le_of_succ_le_succ h) (Nat.not_succ_le_zero _)
-
 /-- A value at or below one is no value grown by two. -/
 private theorem ltTwo {x y : Nat} (hx : x ≤ 1) : ¬ x = y + 2 := by
   intro he
   rw [he] at hx
   exact Nat.not_succ_le_zero y (Nat.le_of_succ_le_succ hx)
 
-/-- A vacant double is a vacant value. -/
-private theorem mulTwoZero : ∀ {B : Nat}, 2 * B = 0 → B = 0
-  | 0, _ => rfl
-  | _ + 1, h => Nat.noConfusion h
-
 /-- The plus-two pin: a value at or below one whose double is two
 further values' sum grown by two is one at both of them vacant. -/
 private theorem twoPin {A B C : Nat} (hA : A ≤ 1)
     (h : 2 * A = B + C + 2) : A = 1 ∧ B = 0 ∧ C = 0 := by
-  match valDich hA with
+  match ground.leOneCases hA with
   | .inl h0 =>
     rw [h0] at h
     exact absurd h (ltTwo (Nat.zero_le 1))
@@ -15571,7 +15449,7 @@ private theorem twoPin {A B C : Nat} (hA : A ≤ 1)
 third's double grown by two are both one at the third vacant. -/
 private theorem negPin {A B C : Nat} (hA : A ≤ 1) (hC : C ≤ 1)
     (h : A + C = 2 * B + 2) : A = 1 ∧ C = 1 ∧ B = 0 := by
-  match valDich hA, valDich hC with
+  match ground.leOneCases hA, ground.leOneCases hC with
   | .inl h0, .inl h1 =>
     rw [h0, h1] at h
     exact absurd h (ltTwo (Nat.zero_le 1))
@@ -15583,7 +15461,7 @@ private theorem negPin {A B C : Nat} (hA : A ≤ 1) (hC : C ≤ 1)
     exact absurd h (ltTwo (Nat.le_refl 1))
   | .inr h0, .inr h1 =>
     rw [h0, h1] at h
-    exact ⟨h0, h1, mulTwoZero (Nat.succ.inj (Nat.succ.inj h.symm))⟩
+    exact ⟨h0, h1, ground.twoMulZero (Nat.succ.inj (Nat.succ.inj h.symm))⟩
 
 /-- The window family's plus-two read at a key and its two
 neighbours: the doubled middle entry is the neighbours' sum grown
@@ -15960,16 +15838,6 @@ theorem posCorootV_entry (l j k : Nat) (F : Nat → Nat)
 
 /-! ### The count-pair reads and the θ count's vacant arm -/
 
-/-- The count pair's memberwise swap exchanges its two counts. -/
-private theorem ofCountsSwap (a b : Nat) :
-    (BPair.ofCounts a b).swap = BPair.ofCounts b a := by
-  show BPair.mk ((BPair.ofNat a).snd + (BPair.ofNat b).fst)
-      ((BPair.ofNat a).fst + (BPair.ofNat b).snd)
-    = BPair.mk ((BPair.ofNat b).fst + (BPair.ofNat a).snd)
-      ((BPair.ofNat b).snd + (BPair.ofNat a).fst)
-  rw [ground.add_comm (BPair.ofNat a).snd (BPair.ofNat b).fst,
-    ground.add_comm (BPair.ofNat a).fst (BPair.ofNat b).snd]
-
 /-- A `B` positive fold's balance partner reads the column values'
 swap entrywise. -/
 theorem negCorootV_entry (l j k : Nat) (F : Nat → Nat)
@@ -15984,21 +15852,9 @@ theorem negCorootV_entry (l j k : Nat) (F : Nat → Nat)
   have hf : ground.getAt [] (sertables.tableB l).posFolds j
       = (List.range l).map F := hfe
   rw [nuAtN (sertables.tableB l) j k hkr, hf,
-    ← ofCountsSwap (2 * F k) (nbB l F k)]
+    ← ground.BPair.ofCounts_swap (2 * F k) (nbB l F k)]
   exact BPair.oneValue_trans (BPair.norm_oneValue _)
     (ground.swap_congr (colB l F k hk))
-
-/-- Two count pairs at one value cross-add. -/
-private theorem ofCountsCross {a b c d : Nat}
-    (h : (BPair.ofCounts a b).oneValue (BPair.ofCounts c d)) :
-    a + d = c + b := by
-  have h2 : (BPair.ofCounts (a + d) (b + c)).oneValue BPair.unit :=
-    BPair.oneValue_trans (BPair.ofCounts_add a b d c)
-      (BPair.oneValue_trans (BPair.add_congr h (BPair.oneValue_refl _))
-        (BPair.oneValue_trans
-          (BPair.oneValue_symm (BPair.ofCounts_add c d d c))
-          (BPair.ofCounts_unit.mpr (Nat.add_comm c d))))
-  exact (BPair.ofCounts_unit.mp h2).trans (Nat.add_comm b c)
 
 /-- The two count reads as a count pair. -/
 private theorem ofNatTwoCounts :
@@ -16010,7 +15866,7 @@ second. -/
 private theorem countsTwo {p n : Nat}
     (h : (BPair.ofCounts p n).oneValue (BPair.ofNat 2)) : p = n + 2 := by
   have hc : p + 0 = 2 + n :=
-    ofCountsCross (BPair.oneValue_trans h
+    ground.BPair.ofCounts_cross (BPair.oneValue_trans h
       (BPair.oneValue_symm ofNatTwoCounts))
   rw [Nat.add_zero] at hc
   rw [hc]
@@ -16205,7 +16061,7 @@ theorem runVanishB (l m : Nat) (nu0 : List ground.BPair)
         have hf : ground.getAt [] (sertables.tableB l).posFolds j
             = (List.range l).map F := hfe
         rw [nuAtN (sertables.tableB l) j (m + 1) hm1l, hf,
-          ← ofCountsSwap (2 * F (m + 1)) (nbB l F (m + 1))]
+          ← ground.BPair.ofCounts_swap (2 * F (m + 1)) (nbB l F (m + 1))]
         exact BPair.oneValue_trans (BPair.norm_oneValue _)
           (ground.swap_congr (colB l F (m + 1) hm1l))
       have hnat : nbB l F (m + 1) = 2 * F (m + 1) + 2 :=
@@ -16771,7 +16627,7 @@ theorem negCorootV_entryC (l j k : Nat) (F : Nat → Nat)
   have hf : ground.getAt [] (sertables.tableC l).posFolds j
       = (List.range l).map F := hfe
   rw [nuAtN (sertables.tableC l) j k hkr, hf,
-    ← ofCountsSwap (2 * F k) (nbC l F k)]
+    ← ground.BPair.ofCounts_swap (2 * F k) (nbC l F k)]
   exact BPair.oneValue_trans (BPair.norm_oneValue _)
     (ground.swap_congr (colC l F k hk))
 
@@ -17890,7 +17746,7 @@ theorem negCorootV_entryD (l j k : Nat) (F : Nat → Nat)
   have hf : ground.getAt [] (sertables.tableD l).posFolds j
       = (List.range l).map F := hfe
   rw [nuAtN (sertables.tableD l) j k hkr, hf,
-    ← ofCountsSwap (2 * F k) (nbD l F k)]
+    ← ground.BPair.ofCounts_swap (2 * F k) (nbD l F k)]
   exact BPair.oneValue_trans (BPair.norm_oneValue _)
     (ground.swap_congr (colD l h1l F k hk))
 

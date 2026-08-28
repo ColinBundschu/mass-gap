@@ -68,7 +68,6 @@ The `G_2` tier reads the tex's clearance at both counts: the
 `(2,2)` orbit clears count two and refuses three with the cap
 refusing two — `lem:grading`'s "two off `G_2` and three at
 it". -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places grading fiberdec

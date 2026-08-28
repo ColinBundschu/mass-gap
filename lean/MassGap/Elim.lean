@@ -101,7 +101,15 @@ instance at the collected first-row fold, `thm:restoration`'s
 derivation clause) — and the adjugate row
 solve — the cofactor vector's diagonal and off-diagonal reads
 (`cofVec_diag`, `cofVec_off`) collecting to
-`G·(adj(G)·p) ~ det(G)·p` (`adjP_read`).  Two square lists'
+`G·(adj(G)·p) ~ det(G)·p` (`adjP_read`).  The adjugate identity
+runs at every entry bundle: at any stated determinant read
+agreeing with the assignment fold on square frames, a row's fold
+against its own cofactors collects the determinant and against a
+further row's cofactors it reads equal members (`adjO_row_diag`,
+`adjO_row_off`), the column side the same two at the exchanged
+strike (`adjO_col_diag`, `adjO_col_off`); the polynomial carrier
+enters at `polyLaws` with the tower's lift `polyLawsO` and the
+minor's own fold read `minorP_detP`.  Two square lists'
 product reads its determinant at the factors' own
 (`lem:inertia`'s product sentence: the joined list's two reads at
 the memberwise-swapped identity beside the second list, the
@@ -231,7 +239,7 @@ module.
 
 The pairing's own reads stand public for the form tiers above
 (`lem:fpcap`'s two-sided cap the arriving consumer): the two folds
-at one value (`dotN_dotP`, the skipped factor's unit read), a
+at one value (`dotN_read`, the skipped factor's unit read), a
 count pair against a product of scaled data (`mulPairNat`), the
 pairing folds as index folds over the key range (`dotP_fold`,
 `selfFold`) and the self pairing's one-sided read
@@ -1366,11 +1374,6 @@ constructor field, an off-order datum unrepresentable.  The kit
 below is hand-rolled: the core length lemmas read through
 propext. -/
 
-private theorem lenMap {α β : Type} (f : α → β) :
-    ∀ l : List α, (l.map f).length = l.length
-  | [] => rfl
-  | _ :: t => congrArg Nat.succ (lenMap f t)
-
 /-- The order read at a stated key count: the row count with every
 row's column count at the order. -/
 def sqAt (m : Mat) (n : Nat) : Prop :=
@@ -1413,7 +1416,7 @@ families' tier, its consumer. -/
 def appSq {n : Nat} (A : SqMat n) (v : Vec n) : Vec n :=
   ⟨matVec A.val v.val, by
     rw [show (matVec A.val v.val).length = n from
-      (lenMap _ A.val).trans A.rows]
+      (ground.length_map _ A.val).trans A.rows]
     exact beqRefl n⟩
 
 /-- The entries' componentwise sum over shared key lists. -/
@@ -1535,7 +1538,7 @@ theorem transposeM_swap (m : Mat) :
   | cons r t =>
     show transposeGo (r.map BPair.swap).length (matSwap (r :: t))
       = matSwap (transposeGo r.length (r :: t))
-    rw [lenMap BPair.swap r]
+    rw [ground.length_map BPair.swap r]
     exact transGoSwap _ _
 
 /-- The product against a swapped factor is the product's swap, the
@@ -2163,68 +2166,25 @@ private theorem detO_frontRec {γ : Type} {ops : DOps γ}
         (C.swapCongr (C.ovTrans (C.ovSymm h1) h2)))
       (sgnPO_succ C k (detO ops (frontRec k (ground.adjSwap k m))))
 
-/-- The row replaced at a place, the further rows kept. -/
-def setRow {α : Type} : List α → Nat → α → List α
-  | [], _, _ => []
-  | _ :: t, 0, b => b :: t
-  | a :: t, k + 1, b => a :: setRow t k b
-
-private theorem eraseIdx_setRow {α : Type} (b : α) :
-    ∀ (m : List α) (k : Nat),
-      (setRow m k b).eraseIdx k = m.eraseIdx k
-  | [], 0 => rfl
-  | [], _ + 1 => rfl
-  | _ :: _, 0 => rfl
-  | a :: t, k + 1 => by
-    show a :: (setRow t k b).eraseIdx k = a :: t.eraseIdx k
-    rw [eraseIdx_setRow b t k]
-
-/-- The replaced row reads the stated row at its place. -/
-theorem getAt_setRow {α : Type} (d : α) (b : α) :
-    ∀ (m : List α) (k : Nat), k < m.length →
-      ground.getAt d (setRow m k b) k = b
-  | [], _, h => absurd h (Nat.not_lt_zero _)
-  | _ :: _, 0, _ => rfl
-  | _ :: t, k + 1, h =>
-    getAt_setRow d b t k (Nat.lt_of_succ_lt_succ h)
-
-/-- A row replaced by itself reads the list back. -/
-theorem setRow_self {α : Type} (d : α) :
-    ∀ (m : List α) (k : Nat), k < m.length →
-      setRow m k (ground.getAt d m k) = m
-  | [], _, h => absurd h (Nat.not_lt_zero _)
-  | _ :: _, 0, _ => rfl
-  | a :: t, k + 1, h => by
-    show a :: setRow t k (ground.getAt d t k) = a :: t
-    rw [setRow_self d t k (Nat.lt_of_succ_lt_succ h)]
-
-/-- The replacement keeps the row count. -/
-theorem length_setRow {α : Type} (b : α) :
-    ∀ (m : List α) (k : Nat), (setRow m k b).length = m.length
-  | [], 0 => rfl
-  | [], _ + 1 => rfl
-  | _ :: _, 0 => rfl
-  | _ :: t, k + 1 => congrArg Nat.succ (length_setRow b t k)
-
 private theorem detO_replace {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ}
     (L : DLaws γ ops R.rel) (m : List (List γ)) (k : Nat)
     (hk : k < m.length) (b : List γ) :
-    R.rel (detO ops (setRow m k b))
+    R.rel (detO ops (List.set m k b))
       (ground.famFold ops.add ops.unit
         (fun j => sgnPO ops (k + j)
           (ops.mul (ground.getAt ops.unit b j)
             (cof0O ops (m.eraseIdx k) j)))
         (List.range ((m.eraseIdx k).length + 1))) := by
-  have hks : k < (setRow m k b).length := by
-    rw [length_setRow]
+  have hks : k < (List.set m k b).length := by
+    rw [ground.length_set]
     exact hk
-  have hshape : frontRec k (setRow m k b) = b :: m.eraseIdx k := by
-    rw [frontRec_shape [] k (setRow m k b) hks,
-      getAt_setRow [] b m k hk, eraseIdx_setRow b m k]
-  have hfront : R.rel (detO ops (setRow m k b))
+  have hshape : frontRec k (List.set m k b) = b :: m.eraseIdx k := by
+    rw [frontRec_shape [] k (List.set m k b) hks,
+      ground.getAt_set_self [] b m k hk, ground.eraseIdx_set b m k]
+  have hfront : R.rel (detO ops (List.set m k b))
       (sgnPO ops k (detO ops (b :: m.eraseIdx k))) := by
-    have hf := detO_frontRec L.toDCore k (setRow m k b) hks
+    have hf := detO_frontRec L.toDCore k (List.set m k b) hks
     rw [hshape] at hf
     exact hf
   refine L.ovTrans hfront ?_
@@ -2258,37 +2218,6 @@ private def dotO {γ : Type} (ops : DOps γ) :
 /-- The plain row-against-column fold, the proof carrier beside
 `dotN`'s skipping spelling. -/
 def dotP : List BPair → List BPair → BPair := dotO bpairOps
-
-/-- The skipping fold and the plain fold read one value: a factor
-at the canonical unit contributes the sum's unit, and the
-canonical representative is one value with its datum. -/
-theorem dotN_dotP : ∀ u v : List BPair, (dotN u v).oneValue (dotP u v)
-  | [], _ => BPair.oneValue_refl _
-  | _ :: _, [] => BPair.oneValue_refl _
-  | a :: s, b :: t => by
-    show (if a.isUnitRep || b.isUnitRep then dotN s t
-        else (a * b + dotN s t).norm).oneValue (a * b + dotP s t)
-    cases ha : a.isUnitRep with
-    | true =>
-      show (dotN s t).oneValue (a * b + dotP s t)
-      rw [BPair.unit_of_isUnitRep ha]
-      exact BPair.oneValue_trans (dotN_dotP s t)
-        (BPair.oneValue_symm (BPair.oneValue_trans
-          (BPair.add_congr (BPair.unit_mul b) (BPair.oneValue_refl _))
-          (BPair.unit_add _)))
-    | false =>
-      cases hb : b.isUnitRep with
-      | true =>
-        show (dotN s t).oneValue (a * b + dotP s t)
-        rw [BPair.unit_of_isUnitRep hb]
-        exact BPair.oneValue_trans (dotN_dotP s t)
-          (BPair.oneValue_symm (BPair.oneValue_trans
-            (BPair.add_congr (BPair.mul_unit a) (BPair.oneValue_refl _))
-            (BPair.unit_add _)))
-      | false =>
-        show ((a * b + dotN s t).norm).oneValue (a * b + dotP s t)
-        exact BPair.oneValue_trans (BPair.norm_oneValue _)
-          (BPair.add_congr (BPair.oneValue_refl _) (dotN_dotP s t))
 
 /-- The cofactor vector at a row, at a carrier. -/
 private def cofVecO {γ : Type} (ops : DOps γ) (m : List (List γ))
@@ -2344,7 +2273,7 @@ private theorem cofVecO_diag {γ : Type} {ops : DOps γ}
   rw [← hlen]
   refine L.ovSymm ?_
   have hrepl := detO_replace L m k hk (ground.getAt [] m k)
-  rw [setRow_self [] m k hk] at hrepl
+  rw [ground.set_self [] m k hk] at hrepl
   exact hrepl
 
 /-- The diagonal read: a row against its own cofactor vector is
@@ -2375,11 +2304,11 @@ private theorem cofVecO_off {γ : Type} {ops : DOps γ}
   rw [← hlen]
   refine L.ovTrans
     (L.ovSymm (detO_replace L m k hk (ground.getAt [] m i))) ?_
-  have hgi : ground.getAt [] (setRow m k (ground.getAt [] m i)) i
+  have hgi : ground.getAt [] (List.set m k (ground.getAt [] m i)) i
       = ground.getAt [] m i := by
     have : ∀ (mm : List (List γ)) (kk ii : Nat)
         (bb : List γ), ii ≠ kk →
-        ground.getAt [] (setRow mm kk bb) ii
+        ground.getAt [] (List.set mm kk bb) ii
           = ground.getAt [] mm ii := by
       intro mm
       induction mm with
@@ -2393,10 +2322,10 @@ private theorem cofVecO_off {γ : Type} {ops : DOps γ}
         | kk + 1, ii + 1 =>
           exact ihm kk ii bb (fun he => hne (congrArg Nat.succ he))
     exact this m k i (ground.getAt [] m i) hik
-  have hgk : ground.getAt [] (setRow m k (ground.getAt [] m i)) k
-      = ground.getAt [] m i := getAt_setRow [] _ m k hk
-  have hlset : (setRow m k (ground.getAt [] m i)).length
-      = m.length := length_setRow _ m k
+  have hgk : ground.getAt [] (List.set m k (ground.getAt [] m i)) k
+      = ground.getAt [] m i := ground.getAt_set_self [] _ m k hk
+  have hlset : (List.set m k (ground.getAt [] m i)).length
+      = m.length := ground.length_set _ m k
   match Nat.lt_or_ge i k with
   | .inl hlt =>
     exact detO_rows_equal L hlt (by rw [hlset]; exact hk)
@@ -2444,6 +2373,18 @@ def vecScale (c : BPair) (v : List BPair) : List BPair :=
 
 /-- The componentwise sum at matched keys. -/
 def vecAdd (u v : List BPair) : List BPair := vecAddO bpairOps u v
+
+/-- The entrywise vector sum at one count is the componentwise sum:
+the truncating fold and the padding fold agree at matched
+lengths. -/
+theorem vecAdd_eq_polyAdd : ∀ (u v : List BPair),
+    u.length = v.length → elim.vecAdd u v = poly.add u v
+  | [], [], _ => rfl
+  | [], _ :: _, h => Nat.noConfusion h
+  | _ :: _, [], h => Nat.noConfusion h
+  | _ :: u, _ :: v, h => by
+    show (_ + _) :: elim.vecAdd u v = (_ + _) :: poly.add u v
+    rw [vecAdd_eq_polyAdd u v (Nat.succ.inj h)]
 
 /-- The combination at a stated width: the coefficients against
 the rows, seeded at the width's unit family. -/
@@ -3095,12 +3036,6 @@ private theorem dotO_comm {γ : Type} {ops : DOps γ}
   | _ :: _, [] => C.ovRefl _
   | a :: u, b :: v => C.addCongr (C.mulComm a b) (dotO_comm C u v)
 
-/-- The product at the sum's unit on the left sits at that unit. -/
-private theorem mulUnitLeft {γ : Type} {ops : DOps γ}
-    {R : ground.DRead γ} (L : DLaws γ ops R.rel) (x : γ) :
-    R.rel (ops.mul ops.unit x) ops.unit :=
-  L.ovTrans (L.mulComm ops.unit x) (L.mulUnit x)
-
 /-- A left factor reading the sum's unit at every key pairs at that
 unit. -/
 private theorem dotO_null_left {γ : Type} {ops : DOps γ}
@@ -3114,7 +3049,7 @@ private theorem dotO_null_left {γ : Type} {ops : DOps γ}
     show R.rel (ops.add (ops.mul a b) (dotO ops v w)) ops.unit
     exact L.ovTrans
       (L.addCongr
-        (L.ovTrans (L.mulCongr (h 0) (L.ovRefl b)) (mulUnitLeft L b))
+        (L.ovTrans (L.mulCongr (h 0) (L.ovRefl b)) (mulUnitLeftO L b))
         (dotO_null_left L v w (fun t => h (t + 1))))
       (L.unitAdd ops.unit)
 
@@ -3810,22 +3745,6 @@ theorem swap_of_null_add : ∀ (a b : List BPair),
     rw [ground.add_comm y.fst x.fst]
     exact h1
 
-/-- The pointwise read assembled: two vectors of one length reading
-one value at every place read one value. -/
-theorem getAt_polyOne : ∀ (u v : List BPair),
-    u.length = v.length →
-    (∀ i, i < u.length →
-      (ground.getAt BPair.unit u i).oneValue
-        (ground.getAt BPair.unit v i)) →
-    poly.oneValue u v
-  | [], [], _, _ => trivial
-  | [], _ :: _, hl, _ => nomatch hl
-  | _ :: _, [], hl, _ => nomatch hl
-  | _ :: u, _ :: v, hl, h =>
-    ⟨h 0 (Nat.succ_pos _),
-     getAt_polyOne u v (Nat.succ.inj hl)
-       (fun i hi => h (i + 1) (Nat.succ_lt_succ hi))⟩
-
 /-- The matrix read assembled at the entries: two families at a
 stated shape reading one value at every key pair read one value. -/
 theorem matOne_of_entries (A B : Mat) (n : Nat)
@@ -3840,7 +3759,7 @@ theorem matOne_of_entries (A B : Mat) (n : Nat)
   refine matOne_getAt A B (by rw [hAl, hBl]) ?_
   intro i hi
   rw [hAl] at hi
-  refine getAt_polyOne _ _ ?_ ?_
+  refine poly.oneValue_of_entries _ _ ?_ ?_
   · rw [rowsLen_getAt A i hAr (by rw [hAl]; exact hi),
       rowsLen_getAt B i hBr (by rw [hBl]; exact hi)]
   · intro j hj
@@ -3890,7 +3809,7 @@ private theorem combo_append_one (n : Nat) :
     show poly.oneValue
       (vecAdd (vecScale c v) (List.replicate n BPair.unit))
       (vecAdd (List.replicate n BPair.unit) (vecScale c v))
-    refine getAt_polyOne _ _ ?_ ?_
+    refine poly.oneValue_of_entries _ _ ?_ ?_
     · rw [length_vecAdd _ _ n (by rw [length_vecScale, hv])
           (ground.length_replicate BPair.unit n),
         length_vecAdd _ _ n (ground.length_replicate BPair.unit n)
@@ -3927,7 +3846,7 @@ private theorem combo_append_one (n : Nat) :
               hL.2 hv,
             length_vecAdd _ _ n (length_combo n cs L hL.2)
               (by rw [length_vecScale, hv])])
-    · refine getAt_polyOne _ _ ?_ ?_
+    · refine poly.oneValue_of_entries _ _ ?_ ?_
       · rw [length_vecAdd _ _ n
             (by rw [length_vecScale]; exact hL.1)
             (length_vecAdd _ _ n (length_combo n cs L hL.2)
@@ -3986,15 +3905,6 @@ unit: the descent at the last cofactor — a balanced determinant
 reads the cofactor vector as a dependency, and the last cofactor
 is the dropped family's own determinant through the trailing key's
 enumeration. -/
-
-/-- A unit tail's every entry reads the unit. -/
-theorem unitTail_getAt : ∀ (u : List BPair) (i : Nat),
-    poly.unitTail u → i < u.length →
-    (ground.getAt BPair.unit u i).oneValue BPair.unit
-  | [], i, _, hi => absurd hi (Nat.not_lt_zero i)
-  | _ :: _, 0, h, _ => h.1
-  | _ :: u, i + 1, h, hi =>
-    unitTail_getAt u i h.2 (Nat.lt_of_succ_lt_succ hi)
 
 /-- The term's congruence at the letters an assignment reads: two
 families agreeing below a stated letter count read one value at
@@ -4379,7 +4289,7 @@ theorem combo_append (n : Nat) : ∀ (cs : List BPair) (L : Mat)
         (combo_append n cs L ds M (Nat.succ.inj hl) hL.2 hM) rfl
         (by rw [length_combo n (cs ++ ds) (L ++ M)
               (rowsLen_append n hL.2 hM), hBC])
-    · refine getAt_polyOne _ _
+    · refine poly.oneValue_of_entries _ _
         (by rw [length_vecAdd _ _ n hA hBC,
           length_vecAdd _ _ n hAB hC]) ?_
       intro i hi
@@ -4796,6 +4706,14 @@ theorem dotN_scaleV (c : BPair) (r u : List BPair) :
       (BPair.mul_congr (BPair.oneValue_refl c)
         (BPair.oneValue_symm (dotN_read r u))))
 
+/-- A cleared vector's self-pairing is the clearing's square against
+the vector's own. -/
+theorem dotN_vecScale_self (k : BPair) (v : List BPair) :
+    (dotN (vecScale k v) (vecScale k v)).oneValue (k * k * dotN v v) := by
+  rw [BPair.mul_assoc k k (dotN v v)]
+  exact BPair.oneValue_trans (dotN_scaleRow_free k v (vecScale k v))
+    (BPair.mul_congr (BPair.oneValue_refl k) (dotN_scaleV k v v))
+
 /-! The transpose at the parametrized tier (`def:elim`'s
 determinant against the exchanged key lists): the landed family's
 arms at the bundle's unit with their balance-pair bridges, the
@@ -5083,12 +5001,6 @@ private theorem lovTrans {γ : Type} {ops : DOps γ}
   | _ :: _, _ :: _, _ :: _, h1, h2 =>
     ⟨C.ovTrans h1.1 h2.1, lovTrans C h1.2 h2.2⟩
 
-private theorem lovOfUt {γ : Type} {ops : DOps γ}
-    {R : ground.DRead γ} :
-    ∀ {p : List γ}, poly.unitTailO ops R p → poly.listOV ops R p []
-  | [], h => h
-  | _ :: _, h => h
-
 /-! The key reads at the lifted carrier: the entries at their
 keys, the sum and the scale reading through them. -/
 
@@ -5132,20 +5044,15 @@ private theorem getAtAddO {γ : Type} {ops : DOps γ}
     ∀ (p q : List γ) (k : Nat),
       R.rel (ground.getAt ops.unit (poly.addLO ops p q) k)
         (ops.add (ground.getAt ops.unit p k)
-          (ground.getAt ops.unit q k))
-  | [], _, _ => L.toDCore.ovSymm (L.unitAdd _)
-  | _ :: _, [], _ => L.toDCore.ovSymm (L.addUnit _)
-  | _ :: _, _ :: _, 0 => L.toDCore.ovRefl _
-  | _ :: p, _ :: q, k + 1 => getAtAddO L p q k
+          (ground.getAt ops.unit q k)) :=
+  poly.getAt_addLO ops R L.toDCore.ovRefl L.toDCore.ovSymm L.unitAdd L.addUnit
 
 private theorem getAtScaleO {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ} (L : DLaws γ ops R.rel) (c : γ) :
     ∀ (l : List γ) (k : Nat),
       R.rel (ground.getAt ops.unit (l.map (ops.mul c)) k)
-        (ops.mul c (ground.getAt ops.unit l k))
-  | [], _ => L.toDCore.ovSymm (L.mulUnit c)
-  | _ :: _, 0 => L.toDCore.ovRefl _
-  | _ :: l, k + 1 => getAtScaleO L c l k
+        (ops.mul c (ground.getAt ops.unit l k)) :=
+  poly.getAt_mapMul ops R L.toDCore.ovRefl L.toDCore.ovSymm L.mulUnit c
 
 /-! The componentwise sum's algebra at the lifted carrier. -/
 
@@ -5247,7 +5154,7 @@ private theorem utScaleO {γ : Type} {ops : DOps γ}
   | c :: l =>
     ⟨L.toDCore.ovTrans
       (L.toDCore.mulCongr h (L.toDCore.ovRefl c))
-      (mulUnitLeft L c),
+      (mulUnitLeftO L c),
      utScaleO L h l⟩
 
 private theorem scaleCongrO {γ : Type} {ops : DOps γ}
@@ -5537,7 +5444,10 @@ private theorem cancelLO {γ : Type} {ops : DOps γ}
           (getAtAddO L a' b' k)))
       (lovGetAt L.toDCore ha k))
 
-private theorem polyLawsO {γ : Type} {ops : DOps γ}
+/-- The polynomial carrier's laws bundle at an entry bundle's own:
+the lifted sum and convolution satisfy the tier's laws wherever the
+entries do, one lift per level of the carrier tower. -/
+theorem polyLawsO {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ} (L : DLaws γ ops R.rel) :
     DLaws (List γ) (poly.polyO ops) (poly.listOV ops R) :=
   { toDCore := polyCoreO L
@@ -5546,8 +5456,8 @@ private theorem polyLawsO {γ : Type} {ops : DOps γ}
       show poly.listOV ops R (poly.addLO ops x []) x
       rw [poly.addNilO ops x]
       exact lovRefl L.toDCore x
-    mulUnit := fun x => lovOfUt (mulNilO L.toDCore x)
-    swapFix := fun _ h => lovOfUt (utNegReadO L h)
+    mulUnit := fun x => poly.lovNilO _ _ (mulNilO L.toDCore x)
+    swapFix := fun _ h => poly.lovNilO _ _ (utNegReadO L h)
     oneMul := oneMulLO L
     addCancel := fun h ha => cancelLO L h ha }
 
@@ -5886,10 +5796,8 @@ private theorem getAtNegO {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ} (C : DCore γ ops R.rel) :
     ∀ (q : List γ) (k : Nat),
       R.rel (ground.getAt ops.unit (q.map ops.swap) k)
-        (ops.swap (ground.getAt ops.unit q k))
-  | [], _ => C.ovSymm C.swapUnit
-  | _ :: _, 0 => C.ovRefl _
-  | _ :: q, k + 1 => getAtNegO C q k
+        (ops.swap (ground.getAt ops.unit q k)) :=
+  poly.getAt_mapSwap ops R C.ovRefl C.ovSymm C.swapUnit
 
 private theorem diffUtO {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ} (L : DLaws γ ops R.rel)
@@ -5949,7 +5857,7 @@ private theorem cancelMonicOV {γ : Type} {ops : DOps γ}
       (poly.addLO ops X (Y.map ops.swap)).length D.dropLast
       (poly.addLO ops X (Y.map ops.swap)) [] (Nat.le_refl _)
       (Nat.zero_le _)
-      (lovOfUt (ovUt L.toDCore hB hu))
+      (poly.lovNilO _ _ (ovUt L.toDCore hB hu))
   exact ovOfDiffO L huZ
 
 /-! The lifted carrier's product-top and fold-shape kit: the
@@ -7208,7 +7116,7 @@ private theorem dotO_unitRead {γ : Type} {ops : DOps γ}
       (ground.getAt ops.unit w c)
     refine L.ovTrans (L.addCongr
       (L.ovTrans (L.mulCongr (hr 0 (fun he => Nat.noConfusion he))
-        (L.ovRefl b)) (mulUnitLeft L b))
+        (L.ovRefl b)) (mulUnitLeftO L b))
       (dotO_unitRead L v w c (Nat.succ.inj hl) hc
         (fun t ht => hr (t + 1)
           (fun he => ht (Nat.succ.inj he))))) ?_
@@ -7248,11 +7156,11 @@ private theorem detO_congr_letters {γ : Type} {ops : DOps γ}
 
 /-- The replaced row's determinant is the replacement against the
 row's cofactor vector, the expansion read as one pairing. -/
-private theorem detO_setRow_dot {γ : Type} {ops : DOps γ}
+private theorem detO_List.set_dot {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ} (L : DLaws γ ops R.rel)
     (m : List (List γ)) (k : Nat) (hk : k < m.length) (b : List γ)
     (hb : b.length = m.length) :
-    R.rel (detO ops (setRow m k b)) (dotO ops b (cofVecO ops m k)) := by
+    R.rel (detO ops (List.set m k b)) (dotO ops b (cofVecO ops m k)) := by
   refine L.ovTrans (detO_replace L m k hk b) ?_
   rw [show ((m.eraseIdx k).length + 1) = m.length from
     length_eraseIdx m k hk]
@@ -8280,13 +8188,13 @@ the head row's own expansion. -/
 /-- The last row read at the last column's unit family: the
 determinant collapses to the leading square's own, the row and the
 column both withdrawn. -/
-private theorem detO_setRow_last {γ : Type} {ops : DOps γ}
+private theorem detO_List.set_last {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ} (L : DLaws γ ops R.rel)
         (m : List (List γ)) (e : Nat) (hlen : m.length = e + 1)
     (v : List γ) (hv : v.length = e + 1)
     (hve : R.rel (ground.getAt ops.unit v e) ops.one)
     (hvo : ∀ b, ¬ b = e → R.rel (ground.getAt ops.unit v b) ops.unit) :
-    R.rel (detO ops (setRow m e v))
+    R.rel (detO ops (List.set m e v))
       (detO ops ((m.eraseIdx e).map (fun r => r.eraseIdx e))) := by
   have hem : e < m.length := by
     rw [hlen]
@@ -8295,7 +8203,7 @@ private theorem detO_setRow_last {γ : Type} {ops : DOps γ}
     have h := length_eraseIdx m e hem
     rw [hlen] at h
     exact Nat.succ.inj h
-  refine L.ovTrans (detO_setRow_dot L m e hem v (by rw [hv, hlen])) ?_
+  refine L.ovTrans (detO_List.set_dot L m e hem v (by rw [hv, hlen])) ?_
   refine L.ovTrans (dotO_unitRead L v (cofVecO ops m e) e
     (by rw [hv, length_cofVecO, hlen]) hve hvo) ?_
   rw [show ground.getAt ops.unit (cofVecO ops m e) e
@@ -8338,17 +8246,17 @@ private theorem dotO_map_index {γ α : Type} (ops : DOps γ) (d : α)
     l.length y hy
 
 /-- Two replacements at differing places commute. -/
-private theorem setRow_comm {α : Type} :
+private theorem List.set_comm {α : Type} :
     ∀ (l : List α) (p q : Nat) (u v : α), ¬ p = q →
-      setRow (setRow l p u) q v = setRow (setRow l q v) p u
+      List.set (List.set l p u) q v = List.set (List.set l q v) p u
   | [], _, _, _, _, _ => rfl
   | _ :: _, 0, 0, _, _, h => absurd rfl h
   | _ :: _, 0, _ + 1, _, _, _ => rfl
   | _ :: _, _ + 1, 0, _, _, _ => rfl
   | a :: t, p + 1, q + 1, u, v, h => by
-    show a :: setRow (setRow t p u) q v
-      = a :: setRow (setRow t q v) p u
-    rw [setRow_comm t p q u v (fun he => h (congrArg Nat.succ he))]
+    show a :: List.set (List.set t p u) q v
+      = a :: List.set (List.set t q v) p u
+    rw [List.set_comm t p q u v (fun he => h (congrArg Nat.succ he))]
 
 /-- The fold at two singly listed keys with every further member at
 the sum's unit reads those two keys' join. -/
@@ -8415,18 +8323,18 @@ private theorem foldO_pick2 {γ : Type} {ops : DOps γ}
 /-- The replaced row read as a combination of a further family's
 rows: the determinant expands over the coefficients, one summand
 per member at the member's own replaced determinant. -/
-private theorem detO_setRow_combo {γ : Type} {ops : DOps γ}
+private theorem detO_List.set_combo {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ} (L : DLaws γ ops R.rel)
     (m : List (List γ)) (k : Nat) (hk : k < m.length)
     (y : List γ) (M' : List (List γ)) (hM : rowsLen m.length M') :
-    R.rel (detO ops (setRow m k (comboO ops m.length y M')))
+    R.rel (detO ops (List.set m k (comboO ops m.length y M')))
       (dotO ops y
-        (M'.map (fun row => detO ops (setRow m k row)))) := by
+        (M'.map (fun row => detO ops (List.set m k row)))) := by
   have hcl : (comboO ops m.length y M').length = m.length :=
     length_comboO ops m.length y M' hM
   have hcof : (cofVecO ops m k).length = m.length :=
     length_cofVecO ops m k
-  refine L.ovTrans (detO_setRow_dot L m k hk _ hcl) ?_
+  refine L.ovTrans (detO_List.set_dot L m k hk _ hcl) ?_
   refine L.ovTrans (dotO_comm L.toDCore _ _) ?_
   refine L.ovTrans
     (dotO_combo L y M' (cofVecO ops m k) m.length hM) ?_
@@ -8437,23 +8345,23 @@ private theorem detO_setRow_combo {γ : Type} {ops : DOps γ}
   rw [ground.getAt_map ([] : List γ) ops.unit
       (fun row => dotO ops (cofVecO ops m k) row) M' i hi,
     ground.getAt_map ([] : List γ) ops.unit
-      (fun row => detO ops (setRow m k row)) M' i hi]
+      (fun row => detO ops (List.set m k row)) M' i hi]
   refine L.ovTrans (dotO_comm L.toDCore _ _) ?_
-  exact L.ovSymm (detO_setRow_dot L m k hk (ground.getAt [] M' i)
+  exact L.ovSymm (detO_List.set_dot L m k hk (ground.getAt [] M' i)
     (rowsLen_getAt M' i hM hi))
 
 /-! The key-list spellings the bordered tier reads at: the
 transpose and the adjacent column exchange as explicit key maps,
 with the unit family at a stated key. -/
 
-private theorem rowsLen_swapAdjO {γ : Type} {n : Nat} :
+theorem rowsLen_adjSwap {γ : Type} {n : Nat} :
     ∀ (k : Nat) (m : List (List γ)), rowsLen n m →
       rowsLen n (ground.adjSwap k m)
   | 0, [], h => h
   | _ + 1, [], h => h
   | 0, [_], h => h
   | 0, _ :: _ :: _, h => ⟨h.2.1, h.1, h.2.2⟩
-  | k + 1, _ :: t, h => ⟨h.1, rowsLen_swapAdjO k t h.2⟩
+  | k + 1, _ :: t, h => ⟨h.1, rowsLen_adjSwap k t h.2⟩
 
 /-- The transpose at a stated width, as the key range's own double
 map — the explicit spelling the bordered tier reads at. -/
@@ -8531,7 +8439,7 @@ private theorem colSwapM_det {γ : Type} {ops : DOps γ}
   have hYl : (ground.adjSwap k (transM ops n X)).length = n := by
     rw [ground.length_adjSwap, hXt]
   have hYr : rowsLen n (ground.adjSwap k (transM ops n X)) :=
-    rowsLen_swapAdjO k (transM ops n X) (transM_rows ops n X)
+    rowsLen_adjSwap k (transM ops n X) (transM_rows ops n X)
   refine C.ovTrans (detO_congr_letters C (colSwapM ops n k X)
     (transM ops n (ground.adjSwap k (transM ops n X)))
     (by rw [colSwapM_len, transM_len]) (fun a ha b hb => ?_)) ?_
@@ -8628,46 +8536,35 @@ private theorem subM_entry {γ : Type} (ops : DOps γ) (p : Nat)
       = ground.getAt ops.unit (ground.getAt [] S (f a)) (g b) :=
   ground.matOf_entry [] ops.unit p p _ a b ha hb
 
-/-- A further place reads through a replacement. -/
-theorem getAt_setRow_ne {α : Type} (d : α) :
-    ∀ (m : List α) (k i : Nat) (b : α), ¬ i = k →
-      ground.getAt d (setRow m k b) i = ground.getAt d m i
-  | [], _, _, _, _ => rfl
-  | _ :: _, 0, 0, _, h => absurd rfl h
-  | _ :: _, 0, _ + 1, _, _ => rfl
-  | _ :: _, _ + 1, 0, _, _ => rfl
-  | _ :: t, k + 1, i + 1, b, h =>
-    getAt_setRow_ne d t k i b (fun he => h (congrArg Nat.succ he))
-
 /-- The adjacent exchange as two replacements at the exchanged
 places. -/
-private theorem setRow_swapAdj {α : Type} (d : α) :
+private theorem List.set_swapAdj {α : Type} (d : α) :
     ∀ (k : Nat) (m : List α), k + 1 < m.length →
-      setRow (setRow m (k + 1) (ground.getAt d m k)) k
+      List.set (List.set m (k + 1) (ground.getAt d m k)) k
         (ground.getAt d m (k + 1)) = ground.adjSwap k m
   | 0, [], h => absurd h (Nat.not_lt_zero _)
   | 0, [_], h => absurd h (Nat.lt_irrefl 1)
   | _ + 1, [], h => absurd h (Nat.not_lt_zero _)
   | 0, _ :: _ :: _, _ => rfl
   | k + 1, a :: t, h => by
-    show a :: setRow (setRow t (k + 1) (ground.getAt d t k)) k
+    show a :: List.set (List.set t (k + 1) (ground.getAt d t k)) k
       (ground.getAt d t (k + 1)) = a :: ground.adjSwap k t
-    rw [setRow_swapAdj d k t (Nat.lt_of_succ_lt_succ h)]
+    rw [List.set_swapAdj d k t (Nat.lt_of_succ_lt_succ h)]
 
 /-- A replacement at the first exchanged place reads through the
 exchange at the second. -/
-private theorem adjSwap_setRow {α : Type} :
+private theorem adjSwap_List.set {α : Type} :
     ∀ (k : Nat) (m : List α) (b : α), k + 1 < m.length →
-      ground.adjSwap k (setRow m k b)
-        = setRow (ground.adjSwap k m) (k + 1) b
+      ground.adjSwap k (List.set m k b)
+        = List.set (ground.adjSwap k m) (k + 1) b
   | 0, [], _, h => absurd h (Nat.not_lt_zero _)
   | 0, [_], _, h => absurd h (Nat.lt_irrefl 1)
   | _ + 1, [], _, h => absurd h (Nat.not_lt_zero _)
   | 0, _ :: _ :: _, _, _ => rfl
   | k + 1, a :: t, b, h => by
-    show a :: ground.adjSwap k (setRow t k b)
-      = a :: setRow (ground.adjSwap k t) (k + 1) b
-    rw [adjSwap_setRow k t b (Nat.lt_of_succ_lt_succ h)]
+    show a :: ground.adjSwap k (List.set t k b)
+      = a :: List.set (ground.adjSwap k t) (k + 1) b
+    rw [adjSwap_List.set k t b (Nat.lt_of_succ_lt_succ h)]
 
 /-- The pairing against a scaled left factor is the scale of the
 pairing. -/
@@ -8680,12 +8577,12 @@ private theorem dotO_vecScale_left {γ : Type} {ops : DOps γ}
       (L.mulCongr (L.ovRefl c) (dotO_comm L.toDCore w u)))
 
 /-- A replacement at a matched width keeps the stated row width. -/
-theorem rowsLen_setRow {γ : Type} {n : Nat} :
+theorem rowsLen_set {γ : Type} {n : Nat} :
     ∀ (M : List (List γ)) (k : Nat) (v : List γ),
-      rowsLen n M → v.length = n → rowsLen n (setRow M k v)
+      rowsLen n M → v.length = n → rowsLen n (List.set M k v)
   | [], _, _, h, _ => h
   | _ :: _, 0, _, h, hv => ⟨hv, h.2⟩
-  | _ :: t, k + 1, v, h, hv => ⟨h.1, rowsLen_setRow t k v h.2 hv⟩
+  | _ :: t, k + 1, v, h, hv => ⟨h.1, rowsLen_set t k v h.2 hv⟩
 
 /-- The last row read at the last key's unit family: the leading
 submatrix's determinant, in the explicit key-map spelling. -/
@@ -8693,7 +8590,7 @@ private theorem detO_lastUnit_subM {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ} (L : DLaws γ ops R.rel)
     (e : Nat)
     (X : List (List γ)) (hl : X.length = e + 1) :
-    R.rel (detO ops (setRow X e (unitFam ops (e + 1) e)))
+    R.rel (detO ops (List.set X e (unitFam ops (e + 1) e)))
       (detO ops (subM ops e (fun a => a) (fun b => b) X)) := by
   have hk1 : e < X.length := by
     rw [hl]
@@ -8702,7 +8599,7 @@ private theorem detO_lastUnit_subM {γ : Type} {ops : DOps γ}
     have h := length_eraseIdx X e hk1
     rw [hl] at h
     exact Nat.succ.inj h
-  refine L.ovTrans (detO_setRow_last L X e hl
+  refine L.ovTrans (detO_List.set_last L X e hl
     (unitFam ops (e + 1) e) (unitFam_len ops (e + 1) e)
     (ovOfEq L.toDCore
       (unitFam_hit ops (e + 1) e (Nat.lt_succ_self e)))
@@ -8752,21 +8649,21 @@ private theorem swapIx_hit {k b : Nat} (hb : ¬ b = k + 1) :
 
 /-- The exchanged columns read the last key's unit family at the
 replaced row: the two spellings' determinants read one value. -/
-private theorem colSwap_setRow_unit {γ : Type} {ops : DOps γ}
+private theorem colSwap_List.set_unit {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ} (C : DCore γ ops R.rel) (n k : Nat)
     (X : List (List γ)) (hl : X.length = n) (hk : k + 1 < n) :
     R.rel (detO ops
-        (colSwapM ops n k (setRow X (k + 1) (unitFam ops n k))))
-      (detO ops (setRow (colSwapM ops n k X) (k + 1)
+        (colSwapM ops n k (List.set X (k + 1) (unitFam ops n k))))
+      (detO ops (List.set (colSwapM ops n k X) (k + 1)
         (unitFam ops n (k + 1)))) := by
   have hk0 : k < n := Nat.lt_trans (Nat.lt_succ_self k) hk
   refine detO_congr_letters C _ _ ?_ (fun a ha b hb => ?_)
-  · rw [colSwapM_len, length_setRow, colSwapM_len]
+  · rw [colSwapM_len, ground.length_set, colSwapM_len]
   · rw [colSwapM_len] at ha hb
     rw [colSwapM_entry ops n k _ a b ha hb]
     by_cases hak : a = k + 1
-    · rw [hak, getAt_setRow ([] : List γ) _ X (k + 1) (by rw [hl]; exact hk),
-        getAt_setRow ([] : List γ) _ (colSwapM ops n k X) (k + 1)
+    · rw [hak, ground.getAt_set_self ([] : List γ) _ X (k + 1) (by rw [hl]; exact hk),
+        ground.getAt_set_self ([] : List γ) _ (colSwapM ops n k X) (k + 1)
           (by rw [colSwapM_len]; exact hk)]
       by_cases hbk : b = k + 1
       · rw [hbk,
@@ -8780,8 +8677,8 @@ private theorem colSwap_setRow_unit {γ : Type} {ops : DOps γ}
       · rw [unitFam_miss ops n k _ (swapIx_hit hbk),
           unitFam_miss ops n (k + 1) b hbk]
         exact C.ovRefl _
-    · rw [getAt_setRow_ne ([] : List γ) X (k + 1) a _ hak,
-        getAt_setRow_ne ([] : List γ) (colSwapM ops n k X) (k + 1) a
+    · rw [ground.getAt_set_ne ([] : List γ) X (k + 1) a _ hak,
+        ground.getAt_set_ne ([] : List γ) (colSwapM ops n k X) (k + 1) a
           _ hak,
         colSwapM_entry ops n k X a b ha hb]
       exact C.ovRefl _
@@ -8793,9 +8690,9 @@ private theorem cofRead {γ : Type} {ops : DOps γ}
     (n : Nat)
     (G : List (List γ)) (hl : G.length = n) (c t : Nat)
     (hc : c < n) (ht : t < n) :
-    R.rel (detO ops (setRow G c (unitFam ops n t)))
+    R.rel (detO ops (List.set G c (unitFam ops n t)))
       (ground.getAt ops.unit (cofVecO ops G c) t) := by
-  refine L.ovTrans (detO_setRow_dot L G c (by rw [hl]; exact hc)
+  refine L.ovTrans (detO_List.set_dot L G c (by rw [hl]; exact hc)
     (unitFam ops n t) (by rw [unitFam_len, hl])) ?_
   exact dotO_unitRead L (unitFam ops n t) (cofVecO ops G c) t
     (by rw [unitFam_len, length_cofVecO, hl])
@@ -8842,10 +8739,10 @@ private theorem cofBorder10 {γ : Type} {ops : DOps γ}
   have hcs : (colSwapM ops (k + 2) k (transM ops (k + 2) S)).length
       = k + 2 := colSwapM_len ops (k + 2) k _
   have h1 := colSwapM_det L.toDCore (k + 2) k
-    (setRow (transM ops (k + 2) S) (k + 1) (unitFam ops (k + 2) k))
-    (by rw [length_setRow, hG])
-    (rowsLen_setRow _ (k + 1) _ hGr (unitFam_len ops (k + 2) k)) hk
-  have h2 := colSwap_setRow_unit L.toDCore (k + 2) k
+    (List.set (transM ops (k + 2) S) (k + 1) (unitFam ops (k + 2) k))
+    (by rw [ground.length_set, hG])
+    (rowsLen_set _ (k + 1) _ hGr (unitFam_len ops (k + 2) k)) hk
+  have h2 := colSwap_List.set_unit L.toDCore (k + 2) k
     (transM ops (k + 2) S) hG hk
   have h3 := detO_lastUnit_subM L (k + 1)
     (colSwapM ops (k + 2) k (transM ops (k + 2) S)) hcs
@@ -8866,7 +8763,7 @@ private theorem cofBorder10 {γ : Type} {ops : DOps γ}
     (fun a => a) (bumpIx k) S
     (fun a ha => Nat.lt_trans ha hk)
     (fun b hb => bumpIx_lt hb hk)
-  have hmain : R.rel (ops.swap (detO ops (setRow (transM ops (k + 2) S)
+  have hmain : R.rel (ops.swap (detO ops (List.set (transM ops (k + 2) S)
       (k + 1) (unitFam ops (k + 2) k))))
       (detO ops (subM ops (k + 1) (bumpIx k) (fun b => b) S)) :=
     L.ovTrans (L.ovSymm h1)
@@ -8891,15 +8788,15 @@ private theorem cofBorder01 {γ : Type} {ops : DOps γ}
     transM_len ops (k + 2) S
   have hZ : (ground.adjSwap k (transM ops (k + 2) S)).length = k + 2 := by
     rw [ground.length_adjSwap, hG]
-  have h1 : ground.adjSwap k (setRow (transM ops (k + 2) S) k
+  have h1 : ground.adjSwap k (List.set (transM ops (k + 2) S) k
       (unitFam ops (k + 2) (k + 1)))
-      = setRow (ground.adjSwap k (transM ops (k + 2) S)) (k + 1)
+      = List.set (ground.adjSwap k (transM ops (k + 2) S)) (k + 1)
         (unitFam ops (k + 2) (k + 1)) :=
-    adjSwap_setRow k (transM ops (k + 2) S) _
+    adjSwap_List.set k (transM ops (k + 2) S) _
       (by rw [hG]; exact hk)
   have h2 := detO_swapAdj L.toDCore k
-    (setRow (transM ops (k + 2) S) k (unitFam ops (k + 2) (k + 1)))
-    (by rw [length_setRow, hG]; exact hk)
+    (List.set (transM ops (k + 2) S) k (unitFam ops (k + 2) (k + 1)))
+    (by rw [ground.length_set, hG]; exact hk)
   rw [h1] at h2
   have h3 := detO_lastUnit_subM L (k + 1)
     (ground.adjSwap k (transM ops (k + 2) S)) hZ
@@ -8920,7 +8817,7 @@ private theorem cofBorder01 {γ : Type} {ops : DOps γ}
     (bumpIx k) (fun b => b) S
     (fun a ha => bumpIx_lt ha hk)
     (fun b hb => Nat.lt_trans hb hk)
-  have hmain : R.rel (ops.swap (detO ops (setRow (transM ops (k + 2) S)
+  have hmain : R.rel (ops.swap (detO ops (List.set (transM ops (k + 2) S)
       k (unitFam ops (k + 2) (k + 1)))))
       (detO ops (subM ops (k + 1) (fun a => a) (bumpIx k) S)) :=
     L.ovTrans (L.ovSymm h2) (L.ovTrans h3 (L.ovTrans h4 h5))
@@ -8947,23 +8844,23 @@ private theorem cofBorder00 {γ : Type} {ops : DOps γ}
   have hZ : (ground.adjSwap k (transM ops (k + 2) S)).length = k + 2 := by
     rw [ground.length_adjSwap, hG]
   have hZr : rowsLen (k + 2) (ground.adjSwap k (transM ops (k + 2) S)) :=
-    rowsLen_swapAdjO k (transM ops (k + 2) S) hGr
-  have h1 : ground.adjSwap k (setRow (transM ops (k + 2) S) k
+    rowsLen_adjSwap k (transM ops (k + 2) S) hGr
+  have h1 : ground.adjSwap k (List.set (transM ops (k + 2) S) k
       (unitFam ops (k + 2) k))
-      = setRow (ground.adjSwap k (transM ops (k + 2) S)) (k + 1)
+      = List.set (ground.adjSwap k (transM ops (k + 2) S)) (k + 1)
         (unitFam ops (k + 2) k) :=
-    adjSwap_setRow k (transM ops (k + 2) S) _
+    adjSwap_List.set k (transM ops (k + 2) S) _
       (by rw [hG]; exact hk)
   have h2 := detO_swapAdj L.toDCore k
-    (setRow (transM ops (k + 2) S) k (unitFam ops (k + 2) k))
-    (by rw [length_setRow, hG]; exact hk)
+    (List.set (transM ops (k + 2) S) k (unitFam ops (k + 2) k))
+    (by rw [ground.length_set, hG]; exact hk)
   rw [h1] at h2
   have h3 := colSwapM_det L.toDCore (k + 2) k
-    (setRow (ground.adjSwap k (transM ops (k + 2) S)) (k + 1)
+    (List.set (ground.adjSwap k (transM ops (k + 2) S)) (k + 1)
       (unitFam ops (k + 2) k))
-    (by rw [length_setRow, hZ])
-    (rowsLen_setRow _ (k + 1) _ hZr (unitFam_len ops (k + 2) k)) hk
-  have h4 := colSwap_setRow_unit L.toDCore (k + 2) k
+    (by rw [ground.length_set, hZ])
+    (rowsLen_set _ (k + 1) _ hZr (unitFam_len ops (k + 2) k)) hk
+  have h4 := colSwap_List.set_unit L.toDCore (k + 2) k
     (ground.adjSwap k (transM ops (k + 2) S)) hZ hk
   have h5 := detO_lastUnit_subM L (k + 1)
     (colSwapM ops (k + 2) k (ground.adjSwap k (transM ops (k + 2) S)))
@@ -9063,17 +8960,17 @@ private theorem detO_comboRow_pick {γ : Type} {ops : DOps γ}
     (hS : S.length = n) (hrows : rowsLen n S)
     (p : Nat) (hp : p < n) (y : List γ) (hy : y.length = n)
     (s0 : Nat) (hs0 : s0 < n) (V : γ)
-    (hhit : R.rel (detO ops (setRow M p (ground.getAt [] S s0))) V)
+    (hhit : R.rel (detO ops (List.set M p (ground.getAt [] S s0))) V)
     (hmiss : ∀ s, s < n → ¬ s = s0 →
-      R.rel (detO ops (setRow M p (ground.getAt [] S s))) ops.unit) :
-    R.rel (detO ops (setRow M p (comboO ops n y S)))
+      R.rel (detO ops (List.set M p (ground.getAt [] S s))) ops.unit) :
+    R.rel (detO ops (List.set M p (comboO ops n y S)))
       (ops.mul (ground.getAt ops.unit y s0) V) := by
-  have h := detO_setRow_combo L M p (by rw [hM]; exact hp) y S
+  have h := detO_List.set_combo L M p (by rw [hM]; exact hp) y S
     (by rw [hM]; exact hrows)
   rw [hM] at h
   refine L.ovTrans h ?_
   rw [dotO_map_index ops ([] : List γ)
-    (fun row => detO ops (setRow M p row)) y S (by rw [hy, hS]), hS]
+    (fun row => detO ops (List.set M p row)) y S (by rw [hy, hS]), hS]
   refine L.ovTrans (foldO_congr_members L.toDCore _
     (fun s => if s0 = s then
         ops.mul (ground.getAt ops.unit y s0) V else ops.unit)
@@ -9101,7 +8998,7 @@ private theorem detN_direct {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ} (L : DLaws γ ops R.rel)
     (k : Nat)
     (S : List (List γ)) (hl : S.length = k + 2) :
-    R.rel (detO ops (setRow (setRow S k
+    R.rel (detO ops (List.set (List.set S k
           (vecScaleO ops (detO ops S) (unitFam ops (k + 2) k)))
         (k + 1)
         (vecScaleO ops (detO ops S) (unitFam ops (k + 2) (k + 1)))))
@@ -9110,46 +9007,46 @@ private theorem detN_direct {γ : Type} {ops : DOps γ}
   have hk : k + 1 < k + 2 := Nat.lt_succ_self (k + 1)
   have hk0 : k < k + 2 := Nat.lt_trans (Nat.lt_succ_self k) hk
   have hne : ¬ k = k + 1 := fun he => Nat.succ_ne_self k he.symm
-  have hm1 : (setRow S k
+  have hm1 : (List.set S k
       (vecScaleO ops (detO ops S) (unitFam ops (k + 2) k))).length
-      = k + 2 := by rw [length_setRow, hl]
-  have hm2 : (setRow S (k + 1) (unitFam ops (k + 2) (k + 1))).length
-      = k + 2 := by rw [length_setRow, hl]
+      = k + 2 := by rw [ground.length_set, hl]
+  have hm2 : (List.set S (k + 1) (unitFam ops (k + 2) (k + 1))).length
+      = k + 2 := by rw [ground.length_set, hl]
   have hvs : ∀ c, (vecScaleO ops (detO ops S)
       (unitFam ops (k + 2) c)).length = k + 2 := fun c => by
     show ((unitFam ops (k + 2) c).map _).length = k + 2
     rw [ground.length_map, unitFam_len]
-  refine L.ovTrans (detO_setRow_dot L _ (k + 1)
+  refine L.ovTrans (detO_List.set_dot L _ (k + 1)
     (by rw [hm1]; exact hk) _ (by rw [hvs, hm1])) ?_
   refine L.ovTrans (dotO_vecScale_left L (detO ops S) _ _) ?_
   refine L.mulCongr (L.ovRefl _) ?_
-  refine L.ovTrans (L.ovSymm (detO_setRow_dot L _ (k + 1)
+  refine L.ovTrans (L.ovSymm (detO_List.set_dot L _ (k + 1)
     (by rw [hm1]; exact hk) _ (by rw [unitFam_len, hm1]))) ?_
-  rw [setRow_comm S k (k + 1)
+  rw [List.set_comm S k (k + 1)
     (vecScaleO ops (detO ops S) (unitFam ops (k + 2) k))
     (unitFam ops (k + 2) (k + 1)) hne]
-  refine L.ovTrans (detO_setRow_dot L _ k
+  refine L.ovTrans (detO_List.set_dot L _ k
     (by rw [hm2]; exact hk0) _ (by rw [hvs, hm2])) ?_
   refine L.ovTrans (dotO_vecScale_left L (detO ops S) _ _) ?_
   refine L.mulCongr (L.ovRefl _) ?_
-  refine L.ovTrans (L.ovSymm (detO_setRow_dot L _ k
+  refine L.ovTrans (L.ovSymm (detO_List.set_dot L _ k
     (by rw [hm2]; exact hk0) _ (by rw [unitFam_len, hm2]))) ?_
-  rw [← setRow_comm S k (k + 1) (unitFam ops (k + 2) k)
+  rw [← List.set_comm S k (k + 1) (unitFam ops (k + 2) k)
     (unitFam ops (k + 2) (k + 1)) hne]
   refine L.ovTrans (detO_lastUnit_subM L (k + 1)
-    (setRow S k (unitFam ops (k + 2) k))
-    (by rw [length_setRow, hl])) ?_
+    (List.set S k (unitFam ops (k + 2) k))
+    (by rw [ground.length_set, hl])) ?_
   refine L.ovTrans (detO_congr_letters L.toDCore _
-    (setRow (subM ops (k + 1) (fun a => a) (fun b => b) S) k
+    (List.set (subM ops (k + 1) (fun a => a) (fun b => b) S) k
       (unitFam ops (k + 1) k))
-    (by rw [subM_len, length_setRow, subM_len]) (fun a ha b hb => ?_))
+    (by rw [subM_len, ground.length_set, subM_len]) (fun a ha b hb => ?_))
     ?_
   · rw [subM_len] at ha hb
     rw [subM_entry ops (k + 1) _ _ _ a b ha hb]
     by_cases hak : a = k
     · rw [hak,
-        getAt_setRow ([] : List γ) _ S k (by rw [hl]; exact hk0),
-        getAt_setRow ([] : List γ) _
+        ground.getAt_set_self ([] : List γ) _ S k (by rw [hl]; exact hk0),
+        ground.getAt_set_self ([] : List γ) _
           (subM ops (k + 1) (fun a => a) (fun b => b) S) k
           (by rw [subM_len]; exact Nat.lt_succ_self k)]
       by_cases hbk : b = k
@@ -9159,8 +9056,8 @@ private theorem detN_direct {γ : Type} {ops : DOps γ}
       · rw [unitFam_miss ops (k + 2) k b hbk,
           unitFam_miss ops (k + 1) k b hbk]
         exact L.ovRefl _
-    · rw [getAt_setRow_ne ([] : List γ) S k a _ hak,
-        getAt_setRow_ne ([] : List γ)
+    · rw [ground.getAt_set_ne ([] : List γ) S k a _ hak,
+        ground.getAt_set_ne ([] : List γ)
           (subM ops (k + 1) (fun a => a) (fun b => b) S) k a _ hak,
         subM_entry ops (k + 1) _ _ S a b ha hb]
       exact L.ovRefl _
@@ -9186,7 +9083,7 @@ private theorem detN_expand {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ} (L : DLaws γ ops R.rel) (k : Nat)
     (S : List (List γ)) (hl : S.length = k + 2)
     (hrows : rowsLen (k + 2) S) :
-    R.rel (detO ops (setRow (setRow S k
+    R.rel (detO ops (List.set (List.set S k
           (comboO ops (k + 2)
             (cofVecO ops (transM ops (k + 2) S) k) S))
         (k + 1)
@@ -9209,16 +9106,16 @@ private theorem detN_expand {γ : Type} {ops : DOps γ}
   have hy : ∀ c, (cofVecO ops (transM ops (k + 2) S) c).length
       = k + 2 := fun c => by
     rw [length_cofVecO, transM_len]
-  have hm1 : (setRow S k (comboO ops (k + 2)
+  have hm1 : (List.set S k (comboO ops (k + 2)
       (cofVecO ops (transM ops (k + 2) S) k) S)).length = k + 2 := by
-    rw [length_setRow, hl]
+    rw [ground.length_set, hl]
   have hstep : ∀ (M : List (List γ)) (p s : Nat), M.length = k + 2 →
       p < k + 2 → s < k + 2 →
-      ground.getAt [] (setRow M p (ground.getAt [] S s)) p
+      ground.getAt [] (List.set M p (ground.getAt [] S s)) p
         = ground.getAt [] S s := fun M p s hM hp _ =>
-    getAt_setRow ([] : List γ) _ M p (by rw [hM]; exact hp)
-  have houter := detO_setRow_combo L
-    (setRow S k (comboO ops (k + 2)
+    ground.getAt_set_self ([] : List γ) _ M p (by rw [hM]; exact hp)
+  have houter := detO_List.set_combo L
+    (List.set S k (comboO ops (k + 2)
       (cofVecO ops (transM ops (k + 2) S) k) S)) (k + 1)
     (by rw [hm1]; exact hk)
     (cofVecO ops (transM ops (k + 2) S) (k + 1)) S
@@ -9226,7 +9123,7 @@ private theorem detN_expand {γ : Type} {ops : DOps γ}
   rw [hm1] at houter
   refine L.ovTrans houter ?_
   rw [dotO_map_index ops ([] : List γ)
-    (fun row => detO ops (setRow (setRow S k (comboO ops (k + 2)
+    (fun row => detO ops (List.set (List.set S k (comboO ops (k + 2)
       (cofVecO ops (transM ops (k + 2) S) k) S)) (k + 1) row))
     (cofVecO ops (transM ops (k + 2) S) (k + 1)) S
     (by rw [hy, hl]), hl]
@@ -9244,74 +9141,74 @@ private theorem detN_expand {γ : Type} {ops : DOps γ}
     refine detO_rows_equal L
       (show x < k + 1 from Nat.lt_of_le_of_ne
         (Nat.le_of_succ_le_succ hxn) hxk1)
-      (show k + 1 < (setRow (setRow S k (comboO ops (k + 2)
+      (show k + 1 < (List.set (List.set S k (comboO ops (k + 2)
           (cofVecO ops (transM ops (k + 2) S) k) S)) (k + 1)
           (ground.getAt [] S x)).length from by
-        rw [length_setRow, hm1]
+        rw [ground.length_set, hm1]
         exact hk)
       ?_
-    rw [getAt_setRow_ne ([] : List γ) _ (k + 1) x _ hxk1,
-      getAt_setRow_ne ([] : List γ) S k x _ hxk,
+    rw [ground.getAt_set_ne ([] : List γ) _ (k + 1) x _ hxk1,
+      ground.getAt_set_ne ([] : List γ) S k x _ hxk,
       hstep _ (k + 1) x hm1 hk hxn]
   · refine L.addCongr ?_ ?_
     · refine L.mulCongr (L.ovRefl _) ?_
-      rw [setRow_comm S k (k + 1) _ (ground.getAt [] S k) hne]
+      rw [List.set_comm S k (k + 1) _ (ground.getAt [] S k) hne]
       refine detO_comboRow_pick L (k + 2)
-        (setRow S (k + 1) (ground.getAt [] S k)) S
-        (by rw [length_setRow, hl]) hl hrows k hk0 _ (hy k)
+        (List.set S (k + 1) (ground.getAt [] S k)) S
+        (by rw [ground.length_set, hl]) hl hrows k hk0 _ (hy k)
         (k + 1) hk (ops.swap (detO ops S)) ?_ (fun s hs hsk => ?_)
-      · rw [setRow_swapAdj ([] : List γ) k S (by rw [hl]; exact hk)]
+      · rw [List.set_swapAdj ([] : List γ) k S (by rw [hl]; exact hk)]
         exact detO_swapAdj L.toDCore k S (by rw [hl]; exact hk)
-      · have hml : (setRow S (k + 1) (ground.getAt [] S k)).length
-            = k + 2 := by rw [length_setRow, hl]
-        have hXl : (setRow (setRow S (k + 1) (ground.getAt [] S k)) k
+      · have hml : (List.set S (k + 1) (ground.getAt [] S k)).length
+            = k + 2 := by rw [ground.length_set, hl]
+        have hXl : (List.set (List.set S (k + 1) (ground.getAt [] S k)) k
             (ground.getAt [] S s)).length = k + 2 := by
-          rw [length_setRow, hml]
+          rw [ground.length_set, hml]
         by_cases hsk0 : s = k
         · refine detO_rows_equal L (Nat.lt_succ_self k)
             (by rw [hXl]; exact hk) ?_
           rw [hsk0,
-            getAt_setRow ([] : List γ) _
-              (setRow S (k + 1) (ground.getAt [] S k)) k
+            ground.getAt_set_self ([] : List γ) _
+              (List.set S (k + 1) (ground.getAt [] S k)) k
               (by rw [hml]; exact hk0),
-            getAt_setRow_ne ([] : List γ) _ k (k + 1) _
+            ground.getAt_set_ne ([] : List γ) _ k (k + 1) _
               (fun he => Nat.succ_ne_self k he),
-            getAt_setRow ([] : List γ) _ S (k + 1)
+            ground.getAt_set_self ([] : List γ) _ S (k + 1)
               (by rw [hl]; exact hk)]
         · refine detO_rows_equal L
             (show s < k from Nat.lt_of_le_of_ne
               (Nat.le_of_succ_le_succ (Nat.lt_of_le_of_ne
                 (Nat.le_of_succ_le_succ hs) hsk)) hsk0)
             (by rw [hXl]; exact hk0) ?_
-          rw [getAt_setRow_ne ([] : List γ) _ k s _ hsk0,
-            getAt_setRow_ne ([] : List γ) S (k + 1) s _ hsk,
-            getAt_setRow ([] : List γ) _
-              (setRow S (k + 1) (ground.getAt [] S k)) k
+          rw [ground.getAt_set_ne ([] : List γ) _ k s _ hsk0,
+            ground.getAt_set_ne ([] : List γ) S (k + 1) s _ hsk,
+            ground.getAt_set_self ([] : List γ) _
+              (List.set S (k + 1) (ground.getAt [] S k)) k
               (by rw [hml]; exact hk0)]
     · refine L.mulCongr (L.ovRefl _) ?_
-      rw [← getAt_setRow_ne ([] : List γ) S k (k + 1)
+      rw [← ground.getAt_set_ne ([] : List γ) S k (k + 1)
           (comboO ops (k + 2)
             (cofVecO ops (transM ops (k + 2) S) k) S)
           (fun he => Nat.succ_ne_self k he),
-        setRow_self ([] : List γ) _ (k + 1) (by rw [hm1]; exact hk)]
+        ground.set_self ([] : List γ) _ (k + 1) (by rw [hm1]; exact hk)]
       refine detO_comboRow_pick L (k + 2) S S hl hl hrows k hk0 _
         (hy k) k hk0 (detO ops S) ?_ (fun s hs hsk => ?_)
-      · rw [setRow_self ([] : List γ) S k (by rw [hl]; exact hk0)]
+      · rw [ground.set_self ([] : List γ) S k (by rw [hl]; exact hk0)]
         exact L.ovRefl _
-      · have hXl : (setRow S k (ground.getAt [] S s)).length = k + 2 := by
-          rw [length_setRow, hl]
+      · have hXl : (List.set S k (ground.getAt [] S s)).length = k + 2 := by
+          rw [ground.length_set, hl]
         match Nat.lt_or_ge s k with
         | .inl hsk1 =>
           refine detO_rows_equal L hsk1 (by rw [hXl]; exact hk0) ?_
-          rw [getAt_setRow_ne ([] : List γ) S k s _ hsk,
-            getAt_setRow ([] : List γ) _ S k (by rw [hl]; exact hk0)]
+          rw [ground.getAt_set_ne ([] : List γ) S k s _ hsk,
+            ground.getAt_set_self ([] : List γ) _ S k (by rw [hl]; exact hk0)]
         | .inr hsk1 =>
           refine detO_rows_equal L
             (show k < s from Nat.lt_of_le_of_ne hsk1
               (fun he => hsk he.symm))
             (by rw [hXl]; exact hs) ?_
-          rw [getAt_setRow ([] : List γ) _ S k (by rw [hl]; exact hk0),
-            getAt_setRow_ne ([] : List γ) S k s _ hsk]
+          rw [ground.getAt_set_self ([] : List γ) _ S k (by rw [hl]; exact hk0),
+            ground.getAt_set_ne ([] : List γ) S k s _ hsk]
 
 /-- The balance partner passes the product's left factor. -/
 private theorem mulSwapLeft {γ : Type} {ops : DOps γ}
@@ -9358,39 +9255,39 @@ private theorem jacobiCorner {γ : Type} {ops : DOps γ}
   have h01 := cofBorder01 L k S
   have h10 := cofBorder10 L k S
   have hA := detN_expand L k S hl hrows
-  have hcong : R.rel (detO ops (setRow (setRow S k
+  have hcong : R.rel (detO ops (List.set (List.set S k
         (comboO ops (k + 2)
           (cofVecO ops (transM ops (k + 2) S) k) S))
         (k + 1)
         (comboO ops (k + 2)
           (cofVecO ops (transM ops (k + 2) S) (k + 1)) S)))
-      (detO ops (setRow (setRow S k
+      (detO ops (List.set (List.set S k
           (vecScaleO ops (detO ops S) (unitFam ops (k + 2) k)))
         (k + 1)
         (vecScaleO ops (detO ops S)
           (unitFam ops (k + 2) (k + 1))))) := by
     refine detO_congr_letters L.toDCore _ _
-      (by rw [length_setRow, length_setRow, length_setRow,
-        length_setRow]) (fun a ha b hb => ?_)
-    rw [length_setRow, length_setRow, hl] at ha hb
+      (by rw [ground.length_set, ground.length_set, ground.length_set,
+        ground.length_set]) (fun a ha b hb => ?_)
+    rw [ground.length_set, ground.length_set, hl] at ha hb
     by_cases ha1 : a = k + 1
     · rw [ha1,
-        getAt_setRow ([] : List γ) _ _ (k + 1)
-          (by rw [length_setRow, hl]; exact hk),
-        getAt_setRow ([] : List γ) _ _ (k + 1)
-          (by rw [length_setRow, hl]; exact hk)]
+        ground.getAt_set_self ([] : List γ) _ _ (k + 1)
+          (by rw [ground.length_set, hl]; exact hk),
+        ground.getAt_set_self ([] : List γ) _ _ (k + 1)
+          (by rw [ground.length_set, hl]; exact hk)]
       exact comboCof_entry L (k + 2) S hl hrows
         (k + 1) b hk hb
-    · rw [getAt_setRow_ne ([] : List γ) _ (k + 1) a _ ha1,
-        getAt_setRow_ne ([] : List γ) _ (k + 1) a _ ha1]
+    · rw [ground.getAt_set_ne ([] : List γ) _ (k + 1) a _ ha1,
+        ground.getAt_set_ne ([] : List γ) _ (k + 1) a _ ha1]
       by_cases ha0 : a = k
       · rw [ha0,
-          getAt_setRow ([] : List γ) _ S k (by rw [hl]; exact hk0),
-          getAt_setRow ([] : List γ) _ S k (by rw [hl]; exact hk0)]
+          ground.getAt_set_self ([] : List γ) _ S k (by rw [hl]; exact hk0),
+          ground.getAt_set_self ([] : List γ) _ S k (by rw [hl]; exact hk0)]
         exact comboCof_entry L (k + 2) S hl hrows
           k b hk0 hb
-      · rw [getAt_setRow_ne ([] : List γ) S k a _ ha0,
-          getAt_setRow_ne ([] : List γ) S k a _ ha0]
+      · rw [ground.getAt_set_ne ([] : List γ) S k a _ ha0,
+          ground.getAt_set_ne ([] : List γ) S k a _ ha0]
         exact L.ovRefl _
   have hB := detN_direct L k S hl
   refine L.ovTrans ?_ (L.ovTrans (L.ovSymm hA)
@@ -10122,18 +10019,6 @@ theorem divExact (m : Mat) (hsq : rowsLen m.length m) (k i j : Nat)
       (BPair.oneValue_symm hEu)
   · exact cofactorAt_sound hP hprod
 
-private theorem off_unit_extract : ∀ r : List BPair,
-    ¬ poly.unitTail r →
-    ∃ k, k < r.length
-      ∧ ¬ (ground.getAt BPair.unit r k).oneValue BPair.unit
-  | [], hr => absurd trivial hr
-  | a :: t, hr => by
-    by_cases ha : a.oneValue BPair.unit
-    · have ht : ¬ poly.unitTail t := fun h => hr ⟨ha, h⟩
-      match off_unit_extract t ht with
-      | ⟨k, hk, hks⟩ => exact ⟨k + 1, Nat.succ_lt_succ hk, hks⟩
-    · exact ⟨0, Nat.succ_pos _, ha⟩
-
 /-! Independence's elimination (`lem:lowerspan`'s read-back of a
 dependency's coefficients): a combination reading the unit family pairs against
 every row at the sum's unit, so the cofactor vector's own
@@ -10367,7 +10252,7 @@ theorem indep_single (n : Nat) (r : List BPair)
   | [c], _ =>
     have hnull' : poly.unitTail (vecAdd (vecScale c r)
         (List.replicate n BPair.unit)) := hnull
-    match off_unit_extract r hr with
+    match poly.offUnit_witness r hr with
     | ⟨k, hk, hrk⟩ =>
       have hkn : k < n := by
         rw [← hrn]
@@ -10482,7 +10367,7 @@ rows. -/
 theorem indep_swapAdj (n k : Nat) (L : Mat)
     (h : indepRows n L) : indepRows n (ground.adjSwap k L) := by
   refine indep_intro n (ground.adjSwap k L)
-    (rowsLen_swapAdjO k L h.1) ?_
+    (rowsLen_adjSwap k L h.1) ?_
   intro cs hcl hnull
   have hsw : (ground.adjSwap k cs).length = L.length := by
     rw [ground.length_adjSwap, hcl, ground.length_adjSwap]
@@ -10723,7 +10608,7 @@ private theorem bound_succ (n : Nat)
       (indep_tails n L hL hU h)
     rw [length_dropCol] at h3
     exact Nat.le_trans h3 (Nat.le_succ n)
-  · match off_unit_extract (colHead BPair.unit L) hU with
+  · match poly.offUnit_witness (colHead BPair.unit L) hU with
     | ⟨k, hk, hks⟩ =>
       have hk' : k < L.length := by
         rw [← length_colHead BPair.unit L]
@@ -11428,7 +11313,8 @@ theorem length_matMul (a b : Mat) :
     (matMul a b).length = a.length :=
   ground.length_map _ a
 
-private theorem matVec_null_go : ∀ (T : Mat) (v : List BPair),
+/-- The action at a unit-tail vector reads the unit tail. -/
+theorem matVec_null : ∀ (T : Mat) (v : List BPair),
     poly.unitTail v → poly.unitTail (matVec T v)
   | [], _, _ => trivial
   | r :: t, v, hv => by
@@ -11436,12 +11322,7 @@ private theorem matVec_null_go : ∀ (T : Mat) (v : List BPair),
     exact ⟨BPair.oneValue_trans (dotN_read r v)
         (dotP_null_right r v
           (fun i _ => poly.getAt_unitTail hv i)),
-      matVec_null_go t v hv⟩
-
-/-- The action at a unit-tail vector reads the unit tail. -/
-theorem matVec_null (T : Mat) : ∀ v : List BPair,
-    poly.unitTail v → poly.unitTail (matVec T v) :=
-  matVec_null_go T
+      matVec_null t v hv⟩
 
 private theorem matVec_congr_go : ∀ (T : Mat) (u u' : List BPair),
     u.length = u'.length → poly.oneValue u u' →
@@ -11494,14 +11375,6 @@ theorem matVec_vecScale_free : ∀ (M : Mat) (c : BPair)
       (BPair.oneValue_trans (dotP_vecScale_right r u c)
         (BPair.mul_congr (BPair.oneValue_refl c)
           (BPair.oneValue_symm (dotN_read r u))))
-
-/-- The action keeps a scaled vector's scaling: the shape wrapper
-at the square frame's data, the read the general's whole. -/
-theorem matVec_vecScale (T : Mat) (n : Nat) (_ : rowsLen n T)
-    (c : BPair) (v : List BPair) (_ : v.length = n) :
-    poly.oneValue (matVec T (vecScale c v))
-      (vecScale c (matVec T v)) :=
-  matVec_vecScale_free T c v
 
 private theorem unitReplRead (n : Nat) (v : List BPair) :
     BPair.unit.oneValue (dotP (List.replicate n BPair.unit) v) :=
@@ -11565,19 +11438,6 @@ theorem rowsLen_transposeM (m : Mat) :
 /-! `lem:dualread`(i)'s Gram reads: the struck columns' width, the
 mapped pairing's index fold, the Gram's symmetry, and the cofactor
 vector's column fold. -/
-
-/-- The struck columns keep the width less one: the erasure at a
-key inside the width drops every row's count by one. -/
-private theorem rowsLen_strikeCol {γ : Type} {n j : Nat}
-    (hj : j < n + 1) :
-    ∀ M : List (List γ), rowsLen (n + 1) M →
-      rowsLen n (M.map (fun r => r.eraseIdx j))
-  | [], _ => trivial
-  | row :: t, h =>
-    ⟨Nat.succ.inj
-      ((ground.length_eraseIdx row j (by rw [h.1]; exact hj)).trans
-        h.1),
-     rowsLen_strikeCol hj t h.2⟩
 
 /-- The pairing of two families mapped over one index list is the
 index fold of the members' products, the fold's own spelling at a
@@ -11879,7 +11739,7 @@ private theorem matVec_transpose_go (n : Nat) (T : Mat)
     poly.oneValue (matVec (transposeM T) s) (combo n s T) := by
   have hL : (matVec (transposeM T) s).length = n := by
     rw [matVec_length, length_transposeM T hT hne]
-  refine getAt_polyOne _ _ ?_ ?_
+  refine poly.oneValue_of_entries _ _ ?_ ?_
   · rw [hL, length_combo n s T hT]
   · intro i hi
     rw [hL] at hi
@@ -12086,7 +11946,7 @@ theorem matVec_combo (T : Mat) (n : Nat) :
 whose row images all sit in the target list's span, every span
 member of the source maps into the target's span
 (`lem:lowerspan`'s transport read). -/
-theorem span_map (T : Mat) (n : Nat) (hT : rowsLen n T)
+theorem span_map (T : Mat) (n : Nat)
     (L M : Mat) (hL : rowsLen n L) (hM : rowsLen T.length M)
     (himg : ∀ k, k < L.length →
       spanRel T.length M (matVec T (ground.getAt [] L k)))
@@ -12106,7 +11966,7 @@ theorem span_map (T : Mat) (n : Nat) (hT : rowsLen n T)
   have hchain : poly.oneValue (vecScale c₀ (matVec T x))
       (combo T.length cs (L.map (matVec T))) :=
     poly.oneValue_trans
-      (poly.oneValue_symm (matVec_vecScale T n hT c₀ x hx))
+      (poly.oneValue_symm (matVec_vecScale_free T c₀ x))
       (poly.oneValue_trans
         (matVec_congr_go T (vecScale c₀ x) (combo n cs L)
           (((length_vecScale c₀ x).trans hx).trans
@@ -12173,14 +12033,14 @@ a family's span maps into the image family's span, the
 combination read under the action (`lem:lowerspan`'s transport
 with the target list the source's own image). -/
 theorem spanRel_matVec (n : Nat) (G : Mat) (x : List BPair)
-    (T : Mat) (m : Nat) (hT : rowsLen n T) (hTl : T.length = m)
+    (T : Mat) (m : Nat) (hTl : T.length = m)
     (hG : rowsLen n G) (hx : x.length = n) (h : spanRel n G x) :
     spanRel m (G.map (matVec T)) (matVec T x) := by
   have hres := spanRel_mapBy n T.length (matVec T)
     (fun y => matVec_length T y)
     (fun a b ha hb hone =>
       matVec_congr_go T a b (ha.trans hb.symm) hone)
-    (fun c y hy => matVec_vecScale T n hT c y hy)
+    (fun c y hy => matVec_vecScale_free T c y)
     (fun cs L hL => matVec_combo T n cs L hL)
     G hG x hx h
   rw [hTl] at hres
@@ -12230,7 +12090,7 @@ theorem selfFold (u : List BPair) (n : Nat)
     (dotN u u).oneValue
       (bsum (fun i => ground.getAt BPair.unit u i
         * ground.getAt BPair.unit u i) (List.range n)) := by
-  refine BPair.oneValue_trans (dotN_dotP u u) ?_
+  refine BPair.oneValue_trans (dotN_read u u) ?_
   rw [dotP_fold n u u hu hu]
   exact BPair.oneValue_refl _
 
@@ -12241,12 +12101,119 @@ theorem dotN_self_side : ∀ v : List ground.BPair,
     ¬ (elim.dotN v v < ground.BPair.unit) := by
   intro v hlt
   have h : (dotP v v).fst + Pos.one < Pos.one + (dotP v v).snd :=
-    BPair.lt_congr (dotN_dotP v v) (BPair.oneValue_refl _) hlt
+    BPair.lt_congr (dotN_read v v) (BPair.oneValue_refl _) hlt
   match dotP_self_side v with
   | Or.inl he => exact ground.lt_ne h (by rw [he, ground.add_comm])
   | Or.inr ⟨g, hg⟩ =>
     exact ground.lt_asymm h
       ⟨g, by rw [ground.add_assoc, hg, ground.add_comm]⟩
+
+/-- The self pairing at a memberwise sum expands at the two
+self-pairings and the cross pairing twice, the cross reads
+identified at the pairing's symmetry. -/
+private theorem dotP_polar_expand (P Q : List BPair)
+    (hPQ : P.length = Q.length) :
+    (dotP (vecAdd P Q) (vecAdd P Q)).oneValue
+      (dotP P P + dotP Q Q + (dotP P Q + dotP P Q)) := by
+  have hW : (vecAdd P Q).length = P.length :=
+    length_vecAdd P Q P.length rfl hPQ.symm
+  have h1 : (dotP (vecAdd P Q) (vecAdd P Q)).oneValue
+      (dotP P (vecAdd P Q) + dotP Q (vecAdd P Q)) :=
+    dotP_vecAdd_left P Q (vecAdd P Q) (Nat.le_of_eq hW)
+      (Nat.le_of_eq (hW.trans hPQ))
+  have h2 : (dotP P (vecAdd P Q)).oneValue (dotP P P + dotP P Q) :=
+    dotP_vecAdd_right P P Q hPQ
+  have h3 : (dotP Q (vecAdd P Q)).oneValue (dotP Q P + dotP Q Q) :=
+    dotP_vecAdd_right Q P Q hPQ
+  refine BPair.oneValue_trans h1 ?_
+  refine BPair.oneValue_trans (BPair.add_congr h2 h3) ?_
+  rw [dotP_comm Q P, BPair.add_comm (dotP P Q) (dotP Q Q),
+    BPair.add_add_comm]
+  exact BPair.oneValue_refl _
+
+/-- The self pairing at a scaled family is the weight's square
+against the family's own self pairing. -/
+private theorem dotP_scale_self (c : BPair) (l : List BPair) :
+    (dotP (vecScale c l) (vecScale c l)).oneValue ((c * c) * dotP l l) := by
+  have h2 : (dotP (vecScale c l) l).oneValue (c * dotP l l) := by
+    rw [dotP_comm (vecScale c l) l]
+    exact dotP_vecScale_right l l c
+  refine BPair.oneValue_trans (dotP_vecScale_right (vecScale c l) l c) ?_
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl c) h2) ?_
+  exact BPair.oneValue_of_eq (BPair.mul_assoc c c (dotP l l)).symm
+
+/-- The pairing's polarization at two weights: the doubled weighted
+pairing sits at or below the weighted self-pairings' sum, the
+square's own expansion at the memberwise swap. -/
+theorem dotN_polar (u v : List BPair) (h : u.length = v.length)
+    (a b : BPair) :
+    ((a * b) * dotN u v).scale 2
+      ≤ (a * a) * dotN u u + (b * b) * dotN v v := by
+  have hPQ : (vecScale a u).length
+      = ((vecScale b v).map BPair.swap).length := by
+    rw [length_vecScale, ground.length_map, length_vecScale]
+    exact h
+  have hQQe : dotP ((vecScale b v).map BPair.swap)
+        ((vecScale b v).map BPair.swap)
+      = dotP (vecScale b v) (vecScale b v) := by
+    rw [dotP_swapMap, dotP_comm, dotP_swapMap, BPair.swap_swap]
+  have hQQ : (dotP ((vecScale b v).map BPair.swap)
+        ((vecScale b v).map BPair.swap)).oneValue ((b * b) * dotP v v) := by
+    rw [hQQe]
+    exact dotP_scale_self b v
+  have hPv : (dotP (vecScale a u) v).oneValue (a * dotP u v) := by
+    rw [dotP_comm (vecScale a u) v, dotP_comm u v]
+    exact dotP_vecScale_right v u a
+  have hcross : (dotP (vecScale a u) (vecScale b v)).oneValue
+      ((a * b) * dotP u v) := by
+    refine BPair.oneValue_trans
+      (dotP_vecScale_right (vecScale a u) v b) ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl b) hPv) ?_
+    refine BPair.oneValue_of_eq ?_
+    rw [← BPair.mul_assoc, BPair.mul_comm b a]
+  have hPQv : (dotP (vecScale a u) ((vecScale b v).map BPair.swap)).oneValue
+      (((a * b) * dotP u v).swap) :=
+    BPair.oneValue_trans
+      (BPair.oneValue_of_eq (dotP_swapMap (vecScale a u) (vecScale b v)))
+      (ground.swap_congr hcross)
+  have hV : (((a * b) * dotN u v).scale 2).swap
+      = ((a * b) * dotN u v).swap + ((a * b) * dotN u v).swap := by
+    rw [BPair.scale_two, BPair.swap_add]
+  have hTarget : ((a * a) * dotN u u + (b * b) * dotN v v
+        + (((a * b) * dotN u v).scale 2).swap).oneValue
+      ((a * a) * dotP u u + (b * b) * dotP v v
+        + (((a * b) * dotP u v).swap + ((a * b) * dotP u v).swap)) := by
+    rw [hV]
+    exact BPair.add_congr
+      (BPair.add_congr
+        (BPair.mul_congr (BPair.oneValue_refl _) (dotN_read u u))
+        (BPair.mul_congr (BPair.oneValue_refl _) (dotN_read v v)))
+      (BPair.add_congr
+        (ground.swap_congr
+          (BPair.mul_congr (BPair.oneValue_refl _) (dotN_read u v)))
+        (ground.swap_congr
+          (BPair.mul_congr (BPair.oneValue_refl _) (dotN_read u v))))
+  have hunit : BPair.unit
+      ≤ dotN (vecAdd (vecScale a u) ((vecScale b v).map BPair.swap))
+          (vecAdd (vecScale a u) ((vecScale b v).map BPair.swap)) :=
+    ground.leB_of_not_lt (dotN_self_side _)
+  have hchain : (dotN (vecAdd (vecScale a u)
+          ((vecScale b v).map BPair.swap))
+        (vecAdd (vecScale a u) ((vecScale b v).map BPair.swap))).oneValue
+      ((a * a) * dotN u u + (b * b) * dotN v v
+        + (((a * b) * dotN u v).scale 2).swap) :=
+    BPair.oneValue_trans
+      (BPair.oneValue_trans (dotN_read _ _)
+        (BPair.oneValue_trans
+          (dotP_polar_expand (vecScale a u)
+            ((vecScale b v).map BPair.swap) hPQ)
+          (BPair.add_congr
+            (BPair.add_congr (dotP_scale_self a u) hQQ)
+            (BPair.add_congr hPQv hPQv))))
+      (BPair.oneValue_symm hTarget)
+  exact ground.leB_of_unit_add (ground.leB_congr_right hchain hunit)
 
 /-! The orthogonal tier's reads: independence from pairwise
 perpendicularity at off-unit members, the vacant span's unit read,
@@ -12390,6 +12357,137 @@ theorem dotP_oneValue_left : ∀ (r s x : List BPair),
     BPair.add_congr (BPair.mul_congr h.1 (BPair.oneValue_refl e))
       (dotP_oneValue_left p q t h.2)
 
+/-! The pairing's fold against its termwise reads at two clearings:
+a termwise at-or-below read carries to the fold, an equal-membered
+fold reads every term equal-membered inside both lists' order, and
+a fold strictly above the sum's unit at termwise at-or-above
+products carries such a product (`def:elim`'s pairing tier). -/
+
+/-- The fold's at-or-below read at two clearings under a termwise
+at-or-below read: every term inside the left orders compares at the
+stated clearings, each side's fold at its own right carrier. -/
+theorem dotP_le_of_leTerm (gn gd : Pos) : ∀ (a w b v : List BPair),
+    a.length = b.length →
+    (∀ j, j < a.length →
+      ((ground.getAt BPair.unit a j * ground.getAt BPair.unit w j).scale gn)
+        ≤ ((ground.getAt BPair.unit b j
+            * ground.getAt BPair.unit v j).scale gd)) →
+    ((dotP a w).scale gn) ≤ ((dotP b v).scale gd)
+  | [], _, [], _, _, _ =>
+    ground.leB_congr (ground.unitScale gn) (ground.unitScale gd)
+      (ground.leB_refl BPair.unit)
+  | [], _, _ :: _, _, hl, _ => Nat.noConfusion hl
+  | _ :: _, _, [], _, hl, _ => Nat.noConfusion hl
+  | _ :: _, [], _ :: _, [], _, _ =>
+    ground.leB_congr (ground.unitScale gn) (ground.unitScale gd)
+      (ground.leB_refl BPair.unit)
+  | d :: a, [], e :: b, x :: v, hl, h => by
+    show ((dotP (d :: a) []).scale gn) ≤ ((e * x + dotP b v).scale gd)
+    rw [dotP_nil_right, BPair.scale_add]
+    have h0 : (BPair.unit.scale gn) ≤ ((e * x).scale gd) :=
+      ground.leB_congr_left
+        (BPair.scale_congr gn (BPair.mul_unit d)) (h 0 (Nat.succ_pos _))
+    have hrec := dotP_le_of_leTerm gn gd a [] b v (Nat.succ.inj hl)
+      (fun j hj => h (j + 1) (Nat.succ_lt_succ hj))
+    rw [dotP_nil_right] at hrec
+    refine ground.leB_congr_left ?_ (ground.leB_add h0 hrec)
+    exact BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.scale_add BPair.unit BPair.unit gn).symm)
+      (BPair.scale_congr gn (BPair.add_unit BPair.unit))
+  | d :: a, y :: w, e :: b, [], hl, h => by
+    show ((d * y + dotP a w).scale gn) ≤ ((dotP (e :: b) []).scale gd)
+    rw [dotP_nil_right, BPair.scale_add]
+    have h0 : ((d * y).scale gn) ≤ (BPair.unit.scale gd) :=
+      ground.leB_congr_right
+        (BPair.scale_congr gd (BPair.mul_unit e)) (h 0 (Nat.succ_pos _))
+    have hrec := dotP_le_of_leTerm gn gd a w b [] (Nat.succ.inj hl)
+      (fun j hj => h (j + 1) (Nat.succ_lt_succ hj))
+    rw [dotP_nil_right] at hrec
+    refine ground.leB_congr_right ?_ (ground.leB_add h0 hrec)
+    exact BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.scale_add BPair.unit BPair.unit gd).symm)
+      (BPair.scale_congr gd (BPair.add_unit BPair.unit))
+  | d :: a, y :: w, e :: b, x :: v, hl, h => by
+    show ((d * y + dotP a w).scale gn) ≤ ((e * x + dotP b v).scale gd)
+    rw [BPair.scale_add, BPair.scale_add]
+    exact ground.leB_add (h 0 (Nat.succ_pos _))
+      (dotP_le_of_leTerm gn gd a w b v (Nat.succ.inj hl)
+        (fun j hj => h (j + 1) (Nat.succ_lt_succ hj)))
+
+/-- The fold's equal-membered read at two clearings under a
+termwise at-or-below read is termwise: every term inside both
+lists' order reads equal members at the two clearings. -/
+theorem dotP_eq_of_leTerm (gn gd : Pos) : ∀ (a b w : List BPair),
+    a.length = b.length →
+    (∀ j, j < a.length →
+      ((ground.getAt BPair.unit a j * ground.getAt BPair.unit w j).scale gn)
+        ≤ ((ground.getAt BPair.unit b j
+            * ground.getAt BPair.unit w j).scale gd)) →
+    ((dotP a w).scale gn).oneValue ((dotP b w).scale gd) →
+    ∀ j, j < a.length → j < w.length →
+      ((ground.getAt BPair.unit a j
+          * ground.getAt BPair.unit w j).scale gn).oneValue
+        ((ground.getAt BPair.unit b j
+            * ground.getAt BPair.unit w j).scale gd)
+  | [], [], _, _, _, _, j, hj, _ => absurd hj (Nat.not_lt_zero j)
+  | [], _ :: _, _, hl, _, _, _, _, _ => Nat.noConfusion hl
+  | _ :: _, [], _, hl, _, _, _, _, _ => Nat.noConfusion hl
+  | _ :: _, _ :: _, [], _, _, _, j, _, hjw => absurd hjw (Nat.not_lt_zero j)
+  | d :: a, e :: b, x :: w, hl, hle, he, j, hj, hjw => by
+    have hs : ((d * x).scale gn + (dotP a w).scale gn).oneValue
+        ((e * x).scale gd + (dotP b w).scale gd) := by
+      rw [← BPair.scale_add, ← BPair.scale_add]
+      exact he
+    have h0 : ((d * x).scale gn) ≤ ((e * x).scale gd) :=
+      hle 0 (Nat.succ_pos _)
+    have htl : ((dotP a w).scale gn) ≤ ((dotP b w).scale gd) :=
+      dotP_le_of_leTerm gn gd a w b w (Nat.succ.inj hl)
+        (fun k hk => hle (k + 1) (Nat.succ_lt_succ hk))
+    have hsplit := ground.addOneValue_of_le h0 htl hs
+    match j, hj, hjw with
+    | 0, _, _ => exact hsplit.1
+    | i + 1, hji, hjwi =>
+      exact dotP_eq_of_leTerm gn gd a b w (Nat.succ.inj hl)
+        (fun k hk => hle (k + 1) (Nat.succ_lt_succ hk)) hsplit.2 i
+        (Nat.lt_of_succ_lt_succ hji) (Nat.lt_of_succ_lt_succ hjwi)
+
+/-- A termwise at-or-above-unit read at the pairing's products
+carries to the fold. -/
+private theorem dotP_unitLe : ∀ (a w : List BPair),
+    (∀ j, j < a.length →
+      BPair.unit ≤ ground.getAt BPair.unit a j * ground.getAt BPair.unit w j) →
+    BPair.unit ≤ dotP a w
+  | [], _, _ => ground.leB_refl BPair.unit
+  | _ :: _, [], _ => ground.leB_refl BPair.unit
+  | d :: a, x :: w, h => by
+    show BPair.unit ≤ d * x + dotP a w
+    exact ground.unitLeAdd (h 0 (Nat.succ_pos _))
+      (dotP_unitLe a w (fun j hj => h (j + 1) (Nat.succ_lt_succ hj)))
+
+/-- A fold strictly above the sum's unit at termwise at-or-above
+products carries a product strictly above it inside both lists'
+order. -/
+theorem dotP_pos_mem : ∀ (a w : List BPair),
+    (∀ j, j < a.length →
+      BPair.unit ≤ ground.getAt BPair.unit a j * ground.getAt BPair.unit w j) →
+    BPair.unit < dotP a w →
+    ∃ j, j < a.length ∧ j < w.length
+      ∧ BPair.unit < ground.getAt BPair.unit a j * ground.getAt BPair.unit w j
+  | [], _, _, hp =>
+    absurd hp (ground.leB_not_lt (ground.leB_refl BPair.unit))
+  | _ :: _, [], _, hp =>
+    absurd hp (ground.leB_not_lt (ground.leB_refl BPair.unit))
+  | d :: a, x :: w, h, hp => by
+    have hsplit := ground.posOfAddPos (h 0 (Nat.succ_pos _))
+      (dotP_unitLe a w (fun j hj => h (j + 1) (Nat.succ_lt_succ hj)))
+      (show BPair.unit < d * x + dotP a w from hp)
+    match hsplit with
+    | Or.inl h0 => exact ⟨0, Nat.succ_pos _, Nat.succ_pos _, h0⟩
+    | Or.inr ht =>
+      obtain ⟨j, hj, hjw, hpos⟩ := dotP_pos_mem a w
+        (fun k hk => h (k + 1) (Nat.succ_lt_succ hk)) ht
+      exact ⟨j + 1, Nat.succ_lt_succ hj, Nat.succ_lt_succ hjw, hpos⟩
+
 /-- The matrix action rowwise, the plain fold's map. -/
 theorem matVec_dotPmap : ∀ (M : Mat) (v : List BPair),
     poly.oneValue (matVec M v) (M.map (fun r => dotP r v))
@@ -12439,6 +12537,16 @@ theorem matVec_matOne :
        (BPair.oneValue_trans (dotP_oneValue_left r s x h.1)
          (BPair.oneValue_symm (dotN_read s x))),
      matVec_matOne a b x h.2⟩
+
+/-- A symmetric datum walks across the pairing. -/
+theorem dotP_matVec_sym {n : Nat} (M : Mat) (hM : sqAt M n)
+    (hsym : matOneValue (transposeM M) M)
+    (x y : List BPair) (hx : x.length = n) (hy : y.length = n) :
+    (dotP (matVec M x) y).oneValue (dotP x (matVec M y)) := by
+  refine BPair.oneValue_trans
+    (dotP_matVec_transpose n M x y (rowsLen_of_sqAt hM) hx
+      (by rw [sqAt_len hM]; exact hy)) ?_
+  exact dotP_oneValue_right x _ _ (matVec_matOne _ _ y hsym)
 
 /-- A vector perpendicular to every row of a family is
 perpendicular to every combination of them. -/
@@ -12598,6 +12706,15 @@ theorem vecAdd_congr : ∀ (A B S : List BPair),
     ⟨BPair.add_congr hh.1 (BPair.oneValue_refl s),
      vecAdd_congr A B S (Nat.succ.inj hl) hh.2⟩
 
+/-- The memberwise sum carries a one-value read in both summands. -/
+theorem vecAdd_congr2 (A A' B B' : List BPair)
+    (hA : A.length = A'.length) (hB : B.length = B'.length)
+    (h1 : poly.oneValue A A') (h2 : poly.oneValue B B') :
+    poly.oneValue (vecAdd A B) (vecAdd A' B') := by
+  refine poly.oneValue_trans (vecAdd_congr A A' B hA h1) ?_
+  rw [vecAdd_comm A' B, vecAdd_comm A' B']
+  exact vecAdd_congr B B' A' hB h2
+
 /-- The cleared member reads its residual joined to the projection
 combination — `residV`'s defining join read back, `lem:lowerspan`'s
 solve identity. -/
@@ -12617,7 +12734,7 @@ theorem residV_expand (n : Nat) (L : Mat) (v : List BPair)
     rw [ground.length_map]
     exact hC
   have hR : (residV n L v).length = n := length_residV n L v hLn hv
-  refine getAt_polyOne _ _
+  refine poly.oneValue_of_entries _ _
     (by rw [hS, length_vecAdd _ _ n hR hC]) ?_
   intro i hi
   rw [hS] at hi
@@ -12689,7 +12806,7 @@ the unit family with one at its own key — the back solve's terminal
 seed and the identity family's matrix. -/
 def idList (w : Nat) : List (List BPair) :=
   (List.range w).map (fun c =>
-    setRow (List.replicate w BPair.unit) c (BPair.ofPos .one))
+    List.set (List.replicate w BPair.unit) c (BPair.ofPos .one))
 
 /-- The back solve, mirroring `sdescend`'s recursion round for
 round: at the terminal step the unit families, and across a round
@@ -12761,8 +12878,8 @@ round's extension grows the round below's width by one place. -/
 private theorem kernelGo_rowsLen : ∀ (fuel w : Nat) (prev : BPair)
     (rows : List SRow), rowsLen w (kernelGo fuel w prev rows)
   | 0, w, _, _ =>
-    rowsLen_map (fun c => setRow (List.replicate w BPair.unit) c
-        (BPair.ofPos .one)) w (List.range w) (fun x _ => (fun _ => by rw [length_setRow, ground.length_replicate]) x)
+    rowsLen_map (fun c => List.set (List.replicate w BPair.unit) c
+        (BPair.ofPos .one)) w (List.range w) (fun x _ => (fun _ => by rw [ground.length_set, ground.length_replicate]) x)
   | fuel + 1, 0, prev, rows => by
     rw [kernelGo_w0 (fuel + 1) prev rows]
     exact trivial
@@ -12777,8 +12894,8 @@ private theorem kernelGo_rowsLen : ∀ (fuel w : Nat) (prev : BPair)
           (fun v => insertAt ((dotN t v).swap) (vecScale p.1 v) j))
     cases hf : sFind rows with
     | none =>
-      exact rowsLen_map (fun c => setRow (List.replicate (w + 1) BPair.unit) c
-          (BPair.ofPos .one)) (w + 1) (List.range (w + 1)) (fun x _ => (fun _ => by rw [length_setRow, ground.length_replicate]) x)
+      exact rowsLen_map (fun c => List.set (List.replicate (w + 1) BPair.unit) c
+          (BPair.ofPos .one)) (w + 1) (List.range (w + 1)) (fun x _ => (fun _ => by rw [ground.length_set, ground.length_replicate]) x)
     | some ij =>
       exact rowsLen_extend w ij.2
         (sPeel ij.2 (ground.getAt ((0, []) : SRow) rows ij.1)).1
@@ -12810,7 +12927,7 @@ private theorem kernelGo_length : ∀ (fuel w : Nat) (prev : BPair)
     (kernelGo fuel w prev rows).length = w - sdescend fuel prev rows
   | 0, w, _, _ => by
     show ((List.range w).map (fun c =>
-        setRow (List.replicate w BPair.unit) c
+        List.set (List.replicate w BPair.unit) c
           (BPair.ofPos .one))).length = w - 0
     rw [ground.length_mapRange, Nat.sub_zero]
   | fuel + 1, w, prev, rows => by
@@ -12832,7 +12949,7 @@ private theorem kernelGo_length : ∀ (fuel w : Nat) (prev : BPair)
     cases hf : sFind rows with
     | none =>
       show ((List.range w).map (fun c =>
-          setRow (List.replicate w BPair.unit) c
+          List.set (List.replicate w BPair.unit) c
             (BPair.ofPos .one))).length = w - 0
       rw [ground.length_mapRange, Nat.sub_zero]
     | some ij =>
@@ -15737,7 +15854,7 @@ private theorem display_dense (m : Mat) (rs cs ri cj : List Nat)
   have hsi := rowsOk_getAt rows i inv.sorted hi
   have hsa := rowsOk_getAt (rows.eraseIdx i) a
     (rowsOk_eraseIdx rows i inv.sorted) ha
-  refine getAt_polyOne _ _ ?_ ?_
+  refine poly.oneValue_of_entries _ _ ?_ ?_
   · rw [length_vecScale, length_denseRow,
       length_vecAdd _ _ (cj.eraseIdx j).length
         (by rw [length_vecScale, length_denseRow])
@@ -15869,7 +15986,7 @@ private theorem kernelGo_members (m : Mat) :
         refine BPair.oneValue_trans
           (BPair.add_congr
             (BPair.mul_congr (BPair.oneValue_refl _)
-              (ground.swap_congr (dotN_dotP _ _)))
+              (ground.swap_congr (dotN_read _ _)))
             (dotP_vecScale_right _ _ _)) ?_
         rw [← BPair.left_distrib]
         exact oneValue_mul_unit _ _
@@ -16032,7 +16149,7 @@ private theorem kernelGo_members (m : Mat) :
         refine BPair.oneValue_trans
           (BPair.add_congr
             (BPair.mul_congr (BPair.oneValue_refl _)
-              (ground.swap_congr (dotN_dotP _ _)))
+              (ground.swap_congr (dotN_read _ _)))
             (dotP_vecScale_right _ _ _)) ?_
         rw [BPair.add_comm]
         exact hSum
@@ -16066,7 +16183,7 @@ private theorem unitTail_matVec (m : Mat) (v : List BPair)
     (m.map (fun r => dotN r v)) p).oneValue BPair.unit
   rw [ground.getAt_map ([] : List BPair) BPair.unit
     (fun r => dotN r v) m p hp]
-  exact BPair.oneValue_trans (dotN_dotP _ v) (h p hp)
+  exact BPair.oneValue_trans (dotN_read _ v) (h p hp)
 
 /-- The action's unit tail read back at every row, the walker's
 other direction. -/
@@ -16084,7 +16201,7 @@ private theorem matVec_row_null (m : Mat) (v : List BPair)
   rw [ground.getAt_map ([] : List BPair) BPair.unit
     (fun r => dotN r v) m a ha] at hg
   exact BPair.oneValue_trans
-    (BPair.oneValue_symm (dotN_dotP _ v)) hg
+    (BPair.oneValue_symm (dotN_read _ v)) hg
 
 /-- The kernel list's members pair every row at the sum's unit:
 the solves' reads, `def:elim`'s sentence at the landed action. -/
@@ -16155,13 +16272,13 @@ private theorem getAt_insertAt_lift {α : Type} (d : α) (x : α)
 with the product's one at that key. -/
 theorem idList_getAt (w k : Nat) (hk : k < w) :
     ground.getAt ([] : List BPair) (idList w) k
-      = setRow (List.replicate w BPair.unit) k
+      = List.set (List.replicate w BPair.unit) k
         (BPair.ofPos .one) := by
   show ground.getAt ([] : List BPair)
       ((List.range w).map (fun c =>
-        setRow (List.replicate w BPair.unit) c
+        List.set (List.replicate w BPair.unit) c
           (BPair.ofPos .one))) k
-    = setRow (List.replicate w BPair.unit) k (BPair.ofPos .one)
+    = List.set (List.replicate w BPair.unit) k (BPair.ofPos .one)
   rw [ground.getAt_map 0 ([] : List BPair) _ (List.range w) k
       (by rw [ground.length_range]; exact hk),
     ground.getAt_range w k hk]
@@ -16179,13 +16296,13 @@ private theorem idList_coords (w k : Nat) (hk : k < w) :
           BPair.unit := by
   refine ⟨?_, ?_⟩
   · rw [idList_getAt w k hk, ground.getAt_range w k hk,
-      getAt_setRow BPair.unit (BPair.ofPos .one)
+      ground.getAt_set_self BPair.unit (BPair.ofPos .one)
         (List.replicate w BPair.unit) k
         (by rw [ground.length_replicate]; exact hk)]
     exact BPair.oneValue_refl _
   · intro k' hk' hne
     rw [idList_getAt w k hk, ground.getAt_range w k' hk',
-      getAt_setRow_ne BPair.unit (List.replicate w BPair.unit) k k'
+      ground.getAt_set_ne BPair.unit (List.replicate w BPair.unit) k k'
         (BPair.ofPos .one) hne,
       ground.getAt_replicate_self BPair.unit w k']
     exact BPair.oneValue_refl _
@@ -16312,28 +16429,49 @@ private theorem freeGo_lt : ∀ (fuel w : Nat) (prev : BPair)
       | zero => exact absurd hih (Nat.not_lt_zero _)
       | succ w' => exact liftIx_lt hih
 
-/-- The crossed pivots' product sits off the sum's unit: every
-crossed pivot does at its stored read, and the product keeps the
-read at the product's injectivity. -/
-private theorem pivGo_off (m : Mat) :
-    ∀ (fuel : Nat) (rs cs ri cj : List Nat) (prev : BPair)
-      (rows : List SRow), KInv m rs cs ri cj prev rows →
+/-- The crossed pivots' product sits off the sum's unit at the
+sortedness alone: the terminal read is the product's own one, a
+found pivot is a stored value and stored values sit off the unit
+class, the round below reads the stepped rows' own sortedness, and
+the product keeps the read at the product's injectivity. -/
+private theorem pivGo_off : ∀ (fuel : Nat) (prev : BPair)
+    (rows : List SRow), rowsOk rows →
       ¬ (pivGo fuel prev rows).oneValue BPair.unit
-  | 0, _, _, _, _, prev, rows, _ => by
+  | 0, prev, rows, _ => by
     rw [pivGo_zero prev rows]
     exact BPair.ofNat_one_off
-  | fuel + 1, rs, cs, ri, cj, prev, rows, inv => by
+  | fuel + 1, prev, rows, hro => by
     cases hf : sFind rows with
     | none =>
       rw [pivGo_none fuel prev rows hf]
       exact BPair.ofNat_one_off
     | some ij =>
       obtain ⟨i, j⟩ := ij
-      have inv' := kinv_step m rs cs ri cj prev rows inv i j hf
+      have hi : i < rows.length := sFind_lt rows i j hf
+      have hsi := rowsOk_getAt rows i hro hi
+      have hp1eq : (sPeel j (ground.getAt ((0, []) : SRow) rows i)).1
+          = ground.keyAt Nat.beq BPair.unit j
+            (ground.getAt ((0, []) : SRow) rows i).2 :=
+        keyAt_peel_head j
+          (ground.getAt ((0, []) : SRow) rows i).2 hsi.1
+      have hoff : ¬ (sPeel j
+          (ground.getAt ((0, []) : SRow) rows i)).1.oneValue
+          BPair.unit := by
+        obtain ⟨v, es, hrow⟩ := sFind_at rows i j hf
+        rw [hp1eq, hrow, keyAt_hit (ground.beqRefl j) v es]
+        have hent : entsOk ((j, v) :: es) := by
+          rw [← hrow]
+          exact hsi.2
+        exact (show (¬ v.oneValue BPair.unit) ∧ entsOk es from hent).1
       rw [pivGo_some fuel prev rows i j hf]
       intro hcon
-      exact pivGo_off m fuel _ _ _ _ _ _ inv'
-        (mul_cancel_unit inv'.prevOff hcon)
+      exact pivGo_off fuel _ _
+        (rowsOk_stepRows prev
+          (sPeel j (ground.getAt ((0, []) : SRow) rows i)) j
+          (keysAsc_peel j (ground.getAt ((0, []) : SRow) rows i).2 0
+            hsi.1 (Nat.zero_le j))
+          (rows.eraseIdx i) (rowsOk_eraseIdx rows i hro))
+        (mul_cancel_unit hoff hcon)
 
 /-- Each member reads the crossed pivots' product at its own
 pivot-free coordinate — the terminal seed's one scaled by every
@@ -16568,6 +16706,12 @@ whole, the terminal step's one scaled by every round's pivot. -/
 def pivotProd (m : Mat) : BPair :=
   pivGo m.length (BPair.ofPos .one) (m.map ofRow)
 
+/-- The crossed pivots' product sits off the sum's unit at every
+matrix: the sparse reading stores no unit value, so every crossed
+pivot sits off the unit class and the product does too. -/
+theorem pivotProd_off (m : Mat) : ¬ (pivotProd m).oneValue BPair.unit :=
+  pivGo_off m.length (BPair.ofPos .one) (m.map ofRow) (rowsOk_ofRow m)
+
 /-- One pivot-free column per kernel member. -/
 theorem freeCols_length (cols : Nat) (m : Mat) :
     (freeCols cols m).length = (kernelList cols m).length :=
@@ -16636,9 +16780,8 @@ theorem kernelList_indep (cols : Nat) (m : Mat)
     (ground.getAt 0
       (freeGo m.length cols (BPair.ofPos .one) (m.map ofRow)) k) hk
     (freeGo_lt m.length cols (BPair.ofPos .one) (m.map ofRow) k hkF)
-    (fun hcon => pivGo_off m m.length [] [] (List.range m.length)
-      (List.range cols) (BPair.ofPos .one) (m.map ofRow)
-      (kinv_init cols m hm)
+    (fun hcon => pivGo_off m.length (BPair.ofPos .one)
+      (m.map ofRow) (rowsOk_ofRow m)
       (BPair.oneValue_trans
         (BPair.oneValue_symm (hcoords k hk).1) hcon))
     (fun k' hk' hne => (hcoords k' hk').2 k hk
@@ -16693,8 +16836,8 @@ private theorem oneValue_map_rowsLen (w : Nat)
 
 /-- The terminal seed sits at the stated width. -/
 theorem rowsLen_idList (w : Nat) : rowsLen w (idList w) :=
-  rowsLen_map (fun c => setRow (List.replicate w BPair.unit) c
-      (BPair.ofPos .one)) w (List.range w) (fun x _ => (fun _ => by rw [length_setRow, ground.length_replicate]) x)
+  rowsLen_map (fun c => List.set (List.replicate w BPair.unit) c
+      (BPair.ofPos .one)) w (List.range w) (fun x _ => (fun _ => by rw [ground.length_set, ground.length_replicate]) x)
 
 /-- The terminal seed spans everything at the product's one: each
 unit family picks its own coefficient out of the combination. -/
@@ -16702,7 +16845,7 @@ private theorem combo_idList (w : Nat) (u : List BPair)
     (hu : u.length = w) :
     poly.oneValue (vecScale (BPair.ofPos .one) u)
       (combo w u (idList w)) := by
-  refine getAt_polyOne _ _ ?_ ?_
+  refine poly.oneValue_of_entries _ _ ?_ ?_
   · rw [length_vecScale, hu,
       length_combo w u (idList w) (rowsLen_idList w)]
   · intro q hq
@@ -16721,7 +16864,7 @@ private theorem combo_idList (w : Nat) (u : List BPair)
       rw [ground.getAt_map ([] : List BPair) BPair.unit _ (idList w)
           kk (by rw [length_idList]; exact hkk),
         idList_getAt w kk hkk,
-        getAt_setRow_ne BPair.unit (List.replicate w BPair.unit) kk
+        ground.getAt_set_ne BPair.unit (List.replicate w BPair.unit) kk
           q (BPair.ofPos .one) (fun he => hne he.symm),
         ground.getAt_replicate_self BPair.unit w q]
       exact BPair.oneValue_refl _
@@ -16731,7 +16874,7 @@ private theorem combo_idList (w : Nat) (u : List BPair)
       rw [ground.getAt_map ([] : List BPair) BPair.unit _ (idList w)
           q (by rw [length_idList]; exact hq),
         idList_getAt w q hq,
-        getAt_setRow BPair.unit (BPair.ofPos .one)
+        ground.getAt_set_self BPair.unit (BPair.ofPos .one)
           (List.replicate w BPair.unit) q
           (by rw [ground.length_replicate]; exact hq)]
     have hpick := dotP_oneIndex u ((idList w).map
@@ -16796,7 +16939,7 @@ private theorem combo_mapExt (w : Nat) (t : List BPair)
   have hext : rowsLen (w + 1) (K.map (fun u =>
       insertAt ((dotN t u).swap) (vecScale P0 u) j)) :=
     rowsLen_extend w j P0 t K hK
-  refine getAt_polyOne _ _ ?_ ?_
+  refine poly.oneValue_of_entries _ _ ?_ ?_
   · rw [length_combo (w + 1) cs _ hext, length_insertAt,
       length_vecScale, hC]
   · intro c hc
@@ -16818,7 +16961,7 @@ private theorem combo_mapExt (w : Nat) (t : List BPair)
             rw [getAt_insertAt BPair.unit _ _ j j
                 (by rw [length_vecScale, hu]; exact hj),
               if_neg (Nat.lt_irrefl j), if_pos rfl]
-            exact ground.swap_congr (dotN_dotP t u))) ?_
+            exact ground.swap_congr (dotN_read t u))) ?_
       rw [dotP_swapMap]
       exact ground.swap_congr
         (BPair.oneValue_symm (dotP_combo cs K t w hK))
@@ -17081,7 +17224,7 @@ private theorem kernelGo_span (m : Mat) :
                 (rows.eraseIdx i)))).length
             = (cj.eraseIdx j).length :=
           length_combo _ cs0 _ (kernelGo_rowsLen fuel _ _ _)
-        refine getAt_polyOne _ _ ?_ ?_
+        refine poly.oneValue_of_entries _ _ ?_ ?_
         · rw [length_vecScale, hvW, length_insertAt,
             length_vecScale, hCK]
         · intro c hc
@@ -17761,7 +17904,7 @@ private theorem length_residGo (n : Nat) (v : List BPair)
       exact length_residGo n v hv t hLn.2
 
 /-- The diagonal residual reads the family's own width. -/
-private theorem length_residD (n : Nat) (L : Mat) (v : List BPair)
+theorem length_residD (n : Nat) (L : Mat) (v : List BPair)
     (hLn : rowsLen n L) (hv : v.length = n) :
     (residD L v).length = n := by
   show (vecAdd (vecScale (residGo L v).2 v)
@@ -17918,21 +18061,21 @@ private theorem detO_comboRow {γ : Type} {ops : DOps γ}
       R.rel (ground.getAt ops.unit y t) ops.unit
         ∨ ground.getAt [] M t = ground.getAt [] N t)
     (hself : ground.getAt [] M k = ground.getAt [] N k) :
-    R.rel (detO ops (setRow N k (comboO ops N.length y M)))
+    R.rel (detO ops (List.set N k (comboO ops N.length y M)))
       (ops.mul (ground.getAt ops.unit y k) (detO ops N)) := by
-  refine L.ovTrans (detO_setRow_combo L N k hk y M hM) ?_
-  show R.rel (dotO ops y (M.map (fun row => detO ops (setRow N k row)))) _
+  refine L.ovTrans (detO_List.set_combo L N k hk y M hM) ?_
+  show R.rel (dotO ops y (M.map (fun row => detO ops (List.set N k row)))) _
   have hMr : M = (List.range N.length).map (ground.getAt [] M) :=
     (ground.range_map_getAt [] N.length M hMl).symm
-  have hmap : M.map (fun row => detO ops (setRow N k row))
+  have hmap : M.map (fun row => detO ops (List.set N k row))
       = (List.range N.length).map
-          (fun t => detO ops (setRow N k (ground.getAt [] M t))) := by
+          (fun t => detO ops (List.set N k (ground.getAt [] M t))) := by
     conv => lhs; rw [hMr]
     exact ground.map_map _ _ _
   rw [hmap, dotO_map_range ops _ N.length y hy]
   refine ground.famFold_pick_ov (foldLawsOf L) _ k _ (List.range N.length)
     (ground.countOf_range_one hk) ?_ ?_
-  · rw [hself, setRow_self [] N k hk]
+  · rw [hself, ground.set_self [] N k hk]
     exact L.ovRefl _
   · intro t ht htk
     have htn : t < N.length := ground.ltOfMem ht
@@ -17942,13 +18085,13 @@ private theorem detO_comboRow {γ : Type} {ops : DOps γ}
     | .inr hMt =>
       rw [hMt]
       refine L.ovTrans (L.mulCongr (L.ovRefl _) ?_) (L.mulUnit _)
-      have hlen : (setRow N k (ground.getAt [] N t)).length = N.length :=
-        length_setRow _ N k
+      have hlen : (List.set N k (ground.getAt [] N t)).length = N.length :=
+        ground.length_set _ N k
       cases Nat.lt_or_ge t k with
       | inl hlt =>
         exact detO_rows_equal L hlt (by rw [hlen]; exact hk)
-          (by rw [getAt_setRow_ne [] N k t _ htk,
-            getAt_setRow [] _ N k hk])
+          (by rw [ground.getAt_set_ne [] N k t _ htk,
+            ground.getAt_set_self [] _ N k hk])
       | inr hge =>
         have hkt : k < t := by
           match Nat.lt_or_ge k t with
@@ -17956,8 +18099,8 @@ private theorem detO_comboRow {γ : Type} {ops : DOps γ}
           | .inr h =>
             exact absurd (Nat.le_antisymm hge h) (fun he => htk he.symm)
         exact detO_rows_equal L hkt (by rw [hlen]; exact htn)
-          (by rw [getAt_setRow [] _ N k hk,
-            getAt_setRow_ne [] N k t _ htk])
+          (by rw [ground.getAt_set_self [] _ N k hk,
+            ground.getAt_set_ne [] N k t _ htk])
 
 /-- A scaled row's entry reads the scaled entry at every key, the
 keys beyond the row at the product's own vacancy. -/
@@ -18400,19 +18543,6 @@ key at a time; the sum truncates at the shorter key list, which is
 why the reads carry no shape hypothesis. -/
 
 
-/-- The memberwise sum's four-term exchange. -/
-private theorem vecAdd_shuffle : ∀ a b c d : List BPair,
-    vecAdd (vecAdd a b) (vecAdd c d) = vecAdd (vecAdd a c) (vecAdd b d)
-  | [], _, _, _ => rfl
-  | _ :: _, [], [], _ => rfl
-  | _ :: _, [], _ :: _, _ => rfl
-  | _ :: _, _ :: _, [], _ => rfl
-  | _ :: _, _ :: _, _ :: _, [] => rfl
-  | x :: a, y :: b, z :: c, w :: d => by
-    show (x + y + (z + w)) :: vecAdd (vecAdd a b) (vecAdd c d)
-      = (x + z + (y + w)) :: vecAdd (vecAdd a c) (vecAdd b d)
-    rw [BPair.add_add_comm x y z w, vecAdd_shuffle a b c d]
-
 /-- The entrywise matrix sum commutes. -/
 theorem matAdd_comm : ∀ A B : Mat, matAdd A B = matAdd B A
   | [], [] => rfl
@@ -18433,6 +18563,11 @@ theorem matAdd_assoc : ∀ A B C : Mat,
       = vecAdd r (vecAdd s t) :: matAdd A (matAdd B C)
     rw [vecAdd_assoc r s t, matAdd_assoc A B C]
 
+/-- The entrywise matrix sum's trailing exchange. -/
+theorem matAdd_right_comm (A B C : Mat) :
+    matAdd (matAdd A B) C = matAdd (matAdd A C) B := by
+  rw [matAdd_assoc A B C, matAdd_comm B C, matAdd_assoc A C B]
+
 /-- The entrywise matrix sum's four-term exchange. -/
 theorem matAdd_shuffle : ∀ A B C D : Mat,
     matAdd (matAdd A B) (matAdd C D) = matAdd (matAdd A C) (matAdd B D)
@@ -18444,7 +18579,7 @@ theorem matAdd_shuffle : ∀ A B C D : Mat,
   | a :: A, b :: B, c :: C, d :: D => by
     show vecAdd (vecAdd a b) (vecAdd c d) :: matAdd (matAdd A B) (matAdd C D)
       = vecAdd (vecAdd a c) (vecAdd b d) :: matAdd (matAdd A C) (matAdd B D)
-    rw [vecAdd_shuffle a b c d, matAdd_shuffle A B C D]
+    rw [vecAdd_add_comm a b c d, matAdd_shuffle A B C D]
 
 /-- The memberwise swap of a sum splits. -/
 theorem vecAdd_swapMap : ∀ u v : List BPair,
@@ -18586,10 +18721,10 @@ and `thm:trigpencil`'s symbol. -/
 read. -/
 theorem dotN_comm (u v : List BPair) :
     (dotN u v).oneValue (dotN v u) :=
-  BPair.oneValue_trans (dotN_dotP u v)
+  BPair.oneValue_trans (dotN_read u v)
     (BPair.oneValue_trans
       (BPair.oneValue_of_eq (dotP_comm u v))
-      (BPair.oneValue_symm (dotN_dotP v u)))
+      (BPair.oneValue_symm (dotN_read v u)))
 
 /-- The entrywise sum's row count at matched operands. -/
 theorem length_matAdd : ∀ a b : Mat,
@@ -18725,12 +18860,6 @@ theorem getAt_matMul (a b : Mat) (p : Nat) (hp : p < a.length) :
   ground.getAt_map ([] : List BPair) ([] : List BPair)
     (fun r => (transposeM b).map (fun c => dotN r c)) a p hp
 
-/-- A row's fold list reads the action's, the fold symmetric. -/
-private theorem mrow_matVec (M : Mat) (x : List BPair) :
-    poly.oneValue (M.map (fun c => dotN x c)) (matVec M x) :=
-  poly.oneValue_map (fun c => dotN x c) (fun c => dotN c x) M
-    (fun a _ => dotN_comm x a)
-
 /-- The product's key-list exchange reverses the factors. -/
 theorem transposeM_matMul {r n k : Nat} (B C : Mat)
     (hB : rowsLen n B) (hC : rowsLen k C)
@@ -18768,7 +18897,7 @@ theorem transposeM_matMul {r n k : Nat} (B C : Mat)
       (matMul (transposeM C) (transposeM B)) p).length = r := by
     rw [getAt_matMul (transposeM C) (transposeM B) p (by rw [hCt]; exact hp),
       ground.length_map, hBB, hBl]
-  refine getAt_polyOne _ _ (by rw [hrowL, hrowR]) ?_
+  refine poly.oneValue_of_entries _ _ (by rw [hrowL, hrowR]) ?_
   intro q hq
   rw [hrowL] at hq
   rw [getAt_transposeM BPair.unit (matMul B C) hMr p q hp
@@ -18807,18 +18936,18 @@ theorem matMul_assoc {n k s : Nat} (A B C : Mat)
         ((transposeM (matMul B C)).map (fun c => dotN x c)) := by
     intro x hx
     refine poly.oneValue_trans
-      (mrow_matVec (transposeM C)
+      (dotN_map_comm (transposeM C)
         ((transposeM B).map (fun c' => dotN x c'))) ?_
     refine poly.oneValue_trans
       (matVec_congr_go (transposeM C) _ (matVec (transposeM B) x)
         ((matVec_length (transposeM B) x).symm ▸
           (ground.length_map (fun c' => dotN x c') (transposeM B)))
-        (mrow_matVec (transposeM B) x)) ?_
+        (dotN_map_comm (transposeM B) x)) ?_
     refine poly.oneValue_trans
       (matVec_comp (transposeM C) (transposeM B) x n hBtr hx
         (rowsLen_cast hBt.symm hCtr)) ?_
     exact poly.oneValue_trans (matVec_matOne _ _ x hT)
-      (poly.oneValue_symm (mrow_matVec (transposeM (matMul B C)) x))
+      (poly.oneValue_symm (dotN_map_comm (transposeM (matMul B C)) x))
   show matOneValue
     ((A.map (fun x => (transposeM B).map (fun c => dotN x c))).map
       (fun y => (transposeM C).map (fun c => dotN y c)))
@@ -18908,7 +19037,7 @@ private theorem transposeM_congr {n : Nat} (A B : Mat) (hA : rowsLen n A)
       = B.length :=
     rowsLen_getAt (transposeM B) p (rowsLen_transposeM B)
       (by rw [h2]; exact hp)
-  refine getAt_polyOne _ _ (by rw [hrA, hrB, hl]) ?_
+  refine poly.oneValue_of_entries _ _ (by rw [hrA, hrB, hl]) ?_
   intro q hq
   rw [hrA] at hq
   rw [getAt_transposeM BPair.unit A hA p q hp hq,
@@ -18937,9 +19066,9 @@ theorem matMul_congrR_of (A B B' : Mat)
   show matOneValue (A.map (fun r => (transposeM B).map (fun c => dotN r c)))
     (A.map (fun r => (transposeM B').map (fun c => dotN r c)))
   refine matOne_map _ _ (fun r => ?_) A
-  exact poly.oneValue_trans (mrow_matVec (transposeM B) r)
+  exact poly.oneValue_trans (dotN_map_comm (transposeM B) r)
     (poly.oneValue_trans (matVec_matOne _ _ r h)
-      (poly.oneValue_symm (mrow_matVec (transposeM B') r)))
+      (poly.oneValue_symm (dotN_map_comm (transposeM B') r)))
 
 /-- The product's congruence in its right factor at a stated
 rectangle, the untransposed read derived at `transposeM_congr`'s own
@@ -19087,7 +19216,7 @@ private theorem matMul_permT (n : Nat) (S : Mat) (hS : rowsLen n S)
           ground.getAt BPair.unit r j)) S i hi]
     have hrl : (ground.getAt ([] : List BPair) S i).length = n :=
       rowsLen_getAt S i hS hi
-    refine getAt_polyOne _ _
+    refine poly.oneValue_of_entries _ _
       (by rw [ground.length_map, ground.length_map, hPl]) ?_
     intro q hq
     rw [ground.length_map, hPl] at hq
@@ -19127,7 +19256,7 @@ private theorem permM_matMul (n w : Nat) (X : Mat) (hX : rowsLen w X)
     getAt_permM n idx p hp,
     ground.getAt_map (0 : Nat) ([] : List BPair)
       (fun i => ground.getAt ([] : List BPair) X i) idx p hp]
-  refine getAt_polyOne _ _
+  refine poly.oneValue_of_entries _ _
     (by rw [ground.length_map, hTl,
       rowsLen_getAt X (ground.getAt (0 : Nat) idx p) hX hipX]) ?_
   intro q hq
@@ -19252,7 +19381,7 @@ theorem transposeM_selM (I J : List Nat) (S : Mat) (n : Nat)
         (fun j => I.map (fun i =>
           ground.getAt BPair.unit (ground.getAt [] S j) i)) J p hp,
       ground.length_map]
-  refine getAt_polyOne _ _ (by rw [hrowL, hrowR]) ?_
+  refine poly.oneValue_of_entries _ _ (by rw [hrowL, hrowR]) ?_
   intro q hq
   rw [hrowL] at hq
   have hiq : ground.getAt (0 : Nat) I q < n :=
@@ -19317,6 +19446,29 @@ every entry at the sum's unit. -/
 theorem matNull_add_swap (M : Mat) : matNull (matAdd M (matSwap M)) := by
   rw [matAdd_comm M (matSwap M)]
   exact matNull_swap_add (matOne_refl M)
+
+/-- Two null matrices sum to a null matrix, row by row. -/
+theorem matNull_matAdd : ∀ {X Y : Mat}, matNull X → matNull Y →
+    matNull (matAdd X Y)
+  | [], _, _, _ => trivial
+  | _ :: _, [], _, _ => trivial
+  | _ :: _, _ :: _, hX, hY =>
+    ⟨unitTail_vecAdd_of hX.1 hY.1, matNull_matAdd hX.2 hY.2⟩
+
+/-- A null matrix's rows read the unit tail, row by row. -/
+theorem matNull_rowAt : ∀ (M : Mat), matNull M → ∀ i : Nat,
+    poly.unitTail (ground.getAt ([] : List BPair) M i)
+  | [], _, _ => trivial
+  | _ :: _, h, 0 => h.1
+  | _ :: t, h, i + 1 => matNull_rowAt t h.2 i
+
+/-- A null matrix's entry reads the sum's unit at every key, the
+row read's entry. -/
+theorem matNull_getAt (S : Mat) (h : matNull S) (i j : Nat) :
+    BPair.oneValue
+      (ground.getAt BPair.unit (ground.getAt ([] : List BPair) S i) j)
+      BPair.unit :=
+  poly.getAt_unitTail (matNull_rowAt S h i) j
 
 /-- A null matrix absorbs into the entrywise sum on the right, the
 shapes read square at one order. -/
@@ -19438,6 +19590,27 @@ theorem dotN_congrR (c r s : List BPair) (h : poly.oneValue r s) :
   BPair.oneValue_trans (dotN_read c r)
     (BPair.oneValue_trans (dotP_oneValue_right c r s h)
       (BPair.oneValue_symm (dotN_read c s)))
+
+/-- The coupling's exchange at a pairing: the transpose's action
+against one vector is the datum's action against the other. -/
+theorem dotN_transpose_flip (A : Mat) (n : Nat) (hAr : rowsLen n A)
+    (u w : List BPair) (hu : u.length = n) (hw : w.length = A.length) :
+    (dotN u (matVec (transposeM A) w)).oneValue (dotN w (matVec A u)) := by
+  refine BPair.oneValue_trans (dotN_read _ _) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_symm (dotP_matVec_transpose n A u w hAr hu hw)) ?_
+  rw [dotP_comm (matVec A u) w]
+  exact BPair.oneValue_symm (dotN_read w (matVec A u))
+
+/-- A symmetric datum exchanges the two vectors of its pairing. -/
+theorem dotN_sym_flip (A : Mat) (n : Nat) (hAr : rowsLen n A)
+    (hAl : A.length = n) (hsym : matOneValue (transposeM A) A)
+    (u w : List BPair) (hu : u.length = n) (hw : w.length = n) :
+    (dotN w (matVec A u)).oneValue (dotN u (matVec A w)) :=
+  BPair.oneValue_trans
+    (BPair.oneValue_symm
+      (dotN_transpose_flip A n hAr u w hu (hw.trans hAl.symm)))
+    (dotN_congrR u _ _ (matVec_matOne (transposeM A) A w hsym))
 
 
 /-- The action's entry is the row's fold. -/
@@ -19569,7 +19742,7 @@ theorem permM_orthL (o : Nat) (l : List Nat)
         ground.getAt_map 0 ([] : List BPair) (idRow o) (List.range o)
           p (by rw [ground.length_range]; exact hpo),
         ground.getAt_range o p hpo]
-      refine getAt_polyOne _ _ (by rw [ground.length_map,
+      refine poly.oneValue_of_entries _ _ (by rw [ground.length_map,
         length_idRow, hlen]) ?_
       intro q hq
       rw [ground.length_map] at hq
@@ -19650,7 +19823,7 @@ theorem permM_orthR (o : Nat) (l : List Nat)
         rw [hTl] at hp
         have hposp : places.posOf p (k :: t) < (k :: t).length :=
           places.posOf_lt p (k :: t) (hcov p hp)
-        refine getAt_polyOne _ _ ?_ ?_
+        refine poly.oneValue_of_entries _ _ ?_ ?_
         · rw [rowsLen_getAt _ p (rowsLen_cast hPl hTr)
             (by rw [hTl]; exact hp),
             show permM o ((List.range o).map
@@ -19865,7 +20038,7 @@ private theorem rowsLen_moveRow {γ : Type} {n : Nat} :
     rowsLen n m → rowsLen n (moveRow i k m)
   | 0, _, _, h => h
   | i + 1, k, m, h =>
-    rowsLen_swapAdjO k _ (rowsLen_moveRow i (k + 1) m h)
+    rowsLen_adjSwap k _ (rowsLen_moveRow i (k + 1) m h)
 
 /-- Below the step's place the move reads the rows back. -/
 private theorem getAt_moveRow_lt {α : Type} (d : α) :
@@ -20290,14 +20463,6 @@ private theorem swapOfNullAddO {γ : Type} {ops : DOps γ}
         (L.ovRefl x),
      swapOfNullAddO L a b (Nat.succ.inj hl) h.2⟩
 
-/-- The balance partner crosses the product's left slot. -/
-private theorem swapMulLeftO {γ : Type} {ops : DOps γ}
-    {R : ground.DRead γ} (C : DCore γ ops R.rel) (c x : γ) :
-    R.rel (ops.mul (ops.swap c) x) (ops.swap (ops.mul c x)) :=
-  C.ovTrans (C.mulComm (ops.swap c) x)
-    (C.ovTrans (C.mulSwapRight x c)
-      (C.swapCongr (C.mulComm x c)))
-
 
 /-- The joined coefficient's combination splits at the joined
 row's clearing. -/
@@ -20407,7 +20572,7 @@ private theorem vecScaleO_swapMap {γ : Type} {ops : DOps γ}
     ∀ r : List γ, poly.listOV ops R (vecScaleO ops (ops.swap c) r)
       ((vecScaleO ops c r).map ops.swap)
   | [] => trivial
-  | x :: r => ⟨swapMulLeftO C c x, vecScaleO_swapMap C c r⟩
+  | x :: r => ⟨mulSwapLeft C c x, vecScaleO_swapMap C c r⟩
 
 /-- The memberwise sum of two balance partners is the sum's own
 partner. -/
@@ -20682,9 +20847,9 @@ private theorem bordO_expand {γ : Type} {ops : DOps γ}
   have hb : (ground.getAt [] (borderAtO ops k i k m) k).length
       = (borderAtO ops k i k m).length := by
     rw [hrow, keepColsO_len, borderKeys_len, borderAtO_len]
-  have h1 := detO_setRow_dot L (borderAtO ops k i k m) k hkB
+  have h1 := detO_List.set_dot L (borderAtO ops k i k m) k hkB
     (ground.getAt [] (borderAtO ops k i k m) k) hb
-  rw [setRow_self ([] : List γ) (borderAtO ops k i k m) k hkB,
+  rw [ground.set_self ([] : List γ) (borderAtO ops k i k m) k hkB,
     cofVecO_bord ops m k i, hrow] at h1
   exact h1
 
@@ -20869,27 +21034,27 @@ private theorem stall_unitO {γ : Type} {ops : DOps γ}
       ((bordFamO ops k m).map ops.swap)
       (colRowsO ops k m)).length = (transposeO ops m).length := by
     rw [length_comboO ops m.length _ _ hcr0, hMl]
-  have hd1 : R.rel (detO ops (setRow (transposeO ops m) k
+  have hd1 : R.rel (detO ops (List.set (transposeO ops m) k
       (vecScaleO ops
         (sgnPO ops (k + k) (cof0O ops (leadBordO ops k m) k))
         (ground.getAt [] (transposeO ops m) k))))
       (ops.mul (sgnPO ops (k + k) (cof0O ops (leadBordO ops k m) k))
         (detO ops (transposeO ops m))) := by
     refine L.ovTrans
-      (detO_setRow_dot L (transposeO ops m) k hkM _ hclen) ?_
+      (detO_List.set_dot L (transposeO ops m) k hkM _ hclen) ?_
     refine L.ovTrans (dotO_vecScale_left L _ _ _) ?_
     exact L.mulCongr (L.ovRefl _)
       (cofVecO_diag L (transposeO ops m) k hkM
         (by rw [hMl]; exact hwl))
-  have hd2 : R.rel (detO ops (setRow (transposeO ops m) k
+  have hd2 : R.rel (detO ops (List.set (transposeO ops m) k
       (vecScaleO ops
         (sgnPO ops (k + k) (cof0O ops (leadBordO ops k m) k))
         (ground.getAt [] (transposeO ops m) k))))
-      (detO ops (setRow (transposeO ops m) k
+      (detO ops (List.set (transposeO ops m) k
         (comboO ops m.length ((bordFamO ops k m).map ops.swap)
           (colRowsO ops k m)))) := by
     refine L.ovTrans
-      (detO_setRow_dot L (transposeO ops m) k hkM _ hclen) ?_
+      (detO_List.set_dot L (transposeO ops m) k hkM _ hclen) ?_
     refine L.ovTrans (dotO_comm L.toDCore _ _) ?_
     refine L.ovTrans
       (dotO_congr_right L (cofVecO ops (transposeO ops m) k) _ _
@@ -20897,11 +21062,11 @@ private theorem stall_unitO {γ : Type} {ops : DOps γ}
         (fun p _ => lovGetAt L.toDCore hcl2 p)) ?_
     refine L.ovTrans (dotO_comm L.toDCore _ _) ?_
     exact L.ovSymm
-      (detO_setRow_dot L (transposeO ops m) k hkM _ hcomlen)
-  have hd3 : R.rel (detO ops (setRow (transposeO ops m) k
+      (detO_List.set_dot L (transposeO ops m) k hkM _ hcomlen)
+  have hd3 : R.rel (detO ops (List.set (transposeO ops m) k
       (comboO ops m.length ((bordFamO ops k m).map ops.swap)
         (colRowsO ops k m)))) ops.unit := by
-    have hcomb := detO_setRow_combo L (transposeO ops m) k hkM
+    have hcomb := detO_List.set_combo L (transposeO ops m) k hkM
       ((bordFamO ops k m).map ops.swap) (colRowsO ops k m)
       (by rw [hMl]; exact hcr0)
     rw [hMl] at hcomb
@@ -20909,16 +21074,16 @@ private theorem stall_unitO {γ : Type} {ops : DOps γ}
     refine dotO_null_right L _ _ (fun p hp => ?_)
     rw [ground.length_map, colRowsO_len] at hp
     rw [ground.getAt_map ([] : List γ) ops.unit
-      (fun row => detO ops (setRow (transposeO ops m) k row))
+      (fun row => detO ops (List.set (transposeO ops m) k row))
       (colRowsO ops k m) p (by rw [colRowsO_len]; exact hp),
       colRowsO_getAt ops k m p hp]
     refine detO_rows_equal L
-      (m := setRow (transposeO ops m) k
+      (m := List.set (transposeO ops m) k
         (ground.getAt [] (transposeO ops m) p)) hp
-      (by rw [length_setRow]; exact hkM) ?_
-    rw [getAt_setRow_ne [] (transposeO ops m) k p _
+      (by rw [ground.length_set]; exact hkM) ?_
+    rw [ground.getAt_set_ne [] (transposeO ops m) k p _
         (Nat.ne_of_lt hp),
-      getAt_setRow [] (ground.getAt [] (transposeO ops m) p)
+      ground.getAt_set_self [] (ground.getAt [] (transposeO ops m) p)
         (transposeO ops m) k hkM]
   have hfin : R.rel (ops.mul
       (sgnPO ops (k + k) (cof0O ops (leadBordO ops k m) k))
@@ -21382,20 +21547,6 @@ private theorem utReadB {γ : Type} {ops : DOps γ}
       rw [utReadB Cf p h.2]
       rfl
 
-/-- The unit tail names the vacant list's read. -/
-private theorem lovNilOfUt {γ : Type} {ops : DOps γ}
-    {R : ground.DRead γ} :
-    ∀ {p : List γ}, poly.unitTailO ops R p → poly.listOV ops R p []
-  | [], _ => trivial
-  | _ :: _, h => ⟨h.1, h.2⟩
-
-/-- The vacant list's read names the unit tail. -/
-private theorem utOfLovNil {γ : Type} {ops : DOps γ}
-    {R : ground.DRead γ} :
-    ∀ {p : List γ}, poly.listOV ops R p [] → poly.unitTailO ops R p
-  | [], _ => trivial
-  | _ :: _, h => ⟨h.1, h.2⟩
-
 /-- The scan's vacant read: every entry passes the test. -/
 private theorem lastOffIdx_none {γ : Type} (u : γ → Bool) :
     ∀ p : List γ, lastOffIdx u p = none →
@@ -21479,8 +21630,8 @@ private theorem utMulLeftO {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ} (L : DLaws γ ops R.rel) {p : List γ}
     (h : poly.unitTailO ops R p) (q : List γ) :
     poly.unitTailO ops R (poly.mulLO ops p q) := by
-  have h1 := mulCongrLeftO L (lovNilOfUt h) q
-  exact utOfLovNil
+  have h1 := mulCongrLeftO L (poly.lovNilO _ _ h) q
+  exact poly.utOfNilO _ _
     (show poly.listOV ops R (poly.mulLO ops p q) [] from h1)
 
 /-- Beyond both tops the convolution reads the sum's unit. -/
@@ -21554,7 +21705,7 @@ private theorem mulTopCoeffO {γ : Type} {ops : DOps γ}
     rw [ground.getAt_over ops.unit ([] : List γ) (tP + tD)
         (Nat.zero_le _),
       ground.getAt_over ops.unit ([] : List γ) tP (Nat.zero_le _)]
-    exact L.toDCore.ovSymm (mulUnitLeft L _)
+    exact L.toDCore.ovSymm (mulUnitLeftO L _)
   | c :: P', 0, d, tD, hP, hD => by
     show R.rel (ground.getAt ops.unit
         (poly.addLO ops (d.map (ops.mul c))
@@ -21705,7 +21856,7 @@ private theorem mulCancelL {γ : Type} {ops : DOps γ}
     poly.listOV ops R a b := by
   have hPB : unitBL Cf.unitB P = false := by
     cases hb : unitBL Cf.unitB P with
-    | true => exact absurd (lovNilOfUt (unitBL_ut Cf P hb)) hP
+    | true => exact absurd (poly.lovNilO _ _ (unitBL_ut Cf P hb)) hP
     | false => rfl
   have hut : poly.unitTailO ops R
       (poly.addLO ops (poly.mulLO ops P a)
@@ -21790,7 +21941,7 @@ private theorem cofGo_sound {γ : Type} {ops : DOps γ}
       have hutPX : poly.unitTailO ops R (poly.mulLO ops P X) :=
         utTransferO L.toDCore
           (lovSymm L.toDCore
-            (mulCongrO L P (lovNilOfUt (unitBL_ut Cf X hXB))))
+            (mulCongrO L P (poly.lovNilO _ _ (unitBL_ut Cf X hXB))))
           (mulNilO L.toDCore P)
       have hutE : poly.unitTailO ops R E :=
         utTransferO L.toDCore hE hutPX
@@ -22036,9 +22187,9 @@ private def polyCofO {γ : Type} {ops : DOps γ}
     DCof (List γ) (poly.polyO ops) (poly.listOV ops R) :=
   { cof := fun E P => cofLO Cf E.length E P
     unitB := unitBL Cf.unitB
-    unitB_true := fun {x} h => lovNilOfUt (unitBL_ut Cf x h)
+    unitB_true := fun {x} h => poly.lovNilO _ _ (unitBL_ut Cf x h)
     unitB_false := fun {x} h hx => by
-      rw [utReadB Cf x (utOfLovNil hx)] at h
+      rw [utReadB Cf x (poly.utOfNilO _ _ hx)] at h
       nomatch h
     cofSound := fun {P X E} hP hE => by
       show poly.listOV ops R
@@ -22051,7 +22202,7 @@ private def polyCofO {γ : Type} {ops : DOps γ}
       cases hsP : lastOffIdx Cf.unitB P with
       | none =>
         exact absurd
-          (lovNilOfUt
+          (poly.lovNilO _ _
             (unitBL_ut Cf P (lastOffIdx_none Cf.unitB P hsP)))
           hP
       | some tP =>
@@ -22667,12 +22818,12 @@ polynomials' spelling. -/
 private theorem ovNilOfUt {p : poly.Poly} (h : poly.unitTail p) :
     poly.oneValue p [] :=
   show poly.listOV ground.bpairOps ground.bpairRead p [] from
-    lovNilOfUt h
+    poly.lovNilO _ _ h
 
 /-- The vacant list's read names the unit tail, the converse. -/
 private theorem utOfOvNil {p : poly.Poly} (h : poly.oneValue p []) :
     poly.unitTail p :=
-  utOfLovNil
+  poly.utOfNilO _ _
     (show poly.listOV ground.bpairOps ground.bpairRead p [] from h)
 
 /-- The vacant right factor's product reads the vacant list. -/
@@ -22703,21 +22854,13 @@ private theorem crossOf {p p' q q' : poly.Poly}
   poly.oneValue_trans (poly.mul_congr_left hN q')
     (poly.mul_congr p' (poly.oneValue_symm hD))
 
-/-- An occupied polynomial factor withdraws at the product's
-injectivity, the cancellation at the polynomial carrier. -/
-theorem pMulCancel {P a b : poly.Poly} (hP : ¬ poly.unitTail P)
-    (h : poly.oneValue (poly.mul P a) (poly.mul P b)) :
-    poly.oneValue a b :=
-  mulCancelL (R := ground.bpairRead) bpairLaws bpairCof
-    (fun hl => hP (utOfLovNil hl)) h
-
 /-- The cross read composes at an occupied middle second member,
 the cancellation through the occupied factor. -/
 theorem cross_trans {x y z : poly.PPair} (hy : ¬ poly.unitTail y.2)
     (h1 : poly.oneValue (poly.mul x.1 y.2) (poly.mul y.1 x.2))
     (h2 : poly.oneValue (poly.mul y.1 z.2) (poly.mul z.1 y.2)) :
     poly.oneValue (poly.mul x.1 z.2) (poly.mul z.1 x.2) :=
-  pMulCancel hy
+  poly.pmul_cancel y.2 _ _ hy
     (poly.oneValue_trans
       (poly.oneValue_trans
         (poly.mul_left_comm y.2 x.1 z.2)
@@ -22876,7 +23019,7 @@ private theorem pairLawsP : DLaws POcc opsP ovP :=
     oneMul := fun x =>
       crossOf (poly.one_mul x.val.1) (poly.one_mul x.val.2)
     addCancel := fun {x y x' y'} H Hx =>
-      pMulCancel (mulDenOff x.den_off x'.den_off)
+      poly.pmul_cancel _ _ _ (mulDenOff x.den_off x'.den_off)
         (poly.oneValue_trans
           (poly.oneValue_symm
             (poly.oneValue_trans
@@ -22942,7 +23085,7 @@ private def pairCof : DCof POcc opsP ovP :=
                   (mulShuffle P.val.2 P.val.1 E.val.2)
                   (poly.mul_assoc P.val.2 E.val.2 P.val.1)))))
     mulCancel := fun {P u v} hP h =>
-      pMulCancel (mulDenOff (numOff hP) P.den_off)
+      poly.pmul_cancel _ _ _ (mulDenOff (numOff hP) P.den_off)
         (poly.oneValue_trans
           (poly.oneValue_symm
             (poly.mul_exchange4 P.val.1 u.val.1 P.val.2 v.val.2))
@@ -23114,6 +23257,23 @@ theorem rowsLen_rowJoin : ∀ (na nb : Nat) {P Q : Mat}, rowsLen na P →
   intro na nb P Q hP hQ
   exact rowsLen_zipJoinO na nb hP hQ
 
+/-- The class read passes the rowwise join at a shared leading
+width. -/
+theorem matOne_rowJoin {a : Nat} : ∀ (T T' U U' : Mat),
+    rowsLen a T → rowsLen a T' →
+    matOneValue T T' → matOneValue U U' →
+    matOneValue (rowJoin T U) (rowJoin T' U')
+  | [], [], _, _, _, _, _, _ => trivial
+  | [], _ :: _, _, _, _, _, hT, _ => hT.elim
+  | _ :: _, [], _, _, _, _, hT, _ => hT.elim
+  | _ :: _, _ :: _, [], [], _, _, _, _ => trivial
+  | _ :: _, _ :: _, [], _ :: _, _, _, _, hU => hU.elim
+  | _ :: _, _ :: _, _ :: _, [], _, _, _, hU => hU.elim
+  | t :: T, t' :: T', u :: U, u' :: U', hTr, hTr', hT, hU =>
+    ⟨poly.oneValue_append t t' u u' (hTr.1.trans hTr'.1.symm)
+        hT.1 hU.1,
+     matOne_rowJoin T T' U U' hTr.2 hTr'.2 hT.2 hU.2⟩
+
 /-- The summed datum's action splits at the seam: the joined
 vector's image is the two sides' images' componentwise sum. -/
 theorem matVec_rowJoin : ∀ (na : Nat) (P Q : Mat)
@@ -23129,10 +23289,10 @@ theorem matVec_rowJoin : ∀ (na : Nat) (P Q : Mat)
         (vecAdd (matVec P v) (matVec Q w))
     refine ⟨?_, matVec_rowJoin na P Q v w hP.2 hv⟩
     exact BPair.oneValue_trans
-      (BPair.oneValue_trans (dotN_dotP (r ++ s) (v ++ w))
+      (BPair.oneValue_trans (dotN_read (r ++ s) (v ++ w))
         (dotP_append r v s w (hP.1.trans hv.symm)))
-      (BPair.add_congr (BPair.oneValue_symm (dotN_dotP r v))
-        (BPair.oneValue_symm (dotN_dotP s w)))
+      (BPair.add_congr (BPair.oneValue_symm (dotN_read r v))
+        (BPair.oneValue_symm (dotN_read s w)))
 
 
 /-! The block-triangular determinant: the expansion at the vacant
@@ -23191,16 +23351,6 @@ private theorem rowJoin_nilRows {γ : Type} :
     rw [hbn, ground.append_nil p,
       rowJoin_nilRows P B (Nat.succ.inj h) hb.2]
 
-/-- The rows' widths after a struck key inside every row. -/
-private theorem rowsLen_mapErase {γ : Type} (m j : Nat) (hj : j < m + 1) :
-    ∀ B : List (List γ), rowsLen (m + 1) B →
-      rowsLen m (B.map (fun r => r.eraseIdx j))
-  | [], _ => trivial
-  | b :: B, h =>
-    ⟨Nat.succ.inj ((ground.length_eraseIdx b j
-        (by rw [h.1]; exact hj)).trans h.1),
-      rowsLen_mapErase m j hj B h.2⟩
-
 /-- The expansion at a stated row of a join: the row's entries
 against the remaining rows' head cofactors, the signs the row's
 own crossing parities. -/
@@ -23228,7 +23378,7 @@ private theorem detO_rowSplit {γ : Type} {ops : DOps γ}
     exact eraseIdx_append_off top (z :: rest) 0
   have hexp := detO_replace L (top ++ z :: rest) k hk
     (ground.getAt [] (top ++ z :: rest) k)
-  rw [setRow_self [] (top ++ z :: rest) k hk, hget, herase, hn] at hexp
+  rw [ground.set_self [] (top ++ z :: rest) k hk, hget, herase, hn] at hexp
   exact hexp
 
 /-- A fold over a shifted range drops its vacant head: the keys
@@ -23390,9 +23540,9 @@ private theorem detO_blockTriGo {γ : Type} {ops : DOps γ}
             (B.map (fun r => r.eraseIdx j))
             (R'.map (fun r => r.eraseIdx j))
             ((ground.length_map (fun r => List.eraseIdx r j) B).trans hBl)
-            (rowsLen_mapErase m j hjm B hBr)
+            (rowsLen_eraseCol m j hjm B hBr)
             ((ground.length_map (fun r => List.eraseIdx r j) R').trans hR'l)
-            (rowsLen_mapErase m j hjm R' hRr.2)
+            (rowsLen_eraseCol m j hjm R' hRr.2)
           refine L.ovTrans hih ?_
           exact L.mulCongr (L.ovRefl (detO ops P))
             (L.ovSymm
@@ -23520,7 +23670,7 @@ the original list. -/
 private def redGoO {γ : Type} (ops : DOps γ) (M : List (List γ))
     (k : Nat) (y : Nat → List γ) : Nat → List (List γ)
   | 0 => M
-  | i + 1 => setRow (redGoO ops M k y i) (k + i)
+  | i + 1 => List.set (redGoO ops M k y i) (k + i)
       (comboO ops M.length (y i) M)
 
 private theorem length_redGoO {γ : Type} (ops : DOps γ)
@@ -23528,8 +23678,8 @@ private theorem length_redGoO {γ : Type} (ops : DOps γ)
     ∀ i, (redGoO ops M k y i).length = M.length
   | 0 => rfl
   | i + 1 => by
-    show (setRow (redGoO ops M k y i) (k + i) _).length = M.length
-    rw [length_setRow, length_redGoO ops M k y i]
+    show (List.set (redGoO ops M k y i) (k + i) _).length = M.length
+    rw [ground.length_set, length_redGoO ops M k y i]
 
 private theorem getAt_redGoO_lt {γ : Type} (ops : DOps γ)
     (M : List (List γ)) (k : Nat) (y : Nat → List γ)
@@ -23537,8 +23687,8 @@ private theorem getAt_redGoO_lt {γ : Type} (ops : DOps γ)
     ∀ i, ground.getAt [] (redGoO ops M k y i) t = ground.getAt [] M t
   | 0 => rfl
   | i + 1 => by
-    show ground.getAt [] (setRow (redGoO ops M k y i) (k + i) _) t = _
-    rw [getAt_setRow_ne [] _ (k + i) t _ (fun he => by
+    show ground.getAt [] (List.set (redGoO ops M k y i) (k + i) _) t = _
+    rw [ground.getAt_set_ne [] _ (k + i) t _ (fun he => by
         rw [he] at ht
         exact Nat.lt_irrefl k
           (Nat.lt_of_le_of_lt (Nat.le_add_right k i) ht)),
@@ -23550,8 +23700,8 @@ private theorem getAt_redGoO_ge {γ : Type} (ops : DOps γ)
       ground.getAt [] (redGoO ops M k y i) t = ground.getAt [] M t
   | 0, _ => rfl
   | i + 1, ht => by
-    show ground.getAt [] (setRow (redGoO ops M k y i) (k + i) _) t = _
-    rw [getAt_setRow_ne [] _ (k + i) t _ (fun he => by
+    show ground.getAt [] (List.set (redGoO ops M k y i) (k + i) _) t = _
+    rw [ground.getAt_set_ne [] _ (k + i) t _ (fun he => by
         rw [he] at ht
         exact Nat.lt_irrefl _
           (Nat.lt_of_lt_of_le (Nat.lt_succ_self (k + i)) ht)),
@@ -23564,13 +23714,13 @@ private theorem getAt_redGoO_mid {γ : Type} (ops : DOps γ)
         = comboO ops M.length (y i') M
   | 0, h, _ => absurd h (Nat.not_lt_zero i')
   | i + 1, h, hle => by
-    show ground.getAt [] (setRow (redGoO ops M k y i) (k + i)
+    show ground.getAt [] (List.set (redGoO ops M k y i) (k + i)
       (comboO ops M.length (y i) M)) (k + i') = _
     by_cases he : i' = i
     · rw [he]
-      exact getAt_setRow [] _ _ (k + i)
+      exact ground.getAt_set_self [] _ _ (k + i)
         (by rw [length_redGoO]; exact Nat.lt_of_succ_le hle)
-    · rw [getAt_setRow_ne [] _ (k + i) (k + i') _
+    · rw [ground.getAt_set_ne [] _ (k + i) (k + i') _
         (fun h2 => he (ground.addCancelL k h2))]
       exact getAt_redGoO_mid ops M k y i' i
         (by
@@ -23596,7 +23746,7 @@ private theorem detO_redGo {γ : Type} {ops : DOps γ}
       exact Nat.add_lt_add_left (Nat.lt_of_succ_le hi) k
     have hlen : (redGoO ops M k (redCoefO ops M.length k d c) i).length
         = M.length := length_redGoO ops M k _ i
-    show R.rel (detO ops (setRow
+    show R.rel (detO ops (List.set
       (redGoO ops M k (redCoefO ops M.length k d c) i) (k + i)
       (comboO ops M.length (redCoefO ops M.length k d c i) M))) _
     have hcomb := detO_comboRow L M
@@ -23803,7 +23953,7 @@ private theorem detO_slabReduce {γ : Type} {ops : DOps γ}
         ground.getAt_append ops.unit (ground.getAt [] P s)
           (ground.getAt [] B s) b,
         rowsLen_getAt P s hPr (by rw [hPl]; exact hsk), if_pos hbk]
-      exact swapMulLeftO L.toDCore _ _
+      exact mulSwapLeft L.toDCore _ _
     · obtain ⟨v, hv⟩ := Nat.le.dest (Nat.le_of_not_lt hbk)
       have hvm : v < m := by
         match Nat.lt_or_ge v m with
@@ -23834,7 +23984,7 @@ private theorem detO_slabReduce {γ : Type} {ops : DOps γ}
         if_neg (fun h => Nat.lt_irrefl k
           (Nat.lt_of_le_of_lt (Nat.le_add_right k v) h)),
         ground.addSubSelfL k v]
-      exact swapMulLeftO L.toDCore _ _
+      exact mulSwapLeft L.toDCore _ _
 
 /-- A transposed factor's product entry: the coefficient column
 against the second factor's column, one fold over the leading
@@ -23859,7 +24009,7 @@ private theorem transMul_entry (C Z : Mat) (k m w : Nat) (hk : 0 < k)
   rw [getAt_matMul (transposeM C) Z i (by rw [hCt]; exact hi),
     ground.getAt_map ([] : List BPair) BPair.unit _ (transposeM Z) b
       (by rw [hZt]; exact hb)]
-  refine BPair.oneValue_trans (dotN_dotP _ _) ?_
+  refine BPair.oneValue_trans (dotN_read _ _) ?_
   have hrC : (ground.getAt [] (transposeM C) i).length = k :=
     rowsLen_getAt _ i hCtr (by rw [hCt]; exact hi)
   have hrZ : (ground.getAt [] (transposeM Z) b).length = k :=
@@ -24010,6 +24160,35 @@ theorem diagO_entry {γ : Type} (ops : DOps γ) (ds : List γ)
       = if j = i then ground.getAt ops.unit ds i else ops.unit :=
   ground.matOf_entry [] ops.unit ds.length ds.length _ i j hi hj
 
+/-- The diagonal's row against a vector reads the diagonal member
+against the vector's own, the further keys at the sum's unit. -/
+theorem diagO_row (ds w : List BPair) (t : Nat)
+    (ht : t < ds.length) (hw : w.length = ds.length) :
+    (dotN (ground.getAt ([] : List BPair)
+        (diagO ground.bpairOps ds) t) w).oneValue
+      (ground.getAt BPair.unit ds t * ground.getAt BPair.unit w t) := by
+  have hrl : (ground.getAt ([] : List BPair)
+      (diagO ground.bpairOps ds) t).length = ds.length :=
+    rowsLen_getAt (diagO ground.bpairOps ds) t
+      (diagO_rows ground.bpairOps ds)
+      (by rw [diagO_len]; exact ht)
+  refine BPair.oneValue_trans (dotN_read _ w) ?_
+  rw [dotP_comm _ w]
+  refine BPair.oneValue_trans
+    (dotP_oneIndex w _ t (by rw [hw, hrl]) (by rw [hrl]; exact ht) ?_) ?_
+  · intro q hq hne
+    rw [hrl] at hq
+    rw [show ground.getAt BPair.unit
+          (ground.getAt ([] : List BPair) (diagO ground.bpairOps ds) t) q
+        = if q = t then ground.getAt BPair.unit ds t else BPair.unit from
+        diagO_entry ground.bpairOps ds t q ht hq, if_neg hne]
+    exact BPair.oneValue_refl _
+  · rw [show ground.getAt BPair.unit
+          (ground.getAt ([] : List BPair) (diagO ground.bpairOps ds) t) t
+        = if t = t then ground.getAt BPair.unit ds t else BPair.unit from
+        diagO_entry ground.bpairOps ds t t ht ht, if_pos rfl]
+    exact BPair.oneValue_of_eq (BPair.mul_comm _ _)
+
 /-- A seeded factor leaves the running product. -/
 private theorem foldMulO_pull {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ} (C : DCore γ ops R.rel) (a : γ) :
@@ -24138,7 +24317,7 @@ theorem detL_diag (ds : List BPair) :
 
 /-- The polynomial minor collects to the assignment fold at every
 square list. -/
-private theorem minorP_detP (X : List (List poly.Poly))
+theorem minorP_detP (X : List (List poly.Poly))
     (hX : rowsLen X.length X) :
     poly.oneValue (minorO poly.polyOps poly.pnorm id X)
       (detO poly.polyOps X) :=
@@ -24592,7 +24771,7 @@ private theorem signAtO_mulLeft {γ : Type} {ops : DOps γ}
       (signAtO ops s (ops.mul x y)) := by
   cases s with
   | false => exact C.ovRefl _
-  | true => exact swapMulLeftO C x y
+  | true => exact mulSwapLeft C x y
 
 /-- Two square lists' product reads its determinant at the
 factors' own (`lem:inertia`'s product read, the one joined list's
@@ -24700,7 +24879,7 @@ private theorem detO_mul {γ : Type} {ops : DOps γ}
         (fun s => ops.swap (ops.mul
           (ground.getAt ops.unit (ground.getAt [] A i) s)
           (ground.getAt ops.unit (ground.getAt [] B s) v)))
-        (List.range n) (fun _ _ => swapMulLeftO L.toDCore _ _)) ?_
+        (List.range n) (fun _ _ => mulSwapLeft L.toDCore _ _)) ?_
       exact foldO_swap L.toDCore _ (List.range n)
   have hM01 : R.rel
       (detO ops (List.zipWith (· ++ ·)
@@ -24796,7 +24975,7 @@ private theorem matMul_matMulO (A B : Mat) (n : Nat) (h0 : 0 < n)
   rw [getAt_matMul A B i (by rw [hAl]; exact hi),
     ground.getAt_map ([] : List BPair) BPair.unit _ (transposeM B) j
       (by rw [hBt]; exact hj)]
-  refine BPair.oneValue_trans (dotN_dotP _ _) ?_
+  refine BPair.oneValue_trans (dotN_read _ _) ?_
   have hrA : (ground.getAt ([] : List BPair) A i).length = n :=
     rowsLen_getAt A i hAr (by rw [hAl]; exact hi)
   have hrB : (ground.getAt ([] : List BPair) (transposeM B) j).length
@@ -24929,7 +25108,7 @@ private theorem rowsLen_padR (na nb : Nat) : ∀ L : Mat,
 
 /-- A family extended on the left by the unit family reads the
 summed width. -/
-private theorem rowsLen_padL (na nb : Nat) : ∀ L : Mat,
+theorem rowsLen_padL (na nb : Nat) : ∀ L : Mat,
     rowsLen nb L →
     rowsLen (na + nb)
       (L.map (fun c => List.replicate na BPair.unit ++ c))
@@ -25508,7 +25687,7 @@ the basis, its width and its action, the datum at a joined basis,
 and the counts' basis freedom — two stated bases of one span read
 one kernel dimension.  `gramM` shares the map-of-map shape at the
 plain fold where `crossM` reads the skipping one, one value by
-`dotN_dotP` at every entry; the two stand at their own carriers,
+`dotN_read` at every entry; the two stand at their own carriers,
 a parametrized general the move if a third instance arrives. -/
 
 /-- A stacked family read against a stated basis, entry by entry at
@@ -25533,7 +25712,7 @@ private theorem polyOne_map_dotN (r : List BPair) : ∀ L : Mat,
     poly.oneValue (L.map (fun x => dotN r x))
       (L.map (fun x => dotP r x))
   | [] => trivial
-  | x :: L => ⟨dotN_dotP r x, polyOne_map_dotN r L⟩
+  | x :: L => ⟨dotN_read r x, polyOne_map_dotN r L⟩
 
 /-- The cross datum's action is the stacked family's at the
 combination: a coefficient vector's read against the cross rows is
@@ -25552,7 +25731,7 @@ theorem matVec_crossM : ∀ (n : Nat) (R L : Mat) (c : List BPair),
         (matVec R (combo n c L))
     refine ⟨?_, matVec_crossM n R L c hR.2 hL⟩
     exact BPair.oneValue_trans
-      (dotN_dotP (L.map (fun x => dotN r x)) c)
+      (dotN_read (L.map (fun x => dotN r x)) c)
       (BPair.oneValue_trans
         (BPair.oneValue_of_eq
           (dotP_comm (L.map (fun x => dotN r x)) c))
@@ -25560,7 +25739,7 @@ theorem matVec_crossM : ∀ (n : Nat) (R L : Mat) (c : List BPair),
           (dotP_oneValue_right c (L.map (fun x => dotN r x))
             (L.map (fun x => dotP r x)) (polyOne_map_dotN r L))
           (BPair.oneValue_symm
-            (BPair.oneValue_trans (dotN_dotP r (combo n c L))
+            (BPair.oneValue_trans (dotN_read r (combo n c L))
               (dotP_combo c L r n hL)))))
 
 /-- The cross datum at a joined basis is the sides' data joined
@@ -25744,7 +25923,7 @@ private theorem crossKer_span (n : Nat) (R L L' : Mat)
             (vecScale c₀ (combo n (ground.getAt []
               (kernelList L.length (crossM R L)) k) L))
             (poly.oneValue_symm hone))
-          (matVec_vecScale R n hR c₀ _ hv)))
+          (matVec_vecScale_free R c₀ _)))
       (unitTail_vecScale c₀ _ hker)
   obtain ⟨d₀, ds, hd₀, hdsl, hdone⟩ := span_elim
     (kernelList_span L'.length (crossM R L') (rowsLen_crossM R L')
@@ -26151,7 +26330,7 @@ stated width, and the collection at a one-member family.
 at every width, two spellings of one datum, and the twin set runs
 six deep: `length_idList` with `inertia.idMat_len`,
 `rowsLen_idList` with `inertia.idMat_rows`, `idList_getAt` with
-`split.idMat_bvec`, `matVec_idList` with `split.matVec_idMat`,
+`split.idMat_bvec`, `matVec_idList` with `inertia.matVec_idMat`,
 `dotP_onehot` with `split.dotP_bvec`, and `inertia.scaleId_act`
 the standing general of the action read; `speccut`'s `diagRead`
 field takes `sqAt (idMat n) n` as a hypothesis where
@@ -26163,23 +26342,23 @@ reciprocal pointers landing with the seam. -/
 
 private theorem dotP_onehot (w k : Nat) (u : List BPair)
     (hk : k < w) (hl : u.length = w) :
-    (dotP (setRow (List.replicate w BPair.unit) k
+    (dotP (List.set (List.replicate w BPair.unit) k
         (BPair.ofPos .one)) u).oneValue
       (ground.getAt BPair.unit u k) := by
-  have hrl : (setRow (List.replicate w BPair.unit) k
+  have hrl : (List.set (List.replicate w BPair.unit) k
       (BPair.ofPos .one)).length = w := by
-    rw [length_setRow, ground.length_replicate]
+    rw [ground.length_set, ground.length_replicate]
   rw [dotP_comm]
   refine BPair.oneValue_trans
     (dotP_oneIndex u _ k (by rw [hrl, hl])
       (by rw [hrl]; exact hk) ?_) ?_
   · intro q hq hqk
     rw [hrl] at hq
-    rw [getAt_setRow_ne BPair.unit (List.replicate w BPair.unit) k
+    rw [ground.getAt_set_ne BPair.unit (List.replicate w BPair.unit) k
         q (BPair.ofPos .one) hqk,
       ground.getAt_replicate_self BPair.unit w q]
     exact BPair.oneValue_refl _
-  · rw [getAt_setRow BPair.unit (BPair.ofPos .one)
+  · rw [ground.getAt_set_self BPair.unit (BPair.ofPos .one)
       (List.replicate w BPair.unit) k
       (by rw [ground.length_replicate]; exact hk)]
     exact BPair.mul_one_read _
@@ -26190,7 +26369,7 @@ theorem matVec_idList : ∀ (n : Nat) (u : List BPair),
     u.length = n →
     poly.oneValue (matVec (idList n) u) u := by
   intro n u hu
-  refine getAt_polyOne _ _ ?_ ?_
+  refine poly.oneValue_of_entries _ _ ?_ ?_
   · rw [matVec_length, length_idList, hu]
   · intro i hi
     rw [matVec_length, length_idList] at hi
@@ -26203,7 +26382,7 @@ theorem matVec_idList : ∀ (n : Nat) (u : List BPair),
         (fun r => dotN r u) (idList n) i
         (by rw [length_idList]; exact hi)
     rw [hmap, idList_getAt n i hi]
-    exact BPair.oneValue_trans (dotN_dotP _ u)
+    exact BPair.oneValue_trans (dotN_read _ u)
       (dotP_onehot n i u hi hu)
 
 /-- The identity datum is square at its width. -/
@@ -26237,8 +26416,8 @@ private theorem perpAll_idList (n : Nat) : perpAll (idList n) := by
   rw [idList_getAt n p hp, idList_getAt n q hq]
   refine BPair.oneValue_trans
     (dotP_onehot n p _ hp
-      (by rw [length_setRow, ground.length_replicate])) ?_
-  rw [getAt_setRow_ne BPair.unit (List.replicate n BPair.unit) q p
+      (by rw [ground.length_set, ground.length_replicate])) ?_
+  rw [ground.getAt_set_ne BPair.unit (List.replicate n BPair.unit) q p
       (BPair.ofPos Pos.one) hpq,
     ground.getAt_replicate_self BPair.unit n p]
   exact BPair.oneValue_refl _
@@ -26255,8 +26434,8 @@ theorem indepRows_idList (n : Nat) : indepRows n (idList n) := by
     rw [idList_getAt n k hk]
     refine BPair.oneValue_trans
       (dotP_onehot n k _ hk
-        (by rw [length_setRow, ground.length_replicate])) ?_
-    rw [getAt_setRow BPair.unit (BPair.ofPos Pos.one)
+        (by rw [ground.length_set, ground.length_replicate])) ?_
+    rw [ground.getAt_set_self BPair.unit (BPair.ofPos Pos.one)
       (List.replicate n BPair.unit) k
       (by rw [ground.length_replicate]; exact hk)]
     exact BPair.oneValue_refl _
@@ -26299,7 +26478,7 @@ theorem dotN_idList_entry (n : Nat) (r : List BPair)
     (dotN r (ground.getAt ([] : List BPair) (idList n) i)).oneValue
       (ground.getAt BPair.unit r i) := by
   rw [idList_getAt n i hi]
-  refine BPair.oneValue_trans (dotN_dotP r _) ?_
+  refine BPair.oneValue_trans (dotN_read r _) ?_
   rw [dotP_comm]
   exact dotP_onehot n i r hi hr
 
@@ -26427,7 +26606,7 @@ theorem adjM_row_diag (G : Mat) {n : Nat} (hsq : sqAt G n) (i : Nat)
   have hGl : G.length = n := sqAt_len hsq
   have hiG : i < G.length := by rw [hGl]; exact hi
   rw [adjM_entry G hsq i i hi hi]
-  exact BPair.oneValue_trans (dotN_dotP _ _)
+  exact BPair.oneValue_trans (dotN_read _ _)
     (cofVec_diag G i hiG (by rw [sqAt_row_len hsq i hiG, hGl]))
 
 /-- The adjugate identity off the diagonal: a row's fold against a
@@ -26441,7 +26620,7 @@ theorem adjM_row_off (G : Mat) {n : Nat} (hsq : sqAt G n) (i j : Nat)
   have hiG : i < G.length := by rw [hGl]; exact hi
   have hjG : j < G.length := by rw [hGl]; exact hj
   rw [adjM_entry G hsq i j hi hj]
-  exact BPair.oneValue_trans (dotN_dotP _ _)
+  exact BPair.oneValue_trans (dotN_read _ _)
     (cofVec_off G i j hiG hjG hij
       (by rw [sqAt_row_len hsq i hiG, hGl]))
 
@@ -26502,7 +26681,7 @@ private theorem strike_exchange (G : Mat) {w : Nat}
     Nat.succ.inj
       ((ground.length_eraseIdx (transposeM G) i hiT).trans hTl)
   have hYr : rowsLen w ((G.eraseIdx k).map (fun r => r.eraseIdx i)) :=
-    rowsLen_strikeCol hi (G.eraseIdx k)
+    rowsLen_eraseCol _ _ hi (G.eraseIdx k)
       (rowsLen_eraseIdx (w + 1) G k hGr)
   have hYl : ((G.eraseIdx k).map (fun r => r.eraseIdx i)).length
       = w := by
@@ -26791,7 +26970,7 @@ theorem adjM_col_diag (G : Mat) {n : Nat} (hsq : sqAt G n)
     ground.getAt_map ([] : List BPair) BPair.unit
       (fun c => dotN (ground.getAt [] (adjM G) i) c) (transposeM G)
       i (by rw [hTl]; exact hi)]
-  refine BPair.oneValue_trans (dotN_dotP _ _) ?_
+  refine BPair.oneValue_trans (dotN_read _ _) ?_
   refine BPair.oneValue_trans
     (dotP_oneValue_left _ (cofVec (transposeM G) i) _
       (adjM_row_cofT G hsq i hi)) ?_
@@ -26824,7 +27003,7 @@ theorem adjM_col_off (G : Mat) {n : Nat} (hsq : sqAt G n)
     ground.getAt_map ([] : List BPair) BPair.unit
       (fun c => dotN (ground.getAt [] (adjM G) i) c) (transposeM G)
       j (by rw [hTl]; exact hj)]
-  refine BPair.oneValue_trans (dotN_dotP _ _) ?_
+  refine BPair.oneValue_trans (dotN_read _ _) ?_
   refine BPair.oneValue_trans
     (dotP_oneValue_left _ (cofVec (transposeM G) i) _
       (adjM_row_cofT G hsq i hi)) ?_
@@ -26833,6 +27012,400 @@ theorem adjM_col_off (G : Mat) {n : Nat} (hsq : sqAt G n)
     (by rw [hTl]; exact hi) (fun h => hij h.symm)
     (by rw [rowLen_of_rowsLen (transposeM G) j hTr
         (by rw [hTl]; exact hj), hTl])
+
+
+/-! The adjugate identity at any entry bundle (`def:elim`'s
+adjugate identity: a row's fold against its own cofactors collects
+the regrouped assignment fold, the determinant, and against a
+further row's cofactors it reads equal members — the reads run
+over the ground pairs, over their balance pairs, and over the
+polynomials as the entry carrier in turn, each level's cofactor
+and injectivity the level below's own).  The row side is the
+cofactor vector's two reads; the column side is the same two at
+the exchanged strike. -/
+
+/-- The cofactor at a stated determinant read is the head
+cofactor's own signed strike. -/
+private theorem cofO_read {γ : Type} {ops : DOps γ}
+    {R : ground.DRead γ} (C : DCore γ ops R.rel)
+    (det : List (List γ) → γ) (sw : γ → γ)
+    (hdet : ∀ E : List (List γ), rowsLen E.length E →
+      R.rel (det E) (detO ops E))
+    (hsw : ∀ x : γ, R.rel (sw x) (ops.swap x))
+    (m : List (List γ)) (hsq : rowsLen m.length m)
+    (j s : Nat) (hj : j < m.length) (hs : s < m.length) :
+    R.rel (cofO det sw m j s)
+      (sgnPO ops (j + s) (cof0O ops (m.eraseIdx j) s)) := by
+  have hlen : (m.eraseIdx j).length + 1 = m.length :=
+    ground.length_eraseIdx m j hj
+  have hsl1 : s < (m.eraseIdx j).length + 1 := by
+    rw [hlen]
+    exact hs
+  have hsle : s ≤ (m.eraseIdx j).length := Nat.le_of_lt_succ hsl1
+  have hEr : rowsLen (m.eraseIdx j).length
+      ((m.eraseIdx j).map (fun r => r.eraseIdx s)) :=
+    rowsLen_eraseCol _ s (by rw [hlen]; exact hs) (m.eraseIdx j)
+      (by rw [hlen]; exact rowsLen_eraseIdx m.length m j hsq)
+  have hEsq : rowsLen ((m.eraseIdx j).map
+      (fun r => r.eraseIdx s)).length
+      ((m.eraseIdx j).map (fun r => r.eraseIdx s)) := by
+    rw [ground.length_map]
+    exact hEr
+  have hst := cof0O_strike C (m.eraseIdx j) s hsle
+  show R.rel (if places.parityOf (j + s)
+      then sw (det ((m.eraseIdx j).map (fun r => r.eraseIdx s)))
+      else det ((m.eraseIdx j).map (fun r => r.eraseIdx s)))
+    (if places.parityOf (j + s)
+      then ops.swap (cof0O ops (m.eraseIdx j) s)
+      else cof0O ops (m.eraseIdx j) s)
+  cases places.parityOf (j + s) with
+  | true =>
+    exact C.ovTrans (hsw _)
+      (C.swapCongr (C.ovTrans (hdet _ hEsq) (C.ovSymm hst)))
+  | false => exact C.ovTrans (hdet _ hEsq) (C.ovSymm hst)
+
+/-- The row side's entry: a row against the adjugate's column at a
+key is that row's fold against the key's own cofactor vector. -/
+private theorem adjO_rowFold {γ : Type} {ops : DOps γ}
+    {R : ground.DRead γ} (L : DLaws γ ops R.rel)
+    (det : List (List γ) → γ) (sw : γ → γ)
+    (hdet : ∀ E : List (List γ), rowsLen E.length E →
+      R.rel (det E) (detO ops E))
+    (hsw : ∀ x : γ, R.rel (sw x) (ops.swap x))
+    (m : List (List γ)) (hsq : rowsLen m.length m)
+    (i j : Nat) (hi : i < m.length) (hj : j < m.length) :
+    R.rel (ground.getAt ops.unit
+        (ground.getAt [] (matMulO ops m (adjO det sw m)) i) j)
+      (dotO ops (ground.getAt [] m i) (cofVecO ops m j)) := by
+  have hrow : (ground.getAt [] m i).length = m.length :=
+    rowsLen_getAt m i hsq hi
+  have hAl : (adjO det sw m).length = m.length :=
+    ground.matOf_length m.length m.length _
+  have hAr : rowsLen m.length (adjO det sw m) :=
+    rowsLen_matOf m.length m.length _
+  have hw : ((adjO det sw m).headD []).length = m.length :=
+    headD_len_of _ m.length hAl hAr
+  have hentry : ∀ s, s < m.length →
+      ground.getAt ops.unit
+        (ground.getAt [] (adjO det sw m) s) j = cofO det sw m j s :=
+    fun s hs => ground.matOf_entry ([] : List γ) ops.unit
+      m.length m.length (fun p q => cofO det sw m q p) s j hs hj
+  rw [show dotO ops (ground.getAt [] m i) (cofVecO ops m j)
+      = ground.famFold ops.add ops.unit
+        (fun s => ops.mul
+          (ground.getAt ops.unit (ground.getAt [] m i) s)
+          (sgnPO ops (j + s) (cof0O ops (m.eraseIdx j) s)))
+        (List.range m.length) from
+    dotO_map_range ops _ m.length (ground.getAt [] m i) hrow]
+  refine L.ovTrans (matMulO_entry L m (adjO det sw m) m.length
+    m.length hsq hw i j hi hj) ?_
+  refine foldO_congr_members L.toDCore _ _ (List.range m.length)
+    (fun s hs => ?_)
+  have hsm : s < m.length := ground.ltOfMem hs
+  rw [hentry s hsm]
+  exact L.mulCongr (L.ovRefl _)
+    (cofO_read L.toDCore det sw hdet hsw m hsq j s hj hsm)
+
+/-- The adjugate identity's diagonal at any entry bundle: a row's
+fold against its own cofactors collects the regrouped assignment
+fold, the determinant. -/
+theorem adjO_row_diag {γ : Type} {ops : DOps γ}
+    {R : ground.DRead γ} (L : DLaws γ ops R.rel)
+    (det : List (List γ) → γ) (sw : γ → γ)
+    (hdet : ∀ E : List (List γ), rowsLen E.length E →
+      R.rel (det E) (detO ops E))
+    (hsw : ∀ x : γ, R.rel (sw x) (ops.swap x))
+    (m : List (List γ)) (hsq : rowsLen m.length m)
+    (i : Nat) (hi : i < m.length) :
+    R.rel (ground.getAt ops.unit
+        (ground.getAt [] (matMulO ops m (adjO det sw m)) i) i)
+      (det m) :=
+  L.ovTrans (adjO_rowFold L det sw hdet hsw m hsq i i hi hi)
+    (L.ovTrans (cofVecO_diag L m i hi (rowsLen_getAt m i hsq hi))
+      (L.ovSymm (hdet m hsq)))
+
+/-- The adjugate identity off the diagonal at any entry bundle: a
+row's fold against a further row's cofactors reads equal members,
+the fold a determinant at that row repeated. -/
+theorem adjO_row_off {γ : Type} {ops : DOps γ}
+    {R : ground.DRead γ} (L : DLaws γ ops R.rel)
+    (det : List (List γ) → γ) (sw : γ → γ)
+    (hdet : ∀ E : List (List γ), rowsLen E.length E →
+      R.rel (det E) (detO ops E))
+    (hsw : ∀ x : γ, R.rel (sw x) (ops.swap x))
+    (m : List (List γ)) (hsq : rowsLen m.length m)
+    (i j : Nat) (hi : i < m.length) (hj : j < m.length)
+    (hij : i ≠ j) :
+    R.rel (ground.getAt ops.unit
+        (ground.getAt [] (matMulO ops m (adjO det sw m)) i) j)
+      ops.unit :=
+  L.ovTrans (adjO_rowFold L det sw hdet hsw m hsq i j hi hj)
+    (cofVecO_off L m i j hi hj hij (rowsLen_getAt m i hsq hi))
+
+/-- The struck square's exchange at any entry bundle
+(`def:elim`'s exchanged row and column lists): withdrawing row `k`
+with column `i` reads the transpose's withdrawal at row `i` with
+column `k`, the two struck determinants one value. -/
+private theorem strikeO_exchange {γ : Type} {ops : DOps γ}
+    {R : ground.DRead γ} (C : DCore γ ops R.rel)
+    (m : List (List γ)) (hsq : rowsLen m.length m)
+    (k i : Nat) (hk : k < m.length) (hi : i < m.length) :
+    R.rel (detO ops (((transposeO ops m).eraseIdx i).map
+        (fun r => r.eraseIdx k)))
+      (detO ops ((m.eraseIdx k).map (fun r => r.eraseIdx i))) := by
+  have hpos : 0 < m.length := Nat.lt_of_le_of_lt (Nat.zero_le k) hk
+  have hTl : (transposeO ops m).length = m.length :=
+    length_transposeO ops m hsq hpos
+  have hTr : rowsLen m.length (transposeO ops m) :=
+    rowsLen_transposeO ops m
+  have hiT : i < (transposeO ops m).length := by
+    rw [hTl]
+    exact hi
+  have hEm : (m.eraseIdx k).length + 1 = m.length :=
+    ground.length_eraseIdx m k hk
+  have hET : ((transposeO ops m).eraseIdx i).length
+      = (m.eraseIdx k).length :=
+    Nat.succ.inj ((ground.length_eraseIdx (transposeO ops m) i
+      hiT).trans (hTl.trans hEm.symm))
+  have hYr : rowsLen (m.eraseIdx k).length
+      ((m.eraseIdx k).map (fun r => r.eraseIdx i)) :=
+    rowsLen_eraseCol _ i (by rw [hEm]; exact hi) (m.eraseIdx k)
+      (by rw [hEm]; exact rowsLen_eraseIdx m.length m k hsq)
+  have hYl : ((m.eraseIdx k).map (fun r => r.eraseIdx i)).length
+      = (m.eraseIdx k).length := ground.length_map _ _
+  have hYr' : rowsLen ((m.eraseIdx k).map
+      (fun r => r.eraseIdx i)).length
+      ((m.eraseIdx k).map (fun r => r.eraseIdx i)) := by
+    rw [hYl]
+    exact hYr
+  have hXl : (((transposeO ops m).eraseIdx i).map
+      (fun r => r.eraseIdx k)).length = (m.eraseIdx k).length := by
+    rw [ground.length_map]
+    exact hET
+  have hTYl : (transposeO ops ((m.eraseIdx k).map
+      (fun r => r.eraseIdx i))).length = (m.eraseIdx k).length := by
+    match hnil : (m.eraseIdx k).map (fun r => r.eraseIdx i) with
+    | [] =>
+      rw [hnil] at hYl
+      rw [hnil, ← hYl]
+      rfl
+    | c :: cs =>
+      have hposY : 0 < ((m.eraseIdx k).map
+          (fun r => r.eraseIdx i)).length := by
+        rw [hnil]
+        exact Nat.succ_pos cs.length
+      exact length_transposeO ops _ hYr hposY
+  refine C.ovTrans (detO_congr_letters C _ _
+    (hXl.trans hTYl.symm) (fun a ha b hb => ?_))
+    (detO_transpose C _ hYr')
+  rw [hXl] at ha hb
+  have haT : a < ((transposeO ops m).eraseIdx i).length := by
+    rw [hET]
+    exact ha
+  have ha1 : a + 1 < m.length := by
+    rw [← hEm]
+    exact Nat.succ_lt_succ ha
+  have hb1 : b + 1 < m.length := by
+    rw [← hEm]
+    exact Nat.succ_lt_succ hb
+  have han : a < m.length := Nat.lt_of_succ_lt ha1
+  have hbn : b < m.length := Nat.lt_of_succ_lt hb1
+  rw [ground.getAt_map ([] : List γ) ([] : List γ)
+      (fun r => r.eraseIdx k) ((transposeO ops m).eraseIdx i) a haT,
+    getAt_transposeO ops ops.unit _ hYr' a b
+      (by rw [hYl]; exact ha) (by rw [hYl]; exact hb),
+    ground.getAt_map ([] : List γ) ([] : List γ)
+      (fun r => r.eraseIdx i) (m.eraseIdx k) b hb,
+    getAt_eraseIdx ops.unit
+      (ground.getAt [] ((transposeO ops m).eraseIdx i) a) k b,
+    getAt_eraseIdx ops.unit
+      (ground.getAt [] (m.eraseIdx k) b) i a,
+    getAt_eraseIdx ([] : List γ) (transposeO ops m) i a,
+    getAt_eraseIdx ([] : List γ) m k b]
+  by_cases hai : a < i
+  · rw [if_pos hai, if_pos hai]
+    by_cases hbk : b < k
+    · rw [if_pos hbk, if_pos hbk,
+        getAt_transposeO ops ops.unit m hsq a b han hbn]
+      exact C.ovRefl _
+    · rw [if_neg hbk, if_neg hbk,
+        getAt_transposeO ops ops.unit m hsq a (b + 1) han hb1]
+      exact C.ovRefl _
+  · rw [if_neg hai, if_neg hai]
+    by_cases hbk : b < k
+    · rw [if_pos hbk, if_pos hbk,
+        getAt_transposeO ops ops.unit m hsq (a + 1) b ha1 hbn]
+      exact C.ovRefl _
+    · rw [if_neg hbk, if_neg hbk,
+        getAt_transposeO ops ops.unit m hsq (a + 1) (b + 1) ha1 hb1]
+      exact C.ovRefl _
+
+/-- The head cofactors read across the exchange: the row struck at
+one key against the column struck at the other reads the exchanged
+strike's own on the transpose. -/
+private theorem cof0O_exchange {γ : Type} {ops : DOps γ}
+    {R : ground.DRead γ} (C : DCore γ ops R.rel)
+    (m : List (List γ)) (hsq : rowsLen m.length m)
+    (s i : Nat) (hs : s < m.length) (hi : i < m.length) :
+    R.rel (cof0O ops (m.eraseIdx s) i)
+      (cof0O ops ((transposeO ops m).eraseIdx i) s) := by
+  have hpos : 0 < m.length := Nat.lt_of_le_of_lt (Nat.zero_le s) hs
+  have hTl : (transposeO ops m).length = m.length :=
+    length_transposeO ops m hsq hpos
+  have hiT : i < (transposeO ops m).length := by
+    rw [hTl]
+    exact hi
+  have hEm : (m.eraseIdx s).length + 1 = m.length :=
+    ground.length_eraseIdx m s hs
+  have hET : ((transposeO ops m).eraseIdx i).length + 1 = m.length :=
+    (ground.length_eraseIdx (transposeO ops m) i hiT).trans hTl
+  have hi1 : i < (m.eraseIdx s).length + 1 := by
+    rw [hEm]
+    exact hi
+  have hs1 : s < ((transposeO ops m).eraseIdx i).length + 1 := by
+    rw [hET]
+    exact hs
+  have h1 := cof0O_strike C (m.eraseIdx s) i (Nat.le_of_lt_succ hi1)
+  have h2 := cof0O_strike C ((transposeO ops m).eraseIdx i) s
+    (Nat.le_of_lt_succ hs1)
+  exact C.ovTrans h1
+    (C.ovTrans (C.ovSymm (strikeO_exchange C m hsq s i hs hi))
+      (C.ovSymm h2))
+
+/-- The column side's entry at any entry bundle: the adjugate's row
+against the list's column at a key is the transpose's row fold
+against the key's own cofactor vector. -/
+private theorem adjO_colFold {γ : Type} {ops : DOps γ}
+    {R : ground.DRead γ} (L : DLaws γ ops R.rel)
+    (det : List (List γ) → γ) (sw : γ → γ)
+    (hdet : ∀ E : List (List γ), rowsLen E.length E →
+      R.rel (det E) (detO ops E))
+    (hsw : ∀ x : γ, R.rel (sw x) (ops.swap x))
+    (m : List (List γ)) (hsq : rowsLen m.length m)
+    (i j : Nat) (hi : i < m.length) (hj : j < m.length) :
+    R.rel (ground.getAt ops.unit
+        (ground.getAt [] (matMulO ops (adjO det sw m) m) i) j)
+      (dotO ops (ground.getAt [] (transposeO ops m) j)
+        (cofVecO ops (transposeO ops m) i)) := by
+  have hpos : 0 < m.length := Nat.lt_of_le_of_lt (Nat.zero_le i) hi
+  have hTl : (transposeO ops m).length = m.length :=
+    length_transposeO ops m hsq hpos
+  have hTr : rowsLen m.length (transposeO ops m) :=
+    rowsLen_transposeO ops m
+  have hjT : j < (transposeO ops m).length := by
+    rw [hTl]
+    exact hj
+  have hrowT : (ground.getAt [] (transposeO ops m) j).length
+      = (transposeO ops m).length := by
+    rw [rowsLen_getAt (transposeO ops m) j hTr hjT, hTl]
+  have hAl : (adjO det sw m).length = m.length :=
+    ground.matOf_length m.length m.length _
+  have hAr : rowsLen m.length (adjO det sw m) :=
+    rowsLen_matOf m.length m.length _
+  have hw : (m.headD []).length = m.length :=
+    headD_len_of m m.length rfl hsq
+  have hiA : i < (adjO det sw m).length := by
+    rw [hAl]
+    exact hi
+  have hentry : ∀ s, s < m.length →
+      ground.getAt ops.unit
+        (ground.getAt [] (adjO det sw m) i) s = cofO det sw m s i :=
+    fun s hs => ground.matOf_entry ([] : List γ) ops.unit
+      m.length m.length (fun p q => cofO det sw m q p) i s hi hs
+  rw [show dotO ops (ground.getAt [] (transposeO ops m) j)
+      (cofVecO ops (transposeO ops m) i)
+      = ground.famFold ops.add ops.unit
+        (fun s => ops.mul (ground.getAt ops.unit
+            (ground.getAt [] (transposeO ops m) j) s)
+          (sgnPO ops (i + s)
+            (cof0O ops ((transposeO ops m).eraseIdx i) s)))
+        (List.range (transposeO ops m).length) from
+    dotO_map_range ops _ (transposeO ops m).length
+      (ground.getAt [] (transposeO ops m) j) hrowT, hTl]
+  refine L.ovTrans (matMulO_entry L (adjO det sw m) m m.length
+    m.length hAr hw i j hiA hj) ?_
+  refine foldO_congr_members L.toDCore _ _ (List.range m.length)
+    (fun s hs => ?_)
+  have hsm : s < m.length := ground.ltOfMem hs
+  rw [hentry s hsm, getAt_transposeO ops ops.unit m hsq j s hj hsm]
+  refine L.ovTrans (L.mulComm _ _) ?_
+  refine L.mulCongr (L.ovRefl _) ?_
+  refine L.ovTrans
+    (cofO_read L.toDCore det sw hdet hsw m hsq s i hsm hi) ?_
+  rw [Nat.add_comm s i]
+  exact sgnPO_congr L.toDCore (cof0O_exchange L.toDCore m hsq s i hsm hi)
+
+/-- The adjugate identity's column side at the diagonal, at any
+entry bundle: the product against the list reads the determinant,
+the row side at the exchanged row and column lists. -/
+theorem adjO_col_diag {γ : Type} {ops : DOps γ}
+    {R : ground.DRead γ} (L : DLaws γ ops R.rel)
+    (det : List (List γ) → γ) (sw : γ → γ)
+    (hdet : ∀ E : List (List γ), rowsLen E.length E →
+      R.rel (det E) (detO ops E))
+    (hsw : ∀ x : γ, R.rel (sw x) (ops.swap x))
+    (m : List (List γ)) (hsq : rowsLen m.length m)
+    (i : Nat) (hi : i < m.length) :
+    R.rel (ground.getAt ops.unit
+        (ground.getAt [] (matMulO ops (adjO det sw m) m) i) i)
+      (det m) := by
+  have hpos : 0 < m.length := Nat.lt_of_le_of_lt (Nat.zero_le i) hi
+  have hTl : (transposeO ops m).length = m.length :=
+    length_transposeO ops m hsq hpos
+  have hTr : rowsLen m.length (transposeO ops m) :=
+    rowsLen_transposeO ops m
+  have hTsq : rowsLen (transposeO ops m).length
+      (transposeO ops m) := by
+    rw [hTl]
+    exact hTr
+  have hiT : i < (transposeO ops m).length := by
+    rw [hTl]
+    exact hi
+  refine L.ovTrans (adjO_colFold L det sw hdet hsw m hsq i i hi hi) ?_
+  refine L.ovTrans (cofVecO_diag L (transposeO ops m) i hiT
+    (rowsLen_getAt (transposeO ops m) i hTsq hiT)) ?_
+  exact L.ovTrans (detO_transpose L.toDCore m hsq)
+    (L.ovSymm (hdet m hsq))
+
+/-- The adjugate identity's column side off the diagonal, at any
+entry bundle: the product against the list reads equal members, the
+exchanged read a repeated row of the transpose. -/
+theorem adjO_col_off {γ : Type} {ops : DOps γ}
+    {R : ground.DRead γ} (L : DLaws γ ops R.rel)
+    (det : List (List γ) → γ) (sw : γ → γ)
+    (hdet : ∀ E : List (List γ), rowsLen E.length E →
+      R.rel (det E) (detO ops E))
+    (hsw : ∀ x : γ, R.rel (sw x) (ops.swap x))
+    (m : List (List γ)) (hsq : rowsLen m.length m)
+    (i j : Nat) (hi : i < m.length) (hj : j < m.length)
+    (hij : i ≠ j) :
+    R.rel (ground.getAt ops.unit
+        (ground.getAt [] (matMulO ops (adjO det sw m) m) i) j)
+      ops.unit := by
+  have hpos : 0 < m.length := Nat.lt_of_le_of_lt (Nat.zero_le i) hi
+  have hTl : (transposeO ops m).length = m.length :=
+    length_transposeO ops m hsq hpos
+  have hTr : rowsLen m.length (transposeO ops m) :=
+    rowsLen_transposeO ops m
+  have hTsq : rowsLen (transposeO ops m).length
+      (transposeO ops m) := by
+    rw [hTl]
+    exact hTr
+  have hiT : i < (transposeO ops m).length := by
+    rw [hTl]
+    exact hi
+  have hjT : j < (transposeO ops m).length := by
+    rw [hTl]
+    exact hj
+  refine L.ovTrans (adjO_colFold L det sw hdet hsw m hsq i j hi hj) ?_
+  exact cofVecO_off L (transposeO ops m) j i hjT hiT
+    (fun h => hij h.symm)
+    (rowsLen_getAt (transposeO ops m) j hTsq hjT)
+
+/-- The polynomial carrier's laws bundle at the balance-pair
+entries, the tower's one lift at the entry bundle's own. -/
+theorem polyLaws : DLaws poly.Poly poly.polyOps poly.polyRead.rel :=
+  polyLawsO (R := ground.bpairRead) bpairLaws
 
 /-- A signed monomial against the swapped one flips its side. -/
 private theorem smono_flip (s : Bool) (n : Nat) :
@@ -27053,6 +27626,140 @@ theorem eval_minorP (M : List (List poly.Poly)) (r : BPair)
   rw [eval_evalLO (detO poly.polyOps M) r]
   exact h3
 
+/-- The Horner read at polynomial coefficients collects to the
+monomial fold, the coefficient against the outer point's power. -/
+private theorem evalLO_foldP : ∀ (P : poly.PPoly) (q : poly.Poly),
+    poly.oneValue (evalLO poly.polyOps P q)
+      (ground.famFold poly.add []
+        (fun k => poly.mul (ground.getAt [] P k) (poly.powOf q k))
+        (List.range P.length))
+  | [], _ => trivial
+  | C :: P, q => by
+    rw [show (C :: P).length = P.length + 1 from rfl,
+      ground.famFold_range_cons poly.add ([] : poly.Poly)
+        (fun k => poly.mul (ground.getAt [] (C :: P) k)
+          (poly.powOf q k)) P.length]
+    show poly.oneValue
+      (poly.add C (poly.mul q (evalLO poly.polyOps P q)))
+      (poly.add (poly.mul C (poly.powOf q 0))
+        (ground.famFold poly.add []
+          (fun j => poly.mul (ground.getAt [] P j)
+            (poly.powOf q (j + 1)))
+          (List.range P.length)))
+    refine poly.add_congr
+      (poly.oneValue_symm (poly.oneValue_trans
+        (poly.mul_comm C poly.one) (poly.one_mul C))) ?_
+    refine poly.oneValue_trans
+      (poly.mul_congr q (evalLO_foldP P q)) ?_
+    refine poly.oneValue_trans (poly.mul_comm q _) ?_
+    refine poly.oneValue_trans
+      (poly.mul_famFold _ (List.range P.length) q) ?_
+    refine ground.famFold_congr_members_ov poly.oneValue poly.add []
+      poly.oneValue_refl (fun h1 h2 => poly.add_congr h1 h2) _ _
+      (List.range P.length) (fun j _ => ?_)
+    exact poly.oneValue_trans
+      (poly.mul_assoc (ground.getAt [] P j) (poly.powOf q j) q)
+      (poly.mul_congr (ground.getAt [] P j)
+        (poly.mul_comm (poly.powOf q j) q))
+
+/-- The outer evaluation at the unit clearing is the Horner read,
+the two collections meeting at the monomial fold. -/
+private theorem pevalCOne_evalLO (P : poly.PPoly) (q : poly.Poly) :
+    poly.oneValue (poly.pevalC P q ground.Pos.one 1)
+      (evalLO poly.polyOps P q) :=
+  poly.oneValue_trans (poly.pevalC_fold P q 1)
+    (poly.oneValue_symm (evalLO_foldP P q))
+
+/-- The iterated carrier's minor at the outer point: the symbol's
+minor evaluated at a stated outer point at the unit clearing is
+the evaluated entries' own minor, every square list. -/
+theorem evalC_minorPP (M : List (List poly.PPoly)) (q : poly.Poly)
+    (hsq : rowsLen M.length M) :
+    poly.oneValue
+      (poly.pevalC (minorO (poly.polyO poly.polyOps) poly.pnormP id M)
+        q ground.Pos.one 1)
+      (minorO poly.polyOps poly.pnorm id
+        (M.map (fun row => row.map
+          (fun P => poly.pevalC P q ground.Pos.one 1)))) := by
+  have h1 : poly.ppOneValue
+      (minorO (poly.polyO poly.polyOps) poly.pnormP id M)
+      (detO (poly.polyO poly.polyOps) M) :=
+    minorO_detO (R := poly.listRead poly.polyOps poly.polyRead)
+      (polyLawsO (R := poly.polyRead)
+        (polyLawsO (R := ground.bpairRead) bpairLaws))
+      poly.pnormP id
+      (fun x => poly.pnormP_ppOneValue x)
+      (fun x => lovRefl (R := poly.polyRead)
+        (polyLawsO (R := ground.bpairRead) bpairLaws).toDCore x)
+      M hsq
+  have h2 : poly.oneValue
+      (evalLO poly.polyOps
+        (minorO (poly.polyO poly.polyOps) poly.pnormP id M) q)
+      (evalLO poly.polyOps (detO (poly.polyO poly.polyOps) M) q) :=
+    evalCongrO (polyLawsO (R := ground.bpairRead) bpairLaws) h1 q
+  have h3 : poly.oneValue
+      (evalLO poly.polyOps (detO (poly.polyO poly.polyOps) M) q)
+      (detO poly.polyOps (evalMatLO poly.polyOps M q)) :=
+    evalDetLO (R := poly.polyRead)
+      (polyLawsO (R := ground.bpairRead) bpairLaws) M q
+  have hMr : rowsLen M.length (evalMatLO poly.polyOps M q) :=
+    rowsLen_mapRowsO _ M M.length hsq
+  have hsq' : rowsLen (evalMatLO poly.polyOps M q).length
+      (evalMatLO poly.polyOps M q) := by
+    rw [evalMatLO_len]
+    exact hMr
+  have h4 : poly.oneValue
+      (detO poly.polyOps (evalMatLO poly.polyOps M q))
+      (minorO poly.polyOps poly.pnorm id
+        (evalMatLO poly.polyOps M q)) :=
+    poly.oneValue_symm
+      (minorO_detO (R := poly.polyRead)
+        (polyLawsO (R := ground.bpairRead) bpairLaws)
+        poly.pnorm id
+        (fun x => poly.pnorm_oneValue x)
+        (fun x => lovRefl (R := ground.bpairRead) bpairCore x)
+        _ hsq')
+  have h5 : poly.oneValue
+      (minorO poly.polyOps poly.pnorm id
+        (evalMatLO poly.polyOps M q))
+      (minorO poly.polyOps poly.pnorm id
+        (M.map (fun row => row.map
+          (fun P => poly.pevalC P q ground.Pos.one 1)))) := by
+    refine minorP_congr _ _ M.length (evalMatLO_len _ _ _)
+      (ground.length_map _ M) hMr
+      (rowsLen_mapRowsO _ M M.length hsq)
+      (fun a ha b hb => ?_)
+    have hlen : (ground.getAt [] M a).length = M.length :=
+      rowsLen_getAt M a hsq ha
+    have hb' : b < (ground.getAt [] M a).length := by
+      rw [hlen]
+      exact hb
+    have e1 : ground.getAt []
+        (ground.getAt [] (evalMatLO poly.polyOps M q) a) b
+        = evalLO poly.polyOps
+          (ground.getAt [] (ground.getAt [] M a) b) q := by
+      show ground.getAt [] (ground.getAt [] (M.map (fun row =>
+          row.map (fun p => evalLO poly.polyOps p q))) a) b = _
+      rw [ground.getAt_map ([] : List poly.PPoly)
+          ([] : List poly.Poly) _ M a ha,
+        ground.getAt_map ([] : poly.PPoly) ([] : poly.Poly) _
+          (ground.getAt [] M a) b hb']
+    have e2 : ground.getAt []
+        (ground.getAt [] (M.map (fun row => row.map
+          (fun P => poly.pevalC P q ground.Pos.one 1))) a) b
+        = poly.pevalC
+          (ground.getAt [] (ground.getAt [] M a) b) q
+          ground.Pos.one 1 := by
+      rw [ground.getAt_map ([] : List poly.PPoly)
+          ([] : List poly.Poly) _ M a ha,
+        ground.getAt_map ([] : poly.PPoly) ([] : poly.Poly) _
+          (ground.getAt [] M a) b hb']
+    rw [e1, e2]
+    exact poly.oneValue_symm (pevalCOne_evalLO _ q)
+  exact poly.oneValue_trans (pevalCOne_evalLO _ q)
+    (poly.oneValue_trans h2 (poly.oneValue_trans h3
+      (poly.oneValue_trans h4 h5)))
+
 /-- The shift matrix's evaluation: the rows' evaluated
 coefficients are the evaluated polynomials' own shift rows. -/
 theorem shiftMatO_eval (p q : List poly.Poly) (r : BPair) :
@@ -27181,16 +27888,11 @@ private theorem length_shiftRow {γ : Type} (ops : DOps γ) (w a : Nat)
     ground.subSub w a f.length]
   exact ground.natAddSubCancel h
 
-/-- A count is at most its predecessor's successor. -/
-private theorem le_succ_pred : ∀ n : Nat, n ≤ n - 1 + 1
-  | 0 => Nat.zero_le 1
-  | n + 1 => Nat.le_refl (n + 1)
-
 /-- The shift row fits its width: an offset below the further
 polynomial's degree leaves room for the whole polynomial. -/
 private theorem shiftFit (i n m : Nat) (h : i < m) :
     i + n ≤ m + (n - 1) := by
-  refine Nat.le_trans (Nat.add_le_add_left (le_succ_pred n) i) ?_
+  refine Nat.le_trans (Nat.add_le_add_left (ground.lePredSucc n) i) ?_
   rw [show i + (n - 1 + 1) = i + 1 + (n - 1) from
     (Nat.succ_add i (n - 1)).symm]
   exact Nat.add_le_add_right h (n - 1)
@@ -27618,5 +28320,397 @@ theorem bezout_all (p q : poly.Poly)
     (poly.ov_of_getAt (fun j =>
       BPair.oneValue_trans (bezout_coef p q j) (colFold_read p q hW j)))
     ⟨BPair.oneValue_symm (resultant_read p q), trivial⟩
+
+
+/-! The squares' fold at a joined vector and the count's fold of
+squares at a matrix sum (`lem:fourpoint`'s tail): the expansion of a
+sum's self-pairing, the weighted polarization beneath it, and the
+list sum's own square cap at the count's multiple. -/
+
+/-- A joined vector's self-pairing expands into the two self-pairings
+and the two cross pairings. -/
+theorem dotN_add_expand (a b : List BPair) (h : a.length = b.length) :
+    (dotN (vecAdd a b) (vecAdd a b)).oneValue
+      (dotN a a + dotN b b + (dotN a b + dotN b a)) := by
+  have hl : (vecAdd a b).length = a.length := length_vecAdd a b a.length rfl h.symm
+  refine BPair.oneValue_trans
+    (dotN_addRow a b (vecAdd a b) hl.symm (h.symm.trans hl.symm)) ?_
+  refine BPair.oneValue_trans
+    (BPair.add_congr
+      (dotN_addRow_right a a b rfl h.symm)
+      (dotN_addRow_right b a b h rfl)) ?_
+  rw [BPair.add_comm (dotN b a) (dotN b b),
+    BPair.add_add_comm (dotN a a) (dotN a b) (dotN b b) (dotN b a)]
+  exact BPair.oneValue_refl _
+
+/-- The matrix list's sum at an order, the vacant list the null matrix. -/
+def matSumL (n : Nat) : List Mat → Mat
+  | [] => nullMat n n
+  | A :: t => matAdd A (matSumL n t)
+
+/-- The list sum keeps the stated order at every term's own. -/
+private theorem sqAt_matSumL (n : Nat) : ∀ Ms : List Mat,
+    (∀ i, i < Ms.length → sqAt (ground.getAt [] Ms i) n) →
+    sqAt (matSumL n Ms) n
+  | [], _ => sqAt_of (length_nullMat n n) (rowsLen_nullMat n n)
+  | A :: t, h =>
+    sqAt_matAdd n A (matSumL n t) (h 0 (Nat.succ_pos t.length))
+      (sqAt_matSumL n t (fun i hi => h (i + 1) (Nat.succ_lt_succ hi)))
+
+/-- A unit-tailed vector pairs every vector at the sum's unit. -/
+theorem dotN_nullL (S T : List BPair)
+    (h : poly.unitTail S) : (dotN S T).oneValue BPair.unit :=
+  dotN_congrL S [] T (poly.unitTail_oneValue h trivial)
+
+/-- A pairing against a vector at the sum's unit reads that unit,
+the mirror read. -/
+theorem dotN_nullR (u v : List BPair) (h : poly.unitTail v) :
+    (dotN u v).oneValue BPair.unit :=
+  BPair.oneValue_trans (dotN_read u v) (dotP_null_tail_right u v h)
+
+
+/-- The vector list's sum, the unit family at the vacant list. -/
+def vecSumL (n : Nat) : List (List BPair) → List BPair
+  | [] => List.replicate n BPair.unit
+  | v :: t => vecAdd v (vecSumL n t)
+
+private theorem length_vecSumL (n : Nat) : ∀ vs : List (List BPair),
+    (∀ i, i < vs.length → (ground.getAt [] vs i).length = n) →
+    (vecSumL n vs).length = n
+  | [], _ => ground.length_replicate BPair.unit n
+  | v :: t, h =>
+    length_vecAdd v (vecSumL n t) n (h 0 (Nat.succ_pos _))
+      (length_vecSumL n t (fun i hi => h (i + 1) (Nat.succ_lt_succ hi)))
+
+/-- A member's swap image keeps its self-pairing. -/
+theorem dotN_swapPair (S : List BPair) :
+    dotN (S.map BPair.swap) (S.map BPair.swap) = dotN S S := by
+  rw [dotN_swapLeft, dotN_swap]
+  exact rfl
+
+/-- One head's pairwise gaps against a tail: the fold of the gap
+self-pairings, the head against each member's balance partner. -/
+def gapRow (a : List BPair) : List (List BPair) → BPair
+  | [] => BPair.unit
+  | u :: t =>
+    dotN (vecAdd a (u.map BPair.swap)) (vecAdd a (u.map BPair.swap))
+      + gapRow a t
+
+/-- The pairwise gaps' fold over the place pairs. -/
+def gapFold : List (List BPair) → BPair
+  | [] => BPair.unit
+  | a :: t => gapRow a t + gapFold t
+
+/-- The self-pairings' fold. -/
+def selfSumL : List (List BPair) → BPair
+  | [] => BPair.unit
+  | v :: t => dotN v v + selfSumL t
+
+/-- A member joined to its count multiple with a second member's own
+collects at the successor count. -/
+private theorem succCollect (k : Nat) (x y : BPair) :
+    ((x + (BPair.ofNat k * x + y)) + BPair.ofNat k * y).oneValue
+      (BPair.ofNat (k + 1) * (x + y)) := by
+  refine BPair.oneValue_symm ?_
+  refine BPair.oneValue_trans
+    (BPair.mul_congr_left (BPair.ofNat_succ k)) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq
+      (BPair.right_distrib (BPair.ofNat k) (BPair.ofNat 1) (x + y))) ?_
+  refine BPair.oneValue_trans
+    (BPair.add_congr (BPair.oneValue_of_eq
+        (BPair.left_distrib (BPair.ofNat k) x y))
+      (BPair.ofNat_one_mul (x + y))) ?_
+  refine BPair.oneValue_of_eq ?_
+  rw [BPair.add_add_comm (BPair.ofNat k * x) (BPair.ofNat k * y) x y,
+    BPair.add_comm (BPair.ofNat k * x) x,
+    BPair.add_comm (BPair.ofNat k * y) y,
+    ← BPair.add_assoc x (BPair.ofNat k * x) y,
+    BPair.add_assoc (x + BPair.ofNat k * x) y (BPair.ofNat k * y)]
+
+/-- Eight summands regrouped at the swap pair and the row's two
+folds. -/
+private theorem gapCollect (A U W R x y z w : BPair) :
+    (((A + U) + W) + R) + ((x + y) + (z + w))
+      = (A + U) + ((W + (x + z)) + (R + (y + w))) := by
+  repeat rw [BPair.add_assoc]
+  rw [BPair.add_left_comm R x (y + (z + w)),
+    BPair.add_left_comm y z w,
+    BPair.add_left_comm R z (y + w),
+    BPair.add_left_comm W x (z + (R + (y + w))),
+    BPair.add_left_comm W z (R + (y + w))]
+
+/-- Five summands regrouped at the row against the cross pair. -/
+private theorem regroup5 (A S2 C R G : BPair) :
+    ((A + S2) + C) + (R + G) = (A + (R + C)) + (S2 + G) := by
+  repeat rw [BPair.add_assoc]
+  rw [BPair.add_left_comm S2 C (R + G),
+    BPair.add_left_comm S2 R G,
+    BPair.add_left_comm C R (S2 + G)]
+
+/-- One head's gap row joined to its two cross pairings against the
+tail's sum reads the tail's count against the head's self-pairing,
+the tail's fold beside it. -/
+private theorem gapRow_split (n : Nat) (a : List BPair) (ha : a.length = n) :
+    ∀ t : List (List BPair),
+    (∀ i, i < t.length → (ground.getAt [] t i).length = n) →
+    (gapRow a t + (dotN a (vecSumL n t) + dotN (vecSumL n t) a)).oneValue
+      (BPair.ofNat t.length * dotN a a + selfSumL t)
+  | [], _ => by
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl BPair.unit)
+        (BPair.add_congr
+          (dotN_nullR a (vecSumL n []) (poly.unitTail_replicate n))
+          (dotN_nullL (vecSumL n []) a (poly.unitTail_replicate n)))) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl BPair.unit)
+        (BPair.unit_add BPair.unit)) ?_
+    refine BPair.oneValue_trans (BPair.unit_add BPair.unit) ?_
+    refine BPair.oneValue_symm ?_
+    exact BPair.oneValue_trans
+      (BPair.add_congr (BPair.unit_mul (dotN a a))
+        (BPair.oneValue_refl BPair.unit))
+      (BPair.unit_add BPair.unit)
+  | u :: t, h => by
+    have hu : u.length = n := h 0 (Nat.succ_pos _)
+    have ht : ∀ i, i < t.length → (ground.getAt [] t i).length = n :=
+      fun i hi => h (i + 1) (Nat.succ_lt_succ hi)
+    have hS : (vecSumL n t).length = n := length_vecSumL n t ht
+    have hu' : (u.map BPair.swap).length = n :=
+      (ground.length_map BPair.swap u).trans hu
+    refine BPair.oneValue_trans
+      (BPair.add_congr
+        (BPair.add_congr
+          (dotN_add_expand a (u.map BPair.swap) (ha.trans hu'.symm))
+          (BPair.oneValue_refl (gapRow a t)))
+        (BPair.add_congr
+          (dotN_addRow_right a u (vecSumL n t) (hu.trans ha.symm)
+            (hS.trans ha.symm))
+          (dotN_addRow u (vecSumL n t) a (hu.trans ha.symm)
+            (hS.trans ha.symm)))) ?_
+    rw [dotN_swapPair u, dotN_swap a u, dotN_swapLeft u a, BPair.swap_add]
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq
+        (gapCollect (dotN a a) (dotN u u) ((dotN a u + dotN u a).swap)
+          (gapRow a t) (dotN a u) (dotN a (vecSumL n t)) (dotN u a)
+          (dotN (vecSumL n t) a))) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl (dotN a a + dotN u u))
+        (BPair.add_congr
+          (BPair.swap_add_null
+            (BPair.oneValue_refl (dotN a u + dotN u a)))
+          (gapRow_split n a ha t ht))) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl _)
+        (BPair.unit_add (BPair.ofNat t.length * dotN a a + selfSumL t))) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq
+        (BPair.add_add_comm (dotN a a) (dotN u u)
+          (BPair.ofNat t.length * dotN a a) (selfSumL t))) ?_
+    refine BPair.add_congr ?_ (BPair.oneValue_refl (dotN u u + selfSumL t))
+    refine BPair.oneValue_symm ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr_left (BPair.ofNat_succ t.length)) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq
+        (BPair.right_distrib (BPair.ofNat t.length) (BPair.ofNat 1)
+          (dotN a a))) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl _)
+        (BPair.ofNat_one_mul (dotN a a))) ?_
+    exact BPair.oneValue_of_eq
+      (BPair.add_comm (BPair.ofNat t.length * dotN a a) (dotN a a))
+
+/-- The count's fold of squares (`lem:fourpoint`'s displayed identity
+at the pairing's coordinate folds, `def:ground`'s arithmetic): the
+sum's self-pairing joined to the pairwise gaps' fold reads the count
+against the self-pairings' fold. -/
+theorem dotN_sumL_split (n : Nat) : ∀ vs : List (List BPair),
+    (∀ i, i < vs.length → (ground.getAt [] vs i).length = n) →
+    (dotN (vecSumL n vs) (vecSumL n vs) + gapFold vs).oneValue
+      (BPair.ofNat vs.length * selfSumL vs)
+  | [], _ => by
+    refine BPair.oneValue_trans
+      (BPair.add_congr
+        (dotN_nullL (vecSumL n []) (vecSumL n []) (poly.unitTail_replicate n))
+        (BPair.oneValue_refl BPair.unit)) ?_
+    refine BPair.oneValue_trans (BPair.unit_add BPair.unit) ?_
+    exact BPair.oneValue_symm (BPair.unit_mul BPair.unit)
+  | a :: t, h => by
+    have ha : a.length = n := h 0 (Nat.succ_pos _)
+    have ht : ∀ i, i < t.length → (ground.getAt [] t i).length = n :=
+      fun i hi => h (i + 1) (Nat.succ_lt_succ hi)
+    have hS : (vecSumL n t).length = n := length_vecSumL n t ht
+    refine BPair.oneValue_trans
+      (BPair.add_congr
+        (dotN_add_expand a (vecSumL n t) (ha.trans hS.symm))
+        (BPair.oneValue_refl (gapRow a t + gapFold t))) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq
+        (regroup5 (dotN a a) (dotN (vecSumL n t) (vecSumL n t))
+          (dotN a (vecSumL n t) + dotN (vecSumL n t) a) (gapRow a t)
+          (gapFold t))) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr
+        (BPair.add_congr (BPair.oneValue_refl (dotN a a))
+          (gapRow_split n a ha t ht))
+        (dotN_sumL_split n t ht)) ?_
+    exact succCollect t.length (dotN a a) (selfSumL t)
+
+/-- The gaps' folds sit at or above the sum's unit, each entry a
+self-pairing. -/
+private theorem gapRow_nn (a : List BPair) : ∀ t : List (List BPair),
+    BPair.unit ≤ gapRow a t
+  | [] => ground.leB_refl BPair.unit
+  | u :: t => by
+    refine ground.leB_congr_left (BPair.unit_add BPair.unit) ?_
+    exact ground.leB_add
+      (ground.leB_of_not_lt (dotN_self_side _)) (gapRow_nn a t)
+
+private theorem gapFold_nn : ∀ vs : List (List BPair),
+    BPair.unit ≤ gapFold vs
+  | [] => ground.leB_refl BPair.unit
+  | a :: t => by
+    refine ground.leB_congr_left (BPair.unit_add BPair.unit) ?_
+    exact ground.leB_add (gapRow_nn a t) (gapFold_nn t)
+
+/-- The sum's square cap: the identity's read at the gaps' fold on its
+upper side. -/
+theorem dotN_sumL_sq_le (n : Nat) (vs : List (List BPair))
+    (hvs : ∀ i, i < vs.length → (ground.getAt [] vs i).length = n) :
+    dotN (vecSumL n vs) (vecSumL n vs)
+      ≤ BPair.ofNat vs.length * selfSumL vs := by
+  refine ground.leB_congr
+    (BPair.add_unit (dotN (vecSumL n vs) (vecSumL n vs)))
+    (dotN_sumL_split n vs hvs) ?_
+  exact ground.leB_add (ground.leB_refl _) (gapFold_nn vs)
+
+/-- The list sum's action is the actions' sum. -/
+theorem matVec_matSumL (n : Nat) : ∀ Ms : List Mat,
+    (∀ i, i < Ms.length → sqAt (ground.getAt [] Ms i) n) →
+    ∀ x : List BPair, x.length = n →
+    poly.oneValue (matVec (matSumL n Ms) x)
+      (vecSumL n (Ms.map (fun A => matVec A x)))
+  | [], _, x, _ =>
+    poly.unitTail_oneValue (matVec_nullMat n n x) (poly.unitTail_replicate n)
+  | A :: t, h, x, hx => by
+    have hA : sqAt A n := h 0 (Nat.succ_pos _)
+    have ht : ∀ i, i < t.length → sqAt (ground.getAt [] t i) n :=
+      fun i hi => h (i + 1) (Nat.succ_lt_succ hi)
+    have hmap : ∀ i, i < (t.map (fun B => matVec B x)).length →
+        (ground.getAt [] (t.map (fun B => matVec B x)) i).length = n := by
+      intro i hi
+      have hit : i < t.length := by
+        rw [← ground.length_map (fun B => matVec B x) t]
+        exact hi
+      rw [ground.getAt_map ([] : Mat) ([] : List BPair)
+        (fun B => matVec B x) t i hit]
+      exact (matVec_length _ x).trans (sqAt_len (ht i hit))
+    have hlen1 : (matVec (matSumL n t) x).length = n :=
+      (matVec_length _ x).trans (sqAt_len (sqAt_matSumL n t ht))
+    have hlen2 : (vecSumL n (t.map (fun B => matVec B x))).length = n :=
+      length_vecSumL n _ hmap
+    refine poly.oneValue_trans
+      (matVec_add_free n A (matSumL n t) x (rowsLen_of_sqAt hA)
+        (rowsLen_of_sqAt (sqAt_matSumL n t ht))) ?_
+    exact vecAdd_congr2 _ _ _ _ rfl (hlen1.trans hlen2.symm)
+      (poly.oneValue_refl (matVec A x)) (matVec_matSumL n t ht x hx)
+
+/-- The self-pairings' fold at per-term caps: one cap per term, the
+fold at the count's multiple. -/
+private theorem selfSumL_cap (c : BPair) : ∀ vs : List (List BPair),
+    (∀ i, i < vs.length → dotN (ground.getAt [] vs i) (ground.getAt [] vs i) ≤ c) →
+    selfSumL vs ≤ BPair.ofNat vs.length * c
+  | [], _ => by
+    refine ground.leB_congr_right
+      (BPair.oneValue_symm (BPair.unit_mul c)) (ground.leB_refl BPair.unit)
+  | v :: t, h => by
+    refine ground.leB_congr_right ?_
+      (ground.leB_add (h 0 (Nat.succ_pos _))
+        (selfSumL_cap c t (fun i hi => h (i + 1) (Nat.succ_lt_succ hi))))
+    refine BPair.oneValue_symm ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr_left (BPair.ofNat_succ t.length)) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq
+        (BPair.right_distrib (BPair.ofNat t.length) (BPair.ofNat 1) c)) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl _) (BPair.ofNat_one_mul c)) ?_
+    exact BPair.oneValue_of_eq
+      (BPair.add_comm (BPair.ofNat t.length * c) c)
+
+/-- The list sum's square cap at per-term caps (`lem:fourpoint`'s
+count's fold of squares at the per-term square cap): the summed
+action's self-pairing sits at or below the count's square against the
+per-term cap, the displayed identity's read at the gaps' fold on its
+upper side. -/
+theorem matSumL_sq_cap (n : Nat) (Ms : List Mat)
+    (hMs : ∀ i, i < Ms.length → sqAt (ground.getAt [] Ms i) n) (D : Pos)
+    (hcap : ∀ i, i < Ms.length → ∀ x : List BPair, x.length = n →
+      ¬ (BPair.ofPos (D * D) * dotN x x
+        < dotN (matVec (ground.getAt [] Ms i) x) (matVec (ground.getAt [] Ms i) x)))
+    (x : List BPair) (hx : x.length = n) :
+    ¬ (BPair.ofNat (Ms.length * Ms.length) * (BPair.ofPos (D * D) * dotN x x)
+        < dotN (matVec (matSumL n Ms) x) (matVec (matSumL n Ms) x)) := by
+  have hmap : ∀ i, i < (Ms.map (fun A => matVec A x)).length →
+      (ground.getAt [] (Ms.map (fun A => matVec A x)) i).length = n := by
+    intro i hi
+    have hit : i < Ms.length := by
+      rw [← ground.length_map (fun A => matVec A x) Ms]
+      exact hi
+    rw [ground.getAt_map ([] : Mat) ([] : List BPair)
+      (fun A => matVec A x) Ms i hit]
+    exact (matVec_length _ x).trans (sqAt_len (hMs i hit))
+  have hterm : ∀ i, i < (Ms.map (fun A => matVec A x)).length →
+      dotN (ground.getAt [] (Ms.map (fun A => matVec A x)) i)
+          (ground.getAt [] (Ms.map (fun A => matVec A x)) i)
+        ≤ BPair.ofPos (D * D) * dotN x x := by
+    intro i hi
+    have hit : i < Ms.length := by
+      rw [← ground.length_map (fun A => matVec A x) Ms]
+      exact hi
+    rw [ground.getAt_map ([] : Mat) ([] : List BPair)
+      (fun A => matVec A x) Ms i hit]
+    exact ground.leB_of_not_lt (hcap i hit x hx)
+  refine ground.leB_not_lt ?_
+  refine ground.leB_congr_left
+    (BPair.oneValue_symm
+      (BPair.oneValue_trans
+        (dotN_congrL _ _ _ (matVec_matSumL n Ms hMs x hx))
+        (dotN_congrR _ _ _ (matVec_matSumL n Ms hMs x hx)))) ?_
+  refine ground.leB_trans
+    (dotN_sumL_sq_le n (Ms.map (fun A => matVec A x)) hmap) ?_
+  refine ground.leB_congr_right ?_
+    (ground.leB_mulR (ground.unitLeOfNat _)
+      (selfSumL_cap (BPair.ofPos (D * D) * dotN x x)
+        (Ms.map (fun A => matVec A x)) hterm))
+  refine BPair.oneValue_symm ?_
+  rw [ground.length_map (fun A => matVec A x) Ms]
+  exact BPair.ofNat_mul_mul Ms.length Ms.length
+    (BPair.ofPos (D * D) * dotN x x)
+
+/-- The squares' fold at a vector sum: the joined vector's self-pairing
+sits at or below twice the two self-pairings' sum, the gap's square
+`⟨u − v, u − v⟩` the witness. -/
+theorem dotN_vecAdd_sq_le (u v : List BPair) (h : u.length = v.length) :
+    dotN (vecAdd u v) (vecAdd u v) ≤ BPair.ofNat 2 * (dotN u u + dotN v v) := by
+  have hcross : dotN u v + dotN v u ≤ dotN u u + dotN v v := by
+    have hv' : u.length = (v.map BPair.swap).length :=
+      h.trans (ground.length_map BPair.swap v).symm
+    have hgap : BPair.unit
+        ≤ dotN u u + dotN v v + (dotN u v + dotN v u).swap := by
+      refine ground.leB_congr_right ?_
+        (ground.leB_of_not_lt (dotN_self_side (vecAdd u (v.map BPair.swap))))
+      refine BPair.oneValue_trans (dotN_add_expand u (v.map BPair.swap) hv') ?_
+      rw [dotN_swapPair v, dotN_swap u v, dotN_swapLeft v u, BPair.swap_add]
+      exact BPair.oneValue_refl _
+    refine ground.leB_congr_left
+      (BPair.oneValue_of_eq (BPair.swap_swap (dotN u v + dotN v u)).symm) ?_
+    exact ground.leB_of_unit_add hgap
+  refine ground.leB_congr_left
+    (BPair.oneValue_symm (dotN_add_expand u v h)) ?_
+  refine ground.leB_congr_right
+    (BPair.oneValue_symm (BPair.ofNat_two_mul (dotN u u + dotN v v))) ?_
+  exact ground.leB_add (ground.leB_refl _) hcross
 
 end elim

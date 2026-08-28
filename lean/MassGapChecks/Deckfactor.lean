@@ -17,7 +17,6 @@ displays, and the vanishing top's collapsed endpoints refusing.
 The walk's chord instance at base two,
 `z* = 1/2` at `w = 5/2` — the interior member with the exterior
 refusal, and the margin's `[9 : 4]` crossing square. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly elim inertia deckfactor

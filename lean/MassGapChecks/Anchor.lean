@@ -8,7 +8,6 @@ along the `r = 1` tower and beyond, the adjoint's own `m = 1` value
 degenerate counts (`d = 0` decided, `d = 1` refused), and the tower
 law's cross-multiplied display through the theorem.
 -/
-set_option maxRecDepth 8192
 
 open ground places anchor
 

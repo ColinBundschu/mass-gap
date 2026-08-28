@@ -33,7 +33,6 @@ at `D_3`, each against `orbitFam`), and the heavy members'
 further rows are the polynomial tier's, read at
 `lem:serstable`'s word reads rather than re-decided here.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 64000000
 
 open ground memberdata fusion

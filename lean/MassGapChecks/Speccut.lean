@@ -30,7 +30,6 @@ own split there counts a reversal, so every split's count reads it
 (`lem:inertia`'s shared count): the floor datum is the violated
 clause.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground elim inertia speccut
@@ -76,7 +75,6 @@ private def l3 : List (BPair × Pos × BPair) :=
   [(u, 1, ⟨2, 1⟩), (⟨13, 1⟩, 1, ⟨2, 1⟩), (⟨33, 1⟩, 1, ⟨2, 1⟩)]
 
 example : l3.map (fun r => (r.1, r.2.1)) = roots3 := by decide +kernel
-example : matOneValue (transposeM et3) et3 := by decide +kernel
 example : split.diagRead et3 (idMat 3) id3 id3 l3 := by decide +kernel
 
 /-! The forward direction at the window: the spectral read at the
@@ -84,7 +82,7 @@ edge prices the cut's split, the kernel deciding the same count
 raw. -/
 
 example : psdAt spCut :=
-  spec_to_cut et3 id3 id3 l3 4 3 1 (by decide +kernel) (by decide +kernel) (by decide +kernel)
+  spec_to_cut et3 id3 id3 l3 4 3 1 (by decide +kernel) (by decide +kernel)
     spCut (by decide +kernel)
 
 example : psdAt spCut := by decide +kernel
@@ -102,7 +100,7 @@ example : splitRead et3 spGap := by decide +kernel
 example : psdAt spGap := by decide +kernel
 
 example : specRead (l3.map (fun r => (r.1, r.2.1))) 4 3 1 :=
-  cut_to_spec et3 id3 id3 l3 4 3 1 (by decide +kernel) (by decide +kernel) spGap
+  cut_to_spec et3 id3 id3 l3 4 3 1 (by decide +kernel) spGap
     (by decide +kernel) (by decide +kernel) spCut (by decide +kernel) (by decide +kernel)
 
 example : specRead (l3.map (fun r => (r.1, r.2.1))) 4 3 1 := by decide +kernel
@@ -141,7 +139,6 @@ private def l1 : List (BPair × Pos × BPair) := [(⟨1, 2⟩, 1, ⟨5, 1⟩)]
 private def sp1 : Split 1 :=
   ⟨⟨[[⟨3, 1⟩]], by decide +kernel⟩, ⟨[[⟨2, 1⟩]], by decide +kernel⟩, [.one ⟨9, 1⟩], 0, rfl⟩
 
-example : matOneValue (transposeM et1) et1 := by decide +kernel
 example : split.diagRead et1 (idMat 1) t1 t1w l1 := by decide +kernel
 
 example : splitRead (siteDatum (matScale (1 : Pos) (matMul et1 et1))

@@ -31,7 +31,6 @@ input the divisor outright); at two vacant inputs the tuple refuses,
 the Bézout conjunct unsatisfiable against a divisor with a positive
 top.  Beside them the walk's own invariant at its first step off
 the chain, `3P - z P' = 6(1 - z)` before the content strip. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly elim windowsep

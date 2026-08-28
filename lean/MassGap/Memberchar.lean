@@ -249,7 +249,7 @@ private theorem wBox_mem : ∀ (ds : List Nat) (D : Nat) (c : List Nat),
       Nat.le_trans (Nat.le_add_right _ _) hsum'
     have hres : ground.sumNat (List.zipWith Nat.mul c ds)
         ≤ D - v * d := by
-      refine ground.natLeCancelR (v * d) ?_
+      refine ground.leCancelR (v * d) ?_
       rw [ground.subAdd hvd]
       rw [Nat.add_comm (v * d)
         (ground.sumNat (List.zipWith Nat.mul c ds))] at hsum'
@@ -438,21 +438,6 @@ own line, the stepped key is the one member the two lines read
 apart, and the stepped key sits off its own line at the positive
 member's strictly rising `ρ`-dot. -/
 
-/-- The first line step's key: the natural one's multiple of the
-`j`-th positive member joins `ν` at the stepped key itself. -/
-private theorem stepKey0 (t : gentable.Table) (j : Nat)
-    (nu : List BPair) (hnu : nu.length = t.rank) :
-    poly.pnorm (elim.vecAdd nu
-        (elim.vecScale (BPair.ofNat 1) (posCorootV t j)))
-      = poly.pnorm (elim.vecAdd nu (posCorootV t j)) := by
-  have hA : (posCorootV t j).length = t.rank := posCorootV_length t j
-  refine poly.pnorm_congr _ _ ?_ ?_
-  · rw [elim.length_vecAdd nu _ t.rank hnu
-      ((elim.length_vecScale _ _).trans hA),
-      elim.length_vecAdd nu _ t.rank hnu hA]
-  · exact elim.polyOne_vecAdd _ _ _ _ (poly.oneValue_refl nu)
-      (elim.vecScale_one _) rfl (elim.length_vecScale _ _)
-
 /-- The further line steps: a multiple two or beyond of the `j`-th
 positive member beyond `ν` sits one multiple lower beyond the
 stepped key. -/
@@ -538,7 +523,7 @@ theorem gAt_tel (t : gentable.Table) (F : FundData)
   -- the stepped key is on the key's own line
   have hhead : lineAt t F nu
       (poly.pnorm (elim.vecAdd nu (posCorootV t j))) j = true :=
-    lineAt_of_hit t F hshape hrd hj nu _ hnuLe 0 (stepKey0 t j nu hnu)
+    lineAt_of_hit t F hshape hrd hj nu _ hnuLe 0 (assembly.lineKey_one t (j := j) nu hnu)
   refine BPair.oneValue_trans
     (ground.foldB_congr_members _ (fun mu =>
       (if lineAt t F (poly.pnorm (elim.vecAdd nu (posCorootV t j)))
@@ -565,7 +550,7 @@ theorem gAt_tel (t : gentable.Table) (F : FundData)
         have h2 : lineAt t F
             (poly.pnorm (elim.vecAdd nu (posCorootV t j))) mu j = true := by
           match l with
-          | 0 => exact absurd ((stepKey0 t j nu hnu).symm.trans hhit).symm hmu
+          | 0 => exact absurd ((assembly.lineKey_one t (j := j) nu hnu).symm.trans hhit).symm hmu
           | l' + 1 =>
             refine lineAt_of_hit t F hshape hrd hj _ mu hnu' l' ?_
             rw [← stepKey t j nu hnu l']
@@ -759,7 +744,7 @@ private theorem lineHt (t : gentable.Table) (F : FundData)
     (dotB_addR t F hshape (rhoV t) z _
       (ground.length_replicate (BPair.ofNat 1) t.rank) hz hS) ?_
   exact BPair.add_congr (BPair.oneValue_refl _)
-    (dotB_scaleR t F hshape _ (rhoV t) (posCorootV t j) hA)
+    (dotB_scaleR F _ (rhoV t) (posCorootV t j))
 
 /-- The positive member's own height sits strictly above the sum's
 unit, `ρ` read at the pairing's first slot. -/
@@ -2542,57 +2527,6 @@ strictly dominant key joins the window at the capped coefficient
 sum, and the separation prices the eigen identity's factor so the
 counts balance off the shifted key. -/
 
-/-- The pairing's first-slot monotony against an entrywise
-at-or-above-unit column. -/
-private theorem dotP_le_left : ∀ (u w v : List BPair),
-    u.length = w.length →
-    (∀ k, k < u.length →
-      ground.getAt BPair.unit u k ≤ ground.getAt BPair.unit w k) →
-    (∀ k, k < v.length →
-      BPair.unit ≤ ground.getAt BPair.unit v k) →
-    elim.dotP u v ≤ elim.dotP w v
-  | [], [], _, _, _, _ => ground.leB_refl _
-  | [], _ :: _, _, hl, _, _ => Nat.noConfusion hl
-  | _ :: _, [], _, hl, _, _ => Nat.noConfusion hl
-  | _ :: _, _ :: _, [], _, _, _ => ground.leB_refl _
-  | a :: u, b :: w, x :: v, hl, hu, hv => by
-    show a * x + elim.dotP u v ≤ b * x + elim.dotP w v
-    refine ground.leB_add ?_ (dotP_le_left u w v (Nat.succ.inj hl)
-      (fun k hk => hu (k + 1) (Nat.succ_lt_succ hk))
-      (fun k hk => hv (k + 1) (Nat.succ_lt_succ hk)))
-    rw [BPair.mul_comm a x, BPair.mul_comm b x]
-    exact ground.leB_mulR (hv 0 (Nat.succ_pos _))
-      (hu 0 (Nat.succ_pos _))
-
-/-- A strictly dominant key's `ρ`-pairing clears `ρ`'s own: the
-Gram's `ρ`-column entrywise at or above the unit against the key's
-entries at or above one. -/
-private theorem rhoDot_le_dom (t : gentable.Table) (F : FundData)
-    (hshape : fundShape t F) (hgram : gramRead t F)
-    (hgsym : gramSymRead F) (hrho : gentable.rhoRead t)
-    (y : List BPair) (hy : y.length = t.rank)
-    (hdy : ∀ k, k < t.rank →
-      BPair.unit < ground.getAt BPair.unit y k) :
-    dotB F (rhoV t) (rhoV t) ≤ dotB F y (rhoV t) := by
-  have hrl : (rhoV t).length = t.rank :=
-    ground.length_replicate (BPair.ofNat 1) t.rank
-  show elim.dotP (rhoV t) (elim.matVec F.gram (rhoV t))
-    ≤ elim.dotP y (elim.matVec F.gram (rhoV t))
-  refine dotP_le_left (rhoV t) y _ (hrl.trans hy.symm)
-    (fun k hk => ?_) (fun k hk => ?_)
-  · have hkr : k < t.rank := by
-      rw [← hrl]
-      exact hk
-    show ground.getAt BPair.unit
-      (List.replicate t.rank (BPair.ofNat 1)) k
-      ≤ ground.getAt BPair.unit y k
-    rw [ground.getAt_replicate BPair.unit (BPair.ofNat 1) t.rank k hkr]
-    exact ground.oneLeOfUnitLt (hdy k hkr)
-  · have hkr : k < t.rank := by
-      rw [← ((elim.matVec_length F.gram (rhoV t)).trans hshape.1)]
-      exact hk
-    exact gramRho_nonneg t F hshape hgram hgsym hrho hkr
-
 /-- The window's completeness: a strictly dominant normed key of
 the rank's order joining the shifted key at a natural simple fold
 sits in the window — the fold's coefficient sum capped at the
@@ -2634,7 +2568,7 @@ private theorem domWindow_mem (t : gentable.Table) (F : FundData)
     BPair.oneValue_trans
       (dotB_congrL F _ _ _ (poly.pnorm_oneValue _))
       (dotB_addL t F hshape lamV (rhoV t) (rhoV t) hlam.1 hrl)
-  have hyd := rhoDot_le_dom t F hshape hgram hgsym hrho y hy hdy
+  have hyd := assembly.dom_of_beyond t F hshape hgram hgsym hrho y hy hdy
   have hfle : ground.famFold BPair.add BPair.unit
       (fun i => BPair.ofNat (ground.getAt 0 c i)
         * dotB F (posCorootV t (ground.getAt 0 F.simplePos i))

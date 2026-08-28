@@ -5,7 +5,6 @@ pair's two coordinates by kernel `decide` at the committed bases
 and first residues — the channel's order count and the excess's
 evaluation, the pair's data the two divisors' reads.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground contactpair

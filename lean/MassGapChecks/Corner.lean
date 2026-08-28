@@ -1,4 +1,7 @@
 import MassGap.Corner
+import MassGap.Decimation
+import MassGap.Channeldiv
+import MassGap.Chargedcell
 /-!
 The check module for `lem:corner`'s count tier: the batteries read
 the corner count by kernel `decide` at the scale pair `η = [2 : 1]`
@@ -11,6 +14,28 @@ the corner data's first member.  The route battery consumes
 `corner_dual` in both directions at the same data: the corner count
 against the seam pencil `cornerPencil E M 2 1 = 4E − M = diag(3, 2)`
 at the level members `(2·1·3, 2·1·1)` (`certconstruct.countAtPair`).
+The corner presentation's block reads the same tier at the
+two-variable pencil over `E = diag(5, 3)`, `M = [[2, -1], [-1, 1]]`
+and the unit gram at the scale `[2 : 3]` and the height `⟨5 : 7⟩`:
+the double evaluation of `cornerPP` decided at the corner site
+`[[14, 9], [9, 15]]` beside its `cornerPP_eval` route, the count
+tie routed in both directions at the committed split — the
+congruence `[[1, -9], [0, 14]]` with its adjugate clearing the site
+to `diag(14, 1806)`, the count nought — and the tie's three order
+binders refused one at a time at a member grown to three, where the
+componentwise walk keeps the evaluated presentation's count while
+the member's own order read fails.  The ray coordinate's
+read-backs stand at the extent `[3 : 2]` — the ray `[2 : 1]` in it
+and `[3 : 1]` off it, both coordinates' doubled representatives
+routed through the two congruences — and the level's height read
+at the scale `[2 : 3]`, the height `[5 : 7]`, the ray weights
+`(4, 9)` and the level `[30 : 7]`, the floor `[1 : 2]` clearing
+and the floor `[3 : 4]` refusing, each direction beside its
+decided anchor.  The corner divisor's own block reads the toy's
+two-variable minor at its primitive split — one factor at
+height-degree two with the content the unit — and the crossing
+read `−η⁴ (4η⁴ − 4η² + 5)` with its quartic factor the sum of
+squares `(2η² − 1)² + 4`.
 The shifted scaling tier's batteries stand at the electric form
 `E = diag(2, 1)`, the cap's summand `S_θ = 4G − M = diag(3, 2)` and
 the two scales `σ = [3 : 1]`, `σ′ = [1 : 2]` at the cross gap
@@ -72,7 +97,7 @@ tables, and the gap comparison's shape and dominance-join binders
 refused at a length family past the rank, at the vacant rank, and
 at a fold beyond the top.
 
-The Rayleigh-close block closes the file at the dimension-weighted
+The Rayleigh-close block reads the dimension-weighted
 family: the toy head's four fold caps — the vacuum floor, the move
 cap, the boundary cap and the electric cap — each routed once at
 the scale triple `(1, 7, 8)` with its conclusion decided beside the
@@ -93,8 +118,52 @@ vacuum floor's key, dimension and window reads — and the drift's
 two arithmetic closes are routed at their own small instances with
 the drift close's bracket and the rate close's drift and bracket
 binders each refused beside the other decided true.
+
+The frontier-cutoff block reads the scale key, the
+seed floor's window clearing and the rate composition: the key's
+value, its own comparison and its minimality at the fixture
+`η = [2 : 3]`, `ϑ = [1 : 2]`, `d_ϑ = 3`, top `⟨4 : 1⟩` — the fold
+`135`, the clearance `18`, the step `32`, the key `4` — with the
+two positivity binders refused at the vacant scale numerator and
+the vacant level denominator; the seed floor's clearing routed at
+the Casimir `5` and the level `⟨3 : 0⟩` with its three binders
+refused one at a time where the conclusion fails; and the rate
+composition routed at the drift battery's own data with its four
+binders — the margin, the bracket's two sides and the cap's atom
+tie — refused at fixtures whose conclusion fails.
+
+The height section's block closes the file at the extent toy
+`E = [[1, 1], [1, 2]]`, `M = 4E − I` over the unit gram.  The
+section at the height `⟨2 : 1⟩` is the scale pencil whose
+determinant is `η⁴ − 3η³ − 4η² + 10η + 5`, and the two evaluation
+pins stand beside their `cornerAtHeight_eval` routes at the scale
+points `[2 : 3]` and `[1 : 1]`.  On that section the emitted record
+is committed whole — three cells at `η = 1/4, 1, 3` over the
+clearing weight `4` with counts `2, 2, 1`, the divisor's
+content-reduced Bézout certificate at the squarefree determinant, a
+comparison boundary at the frontier display `32η² − 13` and a jump
+boundary at the divisor's root in `(2, 3)` — with the truncated
+boundary list, a forged count and the two tag forgeries refused
+beside it.  The two vacant families stand there as well: the deck
+walk's three reads at the base `c₁ = 2` with the crossing pair
+`[9 : 4]`, and the tension's matched-stencil read through
+`chargedcell.tension_free`, each family's own display a constant
+whose segment count over the record's range is nought — the
+stated count and the endpoints' order each refused beside it.  The
+t-section rides `deckfactor.bandClear` — vacant at a constant
+display, refusing at the display `t` whose root sits inside the
+crossing segment with both splits read — and the rank direction
+reads the deck base as the member-key count at `d = 3`, `d = 5` and
+`d = 2`, the walk's chord at that count the chord at two.
+The join read at the count carrier closes with its own composition:
+the drift's margin comparison at the levels `⟨3 : 2⟩` and `⟨5 : 1⟩`
+with the counts `1 + 2`, `2`, `2 + 3` and `1` (`drift_margin`), and
+the whole join at the one-place head `H = [3]` over the unit gram —
+the level `⟨1 : 1⟩` vacant, the level `⟨5 : 1⟩` occupied,
+`certconstruct.count_below_occupied` holding the one at or below
+the other and `drift_margin` reading that order back as the margin
+comparison `0 + 1 ≤ 2 + 3`.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground elim inertia certconstruct corner
@@ -159,6 +228,362 @@ example : countAtPair (cornerPencil cE cM 2 1) (idMat 2)
 example : cornerCount cE cM (idMat 2) 2 1 3 1 1 (spLt ⟨1, 2⟩ ⟨7, 1⟩) :=
   (corner_dual cE cM (idMat 2) 2 1 3 1 1 (spLt ⟨1, 2⟩ ⟨7, 1⟩)
     cEsq cMsq).mpr (by decide +kernel)
+
+/-! The corner presentation's batteries at the two-variable pencil:
+the corner data `E = diag(5, 3)`, `M = [[2, -1], [-1, 1]]` over the
+unit gram at the scale `[2 : 3]` and the height `⟨5 : 7⟩`.  There
+the double evaluation of `cornerPP` reads the corner site
+`4E + 12G − 9M = [[14, 9], [9, 15]]`, whose upper-triangular
+congruence `T = [[1, -9], [0, 14]]` at the adjugate
+`Tw = [[14, 9], [0, 1]]` and the determinant `14` clears to the
+positive diagonal `diag(14, 1806)`, the count nought. -/
+
+private def pE : Mat := [[⟨6, 1⟩, u], [u, ⟨4, 1⟩]]
+
+private def pM : Mat := [[⟨3, 1⟩, ⟨1, 2⟩], [⟨1, 2⟩, ⟨2, 1⟩]]
+
+private def pG : Mat := [[⟨2, 1⟩, u], [u, ⟨2, 1⟩]]
+
+private def pT : Mat := [[⟨2, 1⟩, ⟨1, 10⟩], [u, ⟨15, 1⟩]]
+
+private def pTw : Mat := [[⟨15, 1⟩, ⟨10, 1⟩], [u, ⟨2, 1⟩]]
+
+private def pSplit : Split 2 :=
+  ⟨⟨pT, rfl⟩, ⟨pTw, rfl⟩, [.one ⟨15, 1⟩, .one ⟨1807, 1⟩], 0, rfl⟩
+
+example : elim.matOneValue (cornerSite pE pM pG 2 3 5 7)
+    [[⟨15, 1⟩, ⟨10, 1⟩], [⟨10, 1⟩, ⟨16, 1⟩]] := by decide +kernel
+
+/-! The double evaluation's identity, decided at the fixture and
+taken again through `cornerPP_eval`. -/
+
+example : elim.matOneValue
+    (cellcount.evalPC
+      (cellcount.ppevalPC (cornerPP pE pM pG) (BPair.ofPos 2) 3 2)
+      ⟨5, 7⟩ Pos.one 1)
+    (cornerSite pE pM pG 2 3 5 7) := by decide +kernel
+
+example : elim.matOneValue
+    (cellcount.evalPC
+      (cellcount.ppevalPC (cornerPP pE pM pG) (BPair.ofPos 2) 3 2)
+      ⟨5, 7⟩ Pos.one 1)
+    (cornerSite pE pM pG 2 3 5 7) :=
+  cornerPP_eval pE pM pG 2 3 5 7
+
+/-! The count tie's route: the height-direction count of the
+evaluated presentation at the committed split, decided as the
+anchor and consumed in both directions. -/
+
+private theorem pAnchor : cellcount.countAt
+    (cellcount.ppevalPC (cornerPP pE pM pG) (BPair.ofPos 2) 3 2)
+    1 ⟨5, 7⟩ Pos.one 0 pSplit := by decide +kernel
+
+private theorem pEsq : elim.sqAt pE 2 := by decide +kernel
+
+private theorem pMsq : elim.sqAt pM 2 := by decide +kernel
+
+private theorem pGsq : elim.sqAt pG 2 := by decide +kernel
+
+example : cornerCount pE pM pG 2 3 5 7 0 pSplit :=
+  (cornerPP_count pE pM pG 2 3 5 7 0 pSplit pEsq pMsq pGsq).mp pAnchor
+
+example : cellcount.countAt
+    (cellcount.ppevalPC (cornerPP pE pM pG) (BPair.ofPos 2) 3 2)
+    1 ⟨5, 7⟩ Pos.one 0 pSplit :=
+  (cornerPP_count pE pM pG 2 3 5 7 0 pSplit pEsq pMsq pGsq).mpr
+    (by decide +kernel)
+
+/-! The count tie's three order binders: an oversized member is
+truncated away by the componentwise walk, so the evaluated
+presentation keeps its count while the corner count refuses the
+member's own order read — the tie fails at each of the three, the
+other two decided at their orders. -/
+
+private def pEw : Mat :=
+  [[⟨6, 1⟩, u, u], [u, ⟨4, 1⟩, u], [u, u, u]]
+
+private def pMw : Mat :=
+  [[⟨3, 1⟩, ⟨1, 2⟩, u], [⟨1, 2⟩, ⟨2, 1⟩, u], [u, u, u]]
+
+private def pGw : Mat :=
+  [[⟨2, 1⟩, u, u], [u, ⟨2, 1⟩, u], [u, u, u]]
+
+example : ¬ elim.sqAt pEw 2 := by decide +kernel
+
+example : ¬ elim.sqAt pMw 2 := by decide +kernel
+
+example : ¬ elim.sqAt pGw 2 := by decide +kernel
+
+example : cellcount.countAt
+    (cellcount.ppevalPC (cornerPP pEw pM pG) (BPair.ofPos 2) 3 2)
+    1 ⟨5, 7⟩ Pos.one 0 pSplit := by decide +kernel
+
+example : ¬ (cellcount.countAt
+      (cellcount.ppevalPC (cornerPP pEw pM pG) (BPair.ofPos 2) 3 2)
+      1 ⟨5, 7⟩ Pos.one 0 pSplit
+    ↔ cornerCount pEw pM pG 2 3 5 7 0 pSplit) := by decide +kernel
+
+example : cellcount.countAt
+    (cellcount.ppevalPC (cornerPP pE pMw pG) (BPair.ofPos 2) 3 2)
+    1 ⟨5, 7⟩ Pos.one 0 pSplit := by decide +kernel
+
+example : ¬ (cellcount.countAt
+      (cellcount.ppevalPC (cornerPP pE pMw pG) (BPair.ofPos 2) 3 2)
+      1 ⟨5, 7⟩ Pos.one 0 pSplit
+    ↔ cornerCount pE pMw pG 2 3 5 7 0 pSplit) := by decide +kernel
+
+example : cellcount.countAt
+    (cellcount.ppevalPC (cornerPP pE pM pGw) (BPair.ofPos 2) 3 2)
+    1 ⟨5, 7⟩ Pos.one 0 pSplit := by decide +kernel
+
+example : ¬ (cellcount.countAt
+      (cellcount.ppevalPC (cornerPP pE pM pGw) (BPair.ofPos 2) 3 2)
+      1 ⟨5, 7⟩ Pos.one 0 pSplit
+    ↔ cornerCount pE pM pGw 2 3 5 7 0 pSplit) := by decide +kernel
+
+/-! `lem:corner`'s ray coordinate read-backs at the extent
+`η₁ = [3 : 2]`: the ray `[2 : 1]` sits in it and the ray `[3 : 1]`
+does not, and the membership is one value across both coordinates'
+representatives — the ray at its doubled pair and the extent at its
+doubled pair — each theorem route beside its decided anchor. -/
+
+example : rayInExtent 2 1 3 2 := by decide +kernel
+
+example : ¬ rayInExtent 3 1 3 2 := by decide +kernel
+
+private theorem rRay : (2 : Pos) * 2 = 4 * 1 := by decide +kernel
+
+private theorem rExt : (3 : Pos) * 4 = 6 * 2 := by decide +kernel
+
+example : rayInExtent 4 2 3 2 := by decide +kernel
+
+example : rayInExtent 4 2 3 2 :=
+  (rayInExtent_ray 2 1 4 2 3 2 rRay).mp (by decide +kernel)
+
+example : rayInExtent 2 1 3 2 :=
+  (rayInExtent_ray 2 1 4 2 3 2 rRay).mpr (by decide +kernel)
+
+example : rayInExtent 2 1 6 4 := by decide +kernel
+
+example : rayInExtent 2 1 6 4 :=
+  (rayInExtent_ext 2 1 3 2 6 4 rExt).mp (by decide +kernel)
+
+example : rayInExtent 2 1 3 2 :=
+  (rayInExtent_ext 2 1 3 2 6 4 rExt).mpr (by decide +kernel)
+
+/-! The level's height read at the scale `η = [2 : 3]`, the height
+`η′ = [5 : 7]`, the ray weights `(α, β) = (4, 9)` and the level
+`λ = [30 : 7]`: the scale tie `α ed² = en² β` and the cofactor
+`λ (ed hd) = ld β (en hn)` carry the level's clearance to the
+height's own comparison, the floor `κ = [1 : 2]` clearing it and
+the floor `κ = [3 : 4]` refusing it, each side beside its decided
+anchor. -/
+
+private theorem lRay : (4 : Pos) * (3 * 3) = 2 * 2 * 9 := by
+  decide +kernel
+
+private theorem lCof : (30 : Pos) * (3 * 7) = 7 * (9 * (2 * 5)) := by
+  decide +kernel
+
+example : levelClears 30 7 1 2 4 9 := by decide +kernel
+
+example : (1 : Pos) * 7 ≤ 5 * 2 := by decide +kernel
+
+example : (1 : Pos) * 7 ≤ 5 * 2 :=
+  (level_height 2 3 5 7 30 7 1 2 4 9 lRay lCof).mp (by decide +kernel)
+
+example : levelClears 30 7 1 2 4 9 :=
+  (level_height 2 3 5 7 30 7 1 2 4 9 lRay lCof).mpr (by decide +kernel)
+
+example : ¬ levelClears 30 7 3 4 4 9 := by decide +kernel
+
+example : ¬ ((3 : Pos) * 7 ≤ 5 * 4) := by decide +kernel
+
+example : ¬ levelClears 30 7 3 4 4 9 :=
+  fun h => (by decide +kernel : ¬ ((3 : Pos) * 7 ≤ 5 * 4))
+    ((level_height 2 3 5 7 30 7 3 4 4 9 lRay lCof).mp h)
+
+example : ¬ ((3 : Pos) * 7 ≤ 5 * 4) :=
+  fun h => (by decide +kernel : ¬ levelClears 30 7 3 4 4 9)
+    ((level_height 2 3 5 7 30 7 3 4 4 9 lRay lCof).mpr h)
+
+/-! The corner divisor at the presentation's toy: the two-variable
+minor `χ = η² x² + η (3 − 8η²) x + (15η⁴ − 11η² + 1)` is primitive
+over the base at its stated top, one factor at height-degree two
+with the content the unit (`divisorid.splitRead`), and the crossing
+read (`thm:divisorid`) is `D = −η⁴ (4η⁴ − 4η² + 5)`, whose quartic
+factor is the sum of squares `(2η² − 1)² + 4`: the vacant scale is
+the divisor's every real root. -/
+
+private def pChi : poly.PPoly := split.ppminor (cornerPP pE pM pG)
+
+private def pDiv : poly.Poly := divisorid.crossD [pChi]
+
+example : poly.ppOneValue pChi
+    [[⟨2, 1⟩, u, ⟨1, 12⟩, u, ⟨16, 1⟩], [u, ⟨4, 1⟩, u, ⟨1, 9⟩],
+      [u, u, ⟨2, 1⟩]] := by decide +kernel
+
+example : divisorid.splitRead pChi poly.one [pChi] := by decide +kernel
+
+private def pDivL : poly.Poly :=
+  [u, u, u, u, ⟨1, 6⟩, u, ⟨5, 1⟩, u, ⟨1, 5⟩]
+
+private theorem pDiv_pin : poly.oneValue pDiv pDivL := by
+  decide +kernel
+
+/-! The located output's leading-term radius at the presentation
+toy's divisor (`thm:windowsep`'s root bound, the cell datum beside
+the output): the radius reads through the pinned display
+(`windowsep.radiusD_congr`) and the flat window's two heights sit
+inside it. -/
+
+example : windowsep.radiusD pDivL = ⟨5, 1⟩ := by decide +kernel
+
+example : windowsep.radiusD pDiv = ⟨5, 1⟩ :=
+  (windowsep.radiusD_congr pDiv_pin).trans (by decide +kernel)
+
+example : (⟨2, 1⟩ : BPair) < windowsep.radiusD pDivL
+    ∧ (⟨3, 1⟩ : BPair) < windowsep.radiusD pDivL := by decide +kernel
+
+example : poly.oneValue
+    (poly.add (poly.mul [⟨1, 2⟩, u, ⟨3, 1⟩] [⟨1, 2⟩, u, ⟨3, 1⟩])
+      [⟨5, 1⟩])
+    [⟨6, 1⟩, u, ⟨1, 5⟩, u, ⟨5, 1⟩] := by decide +kernel
+
+/-! The flat window at the corner carrier: the toy's window at the
+heights `⟨1 : 2⟩` and `⟨2 : 1⟩`, both counts one — the sites
+`[[8, 9], [9, 9]]` and `[[-4, 9], [9, -3]]` at one lower-side
+block each — the route beside its decided anchor, and the two
+shape binders' isolating refusals at the padded members with the
+co-binder decided true beside each. -/
+
+private def cfA : Split 2 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 10⟩], [u, ⟨9, 1⟩]], rfl⟩,
+   ⟨[[⟨9, 1⟩, ⟨10, 1⟩], [u, ⟨2, 1⟩]], rfl⟩,
+   [.one ⟨9, 1⟩, .one ⟨1, 73⟩], 0, rfl⟩
+
+private def cfT : Split 2 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 10⟩], [u, ⟨1, 5⟩]], rfl⟩,
+   ⟨[[⟨1, 5⟩, ⟨10, 1⟩], [u, ⟨2, 1⟩]], rfl⟩,
+   [.one ⟨1, 5⟩, .one ⟨277, 1⟩], 0, rfl⟩
+
+example : flatstep.vacFlat (corner.cornerPencil pE pM 2 3) pG
+      (2 * 3 * 1) (2 * 3 * 2) (2 * 3 * 2) (2 * 3 * 1) 1 cfA cfT
+    ↔ (corner.cornerCount pE pM pG 2 3 1 2 1 cfA
+      ∧ corner.cornerCount pE pM pG 2 3 2 1 1 cfT
+      ∧ 1 ≤ 1 ∧ (1 : Pos) + 1 < 2 + 2) :=
+  corner.corner_flat pE pM pG 2 3 1 2 2 1 1 cfA cfT
+    (by decide +kernel) (by decide +kernel)
+
+example : flatstep.vacFlat (corner.cornerPencil pE pM 2 3) pG
+      (2 * 3 * 1) (2 * 3 * 2) (2 * 3 * 2) (2 * 3 * 1) 1 cfA cfT
+    ∧ corner.cornerCount pE pM pG 2 3 1 2 1 cfA
+    ∧ corner.cornerCount pE pM pG 2 3 2 1 1 cfT := by
+  decide +kernel
+
+example : elim.sqAt pM 2 := by decide +kernel
+
+example : ¬ (flatstep.vacFlat (corner.cornerPencil pEw pM 2 3) pG
+      (2 * 3 * 1) (2 * 3 * 2) (2 * 3 * 2) (2 * 3 * 1) 1 cfA cfT
+    ↔ (corner.cornerCount pEw pM pG 2 3 1 2 1 cfA
+      ∧ corner.cornerCount pEw pM pG 2 3 2 1 1 cfT
+      ∧ 1 ≤ 1 ∧ (1 : Pos) + 1 < 2 + 2)) := by decide +kernel
+
+example : elim.sqAt pE 2 := by decide +kernel
+
+example : ¬ (flatstep.vacFlat (corner.cornerPencil pE pMw 2 3) pG
+      (2 * 3 * 1) (2 * 3 * 2) (2 * 3 * 2) (2 * 3 * 1) 1 cfA cfT
+    ↔ (corner.cornerCount pE pMw pG 2 3 1 2 1 cfA
+      ∧ corner.cornerCount pE pMw pG 2 3 2 1 1 cfT
+      ∧ 1 ≤ 1 ∧ (1 : Pos) + 1 < 2 + 2)) := by decide +kernel
+
+/-! The corner extent at a root-bearing head: `E = [[1,1],[1,2]]`,
+`M = 4E − I` over the unit gram, where the corner divisor is
+`−5η⁴(η² − 4)²` — the origin's least occupied degree four, the
+cofactor `−5(η² − 4)²` at the occupied constant, its squarefree
+part `−5η² + 20` with the root `η = 2` bracketed at `[1, 3]` and
+the leading segment `[0, 1]` vacant — the withdrawal read routed
+whole with the two off-degree refusals beside it. -/
+
+private def fE : Mat := [[⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
+
+private def fM : Mat := [[⟨4, 1⟩, ⟨5, 1⟩], [⟨5, 1⟩, ⟨8, 1⟩]]
+
+private def xChi : poly.PPoly := split.ppminor (corner.cornerPP fE fM pG)
+
+example : poly.ppOneValue xChi
+    [[⟨6, 1⟩, u, ⟨1, 6⟩, u, ⟨2, 1⟩],
+     [u, ⟨11, 1⟩, u, ⟨1, 4⟩],
+     [u, u, ⟨2, 1⟩]] := by decide +kernel
+
+example : divisorid.splitRead xChi poly.one [xChi] := by
+  decide +kernel
+
+private def xDiv : poly.Poly :=
+  [u, u, u, u, ⟨1, 81⟩, u, ⟨41, 1⟩, u, ⟨1, 6⟩]
+
+private theorem xDiv_pin : poly.oneValue (divisorid.crossD [xChi])
+    xDiv := by decide +kernel
+
+/-! The extent's leading-term radius at the corner divisor
+(`thm:windowsep`'s root bound, the cell datum beside the output):
+the radius reads through the pinned display
+(`windowsep.radiusD_congr`) and the extent bracket's upper end
+sits inside it. -/
+
+example : windowsep.radiusD xDiv = ⟨6, 1⟩ := by decide +kernel
+
+example : windowsep.radiusD (divisorid.crossD [xChi]) = ⟨6, 1⟩ :=
+  (windowsep.radiusD_congr xDiv_pin).trans (by decide +kernel)
+
+example : (⟨2, 1⟩ : BPair) < windowsep.radiusD xDiv := by
+  decide +kernel
+
+private def xCt : cellcount.DivCert :=
+  ⟨[⟨1, 5⟩, ⟨1, 1⟩], [⟨21, 1⟩, ⟨1, 1⟩, ⟨1, 6⟩], [⟨1, 1⟩, ⟨1, 21⟩],
+   [⟨1, 21⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨6, 1⟩], [⟨21, 1⟩, ⟨1, 1⟩, ⟨1, 6⟩],
+   [⟨1, 11⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨6, 1⟩],
+   1, 1, 1, 1, ⟨1, 401⟩, ⟨1, 201⟩⟩
+
+private def xH : Split 2 :=
+  ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩,
+   [.one ⟨3, 1⟩, .one ⟨201, 1⟩], 0, rfl⟩
+
+private def xB1 : Split 2 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1001, 1⟩], [u, ⟨201, 1⟩]], rfl⟩,
+   ⟨[[⟨201, 1⟩, ⟨1, 1001⟩], [u, ⟨2, 1⟩]], rfl⟩,
+   [.one ⟨201, 1⟩, .one ⟨600000001, 1⟩], 0, rfl⟩
+
+private def xB2 : Split 2 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨4001, 1⟩], [u, ⟨351, 1⟩]], rfl⟩,
+   ⟨[[⟨351, 1⟩, ⟨1, 4001⟩], [u, ⟨2, 1⟩]], rfl⟩,
+   [.one ⟨351, 1⟩, .one ⟨1, 1312500001⟩], 0, rfl⟩
+
+example : corner.extentRead xDiv 4 xCt
+    ⟨2, 1⟩ ⟨4, 1⟩ 1 xH xB1 xH xB2 := by decide +kernel
+
+example : corner.extentRead (divisorid.crossD [xChi]) 4 xCt
+    ⟨2, 1⟩ ⟨4, 1⟩ 1 xH xB1 xH xB2 :=
+  (corner.extentRead_congr xDiv_pin 4 xCt ⟨2, 1⟩ ⟨4, 1⟩ 1
+    xH xB1 xH xB2).mpr (by decide +kernel)
+
+example : ¬ corner.extentRead xDiv 3 xCt
+    ⟨2, 1⟩ ⟨4, 1⟩ 1 xH xB1 xH xB2 := by decide +kernel
+
+example : ¬ corner.extentRead xDiv 5 xCt
+    ⟨2, 1⟩ ⟨4, 1⟩ 1 xH xB1 xH xB2 := by decide +kernel
+
+/-! The bracket conjunct isolates at a mis-set bracket `[3, 5]`:
+the withdrawal's two conjuncts hold at the degree four while the
+leading segment holds the root, so the located read alone
+parts. -/
+
+example : ¬ corner.extentRead xDiv 4 xCt
+    ⟨4, 1⟩ ⟨6, 1⟩ 1 xH xB1 xH xB2 := by decide +kernel
+
+example : poly.unitTail (xDiv.take 4)
+    ∧ ¬ (ground.getAt ground.BPair.unit xDiv 4).oneValue
+      ground.BPair.unit := by decide +kernel
 
 /-! The shifted scaling tier's fixtures: the electric form
 `E = diag(2, 1)` positive semidefinite, the cap's summand
@@ -1887,3 +2312,757 @@ example : ¬ (ground.Pos.pow (2 : Pos) 2 * (1 : Pos)
 example : ¬ (ground.Pos.pow (2 : Pos) 2 * (1 : Pos)
     ≤ ground.Pos.pow (1 : Pos) 2 * (1 : Pos)
       * ground.Pos.pow (1 : Pos) 2) := by decide +kernel
+
+/-! `lem:corner`'s frontier cutoff at the scale closes the file.
+The scale key stands at `η = [2 : 3]`, `ϑ = [1 : 2]`, `d_ϑ = 3` and
+the window's top `⟨4 : 1⟩`, where the dimension fold is `135`, the
+clearance `18` and the step `32`: the key reads `4`, its own
+comparison decided beside the `scaleKey_ge` route, the comparison
+refused at `3` — the minimality's own witness — with the
+`scaleKey_least` route at `4`, and the two positivity binders
+refused at the vacant scale numerator and the vacant level
+denominator, each with the co-binder decided true and the
+conclusion failing beside it.  The seed floor's window clearing
+runs at the same data with the frontier Casimir `5` and the level
+`⟨3 : 0⟩` below the top, the route beside its decided anchor, and
+each of the three binders refused at a fixture where the
+conclusion fails with the other two decided true — the key's
+comparison at a vacant step multiple, the Casimir below the key,
+and a level beyond the window's top.  The rate composition runs at
+the drift battery's own data (`p = 0`, the counts one, `(a, b, c)
+= (1, 1, 2)`, `g = 69` against `C_g = 35` and the gap `4`), the
+route beside its decided conclusion, with the four binders refused
+one at a time at fixtures whose conclusion fails: the margin
+oversized at `10⁶`, the bracket's upper side at the level `3`, the
+bracket's lower side at the margin `10⁶` against the level one,
+and the cap's atom mistied at `17`. -/
+
+/-! The scale key at the fixture: the dimension fold `135` against
+the clearance `18` and the step `32`. -/
+
+example : ((9 * (3 * 2 + 4 * 2 + 1) - 1 * 9 * 2
+    + (4 * 2 * 2 * 2 - 1)) / (4 * 2 * 2 * 2) : Nat) = 4 := by
+  decide +kernel
+
+example : scaleKey 2 3 1 2 3 4 1 = 4 := by decide +kernel
+
+example : (9 * (3 * 2 + 4 * 2 + 1) : Nat) ≤ 4 * 2 * 2 * 2 * 4 + 1 * 9 * 2
+    ∧ ¬ ((9 * (3 * 2 + 4 * 2 + 1) : Nat)
+      ≤ 4 * 2 * 2 * 2 * 3 + 1 * 9 * 2) := by decide +kernel
+
+example : (3 : Nat) * 3 * (3 * 2 + 4 * 2 + 1)
+    ≤ 4 * 2 * 2 * 2 * scaleKey 2 3 1 2 3 4 1 + 1 * (3 * 3) * 2 := by
+  decide +kernel
+
+example : (3 : Nat) * 3 * (3 * 2 + 4 * 2 + 1)
+    ≤ 4 * 2 * 2 * 2 * scaleKey 2 3 1 2 3 4 1 + 1 * (3 * 3) * 2 :=
+  scaleKey_ge 2 3 1 2 3 4 1 (by decide +kernel) (by decide +kernel)
+
+example : ¬ ((3 : Nat) * 3 * (3 * 2 + 4 * 2 + 1)
+    ≤ 4 * 2 * 2 * 2 * 3 + 1 * (3 * 3) * 2) := by decide +kernel
+
+example : scaleKey 2 3 1 2 3 4 1 ≤ 4 :=
+  scaleKey_least 2 3 1 2 3 4 1 4 (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
+
+/-! The key's two positivity binders, each refused at a vacant
+member with its co-binder decided true. -/
+
+example : (0 : Nat) < 2 := by decide +kernel
+
+example : ¬ ((3 : Nat) * 3 * (3 * 2 + 4 * 2 + 1)
+    ≤ 4 * 0 * 0 * 2 * scaleKey 0 3 1 2 3 4 1 + 1 * (3 * 3) * 2) := by
+  decide +kernel
+
+example : ¬ ((3 : Nat) * 3 * (3 * 0 + 4 * 0 + 1)
+    ≤ 4 * 2 * 2 * 0 * scaleKey 2 3 1 0 3 4 1 + 1 * (3 * 3) * 0) := by
+  decide +kernel
+
+/-! The seed floor's window clearing at the Casimir `5` and the
+level `⟨3 : 0⟩`, the route beside its decided anchor. -/
+
+example : (3 : Nat) * 3 * (3 * 2 + 3 * 2 + 1)
+    ≤ 4 * 2 * 2 * 2 * 5 + 0 * (3 * 3) * 2 := by decide +kernel
+
+example : (3 : Nat) * 3 * (3 * 2 + 3 * 2 + 1)
+    ≤ 4 * 2 * 2 * 2 * 5 + 0 * (3 * 3) * 2 :=
+  seedClears 2 3 1 2 3 4 1 3 0 5 4 (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+
+/-! The clearing's three binders, each refused where the
+conclusion fails with the other two decided true.  The key's
+comparison and the Casimir binder are refused at the vacant
+Casimir `0`, where the routed level's own conclusion fails: the
+first at the vacant step multiple `L = 0` with the Casimir read
+`0 ≤ 0`, the second at the key `L = 4` — whose comparison holds —
+against the Casimir below it.  The level binder is refused at the
+level `⟨20 : 0⟩` beyond the window's top, at the key and the
+Casimir `4`. -/
+
+example : ¬ ((3 : Nat) * 3 * (3 * 2 + 4 * 2 + 1)
+    ≤ 4 * 2 * 2 * 2 * 0 + 1 * (3 * 3) * 2) := by decide +kernel
+
+example : (0 : Nat) ≤ 0 ∧ 3 + 1 ≤ 4 + 0 := by decide +kernel
+
+example : ¬ ((3 : Nat) * 3 * (3 * 2 + 3 * 2 + 1)
+    ≤ 4 * 2 * 2 * 2 * 0 + 0 * (3 * 3) * 2) := by decide +kernel
+
+example : ¬ ((4 : Nat) ≤ 0) := by decide +kernel
+
+example : ((3 : Nat) * 3 * (3 * 2 + 4 * 2 + 1)
+      ≤ 4 * 2 * 2 * 2 * 4 + 1 * (3 * 3) * 2)
+    ∧ (3 : Nat) + 1 ≤ 4 + 0 := by decide +kernel
+
+example : ¬ ((20 : Nat) + 1 ≤ 4 + 0) := by decide +kernel
+
+example : ((3 : Nat) * 3 * (3 * 2 + 4 * 2 + 1)
+      ≤ 4 * 2 * 2 * 2 * 4 + 1 * (3 * 3) * 2)
+    ∧ (4 : Nat) ≤ 4 := by decide +kernel
+
+example : ¬ ((3 : Nat) * 3 * (3 * 2 + 20 * 2 + 1)
+    ≤ 4 * 2 * 2 * 2 * 4 + 0 * (3 * 3) * 2) := by decide +kernel
+
+/-! The frontier's clearing at the key's own cutoff: the frontier
+at the toy's key `4` holds the one target `[2, 0]` with the least
+Casimir `8` at or beyond the key, and the seed floor at that
+Casimir clears the level `⟨3 : 0⟩`, the route beside its decided
+anchor.  The vacant-frontier reading drops the floor to the vacant
+Casimir refused above. -/
+
+example : contactcell.frontierTargets 2 (scaleKey 2 3 1 2 3 4 1)
+      = [[2, 0]]
+    ∧ contactcell.cPlusN 2 (scaleKey 2 3 1 2 3 4 1) = 8
+    ∧ scaleKey 2 3 1 2 3 4 1
+      ≤ contactcell.cPlusN 2 (scaleKey 2 3 1 2 3 4 1) := by
+  decide +kernel
+
+example : (3 : Nat) * 3 * (3 * 2 + 3 * 2 + 1)
+    ≤ 4 * 2 * 2 * 2
+        * contactcell.cPlusN 2 (scaleKey 2 3 1 2 3 4 1)
+      + 0 * (3 * 3) * 2 := by decide +kernel
+
+example : (3 : Nat) * 3 * (3 * 2 + 3 * 2 + 1)
+    ≤ 4 * 2 * 2 * 2
+        * contactcell.cPlusN 2 (scaleKey 2 3 1 2 3 4 1)
+      + 0 * (3 * 3) * 2 :=
+  frontierClears 2 2 3 1 2 3 4 1 3 0 (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+
+/-! The rate composition at the drift battery's data, the route
+beside its decided conclusion. -/
+
+example : (69 : Nat) + 1 * 1
+    * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 3))
+    * (1 * 1) * 1
+  ≤ 1 * 1 * (1 * 1) * ground.rise 1 (2 * 0 + 2)
+      * ground.prodOver (fun _ => 2) (List.range (2 * 0 + 5))
+    + 1 * 1 * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 4))
+      * 2
+    + 1 * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 3))
+      * (2 * 2) * 1 * 1 := by decide +kernel
+
+example : ground.Pos.pow (69 : Pos) (2 * 0 + 4) * (1 : Pos)
+    ≤ ground.Pos.pow (35 : Pos) (2 * 0 + 4) * (1 : Pos)
+      * ground.Pos.pow (4 : Pos) (2 * 0 + 4) := by decide +kernel
+
+example : ground.Pos.pow (69 : Pos) (2 * 0 + 4) * (1 : Pos)
+    ≤ ground.Pos.pow (35 : Pos) (2 * 0 + 4) * (1 : Pos)
+      * ground.Pos.pow (4 : Pos) (2 * 0 + 4) :=
+  corner_rate 0 1 1 1 1 1 1 1 1 2 69 69 35 4 1 2 1 1
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+
+/-! The composition's four binders, each refused at a fixture
+whose conclusion fails with the co-binders decided true: the
+margin, the bracket's two sides, and the cap's atom tie. -/
+
+example : ¬ ((1000000 : Nat) + 1 * 1
+      * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 3))
+      * (1 * 1) * 1
+    ≤ 1 * 1 * (1 * 1) * ground.rise 1 (2 * 0 + 2)
+        * ground.prodOver (fun _ => 2) (List.range (2 * 0 + 5))
+      + 1 * 1
+        * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 4))
+        * 2
+      + 1 * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 3))
+        * (2 * 2) * 1 * 1) := by
+  decide +kernel
+
+example : ((1 : Nat) + 1 = 2)
+  ∧ ((1 : Nat) * ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4))
+    ≤ ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4))
+      * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 4))
+      * 1)
+  ∧ (ground.prodOver (fun _ => 1) (List.range (2 * 0 + 4)) * 1
+    ≤ 1 * ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4)))
+  ∧ ((ground.BPair.ofPos (1000000 : Pos)).oneValue
+    (ground.BPair.ofNat (1 * 1000000)))
+  ∧ ((ground.BPair.ofPos (35 : Pos)).oneValue (ground.BPair.ofNat
+    (ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4))
+        * (1 * (1 * 1) * ground.rise 1 (2 * 0 + 2))
+      + 1 * (2 * 1 + 1))))
+  ∧ ((ground.BPair.ofPos (4 : Pos)).oneValue (ground.BPair.ofNat
+    (1 * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 3))
+      * (2 * 2) * 1)))
+  ∧ ((ground.BPair.ofPos (1 : Pos)).oneValue (ground.BPair.ofNat 1))
+  ∧ ((ground.BPair.ofPos (2 : Pos)).oneValue (ground.BPair.ofNat 2))
+  ∧ ((ground.BPair.ofPos (1 : Pos)).oneValue (ground.BPair.ofNat 1))
+  ∧ ((ground.BPair.ofPos (1 : Pos)).oneValue (ground.BPair.ofNat 1)) := by
+  decide +kernel
+
+example : ¬ (ground.Pos.pow (1000000 : Pos) (2 * 0 + 4) * (1 : Pos)
+    ≤ ground.Pos.pow (35 : Pos) (2 * 0 + 4) * (1 : Pos)
+      * ground.Pos.pow (4 : Pos) (2 * 0 + 4)) := by
+  decide +kernel
+
+example : ¬ ((3 : Nat) * ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4))
+    ≤ ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4))
+      * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 4))
+      * 1) := by
+  decide +kernel
+
+example : ((1 : Nat) + 1 = 2)
+  ∧ ((197 : Nat) + 1 * 1
+      * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 3))
+      * (1 * 1) * 1
+    ≤ 3 * 1 * (1 * 1) * ground.rise 1 (2 * 0 + 2)
+        * ground.prodOver (fun _ => 2) (List.range (2 * 0 + 5))
+      + 1 * 1
+        * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 4))
+        * 2
+      + 1 * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 3))
+        * (2 * 2) * 1 * 1)
+  ∧ (ground.prodOver (fun _ => 1) (List.range (2 * 0 + 4)) * 1
+    ≤ 3 * ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4)))
+  ∧ ((ground.BPair.ofPos (197 : Pos)).oneValue
+    (ground.BPair.ofNat (1 * 197)))
+  ∧ ((ground.BPair.ofPos (35 : Pos)).oneValue (ground.BPair.ofNat
+    (ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4))
+        * (1 * (1 * 1) * ground.rise 1 (2 * 0 + 2))
+      + 1 * (2 * 1 + 1))))
+  ∧ ((ground.BPair.ofPos (4 : Pos)).oneValue (ground.BPair.ofNat
+    (1 * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 3))
+      * (2 * 2) * 1)))
+  ∧ ((ground.BPair.ofPos (1 : Pos)).oneValue (ground.BPair.ofNat 1))
+  ∧ ((ground.BPair.ofPos (2 : Pos)).oneValue (ground.BPair.ofNat 2))
+  ∧ ((ground.BPair.ofPos (3 : Pos)).oneValue (ground.BPair.ofNat 3))
+  ∧ ((ground.BPair.ofPos (1 : Pos)).oneValue (ground.BPair.ofNat 1)) := by
+  decide +kernel
+
+example : ¬ (ground.Pos.pow (197 : Pos) (2 * 0 + 4) * (1 : Pos)
+    ≤ ground.Pos.pow (35 : Pos) (2 * 0 + 4) * (3 : Pos)
+      * ground.Pos.pow (4 : Pos) (2 * 0 + 4)) := by
+  decide +kernel
+
+example : ¬ (ground.prodOver (fun _ => 1) (List.range (2 * 0 + 4)) * 1000000
+    ≤ 1 * ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4))) := by
+  decide +kernel
+
+example : ((1 : Nat) + 1 = 2)
+  ∧ ((5000064 : Nat) + 1000000 * 1
+      * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 3))
+      * (1 * 1) * 1
+    ≤ 1 * 1 * (1 * 1) * ground.rise 1 (2 * 0 + 2)
+        * ground.prodOver (fun _ => 2) (List.range (2 * 0 + 5))
+      + 1000000 * 1
+        * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 4))
+        * 2
+      + 1 * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 3))
+        * (2 * 2) * 1000000 * 1)
+  ∧ ((1 : Nat) * ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4))
+    ≤ ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4))
+      * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 4))
+      * 1000000)
+  ∧ ((ground.BPair.ofPos (5000064 : Pos)).oneValue
+    (ground.BPair.ofNat (1 * 5000064)))
+  ∧ ((ground.BPair.ofPos (35 : Pos)).oneValue (ground.BPair.ofNat
+    (ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4))
+        * (1 * (1 * 1) * ground.rise 1 (2 * 0 + 2))
+      + 1 * (2 * 1 + 1))))
+  ∧ ((ground.BPair.ofPos (4000000 : Pos)).oneValue (ground.BPair.ofNat
+    (1 * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 3))
+      * (2 * 2) * 1000000)))
+  ∧ ((ground.BPair.ofPos (1 : Pos)).oneValue (ground.BPair.ofNat 1))
+  ∧ ((ground.BPair.ofPos (2 : Pos)).oneValue (ground.BPair.ofNat 2))
+  ∧ ((ground.BPair.ofPos (1 : Pos)).oneValue (ground.BPair.ofNat 1))
+  ∧ ((ground.BPair.ofPos (1000000 : Pos)).oneValue (ground.BPair.ofNat 1000000)) := by
+  decide +kernel
+
+example : ¬ (ground.Pos.pow (5000064 : Pos) (2 * 0 + 4) * (1000000 : Pos)
+    ≤ ground.Pos.pow (35 : Pos) (2 * 0 + 4) * (1 : Pos)
+      * ground.Pos.pow (4000000 : Pos) (2 * 0 + 4)) := by
+  decide +kernel
+
+example : ¬ ((ground.BPair.ofPos (17 : Pos)).oneValue (ground.BPair.ofNat
+    (ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4))
+        * (1 * (1 * 1) * ground.rise 1 (2 * 0 + 2))
+      + 1 * (2 * 1 + 1)))) := by
+  decide +kernel
+
+example : ((1 : Nat) + 1 = 2)
+  ∧ ((69 : Nat) + 1 * 1
+      * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 3))
+      * (1 * 1) * 1
+    ≤ 1 * 1 * (1 * 1) * ground.rise 1 (2 * 0 + 2)
+        * ground.prodOver (fun _ => 2) (List.range (2 * 0 + 5))
+      + 1 * 1
+        * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 4))
+        * 2
+      + 1 * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 3))
+        * (2 * 2) * 1 * 1)
+  ∧ ((1 : Nat) * ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4))
+    ≤ ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4))
+      * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 4))
+      * 1)
+  ∧ (ground.prodOver (fun _ => 1) (List.range (2 * 0 + 4)) * 1
+    ≤ 1 * ground.prodOver (fun _ => 2) (List.range (2 * 0 + 4)))
+  ∧ ((ground.BPair.ofPos (69 : Pos)).oneValue
+    (ground.BPair.ofNat (1 * 69)))
+  ∧ ((ground.BPair.ofPos (4 : Pos)).oneValue (ground.BPair.ofNat
+    (1 * ground.prodOver (fun _ => 1) (List.range (2 * 0 + 3))
+      * (2 * 2) * 1)))
+  ∧ ((ground.BPair.ofPos (1 : Pos)).oneValue (ground.BPair.ofNat 1))
+  ∧ ((ground.BPair.ofPos (2 : Pos)).oneValue (ground.BPair.ofNat 2))
+  ∧ ((ground.BPair.ofPos (1 : Pos)).oneValue (ground.BPair.ofNat 1))
+  ∧ ((ground.BPair.ofPos (1 : Pos)).oneValue (ground.BPair.ofNat 1)) := by
+  decide +kernel
+
+example : ¬ (ground.Pos.pow (69 : Pos) (2 * 0 + 4) * (1 : Pos)
+    ≤ ground.Pos.pow (17 : Pos) (2 * 0 + 4) * (1 : Pos)
+      * ground.Pos.pow (4 : Pos) (2 * 0 + 4)) := by
+  decide +kernel
+
+
+/-! The height section at the extent toy: the presentation's height
+variable substituted first, its scale evaluation the corner site
+again at the two scale points `[2 : 3]` and `[1 : 1]` and the two
+heights `⟨2 : 1⟩`, `⟨1 : 3⟩` — the theorem route beside each decided
+anchor.  Beside them stands the frontier display's own bracket: the
+cleared comparison `32η² − 13` sits below the sum's unit at
+`η = 3/5` and above it at `η = 7/10`, its root inside the
+straddle's own segment. -/
+
+example : elim.matOneValue
+    (cellcount.evalPC (corner.cornerAtHeight fE fM pG 2 1)
+      (BPair.ofPos 2) 3 2)
+    (corner.cornerSite fE fM pG 2 3 2 1) := by decide +kernel
+
+example : elim.matOneValue
+    (cellcount.evalPC (corner.cornerAtHeight fE fM pG 2 1)
+      (BPair.ofPos 2) 3 2)
+    (corner.cornerSite fE fM pG 2 3 2 1) :=
+  corner.cornerAtHeight_eval fE fM pG 2 3 2 1
+
+example : elim.matOneValue
+    (cellcount.evalPC (corner.cornerAtHeight fE fM pG 1 3)
+      (BPair.ofPos 1) 1 2)
+    (corner.cornerSite fE fM pG 1 1 1 3) := by decide +kernel
+
+example : elim.matOneValue
+    (cellcount.evalPC (corner.cornerAtHeight fE fM pG 1 3)
+      (BPair.ofPos 1) 1 2)
+    (corner.cornerSite fE fM pG 1 1 1 3) :=
+  corner.cornerAtHeight_eval fE fM pG 1 1 1 3
+
+example : poly.evalClear [⟨1, 14⟩, u, ⟨33, 1⟩] (BPair.ofPos 3) 5 2 < u
+    ∧ u < poly.evalClear [⟨1, 14⟩, u, ⟨33, 1⟩] (BPair.ofPos 7) 10 2 := by
+  decide +kernel
+
+
+/-! `lem:corner`'s height section at the extent toy, and the record
+it emits.  Over `E = [[1, 1], [1, 2]]`, `M = 4E − I` and the unit
+gram the height `η′ = ⟨2 : 1⟩` sections the corner presentation to
+the scale pencil `[[η² − η − 3, η² − 4], [η² − 4, 2η² − η − 7]]`,
+whose determinant is `η⁴ − 3η³ − 4η² + 10η + 5` — squarefree, with
+positive roots in `(2, 3)` and `(3, 4)` and two negative roots.  The
+record's clearing weight is `4` and its three samples are
+`η = 1/4, 1, 3`, the balance-pair numerators `1, 4, 12` over that
+weight, each off the roots; their evaluated sites
+`[[−51, −63], [−63, −114]]`, `[[−48, −48], [−48, −96]]` and
+`[[48, 80], [80, 128]]` split at their own upper-triangular
+congruences with the counts `2, 2, 1`.  The divisor's certificate is
+a content-reduced Bézout pair at the determinant against its
+derivative — the gcd the constant one, so the squarefree part is the
+determinant itself and the content-reduced Bézout combination
+`(689 + 868y − 800y²)D + (470 − 747y − 367y² + 200y³)D′ = 8145`
+serves both the descent and the part — and the cleared-variable
+monic is the determinant's own below-top list, the leading
+magnitude one.  The shared Hermite pairing
+`[[4, 3, 17, 33], [3, 17, 33, 117], [17, 33, 117, 298],
+[33, 117, 298, 947]]` is positive definite, its count nought.  The
+first boundary is a comparison at the frontier display
+`32η² − 13` — the scale key's cleared comparison at `d_ϑ = 3`, the
+top level `⟨4 : 1⟩`, the clearance `[1 : 2]` and the key `4` — whose
+root `√(13/32)` sits in the straddle `[1/4, 1]` while the record
+divisor's own count is nought across it; the second is a jump at
+the divisor's root in `(2, 3)`, which is the only root in the
+straddle `[1, 3]`.  The whole record's read is decided, with the
+truncated boundary list, a forged trailing count, the comparison
+retagged as a jump and the jump retagged as the frontier's
+comparison each refused beside it. -/
+
+private def xrS : split.PMat := corner.cornerAtHeight fE fM pG 2 1
+
+private def xrD : poly.Poly :=
+  [⟨6, 1⟩, ⟨11, 1⟩, ⟨1, 5⟩, ⟨1, 4⟩, ⟨2, 1⟩]
+
+private def xrDp : poly.Poly := [⟨11, 1⟩, ⟨1, 9⟩, ⟨1, 10⟩, ⟨5, 1⟩]
+
+private def xrU : poly.Poly := [⟨690, 1⟩, ⟨869, 1⟩, ⟨1, 801⟩]
+
+private def xrV : poly.Poly :=
+  [⟨471, 1⟩, ⟨1, 748⟩, ⟨1, 368⟩, ⟨201, 1⟩]
+
+private def xrCt : cellcount.DivCert :=
+  ⟨[], xrD, xrDp, xrU, xrV, xrD, xrU, xrV, 1, 1, 1, 1,
+   ⟨8146, 1⟩, ⟨8146, 1⟩⟩
+
+example : poly.oneValue (split.pminor xrS) xrD := by decide +kernel
+
+/-! The section's minor is the presentation's own at the height
+substitution: the record carrier's determinant reads `χ` at the
+height point, the theorem route beside the decided anchor, and a
+forged height point refuses. -/
+
+example : poly.oneValue (split.pminor xrS)
+    (poly.pevalC xChi [⟨2, 1⟩] 1 1) := by decide +kernel
+
+example : poly.oneValue (split.pminor xrS)
+    (poly.pevalC xChi [⟨2, 1⟩] 1 1) :=
+  corner.cornerAtHeight_minor (o := 2) fE fM pG 2 1
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+
+example : ¬ poly.oneValue (split.pminor xrS)
+    (poly.pevalC xChi [⟨1, 2⟩] 1 1) := by decide +kernel
+
+example : poly.oneValue (poly.deriv xrD) xrDp := by decide +kernel
+
+example : cellcount.divRead (split.pminor xrS) xrCt := by decide +kernel
+
+example : poly.oneValue (deckfactor.clearVarBT xrCt.sq)
+    [⟨6, 1⟩, ⟨11, 1⟩, ⟨1, 5⟩, ⟨1, 4⟩] := by decide +kernel
+
+example : ¬ (poly.evalClear xrD ⟨2, 1⟩ 4 4).oneValue u := by
+  decide +kernel
+example : ¬ (poly.evalClear xrD ⟨5, 1⟩ 4 4).oneValue u := by
+  decide +kernel
+example : ¬ (poly.evalClear xrD ⟨13, 1⟩ 4 4).oneValue u := by
+  decide +kernel
+
+private def xrC1 : Split 2 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 22⟩], [u, ⟨18, 1⟩]], rfl⟩,
+   ⟨[[⟨18, 1⟩, ⟨22, 1⟩], [u, ⟨2, 1⟩]], rfl⟩,
+   [.one ⟨1, 52⟩, .one ⟨1, 10456⟩], 0, rfl⟩
+
+private def xrC2 : Split 2 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 2⟩], [u, ⟨2, 1⟩]], rfl⟩,
+   ⟨[[⟨2, 1⟩, ⟨2, 1⟩], [u, ⟨2, 1⟩]], rfl⟩,
+   [.one ⟨1, 49⟩, .one ⟨1, 49⟩], 0, rfl⟩
+
+private def xrC3 : Split 2 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 6⟩], [u, ⟨4, 1⟩]], rfl⟩,
+   ⟨[[⟨4, 1⟩, ⟨6, 1⟩], [u, ⟨2, 1⟩]], rfl⟩,
+   [.one ⟨49, 1⟩, .one ⟨1, 49⟩], 0, rfl⟩
+
+private def xrHD : Split 4 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 4⟩, ⟨1, 191⟩, ⟨471, 1⟩],
+     [u, ⟨5, 1⟩, ⟨1, 82⟩, ⟨1, 748⟩],
+     [u, u, ⟨60, 1⟩, ⟨1, 368⟩],
+     [u, u, u, ⟨201, 1⟩]], rfl⟩,
+   ⟨[[⟨47201, 1⟩, ⟨35401, 1⟩, ⟨200601, 1⟩, ⟨389401, 1⟩],
+     [u, ⟨11801, 1⟩, ⟨16201, 1⟩, ⟨73801, 1⟩],
+     [u, u, ⟨801, 1⟩, ⟨1469, 1⟩],
+     [u, u, u, ⟨237, 1⟩]], rfl⟩,
+   [.one ⟨5, 1⟩, .one ⟨237, 1⟩, .one ⟨59001, 1⟩,
+    .one ⟨1629001, 1⟩], 0, rfl⟩
+
+private def xrB1 : Split 4 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 51⟩, ⟨1, 3521⟩, ⟨53171, 1⟩],
+     [u, ⟨58, 1⟩, ⟨1, 1025⟩, ⟨1, 39034⟩],
+     [u, u, ⟨788, 1⟩, ⟨1, 24501⟩],
+     [u, u, u, ⟨10565, 1⟩]], rfl⟩,
+   ⟨[[⟨473890477, 1⟩, ⟨415693401, 1⟩, ⟨2660437761, 1⟩,
+      ⟨5320875521, 1⟩],
+     [u, ⟨8313869, 1⟩, ⟨10817537, 1⟩, ⟨55806972, 1⟩],
+     [u, u, ⟨602149, 1⟩, ⟨1396501, 1⟩],
+     [u, u, u, ⟨44860, 1⟩]], rfl⟩,
+   [.one ⟨229, 1⟩, .one ⟨3588721, 1⟩, .one ⟨374124061, 1⟩,
+    .one ⟨127000619281, 1⟩], 0, rfl⟩
+
+private def xrB2 : Split 4 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨27, 1⟩, ⟨1, 551⟩, ⟨26, 1⟩],
+     [u, ⟨18, 1⟩, ⟨1, 272⟩, ⟨1, 913⟩],
+     [u, u, ⟨65, 1⟩, ⟨149, 1⟩],
+     [u, u, u, ⟨416, 1⟩]], rfl⟩,
+   ⟨[[⟨451521, 1⟩, ⟨1, 690561⟩, ⟨956161, 1⟩, ⟨1, 1885761⟩],
+     [u, ⟨26561, 1⟩, ⟨112466, 1⟩, ⟨18261, 1⟩],
+     [u, u, ⟨7056, 1⟩, ⟨1, 2517⟩],
+     [u, u, u, ⟨1089, 1⟩]], rfl⟩,
+   [.one ⟨273, 1⟩, .one ⟨1, 17409⟩, .one ⟨6374401, 1⟩,
+    .one ⟨162248401, 1⟩], 0, rfl⟩
+
+private def xrF : poly.Poly := [⟨1, 14⟩, u, ⟨33, 1⟩]
+
+private def xrFH : Split 2 :=
+  ⟨⟨[[⟨2, 1⟩, u], [u, ⟨2, 1⟩]], rfl⟩,
+   ⟨[[⟨2, 1⟩, u], [u, ⟨2, 1⟩]], rfl⟩,
+   [.one ⟨3, 1⟩, .one ⟨833, 1⟩], 0, rfl⟩
+
+private def xrFB : Split 2 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨532481, 1⟩], [u, ⟨21505, 1⟩]], rfl⟩,
+   ⟨[[⟨21505, 1⟩, ⟨1, 532481⟩], [u, ⟨2, 1⟩]], rfl⟩,
+   [.one ⟨21505, 1⟩, .one ⟨1, 1960463592062977⟩], 0, rfl⟩
+
+private def xrCells : List (BPair × Nat × Split 2) :=
+  [(⟨2, 1⟩, 2, xrC1), (⟨5, 1⟩, 2, xrC2), (⟨13, 1⟩, 1, xrC3)]
+
+private def xrBnds : List (decimation.Bound 4) :=
+  [.cmp xrF xrB1 ⟨2, xrFH, xrFB⟩, .jump xrB2]
+
+private def xrRec : decimation.DivRecord 2 4 :=
+  ⟨xrS, 2, 4, xrCt, xrHD, xrCells, xrBnds⟩
+
+example : decimation.recordRead xrRec := by decide +kernel
+
+example : xrRec.cells.map (fun x => x.2.1) = [2, 2, 1] := by
+  decide +kernel
+
+/-! The record's shape refuses at the truncating fold's own law:
+the boundary list dropped to one against three cells, the surviving
+boundary reading its binding while the count tie parts. -/
+
+example : ¬ decimation.recordRead
+    (⟨xrS, 2, 4, xrCt, xrHD, xrCells, xrBnds.take 1⟩ :
+      decimation.DivRecord 2 4) := by decide +kernel
+
+/-! The count forge isolates the pointwise read: the trailing
+cell's count moved to two at its own split, whose reversal fold
+reads one, both boundaries beside it at their bindings. -/
+
+example : ¬ decimation.recordRead
+    (⟨xrS, 2, 4, xrCt, xrHD,
+      xrCells.take 2 ++ [(⟨13, 1⟩, 2, xrC3)], xrBnds⟩ :
+      decimation.DivRecord 2 4) := by decide +kernel
+
+/-! The tag forgeries isolate the two bindings: the frontier
+comparison retagged as a jump demands one root of the divisor's own
+cleared monic between `1/4` and `1`, where the count is nought; the
+divisor's jump retagged as the frontier's comparison demands the
+divisor's count nought across `[1, 3]`, where its root sits. -/
+
+example : ¬ decimation.recordRead
+    (⟨xrS, 2, 4, xrCt, xrHD, xrCells, [.jump xrB1, .jump xrB2]⟩ :
+      decimation.DivRecord 2 4) := by decide +kernel
+
+example : ¬ decimation.recordRead
+    (⟨xrS, 2, 4, xrCt, xrHD, xrCells,
+      [.cmp xrF xrB1 ⟨2, xrFH, xrFB⟩,
+       .cmp xrF xrB2 ⟨2, xrFH, xrFB⟩]⟩ :
+      decimation.DivRecord 2 4) := by decide +kernel
+
+/-! The divisor conjunct isolates at a forged Bézout constant: the
+squarefree part is kept, so every boundary still reads its binding
+at the divisor's own monic while the certificate's descent
+parts. -/
+
+example : ¬ decimation.recordRead
+    (⟨xrS, 2, 4, ⟨[], xrD, xrDp, xrU, xrV, xrD, xrU, xrV,
+      1, 1, 1, 1, ⟨8146, 1⟩, ⟨8147, 1⟩⟩, xrHD, xrCells, xrBnds⟩ :
+      decimation.DivRecord 2 4) := by decide +kernel
+
+example : ((List.zip (List.zip xrCells (xrCells.drop 1)) xrBnds).all
+      (fun y => decide
+        (decimation.boundRead xrD xrHD 4 y.1.1.1 y.1.2.1 y.2)))
+    = true := by decide +kernel
+
+/-! The comparison's own count isolates at a rootless display: the
+constant display reads no root over the straddle `[1/4, 1]` where
+the binding demands one, the divisor's count nought beside it at
+its binding. -/
+
+private def xrNil : Split 0 := ⟨⟨[], rfl⟩, ⟨[], rfl⟩, [], 0, rfl⟩
+
+example : ¬ decimation.recordRead
+    (⟨xrS, 2, 4, xrCt, xrHD, xrCells,
+      [.cmp [⟨2, 1⟩] xrB1 ⟨0, xrNil, xrNil⟩, .jump xrB2]⟩ :
+      decimation.DivRecord 2 4) := by decide +kernel
+
+example : hermitesign.segCountRead (deckfactor.clearVarBT xrD)
+    (deckfactor.clearAt xrD ⟨2, 1⟩)
+    (deckfactor.clearAt xrD ⟨5, 1⟩) 4 0 xrHD xrB1 := by
+  decide +kernel
+
+/-! The emitted record's two vacant families at the toy.  The deck
+family's walk datum is the corner base `c₁ = 2`: the symbol's
+cross-multiplied witness, the crossing read at the pair `[9 : 4]`
+and the margin's square against that pair each decide there, and
+the family's t-direction display is that crossing's constant
+numerator — the display's one member read back against the
+crossing pair — whose cleared-variable list is empty, the segment
+count nought over the record's whole range `[1/4, 3]` at the
+record's clearing.  The tension family drops at the toy's
+unit-class data: at a matched stencil the tension reads the
+electric member alone (`chargedcell.tension_free`'s route beside
+its decided anchor), its side display that member's constant
+numerator — the display's one member read back against the
+tension's value — again a vacant root list over the record's
+range. -/
+
+private def spNil : Split 0 := ⟨⟨[], rfl⟩, ⟨[], rfl⟩, [], 0, rfl⟩
+
+example : channeldiv.symbolRead 2 := by decide +kernel
+example : channeldiv.crossingRead 2 := by decide +kernel
+example : channeldiv.marginRead 2 := by decide +kernel
+
+example : (channeldiv.crossPair 2).oneValue
+    ⟨ground.BPair.ofNat 9, 4⟩ := by decide +kernel
+
+private def xkDeck : poly.Poly := [ground.BPair.ofNat 9]
+
+example : (channeldiv.crossPair 2).oneValue
+    ⟨ground.getAt u xkDeck 0, 4⟩ := by decide +kernel
+
+example : deckfactor.clearVarBT xkDeck = [] := by decide +kernel
+
+example : hermitesign.segCountRead (deckfactor.clearVarBT xkDeck)
+    (deckfactor.clearAt xkDeck ⟨2, 1⟩)
+    (deckfactor.clearAt xkDeck ⟨13, 1⟩) 4 0 spNil spNil := by
+  decide +kernel
+
+example : ¬ hermitesign.segCountRead (deckfactor.clearVarBT xkDeck)
+    (deckfactor.clearAt xkDeck ⟨2, 1⟩)
+    (deckfactor.clearAt xkDeck ⟨13, 1⟩) 4 1 spNil spNil := by
+  decide +kernel
+
+example : ¬ hermitesign.segCountRead (deckfactor.clearVarBT xkDeck)
+    (deckfactor.clearAt xkDeck ⟨13, 1⟩)
+    (deckfactor.clearAt xkDeck ⟨2, 1⟩) 4 0 spNil spNil := by
+  decide +kernel
+
+private def xkVp : ground.Pair := ⟨3, 2⟩
+private def xkW : ground.Pair := ⟨2, 1⟩
+private def xkAtoms : List (Pos × Pos) := [(2, 3), (1, 2)]
+
+example : (chargedcell.tension xkVp xkW xkAtoms xkAtoms).oneValue
+    (CPair.ofPair xkVp .one) :=
+  chargedcell.tension_free xkVp xkW xkAtoms
+
+example : (chargedcell.tension xkVp xkW xkAtoms xkAtoms).oneValue
+    (CPair.ofPair xkVp .one) := by decide +kernel
+
+private def xkTen : poly.Poly := [BPair.ofPos 3]
+
+example : (chargedcell.tension xkVp xkW xkAtoms xkAtoms).oneValue
+    ⟨ground.getAt u xkTen 0, 2⟩ := by decide +kernel
+
+example : hermitesign.segCountRead (deckfactor.clearVarBT xkTen)
+    (deckfactor.clearAt xkTen ⟨2, 1⟩)
+    (deckfactor.clearAt xkTen ⟨13, 1⟩) 4 0 spNil spNil := by
+  decide +kernel
+
+example : ¬ hermitesign.segCountRead (deckfactor.clearVarBT xkTen)
+    (deckfactor.clearAt xkTen ⟨2, 1⟩)
+    (deckfactor.clearAt xkTen ⟨13, 1⟩) 4 1 spNil spNil := by
+  decide +kernel
+
+/-! The t-section rides `deckfactor.bandClear`: a constant
+t-display is vacant across the whole crossing segment, while the
+display `t` itself carries the root nought strictly inside it —
+its cleared monic's Hermite pairing `[[1]]` and bracket pencil
+`[[−4]]` each read their splits, so the band's stated vacancy is
+the one conjunct that parts. -/
+
+example : deckfactor.bandClear xkDeck spNil spNil := by decide +kernel
+
+example : splitRead (hermitesign.hermite
+    (deckfactor.clearVarBT [u, ⟨2, 1⟩]) poly.one) (spOne ⟨2, 1⟩) := by
+  decide +kernel
+
+example : splitRead (hermitesign.pencilB
+      (deckfactor.clearVarBT [u, ⟨2, 1⟩]) poly.one
+      (deckfactor.clearAt [u, ⟨2, 1⟩] ⟨1, 3⟩)
+      (deckfactor.clearAt [u, ⟨2, 1⟩] ⟨3, 1⟩) 1)
+    (spOne ⟨1, 5⟩) := by decide +kernel
+
+example : ¬ deckfactor.bandClear [u, ⟨2, 1⟩] (spOne ⟨2, 1⟩)
+    (spOne ⟨1, 5⟩) := by decide +kernel
+
+/-! The rank direction at the emitted record's deck base: the deck
+base is the member-key count, one value at every cleared residue —
+two at `d = 3` and at `d = 5` through `xfusion.c1_eq`, one at
+`d = 2` through `xfusion.c1_one` — and the record's walk datum
+reads that count back, the chord at the base the chord at two, the
+base the deck family's own `c₁ = 2` above. -/
+
+example : xfusion.c1 3 = 2 := xfusion.c1_eq 3 (by decide +kernel)
+example : xfusion.c1 5 = 2 := xfusion.c1_eq 5 (by decide +kernel)
+example : xfusion.c1 2 = 1 := xfusion.c1_one
+
+example : ground.posOfSucc (xfusion.c1 3 - 1) = 2 := by decide +kernel
+example : ground.posOfSucc (xfusion.c1 5 - 1) = 2 := by decide +kernel
+
+example : (channeldiv.chord (ground.posOfSucc (xfusion.c1 3 - 1))).oneValue
+    (channeldiv.chord 2) := by decide +kernel
+example : (channeldiv.chord (ground.posOfSucc (xfusion.c1 5 - 1))).oneValue
+    (channeldiv.chord 2) := by decide +kernel
+
+example : channeldiv.chord (ground.posOfSucc (xfusion.c1 3 - 1))
+    = channeldiv.chord 2 := rfl
+
+/-! The drift's margin comparison (`drift_margin`) at the committed
+reads: the levels `⟨3 : 2⟩` and `⟨5 : 1⟩` carry the counts
+`gm + GY = 1 + 2`, `GY = 2`, `X + E = 2 + 3` and `V = 1`, and the
+cross-added level order prices the assembled margin at the cap's
+shift, the shared grading weight cancelling. -/
+
+example : 3 + 1 ≤ 3 + 2 := by decide +kernel
+
+example : 3 + 1 ≤ 3 + 2 :=
+  drift_margin 1 2 3 1 3 2 1 2 1 4 1 (by decide +kernel) rfl
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+
+/-! The order binder isolates: at reads placing the vacant level
+above the occupied margin — `⟨5 : 1⟩` reading `4 + 1` against
+`⟨2 : 1⟩` reading `1 + 1` — the reads hold, the strict cross-added
+order refuses, and the margin comparison's conclusion refuses with
+it.  The cap binder isolates at the same data with the order kept:
+the second member priced beyond its cap refuses the conclusion. -/
+
+example : (ground.BPair.ofPos (5 : Pos)).oneValue
+    (ground.BPair.ofNat (4 + 1)) := by decide +kernel
+
+example : ¬ ((5 : Pos) + 1 < (2 : Pos) + 1) := by decide +kernel
+
+example : ¬ (4 + 1 ≤ 1 + 1) := by decide +kernel
+
+example : ((3 : Pos) + 1 < (4 : Pos) + 1) ∧ ¬ (5 ≤ 2)
+    ∧ ¬ (7 + 1 ≤ 3 + 2) := by decide +kernel
+
+/-! The join whole at the one-place head `H = [3]` over the unit
+gram: the level `⟨1 : 1⟩` reads the count nought and the level
+`⟨5 : 1⟩` the count one, `count_below_occupied` holds the vacant
+level strictly below the occupied margin, and `drift_margin` reads
+that order back at the first occupied level `0`, the cap `1` on
+the drift's second member, the margin `X = 4` at its unit shift
+and the weight `V = 1` — the join's own composition read, the two
+counts through the cap to the drift datum. -/
+
+private def dmH : Mat := [[⟨4, 1⟩]]
+
+private theorem dmVac :
+    certconstruct.countAtPair dmH (idMat 1) 1 1 0 (spOne ⟨4, 1⟩) := by
+  decide +kernel
+
+private theorem dmOcc :
+    certconstruct.countAtPair dmH (idMat 1) 5 1 1 (spOne ⟨1, 2⟩) := by
+  decide +kernel
+
+example : 1 + 1 ≤ 4 + 1 :=
+  drift_margin 0 1 1 1 4 1 1 1 1 5 1
+    (certconstruct.count_below_occupied dmH 1 1 5 1 1
+      (spOne ⟨4, 1⟩) (spOne ⟨1, 2⟩) dmVac dmOcc (Nat.le_refl 1))
+    rfl (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)

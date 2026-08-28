@@ -8,7 +8,6 @@ occupancy at the self-dual `θ`'s corner reads, and its membership in
 the window index at a cutoff admitting its content, the eigen-read's
 index form at the diagonal electric member.
 -/
-set_option maxRecDepth 1000000
 set_option maxHeartbeats 16000000
 
 open ground lattice fusion E0

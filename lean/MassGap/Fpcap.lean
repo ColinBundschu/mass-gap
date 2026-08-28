@@ -578,7 +578,7 @@ theorem quadFold {L : Type} (F : Data L) (lam : L)
     rw [ground.length_map]
     exact ground.length_map _ ls
   refine BPair.oneValue_trans
-    (elim.dotN_dotP u (elim.matVec (fusionMat F lam ls) u)) ?_
+    (elim.dotN_read u (elim.matVec (fusionMat F lam ls) u)) ?_
   rw [dotP_fold ls.length u (elim.matVec (fusionMat F lam ls) u)
     hu hvec]
   refine foldB_congr_members _ _ (List.range ls.length) (fun i hi => ?_)
@@ -597,7 +597,7 @@ theorem quadFold {L : Type} (F : Data L) (lam : L)
   rw [hgi]
   refine BPair.oneValue_trans
     (BPair.mul_congr (BPair.oneValue_refl _)
-      (BPair.oneValue_trans (elim.dotN_dotP _ u)
+      (BPair.oneValue_trans (elim.dotN_read _ u)
         (BPair.oneValue_of_eq (dotP_fold ls.length _ u
           (hrows _) hu)))) ?_
   refine BPair.oneValue_trans
@@ -702,5 +702,367 @@ def compRead {L : Type} (F : Data L) (f : L) (ls cs : List L) :
 instance {L : Type} (F : Data L) (f : L) (ls cs : List L) :
     Decidable (compRead F f ls cs) :=
   inferInstanceAs (Decidable (_ = _))
+
+/-! The window commutation at the source's reach: two labels'
+multiplication matrices compose at one value on a vector whose
+occupied support sits one fusion step inside the window —
+`thm:coeffone`'s parenthetical (a multiplication word's products
+with the magnetic member at one value in either order, the algebra
+commutative) read at `prop:algebra`'s identities, the reach
+`lem:stableentries`' clause, the middle rows entering as scalar
+folds alone. -/
+
+/-- One row's reach at a window label: the row-is-support law
+(`fusion.rowLaw`) at the window's and the row's members, with the
+row's occupied members inside the window — the source's
+constituents the window's own (`prop:algebra`;
+`lem:stableentries`). -/
+private def rowArm {L : Type} [DecidableEq L] (F : Data L) (a : L)
+    (ix : List L) (j : L) : Bool :=
+  (ix.all (fun k => decide (rowLaw F a j k)))
+  && ((F.row a j).all (fun k =>
+      decide (rowLaw F a j k)
+      && ((F.count a j k == 0) || ground.containsB ix k)))
+
+/-- The middle rows' laws at the pair: the commutativity and the
+row-is-support law at both rows' members
+(`prop:algebra`'s displayed identities). -/
+private def midArm {L : Type} [DecidableEq L] (F : Data L)
+    (b a : L) : Bool :=
+  ((F.row b a).all (fun e => decide (commLaw F b a e)
+      && decide (rowLaw F b a e) && decide (rowLaw F a b e)))
+  && ((F.row a b).all (fun e => decide (commLaw F b a e)
+      && decide (rowLaw F b a e) && decide (rowLaw F a b e)))
+
+/-- The reach read at a label pair: the middle rows' laws with,
+per occupied support key, the two rows' reach and the two
+associativity reads at every window label — the source one fusion
+step inside the window (`thm:coeffone`'s parenthetical;
+`lem:stableentries`; `prop:algebra`'s displayed identities). -/
+def commReach {L : Type} [DecidableEq L] (F : Data L) (b a : L)
+    (ix : List L) (psi : List ground.BPair) : Prop :=
+  (midArm F b a
+    && (ix.zip psi).all (fun p =>
+      decide (p.2.oneValue ground.BPair.unit)
+      || (rowArm F a ix p.1 && rowArm F b ix p.1
+          && ix.all (fun xl =>
+              decide (assocLaw F b a p.1 xl)
+              && decide (assocLaw F a b p.1 xl))))) = true
+
+instance {L : Type} [DecidableEq L] (F : Data L) (b a : L)
+    (ix : List L) (psi : List ground.BPair) :
+    Decidable (commReach F b a ix psi) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The window distinctness read carries the structural read, the
+interface equality reflexive at the carried representatives. -/
+private theorem distinctAt_structural {L : Type} [DecidableEq L]
+    (F : Data L) {ix : List L} (h : distinctAt F ix) :
+    ground.distinctList ix := by
+  refine ground.distinct_of_getAt_inj F.unit ix
+    (fun p q hp hq he => ?_)
+  have hread := ground.all_range_read ix.length
+    (ground.all_range_read ix.length h p hp) q hq
+  rw [he, F.eqLRefl] at hread
+  cases hpq : (p == q) with
+  | true => exact ground.beqEqOf hpq
+  | false =>
+    rw [hpq] at hread
+    exact Bool.noConfusion hread
+
+/-- The zipped window holds its key pair at every position. -/
+private theorem zipMem {L : Type} (d : L) :
+    ∀ (ix : List L) (psi : List ground.BPair) (j : Nat),
+      psi.length = ix.length → j < ix.length →
+      (ground.getAt d ix j,
+        ground.getAt ground.BPair.unit psi j) ∈ ix.zip psi := by
+  intro ix
+  induction ix with
+  | nil => exact fun _ j _ hj => absurd hj (Nat.not_lt_zero j)
+  | cons a tl ih =>
+    intro psi j hlen hj
+    match psi, j with
+    | [], _ => exact absurd hlen (by intro h; exact Nat.noConfusion h)
+    | b :: pt, 0 => exact List.Mem.head _
+    | b :: pt, j + 1 =>
+      exact List.Mem.tail _
+        (ih pt j (Nat.succ.inj hlen) (Nat.lt_of_succ_lt_succ hj))
+
+/-- The window fold reads the row fold at the reach: the two
+lists hold one occupied support (`fusion.rowLaw` at the window's
+and the row's members with the row's occupied members inside the
+window, `prop:algebra`'s constituents-in-window read). -/
+private theorem rowTransport {L : Type} [DecidableEq L]
+    (F : Data L) (a : L) (ix : List L) (jl : L)
+    (hixd : ground.distinctList ix) (hr : rowArm F a ix jl = true)
+    (w : L → Nat) :
+    ground.famFold Nat.add 0 (fun k => F.count a jl k * w k) ix
+      = ground.famFold Nat.add 0 (fun k => F.count a jl k * w k)
+        (F.row a jl) := by
+  obtain ⟨h1, h2⟩ := ground.andSplitB hr
+  refine ground.famFold_add_occupied _ ix (F.row a jl) hixd
+    (fun x hx => (of_decide_eq_true (ground.andSplitB
+      (ground.all_of_mem _ (F.row a jl) h2 x hx)).1
+        : rowLaw F a jl x).2)
+    (fun x hxi hgx => ?_) (fun x hxr hgx => ?_)
+  · have hlaw : rowLaw F a jl x := of_decide_eq_true
+      (ground.all_of_mem _ ix h1 x
+        (ground.mem_of_countOf_pos x ix hxi))
+    exact hlaw.1.mp (ground.mulPosSplit hgx).1
+  · obtain ⟨_, hclo⟩ := ground.andSplitB
+      (ground.all_of_mem _ (F.row a jl) h2 x
+        (ground.mem_of_countOf_pos x (F.row a jl) hxr))
+    cases hz : (F.count a jl x == 0) with
+    | true =>
+      refine absurd (ground.mulPosSplit hgx).1 ?_
+      rw [ground.beqEqOf hz]
+      exact Nat.lt_irrefl 0
+    | false =>
+      rw [hz] at hclo
+      exact of_decide_eq_true hclo
+
+/-- The middle rows' folds exchange at the laws: one occupied
+support at the exchanged counts (`fusion.commLaw` and
+`fusion.rowLaw` at both rows' members). -/
+private theorem midTransport {L : Type} [DecidableEq L]
+    (F : Data L) (b a : L) (hm : midArm F b a = true) (w : L → Nat) :
+    ground.famFold Nat.add 0 (fun e => F.count b a e * w e)
+      (F.row b a)
+      = ground.famFold Nat.add 0 (fun e => F.count a b e * w e)
+        (F.row a b) := by
+  obtain ⟨hm1, hm2⟩ := ground.andSplitB hm
+  have hcongr : ground.famFold Nat.add 0
+      (fun e => F.count b a e * w e) (F.row b a)
+      = ground.famFold Nat.add 0
+      (fun e => F.count a b e * w e) (F.row b a) := by
+    refine ground.famFold_congr_members Nat.add 0 _ _ (F.row b a)
+      (fun e he => ?_)
+    have harm := ground.all_of_mem _ (F.row b a) hm1 e
+      (ground.mem_of_countOf_pos e (F.row b a) he)
+    rw [(of_decide_eq_true (ground.andSplitB
+      (ground.andSplitB harm).1).1 : commLaw F b a e)]
+  rw [hcongr]
+  refine ground.famFold_add_occupied _ (F.row b a) (F.row a b)
+    (fun e he => ?_) (fun e he => ?_)
+    (fun e hei hge => ?_) (fun e her hge => ?_)
+  · exact (of_decide_eq_true (ground.andSplitB
+      (ground.andSplitB (ground.all_of_mem _ (F.row b a) hm1 e
+        he)).1).2 : rowLaw F b a e).2
+  · exact (of_decide_eq_true (ground.andSplitB
+      (ground.all_of_mem _ (F.row a b) hm2 e he)).2
+        : rowLaw F a b e).2
+  · have harm := ground.all_of_mem _ (F.row b a) hm1 e
+      (ground.mem_of_countOf_pos e (F.row b a) hei)
+    exact (of_decide_eq_true (ground.andSplitB harm).2
+        : rowLaw F a b e).1.mp (ground.mulPosSplit hge).1
+  · have harm := ground.all_of_mem _ (F.row a b) hm2 e
+      (ground.mem_of_countOf_pos e (F.row a b) her)
+    have hc : F.count b a e = F.count a b e :=
+      of_decide_eq_true (ground.andSplitB
+        (ground.andSplitB harm).1).1
+    refine (of_decide_eq_true (ground.andSplitB
+      (ground.andSplitB harm).1).2 : rowLaw F b a e).1.mp ?_
+    rw [hc]
+    exact (ground.mulPosSplit hge).1
+
+/-- The commutation's index identity at one window label pair: the
+window fold walks to the rows, the associativity carries it to the
+middle pair, and the commutativity exchanges the pair
+(`prop:algebra`'s identities at `thm:coeffone`'s parenthetical). -/
+private theorem natCore {L : Type} [DecidableEq L] (F : Data L)
+    (b a : L) (ix : List L) (jl xl : L)
+    (hixd : ground.distinctList ix)
+    (hra : rowArm F a ix jl = true)
+    (hrb : rowArm F b ix jl = true)
+    (hmid : midArm F b a = true)
+    (has1 : assocLaw F b a jl xl)
+    (has2 : assocLaw F a b jl xl) :
+    ground.famFold Nat.add 0
+      (fun k => F.count a jl k * F.count b k xl) ix
+      = ground.famFold Nat.add 0
+      (fun k => F.count b jl k * F.count a k xl) ix := by
+  have has1' : (F.row b a).foldl (fun acc e =>
+        acc + F.count b a e * F.count e jl xl) 0
+      = (F.row a jl).foldl (fun acc f =>
+        acc + F.count a jl f * F.count b f xl) 0 := has1
+  have has2' : (F.row a b).foldl (fun acc e =>
+        acc + F.count a b e * F.count e jl xl) 0
+      = (F.row b jl).foldl (fun acc f =>
+        acc + F.count b jl f * F.count a f xl) 0 := has2
+  rw [ground.foldlSum (fun e => F.count b a e * F.count e jl xl)
+      (F.row b a) 0,
+    ground.foldlSum (fun f => F.count a jl f * F.count b f xl)
+      (F.row a jl) 0,
+    Nat.zero_add, Nat.zero_add] at has1'
+  rw [ground.foldlSum (fun e => F.count a b e * F.count e jl xl)
+      (F.row a b) 0,
+    ground.foldlSum (fun f => F.count b jl f * F.count a f xl)
+      (F.row b jl) 0,
+    Nat.zero_add, Nat.zero_add] at has2'
+  rw [rowTransport F a ix jl hixd hra (fun k => F.count b k xl),
+    ← has1',
+    midTransport F b a hmid (fun e => F.count e jl xl),
+    has2',
+    ← rowTransport F b ix jl hixd hrb (fun k => F.count a k xl)]
+
+/-- One composed entry's walk to the support fold: the outer row
+against the inner multiplication collects, per support key, the
+window fold's pair read at the key's weight. -/
+private theorem sideRead {L : Type} [DecidableEq L] (F : Data L)
+    (c d : L) (ix : List L) (psi : List ground.BPair) (x : L)
+    (hlen : psi.length = ix.length) :
+    (elim.dotN (ix.map (fun y => BPair.ofNat (F.count c y x)))
+        (elim.matVec (fusionMat F d ix) psi)).oneValue
+      (ground.bsum (fun j => BPair.ofNat
+          (ground.famFold Nat.add 0
+            (fun kl => F.count d (ground.getAt F.unit ix j) kl
+              * F.count c kl x) ix)
+          * ground.getAt BPair.unit psi j)
+        (List.range ix.length)) := by
+  have hrl : (ix.map (fun y =>
+      BPair.ofNat (F.count c y x))).length = ix.length :=
+    ground.length_map _ ix
+  have hvl : (elim.matVec (fusionMat F d ix) psi).length
+      = ix.length := by
+    show ((fusionMat F d ix).map
+      (fun r => elim.dotN r psi)).length = ix.length
+    rw [ground.length_map]
+    exact ground.length_map _ ix
+  refine BPair.oneValue_trans (elim.dotN_read _ _) ?_
+  rw [elim.dotP_fold ix.length _ _ hrl hvl]
+  refine BPair.oneValue_trans
+    (foldB_congr_members _
+      (fun k => BPair.ofNat (F.count c (ground.getAt F.unit ix k) x)
+        * ground.bsum (fun j =>
+          BPair.ofNat (F.count d (ground.getAt F.unit ix j)
+            (ground.getAt F.unit ix k))
+          * ground.getAt BPair.unit psi j) (List.range ix.length))
+      (List.range ix.length) (fun k hk => ?_)) ?_
+  · have hkn : k < ix.length :=
+      ground.ltOfMemRange (ground.mem_of_countOf_pos _ _ hk)
+    rw [ground.getAt_map F.unit BPair.unit _ ix k hkn]
+    have hmv : ground.getAt BPair.unit
+        (elim.matVec (fusionMat F d ix) psi) k
+        = elim.dotN (ix.map (fun y => BPair.ofNat
+          (F.count d y (ground.getAt F.unit ix k)))) psi := by
+      show ground.getAt BPair.unit ((fusionMat F d ix).map
+        (fun r => elim.dotN r psi)) k = _
+      rw [show (fusionMat F d ix).map (fun r => elim.dotN r psi)
+          = ix.map (fun z => elim.dotN
+            (ix.map (fun y => BPair.ofNat (F.count d y z))) psi) from
+        ground.map_map _ _ ix]
+      exact ground.getAt_map F.unit BPair.unit _ ix k hkn
+    rw [hmv]
+    refine BPair.mul_congr (BPair.oneValue_refl _) ?_
+    refine BPair.oneValue_trans (elim.dotN_read _ psi)
+      (BPair.oneValue_trans
+        (BPair.oneValue_of_eq (elim.dotP_fold ix.length _ psi
+          (ground.length_map _ ix) hlen)) ?_)
+    refine foldB_congr_members _ _ (List.range ix.length)
+      (fun j hj => ?_)
+    have hjn : j < ix.length :=
+      ground.ltOfMemRange (ground.mem_of_countOf_pos _ _ hj)
+    rw [ground.getAt_map F.unit BPair.unit _ ix j hjn]
+    exact BPair.oneValue_refl _
+  refine BPair.oneValue_trans
+    (foldB_congr_members _ _ (List.range ix.length) (fun k _ =>
+      BPair.oneValue_symm (foldB_mul_left _ _ (List.range ix.length))))
+    ?_
+  refine BPair.oneValue_trans (ground.bsum_swap _ _ _) ?_
+  refine foldB_congr_members _ _ (List.range ix.length)
+    (fun j hj => ?_)
+  refine BPair.oneValue_trans
+    (foldB_congr_members _
+      (fun k => BPair.ofNat
+        (F.count c (ground.getAt F.unit ix k) x
+          * F.count d (ground.getAt F.unit ix j)
+            (ground.getAt F.unit ix k))
+        * ground.getAt BPair.unit psi j)
+      (List.range ix.length) (fun k _ => ?_)) ?_
+  · refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.mul_assoc _ _ _).symm) ?_
+    exact BPair.mul_congr_left
+      (BPair.oneValue_symm (BPair.ofNat_mul _ _))
+  refine BPair.oneValue_trans (ground.bsum_scalar _ _ _) ?_
+  refine BPair.mul_congr_left (BPair.oneValue_of_eq
+    (congrArg BPair.ofNat ?_))
+  refine Eq.trans (ground.famFold_congr_members Nat.add 0 _ _
+    (List.range ix.length) (fun k _ => Nat.mul_comm _ _)) ?_
+  exact ground.famFold_getAt Nat.add 0
+    (fun kl => F.count d (ground.getAt F.unit ix j) kl
+      * F.count c kl x) F.unit ix ix.length rfl
+
+/-- The window commutation at the source's reach: the two
+multiplication matrices' composed reads at one value on the
+support-reached vector — `thm:coeffone`'s parenthetical at
+`prop:algebra`'s identities, the reach `lem:stableentries`'
+clause. -/
+theorem multComm {L : Type} [DecidableEq L] (F : Data L) (b a : L)
+    (ix : List L) (psi : List ground.BPair)
+    (hlen : psi.length = ix.length)
+    (hdist : distinctAt F ix)
+    (hreach : commReach F b a ix psi) :
+    poly.oneValue
+      (elim.matVec (fusionMat F b ix)
+        (elim.matVec (fusionMat F a ix) psi))
+      (elim.matVec (fusionMat F a ix)
+        (elim.matVec (fusionMat F b ix) psi)) := by
+  obtain ⟨hmid, houter⟩ := ground.andSplitB hreach
+  have hixd : ground.distinctList ix := distinctAt_structural F hdist
+  rw [show elim.matVec (fusionMat F b ix)
+        (elim.matVec (fusionMat F a ix) psi)
+      = ix.map (fun z => elim.dotN
+        (ix.map (fun y => BPair.ofNat (F.count b y z)))
+        (elim.matVec (fusionMat F a ix) psi)) from
+    ground.map_map _ _ ix,
+    show elim.matVec (fusionMat F a ix)
+        (elim.matVec (fusionMat F b ix) psi)
+      = ix.map (fun z => elim.dotN
+        (ix.map (fun y => BPair.ofNat (F.count a y z)))
+        (elim.matVec (fusionMat F b ix) psi)) from
+    ground.map_map _ _ ix]
+  refine poly.oneValue_map _ _ ix (fun x hx => ?_)
+  refine BPair.oneValue_trans (sideRead F b a ix psi x hlen) ?_
+  refine BPair.oneValue_trans
+    (foldB_congr_members _ _ (List.range ix.length)
+      (fun j hj => ?_))
+    (BPair.oneValue_symm (sideRead F a b ix psi x hlen))
+  have hjn : j < ix.length :=
+    ground.ltOfMemRange (ground.mem_of_countOf_pos _ _ hj)
+  have hpair := ground.all_of_mem _ (ix.zip psi) houter
+    (ground.getAt F.unit ix j, ground.getAt ground.BPair.unit psi j)
+    (zipMem F.unit ix psi j hlen hjn)
+  have hrow : (decide ((ground.getAt ground.BPair.unit psi j).oneValue
+        ground.BPair.unit)
+      || (rowArm F a ix (ground.getAt F.unit ix j)
+          && rowArm F b ix (ground.getAt F.unit ix j)
+          && ix.all (fun xl =>
+              decide (assocLaw F b a (ground.getAt F.unit ix j) xl)
+              && decide (assocLaw F a b (ground.getAt F.unit ix j)
+                xl)))) = true := hpair
+  cases hu : decide ((ground.getAt BPair.unit psi j).oneValue
+      BPair.unit) with
+  | true =>
+    have hunit := of_decide_eq_true hu
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl _) hunit) ?_
+    refine BPair.oneValue_trans (BPair.mul_unit _) ?_
+    refine BPair.oneValue_symm ?_
+    exact BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl _) hunit)
+      (BPair.mul_unit _)
+  | false =>
+    rw [hu] at hrow
+    obtain ⟨hrab, hxs⟩ := ground.andSplitB hrow
+    obtain ⟨hra, hrb⟩ := ground.andSplitB hrab
+    obtain ⟨has1, has2⟩ := ground.andSplitB
+      (ground.all_of_mem (fun xl =>
+        decide (assocLaw F b a (ground.getAt F.unit ix j) xl)
+        && decide (assocLaw F a b (ground.getAt F.unit ix j) xl))
+        ix hxs x hx)
+    refine BPair.mul_congr_left (BPair.oneValue_of_eq
+      (congrArg BPair.ofNat ?_))
+    exact natCore F b a ix (ground.getAt F.unit ix j) x hixd
+      hra hrb hmid (of_decide_eq_true has1) (of_decide_eq_true has2)
 
 end fpcap

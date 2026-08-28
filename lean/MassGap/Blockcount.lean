@@ -191,7 +191,7 @@ The pool group's own kit is public for the consumers above it: the
 head split and the join (`groupAt_cons`, `groupAt_append`), the
 width at a sized family (`rowsLen_groupAt`), the rows' provenance
 (`groupAt_rows`), the membership read's split (`memAll_split`
-beside `memAll_append`), the content occupancy read structurally
+beside `ground.all_of_append _ _ _`), the content occupancy read structurally
 (`occ`, `occupancyAt_eq_occ`) with the group's row count at it
 (`length_groupAt`, `groupAt_occupancy`), the letter-pair action's
 width (`act_sized`) with its round trip at every pair
@@ -421,26 +421,12 @@ theorem memAll_tail {α : Type} {P : α → Prop} {a : α}
     {t : List α} (h : ∀ v ∈ a :: t, P v) : ∀ v ∈ t, P v :=
   fun v hv => h v (List.Mem.tail a hv)
 
-/-- The read transports over a join of families. -/
-theorem memAll_append {α : Type} {P : α → Prop} {a b : List α}
-    (ha : ∀ v ∈ a, P v) (hb : ∀ v ∈ b, P v) :
-    ∀ v ∈ a ++ b, P v :=
-  fun v hv =>
-    match ground.mem_append_of _ _ hv with
-    | .inl h => ha v h
-    | .inr h => hb v h
-
 /-- The read splits back off a join of families. -/
 theorem memAll_split {α : Type} {P : α → Prop} {a b : List α}
     (h : ∀ v ∈ a ++ b, P v) :
     (∀ v ∈ a, P v) ∧ (∀ v ∈ b, P v) :=
   ⟨fun v hv => h v (ground.mem_append_left b hv),
    fun v hv => h v (ground.mem_append_right a hv)⟩
-
-private theorem drop_append {α : Type} :
-    ∀ a b : List α, (a ++ b).drop a.length = b
-  | [], _ => rfl
-  | _ :: t, b => drop_append t b
 
 private theorem revRange_succ : ∀ k : Nat,
     (List.range (k + 1)).reverse
@@ -728,7 +714,7 @@ private theorem cand_one (Q R : HVec → Prop) (d : Nat)
   | 0, _ => memAll_nil
   | k + 1, hk => by
     rw [range_succ k, ground.flatMap_append]
-    refine memAll_append
+    refine ground.all_of_append _ _ _
       (cand_one Q R d hstep v hv k
         (fun j hj => hk j (Nat.lt_succ_of_lt hj))) ?_
     show ∀ w ∈ ((match lowerH k v with
@@ -752,7 +738,7 @@ private theorem cand_all (Q R : HVec → Prop) (d : Nat)
             | none => [])), Q w ∧ R w
   | [], _ => memAll_nil
   | v :: fs, h =>
-    memAll_append
+    ground.all_of_append _ _ _
       (cand_one Q R d hstep v (memAll_head h) (d - 1)
         (fun _ hj => ground.succ_lt_of_lt_pred hj))
       (cand_all Q R d hstep fs (memAll_tail h))
@@ -799,13 +785,13 @@ private theorem closeSpan_reads (d : Nat) (Q R : HVec → Prop)
             | some w => [w]
             | none => []))).foldl tryAdd pool).drop pool.length)
         = pool ++ tail ∧ ∀ v ∈ tail, Q v ∧ R v
-    rw [ht1, drop_append pool t1]
+    rw [ht1, ground.drop_append_self pool t1]
     obtain ⟨t2, ht2, hqr2⟩ := closeSpan_reads d Q R hstep fuel
       (pool ++ t1) t1
-      (memAll_append hp (fun v hv => (hqr1 v hv).1))
+      (ground.all_of_append _ _ _ hp (fun v hv => (hqr1 v hv).1))
       (fun v hv => (hqr1 v hv).1)
     exact ⟨t1 ++ t2, by rw [ht2, ground.append_assoc],
-      memAll_append hqr1 hqr2⟩
+      ground.all_of_append _ _ _ hqr1 hqr2⟩
 
 /-- The span's parametric read: a predicate at the exhibit kept by
 the occupied lowerings holds over the whole span, the members
@@ -1237,7 +1223,7 @@ private theorem closeSpan_std (d : Nat) : ∀ (fuel k : Nat),
             (stdV d (k + 1))).drop
               ((List.range (k + 1)).map (stdV d)).length)
         = (List.range d).map (stdV d)
-      rw [tryAdd_std d k hlt, drop_append
+      rw [tryAdd_std d k hlt, ground.drop_append_self
         ((List.range (k + 1)).map (stdV d)) [stdV d (k + 1)], hstep]
       exact closeSpan_std d fuel (k + 1) hlt
         (by
@@ -1763,7 +1749,7 @@ private theorem settled_member (pool : List HVec) (v : HVec)
   have hLall : elim.rowsLen v.coords.length
       (groupAt (pool ++ [v]) v.content) := by
     have hL := rowsLen_groupAt v.content (pool ++ [v])
-      (memAll_append hs (memAll_cons hv memAll_nil))
+      (ground.all_of_append _ _ _ hs (memAll_cons hv memAll_nil))
     rw [← hv] at hL
     exact hL
   have hk : (groupAt pool v.content).length
@@ -1865,7 +1851,7 @@ private theorem foldl_tryAdd_sem :
     | inr hcase =>
       rw [hcase.1]
       match foldl_tryAdd_sem imgs' (pool ++ [w])
-          (memAll_append hs
+          (ground.all_of_append _ _ _ hs
             (memAll_cons (memAll_head hi) memAll_nil))
           (memAll_tail hi) hcase.2 with
       | ⟨ext', heq, hind2, hsetts, htrans⟩ =>
@@ -1878,7 +1864,7 @@ private theorem foldl_tryAdd_sem :
             (htrans Q (memAll_tail hQ))⟩
         · rw [← hassoc]
           exact settled_mono (pool ++ [w]) ext' w
-            (memAll_append hs
+            (ground.all_of_append _ _ _ hs
               (memAll_cons (memAll_head hi) memAll_nil))
             (htrans sized (memAll_tail hi)) (memAll_head hi)
             (settled_member pool w hs (memAll_head hi))
@@ -1893,7 +1879,7 @@ theorem memAll_flatMap_of (P A : HVec → Prop)
   | [], _ => memAll_nil
   | v :: t, ha => by
     show ∀ w ∈ f v ++ t.flatMap f, P w
-    exact memAll_append (h v (memAll_head ha))
+    exact ground.all_of_append _ _ _ (h v (memAll_head ha))
       (memAll_flatMap_of P A f h t (memAll_tail ha))
 
 private theorem memAll_flatMap_to (P : HVec → Prop)
@@ -1930,7 +1916,7 @@ private theorem memAll_range_of (P : HVec → Prop)
   | 0, _ => memAll_nil
   | n + 1, h => by
     rw [range_succ n, ground.flatMap_append]
-    refine memAll_append
+    refine ground.all_of_append _ _ _
       (memAll_range_of P g n
         (fun j hj => h j (Nat.lt_of_lt_of_le hj
           (Nat.le_succ n)))) ?_
@@ -2057,7 +2043,7 @@ private theorem closeSpan_prov (d : Nat) :
           (prov_append d pool t1 hp hc1) with
       | ⟨t2, ht2, hp2⟩ =>
         refine ⟨t1 ++ t2, ?_, ?_⟩
-        · rw [hstep, ht1, drop_append pool t1, ht2,
+        · rw [hstep, ht1, ground.drop_append_self pool t1, ht2,
             ground.append_assoc]
         · rw [← ground.append_assoc]
           exact hp2
@@ -2170,7 +2156,7 @@ private theorem closeSpan_sem (d : Nat) (meas : List Nat → Nat)
       exact hk
     · rw [ground.append_nil]
       exact hind
-    · refine closedAt_intro (memAll_append hdone ?_)
+    · refine closedAt_intro (ground.all_of_append _ _ _ hdone ?_)
       intro v hv j w hj heq
       have h0 : meas v.content = 0 := Nat.le_zero.mp (hht v hv)
       rw [hnomove v ((memAll_split hk).2 v hv) h0 j hj] at heq
@@ -2183,7 +2169,7 @@ private theorem closeSpan_sem (d : Nat) (meas : List Nat → Nat)
       exact hk
     · rw [ground.append_nil]
       exact hind
-    · exact closedAt_intro (memAll_append hdone memAll_nil)
+    · exact closedAt_intro (ground.all_of_append _ _ _ hdone memAll_nil)
   | fuel + 1, done, f :: fr, hs, hk, hind, hdone, hht => by
     have hkf : ∀ v ∈ f :: fr, K v := (memAll_split hk).2
     have himgsS : ∀ w ∈ imgsOf d (f :: fr), sized w :=
@@ -2207,13 +2193,13 @@ private theorem closeSpan_sem (d : Nat) (meas : List Nat → Nat)
         hs himgsS hind with
     | ⟨ext₁, heq₁, hind₁, hsetts, htrans⟩ =>
       have hs₁ : ∀ v ∈ (done ++ (f :: fr)) ++ ext₁, sized v :=
-        memAll_append hs (htrans sized himgsS)
+        ground.all_of_append _ _ _ hs (htrans sized himgsS)
       have hk₁ : ∀ v ∈ (done ++ (f :: fr)) ++ ext₁, K v :=
-        memAll_append hk (htrans K himgsK)
+        ground.all_of_append _ _ _ hk (htrans K himgsK)
       have hdone' : ∀ v ∈ done ++ (f :: fr), ∀ j w, j < d - 1 →
           lowerH j v = some w →
           settledAt ((done ++ (f :: fr)) ++ ext₁) w := by
-        refine memAll_append ?_ ?_
+        refine ground.all_of_append _ _ _ ?_ ?_
         · intro v hv j w hj heq
           exact settled_mono (done ++ (f :: fr)) ext₁ w hs
             (htrans sized himgsS) (lowerH_sized heq)
@@ -2233,7 +2219,7 @@ private theorem closeSpan_sem (d : Nat) (meas : List Nat → Nat)
                   (done ++ (f :: fr))).drop
                   (done ++ (f :: fr)).length) := rfl
         refine ⟨ext₁ ++ ext₂, ?_, ?_, ?_, ?_, ?_⟩
-        · rw [hstep, heq₁, drop_append (done ++ (f :: fr)) ext₁,
+        · rw [hstep, heq₁, ground.drop_append_self (done ++ (f :: fr)) ext₁,
             heq₂, ground.append_assoc]
         · rw [← ground.append_assoc]
           exact hs₂
@@ -2242,7 +2228,7 @@ private theorem closeSpan_sem (d : Nat) (meas : List Nat → Nat)
         · rw [← ground.append_assoc]
           intro mu hmu
           exact hind₂ mu hmu
-        · rw [hstep, heq₁, drop_append (done ++ (f :: fr)) ext₁]
+        · rw [hstep, heq₁, ground.drop_append_self (done ++ (f :: fr)) ext₁]
           exact hclosed
 
 private theorem foldl_len_inv {α : Type}
@@ -3436,13 +3422,6 @@ private theorem wSum_collect (mu : List Nat) (x : List BPair)
 raising's outputs sit at the raised content, the reversed action's
 outputs back at the source's. -/
 
-private theorem getAt_ge {α : Type} (dflt : α) :
-    ∀ (l : List α) (i : Nat), l.length ≤ i →
-      ground.getAt dflt l i = dflt
-  | [], _, _ => rfl
-  | _ :: _, 0, h => absurd h (Nat.not_succ_le_zero _)
-  | _ :: t, i + 1, h => getAt_ge dflt t i (Nat.le_of_succ_le_succ h)
-
 private theorem getAt_moveUp_next (j : Nat) (nu : List Nat)
     (hb : 0 < ground.getAt 0 nu (j + 1)) :
     ground.getAt 0 (units.moveUp j nu) (j + 1) + 1
@@ -4436,7 +4415,7 @@ private theorem wedge_raiseNull (d l j : Nat) (hj : j + 1 < d) :
             exact Nat.le_refl 1
           · rw [if_neg hil]
             exact Nat.le_succ 0
-        · rw [getAt_ge 0 (wedge d l).content i
+        · rw [ground.getAt_over 0 (wedge d l).content i
             (by rw [hwl]; exact Nat.le_of_not_lt hid)]
           exact Nat.le_succ 0
       have hlist := unitAct_two (j + 1) j t hcnt2
@@ -5270,7 +5249,7 @@ theorem act_transport (pool : List HVec) (i j : Nat)
       rw [hcc, hxx, elim.matVec_length] at h2
       exact h2
   have hres := elim.span_map (units.matUnitAt (moveAt i j mu) mu i j)
-    (monomialsAt mu).length (units.rowsLen_matUnitAt _ _ i j)
+    (monomialsAt mu).length
     (groupAt pool mu) (groupAt pool (moveAt i j mu))
     (rowsLen_groupAt mu pool hall) hM himg' x hx hsp
   rw [hTlen] at hres
@@ -5334,7 +5313,7 @@ private theorem settled_of_span (pool : List HVec) (w : HVec)
   rw [hsz]
   exact h
 
-private theorem span_of_settled (pool : List HVec) (w : HVec)
+theorem span_of_settled (pool : List HVec) (w : HVec)
     (hall : ∀ v ∈ pool, sized v) (hsz : sized w)
     (h : settledAt pool w) :
     elim.spanRel (monomialsAt w.content).length
@@ -6209,7 +6188,7 @@ private theorem wedge_full_le (d i : Nat) :
     ground.getAt 0 (wedge d d).content i ≤ 1 := by
   by_cases hid : i < d
   · exact Nat.le_of_eq (wedge_full_get d i hid)
-  · rw [getAt_ge 0 (wedge d d).content i
+  · rw [ground.getAt_over 0 (wedge d d).content i
       (by rw [wedge_clen d d]; exact Nat.le_of_not_lt hid)]
     exact Nat.le_succ 0
 
@@ -6530,18 +6509,6 @@ private theorem tensor_coord_at_null (v w : HVec)
   rw [← hr]
   exact tensor_coord_null v w hlen m1 m2 hm.1 hm.2 h1l hbad
 
-private theorem offUnit_witness : ∀ u : List BPair,
-    ¬ poly.unitTail u →
-    ∃ p, p < u.length
-      ∧ ¬ (ground.getAt BPair.unit u p).oneValue BPair.unit
-  | [], h => absurd True.intro h
-  | a :: t, h => by
-    by_cases ha : a.oneValue BPair.unit
-    · match offUnit_witness t (fun hu => h ⟨ha, hu⟩) with
-      | ⟨p, hp, hoff⟩ =>
-        exact ⟨p + 1, Nat.succ_lt_succ hp, hoff⟩
-    · exact ⟨0, Nat.succ_pos _, ha⟩
-
 
 private theorem length_vecAdd_le : ∀ (u w : List BPair),
     u.length ≤ w.length → (elim.vecAdd u w).length = u.length
@@ -6595,8 +6562,8 @@ theorem tensorH_unitTail : ∀ (v w : HVec), sized v → sized w →
       by_cases hw : poly.unitTail w.coords
       · exact hw
       · exfalso
-        match offUnit_witness v.coords hv,
-            offUnit_witness w.coords hw with
+        match poly.offUnit_witness v.coords hv,
+            poly.offUnit_witness w.coords hw with
         | ⟨p, hp, hpo⟩, ⟨q, hq, hqo⟩ =>
           have hpm : p < (monomialsAt v.content).length := by
             rw [← hsv]
@@ -8972,16 +8939,6 @@ private theorem dotP_bsum (F G : List Nat → BPair) :
         (fun i hi => hF (i + 1) (Nat.succ_lt_succ hi))
         (fun i hi => hG (i + 1) (Nat.succ_lt_succ hi))]
 
-private theorem takeN_append_eq : ∀ (a b : List Nat),
-    List.take a.length (a ++ b) = a
-  | [], _ => rfl
-  | x :: t, b => congrArg (List.cons x) (takeN_append_eq t b)
-
-private theorem drop_append_eq : ∀ (a b : List Nat),
-    List.drop a.length (a ++ b) = b
-  | [], _ => rfl
-  | _ :: t, b => drop_append_eq t b
-
 private theorem countOf_map_append (n : Nat) (M1 x : List Nat)
     (hM1 : M1.length = n) :
     ∀ l : List (List Nat),
@@ -9005,12 +8962,12 @@ private theorem countOf_map_append (n : Nat) (M1 x : List Nat)
     · rw [if_pos h, if_pos h]
       by_cases hb : x = M1 ++ b
       · rw [if_pos hb, if_pos (show List.drop n x = b from by
-          rw [hb, ← hM1, drop_append_eq])]
+          rw [hb, ← hM1, ground.drop_append_self])]
       · rw [if_neg hb, if_neg (show ¬ List.drop n x = b from fun he =>
           hb (by rw [h, ← he, take_drop_join]))]
     · rw [if_neg h, if_neg h,
         if_neg (show ¬ x = M1 ++ b from fun he =>
-          h (by rw [he, ← hM1, takeN_append_eq]))]
+          h (by rw [he, ← hM1, ground.take_append_self]))]
 
 private theorem countOf_pairList (n : Nat) (x : List Nat)
     (bs2 : List (List Nat)) :
@@ -10760,12 +10717,6 @@ private theorem foldl_tryAdd_unit :
           h))]
     exact foldl_tryAdd_unit cs pool (memAll_tail h)
 
-private theorem closeSpan_empty (d : Nat) :
-    ∀ (fuel : Nat) (pool : List HVec),
-      closeSpan d fuel pool [] = pool
-  | 0, _ => rfl
-  | _ + 1, _ => rfl
-
 private theorem cand_unit (v : HVec) (d : Nat)
     (h : ∀ (j : Nat) (u : HVec), j + 1 < d → lowerH j v = some u →
       poly.unitTail u.coords) :
@@ -10777,7 +10728,7 @@ private theorem cand_unit (v : HVec) (d : Nat)
   | 0, _ => memAll_nil
   | k + 1, hk => by
     rw [range_succ k, ground.flatMap_append]
-    refine memAll_append
+    refine ground.all_of_append _ _ _
       (cand_unit v d h k (fun j hj => hk j (Nat.lt_succ_of_lt hj))) ?_
     show ∀ w ∈ ((match lowerH k v with
         | some w => [w]
@@ -10839,7 +10790,7 @@ theorem blockSpan_stationary : ∀ s : Shape,
             [exhibit s].length)
         = [exhibit s]
       rw [hround]
-      exact closeSpan_empty s.length f [exhibit s]
+      exact closeSpan_nil s.length f [exhibit s]
   exact key (degree s * s.length)
 
 private theorem grow_ne (pool : List HVec) (c : HVec)
@@ -10899,7 +10850,7 @@ theorem closeSpan_seed_line (d fuel : Nat) (w : HVec)
           | some z => [z]
           | none => []))).foldl tryAdd [w]).drop [w].length)
       = [w] ++ t1 ++ t2
-    rw [ht1, drop_append [w] t1]
+    rw [ht1, ground.drop_append_self [w] t1]
     exact ht2
   rw [hround] at hlen
   have ht1nil : t1 = [] := by
@@ -11469,9 +11420,9 @@ private theorem tryAdd_corrState (d : Nat) (A B : List HVec)
       rw [hq] at hiA' ⊢
       rw [hp] at hiB' ⊢
       exact ⟨corrP_append d hc ⟨hxy, trivial⟩,
-        memAll_append hsA (memAll_cons hsx memAll_nil),
-        memAll_append hsB (memAll_cons hsy memAll_nil),
-        memAll_append hdA (memAll_cons hdx memAll_nil),
+        ground.all_of_append _ _ _ hsA (memAll_cons hsx memAll_nil),
+        ground.all_of_append _ _ _ hsB (memAll_cons hsy memAll_nil),
+        ground.all_of_append _ _ _ hdA (memAll_cons hdx memAll_nil),
         hiA', hiB'⟩
 
 private theorem corrP_split (d : Nat) : ∀ {A B A' B' : List HVec},
@@ -11608,7 +11559,7 @@ private theorem front_unit_of_nomove (d : Nat)
         match lowerH j w with
         | some y => [y]
         | none => []) ++ imgsOf d FP), poly.unitTail y.coords
-    refine memAll_append ?_
+    refine ground.all_of_append _ _ _ ?_
       (front_unit_of_nomove d meas K hnomove FQ FP hc.2
         (memAll_tail hsQ) (memAll_tail hsP) (memAll_tail hdQ)
         (memAll_tail hkQ) (memAll_tail hmQ))
@@ -11645,7 +11596,7 @@ private theorem closeSpan_flush (d : Nat) :
           poolP.length)
       = poolP
     rw [foldl_tryAdd_unit _ _ hunit, ground.dropLength]
-    exact closeSpan_empty d fp poolP
+    exact closeSpan_nil d fp poolP
 
 private theorem closeSpan_corr (d : Nat) (meas : List Nat → Nat)
     (K : HVec → Prop)
@@ -11679,7 +11630,7 @@ private theorem closeSpan_corr (d : Nat) (meas : List Nat → Nat)
   | _ + 1, fuelP, doneQ, [], doneP, [], _, hcD, hcF, _, _, _, _, _,
       _, _ => by
     show corrP d (doneQ ++ []) (closeSpan d fuelP (doneP ++ []) [])
-    rw [closeSpan_empty d fuelP (doneP ++ [])]
+    rw [closeSpan_nil d fuelP (doneP ++ [])]
     exact corrP_append d hcD hcF
   | _ + 1, _, _, [], _, _ :: _, _, _, hcF, _, _, _, _, _, _, _ =>
     hcF.elim
@@ -11750,16 +11701,16 @@ private theorem closeSpan_corr (d : Nat) (meas : List Nat → Nat)
             (((imgsOf d (g :: gs)).foldl tryAdd
               (doneP ++ (g :: gs))).drop
               (doneP ++ (g :: gs)).length))
-        rw [heqQ, heqP, drop_append (doneQ ++ (f :: fr)) extQ,
-          drop_append (doneP ++ (g :: gs)) extP]
+        rw [heqQ, heqP, ground.drop_append_self (doneQ ++ (f :: fr)) extQ,
+          ground.drop_append_self (doneP ++ (g :: gs)) extP]
         exact closeSpan_corr d meas K hK hnomove hdrop fq fp
           (doneQ ++ (f :: fr)) extQ (doneP ++ (g :: gs)) extP
           (Nat.le_of_succ_le_succ hfuel) hcPool hcExt
-          (memAll_append hsQ (htransQ sized himgsSQ))
-          (memAll_append hsP (htransP sized himgsSP))
-          (memAll_append hdQ
+          (ground.all_of_append _ _ _ hsQ (htransQ sized himgsSQ))
+          (ground.all_of_append _ _ _ hsP (htransP sized himgsSP))
+          (ground.all_of_append _ _ _ hdQ
             (htransQ (fun x => x.content.length = d) himgsDQ))
-          (memAll_append hkQ (htransQ K himgsKQ))
+          (ground.all_of_append _ _ _ hkQ (htransQ K himgsKQ))
           hindQ' hindP' (htransQ _ himgsMQ)
 
 private theorem corrP_getAt (d : Nat) : ∀ {A B : List HVec},
@@ -11959,7 +11910,7 @@ theorem occupancy_addFull (lam : Shape) (meas : List Nat → Nat)
       show ∀ v ∈ closeSpan lam.length (degree lam * lam.length)
         [exhibit lam] [exhibit lam], v.content.length = lam.length
       rw [heq]
-      exact memAll_append (memAll_cons hclenQ memAll_nil)
+      exact ground.all_of_append _ _ _ (memAll_cons hclenQ memAll_nil)
         (fun v hv => (htail v hv).1)
   exact corrP_occupancy lam.length mu hmu
     (blockSpan_corrP lam meas hnomove hdrop hexh) hall 0
@@ -13166,7 +13117,7 @@ private theorem walkGoT (T U : WalkTable) (d : Nat) (t u : HVec)
         Nat.add_right_comm (A.length + C.length) 1 B'.length,
         Nat.add_assoc A.length C.length B'.length]
       exact Nat.lt_of_lt_of_le (Nat.lt_succ_self _) (Nat.le_succ _)
-    have hemit := IH A (C ++ B') hltn hA (memAll_append hC hB')
+    have hemit := IH A (C ++ B') hltn hA (ground.all_of_append _ _ _ hC hB')
     rw [wactT_concat T C B' t, wactT_concat U C B' u] at hemit
     have hrecArith : A.length + 1 + (C ++ [l]).length + B'.length = n := by
       rw [← hn, ground.length_append]
@@ -13177,7 +13128,7 @@ private theorem walkGoT (T U : WalkTable) (d : Nat) (t u : HVec)
         Nat.add_succ (A.length + 1 + C.length) B'.length]
     have hrec := walkGoT T U d t u hst hsu hdt hdu htopt htopu htie
       n IH B' A (C ++ [l]) j hrecArith hjd hA hB'
-      (memAll_append hC (memAll_cons hld memAll_nil))
+      (ground.all_of_append _ _ _ hC (memAll_cons hld memAll_nil))
     show (dotG (wactT T A t)
         (wactT T C (T.tr j (T.step l (wactT T B' t))))
         * elim.dotP u.coords u.coords).oneValue
@@ -15847,7 +15798,7 @@ private theorem length_pairsAtIdxM {α : Type} (A : List α)
     (pairsAt (A.map f) B cc).length = (pairIdx A f B cc).length := by
   rw [pairsAt_pairIdxM f A B cc, ground.length_map]
 
-private theorem length_pairsAtIdx (A B : List HVec)
+theorem length_pairsAtIdx (A B : List HVec)
     (cc : List Nat) :
     (pairsAt A B cc).length = (pairIdx A (fun v => v) B cc).length := by
   rw [pairsAt_pairIdx A B cc, ground.length_map]

@@ -43,7 +43,7 @@ settled, reads the cleared line
 `⟨v,v⟩·(T w) ≐ ⟨T v, v⟩·w` at every member: the base is the
 head group's residual read (`group_head` at the derived head
 line), the step the moved read across each provenance lowering
-(`elim.matVec_vecScale`, `elim.matVec_congr`), and the walk
+(`elim.matVec_vecScale_free`, `elim.matVec_congr`), and the walk
 along the provenance carries the display from the head to every
 member.  Clause (iii), `hom_content` — a
 family from one span into another at settled values and some
@@ -109,22 +109,6 @@ private theorem unitTail_rowmap : ∀ (M : elim.Mat) (u : List BPair),
   | _ :: t, u, h =>
     ⟨h 0 (Nat.succ_pos t.length),
      unitTail_rowmap t u (fun k hk => h (k + 1) (Nat.succ_lt_succ hk))⟩
-
-/-- A settled vector sits in its content group's span at the
-content enumeration's width, the unit disjunct through the null
-combination. -/
-private theorem settled_span (pool : List HVec) (w : HVec)
-    (hall : ∀ x ∈ pool, sized x) (hw : sized w)
-    (h : settledAt pool w) :
-    elim.spanRel (monomialsAt w.content).length
-      (groupAt pool w.content) w.coords := by
-  cases h with
-  | inl hu =>
-    exact elim.spanRel_null _ _ _ (unitTail_of_allU w.coords hu)
-      (rowsLen_groupAt w.content pool hall) hw
-  | inr hs =>
-    rw [hw] at hs
-    exact hs
 
 /-- A member's coordinates are a listed row of its own content
 group. -/
@@ -303,7 +287,7 @@ private theorem lower_settle (d j : Nat) (L : List HVec) (u w : HVec)
       settledAt L (act i j x))
     (hjd : j + 1 < d) (hlow : lowerH j u = some w)
     (hu : settledAt L u) : settledAt L w := by
-  have hspan := settled_span L u hLsz hus hu
+  have hspan := blockcount.span_of_settled L u hLsz hus hu
   have himg : ∀ x ∈ L, settledAt L (act (j + 1) j x) :=
     fun x hx => hLcl x hx (j + 1) hjd j (Nat.lt_of_succ_lt hjd)
       (Nat.succ_ne_self j)
@@ -540,7 +524,7 @@ theorem irred (d : Nat) (v : HVec) (tail L : List HVec)
     have hys : sized y := hLsz y hyL
     have hyn : y.coords.length = (monomialsAt v.content).length := by
       rw [hys, hyc]
-    have hyG := settled_span (v :: tail) y hsz hys (hLmem y hyL)
+    have hyG := blockcount.span_of_settled (v :: tail) y hsz hys (hLmem y hyL)
     rw [hyc, group_head d v tail hwid hprov] at hyG
     obtain ⟨c₀, cs, hc₀, hcs, hone⟩ := elim.span_elim hyG
     match cs, hcs, hone with
@@ -629,7 +613,7 @@ theorem irred (d : Nat) (v : HVec) (tail L : List HVec)
           (Nat.le_refl p) hp
     intro x hxL
     have hxs : sized x := hLsz x hxL
-    have hxG := settled_span (v :: tail) x hsz hxs (hLmem x hxL)
+    have hxG := blockcount.span_of_settled (v :: tail) x hsz hxs (hLmem x hxL)
     obtain ⟨c₀, cs, hc₀, hcs, hone⟩ := elim.span_elim hxG
     refine elim.dotP_self_null x.coords ?_
     refine ground.mul_cancel_unit hc₀ ?_
@@ -819,13 +803,10 @@ private theorem endo_step (d j : Nat) (T : List Nat → elim.Mat)
     (elim.vecScale_oneValue S _ _ (poly.oneValue_symm hmv)) ?_
   refine poly.oneValue_trans
     (poly.oneValue_symm
-      (elim.matVec_vecScale _ (monomialsAt u.content).length hMr S
-        (elim.matVec (T u.content) u.coords)
-        (by rw [elim.matVec_length, hTul, hul]))) ?_
+      (elim.matVec_vecScale_free _ S (elim.matVec (T u.content) u.coords))) ?_
   refine poly.oneValue_trans
     (elim.matVec_congr _ _ _ hih) ?_
-  exact elim.matVec_vecScale _ (monomialsAt u.content).length hMr
-    S' u.coords hul
+  exact elim.matVec_vecScale_free _ S' u.coords
 
 /-- The display's walk along the pool: the head's line carried
 down the provenance, one intertwining step per word. -/
@@ -1117,7 +1098,7 @@ private theorem val_closed (d : Nat) (pool : List HVec)
             (monomialsAt (moveAt i j w.content)).length
             (groupAt pool (moveAt i j w.content))
             (act i j w).coords (T (moveAt i j w.content))
-            (monomialsAt (moveAt i j w.content)).length hTr hTl
+            (monomialsAt (moveAt i j w.content)).length hTl
             (rowsLen_groupAt _ pool hsz) (act_sized i j w) hs2
           rw [← valList_group T (moveAt i j w.content) pool] at hmap
           refine Or.inr ?_

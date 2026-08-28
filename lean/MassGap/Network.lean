@@ -448,9 +448,9 @@ def resFactor {L : Type} (F : Data L) (k : L) :
       ground.posOfSucc (2 * q + 1 + F.c2N k)⟩
 
 /-- The slot-two self-energy, `Σ_k w_k [q_k : 2q_k + p_k]` over
-the adjoint square's row: at an occupied Casimir scale and adjoint
-dimension each occupied-count term joins the fold at the products'
-display, the fold seeded at its first member, with the vacant
+the adjoint square's channel list (`fusion.adjChannels`): at an
+occupied Casimir scale and adjoint dimension each occupied channel
+joins the fold at the products' display, the fold seeded at its first member, with the vacant
 interface data — the Casimir scale, the adjoint dimension, or
 every count — at `none`. -/
 def selfEnergy {L : Type} (F : Data L) : Option ground.Pair :=
@@ -458,18 +458,18 @@ def selfEnergy {L : Type} (F : Data L) : Option ground.Pair :=
   | 0, _ => none
   | _ + 1, 0 => none
   | q + 1, t + 1 =>
-    (F.row F.theta F.theta).foldl (fun acc k =>
-      match F.count F.theta F.theta k * F.dim k with
+    (adjChannels F).foldl (fun acc c =>
+      match c.1 with
       | 0 => acc
       | m + 1 =>
         match acc with
         | none => some ⟨ground.posOfSucc m * ground.posOfSucc q,
             ground.posOfSucc t * ground.posOfSucc t
-              * ground.posOfSucc (2 * q + 1 + F.c2N k)⟩
+              * ground.posOfSucc (2 * q + 1 + c.2)⟩
         | some a =>
           some (a + ⟨ground.posOfSucc m * ground.posOfSucc q,
             ground.posOfSucc t * ground.posOfSucc t
-              * ground.posOfSucc (2 * q + 1 + F.c2N k)⟩)) none
+              * ground.posOfSucc (2 * q + 1 + c.2)⟩)) none
 
 /-! The theta graph, and the reduction (`thm:network`(i)). -/
 
@@ -491,6 +491,17 @@ links: the shared link at the middle label with each path's three
 links at its own label. -/
 def netConf {L : Type} (R1 k R2 : L) : List L :=
   [k, R1, R1, R1, R2, R2, R2]
+
+/-- The spread's unit read (`thm:network`(i)): the
+`Θ(R₁, k, R₂)`-network's spread is the unit assignment exactly at its
+three unit labels. -/
+theorem spreadUnit {L : Type} (F : Data L) (R1 k R2 : L) :
+    (netConf R1 k R2).all (fun x => F.eqL x F.unit)
+      = (F.eqL k F.unit && F.eqL R1 F.unit && F.eqL R2 F.unit) := by
+  show (F.eqL k F.unit && (F.eqL R1 F.unit && (F.eqL R1 F.unit
+      && (F.eqL R1 F.unit && (F.eqL R2 F.unit && (F.eqL R2 F.unit
+      && (F.eqL R2 F.unit && true))))))) = _
+  cases F.eqL k F.unit <;> cases F.eqL R1 F.unit <;> cases F.eqL R2 F.unit <;> rfl
 
 /-! The reduction (`thm:network`(i)): the two-valent vertices' reads
 at the incident pairs, the content fold at the spread, the

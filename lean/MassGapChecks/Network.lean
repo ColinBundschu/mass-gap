@@ -18,7 +18,8 @@ at `r = 1`.  Below them the reduction's reads: the all-`θ` network occupied at 
 with its content, its two three-valent multiplicities and a
 path-broken configuration refused; the energy and multiplicity
 theorems routed at the committed labels; the pair read and the
-spread decided there; and the path reads and the determination
+spread decided there with the spread's unit read, the evaluation's
+split at the three labels; and the path reads and the determination
 routed at a fusion datum over the counts, with one datum per
 refused label read — the involution at the unit label, the
 involution at one count, an equality joining two counts to the
@@ -324,6 +325,23 @@ example : carrier.eqConf (dataA 2) (netConf [2, 0] [2, 0] [2, 0])
       (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 4))
       = true := by decide +kernel
 
+/-! The spread's unit read: the all-`θ` network is occupied off the
+unit coordinate, the all-unit spread reads it, and a mixed spread at
+one unit label reads off — the evaluation's split at the three
+labels, decided and through the theorem. -/
+
+example : ((netConf [2, 0] [2, 0] [2, 0]).all
+    (fun x => (dataA 2).eqL x (dataA 2).unit)) = false := by decide +kernel
+example : ((netConf [0, 0] [0, 0] [0, 0]).all
+    (fun x => (dataA 2).eqL x (dataA 2).unit)) = true := by decide +kernel
+example : ((netConf [2, 0] [0, 0] [0, 0]).all
+    (fun x => (dataA 2).eqL x (dataA 2).unit)) = false := by decide +kernel
+example : ((netConf [2, 0] [0, 0] [4, 0]).all
+    (fun x => (dataA 2).eqL x (dataA 2).unit))
+    = ((dataA 2).eqL [0, 0] (dataA 2).unit && (dataA 2).eqL [2, 0] (dataA 2).unit
+      && (dataA 2).eqL [4, 0] (dataA 2).unit) :=
+  spreadUnit (dataA 2) [2, 0] [0, 0] [4, 0]
+
 /-! The interface values the binder reads run at: a fusion datum
 over the counts, its label equality and involution stated per read
 with the counts, rows, dimensions and Casimirs at one value each. -/
@@ -528,16 +546,12 @@ example : (match resFactor (dataA 2) (adjchar.theta 2) with
 state twenty-four wirings, the magnetic image forty-eight, and the
 identity wiring's coefficient occupied. -/
 
-set_option maxRecDepth 65536 in
 example : (chanState 0).length = 24 := by decide +kernel
 
-set_option maxRecDepth 65536 in
 example : (chanState 1).length = 24 := by decide +kernel
 
-set_option maxRecDepth 65536 in
 example : (twoplaq.mulAdj (chanState 0)).length = 48 := by decide +kernel
 
-set_option maxRecDepth 65536 in
 example : genericlift.pairOcc
     (states.coeffAtW (chanState 1) [0, 1, 2, 3]) := by decide +kernel
 

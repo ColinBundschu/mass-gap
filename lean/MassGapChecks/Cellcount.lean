@@ -38,7 +38,6 @@ the interior point's positive-semidefinite binder at each end, the
 tie at a pencil crossing the sum's unit inside the segment, and the
 shape binder at a cubic entry read at the clearing power one, where
 the cleared datum and the point's own value part company. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly elim inertia cellcount
@@ -294,10 +293,7 @@ private def loDc : Pos := 1
 private def loD : CPair := ⟨loDn, loDc⟩
 private def hiD : CPair := ⟨⟨130, 1⟩, 64⟩
 
-private def cvSub : Cover :=
-  Cover.one hiD 0 true ⟨4, 1⟩ ⟨2, 1⟩ Cover.nought Cover.done
-private def cv1 : Cover :=
-  Cover.one hiD 0 true ⟨4, 1⟩ ⟨2, 1⟩ cvSub Cover.done
+private def cv1 : Cover := diagNest hiD ⟨4, 1⟩ ⟨2, 1⟩ 2
 
 example : coverRead sD 2 2 loD hiD cv1 := by decide +kernel
 
@@ -331,16 +327,14 @@ upper endpoint — the same certificate decided over its own shorter
 segment, so the chaining conjunct alone is isolated — and the
 forged side certificate at the pivot read on its lower side. -/
 
-private def cvSubM : Cover :=
-  Cover.one xD 0 true ⟨4, 1⟩ ⟨2, 1⟩ Cover.nought Cover.done
-private def cvShort : Cover :=
-  Cover.one xD 0 true ⟨4, 1⟩ ⟨2, 1⟩ cvSubM Cover.done
+private def cvShort : Cover := diagNest xD ⟨4, 1⟩ ⟨2, 1⟩ 2
 
 example : coverRead sD 2 2 loD xD cvShort := by decide +kernel
 example : ¬ coverRead sD 2 2 loD hiD cvShort := by decide +kernel
 
 private def cvFlip : Cover :=
-  Cover.one hiD 0 false ⟨4, 1⟩ ⟨2, 1⟩ cvSub Cover.done
+  Cover.one hiD 0 false ⟨4, 1⟩ ⟨2, 1⟩
+    (diagNest hiD ⟨4, 1⟩ ⟨2, 1⟩ 1) Cover.done
 
 example : ¬ coverRead sD 2 2 loD hiD cvFlip := by decide +kernel
 

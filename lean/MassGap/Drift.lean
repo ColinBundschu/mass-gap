@@ -43,7 +43,7 @@ lists and read on its shape's block — a channel's occupied block
 content is a pool content wherever the channel's count is
 occupied, so the pool's distinct contents index both reads — and
 every channel carries the two factors' joined degree
-(`exhaust_deg`).  The summed recursion reads at the moments
+(`exhaust_degree`).  The summed recursion reads at the moments
 (`momRec`): the shifted squares split at the display's join into
 the span's square moment against the width, its first moment
 against the unit display's total, and the unit display's own
@@ -1374,32 +1374,6 @@ on its shape's block.  A channel's occupied block content is
 occupied in the pool wherever the channel's count is, so the
 pool's own distinct contents index both reads. -/
 
-/-- A channel's occupied block content at an occupied channel
-count is a content of the fused pool: the channel's summand in the
-graded display is a lower bound on the content's dimension, and an
-independent pool's dimension is its occupancy. -/
-private theorem channel_content (a b : Shape) (hba : b.length = a.length)
-    (nu : List Nat)
-    (hnu : nu ∈ ground.dedupL ((exhaust a.length
-      (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
-    (hcp : 0 < countAt (fusedAt (blockSpan a) (blockSpan b)) nu)
-    (m : List Nat) (hm : 0 < occ m (blockSpan (places.shapeOf nu))) :
-    0 < ground.countOf m
-      ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content) := by
-  obtain ⟨hszP, hwidP, hclP, hiP⟩ := fusedSpan_pack a b hba
-  have hle := ground.famFold_mem_le
-    (fun nu' => countAt (fusedAt (blockSpan a) (blockSpan b)) nu'
-      * occ m (blockSpan (places.shapeOf nu')))
-    (ground.dedupL ((exhaust a.length
-      (fusedAt (blockSpan a) (blockSpan b))).map HVec.content)) nu hnu
-  rw [← gradedDim_countAt a.length
-    (fusedAt (blockSpan a) (blockSpan b)) hszP hwidP hclP m] at hle
-  have hpos : 0 < dimAt (fusedAt (blockSpan a) (blockSpan b)) m :=
-    Nat.lt_of_lt_of_le (Nat.mul_pos hcp hm) hle
-  rw [dimAt_occ (fusedAt (blockSpan a) (blockSpan b)) hiP m,
-    occ_eq_countOf] at hpos
-  exact hpos
-
 /-- A content weight's fold over the fused pool splits over the
 channels: the channel's fusion count against the channel shape's
 own block fold. -/
@@ -1510,42 +1484,6 @@ private theorem fold_channels (a b : Shape) (hba : b.length = a.length)
           ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content)) hcover,
       ground.famFold_map Nat.add 0 W HVec.content
         (blockSpan (places.shapeOf nu))]
-
-/-- The channels' contents carry the fused pool's degree: a
-channel's content is a pool content — the channel's own count and
-its block's top line are occupied — and the tensor's contents sum
-the two factors' box totals. -/
-private theorem exhaust_deg (a b : Shape) (hba : b.length = a.length) :
-    ∀ mu ∈ ground.dedupL ((exhaust a.length
-        (fusedAt (blockSpan a) (blockSpan b))).map HVec.content),
-      ground.sumNat mu = places.degree a + places.degree b := by
-  intro mu hmu
-  obtain ⟨hszP, hwidP, hclP, hiP⟩ := fusedSpan_pack a b hba
-  have hmu' : mu ∈ (exhaust a.length
-      (fusedAt (blockSpan a) (blockSpan b))).map HVec.content :=
-    ground.mem_of_dedupL hmu
-  have hrl := exhaust_rowList_shapeOf a.length
-    (fusedAt (blockSpan a) (blockSpan b)) hszP hwidP hclP mu hmu'
-  have hcnt : 0 < countAt (fusedAt (blockSpan a) (blockSpan b)) mu := by
-    rw [countAt_exhaust a.length (fusedAt (blockSpan a) (blockSpan b))
-        hszP hwidP hclP mu, occ_eq_countOf]
-    exact ground.countOf_pos_of_mem hmu'
-  have htop : ground.countOf (places.rowList (places.shapeOf mu))
-      ((blockSpan (places.shapeOf mu)).map HVec.content) = 1 :=
-    lowerspan.topRead_def (places.shapeOf mu)
-  rw [hrl] at htop
-  have hoccS : 0 < occ mu (blockSpan (places.shapeOf mu)) := by
-    rw [occ_eq_countOf, htop]
-    exact Nat.succ_pos 0
-  have hposc := channel_content a b hba mu hmu hcnt mu hoccS
-  obtain ⟨x, hx, hxc⟩ := ground.mem_map_of HVec.content
-    (fusedAt (blockSpan a) (blockSpan b)) mu
-    (ground.mem_of_countOf_pos mu _ hposc)
-  rw [← hxc]
-  exact fusedAt_degree a.length (places.degree a) (places.degree b)
-    (blockSpan a) (blockSpan b) (blockSpan_width a)
-    (fun w hw => (blockSpan_width b w hw).trans hba)
-    (blockSpan_degree a) (blockSpan_degree b) x hx
 
 /-! The moment reductions: `sumRec`'s shifted-square fold splits at
 the display's join (`weylchar.sqSplit`) into the span's own square
@@ -2019,12 +1957,9 @@ private theorem foldRec (d : Nat) (s t : Shape)
       (ground.dedupL ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)) → mu.length = d := by
     intro mu hmu
-    obtain ⟨w, hw, hwc⟩ := ground.mem_map_of HVec.content
-      (exhaust s.length (fusedAt (blockSpan s) (blockSpan t))) mu
-      (ground.mem_of_dedupL (ground.mem_of_countOf_pos mu _ hmu))
-    obtain ⟨_, hwid, _, _⟩ := exhaust_top s.length
-      (fusedAt (blockSpan s) (blockSpan t)) hszP hwidP hclP w hw
-    rw [← hwc, hwid]
+    rw [exhaust_width s.length
+      (fusedAt (blockSpan s) (blockSpan t)) hszP hwidP hclP mu
+      (ground.mem_of_dedupL (ground.mem_of_countOf_pos mu _ hmu))]
     exact hsd
   have hc1 : ground.famFold Nat.add 0
       (fun mu => fusionCount s t (places.shapeOf mu) * mom1 (blockSpan
@@ -2403,12 +2338,10 @@ private theorem driftFold (d : Nat) (hd : 2 ≤ d) (s : Shape)
           (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
             HVec.content)) → mu.length = d := by
     intro mu hmu
-    obtain ⟨w, hw, hwc⟩ := ground.mem_map_of HVec.content
-      (exhaust s.length (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))) mu
-      (ground.mem_of_dedupL (ground.mem_of_countOf_pos mu _ hmu))
-    obtain ⟨_, hwid, _, _⟩ := exhaust_top s.length
-      (fusedAt (blockSpan s) (blockSpan (adjchar.theta d))) hszP hwidP hclP w hw
-    rw [← hwc, hwid]
+    rw [exhaust_width s.length
+      (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))
+      hszP hwidP hclP mu
+      (ground.mem_of_dedupL (ground.mem_of_countOf_pos mu _ hmu))]
     exact hsd
   have hrl := exhaust_rowList_shapeOf s.length (fusedAt (blockSpan s)
     (blockSpan (adjchar.theta d))) hszP hwidP hclP
@@ -2420,8 +2353,9 @@ private theorem driftFold (d : Nat) (hd : 2 ≤ d) (s : Shape)
     show ground.sumNat (places.rowList (places.shapeOf mu)) = _
     rw [hrl mu (ground.mem_of_dedupL
         (ground.mem_of_countOf_pos mu _ hmu)),
-      exhaust_deg s (adjchar.theta d) hts mu
-        (ground.mem_of_countOf_pos mu _ hmu),
+      exhaust_degree s (adjchar.theta d) hts mu
+        (ground.mem_of_dedupL
+          (ground.mem_of_countOf_pos mu _ hmu)),
       adjchar.degree_theta d hd]
   have hdim := blockcount.fusionCount_dim s (adjchar.theta d) hts
   -- the channel recursion at the two factors' tensor splits
@@ -2645,12 +2579,10 @@ theorem readAll (d : Nat) (hd : 2 ≤ d) (s : Shape)
         (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
           HVec.content)) → mu.length = d := by
     intro mu hmu
-    obtain ⟨w, hw, hwc⟩ := ground.mem_map_of HVec.content
-      (exhaust s.length (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))) mu
-      (ground.mem_of_dedupL (ground.mem_of_countOf_pos mu _ hmu))
-    obtain ⟨_, hwid, _, _⟩ := exhaust_top s.length
-      (fusedAt (blockSpan s) (blockSpan (adjchar.theta d))) hszP hwidP hclP w hw
-    rw [← hwc, hwid]
+    rw [exhaust_width s.length
+      (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))
+      hszP hwidP hclP mu
+      (ground.mem_of_dedupL (ground.mem_of_countOf_pos mu _ hmu))]
     exact hs
   have hdeg : ∀ mu : List Nat, 0 < ground.countOf mu
       (ground.dedupL ((exhaust s.length
@@ -2661,8 +2593,9 @@ theorem readAll (d : Nat) (hd : 2 ≤ d) (s : Shape)
     show ground.sumNat (places.rowList (places.shapeOf mu)) = _
     rw [hrl mu (ground.mem_of_dedupL
         (ground.mem_of_countOf_pos mu _ hmu)),
-      exhaust_deg s (adjchar.theta d) hts mu
-        (ground.mem_of_countOf_pos mu _ hmu)]
+      exhaust_degree s (adjchar.theta d) hts mu
+        (ground.mem_of_dedupL
+          (ground.mem_of_countOf_pos mu _ hmu))]
   -- the image of the channels' index sits once in the enumeration
   have hES1 : ∀ c : Shape, 0 < ground.countOf c ((ground.dedupL ((exhaust s.length
         (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
@@ -2723,11 +2656,7 @@ theorem readAll (d : Nat) (hd : 2 ≤ d) (s : Shape)
     have hcs : c.length = s.length := by
       rw [(places.allShapes_sound d (places.degree s + places.degree (adjchar.theta d)) c
         (ground.mem_of_countOf_pos c _ hc)).1, hs]
-    rw [blockcount.fusionCount_countAt s (adjchar.theta d) c hts,
-      blockcount.countAt_exhaust s.length (fusedAt (blockSpan s) (blockSpan
-        (adjchar.theta d))) hszP hwidP hclP
-        (places.rowList c),
-      blockcount.occ_eq_countOf]
+    rw [blockcount.fusionCount_countOf s (adjchar.theta d) c hts]
     match Nat.eq_zero_or_pos (ground.countOf (places.rowList c)
       ((exhaust s.length (fusedAt (blockSpan s) (blockSpan (adjchar.theta
         d)))).map HVec.content)) with

@@ -64,9 +64,13 @@ datum whose leading entry reads the unit so the descent exchanges
 places before pivoting, and the vacant datum whose whole order is
 the kernel block — each split decided at the construction and read
 again through `mkSplit_read` with its count pinned, the vacant
-datum's rank read beside it.
+datum's rank read beside it.  The cap algebra closes the module:
+the trailing pad's entries pinned at a one-by-one deviation, the
+block cap padded to the joined order, the two summands' caps
+joined at the sum, and the cap rescaled and respelt, each read by
+the kernel and again through its own theorem, with the two
+refusals naming the binder that bites at each.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground elim inertia
@@ -833,7 +837,7 @@ example : (dotN (elim.vecScale ⟨3, 1⟩ kv) kw).oneValue
     (⟨3, 1⟩ * dotN kv kw) → True := fun _ => trivial
 example : (dotN (elim.vecScale ⟨3, 1⟩ [⟨2, 1⟩]) [⟨4, 1⟩]).oneValue
     (⟨3, 1⟩ * dotN [⟨2, 1⟩] [⟨4, 1⟩]) :=
-  dotN_scaleFst ⟨3, 1⟩ [⟨2, 1⟩] [⟨4, 1⟩]
+  dotN_scaleRow_free ⟨3, 1⟩ [⟨2, 1⟩] [⟨4, 1⟩]
 example : elim.vecScale ⟨3, 1⟩ (kv.map BPair.swap)
     = (elim.vecScale ⟨3, 1⟩ kv).map BPair.swap :=
   elim.vecScale_swapMap ⟨3, 1⟩ kv
@@ -1091,3 +1095,114 @@ example : splitRead exKer (mkSplit 2 exKer) :=
   mkSplit_read 2 exKer (by decide +kernel) (by decide +kernel)
 example : revAt (mkSplit 2 exKer) = 0 := by decide +kernel
 example : rankAt (mkSplit 2 exKer) = 0 := by decide +kernel
+
+/-! The cap algebra at data: the trailing pad's four entries pinned
+at a one-by-one deviation — the three leading entries at the sum's
+unit and the trailing entry the deviation's own — the block cap
+padded to the joined order, the two summands' caps joined at the
+sum, the cap rescaled at the weight two, and the cap respelt across
+an entrywise read of both its data, each read by the kernel and
+again through its own theorem, with two refusals naming the binder
+that bites: the block cap's upper split at a deviation four against
+the identity's one, and the second summand's upper split at a
+deviation five against its own cap two. -/
+
+private def cpD : Mat := [[⟨2, 1⟩]]
+private def cpSpU : Split 1 :=
+  mkSplit 1 (siteDatum (matScale 2 (idMat 1)) (matScale 1 cpD))
+private def cpSpL : Split 1 :=
+  mkSplit 1 (matAdd (matScale 2 (idMat 1)) (matScale 1 cpD))
+private def cpSpU2 : Split (1 + 1) :=
+  mkSplit (1 + 1)
+    (siteDatum (matScale 2 (idMat (1 + 1))) (matScale 1 (trailPad 1 cpD)))
+private def cpSpL2 : Split (1 + 1) :=
+  mkSplit (1 + 1)
+    (matAdd (matScale 2 (idMat (1 + 1))) (matScale 1 (trailPad 1 cpD)))
+
+example : matOneValue (trailPad 1 [[⟨3, 1⟩]]) [[u, u], [u, ⟨3, 1⟩]] := by
+  decide +kernel
+
+example : capAt (matScale 1 cpD) (matScale 2 (idMat 1)) cpSpU cpSpL := by
+  decide +kernel
+example : capAt (matScale 1 (trailPad 1 cpD)) (matScale 2 (idMat (1 + 1)))
+    cpSpU2 cpSpL2 := by decide +kernel
+example : capAt (matScale 1 (trailPad 1 cpD)) (matScale 2 (idMat (1 + 1)))
+    cpSpU2 cpSpL2 :=
+  capAt_trailPad (k := 1) (m := 1) cpD 2 1 cpSpU cpSpL (by decide +kernel)
+    cpSpU2 cpSpL2 (by decide +kernel) (by decide +kernel)
+
+private def caS1 : Mat := [[⟨2, 1⟩]]
+private def caC1 : Mat := [[⟨4, 1⟩]]
+private def caS2 : Mat := [[⟨1, 2⟩]]
+private def caC2 : Mat := [[⟨3, 1⟩]]
+private def caSpU1 : Split 1 := mkSplit 1 (siteDatum caC1 caS1)
+private def caSpL1 : Split 1 := mkSplit 1 (matAdd caC1 caS1)
+private def caSpU2 : Split 1 := mkSplit 1 (siteDatum caC2 caS2)
+private def caSpL2 : Split 1 := mkSplit 1 (matAdd caC2 caS2)
+private def caSpU : Split 1 :=
+  mkSplit 1 (siteDatum (matAdd caC1 caC2) (matAdd caS1 caS2))
+private def caSpL : Split 1 :=
+  mkSplit 1 (matAdd (matAdd caC1 caC2) (matAdd caS1 caS2))
+
+example : capAt caS1 caC1 caSpU1 caSpL1 := by decide +kernel
+example : capAt caS2 caC2 caSpU2 caSpL2 := by decide +kernel
+example : capAt (matAdd caS1 caS2) (matAdd caC1 caC2) caSpU caSpL := by
+  decide +kernel
+example : capAt (matAdd caS1 caS2) (matAdd caC1 caC2) caSpU caSpL :=
+  capAt_add caS1 caC1 caS2 caC2 caSpU1 caSpL1 caSpU2 caSpL2 caSpU caSpL
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
+
+example : capAt (matScale 2 caS1) (matScale 2 caC1)
+    (scaleSplit (BPair.ofPos 2) caSpU1)
+    (scaleSplit (BPair.ofPos 2) caSpL1) := by decide +kernel
+example : capAt (matScale 2 caS1) (matScale 2 caC1)
+    (scaleSplit (BPair.ofPos 2) caSpU1)
+    (scaleSplit (BPair.ofPos 2) caSpL1) :=
+  capAt_scale caS1 caC1 2 caSpU1 caSpL1 (by decide +kernel)
+
+private def cgS : Mat := [[⟨3, 2⟩]]
+private def cgC : Mat := [[⟨5, 2⟩]]
+
+example : capAt cgS cgC caSpU1 caSpL1 := by decide +kernel
+example : capAt cgS cgC caSpU1 caSpL1 :=
+  capAt_congr caS1 caC1 cgS cgC caSpU1 caSpL1 (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
+
+private def cfD : Mat := [[⟨5, 1⟩]]
+private def cfSpU1 : Split 1 :=
+  mkSplit 1 (siteDatum (matScale 1 (idMat 1)) (matScale 1 cfD))
+private def cfSpL1 : Split 1 :=
+  mkSplit 1 (matAdd (matScale 1 (idMat 1)) (matScale 1 cfD))
+private def cfSpU : Split (1 + 1) :=
+  mkSplit (1 + 1)
+    (siteDatum (matScale 1 (idMat (1 + 1))) (matScale 1 (trailPad 1 cfD)))
+private def cfSpL : Split (1 + 1) :=
+  mkSplit (1 + 1)
+    (matAdd (matScale 1 (idMat (1 + 1))) (matScale 1 (trailPad 1 cfD)))
+
+/-- Refusal naming `capAt_trailPad`'s block-cap binder: at a
+deviation of four against the identity's one the block's upper
+split reads the lower side, and the padded join's upper split reads
+it at the trailing place. -/
+example : ¬ capAt (matScale 1 cfD) (matScale 1 (idMat 1)) cfSpU1 cfSpL1 := by
+  decide +kernel
+example : ¬ capAt (matScale 1 (trailPad 1 cfD)) (matScale 1 (idMat (1 + 1)))
+    cfSpU cfSpL := by decide +kernel
+
+private def cbS2 : Mat := [[⟨6, 1⟩]]
+private def cbSpU2 : Split 1 := mkSplit 1 (siteDatum caC2 cbS2)
+private def cbSpL2 : Split 1 := mkSplit 1 (matAdd caC2 cbS2)
+private def cbSpU : Split 1 :=
+  mkSplit 1 (siteDatum (matAdd caC1 caC2) (matAdd caS1 cbS2))
+private def cbSpL : Split 1 :=
+  mkSplit 1 (matAdd (matAdd caC1 caC2) (matAdd caS1 cbS2))
+
+/-- Refusal naming `capAt_add`'s second-summand binder: at a
+deviation of five against a cap of two that summand's upper split
+reads the lower side, and the sum's own upper split reads it
+beside it. -/
+example : ¬ capAt cbS2 caC2 cbSpU2 cbSpL2 := by decide +kernel
+example : ¬ capAt (matAdd caS1 cbS2) (matAdd caC1 caC2) cbSpU cbSpL := by
+  decide +kernel

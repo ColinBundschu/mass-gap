@@ -44,7 +44,6 @@ at a nonunit denominator with its interior forge refused; and
 `countAtPair_roots` ties the fiber's top count to the root list's
 below count at the count identity's certificate.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground elim inertia certconstruct flatstep

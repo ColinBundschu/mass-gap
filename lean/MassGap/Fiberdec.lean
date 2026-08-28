@@ -68,7 +68,7 @@ here are stated at the data and the batteries decide them.
 The chord tier stands beneath them.  A polynomial reads at a matrix
 of a stated order by the Horner recursion of `def:poly`, the
 constant entering at the weighted identity (`polyEvalM`), with the
-iterate and the geometric word beside it (`matPow`, `wordSum`), and
+iterate and the geometric word beside it (`inertia.matPow`, `wordSum`), and
 the chord operator is `S := T + Tᵀ` (`chordOp`) with the lemma's
 word `X := T^m P_L(S)` (`chordWord`, the symbol `deck.pSum`'s).
 Four of the lemma's steps are general theorems over the matrix kit.
@@ -683,15 +683,10 @@ def polyEvalM (p : poly.Poly) (M : Mat) (n : Nat) : Mat :=
       matAdd (inertia.matScaleB c (inertia.idMat n)) (matMul M acc))
     (inertia.matScaleB BPair.unit (inertia.idMat n))
 
-/-- The matrix's iterate at a stated key, the word's own power. -/
-def matPow (M : Mat) (n : Nat) : Nat → Mat
-  | 0 => inertia.idMat n
-  | k + 1 => matMul M (matPow M n k)
-
 /-- The geometric word `Σ_{a+b+1=L} T^b` at a stated cycle
 length. -/
 def wordSum (M : Mat) (n L : Nat) : Mat :=
-  elim.msum n (matPow M n) (List.range L)
+  elim.msum n (inertia.matPow M n) (List.range L)
 
 /-- The chord operator `S := T + Tᵀ`, symmetric at the transpose's
 own closure. -/
@@ -700,7 +695,7 @@ def chordOp (Pm : Mat) : Mat := matAdd Pm (transposeM Pm)
 /-- The lemma's word `X := T^m P_L(S)` at the deck symbol
 (`deck.pSum`). -/
 def chordWord (Pm : Mat) (n m : Nat) : Mat :=
-  matMul (matPow Pm n m) (polyEvalM (deck.pSum m) (chordOp Pm) n)
+  matMul (inertia.matPow Pm n m) (polyEvalM (deck.pSum m) (chordOp Pm) n)
 
 /-- The translation's orthogonality read at the matrix level: the
 two products at the identity, `T Tᵀ = 1` and `Tᵀ T = 1`
@@ -792,7 +787,7 @@ theorem permMatAt_id (n : Nat) :
     (by rw [length_permMatAt, inertia.idMat_len]) ?_
   intro i hi
   rw [length_permMatAt] at hi
-  refine getAt_polyOne _ _
+  refine poly.oneValue_of_entries _ _
     (by rw [rowsLen_getAt (permMatAt n (fun l => l)) i
         (rowsLen_permMatAt n _) (by rw [length_permMatAt]; exact hi),
       rowsLen_getAt (inertia.idMat n) i (inertia.idMat_rows n)
@@ -836,7 +831,7 @@ theorem permMatAt_mul (n : Nat) (t s : Nat → Nat)
   rw [hMl] at hi
   rw [getAt_matMul (permMatAt n t) (permMatAt n s) i
     (by rw [length_permMatAt]; exact hi)]
-  refine getAt_polyOne _ _
+  refine poly.oneValue_of_entries _ _
     (by rw [ground.length_map, hSt,
       rowsLen_getAt (permMatAt n (fun l => t (s l))) i
         (rowsLen_permMatAt n _) (by rw [length_permMatAt]; exact hi)]) ?_
@@ -847,7 +842,7 @@ theorem permMatAt_mul (n : Nat) (t s : Nat → Nat)
       (transposeM (permMatAt n s)) j (by rw [hSt]; exact hj),
     getAt_permMatAt n (fun l => t (s l)) i j hi hj]
   refine BPair.oneValue_trans
-    (dotN_dotP (ground.getAt [] (permMatAt n t) i) _) ?_
+    (dotN_read (ground.getAt [] (permMatAt n t) i) _) ?_
   refine BPair.oneValue_trans
     (dotP_oneIndex (ground.getAt [] (permMatAt n t) i)
       (ground.getAt ([] : List BPair) (transposeM (permMatAt n s)) j)
@@ -922,27 +917,23 @@ private theorem cycle_inv (n L : Nat) (t s : Nat → Nat)
     _ = iterAt t L j := hst _ (iterAt_range n t ht L j hj)
 
 /-- The matrix power's shape at a square factor. -/
-private theorem matPow_shape (n : Nat) (M : Mat) (hMl : M.length = n) :
-    ∀ k : Nat, rowsLen n (matPow M n k) ∧ (matPow M n k).length = n
-  | 0 => ⟨inertia.idMat_rows n, inertia.idMat_len n⟩
-  | k + 1 =>
-    ⟨rowsLen_cast
-      (transposeLen (matPow M n k) (matPow_shape n M hMl k).1
-        (matPow_shape n M hMl k).2)
-      (rowsLen_matMul M (matPow M n k)),
-     (ground.length_map _ M).trans hMl⟩
+private theorem matPow_shape (n : Nat) (M : Mat) (hMl : M.length = n)
+    (k : Nat) :
+    rowsLen n (inertia.matPow M n k)
+      ∧ (inertia.matPow M n k).length = n :=
+  ⟨inertia.rowsLen_matPow M n hMl k, inertia.length_matPow M n hMl k⟩
 
 /-- The permutation matrix's power is the iterate's matrix, the
 composition read carried along the count. -/
 theorem permMatAt_pow (n : Nat) (t : Nat → Nat) (hn : 0 < n)
     (ht : ∀ j, j < n → t j < n) : ∀ k : Nat,
-    matOneValue (matPow (permMatAt n t) n k) (permMatAt n (iterAt t k))
+    matOneValue (inertia.matPow (permMatAt n t) n k) (permMatAt n (iterAt t k))
   | 0 => matOne_symm (permMatAt_id n)
   | k + 1 => by
     have hsh := matPow_shape n (permMatAt n t) (length_permMatAt n t) k
     refine matOne_trans
       (matMul_congrR (n := n) (k := n) (permMatAt n t)
-        (matPow (permMatAt n t) n k) (permMatAt n (iterAt t k))
+        (inertia.matPow (permMatAt n t) n k) (permMatAt n (iterAt t k))
         hsh.1 (rowsLen_permMatAt n (iterAt t k)) hsh.2
         (length_permMatAt n (iterAt t k)) hn
         (permMatAt_pow n t hn ht k)) ?_
@@ -951,57 +942,6 @@ theorem permMatAt_pow (n : Nat) (t : Nat → Nat) (hn : 0 < n)
     rw [permMatAt_congr n (fun l => t (iterAt t k l)) (iterAt t (k + 1))
       (fun j _ => (iterAt_step t k j).symm)]
     exact matOne_refl _
-
-/-- Two powers join at the counts' sum. -/
-private theorem matPow_add (n : Nat) (M : Mat) (hMl : M.length = n)
-    (hMr : rowsLen n M) (hn : 0 < n) : ∀ a b : Nat,
-    matOneValue (matMul (matPow M n a) (matPow M n b))
-      (matPow M n (a + b))
-  | 0, b => by
-    rw [Nat.zero_add b]
-    exact inertia.idMat_matMul n (matPow M n b)
-      (matPow_shape n M hMl b).1 (matPow_shape n M hMl b).2 hn
-  | a + 1, b => by
-    rw [Nat.add_right_comm a 1 b]
-    have hsa := matPow_shape n M hMl a
-    have hsb := matPow_shape n M hMl b
-    have hsab := matPow_shape n M hMl (a + b)
-    show matOneValue (matMul (matMul M (matPow M n a)) (matPow M n b))
-      (matMul M (matPow M n (a + b)))
-    refine matOne_trans
-      (matMul_assoc M (matPow M n a) (matPow M n b)
-        hMr hsa.1 hsb.1 hsa.2 hsb.2 hn hn) ?_
-    have hml : (matMul (matPow M n a) (matPow M n b)).length = n := by
-      have : (matMul (matPow M n a) (matPow M n b)).length
-          = (matPow M n a).length := length_matMul _ _
-      rw [this, hsa.2]
-    exact matMul_congrR (n := n) (k := n) M
-      (matMul (matPow M n a) (matPow M n b)) (matPow M n (a + b))
-      (rowsLen_cast
-        (length_transposeM (matPow M n b) hsb.1 (by rw [hsb.2]; exact hn))
-        (rowsLen_matMul (matPow M n a) (matPow M n b)))
-      hsab.1 hml hsab.2 hn (matPow_add n M hMl hMr hn a b)
-
-/-- The power grows at the right factor as well. -/
-private theorem matPow_succR (n : Nat) (M : Mat) (hMl : M.length = n)
-    (hMr : rowsLen n M) (hn : 0 < n) : ∀ m : Nat,
-    matOneValue (matMul (matPow M n m) M) (matPow M n (m + 1))
-  | 0 =>
-    matOne_trans (inertia.idMat_matMul n M hMr hMl hn)
-      (matOne_symm (inertia.matMul_idR n M hMr hMl hn hn))
-  | m + 1 => by
-    have hsm := matPow_shape n M hMl m
-    have hsm1 := matPow_shape n M hMl (m + 1)
-    refine matOne_trans
-      (matMul_assoc M (matPow M n m) M hMr hsm.1 hMr hsm.2 hMl hn hn) ?_
-    have hml : (matMul (matPow M n m) M).length = n := by
-      have h := length_matMul (matPow M n m) M
-      rw [h, hsm.2]
-    exact matMul_congrR (n := n) (k := n) M (matMul (matPow M n m) M)
-      (matPow M n (m + 1))
-      (rowsLen_cast (length_transposeM M hMr (by rw [hMl]; exact hn))
-        (rowsLen_matMul (matPow M n m) M))
-      hsm1.1 hml hsm1.2 hn (matPow_succR n M hMl hMr hn m)
 
 
 /-- The translation's permutation read unpacked at a key: the two
@@ -1055,7 +995,7 @@ private theorem transpose_as_pow (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
     (hts : ∀ l, l < n → t (s l) = l)
     (hcyc : ∀ l, l < n → iterAt t (k + 1) l = l) :
     matOneValue (transposeM (permMatAt n t))
-      (matPow (permMatAt n t) n k) := by
+      (inertia.matPow (permMatAt n t) n k) := by
   rw [transposeM_permMatAt n t s hst hts,
     permMatAt_congr n s (iterAt t k) (cycle_inv n k t s ht hst hcyc)]
   exact matOne_symm (permMatAt_pow n t hn ht k)
@@ -1068,8 +1008,8 @@ private theorem chordOp_pow_comm (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
     (hts : ∀ l, l < n → t (s l) = l)
     (hcyc : ∀ l, l < n → iterAt t (k + 1) l = l) (m : Nat) :
     matOneValue
-      (matMul (chordOp (permMatAt n t)) (matPow (permMatAt n t) n m))
-      (matMul (matPow (permMatAt n t) n m) (chordOp (permMatAt n t))) := by
+      (matMul (chordOp (permMatAt n t)) (inertia.matPow (permMatAt n t) n m))
+      (matMul (inertia.matPow (permMatAt n t) n m) (chordOp (permMatAt n t))) := by
   have hTl := length_permMatAt n t
   have hTr := rowsLen_permMatAt n t
   have hTtr : rowsLen n (transposeM (permMatAt n t)) :=
@@ -1077,44 +1017,44 @@ private theorem chordOp_pow_comm (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
   have hsm := matPow_shape n (permMatAt n t) hTl m
   have hsm1 := matPow_shape n (permMatAt n t) hTl (m + 1)
   have hskm := matPow_shape n (permMatAt n t) hTl (k + m)
-  have hPtr : rowsLen n (transposeM (matPow (permMatAt n t) n m)) :=
-    rowsLen_cast hsm.2 (rowsLen_transposeM (matPow (permMatAt n t) n m))
+  have hPtr : rowsLen n (transposeM (inertia.matPow (permMatAt n t) n m)) :=
+    rowsLen_cast hsm.2 (rowsLen_transposeM (inertia.matPow (permMatAt n t) n m))
   have hmid1 : matOneValue
-      (matMul (permMatAt n t) (matPow (permMatAt n t) n m))
-      (matPow (permMatAt n t) n (m + 1)) := matOne_refl _
+      (matMul (permMatAt n t) (inertia.matPow (permMatAt n t) n m))
+      (inertia.matPow (permMatAt n t) n (m + 1)) := matOne_refl _
   have hmid2 : matOneValue
-      (matMul (transposeM (permMatAt n t)) (matPow (permMatAt n t) n m))
-      (matPow (permMatAt n t) n (k + m)) :=
+      (matMul (transposeM (permMatAt n t)) (inertia.matPow (permMatAt n t) n m))
+      (inertia.matPow (permMatAt n t) n (k + m)) :=
     matOne_trans
       (matMul_congrL (transposeM (permMatAt n t))
-        (matPow (permMatAt n t) n k) (matPow (permMatAt n t) n m)
+        (inertia.matPow (permMatAt n t) n k) (inertia.matPow (permMatAt n t) n m)
         (transpose_as_pow n k t s hn ht hst hts hcyc))
-      (matPow_add n (permMatAt n t) hTl hTr hn k m)
+      (inertia.matPow_add n (permMatAt n t) hTl hTr hn k m)
   have hmid2' : matOneValue
-      (matMul (matPow (permMatAt n t) n m) (transposeM (permMatAt n t)))
-      (matPow (permMatAt n t) n (k + m)) := by
+      (matMul (inertia.matPow (permMatAt n t) n m) (transposeM (permMatAt n t)))
+      (inertia.matPow (permMatAt n t) n (k + m)) := by
     refine matOne_trans
-      (matMul_congrR (n := n) (k := n) (matPow (permMatAt n t) n m)
-        (transposeM (permMatAt n t)) (matPow (permMatAt n t) n k)
+      (matMul_congrR (n := n) (k := n) (inertia.matPow (permMatAt n t) n m)
+        (transposeM (permMatAt n t)) (inertia.matPow (permMatAt n t) n k)
         hTtr (matPow_shape n (permMatAt n t) hTl k).1
         (length_transposeM (permMatAt n t) hTr (by rw [hTl]; exact hn))
         (matPow_shape n (permMatAt n t) hTl k).2 hn
         (transpose_as_pow n k t s hn ht hst hts hcyc)) ?_
     rw [Nat.add_comm k m] at hskm ⊢
-    exact matPow_add n (permMatAt n t) hTl hTr hn m k
+    exact inertia.matPow_add n (permMatAt n t) hTl hTr hn m k
   refine matOne_trans
-    (matMul_addL n (matPow (permMatAt n t) n m) hPtr (permMatAt n t)
+    (matMul_addL n (inertia.matPow (permMatAt n t) n m) hPtr (permMatAt n t)
       (transposeM (permMatAt n t)) hTr hTtr) ?_
   refine matOne_trans
-    (matAdd_cong2 n _ _ (matPow (permMatAt n t) n (m + 1))
-      (matPow (permMatAt n t) n (k + m))
-      (rowsLen_cast (length_transposeM (matPow (permMatAt n t) n m)
+    (matAdd_cong2 n _ _ (inertia.matPow (permMatAt n t) n (m + 1))
+      (inertia.matPow (permMatAt n t) n (k + m))
+      (rowsLen_cast (length_transposeM (inertia.matPow (permMatAt n t) n m)
         hsm.1 (by rw [hsm.2]; exact hn))
-        (rowsLen_matMul (permMatAt n t) (matPow (permMatAt n t) n m)))
-      (rowsLen_cast (length_transposeM (matPow (permMatAt n t) n m)
+        (rowsLen_matMul (permMatAt n t) (inertia.matPow (permMatAt n t) n m)))
+      (rowsLen_cast (length_transposeM (inertia.matPow (permMatAt n t) n m)
         hsm.1 (by rw [hsm.2]; exact hn))
         (rowsLen_matMul (transposeM (permMatAt n t))
-          (matPow (permMatAt n t) n m)))
+          (inertia.matPow (permMatAt n t) n m)))
       hsm1.1 hskm.1 hmid1 hmid2) ?_
   refine matOne_symm ?_
   refine matOne_trans
@@ -1122,20 +1062,20 @@ private theorem chordOp_pow_comm (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
       hTr hTtr
       (hTl.trans (length_transposeM (permMatAt n t) hTr
         (by rw [hTl]; exact hn)).symm)
-      (by rw [hTl]; exact hn) (matPow (permMatAt n t) n m)
+      (by rw [hTl]; exact hn) (inertia.matPow (permMatAt n t) n m)
       (rowsLen_cast hTl.symm hsm.1)) ?_
-  exact matAdd_cong2 n _ _ (matPow (permMatAt n t) n (m + 1))
-    (matPow (permMatAt n t) n (k + m))
+  exact matAdd_cong2 n _ _ (inertia.matPow (permMatAt n t) n (m + 1))
+    (inertia.matPow (permMatAt n t) n (k + m))
     (rowsLen_cast (length_transposeM (permMatAt n t) hTr
       (by rw [hTl]; exact hn))
-      (rowsLen_matMul (matPow (permMatAt n t) n m) (permMatAt n t)))
+      (rowsLen_matMul (inertia.matPow (permMatAt n t) n m) (permMatAt n t)))
     (rowsLen_cast (length_transposeM (transposeM (permMatAt n t)) hTtr
       (by rw [length_transposeM (permMatAt n t) hTr
         (by rw [hTl]; exact hn)]; exact hn))
-      (rowsLen_matMul (matPow (permMatAt n t) n m)
+      (rowsLen_matMul (inertia.matPow (permMatAt n t) n m)
         (transposeM (permMatAt n t))))
     hsm1.1 hskm.1
-    (matPow_succR n (permMatAt n t) hTl hTr hn m) hmid2'
+    (inertia.matPow_succR n (permMatAt n t) hTl hTr hn m) hmid2'
 
 /-- The witness power clears its translation power: the two
 iterates compose to the identity on the range. -/
@@ -1143,12 +1083,12 @@ private theorem clearW_pow (n : Nat) (t s : Nat → Nat) (hn : 0 < n)
     (ht : ∀ j, j < n → t j < n)
     (hst : ∀ l, l < n → s (t l) = l) (m : Nat) :
     matOneValue
-      (matMul (permMatAt n (iterAt s m)) (matPow (permMatAt n t) n m))
+      (matMul (permMatAt n (iterAt s m)) (inertia.matPow (permMatAt n t) n m))
       (inertia.idMat n) := by
   have hsk := matPow_shape n (permMatAt n t) (length_permMatAt n t) m
   refine matOne_trans
     (matMul_congrR (n := n) (k := n) (permMatAt n (iterAt s m))
-      (matPow (permMatAt n t) n m) (permMatAt n (iterAt t m))
+      (inertia.matPow (permMatAt n t) n m) (permMatAt n (iterAt t m))
       hsk.1 (rowsLen_permMatAt n (iterAt t m)) hsk.2
       (length_permMatAt n (iterAt t m)) hn
       (permMatAt_pow n t hn ht m)) ?_
@@ -1163,21 +1103,21 @@ private theorem clearW_pow (n : Nat) (t s : Nat → Nat) (hn : 0 < n)
 private theorem matPow_wrap (n k : Nat) (t : Nat → Nat) (hn : 0 < n)
     (ht : ∀ j, j < n → t j < n)
     (hcyc : ∀ l, l < n → iterAt t (k + 1) l = l) (a : Nat) :
-    matOneValue (matPow (permMatAt n t) n ((k + 1) + a))
-      (matPow (permMatAt n t) n a) := by
+    matOneValue (inertia.matPow (permMatAt n t) n ((k + 1) + a))
+      (inertia.matPow (permMatAt n t) n a) := by
   have hTl := length_permMatAt n t
   have hTr := rowsLen_permMatAt n t
   have hsa := matPow_shape n (permMatAt n t) hTl a
   have hsk := matPow_shape n (permMatAt n t) hTl (k + 1)
   refine matOne_trans
-    (matOne_symm (matPow_add n (permMatAt n t) hTl hTr hn (k + 1) a)) ?_
+    (matOne_symm (inertia.matPow_add n (permMatAt n t) hTl hTr hn (k + 1) a)) ?_
   refine matOne_trans
-    (matMul_congrL (matPow (permMatAt n t) n (k + 1))
-      (inertia.idMat n) (matPow (permMatAt n t) n a) ?_) ?_
+    (matMul_congrL (inertia.matPow (permMatAt n t) n (k + 1))
+      (inertia.idMat n) (inertia.matPow (permMatAt n t) n a) ?_) ?_
   · refine matOne_trans (permMatAt_pow n t hn ht (k + 1)) ?_
     rw [permMatAt_congr n (iterAt t (k + 1)) (fun l => l) hcyc]
     exact permMatAt_id n
-  · exact inertia.idMat_matMul n (matPow (permMatAt n t) n a)
+  · exact inertia.idMat_matMul n (inertia.matPow (permMatAt n t) n a)
       hsa.1 hsa.2 hn
 
 /-- The chord against a positive power: the neighbor pair, the
@@ -1189,9 +1129,9 @@ private theorem chord_mul_pow (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
     (hcyc : ∀ l, l < n → iterAt t (k + 1) l = l) (a : Nat) :
     matOneValue
       (matMul (chordOp (permMatAt n t))
-        (matPow (permMatAt n t) n (a + 1)))
-      (matAdd (matPow (permMatAt n t) n (a + 2))
-        (matPow (permMatAt n t) n a)) := by
+        (inertia.matPow (permMatAt n t) n (a + 1)))
+      (matAdd (inertia.matPow (permMatAt n t) n (a + 2))
+        (inertia.matPow (permMatAt n t) n a)) := by
   have hTl := length_permMatAt n t
   have hTr := rowsLen_permMatAt n t
   have hTtr : rowsLen n (transposeM (permMatAt n t)) :=
@@ -1201,27 +1141,27 @@ private theorem chord_mul_pow (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
   have hsa := matPow_shape n (permMatAt n t) hTl a
   have hska := matPow_shape n (permMatAt n t) hTl (k + (a + 1))
   refine matOne_trans
-    (matMul_addL n (matPow (permMatAt n t) n (a + 1))
+    (matMul_addL n (inertia.matPow (permMatAt n t) n (a + 1))
       (rowsLen_cast hsa1.2
-        (rowsLen_transposeM (matPow (permMatAt n t) n (a + 1))))
+        (rowsLen_transposeM (inertia.matPow (permMatAt n t) n (a + 1))))
       (permMatAt n t) (transposeM (permMatAt n t)) hTr hTtr) ?_
-  refine matAdd_cong2 n _ _ (matPow (permMatAt n t) n (a + 2))
-    (matPow (permMatAt n t) n a)
-    (rowsLen_cast (length_transposeM (matPow (permMatAt n t) n (a + 1))
+  refine matAdd_cong2 n _ _ (inertia.matPow (permMatAt n t) n (a + 2))
+    (inertia.matPow (permMatAt n t) n a)
+    (rowsLen_cast (length_transposeM (inertia.matPow (permMatAt n t) n (a + 1))
       hsa1.1 (by rw [hsa1.2]; exact hn))
       (rowsLen_matMul (permMatAt n t)
-        (matPow (permMatAt n t) n (a + 1))))
-    (rowsLen_cast (length_transposeM (matPow (permMatAt n t) n (a + 1))
+        (inertia.matPow (permMatAt n t) n (a + 1))))
+    (rowsLen_cast (length_transposeM (inertia.matPow (permMatAt n t) n (a + 1))
       hsa1.1 (by rw [hsa1.2]; exact hn))
       (rowsLen_matMul (transposeM (permMatAt n t))
-        (matPow (permMatAt n t) n (a + 1))))
+        (inertia.matPow (permMatAt n t) n (a + 1))))
     hsa2.1 hsa.1 (matOne_refl _) ?_
   refine matOne_trans
     (matMul_congrL (transposeM (permMatAt n t))
-      (matPow (permMatAt n t) n k) (matPow (permMatAt n t) n (a + 1))
+      (inertia.matPow (permMatAt n t) n k) (inertia.matPow (permMatAt n t) n (a + 1))
       (transpose_as_pow n k t s hn ht hst hts hcyc)) ?_
   refine matOne_trans
-    (matPow_add n (permMatAt n t) hTl hTr hn k (a + 1)) ?_
+    (inertia.matPow_add n (permMatAt n t) hTl hTr hn k (a + 1)) ?_
   have hidx : k + (a + 1) = (k + 1) + a := by
     rw [Nat.add_comm k (a + 1), Nat.add_comm (k + 1) a,
       Nat.add_assoc a 1 k, Nat.add_comm 1 k]
@@ -1260,7 +1200,7 @@ range the translation's matrix reads the identity at its `L`-th
 power, the tex's own `T^L = 1` (`lem:fiberdec`). -/
 theorem cycleRead_pow (R : Region) (t s : Nat → Nat) (L : Nat)
     (hn : 0 < R.links) (h : permRead R t s) (hc : cycleRead R t L) :
-    matOneValue (matPow (permMatAt R.links t) R.links L)
+    matOneValue (inertia.matPow (permMatAt R.links t) R.links L)
       (inertia.idMat R.links) := by
   refine matOne_trans
     (permMatAt_pow R.links t hn
@@ -1614,7 +1554,7 @@ private theorem chordWord_shape (n m : Nat) (M : Mat) (hM : rowsLen n M)
       (hMl.trans (transposeLen M hM hMl).symm)).trans hMl) hn (deck.pSum m)
   have hP := matPow_shape n M hMl m
   exact ⟨rowsLen_cast (length_transposeM _ hE.1 (by rw [hE.2]; exact hn))
-      (rowsLen_matMul (matPow M n m) (polyEvalM (deck.pSum m) (chordOp M) n)),
+      (rowsLen_matMul (inertia.matPow M n m) (polyEvalM (deck.pSum m) (chordOp M) n)),
     (length_matMul _ _).trans hP.2⟩
 
 /-- The geometric word is its own translation multiple: the fold
@@ -1623,12 +1563,12 @@ read one value once the wrapped `T^L` reads `T^0`
 (`lem:fiberdec`'s `T X = X`). -/
 theorem wordSum_fixed (n L : Nat) (M : Mat) (hM : rowsLen n M)
     (hMl : M.length = n) (hn : 0 < n)
-    (hcyc : matOneValue (matPow M n L) (inertia.idMat n)) :
+    (hcyc : matOneValue (inertia.matPow M n L) (inertia.idMat n)) :
     matOneValue (matMul M (wordSum M n L)) (wordSum M n L) :=
   matOne_trans
-    (elim.matMul_msum n M hM hMl hn (matPow M n) (matPow_shape n M hMl)
+    (elim.matMul_msum n M hM hMl hn (inertia.matPow M n) (matPow_shape n M hMl)
       (List.range L))
-    (elim.msum_wrap n (matPow M n) (matPow_shape n M hMl) L hcyc)
+    (elim.msum_wrap n (inertia.matPow M n) (matPow_shape n M hMl) L hcyc)
 
 /-- The word's two fixed reads at a translation of stated shape:
 the word is its own `T`-multiple at the cycle read and its
@@ -1637,11 +1577,11 @@ onto the lemma's word by the word identity (`wordOpRead`, the
 decidable read the batteries commit). -/
 theorem fixedWord_of (n m : Nat) (M : Mat) (hM : rowsLen n M)
     (hMl : M.length = n) (hn : 0 < n)
-    (hcyc : matOneValue (matPow M n (2 * m + 1)) (inertia.idMat n))
+    (hcyc : matOneValue (inertia.matPow M n (2 * m + 1)) (inertia.idMat n))
     (horth : matOneValue (matMul (transposeM M) M) (inertia.idMat n))
     (hword : wordOpRead M n m) : fixedWordRead M n m := by
   have hX := chordWord_shape n m M hM hMl hn
-  have hWs := elim.msum_shape n (matPow M n) (matPow_shape n M hMl)
+  have hWs := elim.msum_shape n (inertia.matPow M n) (matPow_shape n M hMl)
     (List.range (2 * m + 1))
   have hfix : matOneValue (matMul M (chordWord M n m)) (chordWord M n m) := by
     refine matOne_trans
@@ -1699,8 +1639,8 @@ private theorem plus_read (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
     ∀ j b : Nat, j + b = k + 1 →
     matOneValue
       (polyEvalM (deck.pFamN j) (chordOp (permMatAt n t)) n)
-      (matAdd (matPow (permMatAt n t) n j)
-        (matPow (permMatAt n t) n b))
+      (matAdd (inertia.matPow (permMatAt n t) n j)
+        (inertia.matPow (permMatAt n t) n b))
   | 0, b, h => by
     have hb : b = k + 1 := by rw [← Nat.zero_add b]; exact h
     rw [hb]
@@ -1713,8 +1653,8 @@ private theorem plus_read (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
     refine matOne_trans (evalM_const n (chordOp (permMatAt n t)) hSl hn
       (BPair.ofNat 2)) ?_
     refine matOne_trans (matOne_symm (matAdd_double (inertia.idMat n))) ?_
-    exact matAdd_cong2 n _ _ (matPow (permMatAt n t) n 0)
-      (matPow (permMatAt n t) n (k + 1))
+    exact matAdd_cong2 n _ _ (inertia.matPow (permMatAt n t) n 0)
+      (inertia.matPow (permMatAt n t) n (k + 1))
       (inertia.idMat_rows n) (inertia.idMat_rows n)
       (inertia.idMat_rows n)
       (matPow_shape n (permMatAt n t) hTl (k + 1)).1
@@ -1762,8 +1702,8 @@ private theorem plus_read (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
         (inertia.idMat_len n) hn hone) ?_
     refine matOne_trans
       (inertia.matMul_idR n (chordOp (permMatAt n t)) hSr hSl hn hn) ?_
-    refine matAdd_cong2 n _ _ (matPow (permMatAt n t) n 1)
-      (matPow (permMatAt n t) n k)
+    refine matAdd_cong2 n _ _ (inertia.matPow (permMatAt n t) n 1)
+      (inertia.matPow (permMatAt n t) n k)
       hTr (rowsLen_cast hTl (rowsLen_transposeM (permMatAt n t)))
       (matPow_shape n (permMatAt n t) hTl 1).1
       (matPow_shape n (permMatAt n t) hTl k).1
@@ -1787,8 +1727,8 @@ private theorem plus_read (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
     have ih2 := plus_read n k t s hn ht hst hts hcyc (j + 1) (b + 1)
       hjb1
     have hshape : ∀ a : Nat,
-        rowsLen n (matPow (permMatAt n t) n a) ∧
-        (matPow (permMatAt n t) n a).length = n :=
+        rowsLen n (inertia.matPow (permMatAt n t) n a) ∧
+        (inertia.matPow (permMatAt n t) n a).length = n :=
       fun a => matPow_shape n (permMatAt n t) hTl a
     have hev : ∀ r : poly.Poly,
         rowsLen n (polyEvalM r (chordOp (permMatAt n t)) n) ∧
@@ -1799,8 +1739,8 @@ private theorem plus_read (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
           (polyEvalM (deck.pFamN (j + 2)) (chordOp (permMatAt n t)) n))
         (matAdd
           (polyEvalM (deck.pFamN j) (chordOp (permMatAt n t)) n)
-          (matAdd (matPow (permMatAt n t) n (j + 2))
-            (matPow (permMatAt n t) n b))) := by
+          (matAdd (inertia.matPow (permMatAt n t) n (j + 2))
+            (inertia.matPow (permMatAt n t) n b))) := by
       refine matOne_trans
         (matOne_symm (evalM_add n (chordOp (permMatAt n t)) hSl hSr hn
           (deck.pFamN j) (deck.pFamN (j + 2)))) ?_
@@ -1815,8 +1755,8 @@ private theorem plus_read (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
       refine matOne_trans
         (matMul_congrR (n := n) (k := n) (chordOp (permMatAt n t))
           (polyEvalM (deck.pFamN (j + 1)) (chordOp (permMatAt n t)) n)
-          (matAdd (matPow (permMatAt n t) n (j + 1))
-            (matPow (permMatAt n t) n (b + 1)))
+          (matAdd (inertia.matPow (permMatAt n t) n (j + 1))
+            (inertia.matPow (permMatAt n t) n (b + 1)))
           (hev (deck.pFamN (j + 1))).1
           (rowsLen_matAdd n _ _ (hshape (j + 1)).1 (hshape (b + 1)).1)
           (hev (deck.pFamN (j + 1))).2
@@ -1824,8 +1764,8 @@ private theorem plus_read (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
             (hshape (b + 1)).2.symm)).trans (hshape (j + 1)).2)
           hn ih2) ?_
       refine matOne_trans
-        (matMul_addR (n := n) (matPow (permMatAt n t) n (j + 1))
-          (matPow (permMatAt n t) n (b + 1))
+        (matMul_addR (n := n) (inertia.matPow (permMatAt n t) n (j + 1))
+          (inertia.matPow (permMatAt n t) n (b + 1))
           (hshape (j + 1)).1 (hshape (b + 1)).1
           ((hshape (j + 1)).2.trans (hshape (b + 1)).2.symm)
           (by rw [(hshape (j + 1)).2]; exact hn)
@@ -1833,32 +1773,32 @@ private theorem plus_read (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
           (rowsLen_cast (hshape (j + 1)).2.symm hSr)) ?_
       refine matOne_trans
         (matAdd_cong2 n _ _
-          (matAdd (matPow (permMatAt n t) n (j + 2))
-            (matPow (permMatAt n t) n j))
-          (matAdd (matPow (permMatAt n t) n (b + 2))
-            (matPow (permMatAt n t) n b))
+          (matAdd (inertia.matPow (permMatAt n t) n (j + 2))
+            (inertia.matPow (permMatAt n t) n j))
+          (matAdd (inertia.matPow (permMatAt n t) n (b + 2))
+            (inertia.matPow (permMatAt n t) n b))
           (rowsLen_cast (length_transposeM _ (hshape (j + 1)).1
             (by rw [(hshape (j + 1)).2]; exact hn))
             (rowsLen_matMul (chordOp (permMatAt n t))
-              (matPow (permMatAt n t) n (j + 1))))
+              (inertia.matPow (permMatAt n t) n (j + 1))))
           (rowsLen_cast (length_transposeM _ (hshape (b + 1)).1
             (by rw [(hshape (b + 1)).2]; exact hn))
             (rowsLen_matMul (chordOp (permMatAt n t))
-              (matPow (permMatAt n t) n (b + 1))))
+              (inertia.matPow (permMatAt n t) n (b + 1))))
           (rowsLen_matAdd n _ _ (hshape (j + 2)).1 (hshape j).1)
           (rowsLen_matAdd n _ _ (hshape (b + 2)).1 (hshape b).1)
           (chord_mul_pow n k t s hn ht hst hts hcyc j)
           (chord_mul_pow n k t s hn ht hst hts hcyc b)) ?_
-      rw [matAdd_comm (matPow (permMatAt n t) n (j + 2))
-        (matPow (permMatAt n t) n j),
-        matAdd_shuffle (matPow (permMatAt n t) n j)
-          (matPow (permMatAt n t) n (j + 2))
-          (matPow (permMatAt n t) n (b + 2))
-          (matPow (permMatAt n t) n b)]
+      rw [matAdd_comm (inertia.matPow (permMatAt n t) n (j + 2))
+        (inertia.matPow (permMatAt n t) n j),
+        matAdd_shuffle (inertia.matPow (permMatAt n t) n j)
+          (inertia.matPow (permMatAt n t) n (j + 2))
+          (inertia.matPow (permMatAt n t) n (b + 2))
+          (inertia.matPow (permMatAt n t) n b)]
       exact matAdd_cong2 n _ _
         (polyEvalM (deck.pFamN j) (chordOp (permMatAt n t)) n)
-        (matAdd (matPow (permMatAt n t) n (j + 2))
-          (matPow (permMatAt n t) n b))
+        (matAdd (inertia.matPow (permMatAt n t) n (j + 2))
+          (inertia.matPow (permMatAt n t) n b))
         (rowsLen_matAdd n _ _ (hshape j).1 (hshape (b + 2)).1)
         (rowsLen_matAdd n _ _ (hshape (j + 2)).1 (hshape b).1)
         (hev (deck.pFamN j)).1
@@ -1867,8 +1807,8 @@ private theorem plus_read (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
     rw [matAdd_comm (polyEvalM (deck.pFamN j) (chordOp (permMatAt n t)) n)
         (polyEvalM (deck.pFamN (j + 2)) (chordOp (permMatAt n t)) n),
       matAdd_comm (polyEvalM (deck.pFamN j) (chordOp (permMatAt n t)) n)
-        (matAdd (matPow (permMatAt n t) n (j + 2))
-          (matPow (permMatAt n t) n b))] at step1
+        (matAdd (inertia.matPow (permMatAt n t) n (j + 2))
+          (inertia.matPow (permMatAt n t) n b))] at step1
     exact matAdd_cancelR n _ _ _
       (hev (deck.pFamN (j + 2))).1
       (rowsLen_matAdd n _ _ (hshape (j + 2)).1 (hshape b).1)
@@ -1906,9 +1846,9 @@ private theorem seg_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
     (hcyc : ∀ l, l < n → iterAt t (2 * m + 1) l = l) :
     ∀ (r c : Nat), c + r = m →
     matOneValue
-      (matMul (matPow (permMatAt n t) n m)
+      (matMul (inertia.matPow (permMatAt n t) n m)
         (polyEvalM (deck.pSum r) (chordOp (permMatAt n t)) n))
-      (msum n (fun b => matPow (permMatAt n t) n (c + b))
+      (msum n (fun b => inertia.matPow (permMatAt n t) n (c + b))
         (List.range (2 * r + 1)))
   | 0, c, h => by
     have hc : c = m := h
@@ -1934,15 +1874,15 @@ private theorem seg_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
           (inertia.idMat n)) ?_
       exact inertia.matScaleB_one (inertia.idMat n)
     show matOneValue
-      (matMul (matPow (permMatAt n t) n m)
+      (matMul (inertia.matPow (permMatAt n t) n m)
         (polyEvalM (deck.pSum 0) (chordOp (permMatAt n t)) n))
-      (msum n (fun b => matPow (permMatAt n t) n (c + b))
+      (msum n (fun b => inertia.matPow (permMatAt n t) n (c + b))
         (List.range 1))
     rw [show List.range 1 = [0] from rfl,
-      msum_cons n (fun b => matPow (permMatAt n t) n (c + b)) 0 [],
+      msum_cons n (fun b => inertia.matPow (permMatAt n t) n (c + b)) 0 [],
       hc]
     refine matOne_trans
-      (matMul_congrR (n := n) (k := n) (matPow (permMatAt n t) n m)
+      (matMul_congrR (n := n) (k := n) (inertia.matPow (permMatAt n t) n m)
         (polyEvalM (deck.pSum 0) (chordOp (permMatAt n t)) n)
         (inertia.idMat n)
         (evalM_shape n (chordOp (permMatAt n t)) hSr hSl hn
@@ -1952,12 +1892,12 @@ private theorem seg_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
           (deck.pSum 0)).2
         (inertia.idMat_len n) hn hone) ?_
     refine matOne_trans
-      (inertia.matMul_idR n (matPow (permMatAt n t) n m)
+      (inertia.matMul_idR n (inertia.matPow (permMatAt n t) n m)
         hsm.1 hsm.2 hn hn) ?_
     rw [matAdd_comm]
     refine matOne_symm ?_
     exact elim.matAdd_nullL (elim.nullMat n n)
-      (matPow (permMatAt n t) n (m + 0))
+      (inertia.matPow (permMatAt n t) n (m + 0))
       (elim.matNull_nullMat n n)
       ((elim.length_nullMat n n).trans
         (matPow_shape n (permMatAt n t) hTl (m + 0)).2.symm)
@@ -1976,16 +1916,16 @@ private theorem seg_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
         (hTl.trans (length_transposeM (permMatAt n t) hTr
           (by rw [hTl]; exact hn)).symm)).trans hTl
     have hshape : ∀ a : Nat,
-        rowsLen n (matPow (permMatAt n t) n a) ∧
-        (matPow (permMatAt n t) n a).length = n :=
+        rowsLen n (inertia.matPow (permMatAt n t) n a) ∧
+        (inertia.matPow (permMatAt n t) n a).length = n :=
       fun a => matPow_shape n (permMatAt n t) hTl a
     have hev : ∀ q : poly.Poly,
         rowsLen n (polyEvalM q (chordOp (permMatAt n t)) n) ∧
         (polyEvalM q (chordOp (permMatAt n t)) n).length = n :=
       fun q => evalM_shape n (chordOp (permMatAt n t)) hSr hSl hn q
     have hfc : ∀ c' : Nat, ∀ k : Nat,
-        rowsLen n (matPow (permMatAt n t) n (c' + k)) ∧
-        (matPow (permMatAt n t) n (c' + k)).length = n :=
+        rowsLen n (inertia.matPow (permMatAt n t) n (c' + k)) ∧
+        (inertia.matPow (permMatAt n t) n (c' + k)).length = n :=
       fun c' k => hshape (c' + k)
     have ih := seg_read n m t s hn ht hst hts hcyc r (c + 1) h'
     have hjb : (r + 1) + (m + c + 1) = 2 * m + 1 := by
@@ -1999,20 +1939,20 @@ private theorem seg_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
       rw [← h]; exact idxC c r
     have hidxw : m + (m + c + 1) = (2 * m + 1) + c := idxW m c
     have hwrap : matOneValue
-        (matPow (permMatAt n t) n (m + (m + c + 1)))
-        (matPow (permMatAt n t) n c) := by
+        (inertia.matPow (permMatAt n t) n (m + (m + c + 1)))
+        (inertia.matPow (permMatAt n t) n c) := by
       rw [hidxw]
       exact matPow_wrap n (2 * m) t hn ht hcyc c
     have hchain2 : matOneValue
-        (matMul (matPow (permMatAt n t) n m)
+        (matMul (inertia.matPow (permMatAt n t) n m)
           (polyEvalM (deck.pFamN (r + 1)) (chordOp (permMatAt n t)) n))
-        (matAdd (matPow (permMatAt n t) n ((c + 1) + (2 * r + 1)))
-          (matPow (permMatAt n t) n c)) := by
+        (matAdd (inertia.matPow (permMatAt n t) n ((c + 1) + (2 * r + 1)))
+          (inertia.matPow (permMatAt n t) n c)) := by
       refine matOne_trans
-        (matMul_congrR (n := n) (k := n) (matPow (permMatAt n t) n m)
+        (matMul_congrR (n := n) (k := n) (inertia.matPow (permMatAt n t) n m)
           (polyEvalM (deck.pFamN (r + 1)) (chordOp (permMatAt n t)) n)
-          (matAdd (matPow (permMatAt n t) n (r + 1))
-            (matPow (permMatAt n t) n (m + c + 1)))
+          (matAdd (inertia.matPow (permMatAt n t) n (r + 1))
+            (inertia.matPow (permMatAt n t) n (m + c + 1)))
           (hev (deck.pFamN (r + 1))).1
           (rowsLen_matAdd n _ _ (hshape (r + 1)).1
             (hshape (m + c + 1)).1)
@@ -2023,50 +1963,50 @@ private theorem seg_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
           (plus_read n (2 * m) t s hn ht hst hts hcyc (r + 1)
             (m + c + 1) hjb)) ?_
       refine matOne_trans
-        (matMul_addR (n := n) (matPow (permMatAt n t) n (r + 1))
-          (matPow (permMatAt n t) n (m + c + 1))
+        (matMul_addR (n := n) (inertia.matPow (permMatAt n t) n (r + 1))
+          (inertia.matPow (permMatAt n t) n (m + c + 1))
           (hshape (r + 1)).1 (hshape (m + c + 1)).1
           ((hshape (r + 1)).2.trans (hshape (m + c + 1)).2.symm)
           (by rw [(hshape (r + 1)).2]; exact hn)
-          (matPow (permMatAt n t) n m)
+          (inertia.matPow (permMatAt n t) n m)
           (rowsLen_cast (hshape (r + 1)).2.symm (hshape m).1)) ?_
       refine matAdd_cong2 n _ _
-        (matPow (permMatAt n t) n ((c + 1) + (2 * r + 1)))
-        (matPow (permMatAt n t) n c)
+        (inertia.matPow (permMatAt n t) n ((c + 1) + (2 * r + 1)))
+        (inertia.matPow (permMatAt n t) n c)
         (rowsLen_cast (length_transposeM _ (hshape (r + 1)).1
           (by rw [(hshape (r + 1)).2]; exact hn))
-          (rowsLen_matMul (matPow (permMatAt n t) n m)
-            (matPow (permMatAt n t) n (r + 1))))
+          (rowsLen_matMul (inertia.matPow (permMatAt n t) n m)
+            (inertia.matPow (permMatAt n t) n (r + 1))))
         (rowsLen_cast (length_transposeM _ (hshape (m + c + 1)).1
           (by rw [(hshape (m + c + 1)).2]; exact hn))
-          (rowsLen_matMul (matPow (permMatAt n t) n m)
-            (matPow (permMatAt n t) n (m + c + 1))))
+          (rowsLen_matMul (inertia.matPow (permMatAt n t) n m)
+            (inertia.matPow (permMatAt n t) n (m + c + 1))))
         (hshape ((c + 1) + (2 * r + 1))).1 (hshape c).1 ?_ ?_
       · rw [← hidxc]
-        exact matPow_add n (permMatAt n t) hTl hTr hn m (r + 1)
+        exact inertia.matPow_add n (permMatAt n t) hTl hTr hn m (r + 1)
       · exact matOne_trans
-          (matPow_add n (permMatAt n t) hTl hTr hn m (m + c + 1))
+          (inertia.matPow_add n (permMatAt n t) hTl hTr hn m (m + c + 1))
           hwrap
     show matOneValue
-      (matMul (matPow (permMatAt n t) n m)
+      (matMul (inertia.matPow (permMatAt n t) n m)
         (polyEvalM
           (poly.add (deck.pSum r) (deck.pFam (ground.posOfSucc r)))
           (chordOp (permMatAt n t)) n))
-      (msum n (fun b => matPow (permMatAt n t) n (c + b))
+      (msum n (fun b => inertia.matPow (permMatAt n t) n (c + b))
         (List.range (2 * (r + 1) + 1)))
     have hseg : matOneValue
-        (matMul (matPow (permMatAt n t) n m)
+        (matMul (inertia.matPow (permMatAt n t) n m)
           (polyEvalM
             (poly.add (deck.pSum r) (deck.pFam (ground.posOfSucc r)))
             (chordOp (permMatAt n t)) n))
         (matAdd
-          (msum n (fun b => matPow (permMatAt n t) n ((c + 1) + b))
+          (msum n (fun b => inertia.matPow (permMatAt n t) n ((c + 1) + b))
             (List.range (2 * r + 1)))
           (matAdd
-            (matPow (permMatAt n t) n ((c + 1) + (2 * r + 1)))
-            (matPow (permMatAt n t) n c))) := by
+            (inertia.matPow (permMatAt n t) n ((c + 1) + (2 * r + 1)))
+            (inertia.matPow (permMatAt n t) n c))) := by
       refine matOne_trans
-        (matMul_congrR (n := n) (k := n) (matPow (permMatAt n t) n m)
+        (matMul_congrR (n := n) (k := n) (inertia.matPow (permMatAt n t) n m)
           (polyEvalM
             (poly.add (deck.pSum r) (deck.pFam (ground.posOfSucc r)))
             (chordOp (permMatAt n t)) n)
@@ -2093,21 +2033,21 @@ private theorem seg_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
           ((hev (deck.pSum r)).2.trans
             (hev (deck.pFam (ground.posOfSucc r))).2.symm)
           (by rw [(hev (deck.pSum r)).2]; exact hn)
-          (matPow (permMatAt n t) n m)
+          (inertia.matPow (permMatAt n t) n m)
           (rowsLen_cast (hev (deck.pSum r)).2.symm (hshape m).1)) ?_
       exact matAdd_cong2 n _ _
-        (msum n (fun b => matPow (permMatAt n t) n ((c + 1) + b))
+        (msum n (fun b => inertia.matPow (permMatAt n t) n ((c + 1) + b))
           (List.range (2 * r + 1)))
-        (matAdd (matPow (permMatAt n t) n ((c + 1) + (2 * r + 1)))
-          (matPow (permMatAt n t) n c))
+        (matAdd (inertia.matPow (permMatAt n t) n ((c + 1) + (2 * r + 1)))
+          (inertia.matPow (permMatAt n t) n c))
         (rowsLen_cast (length_transposeM _ (hev (deck.pSum r)).1
           (by rw [(hev (deck.pSum r)).2]; exact hn))
-          (rowsLen_matMul (matPow (permMatAt n t) n m)
+          (rowsLen_matMul (inertia.matPow (permMatAt n t) n m)
             (polyEvalM (deck.pSum r) (chordOp (permMatAt n t)) n)))
         (rowsLen_cast (length_transposeM _
           (hev (deck.pFam (ground.posOfSucc r))).1
           (by rw [(hev (deck.pFam (ground.posOfSucc r))).2]; exact hn))
-          (rowsLen_matMul (matPow (permMatAt n t) n m)
+          (rowsLen_matMul (inertia.matPow (permMatAt n t) n m)
             (polyEvalM (deck.pFam (ground.posOfSucc r))
               (chordOp (permMatAt n t)) n)))
         (msum_shape n _ (hfc (c + 1)) (List.range (2 * r + 1))).1
@@ -2115,24 +2055,24 @@ private theorem seg_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
           (hshape c).1)
         ih hchain2
     rw [ground.range_succ (2 * (r + 1)),
-      msum_append n (fun b => matPow (permMatAt n t) n (c + b))
+      msum_append n (fun b => inertia.matPow (permMatAt n t) n (c + b))
         (List.range (2 * (r + 1))) (2 * (r + 1))]
     rw [show (2 * (r + 1) : Nat) = (2 * r + 1) + 1 from rfl,
-      ← msum_shift n (fun b => matPow (permMatAt n t) n (c + b))
+      ← msum_shift n (fun b => inertia.matPow (permMatAt n t) n (c + b))
         ((2 * r + 1) + 1)]
     refine matOne_trans hseg ?_
     refine matOne_symm ?_
     rw [show c + 0 = c from rfl,
       ground.range_succ (2 * r + 1),
       msum_append n
-        (fun b => matPow (permMatAt n t) n (c + (b + 1)))
+        (fun b => inertia.matPow (permMatAt n t) n (c + (b + 1)))
         (List.range (2 * r + 1)) (2 * r + 1)]
     refine matOne_trans
-      (matAdd_cong2 n _ _ (matPow (permMatAt n t) n c)
+      (matAdd_cong2 n _ _ (inertia.matPow (permMatAt n t) n c)
         (matAdd
-          (msum n (fun b => matPow (permMatAt n t) n ((c + 1) + b))
+          (msum n (fun b => inertia.matPow (permMatAt n t) n ((c + 1) + b))
             (List.range (2 * r + 1)))
-          (matPow (permMatAt n t) n ((c + 1) + (2 * r + 1))))
+          (inertia.matPow (permMatAt n t) n ((c + 1) + (2 * r + 1))))
         (hshape c).1
         (rowsLen_matAdd n _ _
           (msum_shape n _ (fun k => hshape (c + (k + 1)))
@@ -2144,32 +2084,32 @@ private theorem seg_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
           (hshape ((c + 1) + (2 * r + 1))).1)
         (matOne_refl _)
         (matAdd_cong2 n _ _
-          (msum n (fun b => matPow (permMatAt n t) n ((c + 1) + b))
+          (msum n (fun b => inertia.matPow (permMatAt n t) n ((c + 1) + b))
             (List.range (2 * r + 1)))
-          (matPow (permMatAt n t) n ((c + 1) + (2 * r + 1)))
+          (inertia.matPow (permMatAt n t) n ((c + 1) + (2 * r + 1)))
           (msum_shape n _ (fun k => hshape (c + (k + 1)))
             (List.range (2 * r + 1))).1
           (hshape (c + ((2 * r + 1) + 1))).1
           (msum_shape n _ (hfc (c + 1)) (List.range (2 * r + 1))).1
           (hshape ((c + 1) + (2 * r + 1))).1
           (msum_congr n
-            (fun b => matPow (permMatAt n t) n (c + (b + 1)))
-            (fun b => matPow (permMatAt n t) n ((c + 1) + b))
+            (fun b => inertia.matPow (permMatAt n t) n (c + (b + 1)))
+            (fun b => inertia.matPow (permMatAt n t) n ((c + 1) + b))
             (fun k => hshape (c + (k + 1)))
             (hfc (c + 1))
             (fun k => by rw [Nat.add_right_comm c 1 k]; exact matOne_refl _)
             (List.range (2 * r + 1)))
           (by rw [Nat.add_right_comm c 1 (2 * r + 1)]; exact matOne_refl _))) ?_
-    rw [matAdd_comm (matPow (permMatAt n t) n c)
+    rw [matAdd_comm (inertia.matPow (permMatAt n t) n c)
         (matAdd
-          (msum n (fun b => matPow (permMatAt n t) n ((c + 1) + b))
+          (msum n (fun b => inertia.matPow (permMatAt n t) n ((c + 1) + b))
             (List.range (2 * r + 1)))
-          (matPow (permMatAt n t) n ((c + 1) + (2 * r + 1)))),
+          (inertia.matPow (permMatAt n t) n ((c + 1) + (2 * r + 1)))),
       matAdd_assoc
-        (msum n (fun b => matPow (permMatAt n t) n ((c + 1) + b))
+        (msum n (fun b => inertia.matPow (permMatAt n t) n ((c + 1) + b))
           (List.range (2 * r + 1)))
-        (matPow (permMatAt n t) n ((c + 1) + (2 * r + 1)))
-        (matPow (permMatAt n t) n c)]
+        (inertia.matPow (permMatAt n t) n ((c + 1) + (2 * r + 1)))
+        (inertia.matPow (permMatAt n t) n c)]
     exact matOne_refl _
 /-- The deck relation at a translation's matrix: at the
 orthogonality read the chord's product against `T` collects the
@@ -3219,13 +3159,14 @@ pairing runs over the key list as a fold at the polynomial carrier
 kit beneath it is that fold's algebra: the join, the mapped key
 family's read and the top key's own split (`pfold_append`,
 `pfold_map`, `pfold_rangeSucc`), the pointwise class reads
-(`pfold_congr` at every key, `pfold_brange` below a bound,
+(`pfold_brange` below a bound,
 `pfold_pCong` at the deck symbol), the memberwise sum's split
-(`pfold_split`), the constant two's own count (`pfold_two`), the
-vacant family's null read (`pfold_null`), a factor's distribution
-over the fold (`pfold_mulL`) and the two key ranges' exchange over
-a doubly indexed family (`pfold_fubini`), with `poly.unitTail_sum`
-and `ground.range_split` beneath them.  Two mapped families'
+(`pfold_split`), the constant two's own count (`pfold_two`), a
+factor's distribution over the fold (`pfold_mulL`) and the two key
+ranges' exchange over a doubly indexed family (`pfold_fubini`),
+the last two `ground.famFold_mul_ov`'s and `famFold_swap_ov`'s
+reads at the polynomial carrier, with `ground.range_split`
+beneath them.  Two mapped families'
 pairing is the products' fold (`pdotVec_map`), the row's and the
 vector's own pairings are their index folds over the key range
 (`scaleDot_getAt`, `pdotVec_getAt`, whence the matrix's double fold
@@ -3298,13 +3239,6 @@ private theorem pfold_rangeSucc (f : Nat → poly.Poly) (n : Nat) :
   refine poly.oneValue_trans (pfold_append f (List.range n) [n]) ?_
   rw [pfold_single f n]
   exact poly.oneValue_refl _
-
-/-- The fold reads a pointwise class read of its family. -/
-private theorem pfold_congr {f g : Nat → poly.Poly}
-    (h : ∀ i, poly.oneValue (f i) (g i)) :
-    ∀ l : List Nat, poly.oneValue (pfold f l) (pfold g l)
-  | [] => trivial
-  | a :: t => poly.add_congr (h a) (pfold_congr h t)
 
 /-- The fold over a key range reads a class read holding below the
 bound. -/
@@ -3419,45 +3353,27 @@ private theorem pdotVec_swapNull (u : List poly.Poly) :
           (poly.mul_sum p (poly.scaleDot (r.map BPair.swap) u) (poly.scaleDot r u)))
         (pdotVec_swapNull u M v))
 
-/-- The vacant-member family's fold is a unit tail. -/
-private theorem pfold_null (f : Nat → poly.Poly)
-    (h : ∀ i, poly.unitTail (f i)) :
-    ∀ l : List Nat, poly.unitTail (pfold f l)
-  | [] => trivial
-  | a :: t => poly.unitTail_sum (h a) (pfold_null f h t)
-
 /-- A factor distributes over the fold, the product entering at
-every member. -/
-private theorem pfold_mulL (p : poly.Poly) (f : Nat → poly.Poly) :
-    ∀ l : List Nat,
+every member (`ground.famFold_mul_ov`'s read at the polynomial
+carrier). -/
+private theorem pfold_mulL (p : poly.Poly) (f : Nat → poly.Poly)
+    (l : List Nat) :
     poly.oneValue (poly.mul p (pfold f l))
-      (pfold (fun i => poly.mul p (f i)) l)
-  | [] => poly.unitTail_oneValue (poly.mul_nil p) trivial
-  | a :: t =>
-    poly.oneValue_trans (poly.mul_sum p (f a) (pfold f t))
-      (poly.add_congr (poly.oneValue_refl _) (pfold_mulL p f t))
+      (pfold (fun i => poly.mul p (f i)) l) :=
+  ground.famFold_mul_ov poly.polyFoldLaws poly.mul p
+    (poly.unitTail_oneValue (poly.mul_nil p) trivial)
+    (fun x y => poly.mul_sum p x y) f l
 
-/-- The two key ranges exchange over a doubly indexed family: the
-double fold reads one value in either order. -/
-private theorem pfold_fubini (f : Nat → Nat → poly.Poly) (m : Nat) :
-    ∀ n : Nat,
+/-- The two key ranges exchange over a doubly indexed family, the
+double fold one value in either order (`ground.famFold_swap_ov`'s
+read at the polynomial carrier). -/
+private theorem pfold_fubini (f : Nat → Nat → poly.Poly)
+    (m n : Nat) :
     poly.oneValue
       (pfold (fun i => pfold (fun j => f i j) (List.range m)) (List.range n))
-      (pfold (fun j => pfold (fun i => f i j) (List.range n)) (List.range m))
-  | 0 =>
-    poly.unitTail_oneValue trivial
-      (pfold_null (fun j => pfold (fun i => f i j) (List.range 0))
-        (fun _ => trivial) (List.range m))
-  | n + 1 => by
-    refine poly.oneValue_trans
-      (pfold_rangeSucc (fun i => pfold (fun j => f i j) (List.range m)) n) ?_
-    refine poly.oneValue_trans
-      (poly.add_congr (pfold_fubini f m n) (poly.oneValue_refl _)) ?_
-    refine poly.oneValue_symm (poly.oneValue_trans
-      (pfold_congr (fun j => pfold_rangeSucc (fun i => f i j) n)
-        (List.range m)) ?_)
-    exact pfold_split (fun j => pfold (fun i => f i j) (List.range n))
-      (fun j => f n j) (List.range m)
+      (pfold (fun j => pfold (fun i => f i j) (List.range n)) (List.range m)) :=
+  ground.famFold_swap_ov poly.polyFoldLaws f (List.range n)
+    (List.range m)
 
 /-- The row's fold reads its own index fold over the key range
 (`poly.scaleDot_getAt`). -/
@@ -4420,11 +4336,11 @@ theorem deckColumn_imagePair (m : Nat) :
 private theorem sideSq (m : Nat) :
     4 * ((2 * m + 1) * (2 * m + 1))
       = 2 * (2 * m + 1) * (2 * (2 * m + 1)) := by
-  rw [ground.natMulAssoc 2 (2 * m + 1) (2 * (2 * m + 1)),
-    ← ground.natMulAssoc (2 * m + 1) 2 (2 * m + 1),
+  rw [ground.mulAssoc 2 (2 * m + 1) (2 * (2 * m + 1)),
+    ← ground.mulAssoc (2 * m + 1) 2 (2 * m + 1),
     Nat.mul_comm (2 * m + 1) 2,
-    ground.natMulAssoc 2 (2 * m + 1) (2 * m + 1),
-    ← ground.natMulAssoc 2 2 ((2 * m + 1) * (2 * m + 1))]
+    ground.mulAssoc 2 (2 * m + 1) (2 * m + 1),
+    ← ground.mulAssoc 2 2 ((2 * m + 1) * (2 * m + 1))]
 
 /-- The pair's Gram determinant at the wrap shift: the crossed
 pairing is null (`deckColumn_crossNull`), so the diagonal product
@@ -4722,9 +4638,9 @@ theorem gramUnit_wrap (m : Nat) :
         (BPair.oneValue_symm (BPair.ofNat_mul
           (4 * ((2 * (m + 1) + 1) * (2 * (m + 1) + 1)))
           (2 * (m + 1) + 1))) ?_
-      rw [ground.natMulAssoc 4
+      rw [ground.mulAssoc 4
           ((2 * (m + 1) + 1) * (2 * (m + 1) + 1)) (2 * (m + 1) + 1),
-        ground.natMulAssoc (2 * (m + 1) + 1) (2 * (m + 1) + 1)
+        ground.mulAssoc (2 * (m + 1) + 1) (2 * (m + 1) + 1)
           (2 * (m + 1) + 1)]
       exact BPair.oneValue_refl _
     refine poly.oneValue_trans
@@ -4828,7 +4744,7 @@ private theorem ident_of (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
     show transposeM (matAdd Pm (matSwap (inertia.idMat n))) = _
     rw [transposeM_matAdd Pm (matSwap (inertia.idMat n)) hP hSwI
         (hPl.trans hSwIl.symm) (by rw [hPl]; exact hn),
-      transposeM_swap (inertia.idMat n), inertia.transposeM_idMat n hn]
+      transposeM_swap (inertia.idMat n), inertia.transposeM_idMat n]
   -- the datum's square at the two products
   have hleft : matOneValue
       (matMul (transposeM Pm) (inertia.siteDatum Pm (inertia.idMat n)))
@@ -4947,15 +4863,6 @@ vector reads every Horner read at the evaluation's own scale, the
 matrix recursion matched to `def:poly`'s step for step
 (`polyEval_fixed`). -/
 
-/-- The rescaled identity's action is the plain rescaling. -/
-private theorem matVec_scaleId (c : BPair) (n : Nat) (v : List BPair)
-    (hv : v.length = n) :
-    poly.oneValue (matVec (inertia.matScaleB c (inertia.idMat n)) v)
-      (vecScale c v) :=
-  poly.oneValue_trans (inertia.matVec_scaleB c (inertia.idMat n) v)
-    (vecScale_oneValue c (matVec (inertia.idMat n) v) v
-      (split.matVec_idMat n v hv))
-
 /-- A permutation matrix's action reads the vector's entry at the
 witness's own key: the row carries one occupied key. -/
 private theorem matVec_permAt (n : Nat) (t s : Nat → Nat) (v : List BPair)
@@ -5001,7 +4908,7 @@ private theorem permMatAt_ones (n : Nat) (t s : Nat → Nat)
       (matVec (permMatAt n t) (List.replicate n (BPair.ofPos Pos.one)))
       (List.replicate n (BPair.ofPos Pos.one)) := by
   have hTl : (permMatAt n t).length = n := length_permMatAt n t
-  refine getAt_polyOne _ _
+  refine poly.oneValue_of_entries _ _
     (by rw [matVec_length, hTl, ground.length_replicate]) ?_
   intro i hi
   rw [matVec_length, hTl] at hi
@@ -5070,7 +4977,7 @@ theorem unitFiber_wrap (m : Nat) :
           (inertia.idMat (2 * m + 1))) (orbitSum m))
         (vecAdd (orbitSum m) (orbitSum m)) :=
       poly.oneValue_trans
-        (matVec_scaleId (BPair.ofNat 2) (2 * m + 1) (orbitSum m) hlen)
+        (inertia.scaleId_act (BPair.ofNat 2) (2 * m + 1) (orbitSum m) hlen)
         (vecScale_two (orbitSum m))
     have hlenS : (chordOp (permMatAt (2 * m + 1) (tShift m))).length
         = 2 * m + 1 := by
@@ -5169,14 +5076,6 @@ private theorem evalM_shapeOf (n : Nat) (S : Mat) (hn : 0 < n)
       exact hS
     exact ⟨rowsLen_matAdd n _ _ hIr hMr, matAdd_pos _ _ hIl hMl⟩
 
-/-- A map rides the drop, key by key. -/
-private theorem map_drop {α β : Type} (f : α → β) :
-    ∀ (l : List α) (k : Nat), (l.map f).drop k = (l.drop k).map f
-  | [], 0 => rfl
-  | [], _ + 1 => rfl
-  | _ :: _, 0 => rfl
-  | _ :: t, k + 1 => map_drop f t k
-
 /-- Beyond the first member's count the second reads the unit
 family. -/
 private theorem ov_dropNull : ∀ p q : List BPair, poly.oneValue p q →
@@ -5222,7 +5121,7 @@ private theorem evalM_fixed_go (n : Nat) (S : Mat) (v : List BPair)
     ∀ q : poly.Poly,
     poly.oneValue (matVec (polyEvalM q S n) v)
       (vecScale (poly.eval q (BPair.ofNat 2)) v)
-  | [] => matVec_scaleId BPair.unit n v hv
+  | [] => inertia.scaleId_act BPair.unit n v hv
   | c :: t => by
     have ih := evalM_fixed_go n S v hv hn hS hfix hvd t
     have hP := evalM_shapeOf n S hn hS t
@@ -5241,7 +5140,7 @@ private theorem evalM_fixed_go (n : Nat) (S : Mat) (v : List BPair)
       intro a
       rw [hlen2]
       show poly.unitTail ((v.map (fun x => a * x)).drop S.length)
-      rw [map_drop (fun x => a * x) v S.length]
+      rw [ground.map_drop (fun x => a * x) v S.length]
       exact unitTail_vecScale a (v.drop S.length) hvd
     show poly.oneValue
       (matVec (matAdd (inertia.matScaleB c (inertia.idMat n))
@@ -5265,7 +5164,7 @@ private theorem evalM_fixed_go (n : Nat) (S : Mat) (v : List BPair)
       rw [vecScale_vecScale]
       exact poly.oneValue_refl _
     refine poly.oneValue_trans
-      (vecAdd_ovTrunc _ _ _ _ (matVec_scaleId c n v hv) hsecond
+      (vecAdd_ovTrunc _ _ _ _ (inertia.scaleId_act c n v hv) hsecond
         (by rw [matVec_length, inertia.length_scaleB, inertia.idMat_len,
             length_vecScale, hv])
         (by rw [length_vecScale, length_vecScale])
@@ -5418,7 +5317,7 @@ theorem unitFiber_span (m : Nat) (v : List BPair)
     refine poly.oneValue_trans
       (siteKer_read _ _ v (rowsLen_cast hv.symm hP) (rowsLen_cast hv.symm hI)
         (by rw [matVec_length, matVec_length, hPl, hIl]) ?_)
-      (split.matVec_idMat (2 * m + 1) v hv)
+      (inertia.matVec_idMat (2 * m + 1) v hv)
     refine dotP_self_null _ ?_
     refine BPair.oneValue_trans
       (dotP_matVec_transpose (2 * m + 1) _ v _ hD hv (matVec_length _ v)) ?_
@@ -5459,7 +5358,7 @@ theorem unitFiber_span (m : Nat) (v : List BPair)
           ((orbitSum_len m).trans
             (ground.length_replicate BPair.unit (2 * m + 1)).symm))
         (poly.unitTail_replicate (2 * m + 1))))
-  refine getAt_polyOne _ _
+  refine poly.oneValue_of_entries _ _
     (by rw [length_vecScale, length_vecScale, hv, orbitSum_len]) ?_
   intro i hi
   rw [length_vecScale, hv] at hi
@@ -5517,7 +5416,7 @@ theorem polyEval_fixed (n : Nat) (q : poly.Poly) (S : Mat)
       rw [hSnil]
       cases q with
       | nil =>
-        exact poly.oneValue_trans (matVec_scaleId BPair.unit (n' + 1) v hv)
+        exact poly.oneValue_trans (inertia.scaleId_act BPair.unit (n' + 1) v hv)
           (poly.unitTail_oneValue (unitTail_vecScale BPair.unit v hvu)
             (unitTail_vecScale BPair.unit v hvu))
       | cons c t =>
@@ -5533,7 +5432,7 @@ theorem polyEval_fixed (n : Nat) (q : poly.Poly) (S : Mat)
         (by rw [hSl]; exact Nat.succ_le_succ (Nat.zero_le _)) hfix ?_ q
       refine fixedNil_unit (v.drop S.length) ?_
       show poly.unitTail ((v.drop S.length).map (fun x => BPair.ofNat 2 * x))
-      rw [← map_drop (fun x => BPair.ofNat 2 * x) v S.length]
+      rw [← ground.map_drop (fun x => BPair.ofNat 2 * x) v S.length]
       have h := ov_dropNull (matVec S v) (vecScale (BPair.ofNat 2) v) hfix
       rw [matVec_length] at h
       exact h
@@ -6397,15 +6296,6 @@ theorem blockEntry_bot (m : Nat) (q : poly.Poly) :
 polynomial carrier's folds key by key, so the ground matrices act
 on the rows through the column. -/
 
-/-- A scaled entry's key read is the key's scale, the
-representative collected. -/
-private theorem getAt_scaleP (c : BPair) : ∀ (p : poly.Poly) (i : Nat),
-    (ground.getAt BPair.unit (poly.scaleP c p) i).oneValue
-      (c * ground.getAt BPair.unit p i)
-  | [], _ => BPair.oneValue_symm (BPair.mul_unit c)
-  | _ :: _, 0 => BPair.norm_oneValue _
-  | _ :: ps, i + 1 => getAt_scaleP c ps i
-
 /-- A row's fold against a slice reads the polynomial fold's key:
 the two collected sums exchange at the key's own coefficient. -/
 private theorem dotP_slice : ∀ (r : List BPair) (u : List poly.Poly)
@@ -6421,7 +6311,7 @@ private theorem dotP_slice : ∀ (r : List BPair) (u : List poly.Poly)
         (poly.add (poly.scaleP c p) (poly.scaleDot cs ps)) i)
     refine BPair.oneValue_symm (BPair.oneValue_trans
       (poly.getAt_add (poly.scaleP c p) (poly.scaleDot cs ps) i) ?_)
-    refine BPair.add_congr (getAt_scaleP c p i) ?_
+    refine BPair.add_congr (poly.getAt_scaleP c p i) ?_
     exact BPair.oneValue_symm (dotP_slice cs ps i)
 
 /-- A ground matrix acts on a slice through the column, row by
@@ -6432,7 +6322,7 @@ private theorem matVec_slice : ∀ (M : Mat) (i : Nat)
       (sliceAt i (pmatVec M u))
   | [], _, _ => trivial
   | r :: M, i, u =>
-    ⟨BPair.oneValue_trans (elim.dotN_dotP r (sliceAt i u))
+    ⟨BPair.oneValue_trans (elim.dotN_read r (sliceAt i u))
       (dotP_slice r u i),
      matVec_slice M i u⟩
 
@@ -6510,19 +6400,6 @@ private theorem rootDatum_column (m : Nat) (b : Nat)
         rw [deckColumn_entry_len m j (by rw [deckColumn_len] at hj; exact hj)]
         exact Nat.le_refl m)
   exact poly.unitTail_oneValue_right hker (deck.redP_short m _ hlen)
-
-/-- The action's congruence at its matrix. -/
-private theorem matVec_congrM : ∀ (M M' : Mat) (v : List BPair),
-    elim.matOneValue M M' →
-    poly.oneValue (elim.matVec M v) (elim.matVec M' v)
-  | [], [], _, _ => trivial
-  | [], _ :: _, _, h => h.elim
-  | _ :: _, [], _, h => h.elim
-  | r :: t, r' :: t', v, h =>
-    ⟨BPair.oneValue_trans (elim.dotN_dotP r v)
-      (BPair.oneValue_trans (elim.dotP_oneValue_left r r' v h.1)
-        (BPair.oneValue_symm (elim.dotN_dotP r' v))),
-     matVec_congrM t t' v h.2⟩
 
 /-- The chord and the doubling datum exchange at the orthogonality:
 either product collects the four crossed terms to one shape, the
@@ -6804,7 +6681,7 @@ private theorem imageRow_ker (m i : Nat) :
   refine poly.oneValue_unitTail
     (poly.oneValue_symm (elim.matVec_matMul _ _ (2 * m + 1) hA _ hs)) ?_
   refine poly.oneValue_unitTail
-    (matVec_congrM _ _ _
+    (elim.matVec_matOne _ _ _
       (evalM_datum_comm (2 * m + 1) (permMatAt (2 * m + 1) (tShift m))
         hP hPl hn (orth_wrap m) (deck.pSum m))) ?_
   refine poly.oneValue_unitTail
@@ -7162,21 +7039,6 @@ private theorem wrapVal (m a b : Nat) (h : a + b = 2 * m + 1)
   rw [deckColumn_getAt m a ha, deckColumn_getAt m b hb]
   exact deck.redP_congr m (deck.pFamN_wrapRefl m a b h)
 
-/-- A negated vector's rescaling reads the rescaling's own
-negation. -/
-private theorem scaleP_negVec (c : BPair) : ∀ p : poly.Poly,
-    poly.oneValue (poly.scaleP c (poly.neg p))
-      (poly.neg (poly.scaleP c p))
-  | [] => trivial
-  | x :: p =>
-    ⟨by
-      show ((c * x.swap).norm).oneValue (((c * x).norm).swap)
-      rw [BPair.mul_swap]
-      exact BPair.oneValue_trans (BPair.norm_oneValue _)
-        (BPair.oneValue_symm
-          (ground.swap_congr (BPair.norm_oneValue (c * x)))),
-     scaleP_negVec c p⟩
-
 /-- The reflected key's crossed member reads the shifted key's own:
 the wrap pairs the keys at the side's join, the middle pair
 collapsing at its own wrap. -/
@@ -7343,7 +7205,7 @@ private theorem sliceCross_null (m i j : Nat) :
             ?_
           refine poly.oneValue_trans (poly.scaleP_sum _ _ _) ?_
           exact poly.add_congr (poly.oneValue_refl _)
-            (scaleP_negVec _ _))) ?_
+            (poly.scaleP_neg _ _))) ?_
     refine poly.oneValue_trans
       (pfold_split _ _ (List.range (2 * m + 1))) ?_
     refine poly.oneValue_trans
@@ -7401,13 +7263,6 @@ private theorem sliceCross_null (m i j : Nat) :
       (poly.add_congr hYs (poly.swapMap_oneValue hYt)) ?_
     exact poly.unitTail_oneValue (poly.add_neg _) trivial
   exact poly.getAt_unitTail (poly.oneValue_unitTail hrow trivial) j
-
-/-- The combination's entry, the landed public's read. -/
-private theorem combo_getAt (n : Nat) (cs : List BPair) (M : Mat)
-    (b : Nat) (hM : elim.rowsLen n M) (hb : b < n) :
-    (ground.getAt BPair.unit (elim.combo n cs M) b).oneValue
-      (elim.dotP cs (M.map (fun row => ground.getAt BPair.unit row b))) :=
-  elim.combo_getAt n cs M b hM hb
 
 private def tailP : poly.Poly → poly.Poly
   | [] => []
@@ -7533,7 +7388,7 @@ private theorem sliceTriangle (m : Nat) (cs : List BPair)
     have hbm : b < m := hlen ▸ hb
     have hbL : b < 2 * m + 1 := Nat.lt_of_lt_of_le hbm hm
     have hkey := poly.getAt_unitTail hnull b
-    have hcg := combo_getAt (2 * m + 1) cs
+    have hcg := elim.combo_getAt (2 * m + 1) cs
       ((List.range m).map (fun i => sliceAt i (deckColumn m))) b
       hrows hbL
     have hcol : poly.oneValue
@@ -7646,17 +7501,6 @@ private theorem tShift_cyc (m : Nat) : ∀ l, l < 2 * m + 1 →
     walkRun m l 0 (by rw [Nat.zero_add]; exact hl2m),
     Nat.zero_add l]
 
-/-- The entrywise vector sum at one count is the componentwise
-sum. -/
-private theorem vecAdd_eq_polyAdd : ∀ (u v : List BPair),
-    u.length = v.length → elim.vecAdd u v = poly.add u v
-  | [], [], _ => rfl
-  | [], _ :: _, h => Nat.noConfusion h
-  | _ :: _, [], h => Nat.noConfusion h
-  | _ :: u, _ :: v, h => by
-    show (_ + _) :: elim.vecAdd u v = (_ + _) :: poly.add u v
-    rw [vecAdd_eq_polyAdd u v (Nat.succ.inj h)]
-
 /-- A member-row combination pairs the orbit sum at the sum's
 unit. -/
 private theorem comboPerp_ones (m : Nat) (cs : List BPair) :
@@ -7732,20 +7576,20 @@ private theorem imageKill (m : Nat) (cs : List BPair)
         (elim.matVec_matMul _ _ (2 * m + 1) hTtr w hwl)) ?_
     refine poly.oneValue_trans
       (elim.matVec_matOne _ _ w (orth_wrap m).1) ?_
-    exact split.matVec_idMat (2 * m + 1) w hwl
+    exact inertia.matVec_idMat (2 * m + 1) w hwl
   have h3 : ∀ k : Nat, poly.oneValue
-      (matVec (matPow (permMatAt (2 * m + 1) (tShift m)) (2 * m + 1)
+      (matVec (inertia.matPow (permMatAt (2 * m + 1) (tShift m)) (2 * m + 1)
         (2 * k)) w) w := by
     intro k
     induction k with
-    | zero => exact split.matVec_idMat (2 * m + 1) w hwl
+    | zero => exact inertia.matVec_idMat (2 * m + 1) w hwl
     | succ k ih =>
       have hsm := matPow_shape (2 * m + 1) _ hTl (2 * k)
       have hsm1 := matPow_shape (2 * m + 1) _ hTl (2 * k + 1)
       show poly.oneValue
         (matVec (matMul (permMatAt (2 * m + 1) (tShift m))
           (matMul (permMatAt (2 * m + 1) (tShift m))
-            (matPow (permMatAt (2 * m + 1) (tShift m)) (2 * m + 1)
+            (inertia.matPow (permMatAt (2 * m + 1) (tShift m)) (2 * m + 1)
               (2 * k)))) w) w
       refine poly.oneValue_trans
         (elim.matVec_matMul _ _ (2 * m + 1)
@@ -7762,12 +7606,12 @@ private theorem imageKill (m : Nat) (cs : List BPair)
     have hcyc := matPow_wrap (2 * m + 1) (2 * m) (tShift m) hn
       (tShift_lt m) (tShift_cyc m) 0
     have hTP : matOneValue
-        (matPow (permMatAt (2 * m + 1) (tShift m)) (2 * m + 1)
+        (inertia.matPow (permMatAt (2 * m + 1) (tShift m)) (2 * m + 1)
           (2 * (m + 1)))
         (permMatAt (2 * m + 1) (tShift m)) := by
       show matOneValue
         (matMul (permMatAt (2 * m + 1) (tShift m))
-          (matPow (permMatAt (2 * m + 1) (tShift m)) (2 * m + 1)
+          (inertia.matPow (permMatAt (2 * m + 1) (tShift m)) (2 * m + 1)
             (2 * m + 1)))
         (permMatAt (2 * m + 1) (tShift m))
       refine matOne_trans
@@ -7778,7 +7622,7 @@ private theorem imageKill (m : Nat) (cs : List BPair)
           (inertia.idMat_len _) hn hcyc) ?_
       exact inertia.matMul_idR (2 * m + 1) _ hTr hTl hn hn
     refine poly.oneValue_trans
-      (poly.oneValue_symm (matVec_congrM _ _ w hTP)) ?_
+      (poly.oneValue_symm (elim.matVec_matOne _ _ w hTP)) ?_
     exact h3 (m + 1)
   have hker2 : poly.unitTail
       (matVec (unitDatum (permMatAt (2 * m + 1) (tShift m))
@@ -7797,7 +7641,7 @@ private theorem imageKill (m : Nat) (cs : List BPair)
           (inertia.idMat (2 * m + 1))) w)
         (vecAdd w w) :=
       poly.oneValue_trans
-        (matVec_scaleId (BPair.ofNat 2) (2 * m + 1) w hwl)
+        (inertia.scaleId_act (BPair.ofNat 2) (2 * m + 1) w hwl)
         (vecScale_two w)
     have hscr : rowsLen (2 * m + 1)
         (inertia.matScaleB (BPair.ofNat 2)
@@ -7857,13 +7701,13 @@ private theorem matVec_vAdd (n : Nat) : ∀ (M : Mat) (u v : List BPair),
       (elim.vecAdd (matVec M u) (matVec M v))
   | [], _, _, _, _, _ => trivial
   | r :: t, u, v, hM, hu, hv =>
-    ⟨BPair.oneValue_trans (elim.dotN_dotP r (elim.vecAdd u v))
+    ⟨BPair.oneValue_trans (elim.dotN_read r (elim.vecAdd u v))
       (BPair.oneValue_trans
         (elim.dotP_vecAdd r u v (hu.trans hM.1.symm)
           (hv.trans hM.1.symm))
         (BPair.add_congr
-          (BPair.oneValue_symm (elim.dotN_dotP r u))
-          (BPair.oneValue_symm (elim.dotN_dotP r v)))),
+          (BPair.oneValue_symm (elim.dotN_read r u))
+          (BPair.oneValue_symm (elim.dotN_read r v)))),
      matVec_vAdd n t u v hM.2 hu hv⟩
 
 /-- The orbit sum's self-pairing reads the side's own count. -/
@@ -8296,25 +8140,6 @@ theorem orbitSplit_indep (m : Nat) :
     have hO := imageKill m (altO rest) (altO_len rest m hrl) hAV
     exact ⟨hc0, altEO_unit rest hE hO⟩
 
-/-- A rescaled unit family reads the unit family. -/
-private theorem vecScale_nullVec (c : BPair) : ∀ {w : List BPair},
-    poly.unitTail w → poly.unitTail (elim.vecScale c w)
-  | [], _ => trivial
-  | _ :: _, h =>
-    ⟨BPair.oneValue_trans
-      (BPair.mul_congr (BPair.oneValue_refl c) h.1)
-      (BPair.mul_unit c), vecScale_nullVec c h.2⟩
-
-/-- Two unit families' entrywise sum reads the unit family. -/
-private theorem vecAdd_null : ∀ {u v : List BPair},
-    poly.unitTail u → poly.unitTail v →
-    poly.unitTail (elim.vecAdd u v)
-  | [], _, _, _ => trivial
-  | _ :: _, [], _, _ => trivial
-  | _ :: _, _ :: _, hu, hv =>
-    ⟨BPair.oneValue_trans (BPair.add_congr hu.1 hv.1)
-      (BPair.add_unit BPair.unit), vecAdd_null hu.2 hv.2⟩
-
 /-- A combination over unit-familied pair rows reads the unit
 family. -/
 private theorem comboNull_flatPair (n : Nat) (p q : Nat → List BPair)
@@ -8324,11 +8149,11 @@ private theorem comboNull_flatPair (n : Nat) (p q : Nat → List BPair)
   | [], _ => poly.unitTail_replicate n
   | _ :: _, [] => poly.unitTail_replicate n
   | [c], a :: _ =>
-    vecAdd_null (vecScale_nullVec c (hp a))
+    elim.unitTail_vecAdd_of (elim.unitTail_vecScale c _ (hp a))
       (poly.unitTail_replicate n)
   | c :: d :: t, a :: l =>
-    vecAdd_null (vecScale_nullVec c (hp a))
-      (vecAdd_null (vecScale_nullVec d (hq a))
+    elim.unitTail_vecAdd_of (elim.unitTail_vecScale c _ (hp a))
+      (elim.unitTail_vecAdd_of (elim.unitTail_vecScale d _ (hq a))
         (comboNull_flatPair n p q hp hq t l))
 
 /-- The pair base reads the root block whole: the coefficient rows
@@ -8417,7 +8242,7 @@ theorem rootBlock_span (m : Nat) (v : List BPair)
         (elim.matVec_congr _ _ _ (poly.oneValue_symm hone)) ?_
       refine poly.oneValue_unitTail
         (matVec_scaleArg c₀ _ v) ?_
-      exact vecScale_nullVec c₀ hk
+      exact elim.unitTail_vecScale c₀ _ hk
     have hcombN : poly.unitTail
         (elim.combo (2 * m + 1) ds ((pairBase m).map
           (fun r => matVec (polyEvalM (deck.pSum m)
@@ -8700,8 +8525,8 @@ theorem word_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
   refine matOne_trans
     (seg_read n m t s hn ht hst hts hcyc m 0 (Nat.zero_add m)) ?_
   exact msum_congr n
-    (fun b => matPow (permMatAt n t) n (0 + b))
-    (matPow (permMatAt n t) n)
+    (fun b => inertia.matPow (permMatAt n t) n (0 + b))
+    (inertia.matPow (permMatAt n t) n)
     (fun k => matPow_shape n (permMatAt n t) hTl (0 + k))
     (fun k => matPow_shape n (permMatAt n t) hTl k)
     (fun k => by rw [Nat.zero_add k]; exact matOne_refl _)
@@ -8736,7 +8561,7 @@ theorem annih_of (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
     rw [permMatAt_congr n (fun l => s (t l)) (fun l => l) hst]
     exact permMatAt_id n
   have hcycM : matOneValue
-      (matPow (permMatAt n t) n (2 * m + 1)) (inertia.idMat n) :=
+      (inertia.matPow (permMatAt n t) n (2 * m + 1)) (inertia.idMat n) :=
     matPow_wrap n (2 * m) t hn ht hcyc 0
   have hfix : fixedWordRead (permMatAt n t) n m :=
     fixedWord_of n m (permMatAt n t) hTr hTl hn hcycM horth
@@ -8770,48 +8595,48 @@ theorem annih_of (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
       = n :=
     (inertia.length_scaleB (BPair.ofNat 2) _).trans hP.2
   have f1 : matOneValue
-      (matMul (matPow (permMatAt n t) n m)
+      (matMul (inertia.matPow (permMatAt n t) n m)
         (matMul (chordOp (permMatAt n t))
           (polyEvalM (deck.pSum m) (chordOp (permMatAt n t)) n)))
-      (matMul (matPow (permMatAt n t) n m)
+      (matMul (inertia.matPow (permMatAt n t) n m)
         (inertia.matScaleB (BPair.ofNat 2)
           (polyEvalM (deck.pSum m) (chordOp (permMatAt n t)) n))) := by
     refine matOne_trans
-      (matOne_symm (matMul_assoc (matPow (permMatAt n t) n m)
+      (matOne_symm (matMul_assoc (inertia.matPow (permMatAt n t) n m)
         (chordOp (permMatAt n t))
         (polyEvalM (deck.pSum m) (chordOp (permMatAt n t)) n)
         hsm.1 hSr hP.1 hSl hP.2 hn hn)) ?_
     refine matOne_trans
       (matMul_congrL
-        (matMul (matPow (permMatAt n t) n m) (chordOp (permMatAt n t)))
-        (matMul (chordOp (permMatAt n t)) (matPow (permMatAt n t) n m))
+        (matMul (inertia.matPow (permMatAt n t) n m) (chordOp (permMatAt n t)))
+        (matMul (chordOp (permMatAt n t)) (inertia.matPow (permMatAt n t) n m))
         (polyEvalM (deck.pSum m) (chordOp (permMatAt n t)) n)
         (matOne_symm
           (chordOp_pow_comm n (2 * m) t s hn ht hst hts hcyc m))) ?_
     refine matOne_trans
       (matMul_assoc (chordOp (permMatAt n t))
-        (matPow (permMatAt n t) n m)
+        (inertia.matPow (permMatAt n t) n m)
         (polyEvalM (deck.pSum m) (chordOp (permMatAt n t)) n)
         hSr hsm.1 hP.1 hsm.2 hP.2 hn hn) ?_
     refine matOne_trans hSX ?_
     exact matOne_symm (inertia.matMul_scaleR (BPair.ofNat 2) n
-      (matPow (permMatAt n t) n m)
+      (inertia.matPow (permMatAt n t) n m)
       (polyEvalM (deck.pSum m) (chordOp (permMatAt n t)) n) hP.1)
   have hW := length_permMatAt n (iterAt s m)
   have hWr := rowsLen_permMatAt n (iterAt s m)
   have hclear : ∀ Y : Mat, rowsLen n Y → Y.length = n →
       matOneValue
         (matMul (permMatAt n (iterAt s m))
-          (matMul (matPow (permMatAt n t) n m) Y)) Y := by
+          (matMul (inertia.matPow (permMatAt n t) n m) Y)) Y := by
     intro Y hYr hYl
     refine matOne_trans
       (matOne_symm (matMul_assoc (permMatAt n (iterAt s m))
-        (matPow (permMatAt n t) n m) Y hWr hsm.1 hYr hsm.2 hYl hn hn))
+        (inertia.matPow (permMatAt n t) n m) Y hWr hsm.1 hYr hsm.2 hYl hn hn))
       ?_
     refine matOne_trans
       (matMul_congrL
         (matMul (permMatAt n (iterAt s m))
-          (matPow (permMatAt n t) n m))
+          (inertia.matPow (permMatAt n t) n m))
         (inertia.idMat n) Y
         (clearW_pow n t s hn ht hst m)) ?_
     exact inertia.idMat_matMul n Y hYr hYl hn
@@ -8821,20 +8646,20 @@ theorem annih_of (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
     hSP hSPl)) ?_
   refine matOne_trans
     (matMul_congrR (n := n) (k := n) (permMatAt n (iterAt s m))
-      (matMul (matPow (permMatAt n t) n m)
+      (matMul (inertia.matPow (permMatAt n t) n m)
         (matMul (chordOp (permMatAt n t))
           (polyEvalM (deck.pSum m) (chordOp (permMatAt n t)) n)))
-      (matMul (matPow (permMatAt n t) n m)
+      (matMul (inertia.matPow (permMatAt n t) n m)
         (inertia.matScaleB (BPair.ofNat 2)
           (polyEvalM (deck.pSum m) (chordOp (permMatAt n t)) n)))
       (rowsLen_cast (length_transposeM _ hSP
         (by rw [hSPl]; exact hn))
-        (rowsLen_matMul (matPow (permMatAt n t) n m)
+        (rowsLen_matMul (inertia.matPow (permMatAt n t) n m)
           (matMul (chordOp (permMatAt n t))
             (polyEvalM (deck.pSum m) (chordOp (permMatAt n t)) n))))
       (rowsLen_cast (length_transposeM _ h2P
         (by rw [h2Pl]; exact hn))
-        (rowsLen_matMul (matPow (permMatAt n t) n m)
+        (rowsLen_matMul (inertia.matPow (permMatAt n t) n m)
           (inertia.matScaleB (BPair.ofNat 2)
             (polyEvalM (deck.pSum m) (chordOp (permMatAt n t)) n))))
       ((length_matMul _ _).trans hsm.2)

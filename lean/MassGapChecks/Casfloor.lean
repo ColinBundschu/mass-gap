@@ -26,7 +26,6 @@ exactly, a wider unit-class shape above it, and the class, the
 occupancy, the reduction and the width each forged in turn
 against the conclusion.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground gentable sertables casfloor

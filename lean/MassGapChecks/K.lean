@@ -22,7 +22,6 @@ the module: the cut at the doubled scale reads the base count,
 decided at the scaled certificate and routed through
 `thm:unitschain`'s descent both ways, the forged scaled block
 refusing the stated split. -/
-set_option maxRecDepth 1000000
 set_option maxHeartbeats 16000000
 
 open ground lattice fusion elim inertia K

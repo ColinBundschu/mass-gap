@@ -73,7 +73,6 @@ at a two-by-three rectangle, and the entrywise binder at one
 doubled entry.
 -/
 
-set_option maxRecDepth 8192
 
 open ground poly elim
 
@@ -2305,7 +2304,7 @@ example : elim.kernelDim 2 [[BPair.ofNat 1, BPair.unit]]
   elim.kernelDim_rowJoin 2 1 _ _ (by decide +kernel) (by decide +kernel) rfl
     (fun v w hv _ hker => by
       refine ⟨BPair.oneValue_trans
-        (elim.dotN_dotP [BPair.ofNat 1, BPair.unit] v) ?_, trivial⟩
+        (elim.dotN_read [BPair.ofNat 1, BPair.unit] v) ?_, trivial⟩
       refine BPair.oneValue_trans
         (BPair.oneValue_symm (BPair.add_unit _)) ?_
       refine BPair.oneValue_trans
@@ -2315,7 +2314,7 @@ example : elim.kernelDim 2 [[BPair.ofNat 1, BPair.unit]]
         (BPair.oneValue_symm (elim.dotP_append
           [BPair.ofNat 1, BPair.unit] v [BPair.unit] w hv.symm))
         (BPair.oneValue_trans
-          (BPair.oneValue_symm (elim.dotN_dotP
+          (BPair.oneValue_symm (elim.dotN_read
             ([BPair.ofNat 1, BPair.unit] ++ [BPair.unit]) (v ++ w)))
           hker.1))
 
@@ -3325,3 +3324,22 @@ example : ((List.range 2).all (fun a => (List.range 2).all (fun b =>
   decide +kernel
 example : ¬ poly.oneValue (elim.minorO poly.polyOps poly.pnorm id mSq)
     (elim.minorO poly.polyOps poly.pnorm id mRag) := by decide +kernel
+
+/-! The dot polarization's constant, pinned tight: at the crossed
+pair the display reads equality, and the widened weight refuses. -/
+
+example : (((⟨3, 1⟩ : BPair) * (⟨2, 1⟩ : BPair))
+      * dotN [(⟨2, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)]).scale 2
+    ≤ ((⟨3, 1⟩ : BPair) * (⟨3, 1⟩ : BPair))
+        * dotN [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]
+      + ((⟨2, 1⟩ : BPair) * (⟨2, 1⟩ : BPair))
+        * dotN [(⟨3, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)] := by
+  decide +kernel
+
+example : ¬ ((((⟨3, 1⟩ : BPair) * (⟨2, 1⟩ : BPair))
+      * dotN [(⟨2, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)]).scale 3
+    ≤ ((⟨3, 1⟩ : BPair) * (⟨3, 1⟩ : BPair))
+        * dotN [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]
+      + ((⟨2, 1⟩ : BPair) * (⟨2, 1⟩ : BPair))
+        * dotN [(⟨3, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)]) := by
+  decide +kernel

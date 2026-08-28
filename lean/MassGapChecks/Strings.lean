@@ -91,7 +91,6 @@ example : stringCount 0 2 (walk 0 2 (blockSpan [1, 1, 0]))
     = occupancyAt (blockSpan [1, 1, 0]) [2, 1, 0] := by
   rw [strings.walk110_pin, blockcount.span110_pin]; decide +kernel
 
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 /-! The semantic tier's theorem instances at the same block: every

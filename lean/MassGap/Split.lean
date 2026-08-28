@@ -162,24 +162,6 @@ display over the located root list. -/
 def rootsAtKernel (roots : List (BPair × Pos)) : Nat :=
   roots.countP (fun r => decide (r.1.oneValue BPair.unit))
 
-/-- A first-factor comparison keeps under a common second factor. -/
-private theorem posLeMul {a b : Pos} (c : Pos) (h : a ≤ b) :
-    a * c ≤ b * c :=
-  match h with
-  | Or.inl e => Or.inl (congrArg (· * c) e)
-  | Or.inr ⟨g, hg⟩ => Or.inr ⟨g * c, by
-      rw [← ground.right_distrib a g c, hg]⟩
-
-/-- The one-member site keeps the ground order. -/
-private theorem ofPosLe {a b : Pos} (h : a ≤ b) :
-    BPair.ofPos a ≤ BPair.ofPos b :=
-  match h with
-  | Or.inl e => Or.inl (BPair.oneValue_of_eq (congrArg BPair.ofPos e))
-  | Or.inr ⟨g, hg⟩ => Or.inr ⟨g, by
-      show a + Pos.one + Pos.one + g = b + Pos.one + Pos.one
-      rw [ground.add_right_comm (a + Pos.one) Pos.one g,
-        ground.add_right_comm a Pos.one g, hg]⟩
-
 /-- The below count is monotone in its level: a level at or below a
 second at the cross-multiplied comparison counts at or below it. -/
 theorem rootsBelow_mono (roots : List (BPair × Pos))
@@ -201,9 +183,9 @@ theorem rootsBelow_mono (roots : List (BPair × Pos))
       ← ground.mul_assoc an ad' r.2,
       ground.mul_assoc an' r.2 ad, ground.mul_comm r.2 ad,
       ← ground.mul_assoc an' ad r.2]
-    exact posLeMul r.2 h
+    exact ground.mul_le_mul_right r.2 h
   have h4 : r.1.scale (ad * ad') < BPair.ofPos (an' * r.2 * ad) :=
-    ground.ltB_trans_le h2 (ofPosLe h3)
+    ground.ltB_trans_le h2 (ground.leB_ofPos h3)
   have h5 : (r.1.scale ad').scale ad
       < (BPair.ofPos (an' * r.2)).scale ad := by
     rw [ground.BPair.scale_scale, ground.mul_comm ad' ad]
@@ -768,7 +750,7 @@ private theorem pcf_trans_key (k w : Nat) (N : PMat) (W : Mat)
         = (ground.getAt ([] : List Poly) (ptranspose N) i).map (cf k) from
       ground.getAt_map ([] : List Poly) ([] : List BPair) _ (ptranspose N) i
         (by rw [hPl]; exact hi)]
-    refine getAt_polyOne _ _ ?_ ?_
+    refine poly.oneValue_of_entries _ _ ?_ ?_
     · rw [ground.length_map, hrow i hi, hlen,
         rowsLen_getAt (transposeM W) i (rowsLen_transposeM W)
           (by rw [hTWl]; exact hi)]
@@ -973,33 +955,6 @@ theorem plin_pdiag (l : List (BPair × Pos × BPair)) :
       = diagM (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)) := by
   rw [plin_pcf, pcf_pdiag, cfmap_lin]
 
-/-- The diagonal side's constant coefficient: the diagonal at the
-scale against the root's first member, memberwise swapped. -/
-theorem pconst_pdiag (l : List (BPair × Pos × BPair)) :
-    pconst (pdiag (l.map (fun r => poly.scaleP r.2.2 (linFac r.1 r.2.1))))
-      = diagM (l.map (fun r => (r.2.2 * r.1).norm.swap)) := by
-  rw [pconst_pcf, pcf_pdiag, cfmap_const]
-
-/-! The capstone's kit: the unit family's pairing, the identity and
-diagonal actions, the memberwise swap's transport, and the clearing's
-cancellation. -/
-
-theorem matVec_idMat (n : Nat) (u : List BPair)
-    (hu : u.length = n) : poly.oneValue (matVec (idMat n) u) u := by
-  have hid : (idMat n).length = n :=
-    ground.length_mapRange _ n
-  refine getAt_polyOne _ _ ?_ ?_
-  · rw [matVec_length, hid, hu]
-  · intro i hi
-    rw [matVec_length, hid] at hi
-    rw [show matVec (idMat n) u = (idMat n).map (fun r => dotN r u) from rfl,
-      ground.getAt_map ([] : List BPair) BPair.unit _ (idMat n) i
-        (by rw [hid]; exact hi),
-      inertia.idMat_row n i hi]
-    refine BPair.oneValue_trans (dotN_read _ u) ?_
-    rw [dotP_comm (idRow n i) u]
-    exact dotP_idRow u n i hu hi
-
 theorem diagM_len (ds : List BPair) : (diagM ds).length = ds.length :=
   elim.diagO_len ground.bpairOps ds
 
@@ -1022,10 +977,10 @@ theorem diagM_shape (ds : List BPair) (n : Nat) (hn : ds.length = n) :
   rw [← hn]
   exact elim.diagO_rows ground.bpairOps ds
 
-private theorem diagM_act (ds : List BPair) (j : Nat) (hj : j < ds.length) :
+private theorem diagM_act (ds : List BPair) (j : Nat) :
     poly.oneValue (matVec (diagM ds) (idRow ds.length j))
       (vecScale (ground.getAt BPair.unit ds j) (idRow ds.length j)) := by
-  refine getAt_polyOne _ _ ?_ ?_
+  refine poly.oneValue_of_entries _ _ ?_ ?_
   · rw [matVec_length, diagM_len, length_vecScale, length_idRow]
   · intro i hi
     rw [matVec_length, diagM_len] at hi
@@ -1037,26 +992,17 @@ private theorem diagM_act (ds : List BPair) (j : Nat) (hj : j < ds.length) :
         = (idRow ds.length j).map
           (fun x => ground.getAt BPair.unit ds j * x) from rfl,
       ground.getAt_map BPair.unit BPair.unit _ (idRow ds.length j) i
-        (by rw [length_idRow]; exact hi),
-      getAt_idRow ds.length j i hi]
-    refine BPair.oneValue_trans (dotN_read _ _) ?_
+        (by rw [length_idRow]; exact hi)]
     refine BPair.oneValue_trans
-      (dotP_oneIndex _ (idRow ds.length j) j
-        (by rw [diagM_rowlen ds i hi, length_idRow])
-        (by rw [length_idRow]; exact hj) ?_) ?_
-    · intro q hq hne
-      rw [length_idRow] at hq
-      rw [getAt_idRow ds.length j q hq, if_neg hne]
+      (elim.diagO_row ds (idRow ds.length j) i hi (length_idRow _ _))
+      ?_
+    rw [getAt_idRow ds.length j i hi]
+    by_cases hij : i = j
+    · rw [if_pos hij, hij]
       exact BPair.oneValue_refl _
-    · rw [getAt_idRow ds.length j j hj, if_pos rfl,
-        diagM_entry ds i j hi hj]
-      by_cases hij : i = j
-      · rw [hij, if_pos rfl, if_pos rfl]
-        exact BPair.oneValue_refl _
-      · rw [if_neg (fun hc : j = i => hij hc.symm),
-          if_neg hij]
-        exact BPair.oneValue_trans (BPair.unit_mul _)
-          (BPair.oneValue_symm (BPair.mul_unit _))
+    · rw [if_neg hij]
+      exact BPair.oneValue_trans (BPair.mul_unit _)
+        (BPair.oneValue_symm (BPair.mul_unit _))
 
 private theorem colRead {o : Nat} (M : Mat) (T Tw : SqMat o) (c : BPair)
     (i j : Nat) (hM : sqAt M o) (hi : i < o)
@@ -1187,7 +1133,7 @@ theorem eigenColumn {o : Nat} (H G : Mat) (T Tw : SqMat o)
       (vecScale ((gj * BPair.ofPos dj).norm) (idRow o j)) := by
     refine poly.oneValue_trans (matVec_matOne _ _ _ hDG) ?_
     have hact := diagM_act (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
-      j (by rw [hDGl]; exact hjo)
+      j
     rw [hDGl, hGval] at hact
     exact hact
   have hXH : poly.oneValue
@@ -1201,14 +1147,13 @@ theorem eigenColumn {o : Nat} (H G : Mat) (T Tw : SqMat o)
           (idRow o j)]
       refine poly.oneValue_trans (matVec_matOne _ _ _ hDH) ?_
       have hact := diagM_act (l.map (fun r => (r.2.2 * r.1).norm.swap)) j
-        (by rw [hDHl]; exact hjo)
       rw [hDHl, hHval] at hact
       exact hact
     have h4 := poly.swapMap_oneValue hsw
     rw [show ∀ u : List BPair, (u.map BPair.swap).map BPair.swap = u from
       poly.neg_neg, ← elim.vecScale_swap] at h4
     exact h4
-  refine getAt_polyOne _ _ ?_ ?_
+  refine poly.oneValue_of_entries _ _ ?_ ?_
   · rw [length_vecScale, length_vecScale, matVec_length, matVec_length,
       hHl, hGl]
   · intro i hi
@@ -1788,6 +1733,885 @@ theorem diag_chiRead {o : Nat} (H G : Mat) (T Tw : SqMat o)
   refine chiRead_of_mapped H G l ?_
   rw [hfoldEq, hmapEq]
   exact withdrawScale _ _ _ _ _ _ hcU hstar hkey
+
+/-! The congruated gap's diagonal at the located roots: the
+certificate's carried unit family has the diagonal Gram at the
+roots' scales, the congruated entry off the diagonal reads the
+sum's unit and on it the root's first member against its scale
+(`diagEntryV`, `diagEntryK` at the squared gap), the two diagonals
+are the entry lists `vDiagL` (the squared gap's at the doubled
+datum), and the form at every
+vector of the order is the diagonal's own square-weighted fold
+(`quadFoldV`, `quadFoldK`) — `lem:split`'s `diagRead` with its
+eigen-column capstone the derivation, `lem:inertia`'s form the
+display. -/
+
+/-- The linear coefficient of a polynomial row read, entry by
+entry. -/
+private theorem plinRow : ∀ r s : List poly.Poly, prowOneValue r s →
+    poly.oneValue (r.map (fun p => ground.getAt BPair.unit p 1))
+      (s.map (fun p => ground.getAt BPair.unit p 1))
+  | [], [], _ => trivial
+  | [], _ :: _, h => h.elim
+  | _ :: _, [], h => h.elim
+  | _ :: r, _ :: s, h => ⟨poly.oneValue_getAt 1 h.1, plinRow r s h.2⟩
+
+/-- The linear coefficient of a polynomial matrix read, row by
+row. -/
+private theorem plinOne : ∀ a b : PMat, pmatOneValue a b →
+    matOneValue (plin a) (plin b)
+  | [], [], _ => trivial
+  | [], _ :: _, h => h.elim
+  | _ :: _, [], h => h.elim
+  | _ :: a, _ :: b, h => ⟨plinRow _ _ h.1, plinOne a b h.2⟩
+
+private theorem diagAct (ds c : List BPair) (hc : c.length = ds.length) :
+    poly.oneValue (matVec (diagM ds) c)
+      (List.zipWith (· * ·) ds c) := by
+  refine poly.oneValue_of_entries _ _ ?_ ?_
+  · rw [matVec_length, diagM_len,
+      ground.length_zipWith (· * ·) ds c ds.length rfl hc]
+  · intro i hi
+    rw [matVec_length, diagM_len] at hi
+    rw [show matVec (diagM ds) c
+        = (diagM ds).map (fun r => dotN r c) from rfl,
+      ground.getAt_map ([] : List BPair) BPair.unit _ (diagM ds) i
+        (by rw [diagM_len]; exact hi),
+      ground.getAt_zipWith BPair.unit BPair.unit BPair.unit (· * ·)
+        ds c i hi (by rw [hc]; exact hi)]
+    refine BPair.oneValue_trans (dotN_read _ c) ?_
+    rw [dotP_comm (ground.getAt ([] : List BPair) (diagM ds) i) c]
+    refine BPair.oneValue_trans
+      (dotP_oneIndex c (ground.getAt ([] : List BPair) (diagM ds) i) i
+        (by rw [hc, diagM_rowlen ds i hi])
+        (by rw [diagM_rowlen ds i hi]; exact hi) ?_) ?_
+    · intro j hj hne
+      rw [diagM_rowlen ds i hi] at hj
+      rw [diagM_entry ds i j hi hj, if_neg hne]
+      exact BPair.oneValue_refl _
+    · rw [diagM_entry ds i i hi hi, if_pos rfl]
+      exact BPair.oneValue_of_eq (BPair.mul_comm _ _)
+
+private theorem dotP_dmul : ∀ ds c c' : List BPair,
+    (dotP c (List.zipWith (· * ·) ds c')).oneValue
+      (dotP ds (List.zipWith (· * ·) c c'))
+  | [], c, _ => by
+    match c with
+    | [] => exact BPair.oneValue_refl _
+    | _ :: _ => exact BPair.oneValue_refl _
+  | _ :: _, [], _ => BPair.oneValue_refl _
+  | _ :: _, _ :: _, [] => BPair.oneValue_refl _
+  | d :: ds, x :: c, x' :: c' => by
+    show (x * (d * x') + dotP c (List.zipWith (· * ·) ds c')).oneValue
+      (d * (x * x') + dotP ds (List.zipWith (· * ·) c c'))
+    exact BPair.add_congr
+      (BPair.oneValue_of_eq (BPair.mul_left_comm x d x'))
+      (dotP_dmul ds c c')
+
+private theorem entryOf (M : Mat) (n i j : Nat) (hMl : M.length = n)
+    (hMr : rowsLen n M) (hi : i < n) (hj : j < n) :
+    (dotP (elim.idRow n i) (matVec M (elim.idRow n j))).oneValue
+      (ground.getAt BPair.unit (ground.getAt ([] : List BPair) M i) j) := by
+  have hlen : (matVec M (elim.idRow n j)).length = n := by
+    rw [matVec_length, hMl]
+  rw [dotP_comm (elim.idRow n i) (matVec M (elim.idRow n j))]
+  refine BPair.oneValue_trans (dotP_idRow _ n i hlen hi) ?_
+  rw [show matVec M (elim.idRow n j)
+      = M.map (fun r => dotN r (elim.idRow n j)) from rfl,
+    ground.getAt_map ([] : List BPair) BPair.unit _ M i
+      (by rw [hMl]; exact hi)]
+  refine BPair.oneValue_trans (dotN_read _ _) ?_
+  exact dotP_idRow _ n j
+    (rowsLen_getAt M i hMr (by rw [hMl]; exact hi)) hj
+
+private theorem congrShapeL (M T : Mat) (n : Nat)
+    (hTl : T.length = n) (hTr : rowsLen n T) :
+    (matMul (transposeM T) (matMul M T)).length = n := by
+  rw [show (matMul (transposeM T) (matMul M T)).length
+      = (transposeM T).length from ground.length_map _ _]
+  exact transposeLen T hTr hTl
+
+private theorem congrShapeR (M T : Mat) (n : Nat) (hMl : M.length = n)
+    (hTl : T.length = n) (hTr : rowsLen n T) :
+    rowsLen n (matMul (transposeM T) (matMul M T)) := by
+  have hMTl : (matMul M T).length = n := by
+    rw [show (matMul M T).length = M.length from ground.length_map _ M]
+    exact hMl
+  have hMTr : rowsLen n (matMul M T) :=
+    rowsLen_cast (transposeLen T hTr hTl) (rowsLen_matMul M T)
+  exact rowsLen_cast (transposeLen (matMul M T) hMTr hMTl)
+    (rowsLen_matMul (transposeM T) (matMul M T))
+
+/-- A square datum whose off-diagonal unit-family pairings vanish is
+the diagonal at its own diagonal entries. -/
+private theorem diagOfEntries (A : Mat) (n : Nat) (hAl : A.length = n)
+    (hAr : rowsLen n A)
+    (hoff : ∀ i j, i < n → j < n → ¬ i = j →
+      (dotP (elim.idRow n i) (matVec A (elim.idRow n j))).oneValue
+        BPair.unit) :
+    matOneValue A (diagM ((List.range n).map
+      (fun j => dotP (elim.idRow n j) (matVec A (elim.idRow n j))))) := by
+  have hdl : ((List.range n).map
+      (fun j => dotP (elim.idRow n j) (matVec A (elim.idRow n j)))).length
+      = n := ground.length_mapRange _ n
+  refine matOne_of_entries A _ n hAl hAr
+    (by rw [diagM_len, hdl]) (diagM_shape _ n hdl) ?_
+  intro i j hi hj
+  rw [diagM_entry _ i j (by rw [hdl]; exact hi) (by rw [hdl]; exact hj)]
+  by_cases hij : j = i
+  · subst hij
+    rw [if_pos rfl, ground.getAt_map (0 : Nat) BPair.unit _ (List.range n) j
+      (by rw [ground.length_range]; exact hi), ground.getAt_range n j hi]
+    exact BPair.oneValue_symm (entryOf A n j j hAl hAr hi hi)
+  · rw [if_neg hij]
+    refine BPair.oneValue_symm (BPair.oneValue_trans
+      (BPair.oneValue_symm (hoff i j hi hj (fun he => ?_)))
+      (entryOf A n i j hAl hAr hi hj))
+    exact hij he.symm
+
+private theorem pdiag_len (ds : List poly.Poly) :
+    (pdiag ds).length = ds.length :=
+  ground.length_mapRange _ _
+
+/-- The located root list's own order, the certificate's shape. -/
+theorem rootLen {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) : l.length = n := by
+  obtain ⟨_, _, ⟨_, _, _⟩, hcong, _⟩ := hd
+  have h1 := ground.matched_length hcong
+  rw [show (congrZ T.val (zMat Et (idMat n))).length
+      = (transposeM T.val).length from ground.length_map _ _,
+    transposeLen T.val (rowsLen_of_sqAt T.shape) (SqMat.rows T),
+    pdiag_len, ground.length_map] at h1
+  exact h1.symm
+
+/-- Every located root's scale sits strictly above the sum's
+unit. -/
+theorem scalePos {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) (j : Nat) (hj : j < l.length)
+    (nj gj : BPair) (dj : Pos)
+    (hroot : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j
+      = (nj, dj, gj)) :
+    BPair.unit < gj := by
+  obtain ⟨_, _, ⟨_, _, _⟩, _, hall⟩ := hd
+  have h := ground.all_getAt (BPair.unit, Pos.one, BPair.unit) l hall j hj
+  rw [hroot] at h
+  exact of_decide_eq_true h
+
+private theorem eigenRead {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) (j : Nat) (hj : j < l.length) :
+    poly.oneValue
+      (vecScale (BPair.ofPos
+          (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.1)
+        (matVec Et (matVec T.val (elim.idRow n j))))
+      (vecScale (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).1
+        (matVec T.val (elim.idRow n j))) := by
+  have hE := eigenColumn Et (idMat n) T Tw l j
+    (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).1
+    (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.2
+    (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.1
+    hd hj rfl
+  refine poly.oneValue_trans hE (vecScale_oneValue _ _ _ ?_)
+  exact matVec_idMat n _ (by rw [matVec_length]; exact SqMat.rows T)
+
+/-- The congruated unit gram is the diagonal of the scales against
+the roots' clearings. -/
+theorem gramMat {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) :
+    matOneValue (matMul (transposeM T.val) (matMul (idMat n) T.val))
+      (diagM (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))) := by
+  have h1 := plinOne _ _ hd.2.2.2.1
+  rw [plin_pdiag l] at h1
+  exact matOne_trans
+    (matOne_symm (plin_congrZ Et (idMat n) T hd.1 hd.2.1)) h1
+
+private theorem gramRead {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) (i j : Nat)
+    (hi : i < n) (hj : j < n) :
+    (dotP (matVec T.val (elim.idRow n i))
+        (matVec T.val (elim.idRow n j))).oneValue
+      (ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+        (diagM (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))) i)
+        j) := by
+  have hEt : sqAt Et n := hd.1
+  have hI : sqAt (idMat n) n := hd.2.1
+  have hTl : T.val.length = n := SqMat.rows T
+  have hTr : rowsLen n T.val := rowsLen_of_sqAt T.shape
+  have hIl : (idMat n).length = n := sqAt_len hI
+  have hIr : rowsLen n (idMat n) := rowsLen_of_sqAt hI
+  have hG : matOneValue
+      (matMul (transposeM T.val) (matMul (idMat n) T.val))
+      (diagM (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))) :=
+    gramMat Et T Tw l hd
+  refine BPair.oneValue_trans ?_
+    (poly.oneValue_getAt j (matOne_entries _ _ hG i (by
+      rw [show (matMul (transposeM T.val) (matMul (idMat n) T.val)).length
+          = (transposeM T.val).length from ground.length_map _ _,
+        transposeLen T.val hTr hTl]
+      exact hi)))
+  refine BPair.oneValue_trans ?_
+    (entryOf (matMul (transposeM T.val) (matMul (idMat n) T.val)) n i j
+      (congrShapeL (idMat n) T.val n hTl hTr)
+      (congrShapeR (idMat n) T.val n hIl hTl hTr) hi hj)
+  refine BPair.oneValue_trans ?_
+    (inertia.congrPair (idMat n) T.val n n hIl hIr hTl hTr _ _
+      (length_idRow n i) (length_idRow n j))
+  refine dotP_oneValue_right _ _ _ (poly.oneValue_symm ?_)
+  exact matVec_idMat n _ (by rw [matVec_length, hTl])
+
+/-- The eigen column against a vector: the root's two members clear
+the gap's own pairing at the carried column. -/
+theorem pairEigen {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) (j : Nat) (hjl : j < l.length)
+    (nj gj : BPair) (dj : Pos)
+    (hroot : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j
+      = (nj, dj, gj)) (w : List BPair) :
+    (BPair.ofPos dj
+        * dotP w (matVec Et (matVec T.val (elim.idRow n j)))).oneValue
+      (nj * dotP w (matVec T.val (elim.idRow n j))) := by
+  have h := eigenRead Et T Tw l hd j hjl
+  rw [hroot] at h
+  refine BPair.oneValue_trans
+    (BPair.oneValue_symm (dotP_vecScale_right w _ _)) ?_
+  refine BPair.oneValue_trans (dotP_oneValue_right w _ _ h) ?_
+  exact dotP_vecScale_right w _ _
+
+theorem gramOff {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) (i j : Nat)
+    (hi : i < n) (hj : j < n) (hne : ¬ i = j) :
+    (dotP (matVec T.val (elim.idRow n i))
+        (matVec T.val (elim.idRow n j))).oneValue BPair.unit := by
+  have hws : (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)).length = n := by
+    rw [ground.length_map]; exact rootLen Et T Tw l hd
+  have hg := gramRead Et T Tw l hd i j hi hj
+  rw [diagM_entry _ i j (by rw [hws]; exact hi) (by rw [hws]; exact hj),
+    if_neg (fun he : j = i => hne he.symm)] at hg
+  exact hg
+
+/-- The carried unit family's Gram on its diagonal: the column's own
+pairing is the root's scale against its clearing. -/
+theorem gramDiag {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) (j : Nat) (hj : j < n)
+    (nj gj : BPair) (dj : Pos)
+    (hroot : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j
+      = (nj, dj, gj)) :
+    (dotP (matVec T.val (elim.idRow n j))
+        (matVec T.val (elim.idRow n j))).oneValue (gj * BPair.ofPos dj) := by
+  have hlo : l.length = n := rootLen Et T Tw l hd
+  have hws : (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)).length = n := by
+    rw [ground.length_map]; exact hlo
+  have hg := gramRead Et T Tw l hd j j hj hj
+  rw [diagM_entry _ j j (by rw [hws]; exact hj) (by rw [hws]; exact hj),
+    if_pos rfl,
+    ground.getAt_map (BPair.unit, Pos.one, BPair.unit) BPair.unit _ l j
+      (by rw [hlo]; exact hj), hroot] at hg
+  exact BPair.oneValue_trans hg (BPair.norm_oneValue _)
+
+/-- The gap's congruated entry is the two carried columns' own
+pairing. -/
+private theorem vPair {n : Nat} (Et : Mat) (T : SqMat n) (hEt : sqAt Et n)
+    (i j : Nat) :
+    (dotP (elim.idRow n i)
+        (matVec (matMul (transposeM T.val) (matMul Et T.val))
+          (elim.idRow n j))).oneValue
+      (dotP (matVec T.val (elim.idRow n i))
+        (matVec Et (matVec T.val (elim.idRow n j)))) :=
+  BPair.oneValue_symm
+    (inertia.congrPair Et T.val n n (sqAt_len hEt) (rowsLen_of_sqAt hEt) (SqMat.rows T)
+      (rowsLen_of_sqAt T.shape) _ _ (length_idRow n i) (length_idRow n j))
+
+/-- The congruated gap's diagonal, the entry list at the unit
+family's columns. -/
+def vDiagL {n : Nat} (Et : Mat) (T : SqMat n) : List BPair :=
+  (List.range n).map (fun j => dotP (elim.idRow n j)
+    (matVec (matMul (transposeM T.val) (matMul Et T.val)) (elim.idRow n j)))
+
+/-- The gap's diagonal has the order's own length. -/
+theorem vDiagL_len {n : Nat} (Et : Mat) (T : SqMat n) :
+    (vDiagL Et T).length = n :=
+  ground.length_mapRange _ n
+
+/-- The gap's diagonal entry inside the order is the congruated
+entry at that column. -/
+theorem vDiagL_get {n : Nat} (Et : Mat) (T : SqMat n) (j : Nat)
+    (hj : j < n) :
+    ground.getAt BPair.unit (vDiagL Et T) j
+      = dotP (elim.idRow n j)
+        (matVec (matMul (transposeM T.val) (matMul Et T.val))
+          (elim.idRow n j)) := by
+  show ground.getAt BPair.unit ((List.range n).map (fun j => dotP
+      (elim.idRow n j)
+      (matVec (matMul (transposeM T.val) (matMul Et T.val))
+        (elim.idRow n j)))) j = _
+  rw [ground.getAt_map (0 : Nat) BPair.unit _ (List.range n) j
+      (by rw [ground.length_range]; exact hj),
+    ground.getAt_range n j hj]
+
+/-- The certificate's return at the adjugate witness: the
+congruence's image of the witness's reads the vector at the
+determinant's clearing, every vector of the order carried back. -/
+theorem adjAct {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l)
+    (y : List BPair) (hy : y.length = n) :
+    poly.oneValue (matVec T.val (matVec Tw.val y))
+      (vecScale (minor T.val) y) := by
+  have hTTw : matOneValue (matMul T.val Tw.val)
+      (matScaleB (minor T.val) (idMat n)) := hd.2.2.1.2.1
+  have hTl : T.val.length = n := SqMat.rows T
+  have hTr : rowsLen n T.val := rowsLen_of_sqAt T.shape
+  have hTwl : Tw.val.length = n := SqMat.rows Tw
+  have hTwr : rowsLen n Tw.val := rowsLen_of_sqAt Tw.shape
+  exact poly.oneValue_trans
+    (matVec_comp T.val Tw.val y n hTwr hy (rowsLen_cast hTwl.symm hTr))
+    (poly.oneValue_trans (matVec_matOne _ _ y hTTw)
+      (scaleId_act (minor T.val) n y hy))
+
+/-- The congruated diagonal's entry at a key is the congruence
+columns' own pairing there. -/
+theorem vDiagL_read {n : Nat} (M : Mat) (T : SqMat n)
+    (hMl : M.length = n) (hMr : rowsLen n M)
+    (j : Nat) (hj : j < n) :
+    (ground.getAt BPair.unit (vDiagL M T) j).oneValue
+      (dotP (matVec T.val (elim.idRow n j))
+        (matVec M (matVec T.val (elim.idRow n j)))) := by
+  rw [vDiagL_get M T j hj]
+  exact BPair.oneValue_symm
+    (inertia.congrPair M T.val n n hMl hMr (SqMat.rows T)
+      (rowsLen_of_sqAt T.shape) _ _ (length_idRow n j)
+      (length_idRow n j))
+
+/-- The congruated matrix is its own diagonal at entries reading the
+sum's unit off the key, the assembly from the congruated entries. -/
+private theorem diagOfReads {n : Nat} (M : Mat) (T : SqMat n)
+    (hMl : M.length = n)
+    (hent : ∀ i j, i < n → j < n → ¬ i = j →
+      (dotP (elim.idRow n i)
+        (matVec (matMul (transposeM T.val) (matMul M T.val))
+          (elim.idRow n j))).oneValue BPair.unit) :
+    matOneValue (matMul (transposeM T.val) (matMul M T.val))
+      (diagM (vDiagL M T)) := by
+  have hTl : T.val.length = n := SqMat.rows T
+  have hTr : rowsLen n T.val := rowsLen_of_sqAt T.shape
+  exact diagOfEntries _ n (congrShapeL M T.val n hTl hTr)
+    (congrShapeR M T.val n hMl hTl hTr) hent
+
+/-- A cleared column read at distinct keys reads the pairing at the
+sum's unit, the gram's off-diagonal kill at the clearing. -/
+theorem colOffPair {o : Nat} (Et : Mat) (T Tw : SqMat o)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat o) T Tw l)
+    (A : Mat) (i j : Nat) (hi : i < o) (hj : j < o) (hne : ¬ i = j)
+    (cn cd : BPair) (hcd : ¬ cd.oneValue BPair.unit)
+    (hcol : poly.oneValue
+      (elim.vecScale cd
+        (elim.matVec A (elim.matVec T.val (elim.idRow o j))))
+      (elim.vecScale cn (elim.matVec T.val (elim.idRow o j)))) :
+    (dotP (matVec T.val (elim.idRow o i))
+      (matVec A (matVec T.val (elim.idRow o j)))).oneValue
+      BPair.unit := by
+  have hu : (cd * dotP (matVec T.val (elim.idRow o i))
+      (matVec A (matVec T.val (elim.idRow o j)))).oneValue
+      BPair.unit := by
+    refine BPair.oneValue_trans
+      (BPair.oneValue_symm (dotP_vecScale_right _ _ cd)) ?_
+    refine BPair.oneValue_trans
+      (dotP_oneValue_right _ _ _ hcol) ?_
+    refine BPair.oneValue_trans (dotP_vecScale_right _ _ cn) ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl cn)
+        (gramOff Et T Tw l hd i j hi hj hne)) ?_
+    exact BPair.mul_unit _
+  exact ((BPair.mul_unit_iff _ _).mp hu).elim
+    (fun h1 => absurd h1 hcd) id
+
+/-- A cleared column read pins the congruated diagonal's entry at
+the key: the value against the gram scale at the clearing. -/
+theorem colDiagPin {o : Nat} (Et : Mat) (T Tw : SqMat o)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat o) T Tw l)
+    (A : Mat) (hAl : A.length = o) (hAr : rowsLen o A)
+    (j : Nat) (hj : j < o) (nj gj : BPair) (dj : Pos)
+    (hroot : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j
+      = (nj, dj, gj))
+    (cn cd : BPair)
+    (hcol : poly.oneValue
+      (elim.vecScale cd
+        (elim.matVec A (elim.matVec T.val (elim.idRow o j))))
+      (elim.vecScale cn (elim.matVec T.val (elim.idRow o j)))) :
+    (cd * ground.getAt BPair.unit (vDiagL A T) j).oneValue
+      (cn * (gj * BPair.ofPos dj)) := by
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl cd)
+      (vDiagL_read A T hAl hAr j hj)) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_symm (dotP_vecScale_right _ _ cd)) ?_
+  refine BPair.oneValue_trans (dotP_oneValue_right _ _ _ hcol) ?_
+  refine BPair.oneValue_trans (dotP_vecScale_right _ _ cn) ?_
+  exact BPair.mul_congr (BPair.oneValue_refl cn)
+    (gramDiag Et T Tw l hd j hj nj gj dj hroot)
+
+/-- The gap's congruated entry off the key reads the sum's unit:
+the column pairing killed at the gram through the root's own
+clearing. -/
+private theorem vOff {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) (i j : Nat)
+    (hi : i < n) (hj : j < n) (hne : ¬ i = j) :
+    (dotP (elim.idRow n i)
+        (matVec (matMul (transposeM T.val) (matMul Et T.val))
+          (elim.idRow n j))).oneValue BPair.unit := by
+  have hjl : j < l.length := by rw [rootLen Et T Tw l hd]; exact hj
+  have hvl : (matVec T.val (elim.idRow n j)).length = n := by
+    rw [matVec_length, SqMat.rows T]
+  refine BPair.oneValue_trans (vPair Et T hd.1 i j) ?_
+  exact colOffPair Et T Tw l hd Et i j hi hj hne _ _
+    (BPair.ofPos_off
+      (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.1)
+    (poly.oneValue_trans
+      (eigenColumn Et (idMat n) T Tw l j _ _ _ hd hjl rfl)
+      (vecScale_oneValue _ _ _ (inertia.matVec_idMat n _ hvl)))
+
+/-- The congruated gap's diagonal entry at a root: the root's first
+member against its scale. -/
+theorem diagEntryV {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) (j : Nat) (hj : j < n)
+    (nj gj : BPair) (dj : Pos)
+    (hroot : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j
+      = (nj, dj, gj)) :
+    (dotP (elim.idRow n j)
+        (matVec (matMul (transposeM T.val) (matMul Et T.val))
+          (elim.idRow n j))).oneValue (nj * gj) := by
+  have hjl : j < l.length := by rw [rootLen Et T Tw l hd]; exact hj
+  have hvl : (matVec T.val (elim.idRow n j)).length = n := by
+    rw [matVec_length, SqMat.rows T]
+  rw [← vDiagL_get Et T j hj]
+  refine mulCancel (BPair.ofPos_off dj) ?_
+  refine BPair.oneValue_trans
+    (colDiagPin Et T Tw l hd Et (sqAt_len hd.1)
+      (rowsLen_of_sqAt hd.1) j hj nj gj dj hroot nj (BPair.ofPos dj)
+      (poly.oneValue_trans
+        (eigenColumn Et (idMat n) T Tw l j nj gj dj hd hjl hroot)
+        (vecScale_oneValue _ _ _ (inertia.matVec_idMat n _ hvl)))) ?_
+  refine BPair.oneValue_of_eq ?_
+  rw [← BPair.mul_assoc nj gj (BPair.ofPos dj),
+    BPair.mul_comm (nj * gj) (BPair.ofPos dj)]
+
+/-! The certificate's own symmetry: the congruated site datum reads
+a diagonal at the certificate alone, the diagonal pairing exchanges
+its two vectors, and the adjugate witness carries the exchange back
+at the determinant's square — the pencil's first datum is symmetric
+at every diagonalizing certificate. -/
+
+private theorem dotP_zipSym : ∀ (ds x y : List BPair),
+    (dotP x (List.zipWith (· * ·) ds y)).oneValue
+      (dotP y (List.zipWith (· * ·) ds x))
+  | [], x, y => by
+    rw [show List.zipWith (· * ·) ([] : List BPair) y = [] from rfl,
+      show List.zipWith (· * ·) ([] : List BPair) x = [] from rfl,
+      elim.dotP_nil_right x, elim.dotP_nil_right y]
+    exact BPair.oneValue_refl _
+  | _ :: _, [], y => by
+    rw [show List.zipWith (· * ·) (_ :: _) ([] : List BPair) = []
+      from rfl, elim.dotP_nil_right y]
+    exact BPair.oneValue_refl _
+  | _ :: _, _ :: _, [] => by
+    rw [show List.zipWith (· * ·) (_ :: _) ([] : List BPair) = []
+      from rfl, elim.dotP_nil_right _]
+    exact BPair.oneValue_refl _
+  | d :: ds, x0 :: x, y0 :: y => by
+    show (x0 * (d * y0) + dotP x (List.zipWith (· * ·) ds y)).oneValue
+      (y0 * (d * x0) + dotP y (List.zipWith (· * ·) ds x))
+    refine BPair.add_congr (BPair.oneValue_of_eq ?_) (dotP_zipSym ds x y)
+    rw [BPair.mul_left_comm x0 d y0, BPair.mul_comm x0 y0,
+      ← BPair.mul_left_comm y0 d x0]
+
+/-- The squared gap's congruated entry is the two mapped columns'
+pairing, the datum's own symmetry the exchange. -/
+private theorem kPair {n : Nat} (Et : Mat) (T : SqMat n)
+    (hsym : matOneValue (transposeM Et) Et) (hEt : sqAt Et n) (i j : Nat) :
+    (dotP (elim.idRow n i)
+        (matVec (matMul (transposeM T.val) (matMul (matMul Et Et) T.val))
+          (elim.idRow n j))).oneValue
+      (dotP (matVec Et (matVec T.val (elim.idRow n i)))
+        (matVec Et (matVec T.val (elim.idRow n j)))) := by
+  have hEtl : Et.length = n := sqAt_len hEt
+  have hEtr : rowsLen n Et := rowsLen_of_sqAt hEt
+  have hTl : T.val.length = n := SqMat.rows T
+  have hTr : rowsLen n T.val := rowsLen_of_sqAt T.shape
+  have hEEl : (matMul Et Et).length = n := by
+    rw [show (matMul Et Et).length = Et.length from ground.length_map _ Et]
+    exact hEtl
+  have hEEr : rowsLen n (matMul Et Et) :=
+    rowsLen_cast (transposeLen Et hEtr hEtl) (rowsLen_matMul Et Et)
+  have hvj : (matVec T.val (elim.idRow n j)).length = n := by
+    rw [matVec_length, hTl]
+  refine BPair.oneValue_trans (BPair.oneValue_symm
+    (inertia.congrPair (matMul Et Et) T.val n n hEEl hEEr hTl hTr _ _
+      (length_idRow n i) (length_idRow n j))) ?_
+  refine BPair.oneValue_trans
+    (dotP_oneValue_right _ _ _ (poly.oneValue_symm
+      (matVec_comp Et Et (matVec T.val (elim.idRow n j)) n hEtr hvj
+        (rowsLen_cast hEtl.symm hEtr)))) ?_
+  exact BPair.oneValue_symm
+    (dotP_matVec_sym Et (sqAt_of hEtl hEtr) hsym
+        (matVec T.val (elim.idRow n i))
+      (matVec Et (matVec T.val (elim.idRow n j)))
+      (by rw [matVec_length, hTl]) (by rw [matVec_length, hEtl]))
+
+/-- The bilinear pairing at two vectors reading a common scale of
+two others clears the scale's square: each slot passes its scalar
+out through the site datum's action. -/
+theorem pairScale (A : Mat) (k : BPair) (u v x y : List BPair)
+    (hx : poly.oneValue x (vecScale k u))
+    (hy : poly.oneValue y (vecScale k v)) :
+    (dotP x (matVec A y)).oneValue
+      (k * k * dotP u (matVec A v)) := by
+  refine BPair.oneValue_trans (dotP_oneValue_left _ _ _ hx) ?_
+  refine BPair.oneValue_trans (dotP_oneValue_right _ _ _
+    (matVec_congr A y (vecScale k v) hy)) ?_
+  refine BPair.oneValue_trans (dotP_oneValue_right _ _ _
+    (matVec_vecScale_free A k v)) ?_
+  refine BPair.oneValue_trans (dotP_vecScale_right _ _ _) ?_
+  have hstep : (dotP (vecScale k u) (matVec A v)).oneValue
+      (k * dotP (matVec A v) u) := by
+    rw [dotP_comm (vecScale k u) (matVec A v)]
+    exact dotP_vecScale_right _ _ _
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl k) hstep) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq (BPair.mul_assoc k k _).symm) ?_
+  refine BPair.mul_congr (BPair.oneValue_refl (k * k)) ?_
+  rw [dotP_comm (matVec A v) u]
+  exact BPair.oneValue_refl _
+
+/-- The certificate's symmetry read: the diagonalized site datum is
+symmetric, the congruated diagonal's exchange carried back at the
+adjugate witness against the determinant's square. -/
+theorem sym_of_diagRead {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) :
+    matOneValue (transposeM Et) Et := by
+  have hEt : sqAt Et n := hd.1
+  have hEtl : Et.length = n := sqAt_len hEt
+  have hEtr : rowsLen n Et := rowsLen_of_sqAt hEt
+  have hdet : ¬ (minor T.val).oneValue BPair.unit := hd.2.2.1.1
+  have hTl : T.val.length = n := SqMat.rows T
+  have hTr : rowsLen n T.val := rowsLen_of_sqAt T.shape
+  have hTwl : Tw.val.length = n := SqMat.rows Tw
+  have hVd : matOneValue (matMul (transposeM T.val) (matMul Et T.val))
+      (diagM (vDiagL Et T)) :=
+    diagOfReads Et T hEtl
+      (fun i j hi hj hne => vOff Et T Tw l hd i j hi hj hne)
+  have key : ∀ a b, a < n → b < n →
+      (dotP (matVec T.val (matVec Tw.val (elim.idRow n a)))
+          (matVec Et (matVec T.val (matVec Tw.val (elim.idRow n b))))).oneValue
+        (minor T.val * minor T.val
+          * ground.getAt BPair.unit
+              (ground.getAt ([] : List BPair) Et a) b) := by
+    intro a b ha hb
+    refine BPair.oneValue_trans
+      (pairScale Et (minor T.val) (elim.idRow n a) (elim.idRow n b) _ _
+        (adjAct Et T Tw l hd (elim.idRow n a) (length_idRow n a))
+        (adjAct Et T Tw l hd (elim.idRow n b) (length_idRow n b))) ?_
+    exact BPair.mul_congr (BPair.oneValue_refl _)
+      (entryOf Et n a b hEtl hEtr ha hb)
+  have pairSym : ∀ a b, a < n → b < n →
+      (dotP (matVec T.val (matVec Tw.val (elim.idRow n a)))
+          (matVec Et (matVec T.val (matVec Tw.val (elim.idRow n b))))).oneValue
+        (dotP (matVec T.val (matVec Tw.val (elim.idRow n b)))
+          (matVec Et (matVec T.val (matVec Tw.val (elim.idRow n a))))) := by
+    intro a b _ha _hb
+    have hua : (matVec Tw.val (elim.idRow n a)).length = n := by
+      rw [matVec_length, hTwl]
+    have hub : (matVec Tw.val (elim.idRow n b)).length = n := by
+      rw [matVec_length, hTwl]
+    have hcp := inertia.congrPair Et T.val n n hEtl hEtr hTl hTr
+      (matVec Tw.val (elim.idRow n a)) (matVec Tw.val (elim.idRow n b))
+      hua hub
+    have hcp' := inertia.congrPair Et T.val n n hEtl hEtr hTl hTr
+      (matVec Tw.val (elim.idRow n b)) (matVec Tw.val (elim.idRow n a))
+      hub hua
+    refine BPair.oneValue_trans hcp ?_
+    refine BPair.oneValue_trans ?_ (BPair.oneValue_symm hcp')
+    refine BPair.oneValue_trans (dotP_oneValue_right _ _ _
+      (matVec_matOne _ _ _ hVd)) ?_
+    refine BPair.oneValue_trans ?_
+      (dotP_oneValue_right _ _ _
+        (poly.oneValue_symm (matVec_matOne _ _ _ hVd)))
+    refine BPair.oneValue_trans (dotP_oneValue_right _ _ _
+      (diagAct (vDiagL Et T) _ (by rw [hub, vDiagL_len]))) ?_
+    refine BPair.oneValue_trans ?_
+      (dotP_oneValue_right _ _ _
+        (poly.oneValue_symm
+          (diagAct (vDiagL Et T) _ (by rw [hua, vDiagL_len]))))
+    exact dotP_zipSym (vDiagL Et T) _ _
+  refine matOne_of_entries (transposeM Et) Et n
+    (elim.transposeLen Et hEtr hEtl)
+    (rowsLen_cast hEtl (rowsLen_transposeM Et)) hEtl hEtr ?_
+  intro i j hi hj
+  rw [getAt_transposeM BPair.unit Et hEtr i j hi (by rw [hEtl]; exact hj)]
+  refine ground.mulCancel
+    (ground.offOfUnitLt (ground.sq_pos hdet)) ?_
+  exact BPair.oneValue_trans (BPair.oneValue_symm (key j i hj hi))
+    (BPair.oneValue_trans (pairSym j i hj hi) (key i j hi hj))
+
+private theorem kOff {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) (i j : Nat)
+    (hi : i < n) (hj : j < n) (hne : ¬ i = j) :
+    (dotP (elim.idRow n i)
+        (matVec (matMul (transposeM T.val) (matMul (matMul Et Et) T.val))
+          (elim.idRow n j))).oneValue BPair.unit := by
+  have hsym : matOneValue (transposeM Et) Et :=
+    sym_of_diagRead Et T Tw l hd
+  have hlo : l.length = n := rootLen Et T Tw l hd
+  have hil : i < l.length := by rw [hlo]; exact hi
+  have hjl : j < l.length := by rw [hlo]; exact hj
+  refine BPair.oneValue_trans (kPair Et T hsym hd.1 i j) ?_
+  refine mul_cancel_unit
+    (BPair.ofPos_off (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.1)
+    (mul_cancel_unit
+      (BPair.ofPos_off (ground.getAt (BPair.unit, Pos.one, BPair.unit) l i).2.1) ?_)
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl _)
+      (pairEigen Et T Tw l hd j hjl _ _ _ rfl
+        (matVec Et (matVec T.val (elim.idRow n i))))) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq (BPair.mul_left_comm _ _ _)) ?_
+  refine BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _) ?_)
+    (BPair.mul_unit _)
+  rw [dotP_comm (matVec Et (matVec T.val (elim.idRow n i)))
+    (matVec T.val (elim.idRow n j))]
+  refine BPair.oneValue_trans
+    (pairEigen Et T Tw l hd i hil _ _ _ rfl
+      (matVec T.val (elim.idRow n j))) ?_
+  exact BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl _)
+      (gramOff Et T Tw l hd j i hj hi (fun he => hne he.symm)))
+    (BPair.mul_unit _)
+
+/-- The squared gap's congruated diagonal entry at a root: the
+root's first member squared against its scale, cleared by the
+root's own second member. -/
+theorem diagEntryK {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) (j : Nat) (hj : j < n)
+    (nj gj : BPair) (dj : Pos)
+    (hroot : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j
+      = (nj, dj, gj)) :
+    (BPair.ofPos dj * dotP (elim.idRow n j)
+        (matVec (matMul (transposeM T.val) (matMul (matMul Et Et) T.val))
+          (elim.idRow n j))).oneValue (nj * (nj * gj)) := by
+  have hsym : matOneValue (transposeM Et) Et :=
+    sym_of_diagRead Et T Tw l hd
+  have hjl : j < l.length := by rw [rootLen Et T Tw l hd]; exact hj
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl _) (kPair Et T hsym hd.1 j j)) ?_
+  refine mulCancel (BPair.ofPos_off dj) ?_
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl _)
+      (pairEigen Et T Tw l hd j hjl nj gj dj hroot
+        (matVec Et (matVec T.val (elim.idRow n j))))) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq (BPair.mul_left_comm _ _ _)) ?_
+  have hstep : (BPair.ofPos dj
+      * dotP (matVec Et (matVec T.val (elim.idRow n j)))
+        (matVec T.val (elim.idRow n j))).oneValue
+      (nj * (gj * BPair.ofPos dj)) := by
+    rw [dotP_comm (matVec Et (matVec T.val (elim.idRow n j)))
+      (matVec T.val (elim.idRow n j))]
+    exact BPair.oneValue_trans
+      (pairEigen Et T Tw l hd j hjl nj gj dj hroot
+        (matVec T.val (elim.idRow n j)))
+      (BPair.mul_congr (BPair.oneValue_refl nj)
+        (gramDiag Et T Tw l hd j hj nj gj dj hroot))
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl nj) hstep) ?_
+  refine BPair.oneValue_of_eq ?_
+  rw [← BPair.mul_assoc nj gj (BPair.ofPos dj),
+    BPair.mul_comm (nj * gj) (BPair.ofPos dj),
+    BPair.mul_left_comm nj (BPair.ofPos dj) (nj * gj)]
+
+/-- The form at a carried column reads the root's first member
+against its scale (`lem:inertia`'s form at `lem:split`'s eigen
+column). -/
+theorem eigenQuadV {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) (j : Nat) (hj : j < n)
+    (nj gj : BPair) (dj : Pos)
+    (hroot : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j
+      = (nj, dj, gj)) :
+    (inertia.quadForm Et (matVec T.val (elim.idRow n j))).oneValue (nj * gj) := by
+  have hEt : sqAt Et n := hd.1
+  have hEtl : Et.length = n := sqAt_len hEt
+  have hEtr : rowsLen n Et := rowsLen_of_sqAt hEt
+  have hTl : T.val.length = n := SqMat.rows T
+  have hTr : rowsLen n T.val := rowsLen_of_sqAt T.shape
+  exact BPair.oneValue_trans (dotN_read _ _)
+    (BPair.oneValue_trans
+      (inertia.congrPair Et T.val n n hEtl hEtr hTl hTr _ _
+        (length_idRow n j) (length_idRow n j))
+      (diagEntryV Et T Tw l hd j hj nj gj dj hroot))
+
+/-- The squared gap's form at a carried column reads the root's
+first member squared against its scale, cleared by the root's own
+second member. -/
+theorem eigenQuadK {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l) (j : Nat) (hj : j < n)
+    (nj gj : BPair) (dj : Pos)
+    (hroot : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j
+      = (nj, dj, gj)) :
+    (BPair.ofPos dj * inertia.quadForm (matMul Et Et)
+        (matVec T.val (elim.idRow n j))).oneValue (nj * (nj * gj)) := by
+  have hsym : matOneValue (transposeM Et) Et :=
+    sym_of_diagRead Et T Tw l hd
+  have hEt : sqAt Et n := hd.1
+  have hEtl : Et.length = n := sqAt_len hEt
+  have hEtr : rowsLen n Et := rowsLen_of_sqAt hEt
+  have hEEl : (matMul Et Et).length = n := by
+    rw [show (matMul Et Et).length = Et.length from ground.length_map _ Et]
+    exact hEtl
+  have hEEr : rowsLen n (matMul Et Et) :=
+    rowsLen_cast (transposeLen Et hEtr hEtl) (rowsLen_matMul Et Et)
+  have hTl : T.val.length = n := SqMat.rows T
+  have hTr : rowsLen n T.val := rowsLen_of_sqAt T.shape
+  exact BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_trans (dotN_read _ _)
+        (inertia.congrPair (matMul Et Et) T.val n n hEEl hEEr hTl hTr _ _
+          (length_idRow n j) (length_idRow n j))))
+    (diagEntryK Et T Tw l hd j hj nj gj dj hroot)
+
+/-- The congruated pairing's diagonal fold: at a stated diagonal
+identity for the congruated matrix, the pairing of two congruence
+images against the matrix reads the diagonal against the
+coordinates' products, one member per key. -/
+theorem diagFold {n : Nat} (M : Mat) (T : SqMat n) (ds : List BPair)
+    (hMl : M.length = n) (hMr : rowsLen n M) (hds : ds.length = n)
+    (hDiag : matOneValue (matMul (transposeM T.val) (matMul M T.val))
+      (diagM ds))
+    (c c' : List BPair) (hc : c.length = n) (hc' : c'.length = n) :
+    (dotN (matVec T.val c) (matVec M (matVec T.val c'))).oneValue
+      (dotP ds (List.zipWith (· * ·) c c')) := by
+  have hTl : T.val.length = n := SqMat.rows T
+  have hTr : rowsLen n T.val := rowsLen_of_sqAt T.shape
+  refine BPair.oneValue_trans (dotN_read _ _) ?_
+  refine BPair.oneValue_trans
+    (inertia.congrPair M T.val n n hMl hMr hTl hTr c c' hc hc') ?_
+  refine BPair.oneValue_trans
+    (dotP_oneValue_right c _ _ (matVec_matOne _ _ c' hDiag)) ?_
+  refine BPair.oneValue_trans (dotP_oneValue_right c _ _
+    (diagAct _ c' (by rw [hds, hc']))) ?_
+  exact dotP_dmul ds c c'
+
+/-- The congruated matrix is its own diagonal at columns pairing to
+the sum's unit off the key, the assembly from the columns' pairing
+reads. -/
+theorem diagOfPairs {n : Nat} (M : Mat) (T : SqMat n)
+    (hMl : M.length = n) (hMr : rowsLen n M)
+    (hoffp : ∀ i j, i < n → j < n → ¬ i = j →
+      (dotP (matVec T.val (elim.idRow n i))
+        (matVec M (matVec T.val (elim.idRow n j)))).oneValue
+        BPair.unit) :
+    matOneValue (matMul (transposeM T.val) (matMul M T.val))
+      (diagM (vDiagL M T)) := by
+  have hTl : T.val.length = n := SqMat.rows T
+  have hTr : rowsLen n T.val := rowsLen_of_sqAt T.shape
+  refine diagOfReads M T hMl ?_
+  intro i j hi hj hne
+  exact BPair.oneValue_trans
+    (BPair.oneValue_symm
+      (inertia.congrPair M T.val n n hMl hMr hTl hTr _ _
+        (length_idRow n i) (length_idRow n j)))
+    (hoffp i j hi hj hne)
+
+/-- The gap's form at every vector of the order is its congruated
+diagonal's own square-weighted fold. -/
+theorem quadFoldV {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l)
+    (c : List BPair) (hc : c.length = n) :
+    (inertia.quadForm Et (matVec T.val c)).oneValue
+      (dotP (vDiagL Et T) (List.zipWith (· * ·) c c)) := by
+  have hEt : sqAt Et n := hd.1
+  have hEtl : Et.length = n := sqAt_len hEt
+  have hEtr : rowsLen n Et := rowsLen_of_sqAt hEt
+  have hTl : T.val.length = n := SqMat.rows T
+  have hTr : rowsLen n T.val := rowsLen_of_sqAt T.shape
+  have hVd : matOneValue (matMul (transposeM T.val) (matMul Et T.val))
+      (diagM (vDiagL Et T)) :=
+    diagOfReads Et T hEtl
+      (fun i j hi hj hne => vOff Et T Tw l hd i j hi hj hne)
+  exact diagFold Et T (vDiagL Et T) hEtl hEtr (vDiagL_len Et T) hVd
+    c c hc hc
+
+/-- The squared gap's form at every vector of the order is its
+congruated diagonal's own square-weighted fold. -/
+theorem quadFoldK {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l)
+    (c : List BPair) (hc : c.length = n) :
+    (inertia.quadForm (matMul Et Et) (matVec T.val c)).oneValue
+      (dotP (vDiagL (matMul Et Et) T) (List.zipWith (· * ·) c c)) := by
+  have hsym : matOneValue (transposeM Et) Et :=
+    sym_of_diagRead Et T Tw l hd
+  have hEt : sqAt Et n := hd.1
+  have hEtl : Et.length = n := sqAt_len hEt
+  have hEtr : rowsLen n Et := rowsLen_of_sqAt hEt
+  have hTl : T.val.length = n := SqMat.rows T
+  have hTr : rowsLen n T.val := rowsLen_of_sqAt T.shape
+  have hEEl : (matMul Et Et).length = n := by
+    rw [show (matMul Et Et).length = Et.length from ground.length_map _ Et]
+    exact hEtl
+  have hEEr : rowsLen n (matMul Et Et) :=
+    rowsLen_cast (transposeLen Et hEtr hEtl) (rowsLen_matMul Et Et)
+  have hKd : matOneValue
+      (matMul (transposeM T.val) (matMul (matMul Et Et) T.val))
+      (diagM (vDiagL (matMul Et Et) T)) :=
+    diagOfReads (matMul Et Et) T hEEl
+      (fun i j hi hj hne => kOff Et T Tw l hd i j hi hj hne)
+  exact diagFold (matMul Et Et) T (vDiagL (matMul Et Et) T) hEEl hEEr
+    (vDiagL_len (matMul Et Et) T) hKd c c hc hc
+
+/-- The unit gram's form at every vector of the order is its congruated
+diagonal's own square-weighted fold: the congruence carries the gram to
+the diagonal of the scales against the roots' clearings. -/
+theorem quadFoldG {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l)
+    (c : List BPair) (hc : c.length = n) :
+    (dotN (matVec T.val c) (matVec T.val c)).oneValue
+      (dotP (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+        (List.zipWith (· * ·) c c)) := by
+  have hTl : T.val.length = n := SqMat.rows T
+  have hTr : rowsLen n T.val := rowsLen_of_sqAt T.shape
+  have hIl : (idMat n).length = n := sqAt_len hd.2.1
+  have hIr : rowsLen n (idMat n) := rowsLen_of_sqAt hd.2.1
+  have hG := gramMat Et T Tw l hd
+  refine BPair.oneValue_trans (dotN_read _ _) ?_
+  refine BPair.oneValue_trans
+    (dotP_oneValue_right _ _ _
+      (poly.oneValue_symm
+        (matVec_idMat n (matVec T.val c)
+          (by rw [matVec_length]; exact hTl)))) ?_
+  refine BPair.oneValue_trans
+    (inertia.congrPair (idMat n) T.val n n hIl hIr hTl hTr c c hc hc) ?_
+  refine BPair.oneValue_trans
+    (dotP_oneValue_right c _ _ (matVec_matOne _ _ c hG)) ?_
+  refine BPair.oneValue_trans (dotP_oneValue_right c _ _
+    (diagAct _ c
+      (by rw [ground.length_map, rootLen Et T Tw l hd]; exact hc))) ?_
+  exact dotP_dmul _ c c
 
 /-- The resultant's kernel read, the cross pair: `(A, B)` at the
 stated degrees with `A p` the balance partner of `B q`, off the

@@ -132,7 +132,6 @@ index-action band at the side-nine window beside it (`commRead`
 over `permMat fA chIx 9`, with `occFixed` / `contentFixed` /
 `idxFixed` at the translation witness).
 -/
-set_option maxRecDepth 1000000
 set_option maxHeartbeats 16000000
 
 open ground lattice fusion elim carrier fiberdec
@@ -627,7 +626,7 @@ example : ¬ annihRead orbT 5 1 := by decide +kernel
 rung-and-rail transposition is a permutation of order two, its
 third power off the identity, and `fixedWordRead` fails with it. -/
 
-example : ¬ matOneValue (matPow rrM 9 3) (inertia.idMat 9) := by decide +kernel
+example : ¬ matOneValue (inertia.matPow rrM 9 3) (inertia.idMat 9) := by decide +kernel
 example : ¬ fixedWordRead rrM 9 1 := by decide +kernel
 
 example : ¬ matOneValue
@@ -693,10 +692,10 @@ example : transposeM chT3 = permMatAt 9 (chainTranslInv 3) :=
     (fun l hl => (permRead_at (chainRegion 3) (chainTransl 3)
       (chainTranslInv 3) chPerm3 l hl).2.1)
 
-example : matOneValue (matPow chT5 15 5) (permMatAt 15 (iterAt (chainTransl 5) 5)) :=
+example : matOneValue (inertia.matPow chT5 15 5) (permMatAt 15 (iterAt (chainTransl 5) 5)) :=
   permMatAt_pow 15 (chainTransl 5) (by decide +kernel) (by decide +kernel) 5
 
-example : matOneValue (matPow chT5 15 5) (inertia.idMat 15) :=
+example : matOneValue (inertia.matPow chT5 15 5) (inertia.idMat 15) :=
   cycleRead_pow (chainRegion 5) (chainTransl 5) (chainTranslInv 5) 5
     (by decide +kernel) chPerm5 chCyc5
 

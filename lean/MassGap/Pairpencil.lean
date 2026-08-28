@@ -1,5 +1,6 @@
 import MassGap.Pencil
 import MassGap.Inertia
+import MassGap.Fpcap
 /-!
 `thm:pairpencil` — the window pencil as a symmetric pair matrix:
 `E` is diagonal in the label index with the unit line at its head
@@ -31,12 +32,11 @@ def windowDiag {L : Type} (F : Data L) (R : Region) (C : Nat) :
   0 :: pencil.elecDiag F R C
 
 /-- The label-index magnetic matrix at a loop window: over the unit
-with a stated label list, `M[x, y] = N^x_{θ y}`, the interface's
-own count read. -/
+with a stated label list, `M[x, y] = N^x_{θ y}` — the
+multiplication's matrix at the adjoint, `fpcap.fusionMat`'s read
+at the unit-headed index. -/
 def loopMag {L : Type} (F : Data L) (ls : List L) : Mat :=
-  let ix := F.unit :: ls
-  ix.map (fun x => ix.map (fun y =>
-    BPair.ofNat (F.count F.theta y x)))
+  fpcap.fusionMat F F.theta (F.unit :: ls)
 
 /-- The symmetry read: the matrix one value with its transpose. -/
 def symmRead (m : Mat) : Prop := matOneValue m (transposeM m)

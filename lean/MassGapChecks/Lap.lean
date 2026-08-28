@@ -9,7 +9,6 @@ kernel point at the presentation `1 = [1 : d_f] tr(U U†)`;
 `d_f Δ_U s + 2s = d_f (d_f + 1) s` at `s = (tr U)² + tr U²` with
 `d_f Δ_U w + (d_f + 2) w = d_f² w` at `w = ⟨(tr U)² : tr U²⟩` —
 all cleared polynomial identities in the residue. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly genericlift states kernel lap

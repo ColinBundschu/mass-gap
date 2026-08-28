@@ -10,7 +10,6 @@ moments refuse the requirement, the refusal decided raw at the
 exhibited vector.  The split's positivity is isolated at the
 occupied count: beyond the edge the semidefinite read fails
 outright, so the spectrum direction has no hypothesis there. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground elim inertia momentdivisor

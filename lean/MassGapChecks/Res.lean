@@ -28,7 +28,6 @@ thirty-one, and `crossNull` closes on that degree.  The seam is the
 coefficient's own — the same read at the bare coefficients (the two
 `coeffAtW` batteries above) decides beside it, and the whole
 certificate sits inside the half-second budget's own order. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground poly genericlift states kernel lap res

@@ -19,7 +19,6 @@ degree window's completeness the cleared bracket's own growth,
 `d_f Q` at or beyond the fundamental count's multiple of the
 degree at a reduced shape).
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places fusion
@@ -31,13 +30,28 @@ example : unitLaw (dataA 2) [1, 0] [1, 0] := by decide +kernel
 example : unitLaw (dataA 2) [2, 0] [2, 0] := by decide +kernel
 example : unitLaw (dataA 3) [1, 0, 0] [0, 1, 0] := by decide +kernel
 example : unitLaw (dataA 3) [1, 1, 0] [1, 1, 0] := by decide +kernel
+example : unitLaw (dataA 3) [1, 1, 0] [1, 1, 0] :=
+  unitLaw_dataA 3 [1, 1, 0] [1, 1, 0] rfl rfl
+example : unitLaw (dataA 3) [1, 0, 0] [0, 1, 0] :=
+  unitLaw_dataA 3 [1, 0, 0] [0, 1, 0] rfl rfl
 example : unitLaw (dataA 3) [1, 0, 0] [1, 0, 0] := by decide +kernel
 example : commLaw (dataA 3) [1, 0, 0] [1, 1, 0] [2, 1, 0] := by decide +kernel
+example : commLaw (dataA 3) [1, 0, 0] [1, 1, 0] [2, 1, 0] :=
+  commLaw_dataA 3 [1, 0, 0] [1, 1, 0] [2, 1, 0] (by decide +kernel)
+    (by decide +kernel)
 example : cartanLaw (dataA 2) [1, 0] [1, 0] := by decide +kernel
 example : cartanLaw (dataA 3) [1, 1, 0] [1, 1, 0] := by decide +kernel
 example : assocLaw (dataA 2) [1, 0] [1, 0] [1, 0] [1, 1] := by decide +kernel
+example : assocLaw (dataA 2) [1, 0] [1, 0] [1, 0] [1, 1] :=
+  assocLaw_dataA 2 [1, 0] [1, 0] [1, 0] [1, 1] rfl rfl rfl rfl
 example : assocLaw (dataA 3) [1, 0, 0] [1, 0, 0] [1, 0, 0]
-    [1, 1, 0] := by decide +kernel
+    [1, 1, 0] :=
+  assocLaw_dataA 3 [1, 0, 0] [1, 0, 0] [1, 0, 0] [1, 1, 0] rfl rfl
+    rfl rfl
+example : assocLaw (dataA 2) [1, 0] [1, 0] [1, 0] [1, 2] := by
+  decide +kernel
+example : assocLaw (dataA 2) [1, 0] [1, 0] [1, 0] [1, 2] :=
+  assocLaw_dataA 2 [1, 0] [1, 0] [1, 0] [1, 2] rfl rfl rfl rfl
 
 /-! The dimension identity over the rows. -/
 
@@ -128,3 +142,10 @@ read. -/
 
 example : (tabulate (dataA 2) 12).count [1, 0] [1, 0] [0, 1]
     = (dataA 2).count [1, 0] [1, 0] [0, 1] := by decide +kernel
+
+/-! The row-is-support law at the instantiation: the occupied
+constituent on the row once, the vacant target off it. -/
+
+example : rowLaw (dataA 2) [1, 0] [1, 0] [2, 0] := by decide +kernel
+example : rowLaw (dataA 2) [1, 0] [1, 0] [0, 0] := by decide +kernel
+example : rowLaw (dataA 2) [1, 0] [1, 0] [3, 1] := by decide +kernel

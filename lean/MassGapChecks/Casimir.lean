@@ -63,7 +63,6 @@ genuine lowering, with the theorem's instances beside them, and
 the recursion and symmetry reads decided at three letters at the
 low-degree shapes whose key lists the kernel affords.
 -/
-set_option maxRecDepth 8192
 
 open ground places blockcount casimir
 

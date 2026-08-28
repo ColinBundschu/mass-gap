@@ -219,12 +219,6 @@ private def posLen : List Nat → Nat
   | [] => 0
   | x :: t => if 0 < x then posLen t + 1 else 0
 
-/-- The four-term regrouping at the paired outer members. -/
-private theorem swap4 (a b c d : Nat) :
-    a + b + c + d = (a + d) + (b + c) := by
-  rw [Nat.add_right_comm (a + b) c d, Nat.add_right_comm a b d,
-    Nat.add_assoc]
-
 /-- The edit moves the key-weighted total by the entry's move at
 the key's weight. -/
 private theorem wSum_editAt (f : Nat → Nat) :
@@ -244,10 +238,10 @@ private theorem wSum_editAt (f : Nat → Nat) :
     have hs := ground.sumNat_editAt f k t hk
     have hw := wSum_editAt f k t hk
     rw [Nat.mul_succ, Nat.mul_succ, ← Nat.add_assoc, ← Nat.add_assoc,
-      swap4 (ground.sumNat (ground.editAt f k t))
+      ground.addExch4 (ground.sumNat (ground.editAt f k t))
         (wSum (ground.editAt f k t)) (ground.getAt 0 t k * k)
         (ground.getAt 0 t k),
-      swap4 (ground.sumNat t) (wSum t) (f (ground.getAt 0 t k) * k)
+      ground.addExch4 (ground.sumNat t) (wSum t) (f (ground.getAt 0 t k) * k)
         (f (ground.getAt 0 t k)),
       hs, Nat.add_comm (wSum (ground.editAt f k t)) (ground.getAt 0 t k * k),
       Nat.add_comm (ground.getAt 0 t k * k) (wSum (ground.editAt f k t)),
@@ -603,17 +597,6 @@ private theorem rowHead_read : ∀ s : places.Shape, s ≠ [] →
     ground.getAt 0 (places.rowList s) 0 = ground.sumNat s
   | [], h => absurd rfl h
   | _ :: _, _ => rfl
-
-/-- The row list's last entry is the shape's own. -/
-private theorem rowLast_read : ∀ (s : places.Shape) (r : Nat),
-    s.length = r + 1 →
-    ground.getAt 0 (places.rowList s) r = ground.getAt 0 s r
-  | [], _, h => nomatch h
-  | _ :: t, 0, h => by
-    cases t with
-    | nil => rfl
-    | cons _ u => exact Nat.noConfusion (Nat.succ.inj h)
-  | _ :: t, r + 1, h => rowLast_read t r (Nat.succ.inj h)
 
 /-- The unit family's gap fold is the crossed count: the unit
 block pairs at no gap among itself and reads each vacancy once. -/
@@ -1037,14 +1020,6 @@ private theorem qRowsFall_lt (l m : List Nat) (i g : Nat)
         (2 * l.length * (g' + 1)), ← hfall] at h3
     exact Nat.lt_of_add_lt_add_right h3
 
-/-- The entry at a key at or past the length reads the stated
-default. -/
-private theorem getAt_default : ∀ (l : List Nat) (p : Nat),
-    l.length ≤ p → ground.getAt 0 l p = 0
-  | [], _, _ => rfl
-  | _ :: _, 0, h => absurd h (Nat.not_succ_le_zero _)
-  | _ :: t, p + 1, h => getAt_default t p (Nat.le_of_succ_le_succ h)
-
 /-- The box move's fall identity (`lem:casfloor`): two shapes
 joined at one row pair, `λ + e_b = μ + e_a` entrywise at the rows,
 read the crossed display `d_f Q(λ) + d_f (λ_b + μ_b) = d_f Q(μ) +
@@ -1071,9 +1046,9 @@ theorem boxFall (s t : places.Shape) (i g : Nat)
     cases Nat.lt_or_ge (i + g) s.length with
     | inl h => exact h
     | inr h =>
-      rw [getAt_default (places.rowList t) (i + g)
+      rw [ground.getAt_over 0 (places.rowList t) (i + g)
           (by rw [places.length_rowList, hlen]; exact h),
-        getAt_default (places.rowList s) (i + g)
+        ground.getAt_over 0 (places.rowList s) (i + g)
           (by rw [places.length_rowList]; exact h)] at hg
       exact Nat.noConfusion hg
   have hls : (places.rowList s).length = s.length := places.length_rowList s
@@ -1126,9 +1101,9 @@ theorem fallStrict (s t : places.Shape) (i g : Nat)
     cases Nat.lt_or_ge (i + g) s.length with
     | inl h => exact h
     | inr h =>
-      rw [getAt_default (places.rowList t) (i + g)
+      rw [ground.getAt_over 0 (places.rowList t) (i + g)
           (by rw [places.length_rowList, hlen]; exact h),
-        getAt_default (places.rowList s) (i + g)
+        ground.getAt_over 0 (places.rowList s) (i + g)
           (by rw [places.length_rowList]; exact h)] at hg
       exact Nat.noConfusion hg
   have hls : (places.rowList s).length = s.length := places.length_rowList s
@@ -1863,7 +1838,7 @@ theorem floorAll (r : Nat) (s : places.Shape)
     ((places.length_rowList s).trans hlen)
     (fun p hp => places.rowList_le s p
       (by rw [places.length_rowList] at hp; exact hp))
-    ((rowLast_read s r hlen).trans hred)
+    ((places.rowList_last s r hlen).trans hred)
     (by rw [rowHead_read s hne]; exact hocc)).1
 
 /-- The floor's equality sits at `f` and `f̄` alone
@@ -1889,7 +1864,7 @@ theorem floorSharp (r : Nat) (s : places.Shape)
       ((places.length_rowList s).trans hlen)
       (fun p hp => places.rowList_le s p
         (by rw [places.length_rowList] at hp; exact hp))
-      ((rowLast_read s r hlen).trans hred)
+      ((places.rowList_last s r hlen).trans hred)
       (by rw [rowHead_read s hne]; exact hocc)).2
       (by rw [← hq]; exact heq) with
   | inl h =>
@@ -2165,7 +2140,7 @@ theorem classFloor (r c : Nat) (s : places.Shape)
     exact floorRowsAt (qRows (places.rowList s) + 1) r (c' + 1)
       (places.rowList s) (Nat.lt_succ_self _)
       ((places.length_rowList s).trans hlen) hdescl
-      ((rowLast_read s r hlen).trans hred) hclsl
+      ((places.rowList_last s r hlen).trans hred) hclsl
       (headPos_of_sum (places.rowList s) hdescl hne0)
 
 /-- The class floors clear the fundamental's: at a nonunit class
@@ -2215,7 +2190,7 @@ theorem unitClassFloor (r : Nat) (s : places.Shape)
     ((places.length_rowList s).trans hlen)
     (fun p hp => places.rowList_le s p
       (by rw [places.length_rowList] at hp; exact hp))
-    ((rowLast_read s r hlen).trans hred) hcls
+    ((places.rowList_last s r hlen).trans hred) hcls
     (by rw [rowHead_read s hne]; exact hocc)
 
 end casfloor

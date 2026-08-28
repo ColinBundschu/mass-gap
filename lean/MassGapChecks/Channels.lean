@@ -22,7 +22,6 @@ their theorems at `r = 4` beside the decided instances, with the
 fundamental count's lower bound classified at `d_f = 1` and at the
 vacant count.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground places channels

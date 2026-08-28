@@ -23,9 +23,14 @@ window's coordinate against the full window's at the cleared
 cross comparison, each side's determinant crossing — and the
 refusal at the forged vector carrying the determinant in the null
 coordinate's place.
+
+`prop:algebra`'s commutativity closes the file: the pairing against
+a product state read at either block order — three product cells,
+the three key binders refused one apiece, the vacant-coefficient
+cell, and the window list's right sides row by row.
 -/
-set_option maxRecDepth 1000000
 set_option maxHeartbeats 16000000
+set_option maxRecDepth 8192
 
 open ground lattice fusion algebra
 
@@ -133,3 +138,114 @@ example : genericlift.crossNull
 the null coordinate's place. -/
 
 example : ¬ algebra.prodReadAt dG dM dRhs [dM, dM] := by decide +kernel
+
+/-! `prop:algebra`'s commutativity at the presentation carrier: the
+pairing against a product state reads one value at either block
+order, the block swap a letter-preserving relabeling of the
+concatenated site and its wiring.  The cells are the two-letter
+product `tr U · tr U†` over the `(U, U†)` window, the
+mixed-variable product at two terms of the first factor, and the
+two-member window; each is decided and read again through the
+theorem at its decided key binders. -/
+
+private def kU : states.FList := [(false, false)]
+private def kD : states.FList := [(false, true)]
+private def kV2 : states.FList := [(true, false), (true, true)]
+private def kv1 : states.Comb := [([1, 0], poly.pOne)]
+private def kv2 : states.Comb :=
+  [([1, 0], poly.pOne), ([0, 1], poly.pOne)]
+private def kaM : states.Comb :=
+  [([1, 0], poly.pOne), ([0, 1], poly.pOne)]
+private def kbM : states.Comb := [([0, 1], poly.pOne)]
+
+example : genericlift.crossNull
+    (wg.pairFull dF2 (kU ++ kD) kv1 (states.mulComb dAU dUD))
+    (wg.pairFull dF2 (kD ++ kU) kv1 (states.mulComb dUD dAU)) := by
+  decide +kernel
+example : genericlift.crossNull
+    (wg.pairFull dF2 (kU ++ kD) kv1 (states.mulComb dAU dUD))
+    (wg.pairFull dF2 (kD ++ kU) kv1 (states.mulComb dUD dAU)) :=
+  prodComm dF2 kU kD kv1 dAU dUD (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+
+example : genericlift.crossNull
+    (wg.pairFull dF2 (dF2 ++ kV2) kv1 (states.mulComb kaM kbM))
+    (wg.pairFull dF2 (kV2 ++ dF2) kv1 (states.mulComb kbM kaM)) := by
+  decide +kernel
+example : genericlift.crossNull
+    (wg.pairFull dF2 (dF2 ++ kV2) kv1 (states.mulComb kaM kbM))
+    (wg.pairFull dF2 (kV2 ++ dF2) kv1 (states.mulComb kbM kaM)) :=
+  prodComm dF2 dF2 kV2 kv1 kaM kbM (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+
+example : genericlift.crossNull
+    (wg.pairFull dF2 (kU ++ kD) kv2 (states.mulComb dAU dUD))
+    (wg.pairFull dF2 (kD ++ kU) kv2 (states.mulComb dUD dAU)) := by
+  decide +kernel
+example : genericlift.crossNull
+    (wg.pairFull dF2 (kU ++ kD) kv2 (states.mulComb dAU dUD))
+    (wg.pairFull dF2 (kD ++ kU) kv2 (states.mulComb dUD dAU)) :=
+  prodComm dF2 kU kD kv2 dAU dUD (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+
+/-! The three key binders are load-bearing, one refusal apiece: a
+repeated key on the window member, an out-of-range key on the first
+factor, and an out-of-range key on the second — each refused beside
+the wiring read it violates. -/
+
+private def kFv : states.Comb := [([0, 0], poly.pOne)]
+private def kaF : states.Comb := [([5], poly.pOne)]
+private def kbF : states.Comb := [([1], poly.pOne)]
+
+example : ¬ genericlift.crossNull
+    (wg.pairFull dF2 (kU ++ kD) kFv (states.mulComb dAU dUD))
+    (wg.pairFull dF2 (kD ++ kU) kFv (states.mulComb dUD dAU)) := by
+  decide +kernel
+example : ¬ ((kFv.all (fun e =>
+    decide (states.permAt e.1 dF2.length))) = true) := by decide +kernel
+
+example : ¬ genericlift.crossNull
+    (wg.pairFull dF2 (kU ++ kD) kv1 (states.mulComb kaF dUD))
+    (wg.pairFull dF2 (kD ++ kU) kv1 (states.mulComb dUD kaF)) := by
+  decide +kernel
+example : ¬ ((kaF.all (fun e =>
+    decide (states.permAt e.1 kU.length))) = true) := by decide +kernel
+
+example : ¬ genericlift.crossNull
+    (wg.pairFull dF2 (kU ++ kD) kv1 (states.mulComb dAU kbF))
+    (wg.pairFull dF2 (kD ++ kU) kv1 (states.mulComb kbF dAU)) := by
+  decide +kernel
+example : ¬ ((kbF.all (fun e =>
+    decide (states.permAt e.1 kD.length))) = true) := by decide +kernel
+
+/-! The vacant-coefficient cell: a coefficient whose second member
+sits at the sum's unit carries that vacancy through both folds — the
+same second members multiply along either order — so the two ends'
+cross datum is a unit tail outright and the reading stands with no
+occupancy anywhere in the accumulation. -/
+
+private def kVac : poly.PPair := (poly.one, ([] : poly.Poly))
+private def kaVac : states.Comb := [([0], kVac)]
+
+example : poly.unitTail kVac.2 := by decide +kernel
+example : genericlift.crossNull
+    (wg.pairFull dF2 (kU ++ kD) kv1 (states.mulComb kaVac dUD))
+    (wg.pairFull dF2 (kD ++ kU) kv1 (states.mulComb dUD kaVac)) := by
+  decide +kernel
+example : genericlift.crossNull
+    (wg.pairFull dF2 (kU ++ kD) kv1 (states.mulComb kaVac dUD))
+    (wg.pairFull dF2 (kD ++ kU) kv1 (states.mulComb dUD kaVac)) :=
+  prodComm dF2 kU kD kv1 kaVac dUD (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+
+/-! The window list's right sides carry the exchange row by row, at
+the two-member window. -/
+
+example : genericlift.pprowEq
+    (algebra.prodRhs dF2 kU kD dWs dAU dUD)
+    (algebra.prodRhs dF2 kD kU dWs dUD dAU) := by decide +kernel
+example : genericlift.pprowEq
+    (algebra.prodRhs dF2 kU kD dWs dAU dUD)
+    (algebra.prodRhs dF2 kD kU dWs dUD dAU) :=
+  prodRhsComm dF2 kU kD dWs dAU dUD (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)

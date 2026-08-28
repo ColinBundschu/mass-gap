@@ -9,7 +9,6 @@ themselves — the base the member's support count and the residue
 the member's derived fold (`prop:row`; `con:sertables`) — and at
 the first table across the `A`-series' regimes.
 -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground gentable sertables row closing

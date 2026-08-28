@@ -11,7 +11,6 @@ diagonal, is orthogonal, keeps the unit line's ground, and the
 state's read is blind to the grading; a ragged or off-order
 symmetry datum is unrepresentable at the carrier, the type the
 guard. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground elim inertia SO

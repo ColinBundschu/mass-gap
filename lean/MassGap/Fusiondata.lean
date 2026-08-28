@@ -924,10 +924,7 @@ theorem residCarrier_closed (d : Nat) (P B : List HVec)
               (elim.matVec_congr _ _ _
                 (elim.swapMap_scale _))
               (poly.oneValue_trans
-                (elim.matVec_vecScale _ x.coords.length
-                  (by rw [hsx]
-                      exact units.rowsLen_matUnitAt _ _ i j)
-                  _ _ (by rw [elim.length_combo _ _ _ hCrows]))
+                (elim.matVec_vecScale_free _ _ _)
                 (elim.vecScale_oneValue _ _ _ hc4))))
           (elim.spanRel_scale _ _ _ _ hQB
             (by rw [elim.length_combo _ _ _
@@ -994,10 +991,7 @@ theorem residCarrier_closed (d : Nat) (P B : List HVec)
               x.coords)) := by
         refine elim.spanRel_congr _ _ _ _
           (poly.oneValue_symm
-            (elim.matVec_vecScale _ x.coords.length
-              (by rw [hsx]
-                  exact units.rowsLen_matUnitAt _ _ i j)
-              _ _ rfl))
+            (elim.matVec_vecScale_free _ _ _))
           (elim.spanRel_scale _ _ _ _ hQB
             (by rw [units.matVec_matUnitAt_length]) hs2)
           (by rw [units.matVec_matUnitAt_length])
@@ -1832,12 +1826,9 @@ theorem top_split (d : Nat) (mu : List Nat) (A B : List HVec)
         (places.monomialsAt mu).length
         (elim.collectOf (places.monomialsAt mu).length
           (groupAt A mu)) v hCrows hv))
-    have hs3 := elim.matVec_vecScale
-      (units.matUnitAt (moveAt i j mu) mu i j)
-      (places.monomialsAt mu).length hT
-      (elim.detL (elim.gramM
+    have hs3 := elim.matVec_vecScale_free (units.matUnitAt (moveAt i j mu) mu i j) (elim.detL (elim.gramM
         (elim.collectOf (places.monomialsAt mu).length
-          (groupAt A mu)))) v hv
+          (groupAt A mu)))) v
     have hsum : poly.unitTail (elim.vecAdd
         (elim.matVec (units.matUnitAt (moveAt i j mu) mu i j)
           (elim.residV (places.monomialsAt mu).length
@@ -4930,6 +4921,104 @@ theorem exhaust_rowList_shapeOf (d : Nat) (P : List HVec)
     refine tops.dominant d w hszw hwidw hoffw htopw k ?_
     rw [← hwidw]
     exact hk
+
+/-- The exhaustion's contents keep the stated width, the mapped
+read of the produced members' own (`exhaust_top`). -/
+theorem exhaust_width (d : Nat) (P : List HVec)
+    (hsz : ∀ x ∈ P, sized x)
+    (hwid : ∀ x ∈ P, x.content.length = d)
+    (hcl : ∀ x ∈ P, ∀ i, i < d → ∀ j, j < d → ¬ i = j →
+      settledAt P (act i j x)) :
+    ∀ mu ∈ (exhaust d P).map HVec.content, mu.length = d := by
+  intro mu hmu
+  match ground.mem_map_of HVec.content (exhaust d P) mu hmu with
+  | ⟨w, hw, hwc⟩ =>
+    rw [← hwc]
+    exact (exhaust_top d P hsz hwid hcl w hw).2.1
+
+/-! The channels' own reads at the fused carrier: a channel's
+occupied block content is a content of the pool itself
+(`gradedDim_countAt` at the graded display), and the exhaustion's
+contents carry the two factors' degree total
+(`fusedAt_degree`). -/
+
+/-- A channel's occupied block content at an occupied channel
+count is a content of the fused pool: the channel's summand in the
+graded display is a lower bound on the content's dimension, and an
+independent pool's dimension is its occupancy. -/
+theorem channel_content (a b : Shape) (hba : b.length = a.length)
+    (nu : List Nat)
+    (hnu : nu ∈ ground.dedupL ((exhaust a.length
+      (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
+    (hcp : 0 < countAt (fusedAt (blockSpan a) (blockSpan b)) nu)
+    (m : List Nat) (hm : 0 < occ m (blockSpan (places.shapeOf nu))) :
+    0 < ground.countOf m
+      ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content) := by
+  obtain ⟨hszP, hwidP, hclP, hiP⟩ := fusedSpan_pack a b hba
+  have hle := ground.famFold_mem_le
+    (fun nu' => countAt (fusedAt (blockSpan a) (blockSpan b)) nu'
+      * occ m (blockSpan (places.shapeOf nu')))
+    (ground.dedupL ((exhaust a.length
+      (fusedAt (blockSpan a) (blockSpan b))).map HVec.content)) nu hnu
+  rw [← gradedDim_countAt a.length
+    (fusedAt (blockSpan a) (blockSpan b)) hszP hwidP hclP m] at hle
+  have hpos : 0 < dimAt (fusedAt (blockSpan a) (blockSpan b)) m :=
+    Nat.lt_of_lt_of_le (Nat.mul_pos hcp hm) hle
+  rw [dimAt_occ (fusedAt (blockSpan a) (blockSpan b)) hiP m,
+    occ_eq_countOf] at hpos
+  exact hpos
+
+/-- The exhaustion's contents carry the fused pool's degree: a
+content is a pool content — its own channel count and its block's
+top line are occupied — and the tensor's contents sum the two
+factors' box totals. -/
+theorem exhaust_degree (a b : Shape) (hba : b.length = a.length) :
+    ∀ mu ∈ (exhaust a.length
+      (fusedAt (blockSpan a) (blockSpan b))).map HVec.content,
+      ground.sumNat mu = places.degree a + places.degree b := by
+  intro mu hmu
+  obtain ⟨hszP, hwidP, hclP, _⟩ := fusedSpan_pack a b hba
+  have hrl := exhaust_rowList_shapeOf a.length
+    (fusedAt (blockSpan a) (blockSpan b)) hszP hwidP hclP mu hmu
+  have hcnt : 0 < countAt (fusedAt (blockSpan a) (blockSpan b)) mu := by
+    rw [countAt_exhaust a.length (fusedAt (blockSpan a) (blockSpan b))
+        hszP hwidP hclP mu, occ_eq_countOf]
+    exact ground.countOf_pos_of_mem hmu
+  have htop : ground.countOf (places.rowList (places.shapeOf mu))
+      ((blockSpan (places.shapeOf mu)).map HVec.content) = 1 :=
+    lowerspan.topRead_def (places.shapeOf mu)
+  rw [hrl] at htop
+  have hoccS : 0 < occ mu (blockSpan (places.shapeOf mu)) := by
+    rw [occ_eq_countOf, htop]
+    exact Nat.succ_pos 0
+  have hposc := channel_content a b hba mu (ground.mem_dedupL hmu)
+    hcnt mu hoccS
+  obtain ⟨x, hx, hxc⟩ := ground.mem_map_of HVec.content
+    (fusedAt (blockSpan a) (blockSpan b)) mu
+    (ground.mem_of_countOf_pos mu _ hposc)
+  rw [← hxc]
+  exact fusedAt_degree a.length (places.degree a) (places.degree b)
+    (blockSpan a) (blockSpan b) (blockSpan_width a)
+    (fun w hw => (blockSpan_width b w hw).trans hba)
+    (blockSpan_degree a) (blockSpan_degree b) x hx
+
+/-- The fusion count is the fused pool's occupancy at the target's
+row list: the count read at the exhaustion's contents, the two
+reads one datum (`lem:blockcount`(ii)'s exhaustion at the stated
+pair list). -/
+theorem fusionCount_countOf (a b c : Shape)
+    (hba : b.length = a.length) :
+    fusionCount a b c
+      = ground.countOf (places.rowList c)
+        ((exhaust a.length
+          (fusedAt (blockSpan a) (blockSpan b))).map
+          HVec.content) := by
+  obtain ⟨hszP, hwidP, hclP, _⟩ := fusedSpan_pack a b hba
+  rw [fusionCount_countAt a b c hba,
+    countAt_exhaust a.length (fusedAt (blockSpan a) (blockSpan b))
+      hszP hwidP hclP (places.rowList c),
+    occ_eq_countOf (places.rowList c)
+      (exhaust a.length (fusedAt (blockSpan a) (blockSpan b)))]
 
 /-- The dimension display at the fused carrier
 (`lem:blockcount`(iii)'s fourth clause, dim(W_a ⊗ W_b) read at

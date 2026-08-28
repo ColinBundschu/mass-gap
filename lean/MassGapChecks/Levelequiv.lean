@@ -11,7 +11,6 @@ requirement outright, `thm:certconstruct`(2)'s read paired with
 the requirement's own refusal.  The occupancy hypothesis is
 isolated at the edge's split: its count is unoccupied and no
 vector witnesses the pair's failure there. -/
-set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
 open ground elim inertia levelequiv
