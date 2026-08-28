@@ -7,7 +7,7 @@ A manuscript and its Lean 4 formalization.  The manuscript,
 [docs/theory.tex](docs/theory.tex) ([PDF](docs/theory.pdf)), states and
 derives `thm:main`, a mass gap for lattice gauge theory over every compact
 simple group, constructively over the positive naturals with the sum and the
-product; the Lean tree under [lean/](lean/) formalizes it with an empty axiom set.
+product; the in-progress Lean tree under [lean/](lean/) formalizes it with an empty axiom set.
 
 The tex is the authority and the Lean is its transcription: every top-level
 Lean declaration sits in a namespace matching a label in
