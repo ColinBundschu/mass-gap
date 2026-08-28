@@ -19,7 +19,7 @@ module holds.
 
 ## Status
 
-While the proof in `theory.tex` is complete, **the Lean is not yet a complete formal proof of the Yang-Mills mass gap.**  What
+While `theory.tex` provides a complete proof of the Yang-Mills mass gap, **the Lean is not yet a complete transcription of that proof.**  What
 the tree holds at this release, read off [lean/MassGap/Main.lean](lean/MassGap/Main.lean):
 
 - `main.Member` is the classification's stated domain, with the `A`-series at
