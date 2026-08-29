@@ -22,7 +22,7 @@ module holds.
 it states and derives every clause of `thm:main`, and
 `rem:dictionary` reads the result against the conventional
 formulation, the Jaffe-Witten statement included.  The Lean tree is
-a transcription of that proof in progress: most of it is
+an in-progress transcription of that proof: most of it is
 formalized, and this section says exactly which parts are and are
 not.  The docstring at the head of each module is the ledger of
 record for what that module holds.
