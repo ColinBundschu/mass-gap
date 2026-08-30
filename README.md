@@ -3,43 +3,34 @@
 [![lean](https://github.com/ColinBundschu/mass-gap/actions/workflows/lean.yml/badge.svg)](https://github.com/ColinBundschu/mass-gap/actions/workflows/lean.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22018060.svg)](https://doi.org/10.5281/zenodo.22018060)
 
-A manuscript and its Lean 4 formalization.  The manuscript,
-[docs/theory.tex](docs/theory.tex) ([PDF](docs/theory.pdf)), states and
-derives `thm:main`, a mass gap for lattice gauge theory over every compact
-simple group, constructively over the positive naturals with the sum and the
-product; the in-progress Lean tree under [lean/](lean/) formalizes it with an empty axiom set.
+This repo presents a complete manuscript, [docs/theory.tex](docs/theory.tex) ([PDF](docs/theory.pdf)), and its in-progress Lean 4 formalization, [lean/](lean/).  The manuscript states and derives a mass gap for lattice gauge theory over every compact
+simple group in `thm:main`, with
+`rem:dictionary` presenting the results in the conventional
+formulation, the Jaffe-Witten statement of the Yang-Mills problem included.  The proof is constructive over the positive naturals with the sum and the
+product; this choice was made explicitly to enable Lean to formalize it with an empty axiom set.
 
 The tex is the authority and the Lean is its transcription: every top-level
 Lean declaration sits in a namespace matching a label in
 `theory.tex` (e.g. `gappos.sandwich_lo` transcribes `thm:gappos`, `inertia.rev_add`
-transcribes `lem:inertia`). The docstring at the head of each module under
+transcribes `lem:inertia`).  The docstring at the head of each module under
 [lean/MassGap/](lean/MassGap/) states exactly which clauses of its label the
 module holds.
 
 ## Status
 
-`theory.tex` provides a complete proof of the Yang-Mills mass gap:
-it states and derives every clause of `thm:main`, and
-`rem:dictionary` reads the result against the conventional
-formulation, the Jaffe-Witten statement included.  The Lean tree is
-an in-progress transcription of that proof: most of it is
-formalized, and this section says exactly which parts are and are
-not.  The docstring at the head of each module is the ledger of
-record for what that module holds.
+`theory.tex` is a complete proof and any future changes will ideally only improve clarity and add detail.  The Lean tree is
+a mostly complete transcription of that proof: this section says exactly which parts are and are
+not formalized.
 
-`thm:main` has three clauses, stated over `main.Member`
-([lean/MassGap/Main.lean](lean/MassGap/Main.lean)), the
-classification's stated domain: the `A`-series at every residue,
-`B_l`, `C_l`, `D_l` at their index floors, and `G2`, `F4`, `E6`,
-`E7`, `E8`, each member once.
+`thm:main` has three clauses, stated over the domain `main.Member`
+([lean/MassGap/Main.lean](lean/MassGap/Main.lean)): the `A`-series at every residue,
+`B_l`, `C_l`, `D_l` at their index floors, and once each for `G2`, `F4`, `E6`,
+`E7`, `E8`.
 
 Formalized:
 
-- **Clause (i), gap positivity, is closed at every member**:
-  `main.clauseI_all` holds the tie at every member of the
-  classification, the two committed chain reads as parametric
-  theorems over the rank at the diagonal windows with `E8`'s
-  coupled window its own case.
+- **Clause (i), gap positivity, is closed for every member**:
+  `main.clauseI_all` proves both committed chain reads and the required tie throughout the classification. The series cases are parametric in rank at the diagonal windows; D4’s four-loop window and E8’s coupled window are handled separately.
 - **Clause (ii), the contact value `(3, H_r)`, is closed at every
   member**: `main.clauseII_all` holds it at the whole
   classification: the order count, the base collection, the
