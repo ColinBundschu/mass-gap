@@ -17,6 +17,14 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Two Lean worker threads, not one per core: the heavy
+    # kernel-decide batteries elaborate at multi-GB peaks, and four
+    # concurrent workers exhaust the hosted runner's memory (the
+    # build dies by SIGTERM with no Lean error).  Lake schedules its
+    # jobs on the Lean task pool, so this caps concurrent module
+    # builds; this Lake has no jobs flag.
+    env:
+      LEAN_NUM_THREADS: "2"
     steps:
       - uses: actions/checkout@v5
 
@@ -28,11 +36,6 @@ jobs:
           lake-package-directory: lean
           use-mathlib-cache: false
           build: true
-          # Two lake workers, not one per core: the heavy kernel-decide
-          # batteries elaborate at multi-GB peaks, and four concurrent
-          # workers exhaust the hosted runner's memory (the build dies
-          # by SIGTERM with no Lean error).
-          build-args: "--jobs=2"
           test: false
           lint: false
 
