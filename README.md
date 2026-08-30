@@ -24,8 +24,8 @@ not formalized.
 
 `thm:main` has three clauses. These are stated over the domain `main.Member`
 ([lean/MassGap/Main.lean](lean/MassGap/Main.lean)): the `A`-series at every residue,
-`B_l`, `C_l`, `D_l` at their index floors, and once each for `G2`, `F4`, `E6`,
-`E7`, `E8`.
+`B_l`, `C_l`, `D_l` at their index floors, and `G2`, `F4`, `E6`,
+`E7`, `E8` once each.
 
 Formalized:
 
