@@ -7,11 +7,18 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Stacked pushes supersede cleanly: one run per ref, the newest
+# winning.  Tag refs form their own group, so a tag's run is never
+# cancelled by a branch push.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Installs elan and the toolchain pinned by lean/lean-toolchain,
       # then runs `lake build` in lean/; the .lake build directory is
@@ -21,6 +28,11 @@ jobs:
           lake-package-directory: lean
           use-mathlib-cache: false
           build: true
+          # Two lake workers, not one per core: the heavy kernel-decide
+          # batteries elaborate at multi-GB peaks, and four concurrent
+          # workers exhaust the hosted runner's memory (the build dies
+          # by SIGTERM with no Lean error).
+          build-args: "--jobs=2"
           test: false
           lint: false
 
