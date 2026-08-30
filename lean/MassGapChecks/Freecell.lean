@@ -93,6 +93,66 @@ example : split.pmatOneValue (freePMat eWalk mWalk gK2 2 1)
      [[u, u, ⟨1, 2⟩], [⟨4, 1⟩, u, ⟨1, 2⟩], [u, u, ⟨1, 2⟩]],
      [[u, u, u], [u, u, ⟨1, 2⟩], [⟨12, 1⟩, u, ⟨1, 2⟩]]] := by decide +kernel
 
+/-! The carrier's entry read at the record, decided and through
+`freePMat_entry`: the level datum's entry at the constant key, the
+unit middle, and the magnetic member's balance partner at the top
+key.  Each shape binder refuses at its own ragged member — the
+componentwise walk truncates at the shorter operand — with the
+beyond-order row and column keys refused at the vacant read, and
+the shape read decided, through `pShapeAt_freePMat`, and refused at
+the ragged magnetic member. -/
+
+private def eWr : Mat := [[u, u], [u, ⟨5, 1⟩, u], [u, u, ⟨13, 1⟩]]
+private def mWr : Mat :=
+  [[u, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩], [u, ⟨2, 1⟩, ⟨2, 1⟩]]
+private def gWr : Mat := [[⟨2, 1⟩], [u, ⟨2, 1⟩, u], [u, u, ⟨2, 1⟩]]
+
+example : getAt [] (getAt [] (freePMat eWalk mWalk gK2 2 1) 1) 2
+    = getAt u (getAt [] (siteDatum (matAdd eWalk (matScale 1 gK2))
+        (matScale 2 gK2)) 1) 2
+      :: ([u] ++ [(getAt u (getAt [] mWalk 1) 2).swap]) := by
+  decide +kernel
+example : getAt [] (getAt [] (freePMat eWalk mWalk gK2 2 1) 1) 2
+    = getAt u (getAt [] (siteDatum (matAdd eWalk (matScale 1 gK2))
+        (matScale 2 gK2)) 1) 2
+      :: ([u] ++ [(getAt u (getAt [] mWalk 1) 2).swap]) :=
+  freecell.freePMat_entry eWalk mWalk gK2 2 1 3 (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) 1 2 (by decide +kernel)
+    (by decide +kernel)
+example : ¬ (getAt [] (getAt [] (freePMat eWr mWalk gK2 2 1) 0) 2
+    = getAt u (getAt [] (siteDatum (matAdd eWr (matScale 1 gK2))
+        (matScale 2 gK2)) 0) 2
+      :: ([u] ++ [(getAt u (getAt [] mWalk 0) 2).swap])) := by
+  decide +kernel
+example : ¬ (getAt [] (getAt [] (freePMat eWalk mWr gK2 2 1) 0) 2
+    = getAt u (getAt [] (siteDatum (matAdd eWalk (matScale 1 gK2))
+        (matScale 2 gK2)) 0) 2
+      :: ([u] ++ [(getAt u (getAt [] mWr 0) 2).swap])) := by
+  decide +kernel
+example : ¬ (getAt [] (getAt [] (freePMat eWalk mWalk gWr 2 1) 0) 2
+    = getAt u (getAt [] (siteDatum (matAdd eWalk (matScale 1 gWr))
+        (matScale 2 gWr)) 0) 2
+      :: ([u] ++ [(getAt u (getAt [] mWalk 0) 2).swap])) := by
+  decide +kernel
+example : ¬ (getAt [] (getAt [] (freePMat eWalk mWalk gK2 2 1) 3) 1
+    = getAt u (getAt [] (siteDatum (matAdd eWalk (matScale 1 gK2))
+        (matScale 2 gK2)) 3) 1
+      :: ([u] ++ [(getAt u (getAt [] mWalk 3) 1).swap])) := by
+  decide +kernel
+example : ¬ (getAt [] (getAt [] (freePMat eWalk mWalk gK2 2 1) 1) 3
+    = getAt u (getAt [] (siteDatum (matAdd eWalk (matScale 1 gK2))
+        (matScale 2 gK2)) 1) 3
+      :: ([u] ++ [(getAt u (getAt [] mWalk 1) 3).swap])) := by
+  decide +kernel
+
+example : cellcount.pShapeAt (freePMat eWalk mWalk gK2 2 1) 3 2 := by
+  decide +kernel
+example : cellcount.pShapeAt (freePMat eWalk mWalk gK2 2 1) 3 2 :=
+  freecell.pShapeAt_freePMat eWalk mWalk gK2 2 1 3 (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+example : ¬ cellcount.pShapeAt (freePMat eWalk mWr gK2 2 1) 3 2 := by
+  decide +kernel
+
 /-! `endEval`'s route at the record: at the coupling's unit point the
 cell's matrix is the electric level datum at the clearing's
 rescaling, the free end's diagonal read. -/

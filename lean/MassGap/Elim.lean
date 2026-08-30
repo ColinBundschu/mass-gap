@@ -11811,6 +11811,17 @@ theorem rowsLen_matMul : ∀ (a b : Mat),
 theorem rowsLen_cast {a b : Nat} (h : a = b) {M : Mat}
     (hm : rowsLen a M) : rowsLen b M := by rw [← h]; exact hm
 
+/-- The product's row widths at the right factor's own: a vacant
+left factor truncates the product, an occupied one reads the
+transpose's row count across the order identity. -/
+theorem rowsLen_matMul_of {o : Nat} : ∀ (A B : Mat),
+    (0 < A.length → 0 < B.length) → rowsLen o B →
+    rowsLen o (matMul A B)
+  | [], _, _, _ => trivial
+  | r :: t, B, hpos, hBr =>
+    rowsLen_cast (length_transposeM B hBr (hpos (Nat.succ_pos t.length)))
+      (rowsLen_matMul (r :: t) B)
+
 /-- The transpose's row count at a square shape. -/
 theorem transposeLen {n : Nat} : ∀ (T : Mat), rowsLen n T →
     T.length = n → (transposeM T).length = n
@@ -12284,6 +12295,24 @@ theorem dotP_oneValue_right : ∀ (p u u' : List BPair),
   | a :: s, _ :: p, _ :: q, h =>
     BPair.add_congr (BPair.mul_congr (BPair.oneValue_refl a) h.1)
       (dotP_oneValue_right s p q h.2)
+
+
+/-- The pairing at two weighted vectors carries both weights out,
+the bilinear read's two-slot scaling at the balance weights. -/
+theorem dotN_vecScale_pair (A : Mat) (c d : BPair)
+    (u w : List BPair) :
+    (dotN (vecScale c u) (matVec A (vecScale d w))).oneValue
+      (d * (c * dotN u (matVec A w))) := by
+  refine BPair.oneValue_trans (dotN_read _ _) ?_
+  refine BPair.oneValue_trans
+    (dotP_oneValue_right _ _ _ (matVec_vecScale_free A d w)) ?_
+  refine BPair.oneValue_trans (dotP_vecScale_right _ _ d) ?_
+  refine BPair.mul_congr (BPair.oneValue_refl d) ?_
+  rw [dotP_comm (vecScale c u) (matVec A w)]
+  refine BPair.oneValue_trans (dotP_vecScale_right _ _ c) ?_
+  refine BPair.mul_congr (BPair.oneValue_refl c) ?_
+  rw [dotP_comm (matVec A w) u]
+  exact BPair.oneValue_symm (dotN_read u (matVec A w))
 
 /-- The pairing reads one value in its left member. -/
 theorem dotP_oneValue_left : ∀ (r s x : List BPair),
@@ -18475,6 +18504,12 @@ key at a time; the sum truncates at the shorter key list, which is
 why the reads carry no shape hypothesis. -/
 
 
+/-- The entrywise sum against the vacant matrix is vacant, the
+zip's own truncation. -/
+theorem matAdd_nil_right : ∀ A : Mat, matAdd A [] = []
+  | [] => rfl
+  | _ :: _ => rfl
+
 /-- The entrywise matrix sum commutes. -/
 theorem matAdd_comm : ∀ A B : Mat, matAdd A B = matAdd B A
   | [], [] => rfl
@@ -19523,6 +19558,13 @@ theorem dotN_congrR (c r s : List BPair) (h : poly.oneValue r s) :
     (BPair.oneValue_trans (dotP_oneValue_right c r s h)
       (BPair.oneValue_symm (dotN_read c s)))
 
+/-- The pairing's congruence at a moved matrix: two matrices reading
+one value pair every vector pair at one read. -/
+theorem dotN_matVec_congrM (A B : Mat) (u w : List BPair)
+    (h : matOneValue A B) :
+    (dotN u (matVec A w)).oneValue (dotN u (matVec B w)) :=
+  dotN_congrR u _ _ (matVec_matOne A B w h)
+
 /-- The coupling's exchange at a pairing: the transpose's action
 against one vector is the datum's action against the other. -/
 theorem dotN_transpose_flip (A : Mat) (n : Nat) (hAr : rowsLen n A)
@@ -19542,7 +19584,7 @@ theorem dotN_sym_flip (A : Mat) (n : Nat) (hAr : rowsLen n A)
   BPair.oneValue_trans
     (BPair.oneValue_symm
       (dotN_transpose_flip A n hAr u w hu (hw.trans hAl.symm)))
-    (dotN_congrR u _ _ (matVec_matOne (transposeM A) A w hsym))
+    (dotN_matVec_congrM (transposeM A) A u w hsym)
 
 
 /-- The action's entry is the row's fold. -/
@@ -19875,9 +19917,8 @@ theorem matMul_msum (n : Nat) (X : Mat) (hX : rowsLen n X)
   | k :: t => by
     have hg' : ∀ k, rowsLen n (matMul X (g k))
         ∧ (matMul X (g k)).length = n := fun k =>
-      ⟨rowsLen_cast
-        (length_transposeM (g k) (hg k).1 (by rw [(hg k).2]; exact hn))
-        (rowsLen_matMul X (g k)),
+      ⟨rowsLen_matMul_of X (g k) (fun _ => by rw [(hg k).2]; exact hn)
+                                   (hg k).1,
        (length_matMul X (g k)).trans hXl⟩
     rw [msum_cons n g k t, msum_cons n (fun k => matMul X (g k)) k t]
     refine matOne_trans
@@ -19889,10 +19930,9 @@ theorem matMul_msum (n : Nat) (X : Mat) (hX : rowsLen n X)
     exact matAdd_cong2 n (matMul X (g k)) (matMul X (msum n g t))
       (matMul X (g k)) (msum n (fun k => matMul X (g k)) t)
       (hg' k).1
-      (rowsLen_cast
-        (length_transposeM (msum n g t) (msum_shape n g hg t).1
-          (by rw [(msum_shape n g hg t).2]; exact hn))
-        (rowsLen_matMul X (msum n g t)))
+      (rowsLen_matMul_of X (msum n g t)
+        (fun _ => by rw [(msum_shape n g hg t).2]; exact hn)
+        (msum_shape n g hg t).1)
       (hg' k).1 (msum_shape n (fun k => matMul X (g k)) hg' t).1
       (matOne_refl _) (matMul_msum n X hX hXl hn g hg t)
 

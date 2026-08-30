@@ -37,15 +37,15 @@ bracket point (`keepUpper`/`keepUpper_all`,
 `keepLowerTop`/`keepLowerTop_all` the same clause read at the
 upper endpoint), the upper and lower reads functions of the
 polynomial's value alone (`keepUpper_congr`, `keepLower_congr`);
-the squared comparison's priced read at the two
-factors' own reads at the piece's floor — the origin read's value
-floored across the piece by its fold with the floor above the
-sum's unit (`sqFloor` at the derivative's power `dpow`), the gap
-read's value capped by its own (`sqCap`), and the comparison one
-cross-multiplied read at the two priced values with the square
-scale at the piece's floor (`keepSq`) — reads the ordered squares
-at every piece point (`keepSq_all`), the cleared descent at a
-stated clearing the consumer's shape (`sqComp_clear`); and the
+the piece-local reads at the piece's
+own chart — the binomial identity per occupied key rewriting a
+polynomial at a composite point (`shiftC`, `shiftC_eval`), a
+piece's floor and cap at the rewritten coefficients' magnitude
+fold at the piece's width (`capW`/`capW_le`, `floorW`/`floorW_le`,
+read at the endpoint's clearing as `capA`/`capA_le`,
+`floorA`/`floorA_le` with `overC`), the evaluation additive and
+multiplicative over the polynomial reads (`evalC_add`,
+`evalC_mul`); and the
 composite points read through their integer representatives
 (`evalC_evalClear` at `poly.evalClear`, the homogeneity
 principle's own).  The value
@@ -103,7 +103,7 @@ private theorem ofBC_pow (a : BPair) (w : Pos) :
   exact CPair.oneValue_symm h
 
 /-- The composite unit absorbs a product. -/
-private theorem mulC_unitC (x : CPair) : (x * unitC).oneValue unitC :=
+theorem mulC_unit (x : CPair) : (x * unitC).oneValue unitC :=
   match x with
   | ⟨n, d⟩ =>
     CPair.oneValue_trans
@@ -159,7 +159,7 @@ theorem evalC_unitTail {p : Poly} (h : poly.unitTail p) (x : CPair) :
       (CPair.add_congr (CPair.num_oneValue h.1 Pos.one)
         (CPair.mul_congr (CPair.oneValue_refl x) (evalC_unitTail h.2 x)))
       (CPair.oneValue_trans
-        (CPair.add_congr (CPair.oneValue_refl unitC) (mulC_unitC x))
+        (CPair.add_congr (CPair.oneValue_refl unitC) (mulC_unit x))
         (addC_unitC unitC))
 
 /-- The composite Horner read at every representative of one value:
@@ -227,7 +227,7 @@ theorem evalC_read : ∀ (p : Poly) (K : Nat), p.length ≤ K + 1 →
     exact CPair.oneValue_trans
       (CPair.oneValue_trans
         (CPair.add_congr (CPair.oneValue_refl (ofB a))
-          (mulC_unitC ⟨l, c⟩))
+          (mulC_unit ⟨l, c⟩))
         (CPair.opUnit_oneValue (ofB a) Pos.one Pos.one))
       (CPair.oneValue_symm (CPair.num_oneValue hnum Pos.one))
   | a :: t, M + 1, h, l, c => by
@@ -622,50 +622,6 @@ theorem keepLower_congr {p q : Poly} (h : poly.oneValue p q)
     CPair.lt_congr (CPair.oneValue_refl _)
       (CPair.mul_congr (CPair.swap_congr (evalC_congr h a))
         (CPair.oneValue_refl _)) h5⟩
-
-/-- The derivative's power at the priced side read's clearing, the
-composite carrier's member. -/
-def dpow (p : Poly) (D : BPair) : CPair :=
-  ofB (ground.bpow D ((poly.vnorm (poly.deriv p)).length - 1))
-
-/-- The endpoint value's priced floor across a piece: the value at
-the piece's lower endpoint, cleared at the derivative's power,
-against the fold's width price. -/
-def sqFloor (p : Poly) (a b : CPair) (N D : BPair) : CPair :=
-  evalC p a * dpow p D
-  + CPair.swap (ofB (windowsep.magFold (poly.deriv p) N D)
-      * (b + CPair.swap a))
-
-/-- The endpoint magnitude's priced cap across a piece: the value's
-magnitude at the piece's lower endpoint, cleared at the
-derivative's power, joined to the fold's width price. -/
-def sqCap (p : Poly) (a b : CPair) (N D : BPair) : CPair :=
-  cmag (evalC p a) * dpow p D
-  + ofB (windowsep.magFold (poly.deriv p) N D) * (b + CPair.swap a)
-
-/-- The squared comparison's priced read at the two factors' own
-reads: the bound's clearing above the sum's unit, the ordered
-endpoints inside the bound's segment, the origin read's endpoint
-value clearing its fold's width price, and the comparison one
-cross-multiplied read at the two priced values — the origin read's
-priced floor against the gap read's priced cap, the square scale
-read at the piece's floor, each side padded by the other factor's
-cleared power. -/
-def keepSq (pB pL : Poly) (e0n : BPair) (e0d : Pos)
-    (a b : CPair) (N D : BPair) : Prop :=
-  BPair.unit < D ∧ a < b
-  ∧ cmag a * ofB D ≤ ofB N ∧ cmag b * ofB D ≤ ofB N
-  ∧ ofB (windowsep.magFold (poly.deriv pB) N D) * (b + CPair.swap a)
-      < evalC pB a * dpow pB D
-  ∧ ofB e0n * ((sqCap pL a b N D * sqCap pL a b N D)
-        * (dpow pB D * dpow pB D))
-    < ofB (BPair.ofPos e0d)
-      * (a * ((sqFloor pB a b N D * sqFloor pB a b N D)
-        * (dpow pL D * dpow pL D)))
-
-instance (pB pL : Poly) (e0n : BPair) (e0d : Pos) (a b : CPair)
-    (N D : BPair) : Decidable (keepSq pB pL e0n e0d a b N D) :=
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
 
 /-- A value's upper side at the root, the priced side read: the
 width joins the endpoints and the bracket carries the priced side
@@ -1985,24 +1941,13 @@ private theorem cLtTrans : ∀ {x y z : CPair}, x < y → y < z → x < z
       ← BPair.scale_scale, ← BPair.scale_scale] at b3
     exact BPair.lt_of_scale_lt b3
 
-/-- The at-or-below read rides a strict read on the left. -/
-private theorem cLeLtTrans {x y z : CPair} (h1 : x ≤ y) (h2 : y < z) :
-    x < z :=
-  match h1 with
-  | Or.inl hov =>
-    CPair.lt_congr (CPair.oneValue_symm hov) (CPair.oneValue_refl z) h2
-  | Or.inr hlt => cLtTrans hlt h2
-
 /-- The strict read rides an at-or-below read on the right. -/
-private theorem cLtLeTrans {x y z : CPair} (h1 : x < y) (h2 : y ≤ z) :
+theorem ltC_le_trans {x y z : CPair} (h1 : x < y) (h2 : y ≤ z) :
     x < z :=
   match h2 with
   | Or.inl hov =>
     CPair.lt_congr (CPair.oneValue_refl x) hov h1
   | Or.inr hlt => cLtTrans h1 hlt
-
-/-- A strict composite read enters the at-or-below one. -/
-private theorem cleOfLt {x y : CPair} (h : x < y) : x ≤ y := Or.inr h
 
 /-- The composite unit sits under a product of members at or above
 it. -/
@@ -2010,21 +1955,6 @@ theorem unitC_le_mul : ∀ {x y : CPair}, unitC ≤ x → unitC ≤ y →
     unitC ≤ x * y
   | ⟨_, _⟩, ⟨_, _⟩, hx, hy =>
     unitC_le_num _ (ground.unitLeMul (unitC_le_fst hx) (unitC_le_fst hy))
-
-/-- The composite unit sits strictly under a product of members
-strictly above it. -/
-private theorem cUnitLtMul : ∀ {x y : CPair}, unitC < x → unitC < y →
-    unitC < x * y
-  | ⟨_, _⟩, ⟨_, _⟩, hx, hy =>
-    (unitC_lt_num _ _).mpr
-      (ground.unitLtMul ((unitC_lt_num _ _).mp hx)
-        ((unitC_lt_num _ _).mp hy))
-
-/-- The composite unit sits under a sum of members at or above it. -/
-private theorem cUnitLeAdd {x y : CPair} (hx : unitC ≤ x)
-    (hy : unitC ≤ y) : unitC ≤ x + y :=
-  CPair.le_congr (addC_unitC unitC) (CPair.oneValue_refl _)
-    (CPair.le_add hx hy)
 
 /-- The composite magnitude sits at or above the composite unit. -/
 theorem unitC_le_cmag : ∀ x : CPair, unitC ≤ cmag x
@@ -2035,7 +1965,7 @@ theorem unitC_le_cmag : ∀ x : CPair, unitC ≤ cmag x
 
 /-- The memberwise swap of the magnitude sits at or below the
 member. -/
-private theorem cSwapCmagLe : ∀ x : CPair, CPair.swap (cmag x) ≤ x
+theorem swap_cmag_le : ∀ x : CPair, CPair.swap (cmag x) ≤ x
   | ⟨n, d⟩ => by
     refine CPair.le_congr
       (CPair.swap_congr (CPair.oneValue_symm (cmag_num n d)))
@@ -2044,20 +1974,6 @@ private theorem cSwapCmagLe : ∀ x : CPair, CPair.swap (cmag x) ≤ x
     have h0 := ground.leB_swap (windowsep.swap_le_mag n)
     rw [BPair.swap_swap n] at h0
     exact ground.leB_scale h0 d
-
-/-- The memberwise swap passes into a product's first factor. -/
-private theorem cSwapMul : ∀ x y : CPair,
-    CPair.swap x * y = CPair.swap (x * y)
-  | ⟨xn, xc⟩, ⟨yn, yc⟩ => by
-    show CPair.mk (xn.swap * yn) (xc * yc)
-      = CPair.mk (xn * yn).swap (xc * yc)
-    rw [BPair.swap_mul xn yn]
-
-/-- A summand against its own swap withdraws inside a sum. -/
-private theorem cAddSwapCancel (u v : CPair) :
-    (u + (v + CPair.swap u)).oneValue v := by
-  rw [CPair.add_left_comm u v (CPair.swap u)]
-  exact CPair.add_swap_unit u v
 
 /-- The at-or-below read keeps at a shared right factor at or above
 the composite unit. -/
@@ -2078,51 +1994,13 @@ theorem mulC_le_left {w x y : CPair} (hw : unitC ≤ w) (h : x ≤ y) :
   rw [CPair.mul_comm w x, CPair.mul_comm w y]
   exact cMulLeR hw h
 
-/-- The strict composite order cancels at a shared right factor
-strictly above the composite unit. -/
-private theorem cLtUnscale : ∀ {x y w : CPair}, unitC < w →
-    x * w < y * w → x < y
-  | ⟨xn, xc⟩, ⟨yn, yc⟩, ⟨wn, wc⟩, hw, h => by
-    show xn.scale yc < yn.scale xc
-    have h0 : (xn * wn).scale (yc * wc) < (yn * wn).scale (xc * wc) := h
-    rw [BPair.scale_mul xn wn yc wc, BPair.scale_mul yn wn xc wc] at h0
-    exact ground.ltB_unscale
-      (ground.unitLeScale wc
-        (ground.leB_of_lt ((unitC_lt_num _ _).mp hw))) h0
-
-/-- The composite unit sits strictly under a value against the
-memberwise swap of one strictly below it. -/
-private theorem cUnitLtAddSwap : ∀ {u v : CPair}, u < v →
-    unitC < v + CPair.swap u
-  | ⟨un, uc⟩, ⟨vn, vc⟩, h =>
-    (unitC_lt_num _ _).mpr
-      (ground.unitLt_of_swap_lt (U := vn.scale uc)
-        (V := (un.scale vc).swap)
-        (by rw [BPair.swap_swap]; exact h))
-
-/-- The two magnitudes' product reads the squares. -/
-private theorem magSq (n : BPair) :
-    windowsep.mag n * windowsep.mag n = n * n := by
-  unfold windowsep.mag
-  by_cases h : n < n.swap
-  · rw [if_pos h]
-    exact BPair.swap_mul_swap n n
-  · rw [if_neg h]
-
-/-- A composite square is its magnitude's own. -/
-private theorem cSqMag : ∀ x : CPair, (cmag x * cmag x).oneValue (x * x)
-  | ⟨n, d⟩ =>
-    CPair.oneValue_trans
-      (CPair.mul_congr (cmag_num n d) (cmag_num n d))
-      (CPair.num_oneValue (BPair.oneValue_of_eq (magSq n)) (d * d))
-
 /-- Two stated representatives' product is the products' own. -/
 private theorem cMulMk (u v : BPair) (c e : Pos) :
     (⟨u, c⟩ : CPair) * ⟨v, e⟩ = ⟨u * v, c * e⟩ := rfl
 
 /-- The composite magnitude of a product is the magnitudes'
 product. -/
-private theorem cCmagMul : ∀ x y : CPair,
+theorem cmag_mul : ∀ x y : CPair,
     (cmag (x * y)).oneValue (cmag x * cmag y)
   | ⟨xn, xc⟩, ⟨yn, yc⟩ => by
     show (cmag (⟨xn * yn, xc * yc⟩ : CPair)).oneValue
@@ -2138,7 +2016,7 @@ private theorem cCmagMul : ∀ x y : CPair,
 
 /-- The composite magnitude at a member at or above the composite
 unit is the member. -/
-private theorem cCmagOfNn : ∀ {x : CPair}, unitC ≤ x →
+theorem cmag_of_unitLe : ∀ {x : CPair}, unitC ≤ x →
     (cmag x).oneValue x
   | ⟨n, d⟩, h =>
     CPair.oneValue_trans (cmag_num n d)
@@ -2147,7 +2025,7 @@ private theorem cCmagOfNn : ∀ {x : CPair}, unitC ≤ x →
 
 /-- The composite magnitude of a sum sits at or below the
 magnitudes' sum. -/
-private theorem cCmagAddLe : ∀ x y : CPair,
+theorem cmag_add_le : ∀ x y : CPair,
     cmag (x + y) ≤ cmag x + cmag y
   | ⟨xn, xc⟩, ⟨yn, yc⟩ => by
     refine CPair.le_congr
@@ -2169,253 +2047,415 @@ private theorem cAddMul (x y z : CPair) :
   rw [CPair.mul_comm (x + y) z, CPair.mul_comm x z, CPair.mul_comm y z]
   exact CPair.mul_add z x y
 
-/-- The origin read's priced floor sits at or below the value's
-cleared read at every piece point. -/
-private theorem pointFloor (p : Poly) (a b z : CPair) (N D : BPair)
-    (hD : BPair.unit ≤ D) (hPw : unitC ≤ dpow p D)
-    (ha : cmag a * ofB D ≤ ofB N) (hb : cmag b * ofB D ≤ ofB N)
-    (haz : a ≤ z) (hzb : z ≤ b) :
-    sqFloor p a b N D ≤ evalC p z * dpow p D := by
-  have hgap := evalC_gap_le p a b z N D hD ha hb haz hzb
-  have h1 : CPair.swap (ofB (windowsep.magFold (poly.deriv p) N D)
-        * (b + CPair.swap a))
-      ≤ (evalC p z + CPair.swap (evalC p a)) * dpow p D := by
-    refine CPair.le_trans (CPair.le_swap hgap) ?_
-    refine CPair.le_congr
-      (by rw [cSwapMul]; exact CPair.oneValue_refl _)
-      (CPair.oneValue_refl _) (cMulLeR hPw (cSwapCmagLe _))
-  refine CPair.le_congr (CPair.oneValue_refl _) ?_
-    (CPair.le_add (CPair.le_refl (evalC p a * dpow p D)) h1)
+/-! The piece-local reads: the binomial identity per occupied key
+rewrites a polynomial at a composite point, and a piece's floor and
+cap read at the rewritten coefficients' magnitude fold at the
+piece's width. -/
+
+/-- The composite read at a further second datum: the value at a
+stated clearing joined to its second datum. -/
+def overC : CPair → Pos → CPair
+  | ⟨n, d⟩, q => ⟨n, d * q⟩
+
+/-- The priced at-or-below read enters the further clearing. -/
+private theorem le_overC : ∀ {x y : CPair} {q : Pos},
+    x * ofB (BPair.ofPos q) ≤ y → x ≤ overC y q
+  | ⟨xn, xc⟩, ⟨yn, yc⟩, q, h => by
+    have h0 : (xn * BPair.ofPos q).scale yc
+        ≤ yn.scale (xc * Pos.one) := h
+    rw [ground.mul_one xc] at h0
+    show xn.scale (yc * q) ≤ yn.scale xc
+    refine ground.leB_congr_left ?_ h0
+    refine BPair.oneValue_trans
+      (BPair.scale_congr yc (BPair.mul_ofPos xn q)) ?_
+    refine BPair.oneValue_of_eq ?_
+    rw [BPair.scale_scale, ground.mul_comm q yc]
+
+/-- The further clearing enters the priced at-or-below read. -/
+private theorem overC_le : ∀ {x y : CPair} {q : Pos},
+    x ≤ y * ofB (BPair.ofPos q) → overC x q ≤ y
+  | ⟨xn, xc⟩, ⟨yn, yc⟩, q, h => by
+    have h0 : xn.scale (yc * Pos.one)
+        ≤ (yn * BPair.ofPos q).scale xc := h
+    rw [ground.mul_one yc] at h0
+    show xn.scale yc ≤ yn.scale (xc * q)
+    refine ground.leB_congr_right ?_ h0
+    refine BPair.oneValue_trans
+      (BPair.scale_congr xc (BPair.mul_ofPos yn q)) ?_
+    refine BPair.oneValue_of_eq ?_
+    rw [BPair.scale_scale, ground.mul_comm q xc]
+
+/-- The rewritten coefficient list at a composite point, cleared at
+the point's second datum's powers: the binomial identity per
+occupied key, the polynomial's reads at the piece's own chart. -/
+def shiftC : Poly → BPair → Pos → Poly
+  | [], _, _ => []
+  | c :: p, nA, dA =>
+      poly.add [c * BPair.ofPos (Pos.powC dA p.length)]
+        (poly.mul [nA, BPair.ofPos dA] (shiftC p nA dA))
+
+/-- The composite evaluation is additive over the polynomial sum. -/
+theorem evalC_add : ∀ (p q : Poly) (x : CPair),
+    (evalC (poly.add p q) x).oneValue (evalC p x + evalC q x)
+  | [], q, x => CPair.oneValue_symm (addC_unitC (evalC q x))
+  | c :: p, [], x =>
+    CPair.oneValue_symm
+      (CPair.opUnit_oneValue (evalC (c :: p) x) Pos.one Pos.one)
+  | c :: p, d :: q, x => by
+    show (ofB (c + d) + x * evalC (poly.add p q) x).oneValue
+      (ofB c + x * evalC p x + (ofB d + x * evalC q x))
+    have hc : (ofB (c + d)).oneValue (ofB c + ofB d) :=
+      CPair.oneValue_symm (CPair.add_same c d Pos.one)
+    have hm : (x * evalC (poly.add p q) x).oneValue
+        (x * evalC p x + x * evalC q x) :=
+      CPair.oneValue_trans
+        (CPair.mul_congr (CPair.oneValue_refl x) (evalC_add p q x))
+        (CPair.mul_add x (evalC p x) (evalC q x))
+    refine CPair.oneValue_trans
+      (CPair.add_congr hc hm) ?_
+    rw [CPair.add_assoc (ofB c) (ofB d)
+        (x * evalC p x + x * evalC q x),
+      CPair.add_left_comm (ofB d) (x * evalC p x) (x * evalC q x),
+      ← CPair.add_assoc (ofB c) (x * evalC p x)
+        (ofB d + x * evalC q x)]
+    exact CPair.oneValue_refl _
+
+/-- The one-key entry's product reads the entries' own. -/
+private theorem ofB_mul (u v : BPair) :
+    (ofB (u * v)).oneValue (ofB u * ofB v) := by
+  show CPair.oneValue ⟨u * v, Pos.one⟩ ⟨u * v, Pos.one * Pos.one⟩
+  exact CPair.den_congr (ground.one_mul Pos.one).symm
+
+/-- A coefficientwise scaling's composite read is the scale against
+the list's own. -/
+private theorem evalC_scale (c : BPair) : ∀ (q : Poly) (x : CPair),
+    (evalC (q.map (BPair.mul c)) x).oneValue (ofB c * evalC q x)
+  | [], _ => CPair.oneValue_symm (mulC_unit (ofB c))
+  | d :: t, x => by
+    refine CPair.oneValue_trans
+      (CPair.add_congr (ofB_mul c d)
+        (CPair.mul_congr (CPair.oneValue_refl x) (evalC_scale c t x))) ?_
+    refine CPair.oneValue_symm ?_
+    refine CPair.oneValue_trans
+      (CPair.mul_add (ofB c) (ofB d) (x * evalC t x)) ?_
+    rw [← CPair.mul_assoc x (ofB c) (evalC t x),
+      CPair.mul_comm x (ofB c), CPair.mul_assoc (ofB c) x (evalC t x)]
+    exact CPair.oneValue_refl _
+
+/-- The composite evaluation reads the convolution at the values'
+product. -/
+theorem evalC_mul (p q : Poly) (x : CPair) :
+    (evalC (poly.mul p q) x).oneValue (evalC p x * evalC q x) := by
+  induction p with
+  | nil =>
+    show CPair.oneValue unitC (unitC * evalC q x)
+    rw [CPair.mul_comm unitC (evalC q x)]
+    exact CPair.oneValue_symm (mulC_unit (evalC q x))
+  | cons c p' ih =>
+    show (evalC (poly.add (q.map (BPair.mul c))
+        (BPair.unit :: poly.mul p' q)) x).oneValue
+      ((ofB c + x * evalC p' x) * evalC q x)
+    refine CPair.oneValue_trans
+      (evalC_add (q.map (BPair.mul c))
+        (BPair.unit :: poly.mul p' q) x) ?_
+    have h2 : (evalC (BPair.unit :: poly.mul p' q) x).oneValue
+        (x * (evalC p' x * evalC q x)) :=
+      CPair.oneValue_trans (addC_unitC (x * evalC (poly.mul p' q) x))
+        (CPair.mul_congr (CPair.oneValue_refl x) ih)
+    refine CPair.oneValue_trans
+      (CPair.add_congr (evalC_scale c q x) h2) ?_
+    refine CPair.oneValue_symm ?_
+    refine CPair.oneValue_trans
+      (cAddMul (ofB c) (x * evalC p' x) (evalC q x)) ?_
+    rw [CPair.mul_assoc x (evalC p' x) (evalC q x)]
+    exact CPair.oneValue_refl _
+
+/-- A single-key list's composite read is the key's own entry. -/
+private theorem evalC_single (z : BPair) (y : CPair) :
+    (evalC [z] y).oneValue (ofB z) :=
+  CPair.oneValue_trans
+    (CPair.add_congr (CPair.oneValue_refl (ofB z)) (mulC_unit y))
+    (CPair.opUnit_oneValue (ofB z) Pos.one Pos.one)
+
+/-- The moved point against the point's second datum clears: the
+first datum joins the moved point's own multiple. -/
+private theorem linClear (nA : BPair) (dA : Pos) (y : CPair) :
+    (((⟨nA, dA⟩ : CPair) + y) * ofB (BPair.ofPos dA)).oneValue
+      (ofB nA + y * ofB (BPair.ofPos dA)) := by
   refine CPair.oneValue_trans
-    (CPair.oneValue_symm (cAddMul (evalC p a)
-      (evalC p z + CPair.swap (evalC p a)) (dpow p D))) ?_
-  exact CPair.mul_congr (cAddSwapCancel (evalC p a) (evalC p z))
-    (CPair.oneValue_refl (dpow p D))
+    (cAddMul (⟨nA, dA⟩ : CPair) y (ofB (BPair.ofPos dA))) ?_
+  refine CPair.add_congr ?_
+    (CPair.oneValue_refl (y * ofB (BPair.ofPos dA)))
+  refine CPair.oneValue_trans
+    (CPair.num_oneValue (BPair.mul_ofPos nA dA) (dA * Pos.one)) ?_
+  refine CPair.oneValue_trans
+    (CPair.den_congr (ground.mul_comm dA Pos.one)) ?_
+  exact CPair.scale_oneValue nA Pos.one dA
 
-/-- The gap read's priced cap sits at or above the value's cleared
-magnitude at every piece point. -/
-private theorem pointCap (p : Poly) (a b z : CPair) (N D : BPair)
-    (hD : BPair.unit ≤ D) (hPw : unitC ≤ dpow p D)
-    (ha : cmag a * ofB D ≤ ofB N) (hb : cmag b * ofB D ≤ ofB N)
-    (haz : a ≤ z) (hzb : z ≤ b) :
-    cmag (evalC p z) * dpow p D ≤ sqCap p a b N D := by
-  have hgap := evalC_gap_le p a b z N D hD ha hb haz hzb
-  have h1 : cmag (evalC p z) ≤ cmag (evalC p a)
-      + cmag (evalC p z + CPair.swap (evalC p a)) := by
-    refine CPair.le_congr
-      (cmag_congr (cAddSwapCancel (evalC p a) (evalC p z)))
-      (CPair.oneValue_refl _) ?_
-    exact cCmagAddLe (evalC p a) (evalC p z + CPair.swap (evalC p a))
-  refine CPair.le_trans (cMulLeR hPw h1) ?_
-  exact CPair.le_congr
-    (CPair.oneValue_symm (cAddMul _ _ _))
-    (CPair.oneValue_refl _)
-    (CPair.le_add (CPair.le_refl _) hgap)
+/-- The rewritten vacant list's composite read. -/
+private theorem shiftC_eval_nil (nA : BPair) (dA : Pos) (y : CPair) :
+    (evalC (shiftC [] nA dA) y).oneValue
+      (evalC [] ((⟨nA, dA⟩ : CPair) + y)
+        * ofB (BPair.ofPos (Pos.powC dA 0))) := by
+  show CPair.oneValue unitC
+    (unitC * ofB (BPair.ofPos (Pos.powC dA 0)))
+  rw [CPair.mul_comm unitC (ofB (BPair.ofPos (Pos.powC dA 0)))]
+  exact CPair.oneValue_symm
+    (mulC_unit (ofB (BPair.ofPos (Pos.powC dA 0))))
 
-/-- The squared comparison's side at every piece point: the origin
-read clears its priced floor and the gap read sits under its priced
-cap at the point, the comparison rides the ordered squares with the
-square scale at the piece's floor, and the cleared powers withdraw
-at their positivity. -/
-theorem keepSq_all (pB pL : Poly) (e0n : BPair) (e0d : Pos)
-    (hE0n : BPair.unit ≤ e0n) (a b : CPair) (N D : BPair)
-    (h : keepSq pB pL e0n e0d a b N D) (z : CPair)
-    (haz : a ≤ z) (hzb : z ≤ b) :
-    ofB e0n * (evalC pL z * evalC pL z)
-      < ofB (BPair.ofPos e0d) * (z * (evalC pB z * evalC pB z)) := by
-  obtain ⟨hD, hab, hNa, hNb, h5, h6⟩ := h
-  have hD' : BPair.unit ≤ D := ground.leB_of_lt hD
-  have hN : BPair.unit ≤ N :=
-    unitC_le_fst (CPair.le_trans
-      (unitC_le_mul (unitC_le_cmag a) (unitC_le_num Pos.one hD')) hNa)
-  have hPw : unitC ≤ dpow pB D :=
-    unitC_le_num Pos.one (ground.unitLeBpow hD' _)
-  have hQw : unitC ≤ dpow pL D :=
-    unitC_le_num Pos.one (ground.unitLeBpow hD' _)
-  have hPwLt : unitC < dpow pB D :=
-    (unitC_lt_num _ _).mpr (ground.unitLtBpow hD _)
-  have hQwLt : unitC < dpow pL D :=
-    (unitC_lt_num _ _).mpr (ground.unitLtBpow hD _)
-  have hW : unitC ≤ b + CPair.swap a := cleOfLt (cUnitLtAddSwap hab)
-  have hMQ : unitC ≤ ofB (windowsep.magFold (poly.deriv pL) N D) :=
-    unitC_le_num Pos.one
-      (windowsep.unitLe_magFold (poly.deriv pL) hN hD')
-  have hFz := pointFloor pB a b z N D hD' hPw hNa hNb haz hzb
-  have hCz := pointCap pL a b z N D hD' hQw hNa hNb haz hzb
-  have hFpos : unitC < sqFloor pB a b N D := cUnitLtAddSwap h5
-  have hFnn : unitC ≤ sqFloor pB a b N D := cleOfLt hFpos
-  have hCnn : unitC ≤ sqCap pL a b N D :=
-    cUnitLeAdd (unitC_le_mul (unitC_le_cmag _) hQw) (unitC_le_mul hMQ hW)
-  have hE0n' : unitC ≤ ofB e0n := unitC_le_num Pos.one hE0n
-  have hEd : unitC ≤ ofB (BPair.ofPos e0d) :=
-    unitC_le_num Pos.one (ground.leB_of_lt (ground.unitLtOfPos e0d))
-  -- the floor's square against the cleared power's square sits
-  -- strictly above the composite unit
-  have hTpos : unitC < (sqFloor pB a b N D * sqFloor pB a b N D)
-      * (dpow pL D * dpow pL D) :=
-    cUnitLtMul (cUnitLtMul hFpos hFpos) (cUnitLtMul hQwLt hQwLt)
-  have haNN : unitC ≤ a := by
-    match CPair.le_total a unitC with
-    | Or.inr hle => exact hle
-    | Or.inl hle =>
-      exfalso
-      have hLnn : unitC ≤ ofB e0n
-          * ((sqCap pL a b N D * sqCap pL a b N D)
-            * (dpow pB D * dpow pB D)) :=
-        unitC_le_mul hE0n'
-          (unitC_le_mul (unitC_le_mul hCnn hCnn) (unitC_le_mul hPw hPw))
-      have hRpos := cLeLtTrans hLnn h6
-      have hcap : ofB (BPair.ofPos e0d)
-          * (a * ((sqFloor pB a b N D * sqFloor pB a b N D)
-            * (dpow pL D * dpow pL D)))
-          ≤ ofB (BPair.ofPos e0d)
-            * (unitC * ((sqFloor pB a b N D * sqFloor pB a b N D)
-              * (dpow pL D * dpow pL D))) :=
-        mulC_le_left hEd (cMulLeR (cleOfLt hTpos) hle)
-      have hnull : (ofB (BPair.ofPos e0d)
-          * (unitC * ((sqFloor pB a b N D * sqFloor pB a b N D)
-            * (dpow pL D * dpow pL D)))).oneValue unitC := by
-        refine CPair.oneValue_trans
-          (CPair.mul_congr (CPair.oneValue_refl _)
-            (CPair.oneValue_trans
-              (by rw [CPair.mul_comm]; exact CPair.oneValue_refl _)
-              (mulC_unitC _))) ?_
-        exact mulC_unitC _
-      exact CPair.le_not_lt (CPair.le_refl unitC)
-        (cLtLeTrans hRpos
-          (CPair.le_congr (CPair.oneValue_refl _) hnull hcap))
-  have hzNN : unitC ≤ z := CPair.le_trans haNN haz
-  -- the gap read's padded square sits under the cap's
-  have hovm : (cmag (evalC pL z * dpow pL D)).oneValue
-      (cmag (evalC pL z) * dpow pL D) :=
-    CPair.oneValue_trans (cCmagMul (evalC pL z) (dpow pL D))
-      (CPair.mul_congr (CPair.oneValue_refl _) (cCmagOfNn hQw))
-  have hQzQw : (evalC pL z * dpow pL D) * (evalC pL z * dpow pL D)
-      ≤ sqCap pL a b N D * sqCap pL a b N D :=
-    CPair.le_congr
+/-- The rewritten single-key list's composite read. -/
+private theorem shiftC_eval_one (c nA : BPair) (dA : Pos) (y : CPair) :
+    (evalC (shiftC [c] nA dA) y).oneValue
+      (evalC [c] ((⟨nA, dA⟩ : CPair) + y)
+        * ofB (BPair.ofPos (Pos.powC dA 0))) := by
+  have hhead : (evalC [c * BPair.ofPos (Pos.powC dA 0)] y).oneValue
+      (ofB (c * BPair.ofPos (Pos.powC dA 0))) :=
+    evalC_single (c * BPair.ofPos (Pos.powC dA 0)) y
+  have htail : (evalC (poly.mul [nA, BPair.ofPos dA] []) y).oneValue
+      unitC :=
+    CPair.oneValue_trans (evalC_mul [nA, BPair.ofPos dA] [] y)
+      (mulC_unit (evalC [nA, BPair.ofPos dA] y))
+  have hsum : (evalC (shiftC [c] nA dA) y).oneValue
+      (ofB (c * BPair.ofPos (Pos.powC dA 0)) + unitC) :=
+    CPair.oneValue_trans
+      (evalC_add [c * BPair.ofPos (Pos.powC dA 0)]
+        (poly.mul [nA, BPair.ofPos dA] []) y)
+      (CPair.add_congr hhead htail)
+  have hval : (evalC (shiftC [c] nA dA) y).oneValue
+      (ofB c * ofB (BPair.ofPos (Pos.powC dA 0))) :=
+    CPair.oneValue_trans hsum
       (CPair.oneValue_trans
-        (CPair.oneValue_symm (CPair.mul_congr hovm hovm))
-        (cSqMag (evalC pL z * dpow pL D)))
-      (CPair.oneValue_refl _)
-      (mulC_le_mono (unitC_le_mul (unitC_le_cmag _) hQw) hCnn hCz hCz)
-  -- the origin read's square clears the floor's
-  have hPzPw : sqFloor pB a b N D * sqFloor pB a b N D
-      ≤ (evalC pB z * dpow pB D) * (evalC pB z * dpow pB D) :=
-    mulC_le_mono hFnn (CPair.le_trans hFnn hFz) hFz hFz
-  -- the strict middle at the piece's floor moved to the point
-  have hinner : a * ((sqFloor pB a b N D * sqFloor pB a b N D)
-        * (dpow pL D * dpow pL D))
-      ≤ z * (((evalC pB z * dpow pB D) * (evalC pB z * dpow pB D))
-        * (dpow pL D * dpow pL D)) :=
-    mulC_le_mono
-      (unitC_le_mul (unitC_le_mul hFnn hFnn) (unitC_le_mul hQw hQw))
-      hzNN haz (cMulLeR (unitC_le_mul hQw hQw) hPzPw)
-  have hmid : ofB e0n * ((sqCap pL a b N D * sqCap pL a b N D)
-        * (dpow pB D * dpow pB D))
-      < ofB (BPair.ofPos e0d)
-        * (z * (((evalC pB z * dpow pB D) * (evalC pB z * dpow pB D))
-          * (dpow pL D * dpow pL D))) :=
-    cLtLeTrans h6 (mulC_le_left hEd hinner)
-  -- attach the shared padding on the left
-  have heqL : (ofB e0n * (evalC pL z * evalC pL z))
-        * ((dpow pB D * dpow pB D) * (dpow pL D * dpow pL D))
-      = ofB e0n * (((evalC pL z * dpow pL D)
-        * (evalC pL z * dpow pL D)) * (dpow pB D * dpow pB D)) := by
-    rw [CPair.mul_assoc, CPair.mul_comm (dpow pB D * dpow pB D)
-        (dpow pL D * dpow pL D),
-      ← CPair.mul_assoc (evalC pL z * evalC pL z)
-        (dpow pL D * dpow pL D) (dpow pB D * dpow pB D),
-      cMulShuffle (evalC pL z) (evalC pL z) (dpow pL D) (dpow pL D)]
-  have hL : (ofB e0n * (evalC pL z * evalC pL z))
-        * ((dpow pB D * dpow pB D) * (dpow pL D * dpow pL D))
-      ≤ ofB e0n * ((sqCap pL a b N D * sqCap pL a b N D)
-        * (dpow pB D * dpow pB D)) := by
-    rw [heqL]
-    exact mulC_le_left hE0n' (cMulLeR (unitC_le_mul hPw hPw) hQzQw)
-  -- withdraw the shared padding on the right
-  have heqR : ofB (BPair.ofPos e0d)
-        * (z * (((evalC pB z * dpow pB D) * (evalC pB z * dpow pB D))
-          * (dpow pL D * dpow pL D)))
-      = (ofB (BPair.ofPos e0d) * (z * (evalC pB z * evalC pB z)))
-        * ((dpow pB D * dpow pB D) * (dpow pL D * dpow pL D)) := by
-    rw [cMulShuffle (evalC pB z) (dpow pB D) (evalC pB z) (dpow pB D),
-      CPair.mul_assoc (evalC pB z * evalC pB z)
-        (dpow pB D * dpow pB D) (dpow pL D * dpow pL D),
-      ← CPair.mul_assoc z (evalC pB z * evalC pB z)
-        ((dpow pB D * dpow pB D) * (dpow pL D * dpow pL D)),
-      ← CPair.mul_assoc (ofB (BPair.ofPos e0d))
-        (z * (evalC pB z * evalC pB z))
-        ((dpow pB D * dpow pB D) * (dpow pL D * dpow pL D))]
-  have hfin : (ofB e0n * (evalC pL z * evalC pL z))
-        * ((dpow pB D * dpow pB D) * (dpow pL D * dpow pL D))
-      < (ofB (BPair.ofPos e0d) * (z * (evalC pB z * evalC pB z)))
-        * ((dpow pB D * dpow pB D) * (dpow pL D * dpow pL D)) := by
-    refine cLeLtTrans hL ?_
-    rw [← heqR]
-    exact hmid
-  exact cLtUnscale
-    (cUnitLtMul (cUnitLtMul hPwLt hPwLt) (cUnitLtMul hQwLt hQwLt))
-    hfin
+        (CPair.opUnit_oneValue
+          (ofB (c * BPair.ofPos (Pos.powC dA 0))) Pos.one Pos.one)
+        (ofB_mul c (BPair.ofPos (Pos.powC dA 0))))
+  refine CPair.oneValue_trans hval ?_
+  exact CPair.mul_congr
+    (CPair.oneValue_symm (evalC_single c ((⟨nA, dA⟩ : CPair) + y)))
+    (CPair.oneValue_refl (ofB (BPair.ofPos (Pos.powC dA 0))))
 
-/-- The composite read at a stated clearing past the
-representative's count: the cleared evaluation against the
-clearing's power. -/
-private theorem evalC_clearedAt {P : Poly} {J : Nat}
-    (hvac : ∀ j, J + 1 ≤ j →
-      (ground.getAt BPair.unit P j).oneValue BPair.unit)
-    (x : BPair) (ed : Pos) :
-    (evalC P ⟨x, ed⟩).oneValue
-      ⟨poly.evalClear P x ed J, ground.Pos.pow ed J⟩ := by
+/-- The rewritten list's composite read on the deep recursion, the
+tail's own count carrying the clearing's power. -/
+private theorem shiftC_eval_cons (c d nA : BPair) (dA : Pos) (t : Poly)
+    (y : CPair)
+    (hIH : (evalC (shiftC (d :: t) nA dA) y).oneValue
+      (evalC (d :: t) ((⟨nA, dA⟩ : CPair) + y)
+        * ofB (BPair.ofPos (Pos.powC dA t.length)))) :
+    (evalC (shiftC (c :: d :: t) nA dA) y).oneValue
+      (evalC (c :: d :: t) ((⟨nA, dA⟩ : CPair) + y)
+        * ofB (BPair.ofPos (Pos.powC dA (t.length + 1)))) := by
+  have hpow : Pos.powC dA (t.length + 1)
+      = dA * Pos.powC dA t.length := by
+    have h1 : Pos.pow dA (t.length + 1)
+        = dA * Pos.pow dA t.length := rfl
+    rw [Pos.powC_eq dA (t.length + 1), Pos.powC_eq dA t.length, h1]
+  have hBp : (ofB (BPair.ofPos (Pos.powC dA (t.length + 1)))).oneValue
+      (ofB (BPair.ofPos dA)
+        * ofB (BPair.ofPos (Pos.powC dA t.length))) := by
+    refine CPair.oneValue_trans ?_
+      (ofB_mul (BPair.ofPos dA) (BPair.ofPos (Pos.powC dA t.length)))
+    refine CPair.num_oneValue ?_ Pos.one
+    rw [hpow]
+    exact BPair.oneValue_symm
+      (BPair.ofPos_mul dA (Pos.powC dA t.length))
+  have hlin1 : (evalC [nA, BPair.ofPos dA] y).oneValue
+      (ofB nA + y * ofB (BPair.ofPos dA)) :=
+    CPair.add_congr (CPair.oneValue_refl (ofB nA))
+      (CPair.mul_congr (CPair.oneValue_refl y)
+        (evalC_single (BPair.ofPos dA) y))
+  have hhead : (evalC [c * BPair.ofPos (Pos.powC dA (t.length + 1))] y).oneValue
+      (ofB (c * BPair.ofPos (Pos.powC dA (t.length + 1)))) :=
+    evalC_single (c * BPair.ofPos (Pos.powC dA (t.length + 1))) y
+  have htail : (evalC (poly.mul [nA, BPair.ofPos dA]
+        (shiftC (d :: t) nA dA)) y).oneValue
+      ((ofB nA + y * ofB (BPair.ofPos dA))
+        * (evalC (d :: t) ((⟨nA, dA⟩ : CPair) + y)
+          * ofB (BPair.ofPos (Pos.powC dA t.length)))) :=
+    CPair.oneValue_trans
+      (evalC_mul [nA, BPair.ofPos dA] (shiftC (d :: t) nA dA) y)
+      (CPair.mul_congr hlin1 hIH)
+  have hsum : (evalC (shiftC (c :: d :: t) nA dA) y).oneValue
+      (ofB (c * BPair.ofPos (Pos.powC dA (t.length + 1)))
+        + (ofB nA + y * ofB (BPair.ofPos dA))
+          * (evalC (d :: t) ((⟨nA, dA⟩ : CPair) + y)
+            * ofB (BPair.ofPos (Pos.powC dA t.length)))) :=
+    CPair.oneValue_trans
+      (evalC_add [c * BPair.ofPos (Pos.powC dA (t.length + 1))]
+        (poly.mul [nA, BPair.ofPos dA] (shiftC (d :: t) nA dA)) y)
+      (CPair.add_congr hhead htail)
+  refine CPair.oneValue_trans hsum ?_
+  refine CPair.oneValue_symm ?_
+  show ((ofB c
+      + ((⟨nA, dA⟩ : CPair) + y)
+        * evalC (d :: t) ((⟨nA, dA⟩ : CPair) + y))
+      * ofB (BPair.ofPos (Pos.powC dA (t.length + 1)))).oneValue
+    (ofB (c * BPair.ofPos (Pos.powC dA (t.length + 1)))
+      + (ofB nA + y * ofB (BPair.ofPos dA))
+        * (evalC (d :: t) ((⟨nA, dA⟩ : CPair) + y)
+          * ofB (BPair.ofPos (Pos.powC dA t.length))))
   refine CPair.oneValue_trans
-    (CPair.oneValue_symm (evalC_congr (poly.vnorm_ov P) ⟨x, ed⟩)) ?_
+    (cAddMul (ofB c)
+      (((⟨nA, dA⟩ : CPair) + y)
+        * evalC (d :: t) ((⟨nA, dA⟩ : CPair) + y))
+      (ofB (BPair.ofPos (Pos.powC dA (t.length + 1))))) ?_
+  refine CPair.add_congr
+    (CPair.oneValue_symm
+      (ofB_mul c (BPair.ofPos (Pos.powC dA (t.length + 1))))) ?_
   refine CPair.oneValue_trans
-    (evalC_read (poly.vnorm P) J (poly.vnormLen_cap hvac) x ed) ?_
-  refine CPair.num_oneValue ?_ (ground.Pos.pow ed J)
-  refine BPair.oneValue_trans (poly.eval_clearVar (poly.vnorm P) ed J x) ?_
-  exact poly.evalClear_congr (poly.vnorm_ov P) x ed J
+    (CPair.mul_congr
+      (CPair.oneValue_refl
+        (((⟨nA, dA⟩ : CPair) + y)
+          * evalC (d :: t) ((⟨nA, dA⟩ : CPair) + y)))
+      hBp) ?_
+  rw [cMulShuffle ((⟨nA, dA⟩ : CPair) + y)
+    (evalC (d :: t) ((⟨nA, dA⟩ : CPair) + y)) (ofB (BPair.ofPos dA))
+    (ofB (BPair.ofPos (Pos.powC dA t.length)))]
+  exact CPair.mul_congr (linClear nA dA y)
+    (CPair.oneValue_refl
+      (evalC (d :: t) ((⟨nA, dA⟩ : CPair) + y)
+        * ofB (BPair.ofPos (Pos.powC dA t.length))))
 
-/-- The squared comparison's cleared read: the composite side at a
-box point descends to the cleared evaluations at a stated clearing,
-the point's second datum joining the square scale's side once. -/
-theorem sqComp_clear {pB pL : Poly} {J : Nat}
-    (hvacB : ∀ j, J + 1 ≤ j →
-      (ground.getAt BPair.unit pB j).oneValue BPair.unit)
-    (hvacL : ∀ j, J + 1 ≤ j →
-      (ground.getAt BPair.unit pL j).oneValue BPair.unit)
-    (e0n : BPair) (e0d : Pos) (x : BPair) (ed : Pos)
-    (h : ofB e0n * (evalC pL ⟨x, ed⟩ * evalC pL ⟨x, ed⟩)
-      < ofB (BPair.ofPos e0d)
-        * ((⟨x, ed⟩ : CPair) * (evalC pB ⟨x, ed⟩ * evalC pB ⟨x, ed⟩))) :
-    e0n * (BPair.ofPos ed
-        * (poly.evalClear pL x ed J * poly.evalClear pL x ed J))
-      < BPair.ofPos e0d
-        * (x * (poly.evalClear pB x ed J * poly.evalClear pB x ed J)) := by
-  have hL := evalC_clearedAt hvacL x ed
-  have hB := evalC_clearedAt hvacB x ed
-  have hnum := cltNum (CPair.lt_congr
-    (CPair.mul_congr (CPair.oneValue_refl (ofB e0n))
-      (CPair.mul_congr hL hL))
-    (CPair.mul_congr (CPair.oneValue_refl (ofB (BPair.ofPos e0d)))
-      (CPair.mul_congr (CPair.oneValue_refl (⟨x, ed⟩ : CPair))
-        (CPair.mul_congr hB hB))) h)
-  have hnum' : (e0n
-        * (poly.evalClear pL x ed J * poly.evalClear pL x ed J)).scale
-        (Pos.one * (ed * (ground.Pos.pow ed J * ground.Pos.pow ed J)))
-      < (BPair.ofPos e0d
-          * (x * (poly.evalClear pB x ed J
-            * poly.evalClear pB x ed J))).scale
-        (Pos.one * (ground.Pos.pow ed J * ground.Pos.pow ed J)) := hnum
-  rw [ground.one_mul (ed * (ground.Pos.pow ed J * ground.Pos.pow ed J)),
-    ground.one_mul (ground.Pos.pow ed J * ground.Pos.pow ed J),
-    ← BPair.scale_scale (e0n
-      * (poly.evalClear pL x ed J * poly.evalClear pL x ed J)) ed
-      (ground.Pos.pow ed J * ground.Pos.pow ed J)] at hnum'
-  have hstep := BPair.lt_of_scale_lt hnum'
-  refine BPair.lt_congr ?_ (BPair.oneValue_refl _) hstep
-  refine BPair.oneValue_trans (BPair.oneValue_symm
-    (BPair.ofPos_scale ed (e0n
-      * (poly.evalClear pL x ed J * poly.evalClear pL x ed J)))) ?_
-  exact BPair.oneValue_of_eq (BPair.mul_left_comm (BPair.ofPos ed) e0n
-    (poly.evalClear pL x ed J * poly.evalClear pL x ed J))
+/-- The rewritten list's evaluation is the polynomial's read at the
+moved point, cleared at the point's second datum's power. -/
+theorem shiftC_eval : ∀ (p : Poly) (nA : BPair) (dA : Pos)
+    (y : CPair),
+    (evalC (shiftC p nA dA) y).oneValue
+      (evalC p ((⟨nA, dA⟩ : CPair) + y)
+        * ofB (BPair.ofPos (Pos.powC dA (p.length - 1))))
+  | [], nA, dA, y => shiftC_eval_nil nA dA y
+  | [c], nA, dA, y => shiftC_eval_one c nA dA y
+  | c :: d :: t, nA, dA, y =>
+    shiftC_eval_cons c d nA dA t y (shiftC_eval (d :: t) nA dA y)
+
+/-- The magnitude fold at a width: a coefficient list's cap over
+the width's segment, the magnitudes' Horner read. -/
+def capW : Poly → CPair → CPair
+  | [], _ => unitC
+  | c :: p, w => ofB (windowsep.mag c) + w * capW p w
+
+/-- The piece's floor: the endpoint's read less the deeper
+coefficients' magnitude fold at the width. -/
+def floorW : Poly → CPair → CPair
+  | [], _ => unitC
+  | c :: p, w => ofB c + CPair.swap (w * capW p w)
+
+/-- The deeper read's priced magnitude at a width point sits at or
+below the width's own fold. -/
+private theorem capMulLe {p : Poly} {y w : CPair} (h0 : unitC ≤ y)
+    (hw : y ≤ w) (ih : cmag (evalC p y) ≤ capW p w) :
+    cmag (y * evalC p y) ≤ w * capW p w := by
+  refine CPair.le_congr
+    (CPair.oneValue_symm
+      (CPair.oneValue_trans (cmag_mul y (evalC p y))
+        (CPair.mul_congr (cmag_of_unitLe h0) (CPair.oneValue_refl _))))
+    (CPair.oneValue_refl _) ?_
+  exact mulC_le_mono (unitC_le_cmag (evalC p y))
+    (CPair.le_trans h0 hw) hw ih
+
+/-- A value's magnitude sits at or below the width fold at every
+point of the width's segment. -/
+theorem capW_le (p : Poly) {y w : CPair} (h0 : unitC ≤ y)
+    (hw : y ≤ w) : cmag (evalC p y) ≤ capW p w := by
+  induction p with
+  | nil =>
+    exact CPair.le_congr
+      (CPair.oneValue_symm (cmag_of_unitLe (CPair.le_refl unitC)))
+      (CPair.oneValue_refl unitC) (CPair.le_refl unitC)
+  | cons c t ih =>
+    refine CPair.le_trans (cmag_add_le (ofB c) (y * evalC t y)) ?_
+    refine CPair.le_add ?_ (capMulLe h0 hw ih)
+    exact CPair.le_congr (CPair.oneValue_symm (cmag_num c Pos.one))
+      (CPair.oneValue_refl (ofB (windowsep.mag c)))
+      (CPair.le_refl (ofB (windowsep.mag c)))
+
+/-- A value sits at or beyond the floor at every point of the
+width's segment. -/
+theorem floorW_le (p : Poly) {y w : CPair} (h0 : unitC ≤ y)
+    (hw : y ≤ w) : floorW p w ≤ evalC p y := by
+  cases p with
+  | nil => exact CPair.le_refl unitC
+  | cons c t =>
+    refine CPair.le_add (CPair.le_refl (ofB c)) ?_
+    refine CPair.le_trans
+      (CPair.le_swap (capMulLe h0 hw (capW_le t h0 hw))) ?_
+    exact swap_cmag_le (y * evalC t y)
+
+/-- The piece's priced cap at the piece's own chart: the rewritten
+list's width fold, read at the endpoint's clearing. -/
+def capA (p : Poly) : CPair → CPair → CPair
+  | ⟨nA, dA⟩, w =>
+    overC (capW (shiftC p nA dA) w) (Pos.powC dA (p.length - 1))
+
+/-- The piece's priced floor at the piece's own chart. -/
+def floorA (p : Poly) : CPair → CPair → CPair
+  | ⟨nA, dA⟩, w =>
+    overC (floorW (shiftC p nA dA) w) (Pos.powC dA (p.length - 1))
+
+/-- The piece's chart reads: the moved point inside the moved
+width's segment, and the rewritten list's read at the value's own
+priced clearing. -/
+private theorem shiftReads (p : Poly) (nA : BPair) (dA : Pos)
+    {x b : CPair} (hax : (⟨nA, dA⟩ : CPair) ≤ x) (hxb : x ≤ b) :
+    unitC ≤ x + CPair.swap ⟨nA, dA⟩
+    ∧ x + CPair.swap ⟨nA, dA⟩ ≤ b + CPair.swap ⟨nA, dA⟩
+    ∧ (evalC (shiftC p nA dA) (x + CPair.swap ⟨nA, dA⟩)).oneValue
+        (evalC p x
+          * ofB (BPair.ofPos (Pos.powC dA (p.length - 1)))) := by
+  have hAS : ((⟨nA, dA⟩ : CPair) + CPair.swap ⟨nA, dA⟩).oneValue unitC :=
+    CPair.oneValue_trans
+      (CPair.oneValue_symm
+        (addC_unitC ((⟨nA, dA⟩ : CPair) + CPair.swap ⟨nA, dA⟩)))
+      (CPair.add_swap_unit ⟨nA, dA⟩ unitC)
+  have hxy : ((⟨nA, dA⟩ : CPair) + (x + CPair.swap ⟨nA, dA⟩)).oneValue x := by
+    rw [CPair.add_left_comm (⟨nA, dA⟩ : CPair) x (CPair.swap ⟨nA, dA⟩)]
+    exact CPair.add_swap_unit ⟨nA, dA⟩ x
+  refine ⟨CPair.le_congr hAS
+      (CPair.oneValue_refl (x + CPair.swap ⟨nA, dA⟩))
+      (CPair.le_add hax (CPair.le_refl (CPair.swap ⟨nA, dA⟩))),
+    CPair.le_add hxb (CPair.le_refl (CPair.swap ⟨nA, dA⟩)), ?_⟩
+  exact CPair.oneValue_trans
+    (shiftC_eval p nA dA (x + CPair.swap ⟨nA, dA⟩))
+    (CPair.mul_congr (evalC_point_congr p hxy) (CPair.oneValue_refl _))
+
+/-- A value's magnitude over a piece sits at or below the piece's
+priced cap, the width the endpoints' gap. -/
+theorem capA_le (p : Poly) {a x b : CPair} (hax : a ≤ x)
+    (hxb : x ≤ b) :
+    cmag (evalC p x) ≤ capA p a (b + CPair.swap a) := by
+  obtain ⟨nA, dA⟩ := a
+  obtain ⟨h0, hw, hval⟩ := shiftReads p nA dA hax hxb
+  have hQ : unitC ≤ ofB (BPair.ofPos (Pos.powC dA (p.length - 1))) :=
+    unitC_le_num Pos.one
+      (ground.leB_of_lt
+        (ground.unitLtOfPos (Pos.powC dA (p.length - 1))))
+  have hcm : (cmag (evalC (shiftC p nA dA)
+        (x + CPair.swap ⟨nA, dA⟩))).oneValue
+      (cmag (evalC p x)
+        * ofB (BPair.ofPos (Pos.powC dA (p.length - 1)))) :=
+    CPair.oneValue_trans (cmag_congr hval)
+      (CPair.oneValue_trans
+        (cmag_mul (evalC p x)
+          (ofB (BPair.ofPos (Pos.powC dA (p.length - 1)))))
+        (CPair.mul_congr (CPair.oneValue_refl (cmag (evalC p x)))
+          (cmag_of_unitLe hQ)))
+  have hle : cmag (evalC p x)
+        * ofB (BPair.ofPos (Pos.powC dA (p.length - 1)))
+      ≤ capW (shiftC p nA dA) (b + CPair.swap ⟨nA, dA⟩) :=
+    CPair.le_congr hcm (CPair.oneValue_refl _)
+      (capW_le (shiftC p nA dA) h0 hw)
+  exact le_overC hle
+
+/-- A value over a piece sits at or beyond the piece's priced
+floor. -/
+theorem floorA_le (p : Poly) {a x b : CPair} (hax : a ≤ x)
+    (hxb : x ≤ b) :
+    floorA p a (b + CPair.swap a) ≤ evalC p x := by
+  obtain ⟨nA, dA⟩ := a
+  obtain ⟨h0, hw, hval⟩ := shiftReads p nA dA hax hxb
+  have hle : floorW (shiftC p nA dA) (b + CPair.swap ⟨nA, dA⟩)
+      ≤ evalC p x
+        * ofB (BPair.ofPos (Pos.powC dA (p.length - 1))) :=
+    CPair.le_congr (CPair.oneValue_refl _) hval
+      (floorW_le (shiftC p nA dA) h0 hw)
+  exact overC_le hle
 
 end stage

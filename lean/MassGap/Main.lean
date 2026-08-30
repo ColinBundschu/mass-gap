@@ -364,16 +364,164 @@ private def sHi (o F : Nat) : split.PMat :=
   freecell.freePMat (winDiag o (BPair.ofNat (4 * F))) (winDiag o ⟨2, 1⟩)
     (inertia.idMat o) (ground.posOfSucc (2 * F)) 1
 
-/-- The loop head's two-coefficient value `a − c z²` at its one-member
-coefficients, subtraction-free. -/
-private def qp (a c : Nat) : poly.Poly :=
-  [⟨⟨a⟩, ⟨0⟩⟩, BPair.unit, ⟨⟨0⟩, ⟨c⟩⟩]
+/-! The window carriers' entry reads: `lem:freecell`'s display at
+the diagonal window, each entry the one polynomial list — the
+level datum's entry at the constant key (`def:pencil`'s join at
+`thm:certconstruct`'s cross-added level), the unit middle, and the
+magnetic member's balance partner at the top key — read off the
+stated displays (`freecell.freePMat_entry`;
+`inertia.siteDatum_entry`; the diagonal's own `matOf` read at
+`def:pencil`'s diagonal `E` with `lem:freeend`'s member clause). -/
 
-/-- The loop head's two-coefficient value's cube,
-`a³ − 3a²c z² + 3ac² z⁴ − c³ z⁶`, `c`-cleared. -/
-private def qp3 (a c : Nat) : poly.Poly :=
-  [⟨⟨a * (a * a)⟩, ⟨0⟩⟩, BPair.unit, ⟨⟨0⟩, ⟨3 * (a * (a * c))⟩⟩,
-   BPair.unit, ⟨⟨3 * (a * (c * c))⟩, ⟨0⟩⟩, BPair.unit, ⟨⟨0⟩, ⟨c * (c * c)⟩⟩]
+/-- The floor window's diagonal keeps the stated order. -/
+private theorem sqAt_winDiag (o : Nat) (v : BPair) :
+    elim.sqAt (winDiag o v) o :=
+  elim.sqAt_of (ground.matOf_length o o _) (elim.rowsLen_matOf o o _)
+
+/-- The floor window's diagonal at an entry: the loop value at the
+occupied diagonal keys, the unit line at its head, the vacant
+couplings at the sum's unit. -/
+private theorem winDiag_entry (o : Nat) (v : BPair) (i j : Nat)
+    (hi : i < o) (hj : j < o) :
+    getAt BPair.unit (getAt [] (winDiag o v) i) j
+      = if i == j then (if i == 0 then BPair.unit else v)
+        else BPair.unit :=
+  ground.matOf_entry [] BPair.unit o o _ i j hi hj
+
+/-- The window carrier's entry at any key pair inside the order,
+the displays composed: the diagonal reads at their guards with the
+identity gram's level weights. -/
+private theorem winEntry (o : Nat) (v w : BPair) (x y : Pos)
+    (i j : Nat) (hi : i < o) (hj : j < o) :
+    getAt [] (getAt [] (freecell.freePMat (winDiag o v)
+        (winDiag o w) (inertia.idMat o) x y) i) j
+      = (((if i == j then (if i == 0 then BPair.unit else v)
+            else BPair.unit)
+          + (if j = i then BPair.ofNat 1 else BPair.unit).scale y)
+        + ((if j = i then BPair.ofNat 1 else BPair.unit).scale x).swap)
+        :: ([BPair.unit]
+            ++ [(if i == j then (if i == 0 then BPair.unit else w)
+                else BPair.unit).swap]) := by
+  have hScY : elim.sqAt (inertia.matScale y (inertia.idMat o)) o :=
+    inertia.sqAt_matScale o y _ (inertia.sqAt_idMat o)
+  have hScX : elim.sqAt (inertia.matScale x (inertia.idMat o)) o :=
+    inertia.sqAt_matScale o x _ (inertia.sqAt_idMat o)
+  have hAdd : elim.sqAt (elim.matAdd (winDiag o v)
+      (inertia.matScale y (inertia.idMat o))) o :=
+    elim.sqAt_matAdd o _ _ (sqAt_winDiag o v) hScY
+  have hIdRow : j < (getAt ([] : List BPair)
+      (inertia.idMat o) i).length := by
+    rw [elim.rowsLen_getAt _ i (inertia.idMat_rows o)
+        (by rw [inertia.idMat_len]; exact hi)]
+    exact hj
+  rw [freecell.freePMat_entry (winDiag o v) (winDiag o w)
+      (inertia.idMat o) x y o (sqAt_winDiag o v) (sqAt_winDiag o w)
+      (inertia.sqAt_idMat o) i j hi hj,
+    inertia.siteDatum_entry _ _ o (elim.rowsLen_of_sqAt hAdd)
+      (elim.rowsLen_of_sqAt hScX) i j
+      (by rw [elim.sqAt_len hAdd]; exact hi)
+      (by rw [elim.sqAt_len hScX]; exact hi) hj,
+    elim.entry_matAdd _ _ o
+      (elim.rowsLen_of_sqAt (sqAt_winDiag o v))
+      (elim.rowsLen_of_sqAt hScY) i j
+      (by rw [elim.sqAt_len (sqAt_winDiag o v)]; exact hi)
+      (by rw [elim.sqAt_len hScY]; exact hi) hj,
+    inertia.matScale_entry y (inertia.idMat o) i j
+      (by rw [inertia.idMat_len]; exact hi) hIdRow,
+    inertia.matScale_entry x (inertia.idMat o) i j
+      (by rw [inertia.idMat_len]; exact hi) hIdRow,
+    inertia.getAt_idMat o i j hi hj,
+    winDiag_entry o v i j hi hj,
+    winDiag_entry o w i j hi hj]
+
+/-- The head entry at the window carrier: the unit line's own
+read, the level weights at the identity gram alone. -/
+private theorem winEntry_head (o : Nat) (v w : BPair) (x y : Pos)
+    (ho : 0 < o) :
+    getAt [] (getAt [] (freecell.freePMat (winDiag o v)
+        (winDiag o w) (inertia.idMat o) x y) 0) 0
+      = [(BPair.unit + (BPair.ofNat 1).scale y)
+          + ((BPair.ofNat 1).scale x).swap,
+         BPair.unit, BPair.unit] := by
+  rw [winEntry o v w x y 0 0 ho ho]
+  rfl
+
+/-- A loop entry at the window carrier: the loop values at their
+occupied diagonal key. -/
+private theorem winEntry_loop (o : Nat) (v w : BPair) (x y : Pos)
+    (i : Nat) (h1 : 0 < i) (hio : i < o) :
+    getAt [] (getAt [] (freecell.freePMat (winDiag o v)
+        (winDiag o w) (inertia.idMat o) x y) i) i
+      = [(v + (BPair.ofNat 1).scale y)
+          + ((BPair.ofNat 1).scale x).swap,
+         BPair.unit, w.swap] := by
+  rw [winEntry o v w x y i i hio hio,
+    if_pos (ground.eqBeqOf (rfl : i = i)),
+    if_neg (show ¬ ((i == 0) = true) from fun h =>
+      Nat.ne_of_gt h1 (ground.beqEqOf h)),
+    if_pos (ground.eqBeqOf (rfl : i = i)),
+    if_neg (show ¬ ((i == 0) = true) from fun h =>
+      Nat.ne_of_gt h1 (ground.beqEqOf h)),
+    if_pos (rfl : i = i)]
+  rfl
+
+/-- A coupling entry at the window carrier: the vacant off-diagonal
+reads at the level weights, the one entry shape every carrier's
+off-diagonal takes. -/
+private theorem winEntry_coup (o : Nat) (v w : BPair) (x y : Pos)
+    (i j : Nat) (hi : i < o) (hj : j < o) (hne : i ≠ j) :
+    getAt [] (getAt [] (freecell.freePMat (winDiag o v)
+        (winDiag o w) (inertia.idMat o) x y) i) j
+      = [(BPair.unit + BPair.unit.scale y)
+          + (BPair.unit.scale x).swap,
+         BPair.unit, BPair.unit] := by
+  rw [winEntry o v w x y i j hi hj,
+    if_neg (show ¬ ((i == j) = true) from fun h =>
+      hne (ground.beqEqOf h)),
+    if_neg (show ¬ ((i == j) = true) from fun h =>
+      hne (ground.beqEqOf h)),
+    if_neg (show ¬ (j = i) from fun h => hne h.symm)]
+  rfl
+
+/-- The lower carrier's coupling entry, the level-one instance. -/
+private theorem sLo_coup (o cut i j : Nat) (hi : i < o) (hj : j < o)
+    (hne : i ≠ j) :
+    getAt [] (getAt [] (sLo o cut) i) j
+      = [(BPair.unit + BPair.unit.scale 1) + (BPair.unit.scale 2).swap,
+         BPair.unit, BPair.unit] :=
+  winEntry_coup o (BPair.ofNat cut) ⟨2, 1⟩ 2 1 i j hi hj hne
+
+/-- The upper carrier's coupling entry at the stated level scale. -/
+private theorem sHi_coup (o F i j : Nat) (hi : i < o) (hj : j < o)
+    (hne : i ≠ j) :
+    getAt [] (getAt [] (sHi o F) i) j
+      = [(BPair.unit + BPair.unit.scale 1)
+          + (BPair.unit.scale (ground.posOfSucc (2 * F))).swap,
+         BPair.unit, BPair.unit] :=
+  winEntry_coup o (BPair.ofNat (4 * F)) ⟨2, 1⟩
+    (ground.posOfSucc (2 * F)) 1 i j hi hj hne
+
+/-- The window carrier is symmetric at the stated order: the
+diagonal reads at their own keys with every coupling the one
+entry shape (`thm:pairpencil`'s symmetric site datum). -/
+private theorem winSym (o : Nat) (v w : BPair) (x y : Pos) :
+    split.pSymAt (freecell.freePMat (winDiag o v) (winDiag o w)
+      (inertia.idMat o) x y) o := by
+  refine split.pSymAt_of _ o (fun i j hi hj => ?_)
+  by_cases h : i = j
+  · rw [h]
+    exact poly.oneValue_refl _
+  · rw [winEntry_coup o v w x y i j hi hj h,
+      winEntry_coup o v w x y j i hj hi (fun hh => h hh.symm)]
+    exact poly.oneValue_refl _
+
+/-- The lower carrier's symmetry read. -/
+private theorem sLo_sym (o cut : Nat) : split.pSymAt (sLo o cut) o :=
+  winSym o (BPair.ofNat cut) ⟨2, 1⟩ 2 1
+
+/-- The upper carrier's symmetry read. -/
+private theorem sHi_sym (o F : Nat) : split.pSymAt (sHi o F) o :=
+  winSym o (BPair.ofNat (4 * F)) ⟨2, 1⟩ (ground.posOfSucc (2 * F)) 1
 
 /-- The coupling entry's head at a stated level scale reads the
 sum's unit, the one entry shape every carrier's off-diagonal
@@ -392,6 +540,82 @@ private theorem coupUT (s : Pos) :
        BPair.unit, BPair.unit] :=
   ⟨BPair.oneValue_of_eqMem rfl, BPair.oneValue_refl _,
    BPair.oneValue_refl _, trivial⟩
+
+/-- A trailing row's coupling at the head column is unit-tailed,
+the deflation's row hypothesis at the lower carrier. -/
+private theorem sLo_offR (o cut i : Nat) (h1 : 0 < i) (hio : i < o) :
+    poly.unitTail (getAt [] (getAt [] (sLo o cut) i) 0) := by
+  rw [sLo_coup o cut i 0 hio (Nat.lt_trans h1 hio) (Nat.ne_of_gt h1)]
+  exact coupUT 2
+
+/-- A trailing row's coupling at the head column is unit-tailed,
+the deflation's row hypothesis at the upper carrier. -/
+private theorem sHi_offR (o F i : Nat) (h1 : 0 < i) (hio : i < o) :
+    poly.unitTail (getAt [] (getAt [] (sHi o F) i) 0) := by
+  rw [sHi_coup o F i 0 hio (Nat.lt_trans h1 hio) (Nat.ne_of_gt h1)]
+  exact coupUT (ground.posOfSucc (2 * F))
+
+/-- The lower carrier's head entry, value `−1`: the level one over
+the unit line. -/
+private theorem sLo_head (o cut : Nat) (ho : 0 < o) :
+    getAt [] (getAt [] (sLo o cut) 0) 0
+      = [(⟨⟨4⟩, ⟨5⟩⟩ : BPair), BPair.unit, BPair.unit] := by
+  rw [show sLo o cut = freecell.freePMat (winDiag o (BPair.ofNat cut))
+      (winDiag o ⟨2, 1⟩) (inertia.idMat o) 2 1 from rfl,
+    winEntry_head o (BPair.ofNat cut) ⟨2, 1⟩ 2 1 ho]
+  rfl
+
+
+/-! The committed range's cover data: the endpoint and sample-point
+orders, the piece's distinct place, and the head entry's lower keep
+at the committed range. -/
+
+private theorem winFoot_le_top : winFoot ≤ winTop := by decide +kernel
+
+private theorem winFoot_le_sample :
+    winFoot ≤ (⟨BPair.unit, 1⟩ : ground.CPair) := by decide +kernel
+
+private theorem winSample_le_top :
+    (⟨BPair.unit, 1⟩ : ground.CPair) ≤ winTop := by decide +kernel
+
+private theorem winPlace0 : ground.distinctList [0] := by decide +kernel
+
+private theorem headKeepLower :
+    stage.keepLower [(⟨⟨4⟩, ⟨5⟩⟩ : BPair), BPair.unit, BPair.unit]
+      winFoot winTop ⟨2, 1⟩ ⟨2, 1⟩ := by decide +kernel
+/-- The lower carrier's head keep at the committed range, the free
+end's own read at every order and cutoff. -/
+private theorem sLo_headKeep (o cut : Nat) (ho : 0 < o) :
+    stage.keepLower (getAt [] (getAt [] (sLo o cut) 0) 0)
+      winFoot winTop ⟨2, 1⟩ ⟨2, 1⟩ := by
+  rw [sLo_head o cut ho]
+  exact headKeepLower
+
+/-- The lower carrier's shape at the stated order, the affine
+list's own clearing degree (`cellcount.pShapeAt_levelPMat`). -/
+private theorem sLo_shape (o cut : Nat) :
+    cellcount.pShapeAt (sLo o cut) o 2 :=
+  freecell.pShapeAt_freePMat _ _ _ 2 1 o
+    (sqAt_winDiag o (BPair.ofNat cut)) (sqAt_winDiag o ⟨2, 1⟩)
+    (inertia.sqAt_idMat o)
+
+/-- The upper carrier's shape at the stated order. -/
+private theorem sHi_shape (o F : Nat) :
+    cellcount.pShapeAt (sHi o F) o 2 :=
+  freecell.pShapeAt_freePMat _ _ _ (ground.posOfSucc (2 * F)) 1 o
+    (sqAt_winDiag o (BPair.ofNat (4 * F))) (sqAt_winDiag o ⟨2, 1⟩)
+    (inertia.sqAt_idMat o)
+
+/-- The loop head's two-coefficient value `a − c z²` at its one-member
+coefficients, subtraction-free. -/
+private def qp (a c : Nat) : poly.Poly :=
+  [⟨⟨a⟩, ⟨0⟩⟩, BPair.unit, ⟨⟨0⟩, ⟨c⟩⟩]
+
+/-- The loop head's two-coefficient value's cube,
+`a³ − 3a²c z² + 3ac² z⁴ − c³ z⁶`, `c`-cleared. -/
+private def qp3 (a c : Nat) : poly.Poly :=
+  [⟨⟨a * (a * a)⟩, ⟨0⟩⟩, BPair.unit, ⟨⟨0⟩, ⟨3 * (a * (a * c))⟩⟩,
+   BPair.unit, ⟨⟨3 * (a * (c * c))⟩, ⟨0⟩⟩, BPair.unit, ⟨⟨0⟩, ⟨c * (c * c)⟩⟩]
 
 
 /-- The composite Horner read at the free end: the point's vacant
@@ -1155,35 +1379,59 @@ private theorem defl1' (T : split.PMat)
         (Nat.not_lt_zero k)
   (cellcount.pdefl_offC T 0 [1] hoff).1.1
 
-/-- The order-one deflation's four entries at two trailing keys,
-read at an abstract pencil. -/
-private theorem defl2 (T : split.PMat)
+/-- The order-one deflation's four trailing entries at stated entry
+values: the two loop places at the valued product, the couplings
+exchanged and unit-tailed — the deflation display read at an
+abstract pencil, every entry a stated datum. -/
+private theorem defl2v (T : split.PMat) (hd lp1 lp2 cp Q : poly.Poly)
     (hoff : ∀ k, k < ([1, 2] : List Nat).length → poly.unitTail
-      (ground.getAt [] (ground.getAt [] T (ground.getAt 0 [1, 2] k)) 0)) :
+      (getAt [] (getAt [] T (getAt 0 [1, 2] k)) 0))
+    (hh : getAt [] (getAt [] T 0) 0 = hd)
+    (hl1 : getAt [] (getAt [] T 1) 1 = lp1)
+    (hl2 : getAt [] (getAt [] T 2) 2 = lp2)
+    (hc1 : getAt [] (getAt [] T 1) 2 = cp)
+    (hc2 : getAt [] (getAt [] T 2) 1 = cp)
+    (hcut : poly.unitTail cp)
+    (h1 : poly.oneValue (poly.mul (poly.mul hd hd) lp1) Q)
+    (h2 : poly.oneValue (poly.mul (poly.mul hd hd) lp2) Q) :
     poly.oneValue
-        (ground.getAt [] (ground.getAt [] (cellcount.pdefl [0] [1, 2] T) 0) 0)
-        (poly.mul (poly.mul (ground.getAt [] (ground.getAt [] T 0) 0)
-            (ground.getAt [] (ground.getAt [] T 0) 0))
-          (ground.getAt [] (ground.getAt [] T 1) 1))
+        (getAt [] (getAt [] (cellcount.pdefl [0] [1, 2] T) 0) 0) Q
       ∧ poly.oneValue
-        (ground.getAt [] (ground.getAt [] (cellcount.pdefl [0] [1, 2] T) 0) 1)
-        (poly.mul (poly.mul (ground.getAt [] (ground.getAt [] T 0) 0)
-            (ground.getAt [] (ground.getAt [] T 0) 0))
-          (ground.getAt [] (ground.getAt [] T 1) 2))
+        (getAt [] (getAt [] (cellcount.pdefl [0] [1, 2] T) 1) 1) Q
       ∧ poly.oneValue
-        (ground.getAt [] (ground.getAt [] (cellcount.pdefl [0] [1, 2] T) 1) 0)
-        (poly.mul (poly.mul (ground.getAt [] (ground.getAt [] T 0) 0)
-            (ground.getAt [] (ground.getAt [] T 0) 0))
-          (ground.getAt [] (ground.getAt [] T 2) 1))
-      ∧ poly.oneValue
-        (ground.getAt [] (ground.getAt [] (cellcount.pdefl [0] [1, 2] T) 1) 1)
-        (poly.mul (poly.mul (ground.getAt [] (ground.getAt [] T 0) 0)
-            (ground.getAt [] (ground.getAt [] T 0) 0))
-          (ground.getAt [] (ground.getAt [] T 2) 2)) :=
-  ⟨(cellcount.pdefl_offC T 0 [1, 2] hoff).1.1,
-   (cellcount.pdefl_offC T 0 [1, 2] hoff).1.2.1,
-   (cellcount.pdefl_offC T 0 [1, 2] hoff).2.1.1,
-   (cellcount.pdefl_offC T 0 [1, 2] hoff).2.1.2.1⟩
+        (getAt [] (getAt [] (cellcount.pdefl [0] [1, 2] T) 0) 1)
+        (getAt [] (getAt [] (cellcount.pdefl [0] [1, 2] T) 1) 0)
+      ∧ poly.unitTail
+        (getAt [] (getAt [] (cellcount.pdefl [0] [1, 2] T) 1) 0) := by
+  have hoc := cellcount.pdefl_offC T 0 [1, 2] hoff
+  have g00 : poly.oneValue
+      (getAt [] (getAt [] (cellcount.pdefl [0] [1, 2] T) 0) 0)
+      (poly.mul (poly.mul (getAt [] (getAt [] T 0) 0)
+          (getAt [] (getAt [] T 0) 0))
+        (getAt [] (getAt [] T 1) 1)) := hoc.1.1
+  have g01 : poly.oneValue
+      (getAt [] (getAt [] (cellcount.pdefl [0] [1, 2] T) 0) 1)
+      (poly.mul (poly.mul (getAt [] (getAt [] T 0) 0)
+          (getAt [] (getAt [] T 0) 0))
+        (getAt [] (getAt [] T 1) 2)) := hoc.1.2.1
+  have g10 : poly.oneValue
+      (getAt [] (getAt [] (cellcount.pdefl [0] [1, 2] T) 1) 0)
+      (poly.mul (poly.mul (getAt [] (getAt [] T 0) 0)
+          (getAt [] (getAt [] T 0) 0))
+        (getAt [] (getAt [] T 2) 1)) := hoc.2.1.1
+  have g11 : poly.oneValue
+      (getAt [] (getAt [] (cellcount.pdefl [0] [1, 2] T) 1) 1)
+      (poly.mul (poly.mul (getAt [] (getAt [] T 0) 0)
+          (getAt [] (getAt [] T 0) 0))
+        (getAt [] (getAt [] T 2) 2)) := hoc.2.1.2.1
+  rw [hh, hl1] at g00
+  rw [hh, hc1] at g01
+  rw [hh, hc2] at g10
+  rw [hh, hl2] at g11
+  exact ⟨poly.oneValue_trans g00 h1, poly.oneValue_trans g11 h2,
+    poly.oneValue_trans g01 (poly.oneValue_symm g10),
+    poly.oneValue_unitTail g10
+      (poly.of_unitTail_mul (Or.inr hcut))⟩
 
 /-- The cube step at an abstract pencil: the order-one deflation's
 leading entry reads the pivot's cube when the pivot and the trailing
@@ -1209,16 +1457,20 @@ two: the pivot's own priced side read above the cleared deflation's,
 the clearings the odd multiples `3 K` and `3 (3 K)`. -/
 private theorem subCover (T : split.PMat) (Q R : poly.Poly)
     (hsh : cellcount.pShapeAt T 2 6)
-    (hsym01 : poly.oneValue (ground.getAt [] (ground.getAt [] T 0) 1)
-      (ground.getAt [] (ground.getAt [] T 1) 0))
-    (hut : poly.unitTail (ground.getAt [] (ground.getAt [] T 1) 0))
-    (h00 : poly.oneValue (ground.getAt [] (ground.getAt [] T 0) 0) Q)
-    (h11 : poly.oneValue (ground.getAt [] (ground.getAt [] T 1) 1) Q)
+    (hents : poly.oneValue (ground.getAt [] (ground.getAt [] T 0) 0) Q
+      ∧ poly.oneValue (ground.getAt [] (ground.getAt [] T 1) 1) Q
+      ∧ poly.oneValue (ground.getAt [] (ground.getAt [] T 0) 1)
+        (ground.getAt [] (ground.getAt [] T 1) 0)
+      ∧ poly.unitTail (ground.getAt [] (ground.getAt [] T 1) 0))
     (hQ : stage.keepUpper Q winFoot winTop ⟨2, 1⟩ ⟨2, 1⟩)
     (hR : poly.oneValue (poly.mul Q (poly.mul Q Q)) R)
     (hRk : stage.keepUpper R winFoot winTop ⟨2, 1⟩ ⟨2, 1⟩) :
     cellcount.coverRead T 2 6 winFoot winTop
       (cellcount.diagNest winTop ⟨2, 1⟩ ⟨2, 1⟩ 2) := by
+  have h00 := hents.1
+  have h11 := hents.2.1
+  have hsym01 := hents.2.2.1
+  have hut := hents.2.2.2
   have hsub2 : cellcount.pShapeAt (cellcount.pdefl [0]
       (cellcount.compl [0] 2) T) 1 18 :=
     cellcount.pShape_pdefl T 2 6 [0] (cellcount.compl [0] 2) hsh (Or.inl rfl)
@@ -1249,24 +1501,11 @@ private theorem subCover (T : split.PMat) (Q R : poly.Poly)
 
 /-! The lower sweep's structural reads at order two. -/
 
-private theorem loSym (cut : Nat) : split.pSymAt (sLo 2 cut) 2 := by
-  refine split.pSymAt_of _ 2 (fun i j hi hj => ?_)
-  match i, j with
-  | 0, 0 => exact poly.oneValue_refl _
-  | 0, 1 => exact poly.oneValue_refl _
-  | 1, 0 => exact poly.oneValue_refl _
-  | 1, 1 => exact poly.oneValue_refl _
-  | 0, j + 2 => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hj)) (Nat.not_lt_zero j)
-  | 1, j + 2 => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hj)) (Nat.not_lt_zero j)
-  | i + 2, _ => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hi)) (Nat.not_lt_zero i)
-
 private theorem loOffR (cut : Nat) : ∀ k, k < ([1] : List Nat).length →
     poly.unitTail (getAt [] (getAt [] (sLo 2 cut) (getAt 0 [1] k)) 0) := by
   intro k hk
   match k with
-  | 0 => show poly.unitTail [(BPair.unit + BPair.unit.scale 1)
-            + (BPair.unit.scale 2).swap, BPair.unit, BPair.unit]
-         decide +kernel
+  | 0 => exact sLo_offR 2 cut 1 (Nat.succ_pos 0) (Nat.le_refl 2)
   | k + 1 => exact absurd (Nat.lt_of_succ_lt_succ hk) (Nat.not_lt_zero k)
 
 /-- The lower head's square reads the product's unit, one decided
@@ -1275,6 +1514,21 @@ private theorem loSq3 : poly.oneValue
     (poly.mul [(⟨⟨4⟩, ⟨5⟩⟩ : BPair), BPair.unit, BPair.unit]
       [(⟨⟨4⟩, ⟨5⟩⟩ : BPair), BPair.unit, BPair.unit]) poly.one := by
   decide +kernel
+
+/-- The lower sweep's loop head coefficient at a stated cutoff. -/
+private def loD1 (cut : Nat) : BPair :=
+  (BPair.ofNat cut + (BPair.ofNat 1).scale 1) + ((BPair.ofNat 1).scale 2).swap
+
+/-- The lower carrier's loop entry at its occupied diagonal key:
+the loop head coefficient at the cutoff with the magnetic member's
+balance partner. -/
+private theorem sLo_loop (o cut i : Nat) (h1 : 0 < i) (hio : i < o) :
+    getAt [] (getAt [] (sLo o cut) i) i
+      = [loD1 cut, BPair.unit, (⟨1, 2⟩ : BPair)] := by
+  rw [show sLo o cut = freecell.freePMat (winDiag o (BPair.ofNat cut))
+      (winDiag o ⟨2, 1⟩) (inertia.idMat o) 2 1 from rfl,
+    winEntry_loop o (BPair.ofNat cut) ⟨2, 1⟩ 2 1 i h1 hio]
+  rfl
 
 /-- The lower sweep's cleared deflation reads the loop head's
 two-coefficient value at the cutoff's predecessor. -/
@@ -1285,13 +1539,16 @@ private theorem loHeadValue (k : Nat) :
   have hd := cellcount.pdefl_offC (sLo 2 (4 * (k + 2))) 0 [1]
     (loOffR (4 * (k + 2)))
   refine poly.oneValue_trans hd.1.1 ?_
+  show poly.oneValue
+    (poly.mul (poly.mul (getAt [] (getAt [] (sLo 2 (4 * (k + 2))) 0) 0)
+        (getAt [] (getAt [] (sLo 2 (4 * (k + 2))) 0) 0))
+      (getAt [] (getAt [] (sLo 2 (4 * (k + 2))) 1) 1))
+    (qp (4 * k + 7) 1)
+  rw [sLo_head 2 (4 * (k + 2)) (Nat.succ_pos 1),
+    sLo_loop 2 (4 * (k + 2)) 1 (Nat.succ_pos 0) (Nat.le_refl 2)]
   refine poly.oneValue_trans (poly.mul_congr_left loSq3 _) ?_
   refine poly.oneValue_trans (poly.one_mul _) ?_
   exact ⟨rfl, rfl, rfl, trivial⟩
-
-/-- The lower sweep's loop head coefficient at a stated cutoff. -/
-private def loD1 (cut : Nat) : BPair :=
-  (BPair.ofNat cut + (BPair.ofNat 1).scale 1) + ((BPair.ofNat 1).scale 2).swap
 
 private theorem loD1_le (j : Nat) : BPair.unit ≤ loD1 (j + 8) := by
   refine Or.inr ⟨⟨j + 6⟩, congrArg Pos.mk ?_⟩
@@ -1318,7 +1575,8 @@ private theorem loCount (k : Nat) :
           (cellcount.evalPC (sLo 2 (4 * (k + 2))) BPair.unit 1 2))
       ∧ inertia.revAt (inertia.mkSplit 2
           (cellcount.evalPC (sLo 2 (4 * (k + 2))) BPair.unit 1 2)) = 1 := by
-  have hshape : cellcount.pShapeAt (sLo 2 (4 * (k + 2))) 2 2 := rfl
+  have hshape : cellcount.pShapeAt (sLo 2 (4 * (k + 2))) 2 2 :=
+      sLo_shape 2 (4 * (k + 2))
   have hoffD1 : ¬ (loD1 (4 * (k + 2))).oneValue BPair.unit := loD1_off (4 * k)
   have hleD1 : BPair.unit ≤ loD1 (4 * (k + 2)) := loD1_le (4 * k)
   have hsq : elim.sqAt
@@ -1327,7 +1585,7 @@ private theorem loCount (k : Nat) :
   have hsplit := inertia.mkSplit_read 2
     (cellcount.evalPC (sLo 2 (4 * (k + 2))) BPair.unit 1 2) hsq
     (elim.matOne_symm (cellcount.evalPC_symAt (sLo 2 (4 * (k + 2))) 2 2
-      BPair.unit 1 hshape (loSym (4 * (k + 2)))))
+      BPair.unit 1 hshape (sLo_sym 2 (4 * (k + 2)))))
   have hoff : (([(⟨⟨4⟩, ⟨5⟩⟩ : BPair), loD1 (4 * (k + 2))] : List BPair).all
       (fun d => !(decide (d.oneValue BPair.unit)))) = true := by
     show (!(decide ((⟨⟨4⟩, ⟨5⟩⟩ : BPair).oneValue BPair.unit))
@@ -1363,24 +1621,21 @@ private theorem chainLo2 (F : Nat) (hF : 2 ≤ F) :
   | 0, hF => exact absurd hF (Nat.not_lt_zero 1)
   | 1, hF => exact absurd (Nat.lt_of_succ_lt_succ hF) (Nat.not_lt_zero 0)
   | k + 2, _ =>
-    have hshape : cellcount.pShapeAt (sLo 2 (4 * (k + 2))) 2 2 := rfl
+    have hshape : cellcount.pShapeAt (sLo 2 (4 * (k + 2))) 2 2 :=
+      sLo_shape 2 (4 * (k + 2))
     have hsub : cellcount.pShapeAt (cellcount.pdefl [0]
         (cellcount.compl [0] 2) (sLo 2 (4 * (k + 2)))) 1 6 :=
       cellcount.pShape_pdefl _ 2 2 [0] (cellcount.compl [0] 2) hshape
         (Or.inl rfl)
-    refine ⟨⟨⟨by decide +kernel, rfl, by decide +kernel, hshape,
-          loSym (4 * (k + 2))⟩,
+    refine ⟨⟨⟨winFoot_le_top, rfl, winPlace0, hshape,
+          sLo_sym 2 (4 * (k + 2))⟩,
         ?_,
-        ⟨⟨by decide +kernel, rfl, by decide +kernel, hsub, ?_⟩,
+        ⟨⟨winFoot_le_top, rfl, winPlace0, hsub, ?_⟩,
           ?_, rfl, ⟨hsub, rfl⟩⟩,
         ⟨hshape, rfl⟩⟩,
-      by decide +kernel, by decide +kernel,
+      winFoot_le_sample, winSample_le_top,
       ⟨hshape, (loCount k).1, (loCount k).2⟩, trivial⟩
-    · show stage.keepLower (getAt [] (getAt [] (sLo 2 (4 * (k + 2))) 0) 0)
-        winFoot winTop ⟨2, 1⟩ ⟨2, 1⟩
-      show stage.keepLower [(⟨⟨4⟩, ⟨5⟩⟩ : BPair), BPair.unit, BPair.unit]
-        winFoot winTop ⟨2, 1⟩ ⟨2, 1⟩
-      decide +kernel
+    · exact sLo_headKeep 2 (4 * (k + 2)) (Nat.succ_pos 1)
     · refine split.pSymAt_of _ 1 (fun i j hi hj => ?_)
       match i, j with
       | 0, 0 => exact poly.oneValue_refl _
@@ -1456,6 +1711,29 @@ private def hiD1 (F : Nat) : BPair :=
   (BPair.ofNat (4 * F) + (BPair.ofNat 1).scale 1)
     + ((BPair.ofNat 1).scale (ground.posOfSucc (2 * F))).swap
 
+/-- The upper carrier's head entry, value `−2F`: the stated level
+over the unit line. -/
+private theorem sHi_head (o F : Nat) (ho : 0 < o) :
+    getAt [] (getAt [] (sHi o F) 0) 0
+      = [hiD0 F, BPair.unit, BPair.unit] := by
+  rw [show sHi o F = freecell.freePMat (winDiag o (BPair.ofNat (4 * F)))
+      (winDiag o ⟨2, 1⟩) (inertia.idMat o)
+      (ground.posOfSucc (2 * F)) 1 from rfl,
+    winEntry_head o (BPair.ofNat (4 * F)) ⟨2, 1⟩
+      (ground.posOfSucc (2 * F)) 1 ho]
+  rfl
+
+/-- The upper carrier's loop entry at its occupied diagonal key. -/
+private theorem sHi_loop (o F i : Nat) (h1 : 0 < i) (hio : i < o) :
+    getAt [] (getAt [] (sHi o F) i) i
+      = [hiD1 F, BPair.unit, (⟨1, 2⟩ : BPair)] := by
+  rw [show sHi o F = freecell.freePMat (winDiag o (BPair.ofNat (4 * F)))
+      (winDiag o ⟨2, 1⟩) (inertia.idMat o)
+      (ground.posOfSucc (2 * F)) 1 from rfl,
+    winEntry_loop o (BPair.ofNat (4 * F)) ⟨2, 1⟩
+      (ground.posOfSucc (2 * F)) 1 i h1 hio]
+  rfl
+
 private theorem hiD0_raw (F : Nat) :
     (hiD0 F).oneValue (⟨⟨0⟩, ⟨2 * F⟩⟩ : BPair) := by
   refine congrArg Pos.mk ?_
@@ -1495,23 +1773,11 @@ private theorem hiD1_off (k : Nat) : ¬ (hiD1 (k + 2)).oneValue BPair.unit :=
   fun h => BPair.ofNat_off_unit (2 * (k + 2)) (Nat.succ_pos _)
     (BPair.oneValue_trans (BPair.oneValue_symm (hiD1_read k)) h)
 
-private theorem hiSym (F : Nat) : split.pSymAt (sHi 2 F) 2 := by
-  refine split.pSymAt_of _ 2 (fun i j hi hj => ?_)
-  match i, j with
-  | 0, 0 => exact poly.oneValue_refl _
-  | 0, 1 => exact poly.oneValue_refl _
-  | 1, 0 => exact poly.oneValue_refl _
-  | 1, 1 => exact poly.oneValue_refl _
-  | 0, j + 2 => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hj)) (Nat.not_lt_zero j)
-  | 1, j + 2 => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hj)) (Nat.not_lt_zero j)
-  | i + 2, _ => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hi)) (Nat.not_lt_zero i)
-
 private theorem hiOffR (F : Nat) : ∀ k, k < ([1] : List Nat).length →
     poly.unitTail (getAt [] (getAt [] (sHi 2 F) (getAt 0 [1] k)) 0) := by
   intro k hk
   match k with
-  | 0 => exact ⟨BPair.oneValue_of_eqMem rfl, BPair.oneValue_refl _,
-           BPair.oneValue_refl _, trivial⟩
+  | 0 => exact sHi_offR 2 F 1 (Nat.succ_pos 0) (Nat.le_refl 2)
   | k + 1 => exact absurd (Nat.lt_of_succ_lt_succ hk) (Nat.not_lt_zero k)
 
 private theorem hiHeadPolyLit (F : Nat) :
@@ -1529,20 +1795,21 @@ private theorem hiSqLit (F : Nat) :
       (poly.mul_congr [(BPair.ofNat (2 * F)).swap] (hiHeadPolyLit F))
       (poly.mul_single [(BPair.ofNat (2 * F)).swap] (BPair.ofNat (2 * F)).swap))
 
-private theorem hiHeadPoly (F : Nat) :
-    poly.oneValue (getAt [] (getAt [] (sHi 2 F) 0) 0)
-      [(BPair.ofNat (2 * F)).swap] :=
-  hiHeadPolyLit F
+private theorem hiHeadPoly (o F : Nat) (ho : 0 < o) :
+    poly.oneValue (getAt [] (getAt [] (sHi o F) 0) 0)
+      [(BPair.ofNat (2 * F)).swap] := by
+  rw [sHi_head o F ho]
+  exact hiHeadPolyLit F
 
 /-- The upper sweep's cleared deflation reads the loop head's
 two-coefficient value at the cube and square of the level. -/
-private theorem hiLoop (k : Nat) (H L : poly.Poly)
-    (hH : H = [hiD0 (k + 2), BPair.unit, BPair.unit])
-    (hL : L = [hiD1 (k + 2), BPair.unit, (⟨1, 2⟩ : BPair)]) :
-    poly.oneValue (poly.mul (poly.mul H H) L)
+private theorem hiLoop (k : Nat) :
+    poly.oneValue
+      (poly.mul (poly.mul [hiD0 (k + 2), BPair.unit, BPair.unit]
+          [hiD0 (k + 2), BPair.unit, BPair.unit])
+        [hiD1 (k + 2), BPair.unit, (⟨1, 2⟩ : BPair)])
       (qp (2 * (k + 2) * (2 * (k + 2)) * (2 * (k + 2)))
         (2 * (k + 2) * (2 * (k + 2)))) := by
-  rw [hH, hL]
   refine poly.oneValue_trans (poly.mul_congr_left (hiSqLit (k + 2)) _) ?_
   refine poly.oneValue_trans (poly.mul_comm _ _) ?_
   refine poly.oneValue_trans (poly.mul_single _
@@ -1581,7 +1848,15 @@ private theorem hiHeadValue (k : Nat) :
         (2 * (k + 2) * (2 * (k + 2)))) := by
   have hd := cellcount.pdefl_offC (sHi 2 (k + 2)) 0 [1] (hiOffR (k + 2))
   refine poly.oneValue_trans hd.1.1 ?_
-  exact hiLoop k _ _ rfl rfl
+  show poly.oneValue
+    (poly.mul (poly.mul (getAt [] (getAt [] (sHi 2 (k + 2)) 0) 0)
+        (getAt [] (getAt [] (sHi 2 (k + 2)) 0) 0))
+      (getAt [] (getAt [] (sHi 2 (k + 2)) 1) 1))
+    (qp (2 * (k + 2) * (2 * (k + 2)) * (2 * (k + 2)))
+      (2 * (k + 2) * (2 * (k + 2))))
+  rw [sHi_head 2 (k + 2) (Nat.succ_pos 1),
+    sHi_loop 2 (k + 2) 1 (Nat.succ_pos 0) (Nat.le_refl 2)]
+  exact hiLoop k
 
 private theorem hiBlock (k : Nat) :
     elim.matOneValue (cellcount.evalPC (sHi 2 (k + 2)) BPair.unit 1 2)
@@ -1597,14 +1872,15 @@ private theorem hiCount (k : Nat) :
           (cellcount.evalPC (sHi 2 (k + 2)) BPair.unit 1 2))
       ∧ inertia.revAt (inertia.mkSplit 2
           (cellcount.evalPC (sHi 2 (k + 2)) BPair.unit 1 2)) = 1 := by
-  have hshape : cellcount.pShapeAt (sHi 2 (k + 2)) 2 2 := rfl
+  have hshape : cellcount.pShapeAt (sHi 2 (k + 2)) 2 2 :=
+      sHi_shape 2 (k + 2)
   have hsq : elim.sqAt
       (cellcount.evalPC (sHi 2 (k + 2)) BPair.unit 1 2) 2 :=
     cellcount.evalPC_sqAt hshape BPair.unit 1
   have hsplit := inertia.mkSplit_read 2
     (cellcount.evalPC (sHi 2 (k + 2)) BPair.unit 1 2) hsq
     (elim.matOne_symm (cellcount.evalPC_symAt (sHi 2 (k + 2)) 2 2
-      BPair.unit 1 hshape (hiSym (k + 2))))
+      BPair.unit 1 hshape (sHi_sym 2 (k + 2))))
   have hoff : (([hiD0 (k + 2), hiD1 (k + 2)] : List BPair).all
       (fun d => !(decide (d.oneValue BPair.unit)))) = true := by
     show (!(decide ((hiD0 (k + 2)).oneValue BPair.unit))
@@ -1635,21 +1911,23 @@ private theorem chainHi2 (F : Nat) (hF : 2 ≤ F) :
   | 0, hF => exact absurd hF (Nat.not_lt_zero 1)
   | 1, hF => exact absurd (Nat.lt_of_succ_lt_succ hF) (Nat.not_lt_zero 0)
   | k + 2, _ =>
-    have hshape : cellcount.pShapeAt (sHi 2 (k + 2)) 2 2 := rfl
+    have hshape : cellcount.pShapeAt (sHi 2 (k + 2)) 2 2 :=
+      sHi_shape 2 (k + 2)
     have hsub : cellcount.pShapeAt (cellcount.pdefl [0]
         (cellcount.compl [0] 2) (sHi 2 (k + 2))) 1 6 :=
       cellcount.pShape_pdefl _ 2 2 [0] (cellcount.compl [0] 2) hshape
         (Or.inl rfl)
-    refine ⟨⟨⟨by decide +kernel, rfl, by decide +kernel, hshape,
-          hiSym (k + 2)⟩,
+    refine ⟨⟨⟨winFoot_le_top, rfl, winPlace0, hshape,
+          sHi_sym 2 (k + 2)⟩,
         ?_,
-        ⟨⟨by decide +kernel, rfl, by decide +kernel, hsub, ?_⟩,
+        ⟨⟨winFoot_le_top, rfl, winPlace0, hsub, ?_⟩,
           ?_, rfl, ⟨hsub, rfl⟩⟩,
         ⟨hshape, rfl⟩⟩,
-      by decide +kernel, by decide +kernel,
+      winFoot_le_sample, winSample_le_top,
       ⟨hshape, (hiCount k).1, (hiCount k).2⟩, trivial⟩
     · exact stage.keepLower_congr
-        (poly.oneValue_symm (hiHeadPoly (k + 2))) winFoot winTop ⟨2, 1⟩ ⟨2, 1⟩
+        (poly.oneValue_symm (hiHeadPoly 2 (k + 2) (Nat.succ_pos 1)))
+        winFoot winTop ⟨2, 1⟩ ⟨2, 1⟩
         (keepLower_cn (2 * (k + 2)) (Nat.succ_le_succ (Nat.zero_le _)))
     · refine split.pSymAt_of _ 1 (fun i j hi hj => ?_)
       match i, j with
@@ -1666,47 +1944,28 @@ private theorem chainHi2 (F : Nat) (hF : 2 ≤ F) :
 
 /-! The lower sweep's structural reads at order three. -/
 
-private theorem loSym3 (cut : Nat) : split.pSymAt (sLo 3 cut) 3 := by
-  refine split.pSymAt_of _ 3 (fun i j hi hj => ?_)
-  match i, j with
-  | 0, 0 => exact poly.oneValue_refl _
-  | 0, 1 => exact poly.oneValue_refl _
-  | 0, 2 => exact poly.oneValue_refl _
-  | 1, 0 => exact poly.oneValue_refl _
-  | 1, 1 => exact poly.oneValue_refl _
-  | 1, 2 => exact poly.oneValue_refl _
-  | 2, 0 => exact poly.oneValue_refl _
-  | 2, 1 => exact poly.oneValue_refl _
-  | 2, 2 => exact poly.oneValue_refl _
-  | 0, j + 3 => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hj))) (Nat.not_lt_zero j)
-  | 1, j + 3 => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hj))) (Nat.not_lt_zero j)
-  | 2, j + 3 => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hj))) (Nat.not_lt_zero j)
-  | i + 3, _ => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hi))) (Nat.not_lt_zero i)
-
 private theorem loOffR3 (cut : Nat) : ∀ k, k < ([1, 2] : List Nat).length →
     poly.unitTail
       (getAt [] (getAt [] (sLo 3 cut) (getAt 0 [1, 2] k)) 0) := by
   intro k hk
   match k with
-  | 0 => exact coupUT 2
-  | 1 => exact coupUT 2
+  | 0 => exact sLo_offR 3 cut 1 (Nat.succ_pos 0)
+           (Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le 1)))
+  | 1 => exact sLo_offR 3 cut 2 (Nat.succ_pos 1) (Nat.le_refl 3)
   | k + 2 => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hk)) (Nat.not_lt_zero k)
 
 private theorem loLoop3 (k : Nat) : poly.oneValue
     (poly.mul (poly.mul [(⟨⟨4⟩, ⟨5⟩⟩ : BPair), BPair.unit, BPair.unit]
         [(⟨⟨4⟩, ⟨5⟩⟩ : BPair), BPair.unit, BPair.unit])
-      [(BPair.ofNat (4 * (k + 4)) + (BPair.ofNat 1).scale 1)
-        + ((BPair.ofNat 1).scale 2).swap, BPair.unit, (⟨1, 2⟩ : BPair)])
+      [loD1 (4 * (k + 4)), BPair.unit, (⟨1, 2⟩ : BPair)])
     (qp (4 * k + 15) 1) := by
   refine poly.oneValue_trans (poly.mul_congr_left loSq3 _) ?_
   refine poly.oneValue_trans (poly.one_mul _) ?_
   exact ⟨rfl, rfl, rfl, trivial⟩
 
-set_option maxHeartbeats 1000000 in
 /-- The lower sweep's order-three deflation at its four entries:
 the two loop places at the loop head's two-coefficient value, the couplings
-exchanged and unit-tailed; the raised budget is the elaborator's
-entry reductions into the order-three carrier. -/
+exchanged and unit-tailed. -/
 private theorem loLvl1 (k : Nat) :
     poly.oneValue
         (getAt [] (getAt [] (cellcount.pdefl [0] (cellcount.compl [0] 3)
@@ -1722,12 +1981,19 @@ private theorem loLvl1 (k : Nat) :
       ∧ poly.unitTail
         (getAt [] (getAt [] (cellcount.pdefl [0] (cellcount.compl [0] 3)
           (sLo 3 (4 * (k + 4)))) 1) 0) := by
-  have h := defl2 (sLo 3 (4 * (k + 4))) (loOffR3 (4 * (k + 4)))
-  exact ⟨poly.oneValue_trans h.1 (loLoop3 k),
-    poly.oneValue_trans h.2.2.2 (loLoop3 k),
-    poly.oneValue_trans h.2.1 (poly.oneValue_symm h.2.2.1),
-    poly.oneValue_unitTail h.2.2.1
-      (poly.of_unitTail_mul (Or.inr (coupUT 2)))⟩
+  exact defl2v (sLo 3 (4 * (k + 4))) _ _ _ _ (qp (4 * k + 15) 1)
+    (loOffR3 (4 * (k + 4)))
+    (sLo_head 3 (4 * (k + 4)) (Nat.succ_pos 2))
+    (sLo_loop 3 (4 * (k + 4)) 1 (Nat.succ_pos 0)
+      (Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le 1))))
+    (sLo_loop 3 (4 * (k + 4)) 2 (Nat.succ_pos 1) (Nat.le_refl 3))
+    (sLo_coup 3 (4 * (k + 4)) 1 2
+      (Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le 1))) (Nat.le_refl 3)
+      (fun hh => Nat.noConfusion (Nat.succ.inj hh)))
+    (sLo_coup 3 (4 * (k + 4)) 2 1 (Nat.le_refl 3)
+      (Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le 1)))
+      (fun hh => Nat.noConfusion (Nat.succ.inj hh)))
+    (coupUT 2) (loLoop3 k) (loLoop3 k)
 
 private theorem loBlock3 (k : Nat) :
     elim.matOneValue (cellcount.evalPC (sLo 3 (4 * (k + 4))) BPair.unit 1 2)
@@ -1749,7 +2015,8 @@ private theorem loCount3 (k : Nat) :
           (cellcount.evalPC (sLo 3 (4 * (k + 4))) BPair.unit 1 2))
       ∧ inertia.revAt (inertia.mkSplit 3
           (cellcount.evalPC (sLo 3 (4 * (k + 4))) BPair.unit 1 2)) = 1 := by
-  have hshape : cellcount.pShapeAt (sLo 3 (4 * (k + 4))) 3 2 := rfl
+  have hshape : cellcount.pShapeAt (sLo 3 (4 * (k + 4))) 3 2 :=
+      sLo_shape 3 (4 * (k + 4))
   have hoffD1 : ¬ (loD1 (4 * (k + 4))).oneValue BPair.unit := loD1_off (4 * k + 8)
   have hleD1 : BPair.unit ≤ loD1 (4 * (k + 4)) := loD1_le (4 * k + 8)
   have hsq : elim.sqAt
@@ -1758,7 +2025,7 @@ private theorem loCount3 (k : Nat) :
   have hsplit := inertia.mkSplit_read 3
     (cellcount.evalPC (sLo 3 (4 * (k + 4))) BPair.unit 1 2) hsq
     (elim.matOne_symm (cellcount.evalPC_symAt (sLo 3 (4 * (k + 4))) 3 2
-      BPair.unit 1 hshape (loSym3 (4 * (k + 4)))))
+      BPair.unit 1 hshape (sLo_sym 3 (4 * (k + 4)))))
   have hoff : (([(⟨⟨4⟩, ⟨5⟩⟩ : BPair), loD1 (4 * (k + 4)),
       loD1 (4 * (k + 4))] : List BPair).all
       (fun d => !(decide (d.oneValue BPair.unit)))) = true := by
@@ -1785,10 +2052,8 @@ private theorem loCount3 (k : Nat) :
     inertia.rev_one_lt (show (⟨⟨4⟩, ⟨5⟩⟩ : BPair) < BPair.unit by
       decide +kernel)]
 
-set_option maxHeartbeats 1000000 in
 /-- The lower sweep's chain at order three, the deflation nest one
-level deeper; the raised budget is the elaborator's entry
-reductions into the order-three carrier. -/
+level deeper. -/
 private theorem chainLo3 (F : Nat) (hF : 4 ≤ F) :
     gappos.chainRead (sLo 3 (4 * F)) 2 1 winFoot
       [(winTop, cellcount.diagCover winTop ⟨2, 1⟩ ⟨2, 1⟩ 2,
@@ -1803,70 +2068,49 @@ private theorem chainLo3 (F : Nat) (hF : 4 ≤ F) :
   | 3, hF => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ
       (Nat.lt_of_succ_lt_succ hF))) (Nat.not_lt_zero 0)
   | k + 4, _ =>
-    have hshape : cellcount.pShapeAt (sLo 3 (4 * (k + 4))) 3 2 := rfl
+    have hshape : cellcount.pShapeAt (sLo 3 (4 * (k + 4))) 3 2 :=
+      sLo_shape 3 (4 * (k + 4))
     have hcount := loCount3 k
     have h1 := loLvl1 k
     have hsub1 : cellcount.pShapeAt (cellcount.pdefl [0]
         (cellcount.compl [0] 3) (sLo 3 (4 * (k + 4)))) 2 6 :=
       cellcount.pShape_pdefl _ 3 2 [0] (cellcount.compl [0] 3) hshape
         (Or.inl rfl)
-    refine ⟨⟨⟨by decide +kernel, rfl, by decide +kernel, hshape,
-          loSym3 (4 * (k + 4))⟩,
+    refine ⟨⟨⟨winFoot_le_top, rfl, winPlace0, hshape,
+          sLo_sym 3 (4 * (k + 4))⟩,
         ?_,
         subCover (cellcount.pdefl [0] (cellcount.compl [0] 3)
             (sLo 3 (4 * (k + 4))))
           (qp (4 * k + 15) 1) (qp3 (4 * k + 15) 1)
-          hsub1 h1.2.2.1 h1.2.2.2 h1.1 h1.2.1
+          hsub1 h1
           (keepUpper_qp (4 * k + 15) 1 (Nat.le_refl 1)
             (Nat.le_add_left 3 (4 * k + 12)))
           (cube_qp (4 * k + 15) 1)
           (keepUpper_qp3 (4 * k + 15) 1 (Nat.le_refl 1)
             (by rw [Nat.one_mul]
                 exact coreIneq (4 * k + 15)
-                  (Nat.le_trans (by decide +kernel : (8 : Nat) ≤ 15)
+                  (Nat.le_trans (Nat.le_add_left 8 7 : (8 : Nat) ≤ 15)
                     (Nat.le_add_left 15 (4 * k))))),
         ⟨hshape, rfl⟩⟩,
-      by decide +kernel, by decide +kernel,
+      winFoot_le_sample, winSample_le_top,
       ⟨hshape, hcount.1, hcount.2⟩, trivial⟩
-    · show stage.keepLower (getAt [] (getAt [] (sLo 3 (4 * (k + 4))) 0) 0)
-        winFoot winTop ⟨2, 1⟩ ⟨2, 1⟩
-      show stage.keepLower [(⟨⟨4⟩, ⟨5⟩⟩ : BPair), BPair.unit, BPair.unit]
-        winFoot winTop ⟨2, 1⟩ ⟨2, 1⟩
-      decide +kernel
+    · exact sLo_headKeep 3 (4 * (k + 4)) (Nat.succ_pos 2)
 
 /-! The upper sweep's structural reads at order three. -/
-
-private theorem hiSym3 (F : Nat) : split.pSymAt (sHi 3 F) 3 := by
-  refine split.pSymAt_of _ 3 (fun i j hi hj => ?_)
-  match i, j with
-  | 0, 0 => exact poly.oneValue_refl _
-  | 0, 1 => exact poly.oneValue_refl _
-  | 0, 2 => exact poly.oneValue_refl _
-  | 1, 0 => exact poly.oneValue_refl _
-  | 1, 1 => exact poly.oneValue_refl _
-  | 1, 2 => exact poly.oneValue_refl _
-  | 2, 0 => exact poly.oneValue_refl _
-  | 2, 1 => exact poly.oneValue_refl _
-  | 2, 2 => exact poly.oneValue_refl _
-  | 0, j + 3 => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hj))) (Nat.not_lt_zero j)
-  | 1, j + 3 => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hj))) (Nat.not_lt_zero j)
-  | 2, j + 3 => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hj))) (Nat.not_lt_zero j)
-  | i + 3, _ => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hi))) (Nat.not_lt_zero i)
 
 private theorem hiOffR3 (F : Nat) : ∀ k, k < ([1, 2] : List Nat).length →
     poly.unitTail (getAt [] (getAt [] (sHi 3 F) (getAt 0 [1, 2] k)) 0) := by
   intro k hk
   match k with
-  | 0 => exact coupUT (ground.posOfSucc (2 * F))
-  | 1 => exact coupUT (ground.posOfSucc (2 * F))
+  | 0 => exact sHi_offR 3 F 1 (Nat.succ_pos 0)
+           (Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le 1)))
+  | 1 => exact sHi_offR 3 F 2 (Nat.succ_pos 1) (Nat.le_refl 3)
   | k + 2 => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hk)) (Nat.not_lt_zero k)
 
 
-set_option maxHeartbeats 1000000 in
 /-- The upper sweep's order-three deflation at its four entries: the
 two loop places at the loop head's two-coefficient value, the couplings
-exchanged and unit-tailed; the raised budget is the elaborator's
-entry reductions into the order-three carrier. -/
+exchanged and unit-tailed. -/
 private theorem hiLvl1 (k : Nat) :
     poly.oneValue (getAt [] (getAt [] (cellcount.pdefl [0]
         (cellcount.compl [0] 3) (sHi 3 (k + 4))) 0) 0)
@@ -1882,12 +2126,22 @@ private theorem hiLvl1 (k : Nat) :
           (cellcount.compl [0] 3) (sHi 3 (k + 4))) 1) 0)
       ∧ poly.unitTail (getAt [] (getAt [] (cellcount.pdefl [0]
         (cellcount.compl [0] 3) (sHi 3 (k + 4))) 1) 0) := by
-  have h := defl2 (sHi 3 (k + 4)) (hiOffR3 (k + 4))
-  exact ⟨poly.oneValue_trans h.1 (hiLoop (k + 2) _ _ rfl rfl),
-    poly.oneValue_trans h.2.2.2 (hiLoop (k + 2) _ _ rfl rfl),
-    poly.oneValue_trans h.2.1 (poly.oneValue_symm h.2.2.1),
-    poly.oneValue_unitTail h.2.2.1
-      (poly.of_unitTail_mul (Or.inr (coupUT (ground.posOfSucc (2 * (k + 4))))))⟩
+  exact defl2v (sHi 3 (k + 4)) _ _ _ _
+    (qp (2 * (k + 4) * (2 * (k + 4)) * (2 * (k + 4)))
+      (2 * (k + 4) * (2 * (k + 4))))
+    (hiOffR3 (k + 4))
+    (sHi_head 3 (k + 4) (Nat.succ_pos 2))
+    (sHi_loop 3 (k + 4) 1 (Nat.succ_pos 0)
+      (Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le 1))))
+    (sHi_loop 3 (k + 4) 2 (Nat.succ_pos 1) (Nat.le_refl 3))
+    (sHi_coup 3 (k + 4) 1 2
+      (Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le 1))) (Nat.le_refl 3)
+      (fun hh => Nat.noConfusion (Nat.succ.inj hh)))
+    (sHi_coup 3 (k + 4) 2 1 (Nat.le_refl 3)
+      (Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le 1)))
+      (fun hh => Nat.noConfusion (Nat.succ.inj hh)))
+    (coupUT (ground.posOfSucc (2 * (k + 4))))
+    (hiLoop (k + 2)) (hiLoop (k + 2))
 
 private theorem hiBlock3 (k : Nat) :
     elim.matOneValue (cellcount.evalPC (sHi 3 (k + 4)) BPair.unit 1 2)
@@ -1909,14 +2163,15 @@ private theorem hiCount3 (k : Nat) :
           (cellcount.evalPC (sHi 3 (k + 4)) BPair.unit 1 2))
       ∧ inertia.revAt (inertia.mkSplit 3
           (cellcount.evalPC (sHi 3 (k + 4)) BPair.unit 1 2)) = 1 := by
-  have hshape : cellcount.pShapeAt (sHi 3 (k + 4)) 3 2 := rfl
+  have hshape : cellcount.pShapeAt (sHi 3 (k + 4)) 3 2 :=
+      sHi_shape 3 (k + 4)
   have hsq : elim.sqAt
       (cellcount.evalPC (sHi 3 (k + 4)) BPair.unit 1 2) 3 :=
     cellcount.evalPC_sqAt hshape BPair.unit 1
   have hsplit := inertia.mkSplit_read 3
     (cellcount.evalPC (sHi 3 (k + 4)) BPair.unit 1 2) hsq
     (elim.matOne_symm (cellcount.evalPC_symAt (sHi 3 (k + 4)) 3 2
-      BPair.unit 1 hshape (hiSym3 (k + 4))))
+      BPair.unit 1 hshape (sHi_sym 3 (k + 4))))
   have hoff : (([hiD0 (k + 4), hiD1 (k + 4), hiD1 (k + 4)] : List BPair).all
       (fun d => !(decide (d.oneValue BPair.unit)))) = true := by
     show (!(decide ((hiD0 (k + 4)).oneValue BPair.unit))
@@ -1939,10 +2194,8 @@ private theorem hiCount3 (k : Nat) :
       + (inertia.SBlock.one (hiD1 (k + 4))).rev = 1
   rw [inertia.rev_one_le (hiD1_le (k + 2)), inertia.rev_one_lt (hiD0_lt (k + 2))]
 
-set_option maxHeartbeats 1000000 in
 /-- The upper sweep's chain at order three, the deflation nest one
-level deeper; the raised budget is the elaborator's entry
-reductions into the order-three carrier. -/
+level deeper. -/
 private theorem chainHi3 (F : Nat) (hF : 4 ≤ F) :
     gappos.chainRead (sHi 3 F) 2 1 winFoot
       [(winTop, cellcount.diagCover winTop ⟨2, 1⟩ ⟨2, 1⟩ 2,
@@ -1956,15 +2209,16 @@ private theorem chainHi3 (F : Nat) (hF : 4 ≤ F) :
   | 3, hF => exact absurd (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ
       (Nat.lt_of_succ_lt_succ hF))) (Nat.not_lt_zero 0)
   | k + 4, _ =>
-    have hshape : cellcount.pShapeAt (sHi 3 (k + 4)) 3 2 := rfl
+    have hshape : cellcount.pShapeAt (sHi 3 (k + 4)) 3 2 :=
+      sHi_shape 3 (k + 4)
     have hcount := hiCount3 k
     have h1 := hiLvl1 k
     have hsub1 : cellcount.pShapeAt (cellcount.pdefl [0]
         (cellcount.compl [0] 3) (sHi 3 (k + 4))) 2 6 :=
       cellcount.pShape_pdefl _ 3 2 [0] (cellcount.compl [0] 3) hshape
         (Or.inl rfl)
-    refine ⟨⟨⟨by decide +kernel, rfl, by decide +kernel, hshape,
-          hiSym3 (k + 4)⟩,
+    refine ⟨⟨⟨winFoot_le_top, rfl, winPlace0, hshape,
+          sHi_sym 3 (k + 4)⟩,
         ?_,
         subCover (cellcount.pdefl [0] (cellcount.compl [0] 3)
             (sHi 3 (k + 4)))
@@ -1972,7 +2226,7 @@ private theorem chainHi3 (F : Nat) (hF : 4 ≤ F) :
             (2 * (k + 4) * (2 * (k + 4))))
           (qp3 (2 * (k + 4) * (2 * (k + 4)) * (2 * (k + 4)))
             (2 * (k + 4) * (2 * (k + 4))))
-          hsub1 h1.2.2.1 h1.2.2.2 h1.1 h1.2.1
+          hsub1 h1
           (keepUpper_qp (2 * (k + 4) * (2 * (k + 4)) * (2 * (k + 4)))
             (2 * (k + 4) * (2 * (k + 4)))
             (Nat.succ_le_succ (Nat.zero_le _))
@@ -1985,10 +2239,10 @@ private theorem chainHi3 (F : Nat) (hF : 4 ≤ F) :
             (Nat.succ_le_succ (Nat.zero_le _))
             (bigIneq (2 * (k + 4)) (Nat.le_add_left 8 (2 * k)))),
         ⟨hshape, rfl⟩⟩,
-      by decide +kernel, by decide +kernel,
+      winFoot_le_sample, winSample_le_top,
       ⟨hshape, hcount.1, hcount.2⟩, trivial⟩
     · exact stage.keepLower_congr
-        (poly.oneValue_symm (hiHeadPolyLit (k + 4)))
+        (poly.oneValue_symm (hiHeadPoly 3 (k + 4) (Nat.succ_pos 2)))
         winFoot winTop ⟨2, 1⟩ ⟨2, 1⟩
         (keepLower_cn (2 * (k + 4)) (Nat.succ_le_succ (Nat.zero_le _)))
 

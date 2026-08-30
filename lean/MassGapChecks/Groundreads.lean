@@ -232,12 +232,12 @@ example : (inertia.quadForm gK (matVec (transfer r3).1 v2)).scale (2 * 2)
 
 example : (inertia.quadForm gK (matVec (transfer r3).1 v2)).scale (2 * 2)
     ≤ (inertia.quadForm gK v2).scale (1 * 1 * (r3.2 * r3.2)) :=
-  weight_step (transfer r3) gK gK 1 2 spK (by decide +kernel) v2
+  spectator.contract_all (transfer r3) gK gK 1 2 spK (by decide +kernel) v2
     (by decide +kernel)
 
 example : (inertia.quadForm gK (matVec (transfer r3).1 v2)).scale (2 * 2)
     ≤ (inertia.quadForm gK v2).scale (3 * 3 * (r3.2 * r3.2)) :=
-  weight_step (transfer r3) gK gK 3 2 (spOne ⟨33, 1⟩) (by decide +kernel)
+  spectator.contract_all (transfer r3) gK gK 3 2 (spOne ⟨33, 1⟩) (by decide +kernel)
     v2 (by decide +kernel)
 
 /-- The refusal isolating the certificate: the pair `[1 : 3]` sits below
@@ -1548,7 +1548,7 @@ example : (inertia.quadForm ([] : Mat)
       (matVec (matSwap ([] : Mat)) ([] : List BPair))).scale (1 * 1)
     ≤ (inertia.quadForm ([] : Mat) ([] : List BPair)).scale
       (2 * 2 * (3 * 3)) :=
-  weight_step (transfer ⟨([] : Mat), 3⟩) ([] : Mat) ([] : Mat) 2 1
+  spectator.contract_all (transfer ⟨([] : Mat), 3⟩) ([] : Mat) ([] : Mat) 2 1
     spNil (by decide +kernel) [] rfl
 
 /-! The rectangular step direct: the image's weight at its own
@@ -1563,7 +1563,7 @@ example : (inertia.quadForm (inertia.idMat 2)
       (matVec (matSwap rV.1) u0V.1)).scale (1 * 1)
     ≤ (inertia.quadForm (inertia.idMat 1) u0V.1).scale
       (2 * 2 * (rV.2 * rV.2)) :=
-  weight_step (transfer rV) (inertia.idMat 2) (inertia.idMat 1) 2 1
+  spectator.contract_all (transfer rV) (inertia.idMat 2) (inertia.idMat 1) 2 1
     (spOne ⟨12, 1⟩) (by decide +kernel) u0V.1 rfl
 
 /-! Clause (iv), the rearrangement: the joint read's cofactor

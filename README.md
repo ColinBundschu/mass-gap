@@ -6,7 +6,7 @@
 This repository presents a complete manuscript, [docs/theory.tex](docs/theory.tex) ([PDF](docs/theory.pdf)), and its in-progress Lean 4 formalization, [lean/](lean/).  The manuscript states and derives a mass gap for lattice gauge theory over every compact
 simple group (`thm:main`), with
 `rem:dictionary` presenting the results in the conventional
-formulation, the Jaffe-Witten statement of the Yang-Mills problem included.  The proof is constructive over the positive naturals with the sum and the
+formulation which includes the Jaffe-Witten statement of the Yang-Mills problem.  The proof is constructive over the positive naturals with the sum and the
 product; this choice was made explicitly to enable the Lean to be written constructively and eventually emit certified brackets of physical quantities directly comparable to Montecarlo and experimental results.
 
 The tex is the authority and the Lean is its transcription: every top-level
@@ -41,7 +41,10 @@ Formalized:
 - **The requirement mirrors** `lem:sectorspan` and `lem:attained`.
 - **Most of clause (iii)'s support tiers**: `lem:cornerpivot` (the
   corner disconjugacy certificate: the walk, profile, crossing,
-  dominance, ground-witness, count and block-chain tiers),
+  dominance, ground-witness, count and block-chain tiers, the
+  graded box devices, and the emitted disconjugacy store with its
+  certificate kernel-decided whole), `lem:spectator`'s derivation
+  tier,
   `thm:groundreads` whole (clauses (i)-(vii) with (v')),
   `lem:momentfold` whole (the moment streams, the graded system,
   the truncation cap, the scale comparison and the datum
@@ -52,7 +55,7 @@ Formalized:
 Open (no Lean yet):
 
 - `lem:cornerpivot`'s remainder (the second root's compression and
-  the decimated block chain's emitted certificate data) and
+  the block-chain lift's remaining clauses) and
   `lem:corner`'s cell-floor clause with the corner-output clauses
   of `thm:decomp` and `thm:twoaction`.
 - `lem:cone`, `thm:continuum`, `thm:reconstruct`.
@@ -61,7 +64,7 @@ Open (no Lean yet):
   label reached from a Lean namespace).
 
 The snapshot is taken from the development repository at commit
-`fe29955ce87a276a0e5aa729006514bedd15d4f0` (2026-08-29).
+`7e91dceb532f13d0df40deaca9a1a38203df29c5` (2026-08-30).
 
 ## Proof Methodology
 
@@ -94,7 +97,7 @@ After the build,
 
 walks every constant of both libraries with `Lean.collectAxioms` and prints
 
-    constants read: 29766
+    constants read: 31881
     constants depending on axioms: 0
 
 ending in an error if any constant depends on any axiom.  A single

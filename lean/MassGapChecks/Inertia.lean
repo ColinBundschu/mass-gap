@@ -247,11 +247,48 @@ example : ¬ matOneValue (blockMat (scaleSplit wTwo spInd).blocks 0)
     (blockMat spInd.blocks 0) := by decide +kernel
 
 /-! The diagonal's site structure: the datum at a form pair reads
-entrywise, `A = B + S`. -/
+entrywise, `A = B + S`, with the entry read decided and through the
+theorem — the first member's entry joined to the second's memberwise
+swap.  Every load-bearing binder refuses at the theorem's own
+conclusion read at the forge: either member ragged at the truncated
+seam, either member short of the row key, and the beyond-order
+column key at the vacant read. -/
 
 example : matOneValue
     (siteDatum [[⟨3, 1⟩, u], [u, ⟨3, 1⟩]] [[⟨2, 1⟩, u], [u, ⟨5, 1⟩]])
     [[⟨2, 1⟩, u], [u, ⟨1, 3⟩]] := by decide +kernel
+
+example : elim.sqAt (idMat 3) 3 := by decide +kernel
+example : elim.sqAt (idMat 3) 3 := sqAt_idMat 3
+
+private def sdA : Mat := [[⟨3, 1⟩, ⟨1, 2⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
+private def sdB : Mat := [[⟨2, 1⟩, ⟨1, 4⟩], [⟨1, 6⟩, ⟨5, 1⟩]]
+private def sdAr : Mat := [[⟨3, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
+private def sdBr : Mat := [[⟨2, 1⟩], [⟨1, 6⟩, ⟨5, 1⟩]]
+private def sdA1 : Mat := [[⟨3, 1⟩, ⟨1, 2⟩]]
+private def sdB1 : Mat := [[⟨2, 1⟩, ⟨1, 4⟩]]
+
+example : getAt u (getAt [] (siteDatum sdA sdB) 0) 1
+    = (⟨1, 2⟩ : BPair) + (⟨1, 4⟩ : BPair).swap := by decide +kernel
+example : getAt u (getAt [] (siteDatum sdA sdB) 0) 1
+    = (⟨1, 2⟩ : BPair) + (⟨1, 4⟩ : BPair).swap :=
+  siteDatum_entry sdA sdB 2 (by decide +kernel) (by decide +kernel) 0 1
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+example : ¬ (getAt u (getAt [] (siteDatum sdAr sdB) 0) 1
+    = getAt u (getAt [] sdAr 0) 1
+      + (getAt u (getAt [] sdB 0) 1).swap) := by decide +kernel
+example : ¬ (getAt u (getAt [] (siteDatum sdA sdBr) 0) 1
+    = getAt u (getAt [] sdA 0) 1
+      + (getAt u (getAt [] sdBr 0) 1).swap) := by decide +kernel
+example : ¬ (getAt u (getAt [] (siteDatum sdA1 sdB) 1) 1
+    = getAt u (getAt [] sdA1 1) 1
+      + (getAt u (getAt [] sdB 1) 1).swap) := by decide +kernel
+example : ¬ (getAt u (getAt [] (siteDatum sdA sdB1) 1) 1
+    = getAt u (getAt [] sdA 1) 1
+      + (getAt u (getAt [] sdB1 1) 1).swap) := by decide +kernel
+example : ¬ (getAt u (getAt [] (siteDatum sdA sdB) 0) 2
+    = getAt u (getAt [] sdA 0) 2
+      + (getAt u (getAt [] sdB 0) 2).swap) := by decide +kernel
 
 /-! The two-sided cap: `[[1,2],[2,1]]` capped at `4·I`, the two
 splits at their 2×2 blocks on the upper side. -/

@@ -4464,12 +4464,6 @@ private theorem wedge_raiseNull (d l j : Nat) (hj : j + 1 < d) :
 concatenation, each half a factor's own raising against the other
 factor's coordinate. -/
 
-private theorem take_drop_join : ∀ (n : Nat) (l : List Nat),
-    List.take n l ++ List.drop n l = l
-  | 0, _ => rfl
-  | _ + 1, [] => rfl
-  | n + 1, a :: t => congrArg (List.cons a) (take_drop_join n t)
-
 private theorem countOf_map_pos {α β : Type} [DecidableEq α]
     [DecidableEq β] (g : α → β) (a : α) :
     ∀ l : List α, 0 < ground.countOf a l →
@@ -4667,7 +4661,7 @@ private theorem tensor_raiseNull (j : Nat) (v w : HVec)
       have hsplit : (List.take (sumNat v.content) t).length
           + (List.drop (sumNat v.content) t).length = t.length := by
         rw [← ground.length_append,
-          take_drop_join (sumNat v.content) t]
+          List.take_append_drop (sumNat v.content) t]
       rw [h1, htl, hsum] at hsplit
       refine ground.addCancelR (sumNat v.content) ?_
       rw [Nat.add_comm (List.drop (sumNat v.content) t).length,
@@ -4675,8 +4669,8 @@ private theorem tensor_raiseNull (j : Nat) (v w : HVec)
       exact hsplit
     have hres := tensor_raise_split j v w hlen hsv hsw hv hw
       (List.take (sumNat v.content) t) (List.drop (sumNat v.content) t)
-      h1 h2 (by rw [take_drop_join]; exact hmem)
-    rw [take_drop_join] at hres
+      h1 h2 (by rw [List.take_append_drop]; exact hmem)
+    rw [List.take_append_drop] at hres
     exact hres
   · refine ground.foldB_null _ _ ?_
     intro m hm
@@ -6451,9 +6445,9 @@ private theorem split_lengths (M : List Nat) (a b : Nat)
     rw [hM]
     exact Nat.le_add_right _ _
   have h1 : (List.take a M).length = a := ground.length_take a M hle
-  refine ⟨(take_drop_join a M).symm, h1, ?_⟩
+  refine ⟨(List.take_append_drop a M).symm, h1, ?_⟩
   have hsplit : (List.take a M).length + (List.drop a M).length = M.length := by
-    rw [← ground.length_append, take_drop_join a M]
+    rw [← ground.length_append, List.take_append_drop a M]
   rw [h1, hM] at hsplit
   refine ground.addCancelR a ?_
   rw [Nat.add_comm (List.drop a M).length, Nat.add_comm b]
@@ -8964,7 +8958,7 @@ private theorem countOf_map_append (n : Nat) (M1 x : List Nat)
       · rw [if_pos hb, if_pos (show List.drop n x = b from by
           rw [hb, ← hM1, ground.drop_append_self])]
       · rw [if_neg hb, if_neg (show ¬ List.drop n x = b from fun he =>
-          hb (by rw [h, ← he, take_drop_join]))]
+          hb (by rw [h, ← he, List.take_append_drop]))]
     · rw [if_neg h, if_neg h,
         if_neg (show ¬ x = M1 ++ b from fun he =>
           h (by rw [he, ← hM1, ground.take_append_self]))]
@@ -9110,7 +9104,7 @@ private theorem pairList_count (mu nu : List Nat)
         countOf_monomialsAt
           (List.zipWith (fun a b => a + b) mu nu) x]
       refine if_pos ?_
-      rw [← take_drop_join (sumNat mu) x]
+      rw [← List.take_append_drop (sumNat mu) x]
       exact hcm
   · rw [if_neg hg, if_neg hg, Nat.zero_add]
 

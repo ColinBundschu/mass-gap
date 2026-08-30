@@ -12,11 +12,22 @@ law at the pair `tridiag(3,3,3; 1,1)` and `tridiag(3,3,4; 1,1)`,
 the perturbation at the last slab — the head pivots `3, 8/3` equal
 below it and the tail deviation `E = (1/88, 1/12, 1)` sandwiched
 down to the head at the tail transfer factors, both reversed reads
-parting at the head-perturbed pair.  Clause (ii): the cap step at the
+parting at the head-perturbed pair.  The derived sandwich
+(`sandwich_of_steps`) re-reads the committed step at the theorem
+route, the binder records parting the conclusion at the two moved
+centers, the two moved pivots, and the asymmetric `Y0` of the
+two-by-two fixture.  Clause (ii): the cap step at the
 contraction certificates `λ = 1/3`, `λ' = 1/2` — the deviation
 capped at the deeper slab's block and the doubled next deviation at
 `13/36` of the step's own — beside the step at two blocks of
-crossing orders.
+crossing orders; the derived price (`cap_step_price`) prices the
+read's conclusion from its leading conjuncts, the theorem route on
+both sides beside the decided reads with the collected weight's
+margin refused at eleven, one record per conjunct — the moved
+pivot, the two starved moduli, the tightened cap — each beside its
+parted side, and the bridge records at the starved modulus
+(`contract_all`), the tightened cap (`cap_lo`), and the positive
+deviation (`cap_hi`).
 Clause (iii): the walk's cleared bulk datum `(A, B) = (5, 2)` — the
 deck polynomial `2z² - 5z + 2` with its symmetry, the interior
 solvent `X = 1/2` with the off-root refusal, the pivot pair
@@ -34,7 +45,9 @@ displays' own refusals at the forged image and the forged pivot;
 the membership walk at the pivots `5, 21/5, 85/21` around the
 center `4` with the tightened radius `1/2` refusing at the head;
 the ball's positivity through `ball_psd` at the tail pivot `5`,
-the theorem route at the stated splits; and one cap step walked
+the theorem route at the stated splits, with the member's floor
+(`ball_floor`) pricing it at or beyond three times the gram and
+the two floored-read partings the binder records' own; and one cap step walked
 at the two families' brackets, the length forgery refusing at the
 vacant certificate list.  The tied slab order at two windows: the
 drift `δ = 1` at the tie `A'_i = A_i + 1` below the perturbation
@@ -87,6 +100,103 @@ example : ¬ sandwichStep ([[⟨2, 1⟩]], 3) ([[⟨2, 1⟩]], 2)
     ([[⟨7, 1⟩]], 2) ([[⟨9, 1⟩]], 3) ([[⟨3, 1⟩]], 1)
     ([[⟨4, 1⟩]], 1) 1 1 := by decide +kernel
 
+/-! Clause (i)'s sandwich, derived: the theorem route at the two
+families' slab `0 → 1` step data beside the decided read.  The
+binder records: the moved centers refuse one witness each and the
+conclusion parts — the unprimed at `4`, the primed at `3`, the
+latter withdrawing the deviation against the surviving `-1/6`;
+the moved pivots refuse one join each and the conclusion parts
+beside them — the unprimed at `3`, the primed reading the
+deviation `1/3`; and the symmetry record at the two-by-two
+fixture — the asymmetric `Y0` with every further read holding,
+the conclusion parting — the one load-bearing symmetry, the shape
+binders the committed read's own frame. -/
+
+example : oneValueQ
+    (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3))
+    (mulQ (transposeQ (transfer ([[⟨2, 1⟩]], 3)))
+      (mulQ (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
+        (transfer ([[⟨2, 1⟩]], 2)))) :=
+  sandwich_of_steps (n := 1) (n' := 1) ([[⟨2, 1⟩]], 3)
+    ([[⟨2, 1⟩]], 2) ([[⟨6, 1⟩]], 2) ([[⟨9, 1⟩]], 3)
+    ([[⟨3, 1⟩]], 1) ([[⟨4, 1⟩]], 1) [[⟨4, 1⟩]] [[⟨2, 1⟩]]
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
+example : oneValueQ
+    (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3))
+    (mulQ (transposeQ (transfer ([[⟨2, 1⟩]], 3)))
+      (mulQ (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
+        (transfer ([[⟨2, 1⟩]], 2)))) := by decide +kernel
+example : ¬ oneValueQ
+    (mulQ (([[⟨5, 1⟩]], 1) : MatQ) ([[⟨2, 1⟩]], 3))
+    (ofM [[⟨2, 1⟩]]) := by decide +kernel
+example : ¬ oneValueQ
+    (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3))
+    (mulQ (transposeQ (transfer ([[⟨2, 1⟩]], 3)))
+      (mulQ (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨5, 1⟩]], 1))
+        (transfer ([[⟨2, 1⟩]], 2)))) := by decide +kernel
+example : ¬ oneValueQ (mulQ (([[⟨4, 1⟩]], 1) : MatQ) ([[⟨2, 1⟩]], 2))
+    (ofM [[⟨2, 1⟩]]) := by decide +kernel
+example : ¬ oneValueQ
+    (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3))
+    (mulQ (transposeQ (transfer ([[⟨2, 1⟩]], 3)))
+      (mulQ (devQ (([[⟨4, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
+        (transfer ([[⟨2, 1⟩]], 2)))) := by decide +kernel
+example : ¬ oneValueQ
+    (addQ (([[⟨10, 1⟩]], 3) : MatQ)
+      (mulQ (ofM (transposeM [[⟨2, 1⟩]])) ([[⟨2, 1⟩]], 3)))
+    (ofM [[⟨4, 1⟩]]) := by decide +kernel
+example : ¬ oneValueQ
+    (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨10, 1⟩]], 3))
+    (mulQ (transposeQ (transfer ([[⟨2, 1⟩]], 3)))
+      (mulQ (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
+        (transfer ([[⟨2, 1⟩]], 2)))) := by decide +kernel
+example : ¬ oneValueQ
+    (addQ (([[⟨4, 1⟩]], 1) : MatQ)
+      (mulQ (ofM (transposeM [[⟨2, 1⟩]])) ([[⟨2, 1⟩]], 2)))
+    (ofM [[⟨4, 1⟩]]) := by decide +kernel
+example : ¬ oneValueQ
+    (devQ (([[⟨4, 1⟩]], 1) : MatQ) ([[⟨9, 1⟩]], 3))
+    (mulQ (transposeQ (transfer ([[⟨2, 1⟩]], 3)))
+      (mulQ (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
+        (transfer ([[⟨2, 1⟩]], 2)))) := by decide +kernel
+
+/-! The symmetry record's two-by-two fixture: `Y0 = [[2,1],[0,2]]`
+asymmetric, `C` the identity, `B = Y0`, `Y0' = [[3,1],[1,3]]`
+symmetric with its solved `C'` at the clearing eight,
+`A = [[5,2],[2,5]]`, and the two joins' pivots computed — every
+listed read decided true beside the refused symmetry and the
+parted conclusion. -/
+
+private def y0A : Mat := [[⟨3, 1⟩, ⟨2, 1⟩], [⟨1, 1⟩, ⟨3, 1⟩]]
+private def cIf : Mat := [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
+private def y0S : Mat := [[⟨4, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨4, 1⟩]]
+private def cPf : Mat := [[⟨7, 1⟩, ⟨2, 1⟩], [⟨1, 3⟩, ⟨6, 1⟩]]
+private def aSf : Mat := [[⟨6, 1⟩, ⟨3, 1⟩], [⟨3, 1⟩, ⟨6, 1⟩]]
+private def y1A : Mat := [[⟨4, 1⟩, ⟨3, 1⟩], [⟨2, 1⟩, ⟨4, 1⟩]]
+private def y1P : Mat := [[⟨29, 1⟩, ⟨15, 1⟩], [⟨15, 1⟩, ⟨30, 1⟩]]
+
+example : oneValueQ (mulQ ((y0A, 1) : MatQ) ((cIf, 1) : MatQ))
+    (ofM y0A) := by decide +kernel
+example : oneValueQ (mulQ ((y0S, 1) : MatQ) ((cPf, 8) : MatQ))
+    (ofM y0A) := by decide +kernel
+example : oneValueQ
+    (addQ ((y1A, 1) : MatQ)
+      (mulQ (ofM (transposeM y0A)) ((cIf, 1) : MatQ)))
+    (ofM aSf) := by decide +kernel
+example : oneValueQ
+    (addQ ((y1P, 8) : MatQ)
+      (mulQ (ofM (transposeM y0A)) ((cPf, 8) : MatQ)))
+    (ofM aSf) := by decide +kernel
+example : ¬ matOneValue (transposeM y0A) y0A := by decide +kernel
+example : ¬ oneValueQ (devQ ((y1P, 8) : MatQ) ((y1A, 1) : MatQ))
+    (mulQ (transposeQ (transfer ((cIf, 1) : MatQ)))
+      (mulQ (devQ ((y0S, 1) : MatQ) ((y0A, 1) : MatQ))
+        (transfer ((cPf, 8) : MatQ)))) := by decide +kernel
+
 /-! Clause (i) at the reversed slab order: the third family
 `tridiag(3,3,4; 1,1)` perturbed at the last slab, the shared depth
 `w0 = 2`.  The head pivots `3, 8/3` agree below that slab and part
@@ -131,6 +241,128 @@ example : capStepRead ([[⟨2, 1⟩]], 3) ([[⟨2, 1⟩]], 2)
     ([[⟨6, 1⟩]], 2) ([[⟨9, 1⟩]], 3) ([[⟨3, 1⟩]], 1) ([[⟨4, 1⟩]], 1)
     [[⟨2, 1⟩]] [[⟨2, 1⟩]] 1 1 1 3 1 2 spK spK sp2p spK spU'
     spL' := by decide +kernel
+
+/-! Clause (ii)'s step, derived: the theorem prices the doubled
+deviation two-sidedly at the committed step read's own collected
+weights from the read's leading conjuncts — the step, the two
+contraction certificates (the primed factor's beside the
+unprimed's), and the deviation's cap — the theorem route on both
+sides beside the decided reads, with the collected weight's margin
+refused at eleven against the collected thirteen. -/
+
+example : contractRead (transfer ([[⟨2, 1⟩]], 2)) [[⟨2, 1⟩]]
+    [[⟨2, 1⟩]] 1 2 spK := by decide +kernel
+example : (quadForm
+      (matScale 2
+        (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
+      [⟨2, 1⟩]).scale (1 * (3 * 3 * (2 * 2)))
+    ≤ (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+      (1 * (1 * 1 * (2 * 2) + 1 * 1 * (3 * 3))
+        * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2) :=
+  (cap_step_price (n := 1) (n' := 1) ([[⟨2, 1⟩]], 3)
+    ([[⟨2, 1⟩]], 2) ([[⟨6, 1⟩]], 2) ([[⟨9, 1⟩]], 3)
+    ([[⟨3, 1⟩]], 1) ([[⟨4, 1⟩]], 1) [[⟨2, 1⟩]] [[⟨2, 1⟩]]
+    1 1 1 3 1 2 spK spK sp2p spK
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)).1 [⟨2, 1⟩] rfl
+example : (quadForm
+      (matScale 2
+        (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
+      [⟨2, 1⟩]).scale (1 * (3 * 3 * (2 * 2)))
+    ≤ (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+      (1 * (1 * 1 * (2 * 2) + 1 * 1 * (3 * 3))
+        * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2) := by
+  decide +kernel
+example : ((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+      (1 * (1 * 1 * (2 * 2) + 1 * 1 * (3 * 3))
+        * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2)).swap
+    ≤ (quadForm
+      (matScale 2
+        (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
+      [⟨2, 1⟩]).scale (1 * (3 * 3 * (2 * 2))) :=
+  (cap_step_price (n := 1) (n' := 1) ([[⟨2, 1⟩]], 3)
+    ([[⟨2, 1⟩]], 2) ([[⟨6, 1⟩]], 2) ([[⟨9, 1⟩]], 3)
+    ([[⟨3, 1⟩]], 1) ([[⟨4, 1⟩]], 1) [[⟨2, 1⟩]] [[⟨2, 1⟩]]
+    1 1 1 3 1 2 spK spK sp2p spK
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)).2 [⟨2, 1⟩] rfl
+example : ((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+      (1 * (1 * 1 * (2 * 2) + 1 * 1 * (3 * 3))
+        * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2)).swap
+    ≤ (quadForm
+      (matScale 2
+        (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
+      [⟨2, 1⟩]).scale (1 * (3 * 3 * (2 * 2))) := by decide +kernel
+example : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+      (11 * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2)).swap
+    ≤ (quadForm
+      (matScale 2
+        (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
+      [⟨2, 1⟩]).scale (1 * (3 * 3 * (2 * 2)))) := by decide +kernel
+
+/-! The step theorem's binder records, one per leading conjunct,
+each refusal beside the parted conclusion at its own constants:
+the moved pivot parts the step read and the upper side, the two
+starved moduli part their contraction reads and the swap side,
+and the tightened cap parts the cap read and the swap side.  The
+bridge records beneath them: the starved modulus parts
+`contract_all`'s vector read, the tightened cap parts `cap_lo`'s
+lower read, and the positive deviation at the tightened cap parts
+`cap_hi`'s upper read. -/
+
+example : ¬ ((quadForm
+      (matScale 2
+        (devQ (([[⟨7, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
+      [⟨2, 1⟩]).scale (1 * (3 * 3 * (2 * 2)))
+    ≤ (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+      (1 * (1 * 1 * (2 * 2) + 1 * 1 * (3 * 3))
+        * (devQ (([[⟨7, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2)) := by
+  decide +kernel
+example : ¬ contractRead (transfer ([[⟨2, 1⟩]], 3)) [[⟨2, 1⟩]]
+    [[⟨2, 1⟩]] 1 4 spK := by decide +kernel
+example : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+      (1 * (1 * 1 * (2 * 2) + 1 * 1 * (4 * 4))
+        * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2)).swap
+    ≤ (quadForm
+      (matScale 2
+        (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
+      [⟨2, 1⟩]).scale (1 * (4 * 4 * (2 * 2)))) := by decide +kernel
+example : ¬ contractRead (transfer ([[⟨2, 1⟩]], 2)) [[⟨2, 1⟩]]
+    [[⟨2, 1⟩]] 1 3 spK := by decide +kernel
+example : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+      (1 * (1 * 1 * (3 * 3) + 1 * 1 * (3 * 3))
+        * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2)).swap
+    ≤ (quadForm
+      (matScale 2
+        (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
+      [⟨2, 1⟩]).scale (1 * (3 * 3 * (3 * 3)))) := by decide +kernel
+example : ¬ capQ (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
+    [[⟨2, 1⟩]] 1 2 sp2p spK := by decide +kernel
+example : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+      (1 * (1 * 1 * (2 * 2) + 1 * 1 * (3 * 3))
+        * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2)).swap
+    ≤ (quadForm
+      (matScale 2
+        (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
+      [⟨2, 1⟩]).scale (2 * (3 * 3 * (2 * 2)))) := by decide +kernel
+example : ¬ ((quadForm [[⟨2, 1⟩]]
+      (matVec [[⟨1, 2⟩]] [⟨2, 1⟩])).scale (4 * 4)
+    ≤ (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (1 * 1 * (3 * 3))) := by
+  decide +kernel
+example : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+      (1 * (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1)).2)).swap
+    ≤ (quadForm
+      (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1)).1
+      [⟨2, 1⟩]).scale 2) := by
+  decide +kernel
+example : ¬ capQ (devQ (([[⟨5, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
+    [[⟨2, 1⟩]] 1 2 sp2p spK := by decide +kernel
+example : ¬ ((quadForm
+      (devQ (([[⟨5, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1)).1
+      [⟨2, 1⟩]).scale 2
+    ≤ (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+      (1 * (devQ (([[⟨5, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1)).2)) := by
+  decide +kernel
 
 /-! Clause (iii): the walk's cleared bulk datum `(A, B) = (5, 2)`,
 and the two-by-two deck symmetry. -/
@@ -225,6 +457,27 @@ example : ¬ capQ (devQ (([[⟨1, 2⟩]], 1) : greenprod.MatQ)
     (([[⟨5, 1⟩]], 1) : greenprod.MatQ)) [[⟨2, 1⟩]] 1 1
     (spOne ⟨9, 3⟩) (spOne ⟨4, 8⟩) := by decide +kernel
 example : ¬ psdAt (spOne ⟨1, 2⟩) := by decide +kernel
+
+/-! The member's floor at the ball (`ball_floor`), the theorem
+route beside the decided read: the center `4` at floor `y0 = 3`
+and radius one prices the member `5` at or beyond three times the
+gram.  The binder records, at `ball_psd`'s two record cells above:
+at the member `-1` about the center `4` the floor holds while the
+deviation refuses the radius, and the floored read parts; at the
+member `-1` about the center `0` the deviation's cap holds while
+the floor refuses, and the floored read parts beside it — one
+refusal per load-bearing binder, the shape binders the consumers'
+own pivot frame. -/
+
+example : (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
+    ≤ (quadForm [[⟨6, 1⟩]] [⟨2, 1⟩]).scale 1 :=
+  ball_floor ([[⟨6, 1⟩]], 1) ([[⟨5, 1⟩]], 1) [[⟨2, 1⟩]] 3 1 1 1
+    spK spK sp2p (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) [⟨2, 1⟩] rfl
+example : (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
+    ≤ (quadForm [[⟨6, 1⟩]] [⟨2, 1⟩]).scale 1 := by decide +kernel
+example : ¬ ((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
+    ≤ (quadForm [[⟨1, 2⟩]] [⟨2, 1⟩]).scale 1) := by decide +kernel
 
 example : capWalk [[[⟨2, 1⟩]], [[⟨2, 1⟩]]] 1 1 ([[⟨3, 1⟩]], 1)
     ([[⟨4, 1⟩]], 1)

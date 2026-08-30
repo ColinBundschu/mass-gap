@@ -17,12 +17,10 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Two Lean worker threads, not one per core: the heavy
-    # kernel-decide batteries elaborate at multi-GB peaks, and four
-    # concurrent workers exhaust the hosted runner's memory (the
-    # build dies by SIGTERM with no Lean error).  Lake schedules its
-    # jobs on the Lean task pool, so this caps concurrent module
-    # builds; this Lake has no jobs flag.
+    # Two Lean workers (Lake schedules module builds on the Lean
+    # task pool): the heaviest modules' kernel checks peak near
+    # 9 GB of resident memory, so one worker per core would
+    # oversubscribe the hosted runner's 16 GB.
     env:
       LEAN_NUM_THREADS: "2"
     steps:

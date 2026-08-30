@@ -7169,7 +7169,12 @@ pivot is symmetric: the seed is a diagonal block of the symmetric
 datum, and at a symmetric $X_{i+1}$ the witness identity transposed
 reads $B_i=R_{i+1}^{\mathsf T}X_{i+1}$, so the withdrawn term
 $B_iR_{i+1}=R_{i+1}^{\mathsf T}X_{i+1}R_{i+1}$ is symmetric with $X_i$,
-the induction downward from the seed;
+the induction downward from the seed; and the head pivots are
+symmetric at their own induction: the seed $Y_1$ is a diagonal block
+of the symmetric datum, and at a symmetric $Y_i$ the witness identity
+transposed reads $B_i^{\mathsf T}=C_i^{\mathsf T}Y_i$, so the
+withdrawn term $B_i^{\mathsf T}C_i=C_i^{\mathsf T}Y_iC_i$ is
+symmetric with $Y_{i+1}$, the induction upward from its seed;
 \emph{(ii)} $\operatorname{rev}(S)=\sum_i\operatorname{rev}(X_i)$
 and $\det S=\prod_i\det X_i$, each elimination a unit-triangular
 congruence (Lemma~\ref{lem:inertia});
@@ -7222,7 +7227,9 @@ D_{i+1}
 \]
 at the two families' transfer factors
 (Lemma~\ref{lem:greenprod}(iii)),
-the two recursions' joins at equal $A$, $B$ read against each other,
+the two recursions' joins at equal $A$, $B$ read against each other
+at the transposed witness $B_i^{\mathsf T}=C_i^{\mathsf T}Y_i$ of the
+symmetric head pivot (Lemma~\ref{lem:greenprod}(i)),
 telescoping to a product form: the deviation at depth $i$ beyond the
 perturbation is $D_{w+1}$ sandwiched by the transfer factors of
 Lemma~\ref{lem:greenprod}(iii). Re-convergence of the recursion and the
@@ -10643,28 +10650,45 @@ prices there, and a profile vacant there prices at the scale
 order, the depth's leading part the depth multiple of the
 $u$-slab's origin reads joined to the scale-free slab's scale-key
 reads, one read per depth and linear in it. The depth family
-collects at two chains: every depth's square clears its square
+collects at one chain: every depth's square clears its square
 scale at the ceiling's cross-multiplied bound, and at origin
 reads above the sum's unit on the box a deeper multiple only
-raises the read, so the family's clearing of the tails' join
-reduces to one line, the scale-key read's above the join; piece
-by piece along one cut list the piece keeps the line's upper
-side, or the squared comparison's, the square scale's multiple
-of the origin reads' square at the ceiling's cross-multiplied
-read above the squared gap of the join to the scale-key read,
-whose read returns the depth multiple past the gap at the
-trichotomy of squares, the keeping priced at the two factors'
-own reads at the piece's floor, the origin read's value floored
-across the piece by its fold with the floor above the sum's unit
-and the gap of the join to the scale-key read capped across the
-piece by its own (Lemma~\ref{lem:stage}'s priced side read), the
-comparison one cross-multiplied read at the two priced values
-with the square scale read at the piece's floor, the piece's
-every point reading the comparison at the ordered squares; the
-origin reads' positivity is the second
-chain, a vacant $u$-slab reading the first chain alone: the two
-cut lists, each piece at its one comparison's kept side, the
-device's further data at the leading part. The well's
+raises the read, so the family's clearing of the deeper
+coefficients' caps reduces to one line, the scale-key read's
+above the caps' join; piece by piece along the cut list the
+piece keeps the line's upper side with the origin reads' floor
+at or beyond the sum's unit, or the squared comparison's, the
+origin reads' floor beyond the sum's unit and the square
+scale's multiple of the floor's square at the ceiling's
+cross-multiplied read above the square of the scale-key read's
+cap joined to the deeper coefficients' caps,
+whose read returns the depth multiple past the caps at the
+trichotomy of squares, every value priced across the piece at
+the piece's own endpoint: the binomial identity per occupied
+key (Theorem~\ref{thm:windowsep}) rewrites each slab's scale
+polynomial at the endpoint, the rewrite cleared at the
+endpoint's second datum's powers at the top key's count, one
+value at every representative (Definition~\ref{def:ground}'s
+homogeneity principle), the rewritten coefficients exact
+cleared reads of the stated profile, a floor the endpoint's
+read less the deeper rewritten coefficients' magnitude fold at
+the piece's width and a cap their join, each at the stated
+clearing, the deeper coefficients capped at the
+ceiling's powers and joined on the line's side, below the
+tail's stated handover key each column's cap the piece
+rewrite's own and at or beyond it the column's magnitude fold
+against the box top's powers, the
+$u$-slab's deeper caps at the piece's stated cap's multiple,
+the stated cap a natural whose square scale sits at or beyond
+the piece's top, the depth's $u$-read at or below the cap's
+ceiling multiple at the relation $u^{2}=\eta\,s$, the square
+scale inside the piece with the scale under the ceiling, and the
+comparison one cross-multiplied read at the priced values with
+the square scale read at the piece's floor, the piece's every
+point reading the comparison at the ordered squares; the
+device's data are the composite endpoints with the one cut
+list, the pieces' stated caps, the tail's handover key and the
+shape clearing. The well's
 oscillation reads at the
 corner scale, one read at every scale, so one segment list runs
 the whole tail, and the one certificate settles the count at most
@@ -10673,7 +10697,11 @@ chain across the segments to the crossing seam: an entry read
 crosses a seam at the crossed products' read, the outgoing
 profile's shift against the incoming profile joined at the swap to
 the incoming's shift against the outgoing, positive on the seam's
-box, the products' injectivity reading the crossed entry back at
+box at the crossed products' scale strip (the crossed products
+vacant at the scale-free order and at the scale order's leading
+part, the shift acting at the leading order as the products' own
+exchange, so the strip's withdrawal is the read's whole
+object), the products' injectivity reading the crossed entry back at
 positive profile values; the crossing seam is the two chains'
 break at the count comparison alone, the rebound seeding the
 later chain's entry reads; the first

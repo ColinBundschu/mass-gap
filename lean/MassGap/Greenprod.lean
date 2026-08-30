@@ -1248,13 +1248,6 @@ private theorem scaleScaleB (c : Pos) (w : BPair) (M : Mat) :
   rw [ground.map_map]
   exact elim.matOne_map _ _ (fun r => rowScaleP c w r) M
 
-private theorem matScale_congrM (c : Pos) {A B : Mat}
-    (h : matOneValue A B) :
-    matOneValue (matScale c A) (matScale c B) :=
-  elim.matOne_trans (inertia.matScale_scaleB c A)
-    (elim.matOne_trans (inertia.matOne_scaleB (BPair.ofPos c) h)
-      (elim.matOne_symm (inertia.matScale_scaleB c B)))
-
 private theorem unitTailRepl {y : BPair} (hy : y.oneValue BPair.unit) :
     ∀ n : Nat, poly.unitTail (List.replicate n y)
   | 0 => trivial
@@ -1483,7 +1476,7 @@ private theorem tieStep (dn : BPair) (X X' : MatQ) (j : Nat)
         (elim.length_nullMat n0 _) (elim.rowsLen_nullMat n0 _))
   -- the head-block tie at the shared clearing
   have hidsq : sqAt (idMat n0) n0 :=
-    elim.sqAt_of (inertia.idMat_len n0) (inertia.idMat_rows n0)
+    inertia.sqAt_idMat n0
   have hsProws : rowsLen n0
       (matScaleB (dn.scale (X.2 * X'.2)) (idMat n0)) :=
     inertia.rowsLen_scaleB _ n0 _ (inertia.idMat_rows n0)
@@ -1502,7 +1495,7 @@ private theorem tieStep (dn : BPair) (X X' : MatQ) (j : Nat)
       inertia.matScale_matScale X.2 X'.2 A,
       ground.mul_comm X'.2 X.2]
     refine elim.matOne_trans
-      (matScale_congrM (X.2 * X'.2) htie0) ?_
+      (inertia.matScale_matOne (X.2 * X'.2) htie0) ?_
     rw [inertia.matScale_matAdd (X.2 * X'.2) A
       (matScaleB dn (idMat n0))]
     refine elim.matAdd_cong2 n0 _ _ _ _
@@ -1531,7 +1524,7 @@ private theorem tieStep (dn : BPair) (X X' : MatQ) (j : Nat)
     exact offPadCongr _
       (rectAt_rows (rectAt_matScale (X.2 * X'.2) B' n0 n1 hB'))
       (rectAt_rows (rectAt_matScale (X.2 * X'.2) B n0 n1 hB))
-      (matScale_congrM (X.2 * X'.2) hoff0)
+      (inertia.matScale_matOne (X.2 * X'.2) hoff0)
   have hCr : matOneValue
       (matScale X'.2 (offPad (ground.sumNat (List.take j nt)
         + ground.getAt 0 nt j) (matScale X.2 B)))
@@ -2481,8 +2474,7 @@ private theorem lift_cons (A B : Mat) (As Bs : List Mat)
     qShape_at h.2.1 1 (Nat.succ_lt_succ (by rw [hXtl]; exact hntpos))
   have hstep := tail_step h 0 (Nat.succ_pos _)
   have hMr : rowsLen n0 (matMul B R0.1) :=
-    rowsLen_cast (length_transposeM R0.1 hR0r (by rw [hR0l]; exact hk1))
-      (rowsLen_matMul B R0.1)
+    rowsLen_matMul_of B R0.1 (fun _ => (by rw [hR0l]; exact hk1)) hR0r
   have hbtOff : transposeM (offPad (assemble As Bs).length B)
       = offT n0 (transposeM B) (assemble As Bs).length :=
     transposeM_offPad B n0 (ground.getAt 0 nt 0) _ hBl hBr hk hn1m
@@ -2698,7 +2690,7 @@ private theorem symP_of_sym (S : Mat) (n : Nat) (hSl : S.length = n)
     (hSr : rowsLen n S) (hsym : matOneValue S (transposeM S)) :
     symP S n := fun a b ha hb =>
   BPair.oneValue_trans
-    (dotN_congrR a _ _ (matVec_matOne S (transposeM S) b hsym))
+    (dotN_matVec_congrM S (transposeM S) a b hsym)
     (adjB S n n hSl hSr a ha b hb)
 
 /-- The join's pairing at unit-padded arguments is the trailing

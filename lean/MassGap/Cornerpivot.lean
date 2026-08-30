@@ -89,7 +89,9 @@ so the diagonal and the comparison enter as one canonical object
 each (`diagProf`, `termProf`).
 
 The certificate's box device prices a canonical object's collapse
-from below on a stated box of square scales.  Its data are the box's
+from below on a stated box of square scales, the split's pricing at
+an object occupied at the scale-free order (a vacant object prices
+at the graded device below).  Its data are the box's
 composite endpoints with the floor chain's interior cut list and the
 two remainder arms' own, the priced side reads' bound, the box
 top's cleared read, four floors and the shape clearing
@@ -263,27 +265,35 @@ the scale-free order: the value's own grading at the kernel reads the
 depth multiple of the u-slab's origin coefficients (`profBaseU`)
 against the u⁰-slab's scale-key coefficients (`profLin`), the depth's
 leading part one read per depth and linear in it, and the certificate
-carries two cut lists (`GradCert`, `gradRead`, at the cleared
-ceiling): the origin reads' own chain, and the two-armed chain
-(`chainRead2`) of the scale-key read's line above the tail floors'
-join, whose pieces keep the line's upper side (`lineL`) or the
-squared comparison's — the square scale's multiple of the origin
-reads' square at the ceiling's cross-multiplied read above the
-squared gap of the join to the scale-key read — the keeping priced
-at the two factors' own reads (`stage.keepSq`), the origin read's
-endpoint value floored across the piece by its fold and the gap
-read's endpoint magnitude capped across it by its own, the
-comparison one cross-multiplied read at the two priced values with
-the square scale read at the piece's floor.  Its conclusion
+carries the composite endpoints with the one cut list, the pieces'
+stated caps, the tail's handover key and the shape clearing
+(`GradCert`, `gradRead`, at the
+cleared ceiling): the one chain (`chainK`), whose pieces keep the
+line's upper side with the origin reads' floor at or beyond the sum's
+unit, or the squared comparison's — the square scale's multiple of
+the origin reads' squared floor at the ceiling's cross-multiplied
+read above the squared cap (`pieceKeep`) — every leading value
+priced across the piece at the piece's own endpoint (`stage.floorA`,
+`stage.capA`, the binomial identity per occupied key), the deeper
+scale keys capped at the ceiling's powers (`tailCaps`) and joined on
+the line's side (`capsJoin`, at `pieceL` and `pieceX` against the
+raw origin floor `pieceB`) — below the tail's stated handover key
+each column's cap the piece rewrite's own, at or beyond it the
+handover tier's fold, the column's magnitude fold against the box
+top's powers, free of the piece (`tailTop`, `stage.capW`) — the
+u-slab's caps at the piece's stated cap's
+multiple, the stated cap a natural whose square scale sits at or
+beyond the piece's top, the depth's u-read at or below the cap's
+ceiling multiple at the relation u² = ηs.  Its conclusion
 is that every
 depth beyond nought whose square scale sits inside the box reads the
 collapse strictly above the sum's unit (`gradRead_pos`): the collapse
 is the scale shift of the stripped walk, whose origin slabs are the
 depth's own combination of the two base polynomials — the depth
-multiple past the gap returned at the trichotomy of squares — and
-whose tails are priced by the two cap conjuncts.  At both slabs
-vacant at the origin the collapse is the stripped collapse's scale
-shift (`profStrip`, `profVac`, `depthPoly_profStrip`).
+multiple past the caps returned at the trichotomy of squares — and
+whose deeper keys are priced by the columns' piece caps.  At both
+slabs vacant at the origin the collapse is the stripped collapse's
+scale shift (`profStrip`, `profVac`, `depthPoly_profStrip`).
 
 The universal count identities of this tier are settled through two
 devices, each a private engine: an expression's key form over two
@@ -302,8 +312,9 @@ The certificate `DisconjCert` bundles the rate, the cleared
 ceiling, the pre profile with its graded reads and boundary seed
 clearings, the seam-chained segment lists on the two sides of the
 crossing, and the final seam with the dominance margin; its
-decidable reads are `segRead` (one segment's boxes at the two-step
-overlap), `seamRead` (the crossed products on the seam's box with
+decidable reads are `segRead` (one segment's graded devices at the
+two-step overlap, the jets vacant at the scale-free order),
+`seamRead` (the crossed products on the seam's box with
 the handover cap and the non-decreasing bottoms), `chainSegs` (a
 chained list from a standing profile), `seedRead` (the boundary
 floors), and `certRead` (the whole certificate).  `certCount` is
@@ -801,6 +812,26 @@ theorem depthPoly_ble {V : poly.PPoly × poly.PPoly} {K : Nat}
     (slabGo_ble (m * m) 0 1 V.1 hs.1)
     (slabGo_ble (m * m) 1 m V.2 hs.2)
 
+/-- The dropped tail's length sits one below the list's at most. -/
+private theorem lenDropSucc : ∀ (p : poly.Poly),
+    p.length ≤ (List.drop 1 p).length + 1
+  | [] => Nat.zero_le _
+  | _ :: _ => Nat.le_refl _
+
+/-- A slab-shape read at the stripped slabs lifts one clearing up. -/
+private theorem bleGo_unstrip {K : Nat} : ∀ (b : Nat) (P : poly.PPoly),
+    bleGo K b (P.map (List.drop 1)) = true → bleGo (K + 1) b P = true
+  | _, [], _ => rfl
+  | b, p :: t, h => by
+    have hs := ground.andSplitB h
+    have h1 : b + p.length ≤ K + 1 + 1 :=
+      Nat.le_trans (Nat.add_le_add_left (lenDropSucc p) b)
+        (Nat.succ_le_succ (ground.bleLe hs.1))
+    show (Nat.ble (b + p.length) (K + 1 + 1)
+      && bleGo (K + 1) (b + 1) t) = true
+    rw [ground.leBle h1, bleGo_unstrip (b + 1) t hs.2]
+    rfl
+
 /-- The profile's positivity read on the segment — every depth of the
 segment with its two successors reads the cleared evaluation strictly
 above the sum's unit, clause (i)'s positive list. -/
@@ -1141,32 +1172,6 @@ def decChainRead (p : poly.Poly) (bN bD : BPair) :
 instance (p : poly.Poly) (bN bD : BPair) (cuts : List CPair) :
     Decidable (chainRead p bN bD cuts) :=
   decChainRead p bN bD cuts
-
-/-- The two-armed chained read: each piece keeps the line's upper
-side, or the squared comparison's at the two factors' own priced
-reads, each piece at its one comparison's kept side. -/
-def chainRead2 (pL pB : poly.Poly) (e0n : BPair) (e0d : Pos)
-    (bN bD : BPair) : List CPair → Prop
-  | [] => True
-  | [_] => True
-  | a :: b :: t =>
-    (stage.keepUpper pL a b bN bD
-      ∨ stage.keepSq pB pL e0n e0d a b bN bD)
-    ∧ chainRead2 pL pB e0n e0d bN bD (b :: t)
-
-def decChainRead2 (pL pB : poly.Poly) (e0n : BPair) (e0d : Pos)
-    (bN bD : BPair) :
-    ∀ cuts : List CPair, Decidable (chainRead2 pL pB e0n e0d bN bD cuts)
-  | [] => isTrue trivial
-  | [_] => isTrue trivial
-  | _ :: b :: t =>
-    @instDecidableAnd _ _ inferInstance
-      (decChainRead2 pL pB e0n e0d bN bD (b :: t))
-
-instance (pL pB : poly.Poly) (e0n : BPair) (e0d : Pos) (bN bD : BPair)
-    (cuts : List CPair) :
-    Decidable (chainRead2 pL pB e0n e0d bN bD cuts) :=
-  decChainRead2 pL pB e0n e0d bN bD cuts
 
 /-- The two slabs' scale-order polynomials in the square scale:
 the u-slab's origin coefficients and the scale-free slab's
@@ -2023,57 +2028,6 @@ theorem chainRead_all (p : poly.Poly) (bN bD : BPair) (cuts : List CPair)
     exact absurd (Nat.le_of_succ_le_succ hlen) (Nat.not_succ_le_zero 0)
   | a :: b :: t, h, hlo, hhi, _ => exact chainGo p bN bD a b t x h hlo hhi
 
-/-- The two-armed chain's walk: from a piece's lower cut the line
-keeps its upper side at every point of the remaining cover, or the
-squared comparison holds there at the priced factor reads, the
-piece's own comparison the arm. -/
-private theorem chainGo2 (pL pB : poly.Poly) (e0n : BPair) (e0d : Pos)
-    (hE0n : BPair.unit ≤ e0n) (bN bD : BPair) :
-    ∀ (a b : CPair) (t : List CPair) (x : CPair),
-      chainRead2 pL pB e0n e0d bN bD (a :: b :: t) →
-      a ≤ x → x ≤ ground.getAt stage.unitC (b :: t) t.length →
-      stage.unitC < stage.evalC pL x
-      ∨ stage.ofB e0n * (stage.evalC pL x * stage.evalC pL x)
-        < stage.ofB (BPair.ofPos e0d)
-          * (x * (stage.evalC pB x * stage.evalC pB x))
-  | a, b, [], x, h, hax, hxb =>
-    match h.1 with
-    | Or.inl hp =>
-      Or.inl (stage.keepUpper_all pL a b bN bD hp x hax hxb)
-    | Or.inr hq =>
-      Or.inr (stage.keepSq_all pB pL e0n e0d hE0n a b bN bD hq x hax hxb)
-  | a, b, c :: t, x, h, hax, hxb =>
-    match CPair.le_total x b with
-    | Or.inl hxb2 =>
-      match h.1 with
-      | Or.inl hp =>
-        Or.inl (stage.keepUpper_all pL a b bN bD hp x hax hxb2)
-      | Or.inr hq =>
-        Or.inr (stage.keepSq_all pB pL e0n e0d hE0n a b bN bD hq x
-          hax hxb2)
-    | Or.inr hbx => chainGo2 pL pB e0n e0d hE0n bN bD b c t x h.2 hbx hxb
-
-/-- The two-armed chained read's conclusion: at every point of the
-whole cover the line keeps its upper side, or the squared
-comparison holds at the point. -/
-theorem chainRead2_all (pL pB : poly.Poly) (e0n : BPair) (e0d : Pos)
-    (hE0n : BPair.unit ≤ e0n) (bN bD : BPair)
-    (cuts : List CPair) (x : CPair)
-    (h : chainRead2 pL pB e0n e0d bN bD cuts)
-    (hlo : ground.getAt stage.unitC cuts 0 ≤ x)
-    (hhi : x ≤ ground.getAt stage.unitC cuts (cuts.length - 1))
-    (hlen : 2 ≤ cuts.length) :
-    stage.unitC < stage.evalC pL x
-    ∨ stage.ofB e0n * (stage.evalC pL x * stage.evalC pL x)
-      < stage.ofB (BPair.ofPos e0d)
-        * (x * (stage.evalC pB x * stage.evalC pB x)) := by
-  match cuts, h, hlo, hhi, hlen with
-  | [], _, _, _, hlen => exact absurd hlen (Nat.not_succ_le_zero 1)
-  | [_], _, _, _, hlen =>
-    exact absurd (Nat.le_of_succ_le_succ hlen) (Nat.not_succ_le_zero 0)
-  | a :: b :: t, h, hlo, hhi, _ =>
-    exact chainGo2 pL pB e0n e0d hE0n bN bD a b t x h hlo hhi
-
 /-! The pricing kit: the value's representative reaches no further
 than the list, and a cleared evaluation at a scale below the ceiling
 sits inside the coefficient fold's price at the ceiling. -/
@@ -2551,7 +2505,7 @@ private theorem stepClear_le {a b : CPair} {e0n : BPair} {e0d : Pos}
 
 /-- A composite joined to its memberwise swap is the composite
 unit. -/
-private theorem czero (x : CPair) :
+private theorem swapSelfC (x : CPair) :
     (x + CPair.swap x).oneValue stage.unitC :=
   CPair.oneValue_trans
     (CPair.oneValue_symm (stage.addC_unitC (x + CPair.swap x)))
@@ -2648,7 +2602,7 @@ theorem stepClear_step (a b : CPair) (e0n : BPair) (e0d : Pos)
       ← CPair.add_assoc a (CPair.swap a)
         ((⟨e0n, e0d⟩ : CPair) + CPair.swap ((⟨e0n, e0d⟩ : CPair)))]
     exact CPair.oneValue_trans
-      (CPair.add_congr (czero a) (czero ((⟨e0n, e0d⟩ : CPair))))
+      (CPair.add_congr (swapSelfC a) (swapSelfC ((⟨e0n, e0d⟩ : CPair))))
       (stage.addC_unitC stage.unitC)
   have hgap : stage.unitC ≤ b + CPair.swap a
       + CPair.swap ((⟨e0n, e0d⟩ : CPair)) := by
@@ -2852,14 +2806,6 @@ private theorem scalePVac (c : BPair) {p : poly.Poly} {N : Nat}
     (BPair.oneValue_trans
       (BPair.mul_congr (BPair.oneValue_refl _) (hvac j hj))
       (BPair.mul_unit _))
-
-/-- A natural weight against a clearance power reads its own
-magnitude. -/
-private theorem magPow (w : Nat) {en : Pos} (S : Nat) :
-    windowsep.mag (BPair.ofNat w * ground.bpow (BPair.ofPos en) S)
-      = BPair.ofNat w * ground.bpow (BPair.ofPos en) S :=
-  windowsep.mag_unitLe (ground.unitLeMul (ground.unitLeOfNat w)
-    (ground.unitLeBpow (ground.leB_of_lt (ground.unitLtOfPos en)) S))
 
 /-- The successor power splits off its own base. -/
 private theorem bpowSucc (x : BPair) (K : Nat) :
@@ -4889,60 +4835,163 @@ scale-key reads, both polynomials in the square scale. -/
 
 set_option genInjectivity false in
 /-- The graded box certificate: the box's composite endpoints with
-the two chains' interior cut lists, the priced side reads' bound,
-the box top's cleared read, the two slabs' tail floors, and the
-shape clearing. -/
+the one cut list, the pieces' stated caps, the tail's handover key
+and the shape clearing. -/
 structure GradCert where
   lo : CPair
   hi : CPair
-  cutsB : List CPair
-  bN : BPair
-  bD : BPair
-  shB : BPair
-  fA : BPair
-  fB : BPair
-  cutsA : List CPair
+  cuts : List CPair
+  mcaps : List Nat
+  hk : Nat
   K : Nat
 
-/-- The scale-key read's line above the tail floors' join, the
-depth family's one line: the scale-free slab's scale-key reads
-above the join. -/
-def lineL (V : poly.PPoly × poly.PPoly) (F : BPair) :
-    poly.Poly :=
-  poly.add (profLin V) (poly.neg [F])
+/-- A slab list's scale-key column: the square-scale polynomial at
+one stated scale key, one coefficient per slab. -/
+def profCol (P : poly.PPoly) (k : Nat) : poly.Poly :=
+  P.map (fun p => ground.getAt BPair.unit p k)
+
+/-- The handover tier: at or beyond the tail's handover key every
+column caps at its magnitude fold against the box top's powers
+(`stage.capW`), one fold at the box top alone, free of the piece,
+the ceiling the fold's factor per key. -/
+def tailTop (P : poly.PPoly) (top : CPair) (e0n : BPair)
+    (e0d : Pos) : Nat → Nat → CPair
+  | _, 0 => stage.unitC
+  | k, f + 1 =>
+      (⟨e0n, e0d⟩ : CPair)
+        * (stage.capW (profCol P k) top
+          + tailTop P top e0n e0d (k + 1) f)
+
+/-- The deeper scale keys' priced caps at the ceiling's powers,
+folded Horner-fashion from a stated key at a stated reach: below
+the tail's handover key each column's cap is the piece's own
+endpoint rewrite (`stage.capA`), and at or beyond it the handover
+tier's fold (`tailTop`), the column's magnitude fold against the
+box top's powers; the first count is the Taylor columns remaining
+from the stated key. -/
+def tailCaps (P : poly.PPoly) (a w top : CPair) (e0n : BPair)
+    (e0d : Pos) : Nat → Nat → Nat → CPair
+  | _, _, 0 => stage.unitC
+  | h + 1, k, f + 1 =>
+      (⟨e0n, e0d⟩ : CPair)
+        * (stage.capA (profCol P k) a w
+          + tailCaps P a w top e0n e0d h (k + 1) f)
+  | 0, k, f + 1 => tailTop P top e0n e0d k (f + 1)
+
+/-- The origin reads' raw piece floor, the depth multiple's own
+factor. -/
+def pieceB (V : poly.PPoly × poly.PPoly) (a b : CPair) : CPair :=
+  stage.floorA (profBaseU V) a (b + CPair.swap a)
+
+/-- The profile's scale reach: the slabs' key counts' join, the
+deeper coefficients' own extent and the tail folds' fuel. -/
+def scaleReach : poly.PPoly → Nat
+  | [] => 0
+  | p :: t => Nat.max p.length (scaleReach t)
+
+/-- The deeper coefficients' caps joined on the line's side at the
+deeper columns' own reach, the dropped slabs' scale reach, the
+u-slab's at the piece's stated cap's multiple — the depth's u-read
+at or below the cap's ceiling multiple at the relation `u² = ηs`,
+the square scale inside the piece with the scale under the ceiling;
+the tail's handover key counts each slab family's Taylor columns
+from its own first deeper key. -/
+def capsJoin (V : poly.PPoly × poly.PPoly) (e0n : BPair)
+    (e0d : Pos) (hk mc : Nat) (a b top : CPair) : CPair :=
+  tailCaps V.1 a (b + CPair.swap a) top e0n e0d (hk - 2) 2
+    (scaleReach (V.1.map (List.drop 2)))
+  + stage.ofB (BPair.ofNat mc)
+    * tailCaps V.2 a (b + CPair.swap a) top e0n e0d (hk - 1) 1
+        (scaleReach (V.2.map (List.drop 1)))
+
+/-- The scale-key reads' piece floor past the joined deeper caps,
+the line's own read. -/
+def pieceL (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
+    (hk mc : Nat) (a b top : CPair) : CPair :=
+  stage.floorA (profLin V) a (b + CPair.swap a)
+  + CPair.swap (capsJoin V e0n e0d hk mc a b top)
+
+/-- The scale-key reads' piece cap joined to the deeper
+coefficients' caps, the squared comparison's second factor. -/
+def pieceX (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
+    (hk mc : Nat) (a b top : CPair) : CPair :=
+  stage.capA (profLin V) a (b + CPair.swap a)
+  + capsJoin V e0n e0d hk mc a b top
+
+/-- The piece read: the piece's stated cap a natural whose square
+scale sits at or beyond the piece's top, and the piece keeps the
+line's upper side with the origin reads' floor at or beyond the
+sum's unit, or the squared comparison's — the square scale's
+multiple of the origin reads' squared floor at the ceiling's
+cross-multiplied read above the squared cap — every leading value
+priced across the piece at the piece's own endpoint, the binomial
+identity per occupied key. -/
+def pieceKeep (V : poly.PPoly × poly.PPoly) (e0n : BPair)
+    (e0d : Pos) (top : CPair) (hk mc : Nat) (a b : CPair) : Prop :=
+  a < b
+  ∧ b ≤ (⟨BPair.ofNat (mc * mc) * e0n, e0d⟩ : CPair)
+  ∧ ((stage.unitC ≤ pieceB V a b
+      ∧ stage.unitC < pieceL V e0n e0d hk mc a b top)
+    ∨ (stage.unitC < pieceB V a b
+      ∧ (⟨e0n, e0d⟩ : CPair)
+          * (pieceX V e0n e0d hk mc a b top
+            * pieceX V e0n e0d hk mc a b top)
+        < a * (pieceB V a b * pieceB V a b)))
+
+instance (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
+    (top : CPair) (hk mc : Nat) (a b : CPair) :
+    Decidable (pieceKeep V e0n e0d top hk mc a b) :=
+  inferInstanceAs (Decidable (_ ∧ _ ∧ (_ ∨ _)))
+
+/-- The one chain: consecutive cut points read piece by piece,
+one stated cap per piece, the two lists in step. -/
+def chainK (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
+    (top : CPair) (hk : Nat) :
+    List CPair → List Nat → Prop
+  | [], [] => True
+  | [_], [] => True
+  | a :: b :: t, mc :: ms => pieceKeep V e0n e0d top hk mc a b
+      ∧ chainK V e0n e0d top hk (b :: t) ms
+  | [], _ :: _ => False
+  | [_], _ :: _ => False
+  | _ :: _ :: _, [] => False
+
+def decChainK (V : poly.PPoly × poly.PPoly) (e0n : BPair)
+    (e0d : Pos) (top : CPair) (hk : Nat) :
+    ∀ (cuts : List CPair) (ms : List Nat),
+      Decidable (chainK V e0n e0d top hk cuts ms)
+  | [], [] => isTrue trivial
+  | [_], [] => isTrue trivial
+  | _ :: b :: t, _ :: ms =>
+    @instDecidableAnd _ _ inferInstance
+      (decChainK V e0n e0d top hk (b :: t) ms)
+  | [], _ :: _ => isFalse (fun h => h)
+  | [_], _ :: _ => isFalse (fun h => h)
+  | _ :: _ :: _, [] => isFalse (fun h => h)
+
+instance (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
+    (top : CPair) (hk : Nat) (cuts : List CPair) (ms : List Nat) :
+    Decidable (chainK V e0n e0d top hk cuts ms) :=
+  decChainK V e0n e0d top hk cuts ms
 
 /-- The graded box device's read at an object vacant at the
 scale-free order — the value's own grading at the kernel,
-`value = η·(m·B(s) + L(s)) + priced tails` at the origin reads `B`
+`value = η·(m·B(s) + L(s)) + deeper keys` at the origin reads `B`
 (the u-slab's) and the scale-key reads `L` (the scale-free slab's),
 the depth's leading part one read per depth and linear in it: the
-shape, the box top's cleared-read tie, the vacancy, the two tail
-budgets (the scale-free slab's scale tail at its squared price
-over the depth read, the u-slab's at the ceiling), the origin
-reads' chain — a vacant u-slab reading the line's chain alone —
-and the line's two-armed chain over the box's composite cover,
-each piece keeping the line's upper side or the squared
-comparison's, each piece at its one comparison's kept side. -/
+shape, the vacancy, and the one chain over the box's cut list at
+the pieces' stated caps, each piece at its one comparison's kept
+side with every value priced across the piece at the piece's own
+endpoint. -/
 def gradRead (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
     (C : GradCert) : Prop :=
   profShape V C.K
-  ∧ C.hi ≤ stage.ofB C.shB
   ∧ poly.unitTail (profBase V)
-  ∧ BPair.unit ≤ C.fA
-  ∧ e0n * (C.shB * (capS e0n e0d C.shB C.K (V.2.map (List.drop 1))
-        * capS e0n e0d C.shB C.K (V.2.map (List.drop 1))))
-      ≤ C.fA * C.fA * BPair.ofPos (Pos.powC e0d (2 * C.K + 1))
-  ∧ e0n * capS e0n e0d C.shB C.K (V.1.map (List.drop 2))
-      ≤ C.fB * BPair.ofPos (Pos.powC e0d (C.K + 1))
-  ∧ (poly.unitTail (profBaseU V)
-    ∨ chainRead (profBaseU V) C.bN C.bD (C.lo :: C.cutsA ++ [C.hi]))
-  ∧ chainRead2 (lineL V (C.fA + C.fB)) (profBaseU V) e0n e0d
-      C.bN C.bD (C.lo :: C.cutsB ++ [C.hi])
+  ∧ chainK V e0n e0d C.hi C.hk (C.lo :: C.cuts ++ [C.hi]) C.mcaps
 
 instance (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
     (C : GradCert) : Decidable (gradRead V e0n e0d C) :=
-  inferInstanceAs
-    (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
 /-- The scale strip: every inner polynomial dropped one scale key,
 the object's own scale factor withdrawn — legitimate exactly at the
@@ -4957,6 +5006,16 @@ def profVac (V : poly.PPoly × poly.PPoly) : Prop :=
 
 instance (V : poly.PPoly × poly.PPoly) : Decidable (profVac V) :=
   inferInstanceAs (Decidable (_ ∧ _))
+
+/-- The stripped profile's shape read lifts one clearing up. -/
+private theorem profShape_unstrip {V : poly.PPoly × poly.PPoly}
+    {K : Nat} (h : profShape (profStrip V) K) :
+    profShape V (K + 1) := by
+  have hs := ground.andSplitB h
+  show (bleGo (K + 1) 0 V.1 && bleGo (K + 1) 1 V.2) = true
+  rw [bleGo_unstrip 0 V.1 hs.1, bleGo_unstrip 1 V.2 hs.2]
+  rfl
+
 
 /-- The unit key shift exchanges with any key shift. -/
 private theorem shiftUp_comm1 (b : Nat) (X : poly.Poly) :
@@ -4983,27 +5042,6 @@ private theorem slabGo_strip (mm : Nat) : ∀ (b w : Nat) (P : poly.PPoly),
     refine poly.oneValue_trans
       (poly.add_congr h1 (slabGo_strip mm (b + 1) (w * mm) t h.2)) ?_
     exact poly.oneValue_symm (poly.shiftUp_add 1 _ _)
-
-/-! The graded device's own kit: the two lines' vacancy beyond the
-graded clearing. -/
-
-
-/-- The least cleared multiple's line is vacant beyond the graded
-clearing: the shape read forces the scale-key reads at every outer
-key from the clearing up, and the join's key sits at the origin. -/
-private theorem lineL_vac {V : poly.PPoly × poly.PPoly} {K : Nat}
-    (hsh : profShape V K) (F : BPair) :
-    ∀ j, K - 1 + 1 ≤ j →
-      (ground.getAt BPair.unit (lineL V F) j).oneValue BPair.unit := by
-  intro j hj
-  have hjK : K ≤ j := Nat.le_trans (ground.lePredSucc K) hj
-  refine BPair.oneValue_trans (poly.getAt_add _ _ j) ?_
-  refine BPair.oneValue_trans (BPair.add_congr ?_ ?_)
-    (BPair.add_unit BPair.unit)
-  · exact profLin_vac hsh j hjK
-  · refine BPair.oneValue_of_eq ?_
-    refine ground.getAt_over BPair.unit (poly.neg [F]) j ?_
-    exact Nat.le_trans (Nat.succ_le_succ (Nat.zero_le (K - 1))) hj
 
 /-! The graded device's two cancellations: the tail prices read
 against the cap conjuncts, the clearing's powers withdrawn. -/
@@ -5106,6 +5144,28 @@ private theorem bAt_pmul_vac : ∀ (P : poly.PPoly),
       match k with
       | 0 => exact BPair.oneValue_refl _
       | k + 1 => exact bAt_pmul_vac P (fun j => h (j + 1)) Q k
+    exact BPair.oneValue_trans (BPair.add_congr h1 h2) (BPair.add_unit _)
+
+/-- A product slab at a second factor of vacant origins reads
+vacant origins. -/
+private theorem bAt_pmul_vacR : ∀ (P Q : poly.PPoly),
+    (∀ j, (bAt Q j).oneValue BPair.unit) →
+    ∀ (k : Nat), (bAt (poly.pmul P Q) k).oneValue BPair.unit
+  | [], _, _, _ => BPair.oneValue_refl _
+  | c :: P, Q, h, k => by
+    show (bAt (poly.padd (Q.map (poly.mul c))
+        (([] : poly.Poly) :: poly.pmul P Q)) k).oneValue BPair.unit
+    refine BPair.oneValue_trans (bAt_padd _ _ k) ?_
+    have h1 : (bAt (Q.map (poly.mul c)) k).oneValue BPair.unit := by
+      refine BPair.oneValue_trans (bAt_pmulC c Q k) ?_
+      refine BPair.oneValue_trans
+        (BPair.mul_congr (BPair.oneValue_refl _) (h k)) ?_
+      exact BPair.mul_unit _
+    have h2 : (bAt (([] : poly.Poly) :: poly.pmul P Q) k).oneValue
+        BPair.unit := by
+      match k with
+      | 0 => exact BPair.oneValue_refl _
+      | k + 1 => exact bAt_pmul_vacR P Q h k
     exact BPair.oneValue_trans (BPair.add_congr h1 h2) (BPair.add_unit _)
 
 /-- A product slab whose first factor's origins sit at the head
@@ -5505,6 +5565,86 @@ theorem termProf_vac (V : poly.PPoly × poly.PPoly) (r qn qd : Nat) :
     refine BPair.oneValue_trans (BPair.add_congr hL hR) ?_
     exact ground.unitOfOne (BPair.oneValue_refl _)
 
+/-- A profile's scale-free vacancy read at its slab origins. -/
+private theorem bAt_of_base {V : poly.PPoly × poly.PPoly}
+    (h : poly.unitTail (profBase V)) (k : Nat) :
+    (bAt V.1 k).oneValue BPair.unit := by
+  have h0 := poly.getAt_unitTail h k
+  rw [show profBase V
+      = V.1.map (fun p => ground.getAt BPair.unit p 0) from rfl,
+    bAt_read] at h0
+  exact h0
+
+/-- The crossed products are vacant at the scale-free order and at
+the scale order's leading part, at factors vacant at the scale-free
+order: the shift acts at the leading order as the products' own
+exchange, so the strip's withdrawal is the read's whole object. -/
+theorem crossProf_vac (V W : poly.PPoly × poly.PPoly)
+    (hV : poly.unitTail (profBase V))
+    (hW : poly.unitTail (profBase W)) :
+    profVac (crossProf V W) := by
+  have hVo : ∀ j, (bAt V.1 j).oneValue BPair.unit := bAt_of_base hV
+  have hWo : ∀ j, (bAt W.1 j).oneValue BPair.unit := bAt_of_base hW
+  have hsV : ∀ j, (bAt (profShift V).1 j).oneValue BPair.unit :=
+    fun j => BPair.oneValue_trans (bAt_shift1 V j) (hVo j)
+  have hsW : ∀ j, (bAt (profShift W).1 j).oneValue BPair.unit :=
+    fun j => BPair.oneValue_trans (bAt_shift1 W j) (hWo j)
+  constructor
+  · refine poly.unitTail_of_getAt (fun k => ?_)
+    show (ground.getAt BPair.unit
+      ((crossProf V W).1.map
+        (fun p => ground.getAt BPair.unit p 0)) k).oneValue BPair.unit
+    rw [bAt_read]
+    refine BPair.oneValue_trans (bAt_padd _ _ k) ?_
+    have hL : (bAt (profMul (profShift V) W).1 k).oneValue
+        BPair.unit := by
+      refine BPair.oneValue_trans (bAt_padd _ _ k) ?_
+      refine BPair.oneValue_trans
+        (BPair.add_congr (bAt_pmul_vac _ hsV W.1 k) (bAt_esMul _ k)) ?_
+      exact BPair.add_unit _
+    have hR : (bAt ((profMul V (profShift W)).1.map poly.neg)
+        k).oneValue BPair.unit := by
+      refine BPair.oneValue_trans
+        (bAt_map poly.neg (BPair.oneValue_refl _) _ k) ?_
+      rw [poly.getAt_neg]
+      refine BPair.oneValue_trans (ground.swap_congr ?_)
+        (BPair.oneValue_of_eq (rfl : BPair.swap BPair.unit = BPair.unit))
+      show (bAt (profMul V (profShift W)).1 k).oneValue BPair.unit
+      refine BPair.oneValue_trans (bAt_padd _ _ k) ?_
+      refine BPair.oneValue_trans
+        (BPair.add_congr (bAt_pmul_vac _ hVo (profShift W).1 k)
+          (bAt_esMul _ k)) ?_
+      exact BPair.add_unit _
+    exact BPair.oneValue_trans (BPair.add_congr hL hR) (BPair.add_unit _)
+  · refine poly.unitTail_of_getAt (fun k => ?_)
+    show (ground.getAt BPair.unit
+      ((crossProf V W).2.map
+        (fun p => ground.getAt BPair.unit p 0)) k).oneValue BPair.unit
+    rw [bAt_read]
+    refine BPair.oneValue_trans (bAt_padd _ _ k) ?_
+    have hL : (bAt (profMul (profShift V) W).2 k).oneValue
+        BPair.unit := by
+      refine BPair.oneValue_trans (bAt_padd _ _ k) ?_
+      refine BPair.oneValue_trans
+        (BPair.add_congr (bAt_pmul_vac _ hsV W.2 k)
+          (bAt_pmul_vacR (profShift V).2 W.1 hWo k)) ?_
+      exact BPair.add_unit _
+    have hR : (bAt ((profMul V (profShift W)).2.map poly.neg)
+        k).oneValue BPair.unit := by
+      refine BPair.oneValue_trans
+        (bAt_map poly.neg (BPair.oneValue_refl _) _ k) ?_
+      rw [poly.getAt_neg]
+      refine BPair.oneValue_trans (ground.swap_congr ?_)
+        (BPair.oneValue_of_eq (rfl : BPair.swap BPair.unit = BPair.unit))
+      show (bAt (profMul V (profShift W)).2 k).oneValue BPair.unit
+      refine BPair.oneValue_trans (bAt_padd _ _ k) ?_
+      refine BPair.oneValue_trans
+        (BPair.add_congr (bAt_pmul_vac _ hVo (profShift W).2 k)
+          (bAt_pmul_vacR V.2 (profShift W).1 hsW k)) ?_
+      exact BPair.add_unit _
+    exact BPair.oneValue_trans (BPair.add_congr hL hR) (BPair.add_unit _)
+
+
 /-- A vacant scale-free slab reads every collapse's origin at the
 sum's unit. -/
 private theorem vacHead (V : poly.PPoly × poly.PPoly)
@@ -5729,19 +5869,811 @@ private theorem stripHeadVac (V : poly.PPoly × poly.PPoly)
   refine BPair.oneValue_trans (BPair.add_congr hA hB) ?_
   exact ground.unitOfOne (BPair.oneValue_refl _)
 
-/-- The shape read's arithmetic at the once-dropped slab. -/
-private theorem addOneLe {a d K : Nat} (h : a + (d + 1) ≤ K + 1) :
-    a + d ≤ K :=
-  Nat.le_of_succ_le_succ
-    (Nat.le_trans (Nat.le_of_eq (Nat.add_assoc a d 1)) h)
+/-! The piece-local device's derivation kit: the composite carrier's
+absorptions and order steps, the scale and key-scale evaluations,
+the columns' drops, the slab fold's column peel, and the deeper
+keys' capped fold. -/
 
-/-- The shape read's arithmetic at the twice-dropped slab, the
-once-dropped read's instance. -/
-private theorem addTwoLe {j d K : Nat} (h : j + (d + 2) ≤ K + 1) :
-    1 + j + d ≤ K :=
-  addOneLe (Nat.le_trans (Nat.le_of_eq (by
-    rw [Nat.add_comm 1 j, Nat.add_right_comm j 1 (d + 1),
-      Nat.add_assoc j (d + 1) 1])) h)
+/-- The composite one-scale absorbs on the left. -/
+private theorem mulOneCP : ∀ z : CPair,
+    (stage.ofB (BPair.ofNat 1) * z).oneValue z
+  | ⟨n, d⟩ => by
+    refine CPair.oneValue_trans
+      (CPair.num_oneValue (BPair.ofNat_one_mul n) (Pos.one * d)) ?_
+    rw [ground.one_mul d]
+    exact CPair.oneValue_refl ⟨n, d⟩
+
+/-- The unit-key shift reads the composite point's own factor. -/
+private theorem evalC_shiftUp1 (q : poly.Poly) (x : CPair) :
+    (stage.evalC (poly.shiftUp 1 q) x).oneValue
+      (x * stage.evalC q x) := by
+  show (stage.ofB BPair.unit + x * stage.evalC q x).oneValue
+    (x * stage.evalC q x)
+  exact stage.addC_unitC (x * stage.evalC q x)
+
+/-- A one-datum factor moves into a composite's first member. -/
+private theorem numFactorC (x n : BPair) (d : Pos) :
+    (stage.ofB x * (⟨n, d⟩ : CPair)).oneValue ⟨x * n, d⟩ := by
+  show (⟨x * n, Pos.one * d⟩ : CPair).oneValue ⟨x * n, d⟩
+  rw [ground.one_mul d]
+  exact CPair.oneValue_refl _
+
+/-- A scaled list's composite evaluation reads the scale's own
+factor, the cleared read's composite avatar. -/
+private theorem evalC_scalePC (c : BPair) (ln : BPair) (cc : Pos)
+    (q : poly.Poly) :
+    (stage.evalC (poly.scaleP c q) ⟨ln, cc⟩).oneValue
+      (stage.ofB c * stage.evalC q ⟨ln, cc⟩) := by
+  refine CPair.oneValue_trans
+    (stage.evalC_evalClear (poly.scaleP c q) ln cc) ?_
+  rw [poly.length_scaleP c q]
+  refine CPair.oneValue_trans
+    (CPair.num_oneValue
+      (poly.evalClear_scaleP c q ln cc (q.length - 1))
+      (ground.Pos.pow cc (q.length - 1))) ?_
+  refine CPair.oneValue_trans
+    (CPair.oneValue_symm (numFactorC c _ _)) ?_
+  exact CPair.mul_congr (CPair.oneValue_refl _)
+    (CPair.oneValue_symm (stage.evalC_evalClear q ln cc))
+
+/-- The key-scaled list's composite evaluation is the list's read
+at the scaled point, the weight's own factor in front. -/
+private theorem evalC_keyScaleC (mm w : Nat) (ln : BPair) (cc : Pos)
+    (q : poly.Poly) :
+    (stage.evalC (keyScale mm w q) ⟨ln, cc⟩).oneValue
+      (stage.ofB (BPair.ofNat w)
+        * stage.evalC q ⟨BPair.ofNat mm * ln, cc⟩) := by
+  refine CPair.oneValue_trans
+    (stage.evalC_evalClear (keyScale mm w q) ln cc) ?_
+  rw [keyScale_len mm w q]
+  refine CPair.oneValue_trans
+    (CPair.num_oneValue
+      (evalClear_keyScale mm w q ln cc (q.length - 1))
+      (ground.Pos.pow cc (q.length - 1))) ?_
+  refine CPair.oneValue_trans
+    (CPair.oneValue_symm (numFactorC (BPair.ofNat w) _ _)) ?_
+  exact CPair.mul_congr (CPair.oneValue_refl _)
+    (CPair.oneValue_symm
+      (stage.evalC_evalClear q (BPair.ofNat mm * ln) cc))
+
+/-- The origin column of a map's singletons is the column's own
+singleton map. -/
+private theorem mapColZero (P : poly.PPoly) :
+    P.map (fun p => [ground.getAt BPair.unit p 0])
+      = (profCol P 0).map (fun c => [c]) := by
+  show P.map (fun p => [ground.getAt BPair.unit p 0])
+    = (P.map (fun p => ground.getAt BPair.unit p 0)).map (fun c => [c])
+  rw [ground.map_map]
+
+/-- A dropped slab list's column is the list's next column. -/
+private theorem profCol_drop (P : poly.PPoly) (k : Nat) :
+    profCol (P.map (List.drop 1)) k = profCol P (k + 1) := by
+  show (P.map (List.drop 1)).map (fun p => ground.getAt BPair.unit p k)
+    = P.map (fun p => ground.getAt BPair.unit p (k + 1))
+  rw [ground.map_map, ← Nat.add_comm 1 k]
+  exact ground.map_congr_all _ _
+    (fun p => ground.getAt_drop BPair.unit 1 p k) P
+
+/-- The handover tier's column drop: one dropped slab list, one
+key step. -/
+private theorem tailTop_drop (P : poly.PPoly) (top : CPair)
+    (e0n : BPair) (e0d : Pos) :
+    ∀ (f k : Nat),
+    tailTop (P.map (List.drop 1)) top e0n e0d k f
+      = tailTop P top e0n e0d (k + 1) f
+  | 0, _ => rfl
+  | f + 1, k => by
+    show (⟨e0n, e0d⟩ : CPair)
+        * (stage.capW (profCol (P.map (List.drop 1)) k) top
+          + tailTop (P.map (List.drop 1)) top e0n e0d (k + 1) f)
+      = (⟨e0n, e0d⟩ : CPair)
+        * (stage.capW (profCol P (k + 1)) top
+          + tailTop P top e0n e0d (k + 1 + 1) f)
+    rw [profCol_drop P k, tailTop_drop P top e0n e0d f (k + 1)]
+
+/-- The capped fold at a dropped slab list is the fold one key up. -/
+private theorem tailCaps_drop (P : poly.PPoly) (a w top : CPair)
+    (e0n : BPair) (e0d : Pos) :
+    ∀ (f h k : Nat),
+    tailCaps (P.map (List.drop 1)) a w top e0n e0d h k f
+      = tailCaps P a w top e0n e0d h (k + 1) f
+  | 0, 0, _ => rfl
+  | 0, _ + 1, _ => rfl
+  | f + 1, h + 1, k => by
+    show (⟨e0n, e0d⟩ : CPair)
+        * (stage.capA (profCol (P.map (List.drop 1)) k) a w
+          + tailCaps (P.map (List.drop 1)) a w top e0n e0d h
+              (k + 1) f)
+      = (⟨e0n, e0d⟩ : CPair)
+        * (stage.capA (profCol P (k + 1)) a w
+          + tailCaps P a w top e0n e0d h (k + 1 + 1) f)
+    rw [profCol_drop P k, tailCaps_drop P a w top e0n e0d f h (k + 1)]
+  | f + 1, 0, k => tailTop_drop P top e0n e0d (f + 1) k
+
+/-- The slab fold's column peel: one keyed column off the front,
+the dropped list's fold behind it. -/
+private theorem peelPoly (mm b w : Nat) (P : poly.PPoly) :
+    poly.oneValue (slabGo mm b w P)
+      (poly.add (poly.shiftUp b (keyScale mm w (profCol P 0)))
+        (slabGo mm (b + 1) w (P.map (List.drop 1)))) := by
+  refine poly.oneValue_trans (slabGo_split mm b w P) ?_
+  refine poly.add_congr ?_ (slabGo_shiftTail mm b w P)
+  rw [mapColZero P]
+  exact slabGo_const mm b w (profCol P 0)
+
+/-- The peel's composite value at base nought: the column's read at
+the scaled point, the weight in front, with the point's factor on
+the dropped fold. -/
+private theorem peelValW (mm w : Nat) (ln : BPair) (cc : Pos)
+    (P : poly.PPoly) :
+    (stage.evalC (slabGo mm 0 w P) ⟨ln, cc⟩).oneValue
+      (stage.ofB (BPair.ofNat w)
+        * (stage.evalC (profCol P 0) ⟨BPair.ofNat mm * ln, cc⟩
+          + (⟨ln, cc⟩ : CPair)
+            * stage.evalC (slabGo mm 0 1 (P.map (List.drop 1)))
+                ⟨ln, cc⟩)) := by
+  refine CPair.oneValue_trans
+    (stage.evalC_congr (peelPoly mm 0 w P) ⟨ln, cc⟩) ?_
+  refine CPair.oneValue_trans
+    (stage.evalC_add (poly.shiftUp 0 (keyScale mm w (profCol P 0)))
+      (slabGo mm 1 w (P.map (List.drop 1))) ⟨ln, cc⟩) ?_
+  refine CPair.oneValue_trans
+    (CPair.add_congr
+      (evalC_keyScaleC mm w ln cc (profCol P 0))
+      (CPair.oneValue_trans
+        (stage.evalC_congr
+          (slabGo_norm mm 1 w (P.map (List.drop 1))) ⟨ln, cc⟩)
+        (CPair.oneValue_trans
+          (evalC_shiftUp1
+            (poly.scaleP (BPair.ofNat w)
+              (slabGo mm 0 1 (P.map (List.drop 1)))) ⟨ln, cc⟩)
+          (CPair.mul_congr (CPair.oneValue_refl _)
+            (evalC_scalePC (BPair.ofNat w) ln cc
+              (slabGo mm 0 1 (P.map (List.drop 1)))))))) ?_
+  refine CPair.oneValue_symm ?_
+  refine CPair.oneValue_trans
+    (CPair.mul_add (stage.ofB (BPair.ofNat w)) _ _) ?_
+  refine CPair.add_congr (CPair.oneValue_refl _) ?_
+  rw [← CPair.mul_assoc (stage.ofB (BPair.ofNat w)) (⟨ln, cc⟩ : CPair)
+      (stage.evalC (slabGo mm 0 1 (P.map (List.drop 1))) ⟨ln, cc⟩),
+    CPair.mul_comm (stage.ofB (BPair.ofNat w)) (⟨ln, cc⟩ : CPair),
+    CPair.mul_assoc (⟨ln, cc⟩ : CPair) (stage.ofB (BPair.ofNat w))
+      (stage.evalC (slabGo mm 0 1 (P.map (List.drop 1))) ⟨ln, cc⟩)]
+  exact CPair.oneValue_refl _
+
+/-- The composite floors of the width folds sit at or beyond the
+unit. -/
+private theorem capW_nn {w : CPair} (hw : stage.unitC ≤ w) :
+    ∀ q : poly.Poly, stage.unitC ≤ stage.capW q w
+  | [] => CPair.le_refl _
+  | c :: t =>
+    CPair.le_congr (stage.addC_unitC stage.unitC)
+      (CPair.oneValue_refl _)
+      (CPair.le_add
+        (stage.unitC_le_num Pos.one (windowsep.unitLe_mag c))
+        (stage.unitC_le_mul hw (capW_nn hw t)))
+
+/-- A further second datum keeps the at-or-beyond-unit read. -/
+private theorem overC_nn : ∀ {x : CPair} (q : Pos),
+    stage.unitC ≤ x → stage.unitC ≤ stage.overC x q
+  | ⟨_, d⟩, q, h => stage.unitC_le_num (d * q) (stage.unitC_le_fst h)
+
+/-- The piece cap sits at or beyond the unit. -/
+private theorem capA_nn (p : poly.Poly) (a : CPair) {w : CPair}
+    (hw : stage.unitC ≤ w) : stage.unitC ≤ stage.capA p a w :=
+  overC_nn _ (capW_nn hw _)
+
+/-- The handover tier's fold sits at or beyond the unit. -/
+private theorem tailTop_nn (P : poly.PPoly) {top : CPair}
+    (htop : stage.unitC ≤ top) (e0n : BPair) (e0d : Pos)
+    (hE : BPair.unit ≤ e0n) :
+    ∀ (f k : Nat), stage.unitC ≤ tailTop P top e0n e0d k f
+  | 0, _ => CPair.le_refl _
+  | f + 1, k =>
+    stage.unitC_le_mul (stage.unitC_le_num e0d hE)
+      (CPair.le_congr (stage.addC_unitC stage.unitC)
+        (CPair.oneValue_refl _)
+        (CPair.le_add (capW_nn htop _)
+          (tailTop_nn P htop e0n e0d hE f (k + 1))))
+
+/-- The capped fold sits at or beyond the unit. -/
+private theorem tailCaps_nn (P : poly.PPoly) (a : CPair)
+    {w top : CPair}
+    (hw : stage.unitC ≤ w) (htop : stage.unitC ≤ top)
+    (e0n : BPair) (e0d : Pos) (hE : BPair.unit ≤ e0n) :
+    ∀ (f h k : Nat),
+      stage.unitC ≤ tailCaps P a w top e0n e0d h k f
+  | 0, 0, _ => CPair.le_refl _
+  | 0, _ + 1, _ => CPair.le_refl _
+  | f + 1, h + 1, k =>
+    stage.unitC_le_mul (stage.unitC_le_num e0d hE)
+      (CPair.le_congr (stage.addC_unitC stage.unitC)
+        (CPair.oneValue_refl _)
+        (CPair.le_add (capA_nn _ a hw)
+          (tailCaps_nn P a hw htop e0n e0d hE f h (k + 1))))
+  | f + 1, 0, k => tailTop_nn P htop e0n e0d hE (f + 1) k
+
+/-- A slab list at vacant slabs folds to the unit tail. -/
+private theorem slabGo_lenVac (mm : Nat) : ∀ (b w : Nat)
+    (Q : poly.PPoly),
+    (∀ j, (ground.getAt ([] : poly.Poly) Q j).length ≤ 0) →
+    poly.unitTail (slabGo mm b w Q)
+  | _, _, [], _ => trivial
+  | b, w, p :: t, h => by
+    have hp : p = [] := by
+      match p, h 0 with
+      | [], _ => rfl
+      | _ :: _, hh => exact absurd hh (Nat.not_succ_le_zero _)
+    rw [hp]
+    exact poly.oneValue_unitTail
+      (poly.unitTail_add
+        (poly.unitTail_shiftUp b
+          (show poly.unitTail (poly.scaleP (BPair.ofNat w) [])
+            from trivial)) _)
+      (slabGo_lenVac mm (b + 1) (w * mm) t (fun j => h (j + 1)))
+
+/-- A mapped drop's member is the member's own drop. -/
+private theorem getAtMapDrop : ∀ (Q : poly.PPoly) (j : Nat),
+    ground.getAt ([] : poly.Poly) (Q.map (List.drop 1)) j
+      = List.drop 1 (ground.getAt ([] : poly.Poly) Q j)
+  | [], _ => rfl
+  | _ :: _, 0 => rfl
+  | _ :: t, j + 1 => getAtMapDrop t j
+
+/-- A drop's length steps the cap down. -/
+private theorem lenDropLe {l : poly.Poly} {f : Nat}
+    (h : l.length ≤ f + 1) : (List.drop 1 l).length ≤ f :=
+  match l, h with
+  | [], _ => Nat.zero_le f
+  | _ :: _, h => Nat.le_of_succ_le_succ h
+
+/-- Every slab's key count sits inside the profile's scale
+reach. -/
+private theorem scaleReachLe : ∀ (P : poly.PPoly) (j : Nat),
+    (ground.getAt ([] : poly.Poly) P j).length ≤ scaleReach P
+  | [], _ => Nat.zero_le _
+  | p :: t, 0 => ground.le_max_left p.length (scaleReach t)
+  | p :: t, j + 1 =>
+    Nat.le_trans (scaleReachLe t j)
+      (ground.le_max_right p.length (scaleReach t))
+
+/-- The peel at unit weight: the origin column off the front, the
+dropped fold at the point's factor behind it. -/
+private theorem peelVal1 (mm : Nat) (ln : BPair) (cc : Pos)
+    (Q : poly.PPoly) :
+    (stage.evalC (slabGo mm 0 1 Q) ⟨ln, cc⟩).oneValue
+      (stage.evalC (profCol Q 0) ⟨BPair.ofNat mm * ln, cc⟩
+        + (⟨ln, cc⟩ : CPair)
+          * stage.evalC (slabGo mm 0 1 (Q.map (List.drop 1)))
+              ⟨ln, cc⟩) :=
+  CPair.oneValue_trans (peelValW mm 1 ln cc Q) (mulOneCP _)
+
+/-- The composite sum keeps the strict order against an at-or-below
+second summand. -/
+private theorem cLtAdd : ∀ {x y z w : CPair}, x < y → z ≤ w →
+    x + z < y + w
+  | ⟨a, ac⟩, ⟨b, bc⟩, ⟨c, cc⟩, ⟨d, dc⟩, h1, h2 => by
+    have g1 : a.scale bc < b.scale ac := h1
+    have g2 : c.scale dc ≤ d.scale cc := h2
+    have k1 := BPair.scale_lt (cc * dc) g1
+    have k2 := ground.leB_scale g2 (ac * bc)
+    rw [BPair.scale_scale, BPair.scale_scale] at k1
+    rw [BPair.scale_scale, BPair.scale_scale] at k2
+    rw [show bc * (cc * dc) = cc * (bc * dc) from
+        ground.mul_left_comm bc cc dc,
+      show ac * (cc * dc) = dc * (ac * cc) from by
+        rw [ground.mul_left_comm dc ac cc, ground.mul_comm cc dc]] at k1
+    rw [show dc * (ac * bc) = ac * (bc * dc) from by
+        rw [ground.mul_left_comm dc ac bc, ground.mul_comm dc bc],
+      show cc * (ac * bc) = bc * (ac * cc) from by
+        rw [ground.mul_left_comm cc ac bc, ground.mul_left_comm bc ac cc,
+          ground.mul_comm cc bc]] at k2
+    show (a.scale cc + c.scale ac).scale (bc * dc)
+      < (b.scale dc + d.scale bc).scale (ac * cc)
+    rw [BPair.scale_add, BPair.scale_add, BPair.scale_scale,
+      BPair.scale_scale, BPair.scale_scale, BPair.scale_scale]
+    exact ground.ltB_add k1 k2
+
+/-- A strict order's read at the withdrawn lower member. -/
+private theorem cLtSwapAdd {X Y : CPair} (h : X < Y) :
+    stage.unitC < CPair.swap X + Y := by
+  have h1 : X + CPair.swap X < Y + CPair.swap X :=
+    cLtAdd h (CPair.le_refl (CPair.swap X))
+  rw [CPair.add_comm Y (CPair.swap X)] at h1
+  exact CPair.lt_congr (swapSelfC X) (CPair.oneValue_refl _) h1
+
+/-- A summand at or beyond the unit only raises the read. -/
+private theorem cLeAddNn {z w : CPair} (h : stage.unitC ≤ w) :
+    z ≤ z + w := by
+  have h1 : z + stage.unitC ≤ z + w :=
+    CPair.le_add (CPair.le_refl z) h
+  rw [CPair.add_comm z stage.unitC] at h1
+  exact CPair.le_congr (stage.addC_unitC z) (CPair.oneValue_refl _) h1
+
+/-- The strict order composes with the at-or-below read on the
+left. -/
+private theorem cLeLtTrans {x y z : CPair} (h1 : x ≤ y)
+    (h2 : y < z) : x < z :=
+  match h1 with
+  | Or.inl hov =>
+    CPair.lt_congr (CPair.oneValue_symm hov) (CPair.oneValue_refl _) h2
+  | Or.inr hlt => stage.ltC_le_trans hlt (Or.inr h2)
+
+/-- The strict order reads back from the squares at members at or
+beyond the unit, the trichotomy of squares. -/
+private theorem cLtOfSq {X Y : CPair} (hX : stage.unitC ≤ X)
+    (hY : stage.unitC ≤ Y) (h : X * X < Y * Y) : X < Y :=
+  match CPair.le_total Y X with
+  | Or.inl hYX =>
+    absurd h (CPair.le_not_lt (stage.mulC_le_mono hY hX hYX hYX))
+  | Or.inr hXY =>
+    match hXY with
+    | Or.inl hov =>
+      (CPair.not_lt_of_one (CPair.mul_congr hov hov) h).elim
+    | Or.inr hlt => hlt
+
+/-- The strict order reads back across a shared factor at or beyond
+the unit. -/
+private theorem cLtUnscale {z x y : CPair} (hz : stage.unitC ≤ z)
+    (h : z * x < z * y) : x < y :=
+  match CPair.le_total y x with
+  | Or.inl hyx =>
+    absurd h (CPair.le_not_lt (stage.mulC_le_left hz hyx))
+  | Or.inr hxy =>
+    match hxy with
+    | Or.inl hov =>
+      (CPair.not_lt_of_one
+        (CPair.mul_congr (CPair.oneValue_refl z) hov) h).elim
+    | Or.inr hlt => hlt
+
+/-- A product of members strictly beyond the unit sits there. -/
+private theorem cMulPos {x y : CPair} (hx : stage.unitC < x)
+    (hy : stage.unitC < y) : stage.unitC < x * y := by
+  obtain ⟨xn, xc⟩ := x
+  obtain ⟨yn, yc⟩ := y
+  exact (stage.unitC_lt_num (xn * yn) (xc * yc)).mpr
+    (ground.unitLtMul ((stage.unitC_lt_num xn xc).mp hx)
+      ((stage.unitC_lt_num yn yc).mp hy))
+
+/-- The cleared evaluation lifts across further clearing powers. -/
+private theorem evalLiftLe (p : poly.Poly) (ln : BPair) (ed : Pos)
+    (J : Nat) (hlen : p.length ≤ J + 1) :
+    ∀ g : Nat, (poly.evalClear p ln ed (J + g)).oneValue
+      (ground.bpow (BPair.ofPos ed) g * poly.evalClear p ln ed J)
+  | 0 => by
+    refine BPair.oneValue_symm ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl _)
+        (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans
+      (BPair.ofPos_scale Pos.one (poly.evalClear p ln ed J)) ?_
+    rw [BPair.scale_one]
+    exact BPair.oneValue_refl _
+  | g + 1 => by
+    have hvac : ∀ j, (J + g) + 1 ≤ j →
+        (ground.getAt BPair.unit p j).oneValue BPair.unit := by
+      intro j hj
+      refine BPair.oneValue_of_eq
+        (ground.getAt_over BPair.unit p j ?_)
+      exact Nat.le_trans
+        (Nat.le_trans hlen (Nat.succ_le_succ (Nat.le_add_right J g))) hj
+    refine BPair.oneValue_trans
+      (evalPowLift p ln ed (J + g) hvac) ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl _)
+        (evalLiftLe p ln ed J hlen g)) ?_
+    refine BPair.oneValue_symm ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.norm_oneValue _)
+        (BPair.oneValue_refl _)) ?_
+    exact BPair.oneValue_of_eq
+      (BPair.mul_assoc (BPair.ofPos ed) (ground.bpow (BPair.ofPos ed) g)
+        (poly.evalClear p ln ed J))
+
+/-- The handover tier's bound: each column's value at a point at or
+below the box top is capped by the column's magnitude fold at the
+box top's powers, the peel against the tier's fold key by key. -/
+private theorem tailTopBound (mm : Nat) (e0n : BPair)
+    (e0d en ed : Pos) (hE : BPair.unit ≤ e0n)
+    (heC : (⟨BPair.ofPos en, ed⟩ : CPair) ≤ ⟨e0n, e0d⟩)
+    {top : CPair}
+    (hxt : (⟨BPair.ofNat mm * BPair.ofPos en, ed⟩ : CPair) ≤ top) :
+    ∀ (f : Nat) (Q : poly.PPoly),
+    (∀ j, (ground.getAt ([] : poly.Poly) Q j).length ≤ f) →
+    stage.cmag ((⟨BPair.ofPos en, ed⟩ : CPair)
+        * stage.evalC (slabGo mm 0 1 Q) ⟨BPair.ofPos en, ed⟩)
+      ≤ tailTop Q top e0n e0d 0 f
+  | 0, Q, hlen => by
+    have hvac := slabGo_lenVac mm 0 1 Q hlen
+    refine CPair.le_congr (CPair.oneValue_symm ?_)
+      (CPair.oneValue_refl _) (CPair.le_refl stage.unitC)
+    refine CPair.oneValue_trans
+      (stage.cmag_congr (CPair.oneValue_trans
+        (CPair.mul_congr (CPair.oneValue_refl _)
+          (stage.evalC_unitTail hvac _))
+        (stage.mulC_unit _))) ?_
+    exact stage.cmag_of_unitLe (CPair.le_refl stage.unitC)
+  | f + 1, Q, hlen => by
+    have hηnn : stage.unitC ≤ (⟨BPair.ofPos en, ed⟩ : CPair) :=
+      stage.unitC_le_num ed (ground.leB_of_lt (ground.unitLtOfPos en))
+    have hx0 : stage.unitC
+        ≤ (⟨BPair.ofNat mm * BPair.ofPos en, ed⟩ : CPair) :=
+      stage.unitC_le_num ed
+        (ground.unitLeMul (ground.unitLeOfNat mm)
+          (ground.leB_of_lt (ground.unitLtOfPos en)))
+    have htop : stage.unitC ≤ top := CPair.le_trans hx0 hxt
+    have hstep : stage.cmag ((⟨BPair.ofPos en, ed⟩ : CPair)
+          * stage.evalC (slabGo mm 0 1 Q) ⟨BPair.ofPos en, ed⟩)
+        ≤ (⟨BPair.ofPos en, ed⟩ : CPair)
+          * (stage.cmag (stage.evalC (profCol Q 0)
+              ⟨BPair.ofNat mm * BPair.ofPos en, ed⟩)
+            + stage.cmag ((⟨BPair.ofPos en, ed⟩ : CPair)
+              * stage.evalC (slabGo mm 0 1 (Q.map (List.drop 1)))
+                  ⟨BPair.ofPos en, ed⟩)) := by
+      refine CPair.le_congr
+        (CPair.oneValue_symm (stage.cmag_congr
+          (CPair.mul_congr (CPair.oneValue_refl _)
+            (peelVal1 mm (BPair.ofPos en) ed Q))))
+        (CPair.oneValue_refl _) ?_
+      refine CPair.le_congr
+        (CPair.oneValue_symm (stage.cmag_mul _ _))
+        (CPair.oneValue_refl _) ?_
+      refine CPair.le_congr
+        (CPair.mul_congr
+          (CPair.oneValue_symm (stage.cmag_of_unitLe hηnn))
+          (CPair.oneValue_refl _))
+        (CPair.oneValue_refl _) ?_
+      exact stage.mulC_le_left hηnn (stage.cmag_add_le _ _)
+    refine CPair.le_trans hstep ?_
+    have hcol : stage.cmag (stage.evalC (profCol Q 0)
+          ⟨BPair.ofNat mm * BPair.ofPos en, ed⟩)
+        ≤ stage.capW (profCol Q 0) top :=
+      stage.capW_le (profCol Q 0) hx0 hxt
+    have hrest : stage.cmag ((⟨BPair.ofPos en, ed⟩ : CPair)
+          * stage.evalC (slabGo mm 0 1 (Q.map (List.drop 1)))
+              ⟨BPair.ofPos en, ed⟩)
+        ≤ tailTop Q top e0n e0d 1 f := by
+      rw [← tailTop_drop Q top e0n e0d f 0]
+      refine tailTopBound mm e0n e0d en ed hE heC hxt f
+        (Q.map (List.drop 1)) (fun j => ?_)
+      rw [getAtMapDrop Q j]
+      exact lenDropLe (hlen j)
+    refine CPair.le_trans
+      (stage.mulC_le_left hηnn (CPair.le_add hcol hrest)) ?_
+    refine stage.mulC_le_mono ?_ ?_ heC (CPair.le_refl _)
+    · exact CPair.le_congr (stage.addC_unitC stage.unitC)
+        (CPair.oneValue_refl _)
+        (CPair.le_add (capW_nn htop _)
+          (tailTop_nn Q htop e0n e0d hE f 1))
+    · exact stage.unitC_le_num e0d hE
+
+/-- The deeper keys' fold is capped by the columns' priced caps at
+the ceiling's powers, the peel against the capped fold key by
+key. -/
+private theorem tailBoundC (mm : Nat) (e0n : BPair) (e0d en ed : Pos)
+    (hE : BPair.unit ≤ e0n)
+    (heC : (⟨BPair.ofPos en, ed⟩ : CPair) ≤ ⟨e0n, e0d⟩)
+    {a b top : CPair}
+    (hax : a ≤ ⟨BPair.ofNat mm * BPair.ofPos en, ed⟩)
+    (hxb : (⟨BPair.ofNat mm * BPair.ofPos en, ed⟩ : CPair) ≤ b)
+    (hw : stage.unitC ≤ b + CPair.swap a)
+    (hxt : (⟨BPair.ofNat mm * BPair.ofPos en, ed⟩ : CPair) ≤ top) :
+    ∀ (f h : Nat) (Q : poly.PPoly),
+    (∀ j, (ground.getAt ([] : poly.Poly) Q j).length ≤ f) →
+    stage.cmag ((⟨BPair.ofPos en, ed⟩ : CPair)
+        * stage.evalC (slabGo mm 0 1 Q) ⟨BPair.ofPos en, ed⟩)
+      ≤ tailCaps Q a (b + CPair.swap a) top e0n e0d h 0 f
+  | 0, 0, Q, hlen => by
+    have hvac := slabGo_lenVac mm 0 1 Q hlen
+    refine CPair.le_congr (CPair.oneValue_symm ?_)
+      (CPair.oneValue_refl _) (CPair.le_refl stage.unitC)
+    refine CPair.oneValue_trans
+      (stage.cmag_congr (CPair.oneValue_trans
+        (CPair.mul_congr (CPair.oneValue_refl _)
+          (stage.evalC_unitTail hvac _))
+        (stage.mulC_unit _))) ?_
+    exact stage.cmag_of_unitLe (CPair.le_refl stage.unitC)
+  | 0, _ + 1, Q, hlen => by
+    have hvac := slabGo_lenVac mm 0 1 Q hlen
+    refine CPair.le_congr (CPair.oneValue_symm ?_)
+      (CPair.oneValue_refl _) (CPair.le_refl stage.unitC)
+    refine CPair.oneValue_trans
+      (stage.cmag_congr (CPair.oneValue_trans
+        (CPair.mul_congr (CPair.oneValue_refl _)
+          (stage.evalC_unitTail hvac _))
+        (stage.mulC_unit _))) ?_
+    exact stage.cmag_of_unitLe (CPair.le_refl stage.unitC)
+  | f + 1, h + 1, Q, hlen => by
+    have hηnn : stage.unitC ≤ (⟨BPair.ofPos en, ed⟩ : CPair) :=
+      stage.unitC_le_num ed (ground.leB_of_lt (ground.unitLtOfPos en))
+    have hx0 : stage.unitC
+        ≤ (⟨BPair.ofNat mm * BPair.ofPos en, ed⟩ : CPair) :=
+      stage.unitC_le_num ed
+        (ground.unitLeMul (ground.unitLeOfNat mm)
+          (ground.leB_of_lt (ground.unitLtOfPos en)))
+    have htop : stage.unitC ≤ top := CPair.le_trans hx0 hxt
+    have hstep : stage.cmag ((⟨BPair.ofPos en, ed⟩ : CPair)
+          * stage.evalC (slabGo mm 0 1 Q) ⟨BPair.ofPos en, ed⟩)
+        ≤ (⟨BPair.ofPos en, ed⟩ : CPair)
+          * (stage.cmag (stage.evalC (profCol Q 0)
+              ⟨BPair.ofNat mm * BPair.ofPos en, ed⟩)
+            + stage.cmag ((⟨BPair.ofPos en, ed⟩ : CPair)
+              * stage.evalC (slabGo mm 0 1 (Q.map (List.drop 1)))
+                  ⟨BPair.ofPos en, ed⟩)) := by
+      refine CPair.le_congr
+        (CPair.oneValue_symm (stage.cmag_congr
+          (CPair.mul_congr (CPair.oneValue_refl _)
+            (peelVal1 mm (BPair.ofPos en) ed Q))))
+        (CPair.oneValue_refl _) ?_
+      refine CPair.le_congr
+        (CPair.oneValue_symm (stage.cmag_mul _ _))
+        (CPair.oneValue_refl _) ?_
+      refine CPair.le_congr
+        (CPair.mul_congr
+          (CPair.oneValue_symm (stage.cmag_of_unitLe hηnn))
+          (CPair.oneValue_refl _))
+        (CPair.oneValue_refl _) ?_
+      exact stage.mulC_le_left hηnn (stage.cmag_add_le _ _)
+    refine CPair.le_trans hstep ?_
+    have hcol : stage.cmag (stage.evalC (profCol Q 0)
+          ⟨BPair.ofNat mm * BPair.ofPos en, ed⟩)
+        ≤ stage.capA (profCol Q 0) a (b + CPair.swap a) :=
+      stage.capA_le (profCol Q 0) hax hxb
+    have hrest : stage.cmag ((⟨BPair.ofPos en, ed⟩ : CPair)
+          * stage.evalC (slabGo mm 0 1 (Q.map (List.drop 1)))
+              ⟨BPair.ofPos en, ed⟩)
+        ≤ tailCaps Q a (b + CPair.swap a) top e0n e0d h 1 f := by
+      rw [← tailCaps_drop Q a (b + CPair.swap a) top e0n e0d f h 0]
+      refine tailBoundC mm e0n e0d en ed hE heC hax hxb hw hxt f h
+        (Q.map (List.drop 1)) (fun j => ?_)
+      rw [getAtMapDrop Q j]
+      exact lenDropLe (hlen j)
+    refine CPair.le_trans
+      (stage.mulC_le_left hηnn (CPair.le_add hcol hrest)) ?_
+    refine stage.mulC_le_mono ?_ ?_ heC (CPair.le_refl _)
+    · exact CPair.le_congr (stage.addC_unitC stage.unitC)
+        (CPair.oneValue_refl _)
+        (CPair.le_add (capA_nn _ a hw)
+          (tailCaps_nn Q a hw htop e0n e0d hE f h 1))
+    · exact stage.unitC_le_num e0d hE
+  | f + 1, 0, Q, hlen =>
+    tailTopBound mm e0n e0d en ed hE heC hxt (f + 1) Q hlen
+
+/-- A count's scaled square splits its factors: the squared count's
+multiple of one scale factor against the further one reads the
+scaled count's own square. -/
+private theorem sqNumSplit (k : Nat) (e : BPair) :
+    ((BPair.ofNat k * e) * (BPair.ofNat k * e)).oneValue
+      ((BPair.ofNat (k * k) * e) * e) := by
+  rw [BPair.mul_assoc (BPair.ofNat k) e (BPair.ofNat k * e),
+    ← BPair.mul_assoc e (BPair.ofNat k) e,
+    BPair.mul_comm e (BPair.ofNat k)]
+  refine BPair.oneValue_symm ?_
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.ofNat_mul_mul k k e)
+      (BPair.oneValue_refl e)) ?_
+  rw [BPair.mul_assoc (BPair.ofNat k) (BPair.ofNat k * e) e]
+  exact BPair.oneValue_refl _
+
+/-- The u-slab's deeper keys' fold at the depth's u-read is capped
+by the stated cap's multiple of the columns' priced caps at the
+ceiling's powers: the u-read at or below the cap's ceiling multiple
+prices the leading scale factor, and the deeper factors price at
+the ceiling as the scale-free fold's do. -/
+private theorem tailBoundW (mm mc : Nat) (e0n : BPair)
+    (e0d en ed : Pos) (u : CPair)
+    (hE : BPair.unit ≤ e0n)
+    (heC : (⟨BPair.ofPos en, ed⟩ : CPair) ≤ ⟨e0n, e0d⟩)
+    (hunn : stage.unitC ≤ u)
+    (hu : u ≤ (⟨BPair.ofNat mc * e0n, e0d⟩ : CPair))
+    {a b top : CPair}
+    (hax : a ≤ ⟨BPair.ofNat mm * BPair.ofPos en, ed⟩)
+    (hxb : (⟨BPair.ofNat mm * BPair.ofPos en, ed⟩ : CPair) ≤ b)
+    (hw : stage.unitC ≤ b + CPair.swap a)
+    (hxt : (⟨BPair.ofNat mm * BPair.ofPos en, ed⟩ : CPair) ≤ top) :
+    ∀ (f h : Nat) (Q : poly.PPoly),
+    (∀ j, (ground.getAt ([] : poly.Poly) Q j).length ≤ f) →
+    stage.cmag (u
+        * stage.evalC (slabGo mm 0 1 Q) ⟨BPair.ofPos en, ed⟩)
+      ≤ stage.ofB (BPair.ofNat mc)
+        * tailCaps Q a (b + CPair.swap a) top e0n e0d h 0 f
+  | 0, 0, Q, hlen => by
+    have hvac := slabGo_lenVac mm 0 1 Q hlen
+    refine CPair.le_congr (CPair.oneValue_symm ?_)
+      (CPair.oneValue_symm
+        (stage.mulC_unit (stage.ofB (BPair.ofNat mc))))
+      (CPair.le_refl stage.unitC)
+    refine CPair.oneValue_trans
+      (stage.cmag_congr (CPair.oneValue_trans
+        (CPair.mul_congr (CPair.oneValue_refl u)
+          (stage.evalC_unitTail hvac _))
+        (stage.mulC_unit u))) ?_
+    exact stage.cmag_of_unitLe (CPair.le_refl stage.unitC)
+  | 0, _ + 1, Q, hlen => by
+    have hvac := slabGo_lenVac mm 0 1 Q hlen
+    refine CPair.le_congr (CPair.oneValue_symm ?_)
+      (CPair.oneValue_symm
+        (stage.mulC_unit (stage.ofB (BPair.ofNat mc))))
+      (CPair.le_refl stage.unitC)
+    refine CPair.oneValue_trans
+      (stage.cmag_congr (CPair.oneValue_trans
+        (CPair.mul_congr (CPair.oneValue_refl u)
+          (stage.evalC_unitTail hvac _))
+        (stage.mulC_unit u))) ?_
+    exact stage.cmag_of_unitLe (CPair.le_refl stage.unitC)
+  | f + 1, h + 1, Q, hlen => by
+    have hx0 : stage.unitC
+        ≤ (⟨BPair.ofNat mm * BPair.ofPos en, ed⟩ : CPair) :=
+      stage.unitC_le_num ed
+        (ground.unitLeMul (ground.unitLeOfNat mm)
+          (ground.leB_of_lt (ground.unitLtOfPos en)))
+    have htop : stage.unitC ≤ top := CPair.le_trans hx0 hxt
+    have hstep : stage.cmag (u
+          * stage.evalC (slabGo mm 0 1 Q) ⟨BPair.ofPos en, ed⟩)
+        ≤ u * (stage.cmag (stage.evalC (profCol Q 0)
+              ⟨BPair.ofNat mm * BPair.ofPos en, ed⟩)
+            + stage.cmag ((⟨BPair.ofPos en, ed⟩ : CPair)
+              * stage.evalC (slabGo mm 0 1 (Q.map (List.drop 1)))
+                  ⟨BPair.ofPos en, ed⟩)) := by
+      refine CPair.le_congr
+        (CPair.oneValue_symm (stage.cmag_congr
+          (CPair.mul_congr (CPair.oneValue_refl u)
+            (peelVal1 mm (BPair.ofPos en) ed Q))))
+        (CPair.oneValue_refl _) ?_
+      refine CPair.le_congr
+        (CPair.oneValue_symm (stage.cmag_mul _ _))
+        (CPair.oneValue_refl _) ?_
+      refine CPair.le_congr
+        (CPair.mul_congr
+          (CPair.oneValue_symm (stage.cmag_of_unitLe hunn))
+          (CPair.oneValue_refl _))
+        (CPair.oneValue_refl _) ?_
+      exact stage.mulC_le_left hunn (stage.cmag_add_le _ _)
+    refine CPair.le_trans hstep ?_
+    have hcol : stage.cmag (stage.evalC (profCol Q 0)
+          ⟨BPair.ofNat mm * BPair.ofPos en, ed⟩)
+        ≤ stage.capA (profCol Q 0) a (b + CPair.swap a) :=
+      stage.capA_le (profCol Q 0) hax hxb
+    have hrest : stage.cmag ((⟨BPair.ofPos en, ed⟩ : CPair)
+          * stage.evalC (slabGo mm 0 1 (Q.map (List.drop 1)))
+              ⟨BPair.ofPos en, ed⟩)
+        ≤ tailCaps Q a (b + CPair.swap a) top e0n e0d h 1 f := by
+      rw [← tailCaps_drop Q a (b + CPair.swap a) top e0n e0d f h 0]
+      refine tailBoundC mm e0n e0d en ed hE heC hax hxb hw hxt f h
+        (Q.map (List.drop 1)) (fun j => ?_)
+      rw [getAtMapDrop Q j]
+      exact lenDropLe (hlen j)
+    have hinn : stage.unitC
+        ≤ stage.capA (profCol Q 0) a (b + CPair.swap a)
+          + tailCaps Q a (b + CPair.swap a) top e0n e0d h 1 f :=
+      CPair.le_congr (stage.addC_unitC stage.unitC)
+        (CPair.oneValue_refl _)
+        (CPair.le_add (capA_nn _ a hw)
+          (tailCaps_nn Q a hw htop e0n e0d hE f h 1))
+    refine CPair.le_trans
+      (stage.mulC_le_left hunn (CPair.le_add hcol hrest)) ?_
+    have hov2 : ((⟨BPair.ofNat mc * e0n, e0d⟩ : CPair)
+          * (stage.capA (profCol Q 0) a (b + CPair.swap a)
+            + tailCaps Q a (b + CPair.swap a) top e0n e0d h 1 f)).oneValue
+        (stage.ofB (BPair.ofNat mc)
+          * ((⟨e0n, e0d⟩ : CPair)
+            * (stage.capA (profCol Q 0) a (b + CPair.swap a)
+              + tailCaps Q a (b + CPair.swap a) top e0n e0d h 1 f))) := by
+      rw [← CPair.mul_assoc (stage.ofB (BPair.ofNat mc))
+        (⟨e0n, e0d⟩ : CPair)
+        (stage.capA (profCol Q 0) a (b + CPair.swap a)
+          + tailCaps Q a (b + CPair.swap a) top e0n e0d h 1 f)]
+      exact CPair.mul_congr
+        (CPair.oneValue_symm (numFactorC (BPair.ofNat mc) e0n e0d))
+        (CPair.oneValue_refl _)
+    refine CPair.le_congr (CPair.oneValue_refl _) hov2 ?_
+    exact stage.mulC_le_mono hinn
+      (stage.unitC_le_num e0d
+        (ground.unitLeMul (ground.unitLeOfNat mc) hE))
+      hu (CPair.le_refl _)
+  | f + 1, 0, Q, hlen => by
+    have hx0 : stage.unitC
+        ≤ (⟨BPair.ofNat mm * BPair.ofPos en, ed⟩ : CPair) :=
+      stage.unitC_le_num ed
+        (ground.unitLeMul (ground.unitLeOfNat mm)
+          (ground.leB_of_lt (ground.unitLtOfPos en)))
+    have htop : stage.unitC ≤ top := CPair.le_trans hx0 hxt
+    have hstep : stage.cmag (u
+          * stage.evalC (slabGo mm 0 1 Q) ⟨BPair.ofPos en, ed⟩)
+        ≤ u * (stage.cmag (stage.evalC (profCol Q 0)
+              ⟨BPair.ofNat mm * BPair.ofPos en, ed⟩)
+            + stage.cmag ((⟨BPair.ofPos en, ed⟩ : CPair)
+              * stage.evalC (slabGo mm 0 1 (Q.map (List.drop 1)))
+                  ⟨BPair.ofPos en, ed⟩)) := by
+      refine CPair.le_congr
+        (CPair.oneValue_symm (stage.cmag_congr
+          (CPair.mul_congr (CPair.oneValue_refl u)
+            (peelVal1 mm (BPair.ofPos en) ed Q))))
+        (CPair.oneValue_refl _) ?_
+      refine CPair.le_congr
+        (CPair.oneValue_symm (stage.cmag_mul _ _))
+        (CPair.oneValue_refl _) ?_
+      refine CPair.le_congr
+        (CPair.mul_congr
+          (CPair.oneValue_symm (stage.cmag_of_unitLe hunn))
+          (CPair.oneValue_refl _))
+        (CPair.oneValue_refl _) ?_
+      exact stage.mulC_le_left hunn (stage.cmag_add_le _ _)
+    refine CPair.le_trans hstep ?_
+    have hcol : stage.cmag (stage.evalC (profCol Q 0)
+          ⟨BPair.ofNat mm * BPair.ofPos en, ed⟩)
+        ≤ stage.capW (profCol Q 0) top :=
+      stage.capW_le (profCol Q 0) hx0 hxt
+    have hrest : stage.cmag ((⟨BPair.ofPos en, ed⟩ : CPair)
+          * stage.evalC (slabGo mm 0 1 (Q.map (List.drop 1)))
+              ⟨BPair.ofPos en, ed⟩)
+        ≤ tailTop Q top e0n e0d 1 f := by
+      rw [← tailTop_drop Q top e0n e0d f 0]
+      refine tailTopBound mm e0n e0d en ed hE heC hxt f
+        (Q.map (List.drop 1)) (fun j => ?_)
+      rw [getAtMapDrop Q j]
+      exact lenDropLe (hlen j)
+    have hinn : stage.unitC
+        ≤ stage.capW (profCol Q 0) top
+          + tailTop Q top e0n e0d 1 f :=
+      CPair.le_congr (stage.addC_unitC stage.unitC)
+        (CPair.oneValue_refl _)
+        (CPair.le_add (capW_nn htop _)
+          (tailTop_nn Q htop e0n e0d hE f 1))
+    refine CPair.le_trans
+      (stage.mulC_le_left hunn (CPair.le_add hcol hrest)) ?_
+    have hov2 : ((⟨BPair.ofNat mc * e0n, e0d⟩ : CPair)
+          * (stage.capW (profCol Q 0) top
+            + tailTop Q top e0n e0d 1 f)).oneValue
+        (stage.ofB (BPair.ofNat mc)
+          * ((⟨e0n, e0d⟩ : CPair)
+            * (stage.capW (profCol Q 0) top
+              + tailTop Q top e0n e0d 1 f))) := by
+      rw [← CPair.mul_assoc (stage.ofB (BPair.ofNat mc))
+        (⟨e0n, e0d⟩ : CPair)
+        (stage.capW (profCol Q 0) top
+          + tailTop Q top e0n e0d 1 f)]
+      exact CPair.mul_congr
+        (CPair.oneValue_symm (numFactorC (BPair.ofNat mc) e0n e0d))
+        (CPair.oneValue_refl _)
+    refine CPair.le_congr (CPair.oneValue_refl _) hov2 ?_
+    exact stage.mulC_le_mono hinn
+      (stage.unitC_le_num e0d
+        (ground.unitLeMul (ground.unitLeOfNat mc) hE))
+      hu (CPair.le_refl _)
+
+/-- The chain's walk hands its point a bracketing piece with the
+piece's stated cap. -/
+private theorem chainGoK (V : poly.PPoly × poly.PPoly) (e0n : BPair)
+    (e0d : Pos) (top : CPair) (hk : Nat) :
+    ∀ (a b : CPair) (t : List CPair) (ms : List Nat) (x : CPair),
+      chainK V e0n e0d top hk (a :: b :: t) ms →
+      a ≤ x → x ≤ ground.getAt stage.unitC (b :: t) t.length →
+      ∃ p q mc, p ≤ x ∧ x ≤ q ∧ pieceKeep V e0n e0d top hk mc p q
+  | a, b, [], mc :: _, _, h, hax, hxb => ⟨a, b, mc, hax, hxb, h.1⟩
+  | _, _, [], [], _, h, _, _ => h.elim
+  | a, b, c :: t, mc :: ms, x, h, hax, hxb =>
+    match CPair.le_total x b with
+    | Or.inl hxb2 => ⟨a, b, mc, hax, hxb2, h.1⟩
+    | Or.inr hbx => chainGoK V e0n e0d top hk b c t ms x h.2 hbx hxb
+  | _, _, _ :: _, [], _, h, _, _ => h.elim
+
+/-- The chained piece read's conclusion: every point of the cover
+sits inside a kept piece at the piece's stated cap. -/
+theorem chainK_all (V : poly.PPoly × poly.PPoly) (e0n : BPair)
+    (e0d : Pos) (top : CPair) (hk : Nat) (cuts : List CPair)
+    (ms : List Nat) (x : CPair)
+    (h : chainK V e0n e0d top hk cuts ms)
+    (hlo : ground.getAt stage.unitC cuts 0 ≤ x)
+    (hhi : x ≤ ground.getAt stage.unitC cuts (cuts.length - 1))
+    (hlen : 2 ≤ cuts.length) :
+    ∃ p q mc, p ≤ x ∧ x ≤ q ∧ pieceKeep V e0n e0d top hk mc p q := by
+  match cuts, h, hlo, hhi, hlen with
+  | [], _, _, _, hlen => exact absurd hlen (Nat.not_succ_le_zero 1)
+  | [_], _, _, _, hlen =>
+    exact absurd (Nat.le_of_succ_le_succ hlen) (Nat.not_succ_le_zero 0)
+  | a :: b :: t, h, hlo, hhi, _ =>
+    exact chainGoK V e0n e0d top hk a b t ms x h hlo hhi
 
 /-- The graded device's conclusion: at every depth and every scale
 inside the box at the cleared ceiling, the collapse's cleared
@@ -5752,499 +6684,391 @@ theorem gradRead_pos (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
     (hlo : C.lo ≤ ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩)
     (hhi : (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩ : CPair) ≤ C.hi) :
     BPair.unit < poly.evalClear (depthPoly V m) (BPair.ofPos en) ed C.K := by
-  have hEd : BPair.unit ≤ BPair.ofPos ed :=
-    ground.leB_of_lt (ground.unitLtOfPos ed)
-  have hEn : BPair.unit ≤ BPair.ofPos en :=
-    ground.leB_of_lt (ground.unitLtOfPos en)
   have hE0n : BPair.unit ≤ e0n := unitLe_of_clear he
-  have hxhi : (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩ : CPair)
-      ≤ stage.ofB C.shB := CPair.le_trans hhi h.2.1
-  have hs : BPair.ofNat (m * m) * BPair.ofPos en
-      ≤ C.shB * BPair.ofPos ed := by
-    have h0 : (BPair.ofNat (m * m) * BPair.ofPos en).scale Pos.one
-        ≤ C.shB.scale ed := hxhi
-    rw [BPair.scale_one] at h0
-    exact ground.leB_congr_right
-      (BPair.oneValue_trans
-        (BPair.oneValue_symm (BPair.ofPos_scale ed C.shB))
-        (BPair.oneValue_of_eq (BPair.mul_comm (BPair.ofPos ed) C.shB))) h0
-  have hshB : BPair.unit ≤ C.shB :=
-    stage.unitC_le_fst (CPair.le_trans
-      (stage.unitC_le_num _ (ground.unitLeMul (ground.unitLeOfNat (m * m)) hEn)) hxhi)
-  -- the scale slab's own side
-  have hA : BPair.unit ≤ poly.evalClear (profBaseU V)
-      (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1) := by
-    match h.2.2.2.2.2.2.1 with
-    | Or.inl hut =>
-      have h0 : (poly.evalClear (profBaseU V)
-          (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)).oneValue
-          BPair.unit :=
-        poly.evalClear_congr
-          (poly.unitTail_oneValue (q := ([] : poly.Poly)) hut trivial)
-          (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-      exact ground.leB_congr_right (BPair.oneValue_symm h0)
-        (ground.leB_refl BPair.unit)
-    | Or.inr harm =>
-      have hends := chainEnds C.lo C.hi C.cutsA
-      refine ground.leB_of_lt ?_
-      refine chainFloor
-        (fun j hj => profBaseU_vac h.1 j
-          (Nat.le_trans (ground.lePredSucc C.K) hj))
-        C.bN C.bD (C.lo :: C.cutsA ++ [C.hi])
-        (BPair.ofNat (m * m) * BPair.ofPos en) ed harm hlo ?_ hends.2
-      rw [hends.1]
-      exact hhi
-  -- the leading part's floor at the two-armed chain
-  have hvacL := lineL_vac (V := V) h.1 (C.fA + C.fB)
-  have hmB : BPair.unit ≤ BPair.ofNat m * poly.evalClear (profBaseU V)
-      (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1) :=
-    ground.unitLeMul (ground.unitLeOfNat m) hA
-  have hbase : BPair.unit <
-      BPair.ofNat m * poly.evalClear (profBaseU V)
-        (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-      + poly.evalClear (lineL V (C.fA + C.fB))
-          (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1) := by
-    have hends := chainEnds C.lo C.hi C.cutsB
-    match chainRead2_all (lineL V (C.fA + C.fB)) (profBaseU V)
-        e0n e0d hE0n C.bN C.bD
-        (C.lo :: C.cutsB ++ [C.hi])
-        ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
-        h.2.2.2.2.2.2.2 hlo
-        (by rw [hends.1]; exact hhi) hends.2 with
-    | Or.inl hL =>
-      refine ground.ltB_trans_le
-        (stage.evalFloor hvacL
-          (BPair.ofNat (m * m) * BPair.ofPos en) ed hL) ?_
-      refine ground.leB_congr_left (BPair.unit_add _) ?_
-      exact ground.leB_add hmB (ground.leB_refl _)
-    | Or.inr hP =>
-      have hlt1 : e0n * (BPair.ofPos ed
-            * (poly.evalClear (lineL V (C.fA + C.fB))
-                (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-              * poly.evalClear (lineL V (C.fA + C.fB))
-                (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)))
-          < BPair.ofPos e0d * (BPair.ofNat (m * m) * BPair.ofPos en
-              * (poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-                * poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed
-                  (C.K - 1))) :=
-        stage.sqComp_clear
-          (fun j hj => profBaseU_vac h.1 j
-            (Nat.le_trans (ground.lePredSucc C.K) hj))
-          hvacL e0n e0d (BPair.ofNat (m * m) * BPair.ofPos en) ed hP
-      have hsqm : ((BPair.ofNat m * poly.evalClear (profBaseU V)
-              (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))
-            * (BPair.ofNat m * poly.evalClear (profBaseU V)
-              (BPair.ofNat (m * m) * BPair.ofPos en) ed
-              (C.K - 1))).oneValue
-          (BPair.ofNat (m * m)
-            * (poly.evalClear (profBaseU V)
-                (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-              * poly.evalClear (profBaseU V)
-                (BPair.ofNat (m * m) * BPair.ofPos en) ed
-                (C.K - 1))) := by
-        refine BPair.oneValue_trans (BPair.oneValue_of_eq ?_)
-          (BPair.oneValue_symm (BPair.ofNat_mul_mul m m _))
-        rw [BPair.mul_assoc (BPair.ofNat m)
-            (poly.evalClear (profBaseU V)
-              (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))
-            (BPair.ofNat m * poly.evalClear (profBaseU V)
-              (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)),
-          ← BPair.mul_assoc
-            (poly.evalClear (profBaseU V)
-              (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))
-            (BPair.ofNat m)
-            (poly.evalClear (profBaseU V)
-              (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)),
-          BPair.mul_comm
-            (poly.evalClear (profBaseU V)
-              (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))
-            (BPair.ofNat m),
-          BPair.mul_assoc (BPair.ofNat m)
-            (poly.evalClear (profBaseU V)
-              (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))
-            (poly.evalClear (profBaseU V)
-              (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))]
-      have hker : BPair.ofPos e0d * (BPair.ofNat (m * m) * BPair.ofPos en
-              * (poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-                * poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)))
-          ≤ e0n * (BPair.ofPos ed
-            * ((BPair.ofNat m * poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))
-              * (BPair.ofNat m * poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed
-                  (C.K - 1)))) := by
-        have heqL : BPair.ofPos e0d
-            * (BPair.ofNat (m * m) * BPair.ofPos en
-              * (poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-                * poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)))
-            = BPair.ofPos en * BPair.ofPos e0d
-              * (BPair.ofNat (m * m)
-                * (poly.evalClear (profBaseU V)
-                    (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-                  * poly.evalClear (profBaseU V)
-                    (BPair.ofNat (m * m) * BPair.ofPos en) ed
-                    (C.K - 1))) := by
-          rw [BPair.mul_assoc (BPair.ofNat (m * m)) (BPair.ofPos en)
-              (poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-                * poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)),
-            BPair.mul_left_comm (BPair.ofPos e0d) (BPair.ofNat (m * m))
-              (BPair.ofPos en
-                * (poly.evalClear (profBaseU V)
-                    (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-                  * poly.evalClear (profBaseU V)
-                    (BPair.ofNat (m * m) * BPair.ofPos en) ed
-                    (C.K - 1))),
-            BPair.mul_left_comm (BPair.ofPos e0d) (BPair.ofPos en)
-              (poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-                * poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)),
-            BPair.mul_assoc (BPair.ofPos en) (BPair.ofPos e0d)
-              (BPair.ofNat (m * m)
-                * (poly.evalClear (profBaseU V)
-                    (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-                  * poly.evalClear (profBaseU V)
-                    (BPair.ofNat (m * m) * BPair.ofPos en) ed
-                    (C.K - 1))),
-            BPair.mul_left_comm (BPair.ofPos e0d) (BPair.ofNat (m * m))
-              (poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-                * poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)),
-            BPair.mul_left_comm (BPair.ofNat (m * m)) (BPair.ofPos en)
-              (BPair.ofPos e0d
-                * (poly.evalClear (profBaseU V)
-                    (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-                  * poly.evalClear (profBaseU V)
-                    (BPair.ofNat (m * m) * BPair.ofPos en) ed
-                    (C.K - 1)))]
-        have h2 : ((e0n * BPair.ofPos ed)
-            * (BPair.ofNat (m * m)
-              * (poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-                * poly.evalClear (profBaseU V)
-                  (BPair.ofNat (m * m) * BPair.ofPos en) ed
-                  (C.K - 1)))).oneValue
-            (e0n * (BPair.ofPos ed
-              * ((BPair.ofNat m * poly.evalClear (profBaseU V)
-                    (BPair.ofNat (m * m) * BPair.ofPos en) ed
-                    (C.K - 1))
-                * (BPair.ofNat m * poly.evalClear (profBaseU V)
-                    (BPair.ofNat (m * m) * BPair.ofPos en) ed
-                    (C.K - 1))))) := by
-          refine BPair.oneValue_trans
-            (BPair.oneValue_of_eq
-              (BPair.mul_assoc e0n (BPair.ofPos ed) _)) ?_
-          exact BPair.mul_congr (BPair.oneValue_refl e0n)
-            (BPair.mul_congr (BPair.oneValue_refl _)
-              (BPair.oneValue_symm hsqm))
-        refine ground.leB_congr (BPair.oneValue_of_eq heqL.symm) h2 ?_
-        exact ground.leB_mul_mono
-          (ground.unitLeMul (ground.unitLeOfNat (m * m))
-            (ground.unitLeMul hA hA))
-          (ground.unitLeMul hE0n hEd) he (ground.leB_refl _)
-      have hsq : poly.evalClear (lineL V (C.fA + C.fB))
-            (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-          * poly.evalClear (lineL V (C.fA + C.fB))
-            (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-          < (BPair.ofNat m * poly.evalClear (profBaseU V)
-              (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))
-            * (BPair.ofNat m * poly.evalClear (profBaseU V)
-              (BPair.ofNat (m * m) * BPair.ofPos en) ed
-              (C.K - 1)) := by
-        have heqc : ∀ Z : BPair,
-            e0n * (BPair.ofPos ed * Z)
-              = Z * (e0n * BPair.ofPos ed) := by
-          intro Z
-          rw [← BPair.mul_assoc e0n (BPair.ofPos ed) Z,
-            BPair.mul_comm (e0n * BPair.ofPos ed) Z]
-        exact ground.ltB_unscale
-          (ground.unitLeMul hE0n hEd)
-          (BPair.lt_congr (BPair.oneValue_of_eq (heqc _))
-            (BPair.oneValue_of_eq (heqc _))
-            (ground.ltB_trans_le hlt1 hker))
-      refine ground.unitLt_of_swap_lt ?_
-      refine ground.ltB_of_sq hmB ?_
-      refine BPair.lt_congr
+  have hηnn : stage.unitC ≤ (⟨BPair.ofPos en, ed⟩ : CPair) :=
+    stage.unitC_le_num ed (ground.leB_of_lt (ground.unitLtOfPos en))
+  have heC : (⟨BPair.ofPos en, ed⟩ : CPair) ≤ (⟨e0n, e0d⟩ : CPair) := by
+    show (BPair.ofPos en).scale e0d ≤ e0n.scale ed
+    refine ground.leB_congr ?_ ?_ he
+    · exact BPair.oneValue_trans
         (BPair.oneValue_of_eq
-          (BPair.swap_sq (poly.evalClear (lineL V (C.fA + C.fB))
-            (BPair.ofNat (m * m) * BPair.ofPos en) ed
-            (C.K - 1))).symm)
-        (BPair.oneValue_refl _) hsq
-  -- the two tails' prices
-  have hshape1 : ∀ j, j < (V.1.map (List.drop 2)).length →
-      0 < (poly.vnorm (ground.getAt ([] : poly.Poly)
-        (V.1.map (List.drop 2)) j)).length →
-      1 + j + (poly.vnorm (ground.getAt ([] : poly.Poly)
-        (V.1.map (List.drop 2)) j)).length ≤ C.K - 1 + 1 := by
-    intro j hj hpos
-    have h0 := slabDrop_shape 0 2 V.1 (ground.andSplitB h.1).1 j hj hpos
-    rw [Nat.zero_add] at h0
-    exact Nat.le_trans (addTwoLe h0) (ground.lePredSucc C.K)
-  have hshape2 : ∀ j, j < (V.2.map (List.drop 1)).length →
-      0 < (poly.vnorm (ground.getAt ([] : poly.Poly)
-        (V.2.map (List.drop 1)) j)).length →
-      1 + j + (poly.vnorm (ground.getAt ([] : poly.Poly)
-        (V.2.map (List.drop 1)) j)).length ≤ C.K - 1 + 1 := by
-    intro j hj hpos
-    have h0 := slabDrop_shape 1 1 V.2 (ground.andSplitB h.1).2 j hj hpos
-    exact Nat.le_trans (addOneLe h0) (ground.lePredSucc C.K)
-  have hW1 : windowsep.mag (BPair.ofNat 1 * ground.bpow (BPair.ofPos en) 1)
-        * ground.bpow (BPair.ofPos ed) 1
-      ≤ BPair.ofPos en * ground.bpow (BPair.ofPos ed) 1 :=
-    ground.leB_congr_left
-      (BPair.oneValue_symm
-        (BPair.mul_congr_left
-          (BPair.oneValue_trans
-            (BPair.oneValue_of_eq (magPow 1 1))
-            (BPair.oneValue_trans (BPair.ofNat_one_mul _)
-              (ground.bpow_one_read (BPair.ofPos en))))))
-      (ground.leB_refl _)
-  have hWU : windowsep.mag (BPair.ofNat m * ground.bpow (BPair.ofPos en) 1)
-        * ground.bpow (BPair.ofPos ed) 1
-      ≤ BPair.ofNat m * BPair.ofPos en * ground.bpow (BPair.ofPos ed) 1 :=
-    ground.leB_congr_left
-      (BPair.oneValue_symm
-        (BPair.mul_congr_left
-          (BPair.oneValue_trans
-            (BPair.oneValue_of_eq (magPow m 1))
-            (BPair.mul_congr (BPair.oneValue_refl _)
-              (ground.bpow_one_read (BPair.ofPos en))))))
-      (ground.leB_refl _)
-  have hp1 := slabPriceC he hs hshB (Nat.sub_le C.K 1)
-    (V.1.map (List.drop 2)) 1 1 1 (BPair.ofPos en) hEn hW1 hshape1
-  have hp2 := slabPriceC he hs hshB (Nat.sub_le C.K 1)
-    (V.2.map (List.drop 1)) 1 m 1 (BPair.ofNat m * BPair.ofPos en)
-    (ground.unitLeMul (ground.unitLeOfNat m) hEn) hWU hshape2
-  have hR1 : windowsep.mag (poly.evalClear
-        (slabGo (m * m) 1 1 (V.1.map (List.drop 2)))
-        (BPair.ofPos en) ed (C.K - 1))
-      ≤ C.fB * ground.bpow (BPair.ofPos ed) (C.K - 1) := by
-    refine ground.leB_unscale (ground.unitLtOfPos ed) ?_
-    refine capCancelB
-      (unitLe_capS hE0n hshB (V.1.map (List.drop 2))) he ?_
-      (ground.leB_congr_right
-        (BPair.mul_congr (BPair.oneValue_refl _)
-          (powCRead e0d (C.K + 1)))
-        h.2.2.2.2.2.1)
-    exact ground.leB_congr_left
-      (BPair.mul_congr_left
-        (BPair.mul_congr (BPair.oneValue_refl _)
-          (ground.bpow_one_read (BPair.ofPos ed)))) hp1
-  have hR2 : windowsep.mag (poly.evalClear
-        (slabGo (m * m) 1 m (V.2.map (List.drop 1)))
-        (BPair.ofPos en) ed (C.K - 1))
-      ≤ C.fA * ground.bpow (BPair.ofPos ed) (C.K - 1) := by
-    refine ground.leB_unscale (ground.unitLtOfPos ed) ?_
-    refine capCancelA (windowsep.unitLe_mag _)
-      (unitLe_capS hE0n hshB (V.2.map (List.drop 1))) h.2.2.2.1 hshB
-      he hs ?_
-      (ground.leB_congr_right
-        (BPair.mul_congr (BPair.oneValue_refl _)
-          (powCRead e0d (2 * C.K + 1)))
-        h.2.2.2.2.1)
-    refine ground.leB_congr_right
-      (BPair.oneValue_of_eq
-        (BPair.mul_assoc (BPair.ofNat m * BPair.ofPos en)
-          (capS e0n e0d C.shB C.K (V.2.map (List.drop 1)))
-          (ground.bpow (BPair.ofPos ed) (C.K - 1)))) ?_
-    exact ground.leB_congr_left
-      (BPair.mul_congr_left
-        (BPair.mul_congr (BPair.oneValue_refl _)
-          (ground.bpow_one_read (BPair.ofPos ed)))) hp2
-  -- the collapse's value at the depth
+          (BPair.mul_comm (BPair.ofPos en) (BPair.ofPos e0d)))
+        (BPair.ofPos_scale e0d (BPair.ofPos en))
+    · exact BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.mul_comm e0n (BPair.ofPos ed)))
+        (BPair.ofPos_scale ed e0n)
+  -- the piece
+  have hends := chainEnds C.lo C.hi C.cuts
+  obtain ⟨pa, pb, mc, hax, hxb, hkeep⟩ :=
+    chainK_all V e0n e0d C.hi C.hk (C.lo :: C.cuts ++ [C.hi]) C.mcaps
+      ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩ h.2.2 hlo
+      (by rw [hends.1]; exact hhi) hends.2
+  have hxt : (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩ : CPair)
+      ≤ C.hi := hhi
+  have hhinn : stage.unitC ≤ C.hi :=
+    CPair.le_trans (stage.unitC_le_num ed
+      (ground.unitLeMul (ground.unitLeOfNat (m * m))
+        (ground.leB_of_lt (ground.unitLtOfPos en)))) hxt
+  have hwnn : stage.unitC ≤ pb + CPair.swap pa := by
+    refine CPair.le_congr (swapSelfC pa) (CPair.oneValue_refl _) ?_
+    exact CPair.le_add (Or.inr hkeep.1) (CPair.le_refl (CPair.swap pa))
+  -- the collapse's strip and split, the committed poly reads
   have hstrip : poly.oneValue (depthPoly V m)
       (poly.shiftUp 1 (poly.add
         (slabGo (m * m) 0 1 (V.1.map (List.drop 1)))
         (slabGo (m * m) 0 m V.2))) := by
     refine poly.oneValue_trans
-      (poly.add_congr (slabGo_strip (m * m) 0 1 V.1 h.2.2.1)
+      (poly.add_congr (slabGo_strip (m * m) 0 1 V.1 h.2.1)
         (poly.oneValue_trans (slabGo_norm (m * m) 1 m V.2)
           (poly.oneValue_symm
             (poly.shiftUp_ov 1 (slabGo_norm (m * m) 0 m V.2))))) ?_
     exact poly.oneValue_symm (poly.shiftUp_add 1 _ _)
-  have hT1eq : poly.oneValue
-      (slabGo (m * m) 0 1 ((V.1.map (List.drop 1)).map
-        (fun p => poly.shiftUp 1 (List.drop 1 p))))
-      (slabGo (m * m) 1 1 (V.1.map (List.drop 2))) := by
-    rw [← mapDropDrop V.1]
-    exact slabGo_shiftTail (m * m) 0 1 (V.1.map (List.drop 1))
-  have hT2eq : poly.oneValue
-      (slabGo (m * m) 0 m (V.2.map (fun p => poly.shiftUp 1 (List.drop 1 p))))
-      (slabGo (m * m) 1 m (V.2.map (List.drop 1))) :=
-    slabGo_shiftTail (m * m) 0 m V.2
-  have hO1 : (poly.evalClear
-      (slabGo (m * m) 0 1 ((V.1.map (List.drop 1)).map
-        (fun p => [ground.getAt BPair.unit p 0])))
-      (BPair.ofPos en) ed (C.K - 1)).oneValue
-      (poly.evalClear (profLin V)
-        (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)) := by
-    rw [mapLin V.1]
-    refine BPair.oneValue_trans
-      (poly.evalClear_congr (slabGo_const (m * m) 0 1 (profLin V))
-        (BPair.ofPos en) ed (C.K - 1)) ?_
-    refine BPair.oneValue_trans
-      (evalClear_keyScale (m * m) 1 (profLin V) (BPair.ofPos en) ed
-        (C.K - 1)) ?_
-    exact BPair.ofNat_one_mul _
-  have hmap2 : V.2.map (fun p => [ground.getAt BPair.unit p 0])
-      = (profBaseU V).map (fun c => [c]) := by
-    show V.2.map (fun p => [ground.getAt BPair.unit p 0])
-      = (V.2.map (fun p => ground.getAt BPair.unit p 0)).map (fun c => [c])
-    rw [ground.map_map]
-  have hO2 : (poly.evalClear
-      (slabGo (m * m) 0 m (V.2.map (fun p => [ground.getAt BPair.unit p 0])))
-      (BPair.ofPos en) ed (C.K - 1)).oneValue
-      (BPair.ofNat m * poly.evalClear (profBaseU V)
-        (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)) := by
-    rw [hmap2]
-    refine BPair.oneValue_trans
-      (poly.evalClear_congr (slabGo_const (m * m) 0 m (profBaseU V))
-        (BPair.ofPos en) ed (C.K - 1)) ?_
-    exact evalClear_keyScale (m * m) m (profBaseU V) (BPair.ofPos en) ed
-      (C.K - 1)
-  have hWval : (poly.evalClear (poly.add
-        (slabGo (m * m) 0 1 (V.1.map (List.drop 1)))
-        (slabGo (m * m) 0 m V.2)) (BPair.ofPos en) ed (C.K - 1)).oneValue
-      ((poly.evalClear (profLin V)
-            (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-          + poly.evalClear (slabGo (m * m) 1 1 (V.1.map (List.drop 2)))
-              (BPair.ofPos en) ed (C.K - 1))
-        + (BPair.ofNat m * poly.evalClear (profBaseU V)
-              (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-          + poly.evalClear (slabGo (m * m) 1 m (V.2.map (List.drop 1)))
-              (BPair.ofPos en) ed (C.K - 1))) := by
-    refine BPair.oneValue_trans
-      (poly.evalClear_add _ _ (BPair.ofPos en) ed (C.K - 1)) ?_
-    refine BPair.add_congr ?_ ?_
-    · refine BPair.oneValue_trans
-        (poly.evalClear_congr (slabGo_split (m * m) 0 1
-          (V.1.map (List.drop 1))) (BPair.ofPos en) ed (C.K - 1)) ?_
-      refine BPair.oneValue_trans
-        (poly.evalClear_add _ _ (BPair.ofPos en) ed (C.K - 1)) ?_
-      exact BPair.add_congr hO1
-        (poly.evalClear_congr hT1eq (BPair.ofPos en) ed (C.K - 1))
-    · refine BPair.oneValue_trans
-        (poly.evalClear_congr (slabGo_split (m * m) 0 m V.2)
-          (BPair.ofPos en) ed (C.K - 1)) ?_
-      refine BPair.oneValue_trans
-        (poly.evalClear_add _ _ (BPair.ofPos en) ed (C.K - 1)) ?_
-      exact BPair.add_congr hO2
-        (poly.evalClear_congr hT2eq (BPair.ofPos en) ed (C.K - 1))
-  have hGval : (poly.evalClear (lineL V (C.fA + C.fB))
-      (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)).oneValue
-      (poly.evalClear (profLin V)
-          (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-        + ((C.fA + C.fB)
-            * ground.bpow (BPair.ofPos ed) (C.K - 1)).swap) := by
-    refine BPair.oneValue_trans
-      (poly.evalClear_add _ _ (BPair.ofNat (m * m) * BPair.ofPos en) ed
-        (C.K - 1)) ?_
-    refine BPair.add_congr (BPair.oneValue_refl _) ?_
-    exact BPair.oneValue_trans
-      (poly.evalClear_neg _ _ ed (C.K - 1))
-      (ground.swap_congr
-        (poly.evalClear_single (C.fA + C.fB) _ ed (C.K - 1)))
-  have hsplit : (BPair.ofNat m * poly.evalClear (profBaseU V)
-        (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-      + poly.evalClear (lineL V (C.fA + C.fB))
-          (BPair.ofNat (m * m) * BPair.ofPos en) ed
-          (C.K - 1)).oneValue
-      ((BPair.ofNat m * poly.evalClear (profBaseU V)
-            (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-          + poly.evalClear (profLin V)
-            (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))
-        + ((C.fA + C.fB)
-            * ground.bpow (BPair.ofPos ed) (C.K - 1)).swap) := by
-    refine BPair.oneValue_trans
-      (BPair.add_congr (BPair.oneValue_refl _) hGval) ?_
-    exact BPair.oneValue_of_eq
-      (BPair.add_assoc (BPair.ofNat m * poly.evalClear (profBaseU V)
-          (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))
-        (poly.evalClear (profLin V)
-          (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))
-        ((C.fA + C.fB)
-          * ground.bpow (BPair.ofPos ed) (C.K - 1)).swap).symm
-  have hshuffle : (BPair.ofNat m * poly.evalClear (profBaseU V)
-            (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-          + poly.evalClear (profLin V)
-            (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))
-        + (poly.evalClear (slabGo (m * m) 1 1 (V.1.map (List.drop 2)))
-              (BPair.ofPos en) ed (C.K - 1)
-          + poly.evalClear (slabGo (m * m) 1 m (V.2.map (List.drop 1)))
-              (BPair.ofPos en) ed (C.K - 1))
-      = (poly.evalClear (profLin V)
-            (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-          + poly.evalClear (slabGo (m * m) 1 1 (V.1.map (List.drop 2)))
-              (BPair.ofPos en) ed (C.K - 1))
-        + (BPair.ofNat m * poly.evalClear (profBaseU V)
-              (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1)
-          + poly.evalClear (slabGo (m * m) 1 m (V.2.map (List.drop 1)))
-              (BPair.ofPos en) ed (C.K - 1)) := by
-    rw [BPair.add_add_comm
-        (poly.evalClear (profLin V)
-          (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))
-        (poly.evalClear (slabGo (m * m) 1 1 (V.1.map (List.drop 2)))
-          (BPair.ofPos en) ed (C.K - 1))
-        (BPair.ofNat m * poly.evalClear (profBaseU V)
-          (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))
-        (poly.evalClear (slabGo (m * m) 1 m (V.2.map (List.drop 1)))
-          (BPair.ofPos en) ed (C.K - 1)),
-      BPair.add_comm
-        (BPair.ofNat m * poly.evalClear (profBaseU V)
-          (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))
-        (poly.evalClear (profLin V)
-          (BPair.ofNat (m * m) * BPair.ofPos en) ed (C.K - 1))]
-  have hswapRU : (poly.evalClear (slabGo (m * m) 1 1 (V.1.map (List.drop 2)))
-          (BPair.ofPos en) ed (C.K - 1)
-        + poly.evalClear (slabGo (m * m) 1 m (V.2.map (List.drop 1)))
-          (BPair.ofPos en) ed (C.K - 1)).swap
-      ≤ (C.fA + C.fB) * ground.bpow (BPair.ofPos ed) (C.K - 1) := by
-    refine ground.leB_congr_left
-      (BPair.oneValue_of_eq (BPair.swap_add _ _)) ?_
-    refine ground.leB_congr_right
-      (BPair.oneValue_trans
-        (BPair.oneValue_of_eq
-          (BPair.add_comm (C.fB * ground.bpow (BPair.ofPos ed) (C.K - 1))
-            (C.fA * ground.bpow (BPair.ofPos ed) (C.K - 1))))
-        (BPair.oneValue_of_eq
-          (BPair.right_distrib C.fA C.fB
-            (ground.bpow (BPair.ofPos ed) (C.K - 1))).symm)) ?_
-    exact ground.leB_add
-      (ground.leB_trans (windowsep.swap_le_mag _) hR1)
-      (ground.leB_trans (windowsep.swap_le_mag _) hR2)
+  -- the value's four parts at the composite point
+  have hS1 : (stage.evalC (slabGo (m * m) 0 1 (V.1.map (List.drop 1)))
+        ⟨BPair.ofPos en, ed⟩).oneValue
+      (stage.evalC (profLin V)
+          ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+        + (⟨BPair.ofPos en, ed⟩ : CPair)
+          * stage.evalC (slabGo (m * m) 0 1 (V.1.map (List.drop 2)))
+              ⟨BPair.ofPos en, ed⟩) := by
+    refine CPair.oneValue_trans
+      (peelVal1 (m * m) (BPair.ofPos en) ed (V.1.map (List.drop 1))) ?_
+    rw [profCol_drop V.1 0, mapDropDrop V.1]
+    exact CPair.oneValue_refl _
+  have hS2 : (stage.evalC (slabGo (m * m) 0 m V.2)
+        ⟨BPair.ofPos en, ed⟩).oneValue
+      (stage.ofB (BPair.ofNat m)
+        * (stage.evalC (profBaseU V)
+            ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          + (⟨BPair.ofPos en, ed⟩ : CPair)
+            * stage.evalC
+                (slabGo (m * m) 0 1 (V.2.map (List.drop 1)))
+                ⟨BPair.ofPos en, ed⟩)) :=
+    peelValW (m * m) m (BPair.ofPos en) ed V.2
+  -- the tails' caps at the piece
+  have hT1 : stage.cmag ((⟨BPair.ofPos en, ed⟩ : CPair)
+        * stage.evalC (slabGo (m * m) 0 1 (V.1.map (List.drop 2)))
+            ⟨BPair.ofPos en, ed⟩)
+      ≤ tailCaps V.1 pa (pb + CPair.swap pa) C.hi e0n e0d
+          (C.hk - 2) 2 (scaleReach (V.1.map (List.drop 2))) := by
+    rw [← tailCaps_drop V.1 pa (pb + CPair.swap pa) C.hi e0n e0d
+        (scaleReach (V.1.map (List.drop 2))) (C.hk - 2) 1,
+      ← tailCaps_drop (V.1.map (List.drop 1)) pa (pb + CPair.swap pa)
+        C.hi e0n e0d (scaleReach (V.1.map (List.drop 2))) (C.hk - 2) 0,
+      ← mapDropDrop V.1]
+    refine tailBoundC (m * m) e0n e0d en ed hE0n heC hax hxb hwnn hxt
+      (scaleReach ((V.1.map (List.drop 1)).map (List.drop 1)))
+      (C.hk - 2)
+      ((V.1.map (List.drop 1)).map (List.drop 1)) (fun j => ?_)
+    exact scaleReachLe ((V.1.map (List.drop 1)).map (List.drop 1)) j
+  -- the depth's u-read at or below the stated cap's ceiling
+  -- multiple, at the relation u² = ηs: the square scale inside the
+  -- piece with the scale under the ceiling, the squares' read back
+  have hmnn : stage.unitC ≤ stage.ofB (BPair.ofNat m) :=
+    stage.unitC_le_num Pos.one (ground.unitLeOfNat m)
+  have hunn : stage.unitC
+      ≤ (⟨BPair.ofNat m * BPair.ofPos en, ed⟩ : CPair) :=
+    stage.unitC_le_num ed
+      (ground.unitLeMul (ground.unitLeOfNat m)
+        (ground.leB_of_lt (ground.unitLtOfPos en)))
+  have hcapnn : stage.unitC ≤ (⟨BPair.ofNat mc * e0n, e0d⟩ : CPair) :=
+    stage.unitC_le_num e0d
+      (ground.unitLeMul (ground.unitLeOfNat mc) hE0n)
+  have hcapsqnn : stage.unitC
+      ≤ (⟨BPair.ofNat (mc * mc) * e0n, e0d⟩ : CPair) :=
+    stage.unitC_le_num e0d
+      (ground.unitLeMul (ground.unitLeOfNat (mc * mc)) hE0n)
+  have hmid : (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩ : CPair)
+      * (⟨BPair.ofPos en, ed⟩ : CPair)
+      ≤ (⟨BPair.ofNat (mc * mc) * e0n, e0d⟩ : CPair)
+        * (⟨e0n, e0d⟩ : CPair) :=
+    stage.mulC_le_mono hηnn hcapsqnn
+      (CPair.le_trans hxb hkeep.2.1) heC
+  have hu : (⟨BPair.ofNat m * BPair.ofPos en, ed⟩ : CPair)
+      ≤ ⟨BPair.ofNat mc * e0n, e0d⟩ := by
+    refine stage.leC_of_sq_le hcapnn ?_
+    refine CPair.le_congr
+      (CPair.oneValue_symm
+        (CPair.num_oneValue (sqNumSplit m (BPair.ofPos en)) (ed * ed)))
+      (CPair.oneValue_symm
+        (CPair.num_oneValue (sqNumSplit mc e0n) (e0d * e0d)))
+      hmid
+  -- the u-slab's tail at the stated cap's multiple
+  have hT2W : stage.cmag (stage.ofB (BPair.ofNat m)
+        * ((⟨BPair.ofPos en, ed⟩ : CPair)
+          * stage.evalC (slabGo (m * m) 0 1 (V.2.map (List.drop 1)))
+              ⟨BPair.ofPos en, ed⟩))
+      ≤ stage.ofB (BPair.ofNat mc)
+        * tailCaps V.2 pa (pb + CPair.swap pa) C.hi e0n e0d
+            (C.hk - 1) 1 (scaleReach (V.2.map (List.drop 1))) := by
+    rw [← tailCaps_drop V.2 pa (pb + CPair.swap pa) C.hi e0n e0d
+        (scaleReach (V.2.map (List.drop 1))) (C.hk - 1) 0]
+    have hov : ((⟨BPair.ofNat m * BPair.ofPos en, ed⟩ : CPair)
+          * stage.evalC (slabGo (m * m) 0 1 (V.2.map (List.drop 1)))
+              ⟨BPair.ofPos en, ed⟩).oneValue
+        (stage.ofB (BPair.ofNat m)
+          * ((⟨BPair.ofPos en, ed⟩ : CPair)
+            * stage.evalC (slabGo (m * m) 0 1 (V.2.map (List.drop 1)))
+                ⟨BPair.ofPos en, ed⟩)) := by
+      rw [← CPair.mul_assoc (stage.ofB (BPair.ofNat m))
+        (⟨BPair.ofPos en, ed⟩ : CPair)
+        (stage.evalC (slabGo (m * m) 0 1 (V.2.map (List.drop 1)))
+          ⟨BPair.ofPos en, ed⟩)]
+      exact CPair.mul_congr
+        (CPair.oneValue_symm
+          (numFactorC (BPair.ofNat m) (BPair.ofPos en) ed))
+        (CPair.oneValue_refl _)
+    refine CPair.le_congr (stage.cmag_congr hov)
+      (CPair.oneValue_refl _) ?_
+    refine tailBoundW (m * m) mc e0n e0d en ed
+      (⟨BPair.ofNat m * BPair.ofPos en, ed⟩ : CPair)
+      hE0n heC hunn hu hax hxb hwnn hxt
+      (scaleReach (V.2.map (List.drop 1))) (C.hk - 1)
+      (V.2.map (List.drop 1)) (fun j => ?_)
+    exact scaleReachLe (V.2.map (List.drop 1)) j
+  -- the leading parts' floors and cap at the piece
+  have hBflRaw : pieceB V pa pb
+      ≤ stage.evalC (profBaseU V)
+          ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩ :=
+    stage.floorA_le (profBaseU V) hax hxb
+  have hLfl : pieceL V e0n e0d C.hk mc pa pb C.hi
+      ≤ stage.evalC (profLin V)
+          ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+        + ((⟨BPair.ofPos en, ed⟩ : CPair)
+            * stage.evalC (slabGo (m * m) 0 1 (V.1.map (List.drop 2)))
+                ⟨BPair.ofPos en, ed⟩
+          + stage.ofB (BPair.ofNat m)
+            * ((⟨BPair.ofPos en, ed⟩ : CPair)
+              * stage.evalC (slabGo (m * m) 0 1 (V.2.map (List.drop 1)))
+                  ⟨BPair.ofPos en, ed⟩)) := by
+    refine CPair.le_add (stage.floorA_le (profLin V) hax hxb) ?_
+    refine CPair.le_trans (CPair.le_swap
+      (CPair.le_trans (stage.cmag_add_le _ _)
+        (CPair.le_add hT1 hT2W))) (stage.swap_cmag_le _)
+  have hXcp : stage.cmag
+        (stage.evalC (profLin V)
+            ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          + ((⟨BPair.ofPos en, ed⟩ : CPair)
+              * stage.evalC (slabGo (m * m) 0 1 (V.1.map (List.drop 2)))
+                  ⟨BPair.ofPos en, ed⟩
+            + stage.ofB (BPair.ofNat m)
+              * ((⟨BPair.ofPos en, ed⟩ : CPair)
+                * stage.evalC
+                    (slabGo (m * m) 0 1 (V.2.map (List.drop 1)))
+                    ⟨BPair.ofPos en, ed⟩)))
+      ≤ pieceX V e0n e0d C.hk mc pa pb C.hi := by
+    refine CPair.le_trans (stage.cmag_add_le _ _) ?_
+    refine CPair.le_add (stage.capA_le (profLin V) hax hxb) ?_
+    refine CPair.le_trans (stage.cmag_add_le _ _) ?_
+    exact CPair.le_add hT1 hT2W
+  -- the arms' close
+  have hcore : stage.unitC
+      < (stage.evalC (profLin V)
+            ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          + (⟨BPair.ofPos en, ed⟩ : CPair)
+            * stage.evalC (slabGo (m * m) 0 1 (V.1.map (List.drop 2)))
+                ⟨BPair.ofPos en, ed⟩)
+        + stage.ofB (BPair.ofNat m)
+          * (stage.evalC (profBaseU V)
+              ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+            + (⟨BPair.ofPos en, ed⟩ : CPair)
+              * stage.evalC
+                  (slabGo (m * m) 0 1 (V.2.map (List.drop 1)))
+                  ⟨BPair.ofPos en, ed⟩) := by
+    have hga : stage.unitC
+        < (stage.evalC (profLin V)
+              ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+            + ((⟨BPair.ofPos en, ed⟩ : CPair)
+                * stage.evalC
+                    (slabGo (m * m) 0 1 (V.1.map (List.drop 2)))
+                    ⟨BPair.ofPos en, ed⟩
+              + stage.ofB (BPair.ofNat m)
+                * ((⟨BPair.ofPos en, ed⟩ : CPair)
+                  * stage.evalC
+                      (slabGo (m * m) 0 1 (V.2.map (List.drop 1)))
+                      ⟨BPair.ofPos en, ed⟩)))
+          + stage.ofB (BPair.ofNat m)
+            * stage.evalC (profBaseU V)
+                ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩ := by
+      match hkeep.2.2 with
+      | Or.inl hL =>
+        refine stage.ltC_le_trans
+          (stage.ltC_le_trans hL.2 hLfl) (cLeAddNn ?_)
+        exact stage.unitC_le_mul hmnn (CPair.le_trans hL.1 hBflRaw)
+      | Or.inr hSq =>
+        have hfBnn : stage.unitC ≤ pieceB V pa pb :=
+          Or.inr hSq.1
+        have hXnn : stage.unitC ≤ pieceX V e0n e0d C.hk mc pa pb C.hi :=
+          CPair.le_congr (stage.addC_unitC stage.unitC)
+            (CPair.oneValue_refl _)
+            (CPair.le_add (capA_nn _ pa hwnn)
+              (CPair.le_congr (stage.addC_unitC stage.unitC)
+                (CPair.oneValue_refl _)
+                (CPair.le_add
+                  (tailCaps_nn V.1 pa hwnn hhinn e0n e0d hE0n
+                    (scaleReach (V.1.map (List.drop 2)))
+                    (C.hk - 2) 2)
+                  (stage.unitC_le_mul
+                    (stage.unitC_le_num Pos.one
+                      (ground.unitLeOfNat mc))
+                    (tailCaps_nn V.2 pa hwnn hhinn e0n e0d hE0n
+                      (scaleReach (V.2.map (List.drop 1)))
+                      (C.hk - 1) 1)))))
+        have hXsq : (⟨BPair.ofPos en, ed⟩ : CPair)
+            * (pieceX V e0n e0d C.hk mc pa pb C.hi
+              * pieceX V e0n e0d C.hk mc pa pb C.hi)
+            < (⟨BPair.ofPos en, ed⟩ : CPair)
+              * ((stage.ofB (BPair.ofNat m)
+                    * pieceB V pa pb)
+                * (stage.ofB (BPair.ofNat m)
+                    * pieceB V pa pb)) := by
+          refine cLeLtTrans
+            (stage.mulC_le_mono
+              (stage.unitC_le_mul hXnn hXnn)
+              (stage.unitC_le_num e0d hE0n) heC (CPair.le_refl _)) ?_
+          refine stage.ltC_le_trans hSq.2 ?_
+          refine CPair.le_congr (CPair.oneValue_refl _)
+            (CPair.oneValue_symm ?_)
+            (stage.mulC_le_mono
+              (stage.unitC_le_mul hfBnn hfBnn) ?_ hax (CPair.le_refl _))
+          · rw [CPair.mul_comm
+              (stage.ofB (BPair.ofNat m) * pieceB V pa pb)
+              (stage.ofB (BPair.ofNat m) * pieceB V pa pb),
+              CPair.mul_assoc (stage.ofB (BPair.ofNat m))
+                (pieceB V pa pb)
+                (stage.ofB (BPair.ofNat m)
+                  * pieceB V pa pb),
+              ← CPair.mul_assoc (pieceB V pa pb)
+                (stage.ofB (BPair.ofNat m))
+                (pieceB V pa pb),
+              CPair.mul_comm (pieceB V pa pb)
+                (stage.ofB (BPair.ofNat m)),
+              CPair.mul_assoc (stage.ofB (BPair.ofNat m))
+                (pieceB V pa pb)
+                (pieceB V pa pb),
+              ← CPair.mul_assoc (stage.ofB (BPair.ofNat m))
+                (stage.ofB (BPair.ofNat m))
+                (pieceB V pa pb
+                  * pieceB V pa pb)]
+            have e1 : ((⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+                  : CPair)
+                * (pieceB V pa pb
+                  * pieceB V pa pb)).oneValue
+                ((stage.ofB (BPair.ofNat (m * m))
+                  * (⟨BPair.ofPos en, ed⟩ : CPair))
+                  * (pieceB V pa pb
+                    * pieceB V pa pb)) :=
+              CPair.mul_congr
+                (CPair.oneValue_symm
+                  (numFactorC (BPair.ofNat (m * m)) (BPair.ofPos en) ed))
+                (CPair.oneValue_refl _)
+            refine CPair.oneValue_symm (CPair.oneValue_trans e1 ?_)
+            rw [CPair.mul_comm (stage.ofB (BPair.ofNat (m * m)))
+                (⟨BPair.ofPos en, ed⟩ : CPair),
+              CPair.mul_assoc (⟨BPair.ofPos en, ed⟩ : CPair)
+                (stage.ofB (BPair.ofNat (m * m)))
+                (pieceB V pa pb
+                  * pieceB V pa pb)]
+            refine CPair.mul_congr (CPair.oneValue_refl _) ?_
+            refine CPair.mul_congr ?_ (CPair.oneValue_refl _)
+            refine CPair.oneValue_trans
+              (CPair.num_oneValue (BPair.ofNat_mul m m) Pos.one) ?_
+            exact CPair.oneValue_symm
+              (numFactorC (BPair.ofNat m) (BPair.ofNat m) Pos.one)
+          · exact stage.unitC_le_num ed
+              (ground.unitLeMul (ground.unitLeOfNat (m * m))
+                (ground.leB_of_lt (ground.unitLtOfPos en)))
+        have hXlt : pieceX V e0n e0d C.hk mc pa pb C.hi
+            < stage.ofB (BPair.ofNat m) * pieceB V pa pb :=
+          cLtOfSq hXnn (stage.unitC_le_mul hmnn hfBnn)
+            (cLtUnscale hηnn hXsq)
+        refine stage.ltC_le_trans (cLtSwapAdd hXlt) ?_
+        refine CPair.le_add ?_ (stage.mulC_le_left hmnn hBflRaw)
+        exact CPair.le_trans (CPair.le_swap hXcp) (stage.swap_cmag_le _)
+    refine CPair.lt_congr (CPair.oneValue_refl _) ?_ hga
+    rw [← CPair.add_assoc
+        (stage.evalC (profLin V)
+          ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩)
+        ((⟨BPair.ofPos en, ed⟩ : CPair)
+          * stage.evalC (slabGo (m * m) 0 1 (V.1.map (List.drop 2)))
+              ⟨BPair.ofPos en, ed⟩)
+        (stage.ofB (BPair.ofNat m)
+          * ((⟨BPair.ofPos en, ed⟩ : CPair)
+            * stage.evalC (slabGo (m * m) 0 1 (V.2.map (List.drop 1)))
+                ⟨BPair.ofPos en, ed⟩)),
+      CPair.add_assoc
+        (stage.evalC (profLin V)
+            ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          + (⟨BPair.ofPos en, ed⟩ : CPair)
+            * stage.evalC (slabGo (m * m) 0 1 (V.1.map (List.drop 2)))
+                ⟨BPair.ofPos en, ed⟩)
+        (stage.ofB (BPair.ofNat m)
+          * ((⟨BPair.ofPos en, ed⟩ : CPair)
+            * stage.evalC (slabGo (m * m) 0 1 (V.2.map (List.drop 1)))
+                ⟨BPair.ofPos en, ed⟩))
+        (stage.ofB (BPair.ofNat m)
+          * stage.evalC (profBaseU V)
+              ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩),
+      CPair.add_comm
+        (stage.ofB (BPair.ofNat m)
+          * ((⟨BPair.ofPos en, ed⟩ : CPair)
+            * stage.evalC (slabGo (m * m) 0 1 (V.2.map (List.drop 1)))
+                ⟨BPair.ofPos en, ed⟩))
+        (stage.ofB (BPair.ofNat m)
+          * stage.evalC (profBaseU V)
+              ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩)]
+    refine CPair.add_congr (CPair.oneValue_refl _) ?_
+    exact CPair.oneValue_symm (CPair.mul_add _ _ _)
+  -- the total's positivity at the composite point
+  have hη : stage.unitC < (⟨BPair.ofPos en, ed⟩ : CPair) :=
+    (stage.unitC_lt_num _ ed).mpr (ground.unitLtOfPos en)
+  have hVfull : (stage.evalC (depthPoly V m)
+        ⟨BPair.ofPos en, ed⟩).oneValue
+      ((⟨BPair.ofPos en, ed⟩ : CPair)
+        * ((stage.evalC (profLin V)
+              ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+            + (⟨BPair.ofPos en, ed⟩ : CPair)
+              * stage.evalC
+                  (slabGo (m * m) 0 1 (V.1.map (List.drop 2)))
+                  ⟨BPair.ofPos en, ed⟩)
+          + stage.ofB (BPair.ofNat m)
+            * (stage.evalC (profBaseU V)
+                ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+              + (⟨BPair.ofPos en, ed⟩ : CPair)
+                * stage.evalC
+                    (slabGo (m * m) 0 1 (V.2.map (List.drop 1)))
+                    ⟨BPair.ofPos en, ed⟩))) := by
+    refine CPair.oneValue_trans (stage.evalC_congr hstrip _) ?_
+    refine CPair.oneValue_trans (evalC_shiftUp1 _ _) ?_
+    refine CPair.mul_congr (CPair.oneValue_refl _) ?_
+    refine CPair.oneValue_trans (stage.evalC_add _ _ _) ?_
+    exact CPair.add_congr hS1 hS2
+  have htot : stage.unitC
+      < stage.evalC (depthPoly V m) ⟨BPair.ofPos en, ed⟩ :=
+    CPair.lt_congr (CPair.oneValue_refl _)
+      (CPair.oneValue_symm hVfull) (cMulPos hη hcore)
+  -- the cleared conclusion at the stated clearing
+  have hbase : BPair.unit < poly.evalClear (depthPoly V m)
+      (BPair.ofPos en) ed ((depthPoly V m).length - 1) :=
+    (stage.unitC_lt_num _ _).mp
+      (CPair.lt_congr (CPair.oneValue_refl _)
+        (stage.evalC_evalClear (depthPoly V m) (BPair.ofPos en) ed)
+        htot)
+  have hlenK : (depthPoly V m).length - 1 ≤ C.K := by
+    have hb := depthPoly_ble h.1 m
+    cases hE : (depthPoly V m).length with
+    | zero => exact Nat.zero_le C.K
+    | succ n =>
+      rw [hE] at hb
+      exact Nat.le_of_succ_le_succ hb
+  obtain ⟨g, hg⟩ := Nat.le.dest hlenK
+  have hlift := evalLiftLe (depthPoly V m) (BPair.ofPos en) ed
+    ((depthPoly V m).length - 1) (ground.lePredSucc _) g
+  rw [hg] at hlift
   refine BPair.lt_congr (BPair.oneValue_refl _)
-    (BPair.oneValue_symm
-      (poly.evalClear_congr hstrip (BPair.ofPos en) ed C.K)) ?_
-  refine BPair.lt_congr (BPair.oneValue_refl _)
-    (BPair.oneValue_symm
-      (evalClear_shiftUp 1 (poly.add
-        (slabGo (m * m) 0 1 (V.1.map (List.drop 1)))
-        (slabGo (m * m) 0 m V.2)) (BPair.ofPos en) ed C.K)) ?_
-  refine ground.unitLtMul
-    (ground.unitLtBpow (ground.unitLtOfPos en) 1) ?_
-  refine BPair.lt_congr (BPair.oneValue_refl _)
-    (BPair.oneValue_symm hWval) ?_
-  refine BPair.lt_congr (BPair.oneValue_refl _)
-    (BPair.oneValue_of_eq hshuffle) ?_
-  refine ground.ltB_trans_le
-    (BPair.lt_congr (BPair.oneValue_refl _) hsplit hbase) ?_
-  exact ground.leB_add (ground.leB_refl _) (ground.leB_swap hswapRU)
-
-
-/-! The bundled corner disconjugacy certificate: the segment and
-seam data with their reads, and the whole certificate's decidable
-read — the one stated rate, the positive tier's chain from the
-boundary seed, the post chain from its own head segment, and the
-final seam at the slope allowance with the dominance margin. -/
+    (BPair.oneValue_symm hlift) ?_
+  exact ground.unitLtMul
+    (ground.unitLtBpow (ground.unitLtOfPos ed) g) hbase
 
 set_option genInjectivity false in
 /-- A seam's certificate: the crossed products' graded read with
@@ -6254,15 +7078,18 @@ structure SeamCert where
   cert : GradCert
 
 set_option genInjectivity false in
-/-- A segment's certificate: the jet with its positivity box, the
-two-step overlap's middle top, and the termwise box at the
-stripped comparison object. -/
+set_option genInjectivity false in
+/-- A segment's certificate: the jet with its positivity device,
+the two-step overlap's middle top, and the termwise device at the
+stripped comparison object — the graded devices, the segment jets
+vacant at the scale-free order (the split's own pricing there). -/
 structure SegCert where
   jet : poly.PPoly × poly.PPoly
-  pos : BoxCert
+  pos : GradCert
   mid : CPair
-  term : BoxCert
+  term : GradCert
 
+set_option genInjectivity false in
 set_option genInjectivity false in
 /-- The corner disconjugacy certificate: the one stated rate, the
 cleared scale ceiling, the pre profile with its graded reads and
@@ -6290,13 +7117,13 @@ structure DisconjCert where
   alD : Nat
   ws : Nat
 
-/-- One segment's read: the jet's positivity box, the stripped
-comparison's box, and the two-step overlap of the termwise box
-inside the positivity box. -/
+/-- One segment's read: the jet's graded positivity device, the
+stripped comparison's graded device, and the two-step overlap of
+the termwise device inside the positivity device. -/
 def segRead (r qcN qcD : Nat) (e0n : BPair) (e0d : Pos)
     (S : SegCert) : Prop :=
-  boxRead S.jet e0n e0d S.pos
-  ∧ boxRead (profStrip (termProf S.jet r qcN qcD)) e0n e0d S.term
+  gradRead S.jet e0n e0d S.pos
+  ∧ gradRead (profStrip (termProf S.jet r qcN qcD)) e0n e0d S.term
   ∧ S.pos.lo ≤ S.term.lo
   ∧ stepClear S.term.hi S.mid e0n e0d
   ∧ stepClear S.mid S.pos.hi e0n e0d
@@ -6306,7 +7133,10 @@ instance (r qcN qcD : Nat) (e0n : BPair) (e0d : Pos) (S : SegCert) :
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _))
 
 /-- One seam's read against the outgoing coverage: the crossed
-products' graded read on the seam's box, the handover cap one step
+products' scale strip at the graded read on the seam's box (the
+crossed products vacant at the scale-free order and at the scale
+order's leading part, the strip's withdrawal the read's whole
+object), the handover cap one step
 past the incoming box's bottom and inside the seam's box, the
 outgoing coverage and the incoming box both reaching it, and the
 incoming bottom at or beyond the outgoing one, the handover depths
@@ -6314,7 +7144,7 @@ non-decreasing along the chain. -/
 def seamRead (e0n : BPair) (e0d : Pos)
     (Vp : poly.PPoly × poly.PPoly) (loPrev hiPrev : CPair)
     (M : SeamCert) (S : SegCert) : Prop :=
-  gradRead (crossProf Vp S.jet) e0n e0d M.cert
+  gradRead (profStrip (crossProf Vp S.jet)) e0n e0d M.cert
   ∧ M.cert.lo ≤ S.term.lo
   ∧ stepClear S.term.lo M.b e0n e0d
   ∧ M.b ≤ M.cert.hi
@@ -13350,7 +14180,7 @@ theorem cutMono : ∀ (r qn qd : Nat) (en ed : Pos) (n a b a' b' : Nat),
       have hid : inertia.splitRead (inertia.idMat n)
           (inertia.scalarSplit n Pos.one) :=
         inertia.scalarSplit_read Pos.one (inertia.idMat n)
-          (elim.sqAt_of (inertia.idMat_len n) (inertia.idMat_rows n))
+          (inertia.sqAt_idMat n)
           (by rw [inertia.matScale_one]; exact elim.matOne_refl _)
       have hspd := inertia.splitRead_congr _ _ hsqD (elim.matOne_symm hgap) _
         (inertia.scaleSplit_read _ (ground.offOfUnitLt hWpos)
@@ -13696,6 +14526,37 @@ private theorem termOfStrip (r qcN qcD : Nat) (en ed : Pos)
       Nat.add_comm 1 (depthPoly (profStrip (termProf V r qcN qcD)) m).length]
     exact Nat.succ_le_succ (depthPoly_ble hshT m)
 
+/-- The stripped crossed products' positive read at a depth is the
+crossed products' own: the scale factor withdrawn at the structural
+vacancy, the collapse read one clearing up. -/
+private theorem crossOfStrip (Vp Vs : poly.PPoly × poly.PPoly)
+    (en ed : Pos) (m K : Nat)
+    (hvacV : poly.unitTail (profBase Vp))
+    (hvacS : poly.unitTail (profBase Vs))
+    (hsh : profShape (profStrip (crossProf Vp Vs)) K)
+    (hpos : BPair.unit < poly.evalClear
+      (depthPoly (profStrip (crossProf Vp Vs)) m) (BPair.ofPos en) ed K) :
+    BPair.unit < poly.evalClear (depthPoly (crossProf Vp Vs) m)
+      (BPair.ofPos en) ed (K + 1) := by
+  have hshift : BPair.unit < poly.evalClear
+      (poly.shiftUp 1 (depthPoly (profStrip (crossProf Vp Vs)) m))
+      (BPair.ofPos en) ed (K + 1) := by
+    refine BPair.lt_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_symm (evalClear_shiftUp 1
+        (depthPoly (profStrip (crossProf Vp Vs)) m)
+        (BPair.ofPos en) ed (K + 1))) ?_
+    exact ground.unitLtMul
+      (ground.unitLtBpow (ground.unitLtOfPos en) 1) hpos
+  refine posMove
+    (depthPoly_profStrip (crossProf Vp Vs) m
+      (crossProf_vac Vp Vs hvacV hvacS))
+    (depthPoly_ble (profShape_unstrip hsh) m) ?_ hshift
+  rw [poly.len_shift 1
+      (depthPoly (profStrip (crossProf Vp Vs)) m),
+    Nat.add_comm 1
+      (depthPoly (profStrip (crossProf Vp Vs)) m).length]
+  exact Nat.add_le_add_right (depthPoly_ble hsh m) 1
+
 /-- A segment's termwise comparison at the cap line, at every depth
 whose square scale sits inside the term box. -/
 private theorem segTermCap (r qcN qcD : Nat) (e0n : BPair) (e0d : Pos)
@@ -13712,7 +14573,7 @@ private theorem segTermCap (r qcN qcD : Nat) (e0n : BPair) (e0d : Pos)
             (BPair.ofPos en) ed S.pos.K :=
   termOfStrip r qcN qcD en ed S.jet S.pos.K S.term.K m h.1.1
     h.2.1.1
-    (boxRead_pos (profStrip (termProf S.jet r qcN qcD)) e0n e0d S.term
+    (gradRead_pos (profStrip (termProf S.jet r qcN qcD)) e0n e0d S.term
       h.2.1 m en ed he hlo hhi)
 
 /-- A segment's profile positivity, at every depth whose square
@@ -13724,7 +14585,7 @@ private theorem segPos (r qcN qcD : Nat) (e0n : BPair) (e0d : Pos)
     (hhi : sAt en ed m ≤ S.pos.hi) :
     BPair.unit
       < poly.evalClear (depthPoly S.jet m) (BPair.ofPos en) ed S.pos.K :=
-  boxRead_pos S.jet e0n e0d S.pos h.1 m en ed he hlo hhi
+  gradRead_pos S.jet e0n e0d S.pos h.1 m en ed he hlo hhi
 
 /-- A segment's two-step overlap carries a depth inside the term
 box's top to the square scale two depths on inside the positivity
@@ -15203,11 +16064,15 @@ private theorem postRun (r qcN qcD ws alN alD A B n k0 g : Nat)
         (ground.leB_of_lt (hDat _ hdk (Nat.le_refl _))))
       hposD (ground.leB_of_lt hSpos)
       (crossOrder P.jet S.jet P.pos.K S.pos.K en ed
-        (firstGE en ed S.term.lo k (k0 - k)) M.cert.K hch.1.1.1 hP.1.1
+        (firstGE en ed S.term.lo k (k0 - k)) (M.cert.K + 1)
+        (profShape_unstrip hch.1.1.1) hP.1.1
         hch.2.1.1.1
-        (gradRead_pos (crossProf P.jet S.jet) e0n e0d M.cert hch.1.1 _ en ed
-          he (CPair.le_trans hch.1.2.1 hdhit)
-          (CPair.le_trans hdb hch.1.2.2.2.1)))
+        (crossOfStrip P.jet S.jet en ed _ M.cert.K
+          hP.1.2.1 hch.2.1.1.2.1 hch.1.1.1
+          (gradRead_pos (profStrip (crossProf P.jet S.jet)) e0n e0d
+            M.cert hch.1.1 _ en ed
+            he (CPair.le_trans hch.1.2.1 hdhit)
+            (CPair.le_trans hdb hch.1.2.2.2.1))))
       hentD
     have hnext := ih S (firstGE en ed S.term.lo k (k0 - k)) hch.2.2 hch.2.1
       hgrF hlolo hbhi2 hdhit
@@ -15276,6 +16141,7 @@ private theorem posRun (r qN qD A B : Nat) (e0n : BPair) (e0d : Pos)
       (Kp : Nat) (loP hiP hiPos : CPair) (k : Nat),
       chainSegs r qN qD e0n e0d Vp loP hiP l →
       profShape Vp Kp →
+      poly.unitTail (profBase Vp) →
       (∀ m, loP ≤ sAt en ed m → sAt en ed m ≤ hiPos →
         BPair.unit
           < poly.evalClear (depthPoly Vp m) (BPair.ofPos en) ed Kp) →
@@ -15300,7 +16166,7 @@ private theorem posRun (r qN qD A B : Nat) (e0n : BPair) (e0d : Pos)
   intro l
   induction l with
   | nil =>
-    intro Vp Kp loP hiP hiPos k _ _ hPos hTerm hTwo hlok _ _ h0 hent j hkj hjt
+    intro Vp Kp loP hiP hiPos k _ _ _ hPos hTerm hTwo hlok _ _ h0 hent j hkj hjt
     have hsum : k + (j - k) = j := ground.natAddSubCancel hkj
     have hjhi : sAt en ed (k + (j - k)) ≤ hiP := by
       rw [hsum]
@@ -15324,8 +16190,8 @@ private theorem posRun (r qN qD A B : Nat) (e0n : BPair) (e0d : Pos)
     exact hstep
   | cons hd t ih =>
     obtain ⟨M, S⟩ := hd
-    intro Vp Kp loP hiP hiPos k hch hsh hPos hTerm hTwo hlok hk hk1 h0 hent
-      j hkj hjt
+    intro Vp Kp loP hiP hiPos k hch hsh hvacP hPos hTerm hTwo hlok hk hk1
+      h0 hent j hkj hjt
     have hsum : k + (j - k) = j := ground.natAddSubCancel hkj
     match (inferInstance : Decidable (S.term.lo ≤ sAt en ed j)) with
     | isFalse hno =>
@@ -15470,14 +16336,19 @@ private theorem posRun (r qN qD A B : Nat) (e0n : BPair) (e0d : Pos)
           (ground.leB_of_lt (hDat _ hdk (Nat.le_refl _))))
         hposD (ground.leB_of_lt hSpos)
         (crossOrder Vp S.jet Kp S.pos.K en ed
-          (firstGE en ed S.term.lo k (j - k)) M.cert.K hch.1.1.1 hsh
+          (firstGE en ed S.term.lo k (j - k)) (M.cert.K + 1)
+          (profShape_unstrip hch.1.1.1) hsh
           hch.2.1.1.1
-          (gradRead_pos (crossProf Vp S.jet) e0n e0d M.cert hch.1.1 _ en ed
-            he (CPair.le_trans hch.1.2.1 hdhit)
-            (CPair.le_trans hdb hch.1.2.2.2.1)))
+          (crossOfStrip Vp S.jet en ed _ M.cert.K
+            hvacP hch.2.1.1.2.1 hch.1.1.1
+            (gradRead_pos (profStrip (crossProf Vp S.jet)) e0n e0d
+              M.cert hch.1.1 _ en ed
+              he (CPair.le_trans hch.1.2.1 hdhit)
+              (CPair.le_trans hdb hch.1.2.2.2.1))))
         hentD
       refine ih S.jet S.pos.K S.term.lo S.term.hi S.pos.hi
         (firstGE en ed S.term.lo k (j - k)) hch.2.2 hch.2.1.1.1
+        hch.2.1.1.2.1
         (fun m hlo hhi => segPosAt r qN qD e0n e0d en ed S hch.2.1 he m
           hlo hhi)
         (fun m hlo hhi => segTermAt r qN qD A B e0n e0d en ed S hch.2.1 he
@@ -15725,6 +16596,7 @@ private theorem coverCoreB (r qcN qcD A B n cc : Nat)
     (fun m => (wellWalk r A B en ed m).swap) he hβ
     (fun m => rec_swap (wellWalk_rec r A B en ed m)) hqcD hrate l P.jet
     P.pos.K P.term.lo P.term.hi P.pos.hi (cc + 1) hch hP.1.1
+    hP.1.2.1
     (fun m hlo hhi => segPosAt r qcN qcD e0n e0d en ed P hP he m hlo hhi)
     (fun m hlo hhi => segTermAt r qcN qcD A B e0n e0d en ed P hP he hqcD
       hrate m hlo hhi)
@@ -15924,7 +16796,7 @@ private theorem posPhase (r A B c : Nat) (C : DisconjCert) (en ed : Pos)
       match m with
       | 0 =>
         exact seedPos r C.qcN C.qcD C.e0n C.e0d en ed C.preV C.seedK C.seedCK
-          C.seedTK C.prePos.K hgrPos.1 hgrPos.2.2.1 hseedR he
+          C.seedTK C.prePos.K hgrPos.1 hgrPos.2.1 hseedR he
       | m' + 1 =>
         exact gradRead_pos C.preV C.e0n C.e0d C.prePos hgrPos (m' + 1) en ed
           he (CPair.le_trans hploU (sAt_unit en ed (m' + 1))) hhi
@@ -15947,7 +16819,7 @@ private theorem posPhase (r A B c : Nat) (C : DisconjCert) (en ed : Pos)
       match m with
       | 0 =>
         exact seedTerm r C.qcN C.qcD C.e0n C.e0d en ed C.preV C.seedK C.seedCK
-          C.seedTK C.prePos.K hgrPos.1 hgrPos.2.2.1 hseedR he
+          C.seedTK C.prePos.K hgrPos.1 hgrPos.2.1 hseedR he
       | m' + 1 =>
         refine termOfStrip r C.qcN C.qcD en ed C.preV C.prePos.K C.preTerm.K
           (m' + 1) hgrPos.1 hgrTerm.1 ?_
@@ -15973,7 +16845,7 @@ private theorem posPhase (r A B c : Nat) (C : DisconjCert) (en ed : Pos)
         hqcD hrate
         (ground.leB_of_lt (hPos 0 (sAt_unit en ed 0) hp0hi))
         (seedRead_read r C.qcN C.qcD C.e0n C.e0d en ed C.preV C.seedK
-          C.seedCK C.seedTK C.prePos.K hgrPos.1 hgrPos.2.2.1 hseedR he)
+          C.seedCK C.seedTK C.prePos.K hgrPos.1 hgrPos.2.1 hseedR he)
     have hrun0 := runD r A B en ed (wellWalk r A B en ed)
       (fun m => poly.evalClear (depthPoly C.preV m) (BPair.ofPos en) ed
         C.prePos.K)
@@ -15999,7 +16871,7 @@ private theorem posPhase (r A B c : Nat) (C : DisconjCert) (en ed : Pos)
       exact posRun r C.qcN C.qcD A B C.e0n C.e0d en ed (wellWalk r A B en ed)
         he hβ (fun m => wellWalk_rec r A B en ed m) hqcD hrate C.posChain
         C.preV C.prePos.K stage.unitC C.preTerm.hi C.prePos.hi 1 hchP
-        hgrPos.1 hPos hTerm hTwo (sAt_unit en ed 1)
+        hgrPos.1 hgrPos.2.1 hPos hTerm hTwo (sAt_unit en ed 1)
         (fun M' S' t' hEq m hm => by
           rw [hEq] at hchP
           exact CPair.le_trans

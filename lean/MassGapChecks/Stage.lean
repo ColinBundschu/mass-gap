@@ -21,11 +21,18 @@ its theorem, the lower side at `-z - 5`, the two reads carried to
 a respelling of the polynomial through their congruences with a
 polynomial off the one-value class refusing, and the clearing
 conjunct's isolation at a bound below the sum's unit.  The
-squared comparison's priced read (`keepSq`) runs at the factor
-pair `x + 3` against the constant one, decided with the side kept
-at an interior point through its theorem (`keepSq_all`), one
-isolating refusal per conjunct, and the cleared read
-(`sqComp_clear`) decided raw beside its theorem route.  The
+piece-local kit reads at `1 + 2z` on the piece `(3/2, 2)`: the
+binomial rewrite at the composite point pinned coefficientwise
+(`shiftC` to `[8, 4]` at the clearing two, `shiftC_eval` at an
+interior point), the rewritten magnitudes' Horner folds (`capW` at
+ten, `floorW` at six, `overC` halving), the piece's priced cap and
+floor (`capA` at five, `floorA` at three), each side read raw and
+through its theorem (`capA_le`, `floorA_le`) at the interior point
+`7/4`, with the bracketing binders' isolating refusals at points
+past either endpoint; the evaluation homomorphisms (`evalC_add`,
+`evalC_mul`) and the magnitude calculus (`cmag_mul`,
+`cmag_add_le`, `swap_cmag_le`, `cmag_of_unitLe`, `mulC_unit`)
+pinned at signed instances.  The
 upper-endpoint read (`keepLowerTop`) closes the module at `x - 5`
 on `(1, 2)` at the bound `[2 : 1]`, decided with the side kept at
 the lower endpoint and the interior point `3/2` through its theorem
@@ -264,176 +271,128 @@ example : ¬ keepLowerTop pDrop ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨3, 1�
   decide +kernel
 example : ¬ (BPair.unit < (⟨1, 2⟩ : BPair)) := by decide +kernel
 
-/-! The squared comparison's priced read (`keepSq`) at the factor
-pair `x + 3` against the constant one on the bracket `(1, 2)` at
-the bound `[8 : 2]` and the ceiling `[1 : 1]`: the read decided at
-its six conjuncts, the side kept at the interior point `3/2`
-through the theorem (`keepSq_all`) beside the raw decided
-conclusion.  One isolating refusal per conjunct, each beside the
-rows reading every further conjunct at the forged data: the
-clearing at the bound `-1`; the ordered endpoints at the swapped
-bracket; the lower endpoint's segment read at `x + 8` on
-`(-3, 1)` at the ceiling `-5`, where the comparison holds at the
-negative ceiling and the segment read is the one refusal; the
-upper endpoint's segment read at the bracket reaching eight; the
-priced floor at `2x - 3`, the origin read negative at the piece's
-floor with its square clearing the comparison, the conclusion
-parted at the interior point `3/2`; and the comparison at the
-ceiling twenty.  The cleared read (`sqComp_clear`) closes the
-tier at the point `1/2` at the clearing one, decided raw beside
-its theorem route, the vacancy reads past the clearing the
-beyond-length reads. -/
+/-! The piece-local kit at `1 + 2z` on the piece `(3/2, 2)`, every
+value hand-computed: the binomial rewrite at the composite point
+`3/2` clears at the denominator's power to `[8, 4]`; the rewritten
+magnitudes' Horner cap at the width `1/2` reads ten and the floor
+six; the clearing halves them to the piece cap five and floor
+three; the interior point `7/4` reads `9/2`, inside both; and all
+four bracketing binders across the two theorems isolate — the
+point three past the top parts the cap's conclusion with the top
+binder alone refused and the point `-5` below the bottom parts it
+with the bottom binder alone refused, while the point `1/2` below
+the bottom parts the floor's with the bottom binder alone refused
+and, at the falling sibling `1 - 2z`, the point three past the top
+parts the floor's with the top binder alone refused. -/
 
-private def pSqB : Poly := [⟨4, 1⟩, ⟨2, 1⟩]
-private def pSqL : Poly := [⟨2, 1⟩]
+private def pPc : Poly := [BPair.ofNat 1, BPair.ofNat 2]
+private def aPc : CPair := ⟨BPair.ofNat 3, 2⟩
+private def bPc : CPair := ⟨BPair.ofNat 2, 1⟩
 
-example : keepSq pSqB pSqL ⟨2, 1⟩ 1 ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩
-    ⟨3, 1⟩ := by decide +kernel
+example : poly.oneValue (shiftC pPc (BPair.ofNat 3) 2)
+    [BPair.ofNat 8, BPair.ofNat 4] := by decide +kernel
 
-example : ofB (⟨2, 1⟩ : BPair) * (evalC pSqL ⟨⟨4, 1⟩, 2⟩
-      * evalC pSqL ⟨⟨4, 1⟩, 2⟩)
-    < ofB (BPair.ofPos 1) * ((⟨⟨4, 1⟩, 2⟩ : CPair)
-      * (evalC pSqB ⟨⟨4, 1⟩, 2⟩ * evalC pSqB ⟨⟨4, 1⟩, 2⟩)) := by
+example : (evalC (shiftC pPc (BPair.ofNat 3) 2)
+      ⟨BPair.ofNat 1, 4⟩).oneValue
+    (evalC pPc ((⟨BPair.ofNat 3, 2⟩ : CPair) + ⟨BPair.ofNat 1, 4⟩)
+      * ofB (BPair.ofPos (Pos.powC 2 (pPc.length - 1)))) := by
   decide +kernel
 
-example : ofB (⟨2, 1⟩ : BPair) * (evalC pSqL ⟨⟨4, 1⟩, 2⟩
-      * evalC pSqL ⟨⟨4, 1⟩, 2⟩)
-    < ofB (BPair.ofPos 1) * ((⟨⟨4, 1⟩, 2⟩ : CPair)
-      * (evalC pSqB ⟨⟨4, 1⟩, 2⟩ * evalC pSqB ⟨⟨4, 1⟩, 2⟩)) :=
-  keepSq_all pSqB pSqL ⟨2, 1⟩ 1 (by decide +kernel) ⟨⟨2, 1⟩, 1⟩
-    ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩ (by decide +kernel) ⟨⟨4, 1⟩, 2⟩
-    (by decide +kernel) (by decide +kernel)
-
-example : ¬ keepSq pSqB pSqL ⟨2, 1⟩ 1 ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩
-    ⟨1, 2⟩ := by decide +kernel
-example : ¬ (BPair.unit < (⟨1, 2⟩ : BPair)) := by decide +kernel
-example : cmag (⟨⟨2, 1⟩, 1⟩ : CPair) * ofB ⟨1, 2⟩ ≤ ofB ⟨9, 1⟩ := by
-  decide +kernel
-example : cmag (⟨⟨3, 1⟩, 1⟩ : CPair) * ofB ⟨1, 2⟩ ≤ ofB ⟨9, 1⟩ := by
-  decide +kernel
-example : ofB (windowsep.magFold (poly.deriv pSqB) ⟨9, 1⟩ ⟨1, 2⟩)
-      * ((⟨⟨3, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨2, 1⟩, 1⟩)
-    < evalC pSqB ⟨⟨2, 1⟩, 1⟩ * dpow pSqB ⟨1, 2⟩ := by decide +kernel
-example : ofB (⟨2, 1⟩ : BPair)
-      * ((sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨1, 2⟩
-          * sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨1, 2⟩)
-        * (dpow pSqB ⟨1, 2⟩ * dpow pSqB ⟨1, 2⟩))
-    < ofB (BPair.ofPos 1) * ((⟨⟨2, 1⟩, 1⟩ : CPair)
-      * ((sqFloor pSqB ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨1, 2⟩
-          * sqFloor pSqB ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨1, 2⟩)
-        * (dpow pSqL ⟨1, 2⟩ * dpow pSqL ⟨1, 2⟩))) := by decide +kernel
-
-example : ¬ keepSq pSqB pSqL ⟨2, 1⟩ 1 ⟨⟨3, 1⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨9, 1⟩
-    ⟨3, 1⟩ := by decide +kernel
-example : ¬ ((⟨⟨3, 1⟩, 1⟩ : CPair) < ⟨⟨2, 1⟩, 1⟩) := by decide +kernel
-example : ofB (windowsep.magFold (poly.deriv pSqB) ⟨9, 1⟩ ⟨3, 1⟩)
-      * ((⟨⟨2, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨3, 1⟩, 1⟩)
-    < evalC pSqB ⟨⟨3, 1⟩, 1⟩ * dpow pSqB ⟨3, 1⟩ := by decide +kernel
-example : ofB (⟨2, 1⟩ : BPair)
-      * ((sqCap pSqL ⟨⟨3, 1⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
-          * sqCap pSqL ⟨⟨3, 1⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
-        * (dpow pSqB ⟨3, 1⟩ * dpow pSqB ⟨3, 1⟩))
-    < ofB (BPair.ofPos 1) * ((⟨⟨3, 1⟩, 1⟩ : CPair)
-      * ((sqFloor pSqB ⟨⟨3, 1⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
-          * sqFloor pSqB ⟨⟨3, 1⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
-        * (dpow pSqL ⟨3, 1⟩ * dpow pSqL ⟨3, 1⟩))) := by decide +kernel
-
-private def pSqW : Poly := [⟨9, 1⟩, ⟨2, 1⟩]
-
-example : ¬ keepSq pSqW pSqL ⟨1, 6⟩ 1 ⟨⟨1, 4⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨5, 1⟩
-    ⟨3, 1⟩ := by decide +kernel
-example : ¬ (cmag (⟨⟨1, 4⟩, 1⟩ : CPair) * ofB ⟨3, 1⟩ ≤ ofB ⟨5, 1⟩) := by
-  decide +kernel
-example : (⟨⟨1, 4⟩, 1⟩ : CPair) < ⟨⟨2, 1⟩, 1⟩ := by decide +kernel
-example : cmag (⟨⟨2, 1⟩, 1⟩ : CPair) * ofB ⟨3, 1⟩ ≤ ofB ⟨5, 1⟩ := by
-  decide +kernel
-example : ofB (windowsep.magFold (poly.deriv pSqW) ⟨5, 1⟩ ⟨3, 1⟩)
-      * ((⟨⟨2, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨1, 4⟩, 1⟩)
-    < evalC pSqW ⟨⟨1, 4⟩, 1⟩ * dpow pSqW ⟨3, 1⟩ := by decide +kernel
-example : ofB (⟨1, 6⟩ : BPair)
-      * ((sqCap pSqL ⟨⟨1, 4⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨5, 1⟩ ⟨3, 1⟩
-          * sqCap pSqL ⟨⟨1, 4⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨5, 1⟩ ⟨3, 1⟩)
-        * (dpow pSqW ⟨3, 1⟩ * dpow pSqW ⟨3, 1⟩))
-    < ofB (BPair.ofPos 1) * ((⟨⟨1, 4⟩, 1⟩ : CPair)
-      * ((sqFloor pSqW ⟨⟨1, 4⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨5, 1⟩ ⟨3, 1⟩
-          * sqFloor pSqW ⟨⟨1, 4⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨5, 1⟩ ⟨3, 1⟩)
-        * (dpow pSqL ⟨3, 1⟩ * dpow pSqL ⟨3, 1⟩))) := by decide +kernel
-
-example : ¬ keepSq pSqW pSqL ⟨2, 1⟩ 1 ⟨⟨2, 1⟩, 1⟩ ⟨⟨9, 1⟩, 1⟩ ⟨9, 1⟩
-    ⟨3, 1⟩ := by decide +kernel
-example : ¬ (cmag (⟨⟨9, 1⟩, 1⟩ : CPair) * ofB ⟨3, 1⟩ ≤ ofB ⟨9, 1⟩) := by
-  decide +kernel
-example : cmag (⟨⟨2, 1⟩, 1⟩ : CPair) * ofB ⟨3, 1⟩ ≤ ofB ⟨9, 1⟩ := by
-  decide +kernel
-example : ofB (windowsep.magFold (poly.deriv pSqW) ⟨9, 1⟩ ⟨3, 1⟩)
-      * ((⟨⟨9, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨2, 1⟩, 1⟩)
-    < evalC pSqW ⟨⟨2, 1⟩, 1⟩ * dpow pSqW ⟨3, 1⟩ := by decide +kernel
-example : ofB (⟨2, 1⟩ : BPair)
-      * ((sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨9, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
-          * sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨9, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
-        * (dpow pSqW ⟨3, 1⟩ * dpow pSqW ⟨3, 1⟩))
-    < ofB (BPair.ofPos 1) * ((⟨⟨2, 1⟩, 1⟩ : CPair)
-      * ((sqFloor pSqW ⟨⟨2, 1⟩, 1⟩ ⟨⟨9, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
-          * sqFloor pSqW ⟨⟨2, 1⟩, 1⟩ ⟨⟨9, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
-        * (dpow pSqL ⟨3, 1⟩ * dpow pSqL ⟨3, 1⟩))) := by decide +kernel
-
-private def pSqX : Poly := [⟨1, 4⟩, ⟨3, 1⟩]
-
-example : ¬ keepSq pSqX pSqL ⟨2, 1⟩ 1 ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩
-    ⟨3, 1⟩ := by decide +kernel
-example : ¬ (ofB (windowsep.magFold (poly.deriv pSqX) ⟨9, 1⟩ ⟨3, 1⟩)
-      * ((⟨⟨3, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨2, 1⟩, 1⟩)
-    < evalC pSqX ⟨⟨2, 1⟩, 1⟩ * dpow pSqX ⟨3, 1⟩) := by decide +kernel
-example : cmag (⟨⟨2, 1⟩, 1⟩ : CPair) * ofB ⟨3, 1⟩ ≤ ofB ⟨9, 1⟩ := by
-  decide +kernel
-example : cmag (⟨⟨3, 1⟩, 1⟩ : CPair) * ofB ⟨3, 1⟩ ≤ ofB ⟨9, 1⟩ := by
-  decide +kernel
-example : ofB (⟨2, 1⟩ : BPair)
-      * ((sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
-          * sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
-        * (dpow pSqX ⟨3, 1⟩ * dpow pSqX ⟨3, 1⟩))
-    < ofB (BPair.ofPos 1) * ((⟨⟨2, 1⟩, 1⟩ : CPair)
-      * ((sqFloor pSqX ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
-          * sqFloor pSqX ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
-        * (dpow pSqL ⟨3, 1⟩ * dpow pSqL ⟨3, 1⟩))) := by decide +kernel
-example : ¬ (ofB (⟨2, 1⟩ : BPair) * (evalC pSqL ⟨⟨4, 1⟩, 2⟩
-      * evalC pSqL ⟨⟨4, 1⟩, 2⟩)
-    < ofB (BPair.ofPos 1) * ((⟨⟨4, 1⟩, 2⟩ : CPair)
-      * (evalC pSqX ⟨⟨4, 1⟩, 2⟩ * evalC pSqX ⟨⟨4, 1⟩, 2⟩))) := by
+example : (capW [BPair.ofNat 8, BPair.ofNat 4]
+      ⟨BPair.ofNat 1, 2⟩).oneValue ⟨BPair.ofNat 10, 1⟩ := by
   decide +kernel
 
-example : ¬ keepSq pSqB pSqL ⟨21, 1⟩ 1 ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩
-    ⟨3, 1⟩ := by decide +kernel
-example : ¬ (ofB (⟨21, 1⟩ : BPair)
-      * ((sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
-          * sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
-        * (dpow pSqB ⟨3, 1⟩ * dpow pSqB ⟨3, 1⟩))
-    < ofB (BPair.ofPos 1) * ((⟨⟨2, 1⟩, 1⟩ : CPair)
-      * ((sqFloor pSqB ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
-          * sqFloor pSqB ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
-        * (dpow pSqL ⟨3, 1⟩ * dpow pSqL ⟨3, 1⟩)))) := by decide +kernel
-example : ofB (windowsep.magFold (poly.deriv pSqB) ⟨9, 1⟩ ⟨3, 1⟩)
-      * ((⟨⟨3, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨2, 1⟩, 1⟩)
-    < evalC pSqB ⟨⟨2, 1⟩, 1⟩ * dpow pSqB ⟨3, 1⟩ := by decide +kernel
+example : (floorW [BPair.ofNat 8, BPair.ofNat 4]
+      ⟨BPair.ofNat 1, 2⟩).oneValue ⟨BPair.ofNat 6, 1⟩ := by
+  decide +kernel
 
-example : (⟨2, 1⟩ : BPair) * (BPair.ofPos 2
-      * (poly.evalClear pSqL ⟨2, 1⟩ 2 1 * poly.evalClear pSqL ⟨2, 1⟩ 2 1))
-    < BPair.ofPos 1 * ((⟨2, 1⟩ : BPair)
-      * (poly.evalClear pSqB ⟨2, 1⟩ 2 1
-        * poly.evalClear pSqB ⟨2, 1⟩ 2 1)) := by decide +kernel
+example : (overC (⟨BPair.ofNat 10, 1⟩ : CPair) 2).oneValue
+    ⟨BPair.ofNat 10, 2⟩ := by decide +kernel
 
-example : (⟨2, 1⟩ : BPair) * (BPair.ofPos 2
-      * (poly.evalClear pSqL ⟨2, 1⟩ 2 1 * poly.evalClear pSqL ⟨2, 1⟩ 2 1))
-    < BPair.ofPos 1 * ((⟨2, 1⟩ : BPair)
-      * (poly.evalClear pSqB ⟨2, 1⟩ 2 1
-        * poly.evalClear pSqB ⟨2, 1⟩ 2 1)) :=
-  sqComp_clear (pB := pSqB) (pL := pSqL) (J := 1)
-    (fun j hj => by
-      rw [ground.getAt_over BPair.unit pSqB j
-        (show List.length pSqB ≤ j from hj)]
-      exact BPair.oneValue_refl _)
-    (fun j hj => by
-      rw [ground.getAt_over BPair.unit pSqL j
-        (Nat.le_trans (Nat.succ_le_succ (Nat.zero_le 1)) hj)]
-      exact BPair.oneValue_refl _)
-    ⟨2, 1⟩ 1 ⟨2, 1⟩ 2 (by decide +kernel)
+example : (capA pPc aPc (bPc + CPair.swap aPc)).oneValue
+    ⟨BPair.ofNat 5, 1⟩ := by decide +kernel
+
+example : (floorA pPc aPc (bPc + CPair.swap aPc)).oneValue
+    ⟨BPair.ofNat 3, 1⟩ := by decide +kernel
+
+example : cmag (evalC pPc ⟨BPair.ofNat 7, 4⟩)
+    ≤ capA pPc aPc (bPc + CPair.swap aPc) := by decide +kernel
+
+example : cmag (evalC pPc ⟨BPair.ofNat 7, 4⟩)
+    ≤ capA pPc aPc (bPc + CPair.swap aPc) :=
+  capA_le pPc (x := ⟨BPair.ofNat 7, 4⟩) (by decide +kernel)
+    (by decide +kernel)
+
+example : floorA pPc aPc (bPc + CPair.swap aPc)
+    ≤ evalC pPc ⟨BPair.ofNat 7, 4⟩ := by decide +kernel
+
+example : floorA pPc aPc (bPc + CPair.swap aPc)
+    ≤ evalC pPc ⟨BPair.ofNat 7, 4⟩ :=
+  floorA_le pPc (x := ⟨BPair.ofNat 7, 4⟩) (by decide +kernel)
+    (by decide +kernel)
+
+/-! The bracketing binders' isolating refusals, all four binders
+across the two theorems: at the point three the top binder alone
+refuses and the cap's conclusion parts; at the point `-5` the
+bottom binder alone refuses and the cap's conclusion parts; at
+the point `1/2` the bottom binder alone refuses and the floor's
+conclusion parts; and at the falling sibling `1 - 2z`, whose
+value drops past the top, the point three refuses the top binder
+alone and the floor's conclusion parts. -/
+
+example : ¬ (cmag (evalC pPc ⟨BPair.ofNat 3, 1⟩)
+    ≤ capA pPc aPc (bPc + CPair.swap aPc)) := by decide +kernel
+example : aPc ≤ ⟨BPair.ofNat 3, 1⟩ := by decide +kernel
+example : ¬ ((⟨BPair.ofNat 3, 1⟩ : CPair) ≤ bPc) := by decide +kernel
+
+example : ¬ (cmag (evalC pPc ⟨(BPair.ofNat 5).swap, 1⟩)
+    ≤ capA pPc aPc (bPc + CPair.swap aPc)) := by decide +kernel
+example : ¬ (aPc ≤ (⟨(BPair.ofNat 5).swap, 1⟩ : CPair)) := by
+  decide +kernel
+example : (⟨(BPair.ofNat 5).swap, 1⟩ : CPair) ≤ bPc := by
+  decide +kernel
+
+example : ¬ (floorA pPc aPc (bPc + CPair.swap aPc)
+    ≤ evalC pPc ⟨BPair.ofNat 1, 2⟩) := by decide +kernel
+example : ¬ (aPc ≤ ⟨BPair.ofNat 1, 2⟩) := by decide +kernel
+example : (⟨BPair.ofNat 1, 2⟩ : CPair) ≤ bPc := by decide +kernel
+
+private def qPc : Poly := [BPair.unit, (BPair.ofNat 2).swap]
+
+example : ¬ (floorA qPc aPc (bPc + CPair.swap aPc)
+    ≤ evalC qPc ⟨BPair.ofNat 3, 1⟩) := by decide +kernel
+example : aPc ≤ (⟨BPair.ofNat 3, 1⟩ : CPair) := by decide +kernel
+
+/-! The evaluation homomorphisms and the magnitude calculus at
+signed instances. -/
+
+example : (evalC (poly.add pPc [BPair.ofNat 2, BPair.ofNat 1])
+      ⟨BPair.ofNat 3, 2⟩).oneValue
+    (evalC pPc ⟨BPair.ofNat 3, 2⟩
+      + evalC [BPair.ofNat 2, BPair.ofNat 1] ⟨BPair.ofNat 3, 2⟩) := by
+  decide +kernel
+
+example : (evalC (poly.mul pPc [BPair.ofNat 2, BPair.ofNat 1])
+      ⟨BPair.ofNat 3, 2⟩).oneValue
+    (evalC pPc ⟨BPair.ofNat 3, 2⟩
+      * evalC [BPair.ofNat 2, BPair.ofNat 1] ⟨BPair.ofNat 3, 2⟩) := by
+  decide +kernel
+
+example : (cmag ((⟨(BPair.ofNat 2).swap, 1⟩ : CPair)
+      * ⟨BPair.ofNat 3, 2⟩)).oneValue
+    (cmag (⟨(BPair.ofNat 2).swap, 1⟩ : CPair)
+      * cmag (⟨BPair.ofNat 3, 2⟩ : CPair)) := by decide +kernel
+
+example : cmag ((⟨(BPair.ofNat 2).swap, 1⟩ : CPair)
+      + ⟨BPair.ofNat 3, 1⟩)
+    ≤ cmag (⟨(BPair.ofNat 2).swap, 1⟩ : CPair)
+      + cmag (⟨BPair.ofNat 3, 1⟩ : CPair) := by decide +kernel
+
+example : CPair.swap (cmag (⟨(BPair.ofNat 2).swap, 1⟩ : CPair))
+    ≤ ⟨(BPair.ofNat 2).swap, 1⟩ := by decide +kernel
+
+example : (cmag (⟨BPair.ofNat 3, 2⟩ : CPair)).oneValue
+    ⟨BPair.ofNat 3, 2⟩ := by decide +kernel
+
+example : ((⟨BPair.ofNat 3, 2⟩ : CPair) * unitC).oneValue unitC := by
+  decide +kernel

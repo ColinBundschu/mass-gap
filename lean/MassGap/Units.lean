@@ -1353,12 +1353,6 @@ theorem rowsLen_matUnitAt (muTo muFrom : List Nat)
   rw [ground.length_map] at h
   exact h
 
-private theorem rowsLen_matMul (S T : elim.Mat) (n : Nat)
-    (hT : elim.rowsLen n T) (hT0 : 0 < T.length) :
-    elim.rowsLen n (elim.matMul S T) :=
-  elim.rowsLen_map (fun r => (elim.transposeM T).map (fun c => elim.dotN r c)) n S (fun x _ => (fun _ => by
-      rw [ground.length_map, elim.length_transposeM T hT hT0]) x)
-
 private theorem matOneValue_of_rows (n : Nat) : ∀ A B : elim.Mat,
     A.length = B.length → elim.rowsLen n A → elim.rowsLen n B →
     (∀ p, p < A.length → ∀ q, q < n →
@@ -1689,10 +1683,10 @@ theorem matVec_comm_read (muTo muMidA muMidB muFrom : List Nat)
       (by rw [elim.length_matMul, length_matUnitAt])
       (by rw [elim.length_matMul, length_matUnitAt])
       (rowsLen_matUnitAt muTo muFrom i j)
-      (rowsLen_matMul _ _ _ (rowsLen_matUnitAt muMidA muFrom k j)
-        hfrom0)
-      (rowsLen_matMul _ _ _ (rowsLen_matUnitAt muMidB muFrom i k)
-        hfrom0')
+      (elim.rowsLen_matMul_of _ _
+         (fun _ => hfrom0) (rowsLen_matUnitAt muMidA muFrom k j))
+      (elim.rowsLen_matMul_of _ _
+         (fun _ => hfrom0') (rowsLen_matUnitAt muMidB muFrom i k))
       (fun p hp q hq => ?_)
     have hac := act_comm i k k j
       (ground.getAt [] (monomialsAt muFrom) q)
@@ -2116,8 +2110,10 @@ theorem matVec_swap_read (muA muB muTo muFrom : List Nat)
   refine elim.matVec_rows_congr (monomialsAt muFrom).length _ _
     (by rw [elim.length_matMul, length_matUnitAt,
       elim.length_matMul, length_matUnitAt])
-    (rowsLen_matMul _ _ _ (rowsLen_matUnitAt muA muFrom c d) hf0)
-    (rowsLen_matMul _ _ _ (rowsLen_matUnitAt muB muFrom a b) hf0')
+    (elim.rowsLen_matMul_of _ _
+       (fun _ => hf0) (rowsLen_matUnitAt muA muFrom c d))
+    (elim.rowsLen_matMul_of _ _
+       (fun _ => hf0') (rowsLen_matUnitAt muB muFrom a b))
     (fun p hp q hq => ?_) x
   have hp' : p < (monomialsAt muTo).length := by
     rw [elim.length_matMul, length_matUnitAt] at hp
@@ -2422,9 +2418,11 @@ theorem matVec_table_read (muA muB muTo muFrom : List Nat)
     (length_delMat muTo muFrom (a = d) c b)
     (by rw [elim.length_matMul, length_matUnitAt])
     (length_delMat muTo muFrom (b = c) a d)
-    (rowsLen_matMul _ _ _ (rowsLen_matUnitAt muA muFrom c d) hf0)
+    (elim.rowsLen_matMul_of _ _
+       (fun _ => hf0) (rowsLen_matUnitAt muA muFrom c d))
     (rowsLen_delMat muTo muFrom (a = d) c b)
-    (rowsLen_matMul _ _ _ (rowsLen_matUnitAt muB muFrom a b) hf0')
+    (elim.rowsLen_matMul_of _ _
+       (fun _ => hf0') (rowsLen_matUnitAt muB muFrom a b))
     (rowsLen_delMat muTo muFrom (b = c) a d)
     (fun p hp q hq => ?_)
   have hac := act_comm a b c d
@@ -2561,10 +2559,10 @@ theorem matVec_pair_read (mu muA muB : List Nat) (j : Nat)
     refine cross_rows _ _ _ _ (monomialsAt mu).length x
       (by rw [elim.length_matMul, length_matUnitAt])
       (by rw [elim.length_matMul, length_matUnitAt])
-      (rowsLen_matMul _ _ _ (rowsLen_matUnitAt muA mu (j + 1) j)
-        hf0)
-      (rowsLen_matMul _ _ _ (rowsLen_matUnitAt muB mu j (j + 1))
-        hf0')
+      (elim.rowsLen_matMul_of _ _
+         (fun _ => hf0) (rowsLen_matUnitAt muA mu (j + 1) j))
+      (elim.rowsLen_matMul_of _ _
+         (fun _ => hf0') (rowsLen_matUnitAt muB mu j (j + 1)))
       hx (fun p hp => ?_) (fun p hp q hq hne => ?_)
     · have hmp : 0 < ground.countOf
           (ground.getAt [] (monomialsAt mu) p) (monomialsAt mu) :=
@@ -2729,10 +2727,10 @@ theorem matVec_gpair_read (mu muA muB : List Nat) (i j : Nat)
     refine cross_rows _ _ _ _ (monomialsAt mu).length x
       (by rw [elim.length_matMul, length_matUnitAt])
       (by rw [elim.length_matMul, length_matUnitAt])
-      (rowsLen_matMul _ _ _ (rowsLen_matUnitAt muA mu j i)
-        hf0)
-      (rowsLen_matMul _ _ _ (rowsLen_matUnitAt muB mu i j)
-        hf0')
+      (elim.rowsLen_matMul_of _ _
+         (fun _ => hf0) (rowsLen_matUnitAt muA mu j i))
+      (elim.rowsLen_matMul_of _ _
+         (fun _ => hf0') (rowsLen_matUnitAt muB mu i j))
       hx (fun p hp => ?_) (fun p hp q hq hne => ?_)
     · have hmp : 0 < ground.countOf
           (ground.getAt [] (monomialsAt mu) p) (monomialsAt mu) :=

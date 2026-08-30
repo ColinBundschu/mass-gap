@@ -43,7 +43,7 @@ ascending telescope at the tail witnesses from the kernel rows at unit
 sides: the far row closes at the last pivot, each earlier row withdraws
 the next slab's transfer image, and the next pivot's nonsingularity
 reads the slab's own image off it); its weight is capped geometrically
-at the transfer factor's certificate (`weight_step`, `lem:spectator`(ii)'s
+at the transfer factor's certificate (`spectator.contract_all`, `lem:spectator`(ii)'s
 `Tᵀ Gᵢ T ⪯ λ² Gₛ` read at the image against the two slabs' own grams, the
 factor rectangular and the certificate's split at the source slab's order,
 priced at every vector), and the certificates' product prices every deeper
@@ -118,7 +118,7 @@ reads, the spectral width the factor (`euc_pair_price` at
 `split.pairScale` and `split.diagFold`); and the m-point iteration
 is capped: the chain of head-capped probes over certified
 separations (`growthTail`) collapses its gram along the
-certificates (`tailCap` at `truncation.cap_sq` and `weight_step`),
+certificates (`tailCap` at `truncation.cap_sq` and `spectator.contract_all`),
 and the chain read's magnitude sits at or below the end pairings at
 the caps' fold against the certificate factors (`growth_cap`).
 
@@ -1345,72 +1345,6 @@ theorem source_tele (diag off : List Mat) (Ys Cs : List greenprod.MatQ)
     hslab hq hwc hvs hsteps hrows
     (belowOfSupport jb ws hw) hjb hinv0
 
-/-- The transfer factor's certificate prices its image's weight: at
-`Tᵀ Gi T ⪯ λ² Gs` the image's form at its own slab's gram sits at
-or below the certificate's square against the source's at the
-source's, the clearing's square riding the factor — the factor
-rectangular at the two slabs' orders. -/
-theorem weight_step {o : Nat} (T : greenprod.MatQ) (Gi Gsr : Mat)
-    (ln ld : Pos) (sp : Split o)
-    (h : spectator.contractRead T Gi Gsr ln ld sp)
-    (u : List BPair) (hu : u.length = o) :
-    (inertia.quadForm Gi (matVec T.1 u)).scale (ld * ld)
-      ≤ (inertia.quadForm Gsr u).scale (ln * ln * (T.2 * T.2)) := by
-  obtain ⟨hGi, hTr, hGs, hsp, hpsd⟩ := h
-  cases hT1 : T.1 with
-  | nil =>
-    rw [hT1] at hsp
-    have hzn : ∀ X : elim.Mat,
-        inertia.siteDatum X ([] : elim.Mat) = [] := fun X =>
-      match X with | [] => rfl | _ :: _ => rfl
-    have hy : inertia.matScale (ld * ld)
-        (elim.matMul (transposeM ([] : elim.Mat))
-          (elim.matMul Gi ([] : elim.Mat))) = ([] : elim.Mat) := rfl
-    have hd := hsp.1
-    rw [hy, hzn] at hd
-    have ho : (0 : Nat) = o := sqAt_len hd
-    have h0 : u.length = 0 := hu.trans ho.symm
-    match u, h0 with
-    | [], _ =>
-      show BPair.scale (dotN [] _) (ld * ld)
-        ≤ BPair.scale (dotN [] _) (ln * ln * (T.2 * T.2))
-      exact ground.leB_congr (ground.unitScale (ld * ld))
-        (ground.unitScale (ln * ln * (T.2 * T.2)))
-        (ground.leB_refl BPair.unit)
-  | cons r tl =>
-    rw [hT1] at hTr hGi hsp
-    have hTt : (transposeM (r :: tl)).length = o :=
-      length_transposeM (r :: tl) hTr (Nat.succ_pos _)
-    have hGT : (matMul Gi (r :: tl)).length = (r :: tl).length :=
-      (length_matMul Gi (r :: tl)).trans (sqAt_len hGi)
-    have hGTr : rowsLen o (matMul Gi (r :: tl)) :=
-      rowsLen_cast hTt (rowsLen_matMul Gi (r :: tl))
-    have hGTpos : 0 < (matMul Gi (r :: tl)).length := by
-      rw [hGT]; exact Nat.succ_pos tl.length
-    have hMl : (matMul (transposeM (r :: tl))
-        (matMul Gi (r :: tl))).length = u.length := by
-      rw [length_matMul, hTt, hu]
-    have hMr : rowsLen u.length (matMul (transposeM (r :: tl))
-        (matMul Gi (r :: tl))) := by
-      rw [hu]
-      exact rowsLen_cast
-        (length_transposeM (matMul Gi (r :: tl)) hGTr hGTpos)
-        (rowsLen_matMul (transposeM (r :: tl)) (matMul Gi (r :: tl)))
-    have hGl : Gsr.length = u.length := (sqAt_len hGs).trans hu.symm
-    have hGr : rowsLen u.length Gsr := by rw [hu]; exact rowsLen_of_sqAt hGs
-    have hbase : ¬ (inertia.quadForm
-        (siteDatum (matScale (ln * ln * (T.2 * T.2)) Gsr)
-          (matScale (ld * ld) (matMul (transposeM (r :: tl))
-            (matMul Gi (r :: tl))))) u
-        < BPair.unit) := inertia.psd_all _ sp hsp hpsd u hu
-    have hside := inertia.scaledSite_side hGl hGr hMl hMr hbase
-    have hle := ground.leB_of_not_lt hside
-    refine ground.leB_congr_left ?_ hle
-    exact BPair.scale_congr (ld * ld)
-      (BPair.oneValue_symm
-        (inertia.congQuad Gi (r :: tl) (r :: tl).length o hGi hTr rfl
-          u hu))
-
 /-- The certificate list along the tail witnesses at the slab
 grams: per transfer factor its contraction certificate at its own
 two slabs' grams, each certificate's split at its source slab's
@@ -1614,7 +1548,7 @@ private theorem chainGo :
           (matVec (matSwap R.1) u0.1)).scale (c.2.2.1 * c.2.2.1)
         ≤ (inertia.quadForm G0 u0.1).scale
           (c.2.1 * c.2.1 * (R.2 * R.2)) :=
-      weight_step (greenprod.transfer R) G1 G0 c.2.1 c.2.2.1 c.2.2.2
+      spectator.contract_all (greenprod.transfer R) G1 G0 c.2.1 c.2.2.1 c.2.2.2
         hc.1 u0.1 hu0
     have hx1 : poly.oneValue (greenprod.vecScale (R.2 * u0.2) u1.1)
         (vecScale (BPair.ofPos (R.2 * u0.2)) u1.1) :=
@@ -4839,7 +4773,7 @@ private theorem chainDownGo :
           (matVec (matSwap C.1) u1.1)).scale (c.2.2.1 * c.2.2.1)
         ≤ (inertia.quadForm G1 u1.1).scale
           (c.2.1 * c.2.1 * (C.2 * C.2)) :=
-      weight_step (greenprod.transfer C) G0 G1 c.2.1 c.2.2.1 c.2.2.2
+      spectator.contract_all (greenprod.transfer C) G0 G1 c.2.1 c.2.2.1 c.2.2.2
         hc.1 u1.1 hu1
     have hx1 : poly.oneValue (greenprod.vecScale (C.2 * u1.2) u0.1)
         (vecScale (BPair.ofPos (C.2 * u1.2)) u0.1) :=
@@ -5294,7 +5228,7 @@ private theorem unitGramShape : ∀ ns : List Nat,
     greenprod.gramShape (ns.map inertia.idMat) ns
   | [] => trivial
   | k :: ns =>
-    ⟨elim.sqAt_of (inertia.idMat_len k) (inertia.idMat_rows k),
+    ⟨inertia.sqAt_idMat k,
      unitGramShape ns⟩
 
 
@@ -10109,7 +10043,7 @@ theorem tailCap : ∀ (kim : Nat) (ss : List GStep) (kfin : Nat)
     have hTl : T.1.length = kim := (sqAt_len hc.1).symm.trans (idMat_len kim)
     have hzl : (matVec T.1 (matVec P (tailVec ss y))).length = kim :=
       (matVec_length T.1 (matVec P (tailVec ss y))).trans hTl
-    have hw := weight_step T (idMat kim) (idMat ko) ln ld spc hc
+    have hw := spectator.contract_all T (idMat kim) (idMat ko) ln ld spc hc
       (matVec P (tailVec ss y)) hAlen
     have e1 : (inertia.quadForm (idMat kim)
           (matVec T.1 (matVec P (tailVec ss y)))).oneValue
@@ -12910,7 +12844,7 @@ theorem drift_mono {n : Nat} (Et Ed : Mat) (hEt : sqAt Et n)
     inertia.sqAt_matScale n g Ed hEd
   have hL : sqAt (inertia.matScale a (idMat n)) n :=
     inertia.sqAt_matScale n a (idMat n)
-      (sqAt_of (idMat_len n) (idMat_rows n))
+      (inertia.sqAt_idMat n)
   have hEtNull : sqAt (matAdd Et (matSwap Et)) n :=
     elim.sqAt_matAdd n Et (matSwap Et) hEt (elim.sqAt_matSwap n Et hEt)
   have hLNull : sqAt (matAdd (matSwap (inertia.matScale a (idMat n)))

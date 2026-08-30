@@ -363,6 +363,74 @@ example : ¬ pShapeAt sD 2 1 := by decide +kernel
 example : ¬ pShapeAt (pdefl [0] [1] sD) 1 ((2 * 1 + 1) * 1) := by
   decide +kernel
 
+/-! `lem:freecell`'s display read entrywise at the level carrier:
+an entry inside the order is the level datum's entry at the
+constant key with the stated middle and the trailing member's
+entry at the top key, decided and through the theorem.  Each of
+the three shape binders refuses at its own ragged member — the
+componentwise walk truncates at the shorter operand — with the
+beyond-order row and column keys refused at the vacant read, and
+the shape read decided, through the theorem, and refused at the
+ragged data. -/
+
+private def lvA : elim.Mat := [[⟨3, 1⟩, ⟨1, 2⟩], [⟨2, 1⟩, ⟨5, 1⟩]]
+private def lvB : elim.Mat := [[⟨4, 1⟩, ⟨1, 3⟩], [⟨1, 5⟩, ⟨6, 1⟩]]
+private def lvG : elim.Mat := [[⟨2, 1⟩, u], [u, ⟨3, 1⟩]]
+private def lvAr : elim.Mat := [[⟨3, 1⟩], [⟨2, 1⟩, ⟨5, 1⟩]]
+private def lvBr : elim.Mat := [[⟨4, 1⟩], [⟨1, 5⟩, ⟨6, 1⟩]]
+private def lvGr : elim.Mat := [[⟨2, 1⟩], [u, ⟨3, 1⟩]]
+
+example : getAt [] (getAt [] (levelPMat lvA lvB lvG 3 2 [u]) 0) 1
+    = getAt u (getAt []
+        (inertia.siteDatum (elim.matAdd lvA (inertia.matScale 2 lvG))
+          (inertia.matScale 3 lvG)) 0) 1
+      :: ([u] ++ [getAt u (getAt [] lvB 0) 1]) := by decide +kernel
+example : getAt [] (getAt [] (levelPMat lvA lvB lvG 3 2 [u]) 0) 1
+    = getAt u (getAt []
+        (inertia.siteDatum (elim.matAdd lvA (inertia.matScale 2 lvG))
+          (inertia.matScale 3 lvG)) 0) 1
+      :: ([u] ++ [getAt u (getAt [] lvB 0) 1]) :=
+  levelPMat_entry lvA lvB lvG 3 2 [u] 2 (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) 0 1 (by decide +kernel)
+    (by decide +kernel)
+example : ¬ (getAt [] (getAt [] (levelPMat lvA lvBr lvG 3 2 [u]) 0) 1
+    = getAt u (getAt []
+        (inertia.siteDatum (elim.matAdd lvA (inertia.matScale 2 lvG))
+          (inertia.matScale 3 lvG)) 0) 1
+      :: ([u] ++ [getAt u (getAt [] lvBr 0) 1])) := by decide +kernel
+example : ¬ (getAt [] (getAt [] (levelPMat lvAr lvB lvG 3 2 [u]) 0) 1
+    = getAt u (getAt []
+        (inertia.siteDatum (elim.matAdd lvAr (inertia.matScale 2 lvG))
+          (inertia.matScale 3 lvG)) 0) 1
+      :: ([u] ++ [getAt u (getAt [] lvB 0) 1])) := by decide +kernel
+example : ¬ (getAt [] (getAt [] (levelPMat lvA lvB lvGr 3 2 [u]) 0) 1
+    = getAt u (getAt []
+        (inertia.siteDatum (elim.matAdd lvA (inertia.matScale 2 lvGr))
+          (inertia.matScale 3 lvGr)) 0) 1
+      :: ([u] ++ [getAt u (getAt [] lvB 0) 1])) := by decide +kernel
+example : ¬ (getAt [] (getAt [] (levelPMat lvA lvB lvG 3 2 [u]) 2) 1
+    = getAt u (getAt []
+        (inertia.siteDatum (elim.matAdd lvA (inertia.matScale 2 lvG))
+          (inertia.matScale 3 lvG)) 2) 1
+      :: ([u] ++ [getAt u (getAt [] lvB 2) 1])) := by decide +kernel
+example : ¬ (getAt [] (getAt [] (levelPMat lvA lvB lvG 3 2 [u]) 0) 2
+    = getAt u (getAt []
+        (inertia.siteDatum (elim.matAdd lvA (inertia.matScale 2 lvG))
+          (inertia.matScale 3 lvG)) 0) 2
+      :: ([u] ++ [getAt u (getAt [] lvB 0) 2])) := by decide +kernel
+
+example : pShapeAt (levelPMat lvA lvB lvG 3 2 [u]) 2 2 := by
+  decide +kernel
+example : pShapeAt (levelPMat lvA lvB lvG 3 2 [u]) 2 2 :=
+  pShapeAt_levelPMat lvA lvB lvG 3 2 [u] 2 (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+example : ¬ pShapeAt (levelPMat lvAr lvB lvG 3 2 [u]) 2 2 := by
+  decide +kernel
+example : ¬ pShapeAt (levelPMat lvA lvBr lvG 3 2 [u]) 2 2 := by
+  decide +kernel
+example : ¬ pShapeAt (levelPMat lvA lvB lvGr 3 2 [u]) 2 2 := by
+  decide +kernel
+
 private def sfX : split.PMat := [[[(⟨2, 1⟩ : BPair)]]]
 
 example : pShapeAt sfX 1 0 := by decide +kernel

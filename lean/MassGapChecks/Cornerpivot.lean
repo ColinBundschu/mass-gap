@@ -2544,20 +2544,17 @@ example : profBaseU gradV = [BPair.ofNat 3] := by decide +kernel
 
 example : profLin gradV = [BPair.ofNat 5] := by decide +kernel
 
-/-- The fixture certificate: the box `[0 : 4]`, the line's
-two-armed chain the composite cover's one piece at the scale-key
-arm, the priced bound `[9 : 2]`, the box top's cleared read four,
-both floors one, the origin reads' chain the same piece, the
-clearing one. -/
+/-- The fixture certificate: the box `[0 : 4]` at one piece, the
+stated cap two — the cap's square scale four reaching the box's
+top — and the shape clearing one. -/
 private def gradC : GradCert :=
-  ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [],
-   BPair.ofNat 9, BPair.ofNat 2, BPair.ofNat 4,
-   BPair.ofNat 1, BPair.ofNat 1, [], 1⟩
+  ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [], [2], 0, 1⟩
 
 example : gradRead gradV (BPair.ofNat 1) 1 gradC := by decide +kernel
 
-example : stage.keepUpper (lineL gradV (gradC.fA + gradC.fB))
-    stage.unitC ⟨BPair.ofNat 4, 1⟩ gradC.bN gradC.bD := by decide +kernel
+example : stage.unitC ≤ pieceB gradV stage.unitC ⟨BPair.ofNat 4, 1⟩
+    ∧ stage.unitC < pieceL gradV (BPair.ofNat 1) 1 0 2
+        stage.unitC ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 4, 1⟩ := by decide +kernel
 
 example : BPair.unit
     < poly.evalClear (depthPoly gradV 2) (BPair.ofPos 1) 1 gradC.K :=
@@ -2573,13 +2570,12 @@ example : BPair.unit
     < poly.evalClear (depthPoly gradV 2) (BPair.ofPos 1) 1 1 := by
   decide +kernel
 
-/-- The graded fixture's certificate at a genuinely rational ceiling,
-the fourth: the box `[0 : 1]`, both chains the whole box, the box
-top's cleared read one. -/
+/-- The graded fixture's certificate at a genuinely rational
+ceiling, the fourth: the box `[0 : 1]` at one piece, the stated
+cap two whose square scale at the quarter reads one, the box's
+top. -/
 private def gradCR : GradCert :=
-  ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [],
-   BPair.ofNat 9, BPair.ofNat 2, BPair.ofNat 1,
-   BPair.ofNat 1, BPair.ofNat 1, [], 1⟩
+  ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [], [2], 0, 1⟩
 
 example : gradRead gradV (BPair.ofNat 1) 4 gradCR := by decide +kernel
 
@@ -2722,13 +2718,16 @@ example : ¬ (inertia.revAt (inertia.mkSplit 2 (wellMat 3 30 3 2 4 2))
 
 /-! The graded device's committed refusals, each isolating one
 conjunct with the surviving ones decided true beside it: the shape
-clearing at a deep key past a forged clearing, the box top's
-cleared-read tie at a forged read under the top, the vacancy at an
-occupied u⁰-slab origin, the squared floor's sign guard at a lower-
-side floor whose square clears, the two cap comparisons at an
-occupied scale tail on either slab, and each chain at a stalled
-piece inside its composite cover, the cover's endpoints the box's
-own data. -/
+clearing at a deep key past a forged clearing, the vacancy at an
+occupied u⁰-slab origin, the stated cap's square scale at a forged
+cap under the piece's top — with the validity's load-bearing
+witness, a vacant cap admitting a false conclusion at an occupied
+u-tail — the line arm's origin floor at a u-slab origin below its
+balance partner, its forge admitting a false conclusion at depth
+two, the caps' one-per-piece shape at a withdrawn and at an
+excess cap list, the chain at a stalled piece, and the two slabs'
+deep tails read at the ceiling's powers with the ceiling's two
+members each load-bearing. -/
 
 -- the shape clearing
 private def gsV : poly.PPoly × poly.PPoly :=
@@ -2736,137 +2735,24 @@ private def gsV : poly.PPoly × poly.PPoly :=
    [[BPair.ofNat 3]])
 
 private def gsC : GradCert :=
-  ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [],
-   BPair.ofNat 9, BPair.ofNat 2, BPair.ofNat 4,
-   BPair.ofNat 1, BPair.ofNat 100, [], 1⟩
+  ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [], [2], 0, 1⟩
 
 example : ¬ gradRead gsV (BPair.ofNat 1) 1 gsC := by decide +kernel
 
 example : ¬ profShape gsV gsC.K := by decide +kernel
 
-example : gsC.hi ≤ stage.ofB gsC.shB
-    ∧ poly.unitTail (profBase gsV)
-    ∧ BPair.unit ≤ gsC.fA
-    ∧ BPair.ofNat 1
-        * (gsC.shB
-          * (capS (BPair.ofNat 1) 1 gsC.shB gsC.K
-                (gsV.2.map (List.drop 1))
-            * capS (BPair.ofNat 1) 1 gsC.shB gsC.K
-                (gsV.2.map (List.drop 1))))
-        ≤ gsC.fA * gsC.fA
-          * BPair.ofPos (Pos.powC 1 (2 * gsC.K + 1))
-    ∧ BPair.ofNat 1
-        * capS (BPair.ofNat 1) 1 gsC.shB gsC.K
-            (gsV.1.map (List.drop 2))
-        ≤ gsC.fB * BPair.ofPos (Pos.powC 1 (gsC.K + 1))
-    ∧ chainRead (profBaseU gsV) gsC.bN gsC.bD
-        (gsC.lo :: gsC.cutsA ++ [gsC.hi])
-    ∧ chainRead2 (lineL gsV (gsC.fA + gsC.fB)) (profBaseU gsV)
-        (BPair.ofNat 1) 1
-        gsC.bN gsC.bD (gsC.lo :: gsC.cutsB ++ [gsC.hi]) := by
+example : poly.unitTail (profBase gsV)
+    ∧ chainK gsV (BPair.ofNat 1) 1 gsC.hi gsC.hk
+        (gsC.lo :: gsC.cuts ++ [gsC.hi]) gsC.mcaps := by
   decide +kernel
 
-example : (1 : Nat) ≤ 1
-    ∧ BPair.ofPos 2 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 2
+example : BPair.ofPos 2 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 2
     ∧ gsC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 2, 2⟩ : CPair)
     ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 2, 2⟩ : CPair) ≤ gsC.hi := by
   decide +kernel
 
 example : ¬ (BPair.unit
     < poly.evalClear (depthPoly gsV 1) (BPair.ofPos 2) 2 gsC.K) := by
-  decide +kernel
-
--- the box top's cleared-read tie
-private def gfV : poly.PPoly × poly.PPoly :=
-  ([[BPair.unit, BPair.ofNat 79],
-    [BPair.unit, BPair.unit, (BPair.ofNat 25).swap]],
-   [[BPair.ofNat 3]])
-
-private def gfC : GradCert :=
-  ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [],
-   BPair.ofNat 9, BPair.ofNat 2, BPair.ofNat 3,
-   BPair.ofNat 1, BPair.ofNat 75, [], 3⟩
-
-example : ¬ gradRead gfV (BPair.ofNat 1) 1 gfC := by decide +kernel
-
-example : ¬ (gfC.hi ≤ stage.ofB gfC.shB) := by decide +kernel
-
-example : profShape gfV gfC.K
-    ∧ poly.unitTail (profBase gfV)
-    ∧ BPair.unit ≤ gfC.fA
-    ∧ BPair.ofNat 1
-        * (gfC.shB
-          * (capS (BPair.ofNat 1) 1 gfC.shB gfC.K
-                (gfV.2.map (List.drop 1))
-            * capS (BPair.ofNat 1) 1 gfC.shB gfC.K
-                (gfV.2.map (List.drop 1))))
-        ≤ gfC.fA * gfC.fA
-          * BPair.ofPos (Pos.powC 1 (2 * gfC.K + 1))
-    ∧ BPair.ofNat 1
-        * capS (BPair.ofNat 1) 1 gfC.shB gfC.K
-            (gfV.1.map (List.drop 2))
-        ≤ gfC.fB * BPair.ofPos (Pos.powC 1 (gfC.K + 1))
-    ∧ chainRead (profBaseU gfV) gfC.bN gfC.bD
-        (gfC.lo :: gfC.cutsA ++ [gfC.hi])
-    ∧ chainRead2 (lineL gfV (gfC.fA + gfC.fB)) (profBaseU gfV)
-        (BPair.ofNat 1) 1
-        gfC.bN gfC.bD (gfC.lo :: gfC.cutsB ++ [gfC.hi]) := by
-  decide +kernel
-
-example : (1 : Nat) ≤ 2
-    ∧ BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
-    ∧ gfC.lo ≤ (⟨BPair.ofNat (2 * 2) * BPair.ofPos 1, 1⟩ : CPair)
-    ∧ (⟨BPair.ofNat (2 * 2) * BPair.ofPos 1, 1⟩ : CPair) ≤ gfC.hi := by
-  decide +kernel
-
-example : ¬ (BPair.unit
-    < poly.evalClear (depthPoly gfV 2) (BPair.ofPos 1) 1 gfC.K) := by
-  decide +kernel
-
--- the squared floor's sign guard
-private def gaV : poly.PPoly × poly.PPoly :=
-  ([[BPair.unit, BPair.ofNat 5]],
-   [[BPair.ofNat 3, (BPair.ofNat 40).swap]])
-
-private def gaC : GradCert :=
-  ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [],
-   BPair.ofNat 9, BPair.ofNat 2, BPair.ofNat 4,
-   (BPair.ofNat 81).swap, BPair.ofNat 1, [], 2⟩
-
-example : ¬ gradRead gaV (BPair.ofNat 1) 1 gaC := by decide +kernel
-
-example : ¬ (BPair.unit ≤ gaC.fA) := by decide +kernel
-
-example : profShape gaV gaC.K
-    ∧ gaC.hi ≤ stage.ofB gaC.shB
-    ∧ poly.unitTail (profBase gaV)
-    ∧ BPair.ofNat 1
-        * (gaC.shB
-          * (capS (BPair.ofNat 1) 1 gaC.shB gaC.K
-                (gaV.2.map (List.drop 1))
-            * capS (BPair.ofNat 1) 1 gaC.shB gaC.K
-                (gaV.2.map (List.drop 1))))
-        ≤ gaC.fA * gaC.fA
-          * BPair.ofPos (Pos.powC 1 (2 * gaC.K + 1))
-    ∧ BPair.ofNat 1
-        * capS (BPair.ofNat 1) 1 gaC.shB gaC.K
-            (gaV.1.map (List.drop 2))
-        ≤ gaC.fB * BPair.ofPos (Pos.powC 1 (gaC.K + 1))
-    ∧ chainRead (profBaseU gaV) gaC.bN gaC.bD
-        (gaC.lo :: gaC.cutsA ++ [gaC.hi])
-    ∧ chainRead2 (lineL gaV (gaC.fA + gaC.fB)) (profBaseU gaV)
-        (BPair.ofNat 1) 1
-        gaC.bN gaC.bD (gaC.lo :: gaC.cutsB ++ [gaC.hi]) := by
-  decide +kernel
-
-example : (1 : Nat) ≤ 1
-    ∧ BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
-    ∧ gaC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair)
-    ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair) ≤ gaC.hi := by
-  decide +kernel
-
-example : ¬ (BPair.unit
-    < poly.evalClear (depthPoly gaV 1) (BPair.ofPos 1) 1 gaC.K) := by
   decide +kernel
 
 -- the vacancy conjunct
@@ -2878,144 +2764,193 @@ example : ¬ gradRead occV (BPair.ofNat 1) 1 gradC := by decide +kernel
 example : ¬ poly.unitTail (profBase occV) := by decide +kernel
 
 example : profShape occV gradC.K
-    ∧ gradC.hi ≤ stage.ofB gradC.shB
-    ∧ BPair.unit ≤ gradC.fA
-    ∧ BPair.ofNat 1
-        * (gradC.shB
-          * (capS (BPair.ofNat 1) 1 gradC.shB gradC.K
-                (occV.2.map (List.drop 1))
-            * capS (BPair.ofNat 1) 1 gradC.shB gradC.K
-                (occV.2.map (List.drop 1))))
-        ≤ gradC.fA * gradC.fA
-          * BPair.ofPos (Pos.powC 1 (2 * gradC.K + 1))
-    ∧ BPair.ofNat 1
-        * capS (BPair.ofNat 1) 1 gradC.shB gradC.K
-            (occV.1.map (List.drop 2))
-        ≤ gradC.fB * BPair.ofPos (Pos.powC 1 (gradC.K + 1))
-    ∧ chainRead (profBaseU occV) gradC.bN gradC.bD
-        (gradC.lo :: gradC.cutsA ++ [gradC.hi])
-    ∧ chainRead2 (lineL occV (gradC.fA + gradC.fB)) (profBaseU occV)
-        (BPair.ofNat 1) 1
-        gradC.bN gradC.bD (gradC.lo :: gradC.cutsB ++ [gradC.hi]) := by
+    ∧ chainK occV (BPair.ofNat 1) 1 gradC.hi gradC.hk
+        (gradC.lo :: gradC.cuts ++ [gradC.hi]) gradC.mcaps := by
   decide +kernel
 
--- the line's chain: a stalled piece inside the composite cover
+-- the stated cap's square scale at a forged cap under the top
 example : ¬ gradRead gradV (BPair.ofNat 1) 1
-    { gradC with cutsB := [⟨BPair.ofNat 4, 1⟩] } := by
+    { gradC with mcaps := [1] } := by decide +kernel
+
+example : ¬ ((⟨BPair.ofNat 4, 1⟩ : CPair)
+    ≤ ⟨BPair.ofNat (1 * 1) * BPair.ofNat 1, 1⟩) := by decide +kernel
+
+example : stage.unitC ≤ pieceB gradV stage.unitC ⟨BPair.ofNat 4, 1⟩
+    ∧ stage.unitC < pieceL gradV (BPair.ofNat 1) 1 0 1
+        stage.unitC ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 4, 1⟩ := by decide +kernel
+
+-- the validity's load-bearing witness: at an occupied u-tail a
+-- vacant stated cap withdraws the tail's price, the arms pass, and
+-- the collapse sits on the lower side — the square-scale conjunct
+-- is the refusal that stops the forge
+private def uLbV : poly.PPoly × poly.PPoly :=
+  ([[BPair.unit, BPair.ofNat 5]],
+   [[BPair.ofNat 1, (BPair.ofNat 60).swap]])
+
+private def uLbC : GradCert :=
+  ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [], [0], 0, 2⟩
+
+example : ¬ gradRead uLbV (BPair.ofNat 1) 1 uLbC := by decide +kernel
+
+example : ¬ ((⟨BPair.ofNat 4, 1⟩ : CPair)
+    ≤ ⟨BPair.ofNat (0 * 0) * BPair.ofNat 1, 1⟩) := by decide +kernel
+
+example : profShape uLbV uLbC.K
+    ∧ poly.unitTail (profBase uLbV)
+    ∧ stage.unitC ≤ pieceB uLbV stage.unitC ⟨BPair.ofNat 4, 1⟩
+    ∧ stage.unitC < pieceL uLbV (BPair.ofNat 1) 1 0 0
+        stage.unitC ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 4, 1⟩ := by decide +kernel
+
+example : ¬ (BPair.unit
+    < poly.evalClear (depthPoly uLbV 1) (BPair.ofPos 1) 1 uLbC.K) := by
   decide +kernel
 
-example : ¬ chainRead2 (lineL gradV (gradC.fA + gradC.fB))
-    (profBaseU gradV) (BPair.ofNat 1) 1 gradC.bN gradC.bD
-    (gradC.lo :: [⟨BPair.ofNat 4, 1⟩] ++ [gradC.hi]) := by
+-- the line arm's origin-floor conjunct, load-bearing: at a u-slab
+-- origin below its balance partner the arm's floor refuses while
+-- every further conjunct passes, and the collapse crosses at depth
+-- two — the origin floor is the refusal that stops the forge
+private def bflV : poly.PPoly × poly.PPoly :=
+  ([[BPair.unit, BPair.ofNat 5]], [[(BPair.ofNat 3).swap]])
+
+private def bflC : GradCert :=
+  ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [], [2], 0, 1⟩
+
+example : ¬ gradRead bflV (BPair.ofNat 1) 1 bflC := by decide +kernel
+
+example : ¬ (stage.unitC
+    ≤ pieceB bflV stage.unitC ⟨BPair.ofNat 4, 1⟩) := by decide +kernel
+
+example : profShape bflV bflC.K
+    ∧ poly.unitTail (profBase bflV) := by decide +kernel
+
+example : stage.unitC < (⟨BPair.ofNat 4, 1⟩ : CPair)
+    ∧ (⟨BPair.ofNat 4, 1⟩ : CPair)
+      ≤ ⟨BPair.ofNat (2 * 2) * BPair.ofNat 1, 1⟩ := by decide +kernel
+
+example : stage.unitC
+    < pieceL bflV (BPair.ofNat 1) 1 0 2 stage.unitC
+        ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 4, 1⟩ := by decide +kernel
+
+example : ¬ (BPair.unit
+    < poly.evalClear (depthPoly bflV 2) (BPair.ofPos 1) 1 bflC.K) := by
   decide +kernel
 
--- the origin reads' chain: a stalled piece inside the composite cover
+-- the caps' one-per-piece shape: the withdrawn and the excess list
 example : ¬ gradRead gradV (BPair.ofNat 1) 1
-    { gradC with cutsA := [⟨BPair.ofNat 4, 1⟩] } := by
+    { gradC with mcaps := [] } := by decide +kernel
+
+example : ¬ gradRead gradV (BPair.ofNat 1) 1
+    { gradC with mcaps := [2, 2] } := by decide +kernel
+
+-- the chain's stalled piece inside the composite cover
+example : ¬ gradRead gradV (BPair.ofNat 1) 1
+    { gradC with cuts := [⟨BPair.ofNat 4, 1⟩], mcaps := [2, 2] } := by
   decide +kernel
 
-example : ¬ poly.unitTail (profBaseU gradV) := by decide +kernel
+example : ¬ pieceKeep gradV (BPair.ofNat 1) 1 ⟨BPair.ofNat 4, 1⟩ 0 2
+    ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 4, 1⟩ := by decide +kernel
 
-example : ¬ chainRead (profBaseU gradV) gradC.bN gradC.bD
-    (gradC.lo :: [⟨BPair.ofNat 4, 1⟩] ++ [gradC.hi]) := by
-  decide +kernel
+example : pieceKeep gradV (BPair.ofNat 1) 1 ⟨BPair.ofNat 4, 1⟩ 0 2
+    stage.unitC ⟨BPair.ofNat 4, 1⟩ := by decide +kernel
 
--- the u-slab's cap at an occupied scale tail
+-- the u-slab's deep tail at the stated cap's multiple: the price
+-- passes at the ceiling one quarter and refuses at the unit
+-- ceiling, the ceiling's second member load-bearing
 private def capUV : poly.PPoly × poly.PPoly :=
   ([[BPair.unit, BPair.ofNat 5]], [[BPair.ofNat 3, BPair.ofNat 9]])
 
-example : ¬ gradRead capUV (BPair.ofNat 1) 1 { gradC with K := 2 } := by
-  decide +kernel
+example : gradRead capUV (BPair.ofNat 1) 4
+    ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [], [2], 9, 2⟩ := by decide +kernel
 
-example : ¬ (BPair.ofNat 1
-    * (gradC.shB
-      * (capS (BPair.ofNat 1) 1 gradC.shB 2 (capUV.2.map (List.drop 1))
-        * capS (BPair.ofNat 1) 1 gradC.shB 2 (capUV.2.map (List.drop 1))))
-    ≤ gradC.fA * gradC.fA * BPair.ofPos (Pos.powC 1 (2 * 2 + 1))) := by
-  decide +kernel
+example : ¬ gradRead capUV (BPair.ofNat 1) 1
+    ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [], [1], 9, 2⟩ := by decide +kernel
+
+example : ¬ (stage.unitC < pieceL capUV (BPair.ofNat 1) 1 9 1
+    stage.unitC ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 1, 1⟩) := by decide +kernel
 
 example : profShape capUV 2
     ∧ poly.unitTail (profBase capUV)
-    ∧ BPair.ofNat 1
-        * capS (BPair.ofNat 1) 1 gradC.shB 2 (capUV.1.map (List.drop 2))
-        ≤ gradC.fB * BPair.ofPos (Pos.powC 1 (2 + 1)) := by decide +kernel
+    ∧ (⟨BPair.ofNat 1, 1⟩ : CPair)
+        ≤ ⟨BPair.ofNat (1 * 1) * BPair.ofNat 1, 1⟩ := by decide +kernel
 
--- the clearing's own power is load-bearing at the scale slab's cap:
--- the same tail's price fails at the unit ceiling and passes at the
--- ceiling one quarter
-example : ¬ (BPair.ofNat 1
-    * (BPair.ofNat 1
-      * (capS (BPair.ofNat 1) 1 (BPair.ofNat 1) 2 (capUV.2.map (List.drop 1))
-        * capS (BPair.ofNat 1) 1 (BPair.ofNat 1) 2
-            (capUV.2.map (List.drop 1))))
-    ≤ BPair.ofNat 5 * BPair.ofNat 5
-      * BPair.ofPos (Pos.powC 1 (2 * 2 + 1))) := by decide +kernel
+-- the ceiling's first member load-bearing at the same tail
+example : ¬ gradRead capUV (BPair.ofNat 4) 4
+    ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [], [2], 9, 2⟩ := by decide +kernel
 
-example : BPair.ofNat 1
-    * (BPair.ofNat 1
-      * (capS (BPair.ofNat 1) 4 (BPair.ofNat 1) 2 (capUV.2.map (List.drop 1))
-        * capS (BPair.ofNat 1) 4 (BPair.ofNat 1) 2
-            (capUV.2.map (List.drop 1))))
-    ≤ BPair.ofNat 5 * BPair.ofNat 5
-      * BPair.ofPos (Pos.powC 4 (2 * 2 + 1)) := by decide +kernel
+example : ¬ (stage.unitC < pieceL capUV (BPair.ofNat 4) 4 9 2
+    stage.unitC ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 1, 1⟩) := by decide +kernel
 
--- the u⁰-slab's cap at an occupied deep tail
+-- the u⁰-slab's deep tail at the ceiling's powers
 private def capBV : poly.PPoly × poly.PPoly :=
   ([[BPair.unit, BPair.ofNat 5, BPair.ofNat 9]], [[BPair.ofNat 3]])
 
-example : ¬ gradRead capBV (BPair.ofNat 1) 1 { gradC with K := 2 } := by
-  decide +kernel
+example : gradRead capBV (BPair.ofNat 1) 4
+    ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [], [2], 9, 2⟩ := by decide +kernel
 
-example : ¬ (BPair.ofNat 1
-    * capS (BPair.ofNat 1) 1 gradC.shB 2 (capBV.1.map (List.drop 2))
-    ≤ gradC.fB * BPair.ofPos (Pos.powC 1 (2 + 1))) := by decide +kernel
+example : ¬ gradRead capBV (BPair.ofNat 1) 1
+    ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [], [1], 9, 2⟩ := by decide +kernel
+
+example : ¬ (stage.unitC < pieceL capBV (BPair.ofNat 1) 1 9 1
+    stage.unitC ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 1, 1⟩) := by decide +kernel
 
 example : profShape capBV 2
-    ∧ poly.unitTail (profBase capBV)
-    ∧ BPair.ofNat 1
-        * (gradC.shB
-          * (capS (BPair.ofNat 1) 1 gradC.shB 2 (capBV.2.map (List.drop 1))
-            * capS (BPair.ofNat 1) 1 gradC.shB 2
-                (capBV.2.map (List.drop 1))))
-        ≤ gradC.fA * gradC.fA
-          * BPair.ofPos (Pos.powC 1 (2 * 2 + 1)) := by decide +kernel
+    ∧ poly.unitTail (profBase capBV) := by decide +kernel
 
-/-! The graded theorem's binders, each at an isolating instance: the
-squared comparison's own passing chain at a floored box — the
-scale-key arm on its lower side at every point with the squared arm
-pricing the pieces — beside the box floor's refusal of the depth
-nought and the squared arm's forged floor, the read itself refused
-at the withdrawn scale slab, and the scale bound with the box's two
-membership reads at a floored box under a rational ceiling, the
-value's leading part the depth against the withdrawn scale-key
-read. -/
+-- the tail's handover key is load-bearing: at a sloped u-column
+-- the box-top magnitude fold refuses where the piece rewrite
+-- keeps, the key two admitting the cover the key nought refuses
+private def hybV : poly.PPoly × poly.PPoly :=
+  ([[BPair.unit, BPair.ofNat 13]],
+   [[BPair.ofNat 3, BPair.ofNat 8], [BPair.unit, (BPair.ofNat 8).swap]])
+
+example : gradRead hybV (BPair.ofNat 1) 1
+    ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [⟨BPair.ofNat 1, 2⟩],
+     [1, 1], 2, 3⟩ := by decide +kernel
+
+example : ¬ gradRead hybV (BPair.ofNat 1) 1
+    ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [⟨BPair.ofNat 1, 2⟩],
+     [1, 1], 0, 3⟩ := by decide +kernel
+
+example : ¬ (stage.unitC < pieceL hybV (BPair.ofNat 1) 1 0 1
+    stage.unitC ⟨BPair.ofNat 1, 2⟩ ⟨BPair.ofNat 1, 1⟩) := by
+  decide +kernel
+
+example : stage.unitC < pieceL hybV (BPair.ofNat 1) 1 2 1
+    stage.unitC ⟨BPair.ofNat 1, 2⟩ ⟨BPair.ofNat 1, 1⟩ := by
+  decide +kernel
+
+/-! The graded theorem's binders, each at an isolating instance:
+the squared comparison's own passing piece at a floored box — the
+scale-key read on its lower side at every point with the squared
+arm keeping the piece — beside the box floor's refusal of the
+depth nought, the squared comparison's ceiling members each
+load-bearing at the moved clearing, the read itself refused at
+the withdrawn scale slab, and the scale bound with the box's two
+membership reads at a floored box under a rational ceiling. -/
 
 private def gvV : poly.PPoly × poly.PPoly :=
   ([[BPair.unit, (BPair.ofNat 2).swap]], [[BPair.ofNat 3]])
 
-/-- The squared arm's certificate: the box `[1 : 4]` at the
-composite cover's half-step pieces, the scale-key read two below
-the floors' join at every point, the squared comparison `9s` above
-the gap's square four at the ceiling one. -/
+/-- The squared arm's certificate: the box `[1 : 4]` at one piece
+and the stated cap two, the scale-key read two below the floors'
+join at every point, the squared comparison's `9s` above the cap's
+square four at the ceiling one. -/
 private def gvC : GradCert :=
-  ⟨⟨BPair.ofNat 1, 1⟩, ⟨BPair.ofNat 4, 1⟩,
-   [⟨BPair.ofNat 3, 2⟩, ⟨BPair.ofNat 2, 1⟩, ⟨BPair.ofNat 5, 2⟩,
-    ⟨BPair.ofNat 3, 1⟩, ⟨BPair.ofNat 7, 2⟩],
-   BPair.ofNat 9, BPair.ofNat 2, BPair.ofNat 4,
-   BPair.unit, BPair.unit, [], 1⟩
+  ⟨⟨BPair.ofNat 1, 1⟩, ⟨BPair.ofNat 4, 1⟩, [], [2], 0, 1⟩
 
 example : gradRead gvV (BPair.ofNat 1) 1 gvC := by decide +kernel
 
--- the scale-key arm sits on its lower side at the box's floor, the
--- squared arm the piece's own read
-example : ¬ stage.keepUpper (lineL gvV (gvC.fA + gvC.fB))
-    ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 3, 2⟩ gvC.bN gvC.bD := by
-  decide +kernel
+-- the line arm sits on its lower side, the squared arm the
+-- piece's own read
+example : ¬ (stage.unitC < pieceL gvV (BPair.ofNat 1) 1 0 2
+    gvC.lo gvC.hi gvC.hi) := by decide +kernel
 
-example : stage.keepSq (profBaseU gvV) (lineL gvV (gvC.fA + gvC.fB))
-    (BPair.ofNat 1) 1
-    ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 3, 2⟩ gvC.bN gvC.bD := by
-  decide +kernel
+example : stage.unitC < pieceB gvV gvC.lo gvC.hi
+    ∧ (⟨BPair.ofNat 1, 1⟩ : CPair)
+        * (pieceX gvV (BPair.ofNat 1) 1 0 2 gvC.lo gvC.hi gvC.hi
+          * pieceX gvV (BPair.ofNat 1) 1 0 2 gvC.lo gvC.hi gvC.hi)
+      < gvC.lo * (pieceB gvV gvC.lo gvC.hi
+          * pieceB gvV gvC.lo gvC.hi) := by decide +kernel
 
 example : BPair.unit
     < poly.evalClear (depthPoly gvV 1) (BPair.ofPos 1) 1 gvC.K :=
@@ -3041,71 +2976,17 @@ example : ¬ (BPair.unit
     < poly.evalClear (depthPoly gvV 0) (BPair.ofPos 1) 1 gvC.K) := by
   decide +kernel
 
--- the squared arm's floors are load-bearing: the join raised one
--- eats the comparison's margin at the box's floor
-example : ¬ gradRead gvV (BPair.ofNat 1) 1
-    { gvC with fB := BPair.ofNat 1 } := by decide +kernel
-
-example : ¬ (stage.keepUpper (lineL gvV (BPair.unit + BPair.ofNat 1))
-      ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 3, 2⟩ gvC.bN gvC.bD
-    ∨ stage.keepSq (profBaseU gvV) (lineL gvV (BPair.unit + BPair.ofNat 1))
-      (BPair.ofNat 1) 1
-      ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 3, 2⟩ gvC.bN gvC.bD) := by
-  decide +kernel
-
--- the ceiling's first member is load-bearing in the squared
--- comparison: the arm forged at the dropped scale keeps its pieces
--- where the committed arm is refused, and the device's conclusion
--- is false
-private def ceilV : poly.PPoly × poly.PPoly :=
-  ([[BPair.unit, (BPair.ofNat 5).swap]], [[BPair.ofNat 3]])
-
-private def ceilC : GradCert :=
-  ⟨⟨BPair.ofNat 4, 1⟩, ⟨BPair.ofNat 5, 1⟩, [],
-   BPair.ofNat 100, BPair.ofNat 2, BPair.ofNat 5,
-   BPair.unit, BPair.unit, [], 1⟩
-
-example : ¬ gradRead ceilV (BPair.ofNat 4) 1 ceilC := by decide +kernel
-
-example : stage.keepSq (profBaseU ceilV)
-    (lineL ceilV (ceilC.fA + ceilC.fB)) (BPair.ofNat 1) 1
-    ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 5, 1⟩ ceilC.bN ceilC.bD := by
-  decide +kernel
-
-example : ¬ stage.keepSq (profBaseU ceilV)
-    (lineL ceilV (ceilC.fA + ceilC.fB)) (BPair.ofNat 4) 1
-    ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 5, 1⟩ ceilC.bN ceilC.bD := by
-  decide +kernel
-
-example : ¬ stage.keepUpper (lineL ceilV (ceilC.fA + ceilC.fB))
-    ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 5, 1⟩ ceilC.bN ceilC.bD := by
-  decide +kernel
-
-example : BPair.ofPos 4 * BPair.ofPos 1 ≤ BPair.ofNat 4 * BPair.ofPos 1
-    ∧ ceilC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 4, 1⟩ : CPair)
-    ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 4, 1⟩ : CPair) ≤ ceilC.hi := by
-  decide +kernel
-
-example : ¬ (BPair.unit
-    < poly.evalClear (depthPoly ceilV 1) (BPair.ofPos 4) 1 ceilC.K) := by
-  decide +kernel
-
--- the ceiling's second member at the squared comparison's moved
--- clearing: the same certificate passes at the matched clearing and
--- is refused one fourth under it
+-- the ceiling's two members at the squared comparison's moved
+-- clearing: the matched clearing passes, the moved one refuses
 example : gradRead gvV (BPair.ofNat 4) 4 gvC := by decide +kernel
 
 example : ¬ gradRead gvV (BPair.ofNat 4) 1 gvC := by decide +kernel
 
-example : stage.keepSq (profBaseU gvV) (lineL gvV (gvC.fA + gvC.fB))
-    (BPair.ofNat 4) 4
-    ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 3, 2⟩ gvC.bN gvC.bD := by
-  decide +kernel
-
-example : ¬ stage.keepSq (profBaseU gvV) (lineL gvV (gvC.fA + gvC.fB))
-    (BPair.ofNat 4) 1
-    ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 3, 2⟩ gvC.bN gvC.bD := by
-  decide +kernel
+example : ¬ ((⟨BPair.ofNat 4, 1⟩ : CPair)
+    * (pieceX gvV (BPair.ofNat 4) 1 0 2 gvC.lo gvC.hi gvC.hi
+      * pieceX gvV (BPair.ofNat 4) 1 0 2 gvC.lo gvC.hi gvC.hi)
+    < gvC.lo * (pieceB gvV gvC.lo gvC.hi
+        * pieceB gvV gvC.lo gvC.hi)) := by decide +kernel
 
 -- the read itself refused at the withdrawn scale slab
 private def gvW : poly.PPoly × poly.PPoly :=
@@ -3120,19 +3001,14 @@ example : ¬ (BPair.unit
   decide +kernel
 
 /-- The floored box under the rational ceiling: the scale-key read
-on its lower side with the squared comparison `64s` above the
-square twenty-five past the floor, the box `[1/2 : 1]` at
-sixteenth-step pieces. -/
+on its lower side with the squared comparison's `64s` above the
+cap's square twenty-five past the floor, the box `[1/2 : 1]` at
+one piece and the stated cap two. -/
 private def gxV : poly.PPoly × poly.PPoly :=
   ([[BPair.unit, (BPair.ofNat 5).swap]], [[BPair.ofNat 4]])
 
 private def gxC : GradCert :=
-  ⟨⟨BPair.ofNat 1, 2⟩, ⟨BPair.ofNat 1, 1⟩,
-   [⟨BPair.ofNat 9, 16⟩, ⟨BPair.ofNat 5, 8⟩, ⟨BPair.ofNat 11, 16⟩,
-    ⟨BPair.ofNat 3, 4⟩, ⟨BPair.ofNat 13, 16⟩, ⟨BPair.ofNat 7, 8⟩,
-    ⟨BPair.ofNat 15, 16⟩],
-   BPair.ofNat 9, BPair.ofNat 2, BPair.ofNat 1,
-   BPair.unit, BPair.unit, [], 1⟩
+  ⟨⟨BPair.ofNat 1, 2⟩, ⟨BPair.ofNat 1, 1⟩, [], [2], 0, 1⟩
 
 example : gradRead gxV (BPair.ofNat 1) 4 gxC := by decide +kernel
 
@@ -3162,16 +3038,14 @@ example : ¬ (BPair.unit
   decide +kernel
 
 /-- The box's top refused past a sloped first slab: the scale-key
-read climbs to the box's top and falls past it, the depth three's
+read climbs across the box and falls past it, the depth three's
 value on the lower side beyond the top. -/
 private def gyV : poly.PPoly × poly.PPoly :=
   ([[BPair.unit, BPair.ofNat 50], [BPair.unit, (BPair.ofNat 10).swap]],
    [[BPair.ofNat 1]])
 
 private def gyC : GradCert :=
-  ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [⟨BPair.ofNat 2, 1⟩],
-   BPair.ofNat 9, BPair.ofNat 2, BPair.ofNat 4,
-   BPair.unit, BPair.unit, [], 2⟩
+  ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [], [2], 0, 2⟩
 
 example : gradRead gyV (BPair.ofNat 1) 1 gyC := by decide +kernel
 

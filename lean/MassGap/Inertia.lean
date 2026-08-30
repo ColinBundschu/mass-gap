@@ -251,6 +251,25 @@ theorem sqAt_siteDatum (o : Nat) (X Y : Mat) (hX : elim.sqAt X o)
     (hY : elim.sqAt Y o) : elim.sqAt (siteDatum X Y) o :=
   elim.sqAt_matAdd o X (elim.matSwap Y) hX (elim.sqAt_matSwap o Y hY)
 
+/-- The site structure read entrywise: the datum's entry at a key
+pair is the first member's own joined to the second's memberwise
+swap — `def:pencil`'s join `α E = β M + H` at `lem:inertia`'s
+elimination datum, `A = B + S` read entry by entry. -/
+theorem siteDatum_entry (A B : Mat) (n : Nat) (hA : elim.rowsLen n A)
+    (hB : elim.rowsLen n B) (i j : Nat) (hiA : i < A.length)
+    (hiB : i < B.length) (hj : j < n) :
+    ground.getAt BPair.unit
+        (ground.getAt ([] : List BPair) (siteDatum A B) i) j
+      = ground.getAt BPair.unit (ground.getAt ([] : List BPair) A i) j
+        + (ground.getAt BPair.unit
+            (ground.getAt ([] : List BPair) B i) j).swap := by
+  show ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+      (elim.matAdd A (elim.matSwap B)) i) j = _
+  rw [elim.entry_matAdd A (elim.matSwap B) n hA
+      (elim.rowsLen_mapRows BPair.swap B n hB) i j hiA
+      (by rw [elim.length_matSwap]; exact hiB) hj,
+    elim.entry_matSwap B n hB i j hiB hj]
+
 /-- The rescaling distributes over the entrywise sum, row by row. -/
 private theorem scaleRow_add (c : Pos) : ∀ r s : List BPair,
     (List.zipWith (fun x y => x + y) r s).map (fun z => z.scale c)
@@ -4702,6 +4721,10 @@ theorem idMat_len (k : Nat) : (idMat k).length = k :=
 theorem idMat_rows (k : Nat) : rowsLen k (idMat k) :=
   elim.rowsLen_matOf k k _
 
+/-- The identity is square at its order. -/
+theorem sqAt_idMat (k : Nat) : elim.sqAt (idMat k) k :=
+  elim.sqAt_of (idMat_len k) (idMat_rows k)
+
 /-- The matrix's iterated product at a stated order, the power's
 carrier from the identity. -/
 def matPow (M : Mat) (n : Nat) : Nat → Mat
@@ -6945,10 +6968,9 @@ theorem matPow_add (n : Nat) (M : Mat) (hMl : M.length = n)
         length_matPow M n hMl a]
     exact matMul_congrR (n := n) (k := n) M
       (matMul (matPow M n a) (matPow M n b)) (matPow M n (a + b))
-      (rowsLen_cast
-        (length_transposeM (matPow M n b) (rowsLen_matPow M n hMl b)
-          (by rw [length_matPow M n hMl b]; exact hn))
-        (rowsLen_matMul (matPow M n a) (matPow M n b)))
+      (rowsLen_matMul_of (matPow M n a) (matPow M n b)
+         (fun _ => (by rw [length_matPow M n hMl b]; exact hn))
+         (rowsLen_matPow M n hMl b))
       (rowsLen_matPow M n hMl (a + b)) hml
       (length_matPow M n hMl (a + b)) hn
       (matPow_add n M hMl hMr hn a b)
@@ -7220,6 +7242,15 @@ theorem matScale_scaleB (w : Pos) : ∀ M : Mat,
     matOneValue (matScale w M) (matScaleB (BPair.ofPos w) M)
   | [] => trivial
   | r :: M => ⟨scaleRow_ofPos w r, matScale_scaleB w M⟩
+
+/-- The positive rescaling keeps the one-value read, the
+balance-weight congruence at the clearing's own pair. -/
+theorem matScale_matOne (c : Pos) {A B : Mat}
+    (h : matOneValue A B) :
+    matOneValue (matScale c A) (matScale c B) :=
+  elim.matOne_trans (matScale_scaleB c A)
+    (elim.matOne_trans (matOne_scaleB (BPair.ofPos c) h)
+      (elim.matOne_symm (matScale_scaleB c B)))
 
 /-- The key-list exchange passes the positive rescaling: the rescaled
 matrix's transpose reads the transpose's rescaling, the balance-pair
@@ -8642,7 +8673,7 @@ private theorem gram_step (blk : SBlock) (bs : List SBlock) (kn m : Nat)
   have htr : ∀ u v : List BPair,
       (dotN u (matVec S v)).oneValue
         (dotN u (matVec (blockJoin (blockMat [blk] 0) B Q) v)) :=
-    fun u v => dotN_congrR u _ _ (matVec_matOne S _ v hSJ)
+    fun u v => dotN_matVec_congrM S _ u v hSJ
   intro i j hi hj
   cases Nat.lt_or_ge i blk.order with
   | inl hik =>
@@ -8794,7 +8825,7 @@ private theorem detL_liftV (Cw : Mat) (d : BPair) (k m : Nat) (VD : Mat)
     have hCC : transposeM (transposeM (matSwap (VD.map (matVec Cw))))
         = matSwap (VD.map (matVec Cw)) :=
       transposeM_transposeM _ hSWr hk (by rw [hSWl]; exact hm)
-    have hIsq : sqAt (idMat k) k := sqAt_of (idMat_len k) (idMat_rows k)
+    have hIsq : sqAt (idMat k) k := sqAt_idMat k
     have hVsq : sqAt VD m := sqAt_of hVl hVr
     have hred := detL_slabReduce (idMat k) (nullMat k m) (nullMat m k) VD
       (transposeM (matSwap (VD.map (matVec Cw)))) k m d.swap hk hIsq
@@ -8842,10 +8873,9 @@ private theorem detL_liftV (Cw : Mat) (d : BPair) (k m : Nat) (VD : Mat)
     have hN2r : rowsLen m (matSwap (matMul (matSwap (VD.map (matVec Cw)))
         (nullMat k m))) :=
       rowsLen_mapRows BPair.swap _ m
-        (rowsLen_cast
-          (length_transposeM (nullMat k m) (rowsLen_nullMat k m)
-            (by rw [length_nullMat]; exact hk))
-          (rowsLen_matMul _ (nullMat k m)))
+        (rowsLen_matMul_of _ (nullMat k m)
+           (fun _ => (by rw [length_nullMat]; exact hk))
+           (rowsLen_nullMat k m))
     have hSVl : (VD.map (vecScale d.swap)).length = m :=
       (ground.length_map _ VD).trans hVl
     have hSVr : rowsLen m (VD.map (vecScale d.swap)) :=
@@ -9026,9 +9056,9 @@ private theorem detL_idMat : ∀ n : Nat,
     refine BPair.oneValue_trans (detL_congr_one _ _ (idMat_split n)) ?_
     refine BPair.oneValue_trans
       (detL_blockTri (idMat 1) (nullMat 1 n) (idMat n) 1 n
-        (sqAt_of (idMat_len 1) (idMat_rows 1))
+        (sqAt_idMat 1)
         (length_nullMat 1 n) (rowsLen_nullMat 1 n)
-        (sqAt_of (idMat_len n) (idMat_rows n))) ?_
+        (sqAt_idMat n)) ?_
     refine BPair.oneValue_trans
       (BPair.mul_congr detL_idMat1 (detL_idMat n)) ?_
     rfl
@@ -9254,10 +9284,10 @@ private theorem defl_pairSym (S P B Q Cw : Mat) (k m : Nat)
     rw [ground.length_append, matVec_length, hCl, length_vecScale, hv]
   have hback : ∀ u v : List BPair,
       (dotN u (matVec (blockJoin P B Q) v)).oneValue (dotN u (matVec S v)) :=
-    fun u v => dotN_congrR u _ _ (matVec_matOne _ _ v (matOne_symm hSJ))
+    fun u v => dotN_matVec_congrM _ _ u v (matOne_symm hSJ)
   have hfwd : ∀ u v : List BPair,
       (dotN u (matVec S v)).oneValue (dotN u (matVec (blockJoin P B Q) v)) :=
-    fun u v => dotN_congrR u _ _ (matVec_matOne _ _ v hSJ)
+    fun u v => dotN_matVec_congrM _ _ u v hSJ
   refine BPair.oneValue_trans
     (BPair.oneValue_symm
       (quad_liftB P B Q Cw k m w w' hw hw' hPr hPl hBl hBr hBt hBtr hQr hQl
@@ -9943,7 +9973,7 @@ private theorem kern_read (S : Mat) (n : Nat) (hS : sqAt S n)
     VGood S (idMat n) (blockMat [] n) n := by
   have hSl : S.length = n := sqAt_len hS
   have hSr : rowsLen n S := rowsLen_of_sqAt hS
-  refine ⟨sqAt_of (idMat_len n) (idMat_rows n), ?_, ?_⟩
+  refine ⟨sqAt_idMat n, ?_, ?_⟩
   · intro hz
     exact BPair.ofNat_one_off
       (BPair.oneValue_trans (BPair.oneValue_symm (detL_idMat n)) hz)
@@ -10413,7 +10443,7 @@ private theorem capSite_read {n : Nat} (M : Mat) (hM : sqAt M n) (W : Pos)
         (matScale Pos.one (matMul (transposeM M) M))) v).oneValue
       (BPair.ofPos (W * W) * dotN v v
         + (dotN (matVec M v) (matVec M v)).swap) := by
-  have hI : sqAt (idMat n) n := elim.sqAt_of (idMat_len n) (idMat_rows n)
+  have hI : sqAt (idMat n) n := sqAt_idMat n
   have hX : sqAt (matScale (W * W) (idMat n)) n := sqAt_matScale n _ _ hI
   have hY : sqAt (matScale Pos.one (matMul (transposeM M) M)) n :=
     sqAt_gramT M hM
@@ -10469,7 +10499,7 @@ theorem capAt_of_sq {n : Nat} (M : Mat) (hM : sqAt M n) (W : Pos)
       (matScale Pos.one (matMul (transposeM M) M))) spL) :
     capAt (matScale Pos.one (matMul (transposeM M) M))
       (matScale (W * W) (idMat n)) spU spL := by
-  have hI : sqAt (idMat n) n := elim.sqAt_of (idMat_len n) (idMat_rows n)
+  have hI : sqAt (idMat n) n := sqAt_idMat n
   have hX : sqAt (matScale (W * W) (idMat n)) n := sqAt_matScale n _ _ hI
   have hY : sqAt (matScale Pos.one (matMul (transposeM M) M)) n :=
     sqAt_gramT M hM
@@ -11052,7 +11082,7 @@ private theorem levelSite (wn wd : Pos) (m : Nat) (D : Mat)
         + (BPair.ofPos wd * dotN w (matVec D w)).swap) := by
   refine BPair.oneValue_trans
     (quadForm_site_sq
-      (sqAt_matScale m wn (idMat m) (sqAt_of (idMat_len m) (idMat_rows m)))
+      (sqAt_matScale m wn (idMat m) (sqAt_idMat m))
       (sqAt_matScale m wd D hD) hw) ?_
   exact BPair.add_congr (idQuad wn m w hw)
     (ground.swap_congr (quadForm_ofPos wd D w))
@@ -11067,7 +11097,7 @@ private theorem levelSum (wn wd : Pos) (m : Nat) (D : Mat)
         + BPair.ofPos wd * dotN w (matVec D w)) := by
   refine BPair.oneValue_trans
     (quadForm_add_sq
-      (sqAt_matScale m wn (idMat m) (sqAt_of (idMat_len m) (idMat_rows m)))
+      (sqAt_matScale m wn (idMat m) (sqAt_idMat m))
       (sqAt_matScale m wd D hD) hw) ?_
   exact BPair.add_congr (idQuad wn m w hw) (quadForm_ofPos wd D w)
 
@@ -11174,8 +11204,8 @@ theorem capAt_trailPad {k m : Nat} (D : Mat) (wn wd : Pos)
 /-- The vacant certificate at a stated order: the identity
 congruence with the kernel block at the whole order. -/
 def unitSplit (n : Nat) : Split n :=
-  ⟨⟨idMat n, sqAt_of (idMat_len n) (idMat_rows n)⟩,
-    ⟨idMat n, sqAt_of (idMat_len n) (idMat_rows n)⟩, [], n, ground.beqRefl n⟩
+  ⟨⟨idMat n, sqAt_idMat n⟩,
+    ⟨idMat n, sqAt_idMat n⟩, [], n, ground.beqRefl n⟩
 
 /-- The vacant certificate reads the upper side, its block fold
 empty. -/
@@ -11279,8 +11309,8 @@ private theorem allOff_replOne (a : BPair) (h : ¬ a.oneValue BPair.unit) :
 congruence with one positive block per key (`lem:inertia`'s
 existence clause at the unit gram's scalar copy). -/
 def scalarSplit (o : Nat) (c : Pos) : Split o :=
-  ⟨⟨idMat o, sqAt_of (idMat_len o) (idMat_rows o)⟩,
-    ⟨idMat o, sqAt_of (idMat_len o) (idMat_rows o)⟩,
+  ⟨⟨idMat o, sqAt_idMat o⟩,
+    ⟨idMat o, sqAt_idMat o⟩,
     List.replicate o (SBlock.one (BPair.ofPos c)), 0,
     by rw [widthOf_replOne (BPair.ofPos c) o]; exact ground.beqRefl o⟩
 
@@ -11472,8 +11502,8 @@ private theorem allOff_mapOne (ds : List BPair)
 /-- The diagonal identity congruence at a stated entry list: one
 order-one block per entry, the kernel vacant. -/
 def oneSplit (ds : List BPair) : Split ds.length :=
-  ⟨⟨idMat ds.length, sqAt_of (idMat_len ds.length) (idMat_rows ds.length)⟩,
-    ⟨idMat ds.length, sqAt_of (idMat_len ds.length) (idMat_rows ds.length)⟩,
+  ⟨⟨idMat ds.length, sqAt_idMat ds.length⟩,
+    ⟨idMat ds.length, sqAt_idMat ds.length⟩,
     ds.map SBlock.one, 0,
     by rw [widthOf_mapOne ds]; exact ground.beqRefl ds.length⟩
 

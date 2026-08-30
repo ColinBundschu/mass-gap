@@ -390,7 +390,7 @@ private theorem entry_scaleId (o : Nat) (rho : ground.Pos)
 private theorem sqAt_scaleId (o : Nat) (rho : ground.Pos) :
     sqAt (matScale rho (idMat o)) o :=
   inertia.sqAt_matScale o rho (idMat o)
-    (elim.sqAt_of (inertia.idMat_len o) (inertia.idMat_rows o))
+    (inertia.sqAt_idMat o)
 
 /-- The symmetric datum's entry exchange at stated keys. -/
 private theorem entSym (o : Nat) (S : Mat) (hS : sqAt S o)
@@ -738,12 +738,6 @@ private theorem flipEq (x y : ground.CPair) :
     show (xn.scale yc).swap = (xn.swap).scale yc from rfl,
     BPair.add_comm ((xn.swap).scale yc) (yn.scale xc),
     ground.mul_comm yc xc]
-
-/-- The form moves across the entrywise one-value read. -/
-private theorem formOne (A B : Mat) (u : List BPair)
-    (h : matOneValue A B) :
-    (quadForm A u).oneValue (quadForm B u) :=
-  elim.dotN_congrR u _ _ (elim.matVec_matOne A B u h)
 
 /-- The positive rescaling keeps the entrywise symmetry. -/
 private theorem symScale (w : ground.Pos) {o : Nat} (M : Mat)
@@ -1123,13 +1117,13 @@ theorem gapPsd_lo {o K : Nat} (S : split.PMat)
   have hqX : (quadForm (cellcount.evalPC S (vn * BPair.ofPos glc) (vc * glc) K) u).oneValue
       (ground.bpow (BPair.ofPos glc) K * quadForm (cellcount.evalPC S vn vc K) u) :=
     BPair.oneValue_trans
-      (formOne _ _ u
+      (elim.dotN_matVec_congrM _ _ u u
         (cellcount.evalPC_scalePoint S o K vn vc glc hsh))
       (inertia.quadForm_scaleB (ground.bpow (BPair.ofPos glc) K) _ u)
   have hqY : (quadForm (cellcount.evalPC S (gln * BPair.ofPos vc) (glc * vc) K) u).oneValue
       (ground.bpow (BPair.ofPos vc) K * quadForm (cellcount.evalPC S gln glc K) u) :=
     BPair.oneValue_trans
-      (formOne _ _ u
+      (elim.dotN_matVec_congrM _ _ u u
         (cellcount.evalPC_scalePoint S o K gln glc vc hsh))
       (inertia.quadForm_scaleB (ground.bpow (BPair.ofPos vc) K) _ u)
   have hmarg : quadForm (matScale rhoM (idMat o)) u
@@ -1515,13 +1509,13 @@ theorem gapPsd_hi {o K : Nat} (S : split.PMat)
   have hqX : (quadForm (cellcount.evalPC S (vn * BPair.ofPos grc) (vc * grc) K) u).oneValue
       (ground.bpow (BPair.ofPos grc) K * quadForm (cellcount.evalPC S vn vc K) u) :=
     BPair.oneValue_trans
-      (formOne _ _ u
+      (elim.dotN_matVec_congrM _ _ u u
         (cellcount.evalPC_scalePoint S o K vn vc grc hsh))
       (inertia.quadForm_scaleB (ground.bpow (BPair.ofPos grc) K) _ u)
   have hqY : (quadForm (cellcount.evalPC S (grn * BPair.ofPos vc) (grc * vc) K) u).oneValue
       (ground.bpow (BPair.ofPos vc) K * quadForm (cellcount.evalPC S grn grc K) u) :=
     BPair.oneValue_trans
-      (formOne _ _ u
+      (elim.dotN_matVec_congrM _ _ u u
         (cellcount.evalPC_scalePoint S o K grn grc vc hsh))
       (inertia.quadForm_scaleB (ground.bpow (BPair.ofPos vc) K) _ u)
   have hmarg : quadForm (matScale rhoM (idMat o)) u

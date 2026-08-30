@@ -10,8 +10,8 @@ authors:
 repository-code: "https://github.com/ColinBundschu/mass-gap"
 doi: 10.5281/zenodo.22018060
 license: Apache-2.0
-version: 0.2.0
-date-released: 2026-08-29
+version: 0.3.0
+date-released: 2026-08-30
 keywords:
   - mass gap
   - Yang-Mills

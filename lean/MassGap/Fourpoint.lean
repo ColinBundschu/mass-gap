@@ -3594,7 +3594,7 @@ theorem offLine_drift {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
   have hgap := groundreads.gap_perp Et T Tw l hd j0 hj0 d0 g0 hroot0 gn gd hcl
     (residD [matVec T.val (elim.idRow n j0)] J) hphi hperp
 
-  have hIsq : sqAt (idMat n) n := elim.sqAt_of (idMat_len n) (idMat_rows n)
+  have hIsq : sqAt (idMat n) n := inertia.sqAt_idMat n
   have hnull : (dotN (residD [matVec T.val (elim.idRow n j0)] J)
       (matVec Et (matVec T.val (elim.idRow n j0)))).oneValue BPair.unit :=
     BPair.oneValue_trans (dotN_read _ _) (dotP_null_tail_right _ _ hker)
@@ -3752,7 +3752,7 @@ theorem offLine_drift {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
           (dotN_read (matVec T.val (elim.idRow n j0)) _)
           (dotP_null_tail_right (matVec T.val (elim.idRow n j0)) _ hker))) ?_
     refine BPair.oneValue_trans
-      (dotN_congrR _ _ _ (matVec_matOne Et _ _ htie)) ?_
+      (dotN_matVec_congrM Et _ _ _ htie) ?_
     refine BPair.oneValue_trans
       (quadForm_site_sq (sqAt_matScale n c _ hray)
         (sqAt_scaleB e0 n (idMat n) hIsq) hpsi) ?_

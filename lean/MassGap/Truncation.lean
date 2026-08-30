@@ -55,22 +55,6 @@ def shiftSite (W s : Pos) (B G1 G2 : Mat) : Mat :=
   inertia.blockJoin (inertia.matScale (W * W) G1)
     (inertia.matScale s B) (inertia.matScale (s * s) G2)
 
-/-- The pairing at two weighted vectors carries both weights out. -/
-private theorem bilinScale (A : Mat) (c d : BPair)
-    (u w : List BPair) :
-    (dotN (vecScale c u) (matVec A (vecScale d w))).oneValue
-      (d * (c * dotN u (matVec A w))) := by
-  refine BPair.oneValue_trans (dotN_read _ _) ?_
-  refine BPair.oneValue_trans
-    (dotP_oneValue_right _ _ _ (matVec_vecScale_free A d w)) ?_
-  refine BPair.oneValue_trans (dotP_vecScale_right _ _ d) ?_
-  refine BPair.mul_congr (BPair.oneValue_refl d) ?_
-  rw [dotP_comm (vecScale c u) (matVec A w)]
-  refine BPair.oneValue_trans (dotP_vecScale_right _ _ c) ?_
-  refine BPair.mul_congr (BPair.oneValue_refl c) ?_
-  rw [dotP_comm (matVec A w) u]
-  exact BPair.oneValue_symm (dotN_read u (matVec A w))
-
 /-- A rescaled datum's pairing carries the ground weight out at the
 balance weighting. -/
 private theorem scaledCross (w : Pos) (A : Mat) (u v : List BPair) :
@@ -100,7 +84,7 @@ private theorem sqRead (w : Pos) (A : Mat) (u : List BPair) :
         (matVec A (vecScale (BPair.ofPos w) u))).oneValue
       (dotN u (matVec (matScale (w * w) A) u)) :=
   BPair.oneValue_trans
-    (bilinScale A (BPair.ofPos w) (BPair.ofPos w) u u)
+    (dotN_vecScale_pair A (BPair.ofPos w) (BPair.ofPos w) u u)
     (BPair.oneValue_trans
       (BPair.oneValue_symm (scaleSq w (dotN u (matVec A u))))
       (BPair.oneValue_trans
@@ -281,7 +265,7 @@ theorem polar_psd {k m : Nat} (M G M1 M2 B G1 G2 : Mat) (W s : Pos)
             (matVec B (vecScale (BPair.ofPos s) y))).oneValue
           (BPair.ofPos W * dotN x (matVec (matScale s B) y)) :=
         BPair.oneValue_trans
-          (bilinScale B (BPair.ofPos W) (BPair.ofPos s) x y)
+          (dotN_vecScale_pair B (BPair.ofPos W) (BPair.ofPos s) x y)
           (BPair.oneValue_trans
             (BPair.oneValue_of_eq (hmul (dotN x (matVec B y))))
             (BPair.mul_congr (BPair.oneValue_refl _)
@@ -421,17 +405,17 @@ private theorem polarSym (A : Mat) (n : Nat) (hAr : rowsLen n A)
   refine BPair.oneValue_trans
     (BPair.add_congr
       (BPair.add_congr
-        (BPair.oneValue_trans (bilinScale A a a x x)
+        (BPair.oneValue_trans (dotN_vecScale_pair A a a x x)
           (BPair.mul_congr (BPair.oneValue_refl a)
             (BPair.mul_congr (BPair.oneValue_refl a) hxx)))
-        (BPair.oneValue_trans (bilinScale A a b x y)
+        (BPair.oneValue_trans (dotN_vecScale_pair A a b x y)
           (BPair.mul_congr (BPair.oneValue_refl b)
             (BPair.mul_congr (BPair.oneValue_refl a) hxy))))
       (BPair.add_congr
-        (BPair.oneValue_trans (bilinScale A b a y x)
+        (BPair.oneValue_trans (dotN_vecScale_pair A b a y x)
           (BPair.mul_congr (BPair.oneValue_refl a)
             (BPair.mul_congr (BPair.oneValue_refl b) hyx)))
-        (BPair.oneValue_trans (bilinScale A b b y y)
+        (BPair.oneValue_trans (dotN_vecScale_pair A b b y y)
           (BPair.mul_congr (BPair.oneValue_refl b)
             (BPair.mul_congr (BPair.oneValue_refl b) hyy))))) ?_
   refine BPair.oneValue_of_eq ?_

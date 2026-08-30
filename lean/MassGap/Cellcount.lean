@@ -249,6 +249,114 @@ theorem levelPMat_eval (A B G : elim.Mat) (x y : Pos)
     ((elim.sqAt_len hD).trans (elim.sqAt_len hB).symm)
     (elim.rowsLen_of_sqAt hD) (elim.rowsLen_of_sqAt hB)
 
+/-- `lem:freecell`'s display read entrywise: the level carrier's
+entry at a key pair inside the order is the one polynomial list —
+the level datum's entry at the constant key
+(`thm:certconstruct`'s balance-pair level cross-added,
+`def:pencil`'s join at `lem:inertia`'s entrywise site structure),
+the stated middle keys, and the trailing member's entry at the top
+key. -/
+theorem levelPMat_entry (A B G : elim.Mat) (x y : Pos)
+    (mid : List BPair) (o : Nat) (hA : elim.sqAt A o)
+    (hB : elim.sqAt B o) (hG : elim.sqAt G o) (i j : Nat)
+    (hi : i < o) (hj : j < o) :
+    ground.getAt ([] : Poly)
+        (ground.getAt ([] : List Poly) (levelPMat A B G x y mid) i) j
+      = ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+          (inertia.siteDatum (elim.matAdd A (inertia.matScale y G))
+            (inertia.matScale x G)) i) j
+        :: (mid ++ [ground.getAt BPair.unit
+            (ground.getAt ([] : List BPair) B i) j]) := by
+  have hD : elim.sqAt (inertia.siteDatum
+      (elim.matAdd A (inertia.matScale y G))
+      (inertia.matScale x G)) o :=
+    inertia.sqAt_siteDatum o _ _
+      (elim.sqAt_matAdd o A (inertia.matScale y G) hA
+        (inertia.sqAt_matScale o y G hG))
+      (inertia.sqAt_matScale o x G hG)
+  show ground.getAt ([] : Poly) (ground.getAt ([] : List Poly)
+      (List.zipWith (List.zipWith (fun a b => a :: (mid ++ [b])))
+        (inertia.siteDatum (elim.matAdd A (inertia.matScale y G))
+          (inertia.matScale x G)) B) i) j = _
+  rw [ground.getAt_zipWith ([] : List BPair) ([] : List BPair)
+      ([] : List Poly)
+      (List.zipWith (fun a b => a :: (mid ++ [b]))) _ B i
+      (by rw [elim.sqAt_len hD]; exact hi)
+      (by rw [elim.sqAt_len hB]; exact hi),
+    ground.getAt_zipWith BPair.unit BPair.unit ([] : Poly)
+      (fun a b => a :: (mid ++ [b])) _ _ j
+      (by rw [elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hD)
+            (by rw [elim.sqAt_len hD]; exact hi)]
+          exact hj)
+      (by rw [elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hB)
+            (by rw [elim.sqAt_len hB]; exact hi)]
+          exact hj)]
+
+/-- The level carrier's shape read: the stated order with every
+entry inside the affine list's own clearing degree, the
+construction's length data (`lem:freecell`'s entries, one
+polynomial list each). -/
+theorem pShapeAt_levelPMat (A B G : elim.Mat) (x y : Pos)
+    (mid : List BPair) (o : Nat) (hA : elim.sqAt A o)
+    (hB : elim.sqAt B o) (hG : elim.sqAt G o) :
+    pShapeAt (levelPMat A B G x y mid) o (mid.length + 1) := by
+  have hD : elim.sqAt (inertia.siteDatum
+      (elim.matAdd A (inertia.matScale y G))
+      (inertia.matScale x G)) o :=
+    inertia.sqAt_siteDatum o _ _
+      (elim.sqAt_matAdd o A (inertia.matScale y G) hA
+        (inertia.sqAt_matScale o y G hG))
+      (inertia.sqAt_matScale o x G hG)
+  have hlen : (levelPMat A B G x y mid).length = o :=
+    ground.length_zipWith _ _ _ o (elim.sqAt_len hD) (elim.sqAt_len hB)
+  have hrow : ∀ i, i < o →
+      ground.getAt ([] : List Poly) (levelPMat A B G x y mid) i
+        = List.zipWith (fun a b => a :: (mid ++ [b]))
+            (ground.getAt ([] : List BPair)
+              (inertia.siteDatum (elim.matAdd A (inertia.matScale y G))
+                (inertia.matScale x G)) i)
+            (ground.getAt ([] : List BPair) B i) := fun i hi =>
+    ground.getAt_zipWith ([] : List BPair) ([] : List BPair)
+      ([] : List Poly)
+      (List.zipWith (fun a b => a :: (mid ++ [b]))) _ B i
+      (by rw [elim.sqAt_len hD]; exact hi)
+      (by rw [elim.sqAt_len hB]; exact hi)
+  have hrows : elim.rowsLen o (levelPMat A B G x y mid) := by
+    refine elim.rowsLen_intro _ (fun i hi => ?_)
+    rw [hlen] at hi
+    rw [hrow i hi]
+    exact ground.length_zipWith _ _ _ o
+      (elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hD)
+        (by rw [elim.sqAt_len hD]; exact hi))
+      (elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hB)
+        (by rw [elim.sqAt_len hB]; exact hi))
+  refine pShapeAt_of hlen hrows ?_
+  refine ground.all_of_getAt ([] : List Poly) _ _ (fun i hi => ?_)
+  rw [hlen] at hi
+  rw [hrow i hi]
+  refine ground.all_of_getAt ([] : Poly) _ _ (fun j hj => ?_)
+  have hjo : j < o := by
+    rw [ground.length_zipWith _ _ _ o
+        (elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hD)
+          (by rw [elim.sqAt_len hD]; exact hi))
+        (elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hB)
+          (by rw [elim.sqAt_len hB]; exact hi))] at hj
+    exact hj
+  rw [ground.getAt_zipWith BPair.unit BPair.unit ([] : Poly)
+      (fun a b => a :: (mid ++ [b])) _ _ j
+      (by rw [elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hD)
+            (by rw [elim.sqAt_len hD]; exact hi)]
+          exact hjo)
+      (by rw [elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hB)
+            (by rw [elim.sqAt_len hB]; exact hi)]
+          exact hjo)]
+  refine ground.leBle ?_
+  show (mid ++ [ground.getAt BPair.unit
+      (ground.getAt ([] : List BPair) B i) j]).length + 1
+    ≤ mid.length + 1 + 1
+  rw [ground.length_append]
+  exact Nat.le_refl _
+
 /-! `lem:inertia`'s deflation at this module's polynomial carrier:
 the entrywise calculus of `def:elim`'s displayed operations passes
 the cleared evaluation (`evalPC_pmatAdd`, `evalPC_pswapM`,
