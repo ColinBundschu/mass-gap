@@ -7,7 +7,7 @@ This repository presents a complete manuscript, [docs/theory.tex](docs/theory.te
 simple group (`thm:main`), with
 `rem:dictionary` presenting the results in the conventional
 formulation, the Jaffe-Witten statement of the Yang-Mills problem included.  The proof is constructive over the positive naturals with the sum and the
-product; this choice was made explicitly to enable Lean to emit certified brackets of physical quantities directly comparable to Montecarlo and experimental results.
+product; this choice was made explicitly to enable the Lean to be written constructively and consequently emit certified brackets of physical quantities directly comparable to Montecarlo and experimental results.
 
 The tex is the authority and the Lean is its transcription: every top-level
 Lean declaration sits in a namespace matching a label in
