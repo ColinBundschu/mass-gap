@@ -22,7 +22,7 @@ module holds.
 a mostly complete transcription of that proof: this section says exactly which parts are and are
 not formalized.
 
-`thm:main` has three clauses, stated over the domain `main.Member`
+`thm:main` has three clauses. These are stated over the domain `main.Member`
 ([lean/MassGap/Main.lean](lean/MassGap/Main.lean)): the `A`-series at every residue,
 `B_l`, `C_l`, `D_l` at their index floors, and once each for `G2`, `F4`, `E6`,
 `E7`, `E8`.
