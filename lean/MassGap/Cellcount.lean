@@ -49,7 +49,11 @@ their displays.
 calculus passes the cleared evaluation, the pivot's adjugate stands
 at orders one and two with its solve (`adj2v_solve`), and the
 cleared deflation's evaluation is the evaluated blocks' own
-(`pdefl`, `evalPC_pdefl`). -/
+(`pdefl`, `evalPC_pdefl`), the cleared deflation's shape at the
+trailing order and the pivot's odd-multiple clearing
+(`pShape_pdefl`), and the order-one deflation at value-unit
+couplings reading the pivot entry's square on the trailing block
+outright (`pdefl_offC`). -/
 
 namespace cellcount
 open ground poly elim inertia
@@ -555,9 +559,9 @@ theorem evalPC_pointCongr {o : Nat} (S : split.PMat) (K : Nat)
     (hw : inertia.splitRead (evalPC S wn wc K) sp') :
     inertia.revAt sp = inertia.revAt sp' := by
   have hw1 : BPair.unit < ground.bpow (BPair.ofPos wc) K :=
-    windowsep.unitLt_bpow (ground.unitLtOfPos wc) K
+    ground.unitLtBpow (ground.unitLtOfPos wc) K
   have hw2 : BPair.unit < ground.bpow (BPair.ofPos vc) K :=
-    windowsep.unitLt_bpow (ground.unitLtOfPos vc) K
+    ground.unitLtBpow (ground.unitLtOfPos vc) K
   have hpt : (vn * BPair.ofPos wc).oneValue (wn * BPair.ofPos vc) := by
     refine BPair.oneValue_trans
       (BPair.oneValue_of_eq (BPair.mul_comm vn (BPair.ofPos wc))) ?_
@@ -2150,7 +2154,7 @@ private theorem sideDown_shift (p : Poly) (l : BPair) (c : Pos) (K : Nat)
       < ground.bpow (BPair.ofPos c) (K - (p.length - 1))
         * (poly.evalClear p l c (p.length - 1)).swap :=
     ground.unitLtMul
-      (windowsep.unitLt_bpow (ground.unitLtOfPos c) _) hsw
+      (ground.unitLtBpow (ground.unitLtOfPos c) _) hsw
   have heq : ground.bpow (BPair.ofPos c) (K - (p.length - 1))
         * (poly.evalClear p l c (p.length - 1)).swap
       = (ground.bpow (BPair.ofPos c) (K - (p.length - 1))
@@ -2400,9 +2404,9 @@ private theorem rev_point {o : Nat} (S : split.PMat) (K : Nat)
     (hy : inertia.splitRead (evalPC S yn yc K) spy) :
     inertia.revAt spx = inertia.revAt spy := by
   have hWy : BPair.unit < ground.bpow (BPair.ofPos yc) K :=
-    windowsep.unitLt_bpow (ground.unitLtOfPos yc) K
+    ground.unitLtBpow (ground.unitLtOfPos yc) K
   have hWx : BPair.unit < ground.bpow (BPair.ofPos xc) K :=
-    windowsep.unitLt_bpow (ground.unitLtOfPos xc) K
+    ground.unitLtBpow (ground.unitLtOfPos xc) K
   have hsc : inertia.splitRead
       (inertia.matScaleB (ground.bpow (BPair.ofPos yc) K)
         (evalPC S xn xc K))
@@ -2679,6 +2683,296 @@ private theorem rowsLen_pdefl (idx rest : List Nat) (S : split.PMat)
     (rowsLen_pscaleM _ _ _ (split.rowsLen_pselM _ _ _))
     (rowsLen_pswapM _ _ (rowsLen_pscaleM _ _ _ hZr))
 
+/-- One row pair's entrywise sum keeps a shared degree bound, a key
+beyond either row reading the vacant list. -/
+private theorem deg_rowAdd (N : Nat) : ∀ (r s : List Poly),
+    (∀ k, (ground.getAt ([] : Poly) r k).length ≤ N)
+    → (∀ k, (ground.getAt ([] : Poly) s k).length ≤ N)
+    → ∀ k, (ground.getAt ([] : Poly)
+        (List.zipWith poly.add r s) k).length ≤ N
+  | [], _, _, _, _ => Nat.zero_le _
+  | _ :: _, [], _, _, _ => Nat.zero_le _
+  | p :: _, q :: _, hr, hs, 0 => poly.add_len_le p q N (hr 0) (hs 0)
+  | _ :: r, _ :: s, hr, hs, k + 1 =>
+    deg_rowAdd N r s (fun l => hr (l + 1)) (fun l => hs (l + 1)) k
+
+/-- The entrywise sum keeps a shared degree bound at every key of
+every row. -/
+private theorem deg_pmatAdd (N : Nat) : ∀ (A B : split.PMat),
+    (∀ i j, (ground.getAt ([] : Poly)
+        (ground.getAt ([] : List Poly) A i) j).length ≤ N)
+    → (∀ i j, (ground.getAt ([] : Poly)
+        (ground.getAt ([] : List Poly) B i) j).length ≤ N)
+    → ∀ i j, (ground.getAt ([] : Poly)
+        (ground.getAt ([] : List Poly) (split.pmatAdd A B) i) j).length
+          ≤ N
+  | [], _, _, _, _, _ => Nat.zero_le _
+  | _ :: _, [], _, _, _, _ => Nat.zero_le _
+  | r :: _, u :: _, hA, hB, 0, j =>
+    deg_rowAdd N r u (fun l => hA 0 l) (fun l => hB 0 l) j
+  | _ :: A, _ :: B, hA, hB, i + 1, j =>
+    deg_pmatAdd N A B (fun l m => hA (l + 1) m)
+      (fun l m => hB (l + 1) m) i j
+
+/-- The memberwise swap keeps every entry's degree, the map's
+length read. -/
+private theorem deg_pswapM (N : Nat) : ∀ (X : split.PMat),
+    (∀ i j, (ground.getAt ([] : Poly)
+        (ground.getAt ([] : List Poly) X i) j).length ≤ N)
+    → ∀ i j, (ground.getAt ([] : Poly)
+        (ground.getAt ([] : List Poly) (split.pswapM X) i) j).length ≤ N
+  | [], _, _, _ => Nat.zero_le _
+  | r :: _, h, 0, j =>
+    match Nat.lt_or_ge j r.length with
+    | Or.inl hj => by
+      show (ground.getAt ([] : Poly)
+        (r.map poly.polyOps.swap) j).length ≤ N
+      rw [ground.getAt_map ([] : Poly) ([] : Poly) _ r j hj]
+      show ((ground.getAt ([] : Poly) r j).map
+        ground.bpairOps.swap).length ≤ N
+      rw [ground.length_map]
+      exact h 0 j
+    | Or.inr hj => by
+      show (ground.getAt ([] : Poly)
+        (r.map poly.polyOps.swap) j).length ≤ N
+      rw [ground.getAt_over ([] : Poly) _ j
+        (by rw [ground.length_map]; exact hj)]
+      exact Nat.zero_le _
+  | _ :: X, h, i + 1, j => deg_pswapM N X (fun l m => h (l + 1) m) i j
+
+/-- The scale keeps a joined degree bound, the product's length
+read entrywise. -/
+private theorem deg_pscaleM (f : Poly) (a N : Nat)
+    (hf : f.length ≤ a + 1) : ∀ (X : split.PMat),
+    (∀ i j, (ground.getAt ([] : Poly)
+        (ground.getAt ([] : List Poly) X i) j).length ≤ N + 1)
+    → ∀ i j, (ground.getAt ([] : Poly)
+        (ground.getAt ([] : List Poly) (split.pscaleM f X) i) j).length
+          ≤ a + N + 1
+  | [], _, _, _ => Nat.zero_le _
+  | r :: _, h, 0, j =>
+    match Nat.lt_or_ge j r.length with
+    | Or.inl hj => by
+      show (ground.getAt ([] : Poly)
+        (r.map (poly.mul f)) j).length ≤ a + N + 1
+      rw [ground.getAt_map ([] : Poly) ([] : Poly) _ r j hj]
+      exact poly.mul_len_le f _ a N hf (h 0 j)
+    | Or.inr hj => by
+      show (ground.getAt ([] : Poly)
+        (r.map (poly.mul f)) j).length ≤ a + N + 1
+      rw [ground.getAt_over ([] : Poly) _ j
+        (by rw [ground.length_map]; exact hj)]
+      exact Nat.zero_le _
+  | _ :: X, h, i + 1, j =>
+    deg_pscaleM f a N hf X (fun l m => h (l + 1) m) i j
+
+/-- A fold of sums over a key range keeps the unit tail at
+unit-tailed summands and seed. -/
+private theorem foldRange_unit (f : Nat → Poly)
+    (hf : ∀ l, poly.unitTail (f l)) :
+    ∀ (n : Nat) (acc : Poly), poly.unitTail acc →
+      poly.unitTail ((List.range n).foldl (fun s l => poly.add s (f l)) acc)
+  | 0, _, hacc => hacc
+  | n + 1, acc, hacc => by
+    rw [ground.range_cons n,
+      show ((0 : Nat) :: (List.range n).map (fun j => j + 1)).foldl
+          (fun s l => poly.add s (f l)) acc
+        = ((List.range n).map (fun j => j + 1)).foldl
+          (fun s l => poly.add s (f l)) (poly.add acc (f 0)) from rfl,
+      ground.foldl_map (fun j => j + 1) (fun s l => poly.add s (f l))
+        (List.range n) (poly.add acc (f 0))]
+    exact foldRange_unit (fun l => f (l + 1)) (fun l => hf (l + 1)) n
+      (poly.add acc (f 0)) (poly.unitTail_sum hacc (hf 0))
+
+/-- One row's entrywise map keeps the unit tail wherever its own
+step does. -/
+private theorem mapRow_unit (f : Poly → Poly)
+    (hf : ∀ p, poly.unitTail p → poly.unitTail (f p)) :
+    ∀ (s : List Poly),
+      (∀ k, poly.unitTail (ground.getAt ([] : Poly) s k)) →
+      ∀ k, poly.unitTail (ground.getAt ([] : Poly) (s.map f) k)
+  | [], _, _ => trivial
+  | p :: _, h, 0 => hf p (h 0)
+  | _ :: s, h, k + 1 => mapRow_unit f hf s (fun l => h (l + 1)) k
+
+/-- An entrywise map keeps the unit tail wherever its own step
+does, at every key of every row. -/
+private theorem mapRows_unit (f : Poly → Poly)
+    (hf : ∀ p, poly.unitTail p → poly.unitTail (f p)) :
+    ∀ (X : split.PMat), (∀ r k, poly.unitTail (ground.getAt ([] : Poly)
+        (ground.getAt ([] : List Poly) X r) k)) →
+      ∀ r k, poly.unitTail (ground.getAt ([] : Poly)
+        (ground.getAt ([] : List Poly) (X.map (fun s => s.map f)) r) k)
+  | [], _, _, _ => trivial
+  | s :: _, h, 0, k => mapRow_unit f hf s (fun l => h 0 l) k
+  | _ :: X, h, r + 1, k =>
+    mapRows_unit f hf X (fun p l => h (p + 1) l) r k
+
+/-- The polynomial product's entries carry a unit-tailed first
+factor: every term of the row-against-column fold keeps the
+factor's own tail. -/
+private theorem pmatMul_unitL (a b : split.PMat)
+    (ha : ∀ p q, poly.unitTail (ground.getAt ([] : Poly)
+      (ground.getAt ([] : List Poly) a p) q)) :
+    ∀ p q, poly.unitTail (ground.getAt ([] : Poly)
+      (ground.getAt ([] : List Poly) (split.pmatMul a b) p) q) := by
+  intro p q
+  match Nat.lt_or_ge p a.length with
+  | Or.inr h =>
+    rw [ground.getAt_over ([] : List Poly) _ p
+      (by rw [length_pmatMul]; exact h)]
+    exact trivial
+  | Or.inl h =>
+    match Nat.lt_or_ge q (b.headD ([] : List Poly)).length with
+    | Or.inr h2 =>
+      rw [ground.getAt_over ([] : Poly) _ q
+        (by rw [rowLen_pmatMul a b p h]; exact h2)]
+      exact trivial
+    | Or.inl h2 =>
+      rw [getAt_pmatMul a b p q h h2]
+      exact foldRange_unit _
+        (fun l => poly.of_unitTail_mul (Or.inl (ha p l))) _ [] trivial
+
+/-- An entrywise sum against a unit-tailed summand reads its other
+summand, row by row at a shared width. -/
+private theorem row_add_unit : ∀ a b : List Poly,
+    a.length = b.length →
+    (∀ k, poly.unitTail (ground.getAt ([] : Poly) b k)) →
+    split.prowOneValue (List.zipWith poly.add a b) a
+  | [], [], _, _ => trivial
+  | [], _ :: _, hl, _ => nomatch hl
+  | _ :: _, [], hl, _ => nomatch hl
+  | p :: a, _ :: b, hl, h =>
+    ⟨poly.add_unitTail p (h 0),
+     row_add_unit a b (Nat.succ.inj hl) (fun k => h (k + 1))⟩
+
+/-- An entrywise sum against a unit-tailed matrix reads its other
+summand. -/
+private theorem pmatAdd_unit : ∀ A B : split.PMat,
+    A.length = B.length →
+    (∀ r, r < A.length → (ground.getAt ([] : List Poly) A r).length
+      = (ground.getAt ([] : List Poly) B r).length) →
+    (∀ r k, poly.unitTail (ground.getAt ([] : Poly)
+      (ground.getAt ([] : List Poly) B r) k)) →
+    split.pmatOneValue (split.pmatAdd A B) A
+  | [], [], _, _, _ => trivial
+  | [], _ :: _, hl, _, _ => nomatch hl
+  | _ :: _, [], hl, _, _ => nomatch hl
+  | a :: A, b :: B, hl, hr, h =>
+    ⟨row_add_unit a b (hr 0 (Nat.succ_pos _)) (fun k => h 0 k),
+     pmatAdd_unit A B (Nat.succ.inj hl)
+       (fun r hrr => hr (r + 1) (Nat.succ_lt_succ hrr))
+       (fun r k => h (r + 1) k)⟩
+
+/-- The order-one deflation at value-unit couplings: with the
+pivot's row reading the sum's unit against every trailing key, the
+correction term's every entry keeps that tail — one unit-tailed
+factor carrying the whole product — and the deflation reads the
+pivot entry's square on the trailing block, a key beyond the datum
+reading the vacant list. -/
+theorem pdefl_offC (S : split.PMat) (i : Nat) (rest : List Nat)
+    (hoffR : ∀ k, k < rest.length → poly.unitTail
+      (ground.getAt [] (ground.getAt [] S (ground.getAt 0 rest k)) i)) :
+    split.pmatOneValue (pdefl [i] rest S)
+      (split.pscaleM
+        (poly.mul (ground.getAt [] (ground.getAt [] S i) i)
+          (ground.getAt [] (ground.getAt [] S i) i))
+        (split.pselM rest rest S)) := by
+  have hBpl : (split.pselM [i] rest S).length = ([i] : List Nat).length :=
+    split.length_pselM _ _ _
+  have hBpr : elim.rowsLen rest.length (split.pselM [i] rest S) :=
+    split.rowsLen_pselM _ _ _
+  have hhdBp : ((split.pselM [i] rest S).headD ([] : List Poly)).length
+      = rest.length :=
+    headD_width _ ([i] : List Nat).length rest.length hBpl Nat.one_pos hBpr
+  have hWl : (split.pmatMul (padj2 ([i] : List Nat).length
+      (split.pselM [i] [i] S)) (split.pselM [i] rest S)).length
+      = ([i] : List Nat).length :=
+    (length_pmatMul _ _).trans (length_padj2 _ (Or.inl rfl))
+  have hWr : elim.rowsLen rest.length
+      (split.pmatMul (padj2 ([i] : List Nat).length (split.pselM [i] [i] S))
+        (split.pselM [i] rest S)) := by
+    rw [← hhdBp]
+    exact rowsLen_pmatMul _ _
+  have hhdW : ((split.pmatMul (padj2 ([i] : List Nat).length
+      (split.pselM [i] [i] S)) (split.pselM [i] rest S)).headD
+      ([] : List Poly)).length = rest.length :=
+    headD_width _ ([i] : List Nat).length rest.length hWl Nat.one_pos hWr
+  have hZr : elim.rowsLen rest.length
+      (split.pmatMul (split.pselM rest [i] S)
+        (split.pmatMul (padj2 ([i] : List Nat).length
+          (split.pselM [i] [i] S)) (split.pselM [i] rest S))) := by
+    rw [← hhdW]
+    exact rowsLen_pmatMul _ _
+  have hAl : (split.pscaleM (poly.mul (split.pminor (split.pselM [i] [i] S))
+      (split.pminor (split.pselM [i] [i] S)))
+      (split.pselM rest rest S)).length = rest.length :=
+    (length_pscaleM _ _).trans (split.length_pselM rest rest S)
+  have hAr : elim.rowsLen rest.length
+      (split.pscaleM (poly.mul (split.pminor (split.pselM [i] [i] S))
+        (split.pminor (split.pselM [i] [i] S)))
+        (split.pselM rest rest S)) :=
+    rowsLen_pscaleM _ _ _ (split.rowsLen_pselM _ _ _)
+  have hBl : (split.pswapM (split.pscaleM
+      (split.pminor (split.pselM [i] [i] S))
+      (split.pmatMul (split.pselM rest [i] S)
+        (split.pmatMul (padj2 ([i] : List Nat).length
+          (split.pselM [i] [i] S))
+          (split.pselM [i] rest S))))).length = rest.length :=
+    (length_pswapM _).trans ((length_pscaleM _ _).trans
+      ((length_pmatMul _ _).trans (split.length_pselM rest [i] S)))
+  have hBr : elim.rowsLen rest.length (split.pswapM (split.pscaleM
+      (split.pminor (split.pselM [i] [i] S))
+      (split.pmatMul (split.pselM rest [i] S)
+        (split.pmatMul (padj2 ([i] : List Nat).length
+          (split.pselM [i] [i] S))
+          (split.pselM [i] rest S))))) :=
+    rowsLen_pswapM _ _ (rowsLen_pscaleM _ _ _ hZr)
+  have hSelR : ∀ p q, poly.unitTail (ground.getAt ([] : Poly)
+      (ground.getAt ([] : List Poly) (split.pselM rest [i] S) p) q) := by
+    intro p q
+    match Nat.lt_or_ge p rest.length with
+    | Or.inr hp =>
+      rw [ground.getAt_over ([] : List Poly) _ p
+        (by rw [split.length_pselM]; exact hp)]
+      exact trivial
+    | Or.inl hp =>
+      match q with
+      | 0 =>
+        rw [split.getAt_pselM rest [i] S p 0 hp Nat.one_pos]
+        exact hoffR p hp
+      | q + 1 =>
+        rw [ground.getAt_over ([] : Poly) _ (q + 1)
+          (by rw [elim.rowsLen_getAt _ p (split.rowsLen_pselM [i] S rest)
+                (by rw [split.length_pselM]; exact hp)]
+              exact Nat.succ_le_succ (Nat.zero_le q))]
+        exact trivial
+  have hunit : ∀ r k, poly.unitTail (ground.getAt ([] : Poly)
+      (ground.getAt ([] : List Poly) (split.pswapM (split.pscaleM
+        (split.pminor (split.pselM [i] [i] S))
+        (split.pmatMul (split.pselM rest [i] S)
+          (split.pmatMul (padj2 ([i] : List Nat).length
+            (split.pselM [i] [i] S))
+            (split.pselM [i] rest S))))) r) k) :=
+    mapRows_unit poly.neg (fun _ hp => poly.unitTail_swapMap _ hp) _
+      (mapRows_unit (poly.mul (split.pminor (split.pselM [i] [i] S)))
+        (fun _ hp => poly.of_unitTail_mul (Or.inr hp)) _
+        (pmatMul_unitL _ _ hSelR))
+  show split.pmatOneValue
+    (split.pmatAdd
+      (split.pscaleM (poly.mul (split.pminor (split.pselM [i] [i] S))
+        (split.pminor (split.pselM [i] [i] S))) (split.pselM rest rest S))
+      (split.pswapM (split.pscaleM (split.pminor (split.pselM [i] [i] S))
+        (split.pmatMul (split.pselM rest [i] S)
+          (split.pmatMul (padj2 ([i] : List Nat).length
+            (split.pselM [i] [i] S)) (split.pselM [i] rest S))))))
+    (split.pscaleM (poly.mul (split.pminor (split.pselM [i] [i] S))
+      (split.pminor (split.pselM [i] [i] S))) (split.pselM rest rest S))
+  refine pmatAdd_unit _ _ (hAl.trans hBl.symm) (fun r hr => ?_) hunit
+  rw [hAl] at hr
+  rw [elim.rowsLen_getAt _ r hAr (by rw [hAl]; exact hr),
+    elim.rowsLen_getAt _ r hBr (by rw [hBl]; exact hr)]
+
 /-- A cover on an occupied segment reads its pencil's symmetry: the
 chain's end is refused there and the order-nought deflation reads
 the vacant square. -/
@@ -2723,6 +3017,121 @@ private theorem pminor2_len {S : split.PMat} {o K : Nat}
     exact poly.mul_len_le _ _ K K (ent_ble hsh i0 i0) (ent_ble hsh i1 i1)
   · rw [poly.length_neg, poly.pnorm_length]
     exact poly.mul_len_le _ _ K K (ent_ble hsh i0 i1) (ent_ble hsh i1 i0)
+
+/-- The cleared deflation's shape read at the pivot orders one and
+two: the trailing key list's order at the pivot's odd-multiple
+clearing `(2k + 1) K`, each entry the squared minor's scale of the
+trailing block joined to the correction's swap at the products'
+degree reads. -/
+theorem pShape_pdefl (S : split.PMat) (o K : Nat) (idx rest : List Nat)
+    (hS : pShapeAt S o K)
+    (hk : idx.length = 1 ∨ idx.length = 2) :
+    pShapeAt (pdefl idx rest S) rest.length
+      ((2 * idx.length + 1) * K) := by
+  have hk0 : 0 < idx.length := by
+    cases hk with
+    | inl h => rw [h]; exact Nat.succ_pos 0
+    | inr h => rw [h]; exact Nat.succ_pos 1
+  have hent := ent_ble hS
+  have hdeg : ∀ i j, (ground.getAt ([] : Poly)
+      (ground.getAt ([] : List Poly) (pdefl idx rest S) i) j).length
+        ≤ (2 * idx.length + 1) * K + 1 := by
+    cases hk with
+    | inl h1 =>
+      refine Exists.elim (list1E idx h1) (fun i0 hidx => ?_)
+      subst hidx
+      have hm : (split.pminor
+          (split.pselM [i0] [i0] S)).length ≤ K + 1 := hent i0 i0
+      have hadj : ∀ i j, (ground.getAt ([] : Poly)
+          (ground.getAt ([] : List Poly)
+            (padj2 ([i0] : List Nat).length
+              (split.pselM [i0] [i0] S)) i) j).length ≤ 0 + 1 := by
+        intro i j
+        match i, j with
+        | 0, 0 => exact Nat.le_refl 1
+        | 0, _ + 1 => exact Nat.zero_le _
+        | _ + 1, _ => exact Nat.zero_le _
+      have hW := deg_pmatMul _ _ 0 K hadj
+        (deg_pselM (K := K) hent [i0] rest)
+      have hZ := deg_pmatMul _ _ K (0 + K)
+        (deg_pselM (K := K) hent rest [i0]) hW
+      have hAA := deg_pscaleM _ (K + K) K
+        (poly.mul_len_le _ _ K K hm hm) _
+        (deg_pselM (K := K) hent rest rest)
+      have hBB := deg_pswapM _ _
+        (deg_pscaleM _ K (K + (0 + K)) hm _ hZ)
+      have he : (2 * ([i0] : List Nat).length + 1) * K
+          = K + K + K := by
+        show 3 * K = K + K + K
+        rw [Nat.mul_comm 3 K]
+        show 0 + K + K + K = K + K + K
+        rw [Nat.zero_add]
+      have heB : K + (K + (0 + K)) + 1 = K + K + K + 1 := by
+        rw [Nat.zero_add, ← Nat.add_assoc]
+      intro i j
+      refine Nat.le_trans
+        (deg_pmatAdd (K + K + K + 1) _ _ hAA
+          (fun a b => Nat.le_trans (hBB a b) (Nat.le_of_eq heB)) i j)
+        (Nat.le_of_eq (congrArg (· + 1) he.symm))
+    | inr h2 =>
+      refine Exists.elim (list2E idx h2) (fun i0 hex => ?_)
+      refine Exists.elim hex (fun i1 hidx => ?_)
+      subst hidx
+      have hm := pminor2_len hS i0 i1
+      have hP := deg_pselM (K := K) hent [i0, i1] [i0, i1]
+      have hadj : ∀ i j, (ground.getAt ([] : Poly)
+          (ground.getAt ([] : List Poly)
+            (padj2 ([i0, i1] : List Nat).length
+              (split.pselM [i0, i1] [i0, i1] S)) i) j).length
+            ≤ K + 1 := by
+        intro i j
+        match i, j with
+        | 0, 0 => exact hP 1 1
+        | 0, 1 =>
+            show (poly.neg (ground.getAt ([] : Poly)
+              (ground.getAt ([] : List Poly)
+                (split.pselM [i0, i1] [i0, i1] S) 0) 1)).length ≤ K + 1
+            rw [poly.length_neg]
+            exact hP 0 1
+        | 1, 0 =>
+            show (poly.neg (ground.getAt ([] : Poly)
+              (ground.getAt ([] : List Poly)
+                (split.pselM [i0, i1] [i0, i1] S) 1) 0)).length ≤ K + 1
+            rw [poly.length_neg]
+            exact hP 1 0
+        | 1, 1 => exact hP 0 0
+        | 0, _ + 2 => exact Nat.zero_le _
+        | 1, _ + 2 => exact Nat.zero_le _
+        | _ + 2, _ => exact Nat.zero_le _
+      have hW := deg_pmatMul _ _ K K hadj
+        (deg_pselM (K := K) hent [i0, i1] rest)
+      have hZ := deg_pmatMul _ _ K (K + K)
+        (deg_pselM (K := K) hent rest [i0, i1]) hW
+      have hAA := deg_pscaleM _ (K + K + (K + K)) K
+        (poly.mul_len_le _ _ (K + K) (K + K) hm hm) _
+        (deg_pselM (K := K) hent rest rest)
+      have hBB := deg_pswapM _ _
+        (deg_pscaleM _ (K + K) (K + (K + K)) hm _ hZ)
+      have he : (2 * ([i0, i1] : List Nat).length + 1) * K
+          = K + K + (K + K) + K := by
+        show 5 * K = K + K + (K + K) + K
+        rw [Nat.mul_comm 5 K]
+        show 0 + K + K + K + K + K = K + K + (K + K) + K
+        rw [Nat.zero_add, Nat.add_assoc (K + K) K K]
+      have heB : K + K + (K + (K + K)) + 1
+          = K + K + (K + K) + K + 1 := by
+        rw [← Nat.add_assoc (K + K) K (K + K),
+          Nat.add_right_comm (K + K) K (K + K)]
+      intro i j
+      refine Nat.le_trans
+        (deg_pmatAdd (K + K + (K + K) + K + 1) _ _ hAA
+          (fun a b => Nat.le_trans (hBB a b) (Nat.le_of_eq heB)) i j)
+        (Nat.le_of_eq (congrArg (· + 1) he.symm))
+  refine pShapeAt_of (length_pdefl idx rest S)
+    (rowsLen_pdefl idx rest S hk0 hk) ?_
+  refine ground.all_of_getAt ([] : List Poly) _ _ (fun i hi => ?_)
+  refine ground.all_of_getAt ([] : Poly) _ _ (fun j hj => ?_)
+  exact ground.leBle (hdeg i j)
 
 /-- The order-two designated minor's evaluation is the evaluated
 selected block's own, at the doubled clearing power. -/

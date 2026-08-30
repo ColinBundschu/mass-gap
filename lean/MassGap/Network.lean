@@ -711,15 +711,6 @@ private theorem cstep_add {L : Type} (F : Data L) (acc : Nat) (l : L) :
   | true => exact (Nat.add_zero acc).symm
   | false => exact rfl
 
-/-- Three copies at a count. -/
-private theorem three_mul (b : Nat) : 3 * b = b + b + b := by
-  show Nat.succ 2 * b = b + b + b
-  rw [Nat.succ_mul 2 b]
-  show Nat.succ 1 * b + b = b + b + b
-  rw [Nat.succ_mul 1 b]
-  show Nat.succ 0 * b + b + b = b + b + b
-  rw [Nat.succ_mul 0 b, Nat.zero_mul, Nat.zero_add]
-
 /-- `E` at the network spread (`thm:network`(i)): the content fold
 reads the eigenvalue `3 C₂(R₁) + C₂(k) + 3 C₂(R₂)`, each path's
 three links at its own label's Casimir and the shared link at the
@@ -734,7 +725,7 @@ theorem netConf_energy {L : Type} (F : Data L) (R1 k R2 : L) :
     = 3 * gstep F R1 + gstep F k + 3 * gstep F R2
   rw [Nat.add_comm (3 * gstep F R1) (gstep F k)]
   rw [cstep_add, cstep_add, cstep_add, cstep_add, cstep_add, cstep_add,
-    cstep_add, three_mul (gstep F R1), three_mul (gstep F R2),
+    cstep_add, ground.threeMul (gstep F R1), ground.threeMul (gstep F R2),
     Nat.zero_add,
     ← Nat.add_assoc (gstep F k) (gstep F R1 + gstep F R1) (gstep F R1),
     ← Nat.add_assoc (gstep F k) (gstep F R1) (gstep F R1),
@@ -991,13 +982,6 @@ theorem nodes_gap (h : Nat) :
    gap_of (node_val3 h) (node_val4 h) rfl rfl
       (gap_hd h (gap_hd h (by decide +kernel)))⟩
 
-/-- Four copies at a count, the doubled double. -/
-private theorem four_mul (b : Nat) : 4 * b = 2 * b + 2 * b := by
-  show Nat.succ 3 * b = 2 * b + 2 * b
-  rw [Nat.succ_mul 3 b]
-  show Nat.succ 2 * b + b = 2 * b + 2 * b
-  rw [Nat.succ_mul 2 b, Nat.add_assoc (2 * b) b b, Nat.two_mul b]
-
 /-- The unit row's cleared Casimir, at every width. -/
 private theorem dfq_unit (h : Nat) :
     c2hat.dfQ (channels.rowUnit (h + 2)) = 0 :=
@@ -1116,7 +1100,7 @@ theorem nodeDual_read (h : Nat) :
     ground.mulAssoc 2 (h + 3) ((h + 3) + (h + 3)),
     Nat.left_distrib (h + 3) (h + 3) (h + 3),
     Nat.left_distrib 2 ((h + 3) * (h + 3)) ((h + 3) * (h + 3)),
-    four_mul ((h + 3) * (h + 3))]
+    ground.fourMul ((h + 3) * (h + 3))]
 
 /-- The dual pair's second row ties at the one shared value, the
 first tie read across the table's shared entry. -/

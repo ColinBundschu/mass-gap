@@ -479,12 +479,6 @@ def cofactorAt (E P : BPair) : BPair :=
     | some c => BPair.ofPos c
     | none => BPair.unit
 
-/-- Two data at the sum's unit join at it. -/
-private theorem unitAdd {x y : BPair} (hx : x.oneValue BPair.unit)
-    (hy : y.oneValue BPair.unit) : (x + y).oneValue BPair.unit :=
-  BPair.oneValue_trans (BPair.add_congr hx hy)
-    (BPair.unit_add BPair.unit)
-
 /-- A stated pair at equal members reads the cofactor at the sum's
 unit: the pair's side is the equality, and every divisor branch
 answers there. -/
@@ -519,7 +513,7 @@ theorem step_unit_gen (prev pivot t r0 e : BPair)
     | inl hr => exact oneValue_unit_mul (BPair.oneValue_of_eqMem hr)
     | inr ht => exact oneValue_mul_unit r0 t (BPair.oneValue_of_eqMem ht)
   refine cofactorAt_eqMem _ prev (BPair.eqMem_of_oneValue ?_)
-  exact unitAdd hp (ground.swap_congr hq)
+  exact BPair.add_units hp (ground.swap_congr hq)
 
 /-- The Sylvester step at a row entry at the sum's unit whose
 pivot-column partner or pivot-row partner is there too reads the
@@ -6754,66 +6748,18 @@ private theorem side_lt {z : BPair} {g : Pos}
     rfl
   | gt g' hg' => exact (gapClash hg' hg).elim
 
-/-- A product against an occupied count never sits below its own
-factor: the ground order's floor at the divisor. -/
-private theorem mulGe {p s g : Pos} (h : p * s + g = p) : False := by
-  cases ground.trich Pos.one s with
-  | eq he =>
-    rw [← he, ground.mul_one] at h
-    exact ground.add_ne_left p g h
-  | lt t ht =>
-    rw [← ht, ground.left_distrib, ground.mul_one] at h
-    exact ground.add_ne_left p (p * t + g)
-      (by rw [← ground.add_assoc]; exact h)
-  | gt t ht => exact ground.not_lt_one s ⟨t, ht⟩
-
-/-- The magnitude read at an exact product: the division with
-remainder answers at the quotient alone, the two occupied-remainder
-branches refuted at the ground order and the vacant read outright
-(`ground.divModRead_all`). -/
+/-- The magnitude read at an exact product: the quotient's bracket
+at the vacant remainder, the dividend its own lower end with the
+divisor the strict step (`ground.divQuot_eq`). -/
 private theorem cofactorMag_exact {e p x : Pos} (h : p * x = e) :
-    cofactorMag e p = some x := by
-  have hread := ground.divModRead_all e p
-  unfold ground.divModRead at hread
-  show (ground.divMod e p).1 = some x
-  cases hd : ground.divMod e p with
-  | mk o1 o2 =>
-    rw [hd] at hread
-    cases o1 with
-    | none =>
-      cases o2 with
-      | none => exact (hread : False).elim
-      | some r =>
-        have h1 : r = e ∧ r < p := hread
-        obtain ⟨hre, g, hg⟩ := h1
-        exact (mulGe (show p * x + g = p by
-          rw [h, ← hre]; exact hg)).elim
-    | some q =>
-      cases o2 with
-      | none =>
-        have h1 : p * q = e := hread
-        show some q = some x
-        rw [ground.cofactor_unique h1 h]
-      | some r =>
-        have h1 : p * q + r = e ∧ r < p := hread
-        obtain ⟨heq, g, hg⟩ := h1
-        rw [← h] at heq
-        cases ground.trich q x with
-        | eq hqx =>
-          rw [hqx] at heq
-          exact absurd heq (ground.add_ne_left (p * x) r)
-        | lt s hs =>
-          have h2 : p * q + r = p * q + p * s := by
-            rw [heq, ← hs, ground.left_distrib]
-          have h3 : r = p * s := ground.add_left_cancel h2
-          rw [h3] at hg
-          exact (mulGe hg).elim
-        | gt s hs =>
-          have h2 : p * x + p * s + r = p * x := by
-            rw [← ground.left_distrib, hs]
-            exact heq
-          exact (ground.add_ne_left (p * x) (p * s + r)
-            (by rw [← ground.add_assoc]; exact h2)).elim
+    cofactorMag e p = some x :=
+  ground.divQuot_eq e p x (Or.inl h)
+    ⟨p, by
+      show e + p = p * ground.succ x
+      have hs : p * ground.succ x = p * x + p := by
+        show p * (x + Pos.one) = p * x + p
+        rw [ground.left_distrib, ground.mul_one]
+      rw [hs, h]⟩
 
 /-- The cofactor's value at a stated pair above and a divisor
 above: the quotient's own one-member site. -/
@@ -11633,7 +11579,7 @@ theorem sylvesterRead_holds (m : Mat) (hsq : rowsLen m.length m)
       cases Nat.lt_or_ge j k with
       | inl hjlt =>
         refine BPair.oneValue_trans
-          (unitAdd
+          (BPair.add_units
             (oneValue_mul_unit _ _
               (borderAt_col_repeat (k + 1) i j m
                 (Nat.lt_succ_of_lt hjlt)))
@@ -11658,7 +11604,7 @@ theorem sylvesterRead_holds (m : Mat) (hsq : rowsLen m.length m)
     cases Nat.lt_or_ge i k with
     | inl hilt =>
       refine BPair.oneValue_trans
-        (unitAdd
+        (BPair.add_units
           (oneValue_mul_unit _ _
             (borderAt_row_repeat (k + 1) i j m
               (Nat.lt_succ_of_lt hilt)))
@@ -12330,10 +12276,10 @@ theorem dotP_oneValue_right : ∀ (p u u' : List BPair),
   | _ :: _, [], [], _ => BPair.oneValue_refl _
   | a :: s, [], d :: q, h =>
     BPair.oneValue_symm
-      (unitAdd (oneValue_mul_unit a d h.1)
+      (BPair.add_units (oneValue_mul_unit a d h.1)
         (dotP_null_tail_right s q h.2))
   | a :: s, c :: p, [], h =>
-    unitAdd (oneValue_mul_unit a c h.1)
+    BPair.add_units (oneValue_mul_unit a c h.1)
       (dotP_null_tail_right s p h.2)
   | a :: s, _ :: p, _ :: q, h =>
     BPair.add_congr (BPair.mul_congr (BPair.oneValue_refl a) h.1)
@@ -12346,11 +12292,11 @@ theorem dotP_oneValue_left : ∀ (r s x : List BPair),
   | [], _ :: _, [], _ => BPair.oneValue_refl _
   | [], _ :: q, _ :: t, h =>
     BPair.oneValue_symm
-      (unitAdd (oneValue_unit_mul h.1)
+      (BPair.add_units (oneValue_unit_mul h.1)
         (dotP_null_tail_left q t h.2))
   | _ :: _, [], [], _ => BPair.oneValue_refl _
   | _ :: p, [], _ :: t, h =>
-    unitAdd (oneValue_unit_mul h.1)
+    BPair.add_units (oneValue_unit_mul h.1)
       (dotP_null_tail_left p t h.2)
   | _ :: _, _ :: _, [], _ => BPair.oneValue_refl _
   | _ :: p, _ :: q, e :: t, h =>
@@ -12977,16 +12923,11 @@ theorem kernelList_dim (cols : Nat) (m : Mat) :
     (kernelList cols m).length = kernelDim cols m :=
   kernelGo_length m.length cols (BPair.ofPos .one) (m.map ofRow)
 
-/-- The stored keys sit below the stated bound. -/
-private def keysBelow (w : Nat) : List (Nat × BPair) → Prop
-  | [] => True
-  | (k, _) :: es => k < w ∧ keysBelow w es
-
 /-- The descent state at a stated width: every row's count is the
 width with its stored keys below it. -/
 private def SInv (w : Nat) : List SRow → Prop
   | [] => True
-  | r :: t => (r.1 = w ∧ keysBelow w r.2) ∧ SInv w t
+  | r :: t => (r.1 = w ∧ ground.keysBelow w r.2) ∧ SInv w t
 
 /-- The pivot search answers inside the row list: an unoccupied row
 raises the answer's place by one against its own tail, and an
@@ -13023,7 +12964,7 @@ private theorem sFind_key : ∀ (w : Nat) (rows : List SRow)
     (i j : Nat), SInv w rows → sFind rows = some (i, j) → j < w
   | _, [], _, _, _, h => nomatch h
   | w, (c, []) :: rest, i, j, hinv, h => by
-    have hh : (c = w ∧ keysBelow w ([] : List (Nat × BPair)))
+    have hh : (c = w ∧ ground.keysBelow w ([] : List (Nat × BPair)))
         ∧ SInv w rest := hinv
     revert h
     show (match sFind rest with
@@ -13039,9 +12980,9 @@ private theorem sFind_key : ∀ (w : Nat) (rows : List SRow)
       rw [← hj]
       exact sFind_key w rest ij.1 ij.2 hh.2 hf
   | w, (c, (k, v) :: es) :: rest, i, j, hinv, h => by
-    have hh : (c = w ∧ keysBelow w ((k, v) :: es))
+    have hh : (c = w ∧ ground.keysBelow w ((k, v) :: es))
         ∧ SInv w rest := hinv
-    have hk : k < w ∧ keysBelow w es := hh.1.2
+    have hk : k < w ∧ ground.keysBelow w es := hh.1.2
     have h' : ((0, k) : Nat × Nat) = (i, j) := Option.some.inj h
     have hj : k = j := congrArg Prod.snd h'
     rw [← hj]
@@ -13051,15 +12992,15 @@ private theorem sFind_key : ∀ (w : Nat) (rows : List SRow)
 to the entries it walks: a kept key is its own place, below that
 join, and each further entry raises the start by one. -/
 private theorem keysBelow_ofRowFrom : ∀ (r : List BPair) (k : Nat),
-    keysBelow (k + r.length) (ofRowFrom k r)
+    ground.keysBelow (k + r.length) (ofRowFrom k r)
   | [], _ => trivial
   | e :: es, k => by
-    have hib : keysBelow (k + (es.length + 1))
+    have hib : ground.keysBelow (k + (es.length + 1))
         (ofRowFrom (k + 1) es) := by
       have h := keysBelow_ofRowFrom es (k + 1)
       rw [Nat.succ_add k es.length] at h
       exact h
-    show keysBelow (k + (es.length + 1))
+    show ground.keysBelow (k + (es.length + 1))
       (match (e.norm).isUnitRep with
         | true => ofRowFrom (k + 1) es
         | false => (k, e.norm) :: ofRowFrom (k + 1) es)
@@ -13071,10 +13012,10 @@ private theorem keysBelow_ofRowFrom : ∀ (r : List BPair) (k : Nat),
 /-- The key bound weakens upward: a stored key below the lesser
 bound sits below the greater. -/
 private theorem keysBelow_le {v w : Nat} (h : v ≤ w) :
-    ∀ es : List (Nat × BPair), keysBelow v es → keysBelow w es
+    ∀ es : List (Nat × BPair), ground.keysBelow v es → ground.keysBelow w es
   | [], _ => trivial
   | (k, _) :: es, he => by
-    have hh : k < v ∧ keysBelow v es := he
+    have hh : k < v ∧ ground.keysBelow v es := he
     exact ⟨Nat.lt_of_lt_of_le hh.1 h, keysBelow_le h es hh.2⟩
 
 /-- A framed matrix's sparse reading sits at the invariant: each
@@ -13098,19 +13039,19 @@ private theorem sInv_eraseIdx (w : Nat) : ∀ (rows : List SRow)
     (i : Nat), SInv w rows → SInv w (rows.eraseIdx i)
   | [], _, _ => trivial
   | r :: t, 0, h => by
-    have hh : (r.1 = w ∧ keysBelow w r.2) ∧ SInv w t := h
+    have hh : (r.1 = w ∧ ground.keysBelow w r.2) ∧ SInv w t := h
     exact hh.2
   | r :: t, i + 1, h => by
-    have hh : (r.1 = w ∧ keysBelow w r.2) ∧ SInv w t := h
+    have hh : (r.1 = w ∧ ground.keysBelow w r.2) ∧ SInv w t := h
     exact ⟨hh.1, sInv_eraseIdx w t i hh.2⟩
 
 /-- Every key the kept-entry walk stores passed its own bound
 guard, so the kept list sits below the bound outright. -/
 private theorem keysBelow_keepTail (f : BPair → BPair) (lim : Nat) :
-    ∀ es : List (Nat × BPair), keysBelow lim (keepTail f lim es)
+    ∀ es : List (Nat × BPair), ground.keysBelow lim (keepTail f lim es)
   | [] => trivial
   | (k, e) :: es => by
-    show keysBelow lim
+    show ground.keysBelow lim
       (match !(f e).isUnitRep && Nat.blt k lim with
         | true => (k, f e) :: keepTail f lim es
         | false => keepTail f lim es)
@@ -13120,24 +13061,15 @@ private theorem keysBelow_keepTail (f : BPair → BPair) (lim : Nat) :
         keysBelow_keepTail f lim es⟩
     | false => exact keysBelow_keepTail f lim es
 
-/-- A join of two bounded key lists is bounded. -/
-private theorem keysBelow_append (w : Nat) :
-    ∀ a b : List (Nat × BPair), keysBelow w a → keysBelow w b →
-      keysBelow w (a ++ b)
-  | [], _, _, hb => hb
-  | (k, v) :: a, b, ha, hb => by
-    have hh : k < w ∧ keysBelow w a := ha
-    exact ⟨hh.1, keysBelow_append w a b hh.2 hb⟩
-
 /-- The pivot row's split-off fill-in sits below the bound: every
 entry it keeps passed the same bound guard the kept-entry walk
 reads, the split's own second component carrying no bound. -/
 private theorem keysBelow_fillBelow (prev r0 : BPair) (lim k : Nat) :
     ∀ ps : List (Nat × BPair),
-      keysBelow lim (fillBelow prev r0 lim k ps).1
+      ground.keysBelow lim (fillBelow prev r0 lim k ps).1
   | [] => trivial
   | (kt, t) :: ps => by
-    show keysBelow lim
+    show ground.keysBelow lim
       (match Nat.blt kt k with
         | false => ([], (kt, t) :: ps)
         | true =>
@@ -13150,7 +13082,7 @@ private theorem keysBelow_fillBelow (prev r0 : BPair) (lim k : Nat) :
     cases hb : Nat.blt kt k with
     | false => exact trivial
     | true =>
-      show keysBelow lim
+      show ground.keysBelow lim
         (match !(fillEntry prev r0 t).isUnitRep
             && Nat.blt kt lim with
           | true => ((kt, fillEntry prev r0 t)
@@ -13170,10 +13102,10 @@ row's fill-in alike — passed the same bound guard, and the split
 fill-in joins in front of the recursion's own read. -/
 private theorem keysBelow_mergeRow (prev pivot r0 : BPair)
     (lim : Nat) : ∀ (ps es : List (Nat × BPair)),
-      keysBelow lim (mergeRow prev pivot r0 lim ps es)
+      ground.keysBelow lim (mergeRow prev pivot r0 lim ps es)
   | ps, [] => keysBelow_keepTail (fillEntry prev r0) lim ps
   | ps, (ke, e) :: es => by
-    show keysBelow lim
+    show ground.keysBelow lim
       (match (fillBelow prev r0 lim ke ps).2 with
         | [] => (fillBelow prev r0 lim ke ps).1
             ++ scaleTail prev pivot lim ((ke, e) :: es)
@@ -13197,12 +13129,12 @@ private theorem keysBelow_mergeRow (prev pivot r0 : BPair)
                 ++ mergeRow prev pivot r0 lim ((kt, t) :: pr) es)
     cases hb : (fillBelow prev r0 lim ke ps).2 with
     | nil =>
-      exact keysBelow_append lim _ _
+      exact ground.keysBelow_append lim _ _
         (keysBelow_fillBelow prev r0 lim ke ps)
         (keysBelow_keepTail (scaleEntry prev pivot) lim
           ((ke, e) :: es))
     | cons hd pr =>
-      show keysBelow lim
+      show ground.keysBelow lim
         (match Nat.beq hd.1 ke with
           | true =>
             match !(jointEntry prev pivot hd.2 r0 e).isUnitRep
@@ -13225,24 +13157,24 @@ private theorem keysBelow_mergeRow (prev pivot r0 : BPair)
         cases hg : !(jointEntry prev pivot hd.2 r0 e).isUnitRep
             && Nat.blt ke lim with
         | true =>
-          exact keysBelow_append lim _ _
+          exact ground.keysBelow_append lim _ _
             (keysBelow_fillBelow prev r0 lim ke ps)
             ⟨bltLt (ground.andSplitB hg).2,
               keysBelow_mergeRow prev pivot r0 lim pr es⟩
         | false =>
-          exact keysBelow_append lim _ _
+          exact ground.keysBelow_append lim _ _
             (keysBelow_fillBelow prev r0 lim ke ps)
             (keysBelow_mergeRow prev pivot r0 lim pr es)
       | false =>
         cases hg : !(scaleEntry prev pivot e).isUnitRep
             && Nat.blt ke lim with
         | true =>
-          exact keysBelow_append lim _ _
+          exact ground.keysBelow_append lim _ _
             (keysBelow_fillBelow prev r0 lim ke ps)
             ⟨bltLt (ground.andSplitB hg).2,
               keysBelow_mergeRow prev pivot r0 lim (hd :: pr) es⟩
         | false =>
-          exact keysBelow_append lim _ _
+          exact ground.keysBelow_append lim _ _
             (keysBelow_fillBelow prev r0 lim ke ps)
             (keysBelow_mergeRow prev pivot r0 lim (hd :: pr) es)
 
@@ -13251,8 +13183,8 @@ scaling walk and the merge both keep an entry only past the bound
 guard. -/
 private theorem keysBelow_stepSRow (prev pivot r0 : BPair)
     (lim : Nat) (ps es : List (Nat × BPair)) :
-      keysBelow lim (stepSRow prev pivot r0 lim ps es) := by
-  show keysBelow lim
+      ground.keysBelow lim (stepSRow prev pivot r0 lim ps es) := by
+  show ground.keysBelow lim
     (match r0.isUnitRep with
       | true => scaleTail prev pivot lim es
       | false => mergeRow prev pivot r0 lim ps es)
@@ -13282,14 +13214,14 @@ private theorem sInv_step (w : Nat) (prev : BPair)
   | nil => exact fun _ => trivial
   | cons r t ih =>
     intro hrows
-    have hh : (r.1 = w ∧ keysBelow w r.2) ∧ SInv w t := hrows
+    have hh : (r.1 = w ∧ ground.keysBelow w r.2) ∧ SInv w t := hrows
     have hq : ((sPeel j r).2).1 = w - 1 :=
       sPeel_count r hj hh.1.1
     have hlim : ground.natMin p.2.1 ((sPeel j r).2).1 = w - 1 := by
       rw [hp, hq]
       exact natMin_self (w - 1)
     show ((ground.natMin p.2.1 ((sPeel j r).2).1 = w - 1)
-        ∧ keysBelow (w - 1)
+        ∧ ground.keysBelow (w - 1)
           (stepSRow prev p.1 (sPeel j r).1
             (ground.natMin p.2.1 ((sPeel j r).2).1) p.2.2
             ((sPeel j r).2).2))
@@ -13307,13 +13239,13 @@ it. -/
 private theorem sInv_getAt (w : Nat) : ∀ (rows : List SRow)
     (i : Nat), SInv w rows → i < rows.length →
       (ground.getAt ((0, []) : SRow) rows i).1 = w
-      ∧ keysBelow w (ground.getAt ((0, []) : SRow) rows i).2
+      ∧ ground.keysBelow w (ground.getAt ((0, []) : SRow) rows i).2
   | [], _, _, hi => absurd hi (Nat.not_lt_zero _)
   | r :: t, 0, h, _ => by
-    have hh : (r.1 = w ∧ keysBelow w r.2) ∧ SInv w t := h
+    have hh : (r.1 = w ∧ ground.keysBelow w r.2) ∧ SInv w t := h
     exact hh.1
   | r :: t, i + 1, h, hi => by
-    have hh : (r.1 = w ∧ keysBelow w r.2) ∧ SInv w t := h
+    have hh : (r.1 = w ∧ ground.keysBelow w r.2) ∧ SInv w t := h
     exact sInv_getAt w t i hh.2 (Nat.lt_of_succ_lt_succ hi)
 
 /-- The descent's pivot count is bounded by the stated width at the
@@ -13434,12 +13366,12 @@ private theorem keyAt_append_unit (a : Nat) (v : List (Nat × BPair))
 
 /-- A join reads at its tail block above the head block's bound. -/
 private theorem keyAt_append_below (w : Nat) :
-    ∀ u : List (Nat × BPair), keysBelow w u →
+    ∀ u : List (Nat × BPair), ground.keysBelow w u →
       ∀ (v : List (Nat × BPair)) (a : Nat), ¬ a < w →
         ground.keyAt Nat.beq BPair.unit a (u ++ v) = ground.keyAt Nat.beq BPair.unit a v
   | [], _, _, _, _ => rfl
   | (k, x) :: u, hu, v, a, ha => by
-    have hh : k < w ∧ keysBelow w u := hu
+    have hh : k < w ∧ ground.keysBelow w u := hu
     show (cond (Nat.beq k a) (x) (ground.keyAt Nat.beq BPair.unit a (u ++ v))) = ground.keyAt Nat.beq BPair.unit a v
     rw [beqFalse (fun he => ha (by rw [← he]; exact hh.1))]
     exact keyAt_append_below w u hh.2 v a ha
@@ -13977,10 +13909,10 @@ private theorem keyAt_keepTail (f : BPair → BPair) (lim : Nat)
 entry it keeps passed the strict guard against that key. -/
 private theorem keysBelow_fillBelow_lt (prev r0 : BPair)
     (lim k : Nat) : ∀ ps : List (Nat × BPair),
-      keysBelow k (fillBelow prev r0 lim k ps).1
+      ground.keysBelow k (fillBelow prev r0 lim k ps).1
   | [] => trivial
   | (kt, t) :: ps => by
-    show keysBelow k (match Nat.blt kt k with
+    show ground.keysBelow k (match Nat.blt kt k with
         | false => ([], (kt, t) :: ps)
         | true =>
           match !(fillEntry prev r0 t).isUnitRep

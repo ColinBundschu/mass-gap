@@ -25,6 +25,7 @@ abstract: >-
   compact simple group, constructively over the positive naturals, together
   with its Lean 4 formalization: two libraries, MassGap and MassGapChecks,
   Lean core alone, every declaration at the empty axiom set and every check
-  module decided by the kernel.  The README states which clauses of the
-  main theorem the Lean tree holds at this version and which remain open;
-  the work is not a completed formal proof of the Yang-Mills mass gap.
+  module decided by the kernel.  The manuscript is a completed proof of the
+  Yang-Mills mass gap; the Lean tree is its transcription in progress, and
+  the README states which clauses of the main theorem it holds at this
+  version and which remain open.

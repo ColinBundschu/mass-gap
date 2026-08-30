@@ -45,3 +45,17 @@ example : closing.read (supportCount (tableA 2)) (residue (tableA 2)) := by
   decide +kernel
 example : closing.read (supportCount (tableA 5)) (residue (tableA 5)) := by
   decide +kernel
+
+/-! The read's two occupancy binders, isolated: a vacant base and
+a vacant residue each refuse the read outright, the match's
+falsum arms. -/
+
+example : ¬ closing.read 0 3 := by decide +kernel
+example : ¬ closing.read 3 0 := by decide +kernel
+
+/-! The universal read at an uncommitted point, the theorem route
+beside the kernel's own read at a committed one. -/
+
+example : closing.read 2 30 := closing.read_all 1 29
+example : closing.read 2 5 := by decide +kernel
+example : closing.read 2 5 := closing.read_all 1 4

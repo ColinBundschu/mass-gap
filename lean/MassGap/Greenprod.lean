@@ -819,11 +819,11 @@ private theorem offPad_getAt (w : Nat) (B : Mat) (q : Nat)
     ground.getAt [] (offPad w B) q = padRow w (ground.getAt [] B q) :=
   ground.getAt_map ([] : List BPair) ([] : List BPair) (padRow w) B q hq
 
-private theorem offT_len (k : Nat) (bt : Mat) (m : Nat) :
+theorem offT_len (k : Nat) (bt : Mat) (m : Nat) :
     (offT k bt m).length = m :=
   ground.length_mapRange _ m
 
-private theorem offT_rows (k : Nat) (bt : Mat) (m : Nat)
+theorem offT_rows (k : Nat) (bt : Mat) (m : Nat)
     (hbt : rowsLen k bt) : rowsLen k (offT k bt m) :=
   rowsLen_map _ k (List.range m) (fun r _ => by
     by_cases hr : r < bt.length
@@ -1058,7 +1058,7 @@ theorem slab_pos : ∀ {diag off : List Mat} {ns : List Nat},
     slab_pos h.2.2.2 i (Nat.lt_of_succ_lt_succ hi)
 
 /-- The assembled matrix is square at the slab orders' sum. -/
-private theorem assemble_sq : ∀ (diag off : List Mat) (ns : List Nat),
+theorem assemble_sq : ∀ (diag off : List Mat) (ns : List Nat),
     slabShape diag off ns → sqAt (assemble diag off) (ground.sumNat ns)
   | [], _, _, h => h.elim
   | _ :: _, _, [], h => h.elim
@@ -3656,5 +3656,334 @@ theorem revFold_split (sps : List ((k : Nat) × Split k)) (h : Nat) :
     | cons s t =>
       show revFold (s :: t) = revFold (s :: t.take h) + revFold (t.drop h)
       rw [revFold_cons s t, revFold_cons s (t.take h), ih t, Nat.add_assoc]
+
+/-! The scalar chain's form read: the chain assembled at scalar
+slabs reads `inertia.quadForm` as the display's two folds, the
+diagonal entries at the squares with the bonds at the doubled
+consecutive products, and the assembled shape is square at the
+diagonal's count. -/
+
+/-- The keyed pair walk at two matched families is the zipped
+family. -/
+private theorem rangeZipCons (d : BPair) (dd : List BPair) :
+    ∀ (c : List BPair) (rest : elim.Mat), c.length = rest.length →
+      (List.range rest.length).map
+          (fun r => ground.getAt d c r :: ground.getAt dd rest r)
+        = List.zipWith (fun a b => a :: b) c rest
+  | [], [], _ => rfl
+  | [], _ :: _, h => Nat.noConfusion h
+  | _ :: _, [], h => Nat.noConfusion h
+  | a :: ct, R :: rt, h => by
+    show (List.range (rt.length + 1)).map _ = (a :: R) :: _
+    rw [ground.range_cons rt.length]
+    show (a :: R) :: ((List.range rt.length).map (fun j => j + 1)).map
+        (fun r => ground.getAt d (a :: ct) r :: ground.getAt dd (R :: rt) r)
+      = (a :: R) :: _
+    rw [ground.map_map]
+    show (a :: R) :: (List.range rt.length).map
+        (fun j => ground.getAt d ct j :: ground.getAt dd rt j) = _
+    rw [rangeZipCons d dd ct rt (Nat.succ.inj h)]
+
+
+/-- The block row's pairing splits at the leading column: the rows'
+folds against the walked vector are the column's scaled fold and the
+tail block's own. -/
+private theorem consDot (x : BPair) (w : List BPair) :
+    ∀ (c : List BPair) (rest : elim.Mat), c.length = rest.length →
+    ∀ v : List BPair,
+      (elim.dotP v ((List.zipWith (fun a b => a :: b) c rest).map
+          (fun rr => elim.dotP rr (x :: w)))).oneValue
+        (elim.dotP v (c.map (fun cc => cc * x))
+          + elim.dotP v (rest.map (fun rr => elim.dotP rr w)))
+  | [], [], _, v => by
+    show (elim.dotP v []).oneValue (elim.dotP v [] + elim.dotP v [])
+    rw [elim.dotP_nil_right v]
+    exact BPair.oneValue_symm (BPair.add_unit BPair.unit)
+  | [], _ :: _, h, _ => Nat.noConfusion h
+  | _ :: _, [], h, _ => Nat.noConfusion h
+  | _ :: _, _ :: _, _, [] => by
+    show (elim.dotP [] _).oneValue (elim.dotP [] _ + elim.dotP [] _)
+    exact BPair.oneValue_symm (BPair.add_unit BPair.unit)
+  | cc :: ct, R :: rt, h, z :: vt => by
+    show (z * (cc * x + elim.dotP R w)
+        + elim.dotP vt ((List.zipWith (fun a b => a :: b) ct rt).map
+          (fun rr => elim.dotP rr (x :: w)))).oneValue
+      ((z * (cc * x) + elim.dotP vt (ct.map (fun cc => cc * x)))
+        + (z * elim.dotP R w + elim.dotP vt (rt.map (fun rr => elim.dotP rr w))))
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_of_eq (BPair.left_distrib z (cc * x)
+        (elim.dotP R w))) (consDot x w ct rt (Nat.succ.inj h) vt)) ?_
+    exact BPair.oneValue_of_eq (BPair.add_add_comm _ _ _ _)
+
+
+/-- The scalar chain's shape: the assembled matrix is square at the
+diagonal's count, its leading row the same width. -/
+theorem chainLen : ∀ (diag off : List BPair),
+    off.length + 1 = diag.length →
+    (greenprod.assemble (diag.map (fun a => [[a]]))
+        (off.map (fun b => [[b]]))).length = diag.length
+      ∧ ((greenprod.assemble (diag.map (fun a => [[a]]))
+        (off.map (fun b => [[b]]))).headD []).length = diag.length
+  | [], _, h => Nat.noConfusion h
+  | [_], [], _ => ⟨rfl, rfl⟩
+  | [_], _ :: _, h => Nat.noConfusion (Nat.succ.inj h)
+  | _ :: _ :: _, [], h => Nat.noConfusion (Nat.succ.inj h)
+  | a :: a' :: dt, b :: ot, h => by
+    have hIH := chainLen (a' :: dt) ot (Nat.succ.inj h)
+    refine ⟨?_, ?_⟩
+    · show ((List.range (greenprod.assemble ((a' :: dt).map
+          (fun a => [[a]])) (ot.map (fun b => [[b]]))).length).map _).length
+            + 1 = dt.length + 1 + 1
+      rw [ground.length_mapRange, hIH.1]
+      rfl
+    · show (a :: b :: List.replicate
+        (((greenprod.assemble ((a' :: dt).map (fun a => [[a]]))
+          (ot.map (fun b => [[b]]))).headD []).length - 1)
+          BPair.unit).length = dt.length + 1 + 1
+      show (List.replicate
+        (((greenprod.assemble ((a' :: dt).map (fun a => [[a]]))
+          (ot.map (fun b => [[b]]))).headD []).length - 1)
+          BPair.unit).length + 1 + 1 = dt.length + 1 + 1
+      rw [ground.length_replicate, hIH.2]
+      rfl
+
+
+/-- The pairing against a scaled constant family sits at the sum's
+unit. -/
+private theorem dotP_replMul (x : BPair) : ∀ (v : List BPair) (p : Nat),
+    (elim.dotP v ((List.replicate p BPair.unit).map
+      (fun cc => cc * x))).oneValue BPair.unit
+  | [], _ => BPair.oneValue_refl _
+  | _ :: _, 0 => BPair.oneValue_refl _
+  | z :: vt, p + 1 => by
+    show (z * (BPair.unit * x) + elim.dotP vt _).oneValue BPair.unit
+    refine BPair.oneValue_trans (BPair.add_congr
+      (BPair.mul_congr (BPair.oneValue_refl z) (BPair.unit_mul x))
+      (dotP_replMul x vt p)) ?_
+    exact BPair.oneValue_trans
+      (BPair.add_congr (BPair.mul_unit z) (BPair.oneValue_refl BPair.unit))
+      (BPair.unit_add BPair.unit)
+
+/-- The leading slab's own contribution: the diagonal entry at the
+square and the bond entry at the doubled consecutive product. -/
+private theorem consArith (a b x y : BPair) :
+    (x * (a * x + b * y) + y * (b * x)).oneValue
+      (a * (x * x) + BPair.ofNat 2 * (b * (x * y))) := by
+  rw [BPair.left_distrib x (a * x) (b * y),
+    BPair.mul_left_comm x a x, BPair.mul_left_comm x b y,
+    BPair.mul_comm y (b * x), BPair.mul_assoc b x y,
+    BPair.add_assoc]
+  exact BPair.add_congr (BPair.oneValue_refl (a * (x * x)))
+    (BPair.oneValue_symm (BPair.ofNat_two_mul (b * (x * y))))
+
+
+/-- The leading slab's row read at the assembled chain: the head
+row's fold and the block rows' folds split into the slab's own
+entries and the tail chain's fold. -/
+private theorem consQuad (a b x y : BPair) (ut : List BPair) (rest : elim.Mat)
+    (hlen : rest.length = ut.length + 1)
+    (hhd : (rest.headD []).length = ut.length + 1) :
+    (elim.dotP (x :: y :: ut)
+        (((a :: b :: List.replicate ((rest.headD []).length - 1) BPair.unit)
+            :: (List.range rest.length).map (fun r =>
+              (if r < 1 then ground.getAt [] [[b]] r
+               else List.replicate 1 BPair.unit)
+                ++ ground.getAt [] rest r)).map
+          (fun rr => elim.dotP rr (x :: y :: ut)))).oneValue
+      (a * (x * x) + BPair.ofNat 2 * (b * (x * y))
+        + elim.dotP (y :: ut) (rest.map (fun rr => elim.dotP rr (y :: ut)))) := by
+  have hcol : (b :: List.replicate ut.length BPair.unit).length
+      = rest.length := by
+    rw [hlen]
+    show (List.replicate ut.length BPair.unit).length + 1 = ut.length + 1
+    rw [ground.length_replicate]
+  have hpt : ∀ r : Nat,
+      (if r < 1 then ground.getAt [] [[b]] r
+       else List.replicate 1 BPair.unit) ++ ground.getAt [] rest r
+        = ground.getAt BPair.unit (b :: List.replicate ut.length BPair.unit) r
+          :: ground.getAt [] rest r := by
+    intro r
+    match r with
+    | 0 => rfl
+    | j + 1 =>
+      show List.replicate 1 BPair.unit ++ ground.getAt [] rest (j + 1)
+        = ground.getAt BPair.unit (List.replicate ut.length BPair.unit) j
+          :: ground.getAt [] rest (j + 1)
+      rw [ground.getAt_replicate_self BPair.unit ut.length j]
+      rfl
+  rw [hhd]
+  show (x * elim.dotP (a :: b :: List.replicate (ut.length + 1 - 1) BPair.unit)
+        (x :: y :: ut)
+      + elim.dotP (y :: ut)
+        (((List.range rest.length).map (fun r =>
+            (if r < 1 then ground.getAt [] [[b]] r
+             else List.replicate 1 BPair.unit)
+              ++ ground.getAt [] rest r)).map
+          (fun rr => elim.dotP rr (x :: y :: ut)))).oneValue _
+  rw [ground.map_congr_all _
+      (fun r => ground.getAt BPair.unit
+        (b :: List.replicate ut.length BPair.unit) r
+          :: ground.getAt [] rest r) hpt,
+    rangeZipCons BPair.unit [] (b :: List.replicate ut.length BPair.unit)
+      rest hcol]
+  have hhead : (elim.dotP (a :: b :: List.replicate (ut.length + 1 - 1) BPair.unit)
+      (x :: y :: ut)).oneValue (a * x + b * y) := by
+    show (a * x + (b * y
+      + elim.dotP (List.replicate (ut.length + 1 - 1) BPair.unit) ut)).oneValue
+        (a * x + b * y)
+    refine BPair.add_congr (BPair.oneValue_refl (a * x)) ?_
+    refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl (b * y))
+      ?_) (BPair.add_unit (b * y))
+    rw [elim.dotP_comm (List.replicate (ut.length + 1 - 1) BPair.unit) ut]
+    exact elim.dotP_repl_unit ut (ut.length + 1 - 1)
+  have hcolDot : (elim.dotP (y :: ut)
+      ((b :: List.replicate ut.length BPair.unit).map
+        (fun cc => cc * x))).oneValue (y * (b * x)) := by
+    show (y * (b * x) + elim.dotP ut ((List.replicate ut.length BPair.unit).map
+        (fun cc => cc * x))).oneValue (y * (b * x))
+    exact BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl (y * (b * x)))
+        (dotP_replMul x ut ut.length)) (BPair.add_unit (y * (b * x)))
+  refine BPair.oneValue_trans (BPair.add_congr
+    (BPair.mul_congr (BPair.oneValue_refl x) hhead)
+    (consDot x (y :: ut) (b :: List.replicate ut.length BPair.unit) rest
+      hcol (y :: ut))) ?_
+  refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl _)
+    (BPair.add_congr hcolDot (BPair.oneValue_refl _))) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq (BPair.add_assoc _ _ _).symm) ?_
+  exact BPair.add_congr (consArith a b x y) (BPair.oneValue_refl _)
+
+
+/-- The scalar chain's plain form read: the diagonal entries at the
+squares with the bonds at the doubled consecutive products. -/
+private theorem chainDot : ∀ (diag off u : List BPair),
+    diag.length = u.length → off.length + 1 = diag.length →
+    (elim.dotP u ((greenprod.assemble (diag.map (fun a => [[a]]))
+        (off.map (fun b => [[b]]))).map (fun rr => elim.dotP rr u))).oneValue
+      (ground.bsum (fun k =>
+          ground.getAt BPair.unit diag k
+            * (ground.getAt BPair.unit u k
+              * ground.getAt BPair.unit u k))
+        (List.range u.length)
+      + BPair.ofNat 2
+        * ground.bsum (fun k =>
+            ground.getAt BPair.unit off k
+              * (ground.getAt BPair.unit u k
+                * ground.getAt BPair.unit u (k + 1)))
+          (List.range off.length))
+  | [], _, _, _, h => Nat.noConfusion h
+  | [_], _ :: _, _, _, h => Nat.noConfusion (Nat.succ.inj h)
+  | _ :: _ :: _, [], _, _, h => Nat.noConfusion (Nat.succ.inj h)
+  | [_], [], [], h, _ => Nat.noConfusion h
+  | [_], [], _ :: _ :: _, h, _ => Nat.noConfusion (Nat.succ.inj h)
+  | [a], [], [x], _, _ => by
+    show (x * (a * x + BPair.unit) + BPair.unit).oneValue
+      ((a * (x * x) + BPair.unit) + BPair.ofNat 2 * BPair.unit)
+    refine BPair.oneValue_trans (BPair.add_congr
+      (BPair.mul_congr (BPair.oneValue_refl x) (BPair.add_unit (a * x)))
+      (BPair.oneValue_refl BPair.unit)) ?_
+    refine BPair.oneValue_trans (BPair.add_unit (x * (a * x))) ?_
+    rw [BPair.mul_left_comm x a x]
+    refine BPair.oneValue_symm ?_
+    exact BPair.oneValue_trans
+      (BPair.add_congr (BPair.add_unit (a * (x * x)))
+        (BPair.mul_unit (BPair.ofNat 2)))
+      (BPair.add_unit (a * (x * x)))
+  | _ :: _ :: _, _ :: _, [], h, _ => Nat.noConfusion h
+  | _ :: _ :: _, _ :: _, [_], h, _ => Nat.noConfusion (Nat.succ.inj h)
+  | a :: a' :: dt, b :: ot, x :: y :: ut, h1, h2 => by
+    have hut : dt.length = ut.length := Nat.succ.inj (Nat.succ.inj h1)
+    have hIH := chainDot (a' :: dt) ot (y :: ut)
+      (Nat.succ.inj h1) (Nat.succ.inj h2)
+    have hsh := chainLen (a' :: dt) ot (Nat.succ.inj h2)
+    have hlen : (greenprod.assemble ((a' :: dt).map (fun a => [[a]]))
+        (ot.map (fun b => [[b]]))).length = ut.length + 1 := by
+      rw [hsh.1]
+      show dt.length + 1 = ut.length + 1
+      rw [hut]
+    have hhd : ((greenprod.assemble ((a' :: dt).map (fun a => [[a]]))
+        (ot.map (fun b => [[b]]))).headD []).length = ut.length + 1 := by
+      rw [hsh.2]
+      show dt.length + 1 = ut.length + 1
+      rw [hut]
+    have hM : greenprod.assemble ((a :: a' :: dt).map (fun a => [[a]]))
+          ((b :: ot).map (fun b => [[b]]))
+        = (a :: b :: List.replicate
+              (((greenprod.assemble ((a' :: dt).map (fun a => [[a]]))
+                (ot.map (fun b => [[b]]))).headD []).length - 1) BPair.unit)
+          :: (List.range (greenprod.assemble ((a' :: dt).map (fun a => [[a]]))
+                (ot.map (fun b => [[b]]))).length).map (fun r =>
+              (if r < 1 then ground.getAt [] [[b]] r
+               else List.replicate 1 BPair.unit)
+                ++ ground.getAt [] (greenprod.assemble
+                  ((a' :: dt).map (fun a => [[a]]))
+                  (ot.map (fun b => [[b]]))) r) := rfl
+    have hF : ground.bsum (fun k =>
+          ground.getAt BPair.unit (a :: a' :: dt) k
+            * (ground.getAt BPair.unit (x :: y :: ut) k
+              * ground.getAt BPair.unit (x :: y :: ut) k))
+          (List.range (ut.length + 1 + 1))
+        = a * (x * x)
+          + ground.bsum (fun k =>
+            ground.getAt BPair.unit (a' :: dt) k
+              * (ground.getAt BPair.unit (y :: ut) k
+                * ground.getAt BPair.unit (y :: ut) k))
+            (List.range (ut.length + 1)) := by
+      rw [ground.range_cons (ut.length + 1)]
+      show a * (x * x) + ground.bsum _
+          ((List.range (ut.length + 1)).map (fun j => j + 1)) = _
+      rw [ground.bsum_map]
+      rfl
+    have hG : ground.bsum (fun k =>
+          ground.getAt BPair.unit (b :: ot) k
+            * (ground.getAt BPair.unit (x :: y :: ut) k
+              * ground.getAt BPair.unit (x :: y :: ut) (k + 1)))
+          (List.range (ot.length + 1))
+        = b * (x * y)
+          + ground.bsum (fun k =>
+            ground.getAt BPair.unit ot k
+              * (ground.getAt BPair.unit (y :: ut) k
+                * ground.getAt BPair.unit (y :: ut) (k + 1)))
+            (List.range ot.length) := by
+      rw [ground.range_cons ot.length]
+      show b * (x * y) + ground.bsum _
+          ((List.range ot.length).map (fun j => j + 1)) = _
+      rw [ground.bsum_map]
+      rfl
+    rw [hM]
+    show (elim.dotP (x :: y :: ut) _).oneValue
+      (ground.bsum _ (List.range (ut.length + 1 + 1))
+        + BPair.ofNat 2 * ground.bsum _ (List.range (ot.length + 1)))
+    rw [hF, hG]
+    refine BPair.oneValue_trans (consQuad a b x y ut _ hlen hhd) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl _) hIH) ?_
+    rw [BPair.left_distrib (BPair.ofNat 2) (b * (x * y)) _]
+    exact BPair.oneValue_of_eq (BPair.add_add_comm _ _ _ _)
+
+
+/-- The scalar chain's form read is the display's two folds: the
+diagonal entries at the squares with the bonds at the doubled
+consecutive products. -/
+theorem chainQuad : ∀ (diag off u : List BPair),
+    diag.length = u.length → off.length + 1 = diag.length →
+    (inertia.quadForm
+        (greenprod.assemble (diag.map (fun a => [[a]]))
+          (off.map (fun b => [[b]])))
+        u).oneValue
+      (ground.bsum (fun k =>
+          ground.getAt BPair.unit diag k
+            * (ground.getAt BPair.unit u k
+              * ground.getAt BPair.unit u k))
+        (List.range u.length)
+      + BPair.ofNat 2
+        * ground.bsum (fun k =>
+            ground.getAt BPair.unit off k
+              * (ground.getAt BPair.unit u k
+                * ground.getAt BPair.unit u (k + 1)))
+          (List.range off.length)) :=
+  fun diag off u hl ho =>
+    BPair.oneValue_trans (elim.quadP_read _ u) (chainDot diag off u hl ho)
 
 end greenprod

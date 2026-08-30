@@ -108,6 +108,7 @@ import MassGapChecks.Dualtrunc
 import MassGapChecks.Contactcell
 import MassGapChecks.Corner
 import MassGapChecks.Cornerpivot
+import MassGapChecks.Cornerstore
 import MassGapChecks.Freecell
 import MassGapChecks.Bridge
 import MassGapChecks.Network
@@ -120,3 +121,4 @@ import MassGapChecks.Unitschain
 import MassGapChecks.Twoaction
 import MassGapChecks.Restoration
 import MassGapChecks.Groundreads
+import MassGapChecks.Momentfold

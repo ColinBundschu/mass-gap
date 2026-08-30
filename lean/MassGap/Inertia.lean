@@ -85,7 +85,13 @@ order and a positive scalar): the identity congruence with one
 positive block per key, the upper side throughout
 (`scalarSplit_psd`), and every datum reading the unit gram's scalar copy
 splitting at it (`scalarSplit_read`) — `lem:corner`'s join read
-consumes it at the two levels' difference site.
+consumes it at the two levels' difference site.  The diagonal
+certificate at a stated entry list is the block-diagonal addition's
+instance at order-one blocks (`oneSplit`, one block per entry with
+the kernel vacant, the table's order-one row reading each block's
+side): a datum reading the list's block diagonal splits at it
+(`oneSplit_read`) and its count is the list's own side fold
+(`revAt_oneSplit`), `rev_one` the instance at one entry.
 The tier closes at the transports and the joined form reads: a
 split moves across the one-value read at a square datum
 (`splitRead_congr`), a congruence at a two-sided witness
@@ -7051,101 +7057,6 @@ theorem splitRead_congr {n : Nat} (S S' : Mat) (hS' : sqAt S' n)
       (transposeM_congrM n _ _ hrows' hrows hlen.symm (matOne_symm hinner)))
     hcong
 
-/-! The block table's two small orders (`lem:inertia`'s table): at
-order one every split of a one-entry datum off the unit reads the
-entry's side, and at order two every split of a symmetric datum of
-unequal-membered determinant reads one unit per side at the
-determinant's lower side and the diagonal's shared side at the
-upper.  Each is read off the identity congruence's own split
-through the exchange. -/
-
-/-- The order-one identity congruence at a stated entry, the
-datum's own block diagonal. -/
-private def oneSplitAt (d : BPair) : Split 1 :=
-  ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [.one d], 0, rfl⟩
-
-/-- The order-two identity congruence at a stated symmetric block,
-the datum's own block diagonal. -/
-private def twoSplitAt (a b c : BPair) : Split 2 :=
-  ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [.two a b c], 0, rfl⟩
-
-/-- The order-one identity congruence reads the one-entry datum. -/
-private theorem oneSplitAt_read {d : BPair}
-    (hd : ¬ d.oneValue BPair.unit) :
-    splitRead [[d]] (oneSplitAt d) := by
-  refine ⟨rfl, ⟨BPair.ofNat_one_off, matOne_refl _, matOne_refl _⟩,
-    ?_, ?_⟩
-  · have hr : rowsLen 1 (matMul [[d]] (idMat 1)) :=
-      rowsLen_cast (transposeLen (idMat 1) (idMat_rows 1) (idMat_len 1))
-        (rowsLen_matMul [[d]] (idMat 1))
-    have hl : (matMul [[d]] (idMat 1)).length = 1 :=
-      (length_matMul [[d]] (idMat 1)).trans rfl
-    show matOneValue (matMul (transposeM (idMat 1))
-      (matMul [[d]] (idMat 1))) (blockMat [SBlock.one d] 0)
-    rw [transposeM_idMat 1]
-    exact matOne_trans (idMat_matMul (k := 1) 1 _ hr hl Nat.one_pos)
-      (show matOneValue (matMul [[d]] (idMat 1))
-          (blockMat [SBlock.one d] 0) from
-        matMul_idR (k := 1) 1 [[d]] ⟨rfl, trivial⟩ rfl
-          Nat.one_pos Nat.one_pos)
-  · show (!(decide (d.oneValue BPair.unit)) && true) = true
-    rw [decide_eq_false hd]
-    rfl
-
-/-- The order-two identity congruence reads the symmetric two-entry
-datum. -/
-private theorem twoSplitAt_read {a b c : BPair}
-    (hdet : ¬ ((SBlock.two a b c).det).oneValue BPair.unit) :
-    splitRead [[a, b], [b, c]] (twoSplitAt a b c) := by
-  refine ⟨rfl, ⟨BPair.ofNat_one_off, matOne_refl _, matOne_refl _⟩,
-    ?_, ?_⟩
-  · have hr : rowsLen 2 (matMul [[a, b], [b, c]] (idMat 2)) :=
-      rowsLen_cast (transposeLen (idMat 2) (idMat_rows 2) (idMat_len 2))
-        (rowsLen_matMul [[a, b], [b, c]] (idMat 2))
-    have hl : (matMul [[a, b], [b, c]] (idMat 2)).length = 2 :=
-      (length_matMul [[a, b], [b, c]] (idMat 2)).trans rfl
-    show matOneValue (matMul (transposeM (idMat 2))
-      (matMul [[a, b], [b, c]] (idMat 2)))
-      (blockMat [SBlock.two a b c] 0)
-    rw [transposeM_idMat 2]
-    exact matOne_trans
-      (idMat_matMul (k := 2) 2 _ hr hl (Nat.succ_pos 1))
-      (show matOneValue (matMul [[a, b], [b, c]] (idMat 2))
-          (blockMat [SBlock.two a b c] 0) from
-        matMul_idR (k := 2) 2 [[a, b], [b, c]] ⟨rfl, rfl, trivial⟩ rfl
-          (Nat.succ_pos 1) (Nat.succ_pos 1))
-  · show (!(decide (((SBlock.two a b c).det).oneValue BPair.unit))
-      && true) = true
-    rw [decide_eq_false hdet]
-    rfl
-
-/-- Every split of a one-entry datum off the unit reads the entry's
-side, the block table's order-one row. -/
-theorem rev_one {d : BPair} (hd : ¬ d.oneValue BPair.unit)
-    (sp : Split 1) (h : splitRead [[d]] sp) :
-    revAt sp = (SBlock.one d).rev := by
-  rw [rev_exchange [[d]] sp (oneSplitAt d) h (oneSplitAt_read hd)]
-  show 0 + (SBlock.one d).rev = (SBlock.one d).rev
-  exact Nat.zero_add _
-
-/-- Every split of a symmetric two-entry datum of unequal-membered
-determinant reads the block table: one unit per side at the
-determinant's lower side, the diagonal's shared side at the
-upper. -/
-theorem rev_two {a b b' c : BPair} (hb : b'.oneValue b)
-    (hdet : ¬ ((SBlock.two a b c).det).oneValue BPair.unit)
-    (sp : Split 2) (h : splitRead [[a, b], [b', c]] sp) :
-    revAt sp = (SBlock.two a b c).rev := by
-  have h' : splitRead [[a, b], [b, c]] sp :=
-    splitRead_congr (n := 2) [[a, b], [b', c]] [[a, b], [b, c]] rfl
-      ⟨⟨BPair.oneValue_refl a, BPair.oneValue_refl b, trivial⟩,
-       ⟨hb, BPair.oneValue_refl c, trivial⟩, trivial⟩ sp h
-  rw [rev_exchange [[a, b], [b, c]] sp (twoSplitAt a b c) h'
-    (twoSplitAt_read hdet)]
-  show 0 + (SBlock.two a b c).rev = (SBlock.two a b c).rev
-  exact Nat.zero_add _
-
-
 /-- The congruence invariance (`lem:inertia`'s consequences): at a
 congruence with a two-sided witness, `T W ~ c I ~ W T` at `c` off
 equal members, the image reads the datum's own reversal count — the
@@ -11532,6 +11443,163 @@ theorem scalarSplit_read {o : Nat} (c : Pos) (S : Mat)
       ⟨fun hu => BPair.ofNat_one_off
         (BPair.oneValue_trans (BPair.oneValue_symm hminor) hu), hid2, hid2⟩,
       h3, allOff_replOne (BPair.ofPos c) (BPair.ofPos_off c) (n + 1)⟩
+
+/-! The diagonal certificate at a stated entry list
+(`lem:inertia`'s block-diagonal addition: the splits concatenate to
+a split of the block diagonal with the block lists appended and the
+kernel orders added, each order-one block reading its entry's side
+at the table's own row).  The block table's two small orders keep
+their own reads beside it through the exchange. -/
+
+/-- The block widths at an entry list's order-one blocks: one width
+per entry, the kernel vacant. -/
+private theorem widthOf_mapOne : ∀ ds : List BPair,
+    widthOf (ds.map SBlock.one) 0 = ds.length
+  | [] => rfl
+  | _ :: t => by
+    show widthOf (t.map SBlock.one) (0 + 1) = t.length + 1
+    rw [widthOf_shift (t.map SBlock.one) 0 1, widthOf_mapOne t]
+
+/-- An entry list off the sum's unit reads the nonsingularity fold
+at its order-one blocks, the block's determinant its entry. -/
+private theorem allOff_mapOne (ds : List BPair)
+    (h : (ds.all (fun d => !(decide (d.oneValue BPair.unit)))) = true) :
+    ((ds.map SBlock.one).all
+      (fun b => !(decide (b.det.oneValue BPair.unit)))) = true := by
+  rw [ground.all_map SBlock.one _ ds]
+  exact h
+
+/-- The diagonal identity congruence at a stated entry list: one
+order-one block per entry, the kernel vacant. -/
+def oneSplit (ds : List BPair) : Split ds.length :=
+  ⟨⟨idMat ds.length, sqAt_of (idMat_len ds.length) (idMat_rows ds.length)⟩,
+    ⟨idMat ds.length, sqAt_of (idMat_len ds.length) (idMat_rows ds.length)⟩,
+    ds.map SBlock.one, 0,
+    by rw [widthOf_mapOne ds]; exact ground.beqRefl ds.length⟩
+
+/-- A matrix reading an entry list's block diagonal splits at the
+diagonal certificate: the identity congruence returns the matrix
+itself, the blocks the list's entries at their sides. -/
+theorem oneSplit_read (ds : List BPair) (S : Mat)
+    (hsq : sqAt S ds.length)
+    (h : matOneValue S (blockMat (ds.map SBlock.one) 0))
+    (hoff : (ds.all (fun d => !(decide (d.oneValue BPair.unit)))) = true) :
+    splitRead S (oneSplit ds) := by
+  cases ds with
+  | nil =>
+    cases S with
+    | nil =>
+      exact ⟨hsq, ⟨BPair.ofNat_one_off, trivial, trivial⟩, trivial, rfl⟩
+    | cons r t => exact absurd (sqAt_len hsq) (fun he => Nat.noConfusion he)
+  | cons d t =>
+    have hn : 0 < (d :: t).length := Nat.succ_pos t.length
+    have hSl : S.length = (d :: t).length := sqAt_len hsq
+    have hSr : rowsLen (d :: t).length S := rowsLen_of_sqAt hsq
+    have hidl : (idMat (d :: t).length).length = (d :: t).length :=
+      idMat_len (d :: t).length
+    have hminor : (minor (idMat (d :: t).length)).oneValue (BPair.ofNat 1) :=
+      BPair.oneValue_trans
+        (minor_detL (idMat (d :: t).length)
+          (rowsLen_cast hidl.symm (idMat_rows (d :: t).length)))
+        (detL_idMat (d :: t).length)
+    have hid2 : matOneValue
+        (matMul (idMat (d :: t).length) (idMat (d :: t).length))
+        (matScaleB (minor (idMat (d :: t).length))
+          (idMat (d :: t).length)) :=
+      matOne_trans
+        (idMat_matMul (k := (d :: t).length) (d :: t).length
+          (idMat (d :: t).length) (idMat_rows (d :: t).length) hidl hn)
+        (matOne_symm (matOne_trans
+          (matScaleB_congr hminor (idMat (d :: t).length))
+          (matScaleB_one (idMat (d :: t).length))))
+    have h3 : matOneValue
+        (matMul (transposeM (idMat (d :: t).length))
+          (matMul S (idMat (d :: t).length)))
+        (blockMat ((d :: t).map SBlock.one) 0) := by
+      rw [transposeM_idMat (d :: t).length]
+      refine matOne_trans ?_ h
+      refine matOne_trans ?_
+        (idMat_matMul (k := (d :: t).length) (d :: t).length S hSr hSl hn)
+      refine matMul_congrR (n := (d :: t).length) (k := (d :: t).length)
+        (idMat (d :: t).length) (matMul S (idMat (d :: t).length)) S ?_ hSr ?_
+        hSl hn
+        (matMul_idR (k := (d :: t).length) (d :: t).length S hSr hSl hn hn)
+      · exact rowsLen_cast
+          (by rw [transposeM_idMat (d :: t).length, idMat_len])
+          (rowsLen_matMul S (idMat (d :: t).length))
+      · exact (length_matMul S (idMat (d :: t).length)).trans hSl
+    exact ⟨hsq,
+      ⟨fun hu => BPair.ofNat_one_off
+        (BPair.oneValue_trans (BPair.oneValue_symm hminor) hu), hid2, hid2⟩,
+      h3, allOff_mapOne (d :: t) hoff⟩
+
+/-- The diagonal certificate's reversal count is the entry list's
+own side fold. -/
+theorem revAt_oneSplit (ds : List BPair) :
+    revAt (oneSplit ds) = ds.foldl (fun m d => m + (SBlock.one d).rev) 0 :=
+  ground.foldl_map SBlock.one (fun m b => m + b.rev) ds 0
+
+/-- The order-two identity congruence at a stated symmetric block,
+the datum's own block diagonal. -/
+private def twoSplitAt (a b c : BPair) : Split 2 :=
+  ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [.two a b c], 0, rfl⟩
+
+/-- The order-two identity congruence reads the symmetric two-entry
+datum. -/
+private theorem twoSplitAt_read {a b c : BPair}
+    (hdet : ¬ ((SBlock.two a b c).det).oneValue BPair.unit) :
+    splitRead [[a, b], [b, c]] (twoSplitAt a b c) := by
+  refine ⟨rfl, ⟨BPair.ofNat_one_off, matOne_refl _, matOne_refl _⟩,
+    ?_, ?_⟩
+  · have hr : rowsLen 2 (matMul [[a, b], [b, c]] (idMat 2)) :=
+      rowsLen_cast (transposeLen (idMat 2) (idMat_rows 2) (idMat_len 2))
+        (rowsLen_matMul [[a, b], [b, c]] (idMat 2))
+    have hl : (matMul [[a, b], [b, c]] (idMat 2)).length = 2 :=
+      (length_matMul [[a, b], [b, c]] (idMat 2)).trans rfl
+    show matOneValue (matMul (transposeM (idMat 2))
+      (matMul [[a, b], [b, c]] (idMat 2)))
+      (blockMat [SBlock.two a b c] 0)
+    rw [transposeM_idMat 2]
+    exact matOne_trans
+      (idMat_matMul (k := 2) 2 _ hr hl (Nat.succ_pos 1))
+      (show matOneValue (matMul [[a, b], [b, c]] (idMat 2))
+          (blockMat [SBlock.two a b c] 0) from
+        matMul_idR (k := 2) 2 [[a, b], [b, c]] ⟨rfl, rfl, trivial⟩ rfl
+          (Nat.succ_pos 1) (Nat.succ_pos 1))
+  · show (!(decide (((SBlock.two a b c).det).oneValue BPair.unit))
+      && true) = true
+    rw [decide_eq_false hdet]
+    rfl
+
+/-- Every split of a one-entry datum off the unit reads the entry's
+side, the block table's order-one row. -/
+theorem rev_one {d : BPair} (hd : ¬ d.oneValue BPair.unit)
+    (sp : Split 1) (h : splitRead [[d]] sp) :
+    revAt sp = (SBlock.one d).rev := by
+  rw [rev_exchange [[d]] sp (oneSplit [d]) h
+    (oneSplit_read [d] [[d]] rfl (matOne_refl _)
+      (show (!(decide (d.oneValue BPair.unit)) && true) = true by
+        rw [decide_eq_false hd]; rfl)),
+    revAt_oneSplit [d]]
+  show 0 + (SBlock.one d).rev = (SBlock.one d).rev
+  exact Nat.zero_add _
+
+/-- Every split of a symmetric two-entry datum of unequal-membered
+determinant reads the block table: one unit per side at the
+determinant's lower side, the diagonal's shared side at the
+upper. -/
+theorem rev_two {a b b' c : BPair} (hb : b'.oneValue b)
+    (hdet : ¬ ((SBlock.two a b c).det).oneValue BPair.unit)
+    (sp : Split 2) (h : splitRead [[a, b], [b', c]] sp) :
+    revAt sp = (SBlock.two a b c).rev := by
+  have h' : splitRead [[a, b], [b, c]] sp :=
+    splitRead_congr (n := 2) [[a, b], [b', c]] [[a, b], [b, c]] rfl
+      ⟨⟨BPair.oneValue_refl a, BPair.oneValue_refl b, trivial⟩,
+       ⟨hb, BPair.oneValue_refl c, trivial⟩, trivial⟩ sp h
+  rw [rev_exchange [[a, b], [b, c]] sp (twoSplitAt a b c) h'
+    (twoSplitAt_read hdet)]
+  show 0 + (SBlock.two a b c).rev = (SBlock.two a b c).rev
+  exact Nat.zero_add _
 
 /-- lem:inertia's existence clause: the split the leftmost
 admissible pivot's descent closes, one pivot of order at most two

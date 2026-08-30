@@ -674,28 +674,6 @@ private theorem unitLe_of_le_add {a x : BPair} (h : a ≤ a + x) :
   rw [ground.add_comm Pos.one x.snd]
   exact ground.posLeAdd h2 (Or.inl rfl)
 
-/-- The composite product exchanges. -/
-private theorem cmulComm (x y : ground.CPair) : x * y = y * x := by
-  obtain ⟨xn, xc⟩ := x
-  obtain ⟨yn, yc⟩ := y
-  show CPair.mk (xn * yn) (xc * yc) = CPair.mk (yn * xn) (yc * xc)
-  rw [BPair.mul_comm xn yn, ground.mul_comm xc yc]
-
-/-- The composite magnitude sits at or above the composite unit. -/
-private theorem cleUnitCmag (x : ground.CPair) :
-    stage.unitC ≤ stage.cmag x := by
-  obtain ⟨n, d⟩ := x
-  have h1 : stage.unitC ≤ (⟨windowsep.mag n, d⟩ : ground.CPair) := by
-    show BPair.unit.scale d ≤ (windowsep.mag n).scale Pos.one
-    refine ground.leB_congr ?_
-      (BPair.oneValue_of_eq (BPair.scale_one (windowsep.mag n)).symm)
-      (windowsep.unitLe_mag n)
-    show Pos.one + Pos.one * d = Pos.one * d + Pos.one
-    exact ground.add_comm Pos.one (Pos.one * d)
-  exact ground.CPair.le_congr
-    (ground.CPair.oneValue_refl stage.unitC)
-    (ground.CPair.oneValue_symm (stage.cmag_num n d)) h1
-
 /-- A nonnegative composite keeps under its product with a datum at
 or beyond the natural one. -/
 private theorem cleAbsorbC {x : ground.CPair} {c : BPair}
@@ -710,25 +688,6 @@ private theorem cleAbsorbC {x : ground.CPair} {c : BPair}
       (BPair.mul_one_read a) h1) b)
   refine BPair.oneValue_of_eq ?_
   rw [ground.mul_one b]
-
-/-- The composite product keeps a second-factor comparison at a
-nonnegative first factor. -/
-private theorem cleMulC {x : ground.CPair} (hx : stage.unitC ≤ x)
-    {y y' : ground.CPair} (h : y ≤ y') : x * y ≤ x * y' := by
-  obtain ⟨a, b⟩ := x
-  obtain ⟨c, d⟩ := y
-  obtain ⟨e, f⟩ := y'
-  have ha : BPair.unit ≤ a := stage.unitC_le_fst hx
-  have h0 : c.scale f ≤ e.scale d := h
-  have h1 : (a * (c.scale f)).scale b ≤ (a * (e.scale d)).scale b :=
-    ground.leB_scale (ground.leB_mulR ha h0) b
-  show (a * c).scale (b * f) ≤ (a * e).scale (b * d)
-  refine ground.leB_congr (BPair.oneValue_of_eq ?_)
-    (BPair.oneValue_of_eq ?_) h1
-  · rw [BPair.mul_scale a c f, BPair.scale_scale,
-      ground.mul_comm f b]
-  · rw [BPair.mul_scale a e d, BPair.scale_scale,
-      ground.mul_comm d b]
 
 /-- The width from a covered point up to a further one sits at or
 above the composite unit. -/
@@ -751,43 +710,8 @@ private theorem cleUnitAdd {u v : ground.CPair} (h : v ≤ u) :
 
 /-- The composite sum keeps a second-summand comparison. -/
 private theorem cleAddR {x y y' : ground.CPair} (h : y ≤ y') :
-    x + y ≤ x + y' := by
-  obtain ⟨xn, xc⟩ := x
-  obtain ⟨yn, yc⟩ := y
-  obtain ⟨zn, zc⟩ := y'
-  have h0 : yn.scale zc ≤ zn.scale yc := h
-  have hcore : yn.scale (zc * (xc * xc)) ≤ zn.scale (yc * (xc * xc)) := by
-    have h1 := ground.leB_scale h0 (xc * xc)
-    rw [BPair.scale_scale, BPair.scale_scale] at h1
-    exact h1
-  have iA : zc * (xc * yc) = yc * (xc * zc) := by
-    rw [← ground.mul_assoc zc xc yc, ground.mul_comm zc xc,
-      ground.mul_assoc xc zc yc, ground.mul_comm zc yc,
-      ← ground.mul_assoc xc yc zc, ground.mul_comm xc yc,
-      ground.mul_assoc yc xc zc]
-  have iB : zc * (xc * xc) = xc * (xc * zc) := by
-    rw [ground.mul_comm zc (xc * xc), ground.mul_assoc xc xc zc]
-  have iC : yc * (xc * xc) = xc * (xc * yc) := by
-    rw [ground.mul_comm yc (xc * xc), ground.mul_assoc xc xc yc]
-  show (xn.scale yc + yn.scale xc).scale (xc * zc)
-    ≤ (xn.scale zc + zn.scale xc).scale (xc * yc)
-  refine ground.leB_congr (BPair.oneValue_of_eq ?_)
-    (BPair.oneValue_of_eq ?_)
-    (ground.leB_add
-      (ground.leB_refl (xn.scale (zc * (xc * yc)))) hcore)
-  · rw [BPair.scale_add, BPair.scale_scale, BPair.scale_scale,
-      iA, iB]
-  · rw [BPair.scale_add, BPair.scale_scale, BPair.scale_scale,
-      iC]
-
-/-- The composite memberwise swap reverses the at-or-below read. -/
-private theorem cswapLe {u v : ground.CPair} (h : u ≤ v) :
-    ground.CPair.swap v ≤ ground.CPair.swap u := by
-  obtain ⟨un, uc⟩ := u
-  obtain ⟨vn, vc⟩ := v
-  have h0 : un.scale vc ≤ vn.scale uc := h
-  show (vn.swap).scale uc ≤ (un.swap).scale vc
-  exact ground.leB_swap h0
+    x + y ≤ x + y' := 
+  ground.CPair.le_add (ground.CPair.le_refl x) h
 
 /-- The composite magnitude is blind to the memberwise swap. -/
 private theorem cmagSwapC (z : ground.CPair) :
@@ -928,18 +852,18 @@ private theorem capEntry (p : poly.Poly) {K : Nat} (hp : p.length ≤ K + 1)
         * ((⟨grn, grc⟩ : ground.CPair)
           + ground.CPair.swap ⟨gln, glc⟩) :=
     ground.CPair.le_trans
-      (cleAbsorbC (cleUnitCmag _)
+      (cleAbsorbC (stage.unitC_le_cmag _)
         (oneLe_bpow (ground.oneLeOfUnitLt hD)
           ((poly.vnorm (poly.deriv p)).length - 1))) hgap
   have hF2 : stage.ofB (windowsep.magFold (poly.deriv p) N D)
       * ((⟨grn, grc⟩ : ground.CPair) + ground.CPair.swap ⟨gln, glc⟩)
       ≤ stage.ofB F * ((⟨grn, grc⟩ : ground.CPair)
         + ground.CPair.swap ⟨gln, glc⟩) := by
-    rw [cmulComm (stage.ofB (windowsep.magFold (poly.deriv p) N D))
+    rw [CPair.mul_comm (stage.ofB (windowsep.magFold (poly.deriv p) N D))
         ((⟨grn, grc⟩ : ground.CPair) + ground.CPair.swap ⟨gln, glc⟩),
-      cmulComm (stage.ofB F)
+      CPair.mul_comm (stage.ofB F)
         ((⟨grn, grc⟩ : ground.CPair) + ground.CPair.swap ⟨gln, glc⟩)]
-    exact cleMulC hW (ofBLe hFp)
+    exact stage.mulC_le_left hW (ofBLe hFp)
   have hpriced := ground.CPair.le_trans habs hF2
   have hE : (⟨poly.evalClear p (vn * BPair.ofPos glc) (vc * glc) K
       + (poly.evalClear p (gln * BPair.ofPos vc) (glc * vc) K).swap,
@@ -1366,22 +1290,6 @@ theorem gapPsd_lo {o K : Nat} (S : split.PMat)
         (BPair.ofPos ((grc * glc) * ground.Pos.pow glc K))
   exact absurd hBlt (ground.leB_not_lt hB)
 
-/-- A product of two composites at or above the composite unit sits
-there. -/
-private theorem cleUnitMul {x y : ground.CPair}
-    (hx : stage.unitC ≤ x) (hy : stage.unitC ≤ y) :
-    stage.unitC ≤ x * y := by
-  obtain ⟨a, b⟩ := x
-  obtain ⟨c, d⟩ := y
-  have ha : BPair.unit ≤ a := stage.unitC_le_fst hx
-  have hc : BPair.unit ≤ c := stage.unitC_le_fst hy
-  show BPair.unit.scale (b * d) ≤ (a * c).scale Pos.one
-  refine ground.leB_congr ?_
-    (BPair.oneValue_of_eq (BPair.scale_one (a * c)).symm)
-    (ground.unitLeMul ha hc)
-  show Pos.one + Pos.one * (b * d) = Pos.one * (b * d) + Pos.one
-  exact ground.add_comm Pos.one (Pos.one * (b * d))
-
 /-- The entry price at the common clearing, the anchor at the gap's
 upper endpoint: the roaming point's magnitude bound is the
 endpoints' own through the segment read, and the width prices at
@@ -1412,12 +1320,12 @@ private theorem capEntryHi (p : poly.Poly) {K : Nat}
         * ((⟨grn, grc⟩ : ground.CPair)
           + ground.CPair.swap ⟨vn, vc⟩) :=
     ground.CPair.le_trans
-      (cleAbsorbC (cleUnitCmag _)
+      (cleAbsorbC (stage.unitC_le_cmag _)
         (oneLe_bpow (ground.oneLeOfUnitLt hD)
           ((poly.vnorm (poly.deriv p)).length - 1))) hgap
   have hNpos : BPair.unit ≤ N :=
     stage.unitC_le_fst (ground.CPair.le_trans
-      (cleUnitMul (cleUnitCmag ⟨gln, glc⟩) (by
+      (stage.unitC_le_mul (stage.unitC_le_cmag ⟨gln, glc⟩) (by
         show BPair.unit.scale Pos.one ≤ D.scale Pos.one
         exact ground.leB_scale (ground.leB_of_lt hD) Pos.one)) ha)
   have hFC : stage.unitC ≤ stage.ofB F := by
@@ -1429,16 +1337,16 @@ private theorem capEntryHi (p : poly.Poly) {K : Nat}
       * ((⟨grn, grc⟩ : ground.CPair) + ground.CPair.swap ⟨vn, vc⟩)
       ≤ stage.ofB F * ((⟨grn, grc⟩ : ground.CPair)
         + ground.CPair.swap ⟨vn, vc⟩) := by
-    rw [cmulComm (stage.ofB (windowsep.magFold (poly.deriv p) N D))
+    rw [CPair.mul_comm (stage.ofB (windowsep.magFold (poly.deriv p) N D))
         ((⟨grn, grc⟩ : ground.CPair) + ground.CPair.swap ⟨vn, vc⟩),
-      cmulComm (stage.ofB F)
+      CPair.mul_comm (stage.ofB F)
         ((⟨grn, grc⟩ : ground.CPair) + ground.CPair.swap ⟨vn, vc⟩)]
-    exact cleMulC (cleUnitAdd hvr) (ofBLe hFp)
+    exact stage.mulC_le_left (cleUnitAdd hvr) (ofBLe hFp)
   have hWm : stage.ofB F * ((⟨grn, grc⟩ : ground.CPair)
       + ground.CPair.swap ⟨vn, vc⟩)
       ≤ stage.ofB F * ((⟨grn, grc⟩ : ground.CPair)
         + ground.CPair.swap ⟨gln, glc⟩) :=
-    cleMulC hFC (cleAddR (cswapLe hlv))
+    stage.mulC_le_left hFC (cleAddR (ground.CPair.le_swap hlv))
   have hpriced := ground.CPair.le_trans habs
     (ground.CPair.le_trans hF2 hWm)
   have hE : (⟨poly.evalClear p (vn * BPair.ofPos grc) (vc * grc) K

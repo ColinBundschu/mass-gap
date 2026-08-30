@@ -172,6 +172,50 @@ certificates (`lem:greenprod`(iii)'s reads at
 is `relfiber.comm_shift`, standing: clause (vi)'s tier reads it
 at the matrix carrier, where disjoint supports annihilate
 outright.
+
+Clause (vii): the scale sandwich.  At two scales on one head the
+pencils' site datum is the electric multiple at the squares' gap,
+and the transport prices at the grounds' own electric weights
+rather than at a head cap.  The drift's lower side is the counts
+monotone at the site datum's positive-semidefinite split
+(`drift_mono`: `inertia.rev_mono` at the difference identity, the
+two level data withdrawing to the electric multiple), and its
+upper the earlier ground as trial pair: the
+joined pencil reads the kernel column at the electric weight's
+own multiple (`drift_trial`, the weight entering by its defining
+tie).  The later ground's part off the earlier line is priced by
+the electric square weight and the drift's (`transport_electric`:
+the clause-(iii) site-datum tie `Es ∼ Et + g Ed + δ̌ I`, the drift
+entering at its balance partner on the weighted identity
+(`inertia.scaleId_act`), the pairing steps the squared
+Cauchy--Schwarz (`coeff.dotN_sq_le`) at the two summands with one
+occupied-factor cancellation at the residual clearing).  The
+electric square weight closes on the shells: the cross-cleared
+electric fold (`eSum`) is priced by the shells' Horner fold
+(`eFold` at the per-shell caps `eCapList` and the crossing
+certificates) against the head shell's weight
+(`electric_shells`, each summand one comparison at
+`truncation.cap_sq` chained through `weight_chain` at the unit
+grams, the grams' identity read the structural `unitGrams`), and
+the assembled electric weight is the shells' fold's own object:
+at null off couplings (`offNull`) the assembled image's
+self-pairing at the cross-cleared head reads the fold's first
+member (`eSum_assemble` at `eSum_den`, `headVec_weight`'s shape
+at the electric image over `greenprod.assemble`).  Two scales'
+reads of one observable sit in one bracket at the priced width
+(`scale_read`: the width pair dominating the electric composite —
+the grounds' own reads — with the bracket the clause-(iii) read
+display's own arms at it).  The scale count is the division's
+quotient at the cross-multiplied carrier (`scaleCount`,
+`ground.divQuot_read`'s bracket at the cleared level), its two
+comparisons the whole read (`scaleCount_read`, `scaleCount_vac`,
+`scaleCount_eq`), one integer across a scale bracket whose ends
+read it (`scaleCount_stable`, `scaleCount_stable_vac`); and a
+geometric width family sums at or below the head width's read at
+the rate's gap (`ground.widthSum` at the structural rate read
+`ground.widthRate` and the last member's positivity
+`ground.unitLast`), the halving scales' widths' one cofactor
+read.
 -/
 
 namespace groundreads
@@ -12683,5 +12727,1185 @@ theorem prop_bracket {o : Nat} (Et : Mat) (T Tw : SqMat o)
   have hQ4 := qJoin _ _ _ _ _ _ _ _ _ hP4 hc4p (ground.leB_refl _)
   exact magAssemble _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
     hGap hT1 hT2 hQ1 hQ2 hQ3 hQ4
+
+
+
+
+/-- The count of the rate's multiples at or below a level: the
+multiples of `hn/hd` at or below `s` are the `m` with
+`m * hn ≤ s * hd`, and their count is the division's quotient at
+`s * hd` against `hn`, vacant exactly when no multiple fits. -/
+def scaleCount (s hn hd : Pos) : Option Pos :=
+  (ground.divMod (s * hd) hn).1
+
+/-- An occupied count is the stated one: the quotient `q` brackets
+the cleared level between `hn * q` and `hn * (q + 1)`, the division's
+reconstruction read at its own remainder (`ground.divQuot_read`). -/
+theorem scaleCount_read (s hn hd q : Pos)
+    (h : scaleCount s hn hd = some q) :
+    hn * q ≤ s * hd ∧ s * hd < hn * ground.succ q :=
+  ground.divQuot_read (s * hd) hn q h
+
+/-- A vacant count prices the level below one step of the rate: no
+multiple of `hn/hd` reaches `s`, the division's remainder arm the
+whole cleared level (`ground.divQuot_vac`). -/
+theorem scaleCount_vac (s hn hd : Pos)
+    (h : scaleCount s hn hd = none) : s * hd < hn :=
+  ground.divQuot_vac (s * hd) hn h
+
+/-- The bracket names the count: a value bracketed between `hn * q`
+and `hn * (q + 1)` at the cleared level reads the count as `q`, the
+quotient's uniqueness against the trichotomy
+(`ground.divQuot_eq`). -/
+theorem scaleCount_eq (s hn hd q : Pos)
+    (h1 : hn * q ≤ s * hd) (h2 : s * hd < hn * ground.succ q) :
+    scaleCount s hn hd = some q :=
+  ground.divQuot_eq (s * hd) hn q h1 h2
+
+/-- The strict read rides an at-or-below read on its upper side. -/
+private theorem ltLe {a b c : Pos} (hab : a < b) (hbc : b ≤ c) :
+    a < c := by
+  match hbc with
+  | Or.inl e => rw [← e]; exact hab
+  | Or.inr hl => exact ground.lt_trans hab hl
+
+/-- The count is stable across a rate read between two clearings:
+a rate bracketed by `ln/ld` below and `un/ud` above carries the
+bracket of the low and high rates onto `hn/hd`, the two comparisons
+rescaled to a shared clearing and cancelled. -/
+theorem scaleCount_stable (s ln ld hn hd un ud q : Pos)
+    (hlo : ln * hd ≤ hn * ld) (hhi : hn * ud ≤ un * hd)
+    (h1 : un * q ≤ s * ud) (h2 : s * ld < ln * ground.succ q) :
+    scaleCount s hn hd = some q := by
+  refine scaleCount_eq s hn hd q ?_ ?_
+  · refine ground.le_of_mul_le (c := ud) ?_
+    have k1 : hn * ud * q ≤ un * hd * q := ground.mul_le_mul_right q hhi
+    have k2 : un * q * hd ≤ s * ud * hd := ground.mul_le_mul_right hd h1
+    rw [ground.mul_right_comm un hd q] at k1
+    rw [ground.mul_right_comm hn ud q] at k1
+    rw [ground.mul_right_comm s ud hd] at k2
+    exact ground.le_trans k1 k2
+  · refine ground.lt_of_mul_lt (c := ld) ?_
+    have k1 : s * ld * hd < ln * ground.succ q * hd :=
+      ground.mul_lt_mul_right hd h2
+    have k2 : ln * hd * ground.succ q ≤ hn * ld * ground.succ q :=
+      ground.mul_le_mul_right (ground.succ q) hlo
+    rw [ground.mul_right_comm ln (ground.succ q) hd] at k1
+    rw [ground.mul_right_comm s ld hd] at k1
+    rw [ground.mul_right_comm hn ld (ground.succ q)] at k2
+    exact ltLe k1 k2
+
+/-- The vacant count is stable across the same read: a level below
+the low rate's own step is below the read rate's, so no multiple
+fits and the count is vacant. -/
+theorem scaleCount_stable_vac (s ln ld hn hd : Pos)
+    (hlo : ln * hd ≤ hn * ld) (h2 : s * ld < ln) :
+    scaleCount s hn hd = none := by
+  have hkey : s * hd < hn := by
+    refine ground.lt_of_mul_lt (c := ld) ?_
+    have k1 : s * ld * hd < ln * hd := ground.mul_lt_mul_right hd h2
+    rw [ground.mul_right_comm s ld hd] at k1
+    exact ltLe k1 hlo
+  cases hc : scaleCount s hn hd with
+  | none => rfl
+  | some q' =>
+    have hr := scaleCount_read s hn hd q' hc
+    have hh : hn * Pos.one ≤ hn * q' := by
+      rw [ground.mul_comm hn Pos.one, ground.mul_comm hn q']
+      exact ground.mul_le_mul_right hn (ground.posOneLe q')
+    rw [ground.mul_one] at hh
+    exact (ground.posLtLe (ground.le_trans hh hr.1) hkey).elim
+
+/-- The two-term square: a sum's square sits at or below the doubled
+join of the two members' own, the cross term capped by the difference's
+square at the balance carrier. -/
+private theorem twoSq (a b : BPair) :
+    (a + b) * (a + b) ≤ (a * a + b * b).scale 2 := by
+  have hcross : a * b + a * b ≤ a * a + b * b :=
+    ground.leB_congr (BPair.ofPos_one_mul (a * b + a * b))
+      (BPair.ofPos_one_mul (a * a + b * b))
+      (ground.leB_crossSq
+        (ground.leB_of_lt (ground.unitLtOfPos Pos.one)) a b)
+  rw [BPair.sq_expand a b, BPair.scale_two]
+  exact ground.leB_add (ground.leB_refl (a * a + b * b)) hcross
+
+/-- A summand withdraws from a sum's read: at a sum reading a value the
+first member reads that value joined to the second's balance partner. -/
+private theorem addWithdraw {u v w : BPair} (h : (u + v).oneValue w) :
+    u.oneValue (w + v.swap) :=
+  BPair.oneValue_trans
+    (BPair.oneValue_symm (BPair.add_swap_self u v.swap))
+    (BPair.add_congr h (BPair.oneValue_refl v.swap))
+
+/-- The closing algebra of the two-term square: a clearance comparison
+at a product pencil squares, the pairing members are capped by the
+self-pairing against their own cofactors, and the shared self-pairing
+withdraws. -/
+private theorem coreClose {A P Y1 Y2 C1 C2 : BPair} {gn gd : Pos}
+    (hA : BPair.unit ≤ A)
+    (hC1 : BPair.unit ≤ C1) (hC2 : BPair.unit ≤ C2)
+    (hstep : A.scale gn ≤ (P * (Y1 + Y2.swap)).scale gd)
+    (h1 : Y1 * Y1 ≤ A * C1) (h2 : Y2 * Y2 ≤ A * C2) :
+    A.scale (gn * gn) ≤ ((P * P) * (C2 + C1)).scale (2 * (gd * gd)) := by
+  have hLnn : BPair.unit ≤ A.scale gn :=
+    ground.leB_congr_left (BPair.unit_scale gn) (ground.leB_scale hA gn)
+  have hRnn : BPair.unit ≤ (P * (Y1 + Y2.swap)).scale gd :=
+    ground.leB_trans hLnn hstep
+  have hsq := ground.leB_mul_mono hLnn hRnn hstep hstep
+  rw [← BPair.scale_mul A A gn gn,
+    ← BPair.scale_mul (P * (Y1 + Y2.swap)) (P * (Y1 + Y2.swap)) gd gd] at hsq
+  have hYY : (Y1 + Y2.swap) * (Y1 + Y2.swap)
+      ≤ (A * (C2 + C1)).scale 2 := by
+    refine ground.leB_trans (twoSq Y1 Y2.swap) ?_
+    rw [BPair.swap_mul_swap Y2 Y2]
+    refine ground.leB_scale ?_ 2
+    refine ground.leB_congr_right ?_ (ground.leB_add h1 h2)
+    rw [← BPair.left_distrib A C1 C2, BPair.add_comm C1 C2]
+    exact BPair.oneValue_refl _
+  have hprod : (P * (Y1 + Y2.swap)) * (P * (Y1 + Y2.swap))
+      ≤ (P * P) * ((A * (C2 + C1)).scale 2) := by
+    rw [BPair.mul_mul_mul_comm P (Y1 + Y2.swap) P (Y1 + Y2.swap)]
+    exact ground.leB_mulR (ground.unitLeSq P) hYY
+  have hfin : (A * A).scale (gn * gn)
+      ≤ (A * ((P * P) * (C2 + C1))).scale (2 * (gd * gd)) := by
+    refine ground.leB_trans hsq ?_
+    refine ground.leB_congr_right ?_ (ground.leB_scale hprod (gd * gd))
+    rw [BPair.mul_scale (P * P) (A * (C2 + C1)) 2,
+      BPair.mul_left_comm (P * P) A (C2 + C1), BPair.scale_scale]
+    exact BPair.oneValue_refl _
+  have hcase : BPair.unit.oneValue A ∨ BPair.unit < A := hA
+  match hcase with
+  | Or.inl he =>
+    refine ground.leB_congr_left
+      (BPair.oneValue_trans (BPair.oneValue_symm (BPair.unit_scale (gn * gn)))
+        (BPair.scale_congr (gn * gn) he)) ?_
+    exact ground.leB_congr_left (BPair.unit_scale (2 * (gd * gd)))
+      (ground.leB_scale
+        (ground.unitLeMul (ground.unitLeSq P) (ground.unitLeAdd hC2 hC1))
+        (2 * (gd * gd)))
+  | Or.inr hlt =>
+    refine ground.leB_unscale hlt ?_
+    rw [← BPair.scale_mul_left A A (gn * gn),
+      ← BPair.scale_mul_left ((P * P) * (C2 + C1)) A (2 * (gd * gd)),
+      BPair.mul_comm ((P * P) * (C2 + C1)) A]
+    exact hfin
+
+/-- The drift's lower side (`thm:groundreads`(vii)): two pencils on
+one head at the unit gram whose site datum is the electric multiple
+`g Ed`, positive semidefinite at its split, read their counts
+monotone at every level — the later pencil's reversal count at or
+below the earlier's, `inertia.rev_mono` at the difference
+identity. -/
+theorem drift_mono {n : Nat} (Et Ed : Mat) (hEt : sqAt Et n)
+    (hEd : sqAt Ed n) (g a : Pos) (spd sp sp' : inertia.Split n)
+    (hd : inertia.splitRead (inertia.matScale g Ed) spd)
+    (hpd : inertia.psdAt spd)
+    (h : inertia.splitRead
+      (inertia.siteDatum Et (inertia.matScale a (idMat n))) sp)
+    (h' : inertia.splitRead
+      (inertia.siteDatum (matAdd Et (inertia.matScale g Ed))
+        (inertia.matScale a (idMat n))) sp') :
+    inertia.revAt sp' ≤ inertia.revAt sp := by
+  have hS : sqAt (inertia.matScale g Ed) n :=
+    inertia.sqAt_matScale n g Ed hEd
+  have hL : sqAt (inertia.matScale a (idMat n)) n :=
+    inertia.sqAt_matScale n a (idMat n)
+      (sqAt_of (idMat_len n) (idMat_rows n))
+  have hEtNull : sqAt (matAdd Et (matSwap Et)) n :=
+    elim.sqAt_matAdd n Et (matSwap Et) hEt (elim.sqAt_matSwap n Et hEt)
+  have hLNull : sqAt (matAdd (matSwap (inertia.matScale a (idMat n)))
+      (inertia.matScale a (idMat n))) n :=
+    elim.sqAt_matAdd n _ _ (elim.sqAt_matSwap n _ hL) hL
+  have hSE : sqAt (matAdd (inertia.matScale g Ed)
+      (matAdd Et (matSwap Et))) n :=
+    elim.sqAt_matAdd n _ _ hS hEtNull
+  have hdiff : inertia.siteDatum
+      (inertia.siteDatum (matAdd Et (inertia.matScale g Ed))
+        (inertia.matScale a (idMat n)))
+      (inertia.siteDatum Et (inertia.matScale a (idMat n)))
+    = matAdd
+        (matAdd (inertia.matScale g Ed) (matAdd Et (matSwap Et)))
+        (matAdd (matSwap (inertia.matScale a (idMat n)))
+          (inertia.matScale a (idMat n))) := by
+    show matAdd
+        (matAdd (matAdd Et (inertia.matScale g Ed))
+          (matSwap (inertia.matScale a (idMat n))))
+        (matSwap (matAdd Et (matSwap (inertia.matScale a (idMat n)))))
+      = _
+    rw [elim.matSwap_matAdd Et (matSwap (inertia.matScale a (idMat n))),
+      elim.matSwap_matSwap (inertia.matScale a (idMat n)),
+      elim.matAdd_shuffle (matAdd Et (inertia.matScale g Ed))
+        (matSwap (inertia.matScale a (idMat n)))
+        (matSwap Et) (inertia.matScale a (idMat n)),
+      elim.matAdd_comm Et (inertia.matScale g Ed),
+      elim.matAdd_assoc (inertia.matScale g Ed) Et (matSwap Et)]
+  have hfull : matOneValue (inertia.siteDatum
+      (inertia.siteDatum (matAdd Et (inertia.matScale g Ed))
+        (inertia.matScale a (idMat n)))
+      (inertia.siteDatum Et (inertia.matScale a (idMat n))))
+      (inertia.matScale g Ed) := by
+    rw [hdiff]
+    exact elim.matOne_trans
+      (elim.matAdd_nullR _ _ hSE hLNull
+        (elim.matNull_swap_add (elim.matOne_refl _)))
+      (elim.matAdd_nullR _ _ hS hEtNull (elim.matNull_add_swap Et))
+  have hDiffSq : sqAt (inertia.siteDatum
+      (inertia.siteDatum (matAdd Et (inertia.matScale g Ed))
+        (inertia.matScale a (idMat n)))
+      (inertia.siteDatum Et (inertia.matScale a (idMat n)))) n :=
+    inertia.sqAt_siteDatum n _ _ h'.1 h.1
+  have hspd : inertia.splitRead (inertia.siteDatum
+      (inertia.siteDatum (matAdd Et (inertia.matScale g Ed))
+        (inertia.matScale a (idMat n)))
+      (inertia.siteDatum Et (inertia.matScale a (idMat n)))) spd :=
+    inertia.splitRead_congr _ _ hDiffSq (elim.matOne_symm hfull) spd hd
+  exact inertia.rev_mono _ _ spd sp sp' hspd hpd h h'
+
+/-- The drift's trial read at the earlier ground: at the electric
+weight's tie the joined pencil reads the kernel column at the
+weight's own multiple. -/
+theorem drift_trial {n : Nat} (Et Ed : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : split.diagRead Et (idMat n) T Tw l)
+    (j0 : Nat) (hj0 : j0 < n) (d0 : Pos) (g0 : BPair)
+    (hroot0 : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j0
+      = (BPair.unit, d0, g0))
+    (hEd : sqAt Ed n) (g : Pos) (en ed : Pos)
+    (hew : ((dotN (matVec T.val (elim.idRow n j0))
+        (matVec Ed (matVec T.val (elim.idRow n j0)))).scale ed).oneValue
+      ((dotN (matVec T.val (elim.idRow n j0))
+        (matVec T.val (elim.idRow n j0))).scale en)) :
+    ((dotN (matVec T.val (elim.idRow n j0))
+        (matVec (matAdd Et (inertia.matScale g Ed))
+          (matVec T.val (elim.idRow n j0)))).scale ed).oneValue
+      ((dotN (matVec T.val (elim.idRow n j0))
+        (matVec T.val (elim.idRow n j0))).scale (g * en)) := by
+  have hTl : T.val.length = n := SqMat.rows T
+  have hpl : (matVec T.val (elim.idRow n j0)).length = n := by
+    rw [matVec_length]; exact hTl
+  have hEtr : rowsLen n Et := rowsLen_of_sqAt hd.1
+  have hEtl : Et.length = n := sqAt_len hd.1
+  have hEdl : Ed.length = n := sqAt_len hEd
+  have hDr : rowsLen n (inertia.matScale g Ed) :=
+    rowsLen_of_sqAt (inertia.sqAt_matScale n g Ed hEd)
+  have hgc := ground_column Et T Tw l hd j0 hj0 d0 g0 hroot0
+  have hsplit : (dotN (matVec T.val (elim.idRow n j0))
+      (matVec (matAdd Et (inertia.matScale g Ed))
+        (matVec T.val (elim.idRow n j0)))).oneValue
+      (BPair.ofPos g * dotN (matVec T.val (elim.idRow n j0))
+        (matVec Ed (matVec T.val (elim.idRow n j0)))) := by
+    refine BPair.oneValue_trans
+      (dotN_congrR _ _ _
+        (matVec_add Et (inertia.matScale g Ed)
+          (matVec T.val (elim.idRow n j0))
+          (rowsLen_cast hpl.symm hEtr) (rowsLen_cast hpl.symm hDr))) ?_
+    refine BPair.oneValue_trans (dotN_read _ _) ?_
+    refine BPair.oneValue_trans
+      (dotP_vecAdd_right _ (matVec Et (matVec T.val (elim.idRow n j0)))
+        (matVec (inertia.matScale g Ed) (matVec T.val (elim.idRow n j0)))
+        (by rw [matVec_length, matVec_length, inertia.length_matScale,
+          hEtl, hEdl])) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (dotP_null_tail_right _ _ hgc.1)
+        (BPair.oneValue_trans
+          (dotP_oneValue_right _ _ _
+            (inertia.matVec_matScale g Ed
+              (matVec T.val (elim.idRow n j0))))
+          (BPair.oneValue_trans (dotP_vecScale_right _ _ _)
+            (BPair.mul_congr (BPair.oneValue_refl _)
+              (BPair.oneValue_symm (dotN_read _ _)))))) ?_
+    exact BPair.unit_add _
+  refine BPair.oneValue_trans (BPair.scale_congr ed hsplit) ?_
+  rw [← BPair.mul_scale]
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl _) hew) ?_
+  rw [BPair.mul_scale, ← BPair.scale_scale]
+  exact BPair.scale_congr en (BPair.ofPos_scale g _)
+
+
+/-- The transport at the electric weights: the later ground's part
+off the earlier line is priced by the electric square weight and
+the drift's, the two-term square at the pairing step. -/
+theorem transport_electric {n : Nat} (Et Es Ed : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : split.diagRead Et (idMat n) T Tw l)
+    (j0 : Nat) (hj0 : j0 < n) (d0 : Pos) (g0 : BPair)
+    (hroot0 : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j0
+      = (BPair.unit, d0, g0))
+    (gn gd : Pos)
+    (hcl : clearRead l j0 gn gd)
+    (hEd : sqAt Ed n) (g : Pos) (delta : BPair)
+    (htie : elim.matOneValue Es
+      (matAdd Et (matAdd (inertia.matScale g Ed)
+        (matScaleB delta.swap (idMat n)))))
+    (psit : List BPair) (hpt : psit.length = n)
+    (hker : poly.unitTail (matVec Es psit)) :
+    (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+        (residD [matVec T.val (elim.idRow n j0)] psit)).scale
+        (gn * gn)
+      ≤ (((dotN (matVec T.val (elim.idRow n j0))
+              (matVec T.val (elim.idRow n j0))
+            * dotN (matVec T.val (elim.idRow n j0))
+              (matVec T.val (elim.idRow n j0)))
+          * ((dotN (matVec Ed psit) (matVec Ed psit)).scale (g * g)
+            + (delta * delta) * dotN psit psit))).scale
+          (2 * (gd * gd)) := by
+  have hTl : T.val.length = n := SqMat.rows T
+  have hpl : (matVec T.val (elim.idRow n j0)).length = n := by
+    rw [matVec_length]; exact hTl
+  have hEtr : rowsLen n Et := rowsLen_of_sqAt hd.1
+  have hEtl : Et.length = n := sqAt_len hd.1
+  have hEdl : Ed.length = n := sqAt_len hEd
+  have hSr : rowsLen n (inertia.matScale g Ed) :=
+    rowsLen_of_sqAt (inertia.sqAt_matScale n g Ed hEd)
+  have hSl : (inertia.matScale g Ed).length = n := by
+    rw [inertia.length_matScale]; exact hEdl
+  have hIr : rowsLen n (matScaleB delta.swap (idMat n)) :=
+    rowsLen_scaleB delta.swap n (idMat n) (idMat_rows n)
+  have hIl : (matScaleB delta.swap (idMat n)).length = n :=
+    (length_scaleB delta.swap (idMat n)).trans (idMat_len n)
+  have hD2r : rowsLen n (matAdd (inertia.matScale g Ed)
+      (matScaleB delta.swap (idMat n))) :=
+    rowsLen_matAdd n _ _ hSr hIr
+  have hD2l : (matAdd (inertia.matScale g Ed)
+      (matScaleB delta.swap (idMat n))).length = n := by
+    rw [length_matAdd _ _ (hSl.trans hIl.symm)]; exact hSl
+  have hMEt : (matVec Et psit).length = n := by
+    rw [matVec_length]; exact hEtl
+  have hMS : (matVec (inertia.matScale g Ed) psit).length = n := by
+    rw [matVec_length]; exact hSl
+  have hY : (vecScale delta.swap psit).length = n := by
+    rw [length_vecScale]; exact hpt
+  have hWl : (matVec (matAdd Et (inertia.matScale g Ed)) psit).length
+      = n := by
+    rw [matVec_length, length_matAdd Et _ (hEtl.trans hSl.symm)]
+    exact hEtl
+  have hRl : (residD [matVec T.val (elim.idRow n j0)] psit).length = n :=
+    elim.length_residD n [matVec T.val (elim.idRow n j0)] psit
+      ⟨hpl, trivial⟩ hpt
+  have hgc := ground_column Et T Tw l hd j0 hj0 d0 g0 hroot0
+  have hor := offLine_reads (matVec T.val (elim.idRow n j0)) psit n hpl hpt
+  have hperpR : (dotN (matVec T.val (elim.idRow n j0))
+      (residD [matVec T.val (elim.idRow n j0)] psit)).oneValue BPair.unit :=
+    BPair.oneValue_trans
+      (dotN_read _ _)
+      (elim.residD_perp n [matVec T.val (elim.idRow n j0)] psit
+        ⟨hpl, trivial⟩ hpt
+        (elim.perpAll_le1 [matVec T.val (elim.idRow n j0)] (Nat.le_refl 1))
+        0 (Nat.succ_pos 0))
+  -- the tie's distributed action: the head sum beside the swapped
+  -- drift's rescaling
+  have hstep : poly.oneValue
+      (matVec (matAdd Et (matAdd (inertia.matScale g Ed)
+        (matScaleB delta.swap (idMat n)))) psit)
+      (vecAdd (matVec (matAdd Et (inertia.matScale g Ed)) psit)
+        (vecScale delta.swap psit)) := by
+    refine poly.oneValue_trans
+      (matVec_add Et _ psit (rowsLen_cast hpt.symm hEtr)
+        (rowsLen_cast hpt.symm hD2r)) ?_
+    refine poly.oneValue_trans
+      (vecAdd_congr2 (matVec Et psit) (matVec Et psit) _ _ rfl
+        (by rw [matVec_length]
+            exact hD2l.trans (length_vecAdd _ _ n hMS hY).symm)
+        (poly.oneValue_refl _)
+        (poly.oneValue_trans
+          (matVec_add (inertia.matScale g Ed)
+            (matScaleB delta.swap (idMat n)) psit
+            (rowsLen_cast hpt.symm hSr) (rowsLen_cast hpt.symm hIr))
+          (vecAdd_congr2 (matVec (inertia.matScale g Ed) psit)
+            (matVec (inertia.matScale g Ed) psit) _ _ rfl
+            (by rw [matVec_length]; exact hIl.trans hY.symm)
+            (poly.oneValue_refl _)
+            (scaleId_act delta.swap n psit hpt)))) ?_
+    rw [← vecAdd_assoc]
+    exact vecAdd_congr _ _ _
+      ((length_vecAdd _ _ n hMEt hMS).trans hWl.symm)
+      (poly.oneValue_symm (matVec_add Et (inertia.matScale g Ed) psit
+        (rowsLen_cast hpt.symm hEtr) (rowsLen_cast hpt.symm hSr)))
+  -- the pencil identity at the later kernel vector
+  have hpen : poly.oneValue
+      (matVec (matAdd Et (inertia.matScale g Ed)) psit)
+      (vecScale delta psit) := by
+    have htail : poly.unitTail
+        (vecAdd (matVec (matAdd Et (inertia.matScale g Ed)) psit)
+          (vecScale delta.swap psit)) :=
+      poly.unitTail_oneValue_right hker
+        (poly.oneValue_trans (matVec_matOne Es _ psit htie) hstep)
+    have hone : poly.oneValue
+        (matVec (matAdd Et (inertia.matScale g Ed)) psit)
+        ((vecScale delta.swap psit).map BPair.swap) := by
+      refine swap_of_null_add _ _ (hY.trans hWl.symm) ?_
+      rw [vecAdd_comm]
+      exact htail
+    rw [← vecScale_swap delta.swap psit, BPair.swap_swap] at hone
+    exact hone
+  have hvsum : poly.oneValue
+      (vecAdd (matVec Et psit) (matVec (inertia.matScale g Ed) psit))
+      (vecScale delta psit) :=
+    poly.oneValue_trans
+      (poly.oneValue_symm
+        (matVec_add Et (inertia.matScale g Ed) psit
+          (rowsLen_cast hpt.symm hEtr) (rowsLen_cast hpt.symm hSr)))
+      hpen
+  have hadd : ((dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+        (matVec Et psit))
+      + (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+        (matVec (inertia.matScale g Ed) psit))).oneValue
+      (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+        (vecScale delta psit)) :=
+    BPair.oneValue_trans
+      (BPair.oneValue_symm
+        (BPair.oneValue_trans (dotN_read _ _)
+          (BPair.oneValue_trans
+            (dotP_vecAdd_right (residD [matVec T.val (elim.idRow n j0)] psit)
+              (matVec Et psit) (matVec (inertia.matScale g Ed) psit)
+              (by rw [matVec_length, matVec_length, hEtl, hSl]))
+            (BPair.add_congr (BPair.oneValue_symm (dotN_read _ _))
+              (BPair.oneValue_symm (dotN_read _ _))))))
+      (dotN_congrR _ _ _ hvsum)
+  have hEtY : (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+      (matVec Et psit)).oneValue
+      (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+          (vecScale delta psit)
+        + (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+            (vecScale (BPair.ofPos g) (matVec Ed psit))).swap) :=
+    BPair.oneValue_trans (addWithdraw hadd)
+      (BPair.add_congr (BPair.oneValue_refl _)
+        (ground.swap_congr
+          (dotN_congrR _ _ _ (inertia.matVec_matScale g Ed psit))))
+  -- the gap's form at the off-line part
+  have hEtR : (inertia.quadForm Et
+      (residD [matVec T.val (elim.idRow n j0)] psit)).oneValue
+      (dotN (matVec T.val (elim.idRow n j0))
+          (matVec T.val (elim.idRow n j0))
+        * (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+              (vecScale delta psit)
+          + (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+              (vecScale (BPair.ofPos g) (matVec Ed psit))).swap)) := by
+    have hvec : poly.oneValue
+        (matVec Et (residD [matVec T.val (elim.idRow n j0)] psit))
+        (vecScale (dotN (matVec T.val (elim.idRow n j0))
+          (matVec T.val (elim.idRow n j0))) (matVec Et psit)) := by
+      refine poly.oneValue_trans
+        (matVec_congr Et _ _ hor.1) ?_
+      rw [← vecScale_swap (dotN (matVec T.val (elim.idRow n j0)) psit)
+        (matVec T.val (elim.idRow n j0))]
+      refine poly.oneValue_trans
+        (matVec_vecAdd Et n hEtr _ _
+          (by rw [length_vecScale]; exact hpt)
+          (by rw [length_vecScale]; exact hpl)) ?_
+      refine poly.oneValue_trans
+        (elim.vecAdd_congr2 _ _ _ _
+          (by rw [matVec_length, length_vecScale, matVec_length])
+          (by rw [matVec_length, length_vecScale, matVec_length])
+          (matVec_vecScale_free Et _ psit)
+          (matVec_vecScale_free Et _ _)) ?_
+      exact vecAdd_null_right _ _
+        (by rw [length_vecScale, length_vecScale, matVec_length,
+          matVec_length])
+        (unitTail_vecScale _ _ hgc.1)
+    refine BPair.oneValue_trans (dotN_congrR _ _ _ hvec) ?_
+    refine BPair.oneValue_trans (dotN_read _ _) ?_
+    refine BPair.oneValue_trans (dotP_vecScale_right _ _ _) ?_
+    exact BPair.mul_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_trans (BPair.oneValue_symm (dotN_read _ _)) hEtY)
+  have hstep1 : (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+        (residD [matVec T.val (elim.idRow n j0)] psit)).scale gn
+      ≤ (dotN (matVec T.val (elim.idRow n j0))
+            (matVec T.val (elim.idRow n j0))
+          * (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+                (vecScale delta psit)
+            + (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+                (vecScale (BPair.ofPos g) (matVec Ed psit))).swap)).scale gd :=
+    ground.leB_congr_right (BPair.scale_congr gd hEtR)
+      (gap_perp Et T Tw l hd j0 hj0 d0 g0 hroot0 gn gd hcl _ hRl hperpR)
+  -- the two pairing members at their own cofactors
+  have h1 : (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+          (vecScale delta psit)
+        * dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+          (vecScale delta psit))
+      ≤ (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+          (residD [matVec T.val (elim.idRow n j0)] psit))
+        * ((delta * delta) * dotN psit psit) :=
+    ground.leB_congr_right
+      (BPair.mul_congr (BPair.oneValue_refl _)
+        (elim.dotN_vecScale_self delta psit))
+      (coeff.dotN_sq_le (residD [matVec T.val (elim.idRow n j0)] psit)
+        (vecScale delta psit) (by rw [hRl, length_vecScale, hpt]))
+  have h2 : (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+          (vecScale (BPair.ofPos g) (matVec Ed psit))
+        * dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+          (vecScale (BPair.ofPos g) (matVec Ed psit)))
+      ≤ (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+          (residD [matVec T.val (elim.idRow n j0)] psit))
+        * (dotN (matVec Ed psit) (matVec Ed psit)).scale (g * g) :=
+    ground.leB_congr_right
+      (BPair.mul_congr (BPair.oneValue_refl _)
+        (BPair.oneValue_trans
+          (elim.dotN_vecScale_self (BPair.ofPos g) (matVec Ed psit))
+          (BPair.oneValue_trans
+            (BPair.mul_congr (BPair.ofPos_mul g g) (BPair.oneValue_refl _))
+            (BPair.ofPos_scale (g * g) _))))
+      (coeff.dotN_sq_le (residD [matVec T.val (elim.idRow n j0)] psit)
+        (vecScale (BPair.ofPos g) (matVec Ed psit))
+        (by rw [hRl, length_vecScale, matVec_length, hEdl]))
+  exact coreClose
+    (ground.leB_of_not_lt (dotN_self_side _))
+    (ground.unitLeMul (ground.unitLeSq delta)
+      (ground.leB_of_not_lt (dotN_self_side psit)))
+    (ground.leB_congr_left (BPair.unit_scale (g * g))
+      (ground.leB_scale (ground.leB_of_not_lt (dotN_self_side _)) (g * g)))
+    hstep1 h1 h2
+
+
+/-- The electric weight fold: the cross-cleared sum of the shells'
+electric-image self-pairings at the components' clearings. -/
+def eSum : List Mat → List greenprod.VecQ → BPair × Pos
+  | _, [] => (BPair.unit, Pos.one)
+  | EsL, u :: t =>
+      BPair.addQ
+        (dotN (matVec (ground.getAt [] EsL 0) u.1)
+          (matVec (ground.getAt [] EsL 0) u.1), u.2 * u.2)
+        (eSum (EsL.drop 1) t)
+
+/-- The electric fold's joined clearing is the clearings' product
+against itself. -/
+theorem eSum_den (EsL : List Mat) : ∀ us : List greenprod.VecQ,
+    (eSum EsL us).2 = denProd us * denProd us
+  | [] => (ground.mul_one _).symm
+  | u :: t => by
+    show u.2 * u.2 * (eSum (EsL.drop 1) t).2
+      = u.2 * denProd t * (u.2 * denProd t)
+    rw [eSum_den (EsL.drop 1) t, ground.mul_mul_mul_comm]
+
+/-- The off couplings' vacancy, one read per slab seam: the
+electric operator is diagonal in the label index, so its assembled
+couplings sit at the sum's unit throughout. -/
+def offNull : List Mat → Prop
+  | [] => True
+  | B :: Bs => elim.matNull B ∧ offNull Bs
+
+def decOffNull : ∀ Bs : List Mat, Decidable (offNull Bs)
+  | [] => isTrue trivial
+  | _ :: Bs => @instDecidableAnd _ _ inferInstance (decOffNull Bs)
+
+instance (Bs : List Mat) : Decidable (offNull Bs) := decOffNull Bs
+
+/-- The assembled electric weight is the shells' fold: at null off
+couplings the assembled image's self-pairing at the cross-cleared
+head reads the electric fold's first member — the assembled read
+and the component fold one object, `headVec_weight`'s shape at the
+electric image. -/
+theorem eSum_assemble : ∀ (EsL Bs : List Mat)
+    (us : List greenprod.VecQ) (ns : List Nat),
+    greenprod.slabShape EsL Bs ns → offNull Bs →
+    greenprod.vShape us ns →
+    (dotN (matVec (greenprod.assemble EsL Bs) (headVec us))
+        (matVec (greenprod.assemble EsL Bs) (headVec us))).oneValue
+      (eSum EsL us).1
+  | [], _, _, _, hs, _, _ => False.elim hs
+  | _ :: _, _, _, [], hs, _, _ => False.elim hs
+  | [E], [], us, [k], hs, _, hv => by
+    match us, hv with
+    | [], hv => exact False.elim hv
+    | u :: u' :: t, hv => exact False.elim hv.2
+    | [u], hv =>
+      have hhv : headVec [u] = greenprod.vecScale Pos.one u.1 := by
+        show greenprod.vecScale (denProd []) u.1
+            ++ greenprod.vecScale u.2 (headVec []) = _
+        rw [show greenprod.vecScale u.2
+            (headVec ([] : List greenprod.VecQ)) = [] from rfl]
+        exact ground.append_nil _
+      rw [hhv]
+      have himg : poly.oneValue
+          (matVec E (greenprod.vecScale Pos.one u.1))
+          (greenprod.vecScale Pos.one (matVec E u.1)) :=
+        poly.oneValue_trans
+          (matVec_congr E _ _ (greenprod.vecScale_ofPos Pos.one u.1))
+          (poly.oneValue_trans
+            (matVec_vecScale_free E (BPair.ofPos Pos.one) u.1)
+            (poly.oneValue_symm
+              (greenprod.vecScale_ofPos Pos.one (matVec E u.1))))
+      refine BPair.oneValue_trans
+        (BPair.oneValue_trans (dotN_congrL _ _ _ himg)
+          (dotN_congrR _ _ _ himg)) ?_
+      refine BPair.oneValue_trans (gvsSelf Pos.one (matVec E u.1)) ?_
+      show ((dotN (matVec E u.1) (matVec E u.1)).scale
+          (Pos.one * Pos.one)).oneValue
+        ((dotN (matVec E u.1) (matVec E u.1)).scale Pos.one
+          + BPair.unit.scale (u.2 * u.2))
+      rw [ground.mul_one, BPair.scale_one]
+      exact BPair.oneValue_symm
+        (BPair.oneValue_trans
+          (BPair.add_congr (BPair.oneValue_refl _)
+            (BPair.oneValue_symm (ground.unitScale (u.2 * u.2))))
+          (BPair.add_unit _))
+  | [_], [], _, _ :: _ :: _, hs, _, _ => False.elim hs
+  | [_], _ :: _, _, [_], hs, _, _ => False.elim hs
+  | [_], _ :: _, _, _ :: _ :: _, hs, _, _ => False.elim hs
+  | _ :: _ :: _, [], _, [_], hs, _, _ => False.elim hs
+  | _ :: _ :: _, [], _, _ :: _ :: _, hs, _, _ => False.elim hs
+  | _ :: _ :: _, _ :: _, _, [_], hs, _, _ => False.elim hs
+  | E :: E' :: Es, B :: Bs, us, k :: k' :: ns, hs, ho, hv => by
+    match us, hv with
+    | [], hv => exact False.elim hv
+    | u :: us', hv =>
+      have hsT : greenprod.slabShape (E' :: Es) Bs (k' :: ns) := hs.2.2.2
+      have hE : sqAt E k := hs.2.1
+      have hB : elim.rectAt B k k' := hs.2.2.1
+      have hk : 0 < k := hs.1
+      have hEl : E.length = k := sqAt_len hE
+      have hrest : sqAt (greenprod.assemble (E' :: Es) Bs)
+          (ground.sumNat (k' :: ns)) :=
+        greenprod.assemble_sq (E' :: Es) Bs (k' :: ns) hsT
+      have hml : (greenprod.assemble (E' :: Es) Bs).length
+          = ground.sumNat (k' :: ns) := sqAt_len hrest
+      have hhd : ((greenprod.assemble (E' :: Es) Bs).headD []).length
+          = ground.sumNat (k' :: ns) :=
+        greenprod.sqAt_headD _ _ hrest
+      have hn1 : k' ≤ ground.sumNat (k' :: ns) :=
+        ground.getAt_le_sumNat (k' :: ns) 0
+      have hpeel : greenprod.assemble (E :: E' :: Es) (B :: Bs)
+          = inertia.blockJoin E
+              (greenprod.offPad (ground.sumNat (k' :: ns)) B)
+              (greenprod.assemble (E' :: Es) Bs) :=
+        greenprod.assemble_cons E B (E' :: Es) Bs k k'
+          (ground.sumNat (k' :: ns)) hEl hk
+          (greenprod.rectAt_len hB) (greenprod.rectAt_rows hB)
+          hn1 hml hhd
+      -- the components and their lengths
+      have hal : (greenprod.vecScale (denProd us') u.1).length = k :=
+        (ground.length_map _ u.1).trans hv.1
+      have hbl : (greenprod.vecScale u.2 (headVec us')).length
+          = ground.sumNat (k' :: ns) :=
+        (ground.length_map _ (headVec us')).trans (headVec_len hv.2)
+      -- the null coupling's two actions
+      have hoffAct : poly.unitTail
+          (matVec (greenprod.offPad (ground.sumNat (k' :: ns)) B)
+            (greenprod.vecScale u.2 (headVec us'))) := by
+        match us', hv.2 with
+        | [], hv' => exact False.elim hv'
+        | u' :: t', hv' =>
+          have hsplit : greenprod.vecScale u.2 (headVec (u' :: t'))
+              = greenprod.vecScale u.2
+                  (greenprod.vecScale (denProd t') u'.1)
+                ++ greenprod.vecScale u.2
+                  (greenprod.vecScale u'.2 (headVec t')) :=
+            ground.map_append _ _ _
+          rw [hsplit]
+          refine poly.oneValue_unitTail
+            (greenprod.offPad_act (ground.sumNat (k' :: ns)) k' B
+              (greenprod.rectAt_rows hB) _ _
+              ((ground.length_map _ _).trans
+                ((ground.length_map _ u'.1).trans hv'.1))) ?_
+          exact matVec_matNull B _ ho.1
+      have htAct : poly.unitTail
+          (matVec (transposeM
+              (greenprod.offPad (ground.sumNat (k' :: ns)) B))
+            (greenprod.vecScale (denProd us') u.1)) := by
+        rw [greenprod.transposeM_offPad B k k'
+            (ground.sumNat (k' :: ns))
+            (greenprod.rectAt_len hB) (greenprod.rectAt_rows hB)
+            hk hn1,
+          greenprod.offT_split k (transposeM B)
+            (ground.sumNat (k' :: ns))
+            (by rw [length_transposeM B (greenprod.rectAt_rows hB)
+                (by rw [greenprod.rectAt_len hB]; exact hk)]
+                exact hn1),
+          elim.matVec_append]
+        refine unitTail_append
+          (matVec_matNull (transposeM B) _
+            (elim.matNull_transposeM B ho.1)) ?_
+        exact matVec_matNull _ _
+          (elim.matNull_nullMat k _)
+      have hbtr : rowsLen
+          (greenprod.vecScale (denProd us') u.1).length
+          (transposeM
+            (greenprod.offPad (ground.sumNat (k' :: ns)) B)) := by
+        rw [hal, greenprod.transposeM_offPad B k k'
+          (ground.sumNat (k' :: ns))
+          (greenprod.rectAt_len hB) (greenprod.rectAt_rows hB) hk hn1]
+        exact greenprod.offT_rows k (transposeM B)
+          (ground.sumNat (k' :: ns))
+          (rowsLen_cast (greenprod.rectAt_len hB)
+            (rowsLen_transposeM B))
+      -- the assembled action at the joined components
+      have himg : poly.oneValue
+          (matVec (greenprod.assemble (E :: E' :: Es) (B :: Bs))
+            (headVec (u :: us')))
+          (greenprod.vecScale (denProd us') (matVec E u.1)
+            ++ greenprod.vecScale u.2
+              (matVec (greenprod.assemble (E' :: Es) Bs)
+                (headVec us'))) := by
+        show poly.oneValue
+          (matVec (greenprod.assemble (E :: E' :: Es) (B :: Bs))
+            (greenprod.vecScale (denProd us') u.1
+              ++ greenprod.vecScale u.2 (headVec us'))) _
+        rw [hpeel]
+        refine poly.oneValue_trans
+          (inertia.matVec_blockJoin E
+            (greenprod.offPad (ground.sumNat (k' :: ns)) B)
+            (greenprod.assemble (E' :: Es) Bs) _ _
+            (rowsLen_cast (hal.symm) (rowsLen_of_sqAt hE)) hbtr) ?_
+        refine poly.oneValue_append _ _ _ _
+          (by rw [length_vecAdd _ _ k
+              (by rw [matVec_length]; exact hEl)
+              (by rw [matVec_length, greenprod.offPad_len,
+                greenprod.rectAt_len hB])]
+              exact ((ground.length_map _ (matVec E u.1)).trans
+                ((matVec_length E u.1).trans hEl)).symm) ?_ ?_
+        · refine poly.oneValue_trans
+            (vecAdd_null_right _ _
+              (by rw [matVec_length, matVec_length, hEl,
+                greenprod.offPad_len, greenprod.rectAt_len hB])
+              hoffAct) ?_
+          exact poly.oneValue_trans
+            (matVec_congr E _ _ (greenprod.vecScale_ofPos _ u.1))
+            (poly.oneValue_trans
+              (matVec_vecScale_free E (BPair.ofPos (denProd us')) u.1)
+              (poly.oneValue_symm
+                (greenprod.vecScale_ofPos _ (matVec E u.1))))
+        · refine poly.oneValue_trans
+            (vecAdd_null_left _ _
+              (by rw [matVec_length, matVec_length, hml,
+                greenprod.transposeM_offPad B k k'
+                  (ground.sumNat (k' :: ns))
+                  (greenprod.rectAt_len hB)
+                  (greenprod.rectAt_rows hB) hk hn1,
+                greenprod.offT_len])
+              htAct) ?_
+          exact poly.oneValue_trans
+            (matVec_congr _ _ _ (greenprod.vecScale_ofPos _ _))
+            (poly.oneValue_trans
+              (matVec_vecScale_free _ (BPair.ofPos u.2) _)
+              (poly.oneValue_symm (greenprod.vecScale_ofPos _ _)))
+      -- the self-pairing splits at the seam and folds
+      refine BPair.oneValue_trans
+        (BPair.oneValue_trans (dotN_congrL _ _ _ himg)
+          (dotN_congrR _ _ _ himg)) ?_
+      refine BPair.oneValue_trans
+        (inertia.dotN_app _ _ _ _ rfl) ?_
+      show ((dotN (greenprod.vecScale (denProd us') (matVec E u.1))
+            (greenprod.vecScale (denProd us') (matVec E u.1)))
+          + (dotN (greenprod.vecScale u.2
+              (matVec (greenprod.assemble (E' :: Es) Bs)
+                (headVec us')))
+            (greenprod.vecScale u.2
+              (matVec (greenprod.assemble (E' :: Es) Bs)
+                (headVec us'))))).oneValue
+        ((dotN (matVec E u.1) (matVec E u.1)).scale
+            (eSum ((E :: E' :: Es).drop 1) us').2
+          + (eSum ((E :: E' :: Es).drop 1) us').1.scale (u.2 * u.2))
+      rw [show (E :: E' :: Es).drop 1 = E' :: Es from rfl,
+        eSum_den (E' :: Es) us']
+      refine BPair.add_congr ?_ ?_
+      · exact gvsSelf (denProd us') (matVec E u.1)
+      · exact BPair.oneValue_trans (gvsSelf u.2 _)
+          (BPair.scale_congr (u.2 * u.2)
+            (eSum_assemble (E' :: Es) Bs us' (k' :: ns) hsT ho.2 hv.2))
+
+/-- The per-shell electric caps: each shell's block capped
+two-sidedly against its order's identity at the shell's own
+certificate pair. -/
+def eCapList : List Mat → List Nat →
+    List ((k : Nat) × Pos × Pos × inertia.Split k × inertia.Split k) →
+    Prop
+  | _, _, [] => True
+  | EsL, ns, e :: es =>
+      inertia.capAt (inertia.matScale e.2.2.1 (ground.getAt [] EsL 0))
+        (inertia.matScale e.2.1 (idMat e.1)) e.2.2.2.1 e.2.2.2.2
+      ∧ e.1 = ground.getAt 0 ns 0
+      ∧ eCapList (EsL.drop 1) (ns.drop 1) es
+
+def decECapList :
+    ∀ (EsL : List Mat) (ns : List Nat)
+      (es : List ((k : Nat) × Pos × Pos
+        × inertia.Split k × inertia.Split k)),
+    Decidable (eCapList EsL ns es)
+  | _, _, [] => isTrue trivial
+  | EsL, ns, _ :: es =>
+    @instDecidableAnd _ _ inferInstance
+      (@instDecidableAnd _ _ inferInstance
+        (decECapList (EsL.drop 1) (ns.drop 1) es))
+
+instance (EsL : List Mat) (ns : List Nat)
+    (es : List ((k : Nat) × Pos × Pos
+      × inertia.Split k × inertia.Split k)) :
+    Decidable (eCapList EsL ns es) :=
+  decECapList EsL ns es
+
+/-- The shells' Horner fold: the head shell's squared cap joined to
+the deeper shells' at the crossing certificate's squared factor. -/
+def eFold :
+    List ((k : Nat) × Pos × Pos × inertia.Split k × inertia.Split k) →
+    List ((k : Nat) × Pos × Pos × inertia.Split k) → BPair × Pos
+  | [], _ => (BPair.unit, Pos.one)
+  | e :: _, [] =>
+      (BPair.ofPos (e.2.1 * e.2.1), e.2.2.1 * e.2.2.1)
+  | e :: es, c :: cs =>
+      let rest := eFold es cs
+      ((BPair.ofPos (e.2.1 * e.2.1)).scale
+          ((c.2.2.1 * c.2.2.1) * rest.2)
+        + rest.1.scale ((c.2.1 * c.2.1) * (e.2.2.1 * e.2.2.1)),
+       (e.2.2.1 * e.2.2.1) * ((c.2.2.1 * c.2.2.1) * rest.2))
+
+
+/-- The head shell's clearing regroups against the deeper shells'
+joined clearing. -/
+private theorem posE5 (a b c d : Pos) :
+    a * (b * c * d) = b * (c * (d * a)) := by
+  rw [ground.mul_assoc b c d, ground.mul_left_comm a b (c * d),
+    ground.mul_left_comm a c d, ground.mul_comm a d]
+
+/-- The tail summand's clearing regroups at the crossing
+certificate's square. -/
+private theorem posE6 (q e c p : Pos) :
+    q * (e * (c * p) * q) = p * (c * q * e) * q := by
+  rw [← ground.mul_assoc q (e * (c * p)) q,
+    ground.mul_left_comm q e (c * p), ground.mul_left_comm q c p,
+    ground.mul_assoc c q e, ground.mul_left_comm p c (q * e),
+    ground.mul_left_comm e c (q * p), ground.mul_left_comm e q p,
+    ground.mul_left_comm p q e, ground.mul_comm e p]
+
+/-- The fold's clearing regroups against the sum's joined
+clearing. -/
+private theorem posE7 (cn ed q S : Pos) :
+    cn * ed * (q * S) = cn * (S * ed) * q := by
+  rw [ground.mul_assoc cn ed (q * S), ground.mul_assoc cn (S * ed) q,
+    ground.mul_assoc S ed q, ground.mul_left_comm S ed q,
+    ground.mul_comm q S]
+
+/-- The shells' Horner fold sits at or above the sum's unit. -/
+private theorem eFold_unitLe :
+    ∀ (ecs : List ((k : Nat) × Pos × Pos
+        × inertia.Split k × inertia.Split k))
+      (cs : List ((k : Nat) × Pos × Pos × inertia.Split k)),
+    BPair.unit ≤ (eFold ecs cs).1
+  | [], _ => ground.leB_refl _
+  | _ :: _, [] => ground.leB_of_lt (ground.unitLtOfPos _)
+  | e :: es, c :: cs => by
+    show BPair.unit
+      ≤ (BPair.ofPos (e.2.1 * e.2.1)).scale
+            ((c.2.2.1 * c.2.2.1) * (eFold es cs).2)
+        + (eFold es cs).1.scale ((c.2.1 * c.2.1) * (e.2.2.1 * e.2.2.1))
+    refine ground.leB_congr_left (BPair.add_unit BPair.unit)
+      (ground.leB_add ?_ ?_)
+    · refine ground.leB_congr_left
+        (BPair.oneValue_symm
+          (ground.unitScale ((c.2.2.1 * c.2.2.1) * (eFold es cs).2))) ?_
+      exact ground.leB_scale
+        (ground.leB_of_lt (ground.unitLtOfPos (e.2.1 * e.2.1)))
+        ((c.2.2.1 * c.2.2.1) * (eFold es cs).2)
+    · refine ground.leB_congr_left
+        (BPair.oneValue_symm
+          (ground.unitScale ((c.2.1 * c.2.1) * (e.2.2.1 * e.2.2.1)))) ?_
+      exact ground.leB_scale (eFold_unitLe es cs)
+        ((c.2.1 * c.2.1) * (e.2.2.1 * e.2.2.1))
+
+
+/-- The last shell's price: the shell's cap read against the head's
+weight at the vacant deeper sum, the sum's unit summand absorbing. -/
+private theorem eStepLast (X0 D0 : BPair) (q en2 ed2 : Pos)
+    (hcap : X0.scale ed2 ≤ D0.scale en2) :
+    (X0.scale Pos.one + BPair.unit.scale q).scale (ed2 * q)
+      ≤ (D0 * BPair.ofPos en2).scale (q * Pos.one) := by
+  have h1 : (X0.scale Pos.one + BPair.unit.scale q).oneValue X0 :=
+    BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_of_eq (BPair.scale_one X0))
+        (BPair.oneValue_symm (ground.unitScale q)))
+      (BPair.add_unit X0)
+  have h2 := ground.leB_scale hcap q
+  rw [BPair.scale_scale, BPair.scale_scale] at h2
+  refine ground.leB_congr
+    (BPair.scale_congr (ed2 * q) (BPair.oneValue_symm h1)) ?_ h2
+  rw [ground.mul_one q]
+  exact BPair.oneValue_symm
+    (BPair.oneValue_trans (BPair.scale_congr q (BPair.mul_ofPos D0 en2))
+      (BPair.oneValue_of_eq (BPair.scale_scale D0 en2 q)))
+
+/-- The shells' step: the head shell's cap and the deeper shells'
+priced sum join at the crossing certificate's chain, the two
+summands priced separately against the Horner fold's two members. -/
+private theorem eStep (X0 D0 D1 S1 Q : BPair)
+    (S2 P q0 q1 en2 ed2 cn2 cd2 : Pos)
+    (hcap : X0.scale ed2 ≤ D0.scale en2)
+    (hIH : S1.scale (P * q1) ≤ (D1 * Q).scale S2)
+    (hone : D1.scale (cd2 * q0) ≤ D0.scale (cn2 * q1))
+    (hQ : BPair.unit ≤ Q) :
+    (X0.scale S2 + S1.scale q0).scale (ed2 * (cd2 * P) * q0)
+      ≤ (D0 * ((BPair.ofPos en2).scale (cd2 * P)
+          + Q.scale (cn2 * ed2))).scale (q0 * S2) := by
+  have hA : (X0.scale S2).scale (ed2 * (cd2 * P) * q0)
+      ≤ (D0 * (BPair.ofPos en2).scale (cd2 * P)).scale (q0 * S2) := by
+    have h := ground.leB_scale hcap ((cd2 * P) * (q0 * S2))
+    rw [BPair.scale_scale, BPair.scale_scale] at h
+    refine ground.leB_congr (BPair.oneValue_of_eq ?_) ?_ h
+    · rw [BPair.scale_scale, posE5 S2 ed2 (cd2 * P) q0]
+    · rw [BPair.mul_scale, BPair.scale_scale]
+      exact BPair.oneValue_symm
+        (BPair.oneValue_trans
+          (BPair.scale_congr ((cd2 * P) * (q0 * S2))
+            (BPair.mul_ofPos D0 en2))
+          (BPair.oneValue_of_eq
+            (BPair.scale_scale D0 en2 ((cd2 * P) * (q0 * S2)))))
+  have hone2 : (D1 * Q).scale (cd2 * q0) ≤ (D0 * Q).scale (cn2 * q1) := by
+    have h := ground.leB_mulR hQ hone
+    rw [BPair.mul_scale, BPair.mul_scale, BPair.mul_comm Q D1,
+      BPair.mul_comm Q D0] at h
+    exact h
+  have h1 := ground.leB_scale hIH (cd2 * q0 * ed2)
+  rw [BPair.scale_scale, BPair.scale_scale,
+    ground.mul_left_comm S2 (cd2 * q0) ed2] at h1
+  have h2 := ground.leB_scale hone2 (S2 * ed2)
+  rw [BPair.scale_scale, BPair.scale_scale] at h2
+  have h3 := ground.leB_trans h1 h2
+  have h4 : (S1.scale (P * (cd2 * q0 * ed2))).scale q1
+      ≤ ((D0 * Q).scale (cn2 * (S2 * ed2))).scale q1 := by
+    rw [BPair.scale_scale, BPair.scale_scale,
+      ground.mul_right_comm P (cd2 * q0 * ed2) q1,
+      ground.mul_right_comm cn2 (S2 * ed2) q1]
+    exact h3
+  have h6 := ground.leB_scale (ground.leB_of_scale h4) q0
+  rw [BPair.scale_scale, BPair.scale_scale] at h6
+  have hB : (S1.scale q0).scale (ed2 * (cd2 * P) * q0)
+      ≤ (D0 * Q.scale (cn2 * ed2)).scale (q0 * S2) := by
+    rw [BPair.scale_scale, BPair.mul_scale, BPair.scale_scale,
+      posE6 q0 ed2 cd2 P, posE7 cn2 ed2 q0 S2]
+    exact h6
+  rw [BPair.left_distrib, BPair.scale_add, BPair.scale_add]
+  exact ground.leB_add hA hB
+
+
+/-- The grams' identity read along the slabs, one entry per block:
+every gram its slab order's identity, the unit-gram spelling the
+shell display reads at. -/
+def unitGrams : List Mat → List Nat → Prop
+  | [], _ => True
+  | G :: Gs, ns => G = idMat (ground.getAt 0 ns 0)
+      ∧ unitGrams Gs (ns.drop 1)
+
+def decUnitGrams : ∀ (Gs : List Mat) (ns : List Nat),
+    Decidable (unitGrams Gs ns)
+  | [], _ => isTrue trivial
+  | _ :: Gs, ns => @instDecidableAnd _ _ inferInstance
+      (decUnitGrams Gs (ns.drop 1))
+
+instance (Gs : List Mat) (ns : List Nat) :
+    Decidable (unitGrams Gs ns) := decUnitGrams Gs ns
+
+/-- The shells' walk: at the shells' caps, the unit grams and the
+ascending telescope, the cross-cleared electric sum sits at or below
+the head shell's weight against the shells' Horner fold. -/
+private theorem eShellGo :
+    ∀ (us : List greenprod.VecQ) (EsL Gs : List Mat)
+      (Rs : List greenprod.MatQ)
+      (cs : List ((k : Nat) × Pos × Pos × inertia.Split k))
+      (ecs : List ((k : Nat) × Pos × Pos
+        × inertia.Split k × inertia.Split k)) (ns : List Nat),
+    greenprod.gramShape Gs ns →
+    unitGrams Gs ns →
+    capList Gs Rs cs → eCapList EsL ns ecs → ecs.length = us.length →
+    greenprod.teleUp Rs us 0 ns →
+    (eSum EsL us).1.scale
+        ((eFold ecs cs).2
+          * ((ground.getAt ([], Pos.one) us 0).2
+            * (ground.getAt ([], Pos.one) us 0).2))
+      ≤ ((dotN (ground.getAt ([], Pos.one) us 0).1
+            (ground.getAt ([], Pos.one) us 0).1)
+          * (eFold ecs cs).1).scale (eSum EsL us).2 := by
+  intro us
+  induction us with
+  | nil =>
+    intro EsL Gs Rs cs ecs ns _ _ _ _ hlen _
+    cases ecs with
+    | cons e es => exact Nat.noConfusion hlen
+    | nil =>
+      show BPair.unit.scale (Pos.one * (Pos.one * Pos.one))
+        ≤ (BPair.unit * BPair.unit).scale Pos.one
+      exact ground.leB_congr (ground.unitScale _)
+        (BPair.oneValue_symm
+          (BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.scale_one _))
+            (BPair.mul_unit _)))
+        (ground.leB_refl BPair.unit)
+  | cons u0 rest ih =>
+    intro EsL Gs Rs cs ecs ns hg hunit hc hec hlen hw
+    cases ecs with
+    | nil => exact Nat.noConfusion hlen
+    | cons e ecs1 =>
+    cases ns with
+    | nil => exact (hw.2.1 : False).elim
+    | cons k ns1 =>
+    cases Gs with
+    | nil => exact (hg : False).elim
+    | cons G0 Gs1 =>
+    have hcap := truncation.cap_sq (ground.getAt [] EsL 0) e.2.1 e.2.2.1
+      e.2.2.2.1 e.2.2.2.2 hec.1 u0.1 (hw.2.1.1.trans hec.2.1.symm)
+    cases rest with
+    | nil =>
+      cases ecs1 with
+      | cons e1 ecs2 =>
+        exact Nat.noConfusion (Nat.succ.inj hlen)
+      | nil =>
+      cases ns1 with
+      | cons k' ns2 => exact (hw.2.1.2 : False).elim
+      | nil =>
+      cases Rs with
+      | cons R Rs1 => exact (hw.1 : False).elim
+      | nil =>
+      cases cs with
+      | cons c cs1 => exact (hc : False).elim
+      | nil =>
+      exact eStepLast
+        (dotN (matVec (ground.getAt [] EsL 0) u0.1)
+          (matVec (ground.getAt [] EsL 0) u0.1))
+        (dotN u0.1 u0.1) (u0.2 * u0.2) (e.2.1 * e.2.1)
+        (e.2.2.1 * e.2.2.1) hcap
+    | cons u1 rest1 =>
+      cases ns1 with
+      | nil => exact (hw.2.1.2 : False).elim
+      | cons k' ns2 =>
+      cases Rs with
+      | nil => exact (hw.1 : False).elim
+      | cons R Rs1 =>
+      cases cs with
+      | nil => exact (hc : False).elim
+      | cons c cs1 =>
+      cases Gs1 with
+      | nil => exact (hg.2 : False).elim
+      | cons G1 Gs2 =>
+      have hG0 : G0 = idMat k := hunit.1
+      have hG1 : G1 = idMat k' := hunit.2.1
+      have hq0 : (inertia.quadForm G0 u0.1).oneValue (dotN u0.1 u0.1) := by
+        rw [hG0]
+        exact dotN_congrR u0.1 _ _ (inertia.matVec_idMat k u0.1 hw.2.1.1)
+      have hq1 : (inertia.quadForm G1 u1.1).oneValue (dotN u1.1 u1.1) := by
+        rw [hG1]
+        exact dotN_congrR u1.1 _ _
+          (inertia.matVec_idMat k' u1.1 hw.2.1.2.1)
+      have hchain : (inertia.quadForm G1 u1.1).scale
+            (c.2.2.1 * c.2.2.1 * Pos.one * (u0.2 * u0.2))
+          ≤ (inertia.quadForm G0 u0.1).scale
+            (c.2.1 * c.2.1 * Pos.one * (u1.2 * u1.2)) :=
+        weight_chain (G0 :: G1 :: Gs2) (R :: Rs1) (c :: cs1)
+          (u0 :: u1 :: rest1) (k :: k' :: ns2) hg hc hw 1
+          (Nat.succ_lt_succ (Nat.succ_pos rest1.length))
+      rw [ground.mul_one, ground.mul_one] at hchain
+      have hone : (dotN u1.1 u1.1).scale
+            (c.2.2.1 * c.2.2.1 * (u0.2 * u0.2))
+          ≤ (dotN u0.1 u0.1).scale
+            (c.2.1 * c.2.1 * (u1.2 * u1.2)) :=
+        ground.leB_congr
+          (BPair.scale_congr (c.2.2.1 * c.2.2.1 * (u0.2 * u0.2)) hq1)
+          (BPair.scale_congr (c.2.1 * c.2.1 * (u1.2 * u1.2)) hq0) hchain
+      have hIH := ih (EsL.drop 1) (G1 :: Gs2) Rs1 cs1 ecs1 (k' :: ns2)
+        hg.2 hunit.2 hc.2
+        hec.2.2 (Nat.succ.inj hlen) ⟨hw.1.2, hw.2.1.2, hw.2.2.2⟩
+      exact eStep
+        (dotN (matVec (ground.getAt [] EsL 0) u0.1)
+          (matVec (ground.getAt [] EsL 0) u0.1))
+        (dotN u0.1 u0.1) (dotN u1.1 u1.1)
+        (eSum (EsL.drop 1) (u1 :: rest1)).1 (eFold ecs1 cs1).1
+        (eSum (EsL.drop 1) (u1 :: rest1)).2 (eFold ecs1 cs1).2
+        (u0.2 * u0.2) (u1.2 * u1.2) (e.2.1 * e.2.1) (e.2.2.1 * e.2.2.1)
+        (c.2.1 * c.2.1) (c.2.2.1 * c.2.2.1)
+        hcap hIH hone (eFold_unitLe ecs1 cs1)
+
+/-- The electric square weight closes on the shells: the
+cross-cleared electric fold is priced by the shells' Horner fold
+against the head shell's weight, each summand one comparison at the
+certificates, at the unit grams (`unitGrams`) — the clause's stated
+reads, the caps identity-referenced by `truncation.cap_sq`'s own
+split. -/
+theorem electric_shells (EsL Gs : List Mat)
+    (Rs : List greenprod.MatQ)
+    (cs : List ((k : Nat) × Pos × Pos × inertia.Split k))
+    (ecs : List ((k : Nat) × Pos × Pos
+      × inertia.Split k × inertia.Split k))
+    (us : List greenprod.VecQ) (ns : List Nat)
+    (hg : greenprod.gramShape Gs ns)
+    (hunit : unitGrams Gs ns)
+    (hc : capList Gs Rs cs)
+    (hec : eCapList EsL ns ecs)
+    (hlen : ecs.length = us.length)
+    (hw : greenprod.teleUp Rs us 0 ns) :
+    (eSum EsL us).1.scale
+        ((eFold ecs cs).2
+          * ((ground.getAt ([], Pos.one) us 0).2
+            * (ground.getAt ([], Pos.one) us 0).2))
+      ≤ ((dotN (ground.getAt ([], Pos.one) us 0).1
+            (ground.getAt ([], Pos.one) us 0).1)
+          * (eFold ecs cs).1).scale (eSum EsL us).2 :=
+  eShellGo us EsL Gs Rs cs ecs ns hg hunit hc hec hlen hw
+
+
+/-- The two scales' reads of one observable sit in one bracket at
+the priced width: the width pair dominates the electric composite —
+the grounds' own reads — and the bracket is the read display at
+it. -/
+theorem scale_read {n : Nat} (Et Es Ed A : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : split.diagRead Et (idMat n) T Tw l)
+    (j0 : Nat) (hj0 : j0 < n) (d0 : Pos) (g0 : BPair)
+    (hroot0 : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j0
+      = (BPair.unit, d0, g0))
+    (gn gd : Pos)
+    (hcl : clearRead l j0 gn gd)
+    (hEd : sqAt Ed n) (g : Pos) (delta : BPair)
+    (htie : elim.matOneValue Es
+      (matAdd Et (matAdd (inertia.matScale g Ed)
+        (matScaleB delta.swap (idMat n)))))
+    (psit : List BPair) (hpt : psit.length = n)
+    (hker : poly.unitTail (matVec Es psit))
+    (wn wd : Pos)
+    (hwid : ((dotN (matVec Ed psit) (matVec Ed psit)).scale (g * g)
+        + (delta * delta) * dotN psit psit).scale (2 * (wd * wd))
+      ≤ (dotN psit psit).scale (wn * wn))
+    (cn cd : Pos) (spA spA' : inertia.Split n)
+    (hA : inertia.capAt (inertia.matScale cd A)
+      (inertia.matScale cn (idMat n)) spA spA') :
+    (windowsep.mag (readGap
+        (read A (matVec T.val (elim.idRow n j0))) (read A psit))).scale
+        (gn * wd * cd)
+      ≤ (dotN (matVec T.val (elim.idRow n j0))
+            (matVec T.val (elim.idRow n j0))
+          * dotN psit psit).scale (4 * (cn * wn * gd)) := by
+  have hTl : T.val.length = n := SqMat.rows T
+  have hpl : (matVec T.val (elim.idRow n j0)).length = n := by
+    rw [matVec_length]; exact hTl
+  have hgc := ground_column Et T Tw l hd j0 hj0 d0 g0 hroot0
+  have hs : BPair.unit < dotN (matVec T.val (elim.idRow n j0))
+      (matVec T.val (elim.idRow n j0)) := hgc.2.2
+  have hPP : BPair.unit ≤ dotN (matVec T.val (elim.idRow n j0))
+        (matVec T.val (elim.idRow n j0))
+      * dotN (matVec T.val (elim.idRow n j0))
+        (matVec T.val (elim.idRow n j0)) :=
+    ground.leB_of_lt (ground.unitLtMul hs hs)
+  -- the electric transport at the wd-clearing
+  have hTE := ground.leB_scale
+    (transport_electric Et Es Ed T Tw l hd j0 hj0 d0 g0 hroot0 gn gd
+      hcl hEd g delta htie psit hpt hker) (wd * wd)
+  rw [BPair.scale_scale
+      (dotN (residD [matVec T.val (elim.idRow n j0)] psit)
+        (residD [matVec T.val (elim.idRow n j0)] psit))
+      (gn * gn) (wd * wd),
+    BPair.scale_scale _ (2 * (gd * gd)) (wd * wd),
+    ground.mul_right_comm 2 (gd * gd) (wd * wd)] at hTE
+  -- the width binder multiplied through the residual clearing
+  have hW := ground.leB_scale
+    (ground.leB_mulR hPP hwid) (gd * gd)
+  rw [BPair.mul_scale _ _ (2 * (wd * wd)),
+    BPair.mul_scale _ _ (wn * wn),
+    BPair.scale_scale _ (2 * (wd * wd)) (gd * gd),
+    BPair.scale_scale _ (wn * wn) (gd * gd)] at hW
+  have htrans := ground.leB_trans hTE hW
+  exact Decidable.byCases
+    (p := BPair.ofPos (wn * gd) ≤ BPair.ofPos (gn * wd))
+    (fun hw => readClose A cn cd spA spA' hA
+      (matVec T.val (elim.idRow n j0)) psit hpl hpt gn gd wn wd hw hs
+      htrans)
+    (fun hw => readCrude A cn cd spA spA' hA
+      (matVec T.val (elim.idRow n j0)) psit hpl hpt gn gd wn wd
+      (ground.leB_of_lt (Decidable.of_not_not
+        (fun hn => hw (ground.leB_of_not_lt hn)))))
 
 end groundreads

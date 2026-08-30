@@ -159,28 +159,6 @@ the simple `α_i`'s coroot read at `j` is the Cartan entry
 `α_i(α_j^∨)`.  The pairing walks the two lists in lockstep, so the
 read holds at any row count. -/
 
-/-- The vacant coefficients' pairing: a coefficient list reading
-zero at every key pairs the rows off at the sum's unit. -/
-private theorem zipUnit (j : Nat) : ∀ (f : List Nat)
-    (M : List (List BPair)), (∀ k, k < f.length → getAt 0 f k = 0) →
-    (BPair.sum (List.zipWith
-      (fun c row => BPair.ofNat c * getAt BPair.unit row j)
-      f M)).oneValue BPair.unit
-  | [], _, _ => BPair.oneValue_refl _
-  | _ :: _, [], _ => BPair.oneValue_refl _
-  | c :: f, row :: M, h => by
-    show (BPair.sum ((BPair.ofNat c * getAt BPair.unit row j)
-      :: List.zipWith
-        (fun c row => BPair.ofNat c * getAt BPair.unit row j)
-        f M)).oneValue BPair.unit
-    have hc : c = 0 := h 0 (Nat.succ_pos _)
-    rw [hc]
-    refine BPair.oneValue_trans (BPair.sum_cons _ _) ?_
-    exact BPair.oneValue_trans
-      (BPair.add_congr (BPair.unit_mul _)
-        (zipUnit j f M (fun k hk => h (k + 1) (Nat.succ_lt_succ hk))))
-      (BPair.add_unit BPair.unit)
-
 /-- The one-hot pairing: a coefficient list reading one at a key
 and zero at the rest pairs the rows off at that key's own row. -/
 private theorem zipPick (j : Nat) : ∀ (f : List Nat)
@@ -204,9 +182,12 @@ private theorem zipPick (j : Nat) : ∀ (f : List Nat)
           (getAt BPair.unit row j) by
         rw [BPair.mul_comm]
         exact BPair.mul_ofNat_one _)
-      (zipUnit j f M (fun k hk =>
-        hoff (k + 1) (Nat.succ_lt_succ hk) (fun he =>
-          Nat.noConfusion he)))) ?_
+      (zipTermUnit j f M (fun k hk => by
+        have h0 : getAt 0 f k = 0 :=
+          hoff (k + 1) (Nat.succ_lt_succ hk) (fun he =>
+            Nat.noConfusion he)
+        rw [h0]
+        exact BPair.unit_mul _))) ?_
     exact BPair.add_unit _
   | c :: f, row :: M, i + 1, hi, hone, hoff => by
     show (BPair.sum ((BPair.ofNat c * getAt BPair.unit row j)
@@ -249,5 +230,119 @@ theorem corootAt_oneHot (t : Table) (i j : Nat) (hi : i < t.rank) :
     rw [hlen] at hk
     rw [hread k hk, if_neg (fun ht : (k == i) = true =>
       hne (ground.beqEqOf ht))]
+
+/-- The two-head fold at matched counts: coefficients one at the
+first two keys with every deeper row entry the unit read the two
+head entries' sum. -/
+private theorem zipHeadPair (j : Nat) : ∀ (f : List Nat)
+    (M : List (List BPair)), M.length = f.length →
+    getAt 0 f 0 = 1 → getAt 0 f 1 = 1 →
+    (∀ k, 2 ≤ k → k < f.length →
+      (getAt BPair.unit (getAt [] M k) j).oneValue BPair.unit) →
+    (BPair.sum (List.zipWith
+      (fun c row => BPair.ofNat c * getAt BPair.unit row j)
+      f M)).oneValue
+      (getAt BPair.unit (getAt [] M 0) j
+        + getAt BPair.unit (getAt [] M 1) j)
+  | [], _, _, h0, _, _ => Nat.noConfusion h0
+  | [_], _, _, _, h1, _ => Nat.noConfusion h1
+  | _ :: _ :: _, [], hl, _, _, _ => Nat.noConfusion hl
+  | _ :: _ :: _, [_], hl, _, _, _ =>
+    Nat.noConfusion (Nat.succ.inj hl)
+  | c0 :: c1 :: f, row0 :: row1 :: M, _, h0, h1, hent => by
+    have hc0 : c0 = 1 := h0
+    have hc1 : c1 = 1 := h1
+    show (BPair.sum ((BPair.ofNat c0 * getAt BPair.unit row0 j)
+      :: (BPair.ofNat c1 * getAt BPair.unit row1 j)
+      :: List.zipWith
+        (fun c row => BPair.ofNat c * getAt BPair.unit row j)
+        f M)).oneValue
+      (getAt BPair.unit row0 j + getAt BPair.unit row1 j)
+    rw [hc0, hc1]
+    refine BPair.oneValue_trans (BPair.sum_cons _ _) ?_
+    refine BPair.oneValue_trans (BPair.add_congr
+      (show ((BPair.ofNat 1) * getAt BPair.unit row0 j).oneValue
+          (getAt BPair.unit row0 j) by
+        rw [BPair.mul_comm]
+        exact BPair.mul_ofNat_one _)
+      (BPair.oneValue_trans (BPair.sum_cons _ _)
+        (BPair.oneValue_trans
+          (BPair.add_congr
+            (show ((BPair.ofNat 1)
+                  * getAt BPair.unit row1 j).oneValue
+                (getAt BPair.unit row1 j) by
+              rw [BPair.mul_comm]
+              exact BPair.mul_ofNat_one _)
+            (zipTermUnit j f M (fun k hk =>
+              BPair.oneValue_trans
+                (BPair.mul_congr
+                  (BPair.oneValue_refl
+                    (BPair.ofNat (getAt 0 f k)))
+                  (hent (k + 2) (Nat.le_add_left 2 k)
+                    (Nat.succ_lt_succ (Nat.succ_lt_succ hk))))
+                (BPair.mul_unit _))))
+          (BPair.add_unit _)))) ?_
+    exact BPair.oneValue_refl _
+
+/-! The `A` table's occupancy reads: the θ-coroot's first-key read
+(`prop:row`'s occupied support at the `A`-series) and the
+residue's value at every rank (`con:places`' declared residue at
+the first table). -/
+
+/-- The `A` table's θ-coroot at the first key sits off the unit:
+the first row's two against the second row's balance partner, the
+deeper rows' first entries the unit. -/
+theorem corootA_head_off : ∀ (r : Nat), 0 < r →
+    ¬ (corootAt (tableA r) (tableA r).thetaFold 0).oneValue
+      BPair.unit
+  | 1, _ => by decide +kernel
+  | r + 2, _ => fun hu => by
+    have hsum : (corootAt (tableA (r + 2))
+        (tableA (r + 2)).thetaFold 0).oneValue
+        (BPair.ofNat 2 + (BPair.ofNat 1).swap) := by
+      refine BPair.oneValue_trans
+        (zipHeadPair 0 (List.replicate (r + 2) 1)
+          (ground.matOf (r + 2) (r + 2) _)
+          (by rw [ground.matOf_length, ground.length_replicate])
+          (ground.getAt_replicate 0 1 (r + 2) 0 (Nat.succ_pos _))
+          (show getAt 0 (List.replicate (r + 2) 1) 1 = 1 from
+            ground.getAt_replicate 0 1 (r + 2) 1
+              (Nat.succ_lt_succ (Nat.succ_pos _)))
+          (fun k hk2 hkl => ?_)) ?_
+      · obtain ⟨n, hn⟩ := Nat.le.dest hk2
+        have hk : k = n + 2 := by
+          rw [← hn, Nat.add_comm]
+        subst hk
+        rw [ground.length_replicate] at hkl
+        rw [ground.matOf_entry [] BPair.unit (r + 2) (r + 2) _
+          (n + 2) 0 hkl (Nat.succ_pos _)]
+        exact BPair.oneValue_refl _
+      · rw [ground.matOf_entry [] BPair.unit (r + 2) (r + 2) _
+          0 0 (Nat.succ_pos _) (Nat.succ_pos _),
+          ground.matOf_entry [] BPair.unit (r + 2) (r + 2) _
+          1 0 (Nat.succ_lt_succ (Nat.succ_pos _)) (Nat.succ_pos _)]
+        exact BPair.oneValue_refl _
+    exact absurd
+      (BPair.oneValue_trans (BPair.oneValue_symm hsum) hu)
+      (by decide +kernel)
+
+/-- The residue at the `A` table reads the declared residue at
+every rank: the θ-fold's ones against the twos at the matched
+count, with the division's witnessed cancel
+(`con:places`' declared scalar at the first table). -/
+theorem residue_tableA (r : Nat) : residue (tableA r) = r := by
+  show ground.dotNat (List.replicate r 1) (List.replicate r 2)
+    / (2 * 1) = r
+  rw [ground.dotOnesL r (List.replicate r 2)
+      (ground.length_replicate 2 r),
+    ground.sumNat_replicate 2 r]
+  exact divMulSelf r 2 (Nat.zero_lt_succ 1)
+
+/-- The `A` residue's occupancy at every occupied rank, the value
+read's own. -/
+theorem residue_tableA_pos (r : Nat) (hr : 0 < r) :
+    0 < residue (tableA r) := by
+  rw [residue_tableA r]
+  exact hr
 
 end gentable

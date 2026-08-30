@@ -66,3 +66,19 @@ example : BPair.oneValue
     (corootAt (tableA 4) ((List.range (tableA 4).rank).map
       (fun k => if k == 1 then 1 else 0)) 2)
     ((BPair.ofNat 1).swap) := by decide +kernel
+
+/-! The `A` occupancy reads' binders, isolated: at the vacant rank
+the θ-coroot's first-key read is the unit and the residue is
+vacant, so `corootA_head_off`'s and `residue_tableA_pos`'s rank
+binders bind. -/
+
+example : (corootAt (tableA 0) (tableA 0).thetaFold 0).oneValue
+    BPair.unit := by decide +kernel
+example : ¬ 0 < residue (tableA 0) := by decide +kernel
+
+/-! The residue's value read, the theorem route beside the kernel's
+own at a committed rank and at a fresh one. -/
+
+example : residue (tableA 4) = 4 := residue_tableA 4
+example : residue (tableA 7) = 7 := residue_tableA 7
+example : residue (tableA 7) = 7 := by decide +kernel

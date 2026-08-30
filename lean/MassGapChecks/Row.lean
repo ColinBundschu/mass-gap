@@ -645,3 +645,26 @@ example : ground.countOf
 example : steinberg.memberAt tB2 wB2 thFamB2 []
     (poly.pnorm (elim.vecScale (BPair.ofNat 0) (thetaV tB2))) := by
   decide +kernel
+
+/-! `supportCount_pos`'s rank binder, isolated: a rank-vacant
+table holds an off-unit coroot read at the first key while its
+support count is vacant, the fold walking its rank alone. -/
+
+private def rankFreeT : Table := ⟨0, [], 1, [[BPair.ofNat 2]], [], [1]⟩
+
+example : ¬ (corootAt rankFreeT rankFreeT.thetaFold 0).oneValue
+    BPair.unit := by decide +kernel
+example : ¬ 0 < supportCount rankFreeT := by decide +kernel
+
+/-! The `A` support's occupancy at a fresh rank, the theorem
+route. -/
+
+example : 0 < supportCount (tableA 9) :=
+  supportCount_tableA_pos 9 (Nat.succ_pos 8)
+
+example : 0 < supportCount (sertables.tableB 9) :=
+  supportCount_tableB_pos 7
+example : 0 < supportCount (sertables.tableC 9) :=
+  supportCount_tableC_pos 6
+example : 0 < supportCount (sertables.tableD 9) :=
+  supportCount_tableD_pos 5

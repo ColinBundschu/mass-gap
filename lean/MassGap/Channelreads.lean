@@ -78,4 +78,9 @@ instance (c1 : Pos) : Decidable (conjRead c1) := decOneValue _ _
 count. -/
 def orderCount (c1 : Pos) : Nat := poleOrder + (factors c1).length
 
+/-- The order count reads three at every base: the pole order one
+with the factor list's two members, each independent of the base
+(`thm:channeldiv`'s orders). -/
+theorem orderCount_three (c1 : Pos) : orderCount c1 = 3 := rfl
+
 end channelreads

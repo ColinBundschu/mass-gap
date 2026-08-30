@@ -445,45 +445,9 @@ theorem mag_mul (x y : BPair) :
     | inl hy => exact Or.inr (by rw [hx, hy, BPair.swap_mul])
     | inr hy => exact Or.inl (by rw [hx, hy, BPair.swap_mul_swap])
 
-/-! The power's order kit at the balance carrier: a power of a
-datum at or above the sum's unit sits there, a power of one strictly
-above it sits strictly above, powers compare at comparing bases, and
-powers pass the product. -/
-
-/-- A power of a datum at or above the sum's unit sits there. -/
-theorem unitLe_bpow {a : BPair} (h : BPair.unit ≤ a) :
-    ∀ k : Nat, BPair.unit ≤ ground.bpow a k
-  | 0 => ground.leB_of_lt (ground.unitLtOfPos Pos.one)
-  | k + 1 =>
-    ground.leB_congr_right
-      (BPair.oneValue_symm (BPair.norm_oneValue _))
-      (ground.unitLeMul h (unitLe_bpow h k))
-
-/-- A power of a datum strictly above the sum's unit sits strictly
-above it. -/
-theorem unitLt_bpow {a : BPair} (h : BPair.unit < a) :
-    ∀ k : Nat, BPair.unit < ground.bpow a k
-  | 0 => ground.unitLtOfPos Pos.one
-  | k + 1 =>
-    BPair.lt_congr (BPair.oneValue_refl _)
-      (BPair.oneValue_symm (BPair.norm_oneValue _))
-      (ground.unitLtMul h (unitLt_bpow h k))
-
-/-- The powers compare at comparing bases from the sum's unit. -/
-theorem bpow_mono {a b : BPair} (ha : BPair.unit ≤ a) (h : a ≤ b) :
-    ∀ k : Nat, ground.bpow a k ≤ ground.bpow b k
-  | 0 => ground.leB_refl _
-  | k + 1 => by
-    have hb : BPair.unit ≤ b := ground.leB_trans ha h
-    have hstep : a * ground.bpow a k ≤ b * ground.bpow b k :=
-      ground.leB_trans (ground.leB_mulR ha (bpow_mono ha h k))
-        (ground.leB_congr
-          (BPair.oneValue_of_eq (BPair.mul_comm (ground.bpow b k) a))
-          (BPair.oneValue_of_eq (BPair.mul_comm (ground.bpow b k) b))
-          (ground.leB_mulR (unitLe_bpow hb k) h))
-    exact ground.leB_congr
-      (BPair.oneValue_symm (BPair.norm_oneValue _))
-      (BPair.oneValue_symm (BPair.norm_oneValue _)) hstep
+/-! The power's magnitude at the balance carrier: the power's
+magnitude is the magnitude's power, and it caps at the cap's
+power. -/
 
 /-- The power's magnitude is the magnitude's power. -/
 theorem mag_bpow (x : BPair) : ∀ k : Nat,
@@ -503,7 +467,7 @@ theorem mag_bpow (x : BPair) : ∀ k : Nat,
 theorem mag_bpow_le {x R : BPair} (h : mag x ≤ R) (k : Nat) :
     mag (ground.bpow x k) ≤ ground.bpow R k :=
   ground.leB_congr_left (BPair.oneValue_symm (mag_bpow x k))
-    (bpow_mono (unitLe_mag x) h k)
+    (ground.bpow_mono (unitLe_mag x) h k)
 
 /-! The coefficient fold's Horner pass at its own recursion: the
 pass's two accumulators read the running power and the collected
@@ -673,8 +637,8 @@ theorem unitLe_magFold (P : Poly) {n d : BPair}
     (BPair.oneValue_symm (magFold_read P n d))
     (ground.foldB_nonneg _ (List.range (poly.vnorm P).length)
       (fun i _ => ground.unitLeMul
-        (ground.unitLeMul (unitLe_mag _) (unitLe_bpow hn i))
-        (unitLe_bpow hd _)))
+        (ground.unitLeMul (unitLe_mag _) (ground.unitLeBpow hn i))
+        (ground.unitLeBpow hd _)))
 
 /-- The coefficient fold at the memberwise swap, the magnitudes
 unchanged. -/
@@ -889,7 +853,7 @@ private theorem lead_core (q : Poly) (x H : BPair) (n : Nat)
   have hcu : BPair.unit ≤ mag (top q) := unitLe_mag (top q)
   have hSu : BPair.unit ≤ ground.famFold BPair.add BPair.unit
       (fun i => ground.bpow (mag x) i) (List.range n) :=
-    ground.foldB_nonneg _ (List.range n) (fun i _ => unitLe_bpow hyu i)
+    ground.foldB_nonneg _ (List.range n) (fun i _ => ground.unitLeBpow hyu i)
   have hgetn : ground.getAt BPair.unit q n = top q :=
     (poly.topO_getAt ground.bpairOps q n hq).symm
   have heval : (poly.eval q x).oneValue
@@ -917,7 +881,7 @@ private theorem lead_core (q : Poly) (x H : BPair) (n : Nat)
       (BPair.oneValue_symm (BPair.oneValue_trans
         (mag_mul (ground.getAt BPair.unit q i) (ground.bpow x i))
         (BPair.mul_congr (BPair.oneValue_refl _) (mag_bpow x i)))) ?_
-    exact ground.leB_mul_mono (unitLe_bpow hyu i) hHu (hH _ hmem)
+    exact ground.leB_mul_mono (ground.unitLeBpow hyu i) hHu (hH _ hmem)
       (ground.leB_refl _)
   have hTmag : mag (ground.famFold BPair.add BPair.unit
         (fun k => ground.getAt BPair.unit q k * ground.bpow x k)

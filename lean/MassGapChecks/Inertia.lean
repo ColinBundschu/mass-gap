@@ -57,7 +57,11 @@ determinant binder is the clause's frame at the split, both sides
 reading the unit at a vacant pivot.  The block table's two small
 orders ride next: the order-one row at an entry below the unit and
 the order-two row at the mixed block of determinant `-4`, each
-split decided and each count read through the general theorem.  The
+split decided and each count read through the general theorem, with
+the diagonal certificate at a stated entry list beside them — the
+three-order datum `diag(2, -2, 1)` split at its own entries and its
+count the list's side fold, both read twice, and the refusal at an
+entry on the sum's unit naming the nonsingularity binder.  The
 existence clause closes the module at four data — an order-one
 pivot, the mixed 2×2 whose diagonal reads the unit, a three-order
 datum whose leading entry reads the unit so the descent exchanges
@@ -1035,6 +1039,54 @@ example : revAt btSp = 1 := by decide +kernel
 example : revAt btSp = (SBlock.two u btB u).rev :=
   rev_two (b' := btB) (by decide +kernel) (by decide +kernel) btSp
     (by decide +kernel)
+
+/-! The diagonal certificate at a stated entry list: the three-order
+diagonal datum `diag(2, -2, 1)` splitting at its own entries, one
+order-one block each, decided and through the theorem, with the
+reversal count the entry list's own side fold — one lower side, so
+count `1` — read both ways; and the refusal at a list carrying an
+entry on the sum's unit, where the shape and congruence binders
+stand and the nonsingularity binder alone fails, and at an occupied
+coupling, where the block-diagonal binder alone fails. -/
+
+private def dgL : List BPair := [⟨3, 1⟩, ⟨1, 3⟩, ⟨2, 1⟩]
+private def dgM : Mat := [[⟨3, 1⟩, u, u], [u, ⟨1, 3⟩, u], [u, u, ⟨2, 1⟩]]
+
+example : splitRead dgM (oneSplit dgL) := by decide +kernel
+example : splitRead dgM (oneSplit dgL) :=
+  oneSplit_read dgL dgM (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
+example : revAt (oneSplit dgL) = 1 := by decide +kernel
+example : dgL.foldl (fun m d => m + (SBlock.one d).rev) 0 = 1 := by
+  decide +kernel
+example : revAt (oneSplit dgL)
+    = dgL.foldl (fun m d => m + (SBlock.one d).rev) 0 :=
+  revAt_oneSplit dgL
+
+private def dgU : List BPair := [⟨3, 1⟩, u, ⟨2, 1⟩]
+private def dgN : Mat := [[⟨3, 1⟩, u, u], [u, u, u], [u, u, ⟨2, 1⟩]]
+
+example : sqAt dgN dgU.length := by decide +kernel
+example : matOneValue dgN (blockMat (dgU.map SBlock.one) 0) := by
+  decide +kernel
+example : ¬ ((dgU.all (fun d => !(decide (d.oneValue BPair.unit))))
+    = true) := by decide +kernel
+example : ¬ splitRead dgN (oneSplit dgU) := by decide +kernel
+
+/-! The block-diagonal binder isolated: a datum off the list's
+block diagonal — an occupied coupling — with the shape and
+nonsingularity binders standing, refusing the split. -/
+
+private def dgOff : Mat :=
+  [[⟨3, 1⟩, ⟨2, 1⟩, u], [⟨2, 1⟩, ⟨1, 3⟩, u], [u, u, ⟨2, 1⟩]]
+
+example : sqAt dgOff dgL.length := by decide +kernel
+example : (dgL.all (fun d => !(decide (d.oneValue BPair.unit))))
+    = true := by decide +kernel
+example : ¬ matOneValue dgOff (blockMat (dgL.map SBlock.one) 0) := by
+  decide +kernel
+example : ¬ splitRead dgOff (oneSplit dgL) := by decide +kernel
+
 
 /-! The block table's side reads, decided and through the theorems:
 the order-one block at either side, and the order-two block at the

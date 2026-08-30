@@ -86,6 +86,15 @@ def baseRead (c1 : Pos) : Prop :=
 instance (c1 : Pos) : Decidable (baseRead c1) :=
   inferInstanceAs (Decidable (_ = _))
 
+/-- The base collects at every base: `c₁ · c₁² = c₁³` at the order
+count's three (`channelreads.orderCount_three`), the display's own
+read at the defining fold. -/
+theorem baseRead_all (c1 : Pos) : baseRead c1 := by
+  show c1 * (c1 * c1) = Pos.pow c1 (channelreads.orderCount c1)
+  rw [channelreads.orderCount_three c1]
+  show c1 * (c1 * c1) = c1 * (c1 * (c1 * Pos.one))
+  rw [mul_one]
+
 /-- The lower crossing's level reads its two members at one value
 exactly at base two: at a level on the lower crossing
 (`chordmap.crossLo`), the members' one-value read holds exactly at

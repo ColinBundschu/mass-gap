@@ -1227,6 +1227,35 @@ gauge each keep the value. -/
 theorem vnorm_ov (P : Poly) : oneValue (vnorm P) P :=
   oneValue_trans (trim_ov (pnorm P)) (pnorm_oneValue P)
 
+/-- The representative at an occupied tail: a further coefficient
+enters as its own representative above the tail's. -/
+theorem vnorm_cons_occ (c d : BPair) (p t : Poly)
+    (h : vnorm p = d :: t) :
+    vnorm (c :: p) = c.norm :: d :: t := by
+  show (match trim (pnorm p) with
+    | [] => if decide ((BPair.norm c).oneValue BPair.unit) then []
+            else [BPair.norm c]
+    | e :: t' => BPair.norm c :: e :: t') = c.norm :: d :: t
+  rw [show trim (pnorm p) = d :: t from h]
+
+/-- The representative at a vacant tail and an occupied
+coefficient: the one-member list at the coefficient's
+representative. -/
+theorem vnorm_cons_off (c : BPair) (p : Poly) (h : vnorm p = [])
+    (hc : ¬ c.oneValue BPair.unit) : vnorm (c :: p) = [c.norm] := by
+  have hd : decide ((BPair.norm c).oneValue BPair.unit) = false :=
+    decide_eq_false (fun hu => hc (BPair.oneValue_trans
+      (BPair.oneValue_symm (BPair.norm_oneValue c)) hu))
+  show (match trim (pnorm p) with
+    | [] => if decide ((BPair.norm c).oneValue BPair.unit) then []
+            else [BPair.norm c]
+    | e :: t' => BPair.norm c :: e :: t') = [c.norm]
+  rw [show trim (pnorm p) = [] from h]
+  show (if decide ((BPair.norm c).oneValue BPair.unit) then []
+        else [BPair.norm c]) = [c.norm]
+  rw [hd]
+  rfl
+
 /-- The Horner read at the memberwise swap: the negated
 coefficients evaluate to the evaluation's own balance partner. -/
 theorem eval_neg : ∀ (p : Poly) (r : BPair),
@@ -2229,12 +2258,6 @@ private theorem evalClearGo_read (ln cB : BPair) :
             (BPair.oneValue_symm (BPair.mul_one_read pw))))
         (BPair.oneValue_refl _))
 
-/-- The unit's power beyond the constant key reads the sum's unit,
-the product absorbing. -/
-private theorem bpow_unit_succ (k : Nat) :
-    (ground.bpow BPair.unit (k + 1)).oneValue BPair.unit :=
-  BPair.oneValue_trans (BPair.norm_oneValue _) (BPair.unit_mul _)
-
 /-- The cleared evaluation at the sum's unit point keeps the
 constant key alone at the clearing's stated power: every key beyond
 the constant reads the unit's own power, the accumulating sum
@@ -2272,7 +2295,7 @@ theorem evalClear_unit (p : Poly) (c : Pos) (K : Nat) :
               (BPair.mul_congr (BPair.oneValue_refl _)
                 (BPair.oneValue_trans
                   (BPair.mul_congr (BPair.oneValue_refl _)
-                    (bpow_unit_succ k))
+                    (ground.bpow_unit_succ k))
                   (BPair.mul_unit _)))
               (BPair.mul_unit _)))
           (BPair.unit_mul _)

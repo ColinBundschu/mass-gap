@@ -299,6 +299,11 @@ def posVal (p : Pos) : Nat := p.pred + 1
 /-- Every value read is occupied. -/
 theorem posVal_pos (p : Pos) : 0 < posVal p := Nat.succ_pos p.pred
 
+/-- The stored count's injectivity read, the constructor's own: two
+positives at one value are one stored count. -/
+theorem posMkInj {a b : Nat} (h : (⟨a⟩ : Pos) = ⟨b⟩) : a = b :=
+  congrArg Pos.pred h
+
 private theorem val_inj {p q : Pos} (h : posVal p = posVal q) : p = q :=
   congrArg Pos.mk (Nat.succ.inj h)
 
@@ -2973,6 +2978,38 @@ theorem BPair.norm_congr {x y : BPair} (h : x.oneValue y) :
       show (⟨succ g1, Pos.one⟩ : BPair) = ⟨succ g2, Pos.one⟩
       rw [ground.add_left_cancel h']
 
+/-- The representative at a witnessed gap the low way: the side's
+one-member display reads the gap's successor at the second member. -/
+theorem BPair.norm_of_gapLt {x : BPair} {g : Pos}
+    (h : x.fst + g = x.snd) : x.norm = ⟨Pos.one, succ g⟩ := by
+  unfold BPair.norm
+  cases hx : x.side with
+  | lt g1 hg1 =>
+    show (⟨Pos.one, succ g1⟩ : BPair) = ⟨Pos.one, succ g⟩
+    rw [ground.add_left_cancel (hg1.trans h.symm)]
+  | eq he =>
+    exact absurd he (fun he =>
+      BPair.clash_lt_eq (BPair.oneValue_refl x) h he)
+  | gt g2 hg2 =>
+    exact absurd hg2 (fun hg2 =>
+      BPair.clash_lt_gt (BPair.oneValue_refl x) h hg2)
+
+/-- The representative at a witnessed gap the high way: the side's
+one-member display reads the gap's successor at the first member. -/
+theorem BPair.norm_of_gapGt {x : BPair} {g : Pos}
+    (h : x.snd + g = x.fst) : x.norm = ⟨succ g, Pos.one⟩ := by
+  unfold BPair.norm
+  cases hx : x.side with
+  | lt g1 hg1 =>
+    exact absurd hg1 (fun hg1 =>
+      BPair.clash_lt_gt (BPair.oneValue_refl x) hg1 h)
+  | eq he =>
+    exact absurd he (fun he =>
+      BPair.clash_eq_gt (BPair.oneValue_refl x) he h)
+  | gt g2 hg2 =>
+    show (⟨succ g2, Pos.one⟩ : BPair) = ⟨succ g, Pos.one⟩
+    rw [ground.add_left_cancel (hg2.trans h.symm)]
+
 /-- The homogeneity principle at the balance sum. -/
 theorem BPair.add_congr {x x' y y' : BPair} (hx : x.oneValue x')
     (hy : y.oneValue y') : (x + y).oneValue (x' + y') := by
@@ -3093,6 +3130,12 @@ theorem BPair.add_unit (x : BPair) : (x + BPair.unit).oneValue x := by
   show x.fst + Pos.one + x.snd = x.fst + (x.snd + Pos.one)
   rw [ground.add_assoc, ground.add_comm Pos.one x.snd]
 
+/-- Two summands at the sum's unit read the sum there. -/
+theorem BPair.add_units {x y : BPair} (hx : x.oneValue BPair.unit)
+    (hy : y.oneValue BPair.unit) : (x + y).oneValue BPair.unit :=
+  BPair.oneValue_trans (BPair.add_congr hx hy)
+    (BPair.unit_add BPair.unit)
+
 /-- The sum's unit swallows the product on its left. -/
 theorem BPair.unit_mul (x : BPair) :
     (BPair.unit * x).oneValue BPair.unit := by
@@ -3172,6 +3215,21 @@ the middle standing, stated at the joined product's own
 bracketing. -/
 theorem BPair.mul_rot3r (x y z : BPair) : x * (y * z) = z * (y * x) := by
   rw [← BPair.mul_assoc, BPair.mul_comm (x * y) z, BPair.mul_comm x y]
+
+/-- The head passes inside the trailing product, the tightened
+association's read of `BPair.mul_left_comm`. -/
+theorem BPair.mul_left_comm' (x y z : BPair) : x * (y * z) = y * x * z := by
+  rw [BPair.mul_left_comm x y z, ← BPair.mul_assoc y x z]
+
+/-- The trailing factors exchange across the head, the loosened
+association's read of `BPair.mul_right_comm`. -/
+theorem BPair.mul_right_comm' (x y z : BPair) : x * (y * z) = x * z * y := by
+  rw [← BPair.mul_assoc x y z, BPair.mul_right_comm x y z]
+
+/-- Three factors rotate leftward, the mirror of
+`BPair.mul_rot3r`. -/
+theorem BPair.mul_rot3l (x y z : BPair) : x * (y * z) = y * (z * x) := by
+  rw [BPair.mul_left_comm x y z, BPair.mul_comm x z]
 
 /-- The fold over a finite family of balance pairs seeds at the
 sum's unit and adds the members, total at every family. -/
@@ -3340,6 +3398,12 @@ theorem BPair.scale_scale (x : BPair) (a b : Pos) :
       = BPair.mk (x.fst * (a * b)) (x.snd * (a * b))
   rw [ground.mul_assoc, ground.mul_assoc]
 
+/-- Two clearings commute past a rescaling, the clearings' product
+exchanged. -/
+theorem BPair.scale_comm (x : BPair) (a b : Pos) :
+    (x.scale a).scale b = (x.scale b).scale a := by
+  rw [BPair.scale_scale, BPair.scale_scale, ground.mul_comm a b]
+
 theorem BPair.scale_mul (x y : BPair) (a b : Pos) :
     (x * y).scale (a * b) = x.scale a * y.scale b := by
   show BPair.mk ((x.fst * y.fst + x.snd * y.snd) * (a * b))
@@ -3500,6 +3564,31 @@ theorem BPair.ofNat_one_mul (x : BPair) :
     (BPair.ofNat 1 * x).oneValue x :=
   BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.mul_comm _ x))
     (BPair.mul_ofNat_one x)
+
+/-- A zip fold whose every term reads the unit sums to the unit: a
+coefficient list against a row family at one key, each term's read
+the unit. -/
+theorem zipTermUnit (j : Nat) : ∀ (f : List Nat)
+    (M : List (List BPair)),
+    (∀ k, k < f.length →
+      (BPair.ofNat (getAt 0 f k)
+        * getAt BPair.unit (getAt [] M k) j).oneValue BPair.unit) →
+    (BPair.sum (List.zipWith
+      (fun c row => BPair.ofNat c * getAt BPair.unit row j)
+      f M)).oneValue BPair.unit
+  | [], _, _ => BPair.oneValue_refl _
+  | _ :: _, [], _ => BPair.oneValue_refl _
+  | c :: f, row :: M, h => by
+    show (BPair.sum ((BPair.ofNat c * getAt BPair.unit row j)
+      :: List.zipWith
+        (fun c row => BPair.ofNat c * getAt BPair.unit row j)
+        f M)).oneValue BPair.unit
+    refine BPair.oneValue_trans (BPair.sum_cons _ _) ?_
+    refine BPair.oneValue_trans (BPair.add_congr
+      (h 0 (Nat.succ_pos _))
+      (zipTermUnit j f M (fun k hk => h (k + 1)
+        (Nat.succ_lt_succ hk)))) ?_
+    exact BPair.unit_add _
 
 /-- The natural entries' product reads cross-added, one value at
 the identity. -/
@@ -4228,6 +4317,12 @@ theorem CPair.mul_assoc (x y z : CPair) : x * y * z = x * (y * z) := by
     = CPair.mk (x.num * (y.num * z.num)) (x.den * (y.den * z.den))
   rw [BPair.mul_assoc x.num y.num z.num,
     ground.mul_assoc x.den y.den z.den]
+
+/-- The composite product exchanges. -/
+theorem CPair.mul_comm (x y : CPair) : x * y = y * x := by
+  show CPair.mk (x.num * y.num) (x.den * y.den)
+    = CPair.mk (y.num * x.num) (y.den * x.den)
+  rw [BPair.mul_comm x.num y.num, ground.mul_comm x.den y.den]
 
 /-- A shared left factor regroups across the composite product at
 the one-value read. -/
@@ -6139,6 +6234,18 @@ absorbing. -/
 theorem bpow_one_read (x : BPair) : (bpow x 1).oneValue x :=
   BPair.oneValue_trans (BPair.norm_oneValue _) (BPair.mul_one_read x)
 
+/-- The successor power reads the base against the power, the
+recursion's own read. -/
+theorem bpow_succ_read (x : BPair) (j : Nat) :
+    (bpow x (j + 1)).oneValue (x * bpow x j) :=
+  BPair.norm_oneValue _
+
+/-- The unit's power beyond the constant key reads the sum's unit,
+the product absorbing. -/
+theorem bpow_unit_succ (k : Nat) :
+    (bpow BPair.unit (k + 1)).oneValue BPair.unit :=
+  BPair.oneValue_trans (BPair.norm_oneValue _) (BPair.unit_mul _)
+
 /-- The power at a summed key is the powers' product. -/
 theorem bpow_add (x : BPair) (a : Nat) : ∀ b : Nat,
     (bpow x (a + b)).oneValue (bpow x a * bpow x b)
@@ -7590,6 +7697,18 @@ theorem mulMulMulComm (a b c d : Nat) :
     a * b * (c * d) = a * c * (b * d) := by
   rw [mulAssoc a b (c * d), mulAssoc a c (b * d), mulLeftComm b c d]
 
+/-- The three-fold multiplier read, the literal's expansion. -/
+theorem threeMul (n : Nat) : 3 * n = n + n + n := by
+  rw [Nat.mul_comm 3 n]
+  show 0 + n + n + n = n + n + n
+  rw [Nat.zero_add n]
+
+/-- The four-fold multiplier read, the doubled pair's expansion. -/
+theorem fourMul (k : Nat) : 4 * k = 2 * k + 2 * k := by
+  rw [Nat.mul_comm 4 k, Nat.mul_comm 2 k]
+  show 0 + k + k + k + k = 0 + k + k + (0 + k + k)
+  rw [Nat.zero_add k, Nat.add_assoc (k + k) k k]
+
 /-- The four-factor product's head regroup,
 `u v s t = u (v s t)`. -/
 theorem mulFour (u v s t : Nat) :
@@ -7648,6 +7767,41 @@ theorem rise_rect (c p u : Nat) :
     rise (c + p) u * rise c p = rise c u * rise (c + u) p := by
   rw [Nat.mul_comm (rise (c + p) u) (rise c p),
     ← rise_split c p u, ← rise_split c u p, Nat.add_comm p u]
+
+/-- The Pascal count at a height and a key: the count of the key's
+selections from the height, each raised step joining the two counts
+one height below. -/
+def pasc : Nat → Nat → Nat
+  | _, 0 => 1
+  | 0, _ + 1 => 0
+  | j + 1, t + 1 => pasc j t + pasc j (t + 1)
+
+/-- A key above the height reads nought. -/
+theorem pasc_beyond : ∀ j t : Nat, j < t → pasc j t = 0
+  | _, 0, h => absurd h (Nat.not_lt_zero _)
+  | 0, _ + 1, _ => rfl
+  | j + 1, t + 1, h => by
+    show pasc j t + pasc j (t + 1) = 0
+    rw [pasc_beyond j t (Nat.lt_of_succ_lt_succ h),
+      pasc_beyond j (t + 1) (Nat.lt_of_succ_lt h)]
+
+/-- The key at its own height reads one. -/
+theorem pasc_self : ∀ j : Nat, pasc j j = 1
+  | 0 => rfl
+  | j + 1 => by
+    show pasc j j + pasc j (j + 1) = 1
+    rw [pasc_self j, pasc_beyond j (j + 1) (Nat.lt_succ_self j)]
+
+/-- The nought key reads one at every height. -/
+private theorem pascBase (j : Nat) : pasc j 0 = 1 := by
+  match j with
+  | 0 => rfl
+  | _ + 1 => rfl
+
+/-- The raised height's raised key joins the two counts one height
+below, the definition's own step read. -/
+private theorem pascStep (j t : Nat) :
+    pasc (j + 1) (t + 1) = pasc j t + pasc j (t + 1) := rfl
 
 /-- The triple's ends exchange, `a + b + c = c + b + a`. -/
 theorem addSwapEnds (a b c : Nat) : a + b + c = c + b + a := by
@@ -8120,6 +8274,102 @@ theorem posLtSelfAdd (a c : Pos) : a < a + c := ⟨c, rfl⟩
 
 /-- A ground datum sits at or below its own joined sum. -/
 theorem posLeSelfAdd (a c : Pos) : a ≤ a + c := Or.inr (posLtSelfAdd a c)
+
+/-- The division's occupied quotient brackets the dividend: at
+`(divMod a b).1 = some q` the dividend sits between `b * q` and
+`b * (q + 1)`, the reconstruction read at its own remainder. -/
+theorem divQuot_read (a b q : Pos) (h : (divMod a b).1 = some q) :
+    b * q ≤ a ∧ a < b * succ q := by
+  have hsucc : b * succ q = b * q + b := by
+    show b * (q + Pos.one) = b * q + b
+    rw [left_distrib, mul_one]
+  have hread := divModRead_all a b
+  unfold divModRead at hread
+  match hdm : divMod a b with
+  | (some q', some r) =>
+    rw [hdm] at hread
+    rw [hdm] at h
+    have hq : q' = q := Option.some.inj h
+    rw [hq] at hread
+    refine ⟨Or.inr ⟨r, hread.1⟩, ?_⟩
+    obtain ⟨g, hg⟩ := hread.2
+    refine ⟨g, ?_⟩
+    rw [hsucc, ← hread.1, add_assoc, hg]
+  | (some q', none) =>
+    rw [hdm] at hread
+    rw [hdm] at h
+    have hq : q' = q := Option.some.inj h
+    rw [hq] at hread
+    exact ⟨Or.inl hread, ⟨b, by rw [hsucc, ← hread]⟩⟩
+  | (none, some r) =>
+    rw [hdm] at h
+    exact nomatch (show (none : Option Pos) = some q from h)
+  | (none, none) =>
+    rw [hdm] at h
+    exact nomatch (show (none : Option Pos) = some q from h)
+
+/-- The division's vacant quotient prices the dividend below the
+divisor, the remainder arm the whole dividend. -/
+theorem divQuot_vac (a b : Pos) (h : (divMod a b).1 = none) :
+    a < b := by
+  have hread := divModRead_all a b
+  unfold divModRead at hread
+  match hdm : divMod a b with
+  | (some q', some r) =>
+    rw [hdm] at h
+    exact nomatch (show some q' = (none : Option Pos) from h)
+  | (some q', none) =>
+    rw [hdm] at h
+    exact nomatch (show some q' = (none : Option Pos) from h)
+  | (none, some r) =>
+    rw [hdm] at hread
+    rw [← hread.1]
+    exact hread.2
+  | (none, none) =>
+    rw [hdm] at hread
+    exact hread.elim
+
+/-- The bracket names the quotient: a dividend between `b * q` and
+`b * (q + 1)` reads the division's quotient as `q`, the uniqueness
+against the trichotomy. -/
+theorem divQuot_eq (a b q : Pos)
+    (h1 : b * q ≤ a) (h2 : a < b * succ q) :
+    (divMod a b).1 = some q := by
+  have mulLeL : ∀ {x y : Pos} (c : Pos), x ≤ y → c * x ≤ c * y := by
+    intro x y c hxy
+    rw [mul_comm c x, mul_comm c y]
+    exact mul_le_mul_right c hxy
+  have succLe : ∀ {x y g : Pos}, x + g = y → succ x ≤ y := by
+    intro x y g hgg
+    match trich Pos.one g with
+    | .lt g' hg' =>
+      exact Or.inr ⟨g', by
+        show x + Pos.one + g' = y
+        rw [add_assoc, hg', hgg]⟩
+    | .eq he =>
+      exact Or.inl (by
+        show x + Pos.one = y
+        rw [he, hgg])
+    | .gt g' hg' =>
+      exact absurd (show g < Pos.one from ⟨g', hg'⟩) (not_lt_one g)
+  cases hc : (divMod a b).1 with
+  | none =>
+    have hv := divQuot_vac a b hc
+    have hh : b * Pos.one ≤ b * q := mulLeL b (posOneLe q)
+    rw [mul_one] at hh
+    exact (posLtLe (le_trans hh h1) hv).elim
+  | some q' =>
+    have hr := divQuot_read a b q' hc
+    have hq : q' = q := by
+      match trich q' q with
+      | .eq he => exact he
+      | .lt g hgg =>
+        exact absurd (le_trans (mulLeL b (succLe hgg)) h1)
+          (fun hx => posLtLe hx hr.2)
+      | .gt g hgg =>
+        exact absurd (le_trans (mulLeL b (succLe hgg)) hr.1)
+          (fun hx => posLtLe hx h2)
+    exact congrArg some hq
 
 /-- The split's square identity: at a datum split as a part and its
 gap, the gap against the datum joined to the part, together with
@@ -9192,12 +9442,12 @@ theorem CPair.le_add : ∀ {x y z w : CPair}, x ≤ y → z ≤ w → x + z ≤ 
     rw [show bc * (cc * dc) = cc * (bc * dc) from
         mul_left_comm bc cc dc,
       show ac * (cc * dc) = dc * (ac * cc) from by
-        rw [mul_left_comm dc ac cc, mul_comm cc dc]] at k1
+        rw [mul_left_comm dc ac cc, ground.mul_comm cc dc]] at k1
     rw [show dc * (ac * bc) = ac * (bc * dc) from by
-        rw [mul_left_comm dc ac bc, mul_comm dc bc],
+        rw [mul_left_comm dc ac bc, ground.mul_comm dc bc],
       show cc * (ac * bc) = bc * (ac * cc) from by
         rw [mul_left_comm cc ac bc, mul_left_comm bc ac cc,
-          mul_comm cc bc]] at k2
+          ground.mul_comm cc bc]] at k2
     show (a.scale cc + c.scale ac).scale (bc * dc)
       ≤ (b.scale dc + d.scale bc).scale (ac * cc)
     rw [BPair.scale_add, BPair.scale_add, BPair.scale_scale,
@@ -9216,6 +9466,14 @@ theorem CPair.le_not_lt : ∀ {x y : CPair}, x ≤ y → ¬ (y < x)
     have h' : a.scale bc ≤ b.scale ac := h
     have hlt' : b.scale ac < a.scale bc := hlt
     exact ground.leB_not_lt h' hlt'
+
+/-- The composite memberwise swap reverses the at-or-below read. -/
+theorem CPair.le_swap : ∀ {x y : CPair}, x ≤ y →
+    CPair.swap y ≤ CPair.swap x
+  | ⟨xn, xc⟩, ⟨yn, yc⟩, h => by
+    have h0 : xn.scale yc ≤ yn.scale xc := h
+    show yn.swap.scale xc ≤ xn.swap.scale yc
+    exact ground.leB_swap h0
 
 
 /-- A product of two data at or above the sum's unit sits there. -/
@@ -9340,11 +9598,47 @@ theorem unitLtOfPos (w : Pos) : BPair.unit < BPair.ofPos w :=
     rw [ground.add_comm w Pos.one]
     exact ground.posLtSelfAdd Pos.one w)
 
+/-- A datum at or beyond the sum's unit keeps that side at every
+power. -/
+theorem unitLeBpow {a : BPair} (h : BPair.unit ≤ a) :
+    ∀ k : Nat, BPair.unit ≤ bpow a k
+  | 0 => leB_of_lt (unitLtOfPos Pos.one)
+  | k + 1 =>
+    leB_congr_right
+      (BPair.oneValue_symm (BPair.norm_oneValue _))
+      (unitLeMul h (unitLeBpow h k))
+
 /-- A product of two data strictly above the sum's unit sits
 strictly above it. -/
 theorem unitLtMul {x y : BPair} (hx : BPair.unit < x)
     (hy : BPair.unit < y) : BPair.unit < x * y :=
   unitLtOfSide (crossLt (sideOfUnitLt hx) (sideOfUnitLt hy))
+
+/-- A power of a datum strictly above the sum's unit sits strictly
+above it. -/
+theorem unitLtBpow {a : BPair} (h : BPair.unit < a) :
+    ∀ k : Nat, BPair.unit < bpow a k
+  | 0 => unitLtOfPos Pos.one
+  | k + 1 =>
+    BPair.lt_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_symm (BPair.norm_oneValue _))
+      (unitLtMul h (unitLtBpow h k))
+
+/-- The powers compare at comparing bases from the sum's unit. -/
+theorem bpow_mono {a b : BPair} (ha : BPair.unit ≤ a) (h : a ≤ b) :
+    ∀ k : Nat, bpow a k ≤ bpow b k
+  | 0 => leB_refl _
+  | k + 1 => by
+    have hb : BPair.unit ≤ b := leB_trans ha h
+    have hstep : a * bpow a k ≤ b * bpow b k :=
+      leB_trans (leB_mulR ha (bpow_mono ha h k))
+        (leB_congr
+          (BPair.oneValue_of_eq (BPair.mul_comm (bpow b k) a))
+          (BPair.oneValue_of_eq (BPair.mul_comm (bpow b k) b))
+          (leB_mulR (unitLeBpow hb k) h))
+    exact leB_congr
+      (BPair.oneValue_symm (BPair.norm_oneValue _))
+      (BPair.oneValue_symm (BPair.norm_oneValue _)) hstep
 
 /-- A count beyond nought sits strictly above the sum's unit. -/
 theorem unitLtNat : ∀ {n : Nat}, 0 < n → BPair.unit < BPair.ofNat n
@@ -9881,6 +10175,93 @@ theorem foldB_mul_left {α : Type} (c : BPair)
     rw [BPair.left_distrib]
     exact BPair.add_congr (BPair.oneValue_refl _)
       (foldB_mul_left c f t)
+
+/-- The stored keys sit below a stated bound. -/
+def keysBelow (w : Nat) : List (Nat × BPair) → Prop
+  | [] => True
+  | (k, _) :: es => k < w ∧ keysBelow w es
+
+def decKeysBelow (w : Nat) : ∀ es : List (Nat × BPair),
+    Decidable (keysBelow w es)
+  | [] => isTrue trivial
+  | (_, _) :: es => @instDecidableAnd _ _ inferInstance
+      (decKeysBelow w es)
+
+instance (w : Nat) (es : List (Nat × BPair)) :
+    Decidable (keysBelow w es) := decKeysBelow w es
+
+/-- Two key lists below one bound join below it. -/
+theorem keysBelow_append (w : Nat) :
+    ∀ a b : List (Nat × BPair), keysBelow w a → keysBelow w b →
+      keysBelow w (a ++ b)
+  | [], _, _, hb => hb
+  | (_, _) :: a, b, ha, hb =>
+    ⟨ha.1, keysBelow_append w a b ha.2 hb⟩
+
+/-- The rate's decay read along a width family, one comparison per
+consecutive pair: each member cleared at the rate's second member
+sits at or below its predecessor cleared at the first. -/
+def widthRate (rn rd : Pos) : List BPair → Prop
+  | [] => True
+  | [_] => True
+  | w :: w' :: t => w'.scale rd ≤ w.scale rn ∧ widthRate rn rd (w' :: t)
+
+def decWidthRate (rn rd : Pos) : ∀ ws : List BPair,
+    Decidable (widthRate rn rd ws)
+  | [] => isTrue trivial
+  | [_] => isTrue trivial
+  | _ :: w' :: t => @instDecidableAnd _ _ inferInstance
+      (decWidthRate rn rd (w' :: t))
+
+instance (rn rd : Pos) (ws : List BPair) :
+    Decidable (widthRate rn rd ws) := decWidthRate rn rd ws
+
+/-- The family's last member sits at or above the sum's unit, the
+telescope's one consumed positivity. -/
+def unitLast : List BPair → Prop
+  | [] => True
+  | [w] => BPair.unit ≤ w
+  | _ :: w' :: t => unitLast (w' :: t)
+
+def decUnitLast : ∀ ws : List BPair, Decidable (unitLast ws)
+  | [] => isTrue trivial
+  | [w] => inferInstanceAs (Decidable (BPair.unit ≤ w))
+  | _ :: w' :: t => decUnitLast (w' :: t)
+
+instance (ws : List BPair) : Decidable (unitLast ws) :=
+  decUnitLast ws
+
+/-- The width sum against a decaying family: at a rate split
+`rn + gr = rd`, a family whose successive members decay by the rate
+read and whose last member sits at or above the sum's unit has its
+whole fold, cleared at the gap `gr`, at or below its head cleared
+at `rd` — the telescope absorbing the tail into the head's own
+margin. -/
+theorem widthSum (rn gr rd : Pos) (hg : rn + gr = rd) :
+    ∀ ws : List BPair, widthRate rn rd ws → unitLast ws →
+    (ground.bsum id ws).scale gr
+      ≤ (ground.getAt BPair.unit ws 0).scale rd := by
+  intro ws
+  induction ws with
+  | nil =>
+    intro _ _
+    show BPair.unit.scale gr ≤ BPair.unit.scale rd
+    exact ground.leB_congr (ground.unitScale gr) (ground.unitScale rd)
+      (ground.leB_refl BPair.unit)
+  | cons w t ih =>
+    intro hrate hpos
+    have heq : w.scale gr + w.scale rn = w.scale rd := by
+      rw [← BPair.scale_addW, ground.add_comm gr rn, hg]
+    have key : (ground.bsum id t).scale gr ≤ w.scale rn := by
+      cases t with
+      | nil =>
+        exact ground.leB_congr_left (ground.unitScale gr)
+          (ground.unitLeScale rn hpos)
+      | cons w' t' =>
+        exact ground.leB_trans (ih hrate.2 hpos) hrate.1
+    show (w + ground.bsum id t).scale gr ≤ w.scale rd
+    rw [BPair.scale_add, ← heq]
+    exact ground.leB_add (ground.leB_refl _) key
 
 /-- The memberwise swap passes through the fold. -/
 theorem fold_swap {α : Type} (f : α → BPair) :
@@ -11739,6 +12120,141 @@ theorem famFold_range_ext (F : Nat → BPair) (N : Nat)
           (hoff (N + g) (Nat.le_add_right N g)))
         (BPair.add_unit _))
 
+/-- The extension at two stated counts: a family vacant at or
+beyond the lower count folds one value over the two ranges. -/
+theorem foldRange_le (F : Nat → BPair) (N n : Nat) (hNn : N ≤ n)
+    (hoff : ∀ j, N ≤ j → (F j).oneValue BPair.unit) :
+    (famFold BPair.add BPair.unit F (List.range n)).oneValue
+      (famFold BPair.add BPair.unit F (List.range N)) := by
+  obtain ⟨g, hg⟩ := Nat.le.dest hNn
+  rw [← hg]
+  exact famFold_range_ext F N hoff g
+
+/-- A further first member inside a scaled product of two powers
+raises the first power's key. -/
+private theorem armFst (c x y : BPair) (t u : Nat) :
+    (x * (c * (bpow x t * bpow y u))).oneValue
+      (c * (bpow x (t + 1) * bpow y u)) := by
+  rw [BPair.mul_left_comm x c (bpow x t * bpow y u),
+    ← BPair.mul_assoc x (bpow x t) (bpow y u)]
+  exact BPair.mul_congr (BPair.oneValue_refl c)
+    (BPair.mul_congr_left
+      (BPair.oneValue_symm (BPair.norm_oneValue (x * bpow x t))))
+
+/-- A further second member inside a scaled product of two powers
+raises the second power's key. -/
+private theorem armSnd (c x y : BPair) (t u : Nat) :
+    (y * (c * (bpow x t * bpow y u))).oneValue
+      (c * (bpow x t * bpow y (u + 1))) := by
+  rw [BPair.mul_left_comm y c (bpow x t * bpow y u),
+    BPair.mul_left_comm y (bpow x t) (bpow y u)]
+  exact BPair.mul_congr (BPair.oneValue_refl c)
+    (BPair.mul_congr (BPair.oneValue_refl (bpow x t))
+      (BPair.oneValue_symm (BPair.norm_oneValue (y * bpow y u))))
+
+/-- The binomial theorem at the pair carrier: a sum's power reads
+the fold over the keys below the power's own successor of the
+Pascal count against the two members' complementary powers. -/
+theorem bpow_binom (x y : BPair) : ∀ j : Nat,
+    (bpow (x + y) j).oneValue
+      (bsum (fun t => BPair.ofNat (pasc j t)
+        * (bpow x t * bpow y (j - t))) (List.range (j + 1)))
+  | 0 => rfl
+  | j + 1 => by
+    have hIH := bpow_binom x y j
+    have hx : (bsum (fun t => x * (BPair.ofNat (pasc j t)
+        * (bpow x t * bpow y (j - t)))) (List.range (j + 1))).oneValue
+        (x * bsum (fun t => BPair.ofNat (pasc j t)
+          * (bpow x t * bpow y (j - t))) (List.range (j + 1))) :=
+      foldB_mul_left x (fun t => BPair.ofNat (pasc j t)
+        * (bpow x t * bpow y (j - t))) (List.range (j + 1))
+    have hy : (bsum (fun t => y * (BPair.ofNat (pasc j t)
+        * (bpow x t * bpow y (j - t)))) (List.range (j + 1))).oneValue
+        (y * bsum (fun t => BPair.ofNat (pasc j t)
+          * (bpow x t * bpow y (j - t))) (List.range (j + 1))) :=
+      foldB_mul_left y (fun t => BPair.ofNat (pasc j t)
+        * (bpow x t * bpow y (j - t))) (List.range (j + 1))
+    have hxs : (bsum (fun t => x * (BPair.ofNat (pasc j t)
+        * (bpow x t * bpow y (j - t)))) (List.range (j + 1))).oneValue
+        (bsum (fun t => BPair.ofNat (pasc j t)
+          * (bpow x (t + 1) * bpow y (j - t))) (List.range (j + 1))) :=
+      foldB_congr_members _ _ (List.range (j + 1))
+        (fun t _ => armFst (BPair.ofNat (pasc j t)) x y t (j - t))
+    have hys : (bsum (fun t => y * (BPair.ofNat (pasc j t)
+        * (bpow x t * bpow y (j - t)))) (List.range (j + 1))).oneValue
+        (bsum (fun t => BPair.ofNat (pasc j t)
+          * (bpow x t * bpow y (j - t + 1))) (List.range (j + 1))) :=
+      foldB_congr_members _ _ (List.range (j + 1))
+        (fun t _ => armSnd (BPair.ofNat (pasc j t)) x y t (j - t))
+    have hdrop : (bsum (fun t => BPair.ofNat (pasc j (t + 1))
+        * (bpow x (t + 1) * bpow y (j - t))) (List.range (j + 1))).oneValue
+        (bsum (fun t => BPair.ofNat (pasc j (t + 1))
+          * (bpow x (t + 1) * bpow y (j - t))) (List.range j)) := by
+      refine BPair.oneValue_trans (foldB_range_snoc _ j)
+        (BPair.oneValue_trans
+          (BPair.add_congr (BPair.oneValue_refl _) ?_) (BPair.add_unit _))
+      rw [pasc_beyond j (j + 1) (Nat.lt_succ_self j)]
+      exact BPair.unit_mul _
+    have hmatch : (bsum (fun t => BPair.ofNat (pasc j (t + 1))
+        * (bpow x (t + 1) * bpow y (j - t))) (List.range j)).oneValue
+        (bsum (fun t => BPair.ofNat (pasc j (t + 1))
+          * (bpow x (t + 1) * bpow y (j - (t + 1) + 1))) (List.range j)) := by
+      refine foldB_congr_members _ _ (List.range j) ?_
+      intro s hs
+      rw [subSuccAdd (ltOfMem hs)]
+      exact BPair.oneValue_refl _
+    have h0 : BPair.ofNat (pasc j 0) * (bpow x 0 * bpow y (j - 0 + 1))
+        = BPair.ofNat (pasc (j + 1) 0) * (bpow x 0 * bpow y (j + 1 - 0)) := by
+      rw [pascBase j, pascBase (j + 1), Nat.sub_zero j, Nat.sub_zero (j + 1)]
+    have hYS : (bsum (fun t => BPair.ofNat (pasc j t)
+        * (bpow x t * bpow y (j - t + 1))) (List.range (j + 1))).oneValue
+        (BPair.ofNat (pasc (j + 1) 0) * (bpow x 0 * bpow y (j + 1 - 0))
+          + bsum (fun t => BPair.ofNat (pasc j (t + 1))
+              * (bpow x (t + 1) * bpow y (j - t))) (List.range (j + 1))) := by
+      refine BPair.oneValue_trans
+        (BPair.oneValue_of_eq (foldB_range_cons _ j)) ?_
+      rw [h0]
+      exact BPair.add_congr (BPair.oneValue_refl _)
+        (BPair.oneValue_symm (BPair.oneValue_trans hdrop hmatch))
+    have hfold2 : (bsum (fun t => BPair.ofNat (pasc (j + 1) (t + 1))
+        * (bpow x (t + 1) * bpow y (j + 1 - (t + 1))))
+          (List.range (j + 1))).oneValue
+        (bsum (fun t => BPair.ofNat (pasc j t)
+            * (bpow x (t + 1) * bpow y (j - t))) (List.range (j + 1))
+          + bsum (fun t => BPair.ofNat (pasc j (t + 1))
+              * (bpow x (t + 1) * bpow y (j - t))) (List.range (j + 1))) := by
+      refine BPair.oneValue_trans
+        (foldB_congr_members _ (fun t =>
+            BPair.ofNat (pasc j t) * (bpow x (t + 1) * bpow y (j - t))
+            + BPair.ofNat (pasc j (t + 1)) * (bpow x (t + 1) * bpow y (j - t)))
+          (List.range (j + 1)) ?_)
+        (foldB_add
+          (fun t => BPair.ofNat (pasc j t) * (bpow x (t + 1) * bpow y (j - t)))
+          (fun t => BPair.ofNat (pasc j (t + 1))
+            * (bpow x (t + 1) * bpow y (j - t))) (List.range (j + 1)))
+      intro t _
+      rw [pascStep j t, Nat.succ_sub_succ j t]
+      refine BPair.oneValue_trans
+        (BPair.mul_congr_left (BPair.ofNat_add (pasc j t) (pasc j (t + 1)))) ?_
+      exact BPair.oneValue_of_eq (BPair.right_distrib _ _ _)
+    refine BPair.oneValue_trans
+      (BPair.norm_oneValue ((x + y) * bpow (x + y) j)) ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl (x + y)) hIH) ?_
+    rw [BPair.right_distrib]
+    refine BPair.oneValue_trans
+      (BPair.add_congr
+        (BPair.oneValue_trans (BPair.oneValue_symm hx) hxs)
+        (BPair.oneValue_trans (BPair.oneValue_symm hy) hys))
+      (BPair.oneValue_symm ?_)
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq (foldB_range_cons _ (j + 1))) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl _) hfold2) ?_
+    refine BPair.oneValue_symm (BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl _) hYS) ?_)
+    exact BPair.oneValue_of_eq (BPair.add_left_comm _ _ _)
+
 set_option genInjectivity false in
 structure POps (γ : Type) where
   add : γ → γ → γ
@@ -11759,6 +12275,17 @@ def dotO {γ : Type} (ops : POps γ) : List γ → List γ → γ
 instance. -/
 def dotNat (X Y : List Nat) : Nat :=
   dotO natOps X Y
+
+/-- The unit coefficient list pairs off at the second family's
+total, at the matched count. -/
+theorem dotOnesL : ∀ (n : Nat) (Y : List Nat), Y.length = n →
+    dotNat (List.replicate n 1) Y = sumNat Y
+  | 0, [], _ => rfl
+  | 0, _ :: _, h => Nat.noConfusion h
+  | _ + 1, [], h => Nat.noConfusion h
+  | n + 1, b :: Y, h => by
+    show 1 * b + dotNat (List.replicate n 1) Y = b + sumNat Y
+    rw [Nat.one_mul, dotOnesL n Y (Nat.succ.inj h)]
 
 /-- The occupancy family occupied once at each of the first keys:
 the units then the vacancies. -/
@@ -12384,13 +12911,170 @@ read with its decision. -/
 def bpairRead : DRead BPair :=
   ⟨BPair.oneValue, fun _ _ => inferInstance⟩
 
-/-- The composite pair's instance of the read bundle: two pairs at
-balance-pair first data read one value exactly at the
-cross-multiplied first data, `def:ground`'s displayed equality at
-the composite, with its decision. -/
+/-- Two cleared balance data — a balance datum at its stated
+positive clearing — read one value exactly at the cross-multiplied
+first data, `def:ground`'s displayed equality at the composite
+pair. -/
+def qOneValue (p q : BPair × Pos) : Prop :=
+  (p.1.scale q.2).oneValue (q.1.scale p.2)
+
+instance (p q : BPair × Pos) : Decidable (qOneValue p q) :=
+  inferInstanceAs (Decidable (BPair.oneValue _ _))
+
+/-- The composite pair's instance of the read bundle: the cleared
+read with its decision. -/
 def bpairQRead : DRead (BPair × Pos) :=
-  ⟨fun p q => (p.1.scale q.2).oneValue (q.1.scale p.2),
-   fun _ _ => inferInstance⟩
+  ⟨qOneValue, fun _ _ => inferInstance⟩
+
+/-! The composite pair's arithmetic at the cleared read: the read
+is an equivalence, and the cleared join commutes, reassociates,
+reads congruently in both summands, exchanges two joins' inner
+members, withdraws the vacant datum from either summand and
+regroups a seed against three joined pairs. -/
+
+/-- The cleared read is reflexive. -/
+theorem qOneValue_refl (p : BPair × Pos) : qOneValue p p :=
+  BPair.oneValue_refl _
+
+/-- The cleared read is symmetric. -/
+theorem qOneValue_symm {p q : BPair × Pos} (h : qOneValue p q) :
+    qOneValue q p :=
+  BPair.oneValue_symm h
+
+/-- The cleared read composes, the middle datum's clearing
+cancelling. -/
+theorem qOneValue_trans {p q r : BPair × Pos} (h1 : qOneValue p q)
+    (h2 : qOneValue q r) : qOneValue p r := by
+  refine BPair.scale_cancel (w := q.2) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq (BPair.scale_comm p.1 r.2 q.2)) ?_
+  refine BPair.oneValue_trans (BPair.scale_congr r.2 h1) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq (BPair.scale_comm q.1 p.2 r.2)) ?_
+  refine BPair.oneValue_trans (BPair.scale_congr p.2 h2) ?_
+  exact BPair.oneValue_of_eq (BPair.scale_comm r.1 q.2 p.2)
+
+/-- Equal cleared data read one value. -/
+theorem qOneValue_of_eq {p q : BPair × Pos} (h : p = q) :
+    qOneValue p q := by
+  rw [h]
+  exact qOneValue_refl q
+
+/-- The cleared join commutes. -/
+theorem BPair.addQ_comm (p q : BPair × Pos) :
+    qOneValue (BPair.addQ p q) (BPair.addQ q p) := by
+  show ((p.1.scale q.2 + q.1.scale p.2).scale (q.2 * p.2)).oneValue
+    ((q.1.scale p.2 + p.1.scale q.2).scale (p.2 * q.2))
+  rw [BPair.add_comm (q.1.scale p.2), ground.mul_comm q.2 p.2]
+  exact BPair.oneValue_refl _
+
+/-- The cleared join reassociates. -/
+theorem BPair.addQ_assoc (p q r : BPair × Pos) :
+    qOneValue (BPair.addQ (BPair.addQ p q) r)
+      (BPair.addQ p (BPair.addQ q r)) := by
+  refine qOneValue_of_eq ?_
+  show ((p.1.scale q.2 + q.1.scale p.2).scale r.2 + r.1.scale (p.2 * q.2),
+      p.2 * q.2 * r.2)
+    = (p.1.scale (q.2 * r.2) + (q.1.scale r.2 + r.1.scale q.2).scale p.2,
+      p.2 * (q.2 * r.2))
+  rw [BPair.scale_add, BPair.scale_add, BPair.scale_scale,
+    BPair.scale_scale, BPair.scale_scale, BPair.scale_scale,
+    ground.mul_comm r.2 p.2, ground.mul_comm q.2 p.2, BPair.add_assoc,
+    ground.mul_assoc]
+
+/-- The cleared join reads congruently in both summands. -/
+theorem BPair.addQ_congr {p p' q q' : BPair × Pos} (hp : qOneValue p p')
+    (hq : qOneValue q q') :
+    qOneValue (BPair.addQ p q) (BPair.addQ p' q') := by
+  show ((p.1.scale q.2 + q.1.scale p.2).scale (p'.2 * q'.2)).oneValue
+    ((p'.1.scale q'.2 + q'.1.scale p'.2).scale (p.2 * q.2))
+  rw [BPair.scale_add, BPair.scale_add]
+  refine BPair.add_congr ?_ ?_
+  · have e1 : (p.1.scale q.2).scale (p'.2 * q'.2)
+        = (p.1.scale p'.2).scale (q.2 * q'.2) := by
+      rw [BPair.scale_scale, BPair.scale_scale,
+        ground.mul_left_comm q.2 p'.2 q'.2]
+    have e2 : (p'.1.scale q'.2).scale (p.2 * q.2)
+        = (p'.1.scale p.2).scale (q.2 * q'.2) := by
+      rw [BPair.scale_scale, BPair.scale_scale,
+        ground.mul_left_comm q'.2 p.2 q.2, ground.mul_comm q'.2 q.2]
+    exact BPair.oneValue_trans (BPair.oneValue_of_eq e1)
+      (BPair.oneValue_trans (BPair.scale_congr _ hp)
+        (BPair.oneValue_of_eq e2.symm))
+  · have e3 : (q.1.scale p.2).scale (p'.2 * q'.2)
+        = (q.1.scale q'.2).scale (p.2 * p'.2) := by
+      rw [BPair.scale_scale, BPair.scale_scale, ground.mul_comm p'.2 q'.2,
+        ground.mul_left_comm p.2 q'.2 p'.2]
+    have e4 : (q'.1.scale p'.2).scale (p.2 * q.2)
+        = (q'.1.scale q.2).scale (p.2 * p'.2) := by
+      rw [BPair.scale_scale, BPair.scale_scale,
+        ground.mul_left_comm p'.2 p.2 q.2, ground.mul_comm p'.2 q.2,
+        ground.mul_left_comm p.2 q.2 p'.2]
+    exact BPair.oneValue_trans (BPair.oneValue_of_eq e3)
+      (BPair.oneValue_trans (BPair.scale_congr _ hq)
+        (BPair.oneValue_of_eq e4.symm))
+
+/-- The cleared join exchanges its two middle summands. -/
+theorem BPair.addQ_add_comm (a b c d : BPair × Pos) :
+    qOneValue (BPair.addQ (BPair.addQ a b) (BPair.addQ c d))
+      (BPair.addQ (BPair.addQ a c) (BPair.addQ b d)) := by
+  refine qOneValue_trans (BPair.addQ_assoc a b (BPair.addQ c d)) ?_
+  refine qOneValue_trans (BPair.addQ_congr (qOneValue_refl a)
+    (qOneValue_trans (qOneValue_symm (BPair.addQ_assoc b c d))
+      (qOneValue_trans
+        (BPair.addQ_congr (BPair.addQ_comm b c) (qOneValue_refl d))
+        (BPair.addQ_assoc c b d)))) ?_
+  exact qOneValue_symm (BPair.addQ_assoc a c (BPair.addQ b d))
+
+/-- A cleared datum whose first member reads the sum's unit reads
+the vacant datum. -/
+theorem qOneValue_unit {p : BPair × Pos} (h : p.1.oneValue BPair.unit) :
+    qOneValue p (BPair.unit, Pos.one) := by
+  show (p.1.scale Pos.one).oneValue (BPair.unit.scale p.2)
+  rw [BPair.scale_one]
+  exact BPair.oneValue_trans h (BPair.oneValue_symm (BPair.unit_scale p.2))
+
+/-- The vacant datum withdraws from the join's first summand. -/
+theorem BPair.addQ_unitL (p : BPair × Pos) :
+    qOneValue (BPair.addQ (BPair.unit, Pos.one) p) p := by
+  show ((BPair.unit.scale p.2 + p.1.scale Pos.one).scale p.2).oneValue
+    (p.1.scale (Pos.one * p.2))
+  rw [BPair.scale_one, ground.one_mul]
+  exact BPair.scale_congr p.2
+    (BPair.oneValue_trans
+      (BPair.add_congr (BPair.unit_scale p.2) (BPair.oneValue_refl p.1))
+      (BPair.unit_add p.1))
+
+/-- The vacant datum withdraws from the join's second summand. -/
+theorem BPair.addQ_unitR (p : BPair × Pos) :
+    qOneValue (BPair.addQ p (BPair.unit, Pos.one)) p :=
+  qOneValue_trans (BPair.addQ_comm p (BPair.unit, Pos.one))
+    (BPair.addQ_unitL p)
+
+/-- A seed joined to three joined pairs parts as the seed with the
+first two pairs' first members, against the last pair's first member
+joined to the three second members. -/
+theorem BPair.addQ_shuffle (S R0 RT C0 CT D0 DT : BPair × Pos) :
+    qOneValue (BPair.addQ S (BPair.addQ (BPair.addQ R0 RT)
+          (BPair.addQ (BPair.addQ C0 CT) (BPair.addQ D0 DT))))
+      (BPair.addQ (BPair.addQ S (BPair.addQ R0 C0))
+        (BPair.addQ D0 (BPair.addQ RT (BPair.addQ CT DT)))) := by
+  refine qOneValue_trans (BPair.addQ_congr (qOneValue_refl S)
+    (qOneValue_trans (BPair.addQ_congr (qOneValue_refl (BPair.addQ R0 RT))
+        (BPair.addQ_add_comm C0 CT D0 DT))
+      (BPair.addQ_add_comm R0 RT (BPair.addQ C0 D0)
+        (BPair.addQ CT DT)))) ?_
+  refine qOneValue_trans (qOneValue_symm
+    (BPair.addQ_assoc S (BPair.addQ R0 (BPair.addQ C0 D0))
+      (BPair.addQ RT (BPair.addQ CT DT)))) ?_
+  refine qOneValue_trans (BPair.addQ_congr
+    (qOneValue_trans
+      (BPair.addQ_congr (qOneValue_refl S)
+        (qOneValue_symm (BPair.addQ_assoc R0 C0 D0)))
+      (qOneValue_symm (BPair.addQ_assoc S (BPair.addQ R0 C0) D0)))
+    (qOneValue_refl (BPair.addQ RT (BPair.addQ CT DT)))) ?_
+  exact BPair.addQ_assoc (BPair.addQ S (BPair.addQ R0 C0)) D0
+    (BPair.addQ RT (BPair.addQ CT DT))
 
 /-! The matched-list read: `def:ground`'s componentwise pairing of
 matched lists at a stated entry read — two lists read the relation

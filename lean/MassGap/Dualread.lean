@@ -8221,10 +8221,6 @@ reading the adjugate solve at the determinant against the
 combination's coefficients, the clearing withdrawn at the product's
 injectivity. -/
 
-/-- The product's rotation at three factors. -/
-private theorem mul_rot3 (a b c : BPair) : a * (b * c) = b * (c * a) := by
-  rw [BPair.mul_left_comm, BPair.mul_comm a c]
-
 /-- The adjugate solve's entry at a first slot cleared into the
 group's span: the cleared pairings read the Gram against the
 combination's coefficients, and the symmetric Gram's row fold
@@ -8319,7 +8315,7 @@ private theorem adjP_span_entry (grp : List HVec) (f : HVec)
         (ground.foldB_mul_left _ _ (List.range grp.length))) ?_
     exact BPair.oneValue_of_eq
       (ground.famFold_congr_all BPair.add BPair.unit _ _
-        (fun b => mul_rot3 _ _ _) (List.range grp.length))
+        (fun b => BPair.mul_rot3l _ _ _) (List.range grp.length))
   refine BPair.oneValue_trans
     (ground.foldB_swapL _ (List.range grp.length)
       (List.range grp.length)) ?_

@@ -4,10 +4,13 @@ import MassGap.Steinberg
 diagonal's value is θ's occupied coroot support, the count of
 simple keys at an occupied coroot pair (`supportCount`), one at
 every member off the `A`-series and two at the `A`-series at
-`r ≥ 2` with one at its first member — the `c₁` the statement's
-prefix and the channel divisor read; the dimension is the content
-list's own fold, twice the positive count with the coordinate
-count (`dTheta`); and the unit content's fold data enter at the
+`r ≥ 2` with one at its first member, the occupancy at every rank
+`supportCount_pos`'s read at the members' support keys
+(`supportCount_tableA_pos` with the series' instances beside it) —
+the `c₁` the statement's prefix and the channel divisor read; the
+dimension is the content list's own fold, twice the positive
+count with the coordinate count (`dTheta`); and the unit
+content's fold data enter at the
 member join `Σ_α ⟨α,α⟩ = ℓ (r + 1)` over the positive list, the
 cleared length fold (`lenFoldAll`).  The `A`-series' fusion route
 is pinned against this read at the shared instances in the check
@@ -1075,5 +1078,69 @@ theorem defectRead (t : Table) (F : FundData)
   rw [hfalse, htrue] at hmem'
   exact ground.addCancelR t.rank
     (hmem'.trans (Nat.zero_add t.rank).symm)
+
+/-- A range fold counting refusals is occupied once a refused key
+is walked: the key's step raises and every later step keeps the
+raise. -/
+private theorem countPos (P : Nat → Prop) [DecidablePred P]
+    (j : Nat) (h : ¬ P j) : ∀ r : Nat, j < r →
+      0 < (List.range r).foldl (fun acc k =>
+        if P k then acc else acc + 1) 0
+  | 0, hr => absurd hr (Nat.not_lt_zero j)
+  | r + 1, hr => by
+    rw [ground.range_succ r, ground.foldl_append]
+    show 0 < (if P r then
+        (List.range r).foldl (fun acc k =>
+          if P k then acc else acc + 1) 0
+      else (List.range r).foldl (fun acc k =>
+          if P k then acc else acc + 1) 0 + 1)
+    cases Nat.lt_or_ge j r with
+    | inl hlt =>
+      have ih := countPos P j h r hlt
+      by_cases hp : P r
+      · rw [if_pos hp]
+        exact ih
+      · rw [if_neg hp]
+        exact Nat.lt_of_lt_of_le ih (Nat.le_succ _)
+    | inr hge =>
+      have hjr : j = r := Nat.le_antisymm (Nat.le_of_lt_succ hr) hge
+      rw [← hjr, if_neg h]
+      exact Nat.succ_pos _
+
+/-- The support count is occupied at any off-unit key
+(`prop:row`'s occupied support). -/
+theorem supportCount_pos (t : Table) (j : Nat) (hj : j < t.rank)
+    (h : ¬ (corootAt t t.thetaFold j).oneValue BPair.unit) :
+    0 < supportCount t :=
+  countPos (fun k => (corootAt t t.thetaFold k).oneValue BPair.unit)
+    j h t.rank hj
+
+/-- The `A` table's support is occupied at every occupied rank,
+the first key's read (`gentable.corootA_head_off`). -/
+theorem supportCount_tableA_pos (r : Nat) (hr : 0 < r) :
+    0 < supportCount (gentable.tableA r) :=
+  supportCount_pos (gentable.tableA r) 0 hr
+    (gentable.corootA_head_off r hr)
+
+/-- The `B` table's support is occupied at every rank, the support
+key's read (`sertables.corootB_off`). -/
+theorem supportCount_tableB_pos (g : Nat) :
+    0 < supportCount (sertables.tableB (g + 2)) :=
+  supportCount_pos (sertables.tableB (g + 2)) 1
+    (Nat.succ_lt_succ (Nat.succ_pos _)) (sertables.corootB_off g)
+
+/-- The `C` table's support is occupied at every rank, the support
+key's read (`sertables.corootC_off`). -/
+theorem supportCount_tableC_pos (g : Nat) :
+    0 < supportCount (sertables.tableC (g + 3)) :=
+  supportCount_pos (sertables.tableC (g + 3)) 0
+    (Nat.succ_pos _) (sertables.corootC_off g)
+
+/-- The `D` table's support is occupied at every rank, the support
+key's read (`sertables.corootD_off`). -/
+theorem supportCount_tableD_pos (g : Nat) :
+    0 < supportCount (sertables.tableD (g + 4)) :=
+  supportCount_pos (sertables.tableD (g + 4)) 1
+    (Nat.succ_lt_succ (Nat.succ_pos _)) (sertables.corootD_off g)
 
 end row

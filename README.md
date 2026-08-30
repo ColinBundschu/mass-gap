@@ -35,10 +35,11 @@ classification's stated domain: the `A`-series at every residue,
 
 Formalized:
 
-- **Clause (i), gap positivity, is wired at `main`**: `main.clauseI`
-  reads the member's floor window at the two count-one chain reads
-  with the cross-multiplied tie, and `main.clauseI_counts` carries
-  both counts to every ray of the committed range.  Beneath it sit
+- **Clause (i), gap positivity, is closed at every member**:
+  `main.clauseI_all` holds the tie at every member of the
+  classification, the two committed chain reads as parametric
+  theorems over the rank at the diagonal windows with `E8`'s
+  coupled window its own case.  Beneath it sit
   the count certificates (`lem:inertia`, `thm:certconstruct`,
   `lem:stage`, `lem:split`, `lem:stagesplit`, `lem:hermitesign`,
   `lem:deckfactor`, `thm:windowsep`, `lem:cellcount`) and the chain
@@ -47,31 +48,36 @@ Formalized:
   `lem:contactcell`, `lem:freecell`, `thm:flatstep`, `lem:speccut`,
   `thm:divisorid`, `thm:gappos`).
 - **Clause (ii), the contact value `(3, H_r)`, is closed at every
-  member**: `main.clauseII` is `thm:closing`'s read at the member's
-  own base and residue, decided by kernel `decide` at every
-  committed member in
+  member**: `main.clauseII_all` holds it at the whole
+  classification: the order count, the base collection, the
+  excess-harmonic value and the occupancy families as theorems
+  over every residue and rank, the fixed members by kernel
+  `decide` in
   [lean/MassGapChecks/Main.lean](lean/MassGapChecks/Main.lean).
 - **The requirement mirrors** `lem:sectorspan` and `lem:attained`.
 - **Most of clause (iii)'s support tiers**: `lem:cornerpivot` (the
   corner disconjugacy certificate: the walk, profile, crossing,
   dominance, ground-witness, count and block-chain tiers),
-  `thm:groundreads` clauses (i)-(vi) with (v'), `lem:corner`'s
-  corner-count, shifted-scaling, drift, grade-key, cap and count
-  tiers, `lem:fourpoint`'s partition-fold, jet and collection
-  tiers, and `thm:restoration`'s first tier.
+  `thm:groundreads` whole (clauses (i)-(vii) with (v')),
+  `lem:momentfold` whole (the moment streams, the graded system,
+  the truncation cap, the scale comparison and the datum
+  assembly), `lem:fourpoint` whole, `lem:corner`'s corner-count,
+  shifted-scaling, drift, grade-key, cap and count tiers, and
+  `thm:restoration`'s first tier.
 
 Open (no Lean yet):
 
-- `thm:groundreads` clause (vii), the scale sandwich, and
-  `lem:corner`'s cell-floor clause.
-- `lem:momentfold`, `lem:cone`, `thm:continuum`, `thm:decomp`,
-  `thm:reconstruct`.
+- `lem:cornerpivot`'s remainder (the second root's compression and
+  the decimated block chain's emitted certificate data) and
+  `lem:corner`'s cell-floor clause with the corner-output clauses
+  of `thm:decomp` and `thm:twoaction`.
+- `lem:cone`, `thm:continuum`, `thm:reconstruct`.
 - **Clause (iii)'s composite statement at `main`** (it consumes the
   items above), and the reverse correspondence walk (every tex
   label reached from a Lean namespace).
 
 The snapshot is taken from the development repository at commit
-`8c78649c9337165ee7488f97525627a7b426fd30` (2026-08-28).
+`fe29955ce87a276a0e5aa729006514bedd15d4f0` (2026-08-29).
 
 ## Proof Methodology
 
@@ -104,7 +110,7 @@ After the build,
 
 walks every constant of both libraries with `Lean.collectAxioms` and prints
 
-    constants read: 28684
+    constants read: 29766
     constants depending on axioms: 0
 
 ending in an error if any constant depends on any axiom.  A single

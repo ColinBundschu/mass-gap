@@ -292,6 +292,32 @@ example : eval (neg [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩]) ⟨4, 1⟩
     = (eval [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩] ⟨4, 1⟩).swap :=
   eval_neg [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩] ⟨4, 1⟩
 
+/-! The representative at the cons structure: a further
+coefficient above an occupied tail enters as its own
+representative (`vnorm_cons_occ`), and above a vacant tail it is
+the whole list when it is off the sum's unit (`vnorm_cons_off`),
+each decided and through its theorem, with the occupancy binder
+refused at a unit-valued head and the vacant read decided beside
+it. -/
+
+example : vnorm [⟨1, 4⟩, ⟨3, 1⟩, ⟨2, 2⟩] = [⟨1, 4⟩, ⟨3, 1⟩] := by
+  decide +kernel
+example : vnorm [⟨1, 4⟩, ⟨3, 1⟩, ⟨2, 2⟩]
+    = (⟨1, 4⟩ : BPair).norm :: [⟨3, 1⟩] := by decide +kernel
+example : vnorm [⟨1, 4⟩, ⟨3, 1⟩, ⟨2, 2⟩]
+    = (⟨1, 4⟩ : BPair).norm :: [⟨3, 1⟩] :=
+  vnorm_cons_occ ⟨1, 4⟩ ⟨3, 1⟩ [⟨3, 1⟩, ⟨2, 2⟩] [] (by decide +kernel)
+
+example : vnorm [⟨3, 1⟩, ⟨2, 2⟩] = [(⟨3, 1⟩ : BPair).norm] := by
+  decide +kernel
+example : vnorm [⟨3, 1⟩, ⟨2, 2⟩] = [(⟨3, 1⟩ : BPair).norm] :=
+  vnorm_cons_off ⟨3, 1⟩ [⟨2, 2⟩] (by decide +kernel) (by decide +kernel)
+
+example : vnorm [⟨2, 2⟩, ⟨5, 5⟩] = [] := by decide +kernel
+
+example : ¬ vnorm [⟨2, 2⟩, ⟨5, 5⟩] = [(⟨2, 2⟩ : BPair).norm] := by
+  decide +kernel
+
 /-! A coefficient family against a polynomial family (`scaleDot`):
 each coefficient rescales its own polynomial and the rescalings sum
 key by key — `2·(1 + z) + 3·1` reads `5 + 2 z`. -/

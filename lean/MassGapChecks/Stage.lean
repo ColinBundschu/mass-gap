@@ -17,8 +17,15 @@ composite bracket and a stated bound, at `z + 5` on the bracket
 the interior point `1/2` through its theorem (`keepUpper_all`), a
 bracket reaching seven refused and the bound one refused, the
 image-width price at the bracket's endpoints decided and through
-its theorem, the lower side at `-z - 5`, and the clearing
+its theorem, the lower side at `-z - 5`, the two reads carried to
+a respelling of the polynomial through their congruences with a
+polynomial off the one-value class refusing, and the clearing
 conjunct's isolation at a bound below the sum's unit.  The
+squared comparison's priced read (`keepSq`) runs at the factor
+pair `x + 3` against the constant one, decided with the side kept
+at an interior point through its theorem (`keepSq_all`), one
+isolating refusal per conjunct, and the cleared read
+(`sqComp_clear`) decided raw beside its theorem route.  The
 upper-endpoint read (`keepLowerTop`) closes the module at `x - 5`
 on `(1, 2)` at the bound `[2 : 1]`, decided with the side kept at
 the lower endpoint and the interior point `3/2` through its theorem
@@ -75,7 +82,7 @@ example : unitC < evalC [u, ⟨2, 1⟩] ⟨⟨5, 1⟩, 3⟩ :=
 
 /-! The priced side read at a composite bracket and a stated bound,
 at `z + 5` on the bracket `(0, 2)` with the bound `[4 : 1]`: the
-read decided at its six conjuncts, the side kept at the interior
+read decided at its five conjuncts, the side kept at the interior
 point `1/2` through the theorem, a bracket reaching seven refused
 and the bound one refused; the image-width price at the bracket's
 own endpoints decided and through its theorem; and the lower side
@@ -113,13 +120,42 @@ example : evalC pLinNeg ⟨⟨2, 1⟩, 2⟩ < unitC :=
   keepLower_all pLinNeg ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ (by decide +kernel)
     ⟨⟨2, 1⟩, 2⟩ (by decide +kernel) (by decide +kernel)
 
+/-! The priced side reads at every representative: the same
+polynomial respelled with a further count on both members of each
+coefficient, the read decided at the respelling and carried there
+by its congruence on both sides, with a polynomial off the
+one-value class carrying nothing — the constant dropped to the
+sum's unit refuses the read. -/
+
+private def pLinAlt : Poly := [⟨9, 4⟩, ⟨5, 4⟩]
+private def pLinNegAlt : Poly := [⟨4, 9⟩, ⟨4, 5⟩]
+private def pLinOff : Poly := [⟨1, 1⟩, ⟨2, 1⟩]
+
+example : poly.oneValue pLin pLinAlt := by decide +kernel
+example : keepUpper pLinAlt ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by
+  decide +kernel
+example : keepUpper pLinAlt ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ :=
+  keepUpper_congr (p := pLin) (by decide +kernel)
+    ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ (by decide +kernel)
+
+example : poly.oneValue pLinNeg pLinNegAlt := by decide +kernel
+example : keepLower pLinNegAlt ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by
+  decide +kernel
+example : keepLower pLinNegAlt ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ :=
+  keepLower_congr (p := pLinNeg) (by decide +kernel)
+    ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ (by decide +kernel)
+
+example : ¬ poly.oneValue pLin pLinOff := by decide +kernel
+example : ¬ keepUpper pLinOff ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by
+  decide +kernel
+
 /-! The clearing conjunct's own isolation at `1 + z - z²` on the
 bracket `(0, 2)`: at the bound `[0 : -1]` every further conjunct of
-the read holds — the ordered endpoints, the lower endpoint's value
-above the sum's unit, both endpoints inside the bound's segment,
-and the width priced under that value against the derivative's fold
-— while the bracket's upper point sits on the lower side, so the
-read is the clearing's refusal alone. -/
+the read holds — the ordered endpoints, both endpoints inside the
+bound's segment, and the width priced under the lower endpoint's
+value against the derivative's fold — while the bracket's upper
+point sits on the lower side, so the read is the clearing's refusal
+alone. -/
 
 private def pCtr : Poly := [⟨2, 1⟩, ⟨2, 1⟩, ⟨1, 2⟩]
 
@@ -129,7 +165,7 @@ example : evalC pCtr ⟨⟨3, 1⟩, 1⟩ < unitC := by decide +kernel
 
 /-! The upper-endpoint side read (`keepLowerTop`), the same clause
 carried at the bracket's other endpoint: `x - 5` on the bracket
-`(1, 2)` at the bound `[2 : 1]` decided at its six conjuncts, the
+`(1, 2)` at the bound `[2 : 1]` decided at its five conjuncts, the
 side kept at the lower endpoint and at the interior point `3/2`
 through the theorem (`keepLowerTop_all`).  Beside it the two
 endpoints' reads distinguished at `1 - 2x` on the same bracket and
@@ -144,8 +180,8 @@ the clearing, the ordered endpoints and both segment reads hold,
 and the price refuses at the crossing, where the side is lost —
 the conclusion failing at the lower endpoint.  The further three
 conjuncts read their own isolations at `x - 20`: the bracket
-reaching seven refused at the upper segment read alone (the value,
-the price, the clearing and the lower segment read all holding),
+reaching seven refused at the upper segment read alone (the
+price, the clearing and the lower segment read all holding),
 the bound one refused there at the shrunk bound alone, and the
 clearing refused at `x - 5` at the bound's lower-side second
 datum. -/
@@ -227,3 +263,177 @@ example : ¬ (cmag (⟨⟨3, 1⟩, 1⟩ : CPair) * ofB ⟨2, 1⟩ ≤ ofB ⟨2, 
 example : ¬ keepLowerTop pDrop ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨3, 1⟩ ⟨1, 2⟩ := by
   decide +kernel
 example : ¬ (BPair.unit < (⟨1, 2⟩ : BPair)) := by decide +kernel
+
+/-! The squared comparison's priced read (`keepSq`) at the factor
+pair `x + 3` against the constant one on the bracket `(1, 2)` at
+the bound `[8 : 2]` and the ceiling `[1 : 1]`: the read decided at
+its six conjuncts, the side kept at the interior point `3/2`
+through the theorem (`keepSq_all`) beside the raw decided
+conclusion.  One isolating refusal per conjunct, each beside the
+rows reading every further conjunct at the forged data: the
+clearing at the bound `-1`; the ordered endpoints at the swapped
+bracket; the lower endpoint's segment read at `x + 8` on
+`(-3, 1)` at the ceiling `-5`, where the comparison holds at the
+negative ceiling and the segment read is the one refusal; the
+upper endpoint's segment read at the bracket reaching eight; the
+priced floor at `2x - 3`, the origin read negative at the piece's
+floor with its square clearing the comparison, the conclusion
+parted at the interior point `3/2`; and the comparison at the
+ceiling twenty.  The cleared read (`sqComp_clear`) closes the
+tier at the point `1/2` at the clearing one, decided raw beside
+its theorem route, the vacancy reads past the clearing the
+beyond-length reads. -/
+
+private def pSqB : Poly := [⟨4, 1⟩, ⟨2, 1⟩]
+private def pSqL : Poly := [⟨2, 1⟩]
+
+example : keepSq pSqB pSqL ⟨2, 1⟩ 1 ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩
+    ⟨3, 1⟩ := by decide +kernel
+
+example : ofB (⟨2, 1⟩ : BPair) * (evalC pSqL ⟨⟨4, 1⟩, 2⟩
+      * evalC pSqL ⟨⟨4, 1⟩, 2⟩)
+    < ofB (BPair.ofPos 1) * ((⟨⟨4, 1⟩, 2⟩ : CPair)
+      * (evalC pSqB ⟨⟨4, 1⟩, 2⟩ * evalC pSqB ⟨⟨4, 1⟩, 2⟩)) := by
+  decide +kernel
+
+example : ofB (⟨2, 1⟩ : BPair) * (evalC pSqL ⟨⟨4, 1⟩, 2⟩
+      * evalC pSqL ⟨⟨4, 1⟩, 2⟩)
+    < ofB (BPair.ofPos 1) * ((⟨⟨4, 1⟩, 2⟩ : CPair)
+      * (evalC pSqB ⟨⟨4, 1⟩, 2⟩ * evalC pSqB ⟨⟨4, 1⟩, 2⟩)) :=
+  keepSq_all pSqB pSqL ⟨2, 1⟩ 1 (by decide +kernel) ⟨⟨2, 1⟩, 1⟩
+    ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩ (by decide +kernel) ⟨⟨4, 1⟩, 2⟩
+    (by decide +kernel) (by decide +kernel)
+
+example : ¬ keepSq pSqB pSqL ⟨2, 1⟩ 1 ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩
+    ⟨1, 2⟩ := by decide +kernel
+example : ¬ (BPair.unit < (⟨1, 2⟩ : BPair)) := by decide +kernel
+example : cmag (⟨⟨2, 1⟩, 1⟩ : CPair) * ofB ⟨1, 2⟩ ≤ ofB ⟨9, 1⟩ := by
+  decide +kernel
+example : cmag (⟨⟨3, 1⟩, 1⟩ : CPair) * ofB ⟨1, 2⟩ ≤ ofB ⟨9, 1⟩ := by
+  decide +kernel
+example : ofB (windowsep.magFold (poly.deriv pSqB) ⟨9, 1⟩ ⟨1, 2⟩)
+      * ((⟨⟨3, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨2, 1⟩, 1⟩)
+    < evalC pSqB ⟨⟨2, 1⟩, 1⟩ * dpow pSqB ⟨1, 2⟩ := by decide +kernel
+example : ofB (⟨2, 1⟩ : BPair)
+      * ((sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨1, 2⟩
+          * sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨1, 2⟩)
+        * (dpow pSqB ⟨1, 2⟩ * dpow pSqB ⟨1, 2⟩))
+    < ofB (BPair.ofPos 1) * ((⟨⟨2, 1⟩, 1⟩ : CPair)
+      * ((sqFloor pSqB ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨1, 2⟩
+          * sqFloor pSqB ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨1, 2⟩)
+        * (dpow pSqL ⟨1, 2⟩ * dpow pSqL ⟨1, 2⟩))) := by decide +kernel
+
+example : ¬ keepSq pSqB pSqL ⟨2, 1⟩ 1 ⟨⟨3, 1⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨9, 1⟩
+    ⟨3, 1⟩ := by decide +kernel
+example : ¬ ((⟨⟨3, 1⟩, 1⟩ : CPair) < ⟨⟨2, 1⟩, 1⟩) := by decide +kernel
+example : ofB (windowsep.magFold (poly.deriv pSqB) ⟨9, 1⟩ ⟨3, 1⟩)
+      * ((⟨⟨2, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨3, 1⟩, 1⟩)
+    < evalC pSqB ⟨⟨3, 1⟩, 1⟩ * dpow pSqB ⟨3, 1⟩ := by decide +kernel
+example : ofB (⟨2, 1⟩ : BPair)
+      * ((sqCap pSqL ⟨⟨3, 1⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
+          * sqCap pSqL ⟨⟨3, 1⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
+        * (dpow pSqB ⟨3, 1⟩ * dpow pSqB ⟨3, 1⟩))
+    < ofB (BPair.ofPos 1) * ((⟨⟨3, 1⟩, 1⟩ : CPair)
+      * ((sqFloor pSqB ⟨⟨3, 1⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
+          * sqFloor pSqB ⟨⟨3, 1⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
+        * (dpow pSqL ⟨3, 1⟩ * dpow pSqL ⟨3, 1⟩))) := by decide +kernel
+
+private def pSqW : Poly := [⟨9, 1⟩, ⟨2, 1⟩]
+
+example : ¬ keepSq pSqW pSqL ⟨1, 6⟩ 1 ⟨⟨1, 4⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨5, 1⟩
+    ⟨3, 1⟩ := by decide +kernel
+example : ¬ (cmag (⟨⟨1, 4⟩, 1⟩ : CPair) * ofB ⟨3, 1⟩ ≤ ofB ⟨5, 1⟩) := by
+  decide +kernel
+example : (⟨⟨1, 4⟩, 1⟩ : CPair) < ⟨⟨2, 1⟩, 1⟩ := by decide +kernel
+example : cmag (⟨⟨2, 1⟩, 1⟩ : CPair) * ofB ⟨3, 1⟩ ≤ ofB ⟨5, 1⟩ := by
+  decide +kernel
+example : ofB (windowsep.magFold (poly.deriv pSqW) ⟨5, 1⟩ ⟨3, 1⟩)
+      * ((⟨⟨2, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨1, 4⟩, 1⟩)
+    < evalC pSqW ⟨⟨1, 4⟩, 1⟩ * dpow pSqW ⟨3, 1⟩ := by decide +kernel
+example : ofB (⟨1, 6⟩ : BPair)
+      * ((sqCap pSqL ⟨⟨1, 4⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨5, 1⟩ ⟨3, 1⟩
+          * sqCap pSqL ⟨⟨1, 4⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨5, 1⟩ ⟨3, 1⟩)
+        * (dpow pSqW ⟨3, 1⟩ * dpow pSqW ⟨3, 1⟩))
+    < ofB (BPair.ofPos 1) * ((⟨⟨1, 4⟩, 1⟩ : CPair)
+      * ((sqFloor pSqW ⟨⟨1, 4⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨5, 1⟩ ⟨3, 1⟩
+          * sqFloor pSqW ⟨⟨1, 4⟩, 1⟩ ⟨⟨2, 1⟩, 1⟩ ⟨5, 1⟩ ⟨3, 1⟩)
+        * (dpow pSqL ⟨3, 1⟩ * dpow pSqL ⟨3, 1⟩))) := by decide +kernel
+
+example : ¬ keepSq pSqW pSqL ⟨2, 1⟩ 1 ⟨⟨2, 1⟩, 1⟩ ⟨⟨9, 1⟩, 1⟩ ⟨9, 1⟩
+    ⟨3, 1⟩ := by decide +kernel
+example : ¬ (cmag (⟨⟨9, 1⟩, 1⟩ : CPair) * ofB ⟨3, 1⟩ ≤ ofB ⟨9, 1⟩) := by
+  decide +kernel
+example : cmag (⟨⟨2, 1⟩, 1⟩ : CPair) * ofB ⟨3, 1⟩ ≤ ofB ⟨9, 1⟩ := by
+  decide +kernel
+example : ofB (windowsep.magFold (poly.deriv pSqW) ⟨9, 1⟩ ⟨3, 1⟩)
+      * ((⟨⟨9, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨2, 1⟩, 1⟩)
+    < evalC pSqW ⟨⟨2, 1⟩, 1⟩ * dpow pSqW ⟨3, 1⟩ := by decide +kernel
+example : ofB (⟨2, 1⟩ : BPair)
+      * ((sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨9, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
+          * sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨9, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
+        * (dpow pSqW ⟨3, 1⟩ * dpow pSqW ⟨3, 1⟩))
+    < ofB (BPair.ofPos 1) * ((⟨⟨2, 1⟩, 1⟩ : CPair)
+      * ((sqFloor pSqW ⟨⟨2, 1⟩, 1⟩ ⟨⟨9, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
+          * sqFloor pSqW ⟨⟨2, 1⟩, 1⟩ ⟨⟨9, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
+        * (dpow pSqL ⟨3, 1⟩ * dpow pSqL ⟨3, 1⟩))) := by decide +kernel
+
+private def pSqX : Poly := [⟨1, 4⟩, ⟨3, 1⟩]
+
+example : ¬ keepSq pSqX pSqL ⟨2, 1⟩ 1 ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩
+    ⟨3, 1⟩ := by decide +kernel
+example : ¬ (ofB (windowsep.magFold (poly.deriv pSqX) ⟨9, 1⟩ ⟨3, 1⟩)
+      * ((⟨⟨3, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨2, 1⟩, 1⟩)
+    < evalC pSqX ⟨⟨2, 1⟩, 1⟩ * dpow pSqX ⟨3, 1⟩) := by decide +kernel
+example : cmag (⟨⟨2, 1⟩, 1⟩ : CPair) * ofB ⟨3, 1⟩ ≤ ofB ⟨9, 1⟩ := by
+  decide +kernel
+example : cmag (⟨⟨3, 1⟩, 1⟩ : CPair) * ofB ⟨3, 1⟩ ≤ ofB ⟨9, 1⟩ := by
+  decide +kernel
+example : ofB (⟨2, 1⟩ : BPair)
+      * ((sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
+          * sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
+        * (dpow pSqX ⟨3, 1⟩ * dpow pSqX ⟨3, 1⟩))
+    < ofB (BPair.ofPos 1) * ((⟨⟨2, 1⟩, 1⟩ : CPair)
+      * ((sqFloor pSqX ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
+          * sqFloor pSqX ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
+        * (dpow pSqL ⟨3, 1⟩ * dpow pSqL ⟨3, 1⟩))) := by decide +kernel
+example : ¬ (ofB (⟨2, 1⟩ : BPair) * (evalC pSqL ⟨⟨4, 1⟩, 2⟩
+      * evalC pSqL ⟨⟨4, 1⟩, 2⟩)
+    < ofB (BPair.ofPos 1) * ((⟨⟨4, 1⟩, 2⟩ : CPair)
+      * (evalC pSqX ⟨⟨4, 1⟩, 2⟩ * evalC pSqX ⟨⟨4, 1⟩, 2⟩))) := by
+  decide +kernel
+
+example : ¬ keepSq pSqB pSqL ⟨21, 1⟩ 1 ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩
+    ⟨3, 1⟩ := by decide +kernel
+example : ¬ (ofB (⟨21, 1⟩ : BPair)
+      * ((sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
+          * sqCap pSqL ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
+        * (dpow pSqB ⟨3, 1⟩ * dpow pSqB ⟨3, 1⟩))
+    < ofB (BPair.ofPos 1) * ((⟨⟨2, 1⟩, 1⟩ : CPair)
+      * ((sqFloor pSqB ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩
+          * sqFloor pSqB ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨9, 1⟩ ⟨3, 1⟩)
+        * (dpow pSqL ⟨3, 1⟩ * dpow pSqL ⟨3, 1⟩)))) := by decide +kernel
+example : ofB (windowsep.magFold (poly.deriv pSqB) ⟨9, 1⟩ ⟨3, 1⟩)
+      * ((⟨⟨3, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨2, 1⟩, 1⟩)
+    < evalC pSqB ⟨⟨2, 1⟩, 1⟩ * dpow pSqB ⟨3, 1⟩ := by decide +kernel
+
+example : (⟨2, 1⟩ : BPair) * (BPair.ofPos 2
+      * (poly.evalClear pSqL ⟨2, 1⟩ 2 1 * poly.evalClear pSqL ⟨2, 1⟩ 2 1))
+    < BPair.ofPos 1 * ((⟨2, 1⟩ : BPair)
+      * (poly.evalClear pSqB ⟨2, 1⟩ 2 1
+        * poly.evalClear pSqB ⟨2, 1⟩ 2 1)) := by decide +kernel
+
+example : (⟨2, 1⟩ : BPair) * (BPair.ofPos 2
+      * (poly.evalClear pSqL ⟨2, 1⟩ 2 1 * poly.evalClear pSqL ⟨2, 1⟩ 2 1))
+    < BPair.ofPos 1 * ((⟨2, 1⟩ : BPair)
+      * (poly.evalClear pSqB ⟨2, 1⟩ 2 1
+        * poly.evalClear pSqB ⟨2, 1⟩ 2 1)) :=
+  sqComp_clear (pB := pSqB) (pL := pSqL) (J := 1)
+    (fun j hj => by
+      rw [ground.getAt_over BPair.unit pSqB j
+        (show List.length pSqB ≤ j from hj)]
+      exact BPair.oneValue_refl _)
+    (fun j hj => by
+      rw [ground.getAt_over BPair.unit pSqL j
+        (Nat.le_trans (Nat.succ_le_succ (Nat.zero_le 1)) hj)]
+      exact BPair.oneValue_refl _)
+    ⟨2, 1⟩ 1 ⟨2, 1⟩ 2 (by decide +kernel)

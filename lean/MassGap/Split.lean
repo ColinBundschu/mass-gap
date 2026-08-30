@@ -296,6 +296,17 @@ def pSymAt (S : PMat) (o : Nat) : Prop :=
 instance (S : PMat) (o : Nat) : Decidable (pSymAt S o) :=
   inferInstanceAs (Decidable (_ = _))
 
+/-- The symmetry read assembled entrywise: the entry against its
+exchanged entry at every key pair below the order, a key beyond the
+datum reading the vacant list. -/
+theorem pSymAt_of (S : PMat) (o : Nat)
+    (h : ∀ i j, i < o → j < o → poly.oneValue
+      (ground.getAt [] (ground.getAt [] S i) j)
+      (ground.getAt [] (ground.getAt [] S j) i)) :
+    pSymAt S o :=
+  ground.all_range_intro o (fun i hi =>
+    ground.all_range_intro o (fun j hj => decide_eq_true (h i j hi hj)))
+
 /-- Two polynomial rows read one value entrywise over shared key
 lists — the matrix read's own recursion at the coefficient rows
 (`elim.matOneValue`, one carrier). -/

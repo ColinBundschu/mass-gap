@@ -126,6 +126,42 @@ beyond.
 The shape binders (`hj`, the depth below the list's count) are the
 frame's own and carry no refusal of their own; the vector walks'
 shapes derive from the solve reads.
+
+Clause (vii) reads at the standing two-key gap (`et2`, the `l2`
+designation at the clearing `51/1`) joined to its own fixtures: the
+electric datum `ed7 = (53, -4; -4, 17)` and the later gap
+`es7 = (1, -4; -4, 16)` at the site-datum tie with drift `52`, the
+kernel column `ps2 = (4, 1)`.  The count tier decides `scaleCount`
+at the occupied, exact and vacant instances with the bracket reads
+`scaleCount_read`/`_vac`/`_eq` by route and decide, the bracket
+constancy `scaleCount_stable`/`_stable_vac` at `15/8` between the
+rates `9/5` and `2/1`, the refusals isolating each end's comparison
+and each bracket order at the forged rates `3/1` and `1/1`.  The
+width telescope `widthSum` reads the family `(8, 4, 2)` at the rate
+split `1 + 1 = 2`, with the rate read refused at the constant
+family and the last member's positivity refused at the one-member
+family below the unit.  The drift tier reads `drift_mono` at the
+level `20` (counts `1` against `0`, the electric datum's own split
+with the reversed order and the swapped datum refused) and
+`drift_trial` at the weight `53`, the weight tie's forge to `52`
+and the designation moved to the second key (the tie holding at
+`17` there, the display refusing) the trial's own refusals.  The
+transport `transport_electric` decides at the display `2601 ≤
+178466` beside its route, the clearance forged to `500` refusing
+the display, the tie and kernel refusals at the hypothesis level,
+and — at the vacant electric datum with the unit drift, where the
+display collapses — the forged tie and forged kernel each refusing
+the display itself.  The priced width `scale_read` reads at the
+width `103` with the width's domination refused at `10`.  The shell
+tier reads the family `(2, 1, 3)` at caps `(2, 1, 3)` tight at
+`68 = 68`, the cap forge refusing `68` against `56`, and the fold
+values pinned (`eFold` at `68/4`, `eSum` at `17`).  The assembled
+tie `eSum_assemble` reads the two-shell family `(2), (1)` at the
+vacant coupling against the fold's `4`, the occupied coupling
+refused with the read, and the transport display re-decided at the
+assembled datum with the cross-cleared head its kernel vector —
+the transport's electric factor and the shells' fold one object at
+the shared fixture.
 -/
 
 open ground elim inertia greenprod spectator groundreads
@@ -3530,3 +3566,335 @@ example : ¬ elim.matOneValue (elim.transposeM aAsF) aAsF := by
 example : greenprod.assemble
     [[[⟨4, 1⟩]], [[⟨3, 1⟩]], [[⟨4, 1⟩]]]
     [[[⟨2, 1⟩]], [[⟨2, 1⟩]]] = etB6 := by rfl
+
+/-! Clause (vii): the scale count at the division's quotient, the
+two comparisons its whole read. -/
+
+example : scaleCount 7 2 1 = some 3 := by decide +kernel
+example : scaleCount 6 2 1 = some 3 := by decide +kernel
+example : scaleCount 1 2 1 = none := by decide +kernel
+example : scaleCount 7 15 8 = some 3 := by decide +kernel
+example : (2 : Pos) * 3 ≤ 7 * 1 ∧ (7 : Pos) * 1 < 2 * ground.succ 3 :=
+  scaleCount_read 7 2 1 3 (by decide +kernel)
+example : (1 : Pos) * 1 < 2 :=
+  scaleCount_vac 1 2 1 (by decide +kernel)
+example : scaleCount 7 2 1 = some 3 :=
+  scaleCount_eq 7 2 1 3 (by decide +kernel) (by decide +kernel)
+
+/-- The bracket constancy: the ends' comparisons pin the count at
+every scale between, the route beside the decide. -/
+example : scaleCount 7 15 8 = some 3 :=
+  scaleCount_stable 7 9 5 15 8 2 1 3 (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+example : scaleCount 1 15 8 = none :=
+  scaleCount_stable_vac 1 9 5 15 8 (by decide +kernel)
+    (by decide +kernel)
+
+/-- The refusal isolating the upper end's comparison: at the forged
+scale beyond the bracket the count parts from the pinned value. -/
+example : ¬ ((3 : Pos) * 3 ≤ 7 * 1) := by decide +kernel
+example : ¬ (scaleCount 7 3 1 = some 3) := by decide +kernel
+/-- The refusal isolating the lower end's comparison: below the
+bracket the count moves past the pinned value. -/
+example : ¬ ((7 : Pos) * 1 < 1 * ground.succ 3) := by decide +kernel
+example : ¬ (scaleCount 7 1 1 = some 3) := by decide +kernel
+/-- The refusals isolating the two bracket orders at the same
+forged rates: the further binders stand while the order refuses,
+the conclusion refusals above the shared reads. -/
+example : (2 : Pos) * 1 ≤ 3 * 1 := by decide +kernel
+example : (2 : Pos) * 3 ≤ 7 * 1 := by decide +kernel
+example : (7 : Pos) * 1 < 2 * ground.succ 3 := by decide +kernel
+example : ¬ ((3 : Pos) * 1 ≤ 2 * 1) := by decide +kernel
+example : (1 : Pos) * 1 ≤ 2 * 1 := by decide +kernel
+example : ¬ ((2 : Pos) * 1 ≤ 1 * 1) := by decide +kernel
+
+/-! Clause (vii): the width sum at the rate, the route beside the
+refusal isolating the rate binder. -/
+
+example : (ground.bsum id [(⟨9, 1⟩ : BPair), ⟨5, 1⟩, ⟨3, 1⟩]).scale 1
+    ≤ (ground.getAt BPair.unit
+        [(⟨9, 1⟩ : BPair), ⟨5, 1⟩, ⟨3, 1⟩] 0).scale 2 :=
+  widthSum 1 1 2 (by decide +kernel) [⟨9, 1⟩, ⟨5, 1⟩, ⟨3, 1⟩]
+    (by decide +kernel) (by decide +kernel)
+example : (ground.bsum id [(⟨9, 1⟩ : BPair), ⟨5, 1⟩, ⟨3, 1⟩]).scale 1
+    ≤ (ground.getAt BPair.unit
+        [(⟨9, 1⟩ : BPair), ⟨5, 1⟩, ⟨3, 1⟩] 0).scale 2 := by
+  decide +kernel
+example : ¬ widthRate 1 2 [(⟨9, 1⟩ : BPair), ⟨9, 1⟩, ⟨9, 1⟩] := by
+  decide +kernel
+example : ¬ ((ground.bsum id [(⟨9, 1⟩ : BPair), ⟨9, 1⟩, ⟨9, 1⟩]).scale 1
+    ≤ (ground.getAt BPair.unit
+        [(⟨9, 1⟩ : BPair), ⟨9, 1⟩, ⟨9, 1⟩] 0).scale 2) := by
+  decide +kernel
+/-- The refusal isolating the last member's positivity: at one
+member below the sum's unit the rate read is vacuous and the
+telescope refuses. -/
+example : ¬ unitLast [(⟨1, 9⟩ : BPair)] := by decide +kernel
+example : ¬ ((ground.bsum id [(⟨1, 9⟩ : BPair)]).scale 1
+    ≤ (ground.getAt BPair.unit [(⟨1, 9⟩ : BPair)] 0).scale 2) := by
+  decide +kernel
+
+/-! Clause (vii): the electric transport at the two-key gap — the
+later gap at the site-datum tie, the drift entering at its balance
+partner. -/
+
+private def ed7 : Mat := [[⟨54, 1⟩, ⟨1, 5⟩], [⟨1, 5⟩, ⟨18, 1⟩]]
+private def es7 : Mat := [[⟨2, 1⟩, ⟨1, 5⟩], [⟨1, 5⟩, ⟨17, 1⟩]]
+private theorem htie7 : matOneValue es7
+    (matAdd et2 (matAdd (inertia.matScale 1 ed7)
+      (inertia.matScaleB (⟨53, 1⟩ : BPair).swap (idMat 2)))) := by
+  decide +kernel
+private theorem hker7 : poly.unitTail (matVec es7 ps2) := by decide +kernel
+private theorem hEd7 : sqAt ed7 2 := by decide +kernel
+
+/-- The drift's trial read at the kernel column: the electric weight
+`53` at its defining tie, the route beside the decide. -/
+example : ((dotN psiK (matVec ed7 psiK)).scale 1).oneValue
+    ((dotN psiK psiK).scale 53) := by decide +kernel
+example : ((dotN psiK
+      (matVec (matAdd et2 (inertia.matScale 1 ed7)) psiK)).scale 1).oneValue
+    ((dotN psiK psiK).scale (1 * 53)) :=
+  drift_trial et2 ed7 id2 id2 l2 hd2 0 hj02 1 ⟨2, 1⟩ hroot02 hEd7 1 53 1
+    (by decide +kernel)
+example : ((dotN psiK
+      (matVec (matAdd et2 (inertia.matScale 1 ed7)) psiK)).scale 1).oneValue
+    ((dotN psiK psiK).scale (1 * 53)) := by decide +kernel
+/-- The refusals isolating the trial's data: the weight tie forged
+by one refuses with the display, and at the designation moved to
+the second key the tie holds at that column's own weight while the
+display refuses — the trial column the earlier ground's alone. -/
+example : ¬ (((dotN psiK (matVec ed7 psiK)).scale 1).oneValue
+    ((dotN psiK psiK).scale 52)) := by decide +kernel
+example : ¬ (((dotN psiK
+      (matVec (matAdd et2 (inertia.matScale 1 ed7)) psiK)).scale 1).oneValue
+    ((dotN psiK psiK).scale (1 * 52))) := by decide +kernel
+example : ((dotN (matVec id2.val (elim.idRow 2 1))
+      (matVec ed7 (matVec id2.val (elim.idRow 2 1)))).scale 1).oneValue
+    ((dotN (matVec id2.val (elim.idRow 2 1))
+      (matVec id2.val (elim.idRow 2 1))).scale 17) := by decide +kernel
+example : ¬ (((dotN (matVec id2.val (elim.idRow 2 1))
+      (matVec (matAdd et2 (inertia.matScale 1 ed7))
+        (matVec id2.val (elim.idRow 2 1)))).scale 1).oneValue
+    ((dotN (matVec id2.val (elim.idRow 2 1))
+      (matVec id2.val (elim.idRow 2 1))).scale (1 * 17))) := by
+  decide +kernel
+
+/-- The transport display at the electric weights, the route beside
+the decide. -/
+example : (dotN (residD [psiK] ps2) (residD [psiK] ps2)).scale (51 * 51)
+    ≤ (((dotN psiK psiK * dotN psiK psiK)
+        * ((dotN (matVec ed7 ps2) (matVec ed7 ps2)).scale (1 * 1)
+          + (⟨53, 1⟩ * ⟨53, 1⟩) * dotN ps2 ps2))).scale (2 * (1 * 1)) :=
+  transport_electric et2 es7 ed7 id2 id2 l2 hd2 0 hj02 1 ⟨2, 1⟩ hroot02
+    51 1 hcl2 hEd7 1 ⟨53, 1⟩ htie7 ps2 hpt2 hker7
+example : (dotN (residD [psiK] ps2) (residD [psiK] ps2)).scale (51 * 51)
+    ≤ (((dotN psiK psiK * dotN psiK psiK)
+        * ((dotN (matVec ed7 ps2) (matVec ed7 ps2)).scale (1 * 1)
+          + (⟨53, 1⟩ * ⟨53, 1⟩) * dotN ps2 ps2))).scale (2 * (1 * 1)) := by
+  decide +kernel
+
+/-- The refusal isolating the clearance at the display's own level:
+at the forged clearance `500` the read refuses and the display with
+it. -/
+example : ¬ clearRead l2 0 500 1 := by decide +kernel
+example : ¬ ((dotN (residD [psiK] ps2) (residD [psiK] ps2)).scale (500 * 500)
+    ≤ (((dotN psiK psiK * dotN psiK psiK)
+        * ((dotN (matVec ed7 ps2) (matVec ed7 ps2)).scale (1 * 1)
+          + (⟨53, 1⟩ * ⟨53, 1⟩) * dotN ps2 ps2))).scale (2 * (1 * 1))) := by
+  decide +kernel
+
+/-- The refusals isolating the tie and the kernel read, hypothesis
+level: the drift forged by one and the second coordinate off the
+later gap's kernel. -/
+example : ¬ matOneValue es7
+    (matAdd et2 (matAdd (inertia.matScale 1 ed7)
+      (inertia.matScaleB (⟨52, 1⟩ : BPair).swap (idMat 2)))) := by
+  decide +kernel
+example : ¬ poly.unitTail (matVec es7 e1) := by decide +kernel
+
+/-- The display-level refusals at the vacant electric datum: at
+`Ed` vacant and the drift the sum's unit the display collapses, so
+the forged tie and the forged kernel read each refuse with the
+display itself, the further binders standing. -/
+private def edZ : Mat := [[u, u], [u, u]]
+private def esF : Mat := [[⟨2, 1⟩, ⟨1, 5⟩], [⟨2, 1⟩, ⟨1, 5⟩]]
+example : sqAt edZ 2 := by decide +kernel
+example : poly.unitTail (matVec esF ps2) := by decide +kernel
+example : ¬ matOneValue esF (matAdd et2 (matAdd (inertia.matScale 1 edZ)
+    (inertia.matScaleB (BPair.unit : BPair).swap (idMat 2)))) := by
+  decide +kernel
+example : matOneValue et2 (matAdd et2 (matAdd (inertia.matScale 1 edZ)
+    (inertia.matScaleB (BPair.unit : BPair).swap (idMat 2)))) := by
+  decide +kernel
+example : ¬ poly.unitTail (matVec et2 ps2) := by decide +kernel
+example : ¬ ((dotN (residD [psiK] ps2)
+      (residD [psiK] ps2)).scale (51 * 51)
+    ≤ (((dotN psiK psiK * dotN psiK psiK)
+        * ((dotN (matVec edZ ps2) (matVec edZ ps2)).scale (1 * 1)
+          + (BPair.unit * BPair.unit) * dotN ps2 ps2))).scale
+        (2 * (1 * 1))) := by decide +kernel
+
+/-! Clause (vii): the priced-width bracket, the route at the width
+`103` dominating the electric composite. -/
+
+private theorem hwid7 :
+    ((dotN (matVec ed7 ps2) (matVec ed7 ps2)).scale (1 * 1)
+      + (⟨53, 1⟩ * ⟨53, 1⟩) * dotN ps2 ps2).scale (2 * (1 * 1))
+    ≤ (dotN ps2 ps2).scale (103 * 103) := by decide +kernel
+
+example : (windowsep.mag (readGap (read a2 psiK) (read a2 ps2))).scale
+      (51 * 1 * 1)
+    ≤ (dotN psiK psiK * dotN ps2 ps2).scale (4 * (2 * 103 * 1)) :=
+  scale_read et2 es7 ed7 a2 id2 id2 l2 hd2 0 hj02 1 ⟨2, 1⟩ hroot02 51 1
+    hcl2 hEd7 1 ⟨53, 1⟩ htie7 ps2 hpt2 hker7 103 1 hwid7 2 1
+    spA spA' hA2
+example : (windowsep.mag (readGap (read a2 psiK) (read a2 ps2))).scale
+      (51 * 1 * 1)
+    ≤ (dotN psiK psiK * dotN ps2 ps2).scale (4 * (2 * 103 * 1)) := by
+  decide +kernel
+/-- The refusal isolating the width binder: at the forged width `10`
+the composite's domination refuses. -/
+example : ¬ (((dotN (matVec ed7 ps2) (matVec ed7 ps2)).scale (1 * 1)
+      + (⟨53, 1⟩ * ⟨53, 1⟩) * dotN ps2 ps2).scale (2 * (1 * 1))
+    ≤ (dotN ps2 ps2).scale (10 * 10)) := by decide +kernel
+
+/-! Clause (vii): the drift's lower side, the counts monotone at the
+electric site datum — `drift_mono`'s route at the datum's own split
+beside the value pins, with the reversed order refused. -/
+
+private def a20 : Mat := siteDatum et2 (matScale 20 (idMat 2))
+private def a20' : Mat :=
+  siteDatum (matAdd et2 (inertia.matScale 1 ed7)) (matScale 20 (idMat 2))
+private def sp20 : Split 2 := mkSplit 2 a20
+private def sp20' : Split 2 := mkSplit 2 a20'
+private def spd7 : Split 2 := mkSplit 2 (inertia.matScale 1 ed7)
+
+example : inertia.revAt sp20 = 1 := by decide +kernel
+example : inertia.revAt sp20' = 0 := by decide +kernel
+example : inertia.revAt sp20' ≤ inertia.revAt sp20 :=
+  drift_mono et2 ed7 (by decide +kernel) hEd7 1 20 spd7 sp20 sp20'
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
+/-- The refusal at the reversed order: the earlier pencil's count
+sits strictly above the later's at the fixture, so the datum's
+direction is load-bearing. -/
+example : ¬ (inertia.revAt sp20 ≤ inertia.revAt sp20') := by
+  decide +kernel
+/-- The refusal isolating the positive-semidefinite binder: the
+datum's memberwise swap refuses the split's read. -/
+example : ¬ inertia.psdAt (mkSplit 2
+    (inertia.matScale 1 (matSwap ed7))) := by decide +kernel
+
+/-! Clause (vii): the electric square weight on the shells at the
+unit grams, tight at the fixture's own equality. -/
+
+private def esl7 : List Mat := [[[⟨3, 1⟩]], [[⟨2, 1⟩]], [[⟨4, 1⟩]]]
+private def spE0U : Split 1 :=
+  mkSplit 1 (siteDatum (matScale 2 (idMat 1)) (matScale 1 [[⟨3, 1⟩]]))
+private def spE0L : Split 1 :=
+  mkSplit 1 (matAdd (matScale 2 (idMat 1)) (matScale 1 [[⟨3, 1⟩]]))
+private def spE1U : Split 1 :=
+  mkSplit 1 (siteDatum (matScale 1 (idMat 1)) (matScale 1 [[⟨2, 1⟩]]))
+private def spE1L : Split 1 :=
+  mkSplit 1 (matAdd (matScale 1 (idMat 1)) (matScale 1 [[⟨2, 1⟩]]))
+private def spE2U : Split 1 :=
+  mkSplit 1 (siteDatum (matScale 3 (idMat 1)) (matScale 1 [[⟨4, 1⟩]]))
+private def spE2L : Split 1 :=
+  mkSplit 1 (matAdd (matScale 3 (idMat 1)) (matScale 1 [[⟨4, 1⟩]]))
+private def ecs7 : List ((k : Nat) × Pos × Pos × Split k × Split k) :=
+  [⟨1, 2, 1, spE0U, spE0L⟩, ⟨1, 1, 1, spE1U, spE1L⟩,
+   ⟨1, 3, 1, spE2U, spE2L⟩]
+
+example : eCapList esl7 nsK ecs7 := by decide +kernel
+example : ((eFold ecs7 csK).1).oneValue (BPair.ofPos 68) := by
+  decide +kernel
+example : (eFold ecs7 csK).2 = 4 := by decide +kernel
+example : ((eSum esl7 usK).1).oneValue ⟨18, 1⟩ := by decide +kernel
+
+example : (eSum esl7 usK).1.scale
+      ((eFold ecs7 csK).2
+        * ((ground.getAt ([], Pos.one) usK 0).2
+          * (ground.getAt ([], Pos.one) usK 0).2))
+    ≤ ((dotN (ground.getAt ([], Pos.one) usK 0).1
+          (ground.getAt ([], Pos.one) usK 0).1)
+        * (eFold ecs7 csK).1).scale (eSum esl7 usK).2 :=
+  electric_shells esl7 gsK rsK csK ecs7 usK nsK (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+example : (eSum esl7 usK).1.scale
+      ((eFold ecs7 csK).2
+        * ((ground.getAt ([], Pos.one) usK 0).2
+          * (ground.getAt ([], Pos.one) usK 0).2))
+    ≤ ((dotN (ground.getAt ([], Pos.one) usK 0).1
+          (ground.getAt ([], Pos.one) usK 0).1)
+        * (eFold ecs7 csK).1).scale (eSum esl7 usK).2 := by
+  decide +kernel
+
+/-- The refusal isolating the shell caps: the head cap forged below
+the block's modulus, the list refused and the forged fold's display
+with it. -/
+private def ecs7F : List ((k : Nat) × Pos × Pos × Split k × Split k) :=
+  [⟨1, 1, 1, spE1U, spE1L⟩, ⟨1, 1, 1, spE1U, spE1L⟩,
+   ⟨1, 3, 1, spE2U, spE2L⟩]
+example : ¬ eCapList esl7 nsK ecs7F := by decide +kernel
+example : ¬ ((eSum esl7 usK).1.scale
+      ((eFold ecs7F csK).2
+        * ((ground.getAt ([], Pos.one) usK 0).2
+          * (ground.getAt ([], Pos.one) usK 0).2))
+    ≤ ((dotN (ground.getAt ([], Pos.one) usK 0).1
+          (ground.getAt ([], Pos.one) usK 0).1)
+        * (eFold ecs7F csK).1).scale (eSum esl7 usK).2) := by
+  decide +kernel
+
+/-! Clause (vii): the assembled electric weight is the shells'
+fold — the assembled image's self-pairing against the electric
+fold at the shared fixture, and the transport display read at the
+assembled datum, the two displays' one object. -/
+
+private def esl2 : List Mat := [[[⟨3, 1⟩]], [[⟨2, 1⟩]]]
+private def bs2 : List Mat := [[[⟨1, 1⟩]]]
+private def us2 : List greenprod.VecQ := [⟨[⟨2, 1⟩], 1⟩, ⟨[⟨1, 1⟩], 1⟩]
+private def edA : Mat := greenprod.assemble esl2 bs2
+private def esA : Mat := [[⟨1, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨51, 1⟩]]
+
+example : (dotN (matVec edA (headVec us2))
+      (matVec edA (headVec us2))).oneValue (eSum esl2 us2).1 :=
+  eSum_assemble esl2 bs2 us2 [1, 1] (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+example : (dotN (matVec edA (headVec us2))
+      (matVec edA (headVec us2))).oneValue (eSum esl2 us2).1 := by
+  decide +kernel
+/-- The refusal isolating the couplings' vacancy: at an occupied
+coupling the assembled read leaves the shells' fold. -/
+example : ¬ offNull [[[(⟨2, 1⟩ : BPair)]]] := by decide +kernel
+example : ¬ (dotN
+      (matVec (greenprod.assemble esl2 [[[(⟨2, 1⟩ : BPair)]]])
+        (headVec us2))
+      (matVec (greenprod.assemble esl2 [[[(⟨2, 1⟩ : BPair)]]])
+        (headVec us2))).oneValue (eSum esl2 us2).1 := by
+  decide +kernel
+
+/-- The transport display at the assembled electric datum: the
+later gap's kernel vector the cross-cleared head, the display's
+electric factor the assembled read the fold ties. -/
+example : (dotN (residD [psiK] (headVec us2))
+      (residD [psiK] (headVec us2))).scale (51 * 51)
+    ≤ (((dotN psiK psiK * dotN psiK psiK)
+        * ((dotN (matVec edA (headVec us2))
+              (matVec edA (headVec us2))).scale (1 * 1)
+          + (⟨3, 1⟩ * ⟨3, 1⟩)
+            * dotN (headVec us2) (headVec us2)))).scale
+        (2 * (1 * 1)) :=
+  transport_electric et2 esA edA id2 id2 l2 hd2 0 hj02 1 ⟨2, 1⟩
+    hroot02 51 1 hcl2 (by decide +kernel) 1 ⟨3, 1⟩
+    (by decide +kernel) (headVec us2) (by decide +kernel)
+    (by decide +kernel)
+example : (dotN (residD [psiK] (headVec us2))
+      (residD [psiK] (headVec us2))).scale (51 * 51)
+    ≤ (((dotN psiK psiK * dotN psiK psiK)
+        * ((dotN (matVec edA (headVec us2))
+              (matVec edA (headVec us2))).scale (1 * 1)
+          + (⟨3, 1⟩ * ⟨3, 1⟩)
+            * dotN (headVec us2) (headVec us2)))).scale
+        (2 * (1 * 1)) := by
+  decide +kernel

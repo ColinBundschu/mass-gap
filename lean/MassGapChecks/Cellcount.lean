@@ -15,10 +15,17 @@ avoidance at count `1`, the rescaling's own refusal at the
 unrescaled endpoints, the clearing one value across a padded
 representative, and the forged Bézout witness's refusal.  The
 deflation tier at the symmetric pencil `[[t² - 2, 1], [1, 5]]`:
-the symmetry read with its exchanged-entry refusal, the cleared
+the symmetry read decided, assembled entrywise through its intro
+read, and refused at the exchanged entry with the entrywise binder
+refused beside it, the cleared
 deflation's evaluation against the evaluated blocks' own at two
-clearings both decided and through the theorem, and the adjugate's
-solve at pivots of orders two and one.  The pivot cover at the
+clearings both decided and through the theorem, the adjugate's
+solve at pivots of orders two and one, and the order-one deflation
+at value-unit couplings — the constant diagonal pencil reading the
+pivot entry's square on the trailing block, refused at the occupied
+coupling — with the cleared deflation's shape read at the trailing
+order and the odd-multiple clearing, its pivot-order binder refused
+at the vacant pivot list.  The pivot cover at the
 same pencil on `[2, 129/64]`: the nested certificate — the outer
 pivot `t² - 2` on its upper side over the subinterval at the bound
 `[3 : 1]`, the cleared deflation `5t⁴ - 21t² + 22` its own piece
@@ -172,6 +179,11 @@ private def sD : split.PMat :=
   [[[⟨1, 3⟩, u, ⟨2, 1⟩], [⟨2, 1⟩]], [[⟨2, 1⟩], [⟨6, 1⟩]]]
 
 example : split.pSymAt sD 2 := by decide +kernel
+example : split.pSymAt sD 2 :=
+  split.pSymAt_of sD 2 (fun i j hi hj =>
+    (by decide +kernel : ∀ i, i < 2 → ∀ j, j < 2 → poly.oneValue
+      (ground.getAt [] (ground.getAt [] sD i) j)
+      (ground.getAt [] (ground.getAt [] sD j) i)) i hi j hj)
 example : pShapeAt sD 2 2 := by decide +kernel
 
 /-- The exchanged entry moved off its partner: the symmetry read
@@ -180,6 +192,9 @@ private def sA : split.PMat :=
   [[[⟨1, 3⟩, u, ⟨2, 1⟩], [⟨2, 1⟩]], [[⟨3, 1⟩], [⟨6, 1⟩]]]
 
 example : ¬ split.pSymAt sA 2 := by decide +kernel
+example : ¬ (∀ i, i < 2 → ∀ j, j < 2 → poly.oneValue
+    (ground.getAt [] (ground.getAt [] sA i) j)
+    (ground.getAt [] (ground.getAt [] sA j) i)) := by decide +kernel
 
 example : elim.matOneValue
     (evalPC (pdefl [0] [1] sD) ⟨4, 1⟩ 1
@@ -280,6 +295,79 @@ example : elim.matOneValue
     (inertia.matScaleB (elim.minor pv1) bv1) :=
   adj2v_solve (m := 2) pv1 bv1 (Or.inl rfl) (by decide +kernel) rfl
     ⟨rfl, trivial⟩
+
+
+/-! The deflation at value-unit couplings: the constant pencil
+`[[2, 0], [0, 4]]` whose couplings read the sum's unit without
+standing at the unit pair, the deflation reading the pivot entry's
+square on the trailing block — decided and through the theorem —
+against the occupied-coupling pencil `[[2, 2], [2, 4]]`, where the
+correction survives and the two part company. -/
+
+private def dfS : split.PMat :=
+  [[[⟨3, 1⟩], [⟨2, 2⟩]], [[⟨2, 2⟩], [⟨5, 1⟩]]]
+
+example : split.pmatOneValue (pdefl [0] [1] dfS)
+    (split.pscaleM (poly.mul (ground.getAt [] (ground.getAt [] dfS 0) 0)
+      (ground.getAt [] (ground.getAt [] dfS 0) 0))
+      (split.pselM [1] [1] dfS)) := by decide +kernel
+
+example : split.pmatOneValue (pdefl [0] [1] dfS)
+    (split.pscaleM (poly.mul (ground.getAt [] (ground.getAt [] dfS 0) 0)
+      (ground.getAt [] (ground.getAt [] dfS 0) 0))
+      (split.pselM [1] [1] dfS)) :=
+  pdefl_offC dfS 0 [1] (by decide +kernel)
+
+private def dfT : split.PMat :=
+  [[[⟨3, 1⟩], [⟨3, 1⟩]], [[⟨3, 1⟩], [⟨5, 1⟩]]]
+
+example : ¬ poly.unitTail (ground.getAt ([] : Poly)
+    (ground.getAt ([] : List Poly) dfT (ground.getAt 0 [1] 0)) 0) := by
+  decide +kernel
+
+example : ¬ split.pmatOneValue (pdefl [0] [1] dfT)
+    (split.pscaleM (poly.mul (ground.getAt [] (ground.getAt [] dfT 0) 0)
+      (ground.getAt [] (ground.getAt [] dfT 0) 0))
+      (split.pselM [1] [1] dfT)) := by decide +kernel
+
+
+/-! The cleared deflation's shape read: the trailing order at the
+odd-multiple clearing, decided and through the theorem at both
+pivot orders — the one-place pivot on the standing pencil at
+clearing two with a below-clearing refusal isolating the
+odd-multiple factor, and the two-place pivot at a clearing-one
+order-three pencil — with the shape binder refused at the pencil
+read one clearing low and the pivot-order binder refused at the
+vacant pivot list, where the adjugate is vacant, the correction's
+rows truncate the sum, and the shape read fails at every occupied
+trailing list. -/
+
+example : pShapeAt (pdefl [0] [1] sD) 1 ((2 * 1 + 1) * 2) := by
+  decide +kernel
+example : pShapeAt (pdefl [0] [1] sD) 1 ((2 * 1 + 1) * 2) :=
+  pShape_pdefl sD 2 2 [0] [1] (by decide +kernel) (Or.inl rfl)
+example : ¬ pShapeAt (pdefl [0] [1] sD) 1 3 := by decide +kernel
+
+private def sf3 : split.PMat :=
+  [[[⟨2, 1⟩, ⟨1, 2⟩], [u], [u]],
+   [[u], [⟨3, 1⟩, u], [u]],
+   [[u], [u], [⟨4, 1⟩, ⟨2, 1⟩]]]
+
+example : pShapeAt (pdefl [0, 1] [2] sf3) 1 ((2 * 2 + 1) * 1) := by
+  decide +kernel
+example : pShapeAt (pdefl [0, 1] [2] sf3) 1 ((2 * 2 + 1) * 1) :=
+  pShape_pdefl sf3 3 1 [0, 1] [2] (by decide +kernel) (Or.inr rfl)
+example : ¬ pShapeAt (pdefl [0, 1] [2] sf3) 1 2 := by decide +kernel
+
+example : ¬ pShapeAt sD 2 1 := by decide +kernel
+example : ¬ pShapeAt (pdefl [0] [1] sD) 1 ((2 * 1 + 1) * 1) := by
+  decide +kernel
+
+private def sfX : split.PMat := [[[(⟨2, 1⟩ : BPair)]]]
+
+example : pShapeAt sfX 1 0 := by decide +kernel
+example : ¬ pShapeAt (pdefl [] [0] sfX) ([0] : List Nat).length
+    ((2 * ([] : List Nat).length + 1) * 0) := by decide +kernel
 
 
 /-! The pivot cover at `S(t) = [[t² - 2, 1], [1, 5]]` over

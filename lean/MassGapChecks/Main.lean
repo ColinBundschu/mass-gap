@@ -3,9 +3,10 @@ import MassGap.K
 import MassGap.Freeend
 /-!
 The check module for `thm:main`: the batteries re-read the
-statement's member layer by kernel `decide` — clause (ii) at
-every committed member through the carried datum (the base and
-residue the member's own table reads), and the low-index
+statement's member layer — clause (ii) at every committed member
+through the carried datum, the theorem routes at the members' own
+base and residue occupancies with the full reads' decides
+`thm:closing`'s own battery, and the low-index
 coincidence reads at the floors: `Sp(1)` at `SU(2)` the exact
 table identity (`tableC 1`'s six fields read `tableA 1`'s),
 `Sp(2)` at `Spin(5)` and `Spin(6)` at `SU(4)` the derived reads'
@@ -41,24 +42,32 @@ set_option maxHeartbeats 4000000
 
 open ground gentable sertables row main lattice elim inertia fusion
 
-/-! Clause (ii) at every committed member through the carried
-datum. -/
+/-! Clause (ii) at every committed member through the theorem
+routes: `clauseII` is definitionally `thm:closing`'s read at the
+member's base and residue, whose full-read decides sit at that
+theorem's own battery, and the wiring reads here through the
+occupancy door at the same members with the series' routes at
+ranks past every decide. -/
 
-example : clauseII (.A 0) := by decide +kernel
-example : clauseII (.A 1) := by decide +kernel
-example : clauseII (.A 4) := by decide +kernel
-example : clauseII (.B 0) := by decide +kernel
-example : clauseII (.B 1) := by decide +kernel
-example : clauseII (.B 2) := by decide +kernel
-example : clauseII (.C 0) := by decide +kernel
-example : clauseII (.C 1) := by decide +kernel
-example : clauseII (.D 0) := by decide +kernel
-example : clauseII (.D 1) := by decide +kernel
-example : clauseII .G2 := by decide +kernel
-example : clauseII .F4 := by decide +kernel
-example : clauseII .E6 := by decide +kernel
-example : clauseII .E7 := by decide +kernel
-example : clauseII .E8 := by decide +kernel
+example : clauseII (.A 0) := clauseII_A 0
+example : clauseII (.A 1) := clauseII_A 1
+example : clauseII (.A 4) := clauseII_A 4
+example : clauseII (.A 30) := clauseII_A 30
+example : clauseII (.B 0) := clauseII_B 0
+example : clauseII (.B 1) := clauseII_B 1
+example : clauseII (.B 2) := clauseII_B 2
+example : clauseII (.B 28) := clauseII_B 28
+example : clauseII (.C 0) := clauseII_C 0
+example : clauseII (.C 1) := clauseII_C 1
+example : clauseII (.C 28) := clauseII_C 28
+example : clauseII (.D 0) := clauseII_D 0
+example : clauseII (.D 1) := clauseII_D 1
+example : clauseII (.D 28) := clauseII_D 28
+example : clauseII .G2 := clauseII_all .G2
+example : clauseII .F4 := clauseII_all .F4
+example : clauseII .E6 := clauseII_all .E6
+example : clauseII .E7 := clauseII_all .E7
+example : clauseII .E8 := clauseII_all .E8
 
 /-! The residues and bases through the carried datum, the members
 item's displayed values. -/
@@ -254,7 +263,10 @@ per binder: the tie at the member pair one beyond, the sample's
 split forged at the vacuum's side, the foot shifted off the free
 end, the range's top beyond the cover's priced magnitude bound, and
 the sweep at a level beyond the window's content refusing the
-count. -/
+count; and the universal theorem's routes beside the decided twins —
+`D₄`'s four-loop window and `E₈`'s coupled window read off
+`clauseI_all` outright, one series route per series at a rank past
+every decide. -/
 
 example : clauseI (.A 0) := by decide +kernel
 example : clauseI (.A 1) := by decide +kernel
@@ -265,13 +277,18 @@ example : clauseI (.B 1) := by decide +kernel
 example : clauseI (.B 2) := by decide +kernel
 example : clauseI (.C 0) := by decide +kernel
 example : clauseI (.C 1) := by decide +kernel
-example : clauseI (.D 0) := by decide +kernel
+example : clauseI (.D 0) := clauseI_all (.D 0)
 example : clauseI (.D 1) := by decide +kernel
 example : clauseI .G2 := by decide +kernel
 example : clauseI .F4 := by decide +kernel
 example : clauseI .E6 := by decide +kernel
 example : clauseI .E7 := by decide +kernel
-example : clauseI .E8 := by decide +kernel
+example : clauseI .E8 := clauseI_all .E8
+
+example : clauseI (.A 7) := clauseI_all (.A 7)
+example : clauseI (.B 30) := clauseI_all (.B 30)
+example : clauseI (.C 30) := clauseI_all (.C 30)
+example : clauseI (.D 30) := clauseI_all (.D 30)
 
 /-- `Spin(5)`'s clause read, named once and consumed at its own pin
 and the theorem route's hypothesis. -/

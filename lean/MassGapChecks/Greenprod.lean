@@ -31,7 +31,14 @@ depth's, and the two cross-scaled heads' tie display decided at an
 occupied drift and at equal members, refused at a diagonal off the
 tie, refused with the coupling read at a second window's coupling
 off the shared occupied one, and landed whole through `headM_tie`
-at the occupied drift and at the vacant depth. -/
+at the occupied drift and at the vacant depth.  The scalar
+chain's form read closes the module: `chainQuad` at a two-slab
+chain through the theorem beside the decided instance, the shape
+read `chainLen` with its length binder's refusal, and the form
+read's two shape binders load-bearing — the bond count parted short
+refuses with the walked length holding, the two part jointly at the
+combined forge — beside the two one-direction partings that satisfy
+the display at the padded reads. -/
 set_option maxHeartbeats 4000000
 
 open ground elim inertia greenprod
@@ -436,3 +443,76 @@ example : matOneValue (matScale XH.2 (headM diagH offH XT 1))
             (ground.getAt 0 nsH 1)))
         (inertia.trailPad (ground.sumNat (List.take 1 nsH))
           (addQ XT (swapQ XH)).1))) := by decide +kernel
+
+/-! The scalar chain's form read at the two-slab chain
+`tridiag(2,1; 1)`: the display's two folds against the walked
+vector `(1,2)`, the value `10`. -/
+
+private def cqD : List BPair := [BPair.ofNat 2, BPair.ofNat 1]
+private def cqO : List BPair := [BPair.ofNat 1]
+private def cqU : List BPair := [BPair.ofNat 1, BPair.ofNat 2]
+private def cqRead (d o v : List BPair) : BPair :=
+  ground.bsum (fun k =>
+      ground.getAt BPair.unit d k
+        * (ground.getAt BPair.unit v k * ground.getAt BPair.unit v k))
+    (List.range v.length)
+  + BPair.ofNat 2
+    * ground.bsum (fun k =>
+        ground.getAt BPair.unit o k
+          * (ground.getAt BPair.unit v k
+            * ground.getAt BPair.unit v (k + 1)))
+      (List.range o.length)
+
+example : (quadForm
+    (assemble (cqD.map (fun a => [[a]])) (cqO.map (fun b => [[b]])))
+    cqU).oneValue (BPair.ofNat 10) := by decide +kernel
+example : (quadForm
+    (assemble (cqD.map (fun a => [[a]])) (cqO.map (fun b => [[b]])))
+    cqU).oneValue (cqRead cqD cqO cqU) :=
+  chainQuad cqD cqO cqU rfl rfl
+
+/- The two shape binders read load-bearing: the bond count parted
+short refuses with the walked length holding, and the two parted
+jointly refuse; the two one-direction partings beside them, the
+walked vector beyond the diagonal and the bond list at the
+diagonal's own count, satisfy the display at the padded reads. -/
+
+example : ¬ ((quadForm
+    (assemble
+      ([BPair.ofNat 2, BPair.ofNat 1, BPair.ofNat 3].map (fun a => [[a]]))
+      (cqO.map (fun b => [[b]])))
+    [BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3]).oneValue
+    (cqRead [BPair.ofNat 2, BPair.ofNat 1, BPair.ofNat 3] cqO
+      [BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3])) := by decide +kernel
+example : ¬ ((quadForm
+    (assemble (cqD.map (fun a => [[a]]))
+      ([BPair.ofNat 1, BPair.ofNat 5].map (fun b => [[b]])))
+    [BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3]).oneValue
+    (cqRead cqD [BPair.ofNat 1, BPair.ofNat 5]
+      [BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3])) := by decide +kernel
+
+example : (quadForm
+    (assemble (cqD.map (fun a => [[a]])) (cqO.map (fun b => [[b]])))
+    [BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3]).oneValue
+    (cqRead cqD cqO [BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3]) := by
+  decide +kernel
+example : (quadForm
+    (assemble (cqD.map (fun a => [[a]]))
+      ([BPair.ofNat 1, BPair.ofNat 5].map (fun b => [[b]])))
+    cqU).oneValue
+    (cqRead cqD [BPair.ofNat 1, BPair.ofNat 5] cqU) := by decide +kernel
+
+example : (assemble (cqD.map (fun a => [[a]]))
+      (cqO.map (fun b => [[b]]))).length = 2
+    ∧ ((assemble (cqD.map (fun a => [[a]]))
+      (cqO.map (fun b => [[b]]))).headD []).length = 2 := by decide +kernel
+example : (assemble (cqD.map (fun a => [[a]]))
+      (cqO.map (fun b => [[b]]))).length = 2
+    ∧ ((assemble (cqD.map (fun a => [[a]]))
+      (cqO.map (fun b => [[b]]))).headD []).length = 2 :=
+  chainLen cqD cqO rfl
+example : ¬ ((assemble ([BPair.ofNat 2].map (fun a => [[a]]))
+      ([BPair.ofNat 1, BPair.ofNat 5].map (fun b => [[b]]))).length = 1
+    ∧ ((assemble ([BPair.ofNat 2].map (fun a => [[a]]))
+      ([BPair.ofNat 1, BPair.ofNat 5].map (fun b => [[b]]))).headD
+        []).length = 1) := by decide +kernel

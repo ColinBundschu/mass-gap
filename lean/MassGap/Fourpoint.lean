@@ -143,80 +143,8 @@ private def pairSum : List (Pos × Pos) → BPair × Pos
   | [] => (BPair.unit, Pos.one)
   | x :: xs => BPair.addQ (crossAt x xs) (pairSum xs)
 
-/-! The carried reads' kit: the one-value relation is an
-equivalence, the join reads congruently, commutes and
-reassociates, and a balance factor distributes over the join. -/
-
-private theorem qeq_refl (p : BPair × Pos) : bpairQRead.rel p p :=
-  BPair.oneValue_refl _
-
-private theorem qeq_symm {p q : BPair × Pos} (h : bpairQRead.rel p q) : bpairQRead.rel q p :=
-  BPair.oneValue_symm h
-
-private theorem scaleComm (x : BPair) (a b : Pos) :
-    (x.scale a).scale b = (x.scale b).scale a := by
-  rw [BPair.scale_scale, BPair.scale_scale, ground.mul_comm a b]
-
-private theorem qeq_trans {p q r : BPair × Pos} (h1 : bpairQRead.rel p q)
-    (h2 : bpairQRead.rel q r) : bpairQRead.rel p r := by
-  refine BPair.scale_cancel (w := q.2) ?_
-  refine BPair.oneValue_trans (BPair.oneValue_of_eq (scaleComm p.1 r.2 q.2)) ?_
-  refine BPair.oneValue_trans (BPair.scale_congr r.2 h1) ?_
-  refine BPair.oneValue_trans (BPair.oneValue_of_eq (scaleComm q.1 p.2 r.2)) ?_
-  refine BPair.oneValue_trans (BPair.scale_congr p.2 h2) ?_
-  exact BPair.oneValue_of_eq (scaleComm r.1 q.2 p.2)
-
-private theorem qeq_of_eq {p q : BPair × Pos} (h : p = q) : bpairQRead.rel p q := by
-  rw [h]
-  exact qeq_refl q
-
-private theorem qadd_comm (p q : BPair × Pos) : bpairQRead.rel (BPair.addQ p q) (BPair.addQ q p) := by
-  show ((p.1.scale q.2 + q.1.scale p.2).scale (q.2 * p.2)).oneValue
-    ((q.1.scale p.2 + p.1.scale q.2).scale (p.2 * q.2))
-  rw [BPair.add_comm (q.1.scale p.2), ground.mul_comm q.2 p.2]
-  exact BPair.oneValue_refl _
-
-private theorem qadd_assoc (p q r : BPair × Pos) :
-    bpairQRead.rel (BPair.addQ (BPair.addQ p q) r) (BPair.addQ p (BPair.addQ q r)) := by
-  refine qeq_of_eq ?_
-  show ((p.1.scale q.2 + q.1.scale p.2).scale r.2 + r.1.scale (p.2 * q.2),
-      p.2 * q.2 * r.2)
-    = (p.1.scale (q.2 * r.2) + (q.1.scale r.2 + r.1.scale q.2).scale p.2,
-      p.2 * (q.2 * r.2))
-  rw [BPair.scale_add, BPair.scale_add, BPair.scale_scale,
-    BPair.scale_scale, BPair.scale_scale, BPair.scale_scale,
-    ground.mul_comm r.2 p.2, ground.mul_comm q.2 p.2, BPair.add_assoc,
-    ground.mul_assoc]
-
-private theorem qadd_congr {p p' q q' : BPair × Pos} (hp : bpairQRead.rel p p')
-    (hq : bpairQRead.rel q q') : bpairQRead.rel (BPair.addQ p q) (BPair.addQ p' q') := by
-  show ((p.1.scale q.2 + q.1.scale p.2).scale (p'.2 * q'.2)).oneValue
-    ((p'.1.scale q'.2 + q'.1.scale p'.2).scale (p.2 * q.2))
-  rw [BPair.scale_add, BPair.scale_add]
-  refine BPair.add_congr ?_ ?_
-  · have e1 : (p.1.scale q.2).scale (p'.2 * q'.2)
-        = (p.1.scale p'.2).scale (q.2 * q'.2) := by
-      rw [BPair.scale_scale, BPair.scale_scale,
-        ground.mul_left_comm q.2 p'.2 q'.2]
-    have e2 : (p'.1.scale q'.2).scale (p.2 * q.2)
-        = (p'.1.scale p.2).scale (q.2 * q'.2) := by
-      rw [BPair.scale_scale, BPair.scale_scale,
-        ground.mul_left_comm q'.2 p.2 q.2, ground.mul_comm q'.2 q.2]
-    exact BPair.oneValue_trans (BPair.oneValue_of_eq e1)
-      (BPair.oneValue_trans (BPair.scale_congr _ hp)
-        (BPair.oneValue_of_eq e2.symm))
-  · have e3 : (q.1.scale p.2).scale (p'.2 * q'.2)
-        = (q.1.scale q'.2).scale (p.2 * p'.2) := by
-      rw [BPair.scale_scale, BPair.scale_scale, ground.mul_comm p'.2 q'.2,
-        ground.mul_left_comm p.2 q'.2 p'.2]
-    have e4 : (q'.1.scale p'.2).scale (p.2 * q.2)
-        = (q'.1.scale q.2).scale (p.2 * p'.2) := by
-      rw [BPair.scale_scale, BPair.scale_scale,
-        ground.mul_left_comm p'.2 p.2 q.2, ground.mul_comm p'.2 q.2,
-        ground.mul_left_comm p.2 q.2 p'.2]
-    exact BPair.oneValue_trans (BPair.oneValue_of_eq e3)
-      (BPair.oneValue_trans (BPair.scale_congr _ hq)
-        (BPair.oneValue_of_eq e4.symm))
+/-! The cleared read's kit at `def:ground`: a balance factor
+distributes over the join. -/
 
 /-- A balance factor at a carried read. -/
 private def qscale (c : BPair) (p : BPair × Pos) : BPair × Pos :=
@@ -310,18 +238,10 @@ to its three cross reads — its weight and content against the
 fold, its weight against the content fold, and twice its weight
 against the weight fold withdrawn. -/
 
-private theorem qeq_zero {p : BPair × Pos} (h : p.1.oneValue BPair.unit) :
-    bpairQRead.rel p (BPair.unit, Pos.one) := by
-  show (p.1.scale Pos.one).oneValue (BPair.unit.scale p.2)
-  rw [BPair.scale_one]
-  refine BPair.oneValue_trans h ?_
-  show Pos.one + Pos.one * p.2 = Pos.one * p.2 + Pos.one
-  exact ground.add_comm _ _
-
 private theorem qadd_zero :
     bpairQRead.rel (BPair.addQ (BPair.unit, Pos.one) (BPair.unit, Pos.one))
       (BPair.unit, Pos.one) :=
-  qeq_zero (BPair.add_unit _)
+  qOneValue_unit (BPair.add_unit _)
 
 /-- A balance factor at a sum reads the two scaled reads joined. -/
 private theorem qsplit (c X Y : BPair) (a : Pos) :
@@ -340,17 +260,6 @@ private theorem qsplit_swap (c X Y : BPair) :
     BPair.scale_one, BPair.scale_one, BPair.scale_one]
   exact BPair.oneValue_refl _
 
-/-- Four reads at two joins exchange their inner members. -/
-private theorem qadd_swap4 (a b c d : BPair × Pos) :
-    bpairQRead.rel (BPair.addQ (BPair.addQ a b) (BPair.addQ c d)) (BPair.addQ (BPair.addQ a c) (BPair.addQ b d)) := by
-  refine qeq_trans (qadd_assoc a b (BPair.addQ c d)) ?_
-  refine qeq_trans (qadd_congr (qeq_refl a)
-    (qeq_symm (qadd_assoc b c d))) ?_
-  refine qeq_trans (qadd_congr (qeq_refl a)
-    (qadd_congr (qadd_comm b c) (qeq_refl d))) ?_
-  refine qeq_trans (qadd_congr (qeq_refl a) (qadd_assoc c b d)) ?_
-  exact qeq_symm (qadd_assoc a c (BPair.addQ b d))
-
 /-- One channel's cross reads against a list. -/
 private def crossRead (x : Pos × Pos) (xs : List (Pos × Pos)) : BPair × Pos :=
   BPair.addQ (qscale (BPair.ofPos (x.1 * x.2)) (sumQ xs))
@@ -360,28 +269,28 @@ private def crossRead (x : Pos × Pos) (xs : List (Pos × Pos)) : BPair × Pos :
 private theorem crossAt_read (x : Pos × Pos) :
     ∀ xs : List (Pos × Pos), bpairQRead.rel (crossAt x xs) (crossRead x xs)
   | [] => by
-    refine qeq_symm ?_
+    refine qOneValue_symm ?_
     show bpairQRead.rel (BPair.addQ (BPair.ofPos (x.1 * x.2) * BPair.unit, Pos.one)
       (BPair.addQ (BPair.ofPos x.1 * BPair.unit, x.2)
         ((BPair.ofPos (2 * x.1) * BPair.unit).swap, Pos.one)))
       (BPair.unit, Pos.one)
-    refine qeq_trans (qadd_congr (qeq_zero (BPair.mul_unit _))
-      (qadd_congr (qeq_zero (BPair.mul_unit _))
-        (qeq_zero (ground.swap_congr (BPair.mul_unit _))))) ?_
-    exact qeq_trans (qadd_congr (qeq_refl _) qadd_zero) qadd_zero
+    refine qOneValue_trans (BPair.addQ_congr (qOneValue_unit (BPair.mul_unit _))
+      (BPair.addQ_congr (qOneValue_unit (BPair.mul_unit _))
+        (qOneValue_unit (ground.swap_congr (BPair.mul_unit _))))) ?_
+    exact qOneValue_trans (BPair.addQ_congr (qOneValue_refl _) qadd_zero) qadd_zero
   | y :: ys => by
-    refine qeq_trans (qadd_congr (pair_read x y) (crossAt_read x ys)) ?_
-    refine qeq_trans (qadd_swap4 _ _ _ _) ?_
-    refine qeq_trans (qadd_congr (qeq_refl _) (qadd_swap4 _ _ _ _)) ?_
-    refine qeq_symm ?_
+    refine qOneValue_trans (BPair.addQ_congr (pair_read x y) (crossAt_read x ys)) ?_
+    refine qOneValue_trans (BPair.addQ_add_comm _ _ _ _) ?_
+    refine qOneValue_trans (BPair.addQ_congr (qOneValue_refl _) (BPair.addQ_add_comm _ _ _ _)) ?_
+    refine qOneValue_symm ?_
     show bpairQRead.rel (BPair.addQ (qscale (BPair.ofPos (x.1 * x.2))
         (BPair.addQ (BPair.ofPos y.1, y.2) (sumQ ys)))
       (BPair.addQ (BPair.ofPos x.1 * (BPair.ofPos (y.1 * y.2) + aSum ys), x.2)
         ((BPair.ofPos (2 * x.1) * (BPair.ofPos y.1 + tSum ys)).swap,
           Pos.one))) _
     rw [qscale_add]
-    exact qadd_congr (qeq_refl _)
-      (qadd_congr (qsplit _ _ _ _) (qsplit_swap _ _ _))
+    exact BPair.addQ_congr (qOneValue_refl _)
+      (BPair.addQ_congr (qsplit _ _ _ _) (qsplit_swap _ _ _))
 
 /-! The collection over the list: the contents' weighted fold
 against the fold reads the weight fold's square joined to the pair
@@ -396,26 +305,15 @@ private theorem qscale_addL (c c' : BPair) (p : BPair × Pos) :
   rw [BPair.right_distrib, ← BPair.scale_add, BPair.scale_scale]
   exact BPair.oneValue_refl _
 
-private theorem qadd_zero_left (p : BPair × Pos) :
-    bpairQRead.rel (BPair.addQ (BPair.unit, Pos.one) p) p := by
-  show ((BPair.unit.scale p.2 + p.1.scale Pos.one).scale p.2).oneValue
-    (p.1.scale (Pos.one * p.2))
-  rw [BPair.scale_one, ground.one_mul, BPair.scale_add, BPair.scale_scale]
-  have hz : (BPair.unit.scale (p.2 * p.2)).oneValue BPair.unit := by
-    show Pos.one * (p.2 * p.2) + Pos.one = Pos.one + Pos.one * (p.2 * p.2)
-    exact ground.add_comm _ _
-  exact BPair.oneValue_trans (BPair.add_congr hz (BPair.oneValue_refl _))
-    (BPair.unit_add _)
-
 private theorem qadd_rot (a b c : BPair × Pos) :
     bpairQRead.rel (BPair.addQ a (BPair.addQ b c)) (BPair.addQ b (BPair.addQ a c)) := by
-  refine qeq_trans (qeq_symm (qadd_assoc a b c)) ?_
-  refine qeq_trans (qadd_congr (qadd_comm a b) (qeq_refl c)) ?_
-  exact qadd_assoc b a c
+  refine qOneValue_trans (qOneValue_symm (BPair.addQ_assoc a b c)) ?_
+  refine qOneValue_trans (BPair.addQ_congr (BPair.addQ_comm a b) (qOneValue_refl c)) ?_
+  exact BPair.addQ_assoc b a c
 
 /-- A read against its partner reads the sum's unit. -/
 private theorem qadd_neg (p : BPair × Pos) : bpairQRead.rel (BPair.addQ p (bpairQOps.swap p)) bpairQOps.unit := by
-  refine qeq_zero ?_
+  refine qOneValue_unit ?_
   show (p.1.scale p.2 + p.1.swap.scale p.2).oneValue BPair.unit
   rw [← BPair.scale_add]
   refine BPair.oneValue_trans (BPair.scale_congr p.2
@@ -426,7 +324,7 @@ private theorem qadd_neg (p : BPair × Pos) : bpairQRead.rel (BPair.addQ p (bpai
 
 private theorem qneg_read (Z : BPair) :
     bpairQRead.rel (BPair.addQ (Z.swap, Pos.one) (Z, Pos.one)) (BPair.unit, Pos.one) :=
-  qeq_trans (qadd_comm _ _) (qadd_neg (Z, Pos.one))
+  qOneValue_trans (BPair.addQ_comm _ _) (qadd_neg (Z, Pos.one))
 
 /-- The new channel's square: its weight and content against its
 weight over its content is its weight's square. -/
@@ -469,8 +367,8 @@ private theorem collect :
     ∀ xs : List (Pos × Pos), bpairQRead.rel (qscale (aSum xs) (sumQ xs))
       (BPair.addQ (tSum xs * tSum xs, Pos.one) (pairSum xs))
   | [] => by
-    refine qeq_trans (qeq_zero (BPair.mul_unit _)) (qeq_symm ?_)
-    exact qeq_trans (qadd_congr (qeq_zero (BPair.mul_unit _)) (qeq_refl _))
+    refine qOneValue_trans (qOneValue_unit (BPair.mul_unit _)) (qOneValue_symm ?_)
+    exact qOneValue_trans (BPair.addQ_congr (qOneValue_unit (BPair.mul_unit _)) (qOneValue_refl _))
       qadd_zero
   | x :: xs => by
     have ih := collect xs
@@ -478,42 +376,42 @@ private theorem collect :
         (BPair.addQ (BPair.ofPos x.1, x.2) (sumQ xs)))
       (BPair.addQ ((BPair.ofPos x.1 + tSum xs) * (BPair.ofPos x.1 + tSum xs),
         Pos.one) (BPair.addQ (crossAt x xs) (pairSum xs)))
-    refine qeq_trans (qscale_addL _ _ _) ?_
+    refine qOneValue_trans (qscale_addL _ _ _) ?_
     rw [qscale_add, qscale_add]
-    refine qeq_trans (qadd_swap4 _ _ _ _) ?_
-    refine qeq_trans (qadd_congr (qeq_refl _) (qadd_congr (qeq_refl _)
-      (qeq_symm (qeq_trans (qadd_congr
-        (qneg_read (BPair.ofPos (2 * x.1) * tSum xs)) (qeq_refl _))
-        (qadd_zero_left _))))) ?_
-    refine qeq_trans (qadd_congr (qeq_refl _) (qeq_trans
-      (qeq_symm (qadd_assoc _ _ _)) (qeq_trans
-        (qadd_congr (qeq_symm (qadd_assoc _ _ _)) (qeq_refl _))
-        (qadd_assoc _ _ _)))) ?_
-    refine qeq_trans (qadd_assoc _ _ _) ?_
-    refine qeq_trans (qadd_congr (qeq_refl _) (qeq_trans
-      (qeq_symm (qadd_assoc _ _ _))
-      (qadd_congr (qadd_rot _ _ _) (qeq_refl _)))) ?_
+    refine qOneValue_trans (BPair.addQ_add_comm _ _ _ _) ?_
+    refine qOneValue_trans (BPair.addQ_congr (qOneValue_refl _) (BPair.addQ_congr (qOneValue_refl _)
+      (qOneValue_symm (qOneValue_trans (BPair.addQ_congr
+        (qneg_read (BPair.ofPos (2 * x.1) * tSum xs)) (qOneValue_refl _))
+        (BPair.addQ_unitL _))))) ?_
+    refine qOneValue_trans (BPair.addQ_congr (qOneValue_refl _) (qOneValue_trans
+      (qOneValue_symm (BPair.addQ_assoc _ _ _)) (qOneValue_trans
+        (BPair.addQ_congr (qOneValue_symm (BPair.addQ_assoc _ _ _)) (qOneValue_refl _))
+        (BPair.addQ_assoc _ _ _)))) ?_
+    refine qOneValue_trans (BPair.addQ_assoc _ _ _) ?_
+    refine qOneValue_trans (BPair.addQ_congr (qOneValue_refl _) (qOneValue_trans
+      (qOneValue_symm (BPair.addQ_assoc _ _ _))
+      (BPair.addQ_congr (qadd_rot _ _ _) (qOneValue_refl _)))) ?_
     have hm : qscale (aSum xs) (BPair.ofPos x.1, x.2)
         = (BPair.ofPos x.1 * aSum xs, x.2) := by
       show (aSum xs * BPair.ofPos x.1, x.2) = _
       rw [BPair.mul_comm]
     rw [hm]
-    refine qeq_trans (qadd_congr (qeq_refl _) (qadd_congr
-      (qeq_symm (crossAt_read x xs)) (qadd_congr (qeq_refl _) ih))) ?_
-    refine qeq_symm ?_
+    refine qOneValue_trans (BPair.addQ_congr (qOneValue_refl _) (BPair.addQ_congr
+      (qOneValue_symm (crossAt_read x xs)) (BPair.addQ_congr (qOneValue_refl _) ih))) ?_
+    refine qOneValue_symm ?_
     rw [BPair.sq_expand]
-    refine qeq_trans (qadd_congr (qeq_trans (qsplit_one _ _)
-      (qeq_trans (qadd_congr (qsplit_one _ _) (qeq_refl _))
-        (qadd_assoc _ _ _))) (qeq_refl _)) ?_
-    refine qeq_trans (qadd_congr (qadd_congr (qeq_symm (sq_head x.1 x.2))
-      (qadd_congr (qeq_refl _) (qeq_num Pos.one
-        (BPair.oneValue_symm (two_read x.1 (tSum xs)))))) (qeq_refl _)) ?_
-    refine qeq_trans (qadd_assoc _ _ _) ?_
-    refine qadd_congr (qeq_refl _) ?_
-    refine qeq_trans (qadd_swap4 _ _ _ _) ?_
-    refine qeq_trans (qadd_congr (qadd_comm _ _) (qeq_refl _)) ?_
-    refine qeq_trans (qadd_assoc _ _ _) ?_
-    exact qadd_congr (qeq_refl _) (qadd_rot _ _ _)
+    refine qOneValue_trans (BPair.addQ_congr (qOneValue_trans (qsplit_one _ _)
+      (qOneValue_trans (BPair.addQ_congr (qsplit_one _ _) (qOneValue_refl _))
+        (BPair.addQ_assoc _ _ _))) (qOneValue_refl _)) ?_
+    refine qOneValue_trans (BPair.addQ_congr (BPair.addQ_congr (qOneValue_symm (sq_head x.1 x.2))
+      (BPair.addQ_congr (qOneValue_refl _) (qeq_num Pos.one
+        (BPair.oneValue_symm (two_read x.1 (tSum xs)))))) (qOneValue_refl _)) ?_
+    refine qOneValue_trans (BPair.addQ_assoc _ _ _) ?_
+    refine BPair.addQ_congr (qOneValue_refl _) ?_
+    refine qOneValue_trans (BPair.addQ_add_comm _ _ _ _) ?_
+    refine qOneValue_trans (BPair.addQ_congr (BPair.addQ_comm _ _) (qOneValue_refl _)) ?_
+    refine qOneValue_trans (BPair.addQ_assoc _ _ _) ?_
+    exact BPair.addQ_congr (qOneValue_refl _) (qadd_rot _ _ _)
 
 /-! The pair sum's side: every term is a square at pair weights, so
 the sum sits at or above the unit and at or above any one of its
@@ -558,22 +456,22 @@ private theorem qle_congr_right {p q q' : BPair × Pos} (hq : bpairQRead.rel q q
     (h : qle p q) : qle p q' := by
   show p.1.scale q'.2 ≤ q'.1.scale p.2
   refine leB_of_scale (w := q.2) ?_
-  rw [scaleComm p.1 q'.2 q.2]
+  rw [BPair.scale_comm p.1 q'.2 q.2]
   refine leB_congr_right ?_ (leB_scale h q'.2)
-  rw [scaleComm q.1 p.2 q'.2, scaleComm q'.1 p.2 q.2]
+  rw [BPair.scale_comm q.1 p.2 q'.2, BPair.scale_comm q'.1 p.2 q.2]
   exact BPair.scale_congr p.2 hq
 
 private theorem qle_add_left (p r : BPair × Pos) (hr : BPair.unit ≤ r.1) :
     qle p (BPair.addQ r p) :=
-  qle_congr_right (qadd_comm p r) (qle_add_right p r hr)
+  qle_congr_right (BPair.addQ_comm p r) (qle_add_right p r hr)
 
 private theorem qle_trans {p q r : BPair × Pos} (h1 : qle p q) (h2 : qle q r) :
     qle p r := by
   show p.1.scale r.2 ≤ r.1.scale p.2
   refine leB_of_scale (w := q.2) ?_
-  rw [scaleComm p.1 r.2 q.2, scaleComm r.1 p.2 q.2]
+  rw [BPair.scale_comm p.1 r.2 q.2, BPair.scale_comm r.1 p.2 q.2]
   refine leB_trans (leB_scale h1 r.2) ?_
-  rw [scaleComm q.1 p.2 r.2]
+  rw [BPair.scale_comm q.1 p.2 r.2]
   exact leB_scale h2 p.2
 
 private theorem crossAt_ge (x : Pos × Pos) :
@@ -761,7 +659,7 @@ private theorem aSum_read {L : Type} (F : fusion.Data L) (q : Nat) :
 
 /-- A pair's term reads at either order. -/
 private theorem term_comm (x y : Pos × Pos) : bpairQRead.rel (term x y) (term y x) := by
-  refine qeq_of_eq ?_
+  refine qOneValue_of_eq ?_
   show (BPair.ofPos (x.1 * y.1) * (BPair.mk x.2 y.2 * BPair.mk x.2 y.2), x.2 * y.2)
     = (BPair.ofPos (y.1 * x.1) * (BPair.mk y.2 x.2 * BPair.mk y.2 x.2), y.2 * x.2)
   rw [ground.mul_comm x.1 y.1, ground.mul_comm x.2 y.2,
@@ -783,7 +681,7 @@ private theorem qscaleD (p : BPair × Pos) (s : Pos) :
 
 private theorem qdiv_add (p q : BPair × Pos) (w : Pos) :
     bpairQRead.rel (qdiv (BPair.addQ p q) w) (BPair.addQ (qdiv p w) (qdiv q w)) := by
-  refine qeq_trans (qscaleD _ w) (qeq_of_eq ?_)
+  refine qOneValue_trans (qscaleD _ w) (qOneValue_of_eq ?_)
   show ((p.1.scale q.2 + q.1.scale p.2).scale w, p.2 * q.2 * w * w)
     = (p.1.scale (q.2 * w) + q.1.scale (p.2 * w), p.2 * w * (q.2 * w))
   rw [BPair.scale_add, BPair.scale_scale, BPair.scale_scale, ground.mul_mul_mul_comm p.2 w q.2 w,
@@ -926,12 +824,12 @@ private theorem side_core {L : Type} (F : fusion.Data L) (q t : Nat)
   rw [pairFold_at F q t hq ht]
   unfold pairRead
   rw [chanList_at F q hq]
-  refine qeq_trans (eight_read _ _ _ _) ?_
-  refine qeq_trans (qdiv_congr _ (qeq_trans (qscale_congr
-    (BPair.oneValue_symm (aSum_law F q t hq ht hθ hdim hdrift)) (qeq_refl _))
+  refine qOneValue_trans (eight_read _ _ _ _) ?_
+  refine qOneValue_trans (qdiv_congr _ (qOneValue_trans (qscale_congr
+    (BPair.oneValue_symm (aSum_law F q t hq ht hθ hdim hdrift)) (qOneValue_refl _))
     (collect _))) ?_
-  refine qeq_trans (qdiv_add _ _ _) ?_
-  exact qadd_congr (unit_read _ _ (tSum_law F q t ht hdim)) (qeq_refl _)
+  refine qOneValue_trans (qdiv_add _ _ _) ?_
+  exact BPair.addQ_congr (unit_read _ _ (tSum_law F q t ht hdim)) (qOneValue_refl _)
 
 /-- The side: eight times the pair fold is the unit joined to the
 pair sum over the adjoint dimension's fourth power, the collection
@@ -992,9 +890,9 @@ private theorem qle_congr_left {p p' q : BPair × Pos} (hp : bpairQRead.rel p p'
     (h : qle p q) : qle p' q := by
   show p'.1.scale q.2 ≤ q.1.scale p'.2
   refine leB_of_scale (w := p.2) ?_
-  rw [scaleComm p'.1 q.2 p.2, scaleComm q.1 p'.2 p.2]
+  rw [BPair.scale_comm p'.1 q.2 p.2, BPair.scale_comm q.1 p'.2 p.2]
   refine leB_congr_left (BPair.scale_congr q.2 hp) ?_
-  rw [scaleComm p.1 p'.2 q.2]
+  rw [BPair.scale_comm p.1 p'.2 q.2]
   exact leB_scale h p'.2
 
 /-- The unit channel's content at the Casimir scale, six scales. -/
@@ -1143,9 +1041,9 @@ theorem margin {L : Type} (F : fusion.Data L) (q t c : Nat)
         (ground.posOfSucc t * ground.posOfSucc t
           * (ground.posOfSucc t * ground.posOfSucc t))))
       (qscale (BPair.ofPos 8) (pairFold F)) :=
-    qle_congr_right (qeq_symm (side_core F q t hq ht hθ hdim hdrift))
+    qle_congr_right (qOneValue_symm (side_core F q t hq ht hθ hdim hdrift))
       (qle_add_mono _ (qdiv_mono _ hP))
-  have h3 := qle_congr_left (qadd_congr (qeq_refl _) (term_val q t c F.c1 hE)) h2
+  have h3 := qle_congr_left (BPair.addQ_congr (qOneValue_refl _) (term_val q t c F.c1 hE)) h2
   have h4 : ((BPair.ofPos Pos.one).scale
       (42 * (ground.posOfSucc t * ground.posOfSucc t * ground.posOfSucc t))
     + (BPair.ofNat F.c1).scale Pos.one).scale (pairFold F).2
@@ -1354,11 +1252,11 @@ private theorem qswap_congr {p q : BPair × Pos} (h : bpairQRead.rel p q) :
 
 private theorem qmul_zero_left {p : BPair × Pos} (h : p.1.oneValue BPair.unit)
     (q : BPair × Pos) : bpairQRead.rel (bpairQOps.mul p q) bpairQOps.unit :=
-  qeq_zero (BPair.oneValue_trans (BPair.mul_congr_left h) (BPair.unit_mul _))
+  qOneValue_unit (BPair.oneValue_trans (BPair.mul_congr_left h) (BPair.unit_mul _))
 
 private theorem qmul_zero_right (p : BPair × Pos) {q : BPair × Pos}
     (h : q.1.oneValue BPair.unit) : bpairQRead.rel (bpairQOps.mul p q) bpairQOps.unit :=
-  qeq_zero (BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _) h)
+  qOneValue_unit (BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _) h)
     (BPair.mul_unit _))
 
 private theorem qmul_one_left (q : BPair × Pos) :
@@ -1373,9 +1271,6 @@ private theorem qmul_one_right (p : BPair × Pos) :
   rw [ground.mul_one]
   exact BPair.scale_congr p.2 (BPair.mul_ofNat_one p.1)
 
-private theorem qadd_zero_right (p : BPair × Pos) : bpairQRead.rel (BPair.addQ p bpairQOps.unit) p :=
-  qeq_trans (qadd_comm _ _) (qadd_zero_left p)
-
 private theorem qswap_add (p q : BPair × Pos) :
     bpairQOps.swap (BPair.addQ p q) = BPair.addQ (bpairQOps.swap p) (bpairQOps.swap q) := by
   show ((p.1.scale q.2 + q.1.scale p.2).swap, p.2 * q.2)
@@ -1385,56 +1280,56 @@ private theorem qswap_add (p q : BPair × Pos) :
 private theorem getAt_addQ (p q : List (BPair × Pos)) (k : Nat) :
     bpairQRead.rel (ground.getAt bpairQOps.unit (poly.addLO ground.bpairQOps p q) k)
       (BPair.addQ (ground.getAt bpairQOps.unit p k) (ground.getAt bpairQOps.unit q k)) :=
-  poly.getAt_addLO ground.bpairQOps ground.bpairQRead qeq_refl qeq_symm
-    qadd_zero_left qadd_zero_right p q k
+  poly.getAt_addLO ground.bpairQOps ground.bpairQRead qOneValue_refl qOneValue_symm
+    BPair.addQ_unitL BPair.addQ_unitR p q k
 
 private theorem getAt_mapMul (c : BPair × Pos) (q : List (BPair × Pos)) (k : Nat) :
     bpairQRead.rel (ground.getAt bpairQOps.unit (q.map (ground.bpairQOps.mul c)) k)
       (bpairQOps.mul c (ground.getAt bpairQOps.unit q k)) :=
-  poly.getAt_mapMul ground.bpairQOps ground.bpairQRead qeq_refl qeq_symm
+  poly.getAt_mapMul ground.bpairQOps ground.bpairQRead qOneValue_refl qOneValue_symm
     (fun x => qmul_zero_right x (BPair.oneValue_refl _)) c q k
 
 private theorem getAt0_mul : ∀ (p q : List (BPair × Pos)),
     bpairQRead.rel (ground.getAt bpairQOps.unit (poly.mulLO ground.bpairQOps p q) 0)
       (bpairQOps.mul (ground.getAt bpairQOps.unit p 0) (ground.getAt bpairQOps.unit q 0))
-  | [], _ => qeq_symm (qmul_zero_left (BPair.oneValue_refl _) _)
+  | [], _ => qOneValue_symm (qmul_zero_left (BPair.oneValue_refl _) _)
   | c :: p, q => by
     show bpairQRead.rel (ground.getAt bpairQOps.unit (poly.addLO ground.bpairQOps
       (q.map (ground.bpairQOps.mul c))
       (bpairQOps.unit :: poly.mulLO ground.bpairQOps p q)) 0) _
-    refine qeq_trans (getAt_addQ _ _ 0) ?_
-    refine qeq_trans (qadd_congr (getAt_mapMul c q 0) (qeq_refl _)) ?_
-    exact qadd_zero_right _
+    refine qOneValue_trans (getAt_addQ _ _ 0) ?_
+    refine qOneValue_trans (BPair.addQ_congr (getAt_mapMul c q 0) (qOneValue_refl _)) ?_
+    exact BPair.addQ_unitR _
 
 private theorem getAt1_mul : ∀ (p q : List (BPair × Pos)),
     bpairQRead.rel (ground.getAt bpairQOps.unit (poly.mulLO ground.bpairQOps p q) 1)
       (BPair.addQ (bpairQOps.mul (ground.getAt bpairQOps.unit p 0) (ground.getAt bpairQOps.unit q 1))
         (bpairQOps.mul (ground.getAt bpairQOps.unit p 1) (ground.getAt bpairQOps.unit q 0)))
-  | [], _ => qeq_symm (qeq_trans (qadd_congr
+  | [], _ => qOneValue_symm (qOneValue_trans (BPair.addQ_congr
       (qmul_zero_left (BPair.oneValue_refl _) _)
       (qmul_zero_left (BPair.oneValue_refl _) _)) qadd_zero)
   | c :: p, q => by
     show bpairQRead.rel (ground.getAt bpairQOps.unit (poly.addLO ground.bpairQOps
       (q.map (ground.bpairQOps.mul c))
       (bpairQOps.unit :: poly.mulLO ground.bpairQOps p q)) 1) _
-    refine qeq_trans (getAt_addQ _ _ 1) ?_
-    exact qadd_congr (getAt_mapMul c q 1) (getAt0_mul p q)
+    refine qOneValue_trans (getAt_addQ _ _ 1) ?_
+    exact BPair.addQ_congr (getAt_mapMul c q 1) (getAt0_mul p q)
 
 private theorem getAt2_mul : ∀ (p q : List (BPair × Pos)),
     bpairQRead.rel (ground.getAt bpairQOps.unit (poly.mulLO ground.bpairQOps p q) 2)
       (BPair.addQ (bpairQOps.mul (ground.getAt bpairQOps.unit p 0) (ground.getAt bpairQOps.unit q 2))
         (BPair.addQ (bpairQOps.mul (ground.getAt bpairQOps.unit p 1) (ground.getAt bpairQOps.unit q 1))
           (bpairQOps.mul (ground.getAt bpairQOps.unit p 2) (ground.getAt bpairQOps.unit q 0))))
-  | [], _ => qeq_symm (qeq_trans (qadd_congr
+  | [], _ => qOneValue_symm (qOneValue_trans (BPair.addQ_congr
       (qmul_zero_left (BPair.oneValue_refl _) _)
-      (qeq_trans (qadd_congr (qmul_zero_left (BPair.oneValue_refl _) _)
+      (qOneValue_trans (BPair.addQ_congr (qmul_zero_left (BPair.oneValue_refl _) _)
         (qmul_zero_left (BPair.oneValue_refl _) _)) qadd_zero)) qadd_zero)
   | c :: p, q => by
     show bpairQRead.rel (ground.getAt bpairQOps.unit (poly.addLO ground.bpairQOps
       (q.map (ground.bpairQOps.mul c))
       (bpairQOps.unit :: poly.mulLO ground.bpairQOps p q)) 2) _
-    refine qeq_trans (getAt_addQ _ _ 2) ?_
-    exact qadd_congr (getAt_mapMul c q 2) (getAt1_mul p q)
+    refine qOneValue_trans (getAt_addQ _ _ 2) ?_
+    exact BPair.addQ_congr (getAt_mapMul c q 2) (getAt1_mul p q)
 
 private theorem getAt_swapP : ∀ (p : List (BPair × Pos)) (k : Nat),
     ground.getAt bpairQOps.unit (p.map ground.bpairQOps.swap) k
@@ -1446,12 +1341,12 @@ private theorem getAt_swapP : ∀ (p : List (BPair × Pos)) (k : Nat),
 private theorem getAt_nsmul : ∀ (n : Nat) (p : List (BPair × Pos)) (k : Nat),
     bpairQRead.rel (ground.getAt bpairQOps.unit (poly.nsmulO (poly.polyO ground.bpairQOps) p n) k)
       (poly.nsmulO ground.bpairQOps (ground.getAt bpairQOps.unit p k) n)
-  | 0, _, _ => qeq_refl _
+  | 0, _, _ => qOneValue_refl _
   | n + 1, p, k => by
     show bpairQRead.rel (ground.getAt bpairQOps.unit (poly.addLO ground.bpairQOps p
       (poly.nsmulO (poly.polyO ground.bpairQOps) p n)) k) _
-    refine qeq_trans (getAt_addQ _ _ k) ?_
-    exact qadd_congr (qeq_refl _) (getAt_nsmul n p k)
+    refine qOneValue_trans (getAt_addQ _ _ k) ?_
+    exact BPair.addQ_congr (qOneValue_refl _) (getAt_nsmul n p k)
 
 /-- Two carried reads at one clearing join at their first data. -/
 private theorem qadd_same (u v : BPair) (d : Pos) :
@@ -1484,7 +1379,7 @@ private theorem chanFold_split {L : Type} (F : fusion.Data L)
     (hm2 : moment F 2 = 1) :
     ∀ ks : List L, bpairQRead.rel (chanFold F 2 2 ks)
       (BPair.addQ (chanFold F 2 0 ks) (chanFold F 0 2 ks))
-  | [] => qeq_symm qadd_zero
+  | [] => qOneValue_symm qadd_zero
   | k :: ks => by
     have ih := chanFold_split F hm2 ks
     cases hk : F.eqL k F.unit with
@@ -1510,7 +1405,7 @@ private theorem chanFold_split {L : Type} (F : fusion.Data L)
       show bpairQRead.rel (BPair.addQ (chanTerm F 2 2 k) (chanFold F 2 2 ks))
         (BPair.addQ (BPair.addQ (chanTerm F 2 0 k) (chanFold F 2 0 ks))
           (BPair.addQ (chanTerm F 0 2 k) (chanFold F 0 2 ks)))
-      refine qeq_trans (qadd_congr ?_ ih) (qadd_swap4 _ _ _ _)
+      refine qOneValue_trans (BPair.addQ_congr ?_ ih) (BPair.addQ_add_comm _ _ _ _)
       have hT0 : powCount F 0 k = 0 := by
         show (if F.eqL k F.unit then 1 else 0) = 0
         rw [hk]
@@ -1519,12 +1414,12 @@ private theorem chanFold_split {L : Type} (F : fusion.Data L)
       cases hc : F.c2N k with
       | zero =>
         rw [chanTerm_zero F 2 2 hc, chanTerm_zero F 2 0 hc, chanTerm_zero F 0 2 hc]
-        exact qeq_symm qadd_zero
+        exact qOneValue_symm qadd_zero
       | succ p =>
         rw [chanTerm_succ F 2 2 hc, chanTerm_succ F 2 0 hc, chanTerm_succ F 0 2 hc,
           hT0, hm0, hm2, Nat.mul_one, Nat.one_mul, Nat.mul_zero, Nat.add_zero,
           Nat.zero_add]
-        refine qeq_trans ?_ (qeq_symm (qadd_same _ _ _))
+        refine qOneValue_trans ?_ (qOneValue_symm (qadd_same _ _ _))
         refine qeq_num _ ?_
         refine BPair.oneValue_trans (BPair.oneValue_of_eq
           (congrArg BPair.ofNat ?_)) (BPair.ofNat_add _ _)
@@ -1582,8 +1477,8 @@ private theorem jetD02_read {L : Type} (F : fusion.Data L)
 private theorem flat4 (X Y Z W : BPair × Pos) :
     bpairQRead.rel (BPair.addQ (BPair.addQ X (BPair.addQ Y Z)) W)
       (BPair.addQ X (BPair.addQ Y (BPair.addQ Z W))) :=
-  qeq_trans (qadd_assoc X (BPair.addQ Y Z) W)
-    (qadd_congr (qeq_refl X) (qadd_assoc Y Z W))
+  qOneValue_trans (BPair.addQ_assoc X (BPair.addQ Y Z) W)
+    (BPair.addQ_congr (qOneValue_refl X) (BPair.addQ_assoc Y Z W))
 
 /-- Two right-nested four-term joins merge term by term. -/
 private theorem merge4 (X1 Y1 Z1 W1 X2 Y2 Z2 W2 : BPair × Pos) :
@@ -1591,9 +1486,9 @@ private theorem merge4 (X1 Y1 Z1 W1 X2 Y2 Z2 W2 : BPair × Pos) :
         (BPair.addQ X2 (BPair.addQ Y2 (BPair.addQ Z2 W2))))
       (BPair.addQ (BPair.addQ X1 X2) (BPair.addQ (BPair.addQ Y1 Y2)
         (BPair.addQ (BPair.addQ Z1 Z2) (BPair.addQ W1 W2)))) :=
-  qeq_trans (qadd_swap4 _ _ _ _)
-    (qadd_congr (qeq_refl _) (qeq_trans (qadd_swap4 _ _ _ _)
-      (qadd_congr (qeq_refl _) (qadd_swap4 _ _ _ _))))
+  qOneValue_trans (BPair.addQ_add_comm _ _ _ _)
+    (BPair.addQ_congr (qOneValue_refl _) (qOneValue_trans (BPair.addQ_add_comm _ _ _ _)
+      (BPair.addQ_congr (qOneValue_refl _) (BPair.addQ_add_comm _ _ _ _))))
 
 /-- Three four-term joins regroup by position. -/
 private theorem regroup (X1 Y1 Z1 W1 X2 Y2 Z2 W2 X3 Y3 Z3 W3 : BPair × Pos) :
@@ -1604,8 +1499,8 @@ private theorem regroup (X1 Y1 Z1 W1 X2 Y2 Z2 W2 X3 Y3 Z3 W3 : BPair × Pos) :
         (BPair.addQ (BPair.addQ Y1 (BPair.addQ Y2 Y3))
           (BPair.addQ (BPair.addQ Z1 (BPair.addQ Z2 Z3))
             (BPair.addQ W1 (BPair.addQ W2 W3))))) :=
-  qeq_trans (qadd_congr (flat4 _ _ _ _)
-    (qeq_trans (qadd_congr (flat4 _ _ _ _) (flat4 _ _ _ _))
+  qOneValue_trans (BPair.addQ_congr (flat4 _ _ _ _)
+    (qOneValue_trans (BPair.addQ_congr (flat4 _ _ _ _) (flat4 _ _ _ _))
       (merge4 _ _ _ _ _ _ _ _)))
     (merge4 _ _ _ _ _ _ _ _)
 
@@ -1629,21 +1524,21 @@ private theorem xpart (m4 c1 : Nat) :
         (BPair.addQ ((BPair.ofNat (m4 + 1)).swap, 16)
           ((BPair.ofNat (1 + m4)).swap, 16)))
       (BPair.ofCounts (c1 * c1) 1, 8) := by
-  refine qeq_trans (qadd_congr (qeq_refl _) (qadd_same _ _ _)) ?_
-  refine qeq_trans (qadd_same _ _ _) ?_
+  refine qOneValue_trans (BPair.addQ_congr (qOneValue_refl _) (qadd_same _ _ _)) ?_
+  refine qOneValue_trans (qadd_same _ _ _) ?_
   have hu : (BPair.ofNat (m4 + 2 * (c1 * c1) + m4)
       + ((BPair.ofNat (m4 + 1)).swap + (BPair.ofNat (1 + m4)).swap)).oneValue
       (BPair.ofCounts (m4 + 2 * (c1 * c1) + m4) (m4 + 1 + (1 + m4))) := by
     refine BPair.add_congr (BPair.oneValue_refl _) ?_
     rw [BPair.swap_add]
     exact ground.swap_congr (BPair.oneValue_symm (BPair.ofNat_add _ _))
-  refine qeq_trans (qeq_num 16 hu) ?_
-  refine qeq_trans (qeq_num 16
+  refine qOneValue_trans (qeq_num 16 hu) ?_
+  refine qOneValue_trans (qeq_num 16
     (BPair.ofCounts_crossed (natX m4 (2 * (c1 * c1))))) ?_
   have h2 : 2 * (c1 * c1) = c1 * c1 + c1 * c1 := by
     rw [Nat.succ_mul, Nat.one_mul]
   rw [h2]
-  refine qeq_trans (qeq_num 16 (BPair.ofCounts_add (c1 * c1) 1 (c1 * c1) 1)) ?_
+  refine qOneValue_trans (qeq_num 16 (BPair.ofCounts_add (c1 * c1) 1 (c1 * c1) 1)) ?_
   show ((BPair.ofCounts (c1 * c1) 1 + BPair.ofCounts (c1 * c1) 1).scale 8).oneValue
     ((BPair.ofCounts (c1 * c1) 1).scale 16)
   have h16 : (16 : Pos) = 8 + 8 := rfl
@@ -1656,10 +1551,10 @@ private theorem ypart {L : Type} (F : fusion.Data L) (hm2 : moment F 2 = 1) :
     bpairQRead.rel (BPair.addQ (qdiv (chanFold F 2 2 (F.row F.theta F.theta)) 8)
         (BPair.addQ (bpairQOps.swap (qdiv (chanFold F 2 0 (F.row F.theta F.theta)) 8))
           (bpairQOps.swap (qdiv (chanFold F 0 2 (F.row F.theta F.theta)) 8)))) bpairQOps.unit := by
-  refine qeq_trans (qadd_congr (qeq_trans (qdiv_congr 8
-    (chanFold_split F hm2 _)) (qdiv_add _ _ _)) (qeq_refl _)) ?_
-  refine qeq_trans (qadd_swap4 _ _ _ _) ?_
-  exact qeq_trans (qadd_congr (qadd_neg _) (qadd_neg _)) qadd_zero
+  refine qOneValue_trans (BPair.addQ_congr (qOneValue_trans (qdiv_congr 8
+    (chanFold_split F hm2 _)) (qdiv_add _ _ _)) (qOneValue_refl _)) ?_
+  refine qOneValue_trans (BPair.addQ_add_comm _ _ _ _) ?_
+  exact qOneValue_trans (BPair.addQ_congr (qadd_neg _) (qadd_neg _)) qadd_zero
 
 /-- The pair networks' part reads the `(2,2)` term alone, the mixed
 terms at the vacant power reading the unit. -/
@@ -1668,9 +1563,9 @@ private theorem zpart (c : BPair) (S : BPair × Pos) :
         (BPair.addQ (bpairQOps.swap (qscale (BPair.ofNat 0) S)) (bpairQOps.swap (qscale (BPair.ofNat 0) S))))
       (bpairQOps.mul (c, Pos.one) S) := by
   have hz : bpairQRead.rel (bpairQOps.swap (qscale (BPair.ofNat 0) S)) bpairQOps.unit :=
-    qswap_congr (qeq_zero (BPair.unit_mul S.1))
-  refine qeq_trans (qadd_congr (qeq_refl _) (qeq_trans (qadd_congr hz hz) qadd_zero)) ?_
-  refine qeq_trans (qadd_zero_right _) ?_
+    qswap_congr (qOneValue_unit (BPair.unit_mul S.1))
+  refine qOneValue_trans (BPair.addQ_congr (qOneValue_refl _) (qOneValue_trans (BPair.addQ_congr hz hz) qadd_zero)) ?_
+  refine qOneValue_trans (BPair.addQ_unitR _) ?_
   exact qone_mul_den _ _
 
 /-- The distant products' part reads one eighth. -/
@@ -1680,8 +1575,8 @@ private theorem wpart :
       (BPair.ofNat 1, 8) := by
   show bpairQRead.rel (BPair.addQ ((BPair.ofNat 1).swap, 8)
     (BPair.addQ (BPair.ofNat 1, 8) (BPair.ofNat 1, 8))) (BPair.ofNat 1, 8)
-  refine qeq_trans (qadd_congr (qeq_refl _) (qadd_same _ _ _)) ?_
-  refine qeq_trans (qadd_same _ _ _) ?_
+  refine qOneValue_trans (BPair.addQ_congr (qOneValue_refl _) (qadd_same _ _ _)) ?_
+  refine qOneValue_trans (qadd_same _ _ _) ?_
   refine qeq_num 8 ?_
   refine BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.add_assoc _ _ _).symm) ?_
   refine BPair.oneValue_trans (BPair.add_congr
@@ -1699,14 +1594,14 @@ private theorem jetD_read {L : Type} (F : fusion.Data L)
   rw [jetD22_read F hm2 hm3 hT2, jetD20_read F hm1 hm2 hm3 hT2,
     jetD02_read F hm1 hm2 hm3 hT2, qswap_add, qswap_add, qswap_add, qswap_add,
     qswap_add, qswap_add]
-  refine qeq_trans (regroup _ _ _ _ _ _ _ _ _ _ _ _) ?_
-  refine qeq_trans (qadd_congr (xpart _ _) (qadd_congr (ypart F hm2)
-    (qadd_congr (zpart _ _) wpart))) ?_
-  refine qeq_trans (qadd_congr (qeq_refl _) (qadd_zero_left _)) ?_
-  refine qeq_trans (qadd_congr (qeq_refl _) (qadd_comm _ _)) ?_
-  refine qeq_trans (qeq_symm (qadd_assoc _ _ _)) ?_
-  refine qadd_congr ?_ (qeq_refl _)
-  refine qeq_trans (qadd_same _ _ _) ?_
+  refine qOneValue_trans (regroup _ _ _ _ _ _ _ _ _ _ _ _) ?_
+  refine qOneValue_trans (BPair.addQ_congr (xpart _ _) (BPair.addQ_congr (ypart F hm2)
+    (BPair.addQ_congr (zpart _ _) wpart))) ?_
+  refine qOneValue_trans (BPair.addQ_congr (qOneValue_refl _) (BPair.addQ_unitL _)) ?_
+  refine qOneValue_trans (BPair.addQ_congr (qOneValue_refl _) (BPair.addQ_comm _ _)) ?_
+  refine qOneValue_trans (qOneValue_symm (BPair.addQ_assoc _ _ _)) ?_
+  refine BPair.addQ_congr ?_ (qOneValue_refl _)
+  refine qOneValue_trans (qadd_same _ _ _) ?_
   exact qeq_num 8 (BPair.add_swap_self (BPair.ofNat (F.c1 * F.c1)) (BPair.ofNat 1))
 
 /-- One eighth against a quarter's partner collects to the eighth's
@@ -1736,12 +1631,12 @@ private theorem closing (c1 : Nat) (S K X : BPair × Pos)
           * (S.1.scale 8 + (BPair.ofPos S.2).swap)).scale K.2) := by
   have s1 : bpairQRead.rel K (BPair.addQ (BPair.addQ (BPair.ofNat (c1 * c1), 8)
       (bpairQOps.mul (BPair.ofNat (c1 * c1), Pos.one) S)) ((BPair.ofNat (c1 * c1)).swap, 4)) :=
-    qeq_trans hK (qadd_congr hX (qeq_refl ((BPair.ofNat (c1 * c1)).swap, 4)))
+    qOneValue_trans hK (BPair.addQ_congr hX (qOneValue_refl ((BPair.ofNat (c1 * c1)).swap, 4)))
   have s2 : bpairQRead.rel (BPair.addQ (BPair.addQ (BPair.ofNat (c1 * c1), 8)
       (bpairQOps.mul (BPair.ofNat (c1 * c1), Pos.one) S)) ((BPair.ofNat (c1 * c1)).swap, 4))
       (BPair.addQ (BPair.ofNat (c1 * c1), 8)
         (BPair.addQ (bpairQOps.mul (BPair.ofNat (c1 * c1), Pos.one) S) ((BPair.ofNat (c1 * c1)).swap, 4))) :=
-    qadd_assoc _ _ _
+    BPair.addQ_assoc _ _ _
   have s3 : bpairQRead.rel (BPair.addQ (BPair.ofNat (c1 * c1), 8)
       (BPair.addQ (bpairQOps.mul (BPair.ofNat (c1 * c1), Pos.one) S) ((BPair.ofNat (c1 * c1)).swap, 4)))
       (BPair.addQ (bpairQOps.mul (BPair.ofNat (c1 * c1), Pos.one) S)
@@ -1750,10 +1645,10 @@ private theorem closing (c1 : Nat) (S K X : BPair × Pos)
   have s4 : bpairQRead.rel (BPair.addQ (BPair.ofNat (c1 * c1), 8) ((BPair.ofNat (c1 * c1)).swap, 4))
       ((BPair.ofNat (c1 * c1)).swap, 8) := eighth_quarter _
   have s5 : bpairQRead.rel (bpairQOps.mul (BPair.ofNat (c1 * c1), Pos.one) S)
-      (BPair.ofNat (c1 * c1) * S.1, S.2) := qeq_symm (qone_mul_den _ _)
+      (BPair.ofNat (c1 * c1) * S.1, S.2) := qOneValue_symm (qone_mul_den _ _)
   have h1 : bpairQRead.rel K (BPair.addQ (BPair.ofNat (c1 * c1) * S.1, S.2)
       ((BPair.ofNat (c1 * c1)).swap, 8)) :=
-    qeq_trans s1 (qeq_trans s2 (qeq_trans s3 (qadd_congr s5 s4)))
+    qOneValue_trans s1 (qOneValue_trans s2 (qOneValue_trans s3 (BPair.addQ_congr s5 s4)))
   have h2 : (K.1.scale (S.2 * 8)).oneValue
       (((BPair.ofNat (c1 * c1) * S.1).scale 8
         + (BPair.ofNat (c1 * c1)).swap.scale S.2).scale K.2) := h1
@@ -1782,19 +1677,19 @@ private theorem oneValue_of_qeq_z {p : BPair × Pos} (h : bpairQRead.rel p bpair
 
 private theorem qaddL {p q r : BPair × Pos} (hp : bpairQRead.rel p bpairQOps.unit) (hq : bpairQRead.rel q r) :
     bpairQRead.rel (BPair.addQ p q) r :=
-  qeq_trans (qadd_congr hp hq) (qadd_zero_left r)
+  qOneValue_trans (BPair.addQ_congr hp hq) (BPair.addQ_unitL r)
 
 private theorem qaddR {p q r : BPair × Pos} (hp : bpairQRead.rel p r) (hq : bpairQRead.rel q bpairQOps.unit) :
     bpairQRead.rel (BPair.addQ p q) r :=
-  qeq_trans (qadd_congr hp hq) (qadd_zero_right r)
+  qOneValue_trans (BPair.addQ_congr hp hq) (BPair.addQ_unitR r)
 
 private theorem qmul_zL {p : BPair × Pos} (h : bpairQRead.rel p bpairQOps.unit) (r : BPair × Pos) :
     bpairQRead.rel (bpairQOps.mul p r) bpairQOps.unit :=
-  qeq_trans (qmul_congr h (qeq_refl r)) (qmul_zero_left (BPair.oneValue_refl _) r)
+  qOneValue_trans (qmul_congr h (qOneValue_refl r)) (qmul_zero_left (BPair.oneValue_refl _) r)
 
 private theorem qmul_zR (r : BPair × Pos) {p : BPair × Pos} (h : bpairQRead.rel p bpairQOps.unit) :
     bpairQRead.rel (bpairQOps.mul r p) bpairQOps.unit :=
-  qeq_trans (qmul_congr (qeq_refl r) h) (qmul_zero_right r (BPair.oneValue_refl _))
+  qOneValue_trans (qmul_congr (qOneValue_refl r) h) (qmul_zero_right r (BPair.oneValue_refl _))
 
 private theorem qhalf :
     bpairQRead.rel (BPair.addQ (BPair.ofNat 1, (4 : Pos)) (BPair.ofNat 1, (4 : Pos)))
@@ -1810,13 +1705,13 @@ private theorem qmulHH :
 
 private theorem nsmul_z : ∀ (n : Nat) (x : BPair × Pos), bpairQRead.rel x bpairQOps.unit →
     bpairQRead.rel (poly.nsmulO ground.bpairQOps x n) bpairQOps.unit
-  | 0, _, _ => qeq_refl bpairQOps.unit
+  | 0, _, _ => qOneValue_refl bpairQOps.unit
   | _ + 1, _, h => qaddL h (nsmul_z _ _ h)
 
 private theorem nsmul2 {x r : BPair × Pos} (h : bpairQRead.rel x r) :
     bpairQRead.rel (poly.nsmulO ground.bpairQOps x 2) (BPair.addQ r r) := by
   show bpairQRead.rel (BPair.addQ x (BPair.addQ x bpairQOps.unit)) (BPair.addQ r r)
-  exact qadd_congr h (qaddR h (qeq_refl bpairQOps.unit))
+  exact BPair.addQ_congr h (qaddR h (qOneValue_refl bpairQOps.unit))
 
 /-! The polynomial carrier's key reads at the fold's own spellings. -/
 
@@ -1826,29 +1721,29 @@ private theorem addKey {p q : List (BPair × Pos)} {k : Nat} {r s : BPair × Pos
     (hp : bpairQRead.rel (ground.getAt bpairQOps.unit p k) r) (hq : bpairQRead.rel (ground.getAt bpairQOps.unit q k) s) :
     bpairQRead.rel (ground.getAt bpairQOps.unit ((poly.polyO ground.bpairQOps).add p q) k)
       (BPair.addQ r s) :=
-  qeq_trans (getAt_addQ p q k) (qadd_congr hp hq)
+  qOneValue_trans (getAt_addQ p q k) (BPair.addQ_congr hp hq)
 
 private theorem addKeyR {p q : List (BPair × Pos)} {k : Nat} {r : BPair × Pos}
     (hp : bpairQRead.rel (ground.getAt bpairQOps.unit p k) r) (hq : bpairQRead.rel (ground.getAt bpairQOps.unit q k) bpairQOps.unit) :
     bpairQRead.rel (ground.getAt bpairQOps.unit ((poly.polyO ground.bpairQOps).add p q) k) r :=
-  qeq_trans (getAt_addQ p q k) (qaddR hp hq)
+  qOneValue_trans (getAt_addQ p q k) (qaddR hp hq)
 
 private theorem addKeyL {p q : List (BPair × Pos)} {k : Nat} {r : BPair × Pos}
     (hp : bpairQRead.rel (ground.getAt bpairQOps.unit p k) bpairQOps.unit) (hq : bpairQRead.rel (ground.getAt bpairQOps.unit q k) r) :
     bpairQRead.rel (ground.getAt bpairQOps.unit ((poly.polyO ground.bpairQOps).add p q) k) r :=
-  qeq_trans (getAt_addQ p q k) (qaddL hp hq)
+  qOneValue_trans (getAt_addQ p q k) (qaddL hp hq)
 
 private theorem mulKey0 {p q : List (BPair × Pos)} {a b : BPair × Pos}
     (ha : bpairQRead.rel (ground.getAt bpairQOps.unit p 0) a) (hb : bpairQRead.rel (ground.getAt bpairQOps.unit q 0) b) :
     bpairQRead.rel (ground.getAt bpairQOps.unit ((poly.polyO ground.bpairQOps).mul p q) 0) (bpairQOps.mul a b) :=
-  qeq_trans (getAt0_mul p q) (qmul_congr ha hb)
+  qOneValue_trans (getAt0_mul p q) (qmul_congr ha hb)
 
 private theorem mulKey1 {p q : List (BPair × Pos)} {a0 a1 b0 b1 : BPair × Pos}
     (ha0 : bpairQRead.rel (ground.getAt bpairQOps.unit p 0) a0) (ha1 : bpairQRead.rel (ground.getAt bpairQOps.unit p 1) a1)
     (hb0 : bpairQRead.rel (ground.getAt bpairQOps.unit q 0) b0) (hb1 : bpairQRead.rel (ground.getAt bpairQOps.unit q 1) b1) :
     bpairQRead.rel (ground.getAt bpairQOps.unit ((poly.polyO ground.bpairQOps).mul p q) 1)
       (BPair.addQ (bpairQOps.mul a0 b1) (bpairQOps.mul a1 b0)) :=
-  qeq_trans (getAt1_mul p q) (qadd_congr (qmul_congr ha0 hb1) (qmul_congr ha1 hb0))
+  qOneValue_trans (getAt1_mul p q) (BPair.addQ_congr (qmul_congr ha0 hb1) (qmul_congr ha1 hb0))
 
 private theorem mulKey2 {p q : List (BPair × Pos)} {a0 a1 a2 b0 b1 b2 : BPair × Pos}
     (ha0 : bpairQRead.rel (ground.getAt bpairQOps.unit p 0) a0) (ha1 : bpairQRead.rel (ground.getAt bpairQOps.unit p 1) a1)
@@ -1857,42 +1752,42 @@ private theorem mulKey2 {p q : List (BPair × Pos)} {a0 a1 a2 b0 b1 b2 : BPair �
     bpairQRead.rel (ground.getAt bpairQOps.unit ((poly.polyO ground.bpairQOps).mul p q) 2)
       (BPair.addQ (bpairQOps.mul a0 b2)
         (BPair.addQ (bpairQOps.mul a1 b1) (bpairQOps.mul a2 b0))) :=
-  qeq_trans (getAt2_mul p q)
-    (qadd_congr (qmul_congr ha0 hb2)
-      (qadd_congr (qmul_congr ha1 hb1) (qmul_congr ha2 hb0)))
+  qOneValue_trans (getAt2_mul p q)
+    (BPair.addQ_congr (qmul_congr ha0 hb2)
+      (BPair.addQ_congr (qmul_congr ha1 hb1) (qmul_congr ha2 hb0)))
 
 private theorem mulKey0_unitL {p : List (BPair × Pos)} (q : List (BPair × Pos))
     (h : bpairQRead.rel (ground.getAt bpairQOps.unit p 0) bpairQOps.unit) :
     bpairQRead.rel (ground.getAt bpairQOps.unit ((poly.polyO ground.bpairQOps).mul p q) 0) bpairQOps.unit :=
-  qeq_trans (getAt0_mul p q) (qmul_zL h _)
+  qOneValue_trans (getAt0_mul p q) (qmul_zL h _)
 
 private theorem mulKey1_units {p q : List (BPair × Pos)}
     (hp : bpairQRead.rel (ground.getAt bpairQOps.unit p 0) bpairQOps.unit) (hq : bpairQRead.rel (ground.getAt bpairQOps.unit q 0) bpairQOps.unit) :
     bpairQRead.rel (ground.getAt bpairQOps.unit ((poly.polyO ground.bpairQOps).mul p q) 1) bpairQOps.unit :=
-  qeq_trans (getAt1_mul p q) (qaddL (qmul_zL hp _) (qmul_zR _ hq))
+  qOneValue_trans (getAt1_mul p q) (qaddL (qmul_zL hp _) (qmul_zR _ hq))
 
 private theorem mulKey1_unitL {p : List (BPair × Pos)} (q : List (BPair × Pos))
     (hp0 : bpairQRead.rel (ground.getAt bpairQOps.unit p 0) bpairQOps.unit) (hp1 : bpairQRead.rel (ground.getAt bpairQOps.unit p 1) bpairQOps.unit) :
     bpairQRead.rel (ground.getAt bpairQOps.unit ((poly.polyO ground.bpairQOps).mul p q) 1) bpairQOps.unit :=
-  qeq_trans (getAt1_mul p q) (qaddL (qmul_zL hp0 _) (qmul_zL hp1 _))
+  qOneValue_trans (getAt1_mul p q) (qaddL (qmul_zL hp0 _) (qmul_zL hp1 _))
 
 private theorem mulKey2_units {p q : List (BPair × Pos)}
     (hp0 : bpairQRead.rel (ground.getAt bpairQOps.unit p 0) bpairQOps.unit) (hp1 : bpairQRead.rel (ground.getAt bpairQOps.unit p 1) bpairQOps.unit)
     (hq0 : bpairQRead.rel (ground.getAt bpairQOps.unit q 0) bpairQOps.unit) :
     bpairQRead.rel (ground.getAt bpairQOps.unit ((poly.polyO ground.bpairQOps).mul p q) 2) bpairQOps.unit :=
-  qeq_trans (getAt2_mul p q)
+  qOneValue_trans (getAt2_mul p q)
     (qaddL (qmul_zL hp0 _) (qaddL (qmul_zL hp1 _) (qmul_zR _ hq0)))
 
 private theorem nsmulKey_unit (n : Nat) {p : List (BPair × Pos)} {k : Nat}
     (h : bpairQRead.rel (ground.getAt bpairQOps.unit p k) bpairQOps.unit) :
     bpairQRead.rel (ground.getAt bpairQOps.unit (poly.nsmulO (poly.polyO ground.bpairQOps) p n) k) bpairQOps.unit :=
-  qeq_trans (getAt_nsmul n p k) (nsmul_z n _ h)
+  qOneValue_trans (getAt_nsmul n p k) (nsmul_z n _ h)
 
 private theorem nsmulKey2 {p : List (BPair × Pos)} {k : Nat} {r : BPair × Pos}
     (h : bpairQRead.rel (ground.getAt bpairQOps.unit p k) r) :
     bpairQRead.rel (ground.getAt bpairQOps.unit (poly.nsmulO (poly.polyO ground.bpairQOps) p 2) k)
       (BPair.addQ r r) :=
-  qeq_trans (getAt_nsmul 2 p k) (nsmul2 h)
+  qOneValue_trans (getAt_nsmul 2 p k) (nsmul2 h)
 
 private theorem swapKey {p : List (BPair × Pos)} {k : Nat} {r : BPair × Pos}
     (h : bpairQRead.rel (ground.getAt bpairQOps.unit p k) r) :
@@ -1922,117 +1817,117 @@ private theorem kappa4_low {μ : Nat → Nat → List (BPair × Pos)} (c1 : Nat)
           (BPair.addQ (bpairQOps.swap D02) ((BPair.ofNat (c1 * c1)).swap, 4)))) := by
   -- the eight moments' three low reads
   have r10_0 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 1 0) 0) bpairQOps.unit := by
-    rw [h10]; exact qeq_refl _
+    rw [h10]; exact qOneValue_refl _
   have r10_1 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 1 0) 1) (BPair.ofNat 1, (2 : Pos)) := by
-    rw [h10]; exact qeq_refl _
+    rw [h10]; exact qOneValue_refl _
   have r10_2 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 1 0) 2) D10 := by
-    rw [h10]; exact qeq_refl _
+    rw [h10]; exact qOneValue_refl _
   have r01_0 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 0 1) 0) bpairQOps.unit := by
-    rw [h01]; exact qeq_refl _
+    rw [h01]; exact qOneValue_refl _
   have r01_1 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 0 1) 1) (BPair.ofNat 1, (2 : Pos)) := by
-    rw [h01]; exact qeq_refl _
+    rw [h01]; exact qOneValue_refl _
   have r01_2 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 0 1) 2) D01 := by
-    rw [h01]; exact qeq_refl _
+    rw [h01]; exact qOneValue_refl _
   have r11_0 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 1 1) 0) bpairQOps.unit := by
-    rw [h11]; exact qeq_refl _
+    rw [h11]; exact qOneValue_refl _
   have r11_1 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 1 1) 1) bpairQOps.unit := by
-    rw [h11]; exact qeq_zero (BPair.oneValue_refl _)
+    rw [h11]; exact qOneValue_unit (BPair.oneValue_refl _)
   have r20_0 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 2 0) 0) (BPair.ofNat 1, Pos.one) := by
-    rw [h20]; exact qeq_refl _
+    rw [h20]; exact qOneValue_refl _
   have r20_1 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 2 0) 1) (BPair.ofNat c1, (2 : Pos)) := by
-    rw [h20]; exact qeq_refl _
+    rw [h20]; exact qOneValue_refl _
   have r20_2 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 2 0) 2) D20 := by
-    rw [h20]; exact qeq_refl _
+    rw [h20]; exact qOneValue_refl _
   have r02_0 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 0 2) 0) (BPair.ofNat 1, Pos.one) := by
-    rw [h02]; exact qeq_refl _
+    rw [h02]; exact qOneValue_refl _
   have r02_1 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 0 2) 1) (BPair.ofNat c1, (2 : Pos)) := by
-    rw [h02]; exact qeq_refl _
+    rw [h02]; exact qOneValue_refl _
   have r02_2 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 0 2) 2) D02 := by
-    rw [h02]; exact qeq_refl _
+    rw [h02]; exact qOneValue_refl _
   have r12_0 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 1 2) 0) bpairQOps.unit := by
-    rw [h12]; exact qeq_refl _
+    rw [h12]; exact qOneValue_refl _
   have r12_1 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 1 2) 1) (BPair.ofNat 1, (2 : Pos)) := by
-    rw [h12]; exact qeq_refl _
+    rw [h12]; exact qOneValue_refl _
   have r12_2 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 1 2) 2) D12 := by
-    rw [h12]; exact qeq_refl _
+    rw [h12]; exact qOneValue_refl _
   have r21_0 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 2 1) 0) bpairQOps.unit := by
-    rw [h21]; exact qeq_refl _
+    rw [h21]; exact qOneValue_refl _
   have r21_1 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 2 1) 1) (BPair.ofNat 1, (2 : Pos)) := by
-    rw [h21]; exact qeq_refl _
+    rw [h21]; exact qOneValue_refl _
   have r21_2 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 2 1) 2) D21 := by
-    rw [h21]; exact qeq_refl _
+    rw [h21]; exact qOneValue_refl _
   have r22_0 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 2 2) 0) (BPair.ofNat 1, Pos.one) := by
-    rw [h22]; exact qeq_refl _
+    rw [h22]; exact qOneValue_refl _
   have r22_1 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 2 2) 1)
       (BPair.ofNat (c1 + c1), (2 : Pos)) := by
-    rw [h22]; exact qeq_refl _
+    rw [h22]; exact qOneValue_refl _
   have r22_2 : bpairQRead.rel (ground.getAt bpairQOps.unit (μ 2 2) 2) D22 := by
-    rw [h22]; exact qeq_refl _
+    rw [h22]; exact qOneValue_refl _
   -- the squares of the two odd moments and their cross
   have w0 := mulKey0_unitL (μ 1 0) r10_0
   have w1 := mulKey1_units r10_0 r10_0
-  have w2 := qeq_trans (mulKey2 r10_0 r10_1 r10_2 r10_0 r10_1 r10_2)
-    (qaddL (qmul_zL (qeq_refl bpairQOps.unit) D10)
-      (qaddR qmulHH (qmul_zR D10 (qeq_refl bpairQOps.unit))))
+  have w2 := qOneValue_trans (mulKey2 r10_0 r10_1 r10_2 r10_0 r10_1 r10_2)
+    (qaddL (qmul_zL (qOneValue_refl bpairQOps.unit) D10)
+      (qaddR qmulHH (qmul_zR D10 (qOneValue_refl bpairQOps.unit))))
   have v0 := mulKey0_unitL (μ 0 1) r01_0
   have v1 := mulKey1_units r01_0 r01_0
-  have v2 := qeq_trans (mulKey2 r01_0 r01_1 r01_2 r01_0 r01_1 r01_2)
-    (qaddL (qmul_zL (qeq_refl bpairQOps.unit) D01)
-      (qaddR qmulHH (qmul_zR D01 (qeq_refl bpairQOps.unit))))
+  have v2 := qOneValue_trans (mulKey2 r01_0 r01_1 r01_2 r01_0 r01_1 r01_2)
+    (qaddL (qmul_zL (qOneValue_refl bpairQOps.unit) D01)
+      (qaddR qmulHH (qmul_zR D01 (qOneValue_refl bpairQOps.unit))))
   have y0 := mulKey0_unitL (μ 0 1) r10_0
   have y1 := mulKey1_units r10_0 r01_0
   -- the first member's three insertions
   have xa0 := mulKey0_unitL (μ 0 2) w0
   have xa1 := mulKey1_unitL (μ 0 2) w0 w1
-  have xa2 := qeq_trans (mulKey2 w0 w1 w2 r02_0 r02_1 r02_2)
-    (qaddL (qmul_zL (qeq_refl bpairQOps.unit) D02)
-      (qaddL (qmul_zL (qeq_refl bpairQOps.unit) (BPair.ofNat c1, (2 : Pos)))
+  have xa2 := qOneValue_trans (mulKey2 w0 w1 w2 r02_0 r02_1 r02_2)
+    (qaddL (qmul_zL (qOneValue_refl bpairQOps.unit) D02)
+      (qaddL (qmul_zL (qOneValue_refl bpairQOps.unit) (BPair.ofNat c1, (2 : Pos)))
         (qmul_one_right (BPair.ofNat 1, (4 : Pos)))))
   have xb0 := mulKey0_unitL (μ 2 0) v0
   have xb1 := mulKey1_unitL (μ 2 0) v0 v1
-  have xb2 := qeq_trans (mulKey2 v0 v1 v2 r20_0 r20_1 r20_2)
-    (qaddL (qmul_zL (qeq_refl bpairQOps.unit) D20)
-      (qaddL (qmul_zL (qeq_refl bpairQOps.unit) (BPair.ofNat c1, (2 : Pos)))
+  have xb2 := qOneValue_trans (mulKey2 v0 v1 v2 r20_0 r20_1 r20_2)
+    (qaddL (qmul_zL (qOneValue_refl bpairQOps.unit) D20)
+      (qaddL (qmul_zL (qOneValue_refl bpairQOps.unit) (BPair.ofNat c1, (2 : Pos)))
         (qmul_one_right (BPair.ofNat 1, (4 : Pos)))))
   have xc0 := mulKey0_unitL (μ 1 1) y0
   have xc1 := mulKey1_unitL (μ 1 1) y0 y1
   have xc2 := mulKey2_units y0 y1 r11_0
   have t1_0 := nsmulKey_unit 2 xa0
   have t1_1 := nsmulKey_unit 2 xa1
-  have t1_2 := qeq_trans (nsmulKey2 xa2) qhalf
+  have t1_2 := qOneValue_trans (nsmulKey2 xa2) qhalf
   have t2_0 := nsmulKey_unit 2 xb0
   have t2_1 := nsmulKey_unit 2 xb1
-  have t2_2 := qeq_trans (nsmulKey2 xb2) qhalf
+  have t2_2 := qOneValue_trans (nsmulKey2 xb2) qhalf
   have t3_0 := nsmulKey_unit 8 xc0
   have t3_1 := nsmulKey_unit 8 xc1
   have t3_2 := nsmulKey_unit 8 xc2
   -- the second member's five terms
   have p1_0 := mulKey0_unitL (μ 1 2) r10_0
   have p1_1 := mulKey1_units r10_0 r12_0
-  have p1_2 := qeq_trans (mulKey2 r10_0 r10_1 r10_2 r12_0 r12_1 r12_2)
-    (qaddL (qmul_zL (qeq_refl bpairQOps.unit) D12)
-      (qaddR qmulHH (qmul_zR D10 (qeq_refl bpairQOps.unit))))
+  have p1_2 := qOneValue_trans (mulKey2 r10_0 r10_1 r10_2 r12_0 r12_1 r12_2)
+    (qaddL (qmul_zL (qOneValue_refl bpairQOps.unit) D12)
+      (qaddR qmulHH (qmul_zR D10 (qOneValue_refl bpairQOps.unit))))
   have p2_0 := mulKey0_unitL (μ 2 1) r01_0
   have p2_1 := mulKey1_units r01_0 r21_0
-  have p2_2 := qeq_trans (mulKey2 r01_0 r01_1 r01_2 r21_0 r21_1 r21_2)
-    (qaddL (qmul_zL (qeq_refl bpairQOps.unit) D21)
-      (qaddR qmulHH (qmul_zR D01 (qeq_refl bpairQOps.unit))))
+  have p2_2 := qOneValue_trans (mulKey2 r01_0 r01_1 r01_2 r21_0 r21_1 r21_2)
+    (qaddL (qmul_zL (qOneValue_refl bpairQOps.unit) D21)
+      (qaddR qmulHH (qmul_zR D01 (qOneValue_refl bpairQOps.unit))))
   have s1_0 := nsmulKey_unit 2 p1_0
   have s1_1 := nsmulKey_unit 2 p1_1
-  have s1_2 := qeq_trans (nsmulKey2 p1_2) qhalf
+  have s1_2 := qOneValue_trans (nsmulKey2 p1_2) qhalf
   have s2_0 := nsmulKey_unit 2 p2_0
   have s2_1 := nsmulKey_unit 2 p2_1
-  have s2_2 := qeq_trans (nsmulKey2 p2_2) qhalf
-  have s3_0 := qeq_trans (mulKey0 r20_0 r02_0)
+  have s2_2 := qOneValue_trans (nsmulKey2 p2_2) qhalf
+  have s3_0 := qOneValue_trans (mulKey0 r20_0 r02_0)
     (qmul_one_right (BPair.ofNat 1, Pos.one))
-  have s3_1 := qeq_trans (mulKey1 r20_0 r20_1 r02_0 r02_1)
-    (qeq_trans (qadd_congr (qmul_one_left (BPair.ofNat c1, (2 : Pos)))
+  have s3_1 := qOneValue_trans (mulKey1 r20_0 r20_1 r02_0 r02_1)
+    (qOneValue_trans (BPair.addQ_congr (qmul_one_left (BPair.ofNat c1, (2 : Pos)))
         (qmul_one_right (BPair.ofNat c1, (2 : Pos))))
-      (qeq_trans (qadd_same (BPair.ofNat c1) (BPair.ofNat c1) 2)
+      (qOneValue_trans (qadd_same (BPair.ofNat c1) (BPair.ofNat c1) 2)
         (qeq_num 2 (BPair.oneValue_symm (BPair.ofNat_add c1 c1)))))
-  have s3_2 := qeq_trans (mulKey2 r20_0 r20_1 r20_2 r02_0 r02_1 r02_2)
-    (qadd_congr (qmul_one_left D02)
-      (qadd_congr (qeq_num 4 (BPair.oneValue_symm (BPair.ofNat_mul c1 c1)))
+  have s3_2 := qOneValue_trans (mulKey2 r20_0 r20_1 r20_2 r02_0 r02_1 r02_2)
+    (BPair.addQ_congr (qmul_one_left D02)
+      (BPair.addQ_congr (qeq_num 4 (BPair.oneValue_symm (BPair.ofNat_mul c1 c1)))
         (qmul_one_right D20)))
   have s4_0 := nsmulKey_unit 2 (mulKey0_unitL (μ 1 1) r11_0)
   have s4_1 := nsmulKey_unit 2 (mulKey1_units r11_0 r11_0)
@@ -2045,14 +1940,14 @@ private theorem kappa4_low {μ : Nat → Nat → List (BPair × Pos)} (c1 : Nat)
   -- the two members' keys
   have m1k0 := addKeyR (addKeyR (addKeyR r22_0 t1_0) t2_0) t3_0
   have m1k1 := addKeyR (addKeyR (addKeyR r22_1 t1_1) t2_1) t3_1
-  have m1k2 := qeq_trans (addKeyR (addKey (addKey r22_2 t1_2) t2_2) t3_2)
-    (qeq_trans (qadd_assoc D22 (BPair.ofNat 1, (2 : Pos))
+  have m1k2 := qOneValue_trans (addKeyR (addKey (addKey r22_2 t1_2) t2_2) t3_2)
+    (qOneValue_trans (BPair.addQ_assoc D22 (BPair.ofNat 1, (2 : Pos))
         (BPair.ofNat 1, (2 : Pos)))
-      (qadd_congr (qeq_refl D22) qone))
+      (BPair.addQ_congr (qOneValue_refl D22) qone))
   have m2k0 := addKeyR (addKeyR (addKeyL (addKeyR s1_0 s2_0) s3_0) s4_0) s5_0
   have m2k1 := addKeyR (addKeyR (addKeyL (addKeyR s1_1 s2_1) s3_1) s4_1) s5_1
-  have m2k2 := qeq_trans (addKeyR (addKeyR (addKey (addKey s1_2 s2_2) s3_2) s4_2) s5_2)
-    (qadd_congr qone (qeq_refl
+  have m2k2 := qOneValue_trans (addKeyR (addKeyR (addKey (addKey s1_2 s2_2) s3_2) s4_2) s5_2)
+    (BPair.addQ_congr qone (qOneValue_refl
       (BPair.addQ D02 (BPair.addQ (BPair.ofNat (c1 * c1), (4 : Pos)) D20))))
   -- the fold's keys
   have k0 := addKey m1k0 (swapKey m2k0)
@@ -2062,8 +1957,8 @@ private theorem kappa4_low {μ : Nat → Nat → List (BPair × Pos)} (c1 : Nat)
         (BPair.addQ (bpairQOps.swap (BPair.ofNat (c1 * c1), (4 : Pos))) (bpairQOps.swap D20)))
       (BPair.addQ (bpairQOps.swap D20) (BPair.addQ (bpairQOps.swap D02)
         (bpairQOps.swap (BPair.ofNat (c1 * c1), (4 : Pos))))) :=
-    qeq_trans (qadd_congr (qeq_refl (bpairQOps.swap D02))
-        (qadd_comm (bpairQOps.swap (BPair.ofNat (c1 * c1), (4 : Pos))) (bpairQOps.swap D20)))
+    qOneValue_trans (BPair.addQ_congr (qOneValue_refl (bpairQOps.swap D02))
+        (BPair.addQ_comm (bpairQOps.swap (BPair.ofNat (c1 * c1), (4 : Pos))) (bpairQOps.swap D20)))
       (qadd_rot (bpairQOps.swap D02) (bpairQOps.swap D20)
         (bpairQOps.swap (BPair.ofNat (c1 * c1), (4 : Pos))))
   have hfin : bpairQRead.rel (BPair.addQ (BPair.addQ D22 (BPair.ofNat 1, Pos.one))
@@ -2074,16 +1969,16 @@ private theorem kappa4_low {μ : Nat → Nat → List (BPair × Pos)} (c1 : Nat)
         (BPair.addQ (bpairQOps.swap D02)
           ((BPair.ofNat (c1 * c1)).swap, (4 : Pos))))) := by
     rw [qswap_add, qswap_add, qswap_add]
-    refine qeq_trans (qadd_assoc D22 (BPair.ofNat 1, Pos.one) _) ?_
-    refine qadd_congr (qeq_refl D22) ?_
-    refine qeq_trans (qeq_symm (qadd_assoc (BPair.ofNat 1, Pos.one)
+    refine qOneValue_trans (BPair.addQ_assoc D22 (BPair.ofNat 1, Pos.one) _) ?_
+    refine BPair.addQ_congr (qOneValue_refl D22) ?_
+    refine qOneValue_trans (qOneValue_symm (BPair.addQ_assoc (BPair.ofNat 1, Pos.one)
       (bpairQOps.swap (BPair.ofNat 1, Pos.one)) _)) ?_
     exact qaddL (qadd_neg (BPair.ofNat 1, Pos.one)) hR
   exact ⟨oneValue_of_qeq_z
-      (qeq_trans k0 (qadd_neg (BPair.ofNat 1, Pos.one))),
+      (qOneValue_trans k0 (qadd_neg (BPair.ofNat 1, Pos.one))),
     oneValue_of_qeq_z
-      (qeq_trans k1 (qadd_neg (BPair.ofNat (c1 + c1), 2))),
-    qeq_trans k2 hfin⟩
+      (qOneValue_trans k1 (qadd_neg (BPair.ofNat (c1 + c1), 2))),
+    qOneValue_trans k2 hfin⟩
 
 /-! The jet's pairing reads collected: the second-order solve's two
 folds against the moved monomials, the sector fold against the pair
@@ -2105,14 +2000,14 @@ private theorem qmul_one_scale (X : BPair) (p : BPair × Pos) :
 private theorem qmul_add (X : BPair) (p q : BPair × Pos) :
     bpairQRead.rel (bpairQOps.mul (X, Pos.one) (BPair.addQ p q))
       (BPair.addQ (bpairQOps.mul (X, Pos.one) p) (bpairQOps.mul (X, Pos.one) q)) := by
-  refine qeq_trans (qmul_one_scale X (BPair.addQ p q)) ?_
+  refine qOneValue_trans (qmul_one_scale X (BPair.addQ p q)) ?_
   rw [qscale_add]
-  exact qadd_congr (qeq_symm (qmul_one_scale X p)) (qeq_symm (qmul_one_scale X q))
+  exact BPair.addQ_congr (qOneValue_symm (qmul_one_scale X p)) (qOneValue_symm (qmul_one_scale X q))
 
 /-- Two halves of a read join to the read. -/
 private theorem qdiv_two_add (y : BPair × Pos) :
     bpairQRead.rel (BPair.addQ (qdiv y 2) (qdiv y 2)) y := by
-  refine qeq_trans (qadd_same y.1 y.1 (y.2 * 2)) ?_
+  refine qOneValue_trans (qadd_same y.1 y.1 (y.2 * 2)) ?_
   show ((y.1 + y.1).scale y.2).oneValue (y.1.scale (y.2 * 2))
   rw [BPair.scale_add, show (2 : Pos) = Pos.one + Pos.one from rfl,
     ground.left_distrib, ground.mul_one, BPair.scale_addW]
@@ -2142,7 +2037,7 @@ private theorem oneRead_fold {L : Type} (F : fusion.Data L) (a b : Nat) :
     bpairQRead.rel (qdiv (BPair.addQ (oneRead F (a + 1) b) (oneRead F a (b + 1))) 4)
       (BPair.ofNat (moment F (a + 2) * moment F b
         + 2 * (moment F (a + 1) * moment F (b + 1)) + moment F a * moment F (b + 2)), 16) := by
-  refine qeq_trans (qdiv_congr 4 (qadd_same _ _ 4)) ?_
+  refine qOneValue_trans (qdiv_congr 4 (qadd_same _ _ 4)) ?_
   show bpairQRead.rel
     (BPair.ofNat (moment F (a + 1 + 1) * moment F b + moment F (a + 1) * moment F (b + 1))
       + BPair.ofNat (moment F (a + 1) * moment F (b + 1) + moment F a * moment F (b + 1 + 1)),
@@ -2163,14 +2058,14 @@ private theorem oneRead_fold {L : Type} (F : fusion.Data L) (a b : Nat) :
         (moment F (a + 1) * moment F (b + 1))
         (moment F (a + 1) * moment F (b + 1) + moment F a * moment F (b + 1 + 1))]
   rw [hn]
-  exact qeq_symm (qeq_num (4 * 4) (BPair.ofNat_add _ _))
+  exact qOneValue_symm (qeq_num (4 * 4) (BPair.ofNat_add _ _))
 
 /-- The sector fold reads half the scaled pair sum at the count. -/
 private theorem secFold_read (T q t : Nat) : ∀ cs : List (Pos × Pos),
     bpairQRead.rel (secFold T q t cs)
       (qdiv (qscale (BPair.ofNat T) (qscale (BPair.ofPos (ground.posOfSucc q))
         (qdiv (sumQ cs) (ground.posOfSucc t * ground.posOfSucc t)))) 2)
-  | [] => qeq_symm (qeq_zero (BPair.oneValue_trans
+  | [] => qOneValue_symm (qOneValue_unit (BPair.oneValue_trans
       (BPair.mul_congr (BPair.oneValue_refl _) (BPair.mul_unit _)) (BPair.mul_unit _)))
   | (u, a) :: cs => by
     have ih := secFold_read T q t cs
@@ -2193,9 +2088,9 @@ private theorem secFold_read (T q t : Nat) : ∀ cs : List (Pos × Pos),
       rw [ground.mul_comm (a * (ground.posOfSucc t * ground.posOfSucc t)) 2]
       exact BPair.scale_congr _ (BPair.mul_congr (BPair.oneValue_refl _)
         (BPair.oneValue_symm (BPair.ofPos_mul _ _)))
-    refine qeq_trans (qadd_congr hH ih) ?_
-    refine qeq_symm ?_
-    refine qeq_trans (qdiv_congr 2 (qscale_congr (BPair.oneValue_refl _)
+    refine qOneValue_trans (BPair.addQ_congr hH ih) ?_
+    refine qOneValue_symm ?_
+    refine qOneValue_trans (qdiv_congr 2 (qscale_congr (BPair.oneValue_refl _)
       (qscale_congr (BPair.oneValue_refl _) (qdiv_add _ _ _)))) ?_
     rw [qscale_add, qscale_add]
     exact qdiv_add _ _ 2
@@ -2214,7 +2109,7 @@ private theorem secRead_double {L : Type} (F : fusion.Data L) (c d : Nat) :
       unfold pairFold atScale
       rw [hq]
     rw [h1, h2]
-    exact qeq_trans qadd_zero (qeq_symm (qeq_zero (BPair.mul_unit _)))
+    exact qOneValue_trans qadd_zero (qOneValue_symm (qOneValue_unit (BPair.mul_unit _)))
   | succ q =>
     cases ht : F.dim F.theta with
     | zero =>
@@ -2225,7 +2120,7 @@ private theorem secRead_double {L : Type} (F : fusion.Data L) (c d : Nat) :
         unfold pairFold atScale
         rw [hq, ht]
       rw [h1, h2]
-      exact qeq_trans qadd_zero (qeq_symm (qeq_zero (BPair.mul_unit _)))
+      exact qOneValue_trans qadd_zero (qOneValue_symm (qOneValue_unit (BPair.mul_unit _)))
     | succ t =>
       have h1 : secRead F c d
           = secFold (powCount F c F.theta * powCount F d F.theta) q t
@@ -2233,8 +2128,8 @@ private theorem secRead_double {L : Type} (F : fusion.Data L) (c d : Nat) :
         unfold secRead atScale
         rw [hq, ht, chanList_at F q hq]
       rw [h1, pairFold_at F q t hq ht]
-      refine qeq_trans (qadd_congr (secFold_read _ q t _) (secFold_read _ q t _)) ?_
-      refine qeq_trans (qdiv_two_add _) ?_
+      refine qOneValue_trans (BPair.addQ_congr (secFold_read _ q t _) (secFold_read _ q t _)) ?_
+      refine qOneValue_trans (qdiv_two_add _) ?_
       refine qscale_congr (BPair.oneValue_refl _) ?_
       exact qeq_num _ (BPair.ofPos_scale _ _)
 
@@ -2244,13 +2139,13 @@ private theorem twoRead_double {L : Type} (F : fusion.Data L) (c d : Nat) :
     bpairQRead.rel (BPair.addQ (twoRead F c d) (twoRead F c d))
       (BPair.addQ (qdiv (chanFold F c d (F.row F.theta F.theta)) 8)
         (qscale (BPair.ofNat (powCount F c F.theta * powCount F d F.theta)) (pairFold F))) :=
-  qeq_trans (qadd_swap4 _ _ _ _) (qadd_congr (qdiv_double _) (secRead_double F c d))
+  qOneValue_trans (BPair.addQ_add_comm _ _ _ _) (BPair.addQ_congr (qdiv_double _) (secRead_double F c d))
 
 /-- The vacant power's channel fold reads the unit: every channel's
 count at the unit power is the unit off the unit label. -/
 private theorem chanFold_zero {L : Type} (F : fusion.Data L) :
     ∀ ks : List L, bpairQRead.rel (chanFold F 0 0 ks) bpairQOps.unit
-  | [] => qeq_refl _
+  | [] => qOneValue_refl _
   | k :: ks => by
     have ih := chanFold_zero F ks
     cases hk : F.eqL k F.unit with
@@ -2272,7 +2167,7 @@ private theorem chanFold_zero {L : Type} (F : fusion.Data L) :
               * ((powCount F 0 k * moment F 0 + moment F 0 * powCount F 0 k) * F.c2D)),
              ground.posOfSucc p)) _
         rw [hc]
-        exact qeq_refl _
+        exact qOneValue_refl _
       | succ p =>
         show bpairQRead.rel (match F.c2N k with
           | 0 => (BPair.unit, Pos.one)
@@ -2289,23 +2184,23 @@ private theorem chanFold_zero {L : Type} (F : fusion.Data L) :
           ground.posOfSucc p) _
         rw [hp, Nat.zero_mul (moment F 0), Nat.mul_zero (moment F 0), Nat.add_zero,
           Nat.zero_mul F.c2D, Nat.mul_zero (F.count F.theta F.theta k)]
-        exact qeq_zero (BPair.oneValue_refl _)
+        exact qOneValue_unit (BPair.oneValue_refl _)
 
 /-- The sector fold at the vacant count reads the unit. -/
 private theorem secFold_zero (q t : Nat) : ∀ cs : List (Pos × Pos),
     bpairQRead.rel (secFold 0 q t cs) bpairQOps.unit
-  | [] => qeq_refl _
+  | [] => qOneValue_refl _
   | (u, a) :: cs => by
     have ih := secFold_zero q t cs
     show bpairQRead.rel (BPair.addQ (BPair.ofNat 0 * BPair.ofPos (ground.posOfSucc q * u),
         (2 : Pos) * (a * (ground.posOfSucc t * ground.posOfSucc t))) (secFold 0 q t cs)) _
-    exact qaddL (qeq_zero (BPair.unit_mul _)) ih
+    exact qaddL (qOneValue_unit (BPair.unit_mul _)) ih
 
 /-- The second-order read at the vacant powers is the unit. -/
 private theorem twoRead_zero {L : Type} (F : fusion.Data L) (hm1 : moment F 1 = 0) :
     bpairQRead.rel (twoRead F 0 0) bpairQOps.unit := by
   have hT : powCount F 0 F.theta = 0 := (powCount_zero_theta F).trans hm1
-  refine qaddL (qeq_zero (oneValue_of_qeq_z
+  refine qaddL (qOneValue_unit (oneValue_of_qeq_z
     (p := chanFold F 0 0 (F.row F.theta F.theta)) (chanFold_zero F _))) ?_
   cases hq : F.c2D with
   | zero =>
@@ -2313,7 +2208,7 @@ private theorem twoRead_zero {L : Type} (F : fusion.Data L) (hm1 : moment F 1 = 
       unfold secRead atScale
       rw [hq]
     rw [h1]
-    exact qeq_refl _
+    exact qOneValue_refl _
   | succ q =>
     cases ht : F.dim F.theta with
     | zero =>
@@ -2321,7 +2216,7 @@ private theorem twoRead_zero {L : Type} (F : fusion.Data L) (hm1 : moment F 1 = 
         unfold secRead atScale
         rw [hq, ht]
       rw [h1]
-      exact qeq_refl _
+      exact qOneValue_refl _
     | succ t =>
       have h1 : secRead F 0 0 = secFold 0 q t (chanList F) := by
         unfold secRead atScale
@@ -2335,7 +2230,7 @@ private theorem gram0 {L : Type} (F : fusion.Data L) :
   have hm0 : moment F 0 = 1 := rfl
   show bpairQRead.rel (BPair.ofNat (moment F 0 * moment F 0), Pos.one) _
   rw [hm0, Nat.mul_one]
-  exact qeq_refl _
+  exact qOneValue_refl _
 
 /-- The gram's `τ²` read is the unit at `m₁` of equal members. -/
 private theorem gram1 {L : Type} (F : fusion.Data L) (hm1 : moment F 1 = 0) :
@@ -2346,7 +2241,7 @@ private theorem gram1 {L : Type} (F : fusion.Data L) (hm1 : moment F 1 = 0) :
     rw [hm1, hm0, Nat.zero_mul 1, Nat.add_zero]
   show bpairQRead.rel (BPair.addQ (oneRead F 0 0) (oneRead F 0 0)) _
   rw [h]
-  exact qaddL (qeq_zero (BPair.oneValue_refl _)) (qeq_zero (BPair.oneValue_refl _))
+  exact qaddL (qOneValue_unit (BPair.oneValue_refl _)) (qOneValue_unit (BPair.oneValue_refl _))
 
 /-- The gram's `τ⁴` read is the eighth at `m₁` of equal members and
 `m₂ = 1`. -/
@@ -2357,7 +2252,7 @@ private theorem gram2 {L : Type} (F : fusion.Data L) (hm1 : moment F 1 = 0)
   show bpairQRead.rel (BPair.addQ (qdiv (BPair.addQ (oneRead F (0 + 1) 0) (oneRead F 0 (0 + 1))) 4)
     (BPair.addQ (twoRead F 0 0) (twoRead F 0 0))) _
   refine qaddR ?_ (qaddL (twoRead_zero F hm1) (twoRead_zero F hm1))
-  refine qeq_trans (oneRead_fold F 0 0) ?_
+  refine qOneValue_trans (oneRead_fold F 0 0) ?_
   show bpairQRead.rel (BPair.ofNat (moment F 2 * moment F 0
     + 2 * (moment F 1 * moment F 1) + moment F 0 * moment F 2), 16) _
   rw [hm0, hm1, hm2, Nat.mul_one 1, Nat.mul_zero 0, Nat.add_zero 1]
@@ -2368,7 +2263,7 @@ private theorem pair1_read {L : Type} (F : fusion.Data L) (a b : Nat) :
     bpairQRead.rel (ground.getAt bpairQOps.unit (jetPair F a b) 1)
       (BPair.ofNat (moment F (a + 1) * moment F b + moment F a * moment F (b + 1)), 2) := by
   show bpairQRead.rel (BPair.addQ (oneRead F a b) (oneRead F a b)) _
-  refine qeq_trans (qadd_same _ _ 4) ?_
+  refine qOneValue_trans (qadd_same _ _ 4) ?_
   show ((BPair.ofNat (moment F (a + 1) * moment F b + moment F a * moment F (b + 1))
     + BPair.ofNat (moment F (a + 1) * moment F b + moment F a * moment F (b + 1))).scale 2).oneValue
     ((BPair.ofNat (moment F (a + 1) * moment F b + moment F a * moment F (b + 1))).scale 4)
@@ -2386,7 +2281,7 @@ private theorem pair2_read {L : Type} (F : fusion.Data L) (a b : Nat) :
           (qscale (BPair.ofNat (powCount F a F.theta * powCount F b F.theta)) (pairFold F)))) := by
   show bpairQRead.rel (BPair.addQ (qdiv (BPair.addQ (oneRead F (a + 1) b) (oneRead F a (b + 1))) 4)
     (BPair.addQ (twoRead F a b) (twoRead F a b))) _
-  exact qadd_congr (oneRead_fold F a b) (twoRead_double F a b)
+  exact BPair.addQ_congr (oneRead_fold F a b) (twoRead_double F a b)
 
 /-- The jet moments read the displayed orders: the jet's pairing
 polynomial at `(a, b)` is the jet moments' product with the gram, the
@@ -2407,24 +2302,24 @@ theorem jetRead {L : Type} (F : fusion.Data L) (a b : Nat)
   have hG1 := gram1 F hm1
   have hG2 := gram2 F hm1 hm2
   have hJ0 : bpairQRead.rel (ground.getAt bpairQOps.unit (jetMoment F a b) 0)
-      (BPair.ofNat (moment F a * moment F b), Pos.one) := qeq_refl _
+      (BPair.ofNat (moment F a * moment F b), Pos.one) := qOneValue_refl _
   have hJ1 : bpairQRead.rel (ground.getAt bpairQOps.unit (jetMoment F a b) 1)
       (BPair.ofNat (moment F (a + 1) * moment F b + moment F a * moment F (b + 1)), 2) :=
-    qeq_refl _
+    qOneValue_refl _
   have hJ2 : bpairQRead.rel (ground.getAt bpairQOps.unit (jetMoment F a b) 2) (jetD F a b) :=
-    qeq_refl _
+    qOneValue_refl _
   refine ⟨?_, ?_, ?_⟩
   · have hP : bpairQRead.rel (ground.getAt bpairQOps.unit (jetPair F a b) 0)
-        (BPair.ofNat (moment F a * moment F b), Pos.one) := qeq_refl _
-    refine qeq_trans hP (qeq_symm ?_)
-    exact qeq_trans (mulKey0 hJ0 hG0) (qmul_one_right _)
-  · refine qeq_trans (pair1_read F a b) (qeq_symm ?_)
-    refine qeq_trans (mulKey1 hJ0 hJ1 hG0 hG1) ?_
-    exact qaddL (qmul_zR _ (qeq_refl _)) (qmul_one_right _)
-  · refine qeq_trans (pair2_read F a b) (qeq_symm ?_)
-    refine qeq_trans (mulKey2 hJ0 hJ1 hJ2 hG0 hG1 hG2) ?_
-    refine qeq_trans (qadd_congr (qmul_eighth _)
-      (qaddL (qmul_zR _ (qeq_refl _)) (qmul_one_right _))) ?_
+        (BPair.ofNat (moment F a * moment F b), Pos.one) := qOneValue_refl _
+    refine qOneValue_trans hP (qOneValue_symm ?_)
+    exact qOneValue_trans (mulKey0 hJ0 hG0) (qmul_one_right _)
+  · refine qOneValue_trans (pair1_read F a b) (qOneValue_symm ?_)
+    refine qOneValue_trans (mulKey1 hJ0 hJ1 hG0 hG1) ?_
+    exact qaddL (qmul_zR _ (qOneValue_refl _)) (qmul_one_right _)
+  · refine qOneValue_trans (pair2_read F a b) (qOneValue_symm ?_)
+    refine qOneValue_trans (mulKey2 hJ0 hJ1 hJ2 hG0 hG1 hG2) ?_
+    refine qOneValue_trans (BPair.addQ_congr (qmul_eighth _)
+      (qaddL (qmul_zR _ (qOneValue_refl _)) (qmul_one_right _))) ?_
     show bpairQRead.rel (BPair.addQ (BPair.ofNat (moment F a * moment F b), 8)
       (BPair.addQ
         (BPair.addQ (BPair.ofNat (moment F (a + 2) * moment F b
@@ -2432,8 +2327,8 @@ theorem jetRead {L : Type} (F : fusion.Data L) (a b : Nat)
           (BPair.addQ (qdiv (chanFold F a b (F.row F.theta F.theta)) 8)
             (qscale (BPair.ofNat (powCount F a F.theta * powCount F b F.theta)) (pairFold F))))
         ((BPair.ofNat (moment F a * moment F b)).swap, 8))) _
-    refine qeq_trans (qadd_rot _ _ _) ?_
-    exact qaddR (qeq_refl _) (qadd_neg (BPair.ofNat (moment F a * moment F b), 8))
+    refine qOneValue_trans (qadd_rot _ _ _) ?_
+    exact qaddR (qOneValue_refl _) (qadd_neg (BPair.ofNat (moment F a * moment F b), 8))
 
 /-- A window's read beyond the graph's band is the pair's at every far
 datum: the far insertions enter the pairing and the gram equally, a
@@ -2455,61 +2350,61 @@ theorem jetWindow {L : Type} (F : fusion.Data L) (a b : Nat) (f : BPair × Pos)
   have hG1 := gram1 F hm1
   have hG2 := gram2 F hm1 hm2
   have hJ0 : bpairQRead.rel (ground.getAt bpairQOps.unit (jetMoment F a b) 0)
-      (BPair.ofNat (moment F a * moment F b), Pos.one) := qeq_refl _
+      (BPair.ofNat (moment F a * moment F b), Pos.one) := qOneValue_refl _
   have hJ1 : bpairQRead.rel (ground.getAt bpairQOps.unit (jetMoment F a b) 1)
-      (BPair.ofNat (moment F (a + 1) * moment F b + moment F a * moment F (b + 1)), 2) := qeq_refl _
+      (BPair.ofNat (moment F (a + 1) * moment F b + moment F a * moment F (b + 1)), 2) := qOneValue_refl _
   have hJ2 : bpairQRead.rel (ground.getAt bpairQOps.unit (jetMoment F a b) 2) (jetD F a b) :=
-    qeq_refl _
+    qOneValue_refl _
   have hR := (jetRead F a b hm1 hm2).2.2
   have hL : bpairQRead.rel (ground.getAt bpairQOps.unit (farPair F a b f) 2)
       (BPair.addQ (ground.getAt bpairQOps.unit (jetPair F a b) 2) (bpairQOps.mul f (BPair.ofNat (moment F a * moment F b), Pos.one))) :=
-    addKey (p := jetPair F a b) (q := farTail F a b f) (qeq_refl _) (qeq_refl _)
+    addKey (p := jetPair F a b) (q := farTail F a b f) (qOneValue_refl _) (qOneValue_refl _)
   have hW0 : bpairQRead.rel (ground.getAt bpairQOps.unit (farPair F 0 0 f) 0)
       (BPair.ofNat 1, Pos.one) :=
-    addKeyR (q := farTail F 0 0 f) hG0 (qeq_refl _)
+    addKeyR (q := farTail F 0 0 f) hG0 (qOneValue_refl _)
   have hW1 : bpairQRead.rel (ground.getAt bpairQOps.unit (farPair F 0 0 f) 1)
       bpairQOps.unit :=
-    addKeyR (q := farTail F 0 0 f) hG1 (qeq_refl _)
+    addKeyR (q := farTail F 0 0 f) hG1 (qOneValue_refl _)
   have hW2 : bpairQRead.rel (ground.getAt bpairQOps.unit (farPair F 0 0 f) 2)
       (BPair.addQ (BPair.ofNat 1, 8) (bpairQOps.mul f (BPair.ofNat 1, Pos.one))) :=
-    addKey (q := farTail F 0 0 f) hG2 (qmul_congr (qeq_refl f) hG0)
+    addKey (q := farTail F 0 0 f) hG2 (qmul_congr (qOneValue_refl f) hG0)
   refine ⟨?_, ?_, ?_⟩
   · have hL0 : bpairQRead.rel (ground.getAt bpairQOps.unit (farPair F a b f) 0)
         (BPair.ofNat (moment F a * moment F b), Pos.one) :=
-      addKeyR (p := jetPair F a b) (q := farTail F a b f) (qeq_refl _) (qeq_refl _)
-    refine qeq_trans hL0 (qeq_symm ?_)
-    exact qeq_trans (mulKey0 hJ0 hW0) (qmul_one_right _)
+      addKeyR (p := jetPair F a b) (q := farTail F a b f) (qOneValue_refl _) (qOneValue_refl _)
+    refine qOneValue_trans hL0 (qOneValue_symm ?_)
+    exact qOneValue_trans (mulKey0 hJ0 hW0) (qmul_one_right _)
   · have hL1 : bpairQRead.rel (ground.getAt bpairQOps.unit (farPair F a b f) 1)
         (BPair.ofNat (moment F (a + 1) * moment F b + moment F a * moment F (b + 1)), 2) :=
-      addKeyR (p := jetPair F a b) (q := farTail F a b f) (pair1_read F a b) (qeq_refl _)
-    refine qeq_trans hL1 (qeq_symm ?_)
-    refine qeq_trans (mulKey1 hJ0 hJ1 hW0 hW1) ?_
-    exact qaddL (qmul_zR _ (qeq_refl _)) (qmul_one_right _)
+      addKeyR (p := jetPair F a b) (q := farTail F a b f) (pair1_read F a b) (qOneValue_refl _)
+    refine qOneValue_trans hL1 (qOneValue_symm ?_)
+    refine qOneValue_trans (mulKey1 hJ0 hJ1 hW0 hW1) ?_
+    exact qaddL (qmul_zR _ (qOneValue_refl _)) (qmul_one_right _)
   · have h1 : bpairQRead.rel (ground.getAt bpairQOps.unit
         ((poly.polyO ground.bpairQOps).mul (jetMoment F a b) (farPair F 0 0 f)) 2)
         (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.addQ (BPair.ofNat 1, 8) (bpairQOps.mul f (BPair.ofNat 1, Pos.one)))) (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F (a + 1) * moment F b + moment F a * moment F (b + 1)), 2) bpairQOps.unit) (bpairQOps.mul (jetD F a b) (BPair.ofNat 1, Pos.one)))) :=
       mulKey2 hJ0 hJ1 hJ2 hW0 hW1 hW2
     have h2 : bpairQRead.rel (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.addQ (BPair.ofNat 1, 8) (bpairQOps.mul f (BPair.ofNat 1, Pos.one)))) (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F (a + 1) * moment F b + moment F a * moment F (b + 1)), 2) bpairQOps.unit) (bpairQOps.mul (jetD F a b) (BPair.ofNat 1, Pos.one))))
         (BPair.addQ (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.ofNat 1, 8)) (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (bpairQOps.mul f (BPair.ofNat 1, Pos.one)))) (jetD F a b)) :=
-      qadd_congr (qmul_add _ _ _) (qaddL (qmul_zR _ (qeq_refl _)) (qmul_one_right _))
+      BPair.addQ_congr (qmul_add _ _ _) (qaddL (qmul_zR _ (qOneValue_refl _)) (qmul_one_right _))
     have h3 : bpairQRead.rel (BPair.addQ (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.ofNat 1, 8)) (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (bpairQOps.mul f (BPair.ofNat 1, Pos.one)))) (jetD F a b))
-        (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.ofNat 1, 8)) (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (bpairQOps.mul f (BPair.ofNat 1, Pos.one))) (jetD F a b))) := qadd_assoc _ _ _
+        (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.ofNat 1, 8)) (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (bpairQOps.mul f (BPair.ofNat 1, Pos.one))) (jetD F a b))) := BPair.addQ_assoc _ _ _
     have h4 : bpairQRead.rel (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.ofNat 1, 8)) (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (bpairQOps.mul f (BPair.ofNat 1, Pos.one))) (jetD F a b)))
-        (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.ofNat 1, 8)) (BPair.addQ (jetD F a b) (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (bpairQOps.mul f (BPair.ofNat 1, Pos.one))))) := qadd_congr (qeq_refl _) (qadd_comm _ _)
+        (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.ofNat 1, 8)) (BPair.addQ (jetD F a b) (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (bpairQOps.mul f (BPair.ofNat 1, Pos.one))))) := BPair.addQ_congr (qOneValue_refl _) (BPair.addQ_comm _ _)
     have h5 : bpairQRead.rel (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.ofNat 1, 8)) (BPair.addQ (jetD F a b) (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (bpairQOps.mul f (BPair.ofNat 1, Pos.one)))))
-        (BPair.addQ (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.ofNat 1, 8)) (jetD F a b)) (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (bpairQOps.mul f (BPair.ofNat 1, Pos.one)))) := qeq_symm (qadd_assoc _ _ _)
+        (BPair.addQ (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.ofNat 1, 8)) (jetD F a b)) (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (bpairQOps.mul f (BPair.ofNat 1, Pos.one)))) := qOneValue_symm (BPair.addQ_assoc _ _ _)
     have h6a : bpairQRead.rel (ground.getAt bpairQOps.unit
         ((poly.polyO ground.bpairQOps).mul (jetMoment F a b) (jetPair F 0 0)) 2)
         (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.ofNat 1, 8)) (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F (a + 1) * moment F b + moment F a * moment F (b + 1)), 2) bpairQOps.unit) (bpairQOps.mul (jetD F a b) (BPair.ofNat 1, Pos.one)))) :=
       mulKey2 hJ0 hJ1 hJ2 hG0 hG1 hG2
     have h6b : bpairQRead.rel (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.ofNat 1, 8)) (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F (a + 1) * moment F b + moment F a * moment F (b + 1)), 2) bpairQOps.unit) (bpairQOps.mul (jetD F a b) (BPair.ofNat 1, Pos.one)))) (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.ofNat 1, 8)) (jetD F a b)) :=
-      qadd_congr (qeq_refl _) (qaddL (qmul_zR _ (qeq_refl _)) (qmul_one_right _))
+      BPair.addQ_congr (qOneValue_refl _) (qaddL (qmul_zR _ (qOneValue_refl _)) (qmul_one_right _))
     have h6 : bpairQRead.rel (BPair.addQ (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (BPair.ofNat 1, 8)) (jetD F a b)) (ground.getAt bpairQOps.unit (jetPair F a b) 2) :=
-      qeq_symm (qeq_trans hR (qeq_trans h6a h6b))
+      qOneValue_symm (qOneValue_trans hR (qOneValue_trans h6a h6b))
     have h7 : bpairQRead.rel (bpairQOps.mul (BPair.ofNat (moment F a * moment F b), Pos.one) (bpairQOps.mul f (BPair.ofNat 1, Pos.one))) (bpairQOps.mul f (BPair.ofNat (moment F a * moment F b), Pos.one)) :=
-      qeq_trans (qmul_congr (qeq_refl _) (qmul_one_right f)) (qeq_of_eq (qmul_comm _ _))
-    exact qeq_trans hL (qeq_symm (qeq_trans h1 (qeq_trans h2 (qeq_trans h3
-      (qeq_trans h4 (qeq_trans h5 (qadd_congr h6 h7)))))))
+      qOneValue_trans (qmul_congr (qOneValue_refl _) (qmul_one_right f)) (qOneValue_of_eq (qmul_comm _ _))
+    exact qOneValue_trans hL (qOneValue_symm (qOneValue_trans h1 (qOneValue_trans h2 (qOneValue_trans h3
+      (qOneValue_trans h4 (qOneValue_trans h5 (BPair.addQ_congr h6 h7)))))))
 
 /-- The collection: the jet moments' partition fold reads the unit
 at `τ⁰` and at `τ²`, and at `τ⁴` the pair-network read against the
@@ -2575,9 +2470,9 @@ theorem collection {L : Type} (F : fusion.Data L)
   obtain ⟨k0, k1, k2⟩ := kappa4_low (μ := jetMoment F) F.c1
     h10 h01 h11 h20 h02 h12 h21 h22
   refine ⟨k0, k1, closing F.c1 (pairFold F) _ _ ?_ (jetD_read F hm1 hm2 hm3 hT2)⟩
-  refine qeq_trans k2 ?_
-  refine qeq_trans (qadd_congr (qeq_refl _) (qeq_symm (qadd_assoc _ _ _))) ?_
-  exact qeq_symm (qadd_assoc _ _ _)
+  refine qOneValue_trans k2 ?_
+  refine qOneValue_trans (BPair.addQ_congr (qOneValue_refl _) (qOneValue_symm (BPair.addQ_assoc _ _ _))) ?_
+  exact qOneValue_symm (BPair.addQ_assoc _ _ _)
 
 
 /-! `lem:fourpoint`'s tail: the pencil at the ray, the jet
@@ -4675,7 +4570,7 @@ private theorem magClose (cn cd zd : Pos) (A3 A4 m0 m1 m2 g11 G g22 zn : BPair)
   refine le4 ?_ ?_ ?_ ?_
   · rw [← scale3 (windowsep.mag A3) (windowsep.mag (m0 * G))
         (windowsep.mag (m1 * g11)) w3,
-      scaleComm (windowsep.mag A3 + (windowsep.mag (m0 * G)
+      BPair.scale_comm (windowsep.mag A3 + (windowsep.mag (m0 * G)
         + windowsep.mag (m1 * g11))) w3 (cd * zd)]
     refine ground.leB_scale ?_ w3
     rw [scale3 (windowsep.mag A3) (windowsep.mag (m0 * G))
@@ -4684,7 +4579,7 @@ private theorem magClose (cn cd zd : Pos) (A3 A4 m0 m1 m2 g11 G g22 zn : BPair)
     exact le3 b3a b3b b3c
   · rw [← scale4 (windowsep.mag A4) (windowsep.mag (m0 * g22))
         (windowsep.mag (m1 * G)) (windowsep.mag (m2 * g11)) w4,
-      scaleComm (windowsep.mag A4 + (windowsep.mag (m0 * g22)
+      BPair.scale_comm (windowsep.mag A4 + (windowsep.mag (m0 * g22)
         + (windowsep.mag (m1 * G) + windowsep.mag (m2 * g11)))) w4 (cd * zd)]
     refine ground.leB_scale ?_ w4
     rw [scale4 (windowsep.mag A4) (windowsep.mag (m0 * g22))
@@ -4692,12 +4587,12 @@ private theorem magClose (cn cd zd : Pos) (A3 A4 m0 m1 m2 g11 G g22 zn : BPair)
       BPair.right_distrib]
     exact le4 b4a b4b b4c b4d
   · rw [← BPair.scale_add (windowsep.mag (m1 * g22)) (windowsep.mag (m2 * G)) w5,
-      scaleComm (windowsep.mag (m1 * g22) + windowsep.mag (m2 * G)) w5
+      BPair.scale_comm (windowsep.mag (m1 * g22) + windowsep.mag (m2 * G)) w5
         (cd * zd)]
     refine ground.leB_scale ?_ w5
     rw [BPair.scale_add (windowsep.mag (m1 * g22)) (windowsep.mag (m2 * G)) (cd * zd)]
     exact ground.leB_add b5a b5b
-  · rw [scaleComm (windowsep.mag (m2 * g22)) w6 (cd * zd)]
+  · rw [BPair.scale_comm (windowsep.mag (m2 * g22)) w6 (cd * zd)]
     exact ground.leB_scale b6a w6
 
 /-- The truncation beyond `τ⁴` (`lem:fourpoint`'s tail): the jet state's
@@ -5378,26 +5273,26 @@ private theorem qle_mul_mono {p q p' q' : BPair × Pos}
 private theorem qle_add_mono2 {a b a' b' : BPair × Pos}
     (h : qle a b) (h' : qle a' b') : qle (BPair.addQ a a') (BPair.addQ b b') :=
   qle_trans (qle_add_mono a h')
-    (qle_congr_left (qadd_comm b' a)
-      (qle_congr_right (qadd_comm b' b) (qle_add_mono b' h)))
+    (qle_congr_left (BPair.addQ_comm b' a)
+      (qle_congr_right (BPair.addQ_comm b' b) (qle_add_mono b' h)))
 
 /-- The natural weights at two counts join at the summed count. -/
 private theorem nsmul_add (x : BPair × Pos) (j : Nat) : ∀ k : Nat,
     bpairQRead.rel
       (BPair.addQ (poly.nsmulO bpairQOps x j) (poly.nsmulO bpairQOps x k))
       (poly.nsmulO bpairQOps x (j + k))
-  | 0 => qadd_zero_right _
+  | 0 => BPair.addQ_unitR _
   | k + 1 =>
-    qeq_trans (qadd_rot _ x _) (qadd_congr (qeq_refl x) (nsmul_add x j k))
+    qOneValue_trans (qadd_rot _ x _) (BPair.addQ_congr (qOneValue_refl x) (nsmul_add x j k))
 
 /-- The weight of a weight is the weight at the counts' product. -/
 private theorem nsmul_flat (x : BPair × Pos) (k : Nat) : ∀ w : Nat,
     bpairQRead.rel (poly.nsmulO bpairQOps (poly.nsmulO bpairQOps x k) w)
       (poly.nsmulO bpairQOps x (k * w))
-  | 0 => qeq_refl _
+  | 0 => qOneValue_refl _
   | w + 1 =>
-    qeq_trans (qadd_comm _ _)
-      (qeq_trans (qadd_congr (nsmul_flat x k w) (qeq_refl _))
+    qOneValue_trans (BPair.addQ_comm _ _)
+      (qOneValue_trans (BPair.addQ_congr (nsmul_flat x k w) (qOneValue_refl _))
         (nsmul_add x (k * w) k))
 
 private theorem qswap_mul (p q : BPair × Pos) :
@@ -5416,7 +5311,7 @@ private theorem qmul_addQ (p q r : BPair × Pos) :
     bpairQRead.rel (bpairQOps.mul p (BPair.addQ q r))
       (BPair.addQ (bpairQOps.mul p q) (bpairQOps.mul p r)) := by
   rw [qmul_qdiv p (BPair.addQ q r), qmul_qdiv p q, qmul_qdiv p r]
-  exact qeq_trans (qdiv_congr p.2 (qmul_add p.1 q r)) (qdiv_add _ _ p.2)
+  exact qOneValue_trans (qdiv_congr p.2 (qmul_add p.1 q r)) (qdiv_add _ _ p.2)
 
 /-- The telescoping identity at two factors: the product's gap is the
 first factor's gap against the second joined to the first's partner
@@ -5433,14 +5328,14 @@ private theorem teleQ (x y X Y : BPair × Pos) :
   have e3 : bpairQOps.mul y (bpairQOps.swap Y)
       = bpairQOps.swap (bpairQOps.mul y Y) := by
     rw [qmul_comm y (bpairQOps.swap Y), qswap_mul Y y, qmul_comm Y y]
-  refine qeq_trans (qadd_congr (qmul_addQ X x (bpairQOps.swap y))
+  refine qOneValue_trans (BPair.addQ_congr (qmul_addQ X x (bpairQOps.swap y))
     (qmul_addQ y X (bpairQOps.swap Y))) ?_
   rw [e1, e2, e3]
-  refine qeq_trans (qadd_congr (qeq_refl _)
-    (qadd_comm (bpairQOps.mul y X) (bpairQOps.swap (bpairQOps.mul y Y)))) ?_
-  refine qeq_trans (qadd_swap4 _ _ _ _) ?_
-  exact qaddR (qeq_refl _)
-    (qeq_trans (qadd_comm _ _) (qadd_neg (bpairQOps.mul y X)))
+  refine qOneValue_trans (BPair.addQ_congr (qOneValue_refl _)
+    (BPair.addQ_comm (bpairQOps.mul y X) (bpairQOps.swap (bpairQOps.mul y Y)))) ?_
+  refine qOneValue_trans (BPair.addQ_add_comm _ _ _ _) ?_
+  exact qaddR (qOneValue_refl _)
+    (qOneValue_trans (BPair.addQ_comm _ _) (qadd_neg (bpairQOps.mul y X)))
 
 /-- A cap at one key against a datum cleared at the summed key reads
 the datum at the remaining key. -/
@@ -5463,7 +5358,7 @@ private theorem capMul (d : Pos) {x X : BPair × Pos} (m1 m2 : Nat)
     (h1 : qle (magQ x) (BPair.ofPos (Pos.pow d m1), Pos.one))
     (h2 : qle (magQ X) (BPair.ofPos (Pos.pow d m2), Pos.one)) :
     qle (magQ (bpairQOps.mul x X)) (BPair.ofPos (Pos.pow d (m1 + m2)), Pos.one) := by
-  refine qle_congr_left (qeq_symm (magQ_mul x X)) (qle_congr_right ?_
+  refine qle_congr_left (qOneValue_symm (magQ_mul x X)) (qle_congr_right ?_
     (qle_mul_mono (unit_le_ofPos _) (magQ_nn X) h1 h2))
   show ((BPair.ofPos (Pos.pow d m1) * BPair.ofPos (Pos.pow d m2)).scale Pos.one).oneValue
     ((BPair.ofPos (Pos.pow d (m1 + m2))).scale (Pos.one * Pos.one))
@@ -5487,18 +5382,18 @@ private theorem prodStep (d : Pos) {D x y X Y : BPair × Pos} (m1 m2 e : Nat)
       (qdiv (poly.nsmulO bpairQOps D (j + k)) (Pos.pow d e)) := by
   have h1 : qle (magQ (bpairQOps.mul X (BPair.addQ x (bpairQOps.swap y))))
       (qdiv (poly.nsmulO bpairQOps D j) (Pos.pow d e)) :=
-    qle_congr_left (qeq_symm (magQ_mul X (BPair.addQ x (bpairQOps.swap y))))
+    qle_congr_left (qOneValue_symm (magQ_mul X (BPair.addQ x (bpairQOps.swap y))))
       (qle_congr_right (capDiv d _ m2 e)
         (qle_mul_mono (unit_le_ofPos _) (magQ_nn _) hcX hgx))
   have h2 : qle (magQ (bpairQOps.mul y (BPair.addQ X (bpairQOps.swap Y))))
       (qdiv (poly.nsmulO bpairQOps D k) (Pos.pow d e)) :=
-    qle_congr_left (qeq_symm (magQ_mul y (BPair.addQ X (bpairQOps.swap Y))))
+    qle_congr_left (qOneValue_symm (magQ_mul y (BPair.addQ X (bpairQOps.swap Y))))
       (qle_congr_right (capDiv d _ m1 e)
         (qle_mul_mono (unit_le_ofPos _) (magQ_nn _) hcy hgr))
   refine qle_congr_left (magQ_congr (teleQ x y X Y)) ?_
   refine qle_trans (magQ_add _ _) ?_
   exact qle_congr_right
-    (qeq_trans (qeq_symm (qdiv_add _ _ (Pos.pow d e)))
+    (qOneValue_trans (qOneValue_symm (qdiv_add _ _ (Pos.pow d e)))
       (qdiv_congr (Pos.pow d e) (nsmul_add D j k)))
     (qle_add_mono2 h1 h2)
 
@@ -5514,8 +5409,8 @@ private theorem addGap {x1 x2 y1 y2 b1 b2 : BPair × Pos}
       (BPair.addQ (BPair.addQ x1 (bpairQOps.swap y1))
         (BPair.addQ x2 (bpairQOps.swap y2))) := by
     rw [qswap_add y1 y2]
-    exact qadd_swap4 x1 x2 (bpairQOps.swap y1) (bpairQOps.swap y2)
-  exact qle_congr_left (qeq_symm (magQ_congr htel))
+    exact BPair.addQ_add_comm x1 x2 (bpairQOps.swap y1) (bpairQOps.swap y2)
+  exact qle_congr_left (qOneValue_symm (magQ_congr htel))
     (qle_trans (magQ_add _ _) (qle_add_mono2 h1 h2))
 
 /-- A weighted read's gap is the gap at the same weight. -/
@@ -5526,8 +5421,8 @@ private theorem weightGap {x y b : BPair × Pos}
       (poly.nsmulO bpairQOps b w)
   | 0 =>
     qle_congr_left
-      (qeq_symm (qeq_trans (magQ_congr (qadd_neg bpairQOps.unit))
-        (qeq_of_eq magQ_unit)))
+      (qOneValue_symm (qOneValue_trans (magQ_congr (qadd_neg bpairQOps.unit))
+        (qOneValue_of_eq magQ_unit)))
       (qle_refl bpairQOps.unit)
   | w + 1 => addGap h (weightGap h w)
 
@@ -5535,13 +5430,13 @@ private theorem weightGap {x y b : BPair × Pos}
 private theorem baseGap {D g : BPair × Pos} (w : Pos)
     (h : qle (magQ g) (qdiv D w)) :
     qle (magQ g) (qdiv (poly.nsmulO bpairQOps D 1) w) :=
-  qle_congr_right (qdiv_congr w (qeq_symm (qadd_zero_right D))) h
+  qle_congr_right (qdiv_congr w (qOneValue_symm (BPair.addQ_unitR D))) h
 
 /-- A gap read at the vacant key is the read at the weighted datum. -/
 private theorem gapDone {D g : BPair × Pos} {k : Nat} {d : Pos}
     (h : qle (magQ g) (qdiv (poly.nsmulO bpairQOps D k) (Pos.pow d 0))) :
     qle (magQ g) (poly.nsmulO bpairQOps D k) := by
-  refine qle_congr_right (qeq_of_eq ?_) h
+  refine qle_congr_right (qOneValue_of_eq ?_) h
   show ((poly.nsmulO bpairQOps D k).1, (poly.nsmulO bpairQOps D k).2 * Pos.one)
     = poly.nsmulO bpairQOps D k
   rw [ground.mul_one]
@@ -6255,7 +6150,7 @@ private theorem crossTail (gn gd W dth K0 K1 : Pos) (ST Rm : poly.Poly) (K3 : Na
     (BPair.oneValue_symm hread) ?_
   exact unitLtAdd
     (unitLtMul (unitLtOfPos _)
-      (unitLtAdd (unitLtMul (windowsep.unitLt_bpow (unitLtOfPos (gd * W)) K3) hA01) (leB_refl BPair.unit)))
+      (unitLtAdd (unitLtMul (ground.unitLtBpow (unitLtOfPos (gd * W)) K3) hA01) (leB_refl BPair.unit)))
     (leB_refl BPair.unit)
 
 /-- The composite point's evaluation reads the cleared evaluation at the
@@ -6506,7 +6401,7 @@ private theorem clearGap (gn gd W dth K0 K1 : Pos) (c : BPair) (ST Rm : poly.Pol
         + (BPair.ofNat 2 * BPair.ofPos (p * p)
             * poly.evalClear (tailPoly gn gd W dth K0 K1 ST Rm)
                 (BPair.ofPos (p * p)) (q * q) TK).swap :=
-    ground.ltB_unscale (ground.leB_of_lt (windowsep.unitLt_bpow (unitLtOfPos (q * q)) M))
+    ground.ltB_unscale (ground.leB_of_lt (ground.unitLtBpow (unitLtOfPos (q * q)) M))
       (BPair.lt_congr (BPair.oneValue_symm (BPair.unit_mul _))
         (BPair.oneValue_refl _)
         (BPair.lt_congr (BPair.oneValue_refl BPair.unit)

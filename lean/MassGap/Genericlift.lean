@@ -547,7 +547,7 @@ theorem sideUpper : ∀ (P : poly.Poly) (an : ground.Pos),
       (ground.leB_mulR (windowsep.unitLe_radiusD P) (ground.leB_ofPos hle))
   exact windowsep.lead_upper P (BPair.ofPos n) hx
     (ground.unitLtMul htop
-      (windowsep.unitLt_bpow (ground.unitLtOfPos n) _))
+      (ground.unitLtBpow (ground.unitLtOfPos n) _))
 
 /-- Clause (iii)'s side theorem, the top's lower side: the upper
 read at the memberwise swap, the radius and the height unchanged

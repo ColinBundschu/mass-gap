@@ -27,8 +27,12 @@ own output at its certifying equation in the check module.  The adjugate rows ar
 five displayed matrices at their fold keys, `adjRead` the coroot
 witness `Σ_k a_ik α_k(α_j^∨) = e δ_ij` and `thetaRowRead` the
 θ-fold row's `e`-multiple.  The derived residues are
-`gentable.residue`'s reads, the residue folds pinned per member in
-the check module; the reflection permutation, the Weyl list and the
+`gentable.residue`'s reads, the series' values at every rank the
+displayed residue folds' own (`residue_tableB`, `residue_tableC`,
+`residue_tableD`) with the θ-coroot's support key off the unit beside
+them (`corootB_off`, `corootC_off`, `corootD_off`, `prop:row`'s single
+keys), and the residue folds pinned per member in the check
+module; the reflection permutation, the Weyl list and the
 grading land with the alternant layer.  The defining tables enter
 at their key encodings — the paired keys with `B`'s further null
 key — the simple raisings and lowerings the displayed unit moves at
@@ -202,6 +206,608 @@ def tableD (l : Nat) : Table :=
 theorem lensD_at (l i : Nat) (hi : i < l) :
     ground.getAt 0 (tableD l).lenNums i = 2 :=
   ground.getAt_replicate 0 2 l i hi
+
+/-! The series' occupancy tier: the θ-coroot's support key off the
+unit at every rank (`prop:row`'s single key per series) and the
+derived residues at the displayed residue folds' own values
+(`con:sertables`).  The θ-folds enter at their entry reads and,
+at the floor spellings, at their closed list forms — the `B` fold
+one at the first key and two above it against its lengths' short
+last key, the `C` fold two below the long last key against its
+lengths' mirror, and the `D` fold one at the first key, two
+between, and one at each of the fork's keys against the constant
+lengths. -/
+
+/-- The `B` table's highest-root fold at a key: the head window
+joined to the doubled tail window. -/
+theorem thetaB_read (l i : Nat) (h : i < l) :
+    ground.getAt 0 (tableB l).thetaFold i
+      = (if 0 ≤ i && i < 1 then 1 else 0)
+        + ((if 1 ≤ i && i < l then 1 else 0)
+          + (if 1 ≤ i && i < l then 1 else 0)) := by
+  have e1 : (ind l 0 1).length = l := ind_len l 0 1
+  have e2 : (ind l 1 l).length = l := ind_len l 1 l
+  have e3 : (List.zipWith (fun a b => a + b) (ind l 1 l)
+      (ind l 1 l)).length = l :=
+    ground.length_zipWith _ _ _ l e2 e2
+  show ground.getAt 0 (List.zipWith (fun a b => a + b)
+      (ind l 0 1)
+      (List.zipWith (fun a b => a + b) (ind l 1 l)
+        (ind l 1 l))) i = _
+  rw [ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
+        (by rw [e1]; exact h) (by rw [e3]; exact h),
+    ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
+        (by rw [e2]; exact h) (by rw [e2]; exact h),
+    ind_at l 0 1 i h, ind_at l 1 l i h]
+
+/-- The `C` table's highest-root fold at a key: the doubled
+leading window joined to the last key's own. -/
+theorem thetaC_read (l i : Nat) (h : i < l) :
+    ground.getAt 0 (tableC l).thetaFold i
+      = ((if 0 ≤ i && i < l - 1 then 1 else 0)
+          + (if 0 ≤ i && i < l - 1 then 1 else 0))
+        + (if l - 1 ≤ i && i < l then 1 else 0) := by
+  have e1 : (ind l 0 (l - 1)).length = l := ind_len l 0 (l - 1)
+  have e2 : (ind l (l - 1) l).length = l := ind_len l (l - 1) l
+  have e3 : (List.zipWith (fun a b => a + b) (ind l 0 (l - 1))
+      (ind l 0 (l - 1))).length = l :=
+    ground.length_zipWith _ _ _ l e1 e1
+  show ground.getAt 0 (List.zipWith (fun a b => a + b)
+      (List.zipWith (fun a b => a + b) (ind l 0 (l - 1))
+        (ind l 0 (l - 1)))
+      (ind l (l - 1) l)) i = _
+  rw [ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
+        (by rw [e3]; exact h) (by rw [e2]; exact h),
+    ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
+        (by rw [e1]; exact h) (by rw [e1]; exact h),
+    ind_at l 0 (l - 1) i h, ind_at l (l - 1) l i h]
+
+/-- The `D` table's highest-root fold at a key, past the fork
+rank: the head window, the doubled interior window and the last
+two keys' own. -/
+theorem thetaD_read (l i : Nat) (h3 : 3 ≤ l) (h : i < l) :
+    ground.getAt 0 (tableD l).thetaFold i
+      = (if 0 ≤ i && i < 1 then 1 else 0)
+        + (((if 1 ≤ i && i < l - 2 then 1 else 0)
+            + (if 1 ≤ i && i < l - 2 then 1 else 0))
+          + (if l - 2 ≤ i && i < l then 1 else 0)) := by
+  have hne : ¬ ((1 + 1 == l) = true) := by
+    intro hb
+    have he : 1 + 1 = l := ground.beqEqOf hb
+    rw [← he] at h3
+    exact absurd h3 (Nat.lt_irrefl 2)
+  have e1 : (ind l 0 1).length = l := ind_len l 0 1
+  have e2 : (ind l 1 (l - 2)).length = l := ind_len l 1 (l - 2)
+  have e4 : (ind l (l - 2) l).length = l := ind_len l (l - 2) l
+  have e3 : (List.zipWith (fun a b => a + b) (ind l 1 (l - 2))
+      (ind l 1 (l - 2))).length = l :=
+    ground.length_zipWith _ _ _ l e2 e2
+  have e5 : (List.zipWith (fun a b => a + b)
+      (List.zipWith (fun a b => a + b) (ind l 1 (l - 2))
+        (ind l 1 (l - 2)))
+      (ind l (l - 2) l)).length = l :=
+    ground.length_zipWith _ _ _ l e3 e4
+  have hth : (tableD l).thetaFold
+      = List.zipWith (fun a b => a + b) (ind l 0 1)
+          (List.zipWith (fun a b => a + b)
+            (List.zipWith (fun a b => a + b) (ind l 1 (l - 2))
+              (ind l 1 (l - 2)))
+            (ind l (l - 2) l)) := by
+    show (if (1 + 1 == l) = true then
+        List.zipWith (fun a b => a + b) (ind l 0 (l - 2))
+          (ind l (l - 1) l)
+      else List.zipWith (fun a b => a + b) (ind l 0 1)
+          (List.zipWith (fun a b => a + b)
+            (List.zipWith (fun a b => a + b) (ind l 1 (l - 2))
+              (ind l 1 (l - 2)))
+            (ind l (l - 2) l))) = _
+    exact if_neg hne
+  rw [hth,
+    ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
+        (by rw [e1]; exact h) (by rw [e5]; exact h),
+    ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
+        (by rw [e3]; exact h) (by rw [e4]; exact h),
+    ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
+        (by rw [e2]; exact h) (by rw [e2]; exact h),
+    ind_at l 0 1 i h, ind_at l 1 (l - 2) i h,
+    ind_at l (l - 2) l i h]
+
+/-- A repeated family's suffix reads at the joined key: the
+leading count joined to a key reads the further list at the
+key. -/
+private theorem getAt_repApp (x : Nat) (v : List Nat) :
+    ∀ n m : Nat,
+      ground.getAt 0 (List.replicate n x ++ v) (n + m)
+        = ground.getAt 0 v m
+  | 0, m => by
+    show ground.getAt 0 v (0 + m) = ground.getAt 0 v m
+    rw [Nat.zero_add]
+  | n + 1, m => by
+    rw [Nat.add_right_comm n 1 m]
+    show ground.getAt 0 (List.replicate n x ++ v) (n + m)
+      = ground.getAt 0 v m
+    exact getAt_repApp x v n m
+
+/-- The `B` length list at the floor: the twos with the short last
+key's one. -/
+private theorem lensB_form (g : Nat) :
+    (tableB (g + 2)).lenNums = List.replicate (g + 1) 2 ++ [1] := by
+  have hlen : (tableB (g + 2)).lenNums.length = g + 2 :=
+    ground.length_mapRange _ (g + 2)
+  refine ground.getAt_ext 0 _ _ ?_ ?_
+  · rw [hlen, ground.length_append, ground.length_replicate]
+    rfl
+  · intro i hi
+    rw [hlen] at hi
+    rw [lensB_at (g + 2) i hi]
+    by_cases he : i + 1 = g + 2
+    · rw [ground.eqBeqOf he, show i = g + 1 from Nat.succ.inj he]
+      exact (getAt_repApp 2 [1] (g + 1) 0).symm
+    · have hlt : i < g + 1 :=
+        Nat.lt_of_le_of_ne (Nat.le_of_lt_succ hi)
+          (fun h' => he (by rw [h']))
+      rw [ground.neBeqOf he,
+        ground.getAt_append 0 (List.replicate (g + 1) 2) [1] i,
+        ground.length_replicate, if_pos hlt,
+        ground.getAt_replicate 0 2 (g + 1) i hlt]
+      rfl
+
+/-- The `C` length list at the floor: the ones with the long last
+key's two. -/
+private theorem lensC_form (g : Nat) :
+    (tableC (g + 3)).lenNums = List.replicate (g + 2) 1 ++ [2] := by
+  have hlen : (tableC (g + 3)).lenNums.length = g + 3 :=
+    ground.length_mapRange _ (g + 3)
+  refine ground.getAt_ext 0 _ _ ?_ ?_
+  · rw [hlen, ground.length_append, ground.length_replicate]
+    rfl
+  · intro i hi
+    rw [hlen] at hi
+    rw [lensC_at (g + 3) i hi]
+    by_cases he : i + 1 = g + 3
+    · rw [ground.eqBeqOf he, show i = g + 2 from Nat.succ.inj he]
+      exact (getAt_repApp 1 [2] (g + 2) 0).symm
+    · have hlt : i < g + 2 :=
+        Nat.lt_of_le_of_ne (Nat.le_of_lt_succ hi)
+          (fun h' => he (by rw [h']))
+      rw [ground.neBeqOf he,
+        ground.getAt_append 0 (List.replicate (g + 2) 1) [2] i,
+        ground.length_replicate, if_pos hlt,
+        ground.getAt_replicate 0 1 (g + 2) i hlt]
+      rfl
+
+/-- The `B` highest root's fold at the floor: one at the first key
+and two above it. -/
+private theorem thetaB_form (g : Nat) :
+    (tableB (g + 2)).thetaFold = 1 :: List.replicate (g + 1) 2 := by
+  have hlen : (tableB (g + 2)).thetaFold.length = g + 2 :=
+    ground.length_zipWith _ _ _ (g + 2) (ind_len (g + 2) 0 1)
+      (ground.length_zipWith _ _ _ (g + 2) (ind_len (g + 2) 1 (g + 2))
+        (ind_len (g + 2) 1 (g + 2)))
+  refine ground.getAt_ext 0 _ _ ?_ ?_
+  · rw [hlen]
+    show g + 2 = (List.replicate (g + 1) 2).length + 1
+    rw [ground.length_replicate]
+  · intro i hi
+    rw [hlen] at hi
+    rw [thetaB_read (g + 2) i hi]
+    match i, hi with
+    | 0, _ => rfl
+    | j + 1, hj =>
+      rw [decide_eq_true hj]
+      exact (ground.getAt_replicate 0 2 (g + 1) j
+        (Nat.lt_of_succ_lt_succ hj)).symm
+
+/-- The `C` highest root's fold at the floor: two below the long
+last key and one at it. -/
+private theorem thetaC_form (g : Nat) :
+    (tableC (g + 3)).thetaFold = List.replicate (g + 2) 2 ++ [1] := by
+  have hlen : (tableC (g + 3)).thetaFold.length = g + 3 :=
+    ground.length_zipWith _ _ _ (g + 3)
+      (ground.length_zipWith _ _ _ (g + 3) (ind_len (g + 3) 0 (g + 2))
+        (ind_len (g + 3) 0 (g + 2)))
+      (ind_len (g + 3) (g + 2) (g + 3))
+  refine ground.getAt_ext 0 _ _ ?_ ?_
+  · rw [hlen, ground.length_append, ground.length_replicate]
+    rfl
+  · intro i hi
+    rw [hlen] at hi
+    rw [thetaC_read (g + 3) i hi]
+    by_cases he : i + 1 = g + 3
+    · rw [show i = g + 2 from Nat.succ.inj he,
+        decide_eq_false (show ¬ (g + 2 < g + 3 - 1) from
+          Nat.lt_irrefl (g + 2)),
+        decide_eq_true (show g + 3 - 1 ≤ g + 2 from Nat.le_refl (g + 2)),
+        decide_eq_true (show g + 2 < g + 3 from Nat.le_refl (g + 3))]
+      exact (getAt_repApp 2 [1] (g + 2) 0).symm
+    · have hlt : i < g + 2 :=
+        Nat.lt_of_le_of_ne (Nat.le_of_lt_succ hi)
+          (fun h' => he (by rw [h']))
+      rw [decide_eq_true (show i < g + 3 - 1 from hlt),
+        decide_eq_false (show ¬ (g + 3 - 1 ≤ i) from fun hle =>
+          Nat.lt_irrefl i (Nat.lt_of_lt_of_le hlt hle)),
+        ground.getAt_append 0 (List.replicate (g + 2) 2) [1] i,
+        ground.length_replicate, if_pos hlt,
+        ground.getAt_replicate 0 2 (g + 2) i hlt]
+      rfl
+
+/-- The `D` highest root's fold at the floor: one at the first key,
+two between, and one at each of the fork's keys. -/
+private theorem thetaD_form (g : Nat) :
+    (tableD (g + 4)).thetaFold
+      = 1 :: (List.replicate (g + 1) 2 ++ [1, 1]) := by
+  have hlen : (tableD (g + 4)).thetaFold.length = g + 4 :=
+    ground.length_zipWith _ _ _ (g + 4) (ind_len (g + 4) 0 1)
+      (ground.length_zipWith _ _ _ (g + 4)
+        (ground.length_zipWith _ _ _ (g + 4) (ind_len (g + 4) 1 (g + 2))
+          (ind_len (g + 4) 1 (g + 2)))
+        (ind_len (g + 4) (g + 2) (g + 4)))
+  refine ground.getAt_ext 0 _ _ ?_ ?_
+  · rw [hlen]
+    show g + 4 = (List.replicate (g + 1) 2 ++ [1, 1]).length + 1
+    rw [ground.length_append, ground.length_replicate]
+    rfl
+  · intro i hi
+    rw [hlen] at hi
+    rw [thetaD_read (g + 4) i (Nat.le_add_left 3 (g + 1)) hi]
+    match i, hi with
+    | 0, _ => rfl
+    | j + 1, hj =>
+      cases Nat.lt_or_ge (j + 1) (g + 2) with
+      | inl hlt =>
+        rw [decide_eq_true (show j + 1 < g + 4 - 2 from hlt),
+          decide_eq_false (show ¬ (g + 4 - 2 ≤ j + 1) from fun hle =>
+            Nat.lt_irrefl (j + 1) (Nat.lt_of_lt_of_le hlt hle))]
+        have hjg : j < g + 1 := Nat.lt_of_succ_lt_succ hlt
+        rw [show ground.getAt 0
+            (1 :: (List.replicate (g + 1) 2 ++ [1, 1])) (j + 1)
+            = ground.getAt 0 (List.replicate (g + 1) 2 ++ [1, 1]) j
+            from rfl,
+          ground.getAt_append 0 (List.replicate (g + 1) 2) [1, 1] j,
+          ground.length_replicate, if_pos hjg,
+          ground.getAt_replicate 0 2 (g + 1) j hjg]
+        rfl
+      | inr hge =>
+        obtain ⟨m, hm⟩ := Nat.le.dest (Nat.le_of_succ_le_succ hge)
+        have hj2 : m < 2 := by
+          have h4 : g + 1 + (m + 2) ≤ g + 1 + 3 := by
+            rw [← Nat.add_assoc]
+            show g + 1 + m + 1 < g + 4
+            rw [hm]
+            exact hj
+          exact Nat.le_of_succ_le_succ (ground.leCancelL (g + 1) h4)
+        rw [decide_eq_false (show ¬ (j + 1 < g + 4 - 2) from fun hlt =>
+            Nat.lt_irrefl (j + 1) (Nat.lt_of_lt_of_le hlt hge)),
+          decide_eq_true (show g + 4 - 2 ≤ j + 1 from hge),
+          decide_eq_true (show j + 1 < g + 4 from hj),
+          show ground.getAt 0
+            (1 :: (List.replicate (g + 1) 2 ++ [1, 1])) (j + 1)
+            = ground.getAt 0 [1, 1] m from by
+              rw [show j = g + 1 + m from hm.symm]
+              exact getAt_repApp 2 [1, 1] (g + 1) m]
+        match m, hj2 with
+        | 0, _ => rfl
+        | 1, _ => rfl
+        | m + 2, h2 =>
+          exact absurd
+            (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ h2))
+            (Nat.not_lt_zero m)
+
+/-- A matched repeated prefix folds off at its count: the dot of
+two joins reads the count's scale with the tails' own fold. -/
+private theorem dotRepApp (a b : Nat) : ∀ (n : Nat) (X Y : List Nat),
+    ground.dotNat (List.replicate n a ++ X) (List.replicate n b ++ Y)
+      = n * (a * b) + ground.dotNat X Y
+  | 0, X, Y => by
+    show ground.dotNat X Y = 0 * (a * b) + ground.dotNat X Y
+    rw [Nat.zero_mul, Nat.zero_add]
+  | n + 1, X, Y => by
+    show a * b + ground.dotNat (List.replicate n a ++ X)
+        (List.replicate n b ++ Y)
+      = (n + 1) * (a * b) + ground.dotNat X Y
+    rw [dotRepApp a b n X Y,
+      show (n + 1) * (a * b) = n * (a * b) + a * b from
+        Nat.succ_mul n (a * b),
+      ← Nat.add_assoc (a * b) (n * (a * b)) (ground.dotNat X Y),
+      Nat.add_comm (a * b) (n * (a * b))]
+
+/-- The `B` residue fold's value at the floor, cleared. -/
+private theorem valB : ∀ g : Nat, 2 + (g * 4 + 2) = (2 * (g + 1)) * 2
+  | 0 => rfl
+  | g + 1 => by
+    show 2 + ((g + 1) * 4 + 2) = (2 * (g + 1) + 2) * 2
+    rw [show (2 * (g + 1) + 2) * 2 = (2 * (g + 1)) * 2 + 4 from by
+        rw [show (2 * (g + 1) + 2) * 2 = (2 * (g + 1) + 1) * 2 + 2 from
+            Nat.succ_mul (2 * (g + 1) + 1) 2,
+          show (2 * (g + 1) + 1) * 2 = (2 * (g + 1)) * 2 + 2 from
+            Nat.succ_mul (2 * (g + 1)) 2],
+      ← valB g, Nat.add_assoc 2 (g * 4 + 2) 4,
+      show (g + 1) * 4 = g * 4 + 4 from Nat.succ_mul g 4]
+
+/-- The `D` residue fold's value at the floor, cleared. -/
+private theorem valD : ∀ g : Nat, 2 + (g * 4 + 8) = (2 * g + 5) * 2
+  | 0 => rfl
+  | g + 1 => by
+    show 2 + ((g + 1) * 4 + 8) = (2 * g + 2 + 5) * 2
+    rw [show (2 * g + 2 + 5) * 2 = (2 * g + 5) * 2 + 4 from by
+        rw [show (2 * g + 2 + 5) * 2 = (2 * g + 6) * 2 + 2 from
+            Nat.succ_mul (2 * g + 6) 2,
+          show (2 * g + 6) * 2 = (2 * g + 5) * 2 + 2 from
+            Nat.succ_mul (2 * g + 5) 2],
+      ← valD g, Nat.add_assoc 2 (g * 4 + 8) 4,
+      show (g + 1) * 4 = g * 4 + 4 from Nat.succ_mul g 4]
+
+/-- The three-head fold read at a key: at matched counts with every
+deeper row entry the unit, the fold reads its three head terms'
+sum. -/
+private theorem zipHead3 (j : Nat) : ∀ (f : List Nat)
+    (M : List (List BPair)), M.length = f.length →
+    (∀ k, 3 ≤ k → k < f.length →
+      (getAt BPair.unit (getAt [] M k) j).oneValue BPair.unit) →
+    (BPair.sum (List.zipWith
+      (fun c row => BPair.ofNat c * getAt BPair.unit row j)
+      f M)).oneValue
+      (BPair.ofNat (getAt 0 f 0) * getAt BPair.unit (getAt [] M 0) j
+        + (BPair.ofNat (getAt 0 f 1) * getAt BPair.unit (getAt [] M 1) j
+          + BPair.ofNat (getAt 0 f 2)
+            * getAt BPair.unit (getAt [] M 2) j))
+  | [], [], _, _ =>
+    BPair.oneValue_symm (BPair.oneValue_trans
+      (BPair.add_congr (BPair.unit_mul _)
+        (BPair.oneValue_trans
+          (BPair.add_congr (BPair.unit_mul _) (BPair.unit_mul _))
+          (BPair.unit_add _)))
+      (BPair.unit_add _))
+  | [], _ :: _, hl, _ => Nat.noConfusion hl
+  | [_], [], hl, _ => Nat.noConfusion hl
+  | [_], [_], _, _ => by
+    refine BPair.oneValue_trans (BPair.sum_cons _ _) ?_
+    refine BPair.add_congr (BPair.oneValue_refl _) ?_
+    exact BPair.oneValue_symm (BPair.oneValue_trans
+      (BPair.add_congr (BPair.unit_mul _) (BPair.unit_mul _))
+      (BPair.unit_add _))
+  | [_], _ :: _ :: _, hl, _ => Nat.noConfusion (Nat.succ.inj hl)
+  | [_, _], [], hl, _ => Nat.noConfusion hl
+  | [_, _], [_], hl, _ => Nat.noConfusion (Nat.succ.inj hl)
+  | [_, _], [_, _], _, _ => by
+    refine BPair.oneValue_trans (BPair.sum_cons _ _) ?_
+    refine BPair.add_congr (BPair.oneValue_refl _) ?_
+    refine BPair.oneValue_trans (BPair.sum_cons _ _) ?_
+    refine BPair.add_congr (BPair.oneValue_refl _) ?_
+    exact BPair.oneValue_symm (BPair.unit_mul _)
+  | [_, _], _ :: _ :: _ :: _, hl, _ =>
+    Nat.noConfusion (Nat.succ.inj (Nat.succ.inj hl))
+  | _ :: _ :: _ :: _, [], hl, _ => Nat.noConfusion hl
+  | _ :: _ :: _ :: _, [_], hl, _ => Nat.noConfusion (Nat.succ.inj hl)
+  | _ :: _ :: _ :: _, [_, _], hl, _ =>
+    Nat.noConfusion (Nat.succ.inj (Nat.succ.inj hl))
+  | c0 :: c1 :: c2 :: f, r0 :: r1 :: r2 :: M, _, hent => by
+    show (BPair.sum ((BPair.ofNat c0 * getAt BPair.unit r0 j)
+      :: (BPair.ofNat c1 * getAt BPair.unit r1 j)
+      :: (BPair.ofNat c2 * getAt BPair.unit r2 j)
+      :: List.zipWith
+        (fun c row => BPair.ofNat c * getAt BPair.unit row j)
+        f M)).oneValue
+      (BPair.ofNat c0 * getAt BPair.unit r0 j
+        + (BPair.ofNat c1 * getAt BPair.unit r1 j
+          + BPair.ofNat c2 * getAt BPair.unit r2 j))
+    refine BPair.oneValue_trans (BPair.sum_cons _ _) ?_
+    refine BPair.add_congr (BPair.oneValue_refl _) ?_
+    refine BPair.oneValue_trans (BPair.sum_cons _ _) ?_
+    refine BPair.add_congr (BPair.oneValue_refl _) ?_
+    refine BPair.oneValue_trans (BPair.sum_cons _ _) ?_
+    refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl _)
+      (zipTermUnit j f M (fun k hk =>
+        BPair.oneValue_trans
+          (BPair.mul_congr (BPair.oneValue_refl (BPair.ofNat (getAt 0 f k)))
+            (hent (k + 3) (Nat.le_add_left 3 k)
+              (Nat.succ_lt_succ (Nat.succ_lt_succ
+                (Nat.succ_lt_succ hk)))))
+          (BPair.mul_unit _)))) ?_
+    exact BPair.add_unit _
+
+/-- The `B` table's θ-coroot at the support key sits off the unit:
+two at the floor rank, the doubled edge's read, and one above it,
+the first and third rows' partners against the second row's two,
+the deeper rows' entries the unit (`prop:row`'s single key at the
+`B`-series). -/
+theorem corootB_off (g : Nat) :
+    ¬ (corootAt (tableB (g + 2)) (tableB (g + 2)).thetaFold 1).oneValue
+      BPair.unit :=
+  match g with
+  | 0 => by decide +kernel
+  | g + 1 => fun hu => by
+    have hflen : ((tableB (g + 1 + 2)).thetaFold).length = g + 1 + 2 := by
+      rw [thetaB_form (g + 1)]
+      show (List.replicate (g + 1 + 1) 2).length + 1 = g + 1 + 2
+      rw [ground.length_replicate]
+    have hsum : (corootAt (tableB (g + 1 + 2))
+        (tableB (g + 1 + 2)).thetaFold 1).oneValue
+        (BPair.ofNat 1 * m1
+          + (BPair.ofNat 2 * b2 + BPair.ofNat 2 * m1)) := by
+      refine BPair.oneValue_trans
+        (zipHead3 1 (tableB (g + 1 + 2)).thetaFold
+          (ground.matOf (g + 1 + 2) (g + 1 + 2) _)
+          (by rw [ground.matOf_length, hflen])
+          (fun k hk3 hkl => ?_)) ?_
+      · obtain ⟨n, hn⟩ := Nat.le.dest hk3
+        have hk : k = n + 3 := by
+          rw [← hn, Nat.add_comm]
+        subst hk
+        rw [hflen] at hkl
+        rw [ground.matOf_entry [] BPair.unit (g + 1 + 2) (g + 1 + 2) _
+            (n + 3) 1 hkl (Nat.succ_lt_succ (Nat.succ_pos _)),
+          show ((1 : Nat) == n + 3 + 1) = false from rfl, Bool.and_false]
+        exact BPair.oneValue_refl _
+      · rw [thetaB_form (g + 1),
+          ground.matOf_entry [] BPair.unit (g + 1 + 2) (g + 1 + 2) _ 0 1
+            (Nat.succ_pos _) (Nat.succ_lt_succ (Nat.succ_pos _)),
+          ground.matOf_entry [] BPair.unit (g + 1 + 2) (g + 1 + 2) _ 1 1
+            (Nat.succ_lt_succ (Nat.succ_pos _))
+            (Nat.succ_lt_succ (Nat.succ_pos _)),
+          ground.matOf_entry [] BPair.unit (g + 1 + 2) (g + 1 + 2) _ 2 1
+            (Nat.succ_lt_succ (Nat.succ_lt_succ (Nat.succ_pos _)))
+            (Nat.succ_lt_succ (Nat.succ_pos _)),
+          show ((1 : Nat) == 2 + 1) = false from rfl, Bool.and_false]
+        exact BPair.oneValue_refl _
+    exact absurd
+      (BPair.oneValue_trans (BPair.oneValue_symm hsum) hu)
+      (by decide +kernel)
+
+/-- The `C` table's θ-coroot at the support key sits off the unit:
+the first row's two against the second row's balance partner, the
+third row's entry and the deeper rows' the unit (`prop:row`'s
+single key at the `C`-series). -/
+theorem corootC_off (g : Nat) :
+    ¬ (corootAt (tableC (g + 3)) (tableC (g + 3)).thetaFold 0).oneValue
+      BPair.unit := fun hu => by
+  have hflen : ((tableC (g + 3)).thetaFold).length = g + 3 := by
+    rw [thetaC_form g, ground.length_append, ground.length_replicate]
+    rfl
+  have hsum : (corootAt (tableC (g + 3))
+      (tableC (g + 3)).thetaFold 0).oneValue
+      (BPair.ofNat 2 * b2 + (BPair.ofNat 2 * m1 + BPair.unit)) := by
+    refine BPair.oneValue_trans
+      (zipHead3 0 (tableC (g + 3)).thetaFold
+        (ground.matOf (g + 3) (g + 3) _)
+        (by rw [ground.matOf_length, hflen])
+        (fun k hk3 hkl => ?_)) ?_
+    · obtain ⟨n, hn⟩ := Nat.le.dest hk3
+      have hk : k = n + 3 := by
+        rw [← hn, Nat.add_comm]
+      subst hk
+      rw [hflen] at hkl
+      rw [ground.matOf_entry [] BPair.unit (g + 3) (g + 3) _
+          (n + 3) 0 hkl (Nat.succ_pos _),
+        show ((0 : Nat) + 2 == g + 3) = false from rfl,
+        Bool.and_false (n + 3 + 1 == g + 3)]
+      exact BPair.oneValue_refl _
+    · rw [thetaC_form g,
+        ground.matOf_entry [] BPair.unit (g + 3) (g + 3) _ 0 0
+          (Nat.succ_pos _) (Nat.succ_pos _),
+        ground.matOf_entry [] BPair.unit (g + 3) (g + 3) _ 1 0
+          (Nat.succ_lt_succ (Nat.succ_pos _)) (Nat.succ_pos _),
+        ground.matOf_entry [] BPair.unit (g + 3) (g + 3) _ 2 0
+          (Nat.succ_lt_succ (Nat.succ_lt_succ (Nat.succ_pos _)))
+          (Nat.succ_pos _),
+        show ((0 : Nat) + 2 == g + 3) = false from rfl,
+        Bool.and_false (2 + 1 == g + 3)]
+      exact BPair.add_congr (BPair.oneValue_refl _)
+        (BPair.add_congr (BPair.oneValue_refl _) (BPair.mul_unit _))
+  exact absurd
+    (BPair.oneValue_trans (BPair.oneValue_symm hsum) hu)
+    (by decide +kernel)
+
+/-- The `D` table's θ-coroot at the support key sits off the unit,
+the read one at every rank: at the floor the fork's two rows'
+partners join the head pair's read at single fold coefficients,
+above it the first and third rows' partners sit against the second
+row's two with the fork's and the deeper rows' entries the unit
+(`prop:row`'s single key at the `D`-series). -/
+theorem corootD_off (g : Nat) :
+    ¬ (corootAt (tableD (g + 4)) (tableD (g + 4)).thetaFold 1).oneValue
+      BPair.unit :=
+  match g with
+  | 0 => by decide +kernel
+  | g + 1 => fun hu => by
+    have hflen : ((tableD (g + 1 + 4)).thetaFold).length = g + 1 + 4 := by
+      rw [thetaD_form (g + 1)]
+      show (List.replicate (g + 1 + 1) 2 ++ [1, 1]).length + 1 = g + 1 + 4
+      rw [ground.length_append, ground.length_replicate]
+      rfl
+    have hsum : (corootAt (tableD (g + 1 + 4))
+        (tableD (g + 1 + 4)).thetaFold 1).oneValue
+        (BPair.ofNat 1 * m1
+          + (BPair.ofNat 2 * b2 + BPair.ofNat 2 * m1)) := by
+      refine BPair.oneValue_trans
+        (zipHead3 1 (tableD (g + 1 + 4)).thetaFold
+          (ground.matOf (g + 1 + 4) (g + 1 + 4) _)
+          (by rw [ground.matOf_length, hflen])
+          (fun k hk3 hkl => ?_)) ?_
+      · obtain ⟨n, hn⟩ := Nat.le.dest hk3
+        have hk : k = n + 3 := by
+          rw [← hn, Nat.add_comm]
+        subst hk
+        rw [hflen] at hkl
+        rw [ground.matOf_entry [] BPair.unit (g + 1 + 4) (g + 1 + 4) _
+          (n + 3) 1 hkl (Nat.succ_lt_succ (Nat.succ_pos _))]
+        cases hx : (n + 3 + 1 == g + 1 + 4) with
+        | false => exact BPair.oneValue_refl _
+        | true => exact BPair.oneValue_refl _
+      · rw [thetaD_form (g + 1),
+          ground.matOf_entry [] BPair.unit (g + 1 + 4) (g + 1 + 4) _ 0 1
+            (Nat.succ_pos _) (Nat.succ_lt_succ (Nat.succ_pos _)),
+          ground.matOf_entry [] BPair.unit (g + 1 + 4) (g + 1 + 4) _ 1 1
+            (Nat.succ_lt_succ (Nat.succ_pos _))
+            (Nat.succ_lt_succ (Nat.succ_pos _)),
+          ground.matOf_entry [] BPair.unit (g + 1 + 4) (g + 1 + 4) _ 2 1
+            (Nat.succ_lt_succ (Nat.succ_lt_succ (Nat.succ_pos _)))
+            (Nat.succ_lt_succ (Nat.succ_pos _))]
+        exact BPair.oneValue_refl _
+    exact absurd
+      (BPair.oneValue_trans (BPair.oneValue_symm hsum) hu)
+      (by decide +kernel)
+
+/-- The `B` residue at the floor reads the displayed fold's value
+at every rank, `r = 2ℓ - 2` at `ℓ = g + 2` (`con:sertables`' `B`
+residue fold), the division's witnessed cancel. -/
+theorem residue_tableB (g : Nat) : residue (tableB (g + 2)) = 2 * (g + 1) := by
+  show ground.dotNat (tableB (g + 2)).thetaFold (tableB (g + 2)).lenNums
+      / (2 * 1) = 2 * (g + 1)
+  rw [thetaB_form g, lensB_form g]
+  show (1 * 2 + ground.dotNat (List.replicate (g + 1) 2)
+      (List.replicate g 2 ++ [1])) / (2 * 1) = 2 * (g + 1)
+  rw [show List.replicate (g + 1) 2 = List.replicate g 2 ++ [2] from
+      (ground.replicate_snoc 2 g).symm,
+    dotRepApp 2 2 g [2] [1]]
+  show (2 + (g * 4 + 2)) / (2 * 1) = 2 * (g + 1)
+  rw [valB g]
+  exact ground.divMulSelf (2 * (g + 1)) 2 (Nat.zero_lt_succ 1)
+
+/-- The `B` residue's occupancy at every rank, the value read's
+own. -/
+theorem residue_tableB_pos (g : Nat) : 0 < residue (tableB (g + 2)) := by
+  rw [residue_tableB g]
+  exact Nat.succ_pos _
+
+/-- The `C` residue at the floor reads the displayed fold's value
+at every rank, `r = ℓ` at `ℓ = g + 3` (`con:sertables`' `C`
+residue fold), the division's witnessed cancel. -/
+theorem residue_tableC (g : Nat) : residue (tableC (g + 3)) = g + 3 := by
+  show ground.dotNat (tableC (g + 3)).thetaFold (tableC (g + 3)).lenNums
+      / (2 * 1) = g + 3
+  rw [thetaC_form g, lensC_form g, dotRepApp 2 1 (g + 2) [1] [2]]
+  show ((g + 2) * 2 + 2) / (2 * 1) = g + 3
+  rw [show (g + 2) * 2 + 2 = (g + 3) * 2 from (Nat.succ_mul (g + 2) 2).symm]
+  exact ground.divMulSelf (g + 3) 2 (Nat.zero_lt_succ 1)
+
+/-- The `C` residue's occupancy at every rank, the value read's
+own. -/
+theorem residue_tableC_pos (g : Nat) : 0 < residue (tableC (g + 3)) := by
+  rw [residue_tableC g]
+  exact Nat.succ_pos _
+
+/-- The `D` residue at the floor reads the displayed fold's value
+at every rank, `r = 2ℓ - 3` at `ℓ = g + 4` (`con:sertables`' `D`
+residue fold), the division's witnessed cancel. -/
+theorem residue_tableD (g : Nat) : residue (tableD (g + 4)) = 2 * g + 5 := by
+  show ground.dotNat (tableD (g + 4)).thetaFold (tableD (g + 4)).lenNums
+      / (2 * 1) = 2 * g + 5
+  rw [thetaD_form g]
+  show (1 * 2 + ground.dotNat (List.replicate (g + 1) 2 ++ [1, 1])
+      (List.replicate (g + 1 + 2) 2)) / (2 * 1) = 2 * g + 5
+  rw [ground.replicate_append 2 (g + 1) 2,
+    dotRepApp 2 2 (g + 1) [1, 1] (List.replicate 2 2),
+    show (g + 1) * (2 * 2) = g * 4 + 4 from Nat.succ_mul g 4]
+  show (2 + (g * 4 + 8)) / (2 * 1) = 2 * g + 5
+  rw [valD g]
+  exact ground.divMulSelf (2 * g + 5) 2 (Nat.zero_lt_succ 1)
+
+/-- The `D` residue's occupancy at every rank, the value read's
+own. -/
+theorem residue_tableD_pos (g : Nat) : 0 < residue (tableD (g + 4)) := by
+  rw [residue_tableD g]
+  exact Nat.succ_pos _
 
 /-! The fixed members' coordinate families and the fold descent. -/
 

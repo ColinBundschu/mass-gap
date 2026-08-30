@@ -850,18 +850,6 @@ private theorem dotZeroL : ∀ (n : Nat) (Y : List Nat),
     rw [Nat.zero_mul, Nat.zero_add]
     exact dotZeroL n Y
 
-/-- The unit coefficient list pairs off at the second family's
-total, at the matched count. -/
-private theorem dotOnesL : ∀ (n : Nat) (Y : List Nat), Y.length = n →
-    ground.dotNat (List.replicate n 1) Y = ground.sumNat Y
-  | 0, [], _ => rfl
-  | 0, _ :: _, h => Nat.noConfusion h
-  | _ + 1, [], h => Nat.noConfusion h
-  | n + 1, b :: Y, h => by
-    show 1 * b + ground.dotNat (List.replicate n 1) Y
-      = b + ground.sumNat Y
-    rw [Nat.one_mul, dotOnesL n Y (Nat.succ.inj h)]
-
 /-- The coefficient total sits at or below the pairing against a
 family occupied at every paired key. -/
 private theorem dotGeSum : ∀ (m Y : List Nat), m.length ≤ Y.length →
@@ -935,7 +923,7 @@ theorem grade_rho : ∀ t : gentable.Table, gentable.shapeRead t →
     grade t (List.replicate t.rank 1) = gentable.residue t := by
   intro t hs hc
   show ground.dotNat (List.replicate t.rank 1) (cvee t) = gentable.residue t
-  rw [dotOnesL t.rank (cvee t) (cvee_len t)]
+  rw [ground.dotOnesL t.rank (cvee t) (cvee_len t)]
   exact cvee_sum t hs hc
 
 /-- The coefficient sum sits at or below the key, each halved
@@ -948,100 +936,6 @@ theorem coeffSum_le : ∀ (t : gentable.Table) (m : List Nat),
   · rw [cvee_len t]; exact hlen
   · intro i hi
     exact cveeRead_pos t hc i (Nat.lt_of_lt_of_le hi hlen)
-
-/-- The `B` table's highest-root fold at a key: the head window
-joined to the doubled tail window. -/
-private theorem thetaB_read (l i : Nat) (h : i < l) :
-    ground.getAt 0 (sertables.tableB l).thetaFold i
-      = (if 0 ≤ i && i < 1 then 1 else 0)
-        + ((if 1 ≤ i && i < l then 1 else 0)
-          + (if 1 ≤ i && i < l then 1 else 0)) := by
-  have e1 : (sertables.ind l 0 1).length = l := sertables.ind_len l 0 1
-  have e2 : (sertables.ind l 1 l).length = l := sertables.ind_len l 1 l
-  have e3 : (List.zipWith (fun a b => a + b) (sertables.ind l 1 l)
-      (sertables.ind l 1 l)).length = l :=
-    ground.length_zipWith _ _ _ l e2 e2
-  show ground.getAt 0 (List.zipWith (fun a b => a + b)
-      (sertables.ind l 0 1)
-      (List.zipWith (fun a b => a + b) (sertables.ind l 1 l)
-        (sertables.ind l 1 l))) i = _
-  rw [ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
-        (by rw [e1]; exact h) (by rw [e3]; exact h),
-    ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
-        (by rw [e2]; exact h) (by rw [e2]; exact h),
-    sertables.ind_at l 0 1 i h, sertables.ind_at l 1 l i h]
-
-/-- The `C` table's highest-root fold at a key: the doubled
-leading window joined to the last key's own. -/
-private theorem thetaC_read (l i : Nat) (h : i < l) :
-    ground.getAt 0 (sertables.tableC l).thetaFold i
-      = ((if 0 ≤ i && i < l - 1 then 1 else 0)
-          + (if 0 ≤ i && i < l - 1 then 1 else 0))
-        + (if l - 1 ≤ i && i < l then 1 else 0) := by
-  have e1 : (sertables.ind l 0 (l - 1)).length = l := sertables.ind_len l 0 (l - 1)
-  have e2 : (sertables.ind l (l - 1) l).length = l := sertables.ind_len l (l - 1) l
-  have e3 : (List.zipWith (fun a b => a + b) (sertables.ind l 0 (l - 1))
-      (sertables.ind l 0 (l - 1))).length = l :=
-    ground.length_zipWith _ _ _ l e1 e1
-  show ground.getAt 0 (List.zipWith (fun a b => a + b)
-      (List.zipWith (fun a b => a + b) (sertables.ind l 0 (l - 1))
-        (sertables.ind l 0 (l - 1)))
-      (sertables.ind l (l - 1) l)) i = _
-  rw [ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
-        (by rw [e3]; exact h) (by rw [e2]; exact h),
-    ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
-        (by rw [e1]; exact h) (by rw [e1]; exact h),
-    sertables.ind_at l 0 (l - 1) i h, sertables.ind_at l (l - 1) l i h]
-
-/-- The `D` table's highest-root fold at a key, past the fork
-rank: the head window, the doubled interior window and the last
-two keys' own. -/
-private theorem thetaD_read (l i : Nat) (h3 : 3 ≤ l) (h : i < l) :
-    ground.getAt 0 (sertables.tableD l).thetaFold i
-      = (if 0 ≤ i && i < 1 then 1 else 0)
-        + (((if 1 ≤ i && i < l - 2 then 1 else 0)
-            + (if 1 ≤ i && i < l - 2 then 1 else 0))
-          + (if l - 2 ≤ i && i < l then 1 else 0)) := by
-  have hne : ¬ ((1 + 1 == l) = true) := by
-    intro hb
-    have he : 1 + 1 = l := ground.beqEqOf hb
-    rw [← he] at h3
-    exact absurd h3 (Nat.lt_irrefl 2)
-  have e1 : (sertables.ind l 0 1).length = l := sertables.ind_len l 0 1
-  have e2 : (sertables.ind l 1 (l - 2)).length = l := sertables.ind_len l 1 (l - 2)
-  have e4 : (sertables.ind l (l - 2) l).length = l := sertables.ind_len l (l - 2) l
-  have e3 : (List.zipWith (fun a b => a + b) (sertables.ind l 1 (l - 2))
-      (sertables.ind l 1 (l - 2))).length = l :=
-    ground.length_zipWith _ _ _ l e2 e2
-  have e5 : (List.zipWith (fun a b => a + b)
-      (List.zipWith (fun a b => a + b) (sertables.ind l 1 (l - 2))
-        (sertables.ind l 1 (l - 2)))
-      (sertables.ind l (l - 2) l)).length = l :=
-    ground.length_zipWith _ _ _ l e3 e4
-  have hth : (sertables.tableD l).thetaFold
-      = List.zipWith (fun a b => a + b) (sertables.ind l 0 1)
-          (List.zipWith (fun a b => a + b)
-            (List.zipWith (fun a b => a + b) (sertables.ind l 1 (l - 2))
-              (sertables.ind l 1 (l - 2)))
-            (sertables.ind l (l - 2) l)) := by
-    show (if (1 + 1 == l) = true then
-        List.zipWith (fun a b => a + b) (sertables.ind l 0 (l - 2))
-          (sertables.ind l (l - 1) l)
-      else List.zipWith (fun a b => a + b) (sertables.ind l 0 1)
-          (List.zipWith (fun a b => a + b)
-            (List.zipWith (fun a b => a + b) (sertables.ind l 1 (l - 2))
-              (sertables.ind l 1 (l - 2)))
-            (sertables.ind l (l - 2) l))) = _
-    exact if_neg hne
-  rw [hth,
-    ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
-        (by rw [e1]; exact h) (by rw [e5]; exact h),
-    ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
-        (by rw [e3]; exact h) (by rw [e4]; exact h),
-    ground.getAt_zipWith 0 0 0 (fun a b => a + b) _ _ i
-        (by rw [e2]; exact h) (by rw [e2]; exact h),
-    sertables.ind_at l 0 1 i h, sertables.ind_at l 1 (l - 2) i h,
-    sertables.ind_at l (l - 2) l i h]
 
 /-- The `A` table's halved summands, the displayed closed form in
 the rank: one at every key. -/
@@ -1072,7 +966,7 @@ theorem cvee_B : ∀ l : Nat, 2 ≤ l → cvee (sertables.tableB l)
   · intro i hi
     rw [cvee_len (sertables.tableB l), hrk] at hi
     rw [mapRange_read 0 _ l i hi, cvee_entry (sertables.tableB l) i hi,
-      thetaB_read l i hi, sertables.lensB_at l i hi,
+      sertables.thetaB_read l i hi, sertables.lensB_at l i hi,
       show (sertables.tableB l).lenDen = 1 from rfl]
     match i, hi with
     | 0, _ =>
@@ -1103,7 +997,7 @@ theorem cvee_C : ∀ l : Nat,
   · rw [cvee_len (sertables.tableC l), hrk, ground.length_replicate 1 l]
   · intro i hi
     rw [cvee_len (sertables.tableC l), hrk] at hi
-    rw [cvee_entry (sertables.tableC l) i hi, thetaC_read l i hi,
+    rw [cvee_entry (sertables.tableC l) i hi, sertables.thetaC_read l i hi,
       sertables.lensC_at l i hi, ground.getAt_replicate 0 1 l i hi,
       show (sertables.tableC l).lenDen = 1 from rfl]
     by_cases he : i + 1 = l
@@ -1143,7 +1037,7 @@ theorem cvee_D : ∀ l : Nat, 3 ≤ l → cvee (sertables.tableD l)
   · intro i hi
     rw [cvee_len (sertables.tableD l), hrk] at hi
     rw [mapRange_read 0 _ l i hi, cvee_entry (sertables.tableD l) i hi,
-      thetaD_read l i h3 hi,
+      sertables.thetaD_read l i h3 hi,
       show (sertables.tableD l).lenNums = List.replicate l 2 from rfl,
       ground.getAt_replicate 0 2 l i hi,
       show (sertables.tableD l).lenDen = 1 from rfl]

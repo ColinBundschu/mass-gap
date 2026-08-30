@@ -90,15 +90,9 @@ def wpwitsB2 : List (List Nat) :=
 
 end sertables
 
-/-! The residue folds per member, each with its naming identity. -/
+/-! The fixed members' residue folds at their displayed values,
+and the naming identity at every committed member. -/
 
-example : residue (tableB 2) = 2 := by decide +kernel
-example : residue (tableB 3) = 4 := by decide +kernel
-example : residue (tableB 4) = 6 := by decide +kernel
-example : residue (tableC 3) = 3 := by decide +kernel
-example : residue (tableC 4) = 4 := by decide +kernel
-example : residue (tableD 4) = 5 := by decide +kernel
-example : residue (tableD 5) = 7 := by decide +kernel
 example : residue tableG2 = 3 := by decide +kernel
 example : residue tableF4 = 8 := by decide +kernel
 example : residue tableE6 = 11 := by decide +kernel
@@ -117,6 +111,49 @@ example : residueRead tableF4 := by decide +kernel
 example : residueRead tableE6 := by decide +kernel
 example : residueRead tableE7 := by decide +kernel
 example : residueRead tableE8 := by decide +kernel
+
+/-! The series' residue values and support-key refusals at the
+theorem routes: coherence pairs at committed ranks and reads at
+ranks no decide touches. -/
+
+example : residue (tableB 9) = 16 := by decide +kernel
+example : residue (tableB 9) = 16 := residue_tableB 7
+example : residue (tableC 9) = 9 := by decide +kernel
+example : residue (tableC 9) = 9 := residue_tableC 6
+example : residue (tableD 9) = 15 := by decide +kernel
+example : residue (tableD 9) = 15 := residue_tableD 5
+example : residue (tableB 30) = 58 := residue_tableB 28
+example : residue (tableC 30) = 30 := residue_tableC 27
+example : residue (tableD 30) = 57 := residue_tableD 26
+
+example : ¬ (corootAt (tableB 3) (tableB 3).thetaFold 1).oneValue
+    BPair.unit := by decide +kernel
+example : ¬ (corootAt (tableB 3) (tableB 3).thetaFold 1).oneValue
+    BPair.unit := corootB_off 1
+example : ¬ (corootAt (tableC 4) (tableC 4).thetaFold 0).oneValue
+    BPair.unit := by decide +kernel
+example : ¬ (corootAt (tableC 4) (tableC 4).thetaFold 0).oneValue
+    BPair.unit := corootC_off 1
+example : ¬ (corootAt (tableD 5) (tableD 5).thetaFold 1).oneValue
+    BPair.unit := by decide +kernel
+example : ¬ (corootAt (tableD 5) (tableD 5).thetaFold 1).oneValue
+    BPair.unit := corootD_off 1
+
+/-! The floors' spellings, isolated: below the `B` floor the
+support key's read is the unit and the residue is vacant, so the
+`g + 2` spelling binds; the `C` and `D` floors are the
+classification's own domain (`thm:main`'s prefix), the below-floor
+tables keeping both occupancy reads. -/
+
+example : (corootAt (tableB 1) (tableB 1).thetaFold 1).oneValue
+    BPair.unit := by decide +kernel
+example : ¬ 0 < residue (tableB 1) := by decide +kernel
+example : ¬ (corootAt (tableC 2) (tableC 2).thetaFold 0).oneValue
+    BPair.unit := by decide +kernel
+example : 0 < residue (tableC 2) := by decide +kernel
+example : ¬ (corootAt (tableD 3) (tableD 3).thetaFold 1).oneValue
+    BPair.unit := by decide +kernel
+example : 0 < residue (tableD 3) := by decide +kernel
 
 /-! The positive counts: `ℓ²` at `B` and `C`, `ℓ² - ℓ` at `D`,
 and the fixed members' displayed counts. -/

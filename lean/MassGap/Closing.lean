@@ -35,4 +35,27 @@ instance : (c1 r : Nat) → Decidable (read c1 r)
   | 0, _ => inferInstanceAs (Decidable False)
   | _ + 1, 0 => inferInstanceAs (Decidable False)
 
+/-- The read at every occupied base and residue: the order count
+at three, the excess's evaluation the harmonic number, and the
+base's collection — the pair generic in the member's data
+(`thm:closing` at the tex's own quantifier), the member
+instantiations the check module's pins. -/
+theorem read_all (c g : Nat) : read (c + 1) (g + 1) := by
+  show (contactpair.pair (posOfSucc c) g).1 = 3
+    ∧ ((contactpair.pair (posOfSucc c) g).2).oneValue
+        (harmonic (posOfSucc g))
+    ∧ channeldiv.baseRead (posOfSucc c)
+  refine And.intro (channelreads.orderCount_three _)
+    (And.intro ?_ (channeldiv.baseRead_all _))
+  show (excess.evalOne g).oneValue (harmonic (posOfSucc g))
+  rw [excess.evalOne_harmonic g]
+  exact Pair.oneValue_refl _
+
+/-- The read at occupancy witnesses alone: two occupied arguments
+reach the universal read, the match's own split. -/
+theorem read_pos : ∀ (b r : Nat), 0 < b → 0 < r → read b r
+  | b + 1, r + 1, _, _ => read_all b r
+  | 0, _, hb, _ => absurd hb (Nat.lt_irrefl 0)
+  | _ + 1, 0, _, hr => absurd hr (Nat.lt_irrefl 0)
+
 end closing

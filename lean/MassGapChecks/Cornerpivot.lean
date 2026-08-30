@@ -2761,8 +2761,8 @@ example : gsC.hi ≤ stage.ofB gsC.shB
         ≤ gsC.fB * BPair.ofPos (Pos.powC 1 (gsC.K + 1))
     ∧ chainRead (profBaseU gsV) gsC.bN gsC.bD
         (gsC.lo :: gsC.cutsA ++ [gsC.hi])
-    ∧ chainRead2 (lineL gsV (gsC.fA + gsC.fB))
-        (lineSq gsV (BPair.ofNat 1) 1 (gsC.fA + gsC.fB))
+    ∧ chainRead2 (lineL gsV (gsC.fA + gsC.fB)) (profBaseU gsV)
+        (BPair.ofNat 1) 1
         gsC.bN gsC.bD (gsC.lo :: gsC.cutsB ++ [gsC.hi]) := by
   decide +kernel
 
@@ -2808,8 +2808,8 @@ example : profShape gfV gfC.K
         ≤ gfC.fB * BPair.ofPos (Pos.powC 1 (gfC.K + 1))
     ∧ chainRead (profBaseU gfV) gfC.bN gfC.bD
         (gfC.lo :: gfC.cutsA ++ [gfC.hi])
-    ∧ chainRead2 (lineL gfV (gfC.fA + gfC.fB))
-        (lineSq gfV (BPair.ofNat 1) 1 (gfC.fA + gfC.fB))
+    ∧ chainRead2 (lineL gfV (gfC.fA + gfC.fB)) (profBaseU gfV)
+        (BPair.ofNat 1) 1
         gfC.bN gfC.bD (gfC.lo :: gfC.cutsB ++ [gfC.hi]) := by
   decide +kernel
 
@@ -2854,8 +2854,8 @@ example : profShape gaV gaC.K
         ≤ gaC.fB * BPair.ofPos (Pos.powC 1 (gaC.K + 1))
     ∧ chainRead (profBaseU gaV) gaC.bN gaC.bD
         (gaC.lo :: gaC.cutsA ++ [gaC.hi])
-    ∧ chainRead2 (lineL gaV (gaC.fA + gaC.fB))
-        (lineSq gaV (BPair.ofNat 1) 1 (gaC.fA + gaC.fB))
+    ∧ chainRead2 (lineL gaV (gaC.fA + gaC.fB)) (profBaseU gaV)
+        (BPair.ofNat 1) 1
         gaC.bN gaC.bD (gaC.lo :: gaC.cutsB ++ [gaC.hi]) := by
   decide +kernel
 
@@ -2894,8 +2894,8 @@ example : profShape occV gradC.K
         ≤ gradC.fB * BPair.ofPos (Pos.powC 1 (gradC.K + 1))
     ∧ chainRead (profBaseU occV) gradC.bN gradC.bD
         (gradC.lo :: gradC.cutsA ++ [gradC.hi])
-    ∧ chainRead2 (lineL occV (gradC.fA + gradC.fB))
-        (lineSq occV (BPair.ofNat 1) 1 (gradC.fA + gradC.fB))
+    ∧ chainRead2 (lineL occV (gradC.fA + gradC.fB)) (profBaseU occV)
+        (BPair.ofNat 1) 1
         gradC.bN gradC.bD (gradC.lo :: gradC.cutsB ++ [gradC.hi]) := by
   decide +kernel
 
@@ -2905,8 +2905,7 @@ example : ¬ gradRead gradV (BPair.ofNat 1) 1
   decide +kernel
 
 example : ¬ chainRead2 (lineL gradV (gradC.fA + gradC.fB))
-    (lineSq gradV (BPair.ofNat 1) 1 (gradC.fA + gradC.fB))
-    gradC.bN gradC.bD
+    (profBaseU gradV) (BPair.ofNat 1) 1 gradC.bN gradC.bD
     (gradC.lo :: [⟨BPair.ofNat 4, 1⟩] ++ [gradC.hi]) := by
   decide +kernel
 
@@ -3013,7 +3012,8 @@ example : ¬ stage.keepUpper (lineL gvV (gvC.fA + gvC.fB))
     ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 3, 2⟩ gvC.bN gvC.bD := by
   decide +kernel
 
-example : stage.keepUpper (lineSq gvV (BPair.ofNat 1) 1 (gvC.fA + gvC.fB))
+example : stage.keepSq (profBaseU gvV) (lineL gvV (gvC.fA + gvC.fB))
+    (BPair.ofNat 1) 1
     ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 3, 2⟩ gvC.bN gvC.bD := by
   decide +kernel
 
@@ -3048,14 +3048,15 @@ example : ¬ gradRead gvV (BPair.ofNat 1) 1
 
 example : ¬ (stage.keepUpper (lineL gvV (BPair.unit + BPair.ofNat 1))
       ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 3, 2⟩ gvC.bN gvC.bD
-    ∨ stage.keepUpper (lineSq gvV (BPair.ofNat 1) 1
-        (BPair.unit + BPair.ofNat 1))
+    ∨ stage.keepSq (profBaseU gvV) (lineL gvV (BPair.unit + BPair.ofNat 1))
+      (BPair.ofNat 1) 1
       ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 3, 2⟩ gvC.bN gvC.bD) := by
   decide +kernel
 
 -- the ceiling's first member is load-bearing in the squared
--- comparison: the arm forged free of it keeps its pieces where the
--- committed arm is refused, and the device's conclusion is false
+-- comparison: the arm forged at the dropped scale keeps its pieces
+-- where the committed arm is refused, and the device's conclusion
+-- is false
 private def ceilV : poly.PPoly × poly.PPoly :=
   ([[BPair.unit, (BPair.ofNat 5).swap]], [[BPair.ofNat 3]])
 
@@ -3066,17 +3067,13 @@ private def ceilC : GradCert :=
 
 example : ¬ gradRead ceilV (BPair.ofNat 4) 1 ceilC := by decide +kernel
 
-example : stage.keepUpper
-    (poly.add
-      (poly.scaleP (BPair.ofPos 1)
-        (poly.shiftUp 1 (poly.mul (profBaseU ceilV) (profBaseU ceilV))))
-      (poly.neg (poly.mul (lineL ceilV (ceilC.fA + ceilC.fB))
-        (lineL ceilV (ceilC.fA + ceilC.fB)))))
+example : stage.keepSq (profBaseU ceilV)
+    (lineL ceilV (ceilC.fA + ceilC.fB)) (BPair.ofNat 1) 1
     ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 5, 1⟩ ceilC.bN ceilC.bD := by
   decide +kernel
 
-example : ¬ stage.keepUpper
-    (lineSq ceilV (BPair.ofNat 4) 1 (ceilC.fA + ceilC.fB))
+example : ¬ stage.keepSq (profBaseU ceilV)
+    (lineL ceilV (ceilC.fA + ceilC.fB)) (BPair.ofNat 4) 1
     ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 5, 1⟩ ceilC.bN ceilC.bD := by
   decide +kernel
 
@@ -3100,12 +3097,13 @@ example : gradRead gvV (BPair.ofNat 4) 4 gvC := by decide +kernel
 
 example : ¬ gradRead gvV (BPair.ofNat 4) 1 gvC := by decide +kernel
 
-example : stage.keepUpper (lineSq gvV (BPair.ofNat 4) 4 (gvC.fA + gvC.fB))
+example : stage.keepSq (profBaseU gvV) (lineL gvV (gvC.fA + gvC.fB))
+    (BPair.ofNat 4) 4
     ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 3, 2⟩ gvC.bN gvC.bD := by
   decide +kernel
 
-example : ¬ stage.keepUpper
-    (lineSq gvV (BPair.ofNat 4) 1 (gvC.fA + gvC.fB))
+example : ¬ stage.keepSq (profBaseU gvV) (lineL gvV (gvC.fA + gvC.fB))
+    (BPair.ofNat 4) 1
     ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 3, 2⟩ gvC.bN gvC.bD := by
   decide +kernel
 

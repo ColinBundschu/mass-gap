@@ -4,8 +4,9 @@ The check module for `def:ground`: the committed batteries re-read
 the ground carrier's identity instances by kernel `decide` — the
 arithmetic on the successor-count carrier, the trichotomy and gap
 reads, the scalar-pair, balance-pair and composite displays with
-the balance pair's margin at the count carrier, the
-homogeneity instances, and the harmonic numbers.  The
+the balance pair's margin at the count carrier, the cleared
+pair's read at the cross-multiplied first data with its
+composition, the homogeneity instances, and the harmonic numbers.  The
 large-magnitude
 products pin the carrier's kernel feasibility at the committed
 magnitudes, machine integers under the stored counts.  The
@@ -28,7 +29,14 @@ written key's read closes it: a write keeps the family's length,
 the written key reads the written value and every further key is
 kept, decided at an in-range write and at a key beyond the family
 with the key binder refused there, each landed by the theorem
-route.
+route.  The Pascal count and the binomial theorem close the
+module: the count's interior values with its edge reads at the
+nought key, at its own height and above its height, each beside its
+theorem route, and the sum's power against the fold of the count
+times the two members' complementary powers, decided raw and by its
+theorem at two positive members and at a partner-signed pair with
+the value pins beside them, the second power's key binder refused
+at the first member's own key.
 -/
 
 open ground
@@ -58,6 +66,23 @@ example : divModRead 13 3 := by decide +kernel
 example : divModRead 12 3 := by decide +kernel
 example : divModRead 2 5 := by decide +kernel
 example : divModRead 1225 35 := by decide +kernel
+
+/-! The quotient's bracket: an occupied quotient brackets the
+dividend between its own multiple and the next, a vacant quotient
+prices the dividend below the divisor, and the bracket names the
+quotient back — the theorem routes beside the decides. -/
+
+example : (3 : Pos) * 4 ≤ 13 ∧ (13 : Pos) < 3 * ground.succ 4 :=
+  divQuot_read 13 3 4 (by decide +kernel)
+example : (3 : Pos) * 4 ≤ 13 ∧ (13 : Pos) < 3 * ground.succ 4 := by
+  decide +kernel
+example : (2 : Pos) < 5 := divQuot_vac 2 5 (by decide +kernel)
+example : (ground.divMod 13 3).1 = some 4 :=
+  divQuot_eq 13 3 4 (by decide +kernel) (by decide +kernel)
+/-- The refusal isolating the bracket's upper end: at the forged
+quotient the strict step refuses and the naming with it. -/
+example : ¬ ((13 : Pos) < 3 * ground.succ 3) := by decide +kernel
+example : ¬ ((ground.divMod 13 3).1 = some 3) := by decide +kernel
 
 /-! Order as gap-existence, and the trichotomy: the read is data,
 the gap constructed with the outcome. -/
@@ -106,6 +131,41 @@ example : (⟨2, 5⟩ : BPair) < ⟨4, 1⟩ := by decide +kernel
 example : BPair.oneValue (BPair.sum [⟨2, 1⟩, ⟨1, 3⟩, ⟨5, 1⟩]) ⟨4, 1⟩ := by
   decide +kernel
 
+/-! The canonical representative at a witnessed gap: the side's
+one-member display reads the gap's successor at the exceeding
+member either way, decided and through its theorem, with the
+forged gap refused. -/
+
+example : (⟨2, 5⟩ : BPair).norm = ⟨Pos.one, succ 3⟩ := by decide +kernel
+example : (⟨2, 5⟩ : BPair).norm = ⟨Pos.one, succ 3⟩ :=
+  BPair.norm_of_gapLt (g := 3) (by decide +kernel)
+example : ¬ (⟨2, 5⟩ : BPair).norm = ⟨Pos.one, succ 2⟩ := by decide +kernel
+
+example : (⟨5, 2⟩ : BPair).norm = ⟨succ 3, Pos.one⟩ := by decide +kernel
+example : (⟨5, 2⟩ : BPair).norm = ⟨succ 3, Pos.one⟩ :=
+  BPair.norm_of_gapGt (g := 3) (by decide +kernel)
+example : ¬ (⟨5, 2⟩ : BPair).norm = ⟨succ 4, Pos.one⟩ := by decide +kernel
+
+/-! The stored count's injectivity read, the literal-multiplier
+expansions, and the unit summands' sum, each decided and through
+its theorem. -/
+
+example : (1 + 1 : Nat) = 2 := by decide +kernel
+example : (1 + 1 : Nat) = 2 :=
+  ground.posMkInj (a := 1 + 1) (b := 2) rfl
+
+example : 3 * 7 = 7 + 7 + 7 := by decide +kernel
+example : 3 * 7 = 7 + 7 + 7 := ground.threeMul 7
+example : 4 * 7 = 2 * 7 + 2 * 7 := by decide +kernel
+example : 4 * 7 = 2 * 7 + 2 * 7 := ground.fourMul 7
+
+example : ((⟨2, 2⟩ : BPair) + ⟨5, 5⟩).oneValue BPair.unit := by
+  decide +kernel
+example : ((⟨2, 2⟩ : BPair) + ⟨5, 5⟩).oneValue BPair.unit :=
+  BPair.add_units (by decide +kernel) (by decide +kernel)
+example : ¬ ((⟨3, 2⟩ : BPair) + ⟨5, 5⟩).oneValue BPair.unit := by
+  decide +kernel
+
 /-! The margin at the count carrier: the exceeding member's gap
 either way, an equal-membered pair at nought. -/
 
@@ -147,6 +207,40 @@ example : CPair.oneValue (CPair.ofPair ⟨1, 2⟩ 1) ⟨⟨3, 2⟩, 2⟩ := by d
 example : (⟨⟨1, 2⟩, 3⟩ : CPair) < ⟨⟨2, 1⟩, 4⟩ := by decide +kernel
 example : CPair.oneValue ((⟨⟨5, 2⟩, 3⟩ : CPair) + ⟨⟨4, 4⟩, 7⟩)
     ⟨⟨5, 2⟩, 3⟩ := by decide +kernel
+
+/-! The cleared pair's read: a balance datum at its stated positive
+clearing, two such data reading one value exactly at the
+cross-multiplied first data, with the join at the cross-multiplied
+numerators and the read's composition. -/
+
+example : ground.keysBelow 5 [(0, BPair.ofNat 2), (4, BPair.unit)] := by
+  decide +kernel
+example : ¬ ground.keysBelow 4 [(0, BPair.ofNat 2), (4, BPair.unit)] := by
+  decide +kernel
+
+private theorem qHalfRead :
+    qOneValue (BPair.ofNat 6, (2 : Pos)) (BPair.ofNat 3, (1 : Pos)) := by
+  decide +kernel
+
+example : qOneValue (BPair.ofNat 6, (2 : Pos)) (BPair.ofNat 3, (1 : Pos)) :=
+  qHalfRead
+
+/-- The cross multiplication is load-bearing: at the clearings `2`
+and `1` the first data `6` and `4` read `6` against `8`. -/
+example : ¬ qOneValue (BPair.ofNat 6, (2 : Pos))
+    (BPair.ofNat 4, (1 : Pos)) := by decide +kernel
+
+example : (BPair.addQ (BPair.ofNat 6, (2 : Pos))
+    (BPair.ofNat 3, (1 : Pos))).1.oneValue (BPair.ofNat 12) := by
+  decide +kernel
+example : (BPair.addQ (BPair.ofNat 6, (2 : Pos))
+    (BPair.ofNat 3, (1 : Pos))).2 = 2 := by decide +kernel
+
+example : qOneValue (BPair.ofNat 6, (2 : Pos)) (BPair.ofNat 9, (3 : Pos)) := by
+  decide +kernel
+
+example : qOneValue (BPair.ofNat 6, (2 : Pos)) (BPair.ofNat 9, (3 : Pos)) :=
+  qOneValue_trans qHalfRead (by decide +kernel)
 
 /-! The collect-by-count fold's decided pin: the family's fold
 against the multiplicity-weighted base read. -/
@@ -307,6 +401,31 @@ example : (BPair.ofPos (Pos.pow 3 2)).oneValue (bpow (BPair.ofPos 3) 2) := by
 example : (BPair.ofPos (Pos.pow 3 2)).oneValue (bpow (BPair.ofPos 3) 2) :=
   ofPos_pow 3 2
 
+/-! The successor power's read at the base against the power, the
+unit base's absorbed read, and the power's side at a base at or
+beyond the sum's unit — each through the theorem beside its decided
+instance, the order read with its binder's isolating refusal. -/
+
+example : (bpow (BPair.ofNat 2) 3).oneValue
+    (BPair.ofNat 2 * bpow (BPair.ofNat 2) 2) := by decide +kernel
+example : (bpow (BPair.ofNat 2) 3).oneValue
+    (BPair.ofNat 2 * bpow (BPair.ofNat 2) 2) :=
+  bpow_succ_read (BPair.ofNat 2) 2
+example : ¬ ((bpow (BPair.ofNat 2) 3).oneValue
+    (BPair.ofNat 2 * bpow (BPair.ofNat 2) 1)) := by decide +kernel
+
+example : (bpow BPair.unit 3).oneValue BPair.unit := by decide +kernel
+example : (bpow BPair.unit 3).oneValue BPair.unit := bpow_unit_succ 2
+example : ¬ ((bpow (BPair.ofNat 2) 3).oneValue BPair.unit) := by
+  decide +kernel
+
+example : BPair.unit ≤ bpow (BPair.ofNat 2) 3 := by decide +kernel
+example : BPair.unit ≤ bpow (BPair.ofNat 2) 3 :=
+  unitLeBpow (unitLeOfNat 2) 3
+example : ¬ (BPair.unit ≤ (BPair.ofNat 2).swap) := by decide +kernel
+example : ¬ (BPair.unit ≤ bpow ((BPair.ofNat 2).swap) 1) := by
+  decide +kernel
+
 /-! The order's scaling tier: the strict read at a factor strictly
 above the sum's unit, the cancellation back off that factor, and
 the squared comparison's read back at the trichotomy — each at a
@@ -393,8 +512,10 @@ example : 2 + 3 + (5 + 7) = 5 + 2 + (3 + 7) :=
 example : 2 + 3 + 5 + 7 = 2 + 5 + 7 + 3 := ground.addRotTail3 2 3 5 7
 
 /-! The balance carrier's own rearrangements: the seeded sum and
-the seeded product each exchanging their two trailing members, and
-three factors read at their reversal with the middle standing.
+the seeded product each exchanging their two trailing members,
+three factors read at their reversal with the middle standing, the
+head passing inside the trailing product, the trailing factors
+exchanging across the head, and the leftward rotation.
 Each stands beside its perturbed refusal, the exchanged member
 replaced by a member off its own value. -/
 
@@ -416,6 +537,24 @@ example : (⟨2, 1⟩ : BPair) * (⟨1, 3⟩ * ⟨5, 1⟩)
   BPair.mul_rot3r ⟨2, 1⟩ ⟨1, 3⟩ ⟨5, 1⟩
 example : ¬ ((⟨2, 1⟩ : BPair) * (⟨1, 3⟩ * ⟨5, 1⟩)
     = (⟨5, 1⟩ : BPair) * (⟨3, 1⟩ * ⟨2, 1⟩)) := by decide +kernel
+
+example : (⟨2, 1⟩ : BPair) * (⟨1, 3⟩ * ⟨5, 1⟩)
+    = (⟨1, 3⟩ : BPair) * ⟨2, 1⟩ * ⟨5, 1⟩ :=
+  BPair.mul_left_comm' ⟨2, 1⟩ ⟨1, 3⟩ ⟨5, 1⟩
+example : ¬ ((⟨2, 1⟩ : BPair) * (⟨1, 3⟩ * ⟨5, 1⟩)
+    = (⟨3, 1⟩ : BPair) * ⟨2, 1⟩ * ⟨5, 1⟩) := by decide +kernel
+
+example : (⟨2, 1⟩ : BPair) * (⟨1, 3⟩ * ⟨5, 1⟩)
+    = (⟨2, 1⟩ : BPair) * ⟨5, 1⟩ * ⟨1, 3⟩ :=
+  BPair.mul_right_comm' ⟨2, 1⟩ ⟨1, 3⟩ ⟨5, 1⟩
+example : ¬ ((⟨2, 1⟩ : BPair) * (⟨1, 3⟩ * ⟨5, 1⟩)
+    = (⟨2, 1⟩ : BPair) * ⟨5, 1⟩ * ⟨3, 1⟩) := by decide +kernel
+
+example : (⟨2, 1⟩ : BPair) * (⟨1, 3⟩ * ⟨5, 1⟩)
+    = (⟨1, 3⟩ : BPair) * (⟨5, 1⟩ * ⟨2, 1⟩) :=
+  BPair.mul_rot3l ⟨2, 1⟩ ⟨1, 3⟩ ⟨5, 1⟩
+example : ¬ ((⟨2, 1⟩ : BPair) * (⟨1, 3⟩ * ⟨5, 1⟩)
+    = (⟨1, 3⟩ : BPair) * (⟨5, 1⟩ * ⟨3, 1⟩)) := by decide +kernel
 
 /-! The componentwise walk at a vacant second family, vacant at
 every first family, beside the occupied second family's refusal. -/
@@ -897,3 +1036,56 @@ example : ¬ ((1 : Pos) * ((5 : Pos) + 1) + 1 * 1 = 5 * 5) := by
 example : ¬ (Pos.pow (5 : Pos) 3
     ≤ Pos.pow (1 : Pos) 3 + posOfSucc 2 * 1 * Pos.pow (5 : Pos) 2) := by
   decide +kernel
+
+/-! The Pascal count and the binomial theorem at the pair carrier. -/
+
+example : pasc 4 2 = 6 := by decide +kernel
+example : pasc 6 3 = 20 := by decide +kernel
+
+example : pasc 5 0 = 1 := by decide +kernel
+example : pasc 5 5 = 1 := by decide +kernel
+example : pasc 3 5 = 0 := by decide +kernel
+
+example : pasc 7 7 = 1 := by decide +kernel
+example : pasc 7 7 = 1 := pasc_self 7
+
+example : pasc 2 9 = 0 := by decide +kernel
+example : pasc 2 9 = 0 := pasc_beyond 2 9 (by decide +kernel)
+
+example : (bpow (BPair.ofNat 2 + BPair.ofNat 3) 3).oneValue
+    (bsum (fun t => BPair.ofNat (pasc 3 t)
+      * (bpow (BPair.ofNat 2) t * bpow (BPair.ofNat 3) (3 - t)))
+      (List.range 4)) := by decide +kernel
+
+example : (bpow (BPair.ofNat 2 + BPair.ofNat 3) 3).oneValue
+    (bsum (fun t => BPair.ofNat (pasc 3 t)
+      * (bpow (BPair.ofNat 2) t * bpow (BPair.ofNat 3) (3 - t)))
+      (List.range 4)) :=
+  bpow_binom (BPair.ofNat 2) (BPair.ofNat 3) 3
+
+example : (bpow (BPair.ofNat 2 + BPair.ofNat 3) 3).oneValue
+    (BPair.ofNat 125) := by decide +kernel
+
+/-! The partner-signed instance: the second member enters memberwise
+swapped and the square reads the two members' gap against itself. -/
+
+example : (bpow (BPair.ofNat 2 + (BPair.ofNat 3).swap) 2).oneValue
+    (bsum (fun t => BPair.ofNat (pasc 2 t)
+      * (bpow (BPair.ofNat 2) t * bpow ((BPair.ofNat 3).swap) (2 - t)))
+      (List.range 3)) := by decide +kernel
+
+example : (bpow (BPair.ofNat 2 + (BPair.ofNat 3).swap) 2).oneValue
+    (bsum (fun t => BPair.ofNat (pasc 2 t)
+      * (bpow (BPair.ofNat 2) t * bpow ((BPair.ofNat 3).swap) (2 - t)))
+      (List.range 3)) :=
+  bpow_binom (BPair.ofNat 2) ((BPair.ofNat 3).swap) 2
+
+example : (bpow (BPair.ofNat 2 + (BPair.ofNat 3).swap) 2).oneValue
+    (BPair.ofNat 1) := by decide +kernel
+
+/-- The second power's key binder is load-bearing: read at the first
+member's own key the fold sums to 343 against the power's 125. -/
+example : ¬ (bpow (BPair.ofNat 2 + BPair.ofNat 3) 3).oneValue
+    (bsum (fun t => BPair.ofNat (pasc 3 t)
+      * (bpow (BPair.ofNat 2) t * bpow (BPair.ofNat 3) t))
+      (List.range 4)) := by decide +kernel
