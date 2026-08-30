@@ -4,7 +4,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22018060.svg)](https://doi.org/10.5281/zenodo.22018060)
 
 This repository presents a complete manuscript, [docs/theory.tex](docs/theory.tex) ([PDF](docs/theory.pdf)), and its in-progress Lean 4 formalization, [lean/](lean/).  The manuscript states and derives a mass gap for lattice gauge theory over every compact
-simple group in `thm:main`, with
+simple group (`thm:main`), with
 `rem:dictionary` presenting the results in the conventional
 formulation, the Jaffe-Witten statement of the Yang-Mills problem included.  The proof is constructive over the positive naturals with the sum and the
 product; this choice was made explicitly to enable Lean to emit certified brackets of physical quantities directly comparable to Montecarlo and experimental results.
