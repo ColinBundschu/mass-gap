@@ -39,14 +39,7 @@ Formalized:
   `main.clauseI_all` holds the tie at every member of the
   classification, the two committed chain reads as parametric
   theorems over the rank at the diagonal windows with `E8`'s
-  coupled window its own case.  Beneath it sit
-  the count certificates (`lem:inertia`, `thm:certconstruct`,
-  `lem:stage`, `lem:split`, `lem:stagesplit`, `lem:hermitesign`,
-  `lem:deckfactor`, `thm:windowsep`, `lem:cellcount`) and the chain
-  (`lem:fiberdec`, `lem:grading`, `lem:relfiber`, `thm:decimation`,
-  `lem:chargedcell`, `thm:truncation`, `lem:dualtrunc`,
-  `lem:contactcell`, `lem:freecell`, `thm:flatstep`, `lem:speccut`,
-  `thm:divisorid`, `thm:gappos`).
+  coupled window its own case.
 - **Clause (ii), the contact value `(3, H_r)`, is closed at every
   member**: `main.clauseII_all` holds it at the whole
   classification: the order count, the base collection, the
