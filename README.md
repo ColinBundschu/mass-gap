@@ -72,7 +72,7 @@ These questions are real and were raised, in roughly this order and roughly this
 
 ### "This pattern-matches to crankery: solo author, invented vocabulary, Millennium-problem claim. Why should anyone read a more than 100 page PDF of dense, idiosyncratic mathematics?"
 
-Even with the terrible priors aside, at least initially, I argue that no one should read the paper. And if the only deliverable was the paper, I would have never begun this project. Instead, the construction is built so that every claim in the development will be machine-checked by Lean with zero axioms. The intended order becomes: verify the Lean corresponds to real world meaning, then check that the Lean compiles axiom-free.
+Even with the terrible priors aside, at least initially, I argue that no one should read the paper. And if the only deliverable was the paper, I would have never begun this project. Instead, the construction is built so that every claim in the development will be machine-checked by Lean with zero axioms. The intended order becomes: verify the top level theorems in Lean correspond to real world meaning, then check that the Lean compiles axiom-free.
 
 ### "Why does the paper use highly idiosyncratic language at all, such as 'reads,' 'balance pairs,' 'located,' 'priced', instead of standard terminology?"
 
