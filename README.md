@@ -68,7 +68,7 @@ The snapshot is taken from the development repository at commit
 
 ## FAQ
 
-These questions are real: they were raised, in roughly this order and roughly this tone, by a skeptical reviewer who read [docs/theory.tex](docs/theory.tex). Ultimately the reviewer located no internal error (this is not to be taken as a statement of correctness).
+These questions are real and were raised, in roughly this order and roughly this tone, by two separate skeptical reviewers (one a human physicist, the other an AI model) who read [docs/theory.tex](docs/theory.tex). The presentation of the questions is an aggregate of the two, although it is worth noting the physicist's questions formed a strict subset of the AI's. Ultimately neither of them located an internal error (this is not to be taken as a statement of correctness).
 
 ### "This pattern-matches to crankery: solo author, invented vocabulary, Millennium-problem claim. Why should anyone read a more than 100 page PDF of dense, idiosyncratic mathematics?"
 
