@@ -89,7 +89,7 @@ The deviations are systematic, not decorative: they mark exactly the places wher
 
 ### "There is no bibliography. Zero citations."
 
-This is deliberate and **temporary**. It stems from my workflow: I use AI to proofread changes I make to the proofs in the paper, but for it to cross check my work with other places in the tex it must load the entire paper into context every time. The tex is sufficiently large that it consumes around 500,000 tokens to load in completely. This is both monetarily expensive and gives me little working context to do actual proof revision work with the model. Once the Lean transcription has finished and verified the paper's correctness, I will add in an abstract, introduction, citations, etc.
+This is deliberate and **temporary**. It stems from my workflow: I use AI to proofread changes I make to the proofs in the paper, but for it to cross check my work with other places in the tex it must load the entire paper into context every time. The tex is sufficiently large that it consumes around 500,000 tokens to load in completely. This is both monetarily expensive and gives me little working context to argue with the model's feedback, which is frequently wrong about fixing things but mercilessly good at identifying places where I have glossed or taken shortcuts. Once the Lean transcription has finished and verified the paper's correctness, I will add in an abstract, introduction, citations, etc.
 
 ### "Renormalization, asymptotic freedom, beta function, continuum limit: zero occurrences. A Yang–Mills proof cannot fail to contain these."
 
