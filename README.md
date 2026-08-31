@@ -72,7 +72,7 @@ These questions are real: they were raised, in roughly this order and roughly th
 
 ### "This pattern-matches to crankery: solo author, invented vocabulary, Millennium-problem claim. Why should anyone read a more than 100 page PDF of dense, idiosyncratic mathematics?"
 
-Even with the terrible priors aside, at least initially, I argue that no one should read the paper. And if the only deliverable was the paper, I would have never begun this project. However, the construction is built so that no one has to to verify the correctness of the claims. Every claim in the development is either a finite integer computation, a located (bracketed, certified) real-algebraic datum, or a displayed identity, and the work-in-progress machine-checked portion is verified from zero axioms. The intended reading order is: check the statements of what is mechanically checked by Lean, then read the rest as desired to understand how it is implemented.
+Even with the terrible priors aside, at least initially, I argue that no one should read the paper. And if the only deliverable was the paper, I would have never begun this project. However, the construction is built so that no one has to verify the correctness of the claims. Every claim in the development is either a finite integer computation, a located (bracketed, certified) real-algebraic datum, or a displayed identity, and the work-in-progress machine-checked portion is verified from zero axioms. The intended reading order is: check the statements of what is mechanically checked by Lean, then read the rest as desired to understand how it is implemented.
 
 ### "Why does the paper use highly idiosyncratic language at all, such as 'reads,' 'balance pairs,' 'located,' 'priced', instead of standard terminology?"
 
