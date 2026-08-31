@@ -66,6 +66,59 @@ Open (no Lean yet):
 The snapshot is taken from the development repository at commit
 `7e91dceb532f13d0df40deaca9a1a38203df29c5` (2026-08-30).
 
+## Proof Methodology
+
+Every Lean declaration depends solely on the empty axiom set. Specifically, this means no
+`propext`, `Quot.sound`, `Classical.choice`, `sorryAx`, and no native
+reflection (`native_decide`); the kernel checks everything.  The package is
+Lean core alone: `lake-manifest.json` lists no packages and no module
+imports outside `MassGap` and `MassGapChecks`.  No declaration is
+`noncomputable`, `partial`, `unsafe`, `opaque` or an `axiom`; every object
+computes by kernel reduction.  Every public `Prop`-valued definition comes with its `Decidable` instance beside it.  The batteries in
+[lean/MassGapChecks/](lean/MassGapChecks/) decide directly by kernel `decide`.
+
+## Building
+
+Install [elan](https://github.com/leanprover/elan); `lean-toolchain` pins
+`leanprover/lean4:v4.32.2`, which elan fetches on first use.  Then
+
+    cd lean
+    lake build
+
+builds both libraries and every battery.  The build has no
+network dependency past the toolchain.  `lakefile.toml` sets
+`warningAsError`, so a `sorry` anywhere in either library is a build error.
+
+## Verifying the axiom claim
+
+After the build,
+
+    lake env lean AxiomCheck.lean
+
+walks every constant of both libraries with `Lean.collectAxioms` and prints
+
+    constants read: 31881
+    constants depending on axioms: 0
+
+ending in an error if any constant depends on any axiom.  A single
+declaration reads the same way in any file importing the libraries:
+
+    import MassGap
+    #print axioms main.clauseII
+    #print axioms gappos.windowCut
+
+each answering `does not depend on any axioms`.
+
+## Reading the tree
+
+- [lean/MassGap.lean](lean/MassGap.lean) lists the content modules in
+  dependency order, from `Ground` (the positive naturals with pairs as data,
+  `def:ground`) through the label calculus, the interfaces, the certificates
+  and the chain to `Main`.
+- [lean/MassGapChecks/](lean/MassGapChecks/) mirrors the content modules
+  file for file. Each battery pins committed data, and a refusal
+  (`example : ¬ …`) pins the hypothesis it isolates.
+
 ## FAQ
 
 These questions are real and were raised, in roughly this order and roughly this tone, by two separate skeptical reviewers (one a human physicist, the other an AI model) who read [docs/theory.tex](docs/theory.tex). The presentation of the questions is an aggregate of the two, although it is worth noting the physicist's questions formed a strict subset of the AI's. Ultimately neither of them located an internal error (this is not to be taken as a statement of correctness).
@@ -137,59 +190,6 @@ A rough sketch:
 - Write a standalone repository (hopefully with community input) to define a neutral statement of the Yang-Mills problem in Lean using conventional types and Mathlib. Like with this repo it will be tex-first and the lean will formalize it.
 - Write an adapter that connects my proof to the neutral interface
 - Submit the work for peer review and possibly also to somewhere like [Palomar](https://palomar-registry.org/)
-
-## Proof Methodology
-
-Every Lean declaration depends solely on the empty axiom set. Specifically, this means no
-`propext`, `Quot.sound`, `Classical.choice`, `sorryAx`, and no native
-reflection (`native_decide`); the kernel checks everything.  The package is
-Lean core alone: `lake-manifest.json` lists no packages and no module
-imports outside `MassGap` and `MassGapChecks`.  No declaration is
-`noncomputable`, `partial`, `unsafe`, `opaque` or an `axiom`; every object
-computes by kernel reduction.  Every public `Prop`-valued definition comes with its `Decidable` instance beside it.  The batteries in
-[lean/MassGapChecks/](lean/MassGapChecks/) decide directly by kernel `decide`.
-
-## Building
-
-Install [elan](https://github.com/leanprover/elan); `lean-toolchain` pins
-`leanprover/lean4:v4.32.2`, which elan fetches on first use.  Then
-
-    cd lean
-    lake build
-
-builds both libraries and every battery.  The build has no
-network dependency past the toolchain.  `lakefile.toml` sets
-`warningAsError`, so a `sorry` anywhere in either library is a build error.
-
-## Verifying the axiom claim
-
-After the build,
-
-    lake env lean AxiomCheck.lean
-
-walks every constant of both libraries with `Lean.collectAxioms` and prints
-
-    constants read: 31881
-    constants depending on axioms: 0
-
-ending in an error if any constant depends on any axiom.  A single
-declaration reads the same way in any file importing the libraries:
-
-    import MassGap
-    #print axioms main.clauseII
-    #print axioms gappos.windowCut
-
-each answering `does not depend on any axioms`.
-
-## Reading the tree
-
-- [lean/MassGap.lean](lean/MassGap.lean) lists the content modules in
-  dependency order, from `Ground` (the positive naturals with pairs as data,
-  `def:ground`) through the label calculus, the interfaces, the certificates
-  and the chain to `Main`.
-- [lean/MassGapChecks/](lean/MassGapChecks/) mirrors the content modules
-  file for file. Each battery pins committed data, and a refusal
-  (`example : ¬ …`) pins the hypothesis it isolates.
 
 ## Citing
 
