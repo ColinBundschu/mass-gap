@@ -174,7 +174,7 @@ C_2(m\theta)=m(m+r)
 C_2(m)=m^2
 $$
 
-in the abelian theory (`prop:anchor`). Thus the two ingredients that produce the mass point—the adjoint self-fusion channel and its positive fusion strictness—are absent. The argument therefore neither states nor derives a mass gap for $U(1)$.
+in the abelian theory (`prop:anchor`). Thus the two ingredients that produce the mass point (the adjoint self-fusion channel and its positive fusion strictness) are absent. The argument therefore neither states nor derives a mass gap for $U(1)$.
 
 ### "The theorem, translated through its own dictionary, says aΔ is bounded below toward weak coupling. Forty years of Monte Carlo scaling studies say aΔ ~ e^(−c/g²). Isn't the paper simply contradicted by the data?"
 
