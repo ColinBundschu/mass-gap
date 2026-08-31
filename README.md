@@ -79,17 +79,17 @@ Even with the terrible priors aside, at least initially, I argue that no one sho
 First, maybe it shouldn't. But it did not end up this way accidentally: a lot of time was spent trying to conform to standard terminology where possible, and each deviation was chosen for a reason and, where one exists, a literature precedent. The paper carries its own translation table (`rem:dictionary`, "The names"). The most salient cases:
 
 - **Balance pairs `⟨u:v⟩` and scalar pairs `[a:b]`.** The entire development is constructive over the positive naturals: there is no subtraction and no division as primitive operations. `⟨u:v⟩` is the difference u−v and `[a:b]` the quotient a/b, *as data with their defining identities* rather than as operations assumed to exist. This is what lets every statement be a statement about naturals, and what made an axiom-free Lean formalization possible.
-- **"Located."** Bishop's constructive analysis, by name (`rem:dictionary`). A located root or datum comes with an isolating bracket and a modulus — it is a real number you can compute against, not a real number you have merely proven to exist.
+- **"Located."** Bishop's constructive analysis, by name (`rem:dictionary`). A located root or datum comes with an isolating bracket and a modulus. It is a real number you can compute against, not a real number you have merely proven to exist.
 - **"Reversal count."** The negative index of inertia; the two-splits-one-count clause is Sylvester's law of inertia (`lem:inertia`, named in the dictionary). Eigenvalue counting throughout is exact integer LDLᵀ arithmetic, never floating-point.
 - **"Deck relation / deck families."** The double cover w = z + 1/z (Joukowski map); the chord t = 2cos k is the Chebyshev variable of the momentum fiber (`rem:dictionary`). Momentum on the lattice is handled by commuting chord operators, exactly.
-- **"Labels," "blocks," "contents."** Irreducible representations, their carriers, and weights. The rebuild from scratch (through the Weyl character formula, fusion rules, and Weingarten calculus) exists so that the fusion interface (`con:fusion`) is *derived data*, not imported facts — a requirement for the formalization.
+- **"Labels," "blocks," "contents."** Irreducible representations, their carriers, and weights. The rebuild from scratch (through the Weyl character formula, fusion rules, and Weingarten calculus) exists so that the fusion interface (`con:fusion`) is *derived data*, which is a requirement for the formalization.
 - **"Residue" r.** The dual Coxeter number less one, r + 1 = h∨ (`rem:dictionary`, "The members"), the one scalar the whole classification is organized around.
 
 The deviations are systematic, not decorative: they mark exactly the places where the standard term presumes classical operations (subtraction, division, limits, choice) that the construction refuses to presume.
 
 ### "There is no bibliography. Zero citations."
 
-Deliberate and temporary. I use AI to proofread changes I make to the paper, which is sufficiently large that it consumes around 500,000 tokens to load in completely. This is both expensive and gives me little working context afterwards. Once the Lean transcription has finished and verified the paper's correctness, I will add in an abstract, introduction, citations, etc.
+This is deliberate and **temporary**. It stems from my workflow: I use AI to proofread changes I make to the proofs in the paper, but for it to cross check my work with other places in the tex it must load the entire paper into context every time. The tex is sufficiently large that it consumes around 500,000 tokens to load in completely. This is both monetarily expensive and gives me little working context to do actual proof revision work with the model. Once the Lean transcription has finished and verified the paper's correctness, I will add in an abstract, introduction, citations, etc.
 
 ### "Renormalization, asymptotic freedom, beta function, continuum limit: zero occurrences. A Yang–Mills proof cannot fail to contain these."
 
