@@ -143,7 +143,7 @@ These terms play different roles in the conventional approach. Renormalization a
 
 The running scale is replaced by the **unit map** (`rem:dictionary`): at physical gap $\Delta$, the spacing is $a=h/(\sqrt{2},\Delta)$ for the certified corner height $h$, one equation per scale, with the complete trajectory given as a located function. Calibration is therefore an output rather than a scheme choice; the scheme dependence that remains is isolated in the corner outputs (`thm:decomp`).
 
-The manuscript also addresses the standard weak-coupling picture directly. The weak-coupling entry in `rem:dictionary` states the classical comparison—lattice Maxwell theory in each Lie-algebra direction, with massless dispersion as $k\to0$—and identifies the claimed gap as the certified lift above that comparison. The resulting conflict with asymptotic-freedom scaling is addressed separately below.
+The manuscript also addresses the standard weak-coupling picture directly. The weak-coupling entry in `rem:dictionary` states lattice Maxwell theory in each Lie-algebra direction with massless dispersion as $k\to0$ as the classical comparison and identifies the claimed gap as the certified lift above that comparison. The resulting conflict with asymptotic-freedom scaling is addressed separately below.
 
 ### "Wouldn't this argument also 'prove' a mass gap for $U(1)$? If yes, it proves too much."
 
