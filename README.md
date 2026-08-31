@@ -150,7 +150,7 @@ The deviations are systematic, not decorative: they mark exactly the places wher
 
 ### "There is no bibliography. Zero citations."
 
-This is deliberate and **temporary**. It stems from my workflow: I use AI to proofread changes I make to the proofs in the paper, but for it to cross check my work with other places in the tex it must load the entire paper into context every time. The tex is sufficiently large that it consumes around 500,000 tokens to load in completely. This is both monetarily expensive and gives me little working context to engage with the model's feedback, which is focused primarily on identifying places where I have glossed or taken shortcuts. Once the Lean transcription has finished (thereby verifying the paper's correctness), I will add in an abstract, introduction, citations, etc.
+This is **temporary** and I make no attempt to justify public mathematical claims without proper literature citations. The reason I have not fixed it and will not fix until the Lean transcription has finished: I use AI to proofread changes I make to the proofs in the paper, but for it to cross check my work with other places in the tex it must load the entire paper into context every time. The tex is sufficiently large that it consumes around 500,000 tokens to load in completely. This is both monetarily expensive and gives me little working context to engage with the model's feedback. I will add in an abstract, introduction, citations, etc. once the transcription has finished.
 
 ### "Renormalization, asymptotic freedom, beta function, continuum limit: zero occurrences. A Yang–Mills proof cannot fail to contain these."
 
@@ -158,15 +158,45 @@ It can if nothing is expanded. Those words name tools for controlling a perturba
 
 ### "Wouldn't this argument also 'prove' a mass gap for U(1)? If yes, it proves too much."
 
-No, it does not prove a mass gap for U(1). The mechanism dies abelianly, at two named places. First, the channel's base is c₁, the multiplicity of the adjoint in adj⊗adj (`con:xfusion`): positive for every compact simple group, zero for U(1), and with c₁ = 0 the boundary resolvent G₀ = z + c₁zG₀ degenerates to G₀ = z, meaning no mass point, no bound state, and no gap coordinate. Second, the charged tower reads C₂(mθ) = m(m+r) against the abelian tower's m²; the paper names the difference explicitly: "The linear coefficient r is fusion strictness: the abelian tower reads C₂ = m² and this one m(m+r)" (`prop:anchor`). Non-abelian structure is structurally necessary at every stage of the gap mechanism, exactly as the physics demands.
+No. The theorem ranges over compact simple groups, so $U(1)$ is not a member of its domain. More importantly, the gap mechanism requires simple-group data that have no literal $U(1)$ specialization: a highest-root adjoint label $\theta$, its self-fusion channel, and the associated fusion-strictness parameter. Since $U(1)$ has no root system and hence no such $\theta$, $c_1$ is not a $U(1)$ multiplicity that can simply be evaluated as zero.
+
+The abelian comparison nevertheless identifies two precise failures. If the absent non-abelian channel is represented by zero channel weight, the boundary resolvent
+
+$$
+G_0=z+c_1zG_0
+$$
+
+reduces to $G_0=z$, leaving no mass pole, bound state, or gap coordinate. Independently, the charged tower loses the strict linear term:
+
+$$
+C_2(m\theta)=m(m+r)
+\qquad\longrightarrow\qquad
+C_2(m)=m^2
+$$
+
+in the abelian theory (`prop:anchor`). Thus the two ingredients that produce the mass point—the adjoint self-fusion channel and its positive fusion strictness—are absent. The argument therefore neither states nor derives a mass gap for $U(1)$.
 
 ### "The theorem, translated through its own dictionary, says aΔ is bounded below toward weak coupling. Forty years of Monte Carlo scaling studies say aΔ ~ e^(−c/g²). Isn't the paper simply contradicted by the data?"
 
-When stated precisely, this is not a contradiction. Asymptotic-freedom scaling of aΔ comes from perturbative renormalization-group analysis plus numerical simulation: a very well-supported expectation, but not a theorem. The paper proves the negation of that expectation's premise and says so in as many words (`rem:dictionary`: the standard premise "is that the gap in lattice units, aΔ, falls under every floor toward the contact end... Its negation reads: a positive floor on a positive extent, aΔ bounded below toward weak coupling"). One of the two pictures is wrong, and the question is decidable by the constructive apparatus this repository provides: the scheme bridge b_f^equiv = 2n·b_X (`thm:bridge`) calibrates the coupling coordinate against the fundamental-character action, and the certified brackets are finite objects a simulation can be run against. Until that comparison is run, the theorem and the standard scaling picture cannot both describe the measured theory. The repository's position is not "trust the theorem over the data." It is "here is the finite, decisive test."
+This is a direct conflict with the standard weak-coupling picture and its numerical evidence, though not an internal logical contradiction. The manuscript predicts a positive floor where the conventional picture predicts decay to zero. A scheme-matched evaluation of the stated certificates can therefore falsify the claim. Asymptotic-freedom scaling of aΔ comes from perturbative renormalization-group analysis plus numerical simulation: a very well-supported expectation, but not a theorem. The paper proves the negation of that expectation's premise and says so in as many words (`rem:dictionary`: the standard premise "is that the gap in lattice units, aΔ, falls under every floor toward the contact end... Its negation reads: a positive floor on a positive extent, aΔ bounded below toward weak coupling"). One of the two pictures is wrong, and the question is decidable by the constructive apparatus this repository provides: the scheme bridge b_f^equiv = 2n·b_X (`thm:bridge`) calibrates the coupling coordinate against the fundamental-character action, and the certified brackets are finite objects a simulation can be run against. Until that comparison is run, the theorem and the standard scaling picture cannot both describe the measured theory. The repository's position is not "trust the theorem over the data." It is "here is the finite, decisive test."
 
 ### "Does the construction satisfy exact Euclidean covariance, given that the corner height (= √2·aΔ) is floored? You prove the degree-4 anisotropy has *positive multiplicity*. Your own theorem seems to forbid exact O(4) invariance."
 
-It is worth going through this carefully and slowly. This was the reviewer's last standing structural objection and the most difficult one for them to overcome. The answer is a mechanism, not a limit. The question presumes the continuum functions are limits of the lattice correlation functions, which never become covariant at any fixed spacing. The construction runs the other way: the reconstructed relativistic families are defined on the **spectral side**, as weight folds over the located roots at the fiber's chord, read at the cone's coordinates (`thm:reconstruct`(ii), `lem:cone`). That is, they are read from the **degree-two** spectral data: located mass, weights, isotropic cone. And at degree two, `thm:restoration` item 1 is an exact ring identity: the degree-2 invariant rings of B_d and of O(d) *coincide*, at every number of arguments and every dimension. The scoping sentence "the statement is about which forms exist rather than about which are small" is the mechanism, not a caveat: at degree two, anisotropic forms **do not exist**. Nothing is approximately small, because there is nothing to be small. The certified degree-4 breaking (positive multiplicity, suppressed two powers of the spacing) never enters the reconstructed object at all; it lives in the certified bracket *widths around* it and the width within which the lattice instrument agrees with the covariant object. The floor on the corner height bounds a bracket width; it does not deform the covariant point inside the bracket.
+The answer is a reconstruction, not a claim that the lattice correlation functions become exactly covariant at some fixed spacing. At finite spacing the lattice families remain $B_d$-invariant and contain genuine degree-four anisotropic terms. The construction does not discard or deny those terms in the lattice data.
+
+Instead, the lattice system acts as an instrument that locates spectral data: masses, weights, and the quadratic cone. The reconstructed relativistic families are then defined on the spectral side, as weight folds over the located roots at the fiber’s chord, evaluated at the cone’s coordinates (`thm:reconstruct`(ii), `lem:cone`). The load-bearing statement is therefore the factorization
+
+$$
+\text{lattice bracket data}
+\longrightarrow
+\text{located roots, weights, and quadratic cone}
+\longrightarrow
+\text{relativistic families}.
+$$
+
+At degree two, `thm:restoration` item 1 gives an exact ring identity: the degree-two invariant rings of $B_d$ and $O(d)$ coincide, for every number of arguments and in every dimension. Consequently, the cone through which the reconstruction factors is exactly isotropic; there is no degree-two anisotropic form that could deform it. This ring identity alone would not establish covariance of the reconstructed families. What does the work is the additional factorization in `thm:reconstruct`: the reconstructed object depends on the located spectral data and the quadratic cone, not on the higher-degree lattice invariants.
+
+The certified degree-four breaking therefore remains part of the comparison data. It controls the brackets within which the finite-spacing lattice instrument agrees with the reconstructed covariant object, but it is not an input to that object’s cone or covariance law. Likewise, the positive floor on the corner height controls the certified comparison width; it does not deform the covariant spectral point inside that bracket.
 
 ### "Translations are the lattice's ℤᵈ. The Wightman axioms quantify over ℝ⁴."
 
@@ -186,7 +216,7 @@ The status section further up this readme is the most accurate and current answe
 
 ### "Has anyone actually verified this? One reviewer finding no error is not verification."
 
-Two ambiguities in the question need to be addressed before I answer it. First, I would argue that the word verified is undefined because what counts as verified varies from person to person even within the serious mathematical community. Many verified proofs have fallen when checked by theorem solvers. I tend to take a strict reading to verified, and I hold myself to axiom-free Lean as the standard. Second, Lean only can tell you if a proof is correct, not if it is meaningful in any sense outside of its kernel. As a result, I am still a strong believer in peer review, and I welcome all feedback constructively given especially with regards to whether or not the proofs I make actually satisfy the claims a kernel cannot check. This work has not yet undergone formal peer review. Therefore by my own definition, the current work is not verified.
+This work has not been independently verified. The current release has a reproducible Lean build and an empty axiom report for the declarations listed above. That establishes derivability of the encoded statements. It does not establish that the remaining TeX has been transcribed, that the dictionary faithfully states conventional Yang-Mills, or that the argument has survived expert review.
 
 ## Citing
 
