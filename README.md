@@ -63,6 +63,12 @@ Open (no Lean yet):
   items above), and the reverse correspondence walk (every tex
   label reached from a Lean namespace).
 
+Long term future work:
+
+- Write a standalone repository (hopefully with community input) to define a neutral statement of the Yang-Mills problem in Lean using conventional types and Mathlib. Like with this repo it will be tex-first and the lean will formalize it.
+- Write an adapter that connects my proof to the neutral interface
+- Submit the work for peer review and possibly also to somewhere like [Palomar](https://palomar-registry.org/)
+
 The snapshot is taken from the development repository at commit
 `7e91dceb532f13d0df40deaca9a1a38203df29c5` (2026-08-30).
 
@@ -181,15 +187,6 @@ The status section further up this readme is the most accurate and current answe
 ### "Has anyone actually verified this? One reviewer finding no error is not verification."
 
 Two ambiguities in the question need to be addressed before I answer it. First, I would argue that the word verified is undefined because what counts as verified varies from person to person even within the serious mathematical community. Many verified proofs have fallen when checked by theorem solvers. I tend to take a strict reading to verified, and I hold myself to axiom-free Lean as the standard. Second, Lean only can tell you if a proof is correct, not if it is meaningful in any sense outside of its kernel. As a result, I am still a strong believer in peer review, and I welcome all feedback constructively given especially with regards to whether or not the proofs I make actually satisfy the claims a kernel cannot check. This work has not yet undergone formal peer review. Therefore by my own definition, the current work is not verified.
-
-### "What are your plans for this project moving forward?" (Not actually asked by the reviewer, but I wish it had been!)
-
-A rough sketch:
-
-- Finish the `thm:main` Lean transcription
-- Write a standalone repository (hopefully with community input) to define a neutral statement of the Yang-Mills problem in Lean using conventional types and Mathlib. Like with this repo it will be tex-first and the lean will formalize it.
-- Write an adapter that connects my proof to the neutral interface
-- Submit the work for peer review and possibly also to somewhere like [Palomar](https://palomar-registry.org/)
 
 ## Citing
 
