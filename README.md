@@ -70,13 +70,9 @@ The snapshot is taken from the development repository at commit
 
 These questions are real: they were raised, in roughly this order and roughly this tone, by a skeptical reviewer who then read every line of [docs/theory.tex](docs/theory.tex), found each answered in the text, and located no internal error.
 
----
-
 ### "This pattern-matches to crankery: solo author, invented vocabulary, Millennium-problem claim. Why should anyone read a more than 100 page PDF of dense, idiosyncratic mathematics?"
 
 Even with the terrible priors aside, at least initially, I argue that no one should read the paper. And if the only deliverable was the paper, I would have never begun this project. However, the construction is built so that no one has to to verify the correctness of the claims. Every claim in the development is either a finite integer computation, a located (bracketed, certified) real-algebraic datum, or a displayed identity, and the work-in-progress machine-checked portion is verified from zero axioms. The intended reading order is: check the statements of what is mechanically checked by Lean, then read the rest as desired to understand how it is implemented.
-
----
 
 ### "Why does the paper use highly idiosyncratic language at all, such as 'reads,' 'balance pairs,' 'located,' 'priced', instead of standard terminology?"
 
@@ -91,67 +87,45 @@ First, maybe it shouldn't. But it did not end up this way accidentally: a lot of
 
 The deviations are systematic, not decorative: they mark exactly the places where the standard term presumes classical operations (subtraction, division, limits, choice) that the construction refuses to presume.
 
----
-
 ### "There is no bibliography. Zero citations."
 
 Deliberate and temporary. I use AI to proofread changes I make to the paper, which is sufficiently large that it consumes around 500,000 tokens to load in completely. This is both expensive and gives me little working context afterwards. Once the Lean transcription has finished and verified the paper's correctness, I will add in an abstract, introduction, citations, etc.
-
----
 
 ### "Renormalization, asymptotic freedom, beta function, continuum limit: zero occurrences. A Yang–Mills proof cannot fail to contain these."
 
 It can if nothing is expanded. Sit with that for a second. Those words name tools for controlling a perturbative expansion or a limit of measures. This construction is Hamiltonian and exact at every coupling, so there is no series whose divergences need renormalizing. What replaces the running coupling is the **unit map** (`rem:dictionary`): at a physical gap Δ the spacing is a = h/(√2Δ) at the certified corner height h, one equation per scale, the whole trajectory a located function — calibration is an output, not a scheme choice, and the scheme dependence that does exist is quarantined in the corner outputs (`thm:decomp`). The paper also engages the standard weak-coupling picture directly rather than ignoring it: `rem:dictionary`'s weak-coupling item states the classical comparison (lattice Maxwell per Lie-algebra direction, massless dispersion at k → 0) and identifies the gap as the certified lift *above* that comparison. If your question is "but doesn't the result then conflict with asymptotic-freedom scaling?" then that is the right question, and it has its own entry below.
 
----
-
 ### "Wouldn't this argument also 'prove' a mass gap for U(1)? If yes, it proves too much."
 
 No, it does not prove a mass gap for U(1). The mechanism dies abelianly, at two named places. First, the channel's base is c₁, the multiplicity of the adjoint in adj⊗adj (`con:xfusion`): positive for every compact simple group, zero for U(1), and with c₁ = 0 the boundary resolvent G₀ = z + c₁zG₀ degenerates to G₀ = z, meaning no mass point, no bound state, and no gap coordinate. Second the charged tower reads C₂(mθ) = m(m+r) against the abelian tower's m²; the paper names the difference explicitly: "The linear coefficient r is fusion strictness: the abelian tower reads C₂ = m² and this one m(m+r)" (`prop:anchor`). Non-abelian structure is structurally necessary at every stage of the gap mechanism, exactly as the physics demands.
-
----
 
 ### "The theorem, translated through its own dictionary, says aΔ is bounded below toward weak coupling. Forty years of Monte Carlo scaling studies say aΔ ~ e^(−c/g²). Isn't the paper simply contradicted by the data?"
 
 When stated precisely this is not a contradiction. Asymptotic-freedom scaling of aΔ is perturbative renormalization-group analysis plus numerical simulation is a very well-supported expectation, not a theorem. The paper proves the negation of that expectation's premise and says so in as many words (`rem:dictionary`: the standard premise "is that the gap in lattice units, aΔ, falls under every floor toward the contact end... Its negation reads: a positive floor on a positive extent, aΔ bounded below toward weak coupling"). One of the two pictures is wrong, and the question is *decidable* by the constructive apparatus I have built: the scheme bridge b_f^equiv = 2n·b_X (`thm:bridge`) calibrates the coupling coordinate against the fundamental-character action, and the certified brackets are finite objects a simulation can be run against. **Until that comparison is run, the theorem and the standard scaling picture cannot both describe the measured theory.** The repository's position is not "trust the theorem over the data"; it is "here is the finite, decisive test."
 
----
-
 ### "Does the construction satisfy exact Euclidean covariance, given that the corner height (= √2·aΔ) is floored? You prove the degree-4 anisotropy has *positive multiplicity*. Your own theorem seems to forbid exact O(4) invariance."
 
 It is worth going through this carefully and slowly. This was the reviewer's last standing structural objection and the most difficult one for them to overcome. The answer is a mechanism, not a limit. The question presumes the continuum functions are limits of the lattice correlation functions, which never become covariant at any fixed spacing. The construction runs the other way: the reconstructed relativistic families are defined on the **spectral side**, as weight folds over the located roots at the fiber's chord, read at the cone's coordinates (`thm:reconstruct`(ii), `lem:cone`). That is, they are read from the **degree-two** spectral data: located mass, weights, isotropic cone. And at degree two, `thm:restoration` item 1 is an exact ring identity: the degree-2 invariant rings of B_d and of O(d) *coincide*, at every number of arguments and every dimension. The scoping sentence "the statement is about which forms exist rather than about which are small" is the mechanism, not a caveat: at degree two, anisotropic forms **do not exist**. Nothing is approximately small, because there is nothing to be small. The certified degree-4 breaking (positive multiplicity, suppressed two powers of the spacing) never enters the reconstructed object at all; it lives in the certified bracket *widths around* it and the width within which the lattice instrument agrees with the covariant object. The floor on the corner height bounds a bracket width; it does not deform the covariant point inside the bracket.
-
----
 
 ### "Translations are the lattice's ℤᵈ. The Wightman axioms quantify over ℝ⁴."
 
 Time is continuous by construction (the Hamiltonian's own). Spatial ℝᵈ acts on the reconstructed families exactly, by phase, at the momentum coordinates where they are defined (the chord cells, `thm:reconstruct`(ii)); the lattice translates are the instrument that locates the data, entering through the fibering (`lem:fiberdec`) and the momentum transform (`thm:restoration`), and the reader's continuum point "reads itself in through the rationals beside it." This is the constructive meaning of a function on ℝᵈ: certified brackets with moduli at every rational datum. The same side-switch as the covariance entry: exact at the reconstructed object, certified widths at the instrument.
 
----
-
 ### "Why isn't the Osterwalder–Schrader reconstruction performed? The Clay text cites those axioms."
 
 Because the construction is Hamiltonian, and OS reconstruction is the Euclidean route *to* a Hamiltonian theory with a spectrum condition, which this formulation holds by construction (`rem:dictionary`, reconstruction item). The clause "axiomatic properties at least as strong as those cited" is answered property by property rather than by re-deriving the properties from a measure: positivity is the families' own Gram read (`thm:reconstruct`(iii)); the spectrum condition is the cut itself, with the gap `thm:main`(i); locality is exact commutativity at equal times with the cone read at unequal times; covariance is the restoration counts' (entries above); growth is capped (`thm:groundreads`(v)); the vacuum is cyclic (`lem:statespace`) and unique as a divisor count (`thm:SO`); and nontriviality is a theorem. The connected four-point read holds a positive located floor separating the object from every generalized free field (`lem:fourpoint`).
-
----
 
 ### "K = c₁³e^(−H_r) smells like numerology because it has the harmonic numbers in an exponent. Is it even a computed energy?"
 
 What the theory *determines* is the contact pair (3, H_r) as two divisor reads: the order count 3 = 1 + 2 (the mass point's simple pole plus the ι-symmetrized weight's two base orders, off the renewal witness G₀ = z + c₁zG₀, `thm:channeldiv`) read at the base c₁, and the ruler excess H_r (the tower's generating object against the harmonic ruler, an exact finitely-supported polynomial identity, `thm:walkresidue`). The exponential form is those coordinates read against the classical rulers (ln c₁, 1) described as "the axes the usual formulation measures with" (`rem:dictionary`). Nothing is fit and nothing converges: the harmonic number arrives as the value at 1 of an exact polynomial with the geometric derivative, forced by the tower pairing φ_m = r/(m+r). A reader who wants the level as an energy restores the two scales explicitly: K·E₀·C₂(adj) (`rem:dictionary`, "The gap").
 
----
-
 ### "The Lean formalization doesn't cover the continuum theorems. So what does it actually prove?"
 
 The status section further up this readme is the most accurate and current answer to this question, although it may lag progress in the code.
 
----
-
 ### "Has anyone actually verified this? One reviewer finding no error is not verification."
 
 I would expand "anyone" to include "anything" (But first, literally, yes to the question, that is why I am writing the FAQ). Why anything? Because the entire point of using Lean is to act as a verification that the work stands without anyone propping it up. I am a strong believer in peer review, and I welcome all feedback constructively and honestly given. But I also think that humans make mistakes that theorem solvers like Lean do not. Once the work is complete to the best of my abilities in Lean, I will seek peer review.
-
----
 
 ### "What are your plans for this project moving forward?" (Not actually asked by the reviewer, but I wish it had been!)
 
