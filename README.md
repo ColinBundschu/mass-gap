@@ -68,7 +68,7 @@ The snapshot is taken from the development repository at commit
 
 ## FAQ
 
-These questions are real: they were raised, in roughly this order and roughly this tone, by a skeptical reviewer who read [docs/theory.tex](docs/theory.tex). Ultimately they located no internal error (this is not to be taken as a statement of correctness).
+These questions are real: they were raised, in roughly this order and roughly this tone, by a skeptical reviewer who read [docs/theory.tex](docs/theory.tex). Ultimately the reviewer located no internal error (this is not to be taken as a statement of correctness).
 
 ### "This pattern-matches to crankery: solo author, invented vocabulary, Millennium-problem claim. Why should anyone read a more than 100 page PDF of dense, idiosyncratic mathematics?"
 
