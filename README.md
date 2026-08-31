@@ -101,7 +101,7 @@ No, it does not prove a mass gap for U(1). The mechanism dies abelianly, at two 
 
 ### "The theorem, translated through its own dictionary, says aΔ is bounded below toward weak coupling. Forty years of Monte Carlo scaling studies say aΔ ~ e^(−c/g²). Isn't the paper simply contradicted by the data?"
 
-When stated precisely this is not a contradiction. Asymptotic-freedom scaling of aΔ is perturbative renormalization-group analysis plus numerical simulation is a very well-supported expectation, not a theorem. The paper proves the negation of that expectation's premise and says so in as many words (`rem:dictionary`: the standard premise "is that the gap in lattice units, aΔ, falls under every floor toward the contact end... Its negation reads: a positive floor on a positive extent, aΔ bounded below toward weak coupling"). One of the two pictures is wrong, and the question is *decidable* by the constructive apparatus I have built: the scheme bridge b_f^equiv = 2n·b_X (`thm:bridge`) calibrates the coupling coordinate against the fundamental-character action, and the certified brackets are finite objects a simulation can be run against. **Until that comparison is run, the theorem and the standard scaling picture cannot both describe the measured theory.** The repository's position is not "trust the theorem over the data"; it is "here is the finite, decisive test."
+When stated precisely, this is not a contradiction. Asymptotic-freedom scaling of aΔ comes from perturbative renormalization-group analysis plus numerical simulation: a very well-supported expectation, but not a theorem. The paper proves the negation of that expectation's premise and says so in as many words (`rem:dictionary`: the standard premise "is that the gap in lattice units, aΔ, falls under every floor toward the contact end... Its negation reads: a positive floor on a positive extent, aΔ bounded below toward weak coupling"). One of the two pictures is wrong, and the question is decidable by the constructive apparatus this repository provides: the scheme bridge b_f^equiv = 2n·b_X (`thm:bridge`) calibrates the coupling coordinate against the fundamental-character action, and the certified brackets are finite objects a simulation can be run against. Until that comparison is run, the theorem and the standard scaling picture cannot both describe the measured theory. The repository's position is not "trust the theorem over the data." It is "here is the finite, decisive test."
 
 ### "Does the construction satisfy exact Euclidean covariance, given that the corner height (= √2·aΔ) is floored? You prove the degree-4 anisotropy has *positive multiplicity*. Your own theorem seems to forbid exact O(4) invariance."
 
@@ -125,7 +125,7 @@ The status section further up this readme is the most accurate and current answe
 
 ### "Has anyone actually verified this? One reviewer finding no error is not verification."
 
-I would expand "anyone" to include "anything" (But first, literally, yes to the question, that is why I am writing the FAQ). Why anything? Because the entire point of using Lean is to act as a verification that the work stands without anyone propping it up. I am a strong believer in peer review, and I welcome all feedback constructively and honestly given. But I also think that humans make mistakes that theorem solvers like Lean do not. Once the work is complete to the best of my abilities in Lean, I will seek peer review.
+I challenge this question on two issues: First, I would argue that the word verified is undefined because what counts as verified varies from person to person even within the serious mathematical community. Many "verified" proofs have fallen when checked by theorem solvers. I tend to take a strict reading to "verified", to the extent of writing axiom-free Lean as the standard I hold myself to. Still, Lean only can tell you if a proof is correct, not if it is meaningful in any sense outside of its kernel. As a result, I am still a strong believer in peer review, and I welcome all feedback constructively and honestly given especially with regards to whether or not the proofs I make actually satisfy the claims a kernel cannot check.
 
 ### "What are your plans for this project moving forward?" (Not actually asked by the reviewer, but I wish it had been!)
 
@@ -134,11 +134,11 @@ A rough sketch:
 - Finish the `thm:main` Lean transcription
 - Write a standalone repository (hopefully with community input) to define a neutral statement of the Yang-Mills problem in Lean using conventional types and Mathlib. Like with this repo it will be tex-first and the lean will formalize it.
 - Write an adapter that connects my proof to the neutral interface
-- Submit the work for peer review and possibly also to somewhere like Palomar
+- Submit the work for peer review and possibly also to somewhere like [Palomar](https://palomar-registry.org/)
 
 ## Proof Methodology
 
-Every Lean declaration depends soley on the empty axiom set. Specifically, this means no
+Every Lean declaration depends solely on the empty axiom set. Specifically, this means no
 `propext`, `Quot.sound`, `Classical.choice`, `sorryAx`, and no native
 reflection (`native_decide`); the kernel checks everything.  The package is
 Lean core alone: `lake-manifest.json` lists no packages and no module
