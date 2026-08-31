@@ -23,15 +23,15 @@ a mostly complete transcription of that proof: this section says exactly which p
 not formalized.
 
 `thm:main` has three clauses. These are stated over the domain `main.Member`
-([lean/MassGap/Main.lean](lean/MassGap/Main.lean)): the `A`-series at every residue,
-`B_l`, `C_l`, `D_l` at their index floors, and `G2`, `F4`, `E6`,
-`E7`, `E8` once each.
+([lean/MassGap/Main.lean](lean/MassGap/Main.lean)): the $A$-series at every residue,
+$B_\ell$, $C_\ell$, and $D_\ell$ at their index floors, and $G_2$, $F_4$, $E_6$,
+$E_7$, and $E_8$ once each.
 
 Formalized:
 
 - **Clause (i), gap positivity, is closed for every member**:
-  `main.clauseI_all` proves both committed chain reads and the required tie throughout the classification. The series cases are parametric in rank at the diagonal windows; D4’s four-loop window and E8’s coupled window are handled separately.
-- **Clause (ii), the contact value `(3, H_r)`, is closed at every
+  `main.clauseI_all` proves both committed chain reads and the required tie throughout the classification. The series cases are parametric in rank at the diagonal windows; $D_4$’s four-loop window and $E_8$’s coupled window are handled separately.
+- **Clause (ii), the contact value $(3,H_r)$, is closed at every
   member**: `main.clauseII_all` holds it at the whole
   classification: the order count, the base collection, the
   excess-harmonic value and the occupancy families as theorems
@@ -139,12 +139,12 @@ A related question, which no one has asked directly, is "why work on something w
 
 First, maybe it shouldn't. But it did not end up this way accidentally: a lot of time was spent trying to conform to standard terminology where possible, and each deviation was chosen for a reason and, where one exists, a literature precedent. The paper carries its own translation table (`rem:dictionary`, "The names"). The most salient cases:
 
-- **Balance pairs `⟨u:v⟩` and scalar pairs `[a:b]`.** The entire development is constructive over the positive naturals: there is no subtraction and no division as primitive operations. `⟨u:v⟩` is the difference u−v and `[a:b]` the quotient a/b, *as data with their defining identities* rather than as operations assumed to exist. This is what lets every statement be a statement about naturals, and what made an axiom-free Lean formalization possible.
+- **Balance pairs $\langle u:v\rangle$ and scalar pairs $[a:b]$.** The entire development is constructive over the positive naturals: there is no subtraction and no division as primitive operations. $\langle u:v\rangle$ is the difference $u-v$ and $[a:b]$ the quotient $a/b$, *as data with their defining identities* rather than as operations assumed to exist. This is what lets every statement be a statement about naturals, and what made an axiom-free Lean formalization possible.
 - **"Located."** Bishop's constructive analysis, by name (`rem:dictionary`). A located root or datum comes with an isolating bracket and a modulus. It is a real number you can compute against, not a real number you have merely proven to exist.
-- **"Reversal count."** The negative index of inertia; the two-splits-one-count clause is Sylvester's law of inertia (`lem:inertia`, named in the dictionary). Eigenvalue counting throughout is exact integer LDLᵀ arithmetic, never floating-point.
-- **"Deck relation / deck families."** The double cover w = z + 1/z (Joukowski map); the chord t = 2cos k is the Chebyshev variable of the momentum fiber (`rem:dictionary`). Momentum on the lattice is handled by commuting chord operators, exactly.
+- **"Reversal count."** The negative index of inertia; the two-splits-one-count clause is Sylvester's law of inertia (`lem:inertia`, named in the dictionary). Eigenvalue counting throughout is exact integer $LDL^{\mathsf T}$ arithmetic, never floating-point.
+- **"Deck relation / deck families."** The double cover $w=z+z^{-1}$ (Joukowski map); the chord $t=2\cos k$ is the Chebyshev variable of the momentum fiber (`rem:dictionary`). Momentum on the lattice is handled by commuting chord operators, exactly.
 - **"Labels," "blocks," "contents."** Irreducible representations, their carriers, and weights. The rebuild from scratch (through the Weyl character formula, fusion rules, and Weingarten calculus) exists so that the fusion interface (`con:fusion`) is *derived data*, which is a requirement for the formalization.
-- **"Residue" r.** The dual Coxeter number less one, r + 1 = h∨ (`rem:dictionary`, "The members"), the one scalar the whole classification is organized around.
+- **"Residue" $r$.** The dual Coxeter number less one, $r+1=h^\vee$ (`rem:dictionary`, "The members"), the one scalar the whole classification is organized around.
 
 The deviations are systematic, not decorative: they mark exactly the places where the standard term presumes classical operations (subtraction, division, limits, choice) that the construction refuses to presume.
 
@@ -154,33 +154,33 @@ This is **temporary** and I make no attempt to justify public mathematical claim
 
 ### "Renormalization, asymptotic freedom, beta function, continuum limit: zero occurrences. A Yang–Mills proof cannot fail to contain these."
 
-It can if nothing is expanded. Those words name tools for controlling a perturbative expansion or a limit of measures. This construction is Hamiltonian and exact at every coupling, so there is no series whose divergences need renormalizing. What replaces the running coupling is the **unit map** (`rem:dictionary`): at a physical gap Δ the spacing is a = h/(√2Δ) at the certified corner height h, one equation per scale, the whole trajectory a located function. Calibration is an output, not a scheme choice, and the scheme dependence that does exist is quarantined in the corner outputs (`thm:decomp`). The paper also engages the standard weak-coupling picture directly rather than ignoring it: `rem:dictionary`'s weak-coupling item states the classical comparison (lattice Maxwell per Lie-algebra direction, massless dispersion at k → 0) and identifies the gap as the certified lift *above* that comparison. If your question is "but doesn't the result then conflict with asymptotic-freedom scaling?" then that is the right question, and it has its own entry below.
+It can if nothing is expanded. Those words name tools for controlling a perturbative expansion or a limit of measures. This construction is Hamiltonian and exact at every coupling, so there is no series whose divergences need renormalizing. What replaces the running coupling is the **unit map** (`rem:dictionary`): at a physical gap $\Delta$ the spacing is $a=h/(\sqrt{2}\,\Delta)$ at the certified corner height $h$, one equation per scale, the whole trajectory a located function. Calibration is an output, not a scheme choice, and the scheme dependence that does exist is quarantined in the corner outputs (`thm:decomp`). The paper also engages the standard weak-coupling picture directly rather than ignoring it: `rem:dictionary`'s weak-coupling item states the classical comparison (lattice Maxwell per Lie-algebra direction, massless dispersion at $k\to0$) and identifies the gap as the certified lift *above* that comparison. If your question is "but doesn't the result then conflict with asymptotic-freedom scaling?" then that is the right question, and it has its own entry below.
 
-### "Wouldn't this argument also 'prove' a mass gap for U(1)? If yes, it proves too much."
+### "Wouldn't this argument also 'prove' a mass gap for $U(1)$? If yes, it proves too much."
 
 No. The theorem ranges over compact simple groups, so $U(1)$ is not a member of its domain. More importantly, the gap mechanism requires simple-group data that have no literal $U(1)$ specialization: a highest-root adjoint label $\theta$, its self-fusion channel, and the associated fusion-strictness parameter. Since $U(1)$ has no root system and hence no such $\theta$, $c_1$ is not a $U(1)$ multiplicity that can simply be evaluated as zero.
 
 The abelian comparison nevertheless identifies two precise failures. If the absent non-abelian channel is represented by zero channel weight, the boundary resolvent
 
 $$
-G_0=z+c_1zG_0
+G_0 = z + c_1 z G_0
 $$
 
 reduces to $G_0=z$, leaving no mass pole, bound state, or gap coordinate. Independently, the charged tower loses the strict linear term:
 
 $$
-C_2(m\theta)=m(m+r)
+C_2(m\theta) = m(m+r)
 \qquad\longrightarrow\qquad
-C_2(m)=m^2
+C_2(m) = m^2
 $$
 
 in the abelian theory (`prop:anchor`). Thus the two ingredients that produce the mass point (the adjoint self-fusion channel and its positive fusion strictness) are absent. The argument therefore neither states nor derives a mass gap for $U(1)$.
 
-### "The theorem, translated through its own dictionary, says aΔ is bounded below toward weak coupling. Forty years of Monte Carlo scaling studies say aΔ ~ e^(−c/g²). Isn't the paper simply contradicted by the data?"
+### "The theorem, translated through its own dictionary, says $a\Delta$ is bounded below toward weak coupling. Forty years of Monte Carlo scaling studies say $a\Delta\sim e^{-c/g^2}$. Isn't the paper simply contradicted by the data?"
 
-This is a direct conflict with the standard weak-coupling picture and its numerical evidence, though not an internal logical contradiction. The manuscript predicts a positive floor where the conventional picture predicts decay to zero. A scheme-matched evaluation of the stated certificates can therefore falsify the claim. Asymptotic-freedom scaling of aΔ comes from perturbative renormalization-group analysis plus numerical simulation: a very well-supported expectation, but not a theorem. The paper proves the negation of that expectation's premise and says so in as many words (`rem:dictionary`: the standard premise "is that the gap in lattice units, aΔ, falls under every floor toward the contact end... Its negation reads: a positive floor on a positive extent, aΔ bounded below toward weak coupling"). One of the two pictures is wrong, and the question is decidable by the constructive apparatus this repository provides: the scheme bridge b_f^equiv = 2n·b_X (`thm:bridge`) calibrates the coupling coordinate against the fundamental-character action, and the certified brackets are finite objects a simulation can be run against. Until that comparison is run, the theorem and the standard scaling picture cannot both describe the measured theory. The repository's position is not "trust the theorem over the data." It is "here is the finite, decisive test."
+This is a direct conflict with the standard weak-coupling picture and its numerical evidence, though not an internal logical contradiction. The manuscript predicts a positive floor where the conventional picture predicts decay to zero. A scheme-matched evaluation of the stated certificates can therefore falsify the claim. Asymptotic-freedom scaling of $a\Delta$ comes from perturbative renormalization-group analysis plus numerical simulation: a very well-supported expectation, but not a theorem. The paper proves the negation of that expectation's premise and says so in as many words (`rem:dictionary`: the standard premise "is that the gap in lattice units, $a\Delta$, falls under every floor toward the contact end... Its negation reads: a positive floor on a positive extent, $a\Delta$ bounded below toward weak coupling"). One of the two pictures is wrong, and the question is decidable by the constructive apparatus this repository provides: the scheme bridge $b_f^{\mathrm{equiv}}=2n\,b_X$ (`thm:bridge`) calibrates the coupling coordinate against the fundamental-character action, and the certified brackets are finite objects a simulation can be run against. Until that comparison is run, the theorem and the standard scaling picture cannot both describe the measured theory. The repository's position is not "trust the theorem over the data." It is "here is the finite, decisive test."
 
-### "Does the construction satisfy exact Euclidean covariance, given that the corner height (= √2·aΔ) is floored? You prove the degree-4 anisotropy has *positive multiplicity*. Your own theorem seems to forbid exact O(4) invariance."
+### "Does the construction satisfy exact Euclidean covariance, given that the corner height $h=\sqrt{2}\,a\Delta$ is floored? You prove the degree-$4$ anisotropy has *positive multiplicity*. Your own theorem seems to forbid exact $O(4)$ invariance."
 
 The answer is a reconstruction, not a claim that the lattice correlation functions become exactly covariant at some fixed spacing. At finite spacing the lattice families remain $B_d$-invariant and contain genuine degree-four anisotropic terms. The construction does not discard or deny those terms in the lattice data.
 
@@ -198,17 +198,17 @@ At degree two, `thm:restoration` item 1 gives an exact ring identity: the degree
 
 The certified degree-four breaking therefore remains part of the comparison data. It controls the brackets within which the finite-spacing lattice instrument agrees with the reconstructed covariant object, but it is not an input to that object’s cone or covariance law. Likewise, the positive floor on the corner height controls the certified comparison width; it does not deform the covariant spectral point inside that bracket.
 
-### "Translations are the lattice's ℤᵈ. The Wightman axioms quantify over ℝ⁴."
+### "Translations are the lattice's $\mathbb{Z}^d$. The Wightman axioms quantify over $\mathbb{R}^4$."
 
-Time is continuous by construction (the Hamiltonian's own). Spatial ℝᵈ acts on the reconstructed families exactly, by phase, at the momentum coordinates where they are defined (the chord cells, `thm:reconstruct`(ii)); the lattice translates are the instrument that locates the data, entering through the fibering (`lem:fiberdec`) and the momentum transform (`thm:restoration`), and the reader's continuum point "reads itself in through the rationals beside it." This is the constructive meaning of a function on ℝᵈ: certified brackets with moduli at every rational datum. The same side-switch as the covariance entry: exact at the reconstructed object, certified widths at the instrument.
+Time is continuous by construction (the Hamiltonian's own). Spatial $\mathbb{R}^d$ acts on the reconstructed families exactly, by phase, at the momentum coordinates where they are defined (the chord cells, `thm:reconstruct`(ii)); the lattice translates are the instrument that locates the data, entering through the fibering (`lem:fiberdec`) and the momentum transform (`thm:restoration`), and the reader's continuum point "reads itself in through the rationals beside it." This is the constructive meaning of a function on $\mathbb{R}^d$: certified brackets with moduli at every rational datum. The same side-switch as the covariance entry: exact at the reconstructed object, certified widths at the instrument.
 
 ### "Why isn't the Osterwalder–Schrader reconstruction performed? The Clay text cites those axioms."
 
 Because the construction is Hamiltonian, and OS reconstruction is the Euclidean route *to* a Hamiltonian theory with a spectrum condition, which this formulation holds by construction (`rem:dictionary`, reconstruction item). The clause "axiomatic properties at least as strong as those cited" is answered property by property rather than by re-deriving the properties from a measure: positivity is the families' own Gram read (`thm:reconstruct`(iii)); the spectrum condition is the cut itself, with the gap `thm:main`(i); locality is exact commutativity at equal times with the cone read at unequal times; covariance is the restoration counts' (entries above); growth is capped (`thm:groundreads`(v)); the vacuum is cyclic (`lem:statespace`) and unique as a divisor count (`thm:SO`); and nontriviality is a theorem. The connected four-point read holds a positive located floor separating the object from every generalized free field (`lem:fourpoint`).
 
-### "K = c₁³e^(−H_r) smells like numerology because it has the harmonic numbers in an exponent. Is it even a computed energy?"
+### "$K=c_1^3e^{-H_r}$ smells like numerology because it has the harmonic numbers in an exponent. Is it even a computed energy?"
 
-What the theory *determines* is the contact pair (3, H_r) as two divisor reads: the order count 3 = 1 + 2 (the mass point's simple pole plus the ι-symmetrized weight's two base orders, off the renewal witness G₀ = z + c₁zG₀, `thm:channeldiv`) read at the base c₁, and the ruler excess H_r (the tower's generating object against the harmonic ruler, an exact finitely-supported polynomial identity, `thm:walkresidue`). The exponential form is those coordinates read against the classical rulers (ln c₁, 1) described as "the axes the usual formulation measures with" (`rem:dictionary`). Nothing is fit and nothing converges: the harmonic number arrives as the value at 1 of an exact polynomial with the geometric derivative, forced by the tower pairing φ_m = r/(m+r). A reader who wants the level as an energy restores the two scales explicitly: K·E₀·C₂(adj) (`rem:dictionary`, "The gap").
+What the theory *determines* is the contact pair $(3,H_r)$ as two divisor reads: the order count $3=1+2$ (the mass point's simple pole plus the $\iota$-symmetrized weight's two base orders, off the renewal witness $G_0=z+c_1zG_0$, `thm:channeldiv`) read at the base $c_1$, and the ruler excess $H_r$ (the tower's generating object against the harmonic ruler, an exact finitely-supported polynomial identity, `thm:walkresidue`). The exponential form is those coordinates read against the classical rulers $(\ln c_1,1)$ described as "the axes the usual formulation measures with" (`rem:dictionary`). Nothing is fit and nothing converges: the harmonic number arrives as the value at $1$ of an exact polynomial with the geometric derivative, forced by the tower pairing $\varphi_m=r/(m+r)$. A reader who wants the level as an energy restores the two scales explicitly: $K\,E_0\,C_2(\mathrm{adj})$ (`rem:dictionary`, "The gap").
 
 ### "The Lean formalization doesn't cover the continuum theorems. So what does it actually prove?"
 
