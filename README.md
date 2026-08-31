@@ -7,9 +7,9 @@ This repository presents a complete manuscript, [docs/theory.tex](docs/theory.te
 simple group (`thm:main`), with
 `rem:dictionary` presenting the results in the conventional
 formulation which includes the Jaffe-Witten statement of the Yang-Mills problem.  The proof is constructive over the positive naturals with the sum and the
-product; this choice was made explicitly to enable the Lean to be written constructively and eventually emit certified brackets of physical quantities directly comparable to Montecarlo and experimental results.
+product; this choice was made explicitly to enable the Lean to be written constructively and eventually emit certified brackets of physical quantities directly comparable to Monte Carlo and experimental results.
 
-The tex is the authority and the Lean is its transcription: every top-level
+The TeX is the authority and the Lean is its transcription: every top-level
 Lean declaration sits in a namespace matching a label in
 `theory.tex` (e.g. `gappos.sandwich_lo` transcribes `thm:gappos`, `inertia.rev_add`
 transcribes `lem:inertia`).  The docstring at the head of each module under
@@ -63,13 +63,13 @@ Open (no Lean yet):
   items above), and the reverse correspondence walk (every tex
   label reached from a Lean namespace).
 
-Long term future work:
+Long-term future work:
 
-- Write a standalone repository (hopefully with community input) to define a neutral statement of the Yang-Mills problem in Lean using conventional types and Mathlib. Like with this repo it will be tex-first and the lean will formalize it.
+- Write a standalone repository (hopefully with community input) to define a neutral statement of the Yang-Mills problem in Lean using conventional types and Mathlib. As with this repository, it will be TeX-first, with Lean formalizing the specification.
 - Write an adapter that connects my proof to the neutral interface
 - Submit the work for peer review and possibly also to somewhere like [Palomar](https://palomar-registry.org/)
 
-The snapshot is taken from the development repository at commit
+The snapshot was taken from the development repository at commit
 `7e91dceb532f13d0df40deaca9a1a38203df29c5` (2026-08-30).
 
 ## Proof Methodology
@@ -127,13 +127,13 @@ each answering `does not depend on any axioms`.
 
 ## FAQ
 
-These questions are real and were raised, in roughly this order and roughly this tone, by two separate skeptical reviewers (one a human physicist, the other an AI model) who read [docs/theory.tex](docs/theory.tex). The presentation of the questions is an aggregate of the two, although it is worth noting the physicist's questions formed a strict subset of the AI's. Ultimately neither of them located an internal error (this is not to be taken as a statement of correctness).
+These questions are real and were raised, in roughly this order and tone, by two separate skeptical reviewers (one a human physicist, the other an AI model) who read [docs/theory.tex](docs/theory.tex). The presentation of the questions is an aggregate of the two, although it is worth noting the physicist's questions formed a strict subset of the AI's. Additionally, neither of them located an internal error; this is presented as a statement that material information is not being omitted, not evidence of correctness.
 
-### "This pattern-matches to crankery: solo author, invented vocabulary, Millennium-problem claim. Why should anyone read a more than 100 page PDF of dense, idiosyncratic mathematics?"
+### "This pattern-matches to crankery: solo author, invented vocabulary, Millennium-problem claim. Why should anyone read a PDF of more than 100 pages of dense, idiosyncratic mathematics?"
 
-Even with the terrible priors aside, I'd argue that no one should read the paper at least initially. And if the only deliverable was the paper, I would have never begun this project. Instead, the construction is built so that every claim in the development will be machine-checked by Lean with zero axioms. The intended order becomes: verify the top level theorems in Lean correspond to real world meaning, then check that the Lean compiles axiom-free.
+Even with the terrible priors aside, I'd argue that no one should read the paper at least initially. And if the only deliverable was the paper, I would never have begun this project. Instead, the construction is built so that every claim in the development will be machine-checked by Lean with zero axioms. The intended order becomes: verify the top-level theorems in Lean correspond to real-world meaning, then check that the Lean compiles axiom-free.
 
-A related question, which no one has asked directly, is "why work on something where the social consequences will be so severe? You have a promising career in academia, why tarnish it with a black eye (or worse)?" The answer is that I am a firm believer that anyone should be able to make an honest, serious attempt at a hard problem and be treated with basic professional respect (I do not think this entitles that person or their work to anyone else's time, energy, or attention). This is a problem that fascinates me, and with the rise of theorem provers like Lean I have an unprecedented opportunity to see my ideas through in a formal way. Nonetheless, this has not been without repercussions. I am deeply disturbed by the level of dehumanization directed toward me both inside and outside of academia when people realize I am working on this problem. It has involved expletives, name calling, and even threats. I request that anyone looking to engage with my work do exactly that: engage with the work. An extraordinary claim warrants extraordinary scrutiny. It does not warrant extraordinary cruelty.
+A related question, which no one has asked directly, is "why work on something where the social consequences will be so severe? You have a promising career in academia, why tarnish it with a black eye (or worse)?" The answer is that I am a firm believer that anyone should be able to make an honest, serious attempt at a hard problem and be treated with basic professional respect (I do not think this entitles that person or their work to anyone else's time, energy, or attention). This is a problem that fascinates me, and with the rise of theorem provers like Lean I have an unprecedented opportunity to see my ideas through in a formal way. Nonetheless, this has not been without repercussions. I am deeply disturbed by the level of dehumanization directed toward me both inside and outside of academia when people realize I am working on this problem. It has involved expletives, name-calling, and even threats. I request that anyone looking to engage with my work do exactly that: engage with the work. An extraordinary claim warrants extraordinary scrutiny. It does not warrant extraordinary cruelty.
 
 ### "Why does the paper use highly idiosyncratic language at all, such as 'reads,' 'balance pairs,' 'located,' 'priced', instead of standard terminology?"
 
@@ -150,7 +150,7 @@ The deviations are systematic, not decorative: they mark exactly the places wher
 
 ### "There is no bibliography. Zero citations."
 
-This is **temporary** and I make no attempt to justify public mathematical claims without proper literature citations. The reason I have not fixed it and will not fix until the Lean transcription has finished: I use AI to proofread changes I make to the proofs in the paper, but for it to cross check my work with other places in the tex it must load the entire paper into context every time. The tex is sufficiently large that it consumes around 500,000 tokens to load in completely. This is both monetarily expensive and gives me little working context to engage with the model's feedback. I will add in an abstract, introduction, citations, etc. once the transcription has finished.
+This is **temporary** and I make no attempt to justify public mathematical claims without proper literature citations. The reason I have not fixed it and will not fix it until the Lean transcription has finished: I use AI to proofread changes I make to the proofs in the paper, but for it to cross-check my work with other places in the tex it must load the entire paper into context every time. The tex is sufficiently large that it consumes around 500,000 tokens to load in full. This is both monetarily expensive and gives me little working context to engage with the model's feedback. I will add in an abstract, introduction, citations, etc. once the transcription has finished.
 
 ### "Renormalization, asymptotic freedom, beta function, continuum limit: zero occurrences. A Yang–Mills proof cannot fail to contain these."
 
@@ -178,7 +178,7 @@ in the abelian theory (`prop:anchor`). Thus the two ingredients that produce the
 
 ### "The theorem, translated through its own dictionary, says $a\Delta$ is bounded below toward weak coupling. Forty years of Monte Carlo scaling studies say $a\Delta\sim e^{-c/g^2}$. Isn't the paper simply contradicted by the data?"
 
-This is a direct conflict with the standard weak-coupling picture and its numerical evidence, though not an internal logical contradiction. The manuscript predicts a positive floor where the conventional picture predicts decay to zero. A scheme-matched evaluation of the stated certificates can therefore falsify the claim. Asymptotic-freedom scaling of $a\Delta$ comes from perturbative renormalization-group analysis plus numerical simulation: a very well-supported expectation, but not a theorem. The paper proves the negation of that expectation's premise and says so in as many words (`rem:dictionary`: the standard premise "is that the gap in lattice units, $a\Delta$, falls under every floor toward the contact end... Its negation reads: a positive floor on a positive extent, $a\Delta$ bounded below toward weak coupling"). One of the two pictures is wrong, and the question is decidable by the constructive apparatus this repository provides: the scheme bridge $b_f^{\mathrm{equiv}}=2n\,b_X$ (`thm:bridge`) calibrates the coupling coordinate against the fundamental-character action, and the certified brackets are finite objects a simulation can be run against. Until that comparison is run, the theorem and the standard scaling picture cannot both describe the measured theory. The repository's position is not "trust the theorem over the data." It is "here is the finite, decisive test."
+This is a direct conflict with the standard weak-coupling picture and its numerical evidence, though not an internal logical contradiction. The manuscript predicts a positive floor where the conventional picture predicts decay to zero. A scheme-matched evaluation of the stated certificates can therefore falsify the claim. Asymptotic-freedom scaling of $a\Delta$ comes from perturbative renormalization-group analysis plus numerical simulation: a very well-supported expectation, but not a theorem. The paper proves the negation of that expectation's premise and says so in as many words (`rem:dictionary`: the standard premise "is that the gap in lattice units, $a\Delta$, falls under every floor toward the contact end... Its negation reads: a positive floor on a positive extent, $a\Delta$ bounded below toward weak coupling"). One of the two pictures is wrong, and the question is decidable by the constructive apparatus this repository provides: the scheme bridge $b_f^{\mathrm{equiv}}=2n\,b_X$ (`thm:bridge`) calibrates the coupling coordinate against the fundamental-character action, and the certified brackets are finite objects a simulation can be run against. The repository's position is not "trust the theorem over the data." It is "here is the finite, decisive test."
 
 ### "Does the construction satisfy exact Euclidean covariance, given that the corner height $h=\sqrt{2}\,a\Delta$ is floored? You prove the degree-$4$ anisotropy has *positive multiplicity*. Your own theorem seems to forbid exact $O(4)$ invariance."
 
@@ -200,19 +200,19 @@ The certified degree-four breaking therefore remains part of the comparison data
 
 ### "Translations are the lattice's $\mathbb{Z}^d$. The Wightman axioms quantify over $\mathbb{R}^4$."
 
-Time is continuous by construction (the Hamiltonian's own). Spatial $\mathbb{R}^d$ acts on the reconstructed families exactly, by phase, at the momentum coordinates where they are defined (the chord cells, `thm:reconstruct`(ii)); the lattice translates are the instrument that locates the data, entering through the fibering (`lem:fiberdec`) and the momentum transform (`thm:restoration`), and the reader's continuum point "reads itself in through the rationals beside it." This is the constructive meaning of a function on $\mathbb{R}^d$: certified brackets with moduli at every rational datum. The same side-switch as the covariance entry: exact at the reconstructed object, certified widths at the instrument.
+Time is continuous by construction. Spatial $\mathbb{R}^d$ acts on the reconstructed families exactly, by phase, at the momentum coordinates where they are defined (the chord cells, `thm:reconstruct`(ii)); the lattice translates are the instrument that locates the data, entering through the fibering (`lem:fiberdec`) and the momentum transform (`thm:restoration`), and the reader's continuum point "reads itself in through the rationals beside it." This is the constructive meaning of a function on $\mathbb{R}^d$: certified brackets with moduli at every rational datum. The same side-switch as the covariance entry: exact at the reconstructed object, certified widths at the instrument.
 
 ### "Why isn't the Osterwalder–Schrader reconstruction performed? The Clay text cites those axioms."
 
 Because the construction is Hamiltonian, and OS reconstruction is the Euclidean route *to* a Hamiltonian theory with a spectrum condition, which this formulation holds by construction (`rem:dictionary`, reconstruction item). The clause "axiomatic properties at least as strong as those cited" is answered property by property rather than by re-deriving the properties from a measure: positivity is the families' own Gram read (`thm:reconstruct`(iii)); the spectrum condition is the cut itself, with the gap `thm:main`(i); locality is exact commutativity at equal times with the cone read at unequal times; covariance is the restoration counts' (entries above); growth is capped (`thm:groundreads`(v)); the vacuum is cyclic (`lem:statespace`) and unique as a divisor count (`thm:SO`); and nontriviality is a theorem. The connected four-point read holds a positive located floor separating the object from every generalized free field (`lem:fourpoint`).
 
-### " $K=c_1^3e^{-H_r}$ smells like numerology because it has the harmonic numbers in an exponent. Is it even a computed energy?"
+### " $\mathcal K=c_1^3e^{-H_r}$ smells like numerology because it has the harmonic numbers in an exponent. Is it even a computed energy?"
 
-What the theory *determines* is the contact pair $(3,H_r)$ as two divisor reads: the order count $3=1+2$ (the mass point's simple pole plus the $\iota$-symmetrized weight's two base orders, off the renewal witness $G_0=z+c_1zG_0$, `thm:channeldiv`) read at the base $c_1$, and the ruler excess $H_r$ (the tower's generating object against the harmonic ruler, an exact finitely-supported polynomial identity, `thm:walkresidue`). The exponential form is those coordinates read against the classical rulers $(\ln c_1,1)$ described as "the axes the usual formulation measures with" (`rem:dictionary`). Nothing is fit and nothing converges: the harmonic number arrives as the value at $1$ of an exact polynomial with the geometric derivative, forced by the tower pairing $\varphi_m=r/(m+r)$. A reader who wants the level as an energy restores the two scales explicitly: $K\,E_0\,C_2(\mathrm{adj})$ (`rem:dictionary`, "The gap").
+What the theory *determines* is the contact pair $(3,H_r)$ as two divisor reads: the order count $3=1+2$ (the mass point's simple pole plus the $\iota$-symmetrized weight's two base orders, off the renewal witness $G_0=z+c_1zG_0$, `thm:channeldiv`) read at the base $c_1$, and the ruler excess $H_r$ (the tower's generating object against the harmonic ruler, an exact finitely-supported polynomial identity, `thm:walkresidue`). The exponential form is those coordinates read against the classical rulers $(\ln c_1,1)$ described as "the axes the usual formulation measures with" (`rem:dictionary`). Nothing is fitted and nothing converges: the harmonic number arrives as the value at $1$ of an exact polynomial with the geometric derivative, forced by the tower pairing $\varphi_m=r/(m+r)$. A reader who wants the level as an energy restores the two scales explicitly: $\mathcal K\,E_0\,C_2(\mathrm{adj})$ (`rem:dictionary`, "The gap").
 
 ### "The Lean formalization doesn't cover the continuum theorems. So what does it actually prove?"
 
-The status section further up this readme is the most accurate and current answer to this question, although it may lag progress in the code.
+The status section further up this readme is the most accurate and current answer to this question.
 
 ### "Has anyone actually verified this? One reviewer finding no error is not verification."
 
