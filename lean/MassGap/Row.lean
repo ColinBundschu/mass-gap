@@ -935,7 +935,7 @@ private theorem qualCount_zero (t : Table) :
     (fun _ => (1 : Nat)) (List.range t.rank) (fun i _ => ?_)) ?_
   · refine if_pos ?_
     exact BPair.oneValue_trans
-      (BPair.mul_congr (by decide +kernel : (BPair.ofNat 0).oneValue BPair.unit)
+      (BPair.mul_congr BPair.ofNat_zero
         (BPair.oneValue_refl _))
       (BPair.unit_mul _)
   · rw [ground.famFold_length (List.range t.rank),

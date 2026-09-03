@@ -163,17 +163,6 @@ theorem countAtPair_roots {o : Nat} (H G : Mat)
     hsp' h.2.2.1]
   exact h.2.2.2
 
-/-- A root at the kernel point sits below the edge: its rescaling
-reads the sum's unit and the edge's own site sits strictly above
-it. -/
-private theorem kernelBelow (E0 p q : Pos) (r : BPair × Pos)
-    (h : r.1.oneValue BPair.unit) :
-    r.1.scale q < BPair.ofPos (E0 * p * r.2) :=
-  BPair.lt_congr
-    (BPair.oneValue_trans (ground.unitScale q)
-      (BPair.oneValue_symm (BPair.scale_congr q h)))
-    (BPair.oneValue_refl _) (ground.unitLtOfPos (E0 * p * r.2))
-
 /-- The comparisons reach the cut: at the located root list's below
 count and its kernel count reading one value, the located spectrum
 sits at the kernel point or at or beyond the edge — `lem:split`'s
@@ -201,6 +190,28 @@ theorem flat_spec (roots : List (BPair × Pos)) (E0 p q : Pos)
       || !(decide (r.1.scale q < BPair.ofPos (E0 * p * r.2))))) = true
   exact ground.countBy_eq_all _ _
     (fun r hr => decide_eq_true
-      (kernelBelow E0 p q r (of_decide_eq_true hr))) roots heq
+      (split.kernel_below (E0 * p) q r (of_decide_eq_true hr))) roots heq
+
+/-- The edge's cut tie (`thm:flatstep`'s third sentence at
+`lem:speccut`'s tie): at the located root list read through the
+diagonalizing congruence, the kernel count and the below count at
+the edge one value, the cut tie holds at any stated split of the
+cut's site datum — the factorization the congruence's own
+(`split.diag_chiRead`), the spectral read `flat_spec`'s, and the
+cut's split priced by `speccut.spec_to_cut`. -/
+theorem cutTie_of_edge {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair)) (E0 p q : Pos) (g : Nat)
+    (hd : split.diagRead Et (idMat n) T Tw l)
+    (hker : split.rootsAtKernel (l.map (fun r => (r.1, r.2.1))) = g)
+    (hedge : split.rootsBelow (l.map (fun r => (r.1, r.2.1))) (E0 * p) q = g)
+    (sp : Split n)
+    (hsp : splitRead (siteDatum (matScale q (matMul Et Et))
+        (matScale (E0 * p) Et)) sp) :
+    speccut.cutTie Et (l.map (fun r => (r.1, r.2.1))) E0 p q sp := by
+  have hspec := flat_spec (l.map (fun r => (r.1, r.2.1))) E0 p q g hedge hker
+  refine ⟨?_, hspec, sqSquare hd.1, hd.1, hsp,
+    speccut.spec_to_cut Et T Tw l E0 p q hd hspec sp hsp⟩
+  rw [show Et.length = n from sqAt_len hd.1]
+  exact split.diag_chiRead Et (idMat n) T Tw l hd
 
 end flatstep

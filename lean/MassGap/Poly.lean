@@ -3584,6 +3584,22 @@ theorem evalClear_mul (p q : Poly) (ln : BPair) (c : Pos)
         (BPair.mul_congr (eval_clearVar p c K1 ln)
           (eval_clearVar q c K2 ln))))
 
+/-- The cleared evaluation at a product, the factors read at their
+representatives' caps: the canonical representative's key count
+prices the split exactly where the literal one does, the
+homogeneity principle's value-identical read (`def:ground`). -/
+theorem evalClear_mulCap (p q : Poly) (ln : BPair) (c : Pos)
+    (K1 K2 : Nat) (hp : (vnorm p).length ≤ K1 + 1)
+    (hq : (vnorm q).length ≤ K2 + 1) :
+    (evalClear (mul p q) ln c (K1 + K2)).oneValue
+      (evalClear p ln c K1 * evalClear q ln c K2) :=
+  BPair.oneValue_trans
+    (evalClear_congr (mul_vnorm_ov p q) ln c (K1 + K2))
+    (BPair.oneValue_trans
+      (evalClear_mul (vnorm p) (vnorm q) ln c K1 K2 hp hq)
+      (BPair.mul_congr (evalClear_congr (vnorm_ov p) ln c K1)
+        (evalClear_congr (vnorm_ov q) ln c K2)))
+
 /-- The rescaled list's clearing is the clearing's own rescaling,
 entry by entry at the stated power. -/
 private theorem clearVar_scaleP (a : BPair) (p : Poly) (c : Pos)
@@ -3872,6 +3888,13 @@ theorem vnormLen_le (q : Poly) :
     (vnorm q).length ≤ q.length :=
   vnormLen_cap (fun j hj =>
     BPair.oneValue_of_eq (ground.getAt_over BPair.unit q j hj))
+
+/-- A key count inside the clearing power caps the canonical
+representative, the faithfulness bound's transport onto the
+representative's own keys. -/
+theorem capOfLen {p : Poly} {K : Nat}
+    (h : p.length ≤ K + 1) : (vnorm p).length ≤ K + 1 :=
+  Nat.le_trans (vnormLen_le p) h
 
 /-- The integral read: a product at the sum's unit puts one factor's
 every coefficient there, the tops' product off the unit at two

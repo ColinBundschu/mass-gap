@@ -174,6 +174,65 @@ theorem degree_addFulls (m : Nat) (s : Shape) :
         Nat.add_assoc (degree s') (a * (s'.length + 1))
           (m * (s'.length + 1))]
 
+/-- The reduction is idempotent: the reduced shape's last key sits
+at the unit occupancy already. -/
+theorem reduce_reduce : ∀ s : Shape, reduce (reduce s) = reduce s
+  | [] => rfl
+  | x :: t => by
+    match ground.snoc_split t.length (x :: t) rfl with
+    | ⟨s', a, hs, _⟩ =>
+      rw [hs, reduce_snoc s' a, reduce_snoc s' 0]
+
+/-- The reduction reads through the full columns: the added columns
+sit on the last key the reduction withdraws. -/
+theorem reduce_addFulls (m : Nat) : ∀ s : Shape,
+    reduce (addFulls m s) = reduce s
+  | [] => rfl
+  | x :: t => by
+    match ground.snoc_split t.length (x :: t) rfl with
+    | ⟨s', a, hs, _⟩ =>
+      rw [hs, addFulls_snoc m s' a, reduce_snoc s' (a + m),
+        reduce_snoc s' a]
+
+/-- The reduction is injective at one width and one degree: the
+prefixes agree at the split and the degree ties the last
+occupancies. -/
+theorem reduce_inj (r : Nat) (c c' : Shape)
+    (hc : c.length = r + 1) (hc' : c'.length = r + 1)
+    (hdeg : degree c = degree c')
+    (h : reduce c = reduce c') : c = c' := by
+  obtain ⟨u, a, hu, hul⟩ := ground.snoc_split r c hc
+  obtain ⟨v, b, hv, hvl⟩ := ground.snoc_split r c' hc'
+  rw [hu, hv, reduce_snoc u a, reduce_snoc v b] at h
+  have huv : u = v := ground.snoc_inj u v 0 h
+  have hdeg' : degree u + a * (u.length + 1)
+      = degree u + b * (u.length + 1) := by
+    rw [← degree_snoc u a, ← degree_snoc u b, ← hu,
+      show u ++ [b] = c' from by rw [huv]; exact hv.symm]
+    exact hdeg
+  have hab : a = b := Nat.eq_of_mul_eq_mul_right
+    (Nat.succ_pos u.length) (ground.addCancelL _ hdeg')
+  rw [hu, hv, huv, hab]
+
+/-- The row's emission at the label calculus: a shape of the matched
+degree reduced where its count in the product is positive, the
+vacant read otherwise — the row of `con:fusion`'s instantiation is
+the enumeration's members at this emission. -/
+def emit (a b c : Shape) : Option Shape :=
+  if 0 < steinberg.count a b c then some (reduce c) else none
+
+/-- An occupied emission's reads at any count: the count is positive
+and the value is the source's own class, the row's emission its
+instance. -/
+theorem emit_reads {n : Nat} {a x : Shape}
+    (h : (if 0 < n then some (reduce a) else none) = some x) :
+    0 < n ∧ reduce a = x := by
+  by_cases hp : 0 < n
+  · rw [if_pos hp] at h
+    exact ⟨hp, Option.some.inj h⟩
+  · rw [if_neg hp] at h
+    exact nomatch (show (none : Option Shape) = some x from h)
+
 /-- The occupancy total at the added full columns, at an occupied
 width: the stated columns join the last key's own count. -/
 private theorem sumNat_addFulls_occ (m : Nat) (s : Shape)
@@ -384,6 +443,28 @@ private theorem countL_ge (a b c : Shape)
       else 0))
     = _
   rw [if_neg h]
+
+/-- The label count below the target's degree at a refused
+divisibility is vacant: the lift's guard refuses. -/
+theorem countL_ltVac (a b c : Shape)
+    (hlt : degree a + degree b < degree c)
+    (hmod : ¬ (degree c - (degree a + degree b)) % a.length = 0) :
+    countL a b c = 0 := by
+  rw [countL_lt a b c hlt]
+  cases hb : ((degree c - (degree a + degree b)) % a.length == 0) with
+  | true => exact absurd (ground.beqEqOf hb) hmod
+  | false => rfl
+
+/-- The label count at or above the target's degree at a refused
+divisibility is vacant: the lift's guard refuses. -/
+theorem countL_geVac (a b c : Shape)
+    (hge : ¬ degree a + degree b < degree c)
+    (hmod : ¬ (degree a + degree b - degree c) % a.length = 0) :
+    countL a b c = 0 := by
+  rw [countL_ge a b c hge]
+  cases hb : ((degree a + degree b - degree c) % a.length == 0) with
+  | true => exact absurd (ground.beqEqOf hb) hmod
+  | false => rfl
 
 /-- The label count at or above the target's degree: the gap's
 full columns enter the target at the divisibility guard, and the

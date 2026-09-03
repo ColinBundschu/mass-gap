@@ -26,13 +26,11 @@ open ground elim inertia
 half. -/
 def opRead {o : Nat} (Esq Et : Mat) (gn gd : Pos) (sp : Split o) : Prop :=
   sqAt Esq o ∧ sqAt Et o
-  ∧ splitRead
-      (siteDatum (matScale gd Esq) (matScale gn Et)) sp
-  ∧ psdAt sp
+  ∧ leAt (matScale gn Et) (matScale gd Esq) sp
 
 instance {o : Nat} (Esq Et : Mat) (gn gd : Pos) (sp : Split o) :
     Decidable (opRead Esq Et gn gd sp) :=
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
 /-- The requirement's read at a probe over the two compressed
 forms at the carrier: the square's compression beside the gap's,

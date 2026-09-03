@@ -27,7 +27,10 @@ matrices (`pconst`, `plin`), the congruence identity's split into
 the scaled root data (`diagM`), and the eigen-column capstone —
 the congruence's own column at a stated root the pencil's
 eigendirection there, `d_j (H v_j) = n_j (G v_j)` cleared
-(`eigenColumn` at the indicator `elim.idRow`).  The resultant's kernel
+(`eigenColumn` at the indicator `elim.idRow`), and a matrix
+congruated to the diagonal of its columns' pairings reads two
+probes' pairing across it as that diagonal's fold over the probes'
+coordinates at the determinant's square (`pair_fold`).  The resultant's kernel
 read arrives at this
 arithmetic (`crossRead`): a kernel vector's cross pair `(A, B)` at
 the stated degrees with `A p` the balance partner of `B q`, the
@@ -194,6 +197,27 @@ theorem rootsBelow_mono (roots : List (BPair × Pos))
         (ground.BPair.scale_ofPos (an' * r.2) ad)))
   exact ground.BPair.lt_of_scale_lt h5
 
+/-- A root at the kernel point sits below every positive level: its
+rescaling reads the sum's unit and the level's own site sits
+strictly above it. -/
+theorem kernel_below (an ad : Pos) (r : BPair × Pos)
+    (h : r.1.oneValue BPair.unit) :
+    r.1.scale ad < BPair.ofPos (an * r.2) :=
+  BPair.lt_congr
+    (BPair.oneValue_trans (ground.unitScale ad)
+      (BPair.oneValue_symm (BPair.scale_congr ad h)))
+    (BPair.oneValue_refl _) (ground.unitLtOfPos (an * r.2))
+
+/-- The kernel count sits at or below the count below every positive
+level, every kernel root among the roots below it. -/
+theorem kernel_le_below (roots : List (BPair × Pos)) (an ad : Pos) :
+    rootsAtKernel roots ≤ rootsBelow roots an ad := by
+  show roots.countP _ ≤ roots.countP _
+  rw [ground.countP_read, ground.countP_read]
+  exact ground.countBy_mono _ _
+    (fun r hr => decide_eq_true (kernel_below an ad r (of_decide_eq_true hr)))
+    roots
+
 /-- The count identity at the split certificate:
 `count(a) = #{j : ε_j < a}` at a level off the roots — the
 off-roots clause a conjunct — the reversal count against the
@@ -212,27 +236,8 @@ instance {o : Nat} (H G : Mat) (roots : List (BPair × Pos))
     Decidable (countRead H G roots an ad sp) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ = _ ∧ _ ∧ _ = _))
 
-private def pheads (m : PMat) : List Poly :=
-  m.map (fun r =>
-    match r with
-    | [] => []
-    | a :: _ => a)
-
-private def ptails (m : PMat) : PMat :=
-  m.map (fun r =>
-    match r with
-    | [] => []
-    | _ :: t => t)
-
-private def ptransGo : Nat → PMat → PMat
-  | 0, _ => []
-  | n + 1, m => pheads m :: ptransGo n (ptails m)
-
 private def ptranspose (m : PMat) : PMat :=
-  ptransGo
-    (match m with
-     | [] => 0
-     | r :: _ => r.length) m
+  elim.transposeO poly.polyOps m
 
 /-- The congruence at the site datum's polynomial matrix:
 `Tᵀ Z T` at scalar `T`, the entries' folds. -/
@@ -475,57 +480,21 @@ private theorem cf_scaleDot : ∀ (cs : List BPair) (ps : List Poly) (k : Nat),
 /-! The polynomial transpose's entry read and the fold's row read, the
 congruence's coefficient split beneath them. -/
 
-private theorem getAt_ptransGo :
-    ∀ (n : Nat) (m : PMat) (p q : Nat), p < n → q < m.length →
-      ground.getAt ([] : Poly)
-          (ground.getAt ([] : List Poly) (ptransGo n m) p) q
-        = ground.getAt ([] : Poly)
-          (ground.getAt ([] : List Poly) m q) p
-  | 0, _, p, _, hp, _ => absurd hp (Nat.not_lt_zero p)
-  | _ + 1, m, 0, q, _, hq => by
-    show ground.getAt ([] : Poly) (pheads m) q = _
-    rw [show pheads m = m.map (fun r =>
-        match r with
-        | [] => ([] : Poly)
-        | a :: _ => a) from rfl,
-      ground.getAt_map ([] : List Poly) ([] : Poly) _ m q hq]
-    match ground.getAt ([] : List Poly) m q with
-    | [] => rfl
-    | _ :: _ => rfl
-  | n + 1, m, p + 1, q, hp, hq => by
-    show ground.getAt ([] : Poly)
-        (ground.getAt ([] : List Poly) (ptransGo n (ptails m)) p) q = _
-    have hqt : q < (ptails m).length := by
-      rw [show (ptails m).length = m.length from ground.length_map _ m]
-      exact hq
-    rw [getAt_ptransGo n (ptails m) p q (Nat.lt_of_succ_lt_succ hp) hqt,
-      show ground.getAt ([] : List Poly) (ptails m) q
-          = (match ground.getAt ([] : List Poly) m q with
-             | [] => []
-             | _ :: t => t) from
-        ground.getAt_map ([] : List Poly) ([] : List Poly) _ m q hq]
-    match ground.getAt ([] : List Poly) m q with
-    | [] => rfl
-    | _ :: _ => rfl
+private theorem rowsLenOfGetAt (w : Nat) : ∀ N : PMat,
+    (∀ p, p < N.length →
+      (ground.getAt ([] : List Poly) N p).length = w) →
+    rowsLen w N
+  | [], _ => trivial
+  | _ :: t, h =>
+    ⟨h 0 (Nat.succ_pos _),
+     rowsLenOfGetAt w t
+       (fun p hp => h (p + 1) (Nat.succ_lt_succ hp))⟩
 
-private theorem length_ptransGo : ∀ (n : Nat) (m : PMat),
-    (ptransGo n m).length = n
-  | 0, _ => rfl
-  | n + 1, m => congrArg Nat.succ (length_ptransGo n (ptails m))
-
-private theorem rowsLen_ptransGo : ∀ (n : Nat) (m : PMat) (w : Nat),
-    m.length = w → ∀ p, p < n →
-      (ground.getAt ([] : List Poly) (ptransGo n m) p).length = w
-  | 0, _, _, _, p, hp => absurd hp (Nat.not_lt_zero p)
-  | _ + 1, m, w, hw, 0, _ => by
-    show (pheads m).length = w
-    rw [show (pheads m).length = m.length from ground.length_map _ m]
-    exact hw
-  | n + 1, m, w, hw, p + 1, hp => by
-    show (ground.getAt ([] : List Poly) (ptransGo n (ptails m)) p).length
-      = w
-    exact rowsLen_ptransGo n (ptails m) w
-      ((ground.length_map _ m).trans hw) p (Nat.lt_of_succ_lt_succ hp)
+private theorem ptransposeLen {n : Nat} : ∀ M : PMat,
+    M.length = n → rowsLen n M → (ptranspose M).length = n
+  | [], hl, _ => by rw [← hl]; rfl
+  | r :: t, _, hr =>
+    length_transposeO poly.polyOps (r :: t) hr (Nat.succ_pos _)
 
 /-! The congruence's shape reads: the descent's exchanged key count
 at both sides, and the entries' counts within the site datum's own
@@ -537,16 +506,6 @@ theorem congrZ_len (T : Mat) (Z : PMat) :
     (congrZ T Z).length = (transposeM T).length :=
   ground.length_map _ _
 
-/-- The key-list exchange runs at the stated order. -/
-private theorem ptranspose_fuel : ∀ (M : PMat) (n : Nat),
-    M.length = n → rowsLen n M → ptranspose M = ptransGo n M
-  | [], n, hl, _ => by
-    match n, hl with
-    | 0, _ => rfl
-  | r :: t, n, _, hr => by
-    show ptransGo r.length (r :: t) = ptransGo n (r :: t)
-    rw [hr.1]
-
 /-- The congruence's rows read the descent's key count. -/
 theorem congrZ_rows (T : Mat) (Z : PMat) (n : Nat)
     (hTl : T.length = n) (hTr : rowsLen n T) (hZl : Z.length = n) :
@@ -557,13 +516,12 @@ theorem congrZ_rows (T : Mat) (Z : PMat) (n : Nat)
       (fun c => poly.scaleDot c r)))).map
       (fun colj => poly.scaleDot ti colj)))
   refine rowsLen_map _ n (transposeM T) (fun ti _ => ?_)
-  rw [ground.length_map,
-    ptranspose_fuel (Z.map (fun r => (transposeM T).map
-      (fun c => poly.scaleDot c r))) n
-      (by rw [ground.length_map]; exact hZl)
-      (rowsLen_map _ n Z (fun r _ => by
-        rw [ground.length_map]; exact hTt)),
-    length_ptransGo]
+  rw [ground.length_map]
+  exact ptransposeLen (Z.map (fun r => (transposeM T).map
+      (fun c => poly.scaleDot c r)))
+    (by rw [ground.length_map]; exact hZl)
+    (rowsLen_map _ n Z (fun r _ => by
+      rw [ground.length_map]; exact hTt))
 
 /-- A scalar fold against a family within a count sits there. -/
 private theorem scaleDot_ble (K : Nat) (r : List BPair) (u : List Poly)
@@ -589,62 +547,35 @@ private theorem scaleDotRow_ble (K : Nat) (ti : List BPair) :
     rw [scaleDot_ble K ti r hs.1, scaleDotRow_ble K ti t hs.2]
     rfl
 
-/-- The exchange's head row sits at the rows' bound. -/
-private theorem pheads_ble (K : Nat) : ∀ m : PMat,
-    (m.all (fun r => r.all (fun p => Nat.ble p.length K))) = true →
-    ((pheads m).all (fun p => Nat.ble p.length K)) = true
-  | [], _ => rfl
-  | r :: t, h => by
-    have hs := ground.andSplitB h
-    match r, hs.1 with
-    | [], _ =>
-      show (Nat.ble ([] : Poly).length K
-        && (pheads t).all (fun p => Nat.ble p.length K)) = true
-      rw [pheads_ble K t hs.2]
-      rfl
-    | a :: u, hr =>
-      have ha : Nat.ble a.length K = true := (ground.andSplitB hr).1
-      show (Nat.ble a.length K
-        && (pheads t).all (fun p => Nat.ble p.length K)) = true
-      rw [pheads_ble K t hs.2, ha]
-      rfl
-
-/-- The exchange's dropped heads keep the rows' bound. -/
-private theorem ptails_ble (K : Nat) : ∀ m : PMat,
-    (m.all (fun r => r.all (fun p => Nat.ble p.length K))) = true →
-    ((ptails m).all
+/-- The key-list exchange keeps the entries' bound: each exchanged
+entry is a source entry at the flipped keys, the enumeration at the
+transpose's own shape reads. -/
+private theorem ptranspose_ble (K : Nat) {n : Nat} :
+    ∀ M : PMat, rowsLen n M →
+    (M.all (fun r => r.all (fun p => Nat.ble p.length K))) = true →
+    ((ptranspose M).all
       (fun r => r.all (fun p => Nat.ble p.length K))) = true
-  | [], _ => rfl
-  | r :: t, h => by
-    have hs := ground.andSplitB h
-    match r, hs.1 with
-    | [], _ =>
-      show (([] : List Poly).all (fun p => Nat.ble p.length K)
-        && (ptails t).all
-          (fun r => r.all (fun p => Nat.ble p.length K))) = true
-      rw [ptails_ble K t hs.2]
-      rfl
-    | a :: u, hr =>
-      have hu : (u.all (fun p => Nat.ble p.length K)) = true :=
-        (ground.andSplitB hr).2
-      show (u.all (fun p => Nat.ble p.length K)
-        && (ptails t).all
-          (fun r => r.all (fun p => Nat.ble p.length K))) = true
-      rw [ptails_ble K t hs.2, hu]
-      rfl
-
-/-- The key-list exchange keeps the entries' bound. -/
-private theorem ptransGo_ble (K : Nat) : ∀ (n : Nat) (m : PMat),
-    (m.all (fun r => r.all (fun p => Nat.ble p.length K))) = true →
-    ((ptransGo n m).all
+  | [], _, _ => rfl
+  | r :: t, hr, h => by
+    show ((elim.transposeO poly.polyOps (r :: t)).all
       (fun r => r.all (fun p => Nat.ble p.length K))) = true
-  | 0, _, _ => rfl
-  | n + 1, m, h => by
-    show ((pheads m).all (fun p => Nat.ble p.length K)
-      && (ptransGo n (ptails m)).all
-        (fun r => r.all (fun p => Nat.ble p.length K))) = true
-    rw [pheads_ble K m h, ptransGo_ble K n (ptails m) (ptails_ble K m h)]
-    rfl
+    have hlen : (elim.transposeO poly.polyOps (r :: t)).length = n :=
+      length_transposeO poly.polyOps (r :: t) hr (Nat.succ_pos _)
+    refine ground.all_of_getAt ([] : List Poly) _
+      (elim.transposeO poly.polyOps (r :: t)) (fun i hi => ?_)
+    have hin : i < n := by rw [← hlen]; exact hi
+    have hrowlen : (ground.getAt ([] : List Poly)
+        (elim.transposeO poly.polyOps (r :: t)) i).length
+        = (r :: t).length :=
+      rowsLen_getAt (elim.transposeO poly.polyOps (r :: t)) i
+        (rowsLen_transposeO poly.polyOps (r :: t)) hi
+    refine ground.all_of_getAt ([] : Poly) _ _ (fun q hq => ?_)
+    rw [hrowlen] at hq
+    rw [getAt_transposeO poly.polyOps ([] : Poly) (r :: t) hr i q
+      hin hq]
+    exact ground.all_getAt ([] : Poly) _
+      (ground.all_getAt ([] : List Poly) (r :: t) h q hq) i
+      (by rw [rowsLen_getAt (r :: t) q hr hq]; exact hin)
 
 /-- The congruence keeps the site datum's entry bound: the scalar
 folds of families within a count sit within it, the key-list
@@ -666,7 +597,11 @@ theorem congrZ_ble (T : Mat) (Z : PMat) (K : Nat)
   have hZTt : ((ptranspose (Z.map (fun r => (transposeM T).map
       (fun c => poly.scaleDot c r)))).all
     (fun r => r.all (fun p => Nat.ble p.length K))) = true :=
-    ptransGo_ble K _ _ hZT
+    ptranspose_ble K (Z.map (fun r => (transposeM T).map
+        (fun c => poly.scaleDot c r)))
+      (rowsLen_map _ (transposeM T).length Z
+        (fun r _ => ground.length_map _ _))
+      hZT
   show (((transposeM T).map (fun ti =>
       (ptranspose (Z.map (fun r => (transposeM T).map
         (fun c => poly.scaleDot c r)))).map
@@ -738,19 +673,17 @@ private theorem pcf_trans_key (k w : Nat) (N : PMat) (W : Mat)
     (hW : rowsLen w W) (hlen : N.length = W.length) (hpos : 0 < N.length)
     (h : matOneValue (pcf k N) W) :
     matOneValue (pcf k (ptranspose N)) (transposeM W) := by
-  have hfuel : ptranspose N = ptransGo w N := by
-    match N, hpos with
-    | r :: t, _ =>
-      show ptransGo r.length (r :: t) = ptransGo w (r :: t)
-      rw [show r.length = w from hN 0 (Nat.succ_pos _)]
-  have hPl : (ptranspose N).length = w := by rw [hfuel, length_ptransGo]
+  have hrl : rowsLen w N := rowsLenOfGetAt w N hN
+  have hfuel : ptranspose N = elim.transposeO poly.polyOps N := rfl
+  have hPl : (ptranspose N).length = w :=
+    length_transposeO poly.polyOps N hrl hpos
   have hWpos : 0 < W.length := by rw [← hlen]; exact hpos
   have hTWl : (transposeM W).length = w := length_transposeM W hW hWpos
   have hrow : ∀ p, p < w →
       (ground.getAt ([] : List Poly) (ptranspose N) p).length = N.length := by
     intro p hp
-    rw [hfuel]
-    exact rowsLen_ptransGo w N N.length rfl p hp
+    exact rowsLen_getAt (ptranspose N) p
+      (rowsLen_transposeO poly.polyOps N) (by rw [hPl]; exact hp)
   refine matOne_getAt _ _ ?_ ?_
   · rw [show (pcf k (ptranspose N)).length = (ptranspose N).length from
       ground.length_map _ _, hPl, hTWl]
@@ -770,7 +703,7 @@ private theorem pcf_trans_key (k w : Nat) (N : PMat) (W : Mat)
       rw [ground.getAt_map ([] : Poly) BPair.unit (cf k)
           (ground.getAt ([] : List Poly) (ptranspose N) i) q
           (by rw [hrow i hi]; exact hq),
-        hfuel, getAt_ptransGo w N i q hi hq,
+        hfuel, getAt_transposeO poly.polyOps ([] : Poly) N hrl i q hi hq,
         getAt_transposeM BPair.unit W hW i q hi (by rw [← hlen]; exact hq)]
       have hr := matOne_entries _ _ h q
         (by rw [show (pcf k N).length = N.length from
@@ -1328,12 +1261,11 @@ private theorem congrZ_entry (T : Mat) (Z : PMat) (o : Nat)
     rowsLen_map _ o Z (fun _ _ => (ground.length_map _ _).trans hTtl)
   have hPt : ptranspose (Z.map (fun r => (transposeM T).map
         (fun c => poly.scaleDot c r)))
-      = ptransGo o (Z.map (fun r => (transposeM T).map
-        (fun c => poly.scaleDot c r))) :=
-    ptranspose_fuel _ o hZTl hZTr
+      = elim.transposeO poly.polyOps (Z.map (fun r =>
+        (transposeM T).map (fun c => poly.scaleDot c r))) := rfl
   have hPtl : (ptranspose (Z.map (fun r => (transposeM T).map
-      (fun c => poly.scaleDot c r)))).length = o := by
-    rw [hPt, length_ptransGo]
+      (fun c => poly.scaleDot c r)))).length = o :=
+    ptransposeLen _ hZTl hZTr
   have hrowi : (ground.getAt ([] : List BPair) (transposeM T) i).length
       = o := rowsLen_getAt (transposeM T) i hTtr (by rw [hTtl]; exact hi)
   have hrowj : (ground.getAt ([] : List BPair) (transposeM T) j).length
@@ -1356,9 +1288,11 @@ private theorem congrZ_entry (T : Mat) (Z : PMat) (o : Nat)
       (by rw [hPtl]; exact hj)
   have hcolj : (ground.getAt ([] : List Poly)
       (ptranspose (Z.map (fun r => (transposeM T).map
-        (fun c => poly.scaleDot c r)))) j).length = o := by
-    rw [hPt]
-    exact rowsLen_ptransGo o _ o hZTl j hj
+        (fun c => poly.scaleDot c r)))) j).length = o :=
+    (rowsLen_getAt (ptranspose (Z.map (fun r => (transposeM T).map
+        (fun c => poly.scaleDot c r)))) j
+      (rowsLen_transposeO poly.polyOps _)
+      (by rw [hPtl]; exact hj)).trans hZTl
   rw [hL2]
   refine poly.oneValue_trans
     (scaleDot_famFold o _ _ hrowi hcolj) ?_
@@ -1383,7 +1317,8 @@ private theorem congrZ_entry (T : Mat) (Z : PMat) (o : Nat)
             (fun c => poly.scaleDot c r)))) j) s
       = poly.scaleDot (ground.getAt ([] : List BPair) (transposeM T) j)
         (ground.getAt ([] : List Poly) Z s) := by
-    rw [hPt, getAt_ptransGo o _ j s hj (by rw [hZTl]; exact hs),
+    rw [hPt, getAt_transposeO poly.polyOps ([] : Poly) _ hZTr j s hj
+        (by rw [hZTl]; exact hs),
       ground.getAt_map ([] : List Poly) ([] : List Poly) _ Z s hsZ]
     exact ground.getAt_map ([] : List BPair) ([] : Poly) _ (transposeM T) j
       (by rw [hTtl]; exact hj)
@@ -2623,6 +2558,34 @@ theorem quadFoldG {n : Nat} (Et : Mat) (T Tw : SqMat n)
     (diagAct _ c
       (by rw [ground.length_map, rootLen Et T Tw l hd]; exact hc))) ?_
   exact dotP_dmul _ c c
+
+/-- The pair read at a diagonalized matrix is its congruated
+diagonal's fold over the two probes' coordinates: at a matrix whose
+congruence reads the diagonal of its columns' pairings, two probes'
+pairing across it at the determinant's square is the diagonal's
+fold against the coordinates' products, the probes carried back
+through the adjugate witness (`adjAct`, `pairScale`, `diagFold`). -/
+theorem pair_fold {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair))
+    (hd : diagRead Et (idMat n) T Tw l)
+    (M : Mat) (hMl : M.length = n) (hMr : rowsLen n M)
+    (hDiag : matOneValue (matMul (transposeM T.val) (matMul M T.val))
+      (diagM (vDiagL M T)))
+    (x y : List BPair) (hx : x.length = n) (hy : y.length = n) :
+    (minor T.val * minor T.val * dotP x (matVec M y)).oneValue
+      (dotP (vDiagL M T)
+        (List.zipWith (· * ·) (matVec Tw.val x) (matVec Tw.val y))) := by
+  have hTwl : Tw.val.length = n := SqMat.rows Tw
+  have hXl : (matVec Tw.val x).length = n := by rw [matVec_length, hTwl]
+  have hYl : (matVec Tw.val y).length = n := by rw [matVec_length, hTwl]
+  refine BPair.oneValue_trans
+    (BPair.oneValue_symm
+      (pairScale M (minor T.val) x y
+        (matVec T.val (matVec Tw.val x)) (matVec T.val (matVec Tw.val y))
+        (adjAct Et T Tw l hd x hx) (adjAct Et T Tw l hd y hy))) ?_
+  refine BPair.oneValue_trans (BPair.oneValue_symm (dotN_read _ _)) ?_
+  exact diagFold M T _ hMl hMr (vDiagL_len M T) hDiag
+    (matVec Tw.val x) (matVec Tw.val y) hXl hYl
 
 /-- The resultant's kernel read, the cross pair: `(A, B)` at the
 stated degrees with `A p` the balance partner of `B q`, off the

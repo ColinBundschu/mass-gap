@@ -470,15 +470,21 @@ private def prForge : BPair :=
 example : prForge.oneValue (BPair.ofNat 76) := by decide +kernel
 example : ¬ prR.oneValue prForge := by decide +kernel
 
-private def psiH : List BPair := [BPair.ofNat 6, BPair.ofNat 4, BPair.ofNat 2]
-private def bH : List BPair := [BPair.ofNat 3, BPair.ofNat 3]
-private def aH : List BPair := [BPair.ofNat 2, BPair.ofNat 6, BPair.ofNat 6]
+namespace momentfold
 
-private theorem readH : recRead aH bH psiH := by decide +kernel
-private theorem profH :
-    diagProf aH (BPair.ofNat 2).swap (BPair.ofNat 6) (BPair.ofNat 2) := by
+/-- The quadratic head's fixtures, published for the sibling check
+modules reading the same head. -/
+def psiH : List BPair := [BPair.ofNat 6, BPair.ofNat 4, BPair.ofNat 2]
+def bH : List BPair := [BPair.ofNat 3, BPair.ofNat 3]
+def aH : List BPair := [BPair.ofNat 2, BPair.ofNat 6, BPair.ofNat 6]
+def pH2 : BPair := (BPair.ofNat 2).swap
+
+theorem readH : recRead aH bH psiH := by decide +kernel
+theorem profH : diagProf aH pH2 (BPair.ofNat 6) (BPair.ofNat 2) := by
   decide +kernel
-private theorem bondH : constBond bH (BPair.ofNat 3) := by decide +kernel
+theorem bondH : constBond bH (BPair.ofNat 3) := by decide +kernel
+
+end momentfold
 
 example : ¬ diagProf aH (BPair.ofNat 2) (BPair.ofNat 6) (BPair.ofNat 2) := by
   decide +kernel
@@ -825,7 +831,7 @@ private def pinHi : List BPair :=
 
 example : poly.oneValue pinLo pinHi := by decide +kernel
 example : poly.oneValue pinLo pinHi :=
-  det_pin (n := 5) sysH sqH (momVec psiH 1) rfl
+  inertia.det_pin (n := 5) sysH sqH (momVec psiH 1) rfl
 
 example : poly.oneValue (elim.matVec dSys (momVec psiG2 1))
     [BPair.unit, BPair.unit, BPair.unit, BPair.unit, BPair.ofNat 6] := by
@@ -1075,8 +1081,6 @@ example : (drForm drD drO5 drU).oneValue (drRead drD drO5 drU) := by
 /- The square system at the fixtures: the assembled rows pin the
 committed matrices, the read lands by the theorem route, and the
 degree floor with the bond datum refuse at their forges. -/
-
-private def pH2 : BPair := (BPair.ofNat 2).swap
 
 example : elim.matOneValue
     (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2) (BPair.ofNat 3))

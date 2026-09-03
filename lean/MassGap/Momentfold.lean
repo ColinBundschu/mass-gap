@@ -85,10 +85,10 @@ composes from the transfer certificate against the turning read at
 the stated degree (`turn_step`), one comparison per step at the
 shared clearing withdrawn.
 
-Clause (iv), the scale comparison.  The adjugate's action against a
-list's own action pins a vector at the determinant's scale
-(`det_pin`, `def:elim`'s adjugate identity read at a vector), so two
-solved systems at one shape compare: at the coefficients' site datum
+Clause (iv), the scale comparison.  The adjugate's solve read
+returns a solved vector at the determinant's scale
+(`inertia.adj_solve`, `def:elim`'s adjugate identity read at a
+vector), so two solved systems at one shape compare: at the coefficients' site datum
 at the shared shape and the data's difference at the shared width,
 the solutions' difference at the first determinant's scale reads the
 adjugate's action at those differences (`scale_compare`), one read
@@ -3345,19 +3345,6 @@ theorem turn_step (x y u v : BPair) (ln ld qn qd : Pos)
 a list's own action at a vector, and the two solved systems' reads at
 one shape. -/
 
-/-- The adjugate's action against a list's own action pins a vector
-at the determinant's scale: the adjugate identity's action read
-(`inertia.adjM_col_read`) at the vector, the determinant's scaled
-identity acting as the scale itself (`def:elim`'s adjugate identity
-read at a vector). -/
-theorem det_pin {n : Nat} (S : elim.Mat) (hsq : elim.sqAt S n)
-    (z : List BPair) (hz : z.length = n) :
-    poly.oneValue (elim.matVec (elim.matMul (elim.adjM S) S) z)
-      (elim.vecScale (elim.detL S) z) :=
-  poly.oneValue_trans
-    (elim.matVec_matOne _ _ z (inertia.adjM_col_read S hsq))
-    (inertia.scaleId_act (elim.detL S) n z hz)
-
 /-- Two solved systems at one shape compare at the first
 determinant's scale: at the coefficients' site datum at the shared
 shape and the data's difference at the shared width, the solutions'
@@ -3378,7 +3365,6 @@ theorem scale_compare {n : Nat} (S S' D : elim.Mat)
       (elim.matVec (elim.adjM S)
         (elim.vecAdd dw ((elim.matVec D v').map BPair.swap))) := by
   have hSl : S.length = n := elim.sqAt_len hsq
-  have hSr : elim.rowsLen n S := elim.rowsLen_of_sqAt hsq
   have hS'r : elim.rowsLen n S' := elim.rowsLen_of_sqAt hsq'
   have hDr : elim.rowsLen n D := elim.rowsLen_of_sqAt hsqD
   have hDl : D.length = n := elim.sqAt_len hsqD
@@ -3443,11 +3429,7 @@ theorem scale_compare {n : Nat} (S S' D : elim.Mat)
       exact BPair.oneValue_trans
         (BPair.oneValue_of_eq (BPair.add_comm _ _))
         (BPair.swap_add_null (BPair.oneValue_refl _))
-  refine poly.oneValue_trans
-    (poly.oneValue_symm (det_pin S hsq _ hzl)) ?_
-  exact poly.oneValue_trans
-    (elim.matVec_matMul (elim.adjM S) S n hSr _ hzl)
-    (elim.matVec_congr (elim.adjM S) _ _ hact)
+  exact poly.oneValue_symm (inertia.adj_solve S hsq _ _ hzl hact)
 
 /-! Clause (v)'s datum arm: a single-region datum read is a stream
 read at banded weights — the width-one datum's form read at the

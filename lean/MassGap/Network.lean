@@ -778,24 +778,6 @@ theorem netConf_vmult {L : Type} (F : Data L) (R1 k R2 : L)
       (carrier.incidentLabels F thetaR (netConf R1 k R2) 1) = _
     rw [ho]
 
-/-- Two configurations of one length agreeing at every key agree at
-the index's own read. -/
-private theorem eqConf_intro {L : Type} (F : Data L) :
-    ∀ a b : List L, a.length = b.length →
-      (∀ i, i < b.length →
-        F.eqL (ground.getAt F.unit a i) (ground.getAt F.unit b i) = true) →
-      carrier.eqConf F a b = true
-  | [], [], _, _ => rfl
-  | [], _ :: _, h, _ => Nat.noConfusion h
-  | _ :: _, [], h, _ => Nat.noConfusion h
-  | x :: s, y :: t, h, hf => by
-    have h0 : F.eqL x y = true := hf 0 (Nat.succ_pos t.length)
-    show (F.eqL x y && carrier.eqConf F s t) = true
-    rw [h0]
-    show carrier.eqConf F s t = true
-    exact eqConf_intro F s t (Nat.succ.inj h)
-      (fun i hi => hf (i + 1) (Nat.succ_lt_succ hi))
-
 /-- The two-valent vertex's read at either arm gives the pair one
 label: the unit arm at the unit labels' own read `huu`, the occupied
 arm at the involution's `hdc`. -/
@@ -838,7 +820,7 @@ theorem netConf_det {L : Type} (F : Data L)
     htr _ _ _ e32 e21
   have e64 : F.eqL (ground.getAt F.unit a 6) (ground.getAt F.unit a 4) = true :=
     htr _ _ _ e65 e54
-  refine eqConf_intro F a _ hlen (fun i hi => ?_)
+  refine carrier.eqConf_intro F a _ hlen (fun i hi => ?_)
   match i, hi with
   | 0, _ => exact F.eqLRefl (ground.getAt F.unit a 0)
   | 1, _ => exact F.eqLRefl (ground.getAt F.unit a 1)

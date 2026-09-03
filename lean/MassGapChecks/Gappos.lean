@@ -93,8 +93,8 @@ while the removed diagonal three sits below it.
 
 The window's cut: at the free window `diag(0, 12, 32)` the one
 located root list reads both ways — the count identity at the
-window's two levels two and eleven, each counting the ground alone,
-and the diagonalizing congruence at the identity — and `windowCut`
+window's top level eleven, counting the ground alone, and the
+diagonalizing congruence at the identity — and `windowCut`
 lands the cut tie whole at the edge `[8 : 1]`, beside its own
 `decide`; at the edge sixteen the top level's count reads two
 against the ground's one — the top-count binder's refusal, the
@@ -613,9 +613,8 @@ example : ¬ inertia.psdAt (inertia.mkSplit 2
   decide +kernel
 
 /-! The window's cut at the free window `diag(0, 12, 32)`: the one
-root list at both reads, the window's counts at the levels two and
-eleven each the ground's own, and the cut tie landed whole at the
-edge `[8 : 1]`. -/
+root list at both reads, the window's count at the level eleven the
+ground's own, and the cut tie landed whole at the edge `[8 : 1]`. -/
 
 private def et3 : Mat :=
   [[bU, bU, bU], [bU, ⟨13, 1⟩, bU], [bU, bU, ⟨33, 1⟩]]
@@ -629,23 +628,17 @@ private def spCut3 : Split 3 :=
   inertia.mkSplit 3 (siteDatum (matScale 1 (matMul et3 et3))
     (matScale (4 * 2) et3))
 
-private def spWa : Split 3 :=
-  inertia.mkSplit 3 (siteDatum (matScale 1 et3) (matScale 2 (idMat 3)))
 private def spWt : Split 3 :=
   inertia.mkSplit 3 (siteDatum (matScale 1 et3) (matScale 11 (idMat 3)))
 
-private theorem cra : split.countRead et3 (idMat 3)
-    (l3.map (fun r => (r.1, r.2.1))) 2 1 spWa := by decide +kernel
 private theorem crt : split.countRead et3 (idMat 3)
     (l3.map (fun r => (r.1, r.2.1))) 11 1 spWt := by decide +kernel
 
 example : speccut.cutTie et3 (l3.map (fun r => (r.1, r.2.1))) 4 2 1
     spCut3 :=
   windowCut et3 id3 id3 l3 4 2 1 1 (by decide +kernel)
-    (by decide +kernel) 2 1 11 1 spWa spWt
-    cra crt (by decide +kernel) (by decide +kernel)
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    spCut3 (by decide +kernel)
+    (by decide +kernel) 11 1 spWt crt (by decide +kernel)
+    (by decide +kernel) spCut3 (by decide +kernel)
 
 example : speccut.cutTie et3 (l3.map (fun r => (r.1, r.2.1))) 4 2 1
     spCut3 := by decide +kernel

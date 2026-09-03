@@ -1342,13 +1342,13 @@ private theorem frontier_mem (d K : Nat) (s mu c' : places.Shape)
       (places.degree mu + places.degree (adjchar.theta d)) := by
     rw [← hdegc]
     exact places.mem_allShapes d c' hc'len
-  have himg : (if 0 < steinberg.count mu (adjchar.theta d) c'
-      then some (labels.reduce c') else none) = some s := by
+  have himg : labels.emit mu (adjchar.theta d) c' = some s := by
+    show (if 0 < steinberg.count mu (adjchar.theta d) c'
+      then some (labels.reduce c') else none) = some s
     rw [if_pos hstein, hredc]
   have hdef : s ∈ (places.allShapes d
       (places.degree mu + places.degree (adjchar.theta d))).filterMap
-    (fun c => if 0 < steinberg.count mu (adjchar.theta d) c
-      then some (labels.reduce c) else none) :=
+    (labels.emit mu (adjchar.theta d)) :=
     ground.mem_filterMap_to _ hmem himg
   have hcnt := ground.countOf_pos_of_mem hdef
   rw [rankstable.adjRow_eq d mu hmulen hd s] at hcnt

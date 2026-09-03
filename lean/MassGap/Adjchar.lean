@@ -143,21 +143,6 @@ private theorem scan_cons (z w : Bool) (r e : Nat) (t : List Nat) :
         else if e = 2 then (if w then none else multScan z true r t)
         else none) := rfl
 
-/-- A count sits at or below the length. -/
-private theorem countOf_le_length {α : Type} [DecidableEq α]
-    (a : α) : ∀ (l : List α), ground.countOf a l ≤ l.length
-  | [] => Nat.le_refl 0
-  | b :: t => by
-    rw [ground.countOf_cons]
-    show (if a = b then 1 else 0) + ground.countOf a t
-      ≤ t.length + 1
-    by_cases hab : a = b
-    · rw [if_pos hab, Nat.add_comm 1 (ground.countOf a t)]
-      exact Nat.succ_le_succ (countOf_le_length a t)
-    · rw [if_neg hab, Nat.zero_add]
-      exact Nat.le_trans (countOf_le_length a t)
-        (Nat.le_succ t.length)
-
 /-- The all-ones family's reads: every entry at most two, the sum
 the length, and every entry below the length the fold's unit. -/
 private theorem ones_read : ∀ (l : List Nat),
@@ -193,7 +178,7 @@ private theorem ones_read : ∀ (l : List Nat),
         | 0 => exact hb1.symm
         | k + 1 => exact hone k (Nat.lt_of_succ_lt_succ hk)
     · rw [if_neg hb1, Nat.zero_add] at h'
-      have hle := countOf_le_length 1 t
+      have hle := ground.countOf_le_length 1 t
       rw [h'] at hle
       exact absurd hle (Nat.not_succ_le_self t.length)
 

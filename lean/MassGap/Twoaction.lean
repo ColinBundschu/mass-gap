@@ -7,7 +7,10 @@ two ends its fixed points (`unitschain.bridge_fixed` at the
 member's coefficient, `invariant_fixed`), so the two families'
 invariants read one pair, the contact pair at the ends' own values
 (`thm:closing`); the comparison at the corner outputs runs at the
-families' certificates (`lem:corner`).
+families' certificates (`lem:corner`): `compare_bracket` reads each
+output's comparison as one bracket at the two families'
+certificates, the two members' brackets cross-added, finite and
+decidable at the pair carrier's order.
 -/
 
 namespace twoaction
@@ -36,5 +39,15 @@ theorem ends_fixed (r : Nat) (c : Coupling) :
       ↔ (c = .free ∨ c = .contact) :=
   unitschain.bridge_fixed (2 * posOfSucc r)
     (one_lt_two_mul (posOfSucc r)) c
+
+/-- A corner output's comparison at the two families is one bracket
+at their certificates: with each family's output between its
+certificate's two ends, the comparison sits between the cross-added
+ends, the lower end of one against the upper of the other, both
+reads the certificates' own. -/
+theorem compare_bracket (l h l' h' x x' : CPair)
+    (hl : l ≤ x) (hh : x ≤ h) (hl' : l' ≤ x') (hh' : x' ≤ h') :
+    l + x' ≤ x + h' ∧ x + l' ≤ h + x' :=
+  ⟨CPair.le_add hl hh', CPair.le_add hh hl'⟩
 
 end twoaction

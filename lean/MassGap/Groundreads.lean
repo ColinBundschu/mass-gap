@@ -105,8 +105,13 @@ upper at `(N ud)V + un ẼV ~ (N ud vc)I`, and their columns read the
 located pairs `[g lc : N ud d]` and `[N ud d vc : N ud d + un p]`
 (`euc_lo_col`, `euc_lo_col_ker`, `euc_hi_col` at the applied solve
 identity); the iterated products carry the reads to
-every count (`inertia.matPow`, `matPow_col`), the congruated
-diagonals pin per root (`split.colDiagPin`), and the bracket closes
+every count (`inertia.matPow`, `matPow_col`), the split maps both
+families' powers to their diagonal reads at the roots (`euc_hi_diag`,
+`euc_lo_diag` at `split.diagOfPairs`), the congruated diagonals pin
+per root, the upper's `[N : N + uγ]` and the lower's `[g_γ : N]` at
+every count (`euc_hi_root`, `euc_lo_root` at `split.colDiagPin`),
+each family's pair read the diagonal's fold over the probes'
+coordinates (`split.pair_fold`), and the bracket closes
 cross-cleared inside `euc_pair_price`, the sum's unit at or below
 `lc^N dsV + (vc^N dsL).swap` at width
 `[u²ϰ²(lc·vc)^N : N(ud·kd)²]` (the
@@ -2169,9 +2174,8 @@ theorem gap_perp {n : Nat} (Et : Mat) (T Tw : SqMat n)
       (minor T.val * minor T.val * inertia.quadForm Et x) :=
     inertia.quadScaleVec Et (minor T.val) x _ hadj
   have hidq : ∀ y : List BPair, y.length = n →
-      (inertia.quadForm (idMat n) y).oneValue (dotN y y) := by
-    intro y hy
-    exact dotN_congrR y _ _ (inertia.matVec_idMat n y hy)
+      (inertia.quadForm (idMat n) y).oneValue (dotN y y) :=
+    fun y hy => inertia.quadForm_idMat n y hy
   have hq2 : (dotN (matVec T.val (matVec Tw.val x))
       (matVec T.val (matVec Tw.val x))).oneValue
       (minor T.val * minor T.val * dotN x x) := by
@@ -3113,15 +3117,6 @@ private theorem takeDropOcc {a : Type} : ∀ (m i : Nat) (l : List a),
   | m + 1, i + 1, _ :: t, h =>
     Nat.succ_lt_succ (takeDropOcc m i t h)
 
-/-- A key within the family's count leaves the trailing part
-occupied. -/
-private theorem dropPos {a : Type} : ∀ (i : Nat) (l : List a),
-    i < l.length → 0 < (l.drop i).length
-  | 0, [], h => absurd h (Nat.not_lt_zero 0)
-  | 0, _ :: _, _ => Nat.succ_pos _
-  | _ + 1, [], h => absurd h (Nat.not_lt_zero _)
-  | i + 1, _ :: t, h => dropPos i t (Nat.lt_of_succ_lt_succ h)
-
 /-- The tied walk at an occupied certificate list runs on occupied
 witness families. -/
 private theorem walkOcc {dn : BPair} {sn sd cn cd : Pos}
@@ -3626,10 +3621,6 @@ private theorem posK1 (a b c d : Pos) :
   rw [ground.mul_assoc a d (b * c), ground.mul_comm d (b * c),
     ground.mul_assoc b c d]
 
-/-- The three clearings regroup at the walked step. -/
-private theorem posK2 (a b d : Pos) : a * d * b = a * (b * d) := by
-  rw [ground.mul_assoc a d b, ground.mul_comm d b]
-
 /-- The head kernel's walk: at the slab, pivot, witness and vector
 walks with the rows at unit sides and an accumulator entering the
 leading slab, the decimated head at any depth reads the accumulator
@@ -3800,7 +3791,8 @@ private theorem kernelGo : ∀ (j : Nat) (A : Mat) (diag off : List Mat)
       refine poly.oneValue_symm ?_
       refine poly.oneValue_trans (elim.vecScale_oneValue _ _ _
         (greenprod.vecScale_ofPos u1.2 (matVec A u.1))) ?_
-      exact scaleFlat (posK2 _ u1.2 _) (matVec A u.1)
+      exact scaleFlat ((ground.mul_right_comm' _ u1.2 _).symm)
+        (matVec A u.1)
     have hW2 : poly.oneValue (matVec (greenprod.offPad (ground.sumNat
         (List.take j (k1 :: ns1)) + ground.getAt 0 (k1 :: ns1) j) (matScale
         (ground.getAt greenprod.dM (X1 :: Xs1) j).2 B)) (greenprod.vecScale
@@ -3836,7 +3828,8 @@ private theorem kernelGo : ∀ (j : Nat) (A : Mat) (diag off : List Mat)
       refine poly.oneValue_symm ?_
       refine poly.oneValue_trans (elim.vecScale_oneValue _ _ _
         (greenprod.vecScale_ofPos u.2 (matVec B u1.1))) ?_
-      exact scaleFlat (posK2 _ u.2 _) (matVec B u1.1)
+      exact scaleFlat ((ground.mul_right_comm' _ u.2 _).symm)
+        (matVec B u1.1)
     -- the trailing block against the induction hypothesis
     have hT1 : poly.oneValue (matVec (transposeM (matScale (ground.getAt
         greenprod.dM (X1 :: Xs1) j).2 B)) (greenprod.vecScale (denProd
@@ -4213,9 +4206,7 @@ theorem headVec_weight : ∀ (vs : List greenprod.VecQ)
   | _ :: _, [], h => h.elim
   | u :: t, k :: ns, h => by
     have hu : (dotN u.1 u.1).oneValue (inertia.quadForm (idMat k) u.1) :=
-      BPair.oneValue_symm
-        (dotN_congrR u.1 _ _
-          (inertia.matVec_idMat k u.1 h.1))
+      BPair.oneValue_symm (inertia.quadForm_idMat k u.1 h.1)
     show (dotN (greenprod.vecScale (denProd t) u.1
           ++ greenprod.vecScale u.2 (headVec t))
         (greenprod.vecScale (denProd t) u.1
@@ -5307,12 +5298,6 @@ private theorem tieScale (x : BPair) {g gc : BPair} {s s2 : Pos}
     (BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl x) h)
       (BPair.oneValue_of_eq (BPair.mul_scale x gc s2)))
 
-/-- The head term's clearings regroup at the joined blocks. -/
-private theorem posL1 (a b c d : Pos) :
-    a * b * (c * d) = c * (a * (b * d)) := by
-  rw [ground.mul_assoc a b (c * d), ground.mul_left_comm b c d,
-    ground.mul_left_comm a c (b * d)]
-
 /-- The head term's upper clearings regroup at the joined blocks. -/
 private theorem posL5 (a b c d : Pos) :
     a * b * (c * d) = b * (a * (c * d)) := by
@@ -5407,7 +5392,7 @@ private theorem bracketJoin {M MH Y Y' Gc Gu Gv F1 F1' : BPair}
   · rw [BPair.scale_scale]
     have h := ground.leB_scale hMH (Dt * Dt' * (B1 * B2))
     rw [BPair.scale_scale, BPair.scale_scale,
-      posL1 S P (Dt * Dt') (B1 * B2),
+      ground.mul_rotate' S P (Dt * Dt') (B1 * B2),
       posL5 S2 Q4 (Dt * Dt') (B1 * B2)] at h
     exact ground.leB_trans h
       (ground.leB_scale hZH (Q4 * (S2 * (Dt * Dt' * (B1 * B2)))))
@@ -5640,13 +5625,13 @@ theorem window_free {o : Nat} (diag off diag' off' : List Mat)
     ⟨hw2r, hv2r, greenprod.teleUpWalk_anchor j Rs' us' hwk2 hjus2 hjR'⟩
   have hwo := walkOcc hshare.2.2.2.2.2 hocc
   have hoc1 : 0 < (List.drop j cs).length := by
-    refine dropPos j cs ?_
+    refine ground.drop_pos_of_lt j cs ?_
     rw [← capList_len (ns.map inertia.idMat) Rs cs hcap1]
     refine takeDropOcc w0 j Rs ?_
     rw [← ground.length_reverse]
     exact hwo.1
   have hoc2 : 0 < (List.drop j cs').length := by
-    refine dropPos j cs' ?_
+    refine ground.drop_pos_of_lt j cs' ?_
     rw [← capList_len (ns.map inertia.idMat) Rs' cs' hcap2]
     refine takeDropOcc w0 j Rs' ?_
     rw [← ground.length_reverse]
@@ -9088,6 +9073,175 @@ private theorem widthPos (p dj Dg un ud kn kd : Pos) (n : Nat)
       * (posOfSucc n * ((ud * ud) * (kd * kd))))]
   exact ground.le_of_mul_le h2
 
+/-- Clause (v)'s upper family at the split: the upper witness's
+power is congruated to the diagonal of its columns' pairings, every
+off-key pairing the sum's unit — the column read's power at the
+certificate arm's collected scale off the unit (`euc_hi_col`,
+`matPow_col`, `split.colOffPair`), the split mapping the family to
+its diagonal reads at the roots. -/
+theorem euc_hi_diag {o : Nat} (Et : Mat) (T Tw : SqMat o)
+    (l : List (BPair × Pos × BPair))
+    (hd : split.diagRead Et (idMat o) T Tw l)
+    (un ud vc : Pos) (n : Nat) (ws : List (Pos × Pos))
+    (harm : ∀ k, k < l.length →
+      ((ground.getAt (BPair.unit, Pos.one, BPair.unit) l k).1).oneValue
+          BPair.unit
+        ∨ ((ground.getAt (BPair.unit, Pos.one,
+            BPair.unit) l k).1).oneValue
+            (BPair.ofPos (ground.getAt (Pos.one, Pos.one) ws k).1))
+    (Vw : Mat) (hVs : sqAt Vw o)
+    (hV : elim.matOneValue
+      (matAdd (inertia.matScale (posOfSucc n * ud) Vw)
+        (inertia.matScale un (matMul Et Vw)))
+      (inertia.matScale ((posOfSucc n * ud) * vc) (idMat o))) :
+    elim.matOneValue
+      (matMul (transposeM T.val) (matMul (matPow Vw o (n + 1)) T.val))
+      (split.diagM (split.vDiagL (matPow Vw o (n + 1)) T)) := by
+  have hTl : T.val.length = o := SqMat.rows T
+  have hlen : l.length = o := split.rootLen Et T Tw l hd
+  refine split.diagOfPairs (matPow Vw o (n + 1)) T
+    (length_matPow Vw o (sqAt_len hVs) (n + 1))
+    (rowsLen_matPow Vw o (sqAt_len hVs) (n + 1)) ?_
+  intro i j hi hj hne
+  have hjl : j < l.length := by rw [hlen]; exact hj
+  have hroot : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j
+      = ((ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).1,
+         (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.1,
+         (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.2) :=
+    rfl
+  have hvl : (matVec T.val (elim.idRow o j)).length = o := by
+    rw [matVec_length, hTl]
+  have h0 : ¬ (BPair.ofPos
+      ((ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.1
+        * (posOfSucc n * ud))
+      + ((ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).1).scale
+          un).oneValue BPair.unit :=
+    armScaleOff (harm j hjl)
+  rw [show (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.1
+        * (posOfSucc n * ud)
+      = posOfSucc n
+        * (ud * (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.1)
+    from by
+      rw [mul_left_comm _ (posOfSucc n) ud, mul_comm _ ud]] at h0
+  have hHcol := euc_hi_col Et T Tw l hd un ud vc n ws harm Vw hVs hV
+    j hj _ _ _ hroot
+  exact split.colOffPair Et T Tw l hd (matPow Vw o (n + 1)) i j hi hj hne
+    _ _ (ground.bpow_off _ h0 (n + 1))
+    (matPow_col Vw hVs _ hvl _ _ hHcol (n + 1))
+
+/-- Clause (v)'s lower family at the split: the lower witness's
+power is congruated to the diagonal of its columns' pairings, every
+off-key pairing the sum's unit — the column read's power at the
+count's clearing (`euc_lo_col`, `euc_lo_col_ker` at the certificate's
+two arms, `matPow_col`, `split.colOffPair`). -/
+theorem euc_lo_diag {o : Nat} (Et : Mat) (T Tw : SqMat o)
+    (l : List (BPair × Pos × BPair))
+    (hd : split.diagRead Et (idMat o) T Tw l)
+    (un ud kn kd lc : Pos) (n : Nat) (ws : List (Pos × Pos))
+    (hw : eucRead un ud kn kd (posOfSucc n) l ws)
+    (Lw : Mat) (hLs : sqAt Lw o)
+    (hL : elim.matOneValue
+      (matAdd (inertia.matScale (posOfSucc n * ud) Lw)
+        (inertia.matScale (un * lc) Et))
+      (inertia.matScale ((posOfSucc n * ud) * lc) (idMat o))) :
+    elim.matOneValue
+      (matMul (transposeM T.val) (matMul (matPow Lw o (n + 1)) T.val))
+      (split.diagM (split.vDiagL (matPow Lw o (n + 1)) T)) := by
+  have hTl : T.val.length = o := SqMat.rows T
+  refine split.diagOfPairs (matPow Lw o (n + 1)) T
+    (length_matPow Lw o (sqAt_len hLs) (n + 1))
+    (rowsLen_matPow Lw o (sqAt_len hLs) (n + 1)) ?_
+  intro i j hi hj hne
+  have hvl : (matVec T.val (elim.idRow o j)).length = o := by
+    rw [matVec_length, hTl]
+  have hLcol := loColArm Et T Tw l hd un ud kn kd lc n ws hw Lw hLs hL
+    j hj
+  have hoff : ¬ (ground.bpow (BPair.ofPos (posOfSucc n
+      * (ud * (ground.getAt (BPair.unit, Pos.one, BPair.unit)
+          l j).2.1))) (n + 1)).oneValue BPair.unit := by
+    intro hu
+    exact BPair.ofPos_off _
+      (BPair.oneValue_trans (ground.ofPos_pow _ (n + 1)) hu)
+  exact split.colOffPair Et T Tw l hd (matPow Lw o (n + 1)) i j hi hj hne
+    _ _ hoff (matPow_col Lw hLs _ hvl _ _ hLcol (n + 1))
+
+/-- Clause (v)'s upper diagonal read at a root: the congruated entry
+at the key, cleared at the arm's collected scale's power, is the
+root's gram weight at the count-against-clearing's power — the
+upper's `[N : N + uγ]` at every count, the column read's power
+pinned at the congruated diagonal (`euc_hi_col`, `matPow_col`,
+`split.colDiagPin`). -/
+theorem euc_hi_root {o : Nat} (Et : Mat) (T Tw : SqMat o)
+    (l : List (BPair × Pos × BPair))
+    (hd : split.diagRead Et (idMat o) T Tw l)
+    (un ud vc : Pos) (n : Nat) (ws : List (Pos × Pos))
+    (harm : ∀ k, k < l.length →
+      ((ground.getAt (BPair.unit, Pos.one, BPair.unit) l k).1).oneValue
+          BPair.unit
+        ∨ ((ground.getAt (BPair.unit, Pos.one,
+            BPair.unit) l k).1).oneValue
+            (BPair.ofPos (ground.getAt (Pos.one, Pos.one) ws k).1))
+    (Vw : Mat) (hVs : sqAt Vw o)
+    (hV : elim.matOneValue
+      (matAdd (inertia.matScale (posOfSucc n * ud) Vw)
+        (inertia.matScale un (matMul Et Vw)))
+      (inertia.matScale ((posOfSucc n * ud) * vc) (idMat o)))
+    (j : Nat) (hj : j < o) (nj gj : BPair) (dj : Pos)
+    (hroot : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j
+      = (nj, dj, gj)) :
+    (ground.bpow (BPair.ofPos (posOfSucc n * (ud * dj)) + nj.scale un)
+          (n + 1)
+        * ground.getAt BPair.unit
+            (split.vDiagL (matPow Vw o (n + 1)) T) j).oneValue
+      (ground.bpow (BPair.ofPos ((posOfSucc n * (ud * dj)) * vc)) (n + 1)
+        * (gj * BPair.ofPos dj)) := by
+  have hTl : T.val.length = o := SqMat.rows T
+  have hvl : (matVec T.val (elim.idRow o j)).length = o := by
+    rw [matVec_length, hTl]
+  have hHcol := euc_hi_col Et T Tw l hd un ud vc n ws harm Vw hVs hV
+    j hj nj gj dj hroot
+  exact split.colDiagPin Et T Tw l hd (matPow Vw o (n + 1))
+    (length_matPow Vw o (sqAt_len hVs) (n + 1))
+    (rowsLen_matPow Vw o (sqAt_len hVs) (n + 1))
+    j hj nj gj dj hroot _ _ (matPow_col Vw hVs _ hvl _ _ hHcol (n + 1))
+
+/-- Clause (v)'s lower diagonal read at a root: the congruated entry
+at the key, cleared at the count's power, is the root's gram weight
+at the witnessed gap against the clearing's power — the lower's
+`[g_γ : N]` at every count, the certificate's gap witness the read's
+own datum (`euc_lo_col`, `euc_lo_col_ker`, `matPow_col`,
+`split.colDiagPin`). -/
+theorem euc_lo_root {o : Nat} (Et : Mat) (T Tw : SqMat o)
+    (l : List (BPair × Pos × BPair))
+    (hd : split.diagRead Et (idMat o) T Tw l)
+    (un ud kn kd lc : Pos) (n : Nat) (ws : List (Pos × Pos))
+    (hw : eucRead un ud kn kd (posOfSucc n) l ws)
+    (Lw : Mat) (hLs : sqAt Lw o)
+    (hL : elim.matOneValue
+      (matAdd (inertia.matScale (posOfSucc n * ud) Lw)
+        (inertia.matScale (un * lc) Et))
+      (inertia.matScale ((posOfSucc n * ud) * lc) (idMat o)))
+    (j : Nat) (hj : j < o) (nj gj : BPair) (dj : Pos)
+    (hroot : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j
+      = (nj, dj, gj)) :
+    (ground.bpow (BPair.ofPos (posOfSucc n * (ud * dj))) (n + 1)
+        * ground.getAt BPair.unit
+            (split.vDiagL (matPow Lw o (n + 1)) T) j).oneValue
+      (ground.bpow
+          (BPair.ofPos ((ground.getAt (Pos.one, Pos.one) ws j).2 * lc))
+          (n + 1)
+        * (gj * BPair.ofPos dj)) := by
+  have hTl : T.val.length = o := SqMat.rows T
+  have hvl : (matVec T.val (elim.idRow o j)).length = o := by
+    rw [matVec_length, hTl]
+  have hLcol := loColArm Et T Tw l hd un ud kn kd lc n ws hw Lw hLs hL
+    j hj
+  rw [hroot] at hLcol
+  exact split.colDiagPin Et T Tw l hd (matPow Lw o (n + 1))
+    (length_matPow Lw o (sqAt_len hLs) (n + 1))
+    (rowsLen_matPow Lw o (sqAt_len hLs) (n + 1))
+    j hj nj gj dj hroot _ _ (matPow_col Lw hLs _ hvl _ _ hLcol (n + 1))
+
 /-- One root's bracket at the two families' congruated diagonal
 entries: the difference on the positive side and within the uniform
 width against the gram scale, the certificate arm's own reads. -/
@@ -9124,38 +9278,18 @@ private theorem rootBracket {o : Nat} (Et : Mat) (T Tw : SqMat o)
           (posOfSucc n * ((ud * ud) * (kd * kd)))
         ≤ ((gj * BPair.ofPos dj).norm).scale
             ((un * un * (kn * kn)) * Pos.pow (lc * vc) (n + 1))) := by
-  have hTl : T.val.length = o := SqMat.rows T
   have hjl : j < l.length := by
     rw [split.rootLen Et T Tw l hd]; exact hj
-  have hvl : (matVec T.val (elim.idRow o j)).length = o := by
-    rw [matVec_length, hTl]
   have hwj : ground.getAt (Pos.one, Pos.one) ws j
       = ((ground.getAt (Pos.one, Pos.one) ws j).1,
          (ground.getAt (Pos.one, Pos.one) ws j).2) := rfl
   have harm := eucRead_at un ud kn kd (posOfSucc n) l ws hw j hjl
     nj gj dj hroot _ _ hwj
-  have hHcol := euc_hi_col Et T Tw l hd un ud vc n ws
-      (eucRead_arm un ud kn kd (posOfSucc n) l ws hw) Vw hVs hV
+  have hVpin0 := euc_hi_root Et T Tw l hd un ud vc n ws
+    (eucRead_arm un ud kn kd (posOfSucc n) l ws hw) Vw hVs hV
     j hj nj gj dj hroot
-  have hLcol := loColArm Et T Tw l hd un ud kn kd lc n ws hw Lw hLs hL
-    j hj
-  rw [hroot] at hLcol
-  have hHpow := matPow_col Vw hVs _ hvl
-    (BPair.ofPos ((posOfSucc n * (ud * dj)) * vc))
-    (BPair.ofPos (posOfSucc n * (ud * dj)) + nj.scale un)
-    hHcol (n + 1)
-  have hLpow := matPow_col Lw hLs _ hvl
-    (BPair.ofPos ((ground.getAt (Pos.one, Pos.one) ws j).2 * lc))
-    (BPair.ofPos (posOfSucc n * (ud * dj)))
-    hLcol (n + 1)
-  have hVpin0 := split.colDiagPin Et T Tw l hd (matPow Vw o (n + 1))
-    (length_matPow Vw o (sqAt_len hVs) (n + 1))
-    (rowsLen_matPow Vw o (sqAt_len hVs) (n + 1))
-    j hj nj gj dj hroot _ _ hHpow
-  have hLpin0 := split.colDiagPin Et T Tw l hd (matPow Lw o (n + 1))
-    (length_matPow Lw o (sqAt_len hLs) (n + 1))
-    (rowsLen_matPow Lw o (sqAt_len hLs) (n + 1))
-    j hj nj gj dj hroot _ _ hLpow
+  have hLpin0 := euc_lo_root Et T Tw l hd un ud kn kd lc n ws hw Lw hLs hL
+    j hj nj gj dj hroot
   have hWpos : BPair.unit < gj * BPair.ofPos dj :=
     ground.unitLtMul (split.scalePos Et T Tw l hd j hjl nj gj dj hroot)
       (ground.unitLtOfPos dj)
@@ -9339,79 +9473,14 @@ theorem euc_pair_price {o : Nat} (Et : Mat) (T Tw : SqMat o)
   have hTl : T.val.length = o := SqMat.rows T
   have hTwl : Tw.val.length = o := SqMat.rows Tw
   have hdet : ¬ (minor T.val).oneValue BPair.unit := hd.2.2.1.1
-  have hlen : l.length = o := split.rootLen Et T Tw l hd
   have hXl : (matVec Tw.val x).length = o := by
     rw [matVec_length, hTwl]
   have hYl : (matVec Tw.val y).length = o := by
     rw [matVec_length, hTwl]
   -- the two families' diagonal identities from the column reads
-  have hcdVoff : ∀ j, j < o →
-      ∀ (nj gj : BPair) (dj : Pos),
-      ground.getAt (BPair.unit, Pos.one, BPair.unit) l j
-        = (nj, dj, gj) →
-      ¬ (ground.bpow
-          (BPair.ofPos (posOfSucc n * (ud * dj)) + nj.scale un)
-          (n + 1)).oneValue BPair.unit := by
-    intro j hj nj gj dj hroot
-    have hjl : j < l.length := by rw [hlen]; exact hj
-    have hwj : ground.getAt (Pos.one, Pos.one) ws j
-        = ((ground.getAt (Pos.one, Pos.one) ws j).1,
-           (ground.getAt (Pos.one, Pos.one) ws j).2) := rfl
-    have harm := eucRead_at un ud kn kd (posOfSucc n) l ws hw j hjl
-      nj gj dj hroot _ _ hwj
-    have h0 : ¬ (BPair.ofPos (dj * (posOfSucc n * ud))
-        + nj.scale un).oneValue BPair.unit :=
-      armScaleOff (harm.imp And.left And.left)
-    rw [show dj * (posOfSucc n * ud) = posOfSucc n * (ud * dj) from by
-      rw [mul_left_comm dj (posOfSucc n) ud, mul_comm dj ud]] at h0
-    exact ground.bpow_off _ h0 (n + 1)
-  have hDiagV : elim.matOneValue
-      (matMul (transposeM T.val)
-        (matMul (matPow Vw o (n + 1)) T.val))
-      (split.diagM (split.vDiagL (matPow Vw o (n + 1)) T)) := by
-    refine split.diagOfPairs (matPow Vw o (n + 1)) T
-      (length_matPow Vw o (sqAt_len hVs) (n + 1))
-      (rowsLen_matPow Vw o (sqAt_len hVs) (n + 1)) ?_
-    intro i j hi hj hne
-    have hjl : j < l.length := by rw [hlen]; exact hj
-    have hroot : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j
-        = ((ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).1,
-           (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.1,
-           (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.2) :=
-      rfl
-    have hvl : (matVec T.val (elim.idRow o j)).length = o := by
-      rw [matVec_length, hTl]
-    have hHcol := euc_hi_col Et T Tw l hd un ud vc n ws
-      (eucRead_arm un ud kn kd (posOfSucc n) l ws hw) Vw hVs
-      hV j hj _ _ _ hroot
-    exact split.colOffPair Et T Tw l hd (matPow Vw o (n + 1)) i j hi hj hne
-      _ _ (hcdVoff j hj _ _ _ hroot)
-      (matPow_col Vw hVs _ hvl _ _ hHcol (n + 1))
-  have hDiagL : elim.matOneValue
-      (matMul (transposeM T.val)
-        (matMul (matPow Lw o (n + 1)) T.val))
-      (split.diagM (split.vDiagL (matPow Lw o (n + 1)) T)) := by
-    refine split.diagOfPairs (matPow Lw o (n + 1)) T
-      (length_matPow Lw o (sqAt_len hLs) (n + 1))
-      (rowsLen_matPow Lw o (sqAt_len hLs) (n + 1)) ?_
-    intro i j hi hj hne
-    have hroot : ground.getAt (BPair.unit, Pos.one, BPair.unit) l j
-        = ((ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).1,
-           (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.1,
-           (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.2) :=
-      rfl
-    have hvl : (matVec T.val (elim.idRow o j)).length = o := by
-      rw [matVec_length, hTl]
-    have hLcol := loColArm Et T Tw l hd un ud kn kd lc n ws hw Lw hLs hL
-      j hj
-    have hoff : ¬ (ground.bpow (BPair.ofPos (posOfSucc n
-        * (ud * (ground.getAt (BPair.unit, Pos.one, BPair.unit)
-            l j).2.1))) (n + 1)).oneValue BPair.unit := by
-      intro hu
-      exact BPair.ofPos_off _
-        (BPair.oneValue_trans (ground.ofPos_pow _ (n + 1)) hu)
-    exact split.colOffPair Et T Tw l hd (matPow Lw o (n + 1)) i j hi hj hne
-      _ _ hoff (matPow_col Lw hLs _ hvl _ _ hLcol (n + 1))
+  have harm := eucRead_arm un ud kn kd (posOfSucc n) l ws hw
+  have hDiagV := euc_hi_diag Et T Tw l hd un ud vc n ws harm Vw hVs hV
+  have hDiagL := euc_lo_diag Et T Tw l hd un ud kn kd lc n ws hw Lw hLs hL
   -- the identity family's congruated diagonal: the gram reads
   have hDiagG : elim.matOneValue
       (matMul (transposeM T.val) (matMul (idMat o) T.val))
@@ -9423,39 +9492,21 @@ theorem euc_pair_price {o : Nat} (Et : Mat) (T Tw : SqMat o)
     exact BPair.oneValue_trans
       (dotP_oneValue_right _ _ _ (inertia.matVec_idMat o _ hvl))
       (split.gramOff Et T Tw l hd i j hi hj hne)
-  have hadjx := split.adjAct Et T Tw l hd x hx
-  have hadjy := split.adjAct Et T Tw l hd y hy
   -- the three families' det-cleared fold reads
   have hFV : (minor T.val * minor T.val
         * dotP x (matVec (matPow Vw o (n + 1)) y)).oneValue
       (dotP (split.vDiagL (matPow Vw o (n + 1)) T)
-        (List.zipWith (· * ·) (matVec Tw.val x) (matVec Tw.val y))) := by
-    refine BPair.oneValue_trans
-      (BPair.oneValue_symm
-        (split.pairScale (matPow Vw o (n + 1)) (minor T.val) x y
-          (matVec T.val (matVec Tw.val x)) (matVec T.val (matVec Tw.val y))
-          hadjx hadjy)) ?_
-    refine BPair.oneValue_trans (BPair.oneValue_symm (dotN_read _ _)) ?_
-    exact split.diagFold (matPow Vw o (n + 1)) T _
+        (List.zipWith (· * ·) (matVec Tw.val x) (matVec Tw.val y))) :=
+    split.pair_fold Et T Tw l hd (matPow Vw o (n + 1))
       (length_matPow Vw o (sqAt_len hVs) (n + 1))
-      (rowsLen_matPow Vw o (sqAt_len hVs) (n + 1))
-      (split.vDiagL_len (matPow Vw o (n + 1)) T) hDiagV
-      (matVec Tw.val x) (matVec Tw.val y) hXl hYl
+      (rowsLen_matPow Vw o (sqAt_len hVs) (n + 1)) hDiagV x y hx hy
   have hFL : (minor T.val * minor T.val
         * dotP x (matVec (matPow Lw o (n + 1)) y)).oneValue
       (dotP (split.vDiagL (matPow Lw o (n + 1)) T)
-        (List.zipWith (· * ·) (matVec Tw.val x) (matVec Tw.val y))) := by
-    refine BPair.oneValue_trans
-      (BPair.oneValue_symm
-        (split.pairScale (matPow Lw o (n + 1)) (minor T.val) x y
-          (matVec T.val (matVec Tw.val x)) (matVec T.val (matVec Tw.val y))
-          hadjx hadjy)) ?_
-    refine BPair.oneValue_trans (BPair.oneValue_symm (dotN_read _ _)) ?_
-    exact split.diagFold (matPow Lw o (n + 1)) T _
+        (List.zipWith (· * ·) (matVec Tw.val x) (matVec Tw.val y))) :=
+    split.pair_fold Et T Tw l hd (matPow Lw o (n + 1))
       (length_matPow Lw o (sqAt_len hLs) (n + 1))
-      (rowsLen_matPow Lw o (sqAt_len hLs) (n + 1))
-      (split.vDiagL_len (matPow Lw o (n + 1)) T) hDiagL
-      (matVec Tw.val x) (matVec Tw.val y) hXl hYl
+      (rowsLen_matPow Lw o (sqAt_len hLs) (n + 1)) hDiagL x y hx hy
   have hGX : (minor T.val * minor T.val * dotP x x).oneValue
       (dotP (split.vDiagL (idMat o) T)
         (List.zipWith (· * ·) (matVec Tw.val x) (matVec Tw.val x))) := by
@@ -9464,15 +9515,8 @@ theorem euc_pair_price {o : Nat} (Et : Mat) (T Tw : SqMat o)
         (BPair.mul_congr
           (BPair.oneValue_refl (minor T.val * minor T.val))
           (dotP_oneValue_right x _ _ (inertia.matVec_idMat o x hx)))) ?_
-    refine BPair.oneValue_trans
-      (BPair.oneValue_symm
-        (split.pairScale (idMat o) (minor T.val) x x
-          (matVec T.val (matVec Tw.val x)) (matVec T.val (matVec Tw.val x))
-          hadjx hadjx)) ?_
-    refine BPair.oneValue_trans (BPair.oneValue_symm (dotN_read _ _)) ?_
-    exact split.diagFold (idMat o) T _ (idMat_len o) (idMat_rows o)
-      (split.vDiagL_len (idMat o) T) hDiagG
-      (matVec Tw.val x) (matVec Tw.val x) hXl hXl
+    exact split.pair_fold Et T Tw l hd (idMat o) (idMat_len o) (idMat_rows o)
+      hDiagG x x hx hx
   have hGY : (minor T.val * minor T.val * dotP y y).oneValue
       (dotP (split.vDiagL (idMat o) T)
         (List.zipWith (· * ·) (matVec Tw.val y) (matVec Tw.val y))) := by
@@ -9481,15 +9525,8 @@ theorem euc_pair_price {o : Nat} (Et : Mat) (T Tw : SqMat o)
         (BPair.mul_congr
           (BPair.oneValue_refl (minor T.val * minor T.val))
           (dotP_oneValue_right y _ _ (inertia.matVec_idMat o y hy)))) ?_
-    refine BPair.oneValue_trans
-      (BPair.oneValue_symm
-        (split.pairScale (idMat o) (minor T.val) y y
-          (matVec T.val (matVec Tw.val y)) (matVec T.val (matVec Tw.val y))
-          hadjy hadjy)) ?_
-    refine BPair.oneValue_trans (BPair.oneValue_symm (dotN_read _ _)) ?_
-    exact split.diagFold (idMat o) T _ (idMat_len o) (idMat_rows o)
-      (split.vDiagL_len (idMat o) T) hDiagG
-      (matVec Tw.val y) (matVec Tw.val y) hYl hYl
+    exact split.pair_fold Et T Tw l hd (idMat o) (idMat_len o) (idMat_rows o)
+      hDiagG y y hy hy
   -- the carried lists' orders
   have hdsVl : (split.vDiagL (matPow Vw o (n + 1)) T).length = o :=
     split.vDiagL_len (matPow Vw o (n + 1)) T
@@ -10049,13 +10086,12 @@ theorem tailCap : ∀ (kim : Nat) (ss : List GStep) (kfin : Nat)
           (matVec T.1 (matVec P (tailVec ss y)))).oneValue
         (dotN (matVec T.1 (matVec P (tailVec ss y)))
           (matVec T.1 (matVec P (tailVec ss y)))) :=
-      dotN_congrR (matVec T.1 (matVec P (tailVec ss y))) _ _
-        (inertia.matVec_idMat kim (matVec T.1 (matVec P (tailVec ss y))) hzl)
+      inertia.quadForm_idMat kim
+        (matVec T.1 (matVec P (tailVec ss y))) hzl
     have e2 : (inertia.quadForm (idMat ko)
           (matVec P (tailVec ss y))).oneValue
         (dotN (matVec P (tailVec ss y)) (matVec P (tailVec ss y))) :=
-      dotN_congrR (matVec P (tailVec ss y)) _ _
-        (inertia.matVec_idMat ko (matVec P (tailVec ss y)) hAlen)
+      inertia.quadForm_idMat ko (matVec P (tailVec ss y)) hAlen
     have hw' : (dotN (matVec T.1 (matVec P (tailVec ss y)))
           (matVec T.1 (matVec P (tailVec ss y)))).scale (ld * ld)
         ≤ (dotN (matVec P (tailVec ss y))

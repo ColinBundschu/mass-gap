@@ -63,7 +63,60 @@ reversed pair; and the tied walk at a gap of varying orders
 `ns = [1, 2, 1]`, the two steps crossing the orders from the seed
 pair `2` to the folded pair `[34 : 4]` with the depth-`0`
 deviation inside it, beside the refusals at the gram list's own
-orders and at the root factor's forged pair. -/
+orders and at the root factor's forged pair.
+The derived ball and transport tier closes the module at the tight
+center `Ŷ = 4`, the member `Y = 1` at the floor `y0 = 1` and the
+radius `ρ = 3`: the deviation's form expansion at the cleared
+difference; the deviation's triangle at the two caps'
+cross-collected weight — `5, 3, 2` at the caps `2` and `1`, the
+conclusion at three against three exactly — with the two starved
+partings, the leading cap starved at one parting the upper side at
+three against two and the trailing cap's modulus doubled parting it
+at six against five; clause (ii)'s polarization at the promoted
+cross read — the cross datum `-1` capped at the unit gram, the two
+conjuncts at minus four and four against five — with the
+antisymmetric two-by-two record parting the conclusion at two
+thousand against two, the caps standing at that datum, its
+quadratic form unit-valued at every vector; clause (iii)'s pricing
+at the tight center with the member's transfer factor priced at
+sixteen against sixteen exactly, and the five isolating refusals —
+the forged floor at `y0 = 2` parting at sixty-four against
+twenty-five, the starved cap at `ρ = 1` parting at sixteen against
+four, the starved contraction at `λ = 1/5` parting at twenty-five
+against sixteen, the forged member witness parting at sixty-four
+against sixteen, and the bond forged at ten parting at sixteen
+hundred against sixteen; and clause (iii)'s image deviation at the
+same family — the deeper image `3` about the middle center `15/4`
+at the modulus `λ∘ = 1` — with the tie's refusal parting the swap
+side at minus twelve against minus forty-eight.  The member's
+symmetry binder is load-bearing, the record at two orders: the
+unbalanced center `diag(100, 2)` at the radius `[1 : 1000]` with
+the member the center joined to the antisymmetric bond deviation
+`E₁₂ - E₂₁` — the deviation's form
+unit-valued at every vector, so both caps and the floor hold at
+the tiny radius while the member's transfer factor and image blow
+past the modulus, the refused transpose read beside the two parted
+conclusions with every co-binder standing.  The center's symmetry
+binder is `lem:spectator`(iii)'s stated datum, the located
+symmetric `Ŷ`; the gram's, kept at `transfer_price` alone, is the
+pairing's own (`def:carrier`), the image tier deriving it off the
+floor's split.  The pivot's upper-side read at the transported
+ball (`ball_psd_of`) closes the module: the pass at the
+equal-membered pair `Y = Ŷ = 3` about the unit gram at the floor
+`y0 = 1` and radius one, the vacant deviation leaving both cap
+matrices the gram, decided raw and through the theorem at the
+caps' pointwise form; and the upper cap's binder load-bearing at
+the indefinite gram `diag(1, -1)` of order two — the center
+`[[4,1],[1,-2]]` and member `[[2,1],[1,0]]` at the clearing two,
+the deviation `diag(-4, 4)` making the lower side an exact
+equality at every vector while the upper side refuses at `(-1, 2)`
+at twelve against minus twelve, the center's floor and the
+member's split standing and the conclusion parting at the
+indefinite block's one reversal; the lower cap side parts at the
+member `-1` below the center `3`, the deviation the gram's swap at
+the quadruple scale with the upper side held at every vector; and
+the floor parts at the member at its own center `-1`, the vacant
+deviation holding both cap sides. -/
 set_option maxHeartbeats 4000000
 
 open ground poly elim inertia greenprod spectator
@@ -479,6 +532,25 @@ example : (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
 example : ¬ ((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
     ≤ (quadForm [[⟨1, 2⟩]] [⟨2, 1⟩]).scale 1) := by decide +kernel
 
+/-! The member's floor at ∀-form entries throughout
+(`ball_floor_ptw`), the theorem route at the same data: the center
+`4` at floor `y0 = 3` and radius one prices the member `5` at or
+beyond three times the gram, the floor read and the cap's lower
+side entering as their pointwise transports (`floor_all` and
+`cap_lo`). -/
+
+example : (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
+    ≤ (quadForm [[⟨6, 1⟩]] [⟨2, 1⟩]).scale 1 :=
+  ball_floor_ptw (o := 1) ([[⟨6, 1⟩]], 1) ([[⟨5, 1⟩]], 1)
+    [[⟨2, 1⟩]] 3 1 1 1
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (fun w hw => floor_all ([[⟨5, 1⟩]], 1) [[⟨2, 1⟩]] 3 1 1 1 spK
+      (by decide +kernel) (by decide +kernel) (by decide +kernel)
+      w hw)
+    (fun w hw => cap_lo (devQ ([[⟨6, 1⟩]], 1) ([[⟨5, 1⟩]], 1))
+      [[⟨2, 1⟩]] 1 1 spK sp2p (by decide +kernel) w hw)
+    [⟨2, 1⟩] rfl
+
 example : capWalk [[[⟨2, 1⟩]], [[⟨2, 1⟩]]] 1 1 ([[⟨3, 1⟩]], 1)
     ([[⟨4, 1⟩]], 1)
     [([[⟨2, 1⟩]], 3)] [([[⟨2, 1⟩]], 2)] [([[⟨9, 1⟩]], 3)]
@@ -739,3 +811,816 @@ example : ¬ capStepRead ([[⟨2, 1⟩, u]], 1) ([[⟨2, 1⟩, u]], 1)
     ([[⟨4, 1⟩, u], [u, u]], 1) ([[u, u], [u, u]], 1)
     ([[⟨4, 1⟩]], 1) ([[u]], 1) (idMat 2) (idMat 1) 3 1 1 1 1 1
     spD01 spD01 spK (spOne ⟨7, 1⟩) spD06 spD126 := by decide +kernel
+
+/-! The derived ball and transport tier's fixture: the center
+`Ŷ = 4` at the floor `y0 = 1` and radius `ρ = 3`, the member
+`Y = 1` with its witness `1` and the center's witness `1/4` at the
+bond `1`, the deeper image `3` about the middle center `15/4`, and
+the triangle's three members `5, 3, 2` at the unit gram. -/
+
+private def ycT : MatQ := ([[⟨5, 1⟩]], 1)
+private def yT : MatQ := ([[⟨2, 1⟩]], 1)
+private def btT : Mat := [[⟨2, 1⟩]]
+private def ccT : MatQ := ([[⟨2, 1⟩]], 4)
+private def cxT : MatQ := ([[⟨2, 1⟩]], 1)
+private def xmT : MatQ := ([[⟨6, 1⟩]], 1)
+private def ymT : MatQ := ([[⟨4, 1⟩]], 1)
+private def ynT : MatQ := ([[⟨3, 1⟩]], 1)
+private def xdT : MatQ := ([[⟨4, 1⟩]], 1)
+private def ymidT : MatQ := ([[⟨16, 1⟩]], 4)
+private def aT : Mat := [[⟨5, 1⟩]]
+private def dmT : Mat := [[⟨1, 2⟩]]
+private def dAsym : Mat := [[u, ⟨1001, 1⟩], [⟨1, 1001⟩, u]]
+
+/-! The deviation's form expansion: the cleared difference `5 - 3`
+reads its two members' own forms, the second at its swap, the
+theorem route beside the decided display. -/
+
+example : (quadForm (devQ xmT ymT).1 [⟨2, 1⟩]).oneValue
+    ((quadForm xmT.1 [⟨2, 1⟩]).scale ymT.2
+      + ((quadForm ymT.1 [⟨2, 1⟩]).swap).scale xmT.2) :=
+  dev_expand xmT ymT [⟨2, 1⟩] rfl (by decide +kernel) rfl
+    (by decide +kernel)
+example : (quadForm (devQ xmT ymT).1 [⟨2, 1⟩]).oneValue
+    ((quadForm xmT.1 [⟨2, 1⟩]).scale ymT.2
+      + ((quadForm ymT.1 [⟨2, 1⟩]).swap).scale xmT.2) := by
+  decide +kernel
+
+/-! The deviation's triangle at the two caps: the members `5, 3, 2`
+about the unit gram, the deviation `2` capped at `[2 : 1]` and the
+deviation `1` at `[1 : 1]`, the middle member withdrawing and the
+two caps' cross-collected weight pricing `5 - 2` at three against
+three exactly. -/
+
+example : capQ (devQ xmT ymT) gW 2 1 spK (spOne ⟨5, 1⟩) := by
+  decide +kernel
+example : capQ (devQ ymT ynT) gW 1 1 spK (spOne ⟨3, 1⟩) := by
+  decide +kernel
+
+example : (∀ w : List BPair, w.length = 1 →
+      (quadForm (devQ xmT ynT).1 w).scale (1 * 1)
+        ≤ (quadForm gW w).scale ((2 * 1 + 1 * 1) * (devQ xmT ynT).2))
+    ∧ (∀ w : List BPair, w.length = 1 →
+      ((quadForm gW w).scale
+          ((2 * 1 + 1 * 1) * (devQ xmT ynT).2)).swap
+        ≤ (quadForm (devQ xmT ynT).1 w).scale (1 * 1)) :=
+  dev_triangle (o := 1) xmT ymT ynT gW 2 1 1 1
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (fun w hw => cap_hi (devQ xmT ymT) gW 2 1 spK (spOne ⟨5, 1⟩)
+      (by decide +kernel) w hw)
+    (fun w hw => cap_lo (devQ xmT ymT) gW 2 1 spK (spOne ⟨5, 1⟩)
+      (by decide +kernel) w hw)
+    (fun w hw => cap_hi (devQ ymT ynT) gW 1 1 spK (spOne ⟨3, 1⟩)
+      (by decide +kernel) w hw)
+    (fun w hw => cap_lo (devQ ymT ynT) gW 1 1 spK (spOne ⟨3, 1⟩)
+      (by decide +kernel) w hw)
+
+example : (quadForm (devQ xmT ynT).1 [⟨2, 1⟩]).scale (1 * 1)
+    ≤ (quadForm gW [⟨2, 1⟩]).scale
+      ((2 * 1 + 1 * 1) * (devQ xmT ynT).2) := by decide +kernel
+example : ((quadForm gW [⟨2, 1⟩]).scale
+      ((2 * 1 + 1 * 1) * (devQ xmT ynT).2)).swap
+    ≤ (quadForm (devQ xmT ynT).1 [⟨2, 1⟩]).scale (1 * 1) := by
+  decide +kernel
+
+/-! The triangle's two cap binders, each refusal beside the parted
+conclusion at its own collected weight: the leading cap starved at
+`[1 : 1]` parts its own read and the upper side at three against
+two, and the trailing cap's modulus doubled parts its read and the
+upper side at six against five. -/
+
+example : ¬ capQ (devQ xmT ymT) gW 1 1 spK (spOne ⟨5, 1⟩) := by
+  decide +kernel
+example : ¬ ((quadForm (devQ xmT ynT).1 [⟨2, 1⟩]).scale (1 * 1)
+    ≤ (quadForm gW [⟨2, 1⟩]).scale
+      ((1 * 1 + 1 * 1) * (devQ xmT ynT).2)) := by decide +kernel
+example : ¬ capQ (devQ ymT ynT) gW 1 2 spK (spOne ⟨3, 1⟩) := by
+  decide +kernel
+example : ¬ ((quadForm (devQ xmT ynT).1 [⟨2, 1⟩]).scale (1 * 2)
+    ≤ (quadForm gW [⟨2, 1⟩]).scale
+      ((2 * 2 + 1 * 1) * (devQ xmT ynT).2)) := by decide +kernel
+
+/-! Clause (ii)'s polarization at the promoted cross read: the
+cross datum `-1` capped two-sidedly at the unit gram, the doubled
+cross read at the weights `1, 1` priced against the two diagonal
+gram reads at the vectors `1` and `2` — minus four and four
+against five. -/
+
+example : capQ ((dmT, 1) : MatQ) gW 1 1 (spOne ⟨3, 1⟩) spK := by
+  decide +kernel
+
+example : (((dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)
+        + (dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)).scale 1
+      ≤ ((dotN [⟨2, 1⟩] (matVec gW [⟨2, 1⟩])).scale (1 * 1)
+          + (dotN [⟨3, 1⟩] (matVec gW [⟨3, 1⟩])).scale (1 * 1)).scale
+        (1 * 1))
+    ∧ ((((dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)
+        + (dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale
+          (1 * 1)).swap).scale 1
+      ≤ ((dotN [⟨2, 1⟩] (matVec gW [⟨2, 1⟩])).scale (1 * 1)
+          + (dotN [⟨3, 1⟩] (matVec gW [⟨3, 1⟩])).scale (1 * 1)).scale
+        (1 * 1)) :=
+  cap_cross (n := 1) dmT gW (1 * 1) 1 (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+    (fun w hw => cap_hi ((dmT, 1) : MatQ) gW 1 1 (spOne ⟨3, 1⟩) spK
+      (by decide +kernel) w hw)
+    (fun w hw => cap_lo ((dmT, 1) : MatQ) gW 1 1 (spOne ⟨3, 1⟩) spK
+      (by decide +kernel) w hw)
+    [⟨2, 1⟩] [⟨3, 1⟩] rfl rfl 1 1
+
+example : ((dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)
+      + (dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)).scale 1
+    ≤ ((dotN [⟨2, 1⟩] (matVec gW [⟨2, 1⟩])).scale (1 * 1)
+        + (dotN [⟨3, 1⟩] (matVec gW [⟨3, 1⟩])).scale (1 * 1)).scale
+      (1 * 1) := by decide +kernel
+example : (((dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)
+      + (dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale
+        (1 * 1)).swap).scale 1
+    ≤ ((dotN [⟨2, 1⟩] (matVec gW [⟨2, 1⟩])).scale (1 * 1)
+        + (dotN [⟨3, 1⟩] (matVec gW [⟨3, 1⟩])).scale (1 * 1)).scale
+      (1 * 1) := by decide +kernel
+
+/-! The polarization's symmetry binder, the one load-bearing
+record: the antisymmetric two-by-two datum `1000 (E₁₂ - E₂₁)`
+refuses the transpose read and the conclusion parts at the unit
+vectors, two thousand against two — the two cap binders standing
+at that datum, its quadratic form unit-valued at every vector. -/
+
+example : ¬ matOneValue (transposeM dAsym) dAsym := by decide +kernel
+example : ¬ ((((dotN [⟨2, 1⟩, u] (matVec dAsym [u, ⟨2, 1⟩])).scale
+        (1 * 1)
+      + (dotN [⟨2, 1⟩, u] (matVec dAsym [u, ⟨2, 1⟩])).scale
+        (1 * 1)).scale 1)
+    ≤ (((dotN [⟨2, 1⟩, u] (matVec (idMat 2) [⟨2, 1⟩, u])).scale (1 * 1)
+        + (dotN [u, ⟨2, 1⟩] (matVec (idMat 2) [u, ⟨2, 1⟩])).scale
+          (1 * 1)).scale 1)) := by decide +kernel
+
+/-! Clause (iii)'s pricing at the tight center: the member `Y = 1`
+about `Ŷ = 4` at the floor `y0 = 1` and radius `ρ = 3`, the
+center's witness `1/4` contracting at `λ = 1/4` and the member's
+own witness `1` priced at `λ∘ = 4/4` — the transfer factor's
+image priced at sixteen against sixteen exactly. -/
+
+example : capQ (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK := by
+  decide +kernel
+example : floorRead ycT gW 1 1 3 1 spK := by decide +kernel
+example : contractRead (transfer ccT) gW gW 1 4 spK := by
+  decide +kernel
+
+example : ∀ w : List BPair, w.length = 1 →
+    (quadForm gW (matVec (transfer cxT).1 w)).scale
+        ((4 * (1 * 1)) * (4 * (1 * 1)))
+      ≤ (quadForm gW w).scale
+        ((1 * (1 * 1 + 3 * 1)) * (1 * (1 * 1 + 3 * 1))
+          * (cxT.2 * cxT.2)) :=
+  transfer_price (o := 1) (o' := 1) yT ycT cxT ccT btT gW gW
+    1 4 1 1 3 1
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
+    (ball_floor_of yT ycT gW 1 1 3 1 spK (by decide +kernel)
+      (by decide +kernel) (by decide +kernel) (by decide +kernel)
+      (fun w hw => cap_lo (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK
+        (by decide +kernel) w hw))
+    (fun w hw => cap_hi (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK
+      (by decide +kernel) w hw)
+    (fun w hw => cap_lo (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK
+      (by decide +kernel) w hw)
+    (fun w hw => contract_all (transfer ccT) gW gW 1 4 spK
+      (by decide +kernel) w hw)
+
+example : (quadForm gW (matVec (transfer cxT).1 [⟨2, 1⟩])).scale
+      ((4 * (1 * 1)) * (4 * (1 * 1)))
+    ≤ (quadForm gW [⟨2, 1⟩]).scale
+      ((1 * (1 * 1 + 3 * 1)) * (1 * (1 * 1 + 3 * 1))
+        * (cxT.2 * cxT.2)) := by decide +kernel
+
+/-! The pricing's five isolating refusals, each anchor beside the
+parted conclusion at its own forged constants: the floor forged at
+`y0 = 2` parts its read and the price at sixty-four against
+twenty-five; the cap starved at `ρ = 1` parts at sixteen against
+four; the contraction starved at `λ = 1/5` parts at twenty-five
+against sixteen; the member's witness forged at `2` parts its join
+and the price at sixty-four against sixteen; and the center's
+witness read against a bond forged at ten parts with the member's
+own witness at that bond standing, the price at sixteen hundred
+against sixteen. -/
+
+private def cxF3 : MatQ := ([[⟨3, 1⟩]], 1)
+private def btF : Mat := [[⟨11, 1⟩]]
+private def cxF : MatQ := ([[⟨11, 1⟩]], 1)
+
+example : ¬ floorRead ycT gW 2 1 3 1 spK := by decide +kernel
+example : ¬ ((quadForm gW (matVec (transfer cxT).1 [⟨2, 1⟩])).scale
+      ((4 * (2 * 1)) * (4 * (2 * 1)))
+    ≤ (quadForm gW [⟨2, 1⟩]).scale
+      ((1 * (2 * 1 + 3 * 1)) * (1 * (2 * 1 + 3 * 1))
+        * (cxT.2 * cxT.2))) := by decide +kernel
+
+example : ¬ capQ (devQ yT ycT) gW 1 1 (spOne ⟨5, 1⟩) spK := by
+  decide +kernel
+example : ¬ ((quadForm gW (matVec (transfer cxT).1 [⟨2, 1⟩])).scale
+      ((4 * (1 * 1)) * (4 * (1 * 1)))
+    ≤ (quadForm gW [⟨2, 1⟩]).scale
+      ((1 * (1 * 1 + 1 * 1)) * (1 * (1 * 1 + 1 * 1))
+        * (cxT.2 * cxT.2))) := by decide +kernel
+
+example : ¬ contractRead (transfer ccT) gW gW 1 5 spK := by
+  decide +kernel
+example : ¬ ((quadForm gW (matVec (transfer cxT).1 [⟨2, 1⟩])).scale
+      ((5 * (1 * 1)) * (5 * (1 * 1)))
+    ≤ (quadForm gW [⟨2, 1⟩]).scale
+      ((1 * (1 * 1 + 3 * 1)) * (1 * (1 * 1 + 3 * 1))
+        * (cxT.2 * cxT.2))) := by decide +kernel
+
+example : ¬ oneValueQ (mulQ yT cxF3) (ofM btT) := by decide +kernel
+example : ¬ ((quadForm gW (matVec (transfer cxF3).1 [⟨2, 1⟩])).scale
+      ((4 * (1 * 1)) * (4 * (1 * 1)))
+    ≤ (quadForm gW [⟨2, 1⟩]).scale
+      ((1 * (1 * 1 + 3 * 1)) * (1 * (1 * 1 + 3 * 1))
+        * (cxF3.2 * cxF3.2))) := by decide +kernel
+
+example : oneValueQ (mulQ yT cxF) (ofM btF) := by decide +kernel
+example : ¬ oneValueQ (mulQ ycT ccT) (ofM btF) := by decide +kernel
+example : ¬ ((quadForm gW (matVec (transfer cxF).1 [⟨2, 1⟩])).scale
+      ((4 * (1 * 1)) * (4 * (1 * 1)))
+    ≤ (quadForm gW [⟨2, 1⟩]).scale
+      ((1 * (1 * 1 + 3 * 1)) * (1 * (1 * 1 + 3 * 1))
+        * (cxF.2 * cxF.2))) := by decide +kernel
+
+/-! Clause (iii)'s image deviation at the same family: the member
+`1` and the center `4` join the boundary block `A = 4` through the
+bond `1` at the images `3` and `15/4`, the deviation `-3/4` capped
+two-sidedly at the modulus `λ∘ = 1` — minus three against twelve
+and minus twelve against minus three. -/
+
+example : (∀ w : List BPair, w.length = 1 →
+      (quadForm (devQ xdT ymidT).1 w).scale (1 * 1 * 1)
+        ≤ (quadForm gW w).scale (1 * 1 * 3 * (devQ xdT ymidT).2))
+    ∧ (∀ w : List BPair, w.length = 1 →
+      ((quadForm gW w).scale
+          (1 * 1 * 3 * (devQ xdT ymidT).2)).swap
+        ≤ (quadForm (devQ xdT ymidT).1 w).scale (1 * 1 * 1)) :=
+  image_contract (o := 1) (o' := 1) yT xdT ycT ymidT cxT ccT
+    aT btT gW gW 1 4 1 1 3 1 1 1 spK spK
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (fun w hw => cap_hi (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK
+      (by decide +kernel) w hw)
+    (fun w hw => cap_lo (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK
+      (by decide +kernel) w hw)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+
+example : (quadForm (devQ xdT ymidT).1 [⟨2, 1⟩]).scale (1 * 1 * 1)
+    ≤ (quadForm gW [⟨2, 1⟩]).scale
+      (1 * 1 * 3 * (devQ xdT ymidT).2) := by decide +kernel
+example : ((quadForm gW [⟨2, 1⟩]).scale
+      (1 * 1 * 3 * (devQ xdT ymidT).2)).swap
+    ≤ (quadForm (devQ xdT ymidT).1 [⟨2, 1⟩]).scale (1 * 1 * 1) := by
+  decide +kernel
+
+example : (∀ w : List BPair, w.length = 1 →
+      (quadForm (devQ xdT ymidT).1 w).scale (1 * 1 * 1)
+        ≤ (quadForm gW w).scale (1 * 1 * 3 * (devQ xdT ymidT).2))
+    ∧ (∀ w : List BPair, w.length = 1 →
+      ((quadForm gW w).scale
+          (1 * 1 * 3 * (devQ xdT ymidT).2)).swap
+        ≤ (quadForm (devQ xdT ymidT).1 w).scale (1 * 1 * 1)) :=
+  image_contract_of (o := 1) (o' := 1) yT xdT ycT ymidT cxT ccT
+    aT btT gW gW 1 4 1 1 3 1 1 1
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (fun w hw => cap_hi (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK
+      (by decide +kernel) w hw)
+    (fun w hw => cap_lo (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK
+      (by decide +kernel) w hw)
+    (floor_all ycT gW 1 1 3 1 spK (by decide +kernel)
+      (by decide +kernel) (by decide +kernel))
+    (contract_all (transfer ccT) gW gW 1 4 spK (by decide +kernel))
+    (by decide +kernel)
+    (fun h => Nat.noConfusion h)
+    (by decide +kernel)
+
+/-! The image deviation's tie binder: at the modulus `λ∘ = 1/4` the
+tie identity refuses, four against sixteen, and the swap side parts
+beside it at minus twelve against minus forty-eight. -/
+
+example : ¬ (1 * (1 * (4 * 1)) = 1 * ((1 * 1 + 3 * 1) * 4)) := by
+  decide +kernel
+example : ¬ (((quadForm gW [⟨2, 1⟩]).scale
+      (1 * 1 * 3 * (devQ xdT ymidT).2)).swap
+    ≤ (quadForm (devQ xdT ymidT).1 [⟨2, 1⟩]).scale (4 * 4 * 1)) := by
+  decide +kernel
+
+/-! The polarization's two cap binders at the antisymmetric datum:
+its form reads its own swap — the transpose's exchange composed
+with the memberwise swap the datum reads back — so the form is
+unit-valued at every vector and both caps hold against the
+identity gram at the unit modulus, the symmetry binder alone
+carrying the parted conclusion above. -/
+
+private theorem dAsymSwap (w : List BPair) (hw : w.length = 2) :
+    (quadForm dAsym w).oneValue (quadForm dAsym w).swap :=
+  BPair.oneValue_trans
+    (BPair.oneValue_symm
+      (elim.dotN_transpose_flip dAsym 2 (by decide +kernel) w w hw hw))
+    (BPair.oneValue_trans
+      (elim.dotN_matVec_congrM (transposeM dAsym) (matSwap dAsym) w w
+        (by decide +kernel))
+      (inertia.quadForm_swap dAsym w))
+
+private theorem idPsd2 (w : List BPair) (hw : w.length = 2) :
+    BPair.unit ≤ quadForm (idMat 2) w :=
+  ground.leB_of_not_lt
+    (inertia.psd_all (idMat 2) (mkSplit 2 (idMat 2))
+      (by decide +kernel) (by decide +kernel) w hw)
+
+private theorem dAsymUnitLe (w : List BPair) (hw : w.length = 2) :
+    BPair.unit ≤ quadForm dAsym w :=
+  ground.unitLeOfSwap (Or.inl (BPair.oneValue_symm (dAsymSwap w hw)))
+
+private theorem dAsymLeUnit (w : List BPair) (hw : w.length = 2) :
+    quadForm dAsym w ≤ BPair.unit :=
+  ground.leB_swap
+    (ground.unitLeOfSwap (z := (quadForm dAsym w).swap)
+      (Or.inl (dAsymSwap w hw)))
+
+private theorem dAsymHi : ∀ w : List BPair, w.length = 2 →
+    (quadForm dAsym w).scale 1
+      ≤ (quadForm (idMat 2) w).scale (1 * 1) :=
+  fun w hw =>
+    ground.leB_scale
+      (ground.leB_trans (dAsymLeUnit w hw) (idPsd2 w hw)) 1
+
+private theorem dAsymLo : ∀ w : List BPair, w.length = 2 →
+    ((quadForm (idMat 2) w).scale (1 * 1)).swap
+      ≤ (quadForm dAsym w).scale 1 :=
+  fun w hw =>
+    ground.leB_scale
+      (ground.leB_trans (ground.leB_swap (idPsd2 w hw))
+        (dAsymUnitLe w hw)) 1
+
+example : (quadForm dAsym [⟨2, 1⟩, u]).scale 1
+    ≤ (quadForm (idMat 2) [⟨2, 1⟩, u]).scale (1 * 1) :=
+  dAsymHi [⟨2, 1⟩, u] rfl
+example : ∀ w : List BPair, w.length = 2 →
+    (quadForm dAsym w).scale 1
+      ≤ (quadForm (idMat 2) w).scale (1 * 1) := dAsymHi
+example : ∀ w : List BPair, w.length = 2 →
+    ((quadForm (idMat 2) w).scale (1 * 1)).swap
+      ≤ (quadForm dAsym w).scale 1 := dAsymLo
+
+/-! The member-symmetry records at order two: the unbalanced center
+`Ŷ = diag(100, 2)` at the floor `y0 = 1` and radius `ρ = [1 : 1000]`,
+the member `Y = Ŷ + K` at the antisymmetric bond deviation
+`K = E₁₂ - E₂₁` — `K`'s form reads its own swap, so it is
+unit-valued at every vector and the member sits inside every
+radius, while the member's transfer factor and image deviation
+read `100/201` against the modulus: the refused transpose read
+parts `transfer_price`'s and `image_contract`'s conclusions with
+every co-binder standing. -/
+
+private def gI2 : Mat := idMat 2
+private def g4S : Mat := [[⟨5, 1⟩]]
+private def ycW : MatQ := ([[⟨101, 1⟩, u], [u, ⟨3, 1⟩]], 1)
+private def xW : MatQ := ([[⟨101, 1⟩, ⟨2, 1⟩], [⟨1, 2⟩, ⟨3, 1⟩]], 1)
+private def ccW : MatQ := ([[⟨2, 1⟩], [u]], 1)
+private def cxW : MatQ := ([[⟨201, 1⟩], [⟨101, 1⟩]], 201)
+private def bW : Mat := [[⟨101, 1⟩, u]]
+private def ymidW : MatQ := ([[⟨101, 1⟩]], 1)
+private def xdpW : MatQ := ([[⟨20201, 1⟩]], 201)
+private def dKW : Mat := [[u, ⟨2, 1⟩], [⟨1, 2⟩, u]]
+private def spF2 : Split 2 :=
+  mkSplit 2 (siteDatum (matScale (1 * 1000) ycW.1)
+    (matScale (1 * (1 * 1000 + 1 * 1)) gI2))
+
+/-- An entrywise-antisymmetric datum's form reads its own swap:
+the transpose's exchange composes with the memberwise swap the
+datum reads back. -/
+private theorem asymFormSwap (D : Mat) (n : Nat)
+    (hr : rowsLen n D) (hl : D.length = n)
+    (hs : matOneValue (transposeM D) (matSwap D)) :
+    ∀ w : List BPair, w.length = n →
+      (quadForm D w).oneValue (quadForm D w).swap :=
+  fun w hw =>
+    BPair.oneValue_trans
+      (BPair.oneValue_symm
+        (elim.dotN_transpose_flip D n hr w w hw (hw.trans hl.symm)))
+      (BPair.oneValue_trans
+        (elim.dotN_matVec_congrM (transposeM D) (matSwap D) w w hs)
+        (inertia.quadForm_swap D w))
+
+/-- A unit-capped form sits below any scaled form at or beyond the
+unit. -/
+private theorem capOfUnitHi (d g : BPair) (a b : Pos)
+    (hd : d ≤ BPair.unit) (hg : BPair.unit ≤ g) :
+    d.scale a ≤ g.scale b :=
+  ground.leB_trans (ground.leB_scale hd a)
+    (ground.leB_congr_left (ground.unitScale a)
+      (ground.unitLeScale b hg))
+
+/-- The swapped scaled form at or beyond the unit sits below any
+form at or beyond it. -/
+private theorem capOfUnitLo (d g : BPair) (a b : Pos)
+    (hd : BPair.unit ≤ d) (hg : BPair.unit ≤ g) :
+    (g.scale b).swap ≤ d.scale a :=
+  ground.leB_trans (ground.leB_swap (ground.unitLeScale b hg))
+    (ground.leB_trans
+      (ground.leB_congr_right (ground.unitScale a)
+        (ground.leB_refl BPair.unit))
+      (ground.leB_scale hd a))
+
+private theorem dKWSwap (w : List BPair) (hw : w.length = 2) :
+    (quadForm dKW w).oneValue (quadForm dKW w).swap :=
+  asymFormSwap dKW 2 (by decide +kernel) rfl (by decide +kernel) w hw
+
+private theorem idPsd2W (w : List BPair) (hw : w.length = 2) :
+    BPair.unit ≤ quadForm gI2 w :=
+  ground.leB_of_not_lt
+    (inertia.psd_all gI2 (mkSplit 2 gI2)
+      (by decide +kernel) (by decide +kernel) w hw)
+
+private theorem dKWUnitLe (w : List BPair) (hw : w.length = 2) :
+    BPair.unit ≤ quadForm dKW w :=
+  ground.unitLeOfSwap (Or.inl (BPair.oneValue_symm (dKWSwap w hw)))
+
+private theorem dKWLeUnit (w : List BPair) (hw : w.length = 2) :
+    quadForm dKW w ≤ BPair.unit :=
+  ground.leB_swap
+    (ground.unitLeOfSwap (z := (quadForm dKW w).swap)
+      (Or.inl (dKWSwap w hw)))
+
+private theorem qDW (w : List BPair) :
+    (quadForm (devQ xW ycW).1 w).oneValue (quadForm dKW w) :=
+  elim.dotN_matVec_congrM _ _ w w (by decide +kernel)
+
+private theorem devWHi : ∀ w : List BPair, w.length = 2 →
+    (quadForm (devQ xW ycW).1 w).scale 1000
+      ≤ (quadForm gI2 w).scale (1 * (devQ xW ycW).2) :=
+  fun w hw =>
+    capOfUnitHi _ _ _ _
+      (ground.leB_congr_left (BPair.oneValue_symm (qDW w))
+        (dKWLeUnit w hw))
+      (idPsd2W w hw)
+
+private theorem devWLo : ∀ w : List BPair, w.length = 2 →
+    ((quadForm gI2 w).scale (1 * (devQ xW ycW).2)).swap
+      ≤ (quadForm (devQ xW ycW).1 w).scale 1000 :=
+  fun w hw =>
+    capOfUnitLo _ _ _ _
+      (ground.leB_congr_right (BPair.oneValue_symm (qDW w))
+        (dKWUnitLe w hw))
+      (idPsd2W w hw)
+
+/-! The standing co-binders: the shapes, the center's and gram's
+symmetries, the witnesses and joins, the floor, the contraction,
+the defect, the tie and the modulus, each decided; the caps at the
+antisymmetric deviation the ∀-form witnesses above. -/
+
+example : matOneValue (transposeM ycW.1) ycW.1 := by decide +kernel
+example : matOneValue (transposeM gI2) gI2 := by decide +kernel
+example : oneValueQ (mulQ xW cxW) (ofM (transposeM bW)) := by
+  decide +kernel
+example : oneValueQ (addQ xdpW (mulQ (ofM bW) cxW))
+    (ofM ([[⟨201, 1⟩]] : Mat)) := by decide +kernel
+example : oneValueQ (mulQ ycW ccW) (ofM (transposeM bW)) := by
+  decide +kernel
+example : oneValueQ (addQ ymidW (mulQ (ofM bW) ccW))
+    (ofM ([[⟨201, 1⟩]] : Mat)) := by decide +kernel
+example : floorRead ycW gI2 1 1 1 1000 spF2 := by decide +kernel
+example : contractRead (transfer ccW) gI2 g4S 1 2 spK := by
+  decide +kernel
+example : capQ (devQ ymidW ymidW) g4S 1 2000 (spOne ⟨5, 1⟩)
+    (spOne ⟨5, 1⟩) := by decide +kernel
+example : (1 : Pos) * (1001 * (2 * 1000))
+    = 1 * ((1 * 1000 + 1 * 1) * 2000) := by decide +kernel
+example : (1 : Pos) * ((2000 * 2000) * 1000)
+      + (1001 * 1001) * (1 * 2000)
+    ≤ 1 * (2000 * (2000 * 2000)) := by decide +kernel
+example : ∀ w : List BPair, w.length = 2 →
+    (quadForm (devQ xW ycW).1 w).scale 1000
+      ≤ (quadForm gI2 w).scale (1 * (devQ xW ycW).2) := devWHi
+example : ∀ w : List BPair, w.length = 2 →
+    ((quadForm gI2 w).scale (1 * (devQ xW ycW).2)).swap
+      ≤ (quadForm (devQ xW ycW).1 w).scale 1000 := devWLo
+
+/-! The refused member symmetry, and the two parted conclusions:
+`transfer_price`'s at the transfer image's fifty thousand and
+`image_contract`'s at the image deviation `100/201` against the
+modulus. -/
+
+example : ¬ matOneValue (transposeM xW.1) xW.1 := by decide +kernel
+example : ¬ ((quadForm gI2
+      (matVec (transfer cxW).1 [⟨2, 1⟩])).scale
+      ((2 * (1 * 1000)) * (2 * (1 * 1000)))
+    ≤ (quadForm g4S [⟨2, 1⟩]).scale
+      ((1 * (1 * 1000 + 1 * 1)) * (1 * (1 * 1000 + 1 * 1))
+        * (cxW.2 * cxW.2))) := by decide +kernel
+example : ¬ ((quadForm (devQ xdpW ymidW).1 [⟨2, 1⟩]).scale
+      (2000 * 2000 * 1000)
+    ≤ (quadForm g4S [⟨2, 1⟩]).scale
+      (1001 * 1001 * 1 * (devQ xdpW ymidW).2)) := by decide +kernel
+
+/-! The pivot's upper-side read at the transported ball
+(`ball_psd_of`): the two cap sides in their pointwise form with the
+center's floor read the pivot's split at the upper side.  The pass
+is the equal-membered pair at order one — the pivot `Y = 3` at its
+own center `Ŷ = 3`, the unit gram, the floor `y0 = 1` and the
+radius one — the deviation vacant so both cap matrices read the
+gram, the floor's site datum reading one, the pivot's split at the
+block `3` and the count vacant, decided raw and landed through the
+theorem at the caps' `cap_hi`/`cap_lo` form. -/
+
+private def pdX : greenprod.MatQ := ([[⟨4, 1⟩]], 1)
+private def pdG : Mat := [[⟨2, 1⟩]]
+
+example : floorRead pdX pdG 1 1 1 1 (spOne ⟨2, 1⟩) := by decide +kernel
+example : capQ (devQ pdX pdX) pdG 1 1 (spOne ⟨2, 1⟩)
+    (spOne ⟨2, 1⟩) := by decide +kernel
+example : splitRead pdX.1 (spOne ⟨4, 1⟩) := by decide +kernel
+example : psdAt (spOne ⟨4, 1⟩) := by decide +kernel
+
+example : psdAt (spOne ⟨4, 1⟩) :=
+  ball_psd_of (o := 1) (o' := 1) pdX pdX pdG 1 1 1 1 (spOne ⟨2, 1⟩)
+    (spOne ⟨4, 1⟩) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+    (fun w hw => cap_hi (devQ pdX pdX) pdG 1 1 (spOne ⟨2, 1⟩)
+      (spOne ⟨2, 1⟩) (by decide +kernel) w hw)
+    (fun w hw => cap_lo (devQ pdX pdX) pdG 1 1 (spOne ⟨2, 1⟩)
+      (spOne ⟨2, 1⟩) (by decide +kernel) w hw)
+    (by decide +kernel)
+
+/-! The same pivot read at ∀-form entries throughout
+(`ball_psd_ptw`), the theorem route at the same data: the floor
+read joins the two cap sides in its pointwise transport
+(`floor_all`), and the pivot's split reads the upper side. -/
+
+example : psdAt (spOne ⟨4, 1⟩) :=
+  ball_psd_ptw (o := 1) (o' := 1) pdX pdX pdG 1 1 1 1
+    (spOne ⟨4, 1⟩) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
+    (fun w hw => floor_all pdX pdG 1 1 1 1 (spOne ⟨2, 1⟩)
+      (by decide +kernel) (by decide +kernel) (by decide +kernel)
+      w hw)
+    (fun w hw => cap_hi (devQ pdX pdX) pdG 1 1 (spOne ⟨2, 1⟩)
+      (spOne ⟨2, 1⟩) (by decide +kernel) w hw)
+    (fun w hw => cap_lo (devQ pdX pdX) pdG 1 1 (spOne ⟨2, 1⟩)
+      (spOne ⟨2, 1⟩) (by decide +kernel) w hw)
+    (by decide +kernel)
+
+/-! The upper cap's binder is load-bearing, the record at the
+indefinite gram of order two: `G = diag(1, -1)`, the center
+`Ŷ = [[4,1],[1,-2]]` at the clearing two, the member
+`Y = [[2,1],[1,0]]` at the same clearing, the floor pair `[1 : 2]`
+and the radius one.  The deviation reads `diag(-4, 4)` at the
+clearing four, so the lower cap side holds as an exact equality at
+every vector — the swapped scaled gram and the deviation read one
+value — while the upper side refuses at the vector `(-1, 2)`,
+twelve against minus twelve.  The center's floor stands at the
+congruence `Tᵀ ŶT` of the all-twos site datum to the block `2`
+above a kernel of order one, the member's split reads the
+indefinite block `[[2,1],[1,0]]` at the identity congruence, and
+the conclusion parts there: that block's determinant is minus one,
+one reversal. -/
+
+private def gN : Mat := [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨1, 2⟩]]
+private def ycN : greenprod.MatQ :=
+  ([[⟨5, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨1, 3⟩]], 2)
+private def xN : greenprod.MatQ :=
+  ([[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨1, 1⟩]], 2)
+
+private def spFN : Split 2 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 2⟩], [⟨1, 1⟩, ⟨2, 1⟩]], rfl⟩,
+   ⟨[[⟨2, 1⟩, ⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]], rfl⟩,
+   [.one ⟨3, 1⟩], 1, rfl⟩
+
+private def spXN : Split 2 :=
+  ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩,
+   [.two ⟨3, 1⟩ ⟨2, 1⟩ ⟨1, 1⟩], 0, rfl⟩
+
+example : matOneValue (devQ xN ycN).1
+    [[⟨1, 5⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨5, 1⟩]] := by decide +kernel
+example : (devQ xN ycN).2 = 4 := by decide +kernel
+
+example : sqAt xN.1 2 ∧ sqAt ycN.1 2 ∧ sqAt gN 2 := by decide +kernel
+example : floorRead ycN gN 1 2 1 1 spFN := by decide +kernel
+example : splitRead xN.1 spXN := by decide +kernel
+
+/-- The lower cap side at the indefinite gram: the swapped scaled
+gram and the deviation read one value, so the side is an equality
+at every vector. -/
+example : ∀ u : List BPair, u.length = 2 →
+    ((quadForm gN u).scale (1 * (devQ xN ycN).2)).swap
+      ≤ (quadForm (devQ xN ycN).1 u).scale 1 := by
+  intro u _
+  refine ground.leB_congr_right ?_ (ground.leB_refl _)
+  refine BPair.oneValue_trans
+    (BPair.oneValue_symm
+      (ground.swap_congr (quadForm_scale (1 * (devQ xN ycN).2) gN u))) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_symm
+      (quadForm_swap (matScale (1 * (devQ xN ycN).2) gN) u)) ?_
+  refine BPair.oneValue_trans
+    (elim.dotN_matVec_congrM (matSwap (matScale (1 * (devQ xN ycN).2) gN))
+      (matScale 1 (devQ xN ycN).1) u u (by decide +kernel)) ?_
+  exact quadForm_scale 1 (devQ xN ycN).1 u
+
+example : ¬ ((quadForm (devQ xN ycN).1 [⟨1, 2⟩, ⟨3, 1⟩]).scale 1
+    ≤ (quadForm gN [⟨1, 2⟩, ⟨3, 1⟩]).scale
+      (1 * (devQ xN ycN).2)) := by decide +kernel
+example : ¬ psdAt spXN := by decide +kernel
+
+/-! The lower cap side's isolation (`ball_psd_of`): the member `-1`
+at the center `3` about the unit gram sits below the ball — the
+deviation `-4` reads the gram's swap at the quadruple scale, so the
+upper cap side holds at every vector while the lower side refuses
+at the unit vector, the floor standing, and the member's split
+parting at its one lower entry. -/
+
+private def loG : Mat := [[⟨2, 1⟩]]
+private def loYc : greenprod.MatQ := ([[⟨4, 1⟩]], 1)
+private def loX : greenprod.MatQ := ([[⟨1, 2⟩]], 1)
+
+example : floorRead loYc loG 1 1 1 1 (spOne ⟨2, 1⟩) := by decide +kernel
+example : splitRead loX.1 (spOne ⟨1, 2⟩) := by decide +kernel
+
+example : ∀ u : List BPair, u.length = 1 →
+    (quadForm (devQ loX loYc).1 u).scale 1
+      ≤ (quadForm loG u).scale (1 * (devQ loX loYc).2) := by
+  intro u hu
+  have hpos : BPair.unit ≤ quadForm loG u :=
+    ground.leB_of_not_lt
+      (psd_all loG (spOne ⟨2, 1⟩) (by decide +kernel)
+        (by decide +kernel) u hu)
+  have hc : ((quadForm (devQ loX loYc).1 u).scale 1).oneValue
+      ((((quadForm loG u).swap).scale 4).scale 1) := by
+    refine BPair.scale_congr 1 ?_
+    refine BPair.oneValue_trans
+      (elim.dotN_matVec_congrM (devQ loX loYc).1
+        (matScale 4 (matSwap loG)) u u (by decide +kernel)) ?_
+    refine BPair.oneValue_trans (quadForm_scale 4 (matSwap loG) u) ?_
+    exact BPair.scale_congr 4 (quadForm_swap loG u)
+  refine ground.leB_congr_left (BPair.oneValue_symm hc) ?_
+  refine ground.leB_trans
+    (ground.leB_scale (ground.leB_scale (ground.leB_swap hpos) 4) 1) ?_
+  refine ground.leB_congr_left
+    (by decide +kernel :
+      BPair.unit.oneValue ((BPair.unit.swap.scale 4).scale 1)) ?_
+  exact ground.unitLeScale (1 * (devQ loX loYc).2) hpos
+
+example : ¬ (((quadForm loG [⟨2, 1⟩]).scale
+      (1 * (devQ loX loYc).2)).swap
+    ≤ (quadForm (devQ loX loYc).1 [⟨2, 1⟩]).scale 1) := by
+  decide +kernel
+example : ¬ psdAt (spOne ⟨1, 2⟩) := by decide +kernel
+
+/-! The floor's isolation (`ball_psd_of`): the member at its own
+center `-1` about the unit gram reads a vacant deviation, both cap
+sides at every vector, while the center's floor parts at its lower
+read `-3` and the member's split parts at its one lower entry, the
+deep member's parted cell above. -/
+
+private def fYc : greenprod.MatQ := ([[⟨1, 2⟩]], 1)
+
+example : splitRead (siteDatum (matScale (1 * 1) fYc.1)
+    (matScale (fYc.2 * (1 * 1 + 1 * 1)) loG)) (spOne ⟨3, 6⟩) := by
+  decide +kernel
+example : ¬ psdAt (spOne ⟨3, 6⟩) := by decide +kernel
+example : ¬ floorRead fYc loG 1 1 1 1 (spOne ⟨3, 6⟩) := by
+  decide +kernel
+example : splitRead fYc.1 (spOne ⟨1, 2⟩) := by decide +kernel
+
+example : ∀ u : List BPair, u.length = 1 →
+    (quadForm (devQ fYc fYc).1 u).scale 1
+      ≤ (quadForm loG u).scale (1 * (devQ fYc fYc).2) := by
+  intro u hu
+  have hpos : BPair.unit ≤ quadForm loG u :=
+    ground.leB_of_not_lt
+      (psd_all loG (spOne ⟨2, 1⟩) (by decide +kernel)
+        (by decide +kernel) u hu)
+  have hz : ((quadForm (devQ fYc fYc).1 u).scale 1).oneValue
+      BPair.unit := by
+    refine BPair.oneValue_trans
+      (BPair.scale_congr 1
+        (BPair.oneValue_trans
+          (elim.dotN_matVec_congrM (devQ fYc fYc).1
+            (matAdd loG (matSwap loG)) u u (by decide +kernel))
+          (BPair.oneValue_trans
+            (quadForm_add_sq (o := 1) (by decide +kernel)
+              (by decide +kernel) hu)
+            (BPair.oneValue_trans
+              (BPair.add_congr (BPair.oneValue_refl _)
+                (quadForm_swap loG u))
+              (BPair.oneValue_trans
+                (BPair.oneValue_of_eq
+                  (BPair.add_comm (quadForm loG u)
+                    ((quadForm loG u).swap)))
+                (BPair.swap_add_null
+                  (BPair.oneValue_refl (quadForm loG u)))))))) ?_
+    exact by decide +kernel
+  refine ground.leB_congr_left (BPair.oneValue_symm hz) ?_
+  exact ground.unitLeScale (1 * (devQ fYc fYc).2) hpos
+
+example : ∀ u : List BPair, u.length = 1 →
+    ((quadForm loG u).scale (1 * (devQ fYc fYc).2)).swap
+      ≤ (quadForm (devQ fYc fYc).1 u).scale 1 := by
+  intro u hu
+  have hpos : BPair.unit ≤ quadForm loG u :=
+    ground.leB_of_not_lt
+      (psd_all loG (spOne ⟨2, 1⟩) (by decide +kernel)
+        (by decide +kernel) u hu)
+  have hz : ((quadForm (devQ fYc fYc).1 u).scale 1).oneValue
+      BPair.unit := by
+    refine BPair.oneValue_trans
+      (BPair.scale_congr 1
+        (BPair.oneValue_trans
+          (elim.dotN_matVec_congrM (devQ fYc fYc).1
+            (matAdd loG (matSwap loG)) u u (by decide +kernel))
+          (BPair.oneValue_trans
+            (quadForm_add_sq (o := 1) (by decide +kernel)
+              (by decide +kernel) hu)
+            (BPair.oneValue_trans
+              (BPair.add_congr (BPair.oneValue_refl _)
+                (quadForm_swap loG u))
+              (BPair.oneValue_trans
+                (BPair.oneValue_of_eq
+                  (BPair.add_comm (quadForm loG u)
+                    ((quadForm loG u).swap)))
+                (BPair.swap_add_null
+                  (BPair.oneValue_refl (quadForm loG u)))))))) ?_
+    exact by decide +kernel
+  refine ground.leB_congr_right (BPair.oneValue_symm hz) ?_
+  exact ground.leB_swap (ground.unitLeScale (1 * (devQ fYc fYc).2) hpos)
+
+/-! The orders' guard isolated at the collapsed shallower order:
+`o = 0` with `o' = 1`, every further binder of `image_contract_of`
+standing — the shape, exchange and tie reads decided, the
+pointwise reads through the bridges at the vacant split and the
+deeper gram's own split read, the vacant transfer reading the
+contraction's left side at the sum's unit so the pointwise reads
+reach no deeper datum — and the conclusion parted at the one-key
+vector, the transported cap at one hundred against one. -/
+
+private def nzQ : MatQ := (([] : elim.Mat), (1 : Pos))
+private def nzGd : elim.Mat := idMat 1
+private def nzA : elim.Mat := [[BPair.unit]]
+private def nzB : elim.Mat := [[]]
+private def nzXdp : MatQ := (([[BPair.ofNat 100]] : elim.Mat), (1 : Pos))
+private def nzYmid : MatQ := (([[BPair.unit]] : elim.Mat), (1 : Pos))
+private def sp0 : Split 0 := ⟨⟨[], rfl⟩, ⟨[], rfl⟩, [], 0, rfl⟩
+
+example : sqAt nzQ.1 0 ∧ sqAt nzXdp.1 1 ∧ sqAt nzYmid.1 1
+    ∧ rectAt nzQ.1 0 1 ∧ sqAt nzA 1 ∧ rectAt nzB 1 0
+    ∧ sqAt (([] : elim.Mat)) 0
+    ∧ matOneValue (transposeM nzQ.1) nzQ.1
+    ∧ matOneValue (transposeM ([] : elim.Mat)) ([] : elim.Mat) := by
+  decide +kernel
+
+example : oneValueQ (mulQ nzQ nzQ) (ofM (transposeM nzB))
+    ∧ oneValueQ (addQ nzXdp (mulQ (ofM nzB) nzQ)) (ofM nzA)
+    ∧ oneValueQ (addQ nzYmid (mulQ (ofM nzB) nzQ)) (ofM nzA) := by
+  decide +kernel
+
+example : ∀ u : List BPair, u.length = 0 →
+    (quadForm (devQ nzQ nzQ).1 u).scale 1
+      ≤ (quadForm ([] : elim.Mat) u).scale (1 * (devQ nzQ nzQ).2) :=
+  cap_hi (devQ nzQ nzQ) ([] : elim.Mat) 1 1 sp0 sp0 (by decide +kernel)
+
+example : ∀ u : List BPair, u.length = 0 →
+    ((quadForm ([] : elim.Mat) u).scale (1 * (devQ nzQ nzQ).2)).swap
+      ≤ (quadForm (devQ nzQ nzQ).1 u).scale 1 :=
+  cap_lo (devQ nzQ nzQ) ([] : elim.Mat) 1 1 sp0 sp0 (by decide +kernel)
+
+example : ∀ u : List BPair, u.length = 0 →
+    (quadForm ([] : elim.Mat) u).scale (nzQ.2 * (1 * 1 + 1 * 1))
+      ≤ (quadForm nzQ.1 u).scale (1 * 1) :=
+  floor_all nzQ ([] : elim.Mat) 1 1 1 1 sp0
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+
+example : ∀ u : List BPair, u.length = 1 →
+    (quadForm ([] : elim.Mat) (matVec (transfer nzQ).1 u)).scale (1 * 1)
+      ≤ (quadForm nzGd u).scale (1 * 1 * (nzQ.2 * nzQ.2)) := by
+  intro u hu
+  have hpos : BPair.unit ≤ quadForm nzGd u :=
+    ground.leB_of_not_lt
+      (psd_all nzGd (spOne ⟨2, 1⟩) (by decide +kernel)
+        (by decide +kernel) u hu)
+  have hz : ((quadForm ([] : elim.Mat) ([] : List BPair)).scale
+      (1 * 1)).oneValue BPair.unit := by decide +kernel
+  refine ground.leB_congr_left (BPair.oneValue_symm hz) ?_
+  exact ground.unitLeScale (1 * 1 * (nzQ.2 * nzQ.2)) hpos
+
+example : (1 : Pos) * (2 * (1 * 1)) = 1 * ((1 * 1 + 1 * 1) * 1) := by
+  decide +kernel
+
+example : ¬ ((quadForm (devQ nzXdp nzYmid).1 [BPair.ofNat 1]).scale
+      (1 * 1 * 1)
+    ≤ (quadForm nzGd [BPair.ofNat 1]).scale
+        (2 * 2 * 1 * (devQ nzXdp nzYmid).2)) := by decide +kernel

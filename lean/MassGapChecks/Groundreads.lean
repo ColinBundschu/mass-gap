@@ -322,7 +322,13 @@ example : ¬ ((inertia.quadForm gK (ground.getAt ([], Pos.one) usF 2).1).scale
 the kernel root first. -/
 
 private def et2 : Mat := [[u, u], [u, ⟨52, 1⟩]]
-private def id2 : SqMat 2 := ⟨idMat 2, by decide +kernel⟩
+namespace groundreads
+
+/-- The identity congruence at order two, published for the sibling
+check modules. -/
+def id2 : SqMat 2 := ⟨idMat 2, by decide +kernel⟩
+
+end groundreads
 private def l2 : List (BPair × Pos × BPair) :=
   [(u, 1, ⟨2, 1⟩), (⟨52, 1⟩, 1, ⟨2, 1⟩)]
 private def e0 : List BPair := [⟨2, 1⟩, u]
@@ -2579,54 +2585,58 @@ datum reads `1 − 4` at one lower-side block — and the order thread,
 the chain entering at one and leaving at two. -/
 
 /-! The order-one gap, its certificate at the positive arm, and its
-two solved witnesses. -/
+two solved witnesses; the order-two gap at the kernel root beside
+the positive one, its certificate at the two arms, and its two
+solved witnesses — published for the sibling check modules reading
+the Euclidean families. -/
 
-private def etOne : Mat := [[⟨3, 1⟩]]
-private def tOne : SqMat 1 := ⟨[[⟨2, 1⟩]], by decide +kernel⟩
-private def lOne : List (BPair × Pos × BPair) := [(⟨3, 1⟩, 1, ⟨2, 1⟩)]
-private def wsOne : List (Pos × Pos) := [(2, 1)]
-private def lwOne : Mat := [[⟨2, 1⟩]]
-private def vwOne : Mat := [[⟨4, 1⟩]]
+namespace groundreads
 
-private theorem hdOne : split.diagRead etOne (idMat 1) tOne tOne lOne := by
+def etOne : Mat := [[⟨3, 1⟩]]
+def tOne : SqMat 1 := ⟨[[⟨2, 1⟩]], by decide +kernel⟩
+def lOne : List (BPair × Pos × BPair) := [(⟨3, 1⟩, 1, ⟨2, 1⟩)]
+def wsOne : List (Pos × Pos) := [(2, 1)]
+def lwOne : Mat := [[⟨2, 1⟩]]
+def vwOne : Mat := [[⟨4, 1⟩]]
+
+theorem hdOne : split.diagRead etOne (idMat 1) tOne tOne lOne := by
   decide +kernel
-private theorem hwOne : eucRead 1 1 2 1 (posOfSucc 2) lOne wsOne := by
+theorem hwOne : eucRead 1 1 2 1 (posOfSucc 2) lOne wsOne := by
   decide +kernel
-private theorem hLsOne : sqAt lwOne 1 := by decide +kernel
-private theorem hVsOne : sqAt vwOne 1 := by decide +kernel
-private theorem hLOne : elim.matOneValue
+theorem hLsOne : sqAt lwOne 1 := by decide +kernel
+theorem hVsOne : sqAt vwOne 1 := by decide +kernel
+theorem hLOne : elim.matOneValue
     (matAdd (inertia.matScale (posOfSucc 2 * 1) lwOne)
       (inertia.matScale (1 * 3) etOne))
     (inertia.matScale ((posOfSucc 2 * 1) * 3) (idMat 1)) := by decide +kernel
-private theorem hVOne : elim.matOneValue
+theorem hVOne : elim.matOneValue
     (matAdd (inertia.matScale (posOfSucc 2 * 1) vwOne)
       (inertia.matScale 1 (matMul etOne vwOne)))
     (inertia.matScale ((posOfSucc 2 * 1) * 5) (idMat 1)) := by decide +kernel
 
-/-! The order-two gap at the kernel root beside the positive one, its
-certificate at the two arms, and its two solved witnesses. -/
-
-private def etKer : Mat := [[u, u], [u, ⟨3, 1⟩]]
-private def lKer : List (BPair × Pos × BPair) :=
+def etKer : Mat := [[BPair.unit, BPair.unit], [BPair.unit, ⟨3, 1⟩]]
+def lKer : List (BPair × Pos × BPair) :=
   [(BPair.unit, 1, ⟨2, 1⟩), (⟨3, 1⟩, 1, ⟨2, 1⟩)]
-private def wsKer : List (Pos × Pos) := [(1, 3), (2, 1)]
-private def lwKer : Mat := [[⟨4, 1⟩, u], [u, ⟨2, 1⟩]]
-private def vwKer : Mat := [[⟨16, 1⟩, u], [u, ⟨10, 1⟩]]
+def wsKer : List (Pos × Pos) := [(1, 3), (2, 1)]
+def lwKer : Mat := [[⟨4, 1⟩, BPair.unit], [BPair.unit, ⟨2, 1⟩]]
+def vwKer : Mat := [[⟨16, 1⟩, BPair.unit], [BPair.unit, ⟨10, 1⟩]]
 
-private theorem hdKer : split.diagRead etKer (idMat 2) id2 id2 lKer := by
+theorem hdKer : split.diagRead etKer (idMat 2) id2 id2 lKer := by
   decide +kernel
-private theorem hLsKer : sqAt lwKer 2 := by decide +kernel
-private theorem hLKer : elim.matOneValue
+theorem hwKer : eucRead 1 1 2 1 (posOfSucc 2) lKer wsKer := by
+  decide +kernel
+theorem hLsKer : sqAt lwKer 2 := by decide +kernel
+theorem hVsKer : sqAt vwKer 2 := by decide +kernel
+theorem hLKer : elim.matOneValue
     (matAdd (inertia.matScale (posOfSucc 2 * 1) lwKer)
       (inertia.matScale (1 * 3) etKer))
     (inertia.matScale ((posOfSucc 2 * 1) * 3) (idMat 2)) := by decide +kernel
-
-example : eucRead 1 1 2 1 (posOfSucc 2) lKer wsKer := by decide +kernel
-example : sqAt vwKer 2 := by decide +kernel
-example : elim.matOneValue
+theorem hVKer : elim.matOneValue
     (matAdd (inertia.matScale (posOfSucc 2 * 1) vwKer)
       (inertia.matScale 1 (matMul etKer vwKer)))
     (inertia.matScale ((posOfSucc 2 * 1) * 15) (idMat 2)) := by decide +kernel
+
+end groundreads
 
 /-- The refusal isolating the certificate's cap: at `kn = 1` the
 root's representative `2` sits beyond the cap `1 · 1`, the kernel arm
@@ -2648,12 +2658,19 @@ private def lNeg : List (BPair × Pos × BPair) := [(⟨1, 3⟩, 1, ⟨2, 1⟩)]
 example : split.diagRead etNeg (idMat 1) tOne tOne lNeg := by decide +kernel
 example : ¬ eucRead 1 1 2 1 (posOfSucc 2) lNeg wsOne := by decide +kernel
 
-/-- The arm binder's load-bearing forge at `euc_hi_col`: at the root
-`-3` under `N = 3` and `un = ud = d = 1` the collected scale reads
-the sum's unit, so the off-pivot coordinates lose the scale the
-clearing divides by. -/
+/-- The certificate's arm at the upper witness is the solve's own
+datum: at the root `-3` under `N = 3` and `un = ud = d = 1` the
+collected scale reads the sum's unit, the upper datum singular
+there, so the solve identity refuses at the witness `[3]` at the
+clearing `2` as at every witness and clearing. -/
+private def etZ : Mat := [[⟨1, 4⟩]]
+
 example : (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1))
     + (⟨1, 4⟩ : BPair).scale 1).oneValue BPair.unit := by decide +kernel
+example : ¬ elim.matOneValue
+    (matAdd (inertia.matScale (posOfSucc 2 * 1) vwOne)
+      (inertia.matScale 1 (matMul etZ vwOne)))
+    (inertia.matScale ((posOfSucc 2 * 1) * 2) (idMat 1)) := by decide +kernel
 
 /-! The column reads at the order-one gap: the lower witness at the
 positive arm and the upper witness at the certificate's own arm

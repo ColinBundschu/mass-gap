@@ -4815,10 +4815,6 @@ theorem truncBracket {n : Nat} (A : Mat) (cn cd : Pos) (spA spA' : Split n)
 /-! `lem:fourpoint`'s tail closed: the drift, the residual's cap and the
 jet's floor joined at the transport display's width read. -/
 
-/-- A clearing's two trailing factors exchange. -/
-private theorem posMove (x a b : Pos) : x * (a * b) = x * b * a := by
-  rw [ground.mul_comm a b, ← ground.mul_assoc]
-
 /-- The leading factor moves to the tail. -/
 private theorem posLead (a b c : Pos) : a * b * c = b * c * a := by
   rw [ground.mul_assoc, ground.mul_comm]
@@ -5069,7 +5065,7 @@ private theorem driftTrans {Phi s RR JJ : BPair} {dpv gd cc Kn gn p q : Pos}
       (BPair.scale_congr (16 * Pos.pow q 4)
         (BPair.oneValue_trans (BPair.mul_congr_left (BPair.ofPos_mul dpv dpv))
           (BPair.ofPos_scale (dpv * dpv) Phi))) ?_
-    rw [BPair.scale_scale, posMove]
+    rw [BPair.scale_scale, ground.mul_right_comm']
     exact BPair.oneValue_refl _
   have h1 : Phi.scale (dpv * dpv * Pos.pow q 4 * 16)
       ≤ (s * s * RR).scale (gd * gd * (cc * cc)) :=

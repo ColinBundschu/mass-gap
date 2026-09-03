@@ -234,17 +234,37 @@ example : ¬ bdPlaqRead (fiberdec.torusRegion 2 3)
     (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fNone) := by
   decide +kernel
 
-/-! The index matrix at the committed family: the signed member's
-relabeling read as a matrix on the thirty members with the unit
-line at its head, the dualizing action's own indicator rows.  Each
-member's matrix is orthogonal — the closure and the injectivity of
-the relabeling read at the congruence. -/
+/-! The window matrix at the committed family: the signed member's
+relabeling read as a matrix on the window list, every member's
+fiber at one slot, with the unit line at its head, the dualizing
+action's own indicator rows at the induced vertex map (the site
+map itself, an involution at both members, read a permutation of
+the vertex range, the swap's endpoints transported along it and
+the flip's exchanged at its reversed links; every fiber at one
+slot here, the keys' transport vacant).  Each member's
+matrix is orthogonal — the closure and the injectivity of the
+relabeling read at the congruence. -/
+
+/-- The swap's induced vertex map, the site map itself, an
+involution. -/
+private def vSwap : Nat → Nat := bdSite 2 3 pSwap fNone
+
+/-- The flip's induced vertex map, an involution. -/
+private def vFlip : Nat → Nat := bdSite 2 3 (fun e => e) fZero
+
+example : endsRead (torusRegion 2 3) (bdLink 2 3 pSwap fNone) vSwap
+    ∧ vertPermRead (torusRegion 2 3) vSwap vSwap := by decide +kernel
+example : vertPermRead (torusRegion 2 3) vFlip vFlip := by decide +kernel
+example : ¬ endsRead (torusRegion 2 3) (bdLink 2 3 pSwap fNone) vFlip := by
+  decide +kernel
 
 private def bdSwapM : Mat :=
-  dualMat FA twIx 18 (bdLink 2 3 pSwap fNone) (bdRev 2 3 fNone)
+  dualSlotMat FA (torusRegion 2 3) twIx (bdLink 2 3 pSwap fNone)
+    (bdRev 2 3 fNone) vSwap
 
 private def bdFlipM : Mat :=
-  dualMat FA twIx 18 (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero)
+  dualSlotMat FA (torusRegion 2 3) twIx (bdLink 2 3 (fun e => e) fZero)
+    (bdRev 2 3 fZero) vFlip
 
 example : matOneValue (matMul (transposeM bdSwapM) bdSwapM) (idMat 31) := by
   decide +kernel

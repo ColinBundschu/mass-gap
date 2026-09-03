@@ -1143,7 +1143,7 @@ private def transposeGoO {γ : Type} (ops : DOps γ) :
   | n + 1, m => colHead ops.unit m :: transposeGoO ops n (dropCol m)
 
 /-- The exchange of the row and column key lists at a carrier. -/
-private def transposeO {γ : Type} (ops : DOps γ)
+def transposeO {γ : Type} (ops : DOps γ)
     (m : List (List γ)) : List (List γ) :=
   transposeGoO ops
     (match m with
@@ -1708,19 +1708,6 @@ private theorem termO_adjSwap {γ : Type} {ops : DOps γ}
     exact C.mulCongr (C.ovRefl _)
       (termO_adjSwap C k rt jt (Nat.succ.inj h))
 
-/-- The place permutations at a count, the enumeration. -/
-private def permsE (d : Nat) : List (List Nat) :=
-  places.monomialsAt (List.replicate d 1)
-
-private theorem perm_len {d : Nat} {p : List Nat}
-    (hp : 0 < ground.countOf p (permsE d)) : p.length = d :=
-  (places.perm_member_reads hp).1
-
-private theorem perm_distinct {d : Nat} {p : List Nat}
-    (hp : 0 < ground.countOf p (permsE d)) :
-    ∀ x, ground.countOf x p ≤ 1 :=
-  (places.perm_member_reads hp).2.1
-
 private theorem detO_swapAdj {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ}
     (C : DCore γ ops R.rel) (k : Nat) (m : List (List γ))
@@ -1748,7 +1735,7 @@ private theorem detO_swapAdj {γ : Type} {ops : DOps γ}
     (foldO_swap C (fun p => sgnO ops p (termO ops m p))
       (places.monomialsAt (List.replicate m.length 1)))
   refine C.ovTrans (sgnO_congr C p
-    (termO_adjSwap C k m p ((perm_len hp).symm))) ?_
+    (termO_adjSwap C k m p (((places.perm_member_reads hp).1).symm))) ?_
   show R.rel (if places.parity p then
       ops.swap (termO ops m (ground.adjSwap k p))
       else termO ops m (ground.adjSwap k p))
@@ -1756,10 +1743,10 @@ private theorem detO_swapAdj {γ : Type} {ops : DOps γ}
       ops.swap (termO ops m (ground.adjSwap k p))
       else termO ops m (ground.adjSwap k p)))
   rw [places.parity_adjSwap k p
-    (by rw [perm_len hp]; exact hk)
-    (ground.getAt_ne_of_distinct (perm_distinct hp)
+    (by rw [(places.perm_member_reads hp).1]; exact hk)
+    (ground.getAt_ne_of_distinct ((places.perm_member_reads hp).2.1)
       (Nat.lt_succ_self k)
-      (by rw [perm_len hp]; exact hk))]
+      (by rw [(places.perm_member_reads hp).1]; exact hk))]
   cases places.parity p with
   | true => exact C.ovRefl _
   | false => exact C.ovSymm (C.swapSwap _)
@@ -1779,10 +1766,10 @@ private theorem detO_rows_equal {γ : Type} {ops : DOps γ}
   have him : i < m.length := Nat.lt_trans hij hjm
   have hne : i ≠ j := fun he => Nat.lt_irrefl i (he ▸ hij)
   have hterm : ∀ p : List Nat,
-      0 < ground.countOf p (permsE m.length) →
+      0 < ground.countOf p (places.perms m.length) →
       R.rel (termO ops m (places.swapPair i j p)) (termO ops m p) := by
     intro p hp
-    have hplen : p.length = m.length := perm_len hp
+    have hplen : p.length = m.length := (places.perm_member_reads hp).1
     have hswlen : (places.swapPair i j p).length = m.length := by
       rw [places.length_swapPair i j p]
       exact hplen
@@ -1853,7 +1840,7 @@ private theorem detO_rows_equal {γ : Type} {ops : DOps γ}
         (fun x => places.countOf_swapPair x i j p))
       (fun p hp => ?_))
       (foldO_swap L.toDCore
-        (fun p => sgnO ops p (termO ops m p)) (permsE m.length))
+        (fun p => sgnO ops p (termO ops m p)) (places.perms m.length))
     refine L.ovTrans
       (sgnO_congr L.toDCore p (L.ovSymm (hterm p hp))) ?_
     show R.rel (if places.parity p then
@@ -1863,9 +1850,9 @@ private theorem detO_rows_equal {γ : Type} {ops : DOps γ}
         ops.swap (termO ops m (places.swapPair i j p))
         else termO ops m (places.swapPair i j p)))
     rw [places.parity_swapPair p hne
-      (by rw [perm_len hp]; exact him)
-      (by rw [perm_len hp]; exact hjm)
-      (perm_distinct hp)]
+      (by rw [(places.perm_member_reads hp).1]; exact him)
+      (by rw [(places.perm_member_reads hp).1]; exact hjm)
+      ((places.perm_member_reads hp).2.1)]
     cases places.parity p with
     | true => exact L.ovRefl _
     | false => exact L.ovSymm (L.swapSwap _)
@@ -3263,6 +3250,13 @@ theorem gram_sqAt (L : Mat) : sqAt (gramM L) L.length := by
       ground.length_map _ L]
     exact beqRefl L.length
 
+/-- A matrix's leading row carries the stated width, the rows' width
+read at the occupied head. -/
+theorem headD_width {γ : Type} (n : Nat) : ∀ b : List (List γ),
+    0 < b.length → rowsLen n b → (b.headD ([] : List γ)).length = n
+  | [], h, _ => absurd h (Nat.lt_irrefl 0)
+  | _ :: _, _, hr => hr.1
+
 /-- A listed row of a matrix at one width reads that width. -/
 theorem rowsLen_getAt {γ : Type} {n : Nat} :
     ∀ (L : List (List γ)) (i : Nat),
@@ -3793,6 +3787,21 @@ theorem getAt_vecScale (c : BPair) (u : List BPair) (i : Nat)
       = c * ground.getAt BPair.unit u i :=
   getAt_vecScaleO bpairOps c u i hi
 
+
+/-- A vector joined with the constant unit family reads itself. -/
+private theorem vecAdd_replicate : ∀ (v : List BPair) (n : Nat), v.length = n →
+    poly.oneValue (vecAdd v (List.replicate n BPair.unit)) v
+  | [], 0, _ => trivial
+  | [], _ + 1, h => Nat.noConfusion h
+  | _ :: _, 0, h => Nat.noConfusion h
+  | a :: t, n + 1, h =>
+    ⟨BPair.add_unit a, vecAdd_replicate t n (Nat.succ.inj h)⟩
+
+/-- The combination at one member is that member's scale. -/
+theorem combo_one (n : Nat) (c : BPair) (u : List BPair)
+    (hu : u.length = n) :
+    poly.oneValue (combo n [c] [u]) (vecScale c u) :=
+  vecAdd_replicate (vecScale c u) n ((length_vecScale c u).trans hu)
 
 private theorem combo_append_one (n : Nat) :
     ∀ (cs : List BPair) (c : BPair) (L : Mat) (v : List BPair),
@@ -4721,7 +4730,9 @@ private theorem length_transposeGoO {γ : Type} (ops : DOps γ) :
   | n + 1, m =>
     congrArg Nat.succ (length_transposeGoO ops n (dropCol m))
 
-private theorem length_transposeO {γ : Type} (ops : DOps γ)
+/-- The transpose's row count is the stated width, at an occupied
+matrix, at every entry bundle. -/
+theorem length_transposeO {γ : Type} (ops : DOps γ)
     {n : Nat} : ∀ m : List (List γ), rowsLen n m →
       0 < m.length → (transposeO ops m).length = n
   | [], _, h => absurd h (Nat.lt_irrefl 0)
@@ -4778,7 +4789,9 @@ private theorem getAt_transposeGoO {γ : Type} (ops : DOps γ)
       exact absurd this (Nat.not_succ_le_zero n)
     | a :: t => rfl
 
-private theorem getAt_transposeO {γ : Type} (ops : DOps γ)
+/-- The transpose's entry read: the row and column keys exchange,
+at stated rectangular shape, at every entry bundle. -/
+theorem getAt_transposeO {γ : Type} (ops : DOps γ)
     (u : γ) {n : Nat} :
     ∀ (m : List (List γ)), rowsLen n m → ∀ p q, p < n →
       q < m.length →
@@ -4809,7 +4822,7 @@ private theorem rowsLen_transposeGoO {γ : Type} (ops : DOps γ) :
     exact hgo
 
 /-- The transpose's rows, at every source. -/
-private theorem rowsLen_transposeO {γ : Type} (ops : DOps γ) :
+theorem rowsLen_transposeO {γ : Type} (ops : DOps γ) :
     ∀ m : List (List γ), rowsLen m.length (transposeO ops m)
   | [] => trivial
   | r :: t => by
@@ -7919,7 +7932,7 @@ private theorem length_conjP (n : Nat) (q p : List Nat) :
   exact ground.length_mapRange _ n
 
 private theorem getAt_conjP (n : Nat) {q : List Nat} (p : List Nat)
-    (hq : 0 < ground.countOf q (permsE n)) (hplen : p.length = n)
+    (hq : 0 < ground.countOf q (places.perms n)) (hplen : p.length = n)
     (i : Nat) (hi : i < n) :
     ground.getAt 0 (conjP n q p) i
       = ground.getAt 0 q (ground.getAt 0 p (places.posOf i q)) := by
@@ -7939,17 +7952,17 @@ private theorem getAt_conjP (n : Nat) {q : List Nat} (p : List Nat)
 
 /-- The conjugate is a member of the enumeration. -/
 private theorem conjP_member (n : Nat) {q p : List Nat}
-    (hq : 0 < ground.countOf q (permsE n))
-    (hp : 0 < ground.countOf p (permsE n)) :
-    0 < ground.countOf (conjP n q p) (permsE n) :=
+    (hq : 0 < ground.countOf q (places.perms n))
+    (hp : 0 < ground.countOf p (places.perms n)) :
+    0 < ground.countOf (conjP n q p) (places.perms n) :=
   places.expo_member n (places.expo_member n hq hp)
     (places.invPerm_member n hq)
 
 /-- The conjugation at the flipped relabeling reads the
 assignment back. -/
 private theorem conjP_conjP (n : Nat) {q p : List Nat}
-    (hq : 0 < ground.countOf q (permsE n))
-    (hp : 0 < ground.countOf p (permsE n)) :
+    (hq : 0 < ground.countOf q (places.perms n))
+    (hp : 0 < ground.countOf p (places.perms n)) :
     conjP n (places.invPerm n q) (conjP n q p) = p := by
   obtain ⟨hqlen, hqdist, hqval, _⟩ := places.perm_member_reads hq
   obtain ⟨hplen, _, hpval, _⟩ := places.perm_member_reads hp
@@ -7983,8 +7996,8 @@ private theorem conjP_conjP (n : Nat) {q p : List Nat}
 /-- The conjugation keeps the swap grading: the two relabelings'
 gradings compose at an even join. -/
 private theorem parity_conjP (n : Nat) {q p : List Nat}
-    (hq : 0 < ground.countOf q (permsE n))
-    (hp : 0 < ground.countOf p (permsE n)) :
+    (hq : 0 < ground.countOf q (places.perms n))
+    (hp : 0 < ground.countOf p (places.perms n)) :
     places.parity (conjP n q p) = places.parity p := by
   have h1 : places.parity (places.expo q p)
       = xor (places.parity p) (places.parity q) :=
@@ -8000,8 +8013,8 @@ private theorem parity_conjP (n : Nat) {q p : List Nat}
 
 /-- The grading at the conjugate is the assignment's own. -/
 private theorem sgnO_conjP {γ : Type} (ops : DOps γ) (n : Nat)
-    {q p : List Nat} (hq : 0 < ground.countOf q (permsE n))
-    (hp : 0 < ground.countOf p (permsE n)) (x : γ) :
+    {q p : List Nat} (hq : 0 < ground.countOf q (places.perms n))
+    (hp : 0 < ground.countOf p (places.perms n)) (x : γ) :
     sgnO ops (conjP n q p) x = sgnO ops p x := by
   show (if places.parity (conjP n q p) then ops.swap x else x)
     = (if places.parity p then ops.swap x else x)
@@ -8021,7 +8034,7 @@ private theorem detO_reindex {γ : Type} {ops : DOps γ}
     R.rel (detO ops M') (detO ops M) := by
   obtain ⟨hqlen, hqdist, hqval, hqocc⟩ := places.perm_member_reads hq
   have hterm : ∀ p : List Nat,
-      0 < ground.countOf p (permsE n) →
+      0 < ground.countOf p (places.perms n) →
       R.rel (termO ops M' p) (termO ops M (conjP n q p)) := by
     intro p hp
     obtain ⟨hplen, _, hpval, _⟩ := places.perm_member_reads hp
@@ -11811,6 +11824,18 @@ theorem rowsLen_matMul : ∀ (a b : Mat),
 theorem rowsLen_cast {a b : Nat} (h : a = b) {M : Mat}
     (hm : rowsLen a M) : rowsLen b M := by rw [← h]; exact hm
 
+/-- The rectangular shape off its two reads. -/
+theorem rectAt_of {M : Mat} {r c : Nat} (hl : M.length = r)
+    (hr : rowsLen c M) : rectAt M r c := by
+  show (Nat.beq M.length r
+    && M.all (fun row => Nat.beq row.length c)) = true
+  rw [hl, ground.beqRefl r,
+    ground.all_of_getAt ([] : List BPair)
+      (fun row => Nat.beq row.length c) M
+      (fun j hj => by
+        rw [rowsLen_getAt M j hr hj]; exact ground.beqRefl c)]
+  rfl
+
 /-- The product's row widths at the right factor's own: a vacant
 left factor truncates the product, an occupied one reads the
 transpose's row count across the order identity. -/
@@ -12428,7 +12453,7 @@ theorem dotP_eq_of_leTerm (gn gd : Pos) : ∀ (a b w : List BPair),
 
 /-- A termwise at-or-above-unit read at the pairing's products
 carries to the fold. -/
-private theorem dotP_unitLe : ∀ (a w : List BPair),
+theorem dotP_unitLe : ∀ (a w : List BPair),
     (∀ j, j < a.length →
       BPair.unit ≤ ground.getAt BPair.unit a j * ground.getAt BPair.unit w j) →
     BPair.unit ≤ dotP a w
@@ -18819,6 +18844,29 @@ theorem transposeM_matAdd {n : Nat} (A B : Mat) (hA : rowsLen n A)
         (by rw [rowsLen_getAt B q hB (by rw [← hl]; exact hq)]; exact hp)]
 
 
+/-- The sum of two entrywise-symmetric data is entrywise
+symmetric, the transpose distributing over the sum. -/
+theorem transposeM_matAdd_sym {n : Nat} (A B : Mat)
+    (hA : sqAt A n) (hB : sqAt B n)
+    (hsA : matOneValue (transposeM A) A)
+    (hsB : matOneValue (transposeM B) B) :
+    matOneValue (transposeM (matAdd A B)) (matAdd A B) := by
+  cases n with
+  | zero =>
+    rw [List.length_eq_zero_iff.mp (sqAt_len hA),
+      List.length_eq_zero_iff.mp (sqAt_len hB)]
+    exact trivial
+  | succ m =>
+    have hAr : rowsLen (m + 1) A := rowsLen_of_sqAt hA
+    have hBr : rowsLen (m + 1) B := rowsLen_of_sqAt hB
+    have hAl : A.length = m + 1 := sqAt_len hA
+    have hBl : B.length = m + 1 := sqAt_len hB
+    have h0 : 0 < A.length := by rw [hAl]; exact Nat.succ_pos m
+    rw [transposeM_matAdd A B hAr hBr (hAl.trans hBl.symm) h0]
+    exact matAdd_cong2 (m + 1) _ _ _ _
+      (rowsLen_cast hAl (rowsLen_transposeM A))
+      (rowsLen_cast hBl (rowsLen_transposeM B)) hAr hBr hsA hsB
+
 /-- The product's rows: the row-against-column folds against the
 right factor's key-list exchange. -/
 theorem getAt_matMul (a b : Mat) (p : Nat) (hp : p < a.length) :
@@ -19104,7 +19152,7 @@ theorem selM_append (I J : List Nat) (S : Mat) :
     ground.map_append _ I J]
 
 /-- The permutation matrix's row count is its index list's. -/
-private theorem length_permM (n : Nat) (idx : List Nat) :
+theorem length_permM (n : Nat) (idx : List Nat) :
     (permM n idx).length = idx.length := ground.length_map _ idx
 
 /-- The permutation matrix's rows sit at the stated width. -/
@@ -19446,6 +19494,27 @@ theorem matAdd_nullR {o : Nat} (X Z : Mat) (hX : sqAt X o)
     ((sqAt_len hZ).trans (sqAt_len hX).symm)
     (rowsLen_of_sqAt hZ) (rowsLen_of_sqAt hX)
 
+/-- The swapped summand's move across the balance: a datum reading a
+sum whose second summand is a memberwise swap reads, joined to that
+summand's own datum, the sum's first summand. -/
+theorem matSwapMove {o : Nat} (X Y Z : Mat)
+    (hX : sqAt X o) (hY : sqAt Y o) (hZ : sqAt Z o)
+    (h : matOneValue X (matAdd Y (matSwap Z))) :
+    matOneValue (matAdd X Z) Y := by
+  have hZs : sqAt (matSwap Z) o := sqAt_matSwap o Z hZ
+  have hYZ : sqAt (matAdd Y (matSwap Z)) o :=
+    sqAt_matAdd o Y (matSwap Z) hY hZs
+  have hstep : matOneValue (matAdd X Z)
+      (matAdd (matAdd Y (matSwap Z)) Z) :=
+    matAdd_cong2 o X Z _ Z (rowsLen_of_sqAt hX)
+      (rowsLen_of_sqAt hZ) (rowsLen_of_sqAt hYZ)
+      (rowsLen_of_sqAt hZ) h (matOne_refl Z)
+  rw [matAdd_assoc] at hstep
+  refine matOne_trans hstep ?_
+  exact matAdd_nullR Y (matAdd (matSwap Z) Z) hY
+    (sqAt_matAdd o _ _ hZs hZ)
+    (matNull_swap_add (matOne_refl Z))
+
 /-- Every entry of the null matrix sits at the sum's unit. -/
 theorem matNull_nullMat (m : Nat) : ∀ k : Nat, matNull (nullMat k m)
   | 0 => trivial
@@ -19677,6 +19746,48 @@ theorem matMul_congrL : ∀ (A A' B : Mat), matOneValue A A' →
   | r :: A, s :: A', B, h =>
     ⟨poly.oneValue_map _ _ (transposeM B) (fun x _ => (fun c => dotN_congrL r s c h.1) x),
      matMul_congrL A A' B h.2⟩
+
+/-- The congruated datum keeps the exchange: a symmetric datum read
+through any rectangular carrier reads its own exchange, the
+transposes' composition regrouped at the product. -/
+theorem congrSym {k k' : Nat} (S T : Mat)
+    (hSr : rowsLen k' S) (hSl : S.length = k')
+    (hTr : rowsLen k T) (hTl : T.length = k')
+    (hk : 0 < k) (hk' : 0 < k')
+    (hS : matOneValue (transposeM S) S) :
+    matOneValue
+      (transposeM (matMul (transposeM T) (matMul S T)))
+      (matMul (transposeM T) (matMul S T)) := by
+  have hTtl : (transposeM T).length = k :=
+    length_transposeM T hTr (by rw [hTl]; exact hk')
+  have hTtr : rowsLen k' (transposeM T) :=
+    rowsLen_cast hTl (rowsLen_transposeM T)
+  have hSTl : (matMul S T).length = k' :=
+    (length_matMul S T).trans hSl
+  have hSTr : rowsLen k (matMul S T) :=
+    rowsLen_matMul_of S T (fun _ => by rw [hTl]; exact hk') hTr
+  have hStr : matOneValue (transposeM (matMul S T))
+      (matMul (transposeM T) (transposeM S)) :=
+    transposeM_matMul S T hSr hTr hSl hTl hk' hk'
+  have hSt : (transposeM S).length = k' :=
+    length_transposeM S hSr (by rw [hSl]; exact hk')
+  have hStr2 : rowsLen k' (transposeM S) :=
+    rowsLen_cast hSl (rowsLen_transposeM S)
+  refine matOne_trans
+    (transposeM_matMul (transposeM T) (matMul S T)
+      hTtr hSTr hTtl hSTl hk hk') ?_
+  rw [transposeM_transposeM T hTr hk (by rw [hTl]; exact hk')]
+  refine matOne_trans
+    (matMul_congrL _ _ T hStr) ?_
+  refine matOne_trans
+    (matMul_assoc (transposeM T) (transposeM S) T
+      hTtr hStr2 hTr hSt hTl hk' hk') ?_
+  exact matMul_congrR (n := k') (k := k) (transposeM T) _ _
+    (rowsLen_matMul_of (transposeM S) T
+      (fun _ => by rw [hTl]; exact hk') hTr)
+    hSTr
+    ((length_matMul _ T).trans hSt) hSTl hk'
+    (matMul_congrL _ _ T hS)
 
 /-- The places' permutation matrix against its transpose reads the
 identity: at a distinct full key list the product's entry is the

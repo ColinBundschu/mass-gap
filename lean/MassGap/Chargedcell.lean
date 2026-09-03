@@ -132,16 +132,12 @@ theorem clsLaw_all (d : Nat) (a b : Shape) :
     fusion.clsLaw (fusion.dataA d) a b := by
   refine ground.all_filterMap_mem _ _ _ (fun c hc y hy => ?_)
   have hcs := allShapes_sound d (degree a + degree b) c hc
-  by_cases h0 : 0 < steinberg.count a b c
-  · rw [if_pos h0] at hy
-    have hyv : y = labels.reduce c := (Option.some.inj hy).symm
-    rw [hyv]
-    show Nat.beq (degree (labels.reduce c) % d)
-        ((degree a % d + degree b % d) % d) = true
-    rw [ality_reduce d c hcs.1, hcs.2, ground.modAdd]
-    exact ground.beqRefl _
-  · rw [if_neg h0] at hy
-    exact nomatch hy
+  obtain ⟨_, hyv⟩ := labels.emit_reads hy
+  rw [← hyv]
+  show Nat.beq (degree (labels.reduce c) % d)
+      ((degree a % d + degree b % d) % d) = true
+  rw [ality_reduce d c hcs.1, hcs.2, ground.modAdd]
+  exact ground.beqRefl _
 
 /-- The dual's class law at the label calculus. -/
 theorem clsDualLaw_all (d : Nat) (a : Shape) (h : a.length = d) :
@@ -321,23 +317,6 @@ theorem vertexLaw {L : Type} (F : fusion.Data L) (P : L → Bool)
   vertexGo F P hrow hlaw hdual hinv hunit hdualP ls.length ls rfl hls hpos
 
 
-/-- The row's members all read the stated width at the label
-calculus: a row member is a reduced shape of the enumeration at
-that width. -/
-private theorem lenP_row (d : Nat) : ∀ a b : Shape,
-    (((fusion.dataA d).row a b).all (fun s => s.length == d)) = true := by
-  intro a b
-  refine ground.all_filterMap_mem _ _ _ (fun c hc y hy => ?_)
-  have hcs := allShapes_sound d (degree a + degree b) c hc
-  by_cases h0 : 0 < steinberg.count a b c
-  · rw [if_pos h0] at hy
-    have hyv : y = labels.reduce c := (Option.some.inj hy).symm
-    rw [hyv]
-    show ((labels.reduce c).length == d) = true
-    exact ground.eqBeqOf ((labels.length_reduce c).trans hcs.1)
-  · rw [if_neg h0] at hy
-    exact nomatch hy
-
 /-- The dual keeps the stated width: the occupancy reversal off the
 full-column key. -/
 private theorem lenP_dual (d : Nat) : ∀ a : Shape,
@@ -370,7 +349,9 @@ theorem vertexLaw_all (d : Nat) (ls : List Shape)
     clsFold (fusion.dataA d) ls
       = (fusion.dataA d).cls (fusion.dataA d).unit :=
   vertexLaw (fusion.dataA d) (fun s => s.length == d)
-    (fun a b _ _ => lenP_row d a b)
+    (fun a b _ _ => ground.all_of_mem_intro _ _ (fun x hx =>
+      ground.eqBeqOf (fusion.labelA_len d x
+        (ground.all_of_mem _ _ (fusion.labelA_row d a b) x hx))))
     (fun a b _ _ => clsLaw_all d a b)
     (fun a ha => clsDualLaw_all d a (ground.beqEqOf ha))
     (fun a b ha hb h => lenP_inv d a b ha hb h)

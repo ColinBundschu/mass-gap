@@ -398,18 +398,18 @@ private theorem getAt_evalPCrow (ln : BPair) (c : Pos) (K : Nat) :
     ∀ (S : split.PMat) (i : Nat),
       ground.getAt ([] : List BPair) (evalPC S ln c K) i
         = (ground.getAt ([] : List Poly) S i).map
-            (fun p => poly.evalClear p ln c K)
-  | [], _ => rfl
-  | _ :: _, 0 => rfl
-  | _ :: t, i + 1 => getAt_evalPCrow ln c K t i
-
-/-- The cleared evaluation keeps the row count. -/
-private theorem length_evalPC (S : split.PMat) (ln : BPair) (c : Pos)
+            (fun p => poly.evalClear p ln c K) :=
+  ground.getAt_mapT ([] : List Poly) ([] : List BPair)
+    (fun r => r.map (fun p => poly.evalClear p ln c K)) rfl
+/-- The cleared evaluation keeps the row count (`lem:cellcount`'s
+shape discipline at the evaluated family). -/
+theorem length_evalPC (S : split.PMat) (ln : BPair) (c : Pos)
     (K : Nat) : (evalPC S ln c K).length = S.length :=
   ground.length_map _ S
 
-/-- The cleared evaluation keeps every row's width. -/
-private theorem rowsLen_evalPC (n : Nat) (S : split.PMat) (ln : BPair)
+/-- The cleared evaluation keeps every row's width (`lem:cellcount`'s
+shape discipline at the evaluated family). -/
+theorem rowsLen_evalPC (n : Nat) (S : split.PMat) (ln : BPair)
     (c : Pos) (K : Nat) (h : elim.rowsLen n S) :
     elim.rowsLen n (evalPC S ln c K) :=
   elim.rowsLen_mapRowsO (fun p => poly.evalClear p ln c K) S n h
@@ -419,16 +419,15 @@ polynomial family's collected sum reads the evaluated family's,
 every summand and the seed within the stated power. -/
 private theorem ec_foldRange (ln : BPair) (c : Pos) (N : Nat) :
     ∀ (n : Nat) (f : Nat → Poly) (g : Nat → BPair),
-      (∀ l, (f l).length ≤ N + 1) →
       (∀ l, (poly.evalClear (f l) ln c N).oneValue (g l)) →
-      ∀ (acc : Poly) (accB : BPair), acc.length ≤ N + 1 →
+      ∀ (acc : Poly) (accB : BPair),
         (poly.evalClear acc ln c N).oneValue accB →
       (poly.evalClear
           ((List.range n).foldl (fun s l => poly.add s (f l)) acc)
           ln c N).oneValue
         ((List.range n).foldl (fun s l => s + g l) accB)
-  | 0, _, _, _, _, _, _, _, hacc => hacc
-  | n + 1, f, g, hd, hfg, acc, accB, hal, hacc => by
+  | 0, _, _, _, _, _, hacc => hacc
+  | n + 1, f, g, hfg, acc, accB, hacc => by
     rw [ground.range_cons n,
       show ((0 : Nat) :: (List.range n).map (fun j => j + 1)).foldl
           (fun s l => poly.add s (f l)) acc
@@ -443,9 +442,8 @@ private theorem ec_foldRange (ln : BPair) (c : Pos) (N : Nat) :
       ground.foldl_map (fun j => j + 1) (fun s l => s + g l)
         (List.range n) (accB + g 0)]
     exact ec_foldRange ln c N n (fun l => f (l + 1)) (fun l => g (l + 1))
-      (fun l => hd (l + 1)) (fun l => hfg (l + 1))
+      (fun l => hfg (l + 1))
       (poly.add acc (f 0)) (accB + g 0)
-      (poly.add_len_le acc (f 0) (N + 1) hal (hd 0))
       (BPair.oneValue_trans (evalClear_add acc (f 0) ln c N)
         (BPair.add_congr hacc (hfg 0)))
 
@@ -559,15 +557,6 @@ private theorem rowsLen_pmatMul (a b : split.PMat) :
   rw [pmatMul_unfold a b]
   refine elim.rowsLen_map _ _ a (fun r _ => ?_)
   rw [ground.length_map, ground.length_range]
-
-/-- An occupied matrix's leading row reads the stated width. -/
-private theorem headD_width : ∀ (b : split.PMat) (w n : Nat),
-    b.length = w → 0 < w → elim.rowsLen n b →
-    (b.headD ([] : List Poly)).length = n
-  | [], w, _, hbl, hw, _ => by
-    rw [show w = 0 from hbl.symm] at hw
-    exact absurd hw (Nat.lt_irrefl 0)
-  | _ :: _, _, _, _, _, hb => hb.1
 
 /-- Every entry's degree sits within the shape read's clearing power, a
 key beyond the datum reading the vacant list. -/
@@ -768,14 +757,40 @@ private theorem row_pmatAdd (ln : BPair) (c : Pos) (N : Nat) :
   | _ :: _, [] => trivial
   | p :: r, q :: s => ⟨evalClear_add p q ln c N, row_pmatAdd ln c N r s⟩
 
-/-- The entrywise sum's cleared evaluation is the evaluations' own sum. -/
-private theorem evalPC_pmatAdd (ln : BPair) (c : Pos) (N : Nat) :
+/-- The entrywise sum's cleared evaluation is the evaluations' own sum
+(`lem:cellcount`'s cleared evaluation at `def:elim`'s displayed sum). -/
+theorem evalPC_pmatAdd (ln : BPair) (c : Pos) (N : Nat) :
     ∀ A B : split.PMat,
       elim.matOneValue (evalPC (split.pmatAdd A B) ln c N)
         (elim.matAdd (evalPC A ln c N) (evalPC B ln c N))
   | [], _ => trivial
   | _ :: _, [] => trivial
   | r :: A, s :: B => ⟨row_pmatAdd ln c N r s, evalPC_pmatAdd ln c N A B⟩
+
+/-- One row of a matched pair's cleared evaluations: the rows read one
+value entrywise, the evaluation's own congruence at each key. -/
+private theorem pcongrRow (ln : BPair) (c : Pos) (N : Nat) :
+    ∀ r s : List Poly, ground.matchedOV poly.polyRead r s →
+      poly.oneValue (r.map (fun p => poly.evalClear p ln c N))
+        (s.map (fun p => poly.evalClear p ln c N))
+  | [], [], _ => trivial
+  | [], _ :: _, h => False.elim h
+  | _ :: _, [], h => False.elim h
+  | _ :: r, _ :: s, h =>
+    ⟨poly.evalClear_congr h.1 ln c N, pcongrRow ln c N r s h.2⟩
+
+/-- Two polynomial matrices reading one value entrywise have cleared
+evaluations reading one value entrywise, at the shared point and the
+shared clearing power (`lem:cellcount`'s cleared evaluation across a
+representative). -/
+theorem evalPC_pcongr (ln : BPair) (c : Pos) (N : Nat) :
+    ∀ {A B : split.PMat}, split.pmatOneValue A B →
+      elim.matOneValue (evalPC A ln c N) (evalPC B ln c N)
+  | [], [], _ => trivial
+  | [], _ :: _, h => False.elim h
+  | _ :: _, [], h => False.elim h
+  | r :: _, s :: _, h =>
+    ⟨pcongrRow ln c N r s h.1, evalPC_pcongr ln c N h.2⟩
 
 /-- One row of the memberwise swap's cleared evaluation: the row's
 evaluations swapped. -/
@@ -787,8 +802,9 @@ private theorem row_pswapM (ln : BPair) (c : Pos) (N : Nat) :
   | p :: r => ⟨evalClear_neg p ln c N, row_pswapM ln c N r⟩
 
 /-- The memberwise swap's cleared evaluation is the evaluation's own
-swap. -/
-private theorem evalPC_pswapM (ln : BPair) (c : Pos) (N : Nat) :
+swap (`lem:cellcount`'s cleared evaluation at `def:elim`'s displayed
+balance partner). -/
+theorem evalPC_pswapM (ln : BPair) (c : Pos) (N : Nat) :
     ∀ S : split.PMat,
       elim.matOneValue (evalPC (split.pswapM S) ln c N)
         (elim.matSwap (evalPC S ln c N))
@@ -801,11 +817,13 @@ private theorem rowsLen_pswapM (n : Nat) (S : split.PMat)
   elim.rowsLen_mapRowsO poly.neg S n h
 
 /-- One row of a rescaling's cleared evaluation: the scale's own
-evaluation against the row's, the powers splitting. -/
+evaluation against the row's, the powers splitting at the
+representatives' caps. -/
 private theorem row_pscaleM (f : Poly) (ln : BPair) (c : Pos)
-    (K1 K2 : Nat) (hf : f.length ≤ K1 + 1) :
+    (K1 K2 : Nat) (hf : (poly.vnorm f).length ≤ K1 + 1) :
     ∀ r : List Poly,
-      (∀ j, (ground.getAt ([] : Poly) r j).length ≤ K2 + 1) →
+      (∀ j, (poly.vnorm (ground.getAt ([] : Poly) r j)).length
+        ≤ K2 + 1) →
       poly.oneValue
         ((r.map (poly.mul f)).map (fun p => poly.evalClear p ln c (K1 + K2)))
         (poly.scaleP (poly.evalClear f ln c K1)
@@ -813,17 +831,19 @@ private theorem row_pscaleM (f : Poly) (ln : BPair) (c : Pos)
   | [], _ => trivial
   | p :: r, h =>
     ⟨BPair.oneValue_trans
-        (evalClear_mul f p ln c K1 K2 hf (h 0))
+        (poly.evalClear_mulCap f p ln c K1 K2 hf (h 0))
         (BPair.oneValue_symm (BPair.norm_oneValue _)),
      row_pscaleM f ln c K1 K2 hf r (fun j => h (j + 1))⟩
 
 /-- A rescaling's cleared evaluation is the scale's evaluation weighting
-the evaluated matrix, the powers splitting. -/
-private theorem evalPC_pscaleM (f : Poly) (ln : BPair) (c : Pos)
-    (K1 K2 : Nat) (hf : f.length ≤ K1 + 1) :
+the evaluated matrix, the powers splitting at the representatives'
+caps — the canonical key counts, one value's own read
+(`def:ground`'s homogeneity principle). -/
+theorem evalPC_pscaleM (f : Poly) (ln : BPair) (c : Pos)
+    (K1 K2 : Nat) (hf : (poly.vnorm f).length ≤ K1 + 1) :
     ∀ S : split.PMat,
-      (∀ i j, (ground.getAt ([] : Poly)
-        (ground.getAt ([] : List Poly) S i) j).length ≤ K2 + 1) →
+      (∀ i j, (poly.vnorm (ground.getAt ([] : Poly)
+        (ground.getAt ([] : List Poly) S i) j)).length ≤ K2 + 1) →
       elim.matOneValue (evalPC (split.pscaleM f S) ln c (K1 + K2))
         (inertia.matScaleB (poly.evalClear f ln c K1) (evalPC S ln c K2))
   | [], _ => trivial
@@ -837,19 +857,21 @@ private theorem rowsLen_pscaleM (f : Poly) (n : Nat) (S : split.PMat)
   elim.rowsLen_mapRowsO (poly.mul f) S n h
 
 /-- The polynomial product's cleared evaluation is the evaluated
-factors' product, the powers splitting and every entry within its
-factor's own. -/
-private theorem evalPC_pmatMul (a b : split.PMat) (ln : BPair) (c : Pos)
+factors' product, the powers splitting and every entry's canonical
+representative within its factor's own cap (`def:ground`'s
+homogeneity principle, the value-identical key count). -/
+theorem evalPC_pmatMul (a b : split.PMat) (ln : BPair) (c : Pos)
     (K1 K2 w n : Nat) (ha : elim.rowsLen w a) (hbl : b.length = w)
     (hw : 0 < w) (hb : elim.rowsLen n b)
-    (hda : ∀ i j, (ground.getAt ([] : Poly)
-      (ground.getAt ([] : List Poly) a i) j).length ≤ K1 + 1)
-    (hdb : ∀ i j, (ground.getAt ([] : Poly)
-      (ground.getAt ([] : List Poly) b i) j).length ≤ K2 + 1) :
+    (hda : ∀ i j, (poly.vnorm (ground.getAt ([] : Poly)
+      (ground.getAt ([] : List Poly) a i) j)).length ≤ K1 + 1)
+    (hdb : ∀ i j, (poly.vnorm (ground.getAt ([] : Poly)
+      (ground.getAt ([] : List Poly) b i) j)).length ≤ K2 + 1) :
     elim.matOneValue (evalPC (split.pmatMul a b) ln c (K1 + K2))
       (elim.matMul (evalPC a ln c K1) (evalPC b ln c K2)) := by
   have hhd : (b.headD ([] : List Poly)).length = n :=
-    headD_width b w n hbl hw hb
+    elim.headD_width n b
+      (by rw [hbl]; exact hw) hb
   have hBvl : (evalPC b ln c K2).length = w :=
     (length_evalPC b ln c K2).trans hbl
   have hBvr : elim.rowsLen n (evalPC b ln c K2) :=
@@ -900,8 +922,7 @@ private theorem evalPC_pmatMul (a b : split.PMat) (ln : BPair) (c : Pos)
           * ground.getAt BPair.unit
             (ground.getAt ([] : List BPair)
               (elim.transposeM (evalPC b ln c K2)) j) l)
-        (fun l => poly.mul_len_le _ _ K1 K2 (hda i l) (hdb l j))
-        (fun l => ?_) [] BPair.unit (Nat.zero_le _)
+        (fun l => ?_) [] BPair.unit
         (BPair.oneValue_refl _)) ?_
     · match Nat.lt_or_ge l w with
       | Or.inl hlw =>
@@ -909,7 +930,7 @@ private theorem evalPC_pmatMul (a b : split.PMat) (ln : BPair) (c : Pos)
           elim.getAt_transposeM BPair.unit (evalPC b ln c K2) hBvr j l hj
             (by rw [hBvl]; exact hlw),
           getAt_evalPC ln c K2 b l j]
-        exact evalClear_mul _ _ ln c K1 K2 (hda i l) (hdb l j)
+        exact poly.evalClear_mulCap _ _ ln c K1 K2 (hda i l) (hdb l j)
       | Or.inr hlw =>
         rw [ground.getAt_over ([] : Poly) _ l (by rw [hrowW]; exact hlw),
           ground.getAt_over BPair.unit _ l (by rw [hUl]; exact hlw)]
@@ -1283,6 +1304,86 @@ theorem adj2v_solve {k m : Nat} (P B : elim.Mat) (hk : k = 1 ∨ k = 2)
     subst h
     exact solve_two P B hP hBl hBr
 
+/-- The adjugate's row count at the small orders. -/
+theorem length_adj2v {k : Nat} (P : elim.Mat)
+    (hk : k = 1 ∨ k = 2) : (adj2v k P).length = k := by
+  match hk with
+  | Or.inl h => rw [h]; rfl
+  | Or.inr h => rw [h]; rfl
+
+/-- The pivot's block reads at the selected places of a symmetric
+square matrix, the deflation's whole datum at one read: the pivot
+block square at its order, the coupling block at the pivot's rows
+and the trailing order's columns, the trailing block square, the
+adjugate-solved witness at the coupling's shape, the pivot's
+symmetry and its solve (`adj2v_solve`), the coupling's and the
+witness's transposes at the trailing order, and the selection at
+the joined key list read as the blocks' join, square at the joined
+count (`inertia.selM_blockJoin`). -/
+theorem pivotReads (M : elim.Mat) (idx cpl : List Nat) (o : Nat)
+    (hMsq : elim.sqAt M o)
+    (hMsym : elim.matOneValue (elim.transposeM M) M)
+    (hk : idx.length = 1 ∨ idx.length = 2)
+    (hidx : (idx.all (fun i => Nat.blt i o)) = true)
+    (hcpl : (cpl.all (fun j => Nat.blt j o)) = true) :
+    elim.sqAt (elim.selM idx idx M) idx.length
+    ∧ (elim.selM idx cpl M).length = idx.length
+    ∧ elim.rowsLen cpl.length (elim.selM idx cpl M)
+    ∧ elim.sqAt (elim.selM cpl cpl M) cpl.length
+    ∧ (elim.matMul (adj2v idx.length (elim.selM idx idx M))
+        (elim.selM idx cpl M)).length = idx.length
+    ∧ elim.rowsLen cpl.length
+        (elim.matMul (adj2v idx.length (elim.selM idx idx M))
+          (elim.selM idx cpl M))
+    ∧ elim.matOneValue (elim.transposeM (elim.selM idx idx M))
+        (elim.selM idx idx M)
+    ∧ elim.matOneValue
+        (elim.matMul (elim.selM idx idx M)
+          (elim.matMul (adj2v idx.length (elim.selM idx idx M))
+            (elim.selM idx cpl M)))
+        (inertia.matScaleB (elim.minor (elim.selM idx idx M))
+          (elim.selM idx cpl M))
+    ∧ (elim.transposeM (elim.selM idx cpl M)).length = cpl.length
+    ∧ (elim.transposeM
+        (elim.matMul (adj2v idx.length (elim.selM idx idx M))
+          (elim.selM idx cpl M))).length = cpl.length
+    ∧ elim.matOneValue (elim.selM (idx ++ cpl) (idx ++ cpl) M)
+        (inertia.blockJoin (elim.selM idx idx M) (elim.selM idx cpl M)
+          (elim.selM cpl cpl M))
+    ∧ elim.sqAt (inertia.blockJoin (elim.selM idx idx M)
+        (elim.selM idx cpl M) (elim.selM cpl cpl M))
+        (idx.length + cpl.length) := by
+  have hk0 : 0 < idx.length := by
+    cases hk with
+    | inl h => rw [h]; exact Nat.succ_pos 0
+    | inr h => rw [h]; exact Nat.succ_pos 1
+  have hPl : (elim.selM idx idx M).length = idx.length := elim.length_selM _ _ _
+  have hPr : elim.rowsLen idx.length (elim.selM idx idx M) :=
+    elim.rowsLen_selM _ _ _
+  have hPsq : elim.sqAt (elim.selM idx idx M) idx.length :=
+    elim.sqAt_of hPl hPr
+  have hBl : (elim.selM idx cpl M).length = idx.length := elim.length_selM _ _ _
+  have hBr : elim.rowsLen cpl.length (elim.selM idx cpl M) :=
+    elim.rowsLen_selM _ _ _
+  have hTBl : (elim.transposeM (elim.selM idx cpl M)).length = cpl.length :=
+    elim.length_transposeM _ hBr (by rw [hBl]; exact hk0)
+  have hCwl : (elim.matMul (adj2v idx.length (elim.selM idx idx M))
+      (elim.selM idx cpl M)).length = idx.length :=
+    (elim.length_matMul _ _).trans (length_adj2v _ hk)
+  have hCwr : elim.rowsLen cpl.length
+      (elim.matMul (adj2v idx.length (elim.selM idx idx M))
+        (elim.selM idx cpl M)) :=
+    elim.rowsLen_cast hTBl (elim.rowsLen_matMul _ _)
+  refine ⟨hPsq, hBl, hBr,
+    elim.sqAt_of (elim.length_selM _ _ _) (elim.rowsLen_selM _ _ _),
+    hCwl, hCwr,
+    elim.transposeM_selM idx idx M o hMsq hMsym hk0 hidx hidx,
+    adj2v_solve (k := idx.length) (m := cpl.length) _ _ hk hPsq hBl hBr,
+    hTBl,
+    elim.length_transposeM _ hCwr (by rw [hCwl]; exact hk0),
+    inertia.selM_blockJoin M idx cpl o hMsq hMsym hk0 hidx hcpl,
+    inertia.sqAt_selM_blockJoin M idx cpl hk0⟩
+
 /-- The cleared deflation at polynomial entries: the trailing block
 at the pivot minor's square against the pivot minor's multiple of
 the coupling's solved correction, the selected blocks' read. -/
@@ -1434,7 +1535,8 @@ private theorem pdefl_read (S : split.PMat) (K kk ka : Nat)
     (elim.length_matMul _ _).trans hAvl
   have hhdBp : ((split.pselM idx rest S).headD ([] : List Poly)).length
       = rest.length :=
-    headD_width _ idx.length rest.length hBpl hk0 hBpr
+    elim.headD_width rest.length _
+      (by rw [hBpl]; exact hk0) hBpr
   have hWl : (split.pmatMul (padj2 idx.length (split.pselM idx idx S))
       (split.pselM idx rest S)).length = idx.length :=
     (length_pmatMul _ _).trans hadjl
@@ -1450,7 +1552,8 @@ private theorem pdefl_read (S : split.PMat) (K kk ka : Nat)
     deg_pmatMul _ _ ka K hadjd (deg_pselM hdeg idx rest)
   have hhdW : ((split.pmatMul (padj2 idx.length (split.pselM idx idx S))
       (split.pselM idx rest S)).headD ([] : List Poly)).length = rest.length :=
-    headD_width _ idx.length rest.length hWl hk0 hWr
+    elim.headD_width rest.length _
+      (by rw [hWl]; exact hk0) hWr
   have hZr : elim.rowsLen rest.length
       (split.pmatMul (split.pselM rest idx S)
         (split.pmatMul (padj2 idx.length (split.pselM idx idx S))
@@ -1478,7 +1581,8 @@ private theorem pdefl_read (S : split.PMat) (K kk ka : Nat)
     refine elim.matOne_trans
       (evalPC_pmatMul (split.pselM rest idx S) _ ln c K (ka + K)
         idx.length rest.length hCpr hWl hk0 hWr
-        (deg_pselM hdeg rest idx) hWd) ?_
+        (fun i j => poly.capOfLen (deg_pselM hdeg rest idx i j))
+        (fun i j => poly.capOfLen (hWd i j))) ?_
     refine elim.matOne_trans (elim.matMul_congrL _ _ _ hsymT) ?_
     refine elim.matMul_congrR (n := idx.length) (k := rest.length)
       (elim.transposeM (evalPC (split.pselM idx rest S) ln c K)) _ _
@@ -1487,7 +1591,8 @@ private theorem pdefl_read (S : split.PMat) (K kk ka : Nat)
     exact elim.matOne_trans
       (evalPC_pmatMul (padj2 idx.length (split.pselM idx idx S))
         (split.pselM idx rest S) ln c ka K idx.length rest.length
-        hadjr hBpl hk0 hBpr hadjd (deg_pselM hdeg idx rest))
+        hadjr hBpl hk0 hBpr (fun i j => poly.capOfLen (hadjd i j))
+        (fun i j => poly.capOfLen (deg_pselM hdeg idx rest i j)))
       (elim.matMul_congrL _ _ _ hadj)
   have stepU : elim.matOneValue
       (evalPC (split.pscaleM (poly.mul (split.pminor (split.pselM idx idx S))
@@ -1498,8 +1603,9 @@ private theorem pdefl_read (S : split.PMat) (K kk ka : Nat)
         (evalPC (split.pselM rest rest S) ln c K)) :=
     elim.matOne_trans
       (evalPC_pscaleM _ ln c (kk + kk) K
-        (poly.mul_len_le _ _ kk kk hdmin hdmin)
-        (split.pselM rest rest S) (deg_pselM hdeg rest rest))
+        (poly.capOfLen (poly.mul_len_le _ _ kk kk hdmin hdmin))
+        (split.pselM rest rest S)
+        (fun i j => poly.capOfLen (deg_pselM hdeg rest rest i j)))
       (inertia.matScaleB_congr
         (BPair.oneValue_trans (evalClear_mul _ _ ln c kk kk hdmin hdmin)
           (BPair.mul_congr hmin hmin)) _)
@@ -1520,7 +1626,8 @@ private theorem pdefl_read (S : split.PMat) (K kk ka : Nat)
     refine elim.matSwap_congr ?_
     rw [Nat.add_assoc kk kk K]
     exact elim.matOne_trans
-      (evalPC_pscaleM _ ln c kk (kk + K) hdmin _ hZd)
+      (evalPC_pscaleM _ ln c kk (kk + K) (poly.capOfLen hdmin) _
+        (fun i j => poly.capOfLen (hZd i j)))
       (elim.matOne_trans (inertia.matScaleB_congr hmin _)
         (inertia.matOne_scaleB _ stepZ))
   have hCwT : (elim.transposeM (elim.matMul
@@ -1699,9 +1806,45 @@ private theorem pdefl_two (S : split.PMat) (o K i0 i1 : Nat)
     ⟨⟨BPair.oneValue_refl _, evalClear_neg _ ln c K, trivial⟩,
      ⟨evalClear_neg _ ln c K, BPair.oneValue_refl _, trivial⟩, trivial⟩
 
+/-- A row's selection passes the cleared evaluation. -/
+private theorem selRow_evalPC (ln : BPair) (c : Pos) (K : Nat)
+    (r : List Poly) : ∀ J : List Nat,
+    J.map (fun j => ground.getAt BPair.unit
+        (r.map (fun p => poly.evalClear p ln c K)) j)
+      = (J.map (fun j => ground.getAt ([] : Poly) r j)).map
+          (fun p => poly.evalClear p ln c K)
+  | [] => rfl
+  | j :: t => by
+    show ground.getAt BPair.unit
+        (r.map (fun p => poly.evalClear p ln c K)) j
+        :: t.map (fun j => ground.getAt BPair.unit
+          (r.map (fun p => poly.evalClear p ln c K)) j)
+      = poly.evalClear (ground.getAt ([] : Poly) r j) ln c K
+        :: (t.map (fun j => ground.getAt ([] : Poly) r j)).map
+          (fun p => poly.evalClear p ln c K)
+    rw [selRow_evalPC ln c K r t, getAt_rowEC ln c K r j]
+
+/-- The selection passes the cleared evaluation: the evaluated
+matrix's selected block is the selected pencil's own evaluation. -/
+private theorem selM_evalPC (ln : BPair) (c : Pos) (K : Nat)
+    (S : split.PMat) (J : List Nat) : ∀ I : List Nat,
+    elim.selM I J (evalPC S ln c K) = evalPC (split.pselM I J S) ln c K
+  | [] => rfl
+  | i :: t => by
+    show J.map (fun j => ground.getAt BPair.unit
+          (ground.getAt ([] : List BPair) (evalPC S ln c K) i) j)
+        :: elim.selM t J (evalPC S ln c K)
+      = (J.map (fun j => ground.getAt ([] : Poly)
+            (ground.getAt ([] : List Poly) S i) j)).map
+          (fun p => poly.evalClear p ln c K)
+        :: evalPC (split.pselM t J S) ln c K
+    rw [selM_evalPC ln c K S J t, getAt_evalPCrow ln c K S i,
+      selRow_evalPC ln c K (ground.getAt ([] : List Poly) S i) J]
+
 /-- The deflation's cleared evaluation is the evaluated blocks' own
-deflation at the adjugate-solved witness: the clearing power
-`(2k+1) K` at the pivot order `k`, the two arms exact. -/
+deflation at the adjugate-solved witness, the blocks the evaluated
+pencil's selections: the clearing power `(2k+1) K` at the pivot
+order `k`, the two arms exact. -/
 theorem evalPC_pdefl {o : Nat} (S : split.PMat) (K : Nat)
     (idx rest : List Nat) (ln : BPair) (c : Pos)
     (hsh : pShapeAt S o K) (hsym : split.pSymAt S o)
@@ -1710,11 +1853,13 @@ theorem evalPC_pdefl {o : Nat} (S : split.PMat) (K : Nat)
     (hrest : (rest.all (fun j => Nat.blt j o)) = true) :
     elim.matOneValue
       (evalPC (pdefl idx rest S) ln c ((2 * idx.length + 1) * K))
-      (inertia.deflMat (evalPC (split.pselM idx idx S) ln c K)
-        (evalPC (split.pselM idx rest S) ln c K)
-        (evalPC (split.pselM rest rest S) ln c K)
-        (elim.matMul (adj2v idx.length (evalPC (split.pselM idx idx S) ln c K))
-          (evalPC (split.pselM idx rest S) ln c K))) := by
+      (inertia.deflMat (elim.selM idx idx (evalPC S ln c K))
+        (elim.selM idx rest (evalPC S ln c K))
+        (elim.selM rest rest (evalPC S ln c K))
+        (elim.matMul (adj2v idx.length (elim.selM idx idx (evalPC S ln c K)))
+          (elim.selM idx rest (evalPC S ln c K)))) := by
+  rw [selM_evalPC ln c K S idx idx, selM_evalPC ln c K S rest idx,
+    selM_evalPC ln c K S rest rest]
   match idx, hk, hidx with
   | [], Or.inl h, _ => exact Nat.noConfusion h
   | [], Or.inr h, _ => exact Nat.noConfusion h
@@ -2147,41 +2292,6 @@ the selection's passage through the cleared evaluation, the
 clearing power's shift, the composite order's totality and
 transitivity, and the block table's side reads. -/
 
-/-- A row's selection passes the cleared evaluation. -/
-private theorem selRow_evalPC (ln : BPair) (c : Pos) (K : Nat)
-    (r : List Poly) : ∀ J : List Nat,
-    J.map (fun j => ground.getAt BPair.unit
-        (r.map (fun p => poly.evalClear p ln c K)) j)
-      = (J.map (fun j => ground.getAt ([] : Poly) r j)).map
-          (fun p => poly.evalClear p ln c K)
-  | [] => rfl
-  | j :: t => by
-    show ground.getAt BPair.unit
-        (r.map (fun p => poly.evalClear p ln c K)) j
-        :: t.map (fun j => ground.getAt BPair.unit
-          (r.map (fun p => poly.evalClear p ln c K)) j)
-      = poly.evalClear (ground.getAt ([] : Poly) r j) ln c K
-        :: (t.map (fun j => ground.getAt ([] : Poly) r j)).map
-          (fun p => poly.evalClear p ln c K)
-    rw [selRow_evalPC ln c K r t, getAt_rowEC ln c K r j]
-
-/-- The selection passes the cleared evaluation: the evaluated
-matrix's selected block is the selected pencil's own evaluation. -/
-private theorem selM_evalPC (ln : BPair) (c : Pos) (K : Nat)
-    (S : split.PMat) (J : List Nat) : ∀ I : List Nat,
-    elim.selM I J (evalPC S ln c K) = evalPC (split.pselM I J S) ln c K
-  | [] => rfl
-  | i :: t => by
-    show J.map (fun j => ground.getAt BPair.unit
-          (ground.getAt ([] : List BPair) (evalPC S ln c K) i) j)
-        :: elim.selM t J (evalPC S ln c K)
-      = (J.map (fun j => ground.getAt ([] : Poly)
-            (ground.getAt ([] : List Poly) S i) j)).map
-          (fun p => poly.evalClear p ln c K)
-        :: evalPC (split.pselM t J S) ln c K
-    rw [selM_evalPC ln c K S J t, getAt_evalPCrow ln c K S i,
-      selRow_evalPC ln c K (ground.getAt ([] : List Poly) S i) J]
-
 /-- The cleared evaluation of a symmetric pencil is symmetric. -/
 private theorem evalPC_sym {S : split.PMat} {o : Nat} (ln : BPair)
     (c : Pos) (K : Nat) (hlen : S.length = o) (hrows : elim.rowsLen o S)
@@ -2534,26 +2644,16 @@ private theorem rev_point {o : Nat} (S : split.PMat) (K : Nat)
     (evalPC S yn yc K) spy _ hy hsc'
   exact hA.symm.trans hB
 
-/-- The adjugate's row count at the small orders. -/
-private theorem length_adj2v {k : Nat} (P : elim.Mat)
-    (hk : k = 1 ∨ k = 2) : (adj2v k P).length = k := by
-  match hk with
-  | Or.inl h => rw [h]; rfl
-  | Or.inr h => rw [h]; rfl
-
 /-- `lem:inertia`'s addition at the designated places: the count at
 the permuted datum splits at the pivot and the cleared deflation,
 the places' permutation entering the leading position. -/
 private theorem rev_perm_add {o k m : Nat} (M : elim.Mat)
     (idx cpl : List Nat)
-    (hk : idx.length = k) (hcl : cpl.length = m) (hkm : k + m = o)
+    (hk : idx.length = k) (hcl : cpl.length = m)
     (hk12 : k = 1 ∨ k = 2)
     (hMsq : elim.sqAt M o)
     (hMsym : elim.matOneValue (elim.transposeM M) M)
-    (hidx : (idx.all (fun i => Nat.blt i o)) = true)
-    (hcpl : (cpl.all (fun j => Nat.blt j o)) = true)
-    (hjd : ground.distinctList (idx ++ cpl))
-    (hjc : ∀ j, j < o → 0 < ground.countOf j (idx ++ cpl))
+    (hperm : 0 < ground.countOf (idx ++ cpl) (places.perms o))
     (hPnz : ¬ (elim.minor (elim.selM idx idx M)).oneValue BPair.unit)
     (spx : inertia.Split o) (hx : inertia.splitRead M spx)
     (spP : inertia.Split k)
@@ -2565,20 +2665,31 @@ private theorem rev_perm_add {o k m : Nat} (M : elim.Mat)
         (elim.matMul (adj2v k (elim.selM idx idx M))
           (elim.selM idx cpl M))) spD) :
     inertia.revAt spx = inertia.revAt spP + inertia.revAt spD := by
+  subst hk
+  subst hcl
+  obtain ⟨hsgl, hjd', hbnd, hjc⟩ := places.perm_member_reads hperm
+  have hidx : (idx.all (fun i => Nat.blt i o)) = true :=
+    ground.all_of_getAt 0 _ idx (fun p hp => ground.ltBlt (hbnd _
+      (ground.countOf_append_left _ cpl
+        (ground.countOf_pos_of_mem (ground.mem_getAt 0 idx p hp)))))
+  have hcpl : (cpl.all (fun j => Nat.blt j o)) = true :=
+    ground.all_of_getAt 0 _ cpl (fun p hp => ground.ltBlt (hbnd _
+      (ground.countOf_append_right _ idx
+        (ground.countOf_pos_of_mem (ground.mem_getAt 0 cpl p hp)))))
+  have hjd : ground.distinctList (idx ++ cpl) := fun x _ => hjd' x
+  have hkm : idx.length + cpl.length = o := by
+    rw [← ground.length_append]; exact hsgl
   have hMl : M.length = o := elim.sqAt_len hMsq
   have hMr : elim.rowsLen o M := elim.rowsLen_of_sqAt hMsq
-  have hk0 : 0 < k := by
+  have hk0 : 0 < idx.length := by
     match hk12 with
     | Or.inl h => rw [h]; exact Nat.succ_pos 0
     | Or.inr h => rw [h]; exact Nat.succ_pos 1
-  have hidxl : 0 < idx.length := by rw [hk]; exact hk0
   have hopos : 0 < o := by
     rw [← hkm]
-    exact Nat.lt_of_lt_of_le hk0 (Nat.le_add_right k m)
+    exact Nat.lt_of_lt_of_le hk0 (Nat.le_add_right _ _)
   have hsg : ((idx ++ cpl).all (fun j => Nat.blt j o)) = true :=
     (by rw [ground.all_append _ idx cpl, hidx, hcpl]; rfl)
-  have hsgl : (idx ++ cpl).length = o := by
-    rw [ground.length_append, hk, hcl]; exact hkm
   have hp1 : elim.matOneValue
       (elim.matMul (elim.permM o (idx ++ cpl))
         (elim.transposeM (elim.permM o (idx ++ cpl))))
@@ -2656,63 +2767,12 @@ private theorem rev_perm_add {o k m : Nat} (M : elim.Mat)
     (elim.permM o (idx ++ cpl)) (BPair.ofPos Pos.one)
     (ground.offOfUnitLt (ground.unitLtOfPos Pos.one))
     hMsq hTsq hPisq hp2 hp1 spx hx _ spG
-  have hPvl : (elim.selM idx idx M).length = k :=
-    (elim.length_selM idx idx M).trans hk
-  have hPvr : elim.rowsLen k (elim.selM idx idx M) :=
-    elim.rowsLen_cast hk (elim.rowsLen_selM idx M idx)
-  have hPvsq : elim.sqAt (elim.selM idx idx M) k := elim.sqAt_of hPvl hPvr
-  have hBvl : (elim.selM idx cpl M).length = k :=
-    (elim.length_selM idx cpl M).trans hk
-  have hBvr : elim.rowsLen m (elim.selM idx cpl M) :=
-    elim.rowsLen_cast hcl (elim.rowsLen_selM cpl M idx)
-  have hQvl : (elim.selM cpl cpl M).length = m :=
-    (elim.length_selM cpl cpl M).trans hcl
-  have hQvr : elim.rowsLen m (elim.selM cpl cpl M) :=
-    elim.rowsLen_cast hcl (elim.rowsLen_selM cpl M cpl)
-  have hQvsq : elim.sqAt (elim.selM cpl cpl M) m := elim.sqAt_of hQvl hQvr
-  have hCvr : elim.rowsLen k (elim.selM cpl idx M) :=
-    elim.rowsLen_cast hk (elim.rowsLen_selM idx M cpl)
-  have hTBl : (elim.transposeM (elim.selM idx cpl M)).length = m :=
-    elim.length_transposeM _ hBvr (by rw [hBvl]; exact hk0)
-  have hTBr : elim.rowsLen k (elim.transposeM (elim.selM idx cpl M)) :=
-    elim.rowsLen_cast hBvl (elim.rowsLen_transposeM _)
-  have hCT : elim.matOneValue (elim.selM cpl idx M)
-      (elim.transposeM (elim.selM idx cpl M)) :=
-    elim.matOne_symm
-      (elim.transposeM_selM idx cpl M o hMsq hMsym hidxl hidx hcpl)
-  have hJoin : elim.matOneValue (elim.selM (idx ++ cpl) (idx ++ cpl) M)
-      (inertia.blockJoin (elim.selM idx idx M) (elim.selM idx cpl M)
-        (elim.selM cpl cpl M)) := by
-    rw [elim.selM_append idx cpl M]
-    show elim.matOneValue
-      (List.zipWith (· ++ ·) (elim.selM idx idx M) (elim.selM idx cpl M)
-        ++ List.zipWith (· ++ ·) (elim.selM cpl idx M)
-          (elim.selM cpl cpl M))
-      (List.zipWith (· ++ ·) (elim.selM idx idx M) (elim.selM idx cpl M)
-        ++ List.zipWith (· ++ ·)
-          (elim.transposeM (elim.selM idx cpl M)) (elim.selM cpl cpl M))
-    exact elim.matOne_append _ _ _ _ (elim.matOne_refl _)
-      (elim.matOne_rowJoin _ _ _ _ hCvr hTBr hCT
-        (elim.matOne_refl _))
-  have hJsq : elim.sqAt (inertia.blockJoin (elim.selM idx idx M)
-      (elim.selM idx cpl M) (elim.selM cpl cpl M)) o :=
-    elim.sqAt_of
-      (by rw [inertia.length_blockJoin _ _ _ k m hPvl hBvl hTBl hQvl]
-          exact hkm)
-      (elim.rowsLen_cast hkm
-        (inertia.rowsLen_blockJoin _ _ _ k m hPvr hBvr hTBr hQvr))
-  have spJoin := inertia.splitRead_congr _ _ hJsq hJoin _ spJread
-  have hCwl : (elim.matMul (adj2v k (elim.selM idx idx M))
-      (elim.selM idx cpl M)).length = k :=
-    (elim.length_matMul _ _).trans (length_adj2v _ hk12)
-  have hCwr : elim.rowsLen m (elim.matMul (adj2v k (elim.selM idx idx M))
-      (elim.selM idx cpl M)) :=
-    elim.rowsLen_cast hTBl (elim.rowsLen_matMul _ _)
-  have hPs : elim.matOneValue (elim.transposeM (elim.selM idx idx M))
-      (elim.selM idx idx M) :=
-    elim.transposeM_selM idx idx M o hMsq hMsym hidxl hidx hidx
-  have hPw := adj2v_solve (k := k) (m := m) (elim.selM idx idx M)
-    (elim.selM idx cpl M) hk12 hPvsq hBvl hBvr
+  obtain ⟨hPvsq, hBvl, hBvr, hQvsq, hCwl, hCwr, hPs, hPw, _, _, hJoin, hJsq⟩ :=
+    pivotReads M idx cpl o hMsq hMsym hk12 hidx hcpl
+  have hJsq' : elim.sqAt (inertia.blockJoin (elim.selM idx idx M)
+      (elim.selM idx cpl M) (elim.selM cpl cpl M)) o := by
+    rw [← hkm]; exact hJsq
+  have spJoin := inertia.splitRead_congr _ _ hJsq' hJoin _ spJread
   exact hcongr.symm.trans
     (rev_addN hkm (elim.selM idx idx M) (elim.selM idx cpl M)
       (elim.selM cpl cpl M) _ hPvsq hBvl hBvr hQvsq hCwl hCwr hPs hPw
@@ -2768,7 +2828,8 @@ private theorem rowsLen_pdefl (idx rest : List Nat) (S : split.PMat)
     split.rowsLen_pselM _ _ _
   have hhdBp : ((split.pselM idx rest S).headD ([] : List Poly)).length
       = rest.length :=
-    headD_width _ idx.length rest.length hBpl hk0 hBpr
+    elim.headD_width rest.length _
+      (by rw [hBpl]; exact hk0) hBpr
   have hWl : (split.pmatMul (padj2 idx.length (split.pselM idx idx S))
       (split.pselM idx rest S)).length = idx.length :=
     (length_pmatMul _ _).trans (length_padj2 _ hk)
@@ -2780,7 +2841,8 @@ private theorem rowsLen_pdefl (idx rest : List Nat) (S : split.PMat)
   have hhdW : ((split.pmatMul (padj2 idx.length (split.pselM idx idx S))
       (split.pselM idx rest S)).headD ([] : List Poly)).length
       = rest.length :=
-    headD_width _ idx.length rest.length hWl hk0 hWr
+    elim.headD_width rest.length _
+      (by rw [hWl]; exact hk0) hWr
   have hZr : elim.rowsLen rest.length
       (split.pmatMul (split.pselM rest idx S)
         (split.pmatMul (padj2 idx.length (split.pselM idx idx S))
@@ -2992,7 +3054,8 @@ theorem pdefl_offC (S : split.PMat) (i : Nat) (rest : List Nat)
     split.rowsLen_pselM _ _ _
   have hhdBp : ((split.pselM [i] rest S).headD ([] : List Poly)).length
       = rest.length :=
-    headD_width _ ([i] : List Nat).length rest.length hBpl Nat.one_pos hBpr
+    elim.headD_width rest.length _
+      (by rw [hBpl]; exact Nat.one_pos) hBpr
   have hWl : (split.pmatMul (padj2 ([i] : List Nat).length
       (split.pselM [i] [i] S)) (split.pselM [i] rest S)).length
       = ([i] : List Nat).length :=
@@ -3005,7 +3068,8 @@ theorem pdefl_offC (S : split.PMat) (i : Nat) (rest : List Nat)
   have hhdW : ((split.pmatMul (padj2 ([i] : List Nat).length
       (split.pselM [i] [i] S)) (split.pselM [i] rest S)).headD
       ([] : List Poly)).length = rest.length :=
-    headD_width _ ([i] : List Nat).length rest.length hWl Nat.one_pos hWr
+    elim.headD_width rest.length _
+      (by rw [hWl]; exact Nat.one_pos) hWr
   have hZr : elim.rowsLen rest.length
       (split.pmatMul (split.pselM rest [i] S)
         (split.pmatMul (padj2 ([i] : List Nat).length
@@ -3381,9 +3445,6 @@ private theorem piece_add {o m : Nat} (S : split.PMat) (K KK : Nat)
         (elim.matMul (adj2v idx.length
             (elim.selM idx idx (evalPC S xn xc K)))
           (elim.selM idx (compl idx o) (evalPC S xn xc K)))) := by
-    rw [selM_evalPC xn xc K S idx idx,
-      selM_evalPC xn xc K S (compl idx o) idx,
-      selM_evalPC xn xc K S (compl idx o) (compl idx o)]
     exact evalPC_pdefl (o := o) S K idx (compl idx o) xn xc hsh hsym
       hk hidx (all_compl idx o)
   have hDsq := inertia.sqAt_deflMat
@@ -3395,11 +3456,12 @@ private theorem piece_add {o m : Nat} (S : split.PMat) (K KK : Nat)
       (elim.selM idx (compl idx o) (evalPC S xn xc K)))
     m hTBl hTCwl hQvl hQvr
   have hD' := inertia.splitRead_congr _ _ hDsq hDefl spD hD
-  exact rev_perm_add (evalPC S xn xc K) idx (compl idx o) rfl hm hkm
-    hk hMsq hMsym hidx (all_compl idx o)
-    (distinct_append_compl (o := o) hdix)
-    (cover_append_compl (o := o) (idx := idx)) hPnz spx hx _ hPread
-    spD hD'
+  exact rev_perm_add (evalPC S xn xc K) idx (compl idx o) rfl hm
+    hk hMsq hMsym
+    (places.perm_of_counts o _ hsgl
+      (ground.distinctList_all (distinct_append_compl (o := o) hdix))
+      (cover_append_compl (o := o) (idx := idx)))
+    hPnz spx hx _ hPread spD hD'
 
 /-- One subinterval's constancy: at a designated minor keeping its
 side along the subinterval the count reads the pivot's fixed block

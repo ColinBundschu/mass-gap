@@ -22,11 +22,15 @@ class group's sum (`clsAdd`) and the winding floor per class
 positivity at nonunit labels, the Cartan strictness, the drift
 identity and the class laws — the row's additivity, the dual's
 join to the unit class and `θ`'s unit class — are
-the stated reads over the structure; the commutativity and the
-unit law hold at the label instantiation as theorems
-(`commLaw_dataA` at `labels.countL_comm`, `unitLaw_dataA` at
-`repring.unitRead_all`), the further laws each an
-instantiation's pin.
+the stated reads over the structure; the commutativity, the
+unit, the associativity and the row-is-support laws hold at the
+label instantiation as theorems (`commLaw_dataA` at
+`labels.countL_comm`, `unitLaw_dataA` at `repring.unitRead_all`,
+`assocLaw_dataA` at `labels.countL_assoc`, `rowLaw_dataA` at the
+lift's reads and the enumeration's), each over the width-`d`
+labels, the reduced shapes of the stated width (`labelA`, the
+domain the rows and the involution keep), the further laws each
+an instantiation's pin.
 The remaining interface fields land with their consumers: the
 channel list at the sector's own reads
 (`con:xfusion`, `thm:xdata` — `θ`'s content list standing at
@@ -299,8 +303,7 @@ def dataA (d : Nat) : Data Shape :=
    labels.unitL d, labels.dualL, places.addS,
    adjchar.theta d, labels.countL,
    (fun a b => (allShapes d (degree a + degree b)).filterMap
-     (fun c => if 0 < steinberg.count a b c then
-        some (labels.reduce c) else none)),
+     (labels.emit a b)),
    weyldim.dimOf, c2hat.dfQ, 2 * d * d, xfusion.c1 d,
    (fun k => (List.range (k + 1)).flatMap (fun j =>
      (allShapes (d - 1) j).filterMap (fun s =>
@@ -374,8 +377,7 @@ private theorem rowFold (x y : Shape) (W : Shape → Nat)
       W (labels.reduce v) = W v) :
     ground.famFold Nat.add 0
       (fun v => optVal (fun e => labels.countL x y e * W e)
-        (if 0 < steinberg.count x y v then some (labels.reduce v)
-         else none))
+        (labels.emit x y v))
       (allShapes x.length (degree x + degree y))
     = ground.famFold Nat.add 0
       (fun e => steinberg.count x y e * W e)
@@ -430,35 +432,337 @@ theorem assocLaw_dataA (d : Nat) (a b c dd : Shape)
   have hrowR := rowFold b c (fun f => labels.countL a f dd) hWR
   rw [hba] at hrowR
   show (((allShapes d (degree a + degree b)).filterMap
-      (fun c' => if 0 < steinberg.count a b c' then
-        some (labels.reduce c') else none)).foldl
+      (labels.emit a b)).foldl
       (fun acc e => acc + labels.countL a b e * labels.countL e c dd) 0)
     = (((allShapes d (degree b + degree c)).filterMap
-      (fun c' => if 0 < steinberg.count b c c' then
-        some (labels.reduce c') else none)).foldl
+      (labels.emit b c)).foldl
       (fun acc f => acc + labels.countL b c f * labels.countL a f dd) 0)
   rw [← hd,
     ground.foldlSum
       (fun e => labels.countL a b e * labels.countL e c dd)
       ((allShapes a.length (degree a + degree b)).filterMap
-        (fun c' => if 0 < steinberg.count a b c' then
-          some (labels.reduce c') else none)) 0,
+        (labels.emit a b)) 0,
     ground.foldlSum
       (fun f => labels.countL b c f * labels.countL a f dd)
       ((allShapes a.length (degree b + degree c)).filterMap
-        (fun c' => if 0 < steinberg.count b c c' then
-          some (labels.reduce c') else none)) 0,
-    ground.famFold_filterMap
-      (fun c' => if 0 < steinberg.count a b c' then
-        some (labels.reduce c') else none)
+        (labels.emit b c)) 0,
+    ground.famFold_filterMap (labels.emit a b)
       (fun e => labels.countL a b e * labels.countL e c dd)
       (allShapes a.length (degree a + degree b)),
-    ground.famFold_filterMap
-      (fun c' => if 0 < steinberg.count b c c' then
-        some (labels.reduce c') else none)
+    ground.famFold_filterMap (labels.emit b c)
       (fun f => labels.countL b c f * labels.countL a f dd)
       (allShapes a.length (degree b + degree c)),
     rowFold a b (fun e => labels.countL e c dd) hWL, hrowR,
     labels.countL_assoc a b c dd hba hca hdd]
+
+/-- The row-is-support law at the label instantiation, at a
+reduced target of the stated width: an occupied count at or below
+the pairing's degree puts the target's lift at the matched degree
+on the enumeration, so its reduction sits on the row
+(`labels.countL_geRead`, `places.mem_allShapes`), and a target
+beyond the pairing's degree is vacant outright, the lifted first
+shape's full columns refusing a reduced target
+(`labels.countL_ltRead`, `labels.fusionCount_colOff`); a row member
+reads its own positive count (`labels.countL_reduce`); and the row
+lists the target at most once, the enumeration listing each shape
+once and the reduction injective at one degree
+(`places.countOf_allShapes_le`, `labels.reduce_inj`).  The width
+ties are the frame; the reduced read is load-bearing with its
+committed refusal. -/
+theorem rowLaw_dataA (d : Nat) (a b c : Shape)
+    (hba : b.length = a.length) (hca : c.length = a.length)
+    (hd : a.length = d) (hred : labels.reduce c = c) :
+    rowLaw (dataA d) a b c := by
+  match Nat.eq_zero_or_pos a.length with
+  | Or.inl h0 =>
+    have hd0 : d = 0 := hd.symm.trans h0
+    rw [hd0, ground.nil_of_length_zero a h0,
+      ground.nil_of_length_zero b (hba.trans h0),
+      ground.nil_of_length_zero c (hca.trans h0)]
+    decide +kernel
+  | Or.inr hL =>
+    rw [← hd]
+    have hpred : a.length - 1 + 1 = a.length := ground.subAdd hL
+    have hle : ground.countOf c
+        ((allShapes a.length (degree a + degree b)).filterMap (labels.emit a b))
+        ≤ 1 := by
+      refine ground.countOf_filterMap_le_one _ c _
+        (fun x => countOf_allShapes_le a.length _ x) ?_
+      intro x y hx hy hfx hfy
+      obtain ⟨_, hxr⟩ := labels.emit_reads (show (if 0 < steinberg.count a b x
+        then some (labels.reduce x) else none) = some c from hfx)
+      obtain ⟨_, hyr⟩ := labels.emit_reads (show (if 0 < steinberg.count a b y
+        then some (labels.reduce y) else none) = some c from hfy)
+      obtain ⟨hxl, hxd⟩ := allShapes_sound a.length _ x
+        (ground.mem_of_countOf_pos x _ hx)
+      obtain ⟨hyl, hyd⟩ := allShapes_sound a.length _ y
+        (ground.mem_of_countOf_pos y _ hy)
+      exact labels.reduce_inj (a.length - 1) x y (hxl.trans hpred.symm)
+        (hyl.trans hpred.symm) (hxd.trans hyd.symm) (hxr.trans hyr.symm)
+    have hback : 0 < ground.countOf c
+        ((allShapes a.length (degree a + degree b)).filterMap (labels.emit a b))
+        → 0 < labels.countL a b c := by
+      intro hpos
+      obtain ⟨x, hx, hfx⟩ := ground.filterMap_pre (labels.emit a b) _ c hpos
+      obtain ⟨hcnt, hxr⟩ := labels.emit_reads
+        (show (if 0 < steinberg.count a b x
+          then some (labels.reduce x) else none) = some c from hfx)
+      obtain ⟨hxl, hxd⟩ := allShapes_sound a.length _ x
+        (ground.mem_of_countOf_pos x _ hx)
+      rw [← hxr, labels.countL_reduce a b x hxl hxd]
+      exact hcnt
+    have hfwd : 0 < labels.countL a b c → 0 < ground.countOf c
+        ((allShapes a.length (degree a + degree b)).filterMap
+          (labels.emit a b)) := by
+      intro hpos
+      cases Nat.lt_or_ge (degree a + degree b) (degree c) with
+      | inl hlt =>
+        have hmod : (degree c - (degree a + degree b)) % a.length = 0 := by
+          by_cases hm : (degree c - (degree a + degree b)) % a.length = 0
+          · exact hm
+          · rw [labels.countL_ltVac a b c hlt hm] at hpos
+            exact absurd hpos (Nat.lt_irrefl 0)
+        rw [labels.countL_ltRead a b c hba hca hlt hmod] at hpos
+        have hq : 0 < (degree c - (degree a + degree b)) / a.length := by
+          have hn := (ground.natDivRead (degree c - (degree a + degree b))
+            a.length hL).1
+          rw [hmod, Nat.add_zero] at hn
+          cases hz : (degree c - (degree a + degree b)) / a.length with
+          | zero =>
+            rw [hz, Nat.mul_zero] at hn
+            have hk := ground.natAddSubCancel (Nat.le_of_lt hlt)
+            rw [← hn, Nat.add_zero] at hk
+            rw [hk] at hlt
+            exact absurd hlt (Nat.lt_irrefl _)
+          | succ m => exact Nat.succ_pos m
+        have hlast : ground.getAt 0 (places.rowList c) (a.length - 1)
+            = 0 := by
+          rw [places.rowList_last c (a.length - 1) (hca.trans hpred.symm)]
+          obtain ⟨s, x, hs, hsl⟩ :=
+            ground.snoc_split (a.length - 1) c (hca.trans hpred.symm)
+          have hx : x = 0 := by
+            rw [hs, labels.reduce_snoc s x] at hred
+            exact (List.cons.inj
+              (ground.append_inj_len s s [0] [x] rfl hred).2).1.symm
+          rw [hs, ← hsl]
+          show ground.getAt 0 (s ++ [x]) (s.length + 0) = 0
+          rw [ground.getAt_append_add 0 s [x] 0]
+          exact hx
+        rw [labels.fusionCount_colOff _ a b c hba hca
+          (by rw [hlast]; exact hq) hL] at hpos
+        exact absurd hpos (Nat.lt_irrefl 0)
+      | inr hge =>
+        have hnlt : ¬ degree a + degree b < degree c :=
+          fun hlt => Nat.not_succ_le_self (degree a + degree b)
+            (Nat.le_trans hlt hge)
+        have hmod : (degree a + degree b - degree c) % a.length = 0 := by
+          by_cases hm : (degree a + degree b - degree c) % a.length = 0
+          · exact hm
+          · rw [labels.countL_geVac a b c hnlt hm] at hpos
+            exact absurd hpos (Nat.lt_irrefl 0)
+        rw [labels.countL_geRead a b c hba hca hge hmod] at hpos
+        have hcl : (labels.addFulls ((degree a + degree b - degree c)
+            / a.length) c).length = a.length :=
+          (labels.length_addFulls _ c).trans hca
+        have hcd : degree (labels.addFulls ((degree a + degree b - degree c)
+            / a.length) c) = degree a + degree b := by
+          rw [labels.degree_addFulls _ c, hca]
+          have hn := (ground.natDivRead (degree a + degree b - degree c)
+            a.length hL).1
+          rw [hmod, Nat.add_zero, Nat.mul_comm] at hn
+          rw [hn]
+          exact ground.natAddSubCancel hge
+        have hmem : labels.addFulls ((degree a + degree b - degree c)
+            / a.length) c ∈ allShapes a.length (degree a + degree b) := by
+          have h := mem_allShapes a.length _ hcl
+          rw [hcd] at h
+          exact h
+        have hemit : labels.emit a b (labels.addFulls
+            ((degree a + degree b - degree c) / a.length) c) = some c := by
+          show (if 0 < steinberg.count a b (labels.addFulls
+              ((degree a + degree b - degree c) / a.length) c)
+            then some (labels.reduce (labels.addFulls
+              ((degree a + degree b - degree c) / a.length) c))
+            else none) = some c
+          rw [if_pos (by
+              rw [steinberg.count_fusion a b _ hba hcl]
+              exact hpos),
+            labels.reduce_addFulls _ c, hred]
+        exact ground.countOf_pos_of_mem
+          (ground.mem_filterMap_to (labels.emit a b) hmem hemit)
+    exact ⟨⟨hfwd, hback⟩, hle⟩
+
+/-- The label read at a fundamental count: a reduced shape of the
+stated width, `con:labels`' one representative per label — the
+domain the count laws hold over at the instantiation, the unit
+label a member, the involution and the rows keeping it. -/
+def labelA (d : Nat) (s : Shape) : Bool :=
+  (s.length == d) && (labels.reduce s == s)
+
+/-- A label's width. -/
+theorem labelA_len (d : Nat) (s : Shape) (h : labelA d s = true) :
+    s.length = d :=
+  ground.beqEqOf (ground.andSplitB h).1
+
+/-- A label is reduced. -/
+theorem labelA_red (d : Nat) (s : Shape) (h : labelA d s = true) :
+    labels.reduce s = s :=
+  ground.listBeqEq (ground.andSplitB h).2
+
+/-- A reduced shape of the stated width is a label. -/
+theorem labelA_of (d : Nat) (s : Shape) (hl : s.length = d)
+    (hr : labels.reduce s = s) : labelA d s = true := by
+  show ((s.length == d) && (labels.reduce s == s)) = true
+  rw [ground.eqBeqOf hl, hr, ground.listEqBeq s]
+  rfl
+
+/-- The unit label is a label: the unit shape's last key sits at the
+unit occupancy. -/
+theorem labelA_unit (d : Nat) : labelA d (dataA d).unit = true := by
+  refine labelA_of d _ (ground.length_replicate 0 d) ?_
+  cases d with
+  | zero => rfl
+  | succ n =>
+    show labels.reduce (List.replicate (n + 1) 0) = List.replicate (n + 1) 0
+    rw [← ground.replicate_snoc 0 n, labels.reduce_snoc]
+
+/-- The involution keeps the labels: the dual is reduced at the
+width (`labels.reduce_dualL`). -/
+theorem labelA_dual (d : Nat) (s : Shape) (h : labelA d s = true) :
+    labelA d ((dataA d).dual s) = true :=
+  labelA_of d _ ((labels.length_dualL s).trans (labelA_len d s h))
+    (labels.reduce_dualL s)
+
+/-- The rows keep the labels: every row member is the enumeration's
+shape reduced, at the stated width and reduced again to itself. -/
+theorem labelA_row (d : Nat) (a b : Shape) :
+    (((dataA d).row a b).all (labelA d)) = true := by
+  refine ground.all_filterMap_mem _ _ _ (fun c hc y hy => ?_)
+  have hcs := allShapes_sound d (degree a + degree b) c hc
+  obtain ⟨_, hyv⟩ := labels.emit_reads hy
+  rw [← hyv]
+  exact labelA_of d _ ((labels.length_reduce c).trans hcs.1)
+    (labels.reduce_reduce c)
+
+/-- The window index's label carrier at the label calculus is inside
+the labels: the unit label and every below-cutoff member, the
+enumeration's shapes at the withdrawn last key. -/
+theorem labelA_below (d C : Nat) :
+    (((dataA d).unit :: (dataA d).below C).all (labelA d)) = true := by
+  show (labelA d (dataA d).unit && ((dataA d).below C).all (labelA d)) = true
+  rw [labelA_unit d]
+  show ((dataA d).below C).all (labelA d) = true
+  refine ground.all_of_mem_intro _ _ (fun x hx => ?_)
+  obtain ⟨j, _, hxj⟩ := ground.mem_flatMap_of _ _ x hx
+  obtain ⟨s, hs, hsx⟩ := ground.mem_filterMap_of _ _ x hxj
+  have hsx' : (if 0 < j && c2hat.dfQ (s ++ [0]) ≤ C then some (s ++ [0])
+      else none) = some x := hsx
+  by_cases hc : (0 < j && c2hat.dfQ (s ++ [0]) ≤ C) = true
+  · rw [if_pos hc] at hsx'
+    obtain ⟨hsl, hsd⟩ := allShapes_sound (d - 1) j s hs
+    rw [← Option.some.inj hsx']
+    cases d with
+    | zero =>
+      have hj : 0 < j := of_decide_eq_true (ground.andSplitB hc).1
+      rw [ground.nil_of_length_zero s hsl] at hsd
+      rw [← hsd] at hj
+      exact absurd hj (Nat.lt_irrefl 0)
+    | succ n =>
+      have hsl' : s.length = n := hsl
+      refine labelA_of (n + 1) (s ++ [0]) ?_ (labels.reduce_snoc s 0)
+      rw [ground.length_append s [0], hsl']
+      rfl
+  · rw [if_neg hc] at hsx'
+    exact nomatch hsx'
+
+/-- The window index's label carrier at the label calculus is
+distinct: the unit label is off the below-cutoff list, whose members
+are occupied, and the list itself lists each shape once, one block
+per degree with the emission injective. -/
+theorem below_distinct_dataA (d C : Nat) :
+    ground.distinctList ((dataA d).unit :: (dataA d).below C) := by
+  intro x _
+  have hbel : ∀ y, y ∈ (dataA d).below C →
+      ∃ s j, s ∈ allShapes (d - 1) j ∧ 0 < j ∧ y = s ++ [0] := by
+    intro y hy
+    obtain ⟨j, _, hyj⟩ := ground.mem_flatMap_of _ _ y hy
+    obtain ⟨s, hs, hsy⟩ := ground.mem_filterMap_of _ _ y hyj
+    have hsy' : (if 0 < j && c2hat.dfQ (s ++ [0]) ≤ C then some (s ++ [0])
+        else none) = some y := hsy
+    by_cases hc : (0 < j && c2hat.dfQ (s ++ [0]) ≤ C) = true
+    · rw [if_pos hc] at hsy'
+      exact ⟨s, j, hs, of_decide_eq_true (ground.andSplitB hc).1,
+        (Option.some.inj hsy').symm⟩
+    · rw [if_neg hc] at hsy'
+      exact nomatch hsy'
+  rw [ground.countOf_cons]
+  by_cases hxu : x = (dataA d).unit
+  · rw [if_pos hxu]
+    have hz : ground.countOf x ((dataA d).below C) = 0 := by
+      cases Nat.eq_zero_or_pos (ground.countOf x ((dataA d).below C)) with
+      | inl h0 => exact h0
+      | inr hp =>
+        obtain ⟨s, j, hs, hj, hxs⟩ :=
+          hbel x (ground.mem_of_countOf_pos x _ hp)
+        obtain ⟨_, hsd⟩ := allShapes_sound (d - 1) j s hs
+        have hdeg : degree x = j := by
+          rw [hxs, degree_snoc s 0, Nat.zero_mul, Nat.add_zero, hsd]
+        rw [hxu] at hdeg
+        have h0 : degree (List.replicate d 0) = j := hdeg
+        rw [degree_replicate_zero d] at h0
+        rw [← h0] at hj
+        exact absurd hj (Nat.lt_irrefl 0)
+    rw [hz]
+    exact Nat.le_refl 1
+  · rw [if_neg hxu, Nat.zero_add]
+    show ground.countOf x ((List.range (C + 1)).flatMap (fun j =>
+      (allShapes (d - 1) j).filterMap (fun s =>
+        if 0 < j && c2hat.dfQ (s ++ [0]) ≤ C then some (s ++ [0])
+        else none))) ≤ 1
+    rw [ground.countOf_flatMap]
+    refine ground.famFold_le_one_at _ (degree x) (List.range (C + 1)) ?_ ?_ ?_
+    · intro j _ hjx
+      cases Nat.eq_zero_or_pos (ground.countOf x
+          ((allShapes (d - 1) j).filterMap (fun s =>
+            if 0 < j && c2hat.dfQ (s ++ [0]) ≤ C then some (s ++ [0])
+            else none))) with
+      | inl h0 => exact h0
+      | inr hp =>
+        obtain ⟨s, hs, hsx⟩ := ground.filterMap_pre _ _ x hp
+        have hsx' : (if 0 < j && c2hat.dfQ (s ++ [0]) ≤ C then some (s ++ [0])
+            else none) = some x := hsx
+        by_cases hc : (0 < j && c2hat.dfQ (s ++ [0]) ≤ C) = true
+        · rw [if_pos hc] at hsx'
+          obtain ⟨_, hsd⟩ := allShapes_sound (d - 1) j s
+            (ground.mem_of_countOf_pos s _ hs)
+          have hdeg : degree x = j := by
+            rw [← Option.some.inj hsx', degree_snoc s 0, Nat.zero_mul,
+              Nat.add_zero, hsd]
+          exact absurd hdeg.symm hjx
+        · rw [if_neg hc] at hsx'
+          exact nomatch hsx'
+    · refine ground.countOf_filterMap_le_one _ x _
+        (fun s => countOf_allShapes_le (d - 1) _ s) ?_
+      intro s s' _ _ hfs hfs'
+      have hfs2 : (if 0 < degree x && c2hat.dfQ (s ++ [0]) ≤ C
+          then some (s ++ [0]) else none) = some x := hfs
+      have hfs2' : (if 0 < degree x && c2hat.dfQ (s' ++ [0]) ≤ C
+          then some (s' ++ [0]) else none) = some x := hfs'
+      by_cases hc : (0 < degree x && c2hat.dfQ (s ++ [0]) ≤ C) = true
+      · rw [if_pos hc] at hfs2
+        by_cases hc' : (0 < degree x && c2hat.dfQ (s' ++ [0]) ≤ C) = true
+        · rw [if_pos hc'] at hfs2'
+          exact ground.snoc_inj s s' 0
+            ((Option.some.inj hfs2).trans (Option.some.inj hfs2').symm)
+        · rw [if_neg hc'] at hfs2'
+          exact nomatch hfs2'
+      · rw [if_neg hc] at hfs2
+        exact nomatch hfs2
+    · rw [ground.countOf_range]
+      by_cases hlt : degree x < C + 1
+      · rw [if_pos hlt]
+        exact Nat.le_refl 1
+      · rw [if_neg hlt]
+        exact Nat.zero_le 1
 
 end fusion

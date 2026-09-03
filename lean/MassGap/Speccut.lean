@@ -164,7 +164,7 @@ private theorem keyRead {n : Nat} (Et : Mat) (T Tw : SqMat n)
   have hEtl : Et.length = n := sqAt_len hEt
   have hEtr : rowsLen n Et := rowsLen_of_sqAt hEt
   have hEEr : rowsLen n (matMul Et Et) :=
-    rowsLen_cast (transposeLen Et hEtr hEtl) (rowsLen_matMul Et Et)
+    rowsLen_of_sqAt (sqSquare hEt)
   have hTwl : Tw.val.length = n := SqMat.rows Tw
   have hcl : (matVec Tw.val u).length = n := by rw [matVec_length, hTwl]
   have hx : poly.oneValue (matVec T.val (matVec Tw.val u))
@@ -208,11 +208,9 @@ theorem spec_to_cut {n : Nat} (Et : Mat) (T Tw : SqMat n)
     have hEt : sqAt Et n := hd.1
     have hEtl : Et.length = n := sqAt_len hEt
     have hEtr : rowsLen n Et := rowsLen_of_sqAt hEt
-    have hEEl : (matMul Et Et).length = n := by
-      rw [show (matMul Et Et).length = Et.length from ground.length_map _ Et]
-      exact hEtl
+    have hEEl : (matMul Et Et).length = n := sqAt_len (sqSquare hEt)
     have hEEr : rowsLen n (matMul Et Et) :=
-      rowsLen_cast (transposeLen Et hEtr hEtl) (rowsLen_matMul Et Et)
+      rowsLen_of_sqAt (sqSquare hEt)
     exact absurd
       (inertia.scaledSite_gap (by rw [hEEl, hu])
         (by rw [hu]; exact hEEr) (by rw [hEtl, hu]) (by rw [hu]; exact hEtr)
@@ -241,11 +239,9 @@ private theorem rootRead {n : Nat} (Et : Mat) (T Tw : SqMat n)
   have hEt : sqAt Et n := hd.1
   have hEtl : Et.length = n := sqAt_len hEt
   have hEtr : rowsLen n Et := rowsLen_of_sqAt hEt
-  have hEEl : (matMul Et Et).length = n := by
-    rw [show (matMul Et Et).length = Et.length from ground.length_map _ Et]
-    exact hEtl
+  have hEEl : (matMul Et Et).length = n := sqAt_len (sqSquare hEt)
   have hEEr : rowsLen n (matMul Et Et) :=
-    rowsLen_cast (transposeLen Et hEtr hEtl) (rowsLen_matMul Et Et)
+    rowsLen_of_sqAt (sqSquare hEt)
   have hTl : T.val.length = n := SqMat.rows T
   have hjl : j < l.length := by rw [split.rootLen Et T Tw l hd]; exact hj
   have hgpos : BPair.unit < gj :=

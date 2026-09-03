@@ -1,7 +1,10 @@
 import MassGap.Poly
+import MassGap.Split
 import MassGap.Inertia
 import MassGap.Greenprod
 import MassGap.Stage
+import MassGap.Cellcount
+import MassGap.Decimation
 /-!
 `lem:cornerpivot`'s walk tier.  On a band-one head at the dual
 representative, at a scale pair `η` and a probe level cross-added in
@@ -182,23 +185,40 @@ the elimination's ordering certificate data (`thm:decimation`(i)) —
 and the witness family enters at the same gauge (`witList`).  A
 scalar chain's form read is its two folds, the diagonal entries at
 the squares with the bonds at the doubled consecutive products
-(`greenprod.chainQuad`); at the well head the diagonal fold reads the family's
-window (`wellDiagFold`) and the bond fold reads the cross sum
-(`wellCrossFold`), so the head's form is the display's two sides
-(`wellForm`).  At the lower rate's own data those two sides join at
-the sum's unit (`witQuad`, through `kernelCancel` at `witKernel`);
-at a member line beyond it the site identity prices the diagonal at
-the second scale's multiple against the rates' gap on the cross
-member (`siteScale`), the folds split at the scale (`scaledDiagFold`,
-`bondScale`), and the residue is the gap weight's balance partner on
-the family's occupied square fold, strictly below the sum's unit
-(`witStrict`).  The family is then the count's own witness at every
-split (`witCount`, `lem:inertia`'s forcing clause at the one-member
-combination), and the cap pair's read is the compressed two-by-two's
-completed square: at a leading entry below the sum's unit and a
-doubled cross read below the diagonal product's quadruple, every
-split reads the reversal count at two or beyond (`capForcing`, with
-`capStrict` and `capStrictVac` the two scale classes).
+(`greenprod.chainQuad`); at the well head a stated family's diagonal
+fold reads the family's window (`famDiagFold` at the deep-first list
+`famList` with its vacancy) and the bond fold reads the cross sum
+(`famCrossFold`), so the head's form at a stated family is the
+display's two sides (`famForm`), the witness family's read its
+instance (`wellForm` at `witList_fam`).  At the lower rate's own
+data those two sides join at the sum's unit (`witQuad`, through
+`kernelCancel` at `witKernel`); at a line beyond the rate the line
+identity prices the diagonal at the rate's second datum against the
+line's cross-multiplied gap (`lineScale`, `lineDiag`'s read at the
+unit rate pair, with the fold `lineDiagFold`), and the head's form
+at the family reads the gap's balance partner outright — the rate's
+clearing withdraws whole against the family's square fold
+(`witLineRead`), the strict read its corollary (`witStrict`).  The
+family is then the count's own witness at every split (`witCount`,
+`lem:inertia`'s forcing clause at the one-member combination).  The
+cap pair's read is the compressed two-by-two at closed power-sum
+entries: each diagonal entry is a line read's own gap
+(`witLineRead`), the doubled cross reads the mixed folds — the
+mixed square fold `crossSq`, the mixed well folds `crossSqM` and
+`crossSqMM`, and the mixed consecutive fold `crossBond`, each the
+two families' fold at the second family's own window — through the
+diagonal's three keys against the bond (`crossRead`, the sum
+family's form split at `diagSplit` and `crossSplitNat` over
+`inertia.quadAdd`'s polarization with the mixed diagonal fold
+evaluated at `crossDiagEval`), and the completed square at the
+entries forces the count: at a leading entry below the sum's unit
+and a doubled cross read below the diagonal product's quadruple,
+every split reads the reversal count at two or beyond
+(`capForcing`, with `capStrict` and `capStrictVac` the two scale
+classes), so at a cap line beyond both endpoints' rates whose
+discriminant comparison holds at the closed entries the second root
+sits below the cap (`capPair`), the comparisons polynomial in the
+scale — the cell's own reads.
 
 Clause (vi) is the count spine at a scale.  The walk's minors enter
 the head's own data as `wellWalk`, the running leading minors at the
@@ -224,8 +244,8 @@ crossing-free walk (`certRevZero`).
 
 Two member lines at one scale pair meet at the site identity: the
 head is a scalar chain, so its entry at a key pair is the entry chart
-`chainAt` (`chainEntry`, at the diagonal's and the bond's own entry
-lists), and entrywise the second line's scaled head is the first's
+`greenprod.chainAt` (`greenprod.chainEntry`, at the diagonal's and
+the bond's own entry lists), and entrywise the second line's scaled head is the first's
 scaled head against the rates' gap on the identity
 (`lineSite`, with `lineDiag`, `lineBond` and `lineFar` the three
 entry classes); the same reads give the gap itself as that scalar
@@ -326,6 +346,31 @@ to the crossing seam, the first lower-side pivot sits past it with
 the later boxes' reads running from below it, and the count read
 closes beyond it at the rebound seed and the dominance tail's
 geometric list.
+
+Clause (vii) is the evaluated glue.  A profile's collapse evaluated
+at a composite point and cleared at a stated power is `evalProf`, a
+site datum's entrywise shape read at that power is `pfmShapeAt`,
+and the evaluated site datum is `evalPfm` — the family's per-depth
+collapse read entrywise (`cellcount.evalPC` at `pfmDepth`).  The
+magnitude price is `evalProf_mag`: the slab walk's weights are
+natural, so the entrywise magnitude profile's collapse dominates
+the profile's own key by key, and the positive point prices the two
+folds (`thm:windowsep`'s sum and product laws).  The row glue
+`domRow_le` reads one row certificate — `boxRead_pos` prices the
+gap profile's collapse strictly above the sum's unit at the
+certificate's own clearing, `poly.evalClear_pow` transports that
+read to the shared power, and the gap profile's split prices the
+diagonal entry above the off-row magnitude fold's own evaluation —
+so `domCert_domAt` walks the certificate list into
+`thm:decimation`(ii)'s dominance read on the evaluated site datum,
+and `domCert_form` closes the form at or above the sum's unit at
+every vector of the site's order, `decimation.dom_quad` at the
+replicate-unit slack list.  Everything evaluates at one stated
+clearing power, each row certificate's own transported up; the
+square and symmetry reads are `decimation.dom_quad`'s own binders,
+the dominance walk reading the magnitudes alone, and the per-entry
+shape binders are the site's frame — the derivations consume each
+row certificate's own shape alone.
 -/
 
 namespace cornerpivot
@@ -608,6 +653,31 @@ private def slabGo (mm : Nat) : Nat → Nat → poly.PPoly → poly.Poly
   | b, w, p :: t =>
     poly.add (poly.shiftUp b (poly.scaleP (BPair.ofNat w) p))
       (slabGo mm (b + 1) (w * mm) t)
+
+/-- The slab walk reads the sum's unit on a slab whose scale
+polynomials all read it. -/
+private theorem slabGo_unit (mm : Nat) : ∀ (b w : Nat) (P : poly.PPoly),
+    poly.unitTailO poly.polyOps poly.polyRead P →
+      poly.unitTail (slabGo mm b w P)
+  | _, _, [], _ => trivial
+  | b, w, p :: t, h =>
+    poly.unitTail_sum
+      (poly.unitTail_shiftUp b (poly.scaleP_unitTail _ p
+        (poly.oneValue_unitTail (show poly.oneValue p [] from h.1) trivial)))
+      (slabGo_unit mm (b + 1) (w * mm) t h.2)
+
+/-- The slab walk is one value across a slab's representatives, the
+walk's shift and weight the same on both sides. -/
+private theorem slabGo_congr (mm : Nat) : ∀ (b w : Nat) (P Q : poly.PPoly),
+    poly.ppOneValue P Q →
+      poly.oneValue (slabGo mm b w P) (slabGo mm b w Q)
+  | b, w, [], Q, h => slabGo_unit mm b w Q h
+  | b, w, p :: t, [], h =>
+    poly.unitTail_oneValue (slabGo_unit mm b w (p :: t) h) trivial
+  | b, w, _ :: t, _ :: s, h =>
+    poly.add_congr
+      (poly.shiftUp_ov b (poly.oneValue_scaleP (BPair.ofNat w) h.1))
+      (slabGo_congr mm (b + 1) (w * mm) t s h.2)
 
 def depthPoly (V : poly.PPoly × poly.PPoly) (m : Nat) : poly.Poly :=
   poly.add (slabGo (m * m) 0 1 V.1) (slabGo (m * m) 1 m V.2)
@@ -1096,16 +1166,167 @@ def sh1 : poly.PPoly × poly.PPoly :=
 def u1 : poly.PPoly × poly.PPoly :=
   ([[BPair.unit, BPair.ofNat 1]], [[BPair.ofNat 1]])
 
+/-- The vacant profile, both slabs empty — the canonical carrier's
+sum unit. -/
+def vacProf : poly.PPoly × poly.PPoly := (([] : poly.PPoly), ([] : poly.PPoly))
+
+/-- The constant profile at a stated coefficient: the vacant slabs'
+origin. -/
+def constProf (c : BPair) : poly.PPoly × poly.PPoly :=
+  ([[c]], ([] : poly.PPoly))
+
+/-- The family's shape read at the stated clearing: every entry's
+slab keys sit inside the clearing power, the cleared evaluation's
+faithfulness conjunct at the matrix carrier (`lem:cellcount`'s
+shape discipline at `lem:cornerpivot`(vii)'s center family). -/
+def pfmShape (A : List (List (poly.PPoly × poly.PPoly)))
+    (K : Nat) : Prop :=
+  (A.all (fun r => r.all (fun e =>
+    bleGo K 0 e.1 && bleGo K 1 e.2))) = true
+
+instance (A : List (List (poly.PPoly × poly.PPoly))) (K : Nat) :
+    Decidable (pfmShape A K) := inferInstanceAs (Decidable (_ = _))
+
+/-- The family's shape read prices every entry's collapse inside the
+stated clearing power at every depth, a key beyond the family's own
+lists reading the vacant profile's collapse. -/
+theorem pfmShape_le {A : List (List (poly.PPoly × poly.PPoly))}
+    {K : Nat} (h : pfmShape A K) (m : Nat) :
+    ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i) j)
+        m)).length ≤ K + 1 := by
+  intro i j
+  match Nat.lt_or_ge i A.length with
+  | Or.inr hge =>
+    rw [ground.getAt_over ([] : List (poly.PPoly × poly.PPoly)) A i hge]
+    exact Nat.zero_le _
+  | Or.inl hlt =>
+    have hrow := ground.all_getAt ([] : List (poly.PPoly × poly.PPoly))
+      A h i hlt
+    match Nat.lt_or_ge j
+        (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i).length with
+    | Or.inr hge =>
+      rw [ground.getAt_over vacProf _ j hge]
+      exact Nat.zero_le _
+    | Or.inl hjlt =>
+      exact poly.capOfLen (depthPoly_ble
+        (show profShape (ground.getAt vacProf
+          (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i) j) K from
+          ground.all_getAt vacProf _ hrow j hjlt) m)
+
 /-- One slab's substitution walk: the Horner fold of the inner
 polynomials against the shifted square scale's powers. -/
 def shGo : poly.PPoly → poly.PPoly × poly.PPoly
-  | [] => (([] : poly.PPoly), ([] : poly.PPoly))
+  | [] => vacProf
   | p :: t => profAdd ([p], ([] : poly.PPoly)) (profMul sh1 (shGo t))
 
 /-- The depth shift at the canonical carrier: each slab's
 substitution walk, the u¹-slab's against the shifted scale read. -/
 def profShift (V : poly.PPoly × poly.PPoly) : poly.PPoly × poly.PPoly :=
   profAdd (shGo V.1) (profMul u1 (shGo V.2))
+
+/-- One slab's canonical representative: each scale polynomial at
+the canonical read with the trailing vacant keys withdrawn, a
+vacant entry kept as its key's placeholder under occupied deeper
+keys — the homogeneity principle's value-identical representative. -/
+def slabReduce : poly.PPoly → poly.PPoly
+  | [] => []
+  | p :: t =>
+    match slabReduce t, poly.vnorm p with
+    | [], [] => []
+    | [], c :: q => [c :: q]
+    | s :: ts, [] => ([] : poly.Poly) :: s :: ts
+    | s :: ts, c :: q => (c :: q) :: s :: ts
+
+/-- The canonical representative reads its slab back, key by key. -/
+private theorem slabReduce_ov : ∀ P : poly.PPoly,
+    poly.ppOneValue (slabReduce P) P
+  | [] => trivial
+  | p :: t => by
+    have hIH := slabReduce_ov t
+    show poly.ppOneValue
+      (match slabReduce t, poly.vnorm p with
+        | [], [] => []
+        | [], c :: q => [c :: q]
+        | s :: ts, [] => ([] : poly.Poly) :: s :: ts
+        | s :: ts, c :: q => (c :: q) :: s :: ts) (p :: t)
+    have h2 := poly.vnorm_ov p
+    cases hr : slabReduce t with
+    | nil =>
+      rw [hr] at hIH
+      cases hv : poly.vnorm p with
+      | nil =>
+        rw [hv] at h2
+        exact ⟨poly.oneValue_symm h2, hIH⟩
+      | cons c q =>
+        rw [hv] at h2
+        exact ⟨h2, hIH⟩
+    | cons s ts =>
+      rw [hr] at hIH
+      cases hv : poly.vnorm p with
+      | nil =>
+        rw [hv] at h2
+        exact ⟨h2, hIH⟩
+      | cons c q =>
+        rw [hv] at h2
+        exact ⟨h2, hIH⟩
+
+/-- The profile's canonical representative, both slabs reduced. -/
+def profReduce (V : poly.PPoly × poly.PPoly) : poly.PPoly × poly.PPoly :=
+  (slabReduce V.1, slabReduce V.2)
+
+/-! `lem:cornerpivot`(vii)'s center family at the canonical carrier:
+the block chain's center is one matrix in the scale and the depth's
+pair reads, so its operations are the carrier-generic fold layer's
+(`elim.matMulO`, `elim.matAddO`, `elim.matSwapO`, `elim.transposeO`)
+at the profile entry bundle, and the family's per-depth read
+collapses entrywise to the balance-pair polynomial matrices, where
+the same fold layer runs at the polynomial entries. -/
+
+/-- The canonical carrier's entry bundle: the profile sum and the
+kernel-reduced product, the vacant slabs the sum's unit and the
+constant profile the product's, and the profile's memberwise swap
+the balance partner. -/
+def profOps : ground.DOps (poly.PPoly × poly.PPoly) :=
+  ⟨⟨profAdd, profMul, vacProf, constProf (BPair.ofPos .one)⟩, profNeg⟩
+
+/-- The center families' product, the row-against-column folds at the
+canonical carrier. -/
+def pfmMul (A B : List (List (poly.PPoly × poly.PPoly))) :
+    List (List (poly.PPoly × poly.PPoly)) :=
+  elim.matMulO profOps A B
+
+/-- The center families' entrywise sum over shared key lists. -/
+def pfmAdd (A B : List (List (poly.PPoly × poly.PPoly))) :
+    List (List (poly.PPoly × poly.PPoly)) :=
+  elim.matAddO profOps A B
+
+/-- The center family's memberwise swap, entrywise. -/
+def pfmSwap (A : List (List (poly.PPoly × poly.PPoly))) :
+    List (List (poly.PPoly × poly.PPoly)) :=
+  elim.matSwapO profOps A
+
+/-- The exchange of the center family's row and column key lists. -/
+def pfmTr (A : List (List (poly.PPoly × poly.PPoly))) :
+    List (List (poly.PPoly × poly.PPoly)) :=
+  elim.transposeO profOps A
+
+/-- The center family's depth shift, entrywise at the profile's own
+shift. -/
+def pfmShift (A : List (List (poly.PPoly × poly.PPoly))) :
+    List (List (poly.PPoly × poly.PPoly)) :=
+  A.map (fun r => r.map profShift)
+
+/-- The center family's per-depth read: the entries' collapses at the
+depth's pair reads, one polynomial matrix in the scale per depth. -/
+def pfmDepth (m : Nat) (A : List (List (poly.PPoly × poly.PPoly))) :
+    split.PMat :=
+  A.map (fun r => r.map (fun e => depthPoly e m))
+
+/-- The constant family at a stated matrix: each entry the matrix's
+own coefficient at the constant profile. -/
+def ofMatProf (X : elim.Mat) : List (List (poly.PPoly × poly.PPoly)) :=
+  X.map (fun r => r.map constProf)
 
 /-- The diagonal's canonical form at a rate: the band read's
 clearing at the origin, the rate's balance partner at the scale
@@ -1868,6 +2089,583 @@ theorem depthPoly_termProf (V : poly.PPoly × poly.PPoly) (r qn qd m : Nat) :
     exact poly.add_congr (poly.oneValue_refl _)
       (poly.oneValue_trans (depthPoly_profShift (profShift V) m)
         (depthPoly_profShift V (m + 1)))
+
+
+/-! The center family's collapse bridges: every matrix operation of
+the canonical carrier reads the balance-pair polynomial matrices'
+own at each depth, the entrywise collapse bridges lifted through the
+fold layer's folds. -/
+
+/-- A row's key read collapses to the collapsed row's own, a key
+beyond the row reading the vacant slabs' profile against the vacant
+polynomial. -/
+private theorem depthGetAt (m : Nat) :
+    ∀ (r : List (poly.PPoly × poly.PPoly)) (k : Nat),
+      poly.oneValue (depthPoly (ground.getAt profOps.unit r k) m)
+        (ground.getAt ([] : poly.Poly)
+          (r.map (fun e => depthPoly e m)) k)
+  | [], _ => poly.oneValue_refl _
+  | _ :: _, 0 => poly.oneValue_refl _
+  | _ :: t, k + 1 => depthGetAt m t k
+
+/-- The collapsed family's row at a key is the family's own row
+collapsed, a key beyond the family reading the vacant row. -/
+private theorem depthRow (m : Nat) :
+    ∀ (M : List (List (poly.PPoly × poly.PPoly))) (k : Nat),
+      ground.getAt ([] : List poly.Poly) (pfmDepth m M) k
+        = (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) M k).map
+            (fun e => depthPoly e m) :=
+  ground.getAt_mapT ([] : List (poly.PPoly × poly.PPoly))
+    ([] : List poly.Poly) (fun r => r.map (fun e => depthPoly e m))
+    rfl
+
+/-- An entry's collapse at two keys, the row read chained onto the
+key read. -/
+private theorem depthGetAt2 (m : Nat)
+    (M : List (List (poly.PPoly × poly.PPoly))) (k j : Nat) :
+    poly.oneValue
+      (depthPoly (ground.getAt profOps.unit
+        (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) M k) j) m)
+      (ground.getAt ([] : poly.Poly)
+        (ground.getAt ([] : List poly.Poly) (pfmDepth m M) k) j) := by
+  rw [depthRow m M k]
+  exact depthGetAt m (ground.getAt [] M k) j
+
+/-- The collapsed family's leading row carries the family's own
+width. -/
+private theorem headD_pfmDepth (m : Nat) :
+    ∀ M : List (List (poly.PPoly × poly.PPoly)),
+      ((pfmDepth m M).headD ([] : List poly.Poly)).length
+        = (M.headD ([] : List (poly.PPoly × poly.PPoly))).length
+  | [] => rfl
+  | r :: _ => ground.length_map _ r
+
+/-- One row of the sum's collapse, the entrywise bridge over the
+shared key lists. -/
+private theorem depthAddRow (m : Nat) :
+    ∀ r s : List (poly.PPoly × poly.PPoly),
+      ground.matchedOV poly.polyRead
+        ((List.zipWith profAdd r s).map (fun e => depthPoly e m))
+        (List.zipWith poly.add (r.map (fun e => depthPoly e m))
+          (s.map (fun e => depthPoly e m)))
+  | [], [] => trivial
+  | [], _ :: _ => trivial
+  | _ :: _, [] => trivial
+  | a :: r, b :: s => ⟨depthPoly_profAdd a b m, depthAddRow m r s⟩
+
+/-- The sum's collapse, the rows' bridges over the shared key
+lists. -/
+private theorem depthAddM (m : Nat) :
+    ∀ A B : List (List (poly.PPoly × poly.PPoly)),
+      split.pmatOneValue (pfmDepth m (pfmAdd A B))
+        (split.pmatAdd (pfmDepth m A) (pfmDepth m B))
+  | [], [] => trivial
+  | [], _ :: _ => trivial
+  | _ :: _, [] => trivial
+  | a :: A, b :: B => ⟨depthAddRow m a b, depthAddM m A B⟩
+
+/-- One row of the memberwise swap's collapse. -/
+private theorem depthSwapRow (m : Nat) :
+    ∀ r : List (poly.PPoly × poly.PPoly),
+      ground.matchedOV poly.polyRead
+        ((r.map profNeg).map (fun e => depthPoly e m))
+        ((r.map (fun e => depthPoly e m)).map poly.neg)
+  | [] => trivial
+  | a :: r => ⟨depthPoly_profNeg a m, depthSwapRow m r⟩
+
+/-- The memberwise swap's collapse, the rows' bridges. -/
+private theorem depthSwapM (m : Nat) :
+    ∀ A : List (List (poly.PPoly × poly.PPoly)),
+      split.pmatOneValue (pfmDepth m (pfmSwap A))
+        (split.pswapM (pfmDepth m A))
+  | [] => trivial
+  | r :: A => ⟨depthSwapRow m r, depthSwapM m A⟩
+
+/-- One row of the depth shift's collapse, the successor depth's own
+read. -/
+private theorem depthShiftRow (m : Nat) :
+    ∀ r : List (poly.PPoly × poly.PPoly),
+      ground.matchedOV poly.polyRead
+        ((r.map profShift).map (fun e => depthPoly e m))
+        (r.map (fun e => depthPoly e (m + 1)))
+  | [] => trivial
+  | a :: r => ⟨depthPoly_profShift a m, depthShiftRow m r⟩
+
+/-- The depth shift's collapse, the rows' bridges. -/
+private theorem depthShiftM (m : Nat) :
+    ∀ A : List (List (poly.PPoly × poly.PPoly)),
+      split.pmatOneValue (pfmDepth m (pfmShift A)) (pfmDepth (m + 1) A)
+  | [] => trivial
+  | r :: A => ⟨depthShiftRow m r, depthShiftM m A⟩
+
+/-- The constant entry's collapse: the vacant slabs' origin reads the
+stated coefficient at every depth. -/
+private theorem depthConst (c : BPair) (m : Nat) :
+    poly.oneValue (depthPoly (constProf c) m)
+      ([c] : poly.Poly) := poly.scaleP_one [c]
+
+/-- One row of the constant family's collapse. -/
+private theorem depthOfMatRow (m : Nat) :
+    ∀ r : List BPair,
+      ground.matchedOV poly.polyRead
+        ((r.map constProf).map
+          (fun e => depthPoly e m))
+        (r.map (fun c => ([c] : poly.Poly)))
+  | [] => trivial
+  | c :: r => ⟨depthConst c m, depthOfMatRow m r⟩
+
+/-- The constant family's collapse, the rows' bridges. -/
+private theorem depthOfMatM (m : Nat) :
+    ∀ X : elim.Mat,
+      split.pmatOneValue (pfmDepth m (ofMatProf X))
+        (X.map (fun r => r.map (fun c => ([c] : poly.Poly))))
+  | [] => trivial
+  | r :: X => ⟨depthOfMatRow m r, depthOfMatM m X⟩
+
+/-- The leading column's collapse: the family's head reads are the
+collapsed family's own. -/
+private theorem depthColHead (m : Nat) :
+    ∀ M : List (List (poly.PPoly × poly.PPoly)),
+      ground.matchedOV poly.polyRead
+        ((elim.colHead profOps.unit M).map (fun e => depthPoly e m))
+        (elim.colHead ([] : poly.Poly) (pfmDepth m M))
+  | [] => trivial
+  | r :: M => ⟨depthGetAt m r 0, depthColHead m M⟩
+
+/-- The withdrawn leading column commutes with the per-depth read. -/
+private theorem depthDropCol (m : Nat)
+    (M : List (List (poly.PPoly × poly.PPoly))) :
+    elim.dropCol (pfmDepth m M) = pfmDepth m (elim.dropCol M) := by
+  show (M.map (fun r => r.map (fun e => depthPoly e m))).map
+      (fun r => r.drop 1)
+    = (M.map (fun r => r.drop 1)).map
+        (fun r => r.map (fun e => depthPoly e m))
+  rw [ground.map_map, ground.map_map]
+  exact ground.map_congr_all _ _
+    (fun r => ground.map_drop (fun e => depthPoly e m) r 1) M
+
+/-- The key exchange's collapse at an occupied family, the walk down
+the leading columns: the head column's collapse beside the withdrawn
+family's own, the recursion the head row's. -/
+private theorem depthTrGo (m : Nat) :
+    ∀ (r : List (poly.PPoly × poly.PPoly))
+      (t : List (List (poly.PPoly × poly.PPoly))) (u : split.PMat),
+      u = pfmDepth m t →
+      split.pmatOneValue
+        ((elim.transposeO profOps (r :: t)).map
+          (fun row => row.map (fun e => depthPoly e m)))
+        (elim.transposeO poly.polyOps
+          ((r.map (fun e => depthPoly e m)) :: u))
+  | [], _, _, _ => trivial
+  | a :: r, t, u, h => by
+    subst h
+    exact ⟨depthColHead m ((a :: r) :: t),
+      depthTrGo m r (elim.dropCol t) (elim.dropCol (pfmDepth m t))
+        (depthDropCol m t)⟩
+
+/-- The accumulating fold's collapse: a fold of profile summands
+reads the polynomial fold at every seed pair the collapse relates,
+one sum bridge per step. -/
+private theorem depthFold (m : Nat) (f : Nat → poly.PPoly × poly.PPoly)
+    (g : Nat → poly.Poly)
+    (hfg : ∀ k, poly.oneValue (depthPoly (f k) m) (g k)) :
+    ∀ (l : List Nat) (a : poly.PPoly × poly.PPoly) (b : poly.Poly),
+      poly.oneValue (depthPoly a m) b →
+      poly.oneValue
+        (depthPoly (l.foldl (fun acc k => profAdd acc (f k)) a) m)
+        (l.foldl (fun acc k => poly.add acc (g k)) b)
+  | [], _, _, h => h
+  | k :: l, a, b, h =>
+    depthFold m f g hfg l (profAdd a (f k)) (poly.add b (g k))
+      (poly.oneValue_trans (depthPoly_profAdd a (f k) m)
+        (poly.add_congr h (hfg k)))
+
+/-- The product's entry collapse: the row-against-column fold at the
+canonical carrier reads the polynomial fold, each summand's product
+bridge at the two entries' own key reads. -/
+private theorem depthMulEntry (m : Nat)
+    (B : List (List (poly.PPoly × poly.PPoly)))
+    (r : List (poly.PPoly × poly.PPoly)) (j : Nat) :
+    poly.oneValue
+      (depthPoly ((List.range r.length).foldl (fun acc k =>
+        profAdd acc (profMul (ground.getAt profOps.unit r k)
+          (ground.getAt profOps.unit
+            (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) B k) j)))
+        profOps.unit) m)
+      ((List.range r.length).foldl (fun acc k =>
+        poly.add acc (poly.mul
+          (ground.getAt ([] : poly.Poly)
+            (r.map (fun e => depthPoly e m)) k)
+          (ground.getAt ([] : poly.Poly)
+            (ground.getAt ([] : List poly.Poly) (pfmDepth m B) k) j)))
+        ([] : poly.Poly)) :=
+  depthFold m
+    (fun k => profMul (ground.getAt profOps.unit r k)
+      (ground.getAt profOps.unit
+        (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) B k) j))
+    (fun k => poly.mul
+      (ground.getAt ([] : poly.Poly) (r.map (fun e => depthPoly e m)) k)
+      (ground.getAt ([] : poly.Poly)
+        (ground.getAt ([] : List poly.Poly) (pfmDepth m B) k) j))
+    (fun k => poly.oneValue_trans (depthPoly_profMul _ _ m)
+      (poly.oneValue_trans
+        (poly.mul_congr_left (depthGetAt m r k) _)
+        (poly.mul_congr _ (depthGetAt2 m B k j))))
+    (List.range r.length) profOps.unit ([] : poly.Poly)
+    (poly.oneValue_refl _)
+
+/-- One row of the product's collapse: the second factor's head width
+is the collapsed factor's own, and the row's entries collapse at
+every column key. -/
+private theorem depthMulRow (m : Nat)
+    (B : List (List (poly.PPoly × poly.PPoly)))
+    (r : List (poly.PPoly × poly.PPoly)) :
+    ground.matchedOV poly.polyRead
+      (((List.range
+          (B.headD ([] : List (poly.PPoly × poly.PPoly))).length).map
+        (fun j => (List.range r.length).foldl (fun acc k =>
+          profAdd acc (profMul (ground.getAt profOps.unit r k)
+            (ground.getAt profOps.unit
+              (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) B k) j)))
+          profOps.unit)).map (fun e => depthPoly e m))
+      ((List.range ((pfmDepth m B).headD ([] : List poly.Poly)).length).map
+        (fun j => (List.range (r.map (fun e => depthPoly e m)).length).foldl
+          (fun acc k => poly.add acc (poly.mul
+            (ground.getAt ([] : poly.Poly)
+              (r.map (fun e => depthPoly e m)) k)
+            (ground.getAt ([] : poly.Poly)
+              (ground.getAt ([] : List poly.Poly) (pfmDepth m B) k) j)))
+          ([] : poly.Poly))) := by
+  rw [headD_pfmDepth m B, ground.length_map, ground.map_map]
+  exact ground.matched_map _ _ (fun j => depthMulEntry m B r j)
+    (List.range (B.headD ([] : List (poly.PPoly × poly.PPoly))).length)
+
+/-- The product's collapse, the rows' bridges at the shared second
+factor. -/
+private theorem depthMulM (m : Nat)
+    (B : List (List (poly.PPoly × poly.PPoly))) :
+    ∀ A : List (List (poly.PPoly × poly.PPoly)),
+      split.pmatOneValue (pfmDepth m (pfmMul A B))
+        (split.pmatMul (pfmDepth m A) (pfmDepth m B))
+  | [] => trivial
+  | r :: A => ⟨depthMulRow m B r, depthMulM m B A⟩
+
+/-- The product's per-depth read is the collapsed factors' polynomial
+product. -/
+theorem pfmDepth_mul (A B : List (List (poly.PPoly × poly.PPoly)))
+    (m : Nat) :
+    split.pmatOneValue (pfmDepth m (pfmMul A B))
+      (split.pmatMul (pfmDepth m A) (pfmDepth m B)) :=
+  depthMulM m B A
+
+/-- The sum's per-depth read is the collapsed summands' polynomial
+sum. -/
+theorem pfmDepth_add (A B : List (List (poly.PPoly × poly.PPoly)))
+    (m : Nat) :
+    split.pmatOneValue (pfmDepth m (pfmAdd A B))
+      (split.pmatAdd (pfmDepth m A) (pfmDepth m B)) :=
+  depthAddM m A B
+
+/-- The memberwise swap's per-depth read is the collapsed family's
+own swap. -/
+theorem pfmDepth_swap (A : List (List (poly.PPoly × poly.PPoly)))
+    (m : Nat) :
+    split.pmatOneValue (pfmDepth m (pfmSwap A))
+      (split.pswapM (pfmDepth m A)) :=
+  depthSwapM m A
+
+/-- The depth shift's read at a depth is the family's read at the
+successor depth. -/
+theorem pfmDepth_shift (A : List (List (poly.PPoly × poly.PPoly)))
+    (m : Nat) :
+    split.pmatOneValue (pfmDepth m (pfmShift A)) (pfmDepth (m + 1) A) :=
+  depthShiftM m A
+
+/-- The key exchange's per-depth read is the collapsed family's own
+exchange. -/
+theorem pfmDepth_tr (A : List (List (poly.PPoly × poly.PPoly)))
+    (m : Nat) :
+    split.pmatOneValue (pfmDepth m (pfmTr A))
+      (elim.transposeO poly.polyOps (pfmDepth m A)) := by
+  cases A with
+  | nil => trivial
+  | cons r t => exact depthTrGo m r t (pfmDepth m t) rfl
+
+/-- The constant family's per-depth read is the stated matrix's own
+entries, at every depth. -/
+theorem pfmDepth_ofMat (X : elim.Mat) (m : Nat) :
+    split.pmatOneValue (pfmDepth m (ofMatProf X))
+      (X.map (fun r => r.map (fun c => ([c] : poly.Poly)))) :=
+  depthOfMatM m X
+
+/-! `lem:cornerpivot`(vii)'s dominance tier at the canonical
+carrier: the family rescaled at a stated profile, the carrier's own
+one-value reads, the cleared family — the matrix with its clearing,
+the centers' determinants the clearings' reads — and the dominance
+comparison's certificate walk at the four counts' site data, one
+walk per row with the stated caps' box reads. -/
+
+/-- The center family rescaled at a stated profile, entrywise at the
+canonical carrier's reduced product. -/
+def pfmScale (f : poly.PPoly × poly.PPoly)
+    (A : List (List (poly.PPoly × poly.PPoly))) :
+    List (List (poly.PPoly × poly.PPoly)) :=
+  A.map (fun r => r.map (profMul f))
+
+/-- The profile carrier's one-value read, slabwise at the iterated
+carrier's own. -/
+def profOneValue (V W : poly.PPoly × poly.PPoly) : Prop :=
+  poly.ppOneValue V.1 W.1 ∧ poly.ppOneValue V.2 W.2
+
+instance (V W : poly.PPoly × poly.PPoly) :
+    Decidable (profOneValue V W) :=
+  inferInstanceAs (Decidable (_ ∧ _))
+
+/-- The profile read's decision as a bare family, the read datum's
+own field. -/
+def decProfOneValue : ∀ a b, Decidable (profOneValue a b) :=
+  fun _ _ => inferInstanceAs (Decidable (_ ∧ _))
+
+/-- The profile carrier's read datum: the one-value read with its
+decision. -/
+def profDRead : ground.DRead (poly.PPoly × poly.PPoly) :=
+  ⟨profOneValue, decProfOneValue⟩
+
+/-- The per-depth collapse is one value across the profile's
+representatives, slab by slab. -/
+private theorem depthPoly_congr (V W : poly.PPoly × poly.PPoly) (m : Nat)
+    (h : profOneValue V W) :
+    poly.oneValue (depthPoly V m) (depthPoly W m) :=
+  poly.add_congr (slabGo_congr (m * m) 0 1 V.1 W.1 h.1)
+    (slabGo_congr (m * m) 1 m V.2 W.2 h.2)
+
+/-- The canonical representative's collapse is the profile's own at
+every depth (`def:ground`'s homogeneity principle at the profile
+carrier). -/
+theorem depthPoly_profReduce (V : poly.PPoly × poly.PPoly) (m : Nat) :
+    poly.oneValue (depthPoly (profReduce V) m) (depthPoly V m) :=
+  depthPoly_congr (profReduce V) V m
+    ⟨slabReduce_ov V.1, slabReduce_ov V.2⟩
+
+/-- The center families' entrywise read at stated shapes: the key
+lists matched and the entries read at the profile carrier's own. -/
+def pfmOneValue :
+    List (List (poly.PPoly × poly.PPoly)) →
+    List (List (poly.PPoly × poly.PPoly)) → Prop :=
+  ground.matchedOV (ground.matchedRead profDRead)
+
+instance (A B : List (List (poly.PPoly × poly.PPoly))) :
+    Decidable (pfmOneValue A B) :=
+  ground.decMatchedOV (ground.matchedRead profDRead) A B
+
+/-! The cleared family: the matrix with its clearing, the centers'
+determinants the clearings' reads — the four carrier operations at
+the pair, and the cross-multiplied read. -/
+
+/-- The cleared family: a center family with its clearing profile. -/
+abbrev PfMQ :=
+  List (List (poly.PPoly × poly.PPoly)) × (poly.PPoly × poly.PPoly)
+
+/-- A family at the unit clearing. -/
+def ofPfm (A : List (List (poly.PPoly × poly.PPoly))) : PfMQ :=
+  (A, constProf (BPair.ofPos .one))
+
+/-- The cleared families' product: the matrices' own at the
+clearings' product. -/
+def pfmQmul (a b : PfMQ) : PfMQ := (pfmMul a.1 b.1, profMul a.2 b.2)
+
+/-- The cleared families' sum: each matrix against the other's
+clearing, over the clearings' product. -/
+def pfmQadd (a b : PfMQ) : PfMQ :=
+  (pfmAdd (pfmScale b.2 a.1) (pfmScale a.2 b.1), profMul a.2 b.2)
+
+/-- The cleared family's memberwise swap, the matrix's own — the
+clearing positive throughout. -/
+def pfmQswap (a : PfMQ) : PfMQ := (pfmSwap a.1, a.2)
+
+/-- The families' entrywise canonical representative, the profile's
+own at every entry. -/
+def pfmReduce (A : List (List (poly.PPoly × poly.PPoly))) :
+    List (List (poly.PPoly × poly.PPoly)) :=
+  A.map (fun r => r.map profReduce)
+
+/-- The cleared family's depth shift at the canonical
+representative: the matrix's and the clearing's own shifts, every
+entry reduced — the shift's compounded representative withdrawn to
+the canonical size, a constant clearing shifting to itself. -/
+def pfmQshift (a : PfMQ) : PfMQ :=
+  (pfmReduce (pfmShift a.1), profReduce (profShift a.2))
+
+/-- The cleared families' one-value read, cross-multiplied: each
+matrix against the other's clearing — the read blind to a shared
+clearing. -/
+def pfmQOneValue (a b : PfMQ) : Prop :=
+  pfmOneValue (pfmScale b.2 a.1) (pfmScale a.2 b.1)
+
+instance (a b : PfMQ) : Decidable (pfmQOneValue a b) :=
+  inferInstanceAs (Decidable (pfmOneValue _ _))
+
+/-- The row fold at the profile carrier. -/
+def rowFoldProf : List (poly.PPoly × poly.PPoly) →
+    poly.PPoly × poly.PPoly
+  | [] => vacProf
+  | c :: t => profAdd c (rowFoldProf t)
+
+/-! The dominance comparison's certificate walk at the profile
+carrier (`thm:decimation`(ii)): each count's site datum read row by
+row, one box read per row at the diagonal's entry less the off-row
+magnitude fold, the magnitudes the coefficients' own
+(`thm:windowsep`). -/
+
+/-- The entrywise magnitude profile: each coefficient at the
+magnitude carrier (`thm:windowsep`), both slabs — its collapse
+prices the collapse's coefficient magnitudes, the depth walk's
+weights natural. -/
+def magProf (V : poly.PPoly × poly.PPoly) :
+    poly.PPoly × poly.PPoly :=
+  (V.1.map (fun p => p.map windowsep.mag),
+   V.2.map (fun p => p.map windowsep.mag))
+
+/-- The off-row magnitude fold: the row's entrywise magnitude
+profiles summed at the stated key withdrawn, the walk counting the
+key down (`thm:decimation`(ii)'s fold at the profile carrier). -/
+def offMagFold : Nat → List (poly.PPoly × poly.PPoly) →
+    poly.PPoly × poly.PPoly
+  | _, [] => vacProf
+  | 0, _ :: t => rowFoldProf (t.map magProf)
+  | i + 1, x :: t => profAdd (magProf x) (offMagFold i t)
+
+/-- One row's dominance read: the diagonal's entry less the off-row
+magnitude fold at its own box read. -/
+def domRowRead (e0n : BPair) (e0d : Pos) (i : Nat)
+    (srow : List (poly.PPoly × poly.PPoly)) (gap : BoxCert) : Prop :=
+  boxRead (profAdd (ground.getAt vacProf srow i)
+      (profNeg (offMagFold i srow))) e0n e0d gap
+
+instance (e0n : BPair) (e0d : Pos) (i : Nat)
+    (srow : List (poly.PPoly × poly.PPoly)) (gap : BoxCert) :
+    Decidable (domRowRead e0n e0d i srow gap) :=
+  inferInstanceAs (Decidable (boxRead _ _ _ _))
+
+/-- The dominance comparison's certificate walk over a site datum:
+one box read per row at the diagonal's entry less the off-row
+magnitude fold, the row key its own diagonal slot — the site datum
+diagonally dominant on the box, so `thm:decimation`(ii)'s
+comparison reads the count at the profile carrier. -/
+def domCertGo (e0n : BPair) (e0d : Pos) :
+    Nat → List (List (poly.PPoly × poly.PPoly)) →
+    List BoxCert → Prop
+  | _, [], [] => True
+  | _, [], _ :: _ => False
+  | _, _ :: _, [] => False
+  | i, sr :: srs, g :: gs =>
+      domRowRead e0n e0d i sr g ∧ domCertGo e0n e0d (i + 1) srs gs
+
+/-- The dominance walk's decision, the rows' own joined at the
+recursion. -/
+def decDomCertGo (e0n : BPair) (e0d : Pos) :
+    ∀ (i : Nat) (S : List (List (poly.PPoly × poly.PPoly)))
+      (gs : List BoxCert),
+    Decidable (domCertGo e0n e0d i S gs)
+  | _, [], [] => isTrue trivial
+  | _, [], _ :: _ => isFalse (fun h => h)
+  | _, _ :: _, [] => isFalse (fun h => h)
+  | i, _ :: srs, _ :: gs =>
+      @instDecidableAnd _ _ inferInstance
+        (decDomCertGo e0n e0d (i + 1) srs gs)
+
+instance (e0n : BPair) (e0d : Pos) (i : Nat)
+    (S : List (List (poly.PPoly × poly.PPoly)))
+    (gs : List BoxCert) :
+    Decidable (domCertGo e0n e0d i S gs) :=
+  decDomCertGo e0n e0d i S gs
+
+/-! The four counts' site data at the profile carrier: the
+contraction's, the floor's and the two cap arms', each the stated
+read's own scale spelling with the cleared family's clearing
+carried. -/
+
+/-- The contraction certificate's site datum at the profile carrier
+(`spectator.contractRead`'s scale spelling at `lem:spectator`(iii)'s
+bulk data, the one repeating gram): the transfer factor's image
+form cleared at the denominator's square withdrawn from the gram's
+multiple at the numerator's square and the factor's own clearing
+squared. -/
+def contrSiteF (Wf : PfMQ) (G : elim.Mat) (ln ld : Pos) :
+    List (List (poly.PPoly × poly.PPoly)) :=
+  pfmAdd
+    (pfmScale (profMul (profMul Wf.2 Wf.2)
+      (constProf (BPair.ofPos (ln * ln)))) (ofMatProf G))
+    (pfmSwap (pfmScale (constProf (BPair.ofPos (ld * ld)))
+      (pfmMul (pfmTr (pfmSwap Wf.1))
+        (pfmMul (ofMatProf G) (pfmSwap Wf.1)))))
+
+/-- The center's floor site datum at the profile carrier
+(`spectator.floorRead`'s scale spelling): the center cleared at the
+floor and radius denominators' product, less the gram's multiple at
+the center's clearing and the two pairs' cross-added numerator. -/
+def floorSiteF (Cf : PfMQ) (G : elim.Mat) (y0n y0d rn rd : Pos) :
+    List (List (poly.PPoly × poly.PPoly)) :=
+  pfmAdd (pfmScale (constProf (BPair.ofPos (y0d * rd))) Cf.1)
+    (pfmSwap (pfmScale
+      (profMul Cf.2 (constProf (BPair.ofPos (y0n * rd + rn * y0d))))
+      (ofMatProf G)))
+
+/-- The center defect at the profile carrier: the image family less
+the center, the deviation's cleared datum (`spectator.devQ`) at the
+center's own clearing — the deeper center's transfer image against
+the slab's own center, the centers' consecutive drift the defect's
+own summand (`lem:cornerpivot`(vii)). -/
+def devFam (Cf If : PfMQ) : PfMQ := pfmQadd If (pfmQswap Cf)
+
+/-- The defect cap's upper site datum at the profile carrier
+(`spectator.capQ`'s scale spelling): the gram's multiple at the cap
+numerator and the defect's clearing, less the defect cleared at the
+cap denominator. -/
+def dcapHiSiteF (Cf If : PfMQ) (G : elim.Mat) (r0n r0d : Pos) :
+    List (List (poly.PPoly × poly.PPoly)) :=
+  pfmAdd
+    (pfmScale (profMul (devFam Cf If).2 (constProf (BPair.ofPos r0n)))
+      (ofMatProf G))
+    (pfmSwap (pfmScale (constProf (BPair.ofPos r0d)) (devFam Cf If).1))
+
+/-- The defect cap's lower site datum at the profile carrier, the
+upper's memberwise swap on the defect: the gram's multiple joined to
+the defect cleared at the cap denominator. -/
+def dcapLoSiteF (Cf If : PfMQ) (G : elim.Mat) (r0n r0d : Pos) :
+    List (List (poly.PPoly × poly.PPoly)) :=
+  pfmAdd
+    (pfmScale (profMul (devFam Cf If).2 (constProf (BPair.ofPos r0n)))
+      (ofMatProf G))
+    (pfmScale (constProf (BPair.ofPos r0d)) (devFam Cf If).1)
+
+/-- One row of the rescaling's collapse, the entrywise product
+bridge at the shared left factor. -/
+private theorem depthScaleRow (f : poly.PPoly × poly.PPoly) (m : Nat) :
+    ∀ r : List (poly.PPoly × poly.PPoly),
+      ground.matchedOV poly.polyRead
+        ((r.map (profMul f)).map (fun e => depthPoly e m))
+        ((r.map (fun e => depthPoly e m)).map
+          (poly.mul (depthPoly f m)))
+  | [] => trivial
+  | a :: r => ⟨depthPoly_profMul f a m, depthScaleRow f m r⟩
+
+/-- The rescaling's collapse, the rows' bridges. -/
+private theorem depthScaleM (f : poly.PPoly × poly.PPoly) (m : Nat) :
+    ∀ A : List (List (poly.PPoly × poly.PPoly)),
+      split.pmatOneValue (pfmDepth m (pfmScale f A))
+        (split.pscaleM (depthPoly f m) (pfmDepth m A))
+  | [] => trivial
+  | r :: A => ⟨depthScaleRow f m r, depthScaleM f m A⟩
+
+/-- The rescaling's per-depth read is the collapsed family rescaled
+at the stated profile's own collapse. -/
+theorem pfmDepth_scale (f : poly.PPoly × poly.PPoly)
+    (A : List (List (poly.PPoly × poly.PPoly))) (m : Nat) :
+    split.pmatOneValue (pfmDepth m (pfmScale f A))
+      (split.pscaleM (depthPoly f m) (pfmDepth m A)) :=
+  depthScaleM f m A
+
 
 
 /-! The certificate's three further canonical objects: the boundary
@@ -7306,6 +8104,30 @@ def witDiffSq (N : Nat) : Nat :=
     ((2 * (k + 1) + 1) * marg (N * N)
       (2 * (k + 1) * (k + 1) + 2 * (k + 1) + 1)) ^ 2))
 
+/-- The two families' mixed square fold, `Σ w_m w'_m` over the
+second family's own window — the products vanish at either
+endpoint, so the second's range reads the whole sum. -/
+def crossSq (N N' : Nat) : Nat :=
+  ground.sumNat ((List.range N').map (fun k =>
+    witVal N (k + 1) * witVal N' (k + 1)))
+
+/-- The mixed well fold's linear part, `Σ m·w_m w'_m`. -/
+def crossSqM (N N' : Nat) : Nat :=
+  ground.sumNat ((List.range N').map (fun k =>
+    (k + 1) * (witVal N (k + 1) * witVal N' (k + 1))))
+
+/-- The mixed well fold's square part, `Σ m²·w_m w'_m`. -/
+def crossSqMM (N N' : Nat) : Nat :=
+  ground.sumNat ((List.range N').map (fun k =>
+    (k + 1) * (k + 1) * (witVal N (k + 1) * witVal N' (k + 1))))
+
+/-- The mixed consecutive fold, `Σ (w_m w'_{m+1} + w_{m+1} w'_m)`,
+the bond's own cross read at the two families. -/
+def crossBond (N N' : Nat) : Nat :=
+  ground.sumNat ((List.range N').map (fun k =>
+    witVal N (k + 1) * witVal N' (k + 2)
+      + witVal N (k + 2) * witVal N' (k + 1)))
+
 /-- The lower rate's first datum, the display's right side cleared:
 `4en²(Σm²w² + rΣmw²) + (r+1)ed²(Σd² + w₁²)`. -/
 def qLowNum (en ed r N : Nat) : Nat :=
@@ -7364,13 +8186,6 @@ expressions whose mirrored families reduce alike read one value
 private def hread : List Nat → Nat → Nat
   | [], _ => 0
   | c :: p, g => c + g * hread p g
-
-/-- Two count families' key-by-key sum, the longer family's tail
-riding. -/
-private def hadd : List Nat → List Nat → List Nat
-  | [], q => q
-  | c :: p, [] => c :: p
-  | c :: p, d :: q => (c + d) :: hadd p q
 
 /-- Two count families' convolution. -/
 private def hmul : List Nat → List Nat → List Nat
@@ -7589,116 +8404,6 @@ private theorem hreadRow : ∀ (L : List Nat) (N : Nat),
     show c + N * hread t N
       = hread [c] 0 + N * h2read (t.map (fun c => [c])) N 0
     rw [hread_cst c 0, hreadRow t N]
-
-/-! The monomial device: a product mirrors into a count and an
-exponent family over a stated datum list, the mirror's value is the
-product itself, and two products whose counts and exponent families
-agree read one value. -/
-
-private theorem powAdd (x a : Nat) : ∀ b : Nat, x ^ (a + b) = x ^ a * x ^ b
-  | 0 => by rw [Nat.add_zero a, Nat.pow_zero x, Nat.mul_one (x ^ a)]
-  | b + 1 => by
-    rw [← Nat.add_assoc a b 1, Nat.pow_succ x (a + b), powAdd x a b,
-      Nat.pow_succ x b, ground.mulAssoc (x ^ a) (x ^ b) x]
-
-private theorem powOne (x : Nat) : x ^ 1 = x := by
-  rw [Nat.pow_succ x 0, Nat.pow_zero x, Nat.one_mul x]
-
-/-- The exponent family's product against a stated datum list, from
-a stated key. -/
-private def expVal (env : List Nat) : Nat → List Nat → Nat
-  | _, [] => 1
-  | i, k :: t => ground.getAt 0 env i ^ k * expVal env (i + 1) t
-
-/-- The one-key exponent family. -/
-private def unitAt : Nat → List Nat
-  | 0 => [1]
-  | i + 1 => 0 :: unitAt i
-
-private theorem expVal_hadd (env : List Nat) : ∀ (i : Nat) (u v : List Nat),
-    expVal env i (hadd u v) = expVal env i u * expVal env i v
-  | i, [], v => (Nat.one_mul (expVal env i v)).symm
-  | i, a :: u, [] => (Nat.mul_one (expVal env i (a :: u))).symm
-  | i, a :: u, b :: v => by
-    show ground.getAt 0 env i ^ (a + b) * expVal env (i + 1) (hadd u v)
-      = ground.getAt 0 env i ^ a * expVal env (i + 1) u
-        * (ground.getAt 0 env i ^ b * expVal env (i + 1) v)
-    rw [powAdd (ground.getAt 0 env i) a b, expVal_hadd env (i + 1) u v,
-      ground.mulMulMulComm (ground.getAt 0 env i ^ a)
-        (ground.getAt 0 env i ^ b) (expVal env (i + 1) u)
-        (expVal env (i + 1) v)]
-
-private theorem expVal_unitAt (env : List Nat) : ∀ (j i : Nat),
-    expVal env j (unitAt i) = ground.getAt 0 env (j + i)
-  | j, 0 => by
-    show ground.getAt 0 env j ^ 1 * 1 = ground.getAt 0 env (j + 0)
-    rw [Nat.mul_one, powOne, Nat.add_zero j]
-  | j, i + 1 => by
-    show ground.getAt 0 env j ^ 0 * expVal env (j + 1) (unitAt i)
-      = ground.getAt 0 env (j + (i + 1))
-    rw [Nat.pow_zero, Nat.one_mul, expVal_unitAt env (j + 1) i,
-      Nat.add_right_comm j 1 i, Nat.add_assoc j i 1]
-
-set_option genInjectivity false in
-/-- The mirrored product: the counts, the stated data and the
-product. -/
-private inductive Mon where
-  | cst : Nat → Mon
-  | var : Nat → Mon
-  | mul : Mon → Mon → Mon
-
-/-- The mirror's own value at a stated datum list. -/
-private def Mon.val (env : List Nat) : Mon → Nat
-  | .cst c => c
-  | .var i => ground.getAt 0 env i
-  | .mul a b => a.val env * b.val env
-
-/-- The mirror's count. -/
-private def Mon.coef : Mon → Nat
-  | .cst c => c
-  | .var _ => 1
-  | .mul a b => a.coef * b.coef
-
-/-- The mirror's exponent family. -/
-private def Mon.exps : Mon → List Nat
-  | .cst _ => []
-  | .var i => unitAt i
-  | .mul a b => hadd a.exps b.exps
-
-private theorem Mon.read (env : List Nat) : ∀ m : Mon,
-    m.val env = m.coef * expVal env 0 m.exps
-  | .cst c => by
-    show c = c * 1
-    rw [Nat.mul_one c]
-  | .var i => by
-    show ground.getAt 0 env i = 1 * expVal env 0 (unitAt i)
-    rw [Nat.one_mul, expVal_unitAt env 0 i, Nat.zero_add i]
-  | .mul a b => by
-    show a.val env * b.val env
-      = a.coef * b.coef * expVal env 0 (hadd a.exps b.exps)
-    rw [Mon.read env a, Mon.read env b, expVal_hadd env 0 a.exps b.exps,
-      ground.mulMulMulComm a.coef (expVal env 0 a.exps) b.coef
-        (expVal env 0 b.exps)]
-
-/-- Two mirrored products whose counts and exponent families agree
-read one value at every datum list. -/
-private theorem monEq (env : List Nat) (a b : Mon)
-    (hc : a.coef = b.coef) (he : a.exps = b.exps) :
-    a.val env = b.val env := by
-  rw [Mon.read env a, Mon.read env b, hc, he]
-
-example (en ed r : Nat) :
-    4 * (en * en) * 80 * 630 * (11 * (r + 1) * ed)
-      = 6930 * (en * ed * (r + 1) * 16) * (20 * en) :=
-  monEq [en, ed, r + 1]
-    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 4)
-        (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.cst 80)) (Mon.cst 630))
-      (Mon.mul (Mon.mul (Mon.cst 11) (Mon.var 2)) (Mon.var 1)))
-    (Mon.mul (Mon.mul (Mon.cst 6930)
-        (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2))
-          (Mon.cst 16)))
-      (Mon.mul (Mon.cst 20) (Mon.var 0)))
-    (by decide +kernel) (by decide +kernel)
 
 /-- The power sum grows at its endpoint by the arriving depth's own
 power. -/
@@ -9202,7 +9907,7 @@ private theorem bpowTwo (y : BPair) : (ground.bpow y 2).oneValue (y * y) :=
 /-- The diagonal's cleared evaluation at the clearing two: the band
 read's clearing at the scale's square against the well's electric
 member and the rate's balance partner. -/
-private theorem diagRead (r qn qd m : Nat) (en ed : Pos) :
+theorem wellDiag_read (r qn qd m : Nat) (en ed : Pos) :
     (poly.evalClear (diagPoly r qn qd m) (BPair.ofPos en) ed 2).oneValue
       (BPair.ofNat 2 * (BPair.ofNat ((r + 1) * qd) * BPair.ofPos ed
             * BPair.ofPos ed)
@@ -9323,7 +10028,7 @@ theorem witForm (r qn qd N : Nat) (en ed : Pos) :
         (List.range N)) :=
     ground.foldB_congr_members _ _ (List.range N) (fun k _ =>
       BPair.oneValue_trans
-        (BPair.mul_congr_left (diagRead r qn qd (k + 1) en ed))
+        (BPair.mul_congr_left (wellDiag_read r qn qd (k + 1) en ed))
         (BPair.oneValue_of_eq (BPair.right_distrib _ _ _)))
   have hscal : (ground.bsum (fun k =>
         BPair.ofNat 2
@@ -10026,11 +10731,6 @@ private theorem mulVacL (c X Y : BPair) (h : X.oneValue BPair.unit) :
     (BPair.oneValue_trans (BPair.mul_congr h (BPair.oneValue_refl Y))
       (BPair.unit_mul Y))) (BPair.mul_unit c)
 
-/-- The family's vacant entry reads the sum's unit. -/
-private theorem witVac (N j : Nat) (h : N ≤ j) :
-    (BPair.ofNat (witVal N j)).oneValue BPair.unit :=
-  BPair.oneValue_of_eq (congrArg BPair.ofNat (witVal_vac N j h))
-
 /-- The family reads the sum's unit at the nought depth. -/
 private theorem witVal_zero (N : Nat) : witVal N 0 = 0 := by
   show 0 * 0 * (N * N - 0 * 0) = 0
@@ -10041,42 +10741,64 @@ private theorem witVal_zero (N : Nat) : witVal N 0 = 0 := by
 private theorem witList_len (N n : Nat) : (witList N n).length = n :=
   ground.length_mapRange _ n
 
-/-- The family's entry read at a key below the order. -/
-private theorem witList_at (N n k : Nat) (hk : k < n) :
-    ground.getAt BPair.unit (witList N n) k
-      = BPair.ofNat (witVal N (n - k)) := by
+/-- A stated family's deep-first list at the head's gauge. -/
+private def famList (f : Nat → Nat) (n : Nat) : List BPair :=
+  (List.range n).map (fun k => BPair.ofNat (f (n - k)))
+
+/-- The witness family's list is the stated family's at its own
+values. -/
+private theorem witList_fam (N n : Nat) :
+    witList N n = famList (witVal N) n := rfl
+
+/-- The stated family's count. -/
+private theorem famList_len (f : Nat → Nat) (n : Nat) :
+    (famList f n).length = n :=
+  ground.length_mapRange _ n
+
+/-- The stated family's entry read at a key below the order. -/
+private theorem famList_at (f : Nat → Nat) (n k : Nat) (hk : k < n) :
+    ground.getAt BPair.unit (famList f n) k
+      = BPair.ofNat (f (n - k)) := by
   show ground.getAt BPair.unit
-      ((List.range n).map (fun j => BPair.ofNat (witVal N (n - j)))) k = _
+      ((List.range n).map (fun j => BPair.ofNat (f (n - j)))) k = _
   rw [ground.getAt_map_range BPair.unit _ n k, if_pos hk]
 
-/-- The head's diagonal fold at the witness family: the deep-first
+/-- A stated family's vacant entry reads the sum's unit. -/
+private theorem famVac (f : Nat → Nat) (W j : Nat)
+    (hvac : ∀ m, W ≤ m → f m = 0) (h : W ≤ j) :
+    (BPair.ofNat (f j)).oneValue BPair.unit :=
+  BPair.oneValue_of_eq (congrArg BPair.ofNat (hvac j h))
+
+/-- The head's diagonal fold at a stated family: the deep-first
 walk read at the boundary and truncated at the family's window. -/
-private theorem wellDiagFold (r qn qd N n : Nat) (en ed : Pos) (h : N ≤ n) :
+private theorem famDiagFold (r qn qd W n : Nat) (en ed : Pos)
+    (f : Nat → Nat) (hvac : ∀ m, W ≤ m → f m = 0) (h : W ≤ n) :
     (ground.bsum (fun k =>
         ground.getAt BPair.unit
             ((List.range n).map (fun j => wellDiag r qn qd en ed (n - j))) k
-          * (ground.getAt BPair.unit (witList N n) k
-            * ground.getAt BPair.unit (witList N n) k))
+          * (ground.getAt BPair.unit (famList f n) k
+            * ground.getAt BPair.unit (famList f n) k))
       (List.range n)).oneValue
       (ground.bsum (fun k =>
           wellDiag r qn qd en ed (k + 1)
-            * (BPair.ofNat (witVal N (k + 1))
-              * BPair.ofNat (witVal N (k + 1))))
-        (List.range N)) := by
+            * (BPair.ofNat (f (k + 1))
+              * BPair.ofNat (f (k + 1))))
+        (List.range W)) := by
   refine BPair.oneValue_trans
     (ground.foldB_congr_members _
       (fun k => wellDiag r qn qd en ed (n - k)
-        * (BPair.ofNat (witVal N (n - k)) * BPair.ofNat (witVal N (n - k))))
+        * (BPair.ofNat (f (n - k)) * BPair.ofNat (f (n - k))))
       (List.range n) (fun k hk => ?_)) ?_
   · have hkn : k < n := ground.ltOfMem hk
     refine BPair.oneValue_of_eq ?_
     rw [ground.getAt_map_range BPair.unit _ n k, if_pos hkn,
-      witList_at N n k hkn]
+      famList_at f n k hkn]
   · refine BPair.oneValue_trans
       (bsumRev (fun j => wellDiag r qn qd en ed j
-        * (BPair.ofNat (witVal N j) * BPair.ofNat (witVal N j))) n) ?_
-    exact bsumTrunc _ N n h (fun k hk =>
-      mulVacL _ _ _ (witVac N (k + 1) (Nat.le_trans hk (Nat.le_succ k))))
+        * (BPair.ofNat (f j) * BPair.ofNat (f j))) n) ?_
+    exact bsumTrunc _ W n h (fun k hk =>
+      mulVacL _ _ _ (famVac f W (k + 1) hvac
+        (Nat.le_trans hk (Nat.le_succ k))))
 
 
 /-- The key range's fold drops a vacant leading key. -/
@@ -10090,109 +10812,111 @@ private theorem bsumHead (F : Nat → BPair) (n : Nat)
   exact BPair.oneValue_trans
     (BPair.add_congr h0 (BPair.oneValue_refl _)) (BPair.unit_add _)
 
-/-- The head's bond fold at the witness family: the constant weight
+/-- The head's bond fold at a stated family: the constant weight
 against the family's consecutive products, read at the boundary and
 at the family's window. -/
-private theorem wellCrossFold : ∀ (r qd N n : Nat) (ed : Pos), N ≤ n →
+private theorem famCrossFold : ∀ (r qd W n : Nat) (ed : Pos)
+    (f : Nat → Nat), (∀ m, W ≤ m → f m = 0) → f 0 = 0 → W ≤ n →
     (ground.bsum (fun k =>
         ground.getAt BPair.unit
             ((List.range (n - 1)).map (fun _ => (wellBond r qd ed).swap)) k
-          * (ground.getAt BPair.unit (witList N n) k
-            * ground.getAt BPair.unit (witList N n) (k + 1)))
+          * (ground.getAt BPair.unit (famList f n) k
+            * ground.getAt BPair.unit (famList f n) (k + 1)))
       (List.range (n - 1))).oneValue
       ((wellBond r qd ed).swap
-        * BPair.ofNat (ground.sumNat ((List.range N).map (fun k =>
-            witVal N (k + 1) * witVal N (k + 2)))))
-  | _, _, _ + 1, 0, _, h => absurd h (Nat.not_succ_le_zero _)
-  | r, qd, 0, 0, ed, _ =>
+        * BPair.ofNat (ground.sumNat ((List.range W).map (fun k =>
+            f (k + 1) * f (k + 2)))))
+  | _, _, _ + 1, 0, _, _, _, _, h => absurd h (Nat.not_succ_le_zero _)
+  | r, qd, 0, 0, ed, _, _, _, _ =>
     BPair.oneValue_symm (BPair.mul_unit ((wellBond r qd ed).swap))
-  | r, qd, N, p + 1, ed, h => by
-    have hg : ∀ l : Nat, N - 1 ≤ l →
-        witVal N (l + 1) * witVal N (l + 2) = 0 := by
+  | r, qd, W, p + 1, ed, f, hvac, h0, h => by
+    have hg : ∀ l : Nat, W - 1 ≤ l →
+        f (l + 1) * f (l + 2) = 0 := by
       intro l hl
-      rw [witVal_vac N (l + 1)
-          (Nat.le_trans (ground.lePredSucc N) (Nat.succ_le_succ hl)),
-        Nat.zero_mul (witVal N (l + 2))]
+      rw [hvac (l + 1)
+          (Nat.le_trans (ground.lePredSucc W) (Nat.succ_le_succ hl)),
+        Nat.zero_mul (f (l + 2))]
     have hstep : (ground.bsum (fun k =>
           ground.getAt BPair.unit
               ((List.range p).map (fun _ => (wellBond r qd ed).swap)) k
-            * (ground.getAt BPair.unit (witList N (p + 1)) k
-              * ground.getAt BPair.unit (witList N (p + 1)) (k + 1)))
+            * (ground.getAt BPair.unit (famList f (p + 1)) k
+              * ground.getAt BPair.unit (famList f (p + 1)) (k + 1)))
         (List.range p)).oneValue
         (ground.bsum (fun k => (wellBond r qd ed).swap
-            * (BPair.ofNat (witVal N (p + 1 - k))
-              * BPair.ofNat (witVal N (p + 1 - k - 1))))
+            * (BPair.ofNat (f (p + 1 - k))
+              * BPair.ofNat (f (p + 1 - k - 1))))
           (List.range p)) := by
       refine ground.foldB_congr_members _ _ (List.range p) (fun k hk => ?_)
       have hkp : k < p := ground.ltOfMem hk
       refine BPair.oneValue_of_eq ?_
       rw [ground.getAt_map_range BPair.unit _ p k, if_pos hkp,
-        witList_at N (p + 1) k (Nat.lt_succ_of_lt hkp),
-        witList_at N (p + 1) (k + 1) (Nat.succ_lt_succ hkp),
+        famList_at f (p + 1) k (Nat.lt_succ_of_lt hkp),
+        famList_at f (p + 1) (k + 1) (Nat.succ_lt_succ hkp),
         ground.subSub (p + 1) k 1]
     refine BPair.oneValue_trans hstep ?_
     refine BPair.oneValue_trans (BPair.oneValue_symm
       (bsumTrunc (fun k => (wellBond r qd ed).swap
-          * (BPair.ofNat (witVal N (p + 1 - k))
-            * BPair.ofNat (witVal N (p + 1 - k - 1))))
+          * (BPair.ofNat (f (p + 1 - k))
+            * BPair.ofNat (f (p + 1 - k - 1))))
         p (p + 1) (Nat.le_succ p) (fun k hk => ?_))) ?_
-    · rw [BPair.mul_comm (BPair.ofNat (witVal N (p + 1 - k)))
-        (BPair.ofNat (witVal N (p + 1 - k - 1)))]
+    · rw [BPair.mul_comm (BPair.ofNat (f (p + 1 - k)))
+        (BPair.ofNat (f (p + 1 - k - 1)))]
       refine mulVacL _ _ _ ?_
       rw [ground.subSub (p + 1) k 1,
-        ground.subLe (p + 1) (k + 1) (Nat.succ_le_succ hk), witVal_zero N]
+        ground.subLe (p + 1) (k + 1) (Nat.succ_le_succ hk), h0]
       exact BPair.oneValue_refl _
     refine BPair.oneValue_trans
       (bsumRev (fun j => (wellBond r qd ed).swap
-        * (BPair.ofNat (witVal N j) * BPair.ofNat (witVal N (j - 1))))
+        * (BPair.ofNat (f j) * BPair.ofNat (f (j - 1))))
         (p + 1)) ?_
     refine BPair.oneValue_trans
       (bsumHead (fun k => (wellBond r qd ed).swap
-          * (BPair.ofNat (witVal N (k + 1))
-            * BPair.ofNat (witVal N (k + 1 - 1)))) p ?_) ?_
-    · rw [BPair.mul_comm (BPair.ofNat (witVal N (0 + 1)))
-        (BPair.ofNat (witVal N (0 + 1 - 1)))]
+          * (BPair.ofNat (f (k + 1))
+            * BPair.ofNat (f (k + 1 - 1)))) p ?_) ?_
+    · rw [BPair.mul_comm (BPair.ofNat (f (0 + 1)))
+        (BPair.ofNat (f (0 + 1 - 1)))]
       refine mulVacL _ _ _ ?_
-      rw [witVal_zero N]
+      rw [h0]
       exact BPair.oneValue_refl _
     refine BPair.oneValue_trans
       (ground.foldB_mul_left ((wellBond r qd ed).swap)
-        (fun k => BPair.ofNat (witVal N (k + 2))
-          * BPair.ofNat (witVal N (k + 1))) (List.range p)) ?_
+        (fun k => BPair.ofNat (f (k + 2))
+          * BPair.ofNat (f (k + 1))) (List.range p)) ?_
     refine BPair.mul_congr (BPair.oneValue_refl _) ?_
     refine BPair.oneValue_trans
       (ground.foldB_congr_members _
-        (fun k => BPair.ofNat (witVal N (k + 1) * witVal N (k + 2)))
+        (fun k => BPair.ofNat (f (k + 1) * f (k + 2)))
         (List.range p) (fun k _ => ?_)) ?_
     · refine BPair.oneValue_symm (BPair.oneValue_trans
         (BPair.oneValue_of_eq (congrArg BPair.ofNat
-          (Nat.mul_comm (witVal N (k + 1)) (witVal N (k + 2))))) ?_)
-      exact BPair.ofNat_mul (witVal N (k + 2)) (witVal N (k + 1))
+          (Nat.mul_comm (f (k + 1)) (f (k + 2))))) ?_)
+      exact BPair.ofNat_mul (f (k + 2)) (f (k + 1))
     refine BPair.oneValue_symm ?_
-    rw [ground.sumMap (fun k => witVal N (k + 1) * witVal N (k + 2))
-        (List.range N),
-      ground.foldExtend' (fun k => witVal N (k + 1) * witVal N (k + 2))
-        (N - 1) N (Nat.sub_le N 1) hg,
-      ← ground.foldExtend' (fun k => witVal N (k + 1) * witVal N (k + 2))
-        (N - 1) p (Nat.sub_le_sub_right h 1) hg]
+    rw [ground.sumMap (fun k => f (k + 1) * f (k + 2))
+        (List.range W),
+      ground.foldExtend' (fun k => f (k + 1) * f (k + 2))
+        (W - 1) W (Nat.sub_le W 1) hg,
+      ← ground.foldExtend' (fun k => f (k + 1) * f (k + 2))
+        (W - 1) p (Nat.sub_le_sub_right h 1) hg]
     exact ground.ofNat_famFold _ (List.range p)
 
 
-/-- The head's form read at the witness family: the diagonal fold
-at the family's window against the bond's doubled cross fold. -/
-private theorem wellForm : ∀ (r qn qd N n : Nat) (en ed : Pos), N ≤ n →
-    (inertia.quadForm (wellMat r qn qd en ed n) (witList N n)).oneValue
+/-- The head's form read at a stated family: the diagonal fold at
+the family's window against the bond's doubled cross fold. -/
+private theorem famForm : ∀ (r qn qd W n : Nat) (en ed : Pos)
+    (f : Nat → Nat), (∀ m, W ≤ m → f m = 0) → f 0 = 0 → W ≤ n →
+    (inertia.quadForm (wellMat r qn qd en ed n) (famList f n)).oneValue
       (ground.bsum (fun k =>
           wellDiag r qn qd en ed (k + 1)
-            * (BPair.ofNat (witVal N (k + 1))
-              * BPair.ofNat (witVal N (k + 1))))
-        (List.range N)
+            * (BPair.ofNat (f (k + 1))
+              * BPair.ofNat (f (k + 1))))
+        (List.range W)
       + BPair.ofNat 2
         * ((wellBond r qd ed).swap
-          * BPair.ofNat (ground.sumNat ((List.range N).map (fun k =>
-              witVal N (k + 1) * witVal N (k + 2))))))
-  | _, _, _, _ + 1, 0, _, _, h => absurd h (Nat.not_succ_le_zero _)
-  | r, _, qd, 0, 0, _, ed, _ =>
+          * BPair.ofNat (ground.sumNat ((List.range W).map (fun k =>
+              f (k + 1) * f (k + 2))))))
+  | _, _, _, _ + 1, 0, _, _, _, _, _, h => absurd h (Nat.not_succ_le_zero _)
+  | r, _, qd, 0, 0, _, ed, _, _, _, _ =>
     BPair.oneValue_symm (BPair.oneValue_trans
       (BPair.add_congr (BPair.oneValue_refl BPair.unit)
         (BPair.oneValue_trans
@@ -10202,7 +10926,7 @@ private theorem wellForm : ∀ (r qn qd N n : Nat) (en ed : Pos), N ≤ n →
           (mulVacL (BPair.ofNat 2) (BPair.ofNat 0)
             ((wellBond r qd ed).swap) (BPair.oneValue_refl BPair.unit))))
       (BPair.unit_add BPair.unit))
-  | r, qn, qd, N, p + 1, en, ed, h => by
+  | r, qn, qd, W, p + 1, en, ed, f, hvac, h0, h => by
     have hmat : greenprod.assemble
           (((List.range (p + 1)).map (fun j =>
             wellDiag r qn qd en ed (p + 1 - j))).map (fun a => [[a]]))
@@ -10213,16 +10937,33 @@ private theorem wellForm : ∀ (r qn qd N n : Nat) (en ed : Pos), N ≤ n →
       rfl
     rw [← hmat]
     refine BPair.oneValue_trans
-      (greenprod.chainQuad _ _ (witList N (p + 1)) ?_ ?_) ?_
-    · rw [ground.length_mapRange, witList_len]
+      (greenprod.chainQuad _ _ (famList f (p + 1)) ?_ ?_) ?_
+    · rw [ground.length_mapRange, famList_len]
     · rw [ground.length_mapRange, ground.length_mapRange]
-    rw [witList_len N (p + 1),
+    rw [famList_len f (p + 1),
       show ((List.range p).map (fun _ =>
           (wellBond r qd ed).swap)).length = p from
         ground.length_mapRange _ p]
-    exact BPair.add_congr (wellDiagFold r qn qd N (p + 1) en ed h)
+    exact BPair.add_congr (famDiagFold r qn qd W (p + 1) en ed f hvac h)
       (BPair.mul_congr (BPair.oneValue_refl (BPair.ofNat 2))
-        (wellCrossFold r qd N (p + 1) ed h))
+        (famCrossFold r qd W (p + 1) ed f hvac h0 h))
+
+/-- The head's form read at the witness family, the stated family's
+read at the family's own values. -/
+private theorem wellForm (r qn qd N n : Nat) (en ed : Pos) (h : N ≤ n) :
+    (inertia.quadForm (wellMat r qn qd en ed n) (witList N n)).oneValue
+      (ground.bsum (fun k =>
+          wellDiag r qn qd en ed (k + 1)
+            * (BPair.ofNat (witVal N (k + 1))
+              * BPair.ofNat (witVal N (k + 1))))
+        (List.range N)
+      + BPair.ofNat 2
+        * ((wellBond r qd ed).swap
+          * BPair.ofNat (ground.sumNat ((List.range N).map (fun k =>
+              witVal N (k + 1) * witVal N (k + 2)))))) := by
+  rw [witList_fam N n]
+  exact famForm r qn qd N n en ed (witVal N)
+    (fun m hm => witVal_vac N m hm) (witVal_zero N) h
 
 /-- The lower rate's two folds join at the sum's unit: the kernel
 identity against the bond's own doubled cross fold. -/
@@ -10407,10 +11148,10 @@ private theorem lineDiag (r qn qd a b a' b' gg m : Nat) (en ed : Pos)
       (BPair.ofPos en) (BPair.ofPos en))
   refine BPair.oneValue_trans
     (BPair.add_congr (BPair.mul_congr (BPair.oneValue_refl _)
-      (diagRead r (a * qn) (b * qd) m en ed)) (BPair.oneValue_refl _))
+      (wellDiag_read r (a * qn) (b * qd) m en ed)) (BPair.oneValue_refl _))
     (BPair.oneValue_trans ?_
       (BPair.oneValue_symm (BPair.mul_congr (BPair.oneValue_refl _)
-        (diagRead r (a' * qn) (b' * qd) m en ed))))
+        (wellDiag_read r (a' * qn) (b' * qd) m en ed))))
   rw [mulAdd3 (BPair.ofNat b') _ _ _, mulAdd3 (BPair.ofNat b) _ _ _]
   exact lineCombine _ _ _ _ _ _ _ h1 h2
     (lineT3 r qn a b a' b' gg (BPair.ofPos en) (BPair.ofPos ed) hab)
@@ -10425,33 +11166,23 @@ private theorem gapOfAdd {X W Y : BPair} (h : (X + W).oneValue Y) :
     (BPair.swap_add_null (BPair.oneValue_refl X)) (BPair.oneValue_refl W)) ?_
   exact BPair.unit_add W
 
-/-- The site identity at a depth: the diagonal at the scaled rate is
-the second scale's multiple of the diagonal against the rates' gap
-on the cross member — the two lines' diagonal identity at the unit
-second pair. -/
-private theorem siteScale (r qn qd a b g m : Nat) (en ed : Pos)
-    (hab : b + g = a) :
-    (wellDiag r (a * qn) (b * qd) en ed m).oneValue
-      (BPair.ofNat b * wellDiag r qn qd en ed m
-        + (BPair.ofNat ((r + 1) * (g * qn)) * BPair.ofPos en
+/-- The line identity at a depth: the rate's second datum scales a
+line's diagonal to the rate line's own at the line's second datum
+against the cross-multiplied gap's balance partner — the two lines'
+diagonal identity at the unit rate pair. -/
+private theorem lineScale (r qn qd A B G m : Nat) (en ed : Pos)
+    (hG : qn * B + G = A * qd) :
+    (BPair.ofNat qd * wellDiag r A B en ed m).oneValue
+      (BPair.ofNat B * wellDiag r qn qd en ed m
+        + (BPair.ofNat ((r + 1) * G) * BPair.ofPos en
             * BPair.ofPos ed).swap) := by
-  have hab' : 1 * b + g = a * 1 := by
-    rw [Nat.one_mul, Nat.mul_one]
-    exact hab
-  have hld := lineDiag r qn qd a b 1 1 g m en ed hab'
-  rw [Nat.one_mul qn, Nat.one_mul qd] at hld
-  have hld2 : (wellDiag r (a * qn) (b * qd) en ed m
-      + BPair.ofNat ((r + 1) * (g * qn)) * BPair.ofPos en
-        * BPair.ofPos ed).oneValue
-      (BPair.ofNat b * wellDiag r qn qd en ed m) :=
-    BPair.oneValue_trans
-      (BPair.add_congr (BPair.oneValue_symm (BPair.ofNat_one_mul _))
-        (BPair.oneValue_refl _)) hld
-  have hcm : (BPair.ofNat ((r + 1) * (g * qn)) * BPair.ofPos en
-      * BPair.ofPos ed
-      + wellDiag r (a * qn) (b * qd) en ed m).oneValue
-      (BPair.ofNat b * wellDiag r qn qd en ed m) :=
-    BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.add_comm _ _)) hld2
+  have hld := lineDiag r 1 1 A B qn qd G m en ed hG
+  rw [Nat.mul_one A, Nat.mul_one B, Nat.mul_one qn, Nat.mul_one qd,
+    Nat.mul_one G] at hld
+  have hcm : (BPair.ofNat ((r + 1) * G) * BPair.ofPos en * BPair.ofPos ed
+      + BPair.ofNat qd * wellDiag r A B en ed m).oneValue
+      (BPair.ofNat B * wellDiag r qn qd en ed m) :=
+    BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.add_comm _ _)) hld
   exact BPair.oneValue_symm (gapOfAdd hcm)
 
 /-- The bond weight at the scaled rate is the scale's multiple. -/
@@ -10477,36 +11208,43 @@ private theorem witSqBsum (N : Nat) :
   rw [← witSq_fold N]
   exact BPair.oneValue_symm (ground.ofNat_famFold _ (List.range N))
 
-/-- The diagonal fold at the scaled rate: the second scale's
-multiple of the lower rate's own fold against the gap's cross weight
-on the family's square fold. -/
-private theorem scaledDiagFold (r qn qd a b g N : Nat) (en ed : Pos)
-    (hab : b + g = a) :
+/-- The diagonal fold at a line: the rate's second datum scales the
+line's fold to the rate line's own at the line's second datum
+against the cross-multiplied gap's weight on the family's square
+fold. -/
+private theorem lineDiagFold (r qn qd A B G N : Nat) (en ed : Pos)
+    (hG : qn * B + G = A * qd) :
     (ground.bsum (fun k =>
-        wellDiag r (a * qn) (b * qd) en ed (k + 1)
-          * (BPair.ofNat (witVal N (k + 1))
-            * BPair.ofNat (witVal N (k + 1))))
+        BPair.ofNat qd
+          * (wellDiag r A B en ed (k + 1)
+            * (BPair.ofNat (witVal N (k + 1))
+              * BPair.ofNat (witVal N (k + 1)))))
       (List.range N)).oneValue
-      (BPair.ofNat b
+      (BPair.ofNat B
           * ground.bsum (fun k =>
               wellDiag r qn qd en ed (k + 1)
                 * (BPair.ofNat (witVal N (k + 1))
                   * BPair.ofNat (witVal N (k + 1))))
             (List.range N)
-        + (BPair.ofNat ((r + 1) * (g * qn)) * BPair.ofPos en
+        + (BPair.ofNat ((r + 1) * G) * BPair.ofPos en
             * BPair.ofPos ed).swap * BPair.ofNat (witSq N)) := by
   refine BPair.oneValue_trans
     (ground.foldB_congr_members _
-      (fun k => BPair.ofNat b * (wellDiag r qn qd en ed (k + 1)
+      (fun k => BPair.ofNat B * (wellDiag r qn qd en ed (k + 1)
             * (BPair.ofNat (witVal N (k + 1))
               * BPair.ofNat (witVal N (k + 1))))
-        + (BPair.ofNat ((r + 1) * (g * qn)) * BPair.ofPos en
+        + (BPair.ofNat ((r + 1) * G) * BPair.ofPos en
               * BPair.ofPos ed).swap
             * (BPair.ofNat (witVal N (k + 1))
               * BPair.ofNat (witVal N (k + 1))))
       (List.range N) (fun k _ => ?_)) ?_
   · refine BPair.oneValue_trans
-      (BPair.mul_congr (siteScale r qn qd a b g (k + 1) en ed hab)
+      (BPair.oneValue_of_eq
+        (BPair.mul_assoc (BPair.ofNat qd) (wellDiag r A B en ed (k + 1))
+          (BPair.ofNat (witVal N (k + 1))
+            * BPair.ofNat (witVal N (k + 1)))).symm) ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (lineScale r qn qd A B G (k + 1) en ed hG)
         (BPair.oneValue_refl _)) ?_
     refine BPair.oneValue_of_eq ?_
     rw [BPair.right_distrib, BPair.mul_assoc]
@@ -10548,26 +11286,166 @@ private theorem posQLow (en ed r N : Nat) (hed : 0 < ed) (h : 2 ≤ N) :
   exact Nat.mul_pos (Nat.mul_pos (Nat.succ_pos r) hed2)
     (Nat.lt_of_lt_of_le hsq (Nat.le_add_left _ (witDiffSq N)))
 
-/-- The four-factor exchange at the leading pair. -/
-private theorem mulShuffle (u v w z : BPair) :
-    u * (v * w * z) = v * (u * (w * z)) := by
-  rw [BPair.mul_assoc v w z, BPair.mul_left_comm u v (w * z)]
+/-- The two lines' bond weights at a depth: each scaled at the
+other's second datum reads one value, the weights' shared count. -/
+private theorem rateBond (r qcD B : Nat) (ed : Pos) :
+    (BPair.ofNat B * wellBond r qcD ed).oneValue
+      (BPair.ofNat qcD * wellBond r B ed) := by
+  refine BPair.oneValue_trans
+    (numScale B ((r + 1) * qcD) (BPair.ofPos ed) (BPair.ofPos ed)) ?_
+  refine BPair.oneValue_trans ?_
+    (BPair.oneValue_symm
+      (numScale qcD ((r + 1) * B) (BPair.ofPos ed) (BPair.ofPos ed)))
+  rw [ground.mulLeftComm B (r + 1) qcD, ground.mulLeftComm qcD (r + 1) B,
+    Nat.mul_comm B qcD]
+  exact BPair.oneValue_refl _
 
-/-- The scaled form's two summands against the lower rate's own
-cancellation: the residue is the gap weight's balance partner. -/
-private theorem strictCombine (bB K Z C W : BPair)
-    (hK : (K + Z).oneValue BPair.unit) :
-    ((bB * K + C.swap * W) + bB * Z).oneValue ((C * W).swap) := by
-  rw [BPair.add_right_comm (bB * K) (C.swap * W) (bB * Z),
-    ← BPair.left_distrib bB K Z, BPair.swap_mul C W]
-  refine BPair.oneValue_trans (BPair.add_congr
-    (BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl bB) hK)
-      (BPair.mul_unit bB)) (BPair.oneValue_refl ((C * W).swap))) ?_
-  exact BPair.unit_add ((C * W).swap)
+/-- The family is vacant at every depth at an endpoint below two. -/
+private theorem witVal_low (N : Nat) (hN : N < 2) :
+    ∀ m : Nat, witVal N m = 0
+  | 0 => witVal_zero N
+  | m + 1 => witVal_vac N (m + 1)
+      (Nat.le_trans (Nat.le_of_lt_succ hN)
+        (Nat.succ_le_succ (Nat.zero_le m)))
+
+/-- A mapped family at unit reads is a unit tail. -/
+private theorem unitTailMap (f : Nat → BPair)
+    (hf : ∀ k, (f k).oneValue BPair.unit) :
+    ∀ l : List Nat, poly.unitTail (l.map f)
+  | [] => trivial
+  | k :: t => ⟨hf k, unitTailMap f hf t⟩
+
+/-- The rate's cleared tie: the gap's weight against the rate's
+second datum regroups to the second datum's multiple of the gap. -/
+private theorem lineTie (x G p q w : Nat) :
+    x * G * p * q * w = p * q * x * w * G := by
+  rw [ground.mulRightComm x G p, ground.mulRightComm (x * p) G q,
+    ground.mulRightComm (x * p * q) G w, Nat.mul_comm x p,
+    ground.mulRightComm p x q]
+
+/-- The line read at the witness family: the head's form at a line
+beyond the family's own rate reads the line's cross-multiplied
+gap's balance partner outright, the rate's clearing withdrawing
+whole against the family's square fold. -/
+theorem witLineRead : ∀ (en ed : Pos) (r N n A B G : Nat), N ≤ n →
+    qLowNum (ground.posVal en) (ground.posVal ed) r N * B + G
+      = A * qLowDen (ground.posVal en) (ground.posVal ed) r N →
+    (inertia.quadForm (wellMat r A B en ed n) (witList N n)).oneValue
+      (BPair.ofNat G).swap := by
+  intro en ed r N n A B G h hG
+  match Nat.lt_or_ge N 2 with
+  | Or.inl hN2 =>
+    have hw : witSq N = 0 := by
+      rw [← witSq_fold N,
+        ground.foldExtend' (fun k => witVal N (k + 1) * witVal N (k + 1))
+          0 N (Nat.zero_le N) (fun l _ => by
+            rw [witVal_low N hN2 (l + 1)])]
+      rfl
+    have hz : qLowNum (ground.posVal en) (ground.posVal ed) r N * B + G
+        = 0 := by
+      rw [hG]
+      show A * (ground.posVal en * ground.posVal ed * (r + 1) * witSq N)
+        = 0
+      rw [hw]
+      rfl
+    have hG0 : G = 0 := by
+      match G, hz with
+      | 0, _ => rfl
+      | _ + 1, hz => exact Nat.noConfusion hz
+    rw [hG0]
+    refine BPair.oneValue_trans ?_
+      (ground.swap_congr (BPair.oneValue_symm BPair.ofNat_zero))
+    show (elim.dotN (witList N n)
+        (elim.matVec (wellMat r A B en ed n) (witList N n))).oneValue
+      BPair.unit.swap
+    refine BPair.oneValue_trans
+      (inertia.quadNull (wellMat r A B en ed n) (witList N n)
+        (unitTailMap _ (fun k => BPair.oneValue_of_eq
+          (congrArg BPair.ofNat (witVal_low N hN2 (n - k))))
+          (List.range n))) ?_
+    exact BPair.oneValue_refl _
+  | Or.inr hN2 =>
+    have hqd : 0 < qLowDen (ground.posVal en) (ground.posVal ed) r N :=
+      Nat.mul_pos (Nat.mul_pos
+        (Nat.mul_pos (ground.posVal_pos en) (ground.posVal_pos ed))
+        (Nat.succ_pos r)) (posWitSq N hN2)
+    have hval : (BPair.ofNat ((r + 1) * G) * BPair.ofPos en
+          * BPair.ofPos ed * BPair.ofNat (witSq N)).oneValue
+        (BPair.ofNat (qLowDen (ground.posVal en) (ground.posVal ed) r N)
+          * BPair.ofNat G) := by
+      rw [BPair.ofPos_val en, BPair.ofPos_val ed]
+      refine BPair.oneValue_trans
+        (BPair.mul_congr (BPair.mul_congr
+          (BPair.oneValue_symm
+            (BPair.ofNat_mul ((r + 1) * G) (ground.posVal en)))
+          (BPair.oneValue_refl _)) (BPair.oneValue_refl _)) ?_
+      refine BPair.oneValue_trans
+        (BPair.mul_congr
+          (BPair.oneValue_symm
+            (BPair.ofNat_mul ((r + 1) * G * ground.posVal en)
+              (ground.posVal ed)))
+          (BPair.oneValue_refl _)) ?_
+      refine BPair.oneValue_trans
+        (BPair.oneValue_symm
+          (BPair.ofNat_mul
+            ((r + 1) * G * ground.posVal en * ground.posVal ed)
+            (witSq N))) ?_
+      refine BPair.oneValue_trans
+        (BPair.oneValue_of_eq (congrArg BPair.ofNat
+          (lineTie (r + 1) G (ground.posVal en) (ground.posVal ed)
+            (witSq N)))) ?_
+      exact BPair.ofNat_mul _ G
+    refine ground.mulCancel
+      (BPair.ofNat_off_unit _ hqd) ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl _)
+        (wellForm r A B N n en ed h)) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.left_distrib _ _ _)) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr
+        (BPair.oneValue_trans
+          (BPair.oneValue_symm (ground.foldB_mul_left _ _ (List.range N)))
+          (lineDiagFold r _ _ A B G N en ed hG))
+        (BPair.oneValue_trans
+          (BPair.oneValue_of_eq (BPair.mul_left_comm _ _ _))
+          (BPair.mul_congr (BPair.oneValue_refl (BPair.ofNat 2))
+            (BPair.oneValue_trans
+              (BPair.oneValue_of_eq (BPair.mul_assoc _ _ _).symm)
+              (BPair.oneValue_trans
+                (BPair.mul_congr
+                  (BPair.oneValue_trans
+                    (BPair.oneValue_of_eq (BPair.mul_swap _ _))
+                    (BPair.oneValue_trans
+                      (ground.swap_congr (rateBond r B
+                        (qLowDen (ground.posVal en) (ground.posVal ed)
+                          r N) ed))
+                      (BPair.oneValue_of_eq (BPair.mul_swap _ _).symm)))
+                  (BPair.oneValue_refl _))
+                (BPair.oneValue_of_eq (BPair.mul_assoc _ _ _))))))) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.add_right_comm _ _ _)) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr
+        (BPair.oneValue_trans
+          (BPair.add_congr (BPair.oneValue_refl _)
+            (BPair.oneValue_of_eq (BPair.mul_left_comm _ _ _)))
+          (BPair.oneValue_trans
+            (BPair.oneValue_of_eq (BPair.left_distrib _ _ _).symm)
+            (BPair.oneValue_trans
+              (BPair.mul_congr (BPair.oneValue_refl _)
+                (kernelCancel en ed r N))
+              (BPair.mul_unit _))))
+        (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans (BPair.unit_add _) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.swap_mul _ _)) ?_
+    refine BPair.oneValue_trans (ground.swap_congr hval) ?_
+    exact BPair.oneValue_of_eq (BPair.mul_swap _ _).symm
 
 /-- At a member line beyond the lower rate the family's form read
-sits strictly lower, the rates' gap against the family's occupied
-square fold. -/
+sits strictly lower, the line read at the rates' cross-multiplied
+gap. -/
 theorem witStrict : ∀ (en ed : Pos) (r N n a b g : Nat),
     2 ≤ N → N ≤ n → b + g = a → 1 ≤ g →
     inertia.quadForm
@@ -10576,78 +11454,64 @@ theorem witStrict : ∀ (en ed : Pos) (r N n a b g : Nat),
         (witList N n)
       < BPair.unit := by
   intro en ed r N n a b g hN h hab hg
-  have hC : BPair.unit
-      < BPair.ofNat ((r + 1)
-            * (g * qLowNum (ground.posVal en) (ground.posVal ed) r N))
-          * BPair.ofPos en * BPair.ofPos ed * BPair.ofNat (witSq N) :=
-    ground.unitLtMul
-      (ground.unitLtMul
-        (ground.unitLtMul
-          (ground.unitLtNat (Nat.mul_pos (Nat.succ_pos r)
-            (Nat.mul_pos hg (posQLow (ground.posVal en) (ground.posVal ed)
-              r N (ground.posVal_pos ed) hN))))
-          (ground.unitLtOfPos en))
-        (ground.unitLtOfPos ed))
-      (ground.unitLtNat (posWitSq N hN))
-  have heq : BPair.ofNat 2
-        * ((BPair.ofNat b
-            * wellBond r (qLowDen (ground.posVal en) (ground.posVal ed) r N)
-              ed).swap
-          * BPair.ofNat (ground.sumNat ((List.range N).map (fun k =>
-              witVal N (k + 1) * witVal N (k + 2)))))
-      = BPair.ofNat b * (BPair.ofNat 2
-          * ((wellBond r (qLowDen (ground.posVal en) (ground.posVal ed) r N)
-                ed).swap
-            * BPair.ofNat (ground.sumNat ((List.range N).map (fun k =>
-                witVal N (k + 1) * witVal N (k + 2)))))) := by
-    rw [← BPair.mul_swap (BPair.ofNat b)
-      (wellBond r (qLowDen (ground.posVal en) (ground.posVal ed) r N) ed)]
-    exact mulShuffle (BPair.ofNat 2) (BPair.ofNat b)
-      ((wellBond r (qLowDen (ground.posVal en) (ground.posVal ed) r N)
-        ed).swap)
-      (BPair.ofNat (ground.sumNat ((List.range N).map (fun k =>
-        witVal N (k + 1) * witVal N (k + 2)))))
-  have hform : (inertia.quadForm
-      (wellMat r (a * qLowNum (ground.posVal en) (ground.posVal ed) r N)
-        (b * qLowDen (ground.posVal en) (ground.posVal ed) r N) en ed n)
-      (witList N n)).oneValue
-      ((BPair.ofNat ((r + 1)
-            * (g * qLowNum (ground.posVal en) (ground.posVal ed) r N))
-          * BPair.ofPos en * BPair.ofPos ed
-        * BPair.ofNat (witSq N)).swap) := by
-    refine BPair.oneValue_trans
-      (wellForm r (a * qLowNum (ground.posVal en) (ground.posVal ed) r N)
-        (b * qLowDen (ground.posVal en) (ground.posVal ed) r N) N n en ed
-        h) ?_
-    refine BPair.oneValue_trans (BPair.add_congr
-      (scaledDiagFold r (qLowNum (ground.posVal en) (ground.posVal ed) r N)
-        (qLowDen (ground.posVal en) (ground.posVal ed) r N) a b g N en ed
-        hab)
-      (BPair.oneValue_trans
-        (BPair.mul_congr (BPair.oneValue_refl (BPair.ofNat 2))
-          (BPair.mul_congr (ground.swap_congr
-            (bondScale r (qLowDen (ground.posVal en) (ground.posVal ed) r N)
-              b ed)) (BPair.oneValue_refl _)))
-        (BPair.oneValue_of_eq heq))) ?_
-    exact strictCombine (BPair.ofNat b) _ _ _ _ (kernelCancel en ed r N)
-  exact BPair.lt_congr (BPair.oneValue_symm hform)
-    (BPair.oneValue_refl BPair.unit) (ground.ltB_swap hC)
+  have hqn : 0 < qLowNum (ground.posVal en) (ground.posVal ed) r N :=
+    posQLow (ground.posVal en) (ground.posVal ed) r N
+      (ground.posVal_pos ed) hN
+  have hqd : 0 < qLowDen (ground.posVal en) (ground.posVal ed) r N :=
+    Nat.mul_pos (Nat.mul_pos
+      (Nat.mul_pos (ground.posVal_pos en) (ground.posVal_pos ed))
+      (Nat.succ_pos r)) (posWitSq N hN)
+  have hG : qLowNum (ground.posVal en) (ground.posVal ed) r N
+        * (b * qLowDen (ground.posVal en) (ground.posVal ed) r N)
+      + g * (qLowNum (ground.posVal en) (ground.posVal ed) r N
+          * qLowDen (ground.posVal en) (ground.posVal ed) r N)
+      = a * qLowNum (ground.posVal en) (ground.posVal ed) r N
+        * qLowDen (ground.posVal en) (ground.posVal ed) r N := by
+    rw [ground.mulLeftComm
+        (qLowNum (ground.posVal en) (ground.posVal ed) r N) b
+        (qLowDen (ground.posVal en) (ground.posVal ed) r N),
+      ← ground.mulAddR b g
+        (qLowNum (ground.posVal en) (ground.posVal ed) r N
+          * qLowDen (ground.posVal en) (ground.posVal ed) r N),
+      hab,
+      ground.mulAssoc a
+        (qLowNum (ground.posVal en) (ground.posVal ed) r N)
+        (qLowDen (ground.posVal en) (ground.posVal ed) r N)]
+  exact BPair.lt_congr
+    (BPair.oneValue_symm (witLineRead en ed r N n
+      (a * qLowNum (ground.posVal en) (ground.posVal ed) r N)
+      (b * qLowDen (ground.posVal en) (ground.posVal ed) r N)
+      (g * (qLowNum (ground.posVal en) (ground.posVal ed) r N
+        * qLowDen (ground.posVal en) (ground.posVal ed) r N)) h hG))
+    (BPair.oneValue_refl BPair.unit)
+    (ground.ltB_swap (ground.unitLtNat
+      (Nat.mul_pos hg (Nat.mul_pos hqn hqd))))
 
-/-- A vector joined with the constant unit family reads itself. -/
-private theorem vecAddRepl : ∀ (v : List BPair) (n : Nat), v.length = n →
-    poly.oneValue (elim.vecAdd v (List.replicate n BPair.unit)) v
-  | [], 0, _ => trivial
-  | [], _ + 1, h => Nat.noConfusion h
-  | _ :: _, 0, h => Nat.noConfusion h
-  | a :: t, n + 1, h =>
-    ⟨BPair.add_unit a, vecAddRepl t n (Nat.succ.inj h)⟩
-
-/-- The combination at one member is that member's scale. -/
-private theorem combo_one (n : Nat) (c : BPair) (u : List BPair)
-    (hu : u.length = n) :
-    poly.oneValue (elim.combo n [c] [u]) (elim.vecScale c u) :=
-  vecAddRepl (elim.vecScale c u) n
-    ((ground.length_map (fun y => c * y) u).trans hu)
+/-- One strict member forces the count: a vector whose form at the
+datum reads below the sum's unit occupies the reversal count at
+every split, `lem:inertia`'s forcing clause at the one-member
+family. -/
+theorem strictForcing {n : Nat} (S : elim.Mat) (x : List BPair)
+    (hx : x.length = n)
+    (hq : inertia.quadForm S x < BPair.unit) :
+    ∀ sp : inertia.Split n, inertia.splitRead S sp →
+      1 ≤ inertia.revAt sp := by
+  intro sp hsp
+  refine inertia.forcing S sp hsp [x] ⟨hx, trivial⟩ ?_
+  intro cs hcs hu
+  match cs, hcs, hu with
+  | [], hcs, _ => exact Nat.noConfusion hcs
+  | _ :: _ :: _, hcs, _ => exact Nat.noConfusion (Nat.succ.inj hcs)
+  | [c], _, hu =>
+    have hcu : ¬ c.oneValue BPair.unit := fun hc => hu ⟨hc, trivial⟩
+    have hscale := inertia.quadScaleVec S c x
+      (elim.combo n [c] [x]) (elim.combo_one n c x hx)
+    exact BPair.lt_congr (BPair.oneValue_symm hscale)
+      (BPair.oneValue_refl BPair.unit)
+      (BPair.lt_congr
+        (BPair.oneValue_of_eq (BPair.mul_comm _ (c * c)))
+        (BPair.unit_mul (c * c))
+        (ground.ltB_mulPos hq (ground.sq_pos hcu)))
 
 /-- The family is the count's own witness at every member line: one
 lower-side member forces the reversal count occupied at every split
@@ -10661,26 +11525,8 @@ theorem witCount : ∀ (en ed : Pos) (r N n a b g : Nat),
         sp →
       1 ≤ inertia.revAt sp := by
   intro en ed r N n a b g hN h hab hg sp hsp
-  refine inertia.forcing _ sp hsp [witList N n] ⟨witList_len N n, trivial⟩ ?_
-  intro cs hcs hu
-  match cs, hcs, hu with
-  | [], hcs, _ => exact Nat.noConfusion hcs
-  | _ :: _ :: _, hcs, _ => exact Nat.noConfusion (Nat.succ.inj hcs)
-  | [c], _, hu =>
-    have hcu : ¬ c.oneValue BPair.unit := fun hc => hu ⟨hc, trivial⟩
-    have hscale := inertia.quadScaleVec
-      (wellMat r (a * qLowNum (ground.posVal en) (ground.posVal ed) r N)
-        (b * qLowDen (ground.posVal en) (ground.posVal ed) r N) en ed n)
-      c (witList N n) (elim.combo n [c] [witList N n])
-      (combo_one n c (witList N n) (witList_len N n))
-    exact BPair.lt_congr (BPair.oneValue_symm hscale)
-      (BPair.oneValue_refl BPair.unit)
-      (BPair.lt_congr
-        (BPair.oneValue_of_eq (BPair.mul_comm _ (c * c)))
-        (BPair.unit_mul (c * c))
-        (ground.ltB_mulPos
-          (witStrict en ed r N n a b g hN h hab hg)
-          (ground.sq_pos hcu)))
+  exact strictForcing _ (witList N n) (witList_len N n)
+    (witStrict en ed r N n a b g hN h hab hg) sp hsp
 
 /-- The count four's scale is the doubled doubling. -/
 private theorem fourRead (c : BPair) :
@@ -11735,200 +12581,28 @@ theorem certRevZeroKern : ∀ (r qn qd : Nat) (en ed : Pos) (n : Nat),
       (wellRevListKern r qn qd en ed m hoff hy) hsp]
     exact revFoldKern r qn qd en ed m hlo'
 
-/-- The scalar chain's entry chart: the diagonal at the key pair's
-agreement, the bond at the consecutive pairs, the sum's unit beyond. -/
-private def chainAt (d o : List BPair) (i j : Nat) : BPair :=
-  if j = i then ground.getAt BPair.unit d i
-  else if j + 1 = i then ground.getAt BPair.unit o j
-  else if i + 1 = j then ground.getAt BPair.unit o i
-  else BPair.unit
-
-/-- The entry chart drops its leading slab at a shifted key pair. -/
-private theorem chainAt_step (a b : BPair) (dl ot : List BPair) (r j : Nat) :
-    chainAt (a :: dl) (b :: ot) (r + 1) (j + 1) = chainAt dl ot r j := by
-  show (if j + 1 = r + 1 then ground.getAt BPair.unit (a :: dl) (r + 1)
-      else if j + 1 + 1 = r + 1 then ground.getAt BPair.unit (b :: ot) (j + 1)
-      else if r + 1 + 1 = j + 1 then ground.getAt BPair.unit (b :: ot) (r + 1)
-      else BPair.unit)
-    = if j = r then ground.getAt BPair.unit dl r
-      else if j + 1 = r then ground.getAt BPair.unit ot j
-      else if r + 1 = j then ground.getAt BPair.unit ot r
-      else BPair.unit
-  match Nat.decEq j r with
-  | isTrue hh =>
-    rw [if_pos (congrArg (fun z => z + 1) hh), if_pos hh]
-    rfl
-  | isFalse hh =>
-    rw [if_neg (fun hz => hh (Nat.succ.inj hz)), if_neg hh]
-    match Nat.decEq (j + 1) r with
-    | isTrue h2 =>
-      rw [if_pos (congrArg (fun z => z + 1) h2), if_pos h2]
-      rfl
-    | isFalse h2 =>
-      rw [if_neg (fun hz => h2 (Nat.succ.inj hz)), if_neg h2]
-      match Nat.decEq (r + 1) j with
-      | isTrue h3 =>
-        rw [if_pos (congrArg (fun z => z + 1) h3), if_pos h3]
-        rfl
-      | isFalse h3 =>
-        rw [if_neg (fun hz => h3 (Nat.succ.inj hz)), if_neg h3]
-
-/-- The assembled chain's block row: the leading column's entry
-against the tail chain's own row. -/
-private theorem chainRow (b : BPair) (L : Nat) (rest : elim.Mat) (r : Nat)
-    (hr : r < rest.length) :
-    ground.getAt ([] : List BPair)
-        ((List.range rest.length).map (fun s =>
-          (if s < 1 then ground.getAt [] [[b]] s
-           else List.replicate 1 BPair.unit) ++ ground.getAt [] rest s)) r
-      = ground.getAt BPair.unit (b :: List.replicate L BPair.unit) r
-        :: ground.getAt [] rest r := by
-  rw [ground.getAt_map 0 ([] : List BPair) _ (List.range rest.length) r
-      (by rw [ground.length_range]; exact hr),
-    ground.getAt_range rest.length r hr]
-  match r with
-  | 0 => rfl
-  | m + 1 =>
-    show List.replicate 1 BPair.unit ++ ground.getAt [] rest (m + 1)
-      = ground.getAt BPair.unit (List.replicate L BPair.unit) m
-        :: ground.getAt [] rest (m + 1)
-    rw [ground.getAt_replicate_self BPair.unit L m]
-    rfl
-
-/-- The assembled chain's entry at the leading slab: the diagonal
-and bond at the leading keys, the tail chain's own beyond. -/
-private theorem consEntry (a b : BPair) (dl ot : List BPair) (rest : elim.Mat)
-    (hlen : rest.length = dl.length)
-    (hrest : ∀ r j : Nat, r < dl.length → j < dl.length →
-      ground.getAt BPair.unit (ground.getAt ([] : List BPair) rest r) j
-        = chainAt dl ot r j) :
-    ∀ i j : Nat, i < dl.length + 1 → j < dl.length + 1 →
-      ground.getAt BPair.unit (ground.getAt ([] : List BPair)
-        ((a :: b :: List.replicate ((rest.headD []).length - 1) BPair.unit)
-          :: (List.range rest.length).map (fun s =>
-            (if s < 1 then ground.getAt [] [[b]] s
-             else List.replicate 1 BPair.unit) ++ ground.getAt [] rest s)) i) j
-      = chainAt (a :: dl) (b :: ot) i j := by
-  intro i j hi hj
-  match i, j, hi, hj with
-  | 0, 0, _, _ => rfl
-  | 0, 1, _, _ => rfl
-  | 0, k + 2, _, _ =>
-    show ground.getAt BPair.unit
-      (List.replicate ((rest.headD []).length - 1) BPair.unit) k
-      = chainAt (a :: dl) (b :: ot) 0 (k + 2)
-    rw [ground.getAt_replicate_self BPair.unit
-      ((rest.headD []).length - 1) k]
-    rfl
-  | r + 1, 0, hi, _ =>
-    have hr : r < rest.length := by
-      rw [hlen]
-      exact Nat.lt_of_succ_lt_succ hi
-    show ground.getAt BPair.unit (ground.getAt ([] : List BPair)
-        ((List.range rest.length).map (fun s =>
-          (if s < 1 then ground.getAt [] [[b]] s
-           else List.replicate 1 BPair.unit) ++ ground.getAt [] rest s)) r) 0
-      = chainAt (a :: dl) (b :: ot) (r + 1) 0
-    rw [chainRow b dl.length rest r hr]
-    match r with
-    | 0 => rfl
-    | m + 1 =>
-      show ground.getAt BPair.unit (List.replicate dl.length BPair.unit) m
-        = chainAt (a :: dl) (b :: ot) (m + 2) 0
-      rw [ground.getAt_replicate_self BPair.unit dl.length m]
-      rfl
-  | r + 1, j' + 1, hi, hj =>
-    have hr : r < rest.length := by
-      rw [hlen]
-      exact Nat.lt_of_succ_lt_succ hi
-    show ground.getAt BPair.unit (ground.getAt ([] : List BPair)
-        ((List.range rest.length).map (fun s =>
-          (if s < 1 then ground.getAt [] [[b]] s
-           else List.replicate 1 BPair.unit) ++ ground.getAt [] rest s)) r)
-        (j' + 1)
-      = chainAt (a :: dl) (b :: ot) (r + 1) (j' + 1)
-    rw [chainRow b dl.length rest r hr, chainAt_step a b dl ot r j']
-    exact hrest r j' (by rw [← hlen]; exact hr) (Nat.lt_of_succ_lt_succ hj)
-
-/-- The scalar chain's entry read: the assembled matrix is the
-entry chart at every key pair inside the order. -/
-private theorem chainEntry : ∀ (d o : List BPair), o.length + 1 = d.length →
-    ∀ i j : Nat, i < d.length → j < d.length →
-      ground.getAt BPair.unit (ground.getAt ([] : List BPair)
-          (greenprod.assemble (d.map (fun x => [[x]]))
-            (o.map (fun x => [[x]]))) i) j
-        = chainAt d o i j
-  | [], _, h, _, _, _, _ => Nat.noConfusion h
-  | [_], _ :: _, h, _, _, _, _ => Nat.noConfusion (Nat.succ.inj h)
-  | _ :: _ :: _, [], h, _, _, _, _ => Nat.noConfusion (Nat.succ.inj h)
-  | [_], [], _, 0, 0, _, _ => rfl
-  | [_], [], _, 0, _ + 1, _, hj =>
-    absurd (Nat.lt_of_succ_lt_succ hj) (Nat.not_lt_zero _)
-  | [_], [], _, _ + 1, _, hi, _ =>
-    absurd (Nat.lt_of_succ_lt_succ hi) (Nat.not_lt_zero _)
-  | a :: a' :: dt, b :: ot, h, i, j, hi, hj =>
-    consEntry a b (a' :: dt) ot
-      (greenprod.assemble ((a' :: dt).map (fun x => [[x]]))
-        (ot.map (fun x => [[x]])))
-      (greenprod.chainLen (a' :: dt) ot (Nat.succ.inj h)).1
-      (fun r s hr hs => chainEntry (a' :: dt) ot (Nat.succ.inj h) r s hr hs)
-      i j hi hj
-
-/-- The scalar chain's rows read the diagonal's count. -/
-private theorem chainRows : ∀ (d o : List BPair), o.length + 1 = d.length →
-    elim.rowsLen d.length (greenprod.assemble (d.map (fun x => [[x]]))
-      (o.map (fun x => [[x]])))
-  | [], _, h => Nat.noConfusion h
-  | [_], _ :: _, h => Nat.noConfusion (Nat.succ.inj h)
-  | _ :: _ :: _, [], h => Nat.noConfusion (Nat.succ.inj h)
-  | [_], [], _ => ⟨rfl, trivial⟩
-  | _ :: a' :: dt, b :: ot, h => by
-    have hIH := greenprod.chainLen (a' :: dt) ot (Nat.succ.inj h)
-    have hrows := chainRows (a' :: dt) ot (Nat.succ.inj h)
-    have key : ∀ u v : List BPair, u.length = 1 → v.length = dt.length + 1 →
-        (u ++ v).length = dt.length + 1 + 1 := by
-      intro u v hu hv
-      rw [ground.length_append, hu, hv]
-      exact Nat.add_comm 1 (dt.length + 1)
-    refine ⟨?_, ?_⟩
-    · show (List.replicate
-        (((greenprod.assemble ((a' :: dt).map (fun x => [[x]]))
-          (ot.map (fun x => [[x]]))).headD []).length - 1)
-          BPair.unit).length + 1 + 1 = dt.length + 1 + 1
-      rw [ground.length_replicate, hIH.2]
-      rfl
-    · refine elim.rowsLen_map _ (dt.length + 1 + 1) _ (fun s hs => ?_)
-      have hs' : s < (greenprod.assemble ((a' :: dt).map (fun x => [[x]]))
-          (ot.map (fun x => [[x]]))).length := ground.ltOfMemRange hs
-      have h1 : ((if s < 1 then ground.getAt [] [[b]] s
-          else List.replicate 1 BPair.unit) : List BPair).length = 1 := by
-        match s with
-        | 0 => rfl
-        | _ + 1 => rfl
-      exact key _ _ h1 (elim.rowsLen_getAt _ s hrows hs')
-
 /-- The well head's diagonal entries, deep end first. -/
-private def wDiagE (r qn qd : Nat) (en ed : Pos) (n : Nat) : List BPair :=
+def wDiagE (r qn qd : Nat) (en ed : Pos) (n : Nat) : List BPair :=
   (List.range n).map (fun k => wellDiag r qn qd en ed (n - k))
 
 /-- The well head's off-diagonal entries, the bond weight
 throughout. -/
-private def wOffE (r qd : Nat) (ed : Pos) (n : Nat) : List BPair :=
+def wOffE (r qd : Nat) (ed : Pos) (n : Nat) : List BPair :=
   (List.range (n - 1)).map (fun _ => (wellBond r qd ed).swap)
 
 /-- The diagonal entry list's count is the head's order. -/
-private theorem wDiagE_len (r qn qd : Nat) (en ed : Pos) (n : Nat) :
+theorem wDiagE_len (r qn qd : Nat) (en ed : Pos) (n : Nat) :
     (wDiagE r qn qd en ed n).length = n :=
   ground.length_mapRange _ n
 
 /-- The off-diagonal entry list's count is the head's order less
 one. -/
-private theorem wOffE_len (r qd : Nat) (ed : Pos) (n : Nat) :
+theorem wOffE_len (r qd : Nat) (ed : Pos) (n : Nat) :
     (wOffE r qd ed n).length = n - 1 :=
   ground.length_mapRange _ (n - 1)
 
 /-- The diagonal entry at a key is that key's own depth. -/
-private theorem wDiagE_at (r qn qd : Nat) (en ed : Pos) (n i : Nat)
+theorem wDiagE_at (r qn qd : Nat) (en ed : Pos) (n i : Nat)
     (hi : i < n) :
     ground.getAt BPair.unit (wDiagE r qn qd en ed n) i
       = wellDiag r qn qd en ed (n - i) := by
@@ -11939,7 +12613,7 @@ private theorem wDiagE_at (r qn qd : Nat) (en ed : Pos) (n i : Nat)
     ground.getAt_range n i hi]
 
 /-- Every off-diagonal entry is the bond weight's swap. -/
-private theorem wOffE_at (r qd : Nat) (ed : Pos) (n j : Nat)
+theorem wOffE_at (r qd : Nat) (ed : Pos) (n j : Nat)
     (hj : j < n - 1) :
     ground.getAt BPair.unit (wOffE r qd ed n) j = (wellBond r qd ed).swap := by
   show ground.getAt BPair.unit
@@ -11948,7 +12622,7 @@ private theorem wOffE_at (r qd : Nat) (ed : Pos) (n j : Nat)
       (by rw [ground.length_range]; exact hj)]
 
 /-- The well head is the scalar chain at its two entry lists. -/
-private theorem wellMat_chain (r qn qd : Nat) (en ed : Pos) (n : Nat) :
+theorem wellMat_chain (r qn qd : Nat) (en ed : Pos) (n : Nat) :
     wellMat r qn qd en ed n
       = greenprod.assemble ((wDiagE r qn qd en ed n).map (fun x => [[x]]))
           ((wOffE r qd ed n).map (fun x => [[x]])) := by
@@ -11966,14 +12640,14 @@ private theorem wellMat_chain (r qn qd : Nat) (en ed : Pos) (n : Nat) :
       (fun x => [[x]]) (List.range (n - 1))]
 
 /-- The two entry lists' counts meet the chain's own tie. -/
-private theorem wellChainLen (r qn qd : Nat) (en ed : Pos) (m : Nat) :
+theorem wellChainLen (r qn qd : Nat) (en ed : Pos) (m : Nat) :
     (wOffE r qd ed (m + 1)).length + 1
       = (wDiagE r qn qd en ed (m + 1)).length := by
   rw [wOffE_len r qd ed (m + 1), wDiagE_len r qn qd en ed (m + 1)]
   rfl
 
 /-- The well head's row count is its order. -/
-private theorem wellLen (r qn qd : Nat) (en ed : Pos) (m : Nat) :
+theorem wellLen (r qn qd : Nat) (en ed : Pos) (m : Nat) :
     (wellMat r qn qd en ed (m + 1)).length = m + 1 := by
   rw [wellMat_chain r qn qd en ed (m + 1),
     (greenprod.chainLen (wDiagE r qn qd en ed (m + 1)) (wOffE r qd ed (m + 1))
@@ -11981,23 +12655,23 @@ private theorem wellLen (r qn qd : Nat) (en ed : Pos) (m : Nat) :
     wDiagE_len r qn qd en ed (m + 1)]
 
 /-- The well head's rows read its order. -/
-private theorem wellRows (r qn qd : Nat) (en ed : Pos) (m : Nat) :
+theorem wellRows (r qn qd : Nat) (en ed : Pos) (m : Nat) :
     elim.rowsLen (m + 1) (wellMat r qn qd en ed (m + 1)) := by
   rw [wellMat_chain r qn qd en ed (m + 1)]
-  have h := chainRows (wDiagE r qn qd en ed (m + 1)) (wOffE r qd ed (m + 1))
+  have h := greenprod.chainRows (wDiagE r qn qd en ed (m + 1)) (wOffE r qd ed (m + 1))
     (wellChainLen r qn qd en ed m)
   rw [wDiagE_len r qn qd en ed (m + 1)] at h
   exact h
 
 /-- The well head's entry is the entry chart at its two entry
 lists. -/
-private theorem wellEntry (r qn qd : Nat) (en ed : Pos) (m i j : Nat)
+theorem wellEntry (r qn qd : Nat) (en ed : Pos) (m i j : Nat)
     (hi : i < m + 1) (hj : j < m + 1) :
     ground.getAt BPair.unit (ground.getAt ([] : List BPair)
         (wellMat r qn qd en ed (m + 1)) i) j
-      = chainAt (wDiagE r qn qd en ed (m + 1)) (wOffE r qd ed (m + 1)) i j := by
+      = greenprod.chainAt (wDiagE r qn qd en ed (m + 1)) (wOffE r qd ed (m + 1)) i j := by
   rw [wellMat_chain r qn qd en ed (m + 1)]
-  exact chainEntry _ _ (wellChainLen r qn qd en ed m) i j
+  exact greenprod.chainEntry _ _ (wellChainLen r qn qd en ed m) i j
     (by rw [wDiagE_len r qn qd en ed (m + 1)]; exact hi)
     (by rw [wDiagE_len r qn qd en ed (m + 1)]; exact hj)
 
@@ -12105,7 +12779,7 @@ private theorem twoEntry (a b c bb : BPair) (dl ot : List BPair)
     (hlen : rest.length = dl.length)
     (hrest : ∀ i j : Nat, i < dl.length → j < dl.length →
       ground.getAt BPair.unit (ground.getAt ([] : List BPair) rest i) j
-        = chainAt dl ot i j) :
+        = greenprod.chainAt dl ot i j) :
     ∀ i j : Nat, i < dl.length + 2 → j < dl.length + 2 →
       ground.getAt BPair.unit (ground.getAt ([] : List BPair)
         ((a :: b :: BPair.unit
@@ -12118,7 +12792,7 @@ private theorem twoEntry (a b c bb : BPair) (dl ot : List BPair)
               (if z < 1 then ground.getAt [] [[BPair.unit, bb]] z
                else List.replicate 2 BPair.unit)
                 ++ ground.getAt [] rest z)) i) j
-      = chainAt (a :: c :: dl) (b :: bb :: ot) i j := by
+      = greenprod.chainAt (a :: c :: dl) (b :: bb :: ot) i j := by
   intro i j hi hj
   match i, j, hi, hj with
   | 0, 0, _, _ => rfl
@@ -12127,7 +12801,7 @@ private theorem twoEntry (a b c bb : BPair) (dl ot : List BPair)
     show ground.getAt BPair.unit
       (BPair.unit :: List.replicate
         ((rest.headD ([] : List BPair)).length - 1) BPair.unit) k
-      = chainAt (a :: c :: dl) (b :: bb :: ot) 0 (k + 2)
+      = greenprod.chainAt (a :: c :: dl) (b :: bb :: ot) 0 (k + 2)
     rw [show ground.getAt BPair.unit (BPair.unit :: List.replicate
         ((rest.headD ([] : List BPair)).length - 1) BPair.unit) k
       = BPair.unit from ground.getAt_replicate_self BPair.unit
@@ -12140,7 +12814,7 @@ private theorem twoEntry (a b c bb : BPair) (dl ot : List BPair)
     show ground.getAt BPair.unit
       (List.replicate ((rest.headD ([] : List BPair)).length - 1)
         BPair.unit) k
-      = chainAt (a :: c :: dl) (b :: bb :: ot) 1 (k + 3)
+      = greenprod.chainAt (a :: c :: dl) (b :: bb :: ot) 1 (k + 3)
     rw [ground.getAt_replicate_self BPair.unit
       ((rest.headD ([] : List BPair)).length - 1) k]
     rfl
@@ -12153,7 +12827,7 @@ private theorem twoEntry (a b c bb : BPair) (dl ot : List BPair)
         ((List.range rest.length).map (fun z =>
           (if z < 1 then ground.getAt [] [[BPair.unit, bb]] z
            else List.replicate 2 BPair.unit) ++ ground.getAt [] rest z)) s) 0
-      = chainAt (a :: c :: dl) (b :: bb :: ot) (s + 2) 0
+      = greenprod.chainAt (a :: c :: dl) (b :: bb :: ot) (s + 2) 0
     rw [twoRow bb dl.length rest s hs]
     rfl
   | s + 2, 1, hi, _ =>
@@ -12165,16 +12839,16 @@ private theorem twoEntry (a b c bb : BPair) (dl ot : List BPair)
         ((List.range rest.length).map (fun z =>
           (if z < 1 then ground.getAt [] [[BPair.unit, bb]] z
            else List.replicate 2 BPair.unit) ++ ground.getAt [] rest z)) s) 1
-      = chainAt (a :: c :: dl) (b :: bb :: ot) (s + 2) 1
+      = greenprod.chainAt (a :: c :: dl) (b :: bb :: ot) (s + 2) 1
     rw [twoRow bb dl.length rest s hs]
     show ground.getAt BPair.unit
         (bb :: List.replicate dl.length BPair.unit) s
-      = chainAt (a :: c :: dl) (b :: bb :: ot) (s + 2) 1
+      = greenprod.chainAt (a :: c :: dl) (b :: bb :: ot) (s + 2) 1
     match s with
     | 0 => rfl
     | m + 1 =>
       show ground.getAt BPair.unit (List.replicate dl.length BPair.unit) m
-        = chainAt (a :: c :: dl) (b :: bb :: ot) (m + 3) 1
+        = greenprod.chainAt (a :: c :: dl) (b :: bb :: ot) (m + 3) 1
       rw [ground.getAt_replicate_self BPair.unit dl.length m]
       rfl
   | s + 2, k + 2, hi, hj =>
@@ -12187,10 +12861,10 @@ private theorem twoEntry (a b c bb : BPair) (dl ot : List BPair)
           (if z < 1 then ground.getAt [] [[BPair.unit, bb]] z
            else List.replicate 2 BPair.unit) ++ ground.getAt [] rest z)) s)
         (k + 2)
-      = chainAt (a :: c :: dl) (b :: bb :: ot) (s + 2) (k + 2)
+      = greenprod.chainAt (a :: c :: dl) (b :: bb :: ot) (s + 2) (k + 2)
     rw [twoRow bb dl.length rest s hs,
-      chainAt_step a b (c :: dl) (bb :: ot) (s + 1) (k + 1),
-      chainAt_step c bb dl ot s k]
+      greenprod.chainAt_step a b (c :: dl) (bb :: ot) (s + 1) (k + 1),
+      greenprod.chainAt_step c bb dl ot s k]
     exact hrest s k (by rw [← hlen]; exact hs)
       (Nat.lt_of_succ_lt_succ (Nat.lt_of_succ_lt_succ hj))
 
@@ -12231,7 +12905,7 @@ private theorem wideEntry (a bb : BPair) (dl ot : List BPair)
     (hlen : rest.length = dl.length)
     (hrest : ∀ i j : Nat, i < dl.length → j < dl.length →
       ground.getAt BPair.unit (ground.getAt ([] : List BPair) rest i) j
-        = chainAt dl ot i j) :
+        = greenprod.chainAt dl ot i j) :
     ∀ i j : Nat, i < dl.length + 1 → j < dl.length + 1 →
       ground.getAt BPair.unit (ground.getAt ([] : List BPair)
         ((a :: bb :: BPair.unit
@@ -12241,7 +12915,7 @@ private theorem wideEntry (a bb : BPair) (dl ot : List BPair)
               (if z < 2 then ground.getAt [] [[bb], [BPair.unit]] z
                else List.replicate 1 BPair.unit)
                 ++ ground.getAt [] rest z)) i) j
-      = chainAt (a :: dl) (bb :: ot) i j := by
+      = greenprod.chainAt (a :: dl) (bb :: ot) i j := by
   intro i j hi hj
   match i, j, hi, hj with
   | 0, 0, _, _ => rfl
@@ -12250,7 +12924,7 @@ private theorem wideEntry (a bb : BPair) (dl ot : List BPair)
     show ground.getAt BPair.unit
       (BPair.unit :: List.replicate
         ((rest.headD ([] : List BPair)).length - 2) BPair.unit) k
-      = chainAt (a :: dl) (bb :: ot) 0 (k + 2)
+      = greenprod.chainAt (a :: dl) (bb :: ot) 0 (k + 2)
     rw [show ground.getAt BPair.unit (BPair.unit :: List.replicate
         ((rest.headD ([] : List BPair)).length - 2) BPair.unit) k
       = BPair.unit from ground.getAt_replicate_self BPair.unit
@@ -12265,13 +12939,13 @@ private theorem wideEntry (a bb : BPair) (dl ot : List BPair)
         ((List.range rest.length).map (fun z =>
           (if z < 2 then ground.getAt [] [[bb], [BPair.unit]] z
            else List.replicate 1 BPair.unit) ++ ground.getAt [] rest z)) s) 0
-      = chainAt (a :: dl) (bb :: ot) (s + 1) 0
+      = greenprod.chainAt (a :: dl) (bb :: ot) (s + 1) 0
     rw [wideRow bb dl.length rest s hs]
     match s with
     | 0 => rfl
     | m + 1 =>
       show ground.getAt BPair.unit (List.replicate dl.length BPair.unit) m
-        = chainAt (a :: dl) (bb :: ot) (m + 2) 0
+        = greenprod.chainAt (a :: dl) (bb :: ot) (m + 2) 0
       rw [ground.getAt_replicate_self BPair.unit dl.length m]
       rfl
   | s + 1, k + 1, hi, hj =>
@@ -12284,8 +12958,8 @@ private theorem wideEntry (a bb : BPair) (dl ot : List BPair)
           (if z < 2 then ground.getAt [] [[bb], [BPair.unit]] z
            else List.replicate 1 BPair.unit) ++ ground.getAt [] rest z)) s)
         (k + 1)
-      = chainAt (a :: dl) (bb :: ot) (s + 1) (k + 1)
-    rw [wideRow bb dl.length rest s hs, chainAt_step a bb dl ot s k]
+      = greenprod.chainAt (a :: dl) (bb :: ot) (s + 1) (k + 1)
+    rw [wideRow bb dl.length rest s hs, greenprod.chainAt_step a bb dl ot s k]
     exact hrest s k (by rw [← hlen]; exact hs)
       (Nat.lt_of_succ_lt_succ hj)
 
@@ -12294,7 +12968,7 @@ private theorem twoNilEntry (a b c : BPair) :
     ∀ i j : Nat, i < 2 → j < 2 →
       ground.getAt BPair.unit
           (ground.getAt ([] : List BPair) [[a, b], [b, c]] i) j
-        = chainAt [a, c] [b] i j := by
+        = greenprod.chainAt [a, c] [b] i j := by
   intro i j hi hj
   match i, j, hi, hj with
   | 0, 0, _, _ => rfl
@@ -12322,7 +12996,7 @@ private theorem mixRead (r qn qd : Nat) (en ed : Pos) (c : Nat) : ∀ t : Nat,
         ground.getAt BPair.unit (ground.getAt ([] : List BPair)
           (greenprod.assemble (mDiag r qn qd en ed c t)
             (mOff r qd ed c t)) i) j
-          = chainAt (wDiagE r qn qd en ed (c + 2 + t))
+          = greenprod.chainAt (wDiagE r qn qd en ed (c + 2 + t))
               (wOffE r qd ed (c + 2 + t)) i j := by
   intro t
   induction t with
@@ -12357,7 +13031,7 @@ private theorem mixRead (r qn qd : Nat) (en ed : Pos) (c : Nat) : ∀ t : Nat,
         rfl
       have hL := greenprod.chainLen (wDiagE r qn qd en ed (c' + 1))
         (wOffE r qd ed (c' + 1)) hchl
-      have hE := chainEntry (wDiagE r qn qd en ed (c' + 1))
+      have hE := greenprod.chainEntry (wDiagE r qn qd en ed (c' + 1))
         (wOffE r qd ed (c' + 1)) hchl
       rw [← wDiagL_map r qn qd en ed (c' + 1),
         ← wOffL_map r qd ed (c' + 1)] at hL hE
@@ -12416,7 +13090,7 @@ private theorem mixRead (r qn qd : Nat) (en ed : Pos) (c : Nat) : ∀ t : Nat,
           ground.getAt BPair.unit (ground.getAt ([] : List BPair)
             (greenprod.assemble (mDiag r qn qd en ed c 0)
               (mOff r qd ed c 0)) i) j
-            = chainAt (wDiagE r qn qd en ed (c + 2 + 0))
+            = greenprod.chainAt (wDiagE r qn qd en ed (c + 2 + 0))
                 (wOffE r qd ed (c + 2 + 0)) i j := by
         intro i j hi hj
         rw [wDiagE_len r qn qd en ed (c + 2 + 0)] at hi hj
@@ -12458,7 +13132,7 @@ private theorem mixRead (r qn qd : Nat) (en ed : Pos) (c : Nat) : ∀ t : Nat,
           ground.getAt BPair.unit (ground.getAt ([] : List BPair)
             (greenprod.assemble (mDiag r qn qd en ed c (t' + 1))
               (mOff r qd ed c (t' + 1))) i) j
-            = chainAt (wDiagE r qn qd en ed (c + 2 + (t' + 1)))
+            = greenprod.chainAt (wDiagE r qn qd en ed (c + 2 + (t' + 1)))
                 (wOffE r qd ed (c + 2 + (t' + 1))) i j := by
         intro i j hi hj
         rw [wDiagE_len r qn qd en ed (c + 2 + (t' + 1))] at hi hj
@@ -12477,7 +13151,7 @@ private theorem mixRead (r qn qd : Nat) (en ed : Pos) (c : Nat) : ∀ t : Nat,
         rw [ground.length_replicate, ih.2.1]
         rfl
       · rw [hd1, ho1]
-        have key := consEntry (wellDiag r qn qd en ed (c + 2 + (t' + 1) + 1))
+        have key := greenprod.consEntry (wellDiag r qn qd en ed (c + 2 + (t' + 1) + 1))
           (wellBond r qd ed).swap (wDiagE r qn qd en ed (c + 2 + (t' + 1)))
           (wOffE r qd ed (c + 2 + (t' + 1)))
           (greenprod.assemble (mDiag r qn qd en ed c (t' + 1))
@@ -12509,7 +13183,7 @@ private theorem mixRows (r qn qd : Nat) (en ed : Pos) (c : Nat) : ∀ t : Nat,
         rfl
       have hL := greenprod.chainLen (wDiagE r qn qd en ed (c' + 1))
         (wOffE r qd ed (c' + 1)) hchl
-      have hR := chainRows (wDiagE r qn qd en ed (c' + 1))
+      have hR := greenprod.chainRows (wDiagE r qn qd en ed (c' + 1))
         (wOffE r qd ed (c' + 1)) hchl
       rw [← wDiagL_map r qn qd en ed (c' + 1),
         ← wOffL_map r qd ed (c' + 1)] at hL hR
@@ -12624,7 +13298,7 @@ private theorem mixMat (r qn qd : Nat) (en ed : Pos) (c t : Nat) :
   intro i j hi hj
   have hw : ground.getAt BPair.unit (ground.getAt ([] : List BPair)
         (wellMat r qn qd en ed (c + 2 + t)) i) j
-      = chainAt (wDiagE r qn qd en ed (c + 2 + t))
+      = greenprod.chainAt (wDiagE r qn qd en ed (c + 2 + t))
           (wOffE r qd ed (c + 2 + t)) i j := by
     rw [harith]
     exact wellEntry r qn qd en ed (c + 1 + t) i j
@@ -13900,39 +14574,6 @@ private theorem normPair {x y z : BPair} (h : (x + y).oneValue z) :
     (BPair.add_congr (BPair.norm_oneValue x) (BPair.norm_oneValue y))
     (BPair.oneValue_trans h (BPair.oneValue_symm (BPair.norm_oneValue z)))
 
-/-- The entry chart at the diagonal key. -/
-private theorem chainAt_diag (d o : List BPair) (i : Nat) :
-    chainAt d o i i = ground.getAt BPair.unit d i := if_pos rfl
-
-/-- The entry chart one key below the diagonal. -/
-private theorem chainAt_low (d o : List BPair) (i j : Nat) (h1 : ¬ j = i)
-    (h2 : j + 1 = i) : chainAt d o i j = ground.getAt BPair.unit o j := by
-  show (if j = i then ground.getAt BPair.unit d i
-      else if j + 1 = i then ground.getAt BPair.unit o j
-      else if i + 1 = j then ground.getAt BPair.unit o i
-      else BPair.unit) = _
-  rw [if_neg h1, if_pos h2]
-
-/-- The entry chart one key above the diagonal. -/
-private theorem chainAt_up (d o : List BPair) (i j : Nat) (h1 : ¬ j = i)
-    (h2 : ¬ j + 1 = i) (h3 : i + 1 = j) :
-    chainAt d o i j = ground.getAt BPair.unit o i := by
-  show (if j = i then ground.getAt BPair.unit d i
-      else if j + 1 = i then ground.getAt BPair.unit o j
-      else if i + 1 = j then ground.getAt BPair.unit o i
-      else BPair.unit) = _
-  rw [if_neg h1, if_neg h2, if_pos h3]
-
-/-- The entry chart beyond the band. -/
-private theorem chainAt_far (d o : List BPair) (i j : Nat) (h1 : ¬ j = i)
-    (h2 : ¬ j + 1 = i) (h3 : ¬ i + 1 = j) :
-    chainAt d o i j = BPair.unit := by
-  show (if j = i then ground.getAt BPair.unit d i
-      else if j + 1 = i then ground.getAt BPair.unit o j
-      else if i + 1 = j then ground.getAt BPair.unit o i
-      else BPair.unit) = _
-  rw [if_neg h1, if_neg h2, if_neg h3]
-
 /-- Two member lines' site identity: the cross-multiplied datum
 gap is the stated positive diagonal, one cross-multiplication per
 scale -- the rates' gap's own matrix read. -/
@@ -13994,7 +14635,7 @@ theorem lineSite : ∀ (r qn qd : Nat) (en ed : Pos) (n a b a' b' gg : Nat),
       inertia.getAt_idMat (m + 1) i j hi hj]
     match Nat.decEq j i with
     | isTrue hji =>
-      rw [hji, chainAt_diag, chainAt_diag, if_pos rfl,
+      rw [hji, greenprod.chainAt_diag, greenprod.chainAt_diag, if_pos rfl,
         wDiagE_at r (a * qn) (b * qd) en ed (m + 1) i hi,
         wDiagE_at r (a' * qn) (b' * qd) en ed (m + 1) i hi]
       refine normPair ?_
@@ -14008,7 +14649,7 @@ theorem lineSite : ∀ (r qn qd : Nat) (en ed : Pos) (n a b a' b' gg : Nat),
         have hjm : j < m + 1 - 1 := by
           rw [← hlo] at hi
           exact Nat.lt_of_succ_lt_succ hi
-        rw [chainAt_low _ _ i j hji hlo, chainAt_low _ _ i j hji hlo,
+        rw [greenprod.chainAt_low _ _ i j hji hlo, greenprod.chainAt_low _ _ i j hji hlo,
           wOffE_at r (b * qd) ed (m + 1) j hjm,
           wOffE_at r (b' * qd) ed (m + 1) j hjm]
         exact normPair (lineBond r qd b b' ed _)
@@ -14018,13 +14659,13 @@ theorem lineSite : ∀ (r qn qd : Nat) (en ed : Pos) (n a b a' b' gg : Nat),
           have him : i < m + 1 - 1 := by
             rw [← hup] at hj
             exact Nat.lt_of_succ_lt_succ hj
-          rw [chainAt_up _ _ i j hji hlo hup, chainAt_up _ _ i j hji hlo hup,
+          rw [greenprod.chainAt_up _ _ i j hji hlo hup, greenprod.chainAt_up _ _ i j hji hlo hup,
             wOffE_at r (b * qd) ed (m + 1) i him,
             wOffE_at r (b' * qd) ed (m + 1) i him]
           exact normPair (lineBond r qd b b' ed _)
         | isFalse hup =>
-          rw [chainAt_far _ _ i j hji hlo hup,
-            chainAt_far _ _ i j hji hlo hup]
+          rw [greenprod.chainAt_far _ _ i j hji hlo hup,
+            greenprod.chainAt_far _ _ i j hji hlo hup]
           exact normPair (lineFar b b' _)
 
 /-- The site datum of two member lines' scaled heads is the gap's
@@ -14270,65 +14911,489 @@ theorem gapLow_tie (en ed r N g b a : Nat) (hab : b + g = a) :
   rw [ground.mulLeftComm (qLowNum en ed r N) b (qLowDen en ed r N)]
   rw [ground.mulAssoc b (qLowNum en ed r N) (qLowDen en ed r N)]
 
+/-! The two-list compression's closed entries: the mixed folds of
+the two witness families read the compressed pencil's cross entry
+at the diagonal's three keys against the mixed square and well
+folds with the bond against the mixed consecutive fold, and each
+diagonal entry is the line read's own gap. -/
+
+/-- The sum family's values, the two families' depth sums. -/
+private def witValS (N N' m : Nat) : Nat := witVal N m + witVal N' m
+
+/-- The sum family is vacant at or beyond the leading endpoint. -/
+private theorem witValS_vac (N N' : Nat) (hNN : N' ≤ N) :
+    ∀ m, N ≤ m → witValS N N' m = 0 := by
+  intro m hm
+  show witVal N m + witVal N' m = 0
+  rw [witVal_vac N m hm, witVal_vac N' m (Nat.le_trans hNN hm)]
+
+/-- The sum family reads the sum's unit at the nought depth. -/
+private theorem witValS_zero (N N' : Nat) : witValS N N' 0 = 0 := by
+  show witVal N 0 + witVal N' 0 = 0
+  rw [witVal_zero N, witVal_zero N']
+
+/-- Two mapped families' entrywise sum reads the sums' map. -/
+private theorem vecAddMap (f g : Nat → Nat) :
+    ∀ l : List Nat, poly.oneValue
+      (elim.vecAdd (l.map (fun k => BPair.ofNat (f k)))
+        (l.map (fun k => BPair.ofNat (g k))))
+      (l.map (fun k => BPair.ofNat (f k + g k)))
+  | [] => trivial
+  | k :: t => ⟨BPair.oneValue_symm (BPair.ofNat_add (f k) (g k)),
+      vecAddMap f g t⟩
+
+/-- The two families' entrywise sum is the sum family's list. -/
+private theorem witListS_add (N N' n : Nat) :
+    poly.oneValue (elim.vecAdd (witList N n) (witList N' n))
+      (famList (witValS N N') n) :=
+  vecAddMap (fun k => witVal N (n - k)) (fun k => witVal N' (n - k))
+    (List.range n)
+
+/-- A product at a vacant second read is the sum's unit. -/
+private theorem mulZeroR (c : BPair) :
+    (c * BPair.ofNat 0).oneValue BPair.unit :=
+  BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl c) BPair.ofNat_zero)
+    (BPair.mul_unit c)
+
+/-- The second factor pulls past two trailing factors. -/
+private theorem pullMid (X Y E F Z : BPair) :
+    X * Y * E * F * Z = X * E * F * (Y * Z) := by
+  rw [ground.BPair.mul_right_comm X Y E,
+    ground.BPair.mul_right_comm (X * E) Y F,
+    BPair.mul_assoc (X * E * F) Y Z]
+
+/-- The product expansion at two depth sums, the four summands at
+the mixed pair collected. -/
+private theorem prodExpand (a b c d : Nat) :
+    (a + b) * (c + d) = a * c + ((a * d + c * b) + b * d) := by
+  rw [ground.mulAddR a b (c + d), Nat.left_distrib a c d,
+    Nat.left_distrib b c d, Nat.mul_comm b c,
+    Nat.add_assoc (a * c) (a * d) (c * b + b * d),
+    ← Nat.add_assoc (a * d) (c * b) (b * d)]
+
+/-- The sum family's consecutive fold splits at the two families'
+own folds against the mixed consecutive fold. -/
+private theorem crossSplitNat (N N' : Nat) (hNN : N' ≤ N) :
+    ground.sumNat ((List.range N).map (fun k =>
+        witValS N N' (k + 1) * witValS N N' (k + 2)))
+      = ground.sumNat ((List.range N).map (fun k =>
+          witVal N (k + 1) * witVal N (k + 2)))
+        + (crossBond N N'
+          + ground.sumNat ((List.range N').map (fun k =>
+              witVal N' (k + 1) * witVal N' (k + 2)))) := by
+  have hvb : ∀ l, N' - 1 ≤ l →
+      witVal N (l + 1) * witVal N' (l + 2)
+        + witVal N (l + 2) * witVal N' (l + 1) = 0 := by
+    intro l hl
+    rw [witVal_vac N' (l + 2)
+        (Nat.le_trans (ground.lePredSucc N')
+          (Nat.le_trans (Nat.succ_le_succ hl) (Nat.le_succ (l + 1)))),
+      witVal_vac N' (l + 1)
+        (Nat.le_trans (ground.lePredSucc N') (Nat.succ_le_succ hl))]
+    rfl
+  have hvx : ∀ l, N' - 1 ≤ l →
+      witVal N' (l + 1) * witVal N' (l + 2) = 0 := by
+    intro l hl
+    rw [witVal_vac N' (l + 2)
+      (Nat.le_trans (ground.lePredSucc N')
+        (Nat.le_trans (Nat.succ_le_succ hl) (Nat.le_succ (l + 1))))]
+    rfl
+  have hmem : ∀ i, i < N →
+      witValS N N' (i + 1) * witValS N N' (i + 2)
+        = witVal N (i + 1) * witVal N (i + 2)
+          + ((witVal N (i + 1) * witVal N' (i + 2)
+              + witVal N (i + 2) * witVal N' (i + 1))
+            + witVal N' (i + 1) * witVal N' (i + 2)) :=
+    fun i _ => prodExpand (witVal N (i + 1)) (witVal N' (i + 1))
+      (witVal N (i + 2)) (witVal N' (i + 2))
+  rw [ground.sumMap (fun k => witValS N N' (k + 1) * witValS N N' (k + 2))
+      (List.range N),
+    ground.famFold_congr_range _ _ N hmem,
+    ← ground.sumMap _ (List.range N),
+    ground.sumNat_map_add (fun k => witVal N (k + 1) * witVal N (k + 2))
+      (fun k => (witVal N (k + 1) * witVal N' (k + 2)
+          + witVal N (k + 2) * witVal N' (k + 1))
+        + witVal N' (k + 1) * witVal N' (k + 2)) (List.range N),
+    ground.sumNat_map_add (fun k => witVal N (k + 1) * witVal N' (k + 2)
+        + witVal N (k + 2) * witVal N' (k + 1))
+      (fun k => witVal N' (k + 1) * witVal N' (k + 2)) (List.range N),
+    ground.sumMap (fun k => witVal N (k + 1) * witVal N' (k + 2)
+        + witVal N (k + 2) * witVal N' (k + 1)) (List.range N),
+    ground.foldExtend' _ (N' - 1) N
+      (Nat.le_trans (Nat.sub_le N' 1) hNN) hvb,
+    ← ground.foldExtend' _ (N' - 1) N' (Nat.sub_le N' 1) hvb,
+    ← ground.sumMap (fun k => witVal N (k + 1) * witVal N' (k + 2)
+        + witVal N (k + 2) * witVal N' (k + 1)) (List.range N'),
+    ground.sumMap (fun k => witVal N' (k + 1) * witVal N' (k + 2))
+      (List.range N),
+    ground.foldExtend' _ (N' - 1) N
+      (Nat.le_trans (Nat.sub_le N' 1) hNN) hvx,
+    ← ground.foldExtend' _ (N' - 1) N' (Nat.sub_le N' 1) hvx,
+    ← ground.sumMap (fun k => witVal N' (k + 1) * witVal N' (k + 2))
+      (List.range N')]
+  rfl
+
+/-- The mixed diagonal fold, the compressed cross entry's diagonal
+part at the second family's window. -/
+private def crossDiag (r A B N N' : Nat) (en ed : Pos) : BPair :=
+  ground.bsum (fun k =>
+    wellDiag r A B en ed (k + 1)
+      * BPair.ofNat (witVal N (k + 1) * witVal N' (k + 1)))
+    (List.range N')
+
+/-- The sum family's diagonal fold splits at the two families' own
+folds against the doubled mixed fold. -/
+private theorem diagSplit (r A B N N' : Nat) (en ed : Pos)
+    (hNN : N' ≤ N) :
+    (ground.bsum (fun k =>
+        wellDiag r A B en ed (k + 1)
+          * (BPair.ofNat (witValS N N' (k + 1))
+            * BPair.ofNat (witValS N N' (k + 1))))
+      (List.range N)).oneValue
+      (ground.bsum (fun k =>
+          wellDiag r A B en ed (k + 1)
+            * (BPair.ofNat (witVal N (k + 1))
+              * BPair.ofNat (witVal N (k + 1))))
+        (List.range N)
+        + ((crossDiag r A B N N' en ed + crossDiag r A B N N' en ed)
+          + ground.bsum (fun k =>
+              wellDiag r A B en ed (k + 1)
+                * (BPair.ofNat (witVal N' (k + 1))
+                  * BPair.ofNat (witVal N' (k + 1))))
+            (List.range N'))) := by
+  refine BPair.oneValue_trans
+    (ground.foldB_congr_members _
+      (fun k => wellDiag r A B en ed (k + 1)
+          * BPair.ofNat (witVal N (k + 1) * witVal N (k + 1))
+        + (wellDiag r A B en ed (k + 1)
+            * BPair.ofNat (witVal N (k + 1) * witVal N' (k + 1)
+              + witVal N (k + 1) * witVal N' (k + 1))
+          + wellDiag r A B en ed (k + 1)
+            * BPair.ofNat (witVal N' (k + 1) * witVal N' (k + 1))))
+      (List.range N) (fun k _ => ?_)) ?_
+  · refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl _)
+        (BPair.oneValue_symm
+          (BPair.ofNat_mul (witValS N N' (k + 1)) (witValS N N' (k + 1)))))
+      ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl _)
+        (BPair.oneValue_of_eq (congrArg BPair.ofNat
+          (prodExpand (witVal N (k + 1)) (witVal N' (k + 1))
+            (witVal N (k + 1)) (witVal N' (k + 1)))))) ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl _)
+        (BPair.oneValue_trans (BPair.ofNat_add _ _)
+          (BPair.add_congr (BPair.oneValue_refl _)
+            (BPair.ofNat_add _ _)))) ?_
+    exact BPair.oneValue_of_eq (mulAdd3 _ _ _ _)
+  · refine BPair.oneValue_trans (ground.foldB_add _ _ (List.range N)) ?_
+    refine BPair.add_congr ?_ ?_
+    · refine ground.foldB_congr_members _ _ (List.range N)
+        (fun k _ => ?_)
+      exact BPair.mul_congr (BPair.oneValue_refl _)
+        (BPair.ofNat_mul (witVal N (k + 1)) (witVal N (k + 1)))
+    · refine BPair.oneValue_trans (ground.foldB_add _ _ (List.range N)) ?_
+      refine BPair.add_congr ?_ ?_
+      · refine BPair.oneValue_trans
+          (bsumTrunc _ N' N hNN (fun k hk => ?_)) ?_
+        · rw [witVal_vac N' (k + 1) (Nat.le_trans hk (Nat.le_succ k))]
+          exact mulZeroR _
+        · refine BPair.oneValue_trans
+            (ground.foldB_congr_members _
+              (fun k => wellDiag r A B en ed (k + 1)
+                  * BPair.ofNat (witVal N (k + 1) * witVal N' (k + 1))
+                + wellDiag r A B en ed (k + 1)
+                  * BPair.ofNat (witVal N (k + 1) * witVal N' (k + 1)))
+              (List.range N') (fun k _ => ?_)) ?_
+          · refine BPair.oneValue_trans
+              (BPair.mul_congr (BPair.oneValue_refl _)
+                (BPair.ofNat_add _ _)) ?_
+            exact BPair.oneValue_of_eq (BPair.left_distrib _ _ _)
+          · exact ground.foldB_add _ _ (List.range N')
+      · refine BPair.oneValue_trans
+          (bsumTrunc _ N' N hNN (fun k hk => ?_)) ?_
+        · rw [witVal_vac N' (k + 1) (Nat.le_trans hk (Nat.le_succ k))]
+          exact mulZeroR _
+        · refine ground.foldB_congr_members _ _ (List.range N')
+            (fun k _ => ?_)
+          exact BPair.mul_congr (BPair.oneValue_refl _)
+            (BPair.ofNat_mul (witVal N' (k + 1)) (witVal N' (k + 1)))
+
+/-- A family's balance fold at stated values reads the values'
+own sum. -/
+private theorem bsumOfNat (h : Nat → Nat) (W : Nat) :
+    (ground.bsum (fun k => BPair.ofNat (h k)) (List.range W)).oneValue
+      (BPair.ofNat (ground.sumNat ((List.range W).map h))) := by
+  rw [ground.sumMap h (List.range W)]
+  exact BPair.oneValue_symm (ground.ofNat_famFold h (List.range W))
+
+/-- The well weight's mixed fold splits at the square and linear
+mixed folds. -/
+private theorem wellWeightSplit (r N N' : Nat) :
+    ground.sumNat ((List.range N').map (fun k =>
+        ((k + 1) * (k + 1) + r * (k + 1))
+          * (witVal N (k + 1) * witVal N' (k + 1))))
+      = crossSqMM N N' + r * crossSqM N N' := by
+  have hmem : ∀ i, i < N' →
+      ((i + 1) * (i + 1) + r * (i + 1))
+          * (witVal N (i + 1) * witVal N' (i + 1))
+        = (i + 1) * (i + 1) * (witVal N (i + 1) * witVal N' (i + 1))
+          + r * ((i + 1) * (witVal N (i + 1) * witVal N' (i + 1))) := by
+    intro i _
+    rw [ground.mulAddR ((i + 1) * (i + 1)) (r * (i + 1))
+        (witVal N (i + 1) * witVal N' (i + 1)),
+      ground.mulAssoc r (i + 1) (witVal N (i + 1) * witVal N' (i + 1))]
+  rw [ground.sumMap _ (List.range N'),
+    ground.famFold_congr_range _ _ N' hmem,
+    ← ground.sumMap _ (List.range N'),
+    ground.sumNat_map_add (fun k => (k + 1) * (k + 1)
+        * (witVal N (k + 1) * witVal N' (k + 1)))
+      (fun k => r * ((k + 1) * (witVal N (k + 1) * witVal N' (k + 1))))
+      (List.range N'),
+    ← sumNat_scale r (fun k => (k + 1)
+      * (witVal N (k + 1) * witVal N' (k + 1))) (List.range N')]
+  rfl
+
+/-- The mixed diagonal fold's closed read: the three diagonal keys
+against the mixed square and well folds. -/
+private theorem crossDiagEval (r A B N N' : Nat) (en ed : Pos) :
+    (crossDiag r A B N N' en ed).oneValue
+      (BPair.ofNat 2
+          * (BPair.ofNat ((r + 1) * B) * BPair.ofPos ed * BPair.ofPos ed)
+          * BPair.ofNat (crossSq N N')
+        + (BPair.ofNat (4 * B) * BPair.ofPos en * BPair.ofPos en
+            * BPair.ofNat (crossSqMM N N' + r * crossSqM N N')
+          + ((BPair.ofNat ((r + 1) * A) * BPair.ofPos en
+              * BPair.ofPos ed)
+            * BPair.ofNat (crossSq N N')).swap)) := by
+  refine BPair.oneValue_trans
+    (ground.foldB_congr_members _
+      (fun k => BPair.ofNat 2
+            * (BPair.ofNat ((r + 1) * B) * BPair.ofPos ed * BPair.ofPos ed)
+            * BPair.ofNat (witVal N (k + 1) * witVal N' (k + 1))
+        + (BPair.ofNat (4 * B) * BPair.ofPos en * BPair.ofPos en
+              * BPair.ofNat (((k + 1) * (k + 1) + r * (k + 1))
+                * (witVal N (k + 1) * witVal N' (k + 1)))
+          + (BPair.ofNat ((r + 1) * A) * BPair.ofPos en
+              * BPair.ofPos ed).swap
+            * BPair.ofNat (witVal N (k + 1) * witVal N' (k + 1))))
+      (List.range N') (fun k _ => ?_)) ?_
+  · refine BPair.oneValue_trans
+      (BPair.mul_congr (wellDiag_read r A B (k + 1) en ed)
+        (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.right_distrib _ _ _)) ?_
+    refine BPair.add_congr (BPair.oneValue_refl _) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.right_distrib _ _ _)) ?_
+    refine BPair.add_congr ?_ (BPair.oneValue_refl _)
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.mul_congr (BPair.mul_congr
+        (BPair.ofNat_mul (4 * B) ((k + 1) * (k + 1) + r * (k + 1)))
+        (BPair.oneValue_refl _)) (BPair.oneValue_refl _))
+        (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans
+      (BPair.oneValue_of_eq (pullMid _ _ _ _ _)) ?_
+    exact BPair.mul_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_symm (BPair.ofNat_mul _ _))
+  · refine BPair.oneValue_trans (ground.foldB_add _ _ (List.range N')) ?_
+    refine BPair.add_congr ?_ ?_
+    · refine BPair.oneValue_trans
+        (ground.foldB_mul_left _ _ (List.range N')) ?_
+      exact BPair.mul_congr (BPair.oneValue_refl _)
+        (bsumOfNat (fun k => witVal N (k + 1) * witVal N' (k + 1)) N')
+    · refine BPair.oneValue_trans (ground.foldB_add _ _ (List.range N')) ?_
+      refine BPair.add_congr ?_ ?_
+      · refine BPair.oneValue_trans
+          (ground.foldB_mul_left _ _ (List.range N')) ?_
+        refine BPair.mul_congr (BPair.oneValue_refl _) ?_
+        refine BPair.oneValue_trans (bsumOfNat _ N') ?_
+        exact BPair.oneValue_of_eq (congrArg BPair.ofNat
+          (wellWeightSplit r N N'))
+      · refine BPair.oneValue_trans
+          (ground.foldB_mul_left _ _ (List.range N')) ?_
+        refine BPair.oneValue_trans
+          (BPair.mul_congr (BPair.oneValue_refl _)
+            (bsumOfNat (fun k => witVal N (k + 1) * witVal N' (k + 1))
+              N')) ?_
+        exact BPair.oneValue_of_eq (BPair.swap_mul _ _)
+
+/-- The compressed pencil's cross entry at the closed mixed folds:
+the diagonal's three keys against the mixed square and well folds
+with the bond against the mixed consecutive fold, the two lists'
+power-sum reads — the doubled cross's one closed value. -/
+def crossVal (r A B : Nat) (en ed : Pos) (N N' : Nat) : BPair :=
+  BPair.ofNat 2
+    * (BPair.ofNat 2
+          * (BPair.ofNat ((r + 1) * B) * BPair.ofPos ed
+            * BPair.ofPos ed)
+          * BPair.ofNat (crossSq N N')
+        + (BPair.ofNat (4 * B) * BPair.ofPos en * BPair.ofPos en
+            * BPair.ofNat (crossSqMM N N' + r * crossSqM N N')
+          + ((BPair.ofNat ((r + 1) * A) * BPair.ofPos en
+                * BPair.ofPos ed)
+              * BPair.ofNat (crossSq N N')).swap)
+      + (wellBond r B ed).swap * BPair.ofNat (crossBond N N'))
+
+/-- A matrix of nought rows reads every width. -/
+private theorem rowsLenNil {n : Nat} :
+    ∀ M : elim.Mat, M.length = 0 → elim.rowsLen n M
+  | [], _ => trivial
+  | _ :: _, h => Nat.noConfusion h
+
+/-- The well head's row count at every order. -/
+private theorem wellLenAll (r qn qd : Nat) (en ed : Pos) :
+    ∀ n : Nat, (wellMat r qn qd en ed n).length = n
+  | 0 => rfl
+  | m + 1 => wellLen r qn qd en ed m
+
+/-- The well head's rows read its order at every order. -/
+private theorem wellRowsAll (r qn qd : Nat) (en ed : Pos) :
+    ∀ n : Nat, elim.rowsLen n (wellMat r qn qd en ed n)
+  | 0 => rowsLenNil (wellMat r qn qd en ed 0) rfl
+  | m + 1 => wellRows r qn qd en ed m
+
+/-- The doubled cross read at the two families: the compressed
+pencil's cross entry reads its closed value, the two lists'
+power-sum reads. -/
+theorem crossRead : ∀ (r A B N N' n : Nat) (en ed : Pos), N' ≤ N →
+    N ≤ n →
+    (elim.dotN (witList N n)
+        (elim.matVec (wellMat r A B en ed n) (witList N' n))
+      + elim.dotN (witList N' n)
+        (elim.matVec (wellMat r A B en ed n) (witList N n))).oneValue
+      (crossVal r A B en ed N N') := by
+  intro r A B N N' n en ed hNN h
+  have hSl : (wellMat r A B en ed n).length = n := wellLenAll r A B en ed n
+  have hSr : elim.rowsLen n (wellMat r A B en ed n) :=
+    wellRowsAll r A B en ed n
+  have hqA := inertia.quadAdd (wellMat r A B en ed n) n hSr hSl
+    (witList N n) (witList N' n) (witList_len N n) (witList_len N' n)
+  have hshuffle : ((elim.dotN (witList N n)
+          (elim.matVec (wellMat r A B en ed n) (witList N n))
+        + elim.dotN (witList N n)
+          (elim.matVec (wellMat r A B en ed n) (witList N' n)))
+      + (elim.dotN (witList N' n)
+          (elim.matVec (wellMat r A B en ed n) (witList N n))
+        + elim.dotN (witList N' n)
+          (elim.matVec (wellMat r A B en ed n) (witList N' n)))).oneValue
+      ((inertia.quadForm (wellMat r A B en ed n) (witList N n)
+        + inertia.quadForm (wellMat r A B en ed n) (witList N' n))
+      + (elim.dotN (witList N n)
+          (elim.matVec (wellMat r A B en ed n) (witList N' n))
+        + elim.dotN (witList N' n)
+          (elim.matVec (wellMat r A B en ed n) (witList N n)))) := by
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl _)
+        (BPair.oneValue_of_eq (BPair.add_comm _ _))) ?_
+    exact BPair.oneValue_of_eq (BPair.add_add_comm _ _ _ _)
+  have hgap := gapOfAdd
+    (BPair.oneValue_trans (BPair.oneValue_symm hshuffle)
+      (BPair.oneValue_symm hqA))
+  refine BPair.oneValue_trans (BPair.oneValue_symm hgap) ?_
+  refine BPair.oneValue_trans
+    (BPair.add_congr
+      (BPair.oneValue_trans
+        (inertia.quadForm_congr _ (witListS_add N N' n))
+        (BPair.oneValue_trans
+          (famForm r A B N n en ed (witValS N N')
+            (witValS_vac N N' hNN) (witValS_zero N N') h)
+          (BPair.add_congr (diagSplit r A B N N' en ed hNN)
+            (BPair.oneValue_trans
+              (BPair.mul_congr (BPair.oneValue_refl (BPair.ofNat 2))
+                (BPair.oneValue_trans
+                  (BPair.mul_congr (BPair.oneValue_refl _)
+                    (BPair.oneValue_trans
+                      (BPair.oneValue_of_eq (congrArg BPair.ofNat
+                        (crossSplitNat N N' hNN)))
+                      (BPair.oneValue_trans (BPair.ofNat_add _ _)
+                        (BPair.add_congr (BPair.oneValue_refl _)
+                          (BPair.ofNat_add _ _)))))
+                  (BPair.oneValue_of_eq (mulAdd3 _ _ _ _))))
+              (BPair.oneValue_of_eq (mulAdd3 _ _ _ _))))))
+      (ground.swap_congr
+        (BPair.add_congr (wellForm r A B N n en ed h)
+          (wellForm r A B N' n en ed (Nat.le_trans hNN h))))) ?_
+  refine BPair.oneValue_trans
+    (BPair.add_congr
+      (BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.add_add_comm _ _ _ _))
+        (BPair.add_congr (BPair.oneValue_refl _)
+          (BPair.oneValue_trans
+            (BPair.oneValue_of_eq (BPair.add_add_comm _ _ _ _))
+            (BPair.oneValue_of_eq (BPair.add_comm _ _)))))
+      (BPair.oneValue_refl _)) ?_
+  refine BPair.oneValue_trans
+    (BPair.add_congr
+      (BPair.oneValue_of_eq (BPair.add_assoc _ _ _).symm)
+      (BPair.oneValue_refl _)) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq (BPair.add_right_comm _ _ _)) ?_
+  refine BPair.oneValue_trans
+    (BPair.add_congr
+      (BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.add_comm _ _))
+        (BPair.swap_add_null (BPair.oneValue_refl _)))
+      (BPair.oneValue_refl _)) ?_
+  refine BPair.oneValue_trans (BPair.unit_add _) ?_
+  refine BPair.oneValue_trans
+    (BPair.add_congr
+      (BPair.oneValue_symm (BPair.ofNat_two_mul _))
+      (BPair.oneValue_refl _)) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq (BPair.left_distrib _ _ _).symm) ?_
+  exact BPair.mul_congr (BPair.oneValue_refl (BPair.ofNat 2))
+    (BPair.add_congr (crossDiagEval r A B N N' en ed)
+      (BPair.oneValue_refl _))
+
+/-- A count strictly above the sum's unit is occupied. -/
+private theorem posOfUnitLt : ∀ {m : Nat},
+    BPair.unit < BPair.ofNat m → 0 < m
+  | m + 1, _ => Nat.succ_pos m
+  | 0, hp => absurd hp (by decide +kernel)
+
 /-- The cap pair's read at the well head: a second stated family of
 the witness's shape at its own endpoint, the compressed pencil's
-two-by-two entries the folds of the two lists, and a compressed
-count of two at the cap line placing two chain roots below the cap
-— the second root below the cap, the compression's counts at or
-below the full form's. -/
-theorem capPair : ∀ (en ed : Pos) (r N N' n ac bc : Nat),
-    inertia.quadForm
-        (wellMat r (ac * qLowNum (ground.posVal en) (ground.posVal ed) r N)
-          (bc * qLowDen (ground.posVal en) (ground.posVal ed) r N) en ed n)
-        (witList N n)
-      < BPair.unit →
-    (elim.dotN (witList N n)
-        (elim.matVec
-          (wellMat r (ac * qLowNum (ground.posVal en) (ground.posVal ed) r N)
-            (bc * qLowDen (ground.posVal en) (ground.posVal ed) r N) en ed n)
-          (witList N' n))
-      + elim.dotN (witList N' n)
-        (elim.matVec
-          (wellMat r (ac * qLowNum (ground.posVal en) (ground.posVal ed) r N)
-            (bc * qLowDen (ground.posVal en) (ground.posVal ed) r N) en ed n)
-          (witList N n)))
-        * (elim.dotN (witList N n)
-            (elim.matVec
-              (wellMat r
-                (ac * qLowNum (ground.posVal en) (ground.posVal ed) r N)
-                (bc * qLowDen (ground.posVal en) (ground.posVal ed) r N)
-                en ed n)
-              (witList N' n))
-          + elim.dotN (witList N' n)
-            (elim.matVec
-              (wellMat r
-                (ac * qLowNum (ground.posVal en) (ground.posVal ed) r N)
-                (bc * qLowDen (ground.posVal en) (ground.posVal ed) r N)
-                en ed n)
-              (witList N n)))
-      < BPair.ofNat 4
-        * (inertia.quadForm
-            (wellMat r
-              (ac * qLowNum (ground.posVal en) (ground.posVal ed) r N)
-              (bc * qLowDen (ground.posVal en) (ground.posVal ed) r N)
-              en ed n)
-            (witList N n)
-          * inertia.quadForm
-            (wellMat r
-              (ac * qLowNum (ground.posVal en) (ground.posVal ed) r N)
-              (bc * qLowDen (ground.posVal en) (ground.posVal ed) r N)
-              en ed n)
-            (witList N' n)) →
+entries the two lines' gaps on the diagonal with the doubled cross
+at the closed mixed folds, and the discriminant comparison at those
+power-sum reads placing two chain roots below the cap line — the
+second root below the cap, the compression's counts at or below the
+full form's. -/
+theorem capPair : ∀ (en ed : Pos) (r N N' n A B G G' : Nat),
+    N' ≤ N → N ≤ n →
+    qLowNum (ground.posVal en) (ground.posVal ed) r N * B + G
+      = A * qLowDen (ground.posVal en) (ground.posVal ed) r N →
+    qLowNum (ground.posVal en) (ground.posVal ed) r N' * B + G'
+      = A * qLowDen (ground.posVal en) (ground.posVal ed) r N' →
+    crossVal r A B en ed N N' * crossVal r A B en ed N N'
+      < BPair.ofNat (4 * (G * G')) →
     ∀ sp : inertia.Split n,
-      inertia.splitRead
-        (wellMat r (ac * qLowNum (ground.posVal en) (ground.posVal ed) r N)
-          (bc * qLowDen (ground.posVal en) (ground.posVal ed) r N) en ed n)
-        sp →
+      inertia.splitRead (wellMat r A B en ed n) sp →
       2 ≤ inertia.revAt sp := by
-  intro en ed r N N' n ac bc h11 hdet sp hsp
-  exact capForcing _ (witList N n) (witList N' n) (witList_len N n)
-    (witList_len N' n) h11 hdet sp hsp
-
+  intro en ed r N N' n A B G G' hNN h hG hG' hD sp hsp
+  have hpos := ground.mulPosSplit (ground.mulPosSplit
+    (posOfUnitLt (ground.leB_ltB_trans (ground.unitLeSq _) hD))).2
+  have hGpos : 0 < G := hpos.1
+  have hG'pos : 0 < G' := hpos.2
+  have h11v := witLineRead en ed r N n A B G h hG
+  have h22v := witLineRead en ed r N' n A B G' (Nat.le_trans hNN h) hG'
+  have hcr := crossRead r A B N N' n en ed hNN h
+  refine capForcing _ (witList N n) (witList N' n) (witList_len N n)
+    (witList_len N' n)
+    (BPair.lt_congr (BPair.oneValue_symm h11v)
+      (BPair.oneValue_refl BPair.unit)
+      (ground.ltB_swap (ground.unitLtNat hGpos)))
+    (BPair.lt_congr
+      (BPair.mul_congr (BPair.oneValue_symm hcr)
+        (BPair.oneValue_symm hcr))
+      ?_ hD) sp hsp
+  refine BPair.oneValue_trans (BPair.ofNat_mul 4 (G * G')) ?_
+  refine BPair.mul_congr (BPair.oneValue_refl (BPair.ofNat 4)) ?_
+  refine BPair.oneValue_trans (BPair.ofNat_mul G G') ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq (BPair.swap_mul_swap _ _).symm) ?_
+  exact BPair.mul_congr (BPair.oneValue_symm h11v)
+    (BPair.oneValue_symm h22v)
 
 /-! The bundled certificate's glue: the depth reads' geometry, the
 rate transfer from the cap line to the member line, the profile
@@ -14382,20 +15447,6 @@ private theorem rateDiag (r qcN qcD A B : Nat) (en ed : Pos) (m : Nat)
       (ground.unitLeMul (ground.unitLeOfNat ((r + 1) * (qcN * B - A * qcD)))
         (ground.leB_of_lt (ground.unitLtOfPos en)))
       (ground.leB_of_lt (ground.unitLtOfPos ed)))
-
-/-- The two lines' bond weights at a depth: each scaled at the
-other's second datum reads one value, the weights' shared count. -/
-private theorem rateBond (r qcD B : Nat) (ed : Pos) :
-    (BPair.ofNat B * wellBond r qcD ed).oneValue
-      (BPair.ofNat qcD * wellBond r B ed) := by
-  refine BPair.oneValue_trans
-    (numScale B ((r + 1) * qcD) (BPair.ofPos ed) (BPair.ofPos ed)) ?_
-  refine BPair.oneValue_trans ?_
-    (BPair.oneValue_symm
-      (numScale qcD ((r + 1) * B) (BPair.ofPos ed) (BPair.ofPos ed)))
-  rw [ground.mulLeftComm B (r + 1) qcD, ground.mulLeftComm qcD (r + 1) B,
-    Nat.mul_comm B qcD]
-  exact BPair.oneValue_refl _
 
 /-- The rate transfer: a comparison of the cap line's bond weight
 against its diagonal carries to the member line, the cap's second
@@ -14695,8 +15746,8 @@ private theorem wellDiag_mono (r qn qd : Nat) (en ed : Pos) {m m' : Nat}
   have hcount : 4 * qd * (m * m + r * m) ≤ 4 * qd * (m' * m' + r * m') :=
     Nat.mul_le_mul_left (4 * qd)
       (Nat.add_le_add (Nat.mul_le_mul h h) (Nat.mul_le_mul_left r h))
-  refine ground.leB_congr (BPair.oneValue_symm (diagRead r qn qd m en ed))
-    (BPair.oneValue_symm (diagRead r qn qd m' en ed)) ?_
+  refine ground.leB_congr (BPair.oneValue_symm (wellDiag_read r qn qd m en ed))
+    (BPair.oneValue_symm (wellDiag_read r qn qd m' en ed)) ?_
   refine ground.leB_add (ground.leB_refl _) ?_
   refine ground.leB_add ?_ (ground.leB_refl _)
   refine ground.leB_mul_mono hE
@@ -14827,8 +15878,8 @@ private theorem geomNat (P Q M wde G W X : Nat)
   exact Nat.add_le_add hPX (Nat.le_refl (Q * (W * G)))
 
 /-- The bond weight's count: the rate's clearing at the scale's
-square. -/
-private theorem bondNat (r qd : Nat) (ed : Pos) :
+square, the well's bond read at its count form. -/
+theorem wellBond_count (r qd : Nat) (ed : Pos) :
     (wellBond r qd ed).oneValue
       (BPair.ofNat ((r + 1) * qd * ground.posVal ed * ground.posVal ed)) := by
   show (BPair.ofNat ((r + 1) * qd) * BPair.ofPos ed * BPair.ofPos ed).oneValue _
@@ -14836,14 +15887,15 @@ private theorem bondNat (r qd : Nat) (ed : Pos) :
   exact collect3 ((r + 1) * qd) (ground.posVal ed) (ground.posVal ed)
 
 /-- The diagonal's counts: the band read's clearing with the well's
-electric member against the rate's balance partner. -/
-private theorem diagNat (r qn qd m : Nat) (en ed : Pos) :
+electric member against the rate's balance partner, the well's
+diagonal read at the three-term count form. -/
+theorem wellDiag_count (r qn qd m : Nat) (en ed : Pos) :
     (wellDiag r qn qd en ed m).oneValue
       (BPair.ofNat (2 * ((r + 1) * qd * ground.posVal ed * ground.posVal ed)
           + 4 * qd * (m * m + r * m) * ground.posVal en * ground.posVal en)
         + (BPair.ofNat ((r + 1) * qn * ground.posVal en
             * ground.posVal ed)).swap) := by
-  refine BPair.oneValue_trans (diagRead r qn qd m en ed) ?_
+  refine BPair.oneValue_trans (wellDiag_read r qn qd m en ed) ?_
   rw [BPair.ofPos_val en, BPair.ofPos_val ed]
   refine BPair.oneValue_trans
     (BPair.oneValue_of_eq (BPair.add_assoc _ _ _).symm) ?_
@@ -14879,7 +15931,7 @@ private theorem diagCompare (r qn qd m : Nat) (en ed : Pos) (a0 a2 a1 : Nat)
   refine ground.leB_congr_left
     (BPair.oneValue_symm
       (BPair.oneValue_trans
-        (BPair.mul_congr (bondNat r qd ed)
+        (BPair.mul_congr (wellBond_count r qd ed)
           (BPair.oneValue_symm (BPair.ofNat_add a0 a2)))
         (BPair.oneValue_symm (BPair.ofNat_mul _ (a0 + a2))))) ?_
   have hR : (wellDiag r qn qd en ed m * BPair.ofNat a1).oneValue
@@ -14889,7 +15941,7 @@ private theorem diagCompare (r qn qd m : Nat) (en ed : Pos) (a0 a2 a1 : Nat)
         + (BPair.ofNat ((r + 1) * qn * ground.posVal en
             * ground.posVal ed * a1)).swap) := by
     refine BPair.oneValue_trans
-      (BPair.mul_congr (diagNat r qn qd m en ed)
+      (BPair.mul_congr (wellDiag_count r qn qd m en ed)
         (BPair.oneValue_refl (BPair.ofNat a1))) ?_
     refine BPair.oneValue_trans
       (BPair.oneValue_of_eq (BPair.right_distrib _ _ (BPair.ofNat a1))) ?_
@@ -17215,5 +18267,3209 @@ theorem certCount (r : Nat) (C : DisconjCert) (A B n : Nat)
               (Nat.le_of_lt hlt2) (k + 1) (Nat.succ_le_succ hck) hkn) sp hsp]
         exact Nat.le_refl 1
 
+
+/-! `lem:cornerpivot`(vii)'s evaluated glue: the dominance walk's row
+certificates, read at one shared clearing power, make the evaluated
+site matrix diagonally dominant at every depth of the box, so
+`thm:decimation`(ii) prices its form. -/
+
+/-- The profile's evaluated collapse at a depth and a composite
+point, cleared at the stated power — the evaluated site datum's
+entry, `lem:cellcount`'s cleared evaluation at the depth's own
+collapse. -/
+def evalProf (V : poly.PPoly × poly.PPoly) (m : Nat) (en : Pos)
+    (ed : Pos) (K : Nat) : BPair :=
+  poly.evalClear (depthPoly V m) (BPair.ofPos en) ed K
+
+/-- Coefficientwise magnitude domination: every key's magnitude on
+the left sits at or below the key on the right (`thm:windowsep`'s
+carrier at the scale polynomials). -/
+private def magDom (p q : poly.Poly) : Prop :=
+  ∀ j, windowsep.mag (ground.getAt BPair.unit p j)
+    ≤ ground.getAt BPair.unit q j
+
+/-- The magnitude map dominates its own source. -/
+private theorem magDom_map (p : poly.Poly) :
+    magDom p (p.map windowsep.mag) := by
+  intro j
+  rw [windowsep.getAt_map_mag p j]
+  exact ground.leB_refl _
+
+/-- Domination sums, the magnitudes' own sum law. -/
+private theorem magDom_add {p1 q1 p2 q2 : poly.Poly}
+    (h1 : magDom p1 q1) (h2 : magDom p2 q2) :
+    magDom (poly.add p1 p2) (poly.add q1 q2) := by
+  intro j
+  refine ground.leB_congr_left
+    (windowsep.mag_congr (BPair.oneValue_symm (poly.getAt_add p1 p2 j))) ?_
+  refine ground.leB_congr_right
+    (BPair.oneValue_symm (poly.getAt_add q1 q2 j)) ?_
+  exact ground.leB_trans (windowsep.mag_add_le _ _)
+    (ground.leB_add (h1 j) (h2 j))
+
+/-- Domination rides the key shift, the shifted keys vacant on both
+sides below the shift. -/
+private theorem magDom_shiftUp (b : Nat) {p q : poly.Poly}
+    (h : magDom p q) :
+    magDom (poly.shiftUp b p) (poly.shiftUp b q) := by
+  intro j
+  match Nat.lt_or_ge j b with
+  | Or.inl hlt =>
+    rw [poly.getAt_shiftUp_lt b p j hlt, poly.getAt_shiftUp_lt b q j hlt,
+      windowsep.mag_unitLe (ground.leB_refl BPair.unit)]
+    exact ground.leB_refl _
+  | Or.inr hge =>
+    obtain ⟨k, hk⟩ := Nat.le.dest hge
+    rw [← hk, poly.getAt_shiftUp_add b p k, poly.getAt_shiftUp_add b q k]
+    exact h k
+
+/-- Domination rides a rescaling at its own magnitude. -/
+private theorem magDom_scaleP {a : BPair} (ha : windowsep.mag a = a)
+    {p q : poly.Poly} (h : magDom p q) :
+    magDom (poly.scaleP a p) (poly.scaleP a q) := by
+  have hau : BPair.unit ≤ a := by
+    rw [← ha]
+    exact windowsep.unitLe_mag a
+  intro j
+  refine ground.leB_congr_left
+    (windowsep.mag_congr
+      (BPair.oneValue_symm (poly.getAt_scaleP a p j))) ?_
+  refine ground.leB_congr_right
+    (BPair.oneValue_symm (poly.getAt_scaleP a q j)) ?_
+  refine ground.leB_congr_left
+    (BPair.oneValue_symm
+      (windowsep.mag_mul a (ground.getAt BPair.unit p j))) ?_
+  rw [ha]
+  exact ground.leB_mulR hau (h j)
+
+/-- The slab walk carries domination: its weights are natural, its
+shifts and sums the domination laws' own. -/
+private theorem slabGo_magDom (mm : Nat) :
+    ∀ (b w : Nat) (P : poly.PPoly),
+      magDom (slabGo mm b w P)
+        (slabGo mm b w (P.map (fun p => p.map windowsep.mag)))
+  | _, _, [] => by
+    intro j
+    show windowsep.mag BPair.unit ≤ BPair.unit
+    rw [windowsep.mag_unitLe (ground.leB_refl BPair.unit)]
+    exact ground.leB_refl _
+  | b, w, p :: t =>
+    magDom_add
+      (magDom_shiftUp b
+        (magDom_scaleP (windowsep.mag_unitLe (ground.unitLeOfNat w))
+          (magDom_map p)))
+      (slabGo_magDom mm (b + 1) (w * mm) t)
+
+/-- The entrywise magnitude profile's collapse dominates the
+profile's own, key by key at every depth. -/
+private theorem depthPoly_magDom (V : poly.PPoly × poly.PPoly) (m : Nat) :
+    magDom (depthPoly V m) (depthPoly (magProf V) m) :=
+  magDom_add (slabGo_magDom (m * m) 0 1 V.1)
+    (slabGo_magDom (m * m) 1 m V.2)
+
+/-- One monomial term's price at a dominating coefficient: the two
+positive weights ride the magnitude outright. -/
+private theorem magTerm_le {A B : BPair} (hA : windowsep.mag A ≤ B)
+    (x y : BPair) (hx : BPair.unit ≤ x) (hy : BPair.unit ≤ y) :
+    windowsep.mag (A * x * y) ≤ B * x * y := by
+  have hB : BPair.unit ≤ B := ground.leB_trans (windowsep.unitLe_mag A) hA
+  refine ground.leB_congr_left
+    (BPair.oneValue_symm
+      (BPair.oneValue_trans (windowsep.mag_mul (A * x) y)
+        (BPair.mul_congr (windowsep.mag_mul A x)
+          (BPair.oneValue_refl _)))) ?_
+  rw [windowsep.mag_unitLe hx, windowsep.mag_unitLe hy]
+  exact ground.leB_mul_mono hy (ground.unitLeMul hB hx)
+    (ground.leB_mul_mono hx hB hA (ground.leB_refl x))
+    (ground.leB_refl y)
+
+/-- Coefficientwise domination prices the cleared evaluation at a
+positive point: the evaluation's magnitude sits at or below the
+dominating list's own, both folds extended to the shared key
+range. -/
+private theorem evalClear_magDom {p q : poly.Poly} (en ed : Pos)
+    (K : Nat) (h : magDom p q) :
+    windowsep.mag (poly.evalClear p (BPair.ofPos en) ed K)
+      ≤ poly.evalClear q (BPair.ofPos en) ed K := by
+  have hEn : BPair.unit ≤ BPair.ofPos en :=
+    ground.leB_of_lt (ground.unitLtOfPos en)
+  have hEd : BPair.unit ≤ BPair.ofPos ed :=
+    ground.leB_of_lt (ground.unitLtOfPos ed)
+  have hoff : ∀ (l : poly.Poly) (j : Nat), l.length ≤ j →
+      (ground.getAt BPair.unit l j * ground.bpow (BPair.ofPos en) j
+        * ground.bpow (BPair.ofPos ed) (K - j)).oneValue BPair.unit := by
+    intro l j hj
+    rw [ground.getAt_over BPair.unit l j hj]
+    exact BPair.oneValue_trans (BPair.mul_congr_left (BPair.unit_mul _))
+      (BPair.unit_mul _)
+  have hP : (poly.evalClear p (BPair.ofPos en) ed K).oneValue
+      (ground.famFold BPair.add BPair.unit
+        (fun k => ground.getAt BPair.unit p k
+          * ground.bpow (BPair.ofPos en) k
+          * ground.bpow (BPair.ofPos ed) (K - k))
+        (List.range (p.length + q.length))) :=
+    BPair.oneValue_trans (poly.evalClear_read p (BPair.ofPos en) ed K)
+      (BPair.oneValue_symm
+        (ground.foldRange_le _ p.length (p.length + q.length)
+          (Nat.le_add_right _ _) (hoff p)))
+  have hQ : (poly.evalClear q (BPair.ofPos en) ed K).oneValue
+      (ground.famFold BPair.add BPair.unit
+        (fun k => ground.getAt BPair.unit q k
+          * ground.bpow (BPair.ofPos en) k
+          * ground.bpow (BPair.ofPos ed) (K - k))
+        (List.range (p.length + q.length))) :=
+    BPair.oneValue_trans (poly.evalClear_read q (BPair.ofPos en) ed K)
+      (BPair.oneValue_symm
+        (ground.foldRange_le _ q.length (p.length + q.length)
+          (Nat.le_add_left _ _) (hoff q)))
+  refine ground.leB_congr_left
+    (windowsep.mag_congr (BPair.oneValue_symm hP)) ?_
+  refine ground.leB_congr_right (BPair.oneValue_symm hQ) ?_
+  refine ground.leB_trans (windowsep.mag_famFold_le _ _) ?_
+  exact ground.bsum_le _ _ (List.range (p.length + q.length))
+    (fun i _ => magTerm_le (h i) _ _ (ground.unitLeBpow hEn i)
+      (ground.unitLeBpow hEd (K - i)))
+
+/-- The evaluated collapse's magnitude sits at or below the
+entrywise magnitude profile's own evaluation: the slab walk's
+weights are natural, so the depth's collapse is dominated key by
+key and the positive point prices the two folds
+(`thm:windowsep`'s sum and product laws). -/
+theorem evalProf_mag (V : poly.PPoly × poly.PPoly) (m : Nat)
+    (en ed : Pos) (K : Nat) :
+    windowsep.mag (evalProf V m en ed K)
+      ≤ evalProf (magProf V) m en ed K :=
+  evalClear_magDom en ed K (depthPoly_magDom V m)
+
+/-- The profile sum's evaluated collapse is the summands' own, the
+one clearing power shared. -/
+private theorem evalProf_profAdd (V W : poly.PPoly × poly.PPoly)
+    (m : Nat) (en ed : Pos) (K : Nat) :
+    (evalProf (profAdd V W) m en ed K).oneValue
+      (evalProf V m en ed K + evalProf W m en ed K) :=
+  BPair.oneValue_trans
+    (poly.evalClear_congr (depthPoly_profAdd V W m) (BPair.ofPos en) ed K)
+    (poly.evalClear_add _ _ _ _ _)
+
+/-- The swapped profile's evaluated collapse is the collapse's
+balance partner. -/
+private theorem evalProf_profNeg (V : poly.PPoly × poly.PPoly)
+    (m : Nat) (en ed : Pos) (K : Nat) :
+    (evalProf (profNeg V) m en ed K).oneValue
+      (evalProf V m en ed K).swap :=
+  BPair.oneValue_trans
+    (poly.evalClear_congr (depthPoly_profNeg V m) (BPair.ofPos en) ed K)
+    (poly.evalClear_neg _ _ _ _)
+
+/-- The row fold's evaluated collapse is the entries' own fold. -/
+private theorem rowFoldProf_eval (m : Nat) (en ed : Pos) (K : Nat) :
+    ∀ l : List (poly.PPoly × poly.PPoly),
+      (evalProf (rowFoldProf l) m en ed K).oneValue
+        (ground.famFold BPair.add BPair.unit
+          (fun e => evalProf e m en ed K) l)
+  | [] => BPair.oneValue_refl _
+  | c :: t =>
+    BPair.oneValue_trans
+      (evalProf_profAdd c (rowFoldProf t) m en ed K)
+      (BPair.add_congr (BPair.oneValue_refl _)
+        (rowFoldProf_eval m en ed K t))
+
+/-- The vacant profile's evaluated collapse is the sum's unit, both
+slabs' walks vacant. -/
+private theorem evalProf_vac (m : Nat) (en ed : Pos) (K : Nat) :
+    evalProf vacProf m en ed K = BPair.unit := rfl
+
+/-- The off-row magnitude fold's evaluated collapse prices the
+evaluated row's own off-key fold: the walk's two arms are the sum
+law and the entrywise magnitude price. -/
+private theorem offMagFold_le (m : Nat) (en ed : Pos) (K : Nat) :
+    ∀ (i : Nat) (l : List (poly.PPoly × poly.PPoly)),
+      decimation.offFold i (l.map (fun e => evalProf e m en ed K))
+        ≤ evalProf (offMagFold i l) m en ed K
+  | 0, [] => by
+    show BPair.unit ≤ evalProf vacProf m en ed K
+    rw [evalProf_vac m en ed K]
+    exact ground.leB_refl _
+  | _ + 1, [] => by
+    show BPair.unit ≤ evalProf vacProf m en ed K
+    rw [evalProf_vac m en ed K]
+    exact ground.leB_refl _
+  | 0, _ :: t => by
+    show decimation.magSum (t.map (fun e => evalProf e m en ed K))
+      ≤ evalProf (rowFoldProf (t.map magProf)) m en ed K
+    refine ground.leB_congr_right
+      (BPair.oneValue_symm
+        (BPair.oneValue_trans (rowFoldProf_eval m en ed K (t.map magProf))
+          (BPair.oneValue_of_eq
+            (ground.famFold_map BPair.add BPair.unit
+              (fun w => evalProf w m en ed K) magProf t)))) ?_
+    show ground.famFold BPair.add BPair.unit windowsep.mag
+        (t.map (fun e => evalProf e m en ed K))
+      ≤ ground.famFold BPair.add BPair.unit
+        (fun e => evalProf (magProf e) m en ed K) t
+    rw [ground.famFold_map BPair.add BPair.unit windowsep.mag
+      (fun e => evalProf e m en ed K) t]
+    exact ground.bsum_le_of_mem _ _ t
+      (fun e _ => evalProf_mag e m en ed K)
+  | i + 1, x :: t => by
+    show windowsep.mag (evalProf x m en ed K)
+        + decimation.offFold i (t.map (fun e => evalProf e m en ed K))
+      ≤ evalProf (profAdd (magProf x) (offMagFold i t)) m en ed K
+    refine ground.leB_congr_right
+      (BPair.oneValue_symm
+        (evalProf_profAdd (magProf x) (offMagFold i t) m en ed K)) ?_
+    exact ground.leB_add (evalProf_mag x m en ed K)
+      (offMagFold_le m en ed K i t)
+
+/-- The evaluated row's key read is the row entry's own evaluated
+collapse, the vacant profile's collapse the sum's unit past the
+row's length. -/
+private theorem getAt_evalRow (m : Nat) (en ed : Pos) (K : Nat)
+    (srow : List (poly.PPoly × poly.PPoly)) (i : Nat) :
+    ground.getAt BPair.unit (srow.map (fun e => evalProf e m en ed K)) i
+      = evalProf (ground.getAt vacProf srow i) m en ed K :=
+  ground.getAt_mapT vacProf BPair.unit
+    (fun e => evalProf e m en ed K) rfl srow i
+
+/-! `lem:cornerpivot`(vii)'s bridge tier: the canonical carrier's
+operations pass the evaluated collapse — the profile reads at their
+one-value classes, the canonical representative, the depth shift, the
+product at split clearing powers, and the matrix carrier's sum,
+memberwise swap, product, key exchange, rescaling and constant family
+at the evaluated site datum. -/
+
+/-- The constant profile's collapse is one key long at every depth. -/
+private theorem depthConst_len (c : BPair) (m : Nat) :
+    (depthPoly (constProf c) m).length = 1 := rfl
+
+/-- The constant profile's evaluated collapse is its coefficient
+against the whole clearing power, at every depth. -/
+private theorem evalProf_const (c : BPair) (m : Nat) (en ed : Pos) (K : Nat) :
+    (evalProf (constProf c) m en ed K).oneValue
+      (c * ground.bpow (BPair.ofPos ed) K) :=
+  BPair.oneValue_trans
+    (poly.evalClear_congr (depthConst c m) (BPair.ofPos en) ed K)
+    (poly.evalClear_single c (BPair.ofPos en) ed K)
+
+/-- A pair against the clearing's vacant power is the pair itself. -/
+private theorem mulBpowZero (ed : Pos) (z : BPair) :
+    (z * ground.bpow (BPair.ofPos ed) 0).oneValue z :=
+  BPair.oneValue_trans (BPair.mul_ofPos z Pos.one)
+    (BPair.oneValue_of_eq (BPair.scale_one z))
+
+/-- The depth shift's evaluated collapse is the collapse at the
+successor depth. -/
+private theorem evalProf_profShift (V : poly.PPoly × poly.PPoly) (m : Nat)
+    (en ed : Pos) (K : Nat) :
+    (evalProf (profShift V) m en ed K).oneValue
+      (evalProf V (m + 1) en ed K) :=
+  poly.evalClear_congr (depthPoly_profShift V m) (BPair.ofPos en) ed K
+
+/-- The canonical representative's evaluated collapse is the
+profile's own. -/
+private theorem evalProf_profReduce (V : poly.PPoly × poly.PPoly) (m : Nat)
+    (en ed : Pos) (K : Nat) :
+    (evalProf (profReduce V) m en ed K).oneValue
+      (evalProf V m en ed K) :=
+  poly.evalClear_congr (depthPoly_profReduce V m) (BPair.ofPos en) ed K
+
+/-- The reduced product's evaluated collapse is the factors' own at
+split clearing powers, the entries read at their representatives'
+caps (`def:ground`'s homogeneity principle at the profile
+carrier). -/
+private theorem evalProf_profMul (V W : poly.PPoly × poly.PPoly) (m : Nat)
+    (en ed : Pos) (K1 K2 : Nat)
+    (hV : (poly.vnorm (depthPoly V m)).length ≤ K1 + 1)
+    (hW : (poly.vnorm (depthPoly W m)).length ≤ K2 + 1) :
+    (evalProf (profMul V W) m en ed (K1 + K2)).oneValue
+      (evalProf V m en ed K1 * evalProf W m en ed K2) :=
+  BPair.oneValue_trans
+    (poly.evalClear_congr (depthPoly_profMul V W m) (BPair.ofPos en) ed
+      (K1 + K2))
+    (poly.evalClear_mulCap (depthPoly V m) (depthPoly W m)
+      (BPair.ofPos en) ed K1 K2 hV hW)
+
+/-- The unit clearing's product reads the profile's own collapse. -/
+private theorem evalProf_unitMul (V : poly.PPoly × poly.PPoly) (m : Nat)
+    (en ed : Pos) (K : Nat)
+    (hV : (poly.vnorm (depthPoly V m)).length ≤ K + 1) :
+    (evalProf (profMul (constProf (BPair.ofPos Pos.one)) V)
+        m en ed K).oneValue (evalProf V m en ed K) := by
+  have h := evalProf_profMul (constProf (BPair.ofPos Pos.one)) V m en ed 0 K
+    (poly.capOfLen (Nat.le_of_eq (depthConst_len (BPair.ofPos Pos.one) m)))
+    hV
+  rw [Nat.zero_add] at h
+  refine BPair.oneValue_trans h ?_
+  refine BPair.oneValue_trans
+    (BPair.mul_congr
+      (BPair.oneValue_trans
+        (evalProf_const (BPair.ofPos Pos.one) m en ed 0)
+        (mulBpowZero ed (BPair.ofPos Pos.one)))
+      (BPair.oneValue_refl _)) ?_
+  exact BPair.ofPos_one_mul (evalProf V m en ed K)
+
+/-- The clearing's evaluated collapse above the sum's unit at the
+stated power: the certificate prices it strictly above at its own
+power (`boxRead_pos`) and `poly.evalClear_pow` transports that read
+up to the stated one. -/
+theorem clearPos (V : poly.PPoly × poly.PPoly) (e0n : BPair)
+    (e0d : Pos) (C : BoxCert) (m K : Nat) (en ed : Pos)
+    (hr : boxRead V e0n e0d C)
+    (he : BPair.ofPos en * BPair.ofPos e0d ≤ e0n * BPair.ofPos ed)
+    (hlo : C.lo ≤ ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩)
+    (hhi : (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩ : CPair) ≤ C.hi)
+    (hK : C.K + 1 ≤ K + 1) :
+    BPair.unit < evalProf V m en ed K := by
+  have hpos := boxRead_pos V e0n e0d C hr m en ed he hlo hhi
+  have hup := poly.evalClear_pow (depthPoly V m) (BPair.ofPos en) ed K C.K
+    (depthPoly_ble hr.1 m) (Nat.le_of_succ_le_succ hK)
+  exact BPair.lt_congr (BPair.oneValue_refl _) (BPair.oneValue_symm hup)
+    (ground.unitLtMul
+      (ground.unitLtBpow (ground.unitLtOfPos ed) (K - C.K)) hpos)
+
+/-- One row's evaluated dominance comparison at the shared clearing
+power: the row's box certificate prices its gap profile's collapse
+strictly above the sum's unit at the stated power (`clearPos`), and
+the gap profile's split prices the diagonal entry above the off-row
+magnitude fold's own evaluation. -/
+private theorem domRowCore (e0n : BPair) (e0d : Pos) (i m K : Nat)
+    (en ed : Pos) (srow : List (poly.PPoly × poly.PPoly))
+    (gap : BoxCert)
+    (hr : domRowRead e0n e0d i srow gap)
+    (he : BPair.ofPos en * BPair.ofPos e0d ≤ e0n * BPair.ofPos ed)
+    (hlo : gap.lo ≤ ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩)
+    (hhi : (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩ : CPair)
+      ≤ gap.hi)
+    (hK : gap.K + 1 ≤ K + 1) :
+    decimation.offFold i (srow.map (fun e => evalProf e m en ed K))
+      ≤ evalProf (ground.getAt vacProf srow i) m en ed K := by
+  have hposK : BPair.unit
+      < evalProf (profAdd (ground.getAt vacProf srow i)
+          (profNeg (offMagFold i srow))) m en ed K :=
+    clearPos _ e0n e0d gap m K en ed hr he hlo hhi hK
+  have hsplit := BPair.oneValue_trans
+    (evalProf_profAdd (ground.getAt vacProf srow i)
+      (profNeg (offMagFold i srow)) m en ed K)
+    (BPair.add_congr (BPair.oneValue_refl _)
+      (evalProf_profNeg (offMagFold i srow) m en ed K))
+  refine ground.leB_trans (offMagFold_le m en ed K i srow) ?_
+  exact ground.leB_of_unit_add
+    (ground.leB_of_lt
+      (BPair.lt_congr (BPair.oneValue_refl _) hsplit hposK))
+
+/-- `lem:cornerpivot`(vii)'s row glue: at a row certificate read on
+a box holding the depth's composite point, and a shared clearing
+power at or beyond the certificate's own, the evaluated row's
+off-key magnitude fold sits at or below its diagonal entry —
+`thm:decimation`(ii)'s per-row comparison at the evaluated site
+datum. -/
+theorem domRow_le (e0n : BPair) (e0d : Pos) (i m K : Nat)
+    (en ed : Pos) (srow : List (poly.PPoly × poly.PPoly))
+    (gap : BoxCert)
+    (hr : domRowRead e0n e0d i srow gap)
+    (he : BPair.ofPos en * BPair.ofPos e0d ≤ e0n * BPair.ofPos ed)
+    (hlo : gap.lo ≤ ⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩)
+    (hhi : (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩ : CPair)
+      ≤ gap.hi)
+    (hK : gap.K + 1 ≤ K + 1)
+    (hi : i < srow.length) :
+    decimation.offFold i (srow.map (fun e => evalProf e m en ed K))
+      ≤ ground.getAt BPair.unit
+        (srow.map (fun e => evalProf e m en ed K)) i := by
+  rw [ground.getAt_map vacProf BPair.unit
+    (fun e => evalProf e m en ed K) srow i hi]
+  exact domRowCore e0n e0d i m K en ed srow gap hr he hlo hhi hK
+
+/-- The evaluated site datum: the family's per-depth collapse
+evaluated entrywise at the composite point, cleared at the one
+shared power (`cellcount.evalPC` at `pfmDepth`). -/
+def evalPfm (S : List (List (poly.PPoly × poly.PPoly))) (m : Nat)
+    (en ed : Pos) (K : Nat) : elim.Mat :=
+  cellcount.evalPC (pfmDepth m S) (BPair.ofPos en) ed K
+
+/-- The evaluated site datum's rows are the family's rows evaluated
+entrywise, the two maps' composition per row (`ground.map_map`). -/
+private theorem evalPfm_rows (m : Nat) (en ed : Pos) (K : Nat) :
+    ∀ S : List (List (poly.PPoly × poly.PPoly)),
+      evalPfm S m en ed K
+        = S.map (fun r => r.map (fun e => evalProf e m en ed K))
+  | [] => rfl
+  | r :: S => by
+    show (r.map (fun e => depthPoly e m)).map
+          (fun p => poly.evalClear p (BPair.ofPos en) ed K)
+        :: evalPfm S m en ed K
+      = r.map (fun e => evalProf e m en ed K)
+        :: S.map (fun r => r.map (fun e => evalProf e m en ed K))
+    rw [ground.map_map (fun e => depthPoly e m)
+      (fun p => poly.evalClear p (BPair.ofPos en) ed K) r,
+      evalPfm_rows m en ed K S]
+    rfl
+
+/-- The collapsed row's entry at a key is the entry's own collapse,
+a key beyond the row reading the vacant profile's collapse. -/
+private theorem depthEntryEq (m : Nat) :
+    ∀ (r : List (poly.PPoly × poly.PPoly)) (k : Nat),
+      ground.getAt ([] : poly.Poly) (r.map (fun e => depthPoly e m)) k
+        = depthPoly (ground.getAt vacProf r k) m :=
+  ground.getAt_mapT vacProf ([] : poly.Poly) (fun e => depthPoly e m) rfl
+
+/-- The collapsed family's entry at two keys is the family's own
+entry collapsed. -/
+private theorem getAt_pfmDepth (m : Nat)
+    (A : List (List (poly.PPoly × poly.PPoly))) (i j : Nat) :
+    ground.getAt ([] : poly.Poly)
+        (ground.getAt ([] : List poly.Poly) (pfmDepth m A) i) j
+      = depthPoly (ground.getAt vacProf
+          (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i) j) m := by
+  rw [depthRow m A i]
+  exact depthEntryEq m (ground.getAt [] A i) j
+
+/-- The collapsed family's row count is the family's own. -/
+private theorem length_pfmDepth (m : Nat)
+    (A : List (List (poly.PPoly × poly.PPoly))) :
+    (pfmDepth m A).length = A.length := ground.length_map _ A
+
+/-- The collapsed family keeps every row's width. -/
+private theorem rowsLen_pfmDepth (m n : Nat)
+    (A : List (List (poly.PPoly × poly.PPoly))) (h : elim.rowsLen n A) :
+    elim.rowsLen n (pfmDepth m A) :=
+  elim.rowsLen_mapRowsO (fun e => depthPoly e m) A n h
+
+/-- One row of two matched families' collapses. -/
+private theorem depthCongrRow (m : Nat) :
+    ∀ r s : List (poly.PPoly × poly.PPoly),
+      ground.matchedOV (ground.matchedRead profDRead) [r] [s] →
+      ground.matchedOV poly.polyRead (r.map (fun e => depthPoly e m))
+        (s.map (fun e => depthPoly e m))
+  | [], [], _ => trivial
+  | [], _ :: _, h => False.elim h.1
+  | _ :: _, [], h => False.elim h.1
+  | a :: r, b :: s, h =>
+    ⟨depthPoly_congr a b m h.1.1, depthCongrRow m r s ⟨h.1.2, trivial⟩⟩
+
+/-- Two matched families' collapses read one value entrywise at
+every depth. -/
+private theorem depthCongrM (m : Nat) :
+    ∀ A B : List (List (poly.PPoly × poly.PPoly)), pfmOneValue A B →
+      split.pmatOneValue (pfmDepth m A) (pfmDepth m B)
+  | [], [], _ => trivial
+  | [], _ :: _, h => False.elim h
+  | _ :: _, [], h => False.elim h
+  | r :: A, s :: B, h =>
+    ⟨depthCongrRow m r s ⟨h.1, trivial⟩, depthCongrM m A B h.2⟩
+
+/-- The evaluated site datum is one value across the family's
+representatives, at every depth, point and clearing power. -/
+private theorem evalPfm_congr (A B : List (List (poly.PPoly × poly.PPoly)))
+    (m : Nat) (en ed : Pos) (K : Nat) (h : pfmOneValue A B) :
+    elim.matOneValue (evalPfm A m en ed K) (evalPfm B m en ed K) :=
+  cellcount.evalPC_pcongr (BPair.ofPos en) ed K (depthCongrM m A B h)
+
+/-- The families' sum evaluates to the evaluated data's own sum. -/
+private theorem evalPfm_add (A B : List (List (poly.PPoly × poly.PPoly)))
+    (m : Nat) (en ed : Pos) (K : Nat) :
+    elim.matOneValue (evalPfm (pfmAdd A B) m en ed K)
+      (elim.matAdd (evalPfm A m en ed K) (evalPfm B m en ed K)) :=
+  elim.matOne_trans
+    (cellcount.evalPC_pcongr (BPair.ofPos en) ed K (pfmDepth_add A B m))
+    (cellcount.evalPC_pmatAdd (BPair.ofPos en) ed K (pfmDepth m A)
+      (pfmDepth m B))
+
+/-- The family's memberwise swap evaluates to the evaluated datum's
+own swap. -/
+private theorem evalPfm_swap (A : List (List (poly.PPoly × poly.PPoly)))
+    (m : Nat) (en ed : Pos) (K : Nat) :
+    elim.matOneValue (evalPfm (pfmSwap A) m en ed K)
+      (elim.matSwap (evalPfm A m en ed K)) :=
+  elim.matOne_trans
+    (cellcount.evalPC_pcongr (BPair.ofPos en) ed K (pfmDepth_swap A m))
+    (cellcount.evalPC_pswapM (BPair.ofPos en) ed K (pfmDepth m A))
+
+/-- The canonical representative's family reads the family's own
+entries. -/
+private theorem pfmReduce_ovRow :
+    ∀ r : List (poly.PPoly × poly.PPoly),
+      ground.matchedOV (ground.matchedRead profDRead)
+        [r.map profReduce] [r]
+  | [] => ⟨trivial, trivial⟩
+  | e :: r => ⟨⟨⟨slabReduce_ov e.1, slabReduce_ov e.2⟩,
+      (pfmReduce_ovRow r).1⟩, trivial⟩
+
+/-- The canonical representative's family reads the family back. -/
+private theorem pfmReduce_ov :
+    ∀ A : List (List (poly.PPoly × poly.PPoly)),
+      pfmOneValue (pfmReduce A) A
+  | [] => trivial
+  | r :: A => ⟨(pfmReduce_ovRow r).1, pfmReduce_ov A⟩
+
+/-- The canonically represented family's evaluated datum is the
+family's own. -/
+private theorem evalPfm_reduce (A : List (List (poly.PPoly × poly.PPoly)))
+    (m : Nat) (en ed : Pos) (K : Nat) :
+    elim.matOneValue (evalPfm (pfmReduce A) m en ed K)
+      (evalPfm A m en ed K) :=
+  evalPfm_congr (pfmReduce A) A m en ed K (pfmReduce_ov A)
+
+/-- The family's depth shift evaluates to the family's evaluated
+datum at the successor depth. -/
+private theorem evalPfm_shift (A : List (List (poly.PPoly × poly.PPoly)))
+    (m : Nat) (en ed : Pos) (K : Nat) :
+    elim.matOneValue (evalPfm (pfmShift A) m en ed K)
+      (evalPfm A (m + 1) en ed K) :=
+  cellcount.evalPC_pcongr (BPair.ofPos en) ed K (pfmDepth_shift A m)
+
+/-- The rescaled family's evaluated datum is the scale's own
+evaluated collapse weighting the evaluated family, the clearing
+powers splitting at the representatives' caps — the canonical key
+counts, one value's own read (`def:ground`'s homogeneity
+principle). -/
+private theorem evalPfm_scale (f : poly.PPoly × poly.PPoly)
+    (A : List (List (poly.PPoly × poly.PPoly)))
+    (m : Nat) (en ed : Pos) (K1 K2 : Nat)
+    (hf : (poly.vnorm (depthPoly f m)).length ≤ K1 + 1)
+    (hA : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i) j)
+        m)).length ≤ K2 + 1) :
+    elim.matOneValue (evalPfm (pfmScale f A) m en ed (K1 + K2))
+      (inertia.matScaleB (evalProf f m en ed K1)
+        (evalPfm A m en ed K2)) :=
+  elim.matOne_trans
+    (cellcount.evalPC_pcongr (BPair.ofPos en) ed (K1 + K2)
+      (pfmDepth_scale f A m))
+    (cellcount.evalPC_pscaleM (depthPoly f m) (BPair.ofPos en) ed K1 K2 hf
+      (pfmDepth m A)
+      (fun i j => by rw [getAt_pfmDepth m A i j]; exact hA i j))
+
+/-- The families' product's evaluated datum is the evaluated
+factors' own product, the clearing powers splitting at the entries'
+representatives' caps (`def:ground`'s homogeneity principle). -/
+private theorem evalPfm_mul (A B : List (List (poly.PPoly × poly.PPoly)))
+    (m : Nat) (en ed : Pos) (K1 K2 w n : Nat)
+    (ha : elim.rowsLen w A) (hbl : B.length = w) (hw : 0 < w)
+    (hb : elim.rowsLen n B)
+    (hda : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i) j)
+        m)).length ≤ K1 + 1)
+    (hdb : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) B i) j)
+        m)).length ≤ K2 + 1) :
+    elim.matOneValue (evalPfm (pfmMul A B) m en ed (K1 + K2))
+      (elim.matMul (evalPfm A m en ed K1) (evalPfm B m en ed K2)) :=
+  elim.matOne_trans
+    (cellcount.evalPC_pcongr (BPair.ofPos en) ed (K1 + K2)
+      (pfmDepth_mul A B m))
+    (cellcount.evalPC_pmatMul (pfmDepth m A) (pfmDepth m B)
+      (BPair.ofPos en) ed K1 K2 w n (rowsLen_pfmDepth m w A ha)
+      (by rw [length_pfmDepth m B]; exact hbl) hw
+      (rowsLen_pfmDepth m n B hb)
+      (fun i j => by rw [getAt_pfmDepth m A i j]; exact hda i j)
+      (fun i j => by rw [getAt_pfmDepth m B i j]; exact hdb i j))
+
+/-- One row of the constant family's evaluation: each entry's
+one-key list reads its coefficient against the whole clearing
+power. -/
+private theorem ofMatRowEval (ln : BPair) (ed : Pos) (K : Nat) :
+    ∀ r : List BPair,
+      poly.oneValue
+        ((r.map (fun c => ([c] : poly.Poly))).map
+          (fun p => poly.evalClear p ln ed K))
+        (poly.scaleP (ground.bpow (BPair.ofPos ed) K) r)
+  | [] => trivial
+  | c :: r =>
+    ⟨BPair.oneValue_trans (poly.evalClear_single c ln ed K)
+      (BPair.oneValue_trans
+        (BPair.oneValue_of_eq
+          (BPair.mul_comm c (ground.bpow (BPair.ofPos ed) K)))
+        (BPair.oneValue_symm (BPair.norm_oneValue _))),
+     ofMatRowEval ln ed K r⟩
+
+/-- The constant family's evaluation is the stated matrix weighted
+by the whole clearing power. -/
+private theorem ofMatEval (ln : BPair) (ed : Pos) (K : Nat) :
+    ∀ X : elim.Mat,
+      elim.matOneValue
+        (cellcount.evalPC
+          (X.map (fun r => r.map (fun c => ([c] : poly.Poly)))) ln ed K)
+        (inertia.matScaleB (ground.bpow (BPair.ofPos ed) K) X)
+  | [] => trivial
+  | r :: X => ⟨ofMatRowEval ln ed K r, ofMatEval ln ed K X⟩
+
+/-- The constant family's evaluated datum is the stated matrix
+weighted by the clearing's whole power, at every depth. -/
+private theorem evalPfm_ofMat (X : elim.Mat) (m : Nat) (en ed : Pos) (K : Nat) :
+    elim.matOneValue (evalPfm (ofMatProf X) m en ed K)
+      (inertia.matScaleB (ground.bpow (BPair.ofPos ed) K) X) :=
+  elim.matOne_trans
+    (cellcount.evalPC_pcongr (BPair.ofPos en) ed K (pfmDepth_ofMat X m))
+    (ofMatEval (BPair.ofPos en) ed K X)
+
+/-- The key exchange passes the cleared evaluation: the exchanged
+family's evaluated matrix is the evaluated matrix's own exchange, at
+stated rectangular shape. -/
+private theorem evalPC_transposeO (ln : BPair) (c : Pos) (K : Nat)
+    (o : Nat) (S : split.PMat) (hl : S.length = o)
+    (hr : elim.rowsLen o S) :
+    elim.matOneValue
+      (cellcount.evalPC (elim.transposeO poly.polyOps S) ln c K)
+      (elim.transposeM (cellcount.evalPC S ln c K)) := by
+  cases S with
+  | nil => trivial
+  | cons r t =>
+    have hS : 0 < (r :: t).length := Nat.succ_pos _
+    have hEl : (cellcount.evalPC (r :: t) ln c K).length = (r :: t).length :=
+      cellcount.length_evalPC (r :: t) ln c K
+    have hEr : elim.rowsLen o (cellcount.evalPC (r :: t) ln c K) :=
+      cellcount.rowsLen_evalPC o (r :: t) ln c K hr
+    have hLl : (cellcount.evalPC
+        (elim.transposeO poly.polyOps (r :: t)) ln c K).length = o := by
+      rw [cellcount.length_evalPC]
+      exact elim.length_transposeO poly.polyOps (r :: t) hr hS
+    have hRl : (elim.transposeM (cellcount.evalPC (r :: t) ln c K)).length
+        = o :=
+      elim.length_transposeM (cellcount.evalPC (r :: t) ln c K) hEr
+        (by rw [hEl]; exact hS)
+    refine elim.matOne_getAt _ _ (by rw [hLl, hRl]) ?_
+    intro p hp
+    rw [hLl] at hp
+    refine poly.ov_of_getAt ?_
+    intro q
+    rw [cellcount.getAt_evalPC ln c K (elim.transposeO poly.polyOps (r :: t)) p q]
+    match Nat.lt_or_ge q (r :: t).length with
+    | Or.inl hq =>
+      rw [elim.getAt_transposeO poly.polyOps ([] : poly.Poly) (r :: t) hr p q hp hq,
+        elim.getAt_transposeM BPair.unit
+          (cellcount.evalPC (r :: t) ln c K) hEr p q hp (by rw [hEl]; exact hq),
+        cellcount.getAt_evalPC ln c K (r :: t) q p]
+      exact BPair.oneValue_refl _
+    | Or.inr hq =>
+      have hLrow : (ground.getAt ([] : List poly.Poly)
+          (elim.transposeO poly.polyOps (r :: t)) p).length = (r :: t).length :=
+        elim.rowsLen_getAt (elim.transposeO poly.polyOps (r :: t)) p
+          (elim.rowsLen_transposeO poly.polyOps (r :: t))
+          (by rw [elim.length_transposeO poly.polyOps (r :: t) hr hS]; exact hp)
+      have hRrow : (ground.getAt ([] : List BPair)
+          (elim.transposeM (cellcount.evalPC (r :: t) ln c K)) p).length
+          = (cellcount.evalPC (r :: t) ln c K).length :=
+        elim.rowsLen_getAt (elim.transposeM (cellcount.evalPC (r :: t) ln c K)) p
+          (elim.rowsLen_transposeO ground.bpairOps
+            (cellcount.evalPC (r :: t) ln c K))
+          (by rw [hRl]; exact hp)
+      rw [ground.getAt_over ([] : poly.Poly) _ q (by rw [hLrow]; exact hq),
+        ground.getAt_over BPair.unit _ q (by rw [hRrow, hEl]; exact hq)]
+      exact BPair.oneValue_refl _
+
+/-- The family's key exchange evaluates to the evaluated site
+datum's own exchange, at stated rectangular shape. -/
+private theorem evalPfm_tr (A : List (List (poly.PPoly × poly.PPoly)))
+    (m : Nat) (en ed : Pos) (K : Nat) (o : Nat)
+    (hl : A.length = o) (hr : elim.rowsLen o A) :
+    elim.matOneValue (evalPfm (pfmTr A) m en ed K)
+      (elim.transposeM (evalPfm A m en ed K)) :=
+  elim.matOne_trans
+    (cellcount.evalPC_pcongr (BPair.ofPos en) ed K (pfmDepth_tr A m))
+    (evalPC_transposeO (BPair.ofPos en) ed K o (pfmDepth m A)
+      (by rw [length_pfmDepth m A]; exact hl) (rowsLen_pfmDepth m o A hr))
+
+/-- The dominance walk's evaluated read: at a passing certificate
+walk every row's evaluated comparison decides true, the walk's key
+threading the rows. -/
+private theorem domGoOf (e0n : BPair) (e0d : Pos) (m K : Nat)
+    (en ed : Pos)
+    (he : BPair.ofPos en * BPair.ofPos e0d ≤ e0n * BPair.ofPos ed) :
+    ∀ (i : Nat) (S : List (List (poly.PPoly × poly.PPoly)))
+      (gs : List BoxCert),
+      domCertGo e0n e0d i S gs →
+      (gs.all (fun g =>
+        decide (g.lo ≤ (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair))
+        && decide ((⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair) ≤ g.hi)
+        && Nat.ble (g.K + 1) (K + 1))) = true →
+      decimation.domGo i
+        (S.map (fun r => r.map (fun e => evalProf e m en ed K))) = true
+  | _, [], _, _, _ => rfl
+  | _, _ :: _, [], hc, _ => False.elim hc
+  | i, sr :: srs, g :: gs, hc, hb => by
+    have hg := ground.andSplitB (ground.andSplitB hb).1
+    have hg2 := ground.andSplitB hg.1
+    show (decide (decimation.offFold i
+          (sr.map (fun e => evalProf e m en ed K))
+        ≤ ground.getAt BPair.unit
+          (sr.map (fun e => evalProf e m en ed K)) i)
+      && decimation.domGo (i + 1)
+        (srs.map (fun r => r.map (fun e => evalProf e m en ed K))))
+      = true
+    rw [decide_eq_true
+        (ground.leB_congr_right
+          (BPair.oneValue_of_eq (getAt_evalRow m en ed K sr i).symm)
+          (domRowCore e0n e0d i m K en ed sr g hc.1 he
+            (of_decide_eq_true hg2.1) (of_decide_eq_true hg2.2)
+            (ground.bleLe hg.2))),
+      domGoOf e0n e0d m K en ed he (i + 1) srs gs hc.2
+        (ground.andSplitB hb).2]
+    rfl
+
+/-- The dominance walk's evaluated read at a stated row key: the
+row's comparison holds at the walked key, the certificate list
+stepping with the rows. -/
+private theorem domIdx (e0n : BPair) (e0d : Pos) (m K : Nat)
+    (en ed : Pos)
+    (he : BPair.ofPos en * BPair.ofPos e0d ≤ e0n * BPair.ofPos ed) :
+    ∀ (i : Nat) (S : List (List (poly.PPoly × poly.PPoly)))
+      (gs : List BoxCert),
+      domCertGo e0n e0d i S gs →
+      (gs.all (fun g =>
+        decide (g.lo ≤ (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair))
+        && decide ((⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair) ≤ g.hi)
+        && Nat.ble (g.K + 1) (K + 1))) = true →
+      ∀ j, j < S.length →
+        decimation.offFold (i + j)
+            (ground.getAt ([] : List BPair)
+              (S.map (fun r =>
+                r.map (fun e => evalProf e m en ed K))) j)
+          ≤ ground.getAt BPair.unit
+            (ground.getAt ([] : List BPair)
+              (S.map (fun r =>
+                r.map (fun e => evalProf e m en ed K))) j) (i + j)
+  | _, [], _, _, _, j, hj => absurd hj (Nat.not_lt_zero j)
+  | _, _ :: _, [], hc, _, _, _ => False.elim hc
+  | i, sr :: _, g :: _, hc, hb, 0, _ => by
+    have hg := ground.andSplitB (ground.andSplitB hb).1
+    have hg2 := ground.andSplitB hg.1
+    show decimation.offFold (i + 0)
+        (sr.map (fun e => evalProf e m en ed K))
+      ≤ ground.getAt BPair.unit
+        (sr.map (fun e => evalProf e m en ed K)) (i + 0)
+    rw [Nat.add_zero, getAt_evalRow m en ed K sr i]
+    exact domRowCore e0n e0d i m K en ed sr g hc.1 he
+      (of_decide_eq_true hg2.1) (of_decide_eq_true hg2.2)
+      (ground.bleLe hg.2)
+  | i, _ :: srs, _ :: gs, hc, hb, j + 1, hj => by
+    have e : i + (j + 1) = i + 1 + j := by
+      rw [Nat.add_assoc i 1 j, Nat.add_comm 1 j]
+    show decimation.offFold (i + (j + 1))
+        (ground.getAt ([] : List BPair)
+          (srs.map (fun r =>
+            r.map (fun e => evalProf e m en ed K))) j)
+      ≤ ground.getAt BPair.unit
+        (ground.getAt ([] : List BPair)
+          (srs.map (fun r =>
+            r.map (fun e => evalProf e m en ed K))) j) (i + (j + 1))
+    rw [e]
+    exact domIdx e0n e0d m K en ed he (i + 1) srs gs hc.2
+      (ground.andSplitB hb).2 j (Nat.lt_of_succ_lt_succ hj)
+
+/-- `lem:cornerpivot`(vii)'s site glue: at a dominance certificate
+walk over a site datum, with every row certificate's box holding the
+depth's composite point and its clearing power inside the shared
+one, the evaluated site datum is diagonally dominant
+(`thm:decimation`(ii)'s comparison at the evaluated family). -/
+theorem domCert_domAt (e0n : BPair) (e0d : Pos) (m K : Nat)
+    (en ed : Pos) (S : List (List (poly.PPoly × poly.PPoly)))
+    (gs : List BoxCert)
+    (hc : domCertGo e0n e0d 0 S gs)
+    (he : BPair.ofPos en * BPair.ofPos e0d ≤ e0n * BPair.ofPos ed)
+    (hbox : (gs.all (fun g =>
+        decide (g.lo ≤ (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair))
+        && decide ((⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair) ≤ g.hi)
+        && Nat.ble (g.K + 1) (K + 1))) = true) :
+    decimation.domAt (evalPfm S m en ed K) := by
+  show decimation.domGo 0 (evalPfm S m en ed K) = true
+  rw [evalPfm_rows m en ed K S]
+  exact domGoOf e0n e0d m K en ed he 0 S gs hc hbox
+
+open elim inertia in
+/-- `lem:cornerpivot`(vii)'s form glue: the evaluated site datum's
+dominance prices its quadratic form at or above the sum's unit at
+every vector of the site's order — `thm:decimation`(ii)'s display at
+the replicate-unit slack list, the slack withdrawn against the
+comparison's own margin.  The square and symmetry reads are
+`decimation.dom_quad`'s own binders: the dominance walk reads the
+magnitudes alone. -/
+theorem domCert_form (e0n : BPair) (e0d : Pos) (m K : Nat)
+    (en ed : Pos) (S : List (List (poly.PPoly × poly.PPoly)))
+    (gs : List BoxCert)
+    (hc : domCertGo e0n e0d 0 S gs)
+    (he : BPair.ofPos en * BPair.ofPos e0d ≤ e0n * BPair.ofPos ed)
+    (hbox : (gs.all (fun g =>
+        decide (g.lo ≤ (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair))
+        && decide ((⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair) ≤ g.hi)
+        && Nat.ble (g.K + 1) (K + 1))) = true)
+    (hsq : elim.sqAt (evalPfm S m en ed K) S.length)
+    (hsym : matOneValue (evalPfm S m en ed K)
+      (transposeM (evalPfm S m en ed K))) :
+    ∀ v : List BPair, v.length = S.length →
+      BPair.unit ≤ quadForm (evalPfm S m en ed K) v := by
+  intro v hv
+  refine ground.leB_congr_left
+    (elim.dotN_nullL (List.replicate S.length BPair.unit)
+      (List.zipWith (· * ·) v v)
+      (poly.unitTail_replicate S.length)) ?_
+  refine decimation.dom_quad (evalPfm S m en ed K) S.length
+    (List.replicate S.length BPair.unit) hsq
+    (ground.length_replicate BPair.unit S.length) hsym ?_ v hv
+  intro i hi
+  rw [ground.getAt_replicate_self BPair.unit S.length i,
+    evalPfm_rows m en ed K S]
+  refine ground.leB_congr_left
+    (BPair.oneValue_symm (BPair.add_unit _)) ?_
+  have h0 := domIdx e0n e0d m K en ed he 0 S gs hc hbox i hi
+  rw [Nat.zero_add] at h0
+  exact h0
+
+/-! `lem:cornerpivot`(vii)'s four count reshapes: each site datum's
+dominance certificate walk prices its evaluated form at or above the
+sum's unit, and the form's decomposition reads that price as the
+pointwise count the tex states — the floor's center comparison, the
+contraction's transfer comparison and the defect cap's two arms, the
+margins the clearings' own evaluated reads. -/
+
+/-! The clearing cap: a scale polynomial's canonical representative
+sits inside the stated power.  The cap is a class read — the
+representative is one value's own (`poly.vnorm_congr`) — so it rides
+every one-value bridge, and it prices the cleared evaluation's
+faithfulness exactly where the literal key count does. -/
+
+/-- The cap is one value's own read. -/
+private theorem capCongr {p q : poly.Poly} {K : Nat}
+    (h : poly.oneValue p q) (hq : (poly.vnorm q).length ≤ K + 1) :
+    (poly.vnorm p).length ≤ K + 1 := by
+  rw [poly.vnorm_congr h]
+  exact hq
+
+/-- The memberwise swap keeps the cap. -/
+private theorem capNeg {p : poly.Poly} {K : Nat}
+    (h : (poly.vnorm p).length ≤ K + 1) :
+    (poly.vnorm (poly.neg p)).length ≤ K + 1 := by
+  rw [poly.vnorm_neg p, poly.length_neg (poly.vnorm p)]
+  exact h
+
+/-- The sum's cap is the summands' own. -/
+private theorem capAdd {p q : poly.Poly} {K : Nat}
+    (hp : (poly.vnorm p).length ≤ K + 1)
+    (hq : (poly.vnorm q).length ≤ K + 1) :
+    (poly.vnorm (poly.add p q)).length ≤ K + 1 :=
+  capCongr
+    (poly.add_congr (poly.oneValue_symm (poly.vnorm_ov p))
+      (poly.oneValue_symm (poly.vnorm_ov q)))
+    (poly.capOfLen (poly.add_len_le _ _ (K + 1) hp hq))
+
+/-- The product's cap: the factors' caps add. -/
+private theorem capMul {p q : poly.Poly} {K1 K2 : Nat}
+    (hp : (poly.vnorm p).length ≤ K1 + 1)
+    (hq : (poly.vnorm q).length ≤ K2 + 1) :
+    (poly.vnorm (poly.mul p q)).length ≤ K1 + K2 + 1 :=
+  capCongr (poly.mul_vnorm_ov p q)
+    (poly.capOfLen (poly.mul_len_le _ _ K1 K2 hp hq))
+
+/-- A profile against two constant profiles, evaluated at the doubled
+clearing power: the profile's own collapse against the two
+coefficients, the clearing's whole power riding. -/
+private theorem evalMulConst (f : poly.PPoly × poly.PPoly) (x c : BPair)
+    (m : Nat) (en ed : Pos) (K : Nat)
+    (hf : (poly.vnorm (depthPoly f m)).length ≤ K + 1) :
+    (evalProf (profMul (profMul f (constProf x)) (constProf c))
+        m en ed (K + K)).oneValue
+      ((evalProf f m en ed K * x * ground.bpow (BPair.ofPos ed) K) * c) := by
+  have hQ : (poly.vnorm (depthPoly (constProf x) m)).length ≤ 0 + 1 :=
+    poly.capOfLen (Nat.le_of_eq (depthConst_len x m))
+  have hR : (poly.vnorm (depthPoly (constProf c) m)).length ≤ K + 1 :=
+    poly.capOfLen (Nat.le_trans (Nat.le_of_eq (depthConst_len c m))
+      (Nat.succ_le_succ (Nat.zero_le K)))
+  have hPQ : (poly.vnorm (poly.mul (depthPoly f m)
+      (depthPoly (constProf x) m))).length ≤ K + 1 := by
+    have h := capMul hf hQ
+    rw [Nat.add_zero] at h
+    exact h
+  have hcol : poly.oneValue
+      (depthPoly (profMul (profMul f (constProf x)) (constProf c)) m)
+      (poly.mul (poly.mul (depthPoly f m) (depthPoly (constProf x) m))
+        (depthPoly (constProf c) m)) :=
+    poly.oneValue_trans
+      (depthPoly_profMul (profMul f (constProf x)) (constProf c) m)
+      (poly.mul_congr_left (depthPoly_profMul f (constProf x) m)
+        (depthPoly (constProf c) m))
+  have hsplit : (poly.evalClear
+      (poly.mul (depthPoly f m) (depthPoly (constProf x) m))
+      (BPair.ofPos en) ed K).oneValue
+      (evalProf f m en ed K * evalProf (constProf x) m en ed 0) := by
+    have h := poly.evalClear_mulCap (depthPoly f m)
+      (depthPoly (constProf x) m) (BPair.ofPos en) ed K 0 hf hQ
+    rw [Nat.add_zero] at h
+    exact h
+  refine BPair.oneValue_trans
+    (poly.evalClear_congr hcol (BPair.ofPos en) ed (K + K)) ?_
+  refine BPair.oneValue_trans
+    (poly.evalClear_mulCap _ (depthPoly (constProf c) m) (BPair.ofPos en) ed
+      K K hPQ hR) ?_
+  refine BPair.oneValue_trans
+    (BPair.mul_congr hsplit (evalProf_const c m en ed K)) ?_
+  refine BPair.oneValue_trans
+    (BPair.mul_congr
+      (BPair.mul_congr (BPair.oneValue_refl _) (evalProf_const x m en ed 0))
+      (BPair.oneValue_refl _)) ?_
+  refine BPair.oneValue_trans
+    (BPair.mul_congr
+      (BPair.mul_congr (BPair.oneValue_refl _) (BPair.mul_ofPos x Pos.one))
+      (BPair.oneValue_refl _)) ?_
+  rw [BPair.scale_one x, BPair.mul_comm c (ground.bpow (BPair.ofPos ed) K),
+    ← BPair.mul_assoc (evalProf f m en ed K * x)
+      (ground.bpow (BPair.ofPos ed) K) c]
+  exact BPair.oneValue_refl _
+
+/-- One row of the constant family rescaled at a profile against a
+constant profile: the row's coefficients weighted by the profile's
+own evaluated collapse against the constant and the clearing. -/
+private theorem evalScaleOfMatRow (f : poly.PPoly × poly.PPoly) (x : BPair)
+    (m : Nat) (en ed : Pos) (K : Nat)
+    (hf : (poly.vnorm (depthPoly f m)).length ≤ K + 1) :
+    ∀ r : List BPair,
+      poly.oneValue
+        (((r.map constProf).map (profMul (profMul f (constProf x)))).map
+          (fun e => evalProf e m en ed (K + K)))
+        (poly.scaleP
+          (evalProf f m en ed K * x * ground.bpow (BPair.ofPos ed) K) r)
+  | [] => trivial
+  | c :: r =>
+    ⟨BPair.oneValue_trans (evalMulConst f x c m en ed K hf)
+      (BPair.oneValue_symm (BPair.norm_oneValue _)),
+     evalScaleOfMatRow f x m en ed K hf r⟩
+
+/-- The constant family rescaled at a profile against a constant
+profile, evaluated row by row. -/
+private theorem evalScaleOfMatGo (f : poly.PPoly × poly.PPoly) (x : BPair)
+    (m : Nat) (en ed : Pos) (K : Nat)
+    (hf : (poly.vnorm (depthPoly f m)).length ≤ K + 1) :
+    ∀ X : elim.Mat,
+      elim.matOneValue
+        ((pfmScale (profMul f (constProf x)) (ofMatProf X)).map
+          (fun r => r.map (fun e => evalProf e m en ed (K + K))))
+        (inertia.matScaleB
+          (evalProf f m en ed K * x * ground.bpow (BPair.ofPos ed) K) X)
+  | [] => trivial
+  | r :: X =>
+    ⟨evalScaleOfMatRow f x m en ed K hf r,
+     evalScaleOfMatGo f x m en ed K hf X⟩
+
+/-- The constant family rescaled at a profile against a constant
+profile: the stated matrix weighted by the profile's evaluated
+collapse, the constant and the clearing's whole power. -/
+private theorem evalScaleOfMat (f : poly.PPoly × poly.PPoly) (x : BPair)
+    (X : elim.Mat) (m : Nat) (en ed : Pos) (K : Nat)
+    (hf : (poly.vnorm (depthPoly f m)).length ≤ K + 1) :
+    elim.matOneValue
+      (evalPfm (pfmScale (profMul f (constProf x)) (ofMatProf X))
+        m en ed (K + K))
+      (inertia.matScaleB
+        (evalProf f m en ed K * x * ground.bpow (BPair.ofPos ed) K) X) := by
+  rw [evalPfm_rows m en ed (K + K)
+    (pfmScale (profMul f (constProf x)) (ofMatProf X))]
+  exact evalScaleOfMatGo f x m en ed K hf X
+
+/-- The evaluated site datum's row count is the family's own. -/
+theorem length_evalPfm (m : Nat)
+    (A : List (List (poly.PPoly × poly.PPoly))) (en ed : Pos) (K : Nat) :
+    (evalPfm A m en ed K).length = A.length :=
+  (cellcount.length_evalPC (pfmDepth m A) (BPair.ofPos en) ed K).trans
+    (length_pfmDepth m A)
+
+/-- The evaluated site datum keeps every row's width. -/
+theorem rowsLen_evalPfm (n m : Nat)
+    (A : List (List (poly.PPoly × poly.PPoly))) (en ed : Pos) (K : Nat)
+    (h : elim.rowsLen n A) : elim.rowsLen n (evalPfm A m en ed K) :=
+  cellcount.rowsLen_evalPC n (pfmDepth m A) (BPair.ofPos en) ed K
+    (rowsLen_pfmDepth m n A h)
+
+/-- The rescaled family's row count is the family's own. -/
+private theorem length_pfmScale (f : poly.PPoly × poly.PPoly)
+    (A : List (List (poly.PPoly × poly.PPoly))) :
+    (pfmScale f A).length = A.length := ground.length_map _ A
+
+/-- The rescaled family keeps every row's width. -/
+private theorem rowsLen_pfmScale (f : poly.PPoly × poly.PPoly) (n : Nat)
+    (A : List (List (poly.PPoly × poly.PPoly))) (h : elim.rowsLen n A) :
+    elim.rowsLen n (pfmScale f A) :=
+  elim.rowsLen_mapRowsO (profMul f) A n h
+
+/-- The swapped family's row count is the family's own. -/
+private theorem length_pfmSwap (A : List (List (poly.PPoly × poly.PPoly))) :
+    (pfmSwap A).length = A.length := ground.length_map _ A
+
+/-- The swapped family keeps every row's width. -/
+private theorem rowsLen_pfmSwap (n : Nat)
+    (A : List (List (poly.PPoly × poly.PPoly))) (h : elim.rowsLen n A) :
+    elim.rowsLen n (pfmSwap A) :=
+  elim.rowsLen_mapRowsO profOps.swap A n h
+
+/-- The constant family's row count is the stated matrix's own. -/
+private theorem length_ofMatProf (X : elim.Mat) :
+    (ofMatProf X).length = X.length := ground.length_map _ X
+
+/-- The constant family keeps every row's width. -/
+private theorem rowsLen_ofMatProf (n : Nat) (X : elim.Mat)
+    (h : elim.rowsLen n X) : elim.rowsLen n (ofMatProf X) :=
+  elim.rowsLen_mapRowsO constProf X n h
+
+/-- The families' sum keeps the shared row count. -/
+private theorem length_pfmAdd
+    (A B : List (List (poly.PPoly × poly.PPoly)))
+    (h : A.length = B.length) : (pfmAdd A B).length = A.length :=
+  ground.length_zipWith (List.zipWith profOps.add) A B A.length rfl h.symm
+
+/-- The families' sum keeps the shared row width. -/
+private theorem rowsLen_pfmAdd (n : Nat) :
+    ∀ A B : List (List (poly.PPoly × poly.PPoly)),
+      elim.rowsLen n A → elim.rowsLen n B → elim.rowsLen n (pfmAdd A B)
+  | [], _, _, _ => trivial
+  | _ :: _, [], _, _ => trivial
+  | r :: A, s :: B, ha, hb =>
+    ⟨(ground.length_zipWith profOps.add r s r.length rfl
+        ((ha.1.trans hb.1.symm)).symm).trans ha.1,
+     rowsLen_pfmAdd n A B ha.2 hb.2⟩
+
+/-- The swapped family's entry at two keys is the entry's own
+memberwise swap. -/
+private theorem getAt_pfmSwapRow :
+    ∀ (r : List (poly.PPoly × poly.PPoly)) (j : Nat),
+      ground.getAt vacProf (r.map profOps.swap) j
+        = profNeg (ground.getAt vacProf r j) :=
+  ground.getAt_mapT vacProf vacProf profOps.swap rfl
+
+/-- The swapped family's rows are the family's own rows swapped. -/
+private theorem getAt_pfmSwap
+    (A : List (List (poly.PPoly × poly.PPoly))) (i j : Nat) :
+    ground.getAt vacProf
+        (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+          (pfmSwap A) i) j
+      = profNeg (ground.getAt vacProf
+          (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i) j) := by
+  rw [show ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+      (pfmSwap A) i
+      = (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i).map
+          profOps.swap from
+    ground.getAt_mapT ([] : List (poly.PPoly × poly.PPoly))
+      ([] : List (poly.PPoly × poly.PPoly))
+      (fun r => r.map profOps.swap) rfl A i]
+  exact getAt_pfmSwapRow _ j
+
+/-- Two matched rows read one value at every key. -/
+private theorem matchedEntry : ∀ {r s : List poly.Poly},
+    ground.matchedOV poly.polyRead r s →
+    ∀ j, poly.oneValue (ground.getAt ([] : poly.Poly) r j)
+      (ground.getAt ([] : poly.Poly) s j)
+  | [], [], _, _ => poly.oneValue_refl _
+  | [], _ :: _, h, _ => False.elim h
+  | _ :: _, [], h, _ => False.elim h
+  | _ :: _, _ :: _, h, 0 => h.1
+  | _ :: r, _ :: s, h, j + 1 => matchedEntry (r := r) (s := s) h.2 j
+
+/-- Two matched polynomial matrices read one value at every key
+pair. -/
+private theorem pmatEntry : ∀ {A B : split.PMat}, split.pmatOneValue A B →
+    ∀ i j, poly.oneValue
+      (ground.getAt ([] : poly.Poly)
+        (ground.getAt ([] : List poly.Poly) A i) j)
+      (ground.getAt ([] : poly.Poly)
+        (ground.getAt ([] : List poly.Poly) B i) j)
+  | [], [], _, _, _ => poly.oneValue_refl _
+  | [], _ :: _, h, _, _ => False.elim h
+  | _ :: _, [], h, _, _ => False.elim h
+  | _ :: _, _ :: _, h, 0, j => matchedEntry h.1 j
+  | _ :: A, _ :: B, h, i + 1, j => pmatEntry (A := A) (B := B) h.2 i j
+
+/-- A family fold of sums carries the summands' shared cap. -/
+private theorem capFamFold {N : Nat} (f : Nat → poly.Poly)
+    (h : ∀ s, (poly.vnorm (f s)).length ≤ N + 1) :
+    ∀ l : List Nat,
+      (poly.vnorm (ground.famFold poly.add ([] : poly.Poly) f l)).length
+        ≤ N + 1
+  | [] => Nat.zero_le _
+  | a :: t => capAdd (h a) (capFamFold f h t)
+
+/-- The families' product's entries carry the factors' caps added:
+the entry is the row-against-column fold of the factors' own
+entries, so the sum's cap is the products' shared one. -/
+private theorem capPfmMul (A B : List (List (poly.PPoly × poly.PPoly)))
+    (m : Nat) (Ka Kb w n : Nat)
+    (ha : elim.rowsLen w A) (hbl : B.length = w) (hw : 0 < w)
+    (hb : elim.rowsLen n B)
+    (hA : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i) j)
+        m)).length ≤ Ka + 1)
+    (hB : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) B i) j)
+        m)).length ≤ Kb + 1) :
+    ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+        (pfmMul A B) i) j) m)).length ≤ Ka + Kb + 1 := by
+  intro i j
+  have hbh : ((pfmDepth m B).headD ([] : List poly.Poly)).length = n :=
+    elim.headD_width n (pfmDepth m B)
+      (by rw [length_pfmDepth m B, hbl]; exact hw)
+      (rowsLen_pfmDepth m n B hb)
+  rw [← getAt_pfmDepth m (pfmMul A B) i j]
+  refine capCongr (pmatEntry (pfmDepth_mul A B m) i j) ?_
+  match Nat.lt_or_ge i (pfmDepth m A).length with
+  | Or.inr hge =>
+    rw [ground.getAt_over ([] : List poly.Poly) _ i
+      (by
+        rw [show (split.pmatMul (pfmDepth m A) (pfmDepth m B)).length
+            = (pfmDepth m A).length from ground.length_map _ _]
+        exact hge)]
+    exact Nat.zero_le _
+  | Or.inl hi =>
+    match Nat.lt_or_ge j n with
+    | Or.inr hge =>
+      rw [ground.getAt_over ([] : poly.Poly) _ j
+        (by
+          rw [elim.rowsLen_getAt (split.pmatMul (pfmDepth m A) (pfmDepth m B))
+            i (elim.rowsLen_matMulO poly.polyOps (pfmDepth m A)
+              (pfmDepth m B) n hbh)
+            (by
+              rw [show (split.pmatMul (pfmDepth m A) (pfmDepth m B)).length
+                  = (pfmDepth m A).length from ground.length_map _ _]
+              exact hi)]
+          exact hge)]
+      exact Nat.zero_le _
+    | Or.inl hj =>
+      refine capCongr
+        (elim.matMulP_entry (pfmDepth m A) (pfmDepth m B) w n
+          (rowsLen_pfmDepth m w A ha) hbh i j hi hj) ?_
+      refine capFamFold _ (fun s => ?_) (List.range w)
+      refine capMul ?_ ?_
+      · rw [getAt_pfmDepth m A i s]
+        exact hA i s
+      · rw [getAt_pfmDepth m B s j]
+        exact hB s j
+
+/-- The constant family's rows are the stated matrix's own rows at
+the constant profile. -/
+private theorem getAt_ofMatRows : ∀ (X : elim.Mat) (i : Nat),
+    ground.getAt ([] : List (poly.PPoly × poly.PPoly)) (ofMatProf X) i
+      = (ground.getAt ([] : List BPair) X i).map constProf :=
+  ground.getAt_mapT ([] : List BPair)
+    ([] : List (poly.PPoly × poly.PPoly)) (fun r => r.map constProf)
+    rfl
+
+/-- The constant family's entries collapse to one key at every
+depth. -/
+private theorem ofMatEntryLen (X : elim.Mat) (m : Nat) (i j : Nat) :
+    (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+        (ofMatProf X) i) j) m).length ≤ 0 + 1 := by
+  rw [getAt_ofMatRows X i]
+  match Nat.lt_or_ge j (ground.getAt ([] : List BPair) X i).length with
+  | Or.inr hge =>
+    rw [ground.getAt_over vacProf _ j (by rw [ground.length_map]; exact hge)]
+    exact Nat.zero_le _
+  | Or.inl hj =>
+    rw [ground.getAt_map BPair.unit vacProf constProf _ j hj,
+      depthConst_len]
+    exact Nat.le_refl 1
+
+/-- The exchanged family's entries collapse at the family's own key
+counts, the two keys exchanged. -/
+private theorem pfmTrEntryLen
+    (A : List (List (poly.PPoly × poly.PPoly))) (o m K : Nat)
+    (hl : A.length = o) (hr : elim.rowsLen o A)
+    (h : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i) j)
+        m)).length ≤ K + 1) :
+    ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+        (pfmTr A) i) j) m)).length ≤ K + 1 := by
+  intro i j
+  match A, hl with
+  | [], hl0 =>
+    rw [ground.getAt_over ([] : List (poly.PPoly × poly.PPoly))
+      (pfmTr ([] : List (List (poly.PPoly × poly.PPoly)))) i
+      (Nat.zero_le i)]
+    exact Nat.zero_le _
+  | r :: t, hl1 =>
+    have hpos : 0 < (r :: t).length := Nat.succ_pos _
+    have htl : (pfmTr (r :: t)).length = o :=
+      elim.length_transposeO profOps (r :: t) hr hpos
+    match Nat.lt_or_ge i o with
+    | Or.inr hge =>
+      rw [ground.getAt_over ([] : List (poly.PPoly × poly.PPoly))
+        (pfmTr (r :: t)) i (by rw [htl]; exact hge)]
+      exact Nat.zero_le _
+    | Or.inl hi =>
+      match Nat.lt_or_ge j o with
+      | Or.inr hge =>
+        rw [ground.getAt_over vacProf _ j
+          (by
+            rw [elim.rowsLen_getAt (pfmTr (r :: t)) i
+              (elim.rowsLen_transposeO profOps (r :: t))
+              (by rw [htl]; exact hi), hl1]
+            exact hge)]
+        exact Nat.zero_le _
+      | Or.inl hj =>
+        rw [show pfmTr (r :: t) = elim.transposeO profOps (r :: t) from rfl,
+          elim.getAt_transposeO profOps vacProf (r :: t) hr i j hi
+            (by rw [hl1]; exact hj)]
+        exact h j i
+
+/-- The rescaled family's rows are the family's own rows rescaled. -/
+private theorem getAt_pfmScaleRows (f : poly.PPoly × poly.PPoly) :
+    ∀ (A : List (List (poly.PPoly × poly.PPoly))) (i : Nat),
+      ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+          (pfmScale f A) i
+        = (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i).map
+            (profMul f) :=
+  ground.getAt_mapT ([] : List (poly.PPoly × poly.PPoly))
+    ([] : List (poly.PPoly × poly.PPoly)) (fun r => r.map (profMul f))
+    rfl
+
+/-- The rescaled family's entries carry the scale's cap added to the
+family's own. -/
+private theorem capPfmScale (f : poly.PPoly × poly.PPoly)
+    (A : List (List (poly.PPoly × poly.PPoly))) (m Ka Kb : Nat)
+    (hf : (poly.vnorm (depthPoly f m)).length ≤ Ka + 1)
+    (hA : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i) j)
+        m)).length ≤ Kb + 1) :
+    ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+        (pfmScale f A) i) j) m)).length ≤ Ka + Kb + 1 := by
+  intro i j
+  rw [getAt_pfmScaleRows f A i]
+  match Nat.lt_or_ge j
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i).length with
+  | Or.inr hge =>
+    rw [ground.getAt_over vacProf _ j (by rw [ground.length_map]; exact hge)]
+    exact Nat.zero_le _
+  | Or.inl hj =>
+    rw [ground.getAt_map vacProf vacProf (profMul f) _ j hj]
+    exact capCongr (depthPoly_profMul f _ m) (capMul hf (hA i j))
+
+/-- One row of a componentwise profile sum carries the summands'
+shared cap. -/
+private theorem capZipRow (m K : Nat) :
+    ∀ r s : List (poly.PPoly × poly.PPoly),
+      (∀ j, (poly.vnorm (depthPoly (ground.getAt vacProf r j) m)).length
+        ≤ K + 1) →
+      (∀ j, (poly.vnorm (depthPoly (ground.getAt vacProf s j) m)).length
+        ≤ K + 1) →
+      ∀ j, (poly.vnorm (depthPoly (ground.getAt vacProf
+        (List.zipWith profOps.add r s) j) m)).length ≤ K + 1
+  | [], _, _, _, _ => Nat.zero_le _
+  | _ :: _, [], _, _, _ => Nat.zero_le _
+  | _ :: _, _ :: _, ha, hb, 0 =>
+    capCongr (depthPoly_profAdd _ _ m) (capAdd (ha 0) (hb 0))
+  | _ :: r, _ :: s, ha, hb, j + 1 =>
+    capZipRow m K r s (fun k => ha (k + 1)) (fun k => hb (k + 1)) j
+
+/-- The families' sum's entries carry the summands' shared cap. -/
+private theorem capPfmAdd (m K : Nat) :
+    ∀ A B : List (List (poly.PPoly × poly.PPoly)),
+      (∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+        (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i) j)
+          m)).length ≤ K + 1) →
+      (∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+        (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) B i) j)
+          m)).length ≤ K + 1) →
+      ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+        (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+          (pfmAdd A B) i) j) m)).length ≤ K + 1
+  | [], _, _, _, _, _ => Nat.zero_le _
+  | _ :: _, [], _, _, _, _ => Nat.zero_le _
+  | _ :: _, _ :: _, ha, hb, 0, j =>
+    capZipRow m K _ _ (fun k => ha 0 k) (fun k => hb 0 k) j
+  | _ :: A, _ :: B, ha, hb, i + 1, j =>
+    capPfmAdd m K A B (fun p q => ha (p + 1) q) (fun p q => hb (p + 1) q) i j
+
+/-- The canonically represented family's rows are the family's own
+rows represented. -/
+private theorem getAt_pfmReduceRows :
+    ∀ (A : List (List (poly.PPoly × poly.PPoly))) (i : Nat),
+      ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+          (pfmReduce A) i
+        = (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i).map
+            profReduce :=
+  ground.getAt_mapT ([] : List (poly.PPoly × poly.PPoly))
+    ([] : List (poly.PPoly × poly.PPoly)) (fun r => r.map profReduce)
+    rfl
+
+/-- The canonically represented family's entries carry the family's
+own caps. -/
+private theorem capPfmReduce (A : List (List (poly.PPoly × poly.PPoly)))
+    (m K : Nat)
+    (hA : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i) j)
+        m)).length ≤ K + 1) :
+    ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+        (pfmReduce A) i) j) m)).length ≤ K + 1 := by
+  intro i j
+  rw [getAt_pfmReduceRows A i]
+  match Nat.lt_or_ge j
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i).length with
+  | Or.inr hge =>
+    rw [ground.getAt_over vacProf _ j (by rw [ground.length_map]; exact hge)]
+    exact Nat.zero_le _
+  | Or.inl hj =>
+    rw [ground.getAt_map vacProf vacProf profReduce _ j hj]
+    exact capCongr (depthPoly_profReduce _ m) (hA i j)
+
+/-- The shifted family's rows are the family's own rows shifted. -/
+private theorem getAt_pfmShiftRows :
+    ∀ (A : List (List (poly.PPoly × poly.PPoly))) (i : Nat),
+      ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+          (pfmShift A) i
+        = (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i).map
+            profShift :=
+  ground.getAt_mapT ([] : List (poly.PPoly × poly.PPoly))
+    ([] : List (poly.PPoly × poly.PPoly)) (fun r => r.map profShift)
+    rfl
+
+/-- The shifted family's entries at a depth carry the family's own
+caps at the successor depth. -/
+private theorem capPfmShift (A : List (List (poly.PPoly × poly.PPoly)))
+    (m K : Nat)
+    (hA : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i) j)
+        (m + 1))).length ≤ K + 1) :
+    ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+        (pfmShift A) i) j) m)).length ≤ K + 1 := by
+  intro i j
+  rw [getAt_pfmShiftRows A i]
+  match Nat.lt_or_ge j
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i).length with
+  | Or.inr hge =>
+    rw [ground.getAt_over vacProf _ j (by rw [ground.length_map]; exact hge)]
+    exact Nat.zero_le _
+  | Or.inl hj =>
+    rw [ground.getAt_map vacProf vacProf profShift _ j hj]
+    exact capCongr (depthPoly_profShift _ m) (hA i j)
+
+/-- The swapped family's entries carry the family's own caps. -/
+private theorem capPfmSwap (A : List (List (poly.PPoly × poly.PPoly)))
+    (m K : Nat)
+    (hA : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) A i) j)
+        m)).length ≤ K + 1) :
+    ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+        (pfmSwap A) i) j) m)).length ≤ K + 1 := by
+  intro i j
+  rw [getAt_pfmSwap A i j]
+  exact capCongr (depthPoly_profNeg _ m) (capNeg (hA i j))
+
+/-- The two-armed sites' shared core: at a dominance certificate
+walk whose site datum evaluates to a sum of two blocks symmetric at
+the site's order, the evaluated form sits at or beyond the sum's
+unit — the walk's comparison (`domCert_form`) closed at the
+evaluated datum, the sum's exchange read carried by the summands'
+own. -/
+private theorem siteUnit (e0n : BPair) (e0d : Pos) (m N : Nat)
+    (en ed : Pos) (S : List (List (poly.PPoly × poly.PPoly)))
+    (gs : List BoxCert) (o : Nat) (P Q : elim.Mat) (ho : 0 < o)
+    (hSl : S.length = o) (hSr : elim.rowsLen o S)
+    (hPl : P.length = o) (hPr : elim.rowsLen o P)
+    (hQl : Q.length = o) (hQr : elim.rowsLen o Q)
+    (hEv : elim.matOneValue (evalPfm S m en ed N) (elim.matAdd P Q))
+    (hsymP : elim.matOneValue (elim.transposeM P) P)
+    (hsymQ : elim.matOneValue (elim.transposeM Q) Q)
+    (hc : domCertGo e0n e0d 0 S gs)
+    (he : BPair.ofPos en * BPair.ofPos e0d ≤ e0n * BPair.ofPos ed)
+    (hbox : (gs.all (fun g =>
+        decide (g.lo ≤ (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair))
+        && decide ((⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair) ≤ g.hi)
+        && Nat.ble (g.K + 1) (N + 1))) = true) :
+    ∀ u : List BPair, u.length = S.length →
+      BPair.unit ≤ inertia.quadForm (evalPfm S m en ed N) u := by
+  have hDr : elim.rowsLen o (elim.matAdd P Q) :=
+    elim.rowsLen_matAdd o _ _ hPr hQr
+  have hDl : (elim.matAdd P Q).length = o :=
+    (elim.length_matAdd _ _ (by rw [hPl, hQl])).trans hPl
+  have hEr : elim.rowsLen o (evalPfm S m en ed N) :=
+    rowsLen_evalPfm o m S en ed N hSr
+  have hEl : (evalPfm S m en ed N).length = o :=
+    (length_evalPfm m S en ed N).trans hSl
+  have hTPr : elim.rowsLen o (elim.transposeM P) := by
+    have h := elim.rowsLen_transposeO ground.bpairOps P
+    rw [hPl] at h
+    exact h
+  have hTQr : elim.rowsLen o (elim.transposeM Q) := by
+    have h := elim.rowsLen_transposeO ground.bpairOps Q
+    rw [hQl] at h
+    exact h
+  have hTD : elim.matOneValue (elim.transposeM (elim.matAdd P Q))
+      (elim.matAdd P Q) := by
+    rw [elim.transposeM_matAdd P Q hPr hQr (by rw [hPl, hQl])
+      (by rw [hPl]; exact ho)]
+    exact elim.matAdd_cong2 o _ _ _ _ hTPr hTQr hPr hQr hsymP hsymQ
+  have hsymE : elim.matOneValue (evalPfm S m en ed N)
+      (elim.transposeM (evalPfm S m en ed N)) :=
+    elim.matOne_trans hEv
+      (elim.matOne_symm
+        (elim.matOne_trans
+          (elim.transposeM_congrM o (evalPfm S m en ed N) _ hEr hDr
+            (by rw [hEl, hDl]) hEv)
+          hTD))
+  have hsq : elim.sqAt (evalPfm S m en ed N) S.length :=
+    elim.sqAt_of (length_evalPfm m S en ed N) (by rw [hSl]; exact hEr)
+  exact domCert_form e0n e0d m N en ed S gs hc he hbox hsq hsymE
+
+/-- The two-armed site's pointwise count: at a dominance certificate
+walk whose site datum evaluates to a weighted block joined to a
+second weighted block's memberwise swap, both blocks symmetric at
+the site's order, the second block's weighted form sits at or below
+the first's — `thm:decimation`(ii)'s price read through the form's
+decomposition (`inertia.quadForm_add`, `quadForm_swap`,
+`quadForm_scaleB`) and the sum's own comparison. -/
+private theorem siteTwoArm (e0n : BPair) (e0d : Pos) (m N : Nat)
+    (en ed : Pos) (S : List (List (poly.PPoly × poly.PPoly)))
+    (gs : List BoxCert) (o : Nat) (X Y : elim.Mat) (w1 w2 : BPair)
+    (hSl : S.length = o) (hSr : elim.rowsLen o S)
+    (hXl : X.length = o) (hXr : elim.rowsLen o X)
+    (hYl : Y.length = o) (hYr : elim.rowsLen o Y)
+    (hEv : elim.matOneValue (evalPfm S m en ed N)
+      (elim.matAdd (inertia.matScaleB w1 X)
+        (elim.matSwap (inertia.matScaleB w2 Y))))
+    (hsymX : elim.matOneValue (elim.transposeM X) X)
+    (hsymY : elim.matOneValue (elim.transposeM Y) Y)
+    (hc : domCertGo e0n e0d 0 S gs)
+    (he : BPair.ofPos en * BPair.ofPos e0d ≤ e0n * BPair.ofPos ed)
+    (hbox : (gs.all (fun g =>
+        decide (g.lo ≤ (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair))
+        && decide ((⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair) ≤ g.hi)
+        && Nat.ble (g.K + 1) (N + 1))) = true) :
+    ∀ u : List BPair, u.length = o →
+      w2 * inertia.quadForm Y u ≤ w1 * inertia.quadForm X u := by
+  intro u hu
+  cases u with
+  | nil =>
+    exact ground.leB_congr_left (BPair.oneValue_symm (BPair.mul_unit w2))
+      (ground.leB_congr_right (BPair.oneValue_symm (BPair.mul_unit w1))
+        (ground.leB_refl BPair.unit))
+  | cons a t =>
+    have ho : 0 < o := by rw [← hu]; exact Nat.succ_pos _
+    have hXs : elim.rowsLen o (inertia.matScaleB w1 X) :=
+      inertia.rowsLen_scaleB w1 o X hXr
+    have hXsl : (inertia.matScaleB w1 X).length = o :=
+      (inertia.length_scaleB w1 X).trans hXl
+    have hYs : elim.rowsLen o (elim.matSwap (inertia.matScaleB w2 Y)) :=
+      elim.rowsLen_mapRows BPair.swap (inertia.matScaleB w2 Y) o
+        (inertia.rowsLen_scaleB w2 o Y hYr)
+    have hYsl : (elim.matSwap (inertia.matScaleB w2 Y)).length = o :=
+      (elim.length_matSwap (inertia.matScaleB w2 Y)).trans
+        ((inertia.length_scaleB w2 Y).trans hYl)
+    have hTX : elim.matOneValue
+        (elim.transposeM (inertia.matScaleB w1 X))
+        (inertia.matScaleB w1 X) :=
+      elim.matOne_trans (inertia.transposeM_scaleB w1 o X hXr)
+        (inertia.matOne_scaleB w1 hsymX)
+    have hTY : elim.matOneValue
+        (elim.transposeM (elim.matSwap (inertia.matScaleB w2 Y)))
+        (elim.matSwap (inertia.matScaleB w2 Y)) := by
+      rw [elim.transposeM_swap (inertia.matScaleB w2 Y)]
+      exact elim.matSwap_congr
+        (elim.matOne_trans (inertia.transposeM_scaleB w2 o Y hYr)
+          (inertia.matOne_scaleB w2 hsymY))
+    have hpos : BPair.unit
+        ≤ inertia.quadForm (evalPfm S m en ed N) (a :: t) :=
+      siteUnit e0n e0d m N en ed S gs o _ _ ho hSl hSr
+        hXsl hXs hYsl hYs hEv hTX hTY hc he hbox (a :: t)
+        (by rw [hSl]; exact hu)
+    have hq : (inertia.quadForm (evalPfm S m en ed N) (a :: t)).oneValue
+        (w1 * inertia.quadForm X (a :: t)
+          + (w2 * inertia.quadForm Y (a :: t)).swap) :=
+      BPair.oneValue_trans
+        (inertia.quadMatOne _ _ (a :: t) hEv)
+        (BPair.oneValue_trans
+          (inertia.quadForm_add (inertia.matScaleB w1 X)
+            (elim.matSwap (inertia.matScaleB w2 Y)) (a :: t)
+            (by rw [hXsl, hu]) (by rw [hu]; exact hXs)
+            (by rw [hYsl, hu]) (by rw [hu]; exact hYs))
+          (BPair.add_congr
+            (inertia.quadForm_scaleB w1 X (a :: t))
+            (BPair.oneValue_trans
+              (inertia.quadForm_swap (inertia.matScaleB w2 Y) (a :: t))
+              (ground.swap_congr
+                (inertia.quadForm_scaleB w2 Y (a :: t))))))
+    have hsum : BPair.unit ≤ w1 * inertia.quadForm X (a :: t)
+        + (w2 * inertia.quadForm Y (a :: t)).swap :=
+      ground.leB_congr_right hq hpos
+    have hfin := ground.leB_of_unit_add hsum
+    rw [BPair.swap_swap] at hfin
+    exact hfin
+
+/-- A profile pair against a constant profile, evaluated at the
+doubled clearing power against a further coefficient: the two
+profiles' collapses at the shared power with the constants riding
+outside. -/
+private theorem evalMulPairConst (f g : poly.PPoly × poly.PPoly)
+    (x c : BPair) (m : Nat) (en ed : Pos) (K : Nat)
+    (hf : (poly.vnorm (depthPoly f m)).length ≤ K + 1)
+    (hg : (poly.vnorm (depthPoly g m)).length ≤ K + 1) :
+    (evalProf (profMul (profMul (profMul f g) (constProf x))
+        (constProf c)) m en ed (K + K)).oneValue
+      (((evalProf f m en ed K * evalProf g m en ed K) * x) * c) := by
+  have cXp : (poly.vnorm (depthPoly (constProf x) m)).length ≤ 0 + 1 :=
+    poly.capOfLen (Nat.le_of_eq (depthConst_len x m))
+  have cR : (poly.vnorm (depthPoly (constProf c) m)).length ≤ 0 + 1 :=
+    poly.capOfLen (Nat.le_of_eq (depthConst_len c m))
+  have cPQ : (poly.vnorm (poly.mul (depthPoly f m) (depthPoly g m))).length
+      ≤ K + K + 1 := capMul hf hg
+  have cPQX : (poly.vnorm (poly.mul
+      (poly.mul (depthPoly f m) (depthPoly g m))
+      (depthPoly (constProf x) m))).length ≤ K + K + 1 := by
+    have h := capMul cPQ cXp
+    rw [Nat.add_zero] at h
+    exact h
+  have hcol : poly.oneValue
+      (depthPoly (profMul (profMul (profMul f g) (constProf x))
+        (constProf c)) m)
+      (poly.mul (poly.mul (poly.mul (depthPoly f m) (depthPoly g m))
+        (depthPoly (constProf x) m)) (depthPoly (constProf c) m)) :=
+    poly.oneValue_trans
+      (depthPoly_profMul (profMul (profMul f g) (constProf x))
+        (constProf c) m)
+      (poly.mul_congr_left
+        (poly.oneValue_trans
+          (depthPoly_profMul (profMul f g) (constProf x) m)
+          (poly.mul_congr_left (depthPoly_profMul f g m)
+            (depthPoly (constProf x) m)))
+        (depthPoly (constProf c) m))
+  have hmid : (poly.evalClear (poly.mul
+      (poly.mul (depthPoly f m) (depthPoly g m))
+      (depthPoly (constProf x) m)) (BPair.ofPos en) ed (K + K)).oneValue
+      ((evalProf f m en ed K * evalProf g m en ed K)
+        * evalProf (constProf x) m en ed 0) := by
+    have h := poly.evalClear_mulCap (poly.mul (depthPoly f m) (depthPoly g m))
+      (depthPoly (constProf x) m) (BPair.ofPos en) ed (K + K) 0 cPQ cXp
+    rw [Nat.add_zero] at h
+    exact BPair.oneValue_trans h
+      (BPair.mul_congr
+        (poly.evalClear_mulCap (depthPoly f m) (depthPoly g m) (BPair.ofPos en)
+          ed K K hf hg)
+        (BPair.oneValue_refl _))
+  have houter := poly.evalClear_mulCap
+    (poly.mul (poly.mul (depthPoly f m) (depthPoly g m))
+      (depthPoly (constProf x) m)) (depthPoly (constProf c) m)
+    (BPair.ofPos en) ed (K + K) 0 cPQX cR
+  rw [Nat.add_zero] at houter
+  refine BPair.oneValue_trans
+    (poly.evalClear_congr hcol (BPair.ofPos en) ed (K + K)) ?_
+  refine BPair.oneValue_trans houter ?_
+  refine BPair.oneValue_trans
+    (BPair.mul_congr hmid (evalProf_const c m en ed 0)) ?_
+  exact BPair.mul_congr
+    (BPair.mul_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_trans (evalProf_const x m en ed 0)
+        (mulBpowZero ed x)))
+    (mulBpowZero ed c)
+
+/-- One row of the constant family rescaled at a profile pair
+against a constant profile. -/
+private theorem evalScalePairRow (f g : poly.PPoly × poly.PPoly)
+    (x : BPair) (m : Nat) (en ed : Pos) (K : Nat)
+    (hf : (poly.vnorm (depthPoly f m)).length ≤ K + 1)
+    (hg : (poly.vnorm (depthPoly g m)).length ≤ K + 1) :
+    ∀ r : List BPair,
+      poly.oneValue
+        (((r.map constProf).map
+          (profMul (profMul (profMul f g) (constProf x)))).map
+          (fun e => evalProf e m en ed (K + K)))
+        (poly.scaleP
+          ((evalProf f m en ed K * evalProf g m en ed K) * x) r)
+  | [] => trivial
+  | c :: r =>
+    ⟨BPair.oneValue_trans (evalMulPairConst f g x c m en ed K hf hg)
+      (BPair.oneValue_symm (BPair.norm_oneValue _)),
+     evalScalePairRow f g x m en ed K hf hg r⟩
+
+/-- The constant family rescaled at a profile pair against a
+constant profile, evaluated row by row. -/
+private theorem evalScalePairGo (f g : poly.PPoly × poly.PPoly)
+    (x : BPair) (m : Nat) (en ed : Pos) (K : Nat)
+    (hf : (poly.vnorm (depthPoly f m)).length ≤ K + 1)
+    (hg : (poly.vnorm (depthPoly g m)).length ≤ K + 1) :
+    ∀ X : elim.Mat,
+      elim.matOneValue
+        ((pfmScale (profMul (profMul f g) (constProf x))
+          (ofMatProf X)).map
+          (fun r => r.map (fun e => evalProf e m en ed (K + K))))
+        (inertia.matScaleB
+          ((evalProf f m en ed K * evalProf g m en ed K) * x) X)
+  | [] => trivial
+  | r :: X =>
+    ⟨evalScalePairRow f g x m en ed K hf hg r,
+     evalScalePairGo f g x m en ed K hf hg X⟩
+
+/-- The constant family rescaled at a profile pair against a
+constant profile: the stated matrix weighted by the two collapses
+and the constant. -/
+private theorem evalScalePair (f g : poly.PPoly × poly.PPoly) (x : BPair)
+    (X : elim.Mat) (m : Nat) (en ed : Pos) (K : Nat)
+    (hf : (poly.vnorm (depthPoly f m)).length ≤ K + 1)
+    (hg : (poly.vnorm (depthPoly g m)).length ≤ K + 1) :
+    elim.matOneValue
+      (evalPfm (pfmScale (profMul (profMul f g) (constProf x))
+        (ofMatProf X)) m en ed (K + K))
+      (inertia.matScaleB
+        ((evalProf f m en ed K * evalProf g m en ed K) * x) X) := by
+  rw [evalPfm_rows m en ed (K + K)
+    (pfmScale (profMul (profMul f g) (constProf x)) (ofMatProf X))]
+  exact evalScalePairGo f g x m en ed K hf hg X
+
+/-- The two-armed site's pointwise count at an unswapped second
+arm: at a dominance certificate walk whose site datum evaluates to
+two weighted blocks joined, both symmetric at the site's order, the
+first block's weighted form's balance partner sits at or below the
+second's — `thm:decimation`(ii)'s price read through the form's
+decomposition and the sum's own comparison at the commuted order. -/
+private theorem siteTwoArmLo (e0n : BPair) (e0d : Pos) (m N : Nat)
+    (en ed : Pos) (S : List (List (poly.PPoly × poly.PPoly)))
+    (gs : List BoxCert) (o : Nat) (X Y : elim.Mat) (w1 w2 : BPair)
+    (hSl : S.length = o) (hSr : elim.rowsLen o S)
+    (hXl : X.length = o) (hXr : elim.rowsLen o X)
+    (hYl : Y.length = o) (hYr : elim.rowsLen o Y)
+    (hEv : elim.matOneValue (evalPfm S m en ed N)
+      (elim.matAdd (inertia.matScaleB w1 X) (inertia.matScaleB w2 Y)))
+    (hsymX : elim.matOneValue (elim.transposeM X) X)
+    (hsymY : elim.matOneValue (elim.transposeM Y) Y)
+    (hc : domCertGo e0n e0d 0 S gs)
+    (he : BPair.ofPos en * BPair.ofPos e0d ≤ e0n * BPair.ofPos ed)
+    (hbox : (gs.all (fun g =>
+        decide (g.lo ≤ (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair))
+        && decide ((⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair) ≤ g.hi)
+        && Nat.ble (g.K + 1) (N + 1))) = true) :
+    ∀ u : List BPair, u.length = o →
+      (w1 * inertia.quadForm X u).swap ≤ w2 * inertia.quadForm Y u := by
+  intro u hu
+  cases u with
+  | nil =>
+    refine ground.leB_congr_left
+      (ground.swap_congr (BPair.oneValue_symm (BPair.mul_unit w1))) ?_
+    exact ground.leB_congr_right
+      (BPair.oneValue_symm (BPair.mul_unit w2)) (ground.leB_refl BPair.unit)
+  | cons a t =>
+    have ho : 0 < o := by rw [← hu]; exact Nat.succ_pos _
+    have hXs : elim.rowsLen o (inertia.matScaleB w1 X) :=
+      inertia.rowsLen_scaleB w1 o X hXr
+    have hXsl : (inertia.matScaleB w1 X).length = o :=
+      (inertia.length_scaleB w1 X).trans hXl
+    have hYs : elim.rowsLen o (inertia.matScaleB w2 Y) :=
+      inertia.rowsLen_scaleB w2 o Y hYr
+    have hYsl : (inertia.matScaleB w2 Y).length = o :=
+      (inertia.length_scaleB w2 Y).trans hYl
+    have hTX : elim.matOneValue
+        (elim.transposeM (inertia.matScaleB w1 X))
+        (inertia.matScaleB w1 X) :=
+      elim.matOne_trans (inertia.transposeM_scaleB w1 o X hXr)
+        (inertia.matOne_scaleB w1 hsymX)
+    have hTY : elim.matOneValue
+        (elim.transposeM (inertia.matScaleB w2 Y))
+        (inertia.matScaleB w2 Y) :=
+      elim.matOne_trans (inertia.transposeM_scaleB w2 o Y hYr)
+        (inertia.matOne_scaleB w2 hsymY)
+    have hpos : BPair.unit
+        ≤ inertia.quadForm (evalPfm S m en ed N) (a :: t) :=
+      siteUnit e0n e0d m N en ed S gs o _ _ ho hSl hSr
+        hXsl hXs hYsl hYs hEv hTX hTY hc he hbox (a :: t)
+        (by rw [hSl]; exact hu)
+    have hq : (inertia.quadForm (evalPfm S m en ed N) (a :: t)).oneValue
+        (w1 * inertia.quadForm X (a :: t)
+          + w2 * inertia.quadForm Y (a :: t)) :=
+      BPair.oneValue_trans
+        (inertia.quadMatOne _ _ (a :: t) hEv)
+        (BPair.oneValue_trans
+          (inertia.quadForm_add (inertia.matScaleB w1 X)
+            (inertia.matScaleB w2 Y) (a :: t)
+            (by rw [hXsl, hu]) (by rw [hu]; exact hXs)
+            (by rw [hYsl, hu]) (by rw [hu]; exact hYs))
+          (BPair.add_congr
+            (inertia.quadForm_scaleB w1 X (a :: t))
+            (inertia.quadForm_scaleB w2 Y (a :: t))))
+    have hsum : BPair.unit ≤ w2 * inertia.quadForm Y (a :: t)
+        + w1 * inertia.quadForm X (a :: t) := by
+      rw [BPair.add_comm (w2 * inertia.quadForm Y (a :: t))
+        (w1 * inertia.quadForm X (a :: t))]
+      exact ground.leB_congr_right hq hpos
+    exact ground.leB_of_unit_add hsum
+
+/-- The center defect's entries carry the image's and the center's
+caps added. -/
+private theorem devCaps (Cf If : PfMQ) (m K : Nat)
+    (hshI : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) If.1 i) j)
+        m)).length ≤ K + 1)
+    (hshIcl : (poly.vnorm (depthPoly If.2 m)).length ≤ K + 1)
+    (hshC : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) Cf.1 i) j)
+        m)).length ≤ K + 1)
+    (hshCl : (poly.vnorm (depthPoly Cf.2 m)).length ≤ K + 1) :
+    ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+        (devFam Cf If).1 i) j) m)).length ≤ K + K + 1 :=
+  capPfmAdd m (K + K) _ _
+    (capPfmScale Cf.2 If.1 m K K hshCl hshI)
+    (capPfmScale If.2 (pfmSwap Cf.1) m K K
+      hshIcl
+      (capPfmSwap Cf.1 m K hshC))
+
+/-- The center defect's evaluated datum: the image weighted by the
+center clearing's collapse joined to the center's swap weighted by
+the image's own, both at the shared clearing power. -/
+private theorem devEval (Cf If : PfMQ) (o : Nat)
+    (m K : Nat) (en ed : Pos)
+    (hIr : elim.rowsLen o If.1) (hCr : elim.rowsLen o Cf.1)
+    (hshI : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) If.1 i) j)
+        m)).length ≤ K + 1)
+    (hshIcl : (poly.vnorm (depthPoly If.2 m)).length ≤ K + 1)
+    (hshC : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) Cf.1 i) j)
+        m)).length ≤ K + 1)
+    (hshCl : (poly.vnorm (depthPoly Cf.2 m)).length ≤ K + 1) :
+    elim.matOneValue (evalPfm (devFam Cf If).1 m en ed (K + K))
+      (elim.matAdd
+        (inertia.matScaleB (evalProf Cf.2 m en ed K)
+          (evalPfm If.1 m en ed K))
+        (inertia.matScaleB (evalProf If.2 m en ed K)
+          (elim.matSwap (evalPfm Cf.1 m en ed K)))) :=
+  elim.matOne_trans (evalPfm_add _ _ m en ed (K + K))
+    (elim.matAdd_cong2 o _ _ _ _
+      (rowsLen_evalPfm o m _ en ed (K + K)
+        (rowsLen_pfmScale _ o If.1 hIr))
+      (rowsLen_evalPfm o m _ en ed (K + K)
+        (rowsLen_pfmScale _ o _ (rowsLen_pfmSwap o _ hCr)))
+      (inertia.rowsLen_scaleB _ o _ (rowsLen_evalPfm o m If.1 en ed K hIr))
+      (inertia.rowsLen_scaleB _ o _
+        (elim.rowsLen_mapRows BPair.swap _ o
+          (rowsLen_evalPfm o m Cf.1 en ed K hCr)))
+      (evalPfm_scale Cf.2 If.1 m en ed K K hshCl hshI)
+      (elim.matOne_trans
+        (evalPfm_scale If.2 (pfmSwap Cf.1) m en ed K K
+          hshIcl
+          (capPfmSwap Cf.1 m K hshC))
+        (inertia.matOne_scaleB _ (evalPfm_swap Cf.1 m en ed K))))
+
+/-- The center defect's family carries the site's order. -/
+private theorem devLen (Cf If : PfMQ) (o : Nat)
+    (hIl : If.1.length = o) (hCl : Cf.1.length = o) :
+    (devFam Cf If).1.length = o := by
+  have h1 : (pfmScale Cf.2 If.1).length = o := by
+    rw [length_pfmScale]
+    exact hIl
+  have h2 : (pfmScale If.2 (pfmSwap Cf.1)).length = o := by
+    rw [length_pfmScale, length_pfmSwap]
+    exact hCl
+  show (pfmAdd (pfmScale Cf.2 If.1)
+      (pfmScale If.2 (pfmSwap Cf.1))).length = o
+  rw [length_pfmAdd _ _ (h1.trans h2.symm)]
+  exact h1
+
+/-- The center defect's family carries the site's row width. -/
+private theorem devRows (Cf If : PfMQ) (o : Nat)
+    (hIr : elim.rowsLen o If.1) (hCr : elim.rowsLen o Cf.1) :
+    elim.rowsLen o (devFam Cf If).1 :=
+  rowsLen_pfmAdd o _ _ (rowsLen_pfmScale _ o If.1 hIr)
+    (rowsLen_pfmScale _ o _ (rowsLen_pfmSwap o _ hCr))
+
+/-- The evaluated center's exchange at every depth. -/
+theorem evalSymOf (A : List (List (poly.PPoly × poly.PPoly)))
+    (o m K : Nat) (en ed : Pos) (hl : A.length = o)
+    (hr : elim.rowsLen o A) (h : pfmOneValue (pfmTr A) A) :
+    elim.matOneValue (elim.transposeM (evalPfm A m en ed K))
+      (evalPfm A m en ed K) :=
+  elim.matOne_trans
+    (elim.matOne_symm (evalPfm_tr A m en ed K o hl hr))
+    (evalPfm_congr (pfmTr A) A m en ed K h)
+
+/-- The center defect's evaluated datum keeps the exchange: the
+image's own and the center's ride the weighting and the memberwise
+swap. -/
+private theorem devSym (Cf If : PfMQ) (o m K : Nat) (en ed : Pos)
+    (cSh cIf : BPair)
+    (hIl : If.1.length = o) (hIr : elim.rowsLen o If.1)
+    (hCl : Cf.1.length = o) (hCr : elim.rowsLen o Cf.1) (ho : 0 < o)
+    (hsymC : pfmOneValue (pfmTr Cf.1) Cf.1)
+    (hsymI : pfmOneValue (pfmTr If.1) If.1) :
+    elim.matOneValue
+      (elim.transposeM (elim.matAdd
+        (inertia.matScaleB cSh (evalPfm If.1 m en ed K))
+        (inertia.matScaleB cIf
+          (elim.matSwap (evalPfm Cf.1 m en ed K)))))
+      (elim.matAdd
+        (inertia.matScaleB cSh (evalPfm If.1 m en ed K))
+        (inertia.matScaleB cIf
+          (elim.matSwap (evalPfm Cf.1 m en ed K)))) := by
+  have hMIl : (evalPfm If.1 m en ed K).length = o :=
+    (length_evalPfm m If.1 en ed K).trans hIl
+  have hMIr : elim.rowsLen o (evalPfm If.1 m en ed K) :=
+    rowsLen_evalPfm o m If.1 en ed K hIr
+  have hMCl : (evalPfm Cf.1 m en ed K).length = o :=
+    (length_evalPfm m Cf.1 en ed K).trans hCl
+  have hMCr : elim.rowsLen o (evalPfm Cf.1 m en ed K) :=
+    rowsLen_evalPfm o m Cf.1 en ed K hCr
+  have hSCl : (elim.matSwap (evalPfm Cf.1 m en ed K)).length = o :=
+    (elim.length_matSwap _).trans hMCl
+  have hSCr : elim.rowsLen o (elim.matSwap (evalPfm Cf.1 m en ed K)) :=
+    elim.rowsLen_mapRows BPair.swap _ o hMCr
+  have hAl : (inertia.matScaleB cSh (evalPfm If.1 m en ed K)).length = o :=
+    (inertia.length_scaleB _ _).trans hMIl
+  have hAr : elim.rowsLen o (inertia.matScaleB cSh (evalPfm If.1 m en ed K)) :=
+    inertia.rowsLen_scaleB _ o _ hMIr
+  have hBl : (inertia.matScaleB cIf
+      (elim.matSwap (evalPfm Cf.1 m en ed K))).length = o :=
+    (inertia.length_scaleB _ _).trans hSCl
+  have hBr : elim.rowsLen o (inertia.matScaleB cIf
+      (elim.matSwap (evalPfm Cf.1 m en ed K))) :=
+    inertia.rowsLen_scaleB _ o _ hSCr
+  have hTAr : elim.rowsLen o (elim.transposeM
+      (inertia.matScaleB cSh (evalPfm If.1 m en ed K))) := by
+    have h := elim.rowsLen_transposeO ground.bpairOps
+      (inertia.matScaleB cSh (evalPfm If.1 m en ed K))
+    rw [hAl] at h
+    exact h
+  have hTBr : elim.rowsLen o (elim.transposeM (inertia.matScaleB cIf
+      (elim.matSwap (evalPfm Cf.1 m en ed K)))) := by
+    have h := elim.rowsLen_transposeO ground.bpairOps
+      (inertia.matScaleB cIf (elim.matSwap (evalPfm Cf.1 m en ed K)))
+    rw [hBl] at h
+    exact h
+  rw [elim.transposeM_matAdd (inertia.matScaleB cSh (evalPfm If.1 m en ed K))
+    (inertia.matScaleB cIf (elim.matSwap (evalPfm Cf.1 m en ed K)))
+    hAr hBr (by rw [hAl, hBl]) (by rw [hAl]; exact ho)]
+  refine elim.matAdd_cong2 o _ _ _ _ hTAr hTBr hAr hBr ?_ ?_
+  · exact elim.matOne_trans (inertia.transposeM_scaleB cSh o _ hMIr)
+      (inertia.matOne_scaleB cSh
+        (evalSymOf If.1 o m K en ed hIl hIr hsymI))
+  · refine elim.matOne_trans (inertia.transposeM_scaleB cIf o _ hSCr) ?_
+    refine inertia.matOne_scaleB cIf ?_
+    rw [elim.transposeM_swap (evalPfm Cf.1 m en ed K)]
+    exact elim.matSwap_congr
+      (evalSymOf Cf.1 o m K en ed hCl hCr hsymC)
+
+/-- The defect site's second arm's evaluated datum: the defect
+cleared at the cap denominator. -/
+private theorem dcapArm2 (Cf If : PfMQ) (o : Nat) (r0d : Pos)
+    (m K : Nat) (en ed : Pos)
+    (hIr : elim.rowsLen o If.1) (hCr : elim.rowsLen o Cf.1)
+    (hshI : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) If.1 i) j)
+        m)).length ≤ K + 1)
+    (hshIcl : (poly.vnorm (depthPoly If.2 m)).length ≤ K + 1)
+    (hshC : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) Cf.1 i) j)
+        m)).length ≤ K + 1)
+    (hshCl : (poly.vnorm (depthPoly Cf.2 m)).length ≤ K + 1) :
+    elim.matOneValue
+      (evalPfm (pfmScale (constProf (BPair.ofPos r0d)) (devFam Cf If).1)
+        m en ed (K + K))
+      (inertia.matScaleB
+        (evalProf (constProf (BPair.ofPos r0d)) m en ed 0)
+        (elim.matAdd
+          (inertia.matScaleB (evalProf Cf.2 m en ed K)
+            (evalPfm If.1 m en ed K))
+          (inertia.matScaleB (evalProf If.2 m en ed K)
+            (elim.matSwap (evalPfm Cf.1 m en ed K))))) := by
+  have h := evalPfm_scale (constProf (BPair.ofPos r0d))
+    (devFam Cf If).1 m en ed 0 (K + K)
+    (poly.capOfLen (Nat.le_of_eq (depthConst_len (BPair.ofPos r0d) m)))
+    (devCaps Cf If m K hshI hshIcl hshC hshCl)
+  rw [Nat.zero_add] at h
+  exact elim.matOne_trans h
+    (inertia.matOne_scaleB _
+      (devEval Cf If o m K en ed hIr hCr hshI hshIcl hshC hshCl))
+
+/-- The defect datum's two spellings: the cleared matrix datum's own
+sum against the evaluated clearings' weighting. -/
+private theorem devBridge (Cf If : PfMQ) (o m K : Nat) (en ed : Pos)
+    (cI cC : Pos)
+    (hIr : elim.rowsLen o If.1) (hCr : elim.rowsLen o Cf.1)
+    (hcI : (BPair.ofPos cI).oneValue (evalProf If.2 m en ed K))
+    (hcC : (BPair.ofPos cC).oneValue
+      (evalProf Cf.2 m en ed K)) :
+    elim.matOneValue
+      (elim.matAdd (inertia.matScale cC (evalPfm If.1 m en ed K))
+        (inertia.matScale cI
+          (elim.matSwap (evalPfm Cf.1 m en ed K))))
+      (elim.matAdd
+        (inertia.matScaleB (evalProf Cf.2 m en ed K)
+          (evalPfm If.1 m en ed K))
+        (inertia.matScaleB (evalProf If.2 m en ed K)
+          (elim.matSwap (evalPfm Cf.1 m en ed K)))) := by
+  have hMIr : elim.rowsLen o (evalPfm If.1 m en ed K) :=
+    rowsLen_evalPfm o m If.1 en ed K hIr
+  have hSCr : elim.rowsLen o (elim.matSwap (evalPfm Cf.1 m en ed K)) :=
+    elim.rowsLen_mapRows BPair.swap _ o
+      (rowsLen_evalPfm o m Cf.1 en ed K hCr)
+  refine elim.matAdd_cong2 o _ _ _ _
+    (elim.rowsLen_mapRows (fun x => x.scale cC) _ o hMIr)
+    (elim.rowsLen_mapRows (fun x => x.scale cI) _ o hSCr)
+    (inertia.rowsLen_scaleB _ o _ hMIr)
+    (inertia.rowsLen_scaleB _ o _ hSCr) ?_ ?_
+  · exact elim.matOne_trans (inertia.matScale_scaleB cC _)
+      (inertia.matScaleB_congr hcC _)
+  · exact elim.matOne_trans (inertia.matScale_scaleB cI _)
+      (inertia.matScaleB_congr hcI _)
+
+/-- `lem:cornerpivot`(vii)'s floor count at the evaluated data: at a
+dominance certificate walk over the center's floor site datum, with
+the center's exchange and the gram's own, the center's evaluated
+form prices the gram's at the floor and radius numerators' cross-sum
+against the denominators' product, the center's clearing entering at
+its stated margin — `lem:spectator`(iii)'s floor comparison read
+pointwise at every vector of the site's order. -/
+theorem floorCount_ptw (Cf : PfMQ) (G : elim.Mat) (o : Nat)
+    (y0n y0d rn rd : Pos) (e0n : BPair) (e0d : Pos)
+    (bxF : List BoxCert) (m K : Nat) (en ed : Pos) (cC : Pos)
+    (hCl : Cf.1.length = o) (hCr : elim.rowsLen o Cf.1)
+    (hGq : elim.sqAt G o)
+    (hsymC : pfmOneValue (pfmTr Cf.1) Cf.1)
+    (hsymG : elim.matOneValue (elim.transposeM G) G)
+    (hshC : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) Cf.1 i) j)
+        m)).length ≤ K + 1)
+    (hshCl : (poly.vnorm (depthPoly Cf.2 m)).length ≤ K + 1)
+    (hwalk : domCertGo e0n e0d 0 (floorSiteF Cf G y0n y0d rn rd) bxF)
+    (he : BPair.ofPos en * BPair.ofPos e0d ≤ e0n * BPair.ofPos ed)
+    (hbox : (bxF.all (fun g =>
+        decide (g.lo ≤ (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair))
+        && decide ((⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair) ≤ g.hi)
+        && Nat.ble (g.K + 1) (K + K + 1))) = true)
+    (hcC : (BPair.ofPos cC).oneValue (evalProf Cf.2 m en ed K)) :
+    ∀ u : List BPair, u.length = o →
+      (inertia.quadForm G u).scale (cC * (y0n * rd + rn * y0d))
+        ≤ (inertia.quadForm (evalPfm Cf.1 m en ed K) u).scale
+            (y0d * rd) := by
+  intro u hu
+  have hGl : G.length = o := elim.sqAt_len hGq
+  have hGr : elim.rowsLen o G := elim.rowsLen_of_sqAt hGq
+  have hCstLen : (depthPoly (constProf (BPair.ofPos (y0d * rd))) m).length
+      ≤ K + 1 := by
+    rw [depthConst_len]
+    exact Nat.succ_le_succ (Nat.zero_le K)
+  have hMCl : (evalPfm Cf.1 m en ed K).length = o :=
+    (length_evalPfm m Cf.1 en ed K).trans hCl
+  have hMCr : elim.rowsLen o (evalPfm Cf.1 m en ed K) :=
+    rowsLen_evalPfm o m Cf.1 en ed K hCr
+  have hsymMC : elim.matOneValue
+      (elim.transposeM (evalPfm Cf.1 m en ed K)) (evalPfm Cf.1 m en ed K) :=
+    elim.matOne_trans
+      (elim.matOne_symm (evalPfm_tr Cf.1 m en ed K o hCl hCr))
+      (evalPfm_congr (pfmTr Cf.1) Cf.1 m en ed K hsymC)
+  have h1l : (pfmScale (constProf (BPair.ofPos (y0d * rd))) Cf.1).length = o :=
+    (length_pfmScale _ Cf.1).trans hCl
+  have h1r : elim.rowsLen o
+      (pfmScale (constProf (BPair.ofPos (y0d * rd))) Cf.1) :=
+    rowsLen_pfmScale _ o Cf.1 hCr
+  have h2l : (pfmSwap (pfmScale
+      (profMul Cf.2 (constProf (BPair.ofPos (y0n * rd + rn * y0d))))
+      (ofMatProf G))).length = o :=
+    (length_pfmSwap _).trans
+      ((length_pfmScale _ (ofMatProf G)).trans
+        ((length_ofMatProf G).trans hGl))
+  have h2r : elim.rowsLen o (pfmSwap (pfmScale
+      (profMul Cf.2 (constProf (BPair.ofPos (y0n * rd + rn * y0d))))
+      (ofMatProf G))) :=
+    rowsLen_pfmSwap o _
+      (rowsLen_pfmScale _ o (ofMatProf G) (rowsLen_ofMatProf o G hGr))
+  have hSl : (floorSiteF Cf G y0n y0d rn rd).length = o :=
+    (length_pfmAdd _ _ (by rw [h1l, h2l])).trans h1l
+  have hSr : elim.rowsLen o (floorSiteF Cf G y0n y0d rn rd) :=
+    rowsLen_pfmAdd o _ _ h1r h2r
+  have hev1 : elim.matOneValue
+      (evalPfm (pfmScale (constProf (BPair.ofPos (y0d * rd))) Cf.1)
+        m en ed (K + K))
+      (inertia.matScaleB
+        (evalProf (constProf (BPair.ofPos (y0d * rd))) m en ed K)
+        (evalPfm Cf.1 m en ed K)) :=
+    evalPfm_scale (constProf (BPair.ofPos (y0d * rd))) Cf.1 m en ed K K
+      (poly.capOfLen hCstLen) hshC
+  have hev2 : elim.matOneValue
+      (evalPfm (pfmSwap (pfmScale
+        (profMul Cf.2 (constProf (BPair.ofPos (y0n * rd + rn * y0d))))
+        (ofMatProf G))) m en ed (K + K))
+      (elim.matSwap (inertia.matScaleB
+        (evalProf Cf.2 m en ed K * BPair.ofPos (y0n * rd + rn * y0d)
+          * ground.bpow (BPair.ofPos ed) K) G)) :=
+    elim.matOne_trans (evalPfm_swap _ m en ed (K + K))
+      (elim.matSwap_congr
+        (evalScaleOfMat Cf.2 (BPair.ofPos (y0n * rd + rn * y0d)) G
+          m en ed K hshCl))
+  have hEv : elim.matOneValue
+      (evalPfm (floorSiteF Cf G y0n y0d rn rd) m en ed (K + K))
+      (elim.matAdd
+        (inertia.matScaleB
+          (evalProf (constProf (BPair.ofPos (y0d * rd))) m en ed K)
+          (evalPfm Cf.1 m en ed K))
+        (elim.matSwap (inertia.matScaleB
+          (evalProf Cf.2 m en ed K * BPair.ofPos (y0n * rd + rn * y0d)
+            * ground.bpow (BPair.ofPos ed) K) G))) :=
+    elim.matOne_trans (evalPfm_add _ _ m en ed (K + K))
+      (elim.matAdd_cong2 o _ _ _ _
+        (rowsLen_evalPfm o m _ en ed (K + K) h1r)
+        (rowsLen_evalPfm o m _ en ed (K + K) h2r)
+        (inertia.rowsLen_scaleB _ o _ hMCr)
+        (elim.rowsLen_mapRows BPair.swap _ o
+          (inertia.rowsLen_scaleB _ o G hGr))
+        hev1 hev2)
+  have hcmp := siteTwoArm e0n e0d m (K + K) en ed
+    (floorSiteF Cf G y0n y0d rn rd) bxF o (evalPfm Cf.1 m en ed K) G
+    (evalProf (constProf (BPair.ofPos (y0d * rd))) m en ed K)
+    (evalProf Cf.2 m en ed K * BPair.ofPos (y0n * rd + rn * y0d)
+      * ground.bpow (BPair.ofPos ed) K)
+    hSl hSr hMCl hMCr hGl hGr hEv hsymMC hsymG hwalk he hbox u hu
+  have hstep1 : (evalProf Cf.2 m en ed K
+      * BPair.ofPos (y0n * rd + rn * y0d)
+      * ground.bpow (BPair.ofPos ed) K) * inertia.quadForm G u
+      ≤ (BPair.ofPos (y0d * rd) * ground.bpow (BPair.ofPos ed) K)
+        * inertia.quadForm (evalPfm Cf.1 m en ed K) u :=
+    ground.leB_congr_right
+      (BPair.mul_congr (evalProf_const (BPair.ofPos (y0d * rd)) m en ed K)
+        (BPair.oneValue_refl _)) hcmp
+  have hstep2 : (BPair.ofPos cC * BPair.ofPos (y0n * rd + rn * y0d)
+      * ground.bpow (BPair.ofPos ed) K) * inertia.quadForm G u
+      ≤ (BPair.ofPos (y0d * rd) * ground.bpow (BPair.ofPos ed) K)
+        * inertia.quadForm (evalPfm Cf.1 m en ed K) u :=
+    ground.leB_congr_left
+      (BPair.mul_congr
+        (BPair.mul_congr
+          (BPair.mul_congr (BPair.oneValue_symm hcC) (BPair.oneValue_refl _))
+          (BPair.oneValue_refl _))
+        (BPair.oneValue_refl _)) hstep1
+  have hL : (BPair.ofPos cC * BPair.ofPos (y0n * rd + rn * y0d)
+      * ground.bpow (BPair.ofPos ed) K) * inertia.quadForm G u
+      = (BPair.ofPos cC * BPair.ofPos (y0n * rd + rn * y0d)
+          * inertia.quadForm G u) * ground.bpow (BPair.ofPos ed) K := by
+    rw [BPair.mul_assoc, BPair.mul_comm (ground.bpow (BPair.ofPos ed) K)
+      (inertia.quadForm G u), ← BPair.mul_assoc]
+  have hR : (BPair.ofPos (y0d * rd) * ground.bpow (BPair.ofPos ed) K)
+      * inertia.quadForm (evalPfm Cf.1 m en ed K) u
+      = (BPair.ofPos (y0d * rd)
+          * inertia.quadForm (evalPfm Cf.1 m en ed K) u)
+        * ground.bpow (BPair.ofPos ed) K := by
+    rw [BPair.mul_assoc, BPair.mul_comm (ground.bpow (BPair.ofPos ed) K)
+      (inertia.quadForm (evalPfm Cf.1 m en ed K) u), ← BPair.mul_assoc]
+  rw [hL, hR] at hstep2
+  have hstep3 := ground.leB_unscale
+    (ground.unitLtBpow (ground.unitLtOfPos ed) K) hstep2
+  refine ground.leB_congr_left
+    (BPair.oneValue_trans
+      (BPair.mul_congr_left (BPair.ofPos_mul cC (y0n * rd + rn * y0d)))
+      (BPair.ofPos_scale (cC * (y0n * rd + rn * y0d))
+        (inertia.quadForm G u))) ?_
+  exact ground.leB_congr_right
+    (BPair.ofPos_scale (y0d * rd)
+      (inertia.quadForm (evalPfm Cf.1 m en ed K) u)) hstep3
+
+/-- The exchanged family's row count at a stated order. -/
+private theorem length_pfmTr (A : List (List (poly.PPoly × poly.PPoly)))
+    (o : Nat) (hl : A.length = o) (hr : elim.rowsLen o A) (ho : 0 < o) :
+    (pfmTr A).length = o :=
+  elim.length_transposeO profOps A hr (by rw [hl]; exact ho)
+
+/-- `lem:cornerpivot`(vii)'s contraction count at the evaluated
+data: at a dominance certificate walk over the transfer factor's
+contraction site datum, with the gram's exchange, the transferred
+vector's form at the factor's denominator square sits at or below
+the gram's own at the numerator square and the factor's clearing
+squared — `lem:spectator`(iii)'s contraction comparison read
+pointwise at every vector of the site's order. -/
+theorem contrCount_ptw (Wf : PfMQ) (G : elim.Mat) (o : Nat)
+    (ln ld : Pos) (e0n : BPair) (e0d : Pos)
+    (bxC : List BoxCert) (m K : Nat) (en ed : Pos) (cW : Pos)
+    (hWl : Wf.1.length = o) (hWr : elim.rowsLen o Wf.1)
+    (hGq : elim.sqAt G o)
+    (hsymG : elim.matOneValue (elim.transposeM G) G)
+    (hshW : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) Wf.1 i) j)
+        m)).length ≤ K + 1)
+    (hshWcl : (poly.vnorm (depthPoly Wf.2 m)).length ≤ K + 1)
+    (hwalk : domCertGo e0n e0d 0 (contrSiteF Wf G ln ld) bxC)
+    (he : BPair.ofPos en * BPair.ofPos e0d ≤ e0n * BPair.ofPos ed)
+    (hbox : (bxC.all (fun g =>
+        decide (g.lo ≤ (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair))
+        && decide ((⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair) ≤ g.hi)
+        && Nat.ble (g.K + 1) (K + K + 1))) = true)
+    (hcW : (BPair.ofPos cW).oneValue (evalProf Wf.2 m en ed K)) :
+    ∀ u : List BPair, u.length = o →
+      (inertia.quadForm G
+        (elim.matVec (elim.matSwap (evalPfm Wf.1 m en ed K)) u)).scale
+          (ld * ld)
+        ≤ (inertia.quadForm G u).scale (ln * ln * (cW * cW)) := by
+  intro u hu
+  cases u with
+  | nil =>
+    have hW0 : Wf.1 = [] :=
+      ground.nil_of_length_zero Wf.1 (hWl.trans hu.symm)
+    rw [hW0]
+    exact ground.leB_congr_left (ground.unitScale _)
+      (ground.leB_congr_right (ground.unitScale _)
+        (ground.leB_refl BPair.unit))
+  | cons a t =>
+    have ho : 0 < o := by rw [← hu]; exact Nat.succ_pos _
+    have hGl : G.length = o := elim.sqAt_len hGq
+    have hGr : elim.rowsLen o G := elim.rowsLen_of_sqAt hGq
+    have hMWl : (evalPfm Wf.1 m en ed K).length = o :=
+      (length_evalPfm m Wf.1 en ed K).trans hWl
+    have hMWr : elim.rowsLen o (evalPfm Wf.1 m en ed K) :=
+      rowsLen_evalPfm o m Wf.1 en ed K hWr
+    have hSWl : (elim.matSwap (evalPfm Wf.1 m en ed K)).length = o :=
+      (elim.length_matSwap _).trans hMWl
+    have hSWr : elim.rowsLen o (elim.matSwap (evalPfm Wf.1 m en ed K)) :=
+      elim.rowsLen_mapRows BPair.swap _ o hMWr
+    -- the swapped and exchanged profile families
+    have hSwl : (pfmSwap Wf.1).length = o := (length_pfmSwap Wf.1).trans hWl
+    have hSwr : elim.rowsLen o (pfmSwap Wf.1) := rowsLen_pfmSwap o Wf.1 hWr
+    have hTrl : (pfmTr (pfmSwap Wf.1)).length = o :=
+      length_pfmTr (pfmSwap Wf.1) o hSwl hSwr ho
+    have hTrr : elim.rowsLen o (pfmTr (pfmSwap Wf.1)) := by
+      have h := elim.rowsLen_transposeO profOps (pfmSwap Wf.1)
+      rw [hSwl] at h
+      exact h
+    have hOMl : (ofMatProf G).length = o := (length_ofMatProf G).trans hGl
+    have hOMr : elim.rowsLen o (ofMatProf G) := rowsLen_ofMatProf o G hGr
+    have hBl : (pfmMul (ofMatProf G) (pfmSwap Wf.1)).length = o :=
+      (ground.length_map _ (ofMatProf G)).trans hOMl
+    have hBr : elim.rowsLen o (pfmMul (ofMatProf G) (pfmSwap Wf.1)) :=
+      elim.rowsLen_matMulO profOps (ofMatProf G) (pfmSwap Wf.1) o
+        (elim.headD_width o (pfmSwap Wf.1) (by rw [hSwl]; exact ho) hSwr)
+    have hIl : (pfmMul (pfmTr (pfmSwap Wf.1))
+        (pfmMul (ofMatProf G) (pfmSwap Wf.1))).length = o :=
+      (ground.length_map _ (pfmTr (pfmSwap Wf.1))).trans hTrl
+    have hIr : elim.rowsLen o (pfmMul (pfmTr (pfmSwap Wf.1))
+        (pfmMul (ofMatProf G) (pfmSwap Wf.1))) :=
+      elim.rowsLen_matMulO profOps (pfmTr (pfmSwap Wf.1))
+        (pfmMul (ofMatProf G) (pfmSwap Wf.1)) o
+        (elim.headD_width o (pfmMul (ofMatProf G) (pfmSwap Wf.1))
+          (by rw [hBl]; exact ho) hBr)
+    -- the entry reads of the two inner factors
+    have hSwLen := capPfmSwap Wf.1 m K hshW
+    have hTrLen := pfmTrEntryLen (pfmSwap Wf.1) o m K hSwl hSwr hSwLen
+    have hBcap : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+        (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+          (pfmMul (ofMatProf G) (pfmSwap Wf.1)) i) j) m)).length ≤ K + 1 := by
+      have h := capPfmMul (ofMatProf G) (pfmSwap Wf.1) m 0 K o o hOMr hSwl ho
+        hSwr (fun i j => poly.capOfLen (ofMatEntryLen G m i j))
+        hSwLen
+      intro i j
+      have hij := h i j
+      rw [Nat.zero_add] at hij
+      exact hij
+    have hIcap : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+        (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+          (pfmMul (pfmTr (pfmSwap Wf.1))
+            (pfmMul (ofMatProf G) (pfmSwap Wf.1))) i) j) m)).length
+        ≤ K + K + 1 :=
+      capPfmMul (pfmTr (pfmSwap Wf.1))
+        (pfmMul (ofMatProf G) (pfmSwap Wf.1)) m K K o o hTrr hBl ho hBr
+        hTrLen hBcap
+    -- the inner product's evaluated datum
+    have hBev : elim.matOneValue
+        (evalPfm (pfmMul (ofMatProf G) (pfmSwap Wf.1)) m en ed K)
+        (elim.matMul G (elim.matSwap (evalPfm Wf.1 m en ed K))) := by
+      have h := evalPfm_mul (ofMatProf G) (pfmSwap Wf.1) m en ed 0 K o o
+        hOMr hSwl ho hSwr (fun i j => poly.capOfLen (ofMatEntryLen G m i j))
+        hSwLen
+      rw [Nat.zero_add] at h
+      refine elim.matOne_trans h ?_
+      refine elim.matOne_trans
+        (elim.matMul_congrL _ G _
+          (elim.matOne_trans (evalPfm_ofMat G m en ed 0)
+            (inertia.matScaleB_one G))) ?_
+      exact elim.matMul_congrR (n := o) (k := o) G _ _
+        (rowsLen_evalPfm o m (pfmSwap Wf.1) en ed K hSwr) hSWr
+        ((length_evalPfm m (pfmSwap Wf.1) en ed K).trans hSwl) hSWl ho
+        (evalPfm_swap Wf.1 m en ed K)
+    have hTrev : elim.matOneValue
+        (evalPfm (pfmTr (pfmSwap Wf.1)) m en ed K)
+        (elim.transposeM (elim.matSwap (evalPfm Wf.1 m en ed K))) :=
+      elim.matOne_trans (evalPfm_tr (pfmSwap Wf.1) m en ed K o hSwl hSwr)
+        (elim.transposeM_congrM o _ _
+          (rowsLen_evalPfm o m (pfmSwap Wf.1) en ed K hSwr) hSWr
+          ((length_evalPfm m (pfmSwap Wf.1) en ed K).trans
+            (hSwl.trans hSWl.symm))
+          (evalPfm_swap Wf.1 m en ed K))
+    have hIev : elim.matOneValue
+        (evalPfm (pfmMul (pfmTr (pfmSwap Wf.1))
+          (pfmMul (ofMatProf G) (pfmSwap Wf.1))) m en ed (K + K))
+        (elim.matMul (elim.transposeM
+            (elim.matSwap (evalPfm Wf.1 m en ed K)))
+          (elim.matMul G (elim.matSwap (evalPfm Wf.1 m en ed K)))) := by
+      refine elim.matOne_trans
+        (evalPfm_mul (pfmTr (pfmSwap Wf.1))
+          (pfmMul (ofMatProf G) (pfmSwap Wf.1)) m en ed K K o o
+          hTrr hBl ho hBr hTrLen hBcap) ?_
+      refine elim.matOne_trans (elim.matMul_congrL _ _ _ hTrev) ?_
+      exact elim.matMul_congrR (n := o) (k := o) _ _ _
+        (rowsLen_evalPfm o m (pfmMul (ofMatProf G) (pfmSwap Wf.1)) en ed K
+          hBr)
+        (elim.rowsLen_matMul_of G _ (fun _ => by rw [hSWl]; exact ho) hSWr)
+        ((length_evalPfm m (pfmMul (ofMatProf G) (pfmSwap Wf.1)) en ed
+          K).trans hBl)
+        ((elim.length_matMul G _).trans hGl) ho hBev
+    -- the two arms' evaluated data
+    have hev1 : elim.matOneValue
+        (evalPfm (pfmScale (profMul (profMul Wf.2 Wf.2)
+          (constProf (BPair.ofPos (ln * ln)))) (ofMatProf G)) m en ed (K + K))
+        (inertia.matScaleB
+          ((evalProf Wf.2 m en ed K * evalProf Wf.2 m en ed K)
+            * BPair.ofPos (ln * ln)) G) :=
+      evalScalePair Wf.2 Wf.2 (BPair.ofPos (ln * ln)) G m en ed K
+        hshWcl hshWcl
+    have hscale : elim.matOneValue
+        (evalPfm (pfmScale (constProf (BPair.ofPos (ld * ld)))
+          (pfmMul (pfmTr (pfmSwap Wf.1))
+            (pfmMul (ofMatProf G) (pfmSwap Wf.1)))) m en ed (K + K))
+        (inertia.matScaleB
+          (evalProf (constProf (BPair.ofPos (ld * ld))) m en ed 0)
+          (elim.matMul (elim.transposeM
+              (elim.matSwap (evalPfm Wf.1 m en ed K)))
+            (elim.matMul G (elim.matSwap (evalPfm Wf.1 m en ed K))))) := by
+      have h := evalPfm_scale (constProf (BPair.ofPos (ld * ld)))
+        (pfmMul (pfmTr (pfmSwap Wf.1))
+          (pfmMul (ofMatProf G) (pfmSwap Wf.1))) m en ed 0 (K + K)
+        (poly.capOfLen (Nat.le_of_eq (depthConst_len (BPair.ofPos (ld * ld)) m)))
+        hIcap
+      rw [Nat.zero_add] at h
+      exact elim.matOne_trans h
+        (inertia.matOne_scaleB _ hIev)
+    have hev2 : elim.matOneValue
+        (evalPfm (pfmSwap (pfmScale (constProf (BPair.ofPos (ld * ld)))
+          (pfmMul (pfmTr (pfmSwap Wf.1))
+            (pfmMul (ofMatProf G) (pfmSwap Wf.1))))) m en ed (K + K))
+        (elim.matSwap (inertia.matScaleB
+          (evalProf (constProf (BPair.ofPos (ld * ld))) m en ed 0)
+          (elim.matMul (elim.transposeM
+              (elim.matSwap (evalPfm Wf.1 m en ed K)))
+            (elim.matMul G (elim.matSwap (evalPfm Wf.1 m en ed K)))))) :=
+      elim.matOne_trans (evalPfm_swap _ m en ed (K + K))
+        (elim.matSwap_congr hscale)
+    -- the site's shapes
+    have h1l : (pfmScale (profMul (profMul Wf.2 Wf.2)
+        (constProf (BPair.ofPos (ln * ln)))) (ofMatProf G)).length = o :=
+      (length_pfmScale _ (ofMatProf G)).trans hOMl
+    have h1r : elim.rowsLen o (pfmScale
+        (profMul (profMul Wf.2 Wf.2)
+          (constProf (BPair.ofPos (ln * ln)))) (ofMatProf G)) :=
+      rowsLen_pfmScale _ o (ofMatProf G) hOMr
+    have h2l : (pfmSwap (pfmScale (constProf (BPair.ofPos (ld * ld)))
+        (pfmMul (pfmTr (pfmSwap Wf.1))
+          (pfmMul (ofMatProf G) (pfmSwap Wf.1))))).length = o :=
+      (length_pfmSwap _).trans ((length_pfmScale _ _).trans hIl)
+    have h2r : elim.rowsLen o (pfmSwap (pfmScale
+        (constProf (BPair.ofPos (ld * ld)))
+        (pfmMul (pfmTr (pfmSwap Wf.1))
+          (pfmMul (ofMatProf G) (pfmSwap Wf.1))))) :=
+      rowsLen_pfmSwap o _ (rowsLen_pfmScale _ o _ hIr)
+    have hSl : (contrSiteF Wf G ln ld).length = o :=
+      (length_pfmAdd _ _ (by rw [h1l, h2l])).trans h1l
+    have hSr : elim.rowsLen o (contrSiteF Wf G ln ld) :=
+      rowsLen_pfmAdd o _ _ h1r h2r
+    have hYl : (elim.matMul (elim.transposeM
+        (elim.matSwap (evalPfm Wf.1 m en ed K)))
+        (elim.matMul G (elim.matSwap (evalPfm Wf.1 m en ed K)))).length
+        = o :=
+      (elim.length_matMul _ _).trans (elim.transposeLen _ hSWr hSWl)
+    have hYr : elim.rowsLen o (elim.matMul (elim.transposeM
+        (elim.matSwap (evalPfm Wf.1 m en ed K)))
+        (elim.matMul G (elim.matSwap (evalPfm Wf.1 m en ed K)))) :=
+      elim.rowsLen_matMul_of _ _
+        (fun _ => by rw [(elim.length_matMul G _).trans hGl]; exact ho)
+        (elim.rowsLen_matMul_of G _ (fun _ => by rw [hSWl]; exact ho) hSWr)
+    have hEv : elim.matOneValue
+        (evalPfm (contrSiteF Wf G ln ld) m en ed (K + K))
+        (elim.matAdd
+          (inertia.matScaleB
+            ((evalProf Wf.2 m en ed K * evalProf Wf.2 m en ed K)
+              * BPair.ofPos (ln * ln)) G)
+          (elim.matSwap (inertia.matScaleB
+            (evalProf (constProf (BPair.ofPos (ld * ld))) m en ed 0)
+            (elim.matMul (elim.transposeM
+                (elim.matSwap (evalPfm Wf.1 m en ed K)))
+              (elim.matMul G
+                (elim.matSwap (evalPfm Wf.1 m en ed K))))))) :=
+      elim.matOne_trans (evalPfm_add _ _ m en ed (K + K))
+        (elim.matAdd_cong2 o _ _ _ _
+          (rowsLen_evalPfm o m _ en ed (K + K) h1r)
+          (rowsLen_evalPfm o m _ en ed (K + K) h2r)
+          (inertia.rowsLen_scaleB _ o G hGr)
+          (elim.rowsLen_mapRows BPair.swap _ o
+            (inertia.rowsLen_scaleB _ o _ hYr))
+          hev1 hev2)
+    have hcmp := siteTwoArm e0n e0d m (K + K) en ed
+      (contrSiteF Wf G ln ld) bxC o G
+      (elim.matMul (elim.transposeM
+        (elim.matSwap (evalPfm Wf.1 m en ed K)))
+        (elim.matMul G (elim.matSwap (evalPfm Wf.1 m en ed K))))
+      ((evalProf Wf.2 m en ed K * evalProf Wf.2 m en ed K)
+        * BPair.ofPos (ln * ln))
+      (evalProf (constProf (BPair.ofPos (ld * ld))) m en ed 0)
+      hSl hSr hGl hGr hYl hYr hEv hsymG
+      (elim.congrSym G (elim.matSwap (evalPfm Wf.1 m en ed K)) hGr hGl
+        hSWr hSWl ho ho hsymG)
+      hwalk he hbox (a :: t) hu
+    -- the congruated form reads the transferred vector's own
+    have hqY : (inertia.quadForm
+        (elim.matMul (elim.transposeM
+          (elim.matSwap (evalPfm Wf.1 m en ed K)))
+          (elim.matMul G (elim.matSwap (evalPfm Wf.1 m en ed K))))
+        (a :: t)).oneValue
+        (inertia.quadForm G
+          (elim.matVec (elim.matSwap (evalPfm Wf.1 m en ed K))
+            (a :: t))) :=
+      BPair.oneValue_trans
+        (elim.dotN_read (a :: t) _)
+        (BPair.oneValue_trans
+          (BPair.oneValue_symm
+            (inertia.congrPair G (elim.matSwap (evalPfm Wf.1 m en ed K))
+              o o hGl hGr hSWl hSWr (a :: t) (a :: t) hu hu))
+          (BPair.oneValue_symm (elim.dotN_read _ _)))
+    refine ground.leB_congr_left
+      (BPair.oneValue_trans
+        (BPair.mul_congr
+          (BPair.oneValue_trans
+            (evalProf_const (BPair.ofPos (ld * ld)) m en ed 0)
+            (mulBpowZero ed (BPair.ofPos (ld * ld))))
+          hqY)
+        (BPair.ofPos_scale (ld * ld) _)) ?_
+    refine ground.leB_congr_right
+      (BPair.oneValue_trans
+        (BPair.mul_congr
+          (BPair.oneValue_trans
+            (BPair.mul_congr
+              (BPair.mul_congr (BPair.oneValue_symm hcW)
+                (BPair.oneValue_symm hcW))
+              (BPair.oneValue_refl _))
+            (BPair.oneValue_trans
+              (BPair.mul_congr (BPair.ofPos_mul cW cW)
+                (BPair.oneValue_refl _))
+              (BPair.oneValue_trans (BPair.ofPos_mul (cW * cW) (ln * ln))
+                (BPair.oneValue_of_eq (congrArg BPair.ofPos
+                  (ground.mul_comm (cW * cW) (ln * ln)))))))
+          (BPair.oneValue_refl _))
+        (BPair.ofPos_scale (ln * ln * (cW * cW)) _)) ?_
+    exact hcmp
+
+/-- `lem:cornerpivot`(vii)'s defect cap at the evaluated data, the
+upper arm: at a dominance certificate walk over the defect cap's
+upper site datum, with the center's and the image's exchanges and
+the gram's own, the defect's evaluated form at the cap denominator
+sits at or below the gram's at the cap numerator and the defect's
+own clearing — `thm:decimation`(ii)'s comparison at the deviation's
+cleared datum, the center defect the drift's slot. -/
+theorem dcapCount_hi (Cf If : PfMQ) (G : elim.Mat) (o : Nat)
+    (r0n r0d : Pos) (e0n : BPair) (e0d : Pos)
+    (bxU : List BoxCert) (m K : Nat) (en ed : Pos) (cI cC : Pos)
+    (hIl : If.1.length = o) (hIr : elim.rowsLen o If.1)
+    (hCl : Cf.1.length = o) (hCr : elim.rowsLen o Cf.1)
+    (hGq : elim.sqAt G o)
+    (hsymC : pfmOneValue (pfmTr Cf.1) Cf.1)
+    (hsymI : pfmOneValue (pfmTr If.1) If.1)
+    (hsymG : elim.matOneValue (elim.transposeM G) G)
+    (hshI : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) If.1 i) j)
+        m)).length ≤ K + 1)
+    (hshIcl : (poly.vnorm (depthPoly If.2 m)).length ≤ K + 1)
+    (hshC : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) Cf.1 i) j)
+        m)).length ≤ K + 1)
+    (hshCl : (poly.vnorm (depthPoly Cf.2 m)).length ≤ K + 1)
+    (hwalk : domCertGo e0n e0d 0 (dcapHiSiteF Cf If G r0n r0d) bxU)
+    (he : BPair.ofPos en * BPair.ofPos e0d ≤ e0n * BPair.ofPos ed)
+    (hbox : (bxU.all (fun g =>
+        decide (g.lo ≤ (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair))
+        && decide ((⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair) ≤ g.hi)
+        && Nat.ble (g.K + 1) (K + K + 1))) = true)
+    (hcI : (BPair.ofPos cI).oneValue (evalProf If.2 m en ed K))
+    (hcC : (BPair.ofPos cC).oneValue
+      (evalProf Cf.2 m en ed K)) :
+    ∀ w : List BPair, w.length = o →
+      (inertia.quadForm (spectator.devQ (evalPfm If.1 m en ed K, cI)
+          (evalPfm Cf.1 m en ed K, cC)).1 w).scale r0d
+        ≤ (inertia.quadForm G w).scale
+            (r0n * (spectator.devQ (evalPfm If.1 m en ed K, cI)
+              (evalPfm Cf.1 m en ed K, cC)).2) := by
+  intro w hw
+  cases w with
+  | nil =>
+    exact ground.leB_congr_left (ground.unitScale _)
+      (ground.leB_congr_right (ground.unitScale _)
+        (ground.leB_refl BPair.unit))
+  | cons a t =>
+    have ho : 0 < o := by rw [← hw]; exact Nat.succ_pos _
+    have hGl : G.length = o := elim.sqAt_len hGq
+    have hGr : elim.rowsLen o G := elim.rowsLen_of_sqAt hGq
+    have hMIr : elim.rowsLen o (evalPfm If.1 m en ed K) :=
+      rowsLen_evalPfm o m If.1 en ed K hIr
+    have hMIl : (evalPfm If.1 m en ed K).length = o :=
+      (length_evalPfm m If.1 en ed K).trans hIl
+    have hSCr : elim.rowsLen o
+        (elim.matSwap (evalPfm Cf.1 m en ed K)) :=
+      elim.rowsLen_mapRows BPair.swap _ o
+        (rowsLen_evalPfm o m Cf.1 en ed K hCr)
+    have hSCl : (elim.matSwap (evalPfm Cf.1 m en ed K)).length = o :=
+      (elim.length_matSwap _).trans
+        ((length_evalPfm m Cf.1 en ed K).trans hCl)
+    have hDl : (elim.matAdd
+        (inertia.matScaleB (evalProf Cf.2 m en ed K)
+          (evalPfm If.1 m en ed K))
+        (inertia.matScaleB (evalProf If.2 m en ed K)
+          (elim.matSwap (evalPfm Cf.1 m en ed K)))).length = o :=
+      (elim.length_matAdd _ _
+        (by rw [inertia.length_scaleB, inertia.length_scaleB,
+          hMIl, hSCl])).trans
+        ((inertia.length_scaleB _ _).trans hMIl)
+    have hDr : elim.rowsLen o (elim.matAdd
+        (inertia.matScaleB (evalProf Cf.2 m en ed K)
+          (evalPfm If.1 m en ed K))
+        (inertia.matScaleB (evalProf If.2 m en ed K)
+          (elim.matSwap (evalPfm Cf.1 m en ed K)))) :=
+      elim.rowsLen_matAdd o _ _ (inertia.rowsLen_scaleB _ o _ hMIr)
+        (inertia.rowsLen_scaleB _ o _ hSCr)
+    have h1l : (pfmScale (profMul (devFam Cf If).2
+        (constProf (BPair.ofPos r0n))) (ofMatProf G)).length = o :=
+      (length_pfmScale _ (ofMatProf G)).trans
+        ((length_ofMatProf G).trans hGl)
+    have h1r : elim.rowsLen o (pfmScale (profMul (devFam Cf If).2
+        (constProf (BPair.ofPos r0n))) (ofMatProf G)) :=
+      rowsLen_pfmScale _ o (ofMatProf G) (rowsLen_ofMatProf o G hGr)
+    have h2l : (pfmSwap (pfmScale (constProf (BPair.ofPos r0d))
+        (devFam Cf If).1)).length = o :=
+      (length_pfmSwap _).trans
+        ((length_pfmScale _ _).trans (devLen Cf If o hIl hCl))
+    have h2r : elim.rowsLen o (pfmSwap (pfmScale
+        (constProf (BPair.ofPos r0d)) (devFam Cf If).1)) :=
+      rowsLen_pfmSwap o _
+        (rowsLen_pfmScale _ o _ (devRows Cf If o hIr hCr))
+    have hSl : (dcapHiSiteF Cf If G r0n r0d).length = o :=
+      (length_pfmAdd _ _ (by rw [h1l, h2l])).trans h1l
+    have hSr : elim.rowsLen o (dcapHiSiteF Cf If G r0n r0d) :=
+      rowsLen_pfmAdd o _ _ h1r h2r
+    have hEv : elim.matOneValue
+        (evalPfm (dcapHiSiteF Cf If G r0n r0d) m en ed (K + K))
+        (elim.matAdd
+          (inertia.matScaleB
+            ((evalProf If.2 m en ed K
+              * evalProf Cf.2 m en ed K) * BPair.ofPos r0n) G)
+          (elim.matSwap (inertia.matScaleB
+            (evalProf (constProf (BPair.ofPos r0d)) m en ed 0)
+            (elim.matAdd
+              (inertia.matScaleB (evalProf Cf.2 m en ed K)
+                (evalPfm If.1 m en ed K))
+              (inertia.matScaleB (evalProf If.2 m en ed K)
+                (elim.matSwap (evalPfm Cf.1 m en ed K))))))) :=
+      elim.matOne_trans (evalPfm_add _ _ m en ed (K + K))
+        (elim.matAdd_cong2 o _ _ _ _
+          (rowsLen_evalPfm o m _ en ed (K + K) h1r)
+          (rowsLen_evalPfm o m _ en ed (K + K) h2r)
+          (inertia.rowsLen_scaleB _ o G hGr)
+          (elim.rowsLen_mapRows BPair.swap _ o
+            (inertia.rowsLen_scaleB _ o _ hDr))
+          (evalScalePair If.2 Cf.2 (BPair.ofPos r0n) G m en ed K
+            hshIcl hshCl)
+          (elim.matOne_trans (evalPfm_swap _ m en ed (K + K))
+            (elim.matSwap_congr
+              (dcapArm2 Cf If o r0d m K en ed hIr hCr hshI hshIcl hshC
+                hshCl))))
+    have hcmp := siteTwoArm e0n e0d m (K + K) en ed
+      (dcapHiSiteF Cf If G r0n r0d) bxU o G _
+      ((evalProf If.2 m en ed K
+        * evalProf Cf.2 m en ed K) * BPair.ofPos r0n)
+      (evalProf (constProf (BPair.ofPos r0d)) m en ed 0)
+      hSl hSr hGl hGr hDl hDr hEv hsymG
+      (devSym Cf If o m K en ed _ _ hIl hIr hCl hCr ho hsymC hsymI)
+      hwalk he hbox (a :: t) hw
+    have hL : ((evalProf (constProf (BPair.ofPos r0d)) m en ed 0)
+        * inertia.quadForm (elim.matAdd
+          (inertia.matScaleB (evalProf Cf.2 m en ed K)
+            (evalPfm If.1 m en ed K))
+          (inertia.matScaleB (evalProf If.2 m en ed K)
+            (elim.matSwap (evalPfm Cf.1 m en ed K))))
+          (a :: t)).oneValue
+        ((inertia.quadForm (elim.matAdd
+          (inertia.matScale cC (evalPfm If.1 m en ed K))
+          (inertia.matScale cI
+            (elim.matSwap (evalPfm Cf.1 m en ed K))))
+          (a :: t)).scale r0d) :=
+      BPair.oneValue_trans
+        (BPair.mul_congr
+          (BPair.oneValue_trans
+            (evalProf_const (BPair.ofPos r0d) m en ed 0)
+            (mulBpowZero ed (BPair.ofPos r0d)))
+          (BPair.oneValue_symm
+            (inertia.quadMatOne _ _ (a :: t)
+              (devBridge Cf If o m K en ed cI cC hIr hCr hcI hcC))))
+        (BPair.ofPos_scale r0d _)
+    have hR : (((evalProf If.2 m en ed K
+        * evalProf Cf.2 m en ed K) * BPair.ofPos r0n)
+        * inertia.quadForm G (a :: t)).oneValue
+        ((inertia.quadForm G (a :: t)).scale (r0n * (cI * cC))) :=
+      BPair.oneValue_trans
+        (BPair.mul_congr
+          (BPair.oneValue_trans
+            (BPair.mul_congr
+              (BPair.mul_congr (BPair.oneValue_symm hcI)
+                (BPair.oneValue_symm hcC))
+              (BPair.oneValue_refl _))
+            (BPair.oneValue_trans
+              (BPair.mul_congr_left (BPair.ofPos_mul cI cC))
+              (BPair.oneValue_trans (BPair.ofPos_mul (cI * cC) r0n)
+                (BPair.oneValue_of_eq
+                  (congrArg BPair.ofPos
+                    (ground.mul_comm (cI * cC) r0n))))))
+          (BPair.oneValue_refl _))
+        (BPair.ofPos_scale (r0n * (cI * cC)) _)
+    exact ground.leB_congr_left hL (ground.leB_congr_right hR hcmp)
+
+/-- `lem:cornerpivot`(vii)'s defect cap at the evaluated data, the
+lower arm: at a dominance certificate walk over the defect cap's
+lower site datum the gram's evaluated form at the cap numerator and
+the deviation's clearing has its balance partner at or below the
+deviation's own form at the cap denominator — the deviation's
+cleared datum, the center defect the drift's slot. -/
+theorem dcapCount_lo (Cf If : PfMQ) (G : elim.Mat) (o : Nat)
+    (r0n r0d : Pos) (e0n : BPair) (e0d : Pos)
+    (bxL : List BoxCert) (m K : Nat) (en ed : Pos) (cI cC : Pos)
+    (hIl : If.1.length = o) (hIr : elim.rowsLen o If.1)
+    (hCl : Cf.1.length = o) (hCr : elim.rowsLen o Cf.1)
+    (hGq : elim.sqAt G o)
+    (hsymC : pfmOneValue (pfmTr Cf.1) Cf.1)
+    (hsymI : pfmOneValue (pfmTr If.1) If.1)
+    (hsymG : elim.matOneValue (elim.transposeM G) G)
+    (hshI : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) If.1 i) j)
+        m)).length ≤ K + 1)
+    (hshIcl : (poly.vnorm (depthPoly If.2 m)).length ≤ K + 1)
+    (hshC : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) Cf.1 i) j)
+        m)).length ≤ K + 1)
+    (hshCl : (poly.vnorm (depthPoly Cf.2 m)).length ≤ K + 1)
+    (hwalk : domCertGo e0n e0d 0 (dcapLoSiteF Cf If G r0n r0d) bxL)
+    (he : BPair.ofPos en * BPair.ofPos e0d ≤ e0n * BPair.ofPos ed)
+    (hbox : (bxL.all (fun g =>
+        decide (g.lo ≤ (⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair))
+        && decide ((⟨BPair.ofNat (m * m) * BPair.ofPos en, ed⟩
+          : CPair) ≤ g.hi)
+        && Nat.ble (g.K + 1) (K + K + 1))) = true)
+    (hcI : (BPair.ofPos cI).oneValue (evalProf If.2 m en ed K))
+    (hcC : (BPair.ofPos cC).oneValue
+      (evalProf Cf.2 m en ed K)) :
+    ∀ w : List BPair, w.length = o →
+      ((inertia.quadForm G w).scale
+          (r0n * (spectator.devQ (evalPfm If.1 m en ed K, cI)
+            (evalPfm Cf.1 m en ed K, cC)).2)).swap
+        ≤ (inertia.quadForm
+            (spectator.devQ (evalPfm If.1 m en ed K, cI)
+              (evalPfm Cf.1 m en ed K, cC)).1 w).scale r0d := by
+  intro w hw
+  cases w with
+  | nil =>
+    refine ground.leB_congr_left
+      (ground.swap_congr (ground.unitScale _)) ?_
+    exact ground.leB_congr_right (ground.unitScale _)
+      (ground.leB_refl BPair.unit)
+  | cons a t =>
+    have ho : 0 < o := by rw [← hw]; exact Nat.succ_pos _
+    have hGl : G.length = o := elim.sqAt_len hGq
+    have hGr : elim.rowsLen o G := elim.rowsLen_of_sqAt hGq
+    have hMIr : elim.rowsLen o (evalPfm If.1 m en ed K) :=
+      rowsLen_evalPfm o m If.1 en ed K hIr
+    have hMIl : (evalPfm If.1 m en ed K).length = o :=
+      (length_evalPfm m If.1 en ed K).trans hIl
+    have hSCr : elim.rowsLen o
+        (elim.matSwap (evalPfm Cf.1 m en ed K)) :=
+      elim.rowsLen_mapRows BPair.swap _ o
+        (rowsLen_evalPfm o m Cf.1 en ed K hCr)
+    have hSCl : (elim.matSwap (evalPfm Cf.1 m en ed K)).length = o :=
+      (elim.length_matSwap _).trans
+        ((length_evalPfm m Cf.1 en ed K).trans hCl)
+    have hDl : (elim.matAdd
+        (inertia.matScaleB (evalProf Cf.2 m en ed K)
+          (evalPfm If.1 m en ed K))
+        (inertia.matScaleB (evalProf If.2 m en ed K)
+          (elim.matSwap (evalPfm Cf.1 m en ed K)))).length = o :=
+      (elim.length_matAdd _ _
+        (by rw [inertia.length_scaleB, inertia.length_scaleB,
+          hMIl, hSCl])).trans
+        ((inertia.length_scaleB _ _).trans hMIl)
+    have hDr : elim.rowsLen o (elim.matAdd
+        (inertia.matScaleB (evalProf Cf.2 m en ed K)
+          (evalPfm If.1 m en ed K))
+        (inertia.matScaleB (evalProf If.2 m en ed K)
+          (elim.matSwap (evalPfm Cf.1 m en ed K)))) :=
+      elim.rowsLen_matAdd o _ _ (inertia.rowsLen_scaleB _ o _ hMIr)
+        (inertia.rowsLen_scaleB _ o _ hSCr)
+    have h1l : (pfmScale (profMul (devFam Cf If).2
+        (constProf (BPair.ofPos r0n))) (ofMatProf G)).length = o :=
+      (length_pfmScale _ (ofMatProf G)).trans
+        ((length_ofMatProf G).trans hGl)
+    have h1r : elim.rowsLen o (pfmScale (profMul (devFam Cf If).2
+        (constProf (BPair.ofPos r0n))) (ofMatProf G)) :=
+      rowsLen_pfmScale _ o (ofMatProf G) (rowsLen_ofMatProf o G hGr)
+    have h2l : (pfmScale (constProf (BPair.ofPos r0d))
+        (devFam Cf If).1).length = o :=
+      (length_pfmScale _ _).trans (devLen Cf If o hIl hCl)
+    have h2r : elim.rowsLen o (pfmScale (constProf (BPair.ofPos r0d))
+        (devFam Cf If).1) :=
+      rowsLen_pfmScale _ o _ (devRows Cf If o hIr hCr)
+    have hSl : (dcapLoSiteF Cf If G r0n r0d).length = o :=
+      (length_pfmAdd _ _ (by rw [h1l, h2l])).trans h1l
+    have hSr : elim.rowsLen o (dcapLoSiteF Cf If G r0n r0d) :=
+      rowsLen_pfmAdd o _ _ h1r h2r
+    have hEv : elim.matOneValue
+        (evalPfm (dcapLoSiteF Cf If G r0n r0d) m en ed (K + K))
+        (elim.matAdd
+          (inertia.matScaleB
+            ((evalProf If.2 m en ed K
+              * evalProf Cf.2 m en ed K) * BPair.ofPos r0n) G)
+          (inertia.matScaleB
+            (evalProf (constProf (BPair.ofPos r0d)) m en ed 0)
+            (elim.matAdd
+              (inertia.matScaleB (evalProf Cf.2 m en ed K)
+                (evalPfm If.1 m en ed K))
+              (inertia.matScaleB (evalProf If.2 m en ed K)
+                (elim.matSwap (evalPfm Cf.1 m en ed K)))))) :=
+      elim.matOne_trans (evalPfm_add _ _ m en ed (K + K))
+        (elim.matAdd_cong2 o _ _ _ _
+          (rowsLen_evalPfm o m _ en ed (K + K) h1r)
+          (rowsLen_evalPfm o m _ en ed (K + K) h2r)
+          (inertia.rowsLen_scaleB _ o G hGr)
+          (inertia.rowsLen_scaleB _ o _ hDr)
+          (evalScalePair If.2 Cf.2 (BPair.ofPos r0n) G m en ed K
+            hshIcl hshCl)
+          (dcapArm2 Cf If o r0d m K en ed hIr hCr hshI hshIcl hshC
+            hshCl))
+    have hcmp := siteTwoArmLo e0n e0d m (K + K) en ed
+      (dcapLoSiteF Cf If G r0n r0d) bxL o G _
+      ((evalProf If.2 m en ed K
+        * evalProf Cf.2 m en ed K) * BPair.ofPos r0n)
+      (evalProf (constProf (BPair.ofPos r0d)) m en ed 0)
+      hSl hSr hGl hGr hDl hDr hEv hsymG
+      (devSym Cf If o m K en ed _ _ hIl hIr hCl hCr ho hsymC hsymI)
+      hwalk he hbox (a :: t) hw
+    have hL : ((evalProf (constProf (BPair.ofPos r0d)) m en ed 0)
+        * inertia.quadForm (elim.matAdd
+          (inertia.matScaleB (evalProf Cf.2 m en ed K)
+            (evalPfm If.1 m en ed K))
+          (inertia.matScaleB (evalProf If.2 m en ed K)
+            (elim.matSwap (evalPfm Cf.1 m en ed K))))
+          (a :: t)).oneValue
+        ((inertia.quadForm (elim.matAdd
+          (inertia.matScale cC (evalPfm If.1 m en ed K))
+          (inertia.matScale cI
+            (elim.matSwap (evalPfm Cf.1 m en ed K))))
+          (a :: t)).scale r0d) :=
+      BPair.oneValue_trans
+        (BPair.mul_congr
+          (BPair.oneValue_trans
+            (evalProf_const (BPair.ofPos r0d) m en ed 0)
+            (mulBpowZero ed (BPair.ofPos r0d)))
+          (BPair.oneValue_symm
+            (inertia.quadMatOne _ _ (a :: t)
+              (devBridge Cf If o m K en ed cI cC hIr hCr hcI hcC))))
+        (BPair.ofPos_scale r0d _)
+    have hR : (((evalProf If.2 m en ed K
+        * evalProf Cf.2 m en ed K) * BPair.ofPos r0n)
+        * inertia.quadForm G (a :: t)).oneValue
+        ((inertia.quadForm G (a :: t)).scale (r0n * (cI * cC))) :=
+      BPair.oneValue_trans
+        (BPair.mul_congr
+          (BPair.oneValue_trans
+            (BPair.mul_congr
+              (BPair.mul_congr (BPair.oneValue_symm hcI)
+                (BPair.oneValue_symm hcC))
+              (BPair.oneValue_refl _))
+            (BPair.oneValue_trans
+              (BPair.mul_congr_left (BPair.ofPos_mul cI cC))
+              (BPair.oneValue_trans (BPair.ofPos_mul (cI * cC) r0n)
+                (BPair.oneValue_of_eq
+                  (congrArg BPair.ofPos
+                    (ground.mul_comm (cI * cC) r0n))))))
+          (BPair.oneValue_refl _))
+        (BPair.ofPos_scale (r0n * (cI * cC)) _)
+    exact ground.leB_congr_left (ground.swap_congr hR)
+      (ground.leB_congr_right hL hcmp)
+
+open elim inertia greenprod in
+/-- `lem:cornerpivot`(vii)'s witness tie at the evaluated data: the
+family's stated recursion witness identity — the shallower center
+against the transfer factor reading the bond's exchange — read at a
+depth is the cleared pivots' own tie, each clearing entering at its
+stated margin and the shared clearing power cancelling across the
+cross-multiplied comparison. -/
+theorem witTie_ptw (Cf Wf : PfMQ) (B : elim.Mat) (o m K : Nat)
+    (en ed cC cWs : Pos)
+    (hCr : elim.rowsLen o Cf.1)
+    (hWl : Wf.1.length = o) (hWr : elim.rowsLen o Wf.1) (ho : 0 < o)
+    (hshC : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) Cf.1 i) j)
+        m)).length ≤ K + 1)
+    (hshCl : (poly.vnorm (depthPoly Cf.2 m)).length ≤ K + 1)
+    (hshW : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) Wf.1 i) j)
+        (m + 1))).length ≤ K + 1)
+    (hshWcl : (poly.vnorm (depthPoly Wf.2 (m + 1))).length ≤ K + 1)
+    (hcC : (BPair.ofPos cC).oneValue (evalProf Cf.2 m en ed K))
+    (hcW : (BPair.ofPos cWs).oneValue (evalProf Wf.2 (m + 1) en ed K))
+    (hwit : pfmQOneValue (pfmQmul Cf (pfmQshift Wf))
+      (ofPfm (ofMatProf (elim.transposeM B)))) :
+    greenprod.oneValueQ
+      (greenprod.mulQ (evalPfm Cf.1 m en ed K, cC)
+        (evalPfm Wf.1 (m + 1) en ed K, cWs))
+      (greenprod.ofM (elim.transposeM B)) := by
+  have hRSr : elim.rowsLen o (pfmReduce (pfmShift Wf.1)) :=
+    elim.rowsLen_mapRowsO profReduce (pfmShift Wf.1) o
+      (elim.rowsLen_mapRowsO profShift Wf.1 o hWr)
+  have hRSl : (pfmReduce (pfmShift Wf.1)).length = o :=
+    (ground.length_map _ _).trans ((ground.length_map _ _).trans hWl)
+  have hRScap := capPfmReduce (pfmShift Wf.1) m K (capPfmShift Wf.1 m K hshW)
+  have hMulCap := capPfmMul Cf.1 (pfmReduce (pfmShift Wf.1)) m K K o o
+    hCr hRSl ho hRSr hshC hRScap
+  have hClCap : (poly.vnorm
+      (depthPoly (profReduce (profShift Wf.2)) m)).length ≤ K + 1 :=
+    capCongr (depthPoly_profReduce (profShift Wf.2) m)
+      (capCongr (depthPoly_profShift Wf.2 m) hshWcl)
+  have hProdCl : (poly.vnorm (depthPoly
+      (profMul Cf.2 (profReduce (profShift Wf.2))) m)).length ≤ K + K + 1 :=
+    capCongr (depthPoly_profMul Cf.2 (profReduce (profShift Wf.2)) m)
+      (capMul hshCl hClCap)
+  have hEq := evalPfm_congr _ _ m en ed (K + K) hwit
+  -- the left side: the unit clearing weights the evaluated product
+  have hL0 : elim.matOneValue
+      (evalPfm (pfmScale (constProf (BPair.ofPos Pos.one))
+        (pfmMul Cf.1 (pfmReduce (pfmShift Wf.1)))) m en ed (K + K))
+      (inertia.matScaleB
+        (evalProf (constProf (BPair.ofPos Pos.one)) m en ed 0)
+        (evalPfm (pfmMul Cf.1 (pfmReduce (pfmShift Wf.1)))
+          m en ed (K + K))) := by
+    have h := evalPfm_scale (constProf (BPair.ofPos Pos.one))
+      (pfmMul Cf.1 (pfmReduce (pfmShift Wf.1))) m en ed 0 (K + K)
+      (poly.capOfLen (Nat.le_of_eq
+        (depthConst_len (BPair.ofPos Pos.one) m)))
+      hMulCap
+    rw [Nat.zero_add] at h
+    exact h
+  have hL1 : elim.matOneValue
+      (evalPfm (pfmMul Cf.1 (pfmReduce (pfmShift Wf.1))) m en ed (K + K))
+      (elim.matMul (evalPfm Cf.1 m en ed K)
+        (evalPfm Wf.1 (m + 1) en ed K)) :=
+    elim.matOne_trans
+      (evalPfm_mul Cf.1 (pfmReduce (pfmShift Wf.1)) m en ed K K o o
+        hCr hRSl ho hRSr hshC hRScap)
+      (elim.matMul_congrR (n := o) (k := o) (evalPfm Cf.1 m en ed K)
+        (evalPfm (pfmReduce (pfmShift Wf.1)) m en ed K)
+        (evalPfm Wf.1 (m + 1) en ed K)
+        (rowsLen_evalPfm o m _ en ed K hRSr)
+        (rowsLen_evalPfm o (m + 1) Wf.1 en ed K hWr)
+        ((length_evalPfm m _ en ed K).trans hRSl)
+        ((length_evalPfm (m + 1) Wf.1 en ed K).trans hWl) ho
+        (elim.matOne_trans
+          (evalPfm_reduce (pfmShift Wf.1) m en ed K)
+          (evalPfm_shift Wf.1 m en ed K)))
+  have hL : elim.matOneValue
+      (evalPfm (pfmScale (constProf (BPair.ofPos Pos.one))
+        (pfmMul Cf.1 (pfmReduce (pfmShift Wf.1)))) m en ed (K + K))
+      (elim.matMul (evalPfm Cf.1 m en ed K)
+        (evalPfm Wf.1 (m + 1) en ed K)) :=
+    elim.matOne_trans hL0
+      (elim.matOne_trans
+        (inertia.matScaleB_congr
+          (BPair.oneValue_trans
+            (evalProf_const (BPair.ofPos Pos.one) m en ed 0)
+            (mulBpowZero ed (BPair.ofPos Pos.one))) _)
+        (elim.matOne_trans (inertia.matScaleB_one _)
+          hL1))
+  -- the right side: the two margins weight the stated bond's exchange
+  have hR0 : elim.matOneValue
+      (evalPfm (pfmScale (profMul Cf.2 (profReduce (profShift Wf.2)))
+        (ofMatProf (elim.transposeM B))) m en ed (K + K))
+      (inertia.matScaleB
+        (evalProf (profMul Cf.2 (profReduce (profShift Wf.2)))
+          m en ed (K + K))
+        (evalPfm (ofMatProf (elim.transposeM B)) m en ed 0)) :=
+    evalPfm_scale (profMul Cf.2 (profReduce (profShift Wf.2)))
+      (ofMatProf (elim.transposeM B)) m en ed (K + K) 0 hProdCl
+      (fun i j => poly.capOfLen (ofMatEntryLen (elim.transposeM B) m i j))
+  have hRw : (evalProf (profMul Cf.2 (profReduce (profShift Wf.2)))
+      m en ed (K + K)).oneValue (BPair.ofPos (cC * cWs)) :=
+    BPair.oneValue_trans
+      (evalProf_profMul Cf.2 (profReduce (profShift Wf.2)) m en ed K K
+        hshCl hClCap)
+      (BPair.oneValue_trans
+        (BPair.mul_congr
+          (BPair.oneValue_symm hcC)
+          (BPair.oneValue_symm
+            (BPair.oneValue_trans hcW
+              (BPair.oneValue_symm
+                (BPair.oneValue_trans
+                  (evalProf_profReduce (profShift Wf.2) m en ed K)
+                  (evalProf_profShift Wf.2 m en ed K))))))
+        (BPair.ofPos_mul cC cWs))
+  have hR : elim.matOneValue
+      (evalPfm (pfmScale (profMul Cf.2 (profReduce (profShift Wf.2)))
+        (ofMatProf (elim.transposeM B))) m en ed (K + K))
+      (inertia.matScaleB (BPair.ofPos (cC * cWs))
+        (elim.transposeM B)) :=
+    elim.matOne_trans hR0
+      (elim.matOne_trans
+        (inertia.matScaleB_congr hRw _)
+        (inertia.matOne_scaleB (BPair.ofPos (cC * cWs))
+          (elim.matOne_trans
+            (evalPfm_ofMat (elim.transposeM B) m en ed 0)
+            (inertia.matScaleB_one (elim.transposeM B)))))
+  show elim.matOneValue
+    (inertia.matScale Pos.one
+      (elim.matMul (evalPfm Cf.1 m en ed K) (evalPfm Wf.1 (m + 1) en ed K)))
+    (inertia.matScale (cC * cWs) (elim.transposeM B))
+  rw [inertia.matScale_one]
+  exact elim.matOne_trans (elim.matOne_symm hL)
+    (elim.matOne_trans hEq
+      (elim.matOne_trans hR
+        (elim.matOne_symm
+          (inertia.matScale_scaleB (cC * cWs) (elim.transposeM B)))))
+
+open elim inertia greenprod in
+/-- `lem:cornerpivot`(vii)'s image tie at the evaluated data: the
+family's stated recursion join — the image family joined to the
+bond's multiple of the transfer factor's balance partner against the
+diagonal family — read at a depth is the cleared pivots' own join
+against the stated diagonal, the diagonal's stated scale carrying the
+evaluated family's clearing power, each clearing entering at its
+stated margin and the shared clearing power cancelling across the
+cross-multiplied comparison. -/
+theorem joinTie_ptw (Af : List (List (poly.PPoly × poly.PPoly)))
+    (Wf If : PfMQ) (A B : elim.Mat) (o m K : Nat)
+    (en ed edK cI cW : Pos)
+    (hAl : Af.length = o) (hAr : elim.rowsLen o Af)
+    (hWl : Wf.1.length = o) (hWr : elim.rowsLen o Wf.1)
+    (hIl : If.1.length = o) (hIr : elim.rowsLen o If.1)
+    (hBq : elim.sqAt B o) (hAq : elim.sqAt A o) (ho : 0 < o)
+    (hshA : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) Af i) j)
+        m)).length ≤ K + 1)
+    (hshW : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) Wf.1 i) j)
+        m)).length ≤ K + 1)
+    (hshWcl : (poly.vnorm (depthPoly Wf.2 m)).length ≤ K + 1)
+    (hshI : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly)) If.1 i) j)
+        m)).length ≤ K + 1)
+    (hshIcl : (poly.vnorm (depthPoly If.2 m)).length ≤ K + 1)
+    (hcI : (BPair.ofPos cI).oneValue (evalProf If.2 m en ed K))
+    (hcW : (BPair.ofPos cW).oneValue (evalProf Wf.2 m en ed K))
+    (hedK : (BPair.ofPos edK).oneValue (ground.bpow (BPair.ofPos ed) K))
+    (hdiag : elim.matOneValue (inertia.matScale edK A)
+      (evalPfm Af m en ed K))
+    (hjoin : pfmQOneValue If
+      (pfmQadd (ofPfm Af)
+        (pfmQmul (ofPfm (ofMatProf B)) (pfmQswap Wf)))) :
+    greenprod.oneValueQ
+      (greenprod.addQ (evalPfm If.1 m en ed K, cI)
+        (greenprod.mulQ (greenprod.ofM B) (evalPfm Wf.1 m en ed K, cW)))
+      (greenprod.ofM A) := by
+  -- the evaluated pivots and their order reads
+  have hMIl : (evalPfm If.1 m en ed K).length = o :=
+    (length_evalPfm m If.1 en ed K).trans hIl
+  have hMIr : elim.rowsLen o (evalPfm If.1 m en ed K) :=
+    rowsLen_evalPfm o m If.1 en ed K hIr
+  have hMIq : elim.sqAt (evalPfm If.1 m en ed K) o := elim.sqAt_of hMIl hMIr
+  have hMWl : (evalPfm Wf.1 m en ed K).length = o :=
+    (length_evalPfm m Wf.1 en ed K).trans hWl
+  have hMWr : elim.rowsLen o (evalPfm Wf.1 m en ed K) :=
+    rowsLen_evalPfm o m Wf.1 en ed K hWr
+  have hMAl : (evalPfm Af m en ed K).length = o :=
+    (length_evalPfm m Af en ed K).trans hAl
+  have hMAr : elim.rowsLen o (evalPfm Af m en ed K) :=
+    rowsLen_evalPfm o m Af en ed K hAr
+  have hMAq : elim.sqAt (evalPfm Af m en ed K) o := elim.sqAt_of hMAl hMAr
+  have hBMWq : elim.sqAt (elim.matMul B (evalPfm Wf.1 m en ed K)) o :=
+    elim.sqAt_of ((elim.length_matMul B _).trans (elim.sqAt_len hBq))
+      (elim.rowsLen_matMul_of B _ (fun _ => by rw [hMWl]; exact ho) hMWr)
+  -- the caps
+  have hc1 : (poly.vnorm
+      (depthPoly (constProf (BPair.ofPos Pos.one)) m)).length ≤ 0 + 1 :=
+    poly.capOfLen (Nat.le_of_eq (depthConst_len (BPair.ofPos Pos.one) m))
+  have hc1K : (poly.vnorm
+      (depthPoly (constProf (BPair.ofPos Pos.one)) m)).length ≤ K + 1 :=
+    Nat.le_trans hc1 (Nat.succ_le_succ (Nat.zero_le K))
+  have hUW : (poly.vnorm (depthPoly
+      (profMul (constProf (BPair.ofPos Pos.one)) Wf.2) m)).length
+      ≤ K + 1 := by
+    have h := capCongr
+      (depthPoly_profMul (constProf (BPair.ofPos Pos.one)) Wf.2 m)
+      (capMul hc1 hshWcl)
+    rw [Nat.zero_add] at h
+    exact h
+  have hUUW : (poly.vnorm (depthPoly
+      (profMul (constProf (BPair.ofPos Pos.one))
+        (profMul (constProf (BPair.ofPos Pos.one)) Wf.2)) m)).length
+      ≤ K + 1 := by
+    have h := capCongr
+      (depthPoly_profMul (constProf (BPair.ofPos Pos.one))
+        (profMul (constProf (BPair.ofPos Pos.one)) Wf.2) m)
+      (capMul hc1 hUW)
+    rw [Nat.zero_add] at h
+    exact h
+  have hOMr : elim.rowsLen o (ofMatProf B) :=
+    rowsLen_ofMatProf o B (elim.rowsLen_of_sqAt hBq)
+  have hSwl : (pfmSwap Wf.1).length = o := (length_pfmSwap Wf.1).trans hWl
+  have hSwr : elim.rowsLen o (pfmSwap Wf.1) := rowsLen_pfmSwap o Wf.1 hWr
+  have hSwCap := capPfmSwap Wf.1 m K hshW
+  have hOMcap : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+        (ofMatProf B) i) j) m)).length ≤ K + 1 :=
+    fun i j => Nat.le_trans (poly.capOfLen (ofMatEntryLen B m i j))
+      (Nat.succ_le_succ (Nat.zero_le K))
+  have hcapBW : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+        (pfmMul (ofMatProf B) (pfmSwap Wf.1)) i) j) m)).length
+      ≤ K + K + 1 := by
+    intro i j
+    have h := capPfmMul (ofMatProf B) (pfmSwap Wf.1) m 0 K o o
+      hOMr hSwl ho hSwr
+      (fun p q => poly.capOfLen (ofMatEntryLen B m p q)) hSwCap i j
+    rw [Nat.zero_add] at h
+    exact Nat.le_trans h (Nat.succ_le_succ (Nat.le_add_left K K))
+  have hcapS1 := capPfmScale
+    (profMul (constProf (BPair.ofPos Pos.one)) Wf.2) Af m K K hUW hshA
+  have hcapS2 : ∀ i j, (poly.vnorm (depthPoly (ground.getAt vacProf
+      (ground.getAt ([] : List (poly.PPoly × poly.PPoly))
+        (pfmScale (constProf (BPair.ofPos Pos.one))
+          (pfmMul (ofMatProf B) (pfmSwap Wf.1))) i) j) m)).length
+      ≤ K + K + 1 := by
+    intro i j
+    have h := capPfmScale (constProf (BPair.ofPos Pos.one))
+      (pfmMul (ofMatProf B) (pfmSwap Wf.1)) m 0 (K + K) hc1 hcapBW i j
+    rw [Nat.zero_add] at h
+    exact h
+  have hcapR1 := capPfmAdd m (K + K) _ _ hcapS1 hcapS2
+  -- the family identity evaluated at the shared power
+  have hEq := evalPfm_congr _ _ m en ed (K + K + K) hjoin
+  -- the left side
+  have hL0 : elim.matOneValue
+      (evalPfm (pfmScale (profMul (constProf (BPair.ofPos Pos.one))
+        (profMul (constProf (BPair.ofPos Pos.one)) Wf.2)) If.1)
+        m en ed (K + K + K))
+      (inertia.matScaleB
+        (evalProf (profMul (constProf (BPair.ofPos Pos.one))
+          (profMul (constProf (BPair.ofPos Pos.one)) Wf.2))
+          m en ed (K + K))
+        (evalPfm If.1 m en ed K)) :=
+    evalPfm_scale _ If.1 m en ed (K + K) K
+      (Nat.le_trans hUUW (Nat.succ_le_succ (Nat.le_add_right K K))) hshI
+  have hLw : (evalProf (profMul (constProf (BPair.ofPos Pos.one))
+      (profMul (constProf (BPair.ofPos Pos.one)) Wf.2))
+      m en ed (K + K)).oneValue
+      (BPair.ofPos edK * BPair.ofPos cW) :=
+    BPair.oneValue_trans
+      (evalProf_profMul (constProf (BPair.ofPos Pos.one))
+        (profMul (constProf (BPair.ofPos Pos.one)) Wf.2) m en ed K K
+        hc1K hUW)
+      (BPair.mul_congr
+        (BPair.oneValue_trans
+          (BPair.oneValue_trans
+            (evalProf_const (BPair.ofPos Pos.one) m en ed K)
+            (BPair.ofPos_one_mul (ground.bpow (BPair.ofPos ed) K)))
+          (BPair.oneValue_symm hedK))
+        (BPair.oneValue_symm
+          (BPair.oneValue_trans hcW
+            (BPair.oneValue_symm
+              (evalProf_unitMul Wf.2 m en ed K hshWcl)))))
+  have hL : elim.matOneValue
+      (evalPfm (pfmScale (profMul (constProf (BPair.ofPos Pos.one))
+        (profMul (constProf (BPair.ofPos Pos.one)) Wf.2)) If.1)
+        m en ed (K + K + K))
+      (inertia.matScale (edK * cW) (evalPfm If.1 m en ed K)) :=
+    elim.matOne_trans hL0
+      (elim.matOne_trans
+        (inertia.matScaleB_congr
+          (BPair.oneValue_trans hLw (BPair.ofPos_mul edK cW)) _)
+        (elim.matOne_symm
+          (inertia.matScale_scaleB (edK * cW) (evalPfm If.1 m en ed K))))
+  -- the right side
+  have hR0 : elim.matOneValue
+      (evalPfm (pfmScale If.2
+        (pfmAdd (pfmScale (profMul (constProf (BPair.ofPos Pos.one)) Wf.2) Af)
+          (pfmScale (constProf (BPair.ofPos Pos.one))
+            (pfmMul (ofMatProf B) (pfmSwap Wf.1)))))
+        m en ed (K + K + K))
+      (inertia.matScaleB (evalProf If.2 m en ed K)
+        (evalPfm (pfmAdd
+          (pfmScale (profMul (constProf (BPair.ofPos Pos.one)) Wf.2) Af)
+          (pfmScale (constProf (BPair.ofPos Pos.one))
+            (pfmMul (ofMatProf B) (pfmSwap Wf.1)))) m en ed (K + K))) := by
+    have h := evalPfm_scale If.2 _ m en ed K (K + K) hshIcl hcapR1
+    rw [← Nat.add_assoc] at h
+    exact h
+  have hS1 : elim.matOneValue
+      (evalPfm (pfmScale (profMul (constProf (BPair.ofPos Pos.one)) Wf.2) Af)
+        m en ed (K + K))
+      (inertia.matScaleB (BPair.ofPos cW) (evalPfm Af m en ed K)) :=
+    elim.matOne_trans
+      (evalPfm_scale (profMul (constProf (BPair.ofPos Pos.one)) Wf.2) Af
+        m en ed K K hUW hshA)
+      (inertia.matScaleB_congr
+        (BPair.oneValue_trans (evalProf_unitMul Wf.2 m en ed K hshWcl)
+          (BPair.oneValue_symm hcW)) _)
+  have hS2 : elim.matOneValue
+      (evalPfm (pfmScale (constProf (BPair.ofPos Pos.one))
+        (pfmMul (ofMatProf B) (pfmSwap Wf.1))) m en ed (K + K))
+      (elim.matSwap (inertia.matScaleB (BPair.ofPos edK)
+        (elim.matMul B (evalPfm Wf.1 m en ed K)))) := by
+    have h := evalPfm_scale (constProf (BPair.ofPos Pos.one))
+      (pfmMul (ofMatProf B) (pfmSwap Wf.1)) m en ed 0 (K + K) hc1 hcapBW
+    rw [Nat.zero_add] at h
+    refine elim.matOne_trans h ?_
+    refine elim.matOne_trans
+      (inertia.matScaleB_congr
+        (BPair.oneValue_trans
+          (evalProf_const (BPair.ofPos Pos.one) m en ed 0)
+          (mulBpowZero ed (BPair.ofPos Pos.one))) _) ?_
+    refine elim.matOne_trans (inertia.matScaleB_one _) ?_
+    refine elim.matOne_trans
+      (evalPfm_mul (ofMatProf B) (pfmSwap Wf.1) m en ed K K o o
+        hOMr hSwl ho hSwr hOMcap hSwCap) ?_
+    refine elim.matOne_trans
+      (elim.matMul_congrL _ _ _
+        (elim.matOne_trans (evalPfm_ofMat B m en ed K)
+          (inertia.matScaleB_congr (BPair.oneValue_symm hedK) B))) ?_
+    refine elim.matOne_trans
+      (elim.matMul_congrR (n := o) (k := o) _ _ _
+        (rowsLen_evalPfm o m (pfmSwap Wf.1) en ed K hSwr)
+        (elim.rowsLen_mapRows BPair.swap _ o hMWr)
+        ((length_evalPfm m (pfmSwap Wf.1) en ed K).trans hSwl)
+        ((elim.length_matSwap _).trans hMWl) ho
+        (evalPfm_swap Wf.1 m en ed K)) ?_
+    rw [show elim.matMul (inertia.matScaleB (BPair.ofPos edK) B)
+          ((evalPfm Wf.1 m en ed K).map (fun r => r.map BPair.swap))
+        = elim.matSwap (elim.matMul (inertia.matScaleB (BPair.ofPos edK) B)
+            (evalPfm Wf.1 m en ed K)) from
+      elim.matMul_swap _ _]
+    exact elim.matSwap_congr
+      (inertia.matMul_scaleL (BPair.ofPos edK) B (evalPfm Wf.1 m en ed K))
+  have hR : elim.matOneValue
+      (evalPfm (pfmScale If.2
+        (pfmAdd (pfmScale (profMul (constProf (BPair.ofPos Pos.one)) Wf.2) Af)
+          (pfmScale (constProf (BPair.ofPos Pos.one))
+            (pfmMul (ofMatProf B) (pfmSwap Wf.1)))))
+        m en ed (K + K + K))
+      (elim.matAdd (inertia.matScale (cI * cW) (evalPfm Af m en ed K))
+        (elim.matSwap (inertia.matScale (cI * edK)
+          (elim.matMul B (evalPfm Wf.1 m en ed K))))) := by
+    refine elim.matOne_trans hR0 ?_
+    refine elim.matOne_trans
+      (inertia.matOne_scaleB (evalProf If.2 m en ed K)
+        (elim.matOne_trans
+          (evalPfm_add _ _ m en ed (K + K))
+          (elim.matAdd_cong2 o _ _ _ _
+            (rowsLen_evalPfm o m _ en ed (K + K)
+              (rowsLen_pfmScale _ o Af hAr))
+            (rowsLen_evalPfm o m _ en ed (K + K)
+              (rowsLen_pfmScale _ o _
+                (elim.rowsLen_matMulO profOps (ofMatProf B) (pfmSwap Wf.1) o
+                  (elim.headD_width o (pfmSwap Wf.1)
+                    (by rw [hSwl]; exact ho) hSwr))))
+            (inertia.rowsLen_scaleB _ o _ hMAr)
+            (elim.rowsLen_mapRows BPair.swap _ o
+              (inertia.rowsLen_scaleB _ o _
+                (elim.rowsLen_of_sqAt hBMWq)))
+            hS1 hS2))) ?_
+    refine elim.matOne_trans
+      (inertia.matScaleB_congr (BPair.oneValue_symm hcI) _) ?_
+    refine elim.matOne_trans (matScaleB_sum (BPair.ofPos cI) _ _) ?_
+    refine elim.matAdd_cong2 o _ _ _ _
+      (inertia.rowsLen_scaleB _ o _
+        (inertia.rowsLen_scaleB _ o _ hMAr))
+      (inertia.rowsLen_scaleB _ o _
+        (elim.rowsLen_mapRows BPair.swap _ o
+          (inertia.rowsLen_scaleB _ o _ (elim.rowsLen_of_sqAt hBMWq))))
+      (elim.rowsLen_of_sqAt
+        (inertia.sqAt_matScale o (cI * cW) _ hMAq))
+      (elim.rowsLen_mapRows BPair.swap _ o
+        (elim.rowsLen_of_sqAt
+          (inertia.sqAt_matScale o (cI * edK) _ hBMWq)))
+      ?_ ?_
+    · exact elim.matOne_trans
+        (inertia.scaleB_scaleB (BPair.ofPos cI) (BPair.ofPos cW)
+          (evalPfm Af m en ed K))
+        (elim.matOne_trans
+          (inertia.matScaleB_congr (BPair.ofPos_mul cI cW) _)
+          (elim.matOne_symm
+            (inertia.matScale_scaleB (cI * cW) (evalPfm Af m en ed K))))
+    · refine elim.matOne_trans
+        (matScaleB_neg (BPair.ofPos cI)
+          (inertia.matScaleB (BPair.ofPos edK)
+            (elim.matMul B (evalPfm Wf.1 m en ed K)))) ?_
+      exact elim.matSwap_congr
+        (elim.matOne_trans
+          (inertia.scaleB_scaleB (BPair.ofPos cI) (BPair.ofPos edK)
+            (elim.matMul B (evalPfm Wf.1 m en ed K)))
+          (elim.matOne_trans
+            (inertia.matScaleB_congr (BPair.ofPos_mul cI edK) _)
+            (elim.matOne_symm
+              (inertia.matScale_scaleB (cI * edK)
+                (elim.matMul B (evalPfm Wf.1 m en ed K))))))
+  -- the swapped summand moves across the balance
+  have hmove := matSwapMove (o := o)
+    (inertia.matScale (edK * cW) (evalPfm If.1 m en ed K))
+    (inertia.matScale (cI * cW) (evalPfm Af m en ed K))
+    (inertia.matScale (cI * edK) (elim.matMul B (evalPfm Wf.1 m en ed K)))
+    (inertia.sqAt_matScale o _ _ hMIq)
+    (inertia.sqAt_matScale o _ _ hMAq)
+    (inertia.sqAt_matScale o _ _ hBMWq)
+    (elim.matOne_trans (elim.matOne_symm hL) (elim.matOne_trans hEq hR))
+  -- the diagonal's stated scale and the shared clearing power's cancel
+  have hmove2 : elim.matOneValue
+      (elim.matAdd (inertia.matScale (edK * cW) (evalPfm If.1 m en ed K))
+        (inertia.matScale (cI * edK)
+          (elim.matMul B (evalPfm Wf.1 m en ed K))))
+      (inertia.matScale (cI * cW) (inertia.matScale edK A)) :=
+    elim.matOne_trans hmove
+      (elim.matOne_symm
+        (inertia.matScale_matOne (cI * cW) hdiag))
+  rw [inertia.matScale_matScale edK (cI * cW) A,
+    ground.mul_comm (cI * cW) edK,
+    show cI * edK = edK * cI from ground.mul_comm cI edK,
+    ← inertia.matScale_matScale cW edK (evalPfm If.1 m en ed K),
+    ← inertia.matScale_matScale cI edK
+      (elim.matMul B (evalPfm Wf.1 m en ed K)),
+    ← inertia.matScale_matAdd edK,
+    ← inertia.matScale_matScale (cI * cW) edK A] at hmove2
+  have hfin := inertia.matOne_unscale edK o _ _
+    ((elim.length_matAdd _ _
+      (by rw [inertia.length_matScale, inertia.length_matScale,
+        hMIl, (elim.length_matMul B _).trans (elim.sqAt_len hBq)])).trans
+      ((inertia.length_matScale cW _).trans hMIl))
+    (elim.rowsLen_matAdd o _ _
+      (elim.rowsLen_of_sqAt (inertia.sqAt_matScale o cW _ hMIq))
+      (elim.rowsLen_of_sqAt (inertia.sqAt_matScale o cI _ hBMWq)))
+    ((inertia.length_matScale (cI * cW) A).trans (elim.sqAt_len hAq))
+    (elim.rowsLen_of_sqAt (inertia.sqAt_matScale o (cI * cW) _ hAq))
+    hmove2
+  show elim.matOneValue
+    (inertia.matScale Pos.one
+      (elim.matAdd (inertia.matScale (Pos.one * cW) (evalPfm If.1 m en ed K))
+        (inertia.matScale cI (elim.matMul B (evalPfm Wf.1 m en ed K)))))
+    (inertia.matScale (cI * (Pos.one * cW)) A)
+  rw [inertia.matScale_one, ground.one_mul cW]
+  exact hfin
 
 end cornerpivot

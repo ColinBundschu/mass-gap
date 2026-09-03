@@ -24,9 +24,14 @@ action rides at the chain window over the label calculus at two
 letters: the enumeration is pinned once at its five members (three
 squares and the two rails), the content, the occupancy and the
 index closure are fixed at the action, and the congruence
-`Pmᵀ H Pm = H` holds at the free end's window matrix — the same
-transposition, which moves a rail loop off the index, failing the
-closure and the congruence together.
+`Pmᵀ H Pm = H` holds at the free end's window matrix on the window
+list — every fiber at its one slot there, the window list's
+diagonal the index's contents — the same transposition, which moves
+a rail loop off the index, failing the closure and the congruence
+together; the place action's four binders refuse on its own
+carrier, and a three-letter fixture with fibers of four slots reads
+the congruence at the vertex witness and refuses it at the identity
+in the witness's place.
 
 The chord tier rides on the translation's own link permutation
 (`permMatAt`), the cheapest faithful carrier for identities that
@@ -129,8 +134,8 @@ content-pruned identity (`carrier.idxA_eq`), the pin's route
 rather than its statement, and the module's cost is the `apply
 perp_band` route at the forged three-by-three datum with the
 index-action band at the side-nine window beside it (`commRead`
-over `permMat fA chIx 9`, with `occFixed` / `contentFixed` /
-`idxFixed` at the translation witness).
+over `slotMat fA chW chIx` at the translation's two witnesses, with
+`occFixed` / `contentFixed` / `idxFixed` at the link witness).
 -/
 set_option maxHeartbeats 16000000
 
@@ -164,7 +169,7 @@ end fiberdec
 
 /-! The two carriers' interface reads at the three windows. -/
 
-example : wellRead (chainRegion 3) := by decide +kernel
+private theorem chWell3 : wellRead (chainRegion 3) := by decide +kernel
 example : wellRead (chainRegion 5) := by decide +kernel
 example : wellRead (torusRegion 2 3) := by decide +kernel
 
@@ -247,7 +252,8 @@ example : matOneValue
 example : ¬ commutesRead (torusRegion 2 3) (torusTransl 2 3 0)
     (fun l => 17 - l) := by decide +kernel
 
-example : endsRead (chainRegion 3) (chainTransl 3) (chainVert 3) := by
+private theorem chEnds3 :
+    endsRead (chainRegion 3) (chainTransl 3) (chainVert 3) := by
   decide +kernel
 example : endsRead (chainRegion 5) (chainTransl 5) (chainVert 5) := by
   decide +kernel
@@ -257,7 +263,8 @@ example : endsRead (torusRegion 2 3) (torusTransl 2 3 1)
     (shiftSite 3 1) := by decide +kernel
 
 
-example : vertPermRead (chainRegion 3) (chainVert 3) (chainVertInv 3) := by
+private theorem chVert3 :
+    vertPermRead (chainRegion 3) (chainVert 3) (chainVertInv 3) := by
   decide +kernel
 example : vertPermRead (chainRegion 5) (chainVert 5) (chainVertInv 5) := by
   decide +kernel
@@ -298,16 +305,16 @@ example : ¬ plaqMoveRead (chainRegion 3) swapRR := by decide +kernel
 
 /-! The index action at the chain window over the label calculus at
 two letters: the enumeration pinned once at its five members, the
-three squares between the two rail loops. -/
+two rail loops then the three squares. -/
 
 private def fA : Data places.Shape := tabulate (dataA 2) 12
 private def chW : Region := chainRegion 3
 private def chIx : List (List places.Shape) :=
-  [[[0, 0], [0, 0], [0, 0], [1, 0], [1, 0], [1, 0], [0, 0], [0, 0], [0, 0]],
-   [[1, 0], [1, 0], [0, 0], [1, 0], [0, 0], [0, 0], [1, 0], [0, 0], [0, 0]],
+  [[[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [1, 0], [1, 0], [1, 0]],
+   [[0, 0], [0, 0], [0, 0], [1, 0], [1, 0], [1, 0], [0, 0], [0, 0], [0, 0]],
    [[0, 0], [1, 0], [1, 0], [0, 0], [1, 0], [0, 0], [0, 0], [1, 0], [0, 0]],
    [[1, 0], [0, 0], [1, 0], [0, 0], [0, 0], [1, 0], [0, 0], [0, 0], [1, 0]],
-   [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [1, 0], [1, 0], [1, 0]]]
+   [[1, 0], [1, 0], [0, 0], [1, 0], [0, 0], [0, 0], [1, 0], [0, 0], [0, 0]]]
 /-! The diagonal's two `9`s are the rail loops' winding content at
 this window: a winding support of `L = 3` links, each at the member
 floor `3`, against the plaquette level `4 · 3 = 12`.  At side three
@@ -316,12 +323,13 @@ reads at or beyond it (`5 · 3 = 15`) — the fibering's family
 restriction at its own exhibit, and by design here, where the
 window prices the carrier and the translation reads alone. -/
 
-private def chDiag : List Nat := [0, 9, 12, 12, 12, 9]
+private def chDiag : List Nat := [0, 9, 9, 12, 12, 12]
 
 /-! The one enumeration the module prices: the window index at its
 five members.  Every read below runs on the pinned list, the
-window diagonal among them — `windowDiag` is the index's contents
-with the unit line at its head, so the pin carries it.  The pin's
+window list's diagonal among them — every fiber at one slot here,
+the diagonal the index's contents with the unit line at its head,
+so the pin carries it.  The pin's
 statement is `def:carrier`'s own enumeration; its route is the
 content-pruned read beside it (`carrier.idxA_eq`), ten times
 cheaper at this window. -/
@@ -330,8 +338,7 @@ private theorem chIxPin : idx fA chW 12 = chIx := by
   rw [← idxA_eq]
   decide +kernel
 
-example : pairpencil.windowDiag fA chW 12 = chDiag := by
-  show 0 :: (idx fA chW 12).map (contentN fA) = chDiag
+example : pairpencil.slotDiag fA chW (idx fA chW 12) = chDiag := by
   rw [chIxPin]
   decide +kernel
 
@@ -342,13 +349,162 @@ example : contentFixed fA chW chIx (chainTranslInv 3) := by decide +kernel
 example : occFixed fA chW chIx (chainTranslInv 3) := by decide +kernel
 example : idxFixed fA chW chIx (chainTranslInv 3) := by decide +kernel
 
+/-! The content and the occupancy fixed through the theorems at
+the label calculus itself, the pinned index's members the width-two
+labels at the window's link count: the content by the region's own
+action (`contentN_perm`) and the occupancy by the transport at the
+count laws discharged over the labels (`occupied_perm_dataA`), each
+beside the decided read above. -/
+
+private theorem chIxLabels :
+    (chIx.all (fun a => a.all (labelA 2))) = true := by decide +kernel
+private theorem chIxLen : (chIx.all (fun a => a.length == 9)) = true := by
+  decide +kernel
+
+example : contentFixed (dataA 2) chW chIx (chainTranslInv 3) :=
+  contentFixed_of (dataA 2) chW chIx (chainTranslInv 3) (fun a ha =>
+    contentN_perm (dataA 2) chW (chainTransl 3) (chainTranslInv 3) chPerm3 a
+      (ground.beqEqOf (ground.all_of_mem _ _ chIxLen a ha)))
+example : occFixed (dataA 2) chW chIx (chainTranslInv 3) :=
+  occFixed_of (dataA 2) chW chIx (chainTranslInv 3) (fun a ha =>
+    occupied_perm_dataA 2 chW chWell3 (chainTransl 3) (chainTranslInv 3)
+      (chainVert 3) (chainVertInv 3) chPerm3 chEnds3 chVert3 a
+      (ground.all_of_mem _ _ chIxLabels a ha))
+
+/-! The closure through the theorem at the label calculus: the
+enumeration itself at the untabulated interface reads the pinned
+list, and the window index maps within itself at the translation
+(`idxFixed_dataA`), the decided read above its companion. -/
+
+private theorem chIxPinA : idx (dataA 2) chW 12 = chIx := by
+  rw [← idxA_eq]
+  decide +kernel
+
+example : idxFixed (dataA 2) chW chIx (chainTranslInv 3) := by
+  rw [← chIxPinA]
+  exact idxFixed_dataA 2 chW 12 chWell3 (chainTransl 3) (chainTranslInv 3)
+    (chainVert 3) (chainVertInv 3) chPerm3 chEnds3 chVert3
+
+/-! The congruence's data at the pinned index, every fiber at its
+one slot: the window list is the index with the vacant key per
+member and its diagonal is the index's contents (`slotDiag_unit`'s
+instance, decided beside the theorem), the window list meets each
+member's image once, its equality read is structural on the image
+pairs, and the electric member's entries move along the
+translation — each decided and each the theorem's own at the label
+calculus — with the congruence at the free end's window matrix
+read through `commRead_slotE_dataA` beside the decided read.  The
+transposition's refusal: the moved lower rail loop meets the window
+list at no member. -/
+
+private def chSlots : List (List places.Shape × List Nat) :=
+  chIx.map (fun a => (a, List.replicate 6 0))
+private def chAct : List places.Shape × List Nat → List places.Shape × List Nat :=
+  slotAct (dataA 2) (chainTranslInv 3) (chainVertInv 3) 9 6
+
+example : pairpencil.slotList (dataA 2) chW chIx = chSlots := by decide +kernel
+example : pairpencil.slotDiag (dataA 2) chW chIx = chDiag := by decide +kernel
+example : pairpencil.slotDiag (dataA 2) chW chIx = chDiag :=
+  (pairpencil.slotDiag_unit (dataA 2) chW chIx (by decide +kernel)).trans
+    (by decide +kernel)
+example : imgOnceBy (slotEq (dataA 2)) chAct
+    (pairpencil.slotList (dataA 2) chW chIx) := by decide +kernel
+example : imgEqBy (slotEq (dataA 2)) chAct
+    (pairpencil.slotList (dataA 2) chW chIx) := by decide +kernel
+example : ground.distinctList (pairpencil.slotList (dataA 2) chW chIx) := by
+  decide +kernel
+example : movedReadBy (slotEq (dataA 2)) chAct
+    (pairpencil.slotList (dataA 2) chW chIx) (pairpencil.pencilE chDiag) := by
+  decide +kernel
+example : imgOnceBy (slotEq (dataA 2))
+    (slotAct (dataA 2) (chainTranslInv 3) (chainVertInv 3) chW.links chW.verts)
+    (pairpencil.slotList (dataA 2) chW chIx) := by
+  rw [← chIxPinA]
+  exact slotOnce_dataA 2 chW 12 chWell3 (chainTransl 3) (chainTranslInv 3)
+    (chainVert 3) (chainVertInv 3) chPerm3 chEnds3 chVert3
+example : imgEqBy (slotEq (dataA 2))
+    (slotAct (dataA 2) (chainTranslInv 3) (chainVertInv 3) chW.links chW.verts)
+    (pairpencil.slotList (dataA 2) chW chIx) := by
+  rw [← chIxPinA]
+  exact slotEq_dataA 2 chW 12 (chainTranslInv 3) (chainVertInv 3)
+example : ground.distinctList (pairpencil.slotList (dataA 2) chW chIx) := by
+  rw [← chIxPinA]
+  exact pairpencil.slotList_distinct (dataA 2) chW _
+    (idx_distinct (dataA 2) chW 12 (below_distinct_dataA 2 12))
+example : ¬ imgOnceBy (slotEq (dataA 2))
+    (slotAct (dataA 2) swapRR (fun v => v) 9 6)
+    (pairpencil.slotList (dataA 2) chW chIx) := by decide +kernel
+
+/-! The congruence's four load-bearing binders at their refusals
+on the place action's own carrier, the standing conjuncts decided
+beside each: the diagonal moved — two members exchanged under the
+action at weights fourteen and nineteen; the action off
+injectivity, a constant action folding two members onto one at one
+weight; the equality read off the image pairs' structure, the
+parity read meeting each image once at a member off the image with
+the weights fixed; and the image off the list, the shift by five
+at fixed weights. -/
+
+private def swapTwo : Nat → Nat := fun a => if a = 0 then 1 else 0
+
+example : imgOnceBy (fun a b : Nat => a == b) swapTwo [0, 1]
+    ∧ imgEqBy (fun a b : Nat => a == b) swapTwo [0, 1]
+    ∧ ground.distinctList [0, 1] := by decide +kernel
+example : ¬ movedReadBy (fun a b : Nat => a == b) swapTwo [0, 1]
+    (pairpencil.pencilE [0, 14, 19]) := by decide +kernel
+example : ¬ commRead (permMatBy (fun a b : Nat => a == b) swapTwo [0, 1])
+    (pairpencil.pencilE [0, 14, 19]) := by decide +kernel
+example : imgOnceBy (fun a b : Nat => a == b) (fun _ => 0) [0, 1]
+    ∧ imgEqBy (fun a b : Nat => a == b) (fun _ => 0) [0, 1] := by
+  decide +kernel
+example : ¬ movedReadBy (fun a b : Nat => a == b) (fun _ => 0) [0, 1]
+    (pairpencil.pencilE [0, 5, 5]) := by decide +kernel
+example : ¬ commRead (permMatBy (fun a b : Nat => a == b) (fun _ => 0) [0, 1])
+    (pairpencil.pencilE [0, 5, 5]) := by decide +kernel
+
+private def eqP : Nat → Nat → Bool := fun a b => a % 2 == b % 2
+private def imgP : Nat → Nat := fun a => if a == 0 then 3 else 2
+private def wP : Nat → Nat := fun a => if a == 0 || a == 3 then 5 else 9
+
+example : imgOnceBy eqP imgP [0, 1]
+    ∧ ([0, 1].all (fun a => [0, 1].all (fun b =>
+        !(imgP a == imgP b) || (a == b)))) = true
+    ∧ ([0, 1].all (fun a => wP (imgP a) == wP a)) = true := by decide +kernel
+example : ¬ imgEqBy eqP imgP [0, 1] := by decide +kernel
+example : ¬ movedReadBy eqP imgP [0, 1] (pairpencil.pencilE [0, 5, 9]) := by
+  decide +kernel
+example : ¬ commRead (permMatBy eqP imgP [0, 1])
+    (pairpencil.pencilE [0, 5, 9]) := by decide +kernel
+
+example : imgEqBy (fun a b : Nat => a == b) (fun a => a + 5) [0, 1] := by
+  decide +kernel
+example : ¬ imgOnceBy (fun a b : Nat => a == b) (fun a => a + 5) [0, 1] := by
+  decide +kernel
+example : ¬ commRead (permMatBy (fun a b : Nat => a == b) (fun a => a + 5) [0, 1])
+    (pairpencil.pencilE [0, 4, 4]) := by decide +kernel
+
+private theorem chSlotDiagPin :
+    pairpencil.slotDiag (dataA 2) chW (idx (dataA 2) chW 12) = chDiag := by
+  rw [chIxPinA]
+  decide +kernel
+
+set_option maxRecDepth 100000 in
+example : commRead (slotMat (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3))
+    (pairpencil.pencilE chDiag) := by
+  rw [← chIxPinA, ← chSlotDiagPin]
+  exact @commRead_slotE_dataA 2 chW 12 chWell3 (chainTransl 3)
+    (chainTranslInv 3) (chainVert 3) (chainVertInv 3) chPerm3 chEnds3 chVert3
+example : commRead (slotMat (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3))
+    (pairpencil.pencilE chDiag) := by
+  decide +kernel
+
 /-! The commuting read at the free end's window matrix
 (`prop:segment`, the electric member alone at its own one-member
-site, `pairpencil.pencilE`): the induced permutation matrix's congruence fixes
-the diagonal, the three squares' contents at one value and the two
-rails' at another. -/
+site, `pairpencil.pencilE`): the place action's matrix's congruence
+fixes the diagonal at the tabulated interface as well, the three
+squares' contents at one value and the two rails' at another. -/
 
-example : commRead (permMat fA chIx 9 (chainTranslInv 3))
+example : commRead (slotMat fA chW chIx (chainTranslInv 3) (chainVertInv 3))
     (pairpencil.pencilE chDiag) := by
   decide +kernel
 
@@ -358,8 +514,48 @@ so the closure fails and the congruence with it. -/
 
 example : ¬ idxFixed fA chW chIx swapRR := by decide +kernel
 example : ¬ occFixed fA chW chIx swapRR := by decide +kernel
-example : ¬ commRead (permMat fA chIx 9 swapRR)
+example : ¬ commRead (slotMat fA chW chIx swapRR (fun v => v))
     (pairpencil.pencilE chDiag) := by
+  decide +kernel
+
+/-! The window list at fibers of four slots: at three letters the
+rails at the adjoint with one rung at the adjoint, the rung's two
+ends at multiplicity two (`θ ⊗ θ ⊗ θ` holding the unit twice at
+three letters), the three members the translation's one orbit,
+twelve slots with the unit line.  The congruence holds at the
+vertex witness and refuses at the identity in its place, the moved
+key off the moved member's fiber: the vertex witness is
+load-bearing at the window list. -/
+
+private def th3 : places.Shape := adjchar.theta 3
+private def u3 : places.Shape := [0, 0, 0]
+private def ix3 : List (List places.Shape) :=
+  [[th3, u3, u3, th3, th3, th3, th3, th3, th3],
+   [u3, th3, u3, th3, th3, th3, th3, th3, th3],
+   [u3, u3, th3, th3, th3, th3, th3, th3, th3]]
+private def act3 : List places.Shape × List Nat → List places.Shape × List Nat :=
+  slotAct (dataA 3) (chainTranslInv 3) (chainVertInv 3) 9 6
+
+example : (ix3.all (fun a => occupied (dataA 3) chW a)) = true
+    ∧ (ix3.all (fun a => windowfinite.fibProd (dataA 3) chW a == 4)) = true := by
+  decide +kernel
+example : pairpencil.slotKeys (dataA 3) chW (ground.getAt [] ix3 0)
+    = [[0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0],
+       [1, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0]] := by decide +kernel
+example : (pairpencil.slotList (dataA 3) chW ix3).length = 12 := by
+  decide +kernel
+example : imgOnceBy (slotEq (dataA 3)) act3 (pairpencil.slotList (dataA 3) chW ix3)
+    ∧ imgEqBy (slotEq (dataA 3)) act3 (pairpencil.slotList (dataA 3) chW ix3)
+    ∧ ground.distinctList (pairpencil.slotList (dataA 3) chW ix3) := by
+  decide +kernel
+example : commRead (slotMat (dataA 3) chW ix3 (chainTranslInv 3) (chainVertInv 3))
+    (pairpencil.pencilE (pairpencil.slotDiag (dataA 3) chW ix3)) := by
+  decide +kernel
+example : ¬ imgOnceBy (slotEq (dataA 3))
+    (slotAct (dataA 3) (chainTranslInv 3) (fun v => v) 9 6)
+    (pairpencil.slotList (dataA 3) chW ix3) := by decide +kernel
+example : ¬ commRead (slotMat (dataA 3) chW ix3 (chainTranslInv 3) (fun v => v))
+    (pairpencil.pencilE (pairpencil.slotDiag (dataA 3) chW ix3)) := by
   decide +kernel
 
 /-! The chord tier's carriers: the translation's link permutation at
@@ -1513,3 +1709,37 @@ example : ¬ fiberPencilRead 3 [[BPair.ofNat 1, BPair.ofNat 2]]
         (matMul (pairBase 1) (matMul (inertia.idMat 3)
           (transposeM (pairBase 1)))))) 1
     (BPair.ofNat 2) (BPair.ofNat 3) (2 : Pos) := by decide +kernel
+
+/-! A term's support at a fiber of three slots: on the two-direction
+torus at side three over two letters, the adjoint on the eight
+links of two squares sharing one vertex, that vertex at
+multiplicity three (four adjoint links), beside the first square's
+fundamental loop, five positions with the unit line.  The support
+admits an entry within the three-slot fiber, the member its own
+target on the square's row, and refuses one across the two
+members, the loop off the adjoint member's row. -/
+
+private def torW : Region := torusRegion 2 3
+private def torPlaq (i : Nat) : List (Nat × Bool) := ground.getAt [] torW.plaqs i
+private def torPair : List places.Shape :=
+  (List.range torW.links).map (fun l =>
+    if (torPlaq 0).any (fun e => e.1 == l) || (torPlaq 4).any (fun e => e.1 == l)
+    then [2, 0] else [0, 0])
+private def torLoop : List places.Shape :=
+  (List.range torW.links).map (fun l =>
+    if (torPlaq 0).any (fun e => e.1 == l) then [1, 0] else [0, 0])
+private def ixT : List (List places.Shape) := [torPair, torLoop]
+private def e5 (i j : Nat) : Mat :=
+  ground.matOf 5 5 (fun a b =>
+    if (a == i && b == j) || (a == j && b == i) then ⟨2, 1⟩ else BPair.unit)
+
+example : (pairpencil.slotList (dataA 2) torW ixT).length = 4
+    ∧ carrier.occupied (dataA 2) torW torPair = true := by decide +kernel
+example : pairpencil.gramBlockRead (dataA 2) torW 5 ixT (matAdd (inertia.idMat 5) (e5 1 3)) := by
+  decide +kernel
+example : ¬ pairpencil.gramBlockRead (dataA 2) torW 5 ixT (matAdd (inertia.idMat 5) (e5 1 4)) := by
+  decide +kernel
+example : pairpencil.termSupport (dataA 2) torW 5 ixT (torPlaq 0) (e5 1 2) := by
+  decide +kernel
+example : ¬ pairpencil.termSupport (dataA 2) torW 5 ixT (torPlaq 0) (e5 1 4) := by
+  decide +kernel

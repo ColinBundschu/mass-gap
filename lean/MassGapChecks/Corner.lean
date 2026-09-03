@@ -755,16 +755,16 @@ private theorem dmGap :
     (1 : Pos) * 1 * (1 * 1) + 35 = 3 * 3 * (2 * 2) := by
   decide +kernel
 private theorem dmUp : countAtPair
-    (matScale (2 * 2) (cornerPencil eF cM 3 1))
+    (matScale (1 * (2 * 2)) (cornerPencil eF cM 3 1))
     (idMat 2) 30 1 1 (spLt ⟨40, 1⟩ ⟨1, 2⟩) := by decide +kernel
 private theorem dmLo : countAtPair
-    (matScale (1 * 1) (cornerPencil eF cM 1 2))
+    (matScale (1 * (1 * 1)) (cornerPencil eF cM 1 2))
     (idMat 2) 30 1 2 (spLt ⟨1, 32⟩ ⟨1, 37⟩) := by decide +kernel
-private theorem dmScaled : splitRead (matScale 35 eF)
+private theorem dmScaled : splitRead (matScale (1 * 35) eF)
     (spLt ⟨71, 1⟩ ⟨36, 1⟩) := by decide +kernel
 
 example : (1 : Nat) ≤ 2 :=
-  dual_count_mono eF cM (idMat 2) 3 1 1 2 35 30 1 1 2
+  dual_count_mono eF cM (idMat 2) 1 3 1 1 2 35 30 1 1 2
     (spLt ⟨40, 1⟩ ⟨1, 2⟩) (spLt ⟨1, 32⟩ ⟨1, 37⟩)
     (spLt ⟨3, 1⟩ ⟨2, 1⟩) (spLt ⟨71, 1⟩ ⟨36, 1⟩)
     dmGap eFsplit eFpsd dmScaled dmUp dmLo
@@ -784,11 +784,11 @@ reads `diag(7, 1)` at count nought — the gap's diagonal
 `35E = diag(35, -35)` refusing the positive-semidefinite read and
 the monotone conclusion failing. -/
 
-example : countAtPair (matScale (2 * 2) (cornerPencil eInd cM 3 1))
+example : countAtPair (matScale (1 * (2 * 2)) (cornerPencil eInd cM 3 1))
     (idMat 2) 1 11 1 (spLt ⟨43, 1⟩ ⟨1, 35⟩) := by decide +kernel
-example : countAtPair (matScale (1 * 1) (cornerPencil eInd cM 1 2))
+example : countAtPair (matScale (1 * (1 * 1)) (cornerPencil eInd cM 1 2))
     (idMat 2) 1 11 0 (spLt ⟨8, 1⟩ ⟨2, 1⟩) := by decide +kernel
-example : splitRead (matScale 35 eInd) (spLt ⟨36, 1⟩ ⟨1, 36⟩) := by
+example : splitRead (matScale (1 * 35) eInd) (spLt ⟨36, 1⟩ ⟨1, 36⟩) := by
   decide +kernel
 example : ¬ psdAt (spLt ⟨36, 1⟩ ⟨1, 36⟩) := by decide +kernel
 
@@ -3066,3 +3066,126 @@ example : 1 + 1 ≤ 4 + 1 :=
       (spOne ⟨4, 1⟩) (spOne ⟨1, 2⟩) dmVac dmOcc (Nat.le_refl 1))
     rfl (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
+
+/-! ## The extent interval's mixed window
+
+At `E = I`, `M = diag(1, 20)` over the unit gram, the level
+`⟨1 : 6⟩` and the scales `1 < 2 < 3` at the common clearing one:
+the bottom and top scales read count one, the pencils
+`diag(0, -19)`, `diag(8, -11)` at the level's site `diag(5, -14)`,
+`diag(13, -6)`, so the middle scale's count is one by
+`interval_flat`, decided beside the route at `diag(8, -11)`; the
+electric form's positive-semidefinite binder is load-bearing at
+the indefinite `E = diag(1, -1)`, `M = diag(5, -2)` at the level
+`⟨1 : 1⟩`, where the bottom and top read one while the middle reads
+two; the top's read isolates at the scales `1 < 4 < 5`, the bottom
+one and the top vacant, and the bottom's read at the level
+`⟨20 : 1⟩` and the scales `1 < 3 < 5`, the top one and the bottom
+two.  The height's clearance reads at the scales `[1 : 1] ≤ [2 : 1]`,
+the floor `[1 : 2]` against the level `[3 : 1]`, with the scales'
+order load-bearing at the scale `[10 : 1]` and the top's clearance
+at the floor `1` against the level `1`; and the extent's
+positivity reads the root-bearing head's extent bracket `[2, 4]`
+above the sum's unit through `extent_pos`. -/
+
+private def iE : Mat := [[⟨2, 1⟩, u], [u, ⟨2, 1⟩]]
+private def iM : Mat := [[⟨2, 1⟩, u], [u, ⟨21, 1⟩]]
+
+private def iSite (en : Pos) : Mat :=
+  siteDatum (matAdd (matScale (1 * 1 * (1 * 1)) (cornerPencil iE iM en 1))
+    (matScale 6 (idMat 2))) (matScale 1 (idMat 2))
+
+private theorem iBot : countAtPair
+    (matScale (1 * 1 * (1 * 1)) (cornerPencil iE iM 1 1)) (idMat 2) 1 6 1
+    (mkSplit 2 (iSite 1)) := by decide +kernel
+private theorem iMid : countAtPair
+    (matScale (1 * 1 * (1 * 1)) (cornerPencil iE iM 2 1)) (idMat 2) 1 6 1
+    (mkSplit 2 (iSite 2)) := by decide +kernel
+private theorem iTop : countAtPair
+    (matScale (1 * 1 * (1 * 1)) (cornerPencil iE iM 3 1)) (idMat 2) 1 6 1
+    (mkSplit 2 (iSite 3)) := by decide +kernel
+
+example : (1 : Nat) = 1 :=
+  interval_flat iE iM (idMat 2) 1 1 2 1 3 1 1 6 1 1 1
+    (mkSplit 2 (iSite 1)) (mkSplit 2 (iSite 2)) (mkSplit 2 (iSite 3))
+    (scalarSplit 2 1) (scalarSplit 2 3) (scalarSplit 2 5) 3 5
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    iBot iMid iTop (Nat.le_refl 1) (Nat.le_refl 1)
+
+private def nE : Mat := [[⟨2, 1⟩, u], [u, ⟨1, 2⟩]]
+private def nM : Mat := [[⟨6, 1⟩, u], [u, ⟨1, 3⟩]]
+
+private def nSite (en : Pos) : Mat :=
+  siteDatum (matAdd (matScale (1 * 1 * (1 * 1)) (cornerPencil nE nM en 1))
+    (matScale 1 (idMat 2))) (matScale 1 (idMat 2))
+
+/-- The electric form's positivity is load-bearing: at the
+indefinite `E` the two end scales read one and the middle two. -/
+example : countAtPair
+    (matScale (1 * 1 * (1 * 1)) (cornerPencil nE nM 1 1)) (idMat 2) 1 1 1
+    (mkSplit 2 (nSite 1)) := by decide +kernel
+example : countAtPair
+    (matScale (1 * 1 * (1 * 1)) (cornerPencil nE nM 2 1)) (idMat 2) 1 1 2
+    (mkSplit 2 (nSite 2)) := by decide +kernel
+example : countAtPair
+    (matScale (1 * 1 * (1 * 1)) (cornerPencil nE nM 3 1)) (idMat 2) 1 1 1
+    (mkSplit 2 (nSite 3)) := by decide +kernel
+example : splitRead nE (mkSplit 2 nE) := by decide +kernel
+example : ¬ psdAt (mkSplit 2 nE) := by decide +kernel
+
+/-- The top's read is load-bearing: at the level `⟨1 : 6⟩` and the
+scales `1 < 4 < 5` the bottom reads one while the top reads
+vacant, the middle vacant with it. -/
+example : countAtPair
+    (matScale (1 * 1 * (1 * 1)) (cornerPencil iE iM 4 1)) (idMat 2) 1 6 0
+    (mkSplit 2 (iSite 4)) := by decide +kernel
+example : countAtPair
+    (matScale (1 * 1 * (1 * 1)) (cornerPencil iE iM 5 1)) (idMat 2) 1 6 0
+    (mkSplit 2 (iSite 5)) := by decide +kernel
+example : (1 : Pos) * 1 * (1 * 1) + 15 = 4 * 4 * (1 * 1) := by decide +kernel
+example : (4 : Pos) * 4 * (1 * 1) + 9 = 5 * 5 * (1 * 1) := by decide +kernel
+example : splitRead (matScale (1 * 1 * 15) iE) (scalarSplit 2 15) := by
+  decide +kernel
+
+private def iSite20 (en : Pos) : Mat :=
+  siteDatum (matAdd (matScale (1 * 1 * (1 * 1)) (cornerPencil iE iM en 1))
+    (matScale 1 (idMat 2))) (matScale 20 (idMat 2))
+
+/-- The bottom's read is load-bearing: at the level `⟨20 : 1⟩` and
+the scales `1 < 3 < 5` the top reads one while the bottom reads
+two, the middle two with it. -/
+example : countAtPair
+    (matScale (1 * 1 * (1 * 1)) (cornerPencil iE iM 1 1)) (idMat 2) 20 1 2
+    (mkSplit 2 (iSite20 1)) := by decide +kernel
+example : countAtPair
+    (matScale (1 * 1 * (1 * 1)) (cornerPencil iE iM 3 1)) (idMat 2) 20 1 2
+    (mkSplit 2 (iSite20 3)) := by decide +kernel
+example : countAtPair
+    (matScale (1 * 1 * (1 * 1)) (cornerPencil iE iM 5 1)) (idMat 2) 20 1 1
+    (mkSplit 2 (iSite20 5)) := by decide +kernel
+example : (1 : Pos) * 1 * (1 * 1) + 8 = 3 * 3 * (1 * 1) := by decide +kernel
+example : (3 : Pos) * 3 * (1 * 1) + 16 = 5 * 5 * (1 * 1) := by decide +kernel
+example : splitRead (matScale (1 * 1 * 8) iE) (scalarSplit 2 8) := by
+  decide +kernel
+example : splitRead (matScale (1 * 1 * 16) iE) (scalarSplit 2 16) := by
+  decide +kernel
+
+example : (1 : Pos) * 1 * 1 ≤ 3 * (2 * 1) := by decide +kernel
+example : (1 : Pos) * 1 * 1 ≤ 3 * (2 * 1) :=
+  height_clears 1 2 3 1 1 1 2 1 (by decide +kernel) (by decide +kernel)
+
+/-- The top's clearance is load-bearing: at the floor `1` against the
+level `1` and the scales `2 ≤ 2` the clearance parts at the top and
+at the conclusion together. -/
+example : (2 : Pos) * 1 ≤ 2 * 1 := by decide +kernel
+example : ¬ ((1 : Pos) * 2 * 1 ≤ 1 * (1 * 1)) := by decide +kernel
+
+/-- The scales' order is load-bearing: at the scale `[10 : 1]` beyond
+the top the floor's clearance at the top parts at the scale. -/
+example : ¬ ((10 : Pos) * 1 ≤ 2 * 1) := by decide +kernel
+example : ¬ ((1 : Pos) * 10 * 1 ≤ 3 * (2 * 1)) := by decide +kernel
+
+example : BPair.unit < (⟨2, 1⟩ : BPair) := by decide +kernel
+example : BPair.unit < (⟨2, 1⟩ : BPair) :=
+  extent_pos xDiv 4 xCt ⟨2, 1⟩ ⟨4, 1⟩ 1 xH xB1 xH xB2 (by decide +kernel)

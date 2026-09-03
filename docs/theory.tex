@@ -3438,9 +3438,10 @@ the element the reads' solve, the adjugate column against the
 Gram's determinant (Definition~\ref{def:elim}), one finite ground
 computation per read, the right side the \emph{unit read}: $\mathrm{Eval}$ reads its
 argument's unit coordinate in the label index
-(Definition~\ref{def:carrier}), the invariant count's own read
-(Proposition~\ref{prop:repring}), a finite ground computation in the
-structure constants alone. Its matrix elements between
+(Definition~\ref{def:carrier}), a finite ground computation at
+the product's exhaustion, the unit block's component
+(Lemma~\ref{lem:blockcount}(i)), at a loop window the invariant
+count's own read (Proposition~\ref{prop:repring}). Its matrix elements between
 summands, $\mathrm{gram}(x,A\cdot y)$ for $x,y$ window-list members,
 are the label-index reads
 of Proposition~\ref{prop:repring} on the changed edge alone, and the
@@ -3621,7 +3622,11 @@ the two reads $\langle X_ax,\,y\rangle$ and $\langle x,\,X_ay\rangle$
 balance partners ($X_a$ a derivation at one value
 under the involution, $X_a\bar x=\overline{X_ax}$). Consequently every finite family
 of coefficient vectors' Gram is positive semidefinite
-(Lemma~\ref{lem:inertia}): a sum of squares
+(Lemma~\ref{lem:inertia}): a coefficient vector's form at the Gram
+is the family's combination at that vector paired against itself,
+the pairing bilinear (Definition~\ref{def:ground}), a self-pairing
+at or beyond the sum's unit at the positive pairing, so every split
+of the Gram reads the upper side throughout; and a sum of squares
 $\sum_i\|T_ix\|^2$, each $T_i$ a generator action or a coefficient
 multiplication, is a fold of squares, and where the summed operator
 maps the carrier to itself the read restricts to every window.
@@ -3975,9 +3980,7 @@ lattice point's reading against its rulers included.
 
 \begin{remark}[Correspondence with the usual formulation]\label{rem:dictionary}
 The objects above are recorded here under their standard names, so
-that Theorem~\ref{thm:main} reads against the usual statement. The
-correspondence reads into this remark alone: every
-derivation above holds with the remark deleted.
+that Theorem~\ref{thm:main} reads against the usual statement.
 \begin{enumerate}[leftmargin=2em,itemsep=3pt]
 
 \item \emph{The theory.} $H(1,b)=E+bM$ is the lattice gauge Hamiltonian, $E$ its
@@ -7809,7 +7812,23 @@ $\mathrm{gram}$ positive definite by construction
 (Definition~\ref{def:carrier}). So the pair $(\alpha E:\beta M)$'s
 site datum $H([\alpha\!:\!\beta])$
 is symmetric there at every end-weight pair, its entries pair data at
-pair weights.
+pair weights. \emph{The pencil interface.} A window's pencil enters
+every derivation through its fields alone, one interface at every
+window, the label index's product their instantiation
+(Definition~\ref{def:algebra}): the \emph{order}, the window list's
+count (Proposition~\ref{prop:windowfinite}); the \emph{electric
+member}, diagonal at the index's contents with the unit line at its
+head (Definition~\ref{def:pencil}); the \emph{gram}, block diagonal
+over the index at the fibers' pairings with the unit line at one,
+positive definite by its shape (Definition~\ref{def:carrier}); and
+the \emph{magnetic member}, the plaquette terms' sum, each term
+symmetric and capped two-sidedly as a form at the adjoint dimension
+(Lemma~\ref{lem:loopcap}), its row at a configuration within the
+plaquette's changed-edge targets (Definition~\ref{def:algebra}; the
+far reads factorized at the unit character,
+Lemma~\ref{lem:stableentries}); at a loop window the fields read
+off the fusion counts, $M[x,y]=N^x_{\theta y}$ at the orthonormal
+characters (Proposition~\ref{prop:repring}).
 \end{theorem}
 
 \section{The chain's invariant form}
@@ -7851,8 +7870,16 @@ at every odd side, the translations
 and $M$ run over all links and plaquettes at coefficient one,
 Definition~\ref{def:pencil}): a translation $T$ permutes the label
 index isometrically, an orthogonal map, its transpose
-the inverse permutation's matrix (Construction~\ref{con:places}), with $T^L=1$
-along its direction. Its \emph{chord operator} is
+the inverse permutation's matrix (Construction~\ref{con:places}),
+with $T^L=1$ along its direction, the window list moved with the
+index: a fiber's coordinates are one digit per vertex of the
+region below the vertex's multiplicity, an untouched vertex at the
+product's unit (Definition~\ref{def:carrier}), the moved
+configuration's multiplicities the source's along the induced
+vertex permutation (Lemma~\ref{lem:stableentries}), its
+coordinates the source's permuted display there
+(Construction~\ref{con:places}), and the contents fixed at every
+slot. Its \emph{chord operator} is
 $S:=T+T^{\mathsf T}$, symmetric, commuting with $H$ and with the
 gram, and $T$ reads the deck relation at it,
 \[
@@ -9796,9 +9823,12 @@ at every further member. The
 corner outputs, the extent, the floor and the spacing, hold the
 whole direction and scheme dependence: each is a located datum
 per member and direction count
-(Lemma~\ref{lem:corner}), moving with the family's scale as the
-level does, while the invariant reads one value across the
-directions and the scales, the dimension-freeness
+(Lemma~\ref{lem:corner}), the floor and the spacing moving with
+the family's scale as the level does and the extent's ray the one
+pencil at every scale of the family, its heights moving with the
+scale (the seam pencil's multiple, Lemma~\ref{lem:dualtrunc};
+Theorem~\ref{thm:unitschain}), while the invariant reads one value
+across the directions and the scales, the dimension-freeness
 Theorem~\ref{thm:unitschain}'s first consequence.
 \end{theorem}
 
@@ -10353,8 +10383,14 @@ residue (Proposition~\ref{prop:row};
 Lemma~\ref{lem:rankstable}(ii)).
 
 \emph{The cell floor.} The flat step's height extent on the corner
-cell is a positive located datum of the cell: the ground root is simple over the cell (Theorem~\ref{thm:SO};
-Theorem~\ref{thm:divisorid}(iii)), the second jump is separated at
+cell is a positive located datum of the cell: the certificate's
+lines are corner levels at the band top's join, the head the seam
+pencil's own at the tower's data (Lemma~\ref{lem:cornerpivot}(ii);
+Lemma~\ref{lem:dualtrunc}); the ground root is simple over the
+cell, the count vacant at the vacant rate's line, every pivot clear
+at the diagonal $2+\eta\,W$ (Lemma~\ref{lem:cornerpivot}(iv)), and
+one at the member lines (Theorem~\ref{thm:SO};
+Theorem~\ref{thm:divisorid}(iii)); the second jump is separated at
 Theorem~\ref{thm:windowsep}'s floor, and the counting functions
 are flat between them at the certificate's two lines
 (Lemma~\ref{lem:cornerpivot}). The heights read two-sided on the
@@ -10424,8 +10460,14 @@ comparison of (i) is then one polynomial read in the depth and the
 scale, its positivity on the segment closed by the leading-term
 radius in the depth (Theorem~\ref{thm:windowsep}) with the
 finitely many depths below the radius each one read, and the
-well's data enter at the square scale, where the probe line
-$g(\eta)$ meets the band read $2$ at a stated pair rate and the
+well's data enter at the square scale: the probe line at a pair
+rate $q$ is the level $\lambda$ at the join $\lambda+c_1+2=q\,\eta$,
+the walk's band top $c_1+2$ cross-added
+(Theorem~\ref{thm:chordmap}'s crossing joins), so the head's
+diagonal at the dual pencil, $\sigma\,E_m$ against the walk's
+diagonal $c_1$ and the level at unit bonds
+(Proposition~\ref{prop:row}; Lemma~\ref{lem:dualtrunc}), reads
+$2+\eta\,W$ at the rate, the band read $2$ its constant, and the
 comparison's polynomials read the scale through the pair reads
 alone. The profiles enter as stated polynomial data at the
 recurrence's comparison: at the probe
@@ -10556,23 +10598,85 @@ among them (Theorem~\ref{thm:channeldiv}; Lemma~\ref{lem:channels}).
 (Theorem~\ref{thm:decimation}(i); Lemma~\ref{lem:greenprod}) the
 certificate runs at block data, the band-one clauses its scalar
 instance: the count splits over the depth pivots
-(Lemma~\ref{lem:greenprod}(ii)); a segment's pivots stay positive
+(Lemma~\ref{lem:greenprod}(ii)), the recursion's seed the boundary
+block with every later pivot one depth deeper, the band-one walk's
+own march; a segment's pivots stay positive
 at the ball certificate of Lemma~\ref{lem:spectator}(iii) read at
 per-depth stated centers, one matrix polynomial in the scale and
 the depth's pair reads, the three counts cleared by the centers'
-determinants to polynomial comparisons and read as cell functions
+determinants to polynomial comparisons, each count's site datum
+at the dominance comparison (Theorem~\ref{thm:decimation}(ii))
+with the two-sided count's at its two arms,
+one box read per row at the diagonal's entry less the off-row
+magnitude fold, the magnitudes the coefficients' own
+(Theorem~\ref{thm:windowsep}), the comparisons read as cell
+functions
 over the corner base (Lemma~\ref{lem:cellcount}), the center
-defect the drift's slot; the crossing is one block's split at one
+defect the drift's slot: per bond the defect reads the shallower
+center's transfer image at the deeper slab against the deeper
+slab's own center, Lemma~\ref{lem:spectator}(iii)'s
+display at the depth's stated data, so each step hands the ball
+from the shallower center to the deeper outright and the centers'
+consecutive drift enters the defect as its own summand; the
+crossing is one block's split at one
 lower-side unit with its witness list certificate data
-(Lemma~\ref{lem:inertia}), and the rebound is the split's
-rank-one read, the following pivot at or beyond its diagonal less
-the positive part's transfer, one congruence identity and one
-comparison; the dominance tail reads at block diagonal dominance;
+(Lemma~\ref{lem:inertia}), the split entering with its lower unit
+at an order-one block, a mixed block's two units parted at the
+congruence of its two side witnesses (Lemma~\ref{lem:inertia}),
+and the rebound is the split's
+rank-one read: the positive part is the split's block diagonal at
+the lower unit's entry withdrawn to the vacant read, the transfer
+is that datum's form at the recursion witness's image read in the
+split's own coordinates at the congruence witness's solve, and
+the following pivot sits at or beyond its diagonal less the
+transfer, the withdrawn term's display
+(Lemma~\ref{lem:greenprod}(i)) with the congruence's form
+transport the one congruence identity and the lower entry's read
+at or below the vacant read's at every coordinate square the one
+comparison; the dominance tail reads at block diagonal dominance:
+past the crossing a stated positive floor list prices every deeper
+pivot's form at or beyond its floor pair's multiple of the
+coordinates' fold of squares, the seed floor at the crossing's
+following depth read off the rebound at one cross-multiplied
+comparison, the diagonal's floor at or beyond the seed floor
+joined to the transfer's cap, the diagonal's floor a stated pair
+pricing the depth's diagonal from below at that fold and the
+transfer's cap a stated pair pricing the transfer's form at it,
+and each deeper depth one cross-multiplied comparison, the
+arriving floor's multiple of the diagonal's floor at or beyond its
+multiple of the depth's floor joined to the bond's square cap, a
+stated pair pricing the bond's square's form at the fold: the
+withdrawn term's form at the recursion witness's image
+(Lemma~\ref{lem:greenprod}(i)) is the image's dot against the
+bond's transpose image, its square at or below the two images'
+folds of squares' product (Construction~\ref{con:coeff}'s
+displayed comparison), the arriving pivot's floor reads the
+image's fold into the term with the bond's square cap pricing the
+transpose image's, so the arriving floor's multiple of the term
+sits at or below the bond's square cap's read, the term's occupied
+factor withdrawing at the trichotomy with the vacant term's read
+outright, and the depth's pivot clears its floor, clause (i)'s
+comparison at the block reads;
 and the ground witness and the cap pair read lift through the
 compression unchanged ((v); Lemma~\ref{lem:inertia}). The
 collar's finitely many blocks read exactly, the bonds enter
 through their squares alone, and the certificate's data gain the
-center family with its pairs and the crossing split.
+center family with its pairs, the crossing split, and the
+dominance tail's pairs: per depth the center with its floor pair,
+per bond the contraction, the defect and the modulus pairs, the
+one pair $\rho$ the segment's steps share, the self-map's own
+read, the seed's ball at the boundary block, the block's deviation
+from the boundary depth's center two-sided at $\rho$'s multiple of
+the gram, its two splits the statement's witnesses
+(Lemma~\ref{lem:inertia}), and past the crossing per depth the diagonal's floor pair
+with the depth's floor pair, per bond the square's cap pair, and
+the transfer's one cap pair. The chain's count closes at the
+certificate: the count splits over the depth pivots
+(Lemma~\ref{lem:greenprod}(ii)), the walked segment's stated
+splits read vacant at the balls, the crossing's split reads its
+one lower unit, the dominance tail's floors read every deeper
+split vacant, and every split of the assembled datum reads the
+count at one.
 
 The certificate's data are one stated pair
 rate with every profile comparison read at it and the scale's
@@ -10829,9 +10933,23 @@ coincidence);
 and the direction data enter at degree four, the breaking
 multiplicities positive there. So the jump family's loci at the
 corner read the isotropic square at degree two with one located
-coefficient per root, the root reads Lemma~\ref{lem:stage}'s
-at Theorem~\ref{thm:windowsep}'s separations, and the direction
-reads two momentum degrees down.
+coefficient per root: the symbol's momentum reading is $S_0(k)$ at
+the unit monomial with $S_2(k)$ against the isotropic square $Q$
+at degree two, the odd degrees at the sum's unit and the direction
+data at degree four; at a located root $\varepsilon$ of $S_0$,
+simple at Theorem~\ref{thm:windowsep}'s separation, the locus at
+the moved level $\varepsilon+a\,Q$ reads the symbol's degree-two
+term as $S_0'(\varepsilon)\,a+S_2(\varepsilon)$ against $Q$, the
+binomial identity per occupied key (Theorem~\ref{thm:windowsep})
+with $Q$'s square two degrees beyond, so the coefficient is the
+quotient at the derivative's unit witness $u\,S_0'+v\,S=c$ cleared
+at the extension's monic $S$ (Lemma~\ref{lem:stage}): its cofactor
+$\bar a$ reads the balance partner of $S_2\,u$ reduced at $S$, at
+the identity $\bar a\,S_0'(\varepsilon)+c\,S_2(\varepsilon)$ at
+the sum's unit, and the coefficient is $\bar a$ over the clearing
+$c$, one stage element per root, the root reads
+Lemma~\ref{lem:stage}'s at Theorem~\ref{thm:windowsep}'s
+separations; and the direction reads two momentum degrees down.
 \end{lemma}
 
 \begin{lemma}[The free cell]\label{lem:freecell}
@@ -11209,7 +11327,8 @@ on the clearance cell the moment folds' solve returns the
 truncated moment vector from the streams' reads
 (Lemma~\ref{lem:momentfold}), the located divisor read its
 clearance: the divisor data read the Euclidean families as
-their weight folds, one elimination per stream.
+their weight folds, one solved witness per family, the lower's
+and the upper's (Theorem~\ref{thm:groundreads}(v)).
 
 \emph{(ii) The relativistic bracket families are those data at
 the cone's coordinates.} Per probe pair the family is the weight
@@ -11223,7 +11342,16 @@ $m$-point folds' reads (Theorem~\ref{thm:groundreads}(v)).
 
 \emph{(iii) The state reads close the families.} The pairing's
 positivity is the families' own Gram read at every finite probe
-list, the cut is their spectrum condition
+list: a family's Gram at a probe list, its reads at the probe
+pairs, prices its form at coefficient data as the family's read at
+the probes' combination, the pairing bilinear
+(Definition~\ref{def:ground}), and that read is (i)'s weight fold
+at the combination's coordinate squares, every weight the gram's
+positive scale against the root's clearing and every entry the
+upper's or the lower's read on its upper side at the certificate's
+arms (Theorem~\ref{thm:groundreads}(v)), so every split of the
+Gram reads the upper side throughout (Lemma~\ref{lem:inertia});
+the cut is their spectrum condition
 (Lemma~\ref{lem:speccut}), the word sector is the state's space,
 cyclic (Lemma~\ref{lem:statespace}), and every read holds at
 every window ground at once: each output is a located bracket

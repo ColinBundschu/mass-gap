@@ -3593,14 +3593,12 @@ private theorem repl2_miss (i x a : Nat) (t : List Nat)
   rw [if_neg h]
 
 private theorem posOf_hit (x a : Nat) (t : List Nat) (h : x = a) :
-    posOf x (a :: t) = 0 := by
-  show (if x = a then 0 else posOf x t + 1) = 0
-  rw [if_pos h]
+    posOf x (a :: t) = 0 :=
+  ground.posBy_cons_hit _ x a t (decide_eq_true h)
 
 private theorem posOf_miss (x a : Nat) (t : List Nat)
-    (h : ¬ x = a) : posOf x (a :: t) = posOf x t + 1 := by
-  show (if x = a then 0 else posOf x t + 1) = _
-  rw [if_neg h]
+    (h : ¬ x = a) : posOf x (a :: t) = posOf x t + 1 :=
+  ground.posBy_cons_miss _ x a t (decide_eq_false h)
 
 private theorem pos2_hit (x a : Nat) (t : List Nat) (h : x = a) :
     pos2 x (a :: t) = posOf x t + 1 := by
@@ -12179,7 +12177,7 @@ private theorem pair_coords_vacU (v : HVec) (j : Nat)
       (BPair.ofNat (ground.getAt 0 v.content (j + 1))) v.coords) := by
     rw [hz]
     exact elim.unitTail_vecScale_unit
-      (show (BPair.ofNat 0).oneValue BPair.unit from rfl) v.coords
+      BPair.ofNat_zero v.coords
   match pair_coords_vac v j hsv hj hoccj hz with
   | ⟨pcv, hNull⟩ =>
     exact poly.oneValue_trans
@@ -12230,7 +12228,7 @@ private theorem pair_coords_vacD (v : HVec) (j : Nat)
       (BPair.ofNat (ground.getAt 0 v.content j)) v.coords) := by
     rw [hz]
     exact elim.unitTail_vecScale_unit
-      (show (BPair.ofNat 0).oneValue BPair.unit from rfl) v.coords
+      BPair.ofNat_zero v.coords
   have hPlen : (act (j + 1) j (act j (j + 1) v)).coords.length
       = (monomialsAt v.content).length := by
     rw [act_sized (j + 1) j (act j (j + 1) v)]

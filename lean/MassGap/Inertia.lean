@@ -170,6 +170,49 @@ theorem matScaleB_congr {a b : BPair} (h : a.oneValue b) :
   | [] => trivial
   | r :: t => ⟨poly.scaleP_congr h r, matScaleB_congr h t⟩
 
+/-- The balance weighting distributes over the entrywise vector
+sum. -/
+private theorem vecScaleB_sum (w : BPair) : ∀ p q : List BPair,
+    poly.oneValue (poly.scaleP w (vecAdd p q))
+      (vecAdd (poly.scaleP w p) (poly.scaleP w q))
+  | [], _ => trivial
+  | _ :: _, [] => trivial
+  | a :: p, b :: q =>
+    ⟨BPair.oneValue_trans (BPair.norm_oneValue _)
+      (BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.left_distrib w a b))
+        (BPair.add_congr (BPair.oneValue_symm (BPair.norm_oneValue _))
+          (BPair.oneValue_symm (BPair.norm_oneValue _)))),
+     vecScaleB_sum w p q⟩
+
+/-- The balance weighting distributes over the entrywise matrix
+sum. -/
+theorem matScaleB_sum (w : BPair) : ∀ P Q : Mat,
+    matOneValue (matScaleB w (matAdd P Q))
+      (matAdd (matScaleB w P) (matScaleB w Q))
+  | [], _ => trivial
+  | _ :: _, [] => trivial
+  | r :: P, s :: Q => ⟨vecScaleB_sum w r s, matScaleB_sum w P Q⟩
+
+/-- The balance weighting passes the memberwise swap, entry by
+entry. -/
+private theorem vecScaleB_neg (w : BPair) : ∀ p : List BPair,
+    poly.oneValue (poly.scaleP w (p.map BPair.swap))
+      ((poly.scaleP w p).map BPair.swap)
+  | [] => trivial
+  | x :: p =>
+    ⟨BPair.oneValue_trans (BPair.norm_oneValue _)
+      (BPair.oneValue_symm
+        (ground.swap_congr (BPair.norm_oneValue (w * x)))),
+     vecScaleB_neg w p⟩
+
+/-- The balance weighting passes the matrix's memberwise swap. -/
+theorem matScaleB_neg (w : BPair) : ∀ M : Mat,
+    matOneValue (matScaleB w (matSwap M))
+      (matSwap (matScaleB w M))
+  | [] => trivial
+  | r :: M => ⟨vecScaleB_neg w r, matScaleB_neg w M⟩
+
 private theorem levelEntryB (y x : Pos) (e : BPair) :
     (e.scale y + (e.scale x).swap).oneValue ((BPair.mk y x * e).norm) :=
   BPair.oneValue_trans
@@ -1017,6 +1060,34 @@ theorem adjM_col_read (G : Mat) {n : Nat} (hsq : sqAt G n) :
           (BPair.oneValue_trans (BPair.norm_oneValue _)
             (BPair.mul_unit (detL G))))
 
+/-- The adjugate's action against a list's own action pins a vector
+at the determinant's scale: the adjugate identity's action read
+(`adjM_col_read`) at the vector, the determinant's scaled identity
+acting as the scale itself (`def:elim`'s adjugate identity read at a
+vector). -/
+theorem det_pin {n : Nat} (S : Mat) (hsq : sqAt S n)
+    (z : List BPair) (hz : z.length = n) :
+    poly.oneValue (matVec (matMul (adjM S) S) z)
+      (vecScale (detL S) z) :=
+  poly.oneValue_trans
+    (matVec_matOne _ _ z (adjM_col_read S hsq))
+    (scaleId_act (detL S) n z hz)
+
+/-- The solve read: at a list's action on a vector reading stated
+data, the adjugate's action on the data returns the vector at the
+determinant's scale, `def:elim`'s adjugate against the list at the
+solved column. -/
+theorem adj_solve {n : Nat} (S : Mat) (hsq : sqAt S n)
+    (z w : List BPair) (hz : z.length = n)
+    (h : poly.oneValue (matVec S z) w) :
+    poly.oneValue (matVec (adjM S) w) (vecScale (detL S) z) :=
+  poly.oneValue_trans
+    (matVec_congr (adjM S) w _ (poly.oneValue_symm h))
+    (poly.oneValue_trans
+      (poly.oneValue_symm
+        (matVec_matMul (adjM S) S n (rowsLen_of_sqAt hsq) z hz))
+      (det_pin S hsq z hz))
+
 /-- A determinant off equal members refuses every kernel vector but the
 unit family: the adjugate carries `X v` back to the determinant's
 multiple of `v`, and the determinant withdraws at the product's
@@ -1034,11 +1105,8 @@ theorem matVec_null_of_det (X : Mat) {n : Nat} (hsq : sqAt X n)
   have h2 : poly.unitTail (matVec (matMul (adjM X) X) v) :=
     poly.unitTail_oneValue_right h1
       (matVec_comp (adjM X) X v n hXr hv (rowsLen_cast hXl.symm hAr))
-  have h3 : poly.unitTail (matVec (matScaleB (detL X) (idMat n)) v) :=
-    poly.unitTail_oneValue_right h2
-      (matVec_matOne _ _ v (adjM_col_read X hsq))
   have h4 : poly.unitTail (vecScale (detL X) v) :=
-    poly.unitTail_oneValue_right h3 (scaleId_act (detL X) n v hv)
+    poly.unitTail_oneValue_right h2 (det_pin X hsq v hv)
   have hdet' : ¬ (detL X).oneValue BPair.unit := fun hzero =>
     hdet (BPair.oneValue_trans
       (minor_detL X (rowsLen_cast hXl.symm hXr)) hzero)
@@ -1100,6 +1168,18 @@ theorem congQuad (S P : Mat) (n m : Nat) (hsq : sqAt S n)
       c c hc hc) ?_
   exact BPair.oneValue_symm (dotN_read _ _)
 
+/-- The tied compression's form reads the datum's own at the
+carried vector: the congruence transports the read through the
+tie, at every rectangular carrier. -/
+theorem tieQuad {n m : Nat} (S P W : Mat)
+    (hS : sqAt S n) (hPl : P.length = n) (hPr : rowsLen m P)
+    (htie : matOneValue (matMul (transposeM P) (matMul S P)) W)
+    (x : List BPair) (hx : x.length = m) :
+    (dotN (matVec P x) (matVec S (matVec P x))).oneValue
+      (dotN x (matVec W x)) :=
+  BPair.oneValue_trans (congQuad S P n m hS hPr hPl x hx)
+    (quadMatOne _ _ x htie)
+
 /-- The congruence transports the datum's quadratic form to the block
 diagonal's, at every vector of the stated order. -/
 private theorem congTransport {n : Nat} (S : Mat) (sp : Split n)
@@ -1110,10 +1190,8 @@ private theorem congTransport {n : Nat} (S : Mat) (sp : Split n)
     (c : List BPair) (hc : c.length = n) :
     (dotN (matVec sp.T.val c) (matVec S (matVec sp.T.val c))).oneValue
       (dotN c (matVec (blockMat sp.blocks sp.kern) c)) :=
-  BPair.oneValue_trans
-    (congQuad S sp.T.val n n hsq (rowsLen_of_sqAt sp.T.shape) sp.T.rows
-      c hc)
-    (quadMatOne _ _ c hcong)
+  tieQuad S sp.T.val (blockMat sp.blocks sp.kern) hsq sp.T.rows
+    (rowsLen_of_sqAt sp.T.shape) hcong c hc
 
 /-- The positive-semidefinite read at a split prices the datum's
 quadratic form at or above the sum's unit at every vector of the
@@ -1504,16 +1582,25 @@ theorem rev_witness {n : Nat} (S : Mat) (sp : Split n)
     exact BPair.lt_congr (BPair.oneValue_symm (quadP_read _ c))
       (BPair.oneValue_refl BPair.unit) hlt
 
+/-- The one-sided comparison's read at one split: `S ⪯ C`, the
+split the statement's witness (`lem:inertia`). -/
+def leAt {n : Nat} (S C : Mat) (sp : Split n) : Prop :=
+  splitRead (siteDatum C S) sp ∧ psdAt sp
+
+instance {n : Nat} (S C : Mat) (sp : Split n) :
+    Decidable (leAt S C sp) :=
+  inferInstanceAs (Decidable (_ ∧ _))
+
 /-- The two-sided cap at `C`: `S ⪯ C` with `C + S` positive
 semidefinite, two splits the statement's witnesses. -/
 def capAt {n : Nat} (S C : Mat) (spU spL : Split n) : Prop :=
   sqAt S n ∧ sqAt C n
-  ∧ splitRead (siteDatum C S) spU ∧ psdAt spU
+  ∧ leAt S C spU
   ∧ splitRead (matAdd C S) spL ∧ psdAt spL
 
 instance {n : Nat} (S C : Mat) (spU spL : Split n) :
     Decidable (capAt S C spU spL) :=
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _))
 
 /-! Jacobi's rule, the fast route: at leading principal minors of
 unequal members the pivots are the minors' successive cofactors, so
@@ -3711,6 +3798,19 @@ theorem site_side {X Y : Mat} {u : List BPair}
       (ground.leB_congr_right (quadForm_site hXl hXr hYl hYr)
         (ground.leB_of_not_lt h)))
 
+/-- The one-sided comparison's pointwise form comparison: at the
+split's own transport the lower datum's form sits at or below the
+upper's at every vector of the stated order. -/
+theorem le_all {n : Nat} (S C : Mat) (sp : Split n)
+    (hS : sqAt S n) (hC : sqAt C n) (h : leAt S C sp) :
+    ∀ u : List BPair, u.length = n → quadForm S u ≤ quadForm C u :=
+  fun u hu => ground.leB_of_not_lt
+    (site_side ((sqAt_len hC).trans hu.symm)
+      (by rw [hu]; exact rowsLen_of_sqAt hC)
+      ((sqAt_len hS).trans hu.symm)
+      (by rw [hu]; exact rowsLen_of_sqAt hS)
+      (psd_all _ sp h.1 h.2 u hu))
+
 /-- The cleared site datum's form below the sum's unit is the two
 forms' scaled order, the level's weights riding on the members. -/
 theorem scaledSite_gap {X Y : Mat} {u : List BPair} {gn gd : Pos}
@@ -3947,6 +4047,129 @@ theorem rev_compress {n m : Nat} (S P : Mat)
     revAt spc ≤ revAt sp := by
   exact rev_family S (matMul (transposeM P) (matMul S P)) P hP
     (fun v hv => congQuad S P n m hS hPr hP v hv) spc hc sp h
+
+/-- The withdrawn diagonal's block list: each order-one lower
+entry withdrawn to the vacant read, every further block kept —
+the positive part at a split whose lower units sit at order-one
+blocks, the crossing's stated presentation. -/
+def posBlocks : List SBlock → List SBlock
+  | [] => []
+  | .one a :: bs =>
+      (if a < BPair.unit then .one BPair.unit else .one a) :: posBlocks bs
+  | .two a b c :: bs => .two a b c :: posBlocks bs
+
+/-- The withdrawal's head read at an order-one lower entry: the
+entry moves to the vacant read with the tail's fold its own. -/
+theorem posBlocks_cons_lt {a : BPair} (bs : List SBlock)
+    (h : a < BPair.unit) :
+    posBlocks (SBlock.one a :: bs)
+      = SBlock.one BPair.unit :: posBlocks bs := by
+  show (if a < BPair.unit then SBlock.one BPair.unit
+      else SBlock.one a) :: posBlocks bs = _
+  rw [if_pos h]
+
+/-- The withdrawal's head read at an order-one upper entry: the
+entry rides kept with the tail's fold its own. -/
+theorem posBlocks_cons_ge {a : BPair} (bs : List SBlock)
+    (h : ¬ a < BPair.unit) :
+    posBlocks (SBlock.one a :: bs)
+      = SBlock.one a :: posBlocks bs := by
+  show (if a < BPair.unit then SBlock.one BPair.unit
+      else SBlock.one a) :: posBlocks bs = _
+  rw [if_neg h]
+
+/-- The withdrawn diagonal dominates the block diagonal at the
+peeled form: each order-one lower entry's read sits at or below the
+vacant read's at every coordinate square, every further block's
+read its own. -/
+private theorem bQuad_posBlocks : ∀ (bs : List SBlock) (k : Nat)
+    (c : List BPair), bQuad bs k c ≤ bQuad (posBlocks bs) k c
+  | [], _, _ => ground.leB_refl _
+  | SBlock.one _ :: _, _, [] => ground.leB_refl _
+  | SBlock.one a :: bs, k, x :: c' => by
+    have hrec := bQuad_posBlocks bs k c'
+    have hL := peel_one a bs k x c'
+    match (inferInstance : Decidable (a < BPair.unit)) with
+    | isTrue hg =>
+      have hpos := posBlocks_cons_lt bs hg
+      rw [hpos]
+      have hR := peel_one BPair.unit (posBlocks bs) k x c'
+      have hLe : x * (a * x) = x * x * a := by
+        rw [BPair.mul_comm a x, ← BPair.mul_assoc]
+      have hRu : (x * (BPair.unit * x)).oneValue BPair.unit :=
+        BPair.oneValue_trans
+          (BPair.mul_congr (BPair.oneValue_refl x) (BPair.unit_mul x))
+          (BPair.mul_unit x)
+      have hhead : x * (a * x) ≤ x * (BPair.unit * x) :=
+        ground.leB_congr (BPair.oneValue_of_eq hLe.symm)
+          (BPair.oneValue_trans (BPair.mul_unit (x * x))
+            (BPair.oneValue_symm hRu))
+          (ground.leB_mulR (ground.unitLeSq x) (ground.leB_of_lt hg))
+      exact ground.leB_congr (BPair.oneValue_symm hL)
+        (BPair.oneValue_symm hR) (ground.leB_add hhead hrec)
+    | isFalse hg =>
+      have hpos := posBlocks_cons_ge bs hg
+      rw [hpos]
+      have hR := peel_one a (posBlocks bs) k x c'
+      exact ground.leB_congr (BPair.oneValue_symm hL)
+        (BPair.oneValue_symm hR)
+        (ground.leB_add (ground.leB_refl (x * (a * x))) hrec)
+  | SBlock.two _ _ _ :: _, _, [] => ground.leB_refl _
+  | SBlock.two a b d :: bs, k, [x] =>
+    ground.leB_congr (BPair.oneValue_symm (peel_two1 a b d bs k x))
+      (BPair.oneValue_symm (peel_two1 a b d (posBlocks bs) k x))
+      (ground.leB_refl (x * (a * x)))
+  | SBlock.two a b d :: bs, k, x :: y :: c' =>
+    ground.leB_congr
+      (BPair.oneValue_symm (peel_two a b d bs k x y c'))
+      (BPair.oneValue_symm (peel_two a b d (posBlocks bs) k x y c'))
+      (ground.leB_add
+        (ground.leB_refl (x * (a * x + b * y) + y * (b * x + d * y)))
+        (bQuad_posBlocks bs k c'))
+
+/-- The withdrawn diagonal's read: the datum's form at every
+vector, cleared at the congruence determinant's square, sits at or
+below the withdrawn diagonal's read at the witness's coordinates —
+each order-one lower entry's read at or below the vacant read's at
+every coordinate square.  At the crossing's stated presentation,
+the lower unit at an order-one block, the withdrawn diagonal is
+the positive part and the read is the split's rank-one read. -/
+theorem split_posPart {n : Nat} (S : Mat) (sp : Split n)
+    (h : splitRead S sp) (v : List BPair) (hv : v.length = n) :
+    minor sp.T.val * minor sp.T.val * quadForm S v
+      ≤ quadForm (blockMat (posBlocks sp.blocks) sp.kern)
+          (matVec sp.Tw.val v) := by
+  obtain ⟨hsq, ⟨-, hTTw, -⟩, hcong, -⟩ := h
+  have hTrows : rowsLen n sp.T.val := rowsLen_of_sqAt sp.T.shape
+  have hTwrows : rowsLen n sp.Tw.val := rowsLen_of_sqAt sp.Tw.shape
+  have hc : (matVec sp.Tw.val v).length = n :=
+    (matVec_length sp.Tw.val v).trans sp.Tw.rows
+  have himg : poly.oneValue
+      (matVec sp.T.val (matVec sp.Tw.val v))
+      (vecScale (minor sp.T.val) v) := by
+    refine poly.oneValue_trans
+      (matVec_comp sp.T.val sp.Tw.val v n hTwrows hv
+        (by rw [sp.Tw.rows]; exact hTrows)) ?_
+    refine poly.oneValue_trans (matVec_matOne _ _ v hTTw) ?_
+    exact scaleId_act (minor sp.T.val) n v hv
+  have hDD := quadScaleVec S (minor sp.T.val) v
+    (matVec sp.T.val (matVec sp.Tw.val v)) himg
+  have hBQ := congTransport S sp hsq hcong (matVec sp.Tw.val v) hc
+  have hstep : quadForm (blockMat sp.blocks sp.kern)
+        (matVec sp.Tw.val v)
+      ≤ quadForm (blockMat (posBlocks sp.blocks) sp.kern)
+        (matVec sp.Tw.val v) :=
+    ground.leB_congr
+      (BPair.oneValue_symm
+        (quadP_read (blockMat sp.blocks sp.kern) (matVec sp.Tw.val v)))
+      (BPair.oneValue_symm
+        (quadP_read (blockMat (posBlocks sp.blocks) sp.kern)
+          (matVec sp.Tw.val v)))
+      (bQuad_posBlocks sp.blocks sp.kern (matVec sp.Tw.val v))
+  exact ground.leB_congr_left
+    (BPair.oneValue_symm (BPair.oneValue_trans
+      (BPair.oneValue_symm hDD) hBQ))
+    hstep
 
 /-! `lem:inertia`'s consequences paragraph, the general tier's last
 two members.  The rescaling invariance is the tex's `rev(qS) =
@@ -4656,6 +4879,50 @@ theorem rowsLen_blockJoin (P B Q : Mat) (a b : Nat)
   rowsLen_append (a + b) (elim.rowsLen_rowJoin a b hP hB)
     (elim.rowsLen_rowJoin a b hBt hQ)
 
+/-- The selected blocks' join at a symmetric square matrix: the
+selection at the joined key list reads the join of the pivot block,
+the coupling block and the trailing block, the lower coupling the
+upper's transpose at the symmetry. -/
+theorem selM_blockJoin (M : Mat) (idx cpl : List Nat) (o : Nat)
+    (hMsq : sqAt M o) (hMsym : matOneValue (transposeM M) M)
+    (hk0 : 0 < idx.length)
+    (hidx : (idx.all (fun i => Nat.blt i o)) = true)
+    (hcpl : (cpl.all (fun j => Nat.blt j o)) = true) :
+    matOneValue (selM (idx ++ cpl) (idx ++ cpl) M)
+      (blockJoin (selM idx idx M) (selM idx cpl M) (selM cpl cpl M)) := by
+  have hBl : (selM idx cpl M).length = idx.length := length_selM _ _ _
+  have hCvr : rowsLen idx.length (selM cpl idx M) := rowsLen_selM _ _ _
+  have hTBr : rowsLen idx.length (transposeM (selM idx cpl M)) :=
+    rowsLen_cast hBl (rowsLen_transposeM _)
+  have hCT : matOneValue (selM cpl idx M) (transposeM (selM idx cpl M)) :=
+    matOne_symm (transposeM_selM idx cpl M o hMsq hMsym hk0 hidx hcpl)
+  rw [selM_append idx cpl]
+  show matOneValue
+    (List.zipWith (· ++ ·) (selM idx idx M) (selM idx cpl M)
+      ++ List.zipWith (· ++ ·) (selM cpl idx M) (selM cpl cpl M))
+    (List.zipWith (· ++ ·) (selM idx idx M) (selM idx cpl M)
+      ++ List.zipWith (· ++ ·) (transposeM (selM idx cpl M))
+        (selM cpl cpl M))
+  exact matOne_append _ _ _ _ (matOne_refl _)
+    (matOne_rowJoin _ _ _ _ hCvr hTBr hCT (matOne_refl _))
+
+/-- The selected blocks' join is square at the joined count. -/
+theorem sqAt_selM_blockJoin (M : Mat) (idx cpl : List Nat)
+    (hk0 : 0 < idx.length) :
+    sqAt (blockJoin (selM idx idx M) (selM idx cpl M) (selM cpl cpl M))
+      (idx.length + cpl.length) := by
+  have hBl : (selM idx cpl M).length = idx.length := length_selM _ _ _
+  have hBr : rowsLen cpl.length (selM idx cpl M) := rowsLen_selM _ _ _
+  have hTBl : (transposeM (selM idx cpl M)).length = cpl.length :=
+    length_transposeM _ hBr (by rw [hBl]; exact hk0)
+  have hTBr : rowsLen idx.length (transposeM (selM idx cpl M)) :=
+    rowsLen_cast hBl (rowsLen_transposeM _)
+  exact sqAt_of
+    (length_blockJoin _ _ _ idx.length cpl.length (length_selM _ _ _) hBl
+      hTBl (length_selM _ _ _))
+    (rowsLen_blockJoin _ _ _ idx.length cpl.length (rowsLen_selM _ _ _)
+      hBr hTBr (rowsLen_selM _ _ _))
+
 /-- A join at a vacant coupling row count is vacant: the pivot slab's
 zip runs out with the coupling and the exchange's slab with the
 transpose. -/
@@ -4724,6 +4991,7 @@ theorem idMat_rows (k : Nat) : rowsLen k (idMat k) :=
 /-- The identity is square at its order. -/
 theorem sqAt_idMat (k : Nat) : elim.sqAt (idMat k) k :=
   elim.sqAt_of (idMat_len k) (idMat_rows k)
+
 
 /-- The matrix's iterated product at a stated order, the power's
 carrier from the identity. -/
@@ -4803,6 +5071,12 @@ private theorem liftM_act (P Cw : Mat) (q : Nat) (w : List BPair)
 coupling slab, and the solve witness's own passage — the pivot at
 the lifted vector's top half is the coupling's cleared action. -/
 
+
+/-- The identity's form is the coordinates' fold of squares. -/
+theorem quadForm_idMat (k : Nat) (u : List BPair)
+    (hu : u.length = k) :
+    (quadForm (idMat k) u).oneValue (elim.dotN u u) :=
+  elim.dotN_congrR u (elim.matVec (idMat k) u) u (matVec_idMat k u hu)
 /-- The pairing's transpose adjoint at a rectangular block: the
 exchange's action against one vector reads the block's action
 against the other. -/
@@ -7047,7 +7321,7 @@ theorem revAt_zero (sp : Split 0) : revAt sp = 0 := by
     exact absurd (widthOf_pos b bs sp.kern) (by rw [hw]; exact Nat.lt_irrefl 0)
 
 /-- Two weightings compose to the product's. -/
-private theorem scaleB_scaleB (a b : BPair) : ∀ M : Mat,
+theorem scaleB_scaleB (a b : BPair) : ∀ M : Mat,
     matOneValue (matScaleB a (matScaleB b M)) (matScaleB (a * b) M)
   | [] => trivial
   | r :: t =>
@@ -7610,7 +7884,7 @@ sum's unit and the doubled datum reading back at the product's
 injectivity. -/
 theorem sym_of_capAt {n : Nat} (S C : Mat) (spU spL : Split n)
     (h : capAt S C spU spL) : matOneValue (transposeM S) S := by
-  obtain ⟨hS, hC, hU, _, hL, _⟩ := h
+  obtain ⟨hS, hC, ⟨hU, _⟩, hL, _⟩ := h
   have hSl : S.length = n := sqAt_len hS
   have hSr : rowsLen n S := rowsLen_of_sqAt hS
   have hCl : C.length = n := sqAt_len hC
@@ -7799,15 +8073,15 @@ theorem capAt_compress {k m : Nat} (S C S1 C1 BS BC S2 C2 : Mat)
     (hL' : splitRead (matAdd C1 S1) spL')
     (hs1 : sqAt S1 k) (hc1 : sqAt C1 k) :
     capAt S1 C1 spU' spL' := by
-  refine ⟨hs1, hc1, hU', ?_, hL', ?_⟩
+  refine ⟨hs1, hc1, ⟨hU', ?_⟩, hL', ?_⟩
   · have hle := rev_head_le (siteDatum C S) (siteDatum C1 S1) BC
-      (siteDatum C2 S2) hCl htU spU' hU' spU hcap.2.2.1
-    have hz : revAt spU = 0 := hcap.2.2.2.1
+      (siteDatum C2 S2) hCl htU spU' hU' spU hcap.2.2.1.1
+    have hz : revAt spU = 0 := hcap.2.2.1.2
     rw [hz] at hle
     exact Nat.le_antisymm hle (Nat.zero_le _)
   · have hle := rev_head_le (matAdd C S) (matAdd C1 S1) BS
-      (matAdd C2 S2) hBl htL spL' hL' spL hcap.2.2.2.2.1
-    have hz : revAt spL = 0 := hcap.2.2.2.2.2
+      (matAdd C2 S2) hBl htL spL' hL' spL hcap.2.2.2.1
+    have hz : revAt spL = 0 := hcap.2.2.2.2
     rw [hz] at hle
     exact Nat.le_antisymm hle (Nat.zero_le _)
 
@@ -7830,15 +8104,15 @@ theorem capAt_compress_tail {k m : Nat} (S C S1 C1 BS BC S2 C2 : Mat)
     (hL' : splitRead (matAdd C2 S2) spL')
     (hs2 : sqAt S2 m) (hc2 : sqAt C2 m) :
     capAt S2 C2 spU' spL' := by
-  refine ⟨hs2, hc2, hU', ?_, hL', ?_⟩
+  refine ⟨hs2, hc2, ⟨hU', ?_⟩, hL', ?_⟩
   · have hle := rev_tail_le (siteDatum C S) (siteDatum C1 S1) BC
-      (siteDatum C2 S2) hCl hCr htU spU' hU' spU hcap.2.2.1
-    have hz : revAt spU = 0 := hcap.2.2.2.1
+      (siteDatum C2 S2) hCl hCr htU spU' hU' spU hcap.2.2.1.1
+    have hz : revAt spU = 0 := hcap.2.2.1.2
     rw [hz] at hle
     exact Nat.le_antisymm hle (Nat.zero_le _)
   · have hle := rev_tail_le (matAdd C S) (matAdd C1 S1) BS
-      (matAdd C2 S2) hBl hBr htL spL' hL' spL hcap.2.2.2.2.1
-    have hz : revAt spL = 0 := hcap.2.2.2.2.2
+      (matAdd C2 S2) hBl hBr htL spL' hL' spL hcap.2.2.2.1
+    have hz : revAt spL = 0 := hcap.2.2.2.2
     rw [hz] at hle
     exact Nat.le_antisymm hle (Nat.zero_le _)
 
@@ -10287,12 +10561,12 @@ theorem capAt_congr {n : Nat} (S C S' C' : Mat) (spU spL : Split n)
     (hS : sqAt S' n) (hC : sqAt C' n)
     (heS : matOneValue S S') (heC : matOneValue C C') :
     capAt S' C' spU spL := by
-  obtain ⟨hSq, hCq, hU, hpU, hL, hpL⟩ := h
+  obtain ⟨hSq, hCq, ⟨hU, hpU⟩, hL, hpL⟩ := h
   have hrS : rowsLen n S := rowsLen_of_sqAt hSq
   have hrC : rowsLen n C := rowsLen_of_sqAt hCq
   have hrS' : rowsLen n S' := rowsLen_of_sqAt hS
   have hrC' : rowsLen n C' := rowsLen_of_sqAt hC
-  refine ⟨hS, hC, ?_, hpU, ?_, hpL⟩
+  refine ⟨hS, hC, ⟨?_, hpU⟩, ?_, hpL⟩
   · refine splitRead_congr (siteDatum C S) (siteDatum C' S')
       (sqAt_siteDatum n C' S' hC hS) ?_ spU hU
     exact elim.matAdd_cong2 n C (matSwap S) C' (matSwap S') hrC
@@ -10310,7 +10584,7 @@ theorem capAt_scale {n : Nat} (S C : Mat) (q : Pos) (spU spL : Split n)
     (h : capAt S C spU spL) :
     capAt (matScale q S) (matScale q C)
       (scaleSplit (BPair.ofPos q) spU) (scaleSplit (BPair.ofPos q) spL) := by
-  obtain ⟨hSq, hCq, hU, hpU, hL, hpL⟩ := h
+  obtain ⟨hSq, hCq, ⟨hU, hpU⟩, hL, hpL⟩ := h
   have hw : BPair.unit < BPair.ofPos q := ground.unitLtOfPos q
   have hoff : ¬ (BPair.ofPos q).oneValue BPair.unit := ground.offOfUnitLt hw
   have hSs : sqAt (matScale q S) n := sqAt_matScale n q S hSq
@@ -10330,7 +10604,7 @@ theorem capAt_scale {n : Nat} (S C : Mat) (q : Pos) (spU spL : Split n)
     have hb := elim.matOne_symm (matScale_scaleB q (matAdd C S))
     rw [matScale_matAdd q C S] at hb
     exact hb
-  refine ⟨hSs, hCs, ?_, ?_, ?_, ?_⟩
+  refine ⟨hSs, hCs, ⟨?_, ?_⟩, ?_, ?_⟩
   · exact splitRead_congr _ _ (sqAt_siteDatum n _ _ hCs hSs) hcU _
       (scaleSplit_read (BPair.ofPos q) hoff (siteDatum C S) spU hU)
   · show revAt (scaleSplit (BPair.ofPos q) spU) = 0
@@ -10353,8 +10627,8 @@ theorem capAt_add {n : Nat} (S1 C1 S2 C2 : Mat)
     (hU : splitRead (siteDatum (matAdd C1 C2) (matAdd S1 S2)) spU)
     (hL : splitRead (matAdd (matAdd C1 C2) (matAdd S1 S2)) spL) :
     capAt (matAdd S1 S2) (matAdd C1 C2) spU spL := by
-  obtain ⟨hS1, hC1, hU1, hpU1, hL1, hpL1⟩ := h1
-  obtain ⟨hS2, hC2, hU2, hpU2, hL2, hpL2⟩ := h2
+  obtain ⟨hS1, hC1, ⟨hU1, hpU1⟩, hL1, hpL1⟩ := h1
+  obtain ⟨hS2, hC2, ⟨hU2, hpU2⟩, hL2, hpL2⟩ := h2
   have hZC : sqAt (matAdd C1 (matSwap C1)) n :=
     elim.sqAt_matAdd n C1 (matSwap C1) hC1 (elim.sqAt_matSwap n C1 hC1)
   have hZSu : sqAt (matAdd (matSwap S1) S1) n :=
@@ -10390,7 +10664,7 @@ theorem capAt_add {n : Nat} (S1 C1 S2 C2 : Mat)
     splitRead_congr (matAdd C2 S2) _
       (sqAt_siteDatum n _ _ hL.1 hL1.1) (elim.matOne_symm hdL) spL2 hL2
   refine ⟨elim.sqAt_matAdd n S1 S2 hS1 hS2,
-    elim.sqAt_matAdd n C1 C2 hC1 hC2, hU, ?_, hL, ?_⟩
+    elim.sqAt_matAdd n C1 C2 hC1 hC2, ⟨hU, ?_⟩, hL, ?_⟩
   · show revAt spU = 0
     refine Nat.le_antisymm ?_ (Nat.zero_le _)
     rw [← hpU1]
@@ -10406,9 +10680,9 @@ theorem capAt_add {n : Nat} (S1 C1 S2 C2 : Mat)
 
 /-- The pointwise converse of the first transport clause: a split
 whose datum prices every vector of the stated order at or above the
-sum's unit reads the upper side throughout — an occupied reversal
-count would exhibit a vector below it. -/
-private theorem psd_of_all {n : Nat} (S : Mat) (sp : Split n)
+sum's unit reads the upper side throughout, an occupied reversal
+count exhibiting a vector below it (`rev_witness`). -/
+theorem psd_of_all {n : Nat} (S : Mat) (sp : Split n)
     (h : splitRead S sp)
     (hall : ∀ u : List BPair, u.length = n →
       ¬ (dotN u (matVec S u) < BPair.unit)) : psdAt sp := by
@@ -10476,7 +10750,7 @@ theorem cap_vec {n : Nat} (M : Mat) (hM : sqAt M n) (W : Pos)
       (matScale (W * W) (idMat n)) spU spL)
     (v : List BPair) (hv : v.length = n) :
     dotN (matVec M v) (matVec M v) ≤ BPair.ofPos (W * W) * dotN v v := by
-  have hpsd := psd_all _ spU hcapM.2.2.1 hcapM.2.2.2.1 v hv
+  have hpsd := psd_all _ spU hcapM.2.2.1.1 hcapM.2.2.1.2 v hv
   have hread := capSite_read M hM W v hv
   have hunit : BPair.unit
       ≤ BPair.ofPos (W * W) * dotN v v
@@ -10485,6 +10759,50 @@ theorem cap_vec {n : Nat} (M : Mat) (hM : sqAt M n) (W : Pos)
   have h2 := ground.leB_of_unit_add hunit
   refine ground.leB_congr_left ?_ h2
   exact BPair.oneValue_of_eq (BPair.swap_swap _).symm
+
+/-- Every finite family's Gram is positive semidefinite
+(`con:coeff`'s Gram read at `lem:inertia`): a coefficient vector's
+form at the Gram is the family's combination at that vector paired
+against itself, the pairing bilinear — the pairing against a
+combination the coefficients' fold over the rows' pairings
+(`elim.dotP_combo`), read twice — a self-pairing at or beyond the
+sum's unit at the positive pairing, so every split reads the upper
+side throughout (`psd_of_all`).  The family enters at one joined
+coordinate list, `con:coeff`'s paired slots at one list, the row
+width the binder. -/
+theorem gram_psd (L : Mat) (m : Nat) (hr : rowsLen m L)
+    (sp : Split L.length) (h : splitRead (gramM L) sp) : psdAt sp := by
+  refine psd_of_all (gramM L) sp h (fun u hu hlt => ?_)
+  have hrow : poly.oneValue (matVec (gramM L) u)
+      (L.map (fun r => dotP r (combo m u L))) := by
+    show poly.oneValue
+      ((L.map (fun r => L.map (fun c => dotP r c))).map (fun row => dotN row u))
+      (L.map (fun r => dotP r (combo m u L)))
+    rw [ground.map_map]
+    refine poly.oneValue_map _ _ L (fun r _ => ?_)
+    refine BPair.oneValue_trans (dotN_read _ u) ?_
+    rw [dotP_comm]
+    exact BPair.oneValue_symm (dotP_combo u L r m hr)
+  have hq : (dotN u (matVec (gramM L) u)).oneValue
+      (dotN (combo m u L) (combo m u L)) := by
+    refine BPair.oneValue_trans (dotN_congrR u _ _ hrow) ?_
+    refine BPair.oneValue_trans (dotN_read u _) ?_
+    refine BPair.oneValue_trans ?_
+      (BPair.oneValue_symm (dotN_read (combo m u L) (combo m u L)))
+    refine BPair.oneValue_trans ?_
+      (BPair.oneValue_symm (dotP_combo u L (combo m u L) m hr))
+    rw [dotP_comm u, dotP_comm u]
+    refine dotP_congr_left _ _ u (fun j hj => ?_)
+    have hjL : j < L.length := hu ▸ hj
+    rw [show ground.getAt BPair.unit (L.map (fun r => dotP r (combo m u L))) j
+        = dotP (ground.getAt [] L j) (combo m u L) from ?_,
+      show ground.getAt BPair.unit (L.map (fun row => dotP (combo m u L) row)) j
+        = dotP (combo m u L) (ground.getAt [] L j) from ?_, dotP_comm]
+    · exact BPair.oneValue_refl _
+    · exact ground.getAt_map [] BPair.unit (fun row => dotP (combo m u L) row) L j hjL
+    · exact ground.getAt_map [] BPair.unit (fun r => dotP r (combo m u L)) L j hjL
+  exact dotN_self_side (combo m u L)
+    (BPair.lt_congr hq (BPair.oneValue_refl _) hlt)
 
 /-- The pointwise square cap's certificate (`lem:fourpoint`'s magnetic
 square cap at the split reads): every vector's price reads the two
@@ -10503,7 +10821,7 @@ theorem capAt_of_sq {n : Nat} (M : Mat) (hM : sqAt M n) (W : Pos)
   have hX : sqAt (matScale (W * W) (idMat n)) n := sqAt_matScale n _ _ hI
   have hY : sqAt (matScale Pos.one (matMul (transposeM M) M)) n :=
     sqAt_gramT M hM
-  refine ⟨hY, hX, hU, ?_, hL, ?_⟩
+  refine ⟨hY, hX, ⟨hU, ?_⟩, hL, ?_⟩
   · refine psd_of_all _ spU hU (fun v hv => ?_)
     refine ground.leB_not_lt ?_
     refine ground.leB_congr_right
@@ -11134,7 +11452,7 @@ theorem capAt_trailPad {k m : Nat} (D : Mat) (wn wd : Pos)
         exact hv
       rw [hx] at hlen
       exact ground.addCancelL k hlen
-    refine ⟨hPadS, hIdS, hU', ?_, hL', ?_⟩
+    refine ⟨hPadS, hIdS, ⟨hU', ?_⟩, hL', ?_⟩
     · refine psd_of_all _ spU' hU' (fun v hv => ?_)
       obtain ⟨x, w, he, hx, hw⟩ := hsplit v hv
       rw [he]
@@ -11166,7 +11484,7 @@ theorem capAt_trailPad {k m : Nat} (D : Mat) (wn wd : Pos)
             (ground.leB_of_not_lt (elim.dotN_self_side x)))
           (ground.leB_of_not_lt
             (psd_all (siteDatum (matScale wn (idMat m)) (matScale wd D))
-              spU h.2.2.1 h.2.2.2.1 w hw)))
+              spU h.2.2.1.1 h.2.2.1.2 w hw)))
     · refine psd_of_all _ spL' hL' (fun v hv => ?_)
       obtain ⟨x, w, he, hx, hw⟩ := hsplit v hv
       rw [he]
@@ -11198,7 +11516,7 @@ theorem capAt_trailPad {k m : Nat} (D : Mat) (wn wd : Pos)
             (ground.leB_of_not_lt (elim.dotN_self_side x)))
           (ground.leB_of_not_lt
             (psd_all (matAdd (matScale wn (idMat m)) (matScale wd D))
-              spL h.2.2.2.2.1 h.2.2.2.2.2 w hw)))
+              spL h.2.2.2.1 h.2.2.2.2 w hw)))
 
 
 /-- The vacant certificate at a stated order: the identity

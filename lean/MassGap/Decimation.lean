@@ -738,10 +738,35 @@ instance (diag off diag' off' : List Mat)
       Ys Cs Ys' Cs' w0 j ns cn cd Gs certs) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
-/-- The ball's pivots contribute nothing to the slab fold: at each
-pivot the member's own order is the center's — the two shape reads
-meeting at the pivot's length — and the ball's positivity reads its
-count at the sum's unit, so the fold returns its seed. -/
+/-- The ball list's per-position upper-side read: each pivot's
+stated split reads the upper side throughout, the ball's own
+positivity at the pointwise cap sides. -/
+private theorem ballListPsd {o : Nat} (Yc : MatQ) (G : Mat)
+    (y0n y0d rn rd : Pos) (spF : Split o)
+    (hYc : sqAt Yc.1 o)
+    (hF : spectator.floorRead Yc G y0n y0d rn rd spF) :
+    ∀ (Xs : List MatQ) (bsps : List (Split o × Split o)),
+      spectator.ballList Yc G rn rd Xs bsps →
+      ∀ i, i < Xs.length → ∀ s : (k : Nat) × Split k,
+        splitRead (ground.getAt dM Xs i).1 s.2 → psdAt s.2
+  | [], _, _, _, hi, _, _ => absurd hi (Nat.not_lt_zero _)
+  | _ :: _, [], hb, _, _, _, _ => (hb : False).elim
+  | X :: _, b :: _, hb, 0, _, s, hs =>
+    spectator.ball_psd_of X Yc G y0n y0d rn rd spF s.2 hb.1 hYc
+      (inertia.sqAt_matScale_reflect (rn * (spectator.devQ X Yc).2) G
+        hb.2.1.2.1)
+      hF
+      (spectator.cap_hi (spectator.devQ X Yc) G rn rd b.1 b.2 hb.2.1)
+      (spectator.cap_lo (spectator.devQ X Yc) G rn rd b.1 b.2 hb.2.1)
+      hs
+  | _ :: Xt, _ :: bt, hb, i + 1, hi, s, hs =>
+    ballListPsd Yc G y0n y0d rn rd spF hYc hF Xt bt hb.2.2 i
+      (Nat.lt_of_succ_lt_succ hi) s hs
+
+/-- The ball's pivots contribute nothing to the slab fold: each
+pivot's stated split reads the upper side at the ball's own
+positivity, so the fold returns its seed
+(`greenprod.revFold_vacant`). -/
 private theorem ballFold {o : Nat} (Yc : MatQ) (G : Mat)
     (y0n y0d rn rd : Pos) (spF : Split o)
     (hYc : sqAt Yc.1 o)
@@ -749,22 +774,10 @@ private theorem ballFold {o : Nat} (Yc : MatQ) (G : Mat)
     ∀ (Xs : List MatQ) (sps : List ((k : Nat) × Split k))
       (bsps : List (Split o × Split o)) (a : Nat),
       revListRead Xs sps → spectator.ballList Yc G rn rd Xs bsps →
-      sps.foldl (fun m s => m + revAt s.2) a = a
-  | [], [], _, _, _, _ => rfl
-  | [], _ :: _, _, _, hl, _ => (hl : False).elim
-  | _ :: _, [], _, _, hl, _ => (hl : False).elim
-  | _ :: _, _ :: _, [], _, _, hb => (hb : False).elim
-  | X :: Xt, s :: spt, b :: bt, a, hl, hb => by
-    obtain ⟨k, sp⟩ := s
-    have hk : k = o := (sqAt_len hl.1.1).symm.trans (sqAt_len hb.1)
-    subst hk
-    have hz : revAt sp = 0 :=
-      spectator.ball_psd X Yc G y0n y0d rn rd spF b.1 b.2 sp hYc
-        hF hb.2.1 hl.1
-    show spt.foldl (fun m s => m + revAt s.2) (a + revAt sp) = a
-    rw [hz, Nat.add_zero]
-    exact ballFold Yc G y0n y0d rn rd spF hYc hF Xt spt bt a
-      hl.2 hb.2.2
+      sps.foldl (fun m s => m + revAt s.2) a = a :=
+  fun Xs sps bsps a hl hb =>
+    greenprod.revFold_vacant Xs sps a hl
+      (ballListPsd Yc G y0n y0d rn rd spF hYc hF Xs bsps hb)
 
 /-- The decimated count at the deck pivot's ball: the whole chain's
 count is the head slabs' fold wherever the dropped pivots sit in

@@ -1,3 +1,4 @@
+import MassGap.Coeff
 import MassGap.Inertia
 /-!
 `lem:greenprod` — the slab pivots, the counts, and the Green
@@ -2205,9 +2206,6 @@ private theorem tailRead_tail {A B : Mat} {As Bs : List Mat}
 private theorem polyOfEq {u v : List BPair} (h : u = v) :
     poly.oneValue u v := h ▸ poly.oneValue_refl u
 
-private theorem posSwap3 (a b c : Pos) : c * (a * b) = a * (b * c) := by
-  rw [ground.mul_left_comm c a b, ground.mul_comm c b]
-
 theorem vecScale_two (a b : Pos) (u : List BPair) :
     poly.oneValue
       (elim.vecScale (BPair.ofPos a) (elim.vecScale (BPair.ofPos b) u))
@@ -2288,7 +2286,7 @@ private theorem lift_upper (A B : Mat) (X0 R0 : MatQ) (n0 : Nat)
       (elim.vecScale_oneValue (BPair.ofPos d) _ _ hJ) ?_
     exact poly.oneValue_trans (vecScale_two d (X0.2 * R0.2) (matVec A w))
       (polyOfEq
-        (vecScale_posEq (posSwap3 X0.2 R0.2 d) (matVec A w)))
+        (vecScale_posEq (ground.mul_rotate X0.2 R0.2 d) (matVec A w)))
   have hmove := vecAdd_moveR
     (elim.vecScale (BPair.ofPos (R0.2 * d)) (matVec X0.1 w))
     (elim.vecScale (BPair.ofPos (X0.2 * d)) (matVec (matMul B R0.1) w))
@@ -2371,7 +2369,7 @@ private theorem lift_lower (B : Mat) (X1 R0 : MatQ) (rest : Mat)
     refine poly.swapMap_oneValue ?_
     exact poly.oneValue_trans
       (vecScale_two d (X1.2 * R0.2) (matVec (transposeM B) w))
-      (polyOfEq (vecScale_posEq (posSwap3 X1.2 R0.2 d)
+      (polyOfEq (vecScale_posEq (ground.mul_rotate X1.2 R0.2 d)
         (matVec (transposeM B) w)))
   have hUp : poly.oneValue
       (elim.vecScale (BPair.ofPos X1.2)
@@ -2749,7 +2747,9 @@ private theorem revFoldGo : ∀ (sps : List ((k : Nat) × Split k)) (a : Nat),
     rw [Nat.zero_add, revFoldGo t (a + revAt s.2), revFoldGo t (revAt s.2),
       Nat.add_assoc]
 
-private theorem revFold_cons (s : (k : Nat) × Split k)
+/-- The slab fold's head split: the leading certificate's reversal
+count joined to the trailing list's fold. -/
+theorem revFold_cons (s : (k : Nat) × Split k)
     (sps : List ((k : Nat) × Split k)) :
     revFold (s :: sps) = revAt s.2 + revFold sps := by
   show sps.foldl (fun m t => m + revAt t.2) (0 + revAt s.2)
@@ -3497,6 +3497,493 @@ private theorem fam_read : ∀ (diag off : List Mat) (Xs Rs : List MatQ)
               hsym (fam_read As Bs Xt Rt nt spt (tailRead_tail h3) hrl2.2
                 (symP_step A B As Bs n0 nt h3.1 hsym))
 
+/-- Clause (i)'s withdrawn term at the symmetric pivot
+`X_{i+1}`: the witness identity transposed reads the bond back, so
+the withdrawn term is the witness's sandwich of that pivot,
+`B_iR_{i+1} = R_{i+1}ᵀX_{i+1}R_{i+1}` at the two clearings. -/
+theorem withdrawn_sandwich {k k' : Nat} (X' R : MatQ) (B : Mat)
+    (hk : 0 < k) (hk' : 0 < k')
+    (hX' : sqAt X'.1 k') (hB : rectAt B k k') (hR : rectAt R.1 k' k)
+    (hX'sym : matOneValue (transposeM X'.1) X'.1)
+    (hwit : oneValueQ (mulQ X' R) (ofM (transposeM B))) :
+    matOneValue (matScale (X'.2 * R.2) (matMul B R.1))
+      (matMul (matMul (transposeM R.1) X'.1) R.1) := by
+  have hBl : B.length = k := rectAt_len hB
+  have hBr : rowsLen k' B := rectAt_rows hB
+  have hRl : R.1.length = k' := rectAt_len hR
+  have hRr : rowsLen k R.1 := rectAt_rows hR
+  have hX'l : X'.1.length = k' := sqAt_len hX'
+  have hX'r : rowsLen k' X'.1 := rowsLen_of_sqAt hX'
+  have hBTl : (transposeM B).length = k' :=
+    length_transposeM B hBr (by rw [hBl]; exact hk)
+  have hBTr : rowsLen k (transposeM B) :=
+    rowsLen_cast hBl (rowsLen_transposeM B)
+  have hRTl : (transposeM R.1).length = k :=
+    length_transposeM R.1 hRr (by rw [hRl]; exact hk')
+  have hX'Tl : (transposeM X'.1).length = k' :=
+    length_transposeM X'.1 hX'r (by rw [hX'l]; exact hk')
+  have hX'Tr : rowsLen k' (transposeM X'.1) :=
+    rowsLen_cast hX'l (rowsLen_transposeM X'.1)
+  have hBinv : transposeM (transposeM B) = B :=
+    transposeM_transposeM B hBr hk' (by rw [hBl]; exact hk)
+  have hW : matOneValue (matMul X'.1 R.1)
+      (matScale (X'.2 * R.2) (transposeM B)) := by
+    have h0 : matOneValue (matScale Pos.one (matMul X'.1 R.1))
+        (matScale (X'.2 * R.2) (transposeM B)) := hwit
+    rw [matScale_one] at h0
+    exact h0
+  have hMBl : (matMul X'.1 R.1).length = k' :=
+    (length_matMul X'.1 R.1).trans hX'l
+  have hMBr : rowsLen k (matMul X'.1 R.1) :=
+    rowsLen_cast hRTl (rowsLen_matMul X'.1 R.1)
+  have hSBl : (matScale (X'.2 * R.2) (transposeM B)).length = k' :=
+    (length_matScale _ _).trans hBTl
+  have hSBr : rowsLen k (matScale (X'.2 * R.2) (transposeM B)) :=
+    rowsLen_mapRows _ (transposeM B) k hBTr
+  have hWT : matOneValue (transposeM (matMul X'.1 R.1))
+      (transposeM (matScale (X'.2 * R.2) (transposeM B))) :=
+    transposeM_congrM k _ _ hMBr hSBr (hMBl.trans hSBl.symm) hW
+  have hRHS : matOneValue
+      (transposeM (matScale (X'.2 * R.2) (transposeM B)))
+      (matScale (X'.2 * R.2) B) := by
+    have h0 := transposeM_matScale (X'.2 * R.2) k (transposeM B) hBTr
+    rw [hBinv] at h0
+    exact h0
+  have hTM : matOneValue (transposeM (matMul X'.1 R.1))
+      (matMul (transposeM R.1) (transposeM X'.1)) :=
+    transposeM_matMul X'.1 R.1 hX'r hRr hX'l hRl hk' hk'
+  have hcg : matOneValue (matMul (transposeM R.1) (transposeM X'.1))
+      (matMul (transposeM R.1) X'.1) :=
+    matMul_congrR (transposeM R.1) (transposeM X'.1) X'.1
+      hX'Tr hX'r hX'Tl hX'l hk' hX'sym
+  have hstar : matOneValue (matScale (X'.2 * R.2) B)
+      (matMul (transposeM R.1) X'.1) :=
+    matOne_trans (matOne_symm hRHS)
+      (matOne_trans (matOne_symm hWT) (matOne_trans hTM hcg))
+  exact matOne_trans (matScale_scaleB (X'.2 * R.2) (matMul B R.1))
+    (matOne_trans
+      (matOne_symm (matMul_scaleL (BPair.ofPos (X'.2 * R.2)) B R.1))
+      (matOne_trans
+        (matMul_congrL _ (matScale (X'.2 * R.2) B) R.1
+          (matOne_symm (matScale_scaleB (X'.2 * R.2) B)))
+        (matMul_congrL _ _ R.1 hstar)))
+
+/-- The join's form split at the withdrawn term: the diagonal's
+form is the pivot's joined to the withdrawn term's, the recursion
+join's own read (`lem:greenprod`(i)). -/
+theorem join_quadSplit {o o' : Nat} (X R : MatQ) (A B : Mat)
+    (hk' : 0 < o')
+    (hX : sqAt X.1 o) (hB : rectAt B o o') (hR : rectAt R.1 o' o)
+    (hjoin : oneValueQ (addQ X (mulQ (ofM B) R)) (ofM A)) :
+    ∀ u : List BPair, u.length = o →
+      ((quadForm A u).scale (X.2 * R.2)).oneValue
+        ((quadForm X.1 u).scale R.2
+          + (quadForm (matMul B R.1) u).scale X.2) := by
+  intro u hu
+  have hRl : R.1.length = o' := rectAt_len hR
+  have hRr : rowsLen o R.1 := rectAt_rows hR
+  have hBRl : (matMul B R.1).length = o :=
+    (length_matMul B R.1).trans (rectAt_len hB)
+  have hRTl : (transposeM R.1).length = o :=
+    length_transposeM R.1 hRr (by rw [hRl]; exact hk')
+  have hBRr : rowsLen o (matMul B R.1) :=
+    rowsLen_cast hRTl (rowsLen_matMul B R.1)
+  have hJ : matOneValue
+      (matAdd (matScale R.2 X.1) (matScale X.2 (matMul B R.1)))
+      (matScale (X.2 * R.2) A) := by
+    have h0 : matOneValue (matScale Pos.one
+        (matAdd (matScale (Pos.one * R.2) X.1)
+          (matScale X.2 (matMul B R.1))))
+        (matScale (X.2 * (Pos.one * R.2)) A) := hjoin
+    rw [matScale_one, ground.one_mul] at h0
+    exact h0
+  refine BPair.oneValue_trans
+    (BPair.oneValue_symm (quadForm_scale (X.2 * R.2) A u)) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_symm (quadMatOne _ _ u hJ)) ?_
+  refine BPair.oneValue_trans
+    (quadForm_add_sq (sqAt_matScale o R.2 X.1 hX)
+      (sqAt_matScale o X.2 (matMul B R.1) (sqAt_of hBRl hBRr)) hu) ?_
+  exact BPair.add_congr (quadForm_scale R.2 X.1 u)
+    (quadForm_scale X.2 (matMul B R.1) u)
+
+/-- The squared pairing's cancel at a floor and a cap: at a pairing
+whose square sits at or below the two self-pairings' product, a
+floor on the first self-pairing and a cap on the second price the
+pairing itself, the cancellation running at the pairing's own
+occupancy and the vacant read closing at the sum's unit. -/
+private theorem capAssemble {X P Q U : BPair} {fn fd bn bd r : Pos}
+    (h2 : X * X ≤ P * Q)
+    (hA : P.scale fn ≤ X.scale (fd * r))
+    (hb : Q.scale bd ≤ U.scale bn)
+    (hP : BPair.unit ≤ P) (hQ : BPair.unit ≤ Q)
+    (hU : BPair.unit ≤ U) :
+    X.scale (fn * bd) ≤ U.scale (bn * (fd * r)) := by
+  have h4 : BPair.unit ≤ X.scale (fd * r) :=
+    ground.leB_trans (ground.unitLeScale fn hP) hA
+  have hQs : BPair.unit ≤ Q.scale bd := ground.unitLeScale bd hQ
+  have s4 : X.scale (fd * r) * U.scale bn
+      = U.scale (bn * (fd * r)) * X := by
+    rw [← BPair.scale_mul X U (fd * r) bn,
+      ground.mul_comm (fd * r) bn,
+      ← BPair.mul_scale X U (bn * (fd * r)),
+      BPair.mul_comm X (U.scale (bn * (fd * r)))]
+  have hmain : X.scale (fn * bd) * X
+      ≤ U.scale (bn * (fd * r)) * X := by
+    rw [← BPair.scale_mul_left X X (fn * bd), ← s4]
+    refine ground.leB_trans (ground.leB_scale h2 (fn * bd)) ?_
+    rw [BPair.scale_mul P Q fn bd]
+    exact ground.leB_trans
+      (ground.leB_mul_mono hQs h4 hA (ground.leB_refl (Q.scale bd)))
+      (ground.leB_mulR h4 hb)
+  have hside : BPair.unit.oneValue X ∨ BPair.unit < X :=
+    ground.unitLeOfScale h4
+  match hside with
+  | Or.inr hlt => exact ground.leB_unscale hlt hmain
+  | Or.inl he =>
+    refine ground.leB_congr_left ?_
+      (ground.unitLeScale (bn * (fd * r)) hU)
+    exact BPair.oneValue_trans (ground.unitScale (fn * bd))
+      (BPair.scale_congr (fn * bd) he)
+
+/-- The withdrawn term's cap at the arriving floor: the term is the
+witness image's dot against the bond's transpose image, its square
+priced by the squared pairing at the floor and the bond's square
+cap, the bonds entering through their squares alone
+(`lem:cornerpivot`(vii)'s dominance clause); the two images read
+their lengths off the bond's and the witness's own rectangular
+shapes. -/
+theorem sandwich_cap {o o' : Nat} (Xd R : MatQ) (B : Mat)
+    (fn fd bn bd : Pos)
+    (hk : 0 < o)
+    (hB : rectAt B o o') (hR : rectAt R.1 o' o)
+    (hwit : oneValueQ (mulQ Xd R) (ofM (transposeM B)))
+    (hfloor : ∀ w : List BPair, w.length = o' →
+      (dotN w w).scale (fn * Xd.2) ≤ (quadForm Xd.1 w).scale fd)
+    (hbond : ∀ u : List BPair, u.length = o →
+      (quadForm (matMul B (transposeM B)) u).scale bd
+        ≤ (dotN u u).scale bn) :
+    ∀ u : List BPair, u.length = o →
+      (quadForm (matMul B R.1) u).scale (fn * bd)
+        ≤ (dotN u u).scale (bn * (fd * R.2)) := by
+  intro u hu
+  have hBl : B.length = o := rectAt_len hB
+  have hBr : rowsLen o' B := rectAt_rows hB
+  have hRl : R.1.length = o' := rectAt_len hR
+  have hRr : rowsLen o R.1 := rectAt_rows hR
+  have hBTl : (transposeM B).length = o' :=
+    length_transposeM B hBr (by rw [hBl]; exact hk)
+  have hBTr : rowsLen o (transposeM B) :=
+    rowsLen_cast hBl (rowsLen_transposeM B)
+  have hp : (matVec R.1 u).length = o' :=
+    (matVec_length R.1 u).trans hRl
+  have hq : (matVec (transposeM B) u).length = o' :=
+    (matVec_length (transposeM B) u).trans hBTl
+  have hW : matOneValue (matMul Xd.1 R.1)
+      (matScale (Xd.2 * R.2) (transposeM B)) := by
+    have h0 : matOneValue (matScale Pos.one (matMul Xd.1 R.1))
+        (matScale (Xd.2 * R.2) (transposeM B)) := hwit
+    rw [matScale_one] at h0
+    exact h0
+  have hMV : poly.oneValue (matVec Xd.1 (matVec R.1 u))
+      (elim.vecScale (BPair.ofPos (Xd.2 * R.2))
+        (matVec (transposeM B) u)) :=
+    poly.oneValue_trans
+      (poly.oneValue_symm (matVec_matMul Xd.1 R.1 o hRr u hu))
+      (poly.oneValue_trans (matVec_matOne _ _ u hW)
+        (matVec_matScale (Xd.2 * R.2) (transposeM B) u))
+  have h1 : (quadForm Xd.1 (matVec R.1 u)).oneValue
+      ((dotN (matVec R.1 u) (matVec (transposeM B) u)).scale
+        (Xd.2 * R.2)) :=
+    BPair.oneValue_trans (dotN_congrR _ _ _ hMV)
+      (BPair.oneValue_trans
+        (elim.dotN_scaleV (BPair.ofPos (Xd.2 * R.2)) _ _)
+        (BPair.ofPos_scale (Xd.2 * R.2) _))
+  have hQ : (quadForm (matMul B (transposeM B)) u).oneValue
+      (dotN (matVec (transposeM B) u) (matVec (transposeM B) u)) :=
+    BPair.oneValue_trans
+      (dotN_congrR u _ _ (matVec_matMul B (transposeM B) o hBTr u hu))
+      (BPair.oneValue_symm
+        (dotN_transpose_flip B o' hBr (matVec (transposeM B) u) u hq
+          (hu.trans hBl.symm)))
+  have h6 : (quadForm (matMul B R.1) u).oneValue
+      (dotN (matVec R.1 u) (matVec (transposeM B) u)) :=
+    BPair.oneValue_trans
+      (dotN_congrR u _ _ (matVec_matMul B R.1 o hRr u hu))
+      (BPair.oneValue_symm
+        (dotN_transpose_flip B o' hBr (matVec R.1 u) u hp
+          (hu.trans hBl.symm)))
+  have hR1 : ((quadForm Xd.1 (matVec R.1 u)).scale fd).oneValue
+      ((dotN (matVec R.1 u) (matVec (transposeM B) u)).scale
+        (Xd.2 * R.2 * fd)) :=
+    BPair.oneValue_trans (BPair.scale_congr fd h1)
+      (BPair.oneValue_of_eq (BPair.scale_scale _ (Xd.2 * R.2) fd))
+  have hposEq : fd * R.2 * Xd.2 = Xd.2 * R.2 * fd := by
+    rw [ground.mul_comm fd R.2, ground.mul_assoc R.2 fd Xd.2,
+      ground.mul_comm fd Xd.2, ← ground.mul_assoc R.2 Xd.2 fd,
+      ground.mul_comm R.2 Xd.2]
+  have hstep :
+      ((dotN (matVec R.1 u) (matVec R.1 u)).scale fn).scale Xd.2
+        ≤ ((dotN (matVec R.1 u) (matVec (transposeM B) u)).scale
+            (fd * R.2)).scale Xd.2 := by
+    rw [BPair.scale_scale, BPair.scale_scale, hposEq]
+    exact ground.leB_congr_right hR1 (hfloor (matVec R.1 u) hp)
+  refine ground.leB_congr_left
+    (BPair.scale_congr (fn * bd) (BPair.oneValue_symm h6)) ?_
+  exact capAssemble
+    (coeff.dotN_sq_le (matVec R.1 u) (matVec (transposeM B) u)
+      (hp.trans hq.symm))
+    (ground.leB_of_scale hstep)
+    (ground.leB_congr_left (BPair.scale_congr bd hQ) (hbond u hu))
+    (ground.leB_of_not_lt (elim.dotN_self_side _))
+    (ground.leB_of_not_lt (elim.dotN_self_side _))
+    (ground.leB_of_not_lt (elim.dotN_self_side _))
+
+/-- The tail recursion's pivot symmetry at the recursion's own
+walk: the seed reads the last slab's diagonal block at its
+clearing, and at a symmetric `X_{i+1}` the witness identity
+transposed reads the bond, so the withdrawn term is `X_{i+1}`
+conjugated by the witness and `X_i` symmetric with it, the
+symmetry riding the recursion down from the seed. -/
+private theorem tailSymGo : ∀ (diag off : List Mat) (Xs Rs : List MatQ)
+    (ns : List Nat), tailRead diag off Xs Rs ns →
+    (∀ i, i < diag.length →
+      matOneValue (transposeM (ground.getAt [] diag i))
+        (ground.getAt [] diag i)) →
+    ∀ i, i < Xs.length →
+      matOneValue (transposeM (ground.getAt dM Xs i).1)
+        (ground.getAt dM Xs i).1
+  | [], _, _, _, _, h, _, _, _ => h.1.elim
+  | [_], _ :: _, _, _, [], h, _, _, _ => h.1.elim
+  | [_], _ :: _, _, _, [_], h, _, _, _ => h.1.elim
+  | [_], _ :: _, _, _, _ :: _ :: _, h, _, _, _ => h.1.elim
+  | [_], [], _, _, [], h, _, _, _ => h.1.elim
+  | [_], [], _, _, _ :: _ :: _, h, _, _, _ => h.1.elim
+  | [_], [], [], _, [_], h, _, _, _ => h.2.1.elim
+  | [_], [], _ :: _ :: _, _, [_], h, _, _, _ => h.2.1.2.elim
+  | [_], [], [_], _ :: _, [_], h, _, _, _ => h.2.2.1.elim
+  | [_], [], [_], [], [_], _, _, _ + 1, hi =>
+    absurd (Nat.lt_of_succ_lt_succ hi) (Nat.not_lt_zero _)
+  | [A], [], [X], [], [k], h, hd, 0, _ => by
+    have hA : sqAt A k := h.1.2
+    have hX : sqAt X.1 k := h.2.1.1
+    have hAl : A.length = k := sqAt_len hA
+    have hAr : rowsLen k A := rowsLen_of_sqAt hA
+    have hXl : X.1.length = k := sqAt_len hX
+    have hXr : rowsLen k X.1 := rowsLen_of_sqAt hX
+    have hAsym : matOneValue (transposeM A) A := hd 0 (Nat.succ_pos _)
+    have hXA : matOneValue X.1 (matScale X.2 A) := by
+      have h0 : matOneValue (matScale Pos.one X.1) (matScale X.2 A) :=
+        h.2.2.2
+      rw [matScale_one] at h0
+      exact h0
+    have hSl : (matScale X.2 A).length = k :=
+      (length_matScale X.2 A).trans hAl
+    have hSr : rowsLen k (matScale X.2 A) :=
+      rowsLen_mapRows _ A k hAr
+    show matOneValue (transposeM X.1) X.1
+    refine matOne_trans (transposeM_congrM k X.1 (matScale X.2 A)
+      hXr hSr (hXl.trans hSl.symm) hXA) ?_
+    exact matOne_trans (transposeM_matScale X.2 k A hAr)
+      (matOne_trans (matScale_matOne X.2 hAsym) (matOne_symm hXA))
+  | _ :: _ :: _, [], _, _, [], h, _, _, _ => h.1.elim
+  | _ :: _ :: _, [], _, _, [_], h, _, _, _ => h.1.elim
+  | _ :: _ :: _, [], _, _, _ :: _ :: _, h, _, _, _ => h.1.elim
+  | _ :: _ :: _, _ :: _, _, _, [], h, _, _, _ => h.1.elim
+  | _ :: _ :: _, _ :: _, _, _, [_], h, _, _, _ => h.1.elim
+  | _ :: _ :: _, _ :: _, [], _, _ :: _ :: _, h, _, _, _ => h.2.1.elim
+  | _ :: _ :: _, _ :: _, [_], _, _ :: _ :: _, h, _, _, _ =>
+    h.2.1.2.elim
+  | _ :: _ :: _, _ :: _, _ :: _ :: _, [], _ :: _ :: _, h, _, _, _ =>
+    h.2.2.1.elim
+  | _ :: A' :: As, _ :: Bs, _ :: X' :: Xt, _ :: Rt, _ :: k' :: nt,
+      h, hd, i + 1, hi =>
+    tailSymGo (A' :: As) Bs (X' :: Xt) Rt (k' :: nt) (tailRead_tail h)
+      (fun j hj => hd (j + 1) (Nat.succ_lt_succ hj)) i
+      (Nat.lt_of_succ_lt_succ hi)
+  | A :: A' :: As, B :: Bs, X :: X' :: Xt, R :: Rt, k :: k' :: nt,
+      h, hd, 0, _ => by
+    have hk : 0 < k := h.1.1
+    have hk' : 0 < k' :=
+      slab_pos h.1 1 (Nat.succ_lt_succ (Nat.succ_pos _))
+    have hA : sqAt A k := h.1.2.1
+    have hB : rectAt B k k' := h.1.2.2.1
+    have hX : sqAt X.1 k := h.2.1.1
+    have hX' : sqAt X'.1 k' := h.2.1.2.1
+    have hR : rectAt R.1 k' k := h.2.2.1.1
+    have hwit : oneValueQ (mulQ X' R) (ofM (transposeM B)) :=
+      h.2.2.2.1.2.1
+    have hjoin : oneValueQ (addQ X (mulQ (ofM B) R)) (ofM A) :=
+      h.2.2.2.1.2.2
+    have hX'sym : matOneValue (transposeM X'.1) X'.1 :=
+      tailSymGo (A' :: As) Bs (X' :: Xt) Rt (k' :: nt) (tailRead_tail h)
+        (fun j hj => hd (j + 1) (Nat.succ_lt_succ hj)) 0
+        (Nat.succ_pos _)
+    have hAl : A.length = k := sqAt_len hA
+    have hAr : rowsLen k A := rowsLen_of_sqAt hA
+    have hBl : B.length = k := rectAt_len hB
+    have hRl : R.1.length = k' := rectAt_len hR
+    have hRr : rowsLen k R.1 := rectAt_rows hR
+    have hXl : X.1.length = k := sqAt_len hX
+    have hXr : rowsLen k X.1 := rowsLen_of_sqAt hX
+    have hX'l : X'.1.length = k' := sqAt_len hX'
+    have hX'r : rowsLen k' X'.1 := rowsLen_of_sqAt hX'
+    have hAsym : matOneValue (transposeM A) A := hd 0 (Nat.succ_pos _)
+    have hRTl : (transposeM R.1).length = k :=
+      length_transposeM R.1 hRr (by rw [hRl]; exact hk')
+    have hRTr : rowsLen k' (transposeM R.1) :=
+      rowsLen_cast hRl (rowsLen_transposeM R.1)
+    have hX'Tl : (transposeM X'.1).length = k' :=
+      length_transposeM X'.1 hX'r (by rw [hX'l]; exact hk')
+    have hRinv : transposeM (transposeM R.1) = R.1 :=
+      transposeM_transposeM R.1 hRr hk (by rw [hRl]; exact hk')
+    have hMBl : (matMul X'.1 R.1).length = k' :=
+      (length_matMul X'.1 R.1).trans hX'l
+    have hMBr : rowsLen k (matMul X'.1 R.1) :=
+      rowsLen_cast hRTl (rowsLen_matMul X'.1 R.1)
+    have hMscale := withdrawn_sandwich (k := k) (k' := k') X' R B hk hk'
+      hX' hB hR hX'sym hwit
+    have hQ1l : (matMul (transposeM R.1) X'.1).length = k :=
+      (length_matMul _ _).trans hRTl
+    have hQl : (matMul (matMul (transposeM R.1) X'.1) R.1).length = k :=
+      (length_matMul _ _).trans hQ1l
+    have hQr : rowsLen k (matMul (matMul (transposeM R.1) X'.1) R.1) :=
+      rowsLen_cast hRTl (rowsLen_matMul _ R.1)
+    have hQassoc : matOneValue
+        (matMul (matMul (transposeM R.1) X'.1) R.1)
+        (matMul (transposeM R.1) (matMul X'.1 R.1)) :=
+      matMul_assoc (transposeM R.1) X'.1 R.1 hRTr hX'r hRr hX'l hRl hk'
+        hk'
+    have hQsym : matOneValue
+        (transposeM (matMul (matMul (transposeM R.1) X'.1) R.1))
+        (matMul (matMul (transposeM R.1) X'.1) R.1) :=
+      matOne_trans
+        (transposeM_congrM k
+          (matMul (matMul (transposeM R.1) X'.1) R.1)
+          (matMul (transposeM R.1) (matMul X'.1 R.1)) hQr
+          (rowsLen_cast
+            (length_transposeM (matMul X'.1 R.1) hMBr
+              (by rw [hMBl]; exact hk'))
+            (rowsLen_matMul (transposeM R.1) (matMul X'.1 R.1)))
+          (hQl.trans ((length_matMul _ _).trans hRTl).symm) hQassoc)
+        (matOne_trans
+          (congrSym X'.1 R.1 hX'r hX'l hRr hRl hk hk' hX'sym)
+          (matOne_symm hQassoc))
+    have hMl : (matMul B R.1).length = k := (length_matMul B R.1).trans hBl
+    have hMr : rowsLen k (matMul B R.1) :=
+      rowsLen_cast hRTl (rowsLen_matMul B R.1)
+    have hSMl : (matScale (X'.2 * R.2) (matMul B R.1)).length = k :=
+      (length_matScale _ _).trans hMl
+    have hSMr : rowsLen k (matScale (X'.2 * R.2) (matMul B R.1)) :=
+      rowsLen_mapRows _ (matMul B R.1) k hMr
+    have hMTl : (transposeM (matMul B R.1)).length = k :=
+      length_transposeM (matMul B R.1) hMr (by rw [hMl]; exact hk)
+    have hMTr : rowsLen k (transposeM (matMul B R.1)) :=
+      rowsLen_cast hMl (rowsLen_transposeM (matMul B R.1))
+    have hMsym : matOneValue (transposeM (matMul B R.1)) (matMul B R.1) :=
+      matOne_unscale (X'.2 * R.2) k _ _ hMTl hMTr hMl hMr
+        (matOne_trans
+          (matOne_symm
+            (transposeM_matScale (X'.2 * R.2) k (matMul B R.1) hMr))
+          (matOne_trans
+            (transposeM_congrM k _ _ hSMr hQr (hSMl.trans hQl.symm)
+              hMscale)
+            (matOne_trans hQsym (matOne_symm hMscale))))
+    have hS : matOneValue
+        (matAdd (matScale (Pos.one * R.2) X.1)
+          (matScale X.2 (matMul B R.1)))
+        (matScale (X.2 * (Pos.one * R.2)) A) := by
+      have h0 : matOneValue (matScale Pos.one
+          (matAdd (matScale (Pos.one * R.2) X.1)
+            (matScale X.2 (matMul B R.1))))
+          (matScale (X.2 * (Pos.one * R.2)) A) := hjoin
+      rw [matScale_one] at h0
+      exact h0
+    have hP1l : (matScale (Pos.one * R.2) X.1).length = k :=
+      (length_matScale _ _).trans hXl
+    have hP1r : rowsLen k (matScale (Pos.one * R.2) X.1) :=
+      rowsLen_mapRows _ X.1 k hXr
+    have hP2l : (matScale X.2 (matMul B R.1)).length = k :=
+      (length_matScale _ _).trans hMl
+    have hP2r : rowsLen k (matScale X.2 (matMul B R.1)) :=
+      rowsLen_mapRows _ (matMul B R.1) k hMr
+    have hSuml : (matAdd (matScale (Pos.one * R.2) X.1)
+        (matScale X.2 (matMul B R.1))).length = k :=
+      (length_matAdd _ _ (hP1l.trans hP2l.symm)).trans hP1l
+    have hSumr : rowsLen k (matAdd (matScale (Pos.one * R.2) X.1)
+        (matScale X.2 (matMul B R.1))) := rowsLen_matAdd k _ _ hP1r hP2r
+    have hTAl : (matScale (X.2 * (Pos.one * R.2)) A).length = k :=
+      (length_matScale _ _).trans hAl
+    have hTAr : rowsLen k (matScale (X.2 * (Pos.one * R.2)) A) :=
+      rowsLen_mapRows _ A k hAr
+    have hT1 : matOneValue
+        (transposeM (matAdd (matScale (Pos.one * R.2) X.1)
+          (matScale X.2 (matMul B R.1))))
+        (transposeM (matScale (X.2 * (Pos.one * R.2)) A)) :=
+      transposeM_congrM k _ _ hSumr hTAr (hSuml.trans hTAl.symm) hS
+    rw [transposeM_matAdd (n := k) (matScale (Pos.one * R.2) X.1)
+      (matScale X.2 (matMul B R.1)) hP1r hP2r (hP1l.trans hP2l.symm)
+      (by rw [hP1l]; exact hk)] at hT1
+    have hXTl : (transposeM X.1).length = k :=
+      length_transposeM X.1 hXr (by rw [hXl]; exact hk)
+    have hXTr : rowsLen k (transposeM X.1) :=
+      rowsLen_cast hXl (rowsLen_transposeM X.1)
+    have hSXl : (matScale (Pos.one * R.2) (transposeM X.1)).length = k :=
+      (length_matScale _ _).trans hXTl
+    have hSXr : rowsLen k (matScale (Pos.one * R.2) (transposeM X.1)) :=
+      rowsLen_mapRows _ (transposeM X.1) k hXTr
+    have hcong : matOneValue
+        (matAdd (transposeM (matScale (Pos.one * R.2) X.1))
+          (transposeM (matScale X.2 (matMul B R.1))))
+        (matAdd (matScale (Pos.one * R.2) (transposeM X.1))
+          (matScale X.2 (matMul B R.1))) :=
+      matAdd_cong2 k _ _ _ _
+        (rowsLen_cast hP1l (rowsLen_transposeM _))
+        (rowsLen_cast hP2l (rowsLen_transposeM _)) hSXr hP2r
+        (transposeM_matScale (Pos.one * R.2) k X.1 hXr)
+        (matOne_trans (transposeM_matScale X.2 k (matMul B R.1) hMr)
+          (matScale_matOne X.2 hMsym))
+    have hR1 : matOneValue
+        (transposeM (matScale (X.2 * (Pos.one * R.2)) A))
+        (matScale (X.2 * (Pos.one * R.2)) A) :=
+      matOne_trans
+        (transposeM_matScale (X.2 * (Pos.one * R.2)) k A hAr)
+        (matScale_matOne (X.2 * (Pos.one * R.2)) hAsym)
+    have hun : matOneValue (matScale (Pos.one * R.2) (transposeM X.1))
+        (matScale (Pos.one * R.2) X.1) :=
+      matAdd_cancelR k _ _ _ hSXr hP1r hP2r (hSXl.trans hP1l.symm)
+        (hSXl.trans hP2l.symm)
+        (matOne_trans (matOne_symm hcong)
+          (matOne_trans hT1 (matOne_trans hR1 (matOne_symm hS))))
+    show matOneValue (transposeM X.1) X.1
+    exact matOne_unscale (Pos.one * R.2) k _ _ hXTl hXTr hXl hXr hun
+
+/-- The diagonal's symmetric fold: every slab entry reads its
+transpose at one value, the Bool fold over the slab keys with the
+pointwise read derived at `ground.all_range_read`. -/
+def symRead (diag : List Mat) : Prop :=
+  ((List.range diag.length).all (fun i =>
+    decide (matOneValue (transposeM (ground.getAt [] diag i))
+      (ground.getAt [] diag i)))) = true
+
+instance (diag : List Mat) : Decidable (symRead diag) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- Clause (i)'s pivot symmetry at the tail recursion: the seed is
+a diagonal block of the symmetric datum, and at a symmetric
+`X_{i+1}` the witness identity transposed reads the bond back, the
+withdrawn term symmetric with `X_i`, the induction downward from
+the seed. -/
+theorem tailSym (diag off : List Mat) (Xs Rs : List MatQ)
+    (ns : List Nat) (ht : tailRead diag off Xs Rs ns)
+    (hsym : symRead diag) :
+    ∀ i, i < Xs.length →
+      matOneValue (transposeM (ground.getAt dM Xs i).1)
+        (ground.getAt dM Xs i).1 :=
+  tailSymGo diag off Xs Rs ns ht
+    (fun i hi => of_decide_eq_true
+      (ground.all_range_read diag.length hsym i hi))
+
 /-- Clause (ii)'s count split: the assembled block tridiagonal's
 reversal count is the slab fold of the tail pivots' own, at stated
 splits of the pivots and the datum.  The lower bound prices the
@@ -3625,6 +4112,35 @@ theorem revListRead_drop (Xs : List MatQ)
       | nil => exact (hl : False).elim
       | cons _ spt => exact ih Xt spt hl.2
 
+/-- The pivots' splits read at a member: at every key inside the
+pivot list the paired certificate reads that pivot, the default
+certificate blind to the read. -/
+theorem revListRead_at : ∀ (Xs : List MatQ)
+    (sps : List ((k : Nat) × Split k)),
+    revListRead Xs sps →
+    ∀ i, i < Xs.length →
+      ∀ d : (k : Nat) × Split k,
+        splitRead (ground.getAt dM Xs i).1 (ground.getAt d sps i).2
+  | [], [], _, _, hi, _ => absurd hi (Nat.not_lt_zero _)
+  | [], _ :: _, h, _, _, _ => (h : False).elim
+  | _ :: _, [], h, _, _, _ => (h : False).elim
+  | _ :: _, _ :: _, h, 0, _, _ => h.1
+  | _ :: Xs, _ :: sps, h, i + 1, hi, d =>
+    revListRead_at Xs sps h.2 i (Nat.lt_of_succ_lt_succ hi) d
+
+/-- The pivots' splits take with the pivots, the componentwise
+relation's prefix. -/
+theorem revListRead_take : ∀ (Xs : List MatQ)
+    (sps : List ((k : Nat) × Split k)) (h : Nat),
+    revListRead Xs sps →
+    revListRead (Xs.take h) (sps.take h)
+  | _, _, 0, _ => trivial
+  | [], [], _ + 1, _ => trivial
+  | [], _ :: _, _ + 1, hl => (hl : False).elim
+  | _ :: _, [], _ + 1, hl => (hl : False).elim
+  | _ :: Xs, _ :: sps, h + 1, hl =>
+    ⟨hl.1, revListRead_take Xs sps h hl.2⟩
+
 /-- The pivots' splits pair the pivots one for one, the
 componentwise relation's count tie. -/
 theorem revListRead_length : ∀ (Xs : List MatQ)
@@ -3635,6 +4151,25 @@ theorem revListRead_length : ∀ (Xs : List MatQ)
   | _ :: _, [], h => (h : False).elim
   | _ :: Xs, _ :: sps, h =>
     congrArg (· + 1) (revListRead_length Xs sps h.2)
+
+/-- The slab fold at vacant counts returns its seed: where every
+pivot's stated split reads the upper side throughout, the reversal
+fold leaves the accumulator untouched. -/
+theorem revFold_vacant : ∀ (Xs : List MatQ)
+    (sps : List ((k : Nat) × Split k)) (a : Nat),
+    revListRead Xs sps →
+    (∀ i, i < Xs.length → ∀ s : (k : Nat) × Split k,
+      splitRead (ground.getAt dM Xs i).1 s.2 → psdAt s.2) →
+    sps.foldl (fun m s => m + revAt s.2) a = a
+  | [], [], _, _, _ => rfl
+  | [], _ :: _, _, hl, _ => hl.elim
+  | _ :: _, [], _, hl, _ => hl.elim
+  | _ :: Xt, s :: spt, a, hl, hp => by
+    have h0 : revAt s.2 = 0 := hp 0 (Nat.succ_pos _) s hl.1
+    show spt.foldl (fun m s => m + revAt s.2) (a + revAt s.2) = a
+    rw [h0, Nat.add_zero]
+    exact revFold_vacant Xt spt a hl.2
+      (fun i hi s' hs' => hp (i + 1) (Nat.succ_lt_succ hi) s' hs')
 
 /-- The slab fold splits at a leading count, the two parts'
 sum. -/
@@ -3739,6 +4274,211 @@ theorem chainLen : ∀ (diag off : List BPair),
       rw [ground.length_replicate, hIH.2]
       rfl
 
+
+/-- The scalar chain's entry chart: the diagonal at the key pair's
+agreement, the bond at the consecutive pairs, the sum's unit beyond. -/
+def chainAt (d o : List BPair) (i j : Nat) : BPair :=
+  if j = i then ground.getAt BPair.unit d i
+  else if j + 1 = i then ground.getAt BPair.unit o j
+  else if i + 1 = j then ground.getAt BPair.unit o i
+  else BPair.unit
+
+/-- The entry chart drops its leading slab at a shifted key pair. -/
+theorem chainAt_step (a b : BPair) (dl ot : List BPair) (r j : Nat) :
+    chainAt (a :: dl) (b :: ot) (r + 1) (j + 1) = chainAt dl ot r j := by
+  show (if j + 1 = r + 1 then ground.getAt BPair.unit (a :: dl) (r + 1)
+      else if j + 1 + 1 = r + 1 then ground.getAt BPair.unit (b :: ot) (j + 1)
+      else if r + 1 + 1 = j + 1 then ground.getAt BPair.unit (b :: ot) (r + 1)
+      else BPair.unit)
+    = if j = r then ground.getAt BPair.unit dl r
+      else if j + 1 = r then ground.getAt BPair.unit ot j
+      else if r + 1 = j then ground.getAt BPair.unit ot r
+      else BPair.unit
+  match Nat.decEq j r with
+  | isTrue hh =>
+    rw [if_pos (congrArg (fun z => z + 1) hh), if_pos hh]
+    rfl
+  | isFalse hh =>
+    rw [if_neg (fun hz => hh (Nat.succ.inj hz)), if_neg hh]
+    match Nat.decEq (j + 1) r with
+    | isTrue h2 =>
+      rw [if_pos (congrArg (fun z => z + 1) h2), if_pos h2]
+      rfl
+    | isFalse h2 =>
+      rw [if_neg (fun hz => h2 (Nat.succ.inj hz)), if_neg h2]
+      match Nat.decEq (r + 1) j with
+      | isTrue h3 =>
+        rw [if_pos (congrArg (fun z => z + 1) h3), if_pos h3]
+        rfl
+      | isFalse h3 =>
+        rw [if_neg (fun hz => h3 (Nat.succ.inj hz)), if_neg h3]
+
+/-- The assembled chain's block row: the leading column's entry
+against the tail chain's own row. -/
+theorem chainRow (b : BPair) (L : Nat) (rest : elim.Mat) (r : Nat)
+    (hr : r < rest.length) :
+    ground.getAt ([] : List BPair)
+        ((List.range rest.length).map (fun s =>
+          (if s < 1 then ground.getAt [] [[b]] s
+           else List.replicate 1 BPair.unit) ++ ground.getAt [] rest s)) r
+      = ground.getAt BPair.unit (b :: List.replicate L BPair.unit) r
+        :: ground.getAt [] rest r := by
+  rw [ground.getAt_map 0 ([] : List BPair) _ (List.range rest.length) r
+      (by rw [ground.length_range]; exact hr),
+    ground.getAt_range rest.length r hr]
+  match r with
+  | 0 => rfl
+  | m + 1 =>
+    show List.replicate 1 BPair.unit ++ ground.getAt [] rest (m + 1)
+      = ground.getAt BPair.unit (List.replicate L BPair.unit) m
+        :: ground.getAt [] rest (m + 1)
+    rw [ground.getAt_replicate_self BPair.unit L m]
+    rfl
+
+/-- The assembled chain's entry at the leading slab: the diagonal
+and bond at the leading keys, the tail chain's own beyond. -/
+theorem consEntry (a b : BPair) (dl ot : List BPair) (rest : elim.Mat)
+    (hlen : rest.length = dl.length)
+    (hrest : ∀ r j : Nat, r < dl.length → j < dl.length →
+      ground.getAt BPair.unit (ground.getAt ([] : List BPair) rest r) j
+        = chainAt dl ot r j) :
+    ∀ i j : Nat, i < dl.length + 1 → j < dl.length + 1 →
+      ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+        ((a :: b :: List.replicate ((rest.headD []).length - 1) BPair.unit)
+          :: (List.range rest.length).map (fun s =>
+            (if s < 1 then ground.getAt [] [[b]] s
+             else List.replicate 1 BPair.unit) ++ ground.getAt [] rest s)) i) j
+      = chainAt (a :: dl) (b :: ot) i j := by
+  intro i j hi hj
+  match i, j, hi, hj with
+  | 0, 0, _, _ => rfl
+  | 0, 1, _, _ => rfl
+  | 0, k + 2, _, _ =>
+    show ground.getAt BPair.unit
+      (List.replicate ((rest.headD []).length - 1) BPair.unit) k
+      = chainAt (a :: dl) (b :: ot) 0 (k + 2)
+    rw [ground.getAt_replicate_self BPair.unit
+      ((rest.headD []).length - 1) k]
+    rfl
+  | r + 1, 0, hi, _ =>
+    have hr : r < rest.length := by
+      rw [hlen]
+      exact Nat.lt_of_succ_lt_succ hi
+    show ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+        ((List.range rest.length).map (fun s =>
+          (if s < 1 then ground.getAt [] [[b]] s
+           else List.replicate 1 BPair.unit) ++ ground.getAt [] rest s)) r) 0
+      = chainAt (a :: dl) (b :: ot) (r + 1) 0
+    rw [chainRow b dl.length rest r hr]
+    match r with
+    | 0 => rfl
+    | m + 1 =>
+      show ground.getAt BPair.unit (List.replicate dl.length BPair.unit) m
+        = chainAt (a :: dl) (b :: ot) (m + 2) 0
+      rw [ground.getAt_replicate_self BPair.unit dl.length m]
+      rfl
+  | r + 1, j' + 1, hi, hj =>
+    have hr : r < rest.length := by
+      rw [hlen]
+      exact Nat.lt_of_succ_lt_succ hi
+    show ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+        ((List.range rest.length).map (fun s =>
+          (if s < 1 then ground.getAt [] [[b]] s
+           else List.replicate 1 BPair.unit) ++ ground.getAt [] rest s)) r)
+        (j' + 1)
+      = chainAt (a :: dl) (b :: ot) (r + 1) (j' + 1)
+    rw [chainRow b dl.length rest r hr, chainAt_step a b dl ot r j']
+    exact hrest r j' (by rw [← hlen]; exact hr) (Nat.lt_of_succ_lt_succ hj)
+
+/-- The scalar chain's entry read: the assembled matrix is the
+entry chart at every key pair inside the order. -/
+theorem chainEntry : ∀ (d o : List BPair), o.length + 1 = d.length →
+    ∀ i j : Nat, i < d.length → j < d.length →
+      ground.getAt BPair.unit (ground.getAt ([] : List BPair)
+          (assemble (d.map (fun x => [[x]]))
+            (o.map (fun x => [[x]]))) i) j
+        = chainAt d o i j
+  | [], _, h, _, _, _, _ => Nat.noConfusion h
+  | [_], _ :: _, h, _, _, _, _ => Nat.noConfusion (Nat.succ.inj h)
+  | _ :: _ :: _, [], h, _, _, _, _ => Nat.noConfusion (Nat.succ.inj h)
+  | [_], [], _, 0, 0, _, _ => rfl
+  | [_], [], _, 0, _ + 1, _, hj =>
+    absurd (Nat.lt_of_succ_lt_succ hj) (Nat.not_lt_zero _)
+  | [_], [], _, _ + 1, _, hi, _ =>
+    absurd (Nat.lt_of_succ_lt_succ hi) (Nat.not_lt_zero _)
+  | a :: a' :: dt, b :: ot, h, i, j, hi, hj =>
+    consEntry a b (a' :: dt) ot
+      (assemble ((a' :: dt).map (fun x => [[x]]))
+        (ot.map (fun x => [[x]])))
+      (chainLen (a' :: dt) ot (Nat.succ.inj h)).1
+      (fun r s hr hs => chainEntry (a' :: dt) ot (Nat.succ.inj h) r s hr hs)
+      i j hi hj
+
+/-- The scalar chain's rows read the diagonal's count. -/
+theorem chainRows : ∀ (d o : List BPair), o.length + 1 = d.length →
+    elim.rowsLen d.length (assemble (d.map (fun x => [[x]]))
+      (o.map (fun x => [[x]])))
+  | [], _, h => Nat.noConfusion h
+  | [_], _ :: _, h => Nat.noConfusion (Nat.succ.inj h)
+  | _ :: _ :: _, [], h => Nat.noConfusion (Nat.succ.inj h)
+  | [_], [], _ => ⟨rfl, trivial⟩
+  | _ :: a' :: dt, b :: ot, h => by
+    have hIH := chainLen (a' :: dt) ot (Nat.succ.inj h)
+    have hrows := chainRows (a' :: dt) ot (Nat.succ.inj h)
+    have key : ∀ u v : List BPair, u.length = 1 → v.length = dt.length + 1 →
+        (u ++ v).length = dt.length + 1 + 1 := by
+      intro u v hu hv
+      rw [ground.length_append, hu, hv]
+      exact Nat.add_comm 1 (dt.length + 1)
+    refine ⟨?_, ?_⟩
+    · show (List.replicate
+        (((assemble ((a' :: dt).map (fun x => [[x]]))
+          (ot.map (fun x => [[x]]))).headD []).length - 1)
+          BPair.unit).length + 1 + 1 = dt.length + 1 + 1
+      rw [ground.length_replicate, hIH.2]
+      rfl
+    · refine elim.rowsLen_map _ (dt.length + 1 + 1) _ (fun s hs => ?_)
+      have hs' : s < (assemble ((a' :: dt).map (fun x => [[x]]))
+          (ot.map (fun x => [[x]]))).length := ground.ltOfMemRange hs
+      have h1 : ((if s < 1 then ground.getAt [] [[b]] s
+          else List.replicate 1 BPair.unit) : List BPair).length = 1 := by
+        match s with
+        | 0 => rfl
+        | _ + 1 => rfl
+      exact key _ _ h1 (elim.rowsLen_getAt _ s hrows hs')
+
+/-- The entry chart at the diagonal key. -/
+theorem chainAt_diag (d o : List BPair) (i : Nat) :
+    chainAt d o i i = ground.getAt BPair.unit d i := if_pos rfl
+
+/-- The entry chart one key below the diagonal. -/
+theorem chainAt_low (d o : List BPair) (i j : Nat) (h1 : ¬ j = i)
+    (h2 : j + 1 = i) : chainAt d o i j = ground.getAt BPair.unit o j := by
+  show (if j = i then ground.getAt BPair.unit d i
+      else if j + 1 = i then ground.getAt BPair.unit o j
+      else if i + 1 = j then ground.getAt BPair.unit o i
+      else BPair.unit) = _
+  rw [if_neg h1, if_pos h2]
+
+/-- The entry chart one key above the diagonal. -/
+theorem chainAt_up (d o : List BPair) (i j : Nat) (h1 : ¬ j = i)
+    (h2 : ¬ j + 1 = i) (h3 : i + 1 = j) :
+    chainAt d o i j = ground.getAt BPair.unit o i := by
+  show (if j = i then ground.getAt BPair.unit d i
+      else if j + 1 = i then ground.getAt BPair.unit o j
+      else if i + 1 = j then ground.getAt BPair.unit o i
+      else BPair.unit) = _
+  rw [if_neg h1, if_neg h2, if_pos h3]
+
+/-- The entry chart beyond the band. -/
+theorem chainAt_far (d o : List BPair) (i j : Nat) (h1 : ¬ j = i)
+    (h2 : ¬ j + 1 = i) (h3 : ¬ i + 1 = j) :
+    chainAt d o i j = BPair.unit := by
+  show (if j = i then ground.getAt BPair.unit d i
+      else if j + 1 = i then ground.getAt BPair.unit o j
+      else if i + 1 = j then ground.getAt BPair.unit o i
+      else BPair.unit) = _
+  rw [if_neg h1, if_neg h2, if_neg h3]
 
 /-- The pairing against a scaled constant family sits at the sum's
 unit. -/

@@ -9,18 +9,18 @@ form pair (`cutRead`, the split the test's certificate,
 the positive rescaling fixing the count); the level gap `Ẽ` enters
 at its floor certificate, `ε₀ G + Ẽ = H` with the pair at the floor
 positive semidefinite and the ground occupied (`floorRead`,
-`gapMat` the cleared site datum), and clause (i)'s membership — the
-meet over the directed windows — is the theorem tier's own
-statement at the chain assembly's presentation (`thm:pairpencil`
-the pencils' entry, `thm:gappos`'s tier the derivation), each
-window's test `cutRead`'s read at its certificate — the member
-instantiations reading through `thm:main`'s wiring, their windows'
-free-end reads the main check module's pins.  The compression to
+`gapMat` the cleared site datum); clause (i)'s membership is the
+meet of these window tests over the directed family, each window's
+test `cutRead`'s read at its certificate with the window's pencil
+the chain assembly's presentation (`thm:pairpencil` the pencils'
+entry, `thm:gappos`'s tier the per-window derivation), the member
+instantiations reading through `thm:main`'s wiring at their floor
+windows, the main check module's pins.  The compression to
 the word sector reads at
 `thm:coeffone`'s exact line — at the free end the word sector is the
 window itself (`lem:freeend`), and the free-end reading closes
-here: the level gap is the electric diagonal (`freeGap`, the unit
-line at its head), the cut's pair is diagonal with the entries
+here: the level gap is the electric member at the window list's
+diagonal (`freeGap`, the unit line at its head), the cut's pair is diagonal with the entries
 `c ⟨q c : E₀ p⟩`, and the cut holds at every pair at or below the
 member floor and fails beyond, the floor's edge neutral — the
 check module's pins at the committed windows, `lem:casfloor`'s
@@ -61,13 +61,11 @@ compressed whole; at the free end the word sector is the window
 itself and the square is the gap's own (`lem:freeend`). -/
 def cutRead {o : Nat} (Esq Et : Mat) (E0 p q : Pos) (sp : Split o) : Prop :=
   sqAt Esq o ∧ sqAt Et o
-  ∧ splitRead
-      (siteDatum (matScale q Esq) (matScale (E0 * p) Et)) sp
-  ∧ psdAt sp
+  ∧ leAt (matScale (E0 * p) Et) (matScale q Esq) sp
 
 instance {o : Nat} (Esq Et : Mat) (E0 p q : Pos) (sp : Split o) :
     Decidable (cutRead Esq Et E0 p q sp) :=
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
 /-- The cut datum's rescaling: the site datum at the `u²`-scaled
 square, the `u`-scaled gap and the `u`-scaled level is the base
@@ -134,31 +132,22 @@ theorem cutRead_unscale {o : Nat} (u : Pos) (Esq Et : Mat)
      hs (by rw [cutScale u Esq Et E0 p q]; exact h.2.2.1)).symm.trans
      h.2.2.2⟩
 
-/-- The free end's level gap: the electric diagonal's matrix with
-the unit line at its head, `lem:freeend`'s diagonal
-presentation. -/
+/-- The free end's level gap: the electric member at the window
+list's diagonal with the unit line at its head, `lem:freeend`'s
+diagonal presentation. -/
 def freeGap {L : Type} (F : fusion.Data L) (R : Region) (C : Nat) :
     Mat :=
-  let d := pairpencil.windowDiag F R C
-  ground.matOf d.length d.length (fun i j =>
-    if i == j then BPair.ofNat (ground.getAt 0 d i)
-    else BPair.unit)
+  pairpencil.pencilE (pairpencil.slotDiag F R (carrier.idx F R C))
 
-/-- The free-end level gap at a stated window diagonal:
+/-- The free-end level gap at a stated window list's diagonal:
 `lem:freeend`'s diagonal presentation read off the committed
 diagonal. -/
 theorem freeGap_ofDiag {L : Type} (F : fusion.Data L) (R : Region)
     (C : Nat) (d : List Nat) (m : Mat)
-    (hd : pairpencil.windowDiag F R C = d)
-    (hm : ground.matOf d.length d.length (fun i j =>
-      if i == j then BPair.ofNat (ground.getAt 0 d i)
-      else BPair.unit) = m) :
+    (hd : pairpencil.slotDiag F R (carrier.idx F R C) = d)
+    (hm : pairpencil.pencilE d = m) :
     freeGap F R C = m := by
-  show ground.matOf (pairpencil.windowDiag F R C).length
-    (pairpencil.windowDiag F R C).length (fun i j =>
-      if i == j then BPair.ofNat (ground.getAt 0
-        (pairpencil.windowDiag F R C) i)
-      else BPair.unit) = m
+  show pairpencil.pencilE (pairpencil.slotDiag F R (carrier.idx F R C)) = m
   rw [hd]
   exact hm
 

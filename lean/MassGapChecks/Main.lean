@@ -179,6 +179,24 @@ example : ¬ K.cutRead (matMul etB etB) etB 4 11 1
 example : certconstruct.witnessRead (matMul etB etB)
     (matScale 44 etB) [u, ⟨2, 1⟩] := by decide +kernel
 
+/-! The pencil interface at `Spin(5)`'s floor window, the index the
+spinor loop alone: the loop pencil — the window list's diagonal at
+the spinor loop's four-link read,
+the identity gram at its split, and the one plaquette term the
+member's fusion counts, `winM`'s diagonal, capped two-sidedly at the
+adjoint dimension ten (`thm:pairpencil`'s fields at a loop window
+through `thm:main`'s wiring). -/
+
+example : (data (.B 0)).dim ((data (.B 0)).theta) = 10 := by decide +kernel
+example : pairpencil.pencilRead (data (.B 0)) square 40 2
+    ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) (winE (.B 0))
+    (idMat 2) (winM (.B 0)) (inertia.mkSplit 2 (idMat 2))
+    [(winM (.B 0),
+      inertia.mkSplit 2 (siteDatum (inertia.matScaleB (BPair.ofNat 10) (idMat 2))
+        (winM (.B 0))),
+      inertia.mkSplit 2 (matAdd (inertia.matScaleB (BPair.ofNat 10) (idMat 2))
+        (winM (.B 0))))] := by decide +kernel
+
 /-! `Sp(3)`'s window at cutoff fifty-six: the first fundamental's
 floor `14` at the clearing thirty-two. -/
 

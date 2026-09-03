@@ -3624,90 +3624,6 @@ private theorem sumNat_raise (s : Shape) :
     = ground.sumNat (places.rowList s) + s.length
   rw [sumNat_map_succ (places.rowList s), places.length_rowList]
 
-/-- The reduction is injective at one width and one degree: the
-prefixes agree at the split and the degree ties the last
-occupancies. -/
-private theorem reduce_inj (r : Nat) (c c' : Shape)
-    (hc : c.length = r + 1) (hc' : c'.length = r + 1)
-    (hdeg : places.degree c = places.degree c')
-    (h : labels.reduce c = labels.reduce c') : c = c' := by
-  obtain ⟨u, a, hu, hul⟩ := ground.snoc_split r c hc
-  obtain ⟨v, b, hv, hvl⟩ := ground.snoc_split r c' hc'
-  rw [hu, hv, labels.reduce_snoc u a, labels.reduce_snoc v b] at h
-  have huv : u = v := ground.snoc_inj u v 0 h
-  have hdeg' : places.degree u + a * (u.length + 1)
-      = places.degree u + b * (u.length + 1) := by
-    rw [← places.degree_snoc u a, ← places.degree_snoc u b, ← hu,
-      show u ++ [b] = c' from by rw [huv]; exact hv.symm]
-    exact hdeg
-  have hab : a = b := Nat.eq_of_mul_eq_mul_right
-    (Nat.succ_pos u.length) (ground.addCancelL _ hdeg')
-  rw [hu, hv, huv, hab]
-
-/-- A keyed image counts a value at most once where the source
-counts each member at most once and the emission distinguishes its
-sources. -/
-private theorem countOf_filterMap_le_one {α β : Type} [DecidableEq α]
-    [DecidableEq β] (f : α → Option β) (y : β) :
-    ∀ l : List α, (∀ a, ground.countOf a l ≤ 1) →
-      (∀ a b, 0 < ground.countOf a l → 0 < ground.countOf b l →
-        f a = some y → f b = some y → a = b) →
-      ground.countOf y (l.filterMap f) ≤ 1
-  | [], _, _ => Nat.zero_le 1
-  | x :: t, hc, hinj => by
-    have hct : ∀ a, ground.countOf a t ≤ 1 := fun a =>
-      Nat.le_trans (Nat.le_trans (Nat.le_add_left _ _)
-        (Nat.le_of_eq (ground.countOf_cons a x t).symm)) (hc a)
-    have hinjt : ∀ a b, 0 < ground.countOf a t → 0 < ground.countOf b t →
-        f a = some y → f b = some y → a = b := fun a b ha hb =>
-      hinj a b (ground.countOf_cons_pos ha) (ground.countOf_cons_pos hb)
-    cases hf : f x with
-    | none =>
-      have hx : List.filterMap f (x :: t) = t.filterMap f := by
-        show (match f x with
-              | none => t.filterMap f
-              | some c => c :: t.filterMap f) = t.filterMap f
-        rw [hf]
-      rw [hx]
-      exact countOf_filterMap_le_one f y t hct hinjt
-    | some z =>
-      have hx : List.filterMap f (x :: t) = z :: t.filterMap f := by
-        show (match f x with
-              | none => t.filterMap f
-              | some c => c :: t.filterMap f) = z :: t.filterMap f
-        rw [hf]
-      rw [hx, ground.countOf_cons]
-      by_cases hyz : y = z
-      · have hzero : ground.countOf y (t.filterMap f) = 0 := by
-          match Nat.eq_zero_or_pos (ground.countOf y (t.filterMap f)) with
-          | .inl h0 => exact h0
-          | .inr hp =>
-            obtain ⟨w, hw, hfw⟩ := ground.filterMap_pre f t y hp
-            have hwx : w = x := hinj w x (ground.countOf_cons_pos hw)
-              (by rw [ground.countOf_head]; exact Nat.succ_pos _)
-              hfw (by rw [hf, hyz])
-            rw [hwx] at hw
-            have hle : ground.countOf x t + 1 ≤ 1 := by
-              rw [← ground.countOf_head x t]
-              exact hc x
-            exact absurd (Nat.lt_of_lt_of_le hw
-              (Nat.le_of_succ_le_succ hle)) (Nat.lt_irrefl 0)
-        rw [if_pos hyz, hzero]
-        exact Nat.le_refl 1
-      · rw [if_neg hyz, Nat.zero_add]
-        exact countOf_filterMap_le_one f y t hct hinjt
-
-/-- The occupied emission's reads: the count is positive and the
-value is the source's own class. -/
-private theorem emit_reads {n : Nat} {a x : Shape}
-    (h : (if 0 < n then some (labels.reduce a) else none) = some x) :
-    0 < n ∧ labels.reduce a = x := by
-  by_cases hp : 0 < n
-  · rw [if_pos hp] at h
-    exact ⟨hp, Option.some.inj h⟩
-  · rw [if_neg hp] at h
-    exact nomatch (show (none : Option Shape) = some x from h)
-
 /-- A raised display reads the raised row list: the staircase
 cancels key by key. -/
 private theorem rowList_of_raise (d : Nat) (s c : Shape)
@@ -4581,8 +4497,7 @@ theorem adjRow_eq (d : Nat) (s : Shape)
     ground.countOf x
       ((places.allShapes d (places.degree s
           + places.degree (adjchar.theta d))).filterMap
-        (fun c => if 0 < steinberg.count s (adjchar.theta d) c
-          then some (labels.reduce c) else none))
+        (labels.emit s (adjchar.theta d)))
       = ground.countOf x (adjRow d s) := by
   obtain ⟨e, he⟩ := Nat.le.dest hd
   have hde : d = e + 1 + 1 := by
@@ -4594,22 +4509,19 @@ theorem adjRow_eq (d : Nat) (s : Shape)
       places.degree b = places.degree s + d →
       labels.reduce a = labels.reduce b → a = b := by
     intro a b hal hbl hda hdb hr
-    exact reduce_inj (e + 1) a b (by rw [hal, hde]) (by rw [hbl, hde])
+    exact labels.reduce_inj (e + 1) a b (by rw [hal, hde]) (by rw [hbl, hde])
       (by rw [hda, hdb]) hr
   have hLle : ground.countOf x
       ((places.allShapes d (places.degree s
           + places.degree (adjchar.theta d))).filterMap
-        (fun c => if 0 < steinberg.count s (adjchar.theta d) c
-          then some (labels.reduce c) else none)) ≤ 1 := by
+        (labels.emit s (adjchar.theta d))) ≤ 1 := by
     refine countOf_filterMap_le_one _ x _
       (fun a => places.countOf_allShapes_le d _ a) ?_
     intro a b ha hb hfa hfb
-    have hfa' : (if 0 < steinberg.count s (adjchar.theta d) a
-        then some (labels.reduce a) else none) = some x := hfa
-    have hfb' : (if 0 < steinberg.count s (adjchar.theta d) b
-        then some (labels.reduce b) else none) = some x := hfb
-    obtain ⟨_, hxa⟩ := emit_reads hfa'
-    obtain ⟨_, hxb⟩ := emit_reads hfb'
+    have hfa' : labels.emit s (adjchar.theta d) a = some x := hfa
+    have hfb' : labels.emit s (adjchar.theta d) b = some x := hfb
+    obtain ⟨_, hxa⟩ := labels.emit_reads hfa'
+    obtain ⟨_, hxb⟩ := labels.emit_reads hfb'
     obtain ⟨hal, hda⟩ := places.allShapes_sound d _ a
       (ground.mem_of_countOf_pos a _ ha)
     obtain ⟨hbl, hdb⟩ := places.allShapes_sound d _ b
@@ -4625,25 +4537,23 @@ theorem adjRow_eq (d : Nat) (s : Shape)
         then some (labels.reduce a) else none) = some x := hfa
     have hfb' : (if 0 < channels.adjCount d s b
         then some (labels.reduce b) else none) = some x := hfb
-    obtain ⟨_, hxa⟩ := emit_reads hfa'
-    obtain ⟨_, hxb⟩ := emit_reads hfb'
+    obtain ⟨_, hxa⟩ := labels.emit_reads hfa'
+    obtain ⟨_, hxb⟩ := labels.emit_reads hfb'
     obtain ⟨hal, hda⟩ := cand_reads d s a hs ha
     obtain ⟨hbl, hdb⟩ := cand_reads d s b hs hb
     exact hinj a b hal hbl hda hdb (hxa.trans hxb.symm)
   have hLR : 0 < ground.countOf x
       ((places.allShapes d (places.degree s
           + places.degree (adjchar.theta d))).filterMap
-        (fun c => if 0 < steinberg.count s (adjchar.theta d) c
-          then some (labels.reduce c) else none)) →
+        (labels.emit s (adjchar.theta d))) →
       0 < ground.countOf x (adjRow d s) := by
     intro hp
     rw [adjRow_filter d s hs hd]
     obtain ⟨c, hc, hfc⟩ := ground.filterMap_pre _
       (places.allShapes d (places.degree s
         + places.degree (adjchar.theta d))) x hp
-    have hfc' : (if 0 < steinberg.count s (adjchar.theta d) c
-        then some (labels.reduce c) else none) = some x := hfc
-    obtain ⟨hcnt, hxc⟩ := emit_reads hfc'
+    have hfc' : labels.emit s (adjchar.theta d) c = some x := hfc
+    obtain ⟨hcnt, hxc⟩ := labels.emit_reads hfc'
     obtain ⟨hcl, _⟩ := places.allShapes_sound d _ c
       (ground.mem_of_countOf_pos c _ hc)
     have hfast : 0 < channels.adjCount d s c := by
@@ -4665,14 +4575,13 @@ theorem adjRow_eq (d : Nat) (s : Shape)
       0 < ground.countOf x
         ((places.allShapes d (places.degree s
             + places.degree (adjchar.theta d))).filterMap
-          (fun c => if 0 < steinberg.count s (adjchar.theta d) c
-            then some (labels.reduce c) else none)) := by
+          (labels.emit s (adjchar.theta d))) := by
     intro hp
     rw [adjRow_filter d s hs hd] at hp
     obtain ⟨c, hc, hfc⟩ := ground.filterMap_pre _ (adjCands d s) x hp
     have hfc' : (if 0 < channels.adjCount d s c
         then some (labels.reduce c) else none) = some x := hfc
-    obtain ⟨hcnt, hxc⟩ := emit_reads hfc'
+    obtain ⟨hcnt, hxc⟩ := labels.emit_reads hfc'
     obtain ⟨hcl, hcd⟩ := cand_reads d s c hs hc
     have hdef : 0 < steinberg.count s (adjchar.theta d) c := by
       rw [adjCount_eq d s c hs hcl hd]
@@ -4694,8 +4603,7 @@ theorem adjRow_eq (d : Nat) (s : Shape)
     match Nat.eq_zero_or_pos (ground.countOf x
         ((places.allShapes d (places.degree s
             + places.degree (adjchar.theta d))).filterMap
-          (fun c => if 0 < steinberg.count s (adjchar.theta d) c
-            then some (labels.reduce c) else none))) with
+          (labels.emit s (adjchar.theta d)))) with
     | .inl hz' => rw [hz', hz]
     | .inr hp' =>
       exact absurd (hLR hp') (by rw [hz]; exact Nat.lt_irrefl 0)

@@ -14,12 +14,17 @@ members, each member once, the floors the successor spellings' own
 `ℓ = g + 4`, the domain the type).  The member's weight table is
 the carried datum's read (`con:sertables`; `con:gentable`'s first
 table at the `A`-series), the derived residue and the base θ's
-coroot-support count its table reads (`prop:row`).  Clause (ii)
-closes at every member: `clauseII` is `thm:closing`'s read at the
-member's own base and residue, the lattice point `(3, H_r)`, held at
-the whole domain by `clauseII_all` through the occupancy door
-(`closing.read_pos` at the tables' support and residue reads), its
-member instantiations the check module's pins with the low-index
+coroot-support count its table reads (`prop:row`).  Clause (ii)'s
+pair arithmetic reads at every member: `clauseII` is the contact
+pair's equality read at the member's own base and residue, the
+lattice point `(3, H_r)` (`thm:closing`'s componentwise read), held
+at the whole domain by `clauseII_all` through the occupancy door
+(`closing.read_pos` at the tables' support and residue reads); the
+clause's identification of the contact-end value with that pair and
+its attainment read are `thm:closing`'s bracket at the corner
+cell's clearance (`lem:corner`; `lem:attained`), read at the
+corner lane's certificates.  The member instantiations are the
+check module's pins with the low-index
 coincidence reads beside them (`Sp(1)` at `SU(2)` the one exact
 table identity, `Sp(2)` at `Spin(5)` and `Spin(6)` at `SU(4)` the
 derived reads' agreements across the relabelings; `Spin(3)` at
@@ -36,8 +41,9 @@ the committed windows (`lem:freeend`'s member clause) with the
 cut holding at every pair at or below the floor and failing
 beyond (`def:K`'s free-end reading), each window's test
 `K.cutRead`'s read at its certificate, the check module's pins.
-Clause (i) reads at the member through the committed
-level sweeps: `clauseI` is the two count-one chains at the floor
+Clause (i)'s floor-window instance reads at the member through
+the committed level sweeps: `clauseI` is one window cut of
+`def:K`, the two count-one chains at the floor
 window's pair `(E : τ²M)` — `winE` the four-link diagonal and
 `winM` the label-index counts (`thm:pairpencil`'s loop-window
 read), the covers `lem:cellcount`'s priced pivot nests, the
@@ -50,12 +56,12 @@ the clause held at the whole domain by `clauseI_all` through the
 parametric window sweeps at the member's floor numerator — the
 series and the diagonal-window fixed members at the two level
 lines' chain generals, one per window order, with `D₄`'s four-loop
-window and `E₈`'s coupled window decided by kernel reduction;
-the meet over the directed windows — the cut of `def:K` whole —
-is the theorem tier's own statement at the chain assembly's
-presentation (`thm:pairpencil` with `prop:wg`'s rows), and clause
-(iii)'s objects are `thm:continuum`'s continuum reads at the
-K-chain's own site.
+window and `E₈`'s coupled window decided by kernel reduction.
+The cut of `def:K` is the meet of the window cuts over the
+directed family at every interior ray; `clauseI` reads it at the
+floor window over the committed range, one window cut per member
+at the floor numerator's cutoff; clause (iii)'s objects are
+`thm:continuum`'s continuum reads at the K-chain's own site.
 -/
 
 namespace main
@@ -112,15 +118,16 @@ def data : Member → fusion.Data places.Shape
   | .E7 => fusion.dataE7
   | .E8 => fusion.dataE8
 
-/-- Clause (ii) at a member: the contact pair reads the lattice
-point `(3, H_r)` at the member's own base and residue,
-`thm:closing`'s read off the carried datum. -/
+/-- Clause (ii)'s pair arithmetic at a member: the contact pair
+reads the lattice point `(3, H_r)` at the member's own base and
+residue, `thm:closing`'s componentwise read off the carried
+datum. -/
 def clauseII (m : Member) : Prop := closing.read (base m) (residue m)
 
 instance (m : Member) : Decidable (clauseII m) :=
   inferInstanceAs (Decidable (closing.read _ _))
 
-/-- Clause (ii) at the whole `A`-series: the occupancy door
+/-- Clause (ii)'s pair arithmetic at the whole `A`-series: the occupancy door
 (`closing.read_pos`) at the first table's support and residue
 reads. -/
 theorem clauseII_A (g : Nat) : clauseII (.A g) :=
@@ -128,28 +135,29 @@ theorem clauseII_A (g : Nat) : clauseII (.A g) :=
     (row.supportCount_tableA_pos (g + 1) (Nat.succ_pos g))
     (gentable.residue_tableA_pos (g + 1) (Nat.succ_pos g))
 
-/-- Clause (ii) at the whole `B`-series: the occupancy door at the
+/-- Clause (ii)'s pair arithmetic at the whole `B`-series: the occupancy door at the
 member table's support and residue reads. -/
 theorem clauseII_B (g : Nat) : clauseII (.B g) :=
   closing.read_pos _ _
     (row.supportCount_tableB_pos g)
     (sertables.residue_tableB_pos g)
 
-/-- Clause (ii) at the whole `C`-series: the occupancy door at the
+/-- Clause (ii)'s pair arithmetic at the whole `C`-series: the occupancy door at the
 member table's support and residue reads. -/
 theorem clauseII_C (g : Nat) : clauseII (.C g) :=
   closing.read_pos _ _
     (row.supportCount_tableC_pos g)
     (sertables.residue_tableC_pos g)
 
-/-- Clause (ii) at the whole `D`-series: the occupancy door at the
+/-- Clause (ii)'s pair arithmetic at the whole `D`-series: the occupancy door at the
 member table's support and residue reads. -/
 theorem clauseII_D (g : Nat) : clauseII (.D g) :=
   closing.read_pos _ _
     (row.supportCount_tableD_pos g)
     (sertables.residue_tableD_pos g)
 
-/-- Clause (ii) at every member of the classification: the series
+/-- Clause (ii)'s pair arithmetic at every member of the
+classification: the series
 through the occupancy door at their tables' support and residue
 reads, the fixed members' occupancies decided by kernel
 reduction. -/
@@ -302,17 +310,16 @@ def cellsHi (m : Member) :
       × (BPair × ground.Pos) × inertia.Split (winO m)) :=
   [(winTop, winCover m, (BPair.unit, 1), sampleHi m)]
 
-/-- Clause (i) at a member: the two committed level sweeps at the
+/-- Clause (i)'s floor-window instance at a member, one window cut
+of `def:K`: the two committed level sweeps at the
 member's floor window, count one flat across the committed range —
 `thm:gappos`(iv)'s fixed pairs with `thm:flatstep`'s vacuum-sector
 jump reads — and the tie `ℓ₀ + E₀ κ* ≤ ℓ₊` at the committed member
 pair `κ* = [2 winFloorN − 1 : 4]` at `E₀ = 4` (`prop:E0`'s
 four-link count, the tie's inner factor), κ* positive by its
 shape; the window's cut at consumer-stated diagonalization data is
-`gappos.windowCut`'s read, and the cut of `def:K` — the meet over
-the directed windows — reads at the chain assembly's presentation
-(`thm:pairpencil` with `prop:wg`'s rows), its own statement's
-site. -/
+`gappos.windowCut`'s read, one member of the meet the cut of
+`def:K` takes over the directed windows. -/
 def clauseI (m : Member) : Prop :=
   gappos.chainRead (sweepLo m) 2 1 winFoot (cellsLo m)
   ∧ gappos.chainRead (sweepHi m) 2 1 winFoot (cellsHi m)
@@ -2249,8 +2256,8 @@ private theorem chainHi3 (F : Nat) (hF : 4 ≤ F) :
 /-! The floors' occupancy weakenings, read at the tie's hypothesis and
 at the order-two chains' own. -/
 
-/-- Clause (i) at every member of the classification: the series and
-the diagonal-window fixed members through the parametric window sweeps
+/-- Clause (i)'s floor-window instance at every member of the
+classification: the series and the diagonal-window fixed members through the parametric window sweeps
 at the member's floor numerator — the two level lines' chains at the
 window's order with the tie at the committed member pair — and `D₄`'s
 four-loop window and `E₈`'s coupled window decided by kernel

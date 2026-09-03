@@ -2679,8 +2679,7 @@ theorem readAll (d : Nat) (hd : 2 ≤ d) (s : Shape)
       ground.optVal
         (fun c' => labels.countL s (adjchar.theta d) c' * weyldim.dimOf c'
           * c2hat.dfQ c')
-        (if 0 < steinberg.count s (adjchar.theta d) c
-          then some (labels.reduce c) else none)
+        (labels.emit s (adjchar.theta d) c)
       = blockcount.fusionCount s (adjchar.theta d) c * weyldim.dimOf c
         * c2hat.dfQ c := by
     intro c hc
@@ -2689,6 +2688,9 @@ theorem readAll (d : Nat) (hd : 2 ≤ d) (s : Shape)
       (ground.mem_of_countOf_pos c _ hc)
     have hcs : c.length = s.length := by rw [hcl, hs]
     have hcpos : 0 < c.length := by rw [hcl]; exact hd0
+    rw [show labels.emit s (adjchar.theta d) c
+      = (if 0 < steinberg.count s (adjchar.theta d) c
+          then some (labels.reduce c) else none) from rfl]
     by_cases hg : 0 < steinberg.count s (adjchar.theta d) c
     · rw [if_pos hg]
       show labels.countL s (adjchar.theta d) (labels.reduce c)
@@ -2747,8 +2749,7 @@ theorem readAll (d : Nat) (hd : 2 ≤ d) (s : Shape)
       (ground.dedupL ((exhaust s.length
         (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content))
   show ((places.allShapes d (places.degree s + places.degree (adjchar.theta d))).filterMap
-      (fun c => if 0 < steinberg.count s (adjchar.theta d) c
-        then some (labels.reduce c) else none)).foldl
+      (labels.emit s (adjchar.theta d))).foldl
       (fun acc c => acc + labels.countL s (adjchar.theta d) c * weyldim.dimOf c
         * c2hat.dfQ c) 0
     = weyldim.dimOf s * weyldim.dimOf (adjchar.theta d)
@@ -2758,8 +2759,7 @@ theorem readAll (d : Nat) (hd : 2 ≤ d) (s : Shape)
         * c2hat.dfQ c) _ 0,
     Nat.zero_add,
     ground.famFold_filterMap
-      (fun c => if 0 < steinberg.count s (adjchar.theta d) c
-        then some (labels.reduce c) else none)
+      (labels.emit s (adjchar.theta d))
       (fun c => labels.countL s (adjchar.theta d) c * weyldim.dimOf c
         * c2hat.dfQ c)
       (places.allShapes d (places.degree s + places.degree (adjchar.theta d))),

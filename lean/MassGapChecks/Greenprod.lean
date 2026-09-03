@@ -38,7 +38,43 @@ read `chainLen` with its length binder's refusal, and the form
 read's two shape binders load-bearing — the bond count parted short
 refuses with the walked length holding, the two part jointly at the
 combined forge — beside the two one-direction partings that satisfy
-the display at the padded reads. -/
+the display at the padded reads.  Clause (i)'s tail symmetry reads
+last: at the chain fixture the fold at the symmetric diagonal reads
+every tail pivot symmetric down the recursion, the asymmetric
+one-slab seed parting the fold and the conclusion with the
+recursion's read standing, and the symmetric diagonal against a
+forged member list parting the read with the fold standing.  The
+withdrawn term's sandwich closes the module: at the scalar pivot
+`X' = 2` with the bond `B = 1` and the witness `R = 1/2` the
+withdrawn term `B R` cleared at the two clearings reads
+`Rᵀ X' R`, decided raw and through the theorem; and the pivot's
+symmetry binder is load-bearing — at the order-two shear
+`X' = [[1,2],[0,1]]` with the identity bond and the inverse
+witness the witness identity stands while the transpose read
+refuses, and the two sides part, `[[1,-2],[0,1]]` against
+`[[1,0],[-2,1]]`; and the witness identity is load-bearing in
+turn — the forged witness `1` at the symmetric pivot parts the
+sandwich at one against two.  The join's form split and the
+withdrawn term's cap close the module.  At the pivot `X = 2`, the
+bond `B = 2`, the witness `R = 1` and the diagonal `A = 4` the
+join reads at the clearings and the form split prices the
+diagonal's form as the pivot's joined to the withdrawn term's, four
+against two and two, decided and through the theorem, with the
+forged diagonal five parting join and display together.  At the
+deeper pivot `Xd = 2`, the bond `B = 1` and the witness `R = 1/2`
+the floor `(2, 1)` and the bond cap `(1, 1)` are one-sided
+comparisons at the kernel-only order-one split, each site datum
+vacant so each comparison tight, and the conclusion is tight beside
+them at two against two, decided and through the theorem; the three
+hypotheses are isolated in turn — the floor forged at `Xd = 1/2`
+against the witness two, the bond cap forged at `B = 2`, and the
+witness identity forged at `R = 1` — each refused read decided
+beside its co-binders' true reads and the conclusion parting with
+it, four against one, four against one and two against one.  The
+pivots' splits close at a two-member list: the pivots `2` and `−2`
+at their order-one splits, the fold's head split, the paired
+certificate read at each member, and the prefix's read at the
+leading pivot. -/
 set_option maxHeartbeats 4000000
 
 open ground elim inertia greenprod
@@ -516,3 +552,421 @@ example : ¬ ((assemble ([BPair.ofNat 2].map (fun a => [[a]]))
     ∧ ((assemble ([BPair.ofNat 2].map (fun a => [[a]]))
       ([BPair.ofNat 1, BPair.ofNat 5].map (fun b => [[b]]))).headD
         []).length = 1) := by decide +kernel
+
+/-! Clause (i)'s tail symmetry at the scalar three-slab chain: the
+fold at the symmetric diagonal reads every tail pivot symmetric
+down the recursion, the theorem route beside the seed pivot's own
+decided read. -/
+
+example : ∀ i, i < xs3.length →
+    matOneValue (transposeM (ground.getAt dM xs3 i).1)
+      (ground.getAt dM xs3 i).1 :=
+  greenprod.tailSym diag3 off3 xs3 rs3 [1, 1, 1]
+    (by decide +kernel) (by decide +kernel)
+
+example : matOneValue (transposeM (ground.getAt dM xs3 0).1)
+    (ground.getAt dM xs3 0).1 := by decide +kernel
+
+/-! The symmetry fold's own refusal: the one-slab seed
+`A = [[1,1],[0,1]]` reads the recursion at `X = A` while the fold
+refuses at that diagonal, and the conclusion parts at the seed
+pivot. -/
+
+private def asymA : Mat := [[⟨2, 1⟩, ⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
+
+example : tailRead [asymA] [] [(asymA, 1)] [] [2] := by decide +kernel
+example : ¬ (((List.range ([asymA] : List Mat).length).all
+    (fun i => decide (matOneValue
+      (transposeM (ground.getAt [] [asymA] i))
+      (ground.getAt [] [asymA] i)))) = true) := by decide +kernel
+example : ¬ matOneValue
+    (transposeM (ground.getAt dM [((asymA, 1) : MatQ)] 0).1)
+    (ground.getAt dM [((asymA, 1) : MatQ)] 0).1 := by decide +kernel
+
+/-! The recursion's own refusal: the symmetric diagonal
+`A = [[1,0],[0,1]]` against the forged member list parts the
+recursion at the seed while its fold stands, the conclusion the
+parting above. -/
+
+private def symA : Mat := [[⟨2, 1⟩, u], [u, ⟨2, 1⟩]]
+
+example : ¬ tailRead [symA] [] [(asymA, 1)] [] [2] := by decide +kernel
+example : ((List.range ([symA] : List Mat).length).all
+    (fun i => decide (matOneValue
+      (transposeM (ground.getAt [] [symA] i))
+      (ground.getAt [] [symA] i)))) = true := by decide +kernel
+
+/-! Clause (i)'s withdrawn term at the scalar pivot: the deeper
+pivot `X' = 2` at the unit clearing, the bond `B = 1` and the
+witness `R = 1/2` — the witness identity `X'R = Bᵀ` holds at the
+clearings, and the withdrawn term `B R` cleared at `X'`'s and
+`R`'s clearings reads the sandwich `Rᵀ X' R`, decided raw and
+through the theorem. -/
+
+private def wsXp : MatQ := ([[⟨3, 1⟩]], 1)
+private def wsB : Mat := [[⟨2, 1⟩]]
+private def wsR : MatQ := ([[⟨2, 1⟩]], 2)
+
+example : oneValueQ (mulQ wsXp wsR) (ofM (transposeM wsB)) := by
+  decide +kernel
+
+example : matOneValue (matScale (wsXp.2 * wsR.2) (matMul wsB wsR.1))
+    (matMul (matMul (transposeM wsR.1) wsXp.1) wsR.1) := by
+  decide +kernel
+
+example : matOneValue (matScale (wsXp.2 * wsR.2) (matMul wsB wsR.1))
+    (matMul (matMul (transposeM wsR.1) wsXp.1) wsR.1) :=
+  withdrawn_sandwich (k := 1) (k' := 1) wsXp wsR wsB
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
+
+/-! The withdrawn term's symmetry binder, isolated at the
+order-two shear: the deeper pivot `X' = [[1,2],[0,1]]` at the unit
+clearing, the bond the identity and the witness the pivot's own
+inverse `[[1,-2],[0,1]]`.  The witness identity `X'R = Bᵀ = I`
+stands while the pivot's transpose read refuses, and the two sides
+of the sandwich part — `[[1,-2],[0,1]]` against
+`[[1,0],[-2,1]]`. -/
+
+private def waXp : MatQ := ([[⟨2, 1⟩, ⟨3, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]], 1)
+private def waB : Mat := [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
+private def waR : MatQ := ([[⟨2, 1⟩, ⟨1, 3⟩], [⟨1, 1⟩, ⟨2, 1⟩]], 1)
+
+example : oneValueQ (mulQ waXp waR) (ofM (transposeM waB)) := by
+  decide +kernel
+example : ¬ matOneValue (transposeM waXp.1) waXp.1 := by decide +kernel
+example : ¬ matOneValue (matScale (waXp.2 * waR.2) (matMul waB waR.1))
+    (matMul (matMul (transposeM waR.1) waXp.1) waR.1) := by
+  decide +kernel
+
+/-! The withdrawn term's witness identity, isolated: at the deeper
+pivot `2` with the bond `1` and the forged witness `1`, the pivot's
+symmetry and every shape stand while the witness identity refuses,
+and the sandwich's two sides part at one against two. -/
+
+private def wwR : MatQ := ([[⟨2, 1⟩]], 1)
+
+example : ¬ oneValueQ (mulQ wsXp wwR) (ofM (transposeM wsB)) := by
+  decide +kernel
+example : matOneValue (transposeM wsXp.1) wsXp.1 := by decide +kernel
+example : ¬ matOneValue (matScale (wsXp.2 * wwR.2) (matMul wsB wwR.1))
+    (matMul (matMul (transposeM wwR.1) wsXp.1) wwR.1) := by
+  decide +kernel
+
+/-! Clause (i)'s join at the scalar slab: the pivot `X = 2` at the
+unit clearing, the bond `B = 2`, the witness `R = 1` and the
+diagonal `A = 4` — the join `X + B R = A` reads at the clearings,
+and the form split prices the diagonal's form as the pivot's joined
+to the withdrawn term's, four against two and two, decided raw and
+through the theorem; the forged diagonal `A = 5` parts the
+join and the display beside it. -/
+
+private def jqX : MatQ := ([[⟨3, 1⟩]], 1)
+private def jqR : MatQ := ([[⟨2, 1⟩]], 1)
+private def jqB : Mat := [[⟨3, 1⟩]]
+private def jqA : Mat := [[⟨5, 1⟩]]
+private def jqV : List BPair := [⟨2, 1⟩]
+
+example : oneValueQ (addQ jqX (mulQ (ofM jqB) jqR)) (ofM jqA) := by
+  decide +kernel
+
+example : ((quadForm jqA jqV).scale (jqX.2 * jqR.2)).oneValue
+    ((quadForm jqX.1 jqV).scale jqR.2
+      + (quadForm (matMul jqB jqR.1) jqV).scale jqX.2) := by
+  decide +kernel
+
+example : ∀ w : List BPair, w.length = 1 →
+    ((quadForm jqA w).scale (jqX.2 * jqR.2)).oneValue
+      ((quadForm jqX.1 w).scale jqR.2
+        + (quadForm (matMul jqB jqR.1) w).scale jqX.2) :=
+  join_quadSplit (o := 1) (o' := 1) jqX jqR jqA jqB
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+
+/-- Refusal naming the join's own binder: at the diagonal five the
+join refuses at the clearings and the form split parts beside it,
+five against the pivot's two joined to the withdrawn term's two. -/
+
+private def jqA' : Mat := [[⟨6, 1⟩]]
+
+example : ¬ oneValueQ (addQ jqX (mulQ (ofM jqB) jqR)) (ofM jqA') := by
+  decide +kernel
+example : ¬ ((quadForm jqA' jqV).scale (jqX.2 * jqR.2)).oneValue
+    ((quadForm jqX.1 jqV).scale jqR.2
+      + (quadForm (matMul jqB jqR.1) jqV).scale jqX.2) := by
+  decide +kernel
+
+/-! The withdrawn term's cap at the arriving floor: the deeper
+pivot `Xd = 2` at the unit clearing, the bond `B = 1` and the
+witness `R = 1/2` at the witness identity `Xd R = Bᵀ`.  The floor
+`(2, 1)` and the bond cap `(1, 1)` are the one-sided comparisons at
+the kernel-only order-one split — each site datum reads the vacant
+entry, so each comparison is tight — and the conclusion is tight
+beside them, the withdrawn term's form scaled by the floor's
+numerator against the bond's denominator reading two against the
+self-pairing scaled by the bond's numerator against the floor's
+denominator and the witness clearing. -/
+
+private def scXd : MatQ := ([[⟨3, 1⟩]], 1)
+private def scB : Mat := [[⟨2, 1⟩]]
+private def scR : MatQ := ([[⟨2, 1⟩]], 2)
+private def scV : List BPair := [⟨2, 1⟩]
+
+/-- The kernel-only order-one split at the identity congruence, the
+tight comparisons' shared certificate. -/
+private def scKsp : Split 1 :=
+  ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [], 1, rfl⟩
+
+example : oneValueQ (mulQ scXd scR) (ofM (transposeM scB)) := by
+  decide +kernel
+
+example : leAt (matScale (2 * scXd.2) (idMat 1))
+    (matScale 1 scXd.1) scKsp := by decide +kernel
+
+example : leAt (matScale 1 (matMul scB (transposeM scB)))
+    (matScale 1 (idMat 1)) scKsp := by decide +kernel
+
+private theorem scFloor : ∀ w : List BPair, w.length = 1 →
+    (dotN w w).scale (2 * scXd.2) ≤ (quadForm scXd.1 w).scale 1 :=
+  fun w hw =>
+    ground.leB_congr
+      (BPair.oneValue_trans
+        (quadForm_scale (2 * scXd.2) (idMat 1) w)
+        (BPair.scale_congr (2 * scXd.2)
+          (dotN_congrR w _ _ (matVec_idMat 1 w hw))))
+      (quadForm_scale 1 scXd.1 w)
+      (le_all (matScale (2 * scXd.2) (idMat 1)) (matScale 1 scXd.1)
+        scKsp (by decide +kernel) (by decide +kernel)
+        (by decide +kernel) w hw)
+
+private theorem scBond : ∀ w : List BPair, w.length = 1 →
+    (quadForm (matMul scB (transposeM scB)) w).scale 1
+      ≤ (dotN w w).scale 1 :=
+  fun w hw =>
+    ground.leB_congr
+      (quadForm_scale 1 (matMul scB (transposeM scB)) w)
+      (BPair.oneValue_trans (quadForm_scale 1 (idMat 1) w)
+        (BPair.scale_congr 1 (dotN_congrR w _ _ (matVec_idMat 1 w hw))))
+      (le_all (matScale 1 (matMul scB (transposeM scB)))
+        (matScale 1 (idMat 1)) scKsp (by decide +kernel)
+        (by decide +kernel) (by decide +kernel) w hw)
+
+example : (quadForm (matMul scB scR.1) scV).scale (2 * 1)
+    ≤ (dotN scV scV).scale (1 * (1 * scR.2)) := by decide +kernel
+
+example : ∀ w : List BPair, w.length = 1 →
+    (quadForm (matMul scB scR.1) w).scale (2 * 1)
+      ≤ (dotN w w).scale (1 * (1 * scR.2)) :=
+  sandwich_cap (o := 1) (o' := 1) scXd scR scB 2 1 1 1
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
+    scFloor scBond
+
+/-- Refusal isolating the arriving floor: at the deeper pivot
+`Xd = 1/2` with the witness `R = 2` the witness identity and the
+bond cap stand, while the floor `(2, 1)` reads four against one and
+the conclusion parts beside it, four against one. -/
+
+private def sfXd : MatQ := ([[⟨2, 1⟩]], 2)
+private def sfR : MatQ := ([[⟨3, 1⟩]], 1)
+
+example : oneValueQ (mulQ sfXd sfR) (ofM (transposeM scB)) := by
+  decide +kernel
+example : (quadForm (matMul scB (transposeM scB)) scV).scale 1
+    ≤ (dotN scV scV).scale 1 := by decide +kernel
+example : ¬ ((dotN scV scV).scale (2 * sfXd.2)
+    ≤ (quadForm sfXd.1 scV).scale 1) := by decide +kernel
+example : ¬ ((quadForm (matMul scB sfR.1) scV).scale (2 * 1)
+    ≤ (dotN scV scV).scale (1 * (1 * sfR.2))) := by decide +kernel
+
+/-- Refusal isolating the bond's square cap: at the bond `B = 2`
+with the witness `R = 1` the witness identity and the floor stand,
+while the bond cap `(1, 1)` reads four against one and the
+conclusion parts beside it, four against one. -/
+
+private def scRu : MatQ := ([[⟨2, 1⟩]], 1)
+private def sbB : Mat := [[⟨3, 1⟩]]
+
+example : oneValueQ (mulQ scXd scRu) (ofM (transposeM sbB)) := by
+  decide +kernel
+example : (dotN scV scV).scale (2 * scXd.2)
+    ≤ (quadForm scXd.1 scV).scale 1 := by decide +kernel
+example : ¬ ((quadForm (matMul sbB (transposeM sbB)) scV).scale 1
+    ≤ (dotN scV scV).scale 1) := by decide +kernel
+example : ¬ ((quadForm (matMul sbB scRu.1) scV).scale (2 * 1)
+    ≤ (dotN scV scV).scale (1 * (1 * scRu.2))) := by decide +kernel
+
+/-- Refusal isolating the witness identity: at the pass fixture's
+pivot and bond with the witness `R = 1` the floor and the bond cap
+stand, while the witness identity reads two against the bond's
+transpose one and the conclusion parts beside it, two against
+one. -/
+
+example : ¬ oneValueQ (mulQ scXd scRu) (ofM (transposeM scB)) := by
+  decide +kernel
+example : (quadForm (matMul scB (transposeM scB)) scV).scale 1
+    ≤ (dotN scV scV).scale 1 := by decide +kernel
+example : ¬ ((quadForm (matMul scB scRu.1) scV).scale (2 * 1)
+    ≤ (dotN scV scV).scale (1 * (1 * scRu.2))) := by decide +kernel
+
+/-! The pivots' splits at the two-member list: the pivots `2` and
+`−2` at their order-one splits, the fold reading the head's count
+joined to the tail's, the paired certificate read at each member,
+and the prefix's own read at the leading pivot. -/
+
+private def rlSp (a : BPair) : Split 1 :=
+  ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [.one a], 0, rfl⟩
+private def rlXs : List MatQ := [([[⟨3, 1⟩]], 1), ([[⟨1, 3⟩]], 1)]
+private def rlSps : List ((k : Nat) × Split k) :=
+  [⟨1, rlSp ⟨3, 1⟩⟩, ⟨1, rlSp ⟨1, 3⟩⟩]
+
+example : revListRead rlXs rlSps := by decide +kernel
+example : revFold rlSps = 1 := by decide +kernel
+example : revFold rlSps
+    = revAt (rlSp ⟨3, 1⟩) + revFold [⟨1, rlSp ⟨1, 3⟩⟩] :=
+  revFold_cons ⟨1, rlSp ⟨3, 1⟩⟩ [⟨1, rlSp ⟨1, 3⟩⟩]
+
+example : splitRead (ground.getAt dM rlXs 1).1
+    (ground.getAt ⟨1, rlSp ⟨3, 1⟩⟩ rlSps 1).2 := by decide +kernel
+example : ∀ i, i < rlXs.length →
+    ∀ d : (k : Nat) × Split k,
+      splitRead (ground.getAt dM rlXs i).1 (ground.getAt d rlSps i).2 :=
+  revListRead_at rlXs rlSps (by decide +kernel)
+
+example : revListRead (rlXs.take 1) (rlSps.take 1) := by decide +kernel
+example : revListRead (rlXs.take 1) (rlSps.take 1) :=
+  revListRead_take rlXs rlSps 1 (by decide +kernel)
+
+/-! The withdrawn term's cap at two orders: the deeper pivot
+`diag(1, 2)`, the bond `[[1, 1], [0, 1]]` and the witness
+`[[2, 0], [1, 1]]` at the clearing two, the witness identity read
+whole; the floor `(1, 1)` at the site datum `diag(0, 1)` under the
+exchanging congruence, the bond's square `[[2, 1], [1, 1]]` capped
+at `(3, 1)` under the unit-triangular congruence, and the squared
+pairing strict at the two orders, the conclusion at six against
+twelve. -/
+
+private def q2Xd : MatQ :=
+  ([[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨3, 1⟩]], 1)
+private def q2B : Mat := [[⟨2, 1⟩, ⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
+private def q2R : MatQ :=
+  ([[⟨3, 1⟩, ⟨1, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]], 2)
+private def q2V : List BPair := [⟨2, 1⟩, ⟨2, 1⟩]
+
+/-- The floor's split: the exchanging congruence reads the site
+datum `diag(0, 1)` at its occupied entry over the kernel. -/
+private def q2FSp : Split 2 :=
+  ⟨⟨[[⟨1, 1⟩, ⟨1, 2⟩], [⟨2, 1⟩, ⟨1, 1⟩]], rfl⟩,
+   ⟨[[⟨1, 1⟩, ⟨2, 1⟩], [⟨1, 2⟩, ⟨1, 1⟩]], rfl⟩,
+   [.one ⟨2, 1⟩], 1, rfl⟩
+
+/-- The bond cap's split: the unit-triangular congruence at the
+datum `[[1, -1], [-1, 2]]`, two occupied entries. -/
+private def q2BSp : Split 2 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]], rfl⟩,
+   ⟨[[⟨2, 1⟩, ⟨1, 2⟩], [⟨1, 1⟩, ⟨2, 1⟩]], rfl⟩,
+   [.one ⟨2, 1⟩, .one ⟨2, 1⟩], 0, rfl⟩
+
+example : oneValueQ (mulQ q2Xd q2R) (ofM (transposeM q2B)) := by
+  decide +kernel
+
+example : leAt (matScale (1 * q2Xd.2) (idMat 2))
+    (matScale 1 q2Xd.1) q2FSp := by decide +kernel
+
+example : leAt (matScale 1 (matMul q2B (transposeM q2B)))
+    (matScale 3 (idMat 2)) q2BSp := by decide +kernel
+
+private theorem q2Floor : ∀ w : List BPair, w.length = 2 →
+    (dotN w w).scale (1 * q2Xd.2) ≤ (quadForm q2Xd.1 w).scale 1 :=
+  fun w hw =>
+    ground.leB_congr
+      (BPair.oneValue_trans
+        (quadForm_scale (1 * q2Xd.2) (idMat 2) w)
+        (BPair.scale_congr (1 * q2Xd.2)
+          (dotN_congrR w _ _ (matVec_idMat 2 w hw))))
+      (quadForm_scale 1 q2Xd.1 w)
+      (le_all (matScale (1 * q2Xd.2) (idMat 2)) (matScale 1 q2Xd.1)
+        q2FSp (by decide +kernel) (by decide +kernel)
+        (by decide +kernel) w hw)
+
+private theorem q2Bond : ∀ w : List BPair, w.length = 2 →
+    (quadForm (matMul q2B (transposeM q2B)) w).scale 1
+      ≤ (dotN w w).scale 3 :=
+  fun w hw =>
+    ground.leB_congr
+      (quadForm_scale 1 (matMul q2B (transposeM q2B)) w)
+      (BPair.oneValue_trans (quadForm_scale 3 (idMat 2) w)
+        (BPair.scale_congr 3 (dotN_congrR w _ _ (matVec_idMat 2 w hw))))
+      (le_all (matScale 1 (matMul q2B (transposeM q2B)))
+        (matScale 3 (idMat 2)) q2BSp (by decide +kernel)
+        (by decide +kernel) (by decide +kernel) w hw)
+
+example : (dotN (matVec q2R.1 q2V) (matVec (transposeM q2B) q2V))
+      * (dotN (matVec q2R.1 q2V) (matVec (transposeM q2B) q2V))
+    < (dotN (matVec q2R.1 q2V) (matVec q2R.1 q2V))
+      * (dotN (matVec (transposeM q2B) q2V)
+          (matVec (transposeM q2B) q2V)) := by decide +kernel
+
+example : (quadForm (matMul q2B q2R.1) q2V).scale (1 * 1)
+    ≤ (dotN q2V q2V).scale (3 * (1 * q2R.2)) := by decide +kernel
+
+example : ∀ w : List BPair, w.length = 2 →
+    (quadForm (matMul q2B q2R.1) w).scale (1 * 1)
+      ≤ (dotN w w).scale (3 * (1 * q2R.2)) :=
+  sandwich_cap (o := 2) (o' := 2) q2Xd q2R q2B 1 1 3 1
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
+    q2Floor q2Bond
+
+/-! ## The chain chart
+
+The scalar chain's entry chart at the diagonal `(2, 3, 4)` and the
+bonds `(5, 6)`: the four reads decided at the chart, the assembled
+chain's entries read through `chainEntry` beside the decided cells,
+the bond count's short side load-bearing (one bond at three diagonal
+entries drops the last slab, the corner entry reading the sum's unit
+against the chart's `4`), and its long side the padded read (a third
+bond beyond the last slab widens the assembled rows past the order,
+every entry inside the order the chart's own). -/
+
+private def cd : List BPair := [⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩]
+private def co : List BPair := [⟨5, 1⟩, ⟨6, 1⟩]
+private def coShort : List BPair := [⟨5, 1⟩]
+private def coLong : List BPair := [⟨5, 1⟩, ⟨6, 1⟩, ⟨7, 1⟩]
+
+example : chainAt cd co 1 1 = ⟨3, 1⟩ := by decide +kernel
+example : chainAt cd co 1 2 = ⟨6, 1⟩ := by decide +kernel
+example : chainAt cd co 2 1 = ⟨6, 1⟩ := by decide +kernel
+example : chainAt cd co 0 2 = BPair.unit := by decide +kernel
+example : chainAt cd co 1 1 = ⟨3, 1⟩ :=
+  (chainAt_diag cd co 1).trans (by decide +kernel)
+example : chainAt cd co 1 2 = ⟨6, 1⟩ :=
+  (chainAt_up cd co 1 2 (by decide +kernel) (by decide +kernel) rfl).trans
+    (by decide +kernel)
+
+example : ground.getAt BPair.unit (ground.getAt []
+    (assemble (cd.map (fun x => [[x]])) (co.map (fun x => [[x]]))) 1) 2
+    = chainAt cd co 1 2 := by decide +kernel
+example : ground.getAt BPair.unit (ground.getAt []
+    (assemble (cd.map (fun x => [[x]])) (co.map (fun x => [[x]]))) 1) 2
+    = chainAt cd co 1 2 :=
+  chainEntry cd co rfl 1 2 (by decide +kernel) (by decide +kernel)
+example : ground.getAt BPair.unit (ground.getAt []
+    (assemble (cd.map (fun x => [[x]])) (co.map (fun x => [[x]]))) 2) 2
+    = chainAt cd co 2 2 :=
+  chainEntry cd co rfl 2 2 (by decide +kernel) (by decide +kernel)
+
+/-- The bond count's short side is load-bearing: at one bond the
+assembled chain drops its last slab and the corner entry reads the
+sum's unit against the chart's `4`. -/
+example : ¬ (ground.getAt BPair.unit (ground.getAt []
+    (assemble (cd.map (fun x => [[x]])) (coShort.map (fun x => [[x]]))) 2) 2
+    = chainAt cd coShort 2 2) := by decide +kernel
+
+/-- The long side is the padded read: at three bonds the entries
+inside the order stay the chart's own. -/
+example : ground.getAt BPair.unit (ground.getAt []
+    (assemble (cd.map (fun x => [[x]])) (coLong.map (fun x => [[x]]))) 2) 1
+    = chainAt cd coLong 2 1 := by decide +kernel
+example : ¬ (coLong.length + 1 = cd.length) := by decide +kernel

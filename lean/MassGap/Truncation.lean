@@ -360,7 +360,7 @@ theorem polar_psd {k m : Nat} (M G M1 M2 B G1 G2 : Mat) (W s : Pos)
                   (hGjoin _ _ hXl hYl)))
               hMv))
           (ground.leB_of_not_lt
-            (psd_all _ spL hcap.2.2.2.2.1 hcap.2.2.2.2.2 _ hvl))
+            (psd_all _ spL hcap.2.2.2.1 hcap.2.2.2.2 _ hvl))
       have hp2 : BPair.unit ≤
           BPair.ofPos W * (dotN (vecScale (BPair.ofPos W) x)
               (matVec G1 (vecScale (BPair.ofPos W) x))
@@ -380,7 +380,7 @@ theorem polar_psd {k m : Nat} (M G M1 M2 B G1 G2 : Mat) (W s : Pos)
                 (BPair.mul_congr (BPair.oneValue_refl _) hGv'))
               (ground.swap_congr hMv')))
           (ground.leB_of_not_lt
-            (psd_all _ spU hcap.2.2.1 hcap.2.2.2.1 _ hv'l))
+            (psd_all _ spU hcap.2.2.1.1 hcap.2.2.1.2 _ hv'l))
       exact absurd (polarClose _ _ _ _ _ _ _ hp1 hp2
         (BPair.oneValue_symm hT) hlt (ground.unitLtOfPos W)) (fun z => z)
 
@@ -575,7 +575,7 @@ theorem cap_polar {n : Nat} (D : Mat) (wn wd : Pos) (spU spL : Split n)
             (BPair.oneValue_trans (quadForm_ofPos wd D _)
               (BPair.mul_congr (BPair.oneValue_refl _) hDu)))))
       (ground.leB_of_not_lt
-        (psd_all _ spU hcap.2.2.1 hcap.2.2.2.1 _ hul))
+        (psd_all _ spU hcap.2.2.1.1 hcap.2.2.1.2 _ hul))
   have h2 : BPair.unit ≤
       BPair.ofPos wn * ((a * (a * dotN x x) + b * (b * dotN y y))
           + ((a * (b * dotN x y)).swap + (a * (b * dotN x y)).swap))
@@ -591,7 +591,7 @@ theorem cap_polar {n : Nat} (D : Mat) (wn wd : Pos) (spU spL : Split n)
           (BPair.oneValue_trans (quadForm_ofPos wd D _)
             (BPair.mul_congr (BPair.oneValue_refl _) hDu'))))
       (ground.leB_of_not_lt
-        (psd_all _ spL hcap.2.2.2.2.1 hcap.2.2.2.2.2 _ hu'l))
+        (psd_all _ spL hcap.2.2.2.1 hcap.2.2.2.2 _ hu'l))
   rw [BPair.mul_assoc a b (dotN x (matVec D y)),
     BPair.mul_assoc a a (dotN x x), BPair.mul_assoc b b (dotN y y)]
   exact capClose wn wd
@@ -626,7 +626,7 @@ theorem cap_read {n : Nat} (A : Mat) (cn cd : Pos)
   · have hu : BPair.unit ≤ inertia.quadForm
         (siteDatum (matScale cn (idMat n)) (matScale cd A)) v :=
       ground.leB_of_not_lt
-        (inertia.psd_all _ spA hA.2.2.1 hA.2.2.2.1 v hv)
+        (inertia.psd_all _ spA hA.2.2.1.1 hA.2.2.1.2 v hv)
     exact ground.leB_of_unit_add
       (V := (BPair.ofPos cd * inertia.quadForm A v).swap)
       (ground.leB_congr_right
@@ -636,7 +636,7 @@ theorem cap_read {n : Nat} (A : Mat) (cn cd : Pos)
   · have hu : BPair.unit ≤ inertia.quadForm
         (matAdd (matScale cn (idMat n)) (matScale cd A)) v :=
       ground.leB_of_not_lt
-        (inertia.psd_all _ spA' hA.2.2.2.2.1 hA.2.2.2.2.2 v hv)
+        (inertia.psd_all _ spA' hA.2.2.2.1 hA.2.2.2.2 v hv)
     have hstep := ground.leB_of_unit_add
       (V := BPair.ofPos cd * inertia.quadForm A v)
       (ground.leB_congr_right (BPair.add_congr hC hS)

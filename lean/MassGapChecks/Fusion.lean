@@ -149,3 +149,56 @@ constituent on the row once, the vacant target off it. -/
 example : rowLaw (dataA 2) [1, 0] [1, 0] [2, 0] := by decide +kernel
 example : rowLaw (dataA 2) [1, 0] [1, 0] [0, 0] := by decide +kernel
 example : rowLaw (dataA 2) [1, 0] [1, 0] [3, 1] := by decide +kernel
+
+/-! The law through `rowLaw_dataA` beside the decided reads, at the
+three arms of the lift: the occupied target at the matched degree,
+the vacant target, and the reduced target beyond the pairing's
+degree, whose lifted count is vacant at the first shape's full
+column; the refusal at the unreduced target, the full column's
+class member occupied in the count and off the reduced row, the
+reduced binder's own record; the widths are the frame, the law
+holding at the ragged forges outright. -/
+
+example : rowLaw (dataA 2) [1, 0] [1, 0] [2, 0] :=
+  rowLaw_dataA 2 [1, 0] [1, 0] [2, 0] rfl rfl rfl rfl
+example : rowLaw (dataA 2) [1, 0] [1, 0] [0, 0] :=
+  rowLaw_dataA 2 [1, 0] [1, 0] [0, 0] rfl rfl rfl rfl
+example : rowLaw (dataA 2) [1, 0] [1, 0] [4, 0] := by decide +kernel
+example : rowLaw (dataA 2) [1, 0] [1, 0] [4, 0] :=
+  rowLaw_dataA 2 [1, 0] [1, 0] [4, 0] rfl rfl rfl rfl
+example : rowLaw (dataA 3) [1, 0, 0] [1, 1, 0] [2, 1, 0] := by decide +kernel
+example : rowLaw (dataA 3) [1, 0, 0] [1, 1, 0] [2, 1, 0] :=
+  rowLaw_dataA 3 [1, 0, 0] [1, 1, 0] [2, 1, 0] rfl rfl rfl rfl
+example : rowLaw (dataA 0) [] [] [] := rowLaw_dataA 0 [] [] [] rfl rfl rfl rfl
+example : ¬ rowLaw (dataA 2) [1, 0] [1, 0] [0, 1] := by decide +kernel
+example : 0 < (dataA 2).count [1, 0] [1, 0] [0, 1] := by decide +kernel
+example : rowLaw (dataA 2) [1, 0] [1, 0] [2, 0, 0] := by decide +kernel
+example : rowLaw (dataA 2) [1, 0] [2, 0, 0] [1, 0] := by decide +kernel
+
+/-! The labels at a fundamental count: the unit, the involution and
+the rows inside the domain, with the refusals at the unreduced
+shape and at the ragged width. -/
+
+example : labelA 2 [1, 0] = true := by decide +kernel
+example : labelA 2 (dataA 2).unit = true := labelA_unit 2
+example : labelA 3 ((dataA 3).dual [1, 0, 0]) = true :=
+  labelA_dual 3 [1, 0, 0] (by decide +kernel)
+example : ((dataA 3).row [1, 0, 0] [1, 1, 0]).all (labelA 3) = true :=
+  labelA_row 3 [1, 0, 0] [1, 1, 0]
+example : ((dataA 3).row [1, 0, 0] [1, 1, 0]).all (labelA 3) = true := by
+  decide +kernel
+example : labelA 2 [0, 1] = false := by decide +kernel
+example : labelA 2 [1, 0, 0] = false := by decide +kernel
+example : ((dataA 2).unit :: (dataA 2).below 12).all (labelA 2) = true :=
+  labelA_below 2 12
+example : ((dataA 3).unit :: (dataA 3).below 18).all (labelA 3) = true := by
+  decide +kernel
+example : ((dataA 0).unit :: (dataA 0).below 5).all (labelA 0) = true :=
+  labelA_below 0 5
+example : (dataA 0).below 5 = [] := by decide +kernel
+example : ground.distinctList ((dataA 2).unit :: (dataA 2).below 12) :=
+  below_distinct_dataA 2 12
+example : ground.distinctList ((dataA 2).unit :: (dataA 2).below 12) := by
+  decide +kernel
+example : ground.distinctList ((dataA 3).unit :: (dataA 3).below 18) := by
+  decide +kernel

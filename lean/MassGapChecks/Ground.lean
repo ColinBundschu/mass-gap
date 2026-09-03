@@ -1089,3 +1089,39 @@ example : ¬ (bpow (BPair.ofNat 2 + BPair.ofNat 3) 3).oneValue
     (bsum (fun t => BPair.ofNat (pasc 3 t)
       * (bpow (BPair.ofNat 2) t * bpow (BPair.ofNat 3) t))
       (List.range 4)) := by decide +kernel
+
+/-! ## The monomial engine
+
+A natural product identity read at the monomial carrier: the two
+sides' coefficients and exponent lists decided equal at the
+variable list `[en, ed, r + 1]`, the identity's route through
+`monEq`, and the two data load-bearing at parted exponents and at a
+parted coefficient. -/
+
+example (en ed r : Nat) :
+    4 * (en * en) * 80 * 630 * (11 * (r + 1) * ed)
+      = 6930 * (en * ed * (r + 1) * 16) * (20 * en) :=
+  monEq [en, ed, r + 1]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 4)
+        (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.cst 80)) (Mon.cst 630))
+      (Mon.mul (Mon.mul (Mon.cst 11) (Mon.var 2)) (Mon.var 1)))
+    (Mon.mul (Mon.mul (Mon.cst 6930)
+        (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2))
+          (Mon.cst 16)))
+      (Mon.mul (Mon.cst 20) (Mon.var 0)))
+    (by decide +kernel) (by decide +kernel)
+
+example : (Mon.mul (Mon.mul (Mon.cst 4) (Mon.mul (Mon.var 0) (Mon.var 0)))
+    (Mon.var 1)).exps = [2, 1] := by decide +kernel
+example : (Mon.mul (Mon.mul (Mon.cst 4) (Mon.mul (Mon.var 0) (Mon.var 0)))
+    (Mon.var 1)).coef = 4 := by decide +kernel
+example : (Mon.mul (Mon.cst 2) (Mon.var 0)).val [7] = 14 := by decide +kernel
+
+/-- The exponent lists are load-bearing: `2·x` against `x·x` share the
+coefficient and part at the exponents. -/
+example : ¬ ((Mon.mul (Mon.cst 2) (Mon.var 0)).exps
+    = (Mon.mul (Mon.var 0) (Mon.var 0)).exps) := by decide +kernel
+/-- The coefficients are load-bearing: `2·x` against `3·x` share the
+exponents and part at the coefficient. -/
+example : ¬ ((Mon.mul (Mon.cst 2) (Mon.var 0)).coef
+    = (Mon.mul (Mon.cst 3) (Mon.var 0)).coef) := by decide +kernel

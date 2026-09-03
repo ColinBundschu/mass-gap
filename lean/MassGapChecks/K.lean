@@ -16,8 +16,8 @@ floor the cut fails, the split's
 lower-side unit with `thm:certconstruct`'s witness vector reading
 the exceeded pair, `thm:levelequiv`'s shape at the instance.  The
 free-gap coherences read the committed enumerations at the
-carrier check module's pins through the named displays, the theta
-window's at the tabulated lookup route.  The descent tier closes
+carrier check module's pins, the theta window's at the tabulated
+lookup route.  The descent tier closes
 the module: the cut at the doubled scale reads the base count,
 decided at the scaled certificate and routed through
 `thm:unitschain`'s descent both ways, the forged scaled block
@@ -35,8 +35,7 @@ private def etSq : Mat := [[u, u, u], [u, ⟨13, 1⟩, u], [u, u, ⟨33, 1⟩]]
 
 example : freeGap (dataA 2) square 32 = etSq :=
   freeGap_ofDiag (dataA 2) square 32 [0, 12, 32] etSq
-    (pairpencil.windowDiag_at (dataA 2) square 32 carrier.sqIx2
-      [0, 12, 32] carrier.sqIx2_pin (by decide +kernel))
+    (by rw [carrier.sqIx2_pin]; decide +kernel)
     (by decide +kernel)
 
 /-- The rotation moving the unit line's head entry to the trailing
@@ -107,9 +106,7 @@ private def etTh : Mat :=
 
 example : freeGap (tabulate (dataA 2) 18) thetaG 18 = etTh :=
   freeGap_ofDiag (tabulate (dataA 2) 18) thetaG 18 [0, 12, 18, 12] etTh
-    (pairpencil.windowDiag_at (tabulate (dataA 2) 18) thetaG 18
-      carrier.thIx18 [0, 12, 18, 12] carrier.thIx18_pin
-      (by decide +kernel))
+    (by rw [carrier.thIx18_pin]; decide +kernel)
     (by decide +kernel)
 
 private def rot4 : Mat :=
@@ -136,14 +133,12 @@ private def et3 : Mat := [[u, u, u], [u, ⟨33, 1⟩, u], [u, u, ⟨33, 1⟩]]
 
 example : freeGap (dataA 3) square 32 = et3 :=
   freeGap_ofDiag (dataA 3) square 32 [0, 32, 32] et3
-    (pairpencil.windowDiag_at (dataA 3) square 32 carrier.sqIx3
-      [0, 32, 32] carrier.sqIx3_pin (by decide +kernel))
+    (by rw [carrier.sqIx3_pin]; decide +kernel)
     (by decide +kernel)
 
-example : pairpencil.windowDiag (dataA 3) square 32
-    = [0, 32, 32] :=
-  pairpencil.windowDiag_at (dataA 3) square 32 carrier.sqIx3
-    [0, 32, 32] carrier.sqIx3_pin (by decide +kernel)
+example : pairpencil.slotDiag (dataA 3) square (carrier.idx (dataA 3) square 32)
+    = [0, 32, 32] := by
+  rw [carrier.sqIx3_pin]; decide +kernel
 
 example : cutRead (matMul et3 et3) et3 4 8 1
     (⟨⟨idMat 3, rfl⟩, ⟨idMat 3, rfl⟩, [], 3, rfl⟩ : Split 3) := by decide +kernel

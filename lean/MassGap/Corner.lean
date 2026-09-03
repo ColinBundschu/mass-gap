@@ -29,9 +29,17 @@ the cap's site datum with its equal-scale read, its
 positive-semidefinite split at the two summands' own, the cleared
 `ρ, w` identity (`shiftQ_split`) and the three root reads as count
 comparisons (`shift_count_le`, `shift_count_scale`,
-`dual_count_mono` at the corner ray's own points); the drift tier
-prices the ground's electric weight at the drift, the join of the
-ground level with the top root (`drift_cap`).
+`dual_count_mono` at the corner ray's own points, under one further
+clearing); the drift tier prices the ground's electric weight at the
+drift, the join of the ground level with the top root
+(`drift_cap`).  The cell floor's reads at the corner pencil close
+the module: an extent interval's mixed window, three scales at one
+level and one common clearing with the counts monotone in the scale,
+reads the window flat at count one across the interval
+(`interval_flat`), the height at the level clears the interval's
+floor wherever the top scale's does (`height_clears`), and the
+extent's bracket sits above the sum's unit at the cleared
+variable's segment order (`extent_pos`).
 
 The grade-key tier: the key `G(λ) := λ(θ^∨)` enters at the dual
 fold's read `G = Σ_i m_i c^∨_i` over the halved summands
@@ -640,24 +648,31 @@ private theorem cornerPencil_gap (E M : Mat) (en ed en' ed' g : Pos)
 and one level the ray's upper point counts at or below the lower
 point's, the two cleared pencils differing by the gap's electric
 diagonal — the order witnessed by the counts monotone in the scale,
-stated at the corner coordinate's own ray points. -/
+stated at the corner coordinate's own ray points, the two cleared
+pencils read under one further clearing `c`, the common clearing
+an extent interval's three scales share (`lem:corner`'s mixed
+window). -/
 theorem dual_count_mono {o : Nat} (E M G : Mat)
-    (en ed en' ed' g x y : Pos) (n n' : Nat)
+    (c en ed en' ed' g x y : Pos) (n n' : Nat)
     (sp sp' spE spg : inertia.Split o)
     (hg : en' * en' * (ed * ed) + g = en * en * (ed' * ed'))
     (hE : inertia.splitRead E spE) (hEpsd : inertia.psdAt spE)
-    (hsg : inertia.splitRead (inertia.matScale g E) spg)
+    (hsg : inertia.splitRead (inertia.matScale (c * g) E) spg)
     (h : certconstruct.countAtPair
-      (inertia.matScale (ed' * ed') (cornerPencil E M en ed))
+      (inertia.matScale (c * (ed' * ed')) (cornerPencil E M en ed))
       G x y n sp)
     (h' : certconstruct.countAtPair
-      (inertia.matScale (ed * ed) (cornerPencil E M en' ed'))
+      (inertia.matScale (c * (ed * ed)) (cornerPencil E M en' ed'))
       G x y n' sp') :
     n ≤ n' := by
-  rw [cornerPencil_gap E M en ed en' ed' g hg] at h
+  rw [← inertia.matScale_matScale (ed' * ed') c (cornerPencil E M en ed),
+    cornerPencil_gap E M en ed en' ed' g hg, inertia.matScale_matAdd,
+    inertia.matScale_matScale, inertia.matScale_matScale] at h
+  rw [← inertia.matScale_matScale (ed * ed) c (cornerPencil E M en' ed'),
+    inertia.matScale_matScale] at h'
   exact count_le_of_gap E
-    (inertia.matScale (ed * ed) (cornerPencil E M en' ed'))
-    G g x y n n' sp sp' spE spg hE hEpsd hsg h h'
+    (inertia.matScale (c * (ed * ed)) (cornerPencil E M en' ed'))
+    G (c * g) x y n n' sp sp' spE spg hE hEpsd hsg h h'
 
 
 /-! `lem:corner`'s contact drift: the ground's electric weight rides
@@ -6181,5 +6196,94 @@ theorem cornerAtHeight_minor {o : Nat} (E M G : Mat) (hp hm : Pos)
     exact hrows
   exact poly.oneValue_symm
     (elim.evalC_minorPP (cornerPP E M G) [⟨hp, hm⟩] hsq)
+
+/-! The extent interval's mixed window: three scales of the corner
+ray at one level and one common clearing, the counts monotone in the
+scale (`dual_count_mono`), so the ground's read at the interval's
+top with the second's at its bottom reads the window flat at count
+one across the interval, and the height at the fixed level clears the
+interval's floor wherever the top scale's does. -/
+
+/-- The mixed window: at the bottom scale the count sits at or below
+one (the second root at or beyond the level) and at the top scale at
+or above one (the ground at or below it), so every scale between
+reads count one, the counts monotone in the scale at the common
+clearing. -/
+theorem interval_flat {o : Nat} (E M G : Mat)
+    (enb edb en ed ent edt x y : Pos) (nb n nt : Nat)
+    (spb sp spt spE spg1 spg2 : Split o) (g1 g2 : Pos)
+    (hg1 : enb * enb * (ed * ed) + g1 = en * en * (edb * edb))
+    (hg2 : en * en * (edt * edt) + g2 = ent * ent * (ed * ed))
+    (hE : splitRead E spE) (hEpsd : psdAt spE)
+    (hsg1 : splitRead (matScale (edt * edt * g1) E) spg1)
+    (hsg2 : splitRead (matScale (edb * edb * g2) E) spg2)
+    (hb : certconstruct.countAtPair
+      (matScale (edt * edt * (ed * ed)) (cornerPencil E M enb edb))
+      G x y nb spb)
+    (h : certconstruct.countAtPair
+      (matScale (edb * edb * (edt * edt)) (cornerPencil E M en ed))
+      G x y n sp)
+    (ht : certconstruct.countAtPair
+      (matScale (edb * edb * (ed * ed)) (cornerPencil E M ent edt))
+      G x y nt spt)
+    (hnb : nb ≤ 1) (hnt : 1 ≤ nt) : n = 1 := by
+  have hup : nt ≤ n :=
+    dual_count_mono E M G (edb * edb) ent edt en ed g2 x y nt n
+      spt sp spE spg2 hg2 hE hEpsd hsg2 ht h
+  have hdown : n ≤ nb := by
+    rw [ground.mul_comm (edb * edb) (edt * edt)] at h
+    exact dual_count_mono E M G (edt * edt) en ed enb edb g1 x y n nb
+      sp spb spE spg1 hg1 hE hEpsd hsg1 h hb
+  exact Nat.le_antisymm (Nat.le_trans hdown hnb) (Nat.le_trans hnt hup)
+
+/-- The height clears the interval's floor: at one level the height
+is the level's cofactor at the scale, so a floor cleared at the
+interval's top scale is cleared at every scale at or below it, the
+comparison cross-multiplied at the scales' members. -/
+theorem height_clears (kn kd ln ld en ed ent edt : Pos)
+    (hs : en * edt ≤ ent * ed)
+    (hf : kn * ent * ld ≤ ln * (kd * edt)) :
+    kn * en * ld ≤ ln * (kd * ed) := by
+  refine ground.le_of_mul_le (c := edt) ?_
+  have h1 : kn * en * ld * edt ≤ kn * ent * ld * ed := by
+    have h2 : en * edt * (kn * ld) ≤ ent * ed * (kn * ld) :=
+      ground.mul_le_mul_right (kn * ld) hs
+    rw [ground.mul_right_comm kn en ld, ground.mul_assoc (kn * ld) en edt,
+      ground.mul_right_comm kn ent ld, ground.mul_assoc (kn * ld) ent ed,
+      ground.mul_comm (kn * ld) (en * edt), ground.mul_comm (kn * ld) (ent * ed)]
+    exact h2
+  have h3 : kn * ent * ld * ed ≤ ln * (kd * edt) * ed :=
+    ground.mul_le_mul_right ed hf
+  rw [ground.mul_assoc ln (kd * edt) ed, ground.mul_assoc kd edt ed,
+    ground.mul_comm edt ed, ← ground.mul_assoc kd ed edt,
+    ← ground.mul_assoc ln (kd * ed) edt] at h3
+  exact ground.le_trans h1 h3
+
+/-! The extent's positivity: the contact end's interiority read, the
+extent's bracket the divisor's first positive root's, its lower end
+strictly above the sum's unit at the cleared variable's segment
+order (`lem:contactcell`'s outputs at `contactcell.extRead`). -/
+
+/-- The extent's bracket sits above the sum's unit: the segment count
+from the unit to the bracket's lower end reads the two cleared points
+in order, and the clearing's positive factor reads the order back. -/
+theorem extent_pos {o1 o2 o3 o4 : Nat} (D : poly.Poly) (k : Nat)
+    (ct : cellcount.DivCert) (lo hi : BPair) (c : Pos)
+    (spH1 : Split o1) (spB1 : Split o2) (spH2 : Split o3)
+    (spB2 : Split o4)
+    (h : extentRead D k ct lo hi c spH1 spB1 spH2 spB2) :
+    BPair.unit < lo := by
+  have hlt : deckfactor.clearAt ct.sq BPair.unit
+      < deckfactor.clearAt ct.sq lo := h.2.2.2.1.1
+  refine if hc : BPair.unit < lo then hc else absurd hlt ?_
+  have hle : lo ≤ BPair.unit := ground.leB_of_not_lt hc
+  refine ground.leB_not_lt ?_
+  show lo * windowsep.radiusD ct.sq ≤ BPair.unit * windowsep.radiusD ct.sq
+  refine ground.leB_congr_left
+    (BPair.oneValue_of_eq (BPair.mul_comm (windowsep.radiusD ct.sq) lo)) ?_
+  refine ground.leB_congr_right
+    (BPair.oneValue_of_eq
+      (BPair.mul_comm (windowsep.radiusD ct.sq) BPair.unit)) ?_
+  exact ground.leB_mulR (windowsep.unitLe_radiusD ct.sq) hle
 
 end corner

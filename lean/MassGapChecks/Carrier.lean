@@ -109,6 +109,58 @@ def sqIx2 : List (List places.Shape) :=
 theorem sqIx2_pin : idx (dataA 2) square 32 = sqIx2 := by
   rw [← idxA_eq]; decide +kernel
 
+/-! The index's two membership reads at the pinned window: a member
+reads the five data (`idx_sound`) and the data read the membership
+back (`mem_idx`), each decided beside its route, with the refusal
+at a configuration off the index — the two-box loop, occupied at
+every vertex but beyond the cutoff twelve. -/
+
+private def sqLoop2 : List places.Shape := [[2, 0], [2, 0], [2, 0], [2, 0]]
+private def sqLoop1 : List places.Shape := [[1, 0], [1, 0], [1, 0], [1, 0]]
+
+private theorem sqLoop2_mem : sqLoop2 ∈ idx (dataA 2) square 32 := by
+  rw [sqIx2_pin]
+  exact List.Mem.tail _ (List.Mem.head _)
+
+example : sqLoop2.length = square.links
+    ∧ contentN (dataA 2) sqLoop2 ≤ 32
+    ∧ occupied (dataA 2) square sqLoop2 = true :=
+  let h := idx_sound (dataA 2) square 32 sqLoop2 sqLoop2_mem
+  ⟨h.1, h.2.2.2.1, h.2.2.2.2⟩
+example : sqLoop2.length = square.links
+    ∧ contentN (dataA 2) sqLoop2 ≤ 32
+    ∧ occupied (dataA 2) square sqLoop2 = true := by decide +kernel
+example : sqLoop1 ∈ idx (dataA 2) square 32 :=
+  mem_idx (dataA 2) square 32 sqLoop1 rfl
+    (fun l hl => by
+      have hall : (sqLoop1.all (fun x =>
+            ((dataA 2).unit :: (dataA 2).below 32).any
+              (fun m => m == x))) = true := by
+        decide +kernel
+      obtain ⟨m, hm, hml⟩ :=
+        ground.mem_of_any _ _ (ground.all_of_mem _ _ hall l hl)
+      rw [← ground.listBeqEq hml]
+      exact hm)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+example : ground.countOf sqLoop2 (idx (dataA 2) square 12) = 0 := by
+  rw [← idxA_eq]
+  decide +kernel
+example : confMem (dataA 2) sqLoop2 sqIx2 = true :=
+  confMem_of_mem (dataA 2) sqLoop2 sqIx2 (List.Mem.tail _ (List.Mem.head _))
+example : confMem (dataA 2) sqLoop2 sqIx2 = true := by decide +kernel
+example : eqConf (dataA 2) sqLoop1 sqLoop1 = true := eqConf_refl (dataA 2) _
+
+/-! The index is distinct at the distinct label carrier, decided
+beside its route, and the equality read is structural on the
+labels at the calculus. -/
+
+example : ground.distinctList sqIx2 := by decide +kernel
+example : ground.distinctList (idx (dataA 2) square 32) :=
+  idx_distinct (dataA 2) square 32 (below_distinct_dataA 2 32)
+example : eqConf (dataA 2) sqLoop1 [[1, 0], [1, 0], [1, 0], [1, 0]] = true
+    → sqLoop1 = [[1, 0], [1, 0], [1, 0], [1, 0]] :=
+  eqConf_labelA 2 sqLoop1 _ (by decide +kernel) (by decide +kernel)
+
 /-- The square window at three letters, cutoff 32: the fundamental
 loop with the anti-fundamental's. -/
 def sqIx3 : List (List places.Shape) :=
@@ -121,9 +173,9 @@ theorem sqIx3_pin : idx (dataA 3) square 32 = sqIx3 := by
 /-- The theta window at two letters, cutoff 18: the two plaquette
 loops with the hexagon. -/
 def thIx18 : List (List places.Shape) :=
-  [[[1, 0], [1, 0], [1, 0], [1, 0], [0, 0], [0, 0], [0, 0]],
+  [[[0, 0], [0, 0], [0, 0], [1, 0], [1, 0], [1, 0], [1, 0]],
    [[1, 0], [1, 0], [1, 0], [0, 0], [1, 0], [1, 0], [1, 0]],
-   [[0, 0], [0, 0], [0, 0], [1, 0], [1, 0], [1, 0], [1, 0]]]
+   [[1, 0], [1, 0], [1, 0], [1, 0], [0, 0], [0, 0], [0, 0]]]
 
 theorem thIx18_pin :
     idx (tabulate (dataA 2) 18) thetaG 18 = thIx18 := by
@@ -132,8 +184,8 @@ theorem thIx18_pin :
 /-- The theta window at two letters, cutoff 12: the two plaquette
 loops, the hexagon beyond the cutoff. -/
 def thIx12 : List (List places.Shape) :=
-  [[[1, 0], [1, 0], [1, 0], [1, 0], [0, 0], [0, 0], [0, 0]],
-   [[0, 0], [0, 0], [0, 0], [1, 0], [1, 0], [1, 0], [1, 0]]]
+  [[[0, 0], [0, 0], [0, 0], [1, 0], [1, 0], [1, 0], [1, 0]],
+   [[1, 0], [1, 0], [1, 0], [1, 0], [0, 0], [0, 0], [0, 0]]]
 
 theorem thIx12_pin :
     idx (tabulate (dataA 2) 12) thetaG 12 = thIx12 := by

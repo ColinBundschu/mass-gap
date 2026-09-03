@@ -49,21 +49,59 @@ three take the window's region, whose link width is the relabeled
 width, and the index as a stated list, `carrier.idx`'s own value
 at the window pinned beside them, so a battery decides each read
 against one enumeration rather than against nine.  On the window
-matrices the action is the permutation matrix `permMat` on that
-index with the unit line at its head, and the commuting read is its
+matrices the action is the place action's matrix on the window list
+with the unit line at its head (`permMatBy` at a stated list, an
+equality read and an action; `slotMat` its instance at the window
+list `pairpencil.slotList` under the window action `slotAct`, the
+configuration moved at the link witness and the fiber's slot key
+at the vertex witness, `slotImg` the key's permuted display along
+the induced vertex permutation), and the commuting read is its
 congruence (`commRead`, `Pmᵀ H Pm = H`) — at the free end
 (`prop:segment`) `H` is the electric member alone at its own
-one-member site (`pairpencil.pencilE` over `windowDiag`), the
-diagonal fixed exactly where the contents are,
-and the batteries read the congruence at the committed chain
-window.
+one-member site (`pairpencil.pencilE` over the window list's
+diagonal `pairpencil.slotDiag`), the diagonal fixed exactly where
+the contents are, and the batteries read the congruence at the
+committed chain window.
 
-The tier's own remainder is named rather than parked.  The general
-form of the three index reads — the content and the occupancy fixed
-at every configuration of every region admitting the action, the
-congruence at every window — asks for the index list's own
-permutation kit, which the tree does not hold; the decidable reads
-here are stated at the data and the batteries decide them.
+The three index reads and the congruence hold as theorems over the
+region's own action.  The content is fixed at every configuration
+of the region's width (`contentN_perm`, the key range's fold
+reindexed along the permutation); the vertex multiplicity and the
+occupancy transport along the induced vertex map at the count laws
+over a label domain holding the unit, closed under the involution
+and the rows (`vmult_perm`, `occupied_perm`: the incident labels one
+multiset at `incident_perm`, the invariant count a multiset read at
+`carrier.invCount_relist`); the window index maps within itself, a
+member's image a member at `def:carrier`'s five reads
+(`permConf_mem_idx` at `carrier.idx_sound` and `carrier.mem_idx`,
+`idxFixed_idx`); and the place action's matrix commutes with every
+window matrix whose entries move along the action
+(`commReadBy_of`): the matrix is the place list's permutation matrix
+transposed (`permMatBy_read` at `imgPosBy`, the image positions read
+by `posBy` at a once-met list, `imgOnceBy`), the congruence reads
+the selected block (`elim.permM_conj`), and the moved-entries read
+(`movedReadBy`) returns the matrix — the weighted diagonal its
+instance at fixed weights (`movedReadBy_pencilE`,
+`commReadBy_pencilE`, the place list injective at a once-met list
+with the action injective, `imgPosBy_inj`, the list distinct
+outright at `distinct_of_imgOnceBy`, the equality read structural
+on the image pairs, `imgEqBy`).  At the window list the hypotheses
+are the window's own: the moved key is a slot key of the moved
+member at the multiplicities transported (`slotImg_mem` at
+`vmult_perm`), the move is injective at the vertex witness
+(`slotImg_inj`), the window list over a distinct index is distinct
+(`pairpencil.slotList_distinct`), and each member's image is met
+once (`slotOnce_idx`).  At the label calculus every hypothesis is
+the calculus's own theorem over the width-`d` labels
+(`fusion.labelA`): the occupancy transport (`occupied_perm_dataA`),
+the closure (`idxFixed_dataA`), the once-met window list
+(`slotOnce_dataA` at `slotEq_dataA`, the window list's equality
+structural on the labels, and `carrier.idx_distinct`), and the
+congruence at the free end's window matrix
+(`commRead_slotE_dataA`).  The decidable reads at stated data
+follow from the theorems (`contentFixed_of`, `occFixed_of`,
+`idxFixed_of`), and the batteries read each beside its decided
+companion.
 
 The chord tier stands beneath them.  A polynomial reads at a matrix
 of a stated order by the Horner recursion of `def:poly`, the
@@ -638,24 +676,6 @@ instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
     (s : Nat → Nat) : Decidable (idxFixed F R ix s) :=
   inferInstanceAs (Decidable (dualIdxFixed F R ix s _))
 
-/-- The induced permutation matrix on a stated index with the unit
-line at its head: the column at a configuration reads the one at
-its image. -/
-def dualMat {L : Type} (F : Data L) (ix : List (List L)) (n : Nat)
-    (s : Nat → Nat) (rev : Nat → Bool) : Mat :=
-  let ims := ix.map (fun a => dualConf F s rev n a)
-  (BPair.ofPos Pos.one :: ix.map (fun _ => BPair.unit))
-    :: ix.map (fun b =>
-      BPair.unit :: ims.map (fun ia =>
-        if eqConf F ia b then BPair.ofPos Pos.one
-        else BPair.unit))
-
-/-- The induced permutation matrix at the reversal-free instance,
-the images read once per member. -/
-def permMat {L : Type} (F : Data L) (ix : List (List L)) (n : Nat)
-    (s : Nat → Nat) : Mat :=
-  dualMat F ix n s (fun _ => false)
-
 /-- The commuting read at a window matrix: the induced permutation
 matrix's congruence fixes the matrix, `Pmᵀ H Pm = H` entrywise. -/
 def commRead (Pm H : Mat) : Prop :=
@@ -955,6 +975,1322 @@ theorem permRead_at (R : Region) (t s : Nat → Nat) (h : permRead R t s)
   have h3 := ground.andSplitB h2.1
   exact ⟨ground.beqEqOf h3.1, ground.beqEqOf h3.2,
     of_decide_eq_true h2.2, of_decide_eq_true h1.2⟩
+
+/-- The relabeled configuration's label at a key below the width is
+the configuration's own at the witness's key. -/
+theorem getAt_permConf {L : Type} (F : Data L) (s : Nat → Nat) (n : Nat)
+    (a : List L) (k : Nat) (hk : k < n) :
+    ground.getAt F.unit (permConf F s n a) k = ground.getAt F.unit a (s k) := by
+  show ground.getAt F.unit ((List.range n).map
+    (fun l => if (fun _ => false) l
+      then F.dual (ground.getAt F.unit a (s l))
+      else ground.getAt F.unit a (s l))) k = _
+  rw [ground.getAt_map_range F.unit _ n k, if_pos hk]
+  rfl
+
+/-- The content is fixed at the index action, at every
+configuration of the region's width: the relabeled configuration's
+content is the key range's fold reindexed along the permutation,
+one value at the range's reindexing read (`ground.famFold_reindex`,
+`permRead` the two-sided witness) — `lem:fiberdec`'s content clause
+as a theorem over the region's own action. -/
+theorem contentN_perm {L : Type} (F : Data L) (R : Region)
+    (t s : Nat → Nat) (h : permRead R t s) (a : List L)
+    (ha : a.length = R.links) :
+    carrier.contentN F (permConf F s R.links a) = carrier.contentN F a := by
+  rw [carrier.contentN_range F (permConf F s R.links a),
+    carrier.contentN_range F a, ha,
+    show (permConf F s R.links a).length = R.links from
+      ground.length_mapRange _ _]
+  have hstep : ∀ x, 0 < ground.countOf x (List.range R.links) →
+      (if F.eqL (getAt F.unit (permConf F s R.links a) x) F.unit then 0
+        else F.c2N (getAt F.unit (permConf F s R.links a) x))
+      = (if F.eqL (getAt F.unit a (s x)) F.unit then 0
+        else F.c2N (getAt F.unit a (s x))) := by
+    intro x hx
+    rw [getAt_permConf F s R.links a x (ground.ltOfMem hx)]
+  rw [ground.famFold_congr_members Nat.add 0 _ _ (List.range R.links) hstep]
+  refine (ground.famFold_reindex Nat.add 0 Nat.add_comm Nat.add_assoc
+    (fun l => if F.eqL (getAt F.unit a l) F.unit then 0
+      else F.c2N (getAt F.unit a l))
+    (l := List.range R.links) (g := s) (h := t)
+    (ground.distinctList_range R.links) ?_ ?_ ?_ ?_).symm
+  · intro x hx
+    exact (permRead_at R t s h x (ground.ltOfMem hx)).2.1
+  · intro x hx
+    exact (permRead_at R t s h x (ground.ltOfMem hx)).1
+  · intro x hx
+    exact ground.countOf_range_pos
+      (permRead_at R t s h x (ground.ltOfMem hx)).2.2.2
+  · intro x hx
+    exact ground.countOf_range_pos
+      (permRead_at R t s h x (ground.ltOfMem hx)).2.2.1
+
+/-! `lem:fiberdec`'s index action as theorems over the region's own
+translation: the endpoint and vertex reads at a key, the incident
+labels transported along the induced vertex map as one multiset, the
+vertex multiplicity with them at the count laws
+(`carrier.invCount_relist`), and the occupancy fixed — the read
+`occFixed` at every configuration of every region admitting the
+action. -/
+
+/-- The endpoint read at a link: the moved link's tail and head are
+the vertex map's values at the link's own. -/
+theorem endsRead_at (R : Region) (t v : Nat → Nat) (h : endsRead R t v)
+    (l : Nat) (hl : l < R.links) :
+    ground.getAt 0 R.tail (t l) = v (ground.getAt 0 R.tail l)
+      ∧ ground.getAt 0 R.head (t l) = v (ground.getAt 0 R.head l) := by
+  have hb := ground.pairIdxAll_at _ R.tail R.head 0 h l
+    (by rw [R.tailLen]; exact hl) (by rw [R.headLen]; exact hl)
+  rw [Nat.zero_add] at hb
+  have hb' : ((ground.getAt 0 R.tail (t l) == v (ground.getAt 0 R.tail l))
+      && (ground.getAt 0 R.head (t l) == v (ground.getAt 0 R.head l)))
+      = true := hb
+  have h1 := ground.andSplitB hb'
+  exact ⟨ground.beqEqOf h1.1, ground.beqEqOf h1.2⟩
+
+/-- The vertex map's permutation read at a vertex below the count. -/
+theorem vertPermRead_at (R : Region) (v w : Nat → Nat)
+    (h : vertPermRead R v w) (x : Nat) (hx : x < R.verts) :
+    w (v x) = x ∧ v (w x) = x ∧ v x < R.verts ∧ w x < R.verts := by
+  have hb := ground.all_range_read R.verts h x hx
+  have h1 := ground.andSplitB hb
+  have h2 := ground.andSplitB h1.1
+  have h3 := ground.andSplitB h2.1
+  exact ⟨ground.beqEqOf h3.1, ground.beqEqOf h3.2,
+    of_decide_eq_true h2.2, of_decide_eq_true h1.2⟩
+
+/-- A filtered map's count: the fold of the members' option reads. -/
+private theorem countOf_filterMap {α β : Type} [DecidableEq β]
+    (f : α → Option β) (x : β) : ∀ l : List α,
+    ground.countOf x (l.filterMap f)
+      = ground.famFold Nat.add 0 (fun e => match f e with
+          | none => 0
+          | some y => if x = y then 1 else 0) l
+  | [] => rfl
+  | a :: t => by
+    show ground.countOf x (match f a with
+        | none => t.filterMap f
+        | some d => d :: t.filterMap f)
+      = (match f a with
+          | none => 0
+          | some y => if x = y then 1 else 0)
+        + ground.famFold Nat.add 0 (fun e => match f e with
+            | none => 0
+            | some y => if x = y then 1 else 0) t
+    cases f a with
+    | none =>
+      show ground.countOf x (t.filterMap f) = 0 + _
+      rw [Nat.zero_add]
+      exact countOf_filterMap f x t
+    | some y =>
+      show ground.countOf x (y :: t.filterMap f)
+        = (if x = y then 1 else 0) + _
+      rw [ground.countOf_cons, countOf_filterMap f x t]
+
+/-- The vertex map's images compare as their sources below the
+count, the witness reading the sources back. -/
+private theorem beq_map (R : Region) (v w : Nat → Nat)
+    (h : vertPermRead R v w) (p x : Nat) (hp : p < R.verts)
+    (hx : x < R.verts) : (v p == v x) = (p == x) := by
+  by_cases hpx : p = x
+  · rw [hpx, ground.eqBeqOf (rfl : v x = v x), ground.eqBeqOf (rfl : x = x)]
+  · rw [ground.neBeqOf hpx, ground.neBeqOf (fun he : v p = v x =>
+      hpx (Eq.trans (Eq.trans (vertPermRead_at R v w h p hp).1.symm
+        (congrArg w he)) (vertPermRead_at R v w h x hx).1))]
+
+/-- One link's incident fold: the two endpoint reads' conditional
+singletons. -/
+private theorem inc_fold (M : Nat × Bool → Nat) (l : Nat)
+    (c1 c2 : Bool) :
+    ground.famFold Nat.add 0 M
+        ((if c1 then [(l, true)] else []) ++ (if c2 then [(l, false)] else []))
+      = (if c1 then M (l, true) else 0) + (if c2 then M (l, false) else 0) := by
+  cases c1 with
+  | true =>
+    cases c2 with
+    | true => rfl
+    | false => rfl
+  | false =>
+    cases c2 with
+    | true =>
+      show M (l, false) + 0 = 0 + M (l, false)
+      rw [Nat.zero_add, Nat.add_zero]
+    | false => rfl
+
+/-- The incident labels transport along the induced vertex map as one
+multiset: at every label the count at the moved vertex on the
+relabeled configuration is the count at the vertex on the
+configuration — the incident walk reindexed along the link
+permutation, each link's two endpoint reads carried by the endpoint
+read and the vertex map's injectivity, its label the witness's own. -/
+theorem incident_perm {L : Type} [DecidableEq L] (F : Data L)
+    (R : Region) (hw : wellRead R) (t s v w : Nat → Nat)
+    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (a : List L) (x : Nat) (hx : x < R.verts) (lab : L) :
+    ground.countOf lab
+        (carrier.incidentLabels F R (permConf F s R.links a) (v x))
+      = ground.countOf lab (carrier.incidentLabels F R a x) := by
+  show ground.countOf lab ((incident R (v x)).filterMap _)
+    = ground.countOf lab ((incident R x).filterMap _)
+  rw [countOf_filterMap, countOf_filterMap, incident_read R (v x),
+    incident_read R x, ground.famFold_flatMap, ground.famFold_flatMap]
+  refine (ground.famFold_reindex Nat.add 0 Nat.add_comm Nat.add_assoc _
+    (l := List.range R.links) (g := t) (h := s)
+    (ground.distinctList_range R.links)
+    (fun k hk => (permRead_at R t s hp k (ground.ltOfMem hk)).1)
+    (fun k hk => (permRead_at R t s hp k (ground.ltOfMem hk)).2.1)
+    (fun k hk => ground.countOf_range_pos
+      (permRead_at R t s hp k (ground.ltOfMem hk)).2.2.1)
+    (fun k hk => ground.countOf_range_pos
+      (permRead_at R t s hp k (ground.ltOfMem hk)).2.2.2)).trans ?_
+  refine ground.famFold_congr_members Nat.add 0 _ _ (List.range R.links)
+    (fun l hl => ?_)
+  have hll : l < R.links := ground.ltOfMem hl
+  have hM : ∀ d : Bool,
+      (match (if F.eqL (ground.getAt F.unit (permConf F s R.links a) (t l))
+            F.unit then none
+          else if d then some (ground.getAt F.unit (permConf F s R.links a) (t l))
+          else some (F.dual (ground.getAt F.unit (permConf F s R.links a) (t l)))
+          : Option L) with
+        | none => 0
+        | some y => if lab = y then 1 else 0)
+      = (match (if F.eqL (ground.getAt F.unit a l) F.unit then none
+          else if d then some (ground.getAt F.unit a l)
+          else some (F.dual (ground.getAt F.unit a l)) : Option L) with
+        | none => 0
+        | some y => if lab = y then 1 else 0) := by
+    intro d
+    rw [getAt_permConf F s R.links a (t l) (permRead_at R t s hp l hll).2.2.1,
+      (permRead_at R t s hp l hll).1]
+  show ground.famFold Nat.add 0 _
+      ((if ground.getAt 0 R.tail (t l) == v x then [(t l, true)] else [])
+        ++ (if ground.getAt 0 R.head (t l) == v x then [(t l, false)] else []))
+    = ground.famFold Nat.add 0 _
+      ((if ground.getAt 0 R.tail l == x then [(l, true)] else [])
+        ++ (if ground.getAt 0 R.head l == x then [(l, false)] else []))
+  rw [(endsRead_at R t v he l hll).1, (endsRead_at R t v he l hll).2,
+    beq_map R v w hv _ x (endLt R hw l hll).1 hx,
+    beq_map R v w hv _ x (endLt R hw l hll).2 hx,
+    inc_fold, inc_fold, hM true, hM false]
+
+/-- The incident labels of a domain configuration read the domain:
+the configuration's labels with their duals, the unit at the vacant
+keys. -/
+theorem incidentLabels_all {L : Type} (F : Data L) (R : Region)
+    (P : L → Bool) (hunit : P F.unit = true)
+    (hdual : ∀ l, P l = true → P (F.dual l) = true)
+    (a : List L) (ha : a.all P = true) (x : Nat) :
+    (carrier.incidentLabels F R a x).all P = true := by
+  refine ground.all_filterMap_mem _ P _ (fun e _ y hy => ?_)
+  have hl : P (ground.getAt F.unit a e.1) = true := by
+    cases Nat.lt_or_ge e.1 a.length with
+    | inl hlt =>
+      exact ground.all_of_mem P a ha _ (ground.mem_getAt F.unit a e.1 hlt)
+    | inr hge =>
+      rw [ground.getAt_over F.unit a e.1 hge]
+      exact hunit
+  revert hy
+  show (if F.eqL (ground.getAt F.unit a e.1) F.unit then none
+      else if e.2 then some (ground.getAt F.unit a e.1)
+      else some (F.dual (ground.getAt F.unit a e.1))) = some y → P y = true
+  cases hb : F.eqL (ground.getAt F.unit a e.1) F.unit with
+  | true =>
+    intro hy
+    exact nomatch hy
+  | false =>
+    cases hd : e.2 with
+    | true =>
+      intro hy
+      rw [← Option.some.inj
+        (show some (ground.getAt F.unit a e.1) = some y from hy)]
+      exact hl
+    | false =>
+      intro hy
+      rw [← Option.some.inj
+        (show some (F.dual (ground.getAt F.unit a e.1)) = some y from hy)]
+      exact hdual _ hl
+
+/-- The action keeps a label domain holding the unit: the moved
+configuration's labels are the source's at the witness's keys, the
+unoccupied keys reading the unit. -/
+theorem permConf_all {L : Type} (F : Data L) (s : Nat → Nat) (n : Nat)
+    (P : L → Bool) (hunit : P F.unit = true) (a : List L)
+    (ha : a.all P = true) : (permConf F s n a).all P = true := by
+  refine ground.all_of_getAt F.unit P _ (fun k hk => ?_)
+  have hk' : k < n := by
+    rw [show (permConf F s n a).length = n from
+      ground.length_mapRange _ _] at hk
+    exact hk
+  rw [getAt_permConf F s n a k hk']
+  cases Nat.lt_or_ge (s k) a.length with
+  | inl hlt =>
+    exact ground.all_of_mem P a ha _ (ground.mem_getAt F.unit a _ hlt)
+  | inr hge =>
+    rw [ground.getAt_over F.unit a _ hge]
+    exact hunit
+
+/-- The vertex multiplicity transports along the induced vertex map at
+the count laws: the incident labels one multiset (`incident_perm`)
+and the count a read of it (`carrier.invCount_relist`), the laws over
+a label domain holding the unit, closed under the dual and the rows,
+with the configuration inside it. -/
+theorem vmult_perm {L : Type} [DecidableEq L] (F : Data L)
+    (R : Region) (hw : wellRead R) (t s v w : Nat → Nat)
+    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (P : L → Bool) (hunit : P F.unit = true)
+    (hdual : ∀ l, P l = true → P (F.dual l) = true)
+    (hrowP : ∀ a b, P a = true → P b = true → ((F.row a b).all P) = true)
+    (hcomm : ∀ a b c, P a = true → P b = true → P c = true →
+      F.count a b c = F.count b a c)
+    (hassoc : ∀ a b c d, P a = true → P b = true → P c = true →
+      P d = true → assocLaw F a b c d)
+    (hunitL : ∀ a b, P a = true → P b = true → unitLaw F a b)
+    (hrow : ∀ a b c, P a = true → P b = true → P c = true →
+      rowLaw F a b c)
+    (a : List L) (ha : a.all P = true) (x : Nat) (hx : x < R.verts) :
+    carrier.vmult F R (permConf F s R.links a) (v x)
+      = carrier.vmult F R a x :=
+  carrier.invCount_relist F P hunit hrowP hcomm hassoc hunitL hrow _ _
+    (incidentLabels_all F R P hunit hdual (permConf F s R.links a)
+      (permConf_all F s R.links P hunit a ha) (v x))
+    (fun lab => incident_perm F R hw t s v w hp he hv a x hx lab)
+
+/-- The occupancy is fixed at the index action: the touched vertices
+move along the vertex map, each at its transported multiplicity —
+`occFixed`'s read at every domain configuration of a region admitting
+the action. -/
+theorem occupied_perm {L : Type} [DecidableEq L] (F : Data L)
+    (R : Region) (hw : wellRead R) (t s v w : Nat → Nat)
+    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (P : L → Bool) (hunit : P F.unit = true)
+    (hdual : ∀ l, P l = true → P (F.dual l) = true)
+    (hrowP : ∀ a b, P a = true → P b = true → ((F.row a b).all P) = true)
+    (hcomm : ∀ a b c, P a = true → P b = true → P c = true →
+      F.count a b c = F.count b a c)
+    (hassoc : ∀ a b c d, P a = true → P b = true → P c = true →
+      P d = true → assocLaw F a b c d)
+    (hunitL : ∀ a b, P a = true → P b = true → unitLaw F a b)
+    (hrow : ∀ a b c, P a = true → P b = true → P c = true →
+      rowLaw F a b c)
+    (a : List L) (ha : a.all P = true) :
+    carrier.occupied F R (permConf F s R.links a) = carrier.occupied F R a := by
+  have hlen : ∀ x, x < R.verts →
+      (carrier.incidentLabels F R (permConf F s R.links a) (v x)).length
+        = (carrier.incidentLabels F R a x).length :=
+    fun x hx => ground.length_eq_of_countOf _ _
+      (fun lab => incident_perm F R hw t s v w hp he hv a x hx lab)
+  have hvm : ∀ x, x < R.verts →
+      carrier.vmult F R (permConf F s R.links a) (v x) = carrier.vmult F R a x :=
+    fun x hx => vmult_perm F R hw t s v w hp he hv P hunit hdual hrowP hcomm
+      hassoc hunitL hrow a ha x hx
+  have fwd : carrier.occupied F R (permConf F s R.links a) = true →
+      carrier.occupied F R a = true := by
+    intro hocc
+    refine ground.all_of_getAt 0 _ _ (fun k hk => ?_)
+    have hf := ground.mem_filter_of _ _ _ (ground.mem_getAt 0 _ k hk)
+    have hxv : ground.getAt 0 (carrier.touched F R a) k < R.verts :=
+      ground.ltOfMem (ground.countOf_pos_of_mem hf.1)
+    have hmem' : v (ground.getAt 0 (carrier.touched F R a) k)
+        ∈ carrier.touched F R (permConf F s R.links a) := by
+      refine ground.mem_filter_to _
+        (ground.memRange (vertPermRead_at R v w hv _ hxv).2.2.1) ?_
+      show ((carrier.incidentLabels F R (permConf F s R.links a)
+        (v (ground.getAt 0 (carrier.touched F R a) k))).length != 0) = true
+      rw [hlen _ hxv]
+      exact hf.2
+    have hv1 := ground.all_of_mem _ _ hocc _ hmem'
+    show decide (0 < carrier.vmult F R a
+      (ground.getAt 0 (carrier.touched F R a) k)) = true
+    rw [← hvm _ hxv]
+    exact hv1
+  have bwd : carrier.occupied F R a = true →
+      carrier.occupied F R (permConf F s R.links a) = true := by
+    intro hocc
+    refine ground.all_of_getAt 0 _ _ (fun k hk => ?_)
+    have hf := ground.mem_filter_of _ _ _ (ground.mem_getAt 0 _ k hk)
+    have hyv : ground.getAt 0 (carrier.touched F R (permConf F s R.links a)) k
+        < R.verts :=
+      ground.ltOfMem (ground.countOf_pos_of_mem hf.1)
+    have hxv : w (ground.getAt 0 (carrier.touched F R (permConf F s R.links a)) k)
+        < R.verts := (vertPermRead_at R v w hv _ hyv).2.2.2
+    have hvw : v (w (ground.getAt 0
+        (carrier.touched F R (permConf F s R.links a)) k))
+        = ground.getAt 0 (carrier.touched F R (permConf F s R.links a)) k :=
+      (vertPermRead_at R v w hv _ hyv).2.1
+    have hmem' : w (ground.getAt 0 (carrier.touched F R (permConf F s R.links a)) k)
+        ∈ carrier.touched F R a := by
+      refine ground.mem_filter_to _ (ground.memRange hxv) ?_
+      show ((carrier.incidentLabels F R a
+        (w (ground.getAt 0 (carrier.touched F R (permConf F s R.links a)) k))).length
+          != 0) = true
+      rw [← hlen _ hxv, hvw]
+      exact hf.2
+    have hv1 := ground.all_of_mem _ _ hocc _ hmem'
+    show decide (0 < carrier.vmult F R (permConf F s R.links a)
+      (ground.getAt 0 (carrier.touched F R (permConf F s R.links a)) k)) = true
+    rw [← hvw, hvm _ hxv]
+    exact hv1
+  cases h1 : carrier.occupied F R (permConf F s R.links a) with
+  | true => exact (fwd h1).symm
+  | false =>
+    cases h2 : carrier.occupied F R a with
+    | true =>
+      have h3 := bwd h2
+      rw [h1] at h3
+      exact Bool.noConfusion h3
+    | false => rfl
+
+/-- The content-fixed read's theorem form over a stated index: the
+per-member content identity at every member yields the decidable
+read. -/
+theorem contentFixed_of {L : Type} (F : Data L) (R : Region)
+    (ix : List (List L)) (s : Nat → Nat)
+    (h : ∀ a, a ∈ ix → carrier.contentN F (permConf F s R.links a)
+      = carrier.contentN F a) :
+    contentFixed F R ix s :=
+  ground.all_of_mem_intro _ ix (fun a ha => by
+    show (carrier.contentN F (permConf F s R.links a)
+      == carrier.contentN F a) = true
+    exact ground.eqBeqOf (h a ha))
+
+/-- The occupancy-fixed read's theorem form over a stated index: the
+per-member occupancy identity at every member yields the decidable
+read. -/
+theorem occFixed_of {L : Type} (F : Data L) (R : Region)
+    (ix : List (List L)) (s : Nat → Nat)
+    (h : ∀ a, a ∈ ix → carrier.occupied F R (permConf F s R.links a)
+      = carrier.occupied F R a) :
+    occFixed F R ix s :=
+  ground.all_of_mem_intro _ ix (fun a ha => by
+    show (carrier.occupied F R (permConf F s R.links a)
+      == carrier.occupied F R a) = true
+    rw [h a ha]
+    cases carrier.occupied F R a <;> rfl)
+
+/-- The count laws over the width-`d` labels, the transport's four
+law binders at the label calculus. -/
+private def lawsA (d : Nat) : Prop :=
+  (∀ a b c : places.Shape, fusion.labelA d a = true → fusion.labelA d b = true →
+    fusion.labelA d c = true → (dataA d).count a b c = (dataA d).count b a c)
+  ∧ (∀ a b c e : places.Shape, fusion.labelA d a = true →
+    fusion.labelA d b = true → fusion.labelA d c = true →
+    fusion.labelA d e = true → assocLaw (dataA d) a b c e)
+  ∧ (∀ a b : places.Shape, fusion.labelA d a = true → fusion.labelA d b = true →
+    unitLaw (dataA d) a b)
+  ∧ (∀ a b c : places.Shape, fusion.labelA d a = true → fusion.labelA d b = true →
+    fusion.labelA d c = true → rowLaw (dataA d) a b c)
+
+/-- The four laws hold over the labels, each the label calculus's own
+theorem at the labels' widths and the target's reduction. -/
+private theorem lawsA_all (d : Nat) : lawsA d :=
+  ⟨fun x y z hx hy hz => commLaw_dataA d x y z
+      ((fusion.labelA_len d y hy).trans (fusion.labelA_len d x hx).symm)
+      ((fusion.labelA_len d z hz).trans (fusion.labelA_len d x hx).symm),
+   fun x y z u hx hy hz hu => assocLaw_dataA d x y z u
+      ((fusion.labelA_len d y hy).trans (fusion.labelA_len d x hx).symm)
+      ((fusion.labelA_len d z hz).trans (fusion.labelA_len d x hx).symm)
+      ((fusion.labelA_len d u hu).trans (fusion.labelA_len d x hx).symm)
+      (fusion.labelA_len d x hx),
+   fun x y hx hy => unitLaw_dataA d x y
+      ((fusion.labelA_len d y hy).trans (fusion.labelA_len d x hx).symm)
+      (fusion.labelA_len d x hx),
+   fun x y z hx hy hz => fusion.rowLaw_dataA d x y z
+      ((fusion.labelA_len d y hy).trans (fusion.labelA_len d x hx).symm)
+      ((fusion.labelA_len d z hz).trans (fusion.labelA_len d x hx).symm)
+      (fusion.labelA_len d x hx) (fusion.labelA_red d z hz)⟩
+
+/-- The occupancy transport at the label calculus: the count laws
+discharged over the width-`d` labels (`fusion.labelA`), every
+hypothesis the calculus's own theorem — the unit and the involution
+inside the domain, the rows closed in it, and the commutativity,
+associativity, unit and row-is-support laws at the stated widths
+with the target reduced. -/
+theorem occupied_perm_dataA (d : Nat) (R : Region) (hw : wellRead R)
+    (t s v w : Nat → Nat)
+    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (a : List places.Shape) (ha : a.all (fusion.labelA d) = true) :
+    carrier.occupied (dataA d) R (permConf (dataA d) s R.links a)
+      = carrier.occupied (dataA d) R a :=
+  occupied_perm (dataA d) R hw t s v w hp he hv (fusion.labelA d)
+    (fusion.labelA_unit d) (fusion.labelA_dual d)
+    (fun x y _ _ => fusion.labelA_row d x y)
+    (lawsA_all d).1 (lawsA_all d).2.1 (lawsA_all d).2.2.1 (lawsA_all d).2.2.2
+    a ha
+
+/-- The index maps within itself at the action: a member's image is
+a member — the width the range's, the labels the member's own read
+at the witness's keys, the occupied support carried to the moved
+key, the content fixed (`contentN_perm`) and the occupancy fixed
+(`occupied_perm`) — the count laws over a label domain holding the
+window's label carrier (`carrier.idx_sound`, `carrier.mem_idx`). -/
+theorem permConf_mem_idx {L : Type} [DecidableEq L] (F : Data L)
+    (R : Region) (C : Nat) (hw : wellRead R) (t s v w : Nat → Nat)
+    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (P : L → Bool) (hunit : P F.unit = true)
+    (hdual : ∀ l, P l = true → P (F.dual l) = true)
+    (hrowP : ∀ a b, P a = true → P b = true → ((F.row a b).all P) = true)
+    (hcomm : ∀ a b c, P a = true → P b = true → P c = true →
+      F.count a b c = F.count b a c)
+    (hassoc : ∀ a b c d, P a = true → P b = true → P c = true →
+      P d = true → assocLaw F a b c d)
+    (hunitL : ∀ a b, P a = true → P b = true → unitLaw F a b)
+    (hrow : ∀ a b c, P a = true → P b = true → P c = true →
+      rowLaw F a b c)
+    (hdom : ((F.unit :: F.below C).all P) = true)
+    (a : List L) (ha : a ∈ carrier.idx F R C) :
+    permConf F s R.links a ∈ carrier.idx F R C := by
+  obtain ⟨hlen, hlab, hany, hcont, hocc⟩ := carrier.idx_sound F R C a ha
+  have haP : a.all P = true :=
+    ground.all_of_mem_intro P a (fun l hl =>
+      ground.all_of_mem P _ hdom l (hlab l hl))
+  refine carrier.mem_idx F R C _ (ground.length_mapRange _ _) ?_ ?_ ?_ ?_
+  · intro l hl
+    obtain ⟨k, hk, hkl⟩ := ground.mem_map_of _ _ l hl
+    have hk' : k < R.links :=
+      ground.ltOfMem (ground.countOf_pos_of_mem hk)
+    have hsk : s k < a.length := by
+      rw [hlen]
+      exact (permRead_at R t s hp k hk').2.2.2
+    rw [← hkl]
+    show (if (fun _ => false) k then F.dual (ground.getAt F.unit a (s k))
+      else ground.getAt F.unit a (s k)) ∈ F.unit :: F.below C
+    exact hlab _ (ground.mem_getAt F.unit a (s k) hsk)
+  · obtain ⟨x, hx, hfx⟩ := ground.mem_of_any _ a hany
+    obtain ⟨k, hk, hkx⟩ := ground.getAt_of_mem F.unit hx
+    have hk' : k < R.links := by
+      rw [← hlen]
+      exact hk
+    have htk : t k < R.links := (permRead_at R t s hp k hk').2.2.1
+    refine ground.any_of_mem _
+      (ground.mem_getAt F.unit (permConf F s R.links a) (t k)
+        (by
+          rw [show (permConf F s R.links a).length = R.links from
+            ground.length_mapRange _ _]
+          exact htk)) ?_
+    rw [getAt_permConf F s R.links a (t k) htk, (permRead_at R t s hp k hk').1, hkx]
+    exact hfx
+  · rw [contentN_perm F R t s hp a hlen]
+    exact hcont
+  · rw [occupied_perm F R hw t s v w hp he hv P hunit hdual hrowP hcomm
+      hassoc hunitL hrow a haP]
+    exact hocc
+
+/-- The closure read's theorem form over a stated index: every
+member's image a member at the interface equality yields the
+decidable read. -/
+theorem idxFixed_of {L : Type} (F : Data L) (R : Region)
+    (ix : List (List L)) (s : Nat → Nat)
+    (h : ∀ a, a ∈ ix → carrier.confMem F (permConf F s R.links a) ix
+      = true) :
+    idxFixed F R ix s :=
+  ground.all_of_mem_intro _ ix (fun a ha => h a ha)
+
+/-- The window index maps within itself at the action, the closure
+read at `def:carrier`'s own index at every region admitting the
+action, the count laws over a label domain holding the window's
+label carrier. -/
+theorem idxFixed_idx {L : Type} [DecidableEq L] (F : Data L)
+    (R : Region) (C : Nat) (hw : wellRead R) (t s v w : Nat → Nat)
+    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (P : L → Bool) (hunit : P F.unit = true)
+    (hdual : ∀ l, P l = true → P (F.dual l) = true)
+    (hrowP : ∀ a b, P a = true → P b = true → ((F.row a b).all P) = true)
+    (hcomm : ∀ a b c, P a = true → P b = true → P c = true →
+      F.count a b c = F.count b a c)
+    (hassoc : ∀ a b c d, P a = true → P b = true → P c = true →
+      P d = true → assocLaw F a b c d)
+    (hunitL : ∀ a b, P a = true → P b = true → unitLaw F a b)
+    (hrow : ∀ a b c, P a = true → P b = true → P c = true →
+      rowLaw F a b c)
+    (hdom : ((F.unit :: F.below C).all P) = true) :
+    idxFixed F R (carrier.idx F R C) s :=
+  idxFixed_of F R _ s (fun a ha => carrier.confMem_of_mem F _ _
+    (permConf_mem_idx F R C hw t s v w hp he hv P hunit hdual hrowP hcomm
+      hassoc hunitL hrow hdom a ha))
+
+/-- The closure read at the label calculus: the window index at a
+fundamental count maps within itself at every region admitting the
+action, the count laws discharged over the width-`d` labels
+(`fusion.labelA`, the index's label carrier inside them at
+`fusion.labelA_below`). -/
+theorem idxFixed_dataA (d : Nat) (R : Region) (C : Nat) (hw : wellRead R)
+    (t s v w : Nat → Nat)
+    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w) :
+    idxFixed (dataA d) R (carrier.idx (dataA d) R C) s :=
+  idxFixed_idx (dataA d) R C hw t s v w hp he hv (fusion.labelA d)
+    (fusion.labelA_unit d) (fusion.labelA_dual d)
+    (fun x y _ _ => fusion.labelA_row d x y)
+    (lawsA_all d).1 (lawsA_all d).2.1 (lawsA_all d).2.2.1 (lawsA_all d).2.2.2
+    (fusion.labelA_below d C)
+
+/-- The action is injective on the region's width: the moved
+configuration reads its source at the witness's keys. -/
+theorem permConf_inj {L : Type} (F : Data L) (R : Region) (t s : Nat → Nat)
+    (hp : permRead R t s) (a a' : List L) (ha : a.length = R.links)
+    (ha' : a'.length = R.links)
+    (h : permConf F s R.links a = permConf F s R.links a') : a = a' := by
+  refine getAt_ext F.unit a a' (ha.trans ha'.symm) (fun l hl => ?_)
+  rw [ha] at hl
+  have htl : t l < R.links := (permRead_at R t s hp l hl).2.2.1
+  have h1 := getAt_permConf F s R.links a (t l) htl
+  have h2 := getAt_permConf F s R.links a' (t l) htl
+  rw [(permRead_at R t s hp l hl).1] at h1 h2
+  rw [← h1, ← h2, h]
+
+/-- The place action's matrix on a stated index at an equality read
+and an action, the unit line at its head: the column at a member
+reads one at the row of the member its image reads equal to —
+`con:places`' permutation matrix at the index list. -/
+def permMatBy {I : Type} (eq : I → I → Bool) (img : I → I) (ix : List I) : Mat :=
+  (BPair.ofPos Pos.one :: ix.map (fun _ => BPair.unit))
+    :: ix.map (fun b => BPair.unit :: (ix.map img).map (fun ia =>
+      if eq ia b then BPair.ofPos Pos.one else BPair.unit))
+
+/-- The action's place list on the stated list with the unit line at
+its head: the unit line fixed at the vacant key and each member's
+image position shifted past it. -/
+def imgPosBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
+    (ix : List I) : List Nat :=
+  0 :: ix.map (fun a => posBy eq (img a) ix + 1)
+
+/-- The moved-entries read of a window matrix at the action: every
+entry at the moved place pair reads the entry at the pair itself. -/
+def movedReadBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
+    (ix : List I) (H : Mat) : Prop :=
+  ((List.range (ix.length + 1)).all (fun i =>
+    (List.range (ix.length + 1)).all (fun j =>
+      decide ((getAt BPair.unit
+          (getAt [] H (getAt 0 (imgPosBy eq img ix) i))
+          (getAt 0 (imgPosBy eq img ix) j)).oneValue
+        (getAt BPair.unit (getAt [] H i) j))))) = true
+
+instance {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
+    (ix : List I) (H : Mat) : Decidable (movedReadBy eq img ix H) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- Each member's image meets the list at one member alone. -/
+def imgOnceBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
+    (ix : List I) : Prop :=
+  (ix.all (fun a =>
+    (ix.filter (fun b => eq (img a) b)).length == 1)) = true
+
+instance {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
+    (ix : List I) : Decidable (imgOnceBy eq img ix) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The place list's members sit below the order at a once-met
+list. -/
+theorem imgPosBy_lt {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
+    (ix : List I) (h : imgOnceBy eq img ix) :
+    ∀ i, i < ix.length + 1 →
+      getAt 0 (imgPosBy eq img ix) i < ix.length + 1 := by
+  intro i hi
+  cases i with
+  | zero => exact Nat.succ_pos _
+  | succ k =>
+    have hk : k < ix.length := Nat.lt_of_succ_lt_succ hi
+    show getAt 0 (ix.map (fun a => posBy eq (img a) ix + 1)) k
+      < ix.length + 1
+    rw [getAt_map default 0 _ ix k hk]
+    exact Nat.succ_lt_succ (posBy_lt eq _ ix
+      (beqEqOf (all_of_mem _ _ h _ (mem_getAt default ix k hk))))
+
+
+/-- The place action's matrix's order. -/
+theorem length_permMatBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
+    (ix : List I) :
+    (permMatBy eq img ix).length = ix.length + 1 :=
+  congrArg Nat.succ (length_map _ ix)
+
+/-- The place action's matrix's rows at its order. -/
+theorem rowsLen_permMatBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
+    (ix : List I) :
+    rowsLen (ix.length + 1) (permMatBy eq img ix) :=
+  ⟨congrArg Nat.succ (length_map _ ix),
+    rowsLen_map _ _ ix (fun _ _ => congrArg Nat.succ
+      ((length_map _ _).trans (length_map _ ix)))⟩
+
+/-- The place action's matrix's entry at a once-met list: the one
+occupied row at the column's image position. -/
+theorem getAt_permMatBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
+    (ix : List I) (h : imgOnceBy eq img ix) (r c : Nat)
+    (hr : r < ix.length + 1) (hc : c < ix.length + 1) :
+    getAt BPair.unit (getAt [] (permMatBy eq img ix) r) c
+      = if r = getAt 0 (imgPosBy eq img ix) c then BPair.ofPos Pos.one
+        else BPair.unit := by
+  cases r with
+  | zero =>
+    cases c with
+    | zero => rfl
+    | succ j =>
+      have hj : j < ix.length := Nat.lt_of_succ_lt_succ hc
+      show getAt BPair.unit (ix.map (fun _ => BPair.unit)) j
+        = if 0 = getAt 0 (ix.map (fun a =>
+            posBy eq (img a) ix + 1)) j then BPair.ofPos Pos.one
+          else BPair.unit
+      rw [getAt_map default BPair.unit _ ix j hj, getAt_map default 0 _ ix j hj,
+        if_neg (fun h0 => Nat.noConfusion h0)]
+  | succ k =>
+    have hk : k < ix.length := Nat.lt_of_succ_lt_succ hr
+    show getAt BPair.unit (getAt [] (ix.map (fun b =>
+        BPair.unit :: (ix.map img).map
+          (fun ia => if eq ia b then BPair.ofPos Pos.one
+            else BPair.unit))) k) c = _
+    rw [getAt_map default [] _ ix k hk]
+    cases c with
+    | zero =>
+      show BPair.unit = if k + 1 = 0 then BPair.ofPos Pos.one else BPair.unit
+      rw [if_neg (fun h0 => Nat.noConfusion h0)]
+    | succ j =>
+      have hj : j < ix.length := Nat.lt_of_succ_lt_succ hc
+      show getAt BPair.unit ((ix.map img).map
+          (fun ia => if eq ia (getAt default ix k) then BPair.ofPos Pos.one
+            else BPair.unit)) j
+        = if k + 1 = getAt 0 (ix.map (fun a =>
+            posBy eq (img a) ix + 1)) j then BPair.ofPos Pos.one
+          else BPair.unit
+      rw [getAt_map default BPair.unit _ _ j (by rw [length_map]; exact hj),
+        getAt_map default default _ ix j hj, getAt_map default 0 _ ix j hj]
+      have honce : (ix.filter (fun b =>
+          eq (img (getAt default ix j)) b)).length = 1 :=
+        beqEqOf (all_of_mem _ _ h _ (mem_getAt default ix j hj))
+      have hiff := posBy_once eq (img (getAt default ix j)) ix honce k hk
+      show (if eq (img (getAt default ix j)) (getAt default ix k)
+          then BPair.ofPos Pos.one else BPair.unit) = _
+      cases he : eq (img (getAt default ix j)) (getAt default ix k) with
+      | true =>
+        rw [if_pos rfl, if_pos (congrArg Nat.succ (hiff.mp he).symm)]
+      | false =>
+        rw [if_neg (fun h0 => Bool.noConfusion h0),
+          if_neg (fun h0 => Bool.noConfusion
+            (he.symm.trans (hiff.mpr (Nat.succ.inj h0).symm)))]
+
+/-- The place action's matrix is the place list's permutation
+matrix transposed, entry by entry. -/
+theorem permMatBy_read {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
+    (ix : List I) (h : imgOnceBy eq img ix) :
+    matOneValue (permMatBy eq img ix)
+      (transposeM (permM (ix.length + 1) (imgPosBy eq img ix))) := by
+  have hσl : (imgPosBy eq img ix).length = ix.length + 1 :=
+    congrArg Nat.succ (length_map _ ix)
+  have hPl : (permM (ix.length + 1) (imgPosBy eq img ix)).length
+      = ix.length + 1 := (length_map _ _).trans hσl
+  have hPr : rowsLen (ix.length + 1) (permM (ix.length + 1) (imgPosBy eq img ix)) :=
+    rowsLen_permM _ _
+  have hTl : (transposeM (permM (ix.length + 1) (imgPosBy eq img ix))).length
+      = ix.length + 1 := transposeLen _ hPr hPl
+  have hTr : rowsLen (ix.length + 1)
+      (transposeM (permM (ix.length + 1) (imgPosBy eq img ix))) := by
+    have := rowsLen_transposeM (permM (ix.length + 1) (imgPosBy eq img ix))
+    rw [hPl] at this
+    exact this
+  refine matOne_getAt _ _ ((length_permMatBy eq img ix).trans hTl.symm) ?_
+  intro r hr
+  rw [length_permMatBy] at hr
+  refine poly.oneValue_of_entries _ _
+    (by rw [rowsLen_getAt _ r (rowsLen_permMatBy eq img ix)
+          (by rw [length_permMatBy]; exact hr),
+        rowsLen_getAt _ r hTr (by rw [hTl]; exact hr)]) ?_
+  intro c hc
+  rw [rowsLen_getAt _ r (rowsLen_permMatBy eq img ix)
+    (by rw [length_permMatBy]; exact hr)] at hc
+  rw [getAt_permMatBy eq img ix h r c hr hc,
+    getAt_transposeM BPair.unit _ hPr r c hr (by rw [hPl]; exact hc)]
+  show (if r = getAt 0 (imgPosBy eq img ix) c then BPair.ofPos Pos.one
+      else BPair.unit).oneValue
+    (getAt BPair.unit (getAt [] ((imgPosBy eq img ix).map
+      (idRow (ix.length + 1))) c) r)
+  rw [getAt_map 0 [] _ _ c (by rw [hσl]; exact hc),
+    getAt_idRow (ix.length + 1) _ r hr]
+  by_cases hrc : r = getAt 0 (imgPosBy eq img ix) c
+  · rw [if_pos hrc, if_pos hrc]
+    decide
+  · rw [if_neg hrc, if_neg hrc]
+    exact BPair.oneValue_refl _
+
+
+/-- The commuting read at every window matrix whose entries move
+along the action: the place action's matrix is the place list's
+permutation matrix transposed, the congruence reads the selected
+block (`elim.permM_conj`), and the moved-entries read returns the
+matrix. -/
+theorem commReadBy_of {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
+    (ix : List I) (H : Mat)
+    (hsq : sqAt H (ix.length + 1)) (h : imgOnceBy eq img ix)
+    (hmov : movedReadBy eq img ix H) :
+    commRead (permMatBy eq img ix) H := by
+  have hσl : (imgPosBy eq img ix).length = ix.length + 1 :=
+    congrArg Nat.succ (length_map _ ix)
+  have hPl : (permM (ix.length + 1) (imgPosBy eq img ix)).length
+      = ix.length + 1 := (length_map _ _).trans hσl
+  have hPr : rowsLen (ix.length + 1) (permM (ix.length + 1) (imgPosBy eq img ix)) :=
+    rowsLen_permM _ _
+  have hTl : (transposeM (permM (ix.length + 1) (imgPosBy eq img ix))).length
+      = ix.length + 1 := transposeLen _ hPr hPl
+  have hTr : rowsLen (ix.length + 1)
+      (transposeM (permM (ix.length + 1) (imgPosBy eq img ix))) := by
+    have := rowsLen_transposeM (permM (ix.length + 1) (imgPosBy eq img ix))
+    rw [hPl] at this
+    exact this
+  have hPmL : (permMatBy eq img ix).length = ix.length + 1 := length_permMatBy eq img ix
+  have hPmR : rowsLen (ix.length + 1) (permMatBy eq img ix) := rowsLen_permMatBy eq img ix
+  have hN : 0 < ix.length + 1 := Nat.succ_pos _
+  have hread := permMatBy_read eq img ix h
+  have hT : matOneValue (transposeM (permMatBy eq img ix))
+      (permM (ix.length + 1) (imgPosBy eq img ix)) := by
+    have h1 := transposeM_congrM (ix.length + 1) (permMatBy eq img ix)
+      (transposeM (permM (ix.length + 1) (imgPosBy eq img ix))) hPmR hTr
+      (hPmL.trans hTl.symm) hread
+    rw [transposeM_transposeM (permM (ix.length + 1) (imgPosBy eq img ix)) hPr hN
+      (by rw [hPl]; exact hN)] at h1
+    exact h1
+  have hHl : H.length = ix.length + 1 := sqAt_len hsq
+  have hHr : rowsLen (ix.length + 1) H := rowsLen_of_sqAt hsq
+  have hinner : matOneValue (matMul H (permMatBy eq img ix))
+      (matMul H (transposeM (permM (ix.length + 1) (imgPosBy eq img ix)))) :=
+    matMul_congrR H _ _ hPmR hTr hPmL hTl hN hread
+  have hM1r : rowsLen (ix.length + 1) (matMul H (permMatBy eq img ix)) := by
+    have := rowsLen_matMul H (permMatBy eq img ix)
+    rw [transposeLen _ hPmR hPmL] at this
+    exact this
+  have hM2r : rowsLen (ix.length + 1)
+      (matMul H (transposeM (permM (ix.length + 1) (imgPosBy eq img ix)))) := by
+    have := rowsLen_matMul H (transposeM (permM (ix.length + 1) (imgPosBy eq img ix)))
+    rw [transposeLen _ hTr hTl] at this
+    exact this
+  have h2 : matOneValue
+      (matMul (transposeM (permMatBy eq img ix)) (matMul H (permMatBy eq img ix)))
+      (matMul (permM (ix.length + 1) (imgPosBy eq img ix))
+        (matMul H (transposeM (permM (ix.length + 1) (imgPosBy eq img ix))))) :=
+    matOne_trans (matMul_congrL _ _ _ hT)
+      (matMul_congrR _ _ _ hM1r hM2r ((length_matMul H _).trans hHl)
+        ((length_matMul H _).trans hHl) hN hinner)
+  have hblt : ((imgPosBy eq img ix).all (fun i => Nat.blt i (ix.length + 1))) = true :=
+    all_of_mem_intro _ _ (fun x hx => by
+      obtain ⟨i, hi, hix⟩ := getAt_of_mem 0 hx
+      rw [← hix]
+      exact ltBlt (imgPosBy_lt eq img ix h i (by rw [← hσl]; exact hi)))
+  have h3 := permM_conj (ix.length + 1) (imgPosBy eq img ix) H hsq hblt
+  have hSr : rowsLen (ix.length + 1) (selM (imgPosBy eq img ix) (imgPosBy eq img ix) H) := by
+    have := rowsLen_selMO BPair.unit (imgPosBy eq img ix) H (imgPosBy eq img ix)
+    rw [hσl] at this
+    exact this
+  have hSl : (selM (imgPosBy eq img ix) (imgPosBy eq img ix) H).length
+      = ix.length + 1 := (length_selMO BPair.unit _ _ H).trans hσl
+  have h4 : matOneValue (selM (imgPosBy eq img ix) (imgPosBy eq img ix) H) H := by
+    refine matOne_getAt _ _ (hSl.trans hHl.symm) ?_
+    intro i hi
+    rw [hSl] at hi
+    refine poly.oneValue_of_entries _ _
+      (by rw [rowsLen_getAt _ i hSr (by rw [hSl]; exact hi),
+        rowsLen_getAt _ i hHr (by rw [hHl]; exact hi)]) ?_
+    intro j hj
+    rw [rowsLen_getAt _ i hSr (by rw [hSl]; exact hi)] at hj
+    show (getAt BPair.unit (getAt [] (selMO BPair.unit (imgPosBy eq img ix)
+        (imgPosBy eq img ix) H) i) j).oneValue (getAt BPair.unit (getAt [] H i) j)
+    rw [getAt_selMO BPair.unit _ _ H i j (by rw [hσl]; exact hi)
+      (by rw [hσl]; exact hj)]
+    have hrow := all_range_read (ix.length + 1) hmov i hi
+    exact of_decide_eq_true (all_range_read (ix.length + 1) hrow j hj)
+  exact matOne_trans h2 (matOne_trans h3 h4)
+
+
+/-- The equality read is structural on the image pairs: an image
+reading equal to a list member is that member — at the window list
+`con:fusion`'s label equality with the keys' own, the label calculus
+reading it outright (`slotEq_dataA`). -/
+def imgEqBy {I : Type} [Inhabited I] [DecidableEq I] (eq : I → I → Bool)
+    (img : I → I) (ix : List I) : Prop :=
+  (ix.all (fun a => ix.all (fun b =>
+    !(eq (img a) b)
+      || decide (img a = b)))) = true
+
+instance {I : Type} [Inhabited I] [DecidableEq I] (eq : I → I → Bool)
+    (img : I → I) (ix : List I) : Decidable (imgEqBy eq img ix) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The image's list member at a once-met, structurally equal image
+is the image itself. -/
+theorem imgPosBy_read {I : Type} [Inhabited I] [DecidableEq I] (eq : I → I → Bool)
+    (img : I → I) (ix : List I)
+    (h : imgOnceBy eq img ix) (heq : imgEqBy eq img ix) (k : Nat)
+    (hk : k < ix.length) :
+    getAt default ix (posBy eq (img (getAt default ix k)) ix)
+      = img (getAt default ix k) := by
+  have honce : (ix.filter (fun b =>
+      eq (img (getAt default ix k)) b)).length = 1 :=
+    beqEqOf (all_of_mem _ _ h _ (mem_getAt default ix k hk))
+  have hpos := posBy_lt eq _ ix honce
+  have he : eq (img (getAt default ix k))
+      (getAt default ix (posBy eq (img (getAt default ix k)) ix)) = true :=
+    (posBy_once eq _ ix honce _ hpos).mpr rfl
+  have hb := all_of_mem _ _ (all_of_mem _ _ heq _ (mem_getAt default ix k hk)) _
+    (mem_getAt default ix _ hpos)
+  rw [he] at hb
+  exact (of_decide_eq_true (show decide (img (getAt default ix k)
+    = getAt default ix (posBy eq (img (getAt default ix k)) ix)) = true
+    from hb)).symm
+
+/-- At a once-met list with the equality structural on the image
+pairs the equality read is reflexive at every image: the one member
+met is the image itself. -/
+theorem eq_img_self {I : Type} [Inhabited I] [DecidableEq I]
+    (eq : I → I → Bool) (img : I → I) (ix : List I)
+    (h : imgOnceBy eq img ix) (heq : imgEqBy eq img ix) (a : I) (ha : a ∈ ix) :
+    eq (img a) (img a) = true := by
+  have h1 : (ix.filter (fun b => eq (img a) b)).length = 1 :=
+    beqEqOf (all_of_mem _ _ h a ha)
+  have hpos : 0 < (ix.filter (fun b => eq (img a) b)).length := by
+    rw [h1]
+    exact Nat.succ_pos 0
+  obtain ⟨hb, hpb⟩ := mem_filter_of _ _ _ (mem_getAt default _ 0 hpos)
+  have hb2 := all_of_mem _ _ (all_of_mem _ _ heq a ha) _ hb
+  rw [hpb] at hb2
+  have hbe : img a = getAt default (ix.filter (fun b => eq (img a) b)) 0 :=
+    of_decide_eq_true (show decide (img a
+      = getAt default (ix.filter (fun b => eq (img a) b)) 0) = true from hb2)
+  have h3 : eq (img a) (getAt default (ix.filter (fun b => eq (img a) b)) 0)
+      = true := hpb
+  rw [← hbe] at h3
+  exact h3
+
+/-- A once-met list with the equality structural on the image pairs
+and the action injective is distinct: a repeated member is met at
+least twice by every image in its class, so no image lies there, and
+the images, members and pairwise distinct, are one too many for the
+members off it. -/
+theorem distinct_of_imgOnceBy {I : Type} [Inhabited I] [DecidableEq I] (eq : I → I → Bool)
+    (img : I → I) (ix : List I)
+    (h : imgOnceBy eq img ix) (heq : imgEqBy eq img ix)
+    (hpc : ∀ a a', a ∈ ix → a' ∈ ix →
+      img a = img a' → a = a') :
+    distinctList ix := by
+  have himg : ∀ a, a ∈ ix → img a ∈ ix := by
+    intro a ha
+    have h1 : (ix.filter (fun b => eq (img a) b)).length = 1 :=
+      beqEqOf (all_of_mem _ _ h a ha)
+    have hpos : 0 < (ix.filter (fun b => eq (img a) b)).length := by
+      rw [h1]
+      exact Nat.succ_pos 0
+    obtain ⟨hb, hpb⟩ := mem_filter_of _ _ _ (mem_getAt default _ 0 hpos)
+    have hb2 := all_of_mem _ _ (all_of_mem _ _ heq a ha) _ hb
+    rw [hpb] at hb2
+    rw [of_decide_eq_true (show decide (img a
+      = getAt default (ix.filter (fun b => eq (img a) b)) 0) = true
+      from hb2)]
+    exact hb
+  intro b hb
+  cases Nat.lt_or_ge 1 (countOf b ix) with
+  | inr hle => exact hle
+  | inl h2 =>
+    exfalso
+    have hnob : ∀ a, a ∈ ix → ¬ img a = b := by
+      intro a ha hab
+      have h1 : (ix.filter (fun c => eq (img a) c)).length = 1 :=
+        beqEqOf (all_of_mem _ _ h a ha)
+      have hc : countOf b (ix.filter (fun c => eq (img a) c))
+          = countOf b ix := by
+        rw [countOf_filter, if_pos (by rw [← hab]; exact eq_img_self eq img ix h heq a ha)]
+      have hle := countOf_le_length b
+        (ix.filter (fun c => eq (img a) c))
+      rw [hc, h1] at hle
+      exact absurd (Nat.lt_of_lt_of_le h2 hle) (Nat.lt_irrefl 1)
+    have hVd : distinctList (dedupL ix) := fun x _ => countOf_dedupL_le x ix
+    have hbV : b ∈ dedupL ix := mem_dedupL hb
+    have hVimg : ∀ x, countOf x ((dedupL ix).map img) ≤ 1 := by
+      refine fun x => distinctList_all ?_ x
+      refine distinct_of_getAt_inj default _ (fun p q hp hq hpq => ?_)
+      rw [length_map] at hp hq
+      rw [getAt_map default default _ _ p hp, getAt_map default default _ _ q hq] at hpq
+      exact getAt_inj_distinct default (dedupL ix) hVd p q hp hq
+        (hpc _ _ (mem_of_dedupL (mem_getAt default _ p hp))
+          (mem_of_dedupL (mem_getAt default _ q hq)) hpq)
+    have hcov : ∀ x, x ∈ (dedupL ix).map img →
+        x ∈ eraseFirst b (dedupL ix) := by
+      intro x hx
+      obtain ⟨a, ha, hax⟩ := mem_map_of _ _ x hx
+      have haix : a ∈ ix := mem_of_dedupL ha
+      have hxV : x ∈ dedupL ix := by
+        rw [← hax]
+        exact mem_dedupL (himg a haix)
+      have hxb : x ≠ b := by
+        rw [← hax]
+        exact hnob a haix
+      refine mem_of_countOf_pos x _ ?_
+      rw [countOf_eraseFirst_ne _ b x hxb]
+      exact countOf_pos_of_mem hxV
+    have hEd : distinctList (eraseFirst b (dedupL ix)) := by
+      intro x _
+      by_cases hxb : x = b
+      · rw [hxb]
+        have hs := countOf_eraseFirst_self (dedupL ix) b (countOf_pos_of_mem hbV)
+        have hle : countOf b (eraseFirst b (dedupL ix)) + 1 ≤ 1 := by
+          rw [← hs]
+          exact countOf_dedupL_le b ix
+        exact Nat.le_trans (Nat.le_add_right _ 1) hle
+      · rw [countOf_eraseFirst_ne _ b x hxb]
+        exact countOf_dedupL_le x ix
+    have hlen := length_le_of_distinct_mem _ _ hVimg hcov hEd
+    rw [length_map] at hlen
+    have he := length_eraseFirst b (dedupL ix) (countOf_pos_of_mem hbV)
+    rw [← he] at hlen
+    exact absurd hlen (Nat.not_succ_le_self _)
+
+/-- The place list is injective at a once-met list with the action
+injective: two members at one image position share the image, so
+they are one member, the list distinct at `distinct_of_imgOnceBy`. -/
+theorem imgPosBy_inj {I : Type} [Inhabited I] [DecidableEq I] (eq : I → I → Bool)
+    (img : I → I) (ix : List I)
+    (h : imgOnceBy eq img ix) (heq : imgEqBy eq img ix)
+    (hpc : ∀ a a', a ∈ ix → a' ∈ ix →
+      img a = img a' → a = a')
+    (i j : Nat) (hi : i < ix.length + 1) (hj : j < ix.length + 1)
+    (hij : getAt 0 (imgPosBy eq img ix) i = getAt 0 (imgPosBy eq img ix) j) :
+    i = j := by
+  cases i with
+  | zero =>
+    cases j with
+    | zero => rfl
+    | succ j' =>
+      have hj' : j' < ix.length := Nat.lt_of_succ_lt_succ hj
+      have hv : getAt 0 (imgPosBy eq img ix) (j' + 1)
+          = posBy eq (img (getAt default ix j')) ix + 1 :=
+        getAt_map default 0 _ ix j' hj'
+      rw [hv] at hij
+      exact absurd hij (Nat.noConfusion)
+  | succ i' =>
+    have hi' : i' < ix.length := Nat.lt_of_succ_lt_succ hi
+    have hu : getAt 0 (imgPosBy eq img ix) (i' + 1)
+        = posBy eq (img (getAt default ix i')) ix + 1 :=
+      getAt_map default 0 _ ix i' hi'
+    cases j with
+    | zero =>
+      rw [hu] at hij
+      exact absurd hij (Nat.noConfusion)
+    | succ j' =>
+      have hj' : j' < ix.length := Nat.lt_of_succ_lt_succ hj
+      have hv : getAt 0 (imgPosBy eq img ix) (j' + 1)
+          = posBy eq (img (getAt default ix j')) ix + 1 :=
+        getAt_map default 0 _ ix j' hj'
+      rw [hu, hv] at hij
+      have hp : posBy eq (img (getAt default ix i')) ix
+          = posBy eq (img (getAt default ix j')) ix := Nat.succ.inj hij
+      have himg : img (getAt default ix i')
+          = img (getAt default ix j') := by
+        rw [← imgPosBy_read eq img ix h heq i' hi', hp,
+          imgPosBy_read eq img ix h heq j' hj']
+      have hsrc : getAt default ix i' = getAt default ix j' :=
+        hpc _ _ (mem_getAt default ix i' hi') (mem_getAt default ix j' hj') himg
+      exact congrArg Nat.succ (getAt_inj_distinct default ix
+        (distinct_of_imgOnceBy eq img ix h heq hpc) i' j' hi' hj' hsrc)
+
+
+/-- The weighted diagonal moves along the action at fixed weights:
+the diagonal entry at an image position is the source's weight and
+the off-diagonal entries stay off the diagonal at the place list's
+injectivity, the electric member's read at the window list. -/
+theorem movedReadBy_pencilE {I : Type} [Inhabited I] [DecidableEq I] (eq : I → I → Bool)
+    (img : I → I) (ix : List I) (w : I → Nat)
+    (h : imgOnceBy eq img ix) (heq : imgEqBy eq img ix)
+    (hpc : ∀ a a', a ∈ ix → a' ∈ ix →
+      img a = img a' → a = a')
+    (hfix : ∀ a, a ∈ ix → w (img a) = w a) :
+    movedReadBy eq img ix (pairpencil.pencilE (0 :: ix.map w)) := by
+  have hdl : (0 :: ix.map w).length = ix.length + 1 :=
+    congrArg Nat.succ (length_map _ ix)
+  have hent : ∀ p q, p < ix.length + 1 → q < ix.length + 1 →
+      getAt BPair.unit (getAt []
+          (pairpencil.pencilE (0 :: ix.map w)) p) q
+        = if p == q then BPair.ofNat (getAt 0 (0 :: ix.map w) p)
+          else BPair.unit := by
+    intro p q hp hq
+    rw [← hdl] at hp hq
+    exact matOf_entry [] BPair.unit _ _ _ p q hp hq
+  have hdiag : ∀ i, i < ix.length + 1 →
+      getAt 0 (0 :: ix.map w) (getAt 0 (imgPosBy eq img ix) i)
+        = getAt 0 (0 :: ix.map w) i := by
+    intro i hi
+    cases i with
+    | zero => rfl
+    | succ k =>
+      have hk : k < ix.length := Nat.lt_of_succ_lt_succ hi
+      have hv : getAt 0 (imgPosBy eq img ix) (k + 1)
+          = posBy eq (img (getAt default ix k)) ix + 1 :=
+        getAt_map default 0 _ ix k hk
+      rw [hv]
+      show getAt 0 (ix.map w)
+          (posBy eq (img (getAt default ix k)) ix)
+        = getAt 0 (ix.map w) k
+      have honce : (ix.filter (fun b =>
+          eq (img (getAt default ix k)) b)).length = 1 :=
+        beqEqOf (all_of_mem _ _ h _ (mem_getAt default ix k hk))
+      rw [getAt_map default 0 _ ix _ (posBy_lt eq _ ix honce),
+        getAt_map default 0 _ ix k hk, imgPosBy_read eq img ix h heq k hk,
+        hfix _ (mem_getAt default ix k hk)]
+  refine all_range_intro _ (fun i hi => all_range_intro _ (fun j hj => ?_))
+  show decide ((getAt BPair.unit
+      (getAt [] (pairpencil.pencilE (0 :: ix.map w))
+        (getAt 0 (imgPosBy eq img ix) i))
+      (getAt 0 (imgPosBy eq img ix) j)).oneValue
+    (getAt BPair.unit
+      (getAt [] (pairpencil.pencilE (0 :: ix.map w)) i) j)) = true
+  refine decide_eq_true ?_
+  rw [hent _ _ (imgPosBy_lt eq img ix h i hi) (imgPosBy_lt eq img ix h j hj),
+    hent i j hi hj]
+  by_cases hij : i = j
+  · rw [hij, eqBeqOf rfl, eqBeqOf rfl, hdiag j hj]
+    exact BPair.oneValue_refl _
+  · rw [neBeqOf hij, neBeqOf (fun hc =>
+      hij (imgPosBy_inj eq img ix h heq hpc i j hi hj hc))]
+    exact BPair.oneValue_refl _
+
+/-- The commuting read at the free end's window matrix: the weighted
+diagonal commutes with the place action's matrix at fixed weights,
+the electric member's read at the window list. -/
+theorem commReadBy_pencilE {I : Type} [Inhabited I] [DecidableEq I] (eq : I → I → Bool)
+    (img : I → I) (ix : List I) (w : I → Nat)
+    (h : imgOnceBy eq img ix) (heq : imgEqBy eq img ix)
+    (hpc : ∀ a a', a ∈ ix → a' ∈ ix →
+      img a = img a' → a = a')
+    (hfix : ∀ a, a ∈ ix → w (img a) = w a) :
+    commRead (permMatBy eq img ix)
+      (pairpencil.pencilE (0 :: ix.map w)) := by
+  have hdl : (0 :: ix.map w).length = ix.length + 1 :=
+    congrArg Nat.succ (length_map _ ix)
+  have hsq : sqAt (pairpencil.pencilE (0 :: ix.map w))
+      (0 :: ix.map w).length :=
+    sqAt_of (matOf_length _ _ _) (rowsLen_matOf _ _ _)
+  rw [hdl] at hsq
+  exact commReadBy_of eq img ix _ hsq h
+    (movedReadBy_pencilE eq img ix w h heq hpc hfix)
+
+/-! The window list's action. -/
+
+/-- A slot key's image along the induced vertex map: the digit at a
+vertex reads the source's at the witness's vertex, `con:places`'
+permuted display at the vertex keys. -/
+def slotImg (w : Nat → Nat) (m : Nat) (k : List Nat) : List Nat :=
+  (List.range m).map (fun u => getAt 0 k (w u))
+
+/-- The window list's equality read: the interface equality at the
+configurations with the slot keys' own. -/
+def slotEq {L : Type} (F : Data L) (p q : List L × List Nat) : Bool :=
+  eqConf F p.1 q.1 && decide (p.2 = q.2)
+
+/-- The action on the window list at a reversal family: the
+configuration moved at the link witness with the labels dualized
+where the traversal reverses, and the slot key at the vertex
+witness. -/
+def dualSlotAct {L : Type} (F : Data L) (s : Nat → Nat) (rev : Nat → Bool)
+    (w : Nat → Nat) (n m : Nat) (p : List L × List Nat) :
+    List L × List Nat :=
+  (dualConf F s rev n p.1, slotImg w m p.2)
+
+/-- The action on the window list at the reversal-free instance:
+the configuration moved at the link witness and the slot key at
+the vertex witness. -/
+def slotAct {L : Type} (F : Data L) (s w : Nat → Nat) (n m : Nat)
+    (p : List L × List Nat) : List L × List Nat :=
+  dualSlotAct F s (fun _ => false) w n m p
+
+/-- The induced permutation matrix on the window list at a reversal
+family with the unit line at its head, `lem:fiberdec`'s permutation
+of the window and `thm:restoration`'s at the signed members. -/
+def dualSlotMat {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (s : Nat → Nat) (rev : Nat → Bool) (w : Nat → Nat) : Mat :=
+  permMatBy (slotEq F) (dualSlotAct F s rev w R.links R.verts)
+    (pairpencil.slotList F R ix)
+
+/-- The induced permutation matrix on the window list at the
+reversal-free instance. -/
+def slotMat {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (s w : Nat → Nat) : Mat :=
+  dualSlotMat F R ix s (fun _ => false) w
+
+/-- The moved key's length is the vertex count. -/
+theorem slotImg_len (w : Nat → Nat) (m : Nat) (k : List Nat) :
+    (slotImg w m k).length = m :=
+  (length_map _ _).trans (length_range m)
+
+/-- The moved key's digit at a vertex is the source's at the
+witness's vertex. -/
+theorem getAt_slotImg (w : Nat → Nat) (m : Nat) (k : List Nat) (u : Nat)
+    (hu : u < m) : getAt 0 (slotImg w m k) u = getAt 0 k (w u) := by
+  show getAt 0 ((List.range m).map _) u = _
+  rw [getAt_map_range, if_pos hu]
+
+/-- A slot key's image is a slot key of the moved configuration at
+the multiplicities transported along the vertex map. -/
+theorem slotImg_mem {L : Type} (F : Data L) (R : Region) (v w : Nat → Nat)
+    (hv : vertPermRead R v w) (a b : List L)
+    (hvm : ∀ x, x < R.verts → vmult F R b (v x) = vmult F R a x)
+    (k : List Nat) (hk : k ∈ pairpencil.slotKeys F R a) :
+    slotImg w R.verts k ∈ pairpencil.slotKeys F R b := by
+  obtain ⟨_, hd⟩ := pairpencil.slotKeys_read F R a k hk
+  refine pairpencil.slotKeys_intro F R b _ (slotImg_len w R.verts k) (fun u hu => ?_)
+  rw [getAt_slotImg w R.verts k u hu]
+  have hwu : w u < R.verts := (vertPermRead_at R v w hv u hu).2.2.2
+  have h1 := hvm (w u) hwu
+  rw [(vertPermRead_at R v w hv u hu).2.1] at h1
+  rw [h1]
+  exact hd (w u) hwu
+
+/-- The key's move is injective at the vertex range: the witness
+reads each digit back. -/
+theorem slotImg_inj (R : Region) (v w : Nat → Nat) (hv : vertPermRead R v w)
+    (k k' : List Nat) (hk : k.length = R.verts) (hk' : k'.length = R.verts)
+    (h : slotImg w R.verts k = slotImg w R.verts k') : k = k' := by
+  refine getAt_ext 0 k k' (hk.trans hk'.symm) (fun x hx => ?_)
+  rw [hk] at hx
+  have hvx : v x < R.verts := (vertPermRead_at R v w hv x hx).2.2.1
+  have hwv : w (v x) = x := (vertPermRead_at R v w hv x hx).1
+  have h1 : getAt 0 (slotImg w R.verts k) (v x)
+      = getAt 0 (slotImg w R.verts k') (v x) := by rw [h]
+  rw [getAt_slotImg _ _ _ _ hvx, getAt_slotImg _ _ _ _ hvx, hwv] at h1
+  exact h1
+
+/-- The window list's equality read unpacked: the configurations
+at the interface equality and the keys equal. -/
+theorem slotEq_of {L : Type} (F : Data L) (p q : List L × List Nat)
+    (h : slotEq F p q = true) : eqConf F p.1 q.1 = true ∧ p.2 = q.2 := by
+  have h' := andSplitB h
+  exact ⟨h'.1, of_decide_eq_true h'.2⟩
+
+/-- The window list's equality read is reflexive. -/
+theorem slotEq_refl {L : Type} (F : Data L) (p : List L × List Nat) :
+    slotEq F p p = true := by
+  show (eqConf F p.1 p.1 && decide (p.2 = p.2)) = true
+  rw [eqConf_refl, decide_eq_true rfl]
+  rfl
+
+/-- At the label calculus the window list's equality read is
+structural on the image pairs: an image reading equal to a window
+list member is that member. -/
+theorem slotEq_dataA (d : Nat) (R : Region) (C : Nat) (s w : Nat → Nat) :
+    imgEqBy (slotEq (dataA d)) (slotAct (dataA d) s w R.links R.verts)
+      (pairpencil.slotList (dataA d) R (idx (dataA d) R C)) := by
+  refine all_of_mem_intro _ _ (fun p hp => all_of_mem_intro _ _ (fun q hq => ?_))
+  obtain ⟨hpi, _⟩ := pairpencil.mem_slotList_of _ R _ p hp
+  obtain ⟨hqi, _⟩ := pairpencil.mem_slotList_of _ R _ q hq
+  have hpL : (permConf (dataA d) s R.links p.1).all (fusion.labelA d) = true :=
+    permConf_all (dataA d) s R.links _ (fusion.labelA_unit d) p.1
+      (all_of_mem_intro _ p.1 (fun l hl =>
+        all_of_mem _ _ (fusion.labelA_below d C) l
+          ((idx_sound (dataA d) R C p.1 hpi).2.1 l hl)))
+  have hqL : q.1.all (fusion.labelA d) = true :=
+    all_of_mem_intro _ q.1 (fun l hl =>
+      all_of_mem _ _ (fusion.labelA_below d C) l
+        ((idx_sound (dataA d) R C q.1 hqi).2.1 l hl))
+  show (!(slotEq (dataA d) (slotAct (dataA d) s w R.links R.verts p) q)
+    || decide (slotAct (dataA d) s w R.links R.verts p = q)) = true
+  cases he : slotEq (dataA d) (slotAct (dataA d) s w R.links R.verts p) q with
+  | false => rfl
+  | true =>
+    obtain ⟨h1, h2⟩ := slotEq_of _ _ _ he
+    rw [decide_eq_true (Prod.ext (eqConf_labelA d _ _ hpL hqL h1) h2)]
+    rfl
+
+/-- The window list meets each member's image once at the count
+laws over a label domain holding the window's distinct label
+carrier, the interface equality structural on the moved
+configurations: the moved configuration is an index member
+(`permConf_mem_idx`) with its moved key a slot key at the
+transported multiplicities (`vmult_perm`, `slotImg_mem`), every
+window list member reading equal to the image is the image, and
+the window list lists it once (`pairpencil.slotList_distinct`). -/
+theorem slotOnce_idx {L : Type} [DecidableEq L] (F : Data L)
+    (R : Region) (C : Nat) (hw : wellRead R) (t s v w : Nat → Nat)
+    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (P : L → Bool) (hunit : P F.unit = true)
+    (hdual : ∀ l, P l = true → P (F.dual l) = true)
+    (hrowP : ∀ a b, P a = true → P b = true → ((F.row a b).all P) = true)
+    (hcomm : ∀ a b c, P a = true → P b = true → P c = true →
+      F.count a b c = F.count b a c)
+    (hassoc : ∀ a b c d, P a = true → P b = true → P c = true →
+      P d = true → assocLaw F a b c d)
+    (hunitL : ∀ a b, P a = true → P b = true → unitLaw F a b)
+    (hrow : ∀ a b c, P a = true → P b = true → P c = true →
+      rowLaw F a b c)
+    (hdom : ((F.unit :: F.below C).all P) = true)
+    (hdist : distinctList (F.unit :: F.below C))
+    (hstr : ∀ a b, a ∈ idx F R C → b ∈ idx F R C →
+      eqConf F (permConf F s R.links a) b = true → permConf F s R.links a = b) :
+    imgOnceBy (slotEq F) (slotAct F s w R.links R.verts)
+      (pairpencil.slotList F R (idx F R C)) := by
+  refine all_of_mem_intro _ _ (fun p hpm => ?_)
+  obtain ⟨hpi, hpk⟩ := pairpencil.mem_slotList_of F R _ p hpm
+  have hpP : p.1.all P = true :=
+    all_of_mem_intro P p.1 (fun l hl =>
+      all_of_mem _ _ hdom l ((idx_sound F R C p.1 hpi).2.1 l hl))
+  show (((pairpencil.slotList F R (idx F R C)).filter (fun q =>
+    slotEq F (slotAct F s w R.links R.verts p) q)).length == 1) = true
+  refine eqBeqOf ?_
+  refine filter_single _ (slotAct F s w R.links R.verts p) _ ?_ ?_
+    (slotEq_refl F _)
+    (distinctList_all (pairpencil.slotList_distinct F R _ (idx_distinct F R C hdist)) _)
+  · exact pairpencil.mem_slotList_to F R _ _ _
+      (permConf_mem_idx F R C hw t s v w hp he hv P hunit hdual hrowP hcomm
+        hassoc hunitL hrow hdom p.1 hpi)
+      (slotImg_mem F R v w hv p.1 _
+        (fun x hx => vmult_perm F R hw t s v w hp he hv P hunit hdual hrowP
+          hcomm hassoc hunitL hrow p.1 hpP x hx) p.2 hpk)
+  · intro q hq hpq
+    obtain ⟨hqi, _⟩ := pairpencil.mem_slotList_of F R _ q hq
+    obtain ⟨h1, h2⟩ := slotEq_of F _ _ hpq
+    exact (Prod.ext (hstr p.1 q.1 hpi hqi h1) h2).symm
+
+
+/-- The window list at the label calculus meets each member's image
+once, at every region admitting the action. -/
+theorem slotOnce_dataA (d : Nat) (R : Region) (C : Nat) (hw : wellRead R)
+    (t s v w : Nat → Nat)
+    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w) :
+    imgOnceBy (slotEq (dataA d)) (slotAct (dataA d) s w R.links R.verts)
+      (pairpencil.slotList (dataA d) R (idx (dataA d) R C)) :=
+  slotOnce_idx (dataA d) R C hw t s v w hp he hv (fusion.labelA d)
+    (fusion.labelA_unit d) (fusion.labelA_dual d)
+    (fun x y _ _ => fusion.labelA_row d x y)
+    (lawsA_all d).1 (lawsA_all d).2.1 (lawsA_all d).2.2.1 (lawsA_all d).2.2.2
+    (fusion.labelA_below d C) (fusion.below_distinct_dataA d C)
+    (fun a b ha hb h => eqConf_labelA d _ _
+      (permConf_all (dataA d) s R.links _ (fusion.labelA_unit d) a
+        (all_of_mem_intro _ a (fun l hl =>
+          all_of_mem _ _ (fusion.labelA_below d C) l
+            ((idx_sound (dataA d) R C a ha).2.1 l hl))))
+      (all_of_mem_intro _ b (fun l hl =>
+        all_of_mem _ _ (fusion.labelA_below d C) l
+          ((idx_sound (dataA d) R C b hb).2.1 l hl))) h)
+
+/-- The commuting read at the free end's window matrix at the label
+calculus: the electric member over the window list's diagonal
+commutes with the induced permutation matrix at every region
+admitting the action and every cutoff, `lem:fiberdec`'s commuting
+datum at the electric member as a theorem. -/
+theorem commRead_slotE_dataA (d : Nat) (R : Region) (C : Nat)
+    (hw : wellRead R) (t s v w : Nat → Nat)
+    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w) :
+    commRead (slotMat (dataA d) R (idx (dataA d) R C) s w)
+      (pairpencil.pencilE (pairpencil.slotDiag (dataA d) R (idx (dataA d) R C))) :=
+  commReadBy_pencilE (slotEq (dataA d)) (slotAct (dataA d) s w R.links R.verts)
+    (pairpencil.slotList (dataA d) R (idx (dataA d) R C))
+    (fun p => contentN (dataA d) p.1)
+    (slotOnce_dataA d R C hw t s v w hp he hv) (slotEq_dataA d R C s w)
+    (fun p q hpm hqm h => by
+      obtain ⟨hpi, hpk⟩ := pairpencil.mem_slotList_of _ R _ p hpm
+      obtain ⟨hqi, hqk⟩ := pairpencil.mem_slotList_of _ R _ q hqm
+      have h1 : permConf (dataA d) s R.links p.1 = permConf (dataA d) s R.links q.1 :=
+        congrArg Prod.fst h
+      have h2 : slotImg w R.verts p.2 = slotImg w R.verts q.2 :=
+        congrArg Prod.snd h
+      exact Prod.ext
+        (permConf_inj (dataA d) R t s hp p.1 q.1
+          (idx_sound (dataA d) R C p.1 hpi).1
+          (idx_sound (dataA d) R C q.1 hqi).1 h1)
+        (slotImg_inj R v w hv p.2 q.2 (pairpencil.slotKeys_read _ R _ _ hpk).1
+          (pairpencil.slotKeys_read _ R _ _ hqk).1 h2))
+    (fun p hpm => contentN_perm (dataA d) R t s hp p.1
+      (idx_sound (dataA d) R C p.1 (pairpencil.mem_slotList_of _ R _ p hpm).1).1)
 
 /-- The translation's transpose is its witness's matrix
 (`con:places`' transpose-is-inverse), the two composition reads

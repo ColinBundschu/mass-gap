@@ -582,7 +582,7 @@ theorem foldPow_read (l : List BPair) (n d : BPair) :
     (powGo_fst n d l)
 
 /-- The magnitude read through a mapped list's entry. -/
-private theorem getAt_map_mag : ∀ (l : Poly) (i : Nat),
+theorem getAt_map_mag : ∀ (l : Poly) (i : Nat),
     ground.getAt BPair.unit (l.map mag) i
       = mag (ground.getAt BPair.unit l i)
   | [], _ => (mag_unitLe (ground.leB_refl BPair.unit)).symm

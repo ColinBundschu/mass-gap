@@ -108,7 +108,10 @@ import MassGap.Dualtrunc
 import MassGap.Contactcell
 import MassGap.Corner
 import MassGap.Cornerpivot
+import MassGap.Cornerblock
 import MassGap.Cornerstore
+import MassGap.Cornerfloor
+import MassGap.Decomp
 import MassGap.Freecell
 import MassGap.Bridge
 import MassGap.Network
@@ -120,5 +123,8 @@ import MassGap.Generators
 import MassGap.Unitschain
 import MassGap.Twoaction
 import MassGap.Restoration
+import MassGap.Cone
 import MassGap.Groundreads
 import MassGap.Momentfold
+import MassGap.Continuum
+import MassGap.Reconstruct

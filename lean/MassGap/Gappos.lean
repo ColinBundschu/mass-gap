@@ -409,53 +409,21 @@ private theorem entSym (o : Nat) (S : Mat) (hS : sqAt S o)
   exact e
 
 /-- The joined pencil at the scaled identity keeps the entrywise
-symmetry. -/
+symmetry: both summands keep their own and the sum keeps theirs. -/
 private theorem symAdd (o : Nat) (S : Mat) (rho : ground.Pos)
     (hS : sqAt S o) (hsym : matOneValue S (transposeM S)) :
     matOneValue (matAdd (matScale rho (idMat o)) S)
       (transposeM (matAdd (matScale rho (idMat o)) S)) := by
-  have hIsq : sqAt (matScale rho (idMat o)) o := sqAt_scaleId o rho
-  have hDsq : sqAt (matAdd (matScale rho (idMat o)) S) o :=
-    elim.sqAt_matAdd o _ S hIsq hS
-  have hDr : elim.rowsLen o (matAdd (matScale rho (idMat o)) S) :=
-    elim.rowsLen_of_sqAt hDsq
-  have hDl : (matAdd (matScale rho (idMat o)) S).length = o :=
-    elim.sqAt_len hDsq
-  have hTl : (transposeM (matAdd (matScale rho (idMat o)) S)).length
-      = o := elim.transposeLen _ hDr hDl
-  have hTr : elim.rowsLen o
-      (transposeM (matAdd (matScale rho (idMat o)) S)) := by
-    have h0 := elim.rowsLen_transposeM
-      (matAdd (matScale rho (idMat o)) S)
-    rw [hDl] at h0
-    exact h0
-  refine elim.matOne_of_entries _ _ o hDl hDr hTl hTr ?_
-  intro i j hi hj
-  have hent : ∀ a b : Nat, a < o → b < o →
-      ground.getAt BPair.unit (ground.getAt ([] : List BPair)
-          (matAdd (matScale rho (idMat o)) S) a) b
-        = (if b = a then BPair.ofNat 1 else BPair.unit).scale rho
-          + ground.getAt BPair.unit
-              (ground.getAt ([] : List BPair) S a) b := by
-    intro a b ha hb
-    rw [elim.getAt_matAdd _ S a
-        (by rw [elim.sqAt_len hIsq]; exact ha)
-        (by rw [elim.sqAt_len hS]; exact ha),
-      elim.getAt_vecAdd _ _ b
-        (by rw [elim.rowsLen_getAt _ a (elim.rowsLen_of_sqAt hIsq)
-            (by rw [elim.sqAt_len hIsq]; exact ha)]; exact hb)
-        (by rw [elim.rowsLen_getAt _ a (elim.rowsLen_of_sqAt hS)
-            (by rw [elim.sqAt_len hS]; exact ha)]; exact hb),
-      entry_scaleId o rho a b ha hb]
-  rw [elim.getAt_transposeM BPair.unit _ hDr i j hi
-      (by rw [hDl]; exact hj),
-    hent i j hi hj, hent j i hj hi]
-  refine BPair.add_congr ?_ (entSym o S hS hsym i j hi hj)
-  by_cases hji : j = i
-  · rw [hji]
-    exact BPair.oneValue_refl _
-  · rw [if_neg hji, if_neg (fun hh => hji hh.symm)]
-    exact BPair.oneValue_refl _
+  have hsI : matOneValue (transposeM (matScale rho (idMat o)))
+      (matScale rho (idMat o)) :=
+    elim.matOne_trans
+      (inertia.transposeM_matScale rho o (idMat o)
+        (elim.rowsLen_of_sqAt (inertia.sqAt_idMat o)))
+      (inertia.matScale_matOne rho
+        (by rw [inertia.transposeM_idMat o]; exact elim.matOne_refl _))
+  exact elim.matOne_symm
+    (elim.transposeM_matAdd_sym (matScale rho (idMat o)) S
+      (sqAt_scaleId o rho) hS hsI (elim.matOne_symm hsym))
 
 /-- The priced cap's quadratic floor at the scaled identity: the
 joined datum's form clears the vacant fold at every stated vector,
@@ -903,62 +871,21 @@ private theorem capEntry (p : poly.Poly) {K : Nat} (hp : p.length ≤ K + 1)
   exact h5
 
 /-- The site datum of two entrywise-symmetric data keeps the
-entrywise symmetry. -/
+entrywise symmetry: the swapped summand keeps its own and the sum
+keeps theirs. -/
 private theorem symSite {o : Nat} (X Y : Mat)
     (hX : sqAt X o) (hY : sqAt Y o)
     (hsX : matOneValue X (transposeM X))
     (hsY : matOneValue Y (transposeM Y)) :
     matOneValue (matAdd X (elim.matSwap Y))
       (transposeM (matAdd X (elim.matSwap Y))) := by
-  have hA : sqAt (matAdd X (elim.matSwap Y)) o :=
-    elim.sqAt_matAdd o X _ hX (elim.sqAt_matSwap o Y hY)
-  have hAl := elim.sqAt_len hA
-  have hAr := elim.rowsLen_of_sqAt hA
-  have hTl : (transposeM (matAdd X (elim.matSwap Y))).length = o :=
-    elim.transposeLen _ hAr hAl
-  have hTr : elim.rowsLen o (transposeM (matAdd X (elim.matSwap Y))) := by
-    have h0 := elim.rowsLen_transposeM (matAdd X (elim.matSwap Y))
-    rw [hAl] at h0
-    exact h0
-  have hent : ∀ a b : Nat, a < o → b < o →
-      ground.getAt BPair.unit (ground.getAt ([] : List BPair)
-        (matAdd X (elim.matSwap Y)) a) b
-      = ground.getAt BPair.unit
-          (ground.getAt ([] : List BPair) X a) b
-        + (ground.getAt BPair.unit
-            (ground.getAt ([] : List BPair) Y a) b).swap := by
-    intro a b hao hbo
-    have haX : a < X.length := by
-      rw [elim.sqAt_len hX]; exact hao
-    have haY : a < Y.length := by
-      rw [elim.sqAt_len hY]; exact hao
-    have haS : a < (elim.matSwap Y).length := by
-      rw [elim.length_matSwap Y]; exact haY
-    have hbX : b < (ground.getAt ([] : List BPair) X a).length := by
-      rw [elim.rowsLen_getAt _ a (elim.rowsLen_of_sqAt hX) haX]
-      exact hbo
-    have hbY : b < (ground.getAt ([] : List BPair) Y a).length := by
-      rw [elim.rowsLen_getAt _ a (elim.rowsLen_of_sqAt hY) haY]
-      exact hbo
-    have hbS : b < (ground.getAt ([] : List BPair)
-        (elim.matSwap Y) a).length := by
-      rw [elim.rowsLen_getAt _ a
-        (elim.rowsLen_of_sqAt (elim.sqAt_matSwap o Y hY))
-        haS]
-      exact hbo
-    rw [elim.getAt_matAdd X (elim.matSwap Y) a haX haS,
-      elim.getAt_vecAdd _ _ b hbX hbS,
-      show ground.getAt ([] : List BPair) (elim.matSwap Y) a
-        = (ground.getAt ([] : List BPair) Y a).map BPair.swap from
-        ground.getAt_map ([] : List BPair) ([] : List BPair) _ Y a haY,
-      ground.getAt_map BPair.unit BPair.unit BPair.swap _ b hbY]
-  refine elim.matOne_of_entries _ _ o hAl hAr hTl hTr ?_
-  intro i j hi hj
-  rw [elim.getAt_transposeM BPair.unit _ hAr i j hi
-      (by rw [hAl]; exact hj),
-    hent i j hi hj, hent j i hj hi]
-  exact BPair.add_congr (entSym o X hX hsX i j hi hj)
-    (ground.swap_congr (entSym o Y hY hsY i j hi hj))
+  have hsw : matOneValue (transposeM (elim.matSwap Y))
+      (elim.matSwap Y) := by
+    rw [elim.transposeM_swap]
+    exact elim.matSwap_congr (elim.matOne_symm hsY)
+  exact elim.matOne_symm
+    (elim.transposeM_matAdd_sym X (elim.matSwap Y) hX
+      (elim.sqAt_matSwap o Y hY) (elim.matOne_symm hsX) hsw)
 
 /-- The rescaled datum's entrywise cap at the entries' own scaled
 magnitudes. -/
@@ -1728,9 +1655,9 @@ theorem sandwich_lo {o : Nat} (H H' S G : Mat) (rho x y : Pos)
       (siteDatum (matAdd H (matScale (y + rho) G)) (matScale x G))
       (siteDatum (matAdd H' (matScale y G)) (matScale x G))) spL :=
     inertia.splitRead_congr _ _ hDiff (elim.matOne_symm hfull) spL
-      hcap.2.2.2.2.1
+      hcap.2.2.2.1
   exact countAtPair_mono H H' G x (y + rho) x y n n' sp sp' spL
-    hspL hcap.2.2.2.2.2 h h'
+    hspL hcap.2.2.2.2 h h'
 
 /-- The sandwich's upper comparison (`thm:gappos`(v)): at the same
 cap the count at `v'` of a level sits at or below the count at `v`
@@ -1784,9 +1711,9 @@ theorem sandwich_hi {o : Nat} (H H' S G : Mat) (rho x y : Pos)
       (siteDatum (matAdd H' (matScale y G)) (matScale x G))
       (siteDatum (matAdd H (matScale y G)) (matScale (x + rho) G))) spU :=
     inertia.splitRead_congr _ _ hDiff (elim.matOne_symm hfull) spU
-      hcap.2.2.1
+      hcap.2.2.1.1
   exact countAtPair_mono H' H G x y (x + rho) y n' n sp' sp spU
-    hspU hcap.2.2.2.1 h' h
+    hspU hcap.2.2.1.2 h' h
 
 /-- The jump bracket travels between the couplings at the width
 (`thm:gappos`(v)): a flat window of `thm:flatstep` at the coupling
@@ -2476,44 +2403,31 @@ theorem truncCut {k m : Nat} (H G M M1 M2 P G1 Q De G2 B : Mat)
 /-- The window reaches the cut (`thm:gappos`(iii), (v);
 `thm:flatstep`'s identification at `lem:speccut`): at one located
 root list read both ways — the count identity's factorization in
-the two window counts' certificates and the diagonalizing
+the window's top count certificate and the diagonalizing
 congruence, `lem:split`'s one list — a flat window at the ground
-multiplicity brackets the edge between its ends, the below count
-squeezed by the level monotonicity, and the spectral read closes
-the cut at any stated split of the cut's site datum, the cut tie
-landed whole. -/
+multiplicity holds the edge below its top, the below count squeezed
+from above by the level monotonicity and from below by the kernel
+roots, every kernel root below every edge, and the spectral read
+closes the cut at any stated split of the cut's site datum, the cut
+tie landed whole (`flatstep.cutTie_of_edge`). -/
 theorem windowCut {n : Nat} (Et : Mat) (T Tw : SqMat n)
     (l : List (BPair × Pos × BPair)) (E0 p q : Pos) (g : Nat)
     (hd : split.diagRead Et (idMat n) T Tw l)
     (hker : split.rootsAtKernel (l.map (fun r => (r.1, r.2.1))) = g)
-    (ax ay tx ty : Pos) (spa spt : Split n)
-    (hca : split.countRead Et (idMat n)
-      (l.map (fun r => (r.1, r.2.1))) ax ay spa)
+    (tx ty : Pos) (spt : Split n)
     (hct : split.countRead Et (idMat n)
       (l.map (fun r => (r.1, r.2.1))) tx ty spt)
-    (hga : revAt spa = g) (hgt : revAt spt = g)
-    (hae : ax * q ≤ E0 * p * ay) (het : E0 * p * ty ≤ tx * q)
-    (hEE : sqAt (matMul Et Et) n) (sp : Split n)
+    (hgt : revAt spt = g) (het : E0 * p * ty ≤ tx * q)
+    (sp : Split n)
     (hsp : splitRead (siteDatum (matScale q (matMul Et Et))
         (matScale (E0 * p) Et)) sp) :
-    speccut.cutTie Et (l.map (fun r => (r.1, r.2.1))) E0 p q sp := by
-  have hedge : split.rootsBelow (l.map (fun r => (r.1, r.2.1)))
-      (E0 * p) q = g :=
-    Nat.le_antisymm
-      ((hct.2.2.2.2.2.symm.trans hgt) ▸
-        split.rootsBelow_mono (l.map (fun r => (r.1, r.2.1)))
-          (E0 * p) q tx ty het)
-      ((hca.2.2.2.2.2.symm.trans hga) ▸
-        split.rootsBelow_mono (l.map (fun r => (r.1, r.2.1)))
-          ax ay (E0 * p) q hae)
-  have hspec : speccut.specRead (l.map (fun r => (r.1, r.2.1)))
-      E0 p q :=
-    flatstep.flat_spec (l.map (fun r => (r.1, r.2.1))) E0 p q g
-      hedge hker
-  refine ⟨?_, hspec,
-    hEE, hd.1, hsp, speccut.spec_to_cut Et T Tw l E0 p q hd
-      hspec sp hsp⟩
-  rw [show Et.length = n from elim.sqAt_len hd.1]
-  exact hca.2.2.1
+    speccut.cutTie Et (l.map (fun r => (r.1, r.2.1))) E0 p q sp :=
+  flatstep.cutTie_of_edge Et T Tw l E0 p q g hd hker
+    (Nat.le_antisymm
+      (Nat.le_trans (split.rootsBelow_mono _ (E0 * p) q tx ty het)
+        (Nat.le_of_eq (hct.2.2.2.2.2.symm.trans hgt)))
+      (Nat.le_trans (Nat.le_of_eq hker.symm)
+        (split.kernel_le_below _ (E0 * p) q)))
+    sp hsp
 
 end gappos

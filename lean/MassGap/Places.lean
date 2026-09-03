@@ -188,13 +188,12 @@ def monomialsAt (mu : List Nat) : List (List Nat) :=
 /-- The power's whole monomial basis at a letter count and a
 degree. -/
 def allMon (d k : Nat) : List (List Nat) :=
-  ground.keyBox k (List.range d)
+  ground.prodLists (List.replicate k (List.range d))
 
 /-- A member's position in a stated list, the list's own count
 beyond it. -/
-def idxOf {α : Type} [BEq α] (m : α) : List α → Nat
-  | [] => 0
-  | b :: t => if m == b then 0 else idxOf m t + 1
+def idxOf {α : Type} [BEq α] (m : α) : List α → Nat :=
+  ground.posBy (fun a b => a == b) m
 
 private def prodNat : List Nat → Nat
   | [] => 1
@@ -1037,39 +1036,29 @@ theorem getAt_swapPosG_ne : ∀ (g p : Nat) (m : List Nat) (i : Nat),
         getAt_adjSwap_ne 0 (p + g + 1) m i hiK hp1]
 
 /-- A member's first place, the occupancy's own read. -/
-def posOf (x : Nat) : List Nat → Nat
-  | [] => 0
-  | a :: t => if x = a then 0 else posOf x t + 1
+def posOf (x : Nat) : List Nat → Nat :=
+  ground.posBy (fun a b => decide (a = b)) x
 
-theorem posOf_lt (x : Nat) : ∀ m : List Nat,
-    0 < ground.countOf x m → posOf x m < m.length
-  | [], h => absurd h (Nat.lt_irrefl 0)
-  | a :: t, h => by
-    show (if x = a then 0 else posOf x t + 1) < t.length + 1
-    by_cases hxa : x = a
-    · rw [if_pos hxa]
-      exact Nat.succ_pos _
-    · rw [if_neg hxa]
-      have h' : 0 < ground.countOf x t := by
-        rw [← ground.countOf_head_ne hxa t]
-        exact h
-      exact Nat.succ_lt_succ (posOf_lt x t h')
+theorem posOf_lt (x : Nat) (m : List Nat) (h : 0 < ground.countOf x m) :
+    posOf x m < m.length :=
+  ground.posBy_lt_of_hit _ x m
+    ⟨x, ground.mem_of_countOf_pos x m h, decide_eq_true rfl⟩
 
-theorem getAt_posOf (x : Nat) : ∀ m : List Nat,
-    0 < ground.countOf x m →
-    ground.getAt 0 m (posOf x m) = x
-  | [], h => absurd h (Nat.lt_irrefl 0)
-  | a :: t, h => by
-    show ground.getAt 0 (a :: t)
-      (if x = a then 0 else posOf x t + 1) = x
-    by_cases hxa : x = a
-    · rw [if_pos hxa, hxa]
-      rfl
-    · rw [if_neg hxa]
-      have h' : 0 < ground.countOf x t := by
-        rw [← ground.countOf_head_ne hxa t]
-        exact h
-      exact getAt_posOf x t h'
+theorem getAt_posOf (x : Nat) (m : List Nat) (h : 0 < ground.countOf x m) :
+    ground.getAt 0 m (posOf x m) = x :=
+  (of_decide_eq_true (show decide (x = ground.getAt 0 m (posOf x m)) = true from
+    ground.getAt_posBy 0 (fun a b : Nat => decide (a = b)) x m
+      ⟨x, ground.mem_of_countOf_pos x m h, decide_eq_true rfl⟩)).symm
+
+/-- The position at a head: the head itself at the key, past it
+otherwise. -/
+theorem posOf_cons (x a : Nat) (t : List Nat) :
+    posOf x (a :: t) = if x = a then 0 else posOf x t + 1 := by
+  by_cases h : x = a
+  · rw [if_pos h]
+    exact ground.posBy_cons_hit _ x a t (decide_eq_true h)
+  · rw [if_neg h]
+    exact ground.posBy_cons_miss _ x a t (decide_eq_false h)
 
 
 /-! The permutation-membership reads: the enumeration at the unit
@@ -1095,6 +1084,12 @@ theorem rowList_replicate_zero : ∀ n : Nat,
         :: rowList (List.replicate n 0) = 0 :: List.replicate n 0
     rw [sumNat_replicate_zero n, Nat.zero_add 0,
       rowList_replicate_zero n]
+
+/-- The vacant shape's degree is the sum's unit. -/
+theorem degree_replicate_zero (n : Nat) :
+    degree (List.replicate n 0) = 0 := by
+  show ground.sumNat (rowList (List.replicate n 0)) = 0
+  rw [rowList_replicate_zero n, ground.sumNat_replicate_zero n]
 
 /-! The single-key kit: one occupied key over a vacant family, the
 scaled family, and the deepest key's raise — the reduced labels'
@@ -1343,9 +1338,11 @@ theorem posOf_getAt {m : List Nat}
     intro t ht
     match t with
     | 0 =>
+      rw [posOf_cons]
       show (if a = a then 0 else posOf a m + 1) = 0
       rw [if_pos rfl]
     | t + 1 =>
+      rw [posOf_cons]
       show (if ground.getAt 0 m t = a then 0
         else posOf (ground.getAt 0 m t) m + 1) = t + 1
       have hne : ground.getAt 0 m t ≠ a := fun he => by
@@ -2095,6 +2092,7 @@ private theorem posOf_absent (x : Nat) : ∀ m : List Nat,
     have hxa : x ≠ a := fun he => by
       rw [he, ground.countOf_head] at h
       exact nomatch h
+    rw [posOf_cons]
     show (if x = a then 0 else posOf x t + 1) = t.length + 1
     rw [if_neg hxa, posOf_absent x t (by
       rw [← ground.countOf_head_ne hxa t]
@@ -5152,6 +5150,29 @@ theorem countRangePerms (d : Nat) :
   show ground.countOf (List.range d)
     (monomialsAt (List.replicate d 1)) = 1
   rw [countOf_monomialsAt, if_pos ⟨h1, h2⟩]
+
+/-- A list at the count with every letter at most once and every
+letter below the count occupied is a member of the permutations:
+the content at the count reads the all-ones family, the
+enumeration's own count. -/
+theorem perm_of_counts (d : Nat) (l : List Nat) (hlen : l.length = d)
+    (hdist : ∀ x, ground.countOf x l ≤ 1)
+    (hcov : ∀ x, x < d → 0 < ground.countOf x l) :
+    0 < ground.countOf l (perms d) := by
+  show 0 < ground.countOf l (monomialsAt (List.replicate d 1))
+  rw [countOf_monomialsAt]
+  have hc : l.length = sumNat (List.replicate d 1)
+      ∧ content (List.replicate d 1).length l = List.replicate d 1 := by
+    refine ⟨by rw [sumNat_replicate_one]; exact hlen, ?_⟩
+    rw [ground.length_replicate 1 d]
+    refine ground.getAt_ext 0 _ _
+      (by rw [content_length, ground.length_replicate]) ?_
+    intro x hx
+    rw [content_length] at hx
+    rw [getAt_contentAt d l x hx, ground.getAt_replicate 0 1 d x hx]
+    exact Nat.le_antisymm (hdist x) (hcov x hx)
+  rw [if_pos hc]
+  exact Nat.succ_pos 0
 
 /-- Membership from the entry reads: a family at the place count,
 its entries below that count and its keys read injectively, is an

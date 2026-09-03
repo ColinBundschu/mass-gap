@@ -20,33 +20,42 @@ $E_7$, and $E_8$ once each.
 
 Formalized:
 
-- **Clause (i), gap positivity, is closed for every member**:
-  `main.clauseI_all` proves both committed chain reads and the required tie throughout the classification. The series cases are parametric in rank at the diagonal windows; $D_4$’s four-loop window and $E_8$’s coupled window are handled separately.
+- **Clause (i), gap positivity, is closed for every member at its floor window**:
+  `main.clauseI_all` proves both committed chain reads and the required tie throughout the classification. The series cases are parametric in rank at the diagonal windows; $D_4$’s four-loop window and $E_8$’s coupled window are handled separately.  The clause's window-level interface is landed beside it: the pencil interface at the window list (`pairpencil.pencilRead`: the order tie, the electric member, the gram's block read and the magnetic member's terms at their caps and supports) and the fibering's index action with `lem:fiberdec`'s commuting datum at the electric member as a theorem at every region admitting the action (`fiberdec.commRead_slotE_dataA`).
 - **Clause (ii), the contact value $(3,H_r)$, is closed for every member**: `main.clauseII_all` proves it throughout the classification. The order count, base collection, excess-harmonic value, and occupancy families are established parametrically over every residue and rank; the fixed members are discharged by kernel `decide` in [lean/MassGapChecks/Main.lean](lean/MassGapChecks/Main.lean).
 
 - **The requirement mirrors** `lem:sectorspan` and `lem:attained`.
-- **Most of clause (iii)'s support tiers**: `lem:cornerpivot` (the
-  corner disconjugacy certificate: the walk, profile, crossing,
-  dominance, ground-witness, count and block-chain tiers, the
-  graded box devices, and the emitted disconjugacy store with its
+- **Clause (iii)'s support tiers, whole**: `lem:cornerpivot`
+  (the corner disconjugacy certificate, all seven clauses: the
+  walk, profile, crossing, dominance, ground-witness, count and
+  block-chain tiers, the graded box devices, the block chain's
+  ball tier, and the emitted disconjugacy store with its
   certificate kernel-decided whole), `lem:spectator`'s derivation
-  tier,
-  `thm:groundreads` whole (clauses (i)-(vii) with (v')),
-  `lem:momentfold` whole (the moment streams, the graded system,
-  the truncation cap, the scale comparison and the datum
-  assembly), `lem:fourpoint` whole, `lem:corner`'s corner-count,
-  shifted-scaling, drift, grade-key, cap and count tiers, and
-  `thm:restoration`'s first tier.
+  tier, `thm:groundreads` (clauses (i)-(vii) with (v')),
+  `lem:momentfold` (the moment streams, the graded system, the
+  truncation cap, the scale comparison and the datum assembly),
+  `lem:fourpoint`, `lem:corner` (the corner count, the shifted
+  scaling, the drift, the grade key, the caps and counts, and the
+  cell floor with the corner-output clauses of `thm:decomp` and
+  `thm:twoaction`), `lem:cone`, `thm:continuum`,
+  `thm:reconstruct`, and `thm:restoration`'s first tier.
 
 Open (no Lean yet):
 
-- `lem:cornerpivot`'s remainder (the second root's compression and
-  the block-chain lift's remaining clauses) and
-  `lem:corner`'s cell-floor clause with the corner-output clauses
-  of `thm:decomp` and `thm:twoaction`.
-- `lem:cone`, `thm:continuum`, `thm:reconstruct`.
-- **Clause (iii)'s composite statement at `main`** (it consumes the
-  items above), and the reverse correspondence walk (every TeX label reached from a Lean namespace).
+- **Clause (i) at its own quantifiers**: the theorem that at every
+  region and cutoff of the directed family and every interior
+  end-weight ray the window cut holds at one positive pair.  Its
+  remaining reads are the magnetic member's transport under the
+  window action, the gram's block content, the decimation's
+  window-freeness, the cell list closing at the corner cell, and
+  the truncation modulus at the window level; the landed clause is
+  the floor-window instance at every member.
+- **Clause (ii)'s opening**: the identification of the contact-end
+  value with the contact pair, and the attainment read, wired at
+  `main`; the landed clause is the pair arithmetic at every member.
+- **Clause (iii)'s composite statement at `main`** (it consumes
+  `thm:continuum`, landed), and the reverse correspondence walk
+  (every TeX label reached from a Lean namespace).
 
 Long-term future work:
 
@@ -55,7 +64,7 @@ Long-term future work:
 - Submit the work for peer review and possibly also to somewhere like [Palomar](https://palomar-registry.org/).
 
 The snapshot was taken from the development repository at commit
-`7e91dceb532f13d0df40deaca9a1a38203df29c5` (2026-08-30).
+`61724e7ee359a1fc3306a1a1f2a4276adcb2eef5` (2026-09-03).
 
 ## Proof Methodology
 
@@ -88,7 +97,7 @@ After the build,
 
 walks every constant of both libraries with `Lean.collectAxioms` and prints
 
-    constants read: 31881
+    constants read: 33444
     constants depending on axioms: 0
 
 ending in an error if any constant depends on any axiom. A single

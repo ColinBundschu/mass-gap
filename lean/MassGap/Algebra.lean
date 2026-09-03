@@ -47,10 +47,8 @@ changed edge's index support: per boundary link the fusion row at
 all-unit target reads the unit line's coordinate beside the list. -/
 def plaqRow {L : Type} (F : Data L) (R : Region)
     (p : List (Nat × Bool)) (a : List L) : List (List L) :=
-  ((List.range R.links).foldr (fun l acc =>
-    (linkTargets F p a l).flatMap (fun c => acc.map (fun b => c :: b)))
-    [[]]).filter (fun b =>
-      (b.any (fun l => !(F.eqL l F.unit))) && carrier.occupied F R b)
+  (ground.prodLists ((List.range R.links).map (linkTargets F p a))).filter
+    (fun b => (b.any (fun l => !(F.eqL l F.unit))) && carrier.occupied F R b)
 
 /-- The involution at the index, contour reversal: the labels
 dualized linkwise. -/
@@ -67,45 +65,18 @@ alone, so a target keeps every off-boundary label — the product's
 per-key read at the off-boundary singleton. -/
 
 /-- The row's product read at one key: an occupied target's entry
-sits in that key's own target list. -/
+sits in that key's own target list, the product lists' membership
+read at the key. -/
 theorem prodKeep {L : Type} [DecidableEq L] (F : Data L)
-    (p : List (Nat × Bool)) (a : List L) :
-    ∀ (K : List Nat) (b : List L),
-    0 < countOf b (K.foldr (fun k acc =>
-        (linkTargets F p a k).flatMap
-          (fun c => acc.map (fun t => c :: t))) [[]]) →
-    ∀ j, j < K.length →
-      0 < countOf (getAt F.unit b j) (linkTargets F p a (getAt 0 K j))
-  | [], _, _, j, hj => absurd hj (Nat.not_lt_zero j)
-  | k :: K, b, hb, j, hj => by
-    have hb' : 0 < countOf b ((linkTargets F p a k).flatMap
-        (fun c => (K.foldr (fun m acc =>
-            (linkTargets F p a m).flatMap
-              (fun d => acc.map (fun t => d :: t))) [[]]).map
-          (fun t => c :: t))) := hb
-    rw [countOf_flatMap] at hb'
-    obtain ⟨c, hc, hbc⟩ :=
-      famFold_pos_witness _ (linkTargets F p a k) hb'
-    cases b with
-    | nil =>
-      rw [countOf_nil_consMap] at hbc
-      exact absurd hbc (Nat.lt_irrefl 0)
-    | cons x b' =>
-      rw [countOf_consMap x c _ b'] at hbc
-      by_cases hxc : x = c
-      · rw [if_pos hxc] at hbc
-        cases j with
-        | zero =>
-          show 0 < countOf x (linkTargets F p a k)
-          rw [hxc]
-          exact hc
-        | succ j' =>
-          show 0 < countOf (getAt F.unit b' j')
-            (linkTargets F p a (getAt 0 K j'))
-          exact prodKeep F p a K b' hbc j'
-            (Nat.lt_of_succ_lt_succ hj)
-      · rw [if_neg hxc] at hbc
-        exact absurd hbc (Nat.lt_irrefl 0)
+    (p : List (Nat × Bool)) (a : List L) (K : List Nat) (b : List L)
+    (hb : 0 < countOf b (ground.prodLists (K.map (linkTargets F p a))))
+    (j : Nat) (hj : j < K.length) :
+    0 < countOf (getAt F.unit b j) (linkTargets F p a (getAt 0 K j)) := by
+  obtain ⟨_, hall⟩ := ground.mem_prodLists_of F.unit _ b
+    (mem_of_countOf_pos b _ hb)
+  have h := hall j (by rw [length_map]; exact hj)
+  rw [getAt_map 0 [] _ K j hj] at h
+  exact countOf_pos_of_mem h
 
 /-- A row target's entry at every key sits in that key's own target
 list: the product's per-key read walked through the occupancy
@@ -116,9 +87,8 @@ theorem plaqRow_target {L : Type} [DecidableEq L] (F : Data L)
     (l : Nat) (hl : l < R.links) :
     0 < ground.countOf (ground.getAt F.unit b l)
       (linkTargets F p a l) := by
-  have hb1 : 0 < countOf b (((List.range R.links).foldr (fun k acc =>
-      (linkTargets F p a k).flatMap
-        (fun c => acc.map (fun t => c :: t))) [[]]).filter
+  have hb1 : 0 < countOf b ((ground.prodLists
+      ((List.range R.links).map (linkTargets F p a))).filter
     (fun t => (t.any (fun m => !(F.eqL m F.unit)))
       && carrier.occupied F R t)) := hb
   rw [countOf_filter] at hb1

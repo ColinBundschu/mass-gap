@@ -50,6 +50,12 @@ forged minors `1, 24204, -1`; the head minor at
 rate's denominator at the degenerate rate `[0 : 0]`, where the bond
 weight and the cleared diagonal both collapse to the sum's unit —
 with the numerator's forcing at that denominator recorded beside it.
+
+The evaluated glue's battery runs the magnitude price at three
+profiles beside their theorem routes and the dominance glue at two
+sites, the scale-carrying `−500η` off entry and the depth-carrying
+`−100u` one, the box membership's isolation at the second — its
+own section's account.
 -/
 
 
@@ -1382,19 +1388,111 @@ example : inertia.revAt (inertia.mkSplit 5 wLo45) = 1 :=
     (inertia.mkSplit 5 wLo45) (by decide +kernel)
 
 /-! The cap pair at the well head: the second family at the endpoint
-six, the cap line `[2:1]`, the two-by-two hypotheses decided at the
-head, and every split's count at two or beyond — the second root
-below the cap.  The hypothesis binders' isolating refusals are the
-general read's own, at its two-by-two fixtures above. -/
+two, the cap line `(12:1)` beyond both endpoints' rates at the gaps
+`238500` and `378`, the compressed pencil's entries the closed
+power-sum reads — each diagonal entry the line read's own gap and
+the doubled cross the mixed folds' value `-11556` — and every split
+of the order-four head reading the count at two, the raw count
+beside the theorem route with the line reads' and the cross read's
+own cells beside their raw decides.  The refusals isolate the
+load-bearing binders in turn: the discriminant at the degenerate
+second family `N' = N`, where the doubled cross squares exactly to
+the diagonal product's quadruple and the count-one head at the line
+`(9:1)` parts the conclusion; the two line ties at forged gaps,
+each with the discriminant holding at the forged values and the
+count-one head parting; the window binder at the order-one
+head, the n-free hypotheses holding at the committed data with the
+discriminant's own cell beside them; and the endpoint order
+`N' ≤ N` at the second family past the window — with `N ≤ n` it
+hands the second family its own window read `N' ≤ n`, the line
+read's consumed order, the theorem's hypotheses symmetric in the
+two endpoints so the naming keeps every instance, and the refusal's
+data hold every further binder at the order parted, the count-one
+order-two head. -/
 
 private def wCap45 : elim.Mat :=
   wellMat 2 (2 * qLowNum 1 3 2 4) (1 * qLowDen 1 3 2 4) 1 3 5
 
-example : 2 ≤ inertia.revAt (inertia.mkSplit 5 wCap45) :=
-  capPair 1 3 2 4 6 5 2 1 (by decide +kernel) (by decide +kernel)
-    (inertia.mkSplit 5 wCap45) (by decide +kernel)
+private def wCapN : elim.Mat := wellMat 2 12 1 1 3 4
 
-example : 2 ≤ inertia.revAt (inertia.mkSplit 5 wCap45) := by decide +kernel
+example : crossSq 4 2 = 45 := by decide +kernel
+example : crossSqM 4 2 = 45 := by decide +kernel
+example : crossSqMM 4 2 = 45 := by decide +kernel
+example : crossBond 4 2 = 144 := by decide +kernel
+
+example : (crossVal 2 12 1 1 3 4 2).oneValue (BPair.ofNat 11556).swap := by
+  decide +kernel
+
+example : (elim.dotN (witList 4 4) (elim.matVec wCapN (witList 2 4))
+    + elim.dotN (witList 2 4)
+      (elim.matVec wCapN (witList 4 4))).oneValue
+    (crossVal 2 12 1 1 3 4 2) :=
+  crossRead 2 12 1 4 2 4 1 3 (by decide +kernel) (by decide +kernel)
+
+example : (elim.dotN (witList 4 4) (elim.matVec wCapN (witList 2 4))
+    + elim.dotN (witList 2 4)
+      (elim.matVec wCapN (witList 4 4))).oneValue
+    (crossVal 2 12 1 1 3 4 2) := by
+  decide +kernel
+
+example : (inertia.quadForm wCapN (witList 4 4)).oneValue
+    (BPair.ofNat 238500).swap :=
+  witLineRead 1 3 2 4 4 12 1 238500 (by decide +kernel)
+    (by decide +kernel)
+
+example : (inertia.quadForm wCapN (witList 4 4)).oneValue
+    (BPair.ofNat 238500).swap := by decide +kernel
+
+example : (inertia.quadForm wCapN (witList 2 4)).oneValue
+    (BPair.ofNat 378).swap :=
+  witLineRead 1 3 2 2 4 12 1 378 (by decide +kernel) (by decide +kernel)
+
+example : 2 ≤ inertia.revAt (inertia.mkSplit 4 wCapN) :=
+  capPair 1 3 2 4 2 4 12 1 238500 378 (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (inertia.mkSplit 4 wCapN) (by decide +kernel)
+
+example : 2 ≤ inertia.revAt (inertia.mkSplit 4 wCapN) := by decide +kernel
+
+private def wCap9 : elim.Mat := wellMat 2 9 1 1 3 4
+
+example : qLowNum 1 3 2 4 * 1 + 63054 = 9 * qLowDen 1 3 2 4 := by
+  decide +kernel
+example : ¬ (crossVal 2 9 1 1 3 4 4 * crossVal 2 9 1 1 3 4 4
+    < BPair.ofNat (4 * (63054 * 63054))) := by decide +kernel
+example : inertia.revAt (inertia.mkSplit 4 wCap9) = 1 := by decide +kernel
+example : inertia.splitRead wCap9 (inertia.mkSplit 4 wCap9) := by
+  decide +kernel
+
+example : crossVal 2 9 1 1 3 4 2 * crossVal 2 9 1 1 3 4 2
+    < BPair.ofNat (4 * (238500 * 135)) := by decide +kernel
+example : qLowNum 1 3 2 2 * 1 + 135 = 9 * qLowDen 1 3 2 2 := by
+  decide +kernel
+example : ¬ (qLowNum 1 3 2 4 * 1 + 238500 = 9 * qLowDen 1 3 2 4) := by
+  decide +kernel
+
+example : crossVal 2 9 1 1 3 4 2 * crossVal 2 9 1 1 3 4 2
+    < BPair.ofNat (4 * (63054 * 135000)) := by decide +kernel
+example : ¬ (qLowNum 1 3 2 2 * 1 + 135000 = 9 * qLowDen 1 3 2 2) := by
+  decide +kernel
+
+example : crossVal 2 12 1 1 3 4 2 * crossVal 2 12 1 1 3 4 2
+    < BPair.ofNat (4 * (238500 * 378)) := by decide +kernel
+example : inertia.revAt
+    (inertia.mkSplit 1 (wellMat 2 12 1 1 3 1)) = 1 := by decide +kernel
+example : inertia.splitRead (wellMat 2 12 1 1 3 1)
+    (inertia.mkSplit 1 (wellMat 2 12 1 1 3 1)) := by decide +kernel
+
+example : qLowNum 1 3 2 2 * 1 + 216 = 10 * qLowDen 1 3 2 2 := by
+  decide +kernel
+example : qLowNum 1 3 2 4 * 1 + 121536 = 10 * qLowDen 1 3 2 4 := by
+  decide +kernel
+example : crossVal 2 10 1 1 3 2 4 * crossVal 2 10 1 1 3 2 4
+    < BPair.ofNat (4 * (216 * 121536)) := by decide +kernel
+example : inertia.revAt
+    (inertia.mkSplit 2 (wellMat 2 10 1 1 3 2)) = 1 := by decide +kernel
+example : inertia.splitRead (wellMat 2 10 1 1 3 2)
+    (inertia.mkSplit 2 (wellMat 2 10 1 1 3 2)) := by decide +kernel
 
 /-! The rates\' gap at the cut member `[7:6]`, its data occupied and
 its tie the one cross-multiplied identity. -/
@@ -3059,3 +3157,286 @@ example : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
 example : ¬ (BPair.unit
     < poly.evalClear (depthPoly gyV 3) (BPair.ofPos 1) 1 gyC.K) := by
   decide +kernel
+
+/-! The profile-matrix stage runs at the two-key center family
+`[[1, u], [u, s]]`, the constant one and the kernel's two generators
+at the corners: the collapse values at the depth three read the
+scale's own powers — the u-slab's `3`, the square scale's `9`, and
+the kernel's `u · u = ηs` at the square key `9` — with the constant
+one's product returning the u-slab unchanged.  Each of the six
+collapse bridges is decided raw at that family and beside its
+theorem route, the constant family's at the stated matrix
+`[[2, 1], [1, 3]]`. -/
+
+private def blU : poly.PPoly × poly.PPoly :=
+  (([] : poly.PPoly), [[BPair.ofNat 1]])
+private def blOne : poly.PPoly × poly.PPoly :=
+  ([[BPair.ofNat 1]], ([] : poly.PPoly))
+private def blS : poly.PPoly × poly.PPoly :=
+  ([([] : poly.Poly), [BPair.ofNat 1]], ([] : poly.PPoly))
+private def blA : List (List (poly.PPoly × poly.PPoly)) :=
+  [[blOne, blU], [blU, blS]]
+
+example : poly.oneValue (depthPoly blU 3) [BPair.unit, BPair.ofNat 3] := by
+  decide +kernel
+
+example : poly.oneValue (depthPoly blS 3) [BPair.unit, BPair.ofNat 9] := by
+  decide +kernel
+
+-- the kernel's u · u = ηs read
+example : poly.oneValue (depthPoly (profMul blU blU) 3)
+    [BPair.unit, BPair.unit, BPair.ofNat 9] := by decide +kernel
+
+example : poly.oneValue
+    (depthPoly (profMul ([poly.one], ([] : poly.PPoly)) blU) 3)
+    (depthPoly blU 3) := by decide +kernel
+
+example : split.pmatOneValue (pfmDepth 3 (pfmMul blA blA))
+    (split.pmatMul (pfmDepth 3 blA) (pfmDepth 3 blA)) := by decide +kernel
+
+example : split.pmatOneValue (pfmDepth 3 (pfmMul blA blA))
+    (split.pmatMul (pfmDepth 3 blA) (pfmDepth 3 blA)) :=
+  pfmDepth_mul blA blA 3
+
+example : split.pmatOneValue (pfmDepth 3 (pfmAdd blA blA))
+    (split.pmatAdd (pfmDepth 3 blA) (pfmDepth 3 blA)) := by decide +kernel
+
+example : split.pmatOneValue (pfmDepth 3 (pfmAdd blA blA))
+    (split.pmatAdd (pfmDepth 3 blA) (pfmDepth 3 blA)) :=
+  pfmDepth_add blA blA 3
+
+example : split.pmatOneValue (pfmDepth 3 (pfmSwap blA))
+    (split.pswapM (pfmDepth 3 blA)) := by decide +kernel
+
+example : split.pmatOneValue (pfmDepth 3 (pfmSwap blA))
+    (split.pswapM (pfmDepth 3 blA)) := pfmDepth_swap blA 3
+
+example : split.pmatOneValue (pfmDepth 3 (pfmShift blA))
+    (pfmDepth (3 + 1) blA) := by decide +kernel
+
+example : split.pmatOneValue (pfmDepth 3 (pfmShift blA))
+    (pfmDepth (3 + 1) blA) := pfmDepth_shift blA 3
+
+example : split.pmatOneValue (pfmDepth 3 (pfmTr blA))
+    (elim.transposeO poly.polyOps (pfmDepth 3 blA)) := by decide +kernel
+
+example : split.pmatOneValue (pfmDepth 3 (pfmTr blA))
+    (elim.transposeO poly.polyOps (pfmDepth 3 blA)) := pfmDepth_tr blA 3
+
+example : split.pmatOneValue
+    (pfmDepth 3 (ofMatProf [[BPair.ofNat 2, BPair.unit],
+      [BPair.unit, BPair.ofNat 3]]))
+    (([[BPair.ofNat 2, BPair.unit], [BPair.unit, BPair.ofNat 3]] :
+        elim.Mat).map (fun r => r.map (fun c => ([c] : poly.Poly)))) := by
+  decide +kernel
+
+example : split.pmatOneValue
+    (pfmDepth 3 (ofMatProf [[BPair.ofNat 2, BPair.unit],
+      [BPair.unit, BPair.ofNat 3]]))
+    (([[BPair.ofNat 2, BPair.unit], [BPair.unit, BPair.ofNat 3]] :
+        elim.Mat).map (fun r => r.map (fun c => ([c] : poly.Poly)))) :=
+  pfmDepth_ofMat [[BPair.ofNat 2, BPair.unit],
+    [BPair.unit, BPair.ofNat 3]] 3
+
+/-! The evaluated glue runs at the ceiling `[1 : 200]`, the scale
+`[1 : 200]` and the shared clearing power two.  The magnitude price
+is read at three profiles at the depth three, the scale `[1 : 2]`
+and the clearing two: the constant `10`, whose collapse `40` is its
+own magnitude; the mixed-sign scale profile `−2 + 4η`, whose
+collapse cancels at the sum's unit against the magnitude profile's
+`16`; and the u-carrying profile `−2 + u`, whose collapse `−2`
+prices at the magnitude profile's `14` — each decided raw beside
+its theorem route.  The glue reads two sites, the diagonal `10`
+against a scale-carrying and against a depth-carrying off entry.
+At the off entry `−500η` the rows certify at the box
+`(3, 0, 1, 0; 2)` on `[[1 : 2], [2 : 1]]` and the depth-twelve
+composite point `144/200` sits inside it, the row comparison
+`100000 ≤ 400000` with the evaluated form closing at the
+replicate-unit slack.  At the off entry `−100u` the off-row fold
+grows with the depth, the rows certify at the box on
+`[[1 : 2], [5 : 4]]` with the u-slab floor eight at its squared
+price — the device's second-slab arms occupied — and the box
+membership is the load-bearing binder: at the depth twelve the
+comparison reads `240000 ≤ 400000` and the evaluated datum is
+dominant, while at the depth twenty-one the composite point
+`441/200` runs past the box top, the membership read decides false
+with the certificate walk standing, and the evaluated conclusion
+parts, `420000` past the diagonal's `400000`. -/
+
+private def bl2Diag : poly.PPoly × poly.PPoly :=
+  ([[BPair.ofNat 10]], ([] : poly.PPoly))
+private def bl2Mix : poly.PPoly × poly.PPoly :=
+  ([[(⟨1, 3⟩ : BPair), BPair.ofNat 4]], ([] : poly.PPoly))
+private def bl2MixU : poly.PPoly × poly.PPoly :=
+  ([[(⟨1, 3⟩ : BPair)]], [[BPair.ofNat 1]])
+
+example : windowsep.mag (evalProf bl2Diag 3 1 2 2)
+    ≤ evalProf (magProf bl2Diag) 3 1 2 2 := by decide +kernel
+
+example : windowsep.mag (evalProf bl2Diag 3 1 2 2)
+    ≤ evalProf (magProf bl2Diag) 3 1 2 2 :=
+  evalProf_mag bl2Diag 3 1 2 2
+
+example : windowsep.mag (evalProf bl2Mix 3 1 2 2)
+    ≤ evalProf (magProf bl2Mix) 3 1 2 2 := by decide +kernel
+
+example : windowsep.mag (evalProf bl2Mix 3 1 2 2)
+    ≤ evalProf (magProf bl2Mix) 3 1 2 2 :=
+  evalProf_mag bl2Mix 3 1 2 2
+
+example : windowsep.mag (evalProf bl2MixU 3 1 2 2)
+    ≤ evalProf (magProf bl2MixU) 3 1 2 2 := by decide +kernel
+
+example : windowsep.mag (evalProf bl2MixU 3 1 2 2)
+    ≤ evalProf (magProf bl2MixU) 3 1 2 2 :=
+  evalProf_mag bl2MixU 3 1 2 2
+
+-- the three collapses and their magnitude profiles' own
+example : poly.oneValue (depthPoly bl2Mix 3) [(⟨1, 3⟩ : BPair), BPair.ofNat 4]
+    ∧ poly.oneValue (depthPoly bl2MixU 3) [(⟨1, 3⟩ : BPair), BPair.ofNat 3] := by
+  decide +kernel
+
+private def bl2Off : poly.PPoly × poly.PPoly :=
+  ([[BPair.unit, (BPair.ofNat 500).swap]], ([] : poly.PPoly))
+
+private def bl2Bx : BoxCert :=
+  ⟨⟨BPair.ofNat 1, 2⟩, ⟨BPair.ofNat 2, 1⟩, [], [], [],
+   BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
+   BPair.ofNat 3, BPair.unit, BPair.ofNat 1, BPair.unit, 2⟩
+
+private def bl2Row : List (poly.PPoly × poly.PPoly) := [bl2Diag, bl2Off]
+
+private def bl2Site : List (List (poly.PPoly × poly.PPoly)) :=
+  [[bl2Diag, bl2Off], [bl2Off, bl2Diag]]
+
+example : domRowRead (BPair.ofNat 1) 200 0 bl2Row bl2Bx := by decide +kernel
+
+example : decimation.offFold 0
+      (bl2Row.map (fun e => evalProf e 12 1 200 2))
+    ≤ ground.getAt BPair.unit
+      (bl2Row.map (fun e => evalProf e 12 1 200 2)) 0 := by decide +kernel
+
+example : decimation.offFold 0
+      (bl2Row.map (fun e => evalProf e 12 1 200 2))
+    ≤ ground.getAt BPair.unit
+      (bl2Row.map (fun e => evalProf e 12 1 200 2)) 0 :=
+  domRow_le (BPair.ofNat 1) 200 0 12 2 1 200 bl2Row bl2Bx
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+
+example : domCertGo (BPair.ofNat 1) 200 0 bl2Site [bl2Bx, bl2Bx] := by
+  decide +kernel
+
+example : decimation.domAt (evalPfm bl2Site 12 1 200 2) := by decide +kernel
+
+example : decimation.domAt (evalPfm bl2Site 12 1 200 2) :=
+  domCert_domAt (BPair.ofNat 1) 200 12 2 1 200 bl2Site [bl2Bx, bl2Bx]
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+
+example : elim.sqAt (evalPfm bl2Site 12 1 200 2) bl2Site.length := by
+  decide +kernel
+
+example : elim.matOneValue (evalPfm bl2Site 12 1 200 2)
+    (elim.transposeM (evalPfm bl2Site 12 1 200 2)) := by decide +kernel
+
+example : ∀ v : List BPair, v.length = bl2Site.length →
+    BPair.unit ≤ inertia.quadForm (evalPfm bl2Site 12 1 200 2) v :=
+  domCert_form (BPair.ofNat 1) 200 12 2 1 200 bl2Site [bl2Bx, bl2Bx]
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+
+-- the depth-carrying site: the off entry `−100u`, the fold growing
+-- with the depth
+private def bl2OffU : poly.PPoly × poly.PPoly :=
+  (([] : poly.PPoly), [[(BPair.ofNat 100).swap]])
+
+private def bl2BxU : BoxCert :=
+  ⟨⟨BPair.ofNat 1, 2⟩, ⟨BPair.ofNat 5, 4⟩, [], [], [],
+   BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 2,
+   BPair.ofNat 1, BPair.unit, BPair.ofNat 8, BPair.unit, 1⟩
+
+private def bl2RowU : List (poly.PPoly × poly.PPoly) := [bl2Diag, bl2OffU]
+
+private def bl2SiteU : List (List (poly.PPoly × poly.PPoly)) :=
+  [[bl2Diag, bl2OffU], [bl2OffU, bl2Diag]]
+
+example : domRowRead (BPair.ofNat 1) 200 0 bl2RowU bl2BxU := by
+  decide +kernel
+
+example : domCertGo (BPair.ofNat 1) 200 0 bl2SiteU [bl2BxU, bl2BxU] := by
+  decide +kernel
+
+example : decimation.domAt (evalPfm bl2SiteU 12 1 200 2) := by
+  decide +kernel
+
+example : decimation.domAt (evalPfm bl2SiteU 12 1 200 2) :=
+  domCert_domAt (BPair.ofNat 1) 200 12 2 1 200 bl2SiteU [bl2BxU, bl2BxU]
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+
+example : elim.sqAt (evalPfm bl2SiteU 12 1 200 2) bl2SiteU.length := by
+  decide +kernel
+
+example : elim.matOneValue (evalPfm bl2SiteU 12 1 200 2)
+    (elim.transposeM (evalPfm bl2SiteU 12 1 200 2)) := by decide +kernel
+
+example : ∀ v : List BPair, v.length = bl2SiteU.length →
+    BPair.unit ≤ inertia.quadForm (evalPfm bl2SiteU 12 1 200 2) v :=
+  domCert_form (BPair.ofNat 1) 200 12 2 1 200 bl2SiteU [bl2BxU, bl2BxU]
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+
+-- the box membership load-bearing at the depth twenty-one: the
+-- composite point past the box top, the certificate walk standing,
+-- and the evaluated conclusion parted
+example : ¬ (([bl2BxU, bl2BxU].all (fun g =>
+      decide (g.lo ≤ (⟨BPair.ofNat (21 * 21) * BPair.ofPos 1, 200⟩
+        : CPair))
+      && decide ((⟨BPair.ofNat (21 * 21) * BPair.ofPos 1, 200⟩
+        : CPair) ≤ g.hi)
+      && Nat.ble (g.K + 1) (2 + 1))) = true) := by decide +kernel
+
+example : ¬ decimation.domAt (evalPfm bl2SiteU 21 1 200 2) := by
+  decide +kernel
+
+/-! ## The well head's reads
+
+The well's diagonal at the residue `2`, the rate `[3 : 2]`, the
+scale `[2 : 3]` and the depth `1` reads the three-term count form,
+`2·(3·2·9) + 4·2·3·4 − 3·3·2·3`, decided beside the `wellDiag_read`
+route and at the collected count form beside `wellDiag_count`, and
+the well's entries at the order three read the chain
+chart at the tower's diagonal list and the bond list through
+`wellEntry`, the diagonal, bond and far cells decided beside it. -/
+
+example : (wellDiag 2 3 2 2 3 1).oneValue
+    (BPair.ofNat 2 * (BPair.ofNat ((2 + 1) * 2) * BPair.ofPos 3 * BPair.ofPos 3)
+      + (BPair.ofNat (4 * 2 * (1 * 1 + 2 * 1)) * BPair.ofPos 2 * BPair.ofPos 2
+        + (BPair.ofNat ((2 + 1) * 3) * BPair.ofPos 2 * BPair.ofPos 3).swap)) := by
+  decide +kernel
+example : (wellDiag 2 3 2 2 3 1).oneValue
+    (BPair.ofNat 2 * (BPair.ofNat ((2 + 1) * 2) * BPair.ofPos 3 * BPair.ofPos 3)
+      + (BPair.ofNat (4 * 2 * (1 * 1 + 2 * 1)) * BPair.ofPos 2 * BPair.ofPos 2
+        + (BPair.ofNat ((2 + 1) * 3) * BPair.ofPos 2 * BPair.ofPos 3).swap)) :=
+  wellDiag_read 2 3 2 1 2 3
+
+example : (wellDiag 2 3 2 2 3 1).oneValue
+    (BPair.ofNat (2 * ((2 + 1) * 2 * 3 * 3) + 4 * 2 * (1 * 1 + 2 * 1) * 2 * 2)
+      + (BPair.ofNat ((2 + 1) * 3 * 2 * 3)).swap) := by decide +kernel
+example : (wellDiag 2 3 2 2 3 1).oneValue
+    (BPair.ofNat (2 * ((2 + 1) * 2 * 3 * 3) + 4 * 2 * (1 * 1 + 2 * 1) * 2 * 2)
+      + (BPair.ofNat ((2 + 1) * 3 * 2 * 3)).swap) :=
+  wellDiag_count 2 3 2 1 2 3
+
+example : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 1) 1
+    = greenprod.chainAt (wDiagE 2 3 2 2 3 3) (wOffE 2 2 3 3) 1 1 := by
+  decide +kernel
+example : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 1) 1
+    = greenprod.chainAt (wDiagE 2 3 2 2 3 3) (wOffE 2 2 3 3) 1 1 :=
+  wellEntry 2 3 2 2 3 2 1 1 (by decide +kernel) (by decide +kernel)
+example : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 1) 2
+    = greenprod.chainAt (wDiagE 2 3 2 2 3 3) (wOffE 2 2 3 3) 1 2 :=
+  wellEntry 2 3 2 2 3 2 1 2 (by decide +kernel) (by decide +kernel)
+example : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 0) 2
+    = BPair.unit := by decide +kernel
+example : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 1) 2
+    = (wellBond 2 2 3).swap := by decide +kernel

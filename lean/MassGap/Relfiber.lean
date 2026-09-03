@@ -2500,7 +2500,7 @@ order, the vacant class the unit configuration at that key
 range. -/
 def joinAll {L : Type} (F : fusion.Data L) (R : lattice.Region) :
     List (List L) → List L
-  | [] => List.replicate R.links F.unit
+  | [] => carrier.unitConf F R
   | c :: cs => stableentries.joinConf F R c (joinAll F R cs)
 
 /-- One component against a class: the vertex-disjoint read at
@@ -3094,13 +3094,8 @@ private theorem fold_join {L : Type} [DecidableEq L]
       ∧ ∀ c, 0 < countOf c (algebra.linkTargets F p a k) →
         F.eqL c F.unit = true → c = F.unit) :
     ∀ K : List Nat, (∀ k, 0 < countOf k K → k < R.links) →
-    K.foldr (fun k acc =>
-        List.flatMap (fun c => acc.map (fun t => c :: t))
-          (algebra.linkTargets F p
-            (stableentries.joinConf F R a b) k)) [[]]
-      = (K.foldr (fun k acc =>
-          List.flatMap (fun c => acc.map (fun t => c :: t))
-            (algebra.linkTargets F p a k)) [[]]).map (ovK F b K)
+    ground.prodLists (K.map (algebra.linkTargets F p (stableentries.joinConf F R a b)))
+      = (ground.prodLists (K.map (algebra.linkTargets F p a))).map (ovK F b K)
   | [], _ => rfl
   | k :: K, hK => by
     have hk : k < R.links :=
@@ -3108,80 +3103,32 @@ private theorem fold_join {L : Type} [DecidableEq L]
     have hIH := fold_join F R p a b hw hfar hs K
       (fun j hj => hK j (countOf_cons_pos hj))
     show (List.flatMap
-        (fun c => (K.foldr (fun j acc =>
-          List.flatMap (fun d => acc.map (fun t => d :: t))
-            (algebra.linkTargets F p
-              (stableentries.joinConf F R a b) j)) [[]]).map
+        (fun c => (ground.prodLists (K.map (algebra.linkTargets F p (stableentries.joinConf F R a b)))).map
           (fun t => c :: t))
         (algebra.linkTargets F p (stableentries.joinConf F R a b) k))
-      = ((k :: K).foldr (fun j acc =>
-          (algebra.linkTargets F p a j).flatMap
-            (fun d => acc.map (fun t => d :: t))) [[]]).map
+      = (ground.prodLists ((k :: K).map (algebra.linkTargets F p a))).map
           (ovK F b (k :: K))
     rw [targets_join F R p a b hw hfar k hk (hs k hk).1
         (hs k hk).2.1 (hs k hk).2.2, hIH,
       ground.flatMap_map]
     have hstep : ∀ c : L,
-        (((K.foldr (fun j acc =>
-            (algebra.linkTargets F p a j).flatMap
-              (fun d => acc.map (fun t => d :: t))) [[]]).map
+        (((ground.prodLists (K.map (algebra.linkTargets F p a))).map
           (ovK F b K)).map (fun t => ovAt F b k c :: t))
-        = ((K.foldr (fun j acc =>
-            (algebra.linkTargets F p a j).flatMap
-              (fun d => acc.map (fun t => d :: t))) [[]]).map
+        = ((ground.prodLists (K.map (algebra.linkTargets F p a))).map
           (fun t => ovAt F b k c :: ovK F b K t)) :=
       fun c => ground.map_map _ _ _
     rw [ground.flatMap_congr_all _ _ hstep (algebra.linkTargets F p a k)]
     show _ = ((algebra.linkTargets F p a k).flatMap (fun c =>
-        (K.foldr (fun j acc =>
-          (algebra.linkTargets F p a j).flatMap
-            (fun d => acc.map (fun t => d :: t))) [[]]).map
+        (ground.prodLists (K.map (algebra.linkTargets F p a))).map
           (fun t => c :: t))).map (ovK F b (k :: K))
     rw [ground.map_flatMap]
     refine (ground.flatMap_congr_all _ _ (fun c => ?_)
       (algebra.linkTargets F p a k)).symm
-    show ((K.foldr (fun j acc =>
-        (algebra.linkTargets F p a j).flatMap
-          (fun d => acc.map (fun t => d :: t))) [[]]).map
+    show ((ground.prodLists (K.map (algebra.linkTargets F p a))).map
         (fun t => c :: t)).map (ovK F b (k :: K))
-      = (K.foldr (fun j acc =>
-          (algebra.linkTargets F p a j).flatMap
-            (fun d => acc.map (fun t => d :: t))) [[]]).map
+      = (ground.prodLists (K.map (algebra.linkTargets F p a))).map
           (fun t => ovAt F b k c :: ovK F b K t)
     exact ground.map_map _ _ _
-
-/-- A row target's width is the key list's own. -/
-private theorem prodLen {L : Type} [DecidableEq L] (F : fusion.Data L)
-    (p : List (Nat × Bool)) (a : List L) :
-    ∀ (K : List Nat) (t : List L),
-    0 < countOf t (K.foldr (fun k acc =>
-        List.flatMap (fun c => acc.map (fun s => c :: s))
-          (algebra.linkTargets F p a k)) [[]]) →
-    t.length = K.length
-  | [], t, ht => by
-    rw [ground.countOf_single ht]
-    rfl
-  | k :: K, t, ht => by
-    have ht' : 0 < countOf t
-        (List.flatMap (fun c => (K.foldr (fun m acc =>
-          List.flatMap (fun d => acc.map (fun s => d :: s))
-            (algebra.linkTargets F p a m)) [[]]).map
-          (fun s => c :: s)) (algebra.linkTargets F p a k)) := ht
-    rw [ground.countOf_flatMap] at ht'
-    obtain ⟨c, hc, htc⟩ :=
-      ground.famFold_pos_witness _ (algebra.linkTargets F p a k) ht'
-    cases t with
-    | nil =>
-      rw [ground.countOf_nil_consMap] at htc
-      exact absurd htc (Nat.lt_irrefl 0)
-    | cons x t' =>
-      rw [ground.countOf_consMap x c _ t'] at htc
-      by_cases hxc : x = c
-      · rw [if_pos hxc] at htc
-        show t'.length + 1 = K.length + 1
-        rw [prodLen F p a K t' htc]
-      · rw [if_neg hxc] at htc
-        exact absurd htc (Nat.lt_irrefl 0)
 
 /-- A true read at every occupied member folds to true. -/
 private theorem all_pos {α : Type} [DecidableEq α] (f : α → Bool) :
@@ -3466,16 +3413,14 @@ theorem plaqRow_join {L : Type} [DecidableEq L] (F : fusion.Data L)
   have hfold := fold_join F R p a b hw hfar
     (fun k hk => ⟨hsA k hk, hsB k hk, hsRow k hk⟩)
     (List.range R.links) (fun k hk => ground.ltOfMem hk)
-  have hinj : ∀ y, 0 < countOf y ((List.range R.links).foldr
-      (fun k acc =>
-        List.flatMap (fun c => acc.map (fun s => c :: s))
-          (algebra.linkTargets F p a k)) [[]]) →
+  have hinj : ∀ y, 0 < countOf y (ground.prodLists ((List.range R.links).map (algebra.linkTargets F p a))) →
       ovK F b (List.range R.links) y
         = ovK F b (List.range R.links) t → y = t := by
     intro y hyf hov
     have hylen : y.length = R.links := by
-      have hpl := prodLen F p a (List.range R.links) y hyf
-      rw [ground.length_range] at hpl
+      have hpl := (ground.mem_prodLists_of F.unit _ y
+        (mem_of_countOf_pos y _ hyf)).1
+      rw [ground.length_map, ground.length_range] at hpl
       exact hpl
     refine getAt_ext F.unit y t (by rw [hylen, htl]) (fun j hjy => ?_)
     have hjl : j < R.links := by
@@ -3571,15 +3516,10 @@ theorem plaqRow_join {L : Type} [DecidableEq L] (F : fusion.Data L)
           hsB j hjl (link_disj F R t b hw hd2 j hjl htq)
         rw [hsY hyq, ← h3, hbu]
   show countOf (stableentries.joinConf F R t b)
-      (((List.range R.links).foldr (fun k acc =>
-        List.flatMap (fun c => acc.map (fun s => c :: s))
-          (algebra.linkTargets F p
-            (stableentries.joinConf F R a b) k)) [[]]).filter
+      ((ground.prodLists ((List.range R.links).map (algebra.linkTargets F p (stableentries.joinConf F R a b)))).filter
         (fun s => (s.any (fun m => !(F.eqL m F.unit)))
           && carrier.occupied F R s))
-    = countOf t (((List.range R.links).foldr (fun k acc =>
-        List.flatMap (fun c => acc.map (fun s => c :: s))
-          (algebra.linkTargets F p a k)) [[]]).filter
+    = countOf t ((ground.prodLists ((List.range R.links).map (algebra.linkTargets F p a))).filter
         (fun s => (s.any (fun m => !(F.eqL m F.unit)))
           && carrier.occupied F R s))
   rw [hfold, ground.filter_map, join_ov F R t b htl,

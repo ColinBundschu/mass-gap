@@ -83,7 +83,10 @@ the ordered pair's rejoining gap
 the scalar passes (`famFold_mul`, `famFold_mulR`), the point
 collapses at a counted key (`famFold_pick`, `famFold_pickZero`,
 `famFold_le_one_at` the bound at a fold vacant off one key),
-the flattened family's fold (`famFold_flatMap`), the indicator's
+the flattened family's fold (`famFold_flatMap`), the product
+lists over a family of domains (`prodLists`, one list per selection
+of a member from each domain, with their count, membership and
+distinctness reads), the indicator's
 count read (`countOf_fold`, the mirrored indicator's fold at
 `famFold_indicatorFlip`), the rising product from a floor with
 its split (`rise`, `rise_split`), and the collect-by-count read
@@ -152,8 +155,10 @@ the key binder, `famFold_congr_range`) and the guarded run's fold
 keys at or beyond the length at the vacant default);
 the matrix at an entry formula over two key ranges (`matOf` with
 its length, row, width, entry and congruence reads); the key
-lists over a stated alphabet (`keyBox`) and the box at stated
-per-key bounds (`boxAll`, its count the bounds' successor product
+lists over a family of domains (`prodLists`, its count the domains'
+length product, its members' count one at distinct domains) and
+the box at stated per-key bounds (`boxAll`, the product lists at
+the bounds' ranges, its count the bounds' successor product
 `boxAll_length` and its member count one at the matched length
 with every key at or below its bound, vacant off that read,
 `boxAll_countOf`) with the family rotation
@@ -993,6 +998,20 @@ theorem mul_left_cancel {a b c : Pos} (h : a * b = a * c) : b = c :=
 
 theorem mul_right_comm (a b c : Pos) : a * b * c = a * c * b := by
   rw [mul_assoc, mul_comm b c, ← mul_assoc]
+
+theorem mul_right_comm' (a b c : Pos) : a * (b * c) = a * c * b := by
+  rw [← mul_assoc a b c, mul_right_comm a b c]
+
+/-- The trailing factor rotates to the lead across the product. -/
+theorem mul_rotate (a b c : Pos) : c * (a * b) = a * (b * c) := by
+  rw [mul_left_comm c a b, mul_comm c b]
+
+/-- The rotation at a fourth factor riding: the third member leads
+with the first folded past the second onto the fourth. -/
+theorem mul_rotate' (a b c d : Pos) :
+    a * b * (c * d) = c * (a * (b * d)) := by
+  rw [mul_assoc a b (c * d), mul_left_comm b c d,
+    mul_left_comm a c (b * d)]
 
 /-- A square reads its root: `a a = b b` forces `a = b`, the
 trichotomy against the product's strict monotonicity. -/
@@ -1900,6 +1919,32 @@ theorem getAt_take {α : Type} (d : α) : ∀ (k : Nat) (l : List α)
   | _ + 1, [], _, _ => rfl
   | _ + 1, _ :: _, 0, _ => rfl
   | k + 1, _ :: t, i + 1, h => getAt_take d k t i (Nat.lt_of_succ_lt_succ h)
+
+/-- The trailing segment at an occupied key is its own entry over
+the further tail. -/
+theorem drop_getAt_cons {α : Type} (d : α) : ∀ (k : Nat) (l : List α),
+    k < l.length → l.drop k = ground.getAt d l k :: l.drop (k + 1)
+  | 0, [], h => absurd h (Nat.not_lt_zero _)
+  | 0, _ :: _, _ => rfl
+  | _ + 1, [], h => absurd h (Nat.not_lt_zero _)
+  | k + 1, _ :: t, h => drop_getAt_cons d k t (Nat.lt_of_succ_lt_succ h)
+
+/-- An occupied trailing segment reads its withdrawn count inside
+the family's own. -/
+theorem lt_of_drop_pos {α : Type} : ∀ (k : Nat) (l : List α),
+    0 < (l.drop k).length → k < l.length
+  | 0, [], h => absurd h (Nat.not_lt_zero _)
+  | 0, _ :: _, _ => Nat.succ_pos _
+  | _ + 1, [], h => absurd h (Nat.not_lt_zero _)
+  | k + 1, _ :: t, h => Nat.succ_lt_succ (lt_of_drop_pos k t h)
+
+/-- A key inside the family occupies its trailing segment. -/
+theorem drop_pos_of_lt {α : Type} : ∀ (i : Nat) (l : List α),
+    i < l.length → 0 < (l.drop i).length
+  | 0, [], h => absurd h (Nat.not_lt_zero 0)
+  | 0, _ :: _, _ => Nat.succ_pos _
+  | _ + 1, [], h => absurd h (Nat.not_lt_zero _)
+  | i + 1, _ :: t, h => drop_pos_of_lt i t (Nat.lt_of_succ_lt_succ h)
 
 /-- The prefix sum at a key: the leading entries' total, the
 dominance order's reasoning read. -/
@@ -3149,6 +3194,9 @@ theorem BPair.mul_unit (x : BPair) :
   show x.fst * Pos.one + x.snd * Pos.one + Pos.one
       = Pos.one + (x.fst * Pos.one + x.snd * Pos.one)
   rw [ground.add_comm]
+
+/-- The vacant count's pair is the sum's unit. -/
+theorem BPair.ofNat_zero : (BPair.ofNat 0).oneValue BPair.unit := rfl
 
 /-- The cross-added product distributes over the componentwise
 sum. -/
@@ -6294,6 +6342,16 @@ theorem bpow_mul (a b : BPair) : ∀ k : Nat,
       (BPair.oneValue_symm (BPair.norm_oneValue _))
       (BPair.oneValue_symm (BPair.norm_oneValue _))
 
+/-- The entry read through a map at tied defaults: every key's read
+of the mapped family is the map at the key's own read, the
+over-range keys riding the defaults' tie. -/
+theorem getAt_mapT {α γ : Type} (d : α) (e : γ) (f : α → γ)
+    (hd : f d = e) : ∀ (m : List α) (t : Nat),
+      getAt e (m.map f) t = f (getAt d m t)
+  | [], _ => hd.symm
+  | _ :: _, 0 => rfl
+  | _ :: m, t + 1 => getAt_mapT d e f hd m t
+
 /-- The entry read through a map. -/
 theorem getAt_map {α γ : Type} (d : α) (e : γ) (f : α → γ) :
     ∀ (m : List α) (t : Nat), t < m.length →
@@ -6658,6 +6716,127 @@ theorem filterMap_pre {α β : Type} [DecidableEq α]
       · rw [countOf_head_ne hyc] at h
         obtain ⟨z, hz, hfz⟩ := filterMap_pre f t y h
         exact ⟨z, countOf_cons_pos hz, hfz⟩
+
+/-- A keyed image counts a value at most once where the source
+counts each member at most once and the emission distinguishes its
+sources. -/
+theorem countOf_filterMap_le_one {α β : Type} [DecidableEq α]
+    [DecidableEq β] (f : α → Option β) (y : β) :
+    ∀ l : List α, (∀ a, countOf a l ≤ 1) →
+      (∀ a b, 0 < countOf a l → 0 < countOf b l →
+        f a = some y → f b = some y → a = b) →
+      countOf y (l.filterMap f) ≤ 1
+  | [], _, _ => Nat.zero_le 1
+  | x :: t, hc, hinj => by
+    have hct : ∀ a, countOf a t ≤ 1 := fun a =>
+      Nat.le_trans (Nat.le_trans (Nat.le_add_left _ _)
+        (Nat.le_of_eq (countOf_cons a x t).symm)) (hc a)
+    have hinjt : ∀ a b, 0 < countOf a t → 0 < countOf b t →
+        f a = some y → f b = some y → a = b := fun a b ha hb =>
+      hinj a b (countOf_cons_pos ha) (countOf_cons_pos hb)
+    cases hf : f x with
+    | none =>
+      have hx : List.filterMap f (x :: t) = t.filterMap f := by
+        show (match f x with
+              | none => t.filterMap f
+              | some c => c :: t.filterMap f) = t.filterMap f
+        rw [hf]
+      rw [hx]
+      exact countOf_filterMap_le_one f y t hct hinjt
+    | some z =>
+      have hx : List.filterMap f (x :: t) = z :: t.filterMap f := by
+        show (match f x with
+              | none => t.filterMap f
+              | some c => c :: t.filterMap f) = z :: t.filterMap f
+        rw [hf]
+      rw [hx, countOf_cons]
+      by_cases hyz : y = z
+      · have hzero : countOf y (t.filterMap f) = 0 := by
+          match Nat.eq_zero_or_pos (countOf y (t.filterMap f)) with
+          | .inl h0 => exact h0
+          | .inr hp =>
+            obtain ⟨w, hw, hfw⟩ := filterMap_pre f t y hp
+            have hwx : w = x := hinj w x (countOf_cons_pos hw)
+              (by rw [countOf_head]; exact Nat.succ_pos _)
+              hfw (by rw [hf, hyz])
+            rw [hwx] at hw
+            have hle : countOf x t + 1 ≤ 1 := by
+              rw [← countOf_head x t]
+              exact hc x
+            exact absurd (Nat.lt_of_lt_of_le hw
+              (Nat.le_of_succ_le_succ hle)) (Nat.lt_irrefl 0)
+        rw [if_pos hyz, hzero]
+        exact Nat.le_refl 1
+      · rw [if_neg hyz, Nat.zero_add]
+        exact countOf_filterMap_le_one f y t hct hinjt
+
+/-- A filter at one matching member of a distinct list reads that
+member alone: its length is one. -/
+theorem filter_single {α : Type} [DecidableEq α] (p : α → Bool) (x : α) :
+    ∀ l : List α, x ∈ l → (∀ y, y ∈ l → p y = true → y = x) →
+      p x = true → countOf x l ≤ 1 → (l.filter p).length = 1
+  | [], hx, _, _, _ => nomatch hx
+  | y :: t, hx, hall, hpx, hc => by
+    by_cases hyx : y = x
+    · rw [hyx] at hc ⊢
+      rw [filter_cons_true hpx]
+      have hxt : countOf x t = 0 := by
+        have h1 : countOf x t + 1 ≤ 1 := by
+          rw [← countOf_head x t]
+          exact hc
+        exact Nat.le_antisymm (Nat.le_of_succ_le_succ h1) (Nat.zero_le _)
+      have hnil : t.filter p = [] := by
+        cases hl : t.filter p with
+        | nil => rfl
+        | cons z r =>
+          have hz : z ∈ t.filter p := by
+            rw [hl]
+            exact List.Mem.head _
+          obtain ⟨hzt, hpz⟩ := mem_filter_of p t z hz
+          have hzx : z = x := hall z (List.Mem.tail _ hzt) hpz
+          rw [hzx] at hzt
+          have := countOf_pos_of_mem hzt
+          rw [hxt] at this
+          exact absurd this (Nat.lt_irrefl 0)
+      rw [hnil]
+      rfl
+    · have hpy : p y = false := by
+        cases hp : p y with
+        | false => rfl
+        | true => exact absurd (hall y (List.Mem.head _) hp) hyx
+      rw [filter_cons_false hpy]
+      have hxt : x ∈ t := by
+        cases hx with
+        | head => exact absurd rfl hyx
+        | tail _ h => exact h
+      exact filter_single p x t hxt (fun z hz => hall z (List.Mem.tail _ hz))
+        hpx (Nat.le_trans (countOf_cons_le x y t) hc)
+
+/-- A cons map at a varying head over one tail counts a list at
+its head's count at the one matching tail, the vacant read at every
+other tail. -/
+theorem countOf_consMapTail {α : Type} [DecidableEq α] (l0 : α)
+    (b0 b : List α) (ls : List α) :
+    countOf (l0 :: b0) (ls.map (fun l => l :: b))
+      = if b0 = b then countOf l0 ls else 0 := by
+  by_cases hb : b0 = b
+  · rw [if_pos hb, hb]
+    exact countOf_map_inj (fun l => l :: b) l0 ls
+      (fun x _ hx => (List.cons.inj hx).1)
+  · rw [if_neg hb]
+    exact countOf_map_none _ _ ls (fun x _ hx => hb (List.cons.inj hx).2.symm)
+
+/-- A member's count sits at or below the family's length. -/
+theorem countOf_le_length {α : Type} [DecidableEq α] (x : α) :
+    ∀ l : List α, countOf x l ≤ l.length
+  | [] => Nat.le_refl 0
+  | a :: t => by
+    rw [countOf_cons]
+    by_cases h : x = a
+    · rw [if_pos h, Nat.add_comm]
+      exact Nat.succ_le_succ (countOf_le_length x t)
+    · rw [if_neg h, Nat.zero_add]
+      exact Nat.le_succ_of_le (countOf_le_length x t)
 
 /-- The one-valued map reads the replicate. -/
 theorem map_const {α β : Type} (c : β) : ∀ l : List α,
@@ -8820,21 +8999,25 @@ theorem BPair.ofNat_inj {u v : Nat}
   rw [← BPair.marginN_ofNat u, ← BPair.marginN_ofNat v]
   exact BPair.marginN_congr h
 
+/-- A count's first member is its successor. -/
+theorem BPair.ofNat_fst : ∀ n : Nat, (BPair.ofNat n).fst = posOfSucc n
+  | 0 => rfl
+  | _ + 1 => rfl
+
+/-- A count's second member is the unit. -/
+theorem BPair.ofNat_snd : ∀ n : Nat, (BPair.ofNat n).snd = Pos.one
+  | 0 => rfl
+  | _ + 1 => rfl
+
 /-- A pair at or beyond the sum's unit returns to its margin's
 natural entry, one value. -/
 theorem BPair.ofNat_marginN {b : BPair} (h : BPair.unit ≤ b) :
     b.oneValue (BPair.ofNat b.marginN) := by
   have hv := BPair.unitLe_pred h
   rw [BPair.marginN_fst hv]
-  have hfst : ∀ n : Nat, (BPair.ofNat n).fst = posOfSucc n
-    | 0 => rfl
-    | _ + 1 => rfl
-  have hsnd : ∀ n : Nat, (BPair.ofNat n).snd = Pos.one
-    | 0 => rfl
-    | _ + 1 => rfl
   show b.fst + (BPair.ofNat (b.fst.pred - b.snd.pred)).snd
     = (BPair.ofNat (b.fst.pred - b.snd.pred)).fst + b.snd
-  rw [hfst, hsnd]
+  rw [BPair.ofNat_fst, BPair.ofNat_snd]
   exact congrArg Pos.mk (by
     show b.fst.pred + 0 + 1 = b.fst.pred - b.snd.pred + b.snd.pred + 1
     rw [subAdd hv])
@@ -8850,6 +9033,20 @@ theorem BPair.marginN_pos {x : BPair} (h : BPair.unit < x) :
     exact absurd
       (BPair.lt_congr (BPair.oneValue_refl BPair.unit) hx h)
       (by decide +kernel)
+
+/-- A collapse beyond the sum's unit returns its margin's one-member
+site, the occupancy converter at the margin count's predecessor. -/
+def BPair.marginPos (b : BPair) : Pos := posOfSucc (b.marginN - 1)
+
+/-- The margin's site reads its own datum back. -/
+theorem BPair.marginPos_read {b : BPair} (h : BPair.unit < b) :
+    (BPair.ofPos (BPair.marginPos b)).oneValue b := by
+  have hp : 0 < b.marginN := BPair.marginN_pos h
+  have he : BPair.ofPos (BPair.marginPos b) = BPair.ofNat b.marginN := by
+    show BPair.ofNat (b.marginN - 1 + 1) = BPair.ofNat b.marginN
+    rw [subAdd hp]
+  rw [he]
+  exact BPair.oneValue_symm (BPair.ofNat_marginN (leB_of_lt h))
 
 /-! The side bridges at the balance carrier: the order against the
 sum's unit is the members' own order, both directions and both
@@ -8992,6 +9189,32 @@ theorem unitLeOfScale {y : BPair} {w : Pos}
 theorem unitLeScale {y : BPair} (w : Pos)
     (h : BPair.unit ≤ y) : BPair.unit ≤ y.scale w :=
   leB_of_not_lt (fun hlt => leB_not_lt h (ltUnitOfScale hlt))
+
+/-- The scale's monotone read at a member at or beyond the unit:
+the larger weight keeps the side. -/
+theorem leB_scaleMono {z : BPair} (hz : BPair.unit ≤ z)
+    {a b : Pos} (h : a ≤ b) : z.scale a ≤ z.scale b :=
+  match h with
+  | Or.inl e =>
+    leB_congr_right
+      (BPair.oneValue_of_eq (congrArg z.scale e)) (leB_refl _)
+  | Or.inr ⟨g, hg⟩ =>
+    leB_congr_right
+      (BPair.oneValue_of_eq (congrArg z.scale hg))
+      (leB_congr_right
+        (BPair.oneValue_of_eq (BPair.scale_addW z a g).symm)
+        (leB_congr_left (BPair.add_unit (z.scale a))
+          (leB_add (leB_refl (z.scale a))
+            (unitLeScale g hz))))
+
+/-- A member at or beyond its own swap sits at or beyond the
+unit, the doubled member's read. -/
+theorem unitLeOfSwap {z : BPair} (h : z.swap ≤ z) :
+    BPair.unit ≤ z :=
+  unitLeOfScale (w := 2)
+    (leB_congr_right
+      (BPair.oneValue_of_eq (BPair.scale_two z).symm)
+      (leB_unit_add h))
 
 /-- A refused decidable read is the refusal. -/
 theorem notOfBang {P : Prop} {inst : Decidable P}
@@ -9800,17 +10023,12 @@ theorem BPair.ofCounts_zero :
 counts. -/
 theorem BPair.ofCounts_unit {a b : Nat} :
     (BPair.ofCounts a b).oneValue BPair.unit ↔ a = b := by
-  have hfst : ∀ n : Nat, (BPair.ofNat n).fst = posOfSucc n
-    | 0 => rfl
-    | _ + 1 => rfl
-  have hsnd : ∀ n : Nat, (BPair.ofNat n).snd = Pos.one
-    | 0 => rfl
-    | _ + 1 => rfl
   constructor
   · intro h
     have h' : (BPair.ofNat a).fst + (BPair.ofNat b).snd + Pos.one
         = Pos.one + ((BPair.ofNat a).snd + (BPair.ofNat b).fst) := h
-    rw [hfst a, hsnd a, hfst b, hsnd b] at h'
+    rw [BPair.ofNat_fst a, BPair.ofNat_snd a, BPair.ofNat_fst b,
+      BPair.ofNat_snd b] at h'
     have h2 : posOfSucc a + (Pos.one + Pos.one)
         = posOfSucc b + (Pos.one + Pos.one) := by
       rw [← ground.add_assoc (posOfSucc a) Pos.one Pos.one, h',
@@ -9821,7 +10039,7 @@ theorem BPair.ofCounts_unit {a b : Nat} :
     rw [h]
     show (BPair.ofNat b).fst + (BPair.ofNat b).snd + Pos.one
       = Pos.one + ((BPair.ofNat b).snd + (BPair.ofNat b).fst)
-    rw [hfst b, hsnd b,
+    rw [BPair.ofNat_fst b, BPair.ofNat_snd b,
       ground.add_assoc (posOfSucc b) Pos.one Pos.one,
       ground.add_comm (posOfSucc b) (Pos.one + Pos.one),
       ground.add_assoc Pos.one Pos.one (posOfSucc b)]
@@ -10722,17 +10940,22 @@ theorem foldB_pickBeq (i : Nat) (X : BPair) (l : List Nat)
     (fun _ _ hxi => BPair.oneValue_of_eq
       (if_neg (fun hc => hxi (beqEqOf hc))))
 
-/-- Two folds at one comparison per occupied member compare. -/
-theorem bsum_le (f g : Nat → BPair) : ∀ l : List Nat,
-    (∀ i, 0 < ground.countOf i l → f i ≤ g i) →
-    bsum f l ≤ bsum g l
+/-- Two folds at one comparison per member compare, the carrier's
+sum law along the list. -/
+theorem bsum_le_of_mem {α : Type} (f g : α → BPair) :
+    ∀ l : List α, (∀ a ∈ l, f a ≤ g a) → bsum f l ≤ bsum g l
   | [], _ => leB_refl _
   | a :: t, h => by
     show f a + bsum f t ≤ g a + bsum g t
-    exact leB_add
-      (h a (by rw [ground.countOf_head]; exact Nat.succ_pos _))
-      (bsum_le f g t (fun x hx =>
-        h x (Nat.lt_of_lt_of_le hx (Nat.le_add_left _ _))))
+    exact leB_add (h a (List.Mem.head t))
+      (bsum_le_of_mem f g t (fun x hx => h x (List.Mem.tail a hx)))
+
+/-- Two folds at one comparison per occupied member compare, the
+membership read at the count. -/
+theorem bsum_le (f g : Nat → BPair) (l : List Nat)
+    (h : ∀ i, 0 < ground.countOf i l → f i ≤ g i) :
+    bsum f l ≤ bsum g l :=
+  bsum_le_of_mem f g l (fun a ha => h a (countOf_pos_of_mem ha))
 
 /-- A fold of reads at or above the sum's unit sits at or above
 it. -/
@@ -10892,8 +11115,7 @@ theorem range_succ (n : Nat) :
     List.range (n + 1) = List.range n ++ [n] :=
   rangeLoop_acc n [n]
 
-/-! The key-list and reversal kit: the length-`n` key lists over a
-stated alphabet (`keyBox`) with the family rotation (`rotAt`), the
+/-! The reversal kit: the family rotation (`rotAt`), the
 range's length and entry reads, the matrix at an entry formula over
 two key ranges (`matOf`), the cons reversal with its length, count
 and total reads,
@@ -10909,12 +11131,6 @@ theorem length_range : ∀ d : Nat, (List.range d).length = d
   | d + 1 => by
     rw [range_succ d, ground.length_append, length_range d]
     rfl
-
-/-- The length-`n` key lists over a stated member family, one
-entry per place (`con:places`' key lists at a stated alphabet). -/
-def keyBox {α : Type} : Nat → List α → List (List α)
-  | 0, _ => [[]]
-  | n + 1, A => A.flatMap (fun a => (keyBox n A).map (fun w => a :: w))
 
 /-- The range's map reads the range's own length. -/
 theorem length_mapRange {α : Type} (f : Nat → α) (n : Nat) :
@@ -11621,119 +11837,6 @@ theorem famFold_congr_range (F G : Nat → Nat) (n : Nat)
       = famFold Nat.add 0 G (List.range n) :=
   famFold_congr_members Nat.add 0 F G (List.range n)
     (fun i hi => h i (ltOfMem hi))
-
-/-- The full range boxes at stated per-key bounds: every list
-reading each key at or below its bound, once each. -/
-def boxAll : List Nat → List (List Nat)
-  | [] => [[]]
-  | b :: tl => (List.range (b + 1)).flatMap
-      (fun v => (boxAll tl).map (fun m => v :: m))
-
-/-- A keyed union of grown families at one seed list is the two
-counts' product: one grown list per key and seed member. -/
-private theorem length_consMapFlat {α : Type} (L : List (List α)) :
-    ∀ l : List α,
-      (l.flatMap (fun v => L.map (fun m => v :: m))).length
-        = l.length * L.length
-  | [] => (Nat.zero_mul L.length).symm
-  | a :: t => by
-    show (L.map (fun m => a :: m)
-        ++ t.flatMap (fun v => L.map (fun m => v :: m))).length
-      = (t.length + 1) * L.length
-    rw [length_append, length_map, length_consMapFlat L t,
-      mulAddR t.length 1 L.length, Nat.one_mul,
-      Nat.add_comm (t.length * L.length) L.length]
-
-/-- The box's count is the bounds' successor product. -/
-theorem boxAll_length : ∀ b : List Nat,
-    (boxAll b).length = prodOver (fun x => x + 1) b
-  | [] => rfl
-  | b :: tl => by
-    show ((List.range (b + 1)).flatMap
-        (fun v => (boxAll tl).map (fun m => v :: m))).length
-      = prodOver (fun x => x + 1) (b :: tl)
-    rw [length_consMapFlat (boxAll tl) (List.range (b + 1)),
-      length_range (b + 1), boxAll_length tl]
-    rfl
-
-/-- A grown member's count over the box's head block: the head key
-at or below the bound, the tail's own count beneath it. -/
-private theorem countOf_boxStep (a : Nat) (m : List Nat)
-    (L : List (List Nat)) : ∀ n : Nat,
-    countOf (a :: m) ((List.range n).flatMap
-        (fun v => L.map (fun w => v :: w)))
-      = if a < n then countOf m L else 0
-  | 0 => by
-    rw [if_neg (Nat.not_lt_zero a)]
-    rfl
-  | n + 1 => by
-    rw [range_succ n, flatMap_append, countOf_append,
-      countOf_boxStep a m L n]
-    show (if a < n then countOf m L else 0)
-        + countOf (a :: m) (L.map (fun w => n :: w) ++ [])
-      = if a < n + 1 then countOf m L else 0
-    rw [append_nil, countOf_consMap a n L m]
-    by_cases hlt : a < n
-    · rw [if_pos hlt, if_pos (Nat.lt_succ_of_lt hlt),
-        if_neg (Nat.ne_of_lt hlt), Nat.add_zero]
-    · by_cases he : a = n
-      · rw [if_neg hlt, if_pos he,
-          if_pos (Nat.lt_succ_of_le (Nat.le_of_eq he)), Nat.zero_add]
-      · rw [if_neg hlt, if_neg he,
-          if_neg (fun hc : a < n + 1 =>
-            match Nat.eq_or_lt_of_le (Nat.le_of_lt_succ hc) with
-            | Or.inl h1 => he h1
-            | Or.inr h1 => hlt h1),
-          Nat.zero_add]
-
-/-- A list sits in the box once at the pointwise bound and the
-matched length, off it at the vacant count. -/
-theorem boxAll_countOf : ∀ (b m : List Nat),
-    countOf m (boxAll b)
-      = if m.length = b.length
-          ∧ (∀ i, i < b.length → getAt 0 m i ≤ getAt 0 b i)
-        then 1 else 0
-  | [], [] => by
-    rw [if_pos (⟨rfl, fun i hi => absurd hi (Nat.not_lt_zero i)⟩ :
-      ([] : List Nat).length = ([] : List Nat).length
-        ∧ (∀ i, i < ([] : List Nat).length →
-            getAt 0 ([] : List Nat) i ≤ getAt 0 ([] : List Nat) i))]
-    rfl
-  | [], a :: m => by
-    rw [if_neg (fun hc => Nat.noConfusion hc.1)]
-    show countOf (a :: m) [([] : List Nat)] = 0
-    rw [countOf_cons, if_neg (fun hc : a :: m = [] => nomatch hc)]
-    rfl
-  | b0 :: tl, [] => by
-    rw [if_neg (fun hc => Nat.noConfusion hc.1)]
-    show countOf ([] : List Nat) ((List.range (b0 + 1)).flatMap
-        (fun v => (boxAll tl).map (fun w => v :: w))) = 0
-    rw [countOf_flatMap]
-    exact famFold_zero _
-      (fun v => countOf_nil_consMap v (boxAll tl)) (List.range (b0 + 1))
-  | b0 :: tl, a :: m => by
-    show countOf (a :: m) ((List.range (b0 + 1)).flatMap
-        (fun v => (boxAll tl).map (fun w => v :: w))) = _
-    rw [countOf_boxStep a m (boxAll tl) (b0 + 1),
-      boxAll_countOf tl m]
-    by_cases hab : a < b0 + 1
-    · rw [if_pos hab]
-      by_cases hin : m.length = tl.length
-          ∧ (∀ i, i < tl.length → getAt 0 m i ≤ getAt 0 tl i)
-      · have hfwd : (a :: m).length = (b0 :: tl).length
-            ∧ (∀ i, i < (b0 :: tl).length →
-              getAt 0 (a :: m) i ≤ getAt 0 (b0 :: tl) i) := by
-          refine ⟨congrArg (fun x => x + 1) hin.1, ?_⟩
-          intro i hi
-          cases i with
-          | zero => exact Nat.le_of_lt_succ hab
-          | succ k => exact hin.2 k (Nat.lt_of_succ_lt_succ hi)
-        rw [if_pos hin, if_pos hfwd]
-      · rw [if_neg hin, if_neg (fun hc => hin
-          ⟨Nat.succ.inj hc.1,
-           fun i hi => hc.2 (i + 1) (Nat.succ_lt_succ hi)⟩)]
-    · rw [if_neg hab, if_neg (fun hc => hab
-        (Nat.lt_succ_of_le (hc.2 0 (Nat.succ_pos tl.length))))]
 
 /-- A unit indicator's read is its test. -/
 theorem ind_one {c : Prop} [Decidable c]
@@ -12678,6 +12781,17 @@ theorem all_of_mem {α : Type} (f : α → Bool) :
     match hx with
     | List.Mem.head _ => exact hfa
     | List.Mem.tail _ hxt => exact all_of_mem f t hft x hxt
+
+/-- A fold's members all read the domain from the pointwise read
+at the members. -/
+theorem all_of_mem_intro {α : Type} (P : α → Bool) :
+    ∀ l : List α, (∀ x, x ∈ l → P x = true) → l.all P = true
+  | [], _ => rfl
+  | a :: t, h => by
+    show (P a && t.all P) = true
+    rw [h a (List.Mem.head t),
+      all_of_mem_intro P t (fun x hx => h x (List.Mem.tail a hx))]
+    rfl
 
 /-- A family at every member the refused read filters to the
 vacant list. -/
@@ -13697,5 +13811,440 @@ theorem length_flatMap {α β : Type} (f : α → List β) :
   | a :: t => by
     show (f a ++ t.flatMap f).length = (f a).length + _
     rw [length_append, length_flatMap f t]
+
+/-- The product lists over a family of domains: one list per
+selection of a member from each domain, the first domain's member
+at the head — `con:places`' monomial tensors at the factors' lists,
+the enumeration blocking at the head factor. -/
+def prodLists {α : Type} : List (List α) → List (List α)
+  | [] => [[]]
+  | D :: t => D.flatMap (fun x => (prodLists t).map (fun l => x :: l))
+
+/-- The product lists' count is the domains' length product. -/
+theorem length_prodLists {α : Type} :
+    ∀ Ds : List (List α), (prodLists Ds).length = prodOver List.length Ds
+  | [] => rfl
+  | D :: t => by
+    show (D.flatMap (fun x => (prodLists t).map (fun l => x :: l))).length
+      = D.length * prodOver List.length t
+    rw [length_flatMap, ← length_prodLists t,
+      famFold_congr_all Nat.add 0 _ (fun _ => (prodLists t).length)
+        (fun x => length_map _ _) D,
+      famFold_const]
+
+/-- A product list reads one member per domain, at the domains'
+count. -/
+theorem mem_prodLists_of {α : Type} (d : α) :
+    ∀ (Ds : List (List α)) (l : List α), l ∈ prodLists Ds →
+      l.length = Ds.length ∧ ∀ i, i < Ds.length → getAt d l i ∈ getAt [] Ds i
+  | [], l, h => by
+    have h' : l ∈ [([] : List α)] := h
+    cases h' with
+    | head => exact ⟨rfl, fun i hi => absurd hi (Nat.not_lt_zero i)⟩
+    | tail _ h2 => exact nomatch h2
+  | D :: t, l, h => by
+    obtain ⟨x, hx, hl⟩ := mem_flatMap_of _ D l h
+    obtain ⟨m, hm, hml⟩ := mem_map_of _ _ l hl
+    obtain ⟨hlen, hall⟩ := mem_prodLists_of d t m hm
+    rw [← hml]
+    refine ⟨congrArg Nat.succ hlen, fun i hi => ?_⟩
+    cases i with
+    | zero => exact hx
+    | succ j => exact hall j (Nat.lt_of_succ_lt_succ hi)
+
+/-- A list reading one member per domain at the domains' count is
+a product list. -/
+theorem mem_prodLists_to {α : Type} (d : α) :
+    ∀ (Ds : List (List α)) (l : List α), l.length = Ds.length →
+      (∀ i, i < Ds.length → getAt d l i ∈ getAt [] Ds i) → l ∈ prodLists Ds
+  | [], [], _, _ => List.Mem.head _
+  | [], _ :: _, hl, _ => Nat.noConfusion hl
+  | _ :: _, [], hl, _ => Nat.noConfusion hl
+  | _ :: t, _ :: m, hl, hall =>
+    mem_flatMap_to _ (hall 0 (Nat.succ_pos _))
+      (mem_map_to _ (mem_prodLists_to d t m (Nat.succ.inj hl)
+        (fun i hi => hall (i + 1) (Nat.succ_lt_succ hi))))
+
+/-- A grown list's count over the product lists is the head's count
+in its domain against the tail's over the further domains'. -/
+theorem countOf_prodLists_cons {α : Type} [DecidableEq α] (x : α)
+    (l : List α) (D : List α) (t : List (List α)) :
+    countOf (x :: l) (prodLists (D :: t))
+      = countOf x D * countOf l (prodLists t) := by
+  show countOf (x :: l) (D.flatMap (fun y => (prodLists t).map (fun m => y :: m)))
+    = _
+  rw [countOf_flatMap,
+    famFold_off (fun y => countOf (x :: l) ((prodLists t).map (fun m => y :: m)))
+      x D (fun y _ hyx => by rw [countOf_consMap, if_neg (fun h => hyx h.symm)]),
+    countOf_consMap, if_pos rfl]
+
+/-- The product lists over distinct domains are distinct. -/
+theorem distinct_prodLists {α : Type} [DecidableEq α] :
+    ∀ Ds : List (List α), (∀ D, D ∈ Ds → distinctList D) →
+      distinctList (prodLists Ds)
+  | [], _ => fun x hx => by
+    have h' : x ∈ [([] : List α)] := hx
+    cases h' with
+    | head =>
+      show countOf ([] : List α) [[]] ≤ 1
+      rw [countOf_head]
+      exact Nat.le_refl 1
+    | tail _ h2 => exact nomatch h2
+  | D :: t, h => fun l hl => by
+    obtain ⟨x, hx, hm⟩ := mem_flatMap_of _ D l hl
+    obtain ⟨m, hm', hml⟩ := mem_map_of _ _ l hm
+    rw [← hml, countOf_prodLists_cons]
+    exact Nat.mul_le_mul (h D (List.Mem.head t) x hx)
+      (distinct_prodLists t (fun E hE => h E (List.Mem.tail D hE)) m hm')
+
+
+
+/-- A list's count in the product lists over distinct domains: one
+at one member per domain at the domains' count, the sum's unit
+elsewhere. -/
+theorem countOf_prodLists {α : Type} [DecidableEq α] (d : α)
+    (Ds : List (List α)) (hd : ∀ D, D ∈ Ds → distinctList D)
+    (m : List α) :
+    countOf m (prodLists Ds)
+      = if m.length = Ds.length
+          ∧ (∀ i, i < Ds.length → 0 < countOf (getAt d m i) (getAt [] Ds i))
+        then 1 else 0 := by
+  by_cases h : m.length = Ds.length
+      ∧ (∀ i, i < Ds.length → 0 < countOf (getAt d m i) (getAt [] Ds i))
+  · rw [if_pos h]
+    have hm : m ∈ prodLists Ds :=
+      mem_prodLists_to d Ds m h.1 (fun i hi => mem_of_countOf_pos _ _ (h.2 i hi))
+    exact Nat.le_antisymm (distinct_prodLists Ds hd m hm) (countOf_pos_of_mem hm)
+  · rw [if_neg h]
+    cases hc : countOf m (prodLists Ds) with
+    | zero => rfl
+    | succ k =>
+      have hm := mem_prodLists_of d Ds m (mem_of_countOf_pos m _
+        (by rw [hc]; exact Nat.succ_pos k))
+      exact absurd ⟨hm.1, fun i hi => countOf_pos_of_mem (hm.2 i hi)⟩ h
+
+/-! The position read at an equality read: a member's first key
+reading equal in a stated list. -/
+
+/-- The position of a member in a stated list at an equality read,
+the list's count off it, the first key reading equal. -/
+def posBy {α : Type} (eq : α → α → Bool) (a : α) : List α → Nat
+  | [] => 0
+  | b :: t => if eq a b then 0 else posBy eq a t + 1
+
+/-- The position at a head reading equal. -/
+theorem posBy_cons_hit {α : Type} (eq : α → α → Bool) (a b : α) (t : List α)
+    (h : eq a b = true) : posBy eq a (b :: t) = 0 := by
+  show (if eq a b then 0 else posBy eq a t + 1) = 0
+  rw [if_pos h]
+
+/-- The position past a head reading unequal. -/
+theorem posBy_cons_miss {α : Type} (eq : α → α → Bool) (a b : α) (t : List α)
+    (h : eq a b = false) : posBy eq a (b :: t) = posBy eq a t + 1 := by
+  show (if eq a b then 0 else posBy eq a t + 1) = _
+  rw [if_neg (fun h' => Bool.noConfusion (h.symm.trans h'))]
+
+/-- The position sits at or below the count. -/
+theorem posBy_le {α : Type} (eq : α → α → Bool) (a : α) :
+    ∀ l : List α, posBy eq a l ≤ l.length
+  | [] => Nat.le_refl 0
+  | b :: t => by
+    show (if eq a b then 0 else posBy eq a t + 1) ≤ t.length + 1
+    cases eq a b with
+    | true => exact Nat.zero_le _
+    | false => exact Nat.succ_le_succ (posBy_le eq a t)
+
+/-- At a member met once in the list, the equality read at a key
+holds exactly at the position. -/
+theorem posBy_once {α : Type} [Inhabited α] (eq : α → α → Bool) (a : α) :
+    ∀ l : List α,
+      (l.filter (fun b => eq a b)).length = 1 →
+      ∀ k, k < l.length →
+        (eq a (getAt default l k) = true ↔ posBy eq a l = k)
+  | [], _, _, hk => absurd hk (Nat.not_lt_zero _)
+  | b :: t, h, k, hk => by
+    cases hb : eq a b with
+    | true =>
+      rw [filter_cons_true hb] at h
+      have hlen : (t.filter (fun c => eq a c)).length = 0 :=
+        Nat.succ.inj h
+      have hoff : ∀ c, c ∈ t → eq a c = false := by
+        intro c hc
+        cases hc' : eq a c with
+        | false => rfl
+        | true =>
+          have hm : c ∈ t.filter (fun c => eq a c) :=
+            mem_filter_to _ hc hc'
+          rw [nil_of_length_zero _ hlen] at hm
+          exact nomatch hm
+      show (eq a (getAt default (b :: t) k) = true
+        ↔ (if eq a b then 0 else posBy eq a t + 1) = k)
+      rw [hb, if_pos rfl]
+      cases k with
+      | zero => exact ⟨fun _ => rfl, fun _ => hb⟩
+      | succ m =>
+        show (eq a (getAt default t m) = true ↔ 0 = m + 1)
+        have hm : m < t.length := Nat.lt_of_succ_lt_succ hk
+        rw [hoff _ (mem_getAt default t m hm)]
+        exact ⟨fun h0 => Bool.noConfusion h0, fun h0 => Nat.noConfusion h0⟩
+    | false =>
+      rw [filter_cons_false hb] at h
+      show (eq a (getAt default (b :: t) k) = true
+        ↔ (if eq a b then 0 else posBy eq a t + 1) = k)
+      rw [hb, if_neg (fun h0 => Bool.noConfusion h0)]
+      cases k with
+      | zero =>
+        show (eq a b = true ↔ posBy eq a t + 1 = 0)
+        rw [hb]
+        exact ⟨fun h0 => Bool.noConfusion h0, fun h0 => Nat.noConfusion h0⟩
+      | succ m =>
+        show (eq a (getAt default t m) = true ↔ posBy eq a t + 1 = m + 1)
+        have hm : m < t.length := Nat.lt_of_succ_lt_succ hk
+        have ih := posBy_once eq a t h m hm
+        exact ⟨fun h0 => congrArg Nat.succ (ih.mp h0),
+          fun h0 => ih.mpr (Nat.succ.inj h0)⟩
+
+/-- A once-met member's position sits below the count. -/
+theorem posBy_lt {α : Type} [Inhabited α] (eq : α → α → Bool) (a : α)
+    (l : List α)
+    (h : (l.filter (fun b => eq a b)).length = 1) :
+    posBy eq a l < l.length := by
+  cases Nat.lt_or_ge (posBy eq a l) l.length with
+  | inl hlt => exact hlt
+  | inr hge =>
+    have heq : posBy eq a l = l.length :=
+      Nat.le_antisymm (posBy_le eq a l) hge
+    have hvac : ∀ c, c ∈ l → eq a c = false := by
+      intro c hc
+      cases hc' : eq a c with
+      | false => rfl
+      | true =>
+        obtain ⟨j, hj, hjc⟩ := getAt_of_mem default hc
+        have hp := (posBy_once eq a l h j hj).mp (by rw [hjc]; exact hc')
+        rw [heq] at hp
+        rw [hp] at hj
+        exact absurd hj (Nat.lt_irrefl _)
+    have hnil : l.filter (fun b => eq a b) = [] := by
+      refine nil_of_length_zero _ ?_
+      cases hl : (l.filter (fun b => eq a b)).length with
+      | zero => rfl
+      | succ m =>
+        have hm : 0 < (l.filter (fun b => eq a b)).length := by
+          rw [hl]
+          exact Nat.succ_pos m
+        obtain ⟨hc, hcf⟩ := mem_filter_of _ _ _ (mem_getAt default _ 0 hm)
+        rw [hvac _ hc] at hcf
+        exact Bool.noConfusion hcf
+    rw [hnil] at h
+    exact absurd h (Nat.noConfusion)
+
+/-- A member met by the read sits at a position below the count. -/
+theorem posBy_lt_of_hit {α : Type} (eq : α → α → Bool) (a : α) :
+    ∀ l : List α, (∃ b, b ∈ l ∧ eq a b = true) → posBy eq a l < l.length
+  | [], ⟨_, hb, _⟩ => nomatch hb
+  | b :: t, ⟨c, hc, hac⟩ => by
+    cases hab : eq a b with
+    | true =>
+      rw [posBy_cons_hit eq a b t hab]
+      exact Nat.succ_pos _
+    | false =>
+      rw [posBy_cons_miss eq a b t hab]
+      refine Nat.succ_lt_succ (posBy_lt_of_hit eq a t ⟨c, ?_, hac⟩)
+      cases hc with
+      | head =>
+        rw [hac] at hab
+        exact Bool.noConfusion hab
+      | tail _ h2 => exact h2
+
+/-- The list read at a met member's position reads equal to it. -/
+theorem getAt_posBy {α : Type} (d : α) (eq : α → α → Bool) (a : α) :
+    ∀ l : List α, (∃ b, b ∈ l ∧ eq a b = true) →
+      eq a (getAt d l (posBy eq a l)) = true
+  | [], ⟨_, hb, _⟩ => nomatch hb
+  | b :: t, ⟨c, hc, hac⟩ => by
+    cases hab : eq a b with
+    | true =>
+      rw [posBy_cons_hit eq a b t hab]
+      exact hab
+    | false =>
+      rw [posBy_cons_miss eq a b t hab]
+      show eq a (getAt d t (posBy eq a t)) = true
+      refine getAt_posBy d eq a t ⟨c, ?_, hac⟩
+      cases hc with
+      | head =>
+        rw [hac] at hab
+        exact Bool.noConfusion hab
+      | tail _ h2 => exact h2
+
+/-! The range boxes: the product lists at per-key bounds, each
+domain the naturals at or below its bound. -/
+
+/-- The full range boxes at stated per-key bounds: every list
+reading each key at or below its bound, once each — the product
+lists at the bounds' ranges. -/
+def boxAll (b : List Nat) : List (List Nat) :=
+  prodLists (b.map (fun x => List.range (x + 1)))
+
+/-- The box's count is the bounds' successor product. -/
+theorem boxAll_length (b : List Nat) :
+    (boxAll b).length = prodOver (fun x => x + 1) b := by
+  show (prodLists _).length = famFold Nat.mul 1 (fun x => x + 1) b
+  rw [length_prodLists]
+  show famFold Nat.mul 1 List.length (b.map (fun x => List.range (x + 1))) = _
+  rw [famFold_map]
+  exact famFold_congr_all Nat.mul 1 _ _ (fun x => length_range (x + 1)) b
+
+/-- A list sits in the box once at the pointwise bound and the
+matched length, off it at the vacant count. -/
+theorem boxAll_countOf (b m : List Nat) :
+    countOf m (boxAll b)
+      = if m.length = b.length
+          ∧ (∀ i, i < b.length → getAt 0 m i ≤ getAt 0 b i)
+        then 1 else 0 := by
+  show countOf m (prodLists (b.map (fun x => List.range (x + 1)))) = _
+  rw [countOf_prodLists 0 _ (fun D hD => by
+    obtain ⟨x, _, hx⟩ := mem_map_of _ _ D hD
+    rw [← hx]
+    exact distinctList_range _)]
+  have hlen : (b.map (fun x => List.range (x + 1))).length = b.length :=
+    length_map _ _
+  by_cases h : m.length = b.length
+      ∧ (∀ i, i < b.length → getAt 0 m i ≤ getAt 0 b i)
+  · have hc : m.length = (b.map (fun x => List.range (x + 1))).length
+        ∧ (∀ i, i < (b.map (fun x => List.range (x + 1))).length →
+          0 < countOf (getAt 0 m i)
+            (getAt [] (b.map (fun x => List.range (x + 1))) i)) :=
+      ⟨h.1.trans hlen.symm, fun i hi => by
+        rw [hlen] at hi
+        rw [getAt_map 0 [] _ b i hi, countOf_range,
+          if_pos (Nat.lt_succ_of_le (h.2 i hi))]
+        exact Nat.succ_pos 0⟩
+    rw [if_pos h, if_pos hc]
+  · have hc : ¬ (m.length = (b.map (fun x => List.range (x + 1))).length
+        ∧ (∀ i, i < (b.map (fun x => List.range (x + 1))).length →
+          0 < countOf (getAt 0 m i)
+            (getAt [] (b.map (fun x => List.range (x + 1))) i))) :=
+      fun h' => h ⟨h'.1.trans hlen, fun i hi => by
+        have h2 := h'.2 i (by rw [hlen]; exact hi)
+        rw [getAt_map 0 [] _ b i hi, countOf_range] at h2
+        by_cases hlt : getAt 0 m i < getAt 0 b i + 1
+        · exact Nat.le_of_lt_succ hlt
+        · rw [if_neg hlt] at h2
+          exact absurd h2 (Nat.lt_irrefl 0)⟩
+    rw [if_neg h, if_neg hc]
+
+/-- Two count families' key-by-key sum, the longer family's tail
+riding. -/
+def hadd : List Nat → List Nat → List Nat
+  | [], q => q
+  | c :: p, [] => c :: p
+  | c :: p, d :: q => (c + d) :: hadd p q
+
+/-! The monomial device: a product mirrors into a count and an
+exponent family over a stated datum list, the mirror's value is the
+product itself, and two products whose counts and exponent families
+agree read one value: the universal product identities' one
+decision at `def:ground`'s exchanging and regrouping product, the
+families compared by kernel reduction. -/
+
+/-- A power at a summed key is the powers' product. -/
+theorem powAdd (x a : Nat) : ∀ b : Nat, x ^ (a + b) = x ^ a * x ^ b
+  | 0 => by rw [Nat.add_zero a, Nat.pow_zero x, Nat.mul_one (x ^ a)]
+  | b + 1 => by
+    rw [← Nat.add_assoc a b 1, Nat.pow_succ x (a + b), powAdd x a b,
+      Nat.pow_succ x b, ground.mulAssoc (x ^ a) (x ^ b) x]
+
+/-- A power at the key one is the datum. -/
+theorem powOne (x : Nat) : x ^ 1 = x := by
+  rw [Nat.pow_succ x 0, Nat.pow_zero x, Nat.one_mul x]
+
+/-- The exponent family's product against a stated datum list, from
+a stated key. -/
+def expVal (env : List Nat) : Nat → List Nat → Nat
+  | _, [] => 1
+  | i, k :: t => ground.getAt 0 env i ^ k * expVal env (i + 1) t
+
+/-- The one-key exponent family. -/
+def monUnit : Nat → List Nat
+  | 0 => [1]
+  | i + 1 => 0 :: monUnit i
+
+/-- The exponent family's product at joined families is the
+products' product. -/
+theorem expVal_hadd (env : List Nat) : ∀ (i : Nat) (u v : List Nat),
+    expVal env i (hadd u v) = expVal env i u * expVal env i v
+  | i, [], v => (Nat.one_mul (expVal env i v)).symm
+  | i, a :: u, [] => (Nat.mul_one (expVal env i (a :: u))).symm
+  | i, a :: u, b :: v => by
+    show ground.getAt 0 env i ^ (a + b) * expVal env (i + 1) (hadd u v)
+      = ground.getAt 0 env i ^ a * expVal env (i + 1) u
+        * (ground.getAt 0 env i ^ b * expVal env (i + 1) v)
+    rw [powAdd (ground.getAt 0 env i) a b, expVal_hadd env (i + 1) u v,
+      ground.mulMulMulComm (ground.getAt 0 env i ^ a)
+        (ground.getAt 0 env i ^ b) (expVal env (i + 1) u)
+        (expVal env (i + 1) v)]
+
+/-- The one-key family's product reads the datum at the shifted
+key. -/
+theorem expVal_monUnit (env : List Nat) : ∀ (j i : Nat),
+    expVal env j (monUnit i) = ground.getAt 0 env (j + i)
+  | j, 0 => by
+    show ground.getAt 0 env j ^ 1 * 1 = ground.getAt 0 env (j + 0)
+    rw [Nat.mul_one, powOne, Nat.add_zero j]
+  | j, i + 1 => by
+    show ground.getAt 0 env j ^ 0 * expVal env (j + 1) (monUnit i)
+      = ground.getAt 0 env (j + (i + 1))
+    rw [Nat.pow_zero, Nat.one_mul, expVal_monUnit env (j + 1) i,
+      Nat.add_right_comm j 1 i, Nat.add_assoc j i 1]
+
+set_option genInjectivity false in
+/-- The mirrored product: the counts, the stated data and the
+product. -/
+inductive Mon where
+  | cst : Nat → Mon
+  | var : Nat → Mon
+  | mul : Mon → Mon → Mon
+
+/-- The mirror's own value at a stated datum list. -/
+def Mon.val (env : List Nat) : Mon → Nat
+  | .cst c => c
+  | .var i => ground.getAt 0 env i
+  | .mul a b => a.val env * b.val env
+
+/-- The mirror's count. -/
+def Mon.coef : Mon → Nat
+  | .cst c => c
+  | .var _ => 1
+  | .mul a b => a.coef * b.coef
+
+/-- The mirror's exponent family. -/
+def Mon.exps : Mon → List Nat
+  | .cst _ => []
+  | .var i => monUnit i
+  | .mul a b => hadd a.exps b.exps
+
+/-- The mirror's value is its count against its exponent family's
+product. -/
+theorem Mon.read (env : List Nat) : ∀ m : Mon,
+    m.val env = m.coef * expVal env 0 m.exps
+  | .cst c => by
+    show c = c * 1
+    rw [Nat.mul_one c]
+  | .var i => by
+    show ground.getAt 0 env i = 1 * expVal env 0 (monUnit i)
+    rw [Nat.one_mul, expVal_monUnit env 0 i, Nat.zero_add i]
+  | .mul a b => by
+    show a.val env * b.val env
+      = a.coef * b.coef * expVal env 0 (hadd a.exps b.exps)
+    rw [Mon.read env a, Mon.read env b, expVal_hadd env 0 a.exps b.exps,
+      ground.mulMulMulComm a.coef (expVal env 0 a.exps) b.coef
+        (expVal env 0 b.exps)]
+
+/-- Two mirrored products whose counts and exponent families agree
+read one value at every datum list. -/
+theorem monEq (env : List Nat) (a b : Mon)
+    (hc : a.coef = b.coef) (he : a.exps = b.exps) :
+    a.val env = b.val env := by
+  rw [Mon.read env a, Mon.read env b, hc, he]
 
 end ground

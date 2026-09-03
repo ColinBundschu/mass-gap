@@ -39,10 +39,10 @@ or to its reversal.
 
 The second tier is the matrix the theorem's congruence sentence
 reads at, and the momentum transform's carrier.  The index action
-enters as a matrix on a stated window index
-(`fiberdec.dualMat`, the unit line at its head over the
-relabeling's indicator rows, the translation's own matrix its
-vacant instance) — so that a member's congruence on the window's electric
+enters as a matrix on a stated window list
+(`fiberdec.dualSlotMat`, the unit line at its head over the
+relabeling's indicator rows at the fibers' slots, the translation's
+own matrix its vacant instance) — so that a member's congruence on the window's electric
 matrix is the theorem's `E`-fix read entrywise, and a window whose
 multiplicity reads one carries the ground line at `thm:SO`'s
 character clause.  The congruence sentence's determinant read sits
@@ -55,7 +55,7 @@ the relabeling with the row and the column exchanges composing at
 an even join.  The transform is the read family at the
 translate monomials: the keys of one direction row below the side
 (`places.keyBox` at the range alphabet), the box of per-argument
-key lists at a stated argument count (`argBox`, `ground.keyBox`'s
+key lists at a stated argument count (`argBox`, `ground.prodLists`'s
 list-alphabet instance), and the moved key at a signed member
 (`bdKey`) — the exponent read off the permuted direction, a
 flipped direction's at its complement to the side, the wrap's own
@@ -166,9 +166,9 @@ theorem relabel_det (n : Nat) (M M' : elim.Mat) (q : List Nat)
 
 /-- The per-argument key lists, the box at a stated argument
 count: the key lists' own box over the one-direction rows
-(`ground.keyBox` at `places.keyBox`'s alphabet). -/
+(`ground.prodLists` at `places.keyBox`'s alphabet). -/
 def argBox (d L m : Nat) : List (List (List Nat)) :=
-  ground.keyBox m (places.keyBox d L)
+  ground.prodLists (List.replicate m (places.keyBox d L))
 
 /-- The moved translate key at a signed member, read at the
 member's direction witness (the backward map, `permRead`'s own
@@ -1121,13 +1121,14 @@ private theorem prodIP_vac (m d r s t u : Nat) (g : List (List Nat))
   rfl
 
 /-- The two settling moves' read at a family: the reflection clause
-at every member of the box and the transposition clause at every
-grid. -/
-private theorem bdInvAt_intro (m d D : Nat) (c : List (List Nat) → BPair)
+and the transposition clause each at every member of the box give
+the read. -/
+theorem bdInvAt_intro (m d D : Nat) (c : List (List Nat) → BPair)
     (hA : ∀ g : List (List Nat), 0 < ground.countOf g (momBox m d D) →
       ∀ i, i < d →
         (dirTot i g % 2 == 0 || decide ((c g).oneValue BPair.unit)) = true)
-    (hB : ∀ (g : List (List Nat)) (i j : Nat), i < j → j < d →
+    (hB : ∀ g : List (List Nat), 0 < ground.countOf g (momBox m d D) →
+      ∀ i j : Nat, i < j → j < d →
       (c (swapDirs i j g)).oneValue (c g)) :
     bdInvAt m d D c := by
   show ((momBox m d D).all (fun g =>
@@ -1147,7 +1148,7 @@ private theorem bdInvAt_intro (m d D : Nat) (c : List (List Nat) → BPair)
   refine ground.all_range_intro d (fun i _ => ?_)
   refine ground.all_range_intro d (fun j hj => ?_)
   by_cases hij : i < j
-  · rw [decide_eq_true hij, decide_eq_true (hB _ i j hij hj)]
+  · rw [decide_eq_true hij, decide_eq_true (hB _ hcnt i j hij hj)]
     rfl
   · rw [decide_eq_false hij]
     rfl
@@ -1180,7 +1181,7 @@ theorem ipFam_inv (m d r s : Nat) : bdInvAt m d 2 (ipFam m d r s) := by
           rfl
       rw [hpar]
       rfl
-  · intro g i j hij hj
+  · intro g _ i j hij hj
     exact BPair.oneValue_of_eq (ipFam_swap m d r s i j (Nat.ne_of_lt hij)
       (Nat.lt_trans hij hj) hj g)
 
@@ -1212,7 +1213,7 @@ theorem quFam_inv (m d r : Nat) : bdInvAt m d 4 (quFam m d r) := by
           rfl
       rw [hpar]
       rfl
-  · intro g i j hij hj
+  · intro g _ i j hij hj
     exact BPair.oneValue_of_eq (quFam_swap m d r i j (Nat.ne_of_lt hij)
       (Nat.lt_trans hij hj) hj g)
 
@@ -1272,7 +1273,7 @@ theorem prodIP_inv (m d r s t u : Nat) :
             rfl
       rw [hpar]
       rfl
-  · intro g a b hab hbd
+  · intro g _ a b hab hbd
     have had : a < d := Nat.lt_trans hab hbd
     have hcount : dblSum d (fun i j => if swapDirs a b g
           == addG (ipGrid m d r s i) (ipGrid m d t u j) then 1 else 0)

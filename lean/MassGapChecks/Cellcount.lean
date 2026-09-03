@@ -199,44 +199,44 @@ example : ¬ (∀ i, i < 2 → ∀ j, j < 2 → poly.oneValue
 example : elim.matOneValue
     (evalPC (pdefl [0] [1] sD) ⟨4, 1⟩ 1
       ((2 * ([0] : List Nat).length + 1) * 2))
-    (inertia.deflMat (evalPC (split.pselM [0] [0] sD) ⟨4, 1⟩ 1 2)
-      (evalPC (split.pselM [0] [1] sD) ⟨4, 1⟩ 1 2)
-      (evalPC (split.pselM [1] [1] sD) ⟨4, 1⟩ 1 2)
+    (inertia.deflMat (elim.selM [0] [0] (evalPC sD ⟨4, 1⟩ 1 2))
+      (elim.selM [0] [1] (evalPC sD ⟨4, 1⟩ 1 2))
+      (elim.selM [1] [1] (evalPC sD ⟨4, 1⟩ 1 2))
       (elim.matMul (adj2v ([0] : List Nat).length
-          (evalPC (split.pselM [0] [0] sD) ⟨4, 1⟩ 1 2))
-        (evalPC (split.pselM [0] [1] sD) ⟨4, 1⟩ 1 2))) := by decide +kernel
+          (elim.selM [0] [0] (evalPC sD ⟨4, 1⟩ 1 2)))
+        (elim.selM [0] [1] (evalPC sD ⟨4, 1⟩ 1 2)))) := by decide +kernel
 
 example : elim.matOneValue
     (evalPC (pdefl [0] [1] sD) ⟨4, 1⟩ 1
       ((2 * ([0] : List Nat).length + 1) * 2))
-    (inertia.deflMat (evalPC (split.pselM [0] [0] sD) ⟨4, 1⟩ 1 2)
-      (evalPC (split.pselM [0] [1] sD) ⟨4, 1⟩ 1 2)
-      (evalPC (split.pselM [1] [1] sD) ⟨4, 1⟩ 1 2)
+    (inertia.deflMat (elim.selM [0] [0] (evalPC sD ⟨4, 1⟩ 1 2))
+      (elim.selM [0] [1] (evalPC sD ⟨4, 1⟩ 1 2))
+      (elim.selM [1] [1] (evalPC sD ⟨4, 1⟩ 1 2))
       (elim.matMul (adj2v ([0] : List Nat).length
-          (evalPC (split.pselM [0] [0] sD) ⟨4, 1⟩ 1 2))
-        (evalPC (split.pselM [0] [1] sD) ⟨4, 1⟩ 1 2))) :=
+          (elim.selM [0] [0] (evalPC sD ⟨4, 1⟩ 1 2)))
+        (elim.selM [0] [1] (evalPC sD ⟨4, 1⟩ 1 2)))) :=
   evalPC_pdefl (o := 2) sD 2 [0] [1] ⟨4, 1⟩ 1 (by decide +kernel)
     (by decide +kernel) (Or.inl rfl) (by decide +kernel) (by decide +kernel)
 
 example : elim.matOneValue
     (evalPC (pdefl [0] [1] sD) ⟨4, 1⟩ 2
       ((2 * ([0] : List Nat).length + 1) * 2))
-    (inertia.deflMat (evalPC (split.pselM [0] [0] sD) ⟨4, 1⟩ 2 2)
-      (evalPC (split.pselM [0] [1] sD) ⟨4, 1⟩ 2 2)
-      (evalPC (split.pselM [1] [1] sD) ⟨4, 1⟩ 2 2)
+    (inertia.deflMat (elim.selM [0] [0] (evalPC sD ⟨4, 1⟩ 2 2))
+      (elim.selM [0] [1] (evalPC sD ⟨4, 1⟩ 2 2))
+      (elim.selM [1] [1] (evalPC sD ⟨4, 1⟩ 2 2))
       (elim.matMul (adj2v ([0] : List Nat).length
-          (evalPC (split.pselM [0] [0] sD) ⟨4, 1⟩ 2 2))
-        (evalPC (split.pselM [0] [1] sD) ⟨4, 1⟩ 2 2))) := by decide +kernel
+          (elim.selM [0] [0] (evalPC sD ⟨4, 1⟩ 2 2)))
+        (elim.selM [0] [1] (evalPC sD ⟨4, 1⟩ 2 2)))) := by decide +kernel
 
 example : elim.matOneValue
     (evalPC (pdefl [0] [1] sD) ⟨4, 1⟩ 2
       ((2 * ([0] : List Nat).length + 1) * 2))
-    (inertia.deflMat (evalPC (split.pselM [0] [0] sD) ⟨4, 1⟩ 2 2)
-      (evalPC (split.pselM [0] [1] sD) ⟨4, 1⟩ 2 2)
-      (evalPC (split.pselM [1] [1] sD) ⟨4, 1⟩ 2 2)
+    (inertia.deflMat (elim.selM [0] [0] (evalPC sD ⟨4, 1⟩ 2 2))
+      (elim.selM [0] [1] (evalPC sD ⟨4, 1⟩ 2 2))
+      (elim.selM [1] [1] (evalPC sD ⟨4, 1⟩ 2 2))
       (elim.matMul (adj2v ([0] : List Nat).length
-          (evalPC (split.pselM [0] [0] sD) ⟨4, 1⟩ 2 2))
-        (evalPC (split.pselM [0] [1] sD) ⟨4, 1⟩ 2 2))) :=
+          (elim.selM [0] [0] (evalPC sD ⟨4, 1⟩ 2 2)))
+        (elim.selM [0] [1] (evalPC sD ⟨4, 1⟩ 2 2)))) :=
   evalPC_pdefl (o := 2) sD 2 [0] [1] ⟨4, 1⟩ 2 (by decide +kernel)
     (by decide +kernel) (Or.inl rfl) (by decide +kernel) (by decide +kernel)
 
@@ -247,12 +247,12 @@ at the undersized clearing, the point's own read the isolation. -/
 example : ¬ elim.matOneValue
     (evalPC (pdefl [0] [1] sA) ⟨4, 1⟩ 1
       ((2 * ([0] : List Nat).length + 1) * 2))
-    (inertia.deflMat (evalPC (split.pselM [0] [0] sA) ⟨4, 1⟩ 1 2)
-      (evalPC (split.pselM [0] [1] sA) ⟨4, 1⟩ 1 2)
-      (evalPC (split.pselM [1] [1] sA) ⟨4, 1⟩ 1 2)
+    (inertia.deflMat (elim.selM [0] [0] (evalPC sA ⟨4, 1⟩ 1 2))
+      (elim.selM [0] [1] (evalPC sA ⟨4, 1⟩ 1 2))
+      (elim.selM [1] [1] (evalPC sA ⟨4, 1⟩ 1 2))
       (elim.matMul (adj2v ([0] : List Nat).length
-          (evalPC (split.pselM [0] [0] sA) ⟨4, 1⟩ 1 2))
-        (evalPC (split.pselM [0] [1] sA) ⟨4, 1⟩ 1 2))) := by
+          (elim.selM [0] [0] (evalPC sA ⟨4, 1⟩ 1 2)))
+        (elim.selM [0] [1] (evalPC sA ⟨4, 1⟩ 1 2)))) := by
   decide +kernel
 
 example : pShapeAt sA 2 2 := by decide +kernel
@@ -262,12 +262,12 @@ example : ¬ pShapeAt sD 2 1 := by decide +kernel
 example : ¬ elim.matOneValue
     (evalPC (pdefl [0] [1] sD) ⟨5, 1⟩ 3
       ((2 * ([0] : List Nat).length + 1) * 1))
-    (inertia.deflMat (evalPC (split.pselM [0] [0] sD) ⟨5, 1⟩ 3 1)
-      (evalPC (split.pselM [0] [1] sD) ⟨5, 1⟩ 3 1)
-      (evalPC (split.pselM [1] [1] sD) ⟨5, 1⟩ 3 1)
+    (inertia.deflMat (elim.selM [0] [0] (evalPC sD ⟨5, 1⟩ 3 1))
+      (elim.selM [0] [1] (evalPC sD ⟨5, 1⟩ 3 1))
+      (elim.selM [1] [1] (evalPC sD ⟨5, 1⟩ 3 1))
       (elim.matMul (adj2v ([0] : List Nat).length
-          (evalPC (split.pselM [0] [0] sD) ⟨5, 1⟩ 3 1))
-        (evalPC (split.pselM [0] [1] sD) ⟨5, 1⟩ 3 1))) := by
+          (elim.selM [0] [0] (evalPC sD ⟨5, 1⟩ 3 1)))
+        (elim.selM [0] [1] (evalPC sD ⟨5, 1⟩ 3 1)))) := by
   decide +kernel
 
 private def pv2 : elim.Mat := [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨1, 2⟩]]

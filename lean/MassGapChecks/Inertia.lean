@@ -73,7 +73,21 @@ the trailing pad's entries pinned at a one-by-one deviation, the
 block cap padded to the joined order, the two summands' caps
 joined at the sum, and the cap rescaled and respelt, each read by
 the kernel and again through its own theorem, with the two
-refusals naming the binder that bites at each.
+refusals naming the binder that bites at each.  The withdrawn
+diagonal's rank-one read rides last (`split_posPart`): at the
+order-one datum two the kept upper entry prices the form at its
+own, at the order-one datum minus two the withdrawn entry prices
+it at the vacant read, and the split read is load-bearing — a
+forged split at the entry minus one against the datum two refuses
+the congruence with the display parting beside it, two against the
+withdrawn vacant read.  The one-sided comparison closes the module
+(`leAt`, `le_all`): the datum zero under the datum one at the site
+datum's own order-one split, the comparison decided and the two
+forms' order through the theorem, the theorem's shape binders the
+certificate-shape frame at the truncating folds, and the exchanged
+pair's refusal isolating the positive-semidefinite conjunct — the
+site datum minus one occupying the count with the display parting
+beside it.
 -/
 set_option maxHeartbeats 4000000
 
@@ -1295,3 +1309,86 @@ beside it. -/
 example : ¬ capAt cbS2 caC2 cbSpU2 cbSpL2 := by decide +kernel
 example : ¬ capAt (matAdd caS1 cbS2) (matAdd caC1 caC2) cbSpU cbSpL := by
   decide +kernel
+
+/-! The withdrawn diagonal's rank-one read at the identity
+congruence: the kept upper entry two prices its own form, the
+withdrawn lower entry minus two prices its form at the vacant read,
+and the forged split at the entry minus one against the datum two
+refuses the congruence with the display parting beside it. -/
+
+private def ppUp : Mat := [[⟨3, 1⟩]]
+private def ppDn : Mat := [[⟨1, 3⟩]]
+private def ppV : List BPair := [⟨2, 1⟩]
+private def ppForge : Split 1 := spOne ⟨1, 2⟩
+
+example : splitRead ppUp (spOne ⟨3, 1⟩) := by decide +kernel
+example : minor (spOne ⟨3, 1⟩).T.val * minor (spOne ⟨3, 1⟩).T.val
+      * quadForm ppUp ppV
+    ≤ quadForm (blockMat (posBlocks (spOne ⟨3, 1⟩).blocks)
+        (spOne ⟨3, 1⟩).kern)
+      (matVec (spOne ⟨3, 1⟩).Tw.val ppV) := by decide +kernel
+example : minor (spOne ⟨3, 1⟩).T.val * minor (spOne ⟨3, 1⟩).T.val
+      * quadForm ppUp ppV
+    ≤ quadForm (blockMat (posBlocks (spOne ⟨3, 1⟩).blocks)
+        (spOne ⟨3, 1⟩).kern)
+      (matVec (spOne ⟨3, 1⟩).Tw.val ppV) :=
+  split_posPart ppUp (spOne ⟨3, 1⟩) (by decide +kernel) ppV
+    (by decide +kernel)
+
+example : splitRead ppDn (spOne ⟨1, 3⟩) := by decide +kernel
+example : minor (spOne ⟨1, 3⟩).T.val * minor (spOne ⟨1, 3⟩).T.val
+      * quadForm ppDn ppV
+    ≤ quadForm (blockMat (posBlocks (spOne ⟨1, 3⟩).blocks)
+        (spOne ⟨1, 3⟩).kern)
+      (matVec (spOne ⟨1, 3⟩).Tw.val ppV) := by decide +kernel
+example : minor (spOne ⟨1, 3⟩).T.val * minor (spOne ⟨1, 3⟩).T.val
+      * quadForm ppDn ppV
+    ≤ quadForm (blockMat (posBlocks (spOne ⟨1, 3⟩).blocks)
+        (spOne ⟨1, 3⟩).kern)
+      (matVec (spOne ⟨1, 3⟩).Tw.val ppV) :=
+  split_posPart ppDn (spOne ⟨1, 3⟩) (by decide +kernel) ppV
+    (by decide +kernel)
+
+/-- Refusal naming `split_posPart`'s split read: the forged
+order-one split carries the entry minus one against the datum two,
+the congruence identity parting, and the display parts beside it —
+the datum's form two against the withdrawn vacant read. -/
+example : ¬ splitRead ppUp ppForge := by decide +kernel
+example : ¬ (minor ppForge.T.val * minor ppForge.T.val
+      * quadForm ppUp ppV
+    ≤ quadForm (blockMat (posBlocks ppForge.blocks) ppForge.kern)
+      (matVec ppForge.Tw.val ppV)) := by decide +kernel
+
+/-! The one-sided comparison's read at one split: the datum zero
+under the datum one — the site datum `C − S` reads the entry one,
+its order-one split at that entry, and the two forms' order landed
+through `le_all` beside the decided display — with the refusal at
+the exchanged pair, where the site datum reads minus one, the
+split's block occupies the count and the psd conjunct parts with
+the display beside it. -/
+
+private def leS : Mat := [[u]]
+private def leC : Mat := [[⟨2, 1⟩]]
+private def leV : List BPair := [⟨2, 1⟩]
+
+example : matOneValue (siteDatum leC leS) [[⟨3, 2⟩]] := by decide +kernel
+example : leAt leS leC (spOne ⟨3, 2⟩) := by decide +kernel
+example : quadForm leS leV ≤ quadForm leC leV := by decide +kernel
+example : quadForm leS leV ≤ quadForm leC leV :=
+  le_all leS leC (spOne ⟨3, 2⟩) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) leV (by decide +kernel)
+
+/-- Refusal naming `leAt`'s positive-semidefinite conjunct: at the
+exchanged pair the site datum reads minus one, its split reads that
+datum while the block occupies the count, and the two forms' order
+parts beside it — one against zero. -/
+
+private def leS' : Mat := [[⟨2, 1⟩]]
+private def leC' : Mat := [[u]]
+
+example : matOneValue (siteDatum leC' leS') [[⟨2, 3⟩]] := by decide +kernel
+example : splitRead (siteDatum leC' leS') (spOne ⟨2, 3⟩) := by
+  decide +kernel
+example : ¬ psdAt (spOne ⟨2, 3⟩) := by decide +kernel
+example : ¬ leAt leS' leC' (spOne ⟨2, 3⟩) := by decide +kernel
+example : ¬ (quadForm leS' leV ≤ quadForm leC' leV) := by decide +kernel
