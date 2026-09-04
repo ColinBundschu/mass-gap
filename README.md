@@ -11,7 +11,7 @@ The TeX is authoritative, and the Lean is its transcription: every top-level Lea
 
 `theory.tex` is a nominally complete proof, to the extent that any proof only reviewed by its author can be considered complete. Any changes that need to be made, significant or minor, will be made in the TeX first and reflected in Lean. The Lean tree is
 a mostly complete transcription of the TeX proof: this section says exactly which parts are and are
-not formalized. If it becomes clear that a fundamental contradiction, inconsistency, or shortfall makes the proof ultimately doomed, then this repo will serve as a constructive tombstone to where this approach failed and why.
+not formalized.
 
 `thm:main` has three clauses. These are stated over the domain `main.Member`
 ([lean/MassGap/Main.lean](lean/MassGap/Main.lean)): the $A$-series at every residue,
@@ -66,7 +66,7 @@ Long-term future work:
 The snapshot was taken from the development repository at commit
 `61724e7ee359a1fc3306a1a1f2a4276adcb2eef5` (2026-09-03).
 
-## Proof Methodology
+## Proof Methodology and Failure Criteria
 
 Every Lean declaration depends solely on the empty axiom set. Specifically, this means no
 `propext`, `Quot.sound`, `Classical.choice`, `sorryAx`, and no native
@@ -76,6 +76,10 @@ imports outside `MassGap` and `MassGapChecks`. No declaration is
 `noncomputable`, `partial`, `unsafe`, `opaque`, or an `axiom`; every object
 computes by kernel reduction. Every public `Prop`-valued definition comes with its `Decidable` instance beside it. The batteries in
 [lean/MassGapChecks/](lean/MassGapChecks/) decide directly by kernel `decide`.
+
+By construction, everything proven in Lean is mathematically correct for what it states (although emphatically one must be careful reading significance from what is proved). However the same cannot be said for claims in the TeX that are not proven in Lean, errors in mapping between claims in the TeX and the corresponding Lean proofs, or interpretations of the physical relevance of what the Lean proves. If it becomes clear that a fundamental contradiction, inconsistency, or shortfall dooms the top-level proof, then this repository will serve as a constructive tombstone to where this approach failed and why.
+
+That said, the deliverable of this repository is not simply a correct, complete Yang-Mills proof, which remains exceedingly unlikely. Specifically, this repository aims to tackle the fact that every rigorous result on the Yang–Mills gap is analytic and non-algorithmic. Osterwalder-Seiler's strong-coupling gap and Balaban's renormalization-group work are proofs in the ordinary sense: there is no procedure that, given a group and a coupling, produces a certificate that a gap exists there, and no procedure that could return "no" as a theorem either. What this repo does is give the gap a decision structure. In particular, once the transport lemmas make the head's counts uniform in volume and bound the full window by them, the instrument is symmetric: running the certificate on the $K = 0$ sector of the fibered corner head with the vacuum dressing subtracted returns a certified bracket on that gap at every scale $\eta$, and if the bracket falls below the claimed floor, that is a theorem about how the $K = 0$ lift of the lattice model scales with $\eta$, not silence. A certified statement that the gap in lattice units goes to zero along the approach, uniform in volume, would be the first rigorous half of a continuum limit; a certified statement that it does not would be more surprising still. Either result would be a machine certified finding, and an unqualified success under the framework of this repository.
 
 ## Building
 
