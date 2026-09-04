@@ -9,7 +9,7 @@ The TeX is authoritative, and the Lean is its transcription: every top-level Lea
 
 ## Status
 
-`theory.tex` is a complete proof and any future changes will ideally only improve clarity and add detail. The Lean tree is
+`theory.tex` is a nominally complete proof (in the sense that any proof only reviewed by its author can be considered complete) and any future changes will ideally only improve clarity and add detail. The Lean tree is
 a mostly complete transcription of that proof: this section says exactly which parts are and are
 not formalized.
 
