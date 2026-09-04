@@ -9,9 +9,9 @@ The TeX is authoritative, and the Lean is its transcription: every top-level Lea
 
 ## Status
 
-`theory.tex` is a nominally complete proof (to the extent that any proof only reviewed by its author can be considered complete) and any future changes will ideally only improve clarity and add detail. The Lean tree is
-a mostly complete transcription of that proof: this section says exactly which parts are and are
-not formalized.
+`theory.tex` is a nominally complete proof, to the extent that any proof only reviewed by its author can be considered complete. Any changes that need to be made, significant or minor, will be made in the TeX first and reflected in Lean. The Lean tree is
+a mostly complete transcription of the TeX proof: this section says exactly which parts are and are
+not formalized. If it becomes clear that a fundamental contradiction, inconsistency, or shortfall makes the proof ultimately doomed, then this repo will serve as a constructive tombstone to where this approach failed and why.
 
 `thm:main` has three clauses. These are stated over the domain `main.Member`
 ([lean/MassGap/Main.lean](lean/MassGap/Main.lean)): the $A$-series at every residue,
