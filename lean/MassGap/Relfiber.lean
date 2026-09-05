@@ -51,6 +51,21 @@ every bracket with top at or below `ϱℓ` (`bottomClear`).  Clause
 matrix, the batteries pinning the split counts' sum at stated
 splittings.
 
+Clause (iv) closes the calculus at the roots.  A tensor sum's roots
+are the two factors' roots' sums (`pairRoots`, a pair's summed root
+`(n_a d_b + n_b d_a + y d_a d_b : d_a d_b)` at the level's second
+member): the factors' congruences' tensor maps the tensor sum's
+site datum at a level to the diagonal at the summed roots against
+the scales' products (`congr_tensorM` with `lem:split`'s two
+congruated reads, two diagonals' tensor the diagonal at the
+entries' products, `tensorM_diagM`), and the count at a level is
+the root pairs' count below it (`tensorSum_count`, `lem:inertia`'s
+congruence read at the diagonal, the scales' product a positive
+factor keeping each entry's side).  The joined sector's ground is
+the two grounds' sum: a root at or beyond each list's stated floor
+sums to a pair at or beyond the floors' sum (`pairRoots_least`), and
+two roots' summed root is the pair list's member (`pairRoots_mem`).
+
 Clause (i) reads at the index layer beneath that calculus.  A
 class of band components joins to one configuration in the
 region's key order (`joinAll`, the vacant class the unit
@@ -175,29 +190,71 @@ private theorem pairSplit (n : Nat) (hn : 0 < n) :
       show t + 1 = (i + 1) * n + 0
       rw [Nat.add_zero, h2, ← Nat.add_assoc, ← ht]
 
-/-! ### The shape -/
+/-! ### The pair-indexed family, and the shape
+
+The tensor's carriers are pair-indexed families, a key per factor
+pair at the product index: the kit reads the key count, the entry at
+the product index, the predicate count and the family read at a
+general entry, and the tensor's own reads are its instances. -/
+
+/-- The pair-indexed family's key count is the two key counts'
+product. -/
+private theorem pairMap_length {α β γ : Type} (f : α → β → γ) :
+    ∀ (la : List α) (lb : List β),
+      (la.flatMap (fun a => lb.map (f a))).length = la.length * lb.length
+  | [], lb => (Nat.zero_mul lb.length).symm
+  | a :: t, lb => by
+    show ((lb.map (f a)) ++ t.flatMap (fun a => lb.map (f a))).length
+      = (t.length + 1) * lb.length
+    rw [ground.length_append, ground.length_map,
+      pairMap_length f t lb, Nat.succ_mul]
+    exact Nat.add_comm lb.length (t.length * lb.length)
+
+/-- The pair-indexed family's entry at the product index is the
+entry at the two factors' keys. -/
+private theorem getAt_pairMap {α β γ : Type} (dg : γ) (da : α) (db : β)
+    (f : α → β → γ) :
+    ∀ (la : List α) (lb : List β) (i k : Nat),
+      i < la.length → k < lb.length →
+      ground.getAt dg (la.flatMap (fun a => lb.map (f a)))
+          (i * lb.length + k)
+        = f (ground.getAt da la i) (ground.getAt db lb k)
+  | [], _, i, _, hi, _ => absurd hi (Nat.not_lt_zero i)
+  | a :: t, lb, 0, k, _, hk => by
+    show ground.getAt dg
+        (lb.map (f a) ++ t.flatMap (fun a => lb.map (f a)))
+        (0 * lb.length + k)
+      = f a (ground.getAt db lb k)
+    rw [Nat.zero_mul, Nat.zero_add,
+      ground.getAt_append dg (lb.map (f a))
+        (t.flatMap (fun a => lb.map (f a))) k,
+      if_pos (show k < (lb.map (f a)).length from by
+        rw [ground.length_map]; exact hk),
+      ground.getAt_map db dg (f a) lb k hk]
+  | a :: t, lb, i + 1, k, hi, hk => by
+    show ground.getAt dg
+        (lb.map (f a) ++ t.flatMap (fun a => lb.map (f a)))
+        ((i + 1) * lb.length + k)
+      = f (ground.getAt da t i) (ground.getAt db lb k)
+    have hidx : (i + 1) * lb.length + k
+        = (lb.map (f a)).length + (i * lb.length + k) := by
+      rw [ground.length_map, Nat.succ_mul, Nat.add_right_comm,
+        Nat.add_comm (i * lb.length + k) lb.length]
+    rw [hidx, ground.getAt_append_add dg (lb.map (f a))
+        (t.flatMap (fun a => lb.map (f a))) (i * lb.length + k),
+      getAt_pairMap dg da db f t lb i k (Nat.lt_of_succ_lt_succ hi) hk]
 
 /-- The tensor's key count is the two key counts' product. -/
-theorem tensorV_length : ∀ u v : List BPair,
-    (tensorV u v).length = u.length * v.length
-  | [], v => (Nat.zero_mul v.length).symm
-  | x :: u, v => by
-    show (v.map (fun y => (x * y).norm) ++ tensorV u v).length
-      = (u.length + 1) * v.length
-    rw [ground.length_append, ground.length_map, tensorV_length u v,
-      Nat.succ_mul]
-    exact Nat.add_comm v.length (u.length * v.length)
+theorem tensorV_length (u v : List BPair) :
+    (tensorV u v).length = u.length * v.length := by
+  show (u.flatMap (fun x => v.map (fun y => (x * y).norm))).length = _
+  exact pairMap_length _ u v
 
 /-- The tensor's row count is the two row counts' product. -/
-theorem tensorM_length : ∀ A B : Mat,
-    (tensorM A B).length = A.length * B.length
-  | [], B => (Nat.zero_mul B.length).symm
-  | ra :: A, B => by
-    show ((B.map (fun rb => tensorV ra rb)) ++ tensorM A B).length
-      = (A.length + 1) * B.length
-    rw [ground.length_append, ground.length_map, tensorM_length A B,
-      Nat.succ_mul]
-    exact Nat.add_comm B.length (A.length * B.length)
+theorem tensorM_length (A B : Mat) :
+    (tensorM A B).length = A.length * B.length := by
+  show (A.flatMap (fun ra => B.map (fun rb => tensorV ra rb))).length = _
+  exact pairMap_length _ A B
 
 private theorem rowsLen_mapTensor (m n : Nat) (ra : List BPair)
     (hra : ra.length = m) :
@@ -236,70 +293,26 @@ theorem tensorPow_shape (G : Mat) (hG : rowsLen G.length G) :
 /-! ### The entry reads at the product index -/
 
 /-- The tensor's entry at the product index. -/
-theorem getAt_tensorV : ∀ (u v : List BPair) (i k : Nat),
-    i < u.length → k < v.length →
+theorem getAt_tensorV (u v : List BPair) (i k : Nat)
+    (hi : i < u.length) (hk : k < v.length) :
     ground.getAt BPair.unit (tensorV u v) (i * v.length + k)
       = (ground.getAt BPair.unit u i
-        * ground.getAt BPair.unit v k).norm
-  | [], _, i, _, hi, _ => absurd hi (Nat.not_lt_zero i)
-  | x :: u, v, 0, k, _, hk => by
-    show ground.getAt BPair.unit
-        (v.map (fun y => (x * y).norm) ++ tensorV u v) (0 * v.length + k)
-      = (x * ground.getAt BPair.unit v k).norm
-    rw [Nat.zero_mul, Nat.zero_add,
-      ground.getAt_append BPair.unit
-        (v.map (fun y => (x * y).norm)) (tensorV u v) k,
-      if_pos (show k < (v.map (fun y => (x * y).norm)).length from by
-        rw [ground.length_map]; exact hk),
-      ground.getAt_map BPair.unit BPair.unit
-        (fun y => (x * y).norm) v k hk]
-  | x :: u, v, i + 1, k, hi, hk => by
-    show ground.getAt BPair.unit
-        (v.map (fun y => (x * y).norm) ++ tensorV u v)
-        ((i + 1) * v.length + k)
-      = (ground.getAt BPair.unit u i
-        * ground.getAt BPair.unit v k).norm
-    have hidx : (i + 1) * v.length + k
-        = (v.map (fun y => (x * y).norm)).length
-          + (i * v.length + k) := by
-      rw [ground.length_map, Nat.succ_mul, Nat.add_right_comm,
-        Nat.add_comm (i * v.length + k) v.length]
-    rw [hidx, ground.getAt_append_add BPair.unit
-        (v.map (fun y => (x * y).norm)) (tensorV u v)
-        (i * v.length + k),
-      getAt_tensorV u v i k (Nat.lt_of_succ_lt_succ hi) hk]
+        * ground.getAt BPair.unit v k).norm := by
+  show ground.getAt BPair.unit
+      (u.flatMap (fun x => v.map (fun y => (x * y).norm))) (i * v.length + k)
+    = _
+  exact getAt_pairMap BPair.unit BPair.unit BPair.unit _ u v i k hi hk
 
 /-- The tensor's row at the product index. -/
-theorem getAt_tensorM : ∀ (A B : Mat) (i k : Nat),
-    i < A.length → k < B.length →
+theorem getAt_tensorM (A B : Mat) (i k : Nat)
+    (hi : i < A.length) (hk : k < B.length) :
     ground.getAt [] (tensorM A B) (i * B.length + k)
-      = tensorV (ground.getAt [] A i) (ground.getAt [] B k)
-  | [], _, i, _, hi, _ => absurd hi (Nat.not_lt_zero i)
-  | ra :: A, B, 0, k, _, hk => by
-    show ground.getAt []
-        (B.map (fun rb => tensorV ra rb) ++ tensorM A B) (0 * B.length + k)
-      = tensorV ra (ground.getAt [] B k)
-    rw [Nat.zero_mul, Nat.zero_add,
-      ground.getAt_append ([] : List BPair)
-        (B.map (fun rb => tensorV ra rb)) (tensorM A B) k,
-      if_pos (show k < (B.map (fun rb => tensorV ra rb)).length from by
-        rw [ground.length_map]; exact hk),
-      ground.getAt_map ([] : List BPair) ([] : List BPair)
-        (fun rb => tensorV ra rb) B k hk]
-  | ra :: A, B, i + 1, k, hi, hk => by
-    show ground.getAt []
-        (B.map (fun rb => tensorV ra rb) ++ tensorM A B)
-        ((i + 1) * B.length + k)
-      = tensorV (ground.getAt [] A i) (ground.getAt [] B k)
-    have hidx : (i + 1) * B.length + k
-        = (B.map (fun rb => tensorV ra rb)).length
-          + (i * B.length + k) := by
-      rw [ground.length_map, Nat.succ_mul, Nat.add_right_comm,
-        Nat.add_comm (i * B.length + k) B.length]
-    rw [hidx, ground.getAt_append_add ([] : List BPair)
-        (B.map (fun rb => tensorV ra rb)) (tensorM A B)
-        (i * B.length + k),
-      getAt_tensorM A B i k (Nat.lt_of_succ_lt_succ hi) hk]
+      = tensorV (ground.getAt [] A i) (ground.getAt [] B k) := by
+  show ground.getAt []
+      (A.flatMap (fun ra => B.map (fun rb => tensorV ra rb)))
+      (i * B.length + k) = _
+  exact getAt_pairMap ([] : List BPair) ([] : List BPair) ([] : List BPair)
+    _ A B i k hi hk
 
 /-! ### The pairing factorizes -/
 
@@ -2473,6 +2486,898 @@ theorem bottomClear {n : Nat} (H G : Mat) (hH : sqAt H n) (hG : sqAt G n)
     obtain ⟨w, hwl, hwlt⟩ := inertia.rev_witness _ sp hsp
       (by rw [hrev]; exact Nat.succ_le_succ (Nat.zero_le t))
     exact absurd hwlt (hform w hwl)
+
+/-! ### Tier J: the tensor sum's roots
+
+`lem:relfiber`(iv).  The factors' congruences' tensor maps the
+tensor sum's site datum at a level to the diagonal at the summed
+roots against the scales' products ((iii)'s tensor congruence,
+`lem:split`'s diagonal read at each factor), and the count at a
+level is the root pairs' count below it (`lem:inertia`'s congruence
+read at the diagonal).  A pair of roots `(n_a : d_a, g_a)` and
+`(n_b : d_b, g_b)` sums to the root
+`(n_a d_b + n_b d_a + y d_a d_b : d_a d_b)`, the level's second
+member entering on the pencil's own side. -/
+
+/-- The summed root at a root pair: the two roots' sum with the level
+shift joined, at the second members' product (`lem:relfiber`(iv)). -/
+def pairRoot (y : Pos) (a b : BPair × Pos × BPair) : BPair × Pos :=
+  (a.1.scale b.2.1 + b.1.scale a.2.1 + BPair.ofPos (y * (a.2.1 * b.2.1)),
+   a.2.1 * b.2.1)
+
+/-- The tensor sum's roots: the summed root at every root pair
+(`lem:relfiber`(iv)). -/
+def pairRoots (lA lB : List (BPair × Pos × BPair)) (y : Pos) :
+    List (BPair × Pos) :=
+  lA.flatMap (fun a => lB.map (pairRoot y a))
+
+private theorem countBy_append {α : Type} (p : α → Bool) :
+    ∀ u v : List α, ground.countBy p (u ++ v)
+      = ground.countBy p u + ground.countBy p v
+  | [], v => (Nat.zero_add (ground.countBy p v)).symm
+  | a :: u, v => by
+    show cond (p a) 1 0 + ground.countBy p (u ++ v)
+      = cond (p a) 1 0 + ground.countBy p u + ground.countBy p v
+    rw [countBy_append p u v, Nat.add_assoc]
+
+private theorem countBy_mapPair {β γ δ : Type} (pb : β → Bool)
+    (p : γ → Bool) (q : δ → Bool) (F : β → γ) (G : β → δ)
+    (hFG : ∀ b, pb b = true → p (F b) = q (G b)) :
+    ∀ lb : List β, (lb.all pb) = true →
+      ground.countBy p (lb.map F) = ground.countBy q (lb.map G)
+  | [], _ => rfl
+  | b :: t, hall => by
+    have hs := ground.andSplitB (show (pb b && t.all pb) = true from hall)
+    show cond (p (F b)) 1 0 + ground.countBy p (t.map F)
+      = cond (q (G b)) 1 0 + ground.countBy q (t.map G)
+    rw [hFG b hs.1, countBy_mapPair pb p q F G hFG t hs.2]
+
+private theorem countBy_pairMap {α β γ δ : Type} (pa : α → Bool)
+    (pb : β → Bool) (p : γ → Bool) (q : δ → Bool)
+    (f : α → β → γ) (g : α → β → δ)
+    (hfg : ∀ a b, pa a = true → pb b = true → p (f a b) = q (g a b))
+    (lb : List β) (hlb : (lb.all pb) = true) :
+    ∀ la : List α, (la.all pa) = true →
+      ground.countBy p (la.flatMap (fun a => lb.map (f a)))
+        = ground.countBy q (la.flatMap (fun a => lb.map (g a)))
+  | [], _ => rfl
+  | a :: t, hall => by
+    have hs := ground.andSplitB (show (pa a && t.all pa) = true from hall)
+    show ground.countBy p (lb.map (f a) ++ t.flatMap (fun a => lb.map (f a)))
+      = ground.countBy q (lb.map (g a) ++ t.flatMap (fun a => lb.map (g a)))
+    rw [countBy_append, countBy_append,
+      countBy_mapPair pb p q (f a) (g a)
+        (fun b hb => hfg a b hs.1 hb) lb hlb,
+      countBy_pairMap pa pb p q f g hfg lb hlb t hs.2]
+
+private theorem all_pairMap {α β γ : Type} (pa : α → Bool)
+    (pb : β → Bool) (p : γ → Bool) (f : α → β → γ)
+    (hf : ∀ a b, pa a = true → pb b = true → p (f a b) = true)
+    (lb : List β) (hlb : (lb.all pb) = true)
+    (la : List α) (hla : (la.all pa) = true) :
+    ((la.flatMap (fun a => lb.map (f a))).all p) = true := by
+  rw [ground.all_flatMap]
+  refine ground.all_of_mem_intro _ la (fun a ha => ?_)
+  show ((lb.map (f a)).all p) = true
+  rw [ground.all_map]
+  exact ground.all_of_mem_intro _ lb (fun b hb =>
+    hf a b (ground.all_of_mem pa la hla a ha) (ground.all_of_mem pb lb hlb b hb))
+
+/-- Two diagonals' tensor is the diagonal at the entries' products. -/
+private theorem tensorM_diagM (a b : List BPair) :
+    tensorM (split.diagM a) (split.diagM b)
+      = split.diagM (a.flatMap (fun u => b.map (fun v => (u * v).norm))) := by
+  show tensorM (split.diagM a) (split.diagM b) = split.diagM (tensorV a b)
+  have hlL : (tensorM (split.diagM a) (split.diagM b)).length
+      = a.length * b.length := by
+    rw [tensorM_length, split.diagM_len, split.diagM_len]
+  have hrL : rowsLen (a.length * b.length)
+      (tensorM (split.diagM a) (split.diagM b)) :=
+    rowsLen_tensorM a.length b.length _ _
+      (split.diagM_shape a a.length rfl) (split.diagM_shape b b.length rfl)
+  have hTl : (tensorV a b).length = a.length * b.length :=
+    tensorV_length a b
+  refine ground.getAt_ext ([] : List BPair) _ _
+    (by rw [hlL, split.diagM_len, hTl]) ?_
+  intro t ht
+  rw [hlL] at ht
+  have hn0 : 0 < b.length := by
+    cases hb : b.length with
+    | zero => rw [hb, Nat.mul_zero] at ht; exact absurd ht (Nat.not_lt_zero t)
+    | succ n0 => exact Nat.succ_pos n0
+  refine ground.getAt_ext BPair.unit _ _ ?_ ?_
+  · rw [rowsLen_getAt _ t hrL (by rw [hlL]; exact ht),
+      rowsLen_getAt _ t (split.diagM_shape (tensorV a b) (tensorV a b).length rfl)
+        (by rw [split.diagM_len]; rw [hTl]; exact ht), hTl]
+  intro u hu
+  rw [rowsLen_getAt _ t hrL (by rw [hlL]; exact ht)] at hu
+  obtain ⟨i, k, hk, htik⟩ := pairSplit b.length hn0 t
+  obtain ⟨a', b', hb', huab⟩ := pairSplit b.length hn0 u
+  have hi : i < a.length := pairIdxLt (by rw [← htik]; exact ht)
+  have ha' : a' < a.length := pairIdxLt (by rw [← huab]; exact hu)
+  have hL : ground.getAt BPair.unit
+      (ground.getAt [] (tensorM (split.diagM a) (split.diagM b)) t) u
+      = ((if a' = i then ground.getAt BPair.unit a i else BPair.unit)
+        * (if b' = k then ground.getAt BPair.unit b k
+          else BPair.unit)).norm := by
+    have ht2 : t = i * (split.diagM b).length + k := by
+      rw [split.diagM_len]; exact htik
+    rw [ht2, getAt_tensorM (split.diagM a) (split.diagM b) i k
+      (by rw [split.diagM_len]; exact hi)
+      (by rw [split.diagM_len]; exact hk)]
+    have hu2 : u = a' * (ground.getAt ([] : List BPair)
+        (split.diagM b) k).length + b' := by
+      rw [split.diagM_rowlen b k hk]; exact huab
+    rw [hu2, getAt_tensorV (ground.getAt [] (split.diagM a) i)
+      (ground.getAt [] (split.diagM b) k) a' b'
+      (by rw [split.diagM_rowlen a i hi]; exact ha')
+      (by rw [split.diagM_rowlen b k hk]; exact hb'),
+      split.diagM_entry a i a' hi ha', split.diagM_entry b k b' hk hb']
+  have hR : ground.getAt BPair.unit
+      (ground.getAt [] (split.diagM (tensorV a b)) t) u
+      = if u = t then ground.getAt BPair.unit (tensorV a b) t
+        else BPair.unit :=
+    split.diagM_entry (tensorV a b) t u (by rw [hTl]; exact ht)
+      (by rw [hTl]; exact hu)
+  rw [hL, hR, htik, huab]
+  by_cases hia : a' = i
+  · by_cases hkb : b' = k
+    · rw [if_pos hia, if_pos hkb,
+        if_pos (show a' * b.length + b' = i * b.length + k by
+          rw [hia, hkb]),
+        getAt_tensorV a b i k hi hk]
+    · rw [if_pos hia, if_neg hkb,
+        if_neg (show ¬ a' * b.length + b' = i * b.length + k from fun he =>
+          hkb (pairInj i k a' b' hk hb' he.symm).2.symm)]
+      exact Eq.trans (BPair.norm_congr (BPair.mul_unit _)) rfl
+  · rw [if_neg hia,
+      if_neg (show ¬ a' * b.length + b' = i * b.length + k from fun he =>
+        hia (pairInj i k a' b' hk hb' he.symm).1.symm)]
+    exact Eq.trans (BPair.norm_congr (BPair.unit_mul _)) rfl
+
+/-! The congruence's own laws at the site datum's assembly: the read
+passes the middle datum, the weight leaves the congruence, and the
+congruence adds. -/
+
+private theorem congr_mid {o : Nat} (T M N : Mat) (hTl : T.length = o)
+    (hTr : rowsLen o T) (hMl : M.length = o) (hNl : N.length = o)
+    (hMN : matOneValue M N) :
+    matOneValue (matMul (transposeM T) (matMul M T))
+      (matMul (transposeM T) (matMul N T)) := by
+  have hTt : (transposeM T).length = o := transposeLen T hTr hTl
+  exact matMul_congrR_of (transposeM T) (matMul M T) (matMul N T)
+    (transposeM_congrM o (matMul M T) (matMul N T)
+      (rowsLen_cast hTt (rowsLen_matMul M T))
+      (rowsLen_cast hTt (rowsLen_matMul N T))
+      (by rw [length_matMul, length_matMul, hMl, hNl])
+      (matMul_congrL M N T hMN))
+
+private theorem congr_scaleB {o : Nat} (c : BPair) (T M : Mat)
+    (hTl : T.length = o) (hTr : rowsLen o T) (hMl : M.length = o) :
+    matOneValue (matMul (transposeM T) (matMul (inertia.matScaleB c M) T))
+      (inertia.matScaleB c (matMul (transposeM T) (matMul M T))) := by
+  have hTt : (transposeM T).length = o := transposeLen T hTr hTl
+  refine matOne_trans ?_
+    (inertia.matMul_scaleR c o (transposeM T) (matMul M T)
+      (rowsLen_cast hTt (rowsLen_matMul M T)))
+  refine matMul_congrR_of (transposeM T) (matMul (inertia.matScaleB c M) T)
+    (inertia.matScaleB c (matMul M T))
+    (transposeM_congrM o _ _
+      (rowsLen_cast hTt (rowsLen_matMul (inertia.matScaleB c M) T))
+      (inertia.rowsLen_scaleB c o _ (rowsLen_cast hTt (rowsLen_matMul M T)))
+      ?_ (inertia.matMul_scaleL c M T))
+  rw [length_matMul,
+    show (inertia.matScaleB c (matMul M T)).length = (matMul M T).length from
+      ground.length_map _ _,
+    length_matMul, hMl,
+    show (inertia.matScaleB c M).length = M.length from ground.length_map _ _,
+    hMl]
+
+private theorem congr_add {o : Nat} (T X Y : Mat) (hTl : T.length = o)
+    (hTr : rowsLen o T) (hX : sqAt X o) (hY : sqAt Y o) :
+    matOneValue (matMul (transposeM T) (matMul (matAdd X Y) T))
+      (matAdd (matMul (transposeM T) (matMul X T))
+        (matMul (transposeM T) (matMul Y T))) := by
+  have hTt : (transposeM T).length = o := transposeLen T hTr hTl
+  have hXl : X.length = o := sqAt_len hX
+  have hXr : rowsLen o X := rowsLen_of_sqAt hX
+  have hYl : Y.length = o := sqAt_len hY
+  have hYr : rowsLen o Y := rowsLen_of_sqAt hY
+  cases o with
+  | zero =>
+    rw [ground.nil_of_length_zero T hTl]
+    exact trivial
+  | succ o0 =>
+    have hXTl : (matMul X T).length = o0 + 1 :=
+      (length_matMul X T).trans hXl
+    refine matOne_trans ?_
+      (matMul_addR (matMul X T) (matMul Y T)
+        (rowsLen_cast hTt (rowsLen_matMul X T))
+        (rowsLen_cast hTt (rowsLen_matMul Y T))
+        (by rw [length_matMul, length_matMul, hXl, hYl])
+        (by rw [hXTl]; exact Nat.succ_pos o0) (transposeM T)
+        (rowsLen_cast hXTl.symm (rowsLen_cast hTl (rowsLen_transposeM T))))
+    refine matMul_congrR_of (transposeM T) (matMul (matAdd X Y) T)
+      (matAdd (matMul X T) (matMul Y T))
+      (transposeM_congrM (o0 + 1) _ _
+        (rowsLen_cast hTt (rowsLen_matMul (matAdd X Y) T))
+        (rowsLen_matAdd (o0 + 1) _ _
+          (rowsLen_cast hTt (rowsLen_matMul X T))
+          (rowsLen_cast hTt (rowsLen_matMul Y T)))
+        ?_
+        (matMul_addL (o0 + 1) T (rowsLen_cast hTl (rowsLen_transposeM T))
+          X Y hXr hYr))
+    rw [length_matMul, length_matAdd X Y (hXl.trans hYl.symm), hXl,
+      length_matAdd _ _ (by rw [length_matMul, length_matMul, hXl, hYl]),
+      hXTl]
+
+/-- The tensor congruence at two diagonal reads: the tensored
+congruence reads the entries' products' diagonal
+(`lem:relfiber`(iii), `lem:split`). -/
+private theorem congr_tensorDiag {nX nY : Nat} (X Y : Mat) (TX : SqMat nX)
+    (TY : SqMat nY) (u v : List BPair) (hXsq : sqAt X nX) (hYsq : sqAt Y nY)
+    (hvl : v.length = nY)
+    (hX : matOneValue (matMul (transposeM TX.val) (matMul X TX.val))
+      (split.diagM u))
+    (hY : matOneValue (matMul (transposeM TY.val) (matMul Y TY.val))
+      (split.diagM v)) :
+    matOneValue
+      (matMul (transposeM (tensorM TX.val TY.val))
+        (matMul (tensorM X Y) (tensorM TX.val TY.val)))
+      (split.diagM (tensorV u v)) := by
+  have hTYl : TY.val.length = nY := SqMat.rows TY
+  have hTYr : rowsLen nY TY.val := rowsLen_of_sqAt TY.shape
+  have hTYt : (transposeM TY.val).length = nY := transposeLen _ hTYr hTYl
+  have hYTl : (matMul Y TY.val).length = nY :=
+    (length_matMul Y TY.val).trans (sqAt_len hYsq)
+  have hrowY : rowsLen nY (matMul (transposeM TY.val) (matMul Y TY.val)) :=
+    rowsLen_cast (transposeLen (matMul Y TY.val)
+      (rowsLen_cast hTYt (rowsLen_matMul Y TY.val)) hYTl)
+      (rowsLen_matMul (transposeM TY.val) (matMul Y TY.val))
+  refine matOne_trans
+    (congr_tensorM nX nY nX nY X Y TX.val TY.val hXsq hYsq
+      (SqMat.rows TX) (rowsLen_of_sqAt TX.shape) hTYl hTYr) ?_
+  refine matOne_trans (tensorM_congrL _ _ _ hX) ?_
+  refine matOne_trans
+    (tensorM_congrR nY _ _ hrowY
+      (split.diagM_shape v nY hvl) hY (split.diagM u)) ?_
+  rw [tensorM_diagM u v]
+  exact matOne_refl _
+
+/-! The pair-indexed diagonal entry and the level's own root at a
+pair of roots. -/
+
+/-- The tensor sum's diagonal entry at a root pair: the scales'
+product against the summed root off the level. -/
+private def pairEntry (x y : Pos) (a b : BPair × Pos × BPair) : BPair :=
+  (a.2.2 * b.2.2)
+    * (a.1.scale b.2.1 + b.1.scale a.2.1
+      + BPair.ofPos (y * (a.2.1 * b.2.1))
+      + (BPair.ofPos (x * (a.2.1 * b.2.1))).swap)
+
+/-- The congruated entry at a root pair reads the scales' product
+against the summed root off the level. -/
+private theorem entryAlg (x y : Pos) (na ga nb gb : BPair) (da db : Pos) :
+    (((ga * na).norm * (gb * BPair.ofPos db).norm).norm
+      + ((ga * BPair.ofPos da).norm * (gb * nb).norm).norm
+      + (BPair.ofPos y * ((ga * BPair.ofPos da).norm
+          * (gb * BPair.ofPos db).norm).norm).norm
+      + ((BPair.ofPos x).swap * ((ga * BPair.ofPos da).norm
+          * (gb * BPair.ofPos db).norm).norm).norm).oneValue
+      ((ga * gb) * (na.scale db + nb.scale da
+        + BPair.ofPos (y * (da * db))
+        + (BPair.ofPos (x * (da * db))).swap)) := by
+  have hm : (((ga * BPair.ofPos da).norm * (gb * BPair.ofPos db).norm).norm).oneValue
+      ((ga * gb) * (BPair.ofPos da * BPair.ofPos db)) :=
+    BPair.oneValue_trans (BPair.norm_oneValue _)
+      (BPair.oneValue_trans
+        (BPair.mul_congr (BPair.norm_oneValue _) (BPair.norm_oneValue _))
+        (BPair.oneValue_of_eq
+          (BPair.mul_mul_mul_comm ga (BPair.ofPos da) gb (BPair.ofPos db))))
+  have hd : (BPair.ofPos da * BPair.ofPos db).oneValue
+      (BPair.ofPos (da * db)) := BPair.ofPos_mul da db
+  have h1 : (((ga * na).norm * (gb * BPair.ofPos db).norm).norm).oneValue
+      ((ga * gb) * na.scale db) :=
+    BPair.oneValue_trans (BPair.norm_oneValue _)
+      (BPair.oneValue_trans
+        (BPair.mul_congr (BPair.norm_oneValue _) (BPair.norm_oneValue _))
+        (BPair.oneValue_trans
+          (BPair.oneValue_of_eq
+            (BPair.mul_mul_mul_comm ga na gb (BPair.ofPos db)))
+          (BPair.mul_congr (BPair.oneValue_refl (ga * gb))
+            (BPair.mul_ofPos na db))))
+  have h2 : (((ga * BPair.ofPos da).norm * (gb * nb).norm).norm).oneValue
+      ((ga * gb) * nb.scale da) :=
+    BPair.oneValue_trans (BPair.norm_oneValue _)
+      (BPair.oneValue_trans
+        (BPair.mul_congr (BPair.norm_oneValue _) (BPair.norm_oneValue _))
+        (BPair.oneValue_trans
+          (BPair.oneValue_of_eq
+            (BPair.mul_mul_mul_comm ga (BPair.ofPos da) gb nb))
+          (BPair.mul_congr (BPair.oneValue_refl (ga * gb))
+            (BPair.oneValue_trans
+              (BPair.oneValue_of_eq (BPair.mul_comm (BPair.ofPos da) nb))
+              (BPair.mul_ofPos nb da)))))
+  have h3 : ((BPair.ofPos y * ((ga * BPair.ofPos da).norm
+        * (gb * BPair.ofPos db).norm).norm).norm).oneValue
+      ((ga * gb) * BPair.ofPos (y * (da * db))) :=
+    BPair.oneValue_trans (BPair.norm_oneValue _)
+      (BPair.oneValue_trans
+        (BPair.mul_congr (BPair.oneValue_refl (BPair.ofPos y)) hm)
+        (BPair.oneValue_trans
+          (BPair.oneValue_of_eq
+            (BPair.mul_left_comm (BPair.ofPos y) (ga * gb)
+              (BPair.ofPos da * BPair.ofPos db)))
+          (BPair.mul_congr (BPair.oneValue_refl (ga * gb))
+            (BPair.oneValue_trans
+              (BPair.mul_congr (BPair.oneValue_refl (BPair.ofPos y)) hd)
+              (BPair.ofPos_mul y (da * db))))))
+  have h4 : (((BPair.ofPos x).swap * ((ga * BPair.ofPos da).norm
+        * (gb * BPair.ofPos db).norm).norm).norm).oneValue
+      ((ga * gb) * (BPair.ofPos (x * (da * db))).swap) :=
+    BPair.oneValue_trans (BPair.norm_oneValue _)
+      (BPair.oneValue_trans
+        (BPair.mul_congr (BPair.oneValue_refl (BPair.ofPos x).swap) hm)
+        (BPair.oneValue_trans
+          (BPair.oneValue_of_eq
+            (BPair.mul_left_comm (BPair.ofPos x).swap (ga * gb)
+              (BPair.ofPos da * BPair.ofPos db)))
+          (BPair.mul_congr (BPair.oneValue_refl (ga * gb))
+            (BPair.oneValue_trans
+              (BPair.oneValue_of_eq
+                (BPair.swap_mul (BPair.ofPos x)
+                  (BPair.ofPos da * BPair.ofPos db)))
+              (ground.swap_congr
+                (BPair.oneValue_trans
+                  (BPair.mul_congr (BPair.oneValue_refl (BPair.ofPos x)) hd)
+                  (BPair.ofPos_mul x (da * db))))))))
+  refine BPair.oneValue_trans
+    (BPair.add_congr (BPair.add_congr (BPair.add_congr h1 h2) h3) h4) ?_
+  refine BPair.oneValue_of_eq (Eq.symm ?_)
+  rw [BPair.left_distrib, BPair.left_distrib, BPair.left_distrib]
+
+/-- A root pair's diagonal entry sits below the sum's unit exactly
+where the summed root sits below the level, the scales' product a
+positive factor. -/
+private theorem side_pair (x y : Pos) (a b : BPair × Pos × BPair)
+    (hga : BPair.unit < a.2.2) (hgb : BPair.unit < b.2.2) :
+    decide (pairEntry x y a b < BPair.unit)
+      = decide ((pairRoot y a b).1.scale Pos.one
+        < BPair.ofPos (x * (pairRoot y a b).2)) := by
+  have hgab : BPair.unit < a.2.2 * b.2.2 := ground.unitLtMul hga hgb
+  have hkey : pairEntry x y a b < BPair.unit
+      ↔ (pairRoot y a b).1.scale Pos.one
+        < BPair.ofPos (x * (pairRoot y a b).2) := by
+    constructor
+    · intro hlt
+      rw [BPair.scale_one]
+      have hsub : (pairRoot y a b).1
+          + (BPair.ofPos (x * (pairRoot y a b).2)).swap < BPair.unit := by
+        refine ground.ltB_unscale (ground.leB_of_lt hgab) ?_
+        exact BPair.lt_congr
+          (BPair.oneValue_of_eq (BPair.mul_comm (a.2.2 * b.2.2) _))
+          (BPair.oneValue_symm (BPair.unit_mul (a.2.2 * b.2.2))) hlt
+      exact ground.ltB_of_add_unit hsub
+    · intro hlt
+      rw [BPair.scale_one] at hlt
+      have hnull : (BPair.ofPos (x * (pairRoot y a b).2)
+          + (BPair.ofPos (x * (pairRoot y a b).2)).swap).oneValue
+          BPair.unit :=
+        BPair.oneValue_trans
+          (BPair.oneValue_of_eq (BPair.add_comm _ _))
+          (BPair.swap_add_null
+            (BPair.oneValue_refl (BPair.ofPos (x * (pairRoot y a b).2))))
+      have hadd : (pairRoot y a b).1
+            + (BPair.ofPos (x * (pairRoot y a b).2)).swap
+          < BPair.ofPos (x * (pairRoot y a b).2)
+            + (BPair.ofPos (x * (pairRoot y a b).2)).swap :=
+        ground.ltB_add hlt
+          (ground.leB_refl (BPair.ofPos (x * (pairRoot y a b).2)).swap)
+      have hstep : (pairRoot y a b).1
+          + (BPair.ofPos (x * (pairRoot y a b).2)).swap < BPair.unit :=
+        BPair.lt_congr (BPair.oneValue_refl _) hnull hadd
+      exact BPair.lt_congr
+        (BPair.oneValue_of_eq (BPair.mul_comm _ (a.2.2 * b.2.2)))
+        (BPair.unit_mul (a.2.2 * b.2.2))
+        (ground.ltB_mulPos hstep hgab)
+  by_cases hlt : pairEntry x y a b < BPair.unit
+  · rw [decide_eq_true hlt, decide_eq_true (hkey.mp hlt)]
+  · rw [decide_eq_false hlt,
+      decide_eq_false (fun hc => hlt (hkey.mpr hc))]
+
+private theorem swapScaleB_row (c : BPair) : ∀ r : List BPair,
+    (poly.scaleP c r).map BPair.swap = poly.scaleP c.swap r
+  | [] => rfl
+  | z :: r => by
+    show (c * z).norm.swap :: (poly.scaleP c r).map BPair.swap
+      = (c.swap * z).norm :: poly.scaleP c.swap r
+    rw [swapScaleB_row c r, ← BPair.norm_swap (c * z), BPair.swap_mul c z]
+
+private theorem swapScaleB (c : BPair) : ∀ M : Mat,
+    matSwap (inertia.matScaleB c M) = inertia.matScaleB c.swap M
+  | [] => rfl
+  | r :: M => by
+    show (poly.scaleP c r).map BPair.swap
+        :: matSwap (inertia.matScaleB c M)
+      = poly.scaleP c.swap r :: inertia.matScaleB c.swap M
+    rw [swapScaleB c M, swapScaleB_row c r]
+
+/-- `lem:relfiber`(iv): the tensor sum's count at a level is the root
+pairs' count below it — the factors' congruences' tensor maps the site
+datum to the diagonal at the summed roots against the scales' products,
+and the reversal count reads the diagonal's lower side. -/
+theorem tensorSum_count {nA nB : Nat} (A GA : Mat) (TA TwA : SqMat nA)
+    (lA : List (BPair × Pos × BPair)) (hA : split.diagRead A GA TA TwA lA)
+    (B GB : Mat) (TB TwB : SqMat nB)
+    (lB : List (BPair × Pos × BPair)) (hB : split.diagRead B GB TB TwB lB)
+    (x y : Pos) (g : Nat) (sp : inertia.Split (nA * nB))
+    (h : certconstruct.countAtPair
+      (matAdd (tensorM A GB) (tensorM GA B)) (tensorM GA GB) x y g sp) :
+    g = split.rootsBelow (pairRoots lA lB y) x Pos.one := by
+  have hTAl : TA.val.length = nA := SqMat.rows TA
+  have hTAr : rowsLen nA TA.val := rowsLen_of_sqAt TA.shape
+  have hTBl : TB.val.length = nB := SqMat.rows TB
+  have hTBr : rowsLen nB TB.val := rowsLen_of_sqAt TB.shape
+  have hTwAl : TwA.val.length = nA := SqMat.rows TwA
+  have hTwAr : rowsLen nA TwA.val := rowsLen_of_sqAt TwA.shape
+  have hTwBl : TwB.val.length = nB := SqMat.rows TwB
+  have hTwBr : rowsLen nB TwB.val := rowsLen_of_sqAt TwB.shape
+  have hTl : (tensorM TA.val TB.val).length = nA * nB := by
+    rw [tensorM_length, hTAl, hTBl]
+  have hTr : rowsLen (nA * nB) (tensorM TA.val TB.val) :=
+    rowsLen_tensorM nA nB _ _ hTAr hTBr
+  have hTt : (transposeM (tensorM TA.val TB.val)).length = nA * nB :=
+    transposeLen _ hTr hTl
+  have hWl : (tensorM TwA.val TwB.val).length = nA * nB := by
+    rw [tensorM_length, hTwAl, hTwBl]
+  have hWr : rowsLen (nA * nB) (tensorM TwA.val TwB.val) :=
+    rowsLen_tensorM nA nB _ _ hTwAr hTwBr
+  have hGAl : GA.length = nA := sqAt_len hA.2.1
+  have hGBl : GB.length = nB := sqAt_len hB.2.1
+  have hAl : A.length = nA := sqAt_len hA.1
+  have hBl : B.length = nB := sqAt_len hB.1
+  -- the four blocks' shapes at the product order
+  have hAGB : sqAt (tensorM A GB) (nA * nB) :=
+    sqAt_of (by rw [tensorM_length, hAl, hGBl])
+      (rowsLen_tensorM nA nB _ _ (rowsLen_of_sqAt hA.1) (rowsLen_of_sqAt hB.2.1))
+  have hGAB : sqAt (tensorM GA B) (nA * nB) :=
+    sqAt_of (by rw [tensorM_length, hGAl, hBl])
+      (rowsLen_tensorM nA nB _ _ (rowsLen_of_sqAt hA.2.1) (rowsLen_of_sqAt hB.1))
+  have hGG : sqAt (tensorM GA GB) (nA * nB) :=
+    sqAt_of (by rw [tensorM_length, hGAl, hGBl])
+      (rowsLen_tensorM nA nB _ _ (rowsLen_of_sqAt hA.2.1) (rowsLen_of_sqAt hB.2.1))
+  have hGGl : (tensorM GA GB).length = nA * nB := sqAt_len hGG
+  -- the tensored congruence's witness identities
+  have hTW : matOneValue
+      (matMul (tensorM TA.val TB.val) (tensorM TwA.val TwB.val))
+      (inertia.matScaleB (minor TA.val * minor TB.val)
+        (inertia.idMat (nA * nB))) := by
+    refine matOne_trans
+      (matMul_tensorM nA nB nB TA.val TB.val TwA.val TwB.val hTBr hTwBl
+        hTwAr hTwBr) ?_
+    refine matOne_trans (tensorM_congrL _ _ _ hA.2.2.1.2.1) ?_
+    refine matOne_trans
+      (tensorM_congrR nB _ _
+        (rowsLen_cast (transposeLen TwB.val hTwBr hTwBl)
+          (rowsLen_matMul TB.val TwB.val))
+        (inertia.rowsLen_scaleB _ nB _ (inertia.idMat_rows nB)) hB.2.2.1.2.1 _) ?_
+    rw [tensorM_scaleL, tensorM_scaleR, tensorM_idMat]
+    exact inertia.scaleB_scaleB _ _ _
+  have hWT : matOneValue
+      (matMul (tensorM TwA.val TwB.val) (tensorM TA.val TB.val))
+      (inertia.matScaleB (minor TA.val * minor TB.val)
+        (inertia.idMat (nA * nB))) := by
+    refine matOne_trans
+      (matMul_tensorM nA nB nB TwA.val TwB.val TA.val TB.val hTwBr hTBl
+        hTAr hTBr) ?_
+    refine matOne_trans (tensorM_congrL _ _ _ hA.2.2.1.2.2) ?_
+    refine matOne_trans
+      (tensorM_congrR nB _ _
+        (rowsLen_cast (transposeLen TB.val hTBr hTBl)
+          (rowsLen_matMul TwB.val TB.val))
+        (inertia.rowsLen_scaleB _ nB _ (inertia.idMat_rows nB)) hB.2.2.1.2.2 _) ?_
+    rw [tensorM_scaleL, tensorM_scaleR, tensorM_idMat]
+    exact inertia.scaleB_scaleB _ _ _
+  have hc : ¬ (minor TA.val * minor TB.val).oneValue BPair.unit := by
+    intro hu
+    cases (BPair.mul_unit_iff (minor TA.val) (minor TB.val)).mp hu with
+    | inl h1 => exact hA.2.2.1.1 h1
+    | inr h2 => exact hB.2.2.1.1 h2
+  -- the root lists' counts
+  have hlAl : lA.length = nA := by
+    have hh := matOne_length (split.congr_gram A GA TA TwA lA hA)
+    rw [length_matMul, transposeLen TA.val hTAr hTAl, split.diagM_len,
+      ground.length_map] at hh
+    exact hh.symm
+  have hlBl : lB.length = nB := by
+    have hh := matOne_length (split.congr_gram B GB TB TwB lB hB)
+    rw [length_matMul, transposeLen TB.val hTBr hTBl, split.diagM_len,
+      ground.length_map] at hh
+    exact hh.symm
+  -- the three tensored diagonal reads
+  have eAG : matOneValue
+      (matMul (transposeM (tensorM TA.val TB.val))
+        (matMul (tensorM A GB) (tensorM TA.val TB.val)))
+      (split.diagM (tensorV (lA.map (fun r => (r.2.2 * r.1).norm))
+        (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)))) :=
+    congr_tensorDiag A GB TA TB _ _ hA.1 hB.2.1
+      (by rw [ground.length_map]; exact hlBl)
+      (split.congr_pencil A GA TA TwA lA hA)
+      (split.congr_gram B GB TB TwB lB hB)
+  have eGB : matOneValue
+      (matMul (transposeM (tensorM TA.val TB.val))
+        (matMul (tensorM GA B) (tensorM TA.val TB.val)))
+      (split.diagM (tensorV (lA.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+        (lB.map (fun r => (r.2.2 * r.1).norm)))) :=
+    congr_tensorDiag GA B TA TB _ _ hA.2.1 hB.1
+      (by rw [ground.length_map]; exact hlBl)
+      (split.congr_gram A GA TA TwA lA hA)
+      (split.congr_pencil B GB TB TwB lB hB)
+  have eGG : matOneValue
+      (matMul (transposeM (tensorM TA.val TB.val))
+        (matMul (tensorM GA GB) (tensorM TA.val TB.val)))
+      (split.diagM (tensorV (lA.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+        (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)))) :=
+    congr_tensorDiag GA GB TA TB _ _ hA.2.1 hB.2.1
+      (by rw [ground.length_map]; exact hlBl)
+      (split.congr_gram A GA TA TwA lA hA)
+      (split.congr_gram B GB TB TwB lB hB)
+  have eY : matOneValue
+      (matMul (transposeM (tensorM TA.val TB.val))
+        (matMul (inertia.matScale y (tensorM GA GB))
+          (tensorM TA.val TB.val)))
+      (split.diagM ((tensorV (lA.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+        (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))).map
+        (fun z => (BPair.ofPos y * z).norm))) := by
+    refine matOne_trans
+      (congr_mid (tensorM TA.val TB.val) _ _ hTl hTr
+        (by rw [inertia.length_matScale]; exact hGGl)
+        (by rw [show (inertia.matScaleB (BPair.ofPos y) (tensorM GA GB)).length
+            = (tensorM GA GB).length from ground.length_map _ _]; exact hGGl)
+        (inertia.matScale_scaleB y (tensorM GA GB))) ?_
+    refine matOne_trans
+      (congr_scaleB (BPair.ofPos y) (tensorM TA.val TB.val) (tensorM GA GB)
+        hTl hTr hGGl) ?_
+    refine matOne_trans (inertia.matOne_scaleB (BPair.ofPos y) eGG) ?_
+    rw [split.diagM_scaleB]
+    exact matOne_refl _
+  have eX : matOneValue
+      (matMul (transposeM (tensorM TA.val TB.val))
+        (matMul (matSwap (inertia.matScale x (tensorM GA GB)))
+          (tensorM TA.val TB.val)))
+      (split.diagM ((tensorV (lA.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+        (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))).map
+        (fun z => ((BPair.ofPos x).swap * z).norm))) := by
+    have hsw : matOneValue (matSwap (inertia.matScale x (tensorM GA GB)))
+        (inertia.matScaleB (BPair.ofPos x).swap (tensorM GA GB)) := by
+      refine matOne_trans
+        (matSwap_congr (inertia.matScale_scaleB x (tensorM GA GB))) ?_
+      rw [swapScaleB]
+      exact matOne_refl _
+    refine matOne_trans
+      (congr_mid (tensorM TA.val TB.val) _ _ hTl hTr
+        (by rw [length_matSwap, inertia.length_matScale]; exact hGGl)
+        (by rw [show (inertia.matScaleB (BPair.ofPos x).swap
+            (tensorM GA GB)).length = (tensorM GA GB).length from
+            ground.length_map _ _]; exact hGGl) hsw) ?_
+    refine matOne_trans
+      (congr_scaleB (BPair.ofPos x).swap (tensorM TA.val TB.val)
+        (tensorM GA GB) hTl hTr hGGl) ?_
+    refine matOne_trans (inertia.matOne_scaleB (BPair.ofPos x).swap eGG) ?_
+    rw [split.diagM_scaleB]
+    exact matOne_refl _
+  -- the assembled congruence at the pair diagonal
+  have hcongrRows : ∀ M : Mat, M.length = nA * nB →
+      rowsLen (nA * nB) (matMul (transposeM (tensorM TA.val TB.val))
+        (matMul M (tensorM TA.val TB.val))) := by
+    intro M hMl
+    have hMTl : (matMul M (tensorM TA.val TB.val)).length = nA * nB :=
+      (length_matMul _ _).trans hMl
+    exact rowsLen_cast
+      (transposeLen _ (rowsLen_cast hTt (rowsLen_matMul M _)) hMTl)
+      (rowsLen_matMul _ _)
+  have hcongrLen : ∀ M : Mat,
+      (matMul (transposeM (tensorM TA.val TB.val))
+        (matMul M (tensorM TA.val TB.val))).length = nA * nB :=
+    fun _ => (length_matMul _ _).trans hTt
+  have hDl : (lA.flatMap (fun a => lB.map (pairEntry x y a))).length
+      = lA.length * lB.length := pairMap_length (pairEntry x y) lA lB
+  have hDo : (lA.flatMap (fun a => lB.map (pairEntry x y a))).length
+      = nA * nB := by rw [hDl, hlAl, hlBl]
+  have hRl : (tensorV (lA.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+      (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))).length
+      = lA.length * lB.length := by
+    rw [tensorV_length, ground.length_map, ground.length_map]
+  have hent : ∀ i, i < (lA.flatMap (fun a => lB.map (pairEntry x y a))).length →
+      (ground.getAt BPair.unit
+            (tensorV (lA.map (fun r => (r.2.2 * r.1).norm))
+              (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))) i
+          + ground.getAt BPair.unit
+            (tensorV (lA.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+              (lB.map (fun r => (r.2.2 * r.1).norm))) i
+          + ground.getAt BPair.unit
+            ((tensorV (lA.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+              (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))).map
+              (fun z => (BPair.ofPos y * z).norm)) i
+          + ground.getAt BPair.unit
+            ((tensorV (lA.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+              (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))).map
+              (fun z => ((BPair.ofPos x).swap * z).norm)) i).oneValue
+        (ground.getAt BPair.unit
+          (lA.flatMap (fun a => lB.map (pairEntry x y a))) i) := by
+    intro i hi
+    rw [hDl] at hi
+    have hn0 : 0 < lB.length := by
+      cases hb : lB.length with
+      | zero =>
+        rw [hb, Nat.mul_zero] at hi
+        exact absurd hi (Nat.not_lt_zero i)
+      | succ n0 => exact Nat.succ_pos n0
+    obtain ⟨k, j, hj, hik⟩ := pairSplit lB.length hn0 i
+    have hk : k < lA.length := pairIdxLt (by rw [← hik]; exact hi)
+    have hiR : k * lB.length + j
+        < (tensorV (lA.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+          (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))).length := by
+      rw [hRl, ← hik]
+      exact hi
+    have eP : ground.getAt BPair.unit
+          (tensorV (lA.map (fun r => (r.2.2 * r.1).norm))
+            (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)))
+          (k * lB.length + j)
+        = (((ground.getAt (BPair.unit, Pos.one, BPair.unit) lA k).2.2
+              * (ground.getAt (BPair.unit, Pos.one, BPair.unit) lA k).1).norm
+          * ((ground.getAt (BPair.unit, Pos.one, BPair.unit) lB j).2.2
+              * BPair.ofPos
+                (ground.getAt (BPair.unit, Pos.one, BPair.unit) lB j).2.1).norm).norm := by
+      rw [show k * lB.length + j
+          = k * (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)).length + j
+          from by rw [ground.length_map],
+        getAt_tensorV _ _ k j (by rw [ground.length_map]; exact hk)
+          (by rw [ground.length_map]; exact hj),
+        ground.getAt_map (BPair.unit, Pos.one, BPair.unit) BPair.unit _ lA k hk,
+        ground.getAt_map (BPair.unit, Pos.one, BPair.unit) BPair.unit _ lB j hj]
+    have eQ : ground.getAt BPair.unit
+          (tensorV (lA.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+            (lB.map (fun r => (r.2.2 * r.1).norm)))
+          (k * lB.length + j)
+        = (((ground.getAt (BPair.unit, Pos.one, BPair.unit) lA k).2.2
+              * BPair.ofPos
+                (ground.getAt (BPair.unit, Pos.one, BPair.unit) lA k).2.1).norm
+          * ((ground.getAt (BPair.unit, Pos.one, BPair.unit) lB j).2.2
+              * (ground.getAt (BPair.unit, Pos.one, BPair.unit) lB j).1).norm).norm := by
+      rw [show k * lB.length + j
+          = k * (lB.map (fun r => (r.2.2 * r.1).norm)).length + j
+          from by rw [ground.length_map],
+        getAt_tensorV _ _ k j (by rw [ground.length_map]; exact hk)
+          (by rw [ground.length_map]; exact hj),
+        ground.getAt_map (BPair.unit, Pos.one, BPair.unit) BPair.unit _ lA k hk,
+        ground.getAt_map (BPair.unit, Pos.one, BPair.unit) BPair.unit _ lB j hj]
+    have eR : ground.getAt BPair.unit
+          (tensorV (lA.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+            (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)))
+          (k * lB.length + j)
+        = (((ground.getAt (BPair.unit, Pos.one, BPair.unit) lA k).2.2
+              * BPair.ofPos
+                (ground.getAt (BPair.unit, Pos.one, BPair.unit) lA k).2.1).norm
+          * ((ground.getAt (BPair.unit, Pos.one, BPair.unit) lB j).2.2
+              * BPair.ofPos
+                (ground.getAt (BPair.unit, Pos.one, BPair.unit) lB j).2.1).norm).norm := by
+      rw [show k * lB.length + j
+          = k * (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)).length + j
+          from by rw [ground.length_map],
+        getAt_tensorV _ _ k j (by rw [ground.length_map]; exact hk)
+          (by rw [ground.length_map]; exact hj),
+        ground.getAt_map (BPair.unit, Pos.one, BPair.unit) BPair.unit _ lA k hk,
+        ground.getAt_map (BPair.unit, Pos.one, BPair.unit) BPair.unit _ lB j hj]
+    rw [hik, eP, eQ,
+      ground.getAt_map BPair.unit BPair.unit
+        (fun z => (BPair.ofPos y * z).norm) _ (k * lB.length + j) hiR,
+      ground.getAt_map BPair.unit BPair.unit
+        (fun z => ((BPair.ofPos x).swap * z).norm) _ (k * lB.length + j) hiR,
+      eR,
+      getAt_pairMap BPair.unit (BPair.unit, Pos.one, BPair.unit)
+        (BPair.unit, Pos.one, BPair.unit) (pairEntry x y) lA lB k j hk hj]
+    exact entryAlg x y
+      (ground.getAt (BPair.unit, Pos.one, BPair.unit) lA k).1
+      (ground.getAt (BPair.unit, Pos.one, BPair.unit) lA k).2.2
+      (ground.getAt (BPair.unit, Pos.one, BPair.unit) lB j).1
+      (ground.getAt (BPair.unit, Pos.one, BPair.unit) lB j).2.2
+      (ground.getAt (BPair.unit, Pos.one, BPair.unit) lA k).2.1
+      (ground.getAt (BPair.unit, Pos.one, BPair.unit) lB j).2.1
+  have hsum := split.diagM_sum4
+    (tensorV (lA.map (fun r => (r.2.2 * r.1).norm))
+      (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)))
+    (tensorV (lA.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+      (lB.map (fun r => (r.2.2 * r.1).norm)))
+    ((tensorV (lA.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+      (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))).map
+      (fun z => (BPair.ofPos y * z).norm))
+    ((tensorV (lA.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))
+      (lB.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))).map
+      (fun z => ((BPair.ofPos x).swap * z).norm))
+    (lA.flatMap (fun a => lB.map (pairEntry x y a)))
+    (by rw [tensorV_length, ground.length_map, ground.length_map, hDl])
+    (by rw [tensorV_length, ground.length_map, ground.length_map, hDl])
+    (by rw [ground.length_map, hRl, hDl])
+    (by rw [ground.length_map, hRl, hDl]) hent
+  -- the site datum's own congruence
+  have s3 := congr_add (tensorM TA.val TB.val) (tensorM A GB) (tensorM GA B)
+    hTl hTr hAGB hGAB
+  have s2 := congr_add (tensorM TA.val TB.val)
+    (matAdd (tensorM A GB) (tensorM GA B))
+    (inertia.matScale y (tensorM GA GB)) hTl hTr
+    (sqAt_matAdd (nA * nB) _ _ hAGB hGAB)
+    (inertia.sqAt_matScale (nA * nB) y _ hGG)
+  have s1 := congr_add (tensorM TA.val TB.val)
+    (matAdd (matAdd (tensorM A GB) (tensorM GA B))
+      (inertia.matScale y (tensorM GA GB)))
+    (matSwap (inertia.matScale x (tensorM GA GB))) hTl hTr
+    (sqAt_matAdd (nA * nB) _ _ (sqAt_matAdd (nA * nB) _ _ hAGB hGAB)
+      (inertia.sqAt_matScale (nA * nB) y _ hGG))
+    (sqAt_matSwap (nA * nB) _ (inertia.sqAt_matScale (nA * nB) x _ hGG))
+  have c3 := matAdd_congT (nA * nB) _ _ _ _ eAG eGB
+    (hcongrRows _ (sqAt_len hGAB))
+    (split.diagM_shape _ (nA * nB)
+      (by rw [tensorV_length, ground.length_map, ground.length_map, hlAl, hlBl]))
+    (rowsLen_matAdd (nA * nB) _ _ (hcongrRows _ (sqAt_len hAGB))
+      (hcongrRows _ (sqAt_len hGAB)))
+    (rowsLen_matAdd (nA * nB) _ _
+      (split.diagM_shape _ (nA * nB)
+        (by rw [tensorV_length, ground.length_map, ground.length_map,
+          hlAl, hlBl]))
+      (split.diagM_shape _ (nA * nB)
+        (by rw [tensorV_length, ground.length_map, ground.length_map,
+          hlAl, hlBl])))
+  have c2 := matAdd_congT (nA * nB) _ _ _ _ (matOne_trans s3 c3) eY
+    (hcongrRows _ (by rw [inertia.length_matScale]; exact hGGl))
+    (split.diagM_shape _ (nA * nB)
+      (by rw [ground.length_map, hRl, hlAl, hlBl]))
+    (rowsLen_matAdd (nA * nB) _ _
+      (hcongrRows _ (sqAt_len (sqAt_matAdd (nA * nB) _ _ hAGB hGAB)))
+      (hcongrRows _ (by rw [inertia.length_matScale]; exact hGGl)))
+    (rowsLen_matAdd (nA * nB) _ _
+      (rowsLen_matAdd (nA * nB) _ _
+        (split.diagM_shape _ (nA * nB)
+          (by rw [tensorV_length, ground.length_map, ground.length_map,
+            hlAl, hlBl]))
+        (split.diagM_shape _ (nA * nB)
+          (by rw [tensorV_length, ground.length_map, ground.length_map,
+            hlAl, hlBl])))
+      (split.diagM_shape _ (nA * nB)
+        (by rw [ground.length_map, hRl, hlAl, hlBl])))
+  have c1 := matAdd_congT (nA * nB) _ _ _ _ (matOne_trans s2 c2) eX
+    (hcongrRows _ (by rw [length_matSwap, inertia.length_matScale]; exact hGGl))
+    (split.diagM_shape _ (nA * nB)
+      (by rw [ground.length_map, hRl, hlAl, hlBl]))
+    (rowsLen_matAdd (nA * nB) _ _
+      (hcongrRows _ (sqAt_len (sqAt_matAdd (nA * nB) _ _
+        (sqAt_matAdd (nA * nB) _ _ hAGB hGAB)
+        (inertia.sqAt_matScale (nA * nB) y _ hGG))))
+      (hcongrRows _
+        (by rw [length_matSwap, inertia.length_matScale]; exact hGGl)))
+    (rowsLen_matAdd (nA * nB) _ _
+      (rowsLen_matAdd (nA * nB) _ _
+        (rowsLen_matAdd (nA * nB) _ _
+          (split.diagM_shape _ (nA * nB)
+            (by rw [tensorV_length, ground.length_map, ground.length_map,
+              hlAl, hlBl]))
+          (split.diagM_shape _ (nA * nB)
+            (by rw [tensorV_length, ground.length_map, ground.length_map,
+              hlAl, hlBl])))
+        (split.diagM_shape _ (nA * nB)
+          (by rw [ground.length_map, hRl, hlAl, hlBl])))
+      (split.diagM_shape _ (nA * nB)
+        (by rw [ground.length_map, hRl, hlAl, hlBl])))
+  have hSD := matOne_trans s1 (matOne_trans c1 hsum)
+  -- the split transports and the count
+  have hDsq : sqAt (split.diagM (lA.flatMap (fun a => lB.map (pairEntry x y a))))
+      (nA * nB) :=
+    sqAt_of ((split.diagM_len _).trans hDo)
+      (split.diagM_shape _ (nA * nB) hDo)
+  have hspc := inertia.mkSplit_read (nA * nB)
+    (split.diagM (lA.flatMap (fun a => lB.map (pairEntry x y a)))) hDsq
+    (split.diagM_sym _)
+  have hspcT := inertia.splitRead_congr
+    (split.diagM (lA.flatMap (fun a => lB.map (pairEntry x y a))))
+    (matMul (transposeM (tensorM TA.val TB.val))
+      (matMul (inertia.siteDatum
+        (matAdd (matAdd (tensorM A GB) (tensorM GA B))
+          (inertia.matScale y (tensorM GA GB)))
+        (inertia.matScale x (tensorM GA GB))) (tensorM TA.val TB.val)))
+    (sqAt_of (hcongrLen _) (hcongrRows _ (sqAt_len h.2.2.1.1)))
+    (matOne_symm hSD) _ hspc
+  have hrev := inertia.rev_congr
+    (inertia.siteDatum
+      (matAdd (matAdd (tensorM A GB) (tensorM GA B))
+        (inertia.matScale y (tensorM GA GB)))
+      (inertia.matScale x (tensorM GA GB)))
+    (tensorM TA.val TB.val) (tensorM TwA.val TwB.val)
+    (minor TA.val * minor TB.val) hc h.2.2.1.1 (sqAt_of hTl hTr)
+    (sqAt_of hWl hWr) hTW hWT sp h.2.2.1 _ hspcT
+  rw [← h.2.2.2, ← hrev, split.rev_diagM _ _ hspc]
+  show (lA.flatMap (fun a => lB.map (pairEntry x y a))).countP
+      (fun d => decide (d < BPair.unit))
+    = (pairRoots lA lB y).countP
+      (fun r => decide (r.1.scale Pos.one < BPair.ofPos (x * r.2)))
+  rw [ground.countP_read, ground.countP_read]
+  exact countBy_pairMap (fun r => decide (BPair.unit < r.2.2))
+    (fun r => decide (BPair.unit < r.2.2)) _ _ (pairEntry x y) (pairRoot y)
+    (fun a b ha hb =>
+      side_pair x y a b (of_decide_eq_true ha) (of_decide_eq_true hb))
+    lB hB.2.2.2.2 lA hA.2.2.2.2
+
+private theorem notDecide_of_not {p : Prop} [Decidable p] (hn : ¬ p) :
+    (!decide p) = true := by
+  rw [decide_eq_false hn]
+  rfl
+
+/-- The joined sector's ground is the two grounds' sum, the floor
+half: a root at or beyond each list's stated floor sums to a pair at
+or beyond the floors' sum. -/
+theorem pairRoots_least (lA lB : List (BPair × Pos × BPair)) (y : Pos)
+    (aN : BPair) (aD : Pos) (bN : BPair) (bD : Pos)
+    (hA : (lA.all (fun r => !decide (r.1.scale aD < aN.scale r.2.1))) = true)
+    (hB : (lB.all (fun r => !decide (r.1.scale bD < bN.scale r.2.1))) = true) :
+    ((pairRoots lA lB y).all (fun r =>
+      !decide (r.1.scale (aD * bD)
+        < (aN.scale bD + bN.scale aD + BPair.ofPos (y * (aD * bD))).scale r.2)))
+      = true := by
+  refine all_pairMap _ _ _ (pairRoot y) ?_ lB hB lA hA
+  intro a b ha hb
+  have hla : aN.scale a.2.1 ≤ a.1.scale aD :=
+    ground.leB_of_not_lt (notOfBang ha)
+  have hlb : bN.scale b.2.1 ≤ b.1.scale bD :=
+    ground.leB_of_not_lt (notOfBang hb)
+  refine notDecide_of_not (ground.leB_not_lt ?_)
+  have t1 : (aN.scale bD).scale (a.2.1 * b.2.1)
+      ≤ (a.1.scale b.2.1).scale (aD * bD) := by
+    refine ground.leB_congr ?_ ?_ (ground.leB_scale hla (bD * b.2.1))
+    · refine BPair.oneValue_of_eq ?_
+      rw [BPair.scale_scale, BPair.scale_scale, ← ground.mul_assoc,
+        ground.mul_comm a.2.1 bD, ground.mul_assoc]
+    · refine BPair.oneValue_of_eq ?_
+      rw [BPair.scale_scale, BPair.scale_scale, ← ground.mul_assoc,
+        ground.mul_comm (aD * bD) b.2.1]
+  have t2 : (bN.scale aD).scale (a.2.1 * b.2.1)
+      ≤ (b.1.scale a.2.1).scale (aD * bD) := by
+    refine ground.leB_congr ?_ ?_ (ground.leB_scale hlb (aD * a.2.1))
+    · refine BPair.oneValue_of_eq ?_
+      rw [BPair.scale_scale, BPair.scale_scale, ← ground.mul_assoc,
+        ground.mul_comm b.2.1 aD, ground.mul_assoc,
+        ground.mul_comm b.2.1 a.2.1]
+    · refine BPair.oneValue_of_eq ?_
+      rw [BPair.scale_scale, BPair.scale_scale, ← ground.mul_assoc,
+        ground.mul_comm bD aD, ground.mul_assoc,
+        ground.mul_comm bD a.2.1, ← ground.mul_assoc,
+        ground.mul_comm aD a.2.1, ground.mul_assoc]
+  have t3 : (BPair.ofPos (y * (aD * bD))).scale (a.2.1 * b.2.1)
+      ≤ (BPair.ofPos (y * (a.2.1 * b.2.1))).scale (aD * bD) := by
+    refine ground.leB_congr
+      (BPair.oneValue_symm (BPair.scale_ofPos (y * (aD * bD)) (a.2.1 * b.2.1)))
+      (BPair.oneValue_symm ?_)
+      (ground.leB_refl (BPair.ofPos (y * (aD * bD) * (a.2.1 * b.2.1))))
+    refine BPair.oneValue_trans
+      (BPair.scale_ofPos (y * (a.2.1 * b.2.1)) (aD * bD))
+      (BPair.oneValue_of_eq (congrArg BPair.ofPos ?_))
+    rw [ground.mul_assoc y (a.2.1 * b.2.1) (aD * bD),
+      ground.mul_comm (a.2.1 * b.2.1) (aD * bD),
+      ← ground.mul_assoc y (aD * bD) (a.2.1 * b.2.1)]
+  show (aN.scale bD + bN.scale aD + BPair.ofPos (y * (aD * bD))).scale
+      (a.2.1 * b.2.1)
+    ≤ (a.1.scale b.2.1 + b.1.scale a.2.1
+      + BPair.ofPos (y * (a.2.1 * b.2.1))).scale (aD * bD)
+  rw [BPair.scale_add, BPair.scale_add, BPair.scale_add, BPair.scale_add]
+  exact ground.leB_add (ground.leB_add t1 t2) t3
+
+
+/-- The joined sector's ground is the two grounds' sum, the attainment
+half: a root of each list joins the pair list at their summed root
+(`lem:relfiber`(iv)). -/
+theorem pairRoots_mem (lA lB : List (BPair × Pos × BPair)) (y : Pos)
+    {a b : BPair × Pos × BPair} (ha : a ∈ lA) (hb : b ∈ lB) :
+    pairRoot y a b ∈ pairRoots lA lB y :=
+  ground.mem_flatMap_to (fun a => lB.map (pairRoot y a)) ha
+    (ground.mem_map_to (pairRoot y a) hb)
 
 /-! ### Tier I: the components' index reads
 

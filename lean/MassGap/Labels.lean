@@ -221,6 +221,11 @@ the enumeration's members at this emission. -/
 def emit (a b c : Shape) : Option Shape :=
   if 0 < steinberg.count a b c then some (reduce c) else none
 
+/-- The row at the label calculus: the matched-degree shapes'
+emissions at the pair, `con:fusion`'s row field instantiated. -/
+def rowL (d : Nat) (a b : Shape) : List Shape :=
+  (allShapes d (degree a + degree b)).filterMap (emit a b)
+
 /-- An occupied emission's reads at any count: the count is positive
 and the value is the source's own class, the row's emission its
 instance. -/

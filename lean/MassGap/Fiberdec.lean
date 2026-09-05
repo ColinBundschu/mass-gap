@@ -35,9 +35,11 @@ it transports the endpoints along the vertex permutation it induces
 (`endsRead` at `chainVert` and at the site shift itself, that
 vertex map read a permutation of the vertex range at its own
 witness by `vertPermRead`, at `chainVertInv` and `shiftSiteInv`),
-it maps the plaquette list into itself (`plaqMoveRead`, every image
-word a member of the plaquette list), and its `L`-fold iterate is
-the identity (`cycleRead` at `iterAt`, the tex's `T^L = 1`).
+it permutes the plaquette list (`lattice.plaqPermRead`, the
+induced permutation entering as data with its witness, every image
+word the moved position's plaquette at the cyclic reading), and
+its `L`-fold iterate is the identity (`cycleRead` at `iterAt`, the
+tex's `T^L = 1`).
 
 The index action is the relabeling (`permConf`, the moved link's
 label read at the link the witness names), and its three window
@@ -61,7 +63,25 @@ congruence (`commRead`, `Pmᵀ H Pm = H`) — at the free end
 one-member site (`pairpencil.pencilE` over the window list's
 diagonal `pairpencil.slotDiag`), the diagonal fixed exactly where
 the contents are, and the batteries read the congruence at the
-committed chain window.
+committed chain window.  The magnetic member enters the
+congruence through `thm:pairpencil`'s transport field at the
+region's own action: one plaquette's term reads, at the moved
+window-list members, the term at the moved plaquette
+(`termMoved`, the relabeling read `elim.relabelRead` at the
+action's place list), the plaquette list permuted by the action
+(`lattice.plaqPermRead`, the permutation as data with its witness),
+and the terms transported plaquette by plaquette (`termsMoved`);
+the terms' sum then moves along the action, `elim.msum`'s entry
+the balance-pair fold of the terms' entries reindexed along the
+plaquette permutation (`movedReadBy_termSum`), the congruence
+follows at the window list met once (`commRead_slotM`, at the
+label calculus `commRead_slotM_dataA`), and the pencil interface's
+magnetic member commutes at its one value with the terms' sum
+(`commRead_pencilM`, at the label calculus `commRead_pencilM_dataA`;
+`commRead_congr` transports a congruence across a window matrix's
+one value) — the two members' congruences the lemma's commuting
+datum at both members, each over a stated index tied to the
+window's own.
 
 The three index reads and the congruence hold as theorems over the
 region's own action.  The content is fixed at every configuration
@@ -564,16 +584,6 @@ def endsRead (R : Region) (t v : Nat → Nat) : Prop :=
 instance (R : Region) (t v : Nat → Nat) : Decidable (endsRead R t v) :=
   inferInstanceAs (Decidable (_ = _))
 
-/-- The plaquette read transported: every boundary word's image
-under the map is a boundary word of the region, the map's
-injectivity on the words its witness's own at `permRead`. -/
-def plaqMoveRead (R : Region) (t : Nat → Nat) : Prop :=
-  ((R.plaqs.map (fun p => p.map (fun e => (t e.1, e.2)))).all
-    (fun w => R.plaqs.any (fun p => w == p))) = true
-
-instance (R : Region) (t : Nat → Nat) : Decidable (plaqMoveRead R t) :=
-  inferInstanceAs (Decidable (_ = _))
-
 /-- The map's iterate at a stated count. -/
 def iterAt (t : Nat → Nat) : Nat → Nat → Nat
   | 0, l => l
@@ -599,13 +609,14 @@ instance (R : Region) (t : Nat → Nat) (n : Nat) :
 configuration, and the window's three reads sit at the index. -/
 
 /-- The index action at a reversal family: the label at the
-witness's key, dualized where the traversal reverses
-(`con:lattice`'s two action fields, the orientation reversal
-dualizing labels). -/
+witness's key, dualized where the witness's link traverses
+backwards, the reversal family read at the source key as the
+boundary words read it (`lattice.moveWord`) — `con:lattice`'s two
+action fields, the orientation reversal dualizing labels. -/
 def dualConf {L : Type} (F : Data L) (s : Nat → Nat)
     (rev : Nat → Bool) (n : Nat) (a : List L) : List L :=
   (List.range n).map (fun l =>
-    if rev l then F.dual (getAt F.unit a (s l))
+    if rev (s l) then F.dual (getAt F.unit a (s l))
     else getAt F.unit a (s l))
 
 /-- The action on configurations: the label at a link key is the
@@ -1555,19 +1566,15 @@ def imgPosBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
   0 :: ix.map (fun a => posBy eq (img a) ix + 1)
 
 /-- The moved-entries read of a window matrix at the action: every
-entry at the moved place pair reads the entry at the pair itself. -/
+entry at a place pair reads the entry at the moved pair, the
+relabeling read (`elim.relabelRead`) at the action's place list. -/
 def movedReadBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
     (ix : List I) (H : Mat) : Prop :=
-  ((List.range (ix.length + 1)).all (fun i =>
-    (List.range (ix.length + 1)).all (fun j =>
-      decide ((getAt BPair.unit
-          (getAt [] H (getAt 0 (imgPosBy eq img ix) i))
-          (getAt 0 (imgPosBy eq img ix) j)).oneValue
-        (getAt BPair.unit (getAt [] H i) j))))) = true
+  elim.relabelRead (ix.length + 1) H H (imgPosBy eq img ix)
 
 instance {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
     (ix : List I) (H : Mat) : Decidable (movedReadBy eq img ix H) :=
-  inferInstanceAs (Decidable (_ = _))
+  inferInstanceAs (Decidable (elim.relabelRead _ _ _ _))
 
 /-- Each member's image meets the list at one member alone. -/
 def imgOnceBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
@@ -1791,8 +1798,8 @@ theorem commReadBy_of {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I 
         (imgPosBy eq img ix) H) i) j).oneValue (getAt BPair.unit (getAt [] H i) j)
     rw [getAt_selMO BPair.unit _ _ H i j (by rw [hσl]; exact hi)
       (by rw [hσl]; exact hj)]
-    have hrow := all_range_read (ix.length + 1) hmov i hi
-    exact of_decide_eq_true (all_range_read (ix.length + 1) hrow j hj)
+    exact BPair.oneValue_symm
+      (elim.relabelRead_at (ix.length + 1) H H (imgPosBy eq img ix) hmov i j hi hj)
   exact matOne_trans h2 (matOne_trans h3 h4)
 
 
@@ -2030,14 +2037,14 @@ theorem movedReadBy_pencilE {I : Type} [Inhabited I] [DecidableEq I] (eq : I →
         hfix _ (mem_getAt default ix k hk)]
   refine all_range_intro _ (fun i hi => all_range_intro _ (fun j hj => ?_))
   show decide ((getAt BPair.unit
+      (getAt [] (pairpencil.pencilE (0 :: ix.map w)) i) j).oneValue
+    (getAt BPair.unit
       (getAt [] (pairpencil.pencilE (0 :: ix.map w))
         (getAt 0 (imgPosBy eq img ix) i))
-      (getAt 0 (imgPosBy eq img ix) j)).oneValue
-    (getAt BPair.unit
-      (getAt [] (pairpencil.pencilE (0 :: ix.map w)) i) j)) = true
+      (getAt 0 (imgPosBy eq img ix) j))) = true
   refine decide_eq_true ?_
-  rw [hent _ _ (imgPosBy_lt eq img ix h i hi) (imgPosBy_lt eq img ix h j hj),
-    hent i j hi hj]
+  rw [hent i j hi hj,
+    hent _ _ (imgPosBy_lt eq img ix h i hi) (imgPosBy_lt eq img ix h j hj)]
   by_cases hij : i = j
   · rw [hij, eqBeqOf rfl, eqBeqOf rfl, hdiag j hj]
     exact BPair.oneValue_refl _
@@ -2263,16 +2270,19 @@ theorem slotOnce_dataA (d : Nat) (R : Region) (C : Nat) (hw : wellRead R)
           ((idx_sound (dataA d) R C b hb).2.1 l hl))) h)
 
 /-- The commuting read at the free end's window matrix at the label
-calculus: the electric member over the window list's diagonal
-commutes with the induced permutation matrix at every region
-admitting the action and every cutoff, `lem:fiberdec`'s commuting
-datum at the electric member as a theorem. -/
+calculus, over a stated index tied to the window's own: the
+electric member over the window list's diagonal commutes with the
+induced permutation matrix at every region admitting the action
+and every cutoff, `lem:fiberdec`'s commuting datum at the electric
+member as a theorem. -/
 theorem commRead_slotE_dataA (d : Nat) (R : Region) (C : Nat)
+    (ix : List (List places.Shape)) (hix : idx (dataA d) R C = ix)
     (hw : wellRead R) (t s v w : Nat → Nat)
     (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w) :
-    commRead (slotMat (dataA d) R (idx (dataA d) R C) s w)
-      (pairpencil.pencilE (pairpencil.slotDiag (dataA d) R (idx (dataA d) R C))) :=
-  commReadBy_pencilE (slotEq (dataA d)) (slotAct (dataA d) s w R.links R.verts)
+    commRead (slotMat (dataA d) R ix s w)
+      (pairpencil.pencilE (pairpencil.slotDiag (dataA d) R ix)) := by
+  subst hix
+  exact commReadBy_pencilE (slotEq (dataA d)) (slotAct (dataA d) s w R.links R.verts)
     (pairpencil.slotList (dataA d) R (idx (dataA d) R C))
     (fun p => contentN (dataA d) p.1)
     (slotOnce_dataA d R C hw t s v w hp he hv) (slotEq_dataA d R C s w)
@@ -2291,6 +2301,255 @@ theorem commRead_slotE_dataA (d : Nat) (R : Region) (C : Nat)
           (pairpencil.slotKeys_read _ R _ _ hqk).1 h2))
     (fun p hpm => contentN_perm (dataA d) R t s hp p.1
       (idx_sound (dataA d) R C p.1 (pairpencil.mem_slotList_of _ R _ p hpm).1).1)
+
+/-! The magnetic member's transport, `thm:pairpencil`'s interface
+field at the region's own action: the terms transported at every
+plaquette with the plaquette list permuted, the field's window
+instance at one window list. -/
+
+/-- One plaquette term's transport along the region's action: the
+term at the moved plaquette reads, at the moved window-list
+members, the term at the members — the relabeling read
+(`elim.relabelRead`) at the action's place list on the window
+list, the configuration moved at the link witness and the slot key
+at the vertex witness. -/
+def termMoved {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (s w : Nat → Nat) (Mp Mq : Mat) : Prop :=
+  elim.relabelRead ((pairpencil.slotList F R ix).length + 1) Mq Mp
+    (imgPosBy (slotEq F) (slotAct F s w R.links R.verts)
+      (pairpencil.slotList F R ix))
+
+instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (s w : Nat → Nat) (Mp Mq : Mat) : Decidable (termMoved F R ix s w Mp Mq) :=
+  inferInstanceAs (Decidable (elim.relabelRead _ _ _ _))
+
+/-- The plaquette terms' transport along the region's action at its
+plaquette permutation: per plaquette of the list, the term at the
+moved position reads the term at the plaquette's at the moved
+window-list members. -/
+def termsMoved {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (s w pm : Nat → Nat) (Ms : List Mat) : Prop :=
+  ((List.range R.plaqs.length).all (fun q =>
+    decide (termMoved F R ix s w (getAt [] Ms q) (getAt [] Ms (pm q))))) = true
+
+instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (s w pm : Nat → Nat) (Ms : List Mat) :
+    Decidable (termsMoved F R ix s w pm Ms) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- A square matrix's entry at a place pair off its order is the
+sum's unit, the vacant read. -/
+private theorem entry_off {M : Mat} {n : Nat} (hsq : sqAt M n) (i j : Nat)
+    (h : ¬ (i < n ∧ j < n)) :
+    getAt BPair.unit (getAt [] M i) j = BPair.unit := by
+  by_cases hi : i < n
+  · exact getAt_over BPair.unit _ j (by
+      rw [rowsLen_getAt M i (rowsLen_of_sqAt hsq) (by rw [sqAt_len hsq]; exact hi)]
+      exact Nat.le_of_not_lt (fun hj => h ⟨hi, hj⟩))
+  · rw [getAt_over [] M i (by rw [sqAt_len hsq]; exact Nat.le_of_not_lt hi)]
+    exact getAt_over BPair.unit [] j (Nat.zero_le _)
+
+/-- The terms' sum moves along the action: at the terms transported
+plaquette by plaquette and the plaquette list permuted, the sum's
+entry at a place pair reads its entry at the moved pair, the index
+fold reindexed along the plaquette permutation, the permutation
+the action field's datum with its read (`lattice.plaqPermRead`). -/
+theorem movedReadBy_termSum {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) (t s w pm pm' : Nat → Nat)
+    (hpp : plaqPermRead R t (fun _ => false) pm pm')
+    (Ms : List Mat) (hlen : Ms.length = R.plaqs.length)
+    (hsq : ∀ q, q < Ms.length →
+      sqAt (getAt [] Ms q) ((pairpencil.slotList F R ix).length + 1))
+    (htm : termsMoved F R ix s w pm Ms) :
+    movedReadBy (slotEq F) (slotAct F s w R.links R.verts) (pairpencil.slotList F R ix)
+      (elim.msum ((pairpencil.slotList F R ix).length + 1) (getAt [] Ms)
+        (List.range Ms.length)) := by
+  have hshape : ∀ k, k ∈ List.range Ms.length →
+      rowsLen ((pairpencil.slotList F R ix).length + 1) (getAt [] Ms k)
+        ∧ (getAt [] Ms k).length = (pairpencil.slotList F R ix).length + 1 :=
+    fun k hk => ⟨rowsLen_of_sqAt (hsq k (ltOfMemRange hk)),
+      sqAt_len (hsq k (ltOfMemRange hk))⟩
+  have hsum := elim.msum_shape_mem _ (getAt [] Ms) (List.range Ms.length) hshape
+  have hperm : ∀ q, q < Ms.length →
+      pm q < Ms.length ∧ pm' q < Ms.length ∧ pm' (pm q) = q ∧ pm (pm' q) = q := by
+    intro q hq
+    have h := plaqPermRead_at R t _ pm pm' hpp q (by rw [← hlen]; exact hq)
+    rw [hlen]
+    exact h
+  have hterm : ∀ q, q < Ms.length → ∀ i j,
+      i < (pairpencil.slotList F R ix).length + 1 →
+      j < (pairpencil.slotList F R ix).length + 1 →
+      (getAt BPair.unit (getAt [] (getAt [] Ms q) i) j).oneValue
+        (getAt BPair.unit (getAt [] (getAt [] Ms (pm q))
+          (getAt 0 (imgPosBy (slotEq F) (slotAct F s w R.links R.verts)
+            (pairpencil.slotList F R ix)) i))
+          (getAt 0 (imgPosBy (slotEq F) (slotAct F s w R.links R.verts)
+            (pairpencil.slotList F R ix)) j)) :=
+    fun q hq i j hi hj =>
+      elim.relabelRead_at _ _ _ _
+        (of_decide_eq_true (all_range_read _ htm q (by rw [← hlen]; exact hq)))
+        i j hi hj
+  refine all_range_intro _ (fun i hi => all_range_intro _ (fun j hj =>
+    decide_eq_true ?_))
+  rw [elim.entry_msum _ _ i j hi hj _ hshape]
+  by_cases hin : getAt 0 (imgPosBy (slotEq F) (slotAct F s w R.links R.verts)
+        (pairpencil.slotList F R ix)) i < (pairpencil.slotList F R ix).length + 1
+      ∧ getAt 0 (imgPosBy (slotEq F) (slotAct F s w R.links R.verts)
+        (pairpencil.slotList F R ix)) j < (pairpencil.slotList F R ix).length + 1
+  · rw [elim.entry_msum _ _ _ _ hin.1 hin.2 _ hshape]
+    refine famFold_bij_ov bpairFoldLaws.toCommLaws BPair.unit _ _
+      (l := List.range Ms.length) (g := pm) (h := pm')
+      (distinctList_range Ms.length) ?_ ?_ ?_ ?_ ?_
+    · intro q hq
+      exact (hperm q (ltOfMem hq)).2.2.1
+    · intro q hq
+      exact (hperm q (ltOfMem hq)).2.2.2
+    · intro q hq
+      exact countOf_range_pos (hperm q (ltOfMem hq)).1
+    · intro q hq
+      exact countOf_range_pos (hperm q (ltOfMem hq)).2.1
+    · intro q hq
+      exact hterm q (ltOfMem hq) i j hi hj
+  · rw [entry_off (sqAt_of hsum.2 hsum.1) _ _ hin]
+    refine famFold_unit_ov bpairFoldLaws _ (fun q => ?_) _
+    by_cases hq : q < Ms.length
+    · have h1 := hterm q hq i j hi hj
+      rw [entry_off (hsq _ (hperm q hq).1) _ _ hin] at h1
+      exact h1
+    · rw [getAt_over [] Ms q (Nat.le_of_not_lt hq),
+        getAt_over [] [] i (Nat.zero_le _),
+        getAt_over BPair.unit [] j (Nat.zero_le _)]
+      exact BPair.oneValue_refl _
+
+/-- The commuting read at the terms' sum: the induced permutation
+matrix on the window list commutes with the plaquette terms' sum
+at the terms transported and the window list met once. -/
+theorem commRead_slotM {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) (t s w pm pm' : Nat → Nat)
+    (hpp : plaqPermRead R t (fun _ => false) pm pm')
+    (honce : imgOnceBy (slotEq F) (slotAct F s w R.links R.verts)
+      (pairpencil.slotList F R ix))
+    (Ms : List Mat) (hlen : Ms.length = R.plaqs.length)
+    (hsq : ∀ q, q < Ms.length →
+      sqAt (getAt [] Ms q) ((pairpencil.slotList F R ix).length + 1))
+    (htm : termsMoved F R ix s w pm Ms) :
+    commRead (slotMat F R ix s w)
+      (elim.msum ((pairpencil.slotList F R ix).length + 1) (getAt [] Ms)
+        (List.range Ms.length)) := by
+  have hsh := elim.msum_shape_mem ((pairpencil.slotList F R ix).length + 1)
+    (getAt [] Ms) (List.range Ms.length) (fun k hk =>
+      ⟨rowsLen_of_sqAt (hsq k (ltOfMemRange hk)),
+        sqAt_len (hsq k (ltOfMemRange hk))⟩)
+  exact commReadBy_of (slotEq F) (slotAct F s w R.links R.verts)
+    (pairpencil.slotList F R ix) _ (sqAt_of hsh.2 hsh.1) honce
+    (movedReadBy_termSum F R ix t s w pm pm' hpp Ms hlen hsq htm)
+
+/-- The commuting read at the terms' sum at the label calculus,
+over a stated index tied to the window's own: the window list met
+once is the calculus's own theorem, so the induced permutation
+matrix commutes with the terms' sum at every region admitting the
+action and every cutoff — `lem:fiberdec`'s commuting datum at the
+magnetic member as a theorem, the terms transported plaquette by
+plaquette. -/
+theorem commRead_slotM_dataA (d : Nat) (R : Region) (C : Nat)
+    (ix : List (List places.Shape)) (hix : idx (dataA d) R C = ix)
+    (hw : wellRead R) (t s v w pm pm' : Nat → Nat)
+    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (hpp : plaqPermRead R t (fun _ => false) pm pm')
+    (Ms : List Mat) (hlen : Ms.length = R.plaqs.length)
+    (hsq : ∀ q, q < Ms.length →
+      sqAt (getAt [] Ms q) ((pairpencil.slotList (dataA d) R ix).length + 1))
+    (htm : termsMoved (dataA d) R ix s w pm Ms) :
+    commRead (slotMat (dataA d) R ix s w)
+      (elim.msum ((pairpencil.slotList (dataA d) R ix).length + 1)
+        (getAt [] Ms) (List.range Ms.length)) :=
+  commRead_slotM (dataA d) R ix t s w pm pm' hpp
+    (by rw [← hix]; exact slotOnce_dataA d R C hw t s v w hp he hv) Ms hlen hsq htm
+
+/-- The commuting read transports across the window matrix's one
+value: a matrix one value with a commuting matrix commutes. -/
+theorem commRead_congr (n : Nat) (Pm H H' : Mat) (hPm : sqAt Pm n)
+    (hH : sqAt H n) (hH' : sqAt H' n) (hn : 0 < n)
+    (hov : matOneValue H H') (h : commRead Pm H') : commRead Pm H := by
+  have h1 : matOneValue (matMul H Pm) (matMul H' Pm) := matMul_congrL H H' Pm hov
+  have hr : rowsLen n (matMul H Pm) :=
+    rowsLen_matMul_of H Pm (fun _ => by rw [sqAt_len hPm]; exact hn)
+      (rowsLen_of_sqAt hPm)
+  have hr' : rowsLen n (matMul H' Pm) :=
+    rowsLen_matMul_of H' Pm (fun _ => by rw [sqAt_len hPm]; exact hn)
+      (rowsLen_of_sqAt hPm)
+  have h2 : matOneValue (matMul (transposeM Pm) (matMul H Pm))
+      (matMul (transposeM Pm) (matMul H' Pm)) :=
+    matMul_congrR _ _ _ hr hr' ((length_matMul H Pm).trans (sqAt_len hH))
+      ((length_matMul H' Pm).trans (sqAt_len hH')) hn h1
+  exact matOne_trans h2 (matOne_trans h (matOne_symm hov))
+
+/-- The commuting read at the pencil's magnetic member: at the
+pencil interface's read over a stated index tied to the window's
+own, the induced permutation matrix commutes with the magnetic
+member at the terms transported and the window list met once —
+`lem:fiberdec`'s commuting datum at `M` read through
+`thm:pairpencil`'s fields, the member's one value with the terms'
+sum transporting the sum's congruence. -/
+theorem commRead_pencilM {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (C n : Nat) (ix : List (List L)) (c : Pos) (E G M : Mat)
+    (spG : inertia.Split n)
+    (terms : List (Mat × inertia.Split n × inertia.Split n))
+    (hpr : pairpencil.pencilRead F R C n ix c E G M spG terms)
+    (t s w pm pm' : Nat → Nat)
+    (hpp : plaqPermRead R t (fun _ => false) pm pm')
+    (honce : imgOnceBy (slotEq F) (slotAct F s w R.links R.verts)
+      (pairpencil.slotList F R ix))
+    (htm : termsMoved F R ix s w pm (terms.map Prod.fst)) :
+    commRead (slotMat F R ix s w) M := by
+  obtain ⟨hix, hdim, _, _, _, _, _, htr, hMsq, hMov⟩ := hpr
+  have hn : (pairpencil.slotList F R ix).length + 1 = n := by
+    rw [← hdim, ← hix]
+    exact pairpencil.slotList_dimSect F R C
+  have hlen : (terms.map Prod.fst).length = R.plaqs.length :=
+    (length_map _ _).trans (pairpencil.termsRead_len F R n ix G _ _ htr)
+  have hsq : ∀ q, q < (terms.map Prod.fst).length →
+      sqAt (getAt [] (terms.map Prod.fst) q)
+        ((pairpencil.slotList F R ix).length + 1) := by
+    intro q hq
+    rw [hn]
+    exact pairpencil.termsRead_sq F R n ix G _ _ htr q
+      (by rw [length_map Prod.fst terms] at hq; exact hq)
+  have hc := commRead_slotM F R ix t s w pm pm' hpp honce _ hlen hsq htm
+  rw [hn, length_map Prod.fst terms] at hc
+  have hsum := elim.msum_shape_mem n (getAt [] (terms.map Prod.fst))
+    (List.range terms.length) (fun k hk => by
+      have hk' := pairpencil.termsRead_sq F R n ix G _ _ htr k (ltOfMemRange hk)
+      exact ⟨rowsLen_of_sqAt hk', sqAt_len hk'⟩)
+  have hPl : (slotMat F R ix s w).length = n :=
+    (length_permMatBy (slotEq F) (dualSlotAct F s (fun _ => false) w R.links R.verts)
+      (pairpencil.slotList F R ix)).trans hn
+  have hPr : rowsLen n (slotMat F R ix s w) := by
+    rw [← hn]
+    exact rowsLen_permMatBy (slotEq F)
+      (dualSlotAct F s (fun _ => false) w R.links R.verts)
+      (pairpencil.slotList F R ix)
+  exact commRead_congr n (slotMat F R ix s w) M (pairpencil.termSum n terms)
+    (sqAt_of hPl hPr) hMsq (sqAt_of hsum.2 hsum.1) (hn ▸ Nat.succ_pos _) hMov hc
+
+/-- The commuting read at the pencil's magnetic member at the label
+calculus: the window list met once is the calculus's own theorem,
+so at every region admitting the action and every cutoff the
+induced permutation matrix commutes with the magnetic member of
+the pencil interface's read — `lem:fiberdec`'s commuting datum at
+`M` as a theorem. -/
+theorem commRead_pencilM_dataA (d : Nat) (R : Region) (C n : Nat)
+    (ix : List (List places.Shape)) (c : Pos) (E G M : Mat)
+    (spG : inertia.Split n)
+    (terms : List (Mat × inertia.Split n × inertia.Split n))
+    (hpr : pairpencil.pencilRead (dataA d) R C n ix c E G M spG terms)
+    (hw : wellRead R) (t s v w pm pm' : Nat → Nat)
+    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (hpp : plaqPermRead R t (fun _ => false) pm pm')
+    (htm : termsMoved (dataA d) R ix s w pm (terms.map Prod.fst)) :
+    commRead (slotMat (dataA d) R ix s w) M :=
+  commRead_pencilM (dataA d) R C n ix c E G M spG terms hpr t s w pm pm' hpp
+    (by rw [← hpr.1]; exact slotOnce_dataA d R C hw t s v w hp he hv) htm
 
 /-- The translation's transpose is its witness's matrix
 (`con:places`' transpose-is-inverse), the two composition reads

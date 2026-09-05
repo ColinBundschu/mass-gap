@@ -213,26 +213,55 @@ example : fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
 example : ¬ fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
     (fun _ => 0) (bdRev 2 3 fNone) := by decide +kernel
 
-/-! The plaquette set at the cyclic reading (`con:lattice`'s
-boundary field): each member's image word a stored plaquette's own
-cyclic word — the swap's images the stored words' reversals, the
-flip's the moved squares' reversed rotations with the traversal
-bits carried across the reversal family — a translation's literal
+/-! The plaquette set permuted at the cyclic reading
+(`con:lattice`'s boundary field, `lattice.plaqPermRead` at the
+member's plaquette permutation as stated data): each member's
+image word the moved position's own cyclic word — the swap's
+images the stored words' reversals at the transposition of the
+off-diagonal squares, the flip's the moved squares' reversed
+rotations with the traversal bits carried across the reversal
+family at the reflection of the rows — a translation's literal
 membership the reading's own instance, and the refusal isolating
 the reversal family: the flip's map with the bits kept fails the
-cyclic membership outright. -/
+cyclic tie at its own permutation. -/
 
-example : bdPlaqRead (fiberdec.torusRegion 2 3)
-    (bdLink 2 3 pSwap fNone) (bdRev 2 3 fNone) := by decide +kernel
-example : bdPlaqRead (fiberdec.torusRegion 2 3)
-    (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) := by
+private def pmSwap : Nat → Nat := fun q => ground.getAt 0 [0, 3, 6, 1, 4, 7, 2, 5, 8] q
+private def pmFlip : Nat → Nat := fun q => ground.getAt 0 [2, 1, 0, 5, 4, 3, 8, 7, 6] q
+private def pmT0 : Nat → Nat := fun q => ground.getAt 0 [1, 2, 0, 4, 5, 3, 7, 8, 6] q
+private def pmT0' : Nat → Nat := fun q => ground.getAt 0 [2, 0, 1, 5, 3, 4, 8, 6, 7] q
+
+example : plaqPermRead (fiberdec.torusRegion 2 3)
+    (bdLink 2 3 pSwap fNone) (bdRev 2 3 fNone) pmSwap pmSwap := by decide +kernel
+example : plaqPermRead (fiberdec.torusRegion 2 3)
+    (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) pmFlip pmFlip := by
   decide +kernel
-example : bdPlaqRead (fiberdec.torusRegion 2 3)
-    (fiberdec.torusTransl 2 3 0) (bdRev 2 3 fNone) := by
+example : plaqPermRead (fiberdec.torusRegion 2 3)
+    (fiberdec.torusTransl 2 3 0) (bdRev 2 3 fNone) pmT0 pmT0' := by
   decide +kernel
-example : ¬ bdPlaqRead (fiberdec.torusRegion 2 3)
-    (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fNone) := by
+example : ¬ plaqPermRead (fiberdec.torusRegion 2 3)
+    (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fNone) pmFlip pmFlip := by
   decide +kernel
+
+/-! The reversal family read at the source key, the boundary words'
+convention and the index action's one: at the swap composed with
+the flip, whose witness is the swap composed with the other
+direction's flip, the direction-zero winding is carried to the
+direction-one winding dualized — the flipped direction's links read
+their reversal at the source, where the target's direction is
+unflipped — and the moved boundary word flips the traversal bits of
+the direction-zero links alone. -/
+
+private def fOne : Nat → Bool := fun e => e == 1
+
+example : permRead (torusRegion 2 3) (bdLink 2 3 pSwap fZero)
+    (bdLink 2 3 pSwap fOne) := by decide +kernel
+example : eqConf FA (dualConf FA (bdLink 2 3 pSwap fOne) (bdRev 2 3 fZero) 18
+      (torWind 0 0 [1, 0, 0])) (torWind 1 0 [0, 1, 0]) = true
+    ∧ eqConf FA (dualConf FA (bdLink 2 3 pSwap fOne) (bdRev 2 3 fZero) 18
+      (torWind 0 0 [1, 0, 0])) (torWind 1 0 [1, 0, 0]) = false := by
+  decide +kernel
+example : moveWord (bdLink 2 3 pSwap fZero) (bdRev 2 3 fZero) [(0, true), (9, true)]
+    = [(15, false), (0, true)] := by decide +kernel
 
 /-! The window matrix at the committed family: the signed member's
 relabeling read as a matrix on the window list, every member's

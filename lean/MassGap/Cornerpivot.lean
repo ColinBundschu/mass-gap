@@ -258,6 +258,42 @@ a lower member line's count sits at or below the upper's own
 (`cutMono`) — the flat window, count one from the lower line's side
 to the member's (`cutFlat`).
 
+Clause (vi)'s residue direction reads at the one certificate, the
+well read's electric member transported across the residues.  The
+count transport is `well_dominate`: at two well heads whose scaled
+diagonals are ordered at every depth — each head scaled by the
+other's bond clearing, the two bonds one value at the clearings'
+product (`bondTie`) and the diagonals at their ordered count forms
+(`diagLe` at `scaleDiag`) — the dominating head's reversal count sits
+at or below the other's, the scaled site datum's form at every vector
+at or beyond the sum's unit (`siteForm_ge` at the chain's quadratic
+read `wellQuad`, the head symmetric at the chain chart's exchange,
+`wellMat_sym`) and `lem:inertia`'s monotone read with the positive
+clearings withdrawn.  The two diagonal comparisons are `resDiag`, at
+a residue at or beyond two the tie `(r+1)η₂² ≤ 3η²` at the squares
+against `rm ≥ 2m` and a rate at `qη ≤ (cn/cd)η₂` at the diagonals'
+swapped terms, and `oneDiag`, the residue-one diagonal against the
+residue-two diagonal at the scale itself, `[4:2](m²+m) ≥ [4:3](m²+2m)`
+at every depth.  The tied scale is the pair `[26 : 5N²]` off the
+endpoint key (`tieScaleD`, its second member read at `tieScaleD_val`),
+the tie the key's comparison cross-multiplied (`tieRead`,
+`75·363 ≥ 676·40`).  The lower rate reads against the transported
+rate at clause (v)'s closed reads: the two cleared comparisons are
+`resPoly` at the key from `1652` and `onePoly` at the key from
+`1495`, each the display's products distributed (`resDisp`, `oneDisp`
+through `nestRes`, `nestOne`) onto the closed reads' `13860`-clearing
+(`cl2`, `cl1`, `cld`, `cl0` at `witSqMM_closed`, `witSqM_closed`,
+`witDiffSq_closed`, `witSq_closed`) and the one polynomial display at
+the key's offset with a natural coefficient at every key (`resPolyN`,
+`onePolyN`, the two-variable engine's kernel reads); `resRate` reads
+the member `[6 : 5]`'s line under the transported rate at the key's
+bracket and the key clearing twenty residues, the scale's square
+priced by the bracket and the residue by the key, and `oneRate` the
+member `[41 : 40]`'s line under the stated rate at the residue one,
+the scale's second member priced through `[213 : 50]` (`oneScale`).
+The monomial regroupings of the tier are `monEq`'s reads at their
+stated datum lists.
+
 The count spine's two degenerate arms run at the same split.  At a
 head whose last minor carries equal members the deep end's pivot is
 singular, so its slab takes the order-one kernel certificate
@@ -8683,19 +8719,6 @@ theorem powSum10_closed (n : Nat) :
     sumClosed 10 66 (fun n => 66 * n ^ 7 + 33 * n ^ 3) (fun n => 6 * n ^
       11 + 33 * n ^ 10 + 55 * n ^ 9 + 66 * n ^ 5 + 5 * n) rfl powStep10 n
 
-/-- The square at the product's own reading. -/
-private theorem sqRead (a : Nat) :
-    a ^ 2
-      = a * a :=
-  mirEq a 0 (Mir.pow Mir.x 2) (Mir.mul Mir.x Mir.x) (by decide +kernel)
-
-/-- The fourth power at the square's own square. -/
-private theorem quadRead (a : Nat) :
-    a ^ 4
-      = a * a * (a * a) :=
-  mirEq a 0 (Mir.pow Mir.x 4) (Mir.mul (Mir.mul Mir.x Mir.x) (Mir.mul
-    Mir.x Mir.x)) (by decide +kernel)
-
 /-- A product's square at the factors' squares. -/
 private theorem mulSq (a b : Nat) :
     (a * b) ^ 2
@@ -8901,7 +8924,7 @@ private theorem witSqTerm (N m : Nat) (h : m * m ≤ N * N) :
   rw [hg] at key
   show (m * m * (N * N - m * m)) ^ 2 + 2 * N ^ 2 * m ^ 6
     = N ^ 4 * m ^ 4 + m ^ 8
-  rw [sqRead N, quadRead N]
+  rw [sqRead N, pow4Read N, mulAssoc (N * N) N N]
   exact key
 
 /-- The well's linear part at a depth inside the endpoint. -/
@@ -8913,7 +8936,7 @@ private theorem witSqMTerm (N m : Nat) (h : m * m ≤ N * N) :
   rw [hg] at key
   show m * (m * m * (N * N - m * m)) ^ 2 + 2 * N ^ 2 * m ^ 7
     = N ^ 4 * m ^ 5 + m ^ 9
-  rw [sqRead N, quadRead N]
+  rw [sqRead N, pow4Read N, mulAssoc (N * N) N N]
   exact key
 
 /-- The well's square part at a depth inside the endpoint. -/
@@ -8926,7 +8949,7 @@ private theorem witSqMMTerm (N m : Nat) (h : m * m ≤ N * N) :
   rw [hg] at key
   show m * m * (m * m * (N * N - m * m)) ^ 2 + 2 * N ^ 2 * m ^ 8
     = N ^ 4 * m ^ 6 + m ^ 10
-  rw [sqRead N, quadRead N]
+  rw [sqRead N, pow4Read N, mulAssoc (N * N) N N]
   exact key
 
 /-- The bond square at a depth: the margin's own square read against
@@ -8948,7 +8971,7 @@ private theorem witDiffTerm (N m : Nat) :
         (marg (N * N) (2 * m * m + 2 * m + 1) ^ 2)
         (2 * (N * N) * (2 * m * m + 2 * m + 1)),
       margSqNat (N * N) (2 * m * m + 2 * m + 1)]
-  rw [sqRead N, quadRead N]
+  rw [sqRead N, pow4Read N, mulAssoc (N * N) N N]
   refine ground.addCancelR
     ((2 * m + 1) ^ 2 * (2 * (N * N) * (2 * m * m + 2 * m + 1))) ?_
   rw [addShiftFive
@@ -9728,7 +9751,7 @@ theorem keyEq_read (en ed r N : Nat) :
     20 * en * N ^ 2 * (2 * en * N ^ 2) = 363 * (r + 1) * ed ^ 2
       ↔ 40 * N ^ 4 * en ^ 2 = 363 * (r + 1) * ed ^ 2 := by
   have hm : 20 * en * N ^ 2 * (2 * en * N ^ 2) = 40 * N ^ 4 * en ^ 2 := by
-    rw [sqRead N, quadRead N, sqRead en]
+    rw [sqRead N, pow4Read N, mulAssoc (N * N) N N, sqRead en]
     exact monEq [en, N]
       (Mon.mul (Mon.mul (Mon.mul (Mon.cst 20) (Mon.var 0))
           (Mon.mul (Mon.var 1) (Mon.var 1)))
@@ -21471,5 +21494,1105 @@ theorem joinTie_ptw (Af : List (List (poly.PPoly × poly.PPoly)))
     (inertia.matScale (cI * (Pos.one * cW)) A)
   rw [inertia.matScale_one, ground.one_mul cW]
   exact hfin
+
+section
+open elim inertia
+
+/-- The chain chart is symmetric at its key pair: the diagonal at
+one key and the two bond keys one value across the exchange. -/
+private theorem chainAt_symm (d o : List BPair) (i j : Nat) :
+    greenprod.chainAt d o i j = greenprod.chainAt d o j i := by
+  by_cases h : j = i
+  · rw [h]
+  · by_cases h2 : j + 1 = i
+    · have h3 : ¬ i + 1 = j := fun e => by
+        rw [← h2] at e
+        exact Nat.ne_of_gt
+          (Nat.lt_of_lt_of_le (Nat.lt_succ_self j) (Nat.le_succ (j + 1))) e
+      rw [greenprod.chainAt_low d o i j h h2,
+        greenprod.chainAt_up d o j i (fun e => h e.symm) h3 h2]
+    · by_cases h3 : i + 1 = j
+      · rw [greenprod.chainAt_up d o i j h h2 h3,
+          greenprod.chainAt_low d o j i (fun e => h e.symm) h3]
+      · rw [greenprod.chainAt_far d o i j h h2 h3,
+          greenprod.chainAt_far d o j i (fun e => h e.symm) h3 h2]
+
+/-- The well head is symmetric: the chain chart's own exchange
+read at every key pair. -/
+theorem wellMat_sym (r qn qd : Nat) (en ed : Pos) : ∀ n : Nat,
+    matOneValue (transposeM (wellMat r qn qd en ed n))
+      (wellMat r qn qd en ed n)
+  | 0 => trivial
+  | m + 1 => by
+    have hL := wellLen r qn qd en ed m
+    have hR := wellRows r qn qd en ed m
+    refine matOne_of_entries _ _ (m + 1)
+      (length_transposeM _ hR (by rw [hL]; exact Nat.succ_pos m))
+      (rowsLen_cast hL (rowsLen_transposeM _)) hL hR ?_
+    intro i j hi hj
+    rw [getAt_transposeM BPair.unit _ hR i j hi (by rw [hL]; exact hj),
+      wellEntry r qn qd en ed m j i hj hi, wellEntry r qn qd en ed m i j hi hj,
+      chainAt_symm]
+    exact BPair.oneValue_refl _
+
+/-- A count pair at its ordered members sits at or beyond the sum's
+unit. -/
+private theorem unitLe_counts {a b : Nat} (h : b ≤ a) :
+    BPair.unit ≤ BPair.ofNat a + (BPair.ofNat b).swap :=
+  leB_congr_left
+    (BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.add_comm _ _))
+      (BPair.swap_add_null (BPair.oneValue_refl (BPair.ofNat b))))
+    (leB_add (leB_ofNat h) (leB_refl _))
+
+/-- A count weight against the diagonal's count form. -/
+private theorem scaleDiag (w P Q : Nat) (x : BPair)
+    (hx : x.oneValue (BPair.ofNat P + (BPair.ofNat Q).swap)) :
+    (BPair.ofNat w * x).oneValue
+      (BPair.ofNat (w * P) + (BPair.ofNat (w * Q)).swap) := by
+  refine BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _) hx) ?_
+  rw [BPair.left_distrib, BPair.mul_swap]
+  exact BPair.add_congr (BPair.oneValue_symm (BPair.ofNat_mul w P))
+    (ground.swap_congr (BPair.oneValue_symm (BPair.ofNat_mul w Q)))
+
+/-- The scaled diagonals' difference at a depth sits at or beyond the
+sum's unit exactly where its count forms are ordered. -/
+private theorem diagLe (r qn qd r' qn' qd' : Nat) (en ed en' ed' : Pos)
+    (m : Nat)
+    (h : (r' + 1) * qd' * posVal ed' * posVal ed'
+          * ((r + 1) * qn * posVal en * posVal ed)
+        + (r + 1) * qd * posVal ed * posVal ed
+          * (2 * ((r' + 1) * qd' * posVal ed' * posVal ed')
+             + 4 * qd' * (m * m + r' * m) * posVal en' * posVal en')
+      ≤ (r' + 1) * qd' * posVal ed' * posVal ed'
+          * (2 * ((r + 1) * qd * posVal ed * posVal ed)
+             + 4 * qd * (m * m + r * m) * posVal en * posVal en)
+        + (r + 1) * qd * posVal ed * posVal ed
+          * ((r' + 1) * qn' * posVal en' * posVal ed')) :
+    BPair.unit
+      ≤ BPair.ofNat ((r' + 1) * qd' * posVal ed' * posVal ed')
+          * wellDiag r qn qd en ed m
+        + (BPair.ofNat ((r + 1) * qd * posVal ed * posVal ed)
+          * wellDiag r' qn' qd' en' ed' m).swap := by
+  have h1 := scaleDiag ((r' + 1) * qd' * posVal ed' * posVal ed') _ _ _
+    (wellDiag_count r qn qd m en ed)
+  have h2 := scaleDiag ((r + 1) * qd * posVal ed * posVal ed) _ _ _
+    (wellDiag_count r' qn' qd' m en' ed')
+  refine leB_congr_right (BPair.oneValue_symm
+    (BPair.add_congr h1 (ground.swap_congr h2))) ?_
+  rw [← BPair.swap_add, BPair.swap_swap,
+    BPair.add_comm (BPair.ofNat ((r + 1) * qd * posVal ed * posVal ed
+      * (2 * ((r' + 1) * qd' * posVal ed' * posVal ed')
+         + 4 * qd' * (m * m + r' * m) * posVal en' * posVal en'))).swap
+      (BPair.ofNat ((r + 1) * qd * posVal ed * posVal ed
+        * ((r' + 1) * qn' * posVal en' * posVal ed'))),
+    BPair.add_add_comm, BPair.swap_add]
+  refine leB_congr_right
+    (BPair.add_congr (BPair.ofNat_add _ _)
+      (ground.swap_congr (BPair.ofNat_add _ _))) ?_
+  exact unitLe_counts h
+
+/-- The well form at a stated order: the chain's own quadratic
+read at the entry lists. -/
+private theorem wellQuad (r qn qd : Nat) (en ed : Pos) (m : Nat)
+    (u : List BPair) (hu : u.length = m + 1) :
+    (quadForm (wellMat r qn qd en ed (m + 1)) u).oneValue
+      (ground.bsum (fun k =>
+          ground.getAt BPair.unit (wDiagE r qn qd en ed (m + 1)) k
+            * (ground.getAt BPair.unit u k * ground.getAt BPair.unit u k))
+        (List.range u.length)
+      + BPair.ofNat 2
+        * ground.bsum (fun k =>
+            ground.getAt BPair.unit (wOffE r qd ed (m + 1)) k
+              * (ground.getAt BPair.unit u k
+                * ground.getAt BPair.unit u (k + 1)))
+          (List.range (wOffE r qd ed (m + 1)).length)) := by
+  rw [wellMat_chain]
+  exact greenprod.chainQuad _ _ u
+    (by rw [wDiagE_len, hu]) (wellChainLen r qn qd en ed m)
+
+/-- The two scaled bond weights read one count. -/
+private theorem bondTie (r qd r' qd' : Nat) (ed ed' : Pos) :
+    (BPair.ofNat ((r' + 1) * qd' * posVal ed' * posVal ed')
+        * (wellBond r qd ed).swap).oneValue
+      (BPair.ofNat ((r + 1) * qd * posVal ed * posVal ed)
+        * (wellBond r' qd' ed').swap) := by
+  rw [BPair.mul_swap, BPair.mul_swap]
+  refine ground.swap_congr ?_
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl _) (wellBond_count r qd ed)) ?_
+  refine BPair.oneValue_trans (BPair.oneValue_symm
+    (BPair.ofNat_mul ((r' + 1) * qd' * posVal ed' * posVal ed')
+      ((r + 1) * qd * posVal ed * posVal ed))) ?_
+  refine BPair.oneValue_trans ?_
+    (BPair.mul_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_symm (wellBond_count r' qd' ed')))
+  refine BPair.oneValue_trans ?_
+    (BPair.ofNat_mul ((r + 1) * qd * posVal ed * posVal ed)
+      ((r' + 1) * qd' * posVal ed' * posVal ed'))
+  rw [Nat.mul_comm ((r' + 1) * qd' * posVal ed' * posVal ed')
+    ((r + 1) * qd * posVal ed * posVal ed)]
+  exact BPair.oneValue_refl _
+
+/-- The scaled site's form at a vector sits at or beyond the sum's
+unit: the diagonal's ordered count forms at every depth with the
+squares, and the bonds' one count withdrawing. -/
+private theorem siteForm_ge (r qn qd r' qn' qd' : Nat) (en ed en' ed' : Pos)
+    (m : Nat)
+    (hdiag : ∀ k, 1 ≤ k → k ≤ m + 1 →
+      (r' + 1) * qd' * posVal ed' * posVal ed'
+          * ((r + 1) * qn * posVal en * posVal ed)
+        + (r + 1) * qd * posVal ed * posVal ed
+          * (2 * ((r' + 1) * qd' * posVal ed' * posVal ed')
+             + 4 * qd' * (k * k + r' * k) * posVal en' * posVal en')
+      ≤ (r' + 1) * qd' * posVal ed' * posVal ed'
+          * (2 * ((r + 1) * qd * posVal ed * posVal ed)
+             + 4 * qd * (k * k + r * k) * posVal en * posVal en)
+        + (r + 1) * qd * posVal ed * posVal ed
+          * ((r' + 1) * qn' * posVal en' * posVal ed'))
+    (u : List BPair) (hu : u.length = m + 1) :
+    BPair.unit
+      ≤ quadForm
+          (siteDatum
+            (matScaleB (BPair.ofNat ((r' + 1) * qd' * posVal ed' * posVal ed'))
+              (wellMat r qn qd en ed (m + 1)))
+            (matScaleB (BPair.ofNat ((r + 1) * qd * posVal ed * posVal ed))
+              (wellMat r' qn' qd' en' ed' (m + 1))))
+          u := by
+  have hL := wellLen r qn qd en ed m
+  have hR := wellRows r qn qd en ed m
+  have hL' := wellLen r' qn' qd' en' ed' m
+  have hR' := wellRows r' qn' qd' en' ed' m
+  refine leB_congr_right (BPair.oneValue_symm (quadForm_site
+    (by rw [length_scaleB, hL, hu]) (by rw [hu]; exact rowsLen_scaleB _ _ _ hR)
+    (by rw [length_scaleB, hL', hu])
+    (by rw [hu]; exact rowsLen_scaleB _ _ _ hR'))) ?_
+  refine leB_congr_right (BPair.oneValue_symm (BPair.add_congr
+    (quadForm_scaleB _ _ u) (ground.swap_congr (quadForm_scaleB _ _ u)))) ?_
+  refine leB_congr_right (BPair.oneValue_symm (BPair.add_congr
+    (BPair.mul_congr (BPair.oneValue_refl _) (wellQuad r qn qd en ed m u hu))
+    (ground.swap_congr
+      (BPair.mul_congr (BPair.oneValue_refl _)
+        (wellQuad r' qn' qd' en' ed' m u hu))))) ?_
+  rw [BPair.left_distrib, BPair.left_distrib, ← BPair.swap_add,
+    BPair.add_add_comm]
+  refine unitLeAdd ?_ ?_
+  · -- the diagonal part
+    refine leB_congr_right (BPair.oneValue_symm (BPair.add_congr
+      (BPair.oneValue_symm (ground.foldB_mul_left _ _ _))
+      (ground.swap_congr (BPair.oneValue_symm (ground.foldB_mul_left _ _ _))))) ?_
+    rw [← fold_swap]
+    refine leB_congr_right (ground.foldB_add _ _ _) ?_
+    refine ground.foldB_nonneg _ _ (fun k hk => ?_)
+    have hk' : k < u.length := ground.ltOfMemRange (ground.mem_of_countOf_pos k _ hk)
+    rw [hu] at hk'
+    rw [wDiagE_at r qn qd en ed (m + 1) k hk', wDiagE_at r' qn' qd' en' ed' (m + 1) k hk',
+      ← BPair.mul_assoc (BPair.ofNat _) (wellDiag r qn qd en ed (m + 1 - k)),
+      ← BPair.mul_assoc (BPair.ofNat _) (wellDiag r' qn' qd' en' ed' (m + 1 - k)),
+      ← BPair.swap_mul, ← BPair.right_distrib]
+    refine unitLeMul ?_ (unitLeSq _)
+    exact diagLe r qn qd r' qn' qd' en ed en' ed' (m + 1 - k)
+      (hdiag (m + 1 - k) (ground.subPos hk') (Nat.sub_le _ _))
+  · -- the bond part reads the unit
+    refine leB_congr_right (BPair.oneValue_symm ?_) (leB_refl _)
+    rw [wOffE_len, wOffE_len]
+    refine BPair.oneValue_trans (BPair.add_congr
+      (BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.mul_left_comm _ _ _))
+        (BPair.mul_congr (BPair.oneValue_refl _)
+          (BPair.oneValue_symm (ground.foldB_mul_left _ _ _))))
+      (ground.swap_congr (BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.mul_left_comm _ _ _))
+        (BPair.mul_congr (BPair.oneValue_refl _)
+          (BPair.oneValue_symm (ground.foldB_mul_left _ _ _)))))) ?_
+    rw [← BPair.mul_swap, ← BPair.left_distrib, ← fold_swap]
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl _)
+        (BPair.oneValue_symm (ground.foldB_add _ _ _))) ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl _)
+        (ground.foldB_null _ _ (fun k hk => ?_)))
+      (BPair.mul_unit _)
+    have hk' : k < m + 1 - 1 :=
+      ground.ltOfMemRange (ground.mem_of_countOf_pos k _ hk)
+    rw [wOffE_at r qd ed (m + 1) k hk', wOffE_at r' qd' ed' (m + 1) k hk',
+      ← BPair.mul_assoc (BPair.ofNat _) (wellBond r qd ed).swap,
+      ← BPair.mul_assoc (BPair.ofNat _) (wellBond r' qd' ed').swap,
+      ← BPair.swap_mul, ← BPair.right_distrib]
+    refine BPair.oneValue_trans
+      (BPair.mul_congr_left (BPair.add_congr (bondTie r qd r' qd' ed ed')
+        (BPair.oneValue_refl _))) ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr_left (BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.add_comm _ _))
+        (BPair.swap_add_null (BPair.oneValue_refl _)))) ?_
+    exact BPair.unit_mul _
+
+/-- The count transport: at two well heads whose scaled diagonals
+are ordered at every depth, the dominating head's reversal count
+sits at or below the other's — the scaled site datum's split reads
+the upper side throughout (`lem:inertia`'s monotone read, the
+positive clearings withdrawn). -/
+theorem well_dominate (r qn qd r' qn' qd' : Nat) (hqd : 1 ≤ qd)
+    (hqd' : 1 ≤ qd') (en ed en' ed' : Pos) (n : Nat)
+    (hdiag : ∀ k, 1 ≤ k → k ≤ n →
+      (r' + 1) * qd' * posVal ed' * posVal ed'
+          * ((r + 1) * qn * posVal en * posVal ed)
+        + (r + 1) * qd * posVal ed * posVal ed
+          * (2 * ((r' + 1) * qd' * posVal ed' * posVal ed')
+             + 4 * qd' * (k * k + r' * k) * posVal en' * posVal en')
+      ≤ (r' + 1) * qd' * posVal ed' * posVal ed'
+          * (2 * ((r + 1) * qd * posVal ed * posVal ed)
+             + 4 * qd * (k * k + r * k) * posVal en * posVal en)
+        + (r + 1) * qd * posVal ed * posVal ed
+          * ((r' + 1) * qn' * posVal en' * posVal ed'))
+    (sp sp' : Split n)
+    (hsp : splitRead (wellMat r qn qd en ed n) sp)
+    (hsp' : splitRead (wellMat r' qn' qd' en' ed' n) sp') :
+    revAt sp ≤ revAt sp' := by
+  cases n with
+  | zero => rw [revAt_zero sp, revAt_zero sp']; exact Nat.le_refl 0
+  | succ m =>
+  have hw : BPair.unit < BPair.ofNat ((r' + 1) * qd' * posVal ed' * posVal ed') :=
+    unitLtNat (Nat.mul_pos (Nat.mul_pos (Nat.mul_pos (Nat.succ_pos r') hqd')
+      (posVal_pos ed')) (posVal_pos ed'))
+  have hw' : BPair.unit < BPair.ofNat ((r + 1) * qd * posVal ed * posVal ed) :=
+    unitLtNat (Nat.mul_pos (Nat.mul_pos (Nat.mul_pos (Nat.succ_pos r) hqd)
+      (posVal_pos ed)) (posVal_pos ed))
+  have hA := scaleSplit_read _ (offOfUnitLt hw) _ sp hsp
+  have hB := scaleSplit_read _ (offOfUnitLt hw') _ sp' hsp'
+  have hsqA : sqAt (matScaleB (BPair.ofNat ((r' + 1) * qd' * posVal ed' * posVal ed'))
+      (wellMat r qn qd en ed (m + 1))) (m + 1) :=
+    sqAt_scaleB _ _ _ (sqAt_of (wellLen r qn qd en ed m) (wellRows r qn qd en ed m))
+  have hsqB : sqAt (matScaleB (BPair.ofNat ((r + 1) * qd * posVal ed * posVal ed))
+      (wellMat r' qn' qd' en' ed' (m + 1))) (m + 1) :=
+    sqAt_scaleB _ _ _
+      (sqAt_of (wellLen r' qn' qd' en' ed' m) (wellRows r' qn' qd' en' ed' m))
+  have hsymA : matOneValue (transposeM (matScaleB
+      (BPair.ofNat ((r' + 1) * qd' * posVal ed' * posVal ed'))
+      (wellMat r qn qd en ed (m + 1))))
+      (matScaleB (BPair.ofNat ((r' + 1) * qd' * posVal ed' * posVal ed'))
+        (wellMat r qn qd en ed (m + 1))) :=
+    matOne_trans (transposeM_scaleB _ (m + 1) _ (wellRows r qn qd en ed m))
+      (matOne_scaleB _ (wellMat_sym r qn qd en ed (m + 1)))
+  have hsymB : matOneValue (transposeM (matScaleB
+      (BPair.ofNat ((r + 1) * qd * posVal ed * posVal ed))
+      (wellMat r' qn' qd' en' ed' (m + 1))))
+      (matScaleB (BPair.ofNat ((r + 1) * qd * posVal ed * posVal ed))
+        (wellMat r' qn' qd' en' ed' (m + 1))) :=
+    matOne_trans (transposeM_scaleB _ (m + 1) _ (wellRows r' qn' qd' en' ed' m))
+      (matOne_scaleB _ (wellMat_sym r' qn' qd' en' ed' (m + 1)))
+  have hsqD := sqAt_siteDatum (m + 1) _ _ hsqA hsqB
+  have hsymD : matOneValue
+      (transposeM (siteDatum
+        (matScaleB (BPair.ofNat ((r' + 1) * qd' * posVal ed' * posVal ed'))
+          (wellMat r qn qd en ed (m + 1)))
+        (matScaleB (BPair.ofNat ((r + 1) * qd * posVal ed * posVal ed))
+          (wellMat r' qn' qd' en' ed' (m + 1)))))
+      (siteDatum
+        (matScaleB (BPair.ofNat ((r' + 1) * qd' * posVal ed' * posVal ed'))
+          (wellMat r qn qd en ed (m + 1)))
+        (matScaleB (BPair.ofNat ((r + 1) * qd * posVal ed * posVal ed))
+          (wellMat r' qn' qd' en' ed' (m + 1)))) := by
+    show matOneValue (transposeM (matAdd _ (matSwap _))) (matAdd _ (matSwap _))
+    refine transposeM_matAdd_sym _ _ hsqA (sqAt_matSwap _ _ hsqB) hsymA ?_
+    rw [transposeM_swap]
+    exact matSwap_congr hsymB
+  have hD := mkSplit_read (m + 1) _ hsqD hsymD
+  have hpsd := psd_of_all _ _ hD (fun u hu =>
+    leB_not_lt (siteForm_ge r qn qd r' qn' qd' en ed en' ed' m hdiag u hu))
+  have hmono := rev_mono _ _ _ _ _ hD hpsd hB hA
+  rw [scaleSplit_rev _ hw sp, scaleSplit_rev _ hw' sp'] at hmono
+  exact hmono
+
+
+/-! `lem:cornerpivot`(vi)'s residue transport: the two diagonal
+comparisons, the residue-`r` well against the residue-two well at
+the tied scale, and the residue-one well against the residue-two
+well at the scale itself. -/
+
+private theorem rdA1 (r1 qn E D D2 cd : Nat) :
+    (2 + 1) * cd * D2 * D2 * (r1 * qn * E * D)
+      = 3 * r1 * D2 * D * (qn * E * D2 * cd) :=
+  ground.monEq [r1, qn, E, D, D2, cd]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst (2 + 1)) (Mon.var 5)) (Mon.var 4)) (Mon.var 4)) (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2)) (Mon.var 3)))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 3) (Mon.var 0)) (Mon.var 4)) (Mon.var 3)) (Mon.mul (Mon.mul (Mon.mul (Mon.var 1) (Mon.var 2)) (Mon.var 4)) (Mon.var 5)))
+    (by decide +kernel) (by decide +kernel)
+private theorem rdA2 (r1 qd D E2 D2 cn : Nat) :
+    r1 * qd * D * D * ((2 + 1) * cn * E2 * D2)
+      = 3 * r1 * D2 * D * (cn * qd * D * E2) :=
+  ground.monEq [r1, qd, D, E2, D2, cn]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2)) (Mon.var 2)) (Mon.mul (Mon.mul (Mon.mul (Mon.cst (2 + 1)) (Mon.var 5)) (Mon.var 3)) (Mon.var 4)))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 3) (Mon.var 0)) (Mon.var 4)) (Mon.var 2)) (Mon.mul (Mon.mul (Mon.mul (Mon.var 5) (Mon.var 1)) (Mon.var 2)) (Mon.var 3)))
+    (by decide +kernel) (by decide +kernel)
+private theorem rdB1 (r1 qd D E2 cd kk : Nat) :
+    r1 * qd * D * D * (4 * cd * kk * E2 * E2)
+      = 4 * qd * cd * kk * (r1 * (E2 * E2) * (D * D)) :=
+  ground.monEq [r1, qd, D, E2, cd, kk]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2)) (Mon.var 2)) (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 4) (Mon.var 4)) (Mon.var 5)) (Mon.var 3)) (Mon.var 3)))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 4) (Mon.var 1)) (Mon.var 4)) (Mon.var 5)) (Mon.mul (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 3) (Mon.var 3))) (Mon.mul (Mon.var 2) (Mon.var 2))))
+    (by decide +kernel) (by decide +kernel)
+private theorem rdB2 (qd D2 E cd kk : Nat) :
+    (2 + 1) * cd * D2 * D2 * (4 * qd * kk * E * E)
+      = 4 * qd * cd * kk * (3 * (D2 * D2) * (E * E)) :=
+  ground.monEq [qd, D2, E, cd, kk]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst (2 + 1)) (Mon.var 3)) (Mon.var 1)) (Mon.var 1)) (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 4) (Mon.var 0)) (Mon.var 4)) (Mon.var 2)) (Mon.var 2)))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 4) (Mon.var 0)) (Mon.var 3)) (Mon.var 4)) (Mon.mul (Mon.mul (Mon.cst 3) (Mon.mul (Mon.var 1) (Mon.var 1))) (Mon.mul (Mon.var 2) (Mon.var 2))))
+    (by decide +kernel) (by decide +kernel)
+private theorem rdX (r1 qd D D2 cd : Nat) :
+    r1 * qd * D * D * (2 * ((2 + 1) * cd * D2 * D2))
+      = (2 + 1) * cd * D2 * D2 * (2 * (r1 * qd * D * D)) :=
+  ground.monEq [r1, qd, D, D2, cd]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2)) (Mon.var 2)) (Mon.mul (Mon.cst 2) (Mon.mul (Mon.mul (Mon.mul (Mon.cst (2 + 1)) (Mon.var 4)) (Mon.var 3)) (Mon.var 3))))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst (2 + 1)) (Mon.var 4)) (Mon.var 3)) (Mon.var 3)) (Mon.mul (Mon.cst 2) (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2)) (Mon.var 2))))
+    (by decide +kernel) (by decide +kernel)
+
+/-- The residue-`r` diagonal dominates the residue-two diagonal at
+the tied scale: at a residue at or beyond two, a scale `η` and a
+second scale `η₂` at the tie `(r+1)η₂² ≤ 3η²`, and a rate `q` at
+`qη ≤ (cn/cd)·η₂` against the residue-two well's rate `[cn : cd]`,
+the two wells' scaled diagonals are ordered at every depth — the
+tie at the squares against `rm ≥ 2m`, the rate at the diagonals'
+swapped terms, and the band reads one value at the clearings'
+product (`lem:cornerpivot`(vi)). -/
+theorem resDiag (r qn qd cn cd : Nat) (hr : 2 ≤ r) (en ed en₂ ed₂ : Pos)
+    (htie : (r + 1) * (posVal en₂ * posVal en₂) * (posVal ed * posVal ed)
+      ≤ 3 * (posVal ed₂ * posVal ed₂) * (posVal en * posVal en))
+    (hrate : qn * posVal en * posVal ed₂ * cd
+      ≤ cn * qd * posVal ed * posVal en₂)
+    (k : Nat) :
+    (2 + 1) * cd * posVal ed₂ * posVal ed₂
+        * ((r + 1) * qn * posVal en * posVal ed)
+      + (r + 1) * qd * posVal ed * posVal ed
+        * (2 * ((2 + 1) * cd * posVal ed₂ * posVal ed₂)
+           + 4 * cd * (k * k + 2 * k) * posVal en₂ * posVal en₂)
+    ≤ (2 + 1) * cd * posVal ed₂ * posVal ed₂
+        * (2 * ((r + 1) * qd * posVal ed * posVal ed)
+           + 4 * qd * (k * k + r * k) * posVal en * posVal en)
+      + (r + 1) * qd * posVal ed * posVal ed
+        * ((2 + 1) * cn * posVal en₂ * posVal ed₂) := by
+  rw [Nat.left_distrib ((r + 1) * qd * posVal ed * posVal ed)
+      (2 * ((2 + 1) * cd * posVal ed₂ * posVal ed₂))
+      (4 * cd * (k * k + 2 * k) * posVal en₂ * posVal en₂),
+    Nat.left_distrib ((2 + 1) * cd * posVal ed₂ * posVal ed₂)
+      (2 * ((r + 1) * qd * posVal ed * posVal ed))
+      (4 * qd * (k * k + r * k) * posVal en * posVal en),
+    rdA1, rdA2, rdB1, rdB2, rdX]
+  have hA : 3 * (r + 1) * posVal ed₂ * posVal ed * (qn * posVal en * posVal ed₂ * cd)
+      ≤ 3 * (r + 1) * posVal ed₂ * posVal ed * (cn * qd * posVal ed * posVal en₂) :=
+    Nat.mul_le_mul_left _ hrate
+  have hB : 4 * qd * cd * (k * k + 2 * k)
+        * ((r + 1) * (posVal en₂ * posVal en₂) * (posVal ed * posVal ed))
+      ≤ 4 * qd * cd * (k * k + r * k)
+        * (3 * (posVal ed₂ * posVal ed₂) * (posVal en * posVal en)) :=
+    Nat.mul_le_mul
+      (Nat.mul_le_mul_left (4 * qd * cd)
+        (Nat.add_le_add_left (Nat.mul_le_mul_right k hr) (k * k))) htie
+  rw [Nat.add_comm
+    ((2 + 1) * cd * posVal ed₂ * posVal ed₂ * (2 * ((r + 1) * qd * posVal ed * posVal ed))
+      + 4 * qd * cd * (k * k + r * k)
+        * (3 * (posVal ed₂ * posVal ed₂) * (posVal en * posVal en)))
+    (3 * (r + 1) * posVal ed₂ * posVal ed * (cn * qd * posVal ed * posVal en₂))]
+  exact Nat.add_le_add hA (Nat.add_le_add_left hB _)
+
+private theorem odA1 (qn E D cd : Nat) :
+    (2 + 1) * cd * D * D * ((1 + 1) * qn * E * D)
+      = 6 * D * D * D * E * (qn * cd) :=
+  ground.monEq [qn, E, D, cd]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst (2 + 1)) (Mon.var 3)) (Mon.var 2)) (Mon.var 2)) (Mon.mul (Mon.mul (Mon.mul (Mon.cst (1 + 1)) (Mon.var 0)) (Mon.var 1)) (Mon.var 2)))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 6) (Mon.var 2)) (Mon.var 2)) (Mon.var 2)) (Mon.var 1)) (Mon.mul (Mon.var 0) (Mon.var 3)))
+    (by decide +kernel) (by decide +kernel)
+private theorem odA2 (qd E D cn : Nat) :
+    (1 + 1) * qd * D * D * ((2 + 1) * cn * E * D)
+      = 6 * D * D * D * E * (cn * qd) :=
+  ground.monEq [qd, E, D, cn]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst (1 + 1)) (Mon.var 0)) (Mon.var 2)) (Mon.var 2)) (Mon.mul (Mon.mul (Mon.mul (Mon.cst (2 + 1)) (Mon.var 3)) (Mon.var 1)) (Mon.var 2)))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 6) (Mon.var 2)) (Mon.var 2)) (Mon.var 2)) (Mon.var 1)) (Mon.mul (Mon.var 3) (Mon.var 0)))
+    (by decide +kernel) (by decide +kernel)
+private theorem odB1 (qd E D cd kk : Nat) :
+    (1 + 1) * qd * D * D * (4 * cd * kk * E * E)
+      = 4 * qd * cd * D * D * E * E * (2 * kk) :=
+  ground.monEq [qd, E, D, cd, kk]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst (1 + 1)) (Mon.var 0)) (Mon.var 2)) (Mon.var 2)) (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 4) (Mon.var 3)) (Mon.var 4)) (Mon.var 1)) (Mon.var 1)))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 4) (Mon.var 0)) (Mon.var 3)) (Mon.var 2)) (Mon.var 2)) (Mon.var 1)) (Mon.var 1)) (Mon.mul (Mon.cst 2) (Mon.var 4)))
+    (by decide +kernel) (by decide +kernel)
+private theorem odB2 (qd E D cd kk : Nat) :
+    (2 + 1) * cd * D * D * (4 * qd * kk * E * E)
+      = 4 * qd * cd * D * D * E * E * (3 * kk) :=
+  ground.monEq [qd, E, D, cd, kk]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst (2 + 1)) (Mon.var 3)) (Mon.var 2)) (Mon.var 2)) (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 4) (Mon.var 0)) (Mon.var 4)) (Mon.var 1)) (Mon.var 1)))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 4) (Mon.var 0)) (Mon.var 3)) (Mon.var 2)) (Mon.var 2)) (Mon.var 1)) (Mon.var 1)) (Mon.mul (Mon.cst 3) (Mon.var 4)))
+    (by decide +kernel) (by decide +kernel)
+private theorem odX (qd D cd : Nat) :
+    (1 + 1) * qd * D * D * (2 * ((2 + 1) * cd * D * D))
+      = (2 + 1) * cd * D * D * (2 * ((1 + 1) * qd * D * D)) :=
+  ground.monEq [qd, D, cd]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst (1 + 1)) (Mon.var 0)) (Mon.var 1)) (Mon.var 1)) (Mon.mul (Mon.cst 2) (Mon.mul (Mon.mul (Mon.mul (Mon.cst (2 + 1)) (Mon.var 2)) (Mon.var 1)) (Mon.var 1))))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst (2 + 1)) (Mon.var 2)) (Mon.var 1)) (Mon.var 1)) (Mon.mul (Mon.cst 2) (Mon.mul (Mon.mul (Mon.mul (Mon.cst (1 + 1)) (Mon.var 0)) (Mon.var 1)) (Mon.var 1))))
+    (by decide +kernel) (by decide +kernel)
+
+/-- A count sits at or below its square. -/
+private theorem leMulSelf : ∀ k : Nat, k ≤ k * k
+  | 0 => Nat.le_refl 0
+  | s + 1 => Nat.le_mul_of_pos_left (s + 1) (Nat.succ_pos s)
+
+/-- The residue-one diagonal dominates the residue-two diagonal at
+the scale itself: `[4:2](m²+m) ≥ [4:3](m²+2m)` at every depth,
+so at a rate `q` at or below the residue-two well's rate
+`[cn : cd]` the two wells' scaled diagonals are ordered at every
+depth (`lem:cornerpivot`(vi)). -/
+theorem oneDiag (qn qd cn cd : Nat) (en ed : Pos) (hrate : qn * cd ≤ cn * qd)
+    (k : Nat) :
+    (2 + 1) * cd * posVal ed * posVal ed
+        * ((1 + 1) * qn * posVal en * posVal ed)
+      + (1 + 1) * qd * posVal ed * posVal ed
+        * (2 * ((2 + 1) * cd * posVal ed * posVal ed)
+           + 4 * cd * (k * k + 2 * k) * posVal en * posVal en)
+    ≤ (2 + 1) * cd * posVal ed * posVal ed
+        * (2 * ((1 + 1) * qd * posVal ed * posVal ed)
+           + 4 * qd * (k * k + 1 * k) * posVal en * posVal en)
+      + (1 + 1) * qd * posVal ed * posVal ed
+        * ((2 + 1) * cn * posVal en * posVal ed) := by
+  rw [Nat.left_distrib ((1 + 1) * qd * posVal ed * posVal ed)
+      (2 * ((2 + 1) * cd * posVal ed * posVal ed))
+      (4 * cd * (k * k + 2 * k) * posVal en * posVal en),
+    Nat.left_distrib ((2 + 1) * cd * posVal ed * posVal ed)
+      (2 * ((1 + 1) * qd * posVal ed * posVal ed))
+      (4 * qd * (k * k + 1 * k) * posVal en * posVal en),
+    odA1, odA2, odB1, odB2, odX]
+  have hA : 6 * posVal ed * posVal ed * posVal ed * posVal en * (qn * cd)
+      ≤ 6 * posVal ed * posVal ed * posVal ed * posVal en * (cn * qd) :=
+    Nat.mul_le_mul_left _ hrate
+  have hkk : 2 * (k * k + 2 * k) ≤ 3 * (k * k + 1 * k) := by
+    rw [Nat.left_distrib 2 (k * k) (2 * k), Nat.left_distrib 3 (k * k) (1 * k),
+      Nat.one_mul, ← ground.mulAssoc 2 2 k,
+      show (3 : Nat) * (k * k) = 2 * (k * k) + k * k from
+        by rw [show (3 : Nat) = 2 + 1 from rfl, ground.mulAddR, Nat.one_mul],
+      Nat.add_assoc (2 * (k * k)) (k * k) (3 * k)]
+    refine Nat.add_le_add_left ?_ (2 * (k * k))
+    rw [show (3 : Nat) * k = k + 2 * k from
+      by rw [show (3 : Nat) = 1 + 2 from rfl, ground.mulAddR, Nat.one_mul],
+      ← Nat.add_assoc (k * k) k (2 * k)]
+    rw [show (2 : Nat) * 2 * k = 2 * k + 2 * k from
+      by rw [show (2 : Nat) * 2 = 2 + 2 from rfl, ground.mulAddR]]
+    refine Nat.add_le_add_right ?_ (2 * k)
+    rw [show (2 : Nat) * k = k + k from
+      by rw [show (2 : Nat) = 1 + 1 from rfl, ground.mulAddR, Nat.one_mul]]
+    exact Nat.add_le_add_right (leMulSelf k) k
+  have hB : 4 * qd * cd * posVal ed * posVal ed * posVal en * posVal en
+        * (2 * (k * k + 2 * k))
+      ≤ 4 * qd * cd * posVal ed * posVal ed * posVal en * posVal en
+        * (3 * (k * k + 1 * k)) :=
+    Nat.mul_le_mul_left _ hkk
+  rw [Nat.add_comm
+    ((2 + 1) * cd * posVal ed * posVal ed * (2 * ((1 + 1) * qd * posVal ed * posVal ed))
+      + 4 * qd * cd * posVal ed * posVal ed * posVal en * posVal en
+        * (3 * (k * k + 1 * k)))
+    (6 * posVal ed * posVal ed * posVal ed * posVal en * (cn * qd))]
+  exact Nat.add_le_add hA (Nat.add_le_add_left hB _)
+
+/-! The cleared comparisons of `lem:cornerpivot`(vi) at the closed
+reads: the polynomial identity engine over two variables, the two
+displays at the keys `1652` and `1495` as polynomials in the key's
+offset with natural coefficients, and the displays themselves. -/
+
+/-- The transported rate's cleared comparison at the closed reads
+as one polynomial display: at the key `N = t + 1652` the two sides'
+gap is a polynomial in `t` with a natural coefficient at every key
+(`lem:cornerpivot`(vi)'s display). -/
+private theorem resPolyN (N : Nat) (hN : 1652 ≤ N) :
+    43560 * (N * N) * (2 * (80 * N ^ 11 + 4015 * N ^ 5 + 525 * N))
+      + 2178 * (N * N * N) * (231 * (N ^ 10 + 20 * N ^ 4))
+      + 1200 * (N * N) * (N - 1) ^ 4 * (132 * (44 * N ^ 7 + 126 * N ^ 3 + 210 * N ^ 2))
+      + (13860 * (1200 * (N * N) * (N - 1) ^ 4 * (N * N - 1) ^ 2)
+        + 41600 * (N - 1) ^ 4 * (22 * (105 * N ^ 5) + 22 * (21 * N)))
+    ≤ 41600 * (N - 1) ^ 4 * (22 * (16 * N ^ 9 + 110 * N ^ 3))
+      + (43560 * (N * N) * (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3))
+        + 2178 * (N * N * N) * (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2))
+        + 1200 * (N * N) * (N - 1) ^ 4
+          * (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105)))) := by
+  obtain ⟨t, ht⟩ : ∃ t, N = t + 1652 := ⟨N - 1652, (ground.subAdd hN).symm⟩
+  subst ht
+  have hsq : (t + 1652) * (t + 1652) - 1 = (t + 1651) * (t + 1653) := by
+    rw [show (t + 1652) * (t + 1652) = (t + 1651) * (t + 1653) + 1 from
+      mirEq t 0 (Mir.mul (Mir.add Mir.x (Mir.cst 1652)) (Mir.add Mir.x (Mir.cst 1652)))
+        (Mir.add (Mir.mul (Mir.add Mir.x (Mir.cst 1651)) (Mir.add Mir.x (Mir.cst 1653)))
+          (Mir.cst 1)) (by decide +kernel), ground.addSubSelfR]
+  rw [hsq]
+  exact Nat.le.intro (mirEq t 0
+    (Mir.add
+      (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.mul (Mir.cst 43560) (Mir.mul (Mir.add Mir.x (Mir.cst 1652)) (Mir.add Mir.x (Mir.cst 1652)))) (Mir.mul (Mir.cst 2) (Mir.add (Mir.add (Mir.mul (Mir.cst 80) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 11)) (Mir.mul (Mir.cst 4015) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 5))) (Mir.mul (Mir.cst 525) (Mir.add Mir.x (Mir.cst 1652)))))) (Mir.mul (Mir.mul (Mir.cst 2178) (Mir.mul (Mir.mul (Mir.add Mir.x (Mir.cst 1652)) (Mir.add Mir.x (Mir.cst 1652))) (Mir.add Mir.x (Mir.cst 1652)))) (Mir.mul (Mir.cst 231) (Mir.add (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 10) (Mir.mul (Mir.cst 20) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 4)))))) (Mir.mul (Mir.mul (Mir.mul (Mir.cst 1200) (Mir.mul (Mir.add Mir.x (Mir.cst 1652)) (Mir.add Mir.x (Mir.cst 1652)))) (Mir.pow (Mir.add Mir.x (Mir.cst 1651)) 4)) (Mir.mul (Mir.cst 132) (Mir.add (Mir.add (Mir.mul (Mir.cst 44) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 7)) (Mir.mul (Mir.cst 126) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 3))) (Mir.mul (Mir.cst 210) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 2)))))) (Mir.add (Mir.mul (Mir.cst 13860) (Mir.mul (Mir.mul (Mir.mul (Mir.cst 1200) (Mir.mul (Mir.add Mir.x (Mir.cst 1652)) (Mir.add Mir.x (Mir.cst 1652)))) (Mir.pow (Mir.add Mir.x (Mir.cst 1651)) 4)) (Mir.pow (Mir.mul (Mir.add Mir.x (Mir.cst 1651)) (Mir.add Mir.x (Mir.cst 1653))) 2))) (Mir.mul (Mir.mul (Mir.cst 41600) (Mir.pow (Mir.add Mir.x (Mir.cst 1651)) 4)) (Mir.add (Mir.mul (Mir.cst 22) (Mir.mul (Mir.cst 105) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 5))) (Mir.mul (Mir.cst 22) (Mir.mul (Mir.cst 21) (Mir.add Mir.x (Mir.cst 1652))))))))
+      (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.cst 124446329731297787317813577316015978905583728640) (Mir.mul (Mir.cst 986954860650708043355597787756177382927549440) (Mir.pow Mir.x 1))) (Mir.mul (Mir.cst 3612393195993565300544634440295361837125696) (Mir.pow Mir.x 2))) (Mir.mul (Mir.cst 8079564162420218757112091323755160332784) (Mir.pow Mir.x 3))) (Mir.mul (Mir.cst 12320400310078348981970861150102518072) (Mir.pow Mir.x 4))) (Mir.mul (Mir.cst 13526017805942173745001694469303982) (Mir.pow Mir.x 5))) (Mir.mul (Mir.cst 10999107206001673784778421306528) (Mir.pow Mir.x 6))) (Mir.mul (Mir.cst 6707839183601159944733330872) (Mir.pow Mir.x 7))) (Mir.mul (Mir.cst 3067933338641327928806496) (Mir.pow Mir.x 8))) (Mir.mul (Mir.cst 1039327859334000684536) (Mir.pow Mir.x 9))) (Mir.mul (Mir.cst 253494875893673216) (Mir.pow Mir.x 10))) (Mir.mul (Mir.cst 42153357379584) (Mir.pow Mir.x 11))) (Mir.mul (Mir.cst 4283447432) (Mir.pow Mir.x 12))) (Mir.mul (Mir.cst 200882) (Mir.pow Mir.x 13))))
+    (Mir.add (Mir.mul (Mir.mul (Mir.cst 41600) (Mir.pow (Mir.add Mir.x (Mir.cst 1651)) 4)) (Mir.mul (Mir.cst 22) (Mir.add (Mir.mul (Mir.cst 16) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 9)) (Mir.mul (Mir.cst 110) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 3))))) (Mir.add (Mir.add (Mir.mul (Mir.mul (Mir.cst 43560) (Mir.mul (Mir.add Mir.x (Mir.cst 1652)) (Mir.add Mir.x (Mir.cst 1652)))) (Mir.add (Mir.mul (Mir.cst 2) (Mir.mul (Mir.cst 1617) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 7))) (Mir.mul (Mir.cst 2) (Mir.mul (Mir.cst 3003) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 3))))) (Mir.mul (Mir.mul (Mir.cst 2178) (Mir.mul (Mir.mul (Mir.add Mir.x (Mir.cst 1652)) (Mir.add Mir.x (Mir.cst 1652))) (Mir.add Mir.x (Mir.cst 1652)))) (Mir.add (Mir.mul (Mir.cst 231) (Mir.mul (Mir.cst 12) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 6))) (Mir.mul (Mir.cst 231) (Mir.mul (Mir.cst 9) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 2)))))) (Mir.mul (Mir.mul (Mir.mul (Mir.cst 1200) (Mir.mul (Mir.add Mir.x (Mir.cst 1652)) (Mir.add Mir.x (Mir.cst 1652)))) (Mir.pow (Mir.add Mir.x (Mir.cst 1651)) 4)) (Mir.add (Mir.mul (Mir.cst 132) (Mir.mul (Mir.cst 147) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 5))) (Mir.add (Mir.mul (Mir.cst 132) (Mir.mul (Mir.cst 105) (Mir.pow (Mir.add Mir.x (Mir.cst 1652)) 4))) (Mir.add (Mir.mul (Mir.cst 132) (Mir.mul (Mir.cst 23) (Mir.add Mir.x (Mir.cst 1652)))) (Mir.mul (Mir.cst 132) (Mir.cst 105))))))))
+    (by decide +kernel))
+
+/-- The transported rate's cleared comparison at the closed reads
+as one polynomial display: at the key `N = t + 1495` the two sides'
+gap is a polynomial in `t` with a natural coefficient at every key
+(`lem:cornerpivot`(vi)'s display). -/
+private theorem onePolyN (N : Nat) (hN : 1495 ≤ N) :
+    1488300 * (N * N) * (2 * (80 * N ^ 11 + 4015 * N ^ 5 + 525 * N))
+      + 1488300 * (N * N) * (231 * (N ^ 10 + 20 * N ^ 4))
+      + 41000 * (N * N) * (N - 1) ^ 4 * (132 * (44 * N ^ 7 + 126 * N ^ 3 + 210 * N ^ 2))
+      + (13860 * (41000 * (N * N) * (N - 1) ^ 4 * (N * N - 1) ^ 2)
+        + 1363200 * (N - 1) ^ 4 * (22 * (105 * N ^ 5) + 22 * (21 * N)))
+    ≤ 1363200 * (N - 1) ^ 4 * (22 * (16 * N ^ 9 + 110 * N ^ 3))
+      + (1488300 * (N * N) * (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3))
+        + 1488300 * (N * N) * (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2))
+        + 41000 * (N * N) * (N - 1) ^ 4
+          * (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105)))) := by
+  obtain ⟨t, ht⟩ : ∃ t, N = t + 1495 := ⟨N - 1495, (ground.subAdd hN).symm⟩
+  subst ht
+  have hsq : (t + 1495) * (t + 1495) - 1 = (t + 1494) * (t + 1496) := by
+    rw [show (t + 1495) * (t + 1495) = (t + 1494) * (t + 1496) + 1 from
+      mirEq t 0 (Mir.mul (Mir.add Mir.x (Mir.cst 1495)) (Mir.add Mir.x (Mir.cst 1495)))
+        (Mir.add (Mir.mul (Mir.add Mir.x (Mir.cst 1494)) (Mir.add Mir.x (Mir.cst 1496)))
+          (Mir.cst 1)) (by decide +kernel), ground.addSubSelfR]
+  rw [hsq]
+  exact Nat.le.intro (mirEq t 0
+    (Mir.add
+      (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.mul (Mir.cst 1488300) (Mir.mul (Mir.add Mir.x (Mir.cst 1495)) (Mir.add Mir.x (Mir.cst 1495)))) (Mir.mul (Mir.cst 2) (Mir.add (Mir.add (Mir.mul (Mir.cst 80) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 11)) (Mir.mul (Mir.cst 4015) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 5))) (Mir.mul (Mir.cst 525) (Mir.add Mir.x (Mir.cst 1495)))))) (Mir.mul (Mir.mul (Mir.cst 1488300) (Mir.mul (Mir.add Mir.x (Mir.cst 1495)) (Mir.add Mir.x (Mir.cst 1495)))) (Mir.mul (Mir.cst 231) (Mir.add (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 10) (Mir.mul (Mir.cst 20) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 4)))))) (Mir.mul (Mir.mul (Mir.mul (Mir.cst 41000) (Mir.mul (Mir.add Mir.x (Mir.cst 1495)) (Mir.add Mir.x (Mir.cst 1495)))) (Mir.pow (Mir.add Mir.x (Mir.cst 1494)) 4)) (Mir.mul (Mir.cst 132) (Mir.add (Mir.add (Mir.mul (Mir.cst 44) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 7)) (Mir.mul (Mir.cst 126) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 3))) (Mir.mul (Mir.cst 210) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 2)))))) (Mir.add (Mir.mul (Mir.cst 13860) (Mir.mul (Mir.mul (Mir.mul (Mir.cst 41000) (Mir.mul (Mir.add Mir.x (Mir.cst 1495)) (Mir.add Mir.x (Mir.cst 1495)))) (Mir.pow (Mir.add Mir.x (Mir.cst 1494)) 4)) (Mir.pow (Mir.mul (Mir.add Mir.x (Mir.cst 1494)) (Mir.add Mir.x (Mir.cst 1496))) 2))) (Mir.mul (Mir.mul (Mir.cst 1363200) (Mir.pow (Mir.add Mir.x (Mir.cst 1494)) 4)) (Mir.add (Mir.mul (Mir.cst 22) (Mir.mul (Mir.cst 105) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 5))) (Mir.mul (Mir.cst 22) (Mir.mul (Mir.cst 21) (Mir.add Mir.x (Mir.cst 1495))))))))
+      (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.cst 505891584279637992186069673168675511542924032000) (Mir.mul (Mir.cst 4508088739461623411080153630019754885815385600) (Mir.pow Mir.x 1))) (Mir.mul (Mir.cst 18530331864964674057209144385648132882069600) (Mir.pow Mir.x 2))) (Mir.mul (Mir.cst 46521497732858576058099601900326667653600) (Mir.pow Mir.x 3))) (Mir.mul (Mir.cst 79590870710485298928865549014926191800) (Mir.pow Mir.x 4))) (Mir.mul (Mir.cst 97990961430919967872998593318672400) (Mir.pow Mir.x 5))) (Mir.mul (Mir.cst 89323400241032362078193878875000) (Mir.pow Mir.x 6))) (Mir.mul (Mir.cst 61038646997005101550003647000) (Mir.pow Mir.x 7))) (Mir.mul (Mir.cst 31268953137534612278813100) (Mir.pow Mir.x 8))) (Mir.mul (Mir.cst 11860511004948841890600) (Mir.pow Mir.x 9))) (Mir.mul (Mir.cst 3237790358952593400) (Mir.pow Mir.x 10))) (Mir.mul (Mir.cst 602410243208400) (Mir.pow Mir.x 11))) (Mir.mul (Mir.cst 68468753100) (Mir.pow Mir.x 12))) (Mir.mul (Mir.cst 3590400) (Mir.pow Mir.x 13))))
+    (Mir.add (Mir.mul (Mir.mul (Mir.cst 1363200) (Mir.pow (Mir.add Mir.x (Mir.cst 1494)) 4)) (Mir.mul (Mir.cst 22) (Mir.add (Mir.mul (Mir.cst 16) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 9)) (Mir.mul (Mir.cst 110) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 3))))) (Mir.add (Mir.add (Mir.mul (Mir.mul (Mir.cst 1488300) (Mir.mul (Mir.add Mir.x (Mir.cst 1495)) (Mir.add Mir.x (Mir.cst 1495)))) (Mir.add (Mir.mul (Mir.cst 2) (Mir.mul (Mir.cst 1617) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 7))) (Mir.mul (Mir.cst 2) (Mir.mul (Mir.cst 3003) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 3))))) (Mir.mul (Mir.mul (Mir.cst 1488300) (Mir.mul (Mir.add Mir.x (Mir.cst 1495)) (Mir.add Mir.x (Mir.cst 1495)))) (Mir.add (Mir.mul (Mir.cst 231) (Mir.mul (Mir.cst 12) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 6))) (Mir.mul (Mir.cst 231) (Mir.mul (Mir.cst 9) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 2)))))) (Mir.mul (Mir.mul (Mir.mul (Mir.cst 41000) (Mir.mul (Mir.add Mir.x (Mir.cst 1495)) (Mir.add Mir.x (Mir.cst 1495)))) (Mir.pow (Mir.add Mir.x (Mir.cst 1494)) 4)) (Mir.add (Mir.mul (Mir.cst 132) (Mir.mul (Mir.cst 147) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 5))) (Mir.add (Mir.mul (Mir.cst 132) (Mir.mul (Mir.cst 105) (Mir.pow (Mir.add Mir.x (Mir.cst 1495)) 4))) (Mir.add (Mir.mul (Mir.cst 132) (Mir.mul (Mir.cst 23) (Mir.add Mir.x (Mir.cst 1495)))) (Mir.mul (Mir.cst 132) (Mir.cst 105))))))))
+    (by decide +kernel))
+
+
+private theorem regroup8 (a b c d p q s t : Nat) :
+    a + b + c + d + (p + q + s + t) = a + p + (b + q) + (c + s) + (d + t) := by
+  rw [Nat.add_add_add_comm (a + b + c) d (p + q + s) t,
+    Nat.add_add_add_comm (a + b) c (p + q) s,
+    Nat.add_add_add_comm a b p q]
+
+private theorem cl2 (N : Nat) :
+    13860 * witSqMM N + (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3))
+      = 2 * (80 * N ^ 11 + 4015 * N ^ 5 + 525 * N) := by
+  have h := congrArg (fun z => 2 * z) (witSqMM_closed N)
+  show 2 * 6930 * witSqMM N + (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)) = _
+  rw [ground.mulAssoc 2 6930 (witSqMM N), ← Nat.add_assoc, ← Nat.left_distrib,
+    ← Nat.left_distrib]
+  exact h
+
+private theorem cl1 (N : Nat) :
+    13860 * witSqM N + (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2))
+      = 231 * (N ^ 10 + 20 * N ^ 4) := by
+  have h := congrArg (fun z => 231 * z) (witSqM_closed N)
+  show 231 * 60 * witSqM N + (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)) = _
+  rw [ground.mulAssoc 231 60 (witSqM N), ← Nat.add_assoc, ← Nat.left_distrib,
+    ← Nat.left_distrib]
+  exact h
+
+private theorem cld (N : Nat) (hN : 1 ≤ N) :
+    13860 * witDiffSq N
+        + (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105)))
+      = 132 * (44 * N ^ 7 + 126 * N ^ 3 + 210 * N ^ 2) := by
+  have h := congrArg (fun z => 132 * z) (witDiffSq_closed N hN)
+  show 132 * 105 * witDiffSq N
+    + (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105))) = _
+  rw [ground.mulAssoc 132 105 (witDiffSq N), ← Nat.add_assoc, ← Nat.add_assoc,
+    ← Nat.add_assoc, ← Nat.left_distrib, ← Nat.left_distrib, ← Nat.left_distrib,
+    ← Nat.left_distrib]
+  exact h
+
+private theorem cl0 (N : Nat) :
+    13860 * witSq N + (22 * (105 * N ^ 5) + 22 * (21 * N))
+      = 22 * (16 * N ^ 9 + 110 * N ^ 3) := by
+  have h := congrArg (fun z => 22 * z) (witSq_closed N)
+  show 22 * 630 * witSq N + (22 * (105 * N ^ 5) + 22 * (21 * N)) = _
+  rw [ground.mulAssoc 22 630 (witSq N), ← Nat.add_assoc, ← Nat.left_distrib,
+    ← Nat.left_distrib]
+  exact h
+
+/-- The residue-`r` display's products distributed, keys at or
+beyond `1652`. -/
+private theorem resDisp (N : Nat) (hN : 1652 ≤ N) :
+    43560 * (N * N) * witSqMM N + 2178 * (N * N * N) * witSqM N
+      + 1200 * (N * N) * (N - 1) ^ 4 * witDiffSq N
+      + 1200 * (N * N) * (N - 1) ^ 4 * (N * N - 1) ^ 2
+    ≤ 41600 * (N - 1) ^ 4 * witSq N := by
+  have hL : 13860 * (43560 * (N * N) * witSqMM N + 2178 * (N * N * N) * witSqM N + 1200 * (N * N) * (N - 1) ^ 4 * witDiffSq N + 1200 * (N * N) * (N - 1) ^ 4 * (N * N - 1) ^ 2) + (43560 * (N * N) * (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)) + 2178 * (N * N * N) * (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)) + 1200 * (N * N) * (N - 1) ^ 4 * (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105))) + 41600 * (N - 1) ^ 4 * (22 * (105 * N ^ 5) + 22 * (21 * N))) = (43560 * (N * N) * (2 * (80 * N ^ 11 + 4015 * N ^ 5 + 525 * N)) + 2178 * (N * N * N) * (231 * (N ^ 10 + 20 * N ^ 4)) + 1200 * (N * N) * (N - 1) ^ 4 * (132 * (44 * N ^ 7 + 126 * N ^ 3 + 210 * N ^ 2)) + (13860 * (1200 * (N * N) * (N - 1) ^ 4 * (N * N - 1) ^ 2) + 41600 * (N - 1) ^ 4 * (22 * (105 * N ^ 5) + 22 * (21 * N)))) := by
+    rw [Nat.left_distrib 13860 (43560 * (N * N) * witSqMM N + 2178 * (N * N * N) * witSqM N + 1200 * (N * N) * (N - 1) ^ 4 * witDiffSq N)
+        (1200 * (N * N) * (N - 1) ^ 4 * (N * N - 1) ^ 2),
+      Nat.left_distrib 13860 (43560 * (N * N) * witSqMM N + 2178 * (N * N * N) * witSqM N) (1200 * (N * N) * (N - 1) ^ 4 * witDiffSq N),
+      Nat.left_distrib 13860 (43560 * (N * N) * witSqMM N) (2178 * (N * N * N) * witSqM N),
+      ground.mulLeftComm 13860 (43560 * (N * N)) (witSqMM N),
+      ground.mulLeftComm 13860 (2178 * (N * N * N)) (witSqM N),
+      ground.mulLeftComm 13860 (1200 * (N * N) * (N - 1) ^ 4) (witDiffSq N),
+      regroup8,
+      ← Nat.left_distrib (43560 * (N * N)) (13860 * witSqMM N) (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)),
+      ← Nat.left_distrib (2178 * (N * N * N)) (13860 * witSqM N) (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)),
+      ← Nat.left_distrib (1200 * (N * N) * (N - 1) ^ 4) (13860 * witDiffSq N) (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105))),
+      cl2, cl1, cld N (Nat.le_trans (Nat.le_add_left 1 1651) hN)]
+  have hR : 13860 * (41600 * (N - 1) ^ 4 * witSq N) + (43560 * (N * N) * (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)) + 2178 * (N * N * N) * (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)) + 1200 * (N * N) * (N - 1) ^ 4 * (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105))) + 41600 * (N - 1) ^ 4 * (22 * (105 * N ^ 5) + 22 * (21 * N))) = (41600 * (N - 1) ^ 4 * (22 * (16 * N ^ 9 + 110 * N ^ 3)) + (43560 * (N * N) * (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)) + 2178 * (N * N * N) * (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)) + 1200 * (N * N) * (N - 1) ^ 4 * (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105))))) := by
+    rw [ground.mulLeftComm 13860 (41600 * (N - 1) ^ 4) (witSq N),
+      ← Nat.add_assoc (41600 * (N - 1) ^ 4 * (13860 * witSq N))
+        (43560 * (N * N) * (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)) + 2178 * (N * N * N) * (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)) + 1200 * (N * N) * (N - 1) ^ 4 * (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105)))) (41600 * (N - 1) ^ 4 * (22 * (105 * N ^ 5) + 22 * (21 * N))),
+      Nat.add_right_comm (41600 * (N - 1) ^ 4 * (13860 * witSq N))
+        (43560 * (N * N) * (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)) + 2178 * (N * N * N) * (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)) + 1200 * (N * N) * (N - 1) ^ 4 * (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105)))) (41600 * (N - 1) ^ 4 * (22 * (105 * N ^ 5) + 22 * (21 * N))),
+      ← Nat.left_distrib (41600 * (N - 1) ^ 4) (13860 * witSq N) (22 * (105 * N ^ 5) + 22 * (21 * N)), cl0]
+  refine Nat.le_of_mul_le_mul_left (c := 13860) ?_ (Nat.succ_pos _)
+  refine ground.leCancelR (43560 * (N * N) * (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)) + 2178 * (N * N * N) * (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)) + 1200 * (N * N) * (N - 1) ^ 4 * (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105))) + 41600 * (N - 1) ^ 4 * (22 * (105 * N ^ 5) + 22 * (21 * N))) ?_
+  rw [hL, hR]
+  exact resPolyN N hN
+/-- The residue-one display's products distributed, keys at or
+beyond `1495`. -/
+private theorem oneDisp (N : Nat) (hN : 1495 ≤ N) :
+    1488300 * (N * N) * witSqMM N + 1488300 * (N * N) * witSqM N
+      + 41000 * (N * N) * (N - 1) ^ 4 * witDiffSq N
+      + 41000 * (N * N) * (N - 1) ^ 4 * (N * N - 1) ^ 2
+    ≤ 1363200 * (N - 1) ^ 4 * witSq N := by
+  have hL : 13860 * (1488300 * (N * N) * witSqMM N + 1488300 * (N * N) * witSqM N + 41000 * (N * N) * (N - 1) ^ 4 * witDiffSq N + 41000 * (N * N) * (N - 1) ^ 4 * (N * N - 1) ^ 2) + (1488300 * (N * N) * (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)) + 1488300 * (N * N) * (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)) + 41000 * (N * N) * (N - 1) ^ 4 * (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105))) + 1363200 * (N - 1) ^ 4 * (22 * (105 * N ^ 5) + 22 * (21 * N))) = (1488300 * (N * N) * (2 * (80 * N ^ 11 + 4015 * N ^ 5 + 525 * N)) + 1488300 * (N * N) * (231 * (N ^ 10 + 20 * N ^ 4)) + 41000 * (N * N) * (N - 1) ^ 4 * (132 * (44 * N ^ 7 + 126 * N ^ 3 + 210 * N ^ 2)) + (13860 * (41000 * (N * N) * (N - 1) ^ 4 * (N * N - 1) ^ 2) + 1363200 * (N - 1) ^ 4 * (22 * (105 * N ^ 5) + 22 * (21 * N)))) := by
+    rw [Nat.left_distrib 13860 (1488300 * (N * N) * witSqMM N + 1488300 * (N * N) * witSqM N + 41000 * (N * N) * (N - 1) ^ 4 * witDiffSq N)
+        (41000 * (N * N) * (N - 1) ^ 4 * (N * N - 1) ^ 2),
+      Nat.left_distrib 13860 (1488300 * (N * N) * witSqMM N + 1488300 * (N * N) * witSqM N) (41000 * (N * N) * (N - 1) ^ 4 * witDiffSq N),
+      Nat.left_distrib 13860 (1488300 * (N * N) * witSqMM N) (1488300 * (N * N) * witSqM N),
+      ground.mulLeftComm 13860 (1488300 * (N * N)) (witSqMM N),
+      ground.mulLeftComm 13860 (1488300 * (N * N)) (witSqM N),
+      ground.mulLeftComm 13860 (41000 * (N * N) * (N - 1) ^ 4) (witDiffSq N),
+      regroup8,
+      ← Nat.left_distrib (1488300 * (N * N)) (13860 * witSqMM N) (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)),
+      ← Nat.left_distrib (1488300 * (N * N)) (13860 * witSqM N) (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)),
+      ← Nat.left_distrib (41000 * (N * N) * (N - 1) ^ 4) (13860 * witDiffSq N) (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105))),
+      cl2, cl1, cld N (Nat.le_trans (Nat.le_add_left 1 1494) hN)]
+  have hR : 13860 * (1363200 * (N - 1) ^ 4 * witSq N) + (1488300 * (N * N) * (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)) + 1488300 * (N * N) * (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)) + 41000 * (N * N) * (N - 1) ^ 4 * (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105))) + 1363200 * (N - 1) ^ 4 * (22 * (105 * N ^ 5) + 22 * (21 * N))) = (1363200 * (N - 1) ^ 4 * (22 * (16 * N ^ 9 + 110 * N ^ 3)) + (1488300 * (N * N) * (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)) + 1488300 * (N * N) * (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)) + 41000 * (N * N) * (N - 1) ^ 4 * (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105))))) := by
+    rw [ground.mulLeftComm 13860 (1363200 * (N - 1) ^ 4) (witSq N),
+      ← Nat.add_assoc (1363200 * (N - 1) ^ 4 * (13860 * witSq N))
+        (1488300 * (N * N) * (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)) + 1488300 * (N * N) * (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)) + 41000 * (N * N) * (N - 1) ^ 4 * (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105)))) (1363200 * (N - 1) ^ 4 * (22 * (105 * N ^ 5) + 22 * (21 * N))),
+      Nat.add_right_comm (1363200 * (N - 1) ^ 4 * (13860 * witSq N))
+        (1488300 * (N * N) * (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)) + 1488300 * (N * N) * (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)) + 41000 * (N * N) * (N - 1) ^ 4 * (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105)))) (1363200 * (N - 1) ^ 4 * (22 * (105 * N ^ 5) + 22 * (21 * N))),
+      ← Nat.left_distrib (1363200 * (N - 1) ^ 4) (13860 * witSq N) (22 * (105 * N ^ 5) + 22 * (21 * N)), cl0]
+  refine Nat.le_of_mul_le_mul_left (c := 13860) ?_ (Nat.succ_pos _)
+  refine ground.leCancelR (1488300 * (N * N) * (2 * (1617 * N ^ 7) + 2 * (3003 * N ^ 3)) + 1488300 * (N * N) * (231 * (12 * N ^ 6) + 231 * (9 * N ^ 2)) + 41000 * (N * N) * (N - 1) ^ 4 * (132 * (147 * N ^ 5) + (132 * (105 * N ^ 4) + (132 * (23 * N) + 132 * 105))) + 1363200 * (N - 1) ^ 4 * (22 * (105 * N ^ 5) + 22 * (21 * N))) ?_
+  rw [hL, hR]
+  exact onePolyN N hN
+
+private theorem nrA (n S2 : Nat) :
+    6 * (n * n) * (363 * (20 * S2))
+      = 43560 * (n * n) * S2 :=
+  ground.monEq [n, S2]
+    (Mon.mul (Mon.mul (Mon.cst 6) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.mul (Mon.cst 363) (Mon.mul (Mon.cst 20) (Mon.var 1))))
+    (Mon.mul (Mon.mul (Mon.cst 43560) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 1))
+    (by decide +kernel) (by decide +kernel)
+private theorem nrB (n S1 : Nat) :
+    6 * (n * n) * (363 * (n * S1))
+      = 2178 * (n * n * n) * S1 :=
+  ground.monEq [n, S1]
+    (Mon.mul (Mon.mul (Mon.cst 6) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.mul (Mon.cst 363) (Mon.mul (Mon.var 0) (Mon.var 1))))
+    (Mon.mul (Mon.mul (Mon.cst 2178) (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 0)) (Mon.var 0))) (Mon.var 1))
+    (by decide +kernel) (by decide +kernel)
+private theorem nrC (n m Sd : Nat) :
+    6 * (n * n) * (200 * m * Sd)
+      = 1200 * (n * n) * m * Sd :=
+  ground.monEq [n, m, Sd]
+    (Mon.mul (Mon.mul (Mon.cst 6) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.mul (Mon.mul (Mon.cst 200) (Mon.var 1)) (Mon.var 2)))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.cst 1200) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 1)) (Mon.var 2))
+    (by decide +kernel) (by decide +kernel)
+private theorem noA (n S2 : Nat) :
+    2050 * (n * n) * (726 * S2)
+      = 1488300 * (n * n) * S2 :=
+  ground.monEq [n, S2]
+    (Mon.mul (Mon.mul (Mon.cst 2050) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.mul (Mon.cst 726) (Mon.var 1)))
+    (Mon.mul (Mon.mul (Mon.cst 1488300) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 1))
+    (by decide +kernel) (by decide +kernel)
+private theorem noC (n m Sd : Nat) :
+    2050 * (n * n) * (20 * m * Sd)
+      = 41000 * (n * n) * m * Sd :=
+  ground.monEq [n, m, Sd]
+    (Mon.mul (Mon.mul (Mon.cst 2050) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.mul (Mon.mul (Mon.cst 20) (Mon.var 1)) (Mon.var 2)))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.cst 41000) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 1)) (Mon.var 2))
+    (by decide +kernel) (by decide +kernel)
+/-- The residue display's nesting: the two members' products
+distributed. -/
+private theorem nestRes (n S2 S1 m Sd X : Nat) :
+    6 * (n * n) * (363 * (20 * S2 + n * S1) + 200 * m * (Sd + X))
+      = 43560 * (n * n) * S2 + 2178 * (n * n * n) * S1
+        + 1200 * (n * n) * m * Sd + 1200 * (n * n) * m * X := by
+  rw [Nat.left_distrib 363 (20 * S2) (n * S1), Nat.left_distrib (200 * m) Sd X,
+    Nat.left_distrib (6 * (n * n)) (363 * (20 * S2) + 363 * (n * S1))
+      (200 * m * Sd + 200 * m * X),
+    Nat.left_distrib (6 * (n * n)) (363 * (20 * S2)) (363 * (n * S1)),
+    Nat.left_distrib (6 * (n * n)) (200 * m * Sd) (200 * m * X),
+    nrA n S2, nrB n S1, nrC n m Sd, nrC n m X, ← Nat.add_assoc]
+
+/-- The residue-one display's nesting. -/
+private theorem nestOne (n S2 S1 m Sd X : Nat) :
+    2050 * (n * n) * (726 * (S2 + S1) + 20 * m * (Sd + X))
+      = 1488300 * (n * n) * S2 + 1488300 * (n * n) * S1
+        + 41000 * (n * n) * m * Sd + 41000 * (n * n) * m * X := by
+  rw [Nat.left_distrib 726 S2 S1, Nat.left_distrib (20 * m) Sd X,
+    Nat.left_distrib (2050 * (n * n)) (726 * S2 + 726 * S1)
+      (20 * m * Sd + 20 * m * X),
+    Nat.left_distrib (2050 * (n * n)) (726 * S2) (726 * S1),
+    Nat.left_distrib (2050 * (n * n)) (20 * m * Sd) (20 * m * X),
+    noA n S2, noA n S1, noC n m Sd, noC n m X, ← Nat.add_assoc]
+
+/-- The transported rate's cleared comparison at the closed reads:
+at the key's bracket and the key clearing twenty residues, the
+member `[6 : 5]` reads its line under the transported rate at every
+residue at or beyond two, the display
+`6N²(363(20Σ₂+NΣ₁)+200(N−1)⁴(Σ_d+(N²−1)²)) ≤ 41600(N−1)⁴Σ₀` at the
+closed reads of `lem:cornerpivot`(v), whose display at `N = 1652+t`
+reads a natural coefficient at every key of `t`
+(`lem:cornerpivot`(vi)). -/
+theorem resPoly (N : Nat) (hN : 1652 ≤ N) :
+    6 * N ^ 2 * (363 * (20 * witSqMM N + N * witSqM N)
+        + 200 * (N - 1) ^ 4 * (witDiffSq N + (N * N - 1) ^ 2))
+      ≤ 41600 * (N - 1) ^ 4 * witSq N := by
+  rw [sqRead N, nestRes N (witSqMM N) (witSqM N) ((N - 1) ^ 4) (witDiffSq N)
+    ((N * N - 1) ^ 2)]
+  exact resDisp N hN
+
+/-- The same-scale rate's cleared comparison at the closed reads at
+the residue one: the member `[41 : 40]` reads its line under the
+stated rate at the key's bracket, the scale's second member priced
+through `[213 : 50]`, the display
+`2050N²(726(Σ₂+Σ₁)+20(N−1)⁴(Σ_d+(N²−1)²)) ≤ 1363200(N−1)⁴Σ₀`, whose
+display at `N = 1495+t` reads a natural coefficient at every key
+(`lem:cornerpivot`(vi)). -/
+theorem onePoly (N : Nat) (hN : 1495 ≤ N) :
+    2050 * N ^ 2 * (726 * (witSqMM N + witSqM N)
+        + 20 * (N - 1) ^ 4 * (witDiffSq N + (N * N - 1) ^ 2))
+      ≤ 1363200 * (N - 1) ^ 4 * witSq N := by
+  rw [sqRead N, nestOne N (witSqMM N) (witSqM N) ((N - 1) ^ 4) (witDiffSq N)
+    ((N * N - 1) ^ 2)]
+  exact oneDisp N hN
+
+private theorem tiA (r1 D : Nat) :
+    363 * (r1 * (26 * 26) * (D * D))
+      = 676 * (363 * r1 * (D * D)) :=
+  ground.monEq [r1, D]
+    (Mon.mul (Mon.cst 363) (Mon.mul (Mon.mul (Mon.var 0) (Mon.mul (Mon.cst 26) (Mon.cst 26))) (Mon.mul (Mon.var 1) (Mon.var 1))))
+    (Mon.mul (Mon.cst 676) (Mon.mul (Mon.mul (Mon.cst 363) (Mon.var 0)) (Mon.mul (Mon.var 1) (Mon.var 1))))
+    (by decide +kernel) (by decide +kernel)
+private theorem tiB (N E : Nat) :
+    676 * (40 * (N * N * N * N) * (E * E))
+      = N * N * N * N * (E * E) * 27040 :=
+  ground.monEq [N, E]
+    (Mon.mul (Mon.cst 676) (Mon.mul (Mon.mul (Mon.cst 40) (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 0)) (Mon.var 0)) (Mon.var 0))) (Mon.mul (Mon.var 1) (Mon.var 1))))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 0)) (Mon.var 0)) (Mon.var 0)) (Mon.mul (Mon.var 1) (Mon.var 1))) (Mon.cst 27040))
+    (by decide +kernel) (by decide +kernel)
+private theorem tiC (N E : Nat) :
+    363 * (3 * ((5 * N * N) * (5 * N * N)) * (E * E))
+      = N * N * N * N * (E * E) * 27225 :=
+  ground.monEq [N, E]
+    (Mon.mul (Mon.cst 363) (Mon.mul (Mon.mul (Mon.cst 3) (Mon.mul (Mon.mul (Mon.mul (Mon.cst 5) (Mon.var 0)) (Mon.var 0)) (Mon.mul (Mon.mul (Mon.cst 5) (Mon.var 0)) (Mon.var 0)))) (Mon.mul (Mon.var 1) (Mon.var 1))))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 0)) (Mon.var 0)) (Mon.var 0)) (Mon.mul (Mon.var 1) (Mon.var 1))) (Mon.cst 27225))
+    (by decide +kernel) (by decide +kernel)
+
+/-- The tied scale is a pair off the endpoint key: at the key `N` of
+the residue and the scale the pair `η₂ = [26 : 5N²]` reads the tie
+`(r+1)η₂² ≤ 3η²` at the key's comparison, `75·363 ≥ 676·40`
+cross-multiplied (`lem:cornerpivot`(vi)). -/
+theorem tieRead (E D r N : Nat)
+    (hhit : 363 * (r + 1) * D ^ 2 ≤ 40 * N ^ 4 * E ^ 2) :
+    (r + 1) * (26 * 26) * (D * D) ≤ 3 * ((5 * N * N) * (5 * N * N)) * (E * E) := by
+  rw [sqRead D, sqRead E, pow4Read N] at hhit
+  refine Nat.le_of_mul_le_mul_left (c := 363) ?_ (Nat.succ_pos _)
+  rw [tiA, tiC]
+  refine Nat.le_trans (Nat.mul_le_mul_left 676 hhit) ?_
+  rw [tiB]
+  exact Nat.mul_le_mul_left _ (by decide)
+
+/-- The tied scale's second member, `5N²` at its successor
+padding. -/
+def tieScaleD (N : Nat) : Pos := posOfSucc (5 * N * N - 1)
+
+/-- The tied scale's second member reads `5N²` at an occupied key. -/
+theorem tieScaleD_val (N : Nat) (hN : 1 ≤ N) : posVal (tieScaleD N) = 5 * N * N :=
+  ground.subAdd (Nat.le_trans hN
+    (Nat.le_trans (Nat.le_mul_of_pos_left N (by decide : 0 < 5))
+      (Nat.le_mul_of_pos_right (5 * N) hN)))
+
+private theorem rrA1 (P E N : Nat) :
+    6 * P * E * (1 * (5 * N * N))
+      = E * (30 * (N * N) * P) :=
+  ground.monEq [P, E, N]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.cst 6) (Mon.var 0)) (Mon.var 1)) (Mon.mul (Mon.cst 1) (Mon.mul (Mon.mul (Mon.cst 5) (Mon.var 2)) (Mon.var 2))))
+    (Mon.mul (Mon.var 1) (Mon.mul (Mon.mul (Mon.cst 30) (Mon.mul (Mon.var 2) (Mon.var 2))) (Mon.var 0)))
+    (by decide +kernel) (by decide +kernel)
+private theorem rrA2 (E D r1 S0 : Nat) :
+    8 * 26 * (5 * (E * D * r1 * S0) * D)
+      = E * (1040 * (D * D) * r1 * S0) :=
+  ground.monEq [E, D, r1, S0]
+    (Mon.mul (Mon.mul (Mon.cst 8) (Mon.cst 26)) (Mon.mul (Mon.mul (Mon.cst 5) (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2)) (Mon.var 3))) (Mon.var 1)))
+    (Mon.mul (Mon.var 0) (Mon.mul (Mon.mul (Mon.mul (Mon.cst 1040) (Mon.mul (Mon.var 1) (Mon.var 1))) (Mon.var 2)) (Mon.var 3)))
+    (by decide +kernel) (by decide +kernel)
+private theorem rrB1 (m N E A : Nat) :
+    40 * m * (30 * (N * N) * (4 * (E * E) * A))
+      = 120 * (N * N) * A * (40 * m * (E * E)) :=
+  ground.monEq [m, N, E, A]
+    (Mon.mul (Mon.mul (Mon.cst 40) (Mon.var 0)) (Mon.mul (Mon.mul (Mon.cst 30) (Mon.mul (Mon.var 1) (Mon.var 1))) (Mon.mul (Mon.mul (Mon.cst 4) (Mon.mul (Mon.var 2) (Mon.var 2))) (Mon.var 3))))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.cst 120) (Mon.mul (Mon.var 1) (Mon.var 1))) (Mon.var 3)) (Mon.mul (Mon.mul (Mon.cst 40) (Mon.var 0)) (Mon.mul (Mon.var 2) (Mon.var 2))))
+    (by decide +kernel) (by decide +kernel)
+private theorem rrB2 (m N r1 D B : Nat) :
+    40 * m * (30 * (N * N) * (r1 * (D * D) * B))
+      = r1 * (D * D) * (1200 * (N * N) * m * B) :=
+  ground.monEq [m, N, r1, D, B]
+    (Mon.mul (Mon.mul (Mon.cst 40) (Mon.var 0)) (Mon.mul (Mon.mul (Mon.cst 30) (Mon.mul (Mon.var 1) (Mon.var 1))) (Mon.mul (Mon.mul (Mon.var 2) (Mon.mul (Mon.var 3) (Mon.var 3))) (Mon.var 4))))
+    (Mon.mul (Mon.mul (Mon.var 2) (Mon.mul (Mon.var 3) (Mon.var 3))) (Mon.mul (Mon.mul (Mon.mul (Mon.cst 1200) (Mon.mul (Mon.var 1) (Mon.var 1))) (Mon.var 0)) (Mon.var 4)))
+    (by decide +kernel) (by decide +kernel)
+private theorem rrB3 (m D r1 S0 : Nat) :
+    40 * m * (1040 * (D * D) * r1 * S0)
+      = r1 * (D * D) * (41600 * m * S0) :=
+  ground.monEq [m, D, r1, S0]
+    (Mon.mul (Mon.mul (Mon.cst 40) (Mon.var 0)) (Mon.mul (Mon.mul (Mon.mul (Mon.cst 1040) (Mon.mul (Mon.var 1) (Mon.var 1))) (Mon.var 2)) (Mon.var 3)))
+    (Mon.mul (Mon.mul (Mon.var 2) (Mon.mul (Mon.var 1) (Mon.var 1))) (Mon.mul (Mon.mul (Mon.cst 41600) (Mon.var 0)) (Mon.var 3)))
+    (by decide +kernel) (by decide +kernel)
+private theorem rrB4 (N A r1 D : Nat) :
+    120 * (N * N) * A * (363 * r1 * (D * D))
+      = r1 * (D * D) * (43560 * (N * N) * A) :=
+  ground.monEq [N, A, r1, D]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.cst 120) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 1)) (Mon.mul (Mon.mul (Mon.cst 363) (Mon.var 2)) (Mon.mul (Mon.var 3) (Mon.var 3))))
+    (Mon.mul (Mon.mul (Mon.var 2) (Mon.mul (Mon.var 3) (Mon.var 3))) (Mon.mul (Mon.mul (Mon.cst 43560) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 1)))
+    (by decide +kernel) (by decide +kernel)
+private theorem rrC1 (N r S1 : Nat) :
+    20 * (43560 * (N * N) * (r * S1))
+      = 43560 * (N * N) * S1 * (20 * r) :=
+  ground.monEq [N, r, S1]
+    (Mon.mul (Mon.cst 20) (Mon.mul (Mon.mul (Mon.cst 43560) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.mul (Mon.var 1) (Mon.var 2))))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.cst 43560) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 2)) (Mon.mul (Mon.cst 20) (Mon.var 1)))
+    (by decide +kernel) (by decide +kernel)
+private theorem rrC2 (N S1 : Nat) :
+    20 * (2178 * (N * N * N) * S1)
+      = 43560 * (N * N) * S1 * N :=
+  ground.monEq [N, S1]
+    (Mon.mul (Mon.cst 20) (Mon.mul (Mon.mul (Mon.cst 2178) (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 0)) (Mon.var 0))) (Mon.var 1)))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.cst 43560) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 1)) (Mon.var 0))
+    (by decide +kernel) (by decide +kernel)
+
+/-- The member `[6 : 5]` reads its line under the transported rate
+at every residue at or beyond two: at the key's own bracket
+`40(N−1)⁴η² < 363(r+1)` and the key clearing twenty residues,
+`20r ≤ N`, the lower rate's data against the member sit under the
+rate `[208 : 5N²η]`, the scale's square priced by the bracket and the
+residue by the key at the cleared comparison (`resPoly`;
+`lem:cornerpivot`(vi)). -/
+theorem resRate (E D r N : Nat) (hN : 1652 ≤ N) (hr20 : 20 * r ≤ N)
+    (hkey : 40 * (N - 1) ^ 4 * E ^ 2 < 363 * (r + 1) * D ^ 2) :
+    6 * qLowNum E D r N * E * (1 * (5 * N * N))
+      ≤ 8 * 26 * (5 * qLowDen E D r N * D) := by
+  have hdisp := resDisp N hN
+  have hm : 0 < (N - 1) ^ 4 :=
+    Nat.pow_pos (Nat.lt_of_lt_of_le (by decide : 0 < 1651)
+      (Nat.le_of_lt_succ (Nat.lt_of_lt_of_le (Nat.lt_succ_self _)
+        (show 1652 ≤ N - 1 + 1 from (ground.subAdd
+          (Nat.le_trans (by decide : 1 ≤ 1652) hN)).symm ▸ hN))))
+  show 6 * (4 * E ^ 2 * (witSqMM N + r * witSqM N)
+      + (r + 1) * D ^ 2 * (witDiffSq N + (N * N - 1) ^ 2)) * E * (1 * (5 * N * N))
+    ≤ 8 * 26 * (5 * (E * D * (r + 1) * witSq N) * D)
+  rw [sqRead E, sqRead D] at hkey ⊢
+  generalize (N - 1) ^ 4 = m at hkey hdisp hm ⊢
+  generalize (N * N - 1) ^ 2 = X at hdisp ⊢
+  generalize witSqMM N = S2 at hdisp ⊢
+  generalize witSqM N = S1 at hdisp ⊢
+  generalize witDiffSq N = Sd at hdisp ⊢
+  generalize witSq N = S0 at hdisp ⊢
+  generalize r + 1 = r1 at hkey ⊢
+  rw [rrA1, rrA2]
+  refine Nat.mul_le_mul_left E ?_
+  refine Nat.le_of_mul_le_mul_left (c := 40 * m) ?_ (Nat.mul_pos (by decide) hm)
+  rw [Nat.left_distrib (30 * (N * N)) (4 * (E * E) * (S2 + r * S1))
+      (r1 * (D * D) * (Sd + X)),
+    Nat.left_distrib (40 * m) (30 * (N * N) * (4 * (E * E) * (S2 + r * S1)))
+      (30 * (N * N) * (r1 * (D * D) * (Sd + X))),
+    rrB1, rrB2, rrB3]
+  refine Nat.le_trans (Nat.add_le_add_right
+    (Nat.mul_le_mul_left (120 * (N * N) * (S2 + r * S1)) (Nat.le_of_lt hkey)) _) ?_
+  rw [rrB4, ← Nat.left_distrib (r1 * (D * D)) (43560 * (N * N) * (S2 + r * S1))
+    (1200 * (N * N) * m * (Sd + X))]
+  refine Nat.mul_le_mul_left (r1 * (D * D)) ?_
+  refine Nat.le_of_mul_le_mul_left (c := 20) ?_ (by decide)
+  rw [Nat.left_distrib (43560 * (N * N)) S2 (r * S1),
+    Nat.left_distrib (1200 * (N * N) * m) Sd X,
+    ← Nat.add_assoc (43560 * (N * N) * S2 + 43560 * (N * N) * (r * S1))
+      (1200 * (N * N) * m * Sd) (1200 * (N * N) * m * X),
+    Nat.left_distrib 20 (43560 * (N * N) * S2 + 43560 * (N * N) * (r * S1)
+      + 1200 * (N * N) * m * Sd) (1200 * (N * N) * m * X),
+    Nat.left_distrib 20 (43560 * (N * N) * S2 + 43560 * (N * N) * (r * S1))
+      (1200 * (N * N) * m * Sd),
+    Nat.left_distrib 20 (43560 * (N * N) * S2) (43560 * (N * N) * (r * S1))]
+  have hmid : 20 * (43560 * (N * N) * (r * S1)) ≤ 20 * (2178 * (N * N * N) * S1) := by
+    rw [rrC1, rrC2]
+    exact Nat.mul_le_mul_left _ hr20
+  refine Nat.le_trans (Nat.add_le_add_right (Nat.add_le_add_right
+    (Nat.add_le_add_left hmid _) _) _) ?_
+  rw [← Nat.left_distrib 20 (43560 * (N * N) * S2) (2178 * (N * N * N) * S1),
+    ← Nat.left_distrib 20 (43560 * (N * N) * S2 + 2178 * (N * N * N) * S1)
+      (1200 * (N * N) * m * Sd),
+    ← Nat.left_distrib 20 (43560 * (N * N) * S2 + 2178 * (N * N * N) * S1
+      + 1200 * (N * N) * m * Sd) (1200 * (N * N) * m * X)]
+  exact Nat.mul_le_mul_left 20 hdisp
+
+private theorem orS1 (D : Nat) :
+    726 * ((213 * D) * (213 * D))
+      = 45369 * (726 * (D * D)) :=
+  ground.monEq [D]
+    (Mon.mul (Mon.cst 726) (Mon.mul (Mon.mul (Mon.cst 213) (Mon.var 0)) (Mon.mul (Mon.cst 213) (Mon.var 0))))
+    (Mon.mul (Mon.cst 45369) (Mon.mul (Mon.cst 726) (Mon.mul (Mon.var 0) (Mon.var 0))))
+    (by decide +kernel) (by decide +kernel)
+private theorem orS2 (N E : Nat) :
+    45369 * (40 * (N * N * N * N) * (E * E))
+      = N * N * N * N * (E * E) * 1814760 :=
+  ground.monEq [N, E]
+    (Mon.mul (Mon.cst 45369) (Mon.mul (Mon.mul (Mon.cst 40) (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 0)) (Mon.var 0)) (Mon.var 0))) (Mon.mul (Mon.var 1) (Mon.var 1))))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 0)) (Mon.var 0)) (Mon.var 0)) (Mon.mul (Mon.var 1) (Mon.var 1))) (Mon.cst 1814760))
+    (by decide +kernel) (by decide +kernel)
+private theorem orS3 (N E : Nat) :
+    726 * ((50 * (N * N) * E) * (50 * (N * N) * E))
+      = N * N * N * N * (E * E) * 1815000 :=
+  ground.monEq [N, E]
+    (Mon.mul (Mon.cst 726) (Mon.mul (Mon.mul (Mon.mul (Mon.cst 50) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 1)) (Mon.mul (Mon.mul (Mon.cst 50) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 1))))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 0)) (Mon.var 0)) (Mon.var 0)) (Mon.mul (Mon.var 1) (Mon.var 1))) (Mon.cst 1815000))
+    (by decide +kernel) (by decide +kernel)
+private theorem orB1 (m E A : Nat) :
+    40 * m * (41 * (4 * (E * E) * A))
+      = 164 * A * (40 * m * (E * E)) :=
+  ground.monEq [m, E, A]
+    (Mon.mul (Mon.mul (Mon.cst 40) (Mon.var 0)) (Mon.mul (Mon.cst 41) (Mon.mul (Mon.mul (Mon.cst 4) (Mon.mul (Mon.var 1) (Mon.var 1))) (Mon.var 2))))
+    (Mon.mul (Mon.mul (Mon.cst 164) (Mon.var 2)) (Mon.mul (Mon.mul (Mon.cst 40) (Mon.var 0)) (Mon.mul (Mon.var 1) (Mon.var 1))))
+    (by decide +kernel) (by decide +kernel)
+private theorem orB2 (m D B : Nat) :
+    40 * m * (41 * (2 * (D * D) * B))
+      = D * D * (3280 * m * B) :=
+  ground.monEq [m, D, B]
+    (Mon.mul (Mon.mul (Mon.cst 40) (Mon.var 0)) (Mon.mul (Mon.cst 41) (Mon.mul (Mon.mul (Mon.cst 2) (Mon.mul (Mon.var 1) (Mon.var 1))) (Mon.var 2))))
+    (Mon.mul (Mon.mul (Mon.var 1) (Mon.var 1)) (Mon.mul (Mon.mul (Mon.cst 3280) (Mon.var 0)) (Mon.var 2)))
+    (by decide +kernel) (by decide +kernel)
+private theorem orB3 (m E D S0 : Nat) :
+    40 * m * (8 * (40 * (E * D * 2 * S0)))
+      = D * (25600 * E * m * S0) :=
+  ground.monEq [m, E, D, S0]
+    (Mon.mul (Mon.mul (Mon.cst 40) (Mon.var 0)) (Mon.mul (Mon.cst 8) (Mon.mul (Mon.cst 40) (Mon.mul (Mon.mul (Mon.mul (Mon.var 1) (Mon.var 2)) (Mon.cst 2)) (Mon.var 3)))))
+    (Mon.mul (Mon.var 2) (Mon.mul (Mon.mul (Mon.mul (Mon.cst 25600) (Mon.var 1)) (Mon.var 0)) (Mon.var 3)))
+    (by decide +kernel) (by decide +kernel)
+private theorem orB4 (A D : Nat) :
+    164 * A * (726 * (D * D))
+      = D * D * (119064 * A) :=
+  ground.monEq [A, D]
+    (Mon.mul (Mon.mul (Mon.cst 164) (Mon.var 0)) (Mon.mul (Mon.cst 726) (Mon.mul (Mon.var 1) (Mon.var 1))))
+    (Mon.mul (Mon.mul (Mon.var 1) (Mon.var 1)) (Mon.mul (Mon.cst 119064) (Mon.var 0)))
+    (by decide +kernel) (by decide +kernel)
+private theorem orC1 (N E Y : Nat) :
+    50 * (N * N) * E * Y
+      = E * (50 * (N * N) * Y) :=
+  ground.monEq [N, E, Y]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.cst 50) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 1)) (Mon.var 2))
+    (Mon.mul (Mon.var 1) (Mon.mul (Mon.mul (Mon.cst 50) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 2)))
+    (by decide +kernel) (by decide +kernel)
+private theorem orC2 (E m S0 : Nat) :
+    213 * (25600 * E * m * S0)
+      = E * (5452800 * m * S0) :=
+  ground.monEq [E, m, S0]
+    (Mon.mul (Mon.cst 213) (Mon.mul (Mon.mul (Mon.mul (Mon.cst 25600) (Mon.var 0)) (Mon.var 1)) (Mon.var 2)))
+    (Mon.mul (Mon.var 0) (Mon.mul (Mon.mul (Mon.cst 5452800) (Mon.var 1)) (Mon.var 2)))
+    (by decide +kernel) (by decide +kernel)
+private theorem orD1 (N S2 : Nat) :
+    50 * (N * N) * (119064 * S2)
+      = 4 * (1488300 * (N * N) * S2) :=
+  ground.monEq [N, S2]
+    (Mon.mul (Mon.mul (Mon.cst 50) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.mul (Mon.cst 119064) (Mon.var 1)))
+    (Mon.mul (Mon.cst 4) (Mon.mul (Mon.mul (Mon.cst 1488300) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 1)))
+    (by decide +kernel) (by decide +kernel)
+private theorem orD2 (N S1 : Nat) :
+    50 * (N * N) * (119064 * (1 * S1))
+      = 4 * (1488300 * (N * N) * S1) :=
+  ground.monEq [N, S1]
+    (Mon.mul (Mon.mul (Mon.cst 50) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.mul (Mon.cst 119064) (Mon.mul (Mon.cst 1) (Mon.var 1))))
+    (Mon.mul (Mon.cst 4) (Mon.mul (Mon.mul (Mon.cst 1488300) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 1)))
+    (by decide +kernel) (by decide +kernel)
+private theorem orD3 (N m Sd : Nat) :
+    50 * (N * N) * (3280 * m * Sd)
+      = 4 * (41000 * (N * N) * m * Sd) :=
+  ground.monEq [N, m, Sd]
+    (Mon.mul (Mon.mul (Mon.cst 50) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.mul (Mon.mul (Mon.cst 3280) (Mon.var 1)) (Mon.var 2)))
+    (Mon.mul (Mon.cst 4) (Mon.mul (Mon.mul (Mon.mul (Mon.cst 41000) (Mon.mul (Mon.var 0) (Mon.var 0))) (Mon.var 1)) (Mon.var 2)))
+    (by decide +kernel) (by decide +kernel)
+private theorem orD5 (m S0 : Nat) :
+    5452800 * m * S0
+      = 4 * (1363200 * m * S0) :=
+  ground.monEq [m, S0]
+    (Mon.mul (Mon.mul (Mon.cst 5452800) (Mon.var 0)) (Mon.var 1))
+    (Mon.mul (Mon.cst 4) (Mon.mul (Mon.mul (Mon.cst 1363200) (Mon.var 0)) (Mon.var 1)))
+    (by decide +kernel) (by decide +kernel)
+
+/-- The scale's second member priced through `[213 : 50]` at the
+residue one: the key's comparison `726 ≤ 40N⁴η²` at the scale's
+members `[E : D]` puts the second member's `213`-multiple at or
+below the first's `50N²`-multiple, `[213 : 50]²` under the key's
+`[363 : 20]` (`lem:cornerpivot`(vi)). -/
+private theorem oneScale (E D N : Nat)
+    (hhit : 363 * (1 + 1) * (D * D) ≤ 40 * (N * N * N * N) * (E * E)) :
+    213 * D ≤ 50 * (N * N) * E := by
+  refine ground.leOfSqLe ?_
+  refine Nat.le_of_mul_le_mul_left (c := 726) ?_ (Nat.succ_pos _)
+  rw [orS1, orS3]
+  refine Nat.le_trans (Nat.mul_le_mul_left 45369 hhit) ?_
+  rw [orS2]
+  exact Nat.mul_le_mul_left _ (by decide)
+
+/-- The member `[41 : 40]` reads its line under the stated rate at
+the residue one: at the key from `1495`, the key's bracket
+`40(N−1)⁴η² < 726` and the key's comparison `726 ≤ 40N⁴η²`, the
+lower rate's data against the member sit under the rate `8`, the
+scale's square priced by the bracket and its second member through
+`[213 : 50]` at the cleared comparison (`onePoly`;
+`lem:cornerpivot`(vi)). -/
+theorem oneRate (E D N : Nat) (hN : 1495 ≤ N)
+    (hkey : 40 * (N - 1) ^ 4 * E ^ 2 < 363 * (1 + 1) * D ^ 2)
+    (hhit : 363 * (1 + 1) * D ^ 2 ≤ 40 * N ^ 4 * E ^ 2) :
+    41 * qLowNum E D 1 N * 1 ≤ 8 * (40 * qLowDen E D 1 N) := by
+  have hdisp := oneDisp N hN
+  have hm : 0 < (N - 1) ^ 4 :=
+    Nat.pow_pos (Nat.lt_of_lt_of_le (by decide : 0 < 1494)
+      (Nat.le_of_lt_succ (Nat.lt_of_lt_of_le (Nat.lt_succ_self _)
+        (show 1495 ≤ N - 1 + 1 from (ground.subAdd
+          (Nat.le_trans (by decide : 1 ≤ 1495) hN)).symm ▸ hN))))
+  rw [sqRead E, sqRead D, pow4Read N] at hhit
+  have h213 := oneScale E D N hhit
+  show 41 * (4 * E ^ 2 * (witSqMM N + 1 * witSqM N)
+      + (1 + 1) * D ^ 2 * (witDiffSq N + (N * N - 1) ^ 2)) * 1
+    ≤ 8 * (40 * (E * D * (1 + 1) * witSq N))
+  rw [sqRead E, sqRead D] at hkey ⊢
+  have hkey' : 40 * (N - 1) ^ 4 * (E * E) < 726 * (D * D) := hkey
+  show 41 * (4 * (E * E) * (witSqMM N + 1 * witSqM N)
+      + 2 * (D * D) * (witDiffSq N + (N * N - 1) ^ 2)) * 1
+    ≤ 8 * (40 * (E * D * 2 * witSq N))
+  generalize (N - 1) ^ 4 = m at hkey' hdisp hm ⊢
+  generalize (N * N - 1) ^ 2 = X at hdisp ⊢
+  generalize witSqMM N = S2 at hdisp ⊢
+  generalize witSqM N = S1 at hdisp ⊢
+  generalize witDiffSq N = Sd at hdisp ⊢
+  generalize witSq N = S0 at hdisp ⊢
+  rw [Nat.mul_one]
+  refine Nat.le_of_mul_le_mul_left (c := 40 * m) ?_ (Nat.mul_pos (by decide) hm)
+  rw [Nat.left_distrib 41 (4 * (E * E) * (S2 + 1 * S1)) (2 * (D * D) * (Sd + X)),
+    Nat.left_distrib (40 * m) (41 * (4 * (E * E) * (S2 + 1 * S1)))
+      (41 * (2 * (D * D) * (Sd + X))),
+    orB1, orB2, orB3]
+  refine Nat.le_trans (Nat.add_le_add_right
+    (Nat.mul_le_mul_left (164 * (S2 + 1 * S1)) (Nat.le_of_lt hkey')) _) ?_
+  rw [orB4, ← Nat.left_distrib (D * D) (119064 * (S2 + 1 * S1)) (3280 * m * (Sd + X)),
+    ground.mulAssoc D D _]
+  refine Nat.mul_le_mul_left D ?_
+  refine Nat.le_of_mul_le_mul_left (c := 213) ?_ (Nat.succ_pos _)
+  rw [← ground.mulAssoc 213 D _, orC2]
+  refine Nat.le_trans (Nat.mul_le_mul_right _ h213) ?_
+  rw [orC1]
+  refine Nat.mul_le_mul_left E ?_
+  rw [Nat.left_distrib 119064 S2 (1 * S1), Nat.left_distrib (3280 * m) Sd X,
+    Nat.left_distrib (50 * (N * N)) (119064 * S2 + 119064 * (1 * S1))
+      (3280 * m * Sd + 3280 * m * X),
+    Nat.left_distrib (50 * (N * N)) (119064 * S2) (119064 * (1 * S1)),
+    Nat.left_distrib (50 * (N * N)) (3280 * m * Sd) (3280 * m * X),
+    orD1, orD2, orD3, orD3, orD5,
+    ← Nat.add_assoc (4 * (1488300 * (N * N) * S2) + 4 * (1488300 * (N * N) * S1))
+      (4 * (41000 * (N * N) * m * Sd)) (4 * (41000 * (N * N) * m * X)),
+    ← Nat.left_distrib 4 (1488300 * (N * N) * S2) (1488300 * (N * N) * S1),
+    ← Nat.left_distrib 4 (1488300 * (N * N) * S2 + 1488300 * (N * N) * S1)
+      (41000 * (N * N) * m * Sd),
+    ← Nat.left_distrib 4 (1488300 * (N * N) * S2 + 1488300 * (N * N) * S1
+      + 41000 * (N * N) * m * Sd) (41000 * (N * N) * m * X)]
+  exact Nat.mul_le_mul_left 4 hdisp
+
+end
 
 end cornerpivot

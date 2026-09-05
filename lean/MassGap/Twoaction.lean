@@ -1,12 +1,12 @@
 import MassGap.Unitschain
 /-!
-`thm:twoaction` — the invariant clause: the invariant is fixed
-under the scheme bridge, the rescaling `b_f^equiv = 2 d_f b_X` of
-the coupling coordinate (`thm:bridge`) acting on the base with the
-two ends its fixed points (`unitschain.bridge_fixed` at the
-member's coefficient, `invariant_fixed`), so the two families'
-invariants read one pair, the contact pair at the ends' own values
-(`thm:closing`); the comparison at the corner outputs runs at the
+`thm:twoaction` — the bridge clause: the scheme bridge, the
+rescaling `b_f^equiv = 2 d_f b_X` of the coupling coordinate
+(`thm:bridge`), acts on the base with the two ends its fixed points
+(`unitschain.bridge_fixed` at the member's coefficient,
+`ends_fixed`), so the two families' segments share their ends, the
+contact pair read at the contact end (`thm:closing`); the
+comparison at the corner outputs runs at the
 families' certificates (`lem:corner`): `compare_bracket` reads each
 output's comparison as one bracket at the two families'
 certificates, the two members' brackets cross-added, finite and
@@ -33,7 +33,7 @@ private theorem one_lt_two_mul (x : Pos) : (1 : Pos) < 2 * x :=
 /-- The bridge's rescaling at the member's own coefficient
 `2 d_f` fixes exactly the two ends of the base, every interior ray
 moved — the characterization's instance at the coefficient, the
-invariant's reads taken at the ends (`thm:closing`). -/
+contact pair read at the contact end (`thm:closing`). -/
 theorem ends_fixed (r : Nat) (c : Coupling) :
     rayEq c (unitschain.bridgeMap (2 * posOfSucc r) c)
       ↔ (c = .free ∨ c = .contact) :=

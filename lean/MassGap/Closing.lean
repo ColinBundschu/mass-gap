@@ -1,7 +1,7 @@
 import MassGap.Contactpair
 import MassGap.Channeldiv
 /-!
-`thm:closing` — the constant's assembly: the contact pair reads
+`thm:closing` — the contact pair's assembly: the contact pair reads
 `(3, H_r)`, the channel's order count at three and the walk's pole
 excess at the harmonic read, factor by factor, with the base
 collecting at the orders' sum, `c₁^1 · c₁^2 = c₁^3`

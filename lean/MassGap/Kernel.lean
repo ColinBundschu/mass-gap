@@ -2,7 +2,7 @@ import MassGap.Wg
 /-!
 `rem:kernel` — the word index, and the presentation kernel.  The
 states are indexed gauge-free by the multisets of oriented cyclic
-words in the four letters: a generator reads only its cycles'
+words in the letters: a generator reads only its cycles'
 words, each up to rotation, so the positions of repeated factors
 are a gauge mode of the wiring spelling — the word of a cycle is
 its factors' letter list at the least rotation (`fCode` the
@@ -63,9 +63,10 @@ consumer. -/
 namespace kernel
 open ground poly places states genericlift
 
-/-- The letters' keys, the four factors encoded. -/
+/-- A factor's key: the variable's doubled with the dagger's
+read. -/
 def fCode (f : states.Factor) : Nat :=
-  (if f.1 then 2 else 0) + (if f.2 then 1 else 0)
+  2 * f.1 + (if f.2 then 1 else 0)
 
 private def lexLe : List Nat → List Nat → Bool
   | [], _ => true
@@ -92,7 +93,7 @@ list, each at its canonical rotation, the multiset sorted. -/
 def wordsOf (F : states.FList) (π : List Nat) : List (List Nat) :=
   sortW ((places.cyclesOf π).map (fun c =>
     canonRot (c.map (fun i =>
-      fCode (ground.getAt (false, false) F i)))))
+      fCode (ground.getAt (0, false) F i)))))
 
 /-- Two wirings at one word multiset are one state, the repeated
 factors' positions the gauge mode. -/
@@ -159,7 +160,7 @@ def kernelRead (F : states.FList) (keys : List (List Nat))
       let row := (List.range keys.length).foldl (fun acc j =>
         genericlift.pAddR acc (poly.pMul
           (ground.getAt poly.pZero ks j)
-          (wg.pairPhi F F (ground.getAt [] keys i)
+          (wg.pairPhi wg.evalPhi F F (ground.getAt [] keys i)
             (ground.getAt [] keys j)))) poly.pZero
       decide (genericlift.pairOccAt row rv)
         && decide (genericlift.agreeAt row poly.pZero rv)))
@@ -177,7 +178,7 @@ the evaluation identity's relations, the ones holding at every
 residue (`kernelRead` is the at-residue record's checker). -/
 def nullRead (F : states.FList) (k : states.Comb) : Prop :=
   ((places.perms F.length).all (fun π => decide (genericlift.crossNull
-    (wg.pairFull F F [(π, poly.pOne)] k)
+    (wg.pairFull wg.evalPhi F F [(π, poly.pOne)] k)
     poly.pZero))) = true
 
 instance (F : states.FList) (k : states.Comb) :
@@ -229,35 +230,48 @@ def charAt (rv : Nat) (lam mu : List Nat) : BPair :=
 def partsAt (k rv : Nat) : List (List Nat) :=
   (places.allShapes rv k).map places.rowList
 
-/-- A state's variable datum, the winding pair per variable: over
-the wiring's cycles, each cycle's members read off the factor
-list — a cycle across the two variables refuses the read whole —
-and a single-variable cycle reduces at the evaluation identity to
-its net power, the undaggered margin joining the first list, the
-daggered the second, a cycle at equal counts the counter's scalar;
-the value is the `U`-variable's triple with the `V`-variable's. -/
+/-- A variable's winding triple joined at a cycle's read: the net
+power at the undaggered margin joining the first list, at the
+daggered the second, a cycle at equal counts the counter's
+scalar. -/
+private def windJoin (u d : Nat) (t : List Nat × List Nat × Nat) :
+    List Nat × List Nat × Nat :=
+  if d < u then (t.1 ++ [u - d], t.2.1, t.2.2)
+  else if u < d then (t.1, t.2.1 ++ [d - u], t.2.2)
+  else (t.1, t.2.1, t.2.2 + 1)
+
+/-- The winding data keyed by variable, a cycle's read joined at
+its variable's triple, a variable's first cycle entering at the
+vacant triple (`ground.joinBy` at the cycle's join). -/
+private def windAt (v u d : Nat)
+    (l : List (Nat × (List Nat × List Nat × Nat))) :
+    List (Nat × (List Nat × List Nat × Nat)) :=
+  ground.joinBy (fun a b => a == b) (fun t _ => windJoin u d t) v
+    (windJoin u d ([], [], 0)) l
+
+/-- A state's variable data, the winding pairs keyed by variable:
+over the wiring's cycles, each cycle's members read off the factor
+list — a cycle across two variables refuses the read whole — and a
+single-variable cycle reduces at the evaluation identity to its net
+power, the undaggered margin joining the first list, the daggered
+the second, a cycle at equal counts the counter's scalar, the
+cycle's read joined at its variable's triple. -/
 def windingOf (F : states.FList) (π : List Nat) :
-    Option ((List Nat × List Nat × Nat)
-      × (List Nat × List Nat × Nat)) :=
+    Option (List (Nat × (List Nat × List Nat × Nat))) :=
   (places.cyclesOf π).foldl (fun acc c =>
     match acc, c with
     | none, _ => none
     | some t, [] => some t
-    | some (tU, tV), i :: rest =>
-      let v := (ground.getAt (false, false) F i).1
+    | some t, i :: rest =>
+      let v := (ground.getAt (0, false) F i).1
       if ((i :: rest).all (fun j =>
-          (ground.getAt (false, false) F j).1 == v)) then
+          (ground.getAt (0, false) F j).1 == v)) then
         let u := ((i :: rest).filter (fun j =>
-          !(ground.getAt (false, false) F j).2)).length
+          !(ground.getAt (0, false) F j).2)).length
         let d := (i :: rest).length - u
-        let t := if v then tV else tU
-        let t' :=
-          if d < u then (t.1 ++ [u - d], t.2.1, t.2.2)
-          else if u < d then (t.1, t.2.1 ++ [d - u], t.2.2)
-          else (t.1, t.2.1, t.2.2 + 1)
-        some (if v then (tU, t') else (t', tV))
+        some (windAt v u d t)
       else none)
-    (some (([], [], 0), ([], [], 0)))
+    (some [])
 
 /-- A variable's read at the residue: at matched winding totals
 the character fold over the shared within-residue shapes, at
@@ -274,8 +288,8 @@ private def varFold (rv : Nat) (t : List Nat × List Nat × Nat) :
 /-- The at-residue pairing of two generators, `prop:wg`'s direct
 tag: the conjugated first key against the second at the
 concatenated site exactly as `wg.pairPhi` wires it, the product's
-winding data read per variable and the two variables' character
-folds multiplied; a wiring crossing the variables refuses the
+winding data read per variable and the variables' character folds
+multiplied; a wiring crossing the variables refuses the
 read, the crossing class the factor list's own Gram's
 (`rem:kernel`'s computation). -/
 def pairAt (F : states.FList) (pa pb : List Nat) (rv : Nat) :
@@ -283,7 +297,8 @@ def pairAt (F : states.FList) (pa pb : List Nat) (rv : Nat) :
   match windingOf (wg.conjF F ++ F)
       (places.invPerm F.length pa ++ states.shiftW F.length pb) with
   | none => none
-  | some (tU, tV) => some ((varFold rv tU * varFold rv tV).norm)
+  | some ts => some ((ts.foldl (fun acc vt => acc * varFold rv vt.2)
+      (BPair.ofNat 1)).norm)
 
 /-- The row fold at a generator: the combination's coefficients
 evaluate at the residue through the Horner reads and enter at
@@ -310,7 +325,7 @@ pairing's definiteness, and a member's rows are the null
 function's own. -/
 def directRead (F : states.FList) (c : states.Comb) (rv : Nat) :
     Prop :=
-  ((F.all (fun f => !f.1) || F.all (fun f => f.1))
+  (F.all (fun f => f.1 == (ground.getAt (0, false) F 0).1)
     && c.all (fun e =>
         if genericlift.pairOccAt e.2 (BPair.ofNat rv) then true
         else false)

@@ -30,7 +30,7 @@ open twoplaq
 image's component is the module state at the `U` site, and its
 deflation's residual reads its self-pairing at equal members. -/
 theorem vacDressU_null : genericlift.crossNull
-    (wg.pairFull siteQ1 siteQ1
+    (wg.pairFull wg.evalPhi siteQ1 siteQ1
       (res.deflate siteQ1 [phiAdj] phiAdj)
       (res.deflate siteQ1 [phiAdj] phiAdj))
     poly.pZero := by decide +kernel
@@ -38,7 +38,7 @@ theorem vacDressU_null : genericlift.crossNull
 /-- The vacuum `Q`-dressing at the `V` plaquette, the second
 site's read. -/
 theorem vacDressV_null : genericlift.crossNull
-    (wg.pairFull siteQ2 siteQ2
+    (wg.pairFull wg.evalPhi siteQ2 siteQ2
       (res.deflate siteQ2 [phiAdj] phiAdj)
       (res.deflate siteQ2 [phiAdj] phiAdj))
     poly.pZero := by decide +kernel

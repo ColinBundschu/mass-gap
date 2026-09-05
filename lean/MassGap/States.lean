@@ -2,9 +2,10 @@ import MassGap.Places
 import MassGap.Genericlift
 /-!
 `con:states` — the permutation presentation's states.  A factor is
-a variable with its dagger read, one of the four letters
-(`Factor`, the pair of the variable's and the dagger's reads), and
-a factor list fixes the presentation's site (`FList`).  A generator
+a variable with its dagger read (`Factor`, the pair of the
+variable's key and the dagger's read, a variable a link's matrix
+at the coefficient carrier), and a factor list fixes the
+presentation's site (`FList`).  A generator
 `Φ_π` is indexed by a wiring at the places — `π(i) = j` records
 that the row index of factor `i` is contracted against the column
 index of factor `j` — the wiring total with every place's value
@@ -28,9 +29,8 @@ is the per-generator images at the coefficients' products
 namespace states
 open ground places
 
-/-- A factor: the variable's read with the dagger's, one of the
-four letters. -/
-abbrev Factor := Bool × Bool
+/-- A factor: the variable's key with the dagger's read. -/
+abbrev Factor := Nat × Bool
 
 /-- A factor list, the presentation's site. -/
 abbrev FList := List Factor

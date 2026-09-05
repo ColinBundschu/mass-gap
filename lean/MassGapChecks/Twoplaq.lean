@@ -70,7 +70,7 @@ open ground poly genericlift states kernel lap res fiber twoplaq
 
 /-- The four-factor site, one pair per variable. -/
 private def f4 : FList :=
-  [(false, false), (false, true), (true, false), (true, true)]
+  [(0, false), (0, true), (1, false), (1, true)]
 
 /-- The unit presentation's coefficient, `[1 : d_f]`. -/
 private def uC : PPair := ([⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩])
@@ -91,13 +91,13 @@ private def wsE : List (List Nat) := [[0, 1], [1, 0]]
 /-! The sites and the level: the extension at a variable's pair, the
 word fold's order, and `4 d_f` at its own value. -/
 
-example : extSite true siteQ1 = f4 := by decide +kernel
-example : wordSite [false]
-    = [(false, false), (false, true), (false, false), (false, true)] := by
+example : extSite 1 siteQ1 = f4 := by decide +kernel
+example : wordSite [0]
+    = [(0, false), (0, true), (0, false), (0, true)] := by
   decide +kernel
-example : wordSite [false, true]
-    = [(false, false), (false, true), (false, false), (false, true),
-       (true, false), (true, true)] := by decide +kernel
+example : wordSite [0, 1]
+    = [(0, false), (0, true), (0, false), (0, true),
+       (1, false), (1, true)] := by decide +kernel
 example : crossNull lvlE ([⟨5, 1⟩, ⟨5, 1⟩], [⟨2, 1⟩]) := by decide +kernel
 
 /-! The module presentation at the bare pair: the adjoint's
@@ -134,7 +134,7 @@ example : ¬ modPresOk siteQ1 1 0 [] := by decide +kernel
 example : ¬ modPresOk siteQ1 0 3 [] := by decide +kernel
 example : ¬ modPresOk f4 0 1 [] := by decide +kernel
 example : ¬ modPresOk
-    [(false, false), (true, true), (true, false), (true, true)]
+    [(0, false), (1, true), (1, false), (1, true)]
     0 1 [(2, 3)] := by decide +kernel
 
 /-! The electric action's eigen-read at the module level, both
@@ -178,8 +178,8 @@ at the three-box tier's six-permutation Weingarten solve per
 generator — the module's heaviest read — and the cross-plaquette
 sum's unit beside it. -/
 
-example : crossNull (pairP siteQ1 (wordSite [false]) phiAdj (mulAdj phiAdj))
+example : crossNull (pairP siteQ1 (wordSite [0]) phiAdj (mulAdj phiAdj))
     ([⟨3, 1⟩], [⟨2, 1⟩]) := by decide +kernel
 
-example : crossNull (coeffP (wordSite [false]) (mulAdj phiAdj)) pZero := by
+example : crossNull (coeffP (wordSite [0]) (mulAdj phiAdj)) pZero := by
   decide +kernel

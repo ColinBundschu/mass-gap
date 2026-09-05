@@ -11,7 +11,7 @@ count at the level (`certconstruct.countAtPair_scale`,
 `certconstruct.countAtPair_unscale`; `thm:unitschain`'s degree-one
 homogeneity at the corner coordinate): the extent's ray sits at
 every scale, and the floor's move with the scale is the count read
-at the member line's level (`corner.line_flat`).
+at the member line's level (`corner.line_count`).
 -/
 
 namespace decomp

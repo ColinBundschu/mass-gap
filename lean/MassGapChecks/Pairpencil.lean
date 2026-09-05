@@ -17,9 +17,14 @@ letters: the loop pencil — the window list's diagonal at the two
 loops' contents, the identity gram, and the one plaquette term the
 fusion counts capped two-sidedly at the adjoint dimension three —
 passes the whole read, with the refusals isolating the gram's unit
-line, the gram's block structure, a term's support (an entry
+line, the gram's block structure and its block content (the
+identity refused at the clearing two, a loop block doubled
+refused), a term's support (an entry
 between the two loops, off every changed-edge row), the cap at a
-term scaled past the dimension, and the order tie.  The window
+term scaled past the dimension, and the order tie.  The gram's
+block content reads at the theta graph's four-slot fiber over
+three letters, the two trivalent vertices' Grams' Kronecker
+product at the stated clearing, the identity gram refused there.  The window
 list itself reads at the square window, every fiber at one slot
 with its diagonal the window diagonal, and at the theta graph over
 three letters at a fiber of four slots, the two trivalent vertices
@@ -69,12 +74,13 @@ with pair entries at both weights, the displayed matrix at
 `[1 : 1]`. -/
 
 example : matOneValue
-    (pencilH 1 1 [0, 12, 32] (loopMag (dataA 2) [[1, 0], adjchar.theta 2]))
+    (pencilH 1 1 [0, 12, 32] (inertia.idMat 3)
+ (loopMag (dataA 2) [[1, 0], adjchar.theta 2]))
     [[u, u, ⟨1, 2⟩], [u, ⟨12, 1⟩, u], [⟨1, 2⟩, u, ⟨32, 1⟩]] := by
   decide +kernel
 
 example : symmRead
-    (pencilH 2 3 [0, 12, 32]
+    (pencilH 2 3 [0, 12, 32] (inertia.idMat 3)
       (loopMag (dataA 2) [[1, 0], adjchar.theta 2])) := by decide +kernel
 
 /-! The pencil interface at the square window over two letters, the
@@ -135,7 +141,7 @@ example : (slotKeys (dataA 3) thetaG thAll).length
 example : ground.countOf [0, 0, 0, 2, 0, 0] (slotKeys (dataA 3) thetaG thAll) = 0
     ∧ ground.countOf [0, 0, 0, 1, 0] (slotKeys (dataA 3) thetaG thAll) = 0 := by
   decide +kernel
-example : pencilRead (dataA 2) square 32 3 carrier.sqIx2 (pencilE [0, 12, 32])
+example : pencilRead (dataA 2) square 32 3 carrier.sqIx2 1 (pencilE [0, 12, 32])
     gSq mSq spGSq [(mSq, spUSq, spLSq)] := by decide +kernel
 
 /-! The refusals, each at one conjunct with the rest at the passing
@@ -145,9 +151,31 @@ row on the square), the term scaled to four against the dimension
 three, the order tie at two, and the magnetic member doubled
 against its one term's sum. -/
 
-example : ¬ pencilRead (dataA 2) square 32 3 carrier.sqIx2 (pencilE [0, 12, 32])
+example : ¬ pencilRead (dataA 2) square 32 3 carrier.sqIx2 1 (pencilE [0, 12, 32])
     gSq (inertia.matScaleB (BPair.ofNat 2) mSq) spGSq
     [(mSq, spUSq, spLSq)] := by decide +kernel
+
+/-! The magnetic member's order isolated: the member with one row
+padded by a trailing unit reads one value with the terms' sum and
+is refused at the order, the padded row off the square shape. -/
+
+private def mSqRag : Mat :=
+  (List.range 3).map (fun i =>
+    if i == 0 then ground.getAt [] mSq 0 ++ [BPair.unit] else ground.getAt [] mSq i)
+
+example : matOneValue mSqRag (termSum 3 [(mSq, spUSq, spLSq)])
+    ∧ ¬ sqAt mSqRag 3
+    ∧ ¬ pencilRead (dataA 2) square 32 3 carrier.sqIx2 1 (pencilE [0, 12, 32])
+        gSq mSqRag spGSq [(mSq, spUSq, spLSq)] := by decide +kernel
+
+/-! The terms' reads' two extractions at the square's one term: the
+terms' count the plaquettes' and the term square at the order. -/
+
+example : [(mSq, spUSq, spLSq)].length = square.plaqs.length :=
+  termsRead_len (dataA 2) square 3 carrier.sqIx2 gSq _ _ (by decide +kernel)
+example : sqAt mSq 3 :=
+  termsRead_sq (dataA 2) square 3 carrier.sqIx2 gSq square.plaqs
+    [(mSq, spUSq, spLSq)] (by decide +kernel) 0 (by decide)
 
 /-! The index tie isolated: the two loops stated in the reversed
 order with the pencil's data reordered beside them, every further
@@ -160,21 +188,35 @@ private def spLSqR : inertia.Split 3 := inertia.mkSplit 3 (matAdd cSq mSqR)
 
 example : ¬ (carrier.idx (dataA 2) square 32 = carrier.sqIx2.reverse)
     ∧ windowfinite.dimSect (dataA 2) square 32 = 3
-    ∧ matOneValue (pencilE [0, 32, 12]) (pencilE (slotDiag (dataA 2) square
-        carrier.sqIx2.reverse))
-    ∧ gramBlockRead (dataA 2) square 3 carrier.sqIx2.reverse gSq
+    ∧ matOneValue (pencilE [0, 32, 12]) (formE (slotDiag (dataA 2) square
+        carrier.sqIx2.reverse) gSq)
+    ∧ gramBlockRead (dataA 2) square 3 carrier.sqIx2.reverse 1 gSq
     ∧ termsRead (dataA 2) square 3 carrier.sqIx2.reverse gSq square.plaqs
         [(mSqR, spUSqR, spLSqR)] := by decide +kernel
-example : ¬ pencilRead (dataA 2) square 32 3 carrier.sqIx2.reverse
+example : ¬ pencilRead (dataA 2) square 32 3 carrier.sqIx2.reverse 1
     (pencilE [0, 32, 12]) gSq mSqR spGSq [(mSqR, spUSqR, spLSqR)] := by
   decide +kernel
 
-example : ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2
+example : ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2 1
     [[⟨3, 1⟩, u, u], [u, ⟨2, 1⟩, u], [u, u, ⟨2, 1⟩]] := by decide +kernel
-example : ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2
+example : ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2 1
     [[⟨2, 1⟩, u, u], [u, ⟨2, 1⟩, ⟨2, 1⟩], [u, ⟨2, 1⟩, ⟨2, 1⟩]] := by
   decide +kernel
-example : gramBlockRead (dataA 2) square 3 carrier.sqIx2 gSq := by decide +kernel
+example : gramBlockRead (dataA 2) square 3 carrier.sqIx2 1 gSq := by decide +kernel
+
+/-! The block content isolated at the square: the identity gram
+refused at the clearing two, and a loop block doubled at the
+clearing one refused — each loop's block the four coevaluations
+against the four link scales, one exactly. -/
+
+example : ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2 2 gSq
+    ∧ ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2 1
+        [[⟨2, 1⟩, u, u], [u, ⟨3, 1⟩, u], [u, u, ⟨2, 1⟩]]
+    ∧ fibGram (dataA 2) square [[2, 0], [2, 0], [2, 0], [2, 0]]
+      = some [([[BPair.ofNat 3]], 1), ([[BPair.ofNat 3]], 1),
+          ([[BPair.ofNat 3]], 1), ([[BPair.ofNat 3]], 1)]
+    ∧ blockScale (dataA 2) square [[2, 0], [2, 0], [2, 0], [2, 0]] = 81 := by
+  decide +kernel
 example : ¬ termSupport (dataA 2) square 3 carrier.sqIx2 sqPlaq
     [[u, u, ⟨2, 1⟩], [u, ⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩]] := by
   decide +kernel
@@ -195,12 +237,46 @@ private def e6 (i j : Nat) : Mat :=
     if (a == i && b == j) || (a == j && b == i) then ⟨2, 1⟩ else u)
 
 example : (slotList (dataA 3) thetaG ix6).length = 5 := by decide +kernel
-example : gramBlockRead (dataA 3) thetaG 6 ix6 (inertia.idMat 6) := by
+
+/-! The gram's block content at the four-slot fiber: the two
+trivalent vertices' Grams `[[56, -16], [-16, 56]]` at the second
+member three (`con:fiber`'s symbolic tag at three adjoints over
+three letters, the check module for `con:fiber` its pin), the four
+two-end vertices at the coevaluation's eight, and the seven links'
+scale `[1 : 8]` each, so at the clearing `9 · 8` the block is the
+Kronecker product of the vertex Grams at their own eighth,
+`[[7, -2], [-2, 7]]`, the loop member's block the clearing itself; the identity gram is refused there, as
+is the block at the clearing one, the block with the two members
+coupled, and the block with one entry moved. -/
+
+private def vg3 : Mat :=
+  [[BPair.ofNat 56, (BPair.ofNat 16).swap], [(BPair.ofNat 16).swap, BPair.ofNat 56]]
+private def kron2 (A B : Mat) : Mat :=
+  ground.matOf 4 4 (fun i j =>
+    ground.getAt u (ground.getAt [] A (i / 2)) (j / 2)
+      * ground.getAt u (ground.getAt [] B (i % 2)) (j % 2))
+private def vg7 : Mat :=
+  [[BPair.ofNat 7, (BPair.ofNat 2).swap], [(BPair.ofNat 2).swap, BPair.ofNat 7]]
+private def cTh : Pos := 72
+private def gTh : Mat :=
+  ground.matOf 6 6 (fun i j =>
+    if i == 0 && j == 0 then BPair.ofPos cTh
+    else if i == 5 && j == 5 then BPair.ofPos cTh
+    else if 1 ≤ i && i ≤ 4 && 1 ≤ j && j ≤ 4 then
+      ground.getAt u (ground.getAt [] (kron2 vg7 vg7) (i - 1)) (j - 1)
+    else u)
+
+example : fibGram (dataA 3) thetaG thAll
+    = some [(vg3, 3), ([[BPair.ofNat 8]], 1), ([[BPair.ofNat 8]], 1), (vg3, 3),
+        ([[BPair.ofNat 8]], 1), ([[BPair.ofNat 8]], 1)]
+    ∧ blockScale (dataA 3) thetaG thAll = 2097152 := by decide +kernel
+example : gramBlockRead (dataA 3) thetaG 6 ix6 cTh gTh := by decide +kernel
+example : ¬ gramBlockRead (dataA 3) thetaG 6 ix6 cTh (inertia.idMat 6)
+    ∧ ¬ gramBlockRead (dataA 3) thetaG 6 ix6 1 gTh
+    ∧ ¬ gramBlockRead (dataA 3) thetaG 6 ix6 cTh (matAdd gTh (e6 1 5))
+    ∧ ¬ gramBlockRead (dataA 3) thetaG 6 ix6 cTh (matAdd gTh (e6 1 2)) := by
   decide +kernel
-example : gramBlockRead (dataA 3) thetaG 6 ix6
-    (matAdd (inertia.idMat 6) (e6 1 2)) := by decide +kernel
-example : ¬ gramBlockRead (dataA 3) thetaG 6 ix6
-    (matAdd (inertia.idMat 6) (e6 1 5)) := by decide +kernel
+example : inertia.pdAt (inertia.mkSplit 6 gTh) := by decide +kernel
 
 example : ¬ inertia.capAt (inertia.matScaleB (BPair.ofNat 4) mSq) cSq
     (inertia.mkSplit 3 (inertia.siteDatum cSq

@@ -39,13 +39,15 @@ base (`lem:cellcount`).
 Clause (ii).  The relativistic bracket families are those data at
 the cone's coordinates: per probe pair the family is clause (i)'s
 weight fold over the located roots at the fiber's chord
-(`euc_hi_fold`, `euc_lo_fold` at the fiber's diagonalized gap), its
-covariance identity the restoration counts' — the momentum reads
-isotropic at degree two with the direction data two degrees down
-(`cone.cone_read`), one located coefficient per root
-(`cone.prof_coef`); the families are window-free within the
-spectator brackets (`groundreads.window_free`), and the growth caps
-are their m-point folds' reads (`groundreads.growth_cap`).
+(`euc_hi_fold`, `euc_lo_fold` at the fiber's diagonalized gap), and
+the roots' momentum reading is the cone's, at every located root
+the locus at the moved level reading the isotropic square at degree
+two with the root's located coefficient, the odd degrees at the
+sum's unit and the direction data at degree four (`cone.cone_read`
+at the profile's degrees, `cone.prof_coef` the coefficient per
+root); the families are window-free within the spectator brackets
+(`groundreads.window_free`), and the growth caps are their m-point
+folds' reads (`groundreads.growth_cap`).
 
 Clause (iii).  The state reads close the families: the pairing's
 positivity is the families' own Gram read at every finite probe

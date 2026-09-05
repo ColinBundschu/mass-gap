@@ -38,41 +38,41 @@ private def spB (a b c : BPair) : Split 2 :=
 end the electric diagonal alone, the interior pair the pencil's site
 datum, the contact end the magnetic member's balance partner. -/
 
-example : matOneValue (siteAt [4, 8] mF .free) (pencilE [4, 8]) := by
+example : matOneValue (siteAt [4, 8] (idMat 2) mF .free) (pencilE [4, 8]) := by
   decide +kernel
-example : matOneValue (siteAt [4, 8] mF (.mid 3 5))
-    (pencilH 3 5 [4, 8] mF) := by decide +kernel
-example : matOneValue (siteAt [4, 8] mF .contact) (matSwap mF) := by
+example : matOneValue (siteAt [4, 8] (idMat 2) mF (.mid 3 5))
+    (pencilH 3 5 [4, 8] (idMat 2) mF) := by decide +kernel
+example : matOneValue (siteAt [4, 8] (idMat 2) mF .contact) (matSwap mF) := by
   decide +kernel
 
 /-! The three arms' displayed values: the window contents on the
 free diagonal, the interior entries `3·diag` against the swapped
 `5`-weighted couplings, and the contact end's negated couplings. -/
 
-example : matOneValue (siteAt [4, 8] mF .free)
+example : matOneValue (siteAt [4, 8] (idMat 2) mF .free)
     [[⟨5, 1⟩, u], [u, ⟨9, 1⟩]] := by decide +kernel
-example : matOneValue (siteAt [4, 8] mF (.mid 3 5))
+example : matOneValue (siteAt [4, 8] (idMat 2) mF (.mid 3 5))
     [[⟨13, 1⟩, ⟨1, 6⟩], [⟨1, 6⟩, ⟨25, 1⟩]] := by decide +kernel
-example : matOneValue (siteAt [4, 8] mF .contact)
+example : matOneValue (siteAt [4, 8] (idMat 2) mF .contact)
     [[u, ⟨1, 2⟩], [⟨1, 2⟩, u]] := by decide +kernel
 
 /-! The homogeneity at the factor two: the pencil at the weights
 `[6 : 10]` reads one value with the `[3 : 5]` pencil rescaled —
 decided at the fixture, then consumed through the theorem. -/
 
-example : matOneValue (pencilH (2 * 3) (2 * 5) [4, 8] mF)
-    (matScale 2 (pencilH 3 5 [4, 8] mF)) := by decide +kernel
-example : matOneValue (pencilH (2 * 3) (2 * 5) [4, 8] mF)
-    (matScale 2 (pencilH 3 5 [4, 8] mF)) :=
-  pencil_scale 2 3 5 [4, 8] mF
+example : matOneValue (pencilH (2 * 3) (2 * 5) [4, 8] (idMat 2) mF)
+    (matScale 2 (pencilH 3 5 [4, 8] (idMat 2) mF)) := by decide +kernel
+example : matOneValue (pencilH (2 * 3) (2 * 5) [4, 8] (idMat 2) mF)
+    (matScale 2 (pencilH 3 5 [4, 8] (idMat 2) mF)) :=
+  pencil_scale 2 3 5 [4, 8] (idMat 2) mF
 
 /-! The norm-gauge boundary: the literal equality refuses at the
 fixture — the entry's canonical representative does not commute with
 the rescaling literally — so the one-value read is the homogeneity
 clause's forced spelling. -/
 
-example : ¬ (pencilH (2 * 3) (2 * 5) [4, 8] mF
-    = matScale 2 (pencilH 3 5 [4, 8] mF)) := by decide +kernel
+example : ¬ (pencilH (2 * 3) (2 * 5) [4, 8] (idMat 2) mF
+    = matScale 2 (pencilH 3 5 [4, 8] (idMat 2) mF)) := by decide +kernel
 
 /-! The ray's spectral descent at `u = 2` over the level `⟨20 : 1⟩`:
 the base pencil `H ~ diag(12, 24)` with couplings `-5` reads count
@@ -80,14 +80,14 @@ one at the site `[[-7, -5], [-5, 5]]`, the scaled coupling at
 `[[-14, -10], [-10, 10]]` — the base and scaled certificates
 decided, then the theorem route through `ray_count`. -/
 
-example : countAtPair (pencilH 3 5 [4, 8] mF) (idMat 2) 20 1 1
+example : countAtPair (pencilH 3 5 [4, 8] (idMat 2) mF) (idMat 2) 20 1 1
     (spB ⟨1, 8⟩ ⟨1, 6⟩ ⟨6, 1⟩) := by decide +kernel
 
-example : countAtPair (pencilH (2 * 3) (2 * 5) [4, 8] mF) (idMat 2)
+example : countAtPair (pencilH (2 * 3) (2 * 5) [4, 8] (idMat 2) mF) (idMat 2)
     (2 * 20) (2 * 1) 1 (spB ⟨1, 15⟩ ⟨1, 11⟩ ⟨11, 1⟩) := by
   decide +kernel
 
-example : countAtPair (pencilH (2 * 3) (2 * 5) [4, 8] mF) (idMat 2)
+example : countAtPair (pencilH (2 * 3) (2 * 5) [4, 8] (idMat 2) mF) (idMat 2)
     (2 * 20) (2 * 1) 1 (spB ⟨1, 15⟩ ⟨1, 11⟩ ⟨11, 1⟩) :=
   ray_count 2 3 5 [4, 8] mF (idMat 2) 20 1 1
     (spB ⟨1, 8⟩ ⟨1, 6⟩ ⟨6, 1⟩) (spB ⟨1, 15⟩ ⟨1, 11⟩ ⟨11, 1⟩)
@@ -99,19 +99,19 @@ at the base fixture, the datum's one lower-side block.  (b) The
 scaled split `h'`: a forged block datum fails the scaled site's
 read, and the transported count refuses with it. -/
 
-example : ¬ countAtPair (pencilH 3 5 [4, 8] mF) (idMat 2) 20 1 2
+example : ¬ countAtPair (pencilH 3 5 [4, 8] (idMat 2) mF) (idMat 2) 20 1 2
     (spB ⟨1, 8⟩ ⟨1, 6⟩ ⟨6, 1⟩) := by decide +kernel
-example : ¬ countAtPair (pencilH (2 * 3) (2 * 5) [4, 8] mF) (idMat 2)
+example : ¬ countAtPair (pencilH (2 * 3) (2 * 5) [4, 8] (idMat 2) mF) (idMat 2)
     (2 * 20) (2 * 1) 2 (spB ⟨1, 15⟩ ⟨1, 11⟩ ⟨11, 1⟩) := by
   decide +kernel
 
 example : ¬ splitRead (siteDatum
-    (matAdd (pencilH (2 * 3) (2 * 5) [4, 8] mF)
+    (matAdd (pencilH (2 * 3) (2 * 5) [4, 8] (idMat 2) mF)
       (matScale (2 * 1) (idMat 2)))
     (matScale (2 * 20) (idMat 2)))
     (spB ⟨1, 15⟩ ⟨1, 11⟩ ⟨12, 1⟩) := by decide +kernel
 
-example : ¬ countAtPair (pencilH (2 * 3) (2 * 5) [4, 8] mF) (idMat 2)
+example : ¬ countAtPair (pencilH (2 * 3) (2 * 5) [4, 8] (idMat 2) mF) (idMat 2)
     (2 * 20) (2 * 1) 1 (spB ⟨1, 15⟩ ⟨1, 11⟩ ⟨12, 1⟩) := by
   decide +kernel
 

@@ -32,10 +32,10 @@ open ground fusion network
 
 /-! The theta region's lattice reads. -/
 
-example : lattice.wellRead thetaR := by decide +kernel
-example : lattice.colorRead thetaR := by decide +kernel
-example : lattice.simpleRead thetaR := by decide +kernel
-example : lattice.plaqRead thetaR := by decide +kernel
+example : lattice.wellRead lattice.thetaG := by decide +kernel
+example : lattice.colorRead lattice.thetaG := by decide +kernel
+example : lattice.simpleRead lattice.thetaG := by decide +kernel
+example : lattice.plaqRead lattice.thetaG := by decide +kernel
 
 /-! The weight numerators at the committed residues: the `r = 1`
 row's `m_k d_k` at the three channels against `d_θ² = 9`
@@ -71,7 +71,7 @@ example : network.nodes.length = 5 := by decide +kernel
 example : (network.lagNum 0).length = 5 := by decide +kernel
 example : (network.lagNum 1).length = 5 := by decide +kernel
 example : network.siteQ12.length = 4 := by decide +kernel
-example : (twoplaq.extSite false network.siteQ12).length = 6 := by
+example : (twoplaq.extSite 0 network.siteQ12).length = 6 := by
   decide +kernel
 
 /-! The weight displays' theorem routes at each row's own floor
@@ -242,23 +242,23 @@ two: the all-`θ` network's occupancy with its content `56` and its
 two three-valent multiplicities, and a path-broken configuration
 refused at the vertex where its two links read apart. -/
 
-example : carrier.occupied (dataA 2) thetaR
+example : carrier.occupied (dataA 2) lattice.thetaG
     (netConf [2, 0] [2, 0] [2, 0]) = true := by decide +kernel
 
 example : carrier.contentN (dataA 2) (netConf [2, 0] [2, 0] [2, 0])
     = 56 := by decide +kernel
 
-example : carrier.vmult (dataA 2) thetaR
+example : carrier.vmult (dataA 2) lattice.thetaG
     (netConf [2, 0] [2, 0] [2, 0]) 0 = 1 := by decide +kernel
 
-example : carrier.vmult (dataA 2) thetaR
-    (netConf [2, 0] [2, 0] [2, 0]) 1 = 1 := by decide +kernel
+example : carrier.vmult (dataA 2) lattice.thetaG
+    (netConf [2, 0] [2, 0] [2, 0]) 3 = 1 := by decide +kernel
 
-example : carrier.occupied (dataA 2) thetaR
+example : carrier.occupied (dataA 2) lattice.thetaG
     [[2, 0], [2, 0], [4, 0], [2, 0], [2, 0], [2, 0], [2, 0]]
       = false := by decide +kernel
 
-example : carrier.vmult (dataA 2) thetaR
+example : carrier.vmult (dataA 2) lattice.thetaG
     [[2, 0], [2, 0], [4, 0], [2, 0], [2, 0], [2, 0], [2, 0]] 2
       = 0 := by decide +kernel
 
@@ -281,14 +281,14 @@ example : (3 * (if (dataA 2).eqL [2, 0] (dataA 2).unit then 0
     + 3 * (if (dataA 2).eqL [2, 0] (dataA 2).unit then 0
       else (dataA 2).c2N [2, 0])) = 56 := by decide +kernel
 
-example : carrier.vmult (dataA 2) thetaR
+example : carrier.vmult (dataA 2) lattice.thetaG
       (netConf [2, 0] [2, 0] [2, 0]) 0
-      = carrier.invCount (dataA 2) [[2, 0], [2, 0], [2, 0]]
-    ∧ carrier.vmult (dataA 2) thetaR
-      (netConf [2, 0] [2, 0] [2, 0]) 1
       = carrier.invCount (dataA 2)
-          [(dataA 2).dual [2, 0], (dataA 2).dual [2, 0],
-            (dataA 2).dual [2, 0]] :=
+          [[2, 0], (dataA 2).dual [2, 0], (dataA 2).dual [2, 0]]
+    ∧ carrier.vmult (dataA 2) lattice.thetaG
+      (netConf [2, 0] [2, 0] [2, 0]) 3
+      = carrier.invCount (dataA 2)
+          [(dataA 2).dual [2, 0], [2, 0], [2, 0]] :=
   netConf_vmult (dataA 2) [2, 0] [2, 0] [2, 0] (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
@@ -300,22 +300,22 @@ spread. -/
 
 example :
     (((dataA 2).eqL
-          (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 1)
+          (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 0)
           (dataA 2).unit = true
         ∧ (dataA 2).eqL
-          (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 2)
+          (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 1)
           (dataA 2).unit = true)
       ∨ ((dataA 2).eqL
+          (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 0)
+          (dataA 2).unit = false
+        ∧ (dataA 2).eqL
           (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 1)
           (dataA 2).unit = false
         ∧ (dataA 2).eqL
-          (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 2)
-          (dataA 2).unit = false
-        ∧ (dataA 2).eqL
+          ((dataA 2).dual
+            (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 0))
           ((dataA 2).dual
             (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 1))
-          ((dataA 2).dual
-            (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 2))
           = true)) := by decide +kernel
 
 example : carrier.eqConf (dataA 2) (netConf [2, 0] [2, 0] [2, 0])
@@ -353,7 +353,8 @@ private def trivF (e : Nat → Nat → Bool) (d : Nat → Nat)
     count := fun _ _ _ => 1, row := fun _ _ => [0, 1],
     dim := fun _ => 1, c2N := fun _ => 1, c2D := 1, c1 := 1,
     below := fun _ => [], cls := fun _ => 0,
-    clsAdd := fun x y => x + y, clsFloorN := fun _ => 0 }
+    clsAdd := fun x y => x + y, clsFloorN := fun _ => 0,
+    vertList := fun _ => none }
 
 /-- The label equality at the counts' own read. -/
 private def eqBeq (x y : Nat) : Bool := x == y
@@ -376,8 +377,9 @@ private theorem eqJoinRefl (l : Nat) : eqJoin l l = true := by
 /-- The involution at the identity, the four label reads holding. -/
 private def Fid : fusion.Data Nat := trivF eqBeq (fun x => x) eqBeqRefl
 
-/-- The involution at the unit label, refusing `hdu`. -/
-private def Fdu : fusion.Data Nat := trivF eqBeq (fun _ => 0) eqBeqRefl
+/-- The involution reading the count `1` at the unit label and the
+count `2` at `1`, refusing `hdu`. -/
+private def Fdu : fusion.Data Nat := trivF eqBeq (fun x => x - 1) eqBeqRefl
 
 /-- The involution at the count `1`, refusing `hdc`. -/
 private def Fdc : fusion.Data Nat := trivF eqBeq (fun _ => 1) eqBeqRefl
@@ -420,18 +422,18 @@ label reads: the network at the count `1` is occupied, its four
 two-valent pair reads hold, and the index is its own spread. -/
 
 example :
-    ((Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 1) Fid.unit = true
+    ((Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 0) Fid.unit = true
+        ∧ Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 1) Fid.unit = true)
+      ∨ (Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 0) Fid.unit = false
+        ∧ Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 1) Fid.unit = false
+        ∧ Fid.eqL (Fid.dual (ground.getAt Fid.unit (netConf 1 1 1) 0))
+            (Fid.dual (ground.getAt Fid.unit (netConf 1 1 1) 1)) = true))
+  ∧ ((Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 1) Fid.unit = true
         ∧ Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 2) Fid.unit = true)
       ∨ (Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 1) Fid.unit = false
         ∧ Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 2) Fid.unit = false
         ∧ Fid.eqL (Fid.dual (ground.getAt Fid.unit (netConf 1 1 1) 1))
             (Fid.dual (ground.getAt Fid.unit (netConf 1 1 1) 2)) = true))
-  ∧ ((Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 2) Fid.unit = true
-        ∧ Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 3) Fid.unit = true)
-      ∨ (Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 2) Fid.unit = false
-        ∧ Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 3) Fid.unit = false
-        ∧ Fid.eqL (Fid.dual (ground.getAt Fid.unit (netConf 1 1 1) 2))
-            (Fid.dual (ground.getAt Fid.unit (netConf 1 1 1) 3)) = true))
   ∧ ((Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 4) Fid.unit = true
         ∧ Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 5) Fid.unit = true)
       ∨ (Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 4) Fid.unit = false
@@ -447,41 +449,41 @@ example :
   pathReads Fid hduF (netConf 1 1 1) (by decide +kernel)
 
 example : carrier.eqConf Fid (netConf 1 1 1)
-    (netConf (ground.getAt Fid.unit (netConf 1 1 1) 1)
-      (ground.getAt Fid.unit (netConf 1 1 1) 0)
+    (netConf (ground.getAt Fid.unit (netConf 1 1 1) 0)
+      (ground.getAt Fid.unit (netConf 1 1 1) 3)
       (ground.getAt Fid.unit (netConf 1 1 1) 4)) = true :=
   netConf_det Fid hduF hdcF huuF htrF (netConf 1 1 1) (by decide +kernel)
     (by decide +kernel)
 
 /-! The binder refusals, one interface value per label read.  The
 involution at the unit label refuses `hdu`, and the occupied
-configuration `[1, 1, 0, 0, 1, 1, 1]` reads its first path's first
+configuration `[1, 0, 0, 1, 2, 2, 2]` reads its first path's first
 two links at one occupied link beside a link at the unit, the pair
 read refused there. -/
 
 example : Fdu.eqL (Fdu.dual 1) Fdu.unit = true := by decide +kernel
 example : Fdu.eqL 1 Fdu.unit = false := by decide +kernel
-example : carrier.occupied Fdu thetaR [1, 1, 0, 0, 1, 1, 1] = true := by
+example : carrier.occupied Fdu lattice.thetaG [1, 0, 0, 1, 2, 2, 2] = true := by
   decide +kernel
 
 example : ¬
   ((Fdu.eqL
-        (ground.getAt Fdu.unit [1, 1, 0, 0, 1, 1, 1] 1)
+        (ground.getAt Fdu.unit [1, 0, 0, 1, 2, 2, 2] 0)
         Fdu.unit = true
       ∧ Fdu.eqL
-        (ground.getAt Fdu.unit [1, 1, 0, 0, 1, 1, 1] 2)
+        (ground.getAt Fdu.unit [1, 0, 0, 1, 2, 2, 2] 1)
         Fdu.unit = true)
     ∨ (Fdu.eqL
-        (ground.getAt Fdu.unit [1, 1, 0, 0, 1, 1, 1] 1)
+        (ground.getAt Fdu.unit [1, 0, 0, 1, 2, 2, 2] 0)
         Fdu.unit = false
       ∧ Fdu.eqL
-        (ground.getAt Fdu.unit [1, 1, 0, 0, 1, 1, 1] 2)
+        (ground.getAt Fdu.unit [1, 0, 0, 1, 2, 2, 2] 1)
         Fdu.unit = false
       ∧ Fdu.eqL
         (Fdu.dual
-          (ground.getAt Fdu.unit [1, 1, 0, 0, 1, 1, 1] 1))
+          (ground.getAt Fdu.unit [1, 0, 0, 1, 2, 2, 2] 0))
         (Fdu.dual
-          (ground.getAt Fdu.unit [1, 1, 0, 0, 1, 1, 1] 2))
+          (ground.getAt Fdu.unit [1, 0, 0, 1, 2, 2, 2] 1))
         = true)) := by decide +kernel
 
 /-! The involution at the count `1` refuses `hdc`: the occupied
@@ -491,11 +493,11 @@ spread. -/
 
 example : Fdc.eqL (Fdc.dual 1) (Fdc.dual 2) = true := by decide +kernel
 example : Fdc.eqL 2 1 = false := by decide +kernel
-example : carrier.occupied Fdc thetaR [1, 1, 2, 1, 1, 1, 1] = true := by
+example : carrier.occupied Fdc lattice.thetaG [1, 1, 2, 1, 1, 1, 1] = true := by
   decide +kernel
 example : carrier.eqConf Fdc [1, 1, 2, 1, 1, 1, 1]
-    (netConf (ground.getAt Fdc.unit [1, 1, 2, 1, 1, 1, 1] 1)
-      (ground.getAt Fdc.unit [1, 1, 2, 1, 1, 1, 1] 0)
+    (netConf (ground.getAt Fdc.unit [1, 1, 2, 1, 1, 1, 1] 0)
+      (ground.getAt Fdc.unit [1, 1, 2, 1, 1, 1, 1] 3)
       (ground.getAt Fdc.unit [1, 1, 2, 1, 1, 1, 1] 4))
       = false := by decide +kernel
 
@@ -511,11 +513,11 @@ example : Fuu.eqL 4 Fuu.unit = true := by decide +kernel
 example : Fuu.eqL 4 3 = false := by decide +kernel
 example : Fuu.eqL 3 Fuu.unit = true ∧ Fuu.eqL Fuu.unit 4 = true
     ∧ Fuu.eqL 3 4 = false := by decide +kernel
-example : carrier.occupied Fuu thetaR [3, 3, 4, 3, 3, 3, 3] = true := by
+example : carrier.occupied Fuu lattice.thetaG [3, 3, 4, 3, 3, 3, 3] = true := by
   decide +kernel
 example : carrier.eqConf Fuu [3, 3, 4, 3, 3, 3, 3]
-    (netConf (ground.getAt Fuu.unit [3, 3, 4, 3, 3, 3, 3] 1)
-      (ground.getAt Fuu.unit [3, 3, 4, 3, 3, 3, 3] 0)
+    (netConf (ground.getAt Fuu.unit [3, 3, 4, 3, 3, 3, 3] 0)
+      (ground.getAt Fuu.unit [3, 3, 4, 3, 3, 3, 3] 3)
       (ground.getAt Fuu.unit [3, 3, 4, 3, 3, 3, 3] 4))
       = false := by decide +kernel
 
@@ -527,11 +529,10 @@ row fold and withdrawn from the incident list. -/
 example : Fid.eqL 0 Fid.unit = true := by decide +kernel
 example : Fid.eqL 2 Fid.unit = false ∧ Fid.eqL 1 Fid.unit = false := by
   decide +kernel
-example : carrier.vmult Fid thetaR (netConf 2 0 1) 0 = 0 := by decide +kernel
-example : carrier.invCount Fid [0, 2, 1] = 1 := by decide +kernel
-example : carrier.vmult Fid thetaR (netConf 2 0 1) 1 = 0 := by decide +kernel
-example : carrier.invCount Fid
-    [Fid.dual 0, Fid.dual 2, Fid.dual 1] = 1 := by decide +kernel
+example : carrier.vmult Fid lattice.thetaG (netConf 2 0 1) 0 = 0 := by decide +kernel
+example : carrier.invCount Fid [2, Fid.dual 0, Fid.dual 1] = 1 := by decide +kernel
+example : carrier.vmult Fid lattice.thetaG (netConf 2 0 1) 3 = 0 := by decide +kernel
+example : carrier.invCount Fid [Fid.dual 2, 0, 1] = 1 := by decide +kernel
 
 /-! The resolvent factor's composition at the `θ` channel of the
 width two: the weight pair against the factor reads the
@@ -559,7 +560,7 @@ example : genericlift.pairOcc
 chaining equality joins the counts `3, 4` and `4, 5` at both
 orders over the identity involution: the involution reads and the
 unit reads hold while the transitive read is refused at
-`(3, 4, 5)`, and the occupied configuration `[1, 3, 4, 5, 1, 1, 1]`
+`(3, 4, 5)`, and the occupied configuration `[3, 4, 5, 1, 1, 1, 1]`
 refuses the determination. -/
 
 private def eqChain (x y : Nat) : Bool :=
@@ -585,12 +586,12 @@ example : ((List.range 7).all (fun x => (List.range 7).all (fun y =>
 example : ((List.range 7).all (fun x => (List.range 7).all (fun y =>
     !(Fch.eqL x Fch.unit) || (!(Fch.eqL y Fch.unit)
       || Fch.eqL y x)))) = true := by decide +kernel
-example : carrier.occupied Fch thetaR [1, 3, 4, 5, 1, 1, 1] = true := by
+example : carrier.occupied Fch lattice.thetaG [3, 4, 5, 1, 1, 1, 1] = true := by
   decide +kernel
-example : carrier.eqConf Fch [1, 3, 4, 5, 1, 1, 1]
-    (netConf (ground.getAt Fch.unit [1, 3, 4, 5, 1, 1, 1] 1)
-      (ground.getAt Fch.unit [1, 3, 4, 5, 1, 1, 1] 0)
-      (ground.getAt Fch.unit [1, 3, 4, 5, 1, 1, 1] 4))
+example : carrier.eqConf Fch [3, 4, 5, 1, 1, 1, 1]
+    (netConf (ground.getAt Fch.unit [3, 4, 5, 1, 1, 1, 1] 0)
+      (ground.getAt Fch.unit [3, 4, 5, 1, 1, 1, 1] 3)
+      (ground.getAt Fch.unit [3, 4, 5, 1, 1, 1, 1] 4))
       = false := by decide +kernel
 
 /-! The upward equality joins the counts `3` and `4` to the unit
@@ -622,11 +623,11 @@ example : ((List.range 7).all (fun x => (List.range 7).all (fun y =>
     (List.range 7).all (fun z =>
       !(Fup.eqL x y) || (!(Fup.eqL y z) || Fup.eqL x z)))))
       = true := by decide +kernel
-example : carrier.occupied Fup thetaR [3, 3, 4, 3, 3, 3, 3] = true := by
+example : carrier.occupied Fup lattice.thetaG [3, 3, 4, 3, 3, 3, 3] = true := by
   decide +kernel
 example : carrier.eqConf Fup [3, 3, 4, 3, 3, 3, 3]
-    (netConf (ground.getAt Fup.unit [3, 3, 4, 3, 3, 3, 3] 1)
-      (ground.getAt Fup.unit [3, 3, 4, 3, 3, 3, 3] 0)
+    (netConf (ground.getAt Fup.unit [3, 3, 4, 3, 3, 3, 3] 0)
+      (ground.getAt Fup.unit [3, 3, 4, 3, 3, 3, 3] 3)
       (ground.getAt Fup.unit [3, 3, 4, 3, 3, 3, 3] 4))
       = false := by decide +kernel
 
@@ -635,7 +636,7 @@ at a unit first or second path label the three-valent counts part
 from the three-label reads, one exhibit each beside the middle
 label's own above. -/
 
-example : carrier.vmult Fid thetaR (netConf 0 2 1) 0 = 0 := by decide +kernel
-example : carrier.invCount Fid [2, 0, 1] = 1 := by decide +kernel
-example : carrier.vmult Fid thetaR (netConf 1 2 0) 0 = 0 := by decide +kernel
-example : carrier.invCount Fid [2, 1, 0] = 1 := by decide +kernel
+example : carrier.vmult Fid lattice.thetaG (netConf 0 2 1) 0 = 0 := by decide +kernel
+example : carrier.invCount Fid [0, Fid.dual 2, Fid.dual 1] = 1 := by decide +kernel
+example : carrier.vmult Fid lattice.thetaG (netConf 1 2 0) 0 = 0 := by decide +kernel
+example : carrier.invCount Fid [1, Fid.dual 2, Fid.dual 0] = 1 := by decide +kernel

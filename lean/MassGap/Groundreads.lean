@@ -1979,7 +1979,7 @@ private theorem perpCoord {n : Nat} (Et : Mat) (T Tw : SqMat n)
         (elim.idRow n j0) (matVec Tw.val x) (length_idRow n j0) hc) ?_
     refine BPair.oneValue_trans
       (dotP_oneValue_right _ _ _
-        (matVec_matOne _ _ (matVec Tw.val x) (split.gramMat Et T Tw l hd))) ?_
+        (matVec_matOne _ _ (matVec Tw.val x) (split.congr_gram Et (idMat n) T Tw l hd))) ?_
     rw [dotP_comm (elim.idRow n j0) _]
     refine BPair.oneValue_trans (dotP_idRow _ n j0 hwl hj0) ?_
     rw [getAt_matVec _ _ j0 (by rw [split.diagM_len, hdsl]; exact hj0)]
@@ -8032,7 +8032,7 @@ private theorem colCoord {o : Nat} (Et : Mat) (T Tw : SqMat o)
   have hdf := split.diagFold (idMat o) T _
     (idMat_len o) (idMat_rows o)
     (by rw [ground.length_map]; exact hlen)
-    (split.gramMat Et T Tw l hd)
+    (split.congr_gram Et (idMat o) T Tw l hd)
     (elim.idRow o k) (matVec Tw.val x) (length_idRow o k) hcl
   refine BPair.oneValue_trans
     (BPair.oneValue_symm (dotP_vecScale_right _ x (minor T.val))) ?_

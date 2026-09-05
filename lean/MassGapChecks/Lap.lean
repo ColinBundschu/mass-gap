@@ -13,9 +13,9 @@ set_option maxHeartbeats 4000000
 
 open ground poly genericlift states kernel lap
 
-private def fU : FList := [(false, false)]
-private def fAdj : FList := [(false, false), (false, true)]
-private def fUU : FList := [(false, false), (false, false)]
+private def fU : FList := [(0, false)]
+private def fAdj : FList := [(0, false), (0, true)]
+private def fUU : FList := [(0, false), (0, false)]
 private def unitC : Comb := [([1, 0], ([⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]))]
 private def adjC : Comb :=
   [([0, 1], pOne), ([1, 0], ([⟨1, 2⟩], [⟨2, 1⟩, ⟨2, 1⟩]))]
@@ -24,20 +24,30 @@ private def wC : Comb := [([0, 1], pOne), ([1, 0], negP)]
 private def dfp1 : PPair := ([⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩])
 private def dfp2 : PPair := ([⟨4, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩])
 
-example : combEqRead fU (lapComb fU false [([0], pOne)])
+example : combEqRead fU (lapComb fU 0 [([0], pOne)])
     (scaleComb cfP [([0], pOne)]) := by decide +kernel
-example : combEqRead fAdj (lapComb fAdj false unitC) [] := by decide +kernel
-example : combEqRead fAdj (lapComb fAdj false adjC)
+example : combEqRead fAdj (lapComb fAdj 0 unitC) [] := by decide +kernel
+example : combEqRead fAdj (lapComb fAdj 0 adjC)
     (scaleComb dfP adjC) := by decide +kernel
+
+/-! The action at a variable key off `0`: the adjoint at the key `2`
+reads its own Laplacian at `d_f` and the key-`0` Laplacian at the
+sum's unit. -/
+
+private def fAdj2 : FList := [(2, false), (2, true)]
+
+example : combEqRead fAdj2 (lapComb fAdj2 2 adjC)
+    (scaleComb dfP adjC) := by decide +kernel
+example : combEqRead fAdj2 (lapComb fAdj2 0 adjC) [] := by decide +kernel
 example : combEqRead fUU
-    (scaleComb dfP (lapComb fUU false sC) ++ scaleComb (natP 2) sC)
+    (scaleComb dfP (lapComb fUU 0 sC) ++ scaleComb (natP 2) sC)
     (scaleComb (pMul dfP dfp1) sC) := by decide +kernel
 example : combEqRead fUU
-    (scaleComb dfP (lapComb fUU false wC) ++ scaleComb dfp2 wC)
+    (scaleComb dfP (lapComb fUU 0 wC) ++ scaleComb dfp2 wC)
     (scaleComb (pMul dfP dfP) wC) := by decide +kernel
 
 /-! The off-eigenvalue refusal: the adjoint at the fundamental's
 Casimir refuses. -/
 
-example : ¬ combEqRead fAdj (lapComb fAdj false adjC)
+example : ¬ combEqRead fAdj (lapComb fAdj 0 adjC)
     (scaleComb cfP adjC) := by decide +kernel

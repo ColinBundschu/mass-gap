@@ -51,7 +51,11 @@ and two windows share the decimated data up to their lengths with
 the reads within the iterated cap brackets (`windowShareRead` at
 `spectator.capWalk` down the tail witnesses from the perturbation
 slab to the observable's depth, the head pivots shared below the
-slab).
+slab), the far separated sector entering the head through the band
+block's cap alone, its dressing the vacuum's own
+(`lem:relfiber`(iv): `relfiber.tensorSum_count`, the tensor sum's
+count the root pairs' count, and `relfiber.pairRoots_least`, the
+joined sector's ground the two grounds' sum).
 The divisor list's emitted record is the displayed object at its
 committed store (`DivRecord` at `Bound`, `recordRead` at
 `boundRead`): one cell per sample with its count

@@ -1099,22 +1099,11 @@ structure GcdData where
   c : BPair
 
 /-! The descent's own kit: the constant scaling and key shift, the
-content at the coefficients' margins with its exact division, the
-count's power, and the pseudo-division's accumulating descent, the
-inputs at the value's representative (`poly.vnorm`). -/
+content at the coefficients' margins with its exact division
+(`ground.BPair.listContent`, `BPair.listPrim`), the count's power,
+and the pseudo-division's accumulating descent, the inputs at the
+value's representative (`poly.vnorm`). -/
 
-private def contentN (P : Poly) : Nat :=
-  P.foldl (fun k x => Nat.gcd k (BPair.marginN x)) 0
-
-private def primDiv (n : Nat) (P : Poly) : Poly :=
-  P.map (fun x =>
-    if n == 0 then x
-    else if BPair.marginN x % n == 0 then
-      match x.side with
-      | .lt _ _ => ⟨.one, posOfSucc (BPair.marginN x / n)⟩
-      | .eq _ => BPair.unit
-      | .gt _ _ => ⟨posOfSucc (BPair.marginN x / n), .one⟩
-    else x)
 
 private def pdivGo : Nat → Poly → Poly → Poly → Nat →
     Poly × Poly × Nat
@@ -1152,9 +1141,9 @@ private def walkGo : Nat → Row → Row → Row
       let dv := pdiv (c1 :: t1) R0.r
       let em := (bpow (poly.top (c1 :: t1)) dv.2.2 * R1.m).norm
       let mm := (R0.m * R1.m).norm
-      let kap := contentN dv.2.1
+      let kap := BPair.listContent dv.2.1
       walkGo fuel R1
-        ⟨primDiv kap dv.2.1,
+        ⟨BPair.listPrim kap dv.2.1,
          poly.pnorm (poly.add (poly.scaleP em R0.u)
            (poly.neg (poly.scaleP R0.m (poly.mul dv.1 R1.u)))),
          poly.pnorm (poly.add (poly.scaleP em R0.v)
@@ -1167,9 +1156,9 @@ private def signFix (R : Row) : Row :=
   else R
 
 private def contentFix (R : Row) : Row :=
-  let k := contentN R.r
+  let k := BPair.listContent R.r
   if k == 0 then R
-  else ⟨primDiv k R.r, R.u, R.v, (R.m * BPair.ofNat k).norm⟩
+  else ⟨BPair.listPrim k R.r, R.u, R.v, (R.m * BPair.ofNat k).norm⟩
 
 /-- The division descent at the integer representatives: the
 extended primitive pseudo-remainder walk, the contents stripped

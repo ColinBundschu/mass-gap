@@ -27,7 +27,7 @@ example : res.deflateRead siteQ2 [phiAdj] phiAdj := by decide +kernel
 its self-pairing occupied. -/
 
 example : ¬ genericlift.crossNull
-    (wg.pairFull siteQ1 siteQ1
+    (wg.pairFull wg.evalPhi siteQ1 siteQ1
       (res.deflate siteQ1 [phiAdj] [([0, 1], pOne)])
       (res.deflate siteQ1 [phiAdj] [([0, 1], pOne)]))
     poly.pZero := by decide +kernel
@@ -36,13 +36,13 @@ example : ¬ genericlift.crossNull
 the certificates. -/
 
 example : genericlift.crossNull
-    (wg.pairFull siteQ1 siteQ1
+    (wg.pairFull wg.evalPhi siteQ1 siteQ1
       (res.deflate siteQ1 [phiAdj] phiAdj)
       (res.deflate siteQ1 [phiAdj] phiAdj))
     poly.pZero := xdata.vacDressU_null
 
 example : genericlift.crossNull
-    (wg.pairFull siteQ2 siteQ2
+    (wg.pairFull wg.evalPhi siteQ2 siteQ2
       (res.deflate siteQ2 [phiAdj] phiAdj)
       (res.deflate siteQ2 [phiAdj] phiAdj))
     poly.pZero := xdata.vacDressV_null

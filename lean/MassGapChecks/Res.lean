@@ -32,7 +32,7 @@ set_option maxHeartbeats 4000000
 
 open ground poly genericlift states kernel lap res
 
-private def fAdj : FList := [(false, false), (false, true)]
+private def fAdj : FList := [(0, false), (0, true)]
 
 /-- The squared trace's presentation, `|tr U|²`. -/
 private def sqC : Comb := [([0, 1], pOne)]
@@ -49,7 +49,7 @@ private def adjC : Comb :=
 private def uC : PPair := ([⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩])
 
 /-- The `U`-insertion at the adjoint site, the stated action. -/
-private def actU : List Nat → Comb := fun π => lapAct fAdj false π
+private def actU : List Nat → Comb := fun π => lapAct fAdj 0 π
 
 /-! Step 1, the deflated side. -/
 

@@ -3,7 +3,7 @@ import MassGap.Channels
 import MassGap.Twoplaq
 /-!
 `thm:network` — the network reduction and the two-vertex coupling
-law.  (i) The theta graph enters as the committed region `thetaR`,
+law.  (i) The theta graph enters as the committed region `lattice.thetaG`,
 two square plaquettes sharing one link, and the reduction is the
 convolution identity at the carrier's own reads: an occupied
 configuration reads its two three-link paths at one label each,
@@ -473,24 +473,12 @@ def selfEnergy {L : Type} (F : Data L) : Option ground.Pair :=
 
 /-! The theta graph, and the reduction (`thm:network`(i)). -/
 
-/-- The theta graph's committed region: two square plaquettes
-sharing one link.  The shared link `0` runs between the two
-three-valent vertices `0` and `1`; links `1, 2, 3` are the first
-plaquette's unshared path through vertices `2, 3` and links
-`4, 5, 6` the second's through `4, 5`, each path oriented from
-vertex `0` to vertex `1`; the two boundary words close each
-square, and the coloring witnesses the even cycles. -/
-def thetaR : lattice.Region :=
-  ⟨7, 6, [0, 0, 2, 3, 0, 4, 5], [1, 2, 3, 1, 4, 5, 1],
-   [[(0, true), (3, false), (2, false), (1, false)],
-    [(0, true), (6, false), (5, false), (4, false)]],
-   [false, true, true, false, true, false], rfl, rfl⟩
-
-/-- The `Θ(R₁, k, R₂)`-network's spread over the theta region's
-links: the shared link at the middle label with each path's three
-links at its own label. -/
+/-- The `Θ(R₁, k, R₂)`-network's spread over the theta graph's
+links (`lattice.thetaG`): the first path's three links at its
+label, the shared link at the middle label, and the second path's
+three links at its label. -/
 def netConf {L : Type} (R1 k R2 : L) : List L :=
-  [k, R1, R1, R1, R2, R2, R2]
+  [R1, R1, R1, k, R2, R2, R2]
 
 /-- The spread's unit read (`thm:network`(i)): the
 `Θ(R₁, k, R₂)`-network's spread is the unit assignment exactly at its
@@ -498,8 +486,8 @@ three unit labels. -/
 theorem spreadUnit {L : Type} (F : Data L) (R1 k R2 : L) :
     (netConf R1 k R2).all (fun x => F.eqL x F.unit)
       = (F.eqL k F.unit && F.eqL R1 F.unit && F.eqL R2 F.unit) := by
-  show (F.eqL k F.unit && (F.eqL R1 F.unit && (F.eqL R1 F.unit
-      && (F.eqL R1 F.unit && (F.eqL R2 F.unit && (F.eqL R2 F.unit
+  show (F.eqL R1 F.unit && (F.eqL R1 F.unit && (F.eqL R1 F.unit
+      && (F.eqL k F.unit && (F.eqL R2 F.unit && (F.eqL R2 F.unit
       && (F.eqL R2 F.unit && true))))))) = _
   cases F.eqL k F.unit <;> cases F.eqL R1 F.unit <;> cases F.eqL R2 F.unit <;> rfl
 
@@ -663,19 +651,19 @@ label.  The involution's unit read `hdu` enters at the arms where
 one link is occupied beside a link at the unit. -/
 theorem pathReads {L : Type} (F : Data L)
     (hdu : ∀ x, F.eqL (F.dual x) F.unit = true → F.eqL x F.unit = true)
-    (a : List L) (ha : carrier.occupied F thetaR a = true) :
-    ((F.eqL (ground.getAt F.unit a 1) F.unit = true
+    (a : List L) (ha : carrier.occupied F lattice.thetaG a = true) :
+    ((F.eqL (ground.getAt F.unit a 0) F.unit = true
+          ∧ F.eqL (ground.getAt F.unit a 1) F.unit = true)
+        ∨ (F.eqL (ground.getAt F.unit a 0) F.unit = false
+          ∧ F.eqL (ground.getAt F.unit a 1) F.unit = false
+          ∧ F.eqL (F.dual (ground.getAt F.unit a 0))
+              (F.dual (ground.getAt F.unit a 1)) = true))
+      ∧ ((F.eqL (ground.getAt F.unit a 1) F.unit = true
           ∧ F.eqL (ground.getAt F.unit a 2) F.unit = true)
         ∨ (F.eqL (ground.getAt F.unit a 1) F.unit = false
           ∧ F.eqL (ground.getAt F.unit a 2) F.unit = false
           ∧ F.eqL (F.dual (ground.getAt F.unit a 1))
               (F.dual (ground.getAt F.unit a 2)) = true))
-      ∧ ((F.eqL (ground.getAt F.unit a 2) F.unit = true
-          ∧ F.eqL (ground.getAt F.unit a 3) F.unit = true)
-        ∨ (F.eqL (ground.getAt F.unit a 2) F.unit = false
-          ∧ F.eqL (ground.getAt F.unit a 3) F.unit = false
-          ∧ F.eqL (F.dual (ground.getAt F.unit a 2))
-              (F.dual (ground.getAt F.unit a 3)) = true))
       ∧ ((F.eqL (ground.getAt F.unit a 4) F.unit = true
           ∧ F.eqL (ground.getAt F.unit a 5) F.unit = true)
         ∨ (F.eqL (ground.getAt F.unit a 4) F.unit = false
@@ -688,10 +676,14 @@ theorem pathReads {L : Type} (F : Data L)
           ∧ F.eqL (ground.getAt F.unit a 6) F.unit = false
           ∧ F.eqL (F.dual (ground.getAt F.unit a 5))
               (F.dual (ground.getAt F.unit a 6)) = true)) :=
-  And.intro (pairAt F hdu thetaR a 2 1 2 (by decide +kernel) (by decide +kernel) ha)
-    (And.intro (pairAt F hdu thetaR a 3 2 3 (by decide +kernel) (by decide +kernel) ha)
-      (And.intro (pairAt F hdu thetaR a 4 4 5 (by decide +kernel) (by decide +kernel) ha)
-        (pairAt F hdu thetaR a 5 5 6 (by decide +kernel) (by decide +kernel) ha)))
+  And.intro (pairAt F hdu lattice.thetaG a 1 0 1 (by decide +kernel)
+      (by decide +kernel) ha)
+    (And.intro (pairAt F hdu lattice.thetaG a 2 1 2 (by decide +kernel)
+        (by decide +kernel) ha)
+      (And.intro (pairAt F hdu lattice.thetaG a 4 4 5 (by decide +kernel)
+          (by decide +kernel) ha)
+        (pairAt F hdu lattice.thetaG a 5 5 6 (by decide +kernel)
+          (by decide +kernel) ha)))
 
 /-- The content's step at a running value: an occupied label joins
 its Casimir read, a label at the unit passing. -/
@@ -721,61 +713,62 @@ theorem netConf_energy {L : Type} (F : Data L) (R1 k R2 : L) :
         + (if F.eqL k F.unit then 0 else F.c2N k)
         + 3 * (if F.eqL R2 F.unit then 0 else F.c2N R2) := by
   show cstep F (cstep F (cstep F (cstep F (cstep F (cstep F
-      (cstep F 0 k) R1) R1) R1) R2) R2) R2
+      (cstep F 0 R1) R1) R1) k) R2) R2) R2
     = 3 * gstep F R1 + gstep F k + 3 * gstep F R2
-  rw [Nat.add_comm (3 * gstep F R1) (gstep F k)]
   rw [cstep_add, cstep_add, cstep_add, cstep_add, cstep_add, cstep_add,
-    cstep_add, ground.threeMul (gstep F R1), ground.threeMul (gstep F R2),
-    Nat.zero_add,
-    ← Nat.add_assoc (gstep F k) (gstep F R1 + gstep F R1) (gstep F R1),
-    ← Nat.add_assoc (gstep F k) (gstep F R1) (gstep F R1),
-    ← Nat.add_assoc (gstep F k + gstep F R1 + gstep F R1 + gstep F R1)
+    cstep_add, Nat.zero_add, ground.threeMul (gstep F R1),
+    ground.threeMul (gstep F R2),
+    ← Nat.add_assoc (gstep F R1 + gstep F R1 + gstep F R1 + gstep F k)
       (gstep F R2 + gstep F R2) (gstep F R2),
-    ← Nat.add_assoc (gstep F k + gstep F R1 + gstep F R1 + gstep F R1)
+    ← Nat.add_assoc (gstep F R1 + gstep F R1 + gstep F R1 + gstep F k)
       (gstep F R2) (gstep F R2)]
 
 /-- The three-valent vertices' multiplicities at the network spread
 (`thm:network`(i)): at three occupied labels vertex `0` reads the
-invariant count of `(k, R₁, R₂)` along its three outgoing ends and
-vertex `1` the count of the three duals along its three incoming
-ends. -/
+invariant count of the first path's label along its outgoing end
+with the middle and second path labels' duals along its two
+incoming ends, and vertex `3` the count of the first path's dual
+along its incoming end with the middle and second path labels along
+its two outgoing ends. -/
 theorem netConf_vmult {L : Type} (F : Data L) (R1 k R2 : L)
     (h1 : F.eqL R1 F.unit = false) (hk : F.eqL k F.unit = false)
     (h2 : F.eqL R2 F.unit = false) :
-    carrier.vmult F thetaR (netConf R1 k R2) 0
-        = carrier.invCount F [k, R1, R2]
-      ∧ carrier.vmult F thetaR (netConf R1 k R2) 1
-        = carrier.invCount F [F.dual k, F.dual R1, F.dual R2] := by
-  have hz : carrier.incidentLabels F thetaR (netConf R1 k R2) 0
-      = [k, R1, R2] := by
-    rw [labels_read F thetaR (netConf R1 k R2) 0,
-      show lattice.incident thetaR 0 = [(0, true), (1, true), (4, true)]
+    carrier.vmult F lattice.thetaG (netConf R1 k R2) 0
+        = carrier.invCount F [R1, F.dual k, F.dual R2]
+      ∧ carrier.vmult F lattice.thetaG (netConf R1 k R2) 3
+        = carrier.invCount F [F.dual R1, k, R2] := by
+  have hz : carrier.incidentLabels F lattice.thetaG (netConf R1 k R2) 0
+      = [R1, F.dual k, F.dual R2] := by
+    rw [labels_read F lattice.thetaG (netConf R1 k R2) 0,
+      show lattice.incident lattice.thetaG 0
+          = [(0, true), (3, false), (6, false)]
         from by decide +kernel,
-      labelsOf_cons_some F (netConf R1 k R2) (0, true) k _
-        (labelOf_out F _ 0 hk),
-      labelsOf_cons_some F (netConf R1 k R2) (1, true) R1 _
-        (labelOf_out F _ 1 h1),
-      labelsOf_cons_some F (netConf R1 k R2) (4, true) R2 _
-        (labelOf_out F _ 4 h2)]
-    exact rfl
-  have ho : carrier.incidentLabels F thetaR (netConf R1 k R2) 1
-      = [F.dual k, F.dual R1, F.dual R2] := by
-    rw [labels_read F thetaR (netConf R1 k R2) 1,
-      show lattice.incident thetaR 1 = [(0, false), (3, false), (6, false)]
-        from by decide +kernel,
-      labelsOf_cons_some F (netConf R1 k R2) (0, false) (F.dual k) _
-        (labelOf_in F _ 0 hk),
-      labelsOf_cons_some F (netConf R1 k R2) (3, false) (F.dual R1) _
-        (labelOf_in F _ 3 h1),
+      labelsOf_cons_some F (netConf R1 k R2) (0, true) R1 _
+        (labelOf_out F _ 0 h1),
+      labelsOf_cons_some F (netConf R1 k R2) (3, false) (F.dual k) _
+        (labelOf_in F _ 3 hk),
       labelsOf_cons_some F (netConf R1 k R2) (6, false) (F.dual R2) _
         (labelOf_in F _ 6 h2)]
     exact rfl
+  have ho : carrier.incidentLabels F lattice.thetaG (netConf R1 k R2) 3
+      = [F.dual R1, k, R2] := by
+    rw [labels_read F lattice.thetaG (netConf R1 k R2) 3,
+      show lattice.incident lattice.thetaG 3
+          = [(2, false), (3, true), (4, true)]
+        from by decide +kernel,
+      labelsOf_cons_some F (netConf R1 k R2) (2, false) (F.dual R1) _
+        (labelOf_in F _ 2 h1),
+      labelsOf_cons_some F (netConf R1 k R2) (3, true) k _
+        (labelOf_out F _ 3 hk),
+      labelsOf_cons_some F (netConf R1 k R2) (4, true) R2 _
+        (labelOf_out F _ 4 h2)]
+    exact rfl
   refine And.intro ?_ ?_
   · show carrier.invCount F
-      (carrier.incidentLabels F thetaR (netConf R1 k R2) 0) = _
+      (carrier.incidentLabels F lattice.thetaG (netConf R1 k R2) 0) = _
     rw [hz]
   · show carrier.invCount F
-      (carrier.incidentLabels F thetaR (netConf R1 k R2) 1) = _
+      (carrier.incidentLabels F lattice.thetaG (netConf R1 k R2) 3) = _
     rw [ho]
 
 /-- The two-valent vertex's read at either arm gives the pair one
@@ -791,8 +784,8 @@ private theorem pairEq {L : Type} (F : Data L)
   | inr hn => exact hdc x y hn.2.2
 
 /-- The reduction (`thm:network`(i)): an occupied configuration on
-the theta region's seven links is the `Θ(R₁, k, R₂)`-network spread
-at its own labels, the shared link `0` at the middle label and each
+the theta graph's seven links is the `Θ(R₁, k, R₂)`-network spread
+at its own labels, the shared link `3` at the middle label and each
 path at its first link's label.  The two-valent reads (`pathReads`)
 give each path's three links one label through the involution's
 `hdc`, the unit labels' `huu` and the transitive read `htr`. -/
@@ -803,29 +796,29 @@ theorem netConf_det {L : Type} (F : Data L)
       F.eqL y x = true)
     (htr : ∀ x y z, F.eqL x y = true → F.eqL y z = true → F.eqL x z = true)
     (a : List L) (hlen : a.length = 7)
-    (ha : carrier.occupied F thetaR a = true) :
+    (ha : carrier.occupied F lattice.thetaG a = true) :
     carrier.eqConf F a
-      (netConf (ground.getAt F.unit a 1) (ground.getAt F.unit a 0)
+      (netConf (ground.getAt F.unit a 0) (ground.getAt F.unit a 3)
         (ground.getAt F.unit a 4)) = true := by
   have hr := pathReads F hdu a ha
-  have e21 : F.eqL (ground.getAt F.unit a 2) (ground.getAt F.unit a 1) = true :=
+  have e10 : F.eqL (ground.getAt F.unit a 1) (ground.getAt F.unit a 0) = true :=
     pairEq F hdc huu hr.1
-  have e32 : F.eqL (ground.getAt F.unit a 3) (ground.getAt F.unit a 2) = true :=
+  have e21 : F.eqL (ground.getAt F.unit a 2) (ground.getAt F.unit a 1) = true :=
     pairEq F hdc huu hr.2.1
   have e54 : F.eqL (ground.getAt F.unit a 5) (ground.getAt F.unit a 4) = true :=
     pairEq F hdc huu hr.2.2.1
   have e65 : F.eqL (ground.getAt F.unit a 6) (ground.getAt F.unit a 5) = true :=
     pairEq F hdc huu hr.2.2.2
-  have e31 : F.eqL (ground.getAt F.unit a 3) (ground.getAt F.unit a 1) = true :=
-    htr _ _ _ e32 e21
+  have e20 : F.eqL (ground.getAt F.unit a 2) (ground.getAt F.unit a 0) = true :=
+    htr _ _ _ e21 e10
   have e64 : F.eqL (ground.getAt F.unit a 6) (ground.getAt F.unit a 4) = true :=
     htr _ _ _ e65 e54
   refine carrier.eqConf_intro F a _ hlen (fun i hi => ?_)
   match i, hi with
   | 0, _ => exact F.eqLRefl (ground.getAt F.unit a 0)
-  | 1, _ => exact F.eqLRefl (ground.getAt F.unit a 1)
-  | 2, _ => exact e21
-  | 3, _ => exact e31
+  | 1, _ => exact e10
+  | 2, _ => exact e20
+  | 3, _ => exact F.eqLRefl (ground.getAt F.unit a 3)
   | 4, _ => exact F.eqLRefl (ground.getAt F.unit a 4)
   | 5, _ => exact e54
   | 6, _ => exact e64
@@ -1151,7 +1144,7 @@ def lagApply (F : states.FList) :
 /-- The two-plaquette module pair's site, the `U` pair joined to
 the `V` pair — `con:twoplaq`'s site extended at the second
 variable's pair. -/
-def siteQ12 : states.FList := twoplaq.extSite true twoplaq.siteQ1
+def siteQ12 : states.FList := twoplaq.extSite 1 twoplaq.siteQ1
 
 /-- The module pair's state, `q₁ q₂` — the magnetic multiplication
 of the first module's presentation at the second's pair
@@ -1211,7 +1204,7 @@ plaquette's `χ_X` at the extended site, the pairing `prop:wg`'s
 — computable per entry by the `E_link` interpolant, the
 tetrahedral list the node list's own square. -/
 def kMid (k' k : Nat) : poly.PPair :=
-  wg.pairFull siteQ12 (twoplaq.extSite false siteQ12)
+  wg.pairFull wg.evalPhi siteQ12 (twoplaq.extSite 0 siteQ12)
     (chanState k') (twoplaq.mulAdj (chanState k))
 
 end network

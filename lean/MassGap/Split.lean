@@ -30,7 +30,15 @@ eigendirection there, `d_j (H v_j) = n_j (G v_j)` cleared
 (`eigenColumn` at the indicator `elim.idRow`), and a matrix
 congruated to the diagonal of its columns' pairings reads two
 probes' pairing across it as that diagonal's fold over the probes'
-coordinates at the determinant's square (`pair_fold`).  The resultant's kernel
+coordinates at the determinant's square (`pair_fold`).  The two
+congruated data are read at the diagonal beside them: `Tᵀ G T` at
+the roots' scales against their clearings (`congr_gram`) and
+`Tᵀ H T` at the scales against the roots' first members
+(`congr_pencil`, the pencil's own side withdrawn at the
+memberwise swap), with the diagonal's reversal count its
+lower-side entries' count (`rev_diagM`, the head entry's order-one
+block joined to the tail's diagonal at `lem:inertia`'s block
+addition, an entry at the sum's unit entering the kernel block).  The resultant's kernel
 read arrives at this
 arithmetic (`crossRead`): a kernel vector's cross pair `(A, B)` at
 the stated degrees with `A p` the balance partner of `B q`, the
@@ -250,6 +258,10 @@ def congrZ (T : Mat) (Z : PMat) : PMat :=
 /-- The diagonal polynomial matrix at stated entries, the off keys
 at the sum's unit. -/
 def pdiag (ds : List Poly) : PMat := elim.diagO poly.polyOps ds
+
+/-- The polynomial diagonal's shape, square at its entry count. -/
+private theorem pdiag_rows (ds : List Poly) : rowsLen ds.length (pdiag ds) :=
+  elim.diagO_rows poly.polyOps ds
 
 /-- The polynomial-matrix product, the entries' polynomial folds
 (`lem:genericlift`'s adjugate solve and `lem:spectator`'s
@@ -848,14 +860,6 @@ theorem pconst_congrZ {o : Nat} (H G : Mat) (T : SqMat o)
 /-! The diagonal side's two coefficients: the diagonals at the scaled
 root data, the scale against the root's own members. -/
 
-private theorem getAt_cfmap : ∀ (ds : List Poly) (i k : Nat),
-    ground.getAt BPair.unit (ds.map (cf k)) i
-      = cf k (ground.getAt ([] : Poly) ds i)
-  | [], 0, _ => rfl
-  | [], _ + 1, _ => rfl
-  | _ :: _, 0, _ => rfl
-  | _ :: t, i + 1, k => getAt_cfmap t i k
-
 private theorem pcf_pdiag (k : Nat) (ds : List Poly) :
     pcf k (pdiag ds) = diagM (ds.map (cf k)) := by
   show (ground.matOf ds.length ds.length
@@ -872,7 +876,7 @@ private theorem pcf_pdiag (k : Nat) (ds : List Poly) :
   show cf k (if j = i then ground.getAt ([] : Poly) ds i else [])
     = if j = i then ground.getAt BPair.unit (ds.map (cf k)) i
       else BPair.unit
-  rw [getAt_cfmap ds i k]
+  rw [ground.getAt_mapT ([] : Poly) BPair.unit (cf k) rfl ds i]
   by_cases hij : j = i
   · rw [if_pos hij, if_pos hij]
   · rw [if_neg hij, if_neg hij]
@@ -898,6 +902,36 @@ theorem plin_pdiag (l : List (BPair × Pos × BPair)) :
     plin (pdiag (l.map (fun r => poly.scaleP r.2.2 (linFac r.1 r.2.1))))
       = diagM (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)) := by
   rw [plin_pcf, pcf_pdiag, cfmap_lin]
+
+/-- The diagonal side's constant coefficient: the diagonal at the
+scale against the root's first member, on the pencil's own side. -/
+private theorem pconst_pdiag (l : List (BPair × Pos × BPair)) :
+    pconst (pdiag (l.map (fun r => poly.scaleP r.2.2 (linFac r.1 r.2.1))))
+      = diagM (l.map (fun r => (r.2.2 * r.1).norm.swap)) := by
+  rw [pconst_pcf, pcf_pdiag, cfmap_const]
+
+/-- The pencil's congruated gram at a diagonal read: `Tᵀ G T` reads the
+diagonal at the roots' scales against their clearings (`lem:split`). -/
+theorem congr_gram {o : Nat} (H G : Mat) (T Tw : SqMat o)
+    (l : List (BPair × Pos × BPair)) (hd : diagRead H G T Tw l) :
+    matOneValue (matMul (transposeM T.val) (matMul G T.val))
+      (diagM (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))) := by
+  have h1 := pcfOne _ _ hd.2.2.2.1 1
+  rw [← plin_pcf, ← plin_pcf, plin_pdiag l] at h1
+  exact matOne_trans
+    (matOne_symm (plin_congrZ H G T hd.1 hd.2.1)) h1
+
+/-- The pencil's congruated member at a diagonal read, on the pencil's
+own side: the memberwise swap of `Tᵀ H T` reads the diagonal at the
+roots' scales against their first members' swaps. -/
+private theorem pencil_swap {o : Nat} (H G : Mat) (T Tw : SqMat o)
+    (l : List (BPair × Pos × BPair)) (hd : diagRead H G T Tw l) :
+    matOneValue (matSwap (matMul (transposeM T.val) (matMul H T.val)))
+      (diagM (l.map (fun r => (r.2.2 * r.1).norm.swap))) := by
+  have h1 := pcfOne _ _ hd.2.2.2.1 0
+  rw [← pconst_pcf, ← pconst_pcf, pconst_pdiag l] at h1
+  exact matOne_trans
+    (matOne_symm (pconst_congrZ H G T hd.1 hd.2.1)) h1
 
 theorem diagM_len (ds : List BPair) : (diagM ds).length = ds.length :=
   elim.diagO_len ground.bpairOps ds
@@ -1026,6 +1060,8 @@ theorem eigenColumn {o : Nat} (H G : Mat) (T Tw : SqMat o)
     poly.oneValue
       (vecScale (BPair.ofPos dj) (matVec H (matVec T.val (idRow o j))))
       (vecScale nj (matVec G (matVec T.val (idRow o j)))) := by
+  have hDG := congr_gram H G T Tw l hd
+  have hDH := pencil_swap H G T Tw l hd
   obtain ⟨hH, hG, ⟨hdet, hTTw, _⟩, hcong, _⟩ := hd
   have hTl : T.val.length = o := SqMat.rows T
   have hTr : rowsLen o T.val := rowsLen_of_sqAt T.shape
@@ -1042,23 +1078,6 @@ theorem eigenColumn {o : Nat} (H G : Mat) (T Tw : SqMat o)
       ground.length_map] at h1
     exact h1.symm
   have hjo : j < o := by rw [← hlo]; exact hj
-  have hDG : matOneValue (matMul (transposeM T.val) (matMul G T.val))
-      (diagM (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))) := by
-    have h2 := pcfOne _ _ hcong 1
-    rw [pcf_pdiag, cfmap_lin] at h2
-    have h3 : matOneValue (pcf 1 (congrZ T.val (zMat H G)))
-        (matMul (transposeM T.val) (matMul G T.val)) := by
-      rw [← plin_pcf]; exact plin_congrZ H G T hH hG
-    exact matOne_trans (matOne_symm h3) h2
-  have hDH : matOneValue
-      (matSwap (matMul (transposeM T.val) (matMul H T.val)))
-      (diagM (l.map (fun r => (r.2.2 * r.1).norm.swap))) := by
-    have h2 := pcfOne _ _ hcong 0
-    rw [pcf_pdiag, cfmap_const] at h2
-    have h3 : matOneValue (pcf 0 (congrZ T.val (zMat H G)))
-        (matSwap (matMul (transposeM T.val) (matMul H T.val))) := by
-      rw [← pconst_pcf]; exact pconst_congrZ H G T hH hG
-    exact matOne_trans (matOne_symm h3) h2
   have hDGl : (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)).length = o := by
     rw [ground.length_map]; exact hlo
   have hDHl : (l.map (fun r => (r.2.2 * r.1).norm.swap)).length = o := by
@@ -1552,6 +1571,7 @@ theorem diag_chiRead {o : Nat} (H G : Mat) (T Tw : SqMat o)
     (l : List (BPair × Pos × BPair))
     (hd : diagRead H G T Tw l) :
     chiRead H G (l.map (fun r => (r.1, r.2.1))) := by
+  have hDG := congr_gram H G T Tw l hd
   obtain ⟨hH, hG, ⟨hdet, _, _⟩, hcong, _⟩ := hd
   have hTl : T.val.length = o := SqMat.rows T
   have hTr : rowsLen o T.val := rowsLen_of_sqAt T.shape
@@ -1579,8 +1599,8 @@ theorem diag_chiRead {o : Nat} (H G : Mat) (T Tw : SqMat o)
   have hdr : rowsLen o (pdiag
       (l.map (fun r => poly.scaleP r.2.2 (linFac r.1 r.2.1)))) := by
     rw [← hdsl]
-    exact elim.diagO_rows poly.polyOps
-      (l.map (fun r => poly.scaleP r.2.2 (linFac r.1 r.2.1)))
+    exact pdiag_rows (l.map (fun r : BPair × Pos × BPair =>
+      poly.scaleP r.2.2 (linFac r.1 r.2.1)))
   have hminor : poly.oneValue (pminor (congrZ T.val (zMat H G)))
       (pminor (pdiag
         (l.map (fun r => poly.scaleP r.2.2 (linFac r.1 r.2.1))))) :=
@@ -1602,14 +1622,6 @@ theorem diag_chiRead {o : Nat} (H G : Mat) (T Tw : SqMat o)
       (poly.oneValue_trans hminor
         (pminor_pdiag_read (fun r : BPair × Pos × BPair => r.2.2)
           (fun r => linFac r.1 r.2.1) l))
-  have hDG : matOneValue (matMul (transposeM T.val) (matMul G T.val))
-      (diagM (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))) := by
-    have h2 := pcfOne _ _ hcong 1
-    rw [pcf_pdiag, cfmap_lin] at h2
-    have h3 : matOneValue (pcf 1 (congrZ T.val (zMat H G)))
-        (matMul (transposeM T.val) (matMul G T.val)) := by
-      rw [← plin_pcf]; exact plin_congrZ H G T hH hG
-    exact matOne_trans (matOne_symm h3) h2
   have hGTl : (matMul G T.val).length = o :=
     (length_matMul G T.val).trans hGl
   have hGTr : rowsLen o (matMul G T.val) :=
@@ -1691,25 +1703,6 @@ vector of the order is the diagonal's own square-weighted fold
 (`quadFoldV`, `quadFoldK`) — `lem:split`'s `diagRead` with its
 eigen-column capstone the derivation, `lem:inertia`'s form the
 display. -/
-
-/-- The linear coefficient of a polynomial row read, entry by
-entry. -/
-private theorem plinRow : ∀ r s : List poly.Poly, prowOneValue r s →
-    poly.oneValue (r.map (fun p => ground.getAt BPair.unit p 1))
-      (s.map (fun p => ground.getAt BPair.unit p 1))
-  | [], [], _ => trivial
-  | [], _ :: _, h => h.elim
-  | _ :: _, [], h => h.elim
-  | _ :: r, _ :: s, h => ⟨poly.oneValue_getAt 1 h.1, plinRow r s h.2⟩
-
-/-- The linear coefficient of a polynomial matrix read, row by
-row. -/
-private theorem plinOne : ∀ a b : PMat, pmatOneValue a b →
-    matOneValue (plin a) (plin b)
-  | [], [], _ => trivial
-  | [], _ :: _, h => h.elim
-  | _ :: _, [], h => h.elim
-  | _ :: a, _ :: b, h => ⟨plinRow _ _ h.1, plinOne a b h.2⟩
 
 private theorem diagAct (ds c : List BPair) (hc : c.length = ds.length) :
     poly.oneValue (matVec (diagM ds) c)
@@ -1862,17 +1855,318 @@ private theorem eigenRead {n : Nat} (Et : Mat) (T Tw : SqMat n)
   refine poly.oneValue_trans hE (vecScale_oneValue _ _ _ ?_)
   exact matVec_idMat n _ (by rw [matVec_length]; exact SqMat.rows T)
 
-/-- The congruated unit gram is the diagonal of the scales against
-the roots' clearings. -/
-theorem gramMat {n : Nat} (Et : Mat) (T Tw : SqMat n)
-    (l : List (BPair × Pos × BPair))
-    (hd : diagRead Et (idMat n) T Tw l) :
-    matOneValue (matMul (transposeM T.val) (matMul (idMat n) T.val))
-      (diagM (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))) := by
-  have h1 := plinOne _ _ hd.2.2.2.1
-  rw [plin_pdiag l] at h1
-  exact matOne_trans
-    (matOne_symm (plin_congrZ Et (idMat n) T hd.1 hd.2.1)) h1
+/-! The congruated pencil's two diagonal reads and the diagonal's
+reversal count, `lem:split`'s diagonalizing congruence read at the
+site's two data with `lem:inertia`'s order-one blocks beneath it. -/
+
+/-- The diagonal's memberwise swap is the diagonal at the swapped
+entries. -/
+private theorem diagM_swap (ds : List BPair) :
+    matSwap (diagM ds) = diagM (ds.map BPair.swap) := by
+  show (ground.matOf ds.length ds.length
+      (fun i j => if j = i then ground.getAt BPair.unit ds i
+        else BPair.unit)).map (fun r => r.map BPair.swap)
+    = ground.matOf (ds.map BPair.swap).length (ds.map BPair.swap).length
+      (fun i j => if j = i
+        then ground.getAt BPair.unit (ds.map BPair.swap) i
+        else BPair.unit)
+  rw [ground.length_map BPair.swap ds]
+  refine Eq.trans (ground.map_map _ _ (List.range ds.length)) ?_
+  refine ground.map_congr_all _ _ (fun i => ?_) (List.range ds.length)
+  refine Eq.trans (ground.map_map _ _ (List.range ds.length)) ?_
+  refine ground.map_congr_all _ _ (fun j => ?_) (List.range ds.length)
+  show BPair.swap (if j = i then ground.getAt BPair.unit ds i else BPair.unit)
+    = if j = i then ground.getAt BPair.unit (ds.map BPair.swap) i
+      else BPair.unit
+  rw [ground.getAt_mapT BPair.unit BPair.unit BPair.swap rfl ds i]
+  by_cases hij : j = i
+  · rw [if_pos hij, if_pos hij]
+  · rw [if_neg hij, if_neg hij]
+    rfl
+
+/-- The pencil's congruated member at a diagonal read: `Tᵀ H T` reads
+the diagonal at the roots' scales against their first members. -/
+theorem congr_pencil {o : Nat} (H G : Mat) (T Tw : SqMat o)
+    (l : List (BPair × Pos × BPair)) (hd : diagRead H G T Tw l) :
+    matOneValue (matMul (transposeM T.val) (matMul H T.val))
+      (diagM (l.map (fun r => (r.2.2 * r.1).norm))) := by
+  have h3 := elim.matSwap_congr (pencil_swap H G T Tw l hd)
+  rw [elim.matSwap_matSwap, diagM_swap, ground.map_map] at h3
+  exact h3
+
+/-- The diagonal reads its own transpose, the two keys' exchange
+fixing the diagonal's own read. -/
+theorem diagM_sym (ds : List BPair) :
+    matOneValue (transposeM (diagM ds)) (diagM ds) := by
+  have hr : rowsLen ds.length (diagM ds) := diagM_shape ds ds.length rfl
+  refine matOne_of_entries _ _ ds.length
+    (transposeLen (diagM ds) hr (diagM_len ds))
+    (rowsLen_cast (diagM_len ds) (rowsLen_transposeM (diagM ds)))
+    (diagM_len ds) hr ?_
+  intro i j hi hj
+  rw [getAt_transposeM BPair.unit (diagM ds) hr i j hi
+      (by rw [diagM_len]; exact hj),
+    diagM_entry ds j i hj hi, diagM_entry ds i j hi hj]
+  by_cases hij : j = i
+  · rw [if_pos hij, if_pos (show i = j from hij.symm), hij]
+    exact BPair.oneValue_refl _
+  · rw [if_neg hij, if_neg (show ¬ i = j from fun he => hij he.symm)]
+    exact BPair.oneValue_refl _
+
+/-- Every split of a one-entry datum reads the entry's side: one
+unit at a member below the sum's unit and nothing at or beyond it
+(`lem:inertia`'s order-one row, the kernel block at the unit). -/
+private theorem rev_oneEntry {d : BPair} (sp : Split 1)
+    (h : splitRead [[d]] sp) :
+    revAt sp = if d < BPair.unit then 1 else 0 := by
+  by_cases hu : d.oneValue BPair.unit
+  · rw [rev_exchange [[d]] sp (unitSplit 1) h
+      (unitSplit_read [[d]] rfl ⟨⟨hu, trivial⟩, trivial⟩),
+    if_neg (fun hlt => ground.offOfLtUnit hlt hu)]
+    exact unitSplit_psd 1
+  · rw [rev_one hu sp h]
+    by_cases hlt : d < BPair.unit
+    · rw [if_pos hlt]
+      exact rev_one_lt hlt
+    · rw [if_neg hlt]
+      exact rev_one_le (ground.leB_of_not_lt hlt)
+
+/-- The diagonal at a headed entry list is the head's order-one
+datum joined to the tail's diagonal, the off-block entries at the
+sum's unit. -/
+private theorem diagM_cons (d : BPair) (t : List BPair) :
+    matOneValue (diagM (d :: t))
+      (blockJoin [[d]] (nullMat 1 t.length) (diagM t)) := by
+  have hBt : (transposeM (nullMat 1 t.length)).length = t.length :=
+    length_transposeM (nullMat 1 t.length) (rowsLen_nullMat 1 t.length)
+      (by rw [length_nullMat]; exact Nat.succ_pos 0)
+  have hBtr : rowsLen 1 (transposeM (nullMat 1 t.length)) :=
+    rowsLen_cast (length_nullMat 1 t.length)
+      (rowsLen_transposeM (nullMat 1 t.length))
+  have hJl : (blockJoin [[d]] (nullMat 1 t.length) (diagM t)).length
+      = t.length + 1 := by
+    rw [length_blockJoin [[d]] (nullMat 1 t.length) (diagM t) 1 t.length
+      rfl (length_nullMat 1 t.length) hBt (diagM_len t)]
+    exact Nat.add_comm 1 t.length
+  have hJr : rowsLen (t.length + 1)
+      (blockJoin [[d]] (nullMat 1 t.length) (diagM t)) :=
+    rowsLen_cast (Nat.add_comm 1 t.length)
+      (rowsLen_blockJoin [[d]] (nullMat 1 t.length) (diagM t) 1 t.length
+        ⟨rfl, trivial⟩ (rowsLen_nullMat 1 t.length) hBtr
+        (diagM_shape t t.length rfl))
+  have hJ : blockJoin [[d]] (nullMat 1 t.length) (diagM t)
+      = (d :: List.replicate t.length BPair.unit)
+        :: List.zipWith (fun a b => a ++ b)
+            (transposeM (nullMat 1 t.length)) (diagM t) := rfl
+  refine matOne_of_entries _ _ (t.length + 1)
+    (by rw [diagM_len]; rfl) (diagM_shape (d :: t) (t.length + 1) rfl)
+    hJl hJr ?_
+  intro i j hi hj
+  rw [diagM_entry (d :: t) i j hi hj, hJ]
+  cases i with
+  | zero =>
+    show (if j = 0 then ground.getAt BPair.unit (d :: t) 0
+        else BPair.unit).oneValue
+      (ground.getAt BPair.unit (d :: List.replicate t.length BPair.unit) j)
+    cases j with
+    | zero =>
+      rw [if_pos rfl]
+      exact BPair.oneValue_refl _
+    | succ j =>
+      rw [if_neg (fun he => Nat.noConfusion he)]
+      show BPair.unit.oneValue
+        (ground.getAt BPair.unit (List.replicate t.length BPair.unit) j)
+      rw [ground.getAt_replicate_self BPair.unit t.length j]
+      exact BPair.oneValue_refl _
+  | succ i =>
+    have hi' : i < t.length := Nat.lt_of_succ_lt_succ hi
+    have hrow : ground.getAt ([] : List BPair)
+        (List.zipWith (fun a b => a ++ b)
+          (transposeM (nullMat 1 t.length)) (diagM t)) i
+        = ground.getAt ([] : List BPair)
+            (transposeM (nullMat 1 t.length)) i
+          ++ ground.getAt ([] : List BPair) (diagM t) i :=
+      ground.getAt_zipWith ([] : List BPair) ([] : List BPair)
+        ([] : List BPair) (fun a b => a ++ b)
+        (transposeM (nullMat 1 t.length)) (diagM t) i
+        (by rw [hBt]; exact hi') (by rw [diagM_len]; exact hi')
+    have hrl : (ground.getAt ([] : List BPair)
+        (transposeM (nullMat 1 t.length)) i).length = 1 :=
+      rowsLen_getAt _ i hBtr (by rw [hBt]; exact hi')
+    show (if j = i + 1 then ground.getAt BPair.unit (d :: t) (i + 1)
+        else BPair.unit).oneValue
+      (ground.getAt BPair.unit
+        (ground.getAt ([] : List BPair)
+          (List.zipWith (fun a b => a ++ b)
+            (transposeM (nullMat 1 t.length)) (diagM t)) i) j)
+    rw [hrow, ground.getAt_append BPair.unit]
+    cases j with
+    | zero =>
+      rw [if_neg (fun he => Nat.noConfusion he),
+        if_pos (show 0 < (ground.getAt ([] : List BPair)
+          (transposeM (nullMat 1 t.length)) i).length by
+          rw [hrl]; exact Nat.succ_pos 0)]
+      exact BPair.oneValue_symm
+        (matNull_getAt (transposeM (nullMat 1 t.length))
+          (matNull_transposeM (nullMat 1 t.length)
+            (matNull_nullMat t.length 1)) i 0)
+    | succ j =>
+      have hj' : j < t.length := Nat.lt_of_succ_lt_succ hj
+      rw [if_neg (show ¬ (j + 1 < (ground.getAt ([] : List BPair)
+          (transposeM (nullMat 1 t.length)) i).length) by
+          rw [hrl]
+          exact fun hc => Nat.not_lt_zero j (Nat.lt_of_succ_lt_succ hc)),
+        hrl,
+        show j + 1 - 1 = j from Nat.succ_sub_one j,
+        diagM_entry t i j hi' hj']
+      show (if j + 1 = i + 1 then ground.getAt BPair.unit t i
+          else BPair.unit).oneValue
+        (if j = i then ground.getAt BPair.unit t i else BPair.unit)
+      by_cases hji : j = i
+      · rw [if_pos hji, if_pos (show j + 1 = i + 1 from congrArg _ hji)]
+        exact BPair.oneValue_refl _
+      · rw [if_neg hji, if_neg (show ¬ j + 1 = i + 1 from
+          fun he => hji (Nat.succ.inj he))]
+        exact BPair.oneValue_refl _
+
+private theorem rev_diagGo : ∀ (ds : List BPair) (n : Nat),
+    ds.length = n → ∀ sp : Split n, splitRead (diagM ds) sp →
+    revAt sp = ds.countP (fun d => decide (d < BPair.unit))
+  | [], n, hn, sp, h => by
+    subst hn
+    rw [rev_exchange (diagM ([] : List BPair)) sp (oneSplit [])
+      h (oneSplit_read [] (diagM ([] : List BPair)) rfl trivial rfl),
+      revAt_oneSplit []]
+    rfl
+  | d :: t, n, hn, sp, h => by
+    have hn' : 1 + t.length = n :=
+      (Nat.add_comm 1 t.length).trans hn
+    subst hn'
+    have hP : splitRead [[d]] (mkSplit 1 [[d]]) :=
+      mkSplit_read 1 [[d]] rfl (matOne_refl [[d]])
+    have hQ : splitRead (diagM t) (mkSplit t.length (diagM t)) :=
+      mkSplit_read t.length (diagM t)
+        (sqAt_of (diagM_len t) (diagM_shape t t.length rfl))
+        (diagM_sym t)
+    have hJ : splitRead (blockJoin [[d]] (nullMat 1 t.length) (diagM t))
+        sp :=
+      splitRead_congr (diagM (d :: t))
+        (blockJoin [[d]] (nullMat 1 t.length) (diagM t))
+        (sqAt_of
+          (length_blockJoin [[d]] (nullMat 1 t.length) (diagM t)
+            1 t.length rfl (length_nullMat 1 t.length)
+            (length_transposeM (nullMat 1 t.length)
+              (rowsLen_nullMat 1 t.length)
+              (by rw [length_nullMat]; exact Nat.succ_pos 0))
+            (diagM_len t))
+          (rowsLen_blockJoin [[d]] (nullMat 1 t.length) (diagM t)
+            1 t.length ⟨rfl, trivial⟩ (rowsLen_nullMat 1 t.length)
+            (rowsLen_cast (length_nullMat 1 t.length)
+              (rowsLen_transposeM (nullMat 1 t.length)))
+            (diagM_shape t t.length rfl)))
+        (diagM_cons d t) sp h
+    rw [rev_join [[d]] (diagM t) (mkSplit 1 [[d]]) hP
+        (mkSplit t.length (diagM t)) hQ sp hJ,
+      rev_oneEntry (mkSplit 1 [[d]]) hP,
+      rev_diagGo t t.length rfl (mkSplit t.length (diagM t)) hQ,
+      ground.countP_read, ground.countP_read]
+    by_cases hlt : d < BPair.unit
+    · rw [if_pos hlt,
+        ground.countBy_cons_true _ t (decide_eq_true hlt)]
+    · rw [if_neg hlt,
+        ground.countBy_cons_false _ t (decide_eq_false hlt),
+        Nat.zero_add]
+
+/-- A diagonal's reversal count is its lower-side entries' count
+(`lem:inertia`, the order-one blocks' sides). -/
+theorem rev_diagM (ds : List BPair) {n : Nat} (sp : Split n)
+    (h : splitRead (diagM ds) sp) :
+    revAt sp = ds.countP (fun d => decide (d < BPair.unit)) :=
+  rev_diagGo ds n ((diagM_len ds).symm.trans (sqAt_len h.1)) sp h
+
+/-- The weighted diagonal is the diagonal at the weighted entries. -/
+theorem diagM_scaleB (c : BPair) (ds : List BPair) :
+    matScaleB c (diagM ds) = diagM (ds.map (fun z => (c * z).norm)) := by
+  show (ground.matOf ds.length ds.length
+      (fun i j => if j = i then ground.getAt BPair.unit ds i
+        else BPair.unit)).map (fun r => r.map (fun z => (c * z).norm))
+    = ground.matOf (ds.map (fun z => (c * z).norm)).length
+      (ds.map (fun z => (c * z).norm)).length
+      (fun i j => if j = i
+        then ground.getAt BPair.unit (ds.map (fun z => (c * z).norm)) i
+        else BPair.unit)
+  rw [ground.length_map (fun z => (c * z).norm) ds]
+  refine Eq.trans (ground.map_map _ _ (List.range ds.length)) ?_
+  refine ground.map_congr_all _ _ (fun i => ?_) (List.range ds.length)
+  refine Eq.trans (ground.map_map _ _ (List.range ds.length)) ?_
+  refine ground.map_congr_all _ _ (fun j => ?_) (List.range ds.length)
+  show (c * (if j = i then ground.getAt BPair.unit ds i else BPair.unit)).norm
+    = if j = i
+      then ground.getAt BPair.unit (ds.map (fun z => (c * z).norm)) i
+      else BPair.unit
+  rw [ground.getAt_mapT BPair.unit BPair.unit (fun z => (c * z).norm)
+    (Eq.trans (BPair.norm_congr (BPair.mul_unit c)) rfl) ds i]
+  by_cases hij : j = i
+  · rw [if_pos hij, if_pos hij]
+  · rw [if_neg hij, if_neg hij]
+    exact Eq.trans (BPair.norm_congr (BPair.mul_unit c)) rfl
+
+/-- Four diagonals' entrywise sum reads the diagonal at the entries'
+own sums. -/
+theorem diagM_sum4 (P Q R1 R2 D : List BPair)
+    (hP : P.length = D.length) (hQ : Q.length = D.length)
+    (hR1 : R1.length = D.length) (hR2 : R2.length = D.length)
+    (hent : ∀ i, i < D.length →
+      (ground.getAt BPair.unit P i + ground.getAt BPair.unit Q i
+          + ground.getAt BPair.unit R1 i
+          + ground.getAt BPair.unit R2 i).oneValue
+        (ground.getAt BPair.unit D i)) :
+    matOneValue
+      (matAdd (matAdd (matAdd (diagM P) (diagM Q)) (diagM R1)) (diagM R2))
+      (diagM D) := by
+  have hPr : rowsLen D.length (diagM P) := diagM_shape P D.length hP
+  have hQr : rowsLen D.length (diagM Q) := diagM_shape Q D.length hQ
+  have h1r : rowsLen D.length (matAdd (diagM P) (diagM Q)) :=
+    rowsLen_matAdd D.length _ _ hPr hQr
+  have hR1r : rowsLen D.length (diagM R1) := diagM_shape R1 D.length hR1
+  have hR2r : rowsLen D.length (diagM R2) := diagM_shape R2 D.length hR2
+  have h2r : rowsLen D.length
+      (matAdd (matAdd (diagM P) (diagM Q)) (diagM R1)) :=
+    rowsLen_matAdd D.length _ _ h1r hR1r
+  have h1l : (matAdd (diagM P) (diagM Q)).length = D.length := by
+    rw [length_matAdd _ _ (by rw [diagM_len, diagM_len, hP, hQ]),
+      diagM_len, hP]
+  have h2l : (matAdd (matAdd (diagM P) (diagM Q)) (diagM R1)).length
+      = D.length := by
+    rw [length_matAdd _ _ (by rw [h1l, diagM_len, hR1]), h1l]
+  have h3l : (matAdd (matAdd (matAdd (diagM P) (diagM Q)) (diagM R1))
+      (diagM R2)).length = D.length := by
+    rw [length_matAdd _ _ (by rw [h2l, diagM_len, hR2]), h2l]
+  refine matOne_of_entries _ _ D.length h3l
+    (rowsLen_matAdd D.length _ _ h2r hR2r) (diagM_len D)
+    (diagM_shape D D.length rfl) ?_
+  intro i j hi hj
+  rw [entry_matAdd _ _ D.length h2r hR2r i j (by rw [h2l]; exact hi)
+      (by rw [diagM_len, hR2]; exact hi) hj,
+    entry_matAdd _ _ D.length h1r hR1r i j (by rw [h1l]; exact hi)
+      (by rw [diagM_len, hR1]; exact hi) hj,
+    entry_matAdd _ _ D.length hPr hQr i j (by rw [diagM_len, hP]; exact hi)
+      (by rw [diagM_len, hQ]; exact hi) hj,
+    diagM_entry P i j (by rw [hP]; exact hi) (by rw [hP]; exact hj),
+    diagM_entry Q i j (by rw [hQ]; exact hi) (by rw [hQ]; exact hj),
+    diagM_entry R1 i j (by rw [hR1]; exact hi) (by rw [hR1]; exact hj),
+    diagM_entry R2 i j (by rw [hR2]; exact hi) (by rw [hR2]; exact hj),
+    diagM_entry D i j hi hj]
+  by_cases hij : j = i
+  · rw [if_pos hij, if_pos hij, if_pos hij, if_pos hij, if_pos hij]
+    exact hent i hi
+  · rw [if_neg hij, if_neg hij, if_neg hij, if_neg hij, if_neg hij]
+    exact BPair.add_units
+      (BPair.add_units
+        (BPair.add_units (BPair.oneValue_refl BPair.unit)
+          (BPair.oneValue_refl BPair.unit))
+        (BPair.oneValue_refl BPair.unit))
+      (BPair.oneValue_refl BPair.unit)
 
 private theorem gramRead {n : Nat} (Et : Mat) (T Tw : SqMat n)
     (l : List (BPair × Pos × BPair))
@@ -1892,7 +2186,7 @@ private theorem gramRead {n : Nat} (Et : Mat) (T Tw : SqMat n)
   have hG : matOneValue
       (matMul (transposeM T.val) (matMul (idMat n) T.val))
       (diagM (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))) :=
-    gramMat Et T Tw l hd
+    congr_gram Et (idMat n) T Tw l hd
   refine BPair.oneValue_trans ?_
     (poly.oneValue_getAt j (matOne_entries _ _ hG i (by
       rw [show (matMul (transposeM T.val) (matMul (idMat n) T.val)).length
@@ -2543,7 +2837,7 @@ theorem quadFoldG {n : Nat} (Et : Mat) (T Tw : SqMat n)
   have hTr : rowsLen n T.val := rowsLen_of_sqAt T.shape
   have hIl : (idMat n).length = n := sqAt_len hd.2.1
   have hIr : rowsLen n (idMat n) := rowsLen_of_sqAt hd.2.1
-  have hG := gramMat Et T Tw l hd
+  have hG := congr_gram Et (idMat n) T Tw l hd
   refine BPair.oneValue_trans (dotN_read _ _) ?_
   refine BPair.oneValue_trans
     (dotP_oneValue_right _ _ _
@@ -2601,7 +2895,7 @@ instance (p q A B : Poly) : Decidable (crossRead p q A B) :=
     (@instDecidableAnd _ _
       (@instDecidableNot _
         (@instDecidableAnd _ _ (poly.decUnitTail _) (poly.decUnitTail _)))
-      (inferInstanceAs (Decidable (_ ∧ _))))
+      (@instDecidableAnd _ _ (Nat.decLe _ _) (Nat.decLe _ _)))
 
 /-! The two-variable pencil tier at the iterated carrier
 (`poly.PPoly`): the outer pair's site datum over polynomial

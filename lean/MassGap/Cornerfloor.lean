@@ -38,18 +38,39 @@ and every split, the family the count's witness from below
 (`cornerpivot.witCount`) and the certificate its cap from above
 (`cornerpivot.certCount`), so the ground root is simple over the
 cell, the multiplicity the count (`thm:SO`; `thm:divisorid`(iii)),
-`line_flat` its read at the seam pencil; `base_psd` reads the count
+`line_count` its read at the seam pencil; `base_psd` reads the count
 vacant at the vacant rate's line, every pivot clear at the diagonal
 `2 + ηW` (`lem:cornerpivot`(iv) at the constant supersolution, the
 diagonal clearing the bond's double at the electric member's
 margin), `base_count` its read at the seam pencil; and `floor_pos`
-reads the floor, the rates' gap `o = [g : b]·q₋` at the cut member,
-positive by its shape.
+reads the floor, the rates' gap `o = [g : b]·q₋` at a cut member
+beyond one and a key beyond one, positive by its shape.
+
+The residue direction reads at the one certificate transported
+across the residues (`lem:cornerpivot`(vi)).  `cellReadT` is the
+transported cell at a residue at or beyond two: the reference
+certificate's read at the residue two, the tied scale `[26 : 5N²]`
+under the certificate's ceiling, the endpoint key at the member's
+scale and residue, and a cut member beyond one whose line sits at or
+below the transported rate, the certificate's stated rate at the tied
+scale; `cellReadS` is the residue-one cell, the certificate's read at
+the residue two, the scale under the ceiling, the key at the residue
+one, and a cut member whose line sits at or below the stated rate at
+the scale itself.  On each the flat window is the count transport:
+`cut_flat_T` reads the count one at the member line, the witness
+family from below and the residue-two head's count at its line from
+above, the residue-`r` diagonal dominating the residue-two diagonal
+at the tied scale (`cornerpivot.resDiag` at the tie
+`cornerpivot.tieRead`) and the reversal count monotone at a diagonal
+datum on its upper side (`cornerpivot.well_dominate`), the
+residue-two count at most one under the ceiling
+(`cornerpivot.certCount`); `cut_flat_S` reads it at the scale itself
+(`cornerpivot.oneDiag`).
 
 The heights read two-sided on the cell at the chain:
-`ground_below_line` transports the window to the chain's head at the
-corner's levels, the well its leading block at the fiber datum's
-site tie, the compression's counts at or below the chain's
+`ground_below_line` transports a line of count one to the chain's
+head at the corner's levels, the well its leading block at the fiber
+datum's site tie, the compression's counts at or below the chain's
 (`truncation.count_head_le`, `lem:inertia`'s compression), so the
 chain's count at the member line is occupied and its ground sits at
 or below the line.
@@ -602,20 +623,20 @@ def floorN (en ed : Pos) (r N g : Nat) : Nat :=
 def floorD (en ed : Pos) (r N b : Nat) : Nat :=
   b * cornerpivot.qLowDen (posVal en) (posVal ed) r N
 
-/-- The cut member's line second member is occupied: the rate's
-read caps an occupied product, the member's own rate against the
-certificate's stated one, so its right side is occupied and the
-product's second factor with it. -/
-private theorem member_den_pos {r : Nat} {C : cornerpivot.DisconjCert}
-    {en ed : Pos} {N a b g : Nat} (h : cellRead r C en ed N a b g) :
+/-- A cut member's line second member is occupied: the member's
+first datum is occupied at the gap and the lower rate's first datum
+at the key, so a rate's read caps an occupied product and its right
+side's second factor is occupied with it. -/
+private theorem den_pos (en ed : Pos) (r N a b g X Y Z : Nat) (hab : b + g = a)
+    (hg : 1 ≤ g) (hN : 2 ≤ N) (hX : 0 < X)
+    (h : a * cornerpivot.qLowNum (posVal en) (posVal ed) r N * X
+      ≤ Y * (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N * Z)) :
     1 ≤ b * cornerpivot.qLowDen (posVal en) (posVal ed) r N :=
   have hq := cornerpivot.qLowPos (posVal en) (posVal ed) r N (posVal_pos en)
-    (posVal_pos ed) h.2.2.1.1
-  have ha : 1 ≤ a := by
-    rw [← h.2.2.2.1]
-    exact Nat.le_trans h.2.2.2.2.1 (Nat.le_add_left g b)
-  (ground.mulPosSplit (Nat.lt_of_lt_of_le
-    (Nat.mul_pos (Nat.mul_pos ha hq.1) h.1.1) h.2.2.2.2.2)).2
+    (posVal_pos ed) hN
+  have ha : 1 ≤ a := hab ▸ Nat.le_trans hg (Nat.le_add_left g b)
+  (ground.mulPosSplit (ground.mulPosSplit (Nat.lt_of_lt_of_le
+    (Nat.mul_pos (Nat.mul_pos ha hq.1) hX) h)).2).1
 
 /-- The flat window at the member's line: at every order beyond the
 endpoint depth and every split the count reads one, the witness
@@ -633,42 +654,172 @@ theorem cut_flat {r : Nat} {C : cornerpivot.DisconjCert} {en ed : Pos}
     revAt sp = 1 :=
   Nat.le_antisymm
     (cornerpivot.certCount r C _ _ n en ed h.1 h.2.1 h.2.2.2.2.2
-      (member_den_pos h) sp hsp)
+      (den_pos en ed r N a b g C.qcD C.qcN 1 h.2.2.2.1 h.2.2.2.2.1 h.2.2.1.1 h.1.1
+        (by rw [Nat.mul_one]; exact h.2.2.2.2.2)) sp hsp)
     (cornerpivot.witCount en ed r N n a b g h.2.2.1.1 hNn h.2.2.2.1
       h.2.2.2.2.1 sp hsp)
 
-/-- The flat window at the seam pencil: the member's line count one
-at the corner pencil's site over the tower's data, the line's level
-members the member rate's own at the band top's join. -/
-theorem line_flat {r : Nat} {C : cornerpivot.DisconjCert} {en ed : Pos}
-    {N a b g : Nat} (h : cellRead r C en ed N a b g) (c n : Nat)
-    (hNn : N ≤ n) (sp sp' : Split n)
+/-- The transported cell at a residue at or beyond two
+(`lem:cornerpivot`(vi)): the reference certificate's read at the
+residue two, the tied scale `[26 : 5N²]` under the certificate's
+ceiling, the endpoint key at the member's scale and residue, and a
+cut member `[a : b]` beyond one at the gap `g` whose line sits at or
+below the transported rate `[cn·26 : cd·5N²η]`, the certificate's
+stated rate at the tied scale. -/
+def cellReadT (r : Nat) (C : cornerpivot.DisconjCert) (en ed : Pos)
+    (N a b g : Nat) : Prop :=
+  2 ≤ r
+  ∧ cornerpivot.certRead 2 C
+  ∧ BPair.ofPos 26 * BPair.ofPos C.e0d
+      ≤ C.e0n * BPair.ofPos (cornerpivot.tieScaleD N)
+  ∧ cornerpivot.endRead (posVal en) (posVal ed) r N
+  ∧ b + g = a ∧ 1 ≤ g
+  ∧ a * cornerpivot.qLowNum (posVal en) (posVal ed) r N * posVal en
+        * (C.qcD * (5 * N * N))
+      ≤ C.qcN * 26
+        * (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N * posVal ed)
+
+instance (r : Nat) (C : cornerpivot.DisconjCert) (en ed : Pos)
+    (N a b g : Nat) : Decidable (cellReadT r C en ed N a b g) :=
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
+
+/-- The transported cell at the residue one (`lem:cornerpivot`(vi)):
+the reference certificate's read at the residue two, the scale under
+the certificate's ceiling, the endpoint key at the scale and the
+residue one, and a cut member `[a : b]` beyond one at the gap `g`
+whose line sits at or below the certificate's stated rate at the
+scale itself. -/
+def cellReadS (C : cornerpivot.DisconjCert) (en ed : Pos) (N a b g : Nat) :
+    Prop :=
+  cornerpivot.certRead 2 C
+  ∧ BPair.ofPos en * BPair.ofPos C.e0d ≤ C.e0n * BPair.ofPos ed
+  ∧ cornerpivot.endRead (posVal en) (posVal ed) 1 N
+  ∧ b + g = a ∧ 1 ≤ g
+  ∧ a * cornerpivot.qLowNum (posVal en) (posVal ed) 1 N * C.qcD
+      ≤ C.qcN * (b * cornerpivot.qLowDen (posVal en) (posVal ed) 1 N)
+
+instance (C : cornerpivot.DisconjCert) (en ed : Pos) (N a b g : Nat) :
+    Decidable (cellReadS C en ed N a b g) :=
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
+
+private theorem rateT_l (a Q E N cd : Nat) :
+    a * Q * E * (5 * N * N) * cd
+      = a * Q * E * (cd * (5 * N * N)) :=
+  ground.monEq [a, Q, E, N, cd]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2)) (Mon.mul (Mon.mul (Mon.cst 5) (Mon.var 3)) (Mon.var 3))) (Mon.var 4))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2)) (Mon.mul (Mon.var 4) (Mon.mul (Mon.mul (Mon.cst 5) (Mon.var 3)) (Mon.var 3))))
+    (by decide +kernel) (by decide +kernel)
+private theorem rateT_r (cn b Qd D : Nat) :
+    cn * (b * Qd) * D * 26
+      = cn * 26 * (b * Qd * D) :=
+  ground.monEq [cn, b, Qd, D]
+    (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 1) (Mon.var 2))) (Mon.var 3)) (Mon.cst 26))
+    (Mon.mul (Mon.mul (Mon.var 0) (Mon.cst 26)) (Mon.mul (Mon.mul (Mon.var 1) (Mon.var 2)) (Mon.var 3)))
+    (by decide +kernel) (by decide +kernel)
+
+/-- The flat window at the transported cell's member line: at every
+order beyond the endpoint depth and every split the count reads one,
+the witness family from below (`cornerpivot.witCount`) and the
+residue-two certificate from above through the count transport —
+the residue-`r` diagonal dominating the residue-two diagonal at the
+tied scale (`cornerpivot.resDiag` at the tie `cornerpivot.tieRead`),
+the residue-two head's count at its line at most one under the
+certificate's ceiling (`cornerpivot.certCount`), and the reversal
+count monotone at a diagonal datum on its upper side
+(`cornerpivot.well_dominate`; `lem:cornerpivot`(vi)). -/
+theorem cut_flat_T {r : Nat} {C : cornerpivot.DisconjCert} {en ed : Pos}
+    {N a b g : Nat} (h : cellReadT r C en ed N a b g)
+    (n : Nat) (hNn : N ≤ n) (sp : Split n)
     (hsp : splitRead (cornerpivot.wellMat r
       (a * cornerpivot.qLowNum (posVal en) (posVal ed) r N)
-      (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N) en ed n) sp)
-    (hsp' : splitRead (seamSite r
-      (a * cornerpivot.qLowNum (posVal en) (posVal ed) r N)
-      (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N) c en ed n) sp') :
-    countAtPair
-      (matScale (posOfSucc
-          (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N - 1))
-        (cornerPencil (headE r n) (matScale (posOfSucc r) (headM c n)) en ed))
-      (idMat n)
-      (lineX r (a * cornerpivot.qLowNum (posVal en) (posVal ed) r N) en ed)
-      (lineY r c (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N) ed)
-      1 sp' :=
-  line_count r _ _ c (member_den_pos h) en ed n 1 sp sp' hsp
-    (cut_flat h n hNn sp hsp) hsp'
+      (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N) en ed n) sp) :
+    revAt sp = 1 := by
+  obtain ⟨hr, hC, hceil, hend, hab, hg, hrate⟩ := h
+  have hN2 : 2 ≤ N := hend.1
+  have hN1 : 1 ≤ N := Nat.le_trans (by decide) hN2
+  refine Nat.le_antisymm ?_ (cornerpivot.witCount en ed r N n a b g hN2 hNn hab hg sp hsp)
+  cases n with
+  | zero => rw [revAt_zero sp]; exact Nat.zero_le 1
+  | succ m =>
+  have hsp₂ := mkSplit_read (m + 1) _
+    (sqAt_of (cornerpivot.wellLen 2 C.qcN C.qcD 26 (cornerpivot.tieScaleD N) m)
+      (cornerpivot.wellRows 2 C.qcN C.qcD 26 (cornerpivot.tieScaleD N) m))
+    (cornerpivot.wellMat_sym 2 C.qcN C.qcD 26 (cornerpivot.tieScaleD N) (m + 1))
+  refine Nat.le_trans (cornerpivot.well_dominate r _ _ 2 C.qcN C.qcD
+    (den_pos en ed r N a b g (posVal en * (C.qcD * (5 * N * N))) (C.qcN * 26) (posVal ed)
+      hab hg hN2
+      (Nat.mul_pos (posVal_pos en) (Nat.mul_pos hC.1 (Nat.mul_pos
+        (Nat.mul_pos (by decide : 0 < 5) (Nat.lt_of_lt_of_le (by decide : 0 < 2) hN2))
+        (Nat.lt_of_lt_of_le (by decide : 0 < 2) hN2))))
+      (by
+        rw [← ground.mulAssoc (a * cornerpivot.qLowNum (posVal en) (posVal ed) r N)
+          (posVal en) (C.qcD * (5 * N * N))]
+        exact hrate)) hC.1 en ed 26
+    (cornerpivot.tieScaleD N)
+    (m + 1) ?_ sp _ hsp hsp₂)
+    (cornerpivot.certCount 2 C C.qcN C.qcD (m + 1) 26 (cornerpivot.tieScaleD N) hC
+      hceil (Nat.le_refl _) hC.1 _ hsp₂)
+  intro k _ _
+  have htie : (r + 1) * (posVal 26 * posVal 26) * (posVal ed * posVal ed)
+      ≤ 3 * (posVal (cornerpivot.tieScaleD N) * posVal (cornerpivot.tieScaleD N))
+        * (posVal en * posVal en) := by
+    rw [cornerpivot.tieScaleD_val N hN1]
+    exact cornerpivot.tieRead (posVal en) (posVal ed) r N hend.2.1
+  have hrate' : a * cornerpivot.qLowNum (posVal en) (posVal ed) r N * posVal en
+        * posVal (cornerpivot.tieScaleD N) * C.qcD
+      ≤ C.qcN * (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N) * posVal ed
+        * posVal 26 := by
+    rw [cornerpivot.tieScaleD_val N hN1]
+    show a * cornerpivot.qLowNum (posVal en) (posVal ed) r N * posVal en
+        * (5 * N * N) * C.qcD
+      ≤ C.qcN * (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N) * posVal ed
+        * 26
+    rw [rateT_l, rateT_r]
+    exact hrate
+  exact cornerpivot.resDiag r _ _ C.qcN C.qcD hr en ed 26 (cornerpivot.tieScaleD N)
+    htie hrate' k
+
+/-- The flat window at the residue-one cell's member line: the count
+reads one at every order beyond the endpoint depth and every split,
+the witness family from below and the residue-two certificate from
+above at the scale itself, the residue-one diagonal dominating the
+residue-two diagonal at the stated rate (`cornerpivot.oneDiag`;
+`cornerpivot.well_dominate`; `lem:cornerpivot`(vi)). -/
+theorem cut_flat_S {C : cornerpivot.DisconjCert} {en ed : Pos}
+    {N a b g : Nat} (h : cellReadS C en ed N a b g)
+    (n : Nat) (hNn : N ≤ n) (sp : Split n)
+    (hsp : splitRead (cornerpivot.wellMat 1
+      (a * cornerpivot.qLowNum (posVal en) (posVal ed) 1 N)
+      (b * cornerpivot.qLowDen (posVal en) (posVal ed) 1 N) en ed n) sp) :
+    revAt sp = 1 := by
+  obtain ⟨hC, hceil, hend, hab, hg, hrate⟩ := h
+  have hN2 : 2 ≤ N := hend.1
+  refine Nat.le_antisymm ?_ (cornerpivot.witCount en ed 1 N n a b g hN2 hNn hab hg sp hsp)
+  cases n with
+  | zero => rw [revAt_zero sp]; exact Nat.zero_le 1
+  | succ m =>
+  have hsp₂ := mkSplit_read (m + 1) _
+    (sqAt_of (cornerpivot.wellLen 2 C.qcN C.qcD en ed m)
+      (cornerpivot.wellRows 2 C.qcN C.qcD en ed m))
+    (cornerpivot.wellMat_sym 2 C.qcN C.qcD en ed (m + 1))
+  refine Nat.le_trans (cornerpivot.well_dominate 1 _ _ 2 C.qcN C.qcD
+    (den_pos en ed 1 N a b g C.qcD C.qcN 1 hab hg hN2 hC.1 (by rw [Nat.mul_one]; exact hrate))
+    hC.1 en ed en ed (m + 1) ?_ sp _ hsp hsp₂)
+    (cornerpivot.certCount 2 C C.qcN C.qcD (m + 1) en ed hC hceil (Nat.le_refl _)
+      hC.1 _ hsp₂)
+  intro k _ _
+  exact cornerpivot.oneDiag _ _ C.qcN C.qcD en ed hrate k
 
 /-- The floor is positive by its shape: both members of the rates'
 gap `[g : b]·q₋` are occupied at the cut member's own data and the
-endpoint key (`lem:cornerpivot`(v),(vi)). -/
-theorem floor_pos {r : Nat} {C : cornerpivot.DisconjCert} {en ed : Pos}
-    {N a b g : Nat} (h : cellRead r C en ed N a b g) :
+endpoint key (`lem:cornerpivot`(v),(vi)), the member beyond one at
+the gap and the key beyond one. -/
+theorem floor_pos (en ed : Pos) (r N g b : Nat) (hN : 2 ≤ N) (hg : 1 ≤ g)
+    (hb : 1 ≤ b) :
     0 < floorN en ed r N g ∧ 0 < floorD en ed r N b :=
   have hq := cornerpivot.qLowPos (posVal en) (posVal ed) r N (posVal_pos en)
-    (posVal_pos ed) h.2.2.1.1
-  ⟨Nat.mul_pos h.2.2.2.2.1 hq.1, member_den_pos h⟩
+    (posVal_pos ed) hN
+  ⟨Nat.mul_pos hg hq.1, Nat.mul_pos hb hq.2⟩
 
 /-! The vacant rate's line: the diagonal `2 + ηW` at the vacant rate
 clears the bond's double by the electric member's margin, so the
@@ -753,59 +904,34 @@ second root at or beyond every level the bordered pencil counts at
 most one, the two root bounds exchanging. -/
 
 /-- The chain's count at the member line is occupied: the seam
-pencil's count one at the line (`line_flat`) carried to the chain
-whose site the seam's leading block ties
+pencil's count one at a line of count one (`line_count`, the count
+one the cell floor's stated datum at the member line, `lem:corner`)
+carried to the chain whose site the seam's leading block ties
 (`truncation.count_head_le`). -/
-theorem ground_below_line {r : Nat} {C : cornerpivot.DisconjCert}
-    {en ed : Pos} {N a b g : Nat} (h : cellRead r C en ed N a b g)
-    (c n : Nat) (hNn : N ≤ n) {m : Nat} (H G Q G2 B : Mat) (nf : Nat)
+theorem ground_below_line (r qn qd c : Nat) (hqd : 1 ≤ qd) (en ed : Pos)
+    (n : Nat) {m : Nat} (H G Q G2 B : Mat) (nf : Nat)
     (sp sp' : Split n) (spF : Split (n + m))
-    (hsp : splitRead (cornerpivot.wellMat r
-      (a * cornerpivot.qLowNum (posVal en) (posVal ed) r N)
-      (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N) en ed n) sp)
-    (hsp' : splitRead (seamSite r
-      (a * cornerpivot.qLowNum (posVal en) (posVal ed) r N)
-      (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N) c en ed n) sp')
+    (hsp : splitRead (cornerpivot.wellMat r qn qd en ed n) sp)
+    (hone : revAt sp = 1)
+    (hsp' : splitRead (seamSite r qn qd c en ed n) sp')
     (hB : B.length = n)
     (htie : matOneValue
-      (siteDatum
-        (matAdd H (matScale
-          (lineY r c (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N) ed)
-          G))
-        (matScale
-          (lineX r (a * cornerpivot.qLowNum (posVal en) (posVal ed) r N) en ed)
-          G))
+      (siteDatum (matAdd H (matScale (lineY r c qd ed) G))
+        (matScale (lineX r qn en ed) G))
       (blockJoin
         (siteDatum
           (matAdd
-            (matScale (posOfSucc
-                (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N - 1))
+            (matScale (posOfSucc (qd - 1))
               (cornerPencil (headE r n) (matScale (posOfSucc r) (headM c n))
                 en ed))
-            (matScale
-              (lineY r c (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N)
-                ed)
-              (idMat n)))
-          (matScale
-            (lineX r (a * cornerpivot.qLowNum (posVal en) (posVal ed) r N)
-              en ed)
-            (idMat n)))
+            (matScale (lineY r c qd ed) (idMat n)))
+          (matScale (lineX r qn en ed) (idMat n)))
         B
-        (siteDatum
-          (matAdd Q (matScale
-            (lineY r c (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N)
-              ed)
-            G2))
-          (matScale
-            (lineX r (a * cornerpivot.qLowNum (posVal en) (posVal ed) r N)
-              en ed)
-            G2))))
-    (hf : countAtPair H G
-      (lineX r (a * cornerpivot.qLowNum (posVal en) (posVal ed) r N) en ed)
-      (lineY r c (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N) ed)
-      nf spF) :
+        (siteDatum (matAdd Q (matScale (lineY r c qd ed) G2))
+          (matScale (lineX r qn en ed) G2))))
+    (hf : countAtPair H G (lineX r qn en ed) (lineY r c qd ed) nf spF) :
     1 ≤ nf :=
   truncation.count_head_le H G _ (idMat n) B Q G2 _ _ 1 nf sp' spF hB htie
-    (line_flat h c n hNn sp sp' hsp hsp') hf
+    (line_count r qn qd c hqd en ed n 1 sp sp' hsp hone hsp') hf
 
 end corner

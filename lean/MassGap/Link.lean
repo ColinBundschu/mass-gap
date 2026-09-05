@@ -31,8 +31,8 @@ open ground poly places states genericlift
 display at the sides exchanged, all factors of both variables
 participating. -/
 def linkAct (F : states.FList) (π : List Nat) : states.Comb :=
-  let und := wg.posIf F (false, false) ++ wg.posIf F (true, false)
-  let dag := wg.posIf F (false, true) ++ wg.posIf F (true, true)
+  let und := wg.posIf F (0, false) ++ wg.posIf F (1, false)
+  let dag := wg.posIf F (0, true) ++ wg.posIf F (1, true)
   let uu := lap.pairsOf und
   let dd := lap.pairsOf dag
   let mixed := und.flatMap (fun i => dag.map (fun j => (i, j)))

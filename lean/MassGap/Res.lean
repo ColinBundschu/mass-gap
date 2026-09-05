@@ -41,8 +41,8 @@ coefficient at the certified reduction — `lem:genericlift`'s
 presentation, `pReduce_read` the value's bridge. -/
 def deflate1 (F : states.FList) (m y : states.Comb) : states.Comb :=
   y ++ lap.scaleComb (genericlift.pReduce (poly.pMul lap.negP
-    (genericlift.pCofactor (wg.pairFull F F m y)
-      (wg.pairFull F F m m)))) m
+    (genericlift.pCofactor (wg.pairFull wg.evalPhi F F m y)
+      (wg.pairFull wg.evalPhi F F m m)))) m
 
 /-- The deflated side: the fold over the module presentations in
 list order, each join at the prior deflation. -/
@@ -56,9 +56,9 @@ members. -/
 def deflateRead (F : states.FList) (mods : List states.Comb)
     (y : states.Comb) : Prop :=
   (mods.all (fun m => !(decide (genericlift.crossNull
-      (wg.pairFull F F m m) poly.pZero)))) = true
+      (wg.pairFull wg.evalPhi F F m m) poly.pZero)))) = true
   ∧ (mods.all (fun m => decide (genericlift.crossNull
-      (wg.pairFull F F m (deflate F mods y))
+      (wg.pairFull wg.evalPhi F F m (deflate F mods y))
       poly.pZero))) = true
 
 instance (F : states.FList) (mods : List states.Comb)

@@ -22,9 +22,15 @@ member tier's coverage closes at the dagger counts and the
 wrappers: the unequal-dagger word at an even total,
 `Eval((tr U)³ tr U†) = 3` on both engines, the odd-count read at
 the sum's unit on a single factor, and one read through each
-wrapper — `pairPhiSer` at `⟨tr U, tr U⟩ = 1` and `pairFullSer` at
-the one-term pair's orthonormality, the hand-built data through
-the fold.  The transport tier closes the module: the Gram
+wrapper — `pairPhi` at `⟨tr U, tr U⟩ = 1` and `pairFull` at the
+one-term pair's orthonormality, the hand-built data through the
+fold.  The evaluator over the site's own variables reads beside
+the two-plaquette instances: the variable list's pins, a site at
+the keys `0` and `2` and one at `5` and `2` reading one value with
+the keys `0` and `1`, the three-variable trace product at `d_f³`,
+the three-character orthonormality, the mismatched dagger count's
+refusal, and the member engines at a key-`2` adjoint site.  The
+transport tier closes the module: the Gram
 determinant's occupancy at the first three counts, and the Gram's
 transport symmetry with the Weingarten column's travel at the
 two-place cell — abelian, so the relabeling acts trivially and the
@@ -60,10 +66,10 @@ example : genericlift.adjRead (gramWg 2) := by decide +kernel
 
 /-! The scheme's identity instances at the fusion reads. -/
 
-private def fU : FList := [(false, false)]
-private def fUU : FList := [(false, false), (false, false)]
-private def fAdj : FList := [(false, false), (false, true)]
-private def fUV : FList := [(false, false), (true, false)]
+private def fU : FList := [(0, false)]
+private def fUU : FList := [(0, false), (0, false)]
+private def fAdj : FList := [(0, false), (0, true)]
+private def fUV : FList := [(0, false), (1, false)]
 
 /-- The unit's presentation, `[1 : d_f] tr(U U†)`. -/
 private def unitC : Comb := [([1, 0], ([⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]))]
@@ -73,17 +79,17 @@ private def unitC : Comb := [([1, 0], ([⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]))]
 private def adjC : Comb :=
   [([0, 1], pOne), ([1, 0], ([⟨1, 2⟩], [⟨2, 1⟩, ⟨2, 1⟩]))]
 
-example : crossNull (pairPhi fU fU [0] [0]) pOne := by decide +kernel
-example : crossNull (pairFull fAdj fAdj unitC unitC) pOne := by decide +kernel
-example : crossNull (pairFull fAdj fAdj adjC adjC) pOne := by decide +kernel
-example : crossNull (pairFull fAdj fAdj unitC adjC) pZero := by decide +kernel
-example : crossNull (pairPhi fUU fUU [0, 1] [0, 1])
+example : crossNull (pairPhi evalPhi fU fU [0] [0]) pOne := by decide +kernel
+example : crossNull (pairFull evalPhi fAdj fAdj unitC unitC) pOne := by decide +kernel
+example : crossNull (pairFull evalPhi fAdj fAdj adjC adjC) pOne := by decide +kernel
+example : crossNull (pairFull evalPhi fAdj fAdj unitC adjC) pZero := by decide +kernel
+example : crossNull (pairPhi evalPhi fUU fUU [0, 1] [0, 1])
     ([⟨3, 1⟩], [⟨2, 1⟩]) := by decide +kernel
-example : crossNull (pairPhi fUU fUU [0, 1] [1, 0]) pZero := by decide +kernel
-example : crossNull (pairPhi fAdj fAdj [1, 0] [1, 0])
+example : crossNull (pairPhi evalPhi fUU fUU [0, 1] [1, 0]) pZero := by decide +kernel
+example : crossNull (pairPhi evalPhi fAdj fAdj [1, 0] [1, 0])
     (poly.mul [⟨2, 1⟩, ⟨2, 1⟩] [⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩]) := by
   decide +kernel
-example : crossNull (pairPhi fUV fUV [1, 0] [1, 0]) pOne := by decide +kernel
+example : crossNull (pairPhi evalPhi fUV fUV [1, 0] [1, 0]) pOne := by decide +kernel
 
 /-! The member tier: the `B`/`D` and `C` engines at the displayed
 traces, every value validated against the member contraction. -/
@@ -94,17 +100,52 @@ private def rP3 : Poly := [⟨4, 1⟩, ⟨2, 1⟩]
 /-- The doubled rank's polynomial, `2r`. -/
 private def r2 : Poly := [u, ⟨3, 1⟩]
 
-private def fDD : FList := [(false, true), (false, true)]
+private def fDD : FList := [(0, true), (0, true)]
 private def fU4 : FList :=
-  [(false, false), (false, false), (false, false), (false, false)]
+  [(0, false), (0, false), (0, false), (0, false)]
 private def fUUdd : FList :=
-  [(false, false), (false, false), (false, true), (false, true)]
+  [(0, false), (0, false), (0, true), (0, true)]
 private def fUdUd : FList :=
-  [(false, false), (false, true), (false, false), (false, true)]
+  [(0, false), (0, true), (0, false), (0, true)]
 private def fCyc : FList :=
-  [(false, false), (true, false), (false, true), (true, true)]
+  [(0, false), (1, false), (0, true), (1, true)]
 private def fOrth : FList :=
-  [(false, false), (true, false), (true, true), (false, true)]
+  [(0, false), (1, false), (1, true), (0, true)]
+
+/-! The evaluator over the site's own variables: the variable list
+at the occupied keys in their order (`varsOf`), the two-plaquette
+reads above its instances at the keys `0` and `1`; a site at the
+keys `0` and `2`, and one at `5` and `2`, reads one value with its
+relabeling at the keys `0` and `1`, the keys' names, gaps and order
+off the value; the three-variable site `tr(U U†) tr(V V†) tr(W W†)`
+reads `d_f³`; the product of three fundamental characters on three
+variables is orthonormal, `⟨tr U tr V tr W, tr U tr V tr W⟩ = 1`;
+and a mismatched dagger count at a variable reads the sum's unit,
+the matched two-variable site occupied. -/
+
+private def f3 : FList := [(0, false), (1, false), (2, false)]
+private def f33 : FList :=
+  [(0, false), (1, false), (2, false), (0, true), (1, true), (2, true)]
+private def f02 : FList := [(0, false), (2, false), (0, true), (2, true)]
+private def f52 : FList := [(5, false), (2, false), (5, true), (2, true)]
+private def dfP : Poly := [⟨2, 1⟩, ⟨2, 1⟩]
+
+example : varsOf fCyc = [0, 1] := by decide +kernel
+example : varsOf f02 = [0, 2] := by decide +kernel
+example : varsOf f52 = [2, 5] := by decide +kernel
+example : varsOf ([] : FList) = [] := by decide +kernel
+example : crossNull (evalPhi f02 [2, 3, 0, 1]) (evalPhi fCyc [2, 3, 0, 1]) := by
+  decide +kernel
+example : crossNull (evalPhi f52 [1, 2, 3, 0]) (evalPhi fCyc [1, 2, 3, 0]) := by
+  decide +kernel
+example : crossNull (evalPhi f02 [2, 3, 0, 1]) (poly.mul dfP dfP, poly.one) := by
+  decide +kernel
+example : crossNull (evalPhi f33 [3, 4, 5, 0, 1, 2])
+    (poly.mul dfP (poly.mul dfP dfP), poly.one) := by decide +kernel
+example : crossNull (pairPhi evalPhi f3 f3 [0, 1, 2] [0, 1, 2]) pOne := by
+  decide +kernel
+example : crossNull (evalPhi fUV [1, 0]) pZero := by decide +kernel
+example : ¬ crossNull (evalPhi fCyc [2, 3, 0, 1]) pZero := by decide +kernel
 
 /-! The `B`/`D` engine's single-variable traces. -/
 
@@ -139,6 +180,18 @@ example : crossNull (evalPhiC fUU [1, 0])
 example : crossNull (evalPhiC fAdj [1, 0]) (r2, poly.one) := by
   decide +kernel
 example : crossNull (evalPhiC fAdj [0, 1]) pOne := by decide +kernel
+
+/-! The member engines at a key-`2` adjoint site read the key-`0`
+values. -/
+
+private def fAdj2 : FList := [(2, false), (2, true)]
+
+example : crossNull (evalPhiBD fAdj2 [1, 0]) (rP3, poly.one) := by
+  decide +kernel
+example : crossNull (evalPhiBD fAdj2 [0, 1]) pOne := by decide +kernel
+example : crossNull (evalPhiC fAdj2 [1, 0]) (r2, poly.one) := by
+  decide +kernel
+example : crossNull (evalPhiC fAdj2 [0, 1]) pOne := by decide +kernel
 example : crossNull (evalPhiC fDD [1, 0])
     (poly.neg poly.one, poly.one) := by decide +kernel
 example : crossNull (evalPhiC fU4 [0, 1, 2, 3])
@@ -174,7 +227,7 @@ engines, and the odd-count read at the sum's unit on a single
 factor. -/
 
 private def fCube : FList :=
-  [(false, false), (false, false), (false, false), (false, true)]
+  [(0, false), (0, false), (0, false), (0, true)]
 
 example : crossNull (evalPhiBD fCube [0, 1, 2, 3])
     ([⟨4, 1⟩], poly.one) := by decide +kernel
@@ -183,14 +236,14 @@ example : crossNull (evalPhiC fCube [0, 1, 2, 3])
 example : crossNull (evalPhiBD fU [0]) pZero := by decide +kernel
 example : crossNull (evalPhiC fU [0]) pZero := by decide +kernel
 
-/-! One read through each wrapper: `pairPhiSer` at
-`⟨tr U, tr U⟩ = 1`, and `pairFullSer` at the one-term pair's
+/-! One read through each wrapper: `pairPhi evalPhi` at
+`⟨tr U, tr U⟩ = 1`, and `pairFull evalPhi` at the one-term pair's
 orthonormality — the hand-built `fOrth` data through the bilinear
 fold. -/
 
-example : crossNull (pairPhiSer evalPhiBD fU fU [0] [0]) pOne := by
+example : crossNull (pairPhi evalPhiBD fU fU [0] [0]) pOne := by
   decide +kernel
-example : crossNull (pairFullSer evalPhiBD fUV fUV
+example : crossNull (pairFull evalPhiBD fUV fUV
     [([1, 0], pOne)] [([1, 0], pOne)]) pOne := by decide +kernel
 
 /-! The transport tier at `con:sertables`' place carrier: the Gram
@@ -345,7 +398,7 @@ site's own value, the two crossing to the sum's unit. -/
 
 /-- A site read at a relabeling of its places. -/
 private def relSite (G : FList) (r : List Nat) : FList :=
-  r.map (fun j => ground.getAt (false, false) G j)
+  r.map (fun j => ground.getAt (0, false) G j)
 
 /-- A wiring carried along a relabeling of the places. -/
 private def relWire (G : FList) (r p : List Nat) : List Nat :=

@@ -10,8 +10,8 @@ authors:
 repository-code: "https://github.com/ColinBundschu/mass-gap"
 doi: 10.5281/zenodo.22018060
 license: Apache-2.0
-version: 0.3.0
-date-released: 2026-08-30
+version: 0.4.0
+date-released: 2026-09-04
 keywords:
   - mass gap
   - Yang-Mills
@@ -25,7 +25,10 @@ abstract: >-
   compact simple group, constructively over the positive naturals, together
   with its Lean 4 formalization: two libraries, MassGap and MassGapChecks,
   Lean core alone, every declaration at the empty axiom set and every check
-  module decided by the kernel.  The manuscript is a completed proof of the
-  Yang-Mills mass gap; the Lean tree is its transcription in progress, and
-  the README states which clauses of the main theorem it holds at this
-  version and which remain open.
+  module decided by the kernel.  The manuscript is a nominally complete
+  proof, to the extent that any proof reviewed only by its author can be
+  considered complete; any change, significant or minor, is made in the TeX
+  first and reflected in Lean.  The Lean tree is a mostly complete
+  transcription of the TeX proof, and the README states exactly which
+  clauses of the main theorem it holds at this version and which remain
+  open.

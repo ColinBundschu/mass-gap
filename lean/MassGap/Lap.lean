@@ -70,7 +70,7 @@ def crcTerm (π : List Nat) (i j : Nat) :
 
 /-- The Laplacian's action at a generator, the insertion display's
 solved read at the stated variable. -/
-def lapAct (F : states.FList) (W : Bool) (π : List Nat) :
+def lapAct (F : states.FList) (W : Nat) (π : List Nat) :
     states.Comb :=
   let und := wg.posIf F (W, false)
   let dag := wg.posIf F (W, true)
@@ -89,7 +89,7 @@ def lapAct (F : states.FList) (W : Bool) (π : List Nat) :
 
 /-- The action's linear extension over a state, the generic
 extension's instance at the plaquette insertion. -/
-def lapComb (F : states.FList) (W : Bool) (c : states.Comb) :
+def lapComb (F : states.FList) (W : Nat) (c : states.Comb) :
     states.Comb :=
   states.extComb (lapAct F W) c
 

@@ -221,12 +221,17 @@ def HVec.decEq : (a b : HVec) → Decidable (a = b)
 
 instance : DecidableEq HVec := HVec.decEq
 
-/-- The wedge tensor at a column length: the swap-graded sum over
-the arrangements, each monomial on its permutation's side. -/
-def wedge (d l : Nat) : HVec :=
-  let mu := (List.range d).map (fun i => if i < l then 1 else 0)
+/-- The wedge tensor at a stated indicator content: the swap-graded
+sum over the arrangements, each monomial on its permutation's
+side. -/
+def wedgeC (mu : List Nat) : HVec :=
   ⟨mu, (monomialsAt mu).map (fun m =>
     if parity m then (BPair.ofNat 1).swap else BPair.ofNat 1)⟩
+
+/-- The wedge tensor at a column length, the wedge at the first
+letters. -/
+def wedge (d l : Nat) : HVec :=
+  wedgeC ((List.range d).map (fun i => if i < l then 1 else 0))
 
 /-- The tensor of two homogeneous vectors: contents add, each
 coordinate pair's product entering at the concatenated monomial. -/
@@ -295,7 +300,9 @@ private theorem dotG_null_left (v w : HVec) (h : poly.unitTail v.coords) :
   · rw [dotG_off v w hg]
     exact BPair.oneValue_refl _
 
-private def columnLengths (s : Shape) : List Nat :=
+/-- The shape's column lengths, longest first: one entry per column
+at the occupancy's count, the column exhibit's factor order. -/
+def columnLengths (s : Shape) : List Nat :=
   (List.range s.length).reverse.flatMap (fun i =>
     List.replicate (ground.getAt 0 s i) (i + 1))
 
@@ -334,19 +341,12 @@ frontier's occupied interior lowerings at the membership guard,
 the fuel the stabilization bound — `blockSpan`'s engine at the
 exhibit seeds, the exhaustion tier's at a stated top's. -/
 def closeSpan (d : Nat) : Nat → List HVec → List HVec →
-    List HVec
-  | 0, pool, _ => pool
-  | fuel + 1, pool, frontier =>
-    match frontier with
-    | [] => pool
-    | _ :: _ =>
-      let pool' :=
-        (frontier.flatMap (fun v => (List.range (d - 1)).flatMap
-          (fun j =>
-            match lowerH j v with
-            | some w => [w]
-            | none => []))).foldl tryAdd pool
-      closeSpan d fuel pool' (pool'.drop pool.length)
+    List HVec :=
+  ground.closeBy (fun v => (List.range (d - 1)).flatMap
+    (fun j =>
+      match lowerH j v with
+      | some w => [w]
+      | none => [])) tryAdd
 
 /-- The block's span: the lowering closure of the column exhibit, a
 content-graded independent list, the words' stabilization bound the

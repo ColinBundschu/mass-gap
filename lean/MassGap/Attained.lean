@@ -1,4 +1,5 @@
 import MassGap.Speccut
+import MassGap.Levelequiv
 /-!
 `lem:attained` at the window matrices — the edge is the compressed
 pair's least root, read at the spectral read with a named edge root
@@ -12,7 +13,12 @@ reading (clause (iii)): an occupied weight sits at the kernel point
 or at the level exactly (`weights_at`), and a first moment strictly
 above the sum's unit puts an occupied weight at the level
 (`weight_occupied`), the weights the congruence coordinates'
-squares against the certificate Gram's diagonal entries.
+squares against the certificate Gram's diagonal entries; and the
+probe cap (clause (iv)): a probe whose two moments read the pair
+`(μ₂ : γ μ₁)` on its lower side refuses the spectral read at the
+level, a located root sitting off the kernel point below it
+(`probe_cap`, `levelequiv.probe_intro` against
+`speccut.spec_to_cut`).
 
 The moments are `thm:momentform`'s quadratic reads at the carrier,
 `inertia.quadForm` at the gap and at its square; the reads run at
@@ -423,5 +429,31 @@ theorem weight_occupied {n : Nat} (Et : Mat) (T Tw : SqMat n)
   · exact ground.unitLtMul
       (ground.ltOfLeOff (ground.unitLeSq _) hwoff)
       (ground.unitLtMul hgpos (ground.unitLtOfPos _))
+
+/-- The probe cap — clause (iv): at a probe whose two moments read
+the pair `(μ₂ : γ μ₁)` on its lower side, the spectral read at the
+level fails, a located root off the kernel point sitting below the
+level. The operator inequality would price the probe at the
+requirement (`levelequiv.probe_intro`), and the spectral read
+prices the cut's split (`speccut.spec_to_cut`), so the two refuse
+together. -/
+theorem probe_cap {n : Nat} (Et : Mat) (T Tw : SqMat n)
+    (l : List (BPair × Pos × BPair)) (E0 p q : Pos)
+    (hd : split.diagRead Et (idMat n) T Tw l)
+    (sp : Split n)
+    (hsp : splitRead (siteDatum (matScale q (matMul Et Et))
+        (matScale (E0 * p) Et)) sp)
+    (y : List BPair) (hy : y.length = n)
+    (hlow : (inertia.quadForm (matMul Et Et) y).scale q
+      < (inertia.quadForm Et y).scale (E0 * p)) :
+    ¬ speccut.specRead (l.map (fun r => (r.1, r.2.1))) E0 p q := by
+  intro hs
+  have hp : psdAt sp := speccut.spec_to_cut Et T Tw l E0 p q hd hs sp hsp
+  have hop : levelequiv.opRead (matMul Et Et) Et (E0 * p) q sp :=
+    ⟨sqSquare hd.1, hd.1, hsp, hp⟩
+  have hreq := levelequiv.probe_intro (⟨matMul Et Et, sqSquare hd.1⟩ : SqMat n)
+    (⟨Et, hd.1⟩ : SqMat n) (E0 * p) q sp hop
+    (⟨y, by rw [hy]; exact beqRefl n⟩ : Vec n)
+  exact hreq hlow
 
 end attained

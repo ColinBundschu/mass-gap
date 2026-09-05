@@ -15,9 +15,9 @@ set_option maxHeartbeats 4000000
 
 open ground poly genericlift states kernel lap link
 
-private def fU : FList := [(false, false)]
-private def fAdj : FList := [(false, false), (false, true)]
-private def fUV : FList := [(false, false), (true, false)]
+private def fU : FList := [(0, false)]
+private def fAdj : FList := [(0, false), (0, true)]
+private def fUV : FList := [(0, false), (1, false)]
 private def adjC : Comb :=
   [([0, 1], pOne), ([1, 0], ([⟨1, 2⟩], [⟨2, 1⟩, ⟨2, 1⟩]))]
 private def sC : Comb := [([0, 1], pOne), ([1, 0], pOne)]
@@ -39,9 +39,9 @@ example : combEqRead fUV
 /-! The module energy at the two-plaquette weights, `Δ_V` reading
 the sum's unit at the `V`-free state. -/
 
-example : combEqRead fAdj (lapComb fAdj true adjC) [] := by decide +kernel
+example : combEqRead fAdj (lapComb fAdj 1 adjC) [] := by decide +kernel
 example : combEqRead fAdj
-    (scaleComb (natP 3) (lapComb fAdj false adjC)
+    (scaleComb (natP 3) (lapComb fAdj 0 adjC)
       ++ linkComb fAdj adjC
-      ++ scaleComb (natP 3) (lapComb fAdj true adjC))
+      ++ scaleComb (natP 3) (lapComb fAdj 1 adjC))
     (scaleComb (pMul (natP 4) dfP) adjC) := by decide +kernel

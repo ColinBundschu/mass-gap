@@ -21,8 +21,9 @@ $E_7$, and $E_8$ once each.
 Formalized:
 
 - **Clause (i), gap positivity, is closed for every member at its floor window**:
-  `main.clauseI_all` proves both committed chain reads and the required tie throughout the classification. The series cases are parametric in rank at the diagonal windows; $D_4$’s four-loop window and $E_8$’s coupled window are handled separately.  The clause's window-level interface is landed beside it: the pencil interface at the window list (`pairpencil.pencilRead`: the order tie, the electric member, the gram's block read and the magnetic member's terms at their caps and supports) and the fibering's index action with `lem:fiberdec`'s commuting datum at the electric member as a theorem at every region admitting the action (`fiberdec.commRead_slotE_dataA`).
-- **Clause (ii), the contact value $(3,H_r)$, is closed for every member**: `main.clauseII_all` proves it throughout the classification. The order count, base collection, excess-harmonic value, and occupancy families are established parametrically over every residue and rank; the fixed members are discharged by kernel `decide` in [lean/MassGapChecks/Main.lean](lean/MassGapChecks/Main.lean).
+  `main.clauseI_all` proves both committed chain reads and the required tie throughout the classification. The series cases are parametric in rank at the diagonal windows; $D_4$’s four-loop window and $E_8$’s coupled window are handled separately.  The clause's window-level interface is landed beside it: the pencil interface at the window list (`pairpencil.pencilRead`: the order tie, the electric member, the gram's block read and the magnetic member's terms at their caps and supports), the gram's block content as each index member's fiber presentation Gram (`pairpencil.gramBlockRead`), the presentation carrier of the fibers' vertex lists (`fusion.Data.vertList`, with the Gram its derived read), and the fibering's index action with `lem:fiberdec`'s commuting datum at the electric member as a theorem at every region admitting the action (`fiberdec.commRead_slotE_dataA`).
+- **Clause (ii) is closed at both of its halves**: `main.clauseII_all` proves the contact pair $(3,H_r)$ throughout the classification (the order count, base collection, excess-harmonic value, and occupancy families parametrically over every residue and rank; the fixed members by kernel `decide` in [lean/MassGapChecks/Main.lean](lean/MassGapChecks/Main.lean)), and the window half, that at every window and coupling whose cut names an edge the edge is a located root of the window pencil's symbol attained at a word image with the two moments at equality and the first positive, is `attained.attained_at` with the root read `divisorid.rootIff`, stated at the TeX's own quantifier.
+- **Clause (iii)'s member layer is closed for every member**: `main.clauseIII` is `lem:corner`'s cell-floor datum at the member's derived residue (the member's tail scale, its endpoint key, and the residue-one and transported cells), and `main.clauseIII_all` holds it at the whole domain through the one corner disconjugacy certificate transported across the residues (`lem:cornerpivot`(vi)).
 
 - **The requirement mirrors** `lem:sectorspan` and `lem:attained`.
 - **Clause (iii)'s support tiers, whole**: `lem:cornerpivot`
@@ -38,24 +39,42 @@ Formalized:
   scaling, the drift, the grade key, the caps and counts, and the
   cell floor with the corner-output clauses of `thm:decomp` and
   `thm:twoaction`), `lem:cone`, `thm:continuum`,
-  `thm:reconstruct`, and `thm:restoration`'s first tier.
+  `thm:reconstruct`, `thm:restoration`'s first tier, the depth
+  chain of a window (`con:depthchain`, the block chain
+  `lem:cornerpivot`(vii)'s certificate runs on, at the window
+  index), the probe cap `lem:attained`(iv), and the gradient read
+  of `thm:momentform`.
 
 Open (no Lean yet):
 
 - **Clause (i) at its own quantifiers**: the theorem that at every
   region and cutoff of the directed family and every interior
   end-weight ray the window cut holds at one positive pair.  Its
-  remaining reads are the magnetic member's transport under the
-  window action, the gram's block content, the decimation's
-  window-freeness, the cell list closing at the corner cell, and
-  the truncation modulus at the window level; the landed clause is
-  the floor-window instance at every member.
-- **Clause (ii)'s opening**: the identification of the contact-end
-  value with the contact pair, and the attainment read, wired at
-  `main`; the landed clause is the pair arithmetic at every member.
-- **Clause (iii)'s composite statement at `main`** (it consumes
-  `thm:continuum`, landed), and the reverse correspondence walk
-  (every TeX label reached from a Lean namespace).
+  remaining reads are the members' vertex lists beyond two ends
+  (`fusion.Data.vertList` reads `none` there, so every member
+  window with a vertex of three or more ends is refused until it
+  lands), the decimation onto its cells with the cell list closing
+  at the corner cell, the truncation modulus at the window level
+  with the meet over the directed windows, and the read's cost at
+  its named owners; the landed clause is the floor-window instance
+  at every member.
+- **The chain's height at the contact end**: the tail read that
+  `thm:continuum`(iii) consumes for the spacing, that at every
+  floor pair a scale key exists under which the chain's height
+  sits below the floor at every further scale.  It is derived in
+  three steps, each TeX-first: the theta chain's block data (the
+  depth chain at the theta window, with the certificate decided on
+  it), the probe's two moments at the chain's ground (the
+  loop-difference probe's channel fold and connected second-order
+  read), and the tail read itself at `lem:corner`.
+- **Clause (iii)'s composite statement at `main`**: the datum-level
+  closure and site counts (`continuum.counts_stable`,
+  `momentfold.datum_close`, `thm:groundreads`(vii)), the corner
+  cell's positive extent with the contact end interior, and each
+  cell's edge read at a word image, joined to `main.clauseIII`.
+- **The reverse correspondence walk** (every TeX label reached
+  from a Lean namespace), which the linter records as landing at
+  the definitional spine's completion.
 
 Long-term future work:
 
@@ -64,7 +83,7 @@ Long-term future work:
 - Submit the work for peer review and possibly also to somewhere like [Palomar](https://palomar-registry.org/).
 
 The snapshot was taken from the development repository at commit
-`61724e7ee359a1fc3306a1a1f2a4276adcb2eef5` (2026-09-03).
+`c6451e100669e827d6f901388873eadc4d93a013` (2026-09-04).
 
 ## Proof Methodology and Failure Criteria
 
@@ -79,7 +98,7 @@ computes by kernel reduction. Every public `Prop`-valued definition comes with i
 
 By construction, everything proven in Lean is mathematically correct for what it states (although emphatically one must be careful reading significance from what is proved). However the same cannot be said for claims in the TeX that are not proven in Lean, errors in mapping between claims in the TeX and the corresponding Lean proofs, or interpretations of the physical relevance of what the Lean proves. If it becomes clear that a fundamental contradiction, inconsistency, or shortfall dooms the top-level proof, then this repository will serve as a constructive tombstone to where this approach failed and why.
 
-That said, the deliverable of this repository is not simply a correct, complete Yang-Mills proof, which remains exceedingly unlikely. Specifically, this repository aims to tackle the fact that every rigorous result on the Yang–Mills gap is analytic and non-algorithmic. Osterwalder-Seiler's strong-coupling gap and Balaban's renormalization-group work are proofs in the ordinary sense: there is no procedure that, given a group and a coupling, produces a certificate that a gap exists there, and no procedure that could return "no" as a theorem either. What this repo does is give the gap a decision structure. In particular, once the transport lemmas make the head's counts uniform in volume and bound the full window by them, the instrument is symmetric: running the certificate on the $K = 0$ sector of the fibered corner head with the vacuum dressing subtracted returns a certified bracket on that gap at every scale $\eta$, and if the bracket falls below the claimed floor, that is a theorem about how the $K = 0$ lift of the lattice model scales with $\eta$, not silence. A certified statement that the gap in lattice units goes to zero along the approach, uniform in volume, would be the first rigorous half of a continuum limit; a certified statement that it does not would be more surprising still. Either result would be a machine certified finding, and an unqualified success under the framework of this repository.
+That said, the deliverable of this repository is not simply a correct, complete Yang-Mills proof, which remains exceedingly unlikely. Specifically, this repository aims to tackle the fact that every rigorous result on the Yang–Mills gap is analytic and non-algorithmic. Osterwalder-Seiler's strong-coupling gap and Balaban's renormalization-group work are proofs in the ordinary sense: there is no procedure that, given a group and a coupling, produces a certificate that a gap exists there, and no procedure that could return "no" as a theorem either. What this repo does is give the gap a decision structure. In particular, once the transport lemmas make the head's counts uniform in volume and bound the full window by them, the instrument is symmetric: running the certificate on the $K = 0$ sector of the fibered corner head with the vacuum dressing subtracted returns a certified bracket on that gap at every scale $\eta$, and whether the bracket falls under every floor along the tail or holds one is, either way, a theorem about how the $K = 0$ lift of the lattice model scales with $\eta$, not silence. A certified statement that the gap in lattice units goes to zero along the approach, uniform in volume, would be the first rigorous half of a continuum limit; a certified statement that it does not would be more surprising still. Either result would be a machine certified finding, and an unqualified success under the framework of this repository.
 
 ## Building
 
@@ -101,7 +120,7 @@ After the build,
 
 walks every constant of both libraries with `Lean.collectAxioms` and prints
 
-    constants read: 33444
+    constants read: 34215
     constants depending on axioms: 0
 
 ending in an error if any constant depends on any axiom. A single
@@ -115,17 +134,18 @@ each reports `does not depend on any axioms`.
 
 ## Reading the tree
 
-- [lean/MassGap.lean](lean/MassGap.lean) lists the content modules in
-  dependency order, from `Ground` (the positive naturals with pairs as data,
-  `def:ground`) through the label calculus, the interfaces, the certificates
-  and the chain to `Main`.
+- [lean/MassGap.lean](lean/MassGap.lean) lists the content modules,
+  `Ground` (the positive naturals with pairs as data, `def:ground`)
+  first, then the label calculus, the interfaces, the certificates,
+  the chain, and `Main`; each module's own `import` lines are its
+  dependency order.
 - [lean/MassGapChecks/](lean/MassGapChecks/) mirrors the content modules
   file for file. Each battery pins committed data, and a refusal
   (`example : ¬ …`) pins the hypothesis it isolates.
 
 ## FAQ
 
-The questions below aggregate, in roughly their original order and tone, objections raised by two skeptical readers of [docs/theory.tex](docs/theory.tex), one a human physicist and the other an AI model. The human reviewer’s questions formed a strict subset of the model’s. Neither reviewer located an internal error. I report that only to make the review history complete, not as evidence of correctness or independent verification.
+The questions below aggregate, in roughly their original order and tone, objections raised by various reviewers of the repository.
 
 ### "This pattern-matches to crankery: solo author, invented vocabulary, Millennium-problem claim. Why should anyone read a PDF of more than 100 pages of dense, idiosyncratic mathematics?"
 
@@ -154,9 +174,9 @@ This omission is **temporary**, not an assertion that public mathematical claims
 
 These terms play different roles in the conventional approach. Renormalization and the beta function control a perturbative expansion, while the continuum limit is ordinarily constructed through a limit of lattice measures. This manuscript uses neither route. It instead claims a Hamiltonian construction exact at every coupling, followed by a direct located reconstruction from its spectral data (`thm:continuum`, `thm:reconstruct`).
 
-The running scale is replaced by the **unit map** (`rem:dictionary`): at physical gap $\Delta$, the spacing is $a=h/(\sqrt{2},\Delta)$ for the certified corner height $h$, one equation per scale, with the complete trajectory given as a located function. Calibration is therefore an output rather than a scheme choice; the scheme dependence that remains is isolated in the corner outputs (`thm:decomp`).
+The running scale is replaced by the **unit map** (`rem:dictionary`): at physical gap $\Delta$, the spacing is $a=h/(\sqrt{2}\,\Delta)$ at the chain's height $h$ at the scale, a located bracket (`lem:corner`'s cell floor), one equation per scale, so the trajectory's spacings are the heights' reads. Calibration is therefore an output rather than a scheme choice; the scheme dependence that remains is isolated in the corner outputs (`thm:decomp`).
 
-The manuscript also addresses the standard weak-coupling picture directly. The weak-coupling entry in `rem:dictionary` states lattice Maxwell theory in each Lie-algebra direction with massless dispersion as $k\to0$ as the classical comparison and identifies the claimed gap as the certified lift above that comparison. The resulting conflict with asymptotic-freedom scaling is addressed separately below.
+The manuscript also addresses the standard weak-coupling picture directly. The weak-coupling entry in `rem:dictionary` states lattice Maxwell theory in each Lie-algebra direction with massless dispersion as $k\to0$ as the classical comparison and identifies the gap as the certified lift above that comparison.
 
 ### "Wouldn't this argument also 'prove' a mass gap for $U(1)$? If yes, it proves too much."
 
@@ -178,11 +198,7 @@ $$
 
 in the abelian theory (`prop:anchor`). Thus the two ingredients that produce the mass point (the adjoint self-fusion channel and its positive fusion strictness) are absent. The argument therefore neither states nor derives a mass gap for $U(1)$.
 
-### "The theorem, translated through its own dictionary, says $a\Delta$ is bounded below toward weak coupling. Forty years of Monte Carlo scaling studies say $a\Delta\sim e^{-c/g^2}$. Isn't the paper simply contradicted by the data?"
-
-This is a direct conflict with the standard weak-coupling picture and its numerical evidence, though not an internal logical contradiction. The manuscript predicts a positive floor where the conventional picture predicts decay to zero. A scheme-matched evaluation of the stated certificates can therefore falsify the claim. Asymptotic-freedom scaling of $a\Delta$ comes from perturbative renormalization-group analysis plus numerical simulation: a very well-supported expectation, but not a theorem. The paper proves the negation of that expectation's premise and says so in as many words (`rem:dictionary`: the standard premise "is that the gap in lattice units, $a\Delta$, falls under every floor toward the contact end... Its negation reads: a positive floor on a positive extent, $a\Delta$ bounded below toward weak coupling"). One of the two pictures is wrong, and the question is decidable by the constructive apparatus this repository provides: the scheme bridge $b_f^{\mathrm{equiv}}=2n\,b_X$ (`thm:bridge`) calibrates the coupling coordinate against the fundamental-character action, and the certified brackets are finite objects a simulation can be run against. The repository's position is not "trust the theorem over the data." It is "here is the finite, decisive test."
-
-### "Does the construction satisfy exact Euclidean covariance, given that the corner height $h=\sqrt{2}\,a\Delta$ is floored? You prove the degree-4 anisotropy has *positive multiplicity*. Your own theorem seems to forbid exact $O(4)$ invariance."
+### "Does the construction satisfy exact Euclidean covariance, given that the corner height $h=\sqrt{2}\,a\Delta$ is bracketed at every scale? You prove the degree-4 anisotropy has *positive multiplicity*. Your own theorem seems to forbid exact $O(4)$ invariance."
 
 The answer is a reconstruction, not a claim that the lattice correlation functions become exactly covariant at some fixed spacing. At finite spacing the lattice families remain $B_d$-invariant and contain genuine degree-four anisotropic terms. The construction does not discard or deny those terms in the lattice data.
 
@@ -198,11 +214,11 @@ $$
 
 At degree two, `thm:restoration` item 1 gives an exact ring identity: the degree-two invariant rings of $B_d$ and $O(d)$ coincide, for every number of arguments and in every dimension. Consequently, the cone through which the reconstruction factors is exactly isotropic; there is no degree-two anisotropic form that could deform it. This ring identity alone would not establish covariance of the reconstructed families. What does the work is the additional factorization in `thm:reconstruct`: the reconstructed object depends on the located spectral data and the quadratic cone, not on the higher-degree lattice invariants.
 
-The certified degree-four breaking therefore remains part of the comparison data. It controls the brackets within which the finite-spacing lattice instrument agrees with the reconstructed covariant object, but it is not an input to that object’s cone or covariance law. Likewise, the positive floor on the corner height controls the certified comparison width; it does not deform the covariant spectral point inside that bracket.
+The certified degree-four breaking therefore remains part of the comparison data. It controls the brackets within which the finite-spacing lattice instrument agrees with the reconstructed covariant object, but it is not an input to that object’s cone or covariance law. Likewise, the height's bracket at each scale controls the certified comparison width; it does not deform the covariant spectral point inside that bracket.
 
 ### "Translations are the lattice's $\mathbb{Z}^d$. The Wightman axioms quantify over $\mathbb{R}^4$."
 
-Time translation is continuous through the Hamiltonian evolution. Spatial $\mathbb{R}^d$ acts exactly on the reconstructed families by phase multiplication at their momentum coordinates (`thm:reconstruct`(ii)). The lattice translations in $\mathbb{Z}^d$ instead serve as the instrument that locates the spectral data, entering through the fibering (`lem:fiberdec`) and momentum transform (`thm:restoration`). Located brackets and their moduli extend the resulting values from rational coordinates to all of $\mathbb{R}^d$. Thus the discrete translation action belongs to the lattice instrument, while the continuous action belongs to the reconstructed object.
+Time is the pencil's own and continuous through the Hamiltonian evolution. The lattice translations in $\mathbb{Z}^d$ are the instrument that locates the spectral data, entering through the fibering (`lem:fiberdec`) and the momentum transform (`thm:restoration`), and the reconstructed families are stated at the momentum coordinates of the cone (`thm:reconstruct`(ii)), the momenta reading through the $t$-cells at every continuum point (`rem:dictionary`, "Invariance"); a reader's continuum point reads the located brackets in through its own rational comparisons (`rem:dictionary`, "The continuum's points"). Thus the discrete translation action belongs to the lattice instrument, while the reconstructed object is stated at the continuum's coordinates.
 
 ### "Why isn't the Osterwalder–Schrader reconstruction performed? The Clay text cites those axioms."
 
@@ -210,7 +226,7 @@ Because the construction is Hamiltonian. Osterwalder–Schrader reconstruction i
 
 * positivity to the families’ Gram reads (`thm:reconstruct`(iii));
 * the spectrum condition and positive gap to the cut and `thm:main`(i);
-* locality to exact equal-time commutativity together with the cone read at unequal times;
+* locality to exact equal-time commutativity (the algebra is commutative, `prop:algebra`) together with the propagation bracket at unequal times (`thm:groundreads`(vi));
 * covariance to the restoration and reconstruction statements above;
 * growth control to `thm:groundreads`(v);
 * cyclicity to `lem:statespace` and uniqueness of the vacuum to the divisor count in `thm:SO`; and
@@ -218,9 +234,9 @@ Because the construction is Hamiltonian. Osterwalder–Schrader reconstruction i
 
 This is the manuscript’s claimed Hamiltonian replacement for OS reconstruction; it is not itself an OS reconstruction from a Euclidean measure.
 
-### "$`\mathcal K=c_1^3e^{-H_r}`$ smells like numerology because it has the harmonic numbers in an exponent. Is it even a computed energy?"
+### "$`c_1^3e^{-H_r}`$ smells like numerology because it has the harmonic numbers in an exponent. Is it even a computed energy?"
 
-What the theory *determines* is the contact pair $(3,H_r)$ as two divisor reads: the order count $3=1+2$ (the mass point's simple pole plus the $\iota$-symmetrized weight's two base orders, off the renewal witness $G_0=z+c_1zG_0$, `thm:channeldiv`) read at the base $c_1$, and the ruler excess $H_r$ (the tower's generating object against the harmonic ruler, an exact finitely-supported polynomial identity, `thm:walkresidue`). The exponential form is those coordinates read against the classical rulers $(\ln c_1,1)$ described as "the axes the usual formulation measures with" (`rem:dictionary`). Nothing is fitted and nothing converges: the harmonic number arrives as the value at $1$ of an exact polynomial with the geometric derivative, forced by the tower pairing $\varphi_m=r/(m+r)$. A reader who wants the corresponding energy multiplies the dimensionless contact value $\mathcal K$ by the two restored scale factors $E_0$ and $C_2(\mathrm{adj})$, giving $`\mathcal K \, E_0 \, C_2(\mathrm{adj})`$ (`rem:dictionary`, “The gap”).
+What the theory *determines* is the contact pair $(3,H_r)$ as two divisor reads: the order count $3=1+2$ (the mass point's simple pole plus the $\iota$-symmetrized weight's two base orders, off the renewal witness $G_0=z+c_1zG_0$, `thm:channeldiv`) read at the base $c_1$, and the ruler excess $H_r$ (the tower's generating object against the harmonic ruler, an exact finitely-supported polynomial identity, `thm:walkresidue`). The exponential form is those coordinates read against the classical rulers $(\ln c_1,1)$ described as "the axes the usual formulation measures with" (`rem:dictionary`). Nothing is fitted and nothing converges: the harmonic number arrives as the value at $1$ of an exact polynomial with the geometric derivative, forced by the tower pairing $\varphi_m=r/(m+r)$. It is not an energy: the contact pair is two counts of the walk's data, free of unit and of scale (`thm:unitschain`), the walk's mass point an isolated pole below its band at base two and at the band's edge at base one (`thm:channeldiv`). The quantity that restores as an energy is a window cut's edge, $`E_0\,\kappa\,C_2(\mathrm{adj})`$ at the edge's pair $\kappa$ (`rem:dictionary`, “The gap”).
 
 ### "The Lean formalization doesn't cover the continuum theorems. So what does it actually prove?"
 

@@ -46,10 +46,10 @@ namespace twoplaq
 open ground poly places states genericlift
 
 /-- The first module state's site, the `U` pair. -/
-def siteQ1 : states.FList := [(false, false), (false, true)]
+def siteQ1 : states.FList := [(0, false), (0, true)]
 
 /-- The second module state's site, the `V` pair. -/
-def siteQ2 : states.FList := [(true, false), (true, true)]
+def siteQ2 : states.FList := [(1, false), (1, true)]
 
 /-- The adjoint character's presentation at a variable pair: the
 open wiring at the unit with the closed at the withdrawn
@@ -62,9 +62,9 @@ def phiAdj : states.Comb :=
 `E = 3 Δ_U + Δ_L + 3 Δ_V`, forced by the graph — four links per
 plaquette, one shared, three unshared each. -/
 def eAct (F : states.FList) (π : List Nat) : states.Comb :=
-  lap.scaleComb (lap.natP 3) (lap.lapAct F false π)
+  lap.scaleComb (lap.natP 3) (lap.lapAct F 0 π)
   ++ link.linkAct F π
-  ++ lap.scaleComb (lap.natP 3) (lap.lapAct F true π)
+  ++ lap.scaleComb (lap.natP 3) (lap.lapAct F 1 π)
 
 /-- The module level at the trace form, `4 d_f`. -/
 def lvlE : poly.PPair :=
@@ -72,7 +72,7 @@ def lvlE : poly.PPair :=
 
 /-- The site extended at a variable's pair, the magnetic
 multiplication's list. -/
-def extSite (W : Bool) (F : states.FList) : states.FList :=
+def extSite (W : Nat) (F : states.FList) : states.FList :=
   F ++ [(W, false), (W, true)]
 
 /-- One magnetic multiplication, per plaquette: the state against
@@ -82,7 +82,7 @@ def mulAdj (c : states.Comb) : states.Comb :=
 
 /-- A plaquette word's site, the extensions' fold from the first
 module state's. -/
-def wordSite (w : List Bool) : states.FList :=
+def wordSite (w : List Nat) : states.FList :=
   w.foldl (fun F W => extSite W F) siteQ1
 
 /-- A module presentation at a site: the adjoint's pair at the
@@ -111,15 +111,15 @@ def modPresOk (F : states.FList) (i j : Nat)
     (rest : List (Nat × Nat)) : Prop :=
   states.permAt (i :: j :: rest.flatMap (fun p => [p.1, p.2]))
     F.length
-  ∧ (((ground.getAt (false, false) F i).2 == false)
-   && ((ground.getAt (false, false) F j).2 == true)
-   && ((ground.getAt (false, false) F i).1
-      == (ground.getAt (false, false) F j).1)
+  ∧ (((ground.getAt (0, false) F i).2 == false)
+   && ((ground.getAt (0, false) F j).2 == true)
+   && ((ground.getAt (0, false) F i).1
+      == (ground.getAt (0, false) F j).1)
    && (rest.all (fun p =>
-      ((ground.getAt (false, false) F p.1).2 == false)
-      && ((ground.getAt (false, false) F p.2).2 == true)
-      && ((ground.getAt (false, false) F p.1).1
-         == (ground.getAt (false, false) F p.2).1)))) = true
+      ((ground.getAt (0, false) F p.1).2 == false)
+      && ((ground.getAt (0, false) F p.2).2 == true)
+      && ((ground.getAt (0, false) F p.1).1
+         == (ground.getAt (0, false) F p.2).1)))) = true
 
 instance (F : states.FList) (i j : Nat) (rest : List (Nat × Nat)) :
     Decidable (modPresOk F i j rest) :=

@@ -132,22 +132,22 @@ theorem cutRead_unscale {o : Nat} (u : Pos) (Esq Et : Mat)
      hs (by rw [cutScale u Esq Et E0 p q]; exact h.2.2.1)).symm.trans
      h.2.2.2⟩
 
-/-- The free end's level gap: the electric member at the window
-list's diagonal with the unit line at its head, `lem:freeend`'s
-diagonal presentation. -/
-def freeGap {L : Type} (F : fusion.Data L) (R : Region) (C : Nat) :
-    Mat :=
-  pairpencil.pencilE (pairpencil.slotDiag F R (carrier.idx F R C))
+/-- The free end's level gap: the electric member's form against
+the window's gram at the window list's diagonal with the unit line
+at its head, `lem:freeend`'s diagonal presentation. -/
+def freeGap {L : Type} (F : fusion.Data L) (R : Region) (C : Nat)
+    (G : Mat) : Mat :=
+  pairpencil.formE (pairpencil.slotDiag F R (carrier.idx F R C)) G
 
 /-- The free-end level gap at a stated window list's diagonal:
 `lem:freeend`'s diagonal presentation read off the committed
 diagonal. -/
 theorem freeGap_ofDiag {L : Type} (F : fusion.Data L) (R : Region)
-    (C : Nat) (d : List Nat) (m : Mat)
+    (C : Nat) (G : Mat) (d : List Nat) (m : Mat)
     (hd : pairpencil.slotDiag F R (carrier.idx F R C) = d)
-    (hm : pairpencil.pencilE d = m) :
-    freeGap F R C = m := by
-  show pairpencil.pencilE (pairpencil.slotDiag F R (carrier.idx F R C)) = m
+    (hm : pairpencil.formE d G = m) :
+    freeGap F R C G = m := by
+  show pairpencil.formE (pairpencil.slotDiag F R (carrier.idx F R C)) G = m
   rw [hd]
   exact hm
 

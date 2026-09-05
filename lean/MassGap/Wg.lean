@@ -21,18 +21,19 @@ count) and the adjugate column at a composed key reads the key's
 own value (`wgCol_transport`, the pulled column solving the Gram
 against the determinant-scaled identity datum with the one
 determinant cleared).  The
-evaluation of a generator is the contraction sum: per variable at
+evaluation of a generator is the contraction sum (`evalPhi` over
+the site's own variables, `varsOf`, the recursion over the
+variables' permutation pairs, the two-plaquette fiber's read its
+instance at the variables `0` and `1`): per variable at
 matched dagger counts, over the permutation pairs `(σ, τ)`, the
 `δ`-wirings close the chains into loops — the wiring's matching
 against the `σ, τ`-matchings at the index slots, `σ` the undaggered
 rows against the daggered columns and `τ` the exchange (a daggered
 factor's conjugate row is its own column), the loop count the
-alternating cycles' half count (`evalPhi`, `matchIn`,
+alternating cycles' half count (`matchIn`,
 the loop fold `places.cyclesOf`'s) — each loop a factor `d_f`, the
-sum one numerator fold over the one shared determinant — the
-adjugate and determinant hoisted once per evaluation, the
-factorial route's recorded headroom the next tier's rework site —
-and a mismatched dagger count reads the sum's unit.  The pairing
+sum one numerator fold over the one shared determinant, and a
+mismatched dagger count reads the sum's unit.  The pairing
 of two states on their factor lists is `Eval(Φ̄_A Φ_B)`, the
 conjugated key against the second at the concatenated site
 (`pairPhi`, `pairFull` the combinations' bilinear fold).  Every
@@ -56,8 +57,8 @@ and `D`, one engine at the shared Gram and loop value
 (`evalPhiBD`), and the doubled rank `2r` at `C` at the loop's
 parity, half the edge count joined to the dual-pair edges read
 forward and the form edges read against (`evalPhiC`) — and the
-pairing mirrors at the engine argument (`pairPhiSer`,
-`pairFullSer` the combinations' bilinear fold).  And
+pairing reads at the engine argument (`pairPhi`, `pairFull` the
+combinations' bilinear fold).  And
 `rem:kernel`'s gauge-mode sentence reads at the carried
 evaluation: the states are indexed gauge-free by the multisets of
 oriented cyclic words, so a letter-preserving relabeling of the
@@ -65,8 +66,8 @@ site and its carried wiring reads the generator's own value
 (`evalPhi_transport`) — the letters' positions carried by the
 per-letter slot maps, the composite graph's slots by the doubled
 relabeling, the loop count by `places.cyclesOf_transport`, and the
-numerator's four-axis fold reindexed along the conjugated words at
-the Weingarten column's own travel.
+numerator's fold over the tuples of the variables' words reindexed
+along the conjugated words at the Weingarten column's own travel.
 -/
 
 namespace wg
@@ -781,7 +782,7 @@ theorem wgCol_transport (k : Nat) (γ ρ : List Nat)
 /-- The factors at one letter, the positions' filter. -/
 def posIf (G : states.FList) (f : states.Factor) : List Nat :=
   (List.range G.length).filter
-    (fun i => ground.getAt (false, false) G i == f)
+    (fun i => ground.getAt (0, false) G i == f)
 
 /-- One variable's matching written into the slot list: per slot
 the row end against the matched column end, both directions. -/
@@ -792,75 +793,90 @@ private def matchIn (m2 : List Nat) (ps qs σ : List Nat)
     let b := 2 * ground.getAt 0 qs (ground.getAt 0 σ s) + offQ
     (acc.set a b).set b a) m2
 
-/-- The evaluation of a generator, the contraction sum: per
-variable at matched dagger counts, over the permutation pairs, the
-`δ`-wirings close into loops — the wiring's matching at the row
-and column slots against the `σ, τ`-matchings, the loop count the
-alternating cycles' half count — each loop a factor `d_f`. -/
+/-- The site's key bound, one beyond every variable key: the keys'
+sum with one joined. -/
+private def keyBound (G : states.FList) : Nat :=
+  ground.famFold Nat.add 0 (fun i => (ground.getAt (0, false) G i).1)
+    (List.range G.length) + 1
+
+/-- The site's variables: its occupied keys, each once, in the
+keys' own order, `prop:wg`'s per-variable index. -/
+def varsOf (G : states.FList) : List Nat :=
+  (List.range (keyBound G)).filter (fun v =>
+    decide (0 < (posIf G (v, false)).length + (posIf G (v, true)).length))
+
+/-- One variable's Weingarten entry at a permutation pair: the
+identity key's adjugate column read at the composed key. -/
+private def nOf (G : states.FList) (v : Nat) (σ τ : List Nat) : Poly :=
+  ground.getAt [] (ground.getAt []
+    (genericlift.padj (gramWg (posIf G (v, false)).length))
+    (places.idxOf (places.expo σ (places.invPerm
+      (posIf G (v, false)).length τ))
+      (places.perms (posIf G (v, false)).length)))
+    (places.idxOf (List.range (posIf G (v, false)).length)
+      (places.perms (posIf G (v, false)).length))
+
+/-- One variable's two matchings joined to a slot wiring: the
+undaggered rows against the daggered columns at `σ`, the exchange
+at `τ`. -/
+private def matchVar (G : states.FList) (v : Nat) (σ τ m2 : List Nat) :
+    List Nat :=
+  matchIn (matchIn m2 (posIf G (v, false)) (posIf G (v, true)) σ 0 1)
+    (posIf G (v, false)) (posIf G (v, true)) τ 1 0
+
+/-- The wiring's matching: each place's row slot against its
+image's column slot, both directions. -/
+private def mOne (m : Nat) (π : List Nat) : List Nat :=
+  (List.range m).foldl (fun acc i =>
+    (acc.set (2 * i) (2 * ground.getAt 0 π i + 1)).set
+      (2 * ground.getAt 0 π i + 1) (2 * i))
+    (List.replicate (2 * m) 0)
+
+/-- The composite walk: the matchings read after the wiring's
+matching slot by slot. -/
+private def compAt (m : Nat) (m1 m2 : List Nat) : List Nat :=
+  (List.range (2 * m)).map (fun i =>
+    ground.getAt 0 m2 (ground.getAt 0 m1 i))
+
+/-- The contraction sum's recursion over the site's variables: per
+variable the fold over its permutation pairs, each pair's two
+matchings joined to the slot wiring and its Weingarten entry to
+the coefficient list, and at the variables' end one term, the
+coefficients' product against the loop value of the composite
+walk, the alternating cycles' half count at a factor `d_f` each. -/
+private def contract (G : states.FList) (m1 : List Nat) :
+    List Nat → List Nat → List Poly → Poly → Poly
+  | [], m2, cs, acc =>
+    poly.add acc (cs.foldr poly.mul
+      (dfPow ((places.cyclesOf (compAt G.length m1 m2)).length / 2)))
+  | v :: vs, m2, cs, acc =>
+    (places.perms (posIf G (v, false)).length).foldl (fun acc σ =>
+      (places.perms (posIf G (v, false)).length).foldl (fun acc τ =>
+        contract G m1 vs (matchVar G v σ τ m2) (cs ++ [nOf G v σ τ]) acc)
+        acc) acc
+
+/-- The evaluation of a generator, the contraction sum over the
+site's variables: per variable at matched dagger counts — else the
+sum's unit — over the permutation pairs `(σ, τ)`, the `δ`-wirings
+close into loops at the joint matching of every variable, the
+wiring's matching against the `σ, τ`-matchings at the row and
+column slots, each loop a factor `d_f`, the coefficient the
+Weingarten entries' product and the denominator the Gram
+determinants' product, the adjugates and determinants one
+evaluation per variable. -/
 def evalPhi (G : states.FList) (π : List Nat) : poly.PPair :=
-  let m := G.length
-  let uU := posIf G (false, false)
-  let dU := posIf G (false, true)
-  let uV := posIf G (true, false)
-  let dV := posIf G (true, true)
-  if uU.length == dU.length && uV.length == dV.length then
-    let permsU := places.perms uU.length
-    let permsV := places.perms uV.length
-    let adjU := genericlift.padj (gramWg uU.length)
-    let detU := split.pminor (gramWg uU.length)
-    let adjV := genericlift.padj (gramWg uV.length)
-    let detV := split.pminor (gramWg uV.length)
-    let idU := places.idxOf (List.range uU.length) permsU
-    let idV := places.idxOf (List.range uV.length) permsV
-    let m1 := (List.range m).foldl (fun acc i =>
-      let a := 2 * i
-      let b := 2 * ground.getAt 0 π i + 1
-      (acc.set a b).set b a) (List.replicate (2 * m) 0)
-    let num := permsU.foldl (fun acc σU =>
-      permsU.foldl (fun acc τU =>
-        permsV.foldl (fun acc σV =>
-          permsV.foldl (fun acc τV =>
-            let m2 := matchIn (matchIn (matchIn (matchIn
-              (List.replicate (2 * m) 0) uU dU σU 0 1) uU dU τU 1 0)
-              uV dV σV 0 1) uV dV τV 1 0
-            let comp := (List.range (2 * m)).map (fun i =>
-              ground.getAt 0 m2 (ground.getAt 0 m1 i))
-            let loops := (places.cyclesOf comp).length / 2
-            let nU := ground.getAt [] (ground.getAt [] adjU
-              (places.idxOf (places.expo σU
-                (places.invPerm uU.length τU)) permsU)) idU
-            let nV := ground.getAt [] (ground.getAt [] adjV
-              (places.idxOf (places.expo σV
-                (places.invPerm uV.length τV)) permsV)) idV
-            poly.add acc (poly.mul nU (poly.mul nV (dfPow loops))))
-            acc) acc) acc) ([] : Poly)
-    (num, poly.mul detU detV)
+  if (varsOf G).all (fun v =>
+      (posIf G (v, false)).length == (posIf G (v, true)).length) then
+    (contract G (mOne G.length π) (varsOf G)
+      (List.replicate (2 * G.length) 0) [] [],
+     (varsOf G).foldr (fun v d =>
+       poly.mul (split.pminor (gramWg (posIf G (v, false)).length)) d)
+       poly.one)
   else poly.pZero
 
 /-- The conjugation: the daggers flip. -/
 def conjF (F : states.FList) : states.FList :=
   F.map (fun f => (f.1, !f.2))
-
-/-- The pairing of two generators at their factor lists,
-`Eval(Φ̄_A Φ_B)`: the conjugated key — the daggers flipped, the
-wiring transposed — against the second at the concatenated
-site. -/
-def pairPhi (Fa Fb : states.FList) (πa πb : List Nat) :
-    poly.PPair :=
-  evalPhi (conjF Fa ++ Fb)
-    (places.invPerm Fa.length πa ++ states.shiftW Fa.length πb)
-
-/-- The pairing of two states at their factor lists, the
-combinations' bilinear fold at the certified reduction:
-`lem:genericlift`'s `pAddR` accumulates, so the representative
-moves to the descent's own at every term and the fold's value is
-the displayed sum's, `pReduce_read` the bridge. -/
-def pairFull (Fa Fb : states.FList) (a b : states.Comb) :
-    poly.PPair :=
-  a.foldl (fun acc ea => b.foldl (fun acc2 eb =>
-    genericlift.pAddR acc2 (poly.pMul
-      (poly.pMul ea.2 eb.2) (pairPhi Fa Fb ea.1 eb.1))) acc)
-    poly.pZero
 
 /-! The `B`, `C` and `D` member tier: the presentation at the
 defining factors' pair partitions with the member Gram
@@ -869,9 +885,9 @@ defining factors' pair partitions with the member Gram
 /-- The factors at one variable across both dagger reads, the
 member presentation's slot list — the `u`-th factor in list order
 the local slot `u`. -/
-private def posVar (G : states.FList) (v : Bool) : List Nat :=
+private def posVar (G : states.FList) (v : Nat) : List Nat :=
   (List.range G.length).filter
-    (fun i => (ground.getAt (false, false) G i).1 == v)
+    (fun i => (ground.getAt (0, false) G i).1 == v)
 
 /-- A daggered factor's `a`-node on the composite graph: the site
 length past two nodes per earlier daggered factor, the `b`-node
@@ -952,49 +968,50 @@ private def loopFoldSer (edges : List (Nat × Nat × Nat)) :
     ((0, (0, [])) : Nat × Nat × List Nat)
   (st.1, st.2.1)
 
+/-- The member recursion over the site's variables: per variable
+the fold over its partition pairs, each pair's edges joined to the
+dual-pair and form edge lists and its member adjugate entry to the
+coefficient list, and at the variables' end one term, the
+coefficients' product against the loop value at the composite
+walk's count, the signed series negating at an odd walk parity. -/
+private def contractSer (gram : Nat → split.PMat) (loopPoly : Nat → Poly)
+    (signed : Bool) (G : states.FList) (dag : List Bool)
+    (invw : List Nat) :
+    List Nat → List (Nat × Nat × Nat) → List (Nat × Nat × Nat) →
+    List Poly → Poly → Poly
+  | [], rE, sE, cs, acc =>
+    let w := loopFoldSer (rE ++ sE ++ dagEdges G.length dag invw)
+    let lp := if signed && w.2 % 2 == 1
+      then poly.neg (loopPoly w.1) else loopPoly w.1
+    poly.add acc (cs.foldr poly.mul lp)
+  | v :: vs, rE, sE, cs, acc =>
+    (serpairing.allParts ((posVar G v).length / 2)).foldl (fun acc P =>
+      (serpairing.allParts ((posVar G v).length / 2)).foldl (fun acc Q =>
+        contractSer gram loopPoly signed G dag invw vs
+          (rE ++ pairEdges (posVar G v) (rvar G.length dag) P)
+          (sE ++ pairEdges (posVar G v) (svar G.length dag invw) Q)
+          (cs ++ [ground.getAt [] (ground.getAt []
+            (genericlift.padj (gram ((posVar G v).length / 2)))
+            (places.idxOf P (serpairing.allParts ((posVar G v).length / 2))))
+            (places.idxOf Q
+              (serpairing.allParts ((posVar G v).length / 2)))]) acc)
+        acc) acc
+
 /-- The member engine's core, `evalPhi`'s architecture at the pair
 partitions: per variable at an even factor count — else the sum's
 unit — the fold over the partition pairs of the member adjugate
 entries against the loop value at the composite walk's count, the
-adjugate and determinant hoisted once per evaluation, the signed
+adjugate and determinant one evaluation per variable, the signed
 series negating at an odd walk parity. -/
 private def evalSer (gram : Nat → split.PMat) (loopPoly : Nat → Poly)
     (signed : Bool) (G : states.FList) (π : List Nat) :
     poly.PPair :=
-  let m := G.length
-  let pU := posVar G false
-  let pV := posVar G true
-  if pU.length % 2 == 0 && pV.length % 2 == 0 then
-    let kU := pU.length / 2
-    let kV := pV.length / 2
-    let partsU := serpairing.allParts kU
-    let partsV := serpairing.allParts kV
-    let adjU := genericlift.padj (gram kU)
-    let detU := split.pminor (gram kU)
-    let adjV := genericlift.padj (gram kV)
-    let detV := split.pminor (gram kV)
-    let dag := G.map (fun f => f.2)
-    let invw := places.invPerm m π
-    let num := partsU.foldl (fun acc PU =>
-      partsU.foldl (fun acc QU =>
-        partsV.foldl (fun acc PV =>
-          partsV.foldl (fun acc QV =>
-            let edges :=
-              pairEdges pU (rvar m dag) PU
-              ++ pairEdges pV (rvar m dag) PV
-              ++ pairEdges pU (svar m dag invw) QU
-              ++ pairEdges pV (svar m dag invw) QV
-              ++ dagEdges m dag invw
-            let w := loopFoldSer edges
-            let lp := if signed && w.2 % 2 == 1
-              then poly.neg (loopPoly w.1) else loopPoly w.1
-            let nU := ground.getAt [] (ground.getAt [] adjU
-              (places.idxOf PU partsU)) (places.idxOf QU partsU)
-            let nV := ground.getAt [] (ground.getAt [] adjV
-              (places.idxOf PV partsV)) (places.idxOf QV partsV)
-            poly.add acc (poly.mul nU (poly.mul nV lp)))
-            acc) acc) acc) ([] : Poly)
-    (num, poly.mul detU detV)
+  if (varsOf G).all (fun v => (posVar G v).length % 2 == 0) then
+    (contractSer gram loopPoly signed G (G.map (fun f => f.2))
+      (places.invPerm G.length π) (varsOf G) [] [] [] [],
+     (varsOf G).foldr (fun v d =>
+       poly.mul (split.pminor (gram ((posVar G v).length / 2))) d)
+       poly.one)
   else poly.pZero
 
 /-- The `B` and `D` member evaluation — one engine, the Gram and
@@ -1010,27 +1027,31 @@ parity entering negated. -/
 def evalPhiC (G : states.FList) (π : List Nat) : poly.PPair :=
   evalSer serpairing.gramC serpairing.rankPow true G π
 
-/-- The member pairing of two generators at an engine, `pairPhi`'s
-body: the conjugated key against the second at the concatenated
-site. -/
-def pairPhiSer (ev : states.FList → List Nat → poly.PPair)
+/-- The pairing of two generators at their factor lists at an
+evaluator, `Eval(Φ̄_A Φ_B)`: the conjugated key — the daggers
+flipped, the wiring transposed — against the second at the
+concatenated site; the evaluator the site's own, `evalPhi` at the
+variable count or a member engine. -/
+def pairPhi (ev : states.FList → List Nat → poly.PPair)
     (Fa Fb : states.FList) (πa πb : List Nat) : poly.PPair :=
   ev (conjF Fa ++ Fb)
     (places.invPerm Fa.length πa ++ states.shiftW Fa.length πb)
 
-/-- The member pairing of two states at an engine, `pairFull`'s
-bilinear fold at the certified reduction. -/
-def pairFullSer (ev : states.FList → List Nat → poly.PPair)
+/-- The pairing of two states at their factor lists at an
+evaluator, the combinations' bilinear fold at the certified
+reduction: `lem:genericlift`'s `pAddR` accumulates, so the
+representative moves to the descent's own at every term and the
+fold's value is the displayed sum's, `pReduce_read` the bridge. -/
+def pairFull (ev : states.FList → List Nat → poly.PPair)
     (Fa Fb : states.FList) (a b : states.Comb) : poly.PPair :=
   a.foldl (fun acc ea => b.foldl (fun acc2 eb =>
     genericlift.pAddR acc2 (poly.pMul
-      (poly.pMul ea.2 eb.2)
-      (pairPhiSer ev Fa Fb ea.1 eb.1))) acc)
+      (poly.pMul ea.2 eb.2) (pairPhi ev Fa Fb ea.1 eb.1))) acc)
     poly.pZero
 
 /-! `rem:kernel`'s gauge-mode tier: the evaluation's relabeling
 read.  The states are indexed gauge-free by the multisets of
-oriented cyclic words in the four letters, so the positions of
+oriented cyclic words in the letters, so the positions of
 repeated factors are a gauge mode of the `(π, positions)`
 spelling; at the carried evaluation the sentence reads as the
 contraction sum's one value at a letter-preserving relabeling of
@@ -1038,10 +1059,10 @@ the site and its wiring (`evalPhi_transport`).  The relabeling's
 slot maps carry each letter's positions across (`slotOf`), the
 doubled relabeling carries the composite graph's slots (`dbl`),
 the two matchings travel with it (`mOne_transport`,
-`wireOf_transport`), the composite's loop count is the wiring's
-own at `places.cyclesOf_transport`, and the numerator's four-axis
-fold reindexes along the conjugated words at the Weingarten
-column's own transport. -/
+`wireAll_transport`), the composite's loop count is the wiring's
+own at `places.cyclesOf_transport`, and the numerator's fold over
+the tuples of the variables' words reindexes along the conjugated
+words at the Weingarten column's own transport. -/
 private theorem evenOdd : ∀ a b : Nat, ¬ 2 * a = 2 * b + 1
   | 0, _ => fun h => Nat.noConfusion h
   | _ + 1, 0 => fun h => Nat.noConfusion (Nat.succ.inj h)
@@ -1194,26 +1215,26 @@ letter. -/
 private theorem posIf_count (G : states.FList) (f : states.Factor)
     (i : Nat) :
     ground.countOf i (posIf G f)
-      = if ground.getAt (false, false) G i = f then
+      = if ground.getAt (0, false) G i = f then
           (if i < G.length then 1 else 0) else 0 := by
   show ground.countOf i ((List.range G.length).filter
-      (fun j => ground.getAt (false, false) G j == f)) = _
+      (fun j => ground.getAt (0, false) G j == f)) = _
   rw [ground.countOf_filter
-      (fun j => ground.getAt (false, false) G j == f) i
+      (fun j => ground.getAt (0, false) G j == f) i
       (List.range G.length),
     ground.countOf_range i G.length]
-  by_cases hf : ground.getAt (false, false) G i = f
-  · rw [hf, ground.prodBeqIntro ground.boolEqBeq
+  by_cases hf : ground.getAt (0, false) G i = f
+  · rw [hf, ground.prodBeqIntro (fun a => ground.eqBeqOf (rfl : a = a))
       ground.boolEqBeq f, if_pos (rfl : f = f)]
     rfl
-  · rw [ground.prodBeqRefuse (fun _ _ hh => ground.boolBeqEq hh)
+  · rw [ground.prodBeqRefuse (fun _ _ hh => ground.beqEqOf hh)
       (fun _ _ hh => ground.boolBeqEq hh) hf, if_neg hf]
     rfl
 
 /-- A place reading the letter sits in the letter's positions. -/
 private theorem posIf_mem {G : states.FList} {f : states.Factor}
     {i : Nat} (hi : i < G.length)
-    (he : ground.getAt (false, false) G i = f) :
+    (he : ground.getAt (0, false) G i = f) :
     0 < ground.countOf i (posIf G f) := by
   rw [posIf_count G f i, if_pos he, if_pos hi]
   exact Nat.succ_pos 0
@@ -1223,7 +1244,7 @@ private theorem posIf_lt {G : states.FList} {f : states.Factor}
     {i : Nat} (h : 0 < ground.countOf i (posIf G f)) :
     i < G.length := by
   rw [posIf_count G f i] at h
-  by_cases he : ground.getAt (false, false) G i = f
+  by_cases he : ground.getAt (0, false) G i = f
   · rw [if_pos he] at h
     by_cases hi : i < G.length
     · exact hi
@@ -1235,8 +1256,8 @@ private theorem posIf_lt {G : states.FList} {f : states.Factor}
 /-- A position of the letter's filter reads that letter. -/
 private theorem posIf_read {G : states.FList} {f : states.Factor}
     {i : Nat} (h : 0 < ground.countOf i (posIf G f)) :
-    ground.getAt (false, false) G i = f := by
-  by_cases he : ground.getAt (false, false) G i = f
+    ground.getAt (0, false) G i = f := by
+  by_cases he : ground.getAt (0, false) G i = f
   · exact he
   · rw [posIf_count G f i, if_neg he] at h
     exact absurd h (Nat.lt_irrefl 0)
@@ -1245,7 +1266,7 @@ private theorem posIf_read {G : states.FList} {f : states.Factor}
 private theorem posIf_dist (G : states.FList) (f : states.Factor)
     (i : Nat) : ground.countOf i (posIf G f) ≤ 1 := by
   rw [posIf_count G f i]
-  by_cases he : ground.getAt (false, false) G i = f
+  by_cases he : ground.getAt (0, false) G i = f
   · rw [if_pos he]
     by_cases hi : i < G.length
     · rw [if_pos hi]
@@ -1264,7 +1285,7 @@ private theorem posIf_entry_lt (G : states.FList)
 /-- The position list's entry reads its own letter. -/
 private theorem posIf_entry_read (G : states.FList)
     (f : states.Factor) (s : Nat) (hs : s < (posIf G f).length) :
-    ground.getAt (false, false) G (ground.getAt 0 (posIf G f) s)
+    ground.getAt (0, false) G (ground.getAt 0 (posIf G f) s)
       = f :=
   posIf_read (ground.countOf_getAt_pos 0 (posIf G f) s hs)
 
@@ -1291,8 +1312,8 @@ private theorem posIf_len_le (G G' : states.FList) (ρ : List Nat)
     (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
     (hr : 0 < ground.countOf ρ (places.perms m))
     (hg : ∀ i, i < m →
-      ground.getAt (false, false) G' i
-        = ground.getAt (false, false) G (ground.getAt 0 ρ i))
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i))
     (f : states.Factor) :
     (posIf G' f).length ≤ (posIf G f).length := by
   obtain ⟨hrlen, _, hrval, _⟩ := places.perm_member_reads hr
@@ -1348,8 +1369,8 @@ private theorem posIf_len_eq (G G' : states.FList) (ρ : List Nat)
     (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
     (hr : 0 < ground.countOf ρ (places.perms m))
     (hg : ∀ i, i < m →
-      ground.getAt (false, false) G' i
-        = ground.getAt (false, false) G (ground.getAt 0 ρ i))
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i))
     (f : states.Factor) :
     (posIf G' f).length = (posIf G f).length := by
   refine Nat.le_antisymm (posIf_len_le G G' ρ m hm hm' hr hg f) ?_
@@ -1381,8 +1402,8 @@ private theorem slotOf_target (G G' : states.FList) (ρ : List Nat)
     (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
     (hr : 0 < ground.countOf ρ (places.perms m))
     (hg : ∀ i, i < m →
-      ground.getAt (false, false) G' i
-        = ground.getAt (false, false) G (ground.getAt 0 ρ i))
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i))
     (f : states.Factor) (s : Nat) (hs : s < (posIf G' f).length) :
     0 < ground.countOf (ground.getAt 0 ρ
       (ground.getAt 0 (posIf G' f) s)) (posIf G f) := by
@@ -1412,8 +1433,8 @@ private theorem slotOf_lt (G G' : states.FList) (ρ : List Nat)
     (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
     (hr : 0 < ground.countOf ρ (places.perms m))
     (hg : ∀ i, i < m →
-      ground.getAt (false, false) G' i
-        = ground.getAt (false, false) G (ground.getAt 0 ρ i))
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i))
     (f : states.Factor) (s : Nat) (hs : s < (posIf G' f).length) :
     ground.getAt 0 (slotOf G G' ρ f) s < (posIf G f).length := by
   rw [slotOf_read G G' ρ f s hs]
@@ -1425,8 +1446,8 @@ private theorem slotOf_getAt (G G' : states.FList) (ρ : List Nat)
     (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
     (hr : 0 < ground.countOf ρ (places.perms m))
     (hg : ∀ i, i < m →
-      ground.getAt (false, false) G' i
-        = ground.getAt (false, false) G (ground.getAt 0 ρ i))
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i))
     (f : states.Factor) (s : Nat) (hs : s < (posIf G' f).length) :
     ground.getAt 0 (posIf G f)
         (ground.getAt 0 (slotOf G G' ρ f) s)
@@ -1441,8 +1462,8 @@ private theorem slotOf_member (G G' : states.FList) (ρ : List Nat)
     (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
     (hr : 0 < ground.countOf ρ (places.perms m))
     (hg : ∀ i, i < m →
-      ground.getAt (false, false) G' i
-        = ground.getAt (false, false) G (ground.getAt 0 ρ i))
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i))
     (f : states.Factor) :
     0 < ground.countOf (slotOf G G' ρ f)
       (places.perms (posIf G f).length) := by
@@ -1665,14 +1686,6 @@ private theorem matchIn_read (m2 ps qs σ : List Nat)
     (fun t => rangeDist t ps.length) s
     (ground.countOf_range_pos hs)
 
-/-- The wiring's matching: each place's row slot against its
-image's column slot, both directions. -/
-private def mOne (m : Nat) (π : List Nat) : List Nat :=
-  (List.range m).foldl (fun acc i =>
-    (acc.set (2 * i) (2 * ground.getAt 0 π i + 1)).set
-      (2 * ground.getAt 0 π i + 1) (2 * i))
-    (List.replicate (2 * m) 0)
-
 /-- The wiring's matching reads the image's column slot at a
 place's row slot and back. -/
 private theorem mOne_read (m : Nat) {π : List Nat}
@@ -1705,139 +1718,6 @@ private theorem mOne_read (m : Nat) {π : List Nat}
   · exact evenOdd _ _
   · exact fun he => htu (places.perm_inj m hπ t u (ground.ltOfMem ht)
       (ground.ltOfMem hu) (twoSuccInj _ _ he))
-
-/-- The matched-dagger-count guard, one read per variable. -/
-private def guardOf (G : states.FList) : Bool :=
-  (posIf G (false, false)).length == (posIf G (false, true)).length
-    && (posIf G (true, false)).length == (posIf G (true, true)).length
-
-/-- The first matching, the undaggered `U` rows against the
-daggered columns. -/
-private def wire1 (G : states.FList) (σU : List Nat) : List Nat :=
-  matchIn (List.replicate (2 * G.length) 0)
-    (posIf G (false, false)) (posIf G (false, true)) σU 0 1
-
-/-- The second matching joined, the `U` exchange. -/
-private def wire2 (G : states.FList) (σU τU : List Nat) : List Nat :=
-  matchIn (wire1 G σU)
-    (posIf G (false, false)) (posIf G (false, true)) τU 1 0
-
-/-- The third matching joined, the `V` rows against the
-columns. -/
-private def wire3 (G : states.FList) (σU τU σV : List Nat) :
-    List Nat :=
-  matchIn (wire2 G σU τU)
-    (posIf G (true, false)) (posIf G (true, true)) σV 0 1
-
-/-- The four matchings joined, the term's whole slot wiring. -/
-private def wireOf (G : states.FList) (σU τU σV τV : List Nat) :
-    List Nat :=
-  matchIn (wire3 G σU τU σV)
-    (posIf G (true, false)) (posIf G (true, true)) τV 1 0
-
-/-- The second matching's one-step unfolding. -/
-private theorem wire2_unfold (G : states.FList) (σU τU : List Nat) :
-    wire2 G σU τU = matchIn (wire1 G σU)
-      (posIf G (false, false)) (posIf G (false, true)) τU 1 0 := rfl
-
-/-- The third matching's one-step unfolding. -/
-private theorem wire3_unfold (G : states.FList)
-    (σU τU σV : List Nat) :
-    wire3 G σU τU σV = matchIn (wire2 G σU τU)
-      (posIf G (true, false)) (posIf G (true, true)) σV 0 1 := rfl
-
-/-- The joined wiring's one-step unfolding. -/
-private theorem wireOf_unfold (G : states.FList)
-    (σU τU σV τV : List Nat) :
-    wireOf G σU τU σV τV = matchIn (wire3 G σU τU σV)
-      (posIf G (true, false)) (posIf G (true, true)) τV 1 0 := rfl
-
-/-- The first matching's place count is the doubled site's. -/
-private theorem wire1_length (G : states.FList) (σU : List Nat) :
-    (wire1 G σU).length = 2 * G.length := by
-  show (matchIn (List.replicate (2 * G.length) 0) _ _ _ _ _).length
-    = 2 * G.length
-  rw [matchIn_length, ground.length_replicate]
-
-/-- The second matching's place count is the doubled site's. -/
-private theorem wire2_length (G : states.FList) (σU τU : List Nat) :
-    (wire2 G σU τU).length = 2 * G.length := by
-  rw [wire2_unfold, matchIn_length, wire1_length]
-
-/-- The third matching's place count is the doubled site's. -/
-private theorem wire3_length (G : states.FList)
-    (σU τU σV : List Nat) :
-    (wire3 G σU τU σV).length = 2 * G.length := by
-  rw [wire3_unfold, matchIn_length, wire2_length]
-
-/-- The composite walk, the matchings read after the wiring's
-matching slot by slot. -/
-private def compOf (G : states.FList) (π σU τU σV τV : List Nat) :
-    List Nat :=
-  (List.range (2 * G.length)).map (fun i =>
-    ground.getAt 0 (wireOf G σU τU σV τV)
-      (ground.getAt 0 (mOne G.length π) i))
-
-/-- The `U` variable's Weingarten entry at a permutation pair. -/
-private def nUOf (G : states.FList) (σ τ : List Nat) : poly.Poly :=
-  ground.getAt [] (ground.getAt []
-    (genericlift.padj (gramWg (posIf G (false, false)).length))
-    (places.idxOf (places.expo σ (places.invPerm
-      (posIf G (false, false)).length τ))
-      (places.perms (posIf G (false, false)).length)))
-    (places.idxOf (List.range (posIf G (false, false)).length)
-      (places.perms (posIf G (false, false)).length))
-
-/-- The `V` variable's Weingarten entry at a permutation pair. -/
-private def nVOf (G : states.FList) (σ τ : List Nat) : poly.Poly :=
-  ground.getAt [] (ground.getAt []
-    (genericlift.padj (gramWg (posIf G (true, false)).length))
-    (places.idxOf (places.expo σ (places.invPerm
-      (posIf G (true, false)).length τ))
-      (places.perms (posIf G (true, false)).length)))
-    (places.idxOf (List.range (posIf G (true, false)).length)
-      (places.perms (posIf G (true, false)).length))
-
-/-- One tuple's term: the two Weingarten entries against the
-loop count's power. -/
-private def termOf (G : states.FList) (π σU τU σV τV : List Nat) :
-    poly.Poly :=
-  poly.mul (nUOf G σU τU) (poly.mul (nVOf G σV τV)
-    (dfPow ((places.cyclesOf (compOf G π σU τU σV τV)).length / 2)))
-
-/-- The numerator, the four-axis fold of the terms. -/
-private def numOf (G : states.FList) (π : List Nat) : poly.Poly :=
-  (places.perms (posIf G (false, false)).length).foldl (fun acc σU =>
-    (places.perms (posIf G (false, false)).length).foldl (fun acc τU =>
-      (places.perms (posIf G (true, false)).length).foldl (fun acc σV =>
-        (places.perms (posIf G (true, false)).length).foldl
-          (fun acc τV => poly.add acc (termOf G π σU τU σV τV))
-          acc) acc) acc) ([] : poly.Poly)
-
-/-- The numerator's fold spelled at the term function. -/
-private theorem numOf_unfold (G : states.FList) (π : List Nat) :
-    numOf G π =
-      (places.perms (posIf G (false, false)).length).foldl
-        (fun acc σU =>
-          (places.perms (posIf G (false, false)).length).foldl
-            (fun acc τU =>
-              (places.perms (posIf G (true, false)).length).foldl
-                (fun acc σV =>
-                  (places.perms (posIf G (true, false)).length).foldl
-                    (fun acc τV =>
-                      poly.add acc (termOf G π σU τU σV τV))
-                    acc) acc) acc) ([] : poly.Poly) := rfl
-
-/-- The evaluation at its named parts: the guard, the numerator
-fold and the shared determinant. -/
-private theorem evalPhi_bridge (G : states.FList) (π : List Nat) :
-    evalPhi G π =
-      (if guardOf G = true then
-        (numOf G π,
-         poly.mul
-           (split.pminor (gramWg (posIf G (false, false)).length))
-           (split.pminor (gramWg (posIf G (true, false)).length)))
-       else poly.pZero) := rfl
 
 /-- Slots of distinct letters' positions differ at every
 parity pair. -/
@@ -1920,248 +1800,14 @@ private theorem qsInj (G : states.FList) (g h : states.Factor)
     (posIf_inj G h _ _ (sigLt G g h hσ hgh s hs)
       (sigLt G g h hσ hgh t ht) he)
 
-/-- The first call's slots: the undaggered `U` place reads the
-daggered place at its `σ`-match, and back. -/
-private theorem wireOf_read1 (G : states.FList)
-    (σU τU σV τV : List Nat)
-    (hgU : (posIf G (false, false)).length
-      = (posIf G (false, true)).length)
-    (hgV : (posIf G (true, false)).length
-      = (posIf G (true, true)).length)
-    (hσU : 0 < ground.countOf σU
-      (places.perms (posIf G (false, false)).length))
-    (hτU : 0 < ground.countOf τU
-      (places.perms (posIf G (false, false)).length))
-    (hσV : 0 < ground.countOf σV
-      (places.perms (posIf G (true, false)).length))
-    (hτV : 0 < ground.countOf τV
-      (places.perms (posIf G (true, false)).length))
-    (s : Nat) (hs : s < (posIf G (false, false)).length) :
-    ground.getAt 0 (wireOf G σU τU σV τV)
-        (2 * ground.getAt 0 (posIf G (false, false)) s)
-      = 2 * ground.getAt 0 (posIf G (false, true))
-          (ground.getAt 0 σU s) + 1
-    ∧ ground.getAt 0 (wireOf G σU τU σV τV)
-        (2 * ground.getAt 0 (posIf G (false, true))
-          (ground.getAt 0 σU s) + 1)
-      = 2 * ground.getAt 0 (posIf G (false, false)) s := by
-  have hbU := sigLt G (false, false) (false, true) hσU hgU
-  have hbT := sigLt G (false, false) (false, true) hτU hgU
-  have hbV := sigLt G (true, false) (true, true) hσV hgV
-  have hbW := sigLt G (true, false) (true, true) hτV hgV
-  have hcall := matchIn_read (List.replicate (2 * G.length) 0)
-    (posIf G (false, false)) (posIf G (false, true)) σU 0 1
-    (fun t ht => by
-      rw [ground.length_replicate]
-      exact slotLt G (false, false) t 0 (by decide +kernel) ht)
-    (fun t ht => by
-      rw [ground.length_replicate]
-      exact slotLt G (false, true) _ 1 (by decide +kernel) (hbU t ht))
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    (posIf_inj G (false, false))
-    (qsInj G (false, false) (false, true) hσU hgU) s hs
-  refine ⟨?_, ?_⟩
-  · show ground.getAt 0 (wireOf G σU τU σV τV)
-        (2 * ground.getAt 0 (posIf G (false, false)) s + 0) = _
-    rw [wireOf_unfold,
-      matchIn_off_slot G (wire3 G σU τU σV) (false, false)
-        (true, false) (true, true) τV hbW 1 0 0
-        (by decide +kernel) (by decide +kernel) (by decide +kernel)
-        (Or.inl (by decide +kernel)) (Or.inl (by decide +kernel)) s hs,
-      wire3_unfold,
-      matchIn_off_slot G (wire2 G σU τU) (false, false)
-        (true, false) (true, true) σV hbV 0 1 0
-        (by decide +kernel) (by decide +kernel) (by decide +kernel)
-        (Or.inl (by decide +kernel)) (Or.inl (by decide +kernel)) s hs,
-      wire2_unfold,
-      matchIn_off_slot G (wire1 G σU) (false, false)
-        (false, false) (false, true) τU hbT 1 0 0
-        (by decide +kernel) (by decide +kernel) (by decide +kernel)
-        (Or.inr (by decide +kernel)) (Or.inl (by decide +kernel)) s hs]
-    exact hcall.1
-  · rw [wireOf_unfold,
-      matchIn_off_slot G (wire3 G σU τU σV) (false, true)
-        (true, false) (true, true) τV hbW 1 0 1
-        (by decide +kernel) (by decide +kernel) (by decide +kernel)
-        (Or.inl (by decide +kernel)) (Or.inl (by decide +kernel)) _ (hbU s hs),
-      wire3_unfold,
-      matchIn_off_slot G (wire2 G σU τU) (false, true)
-        (true, false) (true, true) σV hbV 0 1 1
-        (by decide +kernel) (by decide +kernel) (by decide +kernel)
-        (Or.inl (by decide +kernel)) (Or.inl (by decide +kernel)) _ (hbU s hs),
-      wire2_unfold,
-      matchIn_off_slot G (wire1 G σU) (false, true)
-        (false, false) (false, true) τU hbT 1 0 1
-        (by decide +kernel) (by decide +kernel) (by decide +kernel)
-        (Or.inl (by decide +kernel)) (Or.inr (by decide +kernel)) _ (hbU s hs)]
-    exact hcall.2
-
-/-- The second call's slots: the daggered `U` place reads the
-undaggered place at its `τ`-match, and back. -/
-private theorem wireOf_read2 (G : states.FList)
-    (σU τU σV τV : List Nat)
-    (hgU : (posIf G (false, false)).length
-      = (posIf G (false, true)).length)
-    (hgV : (posIf G (true, false)).length
-      = (posIf G (true, true)).length)
-    (hτU : 0 < ground.countOf τU
-      (places.perms (posIf G (false, false)).length))
-    (hσV : 0 < ground.countOf σV
-      (places.perms (posIf G (true, false)).length))
-    (hτV : 0 < ground.countOf τV
-      (places.perms (posIf G (true, false)).length))
-    (s : Nat) (hs : s < (posIf G (false, false)).length) :
-    ground.getAt 0 (wireOf G σU τU σV τV)
-        (2 * ground.getAt 0 (posIf G (false, false)) s + 1)
-      = 2 * ground.getAt 0 (posIf G (false, true))
-          (ground.getAt 0 τU s)
-    ∧ ground.getAt 0 (wireOf G σU τU σV τV)
-        (2 * ground.getAt 0 (posIf G (false, true))
-          (ground.getAt 0 τU s))
-      = 2 * ground.getAt 0 (posIf G (false, false)) s + 1 := by
-  have hbT := sigLt G (false, false) (false, true) hτU hgU
-  have hbV := sigLt G (true, false) (true, true) hσV hgV
-  have hbW := sigLt G (true, false) (true, true) hτV hgV
-  have hcall := matchIn_read (wire1 G σU)
-    (posIf G (false, false)) (posIf G (false, true)) τU 1 0
-    (fun t ht => by
-      rw [wire1_length]
-      exact slotLt G (false, false) t 1 (by decide +kernel) ht)
-    (fun t ht => by
-      rw [wire1_length]
-      exact slotLt G (false, true) _ 0 (by decide +kernel) (hbT t ht))
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    (posIf_inj G (false, false))
-    (qsInj G (false, false) (false, true) hτU hgU) s hs
-  refine ⟨?_, ?_⟩
-  · rw [wireOf_unfold,
-      matchIn_off_slot G (wire3 G σU τU σV) (false, false)
-        (true, false) (true, true) τV hbW 1 0 1
-        (by decide +kernel) (by decide +kernel) (by decide +kernel)
-        (Or.inl (by decide +kernel)) (Or.inl (by decide +kernel)) s hs,
-      wire3_unfold,
-      matchIn_off_slot G (wire2 G σU τU) (false, false)
-        (true, false) (true, true) σV hbV 0 1 1
-        (by decide +kernel) (by decide +kernel) (by decide +kernel)
-        (Or.inl (by decide +kernel)) (Or.inl (by decide +kernel)) s hs,
-      wire2_unfold]
-    exact hcall.1
-  · show ground.getAt 0 (wireOf G σU τU σV τV)
-        (2 * ground.getAt 0 (posIf G (false, true))
-          (ground.getAt 0 τU s) + 0) = _
-    rw [wireOf_unfold,
-      matchIn_off_slot G (wire3 G σU τU σV) (false, true)
-        (true, false) (true, true) τV hbW 1 0 0
-        (by decide +kernel) (by decide +kernel) (by decide +kernel)
-        (Or.inl (by decide +kernel)) (Or.inl (by decide +kernel)) _ (hbT s hs),
-      wire3_unfold,
-      matchIn_off_slot G (wire2 G σU τU) (false, true)
-        (true, false) (true, true) σV hbV 0 1 0
-        (by decide +kernel) (by decide +kernel) (by decide +kernel)
-        (Or.inl (by decide +kernel)) (Or.inl (by decide +kernel)) _ (hbT s hs),
-      wire2_unfold]
-    exact hcall.2
-
-/-- The third call's slots: the undaggered `V` place reads the
-daggered place at its `σ`-match, and back. -/
-private theorem wireOf_read3 (G : states.FList)
-    (σU τU σV τV : List Nat)
-    (hgV : (posIf G (true, false)).length
-      = (posIf G (true, true)).length)
-    (hσV : 0 < ground.countOf σV
-      (places.perms (posIf G (true, false)).length))
-    (hτV : 0 < ground.countOf τV
-      (places.perms (posIf G (true, false)).length))
-    (s : Nat) (hs : s < (posIf G (true, false)).length) :
-    ground.getAt 0 (wireOf G σU τU σV τV)
-        (2 * ground.getAt 0 (posIf G (true, false)) s)
-      = 2 * ground.getAt 0 (posIf G (true, true))
-          (ground.getAt 0 σV s) + 1
-    ∧ ground.getAt 0 (wireOf G σU τU σV τV)
-        (2 * ground.getAt 0 (posIf G (true, true))
-          (ground.getAt 0 σV s) + 1)
-      = 2 * ground.getAt 0 (posIf G (true, false)) s := by
-  have hbV := sigLt G (true, false) (true, true) hσV hgV
-  have hbW := sigLt G (true, false) (true, true) hτV hgV
-  have hcall := matchIn_read (wire2 G σU τU)
-    (posIf G (true, false)) (posIf G (true, true)) σV 0 1
-    (fun t ht => by
-      rw [wire2_length]
-      exact slotLt G (true, false) t 0 (by decide +kernel) ht)
-    (fun t ht => by
-      rw [wire2_length]
-      exact slotLt G (true, true) _ 1 (by decide +kernel) (hbV t ht))
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    (posIf_inj G (true, false))
-    (qsInj G (true, false) (true, true) hσV hgV) s hs
-  refine ⟨?_, ?_⟩
-  · show ground.getAt 0 (wireOf G σU τU σV τV)
-        (2 * ground.getAt 0 (posIf G (true, false)) s + 0) = _
-    rw [wireOf_unfold,
-      matchIn_off_slot G (wire3 G σU τU σV) (true, false)
-        (true, false) (true, true) τV hbW 1 0 0
-        (by decide +kernel) (by decide +kernel) (by decide +kernel)
-        (Or.inr (by decide +kernel)) (Or.inl (by decide +kernel)) s hs,
-      wire3_unfold]
-    exact hcall.1
-  · rw [wireOf_unfold,
-      matchIn_off_slot G (wire3 G σU τU σV) (true, true)
-        (true, false) (true, true) τV hbW 1 0 1
-        (by decide +kernel) (by decide +kernel) (by decide +kernel)
-        (Or.inl (by decide +kernel)) (Or.inr (by decide +kernel)) _ (hbV s hs),
-      wire3_unfold]
-    exact hcall.2
-
-/-- The fourth call's slots: the daggered `V` place reads the
-undaggered place at its `τ`-match, and back. -/
-private theorem wireOf_read4 (G : states.FList)
-    (σU τU σV τV : List Nat)
-    (hgV : (posIf G (true, false)).length
-      = (posIf G (true, true)).length)
-    (hτV : 0 < ground.countOf τV
-      (places.perms (posIf G (true, false)).length))
-    (s : Nat) (hs : s < (posIf G (true, false)).length) :
-    ground.getAt 0 (wireOf G σU τU σV τV)
-        (2 * ground.getAt 0 (posIf G (true, false)) s + 1)
-      = 2 * ground.getAt 0 (posIf G (true, true))
-          (ground.getAt 0 τV s)
-    ∧ ground.getAt 0 (wireOf G σU τU σV τV)
-        (2 * ground.getAt 0 (posIf G (true, true))
-          (ground.getAt 0 τV s))
-      = 2 * ground.getAt 0 (posIf G (true, false)) s + 1 := by
-  have hbW := sigLt G (true, false) (true, true) hτV hgV
-  exact matchIn_read (wire3 G σU τU σV)
-    (posIf G (true, false)) (posIf G (true, true)) τV 1 0
-    (fun t ht => by
-      rw [wire3_length]
-      exact slotLt G (true, false) t 1 (by decide +kernel) ht)
-    (fun t ht => by
-      rw [wire3_length]
-      exact slotLt G (true, true) _ 0 (by decide +kernel) (hbW t ht))
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    (posIf_inj G (true, false))
-    (qsInj G (true, false) (true, true) hτV hgV) s hs
-
-/-- The four letters, exhaustively. -/
-private theorem factorCases (f : states.Factor) :
-    f = (false, false) ∨ f = (false, true)
-      ∨ f = (true, false) ∨ f = (true, true) := by
-  obtain ⟨a, b⟩ := f
-  cases a <;> cases b <;>
-    first
-      | exact Or.inl rfl
-      | exact Or.inr (Or.inl rfl)
-      | exact Or.inr (Or.inr (Or.inl rfl))
-      | exact Or.inr (Or.inr (Or.inr rfl))
-
 /-- The doubled relabeling reads the relabeled position's even
 slot to the position's own. -/
 private theorem dblEven (G G' : states.FList) (ρ : List Nat)
     (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
     (hr : 0 < ground.countOf ρ (places.perms m))
     (hg : ∀ i, i < m →
-      ground.getAt (false, false) G' i
-        = ground.getAt (false, false) G (ground.getAt 0 ρ i))
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i))
     (f : states.Factor) (s : Nat) (hs : s < (posIf G' f).length) :
     ground.getAt 0 (dbl ρ) (2 * ground.getAt 0 (posIf G' f) s)
       = 2 * ground.getAt 0 (posIf G f)
@@ -2177,8 +1823,8 @@ private theorem dblOdd (G G' : states.FList) (ρ : List Nat)
     (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
     (hr : 0 < ground.countOf ρ (places.perms m))
     (hg : ∀ i, i < m →
-      ground.getAt (false, false) G' i
-        = ground.getAt (false, false) G (ground.getAt 0 ρ i))
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i))
     (f : states.Factor) (s : Nat) (hs : s < (posIf G' f).length) :
     ground.getAt 0 (dbl ρ) (2 * ground.getAt 0 (posIf G' f) s + 1)
       = 2 * ground.getAt 0 (posIf G f)
@@ -2240,255 +1886,6 @@ private theorem mOne_transport (m : Nat) (π π' ρ : List Nat)
       (dbl_read ρ _ (by
         rw [hrlen]
         exact ht)).1, hkey]
-
-/-- The wiring travels the relabeling: the doubled relabeling
-carries the relabeled site's matched slots to the site's own, at
-the slot maps conjugating the four matchings. -/
-private theorem wireOf_transport (G G' : states.FList) (ρ : List Nat)
-    (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
-    (hr : 0 < ground.countOf ρ (places.perms m))
-    (hg : ∀ i, i < m →
-      ground.getAt (false, false) G' i
-        = ground.getAt (false, false) G (ground.getAt 0 ρ i))
-    (σU τU σV τV σU' τU' σV' τV' : List Nat)
-    (hgU : (posIf G (false, false)).length
-      = (posIf G (false, true)).length)
-    (hgV : (posIf G (true, false)).length
-      = (posIf G (true, true)).length)
-    (hσU : 0 < ground.countOf σU
-      (places.perms (posIf G (false, false)).length))
-    (hτU : 0 < ground.countOf τU
-      (places.perms (posIf G (false, false)).length))
-    (hσV : 0 < ground.countOf σV
-      (places.perms (posIf G (true, false)).length))
-    (hτV : 0 < ground.countOf τV
-      (places.perms (posIf G (true, false)).length))
-    (hσU' : 0 < ground.countOf σU'
-      (places.perms (posIf G' (false, false)).length))
-    (hτU' : 0 < ground.countOf τU'
-      (places.perms (posIf G' (false, false)).length))
-    (hσV' : 0 < ground.countOf σV'
-      (places.perms (posIf G' (true, false)).length))
-    (hτV' : 0 < ground.countOf τV'
-      (places.perms (posIf G' (true, false)).length))
-    (hcU : ∀ s, s < (posIf G' (false, false)).length →
-      ground.getAt 0 (slotOf G G' ρ (false, true))
-          (ground.getAt 0 σU' s)
-        = ground.getAt 0 σU
-          (ground.getAt 0 (slotOf G G' ρ (false, false)) s))
-    (hcT : ∀ s, s < (posIf G' (false, false)).length →
-      ground.getAt 0 (slotOf G G' ρ (false, true))
-          (ground.getAt 0 τU' s)
-        = ground.getAt 0 τU
-          (ground.getAt 0 (slotOf G G' ρ (false, false)) s))
-    (hcV : ∀ s, s < (posIf G' (true, false)).length →
-      ground.getAt 0 (slotOf G G' ρ (true, true))
-          (ground.getAt 0 σV' s)
-        = ground.getAt 0 σV
-          (ground.getAt 0 (slotOf G G' ρ (true, false)) s))
-    (hcW : ∀ s, s < (posIf G' (true, false)).length →
-      ground.getAt 0 (slotOf G G' ρ (true, true))
-          (ground.getAt 0 τV' s)
-        = ground.getAt 0 τV
-          (ground.getAt 0 (slotOf G G' ρ (true, false)) s))
-    (x : Nat) (hx : x < 2 * m) :
-    ground.getAt 0 (dbl ρ)
-        (ground.getAt 0 (wireOf G' σU' τU' σV' τV') x)
-      = ground.getAt 0 (wireOf G σU τU σV τV)
-        (ground.getAt 0 (dbl ρ) x) := by
-  have heFF := posIf_len_eq G G' ρ m hm hm' hr hg (false, false)
-  have heFT := posIf_len_eq G G' ρ m hm hm' hr hg (false, true)
-  have heTF := posIf_len_eq G G' ρ m hm hm' hr hg (true, false)
-  have heTT := posIf_len_eq G G' ρ m hm hm' hr hg (true, true)
-  have hg'U : (posIf G' (false, false)).length
-      = (posIf G' (false, true)).length := by
-    rw [heFF, heFT, hgU]
-  have hg'V : (posIf G' (true, false)).length
-      = (posIf G' (true, true)).length := by
-    rw [heTF, heTT, hgV]
-  obtain ⟨j, hj, hjx⟩ := halveLt hx
-  have hjm : j < G'.length := by
-    rw [hm']
-    exact hj
-  match factorCases (ground.getAt (false, false) G' j) with
-  | Or.inl hf =>
-    obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G' (false, false)).length
-        ∧ ground.getAt 0 (posIf G' (false, false)) s = j :=
-      ⟨places.posOf j _, places.posOf_lt j _ (posIf_mem hjm hf),
-       places.getAt_posOf j _ (posIf_mem hjm hf)⟩
-    have hsl : ground.getAt 0 (slotOf G G' ρ (false, false)) s
-        < (posIf G (false, false)).length :=
-      slotOf_lt G G' ρ m hm hm' hr hg (false, false) s hs
-    match hjx with
-    | Or.inl hev =>
-      have hb : ground.getAt 0 σU' s
-          < (posIf G' (false, true)).length := by
-        rw [← hg'U]
-        exact perm_lt _ hσU' s hs
-      rw [hev, ← hjs,
-        (wireOf_read1 G' σU' τU' σV' τV' hg'U hg'V hσU' hτU' hσV'
-          hτV' s hs).1,
-        dblOdd G G' ρ m hm hm' hr hg (false, true) _ hb,
-        hcU s hs,
-        dblEven G G' ρ m hm hm' hr hg (false, false) s hs,
-        (wireOf_read1 G σU τU σV τV hgU hgV hσU hτU hσV hτV _ hsl).1]
-    | Or.inr hod =>
-      have hb : ground.getAt 0 τU' s
-          < (posIf G' (false, true)).length := by
-        rw [← hg'U]
-        exact perm_lt _ hτU' s hs
-      rw [hod, ← hjs,
-        (wireOf_read2 G' σU' τU' σV' τV' hg'U hg'V hτU' hσV' hτV'
-          s hs).1,
-        dblEven G G' ρ m hm hm' hr hg (false, true) _ hb,
-        hcT s hs,
-        dblOdd G G' ρ m hm hm' hr hg (false, false) s hs,
-        (wireOf_read2 G σU τU σV τV hgU hgV hτU hσV hτV _ hsl).1]
-  | Or.inr (Or.inl hf) =>
-    match hjx with
-    | Or.inr hod =>
-      obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G' (false, false)).length
-          ∧ ground.getAt 0 (posIf G' (false, true))
-              (ground.getAt 0 σU' s) = j := by
-        have htl : places.posOf j (posIf G' (false, true))
-            < (posIf G' (false, false)).length := by
-          rw [hg'U]
-          exact places.posOf_lt j _ (posIf_mem hjm hf)
-        refine ⟨ground.getAt 0 (places.invPerm
-          (posIf G' (false, false)).length σU')
-          (places.posOf j (posIf G' (false, true))),
-          perm_inv_lt _ hσU' _ htl, ?_⟩
-        rw [perm_right _ hσU' _ htl]
-        exact places.getAt_posOf j _ (posIf_mem hjm hf)
-      have hsl : ground.getAt 0 (slotOf G G' ρ (false, false)) s
-          < (posIf G (false, false)).length :=
-        slotOf_lt G G' ρ m hm hm' hr hg (false, false) s hs
-      have hb : ground.getAt 0 σU' s
-          < (posIf G' (false, true)).length := by
-        rw [← hg'U]
-        exact perm_lt _ hσU' s hs
-      rw [hod, ← hjs,
-        (wireOf_read1 G' σU' τU' σV' τV' hg'U hg'V hσU' hτU' hσV'
-          hτV' s hs).2,
-        dblEven G G' ρ m hm hm' hr hg (false, false) s hs,
-        dblOdd G G' ρ m hm hm' hr hg (false, true) _ hb,
-        hcU s hs,
-        (wireOf_read1 G σU τU σV τV hgU hgV hσU hτU hσV hτV _ hsl).2]
-    | Or.inl hev =>
-      obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G' (false, false)).length
-          ∧ ground.getAt 0 (posIf G' (false, true))
-              (ground.getAt 0 τU' s) = j := by
-        have htl : places.posOf j (posIf G' (false, true))
-            < (posIf G' (false, false)).length := by
-          rw [hg'U]
-          exact places.posOf_lt j _ (posIf_mem hjm hf)
-        refine ⟨ground.getAt 0 (places.invPerm
-          (posIf G' (false, false)).length τU')
-          (places.posOf j (posIf G' (false, true))),
-          perm_inv_lt _ hτU' _ htl, ?_⟩
-        rw [perm_right _ hτU' _ htl]
-        exact places.getAt_posOf j _ (posIf_mem hjm hf)
-      have hsl : ground.getAt 0 (slotOf G G' ρ (false, false)) s
-          < (posIf G (false, false)).length :=
-        slotOf_lt G G' ρ m hm hm' hr hg (false, false) s hs
-      have hb : ground.getAt 0 τU' s
-          < (posIf G' (false, true)).length := by
-        rw [← hg'U]
-        exact perm_lt _ hτU' s hs
-      rw [hev, ← hjs,
-        (wireOf_read2 G' σU' τU' σV' τV' hg'U hg'V hτU' hσV' hτV'
-          s hs).2,
-        dblOdd G G' ρ m hm hm' hr hg (false, false) s hs,
-        dblEven G G' ρ m hm hm' hr hg (false, true) _ hb,
-        hcT s hs,
-        (wireOf_read2 G σU τU σV τV hgU hgV hτU hσV hτV _ hsl).2]
-  | Or.inr (Or.inr (Or.inl hf)) =>
-    obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G' (true, false)).length
-        ∧ ground.getAt 0 (posIf G' (true, false)) s = j :=
-      ⟨places.posOf j _, places.posOf_lt j _ (posIf_mem hjm hf),
-       places.getAt_posOf j _ (posIf_mem hjm hf)⟩
-    have hsl : ground.getAt 0 (slotOf G G' ρ (true, false)) s
-        < (posIf G (true, false)).length :=
-      slotOf_lt G G' ρ m hm hm' hr hg (true, false) s hs
-    match hjx with
-    | Or.inl hev =>
-      have hb : ground.getAt 0 σV' s
-          < (posIf G' (true, true)).length := by
-        rw [← hg'V]
-        exact perm_lt _ hσV' s hs
-      rw [hev, ← hjs,
-        (wireOf_read3 G' σU' τU' σV' τV' hg'V hσV' hτV' s hs).1,
-        dblOdd G G' ρ m hm hm' hr hg (true, true) _ hb,
-        hcV s hs,
-        dblEven G G' ρ m hm hm' hr hg (true, false) s hs,
-        (wireOf_read3 G σU τU σV τV hgV hσV hτV _ hsl).1]
-    | Or.inr hod =>
-      have hb : ground.getAt 0 τV' s
-          < (posIf G' (true, true)).length := by
-        rw [← hg'V]
-        exact perm_lt _ hτV' s hs
-      rw [hod, ← hjs,
-        (wireOf_read4 G' σU' τU' σV' τV' hg'V hτV' s hs).1,
-        dblEven G G' ρ m hm hm' hr hg (true, true) _ hb,
-        hcW s hs,
-        dblOdd G G' ρ m hm hm' hr hg (true, false) s hs,
-        (wireOf_read4 G σU τU σV τV hgV hτV _ hsl).1]
-  | Or.inr (Or.inr (Or.inr hf)) =>
-    match hjx with
-    | Or.inr hod =>
-      obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G' (true, false)).length
-          ∧ ground.getAt 0 (posIf G' (true, true))
-              (ground.getAt 0 σV' s) = j := by
-        have htl : places.posOf j (posIf G' (true, true))
-            < (posIf G' (true, false)).length := by
-          rw [hg'V]
-          exact places.posOf_lt j _ (posIf_mem hjm hf)
-        refine ⟨ground.getAt 0 (places.invPerm
-          (posIf G' (true, false)).length σV')
-          (places.posOf j (posIf G' (true, true))),
-          perm_inv_lt _ hσV' _ htl, ?_⟩
-        rw [perm_right _ hσV' _ htl]
-        exact places.getAt_posOf j _ (posIf_mem hjm hf)
-      have hsl : ground.getAt 0 (slotOf G G' ρ (true, false)) s
-          < (posIf G (true, false)).length :=
-        slotOf_lt G G' ρ m hm hm' hr hg (true, false) s hs
-      have hb : ground.getAt 0 σV' s
-          < (posIf G' (true, true)).length := by
-        rw [← hg'V]
-        exact perm_lt _ hσV' s hs
-      rw [hod, ← hjs,
-        (wireOf_read3 G' σU' τU' σV' τV' hg'V hσV' hτV' s hs).2,
-        dblEven G G' ρ m hm hm' hr hg (true, false) s hs,
-        dblOdd G G' ρ m hm hm' hr hg (true, true) _ hb,
-        hcV s hs,
-        (wireOf_read3 G σU τU σV τV hgV hσV hτV _ hsl).2]
-    | Or.inl hev =>
-      obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G' (true, false)).length
-          ∧ ground.getAt 0 (posIf G' (true, true))
-              (ground.getAt 0 τV' s) = j := by
-        have htl : places.posOf j (posIf G' (true, true))
-            < (posIf G' (true, false)).length := by
-          rw [hg'V]
-          exact places.posOf_lt j _ (posIf_mem hjm hf)
-        refine ⟨ground.getAt 0 (places.invPerm
-          (posIf G' (true, false)).length τV')
-          (places.posOf j (posIf G' (true, true))),
-          perm_inv_lt _ hτV' _ htl, ?_⟩
-        rw [perm_right _ hτV' _ htl]
-        exact places.getAt_posOf j _ (posIf_mem hjm hf)
-      have hsl : ground.getAt 0 (slotOf G G' ρ (true, false)) s
-          < (posIf G (true, false)).length :=
-        slotOf_lt G G' ρ m hm hm' hr hg (true, false) s hs
-      have hb : ground.getAt 0 τV' s
-          < (posIf G' (true, true)).length := by
-        rw [← hg'V]
-        exact perm_lt _ hτV' s hs
-      rw [hev, ← hjs,
-        (wireOf_read4 G' σU' τU' σV' τV' hg'V hτV' s hs).2,
-        dblOdd G G' ρ m hm hm' hr hg (true, false) s hs,
-        dblEven G G' ρ m hm hm' hr hg (true, true) _ hb,
-        hcW s hs,
-        (wireOf_read4 G σU τU σV τV hgV hτV _ hsl).2]
 
 /-- A bounded write keeps the entries' bound. -/
 private theorem set_bound (N : Nat) (l : List Nat) (p q : Nat)
@@ -2561,71 +1958,6 @@ private theorem replicate_bound (N : Nat) :
   rw [ground.getAt_replicate 0 0 N x hx]
   exact Nat.lt_of_le_of_lt (Nat.zero_le x) hx
 
-/-- The joined wiring's entries sit below the doubled site. -/
-private theorem wireOf_bound (G : states.FList)
-    (σU τU σV τV : List Nat)
-    (hgU : (posIf G (false, false)).length
-      = (posIf G (false, true)).length)
-    (hgV : (posIf G (true, false)).length
-      = (posIf G (true, true)).length)
-    (hσU : 0 < ground.countOf σU
-      (places.perms (posIf G (false, false)).length))
-    (hτU : 0 < ground.countOf τU
-      (places.perms (posIf G (false, false)).length))
-    (hσV : 0 < ground.countOf σV
-      (places.perms (posIf G (true, false)).length))
-    (hτV : 0 < ground.countOf τV
-      (places.perms (posIf G (true, false)).length)) :
-    ∀ x, x < 2 * G.length →
-      ground.getAt 0 (wireOf G σU τU σV τV) x < 2 * G.length := by
-  have hbU := sigLt G (false, false) (false, true) hσU hgU
-  have hbT := sigLt G (false, false) (false, true) hτU hgU
-  have hbV := sigLt G (true, false) (true, true) hσV hgV
-  have hbW := sigLt G (true, false) (true, true) hτV hgV
-  have h0 : ∀ x, x < (List.replicate (2 * G.length) (0 : Nat)).length →
-      ground.getAt 0 (List.replicate (2 * G.length) 0) x
-        < 2 * G.length := replicate_bound (2 * G.length)
-  have h1 : ∀ x, x < (wire1 G σU).length →
-      ground.getAt 0 (wire1 G σU) x < 2 * G.length := by
-    intro x hx
-    show ground.getAt 0 (matchIn (List.replicate (2 * G.length) 0)
-      (posIf G (false, false)) (posIf G (false, true)) σU 0 1) x
-      < 2 * G.length
-    refine matchIn_bound _ _ _ _ 0 1 _
-      (fun s hs => slotLt G (false, false) s 0 (by decide +kernel) hs)
-      (fun s hs => slotLt G (false, true) _ 1 (by decide +kernel)
-        (hbU s hs)) h0 x ?_
-    rw [ground.length_replicate, ← wire1_length G σU]
-    exact hx
-  have h2 : ∀ x, x < (wire2 G σU τU).length →
-      ground.getAt 0 (wire2 G σU τU) x < 2 * G.length := by
-    intro x hx
-    rw [wire2_unfold]
-    refine matchIn_bound _ _ _ _ 1 0 _
-      (fun s hs => slotLt G (false, false) s 1 (by decide +kernel) hs)
-      (fun s hs => slotLt G (false, true) _ 0 (by decide +kernel)
-        (hbT s hs)) h1 x ?_
-    rw [wire1_length, ← wire2_length G σU τU]
-    exact hx
-  have h3 : ∀ x, x < (wire3 G σU τU σV).length →
-      ground.getAt 0 (wire3 G σU τU σV) x < 2 * G.length := by
-    intro x hx
-    rw [wire3_unfold]
-    refine matchIn_bound _ _ _ _ 0 1 _
-      (fun s hs => slotLt G (true, false) s 0 (by decide +kernel) hs)
-      (fun s hs => slotLt G (true, true) _ 1 (by decide +kernel)
-        (hbV s hs)) h2 x ?_
-    rw [wire2_length, ← wire3_length G σU τU σV]
-    exact hx
-  intro x hx
-  rw [wireOf_unfold]
-  refine matchIn_bound _ _ _ _ 1 0 _
-    (fun s hs => slotLt G (true, false) s 1 (by decide +kernel) hs)
-    (fun s hs => slotLt G (true, true) _ 0 (by decide +kernel)
-      (hbW s hs)) h3 x ?_
-  rw [wire3_length]
-  exact hx
-
 /-- The wiring's matching keeps the doubled bound. -/
 private theorem mOne_bound (m : Nat) {π : List Nat}
     (hπ : 0 < ground.countOf π (places.perms m)) :
@@ -2661,252 +1993,6 @@ private theorem mOne_invol (m : Nat) {π : List Nat}
     have h2 := (mOne_read m hπ _ ht).1
     rw [hpt] at h1 h2
     rw [hod, h1, h2]
-
-/-- The wiring's second matching exchanges its slots in pairs. -/
-private theorem wireOf_invol (G : states.FList)
-    (σU τU σV τV : List Nat)
-    (hgU : (posIf G (false, false)).length
-      = (posIf G (false, true)).length)
-    (hgV : (posIf G (true, false)).length
-      = (posIf G (true, true)).length)
-    (hσU : 0 < ground.countOf σU
-      (places.perms (posIf G (false, false)).length))
-    (hτU : 0 < ground.countOf τU
-      (places.perms (posIf G (false, false)).length))
-    (hσV : 0 < ground.countOf σV
-      (places.perms (posIf G (true, false)).length))
-    (hτV : 0 < ground.countOf τV
-      (places.perms (posIf G (true, false)).length))
-    (x : Nat) (hx : x < 2 * G.length) :
-    ground.getAt 0 (wireOf G σU τU σV τV)
-      (ground.getAt 0 (wireOf G σU τU σV τV) x) = x := by
-  obtain ⟨j, hj, hjx⟩ := halveLt hx
-  match factorCases (ground.getAt (false, false) G j) with
-  | Or.inl hf =>
-    obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G (false, false)).length
-        ∧ ground.getAt 0 (posIf G (false, false)) s = j :=
-      ⟨places.posOf j _, places.posOf_lt j _ (posIf_mem hj hf),
-       places.getAt_posOf j _ (posIf_mem hj hf)⟩
-    match hjx with
-    | Or.inl hev =>
-      rw [hev, ← hjs,
-        (wireOf_read1 G σU τU σV τV hgU hgV hσU hτU hσV hτV s hs).1,
-        (wireOf_read1 G σU τU σV τV hgU hgV hσU hτU hσV hτV s hs).2]
-    | Or.inr hod =>
-      rw [hod, ← hjs,
-        (wireOf_read2 G σU τU σV τV hgU hgV hτU hσV hτV s hs).1,
-        (wireOf_read2 G σU τU σV τV hgU hgV hτU hσV hτV s hs).2]
-  | Or.inr (Or.inl hf) =>
-    match hjx with
-    | Or.inr hod =>
-      obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G (false, false)).length
-          ∧ ground.getAt 0 (posIf G (false, true))
-              (ground.getAt 0 σU s) = j := by
-        have htl : places.posOf j (posIf G (false, true))
-            < (posIf G (false, false)).length := by
-          rw [hgU]
-          exact places.posOf_lt j _ (posIf_mem hj hf)
-        refine ⟨ground.getAt 0 (places.invPerm
-          (posIf G (false, false)).length σU)
-          (places.posOf j (posIf G (false, true))),
-          perm_inv_lt _ hσU _ htl, ?_⟩
-        rw [perm_right _ hσU _ htl]
-        exact places.getAt_posOf j _ (posIf_mem hj hf)
-      rw [hod, ← hjs,
-        (wireOf_read1 G σU τU σV τV hgU hgV hσU hτU hσV hτV s hs).2,
-        (wireOf_read1 G σU τU σV τV hgU hgV hσU hτU hσV hτV s hs).1]
-    | Or.inl hev =>
-      obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G (false, false)).length
-          ∧ ground.getAt 0 (posIf G (false, true))
-              (ground.getAt 0 τU s) = j := by
-        have htl : places.posOf j (posIf G (false, true))
-            < (posIf G (false, false)).length := by
-          rw [hgU]
-          exact places.posOf_lt j _ (posIf_mem hj hf)
-        refine ⟨ground.getAt 0 (places.invPerm
-          (posIf G (false, false)).length τU)
-          (places.posOf j (posIf G (false, true))),
-          perm_inv_lt _ hτU _ htl, ?_⟩
-        rw [perm_right _ hτU _ htl]
-        exact places.getAt_posOf j _ (posIf_mem hj hf)
-      rw [hev, ← hjs,
-        (wireOf_read2 G σU τU σV τV hgU hgV hτU hσV hτV s hs).2,
-        (wireOf_read2 G σU τU σV τV hgU hgV hτU hσV hτV s hs).1]
-  | Or.inr (Or.inr (Or.inl hf)) =>
-    obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G (true, false)).length
-        ∧ ground.getAt 0 (posIf G (true, false)) s = j :=
-      ⟨places.posOf j _, places.posOf_lt j _ (posIf_mem hj hf),
-       places.getAt_posOf j _ (posIf_mem hj hf)⟩
-    match hjx with
-    | Or.inl hev =>
-      rw [hev, ← hjs,
-        (wireOf_read3 G σU τU σV τV hgV hσV hτV s hs).1,
-        (wireOf_read3 G σU τU σV τV hgV hσV hτV s hs).2]
-    | Or.inr hod =>
-      rw [hod, ← hjs,
-        (wireOf_read4 G σU τU σV τV hgV hτV s hs).1,
-        (wireOf_read4 G σU τU σV τV hgV hτV s hs).2]
-  | Or.inr (Or.inr (Or.inr hf)) =>
-    match hjx with
-    | Or.inr hod =>
-      obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G (true, false)).length
-          ∧ ground.getAt 0 (posIf G (true, true))
-              (ground.getAt 0 σV s) = j := by
-        have htl : places.posOf j (posIf G (true, true))
-            < (posIf G (true, false)).length := by
-          rw [hgV]
-          exact places.posOf_lt j _ (posIf_mem hj hf)
-        refine ⟨ground.getAt 0 (places.invPerm
-          (posIf G (true, false)).length σV)
-          (places.posOf j (posIf G (true, true))),
-          perm_inv_lt _ hσV _ htl, ?_⟩
-        rw [perm_right _ hσV _ htl]
-        exact places.getAt_posOf j _ (posIf_mem hj hf)
-      rw [hod, ← hjs,
-        (wireOf_read3 G σU τU σV τV hgV hσV hτV s hs).2,
-        (wireOf_read3 G σU τU σV τV hgV hσV hτV s hs).1]
-    | Or.inl hev =>
-      obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G (true, false)).length
-          ∧ ground.getAt 0 (posIf G (true, true))
-              (ground.getAt 0 τV s) = j := by
-        have htl : places.posOf j (posIf G (true, true))
-            < (posIf G (true, false)).length := by
-          rw [hgV]
-          exact places.posOf_lt j _ (posIf_mem hj hf)
-        refine ⟨ground.getAt 0 (places.invPerm
-          (posIf G (true, false)).length τV)
-          (places.posOf j (posIf G (true, true))),
-          perm_inv_lt _ hτV _ htl, ?_⟩
-        rw [perm_right _ hτV _ htl]
-        exact places.getAt_posOf j _ (posIf_mem hj hf)
-      rw [hev, ← hjs,
-        (wireOf_read4 G σU τU σV τV hgV hτV s hs).2,
-        (wireOf_read4 G σU τU σV τV hgV hτV s hs).1]
-
-/-- The composite walk's place count is the doubled site's. -/
-private theorem compOf_length (G : states.FList)
-    (π σU τU σV τV : List Nat) :
-    (compOf G π σU τU σV τV).length = 2 * G.length :=
-  ground.length_mapRange _ (2 * G.length)
-
-/-- The composite walk reads the matching after the wiring's
-matching at each slot. -/
-private theorem compOf_read (G : states.FList)
-    (π σU τU σV τV : List Nat) (x : Nat) (hx : x < 2 * G.length) :
-    ground.getAt 0 (compOf G π σU τU σV τV) x
-      = ground.getAt 0 (wireOf G σU τU σV τV)
-        (ground.getAt 0 (mOne G.length π) x) := by
-  show ground.getAt 0 ((List.range (2 * G.length)).map (fun i =>
-    ground.getAt 0 (wireOf G σU τU σV τV)
-      (ground.getAt 0 (mOne G.length π) i))) x = _
-  rw [ground.getAt_map_range 0 _ (2 * G.length) x, if_pos hx]
-
-/-- The composite matching is a slot permutation. -/
-private theorem compOf_member (G : states.FList)
-    (π σU τU σV τV : List Nat)
-    (hπ : 0 < ground.countOf π (places.perms G.length))
-    (hgU : (posIf G (false, false)).length
-      = (posIf G (false, true)).length)
-    (hgV : (posIf G (true, false)).length
-      = (posIf G (true, true)).length)
-    (hσU : 0 < ground.countOf σU
-      (places.perms (posIf G (false, false)).length))
-    (hτU : 0 < ground.countOf τU
-      (places.perms (posIf G (false, false)).length))
-    (hσV : 0 < ground.countOf σV
-      (places.perms (posIf G (true, false)).length))
-    (hτV : 0 < ground.countOf τV
-      (places.perms (posIf G (true, false)).length)) :
-    0 < ground.countOf (compOf G π σU τU σV τV)
-      (places.perms (2 * G.length)) := by
-  refine places.perm_of_reads _ _ (compOf_length G π σU τU σV τV)
-    (fun x hx => ?_) (fun x y hx hy he => ?_)
-  · rw [compOf_read G π σU τU σV τV x hx]
-    exact wireOf_bound G σU τU σV τV hgU hgV hσU hτU hσV hτV _
-      (mOne_bound G.length hπ x hx)
-  · rw [compOf_read G π σU τU σV τV x hx,
-      compOf_read G π σU τU σV τV y hy] at he
-    have hw : ground.getAt 0 (mOne G.length π) x
-        = ground.getAt 0 (mOne G.length π) y := by
-      rw [← wireOf_invol G σU τU σV τV hgU hgV hσU hτU hσV hτV _
-          (mOne_bound G.length hπ x hx), he,
-        wireOf_invol G σU τU σV τV hgU hgV hσU hτU hσV hτV _
-          (mOne_bound G.length hπ y hy)]
-    rw [← mOne_invol G.length hπ x hx, hw,
-      mOne_invol G.length hπ y hy]
-
-/-- The composite matching travels the relabeling. -/
-private theorem compOf_transport (G G' : states.FList) (ρ : List Nat)
-    (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
-    (hr : 0 < ground.countOf ρ (places.perms m))
-    (hg : ∀ i, i < m →
-      ground.getAt (false, false) G' i
-        = ground.getAt (false, false) G (ground.getAt 0 ρ i))
-    (π π' σU τU σV τV σU' τU' σV' τV' : List Nat)
-    (hπ : 0 < ground.countOf π (places.perms m))
-    (hπ' : 0 < ground.countOf π' (places.perms m))
-    (hcπ : ∀ s, s < m →
-      ground.getAt 0 ρ (ground.getAt 0 π' s)
-        = ground.getAt 0 π (ground.getAt 0 ρ s))
-    (hgU : (posIf G (false, false)).length
-      = (posIf G (false, true)).length)
-    (hgV : (posIf G (true, false)).length
-      = (posIf G (true, true)).length)
-    (hσU : 0 < ground.countOf σU
-      (places.perms (posIf G (false, false)).length))
-    (hτU : 0 < ground.countOf τU
-      (places.perms (posIf G (false, false)).length))
-    (hσV : 0 < ground.countOf σV
-      (places.perms (posIf G (true, false)).length))
-    (hτV : 0 < ground.countOf τV
-      (places.perms (posIf G (true, false)).length))
-    (hσU' : 0 < ground.countOf σU'
-      (places.perms (posIf G' (false, false)).length))
-    (hτU' : 0 < ground.countOf τU'
-      (places.perms (posIf G' (false, false)).length))
-    (hσV' : 0 < ground.countOf σV'
-      (places.perms (posIf G' (true, false)).length))
-    (hτV' : 0 < ground.countOf τV'
-      (places.perms (posIf G' (true, false)).length))
-    (hcU : ∀ s, s < (posIf G' (false, false)).length →
-      ground.getAt 0 (slotOf G G' ρ (false, true))
-          (ground.getAt 0 σU' s)
-        = ground.getAt 0 σU
-          (ground.getAt 0 (slotOf G G' ρ (false, false)) s))
-    (hcT : ∀ s, s < (posIf G' (false, false)).length →
-      ground.getAt 0 (slotOf G G' ρ (false, true))
-          (ground.getAt 0 τU' s)
-        = ground.getAt 0 τU
-          (ground.getAt 0 (slotOf G G' ρ (false, false)) s))
-    (hcV : ∀ s, s < (posIf G' (true, false)).length →
-      ground.getAt 0 (slotOf G G' ρ (true, true))
-          (ground.getAt 0 σV' s)
-        = ground.getAt 0 σV
-          (ground.getAt 0 (slotOf G G' ρ (true, false)) s))
-    (hcW : ∀ s, s < (posIf G' (true, false)).length →
-      ground.getAt 0 (slotOf G G' ρ (true, true))
-          (ground.getAt 0 τV' s)
-        = ground.getAt 0 τV
-          (ground.getAt 0 (slotOf G G' ρ (true, false)) s))
-    (x : Nat) (hx : x < 2 * m) :
-    ground.getAt 0 (dbl ρ)
-        (ground.getAt 0 (compOf G' π' σU' τU' σV' τV') x)
-      = ground.getAt 0 (compOf G π σU τU σV τV)
-        (ground.getAt 0 (dbl ρ) x) := by
-  have hdm := dbl_member m hr
-  have hRx : ground.getAt 0 (dbl ρ) x < 2 * m :=
-    perm_lt (2 * m) hdm x hx
-  rw [compOf_read G' π' σU' τU' σV' τV' x (by
-      rw [hm']
-      exact hx),
-    compOf_read G π σU τU σV τV _ (by
-      rw [hm]
-      exact hRx),
-    hm, hm',
-    wireOf_transport G G' ρ m hm hm' hr hg σU τU σV τV σU' τU' σV'
-      τV' hgU hgV hσU hτU hσV hτV hσU' hτU' hσV' hτV' hcU hcT hcV
-      hcW _ (mOne_bound m hπ' x hx),
-    mOne_transport m π π' ρ hπ hπ' hr hcπ x hx]
 
 /-- The relabeled slot word: a slot permutation conjugated by the
 two classes' slot maps. -/
@@ -3028,76 +2114,6 @@ private theorem expo_conj (k : Nat) {a b σ' τ' : List Nat}
     hkey, ← conjBy_rel k ha hσ' _ ht, perm_left k hb _
       (perm_lt k hσ' _ ht)]
 
-/-- The `U` numerator entry travels the slot maps: the relabeled
-site's adjugate entry reads the site's own at the conjugated
-word. -/
-private theorem nUOf_transport (G G' : states.FList)
-    (a b σ' τ' : List Nat)
-    (heq : (posIf G' (false, false)).length
-      = (posIf G (false, false)).length)
-    (ha : 0 < ground.countOf a
-      (places.perms (posIf G (false, false)).length))
-    (hb : 0 < ground.countOf b
-      (places.perms (posIf G (false, false)).length))
-    (hσ' : 0 < ground.countOf σ'
-      (places.perms (posIf G (false, false)).length))
-    (hτ' : 0 < ground.countOf τ'
-      (places.perms (posIf G (false, false)).length)) :
-    poly.oneValue (nUOf G' σ' τ')
-      (nUOf G (conjBy (posIf G (false, false)).length a b σ')
-        (conjBy (posIf G (false, false)).length a b τ')) := by
-  show poly.oneValue (ground.getAt [] (ground.getAt []
-      (genericlift.padj (gramWg (posIf G' (false, false)).length))
-      (places.idxOf (places.expo σ' (places.invPerm
-        (posIf G' (false, false)).length τ'))
-        (places.perms (posIf G' (false, false)).length)))
-      (places.idxOf (List.range (posIf G' (false, false)).length)
-        (places.perms (posIf G' (false, false)).length))) _
-  rw [heq, expo_conj (posIf G (false, false)).length ha hb hσ' hτ']
-  exact wgCol_transport (posIf G (false, false)).length
-    (places.expo
-      (conjBy (posIf G (false, false)).length a b σ')
-      (places.invPerm (posIf G (false, false)).length
-        (conjBy (posIf G (false, false)).length a b τ')))
-    (places.invPerm (posIf G (false, false)).length b)
-    (places.expo_member _ (conjBy_member _ ha hb hσ')
-      (places.invPerm_member _ (conjBy_member _ ha hb hτ')))
-    (places.invPerm_member _ hb)
-
-/-- The `V` numerator entry travels the slot maps. -/
-private theorem nVOf_transport (G G' : states.FList)
-    (a b σ' τ' : List Nat)
-    (heq : (posIf G' (true, false)).length
-      = (posIf G (true, false)).length)
-    (ha : 0 < ground.countOf a
-      (places.perms (posIf G (true, false)).length))
-    (hb : 0 < ground.countOf b
-      (places.perms (posIf G (true, false)).length))
-    (hσ' : 0 < ground.countOf σ'
-      (places.perms (posIf G (true, false)).length))
-    (hτ' : 0 < ground.countOf τ'
-      (places.perms (posIf G (true, false)).length)) :
-    poly.oneValue (nVOf G' σ' τ')
-      (nVOf G (conjBy (posIf G (true, false)).length a b σ')
-        (conjBy (posIf G (true, false)).length a b τ')) := by
-  show poly.oneValue (ground.getAt [] (ground.getAt []
-      (genericlift.padj (gramWg (posIf G' (true, false)).length))
-      (places.idxOf (places.expo σ' (places.invPerm
-        (posIf G' (true, false)).length τ'))
-        (places.perms (posIf G' (true, false)).length)))
-      (places.idxOf (List.range (posIf G' (true, false)).length)
-        (places.perms (posIf G' (true, false)).length))) _
-  rw [heq, expo_conj (posIf G (true, false)).length ha hb hσ' hτ']
-  exact wgCol_transport (posIf G (true, false)).length
-    (places.expo
-      (conjBy (posIf G (true, false)).length a b σ')
-      (places.invPerm (posIf G (true, false)).length
-        (conjBy (posIf G (true, false)).length a b τ')))
-    (places.invPerm (posIf G (true, false)).length b)
-    (places.expo_member _ (conjBy_member _ ha hb hσ')
-      (places.invPerm_member _ (conjBy_member _ ha hb hτ')))
-    (places.invPerm_member _ hb)
-
 /-- A seeded fold at a memberwise class read is the seed against
 the family fold. -/
 private theorem foldlOv {α : Type} (F : α → poly.Poly)
@@ -3119,150 +2135,1289 @@ private theorem foldlOv {α : Type} (F : α → poly.Poly)
       (poly.polyFoldLaws.opAssoc acc' (F a)
         (ground.famFold poly.add [] F t))
 
-/-- The four-axis fold collected as nested family folds. -/
-private theorem fourFold (PU PV : List (List Nat))
-    (T : List Nat → List Nat → List Nat → List Nat → poly.Poly) :
-    poly.oneValue
-      (PU.foldl (fun acc σ => PU.foldl (fun acc τ =>
-        PV.foldl (fun acc x => PV.foldl (fun acc y =>
-          poly.add acc (T σ τ x y)) acc) acc) acc) ([] : poly.Poly))
-      (ground.famFold poly.add [] (fun σ =>
-        ground.famFold poly.add [] (fun τ =>
-          ground.famFold poly.add [] (fun x =>
-            ground.famFold poly.add [] (fun y => T σ τ x y) PV)
-            PV) PU) PU) := by
-  have h4 : ∀ (σ τ x : List Nat) (acc acc' : poly.Poly),
-      poly.oneValue acc acc' →
-      poly.oneValue (PV.foldl (fun a y =>
-          poly.add a (T σ τ x y)) acc)
-        (poly.add acc' (ground.famFold poly.add []
-          (fun y => T σ τ x y) PV)) := fun σ τ x acc acc' hov =>
-    foldlOv (fun y => T σ τ x y) _
-      (fun a y => poly.oneValue_refl (poly.add a (T σ τ x y)))
-      PV acc acc' hov
-  have h3 : ∀ (σ τ : List Nat) (acc acc' : poly.Poly),
-      poly.oneValue acc acc' →
-      poly.oneValue (PV.foldl (fun a x => PV.foldl (fun a y =>
-          poly.add a (T σ τ x y)) a) acc)
-        (poly.add acc' (ground.famFold poly.add [] (fun x =>
-          ground.famFold poly.add []
-            (fun y => T σ τ x y) PV) PV)) :=
-    fun σ τ acc acc' hov =>
-      foldlOv _ _ (fun a x => h4 σ τ x a a (poly.oneValue_refl a))
-        PV acc acc' hov
-  have h2 : ∀ (σ : List Nat) (acc acc' : poly.Poly),
-      poly.oneValue acc acc' →
-      poly.oneValue (PU.foldl (fun a τ => PV.foldl (fun a x =>
-          PV.foldl (fun a y => poly.add a (T σ τ x y)) a) a) acc)
-        (poly.add acc' (ground.famFold poly.add [] (fun τ =>
-          ground.famFold poly.add [] (fun x =>
-            ground.famFold poly.add []
-              (fun y => T σ τ x y) PV) PV) PU)) :=
-    fun σ acc acc' hov =>
-      foldlOv _ _ (fun a τ => h3 σ τ a a (poly.oneValue_refl a))
-        PU acc acc' hov
-  refine poly.oneValue_trans
-    (foldlOv _ _ (fun a σ => h2 σ a a (poly.oneValue_refl a))
-      PU [] [] (poly.oneValue_refl []))
-    (poly.polyFoldLaws.unitOp _)
+/-- The matched-dagger-count guard, one read per variable. -/
+private def guardOf (G : states.FList) : Bool :=
+  (varsOf G).all (fun v =>
+    (posIf G (v, false)).length == (posIf G (v, true)).length)
 
-/-- The four-axis fold travels a pair of enumeration bijections:
-the primed terms read the moved terms at every tuple. -/
-private theorem fourBij (PU PV : List (List Nat))
-    (T T' : List Nat → List Nat → List Nat → List Nat → poly.Poly)
-    (gU hU gV hV : List Nat → List Nat)
-    (hdU : ground.distinctList PU) (hdV : ground.distinctList PV)
-    (hghU : ∀ x, 0 < ground.countOf x PU → hU (gU x) = x)
-    (hhgU : ∀ x, 0 < ground.countOf x PU → gU (hU x) = x)
-    (hgmU : ∀ x, 0 < ground.countOf x PU →
-      0 < ground.countOf (gU x) PU)
-    (hhmU : ∀ x, 0 < ground.countOf x PU →
-      0 < ground.countOf (hU x) PU)
-    (hghV : ∀ x, 0 < ground.countOf x PV → hV (gV x) = x)
-    (hhgV : ∀ x, 0 < ground.countOf x PV → gV (hV x) = x)
-    (hgmV : ∀ x, 0 < ground.countOf x PV →
-      0 < ground.countOf (gV x) PV)
-    (hhmV : ∀ x, 0 < ground.countOf x PV →
-      0 < ground.countOf (hV x) PV)
-    (hT : ∀ σ τ x y, 0 < ground.countOf σ PU →
-      0 < ground.countOf τ PU → 0 < ground.countOf x PV →
-      0 < ground.countOf y PV →
-      poly.oneValue (T' σ τ x y) (T (gU σ) (gU τ) (gV x) (gV y))) :
+/-- The evaluation at its named parts: the guard, the recursion at
+the wiring's matching, and the determinants' fold. -/
+private theorem evalPhi_unfold (G : states.FList) (π : List Nat) :
+    evalPhi G π =
+      (if guardOf G = true then
+        (contract G (mOne G.length π) (varsOf G)
+          (List.replicate (2 * G.length) 0) [] [],
+         (varsOf G).foldr (fun v d =>
+           poly.mul (split.pminor (gramWg (posIf G (v, false)).length)) d)
+           poly.one)
+       else poly.pZero) := rfl
+
+/-- Two factors at one key and distinct dagger reads differ. -/
+private theorem dagNe (v : Nat) :
+    ¬ ((v, false) : states.Factor) = (v, true) :=
+  fun h => Bool.noConfusion (congrArg Prod.snd h)
+
+/-- Two factors at distinct keys differ. -/
+private theorem keyNe {v w : Nat} (h : ¬ w = v) (d e : Bool) :
+    ¬ ((w, d) : states.Factor) = (v, e) :=
+  fun he => h (congrArg Prod.fst he)
+
+/-- A variable's matchings keep the slot list's place count. -/
+private theorem matchVar_length (G : states.FList) (v : Nat)
+    (σ τ m2 : List Nat) : (matchVar G v σ τ m2).length = m2.length := by
+  show (matchIn (matchIn m2 _ _ σ 0 1) _ _ τ 1 0).length = _
+  rw [matchIn_length, matchIn_length]
+
+/-- A variable's matchings keep the slot entries' bound. -/
+private theorem matchVar_bound (G : states.FList) (v : Nat)
+    (σ τ m2 : List Nat)
+    (hg : (posIf G (v, false)).length = (posIf G (v, true)).length)
+    (hσ : 0 < ground.countOf σ
+      (places.perms (posIf G (v, false)).length))
+    (hτ : 0 < ground.countOf τ
+      (places.perms (posIf G (v, false)).length))
+    (hb : ∀ x, x < m2.length → ground.getAt 0 m2 x < 2 * G.length) :
+    ∀ x, x < m2.length →
+      ground.getAt 0 (matchVar G v σ τ m2) x < 2 * G.length := by
+  intro x hx
+  show ground.getAt 0 (matchIn (matchIn m2 _ _ σ 0 1)
+    (posIf G (v, false)) (posIf G (v, true)) τ 1 0) x < _
+  refine matchIn_bound _ _ _ _ 1 0 _
+    (fun s hs => slotLt G (v, false) s 1 (by decide +kernel) hs)
+    (fun s hs => slotLt G (v, true) _ 0 (by decide +kernel)
+      (sigLt G (v, false) (v, true) hτ hg s hs))
+    (fun y hy => ?_) x (by
+      rw [matchIn_length]
+      exact hx)
+  refine matchIn_bound _ _ _ _ 0 1 _
+    (fun s hs => slotLt G (v, false) s 0 (by decide +kernel) hs)
+    (fun s hs => slotLt G (v, true) _ 1 (by decide +kernel)
+      (sigLt G (v, false) (v, true) hσ hg s hs)) hb y (by
+      rw [matchIn_length] at hy
+      exact hy)
+
+/-- A variable's two matchings read their slots: the undaggered
+place's row slot against its `σ`-match's column slot, both ways,
+and the row's exchange slot against its `τ`-match's, both ways. -/
+private theorem matchVar_read (G : states.FList) (v : Nat)
+    (σ τ m2 : List Nat) (hm2 : m2.length = 2 * G.length)
+    (hg : (posIf G (v, false)).length = (posIf G (v, true)).length)
+    (hσ : 0 < ground.countOf σ
+      (places.perms (posIf G (v, false)).length))
+    (hτ : 0 < ground.countOf τ
+      (places.perms (posIf G (v, false)).length))
+    (s : Nat) (hs : s < (posIf G (v, false)).length) :
+    (ground.getAt 0 (matchVar G v σ τ m2)
+        (2 * ground.getAt 0 (posIf G (v, false)) s)
+      = 2 * ground.getAt 0 (posIf G (v, true)) (ground.getAt 0 σ s) + 1
+    ∧ ground.getAt 0 (matchVar G v σ τ m2)
+        (2 * ground.getAt 0 (posIf G (v, true)) (ground.getAt 0 σ s) + 1)
+      = 2 * ground.getAt 0 (posIf G (v, false)) s)
+    ∧ (ground.getAt 0 (matchVar G v σ τ m2)
+        (2 * ground.getAt 0 (posIf G (v, false)) s + 1)
+      = 2 * ground.getAt 0 (posIf G (v, true)) (ground.getAt 0 τ s)
+    ∧ ground.getAt 0 (matchVar G v σ τ m2)
+        (2 * ground.getAt 0 (posIf G (v, true)) (ground.getAt 0 τ s))
+      = 2 * ground.getAt 0 (posIf G (v, false)) s + 1) := by
+  have hbσ := sigLt G (v, false) (v, true) hσ hg
+  have hbτ := sigLt G (v, false) (v, true) hτ hg
+  have h1 := matchIn_read m2 (posIf G (v, false)) (posIf G (v, true)) σ 0 1
+    (fun t ht => by
+      rw [hm2]
+      exact slotLt G (v, false) t 0 (by decide +kernel) ht)
+    (fun t ht => by
+      rw [hm2]
+      exact slotLt G (v, true) _ 1 (by decide +kernel) (hbσ t ht))
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (posIf_inj G (v, false)) (qsInj G (v, false) (v, true) hσ hg) s hs
+  have hl1 : (matchIn m2 (posIf G (v, false)) (posIf G (v, true))
+      σ 0 1).length = 2 * G.length := by
+    rw [matchIn_length, hm2]
+  have h2 := matchIn_read
+    (matchIn m2 (posIf G (v, false)) (posIf G (v, true)) σ 0 1)
+    (posIf G (v, false)) (posIf G (v, true)) τ 1 0
+    (fun t ht => by
+      rw [hl1]
+      exact slotLt G (v, false) t 1 (by decide +kernel) ht)
+    (fun t ht => by
+      rw [hl1]
+      exact slotLt G (v, true) _ 0 (by decide +kernel) (hbτ t ht))
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (posIf_inj G (v, false)) (qsInj G (v, false) (v, true) hτ hg) s hs
+  refine ⟨⟨?_, ?_⟩, h2⟩
+  · show ground.getAt 0 (matchIn (matchIn m2 _ _ σ 0 1)
+        (posIf G (v, false)) (posIf G (v, true)) τ 1 0)
+        (2 * ground.getAt 0 (posIf G (v, false)) s + 0) = _
+    rw [matchIn_off_slot G _ (v, false) (v, false) (v, true) τ hbτ 1 0 0
+        (by decide +kernel) (by decide +kernel) (by decide +kernel)
+        (Or.inr (by decide +kernel)) (Or.inl (dagNe v)) s hs]
+    exact h1.1
+  · show ground.getAt 0 (matchIn (matchIn m2 _ _ σ 0 1)
+        (posIf G (v, false)) (posIf G (v, true)) τ 1 0)
+        (2 * ground.getAt 0 (posIf G (v, true))
+          (ground.getAt 0 σ s) + 1) = _
+    rw [matchIn_off_slot G _ (v, true) (v, false) (v, true) τ hbτ 1 0 1
+        (by decide +kernel) (by decide +kernel) (by decide +kernel)
+        (Or.inl (fun h => dagNe v h.symm)) (Or.inr (by decide +kernel))
+        _ (hbσ s hs)]
+    exact h1.2
+
+/-- A variable's matchings leave every further variable's slots. -/
+private theorem matchVar_off (G : states.FList) (v w : Nat)
+    (hvw : ¬ w = v) (σ τ m2 : List Nat)
+    (hg : (posIf G (v, false)).length = (posIf G (v, true)).length)
+    (hσ : 0 < ground.countOf σ
+      (places.perms (posIf G (v, false)).length))
+    (hτ : 0 < ground.countOf τ
+      (places.perms (posIf G (v, false)).length))
+    (d : Bool) (o : Nat) (ho : o < 2) (a : Nat)
+    (ha : a < (posIf G (w, d)).length) :
+    ground.getAt 0 (matchVar G v σ τ m2)
+        (2 * ground.getAt 0 (posIf G (w, d)) a + o)
+      = ground.getAt 0 m2 (2 * ground.getAt 0 (posIf G (w, d)) a + o) := by
+  show ground.getAt 0 (matchIn (matchIn m2 _ _ σ 0 1)
+    (posIf G (v, false)) (posIf G (v, true)) τ 1 0) _ = _
+  rw [matchIn_off_slot G _ (w, d) (v, false) (v, true) τ
+      (sigLt G (v, false) (v, true) hτ hg) 1 0 o
+      (by decide +kernel) (by decide +kernel) ho
+      (Or.inl (keyNe hvw d false)) (Or.inl (keyNe hvw d true)) a ha,
+    matchIn_off_slot G m2 (w, d) (v, false) (v, true) σ
+      (sigLt G (v, false) (v, true) hσ hg) 0 1 o
+      (by decide +kernel) (by decide +kernel) ho
+      (Or.inl (keyNe hvw d false)) (Or.inl (keyNe hvw d true)) a ha]
+
+/-- The tuple's words at the variables: per variable its two
+permutation words, members of the variable's enumeration. -/
+private def tupMem (G : states.FList) :
+    List Nat → List (List Nat) → Prop
+  | [], [] => True
+  | [], _ :: _ => False
+  | _ :: _, [] => False
+  | _ :: _, [_] => False
+  | v :: vs, σ :: τ :: tup =>
+    0 < ground.countOf σ (places.perms (posIf G (v, false)).length)
+    ∧ 0 < ground.countOf τ (places.perms (posIf G (v, false)).length)
+    ∧ tupMem G vs tup
+
+/-- The slot wiring at a tuple of the variables' words: the
+variables' matchings joined in order. -/
+private def wireAll (G : states.FList) :
+    List Nat → List (List Nat) → List Nat → List Nat
+  | [], _, m2 => m2
+  | _ :: _, [], m2 => m2
+  | _ :: _, [_], m2 => m2
+  | v :: vs, σ :: τ :: tup, m2 => wireAll G vs tup (matchVar G v σ τ m2)
+
+/-- The coefficient list at a tuple: one Weingarten entry per
+variable. -/
+private def coefAll (G : states.FList) :
+    List Nat → List (List Nat) → List Poly
+  | [], _ => []
+  | _ :: _, [] => []
+  | _ :: _, [_] => []
+  | v :: vs, σ :: τ :: tup => nOf G v σ τ :: coefAll G vs tup
+
+/-- The variables' word domains, two enumerations per variable. -/
+private def domsOf (G : states.FList) (vs : List Nat) :
+    List (List (List Nat)) :=
+  vs.flatMap (fun v => [places.perms (posIf G (v, false)).length,
+    places.perms (posIf G (v, false)).length])
+
+/-- One tuple's term: the coefficients' product against the loop
+value of the composite walk at the tuple's wiring. -/
+private def termAt (G : states.FList) (m1 : List Nat) (vs : List Nat)
+    (m2 : List Nat) (cs : List Poly) (tup : List (List Nat)) : Poly :=
+  (cs ++ coefAll G vs tup).foldr poly.mul
+    (dfPow ((places.cyclesOf (compAt G.length m1
+      (wireAll G vs tup m2))).length / 2))
+
+/-- The family fold over the product lists at a leading domain
+folds the domain outermost, the tail's lists inside. -/
+private theorem famFold_prodLists_cons {α : Type} (F : List α → Poly)
+    (D : List α) (t : List (List α)) :
     poly.oneValue
-      (PU.foldl (fun acc σ => PU.foldl (fun acc τ =>
-        PV.foldl (fun acc x => PV.foldl (fun acc y =>
-          poly.add acc (T' σ τ x y)) acc) acc) acc) ([] : poly.Poly))
-      (PU.foldl (fun acc σ => PU.foldl (fun acc τ =>
-        PV.foldl (fun acc x => PV.foldl (fun acc y =>
-          poly.add acc (T σ τ x y)) acc) acc) acc)
-        ([] : poly.Poly)) := by
-  have hb4 : ∀ σ τ x, 0 < ground.countOf σ PU →
-      0 < ground.countOf τ PU → 0 < ground.countOf x PV →
-      poly.oneValue
-        (ground.famFold poly.add [] (fun y => T' σ τ x y) PV)
-        (ground.famFold poly.add []
-          (fun y => T (gU σ) (gU τ) (gV x) y) PV) :=
-    fun σ τ x hσ hτ hx =>
-      ground.famFold_bij_ov poly.polyFoldLaws.toCommLaws []
-        (fun y => T' σ τ x y)
-        (fun y => T (gU σ) (gU τ) (gV x) y) hdV hghV hhgV hgmV
-        hhmV (fun y hy => hT σ τ x y hσ hτ hx hy)
-  have hb3 : ∀ σ τ, 0 < ground.countOf σ PU →
-      0 < ground.countOf τ PU →
-      poly.oneValue
-        (ground.famFold poly.add [] (fun x =>
-          ground.famFold poly.add [] (fun y => T' σ τ x y) PV) PV)
-        (ground.famFold poly.add [] (fun x =>
-          ground.famFold poly.add []
-            (fun y => T (gU σ) (gU τ) x y) PV) PV) :=
-    fun σ τ hσ hτ =>
-      ground.famFold_bij_ov poly.polyFoldLaws.toCommLaws []
-        (fun x => ground.famFold poly.add []
-          (fun y => T' σ τ x y) PV)
-        (fun x => ground.famFold poly.add []
-          (fun y => T (gU σ) (gU τ) x y) PV) hdV hghV hhgV hgmV
-        hhmV (fun x hx => hb4 σ τ x hσ hτ hx)
-  have hb2 : ∀ σ, 0 < ground.countOf σ PU →
-      poly.oneValue
-        (ground.famFold poly.add [] (fun τ =>
-          ground.famFold poly.add [] (fun x =>
+      (ground.famFold poly.add [] F (ground.prodLists (D :: t)))
+      (ground.famFold poly.add [] (fun x =>
+        ground.famFold poly.add [] (fun l => F (x :: l))
+          (ground.prodLists t)) D) := by
+  show poly.oneValue (ground.famFold poly.add [] F
+    (D.flatMap (fun x => (ground.prodLists t).map (fun l => x :: l)))) _
+  refine poly.oneValue_trans
+    (ground.famFold_flatMap_ov poly.polyFoldLaws F _ D) ?_
+  rw [ground.famFold_congr_all poly.add [] _ _ (fun x =>
+    ground.famFold_map poly.add [] F (fun l => x :: l)
+      (ground.prodLists t)) D]
+  exact poly.oneValue_refl _
+
+/-- The recursion is the seed against the family fold of the terms
+over the tuples. -/
+private theorem contract_flat (G : states.FList) (m1 : List Nat) :
+    ∀ (vs : List Nat) (m2 : List Nat) (cs : List Poly) (acc : Poly),
+      poly.oneValue (contract G m1 vs m2 cs acc)
+        (poly.add acc (ground.famFold poly.add []
+          (termAt G m1 vs m2 cs) (ground.prodLists (domsOf G vs))))
+  | [], m2, cs, acc => by
+    show poly.oneValue (poly.add acc (cs.foldr poly.mul
+      (dfPow ((places.cyclesOf (compAt G.length m1 m2)).length / 2))))
+      (poly.add acc (poly.add (termAt G m1 [] m2 cs []) []))
+    refine poly.polyFoldLaws.opCongr (poly.oneValue_refl acc) ?_
+    refine poly.oneValue_trans ?_
+      (poly.oneValue_symm (poly.polyFoldLaws.opUnit _))
+    show poly.oneValue (cs.foldr poly.mul _) ((cs ++ []).foldr poly.mul _)
+    rw [ground.append_nil]
+    exact poly.oneValue_refl _
+  | v :: vs, m2, cs, acc => by
+    have hin : ∀ (σ : List Nat) (a a' : Poly), poly.oneValue a a' →
+        poly.oneValue
+          ((places.perms (posIf G (v, false)).length).foldl
+            (fun acc τ => contract G m1 vs (matchVar G v σ τ m2)
+              (cs ++ [nOf G v σ τ]) acc) a)
+          (poly.add a' (ground.famFold poly.add [] (fun τ =>
             ground.famFold poly.add []
-              (fun y => T' σ τ x y) PV) PV) PU)
-        (ground.famFold poly.add [] (fun τ =>
-          ground.famFold poly.add [] (fun x =>
-            ground.famFold poly.add []
-              (fun y => T (gU σ) τ x y) PV) PV) PU) :=
-    fun σ hσ =>
-      ground.famFold_bij_ov poly.polyFoldLaws.toCommLaws []
-        (fun τ => ground.famFold poly.add [] (fun x =>
-          ground.famFold poly.add [] (fun y => T' σ τ x y) PV) PV)
-        (fun τ => ground.famFold poly.add [] (fun x =>
-          ground.famFold poly.add []
-            (fun y => T (gU σ) τ x y) PV) PV) hdU hghU hhgU hgmU
-        hhmU (fun τ hτ => hb3 σ τ hσ hτ)
-  have hb1 : poly.oneValue
-      (ground.famFold poly.add [] (fun σ =>
-        ground.famFold poly.add [] (fun τ =>
-          ground.famFold poly.add [] (fun x =>
-            ground.famFold poly.add []
-              (fun y => T' σ τ x y) PV) PV) PU) PU)
-      (ground.famFold poly.add [] (fun σ =>
-        ground.famFold poly.add [] (fun τ =>
-          ground.famFold poly.add [] (fun x =>
-            ground.famFold poly.add []
-              (fun y => T σ τ x y) PV) PV) PU) PU) :=
-    ground.famFold_bij_ov poly.polyFoldLaws.toCommLaws []
-      (fun σ => ground.famFold poly.add [] (fun τ =>
-        ground.famFold poly.add [] (fun x =>
-          ground.famFold poly.add [] (fun y => T' σ τ x y) PV) PV)
-        PU)
-      (fun σ => ground.famFold poly.add [] (fun τ =>
-        ground.famFold poly.add [] (fun x =>
-          ground.famFold poly.add [] (fun y => T σ τ x y) PV) PV)
-        PU) hdU hghU hhgU hgmU hhmU hb2
-  exact poly.oneValue_trans (fourFold PU PV T')
-    (poly.oneValue_trans hb1
-      (poly.oneValue_symm (fourFold PU PV T)))
+              (termAt G m1 vs (matchVar G v σ τ m2) (cs ++ [nOf G v σ τ]))
+              (ground.prodLists (domsOf G vs)))
+            (places.perms (posIf G (v, false)).length))) :=
+      fun σ a a' h => foldlOv _ _
+        (fun a τ => contract_flat G m1 vs (matchVar G v σ τ m2)
+          (cs ++ [nOf G v σ τ]) a) _ a a' h
+    refine poly.oneValue_trans
+      (foldlOv _ _ (fun a σ => hin σ a a (poly.oneValue_refl a)) _
+        acc acc (poly.oneValue_refl acc)) ?_
+    refine poly.polyFoldLaws.opCongr (poly.oneValue_refl acc) ?_
+    show poly.oneValue _ (ground.famFold poly.add []
+      (termAt G m1 (v :: vs) m2 cs)
+      (ground.prodLists (places.perms (posIf G (v, false)).length
+        :: places.perms (posIf G (v, false)).length :: domsOf G vs)))
+    refine poly.oneValue_trans ?_
+      (poly.oneValue_symm (famFold_prodLists_cons _ _ _))
+    refine ground.famFold_congr_members_ov poly.oneValue poly.add []
+      poly.oneValue_refl poly.polyFoldLaws.opCongr _ _ _
+      (fun σ _ => ?_)
+    refine poly.oneValue_trans ?_
+      (poly.oneValue_symm (famFold_prodLists_cons _ _ _))
+    refine ground.famFold_congr_members_ov poly.oneValue poly.add []
+      poly.oneValue_refl poly.polyFoldLaws.opCongr _ _ _
+      (fun τ _ => ?_)
+    refine ground.famFold_congr_members_ov poly.oneValue poly.add []
+      poly.oneValue_refl poly.polyFoldLaws.opCongr _ _ _
+      (fun tup _ => ?_)
+    show poly.oneValue
+      (((cs ++ [nOf G v σ τ]) ++ coefAll G vs tup).foldr poly.mul _)
+      ((cs ++ (nOf G v σ τ :: coefAll G vs tup)).foldr poly.mul _)
+    rw [ground.append_assoc]
+    exact poly.oneValue_refl _
+
+/-! The variable list's reads: distinct, covering every place's
+key, and one value at a relabeling of the site. -/
+
+/-- A key of the site sits below the key bound. -/
+private theorem key_lt_bound (G : states.FList) (j : Nat)
+    (hj : j < G.length) :
+    (ground.getAt (0, false) G j).1 < keyBound G :=
+  Nat.lt_succ_of_le (ground.famFold_mem_le
+    (fun i => (ground.getAt (0, false) G i).1) (List.range G.length) j
+    (ground.mem_of_countOf_pos j _ (ground.countOf_range_pos hj)))
+
+/-- The variable list is distinct. -/
+private theorem varsOf_distinct (G : states.FList) :
+    ground.distinctList (varsOf G) := by
+  intro v _
+  show ground.countOf v ((List.range (keyBound G)).filter _) ≤ 1
+  rw [ground.countOf_filter]
+  cases decide (0 < (posIf G (v, false)).length + (posIf G (v, true)).length) with
+  | true => exact rangeDist v (keyBound G)
+  | false => exact Nat.zero_le 1
+
+/-- Every place's key is a variable of the site. -/
+private theorem varsOf_cover (G : states.FList) (j : Nat)
+    (hj : j < G.length) :
+    0 < ground.countOf (ground.getAt (0, false) G j).1 (varsOf G) := by
+  refine ground.countOf_pos_of_mem (ground.mem_filter_to _
+    (ground.mem_of_countOf_pos _ _ (ground.countOf_range_pos
+      (key_lt_bound G j hj))) ?_)
+  refine decide_eq_true ?_
+  have hp : 0 < (posIf G ((ground.getAt (0, false) G j).1,
+      (ground.getAt (0, false) G j).2)).length :=
+    ground.length_pos_of_countOf (posIf_mem hj rfl)
+  cases hd : (ground.getAt (0, false) G j).2 with
+  | false =>
+    rw [hd] at hp
+    exact Nat.lt_of_lt_of_le hp (Nat.le_add_right _ _)
+  | true =>
+    rw [hd] at hp
+    exact Nat.lt_of_lt_of_le hp (Nat.le_add_left _ _)
+
+/-- The key bound is one value at a relabeling of the site. -/
+private theorem keyBound_relabel (G G' : states.FList) (ρ : List Nat)
+    (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
+    (hr : 0 < ground.countOf ρ (places.perms m))
+    (hg : ∀ i, i < m →
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i)) :
+    keyBound G' = keyBound G := by
+  show ground.famFold Nat.add 0 (fun i => (ground.getAt (0, false) G' i).1)
+      (List.range G'.length) + 1
+    = ground.famFold Nat.add 0 (fun i => (ground.getAt (0, false) G i).1)
+      (List.range G.length) + 1
+  rw [hm, hm']
+  refine congrArg (fun x => x + 1) ?_
+  rw [ground.famFold_congr_members Nat.add 0 _
+    (fun i => (ground.getAt (0, false) G (ground.getAt 0 ρ i)).1)
+    (List.range m) (fun i hi => by rw [hg i (ground.ltOfMem hi)])]
+  exact (ground.famFold_reindex_ov ground.natFoldLaws.toCommLaws 0
+    (fun i => (ground.getAt (0, false) G i).1)
+    (ground.distinctList_range m)
+    (fun i hi => perm_left m hr i (ground.ltOfMem hi))
+    (fun i hi => perm_right m hr i (ground.ltOfMem hi))
+    (fun i hi => ground.countOf_range_pos
+      (perm_lt m hr i (ground.ltOfMem hi)))
+    (fun i hi => ground.countOf_range_pos
+      (perm_inv_lt m hr i (ground.ltOfMem hi)))).symm
+
+/-- A right fold at pointwise equal steps is one value at every
+seed. -/
+private theorem foldr_ext {α β : Type} (f g : α → β → β)
+    (h : ∀ a b, f a b = g a b) :
+    ∀ (l : List α) (x : β), l.foldr f x = l.foldr g x
+  | [], _ => rfl
+  | a :: t, x => by
+    show f a (t.foldr f x) = g a (t.foldr g x)
+    rw [h a, foldr_ext f g h t x]
+
+/-- The variable list is one value at a relabeling of the site. -/
+private theorem varsOf_relabel (G G' : states.FList) (ρ : List Nat)
+    (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
+    (hr : 0 < ground.countOf ρ (places.perms m))
+    (hg : ∀ i, i < m →
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i)) :
+    varsOf G' = varsOf G := by
+  show (List.range (keyBound G')).filter _
+    = (List.range (keyBound G)).filter _
+  rw [keyBound_relabel G G' ρ m hm hm' hr hg]
+  exact ground.filter_congr _ _ (fun v => by
+    rw [posIf_len_eq G G' ρ m hm hm' hr hg (v, false),
+      posIf_len_eq G G' ρ m hm hm' hr hg (v, true)]) _
+
+/-- The word domains are one value at a relabeling of the site. -/
+private theorem domsOf_relabel (G G' : states.FList) (ρ : List Nat)
+    (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
+    (hr : 0 < ground.countOf ρ (places.perms m))
+    (hg : ∀ i, i < m →
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i))
+    (vs : List Nat) : domsOf G' vs = domsOf G vs :=
+  ground.flatMap_congr_all _ _ (fun v => by
+    rw [posIf_len_eq G G' ρ m hm hm' hr hg (v, false)]) vs
+
+/-- The tuple's membership transports across sites at matched
+undaggered counts. -/
+private theorem tupMem_of_len (G G' : states.FList)
+    (hlen : ∀ v, (posIf G' (v, false)).length
+      = (posIf G (v, false)).length) :
+    ∀ (vs : List Nat) (tup : List (List Nat)),
+      tupMem G' vs tup → tupMem G vs tup
+  | [], [], h => h
+  | [], _ :: _, h => h
+  | _ :: _, [], h => h
+  | _ :: _, [_], h => h
+  | v :: vs, σ :: τ :: tup, ⟨h1, h2, h3⟩ => by
+    refine ⟨?_, ?_, tupMem_of_len G G' hlen vs tup h3⟩
+    · rw [← hlen v]
+      exact h1
+    · rw [← hlen v]
+      exact h2
+
+/-- A member of the word domains' product lists is a tuple of the
+variables' words. -/
+private theorem tupMem_of_count (G : states.FList) :
+    ∀ (vs : List Nat) (tup : List (List Nat)),
+      0 < ground.countOf tup (ground.prodLists (domsOf G vs)) →
+      tupMem G vs tup
+  | [], [], _ => trivial
+  | [], x :: t, h => by
+    have h' : 0 < ground.countOf (x :: t) [([] : List (List Nat))] := h
+    rw [ground.countOf_head_ne (a := x :: t) (b := ([] : List (List Nat)))
+      (fun he => nomatch he) []] at h'
+    exact absurd h' (Nat.lt_irrefl 0)
+  | v :: vs, [], h => by
+    have hl := (ground.mem_prodLists_of [] _ _
+      (ground.mem_of_countOf_pos _ _ h)).1
+    exact nomatch hl
+  | v :: vs, [σ], h => by
+    have hl := (ground.mem_prodLists_of [] _ _
+      (ground.mem_of_countOf_pos _ _ h)).1
+    exact nomatch (Nat.succ.inj hl)
+  | v :: vs, σ :: τ :: tup, h => by
+    have h' : 0 < ground.countOf (σ :: τ :: tup) (ground.prodLists
+        (places.perms (posIf G (v, false)).length
+          :: places.perms (posIf G (v, false)).length :: domsOf G vs)) := h
+    rw [ground.countOf_prodLists_cons, ground.countOf_prodLists_cons] at h'
+    obtain ⟨h1, h23⟩ := ground.mulPosSplit h'
+    obtain ⟨h2, h3⟩ := ground.mulPosSplit h23
+    exact ⟨h1, h2, tupMem_of_count G vs tup h3⟩
+
+/-- A tuple of the variables' words is a member of the domains'
+product lists. -/
+private theorem count_of_tupMem (G : states.FList) :
+    ∀ (vs : List Nat) (tup : List (List Nat)), tupMem G vs tup →
+      0 < ground.countOf tup (ground.prodLists (domsOf G vs))
+  | [], [], _ => by
+    show 0 < ground.countOf ([] : List (List Nat)) [[]]
+    decide +kernel
+  | [], _ :: _, h => False.elim h
+  | _ :: _, [], h => False.elim h
+  | _ :: _, [_], h => False.elim h
+  | v :: vs, σ :: τ :: tup, ⟨h1, h2, h3⟩ => by
+    show 0 < ground.countOf (σ :: τ :: tup) (ground.prodLists
+      (places.perms (posIf G (v, false)).length
+        :: places.perms (posIf G (v, false)).length :: domsOf G vs))
+    rw [ground.countOf_prodLists_cons, ground.countOf_prodLists_cons]
+    exact Nat.mul_pos h1 (Nat.mul_pos h2 (count_of_tupMem G vs tup h3))
+
+/-- Every word domain is distinct, an enumeration of
+permutations. -/
+private theorem domsOf_distinct (G : states.FList) :
+    ∀ (vs : List Nat) (E : List (List Nat)), E ∈ domsOf G vs →
+      ground.distinctList E
+  | [], _, h => nomatch h
+  | v :: vs, E, h => by
+    have h' : E ∈ places.perms (posIf G (v, false)).length
+        :: places.perms (posIf G (v, false)).length :: domsOf G vs := h
+    cases h' with
+    | head => exact places.perms_distinct _
+    | tail _ h2 =>
+      cases h2 with
+      | head => exact places.perms_distinct _
+      | tail _ h3 => exact domsOf_distinct G vs E h3
+
+/-- The head's count in its own list is positive. -/
+private theorem cntHead {α : Type} [DecidableEq α] (a : α) (t : List α) :
+    0 < ground.countOf a (a :: t) := by
+  rw [ground.countOf_head]
+  exact Nat.succ_pos _
+
+/-- A distinct list's head sits off its tail. -/
+private theorem distinct_head_off {α : Type} [DecidableEq α] {a : α}
+    {t : List α} (hd : ground.distinctList (a :: t)) (u : α)
+    (hu : 0 < ground.countOf u t) : ¬ u = a := fun he => by
+  have h1 := hd a (List.Mem.head t)
+  rw [ground.countOf_head] at h1
+  rw [he] at hu
+  exact Nat.lt_irrefl _ (Nat.lt_of_lt_of_le
+    (Nat.succ_lt_succ hu) h1)
+
+/-- The tuple conjugated by the variables' slot maps. -/
+private def conjTup (G G' : states.FList) (ρ : List Nat) :
+    List Nat → List (List Nat) → List (List Nat)
+  | [], tup => tup
+  | _ :: _, [] => []
+  | _ :: _, [σ] => [σ]
+  | v :: vs, σ :: τ :: tup =>
+    conjBy (posIf G (v, false)).length (slotOf G G' ρ (v, false))
+        (slotOf G G' ρ (v, true)) σ
+      :: conjBy (posIf G (v, false)).length (slotOf G G' ρ (v, false))
+        (slotOf G G' ρ (v, true)) τ
+      :: conjTup G G' ρ vs tup
+
+/-- The tuple conjugated back, at the partner slot maps. -/
+private def conjTupInv (G G' : states.FList) (ρ : List Nat) :
+    List Nat → List (List Nat) → List (List Nat)
+  | [], tup => tup
+  | _ :: _, [] => []
+  | _ :: _, [σ] => [σ]
+  | v :: vs, σ :: τ :: tup =>
+    conjBy (posIf G (v, false)).length
+        (places.invPerm (posIf G (v, false)).length
+          (slotOf G G' ρ (v, false)))
+        (places.invPerm (posIf G (v, false)).length
+          (slotOf G G' ρ (v, true))) σ
+      :: conjBy (posIf G (v, false)).length
+        (places.invPerm (posIf G (v, false)).length
+          (slotOf G G' ρ (v, false)))
+        (places.invPerm (posIf G (v, false)).length
+          (slotOf G G' ρ (v, true))) τ
+      :: conjTupInv G G' ρ vs tup
+
+/-- The daggered slot map is a permutation at the undaggered
+count. -/
+private theorem slotOf_member' (G G' : states.FList) (ρ : List Nat)
+    (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
+    (hr : 0 < ground.countOf ρ (places.perms m))
+    (hg : ∀ i, i < m →
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i))
+    (v : Nat)
+    (hgv : (posIf G (v, false)).length = (posIf G (v, true)).length) :
+    0 < ground.countOf (slotOf G G' ρ (v, true))
+      (places.perms (posIf G (v, false)).length) := by
+  rw [hgv]
+  exact slotOf_member G G' ρ m hm hm' hr hg (v, true)
+
+/-- The conjugated tuple conjugates back. -/
+private theorem conjTup_inv (G G' : states.FList) (ρ : List Nat)
+    (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
+    (hr : 0 < ground.countOf ρ (places.perms m))
+    (hg : ∀ i, i < m →
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i)) :
+    ∀ (vs : List Nat) (tup : List (List Nat)),
+      (∀ w, 0 < ground.countOf w vs →
+        (posIf G (w, false)).length = (posIf G (w, true)).length) →
+      tupMem G vs tup →
+      conjTupInv G G' ρ vs (conjTup G G' ρ vs tup) = tup
+  | [], _, _, _ => rfl
+  | _ :: _, [], _, _ => rfl
+  | _ :: _, [_], _, _ => rfl
+  | v :: vs, σ :: τ :: tup, hmt, ⟨h1, h2, h3⟩ => by
+    have ha := slotOf_member G G' ρ m hm hm' hr hg (v, false)
+    have hb := slotOf_member' G G' ρ m hm hm' hr hg v (hmt v (cntHead v vs))
+    show conjBy _ _ _ (conjBy _ _ _ σ) :: conjBy _ _ _ (conjBy _ _ _ τ)
+      :: conjTupInv G G' ρ vs (conjTup G G' ρ vs tup) = _
+    rw [conjBy_inv _ ha hb h1, conjBy_inv _ ha hb h2,
+      conjTup_inv G G' ρ m hm hm' hr hg vs tup (fun w hw => hmt w (ground.countOf_cons_pos hw)) h3]
+
+/-- The back-conjugated tuple conjugates forward. -/
+private theorem conjTup_inv' (G G' : states.FList) (ρ : List Nat)
+    (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
+    (hr : 0 < ground.countOf ρ (places.perms m))
+    (hg : ∀ i, i < m →
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i)) :
+    ∀ (vs : List Nat) (tup : List (List Nat)),
+      (∀ w, 0 < ground.countOf w vs →
+        (posIf G (w, false)).length = (posIf G (w, true)).length) →
+      tupMem G vs tup →
+      conjTup G G' ρ vs (conjTupInv G G' ρ vs tup) = tup
+  | [], _, _, _ => rfl
+  | _ :: _, [], _, _ => rfl
+  | _ :: _, [_], _, _ => rfl
+  | v :: vs, σ :: τ :: tup, hmt, ⟨h1, h2, h3⟩ => by
+    have ha := slotOf_member G G' ρ m hm hm' hr hg (v, false)
+    have hb := slotOf_member' G G' ρ m hm hm' hr hg v (hmt v (cntHead v vs))
+    have hσ := conjBy_inv (posIf G (v, false)).length
+      (places.invPerm_member _ ha) (places.invPerm_member _ hb) h1
+    have hτ := conjBy_inv (posIf G (v, false)).length
+      (places.invPerm_member _ ha) (places.invPerm_member _ hb) h2
+    rw [places.invPerm_invPerm _ ha, places.invPerm_invPerm _ hb] at hσ hτ
+    show conjBy _ _ _ (conjBy _ _ _ σ) :: conjBy _ _ _ (conjBy _ _ _ τ)
+      :: conjTup G G' ρ vs (conjTupInv G G' ρ vs tup) = _
+    rw [hσ, hτ, conjTup_inv' G G' ρ m hm hm' hr hg vs tup (fun w hw => hmt w (ground.countOf_cons_pos hw)) h3]
+
+/-- The conjugated tuple is a tuple of the variables' words. -/
+private theorem conjTup_mem (G G' : states.FList) (ρ : List Nat)
+    (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
+    (hr : 0 < ground.countOf ρ (places.perms m))
+    (hg : ∀ i, i < m →
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i)) :
+    ∀ (vs : List Nat) (tup : List (List Nat)),
+      (∀ w, 0 < ground.countOf w vs →
+        (posIf G (w, false)).length = (posIf G (w, true)).length) →
+      tupMem G vs tup → tupMem G vs (conjTup G G' ρ vs tup)
+  | [], [], _, h => h
+  | [], _ :: _, _, h => h
+  | _ :: _, [], _, h => h
+  | _ :: _, [_], _, h => h
+  | v :: vs, _ :: _ :: tup, hmt, ⟨h1, h2, h3⟩ =>
+    ⟨conjBy_member _ (slotOf_member G G' ρ m hm hm' hr hg (v, false))
+        (slotOf_member' G G' ρ m hm hm' hr hg v (hmt v (cntHead v vs))) h1,
+     conjBy_member _ (slotOf_member G G' ρ m hm hm' hr hg (v, false))
+        (slotOf_member' G G' ρ m hm hm' hr hg v (hmt v (cntHead v vs))) h2,
+     conjTup_mem G G' ρ m hm hm' hr hg vs tup (fun w hw => hmt w (ground.countOf_cons_pos hw)) h3⟩
+
+/-- The back-conjugated tuple is a tuple of the variables'
+words. -/
+private theorem conjTupInv_mem (G G' : states.FList) (ρ : List Nat)
+    (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
+    (hr : 0 < ground.countOf ρ (places.perms m))
+    (hg : ∀ i, i < m →
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i)) :
+    ∀ (vs : List Nat) (tup : List (List Nat)),
+      (∀ w, 0 < ground.countOf w vs →
+        (posIf G (w, false)).length = (posIf G (w, true)).length) →
+      tupMem G vs tup → tupMem G vs (conjTupInv G G' ρ vs tup)
+  | [], [], _, h => h
+  | [], _ :: _, _, h => h
+  | _ :: _, [], _, h => h
+  | _ :: _, [_], _, h => h
+  | v :: vs, _ :: _ :: tup, hmt, ⟨h1, h2, h3⟩ =>
+    ⟨conjBy_member _ (places.invPerm_member _
+          (slotOf_member G G' ρ m hm hm' hr hg (v, false)))
+        (places.invPerm_member _
+          (slotOf_member' G G' ρ m hm hm' hr hg v (hmt v (cntHead v vs)))) h1,
+     conjBy_member _ (places.invPerm_member _
+          (slotOf_member G G' ρ m hm hm' hr hg (v, false)))
+        (places.invPerm_member _
+          (slotOf_member' G G' ρ m hm hm' hr hg v (hmt v (cntHead v vs)))) h2,
+     conjTupInv_mem G G' ρ m hm hm' hr hg vs tup (fun w hw => hmt w (ground.countOf_cons_pos hw)) h3⟩
+
+/-- Two coefficient lists at one value entry by entry. -/
+private def csOV : List Poly → List Poly → Prop
+  | [], [] => True
+  | [], _ :: _ => False
+  | _ :: _, [] => False
+  | a :: t, b :: u => poly.oneValue a b ∧ csOV t u
+
+/-- The product fold reads one value at coefficient lists and seeds
+at one value. -/
+private theorem foldr_mul_ov : ∀ (cs cs' : List Poly) (x x' : Poly),
+    csOV cs cs' → poly.oneValue x x' →
+    poly.oneValue (cs.foldr poly.mul x) (cs'.foldr poly.mul x')
+  | [], [], _, _, _, hx => hx
+  | [], _ :: _, _, _, h, _ => False.elim h
+  | _ :: _, [], _, _, h, _ => False.elim h
+  | _ :: t, b :: u, x, x', ⟨hab, htu⟩, hx =>
+    poly.oneValue_trans (poly.mul_congr_left hab _)
+      (poly.mul_congr b (foldr_mul_ov t u x x' htu hx))
+
+/-- A variable's Weingarten entry travels the slot maps: the
+relabeled site's entry reads the site's own at the conjugated
+words. -/
+private theorem nOf_transport (G G' : states.FList) (v : Nat)
+    (a b σ' τ' : List Nat)
+    (heq : (posIf G' (v, false)).length = (posIf G (v, false)).length)
+    (ha : 0 < ground.countOf a
+      (places.perms (posIf G (v, false)).length))
+    (hb : 0 < ground.countOf b
+      (places.perms (posIf G (v, false)).length))
+    (hσ' : 0 < ground.countOf σ'
+      (places.perms (posIf G (v, false)).length))
+    (hτ' : 0 < ground.countOf τ'
+      (places.perms (posIf G (v, false)).length)) :
+    poly.oneValue (nOf G' v σ' τ')
+      (nOf G v (conjBy (posIf G (v, false)).length a b σ')
+        (conjBy (posIf G (v, false)).length a b τ')) := by
+  show poly.oneValue (ground.getAt [] (ground.getAt []
+      (genericlift.padj (gramWg (posIf G' (v, false)).length))
+      (places.idxOf (places.expo σ' (places.invPerm
+        (posIf G' (v, false)).length τ'))
+        (places.perms (posIf G' (v, false)).length)))
+      (places.idxOf (List.range (posIf G' (v, false)).length)
+        (places.perms (posIf G' (v, false)).length))) _
+  rw [heq, expo_conj (posIf G (v, false)).length ha hb hσ' hτ']
+  exact wgCol_transport (posIf G (v, false)).length
+    (places.expo (conjBy (posIf G (v, false)).length a b σ')
+      (places.invPerm (posIf G (v, false)).length
+        (conjBy (posIf G (v, false)).length a b τ')))
+    (places.invPerm (posIf G (v, false)).length b)
+    (places.expo_member _ (conjBy_member _ ha hb hσ')
+      (places.invPerm_member _ (conjBy_member _ ha hb hτ')))
+    (places.invPerm_member _ hb)
+
+/-- The coefficient list travels the slot maps entry by entry. -/
+private theorem coefAll_transport (G G' : states.FList) (ρ : List Nat)
+    (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
+    (hr : 0 < ground.countOf ρ (places.perms m))
+    (hg : ∀ i, i < m →
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i)) :
+    ∀ (vs : List Nat) (tup : List (List Nat)),
+      (∀ w, 0 < ground.countOf w vs →
+        (posIf G (w, false)).length = (posIf G (w, true)).length) →
+      tupMem G vs tup →
+      csOV (coefAll G' vs tup) (coefAll G vs (conjTup G G' ρ vs tup))
+  | [], [], _, _ => trivial
+  | [], _ :: _, _, h => False.elim h
+  | _ :: _, [], _, h => False.elim h
+  | _ :: _, [_], _, h => False.elim h
+  | v :: vs, σ :: τ :: tup, hmt, ⟨h1, h2, h3⟩ =>
+    ⟨nOf_transport G G' v _ _ σ τ
+        (posIf_len_eq G G' ρ m hm hm' hr hg (v, false))
+        (slotOf_member G G' ρ m hm hm' hr hg (v, false))
+        (slotOf_member' G G' ρ m hm hm' hr hg v (hmt v (cntHead v vs)))
+        h1 h2,
+     coefAll_transport G G' ρ m hm hm' hr hg vs tup (fun w hw => hmt w (ground.countOf_cons_pos hw)) h3⟩
+
+/-! The tuple wiring's reads: the place count, the bound, the
+slots left by the further variables, the reads at a variable, the
+involution, and the transport along a relabeling. -/
+
+/-- The tuple wiring keeps the slot entries' bound. -/
+private theorem wireAll_bound (G : states.FList) :
+    ∀ (vs : List Nat) (tup : List (List Nat)) (m2 : List Nat),
+      tupMem G vs tup →
+      (∀ w, 0 < ground.countOf w vs →
+        (posIf G (w, false)).length = (posIf G (w, true)).length) →
+      (∀ x, x < m2.length → ground.getAt 0 m2 x < 2 * G.length) →
+      ∀ x, x < m2.length →
+        ground.getAt 0 (wireAll G vs tup m2) x < 2 * G.length
+  | [], _, _, _, _, hb, x, hx => hb x hx
+  | _ :: _, [], _, _, _, hb, x, hx => hb x hx
+  | _ :: _, [_], _, _, _, hb, x, hx => hb x hx
+  | v :: vs, σ :: τ :: tup, m2, ⟨h1, h2, h3⟩, hmt, hb, x, hx => by
+    show ground.getAt 0 (wireAll G vs tup (matchVar G v σ τ m2)) x < _
+    exact wireAll_bound G vs tup _ h3 (fun w hw => hmt w (ground.countOf_cons_pos hw))
+      (fun y hy => matchVar_bound G v σ τ m2 (hmt v (cntHead v vs)) h1 h2 hb y
+        (by
+          rw [matchVar_length] at hy
+          exact hy)) x (by
+        rw [matchVar_length]
+        exact hx)
+
+/-- The tuple wiring over variables off a letter's key leaves the
+letter's slots. -/
+private theorem wireAll_off (G : states.FList) (v : Nat) (d : Bool)
+    (o : Nat) (ho : o < 2) (a : Nat) (ha : a < (posIf G (v, d)).length) :
+    ∀ (vs : List Nat) (tup : List (List Nat)) (m2 : List Nat),
+      tupMem G vs tup →
+      (∀ w, 0 < ground.countOf w vs →
+        (posIf G (w, false)).length = (posIf G (w, true)).length) →
+      (∀ w, 0 < ground.countOf w vs → ¬ w = v) →
+      ground.getAt 0 (wireAll G vs tup m2)
+          (2 * ground.getAt 0 (posIf G (v, d)) a + o)
+        = ground.getAt 0 m2 (2 * ground.getAt 0 (posIf G (v, d)) a + o)
+  | [], _, _, _, _, _ => rfl
+  | _ :: _, [], _, _, _, _ => rfl
+  | _ :: _, [_], _, _, _, _ => rfl
+  | w :: vs, σ :: τ :: tup, m2, ⟨h1, h2, h3⟩, hmt, hne => by
+    show ground.getAt 0 (wireAll G vs tup (matchVar G w σ τ m2)) _ = _
+    rw [wireAll_off G v d o ho a ha vs tup _ h3 (fun u hu => hmt u (ground.countOf_cons_pos hu))
+        (fun u hu => hne u (ground.countOf_cons_pos hu)),
+      matchVar_off G w v (fun e => hne w (cntHead w vs) e.symm) σ τ m2
+        (hmt w (cntHead w vs)) h1 h2 d o ho a ha]
+
+/-- The tuple wiring reads a variable's slots at the tuple's words
+for that variable: the four reads of the variable's own matchings,
+the further variables leaving them. -/
+private theorem wireAll_read (G : states.FList) :
+    ∀ (vs : List Nat) (tup : List (List Nat)) (m2 : List Nat),
+      m2.length = 2 * G.length → ground.distinctList vs →
+      tupMem G vs tup →
+      (∀ w, 0 < ground.countOf w vs →
+        (posIf G (w, false)).length = (posIf G (w, true)).length) →
+      ∀ v, 0 < ground.countOf v vs →
+      ∃ σ τ, 0 < ground.countOf σ
+          (places.perms (posIf G (v, false)).length)
+        ∧ 0 < ground.countOf τ
+          (places.perms (posIf G (v, false)).length)
+        ∧ ∀ s, s < (posIf G (v, false)).length →
+          (ground.getAt 0 (wireAll G vs tup m2)
+              (2 * ground.getAt 0 (posIf G (v, false)) s)
+            = 2 * ground.getAt 0 (posIf G (v, true))
+              (ground.getAt 0 σ s) + 1
+          ∧ ground.getAt 0 (wireAll G vs tup m2)
+              (2 * ground.getAt 0 (posIf G (v, true))
+                (ground.getAt 0 σ s) + 1)
+            = 2 * ground.getAt 0 (posIf G (v, false)) s)
+          ∧ (ground.getAt 0 (wireAll G vs tup m2)
+              (2 * ground.getAt 0 (posIf G (v, false)) s + 1)
+            = 2 * ground.getAt 0 (posIf G (v, true))
+              (ground.getAt 0 τ s)
+          ∧ ground.getAt 0 (wireAll G vs tup m2)
+              (2 * ground.getAt 0 (posIf G (v, true))
+                (ground.getAt 0 τ s))
+            = 2 * ground.getAt 0 (posIf G (v, false)) s + 1)
+  | [], _, _, _, _, _, _, _, hv => absurd hv (Nat.lt_irrefl 0)
+  | _ :: _, [], _, _, _, h, _, _, _ => False.elim h
+  | _ :: _, [_], _, _, _, h, _, _, _ => False.elim h
+  | w :: vs, σ :: τ :: tup, m2, hm2, hd, ⟨h1, h2, h3⟩, hmt, v, hv => by
+    by_cases hvw : v = w
+    · rw [hvw]
+      refine ⟨σ, τ, h1, h2, fun s hs => ?_⟩
+      have hnot : ∀ u, 0 < ground.countOf u vs → ¬ u = w :=
+        fun u hu => distinct_head_off hd u hu
+      have hmt' : ∀ u, 0 < ground.countOf u vs →
+          (posIf G (u, false)).length = (posIf G (u, true)).length :=
+        fun u hu => hmt u (ground.countOf_cons_pos hu)
+      have hgw := hmt w (cntHead w vs)
+      have hbσ := sigLt G (w, false) (w, true) h1 hgw
+      have hbτ := sigLt G (w, false) (w, true) h2 hgw
+      show (ground.getAt 0 (wireAll G vs tup (matchVar G w σ τ m2))
+            (2 * ground.getAt 0 (posIf G (w, false)) s) = _
+          ∧ ground.getAt 0 (wireAll G vs tup (matchVar G w σ τ m2)) _ = _)
+        ∧ (ground.getAt 0 (wireAll G vs tup (matchVar G w σ τ m2)) _ = _
+          ∧ ground.getAt 0 (wireAll G vs tup (matchVar G w σ τ m2)) _ = _)
+      have hr := matchVar_read G w σ τ m2 hm2 hgw h1 h2 s hs
+      refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
+      · show ground.getAt 0 (wireAll G vs tup (matchVar G w σ τ m2))
+          (2 * ground.getAt 0 (posIf G (w, false)) s + 0) = _
+        rw [wireAll_off G w false 0 (by decide +kernel) s hs vs tup _
+          h3 hmt' hnot]
+        exact hr.1.1
+      · rw [wireAll_off G w true 1 (by decide +kernel) _ (hbσ s hs) vs tup _
+          h3 hmt' hnot]
+        exact hr.1.2
+      · rw [wireAll_off G w false 1 (by decide +kernel) s hs vs tup _
+          h3 hmt' hnot]
+        exact hr.2.1
+      · show ground.getAt 0 (wireAll G vs tup (matchVar G w σ τ m2))
+          (2 * ground.getAt 0 (posIf G (w, true))
+            (ground.getAt 0 τ s) + 0) = _
+        rw [wireAll_off G w true 0 (by decide +kernel) _ (hbτ s hs) vs tup _
+          h3 hmt' hnot]
+        exact hr.2.2
+    · have hv' : 0 < ground.countOf v vs := by
+        rw [ground.countOf_head_ne hvw] at hv
+        exact hv
+      exact wireAll_read G vs tup (matchVar G w σ τ m2) (by
+          rw [matchVar_length]
+          exact hm2) (ground.distinct_tail hd) h3
+        (fun u hu => hmt u (ground.countOf_cons_pos hu)) v hv'
+
+/-- The tuple wiring over every place's variable is its own
+partner slot by slot. -/
+private theorem wireAll_invol (G : states.FList) (vs : List Nat)
+    (tup : List (List Nat)) (m2 : List Nat)
+    (hm2 : m2.length = 2 * G.length) (hd : ground.distinctList vs)
+    (ht : tupMem G vs tup)
+    (hmt : ∀ w, 0 < ground.countOf w vs →
+      (posIf G (w, false)).length = (posIf G (w, true)).length)
+    (hcov : ∀ j, j < G.length →
+      0 < ground.countOf (ground.getAt (0, false) G j).1 vs)
+    (x : Nat) (hx : x < 2 * G.length) :
+    ground.getAt 0 (wireAll G vs tup m2)
+      (ground.getAt 0 (wireAll G vs tup m2) x) = x := by
+  obtain ⟨j, hj, hjx⟩ := halveLt hx
+  obtain ⟨σ, τ, hσ, hτ, hreads⟩ :=
+    wireAll_read G vs tup m2 hm2 hd ht hmt _ (hcov j hj)
+  have hgv := hmt _ (hcov j hj)
+  cases hdag : (ground.getAt (0, false) G j).2 with
+  | false =>
+    have hf : ground.getAt (0, false) G j
+        = ((ground.getAt (0, false) G j).1, false) :=
+      congrArg (fun b => ((ground.getAt (0, false) G j).1, b)) hdag
+    obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G
+        ((ground.getAt (0, false) G j).1, false)).length
+        ∧ ground.getAt 0 (posIf G
+          ((ground.getAt (0, false) G j).1, false)) s = j :=
+      ⟨places.posOf j _, places.posOf_lt j _ (posIf_mem hj hf),
+       places.getAt_posOf j _ (posIf_mem hj hf)⟩
+    match hjx with
+    | Or.inl hev =>
+      rw [hev, ← hjs, (hreads s hs).1.1, (hreads s hs).1.2]
+    | Or.inr hod =>
+      rw [hod, ← hjs, (hreads s hs).2.1, (hreads s hs).2.2]
+  | true =>
+    have hf : ground.getAt (0, false) G j
+        = ((ground.getAt (0, false) G j).1, true) :=
+      congrArg (fun b => ((ground.getAt (0, false) G j).1, b)) hdag
+    have htl : places.posOf j (posIf G
+        ((ground.getAt (0, false) G j).1, true))
+        < (posIf G ((ground.getAt (0, false) G j).1, false)).length := by
+      rw [hgv]
+      exact places.posOf_lt j _ (posIf_mem hj hf)
+    match hjx with
+    | Or.inr hod =>
+      obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G
+          ((ground.getAt (0, false) G j).1, false)).length
+          ∧ ground.getAt 0 (posIf G
+            ((ground.getAt (0, false) G j).1, true))
+              (ground.getAt 0 σ s) = j :=
+        ⟨ground.getAt 0 (places.invPerm _ σ)
+          (places.posOf j (posIf G ((ground.getAt (0, false) G j).1, true))),
+         perm_inv_lt _ hσ _ htl, by
+          rw [perm_right _ hσ _ htl]
+          exact places.getAt_posOf j _ (posIf_mem hj hf)⟩
+      rw [hod, ← hjs, (hreads s hs).1.2, (hreads s hs).1.1]
+    | Or.inl hev =>
+      obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G
+          ((ground.getAt (0, false) G j).1, false)).length
+          ∧ ground.getAt 0 (posIf G
+            ((ground.getAt (0, false) G j).1, true))
+              (ground.getAt 0 τ s) = j :=
+        ⟨ground.getAt 0 (places.invPerm _ τ)
+          (places.posOf j (posIf G ((ground.getAt (0, false) G j).1, true))),
+         perm_inv_lt _ hτ _ htl, by
+          rw [perm_right _ hτ _ htl]
+          exact places.getAt_posOf j _ (posIf_mem hj hf)⟩
+      rw [hev, ← hjs, (hreads s hs).2.2, (hreads s hs).2.1]
+
+/-- The composite walk's place count is the doubled site's. -/
+private theorem compAt_length (m : Nat) (m1 m2 : List Nat) :
+    (compAt m m1 m2).length = 2 * m :=
+  ground.length_mapRange _ (2 * m)
+
+/-- The composite walk reads the matching after the wiring's
+matching at each slot. -/
+private theorem compAt_read (m : Nat) (m1 m2 : List Nat) (x : Nat)
+    (hx : x < 2 * m) :
+    ground.getAt 0 (compAt m m1 m2) x
+      = ground.getAt 0 m2 (ground.getAt 0 m1 x) := by
+  show ground.getAt 0 ((List.range (2 * m)).map (fun i =>
+    ground.getAt 0 m2 (ground.getAt 0 m1 i))) x = _
+  rw [ground.getAt_map_range 0 _ (2 * m) x, if_pos hx]
+
+/-- The composite walk at the full tuple wiring is a slot
+permutation. -/
+private theorem compAt_member (G : states.FList) (π : List Nat)
+    (hπ : 0 < ground.countOf π (places.perms G.length))
+    (vs : List Nat) (tup : List (List Nat)) (m2 : List Nat)
+    (hm2 : m2.length = 2 * G.length) (hd : ground.distinctList vs)
+    (ht : tupMem G vs tup)
+    (hmt : ∀ w, 0 < ground.countOf w vs →
+      (posIf G (w, false)).length = (posIf G (w, true)).length)
+    (hcov : ∀ j, j < G.length →
+      0 < ground.countOf (ground.getAt (0, false) G j).1 vs)
+    (hb : ∀ x, x < m2.length → ground.getAt 0 m2 x < 2 * G.length) :
+    0 < ground.countOf (compAt G.length (mOne G.length π)
+      (wireAll G vs tup m2)) (places.perms (2 * G.length)) := by
+  refine places.perm_of_reads _ _ (compAt_length _ _ _)
+    (fun x hx => ?_) (fun x y hx hy he => ?_)
+  · rw [compAt_read _ _ _ x hx]
+    exact wireAll_bound G vs tup m2 ht hmt hb _ (by
+      rw [hm2]
+      exact mOne_bound G.length hπ x hx)
+  · rw [compAt_read _ _ _ x hx, compAt_read _ _ _ y hy] at he
+    have hw : ground.getAt 0 (mOne G.length π) x
+        = ground.getAt 0 (mOne G.length π) y := by
+      rw [← wireAll_invol G vs tup m2 hm2 hd ht hmt hcov _
+          (mOne_bound G.length hπ x hx), he,
+        wireAll_invol G vs tup m2 hm2 hd ht hmt hcov _
+          (mOne_bound G.length hπ y hy)]
+    rw [← mOne_invol G.length hπ x hx, hw, mOne_invol G.length hπ y hy]
+
+/-- A variable's matchings travel the relabeling: at the slots of
+the variable and at the slots the prior matchings related, the
+doubled relabeling carries the relabeled matching's slot reads to
+the matching's own. -/
+private theorem matchVar_transport (G G' : states.FList) (ρ : List Nat)
+    (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
+    (hr : 0 < ground.countOf ρ (places.perms m))
+    (hg : ∀ i, i < m →
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i))
+    (v : Nat) (σ' τ' : List Nat)
+    (hgv : (posIf G (v, false)).length = (posIf G (v, true)).length)
+    (hσ' : 0 < ground.countOf σ'
+      (places.perms (posIf G (v, false)).length))
+    (hτ' : 0 < ground.countOf τ'
+      (places.perms (posIf G (v, false)).length))
+    (vs : List Nat) (M' M : List Nat)
+    (hM' : M'.length = 2 * m) (hM : M.length = 2 * m)
+    (hrel : ∀ j o, j < m → o < 2 →
+      ¬ (ground.getAt (0, false) G' j).1 = v →
+      ¬ 0 < ground.countOf (ground.getAt (0, false) G' j).1 vs →
+      ground.getAt 0 (dbl ρ) (ground.getAt 0 M' (2 * j + o))
+        = ground.getAt 0 M (ground.getAt 0 (dbl ρ) (2 * j + o))) :
+    ∀ j o, j < m → o < 2 →
+      ¬ 0 < ground.countOf (ground.getAt (0, false) G' j).1 vs →
+      ground.getAt 0 (dbl ρ)
+          (ground.getAt 0 (matchVar G' v σ' τ' M') (2 * j + o))
+        = ground.getAt 0 (matchVar G v
+            (conjBy (posIf G (v, false)).length (slotOf G G' ρ (v, false))
+              (slotOf G G' ρ (v, true)) σ')
+            (conjBy (posIf G (v, false)).length (slotOf G G' ρ (v, false))
+              (slotOf G G' ρ (v, true)) τ') M)
+          (ground.getAt 0 (dbl ρ) (2 * j + o)) := by
+  intro j o hj ho hnot
+  have heF := posIf_len_eq G G' ρ m hm hm' hr hg (v, false)
+  have heT := posIf_len_eq G G' ρ m hm hm' hr hg (v, true)
+  have hg'v : (posIf G' (v, false)).length
+      = (posIf G' (v, true)).length := by
+    rw [heF, heT, hgv]
+  have ha := slotOf_member G G' ρ m hm hm' hr hg (v, false)
+  have hb := slotOf_member' G G' ρ m hm hm' hr hg v hgv
+  have hσ'' : 0 < ground.countOf σ'
+      (places.perms (posIf G' (v, false)).length) := by
+    rw [heF]
+    exact hσ'
+  have hτ'' : 0 < ground.countOf τ'
+      (places.perms (posIf G' (v, false)).length) := by
+    rw [heF]
+    exact hτ'
+  have hcσ := conjBy_member _ ha hb hσ'
+  have hcτ := conjBy_member _ ha hb hτ'
+  have hjm : j < G'.length := by
+    rw [hm']
+    exact hj
+  have hM'2 : M'.length = 2 * G'.length := by
+    rw [hm']
+    exact hM'
+  have hM2 : M.length = 2 * G.length := by
+    rw [hm]
+    exact hM
+  by_cases hkey : (ground.getAt (0, false) G' j).1 = v
+  · cases hdag : (ground.getAt (0, false) G' j).2 with
+    | false =>
+      have hf : ground.getAt (0, false) G' j = (v, false) := by
+        rw [← hkey]
+        exact congrArg (fun b => ((ground.getAt (0, false) G' j).1, b)) hdag
+      have hmem := posIf_mem hjm hf
+      obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G' (v, false)).length
+          ∧ ground.getAt 0 (posIf G' (v, false)) s = j :=
+        ⟨places.posOf j _, places.posOf_lt j _ hmem,
+         places.getAt_posOf j _ hmem⟩
+      have hsk : s < (posIf G (v, false)).length := by
+        rw [← heF]
+        exact hs
+      have hsl := slotOf_lt G G' ρ m hm hm' hr hg (v, false) s hs
+      have hbσ : ground.getAt 0 σ' s < (posIf G' (v, true)).length := by
+        rw [← hg'v]
+        exact perm_lt _ hσ'' s hs
+      have hbτ : ground.getAt 0 τ' s < (posIf G' (v, true)).length := by
+        rw [← hg'v]
+        exact perm_lt _ hτ'' s hs
+      match ltTwo o ho with
+      | Or.inl h0 =>
+        rw [h0]
+        show ground.getAt 0 (dbl ρ) (ground.getAt 0 (matchVar G' v σ' τ' M')
+            (2 * j)) = ground.getAt 0 (matchVar G v _ _ M)
+            (ground.getAt 0 (dbl ρ) (2 * j))
+        rw [← hjs, (matchVar_read G' v σ' τ' M' hM'2 hg'v hσ'' hτ'' s hs).1.1,
+          dblOdd G G' ρ m hm hm' hr hg (v, true) _ hbσ,
+          dblEven G G' ρ m hm hm' hr hg (v, false) s hs,
+          (matchVar_read G v _ _ M hM2 hgv hcσ hcτ _ hsl).1.1,
+          conjBy_rel _ ha hσ' s hsk]
+      | Or.inr h1 =>
+        rw [h1, ← hjs, (matchVar_read G' v σ' τ' M' hM'2 hg'v hσ'' hτ'' s hs).2.1,
+          dblEven G G' ρ m hm hm' hr hg (v, true) _ hbτ,
+          dblOdd G G' ρ m hm hm' hr hg (v, false) s hs,
+          (matchVar_read G v _ _ M hM2 hgv hcσ hcτ _ hsl).2.1,
+          conjBy_rel _ ha hτ' s hsk]
+    | true =>
+      have hf : ground.getAt (0, false) G' j = (v, true) := by
+        rw [← hkey]
+        exact congrArg (fun b => ((ground.getAt (0, false) G' j).1, b)) hdag
+      have hmem := posIf_mem hjm hf
+      have htl : places.posOf j (posIf G' (v, true))
+          < (posIf G' (v, false)).length := by
+        rw [hg'v]
+        exact places.posOf_lt j _ hmem
+      match ltTwo o ho with
+      | Or.inr h1 =>
+        obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G' (v, false)).length
+            ∧ ground.getAt 0 (posIf G' (v, true))
+                (ground.getAt 0 σ' s) = j :=
+          ⟨ground.getAt 0 (places.invPerm _ σ')
+            (places.posOf j (posIf G' (v, true))),
+           perm_inv_lt _ hσ'' _ htl, by
+            rw [perm_right _ hσ'' _ htl]
+            exact places.getAt_posOf j _ hmem⟩
+        have hsk : s < (posIf G (v, false)).length := by
+          rw [← heF]
+          exact hs
+        have hsl := slotOf_lt G G' ρ m hm hm' hr hg (v, false) s hs
+        have hbσ : ground.getAt 0 σ' s
+            < (posIf G' (v, true)).length := by
+          rw [← hg'v]
+          exact perm_lt _ hσ'' s hs
+        rw [h1, ← hjs, (matchVar_read G' v σ' τ' M' hM'2 hg'v hσ'' hτ'' s hs).1.2,
+          dblEven G G' ρ m hm hm' hr hg (v, false) s hs,
+          dblOdd G G' ρ m hm hm' hr hg (v, true) _ hbσ,
+          conjBy_rel _ ha hσ' s hsk,
+          (matchVar_read G v _ _ M hM2 hgv hcσ hcτ _ hsl).1.2]
+      | Or.inl h0 =>
+        obtain ⟨s, hs, hjs⟩ : ∃ s, s < (posIf G' (v, false)).length
+            ∧ ground.getAt 0 (posIf G' (v, true))
+                (ground.getAt 0 τ' s) = j :=
+          ⟨ground.getAt 0 (places.invPerm _ τ')
+            (places.posOf j (posIf G' (v, true))),
+           perm_inv_lt _ hτ'' _ htl, by
+            rw [perm_right _ hτ'' _ htl]
+            exact places.getAt_posOf j _ hmem⟩
+        have hsk : s < (posIf G (v, false)).length := by
+          rw [← heF]
+          exact hs
+        have hsl := slotOf_lt G G' ρ m hm hm' hr hg (v, false) s hs
+        have hbτ : ground.getAt 0 τ' s
+            < (posIf G' (v, true)).length := by
+          rw [← hg'v]
+          exact perm_lt _ hτ'' s hs
+        rw [h0]
+        show ground.getAt 0 (dbl ρ) (ground.getAt 0 (matchVar G' v σ' τ' M')
+            (2 * j)) = ground.getAt 0 (matchVar G v _ _ M)
+            (ground.getAt 0 (dbl ρ) (2 * j))
+        rw [← hjs, (matchVar_read G' v σ' τ' M' hM'2 hg'v hσ'' hτ'' s hs).2.2,
+          dblOdd G G' ρ m hm hm' hr hg (v, false) s hs,
+          dblEven G G' ρ m hm hm' hr hg (v, true) _ hbτ,
+          conjBy_rel _ ha hτ' s hsk,
+          (matchVar_read G v _ _ M hM2 hgv hcσ hcτ _ hsl).2.2]
+  · have hmem := posIf_mem hjm (rfl : ground.getAt (0, false) G' j
+      = ((ground.getAt (0, false) G' j).1, (ground.getAt (0, false) G' j).2))
+    obtain ⟨a', ha', hja'⟩ : ∃ a', a' < (posIf G'
+        ((ground.getAt (0, false) G' j).1,
+          (ground.getAt (0, false) G' j).2)).length
+        ∧ ground.getAt 0 (posIf G' ((ground.getAt (0, false) G' j).1,
+          (ground.getAt (0, false) G' j).2)) a' = j :=
+      ⟨places.posOf j _, places.posOf_lt j _ hmem,
+       places.getAt_posOf j _ hmem⟩
+    have hal := slotOf_lt G G' ρ m hm hm' hr hg
+      ((ground.getAt (0, false) G' j).1, (ground.getAt (0, false) G' j).2)
+      a' ha'
+    have hx : 2 * j + o < 2 * m := by
+      match ltTwo o ho with
+      | Or.inl h0 =>
+        rw [h0]
+        exact twoLt hj
+      | Or.inr h1 =>
+        rw [h1]
+        exact twoSuccLt hj
+    rw [← hja',
+      matchVar_off G' v _ hkey σ' τ' M' hg'v hσ'' hτ'' _ o ho a' ha',
+      hja', hrel j o hj ho hkey hnot, ← hja']
+    match ltTwo o ho with
+    | Or.inl h0 =>
+      rw [h0]
+      show ground.getAt 0 M (ground.getAt 0 (dbl ρ)
+          (2 * ground.getAt 0 (posIf G' _) a'))
+        = ground.getAt 0 (matchVar G v _ _ M) (ground.getAt 0 (dbl ρ)
+          (2 * ground.getAt 0 (posIf G' _) a'))
+      rw [dblEven G G' ρ m hm hm' hr hg _ a' ha']
+      exact (matchVar_off G v _ hkey _ _ M hgv hcσ hcτ _ 0
+        (by decide +kernel) _ hal).symm
+    | Or.inr h1 =>
+      rw [h1, dblOdd G G' ρ m hm hm' hr hg _ a' ha']
+      exact (matchVar_off G v _ hkey _ _ M hgv hcσ hcτ _ 1
+        (by decide +kernel) _ hal).symm
+
+/-- The tuple wiring travels the relabeling: at every slot whose
+variable the tuple's variables cover, the doubled relabeling
+carries the relabeled wiring's slot reads to the wiring's own. -/
+private theorem wireAll_transport (G G' : states.FList) (ρ : List Nat)
+    (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
+    (hr : 0 < ground.countOf ρ (places.perms m))
+    (hg : ∀ i, i < m →
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i)) :
+    ∀ (vs : List Nat) (tup : List (List Nat)) (M' M : List Nat),
+      tupMem G vs tup →
+      (∀ w, 0 < ground.countOf w vs →
+        (posIf G (w, false)).length = (posIf G (w, true)).length) →
+      M'.length = 2 * m → M.length = 2 * m →
+      (∀ j o, j < m → o < 2 →
+        ¬ 0 < ground.countOf (ground.getAt (0, false) G' j).1 vs →
+        ground.getAt 0 (dbl ρ) (ground.getAt 0 M' (2 * j + o))
+          = ground.getAt 0 M (ground.getAt 0 (dbl ρ) (2 * j + o))) →
+      ∀ j o, j < m → o < 2 →
+        ground.getAt 0 (dbl ρ)
+            (ground.getAt 0 (wireAll G' vs tup M') (2 * j + o))
+          = ground.getAt 0 (wireAll G vs (conjTup G G' ρ vs tup) M)
+            (ground.getAt 0 (dbl ρ) (2 * j + o))
+  | [], _, _, _, _, _, _, _, hrel, j, o, hj, ho =>
+    hrel j o hj ho (Nat.lt_irrefl 0)
+  | _ :: _, [], _, _, h, _, _, _, _, _, _, _, _ => False.elim h
+  | _ :: _, [_], _, _, h, _, _, _, _, _, _, _, _ => False.elim h
+  | v :: vs, σ :: τ :: tup, M', M, ⟨h1, h2, h3⟩, hmt, hM', hM, hrel,
+      j, o, hj, ho => by
+    show ground.getAt 0 (dbl ρ)
+        (ground.getAt 0 (wireAll G' vs tup (matchVar G' v σ τ M')) _)
+      = ground.getAt 0 (wireAll G vs (conjTup G G' ρ vs tup)
+          (matchVar G v _ _ M)) _
+    refine wireAll_transport G G' ρ m hm hm' hr hg vs tup _ _ h3 (fun w hw => hmt w (ground.countOf_cons_pos hw))
+      (by
+        rw [matchVar_length]
+        exact hM')
+      (by
+        rw [matchVar_length]
+        exact hM)
+      (fun j' o' hj' ho' hnot =>
+        matchVar_transport G G' ρ m hm hm' hr hg v σ τ (hmt v (cntHead v vs))
+          h1 h2 vs M' M hM' hM (fun j'' o'' hj'' ho'' hne hnot' =>
+            hrel j'' o'' hj'' ho'' (fun hc => by
+              rw [ground.countOf_cons] at hc
+              have hc' := hc
+              by_cases hkv : (ground.getAt (0, false) G' j'').1 = v
+              · exact hne hkv
+              · rw [if_neg hkv, Nat.zero_add] at hc'
+                exact hnot' hc'))
+          j' o' hj' ho' hnot)
+      j o hj ho
+
+/-- One tuple's term travels the relabeling: the relabeled site's
+term at a tuple reads the site's own at the conjugated tuple. -/
+private theorem termAt_transport (G G' : states.FList) (ρ : List Nat)
+    (m : Nat) (hm : G.length = m) (hm' : G'.length = m)
+    (hr : 0 < ground.countOf ρ (places.perms m))
+    (hg : ∀ i, i < m →
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i))
+    (π π' : List Nat)
+    (hπ : 0 < ground.countOf π (places.perms m))
+    (hπ' : 0 < ground.countOf π' (places.perms m))
+    (hcπ : ∀ s, s < m →
+      ground.getAt 0 ρ (ground.getAt 0 π' s)
+        = ground.getAt 0 π (ground.getAt 0 ρ s))
+    (vs : List Nat) (tup : List (List Nat))
+    (hd : ground.distinctList vs) (ht : tupMem G vs tup)
+    (hmt : ∀ w, 0 < ground.countOf w vs →
+      (posIf G (w, false)).length = (posIf G (w, true)).length)
+    (hcov : ∀ j, j < G.length →
+      0 < ground.countOf (ground.getAt (0, false) G j).1 vs)
+    (hcov' : ∀ j, j < G'.length →
+      0 < ground.countOf (ground.getAt (0, false) G' j).1 vs) :
+    poly.oneValue
+      (termAt G' (mOne m π') vs (List.replicate (2 * m) 0) [] tup)
+      (termAt G (mOne m π) vs (List.replicate (2 * m) 0) []
+        (conjTup G G' ρ vs tup)) := by
+  have hdm := dbl_member m hr
+  have hmt' : ∀ w, 0 < ground.countOf w vs →
+      (posIf G' (w, false)).length = (posIf G' (w, true)).length :=
+    fun w hw => by
+      rw [posIf_len_eq G G' ρ m hm hm' hr hg (w, false),
+        posIf_len_eq G G' ρ m hm hm' hr hg (w, true)]
+      exact hmt w hw
+  have ht' : tupMem G' vs tup :=
+    tupMem_of_len G' G (fun v =>
+      (posIf_len_eq G G' ρ m hm hm' hr hg (v, false)).symm) vs tup ht
+  have htc := conjTup_mem G G' ρ m hm hm' hr hg vs tup hmt ht
+  have hcm : 0 < ground.countOf (compAt G.length (mOne G.length π)
+      (wireAll G vs (conjTup G G' ρ vs tup) (List.replicate (2 * G.length) 0)))
+      (places.perms (2 * G.length)) :=
+    compAt_member G π (by
+        rw [hm]
+        exact hπ) vs _ _ (ground.length_replicate 0 _) hd htc hmt hcov
+      (replicate_bound _)
+  have hcm' : 0 < ground.countOf (compAt G'.length (mOne G'.length π')
+      (wireAll G' vs tup (List.replicate (2 * G'.length) 0)))
+      (places.perms (2 * G'.length)) :=
+    compAt_member G' π' (by
+        rw [hm']
+        exact hπ') vs _ _ (ground.length_replicate 0 _) hd ht' hmt' hcov'
+      (replicate_bound _)
+  rw [hm] at hcm
+  rw [hm'] at hcm'
+  have htr : ∀ x, x < 2 * m →
+      ground.getAt 0 (dbl ρ) (ground.getAt 0 (compAt m (mOne m π')
+        (wireAll G' vs tup (List.replicate (2 * m) 0))) x)
+      = ground.getAt 0 (compAt m (mOne m π)
+          (wireAll G vs (conjTup G G' ρ vs tup) (List.replicate (2 * m) 0)))
+        (ground.getAt 0 (dbl ρ) x) := by
+    intro x hx
+    have hw := wireAll_transport G G' ρ m hm hm' hr hg vs tup
+      (List.replicate (2 * m) 0) (List.replicate (2 * m) 0) ht hmt
+      (ground.length_replicate 0 _) (ground.length_replicate 0 _)
+      (fun j o hj _ hnot => absurd (hcov' j (by
+        rw [hm']
+        exact hj)) hnot)
+    rw [compAt_read m _ _ x hx, compAt_read m _ _ _ (perm_lt _ hdm x hx),
+      ← mOne_transport m π π' ρ hπ hπ' hr hcπ x hx]
+    obtain ⟨j', hj', hj'x⟩ := halveLt (mOne_bound m hπ' x hx)
+    match hj'x with
+    | Or.inl hev =>
+      rw [hev]
+      exact hw j' 0 hj' (by decide +kernel)
+    | Or.inr hod =>
+      rw [hod]
+      exact hw j' 1 hj' (by decide +kernel)
+  have hkey : compAt m (mOne m π') (wireAll G' vs tup (List.replicate (2 * m) 0))
+      = (places.invPerm (2 * m) (places.invPerm (2 * m) (dbl ρ))).map (fun j =>
+          ground.getAt 0 (places.invPerm (2 * m) (dbl ρ))
+            (ground.getAt 0 (compAt m (mOne m π) (wireAll G vs
+              (conjTup G G' ρ vs tup) (List.replicate (2 * m) 0))) j)) := by
+    refine ground.getAt_ext 0 _ _ (by
+        rw [compAt_length, ground.length_map, places.length_invPerm]) ?_
+    intro i hi
+    rw [compAt_length] at hi
+    rw [ground.getAt_map 0 0 _ (places.invPerm (2 * m)
+        (places.invPerm (2 * m) (dbl ρ))) i (by
+          rw [places.length_invPerm]
+          exact hi),
+      places.invPerm_invPerm (2 * m) hdm, ← htr i hi,
+      perm_left (2 * m) hdm _ (perm_lt (2 * m) hcm' i hi)]
+  show poly.oneValue
+    (([] ++ coefAll G' vs tup).foldr poly.mul (dfPow ((places.cyclesOf
+      (compAt G'.length (mOne m π') (wireAll G' vs tup
+        (List.replicate (2 * m) 0)))).length / 2)))
+    (([] ++ coefAll G vs (conjTup G G' ρ vs tup)).foldr poly.mul
+      (dfPow ((places.cyclesOf (compAt G.length (mOne m π) (wireAll G vs
+        (conjTup G G' ρ vs tup) (List.replicate (2 * m) 0)))).length / 2)))
+  rw [hm, hm', hkey, places.cyclesOf_transport (2 * m) hcm
+    (places.invPerm_member (2 * m) hdm)]
+  exact foldr_mul_ov _ _ _ _
+    (coefAll_transport G G' ρ m hm hm' hr hg vs tup hmt ht)
+    (poly.oneValue_refl _)
 
 /-- The evaluation at a relabeled site and its carried wiring
 reads the site's own value: `rem:kernel`'s gauge-mode sentence at
@@ -3275,231 +3430,81 @@ private theorem evalPhi_relabel (G G' : states.FList)
     (hπ : 0 < ground.countOf π (places.perms m))
     (hπ' : 0 < ground.countOf π' (places.perms m))
     (hg : ∀ i, i < m →
-      ground.getAt (false, false) G' i
-        = ground.getAt (false, false) G (ground.getAt 0 ρ i))
+      ground.getAt (0, false) G' i
+        = ground.getAt (0, false) G (ground.getAt 0 ρ i))
     (hcπ : ∀ s, s < m →
       ground.getAt 0 ρ (ground.getAt 0 π' s)
         = ground.getAt 0 π (ground.getAt 0 ρ s)) :
     genericlift.crossNull (evalPhi G' π') (evalPhi G π) := by
-  have heFF := posIf_len_eq G G' ρ m hm hm' hr hg (false, false)
-  have heFT := posIf_len_eq G G' ρ m hm hm' hr hg (false, true)
-  have heTF := posIf_len_eq G G' ρ m hm hm' hr hg (true, false)
-  have heTT := posIf_len_eq G G' ρ m hm hm' hr hg (true, true)
-  have hguard : guardOf G' = guardOf G := by
-    show (((posIf G' (false, false)).length
-        == (posIf G' (false, true)).length)
-      && ((posIf G' (true, false)).length
-        == (posIf G' (true, true)).length)) = _
-    rw [heFF, heFT, heTF, heTT]
-    rfl
-  rw [evalPhi_bridge G' π', evalPhi_bridge G π, hguard]
+  have hvars := varsOf_relabel G G' ρ m hm hm' hr hg
+  have hlen : ∀ v, (posIf G' (v, false)).length = (posIf G (v, false)).length
+      ∧ (posIf G' (v, true)).length = (posIf G (v, true)).length :=
+    fun v => ⟨posIf_len_eq G G' ρ m hm hm' hr hg (v, false),
+      posIf_len_eq G G' ρ m hm hm' hr hg (v, true)⟩
+  have hfwd : guardOf G = true → guardOf G' = true := fun hgd => by
+    refine ground.all_of_mem_intro _ _ (fun v hv => ?_)
+    show ((posIf G' (v, false)).length == (posIf G' (v, true)).length) = true
+    rw [(hlen v).1, (hlen v).2]
+    exact ground.all_of_mem _ _ hgd v (by
+      rw [← hvars]
+      exact hv)
+  have hbwd : guardOf G' = true → guardOf G = true := fun hgd => by
+    refine ground.all_of_mem_intro _ _ (fun v hv => ?_)
+    show ((posIf G (v, false)).length == (posIf G (v, true)).length) = true
+    rw [← (hlen v).1, ← (hlen v).2]
+    exact ground.all_of_mem _ _ hgd v (by
+      rw [hvars]
+      exact hv)
   by_cases hgd : guardOf G = true
-  · rw [if_pos hgd, if_pos hgd]
-    have hsplit : ∀ a b : Bool, (a && b) = true →
-        a = true ∧ b = true := by
-      intro a b h
-      cases a <;> cases b <;>
-        first
-          | exact ⟨rfl, rfl⟩
-          | exact Bool.noConfusion h
-    have hgd' : (((posIf G (false, false)).length
-          == (posIf G (false, true)).length)
-        && ((posIf G (true, false)).length
-          == (posIf G (true, true)).length)) = true := hgd
-    obtain ⟨hA, hB⟩ := hsplit _ _ hgd'
-    have hgU : (posIf G (false, false)).length
-        = (posIf G (false, true)).length := ground.beqEqOf hA
-    have hgV : (posIf G (true, false)).length
-        = (posIf G (true, true)).length := ground.beqEqOf hB
-    have hg'U : (posIf G' (false, false)).length
-        = (posIf G' (false, true)).length := by
-      rw [heFF, heFT, hgU]
-    have hg'V : (posIf G' (true, false)).length
-        = (posIf G' (true, true)).length := by
-      rw [heTF, heTT, hgV]
-    have haU := slotOf_member G G' ρ m hm hm' hr hg (false, false)
-    have haV := slotOf_member G G' ρ m hm hm' hr hg (true, false)
-    have hbU : 0 < ground.countOf (slotOf G G' ρ (false, true))
-        (places.perms (posIf G (false, false)).length) := by
-      rw [hgU]
-      exact slotOf_member G G' ρ m hm hm' hr hg (false, true)
-    have hbV : 0 < ground.countOf (slotOf G G' ρ (true, true))
-        (places.perms (posIf G (true, false)).length) := by
-      rw [hgV]
-      exact slotOf_member G G' ρ m hm hm' hr hg (true, true)
-    have hdm := dbl_member m hr
-    have hcyc : ∀ sU tU sV tV : List Nat,
-        0 < ground.countOf sU
-          (places.perms (posIf G (false, false)).length) →
-        0 < ground.countOf tU
-          (places.perms (posIf G (false, false)).length) →
-        0 < ground.countOf sV
-          (places.perms (posIf G (true, false)).length) →
-        0 < ground.countOf tV
-          (places.perms (posIf G (true, false)).length) →
-        (places.cyclesOf (compOf G' π' sU tU sV tV)).length
-          = (places.cyclesOf (compOf G π
-              (conjBy (posIf G (false, false)).length
-                (slotOf G G' ρ (false, false))
-                (slotOf G G' ρ (false, true)) sU)
-              (conjBy (posIf G (false, false)).length
-                (slotOf G G' ρ (false, false))
-                (slotOf G G' ρ (false, true)) tU)
-              (conjBy (posIf G (true, false)).length
-                (slotOf G G' ρ (true, false))
-                (slotOf G G' ρ (true, true)) sV)
-              (conjBy (posIf G (true, false)).length
-                (slotOf G G' ρ (true, false))
-                (slotOf G G' ρ (true, true)) tV))).length := by
-      intro sU tU sV tV h1 h2 h3 h4
-      have h1' : 0 < ground.countOf sU
-          (places.perms (posIf G' (false, false)).length) := by
-        rw [heFF]
-        exact h1
-      have h2' : 0 < ground.countOf tU
-          (places.perms (posIf G' (false, false)).length) := by
-        rw [heFF]
-        exact h2
-      have h3' : 0 < ground.countOf sV
-          (places.perms (posIf G' (true, false)).length) := by
-        rw [heTF]
-        exact h3
-      have h4' : 0 < ground.countOf tV
-          (places.perms (posIf G' (true, false)).length) := by
-        rw [heTF]
-        exact h4
-      have hcm' : 0 < ground.countOf (compOf G' π' sU tU sV tV)
-          (places.perms (2 * m)) := by
-        rw [← hm']
-        exact compOf_member G' π' sU tU sV tV (by
-            rw [hm']
-            exact hπ') hg'U hg'V h1' h2' h3' h4'
-      have hcm : 0 < ground.countOf (compOf G π
-          (conjBy (posIf G (false, false)).length
-            (slotOf G G' ρ (false, false))
-            (slotOf G G' ρ (false, true)) sU)
-          (conjBy (posIf G (false, false)).length
-            (slotOf G G' ρ (false, false))
-            (slotOf G G' ρ (false, true)) tU)
-          (conjBy (posIf G (true, false)).length
-            (slotOf G G' ρ (true, false))
-            (slotOf G G' ρ (true, true)) sV)
-          (conjBy (posIf G (true, false)).length
-            (slotOf G G' ρ (true, false))
-            (slotOf G G' ρ (true, true)) tV))
-          (places.perms (2 * m)) := by
-        rw [← hm]
-        exact compOf_member G π _ _ _ _ (by
-            rw [hm]
-            exact hπ) hgU hgV
-          (conjBy_member _ haU hbU h1) (conjBy_member _ haU hbU h2)
-          (conjBy_member _ haV hbV h3) (conjBy_member _ haV hbV h4)
-      have htr := compOf_transport G G' ρ m hm hm' hr hg π π'
-        _ _ _ _ sU tU sV tV hπ hπ' hcπ hgU hgV
-        (conjBy_member _ haU hbU h1) (conjBy_member _ haU hbU h2)
-        (conjBy_member _ haV hbV h3) (conjBy_member _ haV hbV h4)
-        h1' h2' h3' h4'
-        (fun s hs => conjBy_rel _ haU h1 s (by
-          rw [← heFF]
-          exact hs))
-        (fun s hs => conjBy_rel _ haU h2 s (by
-          rw [← heFF]
-          exact hs))
-        (fun s hs => conjBy_rel _ haV h3 s (by
-          rw [← heTF]
-          exact hs))
-        (fun s hs => conjBy_rel _ haV h4 s (by
-          rw [← heTF]
-          exact hs))
-      have hkey : compOf G' π' sU tU sV tV
-          = (places.invPerm (2 * m)
-              (places.invPerm (2 * m) (dbl ρ))).map (fun j =>
-            ground.getAt 0 (places.invPerm (2 * m) (dbl ρ))
-              (ground.getAt 0 (compOf G π
-                (conjBy (posIf G (false, false)).length
-                  (slotOf G G' ρ (false, false))
-                  (slotOf G G' ρ (false, true)) sU)
-                (conjBy (posIf G (false, false)).length
-                  (slotOf G G' ρ (false, false))
-                  (slotOf G G' ρ (false, true)) tU)
-                (conjBy (posIf G (true, false)).length
-                  (slotOf G G' ρ (true, false))
-                  (slotOf G G' ρ (true, true)) sV)
-                (conjBy (posIf G (true, false)).length
-                  (slotOf G G' ρ (true, false))
-                  (slotOf G G' ρ (true, true)) tV)) j)) := by
-        refine ground.getAt_ext 0 _ _ (by
-            rw [compOf_length, hm', ground.length_map,
-              places.length_invPerm]) ?_
-        intro i hi
-        rw [compOf_length, hm'] at hi
-        rw [ground.getAt_map 0 0 _ (places.invPerm (2 * m)
-            (places.invPerm (2 * m) (dbl ρ))) i (by
-              rw [places.length_invPerm]
-              exact hi),
-          places.invPerm_invPerm (2 * m) hdm, ← htr i hi,
-          perm_left (2 * m) hdm _ (perm_lt (2 * m) hcm' i hi)]
-      rw [hkey]
-      exact places.cyclesOf_transport (2 * m) hcm
-        (places.invPerm_member (2 * m) hdm)
-    rw [numOf_unfold G' π', numOf_unfold G π, heFF, heTF]
+  · have hgd' := hfwd hgd
+    rw [evalPhi_unfold G' π', evalPhi_unfold G π, if_pos hgd', if_pos hgd]
     refine (genericlift.crossNull_ov _ _).mpr ?_
+    have hD : (varsOf G').foldr (fun v d =>
+        poly.mul (split.pminor (gramWg (posIf G' (v, false)).length)) d)
+        poly.one
+        = (varsOf G).foldr (fun v d =>
+          poly.mul (split.pminor (gramWg (posIf G (v, false)).length)) d)
+          poly.one := by
+      rw [hvars]
+      exact foldr_ext _ _ (fun v d => by rw [(hlen v).1]) _ _
+    rw [hD]
     refine poly.mul_congr_left ?_ _
-    refine fourBij (places.perms (posIf G (false, false)).length)
-      (places.perms (posIf G (true, false)).length)
-      (termOf G π) (termOf G' π')
-      (conjBy (posIf G (false, false)).length
-        (slotOf G G' ρ (false, false))
-        (slotOf G G' ρ (false, true)))
-      (conjBy (posIf G (false, false)).length
-        (places.invPerm (posIf G (false, false)).length
-          (slotOf G G' ρ (false, false)))
-        (places.invPerm (posIf G (false, false)).length
-          (slotOf G G' ρ (false, true))))
-      (conjBy (posIf G (true, false)).length
-        (slotOf G G' ρ (true, false))
-        (slotOf G G' ρ (true, true)))
-      (conjBy (posIf G (true, false)).length
-        (places.invPerm (posIf G (true, false)).length
-          (slotOf G G' ρ (true, false)))
-        (places.invPerm (posIf G (true, false)).length
-          (slotOf G G' ρ (true, true))))
-      (places.perms_distinct _) (places.perms_distinct _)
-      (fun x hx => conjBy_inv _ haU hbU hx)
-      (fun x hx => by
-        have h := conjBy_inv (posIf G (false, false)).length
-          (places.invPerm_member _ haU)
-          (places.invPerm_member _ hbU) hx
-        rw [places.invPerm_invPerm _ haU,
-          places.invPerm_invPerm _ hbU] at h
-        exact h)
-      (fun x hx => conjBy_member _ haU hbU hx)
-      (fun x hx => conjBy_member _ (places.invPerm_member _ haU)
-        (places.invPerm_member _ hbU) hx)
-      (fun x hx => conjBy_inv _ haV hbV hx)
-      (fun x hx => by
-        have h := conjBy_inv (posIf G (true, false)).length
-          (places.invPerm_member _ haV)
-          (places.invPerm_member _ hbV) hx
-        rw [places.invPerm_invPerm _ haV,
-          places.invPerm_invPerm _ hbV] at h
-        exact h)
-      (fun x hx => conjBy_member _ haV hbV hx)
-      (fun x hx => conjBy_member _ (places.invPerm_member _ haV)
-        (places.invPerm_member _ hbV) hx)
-      (fun s t x y hs ht hx hy => ?_)
-    show poly.oneValue (poly.mul (nUOf G' s t)
-      (poly.mul (nVOf G' x y) (dfPow ((places.cyclesOf
-        (compOf G' π' s t x y)).length / 2)))) _
-    rw [hcyc s t x y hs ht hx hy]
-    exact poly.oneValue_trans
-      (poly.mul_congr_left (nUOf_transport G G'
-        (slotOf G G' ρ (false, false)) (slotOf G G' ρ (false, true))
-        s t heFF haU hbU hs ht) _)
-      (poly.mul_congr _ (poly.mul_congr_left
-        (nVOf_transport G G' (slotOf G G' ρ (true, false))
-          (slotOf G G' ρ (true, true)) x y heTF haV hbV hx hy) _))
-  · rw [if_neg hgd, if_neg hgd]
+    have hmt : ∀ w, 0 < ground.countOf w (varsOf G) →
+        (posIf G (w, false)).length = (posIf G (w, true)).length :=
+      fun w hw => ground.beqEqOf (ground.all_of_mem _ _ hgd w
+        (ground.mem_of_countOf_pos w _ hw))
+    have hcov : ∀ j, j < G.length →
+        0 < ground.countOf (ground.getAt (0, false) G j).1 (varsOf G) :=
+      fun j hj => varsOf_cover G j hj
+    have hcov' : ∀ j, j < G'.length →
+        0 < ground.countOf (ground.getAt (0, false) G' j).1 (varsOf G) :=
+      fun j hj => by
+        rw [← hvars]
+        exact varsOf_cover G' j hj
+    rw [hm, hm', hvars]
+    refine poly.oneValue_trans (contract_flat G' _ _ _ _ _)
+      (poly.oneValue_trans ?_ (poly.oneValue_symm (contract_flat G _ _ _ _ _)))
+    refine poly.polyFoldLaws.opCongr (poly.oneValue_refl []) ?_
+    rw [domsOf_relabel G G' ρ m hm hm' hr hg (varsOf G)]
+    refine ground.famFold_bij_ov poly.polyFoldLaws.toCommLaws [] _ _
+      (ground.distinct_prodLists _ (domsOf_distinct G _))
+      (g := conjTup G G' ρ (varsOf G)) (h := conjTupInv G G' ρ (varsOf G))
+      (fun tup ht => conjTup_inv G G' ρ m hm hm' hr hg _ tup hmt
+        (tupMem_of_count G _ tup ht))
+      (fun tup ht => conjTup_inv' G G' ρ m hm hm' hr hg _ tup hmt
+        (tupMem_of_count G _ tup ht))
+      (fun tup ht => count_of_tupMem G _ _
+        (conjTup_mem G G' ρ m hm hm' hr hg _ tup hmt
+          (tupMem_of_count G _ tup ht)))
+      (fun tup ht => count_of_tupMem G _ _
+        (conjTupInv_mem G G' ρ m hm hm' hr hg _ tup hmt
+          (tupMem_of_count G _ tup ht)))
+      (fun tup ht => ?_)
+    exact termAt_transport G G' ρ m hm hm' hr hg π π' hπ hπ' hcπ
+      (varsOf G) tup (varsOf_distinct G) (tupMem_of_count G _ tup ht) hmt
+      hcov hcov'
+  · have hgd' : ¬ guardOf G' = true := fun h => hgd (hbwd h)
+    rw [evalPhi_unfold G' π', evalPhi_unfold G π, if_neg hgd', if_neg hgd]
     exact (by decide +kernel : genericlift.crossNull poly.pZero poly.pZero)
 
 /-- `rem:kernel`'s gauge-mode sentence at the carried evaluation:
@@ -3516,7 +3521,7 @@ theorem evalPhi_transport (G : states.FList) (π ρ : List Nat)
     (hρ : 0 < ground.countOf ρ (places.perms G.length)) :
     genericlift.crossNull
       (evalPhi (ρ.map (fun j =>
-          ground.getAt (false, false) G j))
+          ground.getAt (0, false) G j))
         (ρ.map (fun j => ground.getAt 0
           (places.invPerm G.length ρ) (ground.getAt 0 π j))))
       (evalPhi G π) := by
@@ -3534,10 +3539,10 @@ theorem evalPhi_transport (G : states.FList) (π ρ : List Nat)
       ground.getAt 0 π (ground.getAt 0 ρ s) < G.length := fun s hs =>
     perm_lt G.length hπ _ (perm_lt G.length hρ s hs)
   refine evalPhi_relabel G
-    (ρ.map (fun j => ground.getAt (false, false) G j)) π
+    (ρ.map (fun j => ground.getAt (0, false) G j)) π
     (ρ.map (fun j => ground.getAt 0 (places.invPerm G.length ρ)
       (ground.getAt 0 π j))) ρ G.length rfl ?_ hρ hπ ?_ ?_ ?_
-  · show (ρ.map (fun j => ground.getAt (false, false) G j)).length
+  · show (ρ.map (fun j => ground.getAt (0, false) G j)).length
       = G.length
     rw [ground.length_map, hrlen]
   · refine places.perm_of_reads _ _ (by
@@ -3556,9 +3561,9 @@ theorem evalPhi_transport (G : states.FList) (π ρ : List Nat)
         (places.invPerm_member G.length hρ) _ _ (hplt i hi)
         (hplt j hj) he
   · intro i hi
-    show ground.getAt (false, false) (ρ.map (fun j =>
-      ground.getAt (false, false) G j)) i = _
-    exact ground.getAt_map 0 (false, false) _ ρ i (by
+    show ground.getAt (0, false) (ρ.map (fun j =>
+      ground.getAt (0, false) G j)) i = _
+    exact ground.getAt_map 0 (0, false) _ ρ i (by
       rw [hrlen]
       exact hi)
   · intro s hs

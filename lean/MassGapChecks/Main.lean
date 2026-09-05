@@ -37,6 +37,15 @@ with the refused split's witness the loop's own vector
 in one declaration, the shared enumeration one kernel evaluation
 — the module's priced pins, `Spin(5)`, `Sp(3)` and `G_2` the
 committed members with the `A`-arm's window beside them.
+
+Clause (iii) reads at every committed member through the theorem
+routes, `clauseIII_all` at the `A`-series' first two members, the
+three series' floors and the fixed members; the member scale and key
+read beside them: the scale's second member at the residue two, the
+keys `2990` and `4962` at the residues one and two decided with the
+key's comparison at the key and refused at its predecessor, the
+key's read at the residue two assembled by kernel reduction, and the
+tied scale under the ceiling at the residue-two key.
 -/
 set_option maxHeartbeats 4000000
 
@@ -154,7 +163,7 @@ the clearing twenty-four, the level its four-link read. -/
 four-link read. -/
 private def etB : Mat := [[u, u], [u, ⟨41, 1⟩]]
 
-example : K.freeGap (data (.B 0)) square 40 = etB
+example : K.freeGap (data (.B 0)) square 40 (idMat 2) = etB
     ∧ freeend.levelRead (data (.B 0)) square 40 40 := by decide +kernel
 example : freeend.belowFloor (data (.B 0)) 40 10 := by decide +kernel
 example : carrier.contentN (data (.B 0))
@@ -189,7 +198,7 @@ through `thm:main`'s wiring). -/
 
 example : (data (.B 0)).dim ((data (.B 0)).theta) = 10 := by decide +kernel
 example : pairpencil.pencilRead (data (.B 0)) square 40 2
-    ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) (winE (.B 0))
+    ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) 1 (winE (.B 0))
     (idMat 2) (winM (.B 0)) (inertia.mkSplit 2 (idMat 2))
     [(winM (.B 0),
       inertia.mkSplit 2 (siteDatum (inertia.matScaleB (BPair.ofNat 10) (idMat 2))
@@ -202,7 +211,7 @@ floor `14` at the clearing thirty-two. -/
 
 private def etC : Mat := [[u, u], [u, ⟨57, 1⟩]]
 
-example : K.freeGap (data (.C 0)) square 56 = etC
+example : K.freeGap (data (.C 0)) square 56 (idMat 2) = etC
     ∧ freeend.levelRead (data (.C 0)) square 56 56 := by decide +kernel
 example : freeend.belowFloor (data (.C 0)) 56 14 := by decide +kernel
 example : carrier.contentN (data (.C 0))
@@ -233,7 +242,7 @@ read beside the series'. -/
 
 private def etG : Mat := [[u, u], [u, ⟨97, 1⟩]]
 
-example : K.freeGap (data .G2) square 96 = etG
+example : K.freeGap (data .G2) square 96 (idMat 2) = etG
     ∧ freeend.levelRead (data .G2) square 96 96 := by decide +kernel
 example : freeend.belowFloor (data .G2) 96 24 := by decide +kernel
 example : carrier.contentN (data .G2)
@@ -374,7 +383,8 @@ example : winM .E6 = pairpencil.loopMag (data .E6)
 example : winE (.B 0) = etB := by decide +kernel
 example : winE (.C 0) = etC := by decide +kernel
 example : winE .G2 = etG := by decide +kernel
-example : winE (.A 1) = K.freeGap (data (.A 1)) square (winCut (.A 1)) := by
+example : winE (.A 1) = K.freeGap (data (.A 1)) square (winCut (.A 1))
+    (idMat (winO (.A 1))) := by
   decide +kernel
 
 /-! The counts carried to the interior: the theorem route at the
@@ -421,3 +431,28 @@ example : ¬ cellcount.countAt
       (freecell.freePMat (winE (.B 0)) (winM (.B 0)) (inertia.idMat 2)
         (ground.posOfSucc (4 * winFloorN (.B 0) + 1)) 1)
       BPair.unit 1 2)) := by decide +kernel
+
+/-! Clause (iii) at the committed members through the theorem routes,
+the member scale and key read beside them. -/
+
+example : clauseIII (.A 0) := clauseIII_all (.A 0)
+example : clauseIII (.A 1) := clauseIII_all (.A 1)
+example : clauseIII (.A 30) := clauseIII_all (.A 30)
+example : clauseIII (.B 0) := clauseIII_all (.B 0)
+example : clauseIII (.C 0) := clauseIII_all (.C 0)
+example : clauseIII (.D 0) := clauseIII_all (.D 0)
+example : clauseIII .G2 := clauseIII_all .G2
+example : clauseIII .E8 := clauseIII_all .E8
+
+example : posVal (cornerScaleD 2) = 4718592 := by decide +kernel
+example : cornerKey 1 = 2990 := by decide +kernel
+example : cornerKey 2 = 4962 := by decide +kernel
+example : keyRead 1 2990 := by decide +kernel
+example : ¬ keyRead 1 2989 := by decide +kernel
+example : keyRead 2 4962 := by decide +kernel
+example : ¬ keyRead 2 4961 := by decide +kernel
+example : cornerpivot.endRead (posVal 1) (posVal (cornerScaleD 2)) 2 (cornerKey 2) := by
+  decide +kernel
+example : BPair.ofPos 26 * BPair.ofPos cornerpivot.disconjC.e0d
+    ≤ cornerpivot.disconjC.e0n * BPair.ofPos (cornerpivot.tieScaleD (cornerKey 2)) := by
+  decide +kernel

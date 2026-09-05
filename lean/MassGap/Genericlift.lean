@@ -25,9 +25,9 @@ certificate refuses), the move reading one value with its own pair
 (`pReduce_read`, the two arms the reflexivity at the memberwise
 swap's cancellation and the two stated factors chased through the
 convolution's algebra); `pAddR` is the displayed sum at that
-representative, the second spelling carrying the same bridge, and
-`wg.pairFull`, `res.deflate1` and `kernel.kernelRead` are the fold seams
-recorded as its consumers.  Clause (ii): the adjugate at the
+representative, the second spelling carrying the same bridge, the
+fold's value the displayed sum's at every seam.  Clause (ii): the
+adjugate at the
 polynomial-matrix cofactors (`pcofac`, `padj`), the identity
 `M adj(M) = det(M) 1` the solved witness's whole verification
 (`adjRead` at `split.pmatMul` and `split.pdiag`, the instance

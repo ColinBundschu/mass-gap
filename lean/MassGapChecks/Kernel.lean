@@ -49,7 +49,7 @@ residue.  The factor-list guard refuses a cross-variable site
 (`tr(U V)`) at either tag, and `memberAt` branches at the radius:
 the antisymmetrizer's direct branch at `d_f = 2`, the symbolic
 branch at `d_f = 5` on `con:res`'s adjoint-site instances.  The
-module's cost is the coherence pin's two symbolic `wg.pairPhi`
+module's cost is the coherence pin's two symbolic `wg.pairPhi wg.evalPhi`
 reads at the six-factor site, the `padj (gramWg 3)` adjugate under
 kernel reduction. -/
 set_option maxHeartbeats 16000000
@@ -57,10 +57,10 @@ set_option maxHeartbeats 16000000
 open ground poly genericlift states kernel
 
 private def f4 : FList :=
-  [(false, false), (false, false), (false, true), (false, true)]
-private def f2 : FList := [(false, false), (false, true)]
+  [(0, false), (0, false), (0, true), (0, true)]
+private def f2 : FList := [(0, false), (0, true)]
 private def f3 : FList :=
-  [(false, false), (false, false), (false, false)]
+  [(0, false), (0, false), (0, false)]
 
 /-! The canonical rotation, and the word multisets at
 `[U, U, U†, U†]`: exchanged repeated positions one state. -/
@@ -78,7 +78,7 @@ example : combEqRead f4 [([2, 3, 0, 1], pOne)]
     [([3, 2, 1, 0], pOne)] := by decide +kernel
 example : ¬ combEqRead f4 [([2, 3, 0, 1], pOne)]
     [([3, 2, 1, 0], ([⟨3, 1⟩], [⟨2, 1⟩]))] := by decide +kernel
-example : ¬ combEqRead [(false, false)]
+example : ¬ combEqRead [(0, false)]
     [([0], ([⟨2, 1⟩], [])), ([0], ([⟨2, 1⟩], []))]
     [([0], ([⟨6, 1⟩], [⟨2, 1⟩]))] := by decide +kernel
 
@@ -92,7 +92,7 @@ example : ¬ kernelRead f2 [[0, 1], [1, 0]]
     [([⟨1, 2⟩, ⟨2, 1⟩], [⟨2, 1⟩]), ([⟨1, 2⟩, ⟨2, 1⟩], [⟨2, 1⟩])]
     ⟨4, 1⟩ := by decide +kernel
 example : ¬ kernelRead
-    [(false, false), (false, false)] [[0, 1], [0, 1]]
+    [(0, false), (0, false)] [[0, 1], [0, 1]]
     [([⟨2, 1⟩], [⟨2, 1⟩]), ([⟨1, 2⟩], [⟨2, 1⟩])] ⟨4, 1⟩ := by decide +kernel
 example : ¬ kernelRead f2 [[0, 1], [1, 0]]
     [([⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩]), ([⟨1, 2⟩], [⟨2, 1⟩])]
@@ -153,11 +153,32 @@ example : ((pairAt f3 [1, 0, 2] [1, 2, 0] 2).getD BPair.unit).oneValue
 example : ((pairAt f3 [1, 2, 0] [1, 2, 0] 2).getD BPair.unit).oneValue
     (BPair.ofNat 2) := by decide +kernel
 
+/-! The winding data keyed by variable: the two-variable site at
+the keys `0` and `2` reads one value with the site at `0` and `1`,
+`⟨|tr U|² |tr W|², |tr U|² |tr W|²⟩ = 4` at the residue two, and
+the coherence pin at that site, the direct read against the
+symbolic pairing's Horner evaluation. -/
+
+private def f02 : FList := [(0, false), (2, false), (0, true), (2, true)]
+private def f01 : FList := [(0, false), (1, false), (0, true), (1, true)]
+
+example : ((pairAt f02 [0, 1, 2, 3] [0, 1, 2, 3] 2).getD BPair.unit).oneValue
+    ((pairAt f01 [0, 1, 2, 3] [0, 1, 2, 3] 2).getD BPair.unit) := by
+  decide +kernel
+example : ((pairAt f02 [0, 1, 2, 3] [0, 1, 2, 3] 2).getD BPair.unit).oneValue
+    (BPair.ofNat 4) := by decide +kernel
 example : BPair.oneValue
-    (poly.eval (wg.pairPhi f3 f3 [0, 1, 2] [0, 1, 2]).1
+    (poly.eval (wg.pairPhi wg.evalPhi f02 f02 [0, 1, 2, 3] [0, 1, 2, 3]).1
+      (BPair.ofNat 2))
+    ((pairAt f02 [0, 1, 2, 3] [0, 1, 2, 3] 2).getD BPair.unit
+      * poly.eval (wg.pairPhi wg.evalPhi f02 f02 [0, 1, 2, 3] [0, 1, 2, 3]).2
+        (BPair.ofNat 2)) := by decide +kernel
+
+example : BPair.oneValue
+    (poly.eval (wg.pairPhi wg.evalPhi f3 f3 [0, 1, 2] [0, 1, 2]).1
       (BPair.ofNat 4))
     ((pairAt f3 [0, 1, 2] [0, 1, 2] 4).getD BPair.unit
-      * poly.eval (wg.pairPhi f3 f3 [0, 1, 2] [0, 1, 2]).2
+      * poly.eval (wg.pairPhi wg.evalPhi f3 f3 [0, 1, 2] [0, 1, 2]).2
         (BPair.ofNat 4)) := by decide +kernel
 
 /-! The mixed-dagger and null-cycle paths at `d_f = 2`: the
@@ -175,7 +196,7 @@ example : ((pairAt f4 [0, 1, 2, 3] [0, 1, 2, 3] 2).getD
     BPair.unit).oneValue (BPair.ofNat 14) := by decide +kernel
 example : ((pairAt f4 [1, 0, 2, 3] [0, 1, 3, 2] 2).getD
     BPair.unit).oneValue (BPair.ofNat 2) := by decide +kernel
-example : pairAt [(false, false), (true, false)] [1, 0] [1, 0] 2
+example : pairAt [(0, false), (1, false)] [1, 0] [1, 0] 2
     = none := by decide +kernel
 
 /-! The landing site's closure: the six-wiring antisymmetrizer is
@@ -197,7 +218,16 @@ example : directRead f3 aSym 1 := by decide +kernel
 example : directRead f3 aSym 2 := by decide +kernel
 example : ¬ directRead f3 aSym 3 := by decide +kernel
 
-private def fUV : FList := [(false, false), (true, false)]
+/-! The one-variable read at a key off `0`: the direct member read
+at the keys `1` and `2`. -/
+
+private def f3k1 : FList := [(1, false), (1, false), (1, false)]
+private def f3k2 : FList := [(2, false), (2, false), (2, false)]
+
+example : directRead f3k1 aSym 2 := by decide +kernel
+example : directRead f3k2 aSym 2 := by decide +kernel
+
+private def fUV : FList := [(0, false), (1, false)]
 
 example : ¬ directRead fUV [([1, 0], pOne)] 2 := by decide +kernel
 example : ¬ directRead fUV [([1, 0], pOne)] 5 := by decide +kernel
@@ -218,7 +248,7 @@ private def cDet : Comb :=
    ([2, 3, 0, 1], ([⟨1, 2⟩], [⟨2, 1⟩]))]
 
 private def f21 : FList :=
-  [(false, false), (false, false), (false, true)]
+  [(0, false), (0, false), (0, true)]
 
 private def cTie : Comb :=
   [([0, 1, 2], pOne), ([1, 0, 2], ([⟨1, 2⟩], [⟨2, 1⟩])),

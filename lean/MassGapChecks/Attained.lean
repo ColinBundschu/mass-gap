@@ -313,3 +313,26 @@ example {n : Nat} (E : SqMat n) (Y : Vec n) :
     momentform.mu1 E Y = inertia.quadForm E.val Y.val := rfl
 example {n : Nat} (E : SqMat n) (Y : Vec n) :
     momentform.mu2 E Y = inertia.quadForm (matMul E.val E.val) Y.val := rfl
+
+/-! Clause (iv): the probe cap at the eigen column of the root `12`
+against the level `16`, the pair `(144 : 16·12)` on its lower side
+refusing the spectral read there, the theorem route beside the
+decided refusal; and the isolating refusal of the pair binder: at
+the level `12` the pair reads equal members, the spectral read
+holding. -/
+
+private def sp16 : Split 3 :=
+  mkSplit 3 (siteDatum (matScale (1 : Pos) (matMul et3 et3))
+    (matScale ((4 : Pos) * 4) et3))
+
+private theorem hsp16 : splitRead (siteDatum
+    (matScale (1 : Pos) (matMul et3 et3)) (matScale ((4 : Pos) * 4) et3)) sp16 :=
+  mkSplit_read 3 _ (by decide +kernel) (by decide +kernel)
+
+example : (inertia.quadForm (matMul et3 et3) y1).scale (1 : Pos)
+    < (inertia.quadForm et3 y1).scale ((4 : Pos) * 4) := by decide +kernel
+example : ¬ speccut.specRead (l3.map (fun r => (r.1, r.2.1))) 4 4 1 :=
+  probe_cap et3 id3 id3 l3 4 4 1 hdP sp16 hsp16 y1 (by decide +kernel)
+    (by decide +kernel)
+example : ¬ ((inertia.quadForm (matMul et3 et3) y1).scale (1 : Pos)
+    < (inertia.quadForm et3 y1).scale ((4 : Pos) * 3)) := by decide +kernel

@@ -673,6 +673,15 @@ theorem firstAt_stop (P : Nat → Prop) [DecidablePred P] :
       rw [hstep, ← Nat.add_assoc k j 1, Nat.add_right_comm k j 1] at h
       exact firstAt_stop P j (k + 1) h
 
+/-- A count's square at its self-product. -/
+theorem sqRead (a : Nat) : a ^ 2 = a * a := by
+  rw [Nat.pow_succ, Nat.pow_succ, Nat.pow_zero, Nat.one_mul]
+
+/-- A count's fourth power at its four-fold product. -/
+theorem pow4Read (a : Nat) : a ^ 4 = a * a * a * a := by
+  rw [Nat.pow_succ, Nat.pow_succ, Nat.pow_succ, Nat.pow_succ, Nat.pow_zero,
+    Nat.one_mul]
+
 /-- A count's square reads back the count's order. -/
 theorem leOfSqLe {a b : Nat} (h : a * a ≤ b * b) : a ≤ b := by
   match Nat.lt_or_ge b a with
@@ -3922,6 +3931,33 @@ def BPair.marginN (x : BPair) : Nat :=
   if x.fst.pred ≤ x.snd.pred then x.snd.pred - x.fst.pred
   else x.fst.pred - x.snd.pred
 
+/-- A list's content, the greatest common divisor of its members'
+margins — the coefficients' one shared count (`thm:windowsep`'s
+primitive strip), the kernel's own `Nat.gcd`. -/
+def BPair.listContent (l : List BPair) : Nat :=
+  l.foldl (fun k x => Nat.gcd k (BPair.marginN x)) 0
+
+/-- The list stripped at a stated count: each member's margin divided
+exactly at its own side, a member off the division kept, the vacant
+count the identity. -/
+def BPair.listPrim (n : Nat) (l : List BPair) : List BPair :=
+  l.map (fun x =>
+    if n == 0 then x
+    else if BPair.marginN x % n == 0 then
+      match x.side with
+      | .lt _ _ => ⟨.one, posOfSucc (BPair.marginN x / n)⟩
+      | .eq _ => BPair.unit
+      | .gt _ _ => ⟨posOfSucc (BPair.marginN x / n), .one⟩
+    else x)
+
+/-- A keyed join into an association list: the key's entry joined
+at the stated sum, a fresh key appended at its datum. -/
+def joinBy {α β : Type} (eq : α → α → Bool) (add : β → β → β)
+    (k : α) (x : β) : List (α × β) → List (α × β)
+  | [] => [(k, x)]
+  | (v, y) :: t =>
+    if eq v k then (v, add y x) :: t else (v, y) :: joinBy eq add k x t
+
 /-! The composite pair `[⟨u : v⟩ : c]`, the balance pair of its
 members' pairs at the one shared second datum; the reads are the two
 displays' compositions, displayed once. -/
@@ -4769,6 +4805,14 @@ theorem filter_cons {α : Type} (p : α → Bool) (a : α) (l : List α) :
       = match p a with
         | true => a :: l.filter p
         | false => l.filter p := rfl
+
+
+/-- Predicates agreeing at every member filter alike. -/
+theorem filter_congr {α : Type} (p q : α → Bool) (h : ∀ a, p a = q a) :
+    ∀ l : List α, l.filter p = l.filter q
+  | [] => rfl
+  | a :: t => by
+    rw [filter_cons p a t, filter_cons q a t, h a, filter_congr p q h t]
 
 /-- The keyed join's heads read the first family back: at rows at
 or below their partners' counts, each joined entry's head is the
@@ -8159,6 +8203,24 @@ theorem countOf_partition {α : Type} [DecidableEq α] :
 def dedupL {α : Type} [DecidableEq α] : List α → List α
   | [] => []
   | a :: t => if 0 < countOf a t then dedupL t else a :: dedupL t
+
+/-- The distinct index at a list, the first occurrence kept, the
+members in their order of first appearance. -/
+def dedupF {α : Type} [DecidableEq α] (l : List α) : List α :=
+  l.foldl (fun acc a => if 0 < countOf a acc then acc else acc ++ [a]) []
+
+/-- The closure from stated seeds at a step and a join: each round
+joins the frontier's steps to the pool at the join, the next
+frontier the round's new members, the fuel the rounds' bound. -/
+def closeBy {α : Type} (step : α → List α) (join : List α → α → List α) :
+    Nat → List α → List α → List α
+  | 0, pool, _ => pool
+  | fuel + 1, pool, frontier =>
+    match frontier with
+    | [] => pool
+    | _ :: _ =>
+      let pool' := (frontier.flatMap step).foldl join pool
+      closeBy step join fuel pool' (pool'.drop pool.length)
 
 /-- A member reaches the distinct index. -/
 theorem mem_dedupL {α : Type} [DecidableEq α] {x : α} :

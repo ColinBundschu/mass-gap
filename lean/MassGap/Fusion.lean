@@ -1,6 +1,7 @@
 import MassGap.Repring
 import MassGap.Adjchar
 import MassGap.Xfusion
+import MassGap.Fiber
 /-!
 `con:fusion` — the fusion interface: the calculus's outputs the
 chain reads are one interface, its fields the structure a member
@@ -18,7 +19,16 @@ class data (`lem:chargedcell`'s charged layer) — the class code
 per label (`cls`, the `d_f`-ality at the label calculus), the
 class group's sum (`clsAdd`) and the winding floor per class
 (`clsFloorN`, the endpoint's numerator at the one second member
-`c2D`).  The count laws, the dimension identity, the Casimir's
+`c2D`); and the presentation field: at a vertex's incident ends,
+the labels with their orientations, the fiber's vertex list in the
+ends' slot power (`vertList`, `con:fiber`'s stated list as
+`fiber.VList`, the label calculus's own at `fiber.vertListA` and
+vacant at a member), its Gram the derived read `vertGramOf`, the
+list's own `fiber.listGram` where the list is stated and the
+two-end coevaluation's count at the label data off it
+(`fiber.twoEndGram`, `lem:dualread`(i), vacant at a further
+vertex).
+The count laws, the dimension identity, the Casimir's
 positivity at nonunit labels, the Cartan strictness, the drift
 identity and the class laws — the row's additivity, the dual's
 join to the unit class and `θ`'s unit class — are
@@ -75,6 +85,17 @@ structure Data (L : Type) where
   cls : L → Nat
   clsAdd : Nat → Nat → Nat
   clsFloorN : Nat → Nat
+  vertList : List (L × Bool) → Option fiber.VList
+
+/-- The vertex Gram at the interface: the vertex list's own where
+the list is stated, and off it the two-end coevaluation's count at
+the label data (`con:fiber`: a vertex of two ends reads its block's
+coevaluation, self-paired at the block's count). -/
+def vertGramOf {L : Type} (F : Data L) (es : List (L × Bool)) :
+    Option (elim.Mat × Pos) :=
+  match F.vertList es with
+  | some l => some (fiber.listGram l)
+  | none => fiber.twoEndGram F.eqL F.dual F.dim es
 
 /-- The unit read `N^𝟏_{ab} = δ_{a b̄}` at the interface. -/
 def unitLaw {L : Type} (F : Data L) (a b : L) : Prop :=
@@ -302,15 +323,15 @@ def dataA (d : Nat) : Data Shape :=
    (fun l => ground.listEqBeq (labels.reduce l)),
    labels.unitL d, labels.dualL, places.addS,
    adjchar.theta d, labels.countL,
-   (fun a b => (allShapes d (degree a + degree b)).filterMap
-     (labels.emit a b)),
+   labels.rowL d,
    weyldim.dimOf, c2hat.dfQ, 2 * d * d, xfusion.c1 d,
    (fun k => (List.range (k + 1)).flatMap (fun j =>
      (allShapes (d - 1) j).filterMap (fun s =>
        if 0 < j && c2hat.dfQ (s ++ [0]) ≤ k then some (s ++ [0])
        else none))),
    (fun s => places.degree s % d), (fun x y => (x + y) % d),
-   (fun j => j * (d - j) * (d + 1))⟩
+   (fun j => j * (d - j) * (d + 1)),
+   (fun es => some (fiber.vertListA d es))⟩
 
 /-- The commutativity law holds at the `A`-series data outright:
 the interface's count is the label count, whose exchange is

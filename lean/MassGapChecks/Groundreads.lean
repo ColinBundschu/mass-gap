@@ -1734,7 +1734,7 @@ private def gRow (a b : Nat) : List Nat := [gMul a b]
 private def gF : fusion.Data Nat :=
   ⟨gEq, gEqRefl, 0, (fun l => l), gMul, 1,
    gCount, gRow, (fun _ => 1), (fun _ => 1), 1, 1,
-   (fun _ => []), (fun _ => 0), gMul, (fun _ => 0)⟩
+   (fun _ => []), (fun _ => 0), gMul, (fun _ => 0), (fun _ => none)⟩
 private def gWin : List Nat := [0, 1, 2, 3]
 private def gPsi : List BPair := [BPair.ofNat 1, BPair.ofNat 1,
   BPair.unit, BPair.unit]

@@ -11,8 +11,10 @@ datum.  The reads: the incident list at a vertex with the
 orientation per end; the coloring read (every link's two ends at
 the two colors, so every cycle's length is even); the simplicity
 read (two vertices sharing at most one link); and the plaquette
-read (each
-boundary a closed word of four oriented links of the region).
+read (each boundary a closed word of four oriented links of the
+region, the list one listing per plaquette at the cyclic reading
+`cycEq`, a boundary word against its rotations at either
+traversal).
 The direction data with the transverse cuts, the translation
 action and the signed coordinate permutations land
 with their consumers (`lem:fiberdec`, `lem:chargedcell`,
@@ -155,9 +157,44 @@ private def chainClosed (R : Region) : List (Nat × Bool) → Bool
   | [_] => true
   | e :: e' :: t => (endOf R e == startOf R e') && chainClosed R (e' :: t)
 
+/-- The boundary traversed backwards: the word reversed with every
+traversal bit flipped, the field's orientation reversal. -/
+def revWord (w : List (Nat × Bool)) : List (Nat × Bool) :=
+  (w.reverse).map (fun e => (e.1, !e.2))
+
+/-- Two boundary words one plaquette reading: the words equal, or
+a rotation joining the first to the second or to its reversal, the
+cyclic word at either traversal. -/
+def cycEq (w w' : List (Nat × Bool)) : Bool :=
+  decide (w = w')
+    || (List.range w'.length).any (fun k => decide (w = ground.rotAt k w'))
+    || (List.range w'.length).any (fun k =>
+        decide (w = ground.rotAt k (revWord w')))
+
+/-- A boundary word reads its own cyclic word. -/
+theorem cycEq_self (w : List (Nat × Bool)) : cycEq w w = true := by
+  show (decide (w = w) || _ || _) = true
+  rw [decide_eq_true rfl]
+  rfl
+
+/-- The moved boundary word: each link at its image key with the
+traversal bit carried across the reversal family, the reversal
+read at the source key. -/
+def moveWord (t : Nat → Nat) (rev : Nat → Bool)
+    (w : List (Nat × Bool)) : List (Nat × Bool) :=
+  w.map (fun e => (t e.1, xor e.2 (rev e.1)))
+
+/-- The plaquette list at one listing per plaquette: two positions
+read one cyclic word exactly where they are one position. -/
+private def cycDistinct (ps : List (List (Nat × Bool))) : Bool :=
+  (List.range ps.length).all (fun i => (List.range ps.length).all (fun j =>
+    (i == j) || !cycEq (ground.getAt [] ps i) (ground.getAt [] ps j)))
+
 /-- The plaquette read: each boundary a closed word of four
 distinct oriented links of the region, consecutive ends joined and
-the word's last end the first's start. -/
+the word's last end the first's start, and the list one listing
+per plaquette at the cyclic reading, the plaquette set's own
+count. -/
 def plaqRead (R : Region) : Prop :=
   (R.plaqs.all (fun p =>
     p.length == 4
@@ -169,10 +206,59 @@ def plaqRead (R : Region) : Prop :=
           | e :: _ =>
             match p.reverse with
             | [] => true
-            | e' :: _ => endOf R e' == startOf R e))) = true
+            | e' :: _ => endOf R e' == startOf R e))
+    && cycDistinct R.plaqs) = true
 
 instance (R : Region) : Decidable (plaqRead R) :=
   inferInstanceAs (Decidable (_ = _))
+
+/-- The plaquette list is distinct at the plaquette read, the
+cyclic reading's structural instance. -/
+theorem plaqRead_distinct (R : Region) (h : plaqRead R) :
+    distinctList R.plaqs := by
+  have hc : cycDistinct R.plaqs = true := (andSplitB h).2
+  refine distinct_of_getAt_inj [] R.plaqs (fun p q hp hq heq => ?_)
+  have h1 := all_range_read _ (all_range_read _ hc p hp) q hq
+  rw [heq, cycEq_self] at h1
+  cases hb : (p == q) with
+  | true => exact beqEqOf hb
+  | false =>
+    rw [hb] at h1
+    exact absurd h1 (by decide)
+
+/-- The plaquette permutation read at a link map and its reversal
+family: the action's plaquette permutation enters as data with its
+witness, the two composing to the identity below the count both
+ways and each keeping the range, and every boundary's image word
+is the moved position's plaquette at the cyclic reading — the
+action field's permutation of the plaquettes, read as the induced
+vertex map is (`fiberdec.endsRead`, `fiberdec.vertPermRead`). -/
+def plaqPermRead (R : Region) (t : Nat → Nat) (rev : Nat → Bool)
+    (pm pm' : Nat → Nat) : Prop :=
+  ((List.range R.plaqs.length).all (fun q =>
+    (pm q < R.plaqs.length) && (pm' q < R.plaqs.length)
+      && (pm' (pm q) == q) && (pm (pm' q) == q)
+      && cycEq (moveWord t rev (ground.getAt [] R.plaqs q))
+          (ground.getAt [] R.plaqs (pm q)))) = true
+
+instance (R : Region) (t : Nat → Nat) (rev : Nat → Bool)
+    (pm pm' : Nat → Nat) : Decidable (plaqPermRead R t rev pm pm') :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The plaquette permutation read at a position below the count:
+the moved position and its witness's below the count, the two
+composing to the position both ways. -/
+theorem plaqPermRead_at (R : Region) (t : Nat → Nat) (rev : Nat → Bool)
+    (pm pm' : Nat → Nat) (h : plaqPermRead R t rev pm pm') (q : Nat)
+    (hq : q < R.plaqs.length) :
+    pm q < R.plaqs.length ∧ pm' q < R.plaqs.length
+      ∧ pm' (pm q) = q ∧ pm (pm' q) = q := by
+  have h1 := all_range_read _ h q hq
+  have h2 := andSplitB (andSplitB h1).1
+  have h3 := andSplitB h2.1
+  have h4 := andSplitB h3.1
+  exact ⟨of_decide_eq_true h4.1, of_decide_eq_true h4.2,
+    beqEqOf h3.2, beqEqOf h2.2⟩
 
 /-- The region's shape read: the field lengths at the counts and
 every link end below the vertex count. -/

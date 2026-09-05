@@ -1430,6 +1430,30 @@ def matOneValue : Mat → Mat → Prop := ground.matchedOV poly.polyRead
 theorem matOne_length {A B : Mat} : matOneValue A B → A.length = B.length :=
   ground.matched_length
 
+/-- The relabeled matrix at a stated position list: every entry of
+the second matrix reads the first's at the moved row and column
+keys, the relabeling's own read. -/
+def relabelRead (n : Nat) (M M' : Mat) (q : List Nat) : Prop :=
+  ((List.range n).all (fun i => (List.range n).all (fun j =>
+    decide ((ground.getAt BPair.unit (ground.getAt [] M' i) j).oneValue
+      (ground.getAt BPair.unit
+        (ground.getAt [] M (ground.getAt 0 q i)) (ground.getAt 0 q j)))))) = true
+
+instance (n : Nat) (M M' : Mat) (q : List Nat) :
+    Decidable (relabelRead n M M' q) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The relabeling read at a row and a column key below the
+count. -/
+theorem relabelRead_at (n : Nat) (M M' : Mat) (q : List Nat)
+    (h : relabelRead n M M' q) (i j : Nat) (hi : i < n) (hj : j < n) :
+    (ground.getAt BPair.unit (ground.getAt [] M' i) j).oneValue
+      (ground.getAt BPair.unit
+        (ground.getAt [] M (ground.getAt 0 q i))
+        (ground.getAt 0 q j)) :=
+  of_decide_eq_true
+    (ground.all_range_read n (ground.all_range_read n h i hi) j hj)
+
 def decMatOneValue : ∀ a b : Mat, Decidable (matOneValue a b) :=
   ground.decMatchedOV poly.polyRead
 
@@ -2438,9 +2462,12 @@ theorem rowsLen_selMO {γ : Type} (u : γ) (J : List Nat)
 instance {γ : Type} (n : Nat) (M : List (List γ)) :
     Decidable (rowsLen n M) := decRowsLen n M
 
+/-- The Gram at a stated pairing: the members' pairwise reads. -/
+def gramBy {α : Type} (dot : α → α → BPair) (l : List α) : Mat :=
+  l.map (fun r => l.map (fun c => dot r c))
+
 /-- The Gram: the rows' pairwise folds. -/
-def gramM (L : Mat) : Mat :=
-  L.map (fun r => L.map (fun c => dotP r c))
+def gramM (L : Mat) : Mat := gramBy dotP L
 
 /-- The Gram's row at an occupied key: the stated row's pairings
 against every row, key by key. -/
@@ -19347,7 +19374,7 @@ theorem rowsLen_selM (J : List Nat) (S : Mat) (I : List Nat) :
 
 /-- A symmetric datum's entry at an exchanged key pair reads the
 pair's own, both keys within the order. -/
-private theorem symEntry (n : Nat) (S : Mat) (hSr : rowsLen n S)
+theorem symEntry (n : Nat) (S : Mat) (hSr : rowsLen n S)
     (hSl : S.length = n) (hsym : matOneValue (transposeM S) S)
     (a b : Nat) (ha : a < n) (hb : b < n) :
     (ground.getAt BPair.unit (ground.getAt [] S b) a).oneValue
@@ -19539,23 +19566,6 @@ matrices added along the index order from the null seed. -/
 def msum (n : Nat) (g : Nat → Mat) (l : List Nat) : Mat :=
   l.foldl (fun acc k => matAdd acc (g k)) (nullMat n n)
 
-private theorem msumGo_shape (n : Nat) (g : Nat → Mat)
-    (hg : ∀ k, rowsLen n (g k) ∧ (g k).length = n) :
-    ∀ (l : List Nat) (acc : Mat), rowsLen n acc → acc.length = n →
-      rowsLen n (l.foldl (fun a k => matAdd a (g k)) acc)
-      ∧ (l.foldl (fun a k => matAdd a (g k)) acc).length = n
-  | [], _, hr, hl => ⟨hr, hl⟩
-  | k :: t, acc, hr, hl =>
-    msumGo_shape n g hg t (matAdd acc (g k))
-      (rowsLen_matAdd n acc (g k) hr (hg k).1)
-      ((length_matAdd acc (g k) (hl.trans (hg k).2.symm)).trans hl)
-
-/-- The fold's shape is the family's own. -/
-theorem msum_shape (n : Nat) (g : Nat → Mat)
-    (hg : ∀ k, rowsLen n (g k) ∧ (g k).length = n) (l : List Nat) :
-    rowsLen n (msum n g l) ∧ (msum n g l).length = n :=
-  msumGo_shape n g hg l (nullMat n n) (rowsLen_nullMat n n) (length_nullMat n n)
-
 private theorem msumAcc (n : Nat) (g : Nat → Mat) :
     ∀ (l : List Nat) (a b : Mat),
       (l.foldl (fun c k => matAdd c (g k)) (matAdd a b))
@@ -19574,6 +19584,26 @@ theorem msum_cons (n : Nat) (g : Nat → Mat) (k : Nat) (t : List Nat) :
     = matAdd (g k) (msum n g t)
   rw [matAdd_comm (nullMat n n) (g k), msumAcc n g t (g k) (nullMat n n)]
   rfl
+
+/-- The index fold's shape at square summands over the folded keys
+alone. -/
+theorem msum_shape_mem (n : Nat) (g : Nat → Mat) :
+    ∀ l : List Nat, (∀ k, k ∈ l → rowsLen n (g k) ∧ (g k).length = n) →
+      rowsLen n (msum n g l) ∧ (msum n g l).length = n
+  | [], _ => ⟨rowsLen_nullMat n n, length_nullMat n n⟩
+  | k :: t, hg => by
+    rw [msum_cons n g k t]
+    have hk := hg k (List.Mem.head t)
+    have ht := msum_shape_mem n g t (fun j hj => hg j (List.Mem.tail k hj))
+    exact ⟨rowsLen_matAdd n _ _ hk.1 ht.1,
+      (length_matAdd _ _ (hk.2.trans ht.2.symm)).trans hk.2⟩
+
+/-- The fold's shape at a family square throughout, the folded
+keys' read's instance. -/
+theorem msum_shape (n : Nat) (g : Nat → Mat)
+    (hg : ∀ k, rowsLen n (g k) ∧ (g k).length = n) (l : List Nat) :
+    rowsLen n (msum n g l) ∧ (msum n g l).length = n :=
+  msum_shape_mem n g l (fun k _ => hg k)
 
 /-- The index fold's congruence: pointwise one-value families fold
 to one value. -/
@@ -23708,6 +23738,29 @@ theorem entry_matAdd (A B : Mat) (n : Nat) (hA : rowsLen n A)
   rw [getAt_matAdd A B i hiA hiB]
   exact getAt_vecAdd _ _ j (by rw [rowsLen_getAt A i hA hiA]; exact hj)
     (by rw [rowsLen_getAt B i hB hiB]; exact hj)
+
+/-- The index fold's entry at square summands over the folded keys:
+the balance-pair fold of the summands' entries. -/
+theorem entry_msum (n : Nat) (g : Nat → Mat) (i j : Nat) (hi : i < n)
+    (hj : j < n) :
+    ∀ l : List Nat, (∀ k, k ∈ l → rowsLen n (g k) ∧ (g k).length = n) →
+      ground.getAt BPair.unit (ground.getAt [] (msum n g l) i) j
+        = ground.famFold BPair.add BPair.unit
+            (fun k => ground.getAt BPair.unit (ground.getAt [] (g k) i) j) l
+  | [], _ => by
+    show ground.getAt BPair.unit
+      (ground.getAt [] (List.replicate n (List.replicate n BPair.unit)) i) j
+      = BPair.unit
+    rw [ground.getAt_replicate [] _ n i hi]
+    exact ground.getAt_replicate BPair.unit BPair.unit n j hj
+  | k :: t, hg => by
+    have hk := hg k (List.Mem.head t)
+    have ht := msum_shape_mem n g t (fun l hl => hg l (List.Mem.tail k hl))
+    rw [msum_cons n g k t,
+      entry_matAdd (g k) (msum n g t) n hk.1 ht.1 i j
+        (by rw [hk.2]; exact hi) (by rw [ht.2]; exact hi) hj,
+      entry_msum n g i j hi hj t (fun l hl => hg l (List.Mem.tail k hl))]
+    rfl
 
 /-- The memberwise swap's entry. -/
 theorem entry_matSwap (A : Mat) (n : Nat) (hA : rowsLen n A)

@@ -1009,7 +1009,7 @@ private def FD : fusion.Data Nat :=
    0, (fun x => x), (fun x y => x + y), 1,
    (fun _ _ _ => 1), (fun x _ => if x == 5 then [7] else [3]),
    (fun _ => 1), (fun _ => 1), 1, 1, (fun _ => []),
-   (fun _ => 0), (fun _ _ => 0), (fun _ => 0)⟩
+   (fun _ => 0), (fun _ _ => 0), (fun _ => 0), (fun _ => none)⟩
 
 example : ¬ fusion.oneUnit FD (([0,0,0,0] : List Nat) ++ [5,5,5,5]
     ++ [3,3,3,3] ++ (List.range RD.links).flatMap
@@ -1243,3 +1243,167 @@ example : inertia.revAt spWI
     = inertia.revAt spI1 + inertia.revAt spI2 + inertia.revAt spI3 := by
   decide +kernel
 example : inertia.revAt spWI = 3 := by decide +kernel
+
+/-! `lem:relfiber`(iv)'s tier: the tensor sum's roots.  Two
+one-dimensional factors at the roots `1` and `2` join at the summed
+root `4` off the level shift `y = 1`: at the level `5` the count is
+one and at the level `4` it is nought, each read at the site datum's
+own split beside the root pairs' count below the level; a two-root
+first factor joins at the summed roots `3` and `4`, its count at the
+level `4` one; the pair lists are pinned at their literals; the
+joined ground prices every pair at or beyond the floors' sum, the two
+roots' summed root the pair list's member; a forged first root list
+parts the count identity at the level five, the summed root moving
+past the level while the split's count stands, the `diagRead`
+binder's own refusal; a forged count refuses the split's read and
+parts the identity; and a floor stated above its list's root refuses
+the floor binder and prices the pair list above its own root. -/
+
+private def rfI : Mat := inertia.idMat 1
+private def rfA : Mat := [[⟨2, 1⟩]]
+private def rfB : Mat := [[⟨3, 1⟩]]
+private def rfLA : List (BPair × Pos × BPair) := [(⟨2, 1⟩, 1, ⟨2, 1⟩)]
+private def rfLB : List (BPair × Pos × BPair) := [(⟨3, 1⟩, 1, ⟨2, 1⟩)]
+
+private theorem rfdA : split.diagRead rfA rfI (⟨rfI, rfl⟩ : SqMat 1)
+    (⟨rfI, rfl⟩ : SqMat 1) rfLA := by decide +kernel
+private theorem rfdB : split.diagRead rfB rfI (⟨rfI, rfl⟩ : SqMat 1)
+    (⟨rfI, rfl⟩ : SqMat 1) rfLB := by decide +kernel
+
+example : pairRoots rfLA rfLB 1 = [(⟨7, 3⟩, 1)] := by decide +kernel
+example : split.rootsBelow (pairRoots rfLA rfLB 1) 5 Pos.one = 1 := by
+  decide +kernel
+example : split.rootsBelow (pairRoots rfLA rfLB 1) 4 Pos.one = 0 := by
+  decide +kernel
+
+private theorem rfC5 : certconstruct.countAtPair
+    (matAdd (tensorM rfA rfI) (tensorM rfI rfB)) (tensorM rfI rfI) 5 1 1
+    (inertia.mkSplit 1 (inertia.siteDatum
+      (matAdd (matAdd (tensorM rfA rfI) (tensorM rfI rfB))
+        (inertia.matScale 1 (tensorM rfI rfI)))
+      (inertia.matScale 5 (tensorM rfI rfI)))) := by decide +kernel
+example : (1 : Nat) = split.rootsBelow (pairRoots rfLA rfLB 1) 5 Pos.one :=
+  tensorSum_count rfA rfI (⟨rfI, rfl⟩ : SqMat 1) (⟨rfI, rfl⟩ : SqMat 1)
+    rfLA rfdA rfB rfI (⟨rfI, rfl⟩ : SqMat 1) (⟨rfI, rfl⟩ : SqMat 1)
+    rfLB rfdB 5 1 1
+    (inertia.mkSplit 1 (inertia.siteDatum
+      (matAdd (matAdd (tensorM rfA rfI) (tensorM rfI rfB))
+        (inertia.matScale 1 (tensorM rfI rfI)))
+      (inertia.matScale 5 (tensorM rfI rfI)))) rfC5
+
+private theorem rfC4 : certconstruct.countAtPair
+    (matAdd (tensorM rfA rfI) (tensorM rfI rfB)) (tensorM rfI rfI) 4 1 0
+    (inertia.mkSplit 1 (inertia.siteDatum
+      (matAdd (matAdd (tensorM rfA rfI) (tensorM rfI rfB))
+        (inertia.matScale 1 (tensorM rfI rfI)))
+      (inertia.matScale 4 (tensorM rfI rfI)))) := by decide +kernel
+example : (0 : Nat) = split.rootsBelow (pairRoots rfLA rfLB 1) 4 Pos.one :=
+  tensorSum_count rfA rfI (⟨rfI, rfl⟩ : SqMat 1) (⟨rfI, rfl⟩ : SqMat 1)
+    rfLA rfdA rfB rfI (⟨rfI, rfl⟩ : SqMat 1) (⟨rfI, rfl⟩ : SqMat 1)
+    rfLB rfdB 4 1 0
+    (inertia.mkSplit 1 (inertia.siteDatum
+      (matAdd (matAdd (tensorM rfA rfI) (tensorM rfI rfB))
+        (inertia.matScale 1 (tensorM rfI rfI)))
+      (inertia.matScale 4 (tensorM rfI rfI)))) rfC4
+
+/-! The two-root first factor at the same second factor. -/
+
+private def rfI2 : Mat := inertia.idMat 2
+private def rfA2 : Mat := [[⟨2, 1⟩, BPair.unit], [BPair.unit, ⟨3, 1⟩]]
+private def rfB2 : Mat := [[⟨2, 1⟩]]
+private def rfLA2 : List (BPair × Pos × BPair) :=
+  [(⟨2, 1⟩, 1, ⟨2, 1⟩), (⟨3, 1⟩, 1, ⟨2, 1⟩)]
+private def rfLB2 : List (BPair × Pos × BPair) := [(⟨2, 1⟩, 1, ⟨2, 1⟩)]
+
+private theorem rfdA2 : split.diagRead rfA2 rfI2 (⟨rfI2, rfl⟩ : SqMat 2)
+    (⟨rfI2, rfl⟩ : SqMat 2) rfLA2 := by decide +kernel
+private theorem rfdB2 : split.diagRead rfB2 rfI (⟨rfI, rfl⟩ : SqMat 1)
+    (⟨rfI, rfl⟩ : SqMat 1) rfLB2 := by decide +kernel
+
+example : pairRoots rfLA2 rfLB2 1 = [(⟨6, 3⟩, 1), (⟨7, 3⟩, 1)] := by
+  decide +kernel
+example : split.rootsBelow (pairRoots rfLA2 rfLB2 1) 4 Pos.one = 1 := by
+  decide +kernel
+private theorem rfC42 : certconstruct.countAtPair
+    (matAdd (tensorM rfA2 rfI) (tensorM rfI2 rfB2)) (tensorM rfI2 rfI) 4 1 1
+    (inertia.mkSplit 2 (inertia.siteDatum
+      (matAdd (matAdd (tensorM rfA2 rfI) (tensorM rfI2 rfB2))
+        (inertia.matScale 1 (tensorM rfI2 rfI)))
+      (inertia.matScale 4 (tensorM rfI2 rfI)))) := by decide +kernel
+example : (1 : Nat) = split.rootsBelow (pairRoots rfLA2 rfLB2 1) 4 Pos.one :=
+  tensorSum_count rfA2 rfI2 (⟨rfI2, rfl⟩ : SqMat 2) (⟨rfI2, rfl⟩ : SqMat 2)
+    rfLA2 rfdA2 rfB2 rfI (⟨rfI, rfl⟩ : SqMat 1) (⟨rfI, rfl⟩ : SqMat 1)
+    rfLB2 rfdB2 4 1 1
+    (inertia.mkSplit 2 (inertia.siteDatum
+      (matAdd (matAdd (tensorM rfA2 rfI) (tensorM rfI2 rfB2))
+        (inertia.matScale 1 (tensorM rfI2 rfI)))
+      (inertia.matScale 4 (tensorM rfI2 rfI)))) rfC42
+
+/-! The joined ground at the two floors: every summed root sits at or
+beyond the floors' sum, the read decided beside its theorem route. -/
+
+example : ((pairRoots rfLA rfLB 1).all (fun r =>
+    !decide (r.1.scale (1 * 1)
+      < ((⟨2, 1⟩ : BPair).scale 1 + (⟨3, 1⟩ : BPair).scale 1
+        + BPair.ofPos (1 * (1 * 1))).scale r.2))) = true := by decide +kernel
+example : ((pairRoots rfLA2 rfLB2 1).all (fun r =>
+    !decide (r.1.scale (1 * 1)
+      < ((⟨2, 1⟩ : BPair).scale 1 + (⟨2, 1⟩ : BPair).scale 1
+        + BPair.ofPos (1 * (1 * 1))).scale r.2))) = true :=
+  pairRoots_least rfLA2 rfLB2 1 ⟨2, 1⟩ 1 ⟨2, 1⟩ 1 (by decide +kernel)
+    (by decide +kernel)
+
+/-! The forged first root list: the `diagRead` binder refuses it and
+the count identity parts at the level five. -/
+
+private def rfBad : List (BPair × Pos × BPair) := [(⟨4, 1⟩, 1, ⟨2, 1⟩)]
+
+example : ¬ split.diagRead rfA rfI (⟨rfI, rfl⟩ : SqMat 1)
+    (⟨rfI, rfl⟩ : SqMat 1) rfBad := by decide +kernel
+example : ¬ ((1 : Nat)
+    = split.rootsBelow (pairRoots rfBad rfLB 1) 5 Pos.one) := by
+  decide +kernel
+
+/-! The count binder isolated: at the level five a forged count of
+nought refuses the split's read and parts the identity, the summed
+root's count one. -/
+
+example : ¬ certconstruct.countAtPair
+    (matAdd (tensorM rfA rfI) (tensorM rfI rfB)) (tensorM rfI rfI) 5 1 0
+    (inertia.mkSplit 1 (inertia.siteDatum
+      (matAdd (matAdd (tensorM rfA rfI) (tensorM rfI rfB))
+        (inertia.matScale 1 (tensorM rfI rfI)))
+      (inertia.matScale 5 (tensorM rfI rfI)))) := by decide +kernel
+example : ¬ ((0 : Nat)
+    = split.rootsBelow (pairRoots rfLA rfLB 1) 5 Pos.one) := by
+  decide +kernel
+
+/-! The two floor binders isolated: a stated floor above its list's
+root refuses its binder, and the floors' sum then prices the pair
+list above its own root. -/
+
+example : ¬ ((rfLA.all (fun r =>
+    !decide (r.1.scale 1 < (⟨4, 1⟩ : BPair).scale r.2.1))) = true) := by
+  decide +kernel
+example : ¬ (((pairRoots rfLA rfLB 1).all (fun r =>
+    !decide (r.1.scale (1 * 1)
+      < ((⟨4, 1⟩ : BPair).scale 1 + (⟨3, 1⟩ : BPair).scale 1
+        + BPair.ofPos (1 * (1 * 1))).scale r.2))) = true) := by
+  decide +kernel
+example : ¬ ((rfLB.all (fun r =>
+    !decide (r.1.scale 1 < (⟨5, 1⟩ : BPair).scale r.2.1))) = true) := by
+  decide +kernel
+example : ¬ (((pairRoots rfLA rfLB 1).all (fun r =>
+    !decide (r.1.scale (1 * 1)
+      < ((⟨2, 1⟩ : BPair).scale 1 + (⟨5, 1⟩ : BPair).scale 1
+        + BPair.ofPos (1 * (1 * 1))).scale r.2))) = true) := by
+  decide +kernel
+
+/-! The attainment half: the two roots' summed root is the pair
+list's member, its value pinned. -/
+
+example : pairRoot 1 (⟨2, 1⟩, 1, ⟨2, 1⟩) (⟨3, 1⟩, 1, ⟨2, 1⟩)
+    = (⟨7, 3⟩, 1) := by decide +kernel
+example : pairRoot 1 (⟨2, 1⟩, 1, ⟨2, 1⟩) (⟨3, 1⟩, 1, ⟨2, 1⟩)
+    ∈ pairRoots rfLA rfLB 1 :=
+  pairRoots_mem rfLA rfLB 1 (List.Mem.head _) (List.Mem.head _)

@@ -7,7 +7,9 @@ configuration assigns a label per link key, the unit label the
 unoccupied read and the support the nonunit keys (`support`),
 occupied by the shape of its data (`idx` filters at an occupied
 support); its content is the support's Casimir fold at the
-cleared second member (`contentN`); a touched vertex is a support endpoint, and a
+cleared second member (`contentN`); a touched vertex is a support endpoint, its incident support ends
+the occupied incident labels with their orientations
+(`incidentEnds`, the presentation field's datum), and a
 vertex's multiplicity is the invariant count of the incident
 support labels' product, the incoming links dualized (`vmult`),
 the count the fusion rows' fold (`invCount`, the row expansion one
@@ -69,20 +71,6 @@ private theorem filter_filter {α : Type} (p q : α → Bool) :
       cases hp : p a with
       | false => exact filter_filter p q t
       | true => exact congrArg (List.cons a) (filter_filter p q t)
-
-/-- Predicates agreeing at every member filter alike. -/
-private theorem filter_congr {α : Type} (p q : α → Bool) (h : ∀ a, p a = q a) :
-    ∀ l : List α, l.filter p = l.filter q
-  | [] => rfl
-  | a :: t => by
-    show (match p a with
-          | true => a :: t.filter p
-          | false => t.filter p)
-       = (match q a with
-          | true => a :: t.filter q
-          | false => t.filter q)
-    rw [h a, filter_congr p q h t]
-
 
 /-- The content's one step: an occupied label joins its Casimir
 read, the unit passes. -/
@@ -800,8 +788,19 @@ theorem confMem_of_mem {L : Type} (F : Data L) (a : List L) :
       rw [confMem_of_mem F a t h2]
       cases eqConf F a b <;> rfl
 
+/-- The incident support ends at a vertex: each occupied incident
+link's label with its orientation read, `true` at the tail and
+`false` at the head, the unoccupied keys withdrawn — the vertex
+list's datum at the interface's presentation field. -/
+def incidentEnds {L : Type} (F : Data L) (R : Region)
+    (a : List L) (v : Nat) : List (L × Bool) :=
+  (incident R v).filterMap (fun e =>
+    let l := getAt F.unit a e.1
+    if F.eqL l F.unit then none else some (l, e.2))
+
 /-- The incident support labels at a vertex, the incoming links
-dualized, the unoccupied keys withdrawn at the support read. -/
+dualized, the unoccupied keys withdrawn at the support read, the
+orientation's two branches spelled at the option. -/
 def incidentLabels {L : Type} (F : Data L) (R : Region)
     (a : List L) (v : Nat) : List L :=
   (incident R v).filterMap (fun e =>
@@ -1138,7 +1137,7 @@ theorem idxA_eq {L : Type} (F : Data L) (R : Region) (C : Nat) :
         && occupied F R a)
       (fun a => decide (contentN F a ≤ C))
       (prodLists (List.replicate R.links (F.unit :: F.below C)))]
-  exact filter_congr
+  exact ground.filter_congr
     (fun a => decide (contentN F a ≤ C)
       && ((a.any (fun l => !(F.eqL l F.unit))) && occupied F R a))
     (fun a => (a.any (fun l => !(F.eqL l F.unit)))

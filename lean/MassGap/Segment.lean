@@ -37,14 +37,14 @@ inductive Coupling where
   | mid (al be : Pos)
   | contact
 
-/-- The coupling's site matrix over a window diagonal and magnetic
-matrix: the free end the electric member's one-member weighting
-(`H = E`), an interior pair the pencil's site datum at its two
+/-- The coupling's site matrix over a window diagonal, gram and
+magnetic matrix: the free end the electric member's one-member
+weighting (`H = E`, the form against the gram), an interior pair the pencil's site datum at its two
 weights, and the contact end the magnetic member's balance
 partner. -/
-def siteAt (diag : List Nat) (M : elim.Mat) : Coupling → elim.Mat
-  | .free => pairpencil.pencilE diag
-  | .mid al be => pairpencil.pencilH al be diag M
+def siteAt (diag : List Nat) (G M : elim.Mat) : Coupling → elim.Mat
+  | .free => pairpencil.formE diag G
+  | .mid al be => pairpencil.pencilH al be diag G M
   | .contact => elim.matSwap M
 
 /-- Two couplings at one base point: the ends their own classes and
@@ -94,43 +94,39 @@ private theorem scaleFactor (u w : Pos) (m : BPair) :
 unit fixed under the rescaling at the cross-added read, the magnetic
 arm through the memberwise swap, and the canonical representative
 crossed on both sides. -/
-private theorem entryScale (u al be : Pos) (b : Bool) (dv m : BPair) :
-    (((if b then BPair.ofPos (u * al) * dv else BPair.unit)
+private theorem entryScale (u al be : Pos) (dv m : BPair) :
+    ((BPair.ofPos (u * al) * dv
         + (BPair.ofPos (u * be) * m).swap).norm).oneValue
-      ((((if b then BPair.ofPos al * dv else BPair.unit)
+      (((BPair.ofPos al * dv
           + (BPair.ofPos be * m).swap).norm).scale u) := by
   refine BPair.oneValue_trans (BPair.norm_oneValue _)
     (BPair.oneValue_trans ?_
       (BPair.scale_congr u (BPair.oneValue_symm (BPair.norm_oneValue _))))
   rw [BPair.scale_add]
   refine BPair.add_congr ?_ ?_
-  · cases b with
-    | false => exact ground.add_comm Pos.one (Pos.one * u)
-    | true => exact scaleFactor u al dv
+  · exact scaleFactor u al dv
   · exact ground.swap_congr (scaleFactor u be m)
 
 /-- The pencil row's homogeneity, `entryScale` folded along the
 column range. -/
 private theorem rowScale (u al be : Pos) (diag : List Nat)
-    (M : elim.Mat) (i : Nat) :
+    (G M : elim.Mat) (i : Nat) :
     poly.oneValue
       ((List.range diag.length).map (fun j =>
-        ((if i == j
-            then BPair.ofPos (u * al) * BPair.ofNat (ground.getAt 0 diag i)
-            else BPair.unit)
+        (BPair.ofPos (u * al) * (BPair.ofNat (ground.getAt 0 diag i)
+            * ground.getAt BPair.unit (ground.getAt [] G i) j)
           + (BPair.ofPos (u * be)
               * ground.getAt BPair.unit (ground.getAt [] M i) j).swap
          ).norm))
       (((List.range diag.length).map (fun j =>
-        ((if i == j
-            then BPair.ofPos al * BPair.ofNat (ground.getAt 0 diag i)
-            else BPair.unit)
+        (BPair.ofPos al * (BPair.ofNat (ground.getAt 0 diag i)
+            * ground.getAt BPair.unit (ground.getAt [] G i) j)
           + (BPair.ofPos be
               * ground.getAt BPair.unit (ground.getAt [] M i) j).swap
          ).norm)).map (fun x => x.scale u)) := by
   rw [ground.map_map]
   exact poly.oneValue_map _ _ (List.range diag.length)
-    (fun j _ => entryScale u al be (i == j) _ _)
+    (fun j _ => entryScale u al be _ _)
 
 /-- The pencil's degree-one homogeneity (`prop:segment`): the site
 datum at both weights' `u`-multiples reads one value with the
@@ -139,28 +135,28 @@ shape is degree one in each weight, so the rescaling passes the
 electric arm, the magnetic arm's memberwise swap, and the entry's
 canonical representative.  No hypotheses: the weights' positivity is
 the carrier's type, the frame by construction. -/
-theorem pencil_scale (u al be : Pos) (diag : List Nat) (M : elim.Mat) :
-    elim.matOneValue (pairpencil.pencilH (u * al) (u * be) diag M)
-      (inertia.matScale u (pairpencil.pencilH al be diag M)) := by
+theorem pencil_scale (u al be : Pos) (diag : List Nat) (G M : elim.Mat) :
+    elim.matOneValue (pairpencil.pencilH (u * al) (u * be) diag G M)
+      (inertia.matScale u (pairpencil.pencilH al be diag G M)) := by
   unfold inertia.matScale pairpencil.pencilH ground.matOf
   rw [ground.map_map]
-  exact elim.matOne_map _ _ (rowScale u al be diag M)
+  exact elim.matOne_map _ _ (rowScale u al be diag G M)
     (List.range diag.length)
 
 /-- The pencil's row count is the window diagonal's, the weights and
 the magnetic matrix feeding the entries alone. -/
 private theorem pencilH_len (al be : Pos) (diag : List Nat)
-    (M : elim.Mat) :
-    (pairpencil.pencilH al be diag M).length = diag.length :=
+    (G M : elim.Mat) :
+    (pairpencil.pencilH al be diag G M).length = diag.length :=
   ground.length_mapRange _ diag.length
 
 /-- The pencil is square at the window diagonal's length: the row
 and column ranges are the diagonal's own, independent of the
 weights. -/
 private theorem pencilH_sqAt (al be : Pos) (diag : List Nat)
-    (M : elim.Mat) :
-    elim.sqAt (pairpencil.pencilH al be diag M) diag.length :=
-  elim.sqAt_of (pencilH_len al be diag M)
+    (G M : elim.Mat) :
+    elim.sqAt (pairpencil.pencilH al be diag G M) diag.length :=
+  elim.sqAt_of (pencilH_len al be diag G M)
     (elim.rowsLen_map _ diag.length (List.range diag.length)
       (fun _ _ => ground.length_mapRange _ diag.length))
 
@@ -179,22 +175,22 @@ theorem ray_count {o : Nat} (u al be : Pos) (diag : List Nat)
     (M G : elim.Mat) (x y : Pos) (n : Nat)
     (sp sp' : inertia.Split o)
     (h : certconstruct.countAtPair
-      (pairpencil.pencilH al be diag M) G x y n sp)
+      (pairpencil.pencilH al be diag G M) G x y n sp)
     (h' : inertia.splitRead (inertia.siteDatum
-        (elim.matAdd (pairpencil.pencilH (u * al) (u * be) diag M)
+        (elim.matAdd (pairpencil.pencilH (u * al) (u * be) diag G M)
           (inertia.matScale (u * y) G))
         (inertia.matScale (u * x) G)) sp') :
     certconstruct.countAtPair
-      (pairpencil.pencilH (u * al) (u * be) diag M)
+      (pairpencil.pencilH (u * al) (u * be) diag G M)
       G (u * x) (u * y) n sp' := by
   have ho : diag.length = o :=
-    (pencilH_len al be diag M).symm.trans (elim.sqAt_len h.1)
+    (pencilH_len al be diag G M).symm.trans (elim.sqAt_len h.1)
   have hsqPu : elim.sqAt
-      (pairpencil.pencilH (u * al) (u * be) diag M) o := by
+      (pairpencil.pencilH (u * al) (u * be) diag G M) o := by
     rw [← ho]
-    exact pencilH_sqAt (u * al) (u * be) diag M
+    exact pencilH_sqAt (u * al) (u * be) diag G M
   have hsqUH : elim.sqAt
-      (inertia.matScale u (pairpencil.pencilH al be diag M)) o :=
+      (inertia.matScale u (pairpencil.pencilH al be diag G M)) o :=
     inertia.sqAt_matScale o u _ h.1
   have hsqSy : elim.sqAt (inertia.matScale (u * y) G) o :=
     inertia.sqAt_matScale o (u * y) G h.2.1
@@ -202,12 +198,12 @@ theorem ray_count {o : Nat} (u al be : Pos) (diag : List Nat)
     inertia.sqAt_matScale o (u * x) G h.2.1
   have htie : elim.matOneValue
       (inertia.siteDatum
-        (elim.matAdd (pairpencil.pencilH (u * al) (u * be) diag M)
+        (elim.matAdd (pairpencil.pencilH (u * al) (u * be) diag G M)
           (inertia.matScale (u * y) G))
         (inertia.matScale (u * x) G))
       (inertia.siteDatum
         (elim.matAdd
-          (inertia.matScale u (pairpencil.pencilH al be diag M))
+          (inertia.matScale u (pairpencil.pencilH al be diag G M))
           (inertia.matScale (u * y) G))
         (inertia.matScale (u * x) G)) :=
     elim.matAdd_cong2 o _ _ _ _
@@ -218,13 +214,13 @@ theorem ray_count {o : Nat} (u al be : Pos) (diag : List Nat)
       (elim.matAdd_cong2 o _ _ _ _
         (elim.rowsLen_of_sqAt hsqPu) (elim.rowsLen_of_sqAt hsqSy)
         (elim.rowsLen_of_sqAt hsqUH) (elim.rowsLen_of_sqAt hsqSy)
-        (pencil_scale u al be diag M)
+        (pencil_scale u al be diag G M)
         (elim.matOne_refl (inertia.matScale (u * y) G)))
       (elim.matOne_refl (elim.matSwap (inertia.matScale (u * x) G)))
   have h'2 : inertia.splitRead
       (inertia.siteDatum
         (elim.matAdd
-          (inertia.matScale u (pairpencil.pencilH al be diag M))
+          (inertia.matScale u (pairpencil.pencilH al be diag G M))
           (inertia.matScale (u * y) G))
         (inertia.matScale (u * x) G)) sp' :=
     inertia.splitRead_congr _ _
@@ -232,7 +228,7 @@ theorem ray_count {o : Nat} (u al be : Pos) (diag : List Nat)
         (elim.sqAt_matAdd o _ _ hsqUH hsqSy) hsqSx)
       htie sp' h'
   have hc := certconstruct.countAtPair_scale u
-    (pairpencil.pencilH al be diag M) G x y n sp sp' h h'2
+    (pairpencil.pencilH al be diag G M) G x y n sp sp' h h'2
   exact ⟨hsqPu, h.2.1, h', hc.2.2.2⟩
 
 end segment

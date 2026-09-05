@@ -32,11 +32,33 @@ beyond the endpoint depth, the splits universally bound and the
 chain's coupling shape `hB` the frame `truncation.count_head_le`
 states, the floor's two members decided positive beside
 `floor_pos`.
+
+The transported cells read at the store's own data
+(`lem:cornerpivot`(vi)): the residue-two cell at the tied scale
+`[26 : 5·1654²]` under the ceiling, the cut member `[6 : 5]` under
+the transported rate at the lower rate's decided data, and the
+member's line read at `cornerpivot.resRate`'s route with the key's
+bracket at `1653` decided; the ceiling conjunct refused at the key
+`1651`, the rate conjunct at the member `[4 : 3]`, the residue
+conjunct at the residue one, and `resRate`'s bracket binder at the
+scale `[1000 : 1]`, where the bracket refuses and the member's line
+sits beyond the transported rate.  The residue-one cell reads at the
+scale itself with the key `1495`, its two neighbors refused, the cut
+member `[41 : 40]` under the stated rate at the lower rate's decided
+data and at `cornerpivot.oneRate`'s route, the rate conjunct refused
+at `[42 : 40]` and `oneRate`'s bracket binder at the scale
+`[1000 : 1]`; `resRate`'s key clearing twenty residues refused at
+the residue `200` with the key `1652`, and `oneRate`'s key
+comparison refused at the scale `[1 : 10000000]`, each parting the
+member's line alone; the floor's two shape binders refused at the
+vacant gap and the vacant member.  The flat windows at both cells
+are read at the theorem routes over every order beyond the key.
+The key floors `1652 ≤ N` and `1495 ≤ N` of the two rate reads are
+the tex's frame, the ceiling's read, the two cleared displays
+holding from the keys `151` and `364` (`ChecksCornerpivot`).
 -/
 
 open ground elim inertia certconstruct corner cornerpivot
-
-set_option maxRecDepth 8192
 
 /-! ## The seam tie -/
 
@@ -167,7 +189,19 @@ example : 0 < floorD enS edS preR nS 5 := by
   rw [qDenS]
   decide +kernel
 example : 0 < floorN enS edS preR nS 1 ∧ 0 < floorD enS edS preR nS 5 :=
-  floor_pos storeCell
+  floor_pos enS edS preR nS 1 5 storeEnd.1 (Nat.le_refl 1) (by decide)
+
+/-- The floor's two shape binders are load-bearing: at the vacant
+gap the first member reads the sum's unit, at the vacant cut member
+the second. -/
+example : ¬ (0 < floorN enS edS preR nS 0) := by
+  show ¬ (0 < 0 * qLowNum (posVal enS) (posVal edS) preR nS)
+  rw [Nat.zero_mul]
+  decide
+example : ¬ (0 < floorD enS edS preR nS 0) := by
+  show ¬ (0 < 0 * qLowDen (posVal enS) (posVal edS) preR nS)
+  rw [Nat.zero_mul]
+  decide
 
 example (n : Nat) (hNn : nS ≤ n) (sp : Split n)
     (hsp : splitRead (wellMat preR (6 * qLowNum (posVal enS) (posVal edS) preR nS)
@@ -186,7 +220,8 @@ example (n : Nat) (hNn : nS ≤ n) (sp sp' : Split n)
           enS edS))
       (idMat n) (lineX preR (6 * qLowNum (posVal enS) (posVal edS) preR nS) enS edS)
       (lineY preR 2 (5 * qLowDen (posVal enS) (posVal edS) preR nS) edS) 1 sp' :=
-  line_flat storeCell 2 n hNn sp sp' hsp hsp'
+  line_count preR _ _ 2 (by rw [qDenS]; decide +kernel) enS edS n 1 sp sp' hsp
+    (cut_flat storeCell n hNn sp hsp) hsp'
 
 example (n : Nat) (hNn : nS ≤ n) {m : Nat} (H G Q G2 B : Mat) (nf : Nat)
     (sp sp' : Split n) (spF : Split (n + m))
@@ -221,5 +256,137 @@ example (n : Nat) (hNn : nS ≤ n) {m : Nat} (H G Q G2 B : Mat) (nf : Nat)
       (lineX preR (6 * qLowNum (posVal enS) (posVal edS) preR nS) enS edS)
       (lineY preR 2 (5 * qLowDen (posVal enS) (posVal edS) preR nS) edS) nf spF) :
     1 ≤ nf :=
-  ground_below_line storeCell 2 n hNn H G Q G2 B nf sp sp' spF hsp hsp' hB
-    htie hf
+  ground_below_line preR _ _ 2 (by rw [qDenS]; decide +kernel) enS edS n H G Q G2 B nf
+    sp sp' spF hsp (cut_flat storeCell n hNn sp hsp) hsp' hB htie hf
+
+/-! ## The transported cells at the store -/
+
+private theorem storeCeilT :
+    BPair.ofPos 26 * BPair.ofPos disconjC.e0d
+      ≤ disconjC.e0n * BPair.ofPos (tieScaleD nS) := by decide +kernel
+
+private theorem storeRateT :
+    6 * qLowNum (posVal enS) (posVal edS) preR nS * posVal enS
+        * (disconjC.qcD * (5 * nS * nS))
+      ≤ disconjC.qcN * 26
+        * (5 * qLowDen (posVal enS) (posVal edS) preR nS * posVal edS) := by
+  rw [qNumS, qDenS]
+  decide +kernel
+
+private theorem storeCellT : cellReadT preR disconjC enS edS nS 6 5 1 :=
+  ⟨by decide, disconjC_read, storeCeilT, storeEnd, rfl, Nat.le_refl 1, storeRateT⟩
+
+/-- The transported rate's member `[6 : 5]` reads at the theorem
+route: the key's bracket at `1653` and the key clearing twenty
+residues at the residue two. -/
+example : 6 * qLowNum (posVal enS) (posVal edS) preR nS * posVal enS
+      * (1 * (5 * nS * nS))
+    ≤ 8 * 26 * (5 * qLowDen (posVal enS) (posVal edS) preR nS * posVal edS) :=
+  resRate (posVal enS) (posVal edS) preR nS (by decide) (by decide)
+    (by decide +kernel)
+
+/-- The tied scale's ceiling conjunct is load-bearing: at the key
+`1651` the tied scale sits beyond the certificate's ceiling. -/
+example : ¬ (BPair.ofPos 26 * BPair.ofPos disconjC.e0d
+    ≤ disconjC.e0n * BPair.ofPos (tieScaleD 1651)) := by decide +kernel
+
+/-- The transported rate conjunct is load-bearing: the member
+`[4 : 3]` sits beyond the transported rate at the store. -/
+example : ¬ (4 * qLowNum (posVal enS) (posVal edS) preR nS * posVal enS
+      * (disconjC.qcD * (5 * nS * nS))
+    ≤ disconjC.qcN * 26
+      * (3 * qLowDen (posVal enS) (posVal edS) preR nS * posVal edS)) := by
+  rw [qNumS, qDenS]
+  decide +kernel
+
+/-- The residue conjunct refuses at the residue one. -/
+example : ¬ cellReadT 1 disconjC enS edS nS 6 5 1 := fun h => absurd h.1 (by decide)
+
+/-- The key's bracket binder of `resRate` is load-bearing: at a scale
+whose first member is `1000` against `1` the bracket refuses and the
+member's line sits beyond the transported rate. -/
+example : ¬ (40 * (1652 - 1) ^ 4 * 1000 ^ 2 < 363 * (2 + 1) * 1 ^ 2) := by
+  decide +kernel
+example : ¬ (6 * qLowNum 1000 1 2 1652 * 1000 * (1 * (5 * 1652 * 1652))
+    ≤ 8 * 26 * (5 * qLowDen 1000 1 2 1652 * 1)) := by decide +kernel
+
+/-- The key clearing twenty residues is load-bearing at `resRate`: at
+the residue `200` with the key `1652` at the scale `[1 : 63899]` the
+bracket holds and the key comparison holds, the key sits under
+twenty residues, and the member's line sits beyond the transported
+rate. -/
+example : 40 * (1652 - 1) ^ 4 * 1 ^ 2 < 363 * (200 + 1) * 63899 ^ 2 := by
+  decide +kernel
+example : 363 * (200 + 1) * 63899 ^ 2 ≤ 40 * 1652 ^ 4 * 1 ^ 2 := by decide +kernel
+example : ¬ (20 * 200 ≤ 1652) := by decide
+example : ¬ (6 * qLowNum 1 63899 200 1652 * 1 * (1 * (5 * 1652 * 1652))
+    ≤ 8 * 26 * (5 * qLowDen 1 63899 200 1652 * 1)) := by decide +kernel
+
+example (n : Nat) (hNn : nS ≤ n) (sp : Split n)
+    (hsp : splitRead (wellMat preR (6 * qLowNum (posVal enS) (posVal edS) preR nS)
+      (5 * qLowDen (posVal enS) (posVal edS) preR nS) enS edS n) sp) :
+    revAt sp = 1 :=
+  cut_flat_T storeCellT n hNn sp hsp
+
+/-! ## The residue-one cell at the store's scale -/
+
+private def nO : Nat := 1495
+
+private theorem storeEndO : endRead (posVal enS) (posVal edS) 1 nO := by
+  decide +kernel
+
+private theorem qNumO : qLowNum (posVal enS) (posVal edS) 1 nO
+    = 7699016543785802407062498393736704 := by decide +kernel
+private theorem qDenO : qLowDen (posVal enS) (posVal edS) 1 nO
+    = 993459301769947933037121603895296 := by decide +kernel
+
+private theorem storeRateO :
+    41 * qLowNum (posVal enS) (posVal edS) 1 nO * disconjC.qcD
+      ≤ disconjC.qcN * (40 * qLowDen (posVal enS) (posVal edS) 1 nO) := by
+  rw [qNumO, qDenO]
+  decide +kernel
+
+private theorem storeCellS : cellReadS disconjC enS edS nO 41 40 1 :=
+  ⟨disconjC_read, storeE, storeEndO, rfl, Nat.le_refl 1, storeRateO⟩
+
+/-- The stated rate's member `[41 : 40]` reads at the theorem route
+at the residue one: the key from `1495` with its bracket and its
+comparison. -/
+example : 41 * qLowNum (posVal enS) (posVal edS) 1 nO * 1
+    ≤ 8 * (40 * qLowDen (posVal enS) (posVal edS) 1 nO) :=
+  oneRate (posVal enS) (posVal edS) nO (by decide) (by decide +kernel)
+    (by decide +kernel)
+
+example : ¬ endRead (posVal enS) (posVal edS) 1 1494 := by decide +kernel
+example : ¬ endRead (posVal enS) (posVal edS) 1 1496 := by decide +kernel
+
+/-- The stated-rate conjunct is load-bearing at the residue one: the
+member `[42 : 40]` sits beyond the stated rate. -/
+example : ¬ (42 * qLowNum (posVal enS) (posVal edS) 1 nO * disconjC.qcD
+    ≤ disconjC.qcN * (40 * qLowDen (posVal enS) (posVal edS) 1 nO)) := by
+  rw [qNumO, qDenO]
+  decide +kernel
+
+/-- The key's bracket binder of `oneRate` is load-bearing: at the
+scale `[1000 : 1]` the bracket refuses and the member's line sits
+beyond the stated rate. -/
+example : ¬ (40 * (1495 - 1) ^ 4 * 1000 ^ 2 < 363 * (1 + 1) * 1 ^ 2) := by
+  decide +kernel
+example : ¬ (41 * qLowNum 1000 1 1 1495 * 1 ≤ 8 * (40 * qLowDen 1000 1 1 1495)) := by
+  decide +kernel
+
+/-- The key's comparison binder of `oneRate` is load-bearing: at the
+scale `[1 : 10000000]` the bracket holds at the key `1495`, the
+comparison refuses, and the member's line sits beyond the stated
+rate. -/
+example : 40 * (1495 - 1) ^ 4 * 1 ^ 2 < 363 * (1 + 1) * 10000000 ^ 2 := by
+  decide +kernel
+example : ¬ (363 * (1 + 1) * 10000000 ^ 2 ≤ 40 * 1495 ^ 4 * 1 ^ 2) := by decide +kernel
+example : ¬ (41 * qLowNum 1 10000000 1 1495 * 1 ≤ 8 * (40 * qLowDen 1 10000000 1 1495)) := by
+  decide +kernel
+
+example (n : Nat) (hNn : nO ≤ n) (sp : Split n)
+    (hsp : splitRead (wellMat 1 (41 * qLowNum (posVal enS) (posVal edS) 1 nO)
+      (40 * qLowDen (posVal enS) (posVal edS) 1 nO) enS edS n) sp) :
+    revAt sp = 1 :=
+  cut_flat_S storeCellS n hNn sp hsp

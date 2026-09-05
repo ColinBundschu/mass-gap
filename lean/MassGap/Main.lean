@@ -5,6 +5,8 @@ import MassGap.Memberdata
 import MassGap.Pairpencil
 import MassGap.Freecell
 import MassGap.Gappos
+import MassGap.Cornerstore
+import MassGap.Cornerfloor
 /-!
 `thm:main` — the statement over the classification's stated
 domain, the member a carried datum: the `A`-series at the declared
@@ -14,16 +16,18 @@ members, each member once, the floors the successor spellings' own
 `ℓ = g + 4`, the domain the type).  The member's weight table is
 the carried datum's read (`con:sertables`; `con:gentable`'s first
 table at the `A`-series), the derived residue and the base θ's
-coroot-support count its table reads (`prop:row`).  Clause (ii)'s
-pair arithmetic reads at every member: `clauseII` is the contact
-pair's equality read at the member's own base and residue, the
-lattice point `(3, H_r)` (`thm:closing`'s componentwise read), held
-at the whole domain by `clauseII_all` through the occupancy door
-(`closing.read_pos` at the tables' support and residue reads); the
-clause's identification of the contact-end value with that pair and
-its attainment read are `thm:closing`'s bracket at the corner
-cell's clearance (`lem:corner`; `lem:attained`), read at the
-corner lane's certificates.  The member instantiations are the
+coroot-support count its table reads (`prop:row`).  Clause (ii) reads
+at every member: the contact end's walk is the head's compression
+to the tower labels (`prop:row`), and `clauseII`
+is the walk's two divisor reads at the member's own base and
+residue, the lattice point `(3, H_r)` (`thm:closing`'s componentwise
+read), held at the whole domain by `clauseII_all` through the
+occupancy door (`closing.read_pos` at the tables' support and
+residue reads); the clause's window half, the cut's edge at every
+window and coupling a located root of the window's symbol attained
+at a word image, is `attained.attained_at` at the window matrices
+with the root read `divisorid.rootIff`, stated at the tex's own
+quantifier.  The member instantiations are the
 check module's pins with the low-index
 coincidence reads beside them (`Sp(1)` at `SU(2)` the one exact
 table identity, `Sp(2)` at `Spin(5)` and `Spin(6)` at `SU(4)` the
@@ -60,8 +64,30 @@ window and `E₈`'s coupled window decided by kernel reduction.
 The cut of `def:K` is the meet of the window cuts over the
 directed family at every interior ray; `clauseI` reads it at the
 floor window over the committed range, one window cut per member
-at the floor numerator's cutoff; clause (iii)'s objects are
-`thm:continuum`'s continuum reads at the K-chain's own site.
+at the floor numerator's cutoff.
+Clause (iii)'s corner cell reads at the member through the one
+certificate transported across the residues
+(`lem:cornerpivot`(vi)): `clauseIII` is `lem:corner`'s cell-floor
+datum at the member's derived residue, the member's tail scale
+`[1 : 524288(r+1)²]` (`cornerScaleD`, the ceiling at the residue's
+successor squared) and its endpoint key (`cornerKey`, the least
+natural beyond one at the key's comparison `keyRead`, the search
+bounded at the comparison's stated witness `2000(r+1)²`), the
+residue-one cell at the cut member `[41 : 40]` at the `A`-series'
+first member (`cellS`) and the transported cell at `[6 : 5]` at every
+further member (`cellT`); the datum's reads are the flat window at
+the member line (`corner.cut_flat_T`, `corner.cut_flat_S`), the floor
+positive by its shape (`corner.floor_pos`) and the chain's ground at
+or below the line (`corner.ground_below_line`).  The clause is held
+at the whole domain by `clauseIII_all`: the key's read at the member
+scale (the comparison at the stated witness, the leastness the
+search's own), the key at or beyond the ceiling's own — beyond `1652`
+at every residue at or beyond two and beyond `1495` at the residue
+one — and clearing twenty residues, the tied scale under the
+ceiling, and the cut member's line under the transported rate
+(`cornerpivot.resRate`, `cornerpivot.oneRate`), the series through
+their residue reads and the fixed members' residues decided by kernel
+reduction.
 -/
 
 namespace main
@@ -118,10 +144,10 @@ def data : Member → fusion.Data places.Shape
   | .E7 => fusion.dataE7
   | .E8 => fusion.dataE8
 
-/-- Clause (ii)'s pair arithmetic at a member: the contact pair
-reads the lattice point `(3, H_r)` at the member's own base and
-residue, `thm:closing`'s componentwise read off the carried
-datum. -/
+/-- Clause (ii)'s contact-end read at a member: the walk's two
+divisor reads, the contact pair, read the lattice point `(3, H_r)`
+at the member's own base and residue, `thm:closing`'s componentwise
+read off the carried datum. -/
 def clauseII (m : Member) : Prop := closing.read (base m) (residue m)
 
 instance (m : Member) : Decidable (clauseII m) :=
@@ -2294,5 +2320,262 @@ theorem clauseI_all : ∀ m : Member, clauseI m
       tieRead 114 (by decide +kernel)⟩
   | .E8 => ⟨by decide +kernel, by decide +kernel, by decide +kernel⟩
 
+
+/-- The member's tail scale, `[1 : 524288(r+1)²]`: the reference
+certificate's ceiling `[1 : 524288]` at the residue's successor
+squared (`lem:cornerpivot`(vi)). -/
+def cornerScaleD (r : Nat) : Pos := posOfSucc (524288 * (r + 1) * (r + 1) - 1)
+
+private theorem cornerScaleD_val (r : Nat) :
+    posVal (cornerScaleD r) = 524288 * (r + 1) * (r + 1) :=
+  ground.subAdd (Nat.le_trans (by decide : 1 ≤ 524288)
+    (Nat.le_trans (Nat.le_mul_of_pos_right 524288 (Nat.succ_pos r))
+      (Nat.le_mul_of_pos_right _ (Nat.succ_pos r))))
+
+/-- The endpoint key's comparison at the member's scale
+(`lem:cornerpivot`(v)'s `40N⁴η² ≥ 363(r+1)`). -/
+def keyRead (r N : Nat) : Prop :=
+  363 * (r + 1) * posVal (cornerScaleD r) ^ 2 ≤ 40 * N ^ 4 * posVal (1 : Pos) ^ 2
+
+instance (r N : Nat) : Decidable (keyRead r N) := inferInstanceAs (Decidable (_ ≤ _))
+
+/-- The member's endpoint key, the least natural beyond one at the
+key's comparison, the search bounded at the comparison's stated
+witness `2000(r+1)²` (`lem:cornerpivot`(v),(vi)). -/
+def cornerKey (r : Nat) : Nat :=
+  ground.firstAt (keyRead r) 2 (2000 * (r + 1) * (r + 1))
+
+private theorem kyA (r1 : Nat) :
+    363 * r1 * ((524288 * r1 * r1) * (524288 * r1 * r1))
+      = r1 * r1 * r1 * r1 * r1 * 99780680220672 :=
+  ground.monEq [r1]
+    (Mon.mul (Mon.mul (Mon.cst 363) (Mon.var 0)) (Mon.mul (Mon.mul (Mon.mul (Mon.cst 524288) (Mon.var 0)) (Mon.var 0)) (Mon.mul (Mon.mul (Mon.cst 524288) (Mon.var 0)) (Mon.var 0))))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 0)) (Mon.var 0)) (Mon.var 0)) (Mon.var 0)) (Mon.cst 99780680220672))
+    (by decide +kernel) (by decide +kernel)
+private theorem kyB (r1 : Nat) :
+    40 * ((2000 * r1 * r1) * (2000 * r1 * r1) * (2000 * r1 * r1) * (2000 * r1 * r1)) * 1
+      = r1 * r1 * r1 * r1 * r1 * (r1 * r1 * r1 * 640000000000000) :=
+  ground.monEq [r1]
+    (Mon.mul (Mon.mul (Mon.cst 40) (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 2000) (Mon.var 0)) (Mon.var 0)) (Mon.mul (Mon.mul (Mon.cst 2000) (Mon.var 0)) (Mon.var 0))) (Mon.mul (Mon.mul (Mon.cst 2000) (Mon.var 0)) (Mon.var 0))) (Mon.mul (Mon.mul (Mon.cst 2000) (Mon.var 0)) (Mon.var 0)))) (Mon.cst 1))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 0)) (Mon.var 0)) (Mon.var 0)) (Mon.var 0)) (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 0)) (Mon.var 0)) (Mon.cst 640000000000000)))
+    (by decide +kernel) (by decide +kernel)
+private theorem kyC (r : Nat) :
+    40 * (20 * r * (20 * r) * (20 * r) * (20 * r)) * 1
+      = r * r * r * r * 6400000 :=
+  ground.monEq [r]
+    (Mon.mul (Mon.mul (Mon.cst 40) (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.cst 20) (Mon.var 0)) (Mon.mul (Mon.cst 20) (Mon.var 0))) (Mon.mul (Mon.cst 20) (Mon.var 0))) (Mon.mul (Mon.cst 20) (Mon.var 0)))) (Mon.cst 1))
+    (Mon.mul (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 0)) (Mon.var 0)) (Mon.var 0)) (Mon.cst 6400000))
+    (by decide +kernel) (by decide +kernel)
+
+/-- The key's comparison at the stated witness `2000(r+1)²`, the
+search's bound (`lem:cornerpivot`(vi)). -/
+private theorem key_budget (r : Nat) : keyRead r (2 + 2000 * (r + 1) * (r + 1)) := by
+  show 363 * (r + 1) * posVal (cornerScaleD r) ^ 2
+    ≤ 40 * (2 + 2000 * (r + 1) * (r + 1)) ^ 4 * posVal (1 : Pos) ^ 2
+  rw [cornerScaleD_val r, sqRead]
+  refine Nat.le_trans ?_ (Nat.mul_le_mul_right _ (Nat.mul_le_mul_left 40
+    (Nat.pow_le_pow_left (Nat.le_add_left _ 2) 4)))
+  show 363 * (r + 1) * (524288 * (r + 1) * (r + 1) * (524288 * (r + 1) * (r + 1)))
+    ≤ 40 * (2000 * (r + 1) * (r + 1)) ^ 4 * 1 ^ 2
+  rw [pow4Read, Nat.one_pow]
+  have h1 : 1 ≤ r + 1 := Nat.succ_pos r
+  generalize r + 1 = r1 at h1 ⊢
+  rw [kyA, kyB]
+  refine Nat.mul_le_mul_left _ ?_
+  refine Nat.le_trans (by decide +kernel : 99780680220672 ≤ 1 * 640000000000000) ?_
+  exact Nat.mul_le_mul_right _ (Nat.mul_pos (Nat.mul_pos h1 h1) h1)
+
+private theorem key_hit (r : Nat) : keyRead r (cornerKey r) :=
+  ground.firstAt_hit (keyRead r) (2000 * (r + 1) * (r + 1)) 2 (key_budget r)
+
+private theorem key_ge2 (r : Nat) : 2 ≤ cornerKey r :=
+  ground.firstAt_ge (keyRead r) (2000 * (r + 1) * (r + 1)) 2
+
+/-- The member's endpoint key reads `lem:cornerpivot`(v)'s key at
+the member's scale: the depth beyond one, the comparison, and the
+leastness. -/
+private theorem key_end (r : Nat) :
+    cornerpivot.endRead (posVal 1) (posVal (cornerScaleD r)) r (cornerKey r) := by
+  refine ⟨key_ge2 r, key_hit r, ?_⟩
+  match Nat.lt_or_ge (cornerKey r) 3 with
+  | Or.inl h3 => exact Or.inl (Nat.le_antisymm (Nat.le_of_lt_succ h3) (key_ge2 r))
+  | Or.inr h3 =>
+    refine Or.inr (ground.firstAt_below (keyRead r) (2000 * (r + 1) * (r + 1)) 2
+      (cornerKey r - 1) ?_ ?_)
+    · exact Nat.le_of_lt_succ (Nat.lt_of_lt_of_le (Nat.lt_succ_self 2)
+        (show 3 ≤ cornerKey r - 1 + 1 from
+          (ground.subAdd (Nat.le_trans (by decide : 1 ≤ 3) h3)).symm ▸ h3))
+    · exact Nat.sub_lt (Nat.lt_of_lt_of_le (by decide) h3) (by decide)
+
+/-- A depth whose fourth power sits under the key's comparison lies
+below the key. -/
+private theorem key_lb (r c : Nat)
+    (hc : 40 * c ^ 4 * posVal (1 : Pos) ^ 2
+      < 363 * (r + 1) * posVal (cornerScaleD r) ^ 2) :
+    c < cornerKey r :=
+  Nat.lt_of_not_le (fun hle =>
+    Nat.lt_irrefl _ (Nat.lt_of_le_of_lt
+      (Nat.le_trans (key_hit r) (Nat.mul_le_mul_right _
+        (Nat.mul_le_mul_left 40 (Nat.pow_le_pow_left hle 4)))) hc))
+
+/-- The key sits at or beyond `1652` at every residue at or beyond
+two: the member's key at or beyond the ceiling's own, `1654` at the
+residue two (`lem:cornerpivot`(vi)). -/
+private theorem key_ge1652 (r : Nat) (hr : 2 ≤ r) : 1652 ≤ cornerKey r := by
+  refine key_lb r 1651 ?_
+  rw [cornerScaleD_val r, show posVal (1 : Pos) = 1 from rfl, Nat.one_pow,
+    sqRead (524288 * (r + 1) * (r + 1)), kyA]
+  have h3 : 3 ≤ r + 1 := Nat.succ_le_succ hr
+  refine Nat.lt_of_lt_of_le (by decide +kernel : 40 * 1651 ^ 4 * 1
+    < 3 * 3 * 3 * 3 * 3 * 99780680220672) ?_
+  exact Nat.mul_le_mul_right _
+    (Nat.mul_le_mul (Nat.mul_le_mul (Nat.mul_le_mul (Nat.mul_le_mul h3 h3) h3) h3) h3)
+
+/-- The key clears twenty residues (`lem:cornerpivot`(vi)'s
+`20r ≤ N`). -/
+private theorem key_ge20 (r : Nat) : 20 * r ≤ cornerKey r := by
+  refine Nat.le_of_lt (key_lb r (20 * r) ?_)
+  rw [cornerScaleD_val r, show posVal (1 : Pos) = 1 from rfl, Nat.one_pow,
+    pow4Read (20 * r), sqRead (524288 * (r + 1) * (r + 1)), kyC, kyA]
+  have hr1 : r ≤ r + 1 := Nat.le_succ r
+  refine Nat.lt_of_le_of_lt (Nat.mul_le_mul_right 6400000
+    (Nat.mul_le_mul (Nat.mul_le_mul (Nat.mul_le_mul hr1 hr1) hr1) hr1)) ?_
+  refine Nat.lt_of_le_of_lt (Nat.mul_le_mul_right 6400000
+    (Nat.le_mul_of_pos_right _ (Nat.succ_pos r))) ?_
+  exact Nat.mul_lt_mul_of_pos_left (by decide +kernel)
+    (Nat.mul_pos (Nat.mul_pos (Nat.mul_pos
+      (Nat.mul_pos (Nat.succ_pos r) (Nat.succ_pos r)) (Nat.succ_pos r))
+      (Nat.succ_pos r)) (Nat.succ_pos r))
+
+/-- The key sits at or beyond `1495` at the residue one, the
+ceiling's own read there (`lem:cornerpivot`(vi)). -/
+private theorem key_ge1495 : 1495 ≤ cornerKey 1 :=
+  key_lb 1 1494 (by decide +kernel)
+
+/-- The key's leastness at a key beyond two: the predecessor refuses
+the comparison. -/
+private theorem key_least (r : Nat) (h3 : 3 ≤ cornerKey r) :
+    40 * (cornerKey r - 1) ^ 4 * posVal (1 : Pos) ^ 2
+      < 363 * (r + 1) * posVal (cornerScaleD r) ^ 2 :=
+  match (key_end r).2.2 with
+  | Or.inl h2 => absurd (h2 ▸ h3) (by decide)
+  | Or.inr hn => Nat.lt_of_not_le hn
+
+/-- The transported cell at a member of residue at or beyond two:
+the reference certificate at the member's scale and key, the tied
+scale under the ceiling at the key beyond `1652`, and the cut member
+`[6 : 5]` under the transported rate (`cornerpivot.resRate`). -/
+private theorem memberT (r : Nat) (hr : 2 ≤ r) :
+    corner.cellReadT r cornerpivot.disconjC 1 (cornerScaleD r) (cornerKey r) 6 5 1 := by
+  have hN := key_ge1652 r hr
+  refine ⟨hr, cornerpivot.disconjC_read, ?_, key_end r, rfl, Nat.le_refl 1, ?_⟩
+  · show BPair.ofNat 26 * BPair.ofNat 524288
+      ≤ BPair.ofNat 1 * BPair.ofPos (cornerpivot.tieScaleD (cornerKey r))
+    rw [BPair.ofPos_val (cornerpivot.tieScaleD (cornerKey r)),
+      cornerpivot.tieScaleD_val _ (Nat.le_trans (by decide : 1 ≤ 1652) hN)]
+    refine ground.leB_congr (BPair.ofNat_mul 26 524288) (BPair.ofNat_mul 1 _)
+      (ground.leB_ofNat ?_)
+    exact Nat.le_trans (by decide +kernel : 26 * 524288 ≤ 1 * (5 * 1652 * 1652))
+      (Nat.mul_le_mul_left 1 (Nat.mul_le_mul (Nat.mul_le_mul_left 5 hN) hN))
+  · rw [cornerpivot.disconjC_qcN, cornerpivot.disconjC_qcD]
+    exact cornerpivot.resRate (posVal 1) (posVal (cornerScaleD r)) r (cornerKey r) hN
+      (key_ge20 r) (key_least r (Nat.le_trans (by decide : 3 ≤ 1652) hN))
+
+/-- The residue-one cell at the `A`-series' first member: the
+reference certificate at the member's scale under its ceiling and
+the key from `1495`, and the cut member `[41 : 40]` under the stated
+rate (`cornerpivot.oneRate`). -/
+private theorem memberS :
+    corner.cellReadS cornerpivot.disconjC 1 (cornerScaleD 1) (cornerKey 1) 41 40 1 := by
+  refine ⟨cornerpivot.disconjC_read, by decide +kernel, key_end 1, rfl, Nat.le_refl 1, ?_⟩
+  rw [cornerpivot.disconjC_qcN, cornerpivot.disconjC_qcD]
+  exact cornerpivot.oneRate (posVal 1) (posVal (cornerScaleD 1)) (cornerKey 1) key_ge1495
+    (key_least 1 (Nat.le_trans (by decide : 3 ≤ 1495) key_ge1495)) (key_hit 1)
+
+/-- The member's residue-one corner cell: `lem:corner`'s cell datum
+at the member's derived residue, its tail scale and its endpoint
+key, the cut member `[41 : 40]` at the gap one. -/
+def cellS (m : Member) : Prop :=
+  corner.cellReadS cornerpivot.disconjC 1 (cornerScaleD (residue m))
+    (cornerKey (residue m)) 41 40 1
+
+instance (m : Member) : Decidable (cellS m) :=
+  inferInstanceAs (Decidable (corner.cellReadS _ _ _ _ _ _ _))
+
+/-- The member's transported corner cell: `lem:corner`'s cell datum
+at the member's derived residue, its tail scale and its endpoint
+key, the cut member `[6 : 5]` at the gap one. -/
+def cellT (m : Member) : Prop :=
+  corner.cellReadT (residue m) cornerpivot.disconjC 1 (cornerScaleD (residue m))
+    (cornerKey (residue m)) 6 5 1
+
+instance (m : Member) : Decidable (cellT m) :=
+  inferInstanceAs (Decidable (corner.cellReadT _ _ _ _ _ _ _ _))
+
+/-- Clause (iii)'s corner cell at a member: `lem:corner`'s cell-floor
+datum at the member's derived residue, the one certificate
+transported across the residues at the key's bracket
+(`lem:cornerpivot`(vi)) — the residue-one cell at the cut member
+`[41 : 40]` at the `A`-series' first member and the transported cell
+at `[6 : 5]` at every further member — whose reads are the flat
+window at the member line (`corner.cut_flat_T`, `corner.cut_flat_S`),
+the floor positive by its shape (`corner.floor_pos`) and the chain's
+ground at or below the line (`corner.ground_below_line`). -/
+def clauseIII : Member → Prop
+  | .A 0 => cellS (.A 0)
+  | .A (g + 1) => cellT (.A (g + 1))
+  | .B g => cellT (.B g)
+  | .C g => cellT (.C g)
+  | .D g => cellT (.D g)
+  | .G2 => cellT .G2
+  | .F4 => cellT .F4
+  | .E6 => cellT .E6
+  | .E7 => cellT .E7
+  | .E8 => cellT .E8
+
+instance : (m : Member) → Decidable (clauseIII m)
+  | .A 0 => inferInstanceAs (Decidable (cellS (.A 0)))
+  | .A (g + 1) => inferInstanceAs (Decidable (cellT (.A (g + 1))))
+  | .B g => inferInstanceAs (Decidable (cellT (.B g)))
+  | .C g => inferInstanceAs (Decidable (cellT (.C g)))
+  | .D g => inferInstanceAs (Decidable (cellT (.D g)))
+  | .G2 => inferInstanceAs (Decidable (cellT .G2))
+  | .F4 => inferInstanceAs (Decidable (cellT .F4))
+  | .E6 => inferInstanceAs (Decidable (cellT .E6))
+  | .E7 => inferInstanceAs (Decidable (cellT .E7))
+  | .E8 => inferInstanceAs (Decidable (cellT .E8))
+
+/-- Clause (iii)'s corner cell at every member of the classification:
+the `A`-series' first member at the residue-one cell, and every
+further member at the transported cell through its derived residue
+at or beyond two — the series through their residue reads and the
+fixed members' residues decided by kernel reduction. -/
+theorem clauseIII_all : ∀ m : Member, clauseIII m
+  | .A 0 => by
+      show corner.cellReadS cornerpivot.disconjC 1 (cornerScaleD (residue (.A 0)))
+        (cornerKey (residue (.A 0))) 41 40 1
+      rw [show residue (.A 0) = 1 from gentable.residue_tableA 1]
+      exact memberS
+  | .A (g + 1) => memberT _ (by
+      show 2 ≤ gentable.residue (gentable.tableA (g + 1 + 1))
+      rw [gentable.residue_tableA]
+      exact Nat.le_add_left 2 g)
+  | .B g => memberT _ (by
+      show 2 ≤ gentable.residue (sertables.tableB (g + 2))
+      rw [sertables.residue_tableB g]
+      exact Nat.mul_le_mul_left 2 (Nat.le_add_left 1 g))
+  | .C g => memberT _ (by
+      show 2 ≤ gentable.residue (sertables.tableC (g + 3))
+      rw [sertables.residue_tableC g]
+      exact Nat.le_trans (by decide) (Nat.le_add_left 3 g))
+  | .D g => memberT _ (by
+      show 2 ≤ gentable.residue (sertables.tableD (g + 4))
+      rw [sertables.residue_tableD g]
+      exact Nat.le_trans (by decide) (Nat.le_add_left 5 (2 * g)))
+  | .G2 => memberT _ (by decide +kernel)
+  | .F4 => memberT _ (by decide +kernel)
+  | .E6 => memberT _ (by decide +kernel)
+  | .E7 => memberT _ (by decide +kernel)
+  | .E8 => memberT _ (by decide +kernel)
 
 end main

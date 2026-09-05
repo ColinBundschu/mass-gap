@@ -142,7 +142,7 @@ private def FV : fusion.Data Nat :=
    0, (fun x => x), (fun x y => x + y), 1,
    (fun _ _ _ => 1), (fun _ _ => [0]),
    (fun _ => 1), (fun _ => 1), 1, 1, (fun _ => []),
-   (fun _ => 0), (fun _ _ => 0), (fun _ => 0)⟩
+   (fun _ => 0), (fun _ _ => 0), (fun _ => 0), (fun _ => none)⟩
 
 example : ¬ (FV.eqL FV.theta (FV.dual FV.unit) = true) := by decide +kernel
 example : ¬ fusion.unitLaw FV FV.theta FV.unit := by decide +kernel
@@ -256,7 +256,7 @@ datum `H - 10 G` splits at the clearing of the outer coupling to
 `diag(-12, -1, 2748)` — the counts `0, 1, 1, 2`. -/
 
 private def wH : Mat :=
-  pairpencil.pencilH 1 1 [0, 12, 32]
+  pairpencil.pencilH 1 1 [0, 12, 32] (inertia.idMat 3)
     (pairpencil.loopMag (fusion.dataA 2) [[1, 0], adjchar.theta 2])
 private def wG : Mat := idMat 3
 

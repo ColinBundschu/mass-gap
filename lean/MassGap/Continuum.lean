@@ -5,13 +5,14 @@ import MassGap.Gappos
 /-!
 `thm:continuum` — the continuum reads.  A continuum datum is a
 finite list of supports, separations and Euclidean pairs at pair
-coordinates against the corner scale (`Datum`), its observables the
-algebra's at those supports; the datum's own read at a scale is its
-site counts, one per support (`siteCount`, `siteCounts`:
+coordinates against the chain's height (`Datum`), its observables
+the algebra's at those supports; the datum's own read at a scale is
+its site counts, one per support (`siteCount`, `siteCounts`:
 `thm:groundreads`(vii)'s scale count at the pair coordinate, the
-multiples of the corner scale at or below the support's extent,
-cross-multiplied at the pair's two members, the count's two
-comparisons its whole read, `siteCount_read` and `siteCount_vac`).
+multiples of the chain's height at the scale at or below the
+support's extent, cross-multiplied at the pair's two members, the
+count's two comparisons its whole read, `siteCount_read` and
+`siteCount_vac`).
 
 Clause (i).  At every scale of the corner cell the datum's reads
 sit in the stated brackets: a support's read is window-free within
@@ -22,16 +23,18 @@ slabs), and a Euclidean pair's read within the pair
 bracket (`groundreads.euc_pair_price` at the pair `u`), two scales'
 reads within the scale sandwich's priced bracket
 (`groundreads.scale_read`).  On the corner disconjugacy certificate's
-cell the floor locates the clearance at every tail scale
-(`cornerfloor.cut_flat` at every scale under the ceiling), the
+head, the walk's band-one head (`corner.headM`, `cornerpivot.wellMat`),
+the floor locates the clearance at every tail scale
+(`corner.cut_flat`, `corner.cut_flat_T` and `corner.cut_flat_S` at
+every scale under the ceiling), the
 ground-level sandwich sums to one cofactor read at the upper
 family's rate (`ground.widthSum` at `corner.rate_close`'s rate), the
 heights read two-sided at the certificate's rates
 (`cornerpivot.witCount` from below, `cornerpivot.certCount` from
 above), and a datum's scale reads close on the moment folds'
 clearance cell (`momentfold.datum_close`).  The clause's own read at
-the datum is the site counts' stabilization with the floor: the
-counts read one value at a scale bracket's two ends
+the datum is the site counts' stabilization with the height's
+brackets: the counts read one value at a scale bracket's two ends
 (`countsStable`), and then one value at every scale between
 (`counts_stable`, `groundreads.scaleCount_stable` and
 `scaleCount_stable_vac` support by support).
@@ -42,11 +45,13 @@ vectors); reads at disjoint supports read one value at either order
 and an ordering difference beyond the reach is the remainder's own
 read (`groundreads.lead_tail_null`, `groundreads.prop_bracket`);
 separated reads pair to their product within the crossing
-certificates' brackets (`groundreads.cluster_read`); the chain's own
-heights are two-sided located data at the cell's positive located
-floor (`cornerfloor.cut_flat`, `cornerfloor.floor_pos`), so the
-spectral data sit at the ground with the floor's clearance in the
-corner scale there: at a head pencil whose level gap ties to the
+certificates' brackets (`groundreads.cluster_read`); the certificate's
+head's heights are two-sided located data at its positive located
+floor (`corner.cut_flat`, `corner.cut_flat_T`, `corner.cut_flat_S`,
+`corner.floor_pos`), and the chain's ground sits at or below the
+head's line, the head its leading block
+(`corner.ground_below_line` at `truncation.count_head_le`), so the
+spectral data sit at the ground in the corner scale there: at a head pencil whose level gap ties to the
 ground level (`def:pencil`'s `ε₀ G + Ẽ = H`), the count one at a
 corner line reads the gap's count one at the line's gap level
 through the site shift (`inertia.rev_exchange` at the shifted site,
@@ -61,16 +66,17 @@ two degrees down (`cone.cone_read`), the multiplicities scale-free
 (`restoration.deg4_indep`, `restoration.quartic_breaks`, stated at
 every direction count with no scale datum).
 
-Clause (iii).  The spacing is an output: the corner height reads
-two-sided at the certificate's rates on its cell at the cell's
-positive located floor, one output bracket — the floor's two
-members (`cornerfloor.floorN`, `cornerfloor.floorD`) positive by
-their shape (`cornerfloor.floor_pos`), the count one at every cut
-member's line (`cornerfloor.cut_flat`, `cornerfloor.line_flat`) and
-the chain's ground at or below the line
-(`cornerfloor.ground_below_line`), the upper side the truncation's
-second root against the bordered pencil's ground
-(`truncation.count_head_le`, `contactcell.count_bord_le`).
+Clause (iii).  The spacing is an output: the chain's height at a
+scale is located between the ray's floor and its caps, one output
+bracket per scale — the certificate's head's two-sided datum, its
+floor's two members (`corner.floorN`, `corner.floorD`) positive by
+their shape (`corner.floor_pos`), the count one at every cut
+member's line (`corner.cut_flat`, `corner.cut_flat_T`,
+`corner.cut_flat_S`, `corner.line_count`), the chain's ground at or
+below the line (`corner.ground_below_line`) and its second root at
+or below the head's (`truncation.count_head_le`,
+`contactcell.count_bord_le`), and every probe's two moments' read
+capping the chain's edge beside it (`attained.probe_cap`).
 -/
 
 namespace continuum
@@ -78,7 +84,7 @@ open ground elim inertia certconstruct
 
 set_option genInjectivity false in
 /-- The continuum datum: a finite list of supports, separations and
-Euclidean pairs at pair coordinates against the corner scale, each
+Euclidean pairs at pair coordinates against the chain's height, each
 member a scalar pair `[sn : sd]` (`def:ground`) — the supports and
 the separations at their extents, the Euclidean pairs at
 `thm:groundreads`(v)'s pair `u`. -/
@@ -87,30 +93,31 @@ structure Datum where
   seps : List (Pos × Pos)
   eucs : List (Pos × Pos)
 
-/-- A member's site count against the corner scale `η = [en : ed]`:
-the count of the scale's multiples at or below the member's extent
-`[sn : sd]`, the multiples `m` at `m·en·sd ≤ sn·ed` cross-multiplied
-(`thm:groundreads`(vii)'s scale count at the pair coordinate). -/
-def siteCount (s : Pos × Pos) (en ed : Pos) : Option Pos :=
-  groundreads.scaleCount s.1 (en * s.2) ed
+/-- A member's site count against the chain's height at the scale,
+`h = [hn : hd]`: the count of the height's multiples at or below the
+member's extent `[sn : sd]`, the multiples `m` at `m·hn·sd ≤ sn·hd`
+cross-multiplied (`thm:groundreads`(vii)'s scale count at the pair
+coordinate). -/
+def siteCount (s : Pos × Pos) (hn hd : Pos) : Option Pos :=
+  groundreads.scaleCount s.1 (hn * s.2) hd
 
 /-- The datum's site counts, one per support. -/
-def siteCounts (D : Datum) (en ed : Pos) : List (Option Pos) :=
-  D.supports.map (fun s => siteCount s en ed)
+def siteCounts (D : Datum) (hn hd : Pos) : List (Option Pos) :=
+  D.supports.map (fun s => siteCount s hn hd)
 
 /-- An occupied site count is the stated one: the count `q` brackets
 the cross-multiplied extent between `q` and `q + 1` multiples of the
-cleared scale, the two comparisons the count's whole read. -/
-theorem siteCount_read (s : Pos × Pos) (en ed q : Pos)
-    (h : siteCount s en ed = some q) :
-    en * s.2 * q ≤ s.1 * ed ∧ s.1 * ed < en * s.2 * ground.succ q :=
-  groundreads.scaleCount_read s.1 (en * s.2) ed q h
+cleared height, the two comparisons the count's whole read. -/
+theorem siteCount_read (s : Pos × Pos) (hn hd q : Pos)
+    (h : siteCount s hn hd = some q) :
+    hn * s.2 * q ≤ s.1 * hd ∧ s.1 * hd < hn * s.2 * ground.succ q :=
+  groundreads.scaleCount_read s.1 (hn * s.2) hd q h
 
 /-- A vacant site count prices the extent below one step of the
-cleared scale. -/
-theorem siteCount_vac (s : Pos × Pos) (en ed : Pos)
-    (h : siteCount s en ed = none) : s.1 * ed < en * s.2 :=
-  groundreads.scaleCount_vac s.1 (en * s.2) ed h
+cleared height. -/
+theorem siteCount_vac (s : Pos × Pos) (hn hd : Pos)
+    (h : siteCount s hn hd = none) : s.1 * hd < hn * s.2 :=
+  groundreads.scaleCount_vac s.1 (hn * s.2) hd h
 
 /-- The site counts read one value at a scale bracket's two ends,
 support by support. -/
@@ -166,11 +173,11 @@ private theorem stableGo (ln ld un ud en ed : Pos)
     rw [stableAt ln ld un ud en ed hlo hhi s (of_decide_eq_true h2.1),
       stableGo ln ld un ud en ed hlo hhi t h2.2]
 
-/-- The site counts stabilize with the floor: at a scale bracket
-whose two ends read the datum's counts at one value, every scale
-between reads them at that value, one integer per support across
-the bracket (`thm:groundreads`(vii)'s scale count, one integer
-across a scale bracket whose two ends read it). -/
+/-- The site counts stabilize with the height's brackets: at a
+height bracket whose two ends read the datum's counts at one value,
+every height between reads them at that value, one integer per
+support across the bracket (`thm:groundreads`(vii)'s scale count,
+one integer across a scale bracket whose two ends read it). -/
 theorem counts_stable (D : Datum) (ln ld un ud en ed : Pos)
     (hlo : ln * ed ≤ en * ld) (hhi : en * ud ≤ un * ed)
     (h : countsStable D ln ld un ud) :

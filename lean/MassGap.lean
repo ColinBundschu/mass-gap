@@ -89,6 +89,7 @@ import MassGap.Lowerspan
 import MassGap.Strings
 import MassGap.Blockirr
 import MassGap.Casimir
+import MassGap.Slotpower
 import MassGap.Fiber
 import MassGap.Res
 import MassGap.Twoplaq
@@ -128,3 +129,4 @@ import MassGap.Groundreads
 import MassGap.Momentfold
 import MassGap.Continuum
 import MassGap.Reconstruct
+import MassGap.Depthchain

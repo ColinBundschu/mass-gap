@@ -731,7 +731,7 @@ lift at the tail witnesses, and the two families priced at
 
 /-- The off-diagonal block's row at the trailing order, the width
 filled out by the sum's unit. -/
-private def padRow (w : Nat) (rb : List BPair) : List BPair :=
+def padRow (w : Nat) (rb : List BPair) : List BPair :=
   rb ++ List.replicate (w - rb.length) BPair.unit
 
 /-- The off-diagonal block at the trailing order. -/
@@ -808,14 +808,14 @@ theorem sqAt_headD : ∀ (M : Mat) (m : Nat), sqAt M m →
 theorem offPad_len (w : Nat) (B : Mat) :
     (offPad w B).length = B.length := ground.length_map _ B
 
-private theorem offPad_rows (w n1 : Nat) (B : Mat) (hB : rowsLen n1 B)
+theorem offPad_rows (w n1 : Nat) (B : Mat) (hB : rowsLen n1 B)
     (hle : n1 ≤ w) : rowsLen w (offPad w B) :=
   rowsLen_map (padRow w) w B (fun r hr => by
     show (r ++ List.replicate (w - r.length) BPair.unit).length = w
     rw [ground.length_append, ground.length_replicate,
       elim.rowsLen_of_mem hB hr, ground.natAddSubCancel hle])
 
-private theorem offPad_getAt (w : Nat) (B : Mat) (q : Nat)
+theorem offPad_getAt (w : Nat) (B : Mat) (q : Nat)
     (hq : q < B.length) :
     ground.getAt [] (offPad w B) q = padRow w (ground.getAt [] B q) :=
   ground.getAt_map ([] : List BPair) ([] : List BPair) (padRow w) B q hq

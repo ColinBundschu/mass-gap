@@ -953,20 +953,6 @@ private theorem qRowsFall (l m : List Nat) (i g : Nat)
     rw [hlen]
     exact addCancelL _ hmul
 
-/-- The product carries a strict order at an occupied left member,
-the hand-rolled read. -/
-private theorem mulLtLeft : ∀ (d : Nat), 0 < d → ∀ {x y : Nat},
-    x < y → d * x < d * y := by
-  intro d hd x y h
-  cases d with
-  | zero => exact absurd hd (Nat.lt_irrefl 0)
-  | succ c =>
-    have h1 : (c + 1) * (x + 1) ≤ (c + 1) * y := Nat.mul_le_mul_left (c + 1) h
-    have h2 : (c + 1) * x < (c + 1) * (x + 1) := by
-      rw [Nat.left_distrib (c + 1) x 1, Nat.mul_one (c + 1)]
-      exact Nat.lt_succ_of_le (Nat.le_add_right ((c + 1) * x) c)
-    exact Nat.lt_of_lt_of_le h2 h1
-
 /-- The fall is strict at the rows: the box move lowers the cleared
 read. -/
 private theorem qRowsFall_lt (l m : List Nat) (i g : Nat)
@@ -1013,7 +999,7 @@ private theorem qRowsFall_lt (l m : List Nat) (i g : Nat)
           + ground.getAt 0 m (i + (g' + 1)))
         < l.length * (ground.getAt 0 l i + ground.getAt 0 m i)
           + 2 * l.length * (g' + 1) :=
-      Nat.lt_of_lt_of_le (mulLtLeft l.length hd hAB) (Nat.le_add_right _ _)
+      Nat.lt_of_lt_of_le (Nat.mul_lt_mul_of_pos_left hAB hd) (Nat.le_add_right _ _)
     have h3 := Nat.add_lt_add_left hlt2 (qRows m)
     rw [← Nat.add_assoc (qRows m)
         (l.length * (ground.getAt 0 l i + ground.getAt 0 m i))

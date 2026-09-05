@@ -6,13 +6,13 @@ rescaling multiplies every spectral read of the family by the one
 factor — the count at the pencil (`segment.ray_count`;
 `certconstruct.countAtPair_scale`) and the cut at 𝒦's own carrier
 (`K.cutRead_scale` with `K.cutRead_unscale`, the descent both
-ways) — so the two ends' reads descend jointly to the ray and the
-invariant is their pair (`def:K`), a count against a count with
-each read one value at every form point (`prop:form`).  The first
-consequence is the coordinates' stated data: the contact pair's
-reads take the base and the residue alone (`contactpair.pair`;
-`def:channelreads`; `def:excess`), the direction count entering
-nowhere.  The module's own tier is the second consequence: the
+ways) — so the cut's side descends to the ray (`def:K`), the free
+end's read a count against a count and the contact end's the walk's
+two counts, each read one value at every form point (`prop:form`).
+The first consequence is the coordinates' stated data: the contact
+pair's reads take the base and the residue alone
+(`contactpair.pair`; `def:channelreads`; `def:excess`), the
+direction count entering nowhere.  The module's own tier is the second consequence: the
 scheme bridge acts on the base by `[α : β] ↦ [α : λβ]`
 (`bridgeMap`, descending to the rays at `bridgeMap_congr`), and
 its fixed points at the ray reading are exactly the two ends

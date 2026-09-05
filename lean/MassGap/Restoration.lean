@@ -31,11 +31,13 @@ the translation's own family at this map — the permutation read
 with its witness, and the conjugation of a direction's
 translation into the permuted direction's own
 (`fiberdec.intertwineRead`), a flip carrying a translation to its
-inverse at the backward step — with the plaquette set read at the
-boundary field's own cyclic words (`bdPlaqRead` over `ground.rotAt`, `revWord`, `cycEq` and `moveWord`): every boundary's image word,
-its traversal bits carried across the reversal family, is a
-stored plaquette's cyclic word, a rotation joining it to the word
-or to its reversal.
+inverse at the backward step — with the plaquette set permuted at
+the boundary field's own cyclic words (`lattice.plaqPermRead` at
+the member's link map and reversal family, the permutation as
+data): every boundary's image word, its traversal bits carried
+across the reversal family, is the moved position's plaquette at
+the cyclic reading, a rotation joining it to the word or to its
+reversal.
 
 The second tier is the matrix the theorem's congruence sentence
 reads at, and the momentum transform's carrier.  The index action
@@ -46,10 +48,11 @@ own matrix its vacant instance) — so that a member's congruence on the window'
 matrix is the theorem's `E`-fix read entrywise, and a window whose
 multiplicity reads one carries the ground line at `thm:SO`'s
 character clause.  The congruence sentence's determinant read sits
-beside it: `relabelRead` is the moved pencil's entrywise reading —
-every entry the source's at the moved row and column keys, with
-`relabelRead_at` its extraction at a row and a column key — and
-`relabel_det` reads the two determinants at one value through
+beside it: `elim.relabelRead` is the moved pencil's entrywise
+reading — every entry the source's at the moved row and column
+keys, with `elim.relabelRead_at` its extraction at a row and a
+column key — and `relabel_det` reads the two determinants at one
+value through
 `def:elim`'s exchanged reads, the assignment fold reindexed along
 the relabeling with the row and the column exchanges composing at
 an even join.  The transform is the read family at the
@@ -93,64 +96,6 @@ def bdLink (d L : Nat) (p : Nat → Nat) (f : Nat → Bool) (l : Nat) : Nat :=
 /-- The reversal family, the flipped directions' links. -/
 def bdRev (d L : Nat) (f : Nat → Bool) (l : Nat) : Bool := f (l / L ^ d)
 
-/-- The boundary traversed backwards: the word reversed with every
-traversal bit flipped, the field's orientation reversal. -/
-def revWord (w : List (Nat × Bool)) : List (Nat × Bool) :=
-  (w.reverse).map (fun e => (e.1, !e.2))
-
-/-- Two boundary words one plaquette reading: the words equal, or
-a rotation joining the first to the second or to its reversal —
-the cyclic word at either traversal. -/
-def cycEq (w w' : List (Nat × Bool)) : Bool :=
-  w == w'
-    || (List.range w'.length).any (fun k => w == ground.rotAt k w')
-    || (List.range w'.length).any (fun k => w == ground.rotAt k (revWord w'))
-
-/-- The moved boundary word: each link at its image key with the
-traversal bit carried across the reversal family. -/
-def moveWord (t : Nat → Nat) (rev : Nat → Bool)
-    (w : List (Nat × Bool)) : List (Nat × Bool) :=
-  w.map (fun e => (t e.1, xor e.2 (rev e.1)))
-
-/-- The plaquette set moved into itself at the cyclic reading:
-every boundary's image word is a stored plaquette's own cyclic
-word (`con:lattice`'s field, the signed member permuting the
-plaquette set with the orientation reversal). -/
-def bdPlaqRead (R : Region) (t : Nat → Nat) (rev : Nat → Bool) :
-    Prop :=
-  (R.plaqs.all (fun w =>
-    R.plaqs.any (fun w' => cycEq (moveWord t rev w) w'))) = true
-
-instance (R : Region) (t : Nat → Nat) (rev : Nat → Bool) :
-    Decidable (bdPlaqRead R t rev) :=
-  inferInstanceAs (Decidable (_ = _))
-
-/-- The relabeled window pencil at a stated permutation: every
-entry the source's at the moved row and column keys, the
-relabeling's own read. -/
-def relabelRead (n : Nat) (M M' : elim.Mat) (q : List Nat) : Prop :=
-  ((List.range n).all (fun i =>
-    let row' := ground.getAt [] M' i
-    let row := ground.getAt [] M (ground.getAt 0 q i)
-    (List.range n).all (fun j =>
-      decide ((ground.getAt BPair.unit row' j).oneValue
-        (ground.getAt BPair.unit row (ground.getAt 0 q j)))))) = true
-
-instance (n : Nat) (M M' : elim.Mat) (q : List Nat) :
-    Decidable (relabelRead n M M' q) :=
-  inferInstanceAs (Decidable (_ = _))
-
-/-- The relabeling read at a row and a column key below the
-count. -/
-theorem relabelRead_at (n : Nat) (M M' : elim.Mat) (q : List Nat)
-    (h : relabelRead n M M' q) (i j : Nat) (hi : i < n) (hj : j < n) :
-    (ground.getAt BPair.unit (ground.getAt [] M' i) j).oneValue
-      (ground.getAt BPair.unit
-        (ground.getAt [] M (ground.getAt 0 q i))
-        (ground.getAt 0 q j)) :=
-  of_decide_eq_true
-    (ground.all_range_read n (ground.all_range_read n h i hi) j hj)
-
 /-- The relabeled pencil's determinant reads the source's, the
 theorem's determinant agreement at the window level, the
 characteristic polynomials' coefficientwise read
@@ -159,10 +104,10 @@ theorem relabel_det (n : Nat) (M M' : elim.Mat) (q : List Nat)
     (hq : 0 < ground.countOf q
       (places.monomialsAt (List.replicate n 1)))
     (hM : M.length = n) (hM' : M'.length = n)
-    (h : relabelRead n M M' q) :
+    (h : elim.relabelRead n M M' q) :
     (elim.detL M').oneValue (elim.detL M) :=
   elim.detL_reindex n M M' q hq hM hM'
-    (fun i j hi hj => relabelRead_at n M M' q h i j hi hj)
+    (fun i j hi hj => elim.relabelRead_at n M M' q h i j hi hj)
 
 /-- The per-argument key lists, the box at a stated argument
 count: the key lists' own box over the one-direction rows

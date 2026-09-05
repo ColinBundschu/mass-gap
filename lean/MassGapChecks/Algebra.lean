@@ -81,20 +81,20 @@ example : evalConf (dataA 2) (List.replicate 4 (adjchar.theta 2))
 the single `U` and the single `U†` — so `tr U · tr U†` is the
 window's first member and the solve reads its coordinate. -/
 
-private def dF2 : states.FList := [(false, false), (false, true)]
+private def dF2 : states.FList := [(0, false), (0, true)]
 private def dWs : List states.Comb :=
   [[([0, 1], poly.pOne)], [([1, 0], poly.pOne)]]
 private def dAU : states.Comb := [([0], poly.pOne)]
 private def dUD : states.Comb := [([0], poly.pOne)]
 private def dX :=
-  algebra.prodSolve dF2 [(false, false)] [(false, true)] dWs dAU dUD
+  algebra.prodSolve dF2 [(0, false)] [(0, true)] dWs dAU dUD
 private def dWs1 : List states.Comb := [[([0, 1], poly.pOne)]]
 private def dX1 :=
-  algebra.prodSolve dF2 [(false, false)] [(false, true)] dWs1 dAU dUD
+  algebra.prodSolve dF2 [(0, false)] [(0, true)] dWs1 dAU dUD
 private def dG := algebra.windowGram dF2 dWs
 private def dM := genericlift.ppminor dG
 private def dRhs :=
-  algebra.prodRhs dF2 [(false, false)] [(false, true)] dWs dAU dUD
+  algebra.prodRhs dF2 [(0, false)] [(0, true)] dWs dAU dUD
 private def dG1 := algebra.windowGram dF2 dWs1
 private def dM1 := genericlift.ppminor dG1
 
@@ -127,7 +127,7 @@ identity too, and the two coordinates read one value at the cleared
 cross comparison — each side scaled by the other window's
 determinant, `2 · d_f² = d_f² · 2`. -/
 
-example : algebra.prodRead dF2 [(false, false)] [(false, true)]
+example : algebra.prodRead dF2 [(0, false)] [(0, true)]
     dWs1 dAU dUD dX1 := by decide +kernel
 example : genericlift.crossNull
     (poly.pMul (ground.getAt poly.pZero dX1 0) dM)
@@ -148,9 +148,9 @@ mixed-variable product at two terms of the first factor, and the
 two-member window; each is decided and read again through the
 theorem at its decided key binders. -/
 
-private def kU : states.FList := [(false, false)]
-private def kD : states.FList := [(false, true)]
-private def kV2 : states.FList := [(true, false), (true, true)]
+private def kU : states.FList := [(0, false)]
+private def kD : states.FList := [(0, true)]
+private def kV2 : states.FList := [(1, false), (1, true)]
 private def kv1 : states.Comb := [([1, 0], poly.pOne)]
 private def kv2 : states.Comb :=
   [([1, 0], poly.pOne), ([0, 1], poly.pOne)]
@@ -159,32 +159,32 @@ private def kaM : states.Comb :=
 private def kbM : states.Comb := [([0, 1], poly.pOne)]
 
 example : genericlift.crossNull
-    (wg.pairFull dF2 (kU ++ kD) kv1 (states.mulComb dAU dUD))
-    (wg.pairFull dF2 (kD ++ kU) kv1 (states.mulComb dUD dAU)) := by
+    (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv1 (states.mulComb dAU dUD))
+    (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv1 (states.mulComb dUD dAU)) := by
   decide +kernel
 example : genericlift.crossNull
-    (wg.pairFull dF2 (kU ++ kD) kv1 (states.mulComb dAU dUD))
-    (wg.pairFull dF2 (kD ++ kU) kv1 (states.mulComb dUD dAU)) :=
+    (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv1 (states.mulComb dAU dUD))
+    (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv1 (states.mulComb dUD dAU)) :=
   prodComm dF2 kU kD kv1 dAU dUD (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
 example : genericlift.crossNull
-    (wg.pairFull dF2 (dF2 ++ kV2) kv1 (states.mulComb kaM kbM))
-    (wg.pairFull dF2 (kV2 ++ dF2) kv1 (states.mulComb kbM kaM)) := by
+    (wg.pairFull wg.evalPhi dF2 (dF2 ++ kV2) kv1 (states.mulComb kaM kbM))
+    (wg.pairFull wg.evalPhi dF2 (kV2 ++ dF2) kv1 (states.mulComb kbM kaM)) := by
   decide +kernel
 example : genericlift.crossNull
-    (wg.pairFull dF2 (dF2 ++ kV2) kv1 (states.mulComb kaM kbM))
-    (wg.pairFull dF2 (kV2 ++ dF2) kv1 (states.mulComb kbM kaM)) :=
+    (wg.pairFull wg.evalPhi dF2 (dF2 ++ kV2) kv1 (states.mulComb kaM kbM))
+    (wg.pairFull wg.evalPhi dF2 (kV2 ++ dF2) kv1 (states.mulComb kbM kaM)) :=
   prodComm dF2 dF2 kV2 kv1 kaM kbM (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
 example : genericlift.crossNull
-    (wg.pairFull dF2 (kU ++ kD) kv2 (states.mulComb dAU dUD))
-    (wg.pairFull dF2 (kD ++ kU) kv2 (states.mulComb dUD dAU)) := by
+    (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv2 (states.mulComb dAU dUD))
+    (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv2 (states.mulComb dUD dAU)) := by
   decide +kernel
 example : genericlift.crossNull
-    (wg.pairFull dF2 (kU ++ kD) kv2 (states.mulComb dAU dUD))
-    (wg.pairFull dF2 (kD ++ kU) kv2 (states.mulComb dUD dAU)) :=
+    (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv2 (states.mulComb dAU dUD))
+    (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv2 (states.mulComb dUD dAU)) :=
   prodComm dF2 kU kD kv2 dAU dUD (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
@@ -198,22 +198,22 @@ private def kaF : states.Comb := [([5], poly.pOne)]
 private def kbF : states.Comb := [([1], poly.pOne)]
 
 example : ¬ genericlift.crossNull
-    (wg.pairFull dF2 (kU ++ kD) kFv (states.mulComb dAU dUD))
-    (wg.pairFull dF2 (kD ++ kU) kFv (states.mulComb dUD dAU)) := by
+    (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kFv (states.mulComb dAU dUD))
+    (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kFv (states.mulComb dUD dAU)) := by
   decide +kernel
 example : ¬ ((kFv.all (fun e =>
     decide (states.permAt e.1 dF2.length))) = true) := by decide +kernel
 
 example : ¬ genericlift.crossNull
-    (wg.pairFull dF2 (kU ++ kD) kv1 (states.mulComb kaF dUD))
-    (wg.pairFull dF2 (kD ++ kU) kv1 (states.mulComb dUD kaF)) := by
+    (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv1 (states.mulComb kaF dUD))
+    (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv1 (states.mulComb dUD kaF)) := by
   decide +kernel
 example : ¬ ((kaF.all (fun e =>
     decide (states.permAt e.1 kU.length))) = true) := by decide +kernel
 
 example : ¬ genericlift.crossNull
-    (wg.pairFull dF2 (kU ++ kD) kv1 (states.mulComb dAU kbF))
-    (wg.pairFull dF2 (kD ++ kU) kv1 (states.mulComb kbF dAU)) := by
+    (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv1 (states.mulComb dAU kbF))
+    (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv1 (states.mulComb kbF dAU)) := by
   decide +kernel
 example : ¬ ((kbF.all (fun e =>
     decide (states.permAt e.1 kD.length))) = true) := by decide +kernel
@@ -229,12 +229,12 @@ private def kaVac : states.Comb := [([0], kVac)]
 
 example : poly.unitTail kVac.2 := by decide +kernel
 example : genericlift.crossNull
-    (wg.pairFull dF2 (kU ++ kD) kv1 (states.mulComb kaVac dUD))
-    (wg.pairFull dF2 (kD ++ kU) kv1 (states.mulComb dUD kaVac)) := by
+    (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv1 (states.mulComb kaVac dUD))
+    (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv1 (states.mulComb dUD kaVac)) := by
   decide +kernel
 example : genericlift.crossNull
-    (wg.pairFull dF2 (kU ++ kD) kv1 (states.mulComb kaVac dUD))
-    (wg.pairFull dF2 (kD ++ kU) kv1 (states.mulComb dUD kaVac)) :=
+    (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv1 (states.mulComb kaVac dUD))
+    (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv1 (states.mulComb dUD kaVac)) :=
   prodComm dF2 kU kD kv1 kaVac dUD (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 

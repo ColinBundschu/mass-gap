@@ -319,6 +319,12 @@ def disconjC : DisconjCert :=
    seedK, seedCK, seedTK, [], postSeg, [], finSeam,
    preAlN, preAlD, preWs⟩
 
+/-- The store's stated rate, its first member. -/
+theorem disconjC_qcN : disconjC.qcN = 8 := rfl
+
+/-- The store's stated rate, its second member. -/
+theorem disconjC_qcD : disconjC.qcD = 1 := rfl
+
 
 /-! ## The derived tier: stored values, walk checkpoints, and ties
 

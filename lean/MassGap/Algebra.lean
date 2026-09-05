@@ -138,14 +138,14 @@ agreement's cleared comparison the check module's pin. -/
 pairing's matrix (`prop:wg`). -/
 def windowGram (F : states.FList) (ws : List states.Comb) :
     genericlift.PPMat :=
-  ws.map (fun v => ws.map (fun w => wg.pairFull F F v w))
+  ws.map (fun v => ws.map (fun w => wg.pairFull wg.evalPhi F F v w))
 
 /-- The pairing identity's right side: the product state's pairing
 against every window-list member, `Eval(Φ̄_v Φ_a Φ_u)` at the
 concatenated site. -/
 def prodRhs (F Fa Fu : states.FList) (ws : List states.Comb)
     (a u : states.Comb) : List poly.PPair :=
-  ws.map (fun v => wg.pairFull F (Fa ++ Fu) v (states.mulComb a u))
+  ws.map (fun v => wg.pairFull wg.evalPhi F (Fa ++ Fu) v (states.mulComb a u))
 
 /-- The determination's produced solve: the adjugate against the
 window Gram at the right side, the coordinates cleared at the
@@ -684,7 +684,7 @@ swapped site reads the site at the block swap's own keys. -/
 private theorem site_swap (F Fa Fb : states.FList) :
     wg.conjF F ++ (Fb ++ Fa)
       = (states.swapW F.length Fa.length Fb.length).map
-        (fun j => ground.getAt ((false, false) : states.Factor)
+        (fun j => ground.getAt ((0, false) : states.Factor)
           (wg.conjF F ++ (Fa ++ Fb)) j) := by
   have hcl : (wg.conjF F).length = F.length := by
     show (F.map (fun f => (f.1, !f.2))).length = F.length
@@ -695,21 +695,21 @@ private theorem site_swap (F Fa Fb : states.FList) :
   have hswl : (states.swapW F.length Fa.length Fb.length).length
       = F.length + (Fb.length + Fa.length) :=
     states.length_swapW F.length Fa.length Fb.length
-  refine ground.getAt_ext ((false, false) : states.Factor) _ _ ?_ ?_
+  refine ground.getAt_ext ((0, false) : states.Factor) _ _ ?_ ?_
   · rw [hlen, ground.length_map, hswl]
   · intro i hi
     rw [hlen] at hi
     have hrd : ∀ k, k < F.length + (Fb.length + Fa.length) →
-        ground.getAt ((false, false) : states.Factor)
+        ground.getAt ((0, false) : states.Factor)
           ((states.swapW F.length Fa.length Fb.length).map
-            (fun j => ground.getAt ((false, false) : states.Factor)
+            (fun j => ground.getAt ((0, false) : states.Factor)
               (wg.conjF F ++ (Fa ++ Fb)) j)) k
-          = ground.getAt ((false, false) : states.Factor)
+          = ground.getAt ((0, false) : states.Factor)
             (wg.conjF F ++ (Fa ++ Fb))
             (ground.getAt 0
               (states.swapW F.length Fa.length Fb.length) k) := by
       intro k hk
-      exact ground.getAt_map 0 ((false, false) : states.Factor) _
+      exact ground.getAt_map 0 ((0, false) : states.Factor) _
         (states.swapW F.length Fa.length Fb.length) k
         (by rw [hswl]; exact hk)
     match ixCases (n := F.length) (b := Fb.length) (a := Fa.length)
@@ -717,9 +717,9 @@ private theorem site_swap (F Fa Fb : states.FList) :
     | .inl hk =>
       rw [hrd i (Nat.lt_of_lt_of_le hk (Nat.le_add_right _ _)),
         states.getAt_swapW_low F.length Fa.length Fb.length i hk,
-        app_low ((false, false) : states.Factor) (wg.conjF F)
+        app_low ((0, false) : states.Factor) (wg.conjF F)
           (Fb ++ Fa) F.length i hcl hk,
-        app_low ((false, false) : states.Factor) (wg.conjF F)
+        app_low ((0, false) : states.Factor) (wg.conjF F)
           (Fa ++ Fb) F.length i hcl hk]
     | .inr (.inl ⟨r, hr, hir⟩) =>
       rw [hir]
@@ -728,13 +728,13 @@ private theorem site_swap (F Fa Fb : states.FList) :
           (Nat.lt_of_lt_of_le hr (Nat.le_add_right _ _)) F.length
       rw [hrd (F.length + r) hlt,
         states.getAt_swapW_mid F.length Fa.length Fb.length r hr,
-        app_high ((false, false) : states.Factor) (wg.conjF F)
+        app_high ((0, false) : states.Factor) (wg.conjF F)
           (Fb ++ Fa) F.length r hcl,
-        app_low ((false, false) : states.Factor) Fb Fa
+        app_low ((0, false) : states.Factor) Fb Fa
           Fb.length r rfl hr,
-        app_high ((false, false) : states.Factor) (wg.conjF F)
+        app_high ((0, false) : states.Factor) (wg.conjF F)
           (Fa ++ Fb) F.length (Fa.length + r) hcl,
-        app_high ((false, false) : states.Factor) Fa Fb
+        app_high ((0, false) : states.Factor) Fa Fb
           Fa.length r rfl]
     | .inr (.inr ⟨s, hs, his⟩) =>
       rw [his]
@@ -744,13 +744,13 @@ private theorem site_swap (F Fa Fb : states.FList) :
           F.length
       rw [hrd (F.length + (Fb.length + s)) hlt,
         states.getAt_swapW_high F.length Fa.length Fb.length s hs,
-        app_high ((false, false) : states.Factor) (wg.conjF F)
+        app_high ((0, false) : states.Factor) (wg.conjF F)
           (Fb ++ Fa) F.length (Fb.length + s) hcl,
-        app_high ((false, false) : states.Factor) Fb Fa
+        app_high ((0, false) : states.Factor) Fb Fa
           Fb.length s rfl,
-        app_high ((false, false) : states.Factor) (wg.conjF F)
+        app_high ((0, false) : states.Factor) (wg.conjF F)
           (Fa ++ Fb) F.length s hcl,
-        app_low ((false, false) : states.Factor) Fa Fb
+        app_low ((0, false) : states.Factor) Fa Fb
           Fa.length s rfl hs]
 
 
@@ -906,8 +906,8 @@ private theorem pairPhi_swap (F Fa Fb : states.FList)
     (ha : states.permAt ka Fa.length)
     (hb : states.permAt kb Fb.length) :
     genericlift.crossNull
-      (wg.pairPhi F (Fb ++ Fa) kv (kb ++ states.shiftW Fb.length ka))
-      (wg.pairPhi F (Fa ++ Fb) kv
+      (wg.pairPhi wg.evalPhi F (Fb ++ Fa) kv (kb ++ states.shiftW Fb.length ka))
+      (wg.pairPhi wg.evalPhi F (Fa ++ Fb) kv
         (ka ++ states.shiftW Fa.length kb)) := by
   have hcl : (wg.conjF F).length = F.length := by
     show (F.map (fun f => (f.1, !f.2))).length = F.length
@@ -937,27 +937,37 @@ private theorem pEq_mulComm (x y : poly.PPair) :
     pEq (poly.pMul x y) (poly.pMul y x) :=
   pEq_of_parts (poly.mul_comm x.1 y.1) (poly.mul_comm x.2 y.2)
 
-/-- A branched pair's second member stays occupied where both
-factors do. -/
-private theorem den_ite (c : Bool) (A p q : poly.Poly)
-    (hp : ¬ poly.unitTail p) (hq : ¬ poly.unitTail q) :
-    ¬ poly.unitTail
-      (if c then (A, poly.mul p q) else poly.pZero).2 := by
+/-- A branched pair's second member stays occupied where the
+branch's does. -/
+private theorem den_ite (c : Bool) (A D : poly.Poly)
+    (hD : ¬ poly.unitTail D) :
+    ¬ poly.unitTail (if c then (A, D) else poly.pZero).2 := by
   cases c with
   | false =>
     exact fun h => ground.BPair.ofPos_off ground.Pos.one h.1
-  | true => exact fun h => (poly.unitTail_mul_of h).elim hp hq
+  | true => exact hD
+
+/-- The Gram determinants' product fold sits off the sum's unit
+at every variable list. -/
+private theorem detFold_occ (f : Nat → Nat) : ∀ vs : List Nat,
+    ¬ poly.unitTail (vs.foldr (fun v d =>
+      poly.mul (split.pminor (wg.gramWg (f v))) d) poly.one)
+  | [] => fun h => ground.BPair.ofPos_off ground.Pos.one h.1
+  | v :: t => fun h =>
+    (poly.unitTail_mul_of h).elim (wg.gramWg_detOcc (f v))
+      (detFold_occ f t)
 
 /-- The generator's evaluation carries an occupied second
 member: the Gram determinants sit off the sum's unit. -/
 private theorem evalPhi_den (G : states.FList) (π : List Nat) :
     ¬ poly.unitTail (wg.evalPhi G π).2 :=
-  den_ite _ _ _ _ (wg.gramWg_detOcc _) (wg.gramWg_detOcc _)
+  den_ite _ _ _ (detFold_occ (fun v => (wg.posIf G (v, false)).length)
+    (wg.varsOf G))
 
 /-- The pairing carries an occupied second member. -/
 private theorem pairPhi_den (Fu Fw : states.FList)
     (πa πb : List Nat) :
-    ¬ poly.unitTail (wg.pairPhi Fu Fw πa πb).2 :=
+    ¬ poly.unitTail (wg.pairPhi wg.evalPhi Fu Fw πa πb).2 :=
   evalPhi_den _ _
 
 /-- One triple's term reads at either block order: the
@@ -967,10 +977,10 @@ private theorem term_swap (F Fa Fb : states.FList)
     (ha : states.permAt ka Fa.length)
     (hb : states.permAt kb Fb.length) (cv cx cy : poly.PPair) :
     pEq (poly.pMul (poly.pMul cv (poly.pMul cx cy))
-        (wg.pairPhi F (Fa ++ Fb) kv
+        (wg.pairPhi wg.evalPhi F (Fa ++ Fb) kv
           (ka ++ states.shiftW Fa.length kb)))
       (poly.pMul (poly.pMul cv (poly.pMul cy cx))
-        (wg.pairPhi F (Fb ++ Fa) kv
+        (wg.pairPhi wg.evalPhi F (Fb ++ Fa) kv
           (kb ++ states.shiftW Fb.length ka))) := by
   refine pEq_pMul (pEq_pMul (pEq_refl cv) (pEq_mulComm cx cy)) ?_
   refine pEq_mk ?_ ⟨fun h => absurd h (pairPhi_den _ _ _ _),
@@ -985,16 +995,16 @@ private theorem prod_map (F Fu Fw : states.FList) (a b : states.Comb)
     (ev : List Nat × poly.PPair) :
     (states.mulComb a b).map (fun e =>
         poly.pMul (poly.pMul ev.2 e.2)
-          (wg.pairPhi F (Fu ++ Fw) ev.1 e.1))
+          (wg.pairPhi wg.evalPhi F (Fu ++ Fw) ev.1 e.1))
       = a.flatMap (fun ea => b.map (fun eb =>
         poly.pMul (poly.pMul ev.2 (poly.pMul ea.2 eb.2))
-          (wg.pairPhi F (Fu ++ Fw) ev.1
+          (wg.pairPhi wg.evalPhi F (Fu ++ Fw) ev.1
             (ea.1 ++ states.shiftW ea.1.length eb.1)))) := by
   show ((a.flatMap (fun ea => b.map (fun eb =>
       (ea.1 ++ states.shiftW ea.1.length eb.1,
         poly.pMul ea.2 eb.2)))).map (fun e =>
       poly.pMul (poly.pMul ev.2 e.2)
-        (wg.pairPhi F (Fu ++ Fw) ev.1 e.1))) = _
+        (wg.pairPhi wg.evalPhi F (Fu ++ Fw) ev.1 e.1))) = _
   rw [ground.map_flatMap]
   refine ground.flatMap_congr_all _ _ (fun ea => ?_) a
   rw [ground.map_map]
@@ -1042,23 +1052,23 @@ theorem prodComm (F Fa Fb : states.FList) (v a b : states.Comb)
     (hb : (b.all (fun e =>
       decide (states.permAt e.1 Fb.length))) = true) :
     genericlift.crossNull
-      (wg.pairFull F (Fa ++ Fb) v (states.mulComb a b))
-      (wg.pairFull F (Fb ++ Fa) v (states.mulComb b a)) := by
-  have key : pEq (wg.pairFull F (Fa ++ Fb) v (states.mulComb a b))
-      (wg.pairFull F (Fb ++ Fa) v (states.mulComb b a)) := by
+      (wg.pairFull wg.evalPhi F (Fa ++ Fb) v (states.mulComb a b))
+      (wg.pairFull wg.evalPhi F (Fb ++ Fa) v (states.mulComb b a)) := by
+  have key : pEq (wg.pairFull wg.evalPhi F (Fa ++ Fb) v (states.mulComb a b))
+      (wg.pairFull wg.evalPhi F (Fb ++ Fa) v (states.mulComb b a)) := by
     show pEq (v.foldl (fun q ev =>
         (states.mulComb a b).foldl (fun r e =>
           genericlift.pAddR r (poly.pMul (poly.pMul ev.2 e.2)
-            (wg.pairPhi F (Fa ++ Fb) ev.1 e.1))) q) poly.pZero)
+            (wg.pairPhi wg.evalPhi F (Fa ++ Fb) ev.1 e.1))) q) poly.pZero)
       (v.foldl (fun q ev =>
         (states.mulComb b a).foldl (fun r e =>
           genericlift.pAddR r (poly.pMul (poly.pMul ev.2 e.2)
-            (wg.pairPhi F (Fb ++ Fa) ev.1 e.1))) q) poly.pZero)
+            (wg.pairPhi wg.evalPhi F (Fb ++ Fa) ev.1 e.1))) q) poly.pZero)
     refine outer_fold (states.mulComb a b) (states.mulComb b a)
       (fun ev e => poly.pMul (poly.pMul ev.2 e.2)
-        (wg.pairPhi F (Fa ++ Fb) ev.1 e.1))
+        (wg.pairPhi wg.evalPhi F (Fa ++ Fb) ev.1 e.1))
       (fun ev e => poly.pMul (poly.pMul ev.2 e.2)
-        (wg.pairPhi F (Fb ++ Fa) ev.1 e.1))
+        (wg.pairPhi wg.evalPhi F (Fb ++ Fa) ev.1 e.1))
       v ?_ poly.pZero poly.pZero (pEq_refl poly.pZero)
     intro ev hev acc acc' hacc
     have hpv : states.permAt ev.1 F.length :=
@@ -1087,9 +1097,9 @@ private theorem rhs_rows (F Fa Fb : states.FList) (a b : states.Comb)
         decide (states.permAt e.1 F.length)))) = true →
       genericlift.pprowEq
         (ws.map (fun v =>
-          wg.pairFull F (Fa ++ Fb) v (states.mulComb a b)))
+          wg.pairFull wg.evalPhi F (Fa ++ Fb) v (states.mulComb a b)))
         (ws.map (fun v =>
-          wg.pairFull F (Fb ++ Fa) v (states.mulComb b a)))
+          wg.pairFull wg.evalPhi F (Fb ++ Fa) v (states.mulComb b a)))
   | [], _ => trivial
   | v :: t, h => by
     have hsplit : ((v.all (fun e =>

@@ -234,7 +234,8 @@ private def xrow : Nat → Nat → List Nat
 private def xF : Data Nat :=
   ⟨xeq, xeqRefl, 9, (fun l => l), (fun x y => x + y), 8,
    xcount, xrow, (fun _ => 1), (fun _ => 1), 1, 1,
-   (fun _ => []), (fun _ => 0), (fun x y => x + y), (fun _ => 0)⟩
+   (fun _ => []), (fun _ => 0), (fun x y => x + y), (fun _ => 0),
+   (fun _ => none)⟩
 private def yeq (x y : Nat) : Bool := (x == y) || (x == 4 && y == 3)
 private theorem yeqRefl (l : Nat) : yeq l l = true := by
   show ((l == l) || (l == 4 && l == 3)) = true
@@ -249,7 +250,8 @@ private def yrow : Nat → Nat → List Nat
 private def yF : Data Nat :=
   ⟨yeq, yeqRefl, 9, (fun l => l), (fun x y => x + y), 8,
    ycount, yrow, (fun _ => 1), (fun _ => 1), 1, 1,
-   (fun _ => []), (fun _ => 0), (fun x y => x + y), (fun _ => 0)⟩
+   (fun _ => []), (fun _ => 0), (fun x y => x + y), (fun _ => 0),
+   (fun _ => none)⟩
 private def fIx : List Nat := [0, 1]
 private def fPsi : List BPair := [BPair.ofNat 1, BPair.unit]
 

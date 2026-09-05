@@ -390,13 +390,13 @@ example : crossNull (pAddR halfR halfR) (pAdd halfR halfR) :=
 /-! The reduction at the recorded fold seam: `con:res`' step-1
 deflation of `|tr U|²` off `χ_adj` reads its `[1, 0]` coefficient
 at the true `[1 : d_f]` at one and two keys — the seams reduce in
-place (`wg.pairFull`'s accumulator and `res.deflate1`'s
+place (`wg.pairFull wg.evalPhi`'s accumulator and `res.deflate1`'s
 coefficient), so the unreduced thirty-one-key shape arises nowhere
 on the tree; `MassGapChecks/Res.lean`'s docstring holds the
 recorded before-and-after measurement.  The reduction is idempotent
 at the reduced datum, the constant divisor's arm. -/
 
-private def fAdjR : states.FList := [(false, false), (false, true)]
+private def fAdjR : states.FList := [(0, false), (0, true)]
 private def sqCR : states.Comb := [([0, 1], pOne)]
 private def adjCR : states.Comb :=
   [([0, 1], pOne), ([1, 0], ([⟨1, 2⟩], [⟨2, 1⟩, ⟨2, 1⟩]))]

@@ -33,8 +33,8 @@ private def u : BPair := BPair.unit
 named displays. -/
 private def etSq : Mat := [[u, u, u], [u, ⟨13, 1⟩, u], [u, u, ⟨33, 1⟩]]
 
-example : freeGap (dataA 2) square 32 = etSq :=
-  freeGap_ofDiag (dataA 2) square 32 [0, 12, 32] etSq
+example : freeGap (dataA 2) square 32 (idMat 3) = etSq :=
+  freeGap_ofDiag (dataA 2) square 32 (idMat 3) [0, 12, 32] etSq
     (by rw [carrier.sqIx2_pin]; decide +kernel)
     (by decide +kernel)
 
@@ -104,8 +104,8 @@ private def etTh : Mat :=
   [[u, u, u, u], [u, ⟨13, 1⟩, u, u], [u, u, ⟨19, 1⟩, u],
    [u, u, u, ⟨13, 1⟩]]
 
-example : freeGap (tabulate (dataA 2) 18) thetaG 18 = etTh :=
-  freeGap_ofDiag (tabulate (dataA 2) 18) thetaG 18 [0, 12, 18, 12] etTh
+example : freeGap (tabulate (dataA 2) 18) thetaG 18 (idMat 4) = etTh :=
+  freeGap_ofDiag (tabulate (dataA 2) 18) thetaG 18 (idMat 4) [0, 12, 18, 12] etTh
     (by rw [carrier.thIx18_pin]; decide +kernel)
     (by decide +kernel)
 
@@ -131,8 +131,8 @@ kernel the whole window. -/
 
 private def et3 : Mat := [[u, u, u], [u, ⟨33, 1⟩, u], [u, u, ⟨33, 1⟩]]
 
-example : freeGap (dataA 3) square 32 = et3 :=
-  freeGap_ofDiag (dataA 3) square 32 [0, 32, 32] et3
+example : freeGap (dataA 3) square 32 (idMat 3) = et3 :=
+  freeGap_ofDiag (dataA 3) square 32 (idMat 3) [0, 32, 32] et3
     (by rw [carrier.sqIx3_pin]; decide +kernel)
     (by decide +kernel)
 

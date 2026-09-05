@@ -191,3 +191,65 @@ example : poly.ppOneValue
     (split.ppminor [[[[], [⟨2, 1⟩]], [[⟨2, 1⟩]]],
       [[[⟨2, 1⟩]], [[], [⟨2, 1⟩]]]]) :=
   elim.ppdetD_eq _ (by decide +kernel)
+
+/-! The congruated pencil's two diagonal reads and the diagonal's
+reversal count.  At the committed diagonalization the second datum's
+congruence is the diagonal at the scales against the roots' clearings
+and the first's is the diagonal at the scales against the roots' first
+members, each read by kernel decision beside its theorem route; and a
+three-entry diagonal's split — the middle entry at the sum's unit, so
+the kernel block enters — reads its lower-side count, the theorem's
+value pinned against the constructed split's own. -/
+
+example : matOneValue (matMul (transposeM tM) (matMul (idMat 2) tM))
+    (diagM (lM.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))) := by
+  decide +kernel
+example : matOneValue (matMul (transposeM tM) (matMul (idMat 2) tM))
+    (diagM (lM.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))) :=
+  congr_gram hM (idMat 2) (⟨tM, rfl⟩ : SqMat 2) (⟨tW, rfl⟩ : SqMat 2) lM dgM
+
+example : matOneValue (matMul (transposeM tM) (matMul hM tM))
+    (diagM (lM.map (fun r => (r.2.2 * r.1).norm))) := by decide +kernel
+example : matOneValue (matMul (transposeM tM) (matMul hM tM))
+    (diagM (lM.map (fun r => (r.2.2 * r.1).norm))) :=
+  congr_pencil hM (idMat 2) (⟨tM, rfl⟩ : SqMat 2) (⟨tW, rfl⟩ : SqMat 2)
+    lM dgM
+
+private def dsC : List BPair := [⟨1, 2⟩, u, ⟨3, 1⟩]
+
+example : revAt (mkSplit 3 (diagM dsC)) = 1 := by decide +kernel
+example : dsC.countP (fun d => decide (d < BPair.unit)) = 1 := by
+  decide +kernel
+example : revAt (mkSplit 3 (diagM dsC))
+    = dsC.countP (fun d => decide (d < BPair.unit)) :=
+  rev_diagM dsC (mkSplit 3 (diagM dsC))
+    (mkSplit_read 3 (diagM dsC) (by decide +kernel) (diagM_sym dsC))
+
+/-! The split binder isolated: a further diagonal's split refuses the
+read and parts the count, two lower-side entries against one. -/
+
+private def dsB : List BPair := [⟨1, 2⟩, ⟨1, 2⟩, ⟨3, 1⟩]
+
+example : ¬ splitRead (diagM dsC) (mkSplit 3 (diagM dsB)) := by
+  decide +kernel
+example : ¬ (revAt (mkSplit 3 (diagM dsB))
+    = dsC.countP (fun d => decide (d < BPair.unit))) := by decide +kernel
+
+/-! The diagonal-read binder isolated at the two congruated reads: a
+forged scale refuses the read and parts the gram's diagonal, and a
+forged root refuses it and parts the pencil's. -/
+
+private def lG : List (BPair × Pos × BPair) :=
+  [(⟨4, 1⟩, 1, ⟨2, 1⟩), (⟨1, 2⟩, 1, ⟨3, 1⟩)]
+private def lP : List (BPair × Pos × BPair) :=
+  [(⟨5, 1⟩, 1, ⟨3, 1⟩), (⟨1, 2⟩, 1, ⟨3, 1⟩)]
+
+example : ¬ diagRead hM (idMat 2) (⟨tM, rfl⟩ : SqMat 2)
+    (⟨tW, rfl⟩ : SqMat 2) lG := by decide +kernel
+example : ¬ matOneValue (matMul (transposeM tM) (matMul (idMat 2) tM))
+    (diagM (lG.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm))) := by
+  decide +kernel
+example : ¬ diagRead hM (idMat 2) (⟨tM, rfl⟩ : SqMat 2)
+    (⟨tW, rfl⟩ : SqMat 2) lP := by decide +kernel
+example : ¬ matOneValue (matMul (transposeM tM) (matMul hM tM))
+    (diagM (lP.map (fun r => (r.2.2 * r.1).norm))) := by decide +kernel

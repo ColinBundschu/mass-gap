@@ -136,7 +136,7 @@ the two-sided read at one in place of `d_θ`, refuses at a
 lower-side block, the cap's scale the load-bearing datum. -/
 
 private def cF4 : states.FList :=
-  [(false, false), (false, true), (false, false), (false, true)]
+  [(0, false), (0, true), (0, false), (0, true)]
 
 private def pairEv (F : states.FList)
     (c1 c2 : List (List Nat × BPair × BPair)) (rv : Nat) :

@@ -206,7 +206,7 @@ private def fHinv : fusion.Data Nat :=
   ⟨(fun a b => a % 2 == b % 2), (fun _ => ground.eqBeqOf rfl),
    0, id, (fun a b => a + b), 0, (fun _ _ _ => 0), (fun _ _ => []),
    (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
-   id, (fun _ _ => 0), id⟩
+   id, (fun _ _ => 0), id, (fun _ => none)⟩
 
 example : ∀ a b : Nat, pAll a = true → pAll b = true →
     ((fHinv.row a b).all pAll) = true := fun _ _ _ _ => rfl
@@ -227,7 +227,7 @@ private def fHdual : fusion.Data Nat :=
   ⟨(fun a b => a == b), (fun _ => ground.eqBeqOf rfl),
    0, id, (fun a b => a + b), 0, (fun _ _ _ => 0), (fun _ _ => []),
    (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
-   id, (fun x _ => x), id⟩
+   id, (fun x _ => x), id, (fun _ => none)⟩
 
 example : ∀ a b : Nat, pAll a = true → pAll b = true →
     ((fHdual.row a b).all pAll) = true := fun _ _ _ _ => rfl
@@ -248,7 +248,7 @@ private def fHlaw : fusion.Data Nat :=
   ⟨(fun a b => a == b), (fun _ => ground.eqBeqOf rfl),
    0, id, (fun a b => a + b), 0, (fun _ _ _ => 1), (fun _ _ => [5]),
    (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
-   (fun a => if a == 0 then 0 else 1), (fun x y => (x + y) % 2), id⟩
+   (fun a => if a == 0 then 0 else 1), (fun x y => (x + y) % 2), id, (fun _ => none)⟩
 
 example : ∀ a b : Nat, pAll a = true → pAll b = true →
     ((fHlaw.row a b).all pAll) = true := fun _ _ _ _ => rfl
@@ -277,7 +277,7 @@ private def fHunit : fusion.Data Nat :=
   ⟨(fun a b => a % 2 == b % 2), (fun _ => ground.eqBeqOf rfl),
    0, id, (fun a b => a + b), 0, (fun _ _ _ => 0), (fun _ _ => []),
    (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
-   id, (fun _ _ => 0), id⟩
+   id, (fun _ _ => 0), id, (fun _ => none)⟩
 
 example : ∀ a b : Nat, pHunit a = true → pHunit b = true →
     ((fHunit.row a b).all pHunit) = true := fun _ _ _ _ => rfl
@@ -309,7 +309,7 @@ private def fHdualP : fusion.Data Nat :=
   ⟨(fun a b => a % 2 == b % 2), (fun _ => ground.eqBeqOf rfl),
    0, (fun a => 2 * a), (fun a b => a + b), 0, (fun _ _ _ => 0),
    (fun _ _ => []), (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
-   (fun a => a % 3), (fun x y => (x + y) % 3), id⟩
+   (fun a => a % 3), (fun x y => (x + y) % 3), id, (fun _ => none)⟩
 
 example : ∀ a b : Nat, pHdualP a = true → pHdualP b = true →
     ((fHdualP.row a b).all pHdualP) = true := fun _ _ _ _ => rfl
@@ -360,7 +360,7 @@ private def fHrow : fusion.Data Nat :=
    0, (fun a => if a == 0 then 0 else 3 - a), (fun a b => a + b), 0,
    (fun _ _ _ => 1), (fun a b => if a == 1 && b == 1 then [5] else []),
    (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
-   (fun a => a % 3), (fun x y => (x + y) % 3), id⟩
+   (fun a => a % 3), (fun x y => (x + y) % 3), id, (fun _ => none)⟩
 
 example : ∀ a b : Nat, pHrow a = true → pHrow b = true →
     fusion.clsLaw fHrow a b := by

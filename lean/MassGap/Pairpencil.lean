@@ -17,9 +17,9 @@ loop window's two-sided cap reading at `lem:loopcap` over the
 interface's counts — and
 the pair
 `(α E : β M)`'s site datum `H([α : β])` is symmetric with pair
-entries at weights of the positive carrier (`pencilH`, the free end's
-own diagonal read `pencilE`, `symmRead` the transpose's
-one-value read).  The pencil interface is the fields a window's
+entries at weights of the positive carrier (`pencilH` at the
+electric member's form against the gram, the operator's own
+diagonal `pencilE`, `symmRead` the transpose's one-value read).  The pencil interface is the fields a window's
 pencil enters every derivation through, read positionally at the
 window list — the unit line at position zero, then per index member
 its fiber's slot keys, one digit per vertex below the vertex's
@@ -29,12 +29,22 @@ touched vertices, its count the fiber's multiplicity product at
 distinct index at `slotList_distinct`; `posConf` the configuration
 at a position): the order tie at the window list's count
 (`prop:windowfinite`'s `dimSect`, `slotList_dimSect`), the electric
-member the window list's diagonal at each slot's content with the
-unit line at the sum's unit (`slotDiag`, `def:pencil`; at unit fiber
-products the index's contents outright, `slotDiag_unit`), the
+member the gram's form at the window list's diagonal, each row at
+its slot's content with the unit line at the sum's unit (`formE`
+over `slotDiag`, `def:pencil`'s operator read as a form; at unit
+fiber products the index's contents outright, `slotDiag_unit`), the
 gram block diagonal over the index at the fibers' pairings with the
-unit line at one and positive definite at its split
-(`gramBlockRead`, `def:carrier`), and the magnetic member the
+unit line at the window's clearing and positive definite at its
+split (`gramBlockRead`, `def:carrier`): the cross-member entries at
+the sum's unit, and within a member each entry the fiber's
+presentation Gram at the window's one positive rescaling to integer
+entries — the interface's vertex Grams over the incident ends
+(`fibGram`, `con:fiber`'s vertex lists at their multiplicities, read
+once per member along the index at `memberBlocks`), the entry at
+two slot keys the vertex Grams' entries' product against the links'
+cleared block scale (`blockScale`, `def:carrier`'s `[1 : d_{a_ℓ}]`
+per support link; `entryRead` the one entry's cross-multiplied read
+at the member's positions), and the magnetic member the
 plaquette terms' sum (`termSum`), each term symmetric, capped
 two-sidedly as a form at the adjoint dimension's multiple of the
 gram (`lem:loopcap`; `inertia.capAt` at the two splits) and
@@ -43,8 +53,13 @@ unit at a position pair one of whose configurations is the other's
 target on the plaquette's row (`termSupport` at `def:algebra`'s
 row, the far reads' factorization the vacant complement,
 `lem:stableentries`) — the terms' reads along the region's
-plaquette list (`termsRead`) and the whole `pencilRead`, every read
-at a stated index tied to the window's own; at a loop
+plaquette list (`termsRead`, the terms' count the plaquettes' and
+each term square at the order, `termsRead_len` and `termsRead_sq`),
+the terms' transport along the region's action at the window list
+the field's read in the module that owns the action
+(`fiberdec.termsMoved`), and the whole `pencilRead` at the fields
+this module owns, every read at a stated index tied to the
+window's own; at a loop
 window the fields read off the fusion counts, `loopMag` the
 magnetic term with the identity gram, the check module's pins.
 -/
@@ -66,14 +81,14 @@ instance (m : Mat) : Decidable (symmRead m) :=
   inferInstanceAs (Decidable (matOneValue _ _))
 
 /-- The pair `(α E : β M)`'s site datum `H([α : β])` at
-`α E = β M + H`: the electric diagonal at the first weight against
-the magnetic matrix at the second, every entry a pair datum at pair
+`α E = β M + H`: the electric member's form against the gram at
+the first weight, each row at its slot's content, against the
+magnetic matrix at the second, every entry a pair datum at pair
 weights. -/
-def pencilH (al be : Pos) (diag : List Nat) (M : Mat) : Mat :=
+def pencilH (al be : Pos) (diag : List Nat) (G M : Mat) : Mat :=
   ground.matOf diag.length diag.length (fun i j =>
-      ((if i == j
-          then BPair.ofPos al * BPair.ofNat (ground.getAt 0 diag i)
-          else BPair.unit)
+      (BPair.ofPos al * (BPair.ofNat (ground.getAt 0 diag i)
+          * ground.getAt BPair.unit (ground.getAt [] G i) j)
         + (BPair.ofPos be
             * ground.getAt BPair.unit (ground.getAt [] M i) j).swap
        ).norm)
@@ -243,22 +258,89 @@ theorem slotDiag_unit {L : Type} (F : Data L) (R : Region) :
         rw [hrest']
       | cons k' r' => rw [hs] at h1; exact Nat.noConfusion (Nat.succ.inj h1)
 
-/-- The gram's block read: the unit line at one, and two positions
-at distinct index members pairing at the sum's unit — the fibers'
-orthogonal sum with the unit line's pairing at one
-(`def:carrier`). -/
+/-- The electric member's form against the gram: each entry the
+gram's at the row position's content, `def:pencil`'s operator read
+as a form (`thm:pairpencil`'s electric field). -/
+def formE (diag : List Nat) (G : Mat) : Mat :=
+  ground.matOf diag.length diag.length (fun i j =>
+    (BPair.ofNat (ground.getAt 0 diag i)
+      * ground.getAt BPair.unit (ground.getAt [] G i) j).norm)
+
+/-- The fiber's vertex Grams at a configuration, one per vertex of
+the region at the interface's presentation field over the incident
+ends (`con:fiber`), each at the vertex's multiplicity and square
+there, the vacant read at a vertex off the field or off the
+multiplicity. -/
+def fibGram {L : Type} (F : Data L) (R : Region) (a : List L) :
+    Option (List (Mat × Pos)) :=
+  (List.range R.verts).foldl (fun acc v =>
+    match acc, vertGramOf F (carrier.incidentEnds F R a v) with
+    | none, _ => none
+    | some _, none => none
+    | some l, some g =>
+      if g.1.length == carrier.vmult F R a v
+          && g.1.all (fun r => r.length == carrier.vmult F R a v) then
+        some (l ++ [g])
+      else none) (some [])
+
+/-- The links' cleared block scale at a configuration, the support
+labels' dimensions' product (`def:carrier`'s `[1 : d_{a_ℓ}]` per
+support link). -/
+def blockScale {L : Type} (F : Data L) (R : Region) (a : List L) : Nat :=
+  prodOver (fun l => F.dim (getAt F.unit a l)) (carrier.support F R a)
+
+/-- The block entry read at two positions of one index member at
+its vertex Grams and two slot keys: the gram's entry against the
+block scale and the vertex Grams' second members, one value with
+the clearing against the vertex Grams' entries' product at the two
+keys — `con:fiber`'s pairing display, the links' cleared block
+scales against the vertex lists' pairings' product. -/
+def entryRead {L : Type} (F : Data L) (R : Region) (a : List L)
+    (gs : List (Mat × Pos)) (c : Pos) (G : Mat) (i j : Nat)
+    (k k' : List Nat) : Bool :=
+  let kron := (List.range R.verts).foldl (fun acc v =>
+    acc * ground.getAt BPair.unit
+      (ground.getAt [] (ground.getAt ([], Pos.one) gs v).1 (ground.getAt 0 k v))
+      (ground.getAt 0 k' v)) (BPair.ofNat 1)
+  let den := (List.range R.verts).foldl (fun acc v =>
+    acc * posVal (ground.getAt ([], Pos.one) gs v).2) 1
+  decide ((ground.getAt BPair.unit (ground.getAt [] G i) j
+      * BPair.ofNat (blockScale F R a) * BPair.ofNat den).oneValue
+    (BPair.ofPos c * kron))
+
+/-- The members' block reads along the index: each member's vertex
+Grams read once, its slots' positions the window list's from the
+running offset past the unit line, every key pair at the entry
+read. -/
+def memberBlocks {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (c : Pos) (G : Mat) : Bool :=
+  (ix.foldl (fun (acc : Nat × Bool) a =>
+    let ks := slotKeys F R a
+    (acc.1 + ks.length,
+     acc.2 && (match fibGram F R a with
+       | none => false
+       | some gs =>
+         (List.range ks.length).all (fun p => (List.range ks.length).all (fun q =>
+           entryRead F R a gs c G (acc.1 + p) (acc.1 + q)
+             (ground.getAt [] ks p) (ground.getAt [] ks q)))))) (1, true)).2
+
+/-- The gram's block read: the unit line at the clearing, two
+positions at distinct index members pairing at the sum's unit — the
+fibers' orthogonal sum with the unit line's pairing at one
+(`def:carrier`) — and every member's block at the entry read, the
+fiber's presentation Gram at the stated clearing (`con:fiber`). -/
 def gramBlockRead {L : Type} (F : Data L) (R : Region) (n : Nat)
-    (ix : List (List L)) (G : Mat) : Prop :=
-  (ground.getAt BPair.unit (ground.getAt [] G 0) 0).oneValue
-      (BPair.ofPos Pos.one)
+    (ix : List (List L)) (c : Pos) (G : Mat) : Prop :=
+  (ground.getAt BPair.unit (ground.getAt [] G 0) 0).oneValue (BPair.ofPos c)
   ∧ ((List.range n).all (fun i => (List.range n).all (fun j =>
       carrier.eqConf F (posConf F R ix i) (posConf F R ix j)
         || decide ((ground.getAt BPair.unit
             (ground.getAt [] G i) j).oneValue BPair.unit)))) = true
+  ∧ memberBlocks F R ix c G = true
 
 instance {L : Type} (F : Data L) (R : Region) (n : Nat) (ix : List (List L))
-    (G : Mat) : Decidable (gramBlockRead F R n ix G) :=
-  inferInstanceAs (Decidable (_ ∧ _ = _))
+    (c : Pos) (G : Mat) : Decidable (gramBlockRead F R n ix c G) :=
+  inferInstanceAs (Decidable (_ ∧ _ = _ ∧ _ = _))
 
 /-- A plaquette term's support read: an entry off the sum's unit
 sits at a position pair whose configurations meet across the
@@ -310,34 +392,62 @@ instance decTermsRead {L : Type} (F : Data L) (R : Region) (n : Nat)
       decTermsRead F R n ix G ps ts
     inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
 
+/-- The terms' count is the plaquettes' at the terms' reads. -/
+theorem termsRead_len {L : Type} (F : Data L) (R : Region) (n : Nat)
+    (ix : List (List L)) (G : Mat) :
+    ∀ (ps : List (List (Nat × Bool))) (ts : List (Mat × Split n × Split n)),
+      termsRead F R n ix G ps ts → ts.length = ps.length
+  | [], [], _ => rfl
+  | [], _ :: _, h => h.elim
+  | _ :: _, [], h => h.elim
+  | _ :: ps, _ :: ts, h =>
+    congrArg Nat.succ (termsRead_len F R n ix G ps ts h.2.2.2)
+
+/-- Each term is square at the order, the cap's own shape read. -/
+theorem termsRead_sq {L : Type} (F : Data L) (R : Region) (n : Nat)
+    (ix : List (List L)) (G : Mat) :
+    ∀ (ps : List (List (Nat × Bool))) (ts : List (Mat × Split n × Split n)),
+      termsRead F R n ix G ps ts → ∀ k, k < ts.length →
+        sqAt (ground.getAt [] (ts.map Prod.fst) k) n
+  | [], [], _, _, hk => absurd hk (Nat.not_lt_zero _)
+  | [], _ :: _, h, _, _ => h.elim
+  | _ :: _, [], h, _, _ => h.elim
+  | _ :: _, _ :: _, h, 0, _ => h.2.1.1
+  | _ :: ps, _ :: ts, h, k + 1, hk =>
+    termsRead_sq F R n ix G ps ts h.2.2.2 k (Nat.lt_of_succ_lt_succ hk)
+
 /-- The plaquette terms' sum, the magnetic member assembled from
-its terms at the order. -/
+its terms at the order: `elim.msum`'s index fold over the terms'
+keys. -/
 def termSum (n : Nat) (terms : List (Mat × Split n × Split n)) : Mat :=
-  terms.foldl (fun acc t => matAdd acc t.1) (nullMat n n)
+  elim.msum n (ground.getAt [] (terms.map Prod.fst)) (List.range terms.length)
 
 /-- The pencil interface's read at a window: the stated index the
 window's own, the order tie at the window list's count, the
-electric member the window list's diagonal, the gram's block read
-at its positive-definite split (the split reading the gram's
-order), the magnetic member the plaquette terms' sum, and the
-plaquette terms' reads along the region's plaquettes —
+electric member the gram's form at the window list's diagonal, the
+gram's block read at a stated clearing and at its positive-definite
+split (the split reading the gram's order), the plaquette terms'
+reads along the region's plaquettes,
+and the magnetic member square at the order and one value with
+the plaquette terms' sum —
 `thm:pairpencil`'s fields at a stated pencil over the stated
 index. -/
 def pencilRead {L : Type} [DecidableEq L] (F : Data L) (R : Region)
-    (C n : Nat) (ix : List (List L)) (E G M : Mat) (spG : Split n)
+    (C n : Nat) (ix : List (List L)) (c : Pos) (E G M : Mat) (spG : Split n)
     (terms : List (Mat × Split n × Split n)) : Prop :=
   carrier.idx F R C = ix
   ∧ windowfinite.dimSect F R C = n
   ∧ sqAt E n
-  ∧ matOneValue E (pencilE (slotDiag F R ix))
-  ∧ gramBlockRead F R n ix G ∧ splitRead G spG ∧ pdAt spG
+  ∧ matOneValue E (formE (slotDiag F R ix) G)
+  ∧ gramBlockRead F R n ix c G ∧ splitRead G spG ∧ pdAt spG
   ∧ termsRead F R n ix G R.plaqs terms
+  ∧ sqAt M n
   ∧ matOneValue M (termSum n terms)
 
 instance {L : Type} [DecidableEq L] (F : Data L) (R : Region) (C n : Nat)
-    (ix : List (List L)) (E G M : Mat) (spG : Split n)
+    (ix : List (List L)) (c : Pos) (E G M : Mat) (spG : Split n)
     (terms : List (Mat × Split n × Split n)) :
-    Decidable (pencilRead F R C n ix E G M spG terms) :=
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
+    Decidable (pencilRead F R C n ix c E G M spG terms) :=
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
 
 end pairpencil

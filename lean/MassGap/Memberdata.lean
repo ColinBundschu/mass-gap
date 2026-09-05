@@ -422,7 +422,8 @@ def dataOf (t : gentable.Table) (G : elim.Mat) (fuel : Nat)
    memberdata.countM t G fuel (memberdata.thetaKey t)
      (memberdata.thetaKey t) (memberdata.thetaKey t),
    (fun k => memberdata.belowM t G k),
-   (fun a => cls (memberdata.padN t.rank a)), clsAdd, clsFloorN⟩
+   (fun a => cls (memberdata.padN t.rank a)), clsAdd, clsFloorN,
+   (fun _ => none)⟩
 
 /-- The signed-permutation order at the rank, the series orbits'
 fuel: the closure's round count at the shifted key's whole

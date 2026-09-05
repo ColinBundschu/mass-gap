@@ -56,10 +56,32 @@ profiles beside their theorem routes and the dominance glue at two
 sites, the scale-carrying `−500η` off entry and the depth-carrying
 `−100u` one, the box membership's isolation at the second — its
 own section's account.
+
+The residue transport's battery (`lem:cornerpivot`(vi)) runs the
+count transport at the residue three against the residue-two well
+at the doubled second scale member, the member's count vacant
+against the reference's one at the order five, the route through
+`resDiag` at the tie `4 ≤ 12` and the rate `8 ≤ 8`, with the
+ordering binder refused at the rate `20`, where the member's count
+reads two against the reference's one and the diagonal comparison
+refuses at the depth one; `resDiag`'s three binders are refused one
+at a time — the residue at one with the tie tight (`72 ≤ 75`), where
+the depth-one comparison reads `4764` against `4680`, the tie at a
+doubled first member (`306` against `198`), and the rate at nine
+against eight (`135` against `126`) — and `oneDiag`'s rate binder at
+nine against eight (`90` against `84`); the bond positivity binders
+of the transport are the clearings' frame, `lem:inertia`'s positive
+rescaling.  The tie reads at the key three beside its route and
+refuses at the key one; the tied scale's second member reads `45` at
+the key three and refuses its read at the key nought.  The two
+cleared displays are decided at their keys `1652` and `1495` beside
+their routes and refused at `150` and `363`, the displays' own least
+keys `151` and `364` below the tex's key floors, which are the
+ceiling's reads.
 -/
 
 
-open ground cornerpivot
+open ground elim inertia cornerpivot
 
 
 /-! The bond weights: the stage-gauge unit, the weight `2`, and the
@@ -3440,3 +3462,120 @@ example : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 0) 2
     = BPair.unit := by decide +kernel
 example : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 1) 2
     = (wellBond 2 2 3).swap := by decide +kernel
+
+/-! ## The residue transport (`lem:cornerpivot`(vi)) -/
+
+example : matOneValue (transposeM (wellMat 2 3 2 2 3 3)) (wellMat 2 3 2 2 3 3) := by
+  decide +kernel
+example : matOneValue (transposeM (wellMat 2 3 2 2 3 3)) (wellMat 2 3 2 2 3 3) :=
+  wellMat_sym 2 3 2 2 3 3
+
+example : revAt (mkSplit 5 (wellMat 3 4 1 1 1 5)) = 0 := by decide +kernel
+example : revAt (mkSplit 5 (wellMat 2 8 1 1 2 5)) = 1 := by decide +kernel
+example : revAt (mkSplit 5 (wellMat 3 4 1 1 1 5))
+    ≤ revAt (mkSplit 5 (wellMat 2 8 1 1 2 5)) :=
+  well_dominate 3 4 1 2 8 1 (by decide) (by decide) 1 1 1 2 5
+    (fun k _ _ => resDiag 3 4 1 8 1 (by decide) 1 1 1 2 (by decide +kernel)
+      (by decide +kernel) k)
+    _ _ (by decide +kernel) (by decide +kernel)
+
+/-- The ordering binder is load-bearing: at the rate `20` the
+member's count reads two against the reference's one, and the
+diagonal comparison refuses at the depth one. -/
+example : revAt (mkSplit 5 (wellMat 3 20 1 1 1 5)) = 2 := by decide +kernel
+example : ¬ ((2 + 1) * 1 * 2 * 2 * ((3 + 1) * 20 * 1 * 1)
+      + (3 + 1) * 1 * 1 * 1
+        * (2 * ((2 + 1) * 1 * 2 * 2) + 4 * 1 * (1 * 1 + 2 * 1) * 1 * 1)
+    ≤ (2 + 1) * 1 * 2 * 2
+        * (2 * ((3 + 1) * 1 * 1 * 1) + 4 * 1 * (1 * 1 + 3 * 1) * 1 * 1)
+      + (3 + 1) * 1 * 1 * 1 * ((2 + 1) * 8 * 1 * 2)) := by decide
+
+/-- `resDiag`'s residue binder: at the residue one with the tie
+tight the depth-one comparison refuses. -/
+example : (1 + 1) * (3 * 3) * (2 * 2) ≤ 3 * (5 * 5) * (1 * 1) := by decide
+example : 9 * 1 * 5 * 1 ≤ 8 * 1 * 2 * 3 := by decide
+example : ¬ ((2 + 1) * 1 * 5 * 5 * ((1 + 1) * 9 * 1 * 2)
+      + (1 + 1) * 1 * 2 * 2
+        * (2 * ((2 + 1) * 1 * 5 * 5) + 4 * 1 * (1 * 1 + 2 * 1) * 3 * 3)
+    ≤ (2 + 1) * 1 * 5 * 5
+        * (2 * ((1 + 1) * 1 * 2 * 2) + 4 * 1 * (1 * 1 + 1 * 1) * 1 * 1)
+      + (1 + 1) * 1 * 2 * 2 * ((2 + 1) * 8 * 3 * 5)) := by decide
+
+/-- `resDiag`'s tie binder: at a doubled first member the tie refuses
+and the depth-one comparison with it. -/
+example : ¬ ((2 + 1) * (2 * 2) * (1 * 1) ≤ 3 * (1 * 1) * (1 * 1)) := by decide
+example : ¬ ((2 + 1) * 1 * 1 * 1 * ((2 + 1) * 16 * 1 * 1)
+      + (2 + 1) * 1 * 1 * 1
+        * (2 * ((2 + 1) * 1 * 1 * 1) + 4 * 1 * (1 * 1 + 2 * 1) * 2 * 2)
+    ≤ (2 + 1) * 1 * 1 * 1
+        * (2 * ((2 + 1) * 1 * 1 * 1) + 4 * 1 * (1 * 1 + 2 * 1) * 1 * 1)
+      + (2 + 1) * 1 * 1 * 1 * ((2 + 1) * 8 * 2 * 1)) := by decide
+
+/-- `resDiag`'s rate binder: at nine against eight the depth-one
+comparison refuses. -/
+example : ¬ (9 * 1 * 1 * 1 ≤ 8 * 1 * 1 * 1) := by decide
+example : ¬ ((2 + 1) * 1 * 1 * 1 * ((2 + 1) * 9 * 1 * 1)
+      + (2 + 1) * 1 * 1 * 1
+        * (2 * ((2 + 1) * 1 * 1 * 1) + 4 * 1 * (1 * 1 + 2 * 1) * 1 * 1)
+    ≤ (2 + 1) * 1 * 1 * 1
+        * (2 * ((2 + 1) * 1 * 1 * 1) + 4 * 1 * (1 * 1 + 2 * 1) * 1 * 1)
+      + (2 + 1) * 1 * 1 * 1 * ((2 + 1) * 8 * 1 * 1)) := by decide
+
+example : (2 + 1) * 1 * posVal 1 * posVal 1 * ((1 + 1) * 8 * posVal 1 * posVal 1)
+      + (1 + 1) * 1 * posVal 1 * posVal 1
+        * (2 * ((2 + 1) * 1 * posVal 1 * posVal 1)
+           + 4 * 1 * (1 * 1 + 2 * 1) * posVal 1 * posVal 1)
+    ≤ (2 + 1) * 1 * posVal 1 * posVal 1
+        * (2 * ((1 + 1) * 1 * posVal 1 * posVal 1)
+           + 4 * 1 * (1 * 1 + 1 * 1) * posVal 1 * posVal 1)
+      + (1 + 1) * 1 * posVal 1 * posVal 1 * ((2 + 1) * 8 * posVal 1 * posVal 1) :=
+  oneDiag 8 1 8 1 1 1 (by decide) 1
+
+/-- `oneDiag`'s rate binder: at nine against eight the depth-one
+comparison refuses. -/
+example : ¬ ((2 + 1) * 1 * 1 * 1 * ((1 + 1) * 9 * 1 * 1)
+      + (1 + 1) * 1 * 1 * 1
+        * (2 * ((2 + 1) * 1 * 1 * 1) + 4 * 1 * (1 * 1 + 2 * 1) * 1 * 1)
+    ≤ (2 + 1) * 1 * 1 * 1
+        * (2 * ((1 + 1) * 1 * 1 * 1) + 4 * 1 * (1 * 1 + 1 * 1) * 1 * 1)
+      + (1 + 1) * 1 * 1 * 1 * ((2 + 1) * 8 * 1 * 1)) := by decide
+
+example : (2 + 1) * (26 * 26) * (1 * 1) ≤ 3 * ((5 * 3 * 3) * (5 * 3 * 3)) * (1 * 1) :=
+  tieRead 1 1 2 3 (by decide)
+example : (2 + 1) * (26 * 26) * (1 * 1) ≤ 3 * ((5 * 3 * 3) * (5 * 3 * 3)) * (1 * 1) := by
+  decide
+/-- The tie's key binder: at the key one the comparison refuses and
+the tie with it. -/
+example : ¬ (363 * (2 + 1) * 1 ^ 2 ≤ 40 * 1 ^ 4 * 1 ^ 2) := by decide
+example : ¬ ((2 + 1) * (26 * 26) * (1 * 1) ≤ 3 * ((5 * 1 * 1) * (5 * 1 * 1)) * (1 * 1)) := by
+  decide
+
+example : posVal (tieScaleD 3) = 45 := by decide
+example : posVal (tieScaleD 3) = 5 * 3 * 3 := tieScaleD_val 3 (by decide)
+example : ¬ (posVal (tieScaleD 0) = 5 * 0 * 0) := by decide
+
+example : 6 * 1652 ^ 2 * (363 * (20 * witSqMM 1652 + 1652 * witSqM 1652)
+      + 200 * (1652 - 1) ^ 4 * (witDiffSq 1652 + (1652 * 1652 - 1) ^ 2))
+    ≤ 41600 * (1652 - 1) ^ 4 * witSq 1652 := resPoly 1652 (by decide)
+example : 6 * 1652 ^ 2 * (363 * (20 * witSqMM 1652 + 1652 * witSqM 1652)
+      + 200 * (1652 - 1) ^ 4 * (witDiffSq 1652 + (1652 * 1652 - 1) ^ 2))
+    ≤ 41600 * (1652 - 1) ^ 4 * witSq 1652 := by decide +kernel
+example : ¬ (6 * 150 ^ 2 * (363 * (20 * witSqMM 150 + 150 * witSqM 150)
+      + 200 * (150 - 1) ^ 4 * (witDiffSq 150 + (150 * 150 - 1) ^ 2))
+    ≤ 41600 * (150 - 1) ^ 4 * witSq 150) := by decide +kernel
+example : 6 * 151 ^ 2 * (363 * (20 * witSqMM 151 + 151 * witSqM 151)
+      + 200 * (151 - 1) ^ 4 * (witDiffSq 151 + (151 * 151 - 1) ^ 2))
+    ≤ 41600 * (151 - 1) ^ 4 * witSq 151 := by decide +kernel
+
+example : 2050 * 1495 ^ 2 * (726 * (witSqMM 1495 + witSqM 1495)
+      + 20 * (1495 - 1) ^ 4 * (witDiffSq 1495 + (1495 * 1495 - 1) ^ 2))
+    ≤ 1363200 * (1495 - 1) ^ 4 * witSq 1495 := onePoly 1495 (by decide)
+example : 2050 * 1495 ^ 2 * (726 * (witSqMM 1495 + witSqM 1495)
+      + 20 * (1495 - 1) ^ 4 * (witDiffSq 1495 + (1495 * 1495 - 1) ^ 2))
+    ≤ 1363200 * (1495 - 1) ^ 4 * witSq 1495 := by decide +kernel
+example : ¬ (2050 * 363 ^ 2 * (726 * (witSqMM 363 + witSqM 363)
+      + 20 * (363 - 1) ^ 4 * (witDiffSq 363 + (363 * 363 - 1) ^ 2))
+    ≤ 1363200 * (363 - 1) ^ 4 * witSq 363) := by decide +kernel
+example : 2050 * 364 ^ 2 * (726 * (witSqMM 364 + witSqM 364)
+      + 20 * (364 - 1) ^ 4 * (witDiffSq 364 + (364 * 364 - 1) ^ 2))
+    ≤ 1363200 * (364 - 1) ^ 4 * witSq 364 := by decide +kernel
