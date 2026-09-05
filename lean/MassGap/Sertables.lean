@@ -1414,8 +1414,7 @@ def rhoV (t : gentable.Table) : List BPair :=
 
 /-- The form's pairing at a stated cleared Gram (`con:sertables`'
 form displays at the adjugate-row solve). -/
-def dotG (G : elim.Mat) (x y : List BPair) : BPair :=
-  elim.dotP x (elim.matVec G y)
+def dotG (G : elim.Mat) (x y : List BPair) : BPair := elim.dotAt G x y
 
 /-- The form's pairing at the fundamental data, `dotG` at the
 carried Gram. -/

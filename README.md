@@ -83,7 +83,7 @@ Long-term future work:
 - Submit the work for peer review and possibly also to somewhere like [Palomar](https://palomar-registry.org/).
 
 The snapshot was taken from the development repository at commit
-`c6451e100669e827d6f901388873eadc4d93a013` (2026-09-04).
+`3f7c59800ec6b6a4395507a8ecf4485ed15893b2` (2026-09-05).
 
 ## Proof Methodology and Failure Criteria
 
@@ -120,7 +120,7 @@ After the build,
 
 walks every constant of both libraries with `Lean.collectAxioms` and prints
 
-    constants read: 34215
+    constants read: 34643
     constants depending on axioms: 0
 
 ending in an error if any constant depends on any axiom. A single

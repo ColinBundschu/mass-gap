@@ -2507,19 +2507,19 @@ theorem commRead_pencilM {L : Type} [DecidableEq L] (F : Data L) (R : Region)
     rw [← hdim, ← hix]
     exact pairpencil.slotList_dimSect F R C
   have hlen : (terms.map Prod.fst).length = R.plaqs.length :=
-    (length_map _ _).trans (pairpencil.termsRead_len F R n ix G _ _ htr)
+    (length_map _ _).trans (pairpencil.termsRead_len F R n ix c G _ _ htr)
   have hsq : ∀ q, q < (terms.map Prod.fst).length →
       sqAt (getAt [] (terms.map Prod.fst) q)
         ((pairpencil.slotList F R ix).length + 1) := by
     intro q hq
     rw [hn]
-    exact pairpencil.termsRead_sq F R n ix G _ _ htr q
+    exact pairpencil.termsRead_sq F R n ix c G _ _ htr q
       (by rw [length_map Prod.fst terms] at hq; exact hq)
   have hc := commRead_slotM F R ix t s w pm pm' hpp honce _ hlen hsq htm
   rw [hn, length_map Prod.fst terms] at hc
   have hsum := elim.msum_shape_mem n (getAt [] (terms.map Prod.fst))
     (List.range terms.length) (fun k hk => by
-      have hk' := pairpencil.termsRead_sq F R n ix G _ _ htr k (ltOfMemRange hk)
+      have hk' := pairpencil.termsRead_sq F R n ix c G _ _ htr k (ltOfMemRange hk)
       exact ⟨rowsLen_of_sqAt hk', sqAt_len hk'⟩)
   have hPl : (slotMat F R ix s w).length = n :=
     (length_permMatBy (slotEq F) (dualSlotAct F s (fun _ => false) w R.links R.verts)

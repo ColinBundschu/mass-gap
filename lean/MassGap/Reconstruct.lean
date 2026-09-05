@@ -189,8 +189,7 @@ so every split of the Gram reads the upper side. -/
 
 /-- A family's Gram at a probe list: the family's reads at the probe
 pairs, one row per probe. -/
-def famGram (M : Mat) (P : List (List BPair)) : Mat :=
-  P.map (fun x => P.map (fun y => dotP x (matVec M y)))
+def famGram (M : Mat) (P : List (List BPair)) : Mat := elim.gramAt M P
 
 /-- A family congruated to a diagonal at or above the sum's unit has
 its Gram at every probe list positive semidefinite: the Gram's form

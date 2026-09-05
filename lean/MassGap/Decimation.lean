@@ -77,11 +77,8 @@ open ground elim inertia greenprod certconstruct
 /-- Two configuration lists at one value, the interface equality
 memberwise. -/
 def confListEq {L : Type} (F : fusion.Data L) :
-    List (List L) → List (List L) → Bool
-  | [], [] => true
-  | [], _ :: _ => false
-  | _ :: _, [] => false
-  | a :: s, b :: t => carrier.eqConf F a b && confListEq F s t
+    List (List L) → List (List L) → Bool :=
+  ground.listEqBy (carrier.eqConf F)
 
 /-- Pairwise distinctness at the interface equality. -/
 def distinctGo {L : Type} (F : fusion.Data L) :

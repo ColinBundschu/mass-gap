@@ -151,8 +151,10 @@ over `slotMat fA chW chIx` at the translation's two witnesses, with
 `occFixed` / `contentFixed` / `idxFixed` at the link witness) and
 the pencil interface's read at the chain window, whose six cap
 splits at order six read through `inertia.splitRead` with
-`psdAt`, the one split of the identity gram at that order the
-module's largest single kernel read.
+`psdAt` one kernel task per split read, the kernel keeping every
+reduced subterm of one task until it closes, so a conjunction of
+split reads decided at once costs the sum of their caches where
+the reads decided one by one cost each its own.
 -/
 set_option maxHeartbeats 16000000
 
@@ -570,21 +572,303 @@ example : commRead (slotMat (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 
     (by decide +kernel)
 
 private def chG : Mat := inertia.idMat 6
-private def chC : Mat := inertia.matScaleB (BPair.ofNat 3) chG
-private def chSpG : inertia.Split 6 := inertia.mkSplit 6 chG
+private def chP (k : Nat) : List (Nat × Bool) := ground.getAt [] chW.plaqs k
+private def chCap : Mat :=
+  inertia.matScaleB (BPair.ofNat ((dataA 2).dim (dataA 2).theta)) chG
+
+/-! The gram's split and the six cap splits at the adjoint
+dimension three as stated data: the gram's own, and per plaquette
+the upper split at the site datum and the lower at the sum, each the cleared congruence with its adjugate
+witness at normalized representatives, the blocks and the kernel
+order (`lem:inertia`'s certificate data; the read at the data is
+`splitRead`'s, the descent's own output re-read rather than
+re-run). -/
+
+private def chSpG : inertia.Split 6 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 2⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 2⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 2⟩]], rfl⟩,
+   ⟨[[⟨1, 2⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 2⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 2⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩]], rfl⟩,
+   [.one ⟨2, 1⟩, .one ⟨2, 1⟩, .one ⟨2, 1⟩, .one ⟨2, 1⟩, .one ⟨2, 1⟩, .one ⟨2, 1⟩],
+   0, rfl⟩
+private def chU0 : inertia.Split 6 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 4⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨82, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1594324⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨12157665459056928802, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 5391030899743293631239539488528815119194426882613553319204⟩]], rfl⟩,
+   ⟨[[⟨1, 25392449348622130779763242573538520583474933800798398908000521914985712447677679339868⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨8464149782874043593254414191179506861158311266932799636000173971661904149225893113290, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 313487028995334947898311636710352105968826343219733319851858295246737190712070115308⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨15926791088519786003064148590679881418931379526481396121112548658575277686941530, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 2088595827392656793085408064780643444068898148936888424953199350268⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨4710128697246244834921603690, 1⟩]], rfl⟩,
+   [.one ⟨4, 1⟩,
+    .one ⟨28, 1⟩,
+    .one ⟨19684, 1⟩,
+    .one ⟨7625597484988, 1⟩,
+    .one ⟨443426488243037769948249630619149892804, 1⟩,
+    .one ⟨58126428323973972135274047057240514464642714936487833390350146291993978062482293295650366604554455411194036817110419, 1⟩],
+   0, rfl⟩
+private def chL0 : inertia.Split 6 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 4⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨82, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1594324⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨12157665459056928802, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 5391030899743293631239539488528815119194426882613553319204⟩]], rfl⟩,
+   ⟨[[⟨1, 25392449348622130779763242573538520583474933800798398908000521914985712447677679339868⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨8464149782874043593254414191179506861158311266932799636000173971661904149225893113290, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 313487028995334947898311636710352105968826343219733319851858295246737190712070115308⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨15926791088519786003064148590679881418931379526481396121112548658575277686941530, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 2088595827392656793085408064780643444068898148936888424953199350268⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨4710128697246244834921603690, 1⟩]], rfl⟩,
+   [.one ⟨4, 1⟩,
+    .one ⟨28, 1⟩,
+    .one ⟨19684, 1⟩,
+    .one ⟨7625597484988, 1⟩,
+    .one ⟨443426488243037769948249630619149892804, 1⟩,
+    .one ⟨116252856647947944270548094114481028929285429872975666780700292583987956124964586591300733209108910822388073634220837, 1⟩],
+   0, rfl⟩
+private def chU1 : inertia.Split 6 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 4⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨82, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1594324⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨8105110306037952535, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1597342488812827742589493181786315590872422780033645427913⟩]], rfl⟩,
+   ⟨[[⟨1, 5015792463925359166372986187365633695501221491515733117629732723947795051393121844913⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1671930821308453055457662062455211231833740497171911039209910907982598350464373948305, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 61923363752164927979913409720563378956805203598959668118885589184540679646828664753⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨3146032807608846617889214536430593860529655215107436270837046648607462259148945, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 618843208116342753506787574749820279724117970055374348134281288969⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨3140085798164163223281069127, 1⟩]], rfl⟩,
+   [.one ⟨4, 1⟩,
+    .one ⟨28, 1⟩,
+    .one ⟨19684, 1⟩,
+    .one ⟨5083731656659, 1⟩,
+    .one ⟨197078439219127897754777613608511063469, 1⟩,
+    .one ⟨7654509079700276165962014427290931945961180567767945137823887577546532090532647676793463915003055856618144766039233, 1⟩],
+   0, rfl⟩
+private def chL1 : inertia.Split 6 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 4⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨82, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1594324⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨16210220612075905069, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 12778739910502621940715945454290524726979382240269163423297⟩]], rfl⟩,
+   ⟨[[⟨1, 80252679422805746661967778997850139128019543864251729882075723583164720822289949518593⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨26750893140935248887322592999283379709339847954750576627358574527721573607429983172865, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 990773820034638847678614555529014063308883257583354689902169426952650874349258636033⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨50336524921741545886227432582889501768474483441718980333392746377719396146383105, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 4950745664930742028054300597998562237792943760442994785074250311745⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨6280171596328326446562138253, 1⟩]], rfl⟩,
+   [.one ⟨4, 1⟩,
+    .one ⟨28, 1⟩,
+    .one ⟨19684, 1⟩,
+    .one ⟨10167463313317, 1⟩,
+    .one ⟨788313756876511591019110454434044253873, 1⟩,
+    .one ⟨489888581100817674621568923346619644541515556337148488820728804962978053794089451314781690560195574823561265026510849, 1⟩],
+   0, rfl⟩
+private def chU2 : inertia.Split 6 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 4⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨82, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1594324⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨12157665459056928802, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 3594020599828862420826359659019210079462951255075702212803⟩]], rfl⟩,
+   ⟨[[⟨1, 16928299565748087186508828382359013722316622533865599272000347943323808298451786226579⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨5642766521916029062169609460786337907438874177955199757333449314441269432817262075527, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 208991352663556631932207757806901403979217562146488879901238863497824793808046743539⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨10617860725679857335376099060453254279287586350987597414075032439050185124627687, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1392397218261771195390272043187095629379265432624592283302132900179⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨4710128697246244834921603690, 1⟩]], rfl⟩,
+   [.one ⟨4, 1⟩,
+    .one ⟨28, 1⟩,
+    .one ⟨19684, 1⟩,
+    .one ⟨7625597484988, 1⟩,
+    .one ⟨295617658828691846632166420412766595203, 1⟩,
+    .one ⟨38750952215982648090182698038160342976428476624325222260233430861329318708321528863766911069702970274129357878073613, 1⟩],
+   0, rfl⟩
+private def chL2 : inertia.Split 6 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 4⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨82, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1594324⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨12157665459056928802, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 7188041199657724841652719318038420158925902510151404425605⟩]], rfl⟩,
+   ⟨[[⟨1, 33856599131496174373017656764718027444633245067731198544000695886647616596903572453157⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨11285533043832058124339218921572675814877748355910399514666898628882538865634524151053, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 417982705327113263864415515613802807958435124292977759802477726995649587616093487077⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨21235721451359714670752198120906508558575172701975194828150064878100370249255373, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 2784794436523542390780544086374191258758530865249184566604265800357⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨4710128697246244834921603690, 1⟩]], rfl⟩,
+   [.one ⟨4, 1⟩,
+    .one ⟨28, 1⟩,
+    .one ⟨19684, 1⟩,
+    .one ⟨7625597484988, 1⟩,
+    .one ⟨591235317657383693264332840825533190405, 1⟩,
+    .one ⟨155003808863930592360730792152641371905713906497300889040933723445317274833286115455067644278811881096517431512294449, 1⟩],
+   0, rfl⟩
 private def chTermsP : List (Mat × inertia.Split 6 × inertia.Split 6) :=
-  chW.plaqs.map (fun p =>
-    (chTerm p, inertia.mkSplit 6 (inertia.siteDatum chC (chTerm p)),
-      inertia.mkSplit 6 (matAdd chC (chTerm p))))
+  [(chTerm (chP 0), chU0, chL0), (chTerm (chP 1), chU1, chL1),
+   (chTerm (chP 2), chU2, chL2)]
+private theorem chPlaqs : chW.plaqs = [chP 0, chP 1, chP 2] := by decide +kernel
 private theorem chDim : windowfinite.dimSect (dataA 2) chW 12 = 6 := by
-  show 1 + (idx (dataA 2) chW 12).foldl
-    (fun acc a => acc + windowfinite.fibProd (dataA 2) chW a) 0 = 6
-  rw [chIxPinA]
+  rw [windowfinite.dimSect, chIxPinA]
+  decide +kernel
+
+/-! The terms' reads one kernel task per split read: per plaquette
+the term's symmetry, its shape with the cap's, the upper split at
+the site datum with its positivity (`leAt`), the lower split at the
+sum with its positivity, the support at the changed-edge targets
+and the entries at the fibers' stated lists one task per position
+row (the range fold's one-step introduction assembling them), each
+decided on its own and the three terms assembled at
+`termsRead`'s own conjunction over the pinned plaquette list.  The
+cap is stated at the interface's own spelling (`chCap`, the
+adjoint dimension read at the data), so the assembly matches
+`termsRead`'s clause by unfolding alone, the dimension read left
+to the kernel. -/
+
+private theorem chCapSq : sqAt chCap 6 := by decide +kernel
+private theorem chSym0 : pairpencil.symmRead (chTerm (chP 0)) := by decide +kernel
+private theorem chSq0 : sqAt (chTerm (chP 0)) 6 := by decide +kernel
+private theorem chLe0 : inertia.leAt (chTerm (chP 0)) chCap chU0 := by
+  decide +kernel
+private theorem chLo0 : inertia.splitRead (matAdd chCap (chTerm (chP 0))) chL0 := by
+  decide +kernel
+private theorem chPsd0 : inertia.psdAt chL0 := by decide +kernel
+private theorem chSupp0 :
+    pairpencil.termSupport (dataA 2) chW 6 chIx (chP 0) (chTerm (chP 0)) := by
+  decide +kernel
+private theorem chEnt0R0 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 0) 0 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 0)) (chP 0) 0 j) = true := by
+  decide +kernel
+private theorem chEnt0R1 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 0) 1 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 0)) (chP 0) 1 j) = true := by
+  decide +kernel
+private theorem chEnt0R2 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 0) 2 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 0)) (chP 0) 2 j) = true := by
+  decide +kernel
+private theorem chEnt0R3 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 0) 3 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 0)) (chP 0) 3 j) = true := by
+  decide +kernel
+private theorem chEnt0R4 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 0) 4 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 0)) (chP 0) 4 j) = true := by
+  decide +kernel
+private theorem chEnt0R5 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 0) 5 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 0)) (chP 0) 5 j) = true := by
+  decide +kernel
+private theorem chEnt0 : pairpencil.entriesRead (dataA 2) chW 6 chIx 1 chG (chP 0) (chTerm (chP 0)) :=
+  (ground.all_range_succ_intro 5 (ground.all_range_succ_intro 4 (ground.all_range_succ_intro 3 (ground.all_range_succ_intro 2 (ground.all_range_succ_intro 1 (ground.all_range_succ_intro 0 rfl chEnt0R0) chEnt0R1) chEnt0R2) chEnt0R3) chEnt0R4) chEnt0R5)
+private theorem chSym1 : pairpencil.symmRead (chTerm (chP 1)) := by decide +kernel
+private theorem chSq1 : sqAt (chTerm (chP 1)) 6 := by decide +kernel
+private theorem chLe1 : inertia.leAt (chTerm (chP 1)) chCap chU1 := by
+  decide +kernel
+private theorem chLo1 : inertia.splitRead (matAdd chCap (chTerm (chP 1))) chL1 := by
+  decide +kernel
+private theorem chPsd1 : inertia.psdAt chL1 := by decide +kernel
+private theorem chSupp1 :
+    pairpencil.termSupport (dataA 2) chW 6 chIx (chP 1) (chTerm (chP 1)) := by
+  decide +kernel
+private theorem chEnt1R0 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 1) 0 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 1)) (chP 1) 0 j) = true := by
+  decide +kernel
+private theorem chEnt1R1 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 1) 1 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 1)) (chP 1) 1 j) = true := by
+  decide +kernel
+private theorem chEnt1R2 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 1) 2 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 1)) (chP 1) 2 j) = true := by
+  decide +kernel
+private theorem chEnt1R3 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 1) 3 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 1)) (chP 1) 3 j) = true := by
+  decide +kernel
+private theorem chEnt1R4 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 1) 4 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 1)) (chP 1) 4 j) = true := by
+  decide +kernel
+private theorem chEnt1R5 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 1) 5 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 1)) (chP 1) 5 j) = true := by
+  decide +kernel
+private theorem chEnt1 : pairpencil.entriesRead (dataA 2) chW 6 chIx 1 chG (chP 1) (chTerm (chP 1)) :=
+  (ground.all_range_succ_intro 5 (ground.all_range_succ_intro 4 (ground.all_range_succ_intro 3 (ground.all_range_succ_intro 2 (ground.all_range_succ_intro 1 (ground.all_range_succ_intro 0 rfl chEnt1R0) chEnt1R1) chEnt1R2) chEnt1R3) chEnt1R4) chEnt1R5)
+private theorem chSym2 : pairpencil.symmRead (chTerm (chP 2)) := by decide +kernel
+private theorem chSq2 : sqAt (chTerm (chP 2)) 6 := by decide +kernel
+private theorem chLe2 : inertia.leAt (chTerm (chP 2)) chCap chU2 := by
+  decide +kernel
+private theorem chLo2 : inertia.splitRead (matAdd chCap (chTerm (chP 2))) chL2 := by
+  decide +kernel
+private theorem chPsd2 : inertia.psdAt chL2 := by decide +kernel
+private theorem chSupp2 :
+    pairpencil.termSupport (dataA 2) chW 6 chIx (chP 2) (chTerm (chP 2)) := by
+  decide +kernel
+private theorem chEnt2R0 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 2) 0 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 2)) (chP 2) 0 j) = true := by
+  decide +kernel
+private theorem chEnt2R1 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 2) 1 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 2)) (chP 2) 1 j) = true := by
+  decide +kernel
+private theorem chEnt2R2 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 2) 2 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 2)) (chP 2) 2 j) = true := by
+  decide +kernel
+private theorem chEnt2R3 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 2) 3 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 2)) (chP 2) 3 j) = true := by
+  decide +kernel
+private theorem chEnt2R4 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 2) 4 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 2)) (chP 2) 4 j) = true := by
+  decide +kernel
+private theorem chEnt2R5 : (List.range 6).all (fun j =>
+    !pairpencil.rowPair (dataA 2) chW chIx (chP 2) 5 j
+      || pairpencil.entryAt (dataA 2) chW chIx 1 chG (chTerm (chP 2)) (chP 2) 5 j) = true := by
+  decide +kernel
+private theorem chEnt2 : pairpencil.entriesRead (dataA 2) chW 6 chIx 1 chG (chP 2) (chTerm (chP 2)) :=
+  (ground.all_range_succ_intro 5 (ground.all_range_succ_intro 4 (ground.all_range_succ_intro 3 (ground.all_range_succ_intro 2 (ground.all_range_succ_intro 1 (ground.all_range_succ_intro 0 rfl chEnt2R0) chEnt2R1) chEnt2R2) chEnt2R3) chEnt2R4) chEnt2R5)
+private theorem chCapAt0 : inertia.capAt (chTerm (chP 0)) chCap chU0 chL0 :=
+  ⟨chSq0, chCapSq, chLe0, chLo0, chPsd0⟩
+private theorem chCapAt1 : inertia.capAt (chTerm (chP 1)) chCap chU1 chL1 :=
+  ⟨chSq1, chCapSq, chLe1, chLo1, chPsd1⟩
+private theorem chCapAt2 : inertia.capAt (chTerm (chP 2)) chCap chU2 chL2 :=
+  ⟨chSq2, chCapSq, chLe2, chLo2, chPsd2⟩
+private theorem chTermsRead :
+    pairpencil.termsRead (dataA 2) chW 6 chIx 1 chG chW.plaqs chTermsP := by
+  rw [chPlaqs]
+  exact ⟨chSym0, chCapAt0, chSupp0, chEnt0, chSym1, chCapAt1, chSupp1, chEnt1,
+    chSym2, chCapAt2, chSupp2, chEnt2, trivial⟩
+private theorem chGramRead : pairpencil.gramBlockRead (dataA 2) chW 6 chIx 1 chG := by
+  decide +kernel
+private theorem chSpGRead : inertia.splitRead chG chSpG ∧ inertia.pdAt chSpG := by
   decide +kernel
 private theorem chPencil : pairpencil.pencilRead (dataA 2) chW 12 6 chIx 1
     (pairpencil.pencilE chDiag) chG chSum chSpG chTermsP :=
   ⟨chIxPinA, chDim, by decide +kernel,
-    by rw [chSlotDiag]; decide +kernel, by decide +kernel⟩
+    by rw [chSlotDiag]; decide +kernel, chGramRead, chSpGRead.1, chSpGRead.2,
+    chTermsRead, by decide +kernel, by decide +kernel⟩
 
 example : commRead (slotMat (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3))
     chSum :=
@@ -593,11 +877,10 @@ example : commRead (slotMat (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 
     (chainVert 3) (chainVertInv 3) chPmT chPmS chPerm3 chEnds3 chVert3 chPlaqT
     (by decide +kernel)
 
-private def chP0 : List (Nat × Bool) := ground.getAt [] chW.plaqs 0
 private def chTermBad : Mat :=
   ground.matOf 6 6 (fun i j =>
     if i == 3 && j == 4 then ⟨3, 1⟩
-    else ground.getAt BPair.unit (ground.getAt [] (chTerm chP0) i) j)
+    else ground.getAt BPair.unit (ground.getAt [] (chTerm (chP 0)) i) j)
 private def chTermsBad : List Mat := chTermBad :: chTerms.drop 1
 
 example : ¬ termsMoved (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3)
@@ -611,7 +894,7 @@ example : ¬ commRead (slotMat (dataA 2) chW chIx (chainTranslInv 3) (chainVertI
 private def chTermRail : Mat :=
   ground.matOf 6 6 (fun i j =>
     if i == 1 && j == 2 then ⟨3, 1⟩
-    else ground.getAt BPair.unit (ground.getAt [] (chTerm chP0) i) j)
+    else ground.getAt BPair.unit (ground.getAt [] (chTerm (chP 0)) i) j)
 private def chTermsRail : List Mat := chTermRail :: chTerms.drop 1
 
 example : ¬ termsMoved (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3)
@@ -633,8 +916,8 @@ example : termsMoved (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3)
 
 private def chTermRag : Mat :=
   (List.range 6).map (fun i =>
-    if i == 3 then (ground.getAt [] (chTerm chP0) 3).take 3
-    else ground.getAt [] (chTerm chP0) i)
+    if i == 3 then (ground.getAt [] (chTerm (chP 0)) 3).take 3
+    else ground.getAt [] (chTerm (chP 0)) i)
 private def chTermsRag : List Mat := chTermRag :: chTerms.drop 1
 
 example : termsMoved (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3)
@@ -663,9 +946,9 @@ example : plaqPermRead chW (fun l => l) (fun _ => false) (fun q => q) (fun q => 
   decide +kernel
 
 private def chTwice : Region :=
-  { chW with plaqs := [chP0, chP0, ground.getAt [] chW.plaqs 1] }
+  { chW with plaqs := [chP 0, chP 0, chP 1] }
 private def chRot : Region :=
-  { chW with plaqs := [chP0, ground.rotAt 1 chP0, ground.getAt [] chW.plaqs 1] }
+  { chW with plaqs := [chP 0, ground.rotAt 1 (chP 0), chP 1] }
 
 example : ¬ plaqRead chTwice ∧ ¬ ground.distinctList chTwice.plaqs
     ∧ ¬ plaqRead chRot ∧ ground.distinctList chRot.plaqs := by decide +kernel
@@ -2004,8 +2287,27 @@ private def gT5 : Mat :=
    [BPair.unit, BPair.ofNat 48, (BPair.ofNat 144).swap, BPair.ofNat 144, BPair.unit],
    [BPair.unit, BPair.unit, BPair.unit, BPair.unit, BPair.ofNat 9]]
 
+/-- The torus gram's split as stated data at the clearing nine
+(`lem:inertia`'s certificate data, re-read by `splitRead`). -/
+private def gT5Sp : inertia.Split 5 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 10⟩, ⟨104977, 1⟩, ⟨1, 37018604205637633⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨104977, 1⟩, ⟨1, 111055812616912897⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 222111625233825793⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨876604825116072439516682081700537912287760040895447041, 1⟩]], rfl⟩,
+   ⟨[[⟨183953339572218355818288152625160962318886751936519204186186106405985053573121, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 20439259952468706202032016958351218035431861326279911576242900711776117063681⟩, ⟨20439259952468706202032016958351218035431861326279911576242900711776117063681, 1⟩, ⟨1, 6813086650822902067344005652783739345143953775426637192080966903925372354561⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1752337101549100325962964416868245716343609510140595985617532639898501121, 1⟩, ⟨1, 876168550774550162981482208434122858171804755070297992808766319949250561⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 828202213092463383696328963877361010922879082477364036239361⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨209847509734914867068929, 1⟩]], rfl⟩,
+   [.one ⟨10, 1⟩,
+    .one ⟨11665, 1⟩,
+    .one ⟨2115832430593, 1⟩,
+    .one ⟨3946685925120918264859080080354181121, 1⟩,
+    .one ⟨6915924174751019514658450555513427682916850342835994332150977291331874745396836324972592816085497413002854401, 1⟩],
+   0, rfl⟩
 example : pairpencil.gramBlockRead (dataA 2) torW 5 ixT 9 gT5
-    ∧ inertia.pdAt (inertia.mkSplit 5 gT5) := by decide +kernel
+    ∧ inertia.splitRead gT5 gT5Sp ∧ inertia.pdAt gT5Sp := by decide +kernel
 example : ¬ pairpencil.gramBlockRead (dataA 2) torW 5 ixT 1
       (matAdd (inertia.idMat 5) (e5 1 3))
     ∧ ¬ pairpencil.gramBlockRead (dataA 2) torW 5 ixT 1 gT5

@@ -3937,6 +3937,12 @@ primitive strip), the kernel's own `Nat.gcd`. -/
 def BPair.listContent (l : List BPair) : Nat :=
   l.foldl (fun k x => Nat.gcd k (BPair.marginN x)) 0
 
+/-- A list's shared count with a clearing: the greatest common
+divisor of the members' content and the clearing's value, the
+reduced representative's divisor. -/
+def BPair.sharedCount (l : List BPair) (c : Pos) : Nat :=
+  Nat.gcd (BPair.listContent l) (posVal c)
+
 /-- The list stripped at a stated count: each member's margin divided
 exactly at its own side, a member off the division kept, the vacant
 count the identity. -/
@@ -7477,6 +7483,54 @@ def keyAt {α β : Type} (eq : α → α → Bool) (d : β) (c : α)
     (l : List (α × β)) : β :=
   l.foldr (fun e r => cond (eq e.1 c) e.2 r) d
 
+/-- A store whose every entry holds a read's value at its key, read
+back at a key with the read itself the default: a matching entry's
+value is the read's own there, so the keyed read is the read at
+every key — the store one term shared across its queries. -/
+theorem keyAt_store {α β : Type} (eq : α → α → Bool)
+    (hs : ∀ a b, eq a b = true → a = b) (f : α → β) (k : α) :
+    ∀ st : List (α × β), (∀ e, e ∈ st → e.2 = f e.1) →
+      keyAt eq (f k) k st = f k
+  | [], _ => rfl
+  | e :: t, h => by
+    show cond (eq e.1 k) e.2 (keyAt eq (f k) k t) = f k
+    cases he : eq e.1 k with
+    | true =>
+      show e.2 = f k
+      rw [h e (List.Mem.head t), hs e.1 k he]
+    | false =>
+      exact keyAt_store eq hs f k t (fun x hx => h x (List.Mem.tail e hx))
+
+/-- A read stored over a stated key list is read back at every
+key, `keyAt_store` at the mapped store. -/
+theorem keyAt_memo {α β : Type} (eq : α → α → Bool)
+    (hs : ∀ a b, eq a b = true → a = b) (f : α → β) (k : α)
+    (keys : List α) :
+    keyAt eq (f k) k (keys.map (fun s => (s, f s))) = f k :=
+  keyAt_store eq hs f k _ (fun e he => by
+    obtain ⟨s, _, hse⟩ := mem_map_of (fun s => (s, f s)) keys e he
+    rw [← hse])
+
+/-- A read stored over a stated key list is read back at every
+stored key at any default, the test reflexive. -/
+theorem keyAt_map_mem {α β : Type} (eq : α → α → Bool)
+    (hs : ∀ a b, eq a b = true → a = b) (hr : ∀ a, eq a a = true)
+    (f : α → β) (d : β) (k : α) :
+    ∀ keys : List α, k ∈ keys →
+      keyAt eq d k (keys.map (fun s => (s, f s))) = f k
+  | [], h => nomatch h
+  | s :: t, h => by
+    show cond (eq s k) (f s) (keyAt eq d k (t.map (fun s => (s, f s)))) = f k
+    cases he : eq s k with
+    | true =>
+      show f s = f k
+      rw [hs s k he]
+    | false =>
+      refine keyAt_map_mem eq hs hr f d k t ?_
+      cases h with
+      | head => rw [hr k] at he; exact Bool.noConfusion he
+      | tail _ h' => exact h'
+
 /-- Two folds at one read per occupied member are one value. -/
 theorem famFold_congr_members {α β : Type} [DecidableEq α]
     (add : β → β → β) (unit : β) (f g : α → β) :
@@ -8203,6 +8257,14 @@ theorem countOf_partition {α : Type} [DecidableEq α] :
 def dedupL {α : Type} [DecidableEq α] : List α → List α
   | [] => []
   | a :: t => if 0 < countOf a t then dedupL t else a :: dedupL t
+
+/-- Two lists one value at a stated member equality, memberwise at
+one length. -/
+def listEqBy {α : Type} (eq : α → α → Bool) : List α → List α → Bool
+  | [], [] => true
+  | [], _ :: _ => false
+  | _ :: _, [] => false
+  | a :: s, b :: t => eq a b && listEqBy eq s t
 
 /-- The distinct index at a list, the first occurrence kept, the
 members in their order of first appearance. -/
@@ -13027,18 +13089,25 @@ theorem all_range_read {f : Nat → Bool} : ∀ (n : Nat),
       rw [Nat.le_antisymm (Nat.le_of_lt_succ hi) hge]
       exact (andSplitB hs.2).1
 
+/-- The range fold's one-step introduction: a true fold over the
+range with the next key true is the fold at the successor. -/
+theorem all_range_succ_intro {f : Nat → Bool} (n : Nat)
+    (h : (List.range n).all f = true) (hn : f n = true) :
+    (List.range (n + 1)).all f = true := by
+  rw [range_succ n, all_append f (List.range n) [n]]
+  refine andIntroB h ?_
+  show (f n && true) = true
+  rw [hn]
+  rfl
+
 /-- The range fold's introduction: true at every key of the range
 is the fold's own true read. -/
 theorem all_range_intro {f : Nat → Bool} : ∀ (n : Nat),
     (∀ i, i < n → f i = true) → (List.range n).all f = true
   | 0, _ => rfl
-  | n + 1, h => by
-    rw [range_succ n, all_append f (List.range n) [n]]
-    refine andIntroB (all_range_intro n
-      (fun i hi => h i (Nat.lt_succ_of_lt hi))) ?_
-    show (f n && true) = true
-    rw [h n (Nat.lt_succ_self n)]
-    rfl
+  | n + 1, h =>
+    all_range_succ_intro n (all_range_intro n (fun i hi => h i (Nat.lt_succ_of_lt hi)))
+      (h n (Nat.lt_succ_self n))
 
 /-! The entry-carrier operations bundle: the displayed operations
 of `def:ground` at a general carrier, one bundle per carrier, the

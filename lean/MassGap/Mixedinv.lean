@@ -817,6 +817,15 @@ enumeration, each family's equivariance under the units' moves
 (`con:places`' place symmetry), and the flat forms' independence
 at `k ≤ d` — the invariant span's stated spanning data. -/
 
+/-- The place permutations' Gram at a count and a letter count,
+`lem:mixedinv`'s display: per permutation pair one factor `d_f`
+per cycle of the composite against the second's inverse
+permutation. -/
+def cycleGram (d k : Nat) : elim.Mat :=
+  (places.perms k).map (fun σ => (places.perms k).map (fun τ =>
+    ground.BPair.ofNat (Nat.pow d
+      (places.cyclesOf (places.expo σ (places.invPerm k τ))).length)))
+
 /-- A place permutation's matrix at a content: the row's monomial
 against the permuted display of the column's, one unit entry per
 row — the place action's matrix on the content summand. -/
@@ -2901,6 +2910,38 @@ theorem perm_gram (d k : Nat) (σ τ : List Nat)
   · rw [if_pos hag, if_pos ((agree_iff_fixed k hσ hτ m hml).mp hag)]
   · rw [if_neg hag,
       if_neg (fun hf => hag ((agree_iff_fixed k hσ hτ m hml).mpr hf))]
+
+/-- The cycle-count Gram's entry at two occupied keys is the
+permutation flats' Gram's, `perm_gram`'s read at the two
+permutations: the display's fast read tied to the pairing. -/
+theorem cycleGram_read (d k i j : Nat) (hi : i < (places.perms k).length)
+    (hj : j < (places.perms k).length) :
+    (ground.getAt ground.BPair.unit
+        (ground.getAt [] (elim.gramM (permFlats d k)) i) j).oneValue
+      (ground.getAt ground.BPair.unit (ground.getAt [] (cycleGram d k) i) j) := by
+  have hlen : (permFlats d k).length = (places.perms k).length :=
+    ground.length_map _ _
+  rw [elim.gramM_entry (permFlats d k) i j (by rw [hlen]; exact hi)
+    (by rw [hlen]; exact hj)]
+  show (elim.dotP
+      (ground.getAt [] ((places.perms k).map (fun σ => flatF d k (permMat σ))) i)
+      (ground.getAt [] ((places.perms k).map (fun σ => flatF d k (permMat σ))) j)).oneValue
+    (ground.getAt ground.BPair.unit
+      (ground.getAt [] ((places.perms k).map (fun σ => (places.perms k).map (fun τ =>
+        ground.BPair.ofNat (Nat.pow d
+          (places.cyclesOf (places.expo σ (places.invPerm k τ))).length)))) i) j)
+  rw [ground.getAt_map [] [] (fun σ => flatF d k (permMat σ)) (places.perms k) i hi,
+    ground.getAt_map [] [] (fun σ => flatF d k (permMat σ)) (places.perms k) j hj,
+    ground.getAt_map [] [] (fun σ => (places.perms k).map (fun τ =>
+      ground.BPair.ofNat (Nat.pow d
+        (places.cyclesOf (places.expo σ (places.invPerm k τ))).length)))
+      (places.perms k) i hi,
+    ground.getAt_map [] ground.BPair.unit (fun τ =>
+      ground.BPair.ofNat (Nat.pow d
+        (places.cyclesOf (places.expo (ground.getAt [] (places.perms k) i)
+          (places.invPerm k τ))).length)) (places.perms k) j hj]
+  exact perm_gram d k _ _ (ground.countOf_getAt_pos [] (places.perms k) i hi)
+    (ground.countOf_getAt_pos [] (places.perms k) j hj)
 
 
 /-! `lem:mixedinv`'s span theorem: every invariant of the mixed

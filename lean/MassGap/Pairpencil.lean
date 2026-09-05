@@ -52,7 +52,33 @@ supported across its changed edge alone — an entry off the sum's
 unit at a position pair one of whose configurations is the other's
 target on the plaquette's row (`termSupport` at `def:algebra`'s
 row, the far reads' factorization the vacant complement,
-`lem:stableentries`) — the terms' reads along the region's
+`lem:stableentries`) with its entries the plaquette
+multiplication's read at the fibers' stated lists (`entriesRead`
+at `entryAt`, `con:fiber`'s magnetic read): per position pair
+across the changed edge (`rowPair`) the entry joined to the gram's
+reads `Eval(x̄ |tr U_∂p|² y)`, the boundary character the trace
+against its dagger less the unit, cleared by the links'
+determinants and the states' clearings against the window's
+clearing (`termEntry`) — per link the invariant list of the
+combined slots with its Gram's adjugate and determinant
+(`linkSigAt` the source word's slots at the dagger reads flipped,
+the boundary pair and the target's; `linkData` at
+`fiber.linkList` and `fiber.coevW`, read once per signature of the
+window's words through the store `linkSigs`, `linkDataAt` the
+read's own at `linkDataAt_read`), the boundary character's wiring
+at each vertex (`bdryWiring`, the wiring tensor at the boundary
+layout `bdrySig` and the passes' pairing `bdryPerm`), the vertex
+tensor the three
+members' pairing against the links' members at every tuple of the
+links' member indices (`vertexTensor` at the blocks `blocksAt` and
+the sub-monomials `subMon`, the members `vertexMember` through the
+window's vertex-list store `endsStore`, `vertListAt` the field's
+own read at `vertListAt_read`), and the contraction the fold over
+the vertices at the open links' assignments (`stepVertex`, a link
+opening at its first end and closing at its second at the adjugate
+weight); at unstated lists the loop window's read, the entry the
+fusion count at the loop labels (`loopLabel` at `loopConf`) — the
+terms' reads along the region's
 plaquette list (`termsRead`, the terms' count the plaquettes' and
 each term square at the order, `termsRead_len` and `termsRead_sq`),
 the terms' transport along the region's action at the window list
@@ -173,6 +199,14 @@ def posConf {L : Type} (F : Data L) (R : Region) (ix : List (List L)) :
     Nat → List L
   | 0 => carrier.unitConf F R
   | k + 1 => (getAt (carrier.unitConf F R, []) (slotList F R ix) k).1
+
+/-- The fiber key at a window position: the vacant key at the unit
+line, the window list's key past it, a position past the order
+reading the vacant key. -/
+def posKey {L : Type} (F : Data L) (R : Region) (ix : List (List L)) :
+    Nat → List Nat
+  | 0 => []
+  | k + 1 => (getAt (carrier.unitConf F R, []) (slotList F R ix) k).2
 
 /-- The window list's count is the fibers' multiplicity products'
 fold over the index. -/
@@ -342,6 +376,16 @@ instance {L : Type} (F : Data L) (R : Region) (n : Nat) (ix : List (List L))
     (c : Pos) (G : Mat) : Decidable (gramBlockRead F R n ix c G) :=
   inferInstanceAs (Decidable (_ ∧ _ = _ ∧ _ = _))
 
+/-- Two window positions across a plaquette's changed edge: one
+position's configuration the other's target on the plaquette's row
+(`def:algebra`), read from either side. -/
+def rowPair {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (p : List (Nat × Bool)) (i j : Nat) : Bool :=
+  carrier.confMem F (posConf F R ix j)
+      (algebra.plaqRow F R p (posConf F R ix i))
+    || carrier.confMem F (posConf F R ix i)
+      (algebra.plaqRow F R p (posConf F R ix j))
+
 /-- A plaquette term's support read: an entry off the sum's unit
 sits at a position pair whose configurations meet across the
 plaquette's changed edge, one the other's target on the plaquette's
@@ -352,23 +396,373 @@ def termSupport {L : Type} (F : Data L) (R : Region) (n : Nat)
   ((List.range n).all (fun i => (List.range n).all (fun j =>
       decide ((ground.getAt BPair.unit
           (ground.getAt [] M i) j).oneValue BPair.unit)
-        || carrier.confMem F (posConf F R ix j)
-            (algebra.plaqRow F R p (posConf F R ix i))
-        || carrier.confMem F (posConf F R ix i)
-            (algebra.plaqRow F R p (posConf F R ix j))))) = true
+        || rowPair F R ix p i j))) = true
 
 instance {L : Type} (F : Data L) (R : Region) (n : Nat) (ix : List (List L))
     (p : List (Nat × Bool)) (M : Mat) :
     Decidable (termSupport F R n ix p M) :=
   inferInstanceAs (Decidable (_ = _))
 
+/-! The magnetic member's entries (`con:fiber`'s magnetic read): a
+plaquette term's entry between two window positions reads
+`Eval(x̄ χ_θ(U_∂p) y)`, the boundary character the boundary word's
+trace against its dagger less the unit, the unit's term the
+states' pairing; per link the Gram-dual coevaluation of the link's
+invariant list at the combined slots, the source state's with the
+dagger reads flipped, the boundary word's pair and the target's,
+one coordinate family at both ends; and the entry the one
+contraction, per vertex the three members paired against the
+incident links' coevaluation members and the pairings' product
+folded over the links' member pairs at the adjugate weights. -/
+
+/-- A label's word pair at the presentation field, the one-end
+vertex list's stated end. -/
+def wordOf {L : Type} (F : Data L) (x : L) : Nat × Nat :=
+  match F.vertList [(x, true)] with
+  | some l => getAt (0, 0) l.ends 0
+  | none => (0, 0)
+
+/-- The slot power's letter count at the presentation field, the
+unit state's vertex list's width. -/
+def lettersOf {L : Type} (F : Data L) : Nat :=
+  match F.vertList [] with
+  | some l => l.members.letters
+  | none => 0
+
+/-- The vertex lists read once per incident-end list of the window:
+every index member's incident ends at every vertex with the unit
+line's, each list stored at its first occurrence. -/
+def endsStore {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) : List (List (L × Bool) × Option fiber.VList) :=
+  (carrier.unitConf F R :: ix).foldl (fun acc a =>
+    (List.range R.verts).foldl (fun acc2 v =>
+      let es := carrier.incidentEnds F R a v
+      if acc2.any (fun e => decide (e.1 = es)) then acc2
+      else acc2 ++ [(es, F.vertList es)]) acc) []
+
+/-- The vertex list at an incident-end list through the window's
+store, the field's own read at every list. -/
+def vertListAt {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) (es : List (L × Bool)) : Option fiber.VList :=
+  keyAt (fun a b => decide (a = b)) (F.vertList es) es (endsStore F R ix)
+
+/-- The stored read is the field's: every store entry holds the
+field's value at its key, the store built by joins at the field's
+own reads. -/
+theorem vertListAt_read {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) (es : List (L × Bool)) :
+    vertListAt F R ix es = F.vertList es := by
+  have hv : ∀ (a : List L) (vs : List Nat)
+      (acc : List (List (L × Bool) × Option fiber.VList)),
+      (∀ e, e ∈ acc → e.2 = F.vertList e.1) →
+      ∀ e, e ∈ vs.foldl (fun acc2 v =>
+          let es := carrier.incidentEnds F R a v
+          if acc2.any (fun e => decide (e.1 = es)) then acc2
+          else acc2 ++ [(es, F.vertList es)]) acc →
+        e.2 = F.vertList e.1 := by
+    intro a vs
+    induction vs with
+    | nil => intro acc h; exact h
+    | cons v t ih =>
+      intro acc h
+      refine ih _ ?_
+      intro e he
+      have he' : e ∈ (if acc.any (fun e =>
+            decide (e.1 = carrier.incidentEnds F R a v)) then acc
+          else acc ++ [(carrier.incidentEnds F R a v,
+            F.vertList (carrier.incidentEnds F R a v))]) := he
+      cases hb : acc.any (fun e => decide (e.1 = carrier.incidentEnds F R a v)) with
+      | true =>
+        rw [if_pos hb] at he'
+        exact h e he'
+      | false =>
+        rw [if_neg (fun hc => Bool.noConfusion (hb.symm.trans hc))] at he'
+        cases ground.mem_append_of _ _ he' with
+        | inl hl => exact h e hl
+        | inr hr =>
+          cases hr with
+          | head => rfl
+          | tail _ hm => exact nomatch hm
+  have hst : ∀ (l : List (List L))
+      (acc : List (List (L × Bool) × Option fiber.VList)),
+      (∀ e, e ∈ acc → e.2 = F.vertList e.1) →
+      ∀ e, e ∈ l.foldl (fun acc a =>
+          (List.range R.verts).foldl (fun acc2 v =>
+            let es := carrier.incidentEnds F R a v
+            if acc2.any (fun e => decide (e.1 = es)) then acc2
+            else acc2 ++ [(es, F.vertList es)]) acc) acc →
+        e.2 = F.vertList e.1 := by
+    intro l
+    induction l with
+    | nil => intro acc h; exact h
+    | cons a t ih => intro acc h; exact ih _ (hv a _ acc h)
+  exact keyAt_store (fun a b => decide (a = b)) (fun _ _ h => of_decide_eq_true h)
+    F.vertList es _ (hst (carrier.unitConf F R :: ix) [] (fun _ h => nomatch h))
+
+/-- The vertex member of a state at a vertex: the member at the
+state's key with the list's clearing, vacant where the list is
+unstated. -/
+def vertexMember {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) (a : List L) (k : List Nat) (v : Nat) :
+    Option (slotpower.GVec × Pos) :=
+  match vertListAt F R ix (carrier.incidentEnds F R a v) with
+  | none => none
+  | some l => some (getAt [] l.members.list (getAt 0 k v), l.clear)
+
+/-- A link's combined slot signature at its tail: the source word's
+slots at the dagger reads flipped, the boundary word's undaggered
+and daggered pair at a boundary link, and the target word's slots;
+the head's the exchanged signature slot for slot. -/
+def linkSigAt (wa : Nat × Nat) (bd : Bool) (wb : Nat × Nat) : List Bool :=
+  slotpower.endWordSig wa false ++ (if bd then slotpower.wordSig (1, 1) else [])
+    ++ slotpower.wordSig wb
+
+/-- A link's coevaluation data at its combined signature: the
+invariant list, the Gram's adjugate and the determinant
+(`fiber.linkList`, `fiber.coevW`). -/
+def linkData (d : Nat) (sig : List Bool) :
+    List slotpower.GVec × elim.Mat × BPair :=
+  let lg := fiber.linkList d sig
+  let cw := fiber.coevW lg.2
+  (lg.1, cw.1, cw.2)
+
+/-- The window's link signatures: per pair of the labels' words a
+boundary link's signature, and a word's own off the boundary. -/
+def linkSigs {L : Type} (F : Data L) (ix : List (List L)) : List (List Bool) :=
+  let words := ground.dedupF ((F.unit :: ix.flatMap (fun a => a)).map (wordOf F))
+  ground.dedupF (words.flatMap (fun wa =>
+    linkSigAt wa false wa :: words.map (fun wb => linkSigAt wa true wb)))
+
+/-- The link data read once per signature of the window: the store
+over the window's signatures, the read itself off them. -/
+def linkDataAt {L : Type} (F : Data L) (ix : List (List L)) (sig : List Bool) :
+    List slotpower.GVec × elim.Mat × BPair :=
+  keyAt (fun a b => a == b) (linkData (lettersOf F) sig) sig
+    ((linkSigs F ix).map (fun s => (s, linkData (lettersOf F) s)))
+
+/-- The stored read is the link data at every signature. -/
+theorem linkDataAt_read {L : Type} (F : Data L) (ix : List (List L))
+    (sig : List Bool) : linkDataAt F ix sig = linkData (lettersOf F) sig :=
+  keyAt_memo (fun a b => a == b) (fun _ _ h => ground.listBeqEq h)
+    (linkData (lettersOf F)) sig (linkSigs F ix)
+
+/-- The boundary word's consecutive entry pairs, cyclic. -/
+def wordPairs (p : List (Nat × Bool)) : List ((Nat × Bool) × (Nat × Bool)) :=
+  List.zipWith (fun e f => (e, f)) p (p.drop 1 ++ p.take 1)
+
+/-- The boundary ends at a vertex, the incident ends on the
+plaquette in the incident order. -/
+def bdryEnds (R : Region) (p : List (Nat × Bool)) (v : Nat) : List (Nat × Bool) :=
+  (incident R v).filter (fun e => p.any (fun f => f.1 == e.1))
+
+/-- The boundary word's passes through a vertex: the entering entry
+with the leaving one. -/
+def passesAt (R : Region) (p : List (Nat × Bool)) (v : Nat) :
+    List ((Nat × Bool) × (Nat × Bool)) :=
+  (wordPairs p).filter (fun q => endOf R q.1 == v)
+
+/-- A vertex's boundary layout: the boundary character's word pair
+`(1, 1)` at each boundary end's orientation in the incident order,
+the undaggered slot first at a tail and the daggered first at a
+head, the vertex's own signature with a head's slots exchanged. -/
+def bdrySig (R : Region) (p : List (Nat × Bool)) (v : Nat) : List Bool :=
+  (bdryEnds R p v).flatMap (fun e => slotpower.endWordSig (1, 1) e.2)
+
+/-- A boundary link's position among the vertex's boundary ends. -/
+def bdryPos (R : Region) (p : List (Nat × Bool)) (v : Nat) (l : Nat) : Nat :=
+  places.idxOf l ((bdryEnds R p v).map Prod.fst)
+
+/-- The boundary character's pairing at a vertex, a place
+permutation of the boundary ends: at each pass the entering end's
+undaggered slot pairs the leaving end's daggered and the leaving
+end's undaggered the entering end's daggered, the two ends
+exchanged. -/
+def bdryPerm (R : Region) (p : List (Nat × Bool)) (v : Nat) : List Nat :=
+  (passesAt R p v).foldl (fun σ q =>
+    let a := bdryPos R p v q.1.1
+    let b := bdryPos R p v q.2.1
+    (σ.set a b).set b a) (List.range (bdryEnds R p v).length)
+
+/-- The boundary character's wiring at a vertex, the wiring tensor
+at the boundary layout and its pairing (`con:states`' cycle words
+at the trace against its dagger; `slotpower.wiringG`). -/
+def bdryWiring (d : Nat) (R : Region) (p : List (Nat × Bool)) (v : Nat) :
+    slotpower.GVec :=
+  slotpower.wiringG d (bdrySig R p v) (bdryPerm R p v)
+
+/-- A link's sub-monomial at a vertex from the three states'
+monomials: the source's block, the boundary's and the target's at
+their offsets and lengths. -/
+def subMon (mi mw mj : List Nat)
+    (bl : Nat × Nat × Nat × Nat × Nat × Nat) : List Nat :=
+  (mi.drop bl.1).take bl.2.1 ++ (mw.drop bl.2.2.1).take bl.2.2.2.1
+    ++ (mj.drop bl.2.2.2.2.1).take bl.2.2.2.2.2
+
+/-- The incident links' blocks at a vertex: per incident end the
+source's slot offset and length, the boundary pair's and the
+target's, the three states' slots in the incident order. -/
+def blocksAt (ws : List (Nat × Nat)) (bd : List Bool) (ws' : List (Nat × Nat)) :
+    List (Nat × Nat × Nat × Nat × Nat × Nat) :=
+  ((List.range ws.length).foldl (fun (acc : List _ × Nat × Nat × Nat) t =>
+    let li := (getAt (0, 0) ws t).1 + (getAt (0, 0) ws t).2
+    let lw := if getAt false bd t then 2 else 0
+    let lj := (getAt (0, 0) ws' t).1 + (getAt (0, 0) ws' t).2
+    (acc.1 ++ [(acc.2.1, li, acc.2.2.1, lw, acc.2.2.2, lj)],
+     acc.2.1 + li, acc.2.2.1 + lw, acc.2.2.2 + lj)) ([], 0, 0, 0)).1
+
+/-- The vertex tensor: at every tuple of the incident links'
+member indices the three members' pairing against the links'
+members at the vertex's combined slots, the coordinate pairing on
+the vertex's slot power — one value per tuple in the tuples'
+enumeration order, the fold over the three members' monomial
+triples with each link's members read once per triple at the
+sub-monomial's rank. -/
+def vertexTensor (d : Nat) (mi mw mj : slotpower.GVec)
+    (blocks : List (Nat × Nat × Nat × Nat × Nat × Nat))
+    (Ys : List (List slotpower.GVec)) : List BPair :=
+  let triples := (slotpower.gMons mi).flatMap (fun a =>
+    (slotpower.gMons mw).flatMap (fun w => (slotpower.gMons mj).map (fun b =>
+      ((a.2 * w.2 * b.2).norm, blocks.map (subMon a.1 w.1 b.1)))))
+  let tuples := ground.prodLists (Ys.map (fun Y => List.range Y.length))
+  triples.foldl (fun acc tr =>
+    let vecs := (List.range Ys.length).map (fun e =>
+      let m := getAt [] tr.2 e
+      let c := places.content d m
+      let r := places.rankOf m c
+      (getAt [] Ys e).map (fun y => getAt BPair.unit (slotpower.pieceAt c y) r))
+    List.zipWith (fun t a =>
+      (a + tr.1 * (List.range Ys.length).foldl (fun pr e =>
+        pr * getAt BPair.unit (getAt [] vecs e) (getAt 0 t e)) (BPair.ofNat 1)).norm)
+      tuples acc)
+    (tuples.map (fun _ => BPair.unit))
+
+/-- The contraction's step at a vertex: per open assignment of the
+processed links' members and per tuple of the incident links'
+members, a link met at its first end opens at the tuple's member
+and a link met at its second end closes at the adjugate weight of
+its two members, the value the vertex tensor's at the tuple; the
+assignments joined at their keys, the vacant terms withdrawn. -/
+def stepVertex (es : List (Nat × Bool)) (Ys : List (List slotpower.GVec))
+    (adjs : List elim.Mat) (pv : List BPair)
+    (st : List (List Nat × BPair)) : List (List Nat × BPair) :=
+  let tuples := ground.prodLists (Ys.map (fun Y => List.range Y.length))
+  st.foldl (fun acc kv =>
+    (List.zipWith (fun t x => (t, x)) tuples pv).foldl (fun acc2 tp =>
+      let r := (List.range es.length).foldl (fun (r : List Nat × BPair) e =>
+        let l := (getAt (0, false) es e).1
+        let i := getAt 0 tp.1 e
+        match getAt 0 r.1 l with
+        | 0 => (r.1.set l (i + 1), r.2)
+        | j + 1 =>
+          (r.1.set l 0,
+           r.2 * getAt BPair.unit (getAt [] (getAt [] adjs e) j) i))
+        (kv.1, kv.2 * tp.2)
+      if decide (r.2.oneValue BPair.unit) then acc2
+      else ground.joinBy (fun a b => a == b) (fun y x => (y + x).norm)
+        r.1 r.2.norm acc2) acc) []
+
+/-- The plaquette term's entry read between two states at their
+fiber keys: the contraction's value with the links' determinants'
+product and the states' vertex clearings' product, vacant where a
+vertex list is unstated — the entry `Eval(x̄ |tr U_∂p|² y)` the
+value over the determinants and the clearings. -/
+def termEntry {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) (p : List (Nat × Bool))
+    (a : List L) (k : List Nat) (b : List L) (k' : List Nat) :
+    Option (BPair × BPair × Pos) :=
+  let d := lettersOf F
+  let ms := (List.range R.verts).map (fun v =>
+    (vertexMember F R ix a k v, vertexMember F R ix b k' v))
+  if ms.all (fun q => q.1.isSome && q.2.isSome) then
+    let mem := fun (o : Option (slotpower.GVec × Pos)) =>
+      o.getD ([], Pos.one)
+    let wa := (List.range R.links).map (fun l => wordOf F (getAt F.unit a l))
+    let wb := (List.range R.links).map (fun l => wordOf F (getAt F.unit b l))
+    let bd := (List.range R.links).map (fun l => p.any (fun e => e.1 == l))
+    let ld := (List.range R.links).map (fun l =>
+      linkDataAt F ix (linkSigAt (getAt (0, 0) wa l) (getAt false bd l)
+        (getAt (0, 0) wb l)))
+    let st := (List.range R.verts).foldl (fun st v =>
+      let es := incident R v
+      let Ys := es.map (fun e => (getAt ([], [], BPair.unit) ld e.1).1)
+      let adjs := es.map (fun e => (getAt ([], [], BPair.unit) ld e.1).2.1)
+      let q := getAt (none, none) ms v
+      let pv := vertexTensor d (mem q.1).1 (bdryWiring d R p v) (mem q.2).1
+        (blocksAt (es.map (fun e => getAt (0, 0) wa e.1))
+          (es.map (fun e => getAt false bd e.1))
+          (es.map (fun e => getAt (0, 0) wb e.1))) Ys
+      stepVertex es Ys adjs pv st)
+      [(List.replicate R.links 0, BPair.ofNat 1)]
+    some (keyAt (fun a b => a == b) BPair.unit (List.replicate R.links 0) st,
+      ld.foldl (fun acc e => acc * e.2.2) (BPair.ofNat 1),
+      ms.foldl (fun acc q => acc * (mem q.1).2 * (mem q.2).2) Pos.one)
+  else none
+
+/-- The loop configuration at a label around a plaquette: the
+label at the boundary's forward entries, its dual at the reversed,
+the unit off the boundary. -/
+def loopConf {L : Type} (F : Data L) (R : Region) (p : List (Nat × Bool))
+    (x : L) : List L :=
+  p.foldl (fun acc e => acc.set e.1 (if e.2 then x else F.dual x))
+    (carrier.unitConf F R)
+
+/-- A configuration's loop label at a plaquette: the label read at
+the boundary's first entry where the configuration is that
+label's loop, the unit configuration the unit's. -/
+def loopLabel {L : Type} (F : Data L) (R : Region) (p : List (Nat × Bool))
+    (a : List L) : Option L :=
+  let e := getAt (0, true) p 0
+  let x := if e.2 then getAt F.unit a e.1 else F.dual (getAt F.unit a e.1)
+  if carrier.eqConf F a (loopConf F R p x) then some x else none
+
+/-- The entry read at a window position pair: at stated vertex
+lists the magnetic entry joined to the gram's, cleared by the
+links' determinants and the states' clearings, one value with the
+window's clearing against the contraction; at unstated lists the
+loop window's read, the entry the fusion count `N^x_{θ y}` at the
+two loop labels at the window's clearing. -/
+def entryAt {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) (c : Pos) (G M : Mat) (p : List (Nat × Bool))
+    (i j : Nat) : Bool :=
+  match termEntry F R ix p (posConf F R ix i) (posKey F R ix i)
+      (posConf F R ix j) (posKey F R ix j) with
+  | some r =>
+    decide (((ground.getAt BPair.unit (ground.getAt [] M i) j
+        + ground.getAt BPair.unit (ground.getAt [] G i) j)
+        * r.2.1 * BPair.ofPos r.2.2).oneValue (BPair.ofPos c * r.1))
+  | none =>
+    match loopLabel F R p (posConf F R ix i) with
+    | none => false
+    | some x =>
+      match loopLabel F R p (posConf F R ix j) with
+      | none => false
+      | some y =>
+        decide ((ground.getAt BPair.unit (ground.getAt [] M i) j).oneValue
+          (BPair.ofPos c * BPair.ofNat (F.count F.theta y x)))
+
+/-- A plaquette term's entries: every position pair across the
+plaquette's changed edge at the entry read, the far pairs the
+support read's own. -/
+def entriesRead {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (n : Nat) (ix : List (List L)) (c : Pos) (G : Mat)
+    (p : List (Nat × Bool)) (M : Mat) : Prop :=
+  ((List.range n).all (fun i => (List.range n).all (fun j =>
+      !rowPair F R ix p i j || entryAt F R ix c G M p i j))) = true
+
+instance {L : Type} [DecidableEq L] (F : Data L) (R : Region) (n : Nat)
+    (ix : List (List L)) (c : Pos) (G : Mat) (p : List (Nat × Bool)) (M : Mat) :
+    Decidable (entriesRead F R n ix c G p M) :=
+  inferInstanceAs (Decidable (_ = _))
+
 /-- The plaquette terms' reads along the region's plaquette list,
 each term with its two cap splits: symmetric, capped two-sidedly at
 the adjoint dimension's multiple of the gram (`lem:loopcap`, the
-cap reading the term's order), and supported across its changed
-edge. -/
-def termsRead {L : Type} (F : Data L) (R : Region) (n : Nat)
-    (ix : List (List L)) (G : Mat) :
+cap reading the term's order), supported across its changed edge,
+and its entries the plaquette multiplication's read at the fibers'
+stated lists (`con:fiber`'s magnetic read), the loop window's
+count where the lists are unstated. -/
+def termsRead {L : Type} [DecidableEq L] (F : Data L) (R : Region) (n : Nat)
+    (ix : List (List L)) (c : Pos) (G : Mat) :
     List (List (Nat × Bool)) → List (Mat × Split n × Split n) → Prop
   | [], [] => True
   | [], _ :: _ => False
@@ -377,44 +771,45 @@ def termsRead {L : Type} (F : Data L) (R : Region) (n : Nat)
     symmRead t.1
     ∧ capAt t.1 (matScaleB (BPair.ofNat (F.dim F.theta)) G) t.2.1 t.2.2
     ∧ termSupport F R n ix p t.1
-    ∧ termsRead F R n ix G ps ts
+    ∧ entriesRead F R n ix c G p t.1
+    ∧ termsRead F R n ix c G ps ts
 
-instance decTermsRead {L : Type} (F : Data L) (R : Region) (n : Nat)
-    (ix : List (List L)) (G : Mat) :
+instance decTermsRead {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (n : Nat) (ix : List (List L)) (c : Pos) (G : Mat) :
     (ps : List (List (Nat × Bool))) →
     (ts : List (Mat × Split n × Split n)) →
-    Decidable (termsRead F R n ix G ps ts)
+    Decidable (termsRead F R n ix c G ps ts)
   | [], [] => inferInstanceAs (Decidable True)
   | [], _ :: _ => inferInstanceAs (Decidable False)
   | _ :: _, [] => inferInstanceAs (Decidable False)
   | _ :: ps, _ :: ts =>
-    have : Decidable (termsRead F R n ix G ps ts) :=
-      decTermsRead F R n ix G ps ts
-    inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
+    have : Decidable (termsRead F R n ix c G ps ts) :=
+      decTermsRead F R n ix c G ps ts
+    inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _))
 
 /-- The terms' count is the plaquettes' at the terms' reads. -/
-theorem termsRead_len {L : Type} (F : Data L) (R : Region) (n : Nat)
-    (ix : List (List L)) (G : Mat) :
+theorem termsRead_len {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (n : Nat) (ix : List (List L)) (c : Pos) (G : Mat) :
     ∀ (ps : List (List (Nat × Bool))) (ts : List (Mat × Split n × Split n)),
-      termsRead F R n ix G ps ts → ts.length = ps.length
+      termsRead F R n ix c G ps ts → ts.length = ps.length
   | [], [], _ => rfl
   | [], _ :: _, h => h.elim
   | _ :: _, [], h => h.elim
   | _ :: ps, _ :: ts, h =>
-    congrArg Nat.succ (termsRead_len F R n ix G ps ts h.2.2.2)
+    congrArg Nat.succ (termsRead_len F R n ix c G ps ts h.2.2.2.2)
 
 /-- Each term is square at the order, the cap's own shape read. -/
-theorem termsRead_sq {L : Type} (F : Data L) (R : Region) (n : Nat)
-    (ix : List (List L)) (G : Mat) :
+theorem termsRead_sq {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (n : Nat) (ix : List (List L)) (c : Pos) (G : Mat) :
     ∀ (ps : List (List (Nat × Bool))) (ts : List (Mat × Split n × Split n)),
-      termsRead F R n ix G ps ts → ∀ k, k < ts.length →
+      termsRead F R n ix c G ps ts → ∀ k, k < ts.length →
         sqAt (ground.getAt [] (ts.map Prod.fst) k) n
   | [], [], _, _, hk => absurd hk (Nat.not_lt_zero _)
   | [], _ :: _, h, _, _ => h.elim
   | _ :: _, [], h, _, _ => h.elim
   | _ :: _, _ :: _, h, 0, _ => h.2.1.1
   | _ :: ps, _ :: ts, h, k + 1, hk =>
-    termsRead_sq F R n ix G ps ts h.2.2.2 k (Nat.lt_of_succ_lt_succ hk)
+    termsRead_sq F R n ix c G ps ts h.2.2.2.2 k (Nat.lt_of_succ_lt_succ hk)
 
 /-- The plaquette terms' sum, the magnetic member assembled from
 its terms at the order: `elim.msum`'s index fold over the terms'
@@ -440,7 +835,7 @@ def pencilRead {L : Type} [DecidableEq L] (F : Data L) (R : Region)
   ∧ sqAt E n
   ∧ matOneValue E (formE (slotDiag F R ix) G)
   ∧ gramBlockRead F R n ix c G ∧ splitRead G spG ∧ pdAt spG
-  ∧ termsRead F R n ix G R.plaqs terms
+  ∧ termsRead F R n ix c G R.plaqs terms
   ∧ sqAt M n
   ∧ matOneValue M (termSum n terms)
 

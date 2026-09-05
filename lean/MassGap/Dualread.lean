@@ -8069,32 +8069,6 @@ private theorem gridBlock_row (T : List Nat → elim.Mat)
       (groupAt Y mu).length j,
     if_pos hj]
 
-/-- The block family's read at a member key is its content's
-block. -/
-private theorem keyAt_tab (T : List Nat → elim.Mat)
-    (Y Z : List HVec) :
-    ∀ (L : List (List Nat)) (mu : List Nat), mu ∈ L →
-    ground.keyAt (fun a b => a == b) [] mu
-        (L.map (fun c => (c, gridBlock T Y Z c)))
-      = gridBlock T Y Z mu
-  | [], _, h => nomatch h
-  | c :: L, mu, h => by
-    show cond (c == mu) (gridBlock T Y Z c)
-        (ground.keyAt (fun a b => a == b) [] mu
-          (L.map (fun c => (c, gridBlock T Y Z c))))
-      = gridBlock T Y Z mu
-    cases hb : (c == mu) with
-    | true =>
-      rw [ground.listBeqEq hb]
-      exact rfl
-    | false =>
-      refine keyAt_tab T Y Z L mu ?_
-      cases h with
-      | head =>
-        rw [ground.listEqBeq c] at hb
-        exact Bool.noConfusion hb
-      | tail _ h' => exact h'
-
 /-- The member's position sits inside its content group. -/
 private theorem posLt_group (Y : List HVec) (y : HVec)
     (pre suf : List HVec) (hps : pre ++ y :: suf = Y) :
@@ -8184,8 +8158,9 @@ private theorem gridGo_len (T : List Nat → elim.Mat)
         = gridRow T Y Z y.content
           ((pre.filter (fun w =>
             w.content == y.content)).length) := by
-      rw [keyAt_tab T Y Z (ground.dedupL (Y.map HVec.content))
-          y.content
+      rw [ground.keyAt_map_mem (fun a b => a == b) (fun _ _ h => ground.listBeqEq h)
+          ground.listEqBeq (gridBlock T Y Z) [] y.content
+          (ground.dedupL (Y.map HVec.content))
           (ground.mem_dedupL (ground.mem_map_to HVec.content hyY)),
         gridBlock_row T Y Z y.content _ (posLt_group Y y pre suf hps)]
     rw [ground.length_append, ground.length_append, hrow,
@@ -9166,8 +9141,9 @@ private theorem go_val (T : List Nat → elim.Mat) (Y Z : List HVec)
         = gridRow T Y Z y.content
           ((pre.filter (fun w =>
             w.content == y.content)).length) := by
-      rw [keyAt_tab T Y Z (ground.dedupL (Y.map HVec.content))
-          y.content
+      rw [ground.keyAt_map_mem (fun a b => a == b) (fun _ _ h => ground.listBeqEq h)
+          ground.listEqBeq (gridBlock T Y Z) [] y.content
+          (ground.dedupL (Y.map HVec.content))
           (ground.mem_dedupL (ground.mem_map_to HVec.content hyY)),
         gridBlock_row T Y Z y.content _ (posLt_group Y y pre suf hps)]
     have hlen : (gridRow T Y Z y.content

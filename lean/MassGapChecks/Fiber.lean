@@ -24,9 +24,9 @@ their mixed power, and the insertion's tie to `prop:lap`'s action
 at the residue.  The module's kernel reads price the direct tag's
 kernel solve at the four-end vertex, `elim.kernelList` on the
 stacked raisings' rows over the nineteen-member fused span at each
-of its two orientation spellings, and the symbolic members'
-coordinate pairings at four letters, the reads beyond the one-pin
-budget the module's own. -/
+of its two orientation spellings, and the (2, 1) shape's two-end
+projection over four letters at its twenty-eight-member fused
+span, the reads beyond the one-pin budget the module's own. -/
 set_option maxHeartbeats 4000000
 
 open ground places poly genericlift states fiber
@@ -97,7 +97,8 @@ the fundamental's dual against the fundamental both incoming, the
 fundamental incoming against itself outgoing and outgoing against
 its dual outgoing, each at the count; and the (2, 1) shape over
 four letters against itself at the exchanged orientation, two
-wiring columns at the block's twenty. -/
+wiring columns at the block's twenty, the projection's solve at
+the ends' weight lists' groups. -/
 
 example : vertGramA 3 [(th 3, false), (th 3, false)] = ([[BPair.ofNat 8]], Pos.one)
     ∧ vertGramA 3 [(fdb 3, false), (fd 3, false)] = ([[BPair.ofNat 3]], Pos.one)
@@ -107,11 +108,32 @@ example : vertGramA 3 [(th 3, false), (th 3, false)] = ([[BPair.ofNat 8]], Pos.o
 example : vertGramA 4 [([1, 1, 0, 0], true), ([1, 1, 0, 0], false)]
     = ([[BPair.ofNat 20]], Pos.one) := by decide +kernel
 
+/-! The symbolic members' Gram at the cycle counts is the members'
+coordinate pairing, the fast read tied to the graded vectors at
+the three-end adjoint vertex over three letters at both
+orientations and at the two-end symbolic reads. -/
+
+example : (vertListSym 3 [(th 3, true), (th 3, true), (th 3, false)]).members.gram
+      = slotpower.gramOf
+        (vertListSym 3 [(th 3, true), (th 3, true), (th 3, false)]).members.list
+    ∧ (vertListSym 3 [(th 3, true), (th 3, false), (th 3, false)]).members.gram
+      = slotpower.gramOf
+        (vertListSym 3 [(th 3, true), (th 3, false), (th 3, false)]).members.list
+    ∧ (vertListSym 2 [(th 2, true), (th 2, false)]).members.gram
+      = slotpower.gramOf (vertListSym 2 [(th 2, true), (th 2, false)]).members.list
+    ∧ (vertListSym 3 [(fd 3, true), (fd 3, false)]).members.gram
+      = slotpower.gramOf (vertListSym 3 [(fd 3, true), (fd 3, false)]).members.list := by
+  decide +kernel
+
 /-! The direct route's scale at two ends beside the coevaluation's:
 the kernel member at its primitive representative in the slot
 power's coordinates self-pairs at twelve over two letters and at
 seventy-two over three, where the coevaluation reads the counts
-three and eight. -/
+three and eight; and the coevaluation's clearing at the grouped
+solve, three at the adjoint over three letters and two over two. -/
+
+example : posVal (twoEndList 3 (th 3, true) (th 3, false)).clear = 3
+    ∧ posVal (twoEndList 2 (th 2, true) (th 2, true)).clear = 2 := by decide +kernel
 
 example : listGram (vertListDirect 2 [(th 2, true), (th 2, true)])
       = ([[BPair.ofNat 12]], Pos.one)
@@ -223,7 +245,7 @@ private def casTie (d k : Nat) (F : FList) (W : Nat) (rs cs : List Nat)
   let l := fiber.linkCasC d rs cs [(σ, BPair.ofNat 1)]
   let a := actAtRes d k F W σ
   ((l ++ a.map (fun e => (e.1, BPair.unit))).map Prod.fst).all (fun w =>
-    let x := l.foldl (fun acc e => if e.1 == w then acc + e.2 else acc) BPair.unit
+    let x := fiber.coefAt w l
     let y := a.foldl (fun acc e => if e.1 == w then acc + e.2 else acc)
       (⟨BPair.unit, Pos.one⟩ : CPair)
     ((⟨BPair.ofNat (2 * d), Pos.one⟩ : CPair) * y).oneValue ⟨x, Pos.one⟩)
@@ -238,3 +260,37 @@ example : (places.perms 2).all (fun σ => casTie 2 2 fTwo 0 [0] [1] σ) = true
     ∧ (places.perms 2).all (fun σ => casTie 3 2 fFour 0 [0, 1] [0, 1] σ) = true
     ∧ (places.perms 2).all (fun σ => casTie 4 2 fFour 0 [0, 1] [0, 1] σ) = true := by
   decide +kernel
+
+/-! The letter count at the members: the wirings' stated count at
+the symbolic three-end vertex, the coordinate families' width at
+the direct-tag list and at the unit state's list. -/
+
+example : (vertListSym 3 [(th 3, true), (th 3, true), (th 3, false)]).members.letters = 3
+    ∧ (vertListDirect 2 [(th 2, true), (th 2, true), (th 2, false)]).members.letters = 2
+    ∧ (vertListA 3 []).members.letters = 3 := by decide +kernel
+
+/-! A link's invariant list at its combined slots (`con:fiber`'s
+magnetic read): the adjoint loop's changed link over three letters,
+three of each at the symbolic tag, six wirings at the cycle-count
+Gram of determinant `119439360`, and over two letters the direct
+tag at five kernel members, the Gram's determinant `5184`; the
+fundamental's unchanged link, one wiring at the count; and the
+coevaluation's
+weights the adjugate against the determinant, the list against
+the adjugate the determinant's diagonal at the two-wiring link. -/
+
+example : (linkList 3 [true, false, false, true, false, true]).1.length = 6
+    ∧ (linkList 3 [true, false, false, true, false, true]).2 = mixedinv.cycleGram 3 3
+    ∧ (elim.detD (linkList 3 [true, false, false, true, false, true]).2).oneValue
+        (BPair.ofNat 119439360)
+    ∧ (linkList 2 [true, true, false, true, false, false]).1.length = 5
+    ∧ (elim.detD (linkList 2 [true, true, false, true, false, false]).2).oneValue
+        (BPair.ofNat 5184)
+    ∧ (linkList 3 [true, false]).1.length = 1
+    ∧ (linkList 3 [true, false]).2 = [[BPair.ofNat 3]] := by decide +kernel
+example : (coevW [[BPair.ofNat 4, BPair.ofNat 2], [BPair.ofNat 2, BPair.ofNat 4]]).2.oneValue
+      (BPair.ofNat 12)
+    ∧ elim.matOneValue
+        (elim.matMul [[BPair.ofNat 4, BPair.ofNat 2], [BPair.ofNat 2, BPair.ofNat 4]]
+          (coevW [[BPair.ofNat 4, BPair.ofNat 2], [BPair.ofNat 2, BPair.ofNat 4]]).1)
+        [[BPair.ofNat 12, BPair.unit], [BPair.unit, BPair.ofNat 12]] := by decide +kernel

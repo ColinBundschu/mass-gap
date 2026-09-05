@@ -2469,6 +2469,14 @@ def gramBy {α : Type} (dot : α → α → BPair) (l : List α) : Mat :=
 /-- The Gram: the rows' pairwise folds. -/
 def gramM (L : Mat) : Mat := gramBy dotP L
 
+/-- The pairing at a stated matrix, the row against the matrix's
+read of the column. -/
+def dotAt (M : Mat) (x y : List BPair) : BPair := dotP x (matVec M y)
+
+/-- The Gram at a stated matrix over a stated list, the pairings
+at the matrix. -/
+def gramAt (M : Mat) (P : List (List BPair)) : Mat := gramBy (dotAt M) P
+
 /-- The Gram's row at an occupied key: the stated row's pairings
 against every row, key by key. -/
 theorem gramM_row (L : Mat) (i : Nat) (hi : i < L.length) :

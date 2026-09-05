@@ -1,50 +1,54 @@
 import MassGap.Blockcount
 import MassGap.Labels
 /-!
-`con:slotpower` — the presentation's carrier.  A factor list's slot
+`con:slotpower` — the presentation's carrier. A factor list's slot
 power is the power at one slot per factor, the units acting on an
 undaggered factor's slot by the standard action and on a daggered
 factor's slot by the dual action, the exchanged letters' balance
-partner (`lem:dualread`(i)), both read on the one coordinate
-family, the power's monomials (`slotAct` the action at one slot,
-`raiseS` and `lowerS` the units at a slot signature).  A label
-enters at its word pair (`wordPair`: a column of the reduced shape
-at a length at or below its complement's enters the top word at
-that many undaggered factors, a further column the bottom word at
-the complement length's daggered, the tie a column at its
-complement's length), its slots the top columns' undaggered then
-the bottom columns' daggered (`labelSig`, an incoming end at the
-exchanged signature `endSig`).  A monomial's weight is its
-undaggered letter counts against its daggered, and the unit weight
-is the full columns' class (`unitWeightAt` at the two counts,
-`unitWeight` at a monomial); a graded vector holds one coordinate
-family per content (`GVec` over `blockcount.HVec`, the join
-`gadd`, the scale, the tensor `gtensor`, the coordinate pairing
-`gdot` at the graded pairing, `gOfMons` the vector at a stated
-family of occupied monomials, `gprim` the primitive
-representative at the coordinates' shared count), and a block
-member is weight-homogeneous, every lowering moving the two counts
-alike, so its weight reads at one occupied monomial (`gWeight`).
-A label's block at its word pair is the lowerings' span at its top,
-the top-word columns' wedge exhibits on the undaggered slots
-tensored with the bottom-word columns' dual wedges on the
+partner (`lem:dualread`(i)), both read on the one coordinate family,
+the power's monomials (`slotAct` the action at one slot, `raiseS` and
+`lowerS` the units at a slot signature). A label enters at its word
+pair (`wordPair`: a column of the reduced shape at a length at or
+below its complement's enters the top word at that many undaggered
+factors, a further column the bottom word at the complement length's
+daggered, the tie a column at its complement's length), its slots the
+top columns' undaggered then the bottom columns' daggered (`wordSig`
+at a word pair, `labelSig` at the label's, an incoming end at the
+exchanged signature `endWordSig`, `endSig`). A monomial's
+weight is its undaggered letter counts against its daggered, one
+balance pair per letter (`weightAt`, `weightOf`), and the unit weight
+is the full columns' class (`unitWeightAt`, `unitWeight` at a
+monomial); a graded vector holds one coordinate family per content
+(`GVec` over `blockcount.HVec`, the join `gadd`, the scale, the tensor
+`gtensor`, the coordinate pairing `gdot` at the graded pairing,
+`gOfMons` the vector at a stated family of occupied monomials,
+`gMons` the family read back, `gprim`
+the primitive representative at the coordinates' shared count), and a
+block member is weight-homogeneous, every lowering moving the two
+counts alike, so its weight reads at one occupied monomial
+(`gWeight`). A label's block at its word pair is the lowerings' span
+at its top, the top-word columns' wedge exhibits on the undaggered
+slots tensored with the bottom-word columns' dual wedges on the
 daggered, the wedge at the last letters of the complement's length
 (`blockTop`, `dualWedge`; `blockSpanAt` the closure at the Gram's
-independence read within the weight's group, `gtryAdd`).  The
-fused span at a vertex is its ends' blocks' tensors at the unit
-weight, the members at weights joining to it (`fusedSpan`), the
-stacked raisings' kernel over it the invariants' list (`kernelAt`,
-`def:elim`'s back solve; `combo` a member as a graded vector).  A
-wiring's tensor reads one letter per row end, read again at the
-column end it pairs (`wiringG`).  The through pairing of two ends
-at dual labels pairs each column's slots with its complement
-column's, a wiring at an undaggered slot against a daggered one and
-the star at a tie column, the monomials at complementary letter
-sets at the swap grading's side cleared at the column length's
-factorial (`throughPair`, the tensor the column pairs' families'
-product), and its projection to the fused span at the span's
-Gram-dual solve, the back solve over the bordered Gram, is the
-block's coevaluation (`projectS`).
+independence read within the weight's group, `gtryAdd`). The fused
+span at a vertex is its ends' blocks' tensors at the unit weight, the
+members at weights joining to it, one group per list of the ends'
+weights, the groups pairwise orthogonal at each end's own grading
+(`fusedGroups`; `fusedSpan` the groups' join), the stacked raisings'
+kernel over it the invariants' list (`kernelAt`, `def:elim`'s back
+solve; `combo` a member as a graded vector). A wiring's tensor reads
+one letter per row end, read again at the column end it pairs
+(`wiringG`). The through pairing of two ends at dual labels pairs each
+column's slots with its complement column's, a wiring at an undaggered
+slot against a daggered one and the star at a tie column, the
+monomials at complementary letter sets at the swap grading's side
+cleared at the column length's factorial (`throughPair`, the tensor
+the column pairs' families' product), and its projection to the fused
+span at the span's Gram-dual solve, the back solve over the bordered
+Gram, is the block's coevaluation (`projectS` at one pool;
+`projectGroups` the solve one group at a time at the clearings'
+product, the vector at its reduced representative, `reducePr`).
 -/
 
 namespace slotpower
@@ -69,16 +73,24 @@ bottom columns' complement lengths. -/
 def wordPair (d : Nat) (s : Shape) : Nat × Nat :=
   (sumNat (topCols d s), sumNat ((botCols d s).map (fun l => d - l)))
 
-/-- A label's slot signature: the undaggered slots then the
+/-- A word pair's slot signature: the undaggered slots then the
 daggered, `false` undaggered. -/
-def labelSig (d : Nat) (s : Shape) : List Bool :=
-  List.replicate (wordPair d s).1 false ++ List.replicate (wordPair d s).2 true
+def wordSig (w : Nat × Nat) : List Bool :=
+  List.replicate w.1 false ++ List.replicate w.2 true
 
-/-- An end's slot signature: the label's at an outgoing end, the
-exchanged at an incoming, the dual block on the one coordinate
-family. -/
+/-- A label's slot signature, its word pair's. -/
+def labelSig (d : Nat) (s : Shape) : List Bool := wordSig (wordPair d s)
+
+/-- An end's slot signature at a word pair: the word's at an
+outgoing end, the exchanged at an incoming, the dual block on the
+one coordinate family. -/
+def endWordSig (w : Nat × Nat) (out : Bool) : List Bool :=
+  if out then wordSig w else (wordSig w).map not
+
+/-- An end's slot signature, its label's word pair at the end's
+orientation. -/
 def endSig (d : Nat) (e : Shape × Bool) : List Bool :=
-  if e.2 then labelSig d e.1 else (labelSig d e.1).map not
+  endWordSig (wordPair d e.1) e.2
 
 /-- A vertex's slot signature, its ends' in the incident order. -/
 def vertexSig (d : Nat) (es : List (Shape × Bool)) : List Bool :=
@@ -92,17 +104,25 @@ def upSlots (sig : List Bool) : List Nat :=
 def downSlots (sig : List Bool) : List Nat :=
   (List.range sig.length).filter (fun s => getAt false sig s)
 
-/-- The unit-weight read at an undaggered content against a
-daggered: every letter's two counts at one balance, the full
-columns' class. -/
-def unitWeightAt (d : Nat) (up dn : List Nat) : Bool :=
-  (List.range d).all (fun l =>
-    getAt 0 up l + getAt 0 dn 0 == getAt 0 up 0 + getAt 0 dn l)
+/-- A weight at two contents, the undaggered count against the
+daggered per letter, one balance pair each at its canonical
+representative. -/
+def weightAt (up dn : List Nat) : List BPair :=
+  List.zipWith (fun a b => (BPair.ofNat a + (BPair.ofNat b).swap).norm) up dn
+
+/-- A monomial's weight at a signature. -/
+def weightOf (d : Nat) (sig : List Bool) (m : List Nat) : List BPair :=
+  weightAt (content d ((upSlots sig).map (fun s => getAt 0 m s)))
+    (content d ((downSlots sig).map (fun s => getAt 0 m s)))
+
+/-- The unit-weight read: every letter's balance one value with the
+first's, the full columns' class. -/
+def unitWeightAt (w : List BPair) : Bool :=
+  w.all (fun x => decide (x.oneValue (getAt BPair.unit w 0)))
 
 /-- A monomial's unit-weight read at a signature. -/
 def unitWeight (d : Nat) (sig : List Bool) (m : List Nat) : Bool :=
-  unitWeightAt d (content d ((upSlots sig).map (fun s => getAt 0 m s)))
-    (content d ((downSlots sig).map (fun s => getAt 0 m s)))
+  unitWeightAt (weightOf d sig m)
 
 /-! The graded vectors: one coordinate family per content. -/
 
@@ -113,7 +133,8 @@ abbrev GVec := List HVec
 def gjoin : GVec → HVec → GVec
   | [], v => [v]
   | w :: t, v =>
-    if w.content == v.content then ⟨w.content, elim.vecAdd w.coords v.coords⟩ :: t
+    if w.content == v.content then
+      ⟨w.content, elim.vecAdd w.coords v.coords⟩ :: t
     else w :: gjoin t v
 
 /-- The sum of two graded vectors. -/
@@ -132,9 +153,11 @@ def gdot (g h : GVec) : BPair :=
   g.foldl (fun acc v => h.foldl (fun acc2 w => acc2 + dotG v w) acc) BPair.unit
 
 /-- The tensor of two graded vectors, the pieces' tensors joined at
-their contents. -/
+their contents, each read at the target's enumeration
+(`blockcount.tensorS`). -/
 def gtensor (g h : GVec) : GVec :=
-  g.foldl (fun acc v => h.foldl (fun acc2 w => gjoin acc2 (tensorH v w)) acc) []
+  g.foldl (fun acc v =>
+    h.foldl (fun acc2 w => gjoin acc2 (tensorS v w)) acc) []
 
 /-- The scalar one, the vacant power's own vector. -/
 def gunit (d : Nat) : GVec := [⟨List.replicate d 0, [BPair.ofNat 1]⟩]
@@ -147,7 +170,8 @@ def gOfMons (d : Nat) (l : List (List Nat × BPair)) : GVec :=
   let keyed := l.map (fun p => (content d p.1, p))
   (ground.dedupF (keyed.map Prod.fst)).map (fun c =>
     ⟨c, keyed.foldl (fun acc p =>
-        if p.1 == c then units.scatterAt (rankOf p.2.1 c) p.2.2 acc else acc)
+        if p.1 == c then units.scatterAt (rankOf p.2.1 c) p.2.2 acc
+        else acc)
       ((monomialsAt c).map (fun _ => BPair.unit))⟩)
 
 /-- A piece's coordinates at a stated content, the unit tail off the
@@ -168,29 +192,25 @@ def gprim (g : GVec) : GVec :=
   let k := BPair.listContent (g.flatMap (fun v => v.coords))
   g.map (fun v => ⟨v.content, BPair.listPrim k v.coords⟩)
 
+/-- A graded vector's occupied monomials with their coefficients,
+the family `gOfMons` reads back. -/
+def gMons (g : GVec) : List (List Nat × BPair) :=
+  g.flatMap (fun v =>
+    (List.zipWith (fun m x => (m, x)) (monomialsAt v.content) v.coords).filter
+      (fun p => !decide (p.2.oneValue BPair.unit)))
+
 /-- A graded vector's unit-weight read: every occupied monomial at
 the unit weight. -/
 def gUnitWeight (d : Nat) (sig : List Bool) (g : GVec) : Bool :=
-  g.all (fun v => (List.zipWith (fun m x => (m, x)) (monomialsAt v.content)
-    v.coords).all (fun p => decide (p.2.oneValue BPair.unit) || unitWeight d sig p.1))
+  (gMons g).all (fun p => unitWeight d sig p.1)
 
 /-- A graded vector's weight at a signature, its first occupied
-monomial's undaggered content against its daggered; a block member
-reads one weight at every occupied monomial. -/
-def gWeight (d : Nat) (sig : List Bool) (g : GVec) : List Nat × List Nat :=
-  let m := g.foldl (fun (acc : Option (List Nat)) v =>
-    match acc with
-    | some _ => acc
-    | none => (List.zipWith (fun m x => (m, x)) (monomialsAt v.content) v.coords).foldl
-        (fun acc2 p =>
-          match acc2 with
-          | some _ => acc2
-          | none => if decide (p.2.oneValue BPair.unit) then none else some p.1)
-        none) none
-  match m with
-  | none => (List.replicate d 0, List.replicate d 0)
-  | some m => (content d ((upSlots sig).map (fun s => getAt 0 m s)),
-      content d ((downSlots sig).map (fun s => getAt 0 m s)))
+monomial's, the block members' one weight at every occupied
+monomial (every lowering moving the two counts alike). -/
+def gWeight (d : Nat) (sig : List Bool) (g : GVec) : List BPair :=
+  match (gMons g).head? with
+  | none => List.replicate d BPair.unit
+  | some p => weightOf d sig p.1
 
 /-! The units at the slots. -/
 
@@ -200,8 +220,8 @@ content. -/
 def slotAct (s i j : Nat) (v : HVec) : Option HVec :=
   if 0 < getAt 0 v.content j then
     let mu := moveAt i j v.content
-    some ⟨mu, (List.zipWith (fun m x => (m, x)) (monomialsAt v.content) v.coords).foldl
-      (fun acc p =>
+    some ⟨mu, (List.zipWith (fun m x => (m, x)) (monomialsAt v.content)
+        v.coords).foldl (fun acc p =>
         if p.2.isUnitRep then acc
         else if getAt 0 p.1 s == j then
           units.scatterAt (rankOf (p.1.set s i) mu) p.2 acc
@@ -256,7 +276,8 @@ determinant off the sum's unit (`lem:lowerspan`'s independence
 read at the Gram, the pairing definite; the weight grading
 orthogonal, a member's weight one at every monomial), a member of
 the group's span refused. -/
-def gtryAdd (d : Nat) (sig : List Bool) (pool : List GVec) (g : GVec) : List GVec :=
+def gtryAdd (d : Nat) (sig : List Bool) (pool : List GVec) (g : GVec) :
+    List GVec :=
   let w := gWeight d sig g
   let group := pool.filter (fun h => gWeight d sig h == w)
   if (elim.detD (gramOf (group ++ [g]))).oneValue BPair.unit then pool
@@ -265,8 +286,10 @@ def gtryAdd (d : Nat) (sig : List Bool) (pool : List GVec) (g : GVec) : List GVe
 /-- The lowering closure at a signature from stated seeds, each
 round joining the frontier's lowerings at the membership read
 (`ground.closeBy`). -/
-def closeS (d : Nat) (sig : List Bool) : Nat → List GVec → List GVec → List GVec :=
-  ground.closeBy (fun g => (List.range (d - 1)).map (fun i => gtrim (lowerS sig i g)))
+def closeS (d : Nat) (sig : List Bool) :
+    Nat → List GVec → List GVec → List GVec :=
+  ground.closeBy
+    (fun g => (List.range (d - 1)).map (fun i => gtrim (lowerS sig i g)))
     (gtryAdd d sig)
 
 /-- A label's block at its word pair, the lowerings' span at its
@@ -277,20 +300,32 @@ def blockSpanAt (d : Nat) (s : Shape) : List GVec :=
 
 /-! The fused span and the invariants at a vertex. -/
 
-/-- Two weights' sum, the counts added letter by letter. -/
-private def weightAdd (a b : List Nat × List Nat) : List Nat × List Nat :=
-  (List.zipWith Nat.add a.1 b.1, List.zipWith Nat.add a.2 b.2)
+/-- Two weights' sum, the balances added letter by letter at their
+canonical representatives. -/
+private def weightAdd (a b : List BPair) : List BPair :=
+  List.zipWith (fun x y => (x + y).norm) a b
 
-/-- The fused span at a vertex: the ends' blocks' tensors at the
-unit weight, one tensor per member family whose weights, each read
-at its end's signature, join to the unit weight. -/
+/-- The fused span at a vertex grouped at the ends' weight lists:
+the ends' blocks' tensors at the unit weight, one tensor per member
+family whose weights, each read at its end's signature, join to the
+unit weight, the families at one weight list one group, the
+groups pairwise orthogonal at each end's own grading. -/
+def fusedGroups (d : Nat) (es : List (Shape × Bool)) : List (List GVec) :=
+  let combos := es.foldl
+    (fun (P : List (List GVec × List (List BPair) × List BPair)) e =>
+      let blk := (blockSpanAt d e.1).map (fun g =>
+        (g, gWeight d (endSig d e) g))
+      P.flatMap (fun t => blk.map (fun b =>
+        (t.1 ++ [b.1], t.2.1 ++ [b.2], weightAdd t.2.2 b.2))))
+    [([], [], List.replicate d BPair.unit)]
+  let unit := combos.filter (fun t => unitWeightAt t.2.2)
+  (ground.dedupF (unit.map (fun t => t.2.1))).map (fun key =>
+    (unit.filter (fun t => t.2.1 == key)).map (fun t =>
+      t.1.foldl gtensor (gunit d)))
+
+/-- The fused span at a vertex, its groups joined. -/
 def fusedSpan (d : Nat) (es : List (Shape × Bool)) : List GVec :=
-  let combos := es.foldl (fun (P : List (List GVec × (List Nat × List Nat))) e =>
-      let blk := (blockSpanAt d e.1).map (fun g => (g, gWeight d (endSig d e) g))
-      P.flatMap (fun t => blk.map (fun b => (t.1 ++ [b.1], weightAdd t.2 b.2))))
-    [([], (List.replicate d 0, List.replicate d 0))]
-  (combos.filter (fun t => unitWeightAt d t.2.1 t.2.2)).map (fun t =>
-    t.1.foldl gtensor (gunit d))
+  (fusedGroups d es).flatMap (fun g => g)
 
 /-- A combination over a pool, the coefficients' scaled sum. -/
 def combo (pool : List GVec) (k : List BPair) : GVec :=
@@ -311,8 +346,10 @@ def raiseRows (d : Nat) (sig : List Bool) (pool : List GVec) : elim.Mat :=
 one member per pivot-free column at the back solve, the rows at
 the sum's unit withdrawn (a row of equal members pairs every
 member at that unit outright). -/
-def kernelAt (d : Nat) (sig : List Bool) (pool : List GVec) : List (List BPair) :=
-  elim.kernelList pool.length ((raiseRows d sig pool).filter (fun r => !allU r))
+def kernelAt (d : Nat) (sig : List Bool) (pool : List GVec) :
+    List (List BPair) :=
+  elim.kernelList pool.length
+    ((raiseRows d sig pool).filter (fun r => !allU r))
 
 /-! The wirings and the through pairing. -/
 
@@ -347,11 +384,13 @@ private def matchCols (d : Nat) (same : Bool) :
   | [], _ => []
   | (l, A) :: t, R =>
     let want := if same then d - l else l
-    match R.foldl (fun (acc : Option (Nat × List Nat) × List (Nat × List Nat)) c =>
-        match acc.1 with
-        | some _ => (acc.1, acc.2 ++ [c])
-        | none => if c.1 == want then (some c, acc.2) else (none, acc.2 ++ [c]))
-      (none, []) with
+    match R.foldl
+        (fun (acc : Option (Nat × List Nat) × List (Nat × List Nat)) c =>
+          match acc.1 with
+          | some _ => (acc.1, acc.2 ++ [c])
+          | none =>
+            if c.1 == want then (some c, acc.2) else (none, acc.2 ++ [c]))
+        (none, []) with
     | (some c, rest) => (A, c.2, same && (l + l == d)) :: matchCols d same t rest
     | (none, _) => []
 
@@ -368,7 +407,8 @@ private def pairFam (d : Nat) (p : List Nat × List Nat × Bool) :
        if parity ls then (BPair.ofNat 1).swap else BPair.ofNat 1))
   else
     (allMon d p.1.length).map (fun ls =>
-      (List.zipWith (fun s l => (s, l)) p.1 ls ++ List.zipWith (fun s l => (s, l)) p.2.1 ls,
+      (List.zipWith (fun s l => (s, l)) p.1 ls
+        ++ List.zipWith (fun s l => (s, l)) p.2.1 ls,
        BPair.ofNat 1))
 
 /-- The through pairing of two ends at dual labels: each column's
@@ -388,7 +428,8 @@ def throughPair (d : Nat) (e1 e2 : Shape × Bool) : GVec × Pos :=
     let clear := pairs.foldl (fun acc p =>
       if p.2.2 then acc * factorial p.1.length else acc) 1
     let fam := pairs.foldl (fun acc p =>
-      acc.flatMap (fun a => (pairFam d p).map (fun b => (a.1 ++ b.1, a.2 * b.2))))
+      acc.flatMap (fun a =>
+        (pairFam d p).map (fun b => (a.1 ++ b.1, a.2 * b.2))))
       [(([] : List (Nat × Nat)), BPair.ofNat 1)]
     (gOfMons d (fam.map (fun a =>
       (a.1.foldl (fun m sl => m.set sl.1 sl.2) (List.replicate n 0), a.2))),
@@ -409,5 +450,28 @@ def projectS (pool : List GVec) (g : GVec) : GVec × Pos :=
   let k := BPair.listPrim (BPair.listContent k0) k0
   (gtrim (combo pool (k.take pool.length)),
    posOfSucc (BPair.marginN (getAt BPair.unit k pool.length) - 1))
+
+/-- A projection at its reduced representative: the coordinates
+and the clearing divided at their shared count, one value at the
+homogeneity principle. -/
+def reducePr (p : GVec × Pos) : GVec × Pos :=
+  let k := BPair.sharedCount (p.1.flatMap (fun v => v.coords)) p.2
+  (p.1.map (fun v => ⟨v.content, BPair.listPrim k v.coords⟩),
+   posOfSucc (posVal p.2 / k - 1))
+
+/-- The projection onto the fused span at its groups, the ends'
+weight lists' grading orthogonal (`fusedGroups`): each occupied
+group's Gram-dual solve at its own clearing, the vector the groups'
+solves each scaled by the further groups' clearings at the
+clearings' product, reduced. -/
+def projectGroups (groups : List (List GVec)) (g : GVec) : GVec × Pos :=
+  let prs := (groups.map (fun pool => projectS pool g)).filter (fun p =>
+    p.1.length != 0)
+  let c := prs.foldl (fun acc p => acc * p.2) Pos.one
+  reducePr ((List.range prs.length).foldl (fun acc i =>
+    let p := getAt ([], Pos.one) prs i
+    let others := (List.range prs.length).foldl (fun a j =>
+      if j == i then a else a * (getAt ([], Pos.one) prs j).2) Pos.one
+    gadd acc (gscale (BPair.ofPos others) p.1)) [], c)
 
 end slotpower

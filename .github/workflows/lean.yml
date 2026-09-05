@@ -17,12 +17,14 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Two Lean workers (Lake schedules module builds on the Lean
-    # task pool): the heaviest modules' kernel checks peak near
-    # 9 GB of resident memory, so one worker per core would
-    # oversubscribe the hosted runner's 16 GB.
+    # One Lean worker (Lake schedules module builds on the Lean
+    # task pool): the heaviest modules' kernel checks each peak
+    # near 8 GB of resident memory, so two at once would sit at
+    # the hosted runner's 16 GB and one per core would oversubscribe
+    # it several times over.  The build runs serially at the sum of
+    # the modules' times.
     env:
-      LEAN_NUM_THREADS: "2"
+      LEAN_NUM_THREADS: "1"
     steps:
       - uses: actions/checkout@v5
 

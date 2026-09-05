@@ -206,6 +206,46 @@ example : pairpencil.pencilRead (data (.B 0)) square 40 2
       inertia.mkSplit 2 (matAdd (inertia.matScaleB (BPair.ofNat 10) (idMat 2))
         (winM (.B 0))))] := by decide +kernel
 
+/-! The member's vertex lists are unstated, so the term's entries
+read the loop clause: the spinor loop's own entry the count one at
+the loop labels read off the boundary, the entry doubled is
+refused at the entry conjunct with the symmetry, the cap and the
+support standing, and at the clearing two the read passes with the
+gram and the member doubled together and refuses with the gram
+doubled alone. -/
+
+private def winMDbl : Mat := [[u, u], [u, ⟨3, 1⟩]]
+
+example : pairpencil.loopLabel (data (.B 0)) square sqPlaq
+      (List.replicate 4 (ground.getAt (data (.B 0)).unit (winLabels (.B 0)) 0))
+      = some (ground.getAt (data (.B 0)).unit (winLabels (.B 0)) 0)
+    ∧ pairpencil.loopLabel (data (.B 0)) square sqPlaq
+      (carrier.unitConf (data (.B 0)) square) = some (data (.B 0)).unit
+    ∧ pairpencil.termEntry (data (.B 0)) square
+      ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) sqPlaq
+      (carrier.unitConf (data (.B 0)) square) [] (carrier.unitConf (data (.B 0)) square) []
+      = none
+    ∧ pairpencil.entriesRead (data (.B 0)) square 2
+      ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) 1 (idMat 2) sqPlaq
+      (winM (.B 0))
+    ∧ ¬ pairpencil.entriesRead (data (.B 0)) square 2
+      ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) 1 (idMat 2) sqPlaq winMDbl
+    ∧ pairpencil.entriesRead (data (.B 0)) square 2
+      ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) 2
+      (inertia.matScaleB (BPair.ofNat 2) (idMat 2)) sqPlaq
+      (inertia.matScaleB (BPair.ofNat 2) (winM (.B 0)))
+    ∧ ¬ pairpencil.entriesRead (data (.B 0)) square 2
+      ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) 2
+      (inertia.matScaleB (BPair.ofNat 2) (idMat 2)) sqPlaq (winM (.B 0))
+    ∧ pairpencil.symmRead winMDbl
+    ∧ pairpencil.termSupport (data (.B 0)) square 2
+      ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) sqPlaq winMDbl
+    ∧ inertia.capAt winMDbl (inertia.matScaleB (BPair.ofNat 10) (idMat 2))
+      (inertia.mkSplit 2 (siteDatum (inertia.matScaleB (BPair.ofNat 10) (idMat 2))
+        winMDbl))
+      (inertia.mkSplit 2 (matAdd (inertia.matScaleB (BPair.ofNat 10) (idMat 2))
+        winMDbl)) := by decide +kernel
+
 /-! `Sp(3)`'s window at cutoff fifty-six: the first fundamental's
 floor `14` at the clearing thirty-two. -/
 

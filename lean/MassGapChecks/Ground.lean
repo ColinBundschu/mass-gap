@@ -1125,3 +1125,23 @@ example : ¬ ((Mon.mul (Mon.cst 2) (Mon.var 0)).exps
 exponents and part at the coefficient. -/
 example : ¬ ((Mon.mul (Mon.cst 2) (Mon.var 0)).coef
     = (Mon.mul (Mon.cst 3) (Mon.var 0)).coef) := by decide +kernel
+
+/-! The keyed store's memo read: a read stored over a key list reads
+back at a stored key and at a key off the store alike, decided and
+by its theorem, and a store holding a further value at a key reads
+that value, the store's contents the theorem's binder. -/
+
+example : keyAt (fun a b => a == b) (3 * 3) 3 ([1, 2, 3].map (fun s => (s, s * s))) = 9
+    ∧ keyAt (fun a b => a == b) (5 * 5) 5 ([1, 2, 3].map (fun s => (s, s * s))) = 25
+    ∧ keyAt (fun a b => a == b) (3 * 3) 3 [(3, 7)] = 7 := by decide
+example : keyAt (fun a b => a == b) (3 * 3) 3 ([1, 2, 3].map (fun s => (s, s * s))) = 3 * 3 :=
+  keyAt_memo (fun a b => a == b) (fun _ _ h => beqEqOf h) (fun s => s * s) 3 [1, 2, 3]
+example : keyAt (fun a b => a == b) (3 * 3) 3 [(1, 1), (3, 9)] = 3 * 3 :=
+  keyAt_store (fun a b => a == b) (fun _ _ h => beqEqOf h) (fun s => s * s) 3
+    [(1, 1), (3, 9)] (fun e he => by
+      cases he with
+      | head => rfl
+      | tail _ h2 =>
+        cases h2 with
+        | head => rfl
+        | tail _ h3 => exact nomatch h3)

@@ -2896,21 +2896,147 @@ theorem postSlopeV_w :
 
 The graded devices and the boundary seed's reads decided by kernel at
 the store's data, the derived-object reads at the stored values, and
-`certRead`'s conjuncts assembled from them. -/
+`certRead`'s conjuncts assembled from them; the two term profiles'
+box chains read one kernel task per piece, assembled at `chainK`'s
+own clause over the stated cut list, the kernel keeping every
+reduced subterm of one task until it closes. -/
 
 private theorem dPrePos : gradRead preV preE0n preE0d prePos := by
   decide +kernel
 
-private theorem dPreTerm :
-    gradRead preTermV preE0n preE0d preTerm := by decide +kernel
+private def preTermKCuts : List CPair := preTerm.lo :: preTerm.cuts ++ [preTerm.hi]
+private theorem preTermKP0 : pieceKeep preTermV preE0n preE0d preTerm.hi preTerm.hk
+    (ground.getAt 0 preTerm.mcaps 0) (ground.getAt stage.unitC preTermKCuts 0)
+    (ground.getAt stage.unitC preTermKCuts 1) := by decide +kernel
+private theorem preTermKP1 : pieceKeep preTermV preE0n preE0d preTerm.hi preTerm.hk
+    (ground.getAt 0 preTerm.mcaps 1) (ground.getAt stage.unitC preTermKCuts 1)
+    (ground.getAt stage.unitC preTermKCuts 2) := by decide +kernel
+private theorem preTermKP2 : pieceKeep preTermV preE0n preE0d preTerm.hi preTerm.hk
+    (ground.getAt 0 preTerm.mcaps 2) (ground.getAt stage.unitC preTermKCuts 2)
+    (ground.getAt stage.unitC preTermKCuts 3) := by decide +kernel
+private theorem preTermKP3 : pieceKeep preTermV preE0n preE0d preTerm.hi preTerm.hk
+    (ground.getAt 0 preTerm.mcaps 3) (ground.getAt stage.unitC preTermKCuts 3)
+    (ground.getAt stage.unitC preTermKCuts 4) := by decide +kernel
+private theorem preTermKP4 : pieceKeep preTermV preE0n preE0d preTerm.hi preTerm.hk
+    (ground.getAt 0 preTerm.mcaps 4) (ground.getAt stage.unitC preTermKCuts 4)
+    (ground.getAt stage.unitC preTermKCuts 5) := by decide +kernel
+private theorem preTermKP5 : pieceKeep preTermV preE0n preE0d preTerm.hi preTerm.hk
+    (ground.getAt 0 preTerm.mcaps 5) (ground.getAt stage.unitC preTermKCuts 5)
+    (ground.getAt stage.unitC preTermKCuts 6) := by decide +kernel
+private theorem preTermKP6 : pieceKeep preTermV preE0n preE0d preTerm.hi preTerm.hk
+    (ground.getAt 0 preTerm.mcaps 6) (ground.getAt stage.unitC preTermKCuts 6)
+    (ground.getAt stage.unitC preTermKCuts 7) := by decide +kernel
+private theorem preTermKShape :
+    profShape preTermV preTerm.K ∧ poly.unitTail (profBase preTermV) := by
+  decide +kernel
+private theorem preTermKChain :
+    chainK preTermV preE0n preE0d preTerm.hi preTerm.hk preTermKCuts preTerm.mcaps :=
+  ⟨preTermKP0, preTermKP1, preTermKP2, preTermKP3, preTermKP4, preTermKP5, preTermKP6,
+   trivial⟩
+private theorem dPreTerm : gradRead preTermV preE0n preE0d preTerm :=
+  ⟨preTermKShape.1, preTermKShape.2, preTermKChain⟩
 
 private theorem dPostPos :
     gradRead postSeg.jet preE0n preE0d postSeg.pos := by
   decide +kernel
 
-private theorem dPostTerm :
-    gradRead postTermV preE0n preE0d postSeg.term := by
+private def postTermKCuts : List CPair := postSeg.term.lo :: postSeg.term.cuts ++ [postSeg.term.hi]
+private theorem postTermKP0 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 0) (ground.getAt stage.unitC postTermKCuts 0)
+    (ground.getAt stage.unitC postTermKCuts 1) := by decide +kernel
+private theorem postTermKP1 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 1) (ground.getAt stage.unitC postTermKCuts 1)
+    (ground.getAt stage.unitC postTermKCuts 2) := by decide +kernel
+private theorem postTermKP2 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 2) (ground.getAt stage.unitC postTermKCuts 2)
+    (ground.getAt stage.unitC postTermKCuts 3) := by decide +kernel
+private theorem postTermKP3 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 3) (ground.getAt stage.unitC postTermKCuts 3)
+    (ground.getAt stage.unitC postTermKCuts 4) := by decide +kernel
+private theorem postTermKP4 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 4) (ground.getAt stage.unitC postTermKCuts 4)
+    (ground.getAt stage.unitC postTermKCuts 5) := by decide +kernel
+private theorem postTermKP5 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 5) (ground.getAt stage.unitC postTermKCuts 5)
+    (ground.getAt stage.unitC postTermKCuts 6) := by decide +kernel
+private theorem postTermKP6 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 6) (ground.getAt stage.unitC postTermKCuts 6)
+    (ground.getAt stage.unitC postTermKCuts 7) := by decide +kernel
+private theorem postTermKP7 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 7) (ground.getAt stage.unitC postTermKCuts 7)
+    (ground.getAt stage.unitC postTermKCuts 8) := by decide +kernel
+private theorem postTermKP8 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 8) (ground.getAt stage.unitC postTermKCuts 8)
+    (ground.getAt stage.unitC postTermKCuts 9) := by decide +kernel
+private theorem postTermKP9 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 9) (ground.getAt stage.unitC postTermKCuts 9)
+    (ground.getAt stage.unitC postTermKCuts 10) := by decide +kernel
+private theorem postTermKP10 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 10) (ground.getAt stage.unitC postTermKCuts 10)
+    (ground.getAt stage.unitC postTermKCuts 11) := by decide +kernel
+private theorem postTermKP11 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 11) (ground.getAt stage.unitC postTermKCuts 11)
+    (ground.getAt stage.unitC postTermKCuts 12) := by decide +kernel
+private theorem postTermKP12 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 12) (ground.getAt stage.unitC postTermKCuts 12)
+    (ground.getAt stage.unitC postTermKCuts 13) := by decide +kernel
+private theorem postTermKP13 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 13) (ground.getAt stage.unitC postTermKCuts 13)
+    (ground.getAt stage.unitC postTermKCuts 14) := by decide +kernel
+private theorem postTermKP14 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 14) (ground.getAt stage.unitC postTermKCuts 14)
+    (ground.getAt stage.unitC postTermKCuts 15) := by decide +kernel
+private theorem postTermKP15 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 15) (ground.getAt stage.unitC postTermKCuts 15)
+    (ground.getAt stage.unitC postTermKCuts 16) := by decide +kernel
+private theorem postTermKP16 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 16) (ground.getAt stage.unitC postTermKCuts 16)
+    (ground.getAt stage.unitC postTermKCuts 17) := by decide +kernel
+private theorem postTermKP17 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 17) (ground.getAt stage.unitC postTermKCuts 17)
+    (ground.getAt stage.unitC postTermKCuts 18) := by decide +kernel
+private theorem postTermKP18 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 18) (ground.getAt stage.unitC postTermKCuts 18)
+    (ground.getAt stage.unitC postTermKCuts 19) := by decide +kernel
+private theorem postTermKP19 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 19) (ground.getAt stage.unitC postTermKCuts 19)
+    (ground.getAt stage.unitC postTermKCuts 20) := by decide +kernel
+private theorem postTermKP20 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 20) (ground.getAt stage.unitC postTermKCuts 20)
+    (ground.getAt stage.unitC postTermKCuts 21) := by decide +kernel
+private theorem postTermKP21 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 21) (ground.getAt stage.unitC postTermKCuts 21)
+    (ground.getAt stage.unitC postTermKCuts 22) := by decide +kernel
+private theorem postTermKP22 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 22) (ground.getAt stage.unitC postTermKCuts 22)
+    (ground.getAt stage.unitC postTermKCuts 23) := by decide +kernel
+private theorem postTermKP23 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 23) (ground.getAt stage.unitC postTermKCuts 23)
+    (ground.getAt stage.unitC postTermKCuts 24) := by decide +kernel
+private theorem postTermKP24 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 24) (ground.getAt stage.unitC postTermKCuts 24)
+    (ground.getAt stage.unitC postTermKCuts 25) := by decide +kernel
+private theorem postTermKP25 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 25) (ground.getAt stage.unitC postTermKCuts 25)
+    (ground.getAt stage.unitC postTermKCuts 26) := by decide +kernel
+private theorem postTermKP26 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 26) (ground.getAt stage.unitC postTermKCuts 26)
+    (ground.getAt stage.unitC postTermKCuts 27) := by decide +kernel
+private theorem postTermKP27 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 27) (ground.getAt stage.unitC postTermKCuts 27)
+    (ground.getAt stage.unitC postTermKCuts 28) := by decide +kernel
+private theorem postTermKP28 : pieceKeep postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk
+    (ground.getAt 0 postSeg.term.mcaps 28) (ground.getAt stage.unitC postTermKCuts 28)
+    (ground.getAt stage.unitC postTermKCuts 29) := by decide +kernel
+private theorem postTermKShape :
+    profShape postTermV postSeg.term.K ∧ poly.unitTail (profBase postTermV) := by
   decide +kernel
+private theorem postTermKChain :
+    chainK postTermV preE0n preE0d postSeg.term.hi postSeg.term.hk postTermKCuts postSeg.term.mcaps :=
+  ⟨postTermKP0, postTermKP1, postTermKP2, postTermKP3, postTermKP4, postTermKP5, postTermKP6, postTermKP7, postTermKP8, postTermKP9, postTermKP10, postTermKP11, postTermKP12, postTermKP13, postTermKP14, postTermKP15, postTermKP16, postTermKP17, postTermKP18, postTermKP19, postTermKP20, postTermKP21, postTermKP22, postTermKP23, postTermKP24, postTermKP25, postTermKP26, postTermKP27, postTermKP28,
+   trivial⟩
+private theorem dPostTerm : gradRead postTermV preE0n preE0d postSeg.term :=
+  ⟨postTermKShape.1, postTermKShape.2, postTermKChain⟩
 
 private theorem dSlope :
     gradRead postSlopeV preE0n preE0d finSeam.cert := by

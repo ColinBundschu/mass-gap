@@ -252,6 +252,24 @@ def tensorH (v w : HVec) : HVec :=
             acc)
       (monos.map (fun _ => BPair.unit))).map BPair.norm⟩
 
+/-- The tensor read at the target's own enumeration: each monomial
+of the summed content splits at the first factor's degree and
+reads its two parts' coordinates' product, a part off its factor's
+content the sum's unit — `tensorH`'s fold read from the target,
+one pass over the target's arrangements (`lem:dualread`(ii)'s split
+at the first factor's degree). -/
+def tensorS (v w : HVec) : HVec :=
+  let mu := List.zipWith (fun a b => a + b) v.content w.content
+  let k := sumNat v.content
+  ⟨mu, (monomialsAt mu).map (fun m =>
+    let m1 := m.take k
+    let m2 := m.drop k
+    if content mu.length m1 == v.content
+        && content mu.length m2 == w.content then
+      (ground.getAt BPair.unit v.coords (rankOf m1 v.content)
+        * ground.getAt BPair.unit w.coords (rankOf m2 w.content)).norm
+    else BPair.unit)⟩
+
 /-- The graded pairing: the coordinate fold within one content
 summand, two distinct contents pairing at the sum's unit —
 `con:places`' grading orthogonality read on the carrier. -/

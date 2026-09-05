@@ -191,4 +191,17 @@ theorem thIx12_pin :
     idx (tabulate (dataA 2) 12) thetaG 12 = thIx12 := by
   rw [← idxA_eq]; decide +kernel
 
+/-- The theta window at two letters, cutoff 26: the two plaquette
+loops, the hexagon, and the join at the adjoint on the shared link
+with the fundamental on the six further links, its two trivalent
+vertices at one member each. -/
+def thIx26 : List (List places.Shape) :=
+  [[[0, 0], [0, 0], [0, 0], [1, 0], [1, 0], [1, 0], [1, 0]],
+   [[1, 0], [1, 0], [1, 0], [0, 0], [1, 0], [1, 0], [1, 0]],
+   [[1, 0], [1, 0], [1, 0], [1, 0], [0, 0], [0, 0], [0, 0]],
+   [[1, 0], [1, 0], [1, 0], [2, 0], [1, 0], [1, 0], [1, 0]]]
+
+theorem thIx26_pin : idx (dataA 2) thetaG 26 = thIx26 := by
+  rw [← idxA_eq]; decide +kernel
+
 end carrier

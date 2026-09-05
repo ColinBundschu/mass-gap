@@ -698,11 +698,8 @@ theorem invCount_relist {L : Type} [DecidableEq L] (F : Data L)
 
 /-- Two configurations' equality at the interface's label equality,
 the index's own read. -/
-def eqConf {L : Type} (F : Data L) : List L → List L → Bool
-  | [], [] => true
-  | [], _ :: _ => false
-  | _ :: _, [] => false
-  | a :: s, b :: t => F.eqL a b && eqConf F s t
+def eqConf {L : Type} (F : Data L) : List L → List L → Bool :=
+  ground.listEqBy F.eqL
 
 /-- A configuration's membership in a stated family at the
 interface equality, the fold over the members. -/

@@ -1,59 +1,71 @@
 import MassGap.Lap
 import MassGap.Labels
 import MassGap.Slotpower
+import MassGap.Mixedinv
 /-!
-`con:fiber` — the two-plaquette fiber, and the carrier's fibers in
-the presentation.  The theta-graph's invariant fiber is the span of
-the permutation-presentation states in the two plaquette variables,
-the holonomies read as link matrices at the keys `0` and `1`
+`con:fiber` — the two-plaquette fiber, and the carrier's fibers in the
+presentation. The theta-graph's invariant fiber is the span of the
+permutation-presentation states in the two plaquette variables, the
+holonomies read as link matrices at the keys `0` and `1`
 (`con:states`' `Comb` at those factor lists), and its pairing is
-`prop:algebra`'s identity through the presentation Gram, the
-fiber's own read (`pairP` at `prop:wg`'s `pairFull`); the graph's
-operator data are `con:twoplaq`'s displays, the recorded consumer.
+`prop:algebra`'s identity through the presentation Gram, the fiber's
+own read (`pairP` at `prop:wg`'s `pairFull`); the graph's operator
+data are `con:twoplaq`'s displays, the recorded consumer.
 
-The carrier's fibers (`def:carrier`) read in the presentation at
-the links' variables, the fiber's stated list the vertex lists'
-product and its pairing the presentation Gram of its states.  A
-link's label enters at its word pair (`slotpower.wordPair`), the
-block inside the slot power at those degrees (`con:slotpower`); at
-a vertex the row ends pair against the column ends (`linkEnds`,
-the incident links' row and column ends at the vertex, an incoming
-link's read at the row and column ends exchanged).  A vertex list
-is a `VList`: per end its word pair, the members as graded vectors
-at the vertex's slots (`slotpower.GVec`), and the members' shared
-clearing; its Gram is the members' coordinate pairings at the
-clearing squared, the pair at its reduced representative
-(`listGram`, `reduceGram`).  A vertex of two ends reads its block's
-Gram-dual coevaluation, the through pairing's projection to the
-fused span (`twoEndList` at `slotpower.throughPair` and
-`slotpower.projectS`), its self-pairing the block's count
-(`twoEndGram` the count's own read at an interface's label data,
-the interface's Gram where the list is unstated).  A further vertex at the symbolic
-tag — its row-end count at or below the fundamental count
-(`lem:mixedinv`), the row and column counts matched, every incident
-label once at a separated Casimir value in the mixed power at its
-word pair (`interpValid` over the power's multiplicity family at
-the label calculus's rows and counts) — reads its wirings, the
-place permutations at the row ends against the column ends, each
-link's factors projected to the label's block at the link
+The carrier's fibers (`def:carrier`) read in the presentation at the
+links' variables, the fiber's stated list the vertex lists' product
+and its pairing the presentation Gram of its states. A link's label
+enters at its word pair (`slotpower.wordPair`), the block inside the
+slot power at those degrees (`con:slotpower`); at a vertex the row
+ends pair against the column ends (`linkEnds`, the incident links' row
+and column ends at the vertex, an incoming link's read at the row and
+column ends exchanged). A vertex list is a `VList`: per end its word
+pair, the members in their presentation (`Members`: the collected
+wirings' coefficient rows at the symbolic tag, a stated list of graded
+vectors at the vertex's slots otherwise, `slotpower.GVec`), and the
+members' shared clearing; its Gram is the members' Gram at the
+clearing squared, the pair at its reduced representative (`listGram`,
+`reduceGram`). A vertex of two ends reads its block's Gram-dual
+coevaluation, the through pairing's projection to the fused span group
+by group at the ends' weight lists (`twoEndList` at
+`slotpower.throughPair` and `slotpower.projectGroups`), its
+self-pairing the block's count (`twoEndGram` the count's own read at
+an interface's label data, the interface's Gram where the list is
+unstated). A further vertex at the symbolic tag — its row-end count at
+or below the fundamental count (`lem:mixedinv`), the row and column
+counts matched, every incident label once at a separated Casimir value
+in the mixed power at its word pair (`interpValid` over the power's
+multiplicity family at the label calculus's rows and counts) — reads
+its wirings, the place permutations at the row ends against the column
+ends, each link's factors projected to the label's block at the link
 Casimir's interpolant through the mixed power's occupied Casimir
-values (`linkCas`, `prop:lap`'s insertion display `d_f`-cleared on
-a vertex wiring; `projLink` the interpolant's factors; `con:units`'
+values (`linkCas`, `prop:lap`'s insertion display `d_f`-cleared on a
+vertex wiring; `projLink` the interpolant's factors; `con:units`'
 interpolant), collected at the wirings' Gram, the slot power's
-coordinate pairing at the cycle counts (`vpair`, `lem:mixedinv`'s
-Gram; `collectGram` the joined-collection read at the Gram's
-leading minors), each collected wiring a graded vector at the
-vertex's slots (`vcombG`): `vertListSym`, the members at the
-interpolants' clearings' product.  A further vertex at the direct
-tag, or at a label off the interpolant's reach, reads the kernel
-list of the stacked raisings over the fused span at its unit
-weight (`vertListDirect` at `slotpower.fusedSpan` and
-`slotpower.kernelAt`, `def:blockcount`'s carrier at `def:elim`'s
-back solve, each member at its primitive representative in the
-slot power's coordinates, `slotpower.gprim`).
-`vertListA` is the label calculus's vertex list at the fundamental
-count, the two-end read then the tag's route, and `vertGramA` its
-Gram.
+coordinate pairing at the cycle counts (`mixedinv.cycleGram` at the
+states' coefficient rows, `collectGram` the joined-collection read at
+the Gram's leading minors): `vertListSym`, the members the collected
+rows over the place permutations (`Members.wirings`, their graded
+vectors the rows' combinations over the wirings' table at
+`Members.list` and their Gram the rows against the cycle-count Gram at
+`Members.gram`) at the interpolants' clearings' product. A further
+vertex at the direct tag, or at a label off the interpolant's reach,
+reads the kernel list of the stacked raisings over the fused span at
+its unit weight (`vertListDirect` at `slotpower.fusedSpan` and
+`slotpower.kernelAt`, `def:blockcount`'s carrier at `def:elim`'s back
+solve, each member at its primitive representative in the slot power's
+coordinates, `slotpower.gprim`). `vertListA` is the label calculus's
+vertex list at the fundamental count, the two-end read then the tag's
+route, and `vertGramA` its Gram; `Members.letters` reads the slot
+power's letter count at the members. The magnetic read's link tier
+sits here as well: a link's invariant list at its combined slots
+with its Gram (`linkList`, the place permutations' wirings at the
+cycle-count Gram where the undaggered and daggered counts match at
+or below the fundamental count and the stacked raisings' kernel
+list at the unit weight beyond) and the Gram-dual coevaluation's
+weights, the adjugate against the determinant (`coevW`,
+`lem:dualread`(i)); the window-level contraction is
+`thm:pairpencil`'s magnetic field.
 -/
 
 namespace fiber
@@ -115,15 +127,16 @@ private def vcollect (c : VComb) : VComb :=
   c.foldl (fun acc e =>
     ground.joinBy (fun a b => a == b) (fun y x => (y + x).norm) e.1 e.2 acc) []
 
+/-- A state's coefficient at a wiring, the key's fold over the
+state's entries. -/
+def coefAt (w : List Nat) (v : VComb) : BPair :=
+  v.foldl (fun acc e => if e.1 == w then acc + e.2 else acc) BPair.unit
+
 /-- Two states one value at every wiring's coefficient, each key's
 fold read across both. -/
 def vOneValue (u v : VComb) : Bool :=
   let keys := (u ++ v).map Prod.fst
-  keys.all (fun w =>
-    ((u.foldl (fun acc e => if e.1 == w then acc + e.2 else acc)
-      BPair.unit).oneValue
-      (v.foldl (fun acc e => if e.1 == w then acc + e.2 else acc)
-        BPair.unit)))
+  keys.all (fun w => (coefAt w u).oneValue (coefAt w v))
 
 /-- The link Casimir's insertion on a vertex wiring, `2 d_f`-cleared
 (`prop:lap`'s display at the link's row and column ends at the
@@ -212,15 +225,10 @@ def projVertex (d : Nat) (es : List (Shape × Bool)) (v : VComb) : VComb :=
   (List.zipWith (fun e ends => (e, ends)) es (linkEnds d es 0 0)).foldl
     (fun acc p => projLink d p.2.1 p.2.2 p.1.1 acc) v
 
-/-- Two vertex states' pairing at the mixed power's coordinate
-pairing: per wiring pair the cycle count of the composite against
-the second's inverse permutation, one factor `d_f` per cycle
-(`lem:mixedinv`'s Gram), at the coefficients' products. -/
-private def vpair (d k : Nat) (u v : VComb) : BPair :=
-  u.foldl (fun acc e => v.foldl (fun acc2 f =>
-    acc2 + e.2 * f.2 * BPair.ofNat (Nat.pow d
-      (places.cyclesOf (places.expo e.1 (places.invPerm k f.1))).length))
-    acc) BPair.unit
+/-- A vertex state's coefficient row over the place permutations,
+each key's fold at its permutation's position. -/
+private def rowOf (k : Nat) (v : VComb) : List BPair :=
+  (places.perms k).map (fun σ => coefAt σ v)
 
 /-- The collection at a Gram: the members joined one per refusal,
 a member refusing exactly where the collected list's Gram with it
@@ -236,49 +244,75 @@ private def collectGram (N : elim.Mat) : List Nat :=
 the second member divided at their shared content, positive at the
 second member's own, one value at the homogeneity principle. -/
 private def reduceGram (g : elim.Mat × Pos) : elim.Mat × Pos :=
-  let k := Nat.gcd (BPair.listContent (g.1.flatMap (fun r => r))) (posVal g.2)
+  let k := BPair.sharedCount (g.1.flatMap (fun r => r)) g.2
   (g.1.map (BPair.listPrim k), ground.posOfSucc (posVal g.2 / k - 1))
 
 set_option genInjectivity false in
+/-- A vertex list's members in their presentation: the collected
+wirings' coefficient rows over the place permutations at the
+vertex's signature (`con:fiber`'s symbolic tag), or a stated list
+of graded vectors. -/
+inductive Members
+  | wirings (d : Nat) (sig : List Bool) (k : Nat) (rows : List (List BPair))
+  | vecs (l : List slotpower.GVec)
+
+/-- The members as graded vectors: the rows' combinations over the
+wirings' table, one tensor per place permutation, or the stated
+list. -/
+def Members.list : Members → List slotpower.GVec
+  | .wirings d sig k rows =>
+    let table := (places.perms k).map (slotpower.wiringG d sig)
+    rows.map (slotpower.combo table)
+  | .vecs l => l
+
+/-- The members' Gram: the rows against the wirings' cycle-count
+Gram, the slot power's coordinate pairing at the cycle counts
+(`lem:mixedinv`; `mixedinv.cycleGram`), or the stated list's
+coordinate pairings. -/
+def Members.gram : Members → elim.Mat
+  | .wirings d _ k rows =>
+    (elim.gramAt (mixedinv.cycleGram d k) rows).map (fun r =>
+      r.map BPair.norm)
+  | .vecs l => slotpower.gramOf l
+
+/-- The slot power's letter count at the members: the wirings'
+stated count, and at a stated list the coordinate families' width,
+a content one occupancy per letter. -/
+def Members.letters : Members → Nat
+  | .wirings d _ _ _ => d
+  | .vecs l => (getAt (⟨[], []⟩ : blockcount.HVec) (getAt [] l 0) 0).content.length
+
+set_option genInjectivity false in
 /-- A vertex list in the ends' slot power (`con:slotpower`): per end
-its word pair, the members as graded vectors at the vertex's slots,
-and the members' shared clearing. -/
+its word pair, the members in their presentation, and the members'
+shared clearing. -/
 structure VList where
   ends : List (Nat × Nat)
-  members : List slotpower.GVec
+  members : Members
   clear : Pos
 
-/-- The Gram of a vertex list: the members' coordinate pairings at
-the clearing squared, the pair at its reduced representative. -/
+/-- The Gram of a vertex list: the members' Gram at the clearing
+squared, the pair at its reduced representative. -/
 def listGram (l : VList) : elim.Mat × Pos :=
-  reduceGram (slotpower.gramOf l.members,
+  reduceGram (l.members.gram,
     ground.posOfSucc (posVal l.clear * posVal l.clear - 1))
 
 /-- The ends' word pairs at the fundamental count. -/
 def endPairs (d : Nat) (es : List (Shape × Bool)) : List (Nat × Nat) :=
   es.map (fun e => slotpower.wordPair d e.1)
 
-/-- A wiring combination as a graded vector at the vertex's slots,
-each wiring's tensor at its coefficient, the tensors read off the
-place permutations' table (`slotpower.wiringG` once per
-permutation). -/
-def vcombG (k : Nat) (table : List slotpower.GVec) (v : VComb) : slotpower.GVec :=
-  v.foldl (fun acc e =>
-    slotpower.gadd acc (slotpower.gscale e.2
-      (ground.getAt [] table (places.idxOf e.1 (places.perms k))))) []
-
 /-- The vertex list at the symbolic tag: the wirings' projections
-collected at their Gram, each as a graded vector, at the
-interpolants' clearings' product. -/
+as coefficient rows over the place permutations, collected at their
+Gram, at the interpolants' clearings' product. -/
 def vertListSym (d : Nat) (es : List (Shape × Bool)) : VList :=
   let ends := linkEnds d es 0 0
   let k := ground.sumNat (ends.map (fun e => e.1.length))
-  let imgs := (places.perms k).map (fun σ => projVertex d es [(σ, BPair.ofNat 1)])
-  let N := imgs.map (fun u => imgs.map (fun v => (vpair d k u v).norm))
-  let kept := collectGram N
+  let rows := (places.perms k).map (fun σ =>
+    rowOf k (projVertex d es [(σ, BPair.ofNat 1)]))
+  let kept := collectGram (elim.gramAt (mixedinv.cycleGram d k) rows)
   let D := es.foldl (fun acc e => acc * BPair.marginN (interpClear d e.1)) 1
-  let table := (places.perms k).map (slotpower.wiringG d (slotpower.vertexSig d es))
-  ⟨endPairs d es, kept.map (fun i => vcombG k table (ground.getAt [] imgs i)),
+  ⟨endPairs d es,
+    .wirings d (slotpower.vertexSig d es) k (kept.map (ground.getAt [] rows)),
     ground.posOfSucc (D - 1)⟩
 
 /-- The vertex list at the direct tag: the stacked raisings' kernel
@@ -288,20 +322,21 @@ there, the sign the back solve's own. -/
 def vertListDirect (d : Nat) (es : List (Shape × Bool)) : VList :=
   let pool := slotpower.fusedSpan d es
   ⟨endPairs d es,
-    (slotpower.kernelAt d (slotpower.vertexSig d es) pool).map (fun k =>
-      slotpower.gprim (slotpower.gtrim (slotpower.combo pool k))),
+    .vecs ((slotpower.kernelAt d (slotpower.vertexSig d es) pool).map (fun k =>
+      slotpower.gprim (slotpower.gtrim (slotpower.combo pool k)))),
     Pos.one⟩
 
 /-- The vertex list of two ends: the through pairing's projection to
-the fused span, the block's coevaluation, at the projection's
-clearing against the pairing's. -/
+the fused span, the solve group by group at the ends' weight
+lists, the block's coevaluation, at the projection's clearing
+against the pairing's. -/
 def twoEndList (d : Nat) (e1 e2 : Shape × Bool) : VList :=
   let tp := slotpower.throughPair d e1 e2
   match tp.1 with
-  | [] => ⟨endPairs d [e1, e2], [], Pos.one⟩
+  | [] => ⟨endPairs d [e1, e2], .vecs [], Pos.one⟩
   | _ :: _ =>
-    let pr := slotpower.projectS (slotpower.fusedSpan d [e1, e2]) tp.1
-    ⟨endPairs d [e1, e2], [pr.1], tp.2 * pr.2⟩
+    let pr := slotpower.projectGroups (slotpower.fusedGroups d [e1, e2]) tp.1
+    ⟨endPairs d [e1, e2], .vecs [pr.1], tp.2 * pr.2⟩
 
 /-- The vertex list at the label calculus: an untouched vertex the
 scalar one, one end the vacant list, two ends the coevaluation,
@@ -311,8 +346,8 @@ and every incident label at a valid interpolant, and the direct
 tag's kernel list otherwise. -/
 def vertListA (d : Nat) (es : List (Shape × Bool)) : VList :=
   match es with
-  | [] => ⟨[], [slotpower.gunit d], Pos.one⟩
-  | [e] => ⟨endPairs d [e], [], Pos.one⟩
+  | [] => ⟨[], .vecs [slotpower.gunit d], Pos.one⟩
+  | [e] => ⟨endPairs d [e], .vecs [], Pos.one⟩
   | [e1, e2] => twoEndList d e1 e2
   | _ :: _ :: _ :: _ =>
     let ends := linkEnds d es 0 0
@@ -326,5 +361,32 @@ def vertListA (d : Nat) (es : List (Shape × Bool)) : VList :=
 /-- The vertex Gram at the label calculus, the vertex list's own. -/
 def vertGramA (d : Nat) (es : List (Shape × Bool)) : elim.Mat × Pos :=
   listGram (vertListA d es)
+
+/-- The invariant list of the mixed power at a slot signature with
+its Gram, a link's list at its combined slots (`con:fiber`'s
+magnetic read): the place permutations' wirings at the cycle-count
+Gram where the undaggered and daggered counts match at or below
+the fundamental count (`lem:mixedinv`), and beyond, the stacked
+raisings' kernel list at the unit weight over the power's
+unit-weight monomials (`def:blockcount`; `con:slotpower`), each
+member at its primitive representative, with its coordinate
+Gram. -/
+def linkList (d : Nat) (sig : List Bool) : List slotpower.GVec × elim.Mat :=
+  let ku := (slotpower.upSlots sig).length
+  let kd := (slotpower.downSlots sig).length
+  if ku == kd && ku ≤ d then
+    ((places.perms ku).map (slotpower.wiringG d sig), mixedinv.cycleGram d ku)
+  else
+    let pool := ((places.allMon d sig.length).filter (slotpower.unitWeight d sig)).map
+      (fun m => slotpower.gOfMons d [(m, BPair.ofNat 1)])
+    let mems := (slotpower.kernelAt d sig pool).map (fun k =>
+      slotpower.gprim (slotpower.gtrim (slotpower.combo pool k)))
+    (mems, slotpower.gramOf mems)
+
+/-- The Gram-dual coevaluation's weights at an invariant list's
+Gram: the adjugate against the determinant
+(`lem:dualread`(i)'s display at `def:elim`'s adjugate). -/
+def coevW (G : elim.Mat) : elim.Mat × BPair :=
+  (elim.adjO elim.detD BPair.swap G, elim.detD G)
 
 end fiber
