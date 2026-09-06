@@ -240,11 +240,7 @@ This is the manuscript’s claimed Hamiltonian replacement for OS reconstruction
 
 What the theory *determines* is the contact pair $(3,H_r)$ as two divisor reads: the order count $3=1+2$ (the mass point's simple pole plus the $\iota$-symmetrized weight's two base orders, off the renewal witness $G_0=z+c_1zG_0$, `thm:channeldiv`) read at the base $c_1$, and the ruler excess $H_r$ (the tower's generating object against the harmonic ruler, an exact finitely-supported polynomial identity, `thm:walkresidue`). The exponential form is those coordinates read against the classical rulers $(\ln c_1,1)$ described as "the axes the usual formulation measures with" (`rem:dictionary`). Nothing is fitted and nothing converges: the harmonic number arrives as the value at $1$ of an exact polynomial with the geometric derivative, forced by the tower pairing $\varphi_m=r/(m+r)$. It is not an energy: the contact pair is two counts of the walk's data, free of unit and of scale (`thm:unitschain`), the walk's mass point an isolated pole below its band at base two and at the band's edge at base one (`thm:channeldiv`). The quantity that restores as an energy is a window cut's edge, $`E_0\,\kappa\,C_2(\mathrm{adj})`$ at the edge's pair $\kappa$ (`rem:dictionary`, “The gap”).
 
-### "The Lean formalization doesn't cover the continuum theorems. So what does it actually prove?"
-
-The status section further up this readme is the most accurate and current answer to this question.
-
-### "Has anyone actually verified this? One reviewer finding no error is not verification."
+### "Has anyone actually verified this?"
 
 This work has not been independently verified. The current release has a reproducible Lean build and an empty axiom report for the declarations listed above. That establishes derivability of the encoded statements. It does not establish that the remaining TeX has been transcribed, that the dictionary faithfully states conventional Yang-Mills, or that the argument has survived expert review.
 
