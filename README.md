@@ -84,7 +84,7 @@ Long-term future work:
 The snapshot was taken from the development repository at commit
 `3f7c59800ec6b6a4395507a8ecf4485ed15893b2` (2026-09-05).
 
-## Proof Methodology and Failure Criteria
+## Proof Methodology
 
 Every Lean declaration depends solely on the empty axiom set. Specifically, this means no
 `propext`, `Quot.sound`, `Classical.choice`, `sorryAx`, and no native
@@ -94,6 +94,8 @@ imports outside `MassGap` and `MassGapChecks`. No declaration is
 `noncomputable`, `partial`, `unsafe`, `opaque`, or an `axiom`; every object
 computes by kernel reduction. Every public `Prop`-valued definition comes with its `Decidable` instance beside it. The batteries in
 [lean/MassGapChecks/](lean/MassGapChecks/) decide directly by kernel `decide`.
+
+## Deliverables and Failure Criteria
 
 By construction, everything proven in Lean is mathematically correct for what it states (although emphatically one must be careful reading significance from what is proved). However the same cannot be said for claims in the TeX that are not proven in Lean, errors in mapping between claims in the TeX and the corresponding Lean proofs, or interpretations of the physical relevance of what the Lean proves. If it becomes clear that a fundamental contradiction, inconsistency, or shortfall dooms the top-level proof, then this repository will serve as a constructive tombstone to where this approach failed and why.
 
