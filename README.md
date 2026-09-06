@@ -72,9 +72,8 @@ Open (no Lean yet):
   `momentfold.datum_close`, `thm:groundreads`(vii)), the corner
   cell's positive extent with the contact end interior, and each
   cell's edge read at a word image, joined to `main.clauseIII`.
-- **The reverse correspondence walk** (every TeX label reached
-  from a Lean namespace), which the linter records as landing at
-  the definitional spine's completion.
+- **The reverse correspondence walk**: every TeX label reached
+  from a Lean namespace.
 
 Long-term future work:
 
