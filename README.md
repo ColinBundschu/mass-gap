@@ -21,7 +21,7 @@ $E_7$, and $E_8$ once each.
 Formalized:
 
 - **Clause (i), gap positivity, is closed for every member at its floor window**:
-  `main.clauseI_all` proves both committed chain reads and the required tie throughout the classification. The series cases are parametric in rank at the diagonal windows; $D_4$’s four-loop window and $E_8$’s coupled window are handled separately.  The clause's window-level interface is landed beside it: the pencil interface at the window list (`pairpencil.pencilRead`: the order tie, the electric member, the gram's block read and the magnetic member's terms at their caps and supports), the gram's block content as each index member's fiber presentation Gram (`pairpencil.gramBlockRead`), the presentation carrier of the fibers' vertex lists (`fusion.Data.vertList`, with the Gram its derived read), and the fibering's index action with `lem:fiberdec`'s commuting datum at the electric member as a theorem at every region admitting the action (`fiberdec.commRead_slotE_dataA`).
+  `main.clauseI_all` proves both committed chain reads and the required tie throughout the classification. The series cases are parametric in rank at the diagonal windows; $D_4$'s four-loop window and $E_8$'s coupled window are handled separately.  The clause's window-level interface is landed beside it: the pencil interface at the window list (`pairpencil.pencilRead`: the order tie, the electric member, the gram's block read and the magnetic member's terms at their caps and supports), the gram's block content as each index member's fiber presentation Gram (`pairpencil.gramBlockRead`), the presentation carrier of the fibers' vertex lists (`fusion.Data.vertList`, with the Gram its derived read), and the fibering's index action with `lem:fiberdec`'s commuting datum at the electric member as a theorem at every region admitting the action (`fiberdec.commRead_slotE_dataA`).
 - **Clause (ii) is closed at both of its halves**: `main.clauseII_all` proves the contact pair $(3,H_r)$ throughout the classification (the order count, base collection, excess-harmonic value, and occupancy families parametrically over every residue and rank; the fixed members by kernel `decide` in [lean/MassGapChecks/Main.lean](lean/MassGapChecks/Main.lean)), and the window half, that at every window and coupling whose cut names an edge the edge is a located root of the window pencil's symbol attained at a word image with the two moments at equality and the first positive, is `attained.attained_at` with the root read `divisorid.rootIff`, stated at the TeX's own quantifier.
 - **Clause (iii)'s member layer is closed for every member**: `main.clauseIII` is `lem:corner`'s cell-floor datum at the member's derived residue (the member's tail scale, its endpoint key, and the residue-one and transported cells), and `main.clauseIII_all` holds it at the whole domain through the one corner disconjugacy certificate transported across the residues (`lem:cornerpivot`(vi)).
 
@@ -205,7 +205,7 @@ in the abelian theory (`prop:anchor`). Thus the two ingredients that produce the
 
 The answer is a reconstruction, not a claim that the lattice correlation functions become exactly covariant at some fixed spacing. At finite spacing the lattice families remain $B_d$-invariant and contain genuine degree-four anisotropic terms. The construction does not discard or deny those terms in the lattice data.
 
-Instead, the lattice system acts as an instrument that locates spectral data: masses, weights, and the quadratic cone. The reconstructed relativistic families are then defined on the spectral side, as weight folds over the located roots at the fiber’s chord, evaluated at the cone’s coordinates (`thm:reconstruct`(ii), `lem:cone`). The key statement is therefore the factorization
+Instead, the lattice system acts as an instrument that locates spectral data: masses, weights, and the quadratic cone. The reconstructed relativistic families are then defined on the spectral side, as weight folds over the located roots at the fiber's chord, evaluated at the cone's coordinates (`thm:reconstruct`(ii), `lem:cone`). The key statement is therefore the factorization
 
 $$
 \text{lattice bracket data}
@@ -217,7 +217,7 @@ $$
 
 At degree two, `thm:restoration` item 1 gives an exact ring identity: the degree-two invariant rings of $B_d$ and $O(d)$ coincide, for every number of arguments and in every dimension. Consequently, the cone through which the reconstruction factors is exactly isotropic; there is no degree-two anisotropic form that could deform it. This ring identity alone would not establish covariance of the reconstructed families. What does the work is the additional factorization in `thm:reconstruct`: the reconstructed object depends on the located spectral data and the quadratic cone, not on the higher-degree lattice invariants.
 
-The certified degree-four breaking therefore remains part of the comparison data. It controls the brackets within which the finite-spacing lattice instrument agrees with the reconstructed covariant object, but it is not an input to that object’s cone or covariance law. Likewise, the height's bracket at each scale controls the certified comparison width; it does not deform the covariant spectral point inside that bracket.
+The certified degree-four breaking therefore remains part of the comparison data. It controls the brackets within which the finite-spacing lattice instrument agrees with the reconstructed covariant object, but it is not an input to that object's cone or covariance law. Likewise, the height's bracket at each scale controls the certified comparison width; it does not deform the covariant spectral point inside that bracket.
 
 ### "Translations are the lattice's $\mathbb{Z}^d$. The Wightman axioms quantify over $\mathbb{R}^4$."
 
@@ -227,7 +227,7 @@ Time is the pencil's own and continuous through the Hamiltonian evolution. The l
 
 Because the construction is Hamiltonian. Osterwalder–Schrader reconstruction is a route from Euclidean measures to a Hamiltonian theory with a spectrum condition; this manuscript begins with the Hamiltonian structure and instead addresses the required axiomatic properties individually. The manuscript assigns those obligations as follows:
 
-* positivity to the families’ Gram reads (`thm:reconstruct`(iii));
+* positivity to the families' Gram reads (`thm:reconstruct`(iii));
 * the spectrum condition and positive gap to the cut and `thm:main`(i);
 * locality to exact equal-time commutativity (the algebra is commutative, `prop:algebra`) together with the propagation bracket at unequal times (`thm:groundreads`(vi));
 * covariance to the restoration and reconstruction statements above;
@@ -235,7 +235,7 @@ Because the construction is Hamiltonian. Osterwalder–Schrader reconstruction i
 * cyclicity to `lem:statespace` and uniqueness of the vacuum to the divisor count in `thm:SO`; and
 * nontriviality to the positive connected four-point floor in `lem:fourpoint`, which separates the reconstructed object from every generalized free field.
 
-This is the manuscript’s claimed Hamiltonian replacement for OS reconstruction; it is not itself an OS reconstruction from a Euclidean measure.
+This is the manuscript's claimed Hamiltonian replacement for OS reconstruction; it is not itself an OS reconstruction from a Euclidean measure.
 
 ### "$`c_1^3e^{-H_r}`$ smells like numerology because it has the harmonic numbers in an exponent. Is it even a computed energy?"
 
