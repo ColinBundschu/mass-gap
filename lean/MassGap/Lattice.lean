@@ -232,7 +232,7 @@ witness, the two composing to the identity below the count both
 ways and each keeping the range, and every boundary's image word
 is the moved position's plaquette at the cyclic reading — the
 action field's permutation of the plaquettes, read as the induced
-vertex map is (`fiberdec.endsRead`, `fiberdec.vertPermRead`). -/
+vertex map is (`vertIso`). -/
 def plaqPermRead (R : Region) (t : Nat → Nat) (rev : Nat → Bool)
     (pm pm' : Nat → Nat) : Prop :=
   ((List.range R.plaqs.length).all (fun q =>
@@ -245,20 +245,123 @@ instance (R : Region) (t : Nat → Nat) (rev : Nat → Bool)
     (pm pm' : Nat → Nat) : Decidable (plaqPermRead R t rev pm pm') :=
   inferInstanceAs (Decidable (_ = _))
 
-/-- The plaquette permutation read at a position below the count:
-the moved position and its witness's below the count, the two
-composing to the position both ways. -/
-theorem plaqPermRead_at (R : Region) (t : Nat → Nat) (rev : Nat → Bool)
-    (pm pm' : Nat → Nat) (h : plaqPermRead R t rev pm pm') (q : Nat)
-    (hq : q < R.plaqs.length) :
-    pm q < R.plaqs.length ∧ pm' q < R.plaqs.length
-      ∧ pm' (pm q) = q ∧ pm (pm' q) = q := by
-  have h1 := all_range_read _ h q hq
-  have h2 := andSplitB (andSplitB h1).1
-  have h3 := andSplitB h2.1
-  have h4 := andSplitB h3.1
-  exact ⟨of_decide_eq_true h4.1, of_decide_eq_true h4.2,
-    beqEqOf h3.2, beqEqOf h2.2⟩
+/-- The endpoint read of a link map between two regions at a
+reversal family: the moved link's tail and head are the vertex
+map's values at the link's own, exchanged where the traversal
+reverses. -/
+def endsMoved (R R' : Region) (t : Nat → Nat) (rev : Nat → Bool)
+    (v : Nat → Nat) : Prop :=
+  ground.pairIdxAll (fun l tl hd =>
+    (getAt 0 R'.tail (t l) == v (if rev l then hd else tl))
+      && (getAt 0 R'.head (t l) == v (if rev l then tl else hd)))
+    R.tail R.head 0 = true
+
+instance (R R' : Region) (t : Nat → Nat) (rev : Nat → Bool) (v : Nat → Nat) :
+    Decidable (endsMoved R R' t rev v) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The endpoint read at a link: the moved link's tail and head are
+the vertex map's values at the link's own, exchanged where the
+traversal reverses. -/
+theorem endsMoved_at (R R' : Region) (t : Nat → Nat) (rev : Nat → Bool)
+    (v : Nat → Nat) (h : endsMoved R R' t rev v) (l : Nat) (hl : l < R.links) :
+    getAt 0 R'.tail (t l)
+        = v (if rev l then getAt 0 R.head l else getAt 0 R.tail l)
+      ∧ getAt 0 R'.head (t l)
+        = v (if rev l then getAt 0 R.tail l else getAt 0 R.head l) := by
+  have hb := ground.pairIdxAll_at _ R.tail R.head 0 h l
+    (by rw [R.tailLen]; exact hl) (by rw [R.headLen]; exact hl)
+  rw [Nat.zero_add] at hb
+  have hb' : ((getAt 0 R'.tail (t l)
+        == v (if rev l then getAt 0 R.head l else getAt 0 R.tail l))
+      && (getAt 0 R'.head (t l)
+        == v (if rev l then getAt 0 R.tail l else getAt 0 R.head l)))
+      = true := hb
+  have h1 := andSplitB hb'
+  exact ⟨beqEqOf h1.1, beqEqOf h1.2⟩
+
+/-- A link map's isomorphism read from one region into another
+(`con:lattice`'s bijection of the links onto its image): the map
+keeps the target's range and its witness reads every source key
+back. -/
+def linkIso (R R' : Region) (t s : Nat → Nat) : Prop :=
+  ((List.range R.links).all (fun l => (t l < R'.links) && (s (t l) == l))) = true
+
+instance (R R' : Region) (t s : Nat → Nat) : Decidable (linkIso R R' t s) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- A vertex map's isomorphism read from one region into another:
+the map keeps the target's range and its witness reads every
+source vertex back. -/
+def vertIso (R R' : Region) (v w : Nat → Nat) : Prop :=
+  ((List.range R.verts).all (fun x => (v x < R'.verts) && (w (v x) == x))) = true
+
+instance (R R' : Region) (v w : Nat → Nat) : Decidable (vertIso R R' v w) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- A label-graph isomorphism's carrier read from one region into
+another at a reversal family (`con:lattice`): the link map and the
+vertex map each keep the target's range with the witness reading
+every source key back, and the incidence transports along the two,
+the orientation kept off the reversal family and exchanged on
+it. -/
+def isoRead (R R' : Region) (t s v w : Nat → Nat) (rev : Nat → Bool) : Prop :=
+  linkIso R R' t s ∧ vertIso R R' v w ∧ endsMoved R R' t rev v
+
+instance (R R' : Region) (t s v w : Nat → Nat) (rev : Nat → Bool) :
+    Decidable (isoRead R R' t s v w rev) :=
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
+
+/-- The link isomorphism read at a source key: the image below the
+target's count and the witness reading the key back. -/
+theorem linkIso_at (R R' : Region) (t s : Nat → Nat) (h : linkIso R R' t s)
+    (l : Nat) (hl : l < R.links) : t l < R'.links ∧ s (t l) = l := by
+  have h1 := andSplitB (all_range_read R.links h l hl)
+  exact ⟨of_decide_eq_true h1.1, beqEqOf h1.2⟩
+
+/-- The link isomorphism of a region onto itself reads its witness
+below the count at every key with the map reading it back, the
+pigeonhole at the key range (`ground.rightInv_of_leftInv`). -/
+theorem linkIso_inv (R : Region) (t s : Nat → Nat) (h : linkIso R R t s)
+    (l : Nat) (hl : l < R.links) : s l < R.links ∧ t (s l) = l :=
+  rightInv_of_leftInv R.links t s (linkIso_at R R t s h) l hl
+
+/-- The link isomorphism of a region onto itself at a key: the two
+compositions and the two range reads together. -/
+theorem linkIso_all (R : Region) (t s : Nat → Nat) (h : linkIso R R t s)
+    (l : Nat) (hl : l < R.links) :
+    s (t l) = l ∧ t (s l) = l ∧ t l < R.links ∧ s l < R.links :=
+  ⟨(linkIso_at R R t s h l hl).2, (linkIso_inv R t s h l hl).2,
+    (linkIso_at R R t s h l hl).1, (linkIso_inv R t s h l hl).1⟩
+
+/-- The vertex isomorphism read at a source vertex. -/
+theorem vertIso_at (R R' : Region) (v w : Nat → Nat) (h : vertIso R R' v w)
+    (x : Nat) (hx : x < R.verts) : v x < R'.verts ∧ w (v x) = x := by
+  have h1 := andSplitB (all_range_read R.verts h x hx)
+  exact ⟨of_decide_eq_true h1.1, beqEqOf h1.2⟩
+
+/-- The vertex isomorphism of a region onto itself reads its
+witness below the count with the map reading it back. -/
+theorem vertIso_inv (R : Region) (v w : Nat → Nat) (h : vertIso R R v w)
+    (x : Nat) (hx : x < R.verts) : w x < R.verts ∧ v (w x) = x :=
+  rightInv_of_leftInv R.verts v w (vertIso_at R R v w h) x hx
+
+/-- The vertex isomorphism of a region onto itself at a vertex: the
+two compositions and the two range reads together. -/
+theorem vertIso_all (R : Region) (v w : Nat → Nat) (h : vertIso R R v w)
+    (x : Nat) (hx : x < R.verts) :
+    w (v x) = x ∧ v (w x) = x ∧ v x < R.verts ∧ w x < R.verts :=
+  ⟨(vertIso_at R R v w h x hx).2, (vertIso_inv R v w h x hx).2,
+    (vertIso_at R R v w h x hx).1, (vertIso_inv R v w h x hx).1⟩
+
+/-- The endpoint read at the vacant reversal family: the moved
+link's tail and head are the vertex map's values at the link's
+own. -/
+theorem endsMoved_vac (R : Region) (t v : Nat → Nat)
+    (h : endsMoved R R t (fun _ => false) v) (l : Nat) (hl : l < R.links) :
+    getAt 0 R.tail (t l) = v (getAt 0 R.tail l)
+      ∧ getAt 0 R.head (t l) = v (getAt 0 R.head l) :=
+  endsMoved_at R R t (fun _ => false) v h l hl
 
 /-- The region's shape read: the field lengths at the counts and
 every link end below the vertex count. -/

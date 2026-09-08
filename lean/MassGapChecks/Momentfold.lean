@@ -831,7 +831,7 @@ private def pinHi : List BPair :=
 
 example : poly.oneValue pinLo pinHi := by decide +kernel
 example : poly.oneValue pinLo pinHi :=
-  inertia.det_pin (n := 5) sysH sqH (momVec psiH 1) rfl
+  elim.det_pin (n := 5) sysH sqH (momVec psiH 1) rfl
 
 example : poly.oneValue (elim.matVec dSys (momVec psiG2 1))
     [BPair.unit, BPair.unit, BPair.unit, BPair.unit, BPair.ofNat 6] := by
@@ -1625,3 +1625,119 @@ example : ¬ qOneValue (BPair.addQ (rhoBlock wOne dgV usB)
     (BPair.addQ (cBlock wOne offB usB)
       (cBlock (fun k => wOne (k + 1)) offB usB)))
     (BPair.unit, Pos.one) := by decide +kernel
+
+open elim inertia
+
+/-! The band read at a root list. -/
+
+private def rootsW : List (BPair × Pos) := [(⟨4, 1⟩, 1), (⟨6, 1⟩, 1), (⟨10, 1⟩, 1)]
+
+example : split.rootsBelow rootsW 2 1 = 0 := by decide +kernel
+example : 2 ≤ split.rootsBelow rootsW 6 1 := by decide +kernel
+example : ¬ (2 ≤ split.rootsBelow rootsW 4 1) := by decide +kernel
+example : split.rootsBelow rootsW 4 1 = 1 := by decide +kernel
+
+/-- The roots one, one and ten: the cap's count holds at six while
+the floor's count at two parts, and the band holds no root. -/
+private def rootsF : List (BPair × Pos) := [(⟨2, 1⟩, 1), (⟨2, 1⟩, 1), (⟨11, 1⟩, 1)]
+
+example : 2 ≤ split.rootsBelow rootsF 6 1 := by decide +kernel
+example : ¬ (split.rootsBelow rootsF 2 1 = 0) := by decide +kernel
+example : countBy (fun r : BPair × Pos =>
+    decide (¬ (r.1.scale 1 < BPair.ofPos (2 * r.2)) ∧ r.1.scale 1 < BPair.ofPos (6 * r.2)))
+    rootsF = 0 := by decide +kernel
+
+example : ∃ i j, i < rootsW.length ∧ j < rootsW.length ∧ i ≠ j
+      ∧ ¬ ((getAt (BPair.unit, Pos.one) rootsW i).1.scale 1
+          < BPair.ofPos (2 * (getAt (BPair.unit, Pos.one) rootsW i).2))
+      ∧ ¬ ((getAt (BPair.unit, Pos.one) rootsW j).1.scale 1
+          < BPair.ofPos (2 * (getAt (BPair.unit, Pos.one) rootsW j).2))
+      ∧ (getAt (BPair.unit, Pos.one) rootsW i).1.scale 1
+          < BPair.ofPos (6 * (getAt (BPair.unit, Pos.one) rootsW i).2)
+      ∧ (getAt (BPair.unit, Pos.one) rootsW j).1.scale 1
+          < BPair.ofPos (6 * (getAt (BPair.unit, Pos.one) rootsW j).2) :=
+  two_lines rootsW 2 1 6 1 (by decide +kernel) (by decide +kernel)
+
+/-! The two lines at the count reads: the pencil `diag(4, 6, 10)`
+against the identity at its roots, the floor level `2` vacant and
+the cap level `6` at the count two, the theorem route through
+`split.countRead`'s tie. -/
+
+private def hW : Mat := [[⟨4, 1⟩, BPair.unit, BPair.unit],
+  [BPair.unit, ⟨6, 1⟩, BPair.unit], [BPair.unit, BPair.unit, ⟨10, 1⟩]]
+
+private def spF : Split 3 :=
+  mkSplit 3 (siteDatum (matScale 1 hW) (matScale 2 (idMat 3)))
+private def spC : Split 3 :=
+  mkSplit 3 (siteDatum (matScale 1 hW) (matScale 6 (idMat 3)))
+
+example : split.countRead hW (idMat 3) rootsW 2 1 spF := by decide +kernel
+example : split.countRead hW (idMat 3) rootsW 6 1 spC := by decide +kernel
+example : revAt spF = 0 := by decide +kernel
+example : 2 ≤ revAt spC := by decide +kernel
+example : ∃ i j, i < rootsW.length ∧ j < rootsW.length ∧ i ≠ j
+      ∧ ¬ ((getAt (BPair.unit, Pos.one) rootsW i).1.scale 1
+          < BPair.ofPos (2 * (getAt (BPair.unit, Pos.one) rootsW i).2))
+      ∧ ¬ ((getAt (BPair.unit, Pos.one) rootsW j).1.scale 1
+          < BPair.ofPos (2 * (getAt (BPair.unit, Pos.one) rootsW j).2))
+      ∧ (getAt (BPair.unit, Pos.one) rootsW i).1.scale 1
+          < BPair.ofPos (6 * (getAt (BPair.unit, Pos.one) rootsW i).2)
+      ∧ (getAt (BPair.unit, Pos.one) rootsW j).1.scale 1
+          < BPair.ofPos (6 * (getAt (BPair.unit, Pos.one) rootsW j).2) :=
+  two_lines_at hW (idMat 3) rootsW 2 1 6 1 spF spC (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+
+/-! The cap line's two lower units (`cap_line`): at reads `1` and `1`
+against grams `1` and `1`, the cross read `2` at the square's cap `4`,
+the line `3` beyond the reads' sum reads the diagonals `-2`, `-2` and
+`4 < 16`, decided and through the theorem; at the line `2`, the reads'
+sum itself, the square reads `4 < 4`, refused, the line's binder
+isolated.  The count read at the cap line (`cap_count`) at the key's
+composed data: the excess and the mode read at the clearing `s fd = 2`,
+`62` and `152`, against the line `n fn = 613` (the seam battery of
+`MassGapChecks.Cornercert`), the datum `[[-551, 97], [97, -461]]` at the
+coordinate vectors, the cross read `194` squared, `37636`, under
+`4 · 62 · 152 = 37696`, its split reading the count two, decided and
+through the theorem; at the line `100` under the reads' sum the line's
+binder refuses and the datum `[[-38, 97], [97, 52]]` reads the count
+one. -/
+
+example : (BPair.ofNat 1 + (BPair.ofNat 3).swap) < BPair.unit
+    ∧ BPair.ofNat 2 * BPair.ofNat 2
+      < BPair.ofNat 4 * ((BPair.ofNat 1 + (BPair.ofNat 3).swap)
+        * (BPair.ofNat 1 + (BPair.ofNat 3).swap)) :=
+  cap_line (BPair.ofNat 1 + (BPair.ofNat 3).swap) (BPair.ofNat 1 + (BPair.ofNat 3).swap)
+    (BPair.ofNat 2) (BPair.ofNat 1) (BPair.ofNat 1) (BPair.ofNat 1) (BPair.ofNat 1)
+    (BPair.ofNat 1) (BPair.ofNat 1) (BPair.ofNat 3)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+example : (BPair.ofNat 1 + (BPair.ofNat 3).swap) < BPair.unit
+    ∧ BPair.ofNat 2 * BPair.ofNat 2
+      < BPair.ofNat 4 * ((BPair.ofNat 1 + (BPair.ofNat 3).swap)
+        * (BPair.ofNat 1 + (BPair.ofNat 3).swap)) := by decide +kernel
+example : ¬ (BPair.ofNat 1 + BPair.ofNat 1 < BPair.ofNat 2) := by decide +kernel
+example : ¬ (BPair.ofNat 2 * BPair.ofNat 2
+      < BPair.ofNat 4 * ((BPair.ofNat 1 + (BPair.ofNat 2).swap)
+        * (BPair.ofNat 1 + (BPair.ofNat 2).swap))) := by decide +kernel
+
+private def xCap : List BPair := [BPair.ofNat 1, BPair.unit]
+private def yCap : List BPair := [BPair.unit, BPair.ofNat 1]
+private def sCap : Mat :=
+  [[(BPair.ofNat 551).swap, BPair.ofNat 97], [BPair.ofNat 97, (BPair.ofNat 461).swap]]
+private def spCap : Split 2 := mkSplit 2 sCap
+private def sLow : Mat :=
+  [[(BPair.ofNat 38).swap, BPair.ofNat 97], [BPair.ofNat 97, BPair.ofNat 52]]
+private def spLow : Split 2 := mkSplit 2 sLow
+
+example : splitRead sCap spCap := by decide +kernel
+example : 2 ≤ revAt spCap := by decide +kernel
+example : 2 ≤ revAt spCap :=
+  cap_count sCap xCap yCap (BPair.ofNat 62) (BPair.ofNat 152) (BPair.ofNat 62)
+    (BPair.ofNat 152) (BPair.ofNat 1) (BPair.ofNat 1) (BPair.ofNat 613) rfl rfl
+    (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) spCap (by decide +kernel)
+example : ¬ (BPair.ofNat 62 + BPair.ofNat 152 < BPair.ofNat 100) := by decide +kernel
+example : splitRead sLow spLow := by decide +kernel
+example : ¬ (2 ≤ revAt spLow) := by decide +kernel

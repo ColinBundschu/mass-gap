@@ -24,7 +24,7 @@ completeness: every stated member sits inside the produced blocks'
 joined span (`exhaust_span` at the per-top block `blockOf` and its
 join `blockJoin`), the
 per-member identity the residual's join read back
-(`elim.residV_expand`) at the block's collected group with the
+(`elim.residW_expand`) at the block's collected group with the
 residual recursed, and each round strictly shortens the carrier —
 the pick's own residual reads the unit through the solve
 (`lem:lowerspan`'s member-vector clause) — so the carrier's length
@@ -57,7 +57,7 @@ reverse move of the paired row's own member (`unit_adjoint` at
 the provenance, and the residual carrier carries it onward at the
 collected group.  The round's own block is the instance the
 descent consumes, its residual carrier pairing that block at the
-sum's unit outright (`elim.resid_perp` at
+sum's unit outright (`elim.residW_perp` at
 `elim.collect_span_row`), so the produced blocks are pairwise
 perpendicular (`exhaust_perp`), every produced member settles in
 the stated carrier (`exhaust_settle`, the provenance walk at the
@@ -263,9 +263,22 @@ collected group at its own content, the joined-collection read's
 residual (`lem:lowerspan`). -/
 def residAt (B : List HVec) (x : HVec) : HVec :=
   ⟨x.content,
-    elim.residV x.coords.length
-      (elim.collectOf x.coords.length (groupAt B x.content))
+    elim.residW x.coords.length
+      (elim.collectW x.coords.length (groupAt B x.content))
       x.coords⟩
+
+/-- The residual's coordinates at the collection's own spelling:
+the walk's collection is the collection (`elim.collectW_eq`) at a
+group of the member's width. -/
+private theorem residAt_coords (B : List HVec) (x : HVec)
+    (hG : elim.rowsLen x.coords.length (groupAt B x.content)) :
+    (residAt B x).coords
+      = elim.residW x.coords.length
+          (elim.collectOf x.coords.length (groupAt B x.content))
+          x.coords := by
+  show elim.residW x.coords.length
+    (elim.collectW x.coords.length (groupAt B x.content)) x.coords = _
+  rw [elim.collectW_eq _ _ hG]
 
 /-- The residual carrier: the members' residuals at the block, the
 unit tails withdrawn. -/
@@ -273,14 +286,18 @@ def residCarrier (P B : List HVec) : List HVec :=
   (P.map (residAt B)).filter (fun x => ! allU x.coords)
 
 /-- The block at a stated top: the seed's closure pool at the
-content's height, `lem:lowerspan`'s W_v as a stated list. -/
+content's height, `lem:lowerspan`'s W_v as a stated list, the
+closure run at the stored descents (`blockOf_eq` its read at the
+fresh walk). -/
 def blockOf (d : Nat) (w : HVec) : List HVec :=
-  closeSpan d (lowerspan.ht w.content) [w] [w]
+  (closeSpanS d (lowerspan.ht w.content)
+    (elim.seedK HVec.content dotC w) [w]).1
 
-/-- The block's own spelling as the seed's closure pool at the
-content's height. -/
-private theorem blockOf_eq (d : Nat) (w : HVec) :
-    blockOf d w = closeSpan d (lowerspan.ht w.content) [w] [w] := rfl
+/-- The block at a top off the unit tail is the seed's closure pool
+at the content's height at the fresh walk (`closeSpanS_eq`). -/
+theorem blockOf_eq (d : Nat) (w : HVec) (hw : ¬ poly.unitTail w.coords) :
+    blockOf d w = closeSpan d (lowerspan.ht w.content) [w] [w] :=
+  closeSpanS_eq d _ w hw
 
 /-- The descent: each round picks the height-maximal member, joins
 its block's closure, and recurses on the residual carrier. -/
@@ -545,15 +562,14 @@ theorem residCarrier_sized (P B : List HVec)
   match residCarrier_mem P B y hy with
   | ⟨_, x, hxP, hyx⟩ =>
     rw [hyx]
-    show (elim.residV x.coords.length
-        (elim.collectOf x.coords.length (groupAt B x.content))
-        x.coords).length
+    show (residAt B x).coords.length
       = (places.monomialsAt (residAt B x).content).length
     have hLn : elim.rowsLen x.coords.length
         (groupAt B x.content) := by
       rw [hszP x hxP]
       exact rowsLen_groupAt x.content B hszB
-    rw [elim.length_residV x.coords.length
+    rw [residAt_coords _ _ hLn]
+    rw [elim.length_residW x.coords.length
       (elim.collectOf x.coords.length (groupAt B x.content))
       x.coords (elim.collect_rowsLen _ _ hLn) rfl]
     exact hszP x hxP
@@ -594,8 +610,8 @@ partner to the block's collected source group where the
 perpendicular reads clear it (`orthsplit.perp_invariant`), its
 span read transports through the stated carrier's own closure
 with every source row read back through the residual's join
-(`elim.residV_expand` at the collection, independent by
-`elim.collect_indep`), and the perpendicular tail splits off the
+(`elim.residW_expand` at the collection, at the family's width
+by `elim.collect_rowsLen`), and the perpendicular tail splits off the
 joined span (`elim.span_perp_split`).  The two closure binders
 are load-bearing, their isolating refusals committed; the
 enumeration and width binders are `con:places`' member
@@ -643,10 +659,8 @@ theorem residCarrier_closed (d : Nat) (P B : List HVec)
         elim.collect_rowsLen _ _ hGrows
       have hrvlen : (residAt B x).coords.length
           = x.coords.length := by
-        show (elim.residV x.coords.length
-          (elim.collectOf x.coords.length (groupAt B x.content))
-          x.coords).length = _
-        exact elim.length_residV _ _ x.coords hCrows rfl
+        rw [residAt_coords _ _ hGrows]
+        exact elim.length_residW _ _ x.coords hCrows rfl
       have hQrows : elim.rowsLen
           (places.monomialsAt (moveAt i j x.content)).length
           (groupAt (residCarrier P B) (moveAt i j x.content)) :=
@@ -704,11 +718,11 @@ theorem residCarrier_closed (d : Nat) (P B : List HVec)
             (groupAt B x.content) _ hGrows
             (spanRel_cast _ _ _ _ htr hsx.symm)
         · intro k hk
-          rw [elim.dotP_comm]
-          exact elim.resid_perp x.coords.length
+          rw [elim.dotP_comm, residAt_coords _ _ hGrows]
+          exact elim.residW_perp x.coords.length
             (elim.collectOf x.coords.length
               (groupAt B x.content))
-            x.coords hCrows rfl k hk
+            x.coords (elim.collect_rowsLen _ _ hGrows) rfl k hk
       -- the moved image of the stated member's span
       have hs2 : elim.spanRel
           (places.monomialsAt (moveAt i j x.content)).length
@@ -746,30 +760,27 @@ theorem residCarrier_closed (d : Nat) (P B : List HVec)
                 (groupAt B (moveAt i j x.content))) :=
             elim.collect_rowsLen _ _ hBrows'
           have hreq2 : (residAt B p).coords
-              = elim.residV
+              = elim.residW
                   (places.monomialsAt (moveAt i j x.content)).length
                   (elim.collectOf
                     (places.monomialsAt
                       (moveAt i j x.content)).length
                     (groupAt B (moveAt i j x.content)))
                   p.coords := by
-            show elim.residV p.coords.length
-              (elim.collectOf p.coords.length
-                (groupAt B p.content)) p.coords = _
-            rw [hp_sx, hpc]
-          have hresidlen : (elim.residV
+            rw [residAt_coords _ _ (by rw [hp_sx, hpc]; exact hBrows'), hp_sx, hpc]
+          have hresidlen : (elim.residW
               (places.monomialsAt (moveAt i j x.content)).length
               (elim.collectOf
                 (places.monomialsAt (moveAt i j x.content)).length
                 (groupAt B (moveAt i j x.content)))
               p.coords).length
               = (places.monomialsAt (moveAt i j x.content)).length
-              := elim.length_residV _ _ p.coords hCrows' hp_sx
+              := elim.length_residW _ _ p.coords hCrows' hp_sx
           have he2 : elim.spanRel
               (places.monomialsAt (moveAt i j x.content)).length
               (groupAt (residCarrier P B) (moveAt i j x.content)
                 ++ groupAt B (moveAt i j x.content))
-              (elim.residV
+              (elim.residW
                 (places.monomialsAt (moveAt i j x.content)).length
                 (elim.collectOf
                   (places.monomialsAt
@@ -825,13 +836,13 @@ theorem residCarrier_closed (d : Nat) (P B : List HVec)
               (elim.collect_row_span _ _ hBrows' k2 hk2)
           have he5 := elim.spanRel_congr _ _ _ _
             (poly.oneValue_symm
-              (elim.residV_expand
+              (elim.residW_expand
                 (places.monomialsAt (moveAt i j x.content)).length
                 (elim.collectOf
                   (places.monomialsAt
                     (moveAt i j x.content)).length
                   (groupAt B (moveAt i j x.content)))
-                p.coords hCrows' hp_sx))
+                p.coords (elim.collect_rowsLen _ _ hBrows') hp_sx))
             (elim.spanRel_add _ _ _ _ hQB hresidlen
               (elim.length_combo _ _ _ hCrows') he2 he3)
             (by rw [elim.length_vecScale, hp_sx])
@@ -955,24 +966,9 @@ theorem residCarrier_closed (d : Nat) (P B : List HVec)
                     (fun r => elim.dotP r x.coords)))
                 (elim.collectOf x.coords.length
                   (groupAt B x.content))).map BPair.swap))) := by
-        show poly.oneValue
-          (elim.matVec (units.matUnitAt (moveAt i j x.content)
-            x.content i j)
-            (elim.vecAdd
-              (elim.vecScale
-                (elim.detL (elim.gramM
-                  (elim.collectOf x.coords.length
-                    (groupAt B x.content))))
-                x.coords)
-              ((elim.combo x.coords.length
-                (elim.adjP
-                  (elim.gramM (elim.collectOf x.coords.length
-                    (groupAt B x.content)))
-                  ((elim.collectOf x.coords.length
-                    (groupAt B x.content)).map
-                    (fun r => elim.dotP r x.coords)))
-                (elim.collectOf x.coords.length
-                  (groupAt B x.content))).map BPair.swap))) _
+        rw [residAt_coords _ _ hGrows]
+        refine poly.oneValue_trans
+          (elim.matVec_congr _ _ _ (elim.residW_eq _ _ _ (elim.collect_rowsLen _ _ hGrows))) ?_
         refine elim.matVec_vecAdd _ x.coords.length
           (by rw [hsx]; exact units.rowsLen_matUnitAt _ _ i j)
           _ _ (elim.length_vecScale _ _) ?_
@@ -1029,11 +1025,8 @@ theorem residCarrier_closed (d : Nat) (P B : List HVec)
             have hqlen2 : q.coords.length
                 = (places.monomialsAt
                     (moveAt i j x.content)).length := by
-              rw [hqp2]
-              show (elim.residV p2.coords.length
-                (elim.collectOf p2.coords.length
-                  (groupAt B p2.content)) p2.coords).length = _
-              rw [elim.length_residV _ _ p2.coords
+              rw [hqp2, residAt_coords _ _ (by rw [hszP p2 hp2P]; exact rowsLen_groupAt p2.content B hszB)]
+              rw [elim.length_residW _ _ p2.coords
                 (elim.collect_rowsLen _ _
                   (by rw [hszP p2 hp2P]
                       exact rowsLen_groupAt p2.content B hszB))
@@ -1050,18 +1043,18 @@ theorem residCarrier_closed (d : Nat) (P B : List HVec)
                     (groupAt B (moveAt i j x.content)))
                   k3)).oneValue BPair.unit := by
               intro k3 hk3
-              rw [elim.dotP_comm, hqp2]
+              rw [elim.dotP_comm, hqp2, residAt_coords _ _ (by rw [hszP p2 hp2P]; exact rowsLen_groupAt p2.content B hszB)]
               show (elim.dotP (ground.getAt []
                   (elim.collectOf
                     (places.monomialsAt
                       (moveAt i j x.content)).length
                     (groupAt B (moveAt i j x.content))) k3)
-                (elim.residV p2.coords.length
+                (elim.residW p2.coords.length
                   (elim.collectOf p2.coords.length
                     (groupAt B p2.content))
                   p2.coords)).oneValue BPair.unit
               rw [hp2_sx, hp2c]
-              exact elim.resid_perp _ _ p2.coords
+              exact elim.residW_perp _ _ p2.coords
                 (elim.collect_rowsLen _ _ hBrows') hp2_sx k3 hk3
             rw [hqrow]
             exact elim.perp_span _
@@ -1196,11 +1189,11 @@ theorem exhaustGo_top (d : Nat) : ∀ (fuel : Nat) (P : List HVec),
           (Nat.le_refl _) with
       | ⟨tailB, htlB, hszB', _, _, _, hsetB'⟩ =>
       have hszB : ∀ v ∈ blockOf d w0, sized v := by
-        rw [blockOf_eq, htlB]
+        rw [blockOf_eq d w0 (pickTop_off P w0 hp), htlB]
         exact hszB'
       have hsetB : ∀ x ∈ blockOf d w0, ∀ i, i < d → ∀ j, j < d → ¬ i = j →
           settledAt (blockOf d w0) (act i j x) := by
-        rw [blockOf_eq, htlB]
+        rw [blockOf_eq d w0 (pickTop_off P w0 hp), htlB]
         exact hsetB'
       match w, hw with
       | _, List.Mem.head _ =>
@@ -1232,7 +1225,7 @@ theorem exhaust_top (d : Nat) (P : List HVec)
 /-! The descent's completeness, `lem:blockcount`(i)'s orthogonal
 sum's span half: every stated member sits inside the produced
 blocks' joined span.  The per-member identity is the residual's
-join read back (`elim.residV_expand`) at the block's collected
+join read back (`elim.residW_expand`) at the block's collected
 group — the combination inside the block's group, the residual
 recursed at the carrier's descent — and each round strictly
 shortens the carrier: the pick is a member of its own block, so
@@ -1297,15 +1290,22 @@ private theorem pick_resid_unit (d : Nat) (P : List HVec)
     (lowerspan.ht_nomove d) (lowerspan.ht_drop d)
     (hsz w0 hw0P) (hwid w0 hw0P) (pickTop_off P w0 hp)
     (Nat.le_refl _)
+  rw [← blockOf_eq d w0 (pickTop_off P w0 hp)] at hszB
   have hw0B : w0 ∈ blockOf d w0 := by
     match seedSpan_prov d (lowerspan.ht w0.content) w0 with
     | ⟨tail, htl, _⟩ =>
-      rw [blockOf_eq, htl]
+      rw [blockOf_eq d w0 (pickTop_off P w0 hp), htl]
       exact List.Mem.head tail
   have hspan := settled_to_span
     (blockOf d w0) w0 hszB
     (hsz w0 hw0P) (member_settled _ hszB w0 hw0B)
-  exact allU_of_unitTail _ hspan.2.2
+  exact allU_of_unitTail _ (by
+    have hGb : elim.rowsLen w0.coords.length
+        (groupAt (blockOf d w0) w0.content) := by
+      rw [hsz w0 hw0P]
+      exact rowsLen_groupAt w0.content (blockOf d w0) hszB
+    rw [residAt_coords _ _ hGb]
+    exact poly.oneValue_unitTail (elim.residW_eq _ _ _ (elim.collect_rowsLen _ _ hGb)) hspan.2.2)
 
 /-- The produced members keep the carrier's enumerations, widths
 and off-unit reads through the rounds, the pick's own reads with
@@ -1334,6 +1334,7 @@ private theorem exhaustGo_pack (d : Nat) :
         (lowerspan.ht_nomove d) (lowerspan.ht_drop d)
         (hsz w0 hw0P) (hwid w0 hw0P) (pickTop_off P w0 hp)
         (Nat.le_refl _)
+      rw [← blockOf_eq d w0 (pickTop_off P w0 hp)] at hszB
       match w, hw with
       | _, List.Mem.head _ =>
         exact ⟨hsz w0 hw0P, hwid w0 hw0P, pickTop_off P w0 hp⟩
@@ -1359,6 +1360,7 @@ private theorem blockJoin_sized (d : Nat) (ws : List HVec)
         (lowerspan.ht w.content) lowerspan.ht w
         (lowerspan.ht_nomove d) (lowerspan.ht_drop d)
         hw.1 hw.2.1 hw.2.2 (Nat.le_refl _)
+      rw [← blockOf_eq d w hw.2.2] at hszB
       exact hszB)
     ws hp
 
@@ -1387,7 +1389,7 @@ theorem group_span_rows (R S : List HVec) (mu : List Nat)
 member's residual at the block either reads the unit tail — the
 member already inside the block's group span — or joins the
 residual carrier as its own row, and the residual's join read back
-(`elim.residV_expand`) puts the member in the joined span, the
+(`elim.residW_expand`) puts the member in the joined span, the
 determinant withdrawn at the collection's independence. -/
 private theorem carrier_span_split (P B : List HVec)
     (hszP : ∀ x ∈ P, sized x) (hszB : ∀ x ∈ B, sized x) :
@@ -1411,24 +1413,27 @@ private theorem carrier_span_split (P B : List HVec)
   match hb : allU (residAt B x).coords with
   | true =>
     exact elim.spanRel_mono x.coords.length _ _ x.coords
-      hGrows hRrows ⟨hGrows, rfl, unitTail_of_allU _ hb⟩
+      hGrows hRrows ⟨hGrows, rfl,
+        poly.unitTail_oneValue_right
+          (unitTail_of_allU _ (by rw [residAt_coords _ _ hGrows] at hb; exact hb))
+          (elim.residW_eq _ _ _ (elim.collect_rowsLen _ _ hGrows))⟩
   | false =>
     have hCrows := elim.collect_rowsLen x.coords.length _ hGrows
     have hreq : (residAt B x).coords
-        = elim.residV x.coords.length
+        = elim.residW x.coords.length
             (elim.collectOf x.coords.length
-              (groupAt B x.content)) x.coords := rfl
+              (groupAt B x.content)) x.coords := residAt_coords B x hGrows
     have hrvlen : (residAt B x).coords.length
         = x.coords.length := by
       rw [hreq]
-      exact elim.length_residV _ _ x.coords hCrows rfl
+      exact elim.length_residW _ _ x.coords hCrows rfl
     have hmem := residCarrier_mem_intro P B x hx hb
     have hself := settled_to_span (residCarrier P B) (residAt B x)
       hQsz (hQsz (residAt B x) hmem)
       (member_settled (residCarrier P B) hQsz (residAt B x) hmem)
     have hIH' : elim.spanRel x.coords.length
         (groupAt (residCarrier P B) x.content)
-        (elim.residV x.coords.length
+        (elim.residW x.coords.length
           (elim.collectOf x.coords.length (groupAt B x.content))
           x.coords) := by
       rw [← hreq]
@@ -1452,11 +1457,11 @@ private theorem carrier_span_split (P B : List HVec)
       exact elim.spanRel_mono _ _ _ _ hGrows hRrows
         (elim.collect_row_span _ _ hGrows k hk)
     have hadd := elim.spanRel_add x.coords.length _ _ _ hJrows
-      (elim.length_residV _ _ x.coords hCrows rfl)
+      (elim.length_residW _ _ x.coords hCrows rfl)
       (elim.length_combo _ _ _ hCrows) hresid hcombo
-    have hexp := elim.residV_expand x.coords.length
+    have hexp := elim.residW_expand x.coords.length
       (elim.collectOf x.coords.length (groupAt B x.content))
-      x.coords hCrows rfl
+      x.coords (elim.collect_rowsLen _ _ hGrows) rfl
     have hcongr := elim.spanRel_congr x.coords.length _ _ _
       (poly.oneValue_symm hexp) hadd
       (by rw [elim.length_vecScale])
@@ -1467,7 +1472,7 @@ private theorem carrier_span_split (P B : List HVec)
 /-- The descent's completeness at the stated fuel: every carrier
 member sits inside the produced blocks' joined span.  The
 per-member identity is the residual's join read back
-(`elim.residV_expand`) at the block's collected group — the
+(`elim.residW_expand`) at the block's collected group — the
 combination inside the block's group (`elim.collect_row_span`),
 the residual the carrier's own member recursed — and the round
 strictly shortens the carrier at the pick's unit residual
@@ -1505,6 +1510,7 @@ theorem exhaustGo_span (d : Nat) :
         (lowerspan.ht_nomove d) (lowerspan.ht_drop d)
         (hsz w0 hw0P) (hwid w0 hw0P) (pickTop_off P w0 hp)
         (Nat.le_refl _)
+      rw [← blockOf_eq d w0 (pickTop_off P w0 hp)] at hszB
       have hQsz := residCarrier_sized P (blockOf d w0) hsz hszB
       have hQwid := residCarrier_width d P (blockOf d w0) hwid
       have hQfuel : (residCarrier P (blockOf d w0)).length ≤ fuel :=
@@ -1636,13 +1642,13 @@ theorem top_split (d : Nat) (mu : List Nat) (A B : List HVec)
       poly.unitTail (elim.matVec
         (units.matUnitAt (moveAt i j mu) mu i j) v)) :
     elim.spanRel (places.monomialsAt mu).length (groupAt B mu)
-        (elim.residV (places.monomialsAt mu).length
+        (elim.residW (places.monomialsAt mu).length
           (elim.collectOf (places.monomialsAt mu).length
             (groupAt A mu)) v)
       ∧ (∀ j, j < d → ∀ i, i < j →
           poly.unitTail (elim.matVec
             (units.matUnitAt (moveAt i j mu) mu i j)
-            (elim.residV (places.monomialsAt mu).length
+            (elim.residW (places.monomialsAt mu).length
               (elim.collectOf (places.monomialsAt mu).length
                 (groupAt A mu)) v)))
       ∧ (∀ j, j < d → ∀ i, i < j →
@@ -1675,11 +1681,11 @@ theorem top_split (d : Nat) (mu : List Nat) (A B : List HVec)
     (places.monomialsAt mu).length (groupAt A mu) hArows
   have hABrows := elim.rowsLen_append
     (places.monomialsAt mu).length hArows hBrows
-  have hrlen : (elim.residV (places.monomialsAt mu).length
+  have hrlen : (elim.residW (places.monomialsAt mu).length
       (elim.collectOf (places.monomialsAt mu).length
         (groupAt A mu)) v).length
       = (places.monomialsAt mu).length :=
-    elim.length_residV _ _ v hCrows hv
+    elim.length_residW _ _ v hCrows hv
   have hclen : (elim.combo (places.monomialsAt mu).length
       (elim.adjP (elim.gramM
         (elim.collectOf (places.monomialsAt mu).length
@@ -1708,10 +1714,10 @@ theorem top_split (d : Nat) (mu : List Nat) (A B : List HVec)
       (fun k hk => elim.collect_row_span _ _ hArows k hk)
   have hresidAB : elim.spanRel (places.monomialsAt mu).length
       (groupAt A mu ++ groupAt B mu)
-      (elim.residV (places.monomialsAt mu).length
+      (elim.residW (places.monomialsAt mu).length
         (elim.collectOf (places.monomialsAt mu).length
           (groupAt A mu)) v) :=
-    elim.spanRel_residV _ _ _ v hCrows hv hABrows
+    elim.spanRel_residW _ _ _ v (elim.collect_rowsLen _ _ hArows) hv hABrows
       (fun k hk => elim.spanRel_mono _ _ _ _ hArows hBrows
         (elim.collect_row_span _ _ hArows k hk))
       hsp'
@@ -1719,7 +1725,7 @@ theorem top_split (d : Nat) (mu : List Nat) (A B : List HVec)
     (places.monomialsAt mu).length (groupAt A mu) (groupAt B mu)
     _ hArows hBrows hresidAB
   have hperpResidA : ∀ k, k < (groupAt A mu).length →
-      (elim.dotP (elim.residV (places.monomialsAt mu).length
+      (elim.dotP (elim.residW (places.monomialsAt mu).length
         (elim.collectOf (places.monomialsAt mu).length
           (groupAt A mu)) v)
         (ground.getAt [] (groupAt A mu) k)).oneValue
@@ -1731,10 +1737,10 @@ theorem top_split (d : Nat) (mu : List Nat) (A B : List HVec)
       (elim.collect_span_row _ _ hArows k hk)
     intro k2 hk2
     rw [elim.dotP_comm]
-    exact elim.resid_perp _ _ v hCrows hv k2 hk2
+    exact elim.residW_perp _ _ v (elim.collect_rowsLen _ _ hArows) hv k2 hk2
   have hc1 : elim.spanRel (places.monomialsAt mu).length
       (groupAt B mu)
-      (elim.residV (places.monomialsAt mu).length
+      (elim.residW (places.monomialsAt mu).length
         (elim.collectOf (places.monomialsAt mu).length
           (groupAt A mu)) v) := by
     refine elim.span_perp_split _ _ _ _ hBrows hArows
@@ -1745,7 +1751,7 @@ theorem top_split (d : Nat) (mu : List Nat) (A B : List HVec)
   have hboth : ∀ j, j < d → ∀ i, i < j →
       poly.unitTail (elim.matVec
         (units.matUnitAt (moveAt i j mu) mu i j)
-        (elim.residV (places.monomialsAt mu).length
+        (elim.residW (places.monomialsAt mu).length
           (elim.collectOf (places.monomialsAt mu).length
             (groupAt A mu)) v))
       ∧ poly.unitTail (elim.matVec
@@ -1807,7 +1813,7 @@ theorem top_split (d : Nat) (mu : List Nat) (A B : List HVec)
             (elim.collectOf (places.monomialsAt mu).length
               (groupAt A mu))))
         (elim.matVec (units.matUnitAt (moveAt i j mu) mu i j)
-          (elim.residV (places.monomialsAt mu).length
+          (elim.residW (places.monomialsAt mu).length
             (elim.collectOf (places.monomialsAt mu).length
               (groupAt A mu)) v))).oneValue BPair.unit := by
       refine elim.perp_span
@@ -1822,16 +1828,16 @@ theorem top_split (d : Nat) (mu : List Nat) (A B : List HVec)
       (places.monomialsAt mu).length hT _ _ hrlen hclen
     have hs2 := elim.matVec_congr
       (units.matUnitAt (moveAt i j mu) mu i j) _ _
-      (poly.oneValue_symm (elim.residV_expand
+      (poly.oneValue_symm (elim.residW_expand
         (places.monomialsAt mu).length
         (elim.collectOf (places.monomialsAt mu).length
-          (groupAt A mu)) v hCrows hv))
+          (groupAt A mu)) v (elim.collect_rowsLen _ _ hArows) hv))
     have hs3 := elim.matVec_vecScale_free (units.matUnitAt (moveAt i j mu) mu i j) (elim.detL (elim.gramM
         (elim.collectOf (places.monomialsAt mu).length
           (groupAt A mu)))) v
     have hsum : poly.unitTail (elim.vecAdd
         (elim.matVec (units.matUnitAt (moveAt i j mu) mu i j)
-          (elim.residV (places.monomialsAt mu).length
+          (elim.residW (places.monomialsAt mu).length
             (elim.collectOf (places.monomialsAt mu).length
               (groupAt A mu)) v))
         (elim.matVec (units.matUnitAt (moveAt i j mu) mu i j)
@@ -2197,6 +2203,9 @@ theorem countAt_append (mu : List Nat) (A B : List HVec)
     (elim.rowsLen_crossM _ _) (elim.rowsLen_crossM _ _)
     ((elim.length_crossM _ _).trans (elim.length_crossM _ _).symm)
     (cross_split mu A B hszA hszB hclA hclB hperpUp)
+  rw [blockcount.countAt_collect _ _ hGrows,
+    blockcount.countAt_collect _ _ hArows,
+    blockcount.countAt_collect _ _ hBrows]
   show elim.kernelDim
       (elim.collectOf (places.monomialsAt mu).length
         (groupAt (A ++ B) mu)).length
@@ -2321,6 +2330,7 @@ private theorem count_head (d : Nat) (v : HVec) (tail : List HVec)
   have hrank : elim.rank (elim.crossM (units.stackedRaise v.content)
       [v.coords]) = 0 :=
     elim.rank_null _ (crossOne_rows _ _ hstack)
+  rw [blockcount.countAt_collect _ _ (by rw [hgh]; exact ⟨hszv, trivial⟩)]
   show elim.kernelDim
       (elim.collectOf (monomialsAt v.content).length
         (groupAt (v :: tail) v.content)).length
@@ -2444,23 +2454,23 @@ private theorem seed_forge (d : Nat) (v : HVec) (tail : List HVec)
       (⟨mu, x⟩ : HVec) t0
       hprov0 hsz0 hmud hset0
     have hTsq : ∀ w ∈ (⟨mu, x⟩ : HVec) :: t0,
-        elim.sqAt (elim.idList (monomialsAt w.content).length)
+        elim.sqAt (elim.idMat (monomialsAt w.content).length)
           w.coords.length := by
       intro w hw
       rw [hsz0all w hw]
-      exact elim.sqAt_idList _
+      exact elim.sqAt_idMat _
     have hval : ∀ w ∈ (⟨mu, x⟩ : HVec) :: t0,
         settledAt (v :: tail)
           (⟨w.content, elim.matVec
-            (elim.idList (monomialsAt w.content).length)
+            (elim.idMat (monomialsAt w.content).length)
             w.coords⟩ : HVec) := by
       intro w hw
       have hws := hsz0all w hw
       have hlen : (elim.matVec
-          (elim.idList (monomialsAt w.content).length)
+          (elim.idMat (monomialsAt w.content).length)
           w.coords).length = (monomialsAt w.content).length := by
-        rw [elim.matVec_length, elim.length_idList]
-      have hone := elim.matVec_idList
+        rw [elim.matVec_length, elim.length_idMat]
+      have hone := elim.matVec_idMat
         (monomialsAt w.content).length w.coords hws
       have hspanw : elim.spanRel (monomialsAt w.content).length
           (groupAt (v :: tail) w.content) w.coords := by
@@ -2470,9 +2480,9 @@ private theorem seed_forge (d : Nat) (v : HVec) (tail : List HVec)
         exact h
       refine Or.inr ?_
       show elim.spanRel (elim.matVec
-          (elim.idList (monomialsAt w.content).length)
+          (elim.idMat (monomialsAt w.content).length)
           w.coords).length (groupAt (v :: tail) w.content)
-        (elim.matVec (elim.idList (monomialsAt w.content).length)
+        (elim.matVec (elim.idMat (monomialsAt w.content).length)
           w.coords)
       rw [hlen]
       exact elim.spanRel_congr _ _ w.coords _
@@ -2483,23 +2493,23 @@ private theorem seed_forge (d : Nat) (v : HVec) (tail : List HVec)
           (elim.matVec
             (units.matUnitAt (moveAt i j w.content) w.content i j)
             (elim.matVec
-              (elim.idList (monomialsAt w.content).length)
+              (elim.idMat (monomialsAt w.content).length)
               w.coords))
           (elim.matVec
-            (elim.idList
+            (elim.idMat
               (monomialsAt (moveAt i j w.content)).length)
             (elim.matVec
               (units.matUnitAt (moveAt i j w.content) w.content i j)
               w.coords)) := by
       intro w hw i _ j _ _
       have hws := hsz0all w hw
-      have h1 := elim.matVec_idList (monomialsAt w.content).length
+      have h1 := elim.matVec_idMat (monomialsAt w.content).length
         w.coords hws
       have hLs := elim.matVec_congr
         (units.matUnitAt (moveAt i j w.content) w.content i j)
-        (elim.matVec (elim.idList (monomialsAt w.content).length)
+        (elim.matVec (elim.idMat (monomialsAt w.content).length)
           w.coords) w.coords h1
-      have hRs := elim.matVec_idList
+      have hRs := elim.matVec_idMat
         (monomialsAt (moveAt i j w.content)).length
         (elim.matVec
           (units.matUnitAt (moveAt i j w.content) w.content i j)
@@ -2508,15 +2518,15 @@ private theorem seed_forge (d : Nat) (v : HVec) (tail : List HVec)
       exact poly.oneValue_trans hLs (poly.oneValue_symm hRs)
     have hoffv : ∃ w ∈ (⟨mu, x⟩ : HVec) :: t0,
         ¬ poly.unitTail (elim.matVec
-          (elim.idList (monomialsAt w.content).length)
+          (elim.idMat (monomialsAt w.content).length)
           w.coords) := by
       refine ⟨(⟨mu, x⟩ : HVec), List.Mem.head t0, ?_⟩
       intro hu
       exact hxoff (poly.oneValue_unitTail
         (poly.oneValue_symm
-          (elim.matVec_idList (monomialsAt mu).length x hxlen)) hu)
+          (elim.matVec_idMat (monomialsAt mu).length x hxlen)) hu)
     exact blockirr.hom_content d (⟨mu, x⟩ : HVec) t0 v tail
-      (fun c => elim.idList (monomialsAt c).length)
+      (fun c => elim.idMat (monomialsAt c).length)
       hsz0all hwid0 hprov0 hclv hsz hwid hprov hTsq hval hmv hoffv
 
 /-- The count off the head's content is nought: a content the pool
@@ -2555,6 +2565,7 @@ private theorem count_off (d : Nat) (v : HVec) (tail : List HVec)
       elim.collect_rowsLen _ _ hG
     have hR : elim.rowsLen (monomialsAt mu).length
         (units.stackedRaise mu) := units.rowsLen_stackedRaise mu
+    rw [blockcount.countAt_collect _ _ hG]
     show elim.kernelDim
       (elim.collectOf (monomialsAt mu).length
         (groupAt (v :: tail) mu)).length
@@ -2618,6 +2629,7 @@ private theorem count_off (d : Nat) (v : HVec) (tail : List HVec)
   | .inl hz =>
     have hg : groupAt (v :: tail) mu = [] :=
       groupAt_nil_of_countOf _ _ hz
+    rw [blockcount.countAt_collect _ _ (by rw [hg]; exact trivial)]
     show elim.kernelDim
       (elim.collectOf (monomialsAt mu).length
         (groupAt (v :: tail) mu)).length
@@ -2862,7 +2874,7 @@ pair, a carrier whose members pair its content groups at the sum's
 unit hands blocks whose every member pairs there too — the seed's
 closure walks the display through the lowering moves
 (`act_perp` at the transpose partner, `pool_perp` along the
-provenance) and the residual carrier keeps it (`elim.resid_perp_ext` at
+provenance) and the residual carrier keeps it (`elim.residW_perp_ext` at
 the collected group).  The round's own block is the instance the
 descent consumes: its residual carrier pairs it at the unit
 outright (`resid_perp_own`), so the produced blocks are pairwise
@@ -2907,17 +2919,17 @@ private theorem block_pack (d : Nat) (P : List HVec)
     have hstl := prov_settle d P hsz hcl w0 tailB hprovB
       (hsz w0 hw0P) (hwid w0 hw0P) (member_settled P hsz w0 hw0P)
     refine ⟨?_, ?_, ?_, ?_, ?_, htop0, tailB, ?_, hprovB⟩
-    · rw [blockOf_eq, htlB]
+    · rw [blockOf_eq d w0 (pickTop_off P w0 hp), htlB]
       exact hszB
-    · rw [blockOf_eq, htlB]
+    · rw [blockOf_eq d w0 (pickTop_off P w0 hp), htlB]
       exact hwidB
-    · rw [blockOf_eq, htlB]
+    · rw [blockOf_eq d w0 (pickTop_off P w0 hp), htlB]
       exact hindB
-    · rw [blockOf_eq, htlB]
+    · rw [blockOf_eq d w0 (pickTop_off P w0 hp), htlB]
       exact hsetB
-    · rw [blockOf_eq, htlB]
+    · rw [blockOf_eq d w0 (pickTop_off P w0 hp), htlB]
       exact fun y hy => (hstl y hy).2.2
-    · rw [blockOf_eq, htlB]
+    · rw [blockOf_eq d w0 (pickTop_off P w0 hp), htlB]
 
 /-- The letter pair's image keeps a stated perpendicular read: at
 a vacant second letter the image reads the unit tail outright
@@ -3030,7 +3042,7 @@ private theorem pool_perp (d : Nat) (B : List HVec)
 member's residual pairs an external row through its own stated
 display and the block's, the collected rows carried across the
 group's span (`elim.perp_span` at `elim.collect_row_span`) and the
-residual assembled at `elim.resid_perp_ext`. -/
+residual assembled at `elim.residW_perp_ext`. -/
 private theorem carrier_perp_step (B Q Bl : List HVec)
     (hszB : ∀ x ∈ B, sized x)
     (hszQ : ∀ x ∈ Q, sized x)
@@ -3092,16 +3104,17 @@ private theorem carrier_perp_step (B Q Bl : List HVec)
       exact elim.perp_span x.coords.length (groupAt Bl x.content)
         _ _ hGrows hrlen hGr
         (elim.collect_row_span _ _ hGrows k2 hk2)
-    show (elim.dotP (elim.residV x.coords.length
+    rw [residAt_coords _ _ hGrows]
+    show (elim.dotP (elim.residW x.coords.length
         (elim.collectOf x.coords.length (groupAt Bl x.content))
         x.coords)
       (ground.getAt [] (groupAt B x.content) k)).oneValue
       BPair.unit
-    exact elim.resid_perp_ext x.coords.length _ x.coords _ hCrows rfl
+    exact elim.residW_perp_ext x.coords.length _ x.coords _ (elim.collect_rowsLen _ _ hGrows) rfl
       hrlen (hQperp x hxQ k hk) hCr
 
 /-- The residual carrier pairs its own block at the sum's unit:
-the residual sits against every collected row (`elim.resid_perp`)
+the residual sits against every collected row (`elim.residW_perp`)
 and each group row sits inside the collection's span
 (`elim.collect_span_row`), so `elim.perp_span` closes the display
 at the block's own group. -/
@@ -3124,11 +3137,12 @@ private theorem resid_perp_own (Q Bl : List HVec)
       exact rowsLen_groupAt x.content Bl hszBl
     have hCrows := elim.collect_rowsLen x.coords.length
       (groupAt Bl x.content) hGrows
-    have hrlen : (elim.residV x.coords.length
+    have hrlen : (elim.residW x.coords.length
         (elim.collectOf x.coords.length (groupAt Bl x.content))
         x.coords).length = x.coords.length :=
-      elim.length_residV _ _ x.coords hCrows rfl
-    show (elim.dotP (elim.residV x.coords.length
+      elim.length_residW _ _ x.coords hCrows rfl
+    rw [residAt_coords _ _ hGrows]
+    show (elim.dotP (elim.residW x.coords.length
         (elim.collectOf x.coords.length (groupAt Bl x.content))
         x.coords)
       (ground.getAt [] (groupAt Bl x.content) k)).oneValue
@@ -3139,7 +3153,7 @@ private theorem resid_perp_own (Q Bl : List HVec)
       (elim.collect_span_row _ _ hGrows k hk)
     intro k2 hk2
     rw [elim.dotP_comm]
-    exact elim.resid_perp x.coords.length _ x.coords hCrows rfl
+    exact elim.residW_perp x.coords.length _ x.coords (elim.collect_rowsLen _ _ hGrows) rfl
       k2 hk2
 
 /-- The descent keeps a stated perpendicular read: each round's
@@ -3188,7 +3202,7 @@ private theorem exhaustGo_perp (d : Nat) (B : List HVec)
           have hpp := pool_perp d B hszB hclB w0 (hsz w0 hw0Q)
             (hwid w0 hw0Q) (hperp w0 hw0Q) tailB hprovB
           refine (hpp x ?_).2.2
-          rw [← htlB]
+          rw [← htlB, ← blockOf_eq d w0 (pickTop_off Q w0 hp)]
           exact hx
       have hy' : y ∈ blockOf d w0
           ++ blockJoin d (exhaustGo d fuel
@@ -3344,7 +3358,7 @@ private theorem settled_compose (Q P : List HVec)
 member's own coordinates sit in its content group's span and the
 block's rows sit there too, so the residual — the collection's
 residual at that member — stays inside it
-(`elim.spanRel_residV`). -/
+(`elim.spanRel_residW`). -/
 private theorem residCarrier_settled (P Q Bl : List HVec)
     (hszP : ∀ x ∈ P, sized x)
     (hszQ : ∀ x ∈ Q, sized x)
@@ -3393,18 +3407,19 @@ private theorem residCarrier_settled (P Q Bl : List HVec)
       fun k hk => elim.spanRel_trans _ (groupAt Bl x.content) _ _
         hGrows hProws hGspan
         (elim.collect_row_span _ _ hGrows k hk)
-    have hres := elim.spanRel_residV x.coords.length
+    have hres := elim.spanRel_residW x.coords.length
       (elim.collectOf x.coords.length (groupAt Bl x.content))
-      (groupAt P x.content) x.coords hCrows rfl hProws hCspan
+      (groupAt P x.content) x.coords (elim.collect_rowsLen _ _ hGrows) rfl hProws hCspan
       hxspan
     refine Or.inr ?_
-    show elim.spanRel (elim.residV x.coords.length
+    rw [residAt_coords _ _ hGrows]
+    show elim.spanRel (elim.residW x.coords.length
         (elim.collectOf x.coords.length (groupAt Bl x.content))
         x.coords).length (groupAt P x.content)
-      (elim.residV x.coords.length
+      (elim.residW x.coords.length
         (elim.collectOf x.coords.length (groupAt Bl x.content))
         x.coords)
-    rw [elim.length_residV _ _ x.coords hCrows rfl]
+    rw [elim.length_residW _ _ x.coords hCrows rfl]
     exact hres
 
 /-- The descent's blocks settle in the stated carrier: the round's
@@ -3550,18 +3565,17 @@ theorem countAt_of_units (Q : List HVec) (mu : List Nat)
     (hrows : ∀ k, k < (groupAt Q mu).length →
       poly.unitTail (ground.getAt ([] : List BPair)
         (groupAt Q mu) k)) : countAt Q mu = 0 := by
-  have hc := elim.collect_nil_of_units
+  have hc := elim.collectW_nil_of_units
     (places.monomialsAt mu).length (groupAt Q mu) hrows
   show elim.kernelDim
-    (elim.collectOf (places.monomialsAt mu).length
+    (elim.collectW (places.monomialsAt mu).length
         (groupAt Q mu)).length
     (elim.crossM (units.stackedRaise mu)
-      (elim.collectOf (places.monomialsAt mu).length
+      (elim.collectW (places.monomialsAt mu).length
         (groupAt Q mu))) = 0
   rw [hc]
   show (0 : Nat) - elim.rank (elim.crossM (units.stackedRaise mu)
-    (elim.collectOf (places.monomialsAt mu).length
-      ([] : elim.Mat))) = 0
+    ([] : elim.Mat)) = 0
   exact Nat.zero_sub _
 
 /-- A member-level perpendicular display reads at the group level:
@@ -3704,7 +3718,7 @@ private theorem countAt_exhaustGo (d : Nat) (mu : List Nat) :
       | ⟨tailB, htlB, hszB', hwidB', hprovB', _, hsetB'⟩ =>
         have hhead : countAt (blockOf d w0) mu
             = if mu = w0.content then 1 else 0 := by
-          rw [blockOf_eq, htlB]
+          rw [blockOf_eq d w0 (pickTop_off Q w0 hp), htlB]
           exact countAt_block d w0 tailB hszB' hwidB' hprovB'
             hsetB' (pickTop_off Q w0 hp) mu
         have hIH := countAt_exhaustGo d mu fuel
@@ -3820,12 +3834,13 @@ private theorem collect_blockJoin (d : Nat) (P : List HVec)
       settledAt P (act i j x)) (mu : List Nat) :
     dimAt P mu
       = (groupAt (blockJoin d (exhaust d P)) mu).length := by
+  have hG : elim.rowsLen (places.monomialsAt mu).length
+      (groupAt P mu) := rowsLen_groupAt mu P hsz
+  rw [blockcount.dimAt_collect _ _ hG]
   have hBJsz : ∀ y ∈ blockJoin d (exhaust d P), sized y :=
     fun y hy => (exhaust_settle d P hsz hwid hcl y hy).1
   have hBJset : ∀ y ∈ blockJoin d (exhaust d P), settledAt P y :=
     fun y hy => (exhaust_settle d P hsz hwid hcl y hy).2.2
-  have hG : elim.rowsLen (places.monomialsAt mu).length
-      (groupAt P mu) := rowsLen_groupAt mu P hsz
   have hA := elim.collect_rowsLen _ _ hG
   have hB : elim.rowsLen (places.monomialsAt mu).length
       (groupAt (blockJoin d (exhaust d P)) mu) :=
@@ -3897,7 +3912,8 @@ theorem dimOf_countAt (d : Nat) (P : List HVec)
       have hg : groupAt P y.content = [] :=
         groupAt_nil_of_countOf P y.content hz
       have h0 : occ y.content (blockJoin d (exhaust d P)) = 0 := by
-        rw [← length_groupAt, ← hstep1 y.content]
+        rw [← length_groupAt, ← hstep1 y.content,
+          blockcount.dimAt_collect _ _ (by rw [hg]; exact trivial)]
         show (elim.collectOf
           (places.monomialsAt y.content).length
           (groupAt P y.content)).length = 0
@@ -3950,6 +3966,7 @@ theorem dimOf_countAt (d : Nat) (P : List HVec)
     intro w hw
     obtain ⟨hszw, hwidw, hoffw, htopw⟩ := exhaust_top d P hsz hwid
       hcl w (ground.mem_of_countOf_pos w (exhaust d P) hw)
+    rw [blockOf_eq d w hoffw]
     exact seedBlock_dim d w hszw hwidw hoffw htopw
       (lowerspan.ht w.content) (Nat.le_refl _)
   show ground.famFold Nat.add 0 (fun mu => dimAt P mu)
@@ -3991,6 +4008,7 @@ theorem gradedDim_countAt (d : Nat) (P : List HVec)
     intro w hw
     obtain ⟨hszw, hwidw, hoffw, htopw⟩ := exhaust_top d P hsz hwid
       hcl w (ground.mem_of_countOf_pos w (exhaust d P) hw)
+    rw [blockOf_eq d w hoffw]
     exact seedBlock_occ d w hszw hwidw hoffw htopw
       (lowerspan.ht w.content) (Nat.le_refl _) mu
   rw [collect_blockJoin d P hsz hwid hcl mu,
@@ -4413,7 +4431,7 @@ private theorem blockOf_data (d : Nat) (w : HVec)
       (fun jr hjr => htopw (jr + 1) hjr jr (Nat.lt_succ_self jr))
       (Nat.le_refl _) with
   | ⟨tailB, htlB, hszB, hwidB, hprovB, hindB, hsetB⟩ =>
-    ⟨tailB, (blockOf_eq d w).trans htlB, hszB, hwidB, hindB,
+    ⟨tailB, (blockOf_eq d w hoffw).trans htlB, hszB, hwidB, hindB,
       hsetB, hprovB⟩
 
 /-- A settled member of a one-degree carrier reads the unit family
@@ -5068,7 +5086,7 @@ theorem fusionCount_dim (a b : Shape)
   have hprod : dimOf (fusedAt (blockSpan a) (blockSpan b))
       = (blockSpan a).length * (blockSpan b).length := by
     show ground.famFold Nat.add 0
-      (fun mu => (elim.collectOf (places.monomialsAt mu).length
+      (fun mu => (elim.collectW (places.monomialsAt mu).length
         (groupAt (fusedAt (blockSpan a) (blockSpan b)) mu)).length)
       (ground.dedupL
         ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content))

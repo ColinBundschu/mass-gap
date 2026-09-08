@@ -231,6 +231,13 @@ example : ¬ tailRead [a1, a2] [b1] xsB
 example : tailRead [a1, a2] [b1] xsB rsB [2, 2] := by decide +kernel
 example : detProdRead [a1, a2] [b1] xsB [2, 2] := by decide +kernel
 
+-- the cleared minor at the descent's read, decided and through the
+-- theorem at the two-by-two block
+example : (minorQ (⟨a2, 1⟩ : MatQ)).oneValue (minorQD ⟨a2, 1⟩) := by
+  decide +kernel
+example : (minorQ (⟨a2, 1⟩ : MatQ)).oneValue (minorQD ⟨a2, 1⟩) :=
+  minorQD_eq ⟨a2, 1⟩ (by decide +kernel)
+
 /-! The count split at the scalar three-slab chain: the three pivots
 are positive at order one, so each certificate sits at the identity
 congruence, and the assembled `tridiag(3,3,3; 1,1)` splits at the

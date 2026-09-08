@@ -206,7 +206,7 @@ private def fHinv : fusion.Data Nat :=
   ⟨(fun a b => a % 2 == b % 2), (fun _ => ground.eqBeqOf rfl),
    0, id, (fun a b => a + b), 0, (fun _ _ _ => 0), (fun _ _ => []),
    (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
-   id, (fun _ _ => 0), id, (fun _ => none)⟩
+   id, (fun _ _ => 0), id, (fiber.presNone _)⟩
 
 example : ∀ a b : Nat, pAll a = true → pAll b = true →
     ((fHinv.row a b).all pAll) = true := fun _ _ _ _ => rfl
@@ -227,7 +227,7 @@ private def fHdual : fusion.Data Nat :=
   ⟨(fun a b => a == b), (fun _ => ground.eqBeqOf rfl),
    0, id, (fun a b => a + b), 0, (fun _ _ _ => 0), (fun _ _ => []),
    (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
-   id, (fun x _ => x), id, (fun _ => none)⟩
+   id, (fun x _ => x), id, (fiber.presNone _)⟩
 
 example : ∀ a b : Nat, pAll a = true → pAll b = true →
     ((fHdual.row a b).all pAll) = true := fun _ _ _ _ => rfl
@@ -248,7 +248,7 @@ private def fHlaw : fusion.Data Nat :=
   ⟨(fun a b => a == b), (fun _ => ground.eqBeqOf rfl),
    0, id, (fun a b => a + b), 0, (fun _ _ _ => 1), (fun _ _ => [5]),
    (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
-   (fun a => if a == 0 then 0 else 1), (fun x y => (x + y) % 2), id, (fun _ => none)⟩
+   (fun a => if a == 0 then 0 else 1), (fun x y => (x + y) % 2), id, (fiber.presNone _)⟩
 
 example : ∀ a b : Nat, pAll a = true → pAll b = true →
     ((fHlaw.row a b).all pAll) = true := fun _ _ _ _ => rfl
@@ -277,7 +277,7 @@ private def fHunit : fusion.Data Nat :=
   ⟨(fun a b => a % 2 == b % 2), (fun _ => ground.eqBeqOf rfl),
    0, id, (fun a b => a + b), 0, (fun _ _ _ => 0), (fun _ _ => []),
    (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
-   id, (fun _ _ => 0), id, (fun _ => none)⟩
+   id, (fun _ _ => 0), id, (fiber.presNone _)⟩
 
 example : ∀ a b : Nat, pHunit a = true → pHunit b = true →
     ((fHunit.row a b).all pHunit) = true := fun _ _ _ _ => rfl
@@ -309,7 +309,7 @@ private def fHdualP : fusion.Data Nat :=
   ⟨(fun a b => a % 2 == b % 2), (fun _ => ground.eqBeqOf rfl),
    0, (fun a => 2 * a), (fun a b => a + b), 0, (fun _ _ _ => 0),
    (fun _ _ => []), (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
-   (fun a => a % 3), (fun x y => (x + y) % 3), id, (fun _ => none)⟩
+   (fun a => a % 3), (fun x y => (x + y) % 3), id, (fiber.presNone _)⟩
 
 example : ∀ a b : Nat, pHdualP a = true → pHdualP b = true →
     ((fHdualP.row a b).all pHdualP) = true := fun _ _ _ _ => rfl
@@ -360,7 +360,7 @@ private def fHrow : fusion.Data Nat :=
    0, (fun a => if a == 0 then 0 else 3 - a), (fun a b => a + b), 0,
    (fun _ _ _ => 1), (fun a b => if a == 1 && b == 1 then [5] else []),
    (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
-   (fun a => a % 3), (fun x y => (x + y) % 3), id, (fun _ => none)⟩
+   (fun a => a % 3), (fun x y => (x + y) % 3), id, (fiber.presNone _)⟩
 
 example : ∀ a b : Nat, pHrow a = true → pHrow b = true →
     fusion.clsLaw fHrow a b := by
@@ -588,7 +588,7 @@ private def mv0 : Nat → Nat → Nat :=
 private def pre0 : Nat → Nat := fun e => if e == 0 then 2 else 0
 
 example : lattice.wellRead torus23 := by decide +kernel
-example : fiberdec.permRead torus23 tr1 trI1 := by decide +kernel
+example : lattice.linkIso torus23 torus23 tr1 trI1 := by decide +kernel
 example : ∀ e, e < 2 → transCutRead torus23
     (fun v => fiberdec.digitAt 3 e v) 3 := by decide +kernel
 example : ∀ e, e < 2 → cutMoveRead torus23 tr1
@@ -597,12 +597,12 @@ example : ∀ e, e < 2 → ∀ u, u < 3 → ∀ v, v < 3 →
     mv1 e u = mv1 e v → u = v := by decide +kernel
 example : ∀ e, e < 2 → pre1 e < 3 ∧ mv1 e (pre1 e) = 0 := by decide +kernel
 
-example : ¬ (fiberdec.permConf (fusion.dataA 3) trI1
+example : ¬ (pairpencil.permConf (fusion.dataA 3) tr1 trI1
     (fiberdec.torusRegion 2 3).links wind = wind) := by decide +kernel
-example : chargeT 3 2 3 (fiberdec.permConf (fusion.dataA 3) trI1
+example : chargeT 3 2 3 (pairpencil.permConf (fusion.dataA 3) tr1 trI1
     (fiberdec.torusRegion 2 3).links wind) = [1, 0] := by decide +kernel
 
-example : chargeT 3 2 3 (fiberdec.permConf (fusion.dataA 3) trI1
+example : chargeT 3 2 3 (pairpencil.permConf (fusion.dataA 3) tr1 trI1
       (fiberdec.torusRegion 2 3).links wind)
     = chargeT 3 2 3 wind :=
   chargeT_perm 3 2 3 wind tr1 trI1 mv1 pre1 (by decide +kernel) (by decide +kernel)
@@ -612,28 +612,31 @@ example : chargeT 3 2 3 (fiberdec.permConf (fusion.dataA 3) trI1
 /-! The winding direction's own translation: the string is carried
 onto itself and the charge family stands. -/
 
-example : fiberdec.permConf (fusion.dataA 3) trI0
+example : pairpencil.permConf (fusion.dataA 3) tr0 trI0
     (fiberdec.torusRegion 2 3).links wind = wind := by decide +kernel
 
-example : chargeT 3 2 3 (fiberdec.permConf (fusion.dataA 3) trI0
+example : chargeT 3 2 3 (pairpencil.permConf (fusion.dataA 3) tr0 trI0
       (fiberdec.torusRegion 2 3).links wind)
     = chargeT 3 2 3 wind :=
   chargeT_perm 3 2 3 wind tr0 trI0 mv0 pre0 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-/-! The permutation binder: the witness map collapsed to one key,
-the translation and every read stated at it kept — the relabeled
-configuration reads that key's label at every link and both charge
-components move. -/
+/-! The isomorphism binder: the witness map collapsed to one key,
+the translation and every read stated at it kept — the link
+isomorphism refused, and the relabeled configuration reads the
+collapsed key's label at the one link the translation reads back
+with the unit at every other, a configuration off the occupancy
+read. -/
 
-example : ¬ fiberdec.permRead torus23 tr1 (fun _ => 0) := by decide +kernel
-example : chargeT 3 2 3 (fiberdec.permConf (fusion.dataA 3)
-    (fun _ => 0) (fiberdec.torusRegion 2 3).links wind) = [0, 0] := by
+example : ¬ lattice.linkIso torus23 torus23 tr1 (fun _ => 0) := by decide +kernel
+example : pairpencil.permConf (fusion.dataA 3) tr1 (fun _ => 0)
+      (fiberdec.torusRegion 2 3).links wind
+    = (List.range 18).map (fun l => if l == tr1 0 then fundA else unitA) := by
   decide +kernel
-example : ¬ (chargeT 3 2 3 (fiberdec.permConf (fusion.dataA 3)
-      (fun _ => 0) (fiberdec.torusRegion 2 3).links wind)
-    = chargeT 3 2 3 wind) := by decide +kernel
+example : carrier.occupied (fusion.dataA 3) torus23 (pairpencil.permConf (fusion.dataA 3)
+    tr1 (fun _ => 0) (fiberdec.torusRegion 2 3).links wind) = false := by
+  decide +kernel
 
 /-! The grade-map binders at the direction-one translation.  The
 transport: the all-identity map refuses at the moved direction
@@ -1496,13 +1499,13 @@ the join's own. -/
 
 private def dgL : List elim.Mat := [[[⟨1, 3⟩]], [[⟨7, 1⟩]]]
 private def spA1 : inertia.Split 1 :=
-  ⟨⟨inertia.idMat 1, rfl⟩, ⟨inertia.idMat 1, rfl⟩,
+  ⟨⟨elim.idMat 1, rfl⟩, ⟨elim.idMat 1, rfl⟩,
    [.one ⟨1, 3⟩], 0, rfl⟩
 private def spB1 : inertia.Split 1 :=
-  ⟨⟨inertia.idMat 1, rfl⟩, ⟨inertia.idMat 1, rfl⟩,
+  ⟨⟨elim.idMat 1, rfl⟩, ⟨elim.idMat 1, rfl⟩,
    [.one ⟨7, 1⟩], 0, rfl⟩
 private def spS2 : inertia.Split 2 :=
-  ⟨⟨inertia.idMat 2, rfl⟩, ⟨inertia.idMat 2, rfl⟩,
+  ⟨⟨elim.idMat 2, rfl⟩, ⟨elim.idMat 2, rfl⟩,
    [.one ⟨1, 3⟩, .one ⟨7, 1⟩], 0, rfl⟩
 
 example : greenprod.assemble dgL (unitOffs [1, 1])
@@ -1536,10 +1539,10 @@ example : elim.matOneValue [[⟨19, 1⟩]]
     (elim.matAdd (inertia.matScale 4 gramQ1) secQ0) := by decide +kernel
 
 private def spSh0 : inertia.Split 1 :=
-  ⟨⟨inertia.idMat 1, rfl⟩, ⟨inertia.idMat 1, rfl⟩,
+  ⟨⟨elim.idMat 1, rfl⟩, ⟨elim.idMat 1, rfl⟩,
    [.one ⟨7, 1⟩], 0, rfl⟩
 private def spSh1 : inertia.Split 1 :=
-  ⟨⟨inertia.idMat 1, rfl⟩, ⟨inertia.idMat 1, rfl⟩,
+  ⟨⟨elim.idMat 1, rfl⟩, ⟨elim.idMat 1, rfl⟩,
    [.one ⟨1, 3⟩], 0, rfl⟩
 
 example : certconstruct.countAtPair
@@ -1623,7 +1626,7 @@ and the block structure are the reads of that head pencil, pinned
 per cell. -/
 
 private def spDg (a b : BPair) : inertia.Split 2 :=
-  ⟨⟨inertia.idMat 2, rfl⟩, ⟨inertia.idMat 2, rfl⟩,
+  ⟨⟨elim.idMat 2, rfl⟩, ⟨elim.idMat 2, rfl⟩,
    [.one a, .one b], 0, rfl⟩
 private def spUt (t tw a b : BPair) : inertia.Split 2 :=
   ⟨⟨[[⟨2, 1⟩, t], [u, ⟨2, 1⟩]], rfl⟩,

@@ -653,20 +653,6 @@ instance (E : Ext) (p : Poly) (wn wd : Pos) :
 factor, the balance folds' vanishing tail, scalar pass and constant
 read, and the derivative's coefficient read at every key. -/
 
-/-- A scalar passes into the fold on the right. -/
-private theorem foldB_mul_right {α : Type} (c : BPair) (f : α → BPair)
-    (l : List α) :
-    (ground.famFold BPair.add BPair.unit f l * c).oneValue
-      (ground.famFold BPair.add BPair.unit (fun i => f i * c) l) := by
-  refine BPair.oneValue_trans
-    (BPair.oneValue_of_eq
-      (BPair.mul_comm (ground.famFold BPair.add BPair.unit f l) c)) ?_
-  refine BPair.oneValue_trans
-    (BPair.oneValue_symm (ground.foldB_mul_left c f l)) ?_
-  exact BPair.oneValue_of_eq
-    (ground.famFold_congr_all BPair.add BPair.unit _ _
-      (fun i => BPair.mul_comm c (f i)) l)
-
 /-- A constant family's fold is the family's count against the
 constant. -/
 private theorem foldB_const {α : Type} (c : BPair) : ∀ l : List α,
@@ -687,9 +673,7 @@ private theorem swapCancel (P Q R : BPair) :
   rw [BPair.add_comm R P.swap, BPair.add_add_comm P Q P.swap R]
   refine BPair.oneValue_trans
     (BPair.add_congr
-      (BPair.oneValue_trans
-        (BPair.oneValue_of_eq (BPair.add_comm P P.swap))
-        (BPair.swap_add_null (BPair.oneValue_refl P)))
+      (BPair.add_swap_null P)
       (BPair.oneValue_refl (Q + R))) ?_
   refine BPair.oneValue_trans (BPair.unit_add (Q + R)) ?_
   exact BPair.oneValue_of_eq (BPair.add_comm Q R)

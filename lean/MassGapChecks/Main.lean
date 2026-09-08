@@ -206,13 +206,13 @@ example : pairpencil.pencilRead (data (.B 0)) square 40 2
       inertia.mkSplit 2 (matAdd (inertia.matScaleB (BPair.ofNat 10) (idMat 2))
         (winM (.B 0))))] := by decide +kernel
 
-/-! The member's vertex lists are unstated, so the term's entries
-read the loop clause: the spinor loop's own entry the count one at
-the loop labels read off the boundary, the entry doubled is
-refused at the entry conjunct with the symmetry, the cap and the
-support standing, and at the clearing two the read passes with the
-gram and the member doubled together and refuses with the gram
-doubled alone. -/
+/-! The window's states are loops of the one plaquette, so the
+term's entries read the loop clause: the spinor loop's own entry
+the count one at the loop labels read off the boundary, the entry
+doubled is refused at the entry conjunct with the symmetry, the cap
+and the support standing, and at the clearing two the read passes
+with the gram and the member doubled together and refuses with the
+gram doubled alone. -/
 
 private def winMDbl : Mat := [[u, u], [u, ⟨3, 1⟩]]
 
@@ -221,10 +221,6 @@ example : pairpencil.loopLabel (data (.B 0)) square sqPlaq
       = some (ground.getAt (data (.B 0)).unit (winLabels (.B 0)) 0)
     ∧ pairpencil.loopLabel (data (.B 0)) square sqPlaq
       (carrier.unitConf (data (.B 0)) square) = some (data (.B 0)).unit
-    ∧ pairpencil.termEntry (data (.B 0)) square
-      ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) sqPlaq
-      (carrier.unitConf (data (.B 0)) square) [] (carrier.unitConf (data (.B 0)) square) []
-      = none
     ∧ pairpencil.entriesRead (data (.B 0)) square 2
       ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) 1 (idMat 2) sqPlaq
       (winM (.B 0))
@@ -237,7 +233,7 @@ example : pairpencil.loopLabel (data (.B 0)) square sqPlaq
     ∧ ¬ pairpencil.entriesRead (data (.B 0)) square 2
       ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) 2
       (inertia.matScaleB (BPair.ofNat 2) (idMat 2)) sqPlaq (winM (.B 0))
-    ∧ pairpencil.symmRead winMDbl
+    ∧ elim.symmRead winMDbl
     ∧ pairpencil.termSupport (data (.B 0)) square 2
       ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) sqPlaq winMDbl
     ∧ inertia.capAt winMDbl (inertia.matScaleB (BPair.ofNat 10) (idMat 2))
@@ -245,6 +241,21 @@ example : pairpencil.loopLabel (data (.B 0)) square sqPlaq
         winMDbl))
       (inertia.mkSplit 2 (matAdd (inertia.matScaleB (BPair.ofNat 10) (idMat 2))
         winMDbl)) := by decide +kernel
+
+/-! The contraction's coherence at the member (`con:fiber`'s
+magnetic read at `con:memtable`'s table): the spinor loop's own
+entry, the four boundary links each at the one member of the
+spinor against the `θ` block against the spinor's dual, the
+corners the spinor's coevaluations at the count four, reads the
+fusion count one the loop clause takes; and the vacuum's own
+entry, the boundary links' lists vacant at the `θ` block alone,
+reads the vacant contraction against the count's unit. -/
+example : pairpencil.contractAt (data (.B 0)) square
+    ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) 1 (idMat 2)
+    (winM (.B 0)) sqPlaq 1 1 = true := by decide +kernel
+example : pairpencil.contractAt (data (.B 0)) square
+    ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) 1 (idMat 2)
+    (winM (.B 0)) sqPlaq 0 0 = true := by decide +kernel
 
 /-! `Sp(3)`'s window at cutoff fifty-six: the first fundamental's
 floor `14` at the clearing thirty-two. -/
@@ -324,13 +335,14 @@ walks priced at the record beside the `A`-series' fourth residue's
 (`E8`'s matrix `prop:repring`'s unit read with `prop:row`'s base at
 the self-dual θ, the tex's own values), the electric matrices at
 the standing committed level gaps with the multi-loop window's tie
-at the second `A`-arm, the counts carried to an interior ray
-through the theorem route beside its decided twin, and one refusal
-per binder: the tie at the member pair one beyond, the sample's
-split forged at the vacuum's side, the foot shifted off the free
-end, the range's top beyond the cover's priced magnitude bound, and
-the sweep at a level beyond the window's content refusing the
-count; and the universal theorem's routes beside the decided twins —
+at the second `A`-arm, the flat window carried to an
+interior ray's own pencil through the theorem route beside its
+decided twin, and one refusal per binder: the pair one beyond the
+level gap, the cell's gap one beyond the level tie, the sample's
+split forged at the vacuum's side, the foot shifted beyond the
+cell's top, the range's top beyond the cover's priced magnitude
+bound, and the sweep at a level beyond the window's content
+refusing the count; and the universal theorem's routes beside the decided twins —
 `D₄`'s four-loop window and `E₈`'s coupled window read off
 `clauseI_all` outright, one series route per series at a rank past
 every decide. -/
@@ -427,48 +439,66 @@ example : winE (.A 1) = K.freeGap (data (.A 1)) square (winCut (.A 1))
     (idMat (winO (.A 1))) := by
   decide +kernel
 
-/-! The counts carried to the interior: the theorem route at the
-ray τ = 1/2 of `Spin(5)`'s window beside its decided twin, the
-evaluated pair the committed split's own value. -/
+/-! The flat window carried to the interior: the theorem route at
+the ray τ = 1/2 of `Spin(5)`'s window, the point `[1 : 2]`, beside
+its decided twin — the ray `[4 : 1]`'s pencil at the levels
+`⟨8 : 4⟩` and `⟨4 ℓ₊ : 4⟩`, the site data `diag(-4, 155)` and
+`diag(-80, 79)`, count one each. -/
 
 private def spHalfB0 : Split 2 :=
   ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [.one ⟨1, 5⟩, .one ⟨156, 1⟩], 0, rfl⟩
+private def spHalfB0T : Split 2 :=
+  ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [.one ⟨1, 81⟩, .one ⟨80, 1⟩], 0, rfl⟩
 
-example : splitRead (cellcount.evalPC (sweepLo (.B 0)) ⟨2, 1⟩ 2 2)
+example : splitRead (siteDatum
+    (matAdd (pencil.rayH (winE (.B 0)) (winM (.B 0)) (2 * 2) (1 * 1))
+      (matScale (2 * 2 * 1) (idMat 2))) (matScale (2 * 2 * 2) (idMat 2)))
     spHalfB0 := by decide +kernel
+example : splitRead (siteDatum
+    (matAdd (pencil.rayH (winE (.B 0)) (winM (.B 0)) (2 * 2) (1 * 1))
+      (matScale (2 * 2 * 1) (idMat 2))) (matScale (2 * 2 * winLvl (.B 0)) (idMat 2)))
+    spHalfB0T := by decide +kernel
 
-example : revAt spHalfB0 = 1 :=
-  (clauseI_counts (.B 0) clB0 ⟨2, 1⟩ 2 (by decide +kernel)
-    (by decide +kernel)).1 spHalfB0 (by decide +kernel)
+example : flatstep.vacFlat (pencil.rayH (winE (.B 0)) (winM (.B 0)) (2 * 2) (1 * 1))
+    (idMat 2) (2 * 2 * 2) (2 * 2 * 1) (2 * 2 * winLvl (.B 0)) (2 * 2 * 1) 1
+    spHalfB0 spHalfB0T :=
+  clauseI_counts (.B 0) clB0 1 2 (by decide +kernel) (by decide +kernel)
+    spHalfB0 spHalfB0T (by decide +kernel) (by decide +kernel)
+example : flatstep.vacFlat (pencil.rayH (winE (.B 0)) (winM (.B 0)) (2 * 2) (1 * 1))
+    (idMat 2) (2 * 2 * 2) (2 * 2 * 1) (2 * 2 * winLvl (.B 0)) (2 * 2 * 1) 1
+    spHalfB0 spHalfB0T := by decide +kernel
 
 /-! The refusals, one per binder. -/
 
-example : ¬ (BPair.scale (⟨2, 1⟩ : BPair) 4
-    + BPair.ofPos (4 * ground.posOfSucc (2 * winFloorN (.B 0) - 1))
-    ≤ BPair.scale (⟨winLvl (.B 0), 1⟩ : BPair) 4) := by
+example : ¬ gappos.gapsAt 4 (ground.posOfSucc (2 * winFloorN (.B 0) - 1)) 4
+    [winCell (.B 0)] := by decide +kernel
+
+example : ¬ gappos.cellRead (winE (.B 0)) (winM (.B 0)) (idMat 2)
+    { winCell (.B 0) with gp := ground.posOfSucc (2 * winFloorN (.B 0) - 1) } := by
   decide +kernel
 
 private def spForgeB0 : Split 2 :=
   ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [.one ⟨2, 1⟩, .one ⟨40, 1⟩], 0, rfl⟩
 
-example : ¬ gappos.chainRead (sweepLo (.B 0)) 2 1 winFoot
-    [(winTop, winCover (.B 0), (BPair.unit, 1), spForgeB0)] := by
+example : ¬ gappos.cellsRead (winE (.B 0)) (winM (.B 0)) (idMat 2) winFoot
+    [{ winCell (.B 0) with spA := spForgeB0 }] := by decide +kernel
+
+example : ¬ gappos.cellsRead (winE (.B 0)) (winM (.B 0)) (idMat 2)
+    ⟨BPair.ofNat 2, 1⟩ [winCell (.B 0)] := by decide +kernel
+
+private def covFar : cellcount.Cover :=
+  cellcount.diagCover ⟨BPair.ofNat 2, 1⟩ ⟨2, 1⟩ ⟨2, 1⟩ 1
+
+example : ¬ gappos.cellsRead (winE (.B 0)) (winM (.B 0)) (idMat 2) winFoot
+    [{ winCell (.B 0) with hi := ⟨BPair.ofNat 2, 1⟩, covA := covFar, covT := covFar }] := by
   decide +kernel
 
-example : ¬ gappos.chainRead (sweepLo (.B 0)) 2 1
-    ⟨BPair.ofNat 1, 1⟩ (cellsLo (.B 0)) := by decide +kernel
-
-example : ¬ gappos.chainRead (sweepLo (.B 0)) 2 1 winFoot
-    [(⟨BPair.ofNat 2, 1⟩,
-      cellcount.diagCover ⟨BPair.ofNat 2, 1⟩ ⟨2, 1⟩ ⟨2, 1⟩ 1,
-      (BPair.unit, 1), sampleLo (.B 0))] := by decide +kernel
-
 example : ¬ cellcount.countAt
-    (freecell.freePMat (winE (.B 0)) (winM (.B 0)) (inertia.idMat 2)
+    (freecell.freePMat (winE (.B 0)) (winM (.B 0)) (elim.idMat 2)
       (ground.posOfSucc (4 * winFloorN (.B 0) + 1)) 1) 2
     BPair.unit 1 1
     (inertia.mkSplit 2 (cellcount.evalPC
-      (freecell.freePMat (winE (.B 0)) (winM (.B 0)) (inertia.idMat 2)
+      (freecell.freePMat (winE (.B 0)) (winM (.B 0)) (elim.idMat 2)
         (ground.posOfSucc (4 * winFloorN (.B 0) + 1)) 1)
       BPair.unit 1 2)) := by decide +kernel
 

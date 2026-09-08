@@ -24,7 +24,8 @@ the module: the moved folds hand-computed at that block's pair and
 open ground places blockcount strings
 
 /-! The committed exhaustions, the walk tier's shared fixtures: the
-walk's value at the committed spans, each pin one kernel collection
+walk's value at the committed spans at the residuals' canonical
+representatives, each pin one kernel collection
 at the span literal, the consuming batteries' reads rewrites at the
 literal (`MassGapChecks.Blockcount`'s span fixtures). -/
 
@@ -34,11 +35,10 @@ namespace strings
 `walk 0 2 (blockSpan [1, 1, 0])`: the four strings at the height
 run. -/
 def walk110 : List PairString :=
-  [⟨⟨[2, 1, 0], [⟨6, 6⟩, ⟨9, 8⟩, ⟨8, 9⟩]⟩, 2⟩,
-   ⟨⟨[2, 0, 1], [⟨6, 6⟩, ⟨9, 8⟩, ⟨8, 9⟩]⟩, 1⟩,
-   ⟨⟨[1, 2, 0], [⟨9, 8⟩, ⟨8, 9⟩, ⟨6, 6⟩]⟩, 1⟩,
-   ⟨⟨[1, 1, 1], [⟨545, 543⟩, ⟨435, 431⟩, ⟨543, 545⟩,
-      ⟨475, 473⟩, ⟨431, 435⟩, ⟨473, 475⟩]⟩, 0⟩]
+  [⟨⟨[2, 1, 0], [⟨1, 1⟩, ⟨2, 1⟩, ⟨1, 2⟩]⟩, 2⟩,
+   ⟨⟨[2, 0, 1], [⟨1, 1⟩, ⟨2, 1⟩, ⟨1, 2⟩]⟩, 1⟩,
+   ⟨⟨[1, 2, 0], [⟨2, 1⟩, ⟨1, 2⟩, ⟨1, 1⟩]⟩, 1⟩,
+   ⟨⟨[1, 1, 1], [⟨3, 1⟩, ⟨5, 1⟩, ⟨1, 3⟩, ⟨3, 1⟩, ⟨1, 5⟩, ⟨1, 3⟩]⟩, 0⟩]
 
 theorem walk110_pin :
     walk 0 2 (blockcount.blockSpan [1, 1, 0]) = walk110 := by
@@ -47,7 +47,7 @@ theorem walk110_pin :
 /-- The two-row span's exhaustion at the pair,
 `walk 0 1 (blockSpan [2, 1])`: the one string at height two. -/
 def walk21 : List PairString :=
-  [⟨⟨[3, 1], [⟨6, 6⟩, ⟨6, 6⟩, ⟨9, 8⟩, ⟨8, 9⟩]⟩, 2⟩]
+  [⟨⟨[3, 1], [⟨1, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩, ⟨1, 2⟩]⟩, 2⟩]
 
 theorem walk21_pin :
     walk 0 1 (blockcount.blockSpan [2, 1]) = walk21 := by

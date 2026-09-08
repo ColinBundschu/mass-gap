@@ -94,8 +94,7 @@ def modPres (F : states.FList) (i j : Nat)
     (rest : List (Nat × Nat)) : states.Comb :=
   let paired := rest.foldl (fun w p => lap.swapIdx p.1 p.2 w)
     (List.range F.length)
-  let cPow := rest.foldl (fun c _ => poly.pMul c
-    ([⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩])) poly.pOne
+  let cPow := rest.foldl (fun c _ => poly.pMul c states.invDfP) poly.pOne
   [(paired, cPow),
    (lap.swapIdx i j paired,
     poly.pMul ([⟨1, 2⟩], [⟨2, 1⟩, ⟨2, 1⟩]) cPow)]

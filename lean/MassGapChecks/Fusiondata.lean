@@ -500,7 +500,7 @@ example :
     elim.spanRel (places.monomialsAt [1, 1]).length
       (groupAt [(⟨[1, 1], [BPair.ofNat 1,
           (BPair.ofNat 1).swap]⟩ : HVec)] [1, 1])
-      (elim.residV (places.monomialsAt [1, 1]).length
+      (elim.residW (places.monomialsAt [1, 1]).length
         (elim.collectOf (places.monomialsAt [1, 1]).length
           (groupAt [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
             ⟨[1, 1], [BPair.ofNat 1, BPair.ofNat 1]⟩,
@@ -509,7 +509,7 @@ example :
     ∧ (∀ j, j < 2 → ∀ i, i < j →
       poly.unitTail (elim.matVec
         (units.matUnitAt (moveAt i j [1, 1]) [1, 1] i j)
-        (elim.residV (places.monomialsAt [1, 1]).length
+        (elim.residW (places.monomialsAt [1, 1]).length
           (elim.collectOf (places.monomialsAt [1, 1]).length
             (groupAt [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
               ⟨[1, 1], [BPair.ofNat 1, BPair.ofNat 1]⟩,

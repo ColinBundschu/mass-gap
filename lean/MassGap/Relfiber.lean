@@ -111,7 +111,7 @@ def tensorM (A B : Mat) : Mat :=
 /-- The tensor power `G^{⊗k}`, at the unit power the scalars'
 line. -/
 def tensorPow (G : Mat) : Nat → Mat
-  | 0 => inertia.idMat 1
+  | 0 => elim.idMat 1
   | k + 1 => tensorM G (tensorPow G k)
 
 /-- The tensor-sum pencil `∑_{a+b+1=ϱ} G^{⊗a} ⊗ H ⊗ G^{⊗b}`, the
@@ -278,7 +278,7 @@ power. -/
 theorem tensorPow_shape (G : Mat) (hG : rowsLen G.length G) :
     ∀ k : Nat, rowsLen (G.length ^ k) (tensorPow G k)
       ∧ (tensorPow G k).length = G.length ^ k
-  | 0 => ⟨inertia.idMat_rows 1, inertia.idMat_len 1⟩
+  | 0 => ⟨elim.rowsLen_idMat 1, elim.length_idMat 1⟩
   | k + 1 => by
     have ih := tensorPow_shape G hG k
     refine ⟨?_, ?_⟩
@@ -894,17 +894,17 @@ theorem matMul_tensorM (q r s : Nat) (A B C D : Mat)
 /-- The identity at the product order is the two identities' own
 tensor. -/
 theorem tensorM_idMat (m n : Nat) :
-    tensorM (inertia.idMat m) (inertia.idMat n)
-      = inertia.idMat (m * n) := by
-  have hlL : (tensorM (inertia.idMat m) (inertia.idMat n)).length
+    tensorM (elim.idMat m) (elim.idMat n)
+      = elim.idMat (m * n) := by
+  have hlL : (tensorM (elim.idMat m) (elim.idMat n)).length
       = m * n := by
-    rw [tensorM_length, inertia.idMat_len, inertia.idMat_len]
+    rw [tensorM_length, elim.length_idMat, elim.length_idMat]
   have hrL : rowsLen (m * n)
-      (tensorM (inertia.idMat m) (inertia.idMat n)) :=
-    rowsLen_tensorM m n (inertia.idMat m) (inertia.idMat n)
-      (inertia.idMat_rows m) (inertia.idMat_rows n)
+      (tensorM (elim.idMat m) (elim.idMat n)) :=
+    rowsLen_tensorM m n (elim.idMat m) (elim.idMat n)
+      (elim.rowsLen_idMat m) (elim.rowsLen_idMat n)
   refine ground.getAt_ext ([] : List BPair) _ _
-    (by rw [hlL, inertia.idMat_len]) ?_
+    (by rw [hlL, elim.length_idMat]) ?_
   intro t ht
   rw [hlL] at ht
   have hn0 : 0 < n := by
@@ -913,8 +913,8 @@ theorem tensorM_idMat (m n : Nat) :
     | succ n0 => exact Nat.succ_pos n0
   refine ground.getAt_ext BPair.unit _ _ ?_ ?_
   · rw [rowsLen_getAt _ t hrL (by rw [hlL]; exact ht),
-      rowsLen_getAt _ t (inertia.idMat_rows (m * n))
-        (by rw [inertia.idMat_len]; exact ht)]
+      rowsLen_getAt _ t (elim.rowsLen_idMat (m * n))
+        (by rw [elim.length_idMat]; exact ht)]
   intro u hu
   rw [rowsLen_getAt _ t hrL (by rw [hlL]; exact ht)] at hu
   obtain ⟨i, k, hk, htik⟩ := pairSplit n hn0 t
@@ -923,33 +923,33 @@ theorem tensorM_idMat (m n : Nat) :
   have ha : a < m := pairIdxLt (by rw [← huab]; exact hu)
   have hL : ground.getAt BPair.unit
       (ground.getAt []
-        (tensorM (inertia.idMat m) (inertia.idMat n)) t) u
+        (tensorM (elim.idMat m) (elim.idMat n)) t) u
       = ((if a = i then BPair.ofNat 1 else BPair.unit)
         * (if b = k then BPair.ofNat 1 else BPair.unit)).norm := by
-    have ht2 : t = i * (inertia.idMat n).length + k := by
-      rw [inertia.idMat_len]; exact htik
-    rw [ht2, getAt_tensorM (inertia.idMat m) (inertia.idMat n) i k
-      (by rw [inertia.idMat_len]; exact hi)
-      (by rw [inertia.idMat_len]; exact hk)]
+    have ht2 : t = i * (elim.idMat n).length + k := by
+      rw [elim.length_idMat]; exact htik
+    rw [ht2, getAt_tensorM (elim.idMat m) (elim.idMat n) i k
+      (by rw [elim.length_idMat]; exact hi)
+      (by rw [elim.length_idMat]; exact hk)]
     have hrowM : (ground.getAt ([] : List BPair)
-        (inertia.idMat m) i).length = m :=
-      rowsLen_getAt (inertia.idMat m) i (inertia.idMat_rows m)
-        (by rw [inertia.idMat_len]; exact hi)
+        (elim.idMat m) i).length = m :=
+      rowsLen_getAt (elim.idMat m) i (elim.rowsLen_idMat m)
+        (by rw [elim.length_idMat]; exact hi)
     have hrowN : (ground.getAt ([] : List BPair)
-        (inertia.idMat n) k).length = n :=
-      rowsLen_getAt (inertia.idMat n) k (inertia.idMat_rows n)
-        (by rw [inertia.idMat_len]; exact hk)
+        (elim.idMat n) k).length = n :=
+      rowsLen_getAt (elim.idMat n) k (elim.rowsLen_idMat n)
+        (by rw [elim.length_idMat]; exact hk)
     have hu2 : u = a * (ground.getAt ([] : List BPair)
-        (inertia.idMat n) k).length + b := by
+        (elim.idMat n) k).length + b := by
       rw [hrowN]; exact huab
-    rw [hu2, getAt_tensorV (ground.getAt [] (inertia.idMat m) i)
-      (ground.getAt [] (inertia.idMat n) k) a b
+    rw [hu2, getAt_tensorV (ground.getAt [] (elim.idMat m) i)
+      (ground.getAt [] (elim.idMat n) k) a b
       (by rw [hrowM]; exact ha) (by rw [hrowN]; exact hb),
-      inertia.getAt_idMat m i a hi ha, inertia.getAt_idMat n k b hk hb]
+      elim.getAt_idMat m i a hi ha, elim.getAt_idMat n k b hk hb]
   have hR : ground.getAt BPair.unit
-      (ground.getAt [] (inertia.idMat (m * n)) t) u
+      (ground.getAt [] (elim.idMat (m * n)) t) u
       = if u = t then BPair.ofNat 1 else BPair.unit :=
-    inertia.getAt_idMat (m * n) t u ht hu
+    elim.getAt_idMat (m * n) t u ht hu
   rw [hL, hR, htik, huab]
   by_cases hia : a = i
   · by_cases hkb : b = k
@@ -1084,9 +1084,9 @@ private theorem tensorM_congrR (w : Nat) (B B' : Mat)
 
 /-! ### The relative translation and the tensor congruence -/
 
-private theorem idMat_zero : inertia.idMat 0 = [] := by
-  have h := inertia.idMat_len 0
-  cases hm : inertia.idMat 0 with
+private theorem idMat_zero : elim.idMat 0 = [] := by
+  have h := elim.length_idMat 0
+  cases hm : elim.idMat 0 with
   | nil => rfl
   | cons _ _ => rw [hm] at h; exact Nat.noConfusion h
 
@@ -1098,9 +1098,9 @@ translation the second slot's factor. -/
 theorem comm_shift (nX L : Nat) (X P : Mat) (hX : sqAt X nX)
     (hP : sqAt P L) :
     matOneValue
-      (matMul (tensorM X (inertia.idMat L)) (tensorM (inertia.idMat nX) P))
-      (matMul (tensorM (inertia.idMat nX) P)
-        (tensorM X (inertia.idMat L))) := by
+      (matMul (tensorM X (elim.idMat L)) (tensorM (elim.idMat nX) P))
+      (matMul (tensorM (elim.idMat nX) P)
+        (tensorM X (elim.idMat L))) := by
   have hXl : X.length = nX := sqAt_len hX
   have hXr : rowsLen nX X := rowsLen_of_sqAt hX
   have hPl : P.length = L := sqAt_len hP
@@ -1113,7 +1113,7 @@ theorem comm_shift (nX L : Nat) (X P : Mat) (hX : sqAt X nX)
     cases L with
     | zero =>
       rw [idMat_zero, ground.nil_of_length_zero _ hPl, tensorM_nil X,
-        tensorM_nil (inertia.idMat (n0 + 1))]
+        tensorM_nil (elim.idMat (n0 + 1))]
       exact trivial
     | succ l0 =>
       have hnX : 0 < n0 + 1 := Nat.succ_pos n0
@@ -1121,35 +1121,35 @@ theorem comm_shift (nX L : Nat) (X P : Mat) (hX : sqAt X nX)
       have hP0 : 0 < P.length := by rw [hPl]; exact hL
       have hPt : (transposeM P).length = l0 + 1 :=
         length_transposeM P hPr hP0
-      have hIP : rowsLen (l0 + 1) (matMul (inertia.idMat (l0 + 1)) P) :=
-        rowsLen_cast hPt (rowsLen_matMul (inertia.idMat (l0 + 1)) P)
-      have hPI : rowsLen (l0 + 1) (matMul P (inertia.idMat (l0 + 1))) :=
+      have hIP : rowsLen (l0 + 1) (matMul (elim.idMat (l0 + 1)) P) :=
+        rowsLen_cast hPt (rowsLen_matMul (elim.idMat (l0 + 1)) P)
+      have hPI : rowsLen (l0 + 1) (matMul P (elim.idMat (l0 + 1))) :=
         rowsLen_cast
-          (by rw [inertia.transposeM_idMat (l0 + 1), inertia.idMat_len])
-          (rowsLen_matMul P (inertia.idMat (l0 + 1)))
+          (by rw [inertia.transposeM_idMat (l0 + 1), elim.length_idMat])
+          (rowsLen_matMul P (elim.idMat (l0 + 1)))
       have hLeft : matOneValue
-          (matMul (tensorM X (inertia.idMat (l0 + 1)))
-            (tensorM (inertia.idMat (n0 + 1)) P))
+          (matMul (tensorM X (elim.idMat (l0 + 1)))
+            (tensorM (elim.idMat (n0 + 1)) P))
           (tensorM X P) :=
         matOne_trans
           (matMul_tensorM (n0 + 1) (l0 + 1) (l0 + 1) X
-            (inertia.idMat (l0 + 1)) (inertia.idMat (n0 + 1)) P
-            (inertia.idMat_rows (l0 + 1)) hPl
-            (inertia.idMat_rows (n0 + 1)) hPr)
+            (elim.idMat (l0 + 1)) (elim.idMat (n0 + 1)) P
+            (elim.rowsLen_idMat (l0 + 1)) hPl
+            (elim.rowsLen_idMat (n0 + 1)) hPr)
           (matOne_trans
             (tensorM_congrL _ _ _
               (inertia.matMul_idR (n0 + 1) X hXr hXl hnX hnX))
             (tensorM_congrR (l0 + 1) _ _ hIP hPr
               (inertia.idMat_matMul (l0 + 1) P hPr hPl hL) X))
       have hRight : matOneValue
-          (matMul (tensorM (inertia.idMat (n0 + 1)) P)
-            (tensorM X (inertia.idMat (l0 + 1))))
+          (matMul (tensorM (elim.idMat (n0 + 1)) P)
+            (tensorM X (elim.idMat (l0 + 1))))
           (tensorM X P) :=
         matOne_trans
           (matMul_tensorM (n0 + 1) (l0 + 1) (l0 + 1)
-            (inertia.idMat (n0 + 1)) P X (inertia.idMat (l0 + 1))
-            hPr (inertia.idMat_len (l0 + 1)) hXr
-            (inertia.idMat_rows (l0 + 1)))
+            (elim.idMat (n0 + 1)) P X (elim.idMat (l0 + 1))
+            hPr (elim.length_idMat (l0 + 1)) hXr
+            (elim.rowsLen_idMat (l0 + 1)))
           (matOne_trans
             (tensorM_congrL _ _ _
               (inertia.idMat_matMul (n0 + 1) X hXr hXl hnX))
@@ -1451,98 +1451,98 @@ theorem tensor_form_left {n : Nat} (G : Mat) (sp : inertia.Split n)
       have hGlen : G.length = n := sqAt_len hsq
       have hXrows : rowsLen N X := rowsLen_of_sqAt hX
       have hXlen : X.length = N := sqAt_len hX
-      have hidr : rowsLen N (inertia.idMat N) := inertia.idMat_rows N
-      have hidl : (inertia.idMat N).length = N := inertia.idMat_len N
+      have hidr : rowsLen N (elim.idMat N) := elim.rowsLen_idMat N
+      have hidl : (elim.idMat N).length = N := elim.length_idMat N
       have hnN : 0 < n * N := Nat.mul_pos hn hN
-      have hPl : (tensorM sp.T.val (inertia.idMat N)).length = n * N := by
+      have hPl : (tensorM sp.T.val (elim.idMat N)).length = n * N := by
         rw [tensorM_length, hTlen, hidl]
-      have hPr : rowsLen (n * N) (tensorM sp.T.val (inertia.idMat N)) :=
+      have hPr : rowsLen (n * N) (tensorM sp.T.val (elim.idMat N)) :=
         rowsLen_tensorM n N _ _ hTrows hidr
-      have hPwl : (tensorM sp.Tw.val (inertia.idMat N)).length = n * N := by
+      have hPwl : (tensorM sp.Tw.val (elim.idMat N)).length = n * N := by
         rw [tensorM_length, hTwlen, hidl]
-      have hPwr : rowsLen (n * N) (tensorM sp.Tw.val (inertia.idMat N)) :=
+      have hPwr : rowsLen (n * N) (tensorM sp.Tw.val (elim.idMat N)) :=
         rowsLen_tensorM n N _ _ hTwrows hidr
       have hSl : (tensorM G X).length = n * N := by
         rw [tensorM_length, hGlen, hXlen]
       have hSr : rowsLen (n * N) (tensorM G X) :=
         rowsLen_tensorM n N G X hGrows hXrows
       have hSsq : sqAt (tensorM G X) (n * N) := sqAt_of hSl hSr
-      have hIt : (transposeM (inertia.idMat N)).length = N := by
+      have hIt : (transposeM (elim.idMat N)).length = N := by
         rw [inertia.transposeM_idMat N, hidl]
-      have hIIr : rowsLen N (matMul (inertia.idMat N) (inertia.idMat N)) :=
+      have hIIr : rowsLen N (matMul (elim.idMat N) (elim.idMat N)) :=
         rowsLen_cast hIt (rowsLen_matMul _ _)
-      have hcl : (matVec (tensorM sp.Tw.val (inertia.idMat N)) u).length
+      have hcl : (matVec (tensorM sp.Tw.val (elim.idMat N)) u).length
           = n * N := by rw [matVec_length]; exact hPwl
       have hMM : matOneValue
-          (matMul (tensorM sp.T.val (inertia.idMat N))
-            (tensorM sp.Tw.val (inertia.idMat N)))
+          (matMul (tensorM sp.T.val (elim.idMat N))
+            (tensorM sp.Tw.val (elim.idMat N)))
           (inertia.matScaleB (minor sp.T.val)
-            (inertia.idMat (n * N))) := by
+            (elim.idMat (n * N))) := by
         refine matOne_trans (matMul_tensorM n N N sp.T.val
-          (inertia.idMat N) sp.Tw.val (inertia.idMat N) hidr hidl
+          (elim.idMat N) sp.Tw.val (elim.idMat N) hidr hidl
           hTwrows hidr) ?_
         refine matOne_trans (tensorM_congrL _ _ _ hprod) ?_
         refine matOne_trans (tensorM_congrR N _ _ hIIr hidr
-          (inertia.idMat_matMul N (inertia.idMat N) hidr hidl hN)
-          (inertia.matScaleB (minor sp.T.val) (inertia.idMat n))) ?_
+          (inertia.idMat_matMul N (elim.idMat N) hidr hidl hN)
+          (inertia.matScaleB (minor sp.T.val) (elim.idMat n))) ?_
         rw [tensorM_scaleL, tensorM_idMat]
         exact matOne_refl _
       have hA : poly.oneValue
-          (matVec (tensorM sp.T.val (inertia.idMat N))
-            (matVec (tensorM sp.Tw.val (inertia.idMat N)) u))
+          (matVec (tensorM sp.T.val (elim.idMat N))
+            (matVec (tensorM sp.Tw.val (elim.idMat N)) u))
           (vecScale (minor sp.T.val) u) := by
         refine poly.oneValue_trans
           (matVec_comp _ _ u (n * N) hPwr hu
             (by rw [hPwl]; exact hPr)) ?_
         refine poly.oneValue_trans (matVec_matOne _ _ u hMM) ?_
         exact inertia.scaleId_act (minor sp.T.val) (n * N) u hu
-      have hXIr : rowsLen N (matMul X (inertia.idMat N)) :=
-        rowsLen_cast hIt (rowsLen_matMul X (inertia.idMat N))
-      have hXIl : (matMul X (inertia.idMat N)).length = N := by
+      have hXIr : rowsLen N (matMul X (elim.idMat N)) :=
+        rowsLen_cast hIt (rowsLen_matMul X (elim.idMat N))
+      have hXIl : (matMul X (elim.idMat N)).length = N := by
         rw [length_matMul, hXlen]
-      have hXIt : (transposeM (matMul X (inertia.idMat N))).length = N :=
+      have hXIt : (transposeM (matMul X (elim.idMat N))).length = N :=
         length_transposeM _ hXIr (by rw [hXIl]; exact hN)
       have hXI : matOneValue
-          (matMul (transposeM (inertia.idMat N))
-            (matMul X (inertia.idMat N))) X := by
+          (matMul (transposeM (elim.idMat N))
+            (matMul X (elim.idMat N))) X := by
         rw [inertia.transposeM_idMat N]
-        refine matOne_trans (elim.matMul_congrR_of (inertia.idMat N) _ _
+        refine matOne_trans (elim.matMul_congrR_of (elim.idMat N) _ _
           (elim.transposeM_congrM N _ _ hXIr hXrows (by rw [hXIl, hXlen])
             (inertia.matMul_idR N X hXrows hXlen hN hN))) ?_
         exact inertia.idMat_matMul N X hXrows hXlen hN
       have hR2 : matOneValue
-          (matMul (transposeM (tensorM sp.T.val (inertia.idMat N)))
+          (matMul (transposeM (tensorM sp.T.val (elim.idMat N)))
             (matMul (tensorM G X)
-              (tensorM sp.T.val (inertia.idMat N))))
+              (tensorM sp.T.val (elim.idMat N))))
           (tensorM (inertia.blockMat sp.blocks sp.kern) X) := by
         refine matOne_trans (congr_tensorM n N n N G X sp.T.val
-          (inertia.idMat N) hsq hX hTlen hTrows hidl hidr) ?_
+          (elim.idMat N) hsq hX hTlen hTrows hidl hidr) ?_
         refine matOne_trans (tensorM_congrL _ _ _ hcong) ?_
         exact tensorM_congrR N _ _
-          (rowsLen_cast hXIt (rowsLen_matMul (transposeM (inertia.idMat N))
-            (matMul X (inertia.idMat N)))) hXrows hXI
+          (rowsLen_cast hXIt (rowsLen_matMul (transposeM (elim.idMat N))
+            (matMul X (elim.idMat N)))) hXrows hXI
           (inertia.blockMat sp.blocks sp.kern)
       have hwidth : inertia.widthOf sp.blocks sp.kern = n :=
         Nat.eq_of_beq_eq_true sp.width
       have hBlock : BPair.unit ≤ inertia.quadForm
           (tensorM (inertia.blockMat sp.blocks sp.kern) X)
-          (matVec (tensorM sp.Tw.val (inertia.idMat N)) u) :=
+          (matVec (tensorM sp.Tw.val (elim.idMat N)) u) :=
         tensorL_fold X N hXlen hXrows
           (fun v hv => ground.leB_of_not_lt (hXpos v hv))
           sp.blocks sp.kern hord hns hpsd _
           (by rw [hcl, hwidth])
       have hUp : BPair.unit ≤ inertia.quadForm (tensorM G X)
-          (matVec (tensorM sp.T.val (inertia.idMat N))
-            (matVec (tensorM sp.Tw.val (inertia.idMat N)) u)) := by
+          (matVec (tensorM sp.T.val (elim.idMat N))
+            (matVec (tensorM sp.Tw.val (elim.idMat N)) u)) := by
         refine ground.leB_congr_right (BPair.oneValue_symm ?_) hBlock
         refine BPair.oneValue_trans
           (inertia.congQuad (tensorM G X)
-            (tensorM sp.T.val (inertia.idMat N)) (n * N) (n * N) hSsq
+            (tensorM sp.T.val (elim.idMat N)) (n * N) (n * N) hSsq
             hPr hPl _ hcl) ?_
         exact inertia.quadMatOne _ _ _ hR2
       have hScale : (inertia.quadForm (tensorM G X)
-          (matVec (tensorM sp.T.val (inertia.idMat N))
-            (matVec (tensorM sp.Tw.val (inertia.idMat N)) u))).oneValue
+          (matVec (tensorM sp.T.val (elim.idMat N))
+            (matVec (tensorM sp.Tw.val (elim.idMat N)) u))).oneValue
           (minor sp.T.val * minor sp.T.val
             * inertia.quadForm (tensorM G X) u) := by
         refine BPair.oneValue_trans (dotN_read _ _) ?_
@@ -1876,23 +1876,23 @@ theorem tensor_form_right {n : Nat} (G : Mat) (sp : inertia.Split n)
       have hGlen : G.length = n := sqAt_len hsq
       have hXrows : rowsLen N X := rowsLen_of_sqAt hX
       have hXlen : X.length = N := sqAt_len hX
-      have hidr : rowsLen N (inertia.idMat N) := inertia.idMat_rows N
-      have hidl : (inertia.idMat N).length = N := inertia.idMat_len N
+      have hidr : rowsLen N (elim.idMat N) := elim.rowsLen_idMat N
+      have hidl : (elim.idMat N).length = N := elim.length_idMat N
       have hnN : 0 < N * n := Nat.mul_pos hN hn
-      have hPl : (tensorM (inertia.idMat N) sp.T.val).length = N * n := by
+      have hPl : (tensorM (elim.idMat N) sp.T.val).length = N * n := by
         rw [tensorM_length, hidl, hTlen]
-      have hPr : rowsLen (N * n) (tensorM (inertia.idMat N) sp.T.val) :=
+      have hPr : rowsLen (N * n) (tensorM (elim.idMat N) sp.T.val) :=
         rowsLen_tensorM N n _ _ hidr hTrows
-      have hPwl : (tensorM (inertia.idMat N) sp.Tw.val).length = N * n := by
+      have hPwl : (tensorM (elim.idMat N) sp.Tw.val).length = N * n := by
         rw [tensorM_length, hidl, hTwlen]
-      have hPwr : rowsLen (N * n) (tensorM (inertia.idMat N) sp.Tw.val) :=
+      have hPwr : rowsLen (N * n) (tensorM (elim.idMat N) sp.Tw.val) :=
         rowsLen_tensorM N n _ _ hidr hTwrows
       have hSl : (tensorM X G).length = N * n := by
         rw [tensorM_length, hXlen, hGlen]
       have hSr : rowsLen (N * n) (tensorM X G) :=
         rowsLen_tensorM N n X G hXrows hGrows
       have hSsq : sqAt (tensorM X G) (N * n) := sqAt_of hSl hSr
-      have hIt : (transposeM (inertia.idMat N)).length = N := by
+      have hIt : (transposeM (elim.idMat N)).length = N := by
         rw [inertia.transposeM_idMat N, hidl]
       have hTwt : (transposeM sp.Tw.val).length = n :=
         length_transposeM _ hTwrows (by rw [hTwlen]; exact hn)
@@ -1900,41 +1900,41 @@ theorem tensor_form_right {n : Nat} (G : Mat) (sp : inertia.Split n)
         length_transposeM _ hTrows (by rw [hTlen]; exact hn)
       have hTTw : rowsLen n (matMul sp.T.val sp.Tw.val) :=
         rowsLen_cast hTwt (rowsLen_matMul sp.T.val sp.Tw.val)
-      have hcl : (matVec (tensorM (inertia.idMat N) sp.Tw.val) u).length
+      have hcl : (matVec (tensorM (elim.idMat N) sp.Tw.val) u).length
           = N * n := by rw [matVec_length]; exact hPwl
       have hMM : matOneValue
-          (matMul (tensorM (inertia.idMat N) sp.T.val)
-            (tensorM (inertia.idMat N) sp.Tw.val))
+          (matMul (tensorM (elim.idMat N) sp.T.val)
+            (tensorM (elim.idMat N) sp.Tw.val))
           (inertia.matScaleB (minor sp.T.val)
-            (inertia.idMat (N * n))) := by
-        refine matOne_trans (matMul_tensorM N n n (inertia.idMat N)
-          sp.T.val (inertia.idMat N) sp.Tw.val hTrows hTwlen hidr
+            (elim.idMat (N * n))) := by
+        refine matOne_trans (matMul_tensorM N n n (elim.idMat N)
+          sp.T.val (elim.idMat N) sp.Tw.val hTrows hTwlen hidr
           hTwrows) ?_
         refine matOne_trans (tensorM_congrL _ _ _
-          (inertia.idMat_matMul N (inertia.idMat N) hidr hidl hN)) ?_
+          (inertia.idMat_matMul N (elim.idMat N) hidr hidl hN)) ?_
         refine matOne_trans (tensorM_congrR n _ _ hTTw
-          (inertia.rowsLen_scaleB (minor sp.T.val) n (inertia.idMat n)
-            (inertia.idMat_rows n)) hprod (inertia.idMat N)) ?_
+          (inertia.rowsLen_scaleB (minor sp.T.val) n (elim.idMat n)
+            (elim.rowsLen_idMat n)) hprod (elim.idMat N)) ?_
         rw [tensorM_scaleR, tensorM_idMat]
         exact matOne_refl _
       have hA : poly.oneValue
-          (matVec (tensorM (inertia.idMat N) sp.T.val)
-            (matVec (tensorM (inertia.idMat N) sp.Tw.val) u))
+          (matVec (tensorM (elim.idMat N) sp.T.val)
+            (matVec (tensorM (elim.idMat N) sp.Tw.val) u))
           (vecScale (minor sp.T.val) u) := by
         refine poly.oneValue_trans
           (matVec_comp _ _ u (N * n) hPwr hu
             (by rw [hPwl]; exact hPr)) ?_
         refine poly.oneValue_trans (matVec_matOne _ _ u hMM) ?_
         exact inertia.scaleId_act (minor sp.T.val) (N * n) u hu
-      have hXIr : rowsLen N (matMul X (inertia.idMat N)) :=
-        rowsLen_cast hIt (rowsLen_matMul X (inertia.idMat N))
-      have hXIl : (matMul X (inertia.idMat N)).length = N := by
+      have hXIr : rowsLen N (matMul X (elim.idMat N)) :=
+        rowsLen_cast hIt (rowsLen_matMul X (elim.idMat N))
+      have hXIl : (matMul X (elim.idMat N)).length = N := by
         rw [length_matMul, hXlen]
       have hXI : matOneValue
-          (matMul (transposeM (inertia.idMat N))
-            (matMul X (inertia.idMat N))) X := by
+          (matMul (transposeM (elim.idMat N))
+            (matMul X (elim.idMat N))) X := by
         rw [inertia.transposeM_idMat N]
-        refine matOne_trans (elim.matMul_congrR_of (inertia.idMat N) _ _
+        refine matOne_trans (elim.matMul_congrR_of (elim.idMat N) _ _
           (elim.transposeM_congrM N _ _ hXIr hXrows (by rw [hXIl, hXlen])
             (inertia.matMul_idR N X hXrows hXlen hN hN))) ?_
         exact inertia.idMat_matMul N X hXrows hXlen hN
@@ -1951,38 +1951,38 @@ theorem tensor_form_right {n : Nat} (G : Mat) (sp : inertia.Split n)
         rw [hwidth] at h
         exact h
       have hR2 : matOneValue
-          (matMul (transposeM (tensorM (inertia.idMat N) sp.T.val))
+          (matMul (transposeM (tensorM (elim.idMat N) sp.T.val))
             (matMul (tensorM X G)
-              (tensorM (inertia.idMat N) sp.T.val)))
+              (tensorM (elim.idMat N) sp.T.val)))
           (tensorM X (inertia.blockMat sp.blocks sp.kern)) := by
         refine matOne_trans (congr_tensorM N n N n X G
-          (inertia.idMat N) sp.T.val hX hsq hidl hidr hTlen hTrows) ?_
+          (elim.idMat N) sp.T.val hX hsq hidl hidr hTlen hTrows) ?_
         refine matOne_trans (tensorM_congrL _ _ _ hXI) ?_
         exact tensorM_congrR n _ _
           (rowsLen_cast hGTt (rowsLen_matMul (transposeM sp.T.val)
             (matMul G sp.T.val))) hBr hcong X
       obtain ⟨cs, hcsl, hcsr, hcsf⟩ :=
-        chunkEx N n (matVec (tensorM (inertia.idMat N) sp.Tw.val) u) hcl
+        chunkEx N n (matVec (tensorM (elim.idMat N) sp.Tw.val) u) hcl
       have hBlock : BPair.unit ≤ inertia.quadForm
           (tensorM X (inertia.blockMat sp.blocks sp.kern))
-          (matVec (tensorM (inertia.idMat N) sp.Tw.val) u) := by
+          (matVec (tensorM (elim.idMat N) sp.Tw.val) u) := by
         rw [← hcsf]
         exact tensorR_fold X N hXlen hXrows
           (fun v hv => ground.leB_of_not_lt (hXpos v hv))
           sp.blocks sp.kern hord hns hpsd cs hcsl
           (by rw [hwidth]; exact hcsr)
       have hUp : BPair.unit ≤ inertia.quadForm (tensorM X G)
-          (matVec (tensorM (inertia.idMat N) sp.T.val)
-            (matVec (tensorM (inertia.idMat N) sp.Tw.val) u)) := by
+          (matVec (tensorM (elim.idMat N) sp.T.val)
+            (matVec (tensorM (elim.idMat N) sp.Tw.val) u)) := by
         refine ground.leB_congr_right (BPair.oneValue_symm ?_) hBlock
         refine BPair.oneValue_trans
           (inertia.congQuad (tensorM X G)
-            (tensorM (inertia.idMat N) sp.T.val) (N * n) (N * n) hSsq
+            (tensorM (elim.idMat N) sp.T.val) (N * n) (N * n) hSsq
             hPr hPl _ hcl) ?_
         exact inertia.quadMatOne _ _ _ hR2
       have hScale : (inertia.quadForm (tensorM X G)
-          (matVec (tensorM (inertia.idMat N) sp.T.val)
-            (matVec (tensorM (inertia.idMat N) sp.Tw.val) u))).oneValue
+          (matVec (tensorM (elim.idMat N) sp.T.val)
+            (matVec (tensorM (elim.idMat N) sp.Tw.val) u))).oneValue
           (minor sp.T.val * minor sp.T.val
             * inertia.quadForm (tensorM X G) u) := by
         refine BPair.oneValue_trans (dotN_read _ _) ?_
@@ -2029,7 +2029,7 @@ private theorem tensorV_idOne : ∀ ra : List BPair,
 /-- The unit power is the scalars' line: a right tensor by it is the
 matrix itself at the one-value read. -/
 private theorem tensorM_idOne : ∀ Y : Mat,
-    matOneValue (tensorM Y (inertia.idMat 1)) Y
+    matOneValue (tensorM Y (elim.idMat 1)) Y
   | [] => trivial
   | ra :: Y => ⟨tensorV_idOne ra, tensorM_idOne Y⟩
 
@@ -2511,45 +2511,6 @@ def pairRoots (lA lB : List (BPair × Pos × BPair)) (y : Pos) :
     List (BPair × Pos) :=
   lA.flatMap (fun a => lB.map (pairRoot y a))
 
-private theorem countBy_append {α : Type} (p : α → Bool) :
-    ∀ u v : List α, ground.countBy p (u ++ v)
-      = ground.countBy p u + ground.countBy p v
-  | [], v => (Nat.zero_add (ground.countBy p v)).symm
-  | a :: u, v => by
-    show cond (p a) 1 0 + ground.countBy p (u ++ v)
-      = cond (p a) 1 0 + ground.countBy p u + ground.countBy p v
-    rw [countBy_append p u v, Nat.add_assoc]
-
-private theorem countBy_mapPair {β γ δ : Type} (pb : β → Bool)
-    (p : γ → Bool) (q : δ → Bool) (F : β → γ) (G : β → δ)
-    (hFG : ∀ b, pb b = true → p (F b) = q (G b)) :
-    ∀ lb : List β, (lb.all pb) = true →
-      ground.countBy p (lb.map F) = ground.countBy q (lb.map G)
-  | [], _ => rfl
-  | b :: t, hall => by
-    have hs := ground.andSplitB (show (pb b && t.all pb) = true from hall)
-    show cond (p (F b)) 1 0 + ground.countBy p (t.map F)
-      = cond (q (G b)) 1 0 + ground.countBy q (t.map G)
-    rw [hFG b hs.1, countBy_mapPair pb p q F G hFG t hs.2]
-
-private theorem countBy_pairMap {α β γ δ : Type} (pa : α → Bool)
-    (pb : β → Bool) (p : γ → Bool) (q : δ → Bool)
-    (f : α → β → γ) (g : α → β → δ)
-    (hfg : ∀ a b, pa a = true → pb b = true → p (f a b) = q (g a b))
-    (lb : List β) (hlb : (lb.all pb) = true) :
-    ∀ la : List α, (la.all pa) = true →
-      ground.countBy p (la.flatMap (fun a => lb.map (f a)))
-        = ground.countBy q (la.flatMap (fun a => lb.map (g a)))
-  | [], _ => rfl
-  | a :: t, hall => by
-    have hs := ground.andSplitB (show (pa a && t.all pa) = true from hall)
-    show ground.countBy p (lb.map (f a) ++ t.flatMap (fun a => lb.map (f a)))
-      = ground.countBy q (lb.map (g a) ++ t.flatMap (fun a => lb.map (g a)))
-    rw [countBy_append, countBy_append,
-      countBy_mapPair pb p q (f a) (g a)
-        (fun b hb => hfg a b hs.1 hb) lb hlb,
-      countBy_pairMap pa pb p q f g hfg lb hlb t hs.2]
-
 private theorem all_pairMap {α β γ : Type} (pa : α → Bool)
     (pb : β → Bool) (p : γ → Bool) (f : α → β → γ)
     (hf : ∀ a b, pa a = true → pb b = true → p (f a b) = true)
@@ -2951,7 +2912,7 @@ theorem tensorSum_count {nA nB : Nat} (A GA : Mat) (TA TwA : SqMat nA)
   have hTW : matOneValue
       (matMul (tensorM TA.val TB.val) (tensorM TwA.val TwB.val))
       (inertia.matScaleB (minor TA.val * minor TB.val)
-        (inertia.idMat (nA * nB))) := by
+        (elim.idMat (nA * nB))) := by
     refine matOne_trans
       (matMul_tensorM nA nB nB TA.val TB.val TwA.val TwB.val hTBr hTwBl
         hTwAr hTwBr) ?_
@@ -2960,13 +2921,13 @@ theorem tensorSum_count {nA nB : Nat} (A GA : Mat) (TA TwA : SqMat nA)
       (tensorM_congrR nB _ _
         (rowsLen_cast (transposeLen TwB.val hTwBr hTwBl)
           (rowsLen_matMul TB.val TwB.val))
-        (inertia.rowsLen_scaleB _ nB _ (inertia.idMat_rows nB)) hB.2.2.1.2.1 _) ?_
+        (inertia.rowsLen_scaleB _ nB _ (elim.rowsLen_idMat nB)) hB.2.2.1.2.1 _) ?_
     rw [tensorM_scaleL, tensorM_scaleR, tensorM_idMat]
     exact inertia.scaleB_scaleB _ _ _
   have hWT : matOneValue
       (matMul (tensorM TwA.val TwB.val) (tensorM TA.val TB.val))
       (inertia.matScaleB (minor TA.val * minor TB.val)
-        (inertia.idMat (nA * nB))) := by
+        (elim.idMat (nA * nB))) := by
     refine matOne_trans
       (matMul_tensorM nA nB nB TwA.val TwB.val TA.val TB.val hTwBr hTBl
         hTAr hTBr) ?_
@@ -2975,7 +2936,7 @@ theorem tensorSum_count {nA nB : Nat} (A GA : Mat) (TA TwA : SqMat nA)
       (tensorM_congrR nB _ _
         (rowsLen_cast (transposeLen TB.val hTBr hTBl)
           (rowsLen_matMul TwB.val TB.val))
-        (inertia.rowsLen_scaleB _ nB _ (inertia.idMat_rows nB)) hB.2.2.1.2.2 _) ?_
+        (inertia.rowsLen_scaleB _ nB _ (elim.rowsLen_idMat nB)) hB.2.2.1.2.2 _) ?_
     rw [tensorM_scaleL, tensorM_scaleR, tensorM_idMat]
     exact inertia.scaleB_scaleB _ _ _
   have hc : ¬ (minor TA.val * minor TB.val).oneValue BPair.unit := by

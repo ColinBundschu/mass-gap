@@ -517,6 +517,14 @@ theorem leCancelL : ∀ (a : Nat) {b c : Nat},
     rw [Nat.succ_add, Nat.succ_add] at h
     exact leCancelL a (Nat.le_of_succ_le_succ h)
 
+/-- The strict order cancels its shared left factor: the trichotomy
+against the factor's monotone read. -/
+theorem ltCancelMulL {c a b : Nat} (h : c * a < c * b) : a < b :=
+  match Nat.lt_or_ge a b with
+  | Or.inl hab => hab
+  | Or.inr hba =>
+    absurd (Nat.lt_of_lt_of_le h (Nat.mul_le_mul_left c hba)) (Nat.lt_irrefl _)
+
 /-- The lesser of a count with itself is that count, both arms of
 the accelerated branch reading the one member. -/
 theorem natMin_self (a : Nat) : natMin a a = a := by
@@ -884,6 +892,14 @@ theorem lt_trans {a b c : Pos} (h : a < b) (h' : b < c) : a < c := by
   obtain ⟨g', hg'⟩ := h'
   exact ⟨g + g', by rw [← add_assoc, hg, hg']⟩
 
+/-- A strict read followed by an at-or-below read is strict, the
+equality outcome keeping the witness and the gap outcome composing
+it. -/
+theorem lt_of_lt_of_le {a b c : Pos} (h : a < b) (h' : b ≤ c) : a < c :=
+  match h' with
+  | Or.inl e => by rw [← e]; exact h
+  | Or.inr h'' => lt_trans h h''
+
 /-- A summand on both sides keeps the order, the witness carried
 across the added datum. -/
 private theorem addLtAddR {a b : Pos} (c : Pos) (h : a < b) :
@@ -1132,10 +1148,10 @@ theorem Pos.pow_le {x y : Pos} (h : x ≤ y) : ∀ q : Nat,
 occupancy data (`none` the absent value at the read's own
 occupancy), off the kernel's division at the values. -/
 
-/-- The division with remainder at `a` against `b`: the quotient
-and the remainder, `a = b q + r` with `r` below `b` at the
-occupancy reads; the naming theorem arrives with its consumers, the
-identity instances the check module's. -/
+/-- The division with remainder at `a` against `b` (`def:ground`'s
+division read): the quotient and the remainder, `a = b q + r` with
+`r` below `b` at the occupancy reads, the naming identity
+`natDivRead`'s at the values. -/
 def divMod (a b : Pos) : Option Pos × Option Pos :=
   (match (a.pred + 1) / (b.pred + 1) with
     | 0 => none
@@ -1293,6 +1309,23 @@ theorem natDivRead (A B : Nat) (hB : 0 < B) :
         rw [if_neg hle]
       rw [hm, divEqGo (n + 1) B hB, divGoStep B hB (n + 1) (n + 1),
         dif_neg hle, Nat.mul_zero, Nat.zero_add]
+
+/-- A count whose divisor multiple sits at or below a natural sits
+at or below the quotient: the naming identity's reconstruction
+against the remainder bound, one more multiple exceeding. -/
+theorem le_div_of_mul_le (m d K : Nat) (hd : 0 < d) (h : d * m ≤ K) :
+    m ≤ K / d := by
+  cases Nat.lt_or_ge (K / d) m with
+  | inr hge => exact hge
+  | inl hlt =>
+    have h1 : d * (K / d + 1) ≤ K :=
+      Nat.le_trans (Nat.mul_le_mul_left d hlt) h
+    have h2 := natDivRead K d hd
+    rw [Nat.mul_succ] at h1
+    have h3 : d * (K / d) + d ≤ d * (K / d) + K % d :=
+      Nat.le_trans h1 (Nat.le_of_eq h2.1.symm)
+    exact absurd (Nat.lt_of_le_of_lt (leCancelL _ h3) h2.2)
+      (Nat.lt_irrefl d)
 
 /-- The division read holds at every pair: the general theorem, the
 reconstruction and the remainder bound off the naming identity. -/
@@ -3819,17 +3852,19 @@ theorem BPair.swap_of_add_unit {u v : BPair}
   refine ground.add_right_cancel (c := Pos.one) ?_
   rw [h', ground.add_comm Pos.one (u.snd + v.snd)]
 
+/-- A member joined to its own swap reads the balance null. -/
+theorem BPair.add_swap_null (x : BPair) : (x + x.swap).oneValue BPair.unit :=
+  BPair.oneValue_trans
+    (BPair.oneValue_of_eq (BPair.add_comm x x.swap))
+    (BPair.swap_add_null (BPair.oneValue_refl x))
+
 /-- A member's join with its own swap withdraws from a sum, the
 joined read at the balance null. -/
 theorem BPair.add_swap_cancel (u v : BPair) :
     (u + (v + u.swap)).oneValue v := by
   rw [BPair.add_comm v u.swap, ← BPair.add_assoc]
   exact BPair.oneValue_trans
-    (BPair.add_congr
-      (BPair.oneValue_trans
-        (BPair.oneValue_of_eq (BPair.add_comm u u.swap))
-        (BPair.swap_add_null (BPair.oneValue_refl u)))
-      (BPair.oneValue_refl v))
+    (BPair.add_congr (BPair.add_swap_null u) (BPair.oneValue_refl v))
     (BPair.unit_add v)
 
 /-- A member's swap-join withdraws from a sum's tail. -/
@@ -3837,6 +3872,25 @@ theorem BPair.add_swap_self (r d : BPair) : (r + d.swap + d).oneValue r :=
   BPair.oneValue_trans
     (BPair.oneValue_of_eq (BPair.add_comm (r + d.swap) d))
     (BPair.add_swap_cancel d r)
+
+/-- Completing the square over the balance pairs: a square less
+its double product against a datum, joined to a constant, is the
+shifted square joined to the constant less the datum's square. -/
+theorem complete_sq (δ u v : BPair) :
+    (δ * δ + v + (u * δ + u * δ).swap).oneValue
+      ((δ + u.swap) * (δ + u.swap) + (v + (u * u).swap)) := by
+  rw [BPair.sq_expand_swap δ u, BPair.swap_add, BPair.mul_comm δ u]
+  have e1 : δ * δ + u * u + (u * δ + u * δ).swap + (v + (u * u).swap)
+      = δ * δ + v + (u * δ + u * δ).swap + (u * u + (u * u).swap) := by
+    rw [BPair.add_right_comm (δ * δ) (u * u) ((u * δ + u * δ).swap),
+      BPair.add_assoc (δ * δ + (u * δ + u * δ).swap) (u * u) (v + (u * u).swap),
+      BPair.add_left_comm (u * u) v ((u * u).swap),
+      ← BPair.add_assoc (δ * δ + (u * δ + u * δ).swap) v (u * u + (u * u).swap),
+      BPair.add_right_comm (δ * δ) ((u * δ + u * δ).swap) v]
+  rw [e1]
+  exact BPair.oneValue_symm (BPair.oneValue_trans
+    (BPair.add_congr (BPair.oneValue_refl _) (BPair.add_swap_null (u * u)))
+    (BPair.add_unit _))
 
 /-- The unit rescaling is the datum itself. -/
 theorem BPair.scale_one (x : BPair) : x.scale Pos.one = x := by
@@ -3963,6 +4017,130 @@ def joinBy {α β : Type} (eq : α → α → Bool) (add : β → β → β)
   | [] => [(k, x)]
   | (v, y) :: t =>
     if eq v k then (v, add y x) :: t else (v, y) :: joinBy eq add k x t
+
+/-- The lexicographic order on natural lists, the shorter list
+first at a shared prefix. -/
+def lexLt : List Nat → List Nat → Bool
+  | [], [] => false
+  | [], _ :: _ => true
+  | _ :: _, [] => false
+  | x :: s, y :: t => x < y || (x == y && lexLt s t)
+
+/-- A list's two halves, the members alternating. -/
+def halvesL {α : Type} : List α → List α × List α
+  | [] => ([], [])
+  | [x] => ([x], [])
+  | x :: y :: t => let h := halvesL t; (x :: h.1, y :: h.2)
+
+/-- A keyed list's keys in a stated order: every consecutive pair
+at the relation, the strict order reading no two keys equal. -/
+def keysInOrder {α β : Type} (rel : α → α → Bool) : List (α × β) → Bool
+  | [] => true
+  | [_] => true
+  | x :: y :: t => rel x.1 y.1 && keysInOrder rel (y :: t)
+
+/-- Two keyed lists sorted at a stated order walked together, one
+member per key on each side: at a shared key the stated join of
+the two members with the walk's rest, at a key one list alone
+occupies that side's step, and the two lists at the fuel's end the
+stated stop; the fuel the counts' sum. -/
+def mergeWith {α β γ δ : Type} (lt eq : α → α → Bool)
+    (stop : List (α × β) → List (α × γ) → δ)
+    (both : α → β → γ → δ → δ) (left : α × β → δ → δ)
+    (right : α × γ → δ → δ) :
+    Nat → List (α × β) → List (α × γ) → δ
+  | 0, a, b => stop a b
+  | _ + 1, [], b => stop [] b
+  | _ + 1, x :: s, [] => stop (x :: s) []
+  | fuel + 1, x :: s, y :: t =>
+    if eq x.1 y.1 then
+      both x.1 x.2 y.2 (mergeWith lt eq stop both left right fuel s t)
+    else if lt x.1 y.1 then
+      left x (mergeWith lt eq stop both left right fuel s (y :: t))
+    else right y (mergeWith lt eq stop both left right fuel (x :: s) t)
+
+/-- The merge of two keyed lists sorted at a stated order, two
+members at one key joined at the stated sum, a key one list alone
+occupies kept, the lists at the fuel's end joined (`mergeWith`). -/
+def mergeJoin {α β : Type} (lt eq : α → α → Bool) (add : β → β → β) :
+    Nat → List (α × β) → List (α × β) → List (α × β) :=
+  mergeWith lt eq (fun a b => a ++ b) (fun k x y r => (k, add x y) :: r)
+    (fun x r => x :: r) (fun y r => y :: r)
+
+/-- A keyed list sorted at a stated order with equal keys joined at
+the stated sum, the merge descent over the halves at the count's
+fuel: the collected family at its sorted keys. -/
+def sortJoin {α β : Type} (lt eq : α → α → Bool) (add : β → β → β) :
+    Nat → List (α × β) → List (α × β)
+  | 0, l => l
+  | fuel + 1, l =>
+    match l with
+    | [] => []
+    | [x] => [x]
+    | _ :: _ :: _ =>
+      let h := halvesL l
+      let a := sortJoin lt eq add fuel h.1
+      let b := sortJoin lt eq add fuel h.2
+      mergeJoin lt eq add (a.length + b.length) a b
+
+/-- Two keyed lists of runs sorted at a stated order walked
+together at the stated product: at a shared key every member of
+the one run against every member of the other, one output per
+member pair, a key one list alone occupies walked past
+(`mergeWith`). -/
+def mergeCross {α β γ δ : Type} (lt eq : α → α → Bool) (mul : β → γ → δ) :
+    Nat → List (α × List β) → List (α × List γ) → List δ :=
+  mergeWith lt eq (fun _ _ => [])
+    (fun _ xs ys r => xs.flatMap (fun p => ys.map (mul p)) ++ r)
+    (fun _ r => r) (fun _ r => r)
+
+/-- Two keyed lists sorted at a stated order, one member per key,
+one value at every key either occupies: the members one value at a
+shared key and at the stated unit at a key one list alone occupies
+(`mergeWith`). -/
+def mergeEqBy {α β : Type} (lt eq : α → α → Bool) (isUnit : β → Bool)
+    (eqB : β → β → Bool) : Nat → List (α × β) → List (α × β) → Bool :=
+  mergeWith lt eq
+    (fun a b => a.all (fun x => isUnit x.2) && b.all (fun y => isUnit y.2))
+    (fun _ x y r => eqB x y && r) (fun x r => isUnit x.2 && r)
+    (fun y r => isUnit y.2 && r)
+
+/-- A keyed list's adjacent members at one key gathered into one
+run, the keys' order kept. -/
+def groupRuns {α β : Type} (eq : α → α → Bool) : List (α × β) → List (α × List β)
+  | [] => []
+  | x :: t =>
+    match groupRuns eq t with
+    | (k, ys) :: r => if eq x.1 k then (x.1, x.2 :: ys) :: r else (x.1, [x.2]) :: (k, ys) :: r
+    | [] => [(x.1, [x.2])]
+
+/-- A keyed list sorted at a stated order into its runs, every
+member kept: a list whose keys are already in order at the stated
+order's reflexive closure gathers its runs outright, and every
+further list sorts at the runs' join (`sortJoin`). -/
+def sortRuns {α β : Type} (lt eq : α → α → Bool) (l : List (α × β)) :
+    List (α × List β) :=
+  if keysInOrder (fun x y => !lt y x) l then groupRuns eq l
+  else sortJoin lt eq (fun u v => u ++ v) l.length (l.map (fun p => (p.1, [p.2])))
+
+/-- A keyed family of balance pairs collected at its keys in the
+keys' order: the coefficients at one key joined and every
+coefficient read at its canonical representative (`sortJoin`;
+`BPair.norm`), the members at the sum's unit withdrawn, so the
+collected family is the occupancy family of the read; a family
+already at strictly increasing keys is its own sorted join. -/
+def collectBy {α : Type} (lt eq : α → α → Bool) (l : List (α × BPair)) :
+    List (α × BPair) :=
+  ((if keysInOrder lt l then l else sortJoin lt eq (fun y x => (y + x).norm) l.length l).map
+    (fun p => (p.1, p.2.norm))).filter (fun p => !p.2.isUnitRep)
+
+/-- Two keyed families one value at every key either occupies, the
+collected families walked together (`mergeEqBy`). -/
+def oneValueBy {α : Type} (lt eq : α → α → Bool) (a b : List (α × BPair)) : Bool :=
+  let a' := collectBy lt eq a
+  let b' := collectBy lt eq b
+  mergeEqBy lt eq (fun c => decide (c.oneValue BPair.unit))
+    (fun x y => decide (x.oneValue y)) (a'.length + b'.length) a' b'
 
 /-! The composite pair `[⟨u : v⟩ : c]`, the balance pair of its
 members' pairs at the one shared second datum; the reads are the two
@@ -4805,6 +4983,20 @@ theorem listEqBeq {α : Type} [DecidableEq α] :
     ∀ u : List α, ((u == u) : Bool) = true :=
   listBeqIntro (fun _ => eqBeqOf rfl)
 
+/-- The list carrier's Boolean equality read is symmetric. -/
+theorem listBeqSymm {α : Type} [DecidableEq α] (u w : List α) :
+    (u == w) = (w == u) := by
+  cases h : (u == w) with
+  | true =>
+    rw [listBeqEq h]
+    exact (listEqBeq w).symm
+  | false =>
+    cases h2 : (w == u) with
+    | true =>
+      rw [listBeqEq h2, listEqBeq u] at h
+      exact Bool.noConfusion h
+    | false => rfl
+
 /-- The filter's one-step read, the definition's own match. -/
 theorem filter_cons {α : Type} (p : α → Bool) (a : α) (l : List α) :
     (a :: l).filter p
@@ -4996,6 +5188,25 @@ theorem filter_cons_false {α : Type} {p : α → Bool} {a : α}
     {l : List α} (h : p a = false) :
     (a :: l).filter p = l.filter p := by
   rw [filter_cons p a l, h]
+
+/-- A filter map at a guarded image is the filter's map. -/
+theorem filterMap_ite {α β : Type} (p : α → Bool) (f : α → β) :
+    ∀ l : List α,
+      l.filterMap (fun x => if p x then some (f x) else none)
+        = (l.filter p).map f
+  | [] => rfl
+  | a :: t => by
+    rw [List.filterMap_cons]
+    cases hp : p a with
+    | true =>
+      rw [if_pos rfl, filter_cons_true hp]
+      show f a :: t.filterMap (fun x => if p x then some (f x) else none)
+        = f a :: (t.filter p).map f
+      rw [filterMap_ite p f t]
+    | false =>
+      rw [if_neg (fun h : (false : Bool) = true => Bool.noConfusion h),
+        filter_cons_false hp]
+      exact filterMap_ite p f t
 
 /-- The filter keeps a family every member passes. -/
 theorem filter_all {α : Type} (p : α → Bool) :
@@ -7059,6 +7270,39 @@ theorem flatMap_congr_all {α β : Type} (f g : α → List β)
     show f x ++ t.flatMap f = g x ++ t.flatMap g
     rw [h x, flatMap_congr_all f g h t]
 
+/-- The filter passes into a flat map, row by row. -/
+theorem filter_flatMap {α β : Type} (p : β → Bool) (h : α → List β) :
+    ∀ l : List α, (l.flatMap h).filter p = l.flatMap (fun x => (h x).filter p)
+  | [] => rfl
+  | x :: t => by
+    show (h x ++ t.flatMap h).filter p
+      = (h x).filter p ++ t.flatMap (fun x => (h x).filter p)
+    rw [filter_append, filter_flatMap p h t]
+
+/-- A flat map at a family holding one key once, every further
+member's row vacant, reads that key's row alone. -/
+theorem flatMap_pick {α β : Type} [DecidableEq α] (h : α → List β)
+    (a : α) : ∀ l : List α,
+    (∀ x ∈ l, ¬ x = a → h x = []) → countOf a l = 1 → l.flatMap h = h a
+  | [], _, hc => Nat.noConfusion hc
+  | x :: t, hoff, hc => by
+    have hc' : (if a = x then 1 else 0) + countOf a t = 1 :=
+      (countOf_cons a x t).symm.trans hc
+    show h x ++ t.flatMap h = h a
+    by_cases hax : a = x
+    · have ht : countOf a t = 0 := by
+        rw [if_pos hax] at hc'
+        exact addCancelL 1 (by rw [Nat.add_zero]; exact hc')
+      rw [← hax, flatMap_nil h t (fun y hy => hoff y (List.Mem.tail x hy)
+        (fun hya => Nat.lt_irrefl 0 (by
+          have := countOf_pos_of_mem (hya ▸ hy : a ∈ t)
+          rw [ht] at this
+          exact this))), append_nil]
+    · rw [hoff x (List.Mem.head t) (fun he => hax he.symm)]
+      show t.flatMap h = h a
+      rw [if_neg hax, Nat.zero_add] at hc'
+      exact flatMap_pick h a t (fun y hy => hoff y (List.Mem.tail x hy)) hc'
+
 /-- A keyed union over a mapped family reads at the images. -/
 theorem flatMap_map {α β γ : Type} (f : α → β) (g : β → List γ) :
     ∀ l : List α, (l.map f).flatMap g = l.flatMap (fun x => g (f x))
@@ -7328,9 +7572,9 @@ theorem countOf_bumpAt_ne : ∀ (i : Nat) (l : List Nat) (v : Nat),
 
 /-! The keyed table: entries a key with its two graded counts, the
 read the counts' sum over the matching keys, the insert merging at
-key equality, and the merge walking two tables at a stated order's
-test with the appended tail at the fuel's floor — the read blind
-to the order, the fold's own sum at every shape. -/
+key equality, and the merge the keyed merge (`mergeJoin`) at the
+key equality and the counts' sum — the read blind to the order,
+the fold's own sum at every shape. -/
 
 /-- The table's read at a key test and a side: the matching
 entries' counts' sum. -/
@@ -7403,49 +7647,41 @@ theorem tabRead_append {α : Type} (P : α → Bool) (s : Bool)
     tabRead P s (u ++ v) = tabRead P s u + tabRead P s v :=
   famFold_append Nat.add 0 Nat.add_assoc Nat.zero_add _ u v
 
-/-- The two-table merge at a stated order's test, the fuel one
-step per entry with the joined tail at its floor. -/
-def tabMergeGo {α : Type} [DecidableEq α] (lt : α → α → Bool) :
-    Nat → List (α × Nat × Nat) → List (α × Nat × Nat) →
-    List (α × Nat × Nat)
-  | 0, u, v => u ++ v
-  | _ + 1, [], v => v
-  | _ + 1, a :: u, [] => a :: u
-  | n + 1, a :: u, b :: v =>
-    if a.1 = b.1 then
-      (a.1, a.2.1 + b.2.1, a.2.2 + b.2.2) :: tabMergeGo lt n u v
-    else if lt a.1 b.1 then a :: tabMergeGo lt n u (b :: v)
-    else b :: tabMergeGo lt n (a :: u) v
+/-- The graded counts' sum, the two tables' join at one key. -/
+def tabSum (p q : Nat × Nat) : Nat × Nat := (p.1 + q.1, p.2 + q.2)
 
-/-- The merge at the tables' joined count. -/
+/-- The merge at the tables' joined count: the keyed merge
+(`mergeJoin`) at the key equality and the graded counts' sum. -/
 def tabMerge {α : Type} [DecidableEq α] (lt : α → α → Bool)
     (u v : List (α × Nat × Nat)) : List (α × Nat × Nat) :=
-  tabMergeGo lt (u.length + v.length) u v
+  mergeJoin lt (fun a b => decide (a = b)) tabSum (u.length + v.length) u v
 
 /-- The merge's read is the two tables' sum, at every fuel. -/
-theorem tabMergeGo_read {α : Type} [DecidableEq α]
+theorem mergeJoin_tabRead {α : Type} [DecidableEq α]
     (lt : α → α → Bool) (P : α → Bool) (s : Bool) :
     ∀ (n : Nat) (u v : List (α × Nat × Nat)),
-    tabRead P s (tabMergeGo lt n u v)
+    tabRead P s (mergeJoin lt (fun a b => decide (a = b)) tabSum n u v)
       = tabRead P s u + tabRead P s v
   | 0, u, v => tabRead_append P s u v
   | _ + 1, [], v => (Nat.zero_add _).symm
-  | _ + 1, _ :: _, [] => rfl
+  | _ + 1, x :: u, [] => tabRead_append P s (x :: u) []
   | n + 1, a :: u, b :: v => by
-    show tabRead P s (if a.1 = b.1 then
-        (a.1, a.2.1 + b.2.1, a.2.2 + b.2.2) :: tabMergeGo lt n u v
-      else if lt a.1 b.1 then a :: tabMergeGo lt n u (b :: v)
-      else b :: tabMergeGo lt n (a :: u) v) = _
+    show tabRead P s (if decide (a.1 = b.1) = true then
+        (a.1, a.2.1 + b.2.1, a.2.2 + b.2.2)
+          :: mergeJoin lt (fun a b => decide (a = b)) tabSum n u v
+      else if lt a.1 b.1 then
+        a :: mergeJoin lt (fun a b => decide (a = b)) tabSum n u (b :: v)
+      else b :: mergeJoin lt (fun a b => decide (a = b)) tabSum n (a :: u) v) = _
     by_cases h : a.1 = b.1
-    · rw [if_pos h]
+    · rw [if_pos (decide_eq_true h)]
       show (if P a.1 then (if s then a.2.2 + b.2.2
           else a.2.1 + b.2.1) else 0)
-          + tabRead P s (tabMergeGo lt n u v)
+          + tabRead P s (mergeJoin lt (fun a b => decide (a = b)) tabSum n u v)
         = ((if P a.1 then (if s then a.2.2 else a.2.1) else 0)
             + tabRead P s u)
           + ((if P b.1 then (if s then b.2.2 else b.2.1) else 0)
             + tabRead P s v)
-      rw [tabMergeGo_read lt P s n u v, ← h]
+      rw [mergeJoin_tabRead lt P s n u v, ← h]
       by_cases hp : P a.1 = true
       · rw [if_pos hp, if_pos hp, if_pos hp]
         cases s with
@@ -7453,28 +7689,28 @@ theorem tabMergeGo_read {α : Type} [DecidableEq α]
         | false => exact Nat.add_add_add_comm a.2.1 b.2.1 _ _
       · rw [if_neg hp, if_neg hp, if_neg hp, Nat.zero_add,
           Nat.zero_add, Nat.zero_add]
-    · rw [if_neg h]
+    · rw [if_neg (fun hd => h (of_decide_eq_true hd))]
       by_cases hl : lt a.1 b.1 = true
       · rw [if_pos hl]
         show (if P a.1 then (if s then a.2.2 else a.2.1) else 0)
-            + tabRead P s (tabMergeGo lt n u (b :: v))
+            + tabRead P s (mergeJoin lt (fun a b => decide (a = b)) tabSum n u (b :: v))
           = ((if P a.1 then (if s then a.2.2 else a.2.1) else 0)
               + tabRead P s u) + tabRead P s (b :: v)
-        rw [tabMergeGo_read lt P s n u (b :: v), ← Nat.add_assoc]
+        rw [mergeJoin_tabRead lt P s n u (b :: v), ← Nat.add_assoc]
       · rw [if_neg hl]
         show (if P b.1 then (if s then b.2.2 else b.2.1) else 0)
-            + tabRead P s (tabMergeGo lt n (a :: u) v)
+            + tabRead P s (mergeJoin lt (fun a b => decide (a = b)) tabSum n (a :: u) v)
           = tabRead P s (a :: u)
             + ((if P b.1 then (if s then b.2.2 else b.2.1) else 0)
               + tabRead P s v)
-        rw [tabMergeGo_read lt P s n (a :: u) v, Nat.add_left_comm]
+        rw [mergeJoin_tabRead lt P s n (a :: u) v, Nat.add_left_comm]
 
 /-- The merge's read at the stated count. -/
 theorem tabMerge_read {α : Type} [DecidableEq α]
     (lt : α → α → Bool) (P : α → Bool) (s : Bool)
     (u v : List (α × Nat × Nat)) :
     tabRead P s (tabMerge lt u v) = tabRead P s u + tabRead P s v :=
-  tabMergeGo_read lt P s (u.length + v.length) u v
+  mergeJoin_tabRead lt P s (u.length + v.length) u v
 
 /-- A keyed list's read at a query key and a stated equality test:
 the first matching entry's value, the stated default off the stored
@@ -7530,6 +7766,51 @@ theorem keyAt_map_mem {α β : Type} (eq : α → α → Bool)
       cases h with
       | head => rw [hr k] at he; exact Bool.noConfusion he
       | tail _ h' => exact h'
+
+/-- A keyed list with a key's entry replaced, the entry appended
+where the key is unstored. -/
+def keyPut {α β : Type} (eq : α → α → Bool) (k : α) (v : β) :
+    List (α × β) → List (α × β)
+  | [] => [(k, v)]
+  | e :: t => if eq e.1 k then (k, v) :: t else e :: keyPut eq k v t
+
+/-- The replaced store reads the new value at its key and the prior
+store's values elsewhere, at a test reading equality and reflexive. -/
+theorem keyAt_keyPut {α β : Type} (eq : α → α → Bool)
+    (hs : ∀ a b, eq a b = true → a = b) (hr : ∀ a, eq a a = true)
+    (d : β) (k k' : α) (v : β) :
+    ∀ l : List (α × β),
+      keyAt eq d k' (keyPut eq k v l) = cond (eq k k') v (keyAt eq d k' l)
+  | [] => rfl
+  | e :: t => by
+    show keyAt eq d k' (if eq e.1 k then (k, v) :: t else e :: keyPut eq k v t)
+      = cond (eq k k') v (cond (eq e.1 k') e.2 (keyAt eq d k' t))
+    cases he : eq e.1 k with
+    | true =>
+      rw [if_pos rfl]
+      show cond (eq k k') v (keyAt eq d k' t)
+        = cond (eq k k') v (cond (eq e.1 k') e.2 (keyAt eq d k' t))
+      rw [hs e.1 k he]
+      cases eq k k' with
+      | true => rfl
+      | false => rfl
+    | false =>
+      rw [if_neg (fun hh : (false : Bool) = true => Bool.noConfusion hh)]
+      show cond (eq e.1 k') e.2 (keyAt eq d k' (keyPut eq k v t))
+        = cond (eq k k') v (cond (eq e.1 k') e.2 (keyAt eq d k' t))
+      rw [keyAt_keyPut eq hs hr d k k' v t]
+      cases he' : eq e.1 k' with
+      | true =>
+        have hkk : eq k k' = false := by
+          rw [← hs e.1 k' he']
+          cases hk : eq k e.1 with
+          | false => rfl
+          | true =>
+            rw [hs k e.1 hk, hr e.1] at he
+            exact Bool.noConfusion he
+        rw [hkk]
+        rfl
+      | false => rfl
 
 /-- Two folds at one read per occupied member are one value. -/
 theorem famFold_congr_members {α β : Type} [DecidableEq α]
@@ -8069,6 +8350,15 @@ theorem pasc_self : ∀ j : Nat, pasc j j = 1
     show pasc j j + pasc j (j + 1) = 1
     rw [pasc_self j, pasc_beyond j (j + 1) (Nat.lt_succ_self j)]
 
+/-- A Pascal count at a key at or below its row is occupied. -/
+theorem pasc_pos : ∀ j t : Nat, t ≤ j → 0 < pasc j t
+  | 0, 0, _ => Nat.zero_lt_one
+  | _ + 1, 0, _ => Nat.zero_lt_one
+  | 0, t + 1, h => absurd h (Nat.not_succ_le_zero t)
+  | j + 1, t + 1, h => by
+    show 0 < pasc j t + pasc j (t + 1)
+    exact Nat.lt_of_lt_of_le (pasc_pos j t (Nat.le_of_succ_le_succ h)) (Nat.le_add_right _ _)
+
 /-- The nought key reads one at every height. -/
 private theorem pascBase (j : Nat) : pasc j 0 = 1 := by
   match j with
@@ -8271,18 +8561,82 @@ members in their order of first appearance. -/
 def dedupF {α : Type} [DecidableEq α] (l : List α) : List α :=
   l.foldl (fun acc a => if 0 < countOf a acc then acc else acc ++ [a]) []
 
-/-- The closure from stated seeds at a step and a join: each round
-joins the frontier's steps to the pool at the join, the next
-frontier the round's new members, the fuel the rounds' bound. -/
-def closeBy {α : Type} (step : α → List α) (join : List α → α → List α) :
-    Nat → List α → List α → List α
+/-- The closure from stated seeds at a step and a join over a pool
+with its own data, the members read off the pool by a projection:
+each round joins the frontier's steps to the pool at the join, the
+next frontier the projected pool's new members, the fuel the
+rounds' bound. -/
+def closeByS {α σ : Type} (step : α → List α) (join : σ → α → σ)
+    (proj : σ → List α) : Nat → σ → List α → σ
   | 0, pool, _ => pool
   | fuel + 1, pool, frontier =>
     match frontier with
     | [] => pool
     | _ :: _ =>
       let pool' := (frontier.flatMap step).foldl join pool
-      closeBy step join fuel pool' (pool'.drop pool.length)
+      closeByS step join proj fuel pool'
+        ((proj pool').drop (proj pool).length)
+
+/-- The closure from stated seeds at a step and a join: each round
+joins the frontier's steps to the pool at the join, the next
+frontier the round's new members, the fuel the rounds' bound (the
+projected closure at the pool itself). -/
+def closeBy {α : Type} (step : α → List α) (join : List α → α → List α) :
+    Nat → List α → List α → List α :=
+  closeByS step join (fun l => l)
+
+/-- A join kept by a read and projecting to a list join folds to the
+list fold at the projection, the read kept along the fold. -/
+theorem foldl_proj {α σ : Type} (join : σ → α → σ)
+    (joinL : List α → α → List α) (proj : σ → List α) (I : σ → Prop)
+    (hI : ∀ s a, I s → I (join s a))
+    (hp : ∀ s a, I s → proj (join s a) = joinL (proj s) a) :
+    ∀ (l : List α) (s : σ), I s →
+      I (l.foldl join s) ∧ proj (l.foldl join s) = l.foldl joinL (proj s)
+  | [], _, hs => ⟨hs, rfl⟩
+  | a :: t, s, hs => by
+    show I (t.foldl join (join s a))
+      ∧ proj (t.foldl join (join s a)) = t.foldl joinL (joinL (proj s) a)
+    rw [← hp s a hs]
+    exact foldl_proj join joinL proj I hI hp t (join s a) (hI s a hs)
+
+/-- The closure over a pool with its own data projects to the
+closure at the list join: the read kept by the join and the join
+projecting to the list join at the read, the two closures read one
+member list round by round. -/
+theorem closeByS_proj {α σ : Type} (step : α → List α)
+    (join : σ → α → σ) (joinL : List α → α → List α)
+    (proj : σ → List α) (I : σ → Prop)
+    (hI : ∀ s a, I s → I (join s a))
+    (hp : ∀ s a, I s → proj (join s a) = joinL (proj s) a) :
+    ∀ (fuel : Nat) (s : σ) (fr : List α), I s →
+      I (closeByS step join proj fuel s fr)
+      ∧ proj (closeByS step join proj fuel s fr)
+        = closeBy step joinL fuel (proj s) fr
+  | 0, _, _, hs => ⟨hs, rfl⟩
+  | _ + 1, _, [], hs => ⟨hs, rfl⟩
+  | fuel + 1, s, a :: fr, hs => by
+    show I (closeByS step join proj fuel
+        (((a :: fr).flatMap step).foldl join s)
+        ((proj (((a :: fr).flatMap step).foldl join s)).drop
+          (proj s).length))
+      ∧ proj (closeByS step join proj fuel
+        (((a :: fr).flatMap step).foldl join s)
+        ((proj (((a :: fr).flatMap step).foldl join s)).drop
+          (proj s).length))
+      = closeBy step joinL fuel
+          (((a :: fr).flatMap step).foldl joinL (proj s))
+          ((((a :: fr).flatMap step).foldl joinL (proj s)).drop
+            (proj s).length)
+    obtain ⟨hI', hp'⟩ := foldl_proj join joinL proj I hI hp
+      ((a :: fr).flatMap step) s hs
+    have hrec := closeByS_proj step join joinL proj I hI hp fuel
+      (((a :: fr).flatMap step).foldl join s)
+      ((proj (((a :: fr).flatMap step).foldl join s)).drop
+        (proj s).length) hI'
+    rw [hp'] at hrec
+    rw [hp']
+    exact hrec
 
 /-- A member reaches the distinct index. -/
 theorem mem_dedupL {α : Type} [DecidableEq α] {x : α} :
@@ -9568,6 +9922,17 @@ prices the datum strictly above the sum's unit. -/
 theorem unitLtOfSide {x : BPair} (h : x.snd < x.fst) :
     BPair.unit < x := posLtShift h
 
+/-- The margin's site read as the gap's join: at `a < b` the margin
+of `⟨b : a⟩` joins `a` to `b`, the gap of `def:ground`'s order at
+the difference read. -/
+theorem BPair.marginPos_join {a b : Pos} (h : a < b) :
+    a + BPair.marginPos ⟨b, a⟩ = b := by
+  have e := BPair.marginPos_read (unitLtOfSide (x := ⟨b, a⟩) h)
+  have e' : BPair.marginPos ⟨b, a⟩ + Pos.one + a = b + Pos.one := e
+  rw [ground.add_right_comm (BPair.marginPos ⟨b, a⟩) Pos.one a] at e'
+  rw [ground.add_comm a (BPair.marginPos ⟨b, a⟩)]
+  exact ground.add_right_cancel e'
+
 /-- At or below both ways at the balance carrier is one value. -/
 theorem leB_antisymm {x y : BPair} (h : x ≤ y) (h' : y ≤ x) :
     x.oneValue y := posLeAntisymm h h'
@@ -9581,6 +9946,12 @@ theorem ltB_add {x y x' y' : BPair} (h : x < y)
   rw [ground.add_add_comm x.fst x'.fst y.snd y'.snd,
     ground.add_add_comm y.fst y'.fst x.snd x'.snd]
   exact posLtAddLe h h'
+
+/-- A datum below another joins the second's swap below the sum's
+unit, the gap carried across unchanged. -/
+theorem ltUnit_of_lt {L R : BPair} (h : L < R) : L + R.swap < BPair.unit :=
+  BPair.lt_congr (BPair.oneValue_refl _) (BPair.add_swap_null R)
+    (ltB_add h (leB_refl R.swap))
 
 /-- The balance order's strict read composes with an at-or-below
 read on its right. -/
@@ -9841,6 +10212,13 @@ theorem leB_mulR {x y y' : BPair} (hx : BPair.unit ≤ x)
   refine ground.unitLeMul hx ?_
   exact ground.leB_unit_add (U := y') (V := y.swap) h
 
+/-- A first-factor comparison keeps under a second factor at or
+beyond the unit. -/
+theorem leB_mulL {x y c : BPair} (hc : BPair.unit ≤ c) (h : x ≤ y) :
+    x * c ≤ y * c :=
+  ground.leB_congr (BPair.oneValue_of_eq (BPair.mul_comm c x))
+    (BPair.oneValue_of_eq (BPair.mul_comm c y)) (ground.leB_mulR hc h)
+
 /-- The product's two-sided comparison at factors from the sum's
 unit. -/
 theorem leB_mul_mono {a b u v : BPair} (hu : BPair.unit ≤ u)
@@ -9936,6 +10314,18 @@ theorem unitLtOfNat (n : Nat) :
       (BPair.oneValue_of_eq
         (BPair.add_comm (BPair.ofNat 1) (BPair.ofNat n)))
       (ground.unitLtAdd (by decide +kernel) (unitLeOfNat n)))
+
+/-- The counts' strict order carries onto the balance pairs. -/
+theorem ltB_ofNat {a b : Nat} (h : a < b) :
+    BPair.ofNat a < BPair.ofNat b := by
+  obtain ⟨d, hd⟩ := Nat.le.dest h
+  have hd' : a + (d + 1) = b :=
+    (Nat.add_succ a d).trans ((Nat.succ_add a d).symm.trans hd)
+  rw [← hd']
+  exact BPair.lt_congr (BPair.unit_add (BPair.ofNat a))
+    (BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.add_comm _ _))
+      (BPair.oneValue_symm (BPair.ofNat_add a (d + 1))))
+    (ground.ltB_add (ground.unitLtOfNat d) (ground.leB_refl (BPair.ofNat a)))
 
 /-- A positive datum's balance pair sits strictly above the sum's
 unit, the side read at the one-member site. -/
@@ -10116,6 +10506,31 @@ theorem foldB_foldl {α : Type} (g : α → BPair) :
     refine BPair.oneValue_trans (foldB_foldl g t (acc + g a)) ?_
     rw [BPair.add_assoc]
     exact BPair.oneValue_refl _
+
+/-- The guarded accumulating fold reads its seed against the
+guarded index fold, a refused member keeping the accumulator. -/
+theorem foldB_foldl_guard {α : Type} (P : α → Bool) (g : α → BPair) :
+    ∀ (l : List α) (acc : BPair),
+      (l.foldl (fun a x => if P x then a + g x else a) acc).oneValue
+        (acc + famFold BPair.add BPair.unit
+          (fun x => if P x then g x else BPair.unit) l)
+  | [], acc => BPair.oneValue_symm (BPair.add_unit acc)
+  | a :: t, acc => by
+    show (t.foldl (fun a x => if P x then a + g x else a)
+        (if P a then acc + g a else acc)).oneValue
+      (acc + ((if P a then g a else BPair.unit)
+        + famFold BPair.add BPair.unit
+            (fun x => if P x then g x else BPair.unit) t))
+    refine BPair.oneValue_trans (foldB_foldl_guard P g t _) ?_
+    cases hc : P a with
+    | true =>
+      rw [if_pos rfl, if_pos rfl]
+      exact BPair.oneValue_of_eq (BPair.add_assoc _ _ _)
+    | false =>
+      rw [if_neg (fun h : (false : Bool) = true => Bool.noConfusion h),
+        if_neg (fun h : (false : Bool) = true => Bool.noConfusion h)]
+      exact BPair.add_congr (BPair.oneValue_refl _)
+        (BPair.oneValue_symm (BPair.unit_add _))
 
 /-- Two folds at one read per occupied member are one value. -/
 theorem foldB_congr_members {α : Type} [DecidableEq α]
@@ -10687,18 +11102,10 @@ theorem leB_ltB_trans {x y z : BPair} (h : x ≤ y)
 above the sum's unit. -/
 theorem ltB_mulPos {x y c : BPair} (h : x < y)
     (hc : BPair.unit < c) : x * c < y * c := by
-  have hnull : (x + x.swap).oneValue BPair.unit :=
-    BPair.oneValue_trans
-      (BPair.oneValue_of_eq (BPair.add_comm x x.swap))
-      (BPair.swap_add_null (BPair.oneValue_refl x))
   have hd : BPair.unit < y + x.swap :=
-    BPair.lt_congr hnull (BPair.oneValue_refl _)
+    BPair.lt_congr (BPair.add_swap_null x) (BPair.oneValue_refl _)
       (ltB_add h (leB_refl x.swap))
-  have hxd : (x + (y + x.swap)).oneValue y := by
-    rw [BPair.add_left_comm x y x.swap]
-    exact BPair.oneValue_trans
-      (BPair.add_congr (BPair.oneValue_refl y) hnull)
-      (BPair.add_unit y)
+  have hxd : (x + (y + x.swap)).oneValue y := BPair.add_swap_cancel x y
   have hstep : x * c < x * c + (y + x.swap) * c :=
     ltB_addPos (unitLtMul hd hc)
   refine BPair.lt_congr (BPair.oneValue_refl (x * c)) ?_ hstep
@@ -11098,7 +11505,8 @@ theorem foldB_nonneg {α : Type} [DecidableEq α]
 
 /-- A fold at the sum's unit whose every member sits at or above it
 puts every member at the unit. -/
-theorem bsum_unit_members (f : Nat → BPair) : ∀ l : List Nat,
+theorem bsum_unit_members {α : Type} [DecidableEq α] (f : α → BPair) :
+    ∀ l : List α,
     (∀ x ∈ l, BPair.unit ≤ f x) →
       (ground.bsum f l).oneValue BPair.unit →
       ∀ x ∈ l, (f x).oneValue BPair.unit
@@ -11924,6 +12332,36 @@ theorem countOf_range_pos {j n : Nat} (h : j < n) :
   rw [countOf_range_one h]
   exact Nat.succ_pos 0
 
+/-- A key occupied in a range sits below the range. -/
+theorem ltOfCountRange {j n : Nat} (h : 0 < countOf j (List.range n)) : j < n := by
+  rw [countOf_range] at h
+  cases hlt : decide (j < n) with
+  | false =>
+    rw [if_neg (of_decide_eq_false hlt)] at h
+    exact absurd h (Nat.lt_irrefl 0)
+  | true => exact of_decide_eq_true hlt
+
+/-- A key sits in a filtered range exactly at the predicate's read
+joined to the range's. -/
+theorem containsB_filter (P : Nat → Bool) (n y : Nat) :
+    containsB (List.filter P (List.range n)) y
+      = (P y && decide (y < n)) := by
+  show decide (0 < countOf y (List.filter P (List.range n))) = _
+  rw [countOf_filter P y (List.range n), countOf_range y n]
+  cases hp : P y with
+  | true =>
+    rw [if_pos rfl]
+    by_cases hyn : y < n
+    · rw [if_pos hyn, decide_eq_true hyn]
+      rfl
+    · rw [if_neg hyn]
+      cases hd : decide (y < n) with
+      | true => exact absurd (of_decide_eq_true hd) hyn
+      | false => rfl
+  | false =>
+    rw [if_neg (boolNe rfl)]
+    rfl
+
 /-- The key range is a distinct list, every count at most one. -/
 theorem distinctList_range (n : Nat) :
     ground.distinctList (List.range n) := fun x _ => by
@@ -12323,6 +12761,13 @@ theorem foldB_range_cons (F : Nat → BPair) (m : Nat) :
           (fun j => F (j + 1)) (List.range m) :=
   famFold_range_cons BPair.add BPair.unit F m
 
+/-- The count instance at the natural sum. -/
+theorem sumNat_range_cons (f : Nat → Nat) (m : Nat) :
+    sumNat ((List.range (m + 1)).map f)
+      = f 0 + sumNat ((List.range m).map (fun j => f (j + 1))) := by
+  rw [sumMap, sumMap]
+  exact famFold_range_cons Nat.add 0 f m
+
 /-- The balance fold over a key range at its top key: the shorter
 range's fold joined to the top key's read. -/
 theorem foldB_range_snoc (U : Nat → BPair) (m : Nat) :
@@ -12481,6 +12926,484 @@ theorem bpow_binom (x y : BPair) : ∀ j : Nat,
     refine BPair.oneValue_symm (BPair.oneValue_trans
       (BPair.add_congr (BPair.oneValue_refl _) hYS) ?_)
     exact BPair.oneValue_of_eq (BPair.add_left_comm _ _ _)
+
+/-- The balance fold over a key range at its top key: the shorter
+range's fold joined to the top key's read. -/
+theorem foldB_range_top : ∀ (F : Nat → BPair) (n : Nat),
+    (bsum F (List.range (n + 1))).oneValue (bsum F (List.range n) + F n)
+  | F, 0 => by
+    show (ground.famFold BPair.add BPair.unit F (List.range (0 + 1))).oneValue (BPair.unit + F 0)
+    rw [foldB_range_cons F 0]
+    show (F 0 + BPair.unit).oneValue (BPair.unit + F 0)
+    rw [BPair.add_comm]; exact BPair.oneValue_refl _
+  | F, n + 1 => by
+    have hIH := foldB_range_top (fun j => F (j + 1)) n
+    show (ground.famFold BPair.add BPair.unit F (List.range (n + 1 + 1))).oneValue
+      (ground.famFold BPair.add BPair.unit F (List.range (n + 1)) + F (n + 1))
+    rw [foldB_range_cons F (n + 1), foldB_range_cons F n]
+    refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl (F 0)) hIH) ?_
+    rw [BPair.add_assoc]; exact BPair.oneValue_refl _
+
+/-- The telescope at a pair summing to one with its partner: the
+partner's power joined to the pair's multiple of the partner's
+lower powers' fold reads one, `y^i + x Σ_{k<i} y^k ≡ 1` at `x + y ≡ 1`. -/
+theorem bpow_telescope (x y : BPair) (h : (x + y).oneValue (BPair.ofPos .one)) :
+    ∀ i : Nat, (bpow y i + x * bsum (bpow y) (List.range i)).oneValue (BPair.ofPos .one)
+  | 0 => by
+    show (BPair.ofPos .one + x * BPair.unit).oneValue (BPair.ofPos .one)
+    exact BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl _) (BPair.mul_unit x)) (BPair.add_unit _)
+  | i + 1 => by
+    have hIH := bpow_telescope x y h i
+    -- the fold at the head: Σ_{k<i+1} y^k = y^0 + Σ_{k<i} y^{k+1}
+    have hcons : bsum (bpow y) (List.range (i + 1))
+        = bpow y 0 + bsum (fun k => bpow y (k + 1)) (List.range i) :=
+      foldB_range_cons (bpow y) i
+    have hshift : (bsum (fun k => bpow y (k + 1)) (List.range i)).oneValue
+        (y * bsum (bpow y) (List.range i)) := by
+      refine BPair.oneValue_trans (famFold_congr_members_ov BPair.oneValue BPair.add
+        BPair.unit BPair.oneValue_refl (fun h1 h2 => BPair.add_congr h1 h2)
+        _ (fun k => y * bpow y k) (List.range i) (fun k _ => bpow_succ_read y k)) ?_
+      exact foldB_mul_left y (bpow y) (List.range i)
+    show (bpow y (i + 1) + x * bsum (bpow y) (List.range (i + 1))).oneValue (BPair.ofPos .one)
+    rw [hcons]
+    refine BPair.oneValue_trans (BPair.add_congr (bpow_succ_read y i)
+      (BPair.mul_congr (BPair.oneValue_refl x)
+        (BPair.add_congr (BPair.oneValue_refl _) hshift))) ?_
+    -- y y^i + x (1 + y Σ) ≡ x + y (y^i + x Σ) ≡ x + y ≡ 1
+    have h1 : (y * bpow y i + x * (bpow y 0 + y * bsum (bpow y) (List.range i))).oneValue
+        (x + y * (bpow y i + x * bsum (bpow y) (List.range i))) := by
+      show (y * bpow y i + x * (BPair.ofPos .one + y * bsum (bpow y) (List.range i))).oneValue _
+      rw [BPair.left_distrib, BPair.left_distrib]
+      refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl _)
+        (BPair.add_congr (BPair.mul_one_read x) (BPair.oneValue_refl _))) ?_
+      rw [← BPair.mul_assoc x y, BPair.mul_comm x y, BPair.mul_assoc y x]
+      rw [← BPair.add_assoc, BPair.add_comm (y * bpow y i) x, BPair.add_assoc]
+      exact BPair.oneValue_refl _
+    refine BPair.oneValue_trans h1 ?_
+    refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl x)
+      (BPair.mul_congr (BPair.oneValue_refl y) hIH)) ?_
+    exact BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl x) (BPair.mul_one_read y)) h
+
+/-- The unit family's fold over a key range reads the count. -/
+theorem bsum_one : ∀ n : Nat,
+    (bsum (fun _ : Nat => BPair.ofPos .one) (List.range n)).oneValue (BPair.ofNat n)
+  | 0 => BPair.oneValue_refl _
+  | n + 1 => by
+    refine BPair.oneValue_trans (foldB_range_top (fun _ => BPair.ofPos .one) n) ?_
+    refine BPair.oneValue_trans (BPair.add_congr (bsum_one n) (BPair.oneValue_refl _)) ?_
+    exact BPair.oneValue_symm (BPair.ofNat_succ n)
+
+/-- The telescope folded: the partner's powers' fold joined to the
+pair's multiple of the lower folds' fold reads the count,
+`Σ_{i<n} y^i + x Σ_{i<n} Σ_{k<i} y^k ≡ n`. -/
+theorem bpow_telescope_fold (x y : BPair) (h : (x + y).oneValue (BPair.ofPos .one))
+    (n : Nat) :
+    (bsum (bpow y) (List.range n)
+      + x * bsum (fun i => bsum (bpow y) (List.range i)) (List.range n)).oneValue
+      (BPair.ofNat n) := by
+  refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl _)
+    (BPair.oneValue_symm (foldB_mul_left x _ (List.range n)))) ?_
+  refine BPair.oneValue_trans (BPair.oneValue_symm
+    (famFold_add_ov bpairFoldLaws (bpow y) (fun i => x * bsum (bpow y) (List.range i))
+      (List.range n))) ?_
+  refine BPair.oneValue_trans (famFold_congr_members_ov BPair.oneValue BPair.add BPair.unit
+    BPair.oneValue_refl (fun h1 h2 => BPair.add_congr h1 h2) _ (fun _ => BPair.ofPos .one)
+    (List.range n) (fun i _ => bpow_telescope x y h i)) ?_
+  exact bsum_one n
+
+/-- Bernoulli's read at the telescope: the partner's power joined to
+the key's multiple of the pair reads one joined to the pair's square
+against the lower folds' fold, `y^n + n x ≡ 1 + x² Σ_{i<n} Σ_{k<i} y^k`. -/
+theorem bpow_bernoulli (x y : BPair) (h : (x + y).oneValue (BPair.ofPos .one)) (n : Nat) :
+    (bpow y n + BPair.ofNat n * x).oneValue
+      (BPair.ofPos .one + x * x * bsum (fun i => bsum (bpow y) (List.range i)) (List.range n)) := by
+  have hS := bpow_telescope_fold x y h n
+  have hT := bpow_telescope x y h n
+  refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl _)
+    (BPair.mul_congr (BPair.oneValue_symm hS) (BPair.oneValue_refl x))) ?_
+  rw [BPair.right_distrib, ← BPair.add_assoc, BPair.mul_comm (bsum (bpow y) (List.range n)) x,
+    BPair.mul_assoc x _ x, BPair.mul_comm _ x, ← BPair.mul_assoc x x]
+  exact BPair.add_congr hT (BPair.oneValue_refl _)
+
+/-- The Bernstein bound at the binomial partition: at a pair and its
+partner summing to one, the key's Pascal count against the pair's
+power and the partner's whole power joined to the gap, the
+partition's further summands with the key's summand read against
+the partner's key power's telescope, reads one. -/
+theorem bernstein_bound (x y : BPair) (h : (x + y).oneValue (BPair.ofPos .one)) (j k : Nat) :
+    (BPair.ofNat (pasc (j + k) j) * (bpow x j * bpow y (j + k))
+      + bsum (fun t => if t = j
+          then BPair.ofNat (pasc (j + k) j) * (bpow x j * bpow y k)
+            * (x * bsum (bpow y) (List.range j))
+          else BPair.ofNat (pasc (j + k) t) * (bpow x t * bpow y (j + k - t)))
+        (List.range (j + k + 1))).oneValue (BPair.ofPos .one) := by
+  have hbin := bpow_binom x y (j + k)
+  have hone : (bpow (x + y) (j + k)).oneValue (BPair.ofPos .one) :=
+    BPair.oneValue_trans (bpow_congr h (j + k)) (bpow_one (j + k))
+  -- the indicator fold at the key j reads the withdrawn summand
+  have hind : (bsum (fun t => if t = j
+      then BPair.ofNat (pasc (j + k) j) * (bpow x j * bpow y (j + k)) else BPair.unit)
+      (List.range (j + k + 1))).oneValue
+      (BPair.ofNat (pasc (j + k) j) * (bpow x j * bpow y (j + k))) :=
+    famFold_pick_ov bpairFoldLaws _ j _ (List.range (j + k + 1))
+      (by rw [countOf_range j (j + k + 1), if_pos (Nat.lt_succ_of_le (Nat.le_add_right j k))])
+      (by rw [if_pos rfl]; exact BPair.oneValue_refl _)
+      (fun t _ ht => by rw [if_neg ht]; exact BPair.oneValue_refl _)
+  -- the partition's fold splits at the key: gap + indicator
+  have hsplit : (bsum (fun t => BPair.ofNat (pasc (j + k) t) * (bpow x t * bpow y (j + k - t)))
+      (List.range (j + k + 1))).oneValue
+      (bsum (fun t => if t = j
+          then BPair.ofNat (pasc (j + k) j) * (bpow x j * bpow y k)
+            * (x * bsum (bpow y) (List.range j))
+          else BPair.ofNat (pasc (j + k) t) * (bpow x t * bpow y (j + k - t)))
+        (List.range (j + k + 1))
+       + bsum (fun t => if t = j
+          then BPair.ofNat (pasc (j + k) j) * (bpow x j * bpow y (j + k)) else BPair.unit)
+        (List.range (j + k + 1))) := by
+    refine BPair.oneValue_trans ?_ (famFold_add_ov bpairFoldLaws _ _ (List.range (j + k + 1)))
+    refine famFold_congr_members_ov BPair.oneValue BPair.add BPair.unit BPair.oneValue_refl
+      (fun h1 h2 => BPair.add_congr h1 h2) _ _ (List.range (j + k + 1)) (fun t _ => ?_)
+    by_cases ht : t = j
+    · rw [if_pos ht, if_pos ht, ht, addSubSelfL]
+      -- C x^j y^k (y^j + x Σ) ≡ C x^j y^k x Σ + C x^j y^{j+k}
+      have hT := bpow_telescope x y h j
+      have hy : (bpow y (j + k)).oneValue (bpow y k * bpow y j) := by
+        rw [Nat.add_comm j k]; exact bpow_add y k j
+      refine BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _)
+        (BPair.mul_congr (BPair.oneValue_refl _) (BPair.oneValue_symm
+          (BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl (bpow y k)) hT)
+            (BPair.mul_one_read _))))) ?_
+      rw [BPair.left_distrib (bpow y k), BPair.left_distrib (bpow x j),
+        BPair.left_distrib (BPair.ofNat (pasc (j + k) j)), BPair.add_comm]
+      refine BPair.add_congr ?_ ?_
+      · rw [BPair.mul_assoc (BPair.ofNat (pasc (j + k) j)) (bpow x j * bpow y k),
+          BPair.mul_assoc (bpow x j) (bpow y k)]
+        exact BPair.oneValue_refl _
+      · exact BPair.mul_congr (BPair.oneValue_refl _)
+          (BPair.mul_congr (BPair.oneValue_refl _) (BPair.oneValue_symm hy))
+    · rw [if_neg ht, if_neg ht]
+      exact BPair.oneValue_symm (BPair.add_unit _)
+  refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_symm hind) (BPair.oneValue_refl _)) ?_
+  rw [BPair.add_comm]
+  exact BPair.oneValue_trans (BPair.oneValue_symm hsplit) (BPair.oneValue_trans (BPair.oneValue_symm hbin) hone)
+
+/-- The step quotients ascend along a convex chain: at every key whose
+raised key sits below the top, the raised key's member against the
+top's own lower key sits at or below the key's member against the top,
+the convexity step at the key composed with the read one key up and the
+shared positive factor withdrawn. -/
+theorem quotients_ascend (b : Nat → BPair) (k : Nat)
+    (hpos : ∀ i, i < k → BPair.unit < b i)
+    (hconv : ∀ i, i + 1 < k → b (i + 1) * b (i + 1) ≤ b i * b (i + 2)) :
+    ∀ i, i + 1 < k → b (i + 1) * b (k - 1) ≤ b i * b k := by
+  cases k with
+  | zero => intro i hi; exact absurd hi (Nat.not_lt_zero _)
+  | succ k' =>
+    show ∀ i, i + 1 < k' + 1 → b (i + 1) * b k' ≤ b i * b (k' + 1)
+    have key : ∀ d i, i + 1 + d = k' →
+        b (i + 1) * b k' ≤ b i * b (k' + 1) := by
+      intro d
+      induction d with
+      | zero =>
+        intro i hi
+        have hk : k' = i + 1 := hi.symm
+        have hlt : i + 1 < k' + 1 := by rw [hk]; exact Nat.lt_succ_self (i + 1)
+        have hc := hconv i hlt
+        rw [hk]
+        exact hc
+      | succ d ih =>
+        intro i hi
+        have hik : i + 1 ≤ k' := Nat.le.intro hi
+        have h2 : i + 1 + 1 + d = k' := by
+          rw [Nat.add_right_comm (i + 1) 1 d]
+          exact hi
+        have hIH : b (i + 2) * b k' ≤ b (i + 1) * b (k' + 1) := ih (i + 1) h2
+        have hc := hconv i (Nat.lt_succ_of_le hik)
+        have hp1 : BPair.unit < b (i + 1) :=
+          hpos (i + 1) (Nat.lt_succ_of_le hik)
+        have hp2 : BPair.unit < b (i + 2) :=
+          hpos (i + 2) (Nat.lt_succ_of_le (Nat.le.intro h2))
+        have hpk : BPair.unit < b k' := hpos k' (Nat.lt_succ_self k')
+        have hi0 : BPair.unit < b i :=
+          hpos i (Nat.lt_succ_of_le (Nat.le_trans (Nat.le_succ i) hik))
+        have hmul : b (i + 1) * b (i + 1) * (b (i + 2) * b k')
+            ≤ b i * b (i + 2) * (b (i + 1) * b (k' + 1)) :=
+          leB_mul_mono (unitLeMul (leB_of_lt hp2) (leB_of_lt hpk))
+            (unitLeMul (leB_of_lt hi0) (leB_of_lt hp2)) hc hIH
+        rw [BPair.mul_mul_mul_comm (b (i + 1)) (b (i + 1)) (b (i + 2)) (b k'),
+          BPair.mul_comm (b i) (b (i + 2)),
+          BPair.mul_mul_mul_comm (b (i + 2)) (b i) (b (i + 1)) (b (k' + 1)),
+          BPair.mul_comm (b (i + 2)) (b (i + 1))] at hmul
+        exact leB_unscale_left (unitLtMul hp1 hp2) hmul
+    intro i hi
+    obtain ⟨d, hd⟩ := Nat.le.dest (Nat.le_of_lt_succ hi)
+    exact key d i hd
+
+/-- The chain's power read: at a convex chain of members beyond the
+sum's unit whose head sits at or below one, the key's member raised to
+the raised key sits at or below the raised key's member raised to the
+key: the step quotients ascend to the last (`quotients_ascend`), so
+the member is its head against the product of the quotients, each at
+or below the last, one quotient folded in per key. -/
+theorem chain_power (b : Nat → BPair) (k' : Nat)
+    (hb0 : b 0 ≤ BPair.ofPos .one)
+    (hpos : ∀ i, i ≤ k' + 1 → BPair.unit < b i)
+    (hconv : ∀ i, i + 1 ≤ k' → b (i + 1) * b (i + 1) ≤ b i * b (i + 2)) :
+    bpow (b k') (k' + 1) ≤ bpow (b (k' + 1)) k' := by
+  have hasc := quotients_ascend b (k' + 1) (fun i hi => hpos i (Nat.le_of_lt hi))
+    (fun i hi => hconv i (Nat.le_of_lt_succ hi))
+  have hbk : BPair.unit < b (k' + 1) := hpos (k' + 1) (Nat.le_refl _)
+  have hbk' : BPair.unit < b k' := hpos k' (Nat.le_succ k')
+  have key : ∀ n, n ≤ k' → b n * bpow (b k') n ≤ b 0 * bpow (b (k' + 1)) n := by
+    intro n
+    induction n with
+    | zero => intro _; exact leB_refl _
+    | succ n ih =>
+      intro hn
+      have h1 : b (n + 1) * b k' ≤ b n * b (k' + 1) := hasc n (Nat.lt_succ_of_le hn)
+      have hIH := ih (Nat.le_of_succ_le hn)
+      have e1 : (b (n + 1) * bpow (b k') (n + 1)).oneValue
+          (b (n + 1) * b k' * bpow (b k') n) := by
+        refine BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _) (bpow_succ_read _ n)) ?_
+        exact BPair.oneValue_of_eq (BPair.mul_assoc _ _ _).symm
+      have e2 : (b 0 * bpow (b (k' + 1)) (n + 1)).oneValue
+          (b 0 * (b (k' + 1) * bpow (b (k' + 1)) n)) :=
+        BPair.mul_congr (BPair.oneValue_refl _) (bpow_succ_read _ n)
+      refine leB_congr (BPair.oneValue_symm e1) (BPair.oneValue_symm e2) ?_
+      refine leB_trans (leB_mulL (unitLeBpow (leB_of_lt hbk') n) h1) ?_
+      refine leB_congr (BPair.oneValue_of_eq (BPair.mul_left_comm' _ _ _))
+        (BPair.oneValue_of_eq (BPair.mul_left_comm _ _ _)) (leB_mulR (leB_of_lt hbk) hIH)
+  refine leB_congr_left (BPair.oneValue_symm (bpow_succ_read _ k')) ?_
+  refine leB_trans (key k' (Nat.le_refl k')) ?_
+  exact leB_congr_right (BPair.ofPos_one_mul _) (leB_mulL (unitLeBpow (leB_of_lt hbk) k') hb0)
+
+/-- One summand of the binomial partition: at two data at or beyond the
+sum's unit, the partition's Pascal count against the two powers sits at
+or below the joined datum's power, the partition's further summands at
+or beyond the sum's unit. -/
+theorem binom_member (x y : BPair) (j k : Nat) (hx : BPair.unit ≤ x) (hy : BPair.unit ≤ y) :
+    BPair.ofNat (pasc (j + k) j) * (bpow x j * bpow y k) ≤ bpow (x + y) (j + k) := by
+  have hcount : ground.countOf j (List.range (j + k + 1)) = 1 := by
+    rw [countOf_range j (j + k + 1),
+      if_pos (Nat.lt_succ_of_le (Nat.le_add_right j k))]
+  have hpick : (bsum (fun t => if t = j
+      then BPair.ofNat (pasc (j + k) j) * (bpow x j * bpow y (j + k - j))
+      else BPair.unit) (List.range (j + k + 1))).oneValue
+      (BPair.ofNat (pasc (j + k) j) * (bpow x j * bpow y (j + k - j))) :=
+    famFold_pick_ov bpairFoldLaws _ j _ (List.range (j + k + 1)) hcount
+      (by rw [if_pos rfl]; exact BPair.oneValue_refl _)
+      (fun t _ ht => by rw [if_neg ht]; exact BPair.oneValue_refl _)
+  have hrest : BPair.unit ≤ bsum (fun t => if t = j then BPair.unit
+      else BPair.ofNat (pasc (j + k) t) * (bpow x t * bpow y (j + k - t)))
+      (List.range (j + k + 1)) := by
+    refine foldB_nonneg _ (List.range (j + k + 1)) (fun t _ => ?_)
+    by_cases ht : t = j
+    · rw [if_pos ht]
+      exact leB_refl _
+    · rw [if_neg ht]
+      exact unitLeMul (unitLeOfNat _)
+        (unitLeMul (unitLeBpow hx t) (unitLeBpow hy (j + k - t)))
+  have hsplit : (bsum (fun t => BPair.ofNat (pasc (j + k) t)
+        * (bpow x t * bpow y (j + k - t))) (List.range (j + k + 1))).oneValue
+      (bsum (fun t => if t = j then BPair.unit
+          else BPair.ofNat (pasc (j + k) t) * (bpow x t * bpow y (j + k - t)))
+        (List.range (j + k + 1))
+       + bsum (fun t => if t = j
+          then BPair.ofNat (pasc (j + k) j) * (bpow x j * bpow y (j + k - j))
+          else BPair.unit) (List.range (j + k + 1))) := by
+    refine BPair.oneValue_trans ?_
+      (famFold_add_ov bpairFoldLaws _ _ (List.range (j + k + 1)))
+    refine famFold_congr_members_ov BPair.oneValue BPair.add BPair.unit
+      BPair.oneValue_refl (fun h1 h2 => BPair.add_congr h1 h2) _ _
+      (List.range (j + k + 1)) (fun t _ => ?_)
+    by_cases ht : t = j
+    · rw [if_pos ht, if_pos ht, ht]
+      exact BPair.oneValue_symm (BPair.unit_add _)
+    · rw [if_neg ht, if_neg ht]
+      exact BPair.oneValue_symm (BPair.add_unit _)
+  have hmem : BPair.ofNat (pasc (j + k) j) * (bpow x j * bpow y (j + k - j))
+      ≤ bpow (x + y) (j + k) := by
+    refine leB_congr_right (BPair.oneValue_symm (bpow_binom x y (j + k))) ?_
+    refine leB_congr_right (BPair.oneValue_symm hsplit) ?_
+    refine leB_congr_left (BPair.unit_add _) ?_
+    exact leB_add hrest (leB_congr_left hpick (leB_refl _))
+  rw [addSubSelfL j k] at hmem
+  exact hmem
+
+/-- The power's gap read at the raised key: the power joined to the
+gap, the pair's square against the two lower folds with the shift's
+power, reads one joined to the raised key's power,
+`y^k + ((1 + y^∨)² Σ_{i<k} y^i Σ_{i<j'} y^i + y^{j'}) ≡ 1 + y^{k+j'}`,
+the telescope at the pair `1 + y^∨` twice with the two withdrawn
+powers pairing off against the joined ones. -/
+theorem bpow_gap_read (y : BPair) (k j' : Nat) :
+    (bpow y k + ((BPair.ofPos .one + y.swap) * (BPair.ofPos .one + y.swap)
+        * bsum (bpow y) (List.range k) * bsum (bpow y) (List.range j')
+      + bpow y j')).oneValue (BPair.ofPos .one + bpow y (k + j')) := by
+  have hx : ((BPair.ofPos .one + y.swap) + y).oneValue (BPair.ofPos .one) :=
+    BPair.add_swap_self _ _
+  have hT : ∀ i, ((BPair.ofPos .one + y.swap) * bsum (bpow y) (List.range i)).oneValue
+      (BPair.ofPos .one + (bpow y i).swap) := by
+    intro i
+    have h := bpow_telescope (BPair.ofPos .one + y.swap) y hx i
+    refine BPair.oneValue_trans ?_ (BPair.add_congr h (BPair.oneValue_refl (bpow y i).swap))
+    refine BPair.oneValue_symm ?_
+    refine BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.add_right_comm _ _ _)) ?_
+    refine BPair.oneValue_trans (BPair.add_congr (BPair.add_swap_null _) (BPair.oneValue_refl _)) ?_
+    exact BPair.unit_add _
+  have hprod : ((BPair.ofPos .one + y.swap) * (BPair.ofPos .one + y.swap)
+      * bsum (bpow y) (List.range k) * bsum (bpow y) (List.range j')).oneValue
+      ((BPair.ofPos .one + (bpow y k).swap) * (BPair.ofPos .one + (bpow y j').swap)) := by
+    refine BPair.oneValue_trans (BPair.oneValue_of_eq ?_) (BPair.mul_congr (hT k) (hT j'))
+    rw [BPair.mul_assoc _ _ (bsum (bpow y) (List.range j')), BPair.mul_mul_mul_comm]
+  have hexp : ((BPair.ofPos .one + (bpow y k).swap) * (BPair.ofPos .one + (bpow y j').swap)).oneValue
+      (BPair.ofPos .one + (bpow y j').swap + (bpow y k).swap + bpow y k * bpow y j') := by
+    rw [BPair.left_distrib, BPair.right_distrib, BPair.right_distrib, BPair.swap_mul_swap]
+    refine BPair.oneValue_trans (BPair.add_congr
+      (BPair.add_congr (BPair.mul_one_read _) (BPair.mul_one_read _))
+      (BPair.add_congr (BPair.ofPos_one_mul _) (BPair.oneValue_refl _))) ?_
+    rw [← BPair.add_assoc, BPair.add_right_comm (BPair.ofPos .one)]
+    exact BPair.oneValue_refl _
+  refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl _)
+    (BPair.add_congr (BPair.oneValue_trans hprod hexp) (BPair.oneValue_refl _))) ?_
+  refine BPair.oneValue_trans ?_
+    (BPair.add_congr (BPair.oneValue_refl _) (BPair.oneValue_symm (bpow_add y k j')))
+  have hperm : bpow y k + (BPair.ofPos .one + (bpow y j').swap + (bpow y k).swap
+      + bpow y k * bpow y j' + bpow y j')
+      = BPair.ofPos .one + bpow y k * bpow y j' + (bpow y k + (bpow y k).swap)
+        + (bpow y j' + (bpow y j').swap) := by
+    repeat rw [← BPair.add_assoc]
+    rw [BPair.add_comm (bpow y k) (BPair.ofPos .one),
+      BPair.add_right_comm (BPair.ofPos .one + bpow y k + (bpow y j').swap) ((bpow y k).swap) (bpow y k * bpow y j'),
+      BPair.add_right_comm (BPair.ofPos .one + bpow y k) ((bpow y j').swap) (bpow y k * bpow y j'),
+      BPair.add_right_comm (BPair.ofPos .one) (bpow y k) (bpow y k * bpow y j'),
+      BPair.add_right_comm (BPair.ofPos .one + bpow y k * bpow y j' + bpow y k) ((bpow y j').swap) ((bpow y k).swap),
+      BPair.add_right_comm (BPair.ofPos .one + bpow y k * bpow y j' + bpow y k + (bpow y k).swap) ((bpow y j').swap) (bpow y j')]
+  rw [hperm]
+  refine BPair.oneValue_trans (BPair.add_congr (BPair.add_congr (BPair.oneValue_refl _)
+    (BPair.add_swap_null _)) (BPair.add_swap_null _)) ?_
+  exact BPair.oneValue_trans (BPair.add_congr (BPair.add_unit _) (BPair.oneValue_refl _))
+    (BPair.add_unit _)
+
+/-- A power sits at or below one joined to the power at the raised
+key, the gap read's own gap a positive element at a base at or beyond
+the sum's unit: a square against two folds of powers with a further
+power. -/
+theorem bpow_le_one_add (y : BPair) (k j' : Nat) (hy : BPair.unit ≤ y) :
+    bpow y k ≤ BPair.ofPos .one + bpow y (k + j') := by
+  refine leB_congr_right (bpow_gap_read y k j') ?_
+  refine leB_congr_left (BPair.add_unit _) (leB_add (leB_refl _) ?_)
+  refine unitLeAdd (unitLeMul (unitLeMul (unitLeSq _) ?_) ?_) (unitLeBpow hy j')
+  · exact foldB_nonneg _ _ (fun i _ => unitLeBpow hy i)
+  · exact foldB_nonneg _ _ (fun i _ => unitLeBpow hy i)
+
+/-- The near-scale read: a datum whose scale by a power sits at or below
+the raised power's multiple joined to a remainder itself at or below
+that multiple sits at or below twice the power's multiple, the shared
+power withdrawn from both sides. -/
+theorem near_scale_read (A B C z : BPair) (k j' : Nat) (hz : BPair.unit < z)
+    (hA : A * bpow z j' ≤ bpow z (k + j') * B + C)
+    (hC : C ≤ bpow z (k + j') * B) :
+    A ≤ BPair.ofNat 2 * (bpow z k * B) := by
+  have hzj : BPair.unit < bpow z j' := unitLtBpow hz j'
+  have h2 : A * bpow z j' ≤ bpow z (k + j') * B + bpow z (k + j') * B :=
+    leB_trans hA (leB_add (leB_refl _) hC)
+  have hpiece : (bpow z k * B * bpow z j').oneValue (bpow z (k + j') * B) := by
+    rw [BPair.mul_right_comm (bpow z k) B (bpow z j')]
+    exact BPair.mul_congr_left (BPair.oneValue_symm (bpow_add z k j'))
+  have hRHS : (BPair.ofNat 2 * (bpow z k * B) * bpow z j').oneValue
+      (bpow z (k + j') * B + bpow z (k + j') * B) := by
+    refine BPair.oneValue_trans
+      (BPair.mul_congr_left (BPair.ofNat_two_mul (bpow z k * B))) ?_
+    rw [BPair.right_distrib]
+    exact BPair.add_congr hpiece hpiece
+  exact leB_unscale hzj (leB_congr_right (BPair.oneValue_symm hRHS) h2)
+
+/-- The gap read at the chain's last step (`lem:corner`'s
+concentration key): at a weight the Bernstein key prices by the
+Pascal count of the chain's length at the key against the tolerance's
+power, and a weight whose scale by the raised key's member sits at or
+beyond one, the key's member sits at or below its scale by the
+tolerance joined to the raised key's member.  The refused read puts
+the gap beyond the tolerance, the binomial member at the partition of
+the key's member into the gap and the raised key's member prices the
+member's power from beneath, and the chain's power read closes it
+against the weight's own bound. -/
+theorem chain_gap (b : Nat → BPair) (k' e : Nat) (W τ : BPair)
+    (hb0 : b 0 ≤ BPair.ofPos .one)
+    (hpos : ∀ i, i ≤ k' + 1 → BPair.unit < b i)
+    (hdec : b (k' + 1) ≤ b k')
+    (hconv : ∀ i, i + 1 ≤ k' → b (i + 1) * b (i + 1) ≤ b i * b (i + 2))
+    (hτ : BPair.unit ≤ τ) (he : e + 1 ≤ k' + 1)
+    (hW : BPair.ofPos .one ≤ W * b (k' + 1))
+    (hkey : W ≤ BPair.ofNat (pasc (k' + 1) (e + 1)) * bpow τ (e + 1)) :
+    b k' ≤ τ * b k' + b (k' + 1) := by
+  refine leB_of_not_lt (fun hlt => ?_)
+  have hbk : BPair.unit < b (k' + 1) := hpos (k' + 1) (Nat.le_refl _)
+  have hbk' : BPair.unit < b k' := ltB_trans_le hbk hdec
+  have hτB : BPair.unit ≤ τ * b k' := unitLeMul hτ (leB_of_lt hbk')
+  have hX0 : BPair.unit ≤ b k' + (b (k' + 1)).swap :=
+    leB_unit_add (by rw [BPair.swap_swap]; exact hdec)
+  have hXt : τ * b k' < b k' + (b (k' + 1)).swap := by
+    have h := ltB_add hlt (leB_refl (b (k' + 1)).swap)
+    refine BPair.lt_congr ?_ (BPair.oneValue_refl _) h
+    refine BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.add_assoc _ _ _)) ?_
+    exact BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl _) (BPair.add_swap_null _)) (BPair.add_unit _)
+  have hX1 : BPair.unit < b k' + (b (k' + 1)).swap := leB_ltB_trans hτB hXt
+  obtain ⟨d, hd⟩ := Nat.le.dest he
+  have hkd : k' = e + d :=
+    Eq.symm (Nat.succ.inj (show (e + d).succ = k'.succ from
+      Eq.trans (Nat.add_right_comm e 1 d).symm hd))
+  have hbin := binom_member (b k' + (b (k' + 1)).swap) (b (k' + 1)) (e + 1) d hX0
+    (leB_of_lt hbk)
+  rw [hd] at hbin
+  have hcp := chain_power b k' hb0 hpos hconv
+  have hup : bpow (b k' + (b (k' + 1)).swap + b (k' + 1)) (k' + 1)
+      ≤ bpow (b (k' + 1)) e * bpow (b (k' + 1)) d := by
+    refine leB_congr_left (BPair.oneValue_symm (bpow_congr (BPair.add_swap_self _ _) (k' + 1))) ?_
+    refine leB_congr_right ?_ hcp
+    rw [hkd]
+    exact bpow_add _ e d
+  have hd0 : BPair.unit < bpow (b (k' + 1)) d := unitLtBpow hbk d
+  have h1 : BPair.ofNat (pasc (k' + 1) (e + 1)) * bpow (b k' + (b (k' + 1)).swap) (e + 1)
+      ≤ bpow (b (k' + 1)) e := by
+    refine leB_unscale hd0 ?_
+    exact leB_trans (leB_congr_left (BPair.oneValue_of_eq (BPair.mul_assoc _ _ _).symm) hbin) hup
+  have hpw : bpow (τ * b k') (e + 1) < bpow (b k' + (b (k' + 1)).swap) (e + 1) := by
+    have h1' : τ * b k' * bpow (τ * b k') e
+        ≤ τ * b k' * bpow (b k' + (b (k' + 1)).swap) e :=
+      leB_mulR hτB (bpow_mono hτB (leB_of_lt hXt) e)
+    have h2' : τ * b k' * bpow (b k' + (b (k' + 1)).swap) e
+        < (b k' + (b (k' + 1)).swap) * bpow (b k' + (b (k' + 1)).swap) e :=
+      ltB_mulPos hXt (unitLtBpow hX1 e)
+    exact BPair.lt_congr (BPair.oneValue_symm (bpow_succ_read _ e))
+      (BPair.oneValue_symm (bpow_succ_read _ e)) (leB_ltB_trans h1' h2')
+  have hpasc : BPair.unit < BPair.ofNat (pasc (k' + 1) (e + 1)) :=
+    unitLtNat (pasc_pos (k' + 1) (e + 1) he)
+  have h2 : BPair.ofNat (pasc (k' + 1) (e + 1)) * bpow (τ * b (k' + 1)) (e + 1)
+      < bpow (b (k' + 1)) e := by
+    refine leB_ltB_trans (leB_mulR (leB_of_lt hpasc)
+      (bpow_mono (unitLeMul hτ (leB_of_lt hbk)) (leB_mulR hτ hdec) (e + 1))) ?_
+    have h3 : bpow (τ * b k') (e + 1) * BPair.ofNat (pasc (k' + 1) (e + 1))
+        < bpow (b k' + (b (k' + 1)).swap) (e + 1) * BPair.ofNat (pasc (k' + 1) (e + 1)) :=
+      ltB_mulPos hpw hpasc
+    exact ltB_trans_le (BPair.lt_congr (BPair.oneValue_of_eq (BPair.mul_comm _ _))
+      (BPair.oneValue_of_eq (BPair.mul_comm _ _)) h3) h1
+  have h4 : BPair.ofNat (pasc (k' + 1) (e + 1)) * bpow τ (e + 1) * b (k' + 1)
+      < BPair.ofPos .one := by
+    refine ltB_unscale (unitLeBpow (leB_of_lt hbk) e) ?_
+    refine BPair.lt_congr ?_ (BPair.oneValue_symm (BPair.ofPos_one_mul _)) h2
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl _) (bpow_mul τ (b (k' + 1)) (e + 1))) ?_
+    refine BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _)
+      (BPair.mul_congr (BPair.oneValue_refl _) (bpow_succ_read _ e))) ?_
+    exact BPair.oneValue_of_eq (by repeat rw [← BPair.mul_assoc])
+  have h5 : W * b (k' + 1)
+      ≤ BPair.ofNat (pasc (k' + 1) (e + 1)) * bpow τ (e + 1) * b (k' + 1) :=
+    leB_mulL (leB_of_lt hbk) hkey
+  exact leB_not_lt (leB_trans hW h5) h4
 
 set_option genInjectivity false in
 structure POps (γ : Type) where
@@ -13100,6 +14023,20 @@ theorem all_range_succ_intro {f : Nat → Bool} (n : Nat)
   rw [hn]
   rfl
 
+/-- The range fold's block introduction: a true fold over the range
+with the next `m` keys true, read at their offsets from the range's
+top, is the fold at the sum. -/
+theorem all_range_block_intro {f : Nat → Bool} (n : Nat)
+    (h : (List.range n).all f = true) :
+    ∀ m : Nat, (List.range m).all (fun r => f (n + r)) = true →
+      (List.range (n + m)).all f = true
+  | 0, _ => h
+  | m + 1, hm => by
+    rw [range_succ m, all_append (fun r => f (n + r)) (List.range m) [m]] at hm
+    have hs := andSplitB hm
+    exact all_range_succ_intro (n + m) (all_range_block_intro n h m hs.1)
+      (andSplitB hs.2).1
+
 /-- The range fold's introduction: true at every key of the range
 is the fold's own true read. -/
 theorem all_range_intro {f : Nat → Bool} : ∀ (n : Nat),
@@ -13575,6 +14512,48 @@ theorem length_le_of_distinct (l : List Nat) (n : Nat)
       (distinctList_range n)) ?_
   rw [ground.length_range]
   exact Nat.le_refl n
+
+/-- A self-map of the key range with a left witness has it as a
+right witness, the pigeonhole at the range: the images are distinct
+and within the range, so every key is an image at the witness's
+pre-image. -/
+theorem rightInv_of_leftInv (n : Nat) (t s : Nat → Nat)
+    (h : ∀ l, l < n → t l < n ∧ s (t l) = l) :
+    ∀ l, l < n → s l < n ∧ t (s l) = l := by
+  intro l hl
+  have hdist : distinctList ((List.range n).map t) := by
+    refine distinct_of_getAt_inj 0 _ (fun p q hp hq heq => ?_)
+    rw [length_map, length_range] at hp hq
+    rw [getAt_map_range 0 t n p, if_pos hp, getAt_map_range 0 t n q, if_pos hq] at heq
+    rw [← (h p hp).2, ← (h q hq).2, heq]
+  have hmem : l ∈ (List.range n).map t := by
+    match Nat.eq_zero_or_pos (countOf l ((List.range n).map t)) with
+    | .inr hpos => exact mem_of_countOf_pos l _ hpos
+    | .inl hz =>
+      have hd2 : ∀ x, countOf x (l :: (List.range n).map t) ≤ 1 := by
+        intro x
+        rw [countOf_cons]
+        by_cases hx : x = l
+        · rw [if_pos hx, hx, hz]
+          exact Nat.le_refl 1
+        · rw [if_neg hx, Nat.zero_add]
+          exact distinctList_all hdist x
+      have hle := length_le_of_distinct_mem (l :: (List.range n).map t)
+        (List.range n) hd2 (fun x hx => ?_) (distinctList_range n)
+      · have hle' : n + 1 ≤ n := by
+          rw [List.length_cons, length_map, length_range] at hle
+          exact hle
+        exact absurd hle' (Nat.not_succ_le_self n)
+      · cases hx with
+        | head => exact memRange hl
+        | tail _ hx' =>
+          obtain ⟨p, hp, hpx⟩ := mem_map_of t _ x hx'
+          rw [← hpx]
+          exact memRange (h p (ltOfMemRange hp)).1
+  obtain ⟨p, hp, hpl⟩ := mem_map_of t _ l hmem
+  have hpn : p < n := ltOfMemRange hp
+  rw [← hpl, (h p hpn).2]
+  exact ⟨hpn, rfl⟩
 
 /-- A family's entry past the head is the tail family's own. -/
 theorem getAt_tail {α : Type} (d : α) :
@@ -14135,40 +15114,6 @@ theorem posBy_once {α : Type} [Inhabited α] (eq : α → α → Bool) (a : α)
         exact ⟨fun h0 => congrArg Nat.succ (ih.mp h0),
           fun h0 => ih.mpr (Nat.succ.inj h0)⟩
 
-/-- A once-met member's position sits below the count. -/
-theorem posBy_lt {α : Type} [Inhabited α] (eq : α → α → Bool) (a : α)
-    (l : List α)
-    (h : (l.filter (fun b => eq a b)).length = 1) :
-    posBy eq a l < l.length := by
-  cases Nat.lt_or_ge (posBy eq a l) l.length with
-  | inl hlt => exact hlt
-  | inr hge =>
-    have heq : posBy eq a l = l.length :=
-      Nat.le_antisymm (posBy_le eq a l) hge
-    have hvac : ∀ c, c ∈ l → eq a c = false := by
-      intro c hc
-      cases hc' : eq a c with
-      | false => rfl
-      | true =>
-        obtain ⟨j, hj, hjc⟩ := getAt_of_mem default hc
-        have hp := (posBy_once eq a l h j hj).mp (by rw [hjc]; exact hc')
-        rw [heq] at hp
-        rw [hp] at hj
-        exact absurd hj (Nat.lt_irrefl _)
-    have hnil : l.filter (fun b => eq a b) = [] := by
-      refine nil_of_length_zero _ ?_
-      cases hl : (l.filter (fun b => eq a b)).length with
-      | zero => rfl
-      | succ m =>
-        have hm : 0 < (l.filter (fun b => eq a b)).length := by
-          rw [hl]
-          exact Nat.succ_pos m
-        obtain ⟨hc, hcf⟩ := mem_filter_of _ _ _ (mem_getAt default _ 0 hm)
-        rw [hvac _ hc] at hcf
-        exact Bool.noConfusion hcf
-    rw [hnil] at h
-    exact absurd h (Nat.noConfusion)
-
 /-- A member met by the read sits at a position below the count. -/
 theorem posBy_lt_of_hit {α : Type} (eq : α → α → Bool) (a : α) :
     ∀ l : List α, (∃ b, b ∈ l ∧ eq a b = true) → posBy eq a l < l.length
@@ -14377,5 +15322,902 @@ theorem monEq (env : List Nat) (a b : Mon)
     (hc : a.coef = b.coef) (he : a.exps = b.exps) :
     a.val env = b.val env := by
   rw [Mon.read env a, Mon.read env b, hc, he]
+
+/-! The mirror device and the power sums: an expression over two
+counts mirrors into a count family, the outer variable's keys the
+inner variable's own families (`Mir.keys`), the mirror's value the
+expression itself (`Mir.val`), the Horner reads agreeing node by
+node (`Mir.read`), so two expressions whose mirrored families reduce
+alike read one value (`mirEq`), the universal count identities'
+one decision at the sum and the product; the power sums
+`powSum k n = Σ_{m=1}^{n} m^k` with their eleven closed reads from the
+binomial step at each key (`sumClosed`); and the margin of two
+naturals with its square read (`marg`, `margSq_read`). -/
+
+/-- The power sum `S_k(n) = Σ_{m=1}^{n} m^k`, the closed reads'
+shared carrier (`def:poly`'s binomial identities close it). -/
+def powSum (k n : Nat) : Nat :=
+  ground.sumNat ((List.range n).map (fun j => (j + 1) ^ k))
+
+
+/-- The margin of two naturals, the trichotomy's one value. -/
+def marg (a b : Nat) : Nat := (a - b) + (b - a)
+
+
+/-- The count family's Horner read at a count. -/
+def hread : List Nat → Nat → Nat
+  | [], _ => 0
+  | c :: p, g => c + g * hread p g
+
+/-- Two count families' convolution. -/
+private def hmul : List Nat → List Nat → List Nat
+  | [], _ => []
+  | c :: p, q => hadd (q.map (fun d => c * d)) (0 :: hmul p q)
+
+private theorem hread_add : ∀ (p q : List Nat) (n : Nat),
+    hread (hadd p q) n = hread p n + hread q n
+  | [], q, n => (Nat.zero_add (hread q n)).symm
+  | c :: p, [], n => (Nat.add_zero (hread (c :: p) n)).symm
+  | c :: p, d :: q, n => by
+    show c + d + n * hread (hadd p q) n
+      = c + n * hread p n + (d + n * hread q n)
+    rw [hread_add p q n, Nat.left_distrib n (hread p n) (hread q n),
+      Nat.add_add_add_comm c d (n * hread p n) (n * hread q n)]
+
+private theorem hread_scale : ∀ (q : List Nat) (c n : Nat),
+    hread (q.map (fun d => c * d)) n = c * hread q n
+  | [], c, _ => (Nat.mul_zero c).symm
+  | d :: q, c, n => by
+    show c * d + n * hread (q.map (fun d => c * d)) n
+      = c * (d + n * hread q n)
+    rw [hread_scale q c n, Nat.left_distrib c d (n * hread q n),
+      ground.mulLeftComm n c (hread q n)]
+
+private theorem hread_mul : ∀ (p q : List Nat) (n : Nat),
+    hread (hmul p q) n = hread p n * hread q n
+  | [], q, n => (Nat.zero_mul (hread q n)).symm
+  | c :: p, q, n => by
+    show hread (hadd (q.map (fun d => c * d)) (0 :: hmul p q)) n
+      = (c + n * hread p n) * hread q n
+    rw [hread_add (q.map (fun d => c * d)) (0 :: hmul p q) n,
+      hread_scale q c n]
+    show c * hread q n + (0 + n * hread (hmul p q) n)
+      = (c + n * hread p n) * hread q n
+    rw [hread_mul p q n, Nat.zero_add,
+      ground.mulAddR c (n * hread p n) (hread q n),
+      ground.mulAssoc n (hread p n) (hread q n)]
+
+private theorem hread_cst (c g : Nat) : hread [c] g = c := by
+  show c + g * 0 = c
+  rw [Nat.mul_zero g, Nat.add_zero c]
+
+private theorem hread_lin (a b g : Nat) : hread [a, b] g = a + g * b := by
+  show a + g * (b + g * 0) = a + g * b
+  rw [Nat.mul_zero g, Nat.add_zero b]
+
+/-- The two-variable Horner read: the outer variable's keys are the
+inner variable's own count families. -/
+def h2read : List (List Nat) → Nat → Nat → Nat
+  | [], _, _ => 0
+  | c :: p, m, g => hread c g + m * h2read p m g
+
+def h2add : List (List Nat) → List (List Nat) → List (List Nat)
+  | [], q => q
+  | c :: p, [] => c :: p
+  | c :: p, d :: q => hadd c d :: h2add p q
+
+private def h2mul : List (List Nat) → List (List Nat) → List (List Nat)
+  | [], _ => []
+  | c :: p, q => h2add (q.map (fun d => hmul c d)) ([] :: h2mul p q)
+
+private theorem h2read_add : ∀ (p q : List (List Nat)) (m g : Nat),
+    h2read (h2add p q) m g = h2read p m g + h2read q m g
+  | [], q, m, g => (Nat.zero_add (h2read q m g)).symm
+  | c :: p, [], m, g => (Nat.add_zero (h2read (c :: p) m g)).symm
+  | c :: p, d :: q, m, g => by
+    show hread (hadd c d) g + m * h2read (h2add p q) m g
+      = hread c g + m * h2read p m g + (hread d g + m * h2read q m g)
+    rw [hread_add c d g, h2read_add p q m g,
+      Nat.left_distrib m (h2read p m g) (h2read q m g),
+      Nat.add_add_add_comm (hread c g) (hread d g)
+        (m * h2read p m g) (m * h2read q m g)]
+
+private theorem h2read_scale : ∀ (q : List (List Nat)) (c : List Nat)
+    (m g : Nat),
+    h2read (q.map (fun d => hmul c d)) m g = hread c g * h2read q m g
+  | [], c, _, g => (Nat.mul_zero (hread c g)).symm
+  | d :: q, c, m, g => by
+    show hread (hmul c d) g + m * h2read (q.map (fun d => hmul c d)) m g
+      = hread c g * (hread d g + m * h2read q m g)
+    rw [hread_mul c d g, h2read_scale q c m g,
+      Nat.left_distrib (hread c g) (hread d g) (m * h2read q m g),
+      ground.mulLeftComm m (hread c g) (h2read q m g)]
+
+private theorem h2read_mul : ∀ (p q : List (List Nat)) (m g : Nat),
+    h2read (h2mul p q) m g = h2read p m g * h2read q m g
+  | [], q, m, g => (Nat.zero_mul (h2read q m g)).symm
+  | c :: p, q, m, g => by
+    show h2read (h2add (q.map (fun d => hmul c d)) ([] :: h2mul p q)) m g
+      = (hread c g + m * h2read p m g) * h2read q m g
+    rw [h2read_add (q.map (fun d => hmul c d)) ([] :: h2mul p q) m g,
+      h2read_scale q c m g]
+    show hread c g * h2read q m g + (0 + m * h2read (h2mul p q) m g)
+      = (hread c g + m * h2read p m g) * h2read q m g
+    rw [h2read_mul p q m g, Nat.zero_add,
+      ground.mulAddR (hread c g) (m * h2read p m g) (h2read q m g),
+      ground.mulAssoc m (h2read p m g) (h2read q m g)]
+
+private def h2pow (p : List (List Nat)) : Nat → List (List Nat)
+  | 0 => [[1]]
+  | k + 1 => h2mul p (h2pow p k)
+
+private theorem h2read_pow (p : List (List Nat)) (m g : Nat) :
+    ∀ k : Nat, h2read (h2pow p k) m g = h2read p m g ^ k
+  | 0 => by
+    show hread [1] g + m * 0 = h2read p m g ^ 0
+    rw [hread_cst 1 g, Nat.mul_zero m, Nat.add_zero 1, Nat.pow_zero]
+  | k + 1 => by
+    rw [show h2pow p (k + 1) = h2mul p (h2pow p k) from rfl,
+      h2read_mul p (h2pow p k) m g, h2read_pow p m g k, Nat.pow_succ,
+      Nat.mul_comm (h2read p m g) (h2read p m g ^ k)]
+
+set_option genInjectivity false in
+/-- The mirrored expression over two variables: the constants, the
+two variables, and the sum, the product and the stated power. -/
+inductive Mir where
+  | cst : Nat → Mir
+  | x : Mir
+  | y : Mir
+  | add : Mir → Mir → Mir
+  | mul : Mir → Mir → Mir
+  | pow : Mir → Nat → Mir
+
+/-- The mirror's count families, one key family per outer key. -/
+def Mir.keys : Mir → List (List Nat)
+  | .cst c => [[c]]
+  | .x => [[0], [1]]
+  | .y => [[0, 1]]
+  | .add a b => h2add a.keys b.keys
+  | .mul a b => h2mul a.keys b.keys
+  | .pow a k => h2pow a.keys k
+
+/-- The mirror's own value at the two counts. -/
+def Mir.val (m g : Nat) : Mir → Nat
+  | .cst c => c
+  | .x => m
+  | .y => g
+  | .add a b => a.val m g + b.val m g
+  | .mul a b => a.val m g * b.val m g
+  | .pow a k => a.val m g ^ k
+
+/-- The mirrored families' Horner read is the expression's value. -/
+private theorem Mir.read (m g : Nat) : ∀ e : Mir,
+    h2read e.keys m g = e.val m g
+  | .cst c => by
+    show hread [c] g + m * 0 = c
+    rw [hread_cst c g, Nat.mul_zero m, Nat.add_zero c]
+  | .x => by
+    show hread [0] g + m * (hread [1] g + m * 0) = m
+    rw [hread_cst 0 g, hread_cst 1 g, Nat.mul_zero m, Nat.add_zero 1,
+      Nat.mul_one m, Nat.zero_add m]
+  | .y => by
+    show hread [0, 1] g + m * 0 = g
+    rw [hread_lin 0 1 g, Nat.mul_zero m, Nat.add_zero (0 + g * 1),
+      Nat.mul_one g, Nat.zero_add g]
+  | .add a b => by
+    show h2read (h2add a.keys b.keys) m g = a.val m g + b.val m g
+    rw [h2read_add a.keys b.keys m g, Mir.read m g a, Mir.read m g b]
+  | .mul a b => by
+    show h2read (h2mul a.keys b.keys) m g = a.val m g * b.val m g
+    rw [h2read_mul a.keys b.keys m g, Mir.read m g a, Mir.read m g b]
+  | .pow a k => by
+    show h2read (h2pow a.keys k) m g = a.val m g ^ k
+    rw [h2read_pow a.keys m g k, Mir.read m g a]
+
+/-- The vacant families' padding, the key window the mirrors are
+compared inside. -/
+def zeroPad : List (List Nat) :=
+  List.replicate 32 (List.replicate 16 0)
+
+private theorem hread_zeroRow (g : Nat) :
+    ∀ J : Nat, hread (List.replicate J 0) g = 0
+  | 0 => rfl
+  | J + 1 => by
+    show 0 + g * hread (List.replicate J 0) g = 0
+    rw [hread_zeroRow g J, Nat.mul_zero g, Nat.add_zero 0]
+
+private theorem h2read_zeroRows (m g : Nat) :
+    ∀ K : Nat, h2read (List.replicate K (List.replicate 16 0)) m g = 0
+  | 0 => rfl
+  | K + 1 => by
+    show hread (List.replicate 16 0) g
+        + m * h2read (List.replicate K (List.replicate 16 0)) m g = 0
+    rw [hread_zeroRow g 16, h2read_zeroRows m g K, Nat.mul_zero m,
+      Nat.add_zero 0]
+
+private theorem h2read_zeroPad (m g : Nat) : h2read zeroPad m g = 0 :=
+  h2read_zeroRows m g 32
+
+/-- A count family agreeing with a mirror's padded families reads
+the mirror's own value. -/
+theorem mirRaw (m g : Nat) (K : List (List Nat)) (b : Mir)
+    (h : h2add K zeroPad = h2add b.keys zeroPad) :
+    h2read K m g = b.val m g := by
+  have hK : h2read (h2add K zeroPad) m g = h2read K m g := by
+    rw [h2read_add K zeroPad m g, h2read_zeroPad m g, Nat.add_zero]
+  have hb : h2read (h2add b.keys zeroPad) m g = b.val m g := by
+    rw [h2read_add b.keys zeroPad m g, h2read_zeroPad m g,
+      Nat.add_zero, Mir.read m g b]
+  rw [← hK, ← hb, h]
+
+/-- Two mirrors whose padded count families agree read one value at
+every count pair. -/
+theorem mirEq (m g : Nat) (a b : Mir)
+    (h : h2add a.keys zeroPad = h2add b.keys zeroPad) :
+    a.val m g = b.val m g :=
+  (Mir.read m g a).symm.trans (mirRaw m g a.keys b h)
+
+/-- A one-variable count family enters the two-variable read at its
+one-count keys. -/
+theorem hreadRow : ∀ (L : List Nat) (N : Nat),
+    hread L N = h2read (L.map (fun c => [c])) N 0
+  | [], _ => rfl
+  | c :: t, N => by
+    show c + N * hread t N
+      = hread [c] 0 + N * h2read (t.map (fun c => [c])) N 0
+    rw [hread_cst c 0, hreadRow t N]
+
+/-- The power sum grows at its endpoint by the arriving depth's own
+power. -/
+private theorem powSum_succ (k n : Nat) :
+    powSum k (n + 1) = powSum k n + (n + 1) ^ k := by
+  show ground.sumNat (((List.range (n + 1))).map (fun j => (j + 1) ^ k))
+    = ground.sumNat ((List.range n).map (fun j => (j + 1) ^ k))
+      + (n + 1) ^ k
+  rw [ground.range_succ n, ground.map_append, ground.sumNat_append]
+  rfl
+
+/-- A count family's total scales through its scalar. -/
+theorem sumNat_scale (c : Nat) (f : Nat → Nat)
+    (l : List Nat) :
+    c * ground.sumNat (l.map f)
+      = ground.sumNat (l.map (fun x => c * f x)) := by
+  rw [ground.sumMap f l, ground.sumMap (fun x => c * f x) l]
+  exact ground.famFold_mul c f l
+
+/-- The closed read's induction at a stated family: the base at the
+key nought and one step identity per key settle the cleared read at
+every endpoint. -/
+theorem sumClosedF (f : Nat → Nat) (a : Nat) (L R : Nat → Nat)
+    (hb : a * f 0 + L 0 = R 0)
+    (hs : ∀ n : Nat, R (n + 1) + L n = R n + L (n + 1) + a * f (n + 1)) :
+    ∀ n : Nat, a * ground.sumNat ((List.range (n + 1)).map f) + L n = R n
+  | 0 => by
+    show a * ground.sumNat [f 0] + L 0 = R 0
+    rw [show ground.sumNat [f 0] = f 0 from rfl]
+    exact hb
+  | n + 1 => by
+    have hstep : ground.sumNat ((List.range (n + 1 + 1)).map f)
+        = ground.sumNat ((List.range (n + 1)).map f) + f (n + 1) := by
+      rw [ground.range_succ (n + 1), ground.map_append, ground.sumNat_append]
+      rfl
+    refine ground.addCancelR (L n) ?_
+    rw [hstep, Nat.left_distrib a _ (f (n + 1)), hs n,
+      Nat.add_right_comm (a * ground.sumNat ((List.range (n + 1)).map f))
+        (a * f (n + 1)) (L (n + 1)),
+      Nat.add_assoc (a * ground.sumNat ((List.range (n + 1)).map f) + L (n + 1))
+        (a * f (n + 1)) (L n),
+      Nat.add_comm (a * f (n + 1)) (L n),
+      ← Nat.add_assoc (a * ground.sumNat ((List.range (n + 1)).map f) + L (n + 1))
+        (L n) (a * f (n + 1)),
+      Nat.add_right_comm (a * ground.sumNat ((List.range (n + 1)).map f))
+        (L (n + 1)) (L n),
+      sumClosedF f a L R hb hs n,
+      Nat.add_right_comm (R n) (L (n + 1)) (a * f (n + 1))]
+
+/-- The closed read's induction: the base at the vacant endpoint and
+one step identity per depth settle the cleared read at every
+endpoint. -/
+theorem sumClosed (k a : Nat) (L R : Nat → Nat)
+    (hb : L 0 = R 0)
+    (hs : ∀ n : Nat, R (n + 1) + L n = R n + L (n + 1) + a * (n + 1) ^ k) :
+    ∀ n : Nat, a * powSum k n + L n = R n
+  | 0 => by
+    show a * 0 + L 0 = R 0
+    rw [Nat.mul_zero a, Nat.zero_add]
+    exact hb
+  | n + 1 =>
+    sumClosedF (fun j => (j + 1) ^ k) a (fun j => L (j + 1)) (fun j => R (j + 1))
+      (by
+        have h := hs 0
+        rw [hb] at h
+        refine ground.addCancelR (R 0) ?_
+        rw [h, Nat.add_comm (R 0) (L (0 + 1)),
+          Nat.add_right_comm (L (0 + 1)) (R 0) (a * (0 + 1) ^ k),
+          Nat.add_comm (L (0 + 1)) (a * (0 + 1) ^ k)])
+      (fun j => hs (j + 1)) n
+
+/-- The power sum's step identity at the key 1. -/
+private theorem powStep1 (n : Nat) :
+    (n + 1) ^ 2 + (n + 1)
+      = n ^ 2 + n + 2 * (n + 1) ^ 1 :=
+  mirEq n 0 (Mir.add (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 2) (Mir.add
+    Mir.x (Mir.cst 1))) (Mir.add (Mir.add (Mir.pow Mir.x 2) Mir.x)
+    (Mir.mul (Mir.cst 2) (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 1))) (by decide +kernel)
+
+/-- The power sum's step identity at the key 2. -/
+private theorem powStep2 (n : Nat) :
+    2 * (n + 1) ^ 3 + 3 * (n + 1) ^ 2 + (n + 1)
+      = 2 * n ^ 3 + 3 * n ^ 2 + n + 6 * (n + 1) ^ 2 :=
+  mirEq n 0 (Mir.add (Mir.add (Mir.mul (Mir.cst 2) (Mir.pow (Mir.add Mir.x
+    (Mir.cst 1)) 3)) (Mir.mul (Mir.cst 3) (Mir.pow (Mir.add Mir.x (Mir.cst
+    1)) 2))) (Mir.add Mir.x (Mir.cst 1))) (Mir.add (Mir.add (Mir.add
+    (Mir.mul (Mir.cst 2) (Mir.pow Mir.x 3)) (Mir.mul (Mir.cst 3) (Mir.pow
+    Mir.x 2))) Mir.x) (Mir.mul (Mir.cst 6) (Mir.pow (Mir.add Mir.x
+    (Mir.cst 1)) 2))) (by decide +kernel)
+
+/-- The power sum's step identity at the key 3. -/
+private theorem powStep3 (n : Nat) :
+    (n + 1) ^ 4 + 2 * (n + 1) ^ 3 + (n + 1) ^ 2
+      = n ^ 4 + 2 * n ^ 3 + n ^ 2 + 4 * (n + 1) ^ 3 :=
+  mirEq n 0 (Mir.add (Mir.add (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 4)
+    (Mir.mul (Mir.cst 2) (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 3)))
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 2)) (Mir.add (Mir.add (Mir.add
+    (Mir.pow Mir.x 4) (Mir.mul (Mir.cst 2) (Mir.pow Mir.x 3))) (Mir.pow
+    Mir.x 2)) (Mir.mul (Mir.cst 4) (Mir.pow (Mir.add Mir.x (Mir.cst 1))
+    3))) (by decide +kernel)
+
+/-- The power sum's step identity at the key 4. -/
+private theorem powStep4 (n : Nat) :
+    6 * (n + 1) ^ 5 + 15 * (n + 1) ^ 4 + 10 * (n + 1) ^ 3 + n
+      = 6 * n ^ 5 + 15 * n ^ 4 + 10 * n ^ 3 + ((n + 1)) + 30 * (n + 1) ^ 4
+        :=
+  mirEq n 0 (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 6) (Mir.pow
+    (Mir.add Mir.x (Mir.cst 1)) 5)) (Mir.mul (Mir.cst 15) (Mir.pow
+    (Mir.add Mir.x (Mir.cst 1)) 4))) (Mir.mul (Mir.cst 10) (Mir.pow
+    (Mir.add Mir.x (Mir.cst 1)) 3))) Mir.x) (Mir.add (Mir.add (Mir.add
+    (Mir.add (Mir.mul (Mir.cst 6) (Mir.pow Mir.x 5)) (Mir.mul (Mir.cst 15)
+    (Mir.pow Mir.x 4))) (Mir.mul (Mir.cst 10) (Mir.pow Mir.x 3))) (Mir.add
+    Mir.x (Mir.cst 1))) (Mir.mul (Mir.cst 30) (Mir.pow (Mir.add Mir.x
+    (Mir.cst 1)) 4))) (by decide +kernel)
+
+/-- The power sum's step identity at the key 5. -/
+private theorem powStep5 (n : Nat) :
+    2 * (n + 1) ^ 6 + 6 * (n + 1) ^ 5 + 5 * (n + 1) ^ 4 + n ^ 2
+      = 2 * n ^ 6 + 6 * n ^ 5 + 5 * n ^ 4 + ((n + 1) ^ 2) + 12 * (n + 1) ^
+        5 :=
+  mirEq n 0 (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 2) (Mir.pow
+    (Mir.add Mir.x (Mir.cst 1)) 6)) (Mir.mul (Mir.cst 6) (Mir.pow (Mir.add
+    Mir.x (Mir.cst 1)) 5))) (Mir.mul (Mir.cst 5) (Mir.pow (Mir.add Mir.x
+    (Mir.cst 1)) 4))) (Mir.pow Mir.x 2)) (Mir.add (Mir.add (Mir.add
+    (Mir.add (Mir.mul (Mir.cst 2) (Mir.pow Mir.x 6)) (Mir.mul (Mir.cst 6)
+    (Mir.pow Mir.x 5))) (Mir.mul (Mir.cst 5) (Mir.pow Mir.x 4))) (Mir.pow
+    (Mir.add Mir.x (Mir.cst 1)) 2)) (Mir.mul (Mir.cst 12) (Mir.pow
+    (Mir.add Mir.x (Mir.cst 1)) 5))) (by decide +kernel)
+
+/-- The power sum's step identity at the key 6. -/
+private theorem powStep6 (n : Nat) :
+    6 * (n + 1) ^ 7 + 21 * (n + 1) ^ 6 + 21 * (n + 1) ^ 5 + (n + 1) + 7 *
+      n ^ 3
+      = 6 * n ^ 7 + 21 * n ^ 6 + 21 * n ^ 5 + n + (7 * (n + 1) ^ 3) + 42 *
+        (n + 1) ^ 6 :=
+  mirEq n 0 (Mir.add (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 6)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 7)) (Mir.mul (Mir.cst 21)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 6))) (Mir.mul (Mir.cst 21)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 5))) (Mir.add Mir.x (Mir.cst 1)))
+    (Mir.mul (Mir.cst 7) (Mir.pow Mir.x 3))) (Mir.add (Mir.add (Mir.add
+    (Mir.add (Mir.add (Mir.mul (Mir.cst 6) (Mir.pow Mir.x 7)) (Mir.mul
+    (Mir.cst 21) (Mir.pow Mir.x 6))) (Mir.mul (Mir.cst 21) (Mir.pow Mir.x
+    5))) Mir.x) (Mir.mul (Mir.cst 7) (Mir.pow (Mir.add Mir.x (Mir.cst 1))
+    3))) (Mir.mul (Mir.cst 42) (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 6)))
+    (by decide +kernel)
+
+/-- The power sum's step identity at the key 7. -/
+private theorem powStep7 (n : Nat) :
+    3 * (n + 1) ^ 8 + 12 * (n + 1) ^ 7 + 14 * (n + 1) ^ 6 + 2 * (n + 1) ^
+      2 + 7 * n ^ 4
+      = 3 * n ^ 8 + 12 * n ^ 7 + 14 * n ^ 6 + 2 * n ^ 2 + (7 * (n + 1) ^
+        4) + 24 * (n + 1) ^ 7 :=
+  mirEq n 0 (Mir.add (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 3)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 8)) (Mir.mul (Mir.cst 12)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 7))) (Mir.mul (Mir.cst 14)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 6))) (Mir.mul (Mir.cst 2)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 2))) (Mir.mul (Mir.cst 7)
+    (Mir.pow Mir.x 4))) (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add
+    (Mir.mul (Mir.cst 3) (Mir.pow Mir.x 8)) (Mir.mul (Mir.cst 12) (Mir.pow
+    Mir.x 7))) (Mir.mul (Mir.cst 14) (Mir.pow Mir.x 6))) (Mir.mul (Mir.cst
+    2) (Mir.pow Mir.x 2))) (Mir.mul (Mir.cst 7) (Mir.pow (Mir.add Mir.x
+    (Mir.cst 1)) 4))) (Mir.mul (Mir.cst 24) (Mir.pow (Mir.add Mir.x
+    (Mir.cst 1)) 7))) (by decide +kernel)
+
+/-- The power sum's step identity at the key 8. -/
+private theorem powStep8 (n : Nat) :
+    10 * (n + 1) ^ 9 + 45 * (n + 1) ^ 8 + 60 * (n + 1) ^ 7 + 20 * (n + 1)
+      ^ 3 + (42 * n ^ 5 + 3 * n)
+      = 10 * n ^ 9 + 45 * n ^ 8 + 60 * n ^ 7 + 20 * n ^ 3 + (42 * (n + 1)
+        ^ 5 + 3 * (n + 1)) + 90 * (n + 1) ^ 8 :=
+  mirEq n 0 (Mir.add (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 10)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 9)) (Mir.mul (Mir.cst 45)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 8))) (Mir.mul (Mir.cst 60)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 7))) (Mir.mul (Mir.cst 20)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 3))) (Mir.add (Mir.mul (Mir.cst
+    42) (Mir.pow Mir.x 5)) (Mir.mul (Mir.cst 3) Mir.x))) (Mir.add (Mir.add
+    (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 10) (Mir.pow Mir.x 9))
+    (Mir.mul (Mir.cst 45) (Mir.pow Mir.x 8))) (Mir.mul (Mir.cst 60)
+    (Mir.pow Mir.x 7))) (Mir.mul (Mir.cst 20) (Mir.pow Mir.x 3))) (Mir.add
+    (Mir.mul (Mir.cst 42) (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 5))
+    (Mir.mul (Mir.cst 3) (Mir.add Mir.x (Mir.cst 1))))) (Mir.mul (Mir.cst
+    90) (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 8))) (by decide +kernel)
+
+/-- The power sum's step identity at the key 9. -/
+private theorem powStep9 (n : Nat) :
+    2 * (n + 1) ^ 10 + 10 * (n + 1) ^ 9 + 15 * (n + 1) ^ 8 + 10 * (n + 1)
+      ^ 4 + (14 * n ^ 6 + 3 * n ^ 2)
+      = 2 * n ^ 10 + 10 * n ^ 9 + 15 * n ^ 8 + 10 * n ^ 4 + (14 * (n + 1)
+        ^ 6 + 3 * (n + 1) ^ 2) + 20 * (n + 1) ^ 9 :=
+  mirEq n 0 (Mir.add (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 2)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 10)) (Mir.mul (Mir.cst 10)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 9))) (Mir.mul (Mir.cst 15)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 8))) (Mir.mul (Mir.cst 10)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 4))) (Mir.add (Mir.mul (Mir.cst
+    14) (Mir.pow Mir.x 6)) (Mir.mul (Mir.cst 3) (Mir.pow Mir.x 2))))
+    (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 2)
+    (Mir.pow Mir.x 10)) (Mir.mul (Mir.cst 10) (Mir.pow Mir.x 9))) (Mir.mul
+    (Mir.cst 15) (Mir.pow Mir.x 8))) (Mir.mul (Mir.cst 10) (Mir.pow Mir.x
+    4))) (Mir.add (Mir.mul (Mir.cst 14) (Mir.pow (Mir.add Mir.x (Mir.cst
+    1)) 6)) (Mir.mul (Mir.cst 3) (Mir.pow (Mir.add Mir.x (Mir.cst 1))
+    2)))) (Mir.mul (Mir.cst 20) (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 9)))
+    (by decide +kernel)
+
+/-- The power sum's step identity at the key 10. -/
+private theorem powStep10 (n : Nat) :
+    6 * (n + 1) ^ 11 + 33 * (n + 1) ^ 10 + 55 * (n + 1) ^ 9 + 66 * (n + 1)
+      ^ 5 + 5 * (n + 1) + (66 * n ^ 7 + 33 * n ^ 3)
+      = 6 * n ^ 11 + 33 * n ^ 10 + 55 * n ^ 9 + 66 * n ^ 5 + 5 * n + (66 *
+        (n + 1) ^ 7 + 33 * (n + 1) ^ 3) + 66 * (n + 1) ^ 10 :=
+  mirEq n 0 (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst
+    6) (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 11)) (Mir.mul (Mir.cst 33)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 10))) (Mir.mul (Mir.cst 55)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 9))) (Mir.mul (Mir.cst 66)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 5))) (Mir.mul (Mir.cst 5)
+    (Mir.add Mir.x (Mir.cst 1)))) (Mir.add (Mir.mul (Mir.cst 66) (Mir.pow
+    Mir.x 7)) (Mir.mul (Mir.cst 33) (Mir.pow Mir.x 3)))) (Mir.add (Mir.add
+    (Mir.add (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 6) (Mir.pow
+    Mir.x 11)) (Mir.mul (Mir.cst 33) (Mir.pow Mir.x 10))) (Mir.mul
+    (Mir.cst 55) (Mir.pow Mir.x 9))) (Mir.mul (Mir.cst 66) (Mir.pow Mir.x
+    5))) (Mir.mul (Mir.cst 5) Mir.x)) (Mir.add (Mir.mul (Mir.cst 66)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 7)) (Mir.mul (Mir.cst 33)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 3)))) (Mir.mul (Mir.cst 66)
+    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 10))) (by decide +kernel)
+
+/-- The vacant key's power sum is the endpoint's own count. -/
+theorem powSum0_closed : ∀ n : Nat, powSum 0 n = n
+  | 0 => rfl
+  | n + 1 => by
+    rw [powSum_succ 0 n, powSum0_closed n, Nat.pow_zero]
+
+/-- The power sum's closed read at the key 1, cross-added. -/
+theorem powSum1_closed (n : Nat) :
+    2 * powSum 1 n
+      = n ^ 2 + n :=
+  sumClosed 1 2 (fun _ => 0) (fun n => n ^ 2 + n) rfl powStep1 n
+
+/-- The power sum's closed read at the key 2, cross-added. -/
+theorem powSum2_closed (n : Nat) :
+    6 * powSum 2 n
+      = 2 * n ^ 3 + 3 * n ^ 2 + n :=
+  sumClosed 2 6 (fun _ => 0) (fun n => 2 * n ^ 3 + 3 * n ^ 2 + n) rfl
+    powStep2 n
+
+/-- The power sum's closed read at the key 3, cross-added. -/
+theorem powSum3_closed (n : Nat) :
+    4 * powSum 3 n
+      = n ^ 4 + 2 * n ^ 3 + n ^ 2 :=
+  sumClosed 3 4 (fun _ => 0) (fun n => n ^ 4 + 2 * n ^ 3 + n ^ 2) rfl
+    powStep3 n
+
+/-- The power sum's closed read at the key 4, cross-added. -/
+theorem powSum4_closed (n : Nat) :
+    30 * powSum 4 n + n
+      = 6 * n ^ 5 + 15 * n ^ 4 + 10 * n ^ 3 :=
+  sumClosed 4 30 (fun n => n) (fun n => 6 * n ^ 5 + 15 * n ^ 4 + 10 * n ^
+    3) rfl powStep4 n
+
+/-- The power sum's closed read at the key 5, cross-added. -/
+theorem powSum5_closed (n : Nat) :
+    12 * powSum 5 n + n ^ 2
+      = 2 * n ^ 6 + 6 * n ^ 5 + 5 * n ^ 4 :=
+  sumClosed 5 12 (fun n => n ^ 2) (fun n => 2 * n ^ 6 + 6 * n ^ 5 + 5 * n
+    ^ 4) rfl powStep5 n
+
+/-- The power sum's closed read at the key 6, cross-added. -/
+theorem powSum6_closed (n : Nat) :
+    42 * powSum 6 n + 7 * n ^ 3
+      = 6 * n ^ 7 + 21 * n ^ 6 + 21 * n ^ 5 + n :=
+  sumClosed 6 42 (fun n => 7 * n ^ 3) (fun n => 6 * n ^ 7 + 21 * n ^ 6 +
+    21 * n ^ 5 + n) rfl powStep6 n
+
+/-- The power sum's closed read at the key 7, cross-added. -/
+theorem powSum7_closed (n : Nat) :
+    24 * powSum 7 n + 7 * n ^ 4
+      = 3 * n ^ 8 + 12 * n ^ 7 + 14 * n ^ 6 + 2 * n ^ 2 :=
+  sumClosed 7 24 (fun n => 7 * n ^ 4) (fun n => 3 * n ^ 8 + 12 * n ^ 7 +
+    14 * n ^ 6 + 2 * n ^ 2) rfl powStep7 n
+
+/-- The power sum's closed read at the key 8, cross-added. -/
+theorem powSum8_closed (n : Nat) :
+    90 * powSum 8 n + 42 * n ^ 5 + 3 * n
+      = 10 * n ^ 9 + 45 * n ^ 8 + 60 * n ^ 7 + 20 * n ^ 3 :=
+  by
+  rw [Nat.add_assoc (90 * powSum 8 n) (42 * n ^ 5) (3 * n)]
+  exact
+    sumClosed 8 90 (fun n => 42 * n ^ 5 + 3 * n) (fun n => 10 * n ^ 9 + 45
+      * n ^ 8 + 60 * n ^ 7 + 20 * n ^ 3) rfl powStep8 n
+
+/-- The power sum's closed read at the key 9, cross-added. -/
+theorem powSum9_closed (n : Nat) :
+    20 * powSum 9 n + 14 * n ^ 6 + 3 * n ^ 2
+      = 2 * n ^ 10 + 10 * n ^ 9 + 15 * n ^ 8 + 10 * n ^ 4 :=
+  by
+  rw [Nat.add_assoc (20 * powSum 9 n) (14 * n ^ 6) (3 * n ^ 2)]
+  exact
+    sumClosed 9 20 (fun n => 14 * n ^ 6 + 3 * n ^ 2) (fun n => 2 * n ^ 10
+      + 10 * n ^ 9 + 15 * n ^ 8 + 10 * n ^ 4) rfl powStep9 n
+
+/-- The power sum's closed read at the key 10, cross-added. -/
+theorem powSum10_closed (n : Nat) :
+    66 * powSum 10 n + 66 * n ^ 7 + 33 * n ^ 3
+      = 6 * n ^ 11 + 33 * n ^ 10 + 55 * n ^ 9 + 66 * n ^ 5 + 5 * n :=
+  by
+  rw [Nat.add_assoc (66 * powSum 10 n) (66 * n ^ 7) (33 * n ^ 3)]
+  exact
+    sumClosed 10 66 (fun n => 66 * n ^ 7 + 33 * n ^ 3) (fun n => 6 * n ^
+      11 + 33 * n ^ 10 + 55 * n ^ 9 + 66 * n ^ 5 + 5 * n) rfl powStep10 n
+
+
+/-- A product's square at the factors' squares. -/
+theorem mulSq (a b : Nat) :
+    (a * b) ^ 2
+      = a ^ 2 * b ^ 2 :=
+  mirEq a b (Mir.pow (Mir.mul Mir.x Mir.y) 2) (Mir.mul (Mir.pow Mir.x 2)
+    (Mir.pow Mir.y 2)) (by decide +kernel)
+
+/-- The doubled product at its two orders. -/
+private theorem twoMul (a b : Nat) :
+    2 * a * b
+      = a * b + b * a :=
+  mirEq a b (Mir.mul (Mir.mul (Mir.cst 2) Mir.x) Mir.y) (Mir.add (Mir.mul
+    Mir.x Mir.y) (Mir.mul Mir.y Mir.x)) (by decide +kernel)
+
+/-- The gap's square against the shifted pair's crossed product. -/
+private theorem margShiftSq (b d : Nat) :
+    d ^ 2 + 2 * (b + d) * b
+      = (b + d) * (b + d) + b * b :=
+  mirEq b d (Mir.add (Mir.pow Mir.y 2) (Mir.mul (Mir.mul (Mir.cst 2)
+    (Mir.add Mir.x Mir.y)) Mir.x)) (Mir.add (Mir.mul (Mir.add Mir.x Mir.y)
+    (Mir.add Mir.x Mir.y)) (Mir.mul Mir.x Mir.x)) (by decide +kernel)
+
+
+/-- The margin at a shifted first datum is the shift. -/
+theorem margShift (b d : Nat) : marg (b + d) b = d := by
+  show b + d - b + (b - (b + d)) = d
+  rw [ground.addSubSelfL b d, ground.subLe b (b + d) (Nat.le_add_right b d),
+    Nat.add_zero d]
+
+/-- The margin reads one value at either order. -/
+theorem margComm (a b : Nat) : marg a b = marg b a :=
+  Nat.add_comm (a - b) (b - a)
+
+/-- The margin's square against the doubled product reads the two
+squares, the trichotomy's one identity. -/
+theorem margSqNat (a b : Nat) :
+    marg a b ^ 2 + 2 * a * b = a * a + b * b := by
+  match Nat.le_total b a with
+  | Or.inl h =>
+    have hd : b + (a - b) = a :=
+      (Nat.add_comm b (a - b)).trans (ground.subAdd h)
+    have key : marg (b + (a - b)) b ^ 2 + 2 * (b + (a - b)) * b
+        = (b + (a - b)) * (b + (a - b)) + b * b := by
+      rw [margShift b (a - b)]
+      exact margShiftSq b (a - b)
+    rw [hd] at key
+    exact key
+  | Or.inr h =>
+    have hd : a + (b - a) = b :=
+      (Nat.add_comm a (b - a)).trans (ground.subAdd h)
+    have key : marg (a + (b - a)) a ^ 2 + 2 * (a + (b - a)) * a
+        = (a + (b - a)) * (a + (b - a)) + a * a := by
+      rw [margShift a (b - a)]
+      exact margShiftSq a (b - a)
+    rw [hd] at key
+    rw [margComm a b, ground.mulRightComm 2 a b, Nat.add_comm (a * a) (b *
+      b)]
+    exact key
+
+/-- The count pair's square: the two squares against the doubled
+crossed product. -/
+theorem ofCounts_sq (a b : Nat) :
+    (BPair.ofCounts a b * BPair.ofCounts a b).oneValue
+      (BPair.ofCounts (a * a + b * b) (a * b + b * a)) := by
+  refine BPair.oneValue_symm ?_
+  show (BPair.ofNat (a * a + b * b)
+      + (BPair.ofNat (a * b + b * a)).swap).oneValue
+    ((BPair.ofNat a + (BPair.ofNat b).swap)
+      * (BPair.ofNat a + (BPair.ofNat b).swap))
+  rw [BPair.sq_expand_swap (BPair.ofNat a) (BPair.ofNat b)]
+  refine BPair.add_congr ?_ ?_
+  · exact BPair.oneValue_trans (BPair.ofNat_add (a * a) (b * b))
+      (BPair.add_congr (BPair.ofNat_mul a a) (BPair.ofNat_mul b b))
+  · refine BPair.oneValue_trans
+      (ground.swap_congr (BPair.ofNat_add (a * b) (b * a))) ?_
+    rw [← BPair.swap_add (BPair.ofNat (a * b)) (BPair.ofNat (b * a))]
+    exact BPair.add_congr (ground.swap_congr (BPair.ofNat_mul a b))
+      (ground.swap_congr
+        (BPair.oneValue_trans (BPair.ofNat_mul b a)
+          (BPair.oneValue_of_eq
+            (BPair.mul_comm (BPair.ofNat b) (BPair.ofNat a)))))
+
+/-- The margin's square is the balance pair's own square read, the
+trichotomy's one generic lemma. -/
+theorem margSq_read (a b : Nat) :
+    (BPair.ofNat (marg a b ^ 2)).oneValue
+      (BPair.ofCounts a b * BPair.ofCounts a b) := by
+  have h0 : (BPair.ofNat (marg a b ^ 2)).oneValue
+      (BPair.ofCounts (marg a b ^ 2) 0) :=
+    BPair.oneValue_symm (BPair.add_unit (BPair.ofNat (marg a b ^ 2)))
+  refine BPair.oneValue_trans h0 ?_
+  refine BPair.oneValue_trans (BPair.ofCounts_crossed ?_)
+    (BPair.oneValue_symm (ofCounts_sq a b))
+  rw [← twoMul a b, Nat.add_zero (a * a + b * b)]
+  exact margSqNat a b
+
+/-- A scalar passes into the fold on the right. -/
+theorem foldB_mul_right {α : Type} (c : BPair) (f : α → BPair)
+    (l : List α) :
+    (ground.famFold BPair.add BPair.unit f l * c).oneValue
+      (ground.famFold BPair.add BPair.unit (fun i => f i * c) l) := by
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq
+      (BPair.mul_comm (ground.famFold BPair.add BPair.unit f l) c)) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_symm (ground.foldB_mul_left c f l)) ?_
+  exact BPair.oneValue_of_eq
+    (ground.famFold_congr_all BPair.add BPair.unit _ _
+      (fun i => BPair.mul_comm c (f i)) l)
+
+/-- The count fold over the range reversed reads the fold itself:
+the reversal is an involution of the range. -/
+theorem sumNat_range_rev (f : Nat → Nat) (m : Nat) :
+    ground.sumNat ((List.range (m + 1)).map (fun b => f (m - b)))
+      = ground.sumNat ((List.range (m + 1)).map f) := by
+  have hmem : ∀ x, 0 < countOf x (List.range (m + 1)) → x ≤ m :=
+    fun x hx => Nat.le_of_lt_succ (ltOfCountRange hx)
+  have hinv : ∀ x, x ≤ m → m - (m - x) = x := by
+    intro x hx
+    obtain ⟨d, hd⟩ := Nat.le.dest hx
+    rw [← hd, ground.addSubSelfL x d, Nat.add_comm x d, ground.addSubSelfL d x]
+  have hin : ∀ x, 0 < countOf (m - x) (List.range (m + 1)) := by
+    intro x
+    rw [countOf_range, if_pos (Nat.lt_succ_of_le (Nat.sub_le m x))]
+    exact Nat.succ_pos 0
+  rw [ground.sumMap, ground.sumMap]
+  exact ground.famFold_bij_ov natFoldLaws.toCommLaws 0
+    (fun b => f (m - b)) f (g := fun x => m - x) (h := fun x => m - x)
+    (distinctList_range (m + 1)) (fun x hx => hinv x (hmem x hx))
+    (fun x hx => hinv x (hmem x hx)) (fun x _ => hin x) (fun x _ => hin x)
+    (fun _ _ => rfl)
+
+/-- The margin is one value under a shared summand. -/
+theorem marg_add (a b c : Nat) : marg (a + c) (b + c) = marg a b := by
+  match Nat.le_total a b with
+  | Or.inl h =>
+    obtain ⟨d, hd⟩ := Nat.le.dest h
+    rw [← hd, Nat.add_right_comm a d c, margComm (a + c) (a + c + d), margShift,
+      margComm a (a + d), margShift]
+  | Or.inr h =>
+    obtain ⟨d, hd⟩ := Nat.le.dest h
+    rw [← hd, Nat.add_right_comm b d c, margShift, margShift]
+
+/-- The predicate count at pointwise-equal reads over the members. -/
+theorem countBy_congr {p q : Nat → Bool} : ∀ l : List Nat,
+    (∀ x, 0 < ground.countOf x l → p x = q x) →
+    ground.countBy p l = ground.countBy q l
+  | [], _ => rfl
+  | a :: t, h => by
+    have ha := h a (by rw [ground.countOf_head]; exact Nat.succ_pos _)
+    have ht := countBy_congr t
+      (fun x hx => h x (ground.countOf_cons_pos hx))
+    cases hqa : q a with
+    | true =>
+      rw [ground.countBy_cons_true p t (ha.trans hqa),
+        ground.countBy_cons_true q t hqa, ht]
+    | false =>
+      rw [ground.countBy_cons_false p t (ha.trans hqa),
+        ground.countBy_cons_false q t hqa, ht]
+
+/-- Two predicates refusing together count at the join. -/
+theorem countBy_or {p q : Nat → Bool} : ∀ l : List Nat,
+    (∀ x, 0 < ground.countOf x l → p x = true → q x = false) →
+    ground.countBy (fun x => p x || q x) l
+      = ground.countBy p l + ground.countBy q l
+  | [], _ => rfl
+  | a :: t, h => by
+    have ht := countBy_or t
+      (fun x hx => h x (ground.countOf_cons_pos hx))
+    have hmem := h a (by rw [ground.countOf_head]; exact Nat.succ_pos _)
+    cases hpa : p a with
+    | true =>
+      rw [ground.countBy_cons_true (fun x => p x || q x) t
+          (by rw [hpa]; rfl),
+        ground.countBy_cons_true p t hpa,
+        ground.countBy_cons_false q t (hmem hpa), ht,
+        Nat.add_assoc]
+    | false =>
+      cases hqa : q a with
+      | true =>
+        rw [ground.countBy_cons_true (fun x => p x || q x) t
+            (by rw [hpa, hqa]; rfl),
+          ground.countBy_cons_false p t hpa,
+          ground.countBy_cons_true q t hqa, ht,
+          Nat.add_left_comm]
+      | false =>
+        rw [ground.countBy_cons_false (fun x => p x || q x) t
+            (by rw [hpa, hqa]; rfl),
+          ground.countBy_cons_false p t hpa,
+          ground.countBy_cons_false q t hqa, ht]
+
+/-- The predicate and its refusal split the length. -/
+theorem countBy_split (p : Nat → Bool) : ∀ l : List Nat,
+    ground.countBy p l + ground.countBy (fun x => !(p x)) l
+      = l.length
+  | [] => rfl
+  | a :: t => by
+    cases hpa : p a with
+    | true =>
+      rw [ground.countBy_cons_true p t hpa,
+        ground.countBy_cons_false (fun x => !(p x)) t
+          (by rw [hpa]; rfl),
+        Nat.add_assoc, countBy_split p t,
+        show (a :: t).length = t.length + 1 from rfl,
+        Nat.add_comm]
+    | false =>
+      rw [ground.countBy_cons_false p t hpa,
+        ground.countBy_cons_true (fun x => !(p x)) t
+          (by rw [hpa]; rfl),
+        Nat.add_left_comm, countBy_split p t,
+        show (a :: t).length = t.length + 1 from rfl,
+        Nat.add_comm]
+
+/-- The filter's length is the predicate's count. -/
+theorem length_filterBy (p : Nat → Bool) : ∀ l : List Nat,
+    (l.filter p).length = ground.countBy p l
+  | [] => rfl
+  | a :: t => by
+    cases hpa : p a with
+    | true =>
+      rw [ground.filter_cons_true hpa,
+        ground.countBy_cons_true p t hpa,
+        show (a :: t.filter p).length = (t.filter p).length + 1
+          from rfl,
+        length_filterBy p t, Nat.add_comm]
+    | false =>
+      rw [ground.filter_cons_false hpa,
+        ground.countBy_cons_false p t hpa, length_filterBy p t]
+
+/-- The vacant predicate counts at the sum's unit. -/
+theorem countBy_false : ∀ l : List Nat,
+    ground.countBy (fun _ => false) l = 0
+  | [] => rfl
+  | a :: t => by
+    rw [ground.countBy_cons_false (fun _ => false) t rfl,
+      countBy_false t]
+
+/-- The key comparison's count is the key's own. -/
+theorem countBy_beq (a : Nat) (l : List Nat) :
+    ground.countBy (fun j => j == a) l = ground.countOf a l :=
+  countBy_congr l (fun x _ => ground.beqSymm x a)
+
+/-- The predicate count adds over a join. -/
+theorem countBy_append {α : Type} (p : α → Bool) :
+    ∀ u v : List α, ground.countBy p (u ++ v)
+      = ground.countBy p u + ground.countBy p v
+  | [], v => (Nat.zero_add (ground.countBy p v)).symm
+  | a :: u, v => by
+    show cond (p a) 1 0 + ground.countBy p (u ++ v)
+      = cond (p a) 1 0 + ground.countBy p u + ground.countBy p v
+    rw [countBy_append p u v, Nat.add_assoc]
+
+/-- Two mapped families count at one value where the maps agree at
+the accepted members. -/
+theorem countBy_mapPair {β γ δ : Type} (pb : β → Bool)
+    (p : γ → Bool) (q : δ → Bool) (F : β → γ) (G : β → δ)
+    (hFG : ∀ b, pb b = true → p (F b) = q (G b)) :
+    ∀ lb : List β, (lb.all pb) = true →
+      ground.countBy p (lb.map F) = ground.countBy q (lb.map G)
+  | [], _ => rfl
+  | b :: t, hall => by
+    have hs := ground.andSplitB (show (pb b && t.all pb) = true from hall)
+    show cond (p (F b)) 1 0 + ground.countBy p (t.map F)
+      = cond (q (G b)) 1 0 + ground.countBy q (t.map G)
+    rw [hFG b hs.1, countBy_mapPair pb p q F G hFG t hs.2]
+
+/-- Two paired families count at one value where the pair maps agree
+at the accepted pairs. -/
+theorem countBy_pairMap {α β γ δ : Type} (pa : α → Bool)
+    (pb : β → Bool) (p : γ → Bool) (q : δ → Bool)
+    (f : α → β → γ) (g : α → β → δ)
+    (hfg : ∀ a b, pa a = true → pb b = true → p (f a b) = q (g a b))
+    (lb : List β) (hlb : (lb.all pb) = true) :
+    ∀ la : List α, (la.all pa) = true →
+      ground.countBy p (la.flatMap (fun a => lb.map (f a)))
+        = ground.countBy q (la.flatMap (fun a => lb.map (g a)))
+  | [], _ => rfl
+  | a :: t, hall => by
+    have hs := ground.andSplitB (show (pa a && t.all pa) = true from hall)
+    show ground.countBy p (lb.map (f a) ++ t.flatMap (fun a => lb.map (f a)))
+      = ground.countBy q (lb.map (g a) ++ t.flatMap (fun a => lb.map (g a)))
+    rw [countBy_append, countBy_append,
+      countBy_mapPair pb p q (f a) (g a)
+        (fun b hb => hfg a b hs.1 hb) lb hlb,
+      countBy_pairMap pa pb p q f g hfg lb hlb t hs.2]
+
+/-- Two members read true at a count of two or beyond, at distinct
+positions. -/
+theorem two_of_countBy {α : Type} (d : α) (p : α → Bool) :
+    ∀ l : List α, 2 ≤ countBy p l →
+      ∃ i j, i < l.length ∧ j < l.length ∧ i ≠ j
+        ∧ p (getAt d l i) = true ∧ p (getAt d l j) = true
+  | [], h => absurd h (Nat.not_succ_le_zero _)
+  | a :: t, h => by
+    cases hpa : p a with
+    | true =>
+      rw [countBy_cons_true p t hpa] at h
+      match t, h with
+      | [], h => exact absurd (Nat.le_of_succ_le_succ h) (Nat.not_succ_le_zero _)
+      | b :: t', h =>
+        cases hpb : p b with
+        | true =>
+          exact ⟨0, 1, Nat.succ_pos _, Nat.succ_lt_succ (Nat.succ_pos _),
+            Nat.zero_ne_one, hpa, hpb⟩
+        | false =>
+          rw [countBy_cons_false p t' hpb, Nat.add_comm] at h
+          have h' : 1 ≤ countBy p t' := Nat.le_of_succ_le_succ h
+          obtain ⟨j, hj, hpj⟩ := one_of_countBy d p t' h'
+          exact ⟨0, j + 2, Nat.succ_pos _, Nat.succ_lt_succ (Nat.succ_lt_succ hj),
+            fun h => Nat.noConfusion h, hpa, hpj⟩
+    | false =>
+      rw [countBy_cons_false p t hpa] at h
+      obtain ⟨i, j, hi, hj, hij, hpi, hpj⟩ := two_of_countBy d p t h
+      exact ⟨i + 1, j + 1, Nat.succ_lt_succ hi, Nat.succ_lt_succ hj,
+        fun h => hij (Nat.succ.inj h), hpi, hpj⟩
+where
+  /-- One member reads true at an occupied count. -/
+  one_of_countBy (d : α) (p : α → Bool) :
+      ∀ l : List α, 1 ≤ countBy p l →
+        ∃ i, i < l.length ∧ p (getAt d l i) = true
+    | [], h => absurd h (Nat.not_succ_le_zero _)
+    | a :: t, h => by
+      cases hpa : p a with
+      | true => exact ⟨0, Nat.succ_pos _, hpa⟩
+      | false =>
+        rw [countBy_cons_false p t hpa] at h
+        obtain ⟨i, hi, hpi⟩ := one_of_countBy d p t h
+        exact ⟨i + 1, Nat.succ_lt_succ hi, hpi⟩
+
+/-- A member reading true occupies the count. -/
+theorem countBy_pos_of_mem {α : Type} (p : α → Bool) :
+    ∀ (l : List α) (x : α), x ∈ l → p x = true → 0 < countBy p l
+  | [], _, h, _ => nomatch h
+  | a :: t, x, h, hx => by
+    cases h with
+    | head =>
+      rw [countBy_cons_true p t hx]
+      exact Nat.lt_of_lt_of_le (Nat.succ_pos 0) (Nat.le_add_right 1 _)
+    | tail _ hm =>
+      cases hpa : p a with
+      | true =>
+        rw [countBy_cons_true p t hpa]
+        exact Nat.lt_of_lt_of_le (Nat.succ_pos 0) (Nat.le_add_right 1 _)
+      | false => rw [countBy_cons_false p t hpa]; exact countBy_pos_of_mem p t x hm hx
 
 end ground

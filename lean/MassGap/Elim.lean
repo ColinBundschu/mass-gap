@@ -231,7 +231,19 @@ unit-tail by positivity and both spellings degenerate together —
 and its binders are the perpendicularity with the vector's stated
 width, the rows' width read the frame (a ragged family truncates
 both spellings alike); `residD_perp` carries all three, each with a
-committed refusal in the check module.
+committed refusal in the check module.  The residual's descent read
+`residW` (`residW_eq`, one value at an independent family and every
+vector, the frame the collection's own independence) prices its two
+assignment folds at one pivot walk each, the solve one bordered
+walk (`solveK`, `adjD`, `adjD_eq` at every leading minor off the
+unit and `adjD_gram` at an independent list's Gram); the collection
+at the walk is `collectW` (`collectW_eq` at a family of the stated
+width), the span read decides through the two equalities, and the
+keyed pools close at their stored descents, one descent per group
+grown a row per join, as the collection at the fresh walk
+(`DState`, `growS`, `traceOf`, `growS_read` at a symmetric list,
+`joinS`, `joinS_read` against `joinIndep`, `PoolS`, `closeK`,
+`closeK_eq`).
 The elimination carrier `elimRows` takes the pivot's first read as
 a stated argument beside the pivot; its lemmas cover the matched
 instantiations alone, the mismatch unreachable outside this
@@ -1430,34 +1442,16 @@ def matOneValue : Mat → Mat → Prop := ground.matchedOV poly.polyRead
 theorem matOne_length {A B : Mat} : matOneValue A B → A.length = B.length :=
   ground.matched_length
 
-/-- The relabeled matrix at a stated position list: every entry of
-the second matrix reads the first's at the moved row and column
-keys, the relabeling's own read. -/
-def relabelRead (n : Nat) (M M' : Mat) (q : List Nat) : Prop :=
-  ((List.range n).all (fun i => (List.range n).all (fun j =>
-    decide ((ground.getAt BPair.unit (ground.getAt [] M' i) j).oneValue
-      (ground.getAt BPair.unit
-        (ground.getAt [] M (ground.getAt 0 q i)) (ground.getAt 0 q j)))))) = true
-
-instance (n : Nat) (M M' : Mat) (q : List Nat) :
-    Decidable (relabelRead n M M' q) :=
-  inferInstanceAs (Decidable (_ = _))
-
-/-- The relabeling read at a row and a column key below the
-count. -/
-theorem relabelRead_at (n : Nat) (M M' : Mat) (q : List Nat)
-    (h : relabelRead n M M' q) (i j : Nat) (hi : i < n) (hj : j < n) :
-    (ground.getAt BPair.unit (ground.getAt [] M' i) j).oneValue
-      (ground.getAt BPair.unit
-        (ground.getAt [] M (ground.getAt 0 q i))
-        (ground.getAt 0 q j)) :=
-  of_decide_eq_true
-    (ground.all_range_read n (ground.all_range_read n h i hi) j hj)
-
 def decMatOneValue : ∀ a b : Mat, Decidable (matOneValue a b) :=
   ground.decMatchedOV poly.polyRead
 
 instance (a b : Mat) : Decidable (matOneValue a b) := decMatOneValue a b
+
+/-- The symmetry read: the matrix one value with its transpose. -/
+def symmRead (m : Mat) : Prop := matOneValue m (transposeM m)
+
+instance (m : Mat) : Decidable (symmRead m) :=
+  inferInstanceAs (Decidable (matOneValue _ _))
 
 /-! The matrix one-value read is a class read, with its entry reads
 both ways and the pointwise map. -/
@@ -2451,6 +2445,21 @@ def decRowsLen {γ : Type} (n : Nat) :
   | [] => isTrue trivial
   | _ :: t => @instDecidableAnd _ _ inferInstance (decRowsLen n t)
 
+/-- Two families at one width join at that width, at every entry
+carrier. -/
+private theorem rowsLen_appendO {γ : Type} (n : Nat) :
+    ∀ {L M : List (List γ)},
+      rowsLen n L → rowsLen n M → rowsLen n (L ++ M)
+  | [], _, _, hM => hM
+  | _ :: _, _, hL, hM =>
+    ⟨hL.1, rowsLen_appendO n hL.2 hM⟩
+
+/-- Two families at one width join at that width. -/
+theorem rowsLen_append (n : Nat) : ∀ {L M : Mat},
+    rowsLen n L → rowsLen n M → rowsLen n (L ++ M) := by
+  intro L M hL hM
+  exact rowsLen_appendO n hL hM
+
 /-- The selected block's rows read the column key list's count, at
 any entry type. -/
 theorem rowsLen_selMO {γ : Type} (u : γ) (J : List Nat)
@@ -2468,6 +2477,22 @@ def gramBy {α : Type} (dot : α → α → BPair) (l : List α) : Mat :=
 
 /-- The Gram: the rows' pairwise folds. -/
 def gramM (L : Mat) : Mat := gramBy dotP L
+
+/-- The Gram's count is the list's own. -/
+theorem length_gramBy {α : Type} (dot : α → α → BPair) (l : List α) :
+    (gramBy dot l).length = l.length :=
+  ground.length_map _ l
+
+/-- The Gram's entry at two occupied keys, the members' own
+pairing. -/
+theorem gramBy_entry {α : Type} (dot : α → α → BPair) (d : α)
+    (l : List α) (i j : Nat) (hi : i < l.length) (hj : j < l.length) :
+    ground.getAt BPair.unit (ground.getAt [] (gramBy dot l) i) j
+      = dot (ground.getAt d l i) (ground.getAt d l j) := by
+  show ground.getAt BPair.unit (ground.getAt []
+    (l.map (fun r => l.map (fun c => dot r c))) i) j = _
+  rw [ground.getAt_map d [] _ l i hi,
+    ground.getAt_map d BPair.unit _ l j hj]
 
 /-- The pairing at a stated matrix, the row against the matrix's
 read of the column. -/
@@ -2490,10 +2515,8 @@ pairing. -/
 theorem gramM_entry (L : Mat) (i j : Nat) (hi : i < L.length)
     (hj : j < L.length) :
     ground.getAt BPair.unit (ground.getAt [] (gramM L) i) j
-      = dotP (ground.getAt [] L i) (ground.getAt [] L j) := by
-  rw [gramM_row L i hi,
-    ground.getAt_map ([] : List BPair) BPair.unit
-      (fun c => dotP (ground.getAt [] L i) c) L j hj]
+      = dotP (ground.getAt [] L i) (ground.getAt [] L j) :=
+  gramBy_entry dotP [] L i j hi hj
 
 /-- Independence: the shape read with the Gram determinant off the
 sum's unit, the membership test's clearing scalar. -/
@@ -2765,6 +2788,19 @@ theorem rowsLen_map {γ α : Type} (g : α → List γ) (n : Nat) :
   | a :: t, h =>
     ⟨h a (List.Mem.head t),
      rowsLen_map g n t (fun x hx => h x (List.Mem.tail a hx))⟩
+
+/-- The Gram's rows read the list's count, the width read per
+member. -/
+theorem rowsLen_gramBy {α : Type} (dot : α → α → BPair) (l : List α) :
+    rowsLen l.length (gramBy dot l) :=
+  rowsLen_map _ l.length l (fun _ _ => ground.length_map _ l)
+
+/-- The Gram's rows read its own count, the descent's square frame
+at every listed family. -/
+theorem gramBy_sq {α : Type} (dot : α → α → BPair) (l : List α) :
+    rowsLen (gramBy dot l).length (gramBy dot l) := by
+  rw [length_gramBy]
+  exact rowsLen_gramBy dot l
 
 /-- The entry-formula matrix's rows read the stated width
 (`ground.matOf` at the row predicate). -/
@@ -3324,8 +3360,9 @@ private theorem polyOne_refl : ∀ u : List BPair, poly.oneValue u u
   | _ :: u => ⟨BPair.oneValue_refl _, polyOne_refl u⟩
 
 /-- The combination's width at one row list depends on the
-coefficients' count alone. -/
-private theorem length_combo_congr (n : Nat) :
+coefficients' count alone: the fold truncates at the rows and at
+the coefficients' count. -/
+theorem length_combo_congr (n : Nat) :
     ∀ (cs ds : List BPair) (L : Mat), cs.length = ds.length →
       (combo n cs L).length = (combo n ds L).length
   | [], [], _, _ => rfl
@@ -3379,9 +3416,6 @@ theorem vecScale_combo (c : BPair) (n : Nat) :
       | 0 => trivial
       | n + 1 => ⟨BPair.mul_unit c, repl_go c n⟩
 
-instance (p : poly.Poly) : Decidable (poly.unitTail p) :=
-  poly.decUnitTail p
-
 /-- The membership residual: the determinant-scaled vector against
 the adjugate solve's combination, the swap the subtraction — the
 test's pass the unit-tail read, decidable entry by entry. -/
@@ -3401,9 +3435,6 @@ read). -/
 def spanRel (n : Nat) (L : Mat) (v : List BPair) : Prop :=
   rowsLen n L ∧ v.length = n
     ∧ poly.unitTail (residV n (collectOf n L) v)
-
-instance (n : Nat) (L : Mat) (v : List BPair) : Decidable (spanRel n L v) :=
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
 /-- The self-pairings' product over a family, one factor per row —
 the pairwise-perpendicular family's Gram determinant (`detL_perp`),
@@ -3520,7 +3551,7 @@ theorem dotP_scaleRow (w : BPair) : ∀ r u : List BPair,
       (BPair.oneValue_of_eq (BPair.mul_assoc w a b))
 
 private theorem length_gramM (L : Mat) :
-    (gramM L).length = L.length := ground.length_map _ L
+    (gramM L).length = L.length := length_gramBy dotP L
 
 /-- The adjugate solve's width is the list's own count, read at
 every list. -/
@@ -3931,12 +3962,7 @@ private theorem combo_append_one (n : Nat) :
         (hL : rowsLen n L) (hv : v.length = n) :
         (combo n (cs ++ [c]) (L ++ [v])).length = n :=
       length_combo n (cs ++ [c]) (L ++ [v])
-        (rowsLen_append n L v hL hv)
-    rowsLen_append (n : Nat) : ∀ (L : Mat) (v : List BPair),
-        rowsLen n L → v.length = n → rowsLen n (L ++ [v])
-      | [], v, _, hv => ⟨hv, trivial⟩
-      | r :: L, v, hL, hv =>
-        ⟨hL.1, rowsLen_append n L v hL.2 hv⟩
+        (rowsLen_append n hL ⟨hv, trivial⟩)
 
 /-! The independent family's Gram determinant sits off the sum's
 unit: the descent at the last cofactor — a balanced determinant
@@ -4265,31 +4291,13 @@ theorem vecAdd_swap_unitTail : ∀ t : List BPair,
     poly.unitTail (vecAdd t (t.map BPair.swap))
   | [] => trivial
   | x :: t =>
-    ⟨BPair.oneValue_trans
-        (BPair.oneValue_of_eq (BPair.add_comm x x.swap))
-        (BPair.swap_add_null (BPair.oneValue_refl x)),
-     vecAdd_swap_unitTail t⟩
+    ⟨BPair.add_swap_null x, vecAdd_swap_unitTail t⟩
 
 /-- The matched-width instance of the dropping read. -/
 theorem vecAdd_null_right (u w : List BPair)
     (hl : u.length = w.length) (hw : poly.unitTail w) :
     poly.oneValue (vecAdd u w) u :=
   vecAdd_null_right_le u w (Nat.le_of_eq hl) hw
-
-/-- Two families at one width join at that width, at every entry
-carrier. -/
-private theorem rowsLen_appendO {γ : Type} (n : Nat) :
-    ∀ {L M : List (List γ)},
-      rowsLen n L → rowsLen n M → rowsLen n (L ++ M)
-  | [], _, _, hM => hM
-  | _ :: _, _, hL, hM =>
-    ⟨hL.1, rowsLen_appendO n hL.2 hM⟩
-
-/-- Two families at one width join at that width. -/
-theorem rowsLen_append (n : Nat) : ∀ {L M : Mat},
-    rowsLen n L → rowsLen n M → rowsLen n (L ++ M) := by
-  intro L M hL hM
-  exact rowsLen_appendO n hL hM
 
 /-- The joined family's combination splits at the joined
 coefficients: at a coefficient count matching the first family's,
@@ -4878,6 +4886,19 @@ theorem getAt_transposeM (u : BPair) {n : Nat} (m : Mat)
     ground.getAt u (ground.getAt [] (transposeM m) p) q
       = ground.getAt u (ground.getAt [] m q) p :=
   getAt_transposeO bpairOps u m hrows p q hp hq
+
+/-- A symmetric datum's entries at exchanged keys read one value: the
+transpose's entry read at the symmetry (`def:elim`'s exchanged row
+and column keys at equal members). -/
+theorem symmRead_entry {o : Nat} (S : Mat) (hS : sqAt S o)
+    (hsym : symmRead S) (i j : Nat) (hi : i < o) (hj : j < o) :
+    (ground.getAt BPair.unit (ground.getAt ([] : List BPair) S i) j).oneValue
+      (ground.getAt BPair.unit (ground.getAt ([] : List BPair) S j) i) := by
+  have e := poly.oneValue_getAt j
+    (matOne_entries S (transposeM S) hsym i (by rw [sqAt_len hS]; exact hi))
+  rw [getAt_transposeM BPair.unit S (rowsLen_of_sqAt hS) i j hi
+    (by rw [sqAt_len hS]; exact hj)] at e
+  exact e
 
 private theorem detO_transpose {γ : Type} {ops : DOps γ}
     {R : ground.DRead γ}
@@ -6946,40 +6967,10 @@ private theorem cofactorAt_sound {P X E : BPair}
           (BPair.mul_congr (BPair.oneValue_refl P)
             (ovOfGap (ofPos_gap x) hx)) hE
 
-/-! `def:elim`'s bordered sublists: the pivot descent's minors as
-explicit key-list selections, the leading keys carrying the border
-key at the end of each list. -/
-
-/-- The columns kept at a stated key list. -/
-private def keepCols (ks : List Nat) (r : List BPair) : List BPair :=
-  ks.map (fun j => ground.getAt BPair.unit r j)
-
-/-- The pivot-bordered sublist: rows the leading keys with the
-border row, columns the leading keys with the border column. -/
-def borderAt (k i j : Nat) (m : Mat) : Mat :=
-  ((List.range k) ++ [i]).map (fun a =>
-    keepCols ((List.range k) ++ [j]) (ground.getAt [] m a))
-
-/-- The leading sublist at the stated key count. -/
-def leadAt (k : Nat) (m : Mat) : Mat :=
-  (List.range k).map (fun a =>
-    keepCols (List.range k) (ground.getAt [] m a))
-
-/-- The kept columns read the key list's own width. -/
-private theorem keepCols_len (ks : List Nat) (r : List BPair) :
-    (keepCols ks r).length = ks.length := by
-  show ((ks.map (fun j => ground.getAt BPair.unit r j))).length
-    = ks.length
-  rw [ground.length_map]
-
-/-- The kept columns' entry read: the source entry at the key. -/
-private theorem keepCols_entry (ks : List Nat) (r : List BPair)
-    (b : Nat) (hb : b < ks.length) :
-    ground.getAt BPair.unit (keepCols ks r) b
-      = ground.getAt BPair.unit r (ground.getAt 0 ks b) := by
-  show ground.getAt BPair.unit
-    (ks.map (fun j => ground.getAt BPair.unit r j)) b = _
-  rw [ground.getAt_map 0 BPair.unit _ ks b hb]
+/-! `def:elim`'s bordered sublists at the bundle carrier: the pivot
+descent's minors as explicit key-list selections, the leading keys
+carrying the border key at the end of each list, the balance-pair
+instances below. -/
 
 /-- The bordered key list's read: the leading keys their own, the
 last key the border. -/
@@ -7003,30 +6994,129 @@ private theorem borderKeys_len (K x : Nat) :
   rw [ground.length_append, ground.length_range]
   rfl
 
+/-! The bordered sublists at the bundle carrier: the index surgery
+the descent's walk reads, `keepCols` at the bundle's unit
+default. -/
+
+private def keepColsO {γ : Type} (ops : DOps γ) (ks : List Nat)
+    (r : List γ) : List γ :=
+  ks.map (fun j => ground.getAt ops.unit r j)
+
+private def borderAtO {γ : Type} (ops : DOps γ) (k i j : Nat)
+    (m : List (List γ)) : List (List γ) :=
+  ((List.range k) ++ [i]).map (fun a =>
+    keepColsO ops ((List.range k) ++ [j]) (ground.getAt [] m a))
+
+private def leadAtO {γ : Type} (ops : DOps γ) (k : Nat)
+    (m : List (List γ)) : List (List γ) :=
+  (List.range k).map (fun a =>
+    keepColsO ops (List.range k) (ground.getAt [] m a))
+
+private theorem keepColsO_len {γ : Type} (ops : DOps γ)
+    (ks : List Nat) (r : List γ) :
+    (keepColsO ops ks r).length = ks.length := by
+  show ((ks.map (fun j => ground.getAt ops.unit r j))).length
+    = ks.length
+  rw [ground.length_map]
+
+private theorem keepColsO_entry {γ : Type} (ops : DOps γ)
+    (ks : List Nat) (r : List γ) (b : Nat) (hb : b < ks.length) :
+    ground.getAt ops.unit (keepColsO ops ks r) b
+      = ground.getAt ops.unit r (ground.getAt 0 ks b) := by
+  show ground.getAt ops.unit
+    (ks.map (fun j => ground.getAt ops.unit r j)) b = _
+  rw [ground.getAt_map 0 ops.unit _ ks b hb]
+
+private theorem borderAtO_len {γ : Type} (ops : DOps γ)
+    (k i j : Nat) (m : List (List γ)) :
+    (borderAtO ops k i j m).length = k + 1 := by
+  show (((List.range k) ++ [i]).map (fun a =>
+    keepColsO ops ((List.range k) ++ [j])
+      (ground.getAt [] m a))).length = k + 1
+  rw [ground.length_map, borderKeys_len]
+
+private theorem borderAtO_rows {γ : Type} (ops : DOps γ)
+    (k i j : Nat) (m : List (List γ)) :
+    rowsLen (k + 1) (borderAtO ops k i j m) :=
+  rowsLen_map _ (k + 1) (List.range k ++ [i])
+    (fun x _ => (fun _ => by
+      rw [keepColsO_len, borderKeys_len]) x)
+
+private theorem borderAtO_row {γ : Type} (ops : DOps γ)
+    (k i j : Nat) (m : List (List γ)) (a : Nat) (ha : a < k + 1) :
+    ground.getAt [] (borderAtO ops k i j m) a
+      = keepColsO ops ((List.range k) ++ [j])
+        (ground.getAt [] m (if a < k then a else i)) := by
+  show ground.getAt [] (((List.range k) ++ [i]).map (fun a =>
+    keepColsO ops ((List.range k) ++ [j])
+      (ground.getAt [] m a))) a = _
+  rw [ground.getAt_map 0 [] _ (List.range k ++ [i]) a
+      (by rw [borderKeys_len]; exact ha),
+    borderKeys k i a ha]
+
+private theorem borderAtO_entry {γ : Type} (ops : DOps γ)
+    (k i j : Nat) (m : List (List γ)) (a b : Nat)
+    (ha : a < k + 1) (hb : b < k + 1) :
+    ground.getAt ops.unit
+        (ground.getAt [] (borderAtO ops k i j m) a) b
+      = ground.getAt ops.unit
+        (ground.getAt [] m (if a < k then a else i))
+        (if b < k then b else j) := by
+  rw [borderAtO_row ops k i j m a ha,
+    keepColsO_entry ops _ _ b (by rw [borderKeys_len]; exact hb),
+    borderKeys k j b hb]
+
+private theorem leadAtO_len {γ : Type} (ops : DOps γ) (k : Nat)
+    (m : List (List γ)) : (leadAtO ops k m).length = k :=
+  ground.matOf_length k k _
+
+private theorem leadAtO_entry {γ : Type} (ops : DOps γ) (k : Nat)
+    (m : List (List γ)) (a b : Nat) (ha : a < k) (hb : b < k) :
+    ground.getAt ops.unit (ground.getAt [] (leadAtO ops k m) a) b
+      = ground.getAt ops.unit (ground.getAt [] m a) b :=
+  ground.matOf_entry [] ops.unit k k _ a b ha hb
+
+/-- The columns kept at a stated key list, the balance-pair
+instance. -/
+private def keepCols (ks : List Nat) (r : List BPair) : List BPair :=
+  keepColsO bpairOps ks r
+
+/-- The pivot-bordered sublist: rows the leading keys with the
+border row, columns the leading keys with the border column. -/
+def borderAt (k i j : Nat) (m : Mat) : Mat := borderAtO bpairOps k i j m
+
+/-- The leading sublist at the stated key count. -/
+def leadAt (k : Nat) (m : Mat) : Mat := leadAtO bpairOps k m
+
+/-- The kept columns read the key list's own width. -/
+private theorem keepCols_len (ks : List Nat) (r : List BPair) :
+    (keepCols ks r).length = ks.length :=
+  keepColsO_len bpairOps ks r
+
+/-- The kept columns' entry read: the source entry at the key. -/
+private theorem keepCols_entry (ks : List Nat) (r : List BPair)
+    (b : Nat) (hb : b < ks.length) :
+    ground.getAt BPair.unit (keepCols ks r) b
+      = ground.getAt BPair.unit r (ground.getAt 0 ks b) :=
+  keepColsO_entry bpairOps ks r b hb
+
 /-- The bordered sublist's row count. -/
 private theorem borderAt_len (k i j : Nat) (m : Mat) :
-    (borderAt k i j m).length = k + 1 := by
-  show (((List.range k) ++ [i]).map (fun a =>
-    keepCols ((List.range k) ++ [j]) (ground.getAt [] m a))).length
-    = k + 1
-  rw [ground.length_map, borderKeys_len]
+    (borderAt k i j m).length = k + 1 :=
+  borderAtO_len bpairOps k i j m
 
 /-- Every row of the bordered sublist reads the key count. -/
 private theorem borderAt_rows (k i j : Nat) (m : Mat) :
     rowsLen (k + 1) (borderAt k i j m) :=
-  rowsLen_map _ (k + 1) (List.range k ++ [i]) (fun x _ => (fun _ => by rw [keepCols_len, borderKeys_len]) x)
+  borderAtO_rows bpairOps k i j m
 
 /-- The bordered sublist's row at a key. -/
 private theorem borderAt_row (k i j : Nat) (m : Mat) (a : Nat)
     (ha : a < k + 1) :
     ground.getAt [] (borderAt k i j m) a
       = keepCols ((List.range k) ++ [j])
-        (ground.getAt [] m (if a < k then a else i)) := by
-  show ground.getAt [] (((List.range k) ++ [i]).map (fun a =>
-    keepCols ((List.range k) ++ [j]) (ground.getAt [] m a))) a = _
-  rw [ground.getAt_map 0 [] _ (List.range k ++ [i]) a
-      (by rw [borderKeys_len]; exact ha),
-    borderKeys k i a ha]
+        (ground.getAt [] m (if a < k then a else i)) :=
+  borderAtO_row bpairOps k i j m a ha
 
 /-- The bordered sublist's entry read: the source entry at the row
 and column keys, each the leading key below the count and the
@@ -7037,15 +7127,13 @@ private theorem borderAt_entry (k i j : Nat) (m : Mat) (a b : Nat)
         (ground.getAt [] (borderAt k i j m) a) b
       = ground.getAt BPair.unit
         (ground.getAt [] m (if a < k then a else i))
-        (if b < k then b else j) := by
-  rw [borderAt_row k i j m a ha,
-    keepCols_entry _ _ b (by rw [borderKeys_len]; exact hb),
-    borderKeys k j b hb]
+        (if b < k then b else j) :=
+  borderAtO_entry bpairOps k i j m a b ha hb
 
 /-- The leading sublist's row count. -/
 private theorem leadAt_len (k : Nat) (m : Mat) :
     (leadAt k m).length = k :=
-  ground.matOf_length k k _
+  leadAtO_len bpairOps k m
 
 /-! The bordered tier's own carrier kit: the entry read through an
 erasure, the pairing's commutation and its unit-family reads, the
@@ -7922,12 +8010,7 @@ private theorem leading_leadAt (m : Mat) (k : Nat)
   rw [take_as_range ([] : List BPair) k m hk, ground.map_map]
   refine ground.map_congr_members _ _ (List.range k)
     (fun a ha => ?_)
-  have haM : a < m.length := by
-    rw [ground.countOf_range] at ha
-    by_cases hak : a < k
-    · exact Nat.lt_of_lt_of_le hak hk
-    · rw [if_neg hak] at ha
-      exact absurd ha (Nat.lt_irrefl 0)
+  have haM : a < m.length := Nat.lt_of_lt_of_le (ground.ltOfCountRange ha) hk
   show (ground.getAt [] m a).take k
     = (List.range k).map
         (fun c => ground.getAt BPair.unit (ground.getAt [] m a) c)
@@ -9371,88 +9454,6 @@ private theorem swapMove {X Y Z : BPair}
           (BPair.swap_add_null (BPair.oneValue_refl Y)))
         (BPair.add_unit X)))
 
-/-! The bordered sublists at the bundle carrier: the index surgery
-the descent's walk reads, `keepCols` at the bundle's unit
-default. -/
-
-private def keepColsO {γ : Type} (ops : DOps γ) (ks : List Nat)
-    (r : List γ) : List γ :=
-  ks.map (fun j => ground.getAt ops.unit r j)
-
-private def borderAtO {γ : Type} (ops : DOps γ) (k i j : Nat)
-    (m : List (List γ)) : List (List γ) :=
-  ((List.range k) ++ [i]).map (fun a =>
-    keepColsO ops ((List.range k) ++ [j]) (ground.getAt [] m a))
-
-private def leadAtO {γ : Type} (ops : DOps γ) (k : Nat)
-    (m : List (List γ)) : List (List γ) :=
-  (List.range k).map (fun a =>
-    keepColsO ops (List.range k) (ground.getAt [] m a))
-
-private theorem keepColsO_len {γ : Type} (ops : DOps γ)
-    (ks : List Nat) (r : List γ) :
-    (keepColsO ops ks r).length = ks.length := by
-  show ((ks.map (fun j => ground.getAt ops.unit r j))).length
-    = ks.length
-  rw [ground.length_map]
-
-private theorem keepColsO_entry {γ : Type} (ops : DOps γ)
-    (ks : List Nat) (r : List γ) (b : Nat) (hb : b < ks.length) :
-    ground.getAt ops.unit (keepColsO ops ks r) b
-      = ground.getAt ops.unit r (ground.getAt 0 ks b) := by
-  show ground.getAt ops.unit
-    (ks.map (fun j => ground.getAt ops.unit r j)) b = _
-  rw [ground.getAt_map 0 ops.unit _ ks b hb]
-
-private theorem borderAtO_len {γ : Type} (ops : DOps γ)
-    (k i j : Nat) (m : List (List γ)) :
-    (borderAtO ops k i j m).length = k + 1 := by
-  show (((List.range k) ++ [i]).map (fun a =>
-    keepColsO ops ((List.range k) ++ [j])
-      (ground.getAt [] m a))).length = k + 1
-  rw [ground.length_map, borderKeys_len]
-
-private theorem borderAtO_rows {γ : Type} (ops : DOps γ)
-    (k i j : Nat) (m : List (List γ)) :
-    rowsLen (k + 1) (borderAtO ops k i j m) :=
-  rowsLen_map _ (k + 1) (List.range k ++ [i])
-    (fun x _ => (fun _ => by
-      rw [keepColsO_len, borderKeys_len]) x)
-
-private theorem borderAtO_row {γ : Type} (ops : DOps γ)
-    (k i j : Nat) (m : List (List γ)) (a : Nat) (ha : a < k + 1) :
-    ground.getAt [] (borderAtO ops k i j m) a
-      = keepColsO ops ((List.range k) ++ [j])
-        (ground.getAt [] m (if a < k then a else i)) := by
-  show ground.getAt [] (((List.range k) ++ [i]).map (fun a =>
-    keepColsO ops ((List.range k) ++ [j])
-      (ground.getAt [] m a))) a = _
-  rw [ground.getAt_map 0 [] _ (List.range k ++ [i]) a
-      (by rw [borderKeys_len]; exact ha),
-    borderKeys k i a ha]
-
-private theorem borderAtO_entry {γ : Type} (ops : DOps γ)
-    (k i j : Nat) (m : List (List γ)) (a b : Nat)
-    (ha : a < k + 1) (hb : b < k + 1) :
-    ground.getAt ops.unit
-        (ground.getAt [] (borderAtO ops k i j m) a) b
-      = ground.getAt ops.unit
-        (ground.getAt [] m (if a < k then a else i))
-        (if b < k then b else j) := by
-  rw [borderAtO_row ops k i j m a ha,
-    keepColsO_entry ops _ _ b (by rw [borderKeys_len]; exact hb),
-    borderKeys k j b hb]
-
-private theorem leadAtO_len {γ : Type} (ops : DOps γ) (k : Nat)
-    (m : List (List γ)) : (leadAtO ops k m).length = k :=
-  ground.matOf_length k k _
-
-private theorem leadAtO_entry {γ : Type} (ops : DOps γ) (k : Nat)
-    (m : List (List γ)) (a b : Nat) (ha : a < k) (hb : b < k) :
-    ground.getAt ops.unit (ground.getAt [] (leadAtO ops k m) a) b
-      = ground.getAt ops.unit (ground.getAt [] m a) b :=
-  ground.matOf_entry [] ops.unit k k _ a b ha hb
-
 /-! The evaluation morphism at the lifted carrier: the Horner read
 at the bundle carries the lifted determinant to the carrier's own,
 and the shifted list at the sum's unit reads its source back —
@@ -10088,6 +10089,53 @@ theorem getAt_idRow (n k j : Nat) (hj : j < n) :
   rw [ground.getAt_map 0 BPair.unit _ (List.range n) j
       (by rw [ground.length_range]; exact hj),
     ground.getAt_range n j hj]
+
+/-- The indicator is the unit family's row written at its key. -/
+theorem idRow_set (n k : Nat) :
+    idRow n k
+      = List.set (List.replicate n BPair.unit) k (BPair.ofPos .one) := by
+  refine ground.getAt_ext BPair.unit _ _
+    (by rw [length_idRow, ground.length_set, ground.length_replicate])
+    (fun i hi => ?_)
+  rw [length_idRow] at hi
+  rw [getAt_idRow n k i hi]
+  by_cases hik : i = k
+  · have hk : k < n := by
+      rw [← hik]
+      exact hi
+    rw [if_pos hik, hik,
+      ground.getAt_set_self BPair.unit (BPair.ofPos .one)
+        (List.replicate n BPair.unit) k
+        (by rw [ground.length_replicate]; exact hk)]
+    rfl
+  · rw [if_neg hik,
+      ground.getAt_set_ne BPair.unit (List.replicate n BPair.unit) k i
+        (BPair.ofPos .one) hik,
+      ground.getAt_replicate_self BPair.unit n i]
+
+/-- The identity at an order: the indicators' list, one row per key,
+`def:elim`'s unit family. -/
+def idMat (n : Nat) : Mat := (List.range n).map (idRow n)
+
+/-- The identity's order. -/
+theorem length_idMat (n : Nat) : (idMat n).length = n :=
+  ground.length_mapRange _ n
+
+/-- The identity's rows read its order. -/
+theorem rowsLen_idMat (n : Nat) : rowsLen n (idMat n) :=
+  rowsLen_map _ n (List.range n) (fun x _ => length_idRow n x)
+
+/-- The identity's row is its key's indicator. -/
+theorem idMat_row (n i : Nat) (hi : i < n) :
+    ground.getAt ([] : List BPair) (idMat n) i = idRow n i :=
+  ground.matOf_row [] n n _ i hi
+
+/-- The identity's entry: the key comparison's own indicator. -/
+theorem getAt_idMat (n i j : Nat) (hi : i < n) (hj : j < n) :
+    ground.getAt BPair.unit
+        (ground.getAt ([] : List BPair) (idMat n) i) j
+      = if j = i then BPair.ofNat 1 else BPair.unit :=
+  ground.matOf_entry [] BPair.unit n n _ i j hi hj
 
 /-- The dot against the indicator reads the key's own entry. -/
 theorem dotP_idRow (u : List BPair) (n i : Nat)
@@ -10738,6 +10786,30 @@ theorem null_swap_add : ∀ a b : List BPair,
   | _ :: a, _ :: b, h =>
     ⟨ground.BPair.swap_add_null h.1, null_swap_add a b h.2⟩
 
+/-- An independent extended list refuses a span witness: the
+witness's clearing joins the family's coefficients at the member's
+row to a dependency of the extended list, which its independence
+reads at the unit family, against the clearing off the sum's unit
+(`lem:lowerspan`'s own-collection read). -/
+theorem indep_refuseE (n : Nat) (L : Mat) (v : List BPair)
+    (hind : indepRows n (L ++ [v]))
+    (h : ∃ c₀ cs, (¬ c₀.oneValue BPair.unit) ∧ cs.length = L.length
+      ∧ poly.oneValue (vecScale c₀ v) (combo n cs L)) : False := by
+  obtain ⟨hLn, hv⟩ := rowsLen_split n L v hind.1
+  obtain ⟨c₀, cs, hc₀, hcsl, hone⟩ := h
+  have hnull : poly.unitTail
+      (combo n (cs.map BPair.swap ++ [c₀]) (L ++ [v])) := by
+    refine poly.oneValue_unitTail
+      (combo_append_one n (cs.map BPair.swap) c₀ L v
+        (by rw [ground.length_map]; exact hcsl) hLn hv) ?_
+    rw [combo_swapMap n cs L]
+    exact null_swap_add (combo n cs L) (vecScale c₀ v)
+      (poly.oneValue_symm hone)
+  have hcs := indep_elim hind (cs.map BPair.swap ++ [c₀])
+    (by rw [ground.length_append, ground.length_append, ground.length_map,
+      hcsl]; rfl) hnull
+  exact hc₀ ((unitTail_append_split _ _ hcs).2).1
+
 /-- Every leading part of an independent list is independent, the
 withdrawn tail's coefficients read at the unit family one row at a
 time. -/
@@ -10771,22 +10843,9 @@ private theorem collect_keep_go (n : Nat) : ∀ (R B : Mat),
       indep_ofPrefix n R (B ++ [r]) hBrows hR.2 hBrR
     have hBind : indepRows n B :=
       indep_ofPrefix n [r] B hB ⟨hR.1, trivial⟩ hBr
-    have hstep : ¬ poly.unitTail (residV n B r) := by
-      intro ht
-      obtain ⟨c₀, cs, hc₀, hcsl, hone⟩ :=
-        resid_soundE n B r hB hR.1 (indep_det n B hBind) ht
-      have hnull : poly.unitTail
-          (combo n (cs.map BPair.swap ++ [c₀]) (B ++ [r])) := by
-        refine poly.oneValue_unitTail
-          (combo_append_one n (cs.map BPair.swap) c₀ B r
-            (by rw [ground.length_map]; exact hcsl) hB hR.1) ?_
-        rw [combo_swapMap n cs B]
-        exact null_swap_add (combo n cs B) (vecScale c₀ r)
-          (poly.oneValue_symm hone)
-      have hcs := indep_elim hBr (cs.map BPair.swap ++ [c₀])
-        (by rw [ground.length_append, ground.length_append, ground.length_map,
-          hcsl]; rfl) hnull
-      exact hc₀ ((unitTail_append_split _ _ hcs).2).1
+    have hstep : ¬ poly.unitTail (residV n B r) := fun ht =>
+      indep_refuseE n B r hBr
+        (resid_soundE n B r hB hR.1 (indep_det n B hBind) ht)
     show R.foldl (joinStep n) (joinStep n B r) = B ++ r :: R
     rw [joinStep_join n B r hstep,
       collect_keep_go n R (B ++ [r]) hBrows hR.2 hBrR,
@@ -11022,22 +11081,6 @@ theorem indep_extend (n : Nat) (L : Mat) (v : List BPair)
     indepRows n (L ++ [v]) :=
   indep_extendE n L v hLn hv hind
     (fun hE => hns (span_intro n L v hLn hv hE))
-
-/-- A full-length independent list spans (`lem:lowerspan`'s own
-sentence): a vector off the list's span joins it at the
-membership's refusal, the joined list independent one past the
-count, against the width bound. -/
-theorem span_of_full (n : Nat) (L : Mat) (v : List BPair)
-    (hL : L.length = n) (hind : indepRows n L)
-    (hv : v.length = n) : spanRel n L v :=
-  match (inferInstance : Decidable (spanRel n L v)) with
-  | isTrue h => h
-  | isFalse hns =>
-    absurd
-      (indep_bound n (L ++ [v]) (rowsLen_append n hind.1 ⟨hv, trivial⟩)
-        (indep_extend n L v hind.1 hv hind hns))
-      (fun hb => Nat.lt_irrefl n
-        (by rw [ground.length_append, hL] at hb; exact hb))
 
 /-! The exchange read (`lem:lowerspan`'s two-list clause): each
 member of an independent list solved in a second list's span reads
@@ -12836,13 +12879,6 @@ private def insertAt {α : Type} (x : α) : List α → Nat → List α
 private def denseRow (w : Nat) (r : SRow) : List BPair :=
   (List.range w).map (fun c => ground.keyAt Nat.beq BPair.unit c r.2)
 
-/-- The identity datum at a stated width: one row per column key,
-the unit family with one at its own key — the back solve's terminal
-seed and the identity family's matrix. -/
-def idList (w : Nat) : List (List BPair) :=
-  (List.range w).map (fun c =>
-    List.set (List.replicate w BPair.unit) c (BPair.ofPos .one))
-
 /-- The back solve, mirroring `sdescend`'s recursion round for
 round: at the terminal step the unit families, and across a round
 the stepped members extended at the pivot's clearing — scaled by the
@@ -12850,7 +12886,7 @@ pivot, the pivot coordinate the stepped pivot row's read's balance
 partner at the pivot column. -/
 private def kernelGo (fuel w : Nat) (prev : BPair)
     (rows : List SRow) : List (List BPair) :=
-  descGo idList
+  descGo idMat
     (fun w j p K =>
       let t := denseRow (w - 1) p.2
       K.map (fun v =>
@@ -12877,7 +12913,7 @@ private theorem kernelGo_w0 : ∀ (fuel : Nat) (prev : BPair)
   | 0, _, _ => rfl
   | fuel + 1, prev, rows => by
     show (match sFind rows with
-      | none => idList 0
+      | none => idMat 0
       | some (i, j) =>
         let p := sPeel j (ground.getAt ((0, []) : SRow) rows i)
         let t := denseRow (0 - 1) p.2
@@ -12912,15 +12948,13 @@ the terminal seed reads it off the replaced unit family, and a
 round's extension grows the round below's width by one place. -/
 private theorem kernelGo_rowsLen : ∀ (fuel w : Nat) (prev : BPair)
     (rows : List SRow), rowsLen w (kernelGo fuel w prev rows)
-  | 0, w, _, _ =>
-    rowsLen_map (fun c => List.set (List.replicate w BPair.unit) c
-        (BPair.ofPos .one)) w (List.range w) (fun x _ => (fun _ => by rw [ground.length_set, ground.length_replicate]) x)
+  | 0, w, _, _ => rowsLen_idMat w
   | fuel + 1, 0, prev, rows => by
     rw [kernelGo_w0 (fuel + 1) prev rows]
     exact trivial
   | fuel + 1, w + 1, prev, rows => by
     show rowsLen (w + 1) (match sFind rows with
-      | none => idList (w + 1)
+      | none => idMat (w + 1)
       | some (i, j) =>
         let p := sPeel j (ground.getAt ((0, []) : SRow) rows i)
         let t := denseRow (w + 1 - 1) p.2
@@ -12928,9 +12962,7 @@ private theorem kernelGo_rowsLen : ∀ (fuel w : Nat) (prev : BPair)
             (stepRows prev p j (rows.eraseIdx i))).map
           (fun v => insertAt ((dotN t v).swap) (vecScale p.1 v) j))
     cases hf : sFind rows with
-    | none =>
-      exact rowsLen_map (fun c => List.set (List.replicate (w + 1) BPair.unit) c
-          (BPair.ofPos .one)) (w + 1) (List.range (w + 1)) (fun x _ => (fun _ => by rw [ground.length_set, ground.length_replicate]) x)
+    | none => exact rowsLen_idMat (w + 1)
     | some ij =>
       exact rowsLen_extend w ij.2
         (sPeel ij.2 (ground.getAt ((0, []) : SRow) rows ij.1)).1
@@ -12961,13 +12993,11 @@ private theorem kernelGo_length : ∀ (fuel w : Nat) (prev : BPair)
     (rows : List SRow),
     (kernelGo fuel w prev rows).length = w - sdescend fuel prev rows
   | 0, w, _, _ => by
-    show ((List.range w).map (fun c =>
-        List.set (List.replicate w BPair.unit) c
-          (BPair.ofPos .one))).length = w - 0
-    rw [ground.length_mapRange, Nat.sub_zero]
+    show (idMat w).length = w - 0
+    rw [length_idMat, Nat.sub_zero]
   | fuel + 1, w, prev, rows => by
     show (match sFind rows with
-        | none => idList w
+        | none => idMat w
         | some (i, j) =>
           let p := sPeel j (ground.getAt ((0, []) : SRow) rows i)
           let t := denseRow (w - 1) p.2
@@ -12983,10 +13013,8 @@ private theorem kernelGo_length : ∀ (fuel w : Nat) (prev : BPair)
             (stepRows prev p j (rows.eraseIdx i)))
     cases hf : sFind rows with
     | none =>
-      show ((List.range w).map (fun c =>
-          List.set (List.replicate w BPair.unit) c
-            (BPair.ofPos .one))).length = w - 0
-      rw [ground.length_mapRange, Nat.sub_zero]
+      show (idMat w).length = w - 0
+      rw [length_idMat, Nat.sub_zero]
     | some ij =>
       show ((kernelGo fuel (w - 1)
             (sPeel ij.2 (ground.getAt ((0, []) : SRow) rows ij.1)).1
@@ -14730,7 +14758,7 @@ private theorem keyAt_stepSRow (prev pivot r0 : BPair) (lim : Nat)
   | false =>
     exact keyAt_mergeRow prev pivot r0 lim es ps 0 hps hes a ha
 
-/-- The honest row's sparse walk stores ascending keys from its own
+/-- The stated row's sparse walk stores ascending keys from its own
 starting key: a kept key is that key and the walk continues one
 higher, a skipped key handing the floor down. -/
 private theorem keysAsc_ofRowFrom : ∀ (r : List BPair) (k : Nat),
@@ -14746,7 +14774,7 @@ private theorem keysAsc_ofRowFrom : ∀ (r : List BPair) (k : Nat),
         (keysAsc_ofRowFrom es (k + 1))
     | false => exact ⟨Nat.le_refl k, keysAsc_ofRowFrom es (k + 1)⟩
 
-/-- The honest row's sparse walk stores no value at the unit class:
+/-- The stated row's sparse walk stores no value at the unit class:
 every kept value is a canonical representative past the guard. -/
 private theorem entsOk_ofRowFrom : ∀ (r : List BPair) (k : Nat),
     entsOk (ofRowFrom k r)
@@ -14811,7 +14839,7 @@ private theorem denseRow_sPeel (w j : Nat) (r : SRow)
           getAt_denseRow (w' + 1) r (i + 1) (Nat.succ_lt_succ hi),
           liftIx_gt j i hij]
 
-/-- The honest row's sparse walk reads back one value with the row
+/-- The stated row's sparse walk reads back one value with the row
 at every column key: a stored key carries the entry's canonical
 representative, and a skipped key carries the sum's unit against an
 entry whose representative is the unit. -/
@@ -14857,7 +14885,7 @@ private theorem keyAt_ofRowFrom : ∀ (r : List BPair) (k c : Nat),
         (ofRowFrom (k + 1) es)]
       exact hih
 
-/-- The honest row's sparse reading reads back one value with the
+/-- The stated row's sparse reading reads back one value with the
 row at its own width. -/
 private theorem denseRow_ofRow : ∀ r : List BPair,
     poly.oneValue (denseRow r.length (ofRow r)) r := by
@@ -15779,7 +15807,7 @@ private theorem dotP_unitRow (w : Nat) : ∀ u : List BPair,
 stands whole. -/
 private theorem kernelGo_none (fuel w : Nat) (prev : BPair)
     (rows : List SRow) (hf : sFind rows = none) :
-    kernelGo (fuel + 1) w prev rows = idList w :=
+    kernelGo (fuel + 1) w prev rows = idMat w :=
   descGo_none _ _ fuel w prev rows hf
 
 /-- The back solve at a found pivot: the round below's members
@@ -16259,13 +16287,9 @@ theorem kernelList_members (cols : Nat) (m : Mat)
 back solve round for round, each member off the sum's unit at its
 own column and at the unit at every other's. -/
 
-/-- The terminal seed's member count is the stated width. -/
-theorem length_idList (w : Nat) : (idList w).length = w :=
-  ground.length_mapRange _ w
-
 /-- The back solve at the exhausted fuel is the terminal seed. -/
 private theorem kernelGo_zero (w : Nat) (prev : BPair)
-    (rows : List SRow) : kernelGo 0 w prev rows = idList w :=
+    (rows : List SRow) : kernelGo 0 w prev rows = idMat w :=
   descGo_zero _ _ w prev rows
 
 /-- The letter lift below the pivot's place is the place itself. -/
@@ -16289,43 +16313,22 @@ private theorem getAt_insertAt_lift {α : Type} (d : α) (x : α)
     rw [liftIx_gt j q (Nat.not_lt_of_ge hq),
       if_neg (Nat.not_lt_of_ge (Nat.le_succ_of_le hq)), Nat.succ_sub_one]
 
-/-- The terminal seed's member at a column key: the unit family
-with the product's one at that key. -/
-theorem idList_getAt (w k : Nat) (hk : k < w) :
-    ground.getAt ([] : List BPair) (idList w) k
-      = List.set (List.replicate w BPair.unit) k
-        (BPair.ofPos .one) := by
-  show ground.getAt ([] : List BPair)
-      ((List.range w).map (fun c =>
-        List.set (List.replicate w BPair.unit) c
-          (BPair.ofPos .one))) k
-    = List.set (List.replicate w BPair.unit) k (BPair.ofPos .one)
-  rw [ground.getAt_map 0 ([] : List BPair) _ (List.range w) k
-      (by rw [ground.length_range]; exact hk),
-    ground.getAt_range w k hk]
-
 /-- The terminal seed's own coordinates: the unit family reads one
 at its own column key, the crossed pivots' product at the terminal
 step, and the unit at every other. -/
-private theorem idList_coords (w k : Nat) (hk : k < w) :
-    ((ground.getAt BPair.unit (ground.getAt [] (idList w) k)
+private theorem idMat_coords (w k : Nat) (hk : k < w) :
+    ((ground.getAt BPair.unit (ground.getAt [] (idMat w) k)
       (ground.getAt 0 (List.range w) k)).oneValue
         (BPair.ofPos .one))
       ∧ ∀ k', k' < w → ¬ k' = k →
-        (ground.getAt BPair.unit (ground.getAt [] (idList w) k)
+        (ground.getAt BPair.unit (ground.getAt [] (idMat w) k)
           (ground.getAt 0 (List.range w) k')).oneValue
           BPair.unit := by
   refine ⟨?_, ?_⟩
-  · rw [idList_getAt w k hk, ground.getAt_range w k hk,
-      ground.getAt_set_self BPair.unit (BPair.ofPos .one)
-        (List.replicate w BPair.unit) k
-        (by rw [ground.length_replicate]; exact hk)]
+  · rw [ground.getAt_range w k hk, getAt_idMat w k k hk hk, if_pos rfl]
     exact BPair.oneValue_refl _
   · intro k' hk' hne
-    rw [idList_getAt w k hk, ground.getAt_range w k' hk',
-      ground.getAt_set_ne BPair.unit (List.replicate w BPair.unit) k k'
-        (BPair.ofPos .one) hne,
-      ground.getAt_replicate_self BPair.unit w k']
+    rw [ground.getAt_range w k' hk', getAt_idMat w k k' hk hk', if_neg hne]
     exact BPair.oneValue_refl _
 
 /-- The pivot-free columns, mirroring the back solve round for
@@ -16371,13 +16374,13 @@ private theorem length_freeGo : ∀ (fuel w : Nat) (prev : BPair)
       = (kernelGo fuel w prev rows).length
   | 0, w, prev, rows => by
     rw [freeGo_zero w prev rows, kernelGo_zero w prev rows,
-      ground.length_range, length_idList]
+      ground.length_range, length_idMat]
   | fuel + 1, w, prev, rows => by
     cases hf : sFind rows with
     | none =>
       rw [freeGo_none fuel w prev rows hf,
         kernelGo_none fuel w prev rows hf, ground.length_range,
-        length_idList]
+        length_idMat]
     | some ij =>
       obtain ⟨i, j⟩ := ij
       rw [freeGo_some fuel w prev rows i j hf,
@@ -16517,17 +16520,17 @@ private theorem freeGo_coords (m : Mat) :
             BPair.unit
   | 0, _, _, _, cj, prev, rows, _, _, k, hk => by
     rw [kernelGo_zero cj.length prev rows] at hk ⊢
-    rw [freeGo_zero cj.length prev rows, length_idList]
-    rw [length_idList] at hk
-    exact idList_coords cj.length k hk
+    rw [freeGo_zero cj.length prev rows, length_idMat]
+    rw [length_idMat] at hk
+    exact idMat_coords cj.length k hk
   | fuel + 1, rs, cs, ri, cj, prev, rows, inv, hfuel, k, hk => by
     cases hf : sFind rows with
     | none =>
       rw [kernelGo_none fuel cj.length prev rows hf] at hk ⊢
       rw [freeGo_none fuel cj.length prev rows hf,
-        pivGo_none fuel prev rows hf, length_idList]
-      rw [length_idList] at hk
-      exact idList_coords cj.length k hk
+        pivGo_none fuel prev rows hf, length_idMat]
+      rw [length_idMat] at hk
+      exact idMat_coords cj.length k hk
     | some ij =>
       obtain ⟨i, j⟩ := ij
       have hi : i < rows.length := sFind_lt rows i j hf
@@ -16855,57 +16858,47 @@ private theorem oneValue_map_rowsLen (w : Nat)
     match ground.getAt_of_mem ([] : List BPair) hu with
     | ⟨k, hk, hke⟩ => h u (hke ▸ rowsLen_getAt K k hK hk))
 
-/-- The terminal seed sits at the stated width. -/
-theorem rowsLen_idList (w : Nat) : rowsLen w (idList w) :=
-  rowsLen_map (fun c => List.set (List.replicate w BPair.unit) c
-      (BPair.ofPos .one)) w (List.range w) (fun x _ => (fun _ => by rw [ground.length_set, ground.length_replicate]) x)
-
 /-- The terminal seed spans everything at the product's one: each
 unit family picks its own coefficient out of the combination. -/
-private theorem combo_idList (w : Nat) (u : List BPair)
+private theorem combo_idMat (w : Nat) (u : List BPair)
     (hu : u.length = w) :
     poly.oneValue (vecScale (BPair.ofPos .one) u)
-      (combo w u (idList w)) := by
+      (combo w u (idMat w)) := by
   refine poly.oneValue_of_entries _ _ ?_ ?_
   · rw [length_vecScale, hu,
-      length_combo w u (idList w) (rowsLen_idList w)]
+      length_combo w u (idMat w) (rowsLen_idMat w)]
   · intro q hq
     rw [length_vecScale, hu] at hq
-    have hM : ((idList w).map
+    have hM : ((idMat w).map
         (fun r => ground.getAt BPair.unit r q)).length = w := by
-      rw [ground.length_map, length_idList]
-    have hoff : ∀ kk, kk < ((idList w).map
+      rw [ground.length_map, length_idMat]
+    have hoff : ∀ kk, kk < ((idMat w).map
           (fun r => ground.getAt BPair.unit r q)).length →
         ¬ kk = q →
-        (ground.getAt BPair.unit ((idList w).map
+        (ground.getAt BPair.unit ((idMat w).map
           (fun r => ground.getAt BPair.unit r q)) kk).oneValue
           BPair.unit := by
       intro kk hkk hne
       rw [hM] at hkk
-      rw [ground.getAt_map ([] : List BPair) BPair.unit _ (idList w)
-          kk (by rw [length_idList]; exact hkk),
-        idList_getAt w kk hkk,
-        ground.getAt_set_ne BPair.unit (List.replicate w BPair.unit) kk
-          q (BPair.ofPos .one) (fun he => hne he.symm),
-        ground.getAt_replicate_self BPair.unit w q]
+      rw [ground.getAt_map ([] : List BPair) BPair.unit _ (idMat w)
+          kk (by rw [length_idMat]; exact hkk),
+        getAt_idMat w kk q hkk hq, if_neg (fun he => hne he.symm)]
       exact BPair.oneValue_refl _
-    have hdiag : ground.getAt BPair.unit ((idList w).map
+    have hdiag : ground.getAt BPair.unit ((idMat w).map
         (fun r => ground.getAt BPair.unit r q)) q
         = BPair.ofPos .one := by
-      rw [ground.getAt_map ([] : List BPair) BPair.unit _ (idList w)
-          q (by rw [length_idList]; exact hq),
-        idList_getAt w q hq,
-        ground.getAt_set_self BPair.unit (BPair.ofPos .one)
-          (List.replicate w BPair.unit) q
-          (by rw [ground.length_replicate]; exact hq)]
-    have hpick := dotP_oneIndex u ((idList w).map
+      rw [ground.getAt_map ([] : List BPair) BPair.unit _ (idMat w)
+          q (by rw [length_idMat]; exact hq),
+        getAt_idMat w q q hq hq, if_pos rfl]
+      rfl
+    have hpick := dotP_oneIndex u ((idMat w).map
         (fun r => ground.getAt BPair.unit r q)) q
       (by rw [hM, hu]) (by rw [hM]; exact hq) hoff
     rw [hdiag] at hpick
     rw [getAt_vecScale _ _ q (by rw [hu]; exact hq)]
     refine BPair.oneValue_trans ?_
       (BPair.oneValue_symm
-        (combo_getAt w u (idList w) q (rowsLen_idList w) hq))
+        (combo_getAt w u (idMat w) q (rowsLen_idMat w) hq))
     refine BPair.oneValue_trans
       (BPair.oneValue_of_eq
         (BPair.mul_comm (BPair.ofPos .one)
@@ -17085,16 +17078,16 @@ private theorem kernelGo_span (m : Mat) :
   | 0, _, _, _, cj, prev, rows, _, _, v, hv, _ => by
     rw [kernelGo_zero cj.length prev rows]
     exact ⟨BPair.ofPos .one, v, BPair.ofNat_one_off,
-      by rw [length_idList]; exact hv,
-      combo_idList cj.length v hv⟩
+      by rw [length_idMat]; exact hv,
+      combo_idMat cj.length v hv⟩
   | fuel + 1, rs, cs, ri, cj, prev, rows, inv, hfuel, v, hv,
       hnull => by
     cases hf : sFind rows with
     | none =>
       rw [kernelGo_none fuel cj.length prev rows hf]
       exact ⟨BPair.ofPos .one, v, BPair.ofNat_one_off,
-        by rw [length_idList]; exact hv,
-        combo_idList cj.length v hv⟩
+        by rw [length_idMat]; exact hv,
+        combo_idMat cj.length v hv⟩
     | some ij =>
       obtain ⟨i, j⟩ := ij
       have hi : i < rows.length := sFind_lt rows i j hf
@@ -17938,7 +17931,7 @@ theorem length_residD (n : Nat) (L : Mat) (v : List BPair)
 
 /-- A pairwise-perpendicular family stays so at its rows below the
 head. -/
-private theorem perpAll_tail (r : List BPair) (t : Mat)
+theorem perpAll_tail (r : List BPair) (t : Mat)
     (h : perpAll (r :: t)) : perpAll t := by
   intro p hp q hq hpq
   exact h (p + 1) (Nat.succ_lt_succ hp) (q + 1) (Nat.succ_lt_succ hq)
@@ -22431,10 +22424,27 @@ theorem detD_eq : ∀ (m : Mat), rowsLen m.length m →
 
 /-- The Gram's rows read its own count, the descent's square
 frame at every listed family. -/
-theorem gramM_sq : ∀ L : Mat, rowsLen (gramM L).length (gramM L) := by
-  intro L
-  rw [sqAt_len (gram_sqAt L)]
-  exact rowsLen_of_sqAt (gram_sqAt L)
+theorem gramM_sq : ∀ L : Mat, rowsLen (gramM L).length (gramM L) :=
+  fun L => gramBy_sq dotP L
+
+/-- The joined read: a member against a list reads the extended
+list's Gram determinant off the sum's unit, independence's own read
+at the Gram (`lem:lowerspan`), the walk at the joined list. -/
+def joinIndep {α : Type} (dot : α → α → BPair) (l : List α) (v : α) :
+    Bool :=
+  if (detD (gramBy dot (l ++ [v]))).oneValue BPair.unit then false
+  else true
+
+/-- A member off its own pairing's unit joins the vacant list: the
+one-member Gram's determinant is the pairing itself. -/
+theorem joinIndep_single {α : Type} (dot : α → α → BPair) (v : α)
+    (hv : ¬ (dot v v).oneValue BPair.unit) : joinIndep dot [] v = true := by
+  show (if (detD [[dot v v]]).oneValue BPair.unit then false else true)
+    = true
+  refine if_neg (fun hu => hv ?_)
+  exact BPair.oneValue_trans (BPair.oneValue_symm (detL_single _))
+    (BPair.oneValue_trans
+      (BPair.oneValue_symm (detD_eq [[dot v v]] ⟨rfl, trivial⟩)) hu)
 
 /-- The independence read's decision: the shape at its own read
 and the Gram determinant's off-unit conjunct decided at the pivot
@@ -22451,6 +22461,1007 @@ instance (n : Nat) (L : Mat) : Decidable (indepRows n L) :=
       | false => isTrue (fun hL =>
           Bool.noConfusion (hd.symm.trans (decide_eq_true
             (BPair.oneValue_trans (detD_eq _ (gramM_sq L)) hL)))))
+
+/-! `def:elim`'s grown descent, the descent carried as data: at a
+list symmetric at its entries whose every leading minor sits off
+the sum's unit, grown by one row and its column at the row's own
+entries, the grown row steps through the stored pivot rows in
+order, each stored tail extended at the grown key by the grown
+row's own entry at the pivot key (a stored entry at exchanged keys
+the exchanged row and column lists' one determinant at the
+symmetric entries, `borderAt_symm`), the step Sylvester's cofactor
+at the walk's own row step (`browO`), and the terminal entry the
+grown determinant.  The stored data trace the list's bordered
+minors (`traceOf`, one decidable read), the growth reads the grown
+list (`growS_read`), and a list's Gram grown by a member is the
+joined list's Gram entry by entry at the members' pairings against
+the joined one (`gramBy_grown_entry` at a pairing exchanging at one
+value), so the joined read decides at the stored descent (`joinS`,
+`joinS_read` against `joinIndep`), and a keyed pool of groups closes
+at its stored descents, one descent per group grown a row per join,
+as the collection at the fresh walk (`closeK`, `closeK_eq`): the
+grown row's descent prices the square of the group's count where
+the fresh walk at the joined Gram prices its cube. -/
+
+/-- One step's stored data: the pivot with the pivot row's tail
+past the pivot key. -/
+abbrev DState := List (BPair × List BPair)
+
+/-- The grown row stepped through the stored steps at a stated
+prior pivot: the row's head extends the pivot row's tail at the
+grown key, the row steps at Sylvester's cofactor against the
+extended tail, and the terminal entry seeds one further step. -/
+private def growGo : BPair → DState → List BPair → DState × BPair
+  | _, [], row =>
+    let h := ground.getAt BPair.unit row 0
+    ([(h, [])], h)
+  | prev, (piv, tail) :: st, row =>
+    let h := ground.getAt BPair.unit row 0
+    let r := growGo piv st
+      (browO bpairCof prev piv h (row.drop 1) (tail ++ [h]))
+    ((piv, tail ++ [h]) :: r.1, r.2)
+
+/-- The grown descent at stored data: the grown data with the
+grown determinant, the walk seeded at the product's one. -/
+def growS (st : DState) (row : List BPair) : DState × BPair :=
+  growGo (BPair.ofPos .one) st row
+
+/-- A step's stored data at a key, the vacant data off the
+stored steps. -/
+private def stepAt (st : DState) (j : Nat) : BPair × List BPair :=
+  ground.getAt (BPair.unit, ([] : List BPair)) st j
+
+/-- The stored data's read against a list at a stated first key
+and row count: each step's pivot the next leading minor off the
+sum's unit, its tail the pivot row's bordered minors past the
+pivot key, the tails' widths closing at the count. -/
+private def traceB (st : DState) (k n : Nat) (G : Mat) : Bool :=
+  (st.length + k == n)
+  && (List.range st.length).all (fun j =>
+    decide ((stepAt st j).1.oneValue
+        (detL (borderAt (k + j) (k + j) (k + j) G)))
+    && !(decide ((stepAt st j).1.oneValue BPair.unit))
+    && ((stepAt st j).2.length + (k + j) + 1 == n)
+    && (List.range (stepAt st j).2.length).all (fun c =>
+      decide ((ground.getAt BPair.unit (stepAt st j).2 c).oneValue
+        (detL (borderAt (k + j) (k + j) (k + j + 1 + c) G)))))
+
+/-- The stored data trace the list's descent: the read at the
+first key and the list's own row count. -/
+def traceOf (st : DState) (G : Mat) : Prop :=
+  traceB st 0 G.length G = true
+
+instance (st : DState) (G : Mat) : Decidable (traceOf st G) :=
+  inferInstanceAs (Decidable (_ = true))
+
+/-- The vacant data trace the vacant list. -/
+theorem traceOf_nil : traceOf [] [] := rfl
+
+/-- The trace read's pointwise form, the proofs' plumbing. -/
+private def TraceP (st : DState) (k n : Nat) (G : Mat) : Prop :=
+  st.length + k = n ∧ ∀ j, j < st.length →
+    (stepAt st j).1.oneValue
+        (detL (borderAt (k + j) (k + j) (k + j) G))
+    ∧ ¬ (stepAt st j).1.oneValue BPair.unit
+    ∧ (stepAt st j).2.length + (k + j) + 1 = n
+    ∧ ∀ c, c < (stepAt st j).2.length →
+      (ground.getAt BPair.unit (stepAt st j).2 c).oneValue
+        (detL (borderAt (k + j) (k + j) (k + j + 1 + c) G))
+
+private theorem traceB_read {st : DState} {k n : Nat} {G : Mat}
+    (h : traceB st k n G = true) : TraceP st k n G := by
+  have hs := ground.andSplitB h
+  refine ⟨ground.beqEqOf hs.1, fun j hj => ?_⟩
+  have hj' : (decide ((stepAt st j).1.oneValue
+        (detL (borderAt (k + j) (k + j) (k + j) G)))
+      && !(decide ((stepAt st j).1.oneValue BPair.unit))
+      && ((stepAt st j).2.length + (k + j) + 1 == n)
+      && (List.range (stepAt st j).2.length).all (fun c =>
+        decide ((ground.getAt BPair.unit (stepAt st j).2 c).oneValue
+          (detL (borderAt (k + j) (k + j) (k + j + 1 + c) G)))))
+      = true :=
+    ground.all_range_read st.length hs.2 j hj
+  have h1 := ground.andSplitB hj'
+  have h2 := ground.andSplitB h1.1
+  have h3 := ground.andSplitB h2.1
+  refine ⟨of_decide_eq_true h3.1,
+    of_decide_eq_false (ground.boolFalseOfNot h3.2),
+    ground.beqEqOf h2.2, fun c hc => ?_⟩
+  exact of_decide_eq_true (ground.all_range_read _ h1.2 c hc)
+
+private theorem traceB_intro {st : DState} {k n : Nat} {G : Mat}
+    (h : TraceP st k n G) : traceB st k n G = true := by
+  refine ground.andIntroB (ground.eqBeqOf h.1) ?_
+  refine ground.all_range_intro st.length (fun j hj => ?_)
+  obtain ⟨h1, h2, h3, h4⟩ := h.2 j hj
+  show (decide ((stepAt st j).1.oneValue
+        (detL (borderAt (k + j) (k + j) (k + j) G)))
+      && !(decide ((stepAt st j).1.oneValue BPair.unit))
+      && ((stepAt st j).2.length + (k + j) + 1 == n)
+      && (List.range (stepAt st j).2.length).all (fun c =>
+        decide ((ground.getAt BPair.unit (stepAt st j).2 c).oneValue
+          (detL (borderAt (k + j) (k + j) (k + j + 1 + c) G)))))
+      = true
+  refine ground.andIntroB (ground.andIntroB (ground.andIntroB
+    (decide_eq_true h1) ?_) (ground.eqBeqOf h3))
+    (ground.all_range_intro _ (fun c hc => decide_eq_true (h4 c hc)))
+  rw [decide_eq_false h2]
+  rfl
+
+/-- The pivot's own bordered sublist is the next leading one. -/
+private theorem borderAt_diag (k : Nat) (m : Mat) :
+    borderAt k k k m = leadAt (k + 1) m :=
+  borderAtO_diag bpairOps k m
+
+/-- The leading sublist at the full key count reads the list. -/
+private theorem leadAt_full (m : Mat) (hsq : rowsLen m.length m) :
+    leadAt m.length m = m :=
+  leadAtO_full bpairOps m hsq
+
+/-- A bordered minor at exchanged keys reads one value at a
+symmetric list: the exchanged sublist is the transpose entry by
+entry, and the exchanged row and column lists read one
+determinant. -/
+private theorem borderAt_symm (M : Mat) (hsq : rowsLen M.length M)
+    (hsym : symmRead M) (k i j : Nat) (hk : k ≤ M.length)
+    (hi : i < M.length) (hj : j < M.length) :
+    (detL (borderAt k i j M)).oneValue (detL (borderAt k j i M)) := by
+  have hlen : (borderAt k j i M).length = k + 1 := borderAt_len k j i M
+  have hrows : rowsLen (k + 1) (borderAt k j i M) := borderAt_rows k j i M
+  have hsqB : rowsLen (borderAt k j i M).length (borderAt k j i M) := by
+    rw [hlen]
+    exact hrows
+  rw [← detL_transpose (borderAt k j i M) hsqB]
+  refine detL_congr_letters _ _ ?_ ?_
+  · rw [borderAt_len, length_transposeM (borderAt k j i M) hrows
+      (by rw [hlen]; exact Nat.succ_pos k)]
+  · intro a ha b hb
+    rw [borderAt_len] at ha hb
+    rw [borderAt_entry k i j M a b ha hb,
+      getAt_transposeM BPair.unit (borderAt k j i M) hrows a b ha
+        (by rw [hlen]; exact hb),
+      borderAt_entry k j i M b a hb ha]
+    have hra : (if a < k then a else i) < M.length := by
+      by_cases hak : a < k
+      · rw [if_pos hak]
+        exact Nat.lt_of_lt_of_le hak hk
+      · rw [if_neg hak]
+        exact hi
+    have hcb : (if b < k then b else j) < M.length := by
+      by_cases hbk : b < k
+      · rw [if_pos hbk]
+        exact Nat.lt_of_lt_of_le hbk hk
+      · rw [if_neg hbk]
+        exact hj
+    have h1 := poly.oneValue_getAt (if b < k then b else j)
+      (ground.matched_entry [] hsym (if a < k then a else i) hra)
+    rw [getAt_transposeM BPair.unit M hsq _ _ hra hcb] at h1
+    exact h1
+
+/-- A square list grown by one row and its column at the row's own
+entries: every row extended at the row's entry at its key, the
+row itself the last. -/
+def grownBy (G : Mat) (row : List BPair) : Mat :=
+  (List.range G.length).map (fun a =>
+    ground.getAt [] G a ++ [ground.getAt BPair.unit row a]) ++ [row]
+
+private theorem length_grownBy (G : Mat) (row : List BPair) :
+    (grownBy G row).length = G.length + 1 := by
+  show ((List.range G.length).map (fun a =>
+    ground.getAt [] G a ++ [ground.getAt BPair.unit row a])
+      ++ [row]).length = _
+  rw [ground.length_append, ground.length_map, ground.length_range]
+  rfl
+
+private theorem getAt_grownBy_lt (G : Mat) (row : List BPair) (a : Nat)
+    (ha : a < G.length) :
+    ground.getAt [] (grownBy G row) a
+      = ground.getAt [] G a ++ [ground.getAt BPair.unit row a] := by
+  show ground.getAt [] ((List.range G.length).map (fun a =>
+    ground.getAt [] G a ++ [ground.getAt BPair.unit row a])
+      ++ [row]) a = _
+  rw [ground.getAt_append [] _ _ a, ground.length_map, ground.length_range,
+    if_pos ha,
+    ground.getAt_map 0 [] _ (List.range G.length) a
+      (by rw [ground.length_range]; exact ha),
+    ground.getAt_range G.length a ha]
+
+private theorem getAt_grownBy_last (G : Mat) (row : List BPair) :
+    ground.getAt [] (grownBy G row) G.length = row := by
+  show ground.getAt [] ((List.range G.length).map (fun a =>
+    ground.getAt [] G a ++ [ground.getAt BPair.unit row a])
+      ++ [row]) G.length = _
+  rw [ground.getAt_append [] _ _ G.length, ground.length_map,
+    ground.length_range, if_neg (Nat.lt_irrefl _), Nat.sub_self]
+  rfl
+
+private theorem rowsLen_grownBy (G : Mat) (row : List BPair)
+    (hsq : rowsLen G.length G) (hrow : row.length = G.length + 1) :
+    rowsLen (G.length + 1) (grownBy G row) := by
+  refine rowsLen_append (G.length + 1) ?_ ⟨hrow, trivial⟩
+  refine rowsLen_map _ (G.length + 1) (List.range G.length)
+    (fun a ha => ?_)
+  rw [ground.length_append, rowsLen_getAt G a hsq (ground.ltOfMemRange ha)]
+  rfl
+
+private theorem entry_grownBy_lt (G : Mat) (row : List BPair)
+    (hsq : rowsLen G.length G) (a b : Nat) (ha : a < G.length)
+    (hb : b < G.length) :
+    ground.getAt BPair.unit (ground.getAt [] (grownBy G row) a) b
+      = ground.getAt BPair.unit (ground.getAt [] G a) b := by
+  rw [getAt_grownBy_lt G row a ha, ground.getAt_append BPair.unit _ _ b,
+    rowsLen_getAt G a hsq ha, if_pos hb]
+
+private theorem entry_grownBy_col (G : Mat) (row : List BPair)
+    (hsq : rowsLen G.length G) (a : Nat) (ha : a < G.length) :
+    ground.getAt BPair.unit (ground.getAt [] (grownBy G row) a) G.length
+      = ground.getAt BPair.unit row a := by
+  rw [getAt_grownBy_lt G row a ha,
+    ground.getAt_append BPair.unit _ _ G.length, rowsLen_getAt G a hsq ha,
+    if_neg (Nat.lt_irrefl _), Nat.sub_self]
+  rfl
+
+/-- A symmetric list grown by a row at the row's own entries is
+symmetric: the leading block the list's own, the grown column the
+row's entries, the grown row the row. -/
+private theorem symmRead_grownBy (G : Mat) (row : List BPair)
+    (hsq : rowsLen G.length G) (hrow : row.length = G.length + 1)
+    (hsym : symmRead G) : symmRead (grownBy G row) := by
+  have hlen : (grownBy G row).length = G.length + 1 := length_grownBy G row
+  have hrows : rowsLen (G.length + 1) (grownBy G row) :=
+    rowsLen_grownBy G row hsq hrow
+  have hpos : 0 < (grownBy G row).length := by
+    rw [hlen]
+    exact Nat.succ_pos _
+  have hrowsT : rowsLen (G.length + 1) (transposeM (grownBy G row)) := by
+    rw [← hlen]
+    exact rowsLen_transposeM _
+  refine matOne_of_entries _ _ (G.length + 1) hlen hrows
+    (length_transposeM _ hrows hpos) hrowsT ?_
+  intro i j hi hj
+  rw [getAt_transposeM BPair.unit _ hrows i j hi (by rw [hlen]; exact hj)]
+  cases Nat.lt_or_ge i G.length with
+  | inl hig =>
+    cases Nat.lt_or_ge j G.length with
+    | inl hjg =>
+      rw [entry_grownBy_lt G row hsq i j hig hjg,
+        entry_grownBy_lt G row hsq j i hjg hig]
+      have h1 := poly.oneValue_getAt j (ground.matched_entry [] hsym i hig)
+      rw [getAt_transposeM BPair.unit G hsq i j hig hjg] at h1
+      exact h1
+    | inr hjg =>
+      have hje : j = G.length := Nat.le_antisymm (Nat.le_of_lt_succ hj) hjg
+      rw [hje, entry_grownBy_col G row hsq i hig, getAt_grownBy_last G row]
+      exact BPair.oneValue_refl _
+  | inr hig =>
+    have hie : i = G.length := Nat.le_antisymm (Nat.le_of_lt_succ hi) hig
+    rw [hie, getAt_grownBy_last G row]
+    cases Nat.lt_or_ge j G.length with
+    | inl hjg =>
+      rw [entry_grownBy_col G row hsq j hjg]
+      exact BPair.oneValue_refl _
+    | inr hjg =>
+      have hje : j = G.length := Nat.le_antisymm (Nat.le_of_lt_succ hj) hjg
+      rw [hje, getAt_grownBy_last G row]
+      exact BPair.oneValue_refl _
+
+/-- The bordered sublist inside the grown list's leading keys is
+the list's own. -/
+private theorem borderAt_grown (G : Mat) (row : List BPair)
+    (hsq : rowsLen G.length G) (k i j : Nat) (hk : k ≤ G.length)
+    (hi : i < G.length) (hj : j < G.length) :
+    borderAt k i j (grownBy G row) = borderAt k i j G := by
+  refine ground.getAt_ext [] _ _ (by rw [borderAt_len, borderAt_len]) ?_
+  intro a ha
+  rw [borderAt_len] at ha
+  rw [borderAt_row k i j _ a ha, borderAt_row k i j G a ha]
+  have hra : (if a < k then a else i) < G.length := by
+    by_cases hak : a < k
+    · rw [if_pos hak]
+      exact Nat.lt_of_lt_of_le hak hk
+    · rw [if_neg hak]
+      exact hi
+  rw [getAt_grownBy_lt G row _ hra]
+  refine ground.getAt_ext BPair.unit _ _
+    (by rw [keepCols_len, keepCols_len]) ?_
+  intro b hb
+  rw [keepCols_len] at hb
+  rw [keepCols_entry _ _ b hb, keepCols_entry _ _ b hb]
+  rw [borderKeys_len] at hb
+  rw [borderKeys k j b hb]
+  have hcb : (if b < k then b else j)
+      < (ground.getAt [] G (if a < k then a else i)).length := by
+    rw [rowsLen_getAt G _ hsq hra]
+    by_cases hbk : b < k
+    · rw [if_pos hbk]
+      exact Nat.lt_of_lt_of_le hbk hk
+    · rw [if_neg hbk]
+      exact hj
+  rw [ground.getAt_append BPair.unit _ _ _, if_pos hcb]
+
+/-- The grown row stepped through the stored steps reads the grown
+list: at every step the row's entries are the grown list's bordered
+minors at the grown row, each step Sylvester's cofactor, the
+terminal entry the grown determinant, and at a terminal entry off
+the sum's unit the grown data trace the grown list. -/
+private theorem growGo_read (M : Mat) (g : Nat) (hM : M.length = g + 1)
+    (hsq : rowsLen M.length M) (hsym : symmRead M) :
+    ∀ (st : DState) (k : Nat) (prev : BPair) (row : List BPair),
+      TraceP st k g M →
+      prev.oneValue (detL (leadAt k M)) →
+      ¬ prev.oneValue BPair.unit →
+      row.length + k = g + 1 →
+      (∀ c, c < row.length →
+        (ground.getAt BPair.unit row c).oneValue
+          (detL (borderAt k g (k + c) M))) →
+      (growGo prev st row).2.oneValue (detL M)
+      ∧ (¬ (growGo prev st row).2.oneValue BPair.unit →
+          TraceP (growGo prev st row).1 k (g + 1) M)
+  | [], k, prev, row, ht, _, _, hrow, hent => by
+    have hk : k = g := (Nat.zero_add k).symm.trans ht.1
+    have hrow1 : row.length = 1 := by
+      have h1 : row.length + k = 1 + k := by
+        rw [hrow, hk, Nat.add_comm]
+      exact ground.addCancelR k h1
+    have hpos : 0 < row.length := by
+      rw [hrow1]
+      exact Nat.succ_pos 0
+    have h0 := hent 0 hpos
+    have hfull : borderAt k g (k + 0) M = M := by
+      rw [hk]
+      show borderAt g g g M = M
+      rw [borderAt_diag g M, ← hM]
+      exact leadAt_full M hsq
+    rw [hfull] at h0
+    refine ⟨h0, fun hoff => ⟨?_, fun j hj => ?_⟩⟩
+    · show 1 + k = g + 1
+      rw [hk, Nat.add_comm]
+    · match j, hj with
+      | 0, _ =>
+        refine ⟨?_, hoff, ?_, fun c hc => absurd hc (Nat.not_lt_zero c)⟩
+        · show (ground.getAt BPair.unit row 0).oneValue
+            (detL (borderAt (k + 0) (k + 0) (k + 0) M))
+          rw [hk]
+          show (ground.getAt BPair.unit row 0).oneValue
+            (detL (borderAt g g g M))
+          rw [borderAt_diag g M, ← hM, leadAt_full M hsq]
+          exact h0
+        · show 0 + (k + 0) + 1 = g + 1
+          rw [Nat.zero_add, hk]
+      | j + 1, hj => exact absurd (Nat.lt_of_succ_lt_succ hj) (Nat.not_lt_zero j)
+  | (piv, tail) :: st', k, prev, row, ht, hprev, hpoff, hrow, hent => by
+    obtain ⟨h1, h2, h3, h4⟩ := ht.2 0 (Nat.succ_pos _)
+    have hlen : st'.length + 1 + k = g := ht.1
+    have hkg : k < g := by
+      show k + 1 ≤ g
+      rw [← hlen, Nat.add_right_comm]
+      exact Nat.le_add_left (k + 1) st'.length
+    have htl : tail.length + k + 1 = g := h3
+    have hg : g < M.length := by
+      rw [hM]
+      exact Nat.lt_succ_self g
+    have hkM : k < M.length := Nat.lt_trans hkg hg
+    have hrowlen : row.length = tail.length + 2 := by
+      have h5 : row.length + k = tail.length + 2 + k := by
+        rw [hrow, ← htl]
+        show tail.length + k + 1 + 1 = tail.length + 2 + k
+        rw [Nat.add_right_comm (tail.length + k) 1 1,
+          Nat.add_right_comm tail.length k 2]
+      exact ground.addCancelR k h5
+    have hrowpos : 0 < row.length := by
+      rw [hrowlen]
+      exact Nat.succ_pos _
+    have hh : (ground.getAt BPair.unit row 0).oneValue
+        (detL (borderAt k g k M)) := hent 0 hrowpos
+    have hh' : (ground.getAt BPair.unit row 0).oneValue
+        (detL (borderAt k k g M)) :=
+      BPair.oneValue_trans hh
+        (borderAt_symm M hsq hsym k g k (Nat.le_of_lt hkM) hg hkM)
+    have hkg' : k + 1 + tail.length = g := by
+      rw [Nat.add_right_comm k 1 tail.length, Nat.add_comm k tail.length]
+      exact htl
+    have htail' : ∀ c, c < (tail ++ [ground.getAt BPair.unit row 0]).length →
+        (ground.getAt BPair.unit (tail ++ [ground.getAt BPair.unit row 0])
+          c).oneValue (detL (borderAt k k (k + 1 + c) M)) := by
+      intro c hc
+      rw [ground.length_append] at hc
+      rw [ground.getAt_append BPair.unit tail _ c]
+      by_cases hct : c < tail.length
+      · rw [if_pos hct]
+        exact h4 c hct
+      · rw [if_neg hct]
+        have hce : c = tail.length :=
+          Nat.le_antisymm (Nat.le_of_lt_succ hc) (Nat.le_of_not_lt hct)
+        rw [hce, Nat.sub_self]
+        show (ground.getAt BPair.unit row 0).oneValue
+          (detL (borderAt k k (k + 1 + tail.length) M))
+        rw [hkg']
+        exact hh'
+    have hdroplen : (row.drop 1).length
+        = (tail ++ [ground.getAt BPair.unit row 0]).length := by
+      rw [ground.length_append]
+      have h6 := length_drop1 row hrowpos
+      rw [hrowlen] at h6
+      exact Nat.succ.inj h6
+    have hbl : (browO bpairCof prev piv (ground.getAt BPair.unit row 0)
+        (row.drop 1) (tail ++ [ground.getAt BPair.unit row 0])).length
+        = (row.drop 1).length :=
+      browO_len (R := ground.bpairRead) bpairCof prev piv _ _ _ hdroplen
+    have hrow'len : (browO bpairCof prev piv (ground.getAt BPair.unit row 0)
+        (row.drop 1) (tail ++ [ground.getAt BPair.unit row 0])).length
+        = tail.length + 1 := by
+      rw [hbl, hdroplen, ground.length_append]
+      rfl
+    have hrow'ent : ∀ c, c < (browO bpairCof prev piv
+          (ground.getAt BPair.unit row 0) (row.drop 1)
+          (tail ++ [ground.getAt BPair.unit row 0])).length →
+        (ground.getAt BPair.unit (browO bpairCof prev piv
+          (ground.getAt BPair.unit row 0) (row.drop 1)
+          (tail ++ [ground.getAt BPair.unit row 0])) c).oneValue
+          (detL (borderAt (k + 1) g (k + 1 + c) M)) := by
+      intro c hc
+      rw [hrow'len] at hc
+      have hbe : ground.getAt BPair.unit (browO bpairCof prev piv
+            (ground.getAt BPair.unit row 0) (row.drop 1)
+            (tail ++ [ground.getAt BPair.unit row 0])) c
+          = jointEntryO bpairCof prev piv
+            (ground.getAt BPair.unit
+              (tail ++ [ground.getAt BPair.unit row 0]) c)
+            (ground.getAt BPair.unit row 0)
+            (ground.getAt BPair.unit (row.drop 1) c) :=
+        browO_entry (R := ground.bpairRead) bpairCof prev piv _ _ _ c
+          (by rw [hdroplen, ground.length_append]; exact hc) hdroplen
+      rw [hbe]
+      show (cofactorAt (piv * ground.getAt BPair.unit (row.drop 1) c
+          + (ground.getAt BPair.unit row 0
+            * ground.getAt BPair.unit
+                (tail ++ [ground.getAt BPair.unit row 0]) c).swap)
+          prev).oneValue _
+      rw [getAt_drop1 BPair.unit row c]
+      have hj : k + 1 + c < M.length := by
+        rw [hM]
+        exact Nat.lt_succ_of_le (by
+          rw [← hkg']
+          exact Nat.add_le_add_left (Nat.le_of_lt_succ hc) (k + 1))
+      have hsyl := sylvester M hsq k g (k + 1 + c) hkg hg
+        (Nat.lt_of_lt_of_le (Nat.lt_succ_self k) (Nat.le_add_right (k + 1) c))
+        hj
+      have eA : (ground.getAt BPair.unit row (c + 1)).oneValue
+          (detL (borderAt k g (k + 1 + c) M)) := by
+        rw [Nat.add_right_comm k 1 c]
+        exact hent (c + 1) (by rw [hrowlen]; exact Nat.succ_lt_succ hc)
+      have eB := htail' c (by rw [ground.length_append]; exact hc)
+      have hE : (piv * ground.getAt BPair.unit row (c + 1)
+          + (ground.getAt BPair.unit row 0
+            * ground.getAt BPair.unit
+                (tail ++ [ground.getAt BPair.unit row 0]) c).swap).oneValue
+          (detL (borderAt k k k M) * detL (borderAt k g (k + 1 + c) M)
+            + (detL (borderAt k g k M)
+              * detL (borderAt k k (k + 1 + c) M)).swap) :=
+        BPair.add_congr (BPair.mul_congr h1 eA)
+          (swap_congr (BPair.mul_congr hh eB))
+      have hsyl' : (BPair.add
+          (BPair.mul (detL (leadAt k M))
+            (detL (borderAt (k + 1) g (k + 1 + c) M)))
+          ((BPair.mul (detL (borderAt k g k M))
+            (detL (borderAt k k (k + 1 + c) M))).swap.swap)).oneValue
+          (BPair.mul (detL (borderAt k k k M))
+            (detL (borderAt k g (k + 1 + c) M))) := by
+        rw [BPair.swap_swap]
+        exact hsyl
+      have hprod := swapMove hsyl'
+      have hE2 : (prev * detL (borderAt (k + 1) g (k + 1 + c) M)).oneValue
+          (piv * ground.getAt BPair.unit row (c + 1)
+            + (ground.getAt BPair.unit row 0
+              * ground.getAt BPair.unit
+                  (tail ++ [ground.getAt BPair.unit row 0]) c).swap) :=
+        BPair.oneValue_trans
+          (BPair.mul_congr hprev (BPair.oneValue_refl _))
+          (BPair.oneValue_trans (BPair.oneValue_symm hprod)
+            (BPair.oneValue_symm hE))
+      have hsound := cofactorAt_sound hpoff hE2
+      exact ground.mulCancel hpoff
+        (BPair.oneValue_trans hsound (BPair.oneValue_symm hE2))
+    have hprev2 : piv.oneValue (detL (leadAt (k + 1) M)) := by
+      rw [← borderAt_diag k M]
+      exact h1
+    have ht' : TraceP st' (k + 1) g M := by
+      refine ⟨by rw [← hlen, Nat.add_right_comm]; rfl, fun j hj => ?_⟩
+      obtain ⟨a1, a2, a3, a4⟩ := ht.2 (j + 1) (Nat.succ_lt_succ hj)
+      rw [show k + (j + 1) = k + 1 + j from
+        (Nat.add_right_comm k 1 j).symm] at a1 a3 a4
+      exact ⟨a1, a2, a3, a4⟩
+    have hrow'k : (browO bpairCof prev piv (ground.getAt BPair.unit row 0)
+        (row.drop 1) (tail ++ [ground.getAt BPair.unit row 0])).length
+        + (k + 1) = g + 1 := by
+      rw [hrow'len, Nat.add_right_comm tail.length 1 (k + 1), ← htl]
+      show tail.length + (k + 1) + 1 = tail.length + k + 1 + 1
+      rfl
+    obtain ⟨hd, htr⟩ := growGo_read M g hM hsq hsym st' (k + 1) piv
+      (browO bpairCof prev piv (ground.getAt BPair.unit row 0)
+        (row.drop 1) (tail ++ [ground.getAt BPair.unit row 0]))
+      ht' hprev2 h2 hrow'k hrow'ent
+    refine ⟨hd, fun hoff => ?_⟩
+    have htr' := htr hoff
+    refine ⟨?_, fun j hj => ?_⟩
+    · show (growGo piv st' (browO bpairCof prev piv
+          (ground.getAt BPair.unit row 0) (row.drop 1)
+          (tail ++ [ground.getAt BPair.unit row 0]))).1.length + 1 + k
+        = g + 1
+      rw [Nat.add_right_comm]
+      exact htr'.1
+    · match j, hj with
+      | 0, _ =>
+        refine ⟨h1, h2, ?_, fun c hc => htail' c hc⟩
+        show (tail ++ [ground.getAt BPair.unit row 0]).length + (k + 0) + 1
+          = g + 1
+        rw [ground.length_append, ← htl]
+        show tail.length + 1 + k + 1 = tail.length + k + 1 + 1
+        rw [Nat.add_right_comm tail.length 1 k]
+      | j + 1, hj =>
+        obtain ⟨b1, b2, b3, b4⟩ := htr'.2 j (Nat.lt_of_succ_lt_succ hj)
+        rw [Nat.add_right_comm k 1 j] at b1 b3 b4
+        exact ⟨b1, b2, b3, b4⟩
+
+/-- The grown descent reads the grown list (`def:elim`'s grown
+descent): at a symmetric square list traced by stored data, grown
+by one row and its column at the row's own entries, the terminal
+entry is the grown determinant, and at that entry off the sum's
+unit the grown data trace the grown list. -/
+theorem growS_read (G : Mat) (row : List BPair) (hsq : rowsLen G.length G)
+    (hrow : row.length = G.length + 1) (hsym : symmRead G)
+    (st : DState) (ht : traceOf st G) :
+    (growS st row).2.oneValue (detL (grownBy G row))
+    ∧ (¬ (growS st row).2.oneValue BPair.unit →
+        traceOf (growS st row).1 (grownBy G row)) := by
+  have hM : (grownBy G row).length = G.length + 1 := length_grownBy G row
+  have hsq' : rowsLen (grownBy G row).length (grownBy G row) := by
+    rw [hM]
+    exact rowsLen_grownBy G row hsq hrow
+  have htG : TraceP st 0 G.length G := traceB_read ht
+  have htP : TraceP st 0 G.length (grownBy G row) := by
+    refine ⟨htG.1, fun j hj => ?_⟩
+    obtain ⟨a1, a2, a3, a4⟩ := htG.2 j hj
+    have hjg : 0 + j < G.length := by
+      rw [Nat.zero_add]
+      exact Nat.lt_of_lt_of_le hj (Nat.le_of_eq htG.1)
+    refine ⟨?_, a2, a3, fun c hc => ?_⟩
+    · rw [borderAt_grown G row hsq _ _ _ (Nat.le_of_lt hjg) hjg hjg]
+      exact a1
+    · have hcg : 0 + j + 1 + c < G.length := by
+        rw [← a3, Nat.add_comm (stepAt st j).2.length (0 + j),
+          Nat.add_right_comm (0 + j) (stepAt st j).2.length 1]
+        exact Nat.add_lt_add_left hc (0 + j + 1)
+      rw [borderAt_grown G row hsq _ _ _ (Nat.le_of_lt hjg) hjg hcg]
+      exact a4 c hc
+  have h := growGo_read (grownBy G row) G.length hM hsq'
+    (symmRead_grownBy G row hsq hrow hsym) st 0
+    (BPair.ofPos .one) row htP
+    (BPair.oneValue_symm detL_nil) (by decide +kernel)
+    (by rw [Nat.add_zero]; exact hrow)
+    (fun c hc => by
+      rw [Nat.zero_add]
+      show (ground.getAt BPair.unit row c).oneValue
+        (detL [[ground.getAt BPair.unit
+          (ground.getAt [] (grownBy G row) G.length) c]])
+      rw [getAt_grownBy_last G row]
+      exact BPair.oneValue_symm (detL_single _))
+  refine ⟨h.1, fun hoff => ?_⟩
+  show traceB (growS st row).1 0 (grownBy G row).length (grownBy G row) = true
+  rw [hM]
+  exact traceB_intro (h.2 hoff)
+
+/-- The joined member's pairings, against every member and against
+itself last. -/
+def gramRow {α : Type} (dot : α → α → BPair) (l : List α) (v : α) :
+    List BPair :=
+  l.map (fun w => dot w v) ++ [dot v v]
+
+private theorem length_gramRow {α : Type} (dot : α → α → BPair)
+    (l : List α) (v : α) : (gramRow dot l v).length = l.length + 1 := by
+  show (l.map (fun w => dot w v) ++ [dot v v]).length = _
+  rw [ground.length_append, ground.length_map]
+  rfl
+
+/-- The joined member's pairings read at a key: the member against
+a listed member below the count, against itself at it. -/
+private theorem getAt_gramRow {α : Type} (dot : α → α → BPair)
+    (l : List α) (v : α) (a : Nat) (ha : a < l.length + 1) :
+    ground.getAt BPair.unit (gramRow dot l v) a
+      = if a < l.length then dot (ground.getAt v l a) v else dot v v := by
+  show ground.getAt BPair.unit (l.map (fun w => dot w v) ++ [dot v v]) a = _
+  rw [ground.getAt_append BPair.unit _ _ a, ground.length_map]
+  by_cases hal : a < l.length
+  · rw [if_pos hal, if_pos hal, ground.getAt_map v BPair.unit _ l a hal]
+  · rw [if_neg hal, if_neg hal,
+      Nat.le_antisymm (Nat.le_of_lt_succ ha) (Nat.le_of_not_lt hal),
+      Nat.sub_self]
+    rfl
+
+/-- A joined list's Gram against the list's Gram grown by the
+joined member's pairings, one value entry by entry at a pairing
+exchanging at one value. -/
+private theorem gramBy_grown_entry {α : Type} (dot : α → α → BPair)
+    (hc : ∀ u w, (dot u w).oneValue (dot w u)) (l : List α) (v : α)
+    (a b : Nat) (ha : a < l.length + 1) (hb : b < l.length + 1) :
+    (ground.getAt BPair.unit (ground.getAt []
+        (grownBy (gramBy dot l) (gramRow dot l v)) a) b).oneValue
+      (ground.getAt BPair.unit (ground.getAt []
+        (gramBy dot (l ++ [v])) a) b) := by
+  have hl : (l ++ [v]).length = l.length + 1 := by
+    rw [ground.length_append]
+    rfl
+  have hgl : (gramBy dot l).length = l.length := length_gramBy dot l
+  have hsq : rowsLen (gramBy dot l).length (gramBy dot l) := gramBy_sq dot l
+  rw [gramBy_entry dot v (l ++ [v]) a b (by rw [hl]; exact ha)
+      (by rw [hl]; exact hb),
+    ground.getAt_append v l [v] a, ground.getAt_append v l [v] b]
+  cases Nat.lt_or_ge a l.length with
+  | inl hal =>
+    rw [if_pos hal]
+    cases Nat.lt_or_ge b l.length with
+    | inl hbl =>
+      rw [if_pos hbl, entry_grownBy_lt (gramBy dot l) (gramRow dot l v) hsq a b
+          (by rw [hgl]; exact hal) (by rw [hgl]; exact hbl),
+        gramBy_entry dot v l a b hal hbl]
+      exact BPair.oneValue_refl _
+    | inr hbg =>
+      have hbe : b = l.length := Nat.le_antisymm (Nat.le_of_lt_succ hb) hbg
+      rw [if_neg (Nat.not_lt_of_ge hbg), hbe, Nat.sub_self, ← hgl,
+        entry_grownBy_col (gramBy dot l) (gramRow dot l v) hsq a
+          (by rw [hgl]; exact hal),
+        getAt_gramRow dot l v a ha, if_pos hal]
+      exact BPair.oneValue_refl _
+  | inr hag =>
+    have hae : a = l.length := Nat.le_antisymm (Nat.le_of_lt_succ ha) hag
+    rw [if_neg (Nat.not_lt_of_ge hag), hae, Nat.sub_self, ← hgl,
+      getAt_grownBy_last (gramBy dot l) (gramRow dot l v),
+      getAt_gramRow dot l v b hb, hgl]
+    cases Nat.lt_or_ge b l.length with
+    | inl hbl =>
+      rw [if_pos hbl, if_pos hbl]
+      exact hc _ _
+    | inr hbg =>
+      have hbe : b = l.length := Nat.le_antisymm (Nat.le_of_lt_succ hb) hbg
+      rw [if_neg (Nat.not_lt_of_ge hbg), if_neg (Nat.not_lt_of_ge hbg), hbe,
+        Nat.sub_self]
+      exact BPair.oneValue_refl _
+
+/-- A Gram at a pairing exchanging at one value is symmetric. -/
+private theorem gramBy_symm {α : Type} (dot : α → α → BPair)
+    (hc : ∀ u w, (dot u w).oneValue (dot w u)) (l : List α) :
+    symmRead (gramBy dot l) := by
+  cases l with
+  | nil => exact trivial
+  | cons x t =>
+    have hlen : (gramBy dot (x :: t)).length = (x :: t).length :=
+      length_gramBy dot (x :: t)
+    have hrows : rowsLen (x :: t).length (gramBy dot (x :: t)) :=
+      rowsLen_gramBy dot (x :: t)
+    have hpos : 0 < (gramBy dot (x :: t)).length := by
+      rw [hlen]
+      exact Nat.succ_pos _
+    have hrowsT : rowsLen (x :: t).length (transposeM (gramBy dot (x :: t))) := by
+      rw [← hlen]
+      exact rowsLen_transposeM _
+    refine matOne_of_entries _ _ (x :: t).length hlen hrows
+      (length_transposeM _ hrows hpos) hrowsT ?_
+    intro i j hi hj
+    rw [getAt_transposeM BPair.unit _ hrows i j hi (by rw [hlen]; exact hj),
+      gramBy_entry dot x (x :: t) i j hi hj,
+      gramBy_entry dot x (x :: t) j i hj hi]
+    exact hc _ _
+
+/-- A bordered minor reads one value at two lists one value entry
+by entry. -/
+private theorem borderAt_congr_ov (G G' : Mat)
+    (hent : ∀ a, a < G.length → ∀ b, b < G.length →
+      (ground.getAt BPair.unit (ground.getAt [] G a) b).oneValue
+        (ground.getAt BPair.unit (ground.getAt [] G' a) b))
+    (k i j : Nat) (hk : k ≤ G.length) (hi : i < G.length)
+    (hj : j < G.length) :
+    (detL (borderAt k i j G)).oneValue (detL (borderAt k i j G')) := by
+  refine detL_congr_letters _ _ (by rw [borderAt_len, borderAt_len]) ?_
+  intro a ha b hb
+  rw [borderAt_len] at ha hb
+  rw [borderAt_entry k i j G a b ha hb, borderAt_entry k i j G' a b ha hb]
+  refine hent _ ?_ _ ?_
+  · by_cases hak : a < k
+    · rw [if_pos hak]
+      exact Nat.lt_of_lt_of_le hak hk
+    · rw [if_neg hak]
+      exact hi
+  · by_cases hbk : b < k
+    · rw [if_pos hbk]
+      exact Nat.lt_of_lt_of_le hbk hk
+    · rw [if_neg hbk]
+      exact hj
+
+/-- The trace transports across two lists one value entry by
+entry: its reads are the bordered minors' determinants. -/
+private theorem traceOf_congr (G G' : Mat) (hl : G.length = G'.length)
+    (hent : ∀ a, a < G.length → ∀ b, b < G.length →
+      (ground.getAt BPair.unit (ground.getAt [] G a) b).oneValue
+        (ground.getAt BPair.unit (ground.getAt [] G' a) b))
+    (st : DState) (ht : traceOf st G) : traceOf st G' := by
+  have hP : TraceP st 0 G.length G := traceB_read ht
+  show traceB st 0 G'.length G' = true
+  rw [← hl]
+  refine traceB_intro ⟨hP.1, fun j hj => ?_⟩
+  obtain ⟨a1, a2, a3, a4⟩ := hP.2 j hj
+  have hjg : 0 + j < G.length := by
+    rw [Nat.zero_add]
+    exact Nat.lt_of_lt_of_le hj (Nat.le_of_eq hP.1)
+  refine ⟨BPair.oneValue_trans a1
+    (borderAt_congr_ov G G' hent _ _ _ (Nat.le_of_lt hjg) hjg hjg),
+    a2, a3, fun c hc => ?_⟩
+  have hcg : 0 + j + 1 + c < G.length := by
+    rw [← a3, Nat.add_comm (stepAt st j).2.length (0 + j),
+      Nat.add_right_comm (0 + j) (stepAt st j).2.length 1]
+    exact Nat.add_lt_add_left hc (0 + j + 1)
+  exact BPair.oneValue_trans (a4 c hc)
+    (borderAt_congr_ov G G' hent _ _ _ (Nat.le_of_lt hjg) hjg hcg)
+
+/-- The joined read at the stored descent: the grown data with the
+joined Gram's determinant off the sum's unit, the grown row the
+joined member's pairings. -/
+def joinS {α : Type} (dot : α → α → BPair) (st : DState) (l : List α)
+    (v : α) : DState × Bool :=
+  let r := growS st (gramRow dot l v)
+  (r.1, !(decide (r.2.oneValue BPair.unit)))
+
+/-- The joined read at the stored descent is the joined read at the
+fresh walk, and a passing member's grown data trace the joined
+list's Gram: at a pairing exchanging at one value the joined Gram
+is the Gram grown by the member's pairings entry by entry
+(`gramBy_grown_entry`), the grown descent reads its determinant
+(`growS_read`), and the fresh walk reads it as well (`detD_eq`). -/
+theorem joinS_read {α : Type} (dot : α → α → BPair)
+    (hc : ∀ u w, (dot u w).oneValue (dot w u)) (st : DState) (l : List α)
+    (v : α) (ht : traceOf st (gramBy dot l)) :
+    (joinS dot st l v).2 = joinIndep dot l v
+    ∧ ((joinS dot st l v).2 = true →
+        traceOf (joinS dot st l v).1 (gramBy dot (l ++ [v]))) := by
+  have hg := growS_read (gramBy dot l) (gramRow dot l v) (gramBy_sq dot l)
+    (by rw [length_gramRow, length_gramBy]) (gramBy_symm dot hc l) st ht
+  have hlen : (grownBy (gramBy dot l) (gramRow dot l v)).length
+      = (gramBy dot (l ++ [v])).length := by
+    rw [length_grownBy, length_gramBy, length_gramBy, ground.length_append]
+    rfl
+  have hent : ∀ a, a < (grownBy (gramBy dot l) (gramRow dot l v)).length →
+      ∀ b, b < (grownBy (gramBy dot l) (gramRow dot l v)).length →
+      (ground.getAt BPair.unit (ground.getAt []
+          (grownBy (gramBy dot l) (gramRow dot l v)) a) b).oneValue
+        (ground.getAt BPair.unit (ground.getAt []
+          (gramBy dot (l ++ [v])) a) b) := by
+    intro a ha b hb
+    rw [length_grownBy, length_gramBy] at ha hb
+    exact gramBy_grown_entry dot hc l v a b ha hb
+  have hdet : (growS st (gramRow dot l v)).2.oneValue
+      (detD (gramBy dot (l ++ [v]))) :=
+    BPair.oneValue_trans hg.1
+      (BPair.oneValue_trans (detL_congr_letters _ _ hlen hent)
+        (BPair.oneValue_symm (detD_eq _ (gramBy_sq dot (l ++ [v])))))
+  refine ⟨?_, fun hpass => ?_⟩
+  · show (!(decide ((growS st (gramRow dot l v)).2.oneValue BPair.unit)))
+      = (if (detD (gramBy dot (l ++ [v]))).oneValue BPair.unit then false
+        else true)
+    cases hd : decide ((growS st (gramRow dot l v)).2.oneValue BPair.unit) with
+    | true =>
+      rw [if_pos (BPair.oneValue_trans (BPair.oneValue_symm hdet)
+        (of_decide_eq_true hd))]
+      rfl
+    | false =>
+      rw [if_neg (fun hu => of_decide_eq_false hd
+        (BPair.oneValue_trans hdet hu))]
+      rfl
+  · have hoff : ¬ (growS st (gramRow dot l v)).2.oneValue BPair.unit :=
+      of_decide_eq_false (ground.boolFalseOfNot hpass)
+    exact traceOf_congr _ _ hlen hent _ (hg.2 hoff)
+
+/-! A pool with its groups' stored descents (`lem:lowerspan`'s
+collection at the grown descent): the members keyed to their
+groups, each group's stored data grown at a join and replaced in
+the store, the join at the joined read (`joinS`), and the closure
+at the stored descents projecting to the collection at the fresh
+walk (`closeK_eq` at `ground.closeByS_proj`). -/
+
+/-- A pool with its groups' stored descents, the data keyed by the
+group key. -/
+abbrev PoolS (α κ : Type) := List α × List (κ × DState)
+
+/-- A key's stored data, the vacant data off the stored keys. -/
+def stateAtK {α κ : Type} (keq : κ → κ → Bool) (s : PoolS α κ) (k : κ) :
+    DState :=
+  ground.keyAt keq [] k s.2
+
+/-- The join at the fresh walk: a member the guard passes stays off
+the pool, and a candidate joins at its key's group's joined
+read. -/
+def tryAddL {α κ : Type} (keq : κ → κ → Bool) (key : α → κ)
+    (dot : α → α → BPair) (skip : α → Bool) (pool : List α) (v : α) :
+    List α :=
+  if skip v then pool
+  else if joinIndep dot (pool.filter (fun w => keq (key w) (key v))) v
+    then pool ++ [v] else pool
+
+/-- The join at the stored descent: a member the guard passes stays
+off the pool, and a candidate joins its key's group at the grown
+descent's off-unit read, the group's stored data replaced by the
+grown data. -/
+def tryAddK {α κ : Type} (keq : κ → κ → Bool) (key : α → κ)
+    (dot : α → α → BPair) (skip : α → Bool) (s : PoolS α κ) (v : α) :
+    PoolS α κ :=
+  if skip v then s
+  else
+    let r := joinS dot (stateAtK keq s (key v))
+      (s.1.filter (fun w => keq (key w) (key v))) v
+    if r.2 then (s.1 ++ [v], ground.keyPut keq (key v) r.1 s.2) else s
+
+/-- One member's pool with its own stored descent. -/
+def seedK {α κ : Type} (key : α → κ) (dot : α → α → BPair) (v : α) :
+    PoolS α κ :=
+  ([v], [(key v, (joinS dot [] [] v).1)])
+
+/-- The closure at the stored descents from a stated step
+(`ground.closeByS` at the join `tryAddK`). -/
+def closeK {α κ : Type} (keq : κ → κ → Bool) (key : α → κ)
+    (dot : α → α → BPair) (skip : α → Bool) (step : α → List α) :
+    Nat → PoolS α κ → List α → PoolS α κ :=
+  ground.closeByS step (tryAddK keq key dot skip) (fun s => s.1)
+
+/-- Every key's stored data trace its group's Gram, the closure's
+invariant at the stored descents. -/
+private def tracesK {α κ : Type} (keq : κ → κ → Bool) (key : α → κ)
+    (dot : α → α → BPair) (s : PoolS α κ) : Prop :=
+  ∀ k, traceOf (stateAtK keq s k)
+    (gramBy dot (s.1.filter (fun w => keq (key w) k)))
+
+/-- The join at the stored descent keeps the trace: a passing
+member's grown data trace its group's Gram grown by it, every other
+group unchanged. -/
+private theorem tryAddK_keep {α κ : Type} (keq : κ → κ → Bool) (key : α → κ)
+    (dot : α → α → BPair) (skip : α → Bool)
+    (hkeq : ∀ a b, keq a b = true → a = b) (hkr : ∀ a, keq a a = true)
+    (hc : ∀ u w, (dot u w).oneValue (dot w u)) (s : PoolS α κ) (v : α)
+    (h : tracesK keq key dot s) :
+    tracesK keq key dot (tryAddK keq key dot skip s v) := by
+  by_cases hu : skip v = true
+  · rw [show tryAddK keq key dot skip s v = s from if_pos hu]
+    exact h
+  · have hj := joinS_read dot hc (stateAtK keq s (key v))
+      (s.1.filter (fun w => keq (key w) (key v))) v (h (key v))
+    rw [show tryAddK keq key dot skip s v
+        = (if (joinS dot (stateAtK keq s (key v))
+            (s.1.filter (fun w => keq (key w) (key v))) v).2
+          then (s.1 ++ [v], ground.keyPut keq (key v)
+            (joinS dot (stateAtK keq s (key v))
+              (s.1.filter (fun w => keq (key w) (key v))) v).1 s.2)
+          else s) from if_neg hu]
+    cases hr : (joinS dot (stateAtK keq s (key v))
+        (s.1.filter (fun w => keq (key w) (key v))) v).2 with
+    | false =>
+      rw [if_neg (fun hh : (false : Bool) = true => Bool.noConfusion hh)]
+      exact h
+    | true =>
+      rw [if_pos rfl]
+      intro k
+      show traceOf (ground.keyAt keq [] k (ground.keyPut keq (key v)
+          (joinS dot (stateAtK keq s (key v))
+            (s.1.filter (fun w => keq (key w) (key v))) v).1 s.2))
+        (gramBy dot ((s.1 ++ [v]).filter (fun w => keq (key w) k)))
+      rw [ground.keyAt_keyPut keq hkeq hkr, ground.filter_append]
+      cases hb : keq (key v) k with
+      | true =>
+        rw [ground.filter_cons_true (p := fun w => keq (key w) k) (a := v)
+          (l := []) hb, ← hkeq (key v) k hb]
+        exact hj.2 hr
+      | false =>
+        rw [ground.filter_cons_false (p := fun w => keq (key w) k) (a := v)
+          (l := []) hb,
+          show List.filter (fun w => keq (key w) k) ([] : List α) = [] from rfl,
+          ground.append_nil]
+        exact h k
+
+/-- The join at the stored descent projects to the join at the
+fresh walk (`joinS_read`). -/
+private theorem tryAddK_proj {α κ : Type} (keq : κ → κ → Bool) (key : α → κ)
+    (dot : α → α → BPair) (skip : α → Bool)
+    (hc : ∀ u w, (dot u w).oneValue (dot w u)) (s : PoolS α κ) (v : α)
+    (h : tracesK keq key dot s) :
+    (tryAddK keq key dot skip s v).1 = tryAddL keq key dot skip s.1 v := by
+  by_cases hu : skip v = true
+  · rw [show tryAddK keq key dot skip s v = s from if_pos hu,
+      show tryAddL keq key dot skip s.1 v = s.1 from if_pos hu]
+  · have hj := joinS_read dot hc (stateAtK keq s (key v))
+      (s.1.filter (fun w => keq (key w) (key v))) v (h (key v))
+    rw [show tryAddK keq key dot skip s v
+        = (if (joinS dot (stateAtK keq s (key v))
+            (s.1.filter (fun w => keq (key w) (key v))) v).2
+          then (s.1 ++ [v], ground.keyPut keq (key v)
+            (joinS dot (stateAtK keq s (key v))
+              (s.1.filter (fun w => keq (key w) (key v))) v).1 s.2)
+          else s) from if_neg hu,
+      show tryAddL keq key dot skip s.1 v
+        = (if joinIndep dot (s.1.filter (fun w => keq (key w) (key v))) v
+          then s.1 ++ [v] else s.1) from if_neg hu,
+      ← hj.1]
+    cases (joinS dot (stateAtK keq s (key v))
+        (s.1.filter (fun w => keq (key w) (key v))) v).2 with
+    | false => rfl
+    | true => rfl
+
+/-- One member's pool traces at a member joining the vacant
+pool. -/
+private theorem seedK_traces {α κ : Type} (keq : κ → κ → Bool)
+    (key : α → κ) (dot : α → α → BPair)
+    (hc : ∀ u w, (dot u w).oneValue (dot w u)) (v : α)
+    (hv : joinIndep dot [] v = true) :
+    tracesK keq key dot (seedK key dot v) := by
+  intro k
+  show traceOf (cond (keq (key v) k) (joinS dot [] [] v).1 [])
+    (gramBy dot ([v].filter (fun w => keq (key w) k)))
+  cases hb : keq (key v) k with
+  | true =>
+    rw [ground.filter_cons_true (p := fun w => keq (key w) k) (a := v)
+      (l := []) hb]
+    refine (joinS_read dot hc [] [] v traceOf_nil).2 ?_
+    rw [(joinS_read dot hc [] [] v traceOf_nil).1]
+    exact hv
+  | false =>
+    rw [ground.filter_cons_false (p := fun w => keq (key w) k) (a := v)
+      (l := []) hb]
+    exact traceOf_nil
+
+/-- The closure at the stored descents is the closure at the fresh
+walk: at a key test reading equality and reflexive, a pairing
+exchanging at one value and a seed joining the vacant pool, the
+seed's own descent traces and every join keeps the trace. -/
+theorem closeK_eq {α κ : Type} (keq : κ → κ → Bool) (key : α → κ)
+    (dot : α → α → BPair) (skip : α → Bool)
+    (hkeq : ∀ a b, keq a b = true → a = b) (hkr : ∀ a, keq a a = true)
+    (hc : ∀ u w, (dot u w).oneValue (dot w u)) (step : α → List α)
+    (fuel : Nat) (v : α) (fr : List α) (hv : joinIndep dot [] v = true) :
+    (closeK keq key dot skip step fuel (seedK key dot v) fr).1
+      = ground.closeBy step (tryAddL keq key dot skip) fuel [v] fr :=
+  (ground.closeByS_proj step (tryAddK keq key dot skip)
+    (tryAddL keq key dot skip) (fun s => s.1) (tracesK keq key dot)
+    (tryAddK_keep keq key dot skip hkeq hkr hc)
+    (tryAddK_proj keq key dot skip hc) fuel (seedK key dot v) fr
+    (seedK_traces keq key dot hc v hv)).2
+
+/-- The vacant pool traces: every key's vacant data trace the vacant
+Gram. -/
+private theorem tracesK_vacant {α κ : Type} (keq : κ → κ → Bool)
+    (key : α → κ) (dot : α → α → BPair) :
+    tracesK keq key dot (([], []) : PoolS α κ) :=
+  fun _ => traceOf_nil
+
+/-- The closure at the stored descents from the vacant pool joined
+at a seed is the closure at the fresh walk from the seed's own
+join: at a key test reading equality and reflexive and a pairing
+exchanging at one value, the vacant pool traces and every join
+keeps the trace, the seed's join among them. -/
+theorem closeK_eq_vacant {α κ : Type} (keq : κ → κ → Bool) (key : α → κ)
+    (dot : α → α → BPair) (skip : α → Bool)
+    (hkeq : ∀ a b, keq a b = true → a = b) (hkr : ∀ a, keq a a = true)
+    (hc : ∀ u w, (dot u w).oneValue (dot w u)) (step : α → List α)
+    (fuel : Nat) (v : α) (fr : List α) :
+    (closeK keq key dot skip step fuel
+        (tryAddK keq key dot skip ([], []) v) fr).1
+      = ground.closeBy step (tryAddL keq key dot skip) fuel
+          (tryAddL keq key dot skip [] v) fr := by
+  show _ = ground.closeBy step (tryAddL keq key dot skip) fuel
+    (tryAddL keq key dot skip (([], []) : PoolS α κ).1 v) fr
+  rw [← tryAddK_proj keq key dot skip hc ([], []) v
+    (tracesK_vacant keq key dot)]
+  exact (ground.closeByS_proj step (tryAddK keq key dot skip)
+    (tryAddL keq key dot skip) (fun s => s.1) (tracesK keq key dot)
+    (tryAddK_keep keq key dot skip hkeq hkr hc)
+    (tryAddK_proj keq key dot skip hc) fuel
+    (tryAddK keq key dot skip ([], []) v) fr
+    (tryAddK_keep keq key dot skip hkeq hkr hc ([], []) v
+      (tracesK_vacant keq key dot))).2
 
 /-! The Bezout cofactor row at the descent: each entry the erased
 shift frame's pivot walk, the fold row read back at one value on a
@@ -25984,17 +26995,24 @@ private theorem combo_combo : ∀ (n : Nat) (ds : List BPair)
       ((length_combo n (combo L.length ds C) L hL).trans
         (length_combo n ds (C.map (fun c => combo n c L)) hfr).symm)
 
-/-- The combination reads one value in its coefficients, the
-transpose's action carrying the congruence at matched counts. -/
-private theorem combo_congrC (n : Nat) (L : Mat) (hL : rowsLen n L)
-    (u u' : List BPair) (hu : u.length = L.length)
-    (hu' : u'.length = L.length) (h : poly.oneValue u u') :
-    poly.oneValue (combo n u L) (combo n u' L) :=
-  poly.oneValue_trans
-    (poly.oneValue_symm (matVec_transpose_combo n L u hL hu))
-    (poly.oneValue_trans
-      (matVec_congr (transposeM L) u u' h)
-      (matVec_transpose_combo n L u' hL hu'))
+/-- The combination reads one value at coefficient lists of one
+value and one count, over every row list: the rows' scalings read
+one value entry for entry and the tails' combinations by the
+descent. -/
+theorem combo_congr (n : Nat) : ∀ (cs cs' : List BPair) (L : Mat),
+    cs.length = cs'.length → poly.oneValue cs cs' →
+    poly.oneValue (combo n cs L) (combo n cs' L)
+  | [], [], _, _, _ => poly.oneValue_refl _
+  | [], _ :: _, _, hl, _ => Nat.noConfusion hl
+  | _ :: _, [], _, hl, _ => Nat.noConfusion hl
+  | _ :: _, _ :: _, [], _, _ => poly.oneValue_refl _
+  | c :: cs, c' :: cs', r :: L, hl, h =>
+    vecAdd_congr2 (vecScale c r) (vecScale c' r) (combo n cs L)
+      (combo n cs' L)
+      (by rw [length_vecScale, length_vecScale])
+      (length_combo_congr n cs cs' L (Nat.succ.inj hl))
+      (vecScale_congr h.1 r)
+      (combo_congr n cs cs' L (Nat.succ.inj hl) h.2)
 
 /-- The kernel coefficients' images are independent: a null
 combination of them is a combination of the basis at the inner
@@ -26085,10 +27103,10 @@ private theorem crossKer_span (n : Nat) (R L L' : Mat)
       (vecScale_oneValue d₀ _ (combo n cs L') hone) ?_
     refine poly.oneValue_trans (vecScale_combo d₀ n cs L') ?_
     refine poly.oneValue_trans
-      (combo_congrC n L' hL' (vecScale d₀ cs)
-        (combo L'.length ds (kernelList L'.length (crossM R L')))
-        ((length_vecScale d₀ cs).trans hcsl)
-        (length_combo L'.length ds _ hK') hdone) ?_
+      (combo_congr n (vecScale d₀ cs)
+        (combo L'.length ds (kernelList L'.length (crossM R L'))) L'
+        (((length_vecScale d₀ cs).trans hcsl).trans
+          (length_combo L'.length ds _ hK').symm) hdone) ?_
     exact combo_combo n ds (kernelList L'.length (crossM R L')) L'
       hK' hL'
   exact span_intro n
@@ -26468,70 +27486,34 @@ theorem rank_null : ∀ m : Mat,
 
 /-! The identity datum's reads at `def:elim`'s surface: the action
 reading a vector back entry by entry, the square shape at the
-stated width, and the collection at a one-member family.
-
-`idList` is one value with the certificate tier's `inertia.idMat`
-at every width, two spellings of one datum, and the twin set runs
-six deep: `length_idList` with `inertia.idMat_len`,
-`rowsLen_idList` with `inertia.idMat_rows`, `idList_getAt` with
-`split.idMat_bvec`, `matVec_idList` with `inertia.matVec_idMat`,
-`dotP_onehot` with `split.dotP_bvec`, and `inertia.scaleId_act`
-the standing general of the action read; `speccut`'s `diagRead`
-field takes `sqAt (idMat n) n` as a hypothesis where
-`sqAt_idList` now derives it.  One owner is the move at the tiers'
-seam — `Inertia` imports `Elim`, so this module's spellings are
-the owner and the certificate tier's retire onto them — the
-certificate tier's files the other clone's active surface, the
-reciprocal pointers landing with the seam. -/
-
-private theorem dotP_onehot (w k : Nat) (u : List BPair)
-    (hk : k < w) (hl : u.length = w) :
-    (dotP (List.set (List.replicate w BPair.unit) k
-        (BPair.ofPos .one)) u).oneValue
-      (ground.getAt BPair.unit u k) := by
-  have hrl : (List.set (List.replicate w BPair.unit) k
-      (BPair.ofPos .one)).length = w := by
-    rw [ground.length_set, ground.length_replicate]
-  rw [dotP_comm]
-  refine BPair.oneValue_trans
-    (dotP_oneIndex u _ k (by rw [hrl, hl])
-      (by rw [hrl]; exact hk) ?_) ?_
-  · intro q hq hqk
-    rw [hrl] at hq
-    rw [ground.getAt_set_ne BPair.unit (List.replicate w BPair.unit) k
-        q (BPair.ofPos .one) hqk,
-      ground.getAt_replicate_self BPair.unit w q]
-    exact BPair.oneValue_refl _
-  · rw [ground.getAt_set_self BPair.unit (BPair.ofPos .one)
-      (List.replicate w BPair.unit) k
-      (by rw [ground.length_replicate]; exact hk)]
-    exact BPair.mul_one_read _
+stated width, and the collection at a one-member family. -/
 
 /-- The identity action reads the vector back, entry by entry:
 each row's pairing picks the entry at its own key. -/
-theorem matVec_idList : ∀ (n : Nat) (u : List BPair),
+theorem matVec_idMat : ∀ (n : Nat) (u : List BPair),
     u.length = n →
-    poly.oneValue (matVec (idList n) u) u := by
+    poly.oneValue (matVec (idMat n) u) u := by
   intro n u hu
   refine poly.oneValue_of_entries _ _ ?_ ?_
-  · rw [matVec_length, length_idList, hu]
+  · rw [matVec_length, length_idMat, hu]
   · intro i hi
-    rw [matVec_length, length_idList] at hi
-    have hmap : ground.getAt BPair.unit (matVec (idList n) u) i
-        = dotN (ground.getAt ([] : List BPair) (idList n) i) u := by
+    rw [matVec_length, length_idMat] at hi
+    have hmap : ground.getAt BPair.unit (matVec (idMat n) u) i
+        = dotN (ground.getAt ([] : List BPair) (idMat n) i) u := by
       show ground.getAt BPair.unit
-          ((idList n).map (fun r => dotN r u)) i
-        = dotN (ground.getAt ([] : List BPair) (idList n) i) u
+          ((idMat n).map (fun r => dotN r u)) i
+        = dotN (ground.getAt ([] : List BPair) (idMat n) i) u
       exact ground.getAt_map ([] : List BPair) BPair.unit
-        (fun r => dotN r u) (idList n) i
-        (by rw [length_idList]; exact hi)
-    rw [hmap, idList_getAt n i hi]
+        (fun r => dotN r u) (idMat n) i
+        (by rw [length_idMat]; exact hi)
+    rw [hmap, idMat_row n i hi]
     exact BPair.oneValue_trans (dotN_read _ u)
-      (dotP_onehot n i u hi hu)
+      (BPair.oneValue_trans (BPair.oneValue_of_eq (dotP_comm _ _))
+        (dotP_idRow u n i hu hi))
 
 /-- The identity datum is square at its width. -/
-theorem sqAt_idList : ∀ n : Nat, sqAt (idList n) n :=
-  fun n => sqAt_of (length_idList n) (rowsLen_idList n)
+theorem sqAt_idMat : ∀ n : Nat, sqAt (idMat n) n :=
+  fun n => sqAt_of (length_idMat n) (rowsLen_idMat n)
 
 /-- The self-pairings' product reads the product's one at a family
 every member of which pairs with itself at that one: the fold
@@ -26554,39 +27536,34 @@ private theorem selfProd_one : ∀ L : Mat,
 /-- The identity family is pairwise perpendicular: a member's
 pairing picks the other member's entry at its own key, where the
 unit family stands. -/
-private theorem perpAll_idList (n : Nat) : perpAll (idList n) := by
+private theorem perpAll_idMat (n : Nat) : perpAll (idMat n) := by
   intro p hp q hq hpq
-  rw [length_idList] at hp hq
-  rw [idList_getAt n p hp, idList_getAt n q hq]
+  rw [length_idMat] at hp hq
+  rw [idMat_row n p hp, idMat_row n q hq]
   refine BPair.oneValue_trans
-    (dotP_onehot n p _ hp
-      (by rw [ground.length_set, ground.length_replicate])) ?_
-  rw [ground.getAt_set_ne BPair.unit (List.replicate n BPair.unit) q p
-      (BPair.ofPos Pos.one) hpq,
-    ground.getAt_replicate_self BPair.unit n p]
+    (BPair.oneValue_trans (BPair.oneValue_of_eq (dotP_comm _ _))
+      (dotP_idRow _ n p (length_idRow n q) hp)) ?_
+  rw [getAt_idRow n q p hp, if_neg hpq]
   exact BPair.oneValue_refl _
 
 /-- The identity family is independent: pairwise perpendicular unit
 rows at unit self-pairings, the Gram determinant the self-pairings'
 product. -/
-theorem indepRows_idList (n : Nat) : indepRows n (idList n) := by
-  refine ⟨rowsLen_idList n, ?_⟩
+theorem indepRows_idMat (n : Nat) : indepRows n (idMat n) := by
+  refine ⟨rowsLen_idMat n, ?_⟩
   intro hone
-  have hsp : (selfProd (idList n)).oneValue (BPair.ofPos Pos.one) := by
-    refine selfProd_one (idList n) (fun k hk => ?_)
-    rw [length_idList] at hk
-    rw [idList_getAt n k hk]
+  have hsp : (selfProd (idMat n)).oneValue (BPair.ofPos Pos.one) := by
+    refine selfProd_one (idMat n) (fun k hk => ?_)
+    rw [length_idMat] at hk
+    rw [idMat_row n k hk]
     refine BPair.oneValue_trans
-      (dotP_onehot n k _ hk
-        (by rw [ground.length_set, ground.length_replicate])) ?_
-    rw [ground.getAt_set_self BPair.unit (BPair.ofPos Pos.one)
-      (List.replicate n BPair.unit) k
-      (by rw [ground.length_replicate]; exact hk)]
+      (dotP_idRow _ n k (length_idRow n k) hk) ?_
+    rw [getAt_idRow n k k hk, if_pos rfl]
     exact BPair.oneValue_refl _
   exact absurd
     (BPair.oneValue_trans (BPair.oneValue_symm hsp)
       (BPair.oneValue_trans
-        (BPair.oneValue_symm (detL_perp (idList n) (perpAll_idList n)))
+        (BPair.oneValue_symm (detL_perp (idMat n) (perpAll_idMat n)))
         hone))
     (by decide +kernel)
 
@@ -26617,62 +27594,61 @@ private theorem ofRowFrom_congr : ∀ (a b : List BPair) (k : Nat),
 /-- A row's skipping fold against the identity family's member at a
 key reads that row's own entry there: every other key pairs at the
 unit and is skipped. -/
-theorem dotN_idList_entry (n : Nat) (r : List BPair)
+theorem dotN_idMat_entry (n : Nat) (r : List BPair)
     (hr : r.length = n) (i : Nat) (hi : i < n) :
-    (dotN r (ground.getAt ([] : List BPair) (idList n) i)).oneValue
+    (dotN r (ground.getAt ([] : List BPair) (idMat n) i)).oneValue
       (ground.getAt BPair.unit r i) := by
-  rw [idList_getAt n i hi]
+  rw [idMat_row n i hi]
   refine BPair.oneValue_trans (dotN_read r _) ?_
-  rw [dotP_comm]
-  exact dotP_onehot n i r hi hr
+  exact dotP_idRow r n i hr hi
 
 /-- A row read against the identity family has the row's own sparse
 reading: the width is the stated one and the entries meet at their
 representatives. -/
-private theorem ofRow_dotN_idList (n : Nat) (r : List BPair)
+private theorem ofRow_dotN_idMat (n : Nat) (r : List BPair)
     (hr : r.length = n) :
-    ofRow ((idList n).map (fun x => dotN r x)) = ofRow r := by
-  have hlen : ((idList n).map (fun x => dotN r x)).length
+    ofRow ((idMat n).map (fun x => dotN r x)) = ofRow r := by
+  have hlen : ((idMat n).map (fun x => dotN r x)).length
       = r.length := by
-    rw [ground.length_map, length_idList, hr]
-  have hg : ∀ i, i < ((idList n).map (fun x => dotN r x)).length →
+    rw [ground.length_map, length_idMat, hr]
+  have hg : ∀ i, i < ((idMat n).map (fun x => dotN r x)).length →
       (ground.getAt BPair.unit
-          ((idList n).map (fun x => dotN r x)) i).norm
+          ((idMat n).map (fun x => dotN r x)) i).norm
         = (ground.getAt BPair.unit r i).norm := by
     intro i hi
-    rw [ground.length_map, length_idList] at hi
+    rw [ground.length_map, length_idMat] at hi
     rw [ground.getAt_map ([] : List BPair) BPair.unit
-      (fun x => dotN r x) (idList n) i
-      (by rw [length_idList]; exact hi)]
-    exact BPair.norm_congr (dotN_idList_entry n r hr i hi)
-  show (((idList n).map (fun x => dotN r x)).length,
-      ofRowFrom 0 ((idList n).map (fun x => dotN r x)))
+      (fun x => dotN r x) (idMat n) i
+      (by rw [length_idMat]; exact hi)]
+    exact BPair.norm_congr (dotN_idMat_entry n r hr i hi)
+  show (((idMat n).map (fun x => dotN r x)).length,
+      ofRowFrom 0 ((idMat n).map (fun x => dotN r x)))
     = (r.length, ofRowFrom 0 r)
-  rw [hlen, ofRowFrom_congr ((idList n).map (fun x => dotN r x)) r 0
+  rw [hlen, ofRowFrom_congr ((idMat n).map (fun x => dotN r x)) r 0
     hlen hg]
 
 /-- The cross datum at the identity family has the stacked family's
 own sparse rows, member by member. -/
-private theorem ofRow_crossM_idList (n : Nat) : ∀ R : Mat, rowsLen n R →
-    (crossM R (idList n)).map ofRow = R.map ofRow
+private theorem ofRow_crossM_idMat (n : Nat) : ∀ R : Mat, rowsLen n R →
+    (crossM R (idMat n)).map ofRow = R.map ofRow
   | [], _ => rfl
   | r :: t, h => by
-    show ofRow ((idList n).map (fun x => dotN r x))
-        :: (crossM t (idList n)).map ofRow
+    show ofRow ((idMat n).map (fun x => dotN r x))
+        :: (crossM t (idMat n)).map ofRow
       = ofRow r :: t.map ofRow
-    rw [ofRow_dotN_idList n r h.1, ofRow_crossM_idList n t h.2]
+    rw [ofRow_dotN_idMat n r h.1, ofRow_crossM_idMat n t h.2]
 
 /-- The coordinate basis reads the kernel dimension back: the cross
 datum at the identity family is the stacked family itself, entry by
 entry at the norms, so the two kernel dimensions are one count. -/
-theorem kernelDim_idList (n : Nat) (R : Mat) (hR : rowsLen n R) :
-    kernelDim n (crossM R (idList n)) = kernelDim n R := by
-  have hrank : rank (crossM R (idList n)) = rank R := by
-    show sdescend (crossM R (idList n)).length (BPair.ofPos Pos.one)
-        ((crossM R (idList n)).map ofRow)
+theorem kernelDim_idMat (n : Nat) (R : Mat) (hR : rowsLen n R) :
+    kernelDim n (crossM R (idMat n)) = kernelDim n R := by
+  have hrank : rank (crossM R (idMat n)) = rank R := by
+    show sdescend (crossM R (idMat n)).length (BPair.ofPos Pos.one)
+        ((crossM R (idMat n)).map ofRow)
       = sdescend R.length (BPair.ofPos Pos.one) (R.map ofRow)
-    rw [length_crossM R (idList n), ofRow_crossM_idList n R hR]
-  show n - rank (crossM R (idList n)) = n - rank R
+    rw [length_crossM R (idMat n), ofRow_crossM_idMat n R hR]
+  show n - rank (crossM R (idMat n)) = n - rank R
   rw [hrank]
 
 /-- The collection at a one-member list of the stated width keeps
@@ -27158,6 +28134,57 @@ theorem adjM_col_off (G : Mat) {n : Nat} (hsq : sqAt G n)
         (by rw [hTl]; exact hj), hTl])
 
 
+/-- The list bordered by a stated family's balance partners, one
+column per member: the family's rows appended to the list's row by
+row with the members swapped (`def:elim`'s bordered descent). -/
+def bordBy (G B : Mat) : Mat :=
+  (List.range G.length).map (fun i =>
+    ground.getAt [] G i ++ (ground.getAt [] B i).map BPair.swap)
+
+/-- The Gram-dual solve's kernel member at a pairing vector: the one
+member of the kernel list at the list bordered by the vector's
+balance partner, its leading coordinates the solve's cleared
+coordinates and its last the crossed pivots' product (`def:elim`'s
+bordered descent at one stated pairing vector). -/
+def solveK (G : Mat) (p : List BPair) : List BPair :=
+  ground.getAt [] (kernelList (G.length + 1)
+    (bordBy G (p.map (fun x => [x])))) 0
+
+/-- The adjugate solve's descent read (`def:elim`'s bordered descent
+at one stated pairing vector): coordinate `j` the cofactor of the
+kernel member's coordinate `j`, scaled by the descent determinant,
+at the member's border coordinate, the crossed pivots' product. -/
+def adjD (G : Mat) (p : List BPair) : List BPair :=
+  (List.range G.length).map (fun j =>
+    cofactorAt (detD G * ground.getAt BPair.unit (solveK G p) j)
+      (ground.getAt BPair.unit (solveK G p) G.length))
+
+/-- The adjugate solve's descent read keeps the square list's
+count, one coordinate per row. -/
+theorem length_adjD (G : Mat) (p : List BPair) :
+    (adjD G p).length = G.length :=
+  ground.length_mapRange _ G.length
+
+/-! The membership residual at the descent's reads: `residV`'s
+value with its two assignment folds each read at one pivot walk,
+the Gram's determinant at `detD` and the adjugate solve at `adjD`
+(`detD_eq`, `adjD_gram`), one value at a family of the stated
+width and every vector (`residW_eq`, the width `lem:lowerspan`'s
+matched lists), at the canonical representative entry by entry
+(`BPair.norm`): the residual re-enters the collections as a row,
+so its representatives compound through every later pairing and
+walk.  The span read's instance and the computing engines read it,
+with the collection at the walk `collectW`. -/
+
+/-- The membership residual at the pivot walks: the descent
+determinant of the Gram scaling the vector against the descent
+solve's combination, the swap the subtraction, at the canonical
+representatives. -/
+def residW (n : Nat) (L : Mat) (v : List BPair) : List BPair :=
+  poly.pnorm (vecAdd (vecScale (detD (gramM L)) v)
+    ((combo n (adjD (gramM L) (L.map (fun r => dotP r v))) L).map
+      BPair.swap))
+
 /-! The adjugate identity at any entry bundle (`def:elim`'s
 adjugate identity: a row's fold against its own cofactors collects
 the regrouped assignment fold, the determinant, and against a
@@ -27545,6 +28572,1078 @@ theorem adjO_col_off {γ : Type} {ops : DOps γ}
   exact cofVecO_off L (transposeO ops m) j i hjT hiT
     (fun h => hij h.symm)
     (rowsLen_getAt (transposeO ops m) j hTsq hjT)
+
+/-! The adjugate at one descent (`def:elim`'s bordered descent): at
+a square list whose every leading minor sits off the sum's unit the
+walk pivots at the leading keys in order, the list bordered by a
+stated family's balance partners keeps the border's columns
+pivot-free, and the kernel member at border key `k` reads the
+adjugate against the family's member `k` at the crossed pivots'
+product against the determinant, each entry the cofactor at that
+product: the adjugate whole at the unit family, the adjugate solve
+at one pairing vector. -/
+
+/-- The determinant pins a vector at the adjugate's action against
+the list's own: `def:elim`'s adjugate identity read at a vector, the
+column side entrywise (`adjM_col_diag`, `adjM_col_off`). -/
+theorem det_pin {n : Nat} (S : Mat) (hsq : sqAt S n)
+    (z : List BPair) (hz : z.length = n) :
+    poly.oneValue (matVec (matMul (adjM S) S) z)
+      (vecScale (detL S) z) := by
+  have hSl : S.length = n := sqAt_len hsq
+  have hSr : rowsLen n S := rowsLen_of_sqAt hsq
+  cases Nat.eq_zero_or_pos n with
+  | inl hz0 =>
+    have hcof : ((List.range S.length).map (fun k => cofVec S k)) = [] :=
+      ground.nil_of_length_zero _ ((cofRows_len S).trans (hSl.trans hz0))
+    have hA : adjM S = [] := by
+      show transposeM ((List.range S.length).map (fun k => cofVec S k)) = []
+      rw [hcof]
+      rfl
+    have hzn : z = [] := ground.nil_of_length_zero z (hz.trans hz0)
+    rw [hA, hzn]
+    exact trivial
+  | inr hpos =>
+    have hAl : (adjM S).length = n :=
+      (adjM_len S (by rw [hSl]; exact hpos)).trans hSl
+    have hMl : (matVec (matMul (adjM S) S) z).length = n := by
+      rw [matVec_length, length_matMul, hAl]
+    have hMr : rowsLen n (matMul (adjM S) S) :=
+      rowsLen_cast (transposeLen S hSr hSl) (rowsLen_matMul (adjM S) S)
+    refine poly.oneValue_of_entries _ _
+      (by rw [hMl, length_vecScale, hz]) (fun i hi => ?_)
+    rw [hMl] at hi
+    have hiA : i < (matMul (adjM S) S).length := by
+      rw [length_matMul, hAl]
+      exact hi
+    have hrow : (ground.getAt [] (matMul (adjM S) S) i).length = n :=
+      rowsLen_getAt _ i hMr hiA
+    rw [getAt_matVec _ z i hiA, getAt_vecScale (detL S) z i (by rw [hz]; exact hi)]
+    refine BPair.oneValue_trans (dotN_read _ _) ?_
+    refine BPair.oneValue_trans (BPair.oneValue_of_eq (dotP_comm _ _)) ?_
+    refine BPair.oneValue_trans
+      (dotP_oneIndex z _ i (hz.trans hrow.symm) (by rw [hrow]; exact hi)
+        (fun q hq hqi => adjM_col_off S hsq i q hi
+          (by rw [hrow] at hq; exact hq) (fun he => hqi he.symm))) ?_
+    refine BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl _) (adjM_col_diag S hsq i hi)) ?_
+    exact BPair.oneValue_of_eq (BPair.mul_comm _ _)
+
+/-- The solve read: at a list's action on a vector reading stated
+data, the adjugate's action on the data returns the vector at the
+determinant's scale, `def:elim`'s adjugate against the list at the
+solved column. -/
+theorem adj_solve {n : Nat} (S : Mat) (hsq : sqAt S n)
+    (z w : List BPair) (hz : z.length = n)
+    (h : poly.oneValue (matVec S z) w) :
+    poly.oneValue (matVec (adjM S) w) (vecScale (detL S) z) :=
+  poly.oneValue_trans
+    (matVec_congr (adjM S) w _ (poly.oneValue_symm h))
+    (poly.oneValue_trans
+      (poly.oneValue_symm
+        (matVec_matMul (adjM S) S n (rowsLen_of_sqAt hsq) z hz))
+      (det_pin S hsq z hz))
+
+/-- A determinant off equal members refuses every kernel vector but the
+unit family: the adjugate carries `X v` back to the determinant's
+multiple of `v`, and the determinant withdraws at the product's
+injectivity. -/
+theorem matVec_null_of_det (X : Mat) {n : Nat} (hsq : sqAt X n)
+    (hdet : ¬ (minor X).oneValue BPair.unit)
+    (v : List BPair) (hv : v.length = n)
+    (h : poly.unitTail (matVec X v)) : poly.unitTail v := by
+  have hXl : X.length = n := sqAt_len hsq
+  have hXr : rowsLen n X := rowsLen_of_sqAt hsq
+  have hAr : rowsLen n (adjM X) :=
+    rowsLen_cast hXl (rowsLen_cast (cofRows_len X) (rowsLen_transposeM _))
+  have h1 : poly.unitTail (matVec (adjM X) (matVec X v)) :=
+    matVec_null (adjM X) _ h
+  have h2 : poly.unitTail (matVec (matMul (adjM X) X) v) :=
+    poly.unitTail_oneValue_right h1
+      (matVec_comp (adjM X) X v n hXr hv (rowsLen_cast hXl.symm hAr))
+  have h4 : poly.unitTail (vecScale (detL X) v) :=
+    poly.unitTail_oneValue_right h2 (det_pin X hsq v hv)
+  have hdet' : ¬ (detL X).oneValue BPair.unit := fun hzero =>
+    hdet (BPair.oneValue_trans
+      (minor_detL X (rowsLen_cast hXl.symm hXr)) hzero)
+  exact unitTail_unscale (detL X) hdet' v h4
+
+/-- The adjugate at the descent determinant: `adjM`'s cofactor
+family read off the list bordered by the unit family, one walk, the
+entry at `(j, k)` the cofactor of the kernel member at border key
+`k`'s coordinate `j`, scaled by the determinant, at the member's own
+border coordinate, the crossed pivots' product. -/
+def adjMD (G : Mat) : Mat :=
+  ground.matOf G.length G.length (fun j k =>
+    cofactorAt (detD G * ground.getAt BPair.unit
+        (ground.getAt [] (kernelList (G.length + G.length)
+          (bordBy G (idMat G.length))) k) j)
+      (ground.getAt BPair.unit
+        (ground.getAt [] (kernelList (G.length + G.length)
+          (bordBy G (idMat G.length))) k) (G.length + k)))
+
+/-- The bordered list's row count is the list's. -/
+private theorem bordBy_length (G B : Mat) : (bordBy G B).length = G.length := by
+  show ((List.range G.length).map _).length = _
+  rw [ground.length_map, ground.length_range]
+
+/-- The bordered list's row: the list's row with the family's
+swapped. -/
+private theorem bordBy_row (G B : Mat) (i : Nat) (hi : i < G.length) :
+    ground.getAt [] (bordBy G B) i
+      = ground.getAt [] G i ++ (ground.getAt [] B i).map BPair.swap := by
+  show ground.getAt [] ((List.range G.length).map
+    (fun i => ground.getAt [] G i ++ (ground.getAt [] B i).map BPair.swap)) i
+    = _
+  rw [ground.getAt_map 0 [] _ (List.range G.length) i
+      (by rw [ground.length_range]; exact hi),
+    ground.getAt_range G.length i hi]
+
+/-- The bordered list's rows read the joined widths. -/
+private theorem bordBy_rowsLen (G B : Mat) (hG : rowsLen G.length G)
+    {w : Nat} (hB : rowsLen w B) (hBl : B.length = G.length) :
+    rowsLen (G.length + w) (bordBy G B) :=
+  rowsLen_map _ _ (List.range G.length) (fun i hi => by
+    rw [ground.length_append, rowsLen_getAt G i hG (ground.ltOfMemRange hi),
+      ground.length_map,
+      rowsLen_getAt B i hB (by rw [hBl]; exact ground.ltOfMemRange hi)])
+
+/-- The selection at keys inside the list reads the list's own
+columns, the border off every selected key. -/
+private theorem keepCols_bord (G B : Mat) (hG : rowsLen G.length G) (i : Nat)
+    (cs : List Nat) (hcs : ∀ j ∈ cs, j < G.length) :
+    keepCols cs (ground.getAt [] (bordBy G B) i)
+      = keepCols cs (ground.getAt [] G i) := by
+  by_cases hi : i < G.length
+  · rw [bordBy_row G B i hi]
+    show cs.map (fun j => ground.getAt BPair.unit
+        (ground.getAt [] G i ++ (ground.getAt [] B i).map BPair.swap) j)
+      = cs.map (fun j => ground.getAt BPair.unit (ground.getAt [] G i) j)
+    refine ground.map_congr_members _ _ cs (fun j hj => ?_)
+    have hjn : j < G.length := hcs j (ground.mem_of_countOf_pos j cs hj)
+    exact getAt_append_lt BPair.unit _ _
+      (by rw [rowsLen_getAt G i hG hi]; exact hjn)
+  · rw [ground.getAt_over ([] : List BPair) (bordBy G B) i
+        (by rw [bordBy_length G B]; exact Nat.le_of_not_lt hi),
+      ground.getAt_over ([] : List BPair) G i (Nat.le_of_not_lt hi)]
+
+private theorem sel_bord (G B : Mat) (hG : rowsLen G.length G)
+    (rs cs : List Nat) (hcs : ∀ j ∈ cs, j < G.length) :
+    sel (bordBy G B) rs cs = sel G rs cs :=
+  ground.map_congr_all _ _ (fun i => keepCols_bord G B hG i cs hcs) rs
+
+private theorem rowsLen_take {n : Nat} :
+    ∀ (k : Nat) (L : Mat), rowsLen n L → rowsLen n (L.take k)
+  | 0, _, _ => trivial
+  | _ + 1, [], _ => trivial
+  | k + 1, _ :: t, h => ⟨h.1, rowsLen_take k t h.2⟩
+
+private theorem rowsLen_drop {n : Nat} :
+    ∀ (k : Nat) (L : Mat), rowsLen n L → rowsLen n (L.drop k)
+  | 0, _, h => h
+  | _ + 1, [], _ => trivial
+  | k + 1, _ :: t, h => rowsLen_drop k t h.2
+
+/-- Every leading part of an independent list is independent. -/
+private theorem indep_take (n : Nat) (L : Mat) (hind : indepRows n L)
+    (k : Nat) : indepRows n (L.take k) :=
+  indep_ofPrefix n (L.drop k) (L.take k) (rowsLen_take k L hind.1)
+    (rowsLen_drop k L hind.1) (by rw [List.take_append_drop k L]; exact hind)
+
+/-- The Gram's leading minor is the leading part's own Gram
+determinant. -/
+private theorem sel_gram_take (L : Mat) (m : Nat) (hm : m ≤ L.length) :
+    (detL (sel (gramM L) (List.range m) (List.range m))).oneValue
+      (detL (gramM (L.take m))) := by
+  have hl1 : (sel (gramM L) (List.range m) (List.range m)).length = m :=
+    (sel_len _ _ _).trans (ground.length_range m)
+  have hl2 : (gramM (L.take m)).length = m :=
+    (length_gramM _).trans (ground.length_take m L hm)
+  refine detL_congr_letters _ _ (hl1.trans hl2.symm) (fun a ha b hb => ?_)
+  rw [hl1] at ha hb
+  have haL : a < L.length := Nat.lt_of_lt_of_le ha hm
+  have hbL : b < L.length := Nat.lt_of_lt_of_le hb hm
+  rw [getAt_sel (gramM L) (List.range m) (List.range m) a
+      (by rw [ground.length_range]; exact ha),
+    ground.getAt_range m a ha]
+  show (ground.getAt BPair.unit ((List.range m).map
+      (fun j => ground.getAt BPair.unit (ground.getAt [] (gramM L) a) j))
+      b).oneValue _
+  rw [ground.getAt_map 0 BPair.unit _ (List.range m) b
+      (by rw [ground.length_range]; exact hb),
+    ground.getAt_range m b hb, gramM_entry L a b haL hbL,
+    gramM_entry (L.take m) a b
+      (by rw [ground.length_take m L hm]; exact ha)
+      (by rw [ground.length_take m L hm]; exact hb),
+    ground.getAt_take [] m L a ha, ground.getAt_take [] m L b hb]
+  exact BPair.oneValue_refl _
+
+/-- An independent list's Gram has every leading minor off the
+sum's unit. -/
+private theorem gram_lead (n : Nat) (L : Mat) (hind : indepRows n L) :
+    ∀ k, k < L.length →
+      ¬ (detL (sel (gramM L) (List.range (k + 1))
+        (List.range (k + 1)))).oneValue BPair.unit :=
+  fun k hk h => indep_det n (L.take (k + 1)) (indep_take n L hind (k + 1))
+    (BPair.oneValue_trans
+      (BPair.oneValue_symm (sel_gram_take L (k + 1) hk)) h)
+
+/-- A row occupied at key nought stores it at its head. -/
+private theorem head_zero_of_keyAt : ∀ es : List (Nat × BPair),
+    keysAsc 0 es →
+    ¬ (ground.keyAt Nat.beq BPair.unit 0 es).oneValue BPair.unit →
+    ∃ v es', es = (0, v) :: es'
+  | [], _, h => absurd (BPair.oneValue_refl _) h
+  | (k, v) :: es, hasc, h => by
+    cases k with
+    | zero => exact ⟨v, es, rfl⟩
+    | succ k' =>
+      have hh : 0 ≤ k' + 1 ∧ keysAsc (k' + 1 + 1) es := hasc
+      rw [keyAt_miss (show Nat.beq (k' + 1) 0 = false from rfl) v es,
+        keyAt_lo es hh.2 0 (Nat.succ_pos _)] at h
+      exact absurd (BPair.oneValue_refl _) h
+
+/-- One round of the descent: the pivot search's answer peeled and
+the rows stepped, the state kept at an answered-nothing search. -/
+private def roundStep (s : BPair × List SRow) : BPair × List SRow :=
+  match sFind s.2 with
+  | none => s
+  | some (i, j) =>
+    ((sPeel j (ground.getAt ((0, []) : SRow) s.2 i)).1,
+      stepRows s.1 (sPeel j (ground.getAt ((0, []) : SRow) s.2 i)) j
+        (s.2.eraseIdx i))
+
+/-- The descent's state after a stated round count. -/
+private def roundsAt (m : Mat) : Nat → BPair × List SRow
+  | 0 => (BPair.ofPos .one, m.map ofRow)
+  | k + 1 => roundStep (roundsAt m k)
+
+private theorem roundStep_some (s : BPair × List SRow) (i j : Nat)
+    (hf : sFind s.2 = some (i, j)) :
+    roundStep s
+      = ((sPeel j (ground.getAt ((0, []) : SRow) s.2 i)).1,
+        stepRows s.1 (sPeel j (ground.getAt ((0, []) : SRow) s.2 i)) j
+          (s.2.eraseIdx i)) := by
+  show (match sFind s.2 with
+    | none => s
+    | some (i, j) =>
+      ((sPeel j (ground.getAt ((0, []) : SRow) s.2 i)).1,
+        stepRows s.1 (sPeel j (ground.getAt ((0, []) : SRow) s.2 i)) j
+          (s.2.eraseIdx i))) = _
+  rw [hf]
+
+private theorem drop_erase0 : ∀ (l : List Nat) (k : Nat),
+    k < l.length → (l.drop k).eraseIdx 0 = l.drop (k + 1)
+  | [], _, hk => absurd hk (Nat.not_lt_zero _)
+  | _ :: _, 0, _ => rfl
+  | _ :: t, k + 1, hk => drop_erase0 t k (Nat.lt_of_succ_lt_succ hk)
+
+/-- The pivot search at a round answers the leading remaining
+row's own key: the entry there is the next leading minor, off the
+unit, and every earlier key of the row a repeated-key read the
+sparse row does not store. -/
+private theorem bord_find (G B : Mat) (hG : rowsLen G.length G)
+    (hlead : ∀ k, k < G.length →
+      ¬ (detL (sel G (List.range (k + 1)) (List.range (k + 1)))).oneValue
+        BPair.unit)
+    {w : Nat} (k : Nat) (hk : k < G.length) (prev : BPair) (rows : List SRow)
+    (inv : KInv (bordBy G B) (List.range k) (List.range k)
+      ((List.range G.length).drop k)
+      ((List.range (G.length + w)).drop k) prev rows) :
+    sFind rows = some (0, 0) := by
+  have hkn : k ≤ (List.range G.length).length := by
+    rw [ground.length_range]
+    exact Nat.le_of_lt hk
+  have hk2 : k ≤ (List.range (G.length + w)).length := by
+    rw [ground.length_range]
+    exact Nat.le_of_lt (Nat.lt_of_lt_of_le hk (Nat.le_add_right _ _))
+  have hlen : 0 < rows.length := by
+    rw [inv.lenRows]
+    have h := ground.length_drop k (List.range G.length) hkn
+    rw [ground.length_range] at h
+    cases hd : ((List.range G.length).drop k).length with
+    | zero =>
+      rw [hd, Nat.zero_add] at h
+      exact absurd h (Nat.ne_of_lt hk)
+    | succ _ => exact Nat.succ_pos _
+  have hlen2 : 0 < ((List.range (G.length + w)).drop k).length := by
+    have h := ground.length_drop k (List.range (G.length + w)) hk2
+    rw [ground.length_range] at h
+    cases hd : ((List.range (G.length + w)).drop k).length with
+    | zero =>
+      rw [hd, Nat.zero_add] at h
+      exact absurd h (Nat.ne_of_lt (Nat.lt_of_lt_of_le hk (Nat.le_add_right _ _)))
+    | succ _ => exact Nat.succ_pos _
+  have hent := inv.entries 0 hlen 0 hlen2
+  have hri : ground.getAt 0 ((List.range G.length).drop k) 0 = k := by
+    rw [ground.getAt_drop 0 k _ 0, Nat.add_zero,
+      ground.getAt_range G.length k hk]
+  have hcj : ground.getAt 0 ((List.range (G.length + w)).drop k) 0
+      = k := by
+    rw [ground.getAt_drop 0 k _ 0, Nat.add_zero,
+      ground.getAt_range (G.length + w) k
+        (Nat.lt_of_lt_of_le hk (Nat.le_add_right _ _))]
+  rw [hri, hcj, ← ground.range_succ k,
+    sel_bord G B hG (List.range (k + 1)) (List.range (k + 1))
+      (fun j hj => Nat.lt_of_lt_of_le (ground.ltOfMemRange hj) hk)] at hent
+  have hoff : ¬ (ground.keyAt Nat.beq BPair.unit 0
+      (ground.getAt ((0, []) : SRow) rows 0).2).oneValue BPair.unit :=
+    fun h => hlead k hk (BPair.oneValue_trans (BPair.oneValue_symm hent) h)
+  have hasc := (rowsOk_getAt rows 0 inv.sorted hlen).1
+  match rows, hlen, hoff, hasc with
+  | r :: rest, _, hoff, hasc =>
+    match head_zero_of_keyAt r.2 hasc hoff with
+    | ⟨v, es, he⟩ =>
+      rw [show r = (r.1, (0, v) :: es) from by rw [← he]]
+      rfl
+
+/-- The bordered list's rounds at every leading minor off the
+unit: the crossed keys are the leading ones in order, the
+remaining the rest, and the state names the bordered minors. -/
+private theorem bord_rounds (G B : Mat) (hG : rowsLen G.length G)
+    (hlead : ∀ k, k < G.length →
+      ¬ (detL (sel G (List.range (k + 1)) (List.range (k + 1)))).oneValue
+        BPair.unit)
+    {w : Nat} (hB : rowsLen w B) (hBl : B.length = G.length) :
+    ∀ k, k ≤ G.length →
+      KInv (bordBy G B) (List.range k) (List.range k)
+        ((List.range G.length).drop k)
+        ((List.range (G.length + w)).drop k)
+        (roundsAt (bordBy G B) k).1 (roundsAt (bordBy G B) k).2
+  | 0, _ => by
+    have h := kinv_init (G.length + w) (bordBy G B) (bordBy_rowsLen G B hG hB hBl)
+    rw [bordBy_length G B] at h
+    exact h
+  | k + 1, hk => by
+    have hk' : k < G.length := hk
+    have ih := bord_rounds G B hG hlead hB hBl k (Nat.le_of_lt hk')
+    have hf := bord_find G B hG hlead k hk' _ _ ih
+    have hri : ground.getAt 0 ((List.range G.length).drop k) 0 = k := by
+      rw [ground.getAt_drop 0 k _ 0, Nat.add_zero,
+        ground.getAt_range G.length k hk']
+    have hcj : ground.getAt 0 ((List.range (G.length + w)).drop k) 0
+        = k := by
+      rw [ground.getAt_drop 0 k _ 0, Nat.add_zero,
+        ground.getAt_range (G.length + w) k
+          (Nat.lt_of_lt_of_le hk' (Nat.le_add_right _ _))]
+    have h := kinv_step (bordBy G B) (List.range k) (List.range k)
+      ((List.range G.length).drop k)
+      ((List.range (G.length + w)).drop k)
+      (roundsAt (bordBy G B) k).1 (roundsAt (bordBy G B) k).2 ih 0 0 hf
+    rw [hri, hcj, ← ground.range_succ k,
+      drop_erase0 _ k (by rw [ground.length_range]; exact hk'),
+      drop_erase0 _ k (by
+        rw [ground.length_range]
+        exact Nat.lt_of_lt_of_le hk' (Nat.le_add_right _ _))] at h
+    show KInv (bordBy G B) (List.range (k + 1)) (List.range (k + 1))
+      ((List.range G.length).drop (k + 1))
+      ((List.range (G.length + w)).drop (k + 1))
+      (roundStep (roundsAt (bordBy G B) k)).1
+      (roundStep (roundsAt (bordBy G B) k)).2
+    rw [roundStep_some (roundsAt (bordBy G B) k) 0 0 hf]
+    exact h
+
+/-- The pivot-free columns shifted past the crossed pivots: the
+key lift at the head key, once per round. -/
+private def liftIter : Nat → List Nat → List Nat
+  | 0, F => F
+  | k + 1, F => liftIter k (F.map (liftIx 0))
+
+private theorem liftIter_length : ∀ (k : Nat) (F : List Nat),
+    (liftIter k F).length = F.length
+  | 0, _ => rfl
+  | k + 1, F => by
+    show (liftIter k (F.map (liftIx 0))).length = F.length
+    rw [liftIter_length k, ground.length_map]
+
+private theorem liftIter_getAt : ∀ (k : Nat) (F : List Nat) (i : Nat),
+    i < F.length → ground.getAt 0 (liftIter k F) i = ground.getAt 0 F i + k
+  | 0, F, i, _ => (Nat.add_zero _).symm
+  | k + 1, F, i, hi => by
+    show ground.getAt 0 (liftIter k (F.map (liftIx 0))) i = _
+    rw [liftIter_getAt k _ i (by rw [ground.length_map]; exact hi),
+      ground.getAt_map 0 0 (liftIx 0) F i hi,
+      liftIx_gt 0 (ground.getAt 0 F i) (Nat.not_lt_zero _), Nat.add_assoc,
+      Nat.add_comm 1 k]
+
+/-- The pivot-free read unrolled along the rounds: each round lifts
+the deeper read's keys past its head pivot. -/
+private theorem freeGo_rounds (G B : Mat) (hG : rowsLen G.length G)
+    (hlead : ∀ k, k < G.length →
+      ¬ (detL (sel G (List.range (k + 1)) (List.range (k + 1)))).oneValue
+        BPair.unit)
+    {w : Nat} (hB : rowsLen w B) (hBl : B.length = G.length) :
+    ∀ (k d : Nat), k + d = G.length →
+      freeGo G.length (G.length + w) (BPair.ofPos .one)
+          ((bordBy G B).map ofRow)
+        = liftIter k (freeGo d (d + w) (roundsAt (bordBy G B) k).1
+            (roundsAt (bordBy G B) k).2)
+  | 0, d, hd => by
+    have hdn : d = G.length := by rw [← hd, Nat.zero_add]
+    rw [hdn]
+    rfl
+  | k + 1, d, hd => by
+    have hd' : k + (d + 1) = G.length := by
+      rw [← hd, Nat.add_succ, Nat.succ_add]
+    have hk : k < G.length := by
+      rw [← hd', Nat.add_succ]
+      exact Nat.succ_le_succ (Nat.le_add_right k d)
+    have hf := bord_find G B hG hlead k hk _ _
+      (bord_rounds G B hG hlead hB hBl k (Nat.le_of_lt hk))
+    rw [freeGo_rounds G B hG hlead hB hBl k (d + 1) hd']
+    show liftIter k (freeGo (d + 1) (d + 1 + w)
+        (roundsAt (bordBy G B) k).1 (roundsAt (bordBy G B) k).2)
+      = liftIter k ((freeGo d (d + w)
+          (roundStep (roundsAt (bordBy G B) k)).1
+          (roundStep (roundsAt (bordBy G B) k)).2).map (liftIx 0))
+    rw [roundStep_some (roundsAt (bordBy G B) k) 0 0 hf,
+      show freeGo (d + 1) (d + 1 + w) (roundsAt (bordBy G B) k).1
+          (roundsAt (bordBy G B) k).2
+        = (freeGo d (d + 1 + w - 1)
+            (sPeel 0 (ground.getAt ((0, []) : SRow)
+              (roundsAt (bordBy G B) k).2 0)).1
+            (stepRows (roundsAt (bordBy G B) k).1
+              (sPeel 0 (ground.getAt ((0, []) : SRow)
+                (roundsAt (bordBy G B) k).2 0)) 0
+              ((roundsAt (bordBy G B) k).2.eraseIdx 0))).map (liftIx 0) from
+        descGo_some _ _ d (d + 1 + w) _ _ 0 0 hf,
+      show d + 1 + w - 1 = d + w from
+        (congrArg (fun x => x - 1) (Nat.add_right_comm d 1 w)).trans
+          rfl]
+
+/-- The bordered list's pivot-free columns are the border's, the
+list's own count past its keys. -/
+private theorem freeCols_bord (G B : Mat) (hG : rowsLen G.length G)
+    (hlead : ∀ k, k < G.length →
+      ¬ (detL (sel G (List.range (k + 1)) (List.range (k + 1)))).oneValue
+        BPair.unit)
+    {w : Nat} (hB : rowsLen w B) (hBl : B.length = G.length) :
+    freeCols (G.length + w) (bordBy G B)
+      = liftIter G.length (List.range w) := by
+  show freeGo (bordBy G B).length (G.length + w) (BPair.ofPos .one)
+    ((bordBy G B).map ofRow) = _
+  rw [bordBy_length G B, freeGo_rounds G B hG hlead hB hBl G.length 0 (Nat.add_zero _),
+    freeGo_zero, Nat.zero_add]
+
+/-- The bordered walk's entry at a stated family: the kernel member
+at border key `k` pairs the list against its leading coordinates at
+the crossed pivots' product on the family's member `k`, so the
+cofactor of the determinant's multiple of a leading coordinate at
+the member's own border coordinate is the adjugate's row against
+the family's column (`def:elim`'s bordered descent at
+`adj_solve`). -/
+private theorem bord_entry (G B : Mat) (hG : rowsLen G.length G)
+    (hlead : ∀ k, k < G.length →
+      ¬ (detL (sel G (List.range (k + 1)) (List.range (k + 1)))).oneValue
+        BPair.unit)
+    {w : Nat} (hB : rowsLen w B) (hBl : B.length = G.length)
+    (k : Nat) (hk : k < w) (j : Nat) (hj : j < G.length) :
+    (cofactorAt (detD G * ground.getAt BPair.unit
+        (ground.getAt [] (kernelList (G.length + w) (bordBy G B)) k) j)
+      (ground.getAt BPair.unit
+        (ground.getAt [] (kernelList (G.length + w) (bordBy G B)) k)
+        (G.length + k))).oneValue
+      (dotP (ground.getAt [] (adjM G) j)
+        (B.map (fun r => ground.getAt BPair.unit r k))) := by
+  have hsq : sqAt G G.length := sqAt_of rfl hG
+  have hrows : rowsLen (G.length + w) (bordBy G B) :=
+    bordBy_rowsLen G B hG hB hBl
+  have hfree := freeCols_bord G B hG hlead hB hBl
+  have hfl : (freeCols (G.length + w) (bordBy G B)).length = w := by
+    rw [hfree, liftIter_length, ground.length_range]
+  have hKl : (kernelList (G.length + w) (bordBy G B)).length = w := by
+    rw [← freeCols_length]
+    exact hfl
+  have hfk : ∀ i, i < w →
+      ground.getAt 0 (freeCols (G.length + w) (bordBy G B)) i
+        = G.length + i := by
+    intro i hi
+    rw [hfree, liftIter_getAt G.length _ i (by rw [ground.length_range]; exact hi),
+      ground.getAt_range w i hi, Nat.add_comm]
+  have hkK : k < (kernelList (G.length + w) (bordBy G B)).length := by
+    rw [hKl]
+    exact hk
+  have hyl : (ground.getAt [] (kernelList (G.length + w) (bordBy G B))
+      k).length = G.length + w :=
+    rowsLen_getAt _ k (kernelList_rowsLen _ _) hkK
+  have hco := kernelList_coords (G.length + w) (bordBy G B) hrows k hkK
+  have hmem := kernelList_members (G.length + w) (bordBy G B) hrows k hkK
+  generalize hy : ground.getAt [] (kernelList (G.length + w) (bordBy G B)) k
+    = y at hyl hco hmem ⊢
+  have hnn : G.length ≤ G.length + w := Nat.le_add_right _ _
+  have hhl : (y.take G.length).length = G.length :=
+    ground.length_take _ _ (by rw [hyl]; exact hnn)
+  have hdl : (y.drop G.length).length = w := by
+    have h := ground.length_drop G.length y (by rw [hyl]; exact hnn)
+    rw [hyl, Nat.add_comm G.length w] at h
+    exact ground.addCancelR G.length h
+  -- the tail coordinate at a border key
+  have htail : ∀ i, i < w →
+      (ground.getAt BPair.unit y (G.length + i)).oneValue
+        (if i = k then pivotProd (bordBy G B) else BPair.unit) := by
+    intro i hi
+    by_cases hik : i = k
+    · rw [if_pos hik, hik, ← hfk k hk]
+      exact hco.1
+    · rw [if_neg hik, ← hfk i hi]
+      exact hco.2 i (by rw [hKl]; exact hi) hik
+  have hs : (ground.getAt BPair.unit y (G.length + k)).oneValue
+      (pivotProd (bordBy G B)) := by
+    have h := htail k hk
+    rw [if_pos rfl] at h
+    exact h
+  -- the list against the leading coordinates
+  have hact : ∀ i, i < G.length →
+      (dotP (ground.getAt [] G i) (y.take G.length)).oneValue
+        (ground.getAt BPair.unit (ground.getAt [] B i) k
+          * pivotProd (bordBy G B)) := by
+    intro i hi
+    have hiB : i < B.length := by
+      rw [hBl]
+      exact hi
+    have hBi : (ground.getAt [] B i).length = w := rowsLen_getAt B i hB hiB
+    have h1 := poly.getAt_unitTail hmem i
+    rw [getAt_matVec (bordBy G B) _ i (by rw [bordBy_length]; exact hi),
+      bordBy_row G B i hi] at h1
+    have h2 : (dotP (ground.getAt [] G i ++ (ground.getAt [] B i).map BPair.swap)
+        (y.take G.length ++ y.drop G.length)).oneValue BPair.unit := by
+      rw [List.take_append_drop]
+      exact BPair.oneValue_trans (BPair.oneValue_symm (dotN_read _ _)) h1
+    have hGi : (ground.getAt [] G i).length = (y.take G.length).length := by
+      rw [rowsLen_getAt G i hG hi, hhl]
+    have h3 := BPair.oneValue_trans
+      (BPair.oneValue_symm (dotP_append _ _ _ _ hGi)) h2
+    have hsw : (dotP ((ground.getAt [] B i).map BPair.swap)
+        (y.drop G.length)).oneValue
+        (ground.getAt BPair.unit (ground.getAt [] B i) k
+          * pivotProd (bordBy G B)).swap := by
+      refine BPair.oneValue_trans
+        (dotP_oneIndex ((ground.getAt [] B i).map BPair.swap)
+          (y.drop G.length) k
+          (by rw [ground.length_map, hBi, hdl])
+          (by rw [hdl]; exact hk)
+          (fun q hq hqk => by
+            rw [hdl] at hq
+            rw [ground.getAt_drop BPair.unit G.length y q]
+            have h := htail q hq
+            rw [if_neg hqk] at h
+            exact h)) ?_
+      rw [ground.getAt_map BPair.unit BPair.unit BPair.swap _ k
+          (by rw [hBi]; exact hk),
+        ground.getAt_drop BPair.unit G.length y k]
+      refine BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.mul_comm _ _)) ?_
+      rw [BPair.mul_swap]
+      exact ground.swap_congr
+        (BPair.oneValue_trans (BPair.mul_congr hs (BPair.oneValue_refl _))
+          (BPair.oneValue_of_eq (BPair.mul_comm _ _)))
+    have h4 := BPair.oneValue_trans
+      (BPair.oneValue_symm (BPair.add_congr (BPair.oneValue_refl _) hsw)) h3
+    exact (oneValue_of_null_swap
+      [dotP (ground.getAt [] G i) (y.take G.length)]
+      [ground.getAt BPair.unit (ground.getAt [] B i) k
+        * pivotProd (bordBy G B)] rfl ⟨h4, trivial⟩).1
+  have hGy : poly.oneValue (matVec G (y.take G.length))
+      (vecScale (pivotProd (bordBy G B))
+        (B.map (fun r => ground.getAt BPair.unit r k))) := by
+    refine poly.oneValue_of_entries _ _
+      (by rw [matVec_length, length_vecScale, ground.length_map, hBl])
+      (fun t ht => ?_)
+    rw [matVec_length] at ht
+    rw [getAt_matVec G _ t ht,
+      getAt_vecScale _ _ t (by rw [ground.length_map, hBl]; exact ht),
+      ground.getAt_map ([] : List BPair) BPair.unit _ B t
+        (by rw [hBl]; exact ht)]
+    refine BPair.oneValue_trans (dotN_read _ _) ?_
+    refine BPair.oneValue_trans (hact t ht) ?_
+    exact BPair.oneValue_of_eq (BPair.mul_comm _ _)
+  have hadj := adj_solve G hsq _ _ hhl hGy
+  have hsc := matVec_vecScale_free (adjM G) (pivotProd (bordBy G B))
+    (B.map (fun r => ground.getAt BPair.unit r k))
+  have hjA : j < (adjM G).length := by
+    rw [adjM_len G (Nat.lt_of_le_of_lt (Nat.zero_le j) hj)]
+    exact hj
+  have e1 := poly.oneValue_getAt j
+    (poly.oneValue_trans (poly.oneValue_symm hsc) hadj)
+  rw [getAt_vecScale _ _ j (by rw [matVec_length]; exact hjA),
+    getAt_matVec _ _ j hjA,
+    getAt_vecScale _ _ j (by rw [hhl]; exact hj),
+    ground.getAt_take BPair.unit G.length _ j hj] at e1
+  have hsoff : ¬ (ground.getAt BPair.unit y (G.length + k)).oneValue
+      BPair.unit :=
+    fun h => pivotProd_off _ (BPair.oneValue_trans (BPair.oneValue_symm hs) h)
+  have hE : (ground.getAt BPair.unit y (G.length + k)
+      * dotP (ground.getAt [] (adjM G) j)
+        (B.map (fun r => ground.getAt BPair.unit r k))).oneValue
+      (detD G * ground.getAt BPair.unit y j) := by
+    refine BPair.oneValue_trans
+      (BPair.mul_congr hs (BPair.oneValue_symm (dotN_read _ _))) ?_
+    exact BPair.oneValue_trans e1
+      (BPair.mul_congr (BPair.oneValue_symm (detD_eq G hG))
+        (BPair.oneValue_refl _))
+  exact ground.mulCancel hsoff
+    (BPair.oneValue_trans (cofactorAt_sound hsoff hE)
+      (BPair.oneValue_symm hE))
+
+/-- The descent adjugate's entry at a square list whose every
+leading minor sits off the sum's unit is the cofactor vector's own,
+`adjM`'s entry: the bordered walk at the unit family, the adjugate's
+row against the family's column the entry itself. -/
+private theorem adjMD_lead (G : Mat) (hG : rowsLen G.length G)
+    (hlead : ∀ k, k < G.length →
+      ¬ (detL (sel G (List.range (k + 1)) (List.range (k + 1)))).oneValue
+        BPair.unit)
+    (j k : Nat) (hj : j < G.length) (hk : k < G.length) :
+    (ground.getAt BPair.unit (ground.getAt [] (adjMD G) j) k).oneValue
+      (ground.getAt BPair.unit (cofVec G k) j) := by
+  have he := bord_entry G (idMat G.length) hG hlead (rowsLen_idMat G.length)
+    (length_idMat G.length) k hk j hj
+  show (ground.getAt BPair.unit (ground.getAt []
+      (ground.matOf G.length G.length (fun j k =>
+        cofactorAt (detD G * ground.getAt BPair.unit
+            (ground.getAt [] (kernelList (G.length + G.length)
+              (bordBy G (idMat G.length))) k) j)
+          (ground.getAt BPair.unit
+            (ground.getAt [] (kernelList (G.length + G.length)
+              (bordBy G (idMat G.length))) k) (G.length + k)))) j) k).oneValue _
+  rw [ground.matOf_entry ([] : List BPair) BPair.unit G.length G.length _ j k
+    hj hk]
+  refine BPair.oneValue_trans he ?_
+  have hjA : j < (adjM G).length := by
+    rw [adjM_len G (Nat.lt_of_le_of_lt (Nat.zero_le j) hj)]
+    exact hj
+  have hrowj : (ground.getAt [] (adjM G) j).length = G.length :=
+    rowsLen_getAt _ j (adjM_rowsLen G) hjA
+  have hcol : ((idMat G.length).map
+      (fun r => ground.getAt BPair.unit r k)).length = G.length := by
+    rw [ground.length_map, length_idMat]
+  refine BPair.oneValue_trans
+    (dotP_oneIndex _ _ k (by rw [hrowj, hcol]) (by rw [hcol]; exact hk)
+      (fun q hq hqk => by
+        rw [hcol] at hq
+        rw [ground.getAt_map ([] : List BPair) BPair.unit _ (idMat G.length) q
+            (by rw [length_idMat]; exact hq),
+          getAt_idMat G.length q k hq hk, if_neg (fun he => hqk he.symm)]
+        exact BPair.oneValue_refl _)) ?_
+  rw [ground.getAt_map ([] : List BPair) BPair.unit _ (idMat G.length) k
+      (by rw [length_idMat]; exact hk),
+    getAt_idMat G.length k k hk hk, if_pos rfl, adjM_read G j k hj hk]
+  exact BPair.mul_ofNat_one _
+
+/-- The descent adjugate's entry at an independent list's Gram is
+the cofactor vector's own, `adjM`'s entry: the Gram's every leading
+minor is the leading part's own Gram determinant off the sum's
+unit, and the bordered walk reads the adjugate there
+(`def:elim`'s bordered descent at `lem:lowerspan`'s independent
+list). -/
+theorem adjMD_cofVec (n : Nat) (L : Mat) (hind : indepRows n L)
+    (j k : Nat) (hj : j < L.length) (hk : k < L.length) :
+    (ground.getAt BPair.unit (ground.getAt [] (adjMD (gramM L)) j) k).oneValue
+      (ground.getAt BPair.unit (cofVec (gramM L) k) j) := by
+  have hGl : (gramM L).length = L.length := length_gramM L
+  refine adjMD_lead (gramM L) (gramM_sq L) ?_ j k
+    (by rw [hGl]; exact hj) (by rw [hGl]; exact hk)
+  intro k hk
+  rw [hGl] at hk
+  exact gram_lead n L hind k hk
+
+/-- The leading minor at a count: the leading rows' leading entries'
+determinant, `def:elim`'s $P_k$. -/
+def leadMinor (G : Mat) (k : Nat) : BPair :=
+  detL ((G.take k).map (fun r => r.take k))
+
+/-- The leading minor is the selection's determinant at the leading
+keys. -/
+private theorem leadMinor_sel (G : Mat) (k : Nat) (hk : k ≤ G.length) :
+    (leadMinor G k).oneValue
+      (detL (sel G (List.range k) (List.range k))) := by
+  have hl1 : ((G.take k).map (fun r => r.take k)).length = k := by
+    rw [ground.length_map, ground.length_take k G hk]
+  have hl2 : (sel G (List.range k) (List.range k)).length = k :=
+    (sel_len _ _ _).trans (ground.length_range k)
+  refine detL_congr_letters _ _ (hl1.trans hl2.symm) (fun a ha b hb => ?_)
+  rw [hl1] at ha hb
+  rw [ground.getAt_map ([] : List BPair) ([] : List BPair) _ (G.take k) a
+      (by rw [ground.length_take k G hk]; exact ha),
+    ground.getAt_take ([] : List BPair) k G a ha,
+    ground.getAt_take BPair.unit k _ b hb,
+    getAt_sel G (List.range k) (List.range k) a
+      (by rw [ground.length_range]; exact ha),
+    ground.getAt_range k a ha]
+  show (ground.getAt BPair.unit (ground.getAt [] G a) b).oneValue
+    (ground.getAt BPair.unit ((List.range k).map
+      (fun j => ground.getAt BPair.unit (ground.getAt [] G a) j)) b)
+  rw [ground.getAt_map 0 BPair.unit _ (List.range k) b
+      (by rw [ground.length_range]; exact hb),
+    ground.getAt_range k b hb]
+  exact BPair.oneValue_refl _
+
+/-- The one-column family's column is the vector itself. -/
+private theorem col_single : ∀ p : List BPair,
+    (p.map (fun x => [x])).map (fun r => ground.getAt BPair.unit r 0) = p
+  | [] => rfl
+  | x :: t => congrArg (x :: ·) (col_single t)
+
+/-- The descent read is the adjugate solve, coordinate by coordinate,
+at a square list whose every leading minor sits off the sum's unit
+and a pairing vector of its order: the bordered walk at the vector's
+balance partner, the adjugate's row against the vector the solve's
+own coordinate (`def:elim`'s bordered descent at one stated pairing
+vector). -/
+theorem adjD_eq (G : Mat) (hG : rowsLen G.length G)
+    (hlead : ∀ k, k < G.length →
+      ¬ (leadMinor G (k + 1)).oneValue BPair.unit)
+    (p : List BPair) (hp : p.length = G.length) :
+    poly.oneValue (adjD G p) (adjP G p) := by
+  have hlead' : ∀ k, k < G.length →
+      ¬ (detL (sel G (List.range (k + 1)) (List.range (k + 1)))).oneValue
+        BPair.unit :=
+    fun k hk h => hlead k hk
+      (BPair.oneValue_trans (leadMinor_sel G (k + 1) hk) h)
+  refine poly.oneValue_of_entries _ _ (by rw [length_adjD, length_adjP])
+    (fun j hj => ?_)
+  rw [length_adjD] at hj
+  have hL : ground.getAt BPair.unit (adjD G p) j
+      = cofactorAt (detD G * ground.getAt BPair.unit (solveK G p) j)
+          (ground.getAt BPair.unit (solveK G p) G.length) := by
+    show ground.getAt BPair.unit ((List.range G.length).map _) j = _
+    rw [ground.getAt_map 0 BPair.unit _ (List.range G.length) j
+        (by rw [ground.length_range]; exact hj),
+      ground.getAt_range G.length j hj]
+  rw [hL]
+  have hB : rowsLen 1 (p.map (fun x => [x])) :=
+    rowsLen_map _ 1 p (fun _ _ => rfl)
+  have hBl : (p.map (fun x => [x])).length = G.length := by
+    rw [ground.length_map, hp]
+  have he := bord_entry G (p.map (fun x => [x])) hG hlead' hB hBl 0
+    Nat.zero_lt_one j hj
+  rw [col_single p] at he
+  refine BPair.oneValue_trans he ?_
+  have hjA : j < (adjM G).length := by
+    rw [adjM_len G (Nat.lt_of_le_of_lt (Nat.zero_le j) hj)]
+    exact hj
+  have hrow : poly.oneValue (ground.getAt [] (adjM G) j)
+      (((List.range G.length).map (fun k => cofVec G k)).map
+        (fun r => ground.getAt BPair.unit r j)) := by
+    refine poly.oneValue_of_entries _ _ ?_ ?_
+    · rw [rowsLen_getAt _ j (adjM_rowsLen G) hjA, ground.length_map,
+        ground.length_mapRange]
+    · intro k hk
+      rw [rowsLen_getAt _ j (adjM_rowsLen G) hjA] at hk
+      rw [adjM_read G j k hj hk,
+        ground.getAt_map ([] : List BPair) BPair.unit
+          (fun r => ground.getAt BPair.unit r j)
+          ((List.range G.length).map (fun k => cofVec G k)) k
+          (by rw [ground.length_mapRange]; exact hk),
+        ground.getAt_map 0 ([] : List BPair) (fun k => cofVec G k)
+          (List.range G.length) k
+          (by rw [ground.length_range]; exact hk),
+        ground.getAt_range G.length k hk]
+      exact BPair.oneValue_refl _
+  refine BPair.oneValue_trans (dotP_oneValue_left _ _ p hrow) ?_
+  refine BPair.oneValue_trans (BPair.oneValue_of_eq (dotP_comm _ _)) ?_
+  exact BPair.oneValue_symm
+    (combo_getAt G.length p _ j (cofRows_rowsLen G) hj)
+
+/-- The descent read at an independent list's Gram is the adjugate
+solve: every leading minor is the leading part's own Gram
+determinant off the sum's unit (`lem:lowerspan`'s solve at the
+bordered descent). -/
+theorem adjD_gram (n : Nat) (L : Mat) (hind : indepRows n L)
+    (p : List BPair) (hp : p.length = L.length) :
+    poly.oneValue (adjD (gramM L) p) (adjP (gramM L) p) :=
+  adjD_eq (gramM L) (gramM_sq L)
+    (fun k hk h => gram_lead n L hind k
+      (by rw [length_gramM L] at hk; exact hk)
+      (BPair.oneValue_trans
+        (BPair.oneValue_symm (leadMinor_sel (gramM L) (k + 1) hk)) h))
+    p (by rw [hp, length_gramM])
+
+/-- The descent read at a determinant at the sum's unit is the
+unit family: every coordinate's cofactor reads at a first datum
+of equal members. -/
+theorem adjD_of_detUnit (G : Mat) (p : List BPair)
+    (hdet : (detD G).oneValue BPair.unit) : poly.unitTail (adjD G p) := by
+  refine unitTail_of_getAt _ (fun j hj => ?_)
+  rw [length_adjD] at hj
+  show (ground.getAt BPair.unit ((List.range G.length).map _) j).oneValue
+    BPair.unit
+  rw [ground.getAt_map 0 BPair.unit _ (List.range G.length) j
+      (by rw [ground.length_range]; exact hj),
+    ground.getAt_range G.length j hj,
+    cofactorAt_eqMem _ _ (BPair.eqMem_of_oneValue (oneValue_unit_mul hdet))]
+  exact BPair.oneValue_refl _
+
+/-- At a Gram determinant at the sum's unit the adjugate solve's
+combination is the unit family: the combination pairs every row at
+the row's own read of the solve, the determinant's multiple of the
+row's pairing datum, at the unit, and the positive pairing reads
+the combination off (`lem:lowerspan`: a determinant of equal
+members reads its adjugate column as a dependency perpendicular to
+the list). -/
+private theorem combo_adjP_null (n : Nat) (L : Mat) (hL : rowsLen n L)
+    (v : List BPair) (hdet : (detL (gramM L)).oneValue BPair.unit) :
+    poly.unitTail
+      (combo n (adjP (gramM L) (L.map (fun r => dotP r v))) L) := by
+  refine combo_self_null n L hL _ (fun i hi => ?_)
+  refine BPair.oneValue_trans
+    (dotP_combo _ L (ground.getAt [] L i) n hL) ?_
+  rw [← gramM_row L i hi, dotP_comm]
+  refine BPair.oneValue_trans
+    (adjP_read (gramM L) (gram_sqAt L) _ (ground.length_map _ L) i hi) ?_
+  exact BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl _) hdet) (BPair.mul_unit _)
+
+/-- The walk's residual reads the assignment folds' entry for
+entry at a family of the stated width and every vector: at a Gram
+determinant off the sum's unit the family is independent, its
+Gram square at its own count with every leading minor off the
+unit, and the pairing data sit at the rows' count; at the
+determinant at the unit both combinations are the unit family,
+the descent read's cofactors at equal members and the adjugate
+solve's combination the dependency perpendicular to the list; and
+the two combinations share their count. -/
+theorem residW_eq (n : Nat) (L : Mat) (v : List BPair)
+    (hL : rowsLen n L) :
+    poly.oneValue (residW n L v) (residV n L v) := by
+  refine poly.oneValue_trans (poly.pnorm_oneValue _) ?_
+  refine vecAdd_congr2 _ _ _ _
+    (by rw [length_vecScale, length_vecScale])
+    (by rw [ground.length_map, ground.length_map]
+        exact length_combo_congr n _ _ L
+          (by rw [length_adjD, length_adjP]))
+    (vecScale_congr (detD_eq _ (gramM_sq L)) v) ?_
+  refine poly.swapMap_oneValue ?_
+  match (inferInstance : Decidable ((detL (gramM L)).oneValue BPair.unit)) with
+  | isTrue hdet =>
+    exact poly.unitTail_oneValue
+      (unitTail_combo_of n _ L (adjD_of_detUnit _ _
+        (BPair.oneValue_trans (detD_eq _ (gramM_sq L)) hdet)))
+      (combo_adjP_null n L hL v hdet)
+  | isFalse hdet =>
+    exact combo_congr n _ _ L (by rw [length_adjD, length_adjP])
+      (adjD_gram n L ⟨hL, hdet⟩ _ (ground.length_map _ L))
+
+/-- The walk's residual reads the family's own width. -/
+theorem length_residW (n : Nat) (L : Mat) (v : List BPair)
+    (hLn : rowsLen n L) (hv : v.length = n) :
+    (residW n L v).length = n := by
+  show (poly.pnorm _).length = n
+  rw [poly.pnorm_length]
+  refine ground.length_zipWith BPair.add _ _ n ?_ ?_
+  · rw [length_vecScale, hv]
+  · rw [ground.length_map, length_combo n _ L hLn]
+
+/-- The collected list at the walk's residual: one member joined
+per refusal, the test read at `residW`, the list `collectOf`'s own
+(`collectW_eq`). -/
+def collectW (n : Nat) (L : Mat) : Mat :=
+  L.foldl (fun B r => if poly.unitTail (residW n B r) then B else B ++ [r]) []
+
+/-- The two collections' folds agree at every seed of the rows'
+width and every decision of the test: each refusal is the one tail
+read at two values of one residual, and a joined row keeps the
+seed's width. -/
+private theorem collectW_go (n : Nat) : ∀ (L B : Mat)
+    (dec : (B : Mat) → (r : List BPair) →
+      Decidable (poly.unitTail (residV n B r))),
+    rowsLen n L → rowsLen n B →
+    L.foldl (fun B r => if poly.unitTail (residW n B r) then B
+      else B ++ [r]) B
+    = L.foldl (fun B r => @ite _ (poly.unitTail (residV n B r))
+      (dec B r) B (B ++ [r])) B
+  | [], _, _, _, _ => rfl
+  | r :: L, B, dec, hL, hB => by
+    show List.foldl _ (if poly.unitTail (residW n B r) then B
+        else B ++ [r]) L
+      = List.foldl _ (@ite _ (poly.unitTail (residV n B r))
+        (dec B r) B (B ++ [r])) L
+    by_cases h : poly.unitTail (residV n B r)
+    · rw [if_pos h, if_pos (poly.oneValue_unitTail (residW_eq n B r hB) h)]
+      exact collectW_go n L B dec hL.2 hB
+    · rw [if_neg h, if_neg (fun hw => h
+        (poly.unitTail_oneValue_right hw (residW_eq n B r hB)))]
+      exact collectW_go n L (B ++ [r]) dec hL.2
+        (rowsLen_append n hB ⟨hL.1, trivial⟩)
+
+/-- The collection at the walk is the collection, at a family of
+the stated width. -/
+theorem collectW_eq (n : Nat) (L : Mat) (hL : rowsLen n L) :
+    collectW n L = collectOf n L :=
+  collectW_go n L [] (fun B r => poly.decUnitTail (residV n B r)) hL
+    trivial
+
+/-- The collection at the walk is vacant at a unit-tailed family:
+every residual against the vacant collection reads the row's own
+unit tail (`collect_nil_of_units` at the walk's read). -/
+theorem collectW_nil_of_units (n : Nat) :
+    ∀ L : Mat, (∀ k, k < L.length →
+        poly.unitTail (ground.getAt [] L k)) →
+      collectW n L = []
+  | [], _ => rfl
+  | r :: t, h => by
+    have hres : poly.unitTail (residW n [] r) :=
+      poly.oneValue_unitTail (residW_eq n [] r trivial)
+        (unitTail_vecAdd_of
+          (unitTail_vecScale (detL (gramM ([] : Mat))) r
+            (h 0 (Nat.succ_pos t.length)))
+          (poly.unitTail_swapMap _ (poly.unitTail_replicate n)))
+    show (r :: t).foldl
+        (fun B s =>
+          if poly.unitTail (residW n B s) then B else B ++ [s]) [] = []
+    rw [show (r :: t).foldl
+          (fun B s =>
+            if poly.unitTail (residW n B s) then B else B ++ [s]) []
+        = t.foldl
+            (fun B s =>
+              if poly.unitTail (residW n B s) then B else B ++ [s])
+            (if poly.unitTail (residW n [] r) then [] else [] ++ [r])
+        from rfl,
+      if_pos hres]
+    exact collectW_nil_of_units n t
+      (fun k hk => h (k + 1) (Nat.succ_lt_succ hk))
+
+/-- The span read's decision: the shape reads with the residual's
+unit tail decided at the walk over the collection at the walk,
+transported across the two equalities (`collectW_eq`,
+`residW_eq`) at the collection's width. -/
+instance (n : Nat) (L : Mat) (v : List BPair) : Decidable (spanRel n L v) :=
+  decidable_of_iff
+    (rowsLen n L ∧ v.length = n
+      ∧ poly.unitTail (residW n (collectW n L) v))
+    ⟨fun h => by
+        obtain ⟨h1, h2, h3⟩ := h
+        rw [collectW_eq n L h1] at h3
+        exact ⟨h1, h2, poly.unitTail_oneValue_right h3
+          (residW_eq n _ v (collect_rowsLen n L h1))⟩,
+     fun h => by
+        obtain ⟨h1, h2, h3⟩ := h
+        refine ⟨h1, h2, ?_⟩
+        rw [collectW_eq n L h1]
+        exact poly.oneValue_unitTail
+          (residW_eq n _ v (collect_rowsLen n L h1)) h3⟩
+
+/-- A full-length independent list spans (`lem:lowerspan`'s own
+sentence): a vector off the list's span joins it at the
+membership's refusal, the joined list independent one past the
+count, against the width bound. -/
+theorem span_of_full (n : Nat) (L : Mat) (v : List BPair)
+    (hL : L.length = n) (hind : indepRows n L)
+    (hv : v.length = n) : spanRel n L v :=
+  match (inferInstance : Decidable (spanRel n L v)) with
+  | isTrue h => h
+  | isFalse hns =>
+    absurd
+      (indep_bound n (L ++ [v]) (rowsLen_append n hind.1 ⟨hv, trivial⟩)
+        (indep_extend n L v hind.1 hv hind hns))
+      (fun hb => Nat.lt_irrefl n
+        (by rw [ground.length_append, hL] at hb; exact hb))
+
+/-- An independent extended list refuses the member: the span's
+witness against the extended list's independence
+(`indep_refuseE`). -/
+theorem indep_refuse (n : Nat) (L : Mat) (v : List BPair)
+    (hind : indepRows n (L ++ [v])) : ¬ spanRel n L v :=
+  fun hsp => indep_refuseE n L v hind (span_elim hsp)
+
+/-- The joined read passes exactly at the extended family's
+independence: the extended list is square at its rows, and its Gram
+determinant sits off the sum's unit at the walk's read exactly where
+it does at the fold's (`detD_eq`). -/
+theorem joinIndep_indep (n : Nat) (L : Mat) (v : List BPair)
+    (hLn : rowsLen n L) (hv : v.length = n) :
+    joinIndep dotP L v = true ↔ indepRows n (L ++ [v]) := by
+  constructor
+  · intro h
+    refine ⟨rowsLen_append n hLn ⟨hv, trivial⟩, fun hd => ?_⟩
+    have hD : (detD (gramM (L ++ [v]))).oneValue BPair.unit :=
+      BPair.oneValue_trans (detD_eq _ (gramM_sq _)) hd
+    have hf : joinIndep dotP L v = false := by
+      show (if (detD (gramM (L ++ [v]))).oneValue BPair.unit then false
+        else true) = false
+      exact if_pos hD
+    exact Bool.noConfusion (hf.symm.trans h)
+  · intro hind
+    have hnd : ¬ (detD (gramM (L ++ [v]))).oneValue BPair.unit :=
+      fun hD => hind.2 (BPair.oneValue_trans
+        (BPair.oneValue_symm (detD_eq _ (gramM_sq _))) hD)
+    show (if (detD (gramM (L ++ [v]))).oneValue BPair.unit then false
+      else true) = true
+    exact if_neg hnd
+
+/-- At an independent list the joined read refuses exactly at the
+span: a refused member joins the span at `indep_extend`'s read of
+the decidable membership, and a span member refuses at the
+extended list's independence (`indep_refuse`). -/
+theorem joinIndep_span (n : Nat) (L : Mat) (v : List BPair)
+    (hv : v.length = n) (hind : indepRows n L) :
+    joinIndep dotP L v = false ↔ spanRel n L v := by
+  constructor
+  · intro h
+    match (inferInstance : Decidable (spanRel n L v)) with
+    | isTrue hsp => exact hsp
+    | isFalse hns =>
+      exact absurd h (fun hf => Bool.noConfusion (hf.symm.trans
+        ((joinIndep_indep n L v hind.1 hv).2
+          (indep_extend n L v hind.1 hv hind hns))))
+  · intro hsp
+    cases hb : joinIndep dotP L v with
+    | false => rfl
+    | true =>
+      exact absurd hsp (indep_refuse n L v
+        ((joinIndep_indep n L v hind.1 hv).1 hb))
+
+/-- The cleared member reads its walk's residual joined to the
+projection combination, `residV_expand` at the walk's read. -/
+theorem residW_expand (n : Nat) (L : Mat) (v : List BPair)
+    (hLn : rowsLen n L) (hv : v.length = n) :
+    poly.oneValue (vecScale (detL (gramM L)) v)
+      (vecAdd (residW n L v)
+        (combo n (adjP (gramM L) (L.map (fun r => dotP r v))) L)) :=
+  poly.oneValue_trans (residV_expand n L v hLn hv)
+    (vecAdd_congr _ _ _
+      (by rw [length_residV n L v hLn hv, length_residW n L v hLn hv])
+      (poly.oneValue_symm (residW_eq n L v hLn)))
+
+/-- The walk's residual sits against every row at the sum's unit,
+`resid_perp` at the walk's read. -/
+theorem residW_perp (n : Nat) (L : Mat) (v : List BPair)
+    (hLn : rowsLen n L) (hv : v.length = n) (i : Nat)
+    (hi : i < L.length) :
+    (dotP (ground.getAt [] L i) (residW n L v)).oneValue
+      BPair.unit :=
+  BPair.oneValue_trans
+    (dotP_oneValue_right _ _ _ (residW_eq n L v hLn))
+    (resid_perp n L v hLn hv i hi)
+
+/-- The walk's residual against a vector perpendicular to the family
+and to the vector reads the sum's unit, `resid_perp_ext` at the
+walk's read. -/
+theorem residW_perp_ext (n : Nat) (C : Mat)
+    (v r : List BPair) (hC : rowsLen n C)
+    (hv : v.length = n) (hr : r.length = n)
+    (hvr : (dotP v r).oneValue BPair.unit)
+    (hCr : ∀ k, k < C.length →
+      (dotP (ground.getAt [] C k) r).oneValue BPair.unit) :
+    (dotP (residW n C v) r).oneValue BPair.unit := by
+  rw [dotP_comm]
+  refine BPair.oneValue_trans
+    (dotP_oneValue_right r _ _ (residW_eq n C v hC)) ?_
+  rw [dotP_comm]
+  exact resid_perp_ext n C v r hC hv hr hvr hCr
+
+/-- The walk's residual of a family inside a second family's span
+stays in that span, `spanRel_residV` at the walk's read. -/
+theorem spanRel_residW (n : Nat) (L M : Mat)
+    (v : List BPair) (hLn : rowsLen n L) (hv : v.length = n)
+    (hMn : rowsLen n M)
+    (hLsp : ∀ k, k < L.length →
+      spanRel n M (ground.getAt [] L k))
+    (hvsp : spanRel n M v) :
+    spanRel n M (residW n L v) :=
+  spanRel_congr n M _ _ (poly.oneValue_symm (residW_eq n L v hLn))
+    (spanRel_residV n L M v hLn hv hMn hLsp hvsp)
+    (length_residW n L v hLn hv)
 
 /-- The polynomial carrier's laws bundle at the balance-pair
 entries, the tower's one lift at the entry bundle's own. -/

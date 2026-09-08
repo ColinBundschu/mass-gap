@@ -284,6 +284,45 @@ example : 0 < ground.countOf (ground.adjSwap 1 [2, 0, 1])
 example : ground.countOf (ground.adjSwap 1 [2, 0, 1])
     (places.perms 3) = 1 := by decide +kernel
 
+/-! The enumeration's blocking at the head letter, decided at a
+content of three letters against the expansion and through the
+theorem; and the enumeration at a stated prefix: the arrangements
+opening at a word are the word joined to the withdrawn content's
+arrangements in the enumeration's own order, vacant at a letter
+unoccupied along the withdrawal, decided at the unit content over
+four letters and at a repeated letter, and through the theorem. -/
+
+example : places.monomialsAt [1, 2, 0]
+    = (List.range 3).flatMap (fun i =>
+        if 0 < ground.getAt 0 [1, 2, 0] i then
+          (places.monomialsAt (ground.dipAt i [1, 2, 0])).map (fun m => i :: m)
+        else []) := by decide +kernel
+example : places.monomialsAt [1, 2, 0]
+    = (List.range 3).flatMap (fun i =>
+        if 0 < ground.getAt 0 [1, 2, 0] i then
+          (places.monomialsAt (ground.dipAt i [1, 2, 0])).map (fun m => i :: m)
+        else []) :=
+  places.monomialsAt_expand [1, 2, 0] (by decide +kernel)
+
+example : (places.monomialsAt [1, 1, 1, 1]).filter
+      (fun ls => ls.take 2 == [2, 0])
+    = [[2, 0, 1, 3], [2, 0, 3, 1]]
+    ∧ places.wordOccupied [2, 0] [1, 1, 1, 1] = true
+    ∧ places.withdrawn [2, 0] [1, 1, 1, 1] = [0, 1, 0, 1]
+    ∧ (places.monomialsAt [1, 1, 1, 1]).filter
+        (fun ls => ls.take 2 == [2, 2]) = []
+    ∧ places.wordOccupied [2, 2] [1, 1, 1, 1] = false
+    ∧ (places.monomialsAt [1, 2, 0]).filter
+        (fun ls => ls.take 2 == [1, 1]) = [[1, 1, 0]]
+    ∧ places.wordOccupied [1, 1] [1, 2, 0] = true := by decide +kernel
+example : (places.monomialsAt [1, 1, 1, 1]).filter
+      (fun ls => ls.take 2 == [2, 0])
+    = if places.wordOccupied [2, 0] [1, 1, 1, 1] then
+        (places.monomialsAt (places.withdrawn [2, 0] [1, 1, 1, 1])).map
+          (fun q => [2, 0] ++ q)
+      else [] :=
+  places.monomialsAt_prefix [2, 0] [1, 1, 1, 1]
+
 /-! The tie tier at strictly descending displays: the unit-content
 gap read at both directions, and the raise's rigidity — the
 permuted raise forced back to the identity with the raise the

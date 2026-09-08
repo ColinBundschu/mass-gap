@@ -87,7 +87,7 @@ shared clearing withdrawn.
 
 Clause (iv), the scale comparison.  The adjugate's solve read
 returns a solved vector at the determinant's scale
-(`inertia.adj_solve`, `def:elim`'s adjugate identity read at a
+(`elim.adj_solve`, `def:elim`'s adjugate identity read at a
 vector), so two solved systems at one shape compare: at the coefficients' site datum
 at the shared shape and the data's difference at the shared width,
 the solutions' difference at the first determinant's scale reads the
@@ -3429,7 +3429,7 @@ theorem scale_compare {n : Nat} (S S' D : elim.Mat)
       exact BPair.oneValue_trans
         (BPair.oneValue_of_eq (BPair.add_comm _ _))
         (BPair.swap_add_null (BPair.oneValue_refl _))
-  exact poly.oneValue_symm (inertia.adj_solve S hsq _ _ hzl hact)
+  exact poly.oneValue_symm (elim.adj_solve S hsq _ _ hzl hact)
 
 /-! Clause (v)'s datum arm: a single-region datum read is a stream
 read at banded weights — the width-one datum's form read at the
@@ -3939,5 +3939,165 @@ theorem blockFold_sq (diag off : List elim.Mat)
     (BPair.addQ_congr (qOneValue_unit (seedQ_nil W _ rfl us)) (qOneValue_refl _))
     (BPair.addQ_unitL _)
 
+open elim inertia
+
+/-! The height's two lines (`lem:momentfold` (vi)): a root list at the
+count nought below the floor and two below the cap holds two distinct
+located roots in the lines' band, the window's second root at or
+below the cap and its ground at or beyond the floor (`two_lines`,
+`two_lines_at`); and the cap line's two lower units at two stated
+members perpendicular in the gram (`cap_line`), the count read at
+two or beyond at every split of the datum there (`cap_count`, at
+`lem:inertia`'s forcing clause at two vectors). -/
+
+/-- A root list at the count nought below the floor line and two
+below the cap line holds two distinct located roots in the lines'
+band, each at or beyond the floor and below the cap: the window's
+second root sits at or below the cap and its ground at or beyond the
+floor. -/
+theorem two_lines (roots : List (BPair × Pos)) (fn fd cn cd : Pos)
+    (h0 : split.rootsBelow roots fn fd = 0)
+    (h2 : 2 ≤ split.rootsBelow roots cn cd) :
+    ∃ i j, i < roots.length ∧ j < roots.length ∧ i ≠ j
+      ∧ ¬ ((getAt (BPair.unit, Pos.one) roots i).1.scale fd
+          < BPair.ofPos (fn * (getAt (BPair.unit, Pos.one) roots i).2))
+      ∧ ¬ ((getAt (BPair.unit, Pos.one) roots j).1.scale fd
+          < BPair.ofPos (fn * (getAt (BPair.unit, Pos.one) roots j).2))
+      ∧ (getAt (BPair.unit, Pos.one) roots i).1.scale cd
+          < BPair.ofPos (cn * (getAt (BPair.unit, Pos.one) roots i).2)
+      ∧ (getAt (BPair.unit, Pos.one) roots j).1.scale cd
+          < BPair.ofPos (cn * (getAt (BPair.unit, Pos.one) roots j).2) := by
+  have h2' : 2 ≤ countBy (fun r : BPair × Pos =>
+      decide (r.1.scale cd < BPair.ofPos (cn * r.2))) roots := by
+    rw [← countP_read]
+    exact h2
+  have h0' : countBy (fun r : BPair × Pos =>
+      decide (r.1.scale fd < BPair.ofPos (fn * r.2))) roots = 0 := by
+    rw [← countP_read]
+    exact h0
+  obtain ⟨i, j, hi, hj, hij, hpi, hpj⟩ :=
+    two_of_countBy (BPair.unit, Pos.one) _ roots h2'
+  have hfloor : ∀ r, r ∈ roots → ¬ (r.1.scale fd < BPair.ofPos (fn * r.2)) := by
+    intro r hr hlt
+    have hpos : 0 < countBy (fun r : BPair × Pos =>
+        decide (r.1.scale fd < BPair.ofPos (fn * r.2))) roots :=
+      countBy_pos_of_mem _ roots r hr (decide_eq_true hlt)
+    rw [h0'] at hpos
+    exact Nat.lt_irrefl 0 hpos
+  exact ⟨i, j, hi, hj, hij,
+    hfloor _ (mem_getAt _ roots i hi), hfloor _ (mem_getAt _ roots j hj),
+    of_decide_eq_true hpi, of_decide_eq_true hpj⟩
+
+/-- The two lines at the pencil's count reads: at a floor level whose
+count read is vacant and a cap level whose count read is two or
+beyond, `split.countRead`'s tie of the split's count to the roots
+below the level, two distinct located roots sit in the lines' band,
+the window's second root at or below the cap and its ground at or
+beyond the floor. -/
+theorem two_lines_at {o : Nat} (H G : Mat) (roots : List (BPair × Pos))
+    (fn fd cn cd : Pos) (spF spC : Split o)
+    (hF : split.countRead H G roots fn fd spF) (h0 : revAt spF = 0)
+    (hC : split.countRead H G roots cn cd spC) (h2 : 2 ≤ revAt spC) :
+    ∃ i j, i < roots.length ∧ j < roots.length ∧ i ≠ j
+      ∧ ¬ ((getAt (BPair.unit, Pos.one) roots i).1.scale fd
+          < BPair.ofPos (fn * (getAt (BPair.unit, Pos.one) roots i).2))
+      ∧ ¬ ((getAt (BPair.unit, Pos.one) roots j).1.scale fd
+          < BPair.ofPos (fn * (getAt (BPair.unit, Pos.one) roots j).2))
+      ∧ (getAt (BPair.unit, Pos.one) roots i).1.scale cd
+          < BPair.ofPos (cn * (getAt (BPair.unit, Pos.one) roots i).2)
+      ∧ (getAt (BPair.unit, Pos.one) roots j).1.scale cd
+          < BPair.ofPos (cn * (getAt (BPair.unit, Pos.one) roots j).2) := by
+  refine two_lines roots fn fd cn cd ?_ ?_
+  · rw [← hF.2.2.2.2.2]; exact h0
+  · rw [← hC.2.2.2.2.2]; exact h2
+
+/-- The cap line's two lower units (`lem:momentfold`(vi)'s cap at
+two stated members perpendicular in the gram): at a line beyond the
+two members' diagonal reads' sum, the compressed pair's site datum
+reads the first member's diagonal on the lower side, the read's gap
+to the line at the member's gram, and the cross read's square below
+four times the two diagonals' product, the members' gaps' product
+beyond the reads' product by the line's gap at the products' shape;
+the two reads are `lem:inertia`'s forcing clause at two vectors
+(`inertia.capForcing`), the compression's counts at or below the full
+form's. -/
+theorem cap_line (qSu qSv cross a b ru rv gu gv δ : BPair)
+    (hSu : qSu.oneValue (a + (δ * gu).swap)) (hSv : qSv.oneValue (b + (δ * gv).swap))
+    (ha : a.oneValue (ru * gu)) (hb : b.oneValue (rv * gv))
+    (hcross : cross * cross ≤ BPair.ofNat 4 * (a * b))
+    (hδ : ru + rv < δ) (hgu : BPair.unit < gu) (hgv : BPair.unit < gv)
+    (hru : BPair.unit ≤ ru) (hrv : BPair.unit ≤ rv) :
+    qSu < BPair.unit ∧ cross * cross < BPair.ofNat 4 * (qSu * qSv) := by
+  have hδpos : BPair.unit < δ := leB_ltB_trans (unitLeAdd hru hrv) hδ
+  have hruδ : ru < δ := leB_ltB_trans (leB_congr_left (BPair.add_unit ru) (leB_add (leB_refl ru) hrv)) hδ
+  have hrvδ : rv < δ := leB_ltB_trans (leB_congr_left (BPair.unit_add rv) (leB_add hru (leB_refl rv))) hδ
+  -- a member below its partner joins the partner's swap under the unit
+  have below : ∀ {A B : BPair}, A < B → A + B.swap < BPair.unit := fun h =>
+    BPair.lt_congr (BPair.oneValue_refl _) (BPair.add_swap_null _) (ltB_add h (leB_refl _))
+  refine ⟨?_, ?_⟩
+  · exact BPair.lt_congr (BPair.oneValue_symm (BPair.oneValue_trans hSu
+      (BPair.add_congr ha (BPair.oneValue_refl _)))) (BPair.oneValue_refl _)
+      (below (ltB_mulPos hruδ hgu))
+  · -- the product of the two lower reads is the gaps' product against the grams
+    have hP : (qSu * qSv).oneValue ((δ + ru.swap) * (δ + rv.swap) * (gu * gv)) := by
+      have eu : ∀ r g : BPair, (r * g + (δ * g).swap).oneValue ((δ + r.swap) * g).swap := by
+        intro r g
+        rw [BPair.right_distrib, BPair.swap_mul, ← BPair.swap_add, BPair.swap_swap]
+        exact BPair.oneValue_of_eq (BPair.add_comm _ _)
+      refine BPair.oneValue_trans (BPair.mul_congr
+        (BPair.oneValue_trans hSu (BPair.oneValue_trans
+          (BPair.add_congr ha (BPair.oneValue_refl _)) (eu ru gu)))
+        (BPair.oneValue_trans hSv (BPair.oneValue_trans
+          (BPair.add_congr hb (BPair.oneValue_refl _)) (eu rv gv)))) ?_
+      rw [BPair.swap_mul_swap]
+      refine BPair.oneValue_of_eq ?_
+      rw [← BPair.mul_assoc, BPair.mul_right_comm (δ + ru.swap) gu (δ + rv.swap),
+        BPair.mul_assoc]
+    -- the gaps' product exceeds the reads' product at the scale's own gap
+    have hPQ : ru * rv < (δ + ru.swap) * (δ + rv.swap) := by
+      have hgap : BPair.unit < δ * δ + ((ru + rv) * δ).swap :=
+        BPair.lt_congr (BPair.add_swap_null _) (BPair.oneValue_refl _)
+          (ltB_add (ltB_mulPos hδ hδpos) (leB_refl _))
+      refine ltB_trans_le (ltB_addPos hgap) (leB_congr_right (BPair.oneValue_of_eq ?_) (leB_refl _))
+      rw [BPair.left_distrib, BPair.right_distrib δ ru.swap δ,
+        BPair.right_distrib δ ru.swap rv.swap, BPair.swap_mul, BPair.mul_swap,
+        BPair.swap_mul_swap, BPair.right_distrib ru rv δ, ← BPair.swap_add,
+        BPair.mul_comm δ rv]
+      rw [BPair.add_comm (ru * rv), ← BPair.add_assoc (δ * δ) (ru * δ).swap (rv * δ).swap,
+        BPair.add_assoc (δ * δ + (ru * δ).swap)]
+    have hab : (a * b).oneValue (ru * rv * (gu * gv)) :=
+      BPair.oneValue_trans (BPair.mul_congr ha hb) (BPair.oneValue_of_eq (by
+        rw [BPair.mul_assoc ru gu (rv * gv), BPair.mul_left_comm gu rv gv,
+          ← BPair.mul_assoc ru rv]))
+    have hlt : BPair.ofNat 4 * (a * b) < BPair.ofNat 4 * (qSu * qSv) := by
+      refine BPair.lt_congr (BPair.mul_congr (BPair.oneValue_refl _) (BPair.oneValue_symm hab))
+        (BPair.mul_congr (BPair.oneValue_refl _) (BPair.oneValue_symm hP)) ?_
+      refine BPair.lt_congr (BPair.oneValue_of_eq (BPair.mul_comm _ _))
+        (BPair.oneValue_of_eq (BPair.mul_comm _ _)) ?_
+      exact ltB_mulPos (ltB_mulPos hPQ (unitLtMul hgu hgv)) (unitLtNat (by decide))
+    exact leB_ltB_trans hcross hlt
+
+/-- The count read at the cap line (`lem:momentfold`(vi)): at a
+symmetric datum, the compressed pair's site datum at the line, whose
+forms at two stated members read the members' diagonal reads against
+their grams less the line's multiple of the grams, with the cross
+read's square at or below four times the reads' product, every split
+of the datum reads the reversal count at two or beyond at a line
+beyond the reads' sum, `cap_line` at `lem:inertia`'s forcing clause
+at two vectors. -/
+theorem cap_count {o : Nat} (S : Mat) (x x' : List BPair) (a b ru rv gu gv δ : BPair)
+    (hx : x.length = o) (hx' : x'.length = o)
+    (hSu : (quadForm S x).oneValue (a + (δ * gu).swap))
+    (hSv : (quadForm S x').oneValue (b + (δ * gv).swap))
+    (ha : a.oneValue (ru * gu)) (hb : b.oneValue (rv * gv))
+    (hcross : (dotN x (matVec S x') + dotN x' (matVec S x))
+        * (dotN x (matVec S x') + dotN x' (matVec S x)) ≤ BPair.ofNat 4 * (a * b))
+    (hδ : ru + rv < δ) (hgu : BPair.unit < gu) (hgv : BPair.unit < gv)
+    (hru : BPair.unit ≤ ru) (hrv : BPair.unit ≤ rv) :
+    ∀ sp : Split o, splitRead S sp → 2 ≤ revAt sp := by
+  have h := cap_line (quadForm S x) (quadForm S x')
+    (dotN x (matVec S x') + dotN x' (matVec S x)) a b ru rv gu gv δ
+    hSu hSv ha hb hcross hδ hgu hgv hru hrv
+  exact capForcing S x x' hx hx' h.1 h.2
 
 end momentfold

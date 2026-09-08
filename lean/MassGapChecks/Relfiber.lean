@@ -134,8 +134,8 @@ example : tensorV (tensorV vU vV) vW = tensorV vU (tensorV vV vW) := by
 example : tensorM (tensorM mA mB) mC = tensorM mA (tensorM mB mC) := by
   decide +kernel
 
-example : tensorM (inertia.idMat 2) (inertia.idMat 3)
-    = inertia.idMat (2 * 3) := by decide +kernel
+example : tensorM (elim.idMat 2) (elim.idMat 3)
+    = elim.idMat (2 * 3) := by decide +kernel
 
 /-! ### Linearity in each slot -/
 
@@ -455,7 +455,7 @@ at four committed vectors. -/
 
 private def gTwoBlk : Mat := [[w2, w1], [w1, w2]]
 private def spTwoBlk : inertia.Split 2 :=
-  ⟨⟨inertia.idMat 2, rfl⟩, ⟨inertia.idMat 2, rfl⟩,
+  ⟨⟨elim.idMat 2, rfl⟩, ⟨elim.idMat 2, rfl⟩,
    [.two w2 w1 w2], 0, rfl⟩
 
 example : inertia.splitRead gTwoBlk spTwoBlk := by decide +kernel
@@ -514,16 +514,16 @@ example : ¬ (inertia.quadForm (tensorM gG gG) v4 < BPair.unit) :=
 private def mP : Mat := [[w2, w1], [w1, w2]]
 
 example : matOneValue
-    (matMul (tensorM gG (inertia.idMat 2))
-      (tensorM (inertia.idMat 2) mP))
-    (matMul (tensorM (inertia.idMat 2) mP)
-      (tensorM gG (inertia.idMat 2))) := by decide +kernel
+    (matMul (tensorM gG (elim.idMat 2))
+      (tensorM (elim.idMat 2) mP))
+    (matMul (tensorM (elim.idMat 2) mP)
+      (tensorM gG (elim.idMat 2))) := by decide +kernel
 
 example : matOneValue
-    (matMul (tensorM gG (inertia.idMat 2))
-      (tensorM (inertia.idMat 2) mP))
-    (matMul (tensorM (inertia.idMat 2) mP)
-      (tensorM gG (inertia.idMat 2))) :=
+    (matMul (tensorM gG (elim.idMat 2))
+      (tensorM (elim.idMat 2) mP))
+    (matMul (tensorM (elim.idMat 2) mP)
+      (tensorM gG (elim.idMat 2))) :=
   comm_shift 2 2 gG mP (by decide +kernel) (by decide +kernel)
 
 example : matOneValue
@@ -760,36 +760,36 @@ private def tTw : Mat := [[n2, n1], [n0, n1]]
 example : matOneValue (matMul fibV (transposeM fibV)) dD := by decide +kernel
 
 example : matOneValue
-    (matMul (tensorM xX (inertia.idMat 3)) (tensorM (inertia.idMat 2) pP))
-    (matMul (tensorM (inertia.idMat 2) pP)
-      (tensorM xX (inertia.idMat 3))) :=
+    (matMul (tensorM xX (elim.idMat 3)) (tensorM (elim.idMat 2) pP))
+    (matMul (tensorM (elim.idMat 2) pP)
+      (tensorM xX (elim.idMat 3))) :=
   comm_shift 2 3 xX pP (by decide +kernel) (by decide +kernel)
 
 example : matOneValue
-    (matMul (tensorM xX (inertia.idMat 3)) (tensorM (inertia.idMat 2) pP))
-    (matMul (tensorM (inertia.idMat 2) pP)
-      (tensorM xX (inertia.idMat 3))) := by decide +kernel
+    (matMul (tensorM xX (elim.idMat 3)) (tensorM (elim.idMat 2) pP))
+    (matMul (tensorM (elim.idMat 2) pP)
+      (tensorM xX (elim.idMat 3))) := by decide +kernel
 
 example : matOneValue
-    (matMul (transposeM (tensorM (inertia.idMat 2) (transposeM fibV)))
-      (matMul (tensorM xX (inertia.idMat 3))
-        (tensorM (inertia.idMat 2) (transposeM fibV))))
-    (tensorM (matMul (transposeM (inertia.idMat 2)) (matMul xX (inertia.idMat 2)))
+    (matMul (transposeM (tensorM (elim.idMat 2) (transposeM fibV)))
+      (matMul (tensorM xX (elim.idMat 3))
+        (tensorM (elim.idMat 2) (transposeM fibV))))
+    (tensorM (matMul (transposeM (elim.idMat 2)) (matMul xX (elim.idMat 2)))
       (matMul (transposeM (transposeM fibV))
-        (matMul (inertia.idMat 3) (transposeM fibV)))) :=
-  congr_tensorM 2 3 2 3 xX (inertia.idMat 3) (inertia.idMat 2)
+        (matMul (elim.idMat 3) (transposeM fibV)))) :=
+  congr_tensorM 2 3 2 3 xX (elim.idMat 3) (elim.idMat 2)
     (transposeM fibV) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
 example : matOneValue
-    (matMul (transposeM (tensorM (inertia.idMat 2) (transposeM fibV)))
-      (matMul (tensorM xX (inertia.idMat 3))
-        (tensorM (inertia.idMat 2) (transposeM fibV))))
+    (matMul (transposeM (tensorM (elim.idMat 2) (transposeM fibV)))
+      (matMul (tensorM xX (elim.idMat 3))
+        (tensorM (elim.idMat 2) (transposeM fibV))))
     (tensorM xX dD) := by decide +kernel
 
 private def spWhole : inertia.Split 6 :=
-  ⟨⟨tensorM tT (inertia.idMat 3), rfl⟩,
-   ⟨tensorM (inertia.matScaleB n4 tTw) (inertia.idMat 3), rfl⟩,
+  ⟨⟨tensorM tT (elim.idMat 3), rfl⟩,
+   ⟨tensorM (inertia.matScaleB n4 tTw) (elim.idMat 3), rfl⟩,
    [.one n6, .one n12, .one n36, .one n30, .one n60, .one n180], 0, rfl⟩
 
 private def spF1 : inertia.Split 2 :=
@@ -1009,7 +1009,7 @@ private def FD : fusion.Data Nat :=
    0, (fun x => x), (fun x y => x + y), 1,
    (fun _ _ _ => 1), (fun x _ => if x == 5 then [7] else [3]),
    (fun _ => 1), (fun _ => 1), 1, 1, (fun _ => []),
-   (fun _ => 0), (fun _ _ => 0), (fun _ => 0), (fun _ => none)⟩
+   (fun _ => 0), (fun _ _ => 0), (fun _ => 0), (fiber.presNone _)⟩
 
 example : ¬ fusion.oneUnit FD (([0,0,0,0] : List Nat) ++ [5,5,5,5]
     ++ [3,3,3,3] ++ (List.range RD.links).flatMap
@@ -1175,13 +1175,13 @@ private def w3p : BPair := ⟨4, 1⟩
 private def gI : elim.Mat := [[w1, w0], [w0, wm1]]
 private def hI : elim.Mat := [[w2, w0], [w0, w0]]
 private def spGi : inertia.Split 2 :=
-  ⟨⟨inertia.idMat 2, by decide +kernel⟩, ⟨inertia.idMat 2, by decide +kernel⟩,
+  ⟨⟨elim.idMat 2, by decide +kernel⟩, ⟨elim.idMat 2, by decide +kernel⟩,
    [.one w1, .one wm1], 0, rfl⟩
 private def spFi : inertia.Split 2 :=
-  ⟨⟨inertia.idMat 2, by decide +kernel⟩, ⟨inertia.idMat 2, by decide +kernel⟩,
+  ⟨⟨elim.idMat 2, by decide +kernel⟩, ⟨elim.idMat 2, by decide +kernel⟩,
    [.one w1, .one w1], 0, rfl⟩
 private def spSi : inertia.Split 4 :=
-  ⟨⟨inertia.idMat 4, by decide +kernel⟩, ⟨inertia.idMat 4, by decide +kernel⟩,
+  ⟨⟨elim.idMat 4, by decide +kernel⟩, ⟨elim.idMat 4, by decide +kernel⟩,
    [.one w3p, .one wm1, .one wm1, .one wm1], 0, rfl⟩
 
 example : inertia.splitRead gI spGi := by decide +kernel
@@ -1219,17 +1219,17 @@ private def w18p : BPair := ⟨19, 1⟩
 private def dD3 : elim.Mat := [[w3p, w0, w0], [w0, w6p, w0],
   [w0, w0, w18p]]
 private def spWI : inertia.Split 6 :=
-  ⟨⟨inertia.idMat 6, by decide +kernel⟩, ⟨inertia.idMat 6, by decide +kernel⟩,
+  ⟨⟨elim.idMat 6, by decide +kernel⟩, ⟨elim.idMat 6, by decide +kernel⟩,
    [.one w3p, .one w6p, .one w18p, .one ⟨1, 4⟩, .one ⟨1, 7⟩,
     .one ⟨1, 19⟩], 0, rfl⟩
 private def spI1 : inertia.Split 2 :=
-  ⟨⟨inertia.idMat 2, by decide +kernel⟩, ⟨inertia.idMat 2, by decide +kernel⟩,
+  ⟨⟨elim.idMat 2, by decide +kernel⟩, ⟨elim.idMat 2, by decide +kernel⟩,
    [.one w3p, .one ⟨1, 4⟩], 0, rfl⟩
 private def spI2 : inertia.Split 2 :=
-  ⟨⟨inertia.idMat 2, by decide +kernel⟩, ⟨inertia.idMat 2, by decide +kernel⟩,
+  ⟨⟨elim.idMat 2, by decide +kernel⟩, ⟨elim.idMat 2, by decide +kernel⟩,
    [.one w6p, .one ⟨1, 7⟩], 0, rfl⟩
 private def spI3 : inertia.Split 2 :=
-  ⟨⟨inertia.idMat 2, by decide +kernel⟩, ⟨inertia.idMat 2, by decide +kernel⟩,
+  ⟨⟨elim.idMat 2, by decide +kernel⟩, ⟨elim.idMat 2, by decide +kernel⟩,
    [.one w18p, .one ⟨1, 19⟩], 0, rfl⟩
 
 example : inertia.splitRead (tensorM gI dD3) spWI := by decide +kernel
@@ -1259,7 +1259,7 @@ binder's own refusal; a forged count refuses the split's read and
 parts the identity; and a floor stated above its list's root refuses
 the floor binder and prices the pair list above its own root. -/
 
-private def rfI : Mat := inertia.idMat 1
+private def rfI : Mat := elim.idMat 1
 private def rfA : Mat := [[⟨2, 1⟩]]
 private def rfB : Mat := [[⟨3, 1⟩]]
 private def rfLA : List (BPair × Pos × BPair) := [(⟨2, 1⟩, 1, ⟨2, 1⟩)]
@@ -1308,7 +1308,7 @@ example : (0 : Nat) = split.rootsBelow (pairRoots rfLA rfLB 1) 4 Pos.one :=
 
 /-! The two-root first factor at the same second factor. -/
 
-private def rfI2 : Mat := inertia.idMat 2
+private def rfI2 : Mat := elim.idMat 2
 private def rfA2 : Mat := [[⟨2, 1⟩, BPair.unit], [BPair.unit, ⟨3, 1⟩]]
 private def rfB2 : Mat := [[⟨2, 1⟩]]
 private def rfLA2 : List (BPair × Pos × BPair) :=

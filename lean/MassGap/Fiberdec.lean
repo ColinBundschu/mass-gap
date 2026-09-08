@@ -24,24 +24,28 @@ squares, the coloring by the column-and-row sum's parity.
 The translation is the shift along one direction (`shiftBy` at the
 site keys, `chainBy` at the chain's), a map of the link keys with
 its witness the shift at the complementary step, and its reads are
-the lemma's own: it permutes the links with that witness (`permRead`,
-the two composition reads at `con:places`' transpose-is-inverse),
+the lemma's own: it permutes the links with that witness
+(`lattice.linkIso` at the region onto itself, the witness reading
+every key back and the composition the other way the pigeonhole's
+read, `lattice.linkIso_inv`, `con:places`' transpose-is-inverse),
 two directions' shifts compose to one map at either order
 (`commutesRead` with its key extraction, `con:lattice`'s
 composition clause at a direction carried to itself — the
 instance of `intertwineRead`, one map carrying a second to a
 third across the keys — and `permMatAt_comm` its matrix read),
 it transports the endpoints along the vertex permutation it induces
-(`endsRead` at `chainVert` and at the site shift itself, that
-vertex map read a permutation of the vertex range at its own
-witness by `vertPermRead`, at `chainVertInv` and `shiftSiteInv`),
+(`lattice.endsMoved` at the vacant reversal family at `chainVert`
+and at the site shift itself, that vertex map an isomorphism of
+the vertex range onto itself at its own witness by
+`lattice.vertIso`, at `chainVertInv` and `shiftSiteInv`, the three
+one read, `lattice.isoRead`),
 it permutes the plaquette list (`lattice.plaqPermRead`, the
 induced permutation entering as data with its witness, every image
 word the moved position's plaquette at the cyclic reading), and
 its `L`-fold iterate is the identity (`cycleRead` at `iterAt`, the
 tex's `T^L = 1`).
 
-The index action is the relabeling (`permConf`, the moved link's
+The index action is the relabeling (`pairpencil.permConf`, the moved link's
 label read at the link the witness names), and its three window
 reads are the lemma's commuting datum at the index layer: the
 content is fixed (`contentFixed`), the occupancy is fixed
@@ -50,78 +54,46 @@ permutation), and the index maps within itself (`idxFixed`).  The
 three take the window's region, whose link width is the relabeled
 width, and the index as a stated list, `carrier.idx`'s own value
 at the window pinned beside them, so a battery decides each read
-against one enumeration rather than against nine.  On the window
-matrices the action is the place action's matrix on the window list
-with the unit line at its head (`permMatBy` at a stated list, an
-equality read and an action; `slotMat` its instance at the window
-list `pairpencil.slotList` under the window action `slotAct`, the
-configuration moved at the link witness and the fiber's slot key
-at the vertex witness, `slotImg` the key's permuted display along
-the induced vertex permutation), and the commuting read is its
-congruence (`commRead`, `Pmᵀ H Pm = H`) — at the free end
-(`prop:segment`) `H` is the electric member alone at its own
-one-member site (`pairpencil.pencilE` over the window list's
-diagonal `pairpencil.slotDiag`), the diagonal fixed exactly where
-the contents are, and the batteries read the congruence at the
-committed chain window.  The magnetic member enters the
-congruence through `thm:pairpencil`'s transport field at the
-region's own action: one plaquette's term reads, at the moved
-window-list members, the term at the moved plaquette
-(`termMoved`, the relabeling read `elim.relabelRead` at the
-action's place list), the plaquette list permuted by the action
-(`lattice.plaqPermRead`, the permutation as data with its witness),
-and the terms transported plaquette by plaquette (`termsMoved`);
-the terms' sum then moves along the action, `elim.msum`'s entry
-the balance-pair fold of the terms' entries reindexed along the
-plaquette permutation (`movedReadBy_termSum`), the congruence
-follows at the window list met once (`commRead_slotM`, at the
-label calculus `commRead_slotM_dataA`), and the pencil interface's
-magnetic member commutes at its one value with the terms' sum
-(`commRead_pencilM`, at the label calculus `commRead_pencilM_dataA`;
-`commRead_congr` transports a congruence across a window matrix's
-one value) — the two members' congruences the lemma's commuting
-datum at both members, each over a stated index tied to the
-window's own.
+against one enumeration rather than against nine.  The magnetic member
+and the gram enter the commuting datum through `thm:pairpencil`'s
+transport field at the region's own action: a state moved along the
+action is its configuration moved (`pairpencil.dualConf`) with each
+vertex member moved along the incident ends' column match, the star
+at the tie columns of the reversed ends at the letters and the
+table's dual pair at every reversed slot at a member
+(`pairpencil.movedMembers`), a state of the moved window — each
+moved member in the moved vertex's own list's span at the Gram-dual
+solve with the two lists at one count (`statesTransport` at
+`slotpower.spanMemberT`); every
+pairing read between two moved states is the read between the
+states — each plaquette term's entry at the moved states one value
+with its entry at the states across every position pair of the
+changed edge, the plaquette list permuted (`termsTransport` at
+`pairpencil.termTransportAt` and `lattice.plaqPermRead`) — and the
+moved states' coefficients over the fiber's own list assemble the
+transport's matrix on the window list with its columns' clearings
+(`transportMat`), the two stated lists' pencils congruent at it
+(`transportCongr`), so the moved window's pencil is the pencil read
+at the moved states and every count is one value
+(`inertia.rev_congr`), the electric member fixed at the contents.
 
-The three index reads and the congruence hold as theorems over the
-region's own action.  The content is fixed at every configuration
-of the region's width (`contentN_perm`, the key range's fold
-reindexed along the permutation); the vertex multiplicity and the
-occupancy transport along the induced vertex map at the count laws
-over a label domain holding the unit, closed under the involution
-and the rows (`vmult_perm`, `occupied_perm`: the incident labels one
+The three index reads hold as theorems over the region's own
+action.  The content is fixed at every configuration of the
+region's width (`contentN_perm`, the key range's fold reindexed
+along the permutation); the vertex multiplicity and the occupancy
+transport along the induced vertex map at the count laws over a
+label domain holding the unit, closed under the involution and the
+rows (`vmult_perm`, `occupied_perm`: the incident labels one
 multiset at `incident_perm`, the invariant count a multiset read at
-`carrier.invCount_relist`); the window index maps within itself, a
-member's image a member at `def:carrier`'s five reads
+`carrier.invCount_relist`); and the window index maps within
+itself, a member's image a member at `def:carrier`'s five reads
 (`permConf_mem_idx` at `carrier.idx_sound` and `carrier.mem_idx`,
-`idxFixed_idx`); and the place action's matrix commutes with every
-window matrix whose entries move along the action
-(`commReadBy_of`): the matrix is the place list's permutation matrix
-transposed (`permMatBy_read` at `imgPosBy`, the image positions read
-by `posBy` at a once-met list, `imgOnceBy`), the congruence reads
-the selected block (`elim.permM_conj`), and the moved-entries read
-(`movedReadBy`) returns the matrix — the weighted diagonal its
-instance at fixed weights (`movedReadBy_pencilE`,
-`commReadBy_pencilE`, the place list injective at a once-met list
-with the action injective, `imgPosBy_inj`, the list distinct
-outright at `distinct_of_imgOnceBy`, the equality read structural
-on the image pairs, `imgEqBy`).  At the window list the hypotheses
-are the window's own: the moved key is a slot key of the moved
-member at the multiplicities transported (`slotImg_mem` at
-`vmult_perm`), the move is injective at the vertex witness
-(`slotImg_inj`), the window list over a distinct index is distinct
-(`pairpencil.slotList_distinct`), and each member's image is met
-once (`slotOnce_idx`).  At the label calculus every hypothesis is
-the calculus's own theorem over the width-`d` labels
-(`fusion.labelA`): the occupancy transport (`occupied_perm_dataA`),
-the closure (`idxFixed_dataA`), the once-met window list
-(`slotOnce_dataA` at `slotEq_dataA`, the window list's equality
-structural on the labels, and `carrier.idx_distinct`), and the
-congruence at the free end's window matrix
-(`commRead_slotE_dataA`).  The decidable reads at stated data
-follow from the theorems (`contentFixed_of`, `occFixed_of`,
-`idxFixed_of`), and the batteries read each beside its decided
-companion.
+`idxFixed_idx`).  At the label calculus every hypothesis is the
+calculus's own theorem over the width-`d` labels (`fusion.labelA`):
+the occupancy transport (`occupied_perm_dataA`) and the closure
+(`idxFixed_dataA`).  The decidable reads at stated data follow from
+the theorems (`contentFixed_of`, `occFixed_of`, `idxFixed_of`), and
+the batteries read each beside its decided companion.
 
 The chord tier stands beneath them.  A polynomial reads at a matrix
 of a stated order by the Horner recursion of `def:poly`, the
@@ -138,9 +110,9 @@ key), the matrix of an iterate is the matrix's power
 (`permMatAt_id`), and a translation's transpose is its witness's
 own matrix (`transposeM_permMatAt`, `con:places`'
 transpose-is-inverse).  On it the isometry clause is derived rather
-than decided — `permRead` gives `orthRead` outright
-(`permRead_orth`, the permutation read unpacked at a key by
-`permRead_at`) — and the tex's `T^L = 1` reaches the matrix level
+than decided — the link isomorphism gives `orthRead` outright
+(`linkIso_orth`, the read unpacked at a key by
+`lattice.linkIso_all`) — and the tex's `T^L = 1` reaches the matrix level
 from the cycle read (`cycleRead_pow`).  The deck relation
 `T² + 1 = S T` then collects from the orthogonality read alone
 (`chord_deck`, the product `Tᵀ T = 1` collected), and the chord
@@ -363,6 +335,7 @@ substituted entry has no object here to be.
 
 namespace fiberdec
 open ground lattice fusion elim carrier
+open pairpencil (dualConf permConf)
 
 /-! The torus carrier: the site keys at positional base-`L`
 arithmetic, the links at the key `(direction, site)`, the unit
@@ -551,39 +524,6 @@ theorem commutesRead_at (R : Region) (t s : Nat → Nat)
     t (s l) = s (t l) :=
   intertwineRead_at R t s s h l hl
 
-/-- The permutation read: the map and its witness compose to the
-identity at every link key both ways, each keeping the key
-range. -/
-def permRead (R : Region) (t s : Nat → Nat) : Prop :=
-  ((List.range R.links).all (fun l =>
-    (s (t l) == l) && (t (s l) == l)
-      && (t l < R.links) && (s l < R.links))) = true
-
-instance (R : Region) (t s : Nat → Nat) : Decidable (permRead R t s) :=
-  inferInstanceAs (Decidable (_ = _))
-
-/-- The induced vertex map's permutation read: the vertex map and
-its witness compose to the identity at every vertex key both ways,
-each keeping the vertex range. -/
-def vertPermRead (R : Region) (v w : Nat → Nat) : Prop :=
-  ((List.range R.verts).all (fun x =>
-    (w (v x) == x) && (v (w x) == x)
-      && (v x < R.verts) && (w x < R.verts))) = true
-
-instance (R : Region) (v w : Nat → Nat) : Decidable (vertPermRead R v w) :=
-  inferInstanceAs (Decidable (_ = _))
-
-/-- The endpoint read transported: the moved link's tail and head
-are the vertex map's values at the link's own. -/
-def endsRead (R : Region) (t v : Nat → Nat) : Prop :=
-  ground.pairIdxAll (fun l tl hd =>
-    (ground.getAt 0 R.tail (t l) == v tl)
-      && (ground.getAt 0 R.head (t l) == v hd))
-    R.tail R.head 0 = true
-
-instance (R : Region) (t v : Nat → Nat) : Decidable (endsRead R t v) :=
-  inferInstanceAs (Decidable (_ = _))
-
 /-- The map's iterate at a stated count. -/
 def iterAt (t : Nat → Nat) : Nat → Nat → Nat
   | 0, l => l
@@ -608,92 +548,66 @@ instance (R : Region) (t : Nat → Nat) (n : Nat) :
 /-! The index action: the link permutation relabels a
 configuration, and the window's three reads sit at the index. -/
 
-/-- The index action at a reversal family: the label at the
-witness's key, dualized where the witness's link traverses
-backwards, the reversal family read at the source key as the
-boundary words read it (`lattice.moveWord`) — `con:lattice`'s two
-action fields, the orientation reversal dualizing labels. -/
-def dualConf {L : Type} (F : Data L) (s : Nat → Nat)
-    (rev : Nat → Bool) (n : Nat) (a : List L) : List L :=
-  (List.range n).map (fun l =>
-    if rev (s l) then F.dual (getAt F.unit a (s l))
-    else getAt F.unit a (s l))
-
-/-- The action on configurations: the label at a link key is the
-one the witness's key held, the unoccupied keys reading the
-interface's unit — the reversal-free instance. -/
-def permConf {L : Type} (F : Data L) (s : Nat → Nat) (n : Nat)
-    (a : List L) : List L :=
-  dualConf F s (fun _ => false) n a
-
 /-- The content fixed at the action, over a stated index: the
 content is the support's Casimir fold and the action relabels the
 support alone. -/
 def dualContentFixed {L : Type} (F : Data L) (R : Region)
-    (ix : List (List L)) (s : Nat → Nat) (rev : Nat → Bool) : Prop :=
+    (ix : List (List L)) (t s : Nat → Nat) (rev : Nat → Bool) : Prop :=
   (ix.all (fun a =>
-    contentN F (dualConf F s rev R.links a) == contentN F a)) = true
+    contentN F (dualConf F t s rev R.links a) == contentN F a)) = true
 
 instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
-    (s : Nat → Nat) (rev : Nat → Bool) :
-    Decidable (dualContentFixed F R ix s rev) :=
+    (t s : Nat → Nat) (rev : Nat → Bool) :
+    Decidable (dualContentFixed F R ix t s rev) :=
   inferInstanceAs (Decidable (_ = _))
 
 def contentFixed {L : Type} (F : Data L) (R : Region)
-    (ix : List (List L)) (s : Nat → Nat) : Prop :=
-  dualContentFixed F R ix s (fun _ => false)
+    (ix : List (List L)) (t s : Nat → Nat) : Prop :=
+  dualContentFixed F R ix t s (fun _ => false)
 
 instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
-    (s : Nat → Nat) : Decidable (contentFixed F R ix s) :=
-  inferInstanceAs (Decidable (dualContentFixed F R ix s _))
+    (t s : Nat → Nat) : Decidable (contentFixed F R ix t s) :=
+  inferInstanceAs (Decidable (dualContentFixed F R ix t s _))
 
 /-- The occupancy fixed at the action: the vertex data transport
 along the vertex permutation the link permutation induces. -/
 def dualOccFixed {L : Type} (F : Data L) (R : Region)
-    (ix : List (List L)) (s : Nat → Nat) (rev : Nat → Bool) : Prop :=
+    (ix : List (List L)) (t s : Nat → Nat) (rev : Nat → Bool) : Prop :=
   (ix.all (fun a =>
-    occupied F R (dualConf F s rev R.links a) == occupied F R a)) = true
+    occupied F R (dualConf F t s rev R.links a) == occupied F R a)) = true
 
 instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
-    (s : Nat → Nat) (rev : Nat → Bool) :
-    Decidable (dualOccFixed F R ix s rev) :=
+    (t s : Nat → Nat) (rev : Nat → Bool) :
+    Decidable (dualOccFixed F R ix t s rev) :=
   inferInstanceAs (Decidable (_ = _))
 
 def occFixed {L : Type} (F : Data L) (R : Region) (ix : List (List L))
-    (s : Nat → Nat) : Prop :=
-  dualOccFixed F R ix s (fun _ => false)
+    (t s : Nat → Nat) : Prop :=
+  dualOccFixed F R ix t s (fun _ => false)
 
 instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
-    (s : Nat → Nat) : Decidable (occFixed F R ix s) :=
-  inferInstanceAs (Decidable (dualOccFixed F R ix s _))
+    (t s : Nat → Nat) : Decidable (occFixed F R ix t s) :=
+  inferInstanceAs (Decidable (dualOccFixed F R ix t s _))
 
 /-- The index maps within itself at the action, the witness's own
 action the read back. -/
 def dualIdxFixed {L : Type} (F : Data L) (R : Region)
-    (ix : List (List L)) (s : Nat → Nat) (rev : Nat → Bool) : Prop :=
+    (ix : List (List L)) (t s : Nat → Nat) (rev : Nat → Bool) : Prop :=
   (ix.all (fun a =>
-    carrier.confMem F (dualConf F s rev R.links a) ix)) = true
+    carrier.confMem F (dualConf F t s rev R.links a) ix)) = true
 
 instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
-    (s : Nat → Nat) (rev : Nat → Bool) :
-    Decidable (dualIdxFixed F R ix s rev) :=
+    (t s : Nat → Nat) (rev : Nat → Bool) :
+    Decidable (dualIdxFixed F R ix t s rev) :=
   inferInstanceAs (Decidable (_ = _))
 
 def idxFixed {L : Type} (F : Data L) (R : Region) (ix : List (List L))
-    (s : Nat → Nat) : Prop :=
-  dualIdxFixed F R ix s (fun _ => false)
+    (t s : Nat → Nat) : Prop :=
+  dualIdxFixed F R ix t s (fun _ => false)
 
 instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
-    (s : Nat → Nat) : Decidable (idxFixed F R ix s) :=
-  inferInstanceAs (Decidable (dualIdxFixed F R ix s _))
-
-/-- The commuting read at a window matrix: the induced permutation
-matrix's congruence fixes the matrix, `Pmᵀ H Pm = H` entrywise. -/
-def commRead (Pm H : Mat) : Prop :=
-  matOneValue (matMul (transposeM Pm) (matMul H Pm)) H
-
-instance (Pm H : Mat) : Decidable (commRead Pm H) :=
-  inferInstanceAs (Decidable (matOneValue _ _))
+    (t s : Nat → Nat) : Decidable (idxFixed F R ix t s) :=
+  inferInstanceAs (Decidable (dualIdxFixed F R ix t s _))
 
 /-! The chord tier: the translation's own permutation matrix at the
 key list, the polynomial at a matrix, the chord operator
@@ -711,8 +625,8 @@ def permMatAt (n : Nat) (t : Nat → Nat) : Mat :=
 weighted identity, the shifted family against the matrix. -/
 def polyEvalM (p : poly.Poly) (M : Mat) (n : Nat) : Mat :=
   p.foldr (fun c acc =>
-      matAdd (inertia.matScaleB c (inertia.idMat n)) (matMul M acc))
-    (inertia.matScaleB BPair.unit (inertia.idMat n))
+      matAdd (inertia.matScaleB c (elim.idMat n)) (matMul M acc))
+    (inertia.matScaleB BPair.unit (elim.idMat n))
 
 /-- The geometric word `Σ_{a+b+1=L} T^b` at a stated cycle
 length. -/
@@ -732,8 +646,8 @@ def chordWord (Pm : Mat) (n m : Nat) : Mat :=
 two products at the identity, `T Tᵀ = 1` and `Tᵀ T = 1`
 (`con:places`' transpose-is-inverse). -/
 def orthRead (Pm : Mat) (n : Nat) : Prop :=
-  matOneValue (matMul Pm (transposeM Pm)) (inertia.idMat n)
-  ∧ matOneValue (matMul (transposeM Pm) Pm) (inertia.idMat n)
+  matOneValue (matMul Pm (transposeM Pm)) (elim.idMat n)
+  ∧ matOneValue (matMul (transposeM Pm) Pm) (elim.idMat n)
 
 instance (Pm : Mat) (n : Nat) : Decidable (orthRead Pm n) :=
   inferInstanceAs (Decidable (_ ∧ _))
@@ -741,7 +655,7 @@ instance (Pm : Mat) (n : Nat) : Decidable (orthRead Pm n) :=
 /-- The deck relation at the translation's matrix, `T² + 1 = S T`
 (`def:deck`'s monic quadratic at the chord). -/
 def deckOpRead (Pm : Mat) (n : Nat) : Prop :=
-  matOneValue (matAdd (matMul Pm Pm) (inertia.idMat n))
+  matOneValue (matAdd (matMul Pm Pm) (elim.idMat n))
     (matMul (chordOp Pm) Pm)
 
 instance (Pm : Mat) (n : Nat) : Decidable (deckOpRead Pm n) :=
@@ -784,7 +698,7 @@ is the matrix's power, and the identity map's matrix is the
 identity.  Every entry read is `def:elim`'s one-index pairing — a
 column of `permMatAt n s` carries its one occupied key at `s j`,
 so the product's entry is the composite's own indicator — and the
-range clause the maps carry is `permRead`'s own conjunct. -/
+range clause the maps carry is the link isomorphism's own conjunct. -/
 
 /-- The permutation matrix's row count is its order. -/
 theorem length_permMatAt (n : Nat) (t : Nat → Nat) :
@@ -813,21 +727,21 @@ theorem permMatAt_congr (n : Nat) (t s : Nat → Nat)
 
 /-- The identity map's permutation matrix is the identity. -/
 theorem permMatAt_id (n : Nat) :
-    matOneValue (permMatAt n (fun l => l)) (inertia.idMat n) := by
+    matOneValue (permMatAt n (fun l => l)) (elim.idMat n) := by
   refine matOne_getAt _ _
-    (by rw [length_permMatAt, inertia.idMat_len]) ?_
+    (by rw [length_permMatAt, elim.length_idMat]) ?_
   intro i hi
   rw [length_permMatAt] at hi
   refine poly.oneValue_of_entries _ _
     (by rw [rowsLen_getAt (permMatAt n (fun l => l)) i
         (rowsLen_permMatAt n _) (by rw [length_permMatAt]; exact hi),
-      rowsLen_getAt (inertia.idMat n) i (inertia.idMat_rows n)
-        (by rw [inertia.idMat_len]; exact hi)]) ?_
+      rowsLen_getAt (elim.idMat n) i (elim.rowsLen_idMat n)
+        (by rw [elim.length_idMat]; exact hi)]) ?_
   intro j hj
   rw [rowsLen_getAt (permMatAt n (fun l => l)) i (rowsLen_permMatAt n _)
     (by rw [length_permMatAt]; exact hi)] at hj
   rw [getAt_permMatAt n (fun l => l) i j hi hj,
-    inertia.getAt_idMat n i j hi hj]
+    elim.getAt_idMat n i j hi hj]
   exact BPair.oneValue_refl _
 
 /-- A permutation matrix's column carries its one occupied key at
@@ -975,51 +889,42 @@ theorem permMatAt_pow (n : Nat) (t : Nat → Nat) (hn : 0 < n)
     exact matOne_refl _
 
 
-/-- The translation's permutation read unpacked at a key: the two
-composition reads with the two range clauses. -/
-theorem permRead_at (R : Region) (t s : Nat → Nat) (h : permRead R t s)
-    (l : Nat) (hl : l < R.links) :
-    s (t l) = l ∧ t (s l) = l ∧ t l < R.links ∧ s l < R.links := by
-  have hb := ground.all_range_read R.links h l hl
-  have h1 := ground.andSplitB hb
-  have h2 := ground.andSplitB h1.1
-  have h3 := ground.andSplitB h2.1
-  exact ⟨ground.beqEqOf h3.1, ground.beqEqOf h3.2,
-    of_decide_eq_true h2.2, of_decide_eq_true h1.2⟩
-
 /-- The relabeled configuration's label at a key below the width is
 the configuration's own at the witness's key. -/
-theorem getAt_permConf {L : Type} (F : Data L) (s : Nat → Nat) (n : Nat)
-    (a : List L) (k : Nat) (hk : k < n) :
-    ground.getAt F.unit (permConf F s n a) k = ground.getAt F.unit a (s k) := by
+theorem getAt_permConf {L : Type} (F : Data L) (t s : Nat → Nat) (n : Nat)
+    (a : List L) (k : Nat) (hk : k < n) (hts : t (s k) = k) :
+    ground.getAt F.unit (permConf F t s n a) k = ground.getAt F.unit a (s k) := by
   show ground.getAt F.unit ((List.range n).map
-    (fun l => if (fun _ => false) l
-      then F.dual (ground.getAt F.unit a (s l))
-      else ground.getAt F.unit a (s l))) k = _
-  rw [ground.getAt_map_range F.unit _ n k, if_pos hk]
+    (fun l => if t (s l) == l then
+      (if (fun _ => false) l
+        then F.dual (ground.getAt F.unit a (s l))
+        else ground.getAt F.unit a (s l))
+      else F.unit)) k = _
+  rw [ground.getAt_map_range F.unit _ n k, if_pos hk, ground.eqBeqOf hts]
   rfl
 
 /-- The content is fixed at the index action, at every
 configuration of the region's width: the relabeled configuration's
 content is the key range's fold reindexed along the permutation,
 one value at the range's reindexing read (`ground.famFold_reindex`,
-`permRead` the two-sided witness) — `lem:fiberdec`'s content clause
+the link isomorphism the two-sided witness) — `lem:fiberdec`'s content clause
 as a theorem over the region's own action. -/
 theorem contentN_perm {L : Type} (F : Data L) (R : Region)
-    (t s : Nat → Nat) (h : permRead R t s) (a : List L)
+    (t s : Nat → Nat) (h : linkIso R R t s) (a : List L)
     (ha : a.length = R.links) :
-    carrier.contentN F (permConf F s R.links a) = carrier.contentN F a := by
-  rw [carrier.contentN_range F (permConf F s R.links a),
+    carrier.contentN F (permConf F t s R.links a) = carrier.contentN F a := by
+  rw [carrier.contentN_range F (permConf F t s R.links a),
     carrier.contentN_range F a, ha,
-    show (permConf F s R.links a).length = R.links from
+    show (permConf F t s R.links a).length = R.links from
       ground.length_mapRange _ _]
   have hstep : ∀ x, 0 < ground.countOf x (List.range R.links) →
-      (if F.eqL (getAt F.unit (permConf F s R.links a) x) F.unit then 0
-        else F.c2N (getAt F.unit (permConf F s R.links a) x))
+      (if F.eqL (getAt F.unit (permConf F t s R.links a) x) F.unit then 0
+        else F.c2N (getAt F.unit (permConf F t s R.links a) x))
       = (if F.eqL (getAt F.unit a (s x)) F.unit then 0
         else F.c2N (getAt F.unit a (s x))) := by
     intro x hx
-    rw [getAt_permConf F s R.links a x (ground.ltOfMem hx)]
+    rw [getAt_permConf F t s R.links a x (ground.ltOfMem hx)
+      (linkIso_all R t s h x (ground.ltOfMem hx)).2.1]
   rw [ground.famFold_congr_members Nat.add 0 _ _ (List.range R.links) hstep]
   refine (ground.famFold_reindex Nat.add 0 Nat.add_comm Nat.add_assoc
     (fun l => if F.eqL (getAt F.unit a l) F.unit then 0
@@ -1027,15 +932,15 @@ theorem contentN_perm {L : Type} (F : Data L) (R : Region)
     (l := List.range R.links) (g := s) (h := t)
     (ground.distinctList_range R.links) ?_ ?_ ?_ ?_).symm
   · intro x hx
-    exact (permRead_at R t s h x (ground.ltOfMem hx)).2.1
+    exact (linkIso_all R t s h x (ground.ltOfMem hx)).2.1
   · intro x hx
-    exact (permRead_at R t s h x (ground.ltOfMem hx)).1
-  · intro x hx
-    exact ground.countOf_range_pos
-      (permRead_at R t s h x (ground.ltOfMem hx)).2.2.2
+    exact (linkIso_all R t s h x (ground.ltOfMem hx)).1
   · intro x hx
     exact ground.countOf_range_pos
-      (permRead_at R t s h x (ground.ltOfMem hx)).2.2.1
+      (linkIso_all R t s h x (ground.ltOfMem hx)).2.2.2
+  · intro x hx
+    exact ground.countOf_range_pos
+      (linkIso_all R t s h x (ground.ltOfMem hx)).2.2.1
 
 /-! `lem:fiberdec`'s index action as theorems over the region's own
 translation: the endpoint and vertex reads at a key, the incident
@@ -1044,32 +949,6 @@ vertex multiplicity with them at the count laws
 (`carrier.invCount_relist`), and the occupancy fixed — the read
 `occFixed` at every configuration of every region admitting the
 action. -/
-
-/-- The endpoint read at a link: the moved link's tail and head are
-the vertex map's values at the link's own. -/
-theorem endsRead_at (R : Region) (t v : Nat → Nat) (h : endsRead R t v)
-    (l : Nat) (hl : l < R.links) :
-    ground.getAt 0 R.tail (t l) = v (ground.getAt 0 R.tail l)
-      ∧ ground.getAt 0 R.head (t l) = v (ground.getAt 0 R.head l) := by
-  have hb := ground.pairIdxAll_at _ R.tail R.head 0 h l
-    (by rw [R.tailLen]; exact hl) (by rw [R.headLen]; exact hl)
-  rw [Nat.zero_add] at hb
-  have hb' : ((ground.getAt 0 R.tail (t l) == v (ground.getAt 0 R.tail l))
-      && (ground.getAt 0 R.head (t l) == v (ground.getAt 0 R.head l)))
-      = true := hb
-  have h1 := ground.andSplitB hb'
-  exact ⟨ground.beqEqOf h1.1, ground.beqEqOf h1.2⟩
-
-/-- The vertex map's permutation read at a vertex below the count. -/
-theorem vertPermRead_at (R : Region) (v w : Nat → Nat)
-    (h : vertPermRead R v w) (x : Nat) (hx : x < R.verts) :
-    w (v x) = x ∧ v (w x) = x ∧ v x < R.verts ∧ w x < R.verts := by
-  have hb := ground.all_range_read R.verts h x hx
-  have h1 := ground.andSplitB hb
-  have h2 := ground.andSplitB h1.1
-  have h3 := ground.andSplitB h2.1
-  exact ⟨ground.beqEqOf h3.1, ground.beqEqOf h3.2,
-    of_decide_eq_true h2.2, of_decide_eq_true h1.2⟩
 
 /-- A filtered map's count: the fold of the members' option reads. -/
 private theorem countOf_filterMap {α β : Type} [DecidableEq β]
@@ -1102,13 +981,13 @@ private theorem countOf_filterMap {α β : Type} [DecidableEq β]
 /-- The vertex map's images compare as their sources below the
 count, the witness reading the sources back. -/
 private theorem beq_map (R : Region) (v w : Nat → Nat)
-    (h : vertPermRead R v w) (p x : Nat) (hp : p < R.verts)
+    (h : vertIso R R v w) (p x : Nat) (hp : p < R.verts)
     (hx : x < R.verts) : (v p == v x) = (p == x) := by
   by_cases hpx : p = x
   · rw [hpx, ground.eqBeqOf (rfl : v x = v x), ground.eqBeqOf (rfl : x = x)]
   · rw [ground.neBeqOf hpx, ground.neBeqOf (fun he : v p = v x =>
-      hpx (Eq.trans (Eq.trans (vertPermRead_at R v w h p hp).1.symm
-        (congrArg w he)) (vertPermRead_at R v w h x hx).1))]
+      hpx (Eq.trans (Eq.trans (vertIso_all R v w h p hp).1.symm
+        (congrArg w he)) (vertIso_all R v w h x hx).1))]
 
 /-- One link's incident fold: the two endpoint reads' conditional
 singletons. -/
@@ -1137,10 +1016,10 @@ permutation, each link's two endpoint reads carried by the endpoint
 read and the vertex map's injectivity, its label the witness's own. -/
 theorem incident_perm {L : Type} [DecidableEq L] (F : Data L)
     (R : Region) (hw : wellRead R) (t s v w : Nat → Nat)
-    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (h : isoRead R R t s v w (fun _ => false))
     (a : List L) (x : Nat) (hx : x < R.verts) (lab : L) :
     ground.countOf lab
-        (carrier.incidentLabels F R (permConf F s R.links a) (v x))
+        (carrier.incidentLabels F R (permConf F t s R.links a) (v x))
       = ground.countOf lab (carrier.incidentLabels F R a x) := by
   show ground.countOf lab ((incident R (v x)).filterMap _)
     = ground.countOf lab ((incident R x).filterMap _)
@@ -1149,20 +1028,20 @@ theorem incident_perm {L : Type} [DecidableEq L] (F : Data L)
   refine (ground.famFold_reindex Nat.add 0 Nat.add_comm Nat.add_assoc _
     (l := List.range R.links) (g := t) (h := s)
     (ground.distinctList_range R.links)
-    (fun k hk => (permRead_at R t s hp k (ground.ltOfMem hk)).1)
-    (fun k hk => (permRead_at R t s hp k (ground.ltOfMem hk)).2.1)
+    (fun k hk => (linkIso_all R t s h.1 k (ground.ltOfMem hk)).1)
+    (fun k hk => (linkIso_all R t s h.1 k (ground.ltOfMem hk)).2.1)
     (fun k hk => ground.countOf_range_pos
-      (permRead_at R t s hp k (ground.ltOfMem hk)).2.2.1)
+      (linkIso_all R t s h.1 k (ground.ltOfMem hk)).2.2.1)
     (fun k hk => ground.countOf_range_pos
-      (permRead_at R t s hp k (ground.ltOfMem hk)).2.2.2)).trans ?_
+      (linkIso_all R t s h.1 k (ground.ltOfMem hk)).2.2.2)).trans ?_
   refine ground.famFold_congr_members Nat.add 0 _ _ (List.range R.links)
     (fun l hl => ?_)
   have hll : l < R.links := ground.ltOfMem hl
   have hM : ∀ d : Bool,
-      (match (if F.eqL (ground.getAt F.unit (permConf F s R.links a) (t l))
+      (match (if F.eqL (ground.getAt F.unit (permConf F t s R.links a) (t l))
             F.unit then none
-          else if d then some (ground.getAt F.unit (permConf F s R.links a) (t l))
-          else some (F.dual (ground.getAt F.unit (permConf F s R.links a) (t l)))
+          else if d then some (ground.getAt F.unit (permConf F t s R.links a) (t l))
+          else some (F.dual (ground.getAt F.unit (permConf F t s R.links a) (t l)))
           : Option L) with
         | none => 0
         | some y => if lab = y then 1 else 0)
@@ -1172,17 +1051,17 @@ theorem incident_perm {L : Type} [DecidableEq L] (F : Data L)
         | none => 0
         | some y => if lab = y then 1 else 0) := by
     intro d
-    rw [getAt_permConf F s R.links a (t l) (permRead_at R t s hp l hll).2.2.1,
-      (permRead_at R t s hp l hll).1]
+    rw [getAt_permConf F t s R.links a (t l) (linkIso_all R t s h.1 l hll).2.2.1
+      (by rw [(linkIso_all R t s h.1 l hll).1]), (linkIso_all R t s h.1 l hll).1]
   show ground.famFold Nat.add 0 _
       ((if ground.getAt 0 R.tail (t l) == v x then [(t l, true)] else [])
         ++ (if ground.getAt 0 R.head (t l) == v x then [(t l, false)] else []))
     = ground.famFold Nat.add 0 _
       ((if ground.getAt 0 R.tail l == x then [(l, true)] else [])
         ++ (if ground.getAt 0 R.head l == x then [(l, false)] else []))
-  rw [(endsRead_at R t v he l hll).1, (endsRead_at R t v he l hll).2,
-    beq_map R v w hv _ x (endLt R hw l hll).1 hx,
-    beq_map R v w hv _ x (endLt R hw l hll).2 hx,
+  rw [(endsMoved_vac R t v h.2.2 l hll).1, (endsMoved_vac R t v h.2.2 l hll).2,
+    beq_map R v w h.2.1 _ x (endLt R hw l hll).1 hx,
+    beq_map R v w h.2.1 _ x (endLt R hw l hll).2 hx,
     inc_fold, inc_fold, hM true, hM false]
 
 /-- The incident labels of a domain configuration read the domain:
@@ -1225,21 +1104,31 @@ theorem incidentLabels_all {L : Type} (F : Data L) (R : Region)
 /-- The action keeps a label domain holding the unit: the moved
 configuration's labels are the source's at the witness's keys, the
 unoccupied keys reading the unit. -/
-theorem permConf_all {L : Type} (F : Data L) (s : Nat → Nat) (n : Nat)
+theorem permConf_all {L : Type} (F : Data L) (t s : Nat → Nat) (n : Nat)
     (P : L → Bool) (hunit : P F.unit = true) (a : List L)
-    (ha : a.all P = true) : (permConf F s n a).all P = true := by
+    (ha : a.all P = true) : (permConf F t s n a).all P = true := by
   refine ground.all_of_getAt F.unit P _ (fun k hk => ?_)
   have hk' : k < n := by
-    rw [show (permConf F s n a).length = n from
+    rw [show (permConf F t s n a).length = n from
       ground.length_mapRange _ _] at hk
     exact hk
-  rw [getAt_permConf F s n a k hk']
-  cases Nat.lt_or_ge (s k) a.length with
-  | inl hlt =>
-    exact ground.all_of_mem P a ha _ (ground.mem_getAt F.unit a _ hlt)
-  | inr hge =>
-    rw [ground.getAt_over F.unit a _ hge]
-    exact hunit
+  show P (ground.getAt F.unit ((List.range n).map
+    (fun l => if t (s l) == l then
+      (if (fun _ => false) l
+        then F.dual (ground.getAt F.unit a (s l))
+        else ground.getAt F.unit a (s l))
+      else F.unit)) k) = true
+  rw [ground.getAt_map_range F.unit _ n k, if_pos hk']
+  cases hg : (t (s k) == k) with
+  | false => exact hunit
+  | true =>
+    show P (ground.getAt F.unit a (s k)) = true
+    cases Nat.lt_or_ge (s k) a.length with
+    | inl hlt =>
+      exact ground.all_of_mem P a ha _ (ground.mem_getAt F.unit a _ hlt)
+    | inr hge =>
+      rw [ground.getAt_over F.unit a _ hge]
+      exact hunit
 
 /-- The vertex multiplicity transports along the induced vertex map at
 the count laws: the incident labels one multiset (`incident_perm`)
@@ -1248,7 +1137,7 @@ a label domain holding the unit, closed under the dual and the rows,
 with the configuration inside it. -/
 theorem vmult_perm {L : Type} [DecidableEq L] (F : Data L)
     (R : Region) (hw : wellRead R) (t s v w : Nat → Nat)
-    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (h : isoRead R R t s v w (fun _ => false))
     (P : L → Bool) (hunit : P F.unit = true)
     (hdual : ∀ l, P l = true → P (F.dual l) = true)
     (hrowP : ∀ a b, P a = true → P b = true → ((F.row a b).all P) = true)
@@ -1260,12 +1149,12 @@ theorem vmult_perm {L : Type} [DecidableEq L] (F : Data L)
     (hrow : ∀ a b c, P a = true → P b = true → P c = true →
       rowLaw F a b c)
     (a : List L) (ha : a.all P = true) (x : Nat) (hx : x < R.verts) :
-    carrier.vmult F R (permConf F s R.links a) (v x)
+    carrier.vmult F R (permConf F t s R.links a) (v x)
       = carrier.vmult F R a x :=
   carrier.invCount_relist F P hunit hrowP hcomm hassoc hunitL hrow _ _
-    (incidentLabels_all F R P hunit hdual (permConf F s R.links a)
-      (permConf_all F s R.links P hunit a ha) (v x))
-    (fun lab => incident_perm F R hw t s v w hp he hv a x hx lab)
+    (incidentLabels_all F R P hunit hdual (permConf F t s R.links a)
+      (permConf_all F t s R.links P hunit a ha) (v x))
+    (fun lab => incident_perm F R hw t s v w h a x hx lab)
 
 /-- The occupancy is fixed at the index action: the touched vertices
 move along the vertex map, each at its transported multiplicity —
@@ -1273,7 +1162,7 @@ move along the vertex map, each at its transported multiplicity —
 the action. -/
 theorem occupied_perm {L : Type} [DecidableEq L] (F : Data L)
     (R : Region) (hw : wellRead R) (t s v w : Nat → Nat)
-    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (h : isoRead R R t s v w (fun _ => false))
     (P : L → Bool) (hunit : P F.unit = true)
     (hdual : ∀ l, P l = true → P (F.dual l) = true)
     (hrowP : ∀ a b, P a = true → P b = true → ((F.row a b).all P) = true)
@@ -1285,17 +1174,17 @@ theorem occupied_perm {L : Type} [DecidableEq L] (F : Data L)
     (hrow : ∀ a b c, P a = true → P b = true → P c = true →
       rowLaw F a b c)
     (a : List L) (ha : a.all P = true) :
-    carrier.occupied F R (permConf F s R.links a) = carrier.occupied F R a := by
+    carrier.occupied F R (permConf F t s R.links a) = carrier.occupied F R a := by
   have hlen : ∀ x, x < R.verts →
-      (carrier.incidentLabels F R (permConf F s R.links a) (v x)).length
+      (carrier.incidentLabels F R (permConf F t s R.links a) (v x)).length
         = (carrier.incidentLabels F R a x).length :=
     fun x hx => ground.length_eq_of_countOf _ _
-      (fun lab => incident_perm F R hw t s v w hp he hv a x hx lab)
+      (fun lab => incident_perm F R hw t s v w h a x hx lab)
   have hvm : ∀ x, x < R.verts →
-      carrier.vmult F R (permConf F s R.links a) (v x) = carrier.vmult F R a x :=
-    fun x hx => vmult_perm F R hw t s v w hp he hv P hunit hdual hrowP hcomm
+      carrier.vmult F R (permConf F t s R.links a) (v x) = carrier.vmult F R a x :=
+    fun x hx => vmult_perm F R hw t s v w h P hunit hdual hrowP hcomm
       hassoc hunitL hrow a ha x hx
-  have fwd : carrier.occupied F R (permConf F s R.links a) = true →
+  have fwd : carrier.occupied F R (permConf F t s R.links a) = true →
       carrier.occupied F R a = true := by
     intro hocc
     refine ground.all_of_getAt 0 _ _ (fun k hk => ?_)
@@ -1303,10 +1192,10 @@ theorem occupied_perm {L : Type} [DecidableEq L] (F : Data L)
     have hxv : ground.getAt 0 (carrier.touched F R a) k < R.verts :=
       ground.ltOfMem (ground.countOf_pos_of_mem hf.1)
     have hmem' : v (ground.getAt 0 (carrier.touched F R a) k)
-        ∈ carrier.touched F R (permConf F s R.links a) := by
+        ∈ carrier.touched F R (permConf F t s R.links a) := by
       refine ground.mem_filter_to _
-        (ground.memRange (vertPermRead_at R v w hv _ hxv).2.2.1) ?_
-      show ((carrier.incidentLabels F R (permConf F s R.links a)
+        (ground.memRange (vertIso_all R v w h.2.1 _ hxv).2.2.1) ?_
+      show ((carrier.incidentLabels F R (permConf F t s R.links a)
         (v (ground.getAt 0 (carrier.touched F R a) k))).length != 0) = true
       rw [hlen _ hxv]
       exact hf.2
@@ -1316,33 +1205,33 @@ theorem occupied_perm {L : Type} [DecidableEq L] (F : Data L)
     rw [← hvm _ hxv]
     exact hv1
   have bwd : carrier.occupied F R a = true →
-      carrier.occupied F R (permConf F s R.links a) = true := by
+      carrier.occupied F R (permConf F t s R.links a) = true := by
     intro hocc
     refine ground.all_of_getAt 0 _ _ (fun k hk => ?_)
     have hf := ground.mem_filter_of _ _ _ (ground.mem_getAt 0 _ k hk)
-    have hyv : ground.getAt 0 (carrier.touched F R (permConf F s R.links a)) k
+    have hyv : ground.getAt 0 (carrier.touched F R (permConf F t s R.links a)) k
         < R.verts :=
       ground.ltOfMem (ground.countOf_pos_of_mem hf.1)
-    have hxv : w (ground.getAt 0 (carrier.touched F R (permConf F s R.links a)) k)
-        < R.verts := (vertPermRead_at R v w hv _ hyv).2.2.2
+    have hxv : w (ground.getAt 0 (carrier.touched F R (permConf F t s R.links a)) k)
+        < R.verts := (vertIso_all R v w h.2.1 _ hyv).2.2.2
     have hvw : v (w (ground.getAt 0
-        (carrier.touched F R (permConf F s R.links a)) k))
-        = ground.getAt 0 (carrier.touched F R (permConf F s R.links a)) k :=
-      (vertPermRead_at R v w hv _ hyv).2.1
-    have hmem' : w (ground.getAt 0 (carrier.touched F R (permConf F s R.links a)) k)
+        (carrier.touched F R (permConf F t s R.links a)) k))
+        = ground.getAt 0 (carrier.touched F R (permConf F t s R.links a)) k :=
+      (vertIso_all R v w h.2.1 _ hyv).2.1
+    have hmem' : w (ground.getAt 0 (carrier.touched F R (permConf F t s R.links a)) k)
         ∈ carrier.touched F R a := by
       refine ground.mem_filter_to _ (ground.memRange hxv) ?_
       show ((carrier.incidentLabels F R a
-        (w (ground.getAt 0 (carrier.touched F R (permConf F s R.links a)) k))).length
+        (w (ground.getAt 0 (carrier.touched F R (permConf F t s R.links a)) k))).length
           != 0) = true
       rw [← hlen _ hxv, hvw]
       exact hf.2
     have hv1 := ground.all_of_mem _ _ hocc _ hmem'
-    show decide (0 < carrier.vmult F R (permConf F s R.links a)
-      (ground.getAt 0 (carrier.touched F R (permConf F s R.links a)) k)) = true
+    show decide (0 < carrier.vmult F R (permConf F t s R.links a)
+      (ground.getAt 0 (carrier.touched F R (permConf F t s R.links a)) k)) = true
     rw [← hvw, hvm _ hxv]
     exact hv1
-  cases h1 : carrier.occupied F R (permConf F s R.links a) with
+  cases h1 : carrier.occupied F R (permConf F t s R.links a) with
   | true => exact (fwd h1).symm
   | false =>
     cases h2 : carrier.occupied F R a with
@@ -1356,12 +1245,12 @@ theorem occupied_perm {L : Type} [DecidableEq L] (F : Data L)
 per-member content identity at every member yields the decidable
 read. -/
 theorem contentFixed_of {L : Type} (F : Data L) (R : Region)
-    (ix : List (List L)) (s : Nat → Nat)
-    (h : ∀ a, a ∈ ix → carrier.contentN F (permConf F s R.links a)
+    (ix : List (List L)) (t s : Nat → Nat)
+    (h : ∀ a, a ∈ ix → carrier.contentN F (permConf F t s R.links a)
       = carrier.contentN F a) :
-    contentFixed F R ix s :=
+    contentFixed F R ix t s :=
   ground.all_of_mem_intro _ ix (fun a ha => by
-    show (carrier.contentN F (permConf F s R.links a)
+    show (carrier.contentN F (permConf F t s R.links a)
       == carrier.contentN F a) = true
     exact ground.eqBeqOf (h a ha))
 
@@ -1369,12 +1258,12 @@ theorem contentFixed_of {L : Type} (F : Data L) (R : Region)
 per-member occupancy identity at every member yields the decidable
 read. -/
 theorem occFixed_of {L : Type} (F : Data L) (R : Region)
-    (ix : List (List L)) (s : Nat → Nat)
-    (h : ∀ a, a ∈ ix → carrier.occupied F R (permConf F s R.links a)
+    (ix : List (List L)) (t s : Nat → Nat)
+    (h : ∀ a, a ∈ ix → carrier.occupied F R (permConf F t s R.links a)
       = carrier.occupied F R a) :
-    occFixed F R ix s :=
+    occFixed F R ix t s :=
   ground.all_of_mem_intro _ ix (fun a ha => by
-    show (carrier.occupied F R (permConf F s R.links a)
+    show (carrier.occupied F R (permConf F t s R.links a)
       == carrier.occupied F R a) = true
     rw [h a ha]
     cases carrier.occupied F R a <;> rfl)
@@ -1419,11 +1308,11 @@ associativity, unit and row-is-support laws at the stated widths
 with the target reduced. -/
 theorem occupied_perm_dataA (d : Nat) (R : Region) (hw : wellRead R)
     (t s v w : Nat → Nat)
-    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (h : isoRead R R t s v w (fun _ => false))
     (a : List places.Shape) (ha : a.all (fusion.labelA d) = true) :
-    carrier.occupied (dataA d) R (permConf (dataA d) s R.links a)
+    carrier.occupied (dataA d) R (permConf (dataA d) t s R.links a)
       = carrier.occupied (dataA d) R a :=
-  occupied_perm (dataA d) R hw t s v w hp he hv (fusion.labelA d)
+  occupied_perm (dataA d) R hw t s v w h (fusion.labelA d)
     (fusion.labelA_unit d) (fusion.labelA_dual d)
     (fun x y _ _ => fusion.labelA_row d x y)
     (lawsA_all d).1 (lawsA_all d).2.1 (lawsA_all d).2.2.1 (lawsA_all d).2.2.2
@@ -1437,7 +1326,7 @@ key, the content fixed (`contentN_perm`) and the occupancy fixed
 window's label carrier (`carrier.idx_sound`, `carrier.mem_idx`). -/
 theorem permConf_mem_idx {L : Type} [DecidableEq L] (F : Data L)
     (R : Region) (C : Nat) (hw : wellRead R) (t s v w : Nat → Nat)
-    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (h : isoRead R R t s v w (fun _ => false))
     (P : L → Bool) (hunit : P F.unit = true)
     (hdual : ∀ l, P l = true → P (F.dual l) = true)
     (hrowP : ∀ a b, P a = true → P b = true → ((F.row a b).all P) = true)
@@ -1450,7 +1339,7 @@ theorem permConf_mem_idx {L : Type} [DecidableEq L] (F : Data L)
       rowLaw F a b c)
     (hdom : ((F.unit :: F.below C).all P) = true)
     (a : List L) (ha : a ∈ carrier.idx F R C) :
-    permConf F s R.links a ∈ carrier.idx F R C := by
+    permConf F t s R.links a ∈ carrier.idx F R C := by
   obtain ⟨hlen, hlab, hany, hcont, hocc⟩ := carrier.idx_sound F R C a ha
   have haP : a.all P = true :=
     ground.all_of_mem_intro P a (fun l hl =>
@@ -1462,28 +1351,32 @@ theorem permConf_mem_idx {L : Type} [DecidableEq L] (F : Data L)
       ground.ltOfMem (ground.countOf_pos_of_mem hk)
     have hsk : s k < a.length := by
       rw [hlen]
-      exact (permRead_at R t s hp k hk').2.2.2
+      exact (linkIso_all R t s h.1 k hk').2.2.2
     rw [← hkl]
-    show (if (fun _ => false) k then F.dual (ground.getAt F.unit a (s k))
-      else ground.getAt F.unit a (s k)) ∈ F.unit :: F.below C
+    show (if t (s k) == k then
+      (if (fun _ => false) k then F.dual (ground.getAt F.unit a (s k))
+        else ground.getAt F.unit a (s k))
+      else F.unit) ∈ F.unit :: F.below C
+    rw [ground.eqBeqOf (linkIso_all R t s h.1 k hk').2.1]
     exact hlab _ (ground.mem_getAt F.unit a (s k) hsk)
   · obtain ⟨x, hx, hfx⟩ := ground.mem_of_any _ a hany
     obtain ⟨k, hk, hkx⟩ := ground.getAt_of_mem F.unit hx
     have hk' : k < R.links := by
       rw [← hlen]
       exact hk
-    have htk : t k < R.links := (permRead_at R t s hp k hk').2.2.1
+    have htk : t k < R.links := (linkIso_all R t s h.1 k hk').2.2.1
     refine ground.any_of_mem _
-      (ground.mem_getAt F.unit (permConf F s R.links a) (t k)
+      (ground.mem_getAt F.unit (permConf F t s R.links a) (t k)
         (by
-          rw [show (permConf F s R.links a).length = R.links from
+          rw [show (permConf F t s R.links a).length = R.links from
             ground.length_mapRange _ _]
           exact htk)) ?_
-    rw [getAt_permConf F s R.links a (t k) htk, (permRead_at R t s hp k hk').1, hkx]
+    rw [getAt_permConf F t s R.links a (t k) htk
+      (by rw [(linkIso_all R t s h.1 k hk').1]), (linkIso_all R t s h.1 k hk').1, hkx]
     exact hfx
-  · rw [contentN_perm F R t s hp a hlen]
+  · rw [contentN_perm F R t s h.1 a hlen]
     exact hcont
-  · rw [occupied_perm F R hw t s v w hp he hv P hunit hdual hrowP hcomm
+  · rw [occupied_perm F R hw t s v w h P hunit hdual hrowP hcomm
       hassoc hunitL hrow a haP]
     exact hocc
 
@@ -1491,10 +1384,10 @@ theorem permConf_mem_idx {L : Type} [DecidableEq L] (F : Data L)
 member's image a member at the interface equality yields the
 decidable read. -/
 theorem idxFixed_of {L : Type} (F : Data L) (R : Region)
-    (ix : List (List L)) (s : Nat → Nat)
-    (h : ∀ a, a ∈ ix → carrier.confMem F (permConf F s R.links a) ix
+    (ix : List (List L)) (t s : Nat → Nat)
+    (h : ∀ a, a ∈ ix → carrier.confMem F (permConf F t s R.links a) ix
       = true) :
-    idxFixed F R ix s :=
+    idxFixed F R ix t s :=
   ground.all_of_mem_intro _ ix (fun a ha => h a ha)
 
 /-- The window index maps within itself at the action, the closure
@@ -1503,7 +1396,7 @@ action, the count laws over a label domain holding the window's
 label carrier. -/
 theorem idxFixed_idx {L : Type} [DecidableEq L] (F : Data L)
     (R : Region) (C : Nat) (hw : wellRead R) (t s v w : Nat → Nat)
-    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
+    (h : isoRead R R t s v w (fun _ => false))
     (P : L → Bool) (hunit : P F.unit = true)
     (hdual : ∀ l, P l = true → P (F.dual l) = true)
     (hrowP : ∀ a b, P a = true → P b = true → ((F.row a b).all P) = true)
@@ -1515,9 +1408,9 @@ theorem idxFixed_idx {L : Type} [DecidableEq L] (F : Data L)
     (hrow : ∀ a b c, P a = true → P b = true → P c = true →
       rowLaw F a b c)
     (hdom : ((F.unit :: F.below C).all P) = true) :
-    idxFixed F R (carrier.idx F R C) s :=
-  idxFixed_of F R _ s (fun a ha => carrier.confMem_of_mem F _ _
-    (permConf_mem_idx F R C hw t s v w hp he hv P hunit hdual hrowP hcomm
+    idxFixed F R (carrier.idx F R C) t s :=
+  idxFixed_of F R _ t s (fun a ha => carrier.confMem_of_mem F _ _
+    (permConf_mem_idx F R C hw t s v w h P hunit hdual hrowP hcomm
       hassoc hunitL hrow hdom a ha))
 
 /-- The closure read at the label calculus: the window index at a
@@ -1527,1029 +1420,137 @@ action, the count laws discharged over the width-`d` labels
 `fusion.labelA_below`). -/
 theorem idxFixed_dataA (d : Nat) (R : Region) (C : Nat) (hw : wellRead R)
     (t s v w : Nat → Nat)
-    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w) :
-    idxFixed (dataA d) R (carrier.idx (dataA d) R C) s :=
-  idxFixed_idx (dataA d) R C hw t s v w hp he hv (fusion.labelA d)
+    (h : isoRead R R t s v w (fun _ => false)) :
+    idxFixed (dataA d) R (carrier.idx (dataA d) R C) t s :=
+  idxFixed_idx (dataA d) R C hw t s v w h (fusion.labelA d)
     (fusion.labelA_unit d) (fusion.labelA_dual d)
     (fun x y _ _ => fusion.labelA_row d x y)
     (lawsA_all d).1 (lawsA_all d).2.1 (lawsA_all d).2.2.1 (lawsA_all d).2.2.2
     (fusion.labelA_below d C)
 
-/-- The action is injective on the region's width: the moved
-configuration reads its source at the witness's keys. -/
-theorem permConf_inj {L : Type} (F : Data L) (R : Region) (t s : Nat → Nat)
-    (hp : permRead R t s) (a a' : List L) (ha : a.length = R.links)
-    (ha' : a'.length = R.links)
-    (h : permConf F s R.links a = permConf F s R.links a') : a = a' := by
-  refine getAt_ext F.unit a a' (ha.trans ha'.symm) (fun l hl => ?_)
-  rw [ha] at hl
-  have htl : t l < R.links := (permRead_at R t s hp l hl).2.2.1
-  have h1 := getAt_permConf F s R.links a (t l) htl
-  have h2 := getAt_permConf F s R.links a' (t l) htl
-  rw [(permRead_at R t s hp l hl).1] at h1 h2
-  rw [← h1, ← h2, h]
+/-! The transport at the region's own action, `thm:pairpencil`'s
+transport field: a moved state is the configuration moved with each
+vertex member moved along the incident ends' column match, the star
+at the tie columns of the reversed ends (`pairpencil.dualConf`,
+`pairpencil.movedMembers`), a state of the moved window at the
+moved vertex lists' spans (`statesTransport`); every pairing read
+between two moved states is the read between the states, each
+term's across every position pair of the changed edge with the
+plaquette list permuted (`termsTransport`); and the moved states'
+coefficients over the fiber's own list assemble the transport's
+matrix on the window list (`transportMat`), the two stated lists'
+pencils congruent at it (`transportCongr`) — so the moved window's
+pencil is the pencil read at the moved states and every count is
+one value (`inertia.rev_congr`), the electric member fixed at the
+contents (`dualContentFixed`). -/
 
-/-- The place action's matrix on a stated index at an equality read
-and an action, the unit line at its head: the column at a member
-reads one at the row of the member its image reads equal to —
-`con:places`' permutation matrix at the index list. -/
-def permMatBy {I : Type} (eq : I → I → Bool) (img : I → I) (ix : List I) : Mat :=
-  (BPair.ofPos Pos.one :: ix.map (fun _ => BPair.unit))
-    :: ix.map (fun b => BPair.unit :: (ix.map img).map (fun ia =>
-      if eq ia b then BPair.ofPos Pos.one else BPair.unit))
-
-/-- The action's place list on the stated list with the unit line at
-its head: the unit line fixed at the vacant key and each member's
-image position shifted past it. -/
-def imgPosBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
-    (ix : List I) : List Nat :=
-  0 :: ix.map (fun a => posBy eq (img a) ix + 1)
-
-/-- The moved-entries read of a window matrix at the action: every
-entry at a place pair reads the entry at the moved pair, the
-relabeling read (`elim.relabelRead`) at the action's place list. -/
-def movedReadBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
-    (ix : List I) (H : Mat) : Prop :=
-  elim.relabelRead (ix.length + 1) H H (imgPosBy eq img ix)
-
-instance {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
-    (ix : List I) (H : Mat) : Decidable (movedReadBy eq img ix H) :=
-  inferInstanceAs (Decidable (elim.relabelRead _ _ _ _))
-
-/-- Each member's image meets the list at one member alone. -/
-def imgOnceBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
-    (ix : List I) : Prop :=
+/-- The states' transport over the index: at every member and every
+vertex, the source vertex list's members moved to the moved vertex
+(`pairpencil.moveMember`) lie in the moved vertex's own list's span
+(`slotpower.spanMemberT` at the presentation's table,
+`lem:lowerspan`'s residual read) with the two lists at one
+count. -/
+def statesTransport {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) (t s v : Nat → Nat) (rev : Nat → Bool) : Prop :=
   (ix.all (fun a =>
-    (ix.filter (fun b => eq (img a) b)).length == 1)) = true
+    let a' := dualConf F t s rev R.links a
+    (List.range R.verts).all (fun x =>
+      match F.pres.vertList (carrier.incidentEnds F R a x),
+        F.pres.vertList (carrier.incidentEnds F R a' (v x)) with
+      | some l, some l' =>
+        (l.members.list.length == l'.members.list.length)
+          && l.members.list.all (fun m =>
+            slotpower.spanMemberT F.pres.table l'.members.list
+              (pairpencil.moveMember F R R s rev a x a' (v x) (m, l.clear)).1)
+      | none, none => true
+      | none, some _ => false
+      | some _, none => false))) = true
 
-instance {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
-    (ix : List I) : Decidable (imgOnceBy eq img ix) :=
+instance {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) (t s v : Nat → Nat) (rev : Nat → Bool) :
+    Decidable (statesTransport F R ix t s v rev) :=
   inferInstanceAs (Decidable (_ = _))
 
-/-- The place list's members sit below the order at a once-met
-list. -/
-theorem imgPosBy_lt {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
-    (ix : List I) (h : imgOnceBy eq img ix) :
-    ∀ i, i < ix.length + 1 →
-      getAt 0 (imgPosBy eq img ix) i < ix.length + 1 := by
-  intro i hi
-  cases i with
-  | zero => exact Nat.succ_pos _
-  | succ k =>
-    have hk : k < ix.length := Nat.lt_of_succ_lt_succ hi
-    show getAt 0 (ix.map (fun a => posBy eq (img a) ix + 1)) k
-      < ix.length + 1
-    rw [getAt_map default 0 _ ix k hk]
-    exact Nat.succ_lt_succ (posBy_lt eq _ ix
-      (beqEqOf (all_of_mem _ _ h _ (mem_getAt default ix k hk))))
+/-- The terms' transport over the window list: the plaquette list
+permuted at the action (`lattice.plaqPermRead`, the permutation with
+its witness as data), and at every plaquette and every position
+pair across its changed edge the term's entry between the moved
+states is the entry between the states
+(`pairpencil.termTransportAt` at each position's configuration and
+members moved once). -/
+def termsTransport {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (n : Nat) (ix : List (List L)) (t s v w : Nat → Nat) (rev : Nat → Bool)
+    (pm pm' : Nat → Nat) : Prop :=
+  plaqPermRead R t rev pm pm'
+  ∧ (let mv := (List.range n).map (fun i =>
+        let a := pairpencil.posConf F R ix i
+        let a' := dualConf F t s rev R.links a
+        (a', pairpencil.movedMembers F R R s v w rev a a'
+          (pairpencil.stateMembers F R ix a (pairpencil.posKey F R ix i))))
+     R.plaqs.all (fun p => (List.range n).all (fun i => (List.range n).all (fun j =>
+        !pairpencil.rowPair F R ix p i j
+          || pairpencil.termTransportAt F R R ix ix t rev p
+              (pairpencil.posConf F R ix i) (pairpencil.posKey F R ix i)
+              (pairpencil.posConf F R ix j) (pairpencil.posKey F R ix j)
+              (getAt ([], []) mv i).1 (getAt ([], []) mv j).1
+              (getAt ([], []) mv i).2 (getAt ([], []) mv j).2)))) = true
 
+instance {L : Type} [DecidableEq L] (F : Data L) (R : Region) (n : Nat)
+    (ix : List (List L)) (t s v w : Nat → Nat) (rev : Nat → Bool)
+    (pm pm' : Nat → Nat) :
+    Decidable (termsTransport F R n ix t s v w rev pm pm') :=
+  inferInstanceAs (Decidable (_ ∧ _ = _))
 
-/-- The place action's matrix's order. -/
-theorem length_permMatBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
-    (ix : List I) :
-    (permMatBy eq img ix).length = ix.length + 1 :=
-  congrArg Nat.succ (length_map _ ix)
+/-- The transport's coefficient matrix on the window list at the
+region's own action, with the unit line at its head: per source
+position the moved state's members solved against the moved vertex
+lists' own members (`slotpower.spanCoeffs`, each coefficient at the
+own list's clearing), the column's clearing the solves' clearings'
+product against the moved members' own, and the entry at a moved
+position of the moved configuration the coefficients' product over
+the vertices at the position's key — the moved states'
+combinations over the fiber's own stated list, `thm:pairpencil`'s
+solve. -/
+def transportMat {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) (n : Nat) (t s v w : Nat → Nat) (rev : Nat → Bool) :
+    Mat × List BPair :=
+  let cols := (List.range n).map (fun i =>
+    let a := pairpencil.posConf F R ix i
+    let a' := dualConf F t s rev R.links a
+    let ms := pairpencil.movedMembers F R R s v w rev a a'
+      (pairpencil.stateMembers F R ix a (pairpencil.posKey F R ix i))
+    let sol := (List.range R.verts).map (fun y =>
+      match pairpencil.vertListAt F R ix (carrier.incidentEnds F R a' y),
+        getAt none ms y with
+      | some l, some m =>
+        let c := slotpower.spanCoeffsT F.pres.table l.members.list m.1
+        (c.1.map (fun x => x * BPair.ofPos l.clear), c.2 * m.2)
+      | none, _ => ([], Pos.one)
+      | some _, none => ([], Pos.one))
+    (a', sol))
+  (ground.matOf n n (fun i' i =>
+    let col := getAt ([], []) cols i
+    if carrier.eqConf F (pairpencil.posConf F R ix i') col.1 then
+      let k' := pairpencil.posKey F R ix i'
+      (List.range R.verts).foldl (fun acc y =>
+        acc * getAt BPair.unit (getAt ([], Pos.one) col.2 y).1 (getAt 0 k' y))
+        (BPair.ofNat 1)
+    else BPair.unit),
+   (List.range n).map (fun i =>
+     BPair.ofPos ((List.range R.verts).foldl (fun acc y =>
+       acc * (getAt ([], Pos.one) (getAt ([], []) cols i).2 y).2) Pos.one)))
 
-/-- The place action's matrix's rows at its order. -/
-theorem rowsLen_permMatBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
-    (ix : List I) :
-    rowsLen (ix.length + 1) (permMatBy eq img ix) :=
-  ⟨congrArg Nat.succ (length_map _ ix),
-    rowsLen_map _ _ ix (fun _ _ => congrArg Nat.succ
-      ((length_map _ _).trans (length_map _ ix)))⟩
+/-- The pencil's congruence at the transport's coefficients: the
+matrix's transpose against the pencil against the matrix one value
+with the pencil at the columns' clearings on both sides — the two
+stated lists' pencils congruent at the solve's coefficients, the
+moved states' pencil the states' own. -/
+def transportCongr (T : Mat) (D : List BPair) (P : Mat) : Prop :=
+  matOneValue (matMul (transposeM T) (matMul P T))
+    (matMul (diagO bpairOps D) (matMul P (diagO bpairOps D)))
 
-/-- The place action's matrix's entry at a once-met list: the one
-occupied row at the column's image position. -/
-theorem getAt_permMatBy {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
-    (ix : List I) (h : imgOnceBy eq img ix) (r c : Nat)
-    (hr : r < ix.length + 1) (hc : c < ix.length + 1) :
-    getAt BPair.unit (getAt [] (permMatBy eq img ix) r) c
-      = if r = getAt 0 (imgPosBy eq img ix) c then BPair.ofPos Pos.one
-        else BPair.unit := by
-  cases r with
-  | zero =>
-    cases c with
-    | zero => rfl
-    | succ j =>
-      have hj : j < ix.length := Nat.lt_of_succ_lt_succ hc
-      show getAt BPair.unit (ix.map (fun _ => BPair.unit)) j
-        = if 0 = getAt 0 (ix.map (fun a =>
-            posBy eq (img a) ix + 1)) j then BPair.ofPos Pos.one
-          else BPair.unit
-      rw [getAt_map default BPair.unit _ ix j hj, getAt_map default 0 _ ix j hj,
-        if_neg (fun h0 => Nat.noConfusion h0)]
-  | succ k =>
-    have hk : k < ix.length := Nat.lt_of_succ_lt_succ hr
-    show getAt BPair.unit (getAt [] (ix.map (fun b =>
-        BPair.unit :: (ix.map img).map
-          (fun ia => if eq ia b then BPair.ofPos Pos.one
-            else BPair.unit))) k) c = _
-    rw [getAt_map default [] _ ix k hk]
-    cases c with
-    | zero =>
-      show BPair.unit = if k + 1 = 0 then BPair.ofPos Pos.one else BPair.unit
-      rw [if_neg (fun h0 => Nat.noConfusion h0)]
-    | succ j =>
-      have hj : j < ix.length := Nat.lt_of_succ_lt_succ hc
-      show getAt BPair.unit ((ix.map img).map
-          (fun ia => if eq ia (getAt default ix k) then BPair.ofPos Pos.one
-            else BPair.unit)) j
-        = if k + 1 = getAt 0 (ix.map (fun a =>
-            posBy eq (img a) ix + 1)) j then BPair.ofPos Pos.one
-          else BPair.unit
-      rw [getAt_map default BPair.unit _ _ j (by rw [length_map]; exact hj),
-        getAt_map default default _ ix j hj, getAt_map default 0 _ ix j hj]
-      have honce : (ix.filter (fun b =>
-          eq (img (getAt default ix j)) b)).length = 1 :=
-        beqEqOf (all_of_mem _ _ h _ (mem_getAt default ix j hj))
-      have hiff := posBy_once eq (img (getAt default ix j)) ix honce k hk
-      show (if eq (img (getAt default ix j)) (getAt default ix k)
-          then BPair.ofPos Pos.one else BPair.unit) = _
-      cases he : eq (img (getAt default ix j)) (getAt default ix k) with
-      | true =>
-        rw [if_pos rfl, if_pos (congrArg Nat.succ (hiff.mp he).symm)]
-      | false =>
-        rw [if_neg (fun h0 => Bool.noConfusion h0),
-          if_neg (fun h0 => Bool.noConfusion
-            (he.symm.trans (hiff.mpr (Nat.succ.inj h0).symm)))]
-
-/-- The place action's matrix is the place list's permutation
-matrix transposed, entry by entry. -/
-theorem permMatBy_read {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
-    (ix : List I) (h : imgOnceBy eq img ix) :
-    matOneValue (permMatBy eq img ix)
-      (transposeM (permM (ix.length + 1) (imgPosBy eq img ix))) := by
-  have hσl : (imgPosBy eq img ix).length = ix.length + 1 :=
-    congrArg Nat.succ (length_map _ ix)
-  have hPl : (permM (ix.length + 1) (imgPosBy eq img ix)).length
-      = ix.length + 1 := (length_map _ _).trans hσl
-  have hPr : rowsLen (ix.length + 1) (permM (ix.length + 1) (imgPosBy eq img ix)) :=
-    rowsLen_permM _ _
-  have hTl : (transposeM (permM (ix.length + 1) (imgPosBy eq img ix))).length
-      = ix.length + 1 := transposeLen _ hPr hPl
-  have hTr : rowsLen (ix.length + 1)
-      (transposeM (permM (ix.length + 1) (imgPosBy eq img ix))) := by
-    have := rowsLen_transposeM (permM (ix.length + 1) (imgPosBy eq img ix))
-    rw [hPl] at this
-    exact this
-  refine matOne_getAt _ _ ((length_permMatBy eq img ix).trans hTl.symm) ?_
-  intro r hr
-  rw [length_permMatBy] at hr
-  refine poly.oneValue_of_entries _ _
-    (by rw [rowsLen_getAt _ r (rowsLen_permMatBy eq img ix)
-          (by rw [length_permMatBy]; exact hr),
-        rowsLen_getAt _ r hTr (by rw [hTl]; exact hr)]) ?_
-  intro c hc
-  rw [rowsLen_getAt _ r (rowsLen_permMatBy eq img ix)
-    (by rw [length_permMatBy]; exact hr)] at hc
-  rw [getAt_permMatBy eq img ix h r c hr hc,
-    getAt_transposeM BPair.unit _ hPr r c hr (by rw [hPl]; exact hc)]
-  show (if r = getAt 0 (imgPosBy eq img ix) c then BPair.ofPos Pos.one
-      else BPair.unit).oneValue
-    (getAt BPair.unit (getAt [] ((imgPosBy eq img ix).map
-      (idRow (ix.length + 1))) c) r)
-  rw [getAt_map 0 [] _ _ c (by rw [hσl]; exact hc),
-    getAt_idRow (ix.length + 1) _ r hr]
-  by_cases hrc : r = getAt 0 (imgPosBy eq img ix) c
-  · rw [if_pos hrc, if_pos hrc]
-    decide
-  · rw [if_neg hrc, if_neg hrc]
-    exact BPair.oneValue_refl _
-
-
-/-- The commuting read at every window matrix whose entries move
-along the action: the place action's matrix is the place list's
-permutation matrix transposed, the congruence reads the selected
-block (`elim.permM_conj`), and the moved-entries read returns the
-matrix. -/
-theorem commReadBy_of {I : Type} [Inhabited I] (eq : I → I → Bool) (img : I → I)
-    (ix : List I) (H : Mat)
-    (hsq : sqAt H (ix.length + 1)) (h : imgOnceBy eq img ix)
-    (hmov : movedReadBy eq img ix H) :
-    commRead (permMatBy eq img ix) H := by
-  have hσl : (imgPosBy eq img ix).length = ix.length + 1 :=
-    congrArg Nat.succ (length_map _ ix)
-  have hPl : (permM (ix.length + 1) (imgPosBy eq img ix)).length
-      = ix.length + 1 := (length_map _ _).trans hσl
-  have hPr : rowsLen (ix.length + 1) (permM (ix.length + 1) (imgPosBy eq img ix)) :=
-    rowsLen_permM _ _
-  have hTl : (transposeM (permM (ix.length + 1) (imgPosBy eq img ix))).length
-      = ix.length + 1 := transposeLen _ hPr hPl
-  have hTr : rowsLen (ix.length + 1)
-      (transposeM (permM (ix.length + 1) (imgPosBy eq img ix))) := by
-    have := rowsLen_transposeM (permM (ix.length + 1) (imgPosBy eq img ix))
-    rw [hPl] at this
-    exact this
-  have hPmL : (permMatBy eq img ix).length = ix.length + 1 := length_permMatBy eq img ix
-  have hPmR : rowsLen (ix.length + 1) (permMatBy eq img ix) := rowsLen_permMatBy eq img ix
-  have hN : 0 < ix.length + 1 := Nat.succ_pos _
-  have hread := permMatBy_read eq img ix h
-  have hT : matOneValue (transposeM (permMatBy eq img ix))
-      (permM (ix.length + 1) (imgPosBy eq img ix)) := by
-    have h1 := transposeM_congrM (ix.length + 1) (permMatBy eq img ix)
-      (transposeM (permM (ix.length + 1) (imgPosBy eq img ix))) hPmR hTr
-      (hPmL.trans hTl.symm) hread
-    rw [transposeM_transposeM (permM (ix.length + 1) (imgPosBy eq img ix)) hPr hN
-      (by rw [hPl]; exact hN)] at h1
-    exact h1
-  have hHl : H.length = ix.length + 1 := sqAt_len hsq
-  have hHr : rowsLen (ix.length + 1) H := rowsLen_of_sqAt hsq
-  have hinner : matOneValue (matMul H (permMatBy eq img ix))
-      (matMul H (transposeM (permM (ix.length + 1) (imgPosBy eq img ix)))) :=
-    matMul_congrR H _ _ hPmR hTr hPmL hTl hN hread
-  have hM1r : rowsLen (ix.length + 1) (matMul H (permMatBy eq img ix)) := by
-    have := rowsLen_matMul H (permMatBy eq img ix)
-    rw [transposeLen _ hPmR hPmL] at this
-    exact this
-  have hM2r : rowsLen (ix.length + 1)
-      (matMul H (transposeM (permM (ix.length + 1) (imgPosBy eq img ix)))) := by
-    have := rowsLen_matMul H (transposeM (permM (ix.length + 1) (imgPosBy eq img ix)))
-    rw [transposeLen _ hTr hTl] at this
-    exact this
-  have h2 : matOneValue
-      (matMul (transposeM (permMatBy eq img ix)) (matMul H (permMatBy eq img ix)))
-      (matMul (permM (ix.length + 1) (imgPosBy eq img ix))
-        (matMul H (transposeM (permM (ix.length + 1) (imgPosBy eq img ix))))) :=
-    matOne_trans (matMul_congrL _ _ _ hT)
-      (matMul_congrR _ _ _ hM1r hM2r ((length_matMul H _).trans hHl)
-        ((length_matMul H _).trans hHl) hN hinner)
-  have hblt : ((imgPosBy eq img ix).all (fun i => Nat.blt i (ix.length + 1))) = true :=
-    all_of_mem_intro _ _ (fun x hx => by
-      obtain ⟨i, hi, hix⟩ := getAt_of_mem 0 hx
-      rw [← hix]
-      exact ltBlt (imgPosBy_lt eq img ix h i (by rw [← hσl]; exact hi)))
-  have h3 := permM_conj (ix.length + 1) (imgPosBy eq img ix) H hsq hblt
-  have hSr : rowsLen (ix.length + 1) (selM (imgPosBy eq img ix) (imgPosBy eq img ix) H) := by
-    have := rowsLen_selMO BPair.unit (imgPosBy eq img ix) H (imgPosBy eq img ix)
-    rw [hσl] at this
-    exact this
-  have hSl : (selM (imgPosBy eq img ix) (imgPosBy eq img ix) H).length
-      = ix.length + 1 := (length_selMO BPair.unit _ _ H).trans hσl
-  have h4 : matOneValue (selM (imgPosBy eq img ix) (imgPosBy eq img ix) H) H := by
-    refine matOne_getAt _ _ (hSl.trans hHl.symm) ?_
-    intro i hi
-    rw [hSl] at hi
-    refine poly.oneValue_of_entries _ _
-      (by rw [rowsLen_getAt _ i hSr (by rw [hSl]; exact hi),
-        rowsLen_getAt _ i hHr (by rw [hHl]; exact hi)]) ?_
-    intro j hj
-    rw [rowsLen_getAt _ i hSr (by rw [hSl]; exact hi)] at hj
-    show (getAt BPair.unit (getAt [] (selMO BPair.unit (imgPosBy eq img ix)
-        (imgPosBy eq img ix) H) i) j).oneValue (getAt BPair.unit (getAt [] H i) j)
-    rw [getAt_selMO BPair.unit _ _ H i j (by rw [hσl]; exact hi)
-      (by rw [hσl]; exact hj)]
-    exact BPair.oneValue_symm
-      (elim.relabelRead_at (ix.length + 1) H H (imgPosBy eq img ix) hmov i j hi hj)
-  exact matOne_trans h2 (matOne_trans h3 h4)
-
-
-/-- The equality read is structural on the image pairs: an image
-reading equal to a list member is that member — at the window list
-`con:fusion`'s label equality with the keys' own, the label calculus
-reading it outright (`slotEq_dataA`). -/
-def imgEqBy {I : Type} [Inhabited I] [DecidableEq I] (eq : I → I → Bool)
-    (img : I → I) (ix : List I) : Prop :=
-  (ix.all (fun a => ix.all (fun b =>
-    !(eq (img a) b)
-      || decide (img a = b)))) = true
-
-instance {I : Type} [Inhabited I] [DecidableEq I] (eq : I → I → Bool)
-    (img : I → I) (ix : List I) : Decidable (imgEqBy eq img ix) :=
-  inferInstanceAs (Decidable (_ = _))
-
-/-- The image's list member at a once-met, structurally equal image
-is the image itself. -/
-theorem imgPosBy_read {I : Type} [Inhabited I] [DecidableEq I] (eq : I → I → Bool)
-    (img : I → I) (ix : List I)
-    (h : imgOnceBy eq img ix) (heq : imgEqBy eq img ix) (k : Nat)
-    (hk : k < ix.length) :
-    getAt default ix (posBy eq (img (getAt default ix k)) ix)
-      = img (getAt default ix k) := by
-  have honce : (ix.filter (fun b =>
-      eq (img (getAt default ix k)) b)).length = 1 :=
-    beqEqOf (all_of_mem _ _ h _ (mem_getAt default ix k hk))
-  have hpos := posBy_lt eq _ ix honce
-  have he : eq (img (getAt default ix k))
-      (getAt default ix (posBy eq (img (getAt default ix k)) ix)) = true :=
-    (posBy_once eq _ ix honce _ hpos).mpr rfl
-  have hb := all_of_mem _ _ (all_of_mem _ _ heq _ (mem_getAt default ix k hk)) _
-    (mem_getAt default ix _ hpos)
-  rw [he] at hb
-  exact (of_decide_eq_true (show decide (img (getAt default ix k)
-    = getAt default ix (posBy eq (img (getAt default ix k)) ix)) = true
-    from hb)).symm
-
-/-- At a once-met list with the equality structural on the image
-pairs the equality read is reflexive at every image: the one member
-met is the image itself. -/
-theorem eq_img_self {I : Type} [Inhabited I] [DecidableEq I]
-    (eq : I → I → Bool) (img : I → I) (ix : List I)
-    (h : imgOnceBy eq img ix) (heq : imgEqBy eq img ix) (a : I) (ha : a ∈ ix) :
-    eq (img a) (img a) = true := by
-  have h1 : (ix.filter (fun b => eq (img a) b)).length = 1 :=
-    beqEqOf (all_of_mem _ _ h a ha)
-  have hpos : 0 < (ix.filter (fun b => eq (img a) b)).length := by
-    rw [h1]
-    exact Nat.succ_pos 0
-  obtain ⟨hb, hpb⟩ := mem_filter_of _ _ _ (mem_getAt default _ 0 hpos)
-  have hb2 := all_of_mem _ _ (all_of_mem _ _ heq a ha) _ hb
-  rw [hpb] at hb2
-  have hbe : img a = getAt default (ix.filter (fun b => eq (img a) b)) 0 :=
-    of_decide_eq_true (show decide (img a
-      = getAt default (ix.filter (fun b => eq (img a) b)) 0) = true from hb2)
-  have h3 : eq (img a) (getAt default (ix.filter (fun b => eq (img a) b)) 0)
-      = true := hpb
-  rw [← hbe] at h3
-  exact h3
-
-/-- A once-met list with the equality structural on the image pairs
-and the action injective is distinct: a repeated member is met at
-least twice by every image in its class, so no image lies there, and
-the images, members and pairwise distinct, are one too many for the
-members off it. -/
-theorem distinct_of_imgOnceBy {I : Type} [Inhabited I] [DecidableEq I] (eq : I → I → Bool)
-    (img : I → I) (ix : List I)
-    (h : imgOnceBy eq img ix) (heq : imgEqBy eq img ix)
-    (hpc : ∀ a a', a ∈ ix → a' ∈ ix →
-      img a = img a' → a = a') :
-    distinctList ix := by
-  have himg : ∀ a, a ∈ ix → img a ∈ ix := by
-    intro a ha
-    have h1 : (ix.filter (fun b => eq (img a) b)).length = 1 :=
-      beqEqOf (all_of_mem _ _ h a ha)
-    have hpos : 0 < (ix.filter (fun b => eq (img a) b)).length := by
-      rw [h1]
-      exact Nat.succ_pos 0
-    obtain ⟨hb, hpb⟩ := mem_filter_of _ _ _ (mem_getAt default _ 0 hpos)
-    have hb2 := all_of_mem _ _ (all_of_mem _ _ heq a ha) _ hb
-    rw [hpb] at hb2
-    rw [of_decide_eq_true (show decide (img a
-      = getAt default (ix.filter (fun b => eq (img a) b)) 0) = true
-      from hb2)]
-    exact hb
-  intro b hb
-  cases Nat.lt_or_ge 1 (countOf b ix) with
-  | inr hle => exact hle
-  | inl h2 =>
-    exfalso
-    have hnob : ∀ a, a ∈ ix → ¬ img a = b := by
-      intro a ha hab
-      have h1 : (ix.filter (fun c => eq (img a) c)).length = 1 :=
-        beqEqOf (all_of_mem _ _ h a ha)
-      have hc : countOf b (ix.filter (fun c => eq (img a) c))
-          = countOf b ix := by
-        rw [countOf_filter, if_pos (by rw [← hab]; exact eq_img_self eq img ix h heq a ha)]
-      have hle := countOf_le_length b
-        (ix.filter (fun c => eq (img a) c))
-      rw [hc, h1] at hle
-      exact absurd (Nat.lt_of_lt_of_le h2 hle) (Nat.lt_irrefl 1)
-    have hVd : distinctList (dedupL ix) := fun x _ => countOf_dedupL_le x ix
-    have hbV : b ∈ dedupL ix := mem_dedupL hb
-    have hVimg : ∀ x, countOf x ((dedupL ix).map img) ≤ 1 := by
-      refine fun x => distinctList_all ?_ x
-      refine distinct_of_getAt_inj default _ (fun p q hp hq hpq => ?_)
-      rw [length_map] at hp hq
-      rw [getAt_map default default _ _ p hp, getAt_map default default _ _ q hq] at hpq
-      exact getAt_inj_distinct default (dedupL ix) hVd p q hp hq
-        (hpc _ _ (mem_of_dedupL (mem_getAt default _ p hp))
-          (mem_of_dedupL (mem_getAt default _ q hq)) hpq)
-    have hcov : ∀ x, x ∈ (dedupL ix).map img →
-        x ∈ eraseFirst b (dedupL ix) := by
-      intro x hx
-      obtain ⟨a, ha, hax⟩ := mem_map_of _ _ x hx
-      have haix : a ∈ ix := mem_of_dedupL ha
-      have hxV : x ∈ dedupL ix := by
-        rw [← hax]
-        exact mem_dedupL (himg a haix)
-      have hxb : x ≠ b := by
-        rw [← hax]
-        exact hnob a haix
-      refine mem_of_countOf_pos x _ ?_
-      rw [countOf_eraseFirst_ne _ b x hxb]
-      exact countOf_pos_of_mem hxV
-    have hEd : distinctList (eraseFirst b (dedupL ix)) := by
-      intro x _
-      by_cases hxb : x = b
-      · rw [hxb]
-        have hs := countOf_eraseFirst_self (dedupL ix) b (countOf_pos_of_mem hbV)
-        have hle : countOf b (eraseFirst b (dedupL ix)) + 1 ≤ 1 := by
-          rw [← hs]
-          exact countOf_dedupL_le b ix
-        exact Nat.le_trans (Nat.le_add_right _ 1) hle
-      · rw [countOf_eraseFirst_ne _ b x hxb]
-        exact countOf_dedupL_le x ix
-    have hlen := length_le_of_distinct_mem _ _ hVimg hcov hEd
-    rw [length_map] at hlen
-    have he := length_eraseFirst b (dedupL ix) (countOf_pos_of_mem hbV)
-    rw [← he] at hlen
-    exact absurd hlen (Nat.not_succ_le_self _)
-
-/-- The place list is injective at a once-met list with the action
-injective: two members at one image position share the image, so
-they are one member, the list distinct at `distinct_of_imgOnceBy`. -/
-theorem imgPosBy_inj {I : Type} [Inhabited I] [DecidableEq I] (eq : I → I → Bool)
-    (img : I → I) (ix : List I)
-    (h : imgOnceBy eq img ix) (heq : imgEqBy eq img ix)
-    (hpc : ∀ a a', a ∈ ix → a' ∈ ix →
-      img a = img a' → a = a')
-    (i j : Nat) (hi : i < ix.length + 1) (hj : j < ix.length + 1)
-    (hij : getAt 0 (imgPosBy eq img ix) i = getAt 0 (imgPosBy eq img ix) j) :
-    i = j := by
-  cases i with
-  | zero =>
-    cases j with
-    | zero => rfl
-    | succ j' =>
-      have hj' : j' < ix.length := Nat.lt_of_succ_lt_succ hj
-      have hv : getAt 0 (imgPosBy eq img ix) (j' + 1)
-          = posBy eq (img (getAt default ix j')) ix + 1 :=
-        getAt_map default 0 _ ix j' hj'
-      rw [hv] at hij
-      exact absurd hij (Nat.noConfusion)
-  | succ i' =>
-    have hi' : i' < ix.length := Nat.lt_of_succ_lt_succ hi
-    have hu : getAt 0 (imgPosBy eq img ix) (i' + 1)
-        = posBy eq (img (getAt default ix i')) ix + 1 :=
-      getAt_map default 0 _ ix i' hi'
-    cases j with
-    | zero =>
-      rw [hu] at hij
-      exact absurd hij (Nat.noConfusion)
-    | succ j' =>
-      have hj' : j' < ix.length := Nat.lt_of_succ_lt_succ hj
-      have hv : getAt 0 (imgPosBy eq img ix) (j' + 1)
-          = posBy eq (img (getAt default ix j')) ix + 1 :=
-        getAt_map default 0 _ ix j' hj'
-      rw [hu, hv] at hij
-      have hp : posBy eq (img (getAt default ix i')) ix
-          = posBy eq (img (getAt default ix j')) ix := Nat.succ.inj hij
-      have himg : img (getAt default ix i')
-          = img (getAt default ix j') := by
-        rw [← imgPosBy_read eq img ix h heq i' hi', hp,
-          imgPosBy_read eq img ix h heq j' hj']
-      have hsrc : getAt default ix i' = getAt default ix j' :=
-        hpc _ _ (mem_getAt default ix i' hi') (mem_getAt default ix j' hj') himg
-      exact congrArg Nat.succ (getAt_inj_distinct default ix
-        (distinct_of_imgOnceBy eq img ix h heq hpc) i' j' hi' hj' hsrc)
-
-
-/-- The weighted diagonal moves along the action at fixed weights:
-the diagonal entry at an image position is the source's weight and
-the off-diagonal entries stay off the diagonal at the place list's
-injectivity, the electric member's read at the window list. -/
-theorem movedReadBy_pencilE {I : Type} [Inhabited I] [DecidableEq I] (eq : I → I → Bool)
-    (img : I → I) (ix : List I) (w : I → Nat)
-    (h : imgOnceBy eq img ix) (heq : imgEqBy eq img ix)
-    (hpc : ∀ a a', a ∈ ix → a' ∈ ix →
-      img a = img a' → a = a')
-    (hfix : ∀ a, a ∈ ix → w (img a) = w a) :
-    movedReadBy eq img ix (pairpencil.pencilE (0 :: ix.map w)) := by
-  have hdl : (0 :: ix.map w).length = ix.length + 1 :=
-    congrArg Nat.succ (length_map _ ix)
-  have hent : ∀ p q, p < ix.length + 1 → q < ix.length + 1 →
-      getAt BPair.unit (getAt []
-          (pairpencil.pencilE (0 :: ix.map w)) p) q
-        = if p == q then BPair.ofNat (getAt 0 (0 :: ix.map w) p)
-          else BPair.unit := by
-    intro p q hp hq
-    rw [← hdl] at hp hq
-    exact matOf_entry [] BPair.unit _ _ _ p q hp hq
-  have hdiag : ∀ i, i < ix.length + 1 →
-      getAt 0 (0 :: ix.map w) (getAt 0 (imgPosBy eq img ix) i)
-        = getAt 0 (0 :: ix.map w) i := by
-    intro i hi
-    cases i with
-    | zero => rfl
-    | succ k =>
-      have hk : k < ix.length := Nat.lt_of_succ_lt_succ hi
-      have hv : getAt 0 (imgPosBy eq img ix) (k + 1)
-          = posBy eq (img (getAt default ix k)) ix + 1 :=
-        getAt_map default 0 _ ix k hk
-      rw [hv]
-      show getAt 0 (ix.map w)
-          (posBy eq (img (getAt default ix k)) ix)
-        = getAt 0 (ix.map w) k
-      have honce : (ix.filter (fun b =>
-          eq (img (getAt default ix k)) b)).length = 1 :=
-        beqEqOf (all_of_mem _ _ h _ (mem_getAt default ix k hk))
-      rw [getAt_map default 0 _ ix _ (posBy_lt eq _ ix honce),
-        getAt_map default 0 _ ix k hk, imgPosBy_read eq img ix h heq k hk,
-        hfix _ (mem_getAt default ix k hk)]
-  refine all_range_intro _ (fun i hi => all_range_intro _ (fun j hj => ?_))
-  show decide ((getAt BPair.unit
-      (getAt [] (pairpencil.pencilE (0 :: ix.map w)) i) j).oneValue
-    (getAt BPair.unit
-      (getAt [] (pairpencil.pencilE (0 :: ix.map w))
-        (getAt 0 (imgPosBy eq img ix) i))
-      (getAt 0 (imgPosBy eq img ix) j))) = true
-  refine decide_eq_true ?_
-  rw [hent i j hi hj,
-    hent _ _ (imgPosBy_lt eq img ix h i hi) (imgPosBy_lt eq img ix h j hj)]
-  by_cases hij : i = j
-  · rw [hij, eqBeqOf rfl, eqBeqOf rfl, hdiag j hj]
-    exact BPair.oneValue_refl _
-  · rw [neBeqOf hij, neBeqOf (fun hc =>
-      hij (imgPosBy_inj eq img ix h heq hpc i j hi hj hc))]
-    exact BPair.oneValue_refl _
-
-/-- The commuting read at the free end's window matrix: the weighted
-diagonal commutes with the place action's matrix at fixed weights,
-the electric member's read at the window list. -/
-theorem commReadBy_pencilE {I : Type} [Inhabited I] [DecidableEq I] (eq : I → I → Bool)
-    (img : I → I) (ix : List I) (w : I → Nat)
-    (h : imgOnceBy eq img ix) (heq : imgEqBy eq img ix)
-    (hpc : ∀ a a', a ∈ ix → a' ∈ ix →
-      img a = img a' → a = a')
-    (hfix : ∀ a, a ∈ ix → w (img a) = w a) :
-    commRead (permMatBy eq img ix)
-      (pairpencil.pencilE (0 :: ix.map w)) := by
-  have hdl : (0 :: ix.map w).length = ix.length + 1 :=
-    congrArg Nat.succ (length_map _ ix)
-  have hsq : sqAt (pairpencil.pencilE (0 :: ix.map w))
-      (0 :: ix.map w).length :=
-    sqAt_of (matOf_length _ _ _) (rowsLen_matOf _ _ _)
-  rw [hdl] at hsq
-  exact commReadBy_of eq img ix _ hsq h
-    (movedReadBy_pencilE eq img ix w h heq hpc hfix)
-
-/-! The window list's action. -/
-
-/-- A slot key's image along the induced vertex map: the digit at a
-vertex reads the source's at the witness's vertex, `con:places`'
-permuted display at the vertex keys. -/
-def slotImg (w : Nat → Nat) (m : Nat) (k : List Nat) : List Nat :=
-  (List.range m).map (fun u => getAt 0 k (w u))
-
-/-- The window list's equality read: the interface equality at the
-configurations with the slot keys' own. -/
-def slotEq {L : Type} (F : Data L) (p q : List L × List Nat) : Bool :=
-  eqConf F p.1 q.1 && decide (p.2 = q.2)
-
-/-- The action on the window list at a reversal family: the
-configuration moved at the link witness with the labels dualized
-where the traversal reverses, and the slot key at the vertex
-witness. -/
-def dualSlotAct {L : Type} (F : Data L) (s : Nat → Nat) (rev : Nat → Bool)
-    (w : Nat → Nat) (n m : Nat) (p : List L × List Nat) :
-    List L × List Nat :=
-  (dualConf F s rev n p.1, slotImg w m p.2)
-
-/-- The action on the window list at the reversal-free instance:
-the configuration moved at the link witness and the slot key at
-the vertex witness. -/
-def slotAct {L : Type} (F : Data L) (s w : Nat → Nat) (n m : Nat)
-    (p : List L × List Nat) : List L × List Nat :=
-  dualSlotAct F s (fun _ => false) w n m p
-
-/-- The induced permutation matrix on the window list at a reversal
-family with the unit line at its head, `lem:fiberdec`'s permutation
-of the window and `thm:restoration`'s at the signed members. -/
-def dualSlotMat {L : Type} (F : Data L) (R : Region) (ix : List (List L))
-    (s : Nat → Nat) (rev : Nat → Bool) (w : Nat → Nat) : Mat :=
-  permMatBy (slotEq F) (dualSlotAct F s rev w R.links R.verts)
-    (pairpencil.slotList F R ix)
-
-/-- The induced permutation matrix on the window list at the
-reversal-free instance. -/
-def slotMat {L : Type} (F : Data L) (R : Region) (ix : List (List L))
-    (s w : Nat → Nat) : Mat :=
-  dualSlotMat F R ix s (fun _ => false) w
-
-/-- The moved key's length is the vertex count. -/
-theorem slotImg_len (w : Nat → Nat) (m : Nat) (k : List Nat) :
-    (slotImg w m k).length = m :=
-  (length_map _ _).trans (length_range m)
-
-/-- The moved key's digit at a vertex is the source's at the
-witness's vertex. -/
-theorem getAt_slotImg (w : Nat → Nat) (m : Nat) (k : List Nat) (u : Nat)
-    (hu : u < m) : getAt 0 (slotImg w m k) u = getAt 0 k (w u) := by
-  show getAt 0 ((List.range m).map _) u = _
-  rw [getAt_map_range, if_pos hu]
-
-/-- A slot key's image is a slot key of the moved configuration at
-the multiplicities transported along the vertex map. -/
-theorem slotImg_mem {L : Type} (F : Data L) (R : Region) (v w : Nat → Nat)
-    (hv : vertPermRead R v w) (a b : List L)
-    (hvm : ∀ x, x < R.verts → vmult F R b (v x) = vmult F R a x)
-    (k : List Nat) (hk : k ∈ pairpencil.slotKeys F R a) :
-    slotImg w R.verts k ∈ pairpencil.slotKeys F R b := by
-  obtain ⟨_, hd⟩ := pairpencil.slotKeys_read F R a k hk
-  refine pairpencil.slotKeys_intro F R b _ (slotImg_len w R.verts k) (fun u hu => ?_)
-  rw [getAt_slotImg w R.verts k u hu]
-  have hwu : w u < R.verts := (vertPermRead_at R v w hv u hu).2.2.2
-  have h1 := hvm (w u) hwu
-  rw [(vertPermRead_at R v w hv u hu).2.1] at h1
-  rw [h1]
-  exact hd (w u) hwu
-
-/-- The key's move is injective at the vertex range: the witness
-reads each digit back. -/
-theorem slotImg_inj (R : Region) (v w : Nat → Nat) (hv : vertPermRead R v w)
-    (k k' : List Nat) (hk : k.length = R.verts) (hk' : k'.length = R.verts)
-    (h : slotImg w R.verts k = slotImg w R.verts k') : k = k' := by
-  refine getAt_ext 0 k k' (hk.trans hk'.symm) (fun x hx => ?_)
-  rw [hk] at hx
-  have hvx : v x < R.verts := (vertPermRead_at R v w hv x hx).2.2.1
-  have hwv : w (v x) = x := (vertPermRead_at R v w hv x hx).1
-  have h1 : getAt 0 (slotImg w R.verts k) (v x)
-      = getAt 0 (slotImg w R.verts k') (v x) := by rw [h]
-  rw [getAt_slotImg _ _ _ _ hvx, getAt_slotImg _ _ _ _ hvx, hwv] at h1
-  exact h1
-
-/-- The window list's equality read unpacked: the configurations
-at the interface equality and the keys equal. -/
-theorem slotEq_of {L : Type} (F : Data L) (p q : List L × List Nat)
-    (h : slotEq F p q = true) : eqConf F p.1 q.1 = true ∧ p.2 = q.2 := by
-  have h' := andSplitB h
-  exact ⟨h'.1, of_decide_eq_true h'.2⟩
-
-/-- The window list's equality read is reflexive. -/
-theorem slotEq_refl {L : Type} (F : Data L) (p : List L × List Nat) :
-    slotEq F p p = true := by
-  show (eqConf F p.1 p.1 && decide (p.2 = p.2)) = true
-  rw [eqConf_refl, decide_eq_true rfl]
-  rfl
-
-/-- At the label calculus the window list's equality read is
-structural on the image pairs: an image reading equal to a window
-list member is that member. -/
-theorem slotEq_dataA (d : Nat) (R : Region) (C : Nat) (s w : Nat → Nat) :
-    imgEqBy (slotEq (dataA d)) (slotAct (dataA d) s w R.links R.verts)
-      (pairpencil.slotList (dataA d) R (idx (dataA d) R C)) := by
-  refine all_of_mem_intro _ _ (fun p hp => all_of_mem_intro _ _ (fun q hq => ?_))
-  obtain ⟨hpi, _⟩ := pairpencil.mem_slotList_of _ R _ p hp
-  obtain ⟨hqi, _⟩ := pairpencil.mem_slotList_of _ R _ q hq
-  have hpL : (permConf (dataA d) s R.links p.1).all (fusion.labelA d) = true :=
-    permConf_all (dataA d) s R.links _ (fusion.labelA_unit d) p.1
-      (all_of_mem_intro _ p.1 (fun l hl =>
-        all_of_mem _ _ (fusion.labelA_below d C) l
-          ((idx_sound (dataA d) R C p.1 hpi).2.1 l hl)))
-  have hqL : q.1.all (fusion.labelA d) = true :=
-    all_of_mem_intro _ q.1 (fun l hl =>
-      all_of_mem _ _ (fusion.labelA_below d C) l
-        ((idx_sound (dataA d) R C q.1 hqi).2.1 l hl))
-  show (!(slotEq (dataA d) (slotAct (dataA d) s w R.links R.verts p) q)
-    || decide (slotAct (dataA d) s w R.links R.verts p = q)) = true
-  cases he : slotEq (dataA d) (slotAct (dataA d) s w R.links R.verts p) q with
-  | false => rfl
-  | true =>
-    obtain ⟨h1, h2⟩ := slotEq_of _ _ _ he
-    rw [decide_eq_true (Prod.ext (eqConf_labelA d _ _ hpL hqL h1) h2)]
-    rfl
-
-/-- The window list meets each member's image once at the count
-laws over a label domain holding the window's distinct label
-carrier, the interface equality structural on the moved
-configurations: the moved configuration is an index member
-(`permConf_mem_idx`) with its moved key a slot key at the
-transported multiplicities (`vmult_perm`, `slotImg_mem`), every
-window list member reading equal to the image is the image, and
-the window list lists it once (`pairpencil.slotList_distinct`). -/
-theorem slotOnce_idx {L : Type} [DecidableEq L] (F : Data L)
-    (R : Region) (C : Nat) (hw : wellRead R) (t s v w : Nat → Nat)
-    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
-    (P : L → Bool) (hunit : P F.unit = true)
-    (hdual : ∀ l, P l = true → P (F.dual l) = true)
-    (hrowP : ∀ a b, P a = true → P b = true → ((F.row a b).all P) = true)
-    (hcomm : ∀ a b c, P a = true → P b = true → P c = true →
-      F.count a b c = F.count b a c)
-    (hassoc : ∀ a b c d, P a = true → P b = true → P c = true →
-      P d = true → assocLaw F a b c d)
-    (hunitL : ∀ a b, P a = true → P b = true → unitLaw F a b)
-    (hrow : ∀ a b c, P a = true → P b = true → P c = true →
-      rowLaw F a b c)
-    (hdom : ((F.unit :: F.below C).all P) = true)
-    (hdist : distinctList (F.unit :: F.below C))
-    (hstr : ∀ a b, a ∈ idx F R C → b ∈ idx F R C →
-      eqConf F (permConf F s R.links a) b = true → permConf F s R.links a = b) :
-    imgOnceBy (slotEq F) (slotAct F s w R.links R.verts)
-      (pairpencil.slotList F R (idx F R C)) := by
-  refine all_of_mem_intro _ _ (fun p hpm => ?_)
-  obtain ⟨hpi, hpk⟩ := pairpencil.mem_slotList_of F R _ p hpm
-  have hpP : p.1.all P = true :=
-    all_of_mem_intro P p.1 (fun l hl =>
-      all_of_mem _ _ hdom l ((idx_sound F R C p.1 hpi).2.1 l hl))
-  show (((pairpencil.slotList F R (idx F R C)).filter (fun q =>
-    slotEq F (slotAct F s w R.links R.verts p) q)).length == 1) = true
-  refine eqBeqOf ?_
-  refine filter_single _ (slotAct F s w R.links R.verts p) _ ?_ ?_
-    (slotEq_refl F _)
-    (distinctList_all (pairpencil.slotList_distinct F R _ (idx_distinct F R C hdist)) _)
-  · exact pairpencil.mem_slotList_to F R _ _ _
-      (permConf_mem_idx F R C hw t s v w hp he hv P hunit hdual hrowP hcomm
-        hassoc hunitL hrow hdom p.1 hpi)
-      (slotImg_mem F R v w hv p.1 _
-        (fun x hx => vmult_perm F R hw t s v w hp he hv P hunit hdual hrowP
-          hcomm hassoc hunitL hrow p.1 hpP x hx) p.2 hpk)
-  · intro q hq hpq
-    obtain ⟨hqi, _⟩ := pairpencil.mem_slotList_of F R _ q hq
-    obtain ⟨h1, h2⟩ := slotEq_of F _ _ hpq
-    exact (Prod.ext (hstr p.1 q.1 hpi hqi h1) h2).symm
-
-
-/-- The window list at the label calculus meets each member's image
-once, at every region admitting the action. -/
-theorem slotOnce_dataA (d : Nat) (R : Region) (C : Nat) (hw : wellRead R)
-    (t s v w : Nat → Nat)
-    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w) :
-    imgOnceBy (slotEq (dataA d)) (slotAct (dataA d) s w R.links R.verts)
-      (pairpencil.slotList (dataA d) R (idx (dataA d) R C)) :=
-  slotOnce_idx (dataA d) R C hw t s v w hp he hv (fusion.labelA d)
-    (fusion.labelA_unit d) (fusion.labelA_dual d)
-    (fun x y _ _ => fusion.labelA_row d x y)
-    (lawsA_all d).1 (lawsA_all d).2.1 (lawsA_all d).2.2.1 (lawsA_all d).2.2.2
-    (fusion.labelA_below d C) (fusion.below_distinct_dataA d C)
-    (fun a b ha hb h => eqConf_labelA d _ _
-      (permConf_all (dataA d) s R.links _ (fusion.labelA_unit d) a
-        (all_of_mem_intro _ a (fun l hl =>
-          all_of_mem _ _ (fusion.labelA_below d C) l
-            ((idx_sound (dataA d) R C a ha).2.1 l hl))))
-      (all_of_mem_intro _ b (fun l hl =>
-        all_of_mem _ _ (fusion.labelA_below d C) l
-          ((idx_sound (dataA d) R C b hb).2.1 l hl))) h)
-
-/-- The commuting read at the free end's window matrix at the label
-calculus, over a stated index tied to the window's own: the
-electric member over the window list's diagonal commutes with the
-induced permutation matrix at every region admitting the action
-and every cutoff, `lem:fiberdec`'s commuting datum at the electric
-member as a theorem. -/
-theorem commRead_slotE_dataA (d : Nat) (R : Region) (C : Nat)
-    (ix : List (List places.Shape)) (hix : idx (dataA d) R C = ix)
-    (hw : wellRead R) (t s v w : Nat → Nat)
-    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w) :
-    commRead (slotMat (dataA d) R ix s w)
-      (pairpencil.pencilE (pairpencil.slotDiag (dataA d) R ix)) := by
-  subst hix
-  exact commReadBy_pencilE (slotEq (dataA d)) (slotAct (dataA d) s w R.links R.verts)
-    (pairpencil.slotList (dataA d) R (idx (dataA d) R C))
-    (fun p => contentN (dataA d) p.1)
-    (slotOnce_dataA d R C hw t s v w hp he hv) (slotEq_dataA d R C s w)
-    (fun p q hpm hqm h => by
-      obtain ⟨hpi, hpk⟩ := pairpencil.mem_slotList_of _ R _ p hpm
-      obtain ⟨hqi, hqk⟩ := pairpencil.mem_slotList_of _ R _ q hqm
-      have h1 : permConf (dataA d) s R.links p.1 = permConf (dataA d) s R.links q.1 :=
-        congrArg Prod.fst h
-      have h2 : slotImg w R.verts p.2 = slotImg w R.verts q.2 :=
-        congrArg Prod.snd h
-      exact Prod.ext
-        (permConf_inj (dataA d) R t s hp p.1 q.1
-          (idx_sound (dataA d) R C p.1 hpi).1
-          (idx_sound (dataA d) R C q.1 hqi).1 h1)
-        (slotImg_inj R v w hv p.2 q.2 (pairpencil.slotKeys_read _ R _ _ hpk).1
-          (pairpencil.slotKeys_read _ R _ _ hqk).1 h2))
-    (fun p hpm => contentN_perm (dataA d) R t s hp p.1
-      (idx_sound (dataA d) R C p.1 (pairpencil.mem_slotList_of _ R _ p hpm).1).1)
-
-/-! The magnetic member's transport, `thm:pairpencil`'s interface
-field at the region's own action: the terms transported at every
-plaquette with the plaquette list permuted, the field's window
-instance at one window list. -/
-
-/-- One plaquette term's transport along the region's action: the
-term at the moved plaquette reads, at the moved window-list
-members, the term at the members — the relabeling read
-(`elim.relabelRead`) at the action's place list on the window
-list, the configuration moved at the link witness and the slot key
-at the vertex witness. -/
-def termMoved {L : Type} (F : Data L) (R : Region) (ix : List (List L))
-    (s w : Nat → Nat) (Mp Mq : Mat) : Prop :=
-  elim.relabelRead ((pairpencil.slotList F R ix).length + 1) Mq Mp
-    (imgPosBy (slotEq F) (slotAct F s w R.links R.verts)
-      (pairpencil.slotList F R ix))
-
-instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
-    (s w : Nat → Nat) (Mp Mq : Mat) : Decidable (termMoved F R ix s w Mp Mq) :=
-  inferInstanceAs (Decidable (elim.relabelRead _ _ _ _))
-
-/-- The plaquette terms' transport along the region's action at its
-plaquette permutation: per plaquette of the list, the term at the
-moved position reads the term at the plaquette's at the moved
-window-list members. -/
-def termsMoved {L : Type} (F : Data L) (R : Region) (ix : List (List L))
-    (s w pm : Nat → Nat) (Ms : List Mat) : Prop :=
-  ((List.range R.plaqs.length).all (fun q =>
-    decide (termMoved F R ix s w (getAt [] Ms q) (getAt [] Ms (pm q))))) = true
-
-instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
-    (s w pm : Nat → Nat) (Ms : List Mat) :
-    Decidable (termsMoved F R ix s w pm Ms) :=
-  inferInstanceAs (Decidable (_ = _))
-
-/-- A square matrix's entry at a place pair off its order is the
-sum's unit, the vacant read. -/
-private theorem entry_off {M : Mat} {n : Nat} (hsq : sqAt M n) (i j : Nat)
-    (h : ¬ (i < n ∧ j < n)) :
-    getAt BPair.unit (getAt [] M i) j = BPair.unit := by
-  by_cases hi : i < n
-  · exact getAt_over BPair.unit _ j (by
-      rw [rowsLen_getAt M i (rowsLen_of_sqAt hsq) (by rw [sqAt_len hsq]; exact hi)]
-      exact Nat.le_of_not_lt (fun hj => h ⟨hi, hj⟩))
-  · rw [getAt_over [] M i (by rw [sqAt_len hsq]; exact Nat.le_of_not_lt hi)]
-    exact getAt_over BPair.unit [] j (Nat.zero_le _)
-
-/-- The terms' sum moves along the action: at the terms transported
-plaquette by plaquette and the plaquette list permuted, the sum's
-entry at a place pair reads its entry at the moved pair, the index
-fold reindexed along the plaquette permutation, the permutation
-the action field's datum with its read (`lattice.plaqPermRead`). -/
-theorem movedReadBy_termSum {L : Type} [DecidableEq L] (F : Data L) (R : Region)
-    (ix : List (List L)) (t s w pm pm' : Nat → Nat)
-    (hpp : plaqPermRead R t (fun _ => false) pm pm')
-    (Ms : List Mat) (hlen : Ms.length = R.plaqs.length)
-    (hsq : ∀ q, q < Ms.length →
-      sqAt (getAt [] Ms q) ((pairpencil.slotList F R ix).length + 1))
-    (htm : termsMoved F R ix s w pm Ms) :
-    movedReadBy (slotEq F) (slotAct F s w R.links R.verts) (pairpencil.slotList F R ix)
-      (elim.msum ((pairpencil.slotList F R ix).length + 1) (getAt [] Ms)
-        (List.range Ms.length)) := by
-  have hshape : ∀ k, k ∈ List.range Ms.length →
-      rowsLen ((pairpencil.slotList F R ix).length + 1) (getAt [] Ms k)
-        ∧ (getAt [] Ms k).length = (pairpencil.slotList F R ix).length + 1 :=
-    fun k hk => ⟨rowsLen_of_sqAt (hsq k (ltOfMemRange hk)),
-      sqAt_len (hsq k (ltOfMemRange hk))⟩
-  have hsum := elim.msum_shape_mem _ (getAt [] Ms) (List.range Ms.length) hshape
-  have hperm : ∀ q, q < Ms.length →
-      pm q < Ms.length ∧ pm' q < Ms.length ∧ pm' (pm q) = q ∧ pm (pm' q) = q := by
-    intro q hq
-    have h := plaqPermRead_at R t _ pm pm' hpp q (by rw [← hlen]; exact hq)
-    rw [hlen]
-    exact h
-  have hterm : ∀ q, q < Ms.length → ∀ i j,
-      i < (pairpencil.slotList F R ix).length + 1 →
-      j < (pairpencil.slotList F R ix).length + 1 →
-      (getAt BPair.unit (getAt [] (getAt [] Ms q) i) j).oneValue
-        (getAt BPair.unit (getAt [] (getAt [] Ms (pm q))
-          (getAt 0 (imgPosBy (slotEq F) (slotAct F s w R.links R.verts)
-            (pairpencil.slotList F R ix)) i))
-          (getAt 0 (imgPosBy (slotEq F) (slotAct F s w R.links R.verts)
-            (pairpencil.slotList F R ix)) j)) :=
-    fun q hq i j hi hj =>
-      elim.relabelRead_at _ _ _ _
-        (of_decide_eq_true (all_range_read _ htm q (by rw [← hlen]; exact hq)))
-        i j hi hj
-  refine all_range_intro _ (fun i hi => all_range_intro _ (fun j hj =>
-    decide_eq_true ?_))
-  rw [elim.entry_msum _ _ i j hi hj _ hshape]
-  by_cases hin : getAt 0 (imgPosBy (slotEq F) (slotAct F s w R.links R.verts)
-        (pairpencil.slotList F R ix)) i < (pairpencil.slotList F R ix).length + 1
-      ∧ getAt 0 (imgPosBy (slotEq F) (slotAct F s w R.links R.verts)
-        (pairpencil.slotList F R ix)) j < (pairpencil.slotList F R ix).length + 1
-  · rw [elim.entry_msum _ _ _ _ hin.1 hin.2 _ hshape]
-    refine famFold_bij_ov bpairFoldLaws.toCommLaws BPair.unit _ _
-      (l := List.range Ms.length) (g := pm) (h := pm')
-      (distinctList_range Ms.length) ?_ ?_ ?_ ?_ ?_
-    · intro q hq
-      exact (hperm q (ltOfMem hq)).2.2.1
-    · intro q hq
-      exact (hperm q (ltOfMem hq)).2.2.2
-    · intro q hq
-      exact countOf_range_pos (hperm q (ltOfMem hq)).1
-    · intro q hq
-      exact countOf_range_pos (hperm q (ltOfMem hq)).2.1
-    · intro q hq
-      exact hterm q (ltOfMem hq) i j hi hj
-  · rw [entry_off (sqAt_of hsum.2 hsum.1) _ _ hin]
-    refine famFold_unit_ov bpairFoldLaws _ (fun q => ?_) _
-    by_cases hq : q < Ms.length
-    · have h1 := hterm q hq i j hi hj
-      rw [entry_off (hsq _ (hperm q hq).1) _ _ hin] at h1
-      exact h1
-    · rw [getAt_over [] Ms q (Nat.le_of_not_lt hq),
-        getAt_over [] [] i (Nat.zero_le _),
-        getAt_over BPair.unit [] j (Nat.zero_le _)]
-      exact BPair.oneValue_refl _
-
-/-- The commuting read at the terms' sum: the induced permutation
-matrix on the window list commutes with the plaquette terms' sum
-at the terms transported and the window list met once. -/
-theorem commRead_slotM {L : Type} [DecidableEq L] (F : Data L) (R : Region)
-    (ix : List (List L)) (t s w pm pm' : Nat → Nat)
-    (hpp : plaqPermRead R t (fun _ => false) pm pm')
-    (honce : imgOnceBy (slotEq F) (slotAct F s w R.links R.verts)
-      (pairpencil.slotList F R ix))
-    (Ms : List Mat) (hlen : Ms.length = R.plaqs.length)
-    (hsq : ∀ q, q < Ms.length →
-      sqAt (getAt [] Ms q) ((pairpencil.slotList F R ix).length + 1))
-    (htm : termsMoved F R ix s w pm Ms) :
-    commRead (slotMat F R ix s w)
-      (elim.msum ((pairpencil.slotList F R ix).length + 1) (getAt [] Ms)
-        (List.range Ms.length)) := by
-  have hsh := elim.msum_shape_mem ((pairpencil.slotList F R ix).length + 1)
-    (getAt [] Ms) (List.range Ms.length) (fun k hk =>
-      ⟨rowsLen_of_sqAt (hsq k (ltOfMemRange hk)),
-        sqAt_len (hsq k (ltOfMemRange hk))⟩)
-  exact commReadBy_of (slotEq F) (slotAct F s w R.links R.verts)
-    (pairpencil.slotList F R ix) _ (sqAt_of hsh.2 hsh.1) honce
-    (movedReadBy_termSum F R ix t s w pm pm' hpp Ms hlen hsq htm)
-
-/-- The commuting read at the terms' sum at the label calculus,
-over a stated index tied to the window's own: the window list met
-once is the calculus's own theorem, so the induced permutation
-matrix commutes with the terms' sum at every region admitting the
-action and every cutoff — `lem:fiberdec`'s commuting datum at the
-magnetic member as a theorem, the terms transported plaquette by
-plaquette. -/
-theorem commRead_slotM_dataA (d : Nat) (R : Region) (C : Nat)
-    (ix : List (List places.Shape)) (hix : idx (dataA d) R C = ix)
-    (hw : wellRead R) (t s v w pm pm' : Nat → Nat)
-    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
-    (hpp : plaqPermRead R t (fun _ => false) pm pm')
-    (Ms : List Mat) (hlen : Ms.length = R.plaqs.length)
-    (hsq : ∀ q, q < Ms.length →
-      sqAt (getAt [] Ms q) ((pairpencil.slotList (dataA d) R ix).length + 1))
-    (htm : termsMoved (dataA d) R ix s w pm Ms) :
-    commRead (slotMat (dataA d) R ix s w)
-      (elim.msum ((pairpencil.slotList (dataA d) R ix).length + 1)
-        (getAt [] Ms) (List.range Ms.length)) :=
-  commRead_slotM (dataA d) R ix t s w pm pm' hpp
-    (by rw [← hix]; exact slotOnce_dataA d R C hw t s v w hp he hv) Ms hlen hsq htm
-
-/-- The commuting read transports across the window matrix's one
-value: a matrix one value with a commuting matrix commutes. -/
-theorem commRead_congr (n : Nat) (Pm H H' : Mat) (hPm : sqAt Pm n)
-    (hH : sqAt H n) (hH' : sqAt H' n) (hn : 0 < n)
-    (hov : matOneValue H H') (h : commRead Pm H') : commRead Pm H := by
-  have h1 : matOneValue (matMul H Pm) (matMul H' Pm) := matMul_congrL H H' Pm hov
-  have hr : rowsLen n (matMul H Pm) :=
-    rowsLen_matMul_of H Pm (fun _ => by rw [sqAt_len hPm]; exact hn)
-      (rowsLen_of_sqAt hPm)
-  have hr' : rowsLen n (matMul H' Pm) :=
-    rowsLen_matMul_of H' Pm (fun _ => by rw [sqAt_len hPm]; exact hn)
-      (rowsLen_of_sqAt hPm)
-  have h2 : matOneValue (matMul (transposeM Pm) (matMul H Pm))
-      (matMul (transposeM Pm) (matMul H' Pm)) :=
-    matMul_congrR _ _ _ hr hr' ((length_matMul H Pm).trans (sqAt_len hH))
-      ((length_matMul H' Pm).trans (sqAt_len hH')) hn h1
-  exact matOne_trans h2 (matOne_trans h (matOne_symm hov))
-
-/-- The commuting read at the pencil's magnetic member: at the
-pencil interface's read over a stated index tied to the window's
-own, the induced permutation matrix commutes with the magnetic
-member at the terms transported and the window list met once —
-`lem:fiberdec`'s commuting datum at `M` read through
-`thm:pairpencil`'s fields, the member's one value with the terms'
-sum transporting the sum's congruence. -/
-theorem commRead_pencilM {L : Type} [DecidableEq L] (F : Data L) (R : Region)
-    (C n : Nat) (ix : List (List L)) (c : Pos) (E G M : Mat)
-    (spG : inertia.Split n)
-    (terms : List (Mat × inertia.Split n × inertia.Split n))
-    (hpr : pairpencil.pencilRead F R C n ix c E G M spG terms)
-    (t s w pm pm' : Nat → Nat)
-    (hpp : plaqPermRead R t (fun _ => false) pm pm')
-    (honce : imgOnceBy (slotEq F) (slotAct F s w R.links R.verts)
-      (pairpencil.slotList F R ix))
-    (htm : termsMoved F R ix s w pm (terms.map Prod.fst)) :
-    commRead (slotMat F R ix s w) M := by
-  obtain ⟨hix, hdim, _, _, _, _, _, htr, hMsq, hMov⟩ := hpr
-  have hn : (pairpencil.slotList F R ix).length + 1 = n := by
-    rw [← hdim, ← hix]
-    exact pairpencil.slotList_dimSect F R C
-  have hlen : (terms.map Prod.fst).length = R.plaqs.length :=
-    (length_map _ _).trans (pairpencil.termsRead_len F R n ix c G _ _ htr)
-  have hsq : ∀ q, q < (terms.map Prod.fst).length →
-      sqAt (getAt [] (terms.map Prod.fst) q)
-        ((pairpencil.slotList F R ix).length + 1) := by
-    intro q hq
-    rw [hn]
-    exact pairpencil.termsRead_sq F R n ix c G _ _ htr q
-      (by rw [length_map Prod.fst terms] at hq; exact hq)
-  have hc := commRead_slotM F R ix t s w pm pm' hpp honce _ hlen hsq htm
-  rw [hn, length_map Prod.fst terms] at hc
-  have hsum := elim.msum_shape_mem n (getAt [] (terms.map Prod.fst))
-    (List.range terms.length) (fun k hk => by
-      have hk' := pairpencil.termsRead_sq F R n ix c G _ _ htr k (ltOfMemRange hk)
-      exact ⟨rowsLen_of_sqAt hk', sqAt_len hk'⟩)
-  have hPl : (slotMat F R ix s w).length = n :=
-    (length_permMatBy (slotEq F) (dualSlotAct F s (fun _ => false) w R.links R.verts)
-      (pairpencil.slotList F R ix)).trans hn
-  have hPr : rowsLen n (slotMat F R ix s w) := by
-    rw [← hn]
-    exact rowsLen_permMatBy (slotEq F)
-      (dualSlotAct F s (fun _ => false) w R.links R.verts)
-      (pairpencil.slotList F R ix)
-  exact commRead_congr n (slotMat F R ix s w) M (pairpencil.termSum n terms)
-    (sqAt_of hPl hPr) hMsq (sqAt_of hsum.2 hsum.1) (hn ▸ Nat.succ_pos _) hMov hc
-
-/-- The commuting read at the pencil's magnetic member at the label
-calculus: the window list met once is the calculus's own theorem,
-so at every region admitting the action and every cutoff the
-induced permutation matrix commutes with the magnetic member of
-the pencil interface's read — `lem:fiberdec`'s commuting datum at
-`M` as a theorem. -/
-theorem commRead_pencilM_dataA (d : Nat) (R : Region) (C n : Nat)
-    (ix : List (List places.Shape)) (c : Pos) (E G M : Mat)
-    (spG : inertia.Split n)
-    (terms : List (Mat × inertia.Split n × inertia.Split n))
-    (hpr : pairpencil.pencilRead (dataA d) R C n ix c E G M spG terms)
-    (hw : wellRead R) (t s v w pm pm' : Nat → Nat)
-    (hp : permRead R t s) (he : endsRead R t v) (hv : vertPermRead R v w)
-    (hpp : plaqPermRead R t (fun _ => false) pm pm')
-    (htm : termsMoved (dataA d) R ix s w pm (terms.map Prod.fst)) :
-    commRead (slotMat (dataA d) R ix s w) M :=
-  commRead_pencilM (dataA d) R C n ix c E G M spG terms hpr t s w pm pm' hpp
-    (by rw [← hpr.1]; exact slotOnce_dataA d R C hw t s v w hp he hv) htm
+instance (T : Mat) (D : List BPair) (P : Mat) : Decidable (transportCongr T D P) :=
+  inferInstanceAs (Decidable (matOneValue _ _))
 
 /-- The translation's transpose is its witness's matrix
 (`con:places`' transpose-is-inverse), the two composition reads
@@ -2677,7 +1678,7 @@ private theorem clearW_pow (n : Nat) (t s : Nat → Nat) (hn : 0 < n)
     (hst : ∀ l, l < n → s (t l) = l) (m : Nat) :
     matOneValue
       (matMul (permMatAt n (iterAt s m)) (inertia.matPow (permMatAt n t) n m))
-      (inertia.idMat n) := by
+      (elim.idMat n) := by
   have hsk := matPow_shape n (permMatAt n t) (length_permMatAt n t) m
   refine matOne_trans
     (matMul_congrR (n := n) (k := n) (permMatAt n (iterAt s m))
@@ -2706,7 +1707,7 @@ private theorem matPow_wrap (n k : Nat) (t : Nat → Nat) (hn : 0 < n)
     (matOne_symm (inertia.matPow_add n (permMatAt n t) hTl hTr hn (k + 1) a)) ?_
   refine matOne_trans
     (matMul_congrL (inertia.matPow (permMatAt n t) n (k + 1))
-      (inertia.idMat n) (inertia.matPow (permMatAt n t) n a) ?_) ?_
+      (elim.idMat n) (inertia.matPow (permMatAt n t) n a) ?_) ?_
   · refine matOne_trans (permMatAt_pow n t hn ht (k + 1)) ?_
     rw [permMatAt_congr n (iterAt t (k + 1)) (fun l => l) hcyc]
     exact permMatAt_id n
@@ -2763,39 +1764,39 @@ private theorem chord_mul_pow (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
 matrix's two products with its transpose are the identity, the
 transpose the witness's own matrix (`lem:fiberdec`'s isometry
 clause). -/
-theorem permRead_orth (R : Region) (t s : Nat → Nat)
-    (h : permRead R t s) :
+theorem linkIso_orth (R : Region) (t s : Nat → Nat)
+    (h : linkIso R R t s) :
     orthRead (permMatAt R.links t) R.links := by
   have hT : transposeM (permMatAt R.links t) = permMatAt R.links s :=
     transposeM_permMatAt R.links t s
-      (fun l hl => (permRead_at R t s h l hl).1)
-      (fun l hl => (permRead_at R t s h l hl).2.1)
+      (fun l hl => (linkIso_all R t s h l hl).1)
+      (fun l hl => (linkIso_all R t s h l hl).2.1)
   constructor
   · rw [hT]
     refine matOne_trans
       (permMatAt_mul R.links t s
-        (fun l hl => (permRead_at R t s h l hl).2.2.2)) ?_
+        (fun l hl => (linkIso_all R t s h l hl).2.2.2)) ?_
     rw [permMatAt_congr R.links (fun l => t (s l)) (fun l => l)
-      (fun l hl => (permRead_at R t s h l hl).2.1)]
+      (fun l hl => (linkIso_all R t s h l hl).2.1)]
     exact permMatAt_id R.links
   · rw [hT]
     refine matOne_trans
       (permMatAt_mul R.links s t
-        (fun l hl => (permRead_at R t s h l hl).2.2.1)) ?_
+        (fun l hl => (linkIso_all R t s h l hl).2.2.1)) ?_
     rw [permMatAt_congr R.links (fun l => s (t l)) (fun l => l)
-      (fun l hl => (permRead_at R t s h l hl).1)]
+      (fun l hl => (linkIso_all R t s h l hl).1)]
     exact permMatAt_id R.links
 
 /-- The cycle read carried to the matrix: at `T^L = 1` on the key
 range the translation's matrix reads the identity at its `L`-th
 power, the tex's own `T^L = 1` (`lem:fiberdec`). -/
 theorem cycleRead_pow (R : Region) (t s : Nat → Nat) (L : Nat)
-    (hn : 0 < R.links) (h : permRead R t s) (hc : cycleRead R t L) :
+    (hn : 0 < R.links) (h : linkIso R R t s) (hc : cycleRead R t L) :
     matOneValue (inertia.matPow (permMatAt R.links t) R.links L)
-      (inertia.idMat R.links) := by
+      (elim.idMat R.links) := by
   refine matOne_trans
     (permMatAt_pow R.links t hn
-      (fun l hl => (permRead_at R t s h l hl).2.2.1) L) ?_
+      (fun l hl => (linkIso_all R t s h l hl).2.2.1) L) ?_
   rw [permMatAt_congr R.links (iterAt t L) (fun l => l)
     (fun l hl => ground.beqEqOf
       (ground.all_range_read R.links hc l hl))]
@@ -2815,16 +1816,16 @@ private theorem evalM_shape (n : Nat) (M : Mat) (hM : rowsLen n M)
     (hMl : M.length = n) (hn : 0 < n) : ∀ p : poly.Poly,
     rowsLen n (polyEvalM p M n) ∧ (polyEvalM p M n).length = n
   | [] =>
-    ⟨inertia.rowsLen_scaleB BPair.unit n (inertia.idMat n)
-      (inertia.idMat_rows n),
-     (inertia.length_scaleB BPair.unit (inertia.idMat n)).trans
-       (inertia.idMat_len n)⟩
+    ⟨inertia.rowsLen_scaleB BPair.unit n (elim.idMat n)
+      (elim.rowsLen_idMat n),
+     (inertia.length_scaleB BPair.unit (elim.idMat n)).trans
+       (elim.length_idMat n)⟩
   | c :: p => by
     have ih := evalM_shape n M hM hMl hn p
-    have hsc : rowsLen n (inertia.matScaleB c (inertia.idMat n)) :=
-      inertia.rowsLen_scaleB c n (inertia.idMat n) (inertia.idMat_rows n)
-    have hscl : (inertia.matScaleB c (inertia.idMat n)).length = n :=
-      (inertia.length_scaleB c (inertia.idMat n)).trans (inertia.idMat_len n)
+    have hsc : rowsLen n (inertia.matScaleB c (elim.idMat n)) :=
+      inertia.rowsLen_scaleB c n (elim.idMat n) (elim.rowsLen_idMat n)
+    have hscl : (inertia.matScaleB c (elim.idMat n)).length = n :=
+      (inertia.length_scaleB c (elim.idMat n)).trans (elim.length_idMat n)
     have hprod : rowsLen n (matMul M (polyEvalM p M n)) :=
       rowsLen_matMul_of M (polyEvalM p M n)
         (fun _ => (by rw [ih.2]; exact hn)) ih.1
@@ -2861,25 +1862,25 @@ private theorem evalM_unitTail (n : Nat) (M : Mat) (hMl : M.length = n)
     poly.unitTail p →
     matOneValue (polyEvalM p M n) (elim.nullMat n n)
   | [], _ => by
-    show matOneValue (inertia.matScaleB BPair.unit (inertia.idMat n))
+    show matOneValue (inertia.matScaleB BPair.unit (elim.idMat n))
       (elim.nullMat n n)
-    have h := scaleB_unit_null (n := n) (inertia.idMat n)
-      (inertia.idMat_rows n)
-    rw [inertia.idMat_len n] at h
+    have h := scaleB_unit_null (n := n) (elim.idMat n)
+      (elim.rowsLen_idMat n)
+    rw [elim.length_idMat n] at h
     exact h
   | c :: p, hp => by
     show matOneValue
-      (matAdd (inertia.matScaleB c (inertia.idMat n))
+      (matAdd (inertia.matScaleB c (elim.idMat n))
         (matMul M (polyEvalM p M n)))
       (elim.nullMat n n)
     have hep := evalM_shape n M hMr hMl hn p
-    have h1 : matOneValue (inertia.matScaleB c (inertia.idMat n))
+    have h1 : matOneValue (inertia.matScaleB c (elim.idMat n))
         (elim.nullMat n n) := by
       refine matOne_trans
-        (inertia.matScaleB_congr hp.1 (inertia.idMat n)) ?_
-      have h := scaleB_unit_null (n := n) (inertia.idMat n)
-        (inertia.idMat_rows n)
-      rw [inertia.idMat_len n] at h
+        (inertia.matScaleB_congr hp.1 (elim.idMat n)) ?_
+      have h := scaleB_unit_null (n := n) (elim.idMat n)
+        (elim.rowsLen_idMat n)
+      rw [elim.length_idMat n] at h
       exact h
     have h2 : matOneValue (matMul M (polyEvalM p M n))
         (elim.nullMat n n) := by
@@ -2891,8 +1892,8 @@ private theorem evalM_unitTail (n : Nat) (M : Mat) (hMl : M.length = n)
       exact elim.matMul_nullMat n M hMl
     refine matOne_trans
       (matAdd_cong2 n _ _ (elim.nullMat n n) (elim.nullMat n n)
-        (inertia.rowsLen_scaleB c n (inertia.idMat n)
-          (inertia.idMat_rows n))
+        (inertia.rowsLen_scaleB c n (elim.idMat n)
+          (elim.rowsLen_idMat n))
         (rowsLen_matMul_of M (polyEvalM p M n)
            (fun _ => (by rw [hep.2]; exact hn)) hep.1)
         (elim.rowsLen_nullMat n n) (elim.rowsLen_nullMat n n)
@@ -2916,20 +1917,20 @@ private theorem evalM_congr (n : Nat) (M : Mat) (hMl : M.length = n)
     have hep := evalM_shape n M hMr hMl hn p
     have heq := evalM_shape n M hMr hMl hn q
     show matOneValue
-      (matAdd (inertia.matScaleB c (inertia.idMat n))
+      (matAdd (inertia.matScaleB c (elim.idMat n))
         (matMul M (polyEvalM p M n)))
-      (matAdd (inertia.matScaleB d (inertia.idMat n))
+      (matAdd (inertia.matScaleB d (elim.idMat n))
         (matMul M (polyEvalM q M n)))
     refine matAdd_cong2 n _ _ _ _
-      (inertia.rowsLen_scaleB c n (inertia.idMat n)
-        (inertia.idMat_rows n))
+      (inertia.rowsLen_scaleB c n (elim.idMat n)
+        (elim.rowsLen_idMat n))
       (rowsLen_matMul_of M (polyEvalM p M n)
          (fun _ => (by rw [hep.2]; exact hn)) hep.1)
-      (inertia.rowsLen_scaleB d n (inertia.idMat n)
-        (inertia.idMat_rows n))
+      (inertia.rowsLen_scaleB d n (elim.idMat n)
+        (elim.rowsLen_idMat n))
       (rowsLen_matMul_of M (polyEvalM q M n)
          (fun _ => (by rw [heq.2]; exact hn)) heq.1)
-      (inertia.matScaleB_congr h.1 (inertia.idMat n)) ?_
+      (inertia.matScaleB_congr h.1 (elim.idMat n)) ?_
     exact matMul_congrR (n := n) (k := n) M (polyEvalM p M n)
       (polyEvalM q M n) hep.1 heq.1 hep.2 heq.2 hn
       (evalM_congr n M hMl hMr hn p q h.2)
@@ -2941,20 +1942,20 @@ private theorem evalM_add (n : Nat) (M : Mat) (hMl : M.length = n)
       (matAdd (polyEvalM p M n) (polyEvalM q M n))
   | [], q => by
     show matOneValue (polyEvalM q M n)
-      (matAdd (inertia.matScaleB BPair.unit (inertia.idMat n))
+      (matAdd (inertia.matScaleB BPair.unit (elim.idMat n))
         (polyEvalM q M n))
     have heq := evalM_shape n M hMr hMl hn q
     have hsb : matOneValue
-        (inertia.matScaleB BPair.unit (inertia.idMat n))
+        (inertia.matScaleB BPair.unit (elim.idMat n))
         (elim.nullMat n n) := by
-      have h := scaleB_unit_null (n := n) (inertia.idMat n)
-        (inertia.idMat_rows n)
-      rw [inertia.idMat_len n] at h
+      have h := scaleB_unit_null (n := n) (elim.idMat n)
+        (elim.rowsLen_idMat n)
+      rw [elim.length_idMat n] at h
       exact h
     refine matOne_symm (matOne_trans
       (matAdd_cong2 n _ _ (elim.nullMat n n) (polyEvalM q M n)
-        (inertia.rowsLen_scaleB BPair.unit n (inertia.idMat n)
-          (inertia.idMat_rows n))
+        (inertia.rowsLen_scaleB BPair.unit n (elim.idMat n)
+          (elim.rowsLen_idMat n))
         heq.1 (elim.rowsLen_nullMat n n) heq.1
         hsb (matOne_refl _)) ?_)
     exact elim.matAdd_nullL (elim.nullMat n n) (polyEvalM q M n)
@@ -2964,20 +1965,20 @@ private theorem evalM_add (n : Nat) (M : Mat) (hMl : M.length = n)
   | c :: p, [] => by
     show matOneValue (polyEvalM (c :: p) M n)
       (matAdd (polyEvalM (c :: p) M n)
-        (inertia.matScaleB BPair.unit (inertia.idMat n)))
+        (inertia.matScaleB BPair.unit (elim.idMat n)))
     rw [matAdd_comm]
     have hcp := evalM_shape n M hMr hMl hn (c :: p)
     have hsb : matOneValue
-        (inertia.matScaleB BPair.unit (inertia.idMat n))
+        (inertia.matScaleB BPair.unit (elim.idMat n))
         (elim.nullMat n n) := by
-      have h := scaleB_unit_null (n := n) (inertia.idMat n)
-        (inertia.idMat_rows n)
-      rw [inertia.idMat_len n] at h
+      have h := scaleB_unit_null (n := n) (elim.idMat n)
+        (elim.rowsLen_idMat n)
+      rw [elim.length_idMat n] at h
       exact h
     refine matOne_symm (matOne_trans
       (matAdd_cong2 n _ _ (elim.nullMat n n) (polyEvalM (c :: p) M n)
-        (inertia.rowsLen_scaleB BPair.unit n (inertia.idMat n)
-          (inertia.idMat_rows n))
+        (inertia.rowsLen_scaleB BPair.unit n (elim.idMat n)
+          (elim.rowsLen_idMat n))
         hcp.1 (elim.rowsLen_nullMat n n) hcp.1
         hsb (matOne_refl _)) ?_)
     exact elim.matAdd_nullL (elim.nullMat n n) (polyEvalM (c :: p) M n)
@@ -2989,16 +1990,16 @@ private theorem evalM_add (n : Nat) (M : Mat) (hMl : M.length = n)
     have heq := evalM_shape n M hMr hMl hn q
     have hea := evalM_shape n M hMr hMl hn (poly.add p q)
     show matOneValue
-      (matAdd (inertia.matScaleB (c + d) (inertia.idMat n))
+      (matAdd (inertia.matScaleB (c + d) (elim.idMat n))
         (matMul M (polyEvalM (poly.add p q) M n)))
       (matAdd
-        (matAdd (inertia.matScaleB c (inertia.idMat n))
+        (matAdd (inertia.matScaleB c (elim.idMat n))
           (matMul M (polyEvalM p M n)))
-        (matAdd (inertia.matScaleB d (inertia.idMat n))
+        (matAdd (inertia.matScaleB d (elim.idMat n))
           (matMul M (polyEvalM q M n))))
-    rw [matAdd_shuffle (inertia.matScaleB c (inertia.idMat n))
+    rw [matAdd_shuffle (inertia.matScaleB c (elim.idMat n))
       (matMul M (polyEvalM p M n))
-      (inertia.matScaleB d (inertia.idMat n))
+      (inertia.matScaleB d (elim.idMat n))
       (matMul M (polyEvalM q M n))]
     have hMe : ∀ r : poly.Poly, rowsLen n (matMul M (polyEvalM r M n)) :=
       fun r =>
@@ -3006,16 +2007,16 @@ private theorem evalM_add (n : Nat) (M : Mat) (hMl : M.length = n)
           (fun _ => by rw [(evalM_shape n M hMr hMl hn r).2]; exact hn)
             (evalM_shape n M hMr hMl hn r).1
     refine matAdd_cong2 n _ _ _ _
-      (inertia.rowsLen_scaleB (c + d) n (inertia.idMat n)
-        (inertia.idMat_rows n))
+      (inertia.rowsLen_scaleB (c + d) n (elim.idMat n)
+        (elim.rowsLen_idMat n))
       (hMe (poly.add p q))
       (rowsLen_matAdd n _ _
-        (inertia.rowsLen_scaleB c n (inertia.idMat n)
-          (inertia.idMat_rows n))
-        (inertia.rowsLen_scaleB d n (inertia.idMat n)
-          (inertia.idMat_rows n)))
+        (inertia.rowsLen_scaleB c n (elim.idMat n)
+          (elim.rowsLen_idMat n))
+        (inertia.rowsLen_scaleB d n (elim.idMat n)
+          (elim.rowsLen_idMat n)))
       (rowsLen_matAdd n _ _ (hMe p) (hMe q))
-      (matOne_symm (inertia.matScaleB_add c d (inertia.idMat n)))
+      (matOne_symm (inertia.matScaleB_add c d (elim.idMat n)))
       ?_
     have hlen : (matAdd (polyEvalM p M n) (polyEvalM q M n)).length
         = n := (elim.length_matAdd (polyEvalM p M n) (polyEvalM q M n)
@@ -3039,23 +2040,23 @@ private theorem evalM_consUnit (n : Nat) (M : Mat) (hMl : M.length = n)
       (matMul M (polyEvalM p M n)) := by
   have hep := evalM_shape n M hMr hMl hn p
   have hsb : matOneValue
-      (inertia.matScaleB BPair.unit (inertia.idMat n))
+      (inertia.matScaleB BPair.unit (elim.idMat n))
       (elim.nullMat n n) := by
-    have h := scaleB_unit_null (n := n) (inertia.idMat n)
-      (inertia.idMat_rows n)
-    rw [inertia.idMat_len n] at h
+    have h := scaleB_unit_null (n := n) (elim.idMat n)
+      (elim.rowsLen_idMat n)
+    rw [elim.length_idMat n] at h
     exact h
   have hMe : rowsLen n (matMul M (polyEvalM p M n)) :=
     rowsLen_matMul_of M (polyEvalM p M n)
       (fun _ => (by rw [hep.2]; exact hn)) hep.1
   show matOneValue
-    (matAdd (inertia.matScaleB BPair.unit (inertia.idMat n))
+    (matAdd (inertia.matScaleB BPair.unit (elim.idMat n))
       (matMul M (polyEvalM p M n)))
     (matMul M (polyEvalM p M n))
   refine matOne_trans
     (matAdd_cong2 n _ _ (elim.nullMat n n) (matMul M (polyEvalM p M n))
-      (inertia.rowsLen_scaleB BPair.unit n (inertia.idMat n)
-        (inertia.idMat_rows n))
+      (inertia.rowsLen_scaleB BPair.unit n (elim.idMat n)
+        (elim.rowsLen_idMat n))
       hMe (elim.rowsLen_nullMat n n) hMe
       hsb (matOne_refl _)) ?_
   refine elim.matAdd_nullL (elim.nullMat n n) (matMul M (polyEvalM p M n))
@@ -3076,56 +2077,56 @@ private theorem evalM_mulX (n : Nat) (M : Mat) (hMl : M.length = n)
 private theorem evalM_const (n : Nat) (M : Mat) (hMl : M.length = n)
     (hn : 0 < n) (c : BPair) :
     matOneValue (polyEvalM [c] M n)
-      (inertia.matScaleB c (inertia.idMat n)) := by
+      (inertia.matScaleB c (elim.idMat n)) := by
   show matOneValue
-    (matAdd (inertia.matScaleB c (inertia.idMat n))
-      (matMul M (inertia.matScaleB BPair.unit (inertia.idMat n))))
-    (inertia.matScaleB c (inertia.idMat n))
+    (matAdd (inertia.matScaleB c (elim.idMat n))
+      (matMul M (inertia.matScaleB BPair.unit (elim.idMat n))))
+    (inertia.matScaleB c (elim.idMat n))
   have hnl : matOneValue
-      (matMul M (inertia.matScaleB BPair.unit (inertia.idMat n)))
+      (matMul M (inertia.matScaleB BPair.unit (elim.idMat n)))
       (elim.nullMat n n) := by
     refine matOne_trans
       (matMul_congrR (n := n) (k := n) M
-        (inertia.matScaleB BPair.unit (inertia.idMat n))
+        (inertia.matScaleB BPair.unit (elim.idMat n))
         (elim.nullMat n n)
-        (inertia.rowsLen_scaleB BPair.unit n (inertia.idMat n)
-          (inertia.idMat_rows n))
+        (inertia.rowsLen_scaleB BPair.unit n (elim.idMat n)
+          (elim.rowsLen_idMat n))
         (elim.rowsLen_nullMat n n)
-        ((inertia.length_scaleB BPair.unit (inertia.idMat n)).trans
-          (inertia.idMat_len n))
+        ((inertia.length_scaleB BPair.unit (elim.idMat n)).trans
+          (elim.length_idMat n))
         (elim.length_nullMat n n) hn
         (by
-          have h := scaleB_unit_null (n := n) (inertia.idMat n)
-            (inertia.idMat_rows n)
-          rw [inertia.idMat_len n] at h
+          have h := scaleB_unit_null (n := n) (elim.idMat n)
+            (elim.rowsLen_idMat n)
+          rw [elim.length_idMat n] at h
           exact h)) ?_
     exact elim.matMul_nullMat n M hMl
   rw [matAdd_comm]
   refine matOne_trans
     (matAdd_cong2 n _ _ (elim.nullMat n n)
-      (inertia.matScaleB c (inertia.idMat n))
+      (inertia.matScaleB c (elim.idMat n))
       (rowsLen_matMul_of M
-         (inertia.matScaleB BPair.unit (inertia.idMat n))
+         (inertia.matScaleB BPair.unit (elim.idMat n))
          (fun _ => (by
             rw [(inertia.length_scaleB BPair.unit
-                (inertia.idMat n)).trans (inertia.idMat_len n)]
+                (elim.idMat n)).trans (elim.length_idMat n)]
             exact hn))
-         (inertia.rowsLen_scaleB BPair.unit n (inertia.idMat n)
-           (inertia.idMat_rows n)))
-      (inertia.rowsLen_scaleB c n (inertia.idMat n)
-        (inertia.idMat_rows n))
+         (inertia.rowsLen_scaleB BPair.unit n (elim.idMat n)
+           (elim.rowsLen_idMat n)))
+      (inertia.rowsLen_scaleB c n (elim.idMat n)
+        (elim.rowsLen_idMat n))
       (elim.rowsLen_nullMat n n)
-      (inertia.rowsLen_scaleB c n (inertia.idMat n)
-        (inertia.idMat_rows n))
+      (inertia.rowsLen_scaleB c n (elim.idMat n)
+        (elim.rowsLen_idMat n))
       hnl (matOne_refl _)) ?_
   refine elim.matAdd_nullL (elim.nullMat n n) _
     (elim.matNull_nullMat n n) ?_
     (elim.rowsLen_nullMat n n)
-    (inertia.rowsLen_scaleB c n (inertia.idMat n)
-      (inertia.idMat_rows n))
+    (inertia.rowsLen_scaleB c n (elim.idMat n)
+      (elim.rowsLen_idMat n))
   rw [elim.length_nullMat n n,
-    (inertia.length_scaleB c (inertia.idMat n)).trans
-      (inertia.idMat_len n)]
+    (inertia.length_scaleB c (elim.idMat n)).trans
+      (elim.length_idMat n)]
 
 /-- The lemma's word keeps the translation's shape. -/
 private theorem chordWord_shape (n m : Nat) (M : Mat) (hM : rowsLen n M)
@@ -3147,7 +2148,7 @@ read one value once the wrapped `T^L` reads `T^0`
 (`lem:fiberdec`'s `T X = X`). -/
 theorem wordSum_fixed (n L : Nat) (M : Mat) (hM : rowsLen n M)
     (hMl : M.length = n) (hn : 0 < n)
-    (hcyc : matOneValue (inertia.matPow M n L) (inertia.idMat n)) :
+    (hcyc : matOneValue (inertia.matPow M n L) (elim.idMat n)) :
     matOneValue (matMul M (wordSum M n L)) (wordSum M n L) :=
   matOne_trans
     (elim.matMul_msum n M hM hMl hn (inertia.matPow M n) (matPow_shape n M hMl)
@@ -3161,8 +2162,8 @@ onto the lemma's word by the word identity (`wordOpRead`, the
 decidable read the batteries commit). -/
 theorem fixedWord_of (n m : Nat) (M : Mat) (hM : rowsLen n M)
     (hMl : M.length = n) (hn : 0 < n)
-    (hcyc : matOneValue (inertia.matPow M n (2 * m + 1)) (inertia.idMat n))
-    (horth : matOneValue (matMul (transposeM M) M) (inertia.idMat n))
+    (hcyc : matOneValue (inertia.matPow M n (2 * m + 1)) (elim.idMat n))
+    (horth : matOneValue (matMul (transposeM M) M) (elim.idMat n))
     (hword : wordOpRead M n m) : fixedWordRead M n m := by
   have hX := chordWord_shape n m M hM hMl hn
   have hWs := elim.msum_shape n (inertia.matPow M n) (matPow_shape n M hMl)
@@ -3182,14 +2183,14 @@ permutation read supplies the orthogonality and the cycle read the
 wrapped power, so `fixedWordRead` is decided by the window's own
 two reads and the word identity. -/
 theorem fixedWord_perm (R : Region) (t s : Nat → Nat) (m : Nat)
-    (hn : 0 < R.links) (hperm : permRead R t s)
+    (hn : 0 < R.links) (hperm : linkIso R R t s)
     (hcyc : cycleRead R t (2 * m + 1))
     (hword : wordOpRead (permMatAt R.links t) R.links m) :
     fixedWordRead (permMatAt R.links t) R.links m :=
   fixedWord_of R.links m (permMatAt R.links t)
     (rowsLen_permMatAt R.links t) (length_permMatAt R.links t) hn
     (cycleRead_pow R t s (2 * m + 1) hn hperm hcyc)
-    (permRead_orth R t s hperm).2 hword
+    (linkIso_orth R t s hperm).2 hword
 
 private theorem double_entry (x : BPair) :
     (x + x).oneValue (BPair.ofNat 2 * x).norm :=
@@ -3236,11 +2237,11 @@ private theorem plus_read (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
         hTl
     refine matOne_trans (evalM_const n (chordOp (permMatAt n t)) hSl hn
       (BPair.ofNat 2)) ?_
-    refine matOne_trans (matOne_symm (matAdd_double (inertia.idMat n))) ?_
+    refine matOne_trans (matOne_symm (matAdd_double (elim.idMat n))) ?_
     exact matAdd_cong2 n _ _ (inertia.matPow (permMatAt n t) n 0)
       (inertia.matPow (permMatAt n t) n (k + 1))
-      (inertia.idMat_rows n) (inertia.idMat_rows n)
-      (inertia.idMat_rows n)
+      (elim.rowsLen_idMat n) (elim.rowsLen_idMat n)
+      (elim.rowsLen_idMat n)
       (matPow_shape n (permMatAt n t) hTl (k + 1)).1
       (matOne_refl _)
       (matOne_symm (matPow_wrap n k t hn ht hcyc 0))
@@ -3265,25 +2266,25 @@ private theorem plus_read (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
         [BPair.ofPos .one]) ?_
     have hone : matOneValue
         (polyEvalM [BPair.ofPos .one] (chordOp (permMatAt n t)) n)
-        (inertia.idMat n) := by
+        (elim.idMat n) := by
       refine matOne_trans
         (evalM_const n (chordOp (permMatAt n t)) hSl hn
           (BPair.ofPos .one)) ?_
       refine matOne_trans
         (inertia.matScaleB_congr
           (show (BPair.ofPos .one).oneValue (BPair.ofNat 1) by decide +kernel)
-          (inertia.idMat n)) ?_
-      exact inertia.matScaleB_one (inertia.idMat n)
+          (elim.idMat n)) ?_
+      exact inertia.matScaleB_one (elim.idMat n)
     refine matOne_trans
       (matMul_congrR (n := n) (k := n) (chordOp (permMatAt n t))
         (polyEvalM [BPair.ofPos .one] (chordOp (permMatAt n t)) n)
-        (inertia.idMat n)
+        (elim.idMat n)
         (evalM_shape n (chordOp (permMatAt n t)) hSr hSl hn
           [BPair.ofPos .one]).1
-        (inertia.idMat_rows n)
+        (elim.rowsLen_idMat n)
         (evalM_shape n (chordOp (permMatAt n t)) hSr hSl hn
           [BPair.ofPos .one]).2
-        (inertia.idMat_len n) hn hone) ?_
+        (elim.length_idMat n) hn hone) ?_
     refine matOne_trans
       (inertia.matMul_idR n (chordOp (permMatAt n t)) hSr hSl hn hn) ?_
     refine matAdd_cong2 n _ _ (inertia.matPow (permMatAt n t) n 1)
@@ -3448,15 +2449,15 @@ private theorem seg_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
     have hsm := matPow_shape n (permMatAt n t) hTl m
     have hone : matOneValue
         (polyEvalM (deck.pSum 0) (chordOp (permMatAt n t)) n)
-        (inertia.idMat n) := by
+        (elim.idMat n) := by
       refine matOne_trans
         (evalM_const n (chordOp (permMatAt n t)) hSl hn
           (BPair.ofPos .one)) ?_
       refine matOne_trans
         (inertia.matScaleB_congr
           (show (BPair.ofPos .one).oneValue (BPair.ofNat 1) by decide +kernel)
-          (inertia.idMat n)) ?_
-      exact inertia.matScaleB_one (inertia.idMat n)
+          (elim.idMat n)) ?_
+      exact inertia.matScaleB_one (elim.idMat n)
     show matOneValue
       (matMul (inertia.matPow (permMatAt n t) n m)
         (polyEvalM (deck.pSum 0) (chordOp (permMatAt n t)) n))
@@ -3468,13 +2469,13 @@ private theorem seg_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
     refine matOne_trans
       (matMul_congrR (n := n) (k := n) (inertia.matPow (permMatAt n t) n m)
         (polyEvalM (deck.pSum 0) (chordOp (permMatAt n t)) n)
-        (inertia.idMat n)
+        (elim.idMat n)
         (evalM_shape n (chordOp (permMatAt n t)) hSr hSl hn
           (deck.pSum 0)).1
-        (inertia.idMat_rows n)
+        (elim.rowsLen_idMat n)
         (evalM_shape n (chordOp (permMatAt n t)) hSr hSl hn
           (deck.pSum 0)).2
-        (inertia.idMat_len n) hn hone) ?_
+        (elim.length_idMat n) hn hone) ?_
     refine matOne_trans
       (inertia.matMul_idR n (inertia.matPow (permMatAt n t) n m)
         hsm.1 hsm.2 hn hn) ?_
@@ -3701,15 +2702,15 @@ collected (`def:deck`). -/
 theorem chord_deck (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
     (hPt : rowsLen n (transposeM Pm))
     (hPl : (transposeM Pm).length = n)
-    (horth : matOneValue (matMul (transposeM Pm) Pm) (inertia.idMat n)) :
-    matOneValue (matAdd (matMul Pm Pm) (inertia.idMat n))
+    (horth : matOneValue (matMul (transposeM Pm) Pm) (elim.idMat n)) :
+    matOneValue (matAdd (matMul Pm Pm) (elim.idMat n))
       (matMul (chordOp Pm) Pm) :=
   matOne_symm (matOne_trans (matMul_addL n Pm hPt Pm (transposeM Pm) hP hPt)
     (matAdd_cong2 n (matMul Pm Pm) (matMul (transposeM Pm) Pm)
-      (matMul Pm Pm) (inertia.idMat n)
+      (matMul Pm Pm) (elim.idMat n)
       (rowsLen_cast hPl (rowsLen_matMul Pm Pm))
       (rowsLen_cast hPl (rowsLen_matMul (transposeM Pm) Pm))
-      (rowsLen_cast hPl (rowsLen_matMul Pm Pm)) (inertia.idMat_rows n)
+      (rowsLen_cast hPl (rowsLen_matMul Pm Pm)) (elim.rowsLen_idMat n)
       (matOne_refl (matMul Pm Pm)) horth))
 
 /-- The chord's join at a fixed word: at the two fixed reads
@@ -3799,7 +2800,7 @@ theorem chord_band (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
     (hPl : Pm.length = n) (hn : 0 < n) (horth : orthRead Pm n) :
     matOneValue
       (matAdd (matMul (bandDatum Pm) (bandDatum Pm))
-        (inertia.matScaleB (BPair.ofNat 4) (inertia.idMat n)))
+        (inertia.matScaleB (BPair.ofNat 4) (elim.idMat n)))
       (matMul (chordOp Pm) (chordOp Pm)) := by
   have hTtl : (transposeM Pm).length = n := transposeLen Pm hP hPl
   have hTt : rowsLen n (transposeM Pm) := rowsLen_cast hPl (rowsLen_transposeM Pm)
@@ -3833,7 +2834,7 @@ theorem chord_band (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
     rowsLen_mapRows BPair.swap _ n hPP
   have hswQ : rowsLen n (matSwap (matMul (transposeM Pm) Pm)) :=
     rowsLen_mapRows BPair.swap _ n hQ
-  have hI : rowsLen n (inertia.idMat n) := inertia.idMat_rows n
+  have hI : rowsLen n (elim.idMat n) := elim.rowsLen_idMat n
   -- the doubling datum's square
   have hTA : matOneValue (matMul Pm (bandDatum Pm))
       (matAdd (matMul Pm Pm) (matSwap (matMul Pm (transposeM Pm)))) := by
@@ -3883,7 +2884,7 @@ theorem chord_band (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
         (by rw [hPl]; exact hn) (transposeM Pm) (rowsLen_cast hPl.symm hTt))
   -- the constant collects the two orthogonality reads
   have hFour : matOneValue
-      (inertia.matScaleB (BPair.ofNat 4) (inertia.idMat n))
+      (inertia.matScaleB (BPair.ofNat 4) (elim.idMat n))
       (matAdd
         (matAdd (matMul Pm (transposeM Pm)) (matMul Pm (transposeM Pm)))
         (matAdd (matMul (transposeM Pm) Pm) (matMul (transposeM Pm) Pm))) := by
@@ -3893,27 +2894,27 @@ theorem chord_band (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
         (rowsLen_matAdd n _ _ hI hI) (rowsLen_matAdd n _ _ hI hI)
         (matAdd_cong2 n _ _ _ _ hPP hPP hI hI horth.1 horth.1)
         (matAdd_cong2 n _ _ _ _ hQ hQ hI hI horth.2 horth.2)) ?_)
-    have htwo : matOneValue (matAdd (inertia.idMat n) (inertia.idMat n))
-        (inertia.matScaleB (BPair.ofNat 2) (inertia.idMat n)) :=
+    have htwo : matOneValue (matAdd (elim.idMat n) (elim.idMat n))
+        (inertia.matScaleB (BPair.ofNat 2) (elim.idMat n)) :=
       matOne_trans
         (matAdd_cong2 n _ _ _ _ hI hI
           (rowsLen_mapRows _ _ n hI) (rowsLen_mapRows _ _ n hI)
-          (matOne_symm (inertia.matScaleB_one (inertia.idMat n)))
-          (matOne_symm (inertia.matScaleB_one (inertia.idMat n))))
+          (matOne_symm (inertia.matScaleB_one (elim.idMat n)))
+          (matOne_symm (inertia.matScaleB_one (elim.idMat n))))
         (matOne_trans
           (inertia.matScaleB_add (BPair.ofNat 1) (BPair.ofNat 1)
-            (inertia.idMat n))
+            (elim.idMat n))
           (inertia.matScaleB_congr
-            (BPair.oneValue_symm (BPair.ofNat_add 1 1)) (inertia.idMat n)))
+            (BPair.oneValue_symm (BPair.ofNat_add 1 1)) (elim.idMat n)))
     refine matOne_trans
       (matAdd_cong2 n _ _ _ _
         (rowsLen_matAdd n _ _ hI hI) (rowsLen_matAdd n _ _ hI hI)
         (rowsLen_mapRows _ _ n hI) (rowsLen_mapRows _ _ n hI)
         htwo htwo) ?_
     exact matOne_trans
-      (inertia.matScaleB_add (BPair.ofNat 2) (BPair.ofNat 2) (inertia.idMat n))
+      (inertia.matScaleB_add (BPair.ofNat 2) (BPair.ofNat 2) (elim.idMat n))
       (inertia.matScaleB_congr
-        (BPair.oneValue_symm (BPair.ofNat_add 2 2)) (inertia.idMat n))
+        (BPair.oneValue_symm (BPair.ofNat_add 2 2)) (elim.idMat n))
   -- the assembly
   refine matOne_trans
     (matAdd_cong2 n _ _ _ _
@@ -3961,7 +2962,7 @@ ground, their concatenated lists' congruence and the count. -/
 /-- The pair `(S : 2)`'s site datum, the unit fiber's own block. -/
 def unitDatum (Pm : Mat) (n : Nat) : Mat :=
   inertia.siteDatum (chordOp Pm)
-    (inertia.matScaleB (BPair.ofNat 2) (inertia.idMat n))
+    (inertia.matScaleB (BPair.ofNat 2) (elim.idMat n))
 
 /-- The identification at the datum `D₁` of `1 + D₁ = T`: the
 product `Tᵀ T = 1` expands and the chord reads `S = 2 + D₁ + D₁ᵀ`,
@@ -3970,10 +2971,10 @@ the two joining at `D₁ᵀ D₁ + S = 2`, so a member of the pair
 def identRead (Pm : Mat) (n : Nat) : Prop :=
   matOneValue
     (matAdd
-      (matMul (transposeM (inertia.siteDatum Pm (inertia.idMat n)))
-        (inertia.siteDatum Pm (inertia.idMat n)))
+      (matMul (transposeM (inertia.siteDatum Pm (elim.idMat n)))
+        (inertia.siteDatum Pm (elim.idMat n)))
       (chordOp Pm))
-    (inertia.matScaleB (BPair.ofNat 2) (inertia.idMat n))
+    (inertia.matScaleB (BPair.ofNat 2) (elim.idMat n))
 
 instance (Pm : Mat) (n : Nat) : Decidable (identRead Pm n) :=
   inferInstanceAs (Decidable (matOneValue _ _))
@@ -4359,7 +3360,7 @@ private theorem tShift_ne (m k : Nat) (h : ¬ (k = 2 * m)) :
 private theorem sShift_zero (m : Nat) : sShift m 0 = 2 * m := if_pos rfl
 
 /-- Above the seed the witness is the predecessor. -/
-private theorem sShift_succ (m k : Nat) : sShift m (k + 1) = k :=
+theorem sShift_succ (m k : Nat) : sShift m (k + 1) = k :=
   if_neg (ground.boolNe rfl)
 
 /-- The wrap shift's range clause: the key range maps into
@@ -5232,7 +4233,7 @@ private theorem perp_pair (n : Nat) (M : Mat) (hM : rowsLen n M)
       (pdotVec_swapNull w (transposeM M) v)
 
 /-- The chord operator is its own transpose. -/
-private theorem transposeM_chordOp (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
+theorem transposeM_chordOp (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
     (hPl : Pm.length = n) (hn : 0 < n) :
     matOneValue (transposeM (chordOp Pm)) (chordOp Pm) := by
   have hT : rowsLen n (transposeM Pm) :=
@@ -5528,7 +4529,7 @@ theorem deckColumn_crossNull (m : Nat) :
       (deck.pCong_of m (poly.unitTail_oneValue hnull trivial)))
 
 /-- The witness's range clause: the key range maps into itself. -/
-private theorem sShift_lt (m : Nat) :
+theorem sShift_lt (m : Nat) :
     ∀ j, j < 2 * m + 1 → sShift m j < 2 * m + 1 := by
   intro j hj
   cases j with
@@ -5612,43 +4613,43 @@ against it is the plain pairing rescaled. -/
 private theorem pdotVec_scaleId (c : BPair) (n : Nat) (u v : List poly.Poly)
     (hu : u.length = n) (hv : v.length = n) :
     poly.oneValue
-      (pdotVec v (pmatVec (inertia.matScaleB c (inertia.idMat n)) u))
+      (pdotVec v (pmatVec (inertia.matScaleB c (elim.idMat n)) u))
       (poly.scaleP c (pdotVec v u)) := by
-  have hIl : (inertia.idMat n).length = n := inertia.idMat_len n
-  have hMl : (inertia.matScaleB c (inertia.idMat n)).length = n :=
-    (ground.length_map _ (inertia.idMat n)).trans hIl
-  have hml : (pmatVec (inertia.matScaleB c (inertia.idMat n)) u).length = n := by
+  have hIl : (elim.idMat n).length = n := elim.length_idMat n
+  have hMl : (inertia.matScaleB c (elim.idMat n)).length = n :=
+    (ground.length_map _ (elim.idMat n)).trans hIl
+  have hml : (pmatVec (inertia.matScaleB c (elim.idMat n)) u).length = n := by
     rw [pmatVec_len, hMl]
-  rw [pdotVec_getAt v (pmatVec (inertia.matScaleB c (inertia.idMat n)) u)
+  rw [pdotVec_getAt v (pmatVec (inertia.matScaleB c (elim.idMat n)) u)
       (by rw [hv, hml]), pdotVec_getAt v u (by rw [hv, hu]), hv]
   refine poly.oneValue_trans (pfold_brange n (fun i hi => ?_))
     (poly.oneValue_symm (pfold_scaleP c
       (fun i => poly.mul (ground.getAt ([] : poly.Poly) v i)
         (ground.getAt ([] : poly.Poly) u i)) (List.range n)))
-  have hiM : i < (inertia.matScaleB c (inertia.idMat n)).length := by
+  have hiM : i < (inertia.matScaleB c (elim.idMat n)).length := by
     rw [hMl]; exact hi
-  have hiI : i < (inertia.idMat n).length := by rw [hIl]; exact hi
-  have hrowI : (ground.getAt ([] : List BPair) (inertia.idMat n) i).length = n :=
-    rowsLen_getAt (inertia.idMat n) i (inertia.idMat_rows n) hiI
+  have hiI : i < (elim.idMat n).length := by rw [hIl]; exact hi
+  have hrowI : (ground.getAt ([] : List BPair) (elim.idMat n) i).length = n :=
+    rowsLen_getAt (elim.idMat n) i (elim.rowsLen_idMat n) hiI
   have hgetRow : ground.getAt ([] : List BPair)
-      (inertia.matScaleB c (inertia.idMat n)) i
-      = (ground.getAt ([] : List BPair) (inertia.idMat n) i).map
+      (inertia.matScaleB c (elim.idMat n)) i
+      = (ground.getAt ([] : List BPair) (elim.idMat n) i).map
         (fun x => (c * x).norm) :=
     ground.getAt_map ([] : List BPair) ([] : List BPair)
-      (poly.scaleP c) (inertia.idMat n) i hiI
+      (poly.scaleP c) (elim.idMat n) i hiI
   have hrow : (ground.getAt ([] : List BPair)
-      (inertia.matScaleB c (inertia.idMat n)) i).length = n := by
+      (inertia.matScaleB c (elim.idMat n)) i).length = n := by
     rw [hgetRow, ground.length_map, hrowI]
   have hent : ∀ k, k < n → ground.getAt BPair.unit
       (ground.getAt ([] : List BPair)
-        (inertia.matScaleB c (inertia.idMat n)) i) k
+        (inertia.matScaleB c (elim.idMat n)) i) k
       = (c * (if k = i then BPair.ofNat 1 else BPair.unit)).norm := by
     intro k hk
     rw [hgetRow, ground.getAt_map BPair.unit BPair.unit
       (fun x => (c * x).norm) (ground.getAt ([] : List BPair)
-        (inertia.idMat n) i) k (by rw [hrowI]; exact hk),
-      inertia.getAt_idMat n i k hi hk]
-  rw [pmatVec_getAt (inertia.matScaleB c (inertia.idMat n)) u i hiM]
+        (elim.idMat n) i) k (by rw [hrowI]; exact hk),
+      elim.getAt_idMat n i k hi hk]
+  rw [pmatVec_getAt (inertia.matScaleB c (elim.idMat n)) u i hiM]
   refine poly.oneValue_trans
     (poly.mul_congr _
       (scaleDot_hotAt c _ u i (by rw [hrow, hu]) ?_ ?_)) ?_
@@ -5746,18 +4747,18 @@ theorem deckColumn_imagePair (m : Nat) :
         (bandDatum (permMatAt (2 * m + 1) (tShift m)))).length = 2 * m + 1 :=
       (ground.length_map _ _).trans hAl
     have hFour : rowsLen (2 * m + 1)
-        (inertia.matScaleB (BPair.ofNat 4) (inertia.idMat (2 * m + 1))) :=
+        (inertia.matScaleB (BPair.ofNat 4) (elim.idMat (2 * m + 1))) :=
       rowsLen_mapRows (fun x => (BPair.ofNat 4 * x).norm)
-        (inertia.idMat (2 * m + 1)) (2 * m + 1)
-        (inertia.idMat_rows (2 * m + 1))
+        (elim.idMat (2 * m + 1)) (2 * m + 1)
+        (elim.rowsLen_idMat (2 * m + 1))
     have hFourl : (inertia.matScaleB (BPair.ofNat 4)
-        (inertia.idMat (2 * m + 1))).length = 2 * m + 1 :=
-      (ground.length_map _ (inertia.idMat (2 * m + 1))).trans
-        (inertia.idMat_len (2 * m + 1))
+        (elim.idMat (2 * m + 1))).length = 2 * m + 1 :=
+      (ground.length_map _ (elim.idMat (2 * m + 1))).trans
+        (elim.length_idMat (2 * m + 1))
     have hsplit := pdotVec_matAdd (2 * m + 1) (deckColumn m)
       (matMul (bandDatum (permMatAt (2 * m + 1) (tShift m)))
         (bandDatum (permMatAt (2 * m + 1) (tShift m))))
-      (inertia.matScaleB (BPair.ofNat 4) (inertia.idMat (2 * m + 1)))
+      (inertia.matScaleB (BPair.ofNat 4) (elim.idMat (2 * m + 1)))
       (deckColumn m) (hAAl.trans hFourl.symm) hAA hFour
     have hcb := pdotVec_matOne _ _ (deckColumn m) (deckColumn m)
       (chord_band (2 * m + 1) (permMatAt (2 * m + 1) (tShift m)) hP hPl hn
@@ -6268,7 +5269,7 @@ def pairBase (m : Nat) : Mat :=
        (sliceAt i (deckColumn m))])
 
 /-- The orbit sum's count is the side. -/
-private theorem orbitSum_len (m : Nat) : (orbitSum m).length = 2 * m + 1 :=
+theorem orbitSum_len (m : Nat) : (orbitSum m).length = 2 * m + 1 :=
   ground.length_replicate (BPair.ofPos Pos.one) (2 * m + 1)
 
 /-- A paired family's join counts twice its key list. -/
@@ -6293,14 +5294,14 @@ two memberwise swaps clear against their own, `D₁ᵀ D₁ + S = 2` at
 the datum `D₁` of `1 + D₁ = T`. -/
 private theorem ident_of (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
     (hPl : Pm.length = n) (hn : 0 < n)
-    (horth : matOneValue (matMul (transposeM Pm) Pm) (inertia.idMat n)) :
+    (horth : matOneValue (matMul (transposeM Pm) Pm) (elim.idMat n)) :
     identRead Pm n := by
-  have hI : rowsLen n (inertia.idMat n) := inertia.idMat_rows n
-  have hIl : (inertia.idMat n).length = n := inertia.idMat_len n
-  have hSwI : rowsLen n (matSwap (inertia.idMat n)) :=
-    rowsLen_mapRows BPair.swap (inertia.idMat n) n hI
-  have hSwIl : (matSwap (inertia.idMat n)).length = n :=
-    (ground.length_map _ (inertia.idMat n)).trans hIl
+  have hI : rowsLen n (elim.idMat n) := elim.rowsLen_idMat n
+  have hIl : (elim.idMat n).length = n := elim.length_idMat n
+  have hSwI : rowsLen n (matSwap (elim.idMat n)) :=
+    rowsLen_mapRows BPair.swap (elim.idMat n) n hI
+  have hSwIl : (matSwap (elim.idMat n)).length = n :=
+    (ground.length_map _ (elim.idMat n)).trans hIl
   have hT : rowsLen n (transposeM Pm) :=
     rowsLen_cast hPl (rowsLen_transposeM Pm)
   have hTl : (transposeM Pm).length = n := transposeLen Pm hP hPl
@@ -6311,80 +5312,80 @@ private theorem ident_of (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
     rowsLen_mapRows BPair.swap (transposeM Pm) n hT
   have hSwTl : (matSwap (transposeM Pm)).length = n :=
     (ground.length_map _ (transposeM Pm)).trans hTl
-  have hD : rowsLen n (inertia.siteDatum Pm (inertia.idMat n)) :=
-    rowsLen_matAdd n Pm (matSwap (inertia.idMat n)) hP hSwI
-  have hDl : (inertia.siteDatum Pm (inertia.idMat n)).length = n :=
+  have hD : rowsLen n (inertia.siteDatum Pm (elim.idMat n)) :=
+    rowsLen_matAdd n Pm (matSwap (elim.idMat n)) hP hSwI
+  have hDl : (inertia.siteDatum Pm (elim.idMat n)).length = n :=
     (length_matAdd Pm _ (hPl.trans hSwIl.symm)).trans hPl
-  have hDt : rowsLen n (transposeM (inertia.siteDatum Pm (inertia.idMat n))) :=
+  have hDt : rowsLen n (transposeM (inertia.siteDatum Pm (elim.idMat n))) :=
     rowsLen_cast hDl
-      (rowsLen_transposeM (inertia.siteDatum Pm (inertia.idMat n)))
-  have hDtl : (transposeM (inertia.siteDatum Pm (inertia.idMat n))).length = n :=
-    transposeLen (inertia.siteDatum Pm (inertia.idMat n)) hD hDl
-  have hSwIt : (transposeM (matSwap (inertia.idMat n))).length = n :=
-    transposeLen (matSwap (inertia.idMat n)) hSwI hSwIl
-  have hDT : transposeM (inertia.siteDatum Pm (inertia.idMat n))
-      = matAdd (transposeM Pm) (matSwap (inertia.idMat n)) := by
-    show transposeM (matAdd Pm (matSwap (inertia.idMat n))) = _
-    rw [transposeM_matAdd Pm (matSwap (inertia.idMat n)) hP hSwI
+      (rowsLen_transposeM (inertia.siteDatum Pm (elim.idMat n)))
+  have hDtl : (transposeM (inertia.siteDatum Pm (elim.idMat n))).length = n :=
+    transposeLen (inertia.siteDatum Pm (elim.idMat n)) hD hDl
+  have hSwIt : (transposeM (matSwap (elim.idMat n))).length = n :=
+    transposeLen (matSwap (elim.idMat n)) hSwI hSwIl
+  have hDT : transposeM (inertia.siteDatum Pm (elim.idMat n))
+      = matAdd (transposeM Pm) (matSwap (elim.idMat n)) := by
+    show transposeM (matAdd Pm (matSwap (elim.idMat n))) = _
+    rw [transposeM_matAdd Pm (matSwap (elim.idMat n)) hP hSwI
         (hPl.trans hSwIl.symm) (by rw [hPl]; exact hn),
-      transposeM_swap (inertia.idMat n), inertia.transposeM_idMat n]
+      transposeM_swap (elim.idMat n), inertia.transposeM_idMat n]
   -- the datum's square at the two products
   have hleft : matOneValue
-      (matMul (transposeM Pm) (inertia.siteDatum Pm (inertia.idMat n)))
-      (matAdd (inertia.idMat n) (matSwap (transposeM Pm))) := by
+      (matMul (transposeM Pm) (inertia.siteDatum Pm (elim.idMat n)))
+      (matAdd (elim.idMat n) (matSwap (transposeM Pm))) := by
     refine matOne_trans
-      (matMul_addR Pm (matSwap (inertia.idMat n)) hP hSwI
+      (matMul_addR Pm (matSwap (elim.idMat n)) hP hSwI
         (hPl.trans hSwIl.symm) (by rw [hPl]; exact hn) (transposeM Pm)
         (rowsLen_cast hPl.symm hT)) ?_
     refine matAdd_cong2 n _ _ _ _
       (rowsLen_cast hTl (rowsLen_matMul (transposeM Pm) Pm))
       (rowsLen_cast hSwIt
-        (rowsLen_matMul (transposeM Pm) (matSwap (inertia.idMat n))))
+        (rowsLen_matMul (transposeM Pm) (matSwap (elim.idMat n))))
       hI hSwT horth ?_
     rw [matMul_swap]
     exact matSwap_congr
       (inertia.matMul_idR n (transposeM Pm) hT hTl hn hn)
   have hright : matOneValue
-      (matMul (matSwap (inertia.idMat n))
-        (inertia.siteDatum Pm (inertia.idMat n)))
-      (matAdd (matSwap Pm) (inertia.idMat n)) := by
+      (matMul (matSwap (elim.idMat n))
+        (inertia.siteDatum Pm (elim.idMat n)))
+      (matAdd (matSwap Pm) (elim.idMat n)) := by
     rw [matMul_swapL]
     refine matOne_trans
       (matSwap_congr (inertia.idMat_matMul n
-        (inertia.siteDatum Pm (inertia.idMat n)) hD hDl hn)) ?_
-    show matOneValue (matSwap (matAdd Pm (matSwap (inertia.idMat n))))
-      (matAdd (matSwap Pm) (inertia.idMat n))
+        (inertia.siteDatum Pm (elim.idMat n)) hD hDl hn)) ?_
+    show matOneValue (matSwap (matAdd Pm (matSwap (elim.idMat n))))
+      (matAdd (matSwap Pm) (elim.idMat n))
     rw [matSwap_matAdd, matSwap_matSwap]
     exact matOne_refl _
   have hsq : matOneValue
-      (matMul (transposeM (inertia.siteDatum Pm (inertia.idMat n)))
-        (inertia.siteDatum Pm (inertia.idMat n)))
-      (matAdd (matAdd (inertia.idMat n) (matSwap (transposeM Pm)))
-        (matAdd (matSwap Pm) (inertia.idMat n))) := by
+      (matMul (transposeM (inertia.siteDatum Pm (elim.idMat n)))
+        (inertia.siteDatum Pm (elim.idMat n)))
+      (matAdd (matAdd (elim.idMat n) (matSwap (transposeM Pm)))
+        (matAdd (matSwap Pm) (elim.idMat n))) := by
     rw [hDT]
     refine matOne_trans
-      (matMul_addL n (inertia.siteDatum Pm (inertia.idMat n)) hDt
-        (transposeM Pm) (matSwap (inertia.idMat n)) hT hSwI) ?_
+      (matMul_addL n (inertia.siteDatum Pm (elim.idMat n)) hDt
+        (transposeM Pm) (matSwap (elim.idMat n)) hT hSwI) ?_
     exact matAdd_cong2 n _ _ _ _
       (rowsLen_cast hDtl
         (rowsLen_matMul (transposeM Pm)
-          (inertia.siteDatum Pm (inertia.idMat n))))
+          (inertia.siteDatum Pm (elim.idMat n))))
       (rowsLen_cast hDtl
-        (rowsLen_matMul (matSwap (inertia.idMat n))
-          (inertia.siteDatum Pm (inertia.idMat n))))
+        (rowsLen_matMul (matSwap (elim.idMat n))
+          (inertia.siteDatum Pm (elim.idMat n))))
       (rowsLen_matAdd n _ _ hI hSwT) (rowsLen_matAdd n _ _ hSwP hI)
       hleft hright
   -- the four members collect against the chord's own two
   show matOneValue
-    (matAdd (matMul (transposeM (inertia.siteDatum Pm (inertia.idMat n)))
-        (inertia.siteDatum Pm (inertia.idMat n)))
+    (matAdd (matMul (transposeM (inertia.siteDatum Pm (elim.idMat n)))
+        (inertia.siteDatum Pm (elim.idMat n)))
       (chordOp Pm))
-    (inertia.matScaleB (BPair.ofNat 2) (inertia.idMat n))
+    (inertia.matScaleB (BPair.ofNat 2) (elim.idMat n))
   refine matOne_trans
     (matAdd_cong2 n _ _ _ _
       (rowsLen_cast hDtl
-        (rowsLen_matMul (transposeM (inertia.siteDatum Pm (inertia.idMat n)))
-          (inertia.siteDatum Pm (inertia.idMat n))))
+        (rowsLen_matMul (transposeM (inertia.siteDatum Pm (elim.idMat n)))
+          (inertia.siteDatum Pm (elim.idMat n))))
       (rowsLen_matAdd n Pm (transposeM Pm) hP hT)
       (rowsLen_matAdd n _ _ (rowsLen_matAdd n _ _ hI hSwT)
         (rowsLen_matAdd n _ _ hSwP hI))
@@ -6393,20 +5394,20 @@ private theorem ident_of (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
   · show matOneValue (matAdd Pm (transposeM Pm)) (matAdd (transposeM Pm) Pm)
     rw [matAdd_comm Pm (transposeM Pm)]
     exact matOne_refl _
-  rw [matAdd_comm (matSwap Pm) (inertia.idMat n),
-    matAdd_shuffle (inertia.idMat n) (matSwap (transposeM Pm))
-      (inertia.idMat n) (matSwap Pm),
-    matAdd_assoc (matAdd (inertia.idMat n) (inertia.idMat n))
+  rw [matAdd_comm (matSwap Pm) (elim.idMat n),
+    matAdd_shuffle (elim.idMat n) (matSwap (transposeM Pm))
+      (elim.idMat n) (matSwap Pm),
+    matAdd_assoc (matAdd (elim.idMat n) (elim.idMat n))
       (matAdd (matSwap (transposeM Pm)) (matSwap Pm))
       (matAdd (transposeM Pm) Pm),
     matAdd_shuffle (matSwap (transposeM Pm)) (matSwap Pm)
       (transposeM Pm) Pm,
-    matAdd_comm (matAdd (inertia.idMat n) (inertia.idMat n))
+    matAdd_comm (matAdd (elim.idMat n) (elim.idMat n))
       (matAdd (matAdd (matSwap (transposeM Pm)) (transposeM Pm))
         (matAdd (matSwap Pm) Pm)),
     matAdd_assoc (matAdd (matSwap (transposeM Pm)) (transposeM Pm))
       (matAdd (matSwap Pm) Pm)
-      (matAdd (inertia.idMat n) (inertia.idMat n))]
+      (matAdd (elim.idMat n) (elim.idMat n))]
   refine matOne_trans
     (matAdd_nullL (matAdd (matSwap (transposeM Pm)) (transposeM Pm)) _
       (matNull_swap_add (matOne_refl (transposeM Pm)))
@@ -6425,7 +5426,7 @@ private theorem ident_of (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
           length_matAdd _ _ (hIl.trans hIl.symm), hSwPl, hIl])
       (rowsLen_matAdd n _ _ hSwP hP)
       (rowsLen_matAdd n _ _ hI hI)) ?_
-  exact matAdd_double (inertia.idMat n)
+  exact matAdd_double (elim.idMat n)
 
 /-- The identification at the wrap shift: `D₁ᵀD₁ + S = 2` at the
 datum of `1 + D₁ = T`. -/
@@ -6448,7 +5449,7 @@ matrix recursion matched to `def:poly`'s step for step
 
 /-- A permutation matrix's action reads the vector's entry at the
 witness's own key: the row carries one occupied key. -/
-private theorem matVec_permAt (n : Nat) (t s : Nat → Nat) (v : List BPair)
+theorem matVec_permAt (n : Nat) (t s : Nat → Nat) (v : List BPair)
     (hv : v.length = n)
     (hst : ∀ l, l < n → s (t l) = l)
     (hts : ∀ l, l < n → t (s l) = l)
@@ -6518,7 +5519,7 @@ private theorem wrap_ones (m : Nat) :
       (fun l _ => sShift_tShift m l) (tShift_lt m)⟩
 
 /-- The chord doubles the orbit's own sum at the wrap shift. -/
-private theorem chord_ones (m : Nat) :
+theorem chord_ones (m : Nat) :
     poly.oneValue
       (matVec (chordOp (permMatAt (2 * m + 1) (tShift m))) (orbitSum m))
       (vecAdd (orbitSum m) (orbitSum m)) := by
@@ -6557,7 +5558,7 @@ theorem unitFiber_wrap (m : Nat) :
   · -- the pair `(S : 2)`'s datum reads the sum at the unit family
     have hI : poly.oneValue
         (matVec (inertia.matScaleB (BPair.ofNat 2)
-          (inertia.idMat (2 * m + 1))) (orbitSum m))
+          (elim.idMat (2 * m + 1))) (orbitSum m))
         (vecAdd (orbitSum m) (orbitSum m)) :=
       poly.oneValue_trans
         (inertia.scaleId_act (BPair.ofNat 2) (2 * m + 1) (orbitSum m) hlen)
@@ -6574,16 +5575,16 @@ theorem unitFiber_wrap (m : Nat) :
                   exact Nat.succ_le_succ (Nat.zero_le _))]),
         length_permMatAt]
     have hlenI : (inertia.matScaleB (BPair.ofNat 2)
-        (inertia.idMat (2 * m + 1))).length = 2 * m + 1 :=
-      (inertia.length_scaleB (BPair.ofNat 2) (inertia.idMat (2 * m + 1))).trans
-        (inertia.idMat_len (2 * m + 1))
+        (elim.idMat (2 * m + 1))).length = 2 * m + 1 :=
+      (inertia.length_scaleB (BPair.ofNat 2) (elim.idMat (2 * m + 1))).trans
+        (elim.length_idMat (2 * m + 1))
     have hker : poly.unitTail
         (matVec (unitDatum (permMatAt (2 * m + 1) (tShift m)) (2 * m + 1))
           (orbitSum m)) := by
       show poly.unitTail
         (matVec (matAdd (chordOp (permMatAt (2 * m + 1) (tShift m)))
           (matSwap (inertia.matScaleB (BPair.ofNat 2)
-            (inertia.idMat (2 * m + 1))))) (orbitSum m))
+            (elim.idMat (2 * m + 1))))) (orbitSum m))
       refine poly.oneValue_unitTail
         (matVec_add _ _ (orbitSum m)
           (rowsLen_cast hlen.symm
@@ -6593,7 +5594,7 @@ theorem unitFiber_wrap (m : Nat) :
           (rowsLen_cast hlen.symm
             (rowsLen_mapRows BPair.swap _ (2 * m + 1)
               (rowsLen_mapRows _ _ (2 * m + 1)
-                (inertia.idMat_rows (2 * m + 1)))))) ?_
+                (elim.rowsLen_idMat (2 * m + 1)))))) ?_
       rw [matVec_swapM, elim.vecAdd_comm]
       exact elim.null_swap_add _ _
         (poly.oneValue_symm
@@ -6635,16 +5636,16 @@ private theorem evalM_shapeOf (n : Nat) (S : Mat) (hn : 0 < n)
     (hS : 0 < S.length) : ∀ q : poly.Poly,
     rowsLen n (polyEvalM q S n) ∧ 0 < (polyEvalM q S n).length
   | [] => by
-    refine ⟨rowsLen_mapRows _ (inertia.idMat n) n (inertia.idMat_rows n), ?_⟩
-    show 0 < (inertia.matScaleB BPair.unit (inertia.idMat n)).length
-    rw [inertia.length_scaleB, inertia.idMat_len]
+    refine ⟨rowsLen_mapRows _ (elim.idMat n) n (elim.rowsLen_idMat n), ?_⟩
+    show 0 < (inertia.matScaleB BPair.unit (elim.idMat n)).length
+    rw [inertia.length_scaleB, elim.length_idMat]
     exact hn
   | c :: t => by
     have ih := evalM_shapeOf n S hn hS t
-    have hIr : rowsLen n (inertia.matScaleB c (inertia.idMat n)) :=
-      rowsLen_mapRows _ (inertia.idMat n) n (inertia.idMat_rows n)
-    have hIl : 0 < (inertia.matScaleB c (inertia.idMat n)).length := by
-      rw [inertia.length_scaleB, inertia.idMat_len]
+    have hIr : rowsLen n (inertia.matScaleB c (elim.idMat n)) :=
+      rowsLen_mapRows _ (elim.idMat n) n (elim.rowsLen_idMat n)
+    have hIl : 0 < (inertia.matScaleB c (elim.idMat n)).length := by
+      rw [inertia.length_scaleB, elim.length_idMat]
       exact hn
     have hMr : rowsLen n (matMul S (polyEvalM t S n)) :=
       rowsLen_matMul_of S (polyEvalM t S n) (fun _ => ih.2) ih.1
@@ -6702,9 +5703,9 @@ private theorem evalM_fixed_go (n : Nat) (S : Mat) (v : List BPair)
   | c :: t => by
     have ih := evalM_fixed_go n S v hv hn hS hfix hvd t
     have hP := evalM_shapeOf n S hn hS t
-    have hIr : rowsLen v.length (inertia.matScaleB c (inertia.idMat n)) :=
+    have hIr : rowsLen v.length (inertia.matScaleB c (elim.idMat n)) :=
       rowsLen_cast hv.symm
-        (rowsLen_mapRows _ (inertia.idMat n) n (inertia.idMat_rows n))
+        (rowsLen_mapRows _ (elim.idMat n) n (elim.rowsLen_idMat n))
     have hMr : rowsLen v.length (matMul S (polyEvalM t S n)) :=
       rowsLen_cast hv.symm
         (rowsLen_matMul_of S (polyEvalM t S n) (fun _ => hP.2) hP.1)
@@ -6719,11 +5720,11 @@ private theorem evalM_fixed_go (n : Nat) (S : Mat) (v : List BPair)
       rw [ground.map_drop (fun x => a * x) v S.length]
       exact unitTail_vecScale a (v.drop S.length) hvd
     show poly.oneValue
-      (matVec (matAdd (inertia.matScaleB c (inertia.idMat n))
+      (matVec (matAdd (inertia.matScaleB c (elim.idMat n))
         (matMul S (polyEvalM t S n))) v)
       (vecScale (c + BPair.ofNat 2 * poly.eval t (BPair.ofNat 2)) v)
     refine poly.oneValue_trans
-      (matVec_add (inertia.matScaleB c (inertia.idMat n))
+      (matVec_add (inertia.matScaleB c (elim.idMat n))
         (matMul S (polyEvalM t S n)) v hIr hMr) ?_
     have hsecond : poly.oneValue
         (matVec (matMul S (polyEvalM t S n)) v)
@@ -6741,7 +5742,7 @@ private theorem evalM_fixed_go (n : Nat) (S : Mat) (v : List BPair)
       exact poly.oneValue_refl _
     refine poly.oneValue_trans
       (vecAdd_ovTrunc _ _ _ _ (inertia.scaleId_act c n v hv) hsecond
-        (by rw [matVec_length, inertia.length_scaleB, inertia.idMat_len,
+        (by rw [matVec_length, inertia.length_scaleB, elim.length_idMat,
             length_vecScale, hv])
         (by rw [length_vecScale, length_vecScale])
         (hdrop c) (hdrop (poly.eval t (BPair.ofNat 2) * BPair.ofNat 2))) ?_
@@ -6752,7 +5753,7 @@ private theorem evalM_fixed_go (n : Nat) (S : Mat) (v : List BPair)
           (BPair.mul_comm (poly.eval t (BPair.ofNat 2)) (BPair.ofNat 2)))) v
 
 /-- The wrap shift's chord sits at the side. -/
-private theorem chordWrap_shape (m : Nat) :
+theorem chordWrap_shape (m : Nat) :
     rowsLen (2 * m + 1) (chordOp (permMatAt (2 * m + 1) (tShift m)))
     ∧ (chordOp (permMatAt (2 * m + 1) (tShift m))).length = 2 * m + 1 := by
   have hP : rowsLen (2 * m + 1) (permMatAt (2 * m + 1) (tShift m)) :=
@@ -6817,58 +5818,58 @@ theorem unitFiber_span (m : Nat) (v : List BPair)
     (chordWrap_shape m).1
   have hSl : (chordOp (permMatAt (2 * m + 1) (tShift m))).length = 2 * m + 1 :=
     (chordWrap_shape m).2
-  have hI : rowsLen (2 * m + 1) (inertia.idMat (2 * m + 1)) :=
-    inertia.idMat_rows _
-  have hIl : (inertia.idMat (2 * m + 1)).length = 2 * m + 1 :=
-    inertia.idMat_len _
+  have hI : rowsLen (2 * m + 1) (elim.idMat (2 * m + 1)) :=
+    elim.rowsLen_idMat _
+  have hIl : (elim.idMat (2 * m + 1)).length = 2 * m + 1 :=
+    elim.length_idMat _
   have h2I : rowsLen (2 * m + 1)
-      (inertia.matScaleB (BPair.ofNat 2) (inertia.idMat (2 * m + 1))) :=
-    rowsLen_mapRows _ (inertia.idMat (2 * m + 1)) (2 * m + 1) hI
+      (inertia.matScaleB (BPair.ofNat 2) (elim.idMat (2 * m + 1))) :=
+    rowsLen_mapRows _ (elim.idMat (2 * m + 1)) (2 * m + 1) hI
   have h2Il : (inertia.matScaleB (BPair.ofNat 2)
-      (inertia.idMat (2 * m + 1))).length = 2 * m + 1 :=
+      (elim.idMat (2 * m + 1))).length = 2 * m + 1 :=
     (inertia.length_scaleB _ _).trans hIl
   have hD : rowsLen (2 * m + 1)
       (inertia.siteDatum (permMatAt (2 * m + 1) (tShift m))
-        (inertia.idMat (2 * m + 1))) :=
+        (elim.idMat (2 * m + 1))) :=
     rowsLen_matAdd (2 * m + 1) _ _ hP
-      (rowsLen_mapRows BPair.swap (inertia.idMat (2 * m + 1)) _ hI)
+      (rowsLen_mapRows BPair.swap (elim.idMat (2 * m + 1)) _ hI)
   have hDl : (inertia.siteDatum (permMatAt (2 * m + 1) (tShift m))
-      (inertia.idMat (2 * m + 1))).length = 2 * m + 1 :=
+      (elim.idMat (2 * m + 1))).length = 2 * m + 1 :=
     (length_matAdd _ _
-      (hPl.trans ((ground.length_map _ (inertia.idMat (2 * m + 1))).trans
+      (hPl.trans ((ground.length_map _ (elim.idMat (2 * m + 1))).trans
         hIl).symm)).trans hPl
   -- the chord doubles on the kernel member
   have hSv : poly.oneValue
       (matVec (chordOp (permMatAt (2 * m + 1) (tShift m))) v)
       (matVec (inertia.matScaleB (BPair.ofNat 2)
-        (inertia.idMat (2 * m + 1))) v) :=
+        (elim.idMat (2 * m + 1))) v) :=
     siteKer_read _ _ v (rowsLen_cast hv.symm hS) (rowsLen_cast hv.symm h2I)
       (by rw [matVec_length, matVec_length, hSl, h2Il]) hk
   -- the datum's own square reads the unit family
   have hprod : poly.unitTail
       (matVec (matMul (transposeM (inertia.siteDatum
-        (permMatAt (2 * m + 1) (tShift m)) (inertia.idMat (2 * m + 1))))
+        (permMatAt (2 * m + 1) (tShift m)) (elim.idMat (2 * m + 1))))
         (inertia.siteDatum (permMatAt (2 * m + 1) (tShift m))
-          (inertia.idMat (2 * m + 1)))) v) := by
+          (elim.idMat (2 * m + 1)))) v) := by
     have hDD : rowsLen (2 * m + 1)
         (matMul (transposeM (inertia.siteDatum
-          (permMatAt (2 * m + 1) (tShift m)) (inertia.idMat (2 * m + 1))))
+          (permMatAt (2 * m + 1) (tShift m)) (elim.idMat (2 * m + 1))))
           (inertia.siteDatum (permMatAt (2 * m + 1) (tShift m))
-            (inertia.idMat (2 * m + 1)))) :=
+            (elim.idMat (2 * m + 1)))) :=
       rowsLen_cast (transposeLen _ hD hDl) (rowsLen_matMul _ _)
     have hDDl : (matMul (transposeM (inertia.siteDatum
-        (permMatAt (2 * m + 1) (tShift m)) (inertia.idMat (2 * m + 1))))
+        (permMatAt (2 * m + 1) (tShift m)) (elim.idMat (2 * m + 1))))
         (inertia.siteDatum (permMatAt (2 * m + 1) (tShift m))
-          (inertia.idMat (2 * m + 1)))).length = 2 * m + 1 :=
+          (elim.idMat (2 * m + 1)))).length = 2 * m + 1 :=
       (length_matMul _ _).trans (transposeLen _ hD hDl)
     have hjoin : poly.oneValue
         (vecAdd (matVec (matMul (transposeM (inertia.siteDatum
-            (permMatAt (2 * m + 1) (tShift m)) (inertia.idMat (2 * m + 1))))
+            (permMatAt (2 * m + 1) (tShift m)) (elim.idMat (2 * m + 1))))
             (inertia.siteDatum (permMatAt (2 * m + 1) (tShift m))
-              (inertia.idMat (2 * m + 1)))) v)
+              (elim.idMat (2 * m + 1)))) v)
           (matVec (chordOp (permMatAt (2 * m + 1) (tShift m))) v))
         (matVec (inertia.matScaleB (BPair.ofNat 2)
-          (inertia.idMat (2 * m + 1))) v) :=
+          (elim.idMat (2 * m + 1))) v) :=
       poly.oneValue_trans
         (poly.oneValue_symm
           (matVec_add _ _ v (rowsLen_cast hv.symm hDD)
@@ -6893,7 +5894,7 @@ theorem unitFiber_span (m : Nat) (v : List BPair)
     refine poly.oneValue_trans
       (siteKer_read _ _ v (rowsLen_cast hv.symm hP) (rowsLen_cast hv.symm hI)
         (by rw [matVec_length, matVec_length, hPl, hIl]) ?_)
-      (inertia.matVec_idMat (2 * m + 1) v hv)
+      (elim.matVec_idMat (2 * m + 1) v hv)
     refine dotP_self_null _ ?_
     refine BPair.oneValue_trans
       (dotP_matVec_transpose (2 * m + 1) _ v _ hD hv (matVec_length _ v)) ?_
@@ -6974,7 +5975,7 @@ theorem polyEval_fixed (n : Nat) (q : poly.Poly) (S : Mat)
       | nil => trivial
       | cons c t =>
         show poly.oneValue
-          (matVec (matAdd (inertia.matScaleB c (inertia.idMat 0))
+          (matVec (matAdd (inertia.matScaleB c (elim.idMat 0))
             (matMul S (polyEvalM t S 0))) []) []
         trivial
   | succ n' =>
@@ -6997,11 +5998,11 @@ theorem polyEval_fixed (n : Nat) (q : poly.Poly) (S : Mat)
             (unitTail_vecScale BPair.unit v hvu))
       | cons c t =>
         show poly.oneValue
-          (matVec (matAdd (inertia.matScaleB c (inertia.idMat (n' + 1)))
+          (matVec (matAdd (inertia.matScaleB c (elim.idMat (n' + 1)))
             (matMul [] (polyEvalM t [] (n' + 1)))) v)
           (vecScale (poly.eval (c :: t) (BPair.ofNat 2)) v)
         rw [show matMul ([] : Mat) (polyEvalM t [] (n' + 1)) = [] from rfl,
-          matAdd_nil_right (inertia.matScaleB c (inertia.idMat (n' + 1)))]
+          matAdd_nil_right (inertia.matScaleB c (elim.idMat (n' + 1)))]
         exact unitTail_vecScale _ v hvu
     | succ k =>
       refine evalM_fixed_go (n' + 1) S v hv (Nat.succ_le_succ (Nat.zero_le _))
@@ -7032,30 +6033,30 @@ private theorem scaleDot_scaleId (c : BPair) (n : Nat) (u : List poly.Poly)
     (hu : u.length = n) (i : Nat) (hi : i < n) :
     poly.oneValue
       (poly.scaleDot (ground.getAt ([] : List BPair)
-        (inertia.matScaleB c (inertia.idMat n)) i) u)
+        (inertia.matScaleB c (elim.idMat n)) i) u)
       (poly.scaleP c (ground.getAt ([] : poly.Poly) u i)) := by
-  have hIl : (inertia.idMat n).length = n := inertia.idMat_len n
-  have hiI : i < (inertia.idMat n).length := by rw [hIl]; exact hi
-  have hrowI : (ground.getAt ([] : List BPair) (inertia.idMat n) i).length = n :=
-    rowsLen_getAt (inertia.idMat n) i (inertia.idMat_rows n) hiI
+  have hIl : (elim.idMat n).length = n := elim.length_idMat n
+  have hiI : i < (elim.idMat n).length := by rw [hIl]; exact hi
+  have hrowI : (ground.getAt ([] : List BPair) (elim.idMat n) i).length = n :=
+    rowsLen_getAt (elim.idMat n) i (elim.rowsLen_idMat n) hiI
   have hgetRow : ground.getAt ([] : List BPair)
-      (inertia.matScaleB c (inertia.idMat n)) i
-      = (ground.getAt ([] : List BPair) (inertia.idMat n) i).map
+      (inertia.matScaleB c (elim.idMat n)) i
+      = (ground.getAt ([] : List BPair) (elim.idMat n) i).map
         (fun x => (c * x).norm) :=
     ground.getAt_map ([] : List BPair) ([] : List BPair)
-      (poly.scaleP c) (inertia.idMat n) i hiI
+      (poly.scaleP c) (elim.idMat n) i hiI
   have hrow : (ground.getAt ([] : List BPair)
-      (inertia.matScaleB c (inertia.idMat n)) i).length = n := by
+      (inertia.matScaleB c (elim.idMat n)) i).length = n := by
     rw [hgetRow, ground.length_map, hrowI]
   have hent : ∀ k, k < n → ground.getAt BPair.unit
       (ground.getAt ([] : List BPair)
-        (inertia.matScaleB c (inertia.idMat n)) i) k
+        (inertia.matScaleB c (elim.idMat n)) i) k
       = (c * (if k = i then BPair.ofNat 1 else BPair.unit)).norm := by
     intro k hk
     rw [hgetRow, ground.getAt_map BPair.unit BPair.unit
       (fun x => (c * x).norm) (ground.getAt ([] : List BPair)
-        (inertia.idMat n) i) k (by rw [hrowI]; exact hk),
-      inertia.getAt_idMat n i k hi hk]
+        (elim.idMat n) i) k (by rw [hrowI]; exact hk),
+      elim.getAt_idMat n i k hi hk]
   refine scaleDot_hotAt c _ u i (by rw [hrow, hu]) ?_ ?_
   · rw [hent i hi, if_pos rfl]
     exact BPair.oneValue_trans (BPair.norm_oneValue _) (BPair.mul_ofNat_one c)
@@ -7157,11 +6158,11 @@ private theorem evalCol_entry (m : Nat) : ∀ (q : poly.Poly) (i : Nat),
       (poly.mul q (ground.getAt ([] : poly.Poly) (deckColumn m) i))
   | [], i, hi => by
     have hMl : (inertia.matScaleB BPair.unit
-        (inertia.idMat (2 * m + 1))).length = 2 * m + 1 :=
-      (inertia.length_scaleB BPair.unit (inertia.idMat (2 * m + 1))).trans
-        (inertia.idMat_len (2 * m + 1))
+        (elim.idMat (2 * m + 1))).length = 2 * m + 1 :=
+      (inertia.length_scaleB BPair.unit (elim.idMat (2 * m + 1))).trans
+        (elim.length_idMat (2 * m + 1))
     show ∃ c, deck.pCong m c (ground.getAt ([] : poly.Poly)
-      (pmatVec (inertia.matScaleB BPair.unit (inertia.idMat (2 * m + 1)))
+      (pmatVec (inertia.matScaleB BPair.unit (elim.idMat (2 * m + 1)))
         (deckColumn m)) i) []
     rw [pmatVec_getAt _ (deckColumn m) i (by rw [hMl]; exact hi)]
     exact deck.pCong_of m (poly.unitTail_oneValue
@@ -7177,13 +6178,13 @@ private theorem evalCol_entry (m : Nat) : ∀ (q : poly.Poly) (i : Nat),
       (chordOp (permMatAt (2 * m + 1) (tShift m))) hSr hSl hn t
     have hu : (deckColumn m).length = 2 * m + 1 := deckColumn_len m
     have hAr : rowsLen (2 * m + 1)
-        (inertia.matScaleB c (inertia.idMat (2 * m + 1))) :=
-      inertia.rowsLen_scaleB c (2 * m + 1) (inertia.idMat (2 * m + 1))
-        (inertia.idMat_rows (2 * m + 1))
-    have hAl : (inertia.matScaleB c (inertia.idMat (2 * m + 1))).length
+        (inertia.matScaleB c (elim.idMat (2 * m + 1))) :=
+      inertia.rowsLen_scaleB c (2 * m + 1) (elim.idMat (2 * m + 1))
+        (elim.rowsLen_idMat (2 * m + 1))
+    have hAl : (inertia.matScaleB c (elim.idMat (2 * m + 1))).length
         = 2 * m + 1 :=
-      (inertia.length_scaleB c (inertia.idMat (2 * m + 1))).trans
-        (inertia.idMat_len (2 * m + 1))
+      (inertia.length_scaleB c (elim.idMat (2 * m + 1))).trans
+        (elim.length_idMat (2 * m + 1))
     have hBr : rowsLen (2 * m + 1)
         (matMul (chordOp (permMatAt (2 * m + 1) (tShift m)))
           (polyEvalM t (chordOp (permMatAt (2 * m + 1) (tShift m)))
@@ -7193,7 +6194,7 @@ private theorem evalCol_entry (m : Nat) : ∀ (q : poly.Poly) (i : Nat),
         (polyEvalM t (chordOp (permMatAt (2 * m + 1) (tShift m)))
           (2 * m + 1))).length = 2 * m + 1 :=
       (length_matMul _ _).trans hSl
-    have hjl : (matAdd (inertia.matScaleB c (inertia.idMat (2 * m + 1)))
+    have hjl : (matAdd (inertia.matScaleB c (elim.idMat (2 * m + 1)))
         (matMul (chordOp (permMatAt (2 * m + 1) (tShift m)))
           (polyEvalM t (chordOp (permMatAt (2 * m + 1) (tShift m)))
             (2 * m + 1)))).length = 2 * m + 1 :=
@@ -7204,7 +6205,7 @@ private theorem evalCol_entry (m : Nat) : ∀ (q : poly.Poly) (i : Nat),
     -- the two members of the Horner step
     have hstep1 : poly.oneValue
         (poly.scaleDot (ground.getAt ([] : List BPair)
-          (inertia.matScaleB c (inertia.idMat (2 * m + 1))) i) (deckColumn m))
+          (inertia.matScaleB c (elim.idMat (2 * m + 1))) i) (deckColumn m))
         (poly.scaleP c (ground.getAt ([] : poly.Poly) (deckColumn m) i)) :=
       scaleDot_scaleId c (2 * m + 1) (deckColumn m) hu i hi
     have hstep2 : ∃ d, deck.pCong m d
@@ -7251,7 +6252,7 @@ private theorem evalCol_entry (m : Nat) : ∀ (q : poly.Poly) (i : Nat),
             (poly.mul t
               (ground.getAt ([] : poly.Poly) (deckColumn m) i))))
     show ∃ d, deck.pCong m d (ground.getAt ([] : poly.Poly)
-      (pmatVec (matAdd (inertia.matScaleB c (inertia.idMat (2 * m + 1)))
+      (pmatVec (matAdd (inertia.matScaleB c (elim.idMat (2 * m + 1)))
         (matMul (chordOp (permMatAt (2 * m + 1) (tShift m)))
           (polyEvalM t (chordOp (permMatAt (2 * m + 1) (tShift m)))
             (2 * m + 1)))) (deckColumn m)) i)
@@ -7385,8 +6386,8 @@ private theorem band_chord_comm (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
     rowsLen_mapRows BPair.swap _ n hQ
   have hswQQ : rowsLen n (matSwap (matMul (transposeM Pm) (transposeM Pm))) :=
     rowsLen_mapRows BPair.swap _ n hQQ
-  have hI : rowsLen n (inertia.idMat n) := inertia.idMat_rows n
-  have hIsw : rowsLen n (matSwap (inertia.idMat n)) :=
+  have hI : rowsLen n (elim.idMat n) := elim.rowsLen_idMat n
+  have hIsw : rowsLen n (matSwap (elim.idMat n)) :=
     rowsLen_mapRows BPair.swap _ n hI
   have hTA : matOneValue (matMul Pm (bandDatum Pm))
       (matAdd (matMul Pm Pm) (matSwap (matMul Pm (transposeM Pm)))) := by
@@ -7443,8 +6444,8 @@ private theorem band_chord_comm (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
       (matAdd (matAdd (matMul Pm Pm) (matMul Pm (transposeM Pm)))
         (matAdd (matSwap (matMul (transposeM Pm) Pm))
           (matSwap (matMul (transposeM Pm) (transposeM Pm)))))
-      (matAdd (matAdd (matMul Pm Pm) (inertia.idMat n))
-        (matAdd (matSwap (inertia.idMat n))
+      (matAdd (matAdd (matMul Pm Pm) (elim.idMat n))
+        (matAdd (matSwap (elim.idMat n))
           (matSwap (matMul (transposeM Pm) (transposeM Pm))))) :=
     matAdd_cong2 n _ _ _ _
       (rowsLen_matAdd n _ _ hTT hPP) (rowsLen_matAdd n _ _ hswQ hswQQ)
@@ -7456,8 +6457,8 @@ private theorem band_chord_comm (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
       (matAdd (matAdd (matMul Pm Pm) (matSwap (matMul Pm (transposeM Pm))))
         (matAdd (matMul (transposeM Pm) Pm)
           (matSwap (matMul (transposeM Pm) (transposeM Pm)))))
-      (matAdd (matAdd (matMul Pm Pm) (matSwap (inertia.idMat n)))
-        (matAdd (inertia.idMat n)
+      (matAdd (matAdd (matMul Pm Pm) (matSwap (elim.idMat n)))
+        (matAdd (elim.idMat n)
           (matSwap (matMul (transposeM Pm) (transposeM Pm))))) :=
     matAdd_cong2 n _ _ _ _
       (rowsLen_matAdd n _ _ hTT hswP) (rowsLen_matAdd n _ _ hQ hswQQ)
@@ -7466,8 +6467,8 @@ private theorem band_chord_comm (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
         (matSwap_congr horth.1))
       (matAdd_cong2 n _ _ _ _ hQ hswQQ hI hswQQ horth.2 (matOne_refl _))
   refine matOne_trans (matOne_trans hAS hAS4) ?_
-  rw [matAdd_shuffle (matMul Pm Pm) (inertia.idMat n)
-    (matSwap (inertia.idMat n))
+  rw [matAdd_shuffle (matMul Pm Pm) (elim.idMat n)
+    (matSwap (elim.idMat n))
     (matSwap (matMul (transposeM Pm) (transposeM Pm)))]
   exact matOne_symm (matOne_trans hSA hSA4)
 
@@ -7495,14 +6496,14 @@ private theorem evalM_comm (n : Nat) (M X : Mat) (hMl : M.length = n)
     have hright : matOneValue (matMul (polyEvalM ([] : poly.Poly) M n) X)
         (elim.nullMat n n) := by
       show matOneValue
-        (matMul (inertia.matScaleB BPair.unit (inertia.idMat n)) X)
+        (matMul (inertia.matScaleB BPair.unit (elim.idMat n)) X)
         (elim.nullMat n n)
       refine matOne_trans
-        (inertia.matMul_scaleL BPair.unit (inertia.idMat n) X) ?_
-      have h := scaleB_unit_null (n := n) (matMul (inertia.idMat n) X)
-        (rowsLen_matMul_of (inertia.idMat n) X
+        (inertia.matMul_scaleL BPair.unit (elim.idMat n) X) ?_
+      have h := scaleB_unit_null (n := n) (matMul (elim.idMat n) X)
+        (rowsLen_matMul_of (elim.idMat n) X
            (fun _ => (by rw [hXl]; exact hn)) hXr)
-      rw [length_matMul (inertia.idMat n) X, inertia.idMat_len n] at h
+      rw [length_matMul (elim.idMat n) X, elim.length_idMat n] at h
       exact h
     exact matOne_trans hleft (matOne_symm hright)
   | c :: p => by
@@ -7510,28 +6511,28 @@ private theorem evalM_comm (n : Nat) (M X : Mat) (hMl : M.length = n)
     have hep := evalM_shape n M hMr hMl hn p
     have hXt : rowsLen n (transposeM X) :=
       rowsLen_cast hXl (rowsLen_transposeM X)
-    have hsc : rowsLen n (inertia.matScaleB c (inertia.idMat n)) :=
-      inertia.rowsLen_scaleB c n (inertia.idMat n) (inertia.idMat_rows n)
-    have hscl : (inertia.matScaleB c (inertia.idMat n)).length = n :=
-      (inertia.length_scaleB c (inertia.idMat n)).trans (inertia.idMat_len n)
+    have hsc : rowsLen n (inertia.matScaleB c (elim.idMat n)) :=
+      inertia.rowsLen_scaleB c n (elim.idMat n) (elim.rowsLen_idMat n)
+    have hscl : (inertia.matScaleB c (elim.idMat n)).length = n :=
+      (inertia.length_scaleB c (elim.idMat n)).trans (elim.length_idMat n)
     have hprod : rowsLen n (matMul M (polyEvalM p M n)) :=
       rowsLen_matMul_of M (polyEvalM p M n)
         (fun _ => (by rw [hep.2]; exact hn)) hep.1
     have hprodl : (matMul M (polyEvalM p M n)).length = n :=
       (length_matMul M (polyEvalM p M n)).trans hMl
     have hconst : matOneValue
-        (matMul X (inertia.matScaleB c (inertia.idMat n)))
-        (matMul (inertia.matScaleB c (inertia.idMat n)) X) := by
+        (matMul X (inertia.matScaleB c (elim.idMat n)))
+        (matMul (inertia.matScaleB c (elim.idMat n)) X) := by
       refine matOne_trans
-        (inertia.matMul_scaleR c n X (inertia.idMat n)
-          (inertia.idMat_rows n)) ?_
+        (inertia.matMul_scaleR c n X (elim.idMat n)
+          (elim.rowsLen_idMat n)) ?_
       refine matOne_trans
         (inertia.matOne_scaleB c
           (inertia.matMul_idR (k := n) n X hXr hXl hn hn)) ?_
       refine matOne_trans
         (matOne_symm (inertia.matOne_scaleB c
           (inertia.idMat_matMul (k := n) n X hXr hXl hn))) ?_
-      exact matOne_symm (inertia.matMul_scaleL c (inertia.idMat n) X)
+      exact matOne_symm (inertia.matMul_scaleL c (elim.idMat n) X)
     have hmul : matOneValue (matMul X (matMul M (polyEvalM p M n)))
         (matMul (matMul M (polyEvalM p M n)) X) := by
       refine matOne_trans
@@ -7554,24 +6555,24 @@ private theorem evalM_comm (n : Nat) (M X : Mat) (hMl : M.length = n)
       exact matOne_symm (matMul_assoc (n := n) (k := n) (s := n) M
         (polyEvalM p M n) X hMr hep.1 hXr hep.2 hXl hn hn)
     show matOneValue
-      (matMul X (matAdd (inertia.matScaleB c (inertia.idMat n))
+      (matMul X (matAdd (inertia.matScaleB c (elim.idMat n))
         (matMul M (polyEvalM p M n))))
-      (matMul (matAdd (inertia.matScaleB c (inertia.idMat n))
+      (matMul (matAdd (inertia.matScaleB c (elim.idMat n))
         (matMul M (polyEvalM p M n))) X)
     refine matOne_trans
-      (matMul_addR (inertia.matScaleB c (inertia.idMat n))
+      (matMul_addR (inertia.matScaleB c (elim.idMat n))
         (matMul M (polyEvalM p M n)) hsc hprod (hscl.trans hprodl.symm)
         (by rw [hscl]; exact hn) X (rowsLen_cast hscl.symm hXr)) ?_
     refine matOne_trans ?_
       (matOne_symm (matMul_addL n X hXt
-        (inertia.matScaleB c (inertia.idMat n))
+        (inertia.matScaleB c (elim.idMat n))
         (matMul M (polyEvalM p M n)) hsc hprod))
     exact matAdd_cong2 n _ _ _ _
-      (rowsLen_matMul_of X (inertia.matScaleB c (inertia.idMat n))
+      (rowsLen_matMul_of X (inertia.matScaleB c (elim.idMat n))
          (fun _ => (by rw [hscl]; exact hn)) hsc)
       (rowsLen_matMul_of X (matMul M (polyEvalM p M n))
          (fun _ => (by rw [hprodl]; exact hn)) hprod)
-      (rowsLen_matMul_of (inertia.matScaleB c (inertia.idMat n)) X
+      (rowsLen_matMul_of (inertia.matScaleB c (elim.idMat n)) X
          (fun _ => (by rw [hXl]; exact hn)) hXr)
       (rowsLen_matMul_of (matMul M (polyEvalM p M n)) X
          (fun _ => (by rw [hXl]; exact hn)) hXr)
@@ -8009,8 +7010,8 @@ private theorem chord_datum_comm (n : Nat) (Pm : Mat)
     rowsLen_mapRows BPair.swap _ n hQQ
   have hswQ : rowsLen n (matSwap (matMul (transposeM Pm) Pm)) :=
     rowsLen_mapRows BPair.swap _ n hQ
-  have hI : rowsLen n (inertia.idMat n) := inertia.idMat_rows n
-  have hswI : rowsLen n (matSwap (inertia.idMat n)) :=
+  have hI : rowsLen n (elim.idMat n) := elim.rowsLen_idMat n
+  have hswI : rowsLen n (matSwap (elim.idMat n)) :=
     rowsLen_mapRows BPair.swap _ n hI
   -- the left product's collection
   have hTA : matOneValue (matMul Pm (bandDatum Pm))
@@ -8030,8 +7031,8 @@ private theorem chord_datum_comm (n : Nat) (Pm : Mat)
     exact h
   have hSA : matOneValue (matMul (chordOp Pm) (bandDatum Pm))
       (matAdd
-        (matAdd (matMul Pm Pm) (matSwap (inertia.idMat n)))
-        (matAdd (inertia.idMat n)
+        (matAdd (matMul Pm Pm) (matSwap (elim.idMat n)))
+        (matAdd (elim.idMat n)
           (matSwap (matMul (transposeM Pm) (transposeM Pm))))) := by
     refine matOne_trans
       (matMul_addL n (bandDatum Pm) hAt Pm (transposeM Pm) hP hTt) ?_
@@ -8061,8 +7062,8 @@ private theorem chord_datum_comm (n : Nat) (Pm : Mat)
     exact h
   have hAS : matOneValue (matMul (bandDatum Pm) (chordOp Pm))
       (matAdd
-        (matAdd (matMul Pm Pm) (matSwap (inertia.idMat n)))
-        (matAdd (inertia.idMat n)
+        (matAdd (matMul Pm Pm) (matSwap (elim.idMat n)))
+        (matAdd (elim.idMat n)
           (matSwap (matMul (transposeM Pm) (transposeM Pm))))) := by
     refine matOne_trans
       (matMul_addR Pm (transposeM Pm) hP hTt (hPl.trans hTtl.symm)
@@ -8096,28 +7097,28 @@ private theorem evalM_datum_comm (n : Nat) (Pm : Mat)
       rowsLen_cast hPl (rowsLen_transposeM Pm)
     have hA : rowsLen n (bandDatum Pm) := (bandDatum_shape n Pm hP hPl).1
     have hAl : (bandDatum Pm).length = n := (bandDatum_shape n Pm hP hPl).2
-    have hIA : rowsLen n (matMul (inertia.idMat n) (bandDatum Pm)) :=
+    have hIA : rowsLen n (matMul (elim.idMat n) (bandDatum Pm)) :=
       rowsLen_cast (transposeLen (bandDatum Pm) hA hAl)
-        (rowsLen_matMul (inertia.idMat n) (bandDatum Pm))
-    have hAI : rowsLen n (matMul (bandDatum Pm) (inertia.idMat n)) :=
-      rowsLen_cast (transposeLen (inertia.idMat n) (inertia.idMat_rows n)
-        (inertia.idMat_len n))
-        (rowsLen_matMul (bandDatum Pm) (inertia.idMat n))
-    have hIAl : (matMul (inertia.idMat n) (bandDatum Pm)).length = n :=
-      (length_matMul _ _).trans (inertia.idMat_len n)
-    have hAIl : (matMul (bandDatum Pm) (inertia.idMat n)).length = n :=
+        (rowsLen_matMul (elim.idMat n) (bandDatum Pm))
+    have hAI : rowsLen n (matMul (bandDatum Pm) (elim.idMat n)) :=
+      rowsLen_cast (transposeLen (elim.idMat n) (elim.rowsLen_idMat n)
+        (elim.length_idMat n))
+        (rowsLen_matMul (bandDatum Pm) (elim.idMat n))
+    have hIAl : (matMul (elim.idMat n) (bandDatum Pm)).length = n :=
+      (length_matMul _ _).trans (elim.length_idMat n)
+    have hAIl : (matMul (bandDatum Pm) (elim.idMat n)).length = n :=
       (length_matMul _ _).trans hAl
     show matOneValue
-      (matMul (inertia.matScaleB BPair.unit (inertia.idMat n))
+      (matMul (inertia.matScaleB BPair.unit (elim.idMat n))
         (bandDatum Pm))
       (matMul (bandDatum Pm)
-        (inertia.matScaleB BPair.unit (inertia.idMat n)))
+        (inertia.matScaleB BPair.unit (elim.idMat n)))
     refine matOne_trans
-      (matOne_trans (inertia.matMul_scaleL BPair.unit (inertia.idMat n)
+      (matOne_trans (inertia.matMul_scaleL BPair.unit (elim.idMat n)
         (bandDatum Pm)) (hIAl ▸ scaleB_unit_null _ hIA)) ?_
     refine matOne_symm (matOne_trans
       (matOne_trans (inertia.matMul_scaleR BPair.unit n (bandDatum Pm)
-        (inertia.idMat n) (inertia.idMat_rows n))
+        (elim.idMat n) (elim.rowsLen_idMat n))
         (hAIl ▸ scaleB_unit_null _ hAI)) ?_)
     exact matOne_refl _
   | c :: t => by
@@ -8137,11 +7138,11 @@ private theorem evalM_datum_comm (n : Nat) (Pm : Mat)
     have hE := evalM_shape n (chordOp Pm) hS hSl hn t
     have hEt : (transposeM (polyEvalM t (chordOp Pm) n)).length = n :=
       transposeLen _ hE.1 hE.2
-    have hscR : rowsLen n (inertia.matScaleB c (inertia.idMat n)) :=
-      inertia.rowsLen_scaleB c n (inertia.idMat n) (inertia.idMat_rows n)
-    have hscL : (inertia.matScaleB c (inertia.idMat n)).length = n :=
-      (inertia.length_scaleB c (inertia.idMat n)).trans
-        (inertia.idMat_len n)
+    have hscR : rowsLen n (inertia.matScaleB c (elim.idMat n)) :=
+      inertia.rowsLen_scaleB c n (elim.idMat n) (elim.rowsLen_idMat n)
+    have hscL : (inertia.matScaleB c (elim.idMat n)).length = n :=
+      (inertia.length_scaleB c (elim.idMat n)).trans
+        (elim.length_idMat n)
     have hSE : rowsLen n (matMul (chordOp Pm) (polyEvalM t (chordOp Pm) n)) :=
       rowsLen_cast hEt (rowsLen_matMul _ _)
     have hSEl : (matMul (chordOp Pm) (polyEvalM t (chordOp Pm) n)).length
@@ -8150,16 +7151,16 @@ private theorem evalM_datum_comm (n : Nat) (Pm : Mat)
         (polyEvalM t (chordOp Pm) n))).length = n :=
       transposeLen _ hSE hSEl
     have hscA : matOneValue
-        (matMul (inertia.matScaleB c (inertia.idMat n)) (bandDatum Pm))
+        (matMul (inertia.matScaleB c (elim.idMat n)) (bandDatum Pm))
         (inertia.matScaleB c (bandDatum Pm)) :=
-      matOne_trans (inertia.matMul_scaleL c (inertia.idMat n) (bandDatum Pm))
+      matOne_trans (inertia.matMul_scaleL c (elim.idMat n) (bandDatum Pm))
         (inertia.matOne_scaleB c
           (inertia.idMat_matMul n (bandDatum Pm) hA hAl hn))
     have hAsc : matOneValue
-        (matMul (bandDatum Pm) (inertia.matScaleB c (inertia.idMat n)))
+        (matMul (bandDatum Pm) (inertia.matScaleB c (elim.idMat n)))
         (inertia.matScaleB c (bandDatum Pm)) :=
       matOne_trans (inertia.matMul_scaleR c n (bandDatum Pm)
-        (inertia.idMat n) (inertia.idMat_rows n))
+        (elim.idMat n) (elim.rowsLen_idMat n))
         (inertia.matOne_scaleB c
           (inertia.matMul_idR n (bandDatum Pm) hA hAl hn hn))
     have hcross : matOneValue
@@ -8186,11 +7187,11 @@ private theorem evalM_datum_comm (n : Nat) (Pm : Mat)
       exact matMul_assoc (bandDatum Pm) (chordOp Pm)
         (polyEvalM t (chordOp Pm) n) hA hS hE.1 hSl hE.2 hn hn
     show matOneValue
-      (matMul (matAdd (inertia.matScaleB c (inertia.idMat n))
+      (matMul (matAdd (inertia.matScaleB c (elim.idMat n))
         (matMul (chordOp Pm) (polyEvalM t (chordOp Pm) n)))
         (bandDatum Pm))
       (matMul (bandDatum Pm)
-        (matAdd (inertia.matScaleB c (inertia.idMat n))
+        (matAdd (inertia.matScaleB c (elim.idMat n))
           (matMul (chordOp Pm) (polyEvalM t (chordOp Pm) n))))
     refine matOne_trans
       (matMul_addL n (bandDatum Pm) hAt _ _ hscR hSE) ?_
@@ -8203,7 +7204,7 @@ private theorem evalM_datum_comm (n : Nat) (Pm : Mat)
         (rowsLen_matMul (bandDatum Pm) _))
       (rowsLen_cast hSEt (rowsLen_matMul (bandDatum Pm) _))
       (rowsLen_cast hAtl
-        (rowsLen_matMul (inertia.matScaleB c (inertia.idMat n)) _))
+        (rowsLen_matMul (inertia.matScaleB c (elim.idMat n)) _))
       (rowsLen_cast hAtl (rowsLen_matMul _ (bandDatum Pm))) ?_ ?_
     · exact matOne_trans hAsc (matOne_symm hscA)
     · exact matOne_symm hcross
@@ -9145,13 +8146,13 @@ private theorem imageKill (m : Nat) (cs : List BPair)
         (elim.matVec_matMul _ _ (2 * m + 1) hTtr w hwl)) ?_
     refine poly.oneValue_trans
       (elim.matVec_matOne _ _ w (orth_wrap m).1) ?_
-    exact inertia.matVec_idMat (2 * m + 1) w hwl
+    exact elim.matVec_idMat (2 * m + 1) w hwl
   have h3 : ∀ k : Nat, poly.oneValue
       (matVec (inertia.matPow (permMatAt (2 * m + 1) (tShift m)) (2 * m + 1)
         (2 * k)) w) w := by
     intro k
     induction k with
-    | zero => exact inertia.matVec_idMat (2 * m + 1) w hwl
+    | zero => exact elim.matVec_idMat (2 * m + 1) w hwl
     | succ k ih =>
       have hsm := matPow_shape (2 * m + 1) _ hTl (2 * k)
       have hsm1 := matPow_shape (2 * m + 1) _ hTl (2 * k + 1)
@@ -9186,9 +8187,9 @@ private theorem imageKill (m : Nat) (cs : List BPair)
       refine matOne_trans
         (matMul_congrR (n := 2 * m + 1) (k := 2 * m + 1) _ _ _
           (matPow_shape (2 * m + 1) _ hTl (2 * m + 1)).1
-          (inertia.idMat_rows _)
+          (elim.rowsLen_idMat _)
           (matPow_shape (2 * m + 1) _ hTl (2 * m + 1)).2
-          (inertia.idMat_len _) hn hcyc) ?_
+          (elim.length_idMat _) hn hcyc) ?_
       exact inertia.matMul_idR (2 * m + 1) _ hTr hTl hn hn
     refine poly.oneValue_trans
       (poly.oneValue_symm (elim.matVec_matOne _ _ w hTP)) ?_
@@ -9207,18 +8208,18 @@ private theorem imageKill (m : Nat) (cs : List BPair)
         ((matVec_length _ _).trans (hTtl.trans hwl.symm))
     have hscl : poly.oneValue
         (matVec (inertia.matScaleB (BPair.ofNat 2)
-          (inertia.idMat (2 * m + 1))) w)
+          (elim.idMat (2 * m + 1))) w)
         (vecAdd w w) :=
       poly.oneValue_trans
         (inertia.scaleId_act (BPair.ofNat 2) (2 * m + 1) w hwl)
         (vecScale_two w)
     have hscr : rowsLen (2 * m + 1)
         (inertia.matScaleB (BPair.ofNat 2)
-          (inertia.idMat (2 * m + 1))) :=
-      inertia.rowsLen_scaleB _ _ _ (inertia.idMat_rows _)
+          (elim.idMat (2 * m + 1))) :=
+      inertia.rowsLen_scaleB _ _ _ (elim.rowsLen_idMat _)
     have hsw : rowsLen (2 * m + 1)
         (matSwap (inertia.matScaleB (BPair.ofNat 2)
-          (inertia.idMat (2 * m + 1)))) :=
+          (elim.idMat (2 * m + 1)))) :=
       rowsLen_mapRows _ _ _ hscr
     have hS : rowsLen (2 * m + 1)
         (chordOp (permMatAt (2 * m + 1) (tShift m))) :=
@@ -9226,7 +8227,7 @@ private theorem imageKill (m : Nat) (cs : List BPair)
     show poly.unitTail (matVec
       (matAdd (chordOp (permMatAt (2 * m + 1) (tShift m)))
         (matSwap (inertia.matScaleB (BPair.ofNat 2)
-          (inertia.idMat (2 * m + 1))))) w)
+          (elim.idMat (2 * m + 1))))) w)
     refine poly.oneValue_unitTail
       (elim.matVec_add _ _ w (hwl ▸ hS) (hwl ▸ hsw)) ?_
     rw [matVec_swapM]
@@ -9234,11 +8235,11 @@ private theorem imageKill (m : Nat) (cs : List BPair)
         w).length = 2 * m + 1 :=
       (matVec_length _ _).trans (chordWrap_shape m).2
     have hvl2 : (matVec (inertia.matScaleB (BPair.ofNat 2)
-        (inertia.idMat (2 * m + 1))) w).length = 2 * m + 1 :=
+        (elim.idMat (2 * m + 1))) w).length = 2 * m + 1 :=
       (matVec_length _ _).trans
-        ((inertia.length_scaleB _ _).trans (inertia.idMat_len _))
+        ((inertia.length_scaleB _ _).trans (elim.length_idMat _))
     have hswl2 : ((matVec (inertia.matScaleB (BPair.ofNat 2)
-        (inertia.idMat (2 * m + 1))) w).map BPair.swap).length
+        (elim.idMat (2 * m + 1))) w).map BPair.swap).length
         = 2 * m + 1 := by
       rw [ground.length_map]
       exact hvl2
@@ -10124,13 +9125,13 @@ theorem annih_of (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
   have hsm := matPow_shape n (permMatAt n t) hTl m
   have horth : matOneValue
       (matMul (transposeM (permMatAt n t)) (permMatAt n t))
-      (inertia.idMat n) := by
+      (elim.idMat n) := by
     rw [transposeM_permMatAt n t s hst hts]
     refine matOne_trans (permMatAt_mul n s t ht) ?_
     rw [permMatAt_congr n (fun l => s (t l)) (fun l => l) hst]
     exact permMatAt_id n
   have hcycM : matOneValue
-      (inertia.matPow (permMatAt n t) n (2 * m + 1)) (inertia.idMat n) :=
+      (inertia.matPow (permMatAt n t) n (2 * m + 1)) (elim.idMat n) :=
     matPow_wrap n (2 * m) t hn ht hcyc 0
   have hfix : fixedWordRead (permMatAt n t) n m :=
     fixedWord_of n m (permMatAt n t) hTr hTl hn hcycM horth
@@ -10206,7 +9207,7 @@ theorem annih_of (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
       (matMul_congrL
         (matMul (permMatAt n (iterAt s m))
           (inertia.matPow (permMatAt n t) n m))
-        (inertia.idMat n) Y
+        (elim.idMat n) Y
         (clearW_pow n t s hn ht hst m)) ?_
     exact inertia.idMat_matMul n Y hYr hYl hn
   refine matOne_trans (matOne_symm (hclear

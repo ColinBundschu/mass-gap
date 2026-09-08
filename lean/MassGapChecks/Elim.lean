@@ -875,6 +875,152 @@ example : poly.oneValue
   elim.residV_expand 2 [[BPair.ofNat 1, BPair.unit]]
     [BPair.unit, BPair.ofNat 1] (by decide +kernel) (by decide +kernel)
 
+/-! The residual at the walk (`residW`, `residW_eq`): one value with
+`residV` entry for entry at a family of the stated width and every
+vector — the span member, the outside vector above and a dependent
+family, where the descent determinant reads the unit and both
+combinations the unit family — decided and through the theorem,
+the width binder `lem:lowerspan`'s frame (matched lists at the
+coordinate count) with its survival recorded at a ragged family
+with a short vector; the walk's refusal test at both; the
+collection at the walk is the collection at a family of the stated
+width (`collectW`, `collectW_eq`); the cleared member's join read at the
+walk (`residW_expand`); and the combination's congruence in its
+coefficients at two representatives of one list
+(`combo_congr`). -/
+
+private def rV1 : Mat := [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
+
+example : poly.oneValue (residW 2 rV1 [⟨4, 1⟩, ⟨3, 1⟩])
+    (residV 2 rV1 [⟨4, 1⟩, ⟨3, 1⟩]) := by decide +kernel
+example : poly.oneValue (residW 2 rV1 [⟨4, 1⟩, ⟨3, 1⟩])
+    (residV 2 rV1 [⟨4, 1⟩, ⟨3, 1⟩]) :=
+  elim.residW_eq 2 rV1 _ (by decide +kernel)
+example : poly.oneValue (residW 2 [[⟨2, 1⟩, ⟨1, 1⟩]] [⟨1, 1⟩, ⟨2, 1⟩])
+    (residV 2 [[⟨2, 1⟩, ⟨1, 1⟩]] [⟨1, 1⟩, ⟨2, 1⟩]) := by decide +kernel
+example : poly.oneValue (residW 2 [[⟨2, 1⟩, ⟨1, 1⟩], [⟨3, 1⟩]] [⟨1, 1⟩])
+    (residV 2 [[⟨2, 1⟩, ⟨1, 1⟩], [⟨3, 1⟩]] [⟨1, 1⟩]) := by decide +kernel
+private def rDep : Mat := [[⟨2, 1⟩, ⟨2, 1⟩], [⟨3, 1⟩, ⟨3, 1⟩]]
+example : ¬ indepRows 2 rDep ∧ (detD (gramM rDep)).oneValue BPair.unit
+    ∧ poly.oneValue (residW 2 rDep [⟨2, 1⟩, ⟨1, 1⟩])
+        (residV 2 rDep [⟨2, 1⟩, ⟨1, 1⟩]) := by decide +kernel
+example : poly.oneValue (residW 2 rDep [⟨2, 1⟩, ⟨1, 1⟩])
+    (residV 2 rDep [⟨2, 1⟩, ⟨1, 1⟩]) :=
+  elim.residW_eq 2 rDep _ (by decide +kernel)
+example : poly.unitTail (residW 2 rDep [⟨2, 1⟩, ⟨1, 1⟩]) := by decide +kernel
+private def rRag : Mat := [[⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]]
+example : ¬ rowsLen 2 rRag ∧ poly.oneValue (residW 2 rRag [⟨2, 1⟩, ⟨1, 1⟩])
+    (residV 2 rRag [⟨2, 1⟩, ⟨1, 1⟩]) := by decide +kernel
+example : poly.unitTail (residW 2 rV1 [⟨4, 1⟩, ⟨3, 1⟩]) := by decide +kernel
+example : ¬ poly.unitTail
+    (residW 2 [[⟨2, 1⟩, ⟨1, 1⟩]] [⟨1, 1⟩, ⟨2, 1⟩]) := by decide +kernel
+
+private def rC1 : Mat := [[⟨2, 1⟩, ⟨1, 1⟩], [⟨4, 1⟩, ⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
+
+example : collectW 2 rC1 = collectOf 2 rC1 := by decide +kernel
+example : collectW 2 rC1 = collectOf 2 rC1 :=
+  elim.collectW_eq 2 rC1 (by decide +kernel)
+example : collectW 2 rC1 = [[⟨2, 1⟩, ⟨1, 1⟩], [⟨4, 1⟩, ⟨2, 1⟩]] := by decide +kernel
+example : collectW 2 [[⟨2, 1⟩, ⟨1, 1⟩], [⟨3, 1⟩, ⟨1, 1⟩]]
+    = [[⟨2, 1⟩, ⟨1, 1⟩]] := by decide +kernel
+
+example : poly.oneValue
+    (vecScale (detL (gramM [[BPair.ofNat 1, BPair.unit]]))
+      [BPair.unit, BPair.ofNat 1])
+    (vecAdd (residW 2 [[BPair.ofNat 1, BPair.unit]]
+        [BPair.unit, BPair.ofNat 1])
+      (combo 2 (adjP (gramM [[BPair.ofNat 1, BPair.unit]])
+          ([[BPair.ofNat 1, BPair.unit]].map
+            (fun r => dotP r [BPair.unit, BPair.ofNat 1])))
+        [[BPair.ofNat 1, BPair.unit]])) := by decide +kernel
+example : poly.oneValue
+    (vecScale (detL (gramM [[BPair.ofNat 1, BPair.unit]]))
+      [BPair.unit, BPair.ofNat 1])
+    (vecAdd (residW 2 [[BPair.ofNat 1, BPair.unit]]
+        [BPair.unit, BPair.ofNat 1])
+      (combo 2 (adjP (gramM [[BPair.ofNat 1, BPair.unit]])
+          ([[BPair.ofNat 1, BPair.unit]].map
+            (fun r => dotP r [BPair.unit, BPair.ofNat 1])))
+        [[BPair.ofNat 1, BPair.unit]])) :=
+  elim.residW_expand 2 [[BPair.ofNat 1, BPair.unit]]
+    [BPair.unit, BPair.ofNat 1] (by decide +kernel) (by decide +kernel)
+
+example : poly.oneValue (combo 2 [⟨2, 1⟩, ⟨1, 1⟩] rV1)
+    (combo 2 [⟨3, 2⟩, ⟨5, 5⟩] rV1) := by decide +kernel
+example : poly.oneValue (combo 2 [⟨2, 1⟩, ⟨1, 1⟩] rV1)
+    (combo 2 [⟨3, 2⟩, ⟨5, 5⟩] rV1) :=
+  elim.combo_congr 2 _ _ rV1 rfl (by decide +kernel)
+example : ¬ poly.oneValue (combo 2 [⟨2, 1⟩, ⟨1, 1⟩] rV1)
+    (combo 2 [⟨3, 1⟩, ⟨1, 1⟩] rV1) := by decide +kernel
+
+/-- The count binder on `combo_congr` is load-bearing at a ragged
+family: two coefficient lists of one value at unequal counts, one
+padded by the sum's unit, read the combination at the first row's
+width against the truncation at the short second row. -/
+example : poly.oneValue [⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 1⟩]
+    ∧ ¬ ([⟨2, 1⟩] : List BPair).length = ([⟨2, 1⟩, ⟨1, 1⟩] : List BPair).length
+    ∧ ¬ poly.oneValue (combo 2 [⟨2, 1⟩] [[⟨2, 1⟩, ⟨3, 1⟩], [⟨2, 1⟩]])
+      (combo 2 [⟨2, 1⟩, ⟨1, 1⟩] [[⟨2, 1⟩, ⟨3, 1⟩], [⟨2, 1⟩]]) := by
+  decide +kernel
+
+/-! The descent adjugate (`adjMD`, `adjMD_cofVec`): at an
+independent list's Gram entrywise one value with the cofactor
+vectors, decided and through the theorem, and parted at a
+dependent list's Gram at every entry, the independence isolated;
+the joined read (`joinIndep`): passing at an independent extension
+and refusing at a span member, its two characterizations
+(`joinIndep_indep`, `joinIndep_span`) decided and through the
+theorems, the square frame, the vector's order and the list's
+independence isolated, and the extended list's refusal
+(`indep_refuse`) with its independence isolated. -/
+
+private def a3 : Mat :=
+  [[⟨2, 1⟩, ⟨1, 1⟩, ⟨3, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩],
+    [⟨3, 1⟩, ⟨2, 1⟩, ⟨1, 1⟩]]
+
+example : indepRows 3 a3 := by decide +kernel
+example : ((List.range 3).all (fun j => (List.range 3).all (fun k =>
+    decide ((ground.getAt BPair.unit
+        (ground.getAt [] (adjMD (gramM a3)) j) k).oneValue
+      (ground.getAt BPair.unit (cofVec (gramM a3) k) j))))) = true := by
+  decide +kernel
+example : (ground.getAt BPair.unit
+    (ground.getAt [] (adjMD (gramM a3)) 1) 2).oneValue
+    (ground.getAt BPair.unit (cofVec (gramM a3) 2) 1) :=
+  elim.adjMD_cofVec 3 a3 (by decide +kernel) 1 2 (by decide +kernel)
+    (by decide +kernel)
+
+private def jL : Mat := [[⟨2, 1⟩, ⟨1, 1⟩]]
+private def jDep : Mat := [[⟨2, 1⟩, ⟨1, 1⟩], [⟨3, 1⟩, ⟨1, 1⟩]]
+private def jRag : Mat := [[⟨2, 1⟩, ⟨1, 1⟩, ⟨3, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
+
+example : joinIndep dotP jL [⟨1, 1⟩, ⟨2, 1⟩] = true := by decide +kernel
+example : indepRows 2 (jL ++ [[⟨1, 1⟩, ⟨2, 1⟩]]) := by decide +kernel
+example : indepRows 2 (jL ++ [[⟨1, 1⟩, ⟨2, 1⟩]]) :=
+  (elim.joinIndep_indep 2 jL _ (by decide +kernel) rfl).1 (by decide +kernel)
+example : joinIndep dotP jL [⟨3, 1⟩, ⟨1, 1⟩] = false := by decide +kernel
+example : spanRel 2 jL [⟨3, 1⟩, ⟨1, 1⟩] := by decide +kernel
+example : spanRel 2 jL [⟨3, 1⟩, ⟨1, 1⟩] :=
+  (elim.joinIndep_span 2 jL _ rfl (by decide +kernel)).1
+    (by decide +kernel)
+example : ¬ spanRel 2 jL [⟨1, 1⟩, ⟨2, 1⟩] :=
+  elim.indep_refuse 2 jL _ (by decide +kernel)
+example : joinIndep dotP jL [⟨2, 1⟩] = false
+    ∧ ¬ spanRel 2 jL [⟨2, 1⟩] := by decide +kernel
+example : joinIndep dotP jDep [⟨1, 1⟩, ⟨2, 1⟩] = false
+    ∧ ¬ spanRel 2 jDep [⟨1, 1⟩, ⟨2, 1⟩] := by decide +kernel
+example : joinIndep dotP jL [⟨1, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩] = true
+    ∧ ¬ indepRows 2 (jL ++ [[⟨1, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩]]) := by decide +kernel
+example : joinIndep dotP jRag [⟨1, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩] = true
+    ∧ ¬ indepRows 3 (jRag ++ [[⟨1, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩]]) := by decide +kernel
+example : ¬ indepRows 2 (jL ++ [[⟨3, 1⟩, ⟨1, 1⟩]])
+    ∧ spanRel 2 jL [⟨3, 1⟩, ⟨1, 1⟩] := by decide +kernel
+example : ¬ indepRows 2 jDep
+    ∧ ¬ (ground.getAt BPair.unit
+      (ground.getAt [] (adjMD (gramM jDep)) 0) 0).oneValue
+      (ground.getAt BPair.unit (cofVec (gramM jDep) 0) 0) := by
+  decide +kernel
+
 /-! The independence and span-linearity tier's pins: the dimension
 bound composed through the one-member independence read, the
 transports' instances, and the span's combination read at listed
@@ -2248,6 +2394,74 @@ example : (detD Dsq3).oneValue (detL Dsq3) := detD_eq Dsq3 (by decide +kernel)
 
 example : (detD Dexch).oneValue (detL Dexch) := by decide +kernel
 
+/-! The adjugate solve's descent read (`adjD`, `adjD_eq`): the
+bordered walk's cofactors against the cofactor family's solve at a
+three-list fixture whose every leading minor sits off the unit
+(`leadMinor`), decided beside the theorem route with the value
+pinned and the kernel member's border coordinate off the unit
+(`solveK`); the pairing vector's order binder isolated at a short
+vector and the square binder at a wide list, where the descent read
+and the cofactor solve part, the tall list's survival recorded,
+both folds truncating alike; and the leading-minor binder is
+`def:elim`'s frame, the bordered walk pivoting at the leading keys,
+load-bearing at a singular list, where the kernel member's border
+coordinate reads the unit and the descent read the unit family
+against the cofactor solve's occupied read, its refusal committed
+at the two-row list of one repeated row, with its survival recorded
+at the exchange list whose first minor sits at the unit: there
+`def:elim`'s pivot rule crosses the second key first and the
+kernel member at the border column keeps the solve's identity.
+The independent Gram's read (`adjD_gram`) binds the independence
+outright, refused at a dependent family against a stated vector
+off the pairing data. -/
+
+private def pSq3 : List BPair :=
+  [BPair.ofNat 1, (BPair.ofNat 2).swap, BPair.ofNat 3]
+
+example : ∀ k, k < Dsq3.length →
+    ¬ (leadMinor Dsq3 (k + 1)).oneValue BPair.unit := by decide +kernel
+example : poly.oneValue (adjD Dsq3 pSq3) (adjP Dsq3 pSq3) := by
+  decide +kernel
+example : poly.oneValue (adjD Dsq3 pSq3) (adjP Dsq3 pSq3) :=
+  adjD_eq Dsq3 (by decide +kernel) (by decide +kernel) pSq3 rfl
+example : poly.oneValue (adjD Dsq3 pSq3)
+    [(BPair.ofNat 17).swap, BPair.ofNat 90, BPair.ofNat 16] := by
+  decide +kernel
+example : (solveK Dsq3 pSq3).length = 4 := by decide +kernel
+example : ¬ (ground.getAt BPair.unit (solveK Dsq3 pSq3) 3).oneValue
+    BPair.unit := by decide +kernel
+example : ¬ poly.oneValue (adjD Dsq3 [BPair.ofNat 1, BPair.ofNat 1])
+    (adjP Dsq3 [BPair.ofNat 1, BPair.ofNat 1]) := by decide +kernel
+private def Dwide : Mat :=
+  [[BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3],
+   [BPair.ofNat 4, BPair.ofNat 5, BPair.ofNat 6]]
+private def Dtall : Mat :=
+  [[BPair.ofNat 1, BPair.ofNat 2], [BPair.ofNat 3, BPair.ofNat 4],
+   [BPair.ofNat 5, BPair.ofNat 6]]
+example : ¬ poly.oneValue (adjD Dwide [BPair.ofNat 1, BPair.ofNat 1])
+    (adjP Dwide [BPair.ofNat 1, BPair.ofNat 1]) := by decide +kernel
+example : poly.oneValue (adjD Dtall [BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1])
+    (adjP Dtall [BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1]) := by decide +kernel
+example : ¬ (∀ k, k < Dexch.length →
+    ¬ (leadMinor Dexch (k + 1)).oneValue BPair.unit) := by decide +kernel
+example : poly.oneValue (adjD Dexch [BPair.ofNat 2, BPair.ofNat 3])
+    (adjP Dexch [BPair.ofNat 2, BPair.ofNat 3]) := by decide +kernel
+private def Dsing : Mat :=
+  [[BPair.ofNat 1, BPair.ofNat 1], [BPair.ofNat 1, BPair.ofNat 1]]
+example : rowsLen Dsing.length Dsing ∧ ¬ (∀ k, k < Dsing.length →
+    ¬ (leadMinor Dsing (k + 1)).oneValue BPair.unit) := by decide +kernel
+example : ¬ poly.oneValue (adjD Dsing [BPair.ofNat 1, BPair.ofNat 2])
+    (adjP Dsing [BPair.ofNat 1, BPair.ofNat 2]) := by decide +kernel
+example : poly.unitTail (adjD Dsing [BPair.ofNat 1, BPair.ofNat 2]) := by
+  decide +kernel
+example : poly.unitTail (adjD Dsing [BPair.ofNat 1, BPair.ofNat 2]) :=
+  elim.adjD_of_detUnit Dsing _ (by decide +kernel)
+example : ¬ poly.unitTail (adjP Dsing [BPair.ofNat 1, BPair.ofNat 2]) := by
+  decide +kernel
+example : ¬ indepRows 2 rDep ∧ ¬ poly.oneValue
+    (adjD (gramM rDep) [BPair.ofNat 1, BPair.unit])
+    (adjP (gramM rDep) [BPair.ofNat 1, BPair.unit]) := by decide +kernel
+
 example : (detD Dexch).oneValue (BPair.ofNat 1).swap := by decide +kernel
 
 example : (detD Dstall).oneValue (detL Dstall) := by decide +kernel
@@ -2383,9 +2597,9 @@ the residual truncates and the collection drops the member. -/
 example : ¬ (elim.collectOf 0 [[BPair.ofNat 1]]
     = [[BPair.ofNat 1]]) := by decide +kernel
 
-/-- Refusal at `matVec_idList`'s width frame: the identity at a
+/-- Refusal at `matVec_idMat`'s width frame: the identity at a
 narrower width truncates the vector. -/
-example : ¬ (poly.oneValue (elim.matVec (elim.idList 1)
+example : ¬ (poly.oneValue (elim.matVec (elim.idMat 1)
     [BPair.ofNat 1, BPair.ofNat 2])
     [BPair.ofNat 1, BPair.ofNat 2]) := by decide +kernel
 
@@ -2402,12 +2616,12 @@ example : elim.rank [[BPair.unit, BPair.unit],
 example : elim.collectOf 2 [[BPair.ofNat 1, BPair.unit]]
     = [[BPair.ofNat 1, BPair.unit]] := by decide +kernel
 
-example : poly.oneValue (elim.matVec (elim.idList 2)
+example : poly.oneValue (elim.matVec (elim.idMat 2)
     [BPair.ofNat 1, BPair.ofNat 2])
     [BPair.ofNat 1, BPair.ofNat 2] := by decide +kernel
 
 /-! The identity family's independence and its cross reading
-(`indepRows_idList`, `kernelDim_idList`): the family decided
+(`indepRows_idMat`, `kernelDim_idMat`): the family decided
 independent at a committed width beside its theorem route, the
 cross datum returning the stacked row entry by entry, the two
 kernel dimensions decided one count beside their theorem route,
@@ -2415,32 +2629,32 @@ and the refusal isolating the stacked family's width binder. -/
 
 /-- The identity family at three column keys is independent, the
 Gram determinant the self-pairings' product. -/
-example : elim.indepRows 3 (elim.idList 3) := by decide +kernel
+example : elim.indepRows 3 (elim.idMat 3) := by decide +kernel
 
-example : elim.indepRows 3 (elim.idList 3) := elim.indepRows_idList 3
+example : elim.indepRows 3 (elim.idMat 3) := elim.indepRows_idMat 3
 
 /-- The cross datum at the identity family is the stacked row
 itself, entry by entry at the representatives. -/
 example : elim.crossM [[BPair.ofNat 1, BPair.ofNat 2]]
-    (elim.idList 2) = [[BPair.ofNat 1, BPair.ofNat 2]] := by decide +kernel
+    (elim.idMat 2) = [[BPair.ofNat 1, BPair.ofNat 2]] := by decide +kernel
 
 /-- The two kernel dimensions are one count at a committed stacked
 row. -/
 example : elim.kernelDim 2
-    (elim.crossM [[BPair.ofNat 1, BPair.ofNat 1]] (elim.idList 2))
+    (elim.crossM [[BPair.ofNat 1, BPair.ofNat 1]] (elim.idMat 2))
     = elim.kernelDim 2 [[BPair.ofNat 1, BPair.ofNat 1]] := by decide +kernel
 
 example : elim.kernelDim 2
-    (elim.crossM [[BPair.ofNat 1, BPair.ofNat 1]] (elim.idList 2))
+    (elim.crossM [[BPair.ofNat 1, BPair.ofNat 1]] (elim.idMat 2))
     = elim.kernelDim 2 [[BPair.ofNat 1, BPair.ofNat 1]] :=
-  elim.kernelDim_idList 2 _ ⟨rfl, trivial⟩
+  elim.kernelDim_idMat 2 _ ⟨rfl, trivial⟩
 
-/-- Refusal at `kernelDim_idList`'s width binder: a stacked row
+/-- Refusal at `kernelDim_idMat`'s width binder: a stacked row
 wider than the stated key count meets the identity family at a
 truncating fold, the cross row reads the sum's unit throughout and
 loses the row's own pivot, so the counts part. -/
 example : ¬ (elim.kernelDim 1
-    (elim.crossM [[BPair.unit, BPair.ofNat 1]] (elim.idList 1))
+    (elim.crossM [[BPair.unit, BPair.ofNat 1]] (elim.idMat 1))
     = elim.kernelDim 1 [[BPair.unit, BPair.ofNat 1]]) := by decide +kernel
 
 /-! The adjugate at the committed squares: both products read the
@@ -3343,3 +3557,138 @@ example : ¬ ((((⟨3, 1⟩ : BPair) * (⟨2, 1⟩ : BPair))
       + ((⟨2, 1⟩ : BPair) * (⟨2, 1⟩ : BPair))
         * dotN [(⟨3, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)]) := by
   decide +kernel
+
+/-! `def:elim`'s grown descent. At a symmetric order-3 list at the
+leading-minor frame the stored data grown row by row trace the
+list, the fourth row's growth reads the grown determinant decided
+and through the theorem, the grown data trace the grown list, and
+the joined read at the stored descent agrees with the fresh walk at
+a coordinate family; the refusals: the trace refuses a unit pivot,
+and at a list off the symmetry binder the terminal entry parts from
+the grown determinant while every further hypothesis holds. -/
+
+private def gS : elim.Mat :=
+  [[⟨3, 1⟩, ⟨2, 1⟩, ⟨1, 1⟩],
+   [⟨2, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩],
+   [⟨1, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩]]
+
+private def gRow4 : List BPair := [⟨1, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩, ⟨4, 1⟩]
+
+private def gSt1 : elim.DState := (elim.growS [] [(⟨3, 1⟩ : BPair)]).1
+private def gSt2 : elim.DState :=
+  (elim.growS gSt1 [(⟨2, 1⟩ : BPair), ⟨3, 1⟩]).1
+private def gSt3 : elim.DState :=
+  (elim.growS gSt2 [(⟨1, 1⟩ : BPair), ⟨2, 1⟩, ⟨3, 1⟩]).1
+
+example : elim.traceOf gSt1 [[(⟨3, 1⟩ : BPair)]]
+    ∧ elim.traceOf gSt2 [[(⟨3, 1⟩ : BPair), ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
+    ∧ elim.traceOf gSt3 gS := by decide +kernel
+
+example : (elim.growS gSt3 gRow4).2.oneValue (BPair.ofNat 9)
+    ∧ (elim.growS gSt3 gRow4).2.oneValue (elim.detL (elim.grownBy gS gRow4))
+    ∧ elim.traceOf (elim.growS gSt3 gRow4).1 (elim.grownBy gS gRow4) := by
+  decide +kernel
+
+example : (elim.growS gSt3 gRow4).2.oneValue (elim.detL (elim.grownBy gS gRow4)) :=
+  (elim.growS_read gS gRow4 (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) gSt3 (by decide +kernel)).1
+
+example : elim.traceOf (elim.growS gSt3 gRow4).1 (elim.grownBy gS gRow4) :=
+  (elim.growS_read gS gRow4 (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) gSt3 (by decide +kernel)).2 (by decide +kernel)
+
+/-- The trace refuses a unit pivot. -/
+example : ¬ elim.traceOf [(BPair.unit, [])] [[BPair.unit]] := by decide +kernel
+
+/-- The list off the symmetry binder at its own descent's data:
+the trace holds and every further hypothesis, and the terminal
+entry parts from the grown determinant. -/
+private def gN : elim.Mat := [[⟨2, 1⟩, ⟨3, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
+private def gNRow : List BPair := [⟨2, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩]
+private def gNSt : elim.DState :=
+  [((⟨2, 1⟩ : BPair), [(⟨3, 1⟩ : BPair)]), ((⟨2, 1⟩ : BPair), [])]
+
+example : elim.traceOf gNSt gN ∧ elim.rowsLen gN.length gN
+    ∧ gNRow.length = gN.length + 1
+    ∧ ¬ elim.symmRead gN
+    ∧ ¬ (elim.growS gNSt gNRow).2.oneValue
+        (elim.detL (elim.grownBy gN gNRow)) := by decide +kernel
+
+/-- The square binder: at a list off the square frame, its second
+row wide, the trace, the row count and the symmetry hold and the
+terminal entry parts from the grown determinant. -/
+private def gW : elim.Mat := [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩]]
+private def gWSt : elim.DState :=
+  [((⟨3, 1⟩ : BPair), [(⟨2, 1⟩ : BPair)]), ((⟨4, 1⟩ : BPair), [])]
+private def gWRow : List BPair := [⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩]
+
+example : ¬ elim.rowsLen gW.length gW ∧ elim.traceOf gWSt gW
+    ∧ gWRow.length = gW.length + 1 ∧ elim.symmRead gW
+    ∧ ¬ (elim.growS gWSt gWRow).2.oneValue
+        (elim.detL (elim.grownBy gW gWRow)) := by decide +kernel
+
+/-- The row-count binder: a short grown row at a traced symmetric
+square list reads a terminal entry off the grown determinant. -/
+private def gQ : elim.Mat := [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
+private def gQRow : List BPair := [⟨2, 1⟩, ⟨2, 1⟩]
+
+example : elim.traceOf gWSt gQ ∧ elim.rowsLen gQ.length gQ
+    ∧ elim.symmRead gQ ∧ ¬ gQRow.length = gQ.length + 1
+    ∧ ¬ (elim.growS gWSt gQRow).2.oneValue
+        (elim.detL (elim.grownBy gQ gQRow)) := by decide +kernel
+
+/-- The joined read at the stored descent against the fresh walk:
+a passing member and a refused one, decided and through the
+theorem. -/
+private def jU1 : List BPair := [⟨2, 1⟩, ⟨2, 1⟩]
+private def jU2 : List BPair := [⟨2, 1⟩, ⟨3, 1⟩]
+private def jS1 : elim.DState × Bool := elim.joinS elim.dotP [] [] jU1
+
+example : jS1.2 = true
+    ∧ (elim.joinS elim.dotP jS1.1 [jU1] jU2).2 = true
+    ∧ (elim.joinS elim.dotP jS1.1 [jU1] jU2).2
+      = elim.joinIndep elim.dotP [jU1] jU2
+    ∧ (elim.joinS elim.dotP jS1.1 [jU1] [(⟨3, 1⟩ : BPair), ⟨3, 1⟩]).2 = false
+    ∧ (elim.joinS elim.dotP jS1.1 [jU1] [(⟨3, 1⟩ : BPair), ⟨3, 1⟩]).2
+      = elim.joinIndep elim.dotP [jU1] [(⟨3, 1⟩ : BPair), ⟨3, 1⟩] := by
+  decide +kernel
+
+example : (elim.joinS elim.dotP jS1.1 [jU1] jU2).2
+    = elim.joinIndep elim.dotP [jU1] jU2 :=
+  (elim.joinS_read elim.dotP
+    (fun u w => BPair.oneValue_of_eq (elim.dotP_comm u w)) jS1.1 [jU1] jU2
+    (by decide +kernel)).1
+
+/-- The trace binder of the joined read: stored data off the list's
+Gram read a passing join at a refused member. -/
+example : ¬ elim.traceOf [((⟨2, 1⟩ : BPair), [])]
+      (elim.gramBy elim.dotP [[(⟨3, 1⟩ : BPair)]])
+    ∧ (elim.joinS elim.dotP [((⟨2, 1⟩ : BPair), [])] [[(⟨3, 1⟩ : BPair)]]
+        [(⟨2, 1⟩ : BPair)]).2 = true
+    ∧ elim.joinIndep elim.dotP [[(⟨3, 1⟩ : BPair)]] [(⟨2, 1⟩ : BPair)]
+        = false := by decide +kernel
+
+/-- The trace binder: stored data off the list's own descent read a
+terminal entry off the grown determinant, every further hypothesis
+holding. -/
+example : ¬ elim.traceOf [((⟨2, 1⟩ : BPair), [])] [[(⟨3, 1⟩ : BPair)]]
+    ∧ elim.rowsLen 1 [[(⟨3, 1⟩ : BPair)]]
+    ∧ elim.symmRead [[(⟨3, 1⟩ : BPair)]]
+    ∧ ¬ (elim.growS [((⟨2, 1⟩ : BPair), [])] [⟨2, 1⟩, ⟨6, 1⟩]).2.oneValue
+        (elim.detL (elim.grownBy [[(⟨3, 1⟩ : BPair)]] [⟨2, 1⟩, ⟨6, 1⟩])) := by
+  decide +kernel
+
+/-- The symmetric-pairing binder of the joined read: at a pairing
+off the exchange the joined read at the stored descent parts from
+the fresh walk while the stored data trace the list's Gram. -/
+private def dotA (u w : List BPair) : BPair :=
+  ground.getAt BPair.unit u 0 * ground.getAt BPair.unit w 0
+    + ground.getAt BPair.unit u 0 * ground.getAt BPair.unit w 1
+
+private def aU : List BPair := [⟨2, 1⟩, ⟨1, 1⟩]
+private def aV : List BPair := [⟨2, 1⟩, ⟨2, 1⟩]
+
+example : ¬ (dotA aU aV).oneValue (dotA aV aU)
+    ∧ elim.traceOf [((⟨2, 1⟩ : BPair), [])] (elim.gramBy dotA [aU])
+    ∧ (elim.joinS dotA [((⟨2, 1⟩ : BPair), [])] [aU] aV).2 = true
+    ∧ elim.joinIndep dotA [aU] aV = false := by decide +kernel

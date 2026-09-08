@@ -31,7 +31,12 @@ the graded Gram's own adjugate — and the moved coevaluation pairs
 every member pair at the sum's unit (`coev_equiv`): the two
 collapses run at the entrywise adjugate identity of the symmetric
 group Gram (`elim.adjP_row_fold`, `elim.cofVec_col_fold`) and the
-member reads join at `ev_equivG`.  The correspondence's reads:
+member reads join at `ev_equivG`; the group determinants, the
+coevaluation's adjugate entries and the grid's adjugate solves
+compute at the descent's reads (`elim.detD`, `elim.adjMD`,
+`elim.adjD`), the folds their values at the square Grams
+(`adjBody_bridge` the entries' one value at a group's double key
+fold).  The correspondence's reads:
 the moved form is `movedAt` with `coev_equiv` its coevaluation
 instance, the family's map `mapAt` folds the
 argument's own content group, the map's invariant `mapInv`
@@ -1115,9 +1120,10 @@ crossed pairing per summand, the transpose identity with the
 fold's exchange joining the two at partners. -/
 
 /-- The block's determinant at a stated content: the content
-group's own Gram determinant. -/
+group's own Gram determinant at the descent's read (`elim.detD`,
+the fold's value at the square Gram, `elim.detD_eq`). -/
 private def blockDet (Y : List HVec) (nu : List Nat) : BPair :=
-  elim.detL (elim.gramM
+  elim.detD (elim.gramM
     (groupAt Y nu))
 
 /-- Every occupied content's determinant, the graded Gram's
@@ -1145,7 +1151,8 @@ def coevData (Y : List HVec) : List (BPair × HVec × HVec) :=
     let s := coScale Y mu
     (List.range grp.length).flatMap (fun j =>
       (List.range grp.length).map (fun k =>
-        (s * ground.getAt BPair.unit (elim.cofVec G k) j,
+        (s * ground.getAt BPair.unit
+            (ground.getAt [] (elim.adjMD G) j) k,
           ground.getAt (⟨[], []⟩ : HVec) grp j,
           ground.getAt (⟨[], []⟩ : HVec) grp k))))
 
@@ -1212,6 +1219,29 @@ private theorem grp_sym (grp : List HVec) :
   fun i hi j hj => elim.gramM_symm (grp.map HVec.coords) i j
     (by rw [ground.length_map _ grp]; exact hi)
     (by rw [ground.length_map _ grp]; exact hj)
+
+/-- An independent group's double key fold at the descent
+adjugate's entries reads one value at the cofactor vectors' own,
+each summand's entry the cofactor's read (`elim.adjMD_cofVec`), the
+summand's further data any read congruent in the entry. -/
+private theorem adjBody_bridge (L : elim.Mat) {n : Nat}
+    (hind : elim.indepRows n L) (m : Nat) (hm : L.length = m)
+    (H : Nat → Nat → BPair → BPair)
+    (hH : ∀ j k x y, x.oneValue y → (H j k x).oneValue (H j k y)) :
+    (ground.famFold BPair.add BPair.unit (fun j =>
+      ground.famFold BPair.add BPair.unit (fun k =>
+        H j k (ground.getAt BPair.unit
+          (ground.getAt [] (elim.adjMD (elim.gramM L)) j) k))
+        (List.range m)) (List.range m)).oneValue
+      (ground.famFold BPair.add BPair.unit (fun j =>
+        ground.famFold BPair.add BPair.unit (fun k =>
+          H j k (ground.getAt BPair.unit (elim.cofVec (elim.gramM L) k) j))
+          (List.range m)) (List.range m)) := by
+  refine ground.foldB_congr_members _ _ (List.range m) (fun j hj => ?_)
+  refine ground.foldB_congr_members _ _ (List.range m) (fun k hk => ?_)
+  exact hH j k _ _ (elim.adjMD_cofVec n L hind j k
+    (by rw [hm]; exact ground.ltOfMem hj)
+    (by rw [hm]; exact ground.ltOfMem hk))
 
 /-- The index fold of two families' entries is their pairing, the
 two families read at their shared order. -/
@@ -1511,6 +1541,20 @@ private theorem scale_detAll (Y : List HVec) (mu : List Nat)
     (blockDet Y) mu
     (ground.dedupL (Y.map HVec.content)) (BPair.ofNat 1) h1
 
+/-- The scale read at the group's assignment-fold determinant: the
+fold's value at the walk's (`elim.detD_eq`), the identities of the
+adjugate tier consuming it there. -/
+private theorem scale_detAllL (Y : List HVec) (mu : List Nat)
+    (h1 : ground.countOf mu
+      (ground.dedupL (Y.map HVec.content)) = 1) :
+    (coScale Y mu * elim.detL (elim.gramM
+      ((Y.filter (fun w => w.content == mu)).map HVec.coords))).oneValue
+      (detAll Y) :=
+  BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_symm (elim.detD_eq _ (elim.gramM_sq _))))
+    (BPair.oneValue_of_eq (scale_detAll Y mu h1))
+
 /-- The block at one content over a stated second-slot map: the
 distributive split hands the two summand folds their own collapses
 — the first at the stated read `E`, the second at the opaque-slot
@@ -1521,7 +1565,7 @@ private theorem group_readF (Sl : HVec → HVec) (grp : List HVec)
     (hcont : ∀ w ∈ grp, w.content = mu)
     (hslot : ∀ w ∈ grp, (Sl w).content = w.content)
     (s D E : BPair)
-    (hsd : s * elim.detL (elim.gramM (grp.map HVec.coords)) = D)
+    (hsd : (s * elim.detL (elim.gramM (grp.map HVec.coords))).oneValue D)
     (p q : Nat) (a b : HVec)
     (hag : mu = a.content → a ∈ grp)
     (hE : mu = b.content →
@@ -1600,9 +1644,11 @@ private theorem group_readF (Sl : HVec → HVec) (grp : List HVec)
             (BPair.mul_unit _))
           (BPair.mul_unit _)
     · by_cases ham : mu = a.content
-      · rw [if_pos ham, ← hsd]
-        exact block_twoF grp mu hcont s a (hag ham)
-          (fun w => dotG (act p q (Sl w)) b)
+      · rw [if_pos ham]
+        exact BPair.oneValue_trans
+          (block_twoF grp mu hcont s a (hag ham)
+            (fun w => dotG (act p q (Sl w)) b))
+          (BPair.mul_congr hsd (BPair.oneValue_refl _))
       · rw [if_neg ham]
         refine block_null grp.length _ (fun j k hj _ => ?_)
         rw [show dotG (ground.getAt (⟨[], []⟩ : HVec) grp j) a
@@ -1623,7 +1669,7 @@ and the moved further member's at the member's, every other
 content's block at the sum's unit. -/
 private theorem group_read (grp : List HVec) (mu : List Nat)
     (hcont : ∀ w ∈ grp, w.content = mu) (s D : BPair)
-    (hsd : s * elim.detL (elim.gramM (grp.map HVec.coords)) = D)
+    (hsd : (s * elim.detL (elim.gramM (grp.map HVec.coords))).oneValue D)
     (p q : Nat) (a b : HVec)
     (hbg : mu = b.content → b ∈ grp)
     (hag : mu = a.content → a ∈ grp) :
@@ -1645,9 +1691,9 @@ private theorem group_read (grp : List HVec) (mu : List Nat)
           else BPair.unit)) :=
   group_readF (fun w => w) grp mu hcont (fun _ _ => rfl) s D
     (D * dotG (dact p q b) a) hsd p q a b hag
-    (fun hbm => by
-      rw [← hsd]
-      exact block_one grp mu hcont s p q a b (hbg hbm))
+    (fun hbm => BPair.oneValue_trans
+      (block_one grp mu hcont s p q a b (hbg hbm))
+      (BPair.mul_congr hsd (BPair.oneValue_refl _)))
 
 /-- The coevaluation's datum at one content, the block's own
 double index. -/
@@ -1658,9 +1704,9 @@ private def coevBody (Y : List HVec) (mu : List Nat) :
       (List.range (Y.filter (fun w => w.content == mu)).length).map
         (fun k =>
           ((coScale Y mu) * ground.getAt BPair.unit
-              (elim.cofVec (elim.gramM
+              (ground.getAt [] (elim.adjMD (elim.gramM
                 ((Y.filter (fun w => w.content == mu)).map
-                  HVec.coords)) k) j,
+                  HVec.coords))) j) k,
             ground.getAt (⟨[], []⟩ : HVec)
               (Y.filter (fun w => w.content == mu)) j,
             ground.getAt (⟨[], []⟩ : HVec)
@@ -1730,7 +1776,7 @@ sentence. -/
 theorem coev_equiv (Y : List HVec) (p q : Nat) (a b : HVec)
     (hpb : p < b.content.length) (hqb : q < b.content.length)
     (hpq : ¬ p = q) (hsa : sized a) (hsb : sized b)
-    (ha : a ∈ Y) (hb : b ∈ Y) :
+    (ha : a ∈ Y) (hb : b ∈ Y) (hind : blockcount.indepAll Y) :
     (movedAt (coevData Y) p q a b).oneValue BPair.unit := by
   rw [movedAt_fold (coevData Y) p q a b, elim.dotP_map_pair,
     coevData_flat Y]
@@ -1760,10 +1806,25 @@ theorem coev_equiv (Y : List HVec) (p q : Nat) (a b : HVec)
           (ground.famFold_map BPair.add BPair.unit _ _
             (List.range
               (Y.filter (fun w => w.content == mu)).length)))) ?_
+    refine BPair.oneValue_trans
+      (adjBody_bridge ((Y.filter (fun w => w.content == mu)).map HVec.coords)
+        (blockcount.indepAll_all hind mu) _ (ground.length_map _ _)
+        (fun j k x => (coScale Y mu * x)
+          * (dotG (dact p q (ground.getAt (⟨[], []⟩ : HVec)
+                (Y.filter (fun w => w.content == mu)) j)) a
+              * dotG (ground.getAt (⟨[], []⟩ : HVec)
+                (Y.filter (fun w => w.content == mu)) k) b
+            + dotG (ground.getAt (⟨[], []⟩ : HVec)
+                (Y.filter (fun w => w.content == mu)) j) a
+              * dotG (act p q (ground.getAt (⟨[], []⟩ : HVec)
+                (Y.filter (fun w => w.content == mu)) k)) b))
+        (fun _ _ _ _ h => BPair.mul_congr
+          (BPair.mul_congr (BPair.oneValue_refl _) h)
+          (BPair.oneValue_refl _))) ?_
     exact group_read (Y.filter (fun w => w.content == mu)) mu
       (fun w hw => ground.listBeqEq
         ((ground.mem_filter_of _ Y w hw).2))
-      (coScale Y mu) (detAll Y) (scale_detAll Y mu h1) p q a b
+      (coScale Y mu) (detAll Y) (scale_detAllL Y mu h1) p q a b
       (fun he => ground.mem_filter_to _ hb
         (by rw [he]; exact ground.listEqBeq b.content))
       (fun he => ground.mem_filter_to _ ha
@@ -1827,7 +1888,8 @@ def coevW (b : Shape) (g : HVec) (W : List (List Nat)) :
     let s := coScale Y mu
     (List.range idxs.length).flatMap (fun j =>
       (List.range idxs.length).map (fun k =>
-        (s * ground.getAt BPair.unit (elim.cofVec G k) j,
+        (s * ground.getAt BPair.unit
+            (ground.getAt [] (elim.adjMD G) j) k,
           wactT dualTable
             (ground.getAt ([] : List Nat) idxs j) g,
           wact (ground.getAt ([] : List Nat) idxs k)
@@ -2022,11 +2084,11 @@ private def coevWBody (b : Shape) (g : HVec) (W : List (List Nat))
         (fun k =>
           (coScale (W.map (fun ws => wact ws (exhibit b))) mu
             * ground.getAt BPair.unit
-              (elim.cofVec (elim.gramM
+              (ground.getAt [] (elim.adjMD (elim.gramM
                 (((W.filter
                     (fun ws => (wact ws (exhibit b)).content == mu)).map
-                  (fun ws => wact ws (exhibit b))).map HVec.coords)) k)
-              j,
+                  (fun ws => wact ws (exhibit b))).map HVec.coords)))
+                j) k,
             wactT dualTable (ground.getAt ([] : List Nat)
               (W.filter
                 (fun ws => (wact ws (exhibit b)).content == mu)) j) g,
@@ -2221,7 +2283,9 @@ private theorem coScale_off (Y : List HVec) (mu : List Nat)
 sum's unit. -/
 private theorem blockDet_off (s : Shape) (nu : List Nat) :
     ¬ (blockDet (blockSpan s) nu).oneValue BPair.unit :=
-  (blockcount.indepAll_all (lowerspan.spanReads s).2.1 nu).2
+  fun h => (blockcount.indepAll_all (lowerspan.spanReads s).2.1 nu).2
+    (BPair.oneValue_trans
+      (BPair.oneValue_symm (elim.detD_eq _ (elim.gramM_sq _))) h)
 
 /-- The collected word family's group at a content is the carrier's
 own: the filter reads the words' images. -/
@@ -2450,6 +2514,29 @@ private theorem coevBody_on (a b : Shape) (m : Nat)
           (List.range (W.filter
             (fun z => (wact z (exhibit b)).content == mu0)).length))))
     ?_
+  have hindG : elim.indepRows (places.monomialsAt mu0).length
+      (((W.filter (fun z => (wact z (exhibit b)).content == mu0)).map
+        (fun ws => wact ws (exhibit b))).map HVec.coords) := by
+    rw [coevGrp_group b W mu0, ← hW]
+    exact blockcount.indepAll_all (lowerspan.spanReads b).2.1 mu0
+  refine BPair.oneValue_trans
+    (adjBody_bridge _ hindG _ (by rw [ground.length_map, ground.length_map])
+      (fun j k x =>
+        ((coScale (W.map (fun ws => wact ws (exhibit b))) mu0 * x)
+          * elim.dotP (tensorH (wactT dualTable ws0 g)
+              (wact ws0 (exhibit b))).coords
+            (tensorH (wactT dualTable (ground.getAt ([] : List Nat)
+                (W.filter
+                  (fun z => (wact z (exhibit b)).content == mu0)) j) g)
+              (wact (ground.getAt ([] : List Nat)
+                (W.filter
+                  (fun z => (wact z (exhibit b)).content == mu0)) k)
+                (exhibit b))).coords)
+          * elim.dotP (exhibit b).coords (exhibit b).coords)
+      (fun _ _ _ _ h => BPair.mul_congr
+        (BPair.mul_congr (BPair.mul_congr (BPair.oneValue_refl _) h)
+          (BPair.oneValue_refl _))
+        (BPair.oneValue_refl _))) ?_
   refine ground.foldB_congr_members _ _
     (List.range (W.filter
       (fun z => (wact z (exhibit b)).content == mu0)).length)
@@ -2620,7 +2707,8 @@ theorem coevVec_off (a b : Shape) (m : Nat)
           (fun ws => wact ws (exhibit b))).map
             HVec.coords))).oneValue BPair.unit := by
       rw [coevGrp_group b W (exhibit b).content, ← hW]
-      exact blockDet_off b (exhibit b).content
+      exact fun h => blockDet_off b (exhibit b).content
+        (BPair.oneValue_trans (elim.detD_eq _ (elim.gramM_sq _)) h)
     have hsc : ¬ (coScale (W.map (fun ws => wact ws (exhibit b)))
         (exhibit b).content).oneValue BPair.unit := by
       rw [← hW]
@@ -2738,7 +2826,7 @@ private theorem coevBody_fold (b : Shape) (g : HVec)
         ground.famFold BPair.add BPair.unit (fun k =>
           F (coScale (W.map (fun ws => wact ws (exhibit b))) mu
               * ground.getAt BPair.unit
-                (elim.cofVec (coevG b W mu) k) j,
+                (ground.getAt [] (elim.adjMD (coevG b W mu)) j) k,
             coevX b g W mu j, coevY b W mu k))
           (List.range (coevIdx b W mu).length))
         (List.range (coevIdx b W mu).length)) := by
@@ -3049,6 +3137,32 @@ private theorem coevTest_fold (a b : Shape) (m : Nat)
           (List.range (coevIdx b W mu).length))
         (List.range (coevIdx b W mu).length)) := by
   refine BPair.oneValue_trans (coevBody_fold b g W mu _) ?_
+  have hindG : elim.indepRows (places.monomialsAt mu).length
+      (((coevIdx b W mu).map (fun ws => wact ws (exhibit b))).map
+        HVec.coords) := by
+    show elim.indepRows _
+      (((W.filter (fun ws => (wact ws (exhibit b)).content == mu)).map
+        (fun ws => wact ws (exhibit b))).map HVec.coords)
+    rw [coevGrp_group b W mu, ← hW]
+    exact blockcount.indepAll_all (lowerspan.spanReads b).2.1 mu
+  refine BPair.oneValue_trans
+    (adjBody_bridge _ hindG _ (by rw [ground.length_map, ground.length_map])
+      (fun j k e =>
+        ((coScale (W.map (fun ws => wact ws (exhibit b))) mu * e)
+          * elim.dotP (tensorH x y).coords
+            (tensorH (coevX b g W mu j) (coevY b W mu k)).coords) * E)
+      (fun _ _ _ _ h => BPair.mul_congr
+        (BPair.mul_congr (BPair.mul_congr (BPair.oneValue_refl _) h)
+          (BPair.oneValue_refl _))
+        (BPair.oneValue_refl _))) ?_
+  show (ground.famFold BPair.add BPair.unit (fun j =>
+    ground.famFold BPair.add BPair.unit (fun k =>
+      ((coScale (W.map (fun ws => wact ws (exhibit b))) mu
+          * ground.getAt BPair.unit (elim.cofVec (coevG b W mu) k) j)
+        * elim.dotP (tensorH x y).coords
+          (tensorH (coevX b g W mu j) (coevY b W mu k)).coords) * E)
+      (List.range (coevIdx b W mu).length))
+    (List.range (coevIdx b W mu).length)).oneValue _
   refine ground.foldB_congr_members _ _
     (List.range (coevIdx b W mu).length) (fun j hj0 => ?_)
   have hj : j < (coevIdx b W mu).length := ground.ltOfMem hj0
@@ -3174,14 +3288,15 @@ private theorem coevOff_x (a b : Shape) (m : Nat)
 determinant at that content. -/
 private theorem coevG_det (b : Shape) (W : List (List Nat))
     (mu : List Nat) :
-    elim.detL (coevG b W mu)
-      = blockDet (W.map (fun ws => wact ws (exhibit b))) mu := by
-  show elim.detL (elim.gramM (((W.filter
+    (elim.detL (coevG b W mu)).oneValue
+      (blockDet (W.map (fun ws => wact ws (exhibit b))) mu) := by
+  show (elim.detL (elim.gramM (((W.filter
         (fun ws => (wact ws (exhibit b)).content == mu)).map
-      (fun ws => wact ws (exhibit b))).map HVec.coords))
-    = blockDet (W.map (fun ws => wact ws (exhibit b))) mu
+      (fun ws => wact ws (exhibit b))).map HVec.coords))).oneValue
+    (elim.detD (elim.gramM
+      (groupAt (W.map (fun ws => wact ws (exhibit b))) mu)))
   rw [coevGrp_group b W mu]
-  rfl
+  exact BPair.oneValue_symm (elim.detD_eq _ (elim.gramM_sq _))
 
 /-- The coevaluation's pairing against a test tensor whose partner
 factor is one group's own key: the entries off that group read the
@@ -3237,8 +3352,11 @@ private theorem coevPair_key (a b : Shape) (m : Nat)
       (fun nu _ hne => coevOff_x a b m hba hjoin g hg hgc W hW hWb
         mu nu hne hs0.2.2.2.2.2.2.2 x (coevY b W mu k0) hxw hxd
         hs0.1 hxy E)) ?_
-  rw [coevG_det b W mu, scale_detAll
-    (W.map (fun ws => wact ws (exhibit b))) mu hcount]
+  refine BPair.oneValue_trans
+    (BPair.mul_congr
+      (BPair.mul_congr (BPair.oneValue_refl _) (coevG_det b W mu))
+      (BPair.oneValue_refl _)) ?_
+  rw [scale_detAll (W.map (fun ws => wact ws (exhibit b))) mu hcount]
   exact BPair.oneValue_refl _
 
 /-- The coevaluation's pairing against a test tensor whose partner
@@ -3318,8 +3436,11 @@ private theorem coevPair_gam (a b : Shape) (m : Nat)
       gam hgl
       (fun k => elim.dotP y.coords (coevY b W mu k).coords)
       hcom) ?_
-  rw [coevG_det b W mu, scale_detAll
-    (W.map (fun ws => wact ws (exhibit b))) mu hcount]
+  refine BPair.oneValue_trans
+    (BPair.mul_congr
+      (BPair.mul_congr (BPair.oneValue_refl _) (coevG_det b W mu))
+      (BPair.oneValue_refl _)) ?_
+  rw [scale_detAll (W.map (fun ws => wact ws (exhibit b))) mu hcount]
   exact BPair.oneValue_refl _
 
 /-- Two families whose pairwise pairings agree at the
@@ -4945,9 +5066,9 @@ private theorem coevBody_grid (Y : List HVec) (mu : List Nat) :
         (List.range (Y.filter (fun w =>
             w.content == mu)).length).map (fun k =>
           ((coScale Y mu) * ground.getAt BPair.unit
-              (elim.cofVec (elim.gramM
+              (ground.getAt [] (elim.adjMD (elim.gramM
                 ((Y.filter (fun w => w.content == mu)).map
-                  HVec.coords)) k) j,
+                  HVec.coords))) j) k,
             ground.getAt (⟨[], []⟩ : HVec)
               (Y.filter (fun w => w.content == mu)) j,
             ground.getAt (⟨[], []⟩ : HVec)
@@ -5039,7 +5160,7 @@ content's own grid: the double index fold of the coevaluation's
 weights against the argument's pairings and the moved second
 slots' entries. -/
 private theorem trip_grid (T : List Nat → elim.Mat)
-    (Y : List HVec) (x : HVec)
+    (Y : List HVec) (x : HVec) (hind : blockcount.indepAll Y)
     (h1 : ground.countOf x.content
       (ground.dedupL (Y.map HVec.content)) = 1)
     (hrows : elim.rowsLen (places.monomialsAt x.content).length
@@ -5079,13 +5200,33 @@ private theorem trip_grid (T : List Nat → elim.Mat)
     (ground.famFold_flatMap_ov ground.bpairFoldLaws
       _ _ (List.range (Y.filter (fun w =>
         w.content == x.content)).length)) ?_
-  exact ground.foldB_congr_members _ _
-    (List.range (Y.filter (fun w =>
-      w.content == x.content)).length)
-    (fun j _ => BPair.oneValue_of_eq
-      (ground.famFold_map BPair.add BPair.unit _ _
-        (List.range (Y.filter (fun w =>
-          w.content == x.content)).length)))
+  refine BPair.oneValue_trans
+    (ground.foldB_congr_members _ _
+      (List.range (Y.filter (fun w =>
+        w.content == x.content)).length)
+      (fun j _ => BPair.oneValue_of_eq
+        (ground.famFold_map BPair.add BPair.unit _ _
+          (List.range (Y.filter (fun w =>
+            w.content == x.content)).length)))) ?_
+  exact adjBody_bridge
+    ((Y.filter (fun w => w.content == x.content)).map HVec.coords)
+    (blockcount.indepAll_all hind x.content) _ (ground.length_map _ _)
+    (fun j k e =>
+      ((coScale Y x.content * e)
+        * elim.dotP (ground.getAt (⟨[], []⟩ : HVec)
+            (Y.filter (fun w => w.content == x.content))
+            j).coords x.coords)
+        * ground.getAt BPair.unit
+          (elim.matVec (T (ground.getAt (⟨[], []⟩ : HVec)
+              (Y.filter (fun w => w.content == x.content))
+              k).content)
+            (ground.getAt (⟨[], []⟩ : HVec)
+              (Y.filter (fun w => w.content == x.content))
+              k).coords) r)
+    (fun _ _ _ _ h => BPair.mul_congr
+      (BPair.mul_congr (BPair.mul_congr (BPair.oneValue_refl _) h)
+        (BPair.oneValue_refl _))
+      (BPair.oneValue_refl _))
 
 /-- The members' read: the composite's value at a listed member is
 the member's own at `detAll`'s scale — `lem:dualread`(i)'s round
@@ -5096,7 +5237,8 @@ theorem mapInv_trip_mem (T : List Nat → elim.Mat)
     (Y : List HVec)
     (x : HVec) (hx : x ∈ Y)
     (hT : (T x.content).length
-      = (places.monomialsAt x.content).length) :
+      = (places.monomialsAt x.content).length)
+    (hind : blockcount.indepAll Y) :
     poly.oneValue (mapAt (mapInv T Y) x).coords
       (elim.vecScale (detAll Y)
         (elim.matVec (T x.content) x.coords)) := by
@@ -5113,7 +5255,7 @@ theorem mapInv_trip_mem (T : List Nat → elim.Mat)
   · rw [elim.getAt_vecScale (detAll Y) _ r (by
       rw [elim.matVec_length, hT]
       exact hr)]
-    refine BPair.oneValue_trans (trip_grid T Y x h1 hrows r hr) ?_
+    refine BPair.oneValue_trans (trip_grid T Y x hind h1 hrows r hr) ?_
     refine BPair.oneValue_trans
       (ground.foldB_swapL
         (fun j k => ((coScale Y x.content
@@ -5216,15 +5358,11 @@ theorem mapInv_trip_mem (T : List Nat → elim.Mat)
               w.content == x.content)) x.content hgrp x m hm hme)
       · refine ground.foldB_pickRange _ m _ (Y.filter (fun w =>
           w.content == x.content)).length hm ?_ ?_
-        · rw [if_pos (show m = m from rfl), hme]
-          refine BPair.oneValue_of_eq ?_
-          rw [BPair.mul_assoc,
-            show elim.detL (elim.gramM
-                ((Y.filter (fun w =>
-                  w.content == x.content)).map HVec.coords))
-              = blockDet Y x.content from rfl,
-            scale_detAll Y x.content h1,
-            BPair.mul_comm]
+        · rw [if_pos (show m = m from rfl), hme, BPair.mul_assoc]
+          refine BPair.oneValue_trans
+            (BPair.mul_congr (BPair.oneValue_refl _)
+              (scale_detAllL Y x.content h1)) ?_
+          exact BPair.oneValue_of_eq (BPair.mul_comm _ _)
         · intro t' _ hti
           rw [if_neg hti]
           exact BPair.mul_unit _
@@ -5485,7 +5623,7 @@ private theorem tripCombo (T : List Nat → elim.Mat)
     (hrows : elim.rowsLen (places.monomialsAt xc).length
       (((mapInv T Y).filter (fun t => t.2.1.content == xc)).map
         (fun t => t.2.2.coords)))
-    (n : Nat) :
+    (hind : blockcount.indepAll Y) (n : Nat) :
     ∀ (cs : List BPair) (G : List HVec),
       (∀ g ∈ G, g ∈ Y ∧ g.content = xc ∧ g.coords.length = n) →
       poly.oneValue
@@ -5518,10 +5656,10 @@ private theorem tripCombo (T : List Nat → elim.Mat)
           = (places.monomialsAt g.content).length := by
         rw [hg.2.1]
         exact hT
-      have hbase := mapInv_trip_mem T Y g hg.1 hgT
+      have hbase := mapInv_trip_mem T Y g hg.1 hgT hind
       rw [← hg.2.1]
       exact hbase
-    · exact tripCombo T Y xc hT hrows n cs G'
+    · exact tripCombo T Y xc hT hrows hind n cs G'
         (fun g' hg' => hG g' (List.Mem.tail _ hg'))
 
 /-- The members' reads extend over the list's span: the composite
@@ -5536,7 +5674,8 @@ theorem mapInv_trip (T : List Nat → elim.Mat) (Y : List HVec)
     (hsp : elim.spanRel x.coords.length
       (blockcount.groupAt Y x.content) x.coords)
     (hT : (T x.content).length
-      = (places.monomialsAt x.content).length) :
+      = (places.monomialsAt x.content).length)
+    (hind : blockcount.indepAll Y) :
     poly.oneValue (mapAt (mapInv T Y) x).coords
       (elim.vecScale (detAll Y)
         (elim.matVec (T x.content) x.coords)) := by
@@ -5582,7 +5721,7 @@ theorem mapInv_trip (T : List Nat → elim.Mat) (Y : List HVec)
           exact elim.rowsLen_getAt _ k hsp.1 hk
       match elim.span_elim hsp with
       | ⟨c₀, cs, hc₀, _, hone⟩ =>
-        have htrip := tripCombo T Y x.content hT hrows
+        have htrip := tripCombo T Y x.content hT hrows hind
           x.coords.length cs
           (Y.filter (fun w => w.content == x.content)) hGf
         refine poly.ov_of_getAt (fun r => ?_)
@@ -5745,7 +5884,7 @@ at the sum's unit. -/
 private theorem group_readT (T : List Nat → elim.Mat)
     (grp : List HVec) (mu : List Nat)
     (hcont : ∀ w ∈ grp, w.content = mu) (s D E : BPair)
-    (hsd : s * elim.detL (elim.gramM (grp.map HVec.coords)) = D)
+    (hsd : (s * elim.detL (elim.gramM (grp.map HVec.coords))).oneValue D)
     (p q : Nat) (a b : HVec)
     (hag : mu = a.content → a ∈ grp)
     (hE : mu = b.content →
@@ -6033,7 +6172,7 @@ theorem mapInv_equiv (T : List Nat → elim.Mat) (Y : List HVec)
       (elim.matVec (T (moveAt p q a.content)) (act p q a).coords))
     (hcl : elim.spanRel (act p q a).coords.length
       (blockcount.groupAt Y (act p q a).content)
-      (act p q a).coords) :
+      (act p q a).coords) (hind : blockcount.indepAll Y) :
     (movedAt (mapInv T Y) p q a b).oneValue BPair.unit := by
   have haD : ground.countOf a.content
       (ground.dedupL (Y.map HVec.content)) = 1 :=
@@ -6091,10 +6230,25 @@ theorem mapInv_equiv (T : List Nat → elim.Mat) (Y : List HVec)
           (ground.famFold_map BPair.add BPair.unit _ _
             (List.range
               (Y.filter (fun w => w.content == mu)).length)))) ?_
+    refine BPair.oneValue_trans
+      (adjBody_bridge ((Y.filter (fun w => w.content == mu)).map HVec.coords)
+        (blockcount.indepAll_all hind mu) _ (ground.length_map _ _)
+        (fun j k x => (coScale Y mu * x)
+          * (dotG (dact p q (ground.getAt (⟨[], []⟩ : HVec)
+                (Y.filter (fun w => w.content == mu)) j)) a
+              * dotG (slotT T (ground.getAt (⟨[], []⟩ : HVec)
+                (Y.filter (fun w => w.content == mu)) k)) b
+            + dotG (ground.getAt (⟨[], []⟩ : HVec)
+                (Y.filter (fun w => w.content == mu)) j) a
+              * dotG (act p q (slotT T (ground.getAt (⟨[], []⟩ : HVec)
+                (Y.filter (fun w => w.content == mu)) k))) b))
+        (fun _ _ _ _ h => BPair.mul_congr
+          (BPair.mul_congr (BPair.oneValue_refl _) h)
+          (BPair.oneValue_refl _))) ?_
     exact group_readT T (Y.filter (fun w => w.content == mu)) mu
       (fun w hw => ground.listBeqEq
         ((ground.mem_filter_of _ Y w hw).2))
-      (coScale Y mu) (detAll Y) _ (scale_detAll Y mu h1) p q a b
+      (coScale Y mu) (detAll Y) _ (scale_detAllL Y mu h1) p q a b
       (fun he => ground.mem_filter_to _ ha
         (by rw [he]; exact ground.listEqBeq a.content))
       (fun he => by rw [he])
@@ -6179,11 +6333,11 @@ theorem mapInv_equiv (T : List Nat → elim.Mat) (Y : List HVec)
               Nat.le_antisymm
                 (ground.countOf_dedupL_le b.content
                   (Y.map HVec.content)) hbY
-            have hscale : coScale Y b.content
+            have hscale : (coScale Y b.content
                 * elim.detL (elim.gramM
                   ((Y.filter (fun w => w.content == b.content)).map
-                    HVec.coords)) = detAll Y :=
-              scale_detAll Y b.content hbD
+                    HVec.coords))).oneValue (detAll Y) :=
+              scale_detAllL Y b.content hbD
             rw [hbD]
             refine BPair.oneValue_trans
               (BPair.add_congr (BPair.ofNat_one_mul _)
@@ -6207,8 +6361,9 @@ theorem mapInv_equiv (T : List Nat → elim.Mat) (Y : List HVec)
                     (Y.filter (fun w => w.content == b.content))
                     p q a b c₀ cs (act p q a).coords.length hcb
                     hcl2.1 hcsl' hone hqb hpq hocc hg1' hsa hnm)) ?_
-              rw [BPair.mul_swap, ← BPair.mul_assoc, hscale]
-              exact BPair.oneValue_refl _
+              rw [BPair.mul_swap, ← BPair.mul_assoc]
+              exact ground.swap_congr
+                (BPair.mul_congr hscale (BPair.oneValue_refl _))
             · rw [← BPair.mul_assoc, BPair.mul_comm c₀ (detAll Y),
                 BPair.mul_assoc]
               refine BPair.mul_congr (BPair.oneValue_refl _) ?_
@@ -8030,10 +8185,12 @@ every argument to the unit tail. -/
 
 /-- The solve at the second list's group: the adjugate against the
 group's Gram at a value's pairing data, `lem:lowerspan`'s membership
-solve at the stated content. -/
+solve at the stated content, read at the bordered descent
+(`elim.adjD`, the cofactor family's value at the independent
+group's Gram, `elim.adjD_gram`). -/
 private def zSolve (Z : List HVec) (mu : List Nat) (v : List BPair) :
     List BPair :=
-  elim.adjP (elim.gramM (groupAt Z mu))
+  elim.adjD (elim.gramM (groupAt Z mu))
     ((groupAt Z mu).map (fun r => elim.dotP v r))
 
 /-- One first-list member's row over its content's grid slots: the
@@ -8045,7 +8202,7 @@ private def gridRow (T : List Nat → elim.Mat) (Y Z : List HVec)
   elim.combo (groupAt Z mu).length
     ((List.range (groupAt Y mu).length).map (fun k =>
       coScale Y mu * ground.getAt BPair.unit
-        (elim.cofVec (elim.gramM (groupAt Y mu)) k) j))
+        (ground.getAt [] (elim.adjMD (elim.gramM (groupAt Y mu))) j) k))
     ((List.range (groupAt Y mu).length).map (fun k =>
       elim.vecScale (coScale Z mu)
         (zSolve Z mu
@@ -8122,11 +8279,11 @@ private theorem length_gridRow (T : List Nat → elim.Mat)
   refine elim.length_combo (groupAt Z mu).length _ _
     (elim.rowsLen_map _ _ _ (fun k _ => ?_))
   rw [elim.length_vecScale]
-  show (elim.adjP (elim.gramM (groupAt Z mu))
+  show (elim.adjD (elim.gramM (groupAt Z mu))
     ((groupAt Z mu).map (fun r => elim.dotP
       (elim.matVec (T mu) (ground.getAt [] (groupAt Y mu) k))
       r))).length = _
-  rw [elim.length_adjP]
+  rw [elim.length_adjD]
   exact ground.length_map _ (groupAt Z mu)
 
 /-- The walk's width is the grid's, at every faithful counter. -/
@@ -8472,7 +8629,7 @@ theorem mapMat_trip (P : List (BPair × HVec × HVec)) (Y : List HVec)
     (hm : ∀ t ∈ P, (t.2.1 : HVec).content = (t.2.2 : HVec).content)
     (hfi : ∀ t ∈ P, elim.spanRel (t.2.1 : HVec).coords.length
       (blockcount.groupAt Y (t.2.1 : HVec).content)
-      (t.2.1 : HVec).coords) :
+      (t.2.1 : HVec).coords) (hind : blockcount.indepAll Y) :
     poly.oneValue (mapAt (mapInv (mapMat P) Y) x).coords
       (elim.vecScale (detAll Y) (mapAt P x).coords) := by
   have hW := filterRowsW P x.content hsz hm
@@ -8547,7 +8704,7 @@ theorem mapMat_trip (P : List (BPair × HVec × HVec)) (Y : List HVec)
         rw [mapAt_coords, elim.length_combo _ _ _ hW]
         exact hr)]
       refine BPair.oneValue_trans
-        (trip_grid (mapMat P) Y x h1 hrows r hr) ?_
+        (trip_grid (mapMat P) Y x hind h1 hrows r hr) ?_
       -- the moved second slot's entry opens at the map's own fold
       -- over the family, the member's coefficient and coordinate
       -- crossing to the outside
@@ -8699,11 +8856,10 @@ theorem mapMat_trip (P : List (BPair × HVec × HVec)) (Y : List HVec)
             (trip_collapse (Y.filter (fun w => w.content == x.content))
               (coScale Y x.content) x t.2.1
               (hfx t (ground.mem_of_countOf_pos _ _ ht0)))) ?_
-        rw [show elim.detL (elim.gramM
-              ((Y.filter (fun w =>
-                w.content == x.content)).map HVec.coords))
-            = blockDet Y x.content from rfl,
-          scale_detAll Y x.content h1]
+        refine BPair.oneValue_trans
+          (BPair.mul_congr (BPair.oneValue_refl _)
+            (BPair.mul_congr (scale_detAllL Y x.content h1)
+              (BPair.oneValue_refl _))) ?_
         exact BPair.oneValue_of_eq (entry_collect _ _ _ _)
       refine BPair.oneValue_trans (ground.foldB_mul_left _ _ _) ?_
       refine BPair.mul_congr (BPair.oneValue_refl _) ?_
@@ -8752,11 +8908,11 @@ private theorem detZ_split (Z : List HVec) (mu : List Nat) :
     have hgz : Z.filter (fun w => w.content == mu) = [] :=
       ground.filter_false _ Z hnm
     have hbd : (blockDet Z mu).oneValue (BPair.ofNat 1) := by
-      show (elim.detL (elim.gramM
+      show (elim.detD (elim.gramM
         ((Z.filter (fun w => w.content == mu)).map
           HVec.coords))).oneValue (BPair.ofNat 1)
       rw [hgz]
-      exact BPair.add_unit (BPair.ofPos .one)
+      decide +kernel
     rw [hsk]
     exact BPair.oneValue_trans
       (BPair.mul_congr (BPair.oneValue_refl (detAll Z)) hbd)
@@ -8815,93 +8971,121 @@ private theorem filter_chunkTrip (mu : List Nat) (y : HVec) :
 
 /-- The graded solve clears over the second list's span: the
 combination of the solve against the group reads the block
-determinant's scale of the value. -/
+determinant's scale of the value, at an independent group through
+the adjugate solve and at a dependent one both members the unit
+family, the descent read's cofactors at equal members. -/
 private theorem solve_clear (Z : List HVec) (mu : List Nat)
     (w : List BPair) (n : Nat)
     (hsp : elim.spanRel n (groupAt Z mu) w) :
     poly.oneValue (elim.combo n (zSolve Z mu w) (groupAt Z mu))
       (elim.vecScale (blockDet Z mu) w) := by
-  match elim.span_elim hsp with
-  | ⟨c₀, cs, hc₀, hcs, hone⟩ =>
-    have hwn : w.length = n := hsp.2.1
-    have hrows : elim.rowsLen n (groupAt Z mu) := hsp.1
-    have hgl : (groupAt Z mu).length
-        = (Z.filter (fun v => v.content == mu)).length :=
-      ground.length_map HVec.coords _
-    have hzl : (zSolve Z mu w).length = (groupAt Z mu).length := by
-      show (elim.adjP _ _).length = _
-      rw [elim.length_adjP]
-      exact (ground.length_map _ (groupAt Z mu)).symm ▸ rfl
-    have hzsp : zSolve Z mu w
-        = elim.adjP (elim.gramM
-            ((Z.filter (fun v => v.content == mu)).map HVec.coords))
-          ((Z.filter (fun v => v.content == mu)).map
-            (fun v => elim.dotP w v.coords)) := by
-      show elim.adjP (elim.gramM (groupAt Z mu))
-          ((groupAt Z mu).map (fun r => elim.dotP w r)) = _
-      rw [show groupAt Z mu = (Z.filter (fun v =>
-          v.content == mu)).map HVec.coords from rfl,
-        ground.map_map]
-    have e4 : poly.oneValue (elim.vecScale c₀ (zSolve Z mu w))
-        (elim.vecScale (blockDet Z mu) cs) := by
-      refine poly.ov_of_getAt (fun j => ?_)
-      by_cases hj : j < (Z.filter (fun v => v.content == mu)).length
-      · rw [elim.getAt_vecScale c₀ _ j (by
-          rw [hzl, hgl]; exact hj),
-          elim.getAt_vecScale (blockDet Z mu) _ j (by
-          rw [hcs, hgl]; exact hj), hzsp]
+  match (inferInstance : Decidable
+      ((elim.detD (elim.gramM (groupAt Z mu))).oneValue BPair.unit)) with
+  | isTrue hdet =>
+    exact poly.unitTail_oneValue
+      (elim.unitTail_combo_of n _ _ (elim.adjD_of_detUnit _ _ hdet))
+      (elim.unitTail_vecScale_unit hdet w)
+  | isFalse hdet =>
+    have hind : elim.indepRows n (groupAt Z mu) :=
+      ⟨hsp.1, fun h => hdet (BPair.oneValue_trans
+        (elim.detD_eq _ (elim.gramM_sq _)) h)⟩
+    match elim.span_elim hsp with
+    | ⟨c₀, cs, hc₀, hcs, hone⟩ =>
+      have hwn : w.length = n := hsp.2.1
+      have hrows : elim.rowsLen n (groupAt Z mu) := hsp.1
+      have hgl : (groupAt Z mu).length
+          = (Z.filter (fun v => v.content == mu)).length :=
+        ground.length_map HVec.coords _
+      have hzl : (zSolve Z mu w).length = (groupAt Z mu).length := by
+        show (elim.adjD _ _).length = _
+        rw [elim.length_adjD]
+        exact (ground.length_map _ (groupAt Z mu)).symm ▸ rfl
+      have hind' : elim.indepRows n
+          ((Z.filter (fun v : HVec => v.content == mu)).map HVec.coords) :=
+        hind
+      have hzsp : zSolve Z mu w
+          = elim.adjD (elim.gramM
+              ((Z.filter (fun v => v.content == mu)).map HVec.coords))
+            ((Z.filter (fun v => v.content == mu)).map
+              (fun v => elim.dotP w v.coords)) := by
+        show elim.adjD (elim.gramM (groupAt Z mu))
+            ((groupAt Z mu).map (fun r => elim.dotP w r)) = _
+        rw [show groupAt Z mu = (Z.filter (fun v =>
+            v.content == mu)).map HVec.coords from rfl,
+          ground.map_map]
+      have e4 : poly.oneValue (elim.vecScale c₀ (zSolve Z mu w))
+          (elim.vecScale (blockDet Z mu) cs) := by
+        refine poly.ov_of_getAt (fun j => ?_)
+        by_cases hj : j < (Z.filter (fun v => v.content == mu)).length
+        · rw [elim.getAt_vecScale c₀ _ j (by
+            rw [hzl, hgl]; exact hj),
+            elim.getAt_vecScale (blockDet Z mu) _ j (by
+            rw [hcs, hgl]; exact hj), hzsp]
+          refine BPair.oneValue_trans
+            (BPair.mul_congr (BPair.oneValue_refl c₀)
+              (poly.oneValue_getAt j
+                (elim.adjD_gram n
+                  ((Z.filter (fun v : HVec => v.content == mu)).map HVec.coords)
+                  hind'
+                  ((Z.filter (fun v : HVec => v.content == mu)).map
+                    (fun v : HVec => elim.dotP w v.coords))
+                  (by rw [ground.length_map, ground.length_map])))) ?_
+          refine BPair.oneValue_trans
+            (adjP_span_entry (Z.filter (fun v => v.content == mu))
+              (⟨mu, w⟩ : HVec) c₀ cs n hrows (by rw [hcs]; exact hgl)
+              hone j hj) ?_
+          refine BPair.oneValue_trans
+            (BPair.oneValue_of_eq (BPair.mul_comm _ _)) ?_
+          exact BPair.mul_congr
+            (BPair.oneValue_symm (elim.detD_eq _ (elim.gramM_sq _)))
+            (BPair.oneValue_refl _)
+        · rw [ground.getAt_over BPair.unit _ j (by
+            rw [elim.length_vecScale, hzl, hgl]
+            exact Nat.le_of_not_lt hj),
+            ground.getAt_over BPair.unit _ j (by
+            rw [elim.length_vecScale, hcs, hgl]
+            exact Nat.le_of_not_lt hj)]
+          exact BPair.oneValue_refl _
+      refine poly.ov_of_getAt (fun i => ?_)
+      by_cases hi : i < n
+      · refine ground.mulCancel hc₀ ?_
+        rw [elim.getAt_vecScale (blockDet Z mu) w i (by
+          rw [hwn]; exact hi)]
         refine BPair.oneValue_trans
-          (adjP_span_entry (Z.filter (fun v => v.content == mu))
-            (⟨mu, w⟩ : HVec) c₀ cs n hrows (by rw [hcs]; exact hgl)
-            hone j hj) ?_
-        exact BPair.oneValue_of_eq (BPair.mul_comm _ _)
-      · rw [ground.getAt_over BPair.unit _ j (by
-          rw [elim.length_vecScale, hzl, hgl]
-          exact Nat.le_of_not_lt hj),
-          ground.getAt_over BPair.unit _ j (by
-          rw [elim.length_vecScale, hcs, hgl]
-          exact Nat.le_of_not_lt hj)]
-        exact BPair.oneValue_refl _
-    refine poly.ov_of_getAt (fun i => ?_)
-    by_cases hi : i < n
-    · refine ground.mulCancel hc₀ ?_
-      rw [elim.getAt_vecScale (blockDet Z mu) w i (by
-        rw [hwn]; exact hi)]
-      refine BPair.oneValue_trans
-        (BPair.mul_congr (BPair.oneValue_refl c₀)
-          (elim.combo_getAt n (zSolve Z mu w) (groupAt Z mu) i
-            hrows hi)) ?_
-      rw [elim.dotP_comm (zSolve Z mu w)
-        ((groupAt Z mu).map (fun r => ground.getAt BPair.unit r i))]
-      refine BPair.oneValue_trans
-        (BPair.oneValue_symm (elim.dotP_vecScale_right
+          (BPair.mul_congr (BPair.oneValue_refl c₀)
+            (elim.combo_getAt n (zSolve Z mu w) (groupAt Z mu) i
+              hrows hi)) ?_
+        rw [elim.dotP_comm (zSolve Z mu w)
+          ((groupAt Z mu).map (fun r => ground.getAt BPair.unit r i))]
+        refine BPair.oneValue_trans
+          (BPair.oneValue_symm (elim.dotP_vecScale_right
+            ((groupAt Z mu).map (fun r => ground.getAt BPair.unit r i))
+            (zSolve Z mu w) c₀)) ?_
+        refine BPair.oneValue_trans
+          (elim.dotP_oneValue_right _ _ _ e4) ?_
+        refine BPair.oneValue_trans
+          (elim.dotP_vecScale_right _ cs (blockDet Z mu)) ?_
+        rw [elim.dotP_comm
           ((groupAt Z mu).map (fun r => ground.getAt BPair.unit r i))
-          (zSolve Z mu w) c₀)) ?_
-      refine BPair.oneValue_trans
-        (elim.dotP_oneValue_right _ _ _ e4) ?_
-      refine BPair.oneValue_trans
-        (elim.dotP_vecScale_right _ cs (blockDet Z mu)) ?_
-      rw [elim.dotP_comm
-        ((groupAt Z mu).map (fun r => ground.getAt BPair.unit r i))
-        cs]
-      refine BPair.oneValue_trans
-        (BPair.mul_congr (BPair.oneValue_refl (blockDet Z mu))
-          (BPair.oneValue_symm (elim.combo_getAt n cs
-            (groupAt Z mu) i hrows hi))) ?_
-      refine BPair.oneValue_trans
-        (BPair.mul_congr (BPair.oneValue_refl (blockDet Z mu))
-          (poly.oneValue_getAt i (poly.oneValue_symm hone))) ?_
-      rw [elim.getAt_vecScale c₀ w i (by rw [hwn]; exact hi),
-        ← BPair.mul_assoc, BPair.mul_comm (blockDet Z mu) c₀,
-        BPair.mul_assoc]
-      exact BPair.oneValue_refl _
-    · rw [ground.getAt_over BPair.unit _ i (by
-        rw [elim.length_combo n _ _ hrows]
-        exact Nat.le_of_not_lt hi),
-        ground.getAt_over BPair.unit _ i (by
-        rw [elim.length_vecScale, hwn]
-        exact Nat.le_of_not_lt hi)]
-      exact BPair.oneValue_refl _
+          cs]
+        refine BPair.oneValue_trans
+          (BPair.mul_congr (BPair.oneValue_refl (blockDet Z mu))
+            (BPair.oneValue_symm (elim.combo_getAt n cs
+              (groupAt Z mu) i hrows hi))) ?_
+        refine BPair.oneValue_trans
+          (BPair.mul_congr (BPair.oneValue_refl (blockDet Z mu))
+            (poly.oneValue_getAt i (poly.oneValue_symm hone))) ?_
+        rw [elim.getAt_vecScale c₀ w i (by rw [hwn]; exact hi),
+          ← BPair.mul_assoc, BPair.mul_comm (blockDet Z mu) c₀,
+          BPair.mul_assoc]
+        exact BPair.oneValue_refl _
+      · rw [ground.getAt_over BPair.unit _ i (by
+          rw [elim.length_combo n _ _ hrows]
+          exact Nat.le_of_not_lt hi),
+          ground.getAt_over BPair.unit _ i (by
+          rw [elim.length_vecScale, hwn]
+          exact Nat.le_of_not_lt hi)]
+        exact BPair.oneValue_refl _
 
 
 /-- The block's fold at a tagged chunk: the coefficients against the
@@ -8934,10 +9118,32 @@ private theorem zipTrip_foldW (x : HVec) (r : Nat) (y : HVec) :
     exact BPair.add_congr (BPair.oneValue_refl _)
       (zipTrip_foldW x r y cs L (Nat.succ.inj h))
 
+/-- The descent adjugate's entry at an independent group's Gram is
+the cofactor vector's own at every row key, both reads the unit
+beyond the group's count. -/
+private theorem adjMD_entry (L : elim.Mat) {n : Nat}
+    (hind : elim.indepRows n L) (j k : Nat) (hk : k < L.length) :
+    (ground.getAt BPair.unit
+      (ground.getAt [] (elim.adjMD (elim.gramM L)) j) k).oneValue
+      (ground.getAt BPair.unit (elim.cofVec (elim.gramM L) k) j) := by
+  match Nat.lt_or_ge j L.length with
+  | .inl hj => exact elim.adjMD_cofVec n L hind j k hj hk
+  | .inr hj =>
+    have hGl : (elim.gramM L).length = L.length :=
+      elim.sqAt_len (elim.gram_sqAt L)
+    rw [ground.getAt_over ([] : List BPair) _ j
+        (by show (ground.matOf _ _ _).length ≤ j
+            rw [ground.matOf_length, hGl]; exact hj),
+      ground.getAt_over BPair.unit _ j
+        (by rw [elim.length_cofVec, hGl]; exact hj),
+      ground.getAt_over BPair.unit [] k (Nat.zero_le k)]
+    exact BPair.oneValue_refl _
+
 /-- One block's collection: the tagged chunk's fold reads the graded
 determinant's scale of the coevaluation coefficients' fold at the
-map values' entry reads, the graded solve clearing per group
-member. -/
+map values' entry reads, the graded solve clearing per group member
+and the descent adjugate's entries the cofactors at the
+independent group. -/
 private theorem block_val (T : List Nat → elim.Mat) (Y Z : List HVec)
     (x : HVec) (r : Nat)
     (hr : r < (places.monomialsAt x.content).length)
@@ -8949,6 +9155,7 @@ private theorem block_val (T : List Nat → elim.Mat) (Y Z : List HVec)
     (hfZ : ∀ v ∈ groupAt Y x.content,
       elim.spanRel v.length (groupAt Z x.content)
         (elim.matVec (T x.content) v))
+    (hind : blockcount.indepAll Y)
     (y : HVec) (j : Nat) :
     (ground.famFold BPair.add BPair.unit
       (fun t => (t.1 * elim.dotP t.2.1.coords x.coords)
@@ -8982,8 +9189,8 @@ private theorem block_val (T : List Nat → elim.Mat) (Y Z : List HVec)
               (ground.getAt [] (groupAt Y x.content) k))))) := by
     refine elim.rowsLen_map _ _ _ (fun k _ => ?_)
     rw [elim.length_vecScale]
-    show (elim.adjP (elim.gramM (groupAt Z x.content)) _).length = _
-    rw [elim.length_adjP]
+    show (elim.adjD (elim.gramM (groupAt Z x.content)) _).length = _
+    rw [elim.length_adjD]
     exact ground.length_map _ (groupAt Z x.content)
   have hproj : (Z.filter (fun v => v.content == x.content)).map
       (fun z => ground.getAt BPair.unit z.coords r)
@@ -9032,6 +9239,12 @@ private theorem block_val (T : List Nat → elim.Mat) (Y Z : List HVec)
       have hentry := poly.oneValue_getAt r hclear
       rw [elim.getAt_vecScale (blockDet Z x.content) _ r (by
         rw [elim.matVec_length, hT]; exact hr)] at hentry
+      refine BPair.oneValue_trans
+        (BPair.mul_congr
+          (BPair.mul_congr (BPair.oneValue_refl _)
+            (adjMD_entry (groupAt Y x.content)
+              (blockcount.indepAll_all hind x.content) j k hk))
+          (BPair.oneValue_refl _)) ?_
       refine BPair.oneValue_trans
         (BPair.mul_congr (BPair.oneValue_refl _)
           (elim.dotP_vecScale_right _ _ (coScale Z x.content))) ?_
@@ -9100,7 +9313,8 @@ private theorem go_val (T : List Nat → elim.Mat) (Y Z : List HVec)
       (groupAt Y x.content))
     (hfZ : ∀ v ∈ groupAt Y x.content,
       elim.spanRel v.length (groupAt Z x.content)
-        (elim.matVec (T x.content) v)) :
+        (elim.matVec (T x.content) v))
+    (hind : blockcount.indepAll Y) :
     ∀ (suf pre : List HVec), pre ++ suf = Y →
       (ground.famFold BPair.add BPair.unit
         (fun t => (t.1 * elim.dotP t.2.1.coords x.coords)
@@ -9195,9 +9409,9 @@ private theorem go_val (T : List Nat → elim.Mat) (Y Z : List HVec)
             (p := fun w => w.content == x.content) (a := y) hb]
         exact rfl
       rw [hyc]
-      have hhead := block_val T Y Z x r hr hT hZrows hYrows hfZ y
+      have hhead := block_val T Y Z x r hr hT hZrows hYrows hfZ hind y
         ((pre.filter (fun w => w.content == x.content)).length)
-      have htail := go_val T Y Z x r hr hT hZrows hYrows hfZ suf
+      have htail := go_val T Y Z x r hr hT hZrows hYrows hfZ hind suf
         (pre ++ [y]) (by rw [ground.append_assoc]; exact hps)
       refine BPair.oneValue_trans (BPair.add_congr hhead htail) ?_
       refine BPair.oneValue_trans
@@ -9262,7 +9476,7 @@ private theorem go_val (T : List Nat → elim.Mat) (Y Z : List HVec)
           (p := fun w => w.content == x.content) (a := y) hb]
       refine BPair.oneValue_trans
         (BPair.add_congr (BPair.oneValue_refl BPair.unit)
-          (go_val T Y Z x r hr hT hZrows hYrows hfZ suf (pre ++ [y])
+          (go_val T Y Z x r hr hT hZrows hYrows hfZ hind suf (pre ++ [y])
             (by rw [ground.append_assoc]; exact hps))) ?_
       refine BPair.oneValue_trans (BPair.unit_add _) ?_
       rw [htl]
@@ -9297,7 +9511,8 @@ theorem gridOf_val (T : List Nat → elim.Mat) (Y Z : List HVec)
       (blockcount.groupAt Y x.content) x.coords)
     (hfZ : ∀ v ∈ blockcount.groupAt Y x.content,
       elim.spanRel v.length (blockcount.groupAt Z x.content)
-        (elim.matVec (T x.content) v)) :
+        (elim.matVec (T x.content) v))
+    (hind : blockcount.indepAll Y) :
     poly.oneValue (mapAt (invFam Y Z (gridOf T Y Z)) x).coords
       (elim.vecScale (detAll Z * detAll Y)
         (elim.matVec (T x.content) x.coords)) := by
@@ -9404,9 +9619,9 @@ theorem gridOf_val (T : List Nat → elim.Mat) (Y Z : List HVec)
       refine BPair.oneValue_trans
         (elim.combo_getAt _ _ _ r hW hr) ?_
       rw [ground.map_map, elim.dotP_map_pair]
-      have hgo := go_val T Y Z x r hr hT hZrows hYrows hfZ Y [] rfl
+      have hgo := go_val T Y Z x r hr hT hZrows hYrows hfZ hind Y [] rfl
       refine BPair.oneValue_trans hgo ?_
-      have htg := trip_grid T Y x h1
+      have htg := trip_grid T Y x hind h1
         (tripRows T Y x.content h1 hT) r hr
       refine BPair.oneValue_trans
         (BPair.mul_congr (BPair.oneValue_refl (detAll Z))
@@ -9428,7 +9643,7 @@ theorem gridOf_val (T : List Nat → elim.Mat) (Y Z : List HVec)
             (ground.mem_getAt _ _ k hk)]
         exact BPair.oneValue_refl _
       · have htrip := mapInv_trip T Y x (by
-          rw [hxl]; exact hsp) hT
+          rw [hxl]; exact hsp) hT hind
         refine BPair.oneValue_trans
           (BPair.mul_congr (BPair.oneValue_refl (detAll Z))
             (poly.oneValue_getAt r htrip)) ?_
@@ -9457,12 +9672,13 @@ theorem gridOf_off (T : List Nat → elim.Mat) (Y Z : List HVec)
         (elim.matVec (T x.content) v))
     (hoff : ¬ poly.unitTail
       (elim.vecScale (detAll Z * detAll Y)
-        (elim.matVec (T x.content) x.coords))) :
+        (elim.matVec (T x.content) x.coords)))
+    (hind : blockcount.indepAll Y) :
     ¬ poly.unitTail (gridOf T Y Z) := by
   intro hu
   refine hoff ?_
   refine poly.oneValue_unitTail
-    (poly.oneValue_symm (gridOf_val T Y Z x hsp hfZ)) ?_
+    (poly.oneValue_symm (gridOf_val T Y Z x hsp hfZ hind)) ?_
   exact invFam_unitTail Y Z (gridOf T Y Z) x hu
 
 
@@ -9544,7 +9760,8 @@ theorem gridOf_ker (T : List Nat → elim.Mat) (Y Z : List HVec)
     (hfZ : ∀ mu ∈ Y.map HVec.content,
       ∀ v ∈ blockcount.groupAt Y mu,
       elim.spanRel v.length (blockcount.groupAt Z mu)
-        (elim.matVec (T mu) v)) :
+        (elim.matVec (T mu) v))
+    (hind : blockcount.indepAll Y) :
     poly.unitTail (elim.matVec (dualSys Y Z d) (gridOf T Y Z)) := by
   have hszfam : ∀ t ∈ invFam Y Z (gridOf T Y Z),
       sized (t.2.1 : HVec) ∧ sized (t.2.2 : HVec) := by
@@ -9595,7 +9812,7 @@ theorem gridOf_ker (T : List Nat → elim.Mat) (Y Z : List HVec)
         exact elim.spanRel_getAt _ _ k hk hYra
     have hva := gridOf_val T Y Z a hspa
       (fun v hv => hfZ a.content
-        (ground.mem_map_to HVec.content ha) v hv)
+        (ground.mem_map_to HVec.content ha) v hv) hind
     have hclA := hcl p hp q hq hpq a ha
     have hsact : (act p q a).coords.length
         = (places.monomialsAt (act p q a).content).length :=
@@ -9614,7 +9831,7 @@ theorem gridOf_ker (T : List Nat → elim.Mat) (Y Z : List HVec)
         refine hfZ (act p q a).content ?_ v hv
         rw [← hwc]
         exact ground.mem_map_to HVec.content hwY'
-    have hvm := gridOf_val T Y Z (act p q a) hclA hfZ'
+    have hvm := gridOf_val T Y Z (act p q a) hclA hfZ' hind
     have hR2 : poly.oneValue
         (act p q (mapAt (invFam Y Z (gridOf T Y Z)) a)).coords
         (mapAt (invFam Y Z (gridOf T Y Z)) (act p q a)).coords := by
@@ -11470,6 +11687,8 @@ theorem countAt_lineShift (d : Nat) (P : List HVec)
       (fun a b => a + b) (wedge d d).content cc)).length
       ((groupAt P cc).map (rowW d cc)) :=
     elim.rowsLen_map _ _ _ (fun x _ => rowW_len d cc x)
+  rw [countAt_collect _ _ (by rw [groupAt_mapW d cc hcl P hwid]; exact hGW),
+    countAt_collect _ _ hG]
   have hCW : elim.rowsLen (monomialsAt (List.zipWith
       (fun a b => a + b) (wedge d d).content cc)).length
       ((elim.collectOf (monomialsAt cc).length

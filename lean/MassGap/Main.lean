@@ -47,20 +47,24 @@ beyond (`def:K`'s free-end reading), each window's test
 `K.cutRead`'s read at its certificate, the check module's pins.
 Clause (i)'s floor-window instance reads at the member through
 the committed level sweeps: `clauseI` is one window cut of
-`def:K`, the two count-one chains at the floor
-window's pair `(E : τ²M)` — `winE` the four-link diagonal and
-`winM` the label-index counts (`thm:pairpencil`'s loop-window
-read), the covers `lem:cellcount`'s priced pivot nests, the
-samples the free end's own splits — flat across the committed
-range at `thm:gappos`(iv)'s fixed pair `(ℓ, ℓ + E₀ κ*)` with
-`thm:flatstep`'s vacuum-sector jump reads, the tie at the member
-pair `κ* = [2 winFloorN − 1 : 4]` positive by its shape, and
-`clauseI_counts` carrying both counts to every ray of the range,
-the clause held at the whole domain by `clauseI_all` through the
-parametric window sweeps at the member's floor numerator — the
-series and the diagonal-window fixed members at the two level
-lines' chain generals, one per window order, with `D₄`'s four-loop
-window and `E₈`'s coupled window decided by kernel reduction.
+`def:K`, the one committed cell (`winCell`, `thm:gappos`(iv)'s
+cell list at one member) at the floor window's pair `(E : τ²M)` —
+`winE` the four-link diagonal and `winM` the label-index counts
+(`thm:pairpencil`'s loop-window read), the level pair
+`⟨2 : 1⟩ < ⟨ℓ₊ : 1⟩` at the gap `winGap = 2 winFloorN − 1`, the
+covers `lem:cellcount`'s priced pivot nests at both carriers, the
+sample the free end's own count one with the two sweeps' splits —
+flat across the committed range at `thm:gappos`(iv)'s fixed pair
+`(ℓ, ℓ + E₀ κ*)` with `thm:flatstep`'s vacuum-sector jump reads,
+the pair `κ* = [2 winFloorN − 1 : 4]` the level gap against `E₀ = 4`
+exactly (`gappos.gapsAt`), and `clauseI_counts` carrying the flat
+window to every root-coordinate ray of the range at the ray's own
+pencil (`gappos.point_flat`), the clause held at the whole domain
+by `clauseI_all` through the parametric window sweeps at the
+member's floor numerator — the series and the diagonal-window
+fixed members at the two level lines' chain generals, one per
+window order, with `D₄`'s four-loop window and `E₈`'s coupled
+window decided by kernel reduction.
 The cut of `def:K` is the meet of the window cuts over the
 directed family at every interior ray; `clauseI` reads it at the
 floor window over the committed range, one window cut per member
@@ -292,13 +296,13 @@ def winLvl (m : Member) : ground.Pos :=
 `(E : τ²M)`'s site datum at the level `1`, `lem:freecell`'s carrier
 at the committed window. -/
 def sweepLo (m : Member) : split.PMat :=
-  freecell.freePMat (winE m) (winM m) (inertia.idMat (winO m)) 2 1
+  freecell.freePMat (winE m) (winM m) (elim.idMat (winO m)) 2 1
 
 /-- The upper level line's cell carrier, the level `2 winFloorN` —
 the fixed pair `(ℓ, ℓ + E₀ κ*)`'s second line
 (`thm:gappos`(iv)). -/
 def sweepHi (m : Member) : split.PMat :=
-  freecell.freePMat (winE m) (winM m) (inertia.idMat (winO m))
+  freecell.freePMat (winE m) (winM m) (elim.idMat (winO m))
     (winLvl m) 1
 
 /-- The committed range's foot, the free end. -/
@@ -324,59 +328,38 @@ def sampleLo (m : Member) : inertia.Split (winO m) :=
 def sampleHi (m : Member) : inertia.Split (winO m) :=
   inertia.mkSplit (winO m) (cellcount.evalPC (sweepHi m) BPair.unit 1 2)
 
-/-- The lower sweep's one committed cell. -/
-def cellsLo (m : Member) :
-    List (ground.CPair × cellcount.Cover
-      × (BPair × ground.Pos) × inertia.Split (winO m)) :=
-  [(winTop, winCover m, (BPair.unit, 1), sampleLo m)]
+/-- The member pair's numerator, the committed level gap: the gap of
+the level tie `⟨2 : 1⟩ < ⟨ℓ₊ : 1⟩` at the margin read
+(`BPair.marginPos`, `def:ground`'s difference), the value
+`ℓ₊ − 2 = 2 winFloorN − 1`, so `κ* = [winGap : 4]` reads the gap
+against `E₀ = 4` exactly. -/
+def winGap (m : Member) : ground.Pos :=
+  ground.BPair.marginPos ⟨winLvl m + 1, 2 + 1⟩
 
-/-- The upper sweep's one committed cell. -/
-def cellsHi (m : Member) :
-    List (ground.CPair × cellcount.Cover
-      × (BPair × ground.Pos) × inertia.Split (winO m)) :=
-  [(winTop, winCover m, (BPair.unit, 1), sampleHi m)]
+/-- The member's one committed cell (`thm:gappos`(iv)): the committed
+range from the free end, the level pair `⟨2 : 1⟩ < ⟨ℓ₊ : 1⟩` at the
+gap `winGap`, the priced pivot nest at both carriers, and the free
+end's sample at count one with the two sweeps' splits. -/
+def winCell (m : Member) : gappos.Cell (winO m) :=
+  ⟨winFoot, winTop, 2, 1, winLvl m, 1, winGap m, winCover m, winCover m,
+   BPair.unit, 1, 1, sampleLo m, sampleHi m⟩
 
 /-- Clause (i)'s floor-window instance at a member, one window cut
-of `def:K`: the two committed level sweeps at the
-member's floor window, count one flat across the committed range —
-`thm:gappos`(iv)'s fixed pairs with `thm:flatstep`'s vacuum-sector
-jump reads — and the tie `ℓ₀ + E₀ κ* ≤ ℓ₊` at the committed member
-pair `κ* = [2 winFloorN − 1 : 4]` at `E₀ = 4` (`prop:E0`'s
-four-link count, the tie's inner factor), κ* positive by its
-shape; the window's cut at consumer-stated diagonalization data is
+of `def:K`: the one committed cell read at the member's floor
+window from the free end — the two level carriers' covers and the
+count-one sample, `thm:gappos`(iv)'s fixed pair `(ℓ, ℓ + E₀ κ*)`
+with `thm:flatstep`'s vacuum-sector jump reads — and the pair
+`κ* = [winGap : 4]` against the cell's level gap at `E₀ = 4`
+(`prop:E0`'s four-link count), κ* positive by its shape; the
+window's cut at consumer-stated diagonalization data is
 `gappos.windowCut`'s read, one member of the meet the cut of
 `def:K` takes over the directed windows. -/
 def clauseI (m : Member) : Prop :=
-  gappos.chainRead (sweepLo m) 2 1 winFoot (cellsLo m)
-  ∧ gappos.chainRead (sweepHi m) 2 1 winFoot (cellsHi m)
-  ∧ BPair.scale (⟨2, 1⟩ : BPair) 4
-      + BPair.ofPos (4 * ground.posOfSucc (2 * winFloorN m - 2))
-    ≤ BPair.scale (⟨winLvl m, 1⟩ : BPair) 4
+  gappos.cellsRead (winE m) (winM m) (elim.idMat (winO m)) winFoot [winCell m]
+  ∧ gappos.gapsAt 4 (winGap m) 4 [winCell m]
 
 instance (m : Member) : Decidable (clauseI m) :=
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
-
-/-- The counts carried to every ray of the committed range: at
-clause (i)'s read both level lines' counts read one at every pair
-point from the foot to the top, `gappos.chainCount` at the two
-committed chains — the flat window `thm:flatstep`'s comparisons
-consume. -/
-theorem clauseI_counts (m : Member) (h : clauseI m)
-    (vn : BPair) (vc : ground.Pos)
-    (h1 : winFoot ≤ (⟨vn, vc⟩ : ground.CPair))
-    (h2 : (⟨vn, vc⟩ : ground.CPair) ≤ winTop) :
-    (∀ sp : inertia.Split (winO m),
-      inertia.splitRead (cellcount.evalPC (sweepLo m) vn vc 2) sp →
-        inertia.revAt sp = 1)
-    ∧ (∀ sp : inertia.Split (winO m),
-      inertia.splitRead (cellcount.evalPC (sweepHi m) vn vc 2) sp →
-        inertia.revAt sp = 1) :=
-  ⟨fun sp hsp => gappos.chainCount (sweepLo m) 2 1 winFoot
-      (winTop, winCover m, (BPair.unit, 1), sampleLo m) [] h.1
-      vn vc h1 h2 sp hsp,
-   fun sp hsp => gappos.chainCount (sweepHi m) 2 1 winFoot
-      (winTop, winCover m, (BPair.unit, 1), sampleHi m) [] h.2.1
-      vn vc h1 h2 sp hsp⟩
+  inferInstanceAs (Decidable (_ ∧ _))
 
 /-! The window sweeps' parametric reads: the two level lines'
 carriers at a stated order, the loop head's two-coefficient value and its cube
@@ -389,13 +372,13 @@ and four-link cutoff: the window pair `(E : τ²M)`'s site datum at the
 level `1` (`lem:freecell`'s carrier at the committed window). -/
 private def sLo (o cut : Nat) : split.PMat :=
   freecell.freePMat (winDiag o (BPair.ofNat cut)) (winDiag o ⟨2, 1⟩)
-    (inertia.idMat o) 2 1
+    (elim.idMat o) 2 1
 
 /-- The upper level line's parametric carrier at a stated order and
 floor numerator, the level `2 F`. -/
 private def sHi (o F : Nat) : split.PMat :=
   freecell.freePMat (winDiag o (BPair.ofNat (4 * F))) (winDiag o ⟨2, 1⟩)
-    (inertia.idMat o) (ground.posOfSucc (2 * F)) 1
+    (elim.idMat o) (ground.posOfSucc (2 * F)) 1
 
 /-! The window carriers' entry reads: `lem:freecell`'s display at
 the diagonal window, each entry the one polynomial list — the
@@ -410,6 +393,44 @@ stated displays (`freecell.freePMat_entry`;
 private theorem sqAt_winDiag (o : Nat) (v : BPair) :
     elim.sqAt (winDiag o v) o :=
   elim.sqAt_of (ground.matOf_length o o _) (elim.rowsLen_matOf o o _)
+
+private theorem winE_sq (m : Member) : elim.sqAt (winE m) (winO m) :=
+  sqAt_winDiag _ _
+
+private theorem winM_sq : ∀ m : Member, elim.sqAt (winM m) (winO m)
+  | .A _ => sqAt_winDiag _ _
+  | .B _ => sqAt_winDiag _ _
+  | .C _ => sqAt_winDiag _ _
+  | .D _ => sqAt_winDiag _ _
+  | .G2 => sqAt_winDiag _ _
+  | .F4 => sqAt_winDiag _ _
+  | .E6 => sqAt_winDiag _ _
+  | .E7 => sqAt_winDiag _ _
+  | .E8 => by decide +kernel
+
+/-- The flat window carried to every root-coordinate ray of the
+committed range: at clause (i)'s read the ray `[c² : n²]`'s pencil
+at the point `[n : c]` reads count one at both levels scaled by
+the clearing, `gappos.point_flat` at the committed cell — the flat
+window `thm:flatstep`'s comparisons consume. -/
+theorem clauseI_counts (m : Member) (h : clauseI m) (n c : ground.Pos)
+    (h1 : winFoot ≤ (⟨BPair.ofPos n, c⟩ : ground.CPair))
+    (h2 : (⟨BPair.ofPos n, c⟩ : ground.CPair) ≤ winTop)
+    (spa spt : inertia.Split (winO m))
+    (ha : inertia.splitRead (inertia.siteDatum
+      (elim.matAdd (pencil.rayH (winE m) (winM m) (c * c) (n * n))
+        (inertia.matScale (c * c * 1) (elim.idMat (winO m))))
+      (inertia.matScale (c * c * 2) (elim.idMat (winO m)))) spa)
+    (ht : inertia.splitRead (inertia.siteDatum
+      (elim.matAdd (pencil.rayH (winE m) (winM m) (c * c) (n * n))
+        (inertia.matScale (c * c * 1) (elim.idMat (winO m))))
+      (inertia.matScale (c * c * winLvl m) (elim.idMat (winO m)))) spt) :
+    flatstep.vacFlat (pencil.rayH (winE m) (winM m) (c * c) (n * n))
+      (elim.idMat (winO m)) (c * c * 2) (c * c * 1) (c * c * winLvl m)
+      (c * c * 1) 1 spa spt :=
+  gappos.point_flat (winE m) (winM m) (elim.idMat (winO m)) (winE_sq m)
+    (winM_sq m) (elim.sqAt_idMat _) winFoot (winCell m) [] h.1 n c h1 h2
+    spa spt ha ht
 
 /-- The floor window's diagonal at an entry: the loop value at the
 occupied diagonal keys, the unit line at its head, the vacant
@@ -427,7 +448,7 @@ identity gram's level weights. -/
 private theorem winEntry (o : Nat) (v w : BPair) (x y : Pos)
     (i j : Nat) (hi : i < o) (hj : j < o) :
     getAt [] (getAt [] (freecell.freePMat (winDiag o v)
-        (winDiag o w) (inertia.idMat o) x y) i) j
+        (winDiag o w) (elim.idMat o) x y) i) j
       = (((if i == j then (if i == 0 then BPair.unit else v)
             else BPair.unit)
           + (if j = i then BPair.ofNat 1 else BPair.unit).scale y)
@@ -435,21 +456,21 @@ private theorem winEntry (o : Nat) (v w : BPair) (x y : Pos)
         :: ([BPair.unit]
             ++ [(if i == j then (if i == 0 then BPair.unit else w)
                 else BPair.unit).swap]) := by
-  have hScY : elim.sqAt (inertia.matScale y (inertia.idMat o)) o :=
-    inertia.sqAt_matScale o y _ (inertia.sqAt_idMat o)
-  have hScX : elim.sqAt (inertia.matScale x (inertia.idMat o)) o :=
-    inertia.sqAt_matScale o x _ (inertia.sqAt_idMat o)
+  have hScY : elim.sqAt (inertia.matScale y (elim.idMat o)) o :=
+    inertia.sqAt_matScale o y _ (elim.sqAt_idMat o)
+  have hScX : elim.sqAt (inertia.matScale x (elim.idMat o)) o :=
+    inertia.sqAt_matScale o x _ (elim.sqAt_idMat o)
   have hAdd : elim.sqAt (elim.matAdd (winDiag o v)
-      (inertia.matScale y (inertia.idMat o))) o :=
+      (inertia.matScale y (elim.idMat o))) o :=
     elim.sqAt_matAdd o _ _ (sqAt_winDiag o v) hScY
   have hIdRow : j < (getAt ([] : List BPair)
-      (inertia.idMat o) i).length := by
-    rw [elim.rowsLen_getAt _ i (inertia.idMat_rows o)
-        (by rw [inertia.idMat_len]; exact hi)]
+      (elim.idMat o) i).length := by
+    rw [elim.rowsLen_getAt _ i (elim.rowsLen_idMat o)
+        (by rw [elim.length_idMat]; exact hi)]
     exact hj
   rw [freecell.freePMat_entry (winDiag o v) (winDiag o w)
-      (inertia.idMat o) x y o (sqAt_winDiag o v) (sqAt_winDiag o w)
-      (inertia.sqAt_idMat o) i j hi hj,
+      (elim.idMat o) x y o (sqAt_winDiag o v) (sqAt_winDiag o w)
+      (elim.sqAt_idMat o) i j hi hj,
     inertia.siteDatum_entry _ _ o (elim.rowsLen_of_sqAt hAdd)
       (elim.rowsLen_of_sqAt hScX) i j
       (by rw [elim.sqAt_len hAdd]; exact hi)
@@ -459,11 +480,11 @@ private theorem winEntry (o : Nat) (v w : BPair) (x y : Pos)
       (elim.rowsLen_of_sqAt hScY) i j
       (by rw [elim.sqAt_len (sqAt_winDiag o v)]; exact hi)
       (by rw [elim.sqAt_len hScY]; exact hi) hj,
-    inertia.matScale_entry y (inertia.idMat o) i j
-      (by rw [inertia.idMat_len]; exact hi) hIdRow,
-    inertia.matScale_entry x (inertia.idMat o) i j
-      (by rw [inertia.idMat_len]; exact hi) hIdRow,
-    inertia.getAt_idMat o i j hi hj,
+    inertia.matScale_entry y (elim.idMat o) i j
+      (by rw [elim.length_idMat]; exact hi) hIdRow,
+    inertia.matScale_entry x (elim.idMat o) i j
+      (by rw [elim.length_idMat]; exact hi) hIdRow,
+    elim.getAt_idMat o i j hi hj,
     winDiag_entry o v i j hi hj,
     winDiag_entry o w i j hi hj]
 
@@ -472,7 +493,7 @@ read, the level weights at the identity gram alone. -/
 private theorem winEntry_head (o : Nat) (v w : BPair) (x y : Pos)
     (ho : 0 < o) :
     getAt [] (getAt [] (freecell.freePMat (winDiag o v)
-        (winDiag o w) (inertia.idMat o) x y) 0) 0
+        (winDiag o w) (elim.idMat o) x y) 0) 0
       = [(BPair.unit + (BPair.ofNat 1).scale y)
           + ((BPair.ofNat 1).scale x).swap,
          BPair.unit, BPair.unit] := by
@@ -484,7 +505,7 @@ occupied diagonal key. -/
 private theorem winEntry_loop (o : Nat) (v w : BPair) (x y : Pos)
     (i : Nat) (h1 : 0 < i) (hio : i < o) :
     getAt [] (getAt [] (freecell.freePMat (winDiag o v)
-        (winDiag o w) (inertia.idMat o) x y) i) i
+        (winDiag o w) (elim.idMat o) x y) i) i
       = [(v + (BPair.ofNat 1).scale y)
           + ((BPair.ofNat 1).scale x).swap,
          BPair.unit, w.swap] := by
@@ -504,7 +525,7 @@ off-diagonal takes. -/
 private theorem winEntry_coup (o : Nat) (v w : BPair) (x y : Pos)
     (i j : Nat) (hi : i < o) (hj : j < o) (hne : i ≠ j) :
     getAt [] (getAt [] (freecell.freePMat (winDiag o v)
-        (winDiag o w) (inertia.idMat o) x y) i) j
+        (winDiag o w) (elim.idMat o) x y) i) j
       = [(BPair.unit + BPair.unit.scale y)
           + (BPair.unit.scale x).swap,
          BPair.unit, BPair.unit] := by
@@ -539,7 +560,7 @@ diagonal reads at their own keys with every coupling the one
 entry shape (`thm:pairpencil`'s symmetric site datum). -/
 private theorem winSym (o : Nat) (v w : BPair) (x y : Pos) :
     split.pSymAt (freecell.freePMat (winDiag o v) (winDiag o w)
-      (inertia.idMat o) x y) o := by
+      (elim.idMat o) x y) o := by
   refine split.pSymAt_of _ o (fun i j hi hj => ?_)
   by_cases h : i = j
   · rw [h]
@@ -594,7 +615,7 @@ private theorem sLo_head (o cut : Nat) (ho : 0 < o) :
     getAt [] (getAt [] (sLo o cut) 0) 0
       = [(⟨⟨4⟩, ⟨5⟩⟩ : BPair), BPair.unit, BPair.unit] := by
   rw [show sLo o cut = freecell.freePMat (winDiag o (BPair.ofNat cut))
-      (winDiag o ⟨2, 1⟩) (inertia.idMat o) 2 1 from rfl,
+      (winDiag o ⟨2, 1⟩) (elim.idMat o) 2 1 from rfl,
     winEntry_head o (BPair.ofNat cut) ⟨2, 1⟩ 2 1 ho]
   rfl
 
@@ -630,14 +651,14 @@ private theorem sLo_shape (o cut : Nat) :
     cellcount.pShapeAt (sLo o cut) o 2 :=
   freecell.pShapeAt_freePMat _ _ _ 2 1 o
     (sqAt_winDiag o (BPair.ofNat cut)) (sqAt_winDiag o ⟨2, 1⟩)
-    (inertia.sqAt_idMat o)
+    (elim.sqAt_idMat o)
 
 /-- The upper carrier's shape at the stated order. -/
 private theorem sHi_shape (o F : Nat) :
     cellcount.pShapeAt (sHi o F) o 2 :=
   freecell.pShapeAt_freePMat _ _ _ (ground.posOfSucc (2 * F)) 1 o
     (sqAt_winDiag o (BPair.ofNat (4 * F))) (sqAt_winDiag o ⟨2, 1⟩)
-    (inertia.sqAt_idMat o)
+    (elim.sqAt_idMat o)
 
 /-- The loop head's two-coefficient value `a − c z²` at its one-member
 coefficients, subtraction-free. -/
@@ -1311,29 +1332,17 @@ private theorem keepLower_cn (m : Nat) (hm : 1 ≤ m) :
       (CPair.swap_congr (evalC_foot [(BPair.ofNat m).swap])))
   exact CPair.lt_congr hx hy (BPair.scale_lt Pos.one hcore)
 
-/-! The member tie at the committed pair. -/
+/-! The cell's level tie at the committed pair: the lower level
+joined to the gap reads the upper. -/
 
-private theorem tieNat (X m : Nat) :
-    7 + (X + 3 + m + 0 + 1) + 1 + 3 + 1 = X + 6 + (m + 2) + 3 + 4 + 1 := by
-  rw [Nat.add_comm 7 (X + 3 + m + 0 + 1), Nat.add_right_comm X 3 m]
-  show X + m + 3 + 0 + 1 + 7 + 1 + 3 + 1 = X + 6 + m + 2 + 3 + 4 + 1
-  rw [Nat.add_right_comm X 6 m]
-
-/-- The member tie `ℓ₀ + E₀ κ* ≤ ℓ₊` at every occupied floor
-numerator, the two sides equal-membered (`thm:gappos`(iv)'s fixed pair
-at `E₀ = 4`). -/
-private theorem tieRead (F : Nat) (hF : 1 ≤ F) :
-    BPair.scale (⟨2, 1⟩ : BPair) 4
-      + BPair.ofPos (4 * ground.posOfSucc (2 * F - 2))
-    ≤ BPair.scale (⟨ground.posOfSucc (2 * F), 1⟩ : BPair) 4 := by
+private theorem tieLt (F : Nat) (hF : 1 ≤ F) :
+    (2 : ground.Pos) + 1 < ground.posOfSucc (2 * F) + 1 := by
   cases F with
   | zero => exact absurd hF (Nat.not_lt_zero 0)
   | succ k =>
-    refine Or.inl (congrArg Pos.mk ?_)
-    show 7 + (3 * (2 * k) + 3 + 2 * k + 0 + 1) + 1 + 3 + 1
-        = ((2 * k + 2) * 3 + (2 * k + 2) + 3) + 4 + 1
-    rw [Nat.mul_comm 3 (2 * k), ground.mulAddR (2 * k) 2 3]
-    exact tieNat ((2 * k) * 3) (2 * k)
+    refine ⟨ground.posOfSucc (2 * k), congrArg Pos.mk ?_⟩
+    show 1 + 0 + 1 + 2 * k + 1 = 2 * k + 2 + 0 + 1
+    rw [Nat.add_comm (1 + 0 + 1) (2 * k)]
 
 /-! The cube's strict bound at the loop content, and the degree-nine
 comparison at the upper sweep's own: the count monotonicity at an
@@ -1559,7 +1568,7 @@ private theorem sLo_loop (o cut i : Nat) (h1 : 0 < i) (hio : i < o) :
     getAt [] (getAt [] (sLo o cut) i) i
       = [loD1 cut, BPair.unit, (⟨1, 2⟩ : BPair)] := by
   rw [show sLo o cut = freecell.freePMat (winDiag o (BPair.ofNat cut))
-      (winDiag o ⟨2, 1⟩) (inertia.idMat o) 2 1 from rfl,
+      (winDiag o ⟨2, 1⟩) (elim.idMat o) 2 1 from rfl,
     winEntry_loop o (BPair.ofNat cut) ⟨2, 1⟩ 2 1 i h1 hio]
   rfl
 
@@ -1645,11 +1654,12 @@ private theorem loCount (k : Nat) :
 committed segment, the diagonal pivot nest beneath it and the count one
 at the free end. -/
 private theorem chainLo2 (F : Nat) (hF : 2 ≤ F) :
-    gappos.chainRead (sLo 2 (4 * F)) 2 1 winFoot
-      [(winTop, cellcount.diagCover winTop ⟨2, 1⟩ ⟨2, 1⟩ 1,
-        (BPair.unit, 1),
-        inertia.mkSplit 2 (cellcount.evalPC (sLo 2 (4 * F))
-          BPair.unit 1 2))] := by
+    cellcount.coverRead (sLo 2 (4 * F)) 2 2 winFoot winTop
+        (cellcount.diagCover winTop ⟨2, 1⟩ ⟨2, 1⟩ 1)
+      ∧ winFoot ≤ (⟨BPair.unit, 1⟩ : ground.CPair)
+      ∧ (⟨BPair.unit, 1⟩ : ground.CPair) ≤ winTop
+      ∧ cellcount.countAt (sLo 2 (4 * F)) 2 BPair.unit 1 1
+        (inertia.mkSplit 2 (cellcount.evalPC (sLo 2 (4 * F)) BPair.unit 1 2)) := by
   match F, hF with
   | 0, hF => exact absurd hF (Nat.not_lt_zero 1)
   | 1, hF => exact absurd (Nat.lt_of_succ_lt_succ hF) (Nat.not_lt_zero 0)
@@ -1667,7 +1677,7 @@ private theorem chainLo2 (F : Nat) (hF : 2 ≤ F) :
           ?_, rfl, ⟨hsub, rfl⟩⟩,
         ⟨hshape, rfl⟩⟩,
       winFoot_le_sample, winSample_le_top,
-      ⟨hshape, (loCount k).1, (loCount k).2⟩, trivial⟩
+      ⟨hshape, (loCount k).1, (loCount k).2⟩⟩
     · exact sLo_headKeep 2 (4 * (k + 2)) (Nat.succ_pos 1)
     · refine split.pSymAt_of _ 1 (fun i j hi hj => ?_)
       match i, j with
@@ -1750,7 +1760,7 @@ private theorem sHi_head (o F : Nat) (ho : 0 < o) :
     getAt [] (getAt [] (sHi o F) 0) 0
       = [hiD0 F, BPair.unit, BPair.unit] := by
   rw [show sHi o F = freecell.freePMat (winDiag o (BPair.ofNat (4 * F)))
-      (winDiag o ⟨2, 1⟩) (inertia.idMat o)
+      (winDiag o ⟨2, 1⟩) (elim.idMat o)
       (ground.posOfSucc (2 * F)) 1 from rfl,
     winEntry_head o (BPair.ofNat (4 * F)) ⟨2, 1⟩
       (ground.posOfSucc (2 * F)) 1 ho]
@@ -1761,7 +1771,7 @@ private theorem sHi_loop (o F i : Nat) (h1 : 0 < i) (hio : i < o) :
     getAt [] (getAt [] (sHi o F) i) i
       = [hiD1 F, BPair.unit, (⟨1, 2⟩ : BPair)] := by
   rw [show sHi o F = freecell.freePMat (winDiag o (BPair.ofNat (4 * F)))
-      (winDiag o ⟨2, 1⟩) (inertia.idMat o)
+      (winDiag o ⟨2, 1⟩) (elim.idMat o)
       (ground.posOfSucc (2 * F)) 1 from rfl,
     winEntry_loop o (BPair.ofNat (4 * F)) ⟨2, 1⟩
       (ground.posOfSucc (2 * F)) 1 i h1 hio]
@@ -1936,10 +1946,12 @@ private theorem hiCount (k : Nat) :
 
 /-- The upper sweep's chain at order two. -/
 private theorem chainHi2 (F : Nat) (hF : 2 ≤ F) :
-    gappos.chainRead (sHi 2 F) 2 1 winFoot
-      [(winTop, cellcount.diagCover winTop ⟨2, 1⟩ ⟨2, 1⟩ 1,
-        (BPair.unit, 1),
-        inertia.mkSplit 2 (cellcount.evalPC (sHi 2 F) BPair.unit 1 2))] := by
+    cellcount.coverRead (sHi 2 F) 2 2 winFoot winTop
+        (cellcount.diagCover winTop ⟨2, 1⟩ ⟨2, 1⟩ 1)
+      ∧ winFoot ≤ (⟨BPair.unit, 1⟩ : ground.CPair)
+      ∧ (⟨BPair.unit, 1⟩ : ground.CPair) ≤ winTop
+      ∧ cellcount.countAt (sHi 2 F) 2 BPair.unit 1 1
+        (inertia.mkSplit 2 (cellcount.evalPC (sHi 2 F) BPair.unit 1 2)) := by
   match F, hF with
   | 0, hF => exact absurd hF (Nat.not_lt_zero 1)
   | 1, hF => exact absurd (Nat.lt_of_succ_lt_succ hF) (Nat.not_lt_zero 0)
@@ -1957,7 +1969,7 @@ private theorem chainHi2 (F : Nat) (hF : 2 ≤ F) :
           ?_, rfl, ⟨hsub, rfl⟩⟩,
         ⟨hshape, rfl⟩⟩,
       winFoot_le_sample, winSample_le_top,
-      ⟨hshape, (hiCount k).1, (hiCount k).2⟩, trivial⟩
+      ⟨hshape, (hiCount k).1, (hiCount k).2⟩⟩
     · exact stage.keepLower_congr
         (poly.oneValue_symm (hiHeadPoly 2 (k + 2) (Nat.succ_pos 1)))
         winFoot winTop ⟨2, 1⟩ ⟨2, 1⟩
@@ -2088,11 +2100,12 @@ private theorem loCount3 (k : Nat) :
 /-- The lower sweep's chain at order three, the deflation nest one
 level deeper. -/
 private theorem chainLo3 (F : Nat) (hF : 4 ≤ F) :
-    gappos.chainRead (sLo 3 (4 * F)) 2 1 winFoot
-      [(winTop, cellcount.diagCover winTop ⟨2, 1⟩ ⟨2, 1⟩ 2,
-        (BPair.unit, 1),
-        inertia.mkSplit 3 (cellcount.evalPC (sLo 3 (4 * F))
-          BPair.unit 1 2))] := by
+    cellcount.coverRead (sLo 3 (4 * F)) 3 2 winFoot winTop
+        (cellcount.diagCover winTop ⟨2, 1⟩ ⟨2, 1⟩ 2)
+      ∧ winFoot ≤ (⟨BPair.unit, 1⟩ : ground.CPair)
+      ∧ (⟨BPair.unit, 1⟩ : ground.CPair) ≤ winTop
+      ∧ cellcount.countAt (sLo 3 (4 * F)) 2 BPair.unit 1 1
+        (inertia.mkSplit 3 (cellcount.evalPC (sLo 3 (4 * F)) BPair.unit 1 2)) := by
   match F, hF with
   | 0, hF => exact absurd hF (Nat.not_lt_zero 3)
   | 1, hF => exact absurd (Nat.lt_of_succ_lt_succ hF) (Nat.not_lt_zero 2)
@@ -2126,7 +2139,7 @@ private theorem chainLo3 (F : Nat) (hF : 4 ≤ F) :
                     (Nat.le_add_left 15 (4 * k))))),
         ⟨hshape, rfl⟩⟩,
       winFoot_le_sample, winSample_le_top,
-      ⟨hshape, hcount.1, hcount.2⟩, trivial⟩
+      ⟨hshape, hcount.1, hcount.2⟩⟩
     · exact sLo_headKeep 3 (4 * (k + 4)) (Nat.succ_pos 2)
 
 /-! The upper sweep's structural reads at order three. -/
@@ -2230,10 +2243,12 @@ private theorem hiCount3 (k : Nat) :
 /-- The upper sweep's chain at order three, the deflation nest one
 level deeper. -/
 private theorem chainHi3 (F : Nat) (hF : 4 ≤ F) :
-    gappos.chainRead (sHi 3 F) 2 1 winFoot
-      [(winTop, cellcount.diagCover winTop ⟨2, 1⟩ ⟨2, 1⟩ 2,
-        (BPair.unit, 1),
-        inertia.mkSplit 3 (cellcount.evalPC (sHi 3 F) BPair.unit 1 2))] := by
+    cellcount.coverRead (sHi 3 F) 3 2 winFoot winTop
+        (cellcount.diagCover winTop ⟨2, 1⟩ ⟨2, 1⟩ 2)
+      ∧ winFoot ≤ (⟨BPair.unit, 1⟩ : ground.CPair)
+      ∧ (⟨BPair.unit, 1⟩ : ground.CPair) ≤ winTop
+      ∧ cellcount.countAt (sHi 3 F) 2 BPair.unit 1 1
+        (inertia.mkSplit 3 (cellcount.evalPC (sHi 3 F) BPair.unit 1 2)) := by
   match F, hF with
   | 0, hF => exact absurd hF (Nat.not_lt_zero 3)
   | 1, hF => exact absurd (Nat.lt_of_succ_lt_succ hF) (Nat.not_lt_zero 2)
@@ -2273,7 +2288,7 @@ private theorem chainHi3 (F : Nat) (hF : 4 ≤ F) :
             (bigIneq (2 * (k + 4)) (Nat.le_add_left 8 (2 * k)))),
         ⟨hshape, rfl⟩⟩,
       winFoot_le_sample, winSample_le_top,
-      ⟨hshape, hcount.1, hcount.2⟩, trivial⟩
+      ⟨hshape, hcount.1, hcount.2⟩⟩
     · exact stage.keepLower_congr
         (poly.oneValue_symm (hiHeadPoly 3 (k + 4) (Nat.succ_pos 2)))
         winFoot winTop ⟨2, 1⟩ ⟨2, 1⟩
@@ -2282,6 +2297,28 @@ private theorem chainHi3 (F : Nat) (hF : 4 ≤ F) :
 /-! The floors' occupancy weakenings, read at the tie's hypothesis and
 at the order-two chains' own. -/
 
+/-- The one-cell read at the member: the cell assembled from the
+two level lines' reads and the level tie, the pair's read the gap's
+own. -/
+private theorem cellsOf (m : Member)
+    (hlo : cellcount.coverRead (sweepLo m) (winO m) 2 winFoot winTop (winCover m)
+      ∧ winFoot ≤ (⟨BPair.unit, 1⟩ : ground.CPair)
+      ∧ (⟨BPair.unit, 1⟩ : ground.CPair) ≤ winTop
+      ∧ cellcount.countAt (sweepLo m) 2 BPair.unit 1 1 (sampleLo m))
+    (hhi : cellcount.coverRead (sweepHi m) (winO m) 2 winFoot winTop (winCover m)
+      ∧ winFoot ≤ (⟨BPair.unit, 1⟩ : ground.CPair)
+      ∧ (⟨BPair.unit, 1⟩ : ground.CPair) ≤ winTop
+      ∧ cellcount.countAt (sweepHi m) 2 BPair.unit 1 1 (sampleHi m))
+    (hlt : (2 : ground.Pos) + 1 < winLvl m + 1) :
+    clauseI m :=
+  ⟨⟨⟨hlo.1, hhi.1, hlo.2.1, hlo.2.2.1, hlo.2.2.2, hhi.2.2.2, Nat.le_refl 1,
+      ground.BPair.marginPos_join hlt⟩,
+    CPair.le_refl _, winFoot_le_top, trivial⟩,
+   by
+    show (decide (4 * winGap m ≤ 4 * winGap m) && true) = true
+    rw [decide_eq_true (show 4 * winGap m ≤ 4 * winGap m from Or.inl rfl)]
+    rfl⟩
+
 /-- Clause (i)'s floor-window instance at every member of the
 classification: the series and the diagonal-window fixed members through the parametric window sweeps
 at the member's floor numerator — the two level lines' chains at the
@@ -2289,36 +2326,36 @@ window's order with the tie at the committed member pair — and `D₄`'s
 four-loop window and `E₈`'s coupled window decided by kernel
 reduction. -/
 theorem clauseI_all : ∀ m : Member, clauseI m
-  | .A 0 => ⟨chainLo2 3 (by decide +kernel), chainHi2 3 (by decide +kernel),
-      tieRead 3 (by decide +kernel)⟩
+  | .A 0 => cellsOf _ (chainLo2 3 (by decide +kernel)) (chainHi2 3 (by decide +kernel))
+      (tieLt 3 (by decide +kernel))
   | .A (g + 1) =>
-      ⟨chainLo3 (winFloorN (.A (g + 1))) (floorA_ge g),
-       chainHi3 (winFloorN (.A (g + 1))) (floorA_ge g),
-       tieRead (winFloorN (.A (g + 1)))
-         (Nat.le_of_succ_le (Nat.le_of_succ_le (Nat.le_of_succ_le
-           (floorA_ge g))))⟩
+      cellsOf _ (chainLo3 (winFloorN (.A (g + 1))) (floorA_ge g))
+        (chainHi3 (winFloorN (.A (g + 1))) (floorA_ge g))
+        (tieLt (winFloorN (.A (g + 1)))
+          (Nat.le_of_succ_le (Nat.le_of_succ_le (Nat.le_of_succ_le
+            (floorA_ge g)))))
   | .B g =>
-      ⟨chainLo2 (winFloorN (.B g)) (floorB_ge g),
-       chainHi2 (winFloorN (.B g)) (floorB_ge g),
-       tieRead (winFloorN (.B g)) (Nat.le_of_succ_le (floorB_ge g))⟩
+      cellsOf _ (chainLo2 (winFloorN (.B g)) (floorB_ge g))
+        (chainHi2 (winFloorN (.B g)) (floorB_ge g))
+        (tieLt (winFloorN (.B g)) (Nat.le_of_succ_le (floorB_ge g)))
   | .C g =>
-      ⟨chainLo2 (winFloorN (.C g)) (floorC_ge g),
-       chainHi2 (winFloorN (.C g)) (floorC_ge g),
-       tieRead (winFloorN (.C g)) (Nat.le_of_succ_le (floorC_ge g))⟩
-  | .D 0 => ⟨by decide +kernel, by decide +kernel, by decide +kernel⟩
+      cellsOf _ (chainLo2 (winFloorN (.C g)) (floorC_ge g))
+        (chainHi2 (winFloorN (.C g)) (floorC_ge g))
+        (tieLt (winFloorN (.C g)) (Nat.le_of_succ_le (floorC_ge g)))
+  | .D 0 => ⟨by decide +kernel, by decide +kernel⟩
   | .D (g + 1) =>
-      ⟨chainLo2 (winFloorN (.D (g + 1))) (floorD_ge g),
-       chainHi2 (winFloorN (.D (g + 1))) (floorD_ge g),
-       tieRead (winFloorN (.D (g + 1))) (Nat.le_of_succ_le (floorD_ge g))⟩
-  | .G2 => ⟨chainLo2 24 (by decide +kernel), chainHi2 24 (by decide +kernel),
-      tieRead 24 (by decide +kernel)⟩
-  | .F4 => ⟨chainLo2 24 (by decide +kernel), chainHi2 24 (by decide +kernel),
-      tieRead 24 (by decide +kernel)⟩
-  | .E6 => ⟨chainLo3 104 (by decide +kernel), chainHi3 104 (by decide +kernel),
-      tieRead 104 (by decide +kernel)⟩
-  | .E7 => ⟨chainLo2 114 (by decide +kernel), chainHi2 114 (by decide +kernel),
-      tieRead 114 (by decide +kernel)⟩
-  | .E8 => ⟨by decide +kernel, by decide +kernel, by decide +kernel⟩
+      cellsOf _ (chainLo2 (winFloorN (.D (g + 1))) (floorD_ge g))
+        (chainHi2 (winFloorN (.D (g + 1))) (floorD_ge g))
+        (tieLt (winFloorN (.D (g + 1))) (Nat.le_of_succ_le (floorD_ge g)))
+  | .G2 => cellsOf _ (chainLo2 24 (by decide +kernel)) (chainHi2 24 (by decide +kernel))
+      (tieLt 24 (by decide +kernel))
+  | .F4 => cellsOf _ (chainLo2 24 (by decide +kernel)) (chainHi2 24 (by decide +kernel))
+      (tieLt 24 (by decide +kernel))
+  | .E6 => cellsOf _ (chainLo3 104 (by decide +kernel)) (chainHi3 104 (by decide +kernel))
+      (tieLt 104 (by decide +kernel))
+  | .E7 => cellsOf _ (chainLo2 114 (by decide +kernel)) (chainHi2 114 (by decide +kernel))
+      (tieLt 114 (by decide +kernel))
+  | .E8 => ⟨by decide +kernel, by decide +kernel⟩
 
 
 /-- The member's tail scale, `[1 : 524288(r+1)²]`: the reference

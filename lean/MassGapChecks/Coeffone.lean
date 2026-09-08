@@ -50,6 +50,6 @@ example : groundRead (⟨[[⟨2, 1⟩, u], [u, ⟨4, 1⟩]], rfl⟩ : SqMat 2)
 frontier-closed instance, with the truncated index's frontier leak
 a live refusal — the closed sub-indices the member tier's. -/
 
-example : commuteRead cTh (⟨inertia.idMat 3, rfl⟩ : SqMat 3) := by
+example : commuteRead cTh (⟨elim.idMat 3, rfl⟩ : SqMat 3) := by
   decide +kernel
 example : ¬ commuteRead cF cTh := by decide +kernel

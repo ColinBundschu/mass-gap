@@ -13,7 +13,16 @@ key range, so the term is the kernel's verdict at the window.  The
 composition read
 rides the fundamental `f = (1, 0)` with the intermediate list
 `(f, (3, 0))`, the display's window carrier at `lem:loopcap`'s
-consumer.
+consumer.  The fusion walk's flat read (`lem:corner`'s near mass)
+is decided at the window `(𝟏, θ)` to one step and at the window
+`(𝟏, θ, (4, 0))` to two, reading `6` and `36`, the seed's flat
+read one and the eigen row's window identity on the walk's support
+decided beside the theorem route, and its two binders isolated:
+the seed read refused at a repeated unit key and at a window off
+the unit, and the support identity refused one step past each
+window's reach with the flat read parting there (`31` against
+`36`, `209` against `216`); the walk's pairing side decided at the
+two-step window.
 
 The eigen row's boundary values are pinned rather than a forged
 table: at the window the row folds read `3 ≤ 3 · 1` at the unit —
@@ -235,7 +244,7 @@ private def xF : Data Nat :=
   ⟨xeq, xeqRefl, 9, (fun l => l), (fun x y => x + y), 8,
    xcount, xrow, (fun _ => 1), (fun _ => 1), 1, 1,
    (fun _ => []), (fun _ => 0), (fun x y => x + y), (fun _ => 0),
-   (fun _ => none)⟩
+   (fiber.presNone _)⟩
 private def yeq (x y : Nat) : Bool := (x == y) || (x == 4 && y == 3)
 private theorem yeqRefl (l : Nat) : yeq l l = true := by
   show ((l == l) || (l == 4 && l == 3)) = true
@@ -251,7 +260,7 @@ private def yF : Data Nat :=
   ⟨yeq, yeqRefl, 9, (fun l => l), (fun x y => x + y), 8,
    ycount, yrow, (fun _ => 1), (fun _ => 1), 1, 1,
    (fun _ => []), (fun _ => 0), (fun x y => x + y), (fun _ => 0),
-   (fun _ => none)⟩
+   (fiber.presNone _)⟩
 private def fIx : List Nat := [0, 1]
 private def fPsi : List BPair := [BPair.ofNat 1, BPair.unit]
 
@@ -269,3 +278,47 @@ example : ¬ poly.oneValue
 -- distinctness refusal at a repeated window label
 example : ¬ distinctAt F2 [labels.unitL 2, labels.unitL 2] := by
   decide +kernel
+
+-- the fusion walk's flat read (`lem:corner`'s near mass)
+private def winW : List (List Nat) := [labels.unitL 2, adjchar.theta 2, [4, 0]]
+
+example : seedFlat F win := by decide +kernel
+example : seedFlat F winW := by decide +kernel
+example : ¬ seedFlat F [labels.unitL 2, labels.unitL 2] := by decide +kernel
+example : ¬ seedFlat F [adjchar.theta 2] := by decide +kernel
+example : walkExact F win 1 := by decide +kernel
+example : ¬ walkExact F win 2 := by decide +kernel
+example : walkExact F winW 2 := by decide +kernel
+example : ¬ walkExact F winW 3 := by decide +kernel
+example : (dotN (walkVec F win 1) (dimVec F win)).oneValue
+    (bpow (BPair.ofNat (2 * F.dim th)) 1) := by decide +kernel
+example : (dotN (walkVec F win 1) (dimVec F win)).oneValue
+    (bpow (BPair.ofNat (2 * F.dim th)) 1) :=
+  walk_dim F win 1 (by decide +kernel) (by decide +kernel)
+example : (dotN (walkVec F winW 2) (dimVec F winW)).oneValue (BPair.ofNat 36) := by
+  decide +kernel
+example : (dotN (walkVec F winW 2) (dimVec F winW)).oneValue
+    (bpow (BPair.ofNat (2 * F.dim th)) 2) :=
+  walk_dim F winW 2 (by decide +kernel) (by decide +kernel)
+-- the support identity's refusal parts the flat read
+example : ¬ (dotN (walkVec F win 2) (dimVec F win)).oneValue
+    (bpow (BPair.ofNat (2 * F.dim th)) 2) := by decide +kernel
+example : (dotN (walkVec F win 2) (dimVec F win)).oneValue (BPair.ofNat 31) := by
+  decide +kernel
+example : ¬ (dotN (walkVec F winW 3) (dimVec F winW)).oneValue
+    (bpow (BPair.ofNat (2 * F.dim th)) 3) := by decide +kernel
+example : (dotN (walkVec F winW 3) (dimVec F winW)).oneValue (BPair.ofNat 209) := by
+  decide +kernel
+-- the pairing side
+example : (dotN (walkVec F winW 2) (dimVec F winW)).oneValue
+      (dotN (walkVec F winW 2) (suppDims F winW (walkVec F winW 2)))
+    ∧ dotN (walkVec F winW 2) (dimVec F winW) * dotN (walkVec F winW 2) (dimVec F winW)
+      ≤ dotN (walkVec F winW 2) (walkVec F winW 2)
+        * dotN (suppDims F winW (walkVec F winW 2)) (suppDims F winW (walkVec F winW 2)) := by
+  decide +kernel
+example : (dotN (walkVec F winW 2) (dimVec F winW)).oneValue
+      (dotN (walkVec F winW 2) (suppDims F winW (walkVec F winW 2)))
+    ∧ dotN (walkVec F winW 2) (dimVec F winW) * dotN (walkVec F winW 2) (dimVec F winW)
+      ≤ dotN (walkVec F winW 2) (walkVec F winW 2)
+        * dotN (suppDims F winW (walkVec F winW 2)) (suppDims F winW (walkVec F winW 2)) :=
+  walk_cs F winW 2

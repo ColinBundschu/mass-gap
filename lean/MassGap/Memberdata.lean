@@ -10,15 +10,16 @@ clause).
 The producers run at the coroot presentation: a label is its
 coroot list, the walk carrier the balance vectors, and every form
 read goes through one cleared fundamental Gram — `gramOf`, row `i`
-the adjugate solve of the Cartan rows at the scaled unit column
-(`elim.adjP`), the whole matrix at one positive clearing scale
+the adjugate solve of the Cartan rows at the scaled unit column at
+its descent read (`elim.adjD`, the bordered descent's cofactors), the
+whole matrix at one positive clearing scale
 (the Cartan determinant against the doubled length denominator),
 so numerators and denominators compare at matched scales
 throughout.  The multiplicity family is the recursion's one solve
 (`lem:memberdata`(i)): the dominant keys enter at the coroot box
 under the top's `ρ`-dot cap filtered at the fold membership
-(`domKeys`, the transposed Cartan's adjugate solve the membership
-test), the solve descends the
+(`domKeys`, the transposed Cartan's adjugate solve at its descent
+read the membership test), the solve descends the
 cleared `ρ`-dots from the top (`famGo`, the trace recursion's
 display read per key with each moved count at its dominant image
 through the dominance walk `domWalk`, a vacant gap, starved walk
@@ -45,7 +46,10 @@ kit — `memberchar`'s family reads with the trace recursion's own
 lists, the support witnesses `foldWits`' solves, and the Grams'
 defining reads — decided in the check module at stated members,
 with each walk's fuel a stated datum whose starvation reads the
-vacant list, the pins' own refusal.
+vacant list, the pins' own refusal; every reflection along a walk
+or a closure is the letter's join read (`assembly.reflF`,
+`con:gentable`'s display), one value with the matrix action at
+`reflF_eq`.
 
 The instantiations (`con:fusion`): `fusion.dataB`, `dataC` and
 `dataD` at the rank and `dataG2`, `dataF4`, `dataE6`, `dataE7`
@@ -60,7 +64,16 @@ Casimir the Gram's quadratic read (`c2M`), the base the
 enumeration the coroot box at the Casimir cap (`belowM`), and the
 class data the displayed remainder reads per member
 (`lem:chargedcell`(i)'s class groups at the coroot lists) with
-the winding floors the end members' Casimir reads.  The interface
+the winding floors the end members' Casimir reads, and the
+presentation field at the member's generating table
+(`fiber.presT` over `con:memtable`'s tables — `B` and `D` at the
+defining table joined to the spinor's, `C` at the defining table,
+`G_2` and `F_4` at the folds, `E_8` at its adjoint table, `E_7`
+and `E_6` at the `56` and the `27` with its dual inside it — with
+the reach lists, each fundamental's top among the keys or in the
+stated product of two earlier fundamentals' blocks (`reachB`,
+`reachC`, `reachD` and the fixed members' displayed lists), and
+the fundamentals' involution (`fundInv`)).  The interface
 laws' reads at these instances are the check module's pins.
 -/
 
@@ -95,7 +108,7 @@ denominator (`con:sertables`' adjugate-row form reads at every
 member). -/
 def gramOf (t : gentable.Table) : elim.Mat :=
   (List.range t.rank).map (fun i =>
-    poly.pnorm (elim.adjP t.cartan (scaledE t.rank i (getAt 0 t.lenNums i))))
+    poly.pnorm (elim.adjD t.cartan (scaledE t.rank i (getAt 0 t.lenNums i))))
 
 /-- A fixed member's cleared Gram at its displayed adjugate rows:
 `⟨ω_i, ω_j⟩` cleared as `a_ij · len_j` (`con:sertables`' adjugate
@@ -127,7 +140,7 @@ private def walkP (t : gentable.Table) :
   | fuel + 1, v, p =>
     match lowGo v 0 with
     | none => some (v, p)
-    | some i => walkP t fuel (sertables.reflAt t i v) (!p)
+    | some i => walkP t fuel (assembly.reflF t i v) (!p)
 
 /-- The dominance walk: raise at the first lower-side key until
 every key sits at or beyond the unit, the parity walk's key read;
@@ -161,7 +174,7 @@ private def orbGo (t : gentable.Table) :
   | _ + 1, acc, [] => acc
   | fuel + 1, acc, h :: tl =>
     let fresh := ((List.range t.rank).map
-      (fun i => (sertables.reflAt t i h.1, !h.2))).filter
+      (fun i => (assembly.reflF t i h.1, !h.2))).filter
         (fun q => !(memFstB q.1 acc))
     orbGo t fuel (acc ++ fresh) (tl ++ fresh)
 
@@ -180,7 +193,7 @@ private def orbSGo (t : gentable.Table) :
   | _ + 1, acc, [] => acc
   | fuel + 1, acc, h :: tl =>
     let fresh := ((List.range t.rank).map
-      (fun i => sertables.reflAt t i h)).filter
+      (fun i => assembly.reflF t i h)).filter
         (fun q => !(ground.containsB acc q))
     orbSGo t fuel (acc ++ fresh) (tl ++ fresh)
 
@@ -190,24 +203,29 @@ def orbitSet (t : gentable.Table) (fuel : Nat) (v : List BPair) :
   orbSGo t fuel [poly.pnorm v] [poly.pnorm v]
 
 /-- The fold solve at a gap: the transposed Cartan's adjugate
-column, the natural simple fold's determinant-scaled coefficients
-(`con:gentable`'s dominance order, the coefficients one solve at
-the simple folds' injectivity). -/
+column at its descent read, the natural simple fold's
+determinant-scaled coefficients (`con:gentable`'s dominance order,
+the coefficients one solve at the simple folds' injectivity). -/
 private def foldSolve (t : gentable.Table) (v : List BPair) :
     List BPair :=
-  elim.adjP (elim.transposeM t.cartan) v
+  elim.adjD (elim.transposeM t.cartan) v
+
+/-- The transposed Cartan's determinant at the descent read, the
+fold solve's clearing scale. -/
+private def foldDet (t : gentable.Table) : Nat :=
+  BPair.marginN (elim.detD (elim.transposeM t.cartan))
 
 /-- The fold-membership test: every solved entry at or beyond the
 unit and at the determinant's own multiple. -/
 def foldTest (t : gentable.Table) (v : List BPair) : Bool :=
-  let d := BPair.marginN (elim.detL (elim.transposeM t.cartan))
+  let d := foldDet t
   (foldSolve t v).all (fun x =>
     !(x < BPair.unit) && (BPair.marginN (BPair.norm x) % d == 0))
 
 /-- A member's fold witness at a top: the fold solve read at the
 determinant's cofactor (`thm:memberchar`'s support witnesses). -/
 def foldWits (t : gentable.Table) (lam nu : List BPair) : List Nat :=
-  let d := BPair.marginN (elim.detL (elim.transposeM t.cartan))
+  let d := foldDet t
   (foldSolve t (elim.vecAdd lam (poly.neg nu))).map (fun x =>
     BPair.marginN (BPair.norm x) / d)
 
@@ -400,13 +418,33 @@ end memberdata
 namespace fusion
 open ground
 
+/-- The fundamentals' involution at a member: the index of the dual
+label's read at a fundamental (`dualM` at the unit fold). -/
+def fundInv (t : gentable.Table) (fuel : Nat) (i : Nat) : Nat :=
+  places.idxOf (memberdata.dualM t fuel (unitAt t.rank i))
+    ((List.range t.rank).map (unitAt t.rank))
+
+/-- The series' reach lists (`con:memtable`): at `B` the vector
+and the spinor among the keys with every further fundamental in
+the prior's block against the vector's, at `C` the first
+fundamental among the keys with the rest so, and at `D` the vector
+and the two spinors among the keys with the rest so. -/
+def reachB (l : Nat) : List (Option (Nat × Nat)) :=
+  [none] ++ (List.range (l - 2)).map (fun j => some (j, 0)) ++ [none]
+
+def reachC (l : Nat) : List (Option (Nat × Nat)) :=
+  [none] ++ (List.range (l - 1)).map (fun j => some (j, 0))
+
+def reachD (l : Nat) : List (Option (Nat × Nat)) :=
+  [none] ++ (List.range (l - 3)).map (fun j => some (j, 0)) ++ [none, none]
+
 /-- A member instantiation at a table with stated class data: every
 field the table's own derived read at the coroot lists, the count
 and involution `lem:memberdata`'s constructions, the walks' fuel a
 stated datum (`con:fusion`'s member clause). -/
 def dataOf (t : gentable.Table) (G : elim.Mat) (fuel : Nat)
     (cls : List Nat → Nat) (clsAdd : Nat → Nat → Nat)
-    (clsFloorN : Nat → Nat) : Data (List Nat) :=
+    (clsFloorN : Nat → Nat) (P : fiber.Pres (List Nat)) : Data (List Nat) :=
   let pad := memberdata.padN t.rank
   ⟨(fun a b => pad a == pad b),
    (fun _ => ground.listEqBeq _),
@@ -422,8 +460,7 @@ def dataOf (t : gentable.Table) (G : elim.Mat) (fuel : Nat)
    memberdata.countM t G fuel (memberdata.thetaKey t)
      (memberdata.thetaKey t) (memberdata.thetaKey t),
    (fun k => memberdata.belowM t G k),
-   (fun a => cls (memberdata.padN t.rank a)), clsAdd, clsFloorN,
-   (fun _ => none)⟩
+   (fun a => cls (memberdata.padN t.rank a)), clsAdd, clsFloorN, P⟩
 
 /-- The signed-permutation order at the rank, the series orbits'
 fuel: the closure's round count at the shifted key's whole
@@ -465,6 +502,8 @@ def dataB (l : Nat) : Data (List Nat) :=
       else memberdata.c2M (sertables.tableB l)
         (memberdata.gramOf (sertables.tableB l))
         ((List.range l).map (fun k => if k + 1 == l then 1 else 0)))
+    (fiber.presT (memtable.genB l) (reachB l) (fundInv (sertables.tableB l) (wFuel l))
+      (memberdata.thetaKey (sertables.tableB l)))
 
 /-- The `C` member instantiation at the rank. -/
 def dataC (l : Nat) : Data (List Nat) :=
@@ -474,6 +513,8 @@ def dataC (l : Nat) : Data (List Nat) :=
       else memberdata.c2M (sertables.tableC l)
         (memberdata.gramOf (sertables.tableC l))
         ((List.range l).map (fun k => if k == 0 then 1 else 0)))
+    (fiber.presT (memtable.definingC l) (reachC l) (fundInv (sertables.tableC l) (wFuel l))
+      (memberdata.thetaKey (sertables.tableC l)))
 
 /-- The `D` member instantiation at the rank: the class code and
 its sum at the rank's parity, the winding floors the three end
@@ -494,21 +535,28 @@ def dataD (l : Nat) : Data (List Nat) :=
       else if (if l % 2 == 0 then c == 2 else c == 1) then
         memberdata.c2M t G (e (l - 2))
       else memberdata.c2M t G (e (l - 1)))
+    (fiber.presT (memtable.genD l) (reachD l) (fundInv (sertables.tableD l) (wFuel l))
+      (memberdata.thetaKey (sertables.tableD l)))
 
 /-- A trivial-class member instantiation at its displayed adjugate
 rows: the one class with the vacant floor (`lem:chargedcell`(i)'s
 one-sector read at `G_2`, `F_4` and `E_8`). -/
 def dataFixed (t : gentable.Table) (rows : List (List Nat))
-    (fuel : Nat) : Data (List Nat) :=
+    (fuel : Nat) (P : fiber.Pres (List Nat)) : Data (List Nat) :=
   dataOf t (memberdata.gramRows t rows) fuel
-    (fun _ => 0) (fun _ _ => 0) (fun _ => 0)
+    (fun _ => 0) (fun _ _ => 0) (fun _ => 0) P
 
 /-- The `G_2` instantiation. -/
-def dataG2 : Data (List Nat) := dataFixed sertables.tableG2 sertables.adjG2 16
+def dataG2 : Data (List Nat) :=
+  dataFixed sertables.tableG2 sertables.adjG2 16
+    (fiber.presT memtable.genG2 [none, some (0, 0)] (fundInv sertables.tableG2 16)
+      (memberdata.thetaKey sertables.tableG2))
 
 /-- The `F_4` instantiation. -/
 def dataF4 : Data (List Nat) :=
   dataFixed sertables.tableF4 sertables.adjF4 1200
+    (fiber.presT memtable.genF4 [none, some (0, 0), some (3, 3), none]
+      (fundInv sertables.tableF4 1200) (memberdata.thetaKey sertables.tableF4))
 
 /-- The `E_6` instantiation: the three classes at the key-three
 remainders (`con:sertables`' adjugate rows;
@@ -524,6 +572,9 @@ def dataE6 : Data (List Nat) :=
       else memberdata.c2M sertables.tableE6
         (memberdata.gramRows sertables.tableE6 sertables.adjE6)
         [1, 0, 0, 0, 0, 0])
+    (fiber.presT memtable.genE6
+      [none, some (0, 5), some (0, 0), some (1, 1), some (5, 5), none]
+      (fundInv sertables.tableE6 52000) (memberdata.thetaKey sertables.tableE6))
 
 /-- The `E_7` instantiation: the two classes at the key-two
 remainders, the winding floor the minuscule member's read. -/
@@ -536,9 +587,16 @@ def dataE7 : Data (List Nat) :=
       else memberdata.c2M sertables.tableE7
         (memberdata.gramRows sertables.tableE7 sertables.adjE7)
         [0, 0, 0, 0, 0, 0, 1])
+    (fiber.presT memtable.genE7
+      [some (6, 6), some (6, 0), some (6, 1), some (6, 4), some (6, 5), some (6, 6), none]
+      (fundInv sertables.tableE7 2903040) (memberdata.thetaKey sertables.tableE7))
 
 /-- The `E_8` instantiation. -/
 def dataE8 : Data (List Nat) :=
   dataFixed sertables.tableE8 sertables.adjE8 696729600
+    (fiber.presT memtable.adjointE8
+      [some (7, 7), some (7, 0), some (7, 1), some (7, 4), some (7, 5), some (7, 6),
+       some (7, 7), none]
+      (fundInv sertables.tableE8 696729600) (memberdata.thetaKey sertables.tableE8))
 
 end fusion

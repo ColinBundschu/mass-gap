@@ -791,14 +791,14 @@ private theorem hcapT : capAt mm (matScale (65 * 65) (idMat 2)) spUT spLT := by 
 private theorem hdT : split.diagRead etT (idMat 2) tT twT lT := by decide +kernel
 private theorem hclT : groundreads.clearRead lT 0 2504 1 := by decide +kernel
 private theorem htieT : matOneValue etT
-    (siteDatum (matScale Pos.one (rayH 5 32 eT mT)) (matScaleB e0T (idMat 2))) := by
+    (siteDatum (matScale Pos.one (pencil.rayH eT mT (32 * 32) (5 * 5))) (matScaleB e0T (idMat 2))) := by
   decide +kernel
 
 /-- The jet's identity decided and through the theorem. -/
-example : poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (rayH 5 32 eT mT) jT))
+example : poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jT))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 16) jT).map BPair.swap) rT) := by
   decide +kernel
-example : poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (rayH 5 32 eT mT) jT))
+example : poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jT))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 16) jT).map BPair.swap) rT) :=
   jetResidual (n := 2) eT mT (by decide +kernel) (by decide +kernel) oneT psi1T psi2T
     (by decide +kernel) (by decide +kernel) (by decide +kernel) 16 5 32 hE0T hE1T hE2T
@@ -813,7 +813,7 @@ example : poly.oneValue (matVec eK psi1T) (matVec mT oneT) := by decide +kernel
 example : poly.oneValue
     (vecAdd (vecScale (BPair.ofNat 4) (matVec eK psi2T)) (vecScale (BPair.ofNat 16) oneT))
     (vecScale (BPair.ofNat 4) (matVec mT psi1T)) := by decide +kernel
-example : ¬ poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (rayH 5 32 eK mT) jT))
+example : ¬ poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eK mT (32 * 32) (5 * 5)) jT))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 16) jT).map BPair.swap) rT) := by
   decide +kernel
 private def mA : Mat := [[uT, ⟨5, 1⟩], [⟨6, 1⟩, ⟨65, 1⟩]]
@@ -821,13 +821,13 @@ example : ¬ poly.oneValue (matVec eT psi1T) (matVec mA oneT) := by decide +kern
 example : poly.oneValue
     (vecAdd (vecScale (BPair.ofNat 4) (matVec eT psi2T)) (vecScale (BPair.ofNat 16) oneT))
     (vecScale (BPair.ofNat 4) (matVec mA psi1T)) := by decide +kernel
-example : ¬ poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (rayH 5 32 eT mA) jT))
+example : ¬ poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mA (32 * 32) (5 * 5)) jT))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 16) jT).map BPair.swap)
       (residVec 5 32 16 mA psi1T psi2T)) := by decide +kernel
 example : ¬ poly.oneValue
     (vecAdd (vecScale (BPair.ofNat 4) (matVec eT psi2T)) (vecScale (BPair.ofNat 17) oneT))
     (vecScale (BPair.ofNat 4) (matVec mT psi1T)) := by decide +kernel
-example : ¬ poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (rayH 5 32 eT mT) jT))
+example : ¬ poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jT))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 17) jT).map BPair.swap)
       (residVec 5 32 17 mT psi1T psi2T)) := by decide +kernel
 
@@ -930,7 +930,7 @@ display holds with the clearance forged to `8000` parting it beside
 the clearance read's own refusal. -/
 private theorem hEsT : splitRead eT spET ∧ psdAt spET := by decide +kernel
 private theorem hresT : poly.oneValue
-    (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (rayH 5 32 eT mT) jT))
+    (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jT))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 16) jT).map BPair.swap) rT) := by
   decide +kernel
 example : ((BPair.ofPos 2504 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
@@ -951,9 +951,9 @@ example : ((BPair.ofPos 2504 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
     hresT (by decide +kernel)
 private def jX : List BPair := [⟨2, 1⟩, ⟨1, 26⟩]
 private def rX : List BPair :=
-  vecAdd (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (rayH 5 32 eT mT) jX))
+  vecAdd (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jX))
     (vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 16) jX)
-example : poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (rayH 5 32 eT mT) jX))
+example : poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jX))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 16) jX).map BPair.swap) rX) := by
   decide +kernel
 example : ((BPair.ofPos 2504 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
@@ -1189,7 +1189,7 @@ private def jW : List BPair := jetVec 1 1 oneT psi1W psi2W
 private theorem hdW : split.diagRead etW (idMat 2) tW twW lW := by decide +kernel
 private theorem hclW : groundreads.clearRead lW 0 10 1 := by decide +kernel
 private theorem htieW : matOneValue etW
-    (siteDatum (matScale 1 (rayH 1 1 eW mW)) (matScaleB e0W (idMat 2))) := by decide +kernel
+    (siteDatum (matScale 1 (pencil.rayH eW mW (1 * 1) (1 * 1))) (matScaleB e0W (idMat 2))) := by decide +kernel
 private theorem hEsW : splitRead eW spEW ∧ psdAt spEW := by decide +kernel
 private theorem hcapMW : capAt mmW (matScale (9 * 9) (idMat 2)) spUW spLW := by
   decide +kernel
@@ -1454,11 +1454,11 @@ private def psiN : List BPair := matVec tN.val (elim.idRow 2 0)
 example : split.diagRead etN (idMat 2) tN tN lN := by decide +kernel
 example : groundreads.clearRead lN 0 5 1 := by decide +kernel
 example : matOneValue etN
-    (siteDatum (matScale Pos.one (rayH 1 1 eN mN)) (matScaleB ⟨1, 5⟩ (idMat 2))) := by
+    (siteDatum (matScale Pos.one (pencil.rayH eN mN (1 * 1) (1 * 1))) (matScaleB ⟨1, 5⟩ (idMat 2))) := by
   decide +kernel
 example : splitRead eN spEN := by decide +kernel
 example : capAt mmN (matScale (1 * 1) (idMat 2)) spUN spLN := by decide +kernel
-example : poly.oneValue (vecScale (BPair.ofPos (4 * (1 * 1))) (matVec (rayH 1 1 eN mN) jN))
+example : poly.oneValue (vecScale (BPair.ofPos (4 * (1 * 1))) (matVec (pencil.rayH eN mN (1 * 1) (1 * 1)) jN))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 1 4) * BPair.ofNat 0) jN).map BPair.swap) rN) := by
   decide +kernel
 example : BPair.ofPos (1 * Pos.one * (1 * 1) * 1) < BPair.ofPos 5 := by decide +kernel
@@ -1486,11 +1486,11 @@ private def spLS : Split 2 := mkSplit 2 (matAdd (matScale (3 * 3) (idMat 2)) mmS
 example : split.diagRead etS (idMat 2) tN tN lS := by decide +kernel
 example : groundreads.clearRead lS 0 1 1 := by decide +kernel
 example : matOneValue etS
-    (siteDatum (matScale Pos.one (rayH 1 1 eS mS)) (matScaleB BPair.unit (idMat 2))) := by
+    (siteDatum (matScale Pos.one (pencil.rayH eS mS (1 * 1) (1 * 1))) (matScaleB BPair.unit (idMat 2))) := by
   decide +kernel
 example : splitRead eS spES ∧ psdAt spES := by decide +kernel
 example : capAt mmS (matScale (3 * 3) (idMat 2)) spUS spLS := by decide +kernel
-example : poly.oneValue (vecScale (BPair.ofPos (4 * (1 * 1))) (matVec (rayH 1 1 eS mS) jN))
+example : poly.oneValue (vecScale (BPair.ofPos (4 * (1 * 1))) (matVec (pencil.rayH eS mS (1 * 1) (1 * 1)) jN))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 1 4) * BPair.ofNat 0) jN).map BPair.swap) rN) := by
   decide +kernel
 example : ¬ (BPair.ofPos (1 * Pos.one * (1 * 1) * 3) < BPair.ofPos 1) := by decide +kernel

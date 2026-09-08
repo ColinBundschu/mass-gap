@@ -38,16 +38,17 @@ the content read stays true there, the electric fold being blind
 to the dualization at the interface's own Casimir read
 (`fusion.casDualLaw`).
 
-The matrix tier runs on that same family: each member's relabeling
-is read as a matrix of order thirty-one, the unit line at its head
-over the thirty members' indicator rows, and is orthogonal at both
-members — the closure and the injectivity of the relabeling read
-at the congruence.  The window's electric matrix is the diagonal
-of the family's contents with the unit line at its head, eighteen
-squares at the plaquette level and twelve windings at the side's
-own count, and each member's congruence fixes it: `thm:restoration`'s
-`E` sentence read entrywise, the dualization blind at the
-interface's Casimir read.  With that pair the window carries
+The transport tier runs on that same family: each member reads a
+label-graph isomorphism of the torus onto itself with the induced
+site map, the vertex lists' Grams are one value at the relabeled
+members, and every moved member is the moved vertex's own list's,
+every fiber one coevaluation member, so the index action's
+indicator on the thirty-one window keys, the unit line at its head,
+is the member's matrix, orthogonal at both members.  The window's
+electric matrix is the diagonal of the family's contents with the
+unit line at its head, eighteen squares at the plaquette level and
+twelve windings at the side's own count, fixed at the action at
+the interface's Casimir read.  With that pair the window carries
 `thm:SO`'s character clause outright — the member commutes with
 the electric matrix, is orthogonal, and reads the unit line's
 ground at a scalar squaring to one.
@@ -66,27 +67,23 @@ pair while the diagonal at the swap is refused for the
 direction-zero family, the member moving the probe so the forged
 read parts from the moved family's own.
 
-The determinant tier runs at three scales.  A committed
-three-by-three square with distinct entries is relabeled at a
-committed three-cycle, its literal relabeling decided against the
-entrywise reading, and the two determinants read one value at
-`relabel_det` with the value pinned at the balance partner of five;
-a relabeling with one entry off refuses the read, and an
-assignment holding a letter twice refuses the enumeration's own
-count.  At the window the swap's relabeling of the thirty-one
-window keys is read off the index action — the unit line fixed and
-each loop's key at the moved loop's own, the two orientation
-classes exchanged and the two directions' windings with them — and
-the electric matrix is fixed at it entrywise, so its determinant
-reads one value with itself, the theorem's `E`-fix read at
-`def:elim`'s determinant.  The polynomial carrier's instance is a
-committed two-by-two square at the transposition, the relabeled
-square's minor reading the source's, a square one coefficient off
-refusing the entrywise reading (`lem:split`'s symbol).
+The transport tier reads the members at the window's states: every
+moved member is a state of the moved window, in the moved vertex's
+own list's span (`fiberdec.statesTransport`), and every fiber of
+this window being one coevaluation member, the moved member is the
+moved vertex's own, so the transport's matrix on the window list
+(`fiberdec.transportMat`) is the
+index action's indicator with the unit line at its head, orthogonal,
+and it carries the ground line at `thm:SO`'s character clause.  The
+polynomial carrier's instance is a committed two-by-two square at
+the transposition, the relabeled square's minor reading the
+source's, a square one coefficient off refusing the entrywise
+reading (`lem:split`'s symbol).
 -/
 set_option maxHeartbeats 16000000
 
 open ground lattice fusion carrier fiberdec restoration elim inertia
+open pairpencil (dualConf permConf)
 
 /-! The committed members: the direction swap at the vacant flip
 family, and the reflection in direction zero at the identity
@@ -104,11 +101,11 @@ private def FA : Data places.Shape := dataA 3
 /-! Each member permutes the link keys at itself, and a member of
 order four refuses that reading at its own witness. -/
 
-example : permRead (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
+example : linkIso (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
     (bdLink 2 3 pSwap fNone) := by decide +kernel
-example : permRead (torusRegion 2 3) (bdLink 2 3 (fun e => e) fZero)
+example : linkIso (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 (fun e => e) fZero)
     (bdLink 2 3 (fun e => e) fZero) := by decide +kernel
-example : ¬ permRead (torusRegion 2 3) (bdLink 2 3 pSwap fZero)
+example : ¬ linkIso (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fZero)
     (bdLink 2 3 pSwap fZero) := by decide +kernel
 
 /-! The conjugation reads: each direction's translation carried to
@@ -168,22 +165,22 @@ example : contentN FA (ground.getAt [] twIx 18) = 24 := by decide +kernel
 /-! The three dualizing index reads at both members. -/
 
 example : fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
-    (bdLink 2 3 pSwap fNone) (bdRev 2 3 fNone) := by
+    (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone) (bdRev 2 3 fNone) := by
   decide +kernel
 example : dualOccFixed FA (torusRegion 2 3) twIx
-    (bdLink 2 3 pSwap fNone) (bdRev 2 3 fNone) := by
+    (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone) (bdRev 2 3 fNone) := by
   decide +kernel
 example : dualIdxFixed FA (torusRegion 2 3) twIx
-    (bdLink 2 3 pSwap fNone) (bdRev 2 3 fNone) := by
+    (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone) (bdRev 2 3 fNone) := by
   decide +kernel
 example : fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
-    (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) := by
+    (bdLink 2 3 (fun e => e) fZero) (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) := by
   decide +kernel
 example : dualOccFixed FA (torusRegion 2 3) twIx
-    (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) := by
+    (bdLink 2 3 (fun e => e) fZero) (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) := by
   decide +kernel
 example : dualIdxFixed FA (torusRegion 2 3) twIx
-    (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) := by
+    (bdLink 2 3 (fun e => e) fZero) (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) := by
   decide +kernel
 
 /-! The reversal family isolated: a member's link map at the other
@@ -193,25 +190,25 @@ blindness to the dualization — while a collapsing link map, every
 link at the origin's own, refuses the content read itself. -/
 
 example : ¬ dualOccFixed FA (torusRegion 2 3) twIx
-    (bdLink 2 3 pSwap fNone) (bdRev 2 3 fZero) := by
+    (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone) (bdRev 2 3 fZero) := by
   decide +kernel
 example : ¬ dualIdxFixed FA (torusRegion 2 3) twIx
-    (bdLink 2 3 pSwap fNone) (bdRev 2 3 fZero) := by
+    (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone) (bdRev 2 3 fZero) := by
   decide +kernel
 example : ¬ dualOccFixed FA (torusRegion 2 3) twIx
-    (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fNone) := by
+    (bdLink 2 3 (fun e => e) fZero) (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fNone) := by
   decide +kernel
 example : ¬ dualIdxFixed FA (torusRegion 2 3) twIx
-    (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fNone) := by
+    (bdLink 2 3 (fun e => e) fZero) (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fNone) := by
   decide +kernel
 example : fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
-    (bdLink 2 3 pSwap fNone) (bdRev 2 3 fZero) := by
+    (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone) (bdRev 2 3 fZero) := by
   decide +kernel
 example : fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
-    (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fNone) := by
+    (bdLink 2 3 (fun e => e) fZero) (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fNone) := by
   decide +kernel
 example : ¬ fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
-    (fun _ => 0) (bdRev 2 3 fNone) := by decide +kernel
+    (fun _ => 0) (fun _ => 0) (bdRev 2 3 fNone) := by decide +kernel
 
 /-! The plaquette set permuted at the cyclic reading
 (`con:lattice`'s boundary field, `lattice.plaqPermRead` at the
@@ -253,26 +250,24 @@ the direction-zero links alone. -/
 
 private def fOne : Nat → Bool := fun e => e == 1
 
-example : permRead (torusRegion 2 3) (bdLink 2 3 pSwap fZero)
+example : linkIso (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fZero)
     (bdLink 2 3 pSwap fOne) := by decide +kernel
-example : eqConf FA (dualConf FA (bdLink 2 3 pSwap fOne) (bdRev 2 3 fZero) 18
+example : eqConf FA (dualConf FA (bdLink 2 3 pSwap fZero) (bdLink 2 3 pSwap fOne) (bdRev 2 3 fZero) 18
       (torWind 0 0 [1, 0, 0])) (torWind 1 0 [0, 1, 0]) = true
-    ∧ eqConf FA (dualConf FA (bdLink 2 3 pSwap fOne) (bdRev 2 3 fZero) 18
+    ∧ eqConf FA (dualConf FA (bdLink 2 3 pSwap fZero) (bdLink 2 3 pSwap fOne) (bdRev 2 3 fZero) 18
       (torWind 0 0 [1, 0, 0])) (torWind 1 0 [1, 0, 0]) = false := by
   decide +kernel
 example : moveWord (bdLink 2 3 pSwap fZero) (bdRev 2 3 fZero) [(0, true), (9, true)]
     = [(15, false), (0, true)] := by decide +kernel
 
-/-! The window matrix at the committed family: the signed member's
-relabeling read as a matrix on the window list, every member's
-fiber at one slot, with the unit line at its head, the dualizing
-action's own indicator rows at the induced vertex map (the site
-map itself, an involution at both members, read a permutation of
-the vertex range, the swap's endpoints transported along it and
-the flip's exchanged at its reversed links; every fiber at one
-slot here, the keys' transport vacant).  Each member's
-matrix is orthogonal — the closure and the injectivity of the
-relabeling read at the congruence. -/
+/-! The transport at the committed members: the two signed members
+read the isomorphism of the torus onto itself with the induced site
+map, an involution at both, its own witness (`isoRead`); every
+moved member is a state of the moved window
+(`fiberdec.statesTransport`); and every member's moved member is
+the moved vertex's own list's, every fiber one coevaluation member
+at a single-slot end, so the transport's matrix on the window list
+is the index action's indicator, orthogonal at both members. -/
 
 /-- The swap's induced vertex map, the site map itself, an
 involution. -/
@@ -281,34 +276,135 @@ private def vSwap : Nat → Nat := bdSite 2 3 pSwap fNone
 /-- The flip's induced vertex map, an involution. -/
 private def vFlip : Nat → Nat := bdSite 2 3 (fun e => e) fZero
 
-example : endsRead (torusRegion 2 3) (bdLink 2 3 pSwap fNone) vSwap
-    ∧ vertPermRead (torusRegion 2 3) vSwap vSwap := by decide +kernel
-example : vertPermRead (torusRegion 2 3) vFlip vFlip := by decide +kernel
-example : ¬ endsRead (torusRegion 2 3) (bdLink 2 3 pSwap fNone) vFlip := by
+example : endsMoved (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
+      (fun _ => false) vSwap
+    ∧ vertIso (torusRegion 2 3) (torusRegion 2 3) vSwap vSwap := by decide +kernel
+example : vertIso (torusRegion 2 3) (torusRegion 2 3) vFlip vFlip := by decide +kernel
+example : ¬ endsMoved (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
+    (fun _ => false) vFlip := by decide +kernel
+
+example : isoRead (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
+    (bdLink 2 3 pSwap fNone) vSwap vSwap (bdRev 2 3 fNone) := by decide +kernel
+example : isoRead (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 (fun e => e) fZero)
+    (bdLink 2 3 (fun e => e) fZero) vFlip vFlip (bdRev 2 3 fZero) := by decide +kernel
+example : statesTransport FA (torusRegion 2 3) twIx (bdLink 2 3 pSwap fNone)
+    (bdLink 2 3 pSwap fNone) vSwap (bdRev 2 3 fNone) := by decide +kernel
+example : statesTransport FA (torusRegion 2 3) twIx (bdLink 2 3 (fun e => e) fZero)
+    (bdLink 2 3 (fun e => e) fZero) vFlip (bdRev 2 3 fZero) := by decide +kernel
+
+/-- Every moved member is the moved vertex's own list's member, one
+coevaluation member per fiber at this window. -/
+private def membersFixed (s v w : Nat → Nat) (rev : Nat → Bool) : Bool :=
+  twIx.all (fun a =>
+    let a' := dualConf FA s s rev 18 a
+    (List.zipWith (fun (m m' : Option (slotpower.SVec × Pos)) =>
+        match m, m' with
+        | some x, some y => slotpower.oneValueV x.1 y.1 && decide (x.2 = y.2)
+        | none, none => true
+        | none, some _ => false
+        | some _, none => false)
+      (pairpencil.movedMembers FA (torusRegion 2 3) (torusRegion 2 3) s v w rev a a'
+        (pairpencil.stateMembers FA (torusRegion 2 3) twIx a (List.replicate 9 0)))
+      (pairpencil.stateMembers FA (torusRegion 2 3) twIx a' (List.replicate 9 0))).all
+        (fun b => b))
+
+example : membersFixed (bdLink 2 3 pSwap fNone) vSwap vSwap (bdRev 2 3 fNone) = true
+    ∧ membersFixed (bdLink 2 3 (fun e => e) fZero) vFlip vFlip (bdRev 2 3 fZero) = true := by
   decide +kernel
 
-private def bdSwapM : Mat :=
-  dualSlotMat FA (torusRegion 2 3) twIx (bdLink 2 3 pSwap fNone)
-    (bdRev 2 3 fNone) vSwap
+/-! The transport's matrix at both members (`fiberdec.transportMat`):
+the moved states' coefficients over the window list, every column
+at the unit clearing with every moved member the moved vertex's
+own, so the matrix is the index action's indicator with the unit
+line at its head, orthogonal at both members. -/
 
-private def bdFlipM : Mat :=
-  dualSlotMat FA (torusRegion 2 3) twIx (bdLink 2 3 (fun e => e) fZero)
-    (bdRev 2 3 fZero) vFlip
+private def bdSwapT : Mat × List BPair :=
+  transportMat FA (torusRegion 2 3) twIx 31 (bdLink 2 3 pSwap fNone)
+    (bdLink 2 3 pSwap fNone) vSwap vSwap (bdRev 2 3 fNone)
+private def bdFlipT : Mat × List BPair :=
+  transportMat FA (torusRegion 2 3) twIx 31 (bdLink 2 3 (fun e => e) fZero)
+    (bdLink 2 3 (fun e => e) fZero) vFlip vFlip (bdRev 2 3 fZero)
+private def bdSwapM : Mat := bdSwapT.1
+private def bdFlipM : Mat := bdFlipT.1
 
+example : (bdSwapT.2.all (fun x => decide (x.oneValue (BPair.ofNat 1)))) = true
+    ∧ (bdFlipT.2.all (fun x => decide (x.oneValue (BPair.ofNat 1)))) = true := by
+  decide +kernel
+private theorem bdSwapSq : sqAt bdSwapM 31 := by decide +kernel
+private theorem bdFlipSq : sqAt bdFlipM 31 := by decide +kernel
 example : matOneValue (matMul (transposeM bdSwapM) bdSwapM) (idMat 31) := by
   decide +kernel
 example : matOneValue (matMul (transposeM bdFlipM) bdFlipM) (idMat 31) := by
   decide +kernel
 
-/-! The electric member fixed at the congruence, `thm:restoration`'s
-`E` sentence read at the matrix level: the window diagonal is the
-family's contents with the unit line at its head — the eighteen
-squares at the plaquette level and the twelve windings at the
-side's own count — and the congruence by each member's matrix
-fixes it, the dualization blind at the interface's Casimir read.
-The orthogonality read refuses the electric matrix itself, and the
-commuting read refuses a forged diagonal holding every member's
-entry apart, the swap moving a distinguished entry off itself. -/
+/-! The flip at the adjoint loop, the reversed ends' columns
+(`thm:pairpencil`'s transport at a reversed traversal): over two
+letters the adjoint's two columns are tie columns, so the flip
+reads every moved member at the star, and the loop's term entry
+between the loop and itself is one value at the moved states
+(`pairpencil.termTransport`) with every moved member a state of the
+moved window (`fiberdec.statesTransport`), the reversal family
+vacant refusing the states' transport, the members relabeled at
+the column match alone off the moved vertex lists' spans; over
+three letters the adjoint's two columns match the dual label's
+complement columns in the exchanged order, the block rotation, the
+states' transport holding at the reversal family and refused
+vacant. -/
+
+private def sF : Nat → Nat := bdLink 2 3 (fun e => e) fZero
+private def rF : Nat → Bool := bdRev 2 3 fZero
+private def torP0 : List (Nat × Bool) := ground.getAt [] (torusRegion 2 3).plaqs 0
+private def loopTh2 : List places.Shape :=
+  (List.range 18).map (fun l => if torP0.any (fun e => e.1 == l) then adjchar.theta 2 else [0, 0])
+private def loopTh2' : List places.Shape := dualConf (dataA 2) sF sF rF 18 loopTh2
+private def ixTh2 : List (List places.Shape) := [loopTh2, loopTh2']
+private def loopTh3 : List places.Shape :=
+  (List.range 18).map (fun l => if torP0.any (fun e => e.1 == l) then adjchar.theta 3 else [0, 0, 0])
+private def loopTh3' : List places.Shape := dualConf FA sF sF rF 18 loopTh3
+private def ixTh3 : List (List places.Shape) := [loopTh3, loopTh3']
+
+example : statesTransport (dataA 2) (torusRegion 2 3) ixTh2 sF sF vFlip rF := by
+  decide +kernel
+example : ¬ statesTransport (dataA 2) (torusRegion 2 3) ixTh2 sF sF vFlip (fun _ => false) := by
+  decide +kernel
+/-- The flip's term entry at the adjoint loop over two letters,
+stated data: the contraction, the determinants' product and the
+clearing, one value at the source and at the moved states. -/
+private def flE : Option (BPair × BPair × Pos) :=
+  some (⟨369768517790072833, 1⟩,
+    ⟨420343072239893133593304, 420343071517688997284568⟩, 256)
+
+private theorem flSrc : pairpencil.termEntry (dataA 2) (torusRegion 2 3) ixTh2 torP0 loopTh2
+    (List.replicate 9 0) loopTh2 (List.replicate 9 0) = flE := by decide +kernel
+private theorem flMov : pairpencil.termEntryAt (dataA 2) (torusRegion 2 3) ixTh2
+    (lattice.moveWord sF rF torP0)
+    (dualConf (dataA 2) sF sF rF (torusRegion 2 3).links loopTh2)
+    (dualConf (dataA 2) sF sF rF (torusRegion 2 3).links loopTh2)
+    (List.zipWith (fun m m' => (m, m'))
+      (pairpencil.movedMembers (dataA 2) (torusRegion 2 3) (torusRegion 2 3) sF vFlip vFlip rF
+        loopTh2 (dualConf (dataA 2) sF sF rF (torusRegion 2 3).links loopTh2)
+        (pairpencil.stateMembers (dataA 2) (torusRegion 2 3) ixTh2 loopTh2 (List.replicate 9 0)))
+      (pairpencil.movedMembers (dataA 2) (torusRegion 2 3) (torusRegion 2 3) sF vFlip vFlip rF
+        loopTh2 (dualConf (dataA 2) sF sF rF (torusRegion 2 3).links loopTh2)
+        (pairpencil.stateMembers (dataA 2) (torusRegion 2 3) ixTh2 loopTh2 (List.replicate 9 0))))
+    = flE := by decide +kernel
+
+example : pairpencil.termTransport (dataA 2) (torusRegion 2 3) (torusRegion 2 3) ixTh2 ixTh2
+    sF sF vFlip vFlip rF torP0 loopTh2 (List.replicate 9 0) loopTh2 (List.replicate 9 0)
+    = true := by
+  unfold pairpencil.termTransport
+  exact pairpencil.termTransportAt_of _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ flSrc flMov
+    (by decide +kernel)
+example : statesTransport FA (torusRegion 2 3) ixTh3 sF sF vFlip rF := by decide +kernel
+example : ¬ statesTransport FA (torusRegion 2 3) ixTh3 sF sF vFlip (fun _ => false) := by
+  decide +kernel
+
+/-! The electric member's diagonal at the window, `thm:restoration`'s
+`E` sentence: the window diagonal is the family's contents with the
+unit line at its head — the eighteen squares at the plaquette level
+and the twelve windings at the side's own count — fixed at the
+action at the interface's Casimir read (`dualContentFixed` above),
+the diagonal off orthogonality itself. -/
 
 private def bdDiag : List Nat := 0 :: twIx.map (contentN FA)
 
@@ -317,15 +413,8 @@ example : bdDiag = 0 :: (List.replicate 18 32 ++ List.replicate 12 24) := by
 
 private def bdE : Mat := pairpencil.pencilE bdDiag
 
-example : commRead bdSwapM bdE := by decide +kernel
-example : commRead bdFlipM bdE := by decide +kernel
 example : ¬ matOneValue (matMul (transposeM bdE) bdE) (idMat 31) := by
   decide +kernel
-
-private def bdBadE : Mat :=
-  pairpencil.pencilE (0 :: (List.range 30).map (fun i => i + 1))
-
-example : ¬ commRead bdSwapM bdBadE := by decide +kernel
 
 /-! The ground line at the same window (`thm:SO`'s character
 clause): the electric matrix and the member's own, the member
@@ -338,17 +427,17 @@ private def bdPsi : List BPair :=
   BPair.ofPos 1 :: twIx.map (fun _ => BPair.unit)
 
 example : SO.symRead (⟨bdE, by decide +kernel⟩ : SqMat 31)
-    (⟨bdSwapM, by decide +kernel⟩ : SqMat 31)
+    (⟨bdSwapM, bdSwapSq⟩ : SqMat 31)
     (⟨bdPsi, by decide +kernel⟩ : Vec 31) := by decide +kernel
 example : SO.symRead (⟨bdE, by decide +kernel⟩ : SqMat 31)
-    (⟨bdFlipM, by decide +kernel⟩ : SqMat 31)
+    (⟨bdFlipM, bdFlipSq⟩ : SqMat 31)
     (⟨bdPsi, by decide +kernel⟩ : Vec 31) := by decide +kernel
 
 private def bdPsiBad : List BPair :=
   BPair.unit :: BPair.ofPos 1 :: List.replicate 29 BPair.unit
 
 example : ¬ SO.symRead (⟨bdE, by decide +kernel⟩ : SqMat 31)
-    (⟨bdSwapM, by decide +kernel⟩ : SqMat 31)
+    (⟨bdSwapM, bdSwapSq⟩ : SqMat 31)
     (⟨bdPsiBad, by decide +kernel⟩ : Vec 31) := by decide +kernel
 
 /-! The momentum transform's carrier at two directions, side three
@@ -377,6 +466,9 @@ the flip. -/
 
 private def torShift (ks : List (List Nat)) : Nat → Nat :=
   compShift 2 3 (ground.getAt [] ks 0)
+/-- The shift's witness, the complementary steps along each direction. -/
+private def torShiftInv (ks : List (List Nat)) : Nat → Nat :=
+  compShift 2 3 ((ground.getAt [] ks 0).map (fun k => (3 - k % 3) % 3))
 
 private def windD0 : List places.Shape := torWind 0 0 [1, 0, 0]
 private def windD1 : List places.Shape := torWind 1 0 [1, 0, 0]
@@ -385,20 +477,22 @@ example : eqConf FA windD0 (ground.getAt [] twIx 18) = true := by
   decide +kernel
 example : eqConf FA windD1 (ground.getAt [] twIx 24) = true := by
   decide +kernel
-example : eqConf FA (dualConf FA (bdLink 2 3 pSwap fNone)
+example : eqConf FA (dualConf FA (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone)
     (bdRev 2 3 fNone) 18 windD0) windD1 = true := by decide +kernel
 example : eqConf FA (dualConf FA (bdLink 2 3 (fun e => e) fZero)
-    (bdRev 2 3 fZero) 18 windD1) windD1 = true := by decide +kernel
+    (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) 18 windD1) windD1 = true := by
+  decide +kernel
 example : eqConf FA (dualConf FA (bdLink 2 3 (fun e => e) fZero)
-    (bdRev 2 3 fZero) 18 windD0) windD0 = false := by decide +kernel
+    (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) 18 windD0) windD0 = false := by
+  decide +kernel
 
 private def wD0 (ks : List (List Nat)) : BPair :=
-  if eqConf FA (permConf FA (torShift ks) 18 windD0) windD0 then
+  if eqConf FA (permConf FA (torShift ks) (torShiftInv ks) 18 windD0) windD0 then
     BPair.ofPos 1
   else BPair.unit
 
 private def wD1 (ks : List (List Nat)) : BPair :=
-  if eqConf FA (permConf FA (torShift ks) 18 windD1) windD1 then
+  if eqConf FA (permConf FA (torShift ks) (torShiftInv ks) 18 windD1) windD1 then
     BPair.ofPos 1
   else BPair.unit
 
@@ -412,77 +506,6 @@ so the forged read parts from the moved family's own. -/
 example : transformMoved 2 3 1 wD0 wD1 pSwap fNone := by decide +kernel
 example : transformFixed 2 3 1 wD1 (fun e => e) fZero := by decide +kernel
 example : ¬ transformFixed 2 3 1 wD0 pSwap fNone := by decide +kernel
-
-/-! The determinant at a joint relabeling of rows and columns
-(`thm:restoration`'s derivation clause): a committed three-by-three
-square with distinct entries against its literal relabeling at a
-committed assignment, the relabeling read decided and the
-determinant routed at one value; a forged relabeling with one entry
-off refuses the read, and an assignment holding a letter twice
-refuses the enumeration's own count. -/
-
-private def q3 : List Nat := [1, 2, 0]
-
-private def m3 : Mat :=
-  [[BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3],
-   [BPair.ofNat 4, BPair.ofNat 5, BPair.ofNat 7],
-   [BPair.ofNat 8, BPair.ofNat 6, BPair.ofNat 9]]
-
-private def m3' : Mat :=
-  [[BPair.ofNat 5, BPair.ofNat 7, BPair.ofNat 4],
-   [BPair.ofNat 6, BPair.ofNat 9, BPair.ofNat 8],
-   [BPair.ofNat 2, BPair.ofNat 3, BPair.ofNat 1]]
-
-private def m3bad : Mat :=
-  [[BPair.ofNat 5, BPair.ofNat 7, BPair.ofNat 4],
-   [BPair.ofNat 6, BPair.ofNat 9, BPair.ofNat 8],
-   [BPair.ofNat 2, BPair.ofNat 3, BPair.ofNat 2]]
-
-example : m3' = (List.range 3).map (fun i => (List.range 3).map
-    (fun j => ground.getAt BPair.unit
-      (ground.getAt [] m3 (ground.getAt 0 q3 i))
-      (ground.getAt 0 q3 j))) := by decide +kernel
-
-example : relabelRead 3 m3 m3' q3 := by decide +kernel
-example : ¬ relabelRead 3 m3 m3bad q3 := by decide +kernel
-example : ¬ (0 < ground.countOf [0, 0, 1]
-    (places.monomialsAt (List.replicate 3 1))) := by decide +kernel
-
-example : (detL m3').oneValue (detL m3) :=
-  relabel_det 3 m3 m3' q3 (by decide +kernel) (by decide +kernel)
-    (by decide +kernel) (by decide +kernel)
-
-example : detL m3' = detL m3 := by decide +kernel
-example : (detL m3).oneValue (BPair.ofNat 5).swap := by decide +kernel
-
-/-! The window instance at the committed data: the swap's
-relabeling of the window index — the identity at the unit line,
-each loop's key at the moved loop's own — read off the index
-action, the electric matrix fixed at that relabeling entrywise,
-and the determinant routed at one value with itself, the
-theorem's `E`-fix read at `def:elim`'s determinant. -/
-
-private def twIdx (a : List places.Shape) : Nat :=
-  places.idxOf true (twIx.map (fun b => carrier.eqConf FA a b))
-
-private def qSwap : List Nat :=
-  [0, 10, 13, 16, 11, 14, 17, 12, 15, 18, 1, 4, 7, 2, 5, 8, 3, 6, 9,
-    25, 26, 27, 28, 29, 30, 19, 20, 21, 22, 23, 24]
-
-example : qSwap = 0 :: (List.range 30).map (fun i => 1 + twIdx
-    (dualConf FA (bdLink 2 3 pSwap fNone) (bdRev 2 3 fNone) 18
-      (ground.getAt [] twIx i))) := by decide +kernel
-
-private theorem hqSwap : 0 < ground.countOf qSwap
-    (places.monomialsAt (List.replicate 31 1)) := by
-  rw [places.countOf_monomialsAt, if_pos (by decide +kernel)]
-  exact Nat.succ_pos 0
-
-example : relabelRead 31 bdE bdE qSwap := by decide +kernel
-
-example : (detL bdE).oneValue (detL bdE) :=
-  relabel_det 31 bdE bdE qSwap hqSwap (by decide +kernel)
-    (by decide +kernel) (by decide +kernel)
 
 /-! The polynomial carrier's own instance (`lem:split`'s symbol):
 a committed two-by-two polynomial square at the transposition, its

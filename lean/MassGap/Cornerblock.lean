@@ -1869,7 +1869,7 @@ theorem strict_lift {n m : Nat} (S P W : Mat) (sp : Split n)
     (hx : x.length = m)
     (hq : quadForm W x < BPair.unit) :
     1 ≤ revAt sp := by
-  refine strictForcing S (matVec P x)
+  refine inertia.strictForcing S (matVec P x)
     ((matVec_length P x).trans hPl) ?_ sp hsp
   exact BPair.lt_congr
     (BPair.oneValue_symm (tieQuad S P W hsp.1 hPl hPr htie x hx))
@@ -1895,7 +1895,7 @@ theorem cap_lift {n m : Nat} (S P W : Mat) (sp : Split n)
   have hqx' := tieQuad S P W hsp.1 hPl hPr htie x' hx'
   have hc1 := tiePair S P W hsp.1 hPl hPr htie x x' hx hx'
   have hc2 := tiePair S P W hsp.1 hPl hPr htie x' x hx' hx
-  refine capForcing S (matVec P x) (matVec P x')
+  refine inertia.capForcing S (matVec P x) (matVec P x')
     ((matVec_length P x).trans hPl) ((matVec_length P x').trans hPl)
     (BPair.lt_congr (BPair.oneValue_symm hqx)
       (BPair.oneValue_refl BPair.unit) hq) ?_ sp hsp

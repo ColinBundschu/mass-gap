@@ -283,14 +283,14 @@ the first key and `weight_occupied`'s occupancy at both. -/
 
 private def et2 : Mat := [[⟨7, 1⟩, u], [u, ⟨17, 1⟩]]
 
-private def id2 : SqMat 2 := ⟨inertia.idMat 2, by decide +kernel⟩
+private def id2 : SqMat 2 := ⟨elim.idMat 2, by decide +kernel⟩
 
 private def l2 : List (BPair × Pos × BPair) :=
   [(⟨7, 1⟩, 1, ⟨2, 1⟩), (⟨17, 1⟩, 1, ⟨2, 1⟩)]
 
 private def y2v : List BPair := [⟨5, 1⟩, ⟨4, 1⟩]
 
-example : split.diagRead et2 (inertia.idMat 2) id2 id2 l2 := by
+example : split.diagRead et2 (elim.idMat 2) id2 id2 l2 := by
   decide +kernel
 example : ¬ speccut.specRead (l2.map (fun r => (r.1, r.2.1))) 4 3 1 := by
   decide +kernel

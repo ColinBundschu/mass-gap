@@ -311,7 +311,7 @@ is occupied at two.  The compression's shape binders (`hPl`, `hPr`)
 are the certificate-shape frame at the truncating folds, no refusal
 cell of their own.  The refusals name the reads that bite: the tie
 at the forged compression minus two against the identity datum's
-own two, the strict read at that honest compression, the
+own two, the strict read at that exact compression, the
 discriminant at the datum `diag(-1, 2)` whose product's quadruple
 reads minus eight, and the cap's strict read at the identity
 datum — each with the count parted beside it. -/
@@ -355,7 +355,7 @@ example : ¬ matOneValue (matMul (transposeM liCol) (matMul liId liCol))
 example : quadForm liWn liX1 < BPair.unit := by decide +kernel
 example : ¬ ((1 : Nat) ≤ revAt liSpId) := by decide +kernel
 
-/-- Refusal naming `strict_lift`'s strict read: the honest
+/-- Refusal naming `strict_lift`'s strict read: the exact
 compression at the identity datum reads two, at or above the sum's
 unit, and the count parts beside it. -/
 example : matOneValue (matMul (transposeM liCol) (matMul liId liCol))
@@ -482,7 +482,7 @@ example : ¬ (minor crSp.T.val * minor crSp.T.val
           (matVec crSp.Tw.val (matVec crR5.1 [⟨2, 1⟩]))).scale
           crXf5.2) := by decide +kernel
 
-/-- Refusal naming the join: the honest witness with the following
+/-- Refusal naming the join: the exact witness with the following
 pivot forged at `-1` parts the join's sum at minus three halves
 against one and the display at four against minus four. -/
 example : ¬ oneValueQ (addQ crXf5 (mulQ (ofM crB) crR)) (ofM crA) := by
@@ -498,7 +498,7 @@ example : ¬ (minor crSp.T.val * minor crSp.T.val
           crXf5.2) := by decide +kernel
 
 /-- Refusal naming the split: the positive crossing `+2` at the
-honest witness and join against the lied split at the lower entry
+exact witness and join against the lied split at the lower entry
 parts the display at eight against four, the true sandwich's
 weight underpriced by the withdrawn read. -/
 private def crXc7 : MatQ := ([[⟨3, 1⟩]], 1)
@@ -523,7 +523,7 @@ example : ¬ (minor crSp.T.val * minor crSp.T.val
 /-! The chain's stated splits, isolated: the lied certificate list
 at the standing chain refuses its head split against the pivot
 `21/8` with the fold parting at one; and the forged head pivot `-2`
-at its own honest split refuses the tail recursion's join while the
+at its own exact split refuses the tail recursion's join while the
 certificate list and the symmetric diagonal's fold stand, the fold
 parting at one — the symmetry fold's own parting record is the
 recursion tier's, the asymmetric one-slab seed at the tail walk's
@@ -614,7 +614,7 @@ the comparisons' operand shapes) are the certificate-shape frame at
 the truncating folds.  The tail recursion and the pivots'
 certificate list are load-bearing at the count's own class: the
 lied certificate list against the pivot and the forged head pivot
-at its honest split each part the fold at one. -/
+at its exact split each part the fold at one. -/
 
 private def bA0 : Mat := [[⟨4, 1⟩]]
 private def bA1 : Mat := [[⟨2, 1⟩]]
@@ -775,7 +775,7 @@ at nine, the conclusion parting at eight against four.  The fourth
 and fifth sit at the band-one crossing's own fixture with the
 diagonal floor `(1, 1)` tight, the transfer's cap `(1, 4)` at the
 vacant withdrawal and the seed comparison at six against eight:
-the forged witness with its repaired join, and the honest witness
+the forged witness with its repaired join, and the exact witness
 with the forged following pivot, each part the seed floor at one
 against minus two.  The split class is the module's standing
 crossing refusal at `crossing_rebound`. -/

@@ -62,7 +62,13 @@ a count \emph{occupied} at a natural's read, and the
 trichotomy's below outcome and the vacant read at the further
 two: the counts are a carrier with the displayed sum's unit. The \emph{cofactor} $c$
 at $Y\,c=X$ is one
-value by the product's injectivity where it exists; order and
+value by the product's injectivity where it exists; the
+\emph{division} of a natural $K$ at an occupied natural $d$ is the
+pair of its \emph{quotient} $q$ and \emph{remainder} $r$ at the
+naming identity $K=d\,q+r$ with $r$ below $d$, one pair by the
+trichotomy and the sum's injectivity (two quotients at distinct
+values put a multiple of $d$ at or beyond $d$ inside the remainders'
+gap), the cofactor its read at the remainder the sum's unit; order and
 factor statements are witness existence in this vocabulary, and a
 witness is a field of its statement: the gap a field of a stated
 order, the cofactor of a stated factorization, and a derived
@@ -117,7 +123,8 @@ componentwise, one balance pair per coordinate, the members equal
 exactly where every coordinate's are, and the \emph{dot} of two
 matched lists, in this carrier and in every carrier with the
 displayed sum's unit and product, is the fold of their coordinate
-products, the coordinate reads' one contraction. The balance-pair
+products, the coordinate reads' one contraction, exchanging its two
+lists at each product's exchange. The balance-pair
 displays read at every datum with the displayed sum, product and
 order reads, the scalar pairs among them, and a later site may name
 a pair at a balance-pair first datum: such a composite is the
@@ -307,7 +314,8 @@ at the stated entries, the minor a formula in the displayed
 operations with the evaluation reading sums to sums and products
 to products (Definition~\ref{def:poly}): the identity holds at
 the entries themselves. A step
-pivots at an entry with unequal members, a row or column exchange
+pivots at the first uncrossed row holding an entry with unequal
+members, at that row's least such key, a row or column exchange
 swapping the members of the minors keyed at both. The descent
 reads the determinant with the rank: the terminal bordered minor
 at the last key pair is the minor at the full lists, the
@@ -353,7 +361,39 @@ joins the list's span, the pivot coordinates one value at the
 off-unit pivots by the product's injectivity with the cleared
 combination at the pivot-free coordinates reading the member
 whole: the list's length, the pivot-free
-count, is the \emph{kernel dimension}. A list whose Gram splits at
+count, is the \emph{kernel dimension}. At a square list whose
+every leading minor sits off the sum's unit the descent pivots at
+the leading keys in order: each step's stored entries are the
+bordered minors at the crossed keys, the leading row past the
+crossed ones reading at an earlier key a repeated-key read of equal
+members and at its own key the next leading minor, so the step's
+pivot is that key's own; bordered by a stated family's balance partners, one
+column per member, the list's pivot-free columns are the border's,
+and the kernel member at border key $k$ pairs the list against the
+member's leading coordinates at the crossed pivots' product on the
+family's member $k$, so the determinant's multiple of the leading
+coordinates is the pivots' product's multiple of the adjugate
+against that member, the adjugate identity at the product's
+injectivity: at the unit family the adjugate reads off one descent,
+each entry the cofactor at the pivots' product, and at one stated
+pairing vector, the family that vector alone, the determinant's
+multiple of the kernel member's leading coordinates is the pivots'
+product's multiple of the adjugate against the vector, the
+Gram-dual solve's cleared coordinates, each coordinate the cofactor
+at the product. At such a list symmetric at its entries, grown by
+one row and its column at the row's own entries, the grown list's
+descent is the list's own with the grown row stepped through the
+stored pivot rows in order: a stored entry at exchanged keys reads
+the exchanged row and column lists' one determinant at the
+symmetric entries, so the pivot row's entry at the grown key is
+the grown row's own at the pivot key, the grown row's step is
+Sylvester's identity against the pivot row so extended, and the
+terminal entry is the grown determinant; the grown list's leading
+minors below the grown key are the list's own, the leading lists
+there the list's, and at the grown key the grown determinant, so
+at a grown determinant off the sum's unit every leading minor of
+the grown list sits off the sum's unit, the grown list a square
+list of this clause's own. A list whose Gram splits at
 a partition of its members, every cross pairing of equal members,
 reads its adjugate blockwise: each block's own adjugate at the
 further blocks' determinants, an assignment placing a member off
@@ -1195,20 +1235,32 @@ combination's side reads that unit through the members' own
 pairings, so at a determinant of unequal members every
 coefficient is the sum's unit by the product's injectivity:
 independence is the determinant's unequal-membered read at the
-Gram, one decidable read. At a stated list the membership runs at
+Gram, one decidable read. The solve reads off the descent: each
+leading part of an independent list is independent, the withdrawn
+tail's coefficients read at the unit family one member at a time,
+so each leading minor of the Gram, the leading part's own Gram
+determinant, sits off the sum's unit, and the adjugate against the
+pairing data reads off the descent bordered by the data's
+balance partner, one column (Definition~\ref{def:elim}). At a
+stated list the membership runs at
 its \emph{collection}, one member joined per refusal along the
 list: the collected members are independent, each join's residual
-refusing the span collected so far, every listed member sits
+refusing the span collected so far, the refusal the joined Gram's
+determinant off the sum's unit (the joined list independent at a
+refusal by the membership's refusal above and dependent at a
+passing member, the determinant reading the dependency) and read
+at one descent of the collection's Gram grown a row per join, the
+Gram symmetric at the dot's exchange with every leading minor off
+the sum's unit at the joins' refusals (Definition~\ref{def:elim}),
+every listed member sits
 inside the collection's span, a passing member at its residual's
 read and a joined member as the collection's own, and the
 collection's members are listed members, so a vector joins the
 list's span exactly where it joins the collection's, the two
 memberships one read at the collection's residual, the
 joined-collection read; and an independent list is its own
-collection: each leading part of an independent list is
-independent, the withdrawn tail's coefficients read at the unit
-family one member at a time, and a passing residual puts the next
-member inside its leading part's span, the membership's
+collection: its leading parts independent, and a passing residual
+puts the next member inside its leading part's span, the membership's
 combination joined with the member at one off-unit coefficient
 reading the unit family against the extended part's own
 independence, so each residual refuses and every member joins. An independent list's count sits at or below the
@@ -3340,7 +3392,8 @@ reduced shape, at most $r$ rows deep, the fold
 $\langle\lambda,2\rho\rangle$ reads at or beyond the degree, the last
 place's pairs the rows' own reads, so $d_f\,Q(\lambda)$ clears
 $d_f\,k$ (Definition~\ref{def:c2hat}) and an enumeration at a stated
-cutoff closes on the degrees at or below it. A
+cutoff on $d_f\,Q$ closes on the degrees whose $d_f$-multiple sits
+at or below the cutoff, at most the cutoff's quotient at the count. A
 configuration of $\mathrm{Idx}(\Lambda,C)$ assigns to the links of its
 support, within $\Lambda$'s finitely many, labels from that finite
 set, so
@@ -3638,7 +3691,25 @@ at or beyond the sum's unit at the positive pairing, so every split
 of the Gram reads the upper side throughout; and a sum of squares
 $\sum_i\|T_ix\|^2$, each $T_i$ a generator action or a coefficient
 multiplication, is a fold of squares, and where the summed operator
-maps the carrier to itself the read restricts to every window.
+maps the carrier to itself the read restricts to every window. A
+generator action joined to a coefficient multiplication at its own
+involution image, $T:=\eta\,X_a+G$ at a pair $\eta$,
+squares to the operator read
+\[
+T^{\dagger}T\;=\;\eta^{2}\,X_a^{\dagger}X_a+G^{2}
++\big\langle\,\eta\,(X_aG)\,\big\rangle^{\!\vee}\ ,
+\]
+the last member the balance partner of the multiplication by the
+generator's read of the multiplier: the two cross pairings
+$\langle X_ax,\,Gy\rangle+\langle Gx,\,X_ay\rangle$ move the
+generator across the pairing at the balance partner and split the
+product at the derivation's Leibniz read,
+$X_a(Gy)=(X_aG)\,y+G\,(X_ay)$, the two multiplier terms joining to
+the sum's unit; so a fold of such squares over the links and the
+list reads the electric member at the pair's square against the
+multipliers' squares and the balance partner of the pair's multiple
+of their \emph{divergence} $\sum_{\ell,a}X_a^{\ell}(G_{\ell a})$,
+one multiplication.
 The pairing's squared Cauchy--Schwarz is the two-member instance
 at the coordinate folds, its gap a fold of squares displayed once
 at the cross pairs $c_{ij}$, each joined to its exchange's
@@ -3654,7 +3725,31 @@ the cross monomials $u_iu_jv_iv_j$ entering each member once per
 place pair, so two vectors' squared pairing sits at or below their
 self-pairings' product, the comparison's witness the displayed
 fold; a finite family of paired slots reads it at the slots'
-joined coordinate list, one list.
+joined coordinate list, one list. A \emph{positive element} is a
+fold of products of coefficient elements' squares at coefficients
+of positive pairs, a stage's adjoined roots among them
+(Lemma~\ref{lem:stagesplit}); sums and products of positive
+elements are positive elements, the evaluation reads a positive
+element's product with a square at or beyond the sum's unit, the
+pairing's positivity collected over the fold, and a
+\emph{comparison} $a\le b$ of coefficient elements is the read
+$b=a+P$ at a positive element $P$, two comparisons adding and a
+comparison multiplying by a positive element; the evaluation's
+squared Cauchy--Schwarz, $\mathrm{Eval}(fg)^{2}\le
+\mathrm{Eval}(f^{2})\,\mathrm{Eval}(g^{2})$ at involution-fixed
+$f$, $g$, is the pairing's own at $\mathrm{gram}(f,g)$. The
+\emph{flat read} maps every block's coefficient matrix to the
+identity and a product of elements to its reads' product, the
+tensor's identity the blocks' projectors' sum at the exhaustion
+(Lemma~\ref{lem:blockcount}(i)), so it reads a character at its
+dimension; an element's flat read is the fold over its occupied
+configurations of the coefficient tensors' traces, each trace at
+or below the dimensions' product's root against the tensor's fold
+of squares, so the read's square sits at or below the square's
+evaluation against the \emph{support weight}, the fold over the
+occupied configurations of the links' dimensions' squares, the
+squared Cauchy--Schwarz at the configurations' fold with the
+cleared block scales.
 \end{construction}
 
 \begin{definition}[The electric and magnetic operators, and the pencil]
@@ -3952,11 +4047,11 @@ by the shape of its data
       scale reads close within priced brackets at the certified
       rates, and the chain's height at every scale is located
       between the ray's floor and its caps, the certificate's head's
-      two-sided datum, every probe's two moments' read and every
-      window's own height at its $X$-sector's depth chain where the
-      certificate's clauses read at its block data
-      (Construction~\ref{con:depthchain}), the
-      spacing that height's read under the unit map; and each
+      two-sided datum and every probe's two moments' read at any
+      window, the spacing that height's read under the unit map,
+      and at two directions or beyond the spacing falls under every
+      floor beyond the floor's key (Theorem~\ref{thm:continuum}(iii));
+      and each
       cell's window cut's edge, where one is
       named, is the compressed pair's least root read at a word
       image at the corner scale
@@ -3977,8 +4072,9 @@ two divisor reads.
 Clause (iii) is
 Theorem~\ref{thm:continuum}: the located brackets, the scale
 closure, and the chain's height located at every scale between
-its floor and its caps, the cells' edges read at word images
-(Lemma~\ref{lem:corner}).
+its floor and its caps with its fall beyond the floor's key at two
+directions or beyond,
+the cells' edges read at word images (Lemma~\ref{lem:corner}).
 \end{proof}
 
 Clause (i) is a count of $\mathcal K$'s cut (Definition~\ref{def:K})
@@ -4291,7 +4387,9 @@ scale at the single-plaquette tower's own read
 (Lemma~\ref{lem:corner}'s cell floor), and every probe's two
 moments' read (Lemma~\ref{lem:attained}(iv)); so the premise reads
 on the chain at its windows and fibers as the height's fall under
-every floor along the scale, and the formulation's continuum
+every floor along the scale, the tail read at two directions or
+beyond with one direction the floor (Lemma~\ref{lem:corner}), and
+the formulation's continuum
 reading, restricted to this family, is that datum's;
 clause~(ii)'s pair is the walk's own lattice point on
 either outcome, and item~4's multiplicities are the reading's
@@ -4613,7 +4711,88 @@ cap against the self-pairing's side (Construction~\ref{con:coeff}),
 and the squared comparison reads back at the trichotomy
 (Definition~\ref{def:ground}), the form and its memberwise swap
 each at or below $d_\theta\,\langle x,x\rangle$; the $A$-series'
-shifted route is the display above.
+shifted route is the display above. \emph{The gradient deficit.}
+At one link the adjoint character's gradient, the list
+$(X_a\chi_\theta)_a$ over the generator list
+(Definition~\ref{def:generators}), reads each generator's trace
+against the block's matrix, $X_a\chi_\theta=\tr(X_aU_\theta)$ at
+the derivation action on the block's coefficients
+(Construction~\ref{con:coeff}), the traceless generator's pairing
+against the identity withdrawn, so each read is the trace pairing
+of $U_\theta$ against the identity's balance partner at the
+generator's transpose; the generators are orthogonal at the trace
+pairing on the block, $\tr(X_a^{\dagger}X_b)$ the sum's unit off
+the diagonal and one value $\kappa_\theta$ on it, the list's
+\emph{index}, the Casimir's trace at the block against the
+generator count, $\dim G\,\kappa_\theta=C_2(\theta)\,d_\theta$
+(Lemma~\ref{lem:casimir}), and the identity is perpendicular to the
+list; the pairing's projection fold at the orthogonal list
+(Lemma~\ref{lem:lowerspan}) then reads the self-pairing of
+$U_\theta$ against the identity's balance partner at or beyond its
+components' squares against the members' self-pairings, the sides'
+gap perpendicular to every member with its self-pairing at or
+beyond the sum's unit at the positive pairing and the cross terms
+withdrawing at the orthogonality, the
+identity's component reading the deficit
+$\langle d_\theta\!:\!\chi_\theta\rangle$ at the trace's own
+self-pairing $d_\theta$, and that self-pairing reads
+$2\,\langle d_\theta\!:\!\chi_\theta\rangle$ at the evaluation
+identity $U_\theta U_\theta^{\dagger}=1$
+(Construction~\ref{con:coeff}) with the self-dual adjoint's
+character its own involution image: the \emph{gradient deficit}
+\[
+\sum_a\big(X_a\chi_\theta\big)^2
++\big[\,\kappa_\theta:d_\theta\,\big]\,
+\big\langle d_\theta\!:\!\chi_\theta\big\rangle^{2}
+\ \le\ 2\,\kappa_\theta\,\big\langle d_\theta\!:\!\chi_\theta\big\rangle
+\]
+at every link coefficient, one pair comparison, the character's
+deficit against its gradient square at the index with the deficit's
+square, the display's gap the index's multiple of the spare below,
+$\kappa_\theta\,\varrho$; at a plaquette the read runs at the boundary
+word's coefficient, the character's gradient at a boundary link the
+base link's moved along the boundary arc by the arc word's adjoint
+coefficient at the link's traversal sign
+(Proposition~\ref{prop:lap}'s joint insertion across the arc),
+either arc one value, the gradient fixed under the plaquette's own
+adjoint coefficient. \emph{The spare's second-order read.} The
+spare is the projection residual's fold of squares,
+$\varrho:=|P^{\perp}(U_\theta-1)|^{2}$ at the projector $P^{\perp}$
+off the identity's and the generators' span, and sits at or below
+$c_\varrho\,\langle d_\theta\!:\!\chi_\theta\rangle^{2}$ at the
+member pair $c_\varrho:=4\,\dim G\,c_\theta^{\,2}\,[\,1:\kappa_\theta\,]$,
+$c_\theta^{\,2}$ the structure constants' fold
+(Construction~\ref{con:gentable}'s closure field). The block's
+coefficient keeps the closure field: the fold
+$\sum_{a',b'}U_{aa'}U_{bb'}f_{a'b'}^{\,c'}$ against
+$\sum_cf_{ab}^{\,c}U_{cc'}$ reads a gap every generator annihilates
+at the Leibniz read, the Jacobi identity at the table, with flat
+read the sum's unit (Construction~\ref{con:coeff}), and an element
+every generator annihilates reads its nonunit blocks at the sum's
+unit, the Casimir's positive multiple at each
+(Definition~\ref{def:c2hat}), and its unit block at its flat read:
+the gap is the sum's unit. So at $E:=U_\theta-1$ the \emph{defect},
+$E[Y,Z]$ against $[EY,Z]+[Y,EZ]$, reads $[EY,EZ]$ at every pair,
+and the \emph{inner read} solves it: at $X_E$ the generator
+combination reading $\mathrm{tr}(E\,\mathrm{ad}X_a)$ against the
+index at every letter (the generators' orthogonality above),
+$E':=E-\mathrm{ad}X_E$ pairs every adjoint action at the sum's
+unit under the trace, its defect the defect of $E$ (an adjoint
+action's defect the Jacobi read), so
+$\mathrm{ad}(E'Y)=[E',\mathrm{ad}Y]-\Delta_Y$ at
+$\Delta_Y:Z\mapsto[EY,EZ]$, the trace against $\mathrm{ad}X_a$
+collecting $\mathrm{tr}(E'\,\mathrm{ad}[Y,X_a])$, the sum's unit,
+against $\Delta_Y$'s read: $\kappa_\theta\,(E'Y)_a$ is the trace
+pairing of $\Delta_Y$ against $X_a$, at or below
+$|\Delta_Y|\,|X_a|$ in magnitude, so
+$\kappa_\theta\,|E'Y|^{2}\le\dim G\,|\Delta_Y|^{2}$ with
+$|\Delta_Y|^{2}\le c_\theta^{\,2}\,|EY|^{2}\,|E|^{2}$
+(Construction~\ref{con:coeff}'s Cauchy--Schwarz at the fold), and
+over the coordinate list
+$\kappa_\theta\,|E'|^{2}\le\dim G\,c_\theta^{\,2}\,|E|^{4}$; the
+residual sits at or below every member of $E$'s span class,
+$\varrho\le|E'|^{2}$, and $|E|^{2}=2\,\langle d_\theta\!:\!\chi_\theta\rangle$
+at the evaluation identity: the display.
 \end{lemma}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5087,8 +5266,18 @@ identity's Kronecker read link by link
 the unit coefficient's, one: the presentation at the two holonomies
 is the evaluation's own read.
 The carrier's fibers read in the presentation at the links'
-variables, at Proposition~\ref{prop:wg}'s two tags, a vertex's tag
-its row-end count against the fundamental count. A link's label
+variables at the member's generating table
+(Construction~\ref{con:memtable}): a link's label enters at its
+fundamental fold, its block the lowering span at the fundamentals'
+tops' tensor in the power at the fold's degree, an incoming end at
+the dual action (the dual block, Lemma~\ref{lem:dualread}(i)), and
+the direct tag's kernel list, the two-end coevaluation, the link
+list and the boundary coevaluation below read at the table's keys
+and its stated matrices, the letters the instance at the matrix
+units, with the symbolic tag, the interpolants, the word pairs and
+the star the letters' own: at Proposition~\ref{prop:wg}'s two tags, a vertex's tag
+its row-end count against the fundamental count. At the letters a
+link's label
 enters at its word pair, its block inside the slot power at those
 degrees (Construction~\ref{con:slotpower}); an undaggered factor's row end and a
 daggered factor's column end sit at the link's tail with the
@@ -5104,7 +5293,17 @@ power (Construction~\ref{con:slotpower}). The fiber's stated list (Definition~\r
 the vertex lists' product. A vertex of two ends reads its block's
 Gram-dual coevaluation, the through pairing's projection to the
 fused span (Construction~\ref{con:slotpower};
-Lemma~\ref{lem:dualread}(i)), its self-pairing the block's count. A further vertex at the symbolic
+Lemma~\ref{lem:dualread}(i)), its self-pairing the block's count:
+at two ends of opposite orientations, one label, the through
+pairing is the weight's cleared partner at every slot pair, the
+identity's tensor at the weight's clearing to the degree, and at
+two ends of one orientation, the labels dual, it is the dual
+pair's tensor across the matched factors at the pair's clearing
+to the degree (Construction~\ref{con:memtable}; at the letters
+the star, Construction~\ref{con:slotpower}), the coevaluation
+read through the identification, self-paired at the block's
+count at the clearing, with two labels off the pair reading the
+vacant list. A further vertex at the symbolic
 tag reads its \emph{wirings}, the contractions of the row ends
 against the column ends, the place permutations' span
 (Lemma~\ref{lem:mixedinv}), each link's factors projected to the
@@ -5123,8 +5322,8 @@ coordinates in the slot power and at its primitive representative
 there, the coordinates' shared count withdrawn with the sign the
 back solve's own at the member's pivot-free coordinate
 (Definition~\ref{def:blockcount}; Definition~\ref{def:elim}'s back
-solve; Theorem~\ref{thm:windowsep}'s strip). A fiber's coordinates are the members' positions vertex by
-vertex, the configuration's states the vertex members' products,
+solve; Theorem~\ref{thm:windowsep}'s strip). A fiber's coordinates are the members'
+positions vertex by vertex, the configuration's states the vertex members' products,
 and the fiber's pairing is the presentation Gram of its states, the
 links' cleared block scales against the vertex lists' pairings'
 product at the slot power's coordinate pairing
@@ -5137,7 +5336,13 @@ evaluation at the boundary character's product,
 $\mathrm{Eval}(\bar x\,\chi_\theta(U_{\partial p})\,y)$
 (Definition~\ref{def:algebra}), the character the boundary word's
 trace against its dagger less the unit (Lemma~\ref{lem:adjchar}),
-the unit's term the two states' pairing: the trace against its
+the unit's term the two states' pairing; at a member the boundary
+word's factor at a boundary link is the $\theta$ block's Gram-dual
+coevaluation at the link's two slots (Lemma~\ref{lem:dualread}(i)),
+the dual block's at a reversed traversal, its slots the exchanged
+signature's, the trace against its dagger its read at the letters,
+$|\mathrm{tr}\,U|^2=\chi_\theta+1$, the unit's coevaluation the
+withdrawn term: the trace against its
 dagger holds one undaggered and one daggered factor at every
 boundary link, and reads at each boundary vertex the wiring
 pairing, in the vertex's own signature with a head's slots
@@ -5243,7 +5448,12 @@ exchange a letter-preserving relabeling of the joined list with
 the joined wiring composed at it, the product's identities one
 value at either order (Remark~\ref{rem:kernel}). Equivalently
 $\pi(i)=j$ records that the row index of factor $i$ is contracted
-against the column index of factor $j$. This is the trace-polynomial
+against the column index of factor $j$. The \emph{evaluation
+contraction} withdraws an undaggered factor and a daggered factor
+of one link wired at the product, the one's row against the other's
+column, splicing the wiring across the pair, the evaluation
+identity's read at the wiring (Construction~\ref{con:coeff}), the
+word index's relation (Remark~\ref{rem:kernel}). This is the trace-polynomial
 reduction of the walled Brauer category: the Schur--Weyl dual
 presentation, in which the group enters only as the loop value $d_f$
 of the calculus.
@@ -5277,12 +5487,24 @@ top-word columns' wedge exhibits on the undaggered slots
 columns' \emph{dual wedges} on the daggered slots, the wedge at the
 last letters of the complement's length, the lowerings the units'
 at both actions (Lemma~\ref{lem:lowerspan}'s span read at the slot
-power's coordinates), and an incoming end reads its label's block
+power's coordinates), the block's list the collection from the top
+round by round, a round the prior round's joined members'
+lowerings at the simple indices in order, each joined at the
+collection's refusal (Lemma~\ref{lem:lowerspan}) with a vacant
+lowering withdrawn, and an incoming end reads its label's block
 at the exchanged actions, the dual block on the one coordinate
 family. The \emph{fused span} at a vertex is its ends' blocks'
 tensors at the unit weight, Lemma~\ref{lem:blockcount}(iii)'s pair
-list at the presentation's slots; its Gram splits at the ends'
-weight lists: a weight is one value per undaggered and daggered
+list at the presentation's slots, the list the tensors in the
+arrangements' order, an earlier end's member the outer index,
+collected at the ends' weight lists, each list's tensors at the
+place of its first arrangement, and the \emph{stacked raisings}
+over the span the rows per simple index in order, one row per
+image monomial at its first occupancy over the members' images in
+order, each row the members' image coefficients at the monomial,
+so the span with its rows is stated data and the kernel list at
+the back solve (Definition~\ref{def:elim}) one list; its Gram
+splits at the ends' weight lists: a weight is one value per undaggered and daggered
 content pair at an end's slots, each end's undaggered slots' power
 and daggered slots' power graded by content on their own
 (Construction~\ref{con:places}), so two tensors at distinct weight
@@ -5316,6 +5538,188 @@ Gram-dual solve, is the block's coevaluation there, self-paired at
 the block's count, the projector's own trace; columns of one length
 match in either order, their exchange fixing the top and exchanging
 with the lowerings (Lemma~\ref{lem:lowerspan}).
+\end{construction}
+
+\begin{construction}[The member generating tables]\label{con:memtable}
+A member's \emph{generating table}
+is a table space (Construction~\ref{con:gentable}) over a stated
+key list with the pairing the coordinate fold at stated positive
+weights, the weight one value with its transpose entry by entry,
+one decidable read (the pairing symmetric at the exchange, the
+reads of Lemma~\ref{lem:lowerspan} at it), the weight's cleared
+partner at its clearing a stated datum, the two reading the
+clearing's diagonal at their product
+(Definition~\ref{def:elim}'s adjugate identity, the dual pairing's
+solved witness; at the identity weight the identity at one), the
+simple triples stated matrices over the keys at the
+transpose identity $E_i^{\mathsf T}W=WF_i$ with the two triple
+displays, the \emph{closure read}, every positive root's raising a
+commutator word of the simple raisings along the fold descent at
+occupied coefficients, the words stated data: per positive fold
+off the simple list a simple key occupied in the fold whose
+withdrawn fold is a member of the positive list, the fold's word
+the commutator of the key's raising against the withdrawn fold's
+word, a simple fold's word its raising, one decidable read at the
+stated matrices and the stated words with their keys, each word one
+value with its commutator and occupied,
+so that a vector reading the sum's unit at every simple raising
+reads it at every raising (Lemma~\ref{lem:lowerspan}'s adjacent
+stack) and the stated triples generate the member's every root
+operator, the \emph{dual pair}, and the \emph{reach list}. The
+dual pair $c$ is a stated matrix over the keys with its
+\emph{clearing} $\nu$, a natural, at three decidable reads: each
+entry sits at two keys whose coroot lists join to the unit fold,
+the pair at the unit content; the \emph{invariance},
+$E_i\,c+c\,E_i^{\mathsf T}$ at the sum's unit at every simple
+raising, the tensor of the doubled table at the standard action
+twice; and the \emph{isometry}, the pair's transpose against the
+weight against the pair reading the weight's cleared partner at
+the clearing squared,
+\[
+W_{\det}\ c^{\mathsf T}\,W\,c\;=\;\nu^{2}\,\bar W
+\qquad\text{at}\qquad W\,\bar W=W_{\det}\ .
+\]
+A vector at the unit content reading the sum's unit at every
+simple raising is a top of the unit label, its block the line
+(Lemma~\ref{lem:tops}; Lemma~\ref{lem:lowerspan}), so the pair is
+invariant under every field operator, and the pair against the
+weight, $c\,W$, intertwines the standard action with the dual
+action (Lemma~\ref{lem:dualread}(i)), the transpose identity's read
+at the invariance, with $c^{\mathsf T}W$ at the clearing
+$\nu^{2}$ its solved witness by the isometry: the pair is the identification of the
+dual block on the coordinate family with the dual label's block,
+an isometry of the pairing at the clearing. The letters' table
+is stated without a dual pair, the letters' block against its
+dual's read at the star (Construction~\ref{con:slotpower}). The reach list names
+per fundamental the table itself or two earlier fundamentals: the
+fundamental's \emph{top} is the one kernel member of the stacked
+raisings at its content among the table's keys, or in the tensor
+of the two fundamentals' blocks, the kernel's count one the
+\emph{uniqueness read}, one decidable read per fundamental
+(Definition~\ref{def:blockcount}; Lemma~\ref{lem:tops}); a label's
+top is the fundamentals' tops' tensor in the index order at the
+label's fold, the Cartan product, a top at the summed content
+(Lemma~\ref{lem:blockcount}), and its block the lowering span there
+(Lemma~\ref{lem:lowerspan}): every count of the calculus reads at
+the table's powers (Definition~\ref{def:blockcount};
+Lemma~\ref{lem:blockcount}), every pairing is positive by its
+shape, and the tops fix each block's copy inside the power, the
+\emph{dual coherence}: the identification $c\,W$ slot by slot
+maps a label's block into its dual label's block's span with
+the factors matched to the dual fundamentals, one decidable read
+per label, at a fundamental the uniqueness read's own (the
+identification maps a top of the fundamental inside the stated
+product to a top of the dual fundamental inside the dual product,
+the count one there) and at a label the fundamentals' passed to
+the tensor. The $A$-series' table is the power's letters
+(Construction~\ref{con:places}), the reach the column exhibits
+(Lemma~\ref{lem:tops}(iii)). $C_\ell$'s is the defining table with
+its dual pair (Construction~\ref{con:sertables}) at the clearing
+one: the class group is the unit's with the first fundamental's,
+the table's own block, the box count's parity at the doubled
+coordinates, and the reach list the first fundamental among the
+keys with each further fundamental in the prior's block against
+the first's.
+$B_\ell$'s and $D_\ell$'s are the defining table joined to the
+\emph{spinor table}: the keys the occupancy families of the
+unprimed keys at one bit each, $2^\ell$ keys, the pairing the
+coordinate fold at one; a vector key acts at the \emph{wedge}, an
+unprimed key $i$ raising its bit on the side of the count of
+occupied keys below $i$ and reading the sum's unit at an occupied
+bit, at the \emph{contraction}, a primed key $\bar\imath$ lowering
+the bit $i$ on that side and reading the unit at a vacant bit, and
+the $B_\ell$ null key on the side of the bit count's parity; the
+simple raisings are the quadratic reads, the difference move at
+$(i,i{+}1)$ the wedge at $i$ composed with the contraction at
+$i{+}1$, $B_\ell$'s short move the wedge at $\ell$ composed with
+the null key, $D_\ell$'s last move the wedge at $\ell{-}1$
+composed with the wedge at $\ell$; the lowerings the transposes
+and the coroot diagonals the bit reads, every coordinate one or
+its balance partner at the doubled scale, the spinor's contents;
+the spinor table's dual pair pairs each bit family with its
+complement at the side of the fold $\sum_{j\in n}(\ell-j)$ over
+the family's occupied keys, at the clearing one, an occupied key
+moved down by one and the last key joined each flipping the side
+(the invariance's read at the quadratic reads, the wedge and the
+contraction reading one side at a key pair), and a table's join
+reads the dual pairs each scaled at the other's clearing at the
+clearings' product; the reach list the vector and the spinors
+among the keys with each further fundamental in the prior's block
+against the vector's. At $D_\ell$ the table's two parity summands
+are the two spinors, and a spinor-class label reaches its top at a
+spinor's Cartan product with a vector-class label, the last
+coordinate's parity at the doubled scale
+(Construction~\ref{con:sertables}). The fixed members read one
+table each. $E_8$ reads the \emph{adjoint table} at the displayed
+root list:
+the keys the eight simple keys with the $240$ root keys, the
+pairing the coordinate fold at the Cartan reads on the simple keys
+and at one on the root keys; the simple raising at $\alpha_i$
+reads a root key $\beta$ to the key $\beta+\alpha_i$ on the
+\emph{cocycle} side $\varepsilon(\alpha_i,\beta)$ where the sum is
+a root and to the sum's unit where it sits off the list, the key
+$\check\alpha_i$ to the simple key $i$ on the side
+$\varepsilon(\alpha_i,\check\alpha_i)$, and a simple key $j$ to the
+key $\alpha_i$ at the balance partner of the Cartan read
+$\alpha_i(\alpha_j^\vee)$; the cocycle is bimultiplicative over
+the root lattice at the rule $\varepsilon(\alpha_i,\alpha_j)$ the
+balance partner of one at $i<j$ on an edge and at $i=j$, one
+otherwise, so $\varepsilon(\alpha,\alpha)$ reads the side of the
+halved square and $\varepsilon(\alpha,\beta)\,\varepsilon(\beta,\alpha)$
+the side of the form read, the two identities the cocycle's reads
+at the parities of the fold coefficients; the lowerings the
+transposes; the dual pair the Cartan's adjugate on the simple keys
+with each root key against its partner at the determinant's
+balance partner, the clearing the determinant (the invariance at a
+simple raising reads, at a simple root's partner key against a
+simple key, the Cartan read against the pair's entry, and at a
+root pair the cocycle's product $\varepsilon(\alpha_i,\beta)\,
+\varepsilon(\alpha_i,\check\beta-\alpha_i)$ against
+$\varepsilon(\alpha_i,\alpha_i)$, one side throughout); and the
+reach list the highest root among the keys, $\omega_1$ and
+$\omega_7$ in the adjoint's square, and $\omega_2$, $\omega_6$,
+$\omega_3$, $\omega_5$, $\omega_4$ in the adjoint against
+$\omega_1$, $\omega_7$, $\omega_2$, $\omega_6$, $\omega_5$ in
+turn. The triple displays, the closure read, the dual reads and
+the reach reads are decidable reads at the one member's stated
+matrices, and two cocycle rules differ by a side relabeling of the
+root keys, a diagonal unit congruence fixing every count
+(Lemma~\ref{lem:inertia}), the within-column order's own gauge
+(Construction~\ref{con:slotpower}). $E_7$ reads the $E_8$ table at
+the root keys pairing one against the highest root, the $56$,
+closed under the first seven simples (the pairing kept by them,
+the highest root orthogonal to those simples), with the dual pair
+at the pairs of keys joining to the highest root at the cocycle's
+balance partner: the highest root's line is fixed by the seven
+simples, the sum off the list, so the bracket's coefficient on
+that line is an invariant form, its tensor the form's solved witness
+at the cocycle's identity
+$\varepsilon(\beta,\theta-\beta)\,\varepsilon(\theta-\beta,\beta)$
+the balance partner of one; the reach list $\omega_7$ among the
+keys, $\omega_1$ and $\omega_6$ in the $56$'s square, and
+$\omega_2$, $\omega_5$, $\omega_4$, $\omega_3$ in the $56$ against
+$\omega_1$, $\omega_6$, $\omega_5$, $\omega_2$ in turn. $E_6$
+reads the $E_8$ table at the root keys at the complementary
+pair's dominant grade, one against the last simple root and equal
+members against the highest root less it, together with their
+partners, the $27$ with its dual, closed under the first six
+simples (the two grades kept by them), the dual pair the adjoint
+table's at those keys; the reach list $\omega_1$ and $\omega_6$
+among the keys, $\omega_2$ in $\omega_1$ against $\omega_6$,
+$\omega_3$ in $\omega_1$'s square, $\omega_5$ in $\omega_6$'s and
+$\omega_4$ in $\omega_2$'s. A \emph{fold} reads a table at the
+orbit sums of the simple raisings under a stated key permutation
+of the simple list, each folded triple a display at the summed
+coroots, the orbit's members pairwise orthogonal, the keys and the
+dual pair kept: $F_4$ reads $E_6$'s adjoint table, the adjoint
+table at $E_6$'s displayed root list, folded at the chain's
+exchange, the ends' orbit and the inner pair's orbit against the
+two fixed simples, the reach list $\omega_1$ and $\omega_4$ among
+the keys (the adjoint's split at the member, $78=52+26$),
+$\omega_2$ in $\omega_1$'s square and $\omega_3$ in $\omega_4$'s;
+and $G_2$ reads $D_4$'s defining table folded at the three outer
+simples' orbit against the center's, the reach list $\omega_1$
+among the keys and $\omega_2$ in its square.
 \end{construction}
 
 \begin{remark}[The word index, and the presentation kernel]
@@ -5371,6 +5775,49 @@ d_f\,c_f\sum_{i}\pi
 \end{gather*}
 the witness $k$ at $\pi(k)=j$ off the permutation's own transpose
 data, the inverse permutation (Construction~\ref{con:places}).
+\emph{The joint insertion across a word.} At two factors $i$ and $j$
+of the list and a \emph{word} $P$, a factor list of links with
+their dagger reads, the \emph{joint insertion}
+$\sum_a\big(P\,X_aP^{\dagger}\big)^{(i)}X_a^{(j)}$ reads the
+generator moved by the word's adjoint coefficient at the first
+factor against the generator at the second,
+$P\,X_aP^{\dagger}=\sum_b\mathrm{adj}(P)_{ba}X_b$ the coefficient's
+read at the metric dual (Definition~\ref{def:generators}): each
+generator inserts at its factor's row index at an undaggered
+factor and at its column index with the memberwise swap at a
+daggered one, the derivation's own read, the word and its dagger
+read, the reversed list at the dagger reads flipped, about the
+first, and the two inserted generators contract by the Fierz
+display, $d_f$-cleared, to two wirings on the joined list
+$(F,P,\bar P)$: the \emph{word member}, the first factor's row
+against the word's row with the word's column at the second
+factor's row's contraction, and the second factor's row against
+the dagger word's row with the dagger word's column at the first
+factor's row's; and the \emph{identity member} at the count's
+cofactor, the list's own wiring with the word withdrawn against
+its dagger read at the evaluation contraction
+(Construction~\ref{con:states}); the joint insertion is the word
+member against the identity member's cofactor read, the pair at
+the display's own sides, so the unit word reads the display's
+transposition and identity terms at the factor pair, and a link's
+joint insertion against itself at the unit word, folded over its
+factor pairs, is $\Delta_W$'s display. Two reads close it. \emph{A
+letter wired to itself withdraws}: the Fierz fold at one letter's
+row against its own column reads the sum's unit, the
+transposition's loop at the count against the identity's count at
+the cofactor, the list traceless. \emph{The arc read}: at a loop's
+character the joint insertion of a boundary link's factors against
+the base link's across the boundary arc from the base's tail to
+the link's tail, folded over the factor pairs, reads the base
+link's own Laplacian display at the evaluation contraction at the
+link's traversal sign, the display's balance partner at a link
+traversed backward, the daggered factor's insertion at the
+memberwise swap, the two one value at the word index's relation
+(Remark~\ref{rem:kernel}): the word runs adjacent to the loop's own
+factors and withdraws against them factor by factor, the moved
+generator meeting the loop at the base, and the mixed pairs' cut
+of the joined cycle sits at the link's own place against the
+base's, the two cycles one value at the contraction.
 \end{proposition}
 
 \begin{proof}[Derivation and verification]
@@ -5796,8 +6243,8 @@ equal, the dual's
 contents the balance partners
 (Lemma~\ref{lem:dualread}). At $\omega_2{+}\omega_{r-1}
 =(2,2,1^{\,e})$, at the gap $w$ at $w+2=r$, the six collected
-reads are $[\,r-1:2\,]$, $[\,(r+1)(r+2):r\,(r-1)\,]$, $w$,
-$[\,r\,(r+1):w\,(r-1)\,]$, $w$ and $[\,r-1:2\,]$: the
+reads are $[\,w+1:2\,]$, $[\,(r+1)(r+2):r\,(w+1)\,]$, $w$,
+$[\,r\,(r+1):w\,(w+1)\,]$, $w$ and $[\,w+1:2\,]$: the
 cofactor at $4\,d=(r+1)^2(r+2)\,w$.
 
 \emph{The Casimirs} are Lemma~\ref{lem:casimir}'s bracket at the
@@ -6571,8 +7018,7 @@ cover the interior, the \emph{free cell} at the free end
 cells} of the decimation's divisor list between, and the \emph{contact cell}
 at the other end (Lemma~\ref{lem:contactcell}; the approach the
 corner cell's, Lemma~\ref{lem:corner}), every boundary a
-located root, counts persisting at a boundary beside a
-positive-semidefinite cell.
+located root.
 
 \emph{(iii) Per cell the cut is a flat step, and the cutoff is priced.}
 On each cell the flat step verifies the cut at a level $\kappa$,
@@ -6616,7 +7062,13 @@ interior boundary one located two-sided read of the divisor, and
 E_0\,\mathcal K(v)\;\ge\;\kappa
 \]
 on the whole cell, located point by located point, each cell read at
-one pair (Lemma~\ref{lem:cellcount}). At the reach clearances of
+one pair (Lemma~\ref{lem:cellcount}). The level lines sit off the
+divisor at a cell's boundaries, the margin their distance from the
+first two jumps there, so each line's counting function is one cell
+function on a located segment through the boundary
+(Lemma~\ref{lem:cellcount}), two consecutive cells' segments
+overlap, and the cells' closed union is the segments' union, every
+root-coordinate point inside one segment. At the reach clearances of
 the families each count reads, one
 symbolic verification is every residue's, the rank divisors at
 their leading sides at every one of their residues off the
@@ -6666,9 +7118,9 @@ against $G$'s stored factorization), every count obeys
 jump bracket travels between the two couplings at width $\rho$: at
 $\kappa$ below a cell's level, the level's margin names a pair
 distance whose sandwich width it absorbs, the pair reads hold
-across the cells' closed union by (ii)--(iv) with
-Lemma~\ref{lem:cellcount}'s boundary clause, and the sandwich
-transports the jump comparisons over (Theorem~\ref{thm:flatstep}): so
+across the cells' closed union by (ii)--(iv), the segments' union,
+and the sandwich transports the jump comparisons over
+(Theorem~\ref{thm:flatstep}): so
 at every interior end-weight pair the cut of
 $\mathcal K\big([\,\alpha:\beta\,]\big)$ holds a positive member,
 the ray's own cell's floor: the root coordinate's rays read their
@@ -6676,7 +7128,24 @@ cells directly at the cells' located floors, the corner cell's rays
 at the height floor's multiple by the scale
 (Lemma~\ref{lem:corner}), one positive pair per ray, and every
 further pair ray is a located coupling between them whose margin
-absorbs the sandwich's width.
+absorbs the sandwich's width. At the window pencil the two
+couplings' site datum is the magnetic weights' gap against the
+magnetic member, capped two-sidedly at that gap's multiple of the
+magnetic member's own cap $W$, Theorem~\ref{thm:truncation}'s cap at
+the unit magnetic weight, so a further pair ray
+$[\,\alpha:\beta\,]$ reads its window at a root-coordinate ray
+$[\,q^{2}:p^{2}\,]$ with $p^{2}\alpha<\beta q^{2}\le(p+1)^{2}\alpha$,
+$p$ the least natural at the squared comparison, one decidable read
+over the keys at or below the weight $\beta q^{2}$
+(Definition~\ref{def:ground}), the gap of $\beta q^{2}$ against
+$p^{2}\alpha$ at or below $(2p+1)\,\alpha$, and $q$ beyond $\alpha$
+and at or beyond $4W(2\tau^{\ast}+1)$ at a natural $\tau^{\ast}$ at
+or beyond the segments' union's top, so the sandwich's width at the
+scale $\alpha q^{2}$ sits at or below a quarter of the cell's level
+gap and the transported window keeps at least half of it: at a pair
+$\kappa$ whose double sits at or below every cell's level gap
+against $E_0$, the ray's cut holds $\alpha\kappa$ at its
+representative $[\,\alpha:\beta\,]$, one positive pair per ray.
 
 \end{theorem}
 
@@ -8085,15 +8554,55 @@ Lemma~\ref{lem:stableentries}) and its entries the plaquette's
 multiplication read at the fibers' stated lists in the presentation
 (Construction~\ref{con:fiber}); and the \emph{terms' transport}: a
 label-graph isomorphism of two windows' plaquette neighborhoods
-(Construction~\ref{con:lattice}) reads one plaquette's term at the
-other's window-list members moved along it, the entry the
-changed-edge read at the labels incident to the plaquette
-(Definition~\ref{def:algebra}; Lemma~\ref{lem:stableentries}) with
-the window list moved with the index at the fibers' coordinates
-(Definition~\ref{def:carrier}), and a region's own action the
-instance at every plaquette, the plaquette list permuted; at a loop
+(Construction~\ref{con:lattice}) moves a state of the one window
+to a state of the other, the configuration moved along the links,
+the label dualized at a reversed traversal, and each vertex member
+relabeled along the incident ends' permutation, the slot power's
+place action (Construction~\ref{con:slotpower};
+Construction~\ref{con:places}) at the ends' slots matched column
+by column: at a traversal kept a column against the column of its
+own length, at a reversed traversal a column against the dual
+label's complement column, the moved slot's action the source
+slot's own on the one coordinate family (the dual block at the
+exchanged actions, Construction~\ref{con:slotpower}), and a tie
+column at a reversed traversal read at the star, the source
+letters against the complementary set at the swap grading's side
+cleared at the column length's factorial (the through pairing's
+star, Construction~\ref{con:slotpower}); at a member's table the
+columns are the fundamentals' factors, matched at a traversal kept
+by index and at a traversal reversed to the dual fundamental, and
+every slot of a reversed end is read at the dual pair's
+identification, $c\,W$ from an outgoing source end and
+$c^{\mathsf T}W$ from an incoming one at the clearing $\nu^{2}$
+per slot (Construction~\ref{con:memtable}), the star the letters'
+instance; the relabeled member is a
+member of the moved vertex's block tensor with every raising image
+the sum's unit, the units acting slotwise at the matched actions
+with the star and the identification each intertwining the two
+actions at its slots (Construction~\ref{con:slotpower};
+Construction~\ref{con:memtable}; Lemma~\ref{lem:dualread}(ii)),
+so it lies in the moved vertex list's span at the Gram-dual solve
+(Lemma~\ref{lem:lowerspan}), a state of the moved window, and the
+moved states are independent at the pairing kept and at the
+fiber's count, one stated list of the moved window against the
+fiber's own (Proposition~\ref{prop:windowfinite}); every pairing
+read between two moved states is the read between the states, the
+gram's and each term's, the evaluation one value under the
+relabeling at the place action's transpose identity
+(Construction~\ref{con:coeff}; Construction~\ref{con:places};
+Definition~\ref{def:algebra}; Lemma~\ref{lem:stableentries}), so
+the moved window's pencil is the pencil read at the moved states,
+the two stated lists' pencils congruent at the solve's
+coefficients, and every count is one value
+(Lemma~\ref{lem:inertia}); a region's own action is the instance
+at every plaquette, the plaquette list permuted; at a loop
 window the fields read off the fusion counts, $M[x,y]=N^x_{\theta y}$
-at the orthonormal characters (Proposition~\ref{prop:repring}).
+at the orthonormal characters (Proposition~\ref{prop:repring}), and
+in every window two loop states of one plaquette, the characters
+at the coevaluations' counts (Construction~\ref{con:fiber}), read
+that plaquette's term at the fusion count and the gram at one, the
+characters' product read at the window's evaluation
+(Proposition~\ref{prop:repring}; Lemma~\ref{lem:stableentries}).
 \end{theorem}
 
 \section{The chain's invariant form}
@@ -8109,7 +8618,7 @@ momentum-fiber pencil is a \emph{chord} pencil of
 \emph{bounded degree per grade}: the fiber enters each graded block
 through finitely many translation powers per direction,
 $T_i^{\,j}$ at the direction's own translation, the power bounded
-by the grade's spatial support, each transpose-paired read a
+by the grade's spatial support, each adjoint-paired read a
 deck-family polynomial at the direction's chord
 (Definition~\ref{def:deck}): the momentum variables are the
 chords $t_1,\dots,t_d$, one per direction, the momentum point $K$
@@ -8119,7 +8628,11 @@ chords,
 with integral chord data; its divisor records the band, the gap, and every ``assembled'' coefficient as reads at the ends of $\mathcal C$.
 Its \emph{fiber symbol} is the family's characteristic Laurent polynomial
 $\mathcal S(K;k,r)$, the pair $(k\!:\!A(K))$'s site-datum determinant at the
-level $k$ scalar, of finite Newton polytope by the
+level $k$ scalar against the gram's determinant, one value at
+every stated list of the fiber (two lists' pencils congruent, the
+congruence's determinant's square clearing against the grams'
+determinants at the product read, Lemma~\ref{lem:inertia}), of
+finite Newton polytope by the
 localities above, with polynomial-pair coefficients in the residue;
 $A$ is the momentum fiber of a
 symmetric pair pencil (Theorem~\ref{thm:pairpencil}), so a
@@ -8136,23 +8649,26 @@ over all links and plaquettes at coefficient one
 (Definition~\ref{def:pencil}), $E$ fixed at the contents and $M$ at
 the terms' transport with the plaquette list permuted
 (Theorem~\ref{thm:pairpencil}'s interface); a translation $T$ permutes the label
-index isometrically, an orthogonal map, its transpose
-the inverse permutation's matrix (Construction~\ref{con:places}),
-with $T^L=1$ along its direction, the window list moved with the
-index: a fiber's coordinates are one digit per vertex of the
-region below the vertex's multiplicity, an untouched vertex at the
-product's unit (Definition~\ref{def:carrier}), the moved
-configuration's multiplicities the source's along the induced
-vertex permutation (Lemma~\ref{lem:stableentries}), its
-coordinates the source's permuted display there
-(Construction~\ref{con:places}), and the contents fixed at every
-slot. Its \emph{chord operator} is
-$S:=T+T^{\mathsf T}$, symmetric, commuting with $H$ and with the
+index isometrically, an isometry of the pairing whose pairing
+adjoint is the complementary step's translation, the witness at
+$T^{*}T=1$ at $T^{*}$ the pairing adjoint,
+$\mathrm{gram}\,T^{*}=T^{\mathsf T}\,\mathrm{gram}$ at the stated
+list, with $T^L=1$ along its direction, the window
+list moved with the index: a fiber's coordinates are one digit per
+vertex of the region below the vertex's multiplicity, an untouched
+vertex at the product's unit (Definition~\ref{def:carrier}), the
+moved configuration's multiplicities the source's along the induced
+vertex permutation (Lemma~\ref{lem:stableentries}), a moved state
+the source's members relabeled along the incident permutation with
+every pairing read one value across the move
+(Theorem~\ref{thm:pairpencil}'s transport field), and the contents
+fixed at every slot. Its \emph{chord operator} is
+$S:=T+T^{*}$, symmetric, commuting with $H$ and with the
 gram, and $T$ reads the deck relation at it,
 \[
 T^2+1\;=\;S\,T ,
 \]
-the product $T^{\mathsf T}T=1$ collected
+the product $T^{*}T=1$ collected
 (Definition~\ref{def:deck}). The geometric word reads its deck symbol
 at the operator,
 \[
@@ -8164,12 +8680,12 @@ $P_L$ monic integer of degree $m$ at the deck families, the partial
 sums keeping the top at the last family joined
 (Definition~\ref{def:deck}; Lemma~\ref{lem:deckfactor}), the powers
 matched about the middle collecting at the plus read
-$T^{\,j}+(T^{\mathsf T})^{\,j}=p_j(S)$, the root pair
-$(T,T^{\mathsf T})$ of product one. Write $X:=T^{\,m}P_L(S)$ for the
+$T^{\,j}+(T^{*})^{\,j}=p_j(S)$, the root pair
+$(T,T^{*})$ of product one. Write $X:=T^{\,m}P_L(S)$ for the
 word: at $T^L=1$ the word is its own $T$-multiple, $T\,X=X$, and
-$T^{\mathsf T}$ against that read gives $T^{\mathsf T}X=X$, so
+$T^{*}$ against that read gives $T^{*}X=X$, so
 $S\,X=2\,X$, and the orthogonal $T^{\,m}$ clears at its witness
-$(T^{\mathsf T})^{\,m}$:
+$(T^{*})^{\,m}$:
 \[
 S\;P_L(S)\;=\;2\,P_L(S) .
 \]
@@ -8179,10 +8695,10 @@ read there, $P_L=q\,\langle x\!:\!2\rangle+L$
 key, the recursion's own read from the seeds, so $P_L$ at $2$ reads
 $1+2m=L$, the word's value on the \emph{unit fiber}, the fixed
 vectors' block: at the datum $D_1$ of $1+D_1=T$ the product
-$T^{\mathsf T}T=1$ expands to
-$1+D_1+D_1^{\mathsf T}+D_1^{\mathsf T}D_1=1$ and the chord to
-$S=2+D_1+D_1^{\mathsf T}$, the two joining at
-$D_1^{\mathsf T}D_1+S=2$, so at $S\,v=2\,v$ the read
+$T^{*}T=1$ expands to
+$1+D_1+D_1^{*}+D_1^{*}D_1=1$ and the chord to
+$S=2+D_1+D_1^{*}$, the two joining at
+$D_1^{*}D_1+S=2$, so at $S\,v=2\,v$ the read
 $\langle D_1v,D_1v\rangle$ is the sum's unit and $D_1v$ with it at
 the positive pairing (Definition~\ref{def:carrier}): membership in
 the kernel of the pair $(S\!:\!2)$'s site datum is the fixed read
@@ -8267,19 +8783,19 @@ $\mathrm{spec}(H)\subset\{\varepsilon_0\}\cup
 window ground at once (Lemma~\ref{lem:speccut}). On a chord block at
 a located root $t$ of $P_L$, $S$ reads the root itself and $T$ the
 deck relation at the located \emph{chord}, $T^2+1=t\,T$; the
-transpose-paired reads collect at the deck families,
-$T^{\,b}+(T^{\mathsf T})^{\,b}=p_b(t)$ on the block, the plus read's
+adjoint-paired reads collect at the deck families,
+$T^{\,b}+(T^{*})^{\,b}=p_b(t)$ on the block, the plus read's
 instance at the root pair (Definition~\ref{def:deck}), so every such
 entry is a chord polynomial, its degree bounded by the grade's
 spatial support (Lemma~\ref{lem:stableentries}). The block is \emph{doubled}: its
-datum $A$ at $T=T^{\mathsf T}+A$ squares against the band read,
-$A^2+4=S^2$ at the products $T\,T^{\mathsf T}=1$ and
-$T^{\mathsf T}T=1$ collected, hence
+datum $A$ at $T=T^{*}+A$ squares against the band read,
+$A^2+4=S^2$ at the products $T\,T^{*}=1$ and
+$T^{*}T=1$ collected, hence
 $A^2+4=t^2$ on the block. $P_L$'s roots sit interior to the band, and
-the block's own pairing reads that: transposing $T=T^{\mathsf T}+A$
-gives $T^{\mathsf T}=T+A^{\mathsf T}$, so $A$'s transpose is its
-memberwise swap, $A^{\mathsf T}=\check A$, and at a member $v$ of the
-block the transpose walk reads $\langle v,A^2v\rangle$ as the swap of
+the block's own pairing reads that: the adjoint of $T=T^{*}+A$ reads
+$T^{*}=T+A^{*}$, so $A$'s adjoint is its
+memberwise swap, $A^{*}=\check A$, and at a member $v$ of the
+block the adjoint walk reads $\langle v,A^2v\rangle$ as the swap of
 $\langle Av,Av\rangle$; the block read against $v$ is then
 \[
 t^2\,\langle v,v\rangle+\langle Av,Av\rangle
@@ -8289,8 +8805,8 @@ the pair $\langle t^2\!:\!4\rangle$ at its lower side or at equal
 members (Definition~\ref{def:carrier}'s positive pairing), each root
 block occupied at the doubling read below. At equal members
 $\langle Av,Av\rangle$ is the sum's unit at every member, $Av$ with it
-at that pairing, so $T=T^{\mathsf T}$ on the block and $T^2=1$ at the
-product $T\,T^{\mathsf T}=1$; $T^L=1$ at odd $L$ then reads
+at that pairing, so $T=T^{*}$ on the block and $T^2=1$ at the
+product $T\,T^{*}=1$; $T^L=1$ at odd $L$ then reads
 $T=T\,(T^2)^{\,m}=T^{\,L}=1$ at $2m+1=L$, the coprimality of $2$ and
 $L$ spelled as that word, and $S=2$ on the whole block, so $t$ reads
 $2$ against $S\,v=t\,v$ there, against $t$ a root of $P_L$ and the
@@ -8369,14 +8885,14 @@ reads the column at its own multiple, the membership iterated
 along the Horner recursion (Definition~\ref{def:poly}). That seed against
 the independent translates reads $u_j$ occupied. Its $A$-image is its
 independent partner at the pairing reads: $\langle u_j,A\,u_j\rangle$
-reads its own memberwise swap at $A^{\mathsf T}=\check A$, hence
+reads its own memberwise swap at $A^{*}=\check A$, hence
 equal members, and $\langle A\,u_j,A\,u_j\rangle$ reads
 $\langle4\!:\!t_j^{\,2}\rangle\,\langle u_j,u_j\rangle$ on its upper
 side at the strict interiority above, so $A\,u_j$ is occupied and
 perpendicular to $u_j$, the two independent members of the root
 block: the membership is the exchange's read, the datum and the
 chord two words in the one translation at the product
-$T^{\mathsf T}T=1$, so they exchange with every polynomial in the
+$T^{*}T=1$, so they exchange with every polynomial in the
 chord across it, the datum maps each chord block to itself, and
 the image row reads the moved display,
 $S\,A\,u_j=A\,S\,u_j=t_j\,A\,u_j$, the symbol's read at the image
@@ -9451,7 +9967,8 @@ image's self-pairing at the diagonal $E$
 $\delta$ the drift, the transport display's pairing step at the
 two-term square (the pencil identity read at $\varphi$, (iii));
 and the electric square weight closes on one finite sum over the
-head's shells at (ii)'s caps,
+head's shells (Construction~\ref{con:depthchain}) at (ii)'s
+caps,
 \[
 \langle\tilde\psi,E^{2}\tilde\psi\rangle\ \le\
 \Big(\sum_{i}\ (4\,C_i)^{2}\prod_{j<i}\lambda_j^{\,2}\Big)\,
@@ -9496,18 +10013,14 @@ $g$ permutes the label index isometrically and maps each direction's
 translation to the permuted direction's own, so it maps chord blocks
 onto chord blocks (Lemma~\ref{lem:fiberdec}): the direction
 permutation permutes the block index $(t_1,\dots,t_d)$, and an
-orientation flip reads $T$ at $T^{\mathsf T}$, the chord operator
-$S=T+T^{\mathsf T}$ fixed with it. So the $K$-fiber's pencil and the
-$gK$-fiber's are congruent at the relabeling, the pencil's rows
-and columns read along one permutation of the window index, an
-orthogonal map;
-the site-datum determinant reads one value across it, the
-assignment fold reindexed along the relabeling: each assignment
-pairs with its relabeled own at the entries' product kept, the
-row and column exchanges composing at an even join
-(Definition~\ref{def:elim}'s exchanged reads at
-Construction~\ref{con:places}' descent), and their
-characteristic polynomials agree, coefficient by coefficient:
+orientation flip reads $T$ at $T^{*}$, the chord operator
+$S=T+T^{*}$ fixed with it. So the $K$-fiber's pencil and the
+$gK$-fiber's are one matrix at the moved states' list
+(Theorem~\ref{thm:pairpencil}'s transport field, the moved
+members at the dual labels where the orientation reverses), and the
+symbol is one value at every stated list of the fiber
+(Theorem~\ref{thm:trigpencil}): their characteristic polynomials
+agree, coefficient by coefficient,
 \[
 \mathcal S(gK;k,r)\;=\;\mathcal S(K;k,r)
 \]
@@ -9646,12 +10159,14 @@ Theorem~\ref{thm:restoration}).
 \emph{(iii) The spacing is an output.} The chain's height at a
 scale is located between the ray's floor and its caps, the
 certificate's head's two-sided datum at the certificate's rates,
-every probe's two moments' read and every window's own height at
-its $X$-sector's depth chain where the certificate's clauses read
-at its block data
-(Lemma~\ref{lem:corner}'s cell floor; Lemma~\ref{lem:attained}(iv);
-Construction~\ref{con:depthchain}),
-one output bracket per scale.
+and every probe's two moments' read at any window
+(Lemma~\ref{lem:corner}'s cell floor; Lemma~\ref{lem:attained}(iv)),
+one output bracket per scale, and at two directions or beyond the
+height falls under every floor pair beyond the floor's key, the
+cap line against the floor line at a window of the directed family,
+the lines' gap falling with the window's mode read
+$e_W=[\,20:L^{2}+2L+2\,]$ at the side (Lemma~\ref{lem:corner}'s
+tail read).
 \end{theorem}
 
 \section{The network constituents}
@@ -10475,10 +10990,10 @@ $2\,d_\theta A^2(2N{+}1)^{2p}\,\xi^{4N}$ at or below $w$ at the
 count reads $A$, $p$, and the grade reach $c_r\,(4N^2+1)$ inside
 the scale key's cutoff) certificate data. The \emph{grade
 key} is the highest root's coroot pair,
-$G(\lambda):=\lambda(\theta^\vee)$, the interface's root coroot
+$\mathcal G(\lambda):=\lambda(\theta^\vee)$, the interface's root coroot
 pair at $\theta$ (Construction~\ref{con:gentable}), one natural
 per label: at the fundamental fold $\lambda=\sum_im_i\,\omega_i$
-the key is the dual fold's read, $G=\sum_im_i\,c^\vee_i$ at the
+the key is the dual fold's read, $\mathcal G=\sum_im_i\,c^\vee_i$ at the
 halved summands
 $2\,c^\vee_i=c_i\,\langle\alpha_i,\alpha_i\rangle$ of the
 residue fold, naturals at one or beyond joining to
@@ -10518,22 +11033,22 @@ neighbor at $D_\ell$), the coordinate
 squares and the displayed key reads folding to the cap: $\hat
 c_2(\lambda)$ sits below $c_r\,(G^2+1)$ at one cleared member
 pair $c_r$. \emph{The counts}: the labels at one
-key value are the dual fold's solutions, at most $(G+1)$ per
+key value are the dual fold's solutions, at most $(\mathcal G+1)$ per
 simple key, and the member gap product's factors read at or
 below the $\theta$ factor,
 $\mathrm{dot}(\lambda{+}\rho,\alpha)\le
 \mathrm{dot}(\lambda{+}\rho,\theta)$ at the join's read against
 $\lambda{+}\rho$'s coroot pairs with
-$(\lambda{+}\rho)(\theta^\vee)=G+r$, so the per-key label and
-dimension counts sit below $A\,(G+1)^{p}$ at member reads
-$c_r$, $A$, $p$ (Corollary~\ref{cor:weyldim};
+$(\lambda{+}\rho)(\theta^\vee)=\mathcal G+r$, so the per-key label and
+dimension counts sit below $A\,(\mathcal G+1)^{\wp}$ at member reads
+$c_r$, $A$, $\wp$ (Corollary~\ref{cor:weyldim};
 Lemma~\ref{lem:rankstable}(i) with
 Lemma~\ref{lem:serstable}(i) at the further series, the fixed
 members' reads the adjugate rows'). The \emph{dimension-weighted
 family} is
 \[
-\phi_\xi\;:=\;\sum_{G(\lambda)\le 2N} d_\lambda\,
-\xi^{G(\lambda)}\,\chi_\lambda ,
+\phi_\xi\;:=\;\sum_{\mathcal G(\lambda)\le 2N} d_\lambda\,
+\xi^{\mathcal G(\lambda)}\,\chi_\lambda ,
 \]
 the sum over the chain's labels at the grade key, the characters
 orthonormal (Proposition~\ref{prop:repring}) and the vacuum's
@@ -10556,10 +11071,10 @@ the two keys' part of the pairing priced at the counts' squares,
 below $w$ times the vacuum's term at the weighted power
 comparison. The
 electric read prices at the key's caps, $\hat c_2(\lambda)$
-below $c_r\,(G^2+1)$ with the per-key label and dimension
-counts below $A\,(G+1)^{p}$, the pairing's per-key weight the
+below $c_r\,(\mathcal G^2+1)$ with the per-key label and dimension
+counts below $A\,(\mathcal G+1)^{\wp}$, the pairing's per-key weight the
 fold of the dimensions' squares at or below the count's own square
-$A^2(G+1)^{2p}$, and the weighted geometric sums
+$A^2(\mathcal G+1)^{2\wp}$, and the weighted geometric sums
 close on two displayed reads. The power cap is one rising-product
 read,
 \[
@@ -10580,10 +11095,10 @@ so $y^{\,j+1}S_j(M)\le j!$ at every $M$. At $x=\xi^{2}$ the gap reads
 $y=w\,(1+\xi)$ at or beyond $w$, the vacuum's unit term floors the
 pairing, and
 \[
-w^{\,2p+3}\,\langle\phi_\xi,\,E\,\phi_\xi\rangle
-\;\le\;4\,c_r\,A^2\,(2p+2)!\ \langle\phi_\xi,\phi_\xi\rangle\ :
+w^{\,2\wp+3}\,\langle\phi_\xi,\,E\,\phi_\xi\rangle
+\;\le\;4\,c_r\,A^2\,(2\wp+2)!\ \langle\phi_\xi,\phi_\xi\rangle\ :
 \]
-the rate's data are $q=2p+3$ and $C_E=4\,c_r\,A^2\,(2p+2)!$,
+the rate's data are $q=2\wp+3$ and $C_E=4\,c_r\,A^2\,(2\wp+2)!$,
 member reads.
 The Rayleigh read at $\phi_\xi$ then closes the drift's rate
 against the head's top root $m_+$ at its cap $d_\theta$
@@ -10730,15 +11245,741 @@ own, the head's data capping the chain's. The chain's
 \emph{height} at a scale is its cut's edge at the corner scale
 (Definition~\ref{def:K}; Lemma~\ref{lem:attained}(i)), located
 between the ray's floor, a member pair of its cut, and its caps,
-the head's second root, every probe's two moments' read
-(Lemma~\ref{lem:attained}(iv), the first moment the gradient
-read of Theorem~\ref{thm:momentform}) and every window's own
-height at its $X$-sector's depth chain where the certificate's
-clauses read at its block data (Construction~\ref{con:depthchain};
-Lemma~\ref{lem:cornerpivot}(vii)), the cut's meet at or below
-each window's cut and the window's edge at or below its
-$X$-sector's second root (Definition~\ref{def:K}), one bracket
-per scale. Each cell reads its edges at word
+the head's second root and every probe's two moments' read at
+any window (Lemma~\ref{lem:attained}(iv), the first moment the
+gradient read of Theorem~\ref{thm:momentform}), the cut's meet at
+or below each window's cut (Definition~\ref{def:K}), one bracket
+per scale. \emph{The tail read.} At two directions or beyond the
+caps fall under every floor along the scale, read at one window of
+the directed family (Definition~\ref{def:carrier}), the cut's meet
+at or below the window's cut (Definition~\ref{def:K}): the
+\emph{square window} of side $L$, the vertices at the coordinates
+from one to $L+1$ in every direction with the links and plaquettes among
+them, $\#p$ the plaquettes' count. The window's height reads at its
+two lines (Lemma~\ref{lem:momentfold}(vi)): the floor at the
+\emph{squares' certificate} and the cap at two stated members, the
+\emph{trial} and its \emph{mode member}, the lines' gap against the
+scale the height's cap.
+\emph{The certificate's data.} A \emph{tree} is a link subset
+joining every two vertices of the window by one path, its count one
+below the vertices', the \emph{comb} the last direction's links off
+the last position joined to the comb of the further directions at
+the first position, one direction at a time, the tree path between
+two vertices descending the directions' columns to the first
+positions in turn and ascending, the two descents' shared segment
+withdrawn; the \emph{incidence} $K$ is the plaquette-link list at
+the traversals' signs, one at a boundary link traversed forward and
+its balance partner backward (Construction~\ref{con:lattice}), and
+the plaquettes' Gram $\Delta:=KK^{\mathsf T}$ reads $4$ on the
+diagonal, the boundary's link count, at two plaquettes sharing a
+link the two traversals' signs' product, and symmetric against the
+plaquettes' coordinate pairing, so it splits over its located roots
+$e_K$ with a unit congruence to diagonal (Lemma~\ref{lem:split}),
+the \emph{range} the blocks at roots off the sum's unit, its
+projector $\Pi$ the fold of the blocks' projectors $\Pi_K$, the
+split's own reads. At two directions every root is occupied: a
+plaquette combination pairing every link at the sum's unit reads
+that unit at every coefficient, a plaquette at the window's boundary
+holding a link of one plaquette, its coefficient that link's read,
+the withdrawn window a window and the descent closing at the count.
+At three directions or beyond the kernel is the \emph{cubes'
+boundaries}' span, a cube's six faces at the traversals' signs: a
+cube's boundary pairs every link at the sum's unit, each link of the
+cube on two of its faces at exchanged signs, and a combination
+pairing every link at that unit descends the last direction: its
+read at a top face, a plaquette at the last position whose cube is
+one, withdraws at that cube's boundary's multiple, and a top link,
+a link at the last position in an earlier direction, then sits on
+one occupied plaquette, the face below it in the link's plane with
+the last direction, whose coefficient the link's pairing reads at
+the sum's unit, so the combination sits on the window one position
+shorter, the descent closing at the plane window at the two
+directions' read. Every root sits at or below $8g$ at the direction
+gap $g$ at $g+1=d$: the Gram's form is the links' folds' squares'
+fold, $W^{\mathsf T}\Delta W=\sum_\ell\big(\sum_{p\ni\ell}K_{p\ell}
+W_p\big)^{2}$, each square at or below the link's plaquette count
+$2g$ against the plaquettes' squares (Construction~\ref{con:coeff}'s
+Cauchy--Schwarz), the fold collecting each plaquette's square at its
+four links; and at two directions or beyond every root off the
+sum's unit sits at or beyond $[\,2:L^{2}\,]$, the \emph{Poincar\'e
+read}: a member of the range is perpendicular to the cubes'
+boundaries, its restriction to one plane's plaquettes at every
+position of the further directions has its consecutive differences
+along each plane direction among the link folds, a plaquette
+family's read at the sum's unit at the window's edge telescopes to
+its differences' fold along the direction with the square at or
+below the side against the differences' squares
+(Construction~\ref{con:coeff}'s Cauchy--Schwarz), so the self-pairing
+sits at or below the side's square against either direction's
+differences' fold and at or below half the side's square against the
+two folds' join.
+The \emph{modes' kernel} is
+\[
+\mathsf S\;:=\;2\kappa_\theta\,\Delta\sum_{K}w_K^{3}\,\Pi_K\ ,
+\qquad
+\mathsf S\,\Delta\,\mathsf S\;=\;[\,1:2\kappa_\theta\,]\,\Pi\ ,
+\]
+the fold over the joint chord blocks on the range at the
+adjoined roots $w_K$ at $w_K^{2}\,2\kappa_\theta\,e(K)=1$
+(Lemma~\ref{lem:stagesplit}), $\kappa_\theta$ the adjoint's index
+(Lemma~\ref{lem:loopcap}'s gradient deficit), the kernel symmetric
+with its identity the blocks' own reads, and the \emph{kernel's
+diagonal} $D_p:=(\Delta\mathsf S)_{pp}$ per plaquette, the fold over
+the blocks of $[\,1:2\kappa_\theta w_K\,]$ at the projectors'
+diagonal, at or below the count $D_+:=2g$ at the direction gap $g$
+at $g+1=d$, the blocks' diagonal reads folding to at most one at the
+range's projector and every root at or below $8g$ with
+$[\,1:2\kappa_\theta w_K\,]^{2}=[\,e_K:2\kappa_\theta\,]
+\le[\,4g:\kappa_\theta\,]\le D_+^{\,2}$ at $\kappa_\theta$ and $g$
+at or beyond one. The
+\emph{moved flux} of a plaquette $p$ at a link $\ell$ is the
+character's gradient at $p$'s base link moved to $\ell$'s tail along
+the tree path by the path word's adjoint coefficient
+$R_{\ell\leftarrow p}$, and the certificate's squares are the
+generator actions joined to the balance partners of the moved
+fluxes' folds,
+\[
+G_{\ell a}\;:=\;\sum_p\big(K^{\mathsf T}\mathsf S\big)_{\ell p}\,
+\big(R_{\ell\leftarrow p}\,\nabla\chi_p\big)_a\ ,
+\qquad
+T_{\ell a}\;:=\;\eta\,X_a^{\ell}+\big\langle G_{\ell a}\big\rangle^{\!\vee}
+\]
+over the links and the generator list, a fold of squares restricting
+to every fiber (Construction~\ref{con:coeff}). \emph{The local
+square.} Two moved fluxes' pairing at one link reads the tree path
+from the one base to the other, the link's own path backtracking
+in the tree, so the squares' fold over the links collects at the
+kernel's identity, $\sum_\ell(K^{\mathsf T}\mathsf S)_{\ell p}
+(K^{\mathsf T}\mathsf S)_{\ell p'}=(\mathsf S\Delta\mathsf S)_{pp'}$,
+to the plaquettes' gradient squares against the off-range residual,
+\[
+2\kappa_\theta\sum_{\ell,a}G_{\ell a}^{2}
++\big|\,v+(\Pi\,v)^{\!\vee}\big|^{2}
+\;=\;\sum_p\sum_a\big(X_a\chi_p\big)^{2}
+\qquad\text{at}\quad v:=\big(R_{0\leftarrow p}\nabla\chi_p\big)_p\ ,
+\]
+the second summand the self-pairing of the fluxes moved to one
+vertex off the incidence's range, the range's projector symmetric
+and idempotent, at or beyond the sum's unit at the positive pairing,
+the sum's unit at one and two directions, the range the whole, and
+at three directions or beyond the cubes' boundaries' fold, each
+cube's six moved fluxes at the traversals' signs joined. \emph{The cross
+read.} The divergence $\sum_{\ell,a}X_a^{\ell}(G_{\ell a})$
+(Construction~\ref{con:coeff}) reads at each plaquette and each
+boundary link the generator against the moved gradient, the
+transport's own derivative the sum's unit (a link sits on its own
+tree path at most as the last link into its tail, where the
+generator differentiates the path word at its endpoint, the letter
+wired to itself withdrawing, Proposition~\ref{prop:lap}), and at a
+boundary link's factor the read is the joint insertion across the
+\emph{loop} $\mathrm{Hol}_{\ell p}$ from $\ell$'s tail back along
+the boundary arc off $\ell$ to the base's tail and forward along the
+tree path to $\ell$'s tail, at the link's traversal sign
+$K_{p\ell}$: the arc's part is the base link's own Laplacian, the
+joint insertion across the arc at the evaluation contraction
+(Proposition~\ref{prop:lap}'s arc read), the generator moved through
+the loop's own coefficient and back at the cyclic read of the class
+function (Lemma~\ref{lem:casimir}), $\sum_a(X_aX_a\chi_p)$ the
+balance partner of $C_2(\theta)\,\chi_p$, and the tree path's part
+enters through the loop's adjoint coefficient against the
+\emph{second gradient} $\nabla^{2}\chi_p$, the generator pairs'
+reads $(\nabla^{2}\chi_p)_{ab}:=X_a^{\ell}X_b^{\ell}\chi_p$ at the
+link's tail, the moved generator's index first: the cross read is
+\[
+\sum_{\ell,a}X_a^{\ell}(G_{\ell a})
+\;=\;\Big\langle\,\sum_p\sum_{\ell\in\partial p}
+K_{p\ell}\,(K^{\mathsf T}\mathsf S)_{\ell p}\sum_{a,b}
+\big\langle\mathrm{Hol}_{\ell p}\!:\!1\big\rangle_{ab}\,
+\big(\nabla^{2}\chi_p\big)_{ab}
+\;:\;C_2(\theta)\sum_pD_p\,\chi_p\,\Big\rangle\ ,
+\]
+$\langle\mathrm{Hol}\!:\!1\rangle$ the entrywise balance pair
+against the identity, and the main read the kernel's diagonal $D_p$
+at the incidence's Gram, the signed boundary fold
+$\sum_{\ell\in\partial p}K_{p\ell}(K^{\mathsf T}\mathsf S)_{\ell p}
+=(\Delta\mathsf S)_{pp}$.
+\emph{The assembly.} The fold of squares joined to the electric
+member's balance partner reads the pencil at the dual
+representative as the squares' fold joined to $g$, the
+balance partner of the multiplication
+$\sum_{\ell,a}G_{\ell a}^{2}+\sum_p\chi_p+\eta\sum_{\ell,a}X_a^{\ell}(G_{\ell a})$
+(Construction~\ref{con:coeff}'s joined square at the pair $\eta$),
+and $g$ reads at or beyond a floor by three comparisons at the
+deficits $\delta_p:=\langle d_\theta\!:\!\chi_p\rangle$. The local
+square against the gradient deficit (Lemma~\ref{lem:loopcap}) puts
+$\sum G^{2}$ at or below
+$\sum_p\big\langle\delta_p\!:\![\,1:2d_\theta\,]\,\delta_p^{2}\big\rangle$.
+The loop's deviation prices at three member reads: the structure
+constants' fold $c_\theta^{\,2}:=\sum_{a,b,c}(f_{ab}^{\,c})^{2}$ at
+the closure field's read
+$(X_aX_b\chi_p)+(X_bX_a\chi_p)^{\!\vee}=\sum_cf_{ab}^{\,c}\,X_c\chi_p$
+(Construction~\ref{con:gentable}); a pair $h_\theta$ whose square
+sits at or beyond the second gradient's fold
+$\sum_{a,b}(X_aX_b\chi_\theta)^{2}$ over the block, the fold at or
+below $d_\theta$ times the generators' second-order trace fold
+$\sum_{a,b}\tr\big((X_aX_b)^{\dagger}X_aX_b\big)$ at the block's
+trace pairing (Construction~\ref{con:coeff}'s Cauchy--Schwarz); and
+the kernel's corner fold
+$\sum_{\ell\in\partial p}(K^{\mathsf T}\mathsf S)_{\ell p}^{2}
+\le[\,1:2\kappa_\theta\,]\le1$, so each weight's square sits at or
+below one and its magnitude with it, the trichotomy of squares. The
+pairing of $\langle\mathrm{Hol}\!:\!1\rangle$ against
+$\nabla^{2}\chi_p$ splits at the two matrices' symmetric and
+antisymmetric parts, the cross pairings the sum's unit. The
+antisymmetric part of $\nabla^{2}\chi_p$ is the structure constants
+at the gradient, half the closure field's read, its fold of squares
+at or below $[\,1:4\,]\,c_\theta^{\,2}\sum_c(X_c\chi_p)^{2}$
+(Construction~\ref{con:coeff}'s Cauchy--Schwarz), at or below
+$[\,1:2\,]\,c_\theta^{\,2}\,\kappa_\theta\,\delta_p$ at the gradient
+deficit; the antisymmetric part of $\langle\mathrm{Hol}\!:\!1\rangle$
+has its fold of squares at or below the whole's,
+$\sum_{a,b}\langle\mathrm{Hol}\!:\!1\rangle_{ab}^{2}=2\,\delta_{\mathrm{Hol}}$
+at the loop's deficit $\delta_{\mathrm{Hol}}:=\langle
+d_\theta\!:\!\chi_\theta(\mathrm{Hol})\rangle$, the unitary read's
+trace; so the antisymmetric pairing sits at or below
+$[\,1:2\,]\,(c_\theta^{\,2}\kappa_\theta\,\delta_p+\delta_{\mathrm{Hol}})$,
+Cauchy--Schwarz at the two folds and the two-member fold of squares
+$2ab\le a^{2}+b^{2}$. The symmetric part of
+$\langle\mathrm{Hol}\!:\!1\rangle$ is the balance partner of half the
+square $\langle\mathrm{Hol}\!:\!1\rangle^{\mathsf T}
+\langle\mathrm{Hol}\!:\!1\rangle$ at the unitary read, its fold of
+squares at or below $\delta_{\mathrm{Hol}}^{\,2}$ (a product's
+Frobenius fold at or below the factors' folds' product), and the
+symmetric part of $\nabla^{2}\chi_p$ has its fold at or below
+$h_\theta^{\,2}$, so the symmetric pairing sits at or below
+$h_\theta\,\delta_{\mathrm{Hol}}$: the deviation at $(p,\ell)$ sits
+within $m_\theta\,(\delta_p+\delta_{\mathrm{Hol}})$ at the member
+pair $m_\theta:=c_\theta^{\,2}\kappa_\theta+h_\theta+1$. The loop's
+deficit prices at its region: the loop bounds the region
+$R_{\ell p}$ between the tree path and the arc, its coefficient the
+ordered product of the region's plaquette coefficients each moved
+along the region's column and back (the interior links traversed
+both ways withdrawing at the evaluation identity), so
+$\langle\mathrm{Hol}\!:\!1\rangle$ telescopes over the factors, the
+$i$-th summand the product of the earlier factors against the
+$i$-th factor's own $\langle A_i\!:\!1\rangle$, and the fold of
+squares reads the count against the summands' folds
+(Construction~\ref{con:coeff}'s Cauchy--Schwarz at the count), each
+summand's fold the moved coefficient's, the plaquette's own
+$2\,\delta_q$ at the cyclic trace:
+$\delta_{\mathrm{Hol}}\le n_{\ell p}\sum_{q\in R_{\ell p}}\delta_q$ at
+the region's count $n_{\ell p}$. Folded over the plaquettes and
+their boundary links the deviation sits within
+$\Omega\sum_q\delta_q$ at the \emph{covering count}
+\[
+\Omega\;:=\;m_\theta\Big(4+\max_q\sum_{(p,\ell):\ q\in R_{\ell p}}
+n_{\ell p}\Big)\ ,
+\]
+the fold over the pairs whose regions hold the plaquette: the comb's
+regions are strips of width one below a plaquette's corners in the
+descended directions, one strip per descent of height at most the
+side, so $n_{\ell p}\le g\,L$ at the direction gap $g$ at $g+1=d$,
+and a plaquette sits in the strips of at most $8\,g\,L$ pairs, the
+plaquettes above it along a descent at the planes through its
+transverse direction with their four links: $\Omega\le
+m_\theta\,(4+8\,g^{2}L^{2})$, the side's square against a member
+pair at the direction count. And the square completes at the scale,
+\begin{gather*}
+g\;\ge\;\sum_p[\,1:2d_\theta\,]\,
+\big\langle\delta_p\!:\!\eta\,d_\theta\,(C_2(\theta)D_p+\Omega)\big\rangle^{2}
++\ell_0\ ,\\
+\ell_0:=\sum_pd_\theta\,\Big\langle\eta\,C_2(\theta)D_p\;:\;
+1+[\,1:2\,]\,\eta^{2}\,(C_2(\theta)D_p+\Omega)^{2}\Big\rangle\ ,
+\end{gather*}
+the \emph{floor line}, the window's pencil at or beyond it: the
+ground sits at or beyond $\ell_0$, the kernel's read
+$\eta\,C_2(\theta)\,d_\theta\sum_pD_p$ against the flat read
+$d_\theta\,\#p$, the loss the scale's square against the count at
+the covering count's square. \emph{The profile.} The \emph{profile} $W$ sits on the
+plaquettes of one plane at every position of the further
+directions, $W_p:=w_x\,w_y$ at the plane coordinates $(x,y)$ of the
+plaquette's corner, $1\le x,y\le L$, and $w_b:=b\,(L+1+b^{\vee})$
+at $b$'s balance partner, the parabola at the sum's unit at
+$b=0$ and $b=L+1$; it sits in the range at three directions or
+beyond, a cube's two faces in the plane reading one value at the
+exchanged signs and its further faces off the support. Its Gram read
+against its self-pairing is the two directions' consecutive
+differences' folds at two closed sums,
+\[
+30\sum_{b=1}^{L}w_b^{2}\;=\;L\,(L+1)(L+2)\,(L^{2}+2L+2)\ ,
+\qquad
+3\sum_{b=0}^{L}\big\langle w_{b+1}\!:\!w_b\big\rangle^{2}
+\;=\;L\,(L+1)(L+2)\ ,
+\]
+so $W^{\mathsf T}\Delta W=[\,20:L^{2}+2L+2\,]\,W^{\mathsf T}W$, the
+\emph{mode read} $e_W:=[\,20:L^{2}+2L+2\,]$, falling with the side.
+\emph{The trial.} The \emph{moved flux} $f_p:=R_{0\leftarrow p}
+\nabla\chi_p$ is the base link's gradient moved to the root along
+the tree path, one coefficient element per generator index, and
+the \emph{dumbbell} $D_{pq}:=\sum_a(f_p)_a(f_q)_a$ is two moved
+fluxes' dot, a carrier element: the root's site action
+(Proposition~\ref{prop:link}) moves both lists by one adjoint
+coefficient and the dot is its own read across it. The
+\emph{exponent} is the balance partner of the kernel's form at the
+moved fluxes joined to the deficits' fold at a stated pair
+$\varepsilon$, the \emph{mass},
+\[
+\Phi\;:=\;\Big\langle\,[\,1:2\kappa_\theta\,]\sum_{p,q}
+\mathsf S_{pq}\,D_{pq}+\varepsilon\sum_p\delta_p\Big\rangle^{\!\vee}\ ,
+\qquad
+\Phi_+:=(L+2\,\varepsilon)\,d_\theta\,\#p\ ,
+\]
+at or below the sum's unit and at or beyond the
+balance partner of $\Phi_+$: the form is the fold over the generator index of the
+kernel's form at the lists $(f_p)_a$, each block's coefficient
+$w_K$ positive and at or below $[\,L:2\,]$ at the roots' floor
+($w_K^{2}\,2\kappa_\theta e_K=1$ at $e_K\ge[\,2:L^{2}\,]$ and
+$\kappa_\theta\ge1$, the trichotomy of squares), so the form sits
+between the sum's unit and $[\,L:2\,]$ times the lists'
+self-pairing, at or below $[\,L:2\,]\sum_p2\kappa_\theta\,\delta_p$
+at the gradient deficit (Lemma~\ref{lem:loopcap}) and
+$\delta_p\le2d_\theta$, the character's magnitude at or below the
+dimension. The two summands read the sum's unit at distinct
+configurations: the kernel's form reads it exactly where every
+moved flux does, and a plaquette's flux reads it at every
+coefficient whose adjoint block is symmetric at the orthogonal
+read, the gradient's trace pairing an antisymmetric generator
+against a symmetric matrix, while the deficit there reads half the
+fold of squares of $1-U_\theta$ (Lemma~\ref{lem:loopcap}), occupied
+off the identity; the deficits' fold reads the sum's unit at the
+flat configurations alone, so the mass fixes the trial's weight at
+the flat configurations at every scale below the pair's own, its
+mismatch against the kernel's form at the modes priced at the cap.
+The \emph{profile} at the scale $\eta=[\,n:s\,]$ and a
+stated natural $m$ is
+\[
+B\;:=\;1+\Phi\,[\,s:n\,m\,]\ ,
+\qquad
+\Psi\;:=\;B^{\,m}\ ,
+\]
+$B$ a multiplication between $[\,1:2\,]$ and one at
+$m\ge2\,\Phi_+\,s$ against $n$ (the exponent's read against the
+scale's multiple of $m$ at or below one half), so $\Psi$ sits
+between $[\,1:2\,]^{m}$ and one, positive by its shape; the
+generators read it at the powers' Leibniz read,
+$X_a^{\ell}\Psi=m\,B^{\,m-1}\,X_a^{\ell}B$, so
+\[
+B\;X_a^{\ell}\Psi\;=\;[\,s:n\,]\,\big(X_a^{\ell}\Phi\big)\,\Psi\ ,
+\]
+one exact identity per link and generator. \emph{The parts
+identity.} At a carrier element $F$ the generator's read of
+$F\,\Psi^{2}$ evaluates at the sum's unit (Construction~\ref{con:coeff}),
+so at the \emph{moment reads} $\mu[F]:=\mathrm{Eval}(F\,\Psi^{2})$
+and $\nu[F]:=\mathrm{Eval}(F\,B^{\,2m-1})$, the trial's square with
+one factor $B$ withdrawn,
+\[
+\mu\big[X_a^{\ell}F\big]+2\,[\,s:n\,]\,\nu\big[F\,X_a^{\ell}\Phi\big]
+\;=\;0\ ,
+\qquad
+\mu[F]=\nu[F]+[\,s:n\,m\,]\,\nu[F\,\Phi]\ ,
+\]
+the Leibniz read at the product with the identity above, and the
+second the profile's own display; at $m$ at or beyond
+$2\,\Phi_+\,s\,s$ against $n\,n$ the two reads of a member $F$
+differ by at most half the scale's multiple of the read $\nu[F]$'s
+magnitude cap, the exponent's read against the scale's multiple of
+$m$ at or below half the scale, $\Phi_+\,[\,s:n\,m\,]\le[\,n:2s\,]$. \emph{The deviation.} The exponent's gradient reads the
+certificate's squares, the \emph{mass gradient} and a deviation
+quadratic in the fluxes,
+$X_a^{\ell}\Phi=G_{\ell a}+\varepsilon\,F_{\ell a}+R_{\ell a}$ at
+$F_{\ell a}:=\sum_{p\ni\ell}K_{p\ell}\,(R_{\ell\leftarrow0}f_p)_a$,
+the link's plaquettes' moved fluxes at the traversal signs
+(Lemma~\ref{lem:loopcap}'s gradient move), its square fold at or
+below the link's plaquette count $2g$ against the fluxes' squares
+(Construction~\ref{con:coeff}'s Cauchy--Schwarz at the count): a
+generator at a link reads a
+moved flux at three sites, the boundary read
+$X_a^{\ell}\nabla\chi_p=K_{p\ell}\,\nabla^{2}_{\ell p}$ at
+$\ell\in\partial p$, the second gradient at the arc
+(Proposition~\ref{prop:lap}'s joint insertion), whose read is the
+count's balance partner at the arc's coefficient joined to a
+remainder, $\nabla^{2}_{\ell p}=\langle\,E_{\ell p}:\kappa_\theta\,
+R_{\mathrm{arc}}\rangle$ at the remainder's fold
+$\sum_{a,b}(E_{\ell p})_{ab}^{2}\le2\,h_\theta^{\,2}\,\delta_p$
+(the second gradient at the loop's coefficient,
+Lemma~\ref{lem:casimir}'s cyclic read, the generators' second-order
+trace fold against $\langle\mathrm{Hol}\!:\!1\rangle$'s fold
+$2\delta_p$ by Construction~\ref{con:coeff}'s Cauchy--Schwarz); the
+transport read at a link of the tree path, the generator inserted
+at the link's tail in the path word,
+$X_a^{\ell}R_{0\leftarrow p}=\mathrm{ad}(R_{0\leftarrow\ell}X_a)\,
+R_{0\leftarrow p}$, its fold at or below the structure constants'
+fold $c_\theta^{\,2}$ against the flux's self-pairing; and the arc's
+coefficient against the tree path's, the loop's own,
+$R_{0\leftarrow p}R_{\mathrm{arc}}=R_{0\leftarrow\ell}\,\mathrm{Hol}_{\ell p}$.
+Folded at the kernel the generator's read of the exponent collects
+the certificate's square, the loop's coefficient against the
+identity, the remainder and the transport,
+\begin{multline*}
+R_{\ell a}\;=\;\sum_{p\ni\ell}K_{p\ell}\sum_q\mathsf S_{pq}\,
+\big\langle R_{0\leftarrow\ell}\langle\mathrm{Hol}_{\ell p}\!:\!1\rangle e_a,\,f_q\big\rangle
++[\,1:\kappa_\theta\,]\sum_{p\ni\ell}K_{p\ell}\sum_q\mathsf S_{pq}\,
+\big\langle R_{0\leftarrow p}E_{\ell p}\,e_a,\,f_q\big\rangle^{\!\vee}\\
++[\,1:\kappa_\theta\,]\sum_{p:\ \ell\in\text{path}(p)}\sum_q\mathsf S_{pq}\,
+\big\langle\mathrm{ad}(R_{0\leftarrow\ell}X_a)f_p,\,f_q\big\rangle^{\!\vee}\ ,
+\end{multline*}
+each summand a product of two flux-order reads, the first at the
+loop's deficit, the second at the remainder's fold and the third at
+the structure constants', so the deviation's square fold over the
+links and the generator index sits at or below a stated member
+pair's multiple of the fluxes' fourth-order folds at the kernel's
+entries, the deficits' products $\delta_p\,\delta_{\mathrm{Hol}}$,
+$\delta_p\,|(\mathsf Sf)_p|^{2}$ and $|f_p|^{2}|(\mathsf Sf)_p|^{2}$
+over the pairs at one link, at most $2g$ boundary pairs and $gL$
+path pairs per link (Construction~\ref{con:coeff}'s Cauchy--Schwarz
+at the counts).
+\emph{The positive reads.} The deficit and its complement are folds
+of squares, $2\,\delta_p$ and $2\,(2d_\theta-\delta_p)$ the
+self-pairings of $1-U_\theta$ and $1+U_\theta$ at the plaquette's
+coefficient (Lemma~\ref{lem:loopcap};
+Construction~\ref{con:coeff}'s evaluation identity), so the
+exponent's balance partner $|\Phi|$, the kernel's form joined to
+the mass's fold, is a positive element with $\Phi_+$ at or beyond
+it at three positive gaps, the roots' floor at the kernel's form
+($[\,L:2\,]$ against each $w_K$ at the blocks' squares), the
+gradient deficit's spare, the projection residual's fold of
+squares (Lemma~\ref{lem:loopcap}), and the deficits' complements.
+So at $x:=|\Phi|\,[\,s:n\,m\,]$ the trial reads
+$\Psi^{2}=(1-x)^{2m}$ at the positive elements $x$ and $1-x$, the
+latter the pair $1-\Phi_+[\,s:n\,m\,]$, at or beyond $[\,1:2\,]$,
+joined to $(\Phi_+-|\Phi|)\,[\,s:n\,m\,]$. Two reads at the
+binomial partition $1=\sum_iC(2m,i)\,x^{i}(1-x)^{2m-i}$, every
+summand positive. The \emph{far read}: at a natural $j$ at or
+below $m$,
+\[
+C(2m,j)\,x^{j}\,\Psi^{2}\ \le\ 1\ ,
+\qquad
+\Psi^{2}\,(\varepsilon\,D)^{j}\ \le\ j!\ \eta^{\,j}
+\quad\text{at}\quad D:=\sum_p\delta_p\ ,
+\]
+the first the partition's further summands joined to the $j$-th
+summand's read against $(1-x)^{j}$, the gap
+$x\sum_{i<j}(1-x)^{i}$ at the telescope
+$(1-x)^{i}=1-x\sum_{i'<i}(1-x)^{i'}$, and the second at
+$\varepsilon D\le|\Phi|$ with $j!\,C(2m,j)\ge m^{j}$ at $j\le m$:
+the evaluation of a positive element against
+$\Psi^{2}(\varepsilon D)^{j}$ sits at or below $j!\,\eta^{j}$
+against its own evaluation. The \emph{near read}:
+$\Psi^{2}\ge1-2m\,x$, the gap
+$x^{2}\sum_{i<2m}\sum_{i'<i}(1-x)^{i'}$ at the telescope, and
+$2m\,x=2\,|\Phi|\,[\,s:n\,]$ at $|\Phi|\le([\,L:2\,]+\varepsilon)\,D$.
+\emph{The near mass.} At the \emph{complement read}
+$u_p:=(2d_\theta-\delta_p)\,[\,1:2d_\theta\,]$, a positive element
+with $1-u_p$ positive and flat read one, and a natural $k$, the
+\emph{return read} $Q:=\prod_pu_p^{2k}$ is a positive element
+below one, the gap $\sum_p(1-u_p^{2k})\prod_{q<p}u_q^{2k}$ at the
+product's telescope, with flat read one and support weight $W_k$
+at or below $c_W\,k^{e}$ at $e:=(3\wp+1)\,\#\ell$ and
+$c_W:=A^{3\#\ell}(9g)^{e}$, $\#\ell$ the window's link count: a
+plaquette character's power reads labels at fusion depth at most
+its degree on the plaquette's links, the link's plaquettes' powers
+fuse at the link to depth at most $4gk$, the grade key moves by at
+most two per fusion (the move cap above), and per key the labels
+and dimensions sit below $A\,(\mathcal G+1)^{\wp}$ (the counts above), so a
+link's occupied dimensions' squares fold to at most
+$A^{3}(8gk+1)^{3\wp+1}$ and the weight to at most that power's
+$\#\ell$-th, at $8gk+1\le9gk$. So $\mathrm{Eval}(Q)$ sits at or
+beyond $[\,1:W_k\,]$, the flat read's square against the support
+weight (Construction~\ref{con:coeff}). Per plaquette the reads
+$b_i:=\mathrm{Eval}\big(u_p^{2i}\prod_{q\ne p}u_q^{2k}\big)$ fall at
+a slowing rate: $b_0\le1$, $b_k=\mathrm{Eval}(Q)$,
+$b_i^{2}\le b_{i-1}\,b_{i+1}$ (the evaluation's squared
+Cauchy--Schwarz at the positive element
+$\prod_{q\ne p}u_q^{2k}$), and $b_{i+1}\le b_i$ at
+$(1-u_p^{2})\,u_p^{2i}$ positive, so the \emph{step quotients} $r_i$
+at $r_i\,b_i=b_{i+1}$ ascend below one and $b_k$ sits at or below
+$r_{k-1}^{\,k}$: at a step quotient's gap $y$ at $r_{k-1}+y=1$
+beyond a pair $\tau$ the far read's Bernstein bound at the natural
+$j:=e+1$, $C(k,j)\,y^{j}\,r_{k-1}^{\,k}\le1$, reads
+$C(k,j)\,\tau^{j}<W_k$ against $C(k,j)\,j^{j}\ge k^{j}$ and
+$W_k\le c_Wk^{e}$, so at the \emph{concentration key}
+$k(\tau):=c_W\,j^{j}\,\tau^{-j}$, the least natural at the cleared
+comparison, every $k$ at or beyond it reads the gap at or below
+$\tau$, and the deficit's read at the return read,
+$\delta_p\,Q=2d_\theta\,(1-u_p)\,u_p^{2k}\prod_{q\ne p}u_q^{2k}$ at
+$(1-u_p)\,u_p^{2k}\le(1-u_p^{2})\,u_p^{2k}$, sits at or below
+$2d_\theta\,(b_k-b_{k+1})\le2d_\theta\,\tau\,\mathrm{Eval}(Q)$ at
+$k+1$ at or beyond the key. The trial's mass then reads at the
+near read against the return read, $\Psi^{2}\ge\Psi^{2}Q\ge(1-2mx)\,Q$
+at $1-Q$ positive, the exponent's read against the deficits' fold
+and the fold's read against the return read:
+\begin{gather*}
+\mu[1]\ \ge\ \mathrm{Eval}(Q)\,\Big(1-2\,[\,s:n\,]\,([\,L:2\,]+\varepsilon)\,
+\#p\,2d_\theta\,\tau\Big)\ \ge\ [\,1:2\,]\,\mathrm{Eval}(Q)\ \ge\
+\vartheta:=[\,1:2\,W_{k}\,]\\
+\text{at}\quad
+\tau:=\big[\,n:4\,d_\theta\,\#p\,(L+2\varepsilon)\,s\,\big]
+\end{gather*}
+and $k:=k(\tau)$, the \emph{near mass} $\vartheta$ one pair read
+of the scale, the side and the mass.
+\emph{The near scale.} A \emph{weight} is a positive element $P$
+with its evaluation at or below a stated pair $P_+$ and its moment
+$\mu[P]$ at or beyond a stated pair $P_-$, the trial's weights the
+unit at $P_-=\vartheta$ and the mode's square below; a positive
+element has \emph{flux order} $k$ at a pair $c$ where it sits at or
+below $c\,D^{k}$. At a natural $k$ the deficits' fold reads its
+$k$-th power against a weight at the \emph{near scale} $K$: at
+$y:=D\,[\,1:K\eta\,]$ and a natural $j'$,
+\[
+y^{k}\ \le\ 1+y^{k+j'}\ ,
+\qquad
+\mu\big[P\,D^{k}\big]\ \le\ (K\eta)^{k}\,\mu[P]
++\mu\big[P\,D^{k+j'}\big]\,[\,1:(K\eta)^{j'}\,]
+\ \le\ 2\,(K\eta)^{k}\,\mu[P]\ ,
+\]
+the first at the gap $(1-y)^{2}\big(\sum_{i<k}y^{i}\big)
+\big(\sum_{i<j'}y^{i}\big)+y^{j'}$, the second its moment against
+$P\,(K\eta)^{k}$, and the third at the far read,
+$\mu[P\,D^{k+j'}]\le(k+j')!\,\eta^{k+j'}\,[\,1:\varepsilon^{k+j'}\,]\,P_+$,
+against $(K\eta)^{k}P_-$ (at $m\ge k+j'$): at $j'$ the \emph{bit count}, the least
+natural at or beyond one at $2^{j'}\ge P_+\,[\,1:\varepsilon^{k}P_-\,]$, and
+$K:=[\,2\,k!\,(k+j'):\varepsilon\,]$ the comparison
+$K^{j'}\varepsilon^{k+j'}P_-\ge(k+j')!\,P_+$ holds at
+$(k+j')!\le(k+j')^{j'}\,k!$; the near scale is the largest over
+the stated weights and the powers at or below four, one count
+read of the scale, the side and the mass with the bit count
+growing by at most a stated natural per halving of the scale (the
+near mass a stated power of the scale).
+\emph{The moment identities.} At a plaquette vector $u$ in the
+incidence's range the \emph{mode coordinate} is
+$y_u:=\sum_pu_p\,f_p$, one coefficient element per generator index
+at the root, and the \emph{dual weights} are
+$c^{(u)}:=K^{\mathsf T}\Delta^{-1}(\mathsf S+\varepsilon)^{-1}u$
+over the links, $\Delta^{-1}$ the adjugate solve on the range
+(Definition~\ref{def:elim}) and $(\mathsf S+\varepsilon)^{-1}$ the
+fold $\sum_K[\,1:w_K+\varepsilon\,]\,\Pi_K$, the \emph{shifted
+kernel}'s solve: the weights read the exponent's gradient back to
+the coordinate, $\sum_\ell c^{(u)}_\ell\,R_{0\leftarrow\ell}
+\big(G_{\ell}+\varepsilon F_{\ell}\big)=y_u$ at
+$(\mathsf S+\varepsilon)KK^{\mathsf T}\Delta^{-1}=(\mathsf S+\varepsilon)\,\Pi$,
+and read a further vector's incidence fold to the shifted kernel's
+pairing, $\sum_\ell c^{(u)}_\ell(K^{\mathsf T}u')_\ell
+=u'^{\mathsf T}(\mathsf S+\varepsilon)^{-1}u$. A generator at a link
+reads the moved coordinate's trace at the cross read: the fold over
+$p$'s boundary links of the joint insertion reads
+$\sum_aX^{\ell}_a(R_{\ell\leftarrow0}f_p)_a
+=K_{p\ell}\big(C_2(\theta)\,\chi_p+\mathrm{dev}_{\ell p}\big)^{\!\vee}$
+at $\ell\in\partial p$, the deviation within
+$m_\theta(\delta_p+\delta_{\mathrm{Hol}})$ (the cross read above),
+and at $\ell$ on $p$'s tree path the transport's trace reads the
+structure constants' fold against the loop's coefficient's gap from
+the identity, second order in the fluxes as well; at
+$C_2(\theta)\,d_\theta=\dim G\,\kappa_\theta$ (Lemma~\ref{lem:loopcap})
+the fold is
+\[
+\sum_aX^{\ell}_a\big(R_{\ell\leftarrow0}\,y_{u'}\big)_a
+\;=\;\big\langle\,r_\ell\;:\;\kappa_\theta\dim G\,(K^{\mathsf T}u')_\ell\,\big\rangle\ ,
+\qquad
+|r_\ell|\ \le\ \varrho_1\,|u'|_\infty\,D\ ,
+\]
+$\varrho_1$ a stated pair in the side (the boundary count $2g$ at
+$C_2(\theta)+m_\theta(1+gL)$, the path count $gL$ at the structure
+constants' fold against the loop deficits' cap). The parts identity
+at the element $F_{\ell a}:=c^{(u)}_\ell\,(R_{\ell\leftarrow0}y_{u'})_a\,Z$,
+$Z$ a further involution-fixed positive element, folded over the links and
+the generator index, reads the \emph{coordinate identity}
+\begin{multline*}
+2\,[\,s:n\,]\,\nu\big[\,Z\,\langle y_{u'},y_u\rangle\,\big]
++\sum_\ell c^{(u)}_\ell\,\mu\big[\,Z\,r_\ell\,\big]\\
++\sum_\ell c^{(u)}_\ell\,\mu\big[\,\langle R_{\ell\leftarrow0}y_{u'},\,X^{\ell}Z\rangle\,\big]
++2\,[\,s:n\,]\sum_\ell c^{(u)}_\ell\,
+\nu\big[\,Z\,\langle R_{\ell\leftarrow0}y_{u'},\,R_\ell\rangle\,\big]\\
+=\;\kappa_\theta\dim G\ u'^{\mathsf T}(\mathsf S+\varepsilon)^{-1}u\ \mu[Z]\ ,
+\end{multline*}
+the left member's first summand the exponent's gradient read back
+to $y_u$ through the weights, its second and fourth the derivative's
+remainder and the deviation, and its third the generator's read of
+$Z$. \emph{The second moments.} At $Z=1$ the third summand is the
+sum's unit and the identity reads the coordinates' pairings at the
+shifted kernel's solve, every remainder second order: at
+$u=u'=\Pi e_p$ the read $\nu[\,|y_{\Pi e_p}|^{2}\,]$, the fluxes'
+range part at the plaquette, sits at
+$[\,n:2s\,]\,\kappa_\theta\dim G\,(\mathsf S+\varepsilon)^{-1}_{pp}\,\mu[1]$
+joined to the remainders, $|c^{(u)}|_1\varrho_1\,\mu[D]$ and
+$2[\,s:n\,]\,|c^{(u)}|_1\,\Theta_R\,\nu[\,|y_{u'}|\,D\,]$ at the
+deviation's pair $\Theta_R$ (the deviation's square fold above),
+each priced at the near scale (the moments of $D$ and $D^{2}$
+against $\mu[1]$ with the evaluation's squared Cauchy--Schwarz),
+and the fluxes' off-range part is fourth order, the cubes'
+boundaries' fold (the local square above) at $d\ge3$ and the sum's
+unit at $d=2$: so the deficits' fold reads
+\[
+\mu[D]\ \le\ [\,1:2\kappa_\theta\,]\sum_p\mu\big[|f_p|^{2}\big]
++\big(c_\varrho\,[\,1:2\,]+[\,1:2d_\theta\,]\big)\,\mu[D^{2}]
+\ \le\ C_D\,\#p\,\eta\ \mu[1]
+\]
+at the deficit's second-order read (Lemma~\ref{lem:loopcap}), the
+diagonal $(\mathsf S+\varepsilon)^{-1}_{pp}\le[\,1:w_{\min}\,]$ at the
+roots' cap $w_{\min}^{2}\,16\kappa_\theta g\ge1$, and the near-scale
+reads at the second power, $C_D$ a stated pair in the side and the
+mass on the cell $L^{c}\eta$ below a stated pair, one comparison.
+\emph{The excess.} The trial's read against the floor line,
+$r_u$ at $r_u\,\mu[1]$ the pencil's form at $\Psi$ less the line's
+multiple of the gram, is the certificate's squares at the trial
+joined to the slack's moment, $\sum_{\ell,a}\|T_{\ell a}\Psi\|^{2}+\mu[q]$
+at $q$ the pencil's multiplication against the line, and both read
+at the moments. The squares: $T_{\ell a}\Psi$ reads
+$(\varepsilon F_{\ell a}+R_{\ell a}+G_{\ell a}\,\Phi^{\vee}[\,s:n\,m\,])\,\Psi\,[\,1:B\,]$
+at the exact identity, so the fold sits at or below
+$12\,\big(\varepsilon^{2}\,8g\sum_p\mu[|f_p|^{2}]+\Theta_R\,\mu[D^{2}]
++[\,n^{2}:4s^{2}\,]\,\mu[D]\big)$ at $B\ge[\,1:2\,]$, the three-member
+fold of squares, the mass gradient's cap, the deviation's pair and
+$\Phi_+[\,s:n\,m\,]\le[\,n:2s\,]$ with $2\kappa_\theta\sum G^{2}\le\sum_p|f_p|^{2}$
+at the local square. The slack: $q$ reads the balance pair
+$\big\langle\,\sum_p\delta_p+[\,1:2\,]\,\eta^{2}d_\theta\sum_p(C_2(\theta)D_p+\Omega)^{2}
+\;:\;\sum G^{2}+\eta\,C_2(\theta)\sum_pD_p\delta_p+\eta\,\mathrm{dev}\,\big\rangle$
+at the assembly's reads, the deficits' fold less the squares' fold the
+spares' fold joined to the off-range residual at the local square,
+each spare at or below $(c_\varrho[\,1:2\,]+[\,1:2d_\theta\,])\,\delta_p^{2}$
+(Lemma~\ref{lem:loopcap}'s second-order read) and the residual at
+or below $c_{\mathrm{off}}\,D^{2}$, the cubes' boundaries' fold at
+the cubes' Gram's Poincar\'e read against the faces' second-order
+joins (a boundary's coefficients multiply to the identity, so its
+moved fluxes' signed fold is the pairwise products' fold of the
+coefficients' gaps from the identity, at or below the faces'
+deficits' fold at the count), the sum's unit at $d=2$; so
+$q\le(c_\varrho[\,1:2\,]+[\,1:2d_\theta\,]+c_{\mathrm{off}}[\,1:2\kappa_\theta\,])\,D^{2}
++\eta\,\Omega\,D+[\,1:2\,]\,\eta^{2}d_\theta\,\#p\,(C_2(\theta)D_++\Omega)^{2}$
+at the deviation's cap and the kernel's positive diagonal. At the
+second moments, the gradient deficit ($|f_p|^{2}\le2\,\kappa_\theta\,\delta_p$
+at every plaquette, Lemma~\ref{lem:loopcap}) and the near-scale
+reads the excess is
+\[
+r_u\ \le\ 192\,g\,\kappa_\theta\,C_D\,\#p\ \varepsilon^{2}\,\eta+P_u\,\eta^{2}\ ,
+\]
+$P_u$ a stated pair in the side, the mass and the near scale, the
+mass's square at the plaquette count against a member pair joined to the
+scale's square.
+\emph{The mode member.} At the profile $W$ the mode coordinate
+$y_W$ reads the \emph{mode square} $Q:=|y_W|^{2}$, a positive
+element and a weight at $Q_+:=(|W|^{2}\,4\kappa_\theta d_\theta\#p)^{2}$
+and $Q_-$ below, and the member is
+$v:=\langle Q\!:\!\bar q\rangle\,\Psi$ at the \emph{mode mean} $\bar q$ at
+$\bar q\,\mu[1]=\mu[Q]$, perpendicular to the trial by its
+construction. The coordinate identity at $Z=1$ and at $Z=Q$, both
+at $u=u'=W$ and the \emph{profile's solve}
+$\sigma_W:=W^{\mathsf T}(\mathsf S+\varepsilon)^{-1}W$, reads
+\[
+2\,[\,s:n\,]\,\nu[Q]\ =\ \kappa_\theta\dim G\ \sigma_W\ \mu[1]+r_1\ ,
+\qquad
+2\,[\,s:n\,]\,\nu[Q^{2}]\ =\ \kappa_\theta\,(\dim G+2)\ \sigma_W\ \mu[Q]+r_2\ ,
+\]
+the second's third summand the generator's read of the mode square,
+$\langle R_{\ell\leftarrow0}y_W,X^{\ell}Q\rangle
+=2\,\big\langle\,(R_{\ell\leftarrow0}y_W)^{\mathsf T}\epsilon_\ell\,(R_{\ell\leftarrow0}y_W)
+\,:\,\kappa_\theta(K^{\mathsf T}W)_\ell\,Q\,\big\rangle$
+at $X^{\ell}_a(R_{\ell\leftarrow0}y_W)_b$ the pair
+$\langle\,\epsilon_{\ell,ba}\,:\,\kappa_\theta(K^{\mathsf T}W)_\ell\delta_{ab}\,\rangle$,
+the boundary read's leading member at the joint insertion and its
+gap $\epsilon_\ell$ first order in the fluxes, $|\epsilon_\ell|^{2}
+\le\varrho_2\,|W|_\infty^{2}\,D$ at a stated pair $\varrho_2$ in the
+side (the second gradient's remainder, the loop's gap and the
+transport at the counts), the leading member collecting to
+$2\kappa_\theta\sigma_W\,\mu[Q]$ through the weights; the remainders
+$r_1$ and $r_2$ are second-order reads priced at the near scale,
+$|r_1|$ at or below a stated pair's multiple of $\mu[D]$ joined to
+the deviation's read and $|r_2|$ of $\mu[QD]$ with the mode's
+fifth-order gap, each below a stated pair's multiple of its
+leading member at the scale on the cell. The member's self-pairing
+is the mode's variance, $\mu[Q^{2}]$ less $\bar q\,\mu[Q]$, and at
+$\langle1\!:\![\,n:2s\,]\rangle\,\nu[F]\le\mu[F]\le\nu[F]$ on positive
+elements (the profile's own display) the two identities read it
+from below,
+\[
+\langle v,v\rangle+\eta\,\big(\bar q\,|r_1|+|r_2|\big)\ \ge\
+\eta\,\kappa_\theta\,\sigma_W\,\mu[Q]\,
+\big\langle\,1\,:\,[\,1:4\,]\,\eta\,(\dim G+2)\,\big\rangle\ ,
+\]
+the chi-square read at $\dim G$ degrees; and the member's form
+against the floor line reads the squares and the slack at $v$,
+$T(\langle Q\!:\!\bar q\rangle\Psi)=\eta\,(XQ)\,\Psi+\langle Q\!:\!\bar q\rangle\,T\Psi$, so
+\begin{gather*}
+\langle v,(H-\ell_0)\,v\rangle\ \le\
+2\,\eta^{2}\,\mu\big[|XQ|^{2}\big]+2\,\mu\big[\langle Q\!:\!\bar q\rangle^{2}\,t(D)\big]
++\mu\big[\langle Q\!:\!\bar q\rangle^{2}\,q\big]\ ,\\
+\mu\big[|XQ|^{2}\big]\le8\,\kappa_\theta^{\,2}\,e_W\,|W|^{2}\,\mu[Q]
++8\,\varrho_2\,\#\ell\,|W|_\infty^{2}\,\mu[QD]\ ,
+\end{gather*}
+$t(D):=12\,(16g\kappa_\theta\varepsilon^{2}D+\Theta_RD^{2}+[\,n^{2}:4s^{2}\,]D)$
+the squares' cap at the trial, $|XQ|^{2}$ the fold of
+$2\,\langle X^{\ell}(R_{\ell\leftarrow0}y_W),\,R_{\ell\leftarrow0}y_W\rangle$'s
+squares at the leading member $W^{\mathsf T}\Delta W=e_W|W|^{2}$, the
+mode read at the closed sums, and the mode square's deficit moment
+$\mu[QD]\le2K\eta\,\mu[Q]$ at the near scale. \emph{The mode
+weight's moments.} At the \emph{mode weight}
+$Z:=\langle Q\!:\!\bar q\rangle^{2}$, an involution-fixed positive
+element at the moment $\mu[Z]=\langle v,v\rangle$, the coordinate
+identity at $u=u'=\Pi e_p$ reads the fluxes' range part against the
+weight, the second moments' read at the weight, its third summand the generator's read of the
+mode square at the weight's root, $2\,\langle Q\!:\!\bar q\rangle$
+against the second identity's own read, and the reads close at the
+near scale on the weights $Q^{2}$, $Q$ and the unit with the
+evaluation's squared Cauchy--Schwarz and the \emph{mode mean's read}
+$\mu[Q]^{2}\le\dim G\,\mu[1]\,\langle v,v\rangle$ on the cell, the
+two identities' leading members against the remainders' caps; so the
+deficits' fold and its square read at the mode weight
+\[
+\mu\big[ZD\big]\ \le\ \big(C_D\,\#p\,\eta+P'\,\eta^{2}\big)\,\langle v,v\rangle\ ,
+\qquad
+\mu\big[ZD^{2}\big]\ \le\ 2\,(K\eta)^{2}\,(1+\dim G)\,\langle v,v\rangle\ ,
+\]
+$P'$ a stated pair in the side, the mass and the near scale. The
+member's form then reads at the moments: the squares' cap at the
+mode weight against the deficit's two moments, the slack at the mode
+weight against them, the mode read at the closed sums against the
+variance read on the cell (the variance at or beyond half its
+leading member, $\eta\,(\dim G+2)\le1$ with the remainders' caps
+under a quarter of it, one comparison at the cell), and at
+$\sigma_W\ge|W|^{2}\,[\,2:L+2\varepsilon\,]$ (the roots' floor
+$w_K\le[\,L:2\,]$ at the shifted kernel's solve) the \emph{mode
+read}
+\[
+r_v\ \le\ 16\,\kappa_\theta\,(L+2\varepsilon)\,e_W\ \eta
++384\,g\,\kappa_\theta\,C_D\,\#p\ \varepsilon^{2}\,\eta+P_v\,\eta^{2}\ ,
+\]
+$P_v$ a stated pair in the side, the mass and the near scale, the
+leading read the mode's own frequency read at the profile's Gram
+against its self-pairing, $[\,20:L^{2}+2L+2\,]$ at the side, the
+mass read the squares' cap's mass gradient at the mode weight's
+deficit moment, and the scale read the further caps.
+\emph{The cap.} At every line beyond $\ell_0+r_u+r_v$ the window's
+count reads two below it: the pencil at the floor line is positive
+semidefinite on the window, the trial and the mode member are
+perpendicular in the gram by the member's construction, and their
+diagonal reads against the members' gram are $r_u$ and $r_v$
+(Lemma~\ref{lem:momentfold}(vi)); and the reads' sum sits at or
+below
+$\eta\,\big(16\,\kappa_\theta(L+2\varepsilon)\,e_W+576\,g\,\kappa_\theta\,C_D\,\#p\,\varepsilon^{2}
++(P_u+P_v)\,\eta\big)$, the excess and the mode read joined.
+\emph{The key.} At a floor pair $\varphi$ the \emph{key} is the
+least side $L_0$ at which the mode read sits under a quarter of the
+floor at unit mass, $64\,\kappa_\theta\,(L+2)\,e_W<\varphi$, one
+cross-multiplied comparison per side at $e_W$'s pair; the
+\emph{mass} $\varepsilon$ the pair at or below one at which the two
+mass reads sit under a further quarter,
+$2304\,g\,\kappa_\theta\,C_D\,\#p\,\varepsilon^{2}<\varphi$ at the key's
+plaquette count; and the least scale key $\eta_0$ under which the
+two scale reads sit under a third quarter,
+$4\,(P_u+P_v)\,\eta<\varphi$, with the cell's comparisons at the
+scale ($L^{c}\eta$ below its stated pair, and the variance read's
+cell), the near scale's bit count growing by at most a stated
+natural per halving of the scale, so a comparison at a scale holds
+at its half once the near scale clears that natural, the key the
+least scale of the halving family at the comparisons
+(Definition~\ref{def:ground}): at every scale under $\eta_0$ the
+reads' sum sits under the floor's multiple of the scale,
+$r_u+r_v<\eta\,\varphi$, the line $\ell_0+\eta\,\varphi$ beyond
+$\ell_0+r_u+r_v$ with the window's count two below it, so the
+window's height sits below $\varphi$
+(Lemma~\ref{lem:momentfold}(vi)), and the chain's height with it,
+its cut inside the window's (Definition~\ref{def:K}). At one
+direction the plaquettes' Gram reads $2$ joined to the path's
+differences' read at the ends' sum's unit, the two unshared links'
+count joined to the shared links' difference read, at or beyond $2$
+at every side,
+so every mode's frequency sits at or beyond the adjoined root at
+$4\kappa_\theta$ and the lines' gap keeps that floor at every side.
+Each cell reads its edges at word
 images: the flat window's upper end is the cell's second root, a
 point of its own divisor (Lemma~\ref{lem:split};
 Theorem~\ref{thm:divisorid}(i)), and the window cut's edge there,
@@ -11254,7 +12495,8 @@ term's symmetry from both members, so the pencil is block
 tridiagonal over the depth, the shells its slabs
 (Lemma~\ref{lem:greenprod}), its bonds the terms' reads between
 consecutive shells and its diagonal blocks the terms' reads within
-one shell joined to the shell's contents against the gram. The one-plaquette window's
+one shell joined to the shell's contents against the gram. The
+one-plaquette window's
 unit sector reads its shells at the labels of one fusion depth from
 the unit label, the tower labels $m\theta$ among them at the
 shells' Cartan powers (Construction~\ref{con:labels}), and the walk's
@@ -11265,10 +12507,7 @@ at the label triples of its two plaquettes' unshared links and the
 shared link (Definition~\ref{def:carrier}'s vertex counts at the
 two three-valent vertices), a plaquette's term fusing $\theta$ into
 one plaquette's labels with the shared link's at the vertices'
-recoupling (Theorem~\ref{thm:network}); and a window's depth chain
-is a block chain of Lemma~\ref{lem:cornerpivot}(vii)'s shape, the
-certificate's clauses reading at its block data, with its ground
-reads the streams at block weights (Lemma~\ref{lem:momentfold}(v)).
+recoupling (Theorem~\ref{thm:network}).
 \end{construction}
 
 \begin{lemma}[The moment folds]\label{lem:momentfold}
@@ -11364,6 +12603,33 @@ certificates cell data (Lemma~\ref{lem:cellcount}), so the
 assembled reads close where the parts do. The block chains read
 the streams at block weights through the folds of their own
 recurrence, Lemma~\ref{lem:greenprod}(iii)'s row read.
+
+\emph{(vi) The height reads at two lines.} On a window the height
+reads at two lines, one count per line: at a \emph{floor line} under
+which the window's pencil is positive semidefinite the ground sits
+at or beyond the line, and at a \emph{cap line} with the window's
+count two below it the window's second root sits at or below the
+line (Lemma~\ref{lem:split}'s count read), so the height sits at or
+below the lines' gap against the scale; the floor is a
+positive-semidefinite certificate of the window's pencil above the
+line, a fold of squares at generator actions joined to coefficient
+multiplications (Construction~\ref{con:coeff}), and the cap the
+two-by-two block read at two stated members perpendicular in the
+gram (Lemma~\ref{lem:inertia}'s block reads): at a
+positive-semidefinite form on the members' span, the pencil's site
+datum at the floor line, the members' diagonal reads against the
+gram and the cross read's square at or below four times the
+diagonal reads' product (Construction~\ref{con:coeff}'s squared
+Cauchy--Schwarz at the form's split), so at every line beyond the
+floor line by the reads' sum the compression of the cap level's
+gram multiple against the pencil reads both diagonal entries on the
+lower side with the cross read's square below four times their
+product, the two members' gap beyond the reads' sum at the
+products' shape, two lower units, and the compression's counts sit
+at or below the full form's; the certificate's data and the members' reads are polynomial
+pairs in the scale and the side, their comparisons' validity
+divisors located over the scale and the side
+(Lemma~\ref{lem:cellcount}).
 \end{lemma}
 
 \begin{lemma}[The cone read]\label{lem:cone}

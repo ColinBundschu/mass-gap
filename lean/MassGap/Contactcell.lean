@@ -1296,7 +1296,7 @@ private theorem head_len (d K : Nat) (hd : 1 ≤ d)
     show (List.replicate d (0 : Nat)).length = d
     exact ground.length_replicate 0 d
   | tail _ hm =>
-    have hb : mu ∈ (List.range (K + 1)).flatMap
+    have hb : mu ∈ (List.range (K / d + 1)).flatMap
         (fun j => (places.allShapes (d - 1) j).filterMap
           (fun sh => if 0 < j && c2hat.dfQ (sh ++ [0]) ≤ K
             then some (sh ++ [0]) else none)) :=
@@ -1374,24 +1374,20 @@ private theorem head_mem (d K : Nat) (mu : places.Shape)
     rw [hmured] at hmu
     have hdegmu : places.degree mu = places.degree w := by
       rw [hmu, places.degree_snoc w 0, Nat.zero_mul, Nat.add_zero]
-    have hjK : places.degree w < K + 1 := by
-      refine Nat.lt_succ_of_le ?_
-      rw [← hdegmu]
+    have hjK : places.degree w < K / d + 1 := by
+      refine Nat.lt_succ_of_le (ground.le_div_of_mul_le _ _ _
+        (Nat.lt_of_lt_of_le Nat.zero_lt_two hd) ?_)
+      rw [← hdegmu, ← hmulen]
       exact Nat.le_trans
-        (Nat.le_trans
-          (Nat.le_mul_of_pos_left (places.degree mu)
-            (by rw [hmulen]
-                exact Nat.lt_of_lt_of_le Nat.zero_lt_two hd))
-          (windowfinite.degree_le_dfQ mu (d - 1)
-            (by rw [hmulen, hd1]) hmured))
+        (c2hat.degree_le_dfQ mu (d - 1) (by rw [hmulen, hd1]) hmured)
         hmuK
-    have hjmem : places.degree w ∈ List.range (K + 1) := by
-      have h1 := ground.mem_getAt 0 (List.range (K + 1))
+    have hjmem : places.degree w ∈ List.range (K / d + 1) := by
+      have h1 := ground.mem_getAt 0 (List.range (K / d + 1))
         (places.degree w)
         (by rw [ground.length_range]; exact hjK)
-      rw [ground.getAt_range (K + 1) (places.degree w) hjK] at h1
+      rw [ground.getAt_range (K / d + 1) (places.degree w) hjK] at h1
       exact h1
-    show mu ∈ (List.range (K + 1)).flatMap
+    show mu ∈ (List.range (K / d + 1)).flatMap
       (fun j => (places.allShapes (d - 1) j).filterMap
         (fun sh => if 0 < j && c2hat.dfQ (sh ++ [0]) ≤ K
           then some (sh ++ [0]) else none))

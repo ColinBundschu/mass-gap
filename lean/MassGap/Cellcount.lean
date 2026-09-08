@@ -1926,105 +1926,6 @@ private theorem contains_none {j : Nat} : ∀ idx : List Nat,
       rw [contains_none t h]
       rfl
 
-/-- The predicate count at pointwise-equal reads over the members. -/
-private theorem countBy_congr {p q : Nat → Bool} : ∀ l : List Nat,
-    (∀ x, 0 < ground.countOf x l → p x = q x) →
-    ground.countBy p l = ground.countBy q l
-  | [], _ => rfl
-  | a :: t, h => by
-    have ha := h a (by rw [ground.countOf_head]; exact Nat.succ_pos _)
-    have ht := countBy_congr t
-      (fun x hx => h x (ground.countOf_cons_pos hx))
-    cases hqa : q a with
-    | true =>
-      rw [ground.countBy_cons_true p t (ha.trans hqa),
-        ground.countBy_cons_true q t hqa, ht]
-    | false =>
-      rw [ground.countBy_cons_false p t (ha.trans hqa),
-        ground.countBy_cons_false q t hqa, ht]
-
-/-- Two predicates refusing together count at the join. -/
-private theorem countBy_or {p q : Nat → Bool} : ∀ l : List Nat,
-    (∀ x, 0 < ground.countOf x l → p x = true → q x = false) →
-    ground.countBy (fun x => p x || q x) l
-      = ground.countBy p l + ground.countBy q l
-  | [], _ => rfl
-  | a :: t, h => by
-    have ht := countBy_or t
-      (fun x hx => h x (ground.countOf_cons_pos hx))
-    have hmem := h a (by rw [ground.countOf_head]; exact Nat.succ_pos _)
-    cases hpa : p a with
-    | true =>
-      rw [ground.countBy_cons_true (fun x => p x || q x) t
-          (by rw [hpa]; rfl),
-        ground.countBy_cons_true p t hpa,
-        ground.countBy_cons_false q t (hmem hpa), ht,
-        Nat.add_assoc]
-    | false =>
-      cases hqa : q a with
-      | true =>
-        rw [ground.countBy_cons_true (fun x => p x || q x) t
-            (by rw [hpa, hqa]; rfl),
-          ground.countBy_cons_false p t hpa,
-          ground.countBy_cons_true q t hqa, ht,
-          Nat.add_left_comm]
-      | false =>
-        rw [ground.countBy_cons_false (fun x => p x || q x) t
-            (by rw [hpa, hqa]; rfl),
-          ground.countBy_cons_false p t hpa,
-          ground.countBy_cons_false q t hqa, ht]
-
-/-- The predicate and its refusal split the length. -/
-private theorem countBy_split (p : Nat → Bool) : ∀ l : List Nat,
-    ground.countBy p l + ground.countBy (fun x => !(p x)) l
-      = l.length
-  | [] => rfl
-  | a :: t => by
-    cases hpa : p a with
-    | true =>
-      rw [ground.countBy_cons_true p t hpa,
-        ground.countBy_cons_false (fun x => !(p x)) t
-          (by rw [hpa]; rfl),
-        Nat.add_assoc, countBy_split p t,
-        show (a :: t).length = t.length + 1 from rfl,
-        Nat.add_comm]
-    | false =>
-      rw [ground.countBy_cons_false p t hpa,
-        ground.countBy_cons_true (fun x => !(p x)) t
-          (by rw [hpa]; rfl),
-        Nat.add_left_comm, countBy_split p t,
-        show (a :: t).length = t.length + 1 from rfl,
-        Nat.add_comm]
-
-/-- The filter's length is the predicate's count. -/
-private theorem length_filterBy (p : Nat → Bool) : ∀ l : List Nat,
-    (l.filter p).length = ground.countBy p l
-  | [] => rfl
-  | a :: t => by
-    cases hpa : p a with
-    | true =>
-      rw [ground.filter_cons_true hpa,
-        ground.countBy_cons_true p t hpa,
-        show (a :: t.filter p).length = (t.filter p).length + 1
-          from rfl,
-        length_filterBy p t, Nat.add_comm]
-    | false =>
-      rw [ground.filter_cons_false hpa,
-        ground.countBy_cons_false p t hpa, length_filterBy p t]
-
-/-- The vacant predicate counts at the sum's unit. -/
-private theorem countBy_false : ∀ l : List Nat,
-    ground.countBy (fun _ => false) l = 0
-  | [] => rfl
-  | a :: t => by
-    rw [ground.countBy_cons_false (fun _ => false) t rfl,
-      countBy_false t]
-
-/-- The key comparison's count is the key's own. -/
-private theorem countBy_beq (a : Nat) (l : List Nat) :
-    ground.countBy (fun j => j == a) l = ground.countOf a l :=
-  countBy_congr l (fun x _ => ground.beqSymm x a)
-
 /-- The membership count over the enumeration is the places' own,
 each distinct place inside the order counted once. -/
 private theorem countBy_contains : ∀ (idx : List Nat) {o : Nat},
@@ -2693,16 +2594,16 @@ private theorem rev_perm_add {o k m : Nat} (M : elim.Mat)
   have hp1 : elim.matOneValue
       (elim.matMul (elim.permM o (idx ++ cpl))
         (elim.transposeM (elim.permM o (idx ++ cpl))))
-      (inertia.matScaleB (BPair.ofPos .one) (inertia.idMat o)) :=
+      (inertia.matScaleB (BPair.ofPos .one) (elim.idMat o)) :=
     elim.matOne_trans (elim.permM_orthL o (idx ++ cpl) hsgl hjd hsg)
-      (elim.matOne_symm (inertia.matScaleB_one (inertia.idMat o)))
+      (elim.matOne_symm (inertia.matScaleB_one (elim.idMat o)))
   have hp2 : elim.matOneValue
       (elim.matMul (elim.transposeM (elim.permM o (idx ++ cpl)))
         (elim.permM o (idx ++ cpl)))
-      (inertia.matScaleB (BPair.ofPos .one) (inertia.idMat o)) :=
+      (inertia.matScaleB (BPair.ofPos .one) (elim.idMat o)) :=
     elim.matOne_trans
       (elim.permM_orthR o (idx ++ cpl) hsgl hjd hsg hjc)
-      (elim.matOne_symm (inertia.matScaleB_one (inertia.idMat o)))
+      (elim.matOne_symm (inertia.matScaleB_one (elim.idMat o)))
   have hPil : (elim.permM o (idx ++ cpl)).length = o :=
     (ground.length_map _ _).trans hsgl
   have hPir : elim.rowsLen o (elim.permM o (idx ++ cpl)) :=

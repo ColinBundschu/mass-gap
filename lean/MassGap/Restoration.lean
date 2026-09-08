@@ -11,7 +11,7 @@ side) and the link map (`bdLink`, the key `(direction, site)` at
 the permuted direction's own, a flipped direction's link re-keyed
 at the backward step so that its traversal reverses).  The
 reversal family (`bdRev`) reads which links the member traverses
-backwards, and the index action is `fiberdec.dualConf` at this
+backwards, and the index action is `pairpencil.dualConf` at this
 map and family — the labels dualized exactly at the reversed
 traversals, the orientation reversal of `con:lattice`'s field at
 the theorem's own reading that a signed permutation reverses link
@@ -27,7 +27,7 @@ dualization at the interface's Casimir read
 transported along the vertex permutation the link map induces
 with the incoming links' dualization reading the reversal; and
 the index maps within itself.  The link map's further reads are
-the translation's own family at this map — the permutation read
+the translation's own family at this map — the link isomorphism
 with its witness, and the conjugation of a direction's
 translation into the permuted direction's own
 (`fiberdec.intertwineRead`), a flip carrying a translation to its
@@ -39,23 +39,21 @@ across the reversal family, is the moved position's plaquette at
 the cyclic reading, a rotation joining it to the word or to its
 reversal.
 
-The second tier is the matrix the theorem's congruence sentence
-reads at, and the momentum transform's carrier.  The index action
-enters as a matrix on a stated window list
-(`fiberdec.dualSlotMat`, the unit line at its head over the
-relabeling's indicator rows at the fibers' slots, the translation's
-own matrix its vacant instance) — so that a member's congruence on the window's electric
-matrix is the theorem's `E`-fix read entrywise, and a window whose
-multiplicity reads one carries the ground line at `thm:SO`'s
-character clause.  The congruence sentence's determinant read sits
-beside it: `elim.relabelRead` is the moved pencil's entrywise
-reading — every entry the source's at the moved row and column
-keys, with `elim.relabelRead_at` its extraction at a row and a
-column key — and `relabel_det` reads the two determinants at one
-value through
-`def:elim`'s exchanged reads, the assignment fold reindexed along
-the relabeling with the row and the column exchanges composing at
-an even join.  The transform is the read family at the
+The second tier is the transport and the momentum transform's
+carrier.  A signed member moves a state to a state at
+`thm:pairpencil`'s transport field, the configuration
+`pairpencil.dualConf`'s with its members moved, the reversed ends'
+columns matched to the dual label's and their tie columns read at
+the star (`pairpencil.movedMembers`), a state of the moved window
+(`fiberdec.statesTransport`), and every pairing read is one value
+across the move (`fiberdec.termsTransport` at the member's link map
+and reversal family), so the window's pencil is one matrix at the
+moved states' list, congruent to the window's own at the moved
+states' coefficients (`fiberdec.transportMat`,
+`fiberdec.transportCongr`) with its determinant one value there,
+the theorem's congruence sentence; a window whose multiplicity
+reads one carries the ground line at `thm:SO`'s character clause
+at the transport's matrix on its stated list.  The transform is the read family at the
 translate monomials: the keys of one direction row below the side
 (`places.keyBox` at the range alphabet), the box of per-argument
 key lists at a stated argument count (`argBox`, `ground.prodLists`'s
@@ -96,19 +94,6 @@ def bdLink (d L : Nat) (p : Nat → Nat) (f : Nat → Bool) (l : Nat) : Nat :=
 /-- The reversal family, the flipped directions' links. -/
 def bdRev (d L : Nat) (f : Nat → Bool) (l : Nat) : Bool := f (l / L ^ d)
 
-/-- The relabeled pencil's determinant reads the source's, the
-theorem's determinant agreement at the window level, the
-characteristic polynomials' coefficientwise read
-`split.pminor_reindex`'s. -/
-theorem relabel_det (n : Nat) (M M' : elim.Mat) (q : List Nat)
-    (hq : 0 < ground.countOf q
-      (places.monomialsAt (List.replicate n 1)))
-    (hM : M.length = n) (hM' : M'.length = n)
-    (h : elim.relabelRead n M M' q) :
-    (elim.detL M').oneValue (elim.detL M) :=
-  elim.detL_reindex n M M' q hq hM hM'
-    (fun i j hi hj => elim.relabelRead_at n M M' q h i j hi hj)
-
 /-- The per-argument key lists, the box at a stated argument
 count: the key lists' own box over the one-direction rows
 (`ground.prodLists` at `places.keyBox`'s alphabet). -/
@@ -116,7 +101,7 @@ def argBox (d L m : Nat) : List (List (List Nat)) :=
   ground.prodLists (List.replicate m (places.keyBox d L))
 
 /-- The moved translate key at a signed member, read at the
-member's direction witness (the backward map, `permRead`'s own
+member's direction witness (the backward map, the link isomorphism's own
 convention): the exponent read off the permuted direction, a
 flipped direction's at its complement to the side, the wrap's own
 read (`thm:restoration`'s momentum transform, the flip reading a

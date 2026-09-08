@@ -93,6 +93,16 @@ example : (blockSpan [1, 0, 0]).length = 3 := by decide +kernel
 example : (blockSpan [1, 1, 0]).length = 8 := by
   rw [blockcount.span110_pin]; decide +kernel
 
+/-! The span at the stored descents against the closure at the fresh
+walk (`blockSpan_eq`), decided at two shapes. -/
+
+example : blockSpan [2, 1]
+    = closeSpan 2 (degree [2, 1] * 2) [exhibit [2, 1]] [exhibit [2, 1]]
+    ∧ blockSpan [1, 1, 0]
+    = closeSpan 3 (degree [1, 1, 0] * 3) [exhibit [1, 1, 0]]
+        [exhibit [1, 1, 0]] := by
+  decide +kernel
+
 /-! The fundamental block's span in closed form (`blockSpan_fund`):
 the unit contents in letter order at the one-coordinate unit read.
 The positive width is load-bearing — at the vacant width the
@@ -206,6 +216,22 @@ example : elim.spanRel 3 (groupAt (blockSpan [1, 1, 0]) [2, 1, 0])
   exact elim.resid_sound 3 _ _ ⟨rfl, trivial⟩ rfl (by decide +kernel)
     (by decide +kernel)
 
+/-- The guard's own read at the block: the raised member refuses
+at the joined Gram (`elim.joinIndep`), the span read through
+`elim.joinIndep_span` at the group's independence. -/
+example : elim.joinIndep elim.dotP
+    (groupAt (blockSpan [1, 1, 0]) [2, 1, 0])
+    (act 0 2 (ground.getAt (exhibit [1, 1, 0])
+      (blockSpan [1, 1, 0]) 3)).coords = false := by
+  rw [blockcount.span110_pin]; decide +kernel
+
+example : elim.spanRel 3 (groupAt (blockSpan [1, 1, 0]) [2, 1, 0])
+    (act 0 2 (ground.getAt (exhibit [1, 1, 0])
+      (blockSpan [1, 1, 0]) 3)).coords := by
+  rw [blockcount.span110_pin]
+  exact (elim.joinIndep_span 3 _ _ rfl (by decide +kernel)).1
+    (by decide +kernel)
+
 /-- The image itself: the raised member reads the group's one row,
 the exhibit's own coordinates. -/
 example : poly.oneValue
@@ -228,6 +254,11 @@ example : elim.spanRel 6 (groupAt (blockSpan [1, 1, 0]) [1, 1, 1])
   rw [blockcount.span110_pin]
   exact elim.resid_sound 6 _ _ ⟨rfl, rfl, trivial⟩ rfl (by decide +kernel)
     (by decide +kernel)
+
+example : elim.joinIndep elim.dotP
+    (groupAt (blockSpan [1, 1, 0]) [1, 1, 1])
+    (act 2 0 (exhibit [1, 1, 0])).coords = false := by
+  rw [blockcount.span110_pin]; decide +kernel
 
 example : poly.oneValue (act 2 0 (exhibit [1, 1, 0])).coords
     (elim.vecAdd

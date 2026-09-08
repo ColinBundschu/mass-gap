@@ -334,15 +334,15 @@ def detG (d : Nat) : BPair := elim.detD (gramR d)
 
 /-- The Gram's adjugate at the pivot-descent determinant. -/
 def adjG (d : Nat) : elim.Mat :=
-  elim.adjO elim.detD BPair.swap (gramR d)
+  elim.adjMD (gramR d)
 
 /-- The metric dual's data verified at the adjugate identity,
 `G · adj G = det G · 1`: the identity's read at the computed
 adjugate and determinant, the pair data's own coherence. -/
 def gramSolve (d : Nat) : Prop :=
   let gm := gramR d
-  elim.matOneValue (elim.matMul gm (elim.adjO elim.detD BPair.swap gm))
-    (inertia.matScaleB (elim.detD gm) (inertia.idMat gm.length))
+  elim.matOneValue (elim.matMul gm (elim.adjMD gm))
+    (inertia.matScaleB (elim.detD gm) (elim.idMat gm.length))
 
 /-- The displayed list's independence read: the trace-pairing
 Gram's determinant off the sum's unit, the solve's warrant
@@ -388,9 +388,8 @@ one-value read), leaving
 tuple of the width. -/
 def fierzRead (d : Nat) : Prop :=
   let gs := genList d
-  let gm := gramR d
-  let ag := elim.adjO elim.detD BPair.swap gm
-  let dg := [elim.detD gm]
+  let ag := adjG d
+  let dg := [detG d]
   ((List.range d).all (fun p => (List.range d).all (fun q =>
     (List.range d).all (fun r => (List.range d).all (fun s =>
       decide (poly.oneValue

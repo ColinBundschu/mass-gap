@@ -250,12 +250,12 @@ private theorem lineSite_entry (r qn qd c : Nat) (en ed : Pos)
       (by rw [rowsLen_getAt _ i (rowsLen_of_sqAt hP)
         (by rw [sqAt_len hP]; exact hi)]; exact hj),
     matScale_entry (lineY r c qd ed) (idMat n) i j
-      (by rw [idMat_len]; exact hi)
-      (by rw [rowsLen_getAt _ i (idMat_rows n) (by rw [idMat_len]; exact hi)]
+      (by rw [length_idMat]; exact hi)
+      (by rw [rowsLen_getAt _ i (rowsLen_idMat n) (by rw [length_idMat]; exact hi)]
           exact hj),
     matScale_entry (lineX r qn en ed) (idMat n) i j
-      (by rw [idMat_len]; exact hi)
-      (by rw [rowsLen_getAt _ i (idMat_rows n) (by rw [idMat_len]; exact hi)]
+      (by rw [length_idMat]; exact hi)
+      (by rw [rowsLen_getAt _ i (rowsLen_idMat n) (by rw [length_idMat]; exact hi)]
           exact hj)]
   show ((ground.getAt BPair.unit (ground.getAt ([] : List BPair)
       (siteDatum (matScale (en * en) (headE r n))

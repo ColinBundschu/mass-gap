@@ -24,6 +24,21 @@ example : dfQ (adjchar.theta 6) = 72 := by decide +kernel
 example : dfQ [4, 0] = 24 := by decide +kernel
 example : dfQ [2, 2, 0] = 48 := by decide +kernel
 
+/-! `degree_le_dfQ`'s route at the reduced shape `[2, 1, 0]`: the
+cleared read thirty-two clears the count's multiple of the degree,
+twelve; the reduced binder isolated at `[1]`, whose count multiple
+of the degree exceeds its vacant cleared read. -/
+
+example : (3 : Nat) * places.degree [2, 1, 0]
+    ≤ c2hat.dfQ [2, 1, 0] :=
+  degree_le_dfQ [2, 1, 0] 2 rfl rfl
+example : (3 : Nat) * places.degree [2, 1, 0] = 12 := by decide +kernel
+example : c2hat.dfQ [2, 1, 0] = 32 := by decide +kernel
+example : ¬ ((1 : Nat) * places.degree [1] ≤ c2hat.dfQ [1]) := by
+  decide +kernel
+example : ([1] : places.Shape).length = 0 + 1 := by decide +kernel
+example : ¬ (ground.getAt 0 [1] 0 = 0) := by decide +kernel
+
 /-- The class invariance: a full column moves every row by one and
 the gaps are fixed. -/
 example : dfQ [1, 1, 1] = dfQ [1, 1, 0] := by decide +kernel

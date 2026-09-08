@@ -114,9 +114,7 @@ private theorem addSwapCollect (z K : BPair) :
     ← BPair.add_assoc z z]
   exact BPair.oneValue_trans
     (BPair.add_congr (BPair.oneValue_refl (z + z))
-      (BPair.oneValue_trans
-        (BPair.oneValue_of_eq (BPair.add_comm K K.swap))
-        (BPair.swap_add_null (BPair.oneValue_refl K))))
+      (BPair.add_swap_null K))
     (BPair.add_unit (z + z))
 
 /-- The polarization's close: the cap's two reads at or above the
@@ -524,8 +522,8 @@ theorem cap_polar {n : Nat} (D : Mat) (wn wd : Pos) (spU spL : Split n)
   have hDr : rowsLen n D := rowsLen_of_sqAt (sqAt_matScale_reflect wd D hSq)
   have hsym : matOneValue (transposeM D) D :=
     sym_of_capScale D wn wd spU spL hcap
-  have hIl : (idMat n).length = n := idMat_len n
-  have hIr : rowsLen n (idMat n) := idMat_rows n
+  have hIl : (idMat n).length = n := length_idMat n
+  have hIr : rowsLen n (idMat n) := rowsLen_idMat n
   have hcomm : (dotN y x).oneValue (dotN x y) :=
     BPair.oneValue_trans (dotN_read y x)
       (BPair.oneValue_trans (BPair.oneValue_of_eq (dotP_comm y x))
@@ -533,13 +531,13 @@ theorem cap_polar {n : Nat} (D : Mat) (wn wd : Pos) (spU spL : Split n)
   have hDsym : (dotN y (matVec D x)).oneValue (dotN x (matVec D y)) :=
     elim.dotN_sym_flip D n hDr hDl hsym x y hx hy
   have hIxx : (dotN x (matVec (idMat n) x)).oneValue (dotN x x) :=
-    dotN_congrR x _ _ (inertia.matVec_idMat n x hx)
+    dotN_congrR x _ _ (elim.matVec_idMat n x hx)
   have hIyy : (dotN y (matVec (idMat n) y)).oneValue (dotN y y) :=
-    dotN_congrR y _ _ (inertia.matVec_idMat n y hy)
+    dotN_congrR y _ _ (elim.matVec_idMat n y hy)
   have hIxy : (dotN x (matVec (idMat n) y)).oneValue (dotN x y) :=
-    dotN_congrR x _ _ (inertia.matVec_idMat n y hy)
+    dotN_congrR x _ _ (elim.matVec_idMat n y hy)
   have hIyx : (dotN y (matVec (idMat n) x)).oneValue (dotN x y) :=
-    BPair.oneValue_trans (dotN_congrR y _ _ (inertia.matVec_idMat n x hx))
+    BPair.oneValue_trans (dotN_congrR y _ _ (elim.matVec_idMat n x hx))
       hcomm
   have hul : (vecAdd (vecScale a x) (vecScale b y)).length = n :=
     length_vecAdd _ _ n ((length_vecScale a x).trans hx)
@@ -616,7 +614,7 @@ theorem cap_read {n : Nat} (A : Mat) (cn cd : Pos)
     BPair.oneValue_trans (inertia.quadForm_scale cn (idMat n) v)
       (BPair.oneValue_trans
         (BPair.scale_congr cn
-          (dotN_congrR v _ _ (inertia.matVec_idMat n v hv)))
+          (dotN_congrR v _ _ (elim.matVec_idMat n v hv)))
         (BPair.oneValue_symm (BPair.ofPos_scale cn (dotN v v))))
   have hS : (inertia.quadForm (matScale cd A) v).oneValue
       (BPair.ofPos cd * inertia.quadForm A v) :=

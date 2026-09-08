@@ -20,9 +20,11 @@ same content whose interior lowering refuses the tail.
 The coevaluation tier's batteries sit beside them: the Gram-dual
 coevaluation's datum at the tex's carriers, the moved coevaluation
 decided at every member pair and both letter orders with the
-theorem's route applied whole, and the flat-coefficient forgery's
+theorem's route applied whole, the flat-coefficient forgery's
 refusal at a content carrying two members — the identity the
-adjugate's, not the fold's shape.
+adjugate's, not the fold's shape — and the independence binder's
+frame recorded at a dependent group, the datum the unit family
+there.
 
 The map tier's batteries follow them: the matrix family's
 action decided as the map's value at both occupied contents with
@@ -357,12 +359,17 @@ private def Ys : List HVec := blockSpan ([0, 1] : Shape)
 private def Yr : List HVec := blockSpan ([1, 1] : Shape)
 private def Yt : List HVec := blockSpan ([1, 0, 0] : Shape)
 
-/-- A ragged pool at one occupied content twice, the block whose
-adjugate is not the singleton's. -/
+/-- A pool at one occupied content twice, independent, the block
+whose adjugate is not the singleton's. -/
 private def xF : HVec := ⟨[1, 1], [BPair.ofNat 2, BPair.ofNat 5]⟩
-private def x2F : HVec := ⟨[1, 1], [BPair.ofNat 4, BPair.ofNat 10]⟩
+private def x2F : HVec := ⟨[1, 1], [BPair.ofNat 4, BPair.ofNat 11]⟩
 private def zF : HVec := ⟨[2, 0], [BPair.ofNat 3]⟩
 private def Yh : List HVec := [xF, x2F, zF]
+
+/-- The pool at the second member the first's double, the content's
+group dependent. -/
+private def x2D : HVec := ⟨[1, 1], [BPair.ofNat 4, BPair.ofNat 10]⟩
+private def Yd : List HVec := [xF, x2D, zF]
 
 /-- The moved coevaluation against a member pair: a letter pair's
 Leibniz image paired at the coevaluation's datum. -/
@@ -398,9 +405,20 @@ example : ¬ (ground.getAt BPair.unit
     ((coevData Yh).map (fun t => t.1)) 0).oneValue BPair.unit := by
   decide +kernel
 
+/-! The independence binder's frame (`lem:dualread`(i)'s coevaluation
+at a stated independent spanning list) with its survival: at a
+dependent group the descent's determinant reads the sum's unit and
+every entry of the datum with it, and the moved coevaluation reads
+that unit outright. -/
+
+example : ¬ blockcount.indepAll Yd := by decide +kernel
+example : ∀ t ∈ coevData Yd, t.1.oneValue BPair.unit := by decide +kernel
+example : ∀ a ∈ Yd, ∀ b ∈ Yd,
+    (coevMoved Yd 0 1 a b).oneValue BPair.unit := by decide +kernel
+
 /-! The moved coevaluation reads the sum's unit at every member
 pair and both letter orders, at the tex's two carriers and at the
-ragged pool. -/
+two-member pool. -/
 
 example : ∀ a ∈ Ys, ∀ b ∈ Ys,
     (coevMoved Ys 0 1 a b).oneValue BPair.unit := by decide +kernel
@@ -420,14 +438,14 @@ example : (coevMoved Ys 0 1 (exhibit [0, 1])
   coev_equiv Ys 0 1 (exhibit [0, 1]) (exhibit [0, 1]) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (ground.mem_of_countOf_pos _ Ys (by decide +kernel))
-    (ground.mem_of_countOf_pos _ Ys (by decide +kernel))
+    (ground.mem_of_countOf_pos _ Ys (by decide +kernel)) (by decide +kernel)
 example : (coevMoved Yr 1 0 (exhibit [1, 1])
     (ground.getAt (⟨[], []⟩ : HVec) Yr 1)).oneValue BPair.unit :=
   coev_equiv Yr 1 0 (exhibit [1, 1])
     (ground.getAt (⟨[], []⟩ : HVec) Yr 1) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (ground.mem_of_countOf_pos _ Yr (by decide +kernel))
-    (ground.mem_of_countOf_pos _ Yr (by decide +kernel))
+    (ground.mem_of_countOf_pos _ Yr (by decide +kernel)) (by decide +kernel)
 
 /-! The independent multi-member groups: a two-member group and a
 three-member group at off-unit block determinants, the adjugate
@@ -461,14 +479,14 @@ example : (coevMoved Yi 0 1 (ground.getAt (⟨[], []⟩ : HVec) Yi 0)
     (ground.getAt (⟨[], []⟩ : HVec) Yi 2) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (ground.mem_of_countOf_pos _ Yi (by decide +kernel))
-    (ground.mem_of_countOf_pos _ Yi (by decide +kernel))
+    (ground.mem_of_countOf_pos _ Yi (by decide +kernel)) (by decide +kernel)
 example : (coevMoved Yg 0 1 (ground.getAt (⟨[], []⟩ : HVec) Yg 1)
     (ground.getAt (⟨[], []⟩ : HVec) Yg 3)).oneValue BPair.unit :=
   coev_equiv Yg 0 1 (ground.getAt (⟨[], []⟩ : HVec) Yg 1)
     (ground.getAt (⟨[], []⟩ : HVec) Yg 3) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (ground.mem_of_countOf_pos _ Yg (by decide +kernel))
-    (ground.mem_of_countOf_pos _ Yg (by decide +kernel))
+    (ground.mem_of_countOf_pos _ Yg (by decide +kernel)) (by decide +kernel)
 
 /-! The datum's discrimination: at a content carrying two members
 the flat-coefficient pairing refuses, so the identity is the
@@ -599,7 +617,7 @@ content's own width and the argument at its member or span read,
 each with its committed refusal. -/
 
 private def Tid2 (mu : List Nat) : elim.Mat :=
-  (elim.idList (places.monomialsAt mu).length).map
+  (elim.idMat (places.monomialsAt mu).length).map
     (elim.vecScale (BPair.ofNat 2))
 
 private def Yp : List HVec :=
@@ -635,13 +653,13 @@ example : poly.oneValue (mapAt (mapInv Tid2 Yp) vP0).coords
     (elim.vecScale (detAll Yp)
       (elim.matVec (Tid2 vP0.content) vP0.coords)) :=
   mapInv_trip_mem Tid2 Yp vP0
-    (ground.mem_of_countOf_pos _ Yp (by decide +kernel)) (by decide +kernel)
+    (ground.mem_of_countOf_pos _ Yp (by decide +kernel)) (by decide +kernel) (by decide +kernel)
 
 example : poly.oneValue (mapAt (mapInv Tid2 Yp) vP1).coords
     (elim.vecScale (detAll Yp)
       (elim.matVec (Tid2 vP1.content) vP1.coords)) :=
   mapInv_trip_mem Tid2 Yp vP1
-    (ground.mem_of_countOf_pos _ Yp (by decide +kernel)) (by decide +kernel)
+    (ground.mem_of_countOf_pos _ Yp (by decide +kernel)) (by decide +kernel) (by decide +kernel)
 
 -- the span binder's refusal: an argument off the partial group's
 -- span, the span read refusing beside the conclusion
@@ -663,6 +681,27 @@ example : ∀ x ∈ YRag,
       (elim.vecScale (detAll YRag)
         (elim.matVec (Tid2 x.content) x.coords)) := by decide +kernel
 
+/-- The ragged content group: two members at one content of
+distinct widths, the group off the span relation's row frame and
+off the independence read. -/
+private def YRagGrp : List HVec :=
+  [⟨[2, 1], [BPair.ofNat 1, BPair.ofNat 1, BPair.unit]⟩,
+   ⟨[2, 1], [BPair.ofNat 1]⟩]
+
+private def vRg0 : HVec := ground.getAt (⟨[], []⟩ : HVec) YRagGrp 0
+
+-- the independence binder is `lem:dualread`(i)'s frame, the
+-- coevaluation at an independent spanning list: its survival at
+-- the ragged group, the listed member refusing the span read and
+-- the independence read with the trip's value decided
+example : ¬ blockcount.indepAll YRagGrp := by decide +kernel
+example : ¬ elim.spanRel vRg0.coords.length
+    (blockcount.groupAt YRagGrp vRg0.content) vRg0.coords := by
+  decide +kernel
+example : poly.oneValue (mapAt (mapInv Tid2 YRagGrp) vRg0).coords
+    (elim.vecScale (detAll YRagGrp)
+      (elim.matVec (Tid2 vRg0.content) vRg0.coords)) := by decide +kernel
+
 private def xSp : HVec :=
   ⟨[2, 1], [BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 1]⟩
 
@@ -680,43 +719,20 @@ example : poly.oneValue (mapAt (mapInv Tid2 Yp) xSp).coords
 example : poly.oneValue (mapAt (mapInv Tid2 Yp) xSp).coords
     (elim.vecScale (detAll Yp)
       (elim.matVec (Tid2 xSp.content) xSp.coords)) :=
-  mapInv_trip Tid2 Yp xSp (by decide +kernel) (by decide +kernel)
+  mapInv_trip Tid2 Yp xSp (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 -- the trip at a unit-tailed span member, the cleared
 -- combination's degenerate read
 example : poly.oneValue (mapAt (mapInv Tid2 Yp) xNull).coords
     (elim.vecScale (detAll Yp)
       (elim.matVec (Tid2 xNull.content) xNull.coords)) :=
-  mapInv_trip Tid2 Yp xNull (by decide +kernel) (by decide +kernel)
+  mapInv_trip Tid2 Yp xNull (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 -- the width frame is load-bearing on the span arm as well: the
 -- four-row map refuses at the off-list span member
 example : ¬ poly.oneValue (mapAt (mapInv T4bad Yp) xSp).coords
     (elim.vecScale (detAll Yp)
       (elim.matVec (T4bad xSp.content) xSp.coords)) := by decide +kernel
-
-/-- The ragged content group: two members at one content of
-distinct widths, the group off the span relation's row frame. -/
-private def YRagGrp : List HVec :=
-  [⟨[2, 1], [BPair.ofNat 1, BPair.ofNat 1, BPair.unit]⟩,
-   ⟨[2, 1], [BPair.ofNat 1]⟩]
-
-private def vRg0 : HVec := ground.getAt (⟨[], []⟩ : HVec) YRagGrp 0
-
--- the two reads are independent: a listed member of a ragged
--- group refuses the span read while the members' read holds,
--- decided and through the theorem
-example : ¬ elim.spanRel vRg0.coords.length
-    (blockcount.groupAt YRagGrp vRg0.content) vRg0.coords := by
-  decide +kernel
-example : poly.oneValue (mapAt (mapInv Tid2 YRagGrp) vRg0).coords
-    (elim.vecScale (detAll YRagGrp)
-      (elim.matVec (Tid2 vRg0.content) vRg0.coords)) := by decide +kernel
-example : poly.oneValue (mapAt (mapInv Tid2 YRagGrp) vRg0).coords
-    (elim.vecScale (detAll YRagGrp)
-      (elim.matVec (Tid2 vRg0.content) vRg0.coords)) :=
-  mapInv_trip_mem Tid2 YRagGrp vRg0
-    (ground.mem_of_countOf_pos _ YRagGrp (by decide +kernel)) (by decide +kernel)
 
 /-- The two-block carrier: the adjugate and the further block's
 determinant both off their units. -/
@@ -795,7 +811,7 @@ private def Tns (mu : List Nat) : elim.Mat :=
 refusal. -/
 private def Tmv3 (mu : List Nat) : elim.Mat :=
   if mu = [2, 1] then
-    (elim.idList (places.monomialsAt mu).length).map
+    (elim.idMat (places.monomialsAt mu).length).map
       (elim.vecScale (BPair.ofNat 3))
   else Tid2 mu
 
@@ -839,7 +855,7 @@ example : (movedAt (mapInv Tid2 Ymv) 0 1 mvA mvE1).oneValue
   mapInv_equiv Tid2 Ymv 0 1 mvA mvE1 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
     (ground.mem_of_countOf_pos _ Ymv (by decide +kernel)) (by decide +kernel)
-    (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
 example : (movedAt (mapInv Tid2 Ymv) 0 1 mvA mvE2).oneValue
     BPair.unit := by decide +kernel
 example : (movedAt (mapInv Tid2 Ymv) 0 1 mvA mvE2).oneValue
@@ -847,7 +863,7 @@ example : (movedAt (mapInv Tid2 Ymv) 0 1 mvA mvE2).oneValue
   mapInv_equiv Tid2 Ymv 0 1 mvA mvE2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
     (ground.mem_of_countOf_pos _ Ymv (by decide +kernel)) (by decide +kernel)
-    (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
 
 /-! The non-scalar map at the moved content, decided and through
 the theorem. -/
@@ -859,7 +875,7 @@ example : (movedAt (mapInv Tns Ymv) 0 1 mvA mvE1).oneValue
   mapInv_equiv Tns Ymv 0 1 mvA mvE1 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
     (ground.mem_of_countOf_pos _ Ymv (by decide +kernel)) (by decide +kernel)
-    (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
 example : (movedAt (mapInv Tns Ymv) 0 1 mvA mvE2).oneValue
     BPair.unit := by decide +kernel
 example : (movedAt (mapInv Tns Ymv) 0 1 mvA mvE2).oneValue
@@ -867,21 +883,19 @@ example : (movedAt (mapInv Tns Ymv) 0 1 mvA mvE2).oneValue
   mapInv_equiv Tns Ymv 0 1 mvA mvE2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
     (ground.mem_of_countOf_pos _ Ymv (by decide +kernel)) (by decide +kernel)
-    (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
 
 /-! The dependent group: the moved content's determinant at the
-sum's unit with the read standing, the independence binder's own
-absence from the statement. -/
+sum's unit with the independence read refused, the invariance
+read's survival at `lem:dualread`(i)'s frame, the coevaluation's
+datum the unit family there. -/
 
 example : (elim.detL (elim.gramM
     (blockcount.groupAt Ydep [2, 1]))).oneValue BPair.unit := by
   decide +kernel
+example : ¬ blockcount.indepAll Ydep := by decide +kernel
 example : (movedAt (mapInv Tns Ydep) 0 1 mvA mvE1d).oneValue
-    BPair.unit :=
-  mapInv_equiv Tns Ydep 0 1 mvA mvE1d (by decide +kernel) (by decide +kernel)
-    (by decide +kernel) (by decide +kernel)
-    (ground.mem_of_countOf_pos _ Ydep (by decide +kernel)) (by decide +kernel)
-    (by decide +kernel)
+    BPair.unit := by decide +kernel
 
 /-! The second vector is general: off the list, unsized past the
 content's coordinates, and short of them — the statement binds
@@ -897,7 +911,7 @@ example : (movedAt (mapInv Tns Ymv) 0 1 mvA
     ⟨[2, 1], [BPair.ofNat 5, BPair.ofNat 7, BPair.ofNat 11]⟩
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (ground.mem_of_countOf_pos _ Ymv (by decide +kernel)) (by decide +kernel)
-    (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
 example : (movedAt (mapInv Tns Ymv) 0 1 mvA
     ⟨[2, 1], [BPair.ofNat 1, BPair.unit, BPair.unit,
       BPair.ofNat 3]⟩).oneValue BPair.unit := by decide +kernel
@@ -1045,7 +1059,7 @@ example : (movedAt (mapInv Tns Ymv) 0 1 mvA
       BPair.ofNat 3]⟩
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (ground.mem_of_countOf_pos _ Ymv (by decide +kernel)) (by decide +kernel)
-    (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
 example : (movedAt (mapInv Tns Ymv) 0 1 mvA
     ⟨[2, 1], [BPair.ofNat 1, BPair.ofNat 2]⟩).oneValue
     BPair.unit :=
@@ -1053,19 +1067,19 @@ example : (movedAt (mapInv Tns Ymv) 0 1 mvA
     ⟨[2, 1], [BPair.ofNat 1, BPair.ofNat 2]⟩
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (ground.mem_of_countOf_pos _ Ymv (by decide +kernel)) (by decide +kernel)
-    (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
 example : (movedAt (mapInv Tpd Ymv) 0 1 mvA mvE1).oneValue
     BPair.unit :=
   mapInv_equiv Tpd Ymv 0 1 mvA mvE1 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
     (ground.mem_of_countOf_pos _ Ymv (by decide +kernel)) (by decide +kernel)
-    (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
 example : (movedAt (mapInv Tnb Ymv) 0 1 mvA mvE1).oneValue
     BPair.unit :=
   mapInv_equiv Tnb Ymv 0 1 mvA mvE1 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
     (ground.mem_of_countOf_pos _ Ymv (by decide +kernel)) (by decide +kernel)
-    (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
 
 /-! The matched-contents read: the invariant's family clause
 decided and through the theorem. -/
@@ -1247,10 +1261,10 @@ example : poly.oneValue (mapAt (mapInv (mapMat PCm) Yr) uC).coords
     (elim.vecScale (detAll Yr) (mapAt PCm uC).coords) := by decide +kernel
 example : poly.oneValue (mapAt (mapInv (mapMat PC) Yr) uC).coords
     (elim.vecScale (detAll Yr) (mapAt PC uC).coords) :=
-  mapMat_trip PC Yr uC (by decide +kernel) (by decide +kernel) (by decide +kernel)
+  mapMat_trip PC Yr uC (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 example : poly.oneValue (mapAt (mapInv (mapMat PC) Yr) xOffC).coords
     (elim.vecScale (detAll Yr) (mapAt PC xOffC).coords) :=
-  mapMat_trip PC Yr xOffC (by decide +kernel) (by decide +kernel) (by decide +kernel)
+  mapMat_trip PC Yr xOffC (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 /-! The first slots' span read isolated: the off-span first slot at
 the off-span argument, the conclusion refused. -/
@@ -1402,14 +1416,14 @@ letter and format frames' survivals beside them. -/
 private def xrG : HVec := ground.getAt (⟨[], []⟩ : HVec) Yr 0
 private def xr1G : HVec := ground.getAt (⟨[], []⟩ : HVec) Yr 1
 private def TidG (mu : List Nat) : elim.Mat :=
-  (elim.idList (places.monomialsAt mu).length).map
+  (elim.idMat (places.monomialsAt mu).length).map
     (elim.vecScale (BPair.ofNat 2))
 private def TscG (mu : List Nat) : elim.Mat :=
-  (elim.idList (places.monomialsAt mu).length).map
+  (elim.idMat (places.monomialsAt mu).length).map
     (elim.vecScale (if mu = [2, 1] then BPair.ofNat 2
       else BPair.ofNat 3))
 private def TnullG (mu : List Nat) : elim.Mat :=
-  (elim.idList (places.monomialsAt mu).length).map
+  (elim.idMat (places.monomialsAt mu).length).map
     (elim.vecScale BPair.unit)
 private def ZwG : List HVec :=
   [xrG, ⟨xr1G.content, elim.vecScale (BPair.ofNat 2) xr1G.coords⟩]
@@ -1457,11 +1471,13 @@ example : poly.oneValue
     (elim.vecScale (detAll Yr * detAll Yr)
       (elim.matVec (TidG xrG.content) xrG.coords)) :=
   gridOf_val TidG Yr Yr xrG (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
 example : poly.oneValue
     (mapAt (invFam Yp Yp (gridOf TidG Yp Yp)) vP0).coords
     (elim.vecScale (detAll Yp * detAll Yp)
       (elim.matVec (TidG vP0.content) vP0.coords)) :=
   gridOf_val TidG Yp Yp vP0 (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
 example : ¬ (elim.detL (elim.gramM
     (blockcount.groupAt ZwG [2, 1]))).oneValue
     (elim.detL (elim.gramM (blockcount.groupAt ZwG [1, 2]))) := by
@@ -1471,6 +1487,7 @@ example : poly.oneValue
     (elim.vecScale (detAll ZwG * detAll Yr)
       (elim.matVec (TidG xrG.content) xrG.coords)) :=
   gridOf_val TidG Yr ZwG xrG (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
 example : ¬ poly.oneValue
     (mapAt (invFam Yr ZwG (gridOf TidG Yr ZwG)) xrG).coords
     (elim.vecScale (elim.detL (elim.gramM
@@ -1517,6 +1534,7 @@ example : poly.unitTail
 example : poly.unitTail
     (elim.matVec (dualSys Yr Yr 2) (gridOf TidG Yr Yr)) :=
   gridOf_ker TidG Yr Yr 2 (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 example : poly.unitTail
     (elim.matVec (dualSys Yr ZwG 2) (gridOf TidG Yr ZwG)) := by decide +kernel
@@ -1607,6 +1625,7 @@ example : ¬ poly.unitTail
       (elim.matVec (TidG xrG.content) xrG.coords)) := by decide +kernel
 example : ¬ poly.unitTail (gridOf TidG Yr Yr) :=
   gridOf_off TidG Yr Yr xrG (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
     (by decide +kernel)
 example : poly.unitTail (gridOf TnullG Yr Yr) := by decide +kernel
 

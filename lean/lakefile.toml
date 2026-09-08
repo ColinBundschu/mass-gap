@@ -8,5 +8,8 @@ name = "MassGap"
 [[lean_lib]]
 name = "MassGapChecks"
 
+[lean_lib.leanOptions]
+Elab.async = false
+
 [leanOptions]
 warningAsError = true

@@ -37,9 +37,9 @@ grading land with the alternant layer.  The defining tables enter
 at their key encodings — the paired keys with `B`'s further null
 key — the simple raisings and lowerings the displayed unit moves at
 the form's twist (`B`'s short pair through the null key at the
-cleared weights), each triple display one read (`tripleRead`, the
-weighted transpose joined to the commutator displays at the coroot
-diagonal), and the invariant count the stacked raisings' kernel
+cleared weights), each triple display one read (`memtable.tripleRead` at the
+generating tables, the weighted transpose joined to the commutator
+displays at the coroot diagonal), and the invariant count the stacked raisings' kernel
 over the unit-content monomials (`invCountB` and its partners,
 `prop:wg` the pairing's consumer).  The coordinate tier closes the
 construction at the coroot presentation: `FundData` carries the
@@ -1292,26 +1292,6 @@ the diagonal. -/
 def hDiagD (l i : Nat) : elim.Mat :=
   diagOf (vcountD l) (fun a => kcorootD l a i)
 
-/-- A member triple's display at one read: the pairing carries the
-transpose (`Eᵀ W = W F`), the commutator reads the coroot diagonal
-(`EF - FE = H`), and the diagonal returns the lowering
-(`FH - HF = 2F`), the three entrywise one-value comparisons one
-fold. -/
-def tripleRead (W E F H : elim.Mat) : Prop :=
-  ((if elim.matOneValue (elim.matMul (elim.transposeM E) W)
-        (elim.matMul W F) then true else false)
-    && (if elim.matOneValue
-          (elim.matAdd (elim.matMul E F)
-            (elim.matSwap (elim.matMul F E))) H
-        then true else false)
-    && (if elim.matOneValue
-          (elim.matAdd (elim.matMul F H)
-            (elim.matSwap (elim.matMul H F))) (elim.matAdd F F)
-        then true else false)) = true
-
-instance (W E F H : elim.Mat) : Decidable (tripleRead W E F H) :=
-  inferInstanceAs (Decidable (_ = _))
-
 /-- The unit-content read at a rank: each unprimed key's count in
 the monomial meets its partner's, the null key unconstrained. -/
 def unitContentAt (l : Nat) (m : List Nat) : Bool :=
@@ -1577,7 +1557,7 @@ involution, `s_i s_i μ = μ`). -/
 def reflSquareRead (t : gentable.Table) : Prop :=
   ∀ i, i < t.rank →
     elim.matOneValue (elim.matMul (reflM t i) (reflM t i))
-      (inertia.idMat t.rank)
+      (elim.idMat t.rank)
 
 instance (t : gentable.Table) : Decidable (reflSquareRead t) :=
   inferInstanceAs (Decidable (∀ i, i < t.rank →

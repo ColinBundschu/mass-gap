@@ -354,7 +354,7 @@ private def trivF (e : Nat → Nat → Bool) (d : Nat → Nat)
     dim := fun _ => 1, c2N := fun _ => 1, c2D := 1, c1 := 1,
     below := fun _ => [], cls := fun _ => 0,
     clsAdd := fun x y => x + y, clsFloorN := fun _ => 0,
-    vertList := fun _ => none }
+    pres := fiber.presNone Nat }
 
 /-- The label equality at the counts' own read. -/
 private def eqBeq (x y : Nat) : Bool := x == y

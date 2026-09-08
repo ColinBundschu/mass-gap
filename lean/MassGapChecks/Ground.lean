@@ -1145,3 +1145,123 @@ example : keyAt (fun a b => a == b) (3 * 3) 3 [(1, 1), (3, 9)] = 3 * 3 :=
         cases h2 with
         | head => rfl
         | tail _ h3 => exact nomatch h3)
+
+/-! `def:ground`'s completing of the square at `δ = 5`, `u = 2`,
+`v = 7`: the left member reads `25 + 7 - 20 = 12` and the right
+`(5 - 2)^2 + (7 - 4) = 12`, the theorem route beside the kernel. -/
+example : BPair.oneValue (BPair.ofNat 5 * BPair.ofNat 5 + BPair.ofNat 7
+    + (BPair.ofNat 2 * BPair.ofNat 5 + BPair.ofNat 2 * BPair.ofNat 5).swap)
+    (BPair.ofNat 12) := by decide +kernel
+example : ((BPair.ofNat 5 + (BPair.ofNat 2).swap) * (BPair.ofNat 5 + (BPair.ofNat 2).swap)
+    + (BPair.ofNat 7 + (BPair.ofNat 2 * BPair.ofNat 2).swap)).oneValue
+    (BPair.ofNat 12) := by decide +kernel
+example : (BPair.ofNat 5 * BPair.ofNat 5 + BPair.ofNat 7
+      + (BPair.ofNat 2 * BPair.ofNat 5 + BPair.ofNat 2 * BPair.ofNat 5).swap).oneValue
+    ((BPair.ofNat 5 + (BPair.ofNat 2).swap) * (BPair.ofNat 5 + (BPair.ofNat 2).swap)
+      + (BPair.ofNat 7 + (BPair.ofNat 2 * BPair.ofNat 2).swap)) :=
+  complete_sq (BPair.ofNat 5) (BPair.ofNat 2) (BPair.ofNat 7)
+
+/-! The keyed walkers (`mergeWith`) at their three instances: the
+join at a shared key with the further keys kept, the run product at
+the shared keys alone, and the one-value read with the stated unit
+off the shared keys, refused at an occupied key one list alone
+holds; the keys' order read strict and reflexive at a repeated key;
+the runs gathered in place at keys in order and sorted into runs
+otherwise; and the collection at a cancelling pair read to the
+canonical representative on both of its paths, the sorted join and
+the in-order skip. -/
+
+example : mergeJoin (fun x y => x < y) (fun x y => x == y) Nat.add 4
+    [(1, 10), (3, 30)] [(2, 20), (3, 3)] = [(1, 10), (2, 20), (3, 33)] := by decide +kernel
+example : mergeCross (fun x y => x < y) (fun x y => x == y) Prod.mk 4
+    [(1, [10, 11]), (2, [12])] [(1, [20, 21]), (3, [22])]
+    = [(10, 20), (10, 21), (11, 20), (11, 21)] := by decide +kernel
+example : mergeEqBy (fun x y => x < y) (fun x y => x == y) (fun v => v == 0)
+    (fun v w => v == w) 4 [(1, 5), (2, 0)] [(1, 5), (3, 0)] = true := by decide +kernel
+example : mergeEqBy (fun x y => x < y) (fun x y => x == y) (fun v => v == 0)
+    (fun v w => v == w) 3 [(1, 5), (2, 4)] [(1, 5)] = false := by decide +kernel
+example : keysInOrder (fun x y => x < y) [(1, 0), (2, 0), (2, 0)] = false
+    ∧ keysInOrder (fun x y => x ≤ y) [(1, 0), (2, 0), (2, 0)] = true := by decide +kernel
+example : groupRuns (fun x y => x == y) [(2, 1), (2, 2), (5, 3)] = [(2, [1, 2]), (5, [3])]
+    ∧ sortRuns (fun x y => x < y) (fun x y => x == y) [(2, 1), (2, 2), (5, 3)]
+      = [(2, [1, 2]), (5, [3])]
+    ∧ sortRuns (fun x y => x < y) (fun x y => x == y) [(5, 3), (2, 1), (2, 2)]
+      = [(2, [2, 1]), (5, [3])] := by decide +kernel
+example : collectBy (fun x y => x < y) (fun x y => x == y)
+    [(3, BPair.ofNat 1), (1, BPair.ofNat 2), (3, (BPair.ofNat 1).swap),
+     (2, BPair.ofNat 3 + (BPair.ofNat 3).swap)] = [(1, BPair.ofNat 2)] := by decide +kernel
+example : collectBy (fun x y => x < y) (fun x y => x == y)
+    [(1, BPair.ofNat 2 + BPair.ofNat 2 + (BPair.ofNat 2).swap),
+     (2, BPair.ofNat 3 + (BPair.ofNat 3).swap)] = [(1, BPair.ofNat 2)] := by decide +kernel
+
+/-! The telescope, Bernoulli and Bernstein reads at the pair `2` with its
+partner `-1` summing to one (`lem:corner`'s positive reads): the
+telescope at three keys, the Bernoulli display at four, and the
+Bernstein partition's read at the key one of three, each decided and
+through its theorem; and the power's gap read at the pair `2` at the
+keys two and one, `4 + (3 + 2) ≡ 1 + 8`, decided and through its
+theorem. -/
+example : (bpow (BPair.ofNat 1).swap 3
+    + BPair.ofNat 2 * bsum (bpow (BPair.ofNat 1).swap) (List.range 3)).oneValue
+      (BPair.ofPos .one) := by decide +kernel
+example : (bpow (BPair.ofNat 1).swap 3
+    + BPair.ofNat 2 * bsum (bpow (BPair.ofNat 1).swap) (List.range 3)).oneValue
+      (BPair.ofPos .one) :=
+  bpow_telescope (BPair.ofNat 2) (BPair.ofNat 1).swap (by decide +kernel) 3
+example : (bpow (BPair.ofNat 1).swap 4 + BPair.ofNat 4 * BPair.ofNat 2).oneValue
+    (BPair.ofPos .one + BPair.ofNat 2 * BPair.ofNat 2
+      * bsum (fun i => bsum (bpow (BPair.ofNat 1).swap) (List.range i)) (List.range 4)) := by
+  decide +kernel
+example : (bpow (BPair.ofNat 1).swap 4 + BPair.ofNat 4 * BPair.ofNat 2).oneValue
+    (BPair.ofPos .one + BPair.ofNat 2 * BPair.ofNat 2
+      * bsum (fun i => bsum (bpow (BPair.ofNat 1).swap) (List.range i)) (List.range 4)) :=
+  bpow_bernoulli (BPair.ofNat 2) (BPair.ofNat 1).swap (by decide +kernel) 4
+example : (BPair.ofNat (pasc 3 1) * (bpow (BPair.ofNat 2) 1 * bpow (BPair.ofNat 1).swap 3)
+    + bsum (fun t => if t = 1
+        then BPair.ofNat (pasc 3 1) * (bpow (BPair.ofNat 2) 1 * bpow (BPair.ofNat 1).swap 2)
+          * (BPair.ofNat 2 * bsum (bpow (BPair.ofNat 1).swap) (List.range 1))
+        else BPair.ofNat (pasc 3 t) * (bpow (BPair.ofNat 2) t * bpow (BPair.ofNat 1).swap (3 - t)))
+      (List.range 4)).oneValue (BPair.ofPos .one) :=
+  bernstein_bound (BPair.ofNat 2) (BPair.ofNat 1).swap (by decide +kernel) 1 2
+example : (bpow (BPair.ofNat 2) 2
+    + ((BPair.ofPos .one + (BPair.ofNat 2).swap) * (BPair.ofPos .one + (BPair.ofNat 2).swap)
+        * bsum (bpow (BPair.ofNat 2)) (List.range 2) * bsum (bpow (BPair.ofNat 2)) (List.range 1)
+      + bpow (BPair.ofNat 2) 1)).oneValue (BPair.ofPos .one + bpow (BPair.ofNat 2) 3) := by
+  decide +kernel
+example : (bpow (BPair.ofNat 2) 2
+    + ((BPair.ofPos .one + (BPair.ofNat 2).swap) * (BPair.ofPos .one + (BPair.ofNat 2).swap)
+        * bsum (bpow (BPair.ofNat 2)) (List.range 2) * bsum (bpow (BPair.ofNat 2)) (List.range 1)
+      + bpow (BPair.ofNat 2) 1)).oneValue (BPair.ofPos .one + bpow (BPair.ofNat 2) 3) :=
+  bpow_gap_read (BPair.ofNat 2) 2 1
+
+/-! The chain and near-scale reads (`lem:corner`'s near mass and near
+scale): the ascending quotients, the chain power, the binomial member
+and the power's join at constant and small data through their theorems;
+the chain gap at the constant list, and its seed binder isolated at a
+list seeded at two, the conclusion parting at the vacant pair; the near
+scale read at `A = 4, B = 1, C = 4, z = 2`, and its cap binder isolated at
+`C = 6, A = 5`. -/
+private def cOne : Nat → BPair := fun _ => BPair.ofNat 1
+private def cTwo : Nat → BPair := fun i => if i = 0 then BPair.ofNat 2 else BPair.ofNat 1
+example : ∀ i, i + 1 < 3 → cOne (i + 1) * cOne 2 ≤ cOne i * cOne 3 :=
+  quotients_ascend cOne 3 (by decide +kernel) (by decide +kernel)
+example : bpow (cOne 1) 2 ≤ bpow (cOne 2) 1 :=
+  chain_power cOne 1 (by decide +kernel) (by decide +kernel) (fun _ _ => leB_refl _)
+example : BPair.ofNat (pasc 2 1) * (bpow (BPair.ofNat 1) 1 * bpow (BPair.ofNat 2) 1)
+    ≤ bpow (BPair.ofNat 1 + BPair.ofNat 2) 2 :=
+  binom_member _ _ 1 1 (by decide +kernel) (by decide +kernel)
+example : bpow (BPair.ofNat 2) 1 ≤ BPair.ofPos .one + bpow (BPair.ofNat 2) 2 :=
+  bpow_le_one_add _ 1 1 (by decide +kernel)
+example : cOne 0 ≤ BPair.ofNat 1 * cOne 0 + cOne 1 :=
+  chain_gap cOne 0 0 (BPair.ofNat 1) (BPair.ofNat 1) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (fun _ h => nomatch h) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+example : ¬ (cTwo 0 ≤ BPair.ofPos .one) := by decide +kernel
+example : ¬ (cTwo 0 ≤ BPair.unit * cTwo 0 + cTwo 1) := by decide +kernel
+example : BPair.ofNat 4 ≤ BPair.ofNat 2 * (bpow (BPair.ofNat 2) 1 * BPair.ofNat 1) :=
+  near_scale_read (BPair.ofNat 4) (BPair.ofNat 1) (BPair.ofNat 4) (BPair.ofNat 2) 1 1
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+example : ¬ (BPair.ofNat 6 ≤ bpow (BPair.ofNat 2) 2 * BPair.ofNat 1) := by decide +kernel
+example : ¬ (BPair.ofNat 5 ≤ BPair.ofNat 2 * (bpow (BPair.ofNat 2) 1 * BPair.ofNat 1)) := by
+  decide +kernel
+

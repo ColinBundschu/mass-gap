@@ -565,7 +565,7 @@ private def certE : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
 
 private theorem hshareE : driftShareRead diagE offE diagL offE
     xsE rsE xsL rsL 2 1 nsE dnE 3 1 1 1
-    ((((nsE.take (2 + 1)).drop 1).reverse).map inertia.idMat)
+    ((((nsE.take (2 + 1)).drop 1).reverse).map elim.idMat)
     certE := by decide +kernel
 
 example : driftFold 3 1 1 1 certE = (59, 8) := by decide +kernel
@@ -574,7 +574,7 @@ example : ∃ (k : Nat) (spU spL : Split k),
     capQ (devQ (ground.getAt dM xsL 1) (ground.getAt dM xsE 1)) (idMat 1)
       (driftFold 3 1 1 1 certE).1 (driftFold 3 1 1 1 certE).2 spU spL :=
   driftShare_cap diagE offE diagL offE xsE rsE xsL rsL 2 1 nsE dnE
-    3 1 1 1 ((((nsE.take (2 + 1)).drop 1).reverse).map inertia.idMat)
+    3 1 1 1 ((((nsE.take (2 + 1)).drop 1).reverse).map elim.idMat)
     certE hshareE (by decide +kernel) (by decide +kernel)
 
 /-! The two decimated heads at the observable's depth, the earlier
@@ -687,7 +687,7 @@ certificate list the two windows' shared read parts at its walk,
 whose lists are occupied at the observable's depth. -/
 example : ¬ driftShareRead diagE offE diagL offE xsE rsE xsL rsL
     2 1 nsE dnE 3 1 1 1
-    ((((nsE.take (2 + 1)).drop 1).reverse).map inertia.idMat) [] := by
+    ((((nsE.take (2 + 1)).drop 1).reverse).map elim.idMat) [] := by
   decide +kernel
 example : ¬ (0 < ([] : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
     × Split p.2 × Split p.2 × Split p.1 × Split p.1
@@ -699,7 +699,7 @@ the depth of that slab the walk's lists are vacant and name no
 cap. -/
 example : ¬ driftShareRead diagE offE diagL offE xsE rsE xsL rsL
     2 2 nsE dnE 3 1 1 1
-    ((((nsE.take (2 + 1)).drop 2).reverse).map inertia.idMat)
+    ((((nsE.take (2 + 1)).drop 2).reverse).map elim.idMat)
     certE := by decide +kernel
 example : ¬ (2 < 2) := by decide +kernel
 
@@ -851,7 +851,7 @@ example : (dotN (ground.getAt ([], Pos.one) usK 1).1
   blockWeight_le 1 usK (by decide +kernel)
 
 example : (dotN (headVec usK) (headVec usK)).oneValue
-    (tailSum (nsK.map inertia.idMat) usK).1 :=
+    (tailSum (nsK.map elim.idMat) usK).1 :=
   headVec_weight usK nsK (by decide +kernel)
 
 /-! The tail weights at the chain `tridiag(10, 3, 2; 5, 1)`: the
@@ -912,7 +912,7 @@ private def rV : MatQ := ⟨[[⟨1, 2⟩], [⟨1, 3⟩]], 2⟩
 private def u0V : VecQ := ⟨[⟨2, 1⟩], 1⟩
 private def u1V : VecQ := ⟨[⟨2, 1⟩, ⟨3, 1⟩], 2⟩
 private def nsV : List Nat := [1, 2]
-private def gsV : List Mat := [inertia.idMat 1, inertia.idMat 2]
+private def gsV : List Mat := [elim.idMat 1, elim.idMat 2]
 private def usV : List VecQ := [u0V, u1V]
 private def rsV : List MatQ := [rV]
 private def csV : List ((k : Nat) × Pos × Pos × Split k) :=
@@ -921,7 +921,7 @@ private def csV : List ((k : Nat) × Pos × Pos × Split k) :=
 example : greenprod.gramShape gsV nsV := by decide +kernel
 example : teleUp rsV usV 0 nsV := by decide +kernel
 example : capList gsV rsV csV := by decide +kernel
-example : contractRead (transfer rV) (inertia.idMat 2) (inertia.idMat 1)
+example : contractRead (transfer rV) (elim.idMat 2) (elim.idMat 1)
     2 1 (spOne ⟨12, 1⟩) := by decide +kernel
 example : prodN (csV.take 1) = 4 := by decide +kernel
 example : prodD (csV.take 1) = 1 := by decide +kernel
@@ -1009,9 +1009,9 @@ private def csL : List ((k : Nat) × Pos × Pos × Split k) :=
 
 private theorem hsW : solveRead diagE offE usW wsK nsE := by decide +kernel
 private theorem hsL : solveRead diagL offE usL wsK nsE := by decide +kernel
-private theorem hcapW : capList (nsE.map inertia.idMat) rsE csW := by
+private theorem hcapW : capList (nsE.map elim.idMat) rsE csW := by
   decide +kernel
-private theorem hcapL : capList (nsE.map inertia.idMat) rsL csL := by
+private theorem hcapL : capList (nsE.map elim.idMat) rsL csL := by
   decide +kernel
 
 private theorem hcolW : poly.oneValue
@@ -1296,7 +1296,7 @@ pair `[1 : 3]` sits below the transfer factor's own modulus. -/
 private def csWF : List ((k : Nat) × Pos × Pos × Split k) :=
   [⟨1, 1, 3, spK⟩, ⟨1, 1, 2, spK⟩]
 
-example : ¬ capList (nsE.map inertia.idMat) rsE csWF := by decide +kernel
+example : ¬ capList (nsE.map elim.idMat) rsE csWF := by decide +kernel
 
 /-! The composing bracket at trailing blocks of the slabs' own
 orders: each chain one slab deeper at order two, the window and its
@@ -1331,7 +1331,7 @@ example : tailRead diagLx offEx xsLx rsLx nsX := by decide +kernel
 
 private theorem hshareEx : driftShareRead diagEx offEx diagLx offEx
     xsEx rsEx xsLx rsLx 2 1 nsX dnE 3 1 1 1
-    ((((nsX.take (2 + 1)).drop 1).reverse).map inertia.idMat)
+    ((((nsX.take (2 + 1)).drop 1).reverse).map elim.idMat)
     certE := by decide +kernel
 
 private theorem hdEx : split.diagRead
@@ -1356,9 +1356,9 @@ private theorem hsWx : solveRead diagEx offEx usWx wsKx nsX := by
 private theorem hsLx : solveRead diagLx offEx usLx wsKx nsX := by
   decide +kernel
 private theorem hwKx : sidesUnit wsKx := by decide +kernel
-private theorem hcapWx : capList (nsX.map inertia.idMat) rsEx csWx := by
+private theorem hcapWx : capList (nsX.map elim.idMat) rsEx csWx := by
   decide +kernel
-private theorem hcapLx : capList (nsX.map inertia.idMat) rsLx csLx := by
+private theorem hcapLx : capList (nsX.map elim.idMat) rsLx csLx := by
   decide +kernel
 private theorem hcolWx : poly.oneValue
     (greenprod.vecScale 1 (headVec (List.take 2 usWx)))
@@ -1534,15 +1534,15 @@ varying-order chain: the image gram at the wrong order, the source
 gram at the wrong order, and the vacant factor at a positive
 order. -/
 
-example : ¬ contractRead (transfer rV) (inertia.idMat 1)
-    (inertia.idMat 1) 2 1 (spOne ⟨12, 1⟩) := by decide +kernel
-example : ¬ contractRead (transfer rV) (inertia.idMat 2)
-    (inertia.idMat 2) 2 1 (spOne ⟨12, 1⟩) := by decide +kernel
+example : ¬ contractRead (transfer rV) (elim.idMat 1)
+    (elim.idMat 1) 2 1 (spOne ⟨12, 1⟩) := by decide +kernel
+example : ¬ contractRead (transfer rV) (elim.idMat 2)
+    (elim.idMat 2) 2 1 (spOne ⟨12, 1⟩) := by decide +kernel
 
 private def spNil : Split 0 := ⟨⟨[], rfl⟩, ⟨[], rfl⟩, [], 0, rfl⟩
 
 example : ¬ contractRead (transfer ⟨([] : Mat), 3⟩)
-    (inertia.idMat 2) (inertia.idMat 1) 2 1 (spOne ⟨12, 1⟩) := by
+    (elim.idMat 2) (elim.idMat 1) 2 1 (spOne ⟨12, 1⟩) := by
   decide +kernel
 
 /-! The vacant factor at the vacant order: the certificate reads and
@@ -1561,15 +1561,15 @@ example : (inertia.quadForm ([] : Mat)
 slab's gram priced by the certificate's square against the source's,
 decided beside the theorem route. -/
 
-example : (inertia.quadForm (inertia.idMat 2)
+example : (inertia.quadForm (elim.idMat 2)
       (matVec (matSwap rV.1) u0V.1)).scale (1 * 1)
-    ≤ (inertia.quadForm (inertia.idMat 1) u0V.1).scale
+    ≤ (inertia.quadForm (elim.idMat 1) u0V.1).scale
       (2 * 2 * (rV.2 * rV.2)) := by decide +kernel
-example : (inertia.quadForm (inertia.idMat 2)
+example : (inertia.quadForm (elim.idMat 2)
       (matVec (matSwap rV.1) u0V.1)).scale (1 * 1)
-    ≤ (inertia.quadForm (inertia.idMat 1) u0V.1).scale
+    ≤ (inertia.quadForm (elim.idMat 1) u0V.1).scale
       (2 * 2 * (rV.2 * rV.2)) :=
-  spectator.contract_all (transfer rV) (inertia.idMat 2) (inertia.idMat 1) 2 1
+  spectator.contract_all (transfer rV) (elim.idMat 2) (elim.idMat 1) 2 1
     (spOne ⟨12, 1⟩) (by decide +kernel) u0V.1 rfl
 
 /-! Clause (iv), the rearrangement: the joint read's cofactor
@@ -1648,7 +1648,7 @@ private def tieS (Mm : Mat) : Mat := matAdd (matAdd
     (inertia.matScale ((1 : Pos) * 1)
       (diagO ground.bpairOps (dgS.map BPair.ofNat)))
     (matSwap (inertia.matScale ((1 : Pos) * 1) Mm)))
-    (matSwap (inertia.matScaleB enS (inertia.idMat 2)))
+    (matSwap (inertia.matScaleB enS (elim.idMat 2)))
 
 private def etS : Mat := tieS mS
 
@@ -1734,7 +1734,7 @@ private def gRow (a b : Nat) : List Nat := [gMul a b]
 private def gF : fusion.Data Nat :=
   ⟨gEq, gEqRefl, 0, (fun l => l), gMul, 1,
    gCount, gRow, (fun _ => 1), (fun _ => 1), 1, 1,
-   (fun _ => []), (fun _ => 0), gMul, (fun _ => 0), (fun _ => none)⟩
+   (fun _ => []), (fun _ => 0), gMul, (fun _ => 0), (fiber.presNone _)⟩
 private def gWin : List Nat := [0, 1, 2, 3]
 private def gPsi : List BPair := [BPair.ofNat 1, BPair.ofNat 1,
   BPair.unit, BPair.unit]
@@ -1746,7 +1746,7 @@ private def gEt : Mat := matAdd (matAdd
     (inertia.matScale ((1 : Pos) * 1)
       (diagO ground.bpairOps (gDg.map BPair.ofNat)))
     (matSwap (inertia.matScale ((1 : Pos) * 1) gM)))
-    (matSwap (inertia.matScaleB gEn (inertia.idMat 4)))
+    (matSwap (inertia.matScaleB gEn (elim.idMat 4)))
 
 -- the reach read and the commutation through the theorem route
 example : fpcap.commReach gF 1 2 gWin gPsi := by decide +kernel
@@ -1760,7 +1760,7 @@ example : matOneValue gEt (matAdd (matAdd
     (inertia.matScale ((1 : Pos) * 1)
       (diagO ground.bpairOps (gDg.map BPair.ofNat)))
     (matSwap (inertia.matScale ((1 : Pos) * 1) gM)))
-    (matSwap (inertia.matScaleB gEn (inertia.idMat 4)))) := by
+    (matSwap (inertia.matScaleB gEn (elim.idMat 4)))) := by
   decide +kernel
 example : poly.unitTail (matVec gEt gPsi) := by decide +kernel
 
@@ -1889,22 +1889,22 @@ private def tfA1 : Mat :=
 
 private def spCA0 : Split 1 :=
   mkSplit 1 (siteDatum
-    (matScale (1 * 1 * ((1 : Pos) * 1)) (inertia.idMat 1))
+    (matScale (1 * 1 * ((1 : Pos) * 1)) (elim.idMat 1))
     (matScale ((1 : Pos) * 1)
-      (matMul (transposeM tfA0) (matMul (inertia.idMat 1) tfA0))))
+      (matMul (transposeM tfA0) (matMul (elim.idMat 1) tfA0))))
 private def spCA1 : Split 2 :=
   mkSplit 2 (siteDatum
-    (matScale (1 * 1 * ((1 : Pos) * 1)) (inertia.idMat 2))
+    (matScale (1 * 1 * ((1 : Pos) * 1)) (elim.idMat 2))
     (matScale ((1 : Pos) * 1)
-      (matMul (transposeM tfA1) (matMul (inertia.idMat 1) tfA1))))
+      (matMul (transposeM tfA1) (matMul (elim.idMat 1) tfA1))))
 private def capsA : List ((k : Nat) × Pos × Pos × Split k) :=
   [⟨1, 1, 1, spCA0⟩, ⟨2, 1, 1, spCA1⟩]
 
 private def spAA : Split 1 :=
-  mkSplit 1 (siteDatum (matScale 1 (inertia.idMat 1))
+  mkSplit 1 (siteDatum (matScale 1 (elim.idMat 1))
     (matScale 1 AobsA))
 private def spAA' : Split 1 :=
-  mkSplit 1 (matAdd (matScale 1 (inertia.idMat 1))
+  mkSplit 1 (matAdd (matScale 1 (elim.idMat 1))
     (matScale 1 AobsA))
 
 /-! Fixture `A`'s frame binders, each named once. -/
@@ -1916,7 +1916,7 @@ private theorem htieA : matOneValue etA2 (matAdd (matAdd
     (inertia.matScale ((1 : Pos) * 1)
       (diagO ground.bpairOps (dgA.map BPair.ofNat)))
     (matSwap (inertia.matScale ((1 : Pos) * 1) mA)))
-    (matSwap (inertia.matScaleB BPair.unit (inertia.idMat 4)))) := by
+    (matSwap (inertia.matScaleB BPair.unit (elim.idMat 4)))) := by
   decide +kernel
 private theorem hcommA : poly.oneValue
     (matVec mA (matVec cA colA))
@@ -1932,12 +1932,12 @@ private theorem hjoinA : poly.oneValue
     (greenprod.vecScale 1
       (phiA)) := by
   decide +kernel
-private theorem hcapA : capListDown (nsA.map inertia.idMat) csheadA
+private theorem hcapA : capListDown (nsA.map elim.idMat) csheadA
     capsA := by decide +kernel
-private theorem hgA : gramShape (nsA.map inertia.idMat) nsA := by
+private theorem hgA : gramShape (nsA.map elim.idMat) nsA := by
   decide +kernel
 private theorem hAA : capAt (inertia.matScale 1 AobsA)
-    (inertia.matScale 1 (inertia.idMat 1)) spAA spAA' := by
+    (inertia.matScale 1 (elim.idMat 1)) spAA spAA' := by
   decide +kernel
 private theorem hAsymA : matOneValue (transposeM AobsA) AobsA := by
   decide +kernel
@@ -1957,36 +1957,36 @@ private theorem hteleA : teleDown csheadA usA 2 nsA :=
 -- the ride's price at `m = j = 1`, the source slab at key two:
 -- the head block's weight `1` against the anchor's `10`
 example :
-    (tailSum (List.take 1 (nsA.map inertia.idMat))
+    (tailSum (List.take 1 (nsA.map elim.idMat))
         (List.take 1 usA)).1.scale
         ((tailFold (List.take 1 capsA).reverse).2
           * (prodD (List.take 1 (List.drop 1 capsA))
             * ((ground.getAt ([], Pos.one) usA 2).2
               * (ground.getAt ([], Pos.one) usA 2).2)))
       ≤ ((inertia.quadForm
-            (ground.getAt [] (nsA.map inertia.idMat) 2)
+            (ground.getAt [] (nsA.map elim.idMat) 2)
             (ground.getAt ([], Pos.one) usA 2).1
           * (tailFold (List.take 1 capsA).reverse).1).scale
         ((prodN (List.take 1 (List.drop 1 capsA)))
-          * (tailSum (List.take 1 (nsA.map inertia.idMat))
+          * (tailSum (List.take 1 (nsA.map elim.idMat))
               (List.take 1 usA)).2)) := by
   decide +kernel
 
 example :
-    (tailSum (List.take 1 (nsA.map inertia.idMat))
+    (tailSum (List.take 1 (nsA.map elim.idMat))
         (List.take 1 usA)).1.scale
         ((tailFold (List.take 1 capsA).reverse).2
           * (prodD (List.take 1 (List.drop 1 capsA))
             * ((ground.getAt ([], Pos.one) usA 2).2
               * (ground.getAt ([], Pos.one) usA 2).2)))
       ≤ ((inertia.quadForm
-            (ground.getAt [] (nsA.map inertia.idMat) 2)
+            (ground.getAt [] (nsA.map elim.idMat) 2)
             (ground.getAt ([], Pos.one) usA 2).1
           * (tailFold (List.take 1 capsA).reverse).1).scale
         ((prodN (List.take 1 (List.drop 1 capsA)))
-          * (tailSum (List.take 1 (nsA.map inertia.idMat))
+          * (tailSum (List.take 1 (nsA.map elim.idMat))
               (List.take 1 usA)).2)) :=
-  ride_price (nsA.map inertia.idMat) csheadA capsA usA nsA 1 1 2 hgA
+  ride_price (nsA.map elim.idMat) csheadA capsA usA nsA 1 1 2 hgA
     rfl hcapA hteleA
 
 -- the source's weight: the off-line residual `12` against `16 · 8`
@@ -2177,22 +2177,22 @@ private def tfB1 : Mat :=
 
 private def spCB0 : Split 1 :=
   mkSplit 1 (siteDatum
-    (matScale (1 * 1 * ((3 : Pos) * 3)) (inertia.idMat 1))
+    (matScale (1 * 1 * ((3 : Pos) * 3)) (elim.idMat 1))
     (matScale ((3 : Pos) * 3)
-      (matMul (transposeM tfB0) (matMul (inertia.idMat 1) tfB0))))
+      (matMul (transposeM tfB0) (matMul (elim.idMat 1) tfB0))))
 private def spCB1 : Split 2 :=
   mkSplit 2 (siteDatum
-    (matScale (3 * 3 * ((4 : Pos) * 4)) (inertia.idMat 2))
+    (matScale (3 * 3 * ((4 : Pos) * 4)) (elim.idMat 2))
     (matScale ((4 : Pos) * 4)
-      (matMul (transposeM tfB1) (matMul (inertia.idMat 1) tfB1))))
+      (matMul (transposeM tfB1) (matMul (elim.idMat 1) tfB1))))
 private def capsB : List ((k : Nat) × Pos × Pos × Split k) :=
   [⟨1, 1, 3, spCB0⟩, ⟨2, 3, 4, spCB1⟩]
 
 private def spAB : Split 1 :=
-  mkSplit 1 (siteDatum (matScale 1 (inertia.idMat 1))
+  mkSplit 1 (siteDatum (matScale 1 (elim.idMat 1))
     (matScale 1 AobsB))
 private def spAB' : Split 1 :=
-  mkSplit 1 (matAdd (matScale 1 (inertia.idMat 1))
+  mkSplit 1 (matAdd (matScale 1 (elim.idMat 1))
     (matScale 1 AobsB))
 
 private theorem hdB : split.diagRead etB2 (idMat 4) tB twB lB := by
@@ -2202,7 +2202,7 @@ private theorem htieB : matOneValue etB2 (matAdd (matAdd
     (inertia.matScale ((1 : Pos) * 1)
       (diagO ground.bpairOps (dgB.map BPair.ofNat)))
     (matSwap (inertia.matScale ((1 : Pos) * 1) mB)))
-    (matSwap (inertia.matScaleB BPair.unit (inertia.idMat 4)))) := by
+    (matSwap (inertia.matScaleB BPair.unit (elim.idMat 4)))) := by
   decide +kernel
 private theorem hcommB : poly.oneValue
     (matVec mB (matVec cB colB))
@@ -2218,12 +2218,12 @@ private theorem hjoinB : poly.oneValue
     (greenprod.vecScale 1
       (phiB)) := by
   decide +kernel
-private theorem hcapB : capListDown (nsB.map inertia.idMat) csheadB
+private theorem hcapB : capListDown (nsB.map elim.idMat) csheadB
     capsB := by decide +kernel
-private theorem hgB : gramShape (nsB.map inertia.idMat) nsB := by
+private theorem hgB : gramShape (nsB.map elim.idMat) nsB := by
   decide +kernel
 private theorem hAB : capAt (inertia.matScale 1 AobsB)
-    (inertia.matScale 1 (inertia.idMat 1)) spAB spAB' := by
+    (inertia.matScale 1 (elim.idMat 1)) spAB spAB' := by
   decide +kernel
 private theorem hAsymB : matOneValue (transposeM AobsB) AobsB := by
   decide +kernel
@@ -2240,36 +2240,36 @@ private theorem hteleB : teleDown csheadB usB 2 nsB :=
 
 -- the ride's price: the head block's weight `9216` against `106560`
 example :
-    (tailSum (List.take 1 (nsB.map inertia.idMat))
+    (tailSum (List.take 1 (nsB.map elim.idMat))
         (List.take 1 usB)).1.scale
         ((tailFold (List.take 1 capsB).reverse).2
           * (prodD (List.take 1 (List.drop 1 capsB))
             * ((ground.getAt ([], Pos.one) usB 2).2
               * (ground.getAt ([], Pos.one) usB 2).2)))
       ≤ ((inertia.quadForm
-            (ground.getAt [] (nsB.map inertia.idMat) 2)
+            (ground.getAt [] (nsB.map elim.idMat) 2)
             (ground.getAt ([], Pos.one) usB 2).1
           * (tailFold (List.take 1 capsB).reverse).1).scale
         ((prodN (List.take 1 (List.drop 1 capsB)))
-          * (tailSum (List.take 1 (nsB.map inertia.idMat))
+          * (tailSum (List.take 1 (nsB.map elim.idMat))
               (List.take 1 usB)).2)) := by
   decide +kernel
 
 example :
-    (tailSum (List.take 1 (nsB.map inertia.idMat))
+    (tailSum (List.take 1 (nsB.map elim.idMat))
         (List.take 1 usB)).1.scale
         ((tailFold (List.take 1 capsB).reverse).2
           * (prodD (List.take 1 (List.drop 1 capsB))
             * ((ground.getAt ([], Pos.one) usB 2).2
               * (ground.getAt ([], Pos.one) usB 2).2)))
       ≤ ((inertia.quadForm
-            (ground.getAt [] (nsB.map inertia.idMat) 2)
+            (ground.getAt [] (nsB.map elim.idMat) 2)
             (ground.getAt ([], Pos.one) usB 2).1
           * (tailFold (List.take 1 capsB).reverse).1).scale
         ((prodN (List.take 1 (List.drop 1 capsB)))
-          * (tailSum (List.take 1 (nsB.map inertia.idMat))
+          * (tailSum (List.take 1 (nsB.map elim.idMat))
               (List.take 1 usB)).2)) :=
-  ride_price (nsB.map inertia.idMat) csheadB capsB usB nsB 1 1 2 hgB
+  ride_price (nsB.map elim.idMat) csheadB capsB usB nsB 1 1 2 hgB
     rfl hcapB hteleB
 
 -- the source's weight: `12480 · 4 = 49920` against `900 · 80 = 72000`
@@ -2410,28 +2410,28 @@ factor's own modulus, so the step's site datum carries an occupied
 negative key and the price's display parts at `16 ≤ 10`. -/
 private def spCAF : Split 2 :=
   mkSplit 2 (siteDatum
-    (matScale (1 * 1 * ((1 : Pos) * 1)) (inertia.idMat 2))
+    (matScale (1 * 1 * ((1 : Pos) * 1)) (elim.idMat 2))
     (matScale ((4 : Pos) * 4)
-      (matMul (transposeM tfA1) (matMul (inertia.idMat 1) tfA1))))
+      (matMul (transposeM tfA1) (matMul (elim.idMat 1) tfA1))))
 private def capsAF : List ((k : Nat) × Pos × Pos × Split k) :=
   [⟨1, 1, 1, spCA0⟩, ⟨2, 1, 4, spCAF⟩]
 
-example : ¬ capListDown (nsA.map inertia.idMat) csheadA capsAF := by
+example : ¬ capListDown (nsA.map elim.idMat) csheadA capsAF := by
   decide +kernel
 
 example :
-    ¬ ((tailSum (List.take 1 (nsA.map inertia.idMat))
+    ¬ ((tailSum (List.take 1 (nsA.map elim.idMat))
         (List.take 1 usA)).1.scale
         ((tailFold (List.take 1 capsAF).reverse).2
           * (prodD (List.take 1 (List.drop 1 capsAF))
             * ((ground.getAt ([], Pos.one) usA 2).2
               * (ground.getAt ([], Pos.one) usA 2).2)))
       ≤ ((inertia.quadForm
-            (ground.getAt [] (nsA.map inertia.idMat) 2)
+            (ground.getAt [] (nsA.map elim.idMat) 2)
             (ground.getAt ([], Pos.one) usA 2).1
           * (tailFold (List.take 1 capsAF).reverse).1).scale
         ((prodN (List.take 1 (List.drop 1 capsAF)))
-          * (tailSum (List.take 1 (nsA.map inertia.idMat))
+          * (tailSum (List.take 1 (nsA.map elim.idMat))
               (List.take 1 usA)).2))) := by
   decide +kernel
 
@@ -2462,14 +2462,14 @@ observable rescaled to `200` sits above its own unit cap, the cap
 refuses at the upper split's occupied negative key and the cluster's
 display parts at `1600 ≤ 528`. -/
 private def spFA : Split 1 :=
-  mkSplit 1 (siteDatum (matScale 1 (inertia.idMat 1))
+  mkSplit 1 (siteDatum (matScale 1 (elim.idMat 1))
     (matScale 200 AobsA))
 private def spFA' : Split 1 :=
-  mkSplit 1 (matAdd (matScale 1 (inertia.idMat 1))
+  mkSplit 1 (matAdd (matScale 1 (elim.idMat 1))
     (matScale 200 AobsA))
 
 example : ¬ capAt (inertia.matScale 200 AobsA)
-    (inertia.matScale 1 (inertia.idMat 1)) spFA spFA' := by
+    (inertia.matScale 1 (elim.idMat 1)) spFA spFA' := by
   decide +kernel
 
 example :
@@ -3072,7 +3072,7 @@ private def shearT : Mat :=
 private def yTwo : List BPair := [BPair.ofNat 2, BPair.ofNat 1]
 
 example : ¬ matOneValue (matMul (transposeM shearT) shearT)
-    (inertia.idMat 2) := by decide +kernel
+    (elim.idMat 2) := by decide +kernel
 example : ¬ (dotN (transSum shearT 2 yTwo 2)
       (transSum shearT 2 yTwo 2)).oneValue
     (collectFold (dotN yTwo yTwo)

@@ -21,13 +21,9 @@ at the literal, and one certifying equation per member reading the
 literal as the descent's own output, the `E_8` pair the module's
 heavy pins at their own heartbeat allowance, the 120-member
 family's descent at the shared Gram.
-The defining-table batteries read the triple displays at every
-simple key of `B_2`, `C_3` and `D_4` — `B` at its cleared
-pairing, `C` and `D` at the identity weight — with two committed
-refusals at the `B` short move (the forged raising reading the
-doubled entry at one, and the plain identity in place of the
-cleared pairing) and the invariant counts at the dual pair's
-line.  Budget: the pair-partition counts sit beyond the kernel
+The defining-table batteries read the invariant counts at the
+dual pair's line; the triple displays read at the generating
+tables in `MassGapChecks.Memtable`.  Budget: the pair-partition counts sit beyond the kernel
 allowance — `invCountB 2 2` at 190 s user by kernel decide,
 `invCountC 3 2` refusing the 4000000-heartbeat allowance at
 318 s user, `invCountD 4 2` beyond both — each value `3` at the
@@ -282,47 +278,6 @@ example : thetaRowRead tableF4 1 adjF4 0 := by decide +kernel
 example : thetaRowRead tableE6 3 adjE6 1 := by decide +kernel
 example : thetaRowRead tableE7 2 adjE7 0 := by decide +kernel
 example : thetaRowRead tableE8 1 adjE8 7 := by decide +kernel
-
-/-! The defining tables: the triple reads at every simple key of
-`B_2`, `C_3` and `D_4`, `B` at its cleared pairing and `C` and `D`
-at the identity weight. -/
-
-example : tripleRead (wB 2) (raiseB 2 0) (lowerB 2 0) (hDiagB 2 0) := by
-  decide +kernel
-example : tripleRead (wB 2) (raiseB 2 1) (lowerB 2 1) (hDiagB 2 1) := by
-  decide +kernel
-
-example : tripleRead (inertia.idMat (vcountC 3)) (raiseC 3 0)
-    (lowerC 3 0) (hDiagC 3 0) := by decide +kernel
-example : tripleRead (inertia.idMat (vcountC 3)) (raiseC 3 1)
-    (lowerC 3 1) (hDiagC 3 1) := by decide +kernel
-example : tripleRead (inertia.idMat (vcountC 3)) (raiseC 3 2)
-    (lowerC 3 2) (hDiagC 3 2) := by decide +kernel
-
-example : tripleRead (inertia.idMat (vcountD 4)) (raiseD 4 0)
-    (lowerD 4 0) (hDiagD 4 0) := by decide +kernel
-example : tripleRead (inertia.idMat (vcountD 4)) (raiseD 4 1)
-    (lowerD 4 1) (hDiagD 4 1) := by decide +kernel
-example : tripleRead (inertia.idMat (vcountD 4)) (raiseD 4 2)
-    (lowerD 4 2) (hDiagD 4 2) := by decide +kernel
-example : tripleRead (inertia.idMat (vcountD 4)) (raiseD 4 3)
-    (lowerD 4 3) (hDiagD 4 3) := by decide +kernel
-
-/-! The committed refusals at the `B` short move: the forged
-raising with the doubled entry read at one, and the plain identity
-in place of the cleared pairing. -/
-
-private def forgedShortB : elim.Mat :=
-  ground.matOf 5 5 (fun r c =>
-    if r == 1 && c == 4 then BPair.ofNat 1
-    else if r == 4 && c == 3 then BPair.ofNat 1
-    else BPair.unit)
-
-example : ¬ tripleRead (wB 2) forgedShortB (lowerB 2 1)
-    (hDiagB 2 1) := by decide +kernel
-
-example : ¬ tripleRead (inertia.idMat (vcountB 2)) (raiseB 2 1)
-    (lowerB 2 1) (hDiagB 2 1) := by decide +kernel
 
 /-! The invariant counts at the dual pair's line, one per
 series. -/

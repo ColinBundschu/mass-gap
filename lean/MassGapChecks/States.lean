@@ -91,3 +91,41 @@ example : permAt (swapW 2 3 1) (2 + (3 + 1)) := by decide +kernel
 example : permAt (swapW 2 3 1) (2 + (3 + 1)) := permAt_swapW 2 3 1
 example : ¬ permAt (swapW 2 3 1) 5 := by decide +kernel
 example : permAt (swapW 1 2 2) (1 + (2 + 2)) := permAt_swapW 1 2 2
+
+/-! The wiring surgery of the generator insertions (`con:states`'
+evaluation contraction and `prop:lap`'s joint insertion).  A chain
+`[3, 4]` placed at factor `1`'s row in the two-cycle `[1, 0]` padded
+to five positions reads `[1, 4, 2, 0, 3]`, the cycle `M_0 c_3 c_4
+M_1`, and after factor `1`'s column reads `[4, 0, 2, 1, 3]`, the
+cycle `M_1 c_3 c_4 M_0`; the last position of `[2, 0, 1]` contracts
+to the two-cycle `[1, 0]` at no loop, and the self-wired last
+position of `[1, 0, 2]` withdraws at one loop.  A letter wired to
+itself withdraws: at `[3, 0, 2, 1]`, the first letter self-wired and
+the second in the two-cycle, the transposition member reads
+`[1, 0]` at no loop and the identity member `[1, 0]` at one loop,
+the count against the count's cofactor.  The evaluation contraction
+at the two-cycle `tr(U U†)` withdraws both factors at one loop, at
+`tr(U0 U1 U1† U0†)` the outer pair withdraws to the inner two-cycle,
+and every factor contracts to the vacant list at one loop; a
+residual `(U1, U1†)` at the two-cycle keys the site's positions
+`[1, 2]` with the wiring in rank coordinates, the relabeling of
+`(U1†, U0)` reads `[2, 0]`, and the unit at the word `U0` joins the
+two-cycle at the word's own loop, `[1, 0, 3, 2]` at `[1 : d_f]`. -/
+
+example : chainAtRow 1 [3, 4] (padW 3 [1, 0]) = [1, 4, 2, 0, 3] := by decide +kernel
+example : chainAtCol 1 [3, 4] (padW 3 [1, 0]) = [4, 0, 2, 1, 3] := by decide +kernel
+example : contractLast [2, 0, 1] = ([1, 0], 0) := by decide +kernel
+example : contractLast [1, 0, 2] = ([1, 0], 1) := by decide +kernel
+example : fierzT [3, 0, 2, 1] = ([1, 0], 0) := by decide +kernel
+example : fierzI [3, 0, 2, 1] = ([1, 0], 1) := by decide +kernel
+example : evalStep [(0, false), (0, true)] [1, 0] = ([], [], 1) := by decide +kernel
+example : evalStep [(0, false), (1, false), (1, true), (0, true)] [3, 0, 1, 2]
+    = ([(1, false), (1, true)], [1, 0], 0) := by decide +kernel
+example : padState [(0, false), (0, true)] [(0, false)] [([1, 0], poly.pOne)]
+    = [([1, 0, 3, 2], poly.pMul poly.pOne invDfP)] := by decide +kernel
+example : contractAll [(0, false), (1, false), (1, true), (0, true)] [3, 0, 1, 2]
+    = ([], [], 1) := by decide +kernel
+example : residualKey [(0, false), (1, false), (1, true), (0, true)]
+    [(1, false), (1, true)] [1, 0] = ([1, 2], [1, 0]) := by decide +kernel
+example : relabelTo [(0, false), (1, false), (1, true), (0, true)]
+    [(1, true), (0, false)] = [2, 0] := by decide +kernel

@@ -25,7 +25,9 @@ the two sectors' block join — so the joined level's count is the
 vacuum block's alone, the clear block's own at the sum's unit.  Each
 stored level names its representative across `lem:dualtrunc`'s seam
 identity (`certconstruct.countAtPair_scale`), the count blind to the
-ray's positive factor.
+ray's positive factor: `vacFlat_scale` carries the window itself onto
+the pencil and both levels rescaled by one positive factor, the two
+counts at their rescaled splits and the level order kept.
 
 The comparisons read
 `spec(H) ⊂ {ε₀} ∪ [ε₀ + E₀κ, ∞)` on the window, the cut at that
@@ -213,5 +215,26 @@ theorem cutTie_of_edge {n : Nat} (Et : Mat) (T Tw : SqMat n)
     speccut.spec_to_cut Et T Tw l E0 p q hd hspec sp hsp⟩
   rw [show Et.length = n from sqAt_len hd.1]
   exact split.diag_chiRead Et (idMat n) T Tw l hd
+
+/-- The flat window at a positive rescaling of the pencil and both
+levels (`lem:dualtrunc`'s seam identity at the window): the two
+counts scale with their splits and the level order keeps
+(`certconstruct.countAtPair_scale`). -/
+theorem vacFlat_scale {o : Nat} (c : Pos) (H G : Mat) (hx hy tx ty : Pos)
+    (g : Nat) (spa spt spa' spt' : Split o)
+    (h : vacFlat H G hx hy tx ty g spa spt)
+    (ha' : splitRead (siteDatum (matAdd (matScale c H) (matScale (c * hy) G))
+      (matScale (c * hx) G)) spa')
+    (ht' : splitRead (siteDatum (matAdd (matScale c H) (matScale (c * ty) G))
+      (matScale (c * tx) G)) spt') :
+    vacFlat (matScale c H) G (c * hx) (c * hy) (c * tx) (c * ty) g spa' spt' :=
+  ⟨countAtPair_scale c H G hx hy g spa spa' h.1 ha',
+   countAtPair_scale c H G tx ty g spt spt' h.2.1 ht',
+   h.2.2.1, by
+    have hlt : (hx + ty) * c < (tx + hy) * c := ground.mul_lt_mul_right c h.2.2.2
+    rw [ground.right_distrib, ground.right_distrib, ground.mul_comm hx c,
+      ground.mul_comm ty c, ground.mul_comm tx c, ground.mul_comm hy c] at hlt
+    exact hlt⟩
+
 
 end flatstep

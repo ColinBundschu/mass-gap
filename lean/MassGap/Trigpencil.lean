@@ -37,7 +37,15 @@ polynomial-pair tier its symbolic read.  The one-variable
 `symbolRead` reads the display at a one-variable pencil, and the
 two meet at the symbol's boundary coefficients — the constant
 reads the chord pencil's own determinant at the even order and
-the leading reads the gram's, the batteries' pins.  The \emph{bounded degree per grade} is the
+the leading reads the gram's, the batteries' pins.  The symbol
+against the gram's determinant (`symbolOf`) is one value at every
+stated list of the fiber (`symbolOf_congr`): at a unit congruence of
+the level pair the congruent pencil's determinant against its gram's
+determinant reads the pencil's own at the cross-multiplied read, the
+congruence's determinant's square clearing against the grams'
+determinants (`split.pminor_congrZ`, `elim.detL_mul`); its descent
+read `symbolD` computes both members at the pivot walks, one value
+with the symbol at a square level pair (`symbolD_eq`).  The \emph{bounded degree per grade} is the
 per-grade degree bound on the pencil's rows (`gradeBoundRead`, one
 bound per grade where `lem:cellcount`'s `pShapeAt` carries one
 clearing power for the whole pencil).  The \emph{deck symmetry} is
@@ -207,6 +215,70 @@ instance (S : split.PMat) (d : Nat) : Decidable (symbolRead S d) :=
     decidable_of_iff _ (symbolDispP_congr (elim.pdetD_eq S hsq) d)
   | isFalse _ =>
     inferInstanceAs (Decidable (symbolDispP (split.pminor S) d))
+
+/-- The fiber symbol at a level pencil: the site datum's determinant
+against the gram's determinant, the pair `thm:trigpencil` reads. -/
+def symbolOf (H G : Mat) : poly.Poly × BPair := (split.charPoly H G, detL G)
+
+/-- The fiber symbol at the descent's reads: the site datum's
+determinant at the pivot walk against the gram's descent
+determinant, `symbolOf`'s value at a square level pair
+(`symbolD_eq`). -/
+def symbolD (H G : Mat) : poly.Poly × BPair :=
+  (split.charPolyD H G, detD G)
+
+/-- The walks read the folds at a square level pair, member by
+member: `def:elim`'s pivot descent at the site datum and at the
+gram. -/
+theorem symbolD_eq (H G : Mat)
+    (hZ : rowsLen (split.zMat H G).length (split.zMat H G))
+    (hG : rowsLen G.length G) :
+    poly.oneValue (symbolD H G).1 (symbolOf H G).1
+      ∧ (symbolD H G).2.oneValue (symbolOf H G).2 :=
+  ⟨split.charPolyD_eq H G hZ, detD_eq G hG⟩
+
+/-- The symbol is one value at every stated list of the fiber: at a
+unit congruence of the level pair the congruent pencil's determinant
+against its gram's determinant reads the pencil's own at the
+cross-multiplied read, the congruence's determinant's square
+clearing against the grams' determinants at the product read
+(`split.pminor_congrZ`; `elim.detL_mul`, `lem:inertia`). -/
+theorem symbolOf_congr {o : Nat} (H G : Mat) (T : SqMat o)
+    (hH : sqAt H o) (hG : sqAt G o) :
+    poly.oneValue
+      (poly.mul [(symbolOf H G).2]
+        (split.pminor (split.congrZ T.val (split.zMat H G))))
+      (poly.mul [detL (matMul (transposeM T.val) (matMul G T.val))]
+        (symbolOf H G).1) := by
+  have hTl : T.val.length = o := SqMat.rows T
+  have hTr : rowsLen o T.val := rowsLen_of_sqAt T.shape
+  have hGl : G.length = o := sqAt_len hG
+  have hGT : sqAt (matMul G T.val) o :=
+    sqAt_of ((length_matMul G T.val).trans hGl)
+      (rowsLen_matMul_of G T.val (fun h => by rw [hTl]; rw [hGl] at h; exact h) hTr)
+  have hTt : sqAt (transposeM T.val) o :=
+    sqAt_of (transposeLen T.val hTr hTl) (rowsLen_cast hTl (rowsLen_transposeM T.val))
+  have hd1 := detL_mul (transposeM T.val) (matMul G T.val) o hTt hGT
+  have hd2 := detL_mul G T.val o hG T.shape
+  have hdt : detL (transposeM T.val) = detL T.val :=
+    detL_transpose T.val (by rw [hTl]; exact hTr)
+  have hdet : (detL (matMul (transposeM T.val) (matMul G T.val))).oneValue
+      (detL G * (detL T.val * detL T.val)) := by
+    refine BPair.oneValue_trans hd1 ?_
+    rw [hdt]
+    refine BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _) hd2) ?_
+    rw [← BPair.mul_assoc, BPair.mul_comm (detL T.val) (detL G), BPair.mul_assoc]
+    exact BPair.oneValue_refl _
+  refine poly.oneValue_trans (poly.mul_congr [detL G] (split.pminor_congrZ H G T hH hG)) ?_
+  refine poly.oneValue_trans (poly.oneValue_symm
+    (poly.mul_assoc [detL G] [detL T.val * detL T.val] (split.charPoly H G))) ?_
+  refine poly.mul_congr_left ?_ (split.charPoly H G)
+  refine poly.oneValue_trans (poly.mul_single [detL G] (detL T.val * detL T.val)) ?_
+  show poly.oneValue [detL T.val * detL T.val * detL G]
+    [detL (matMul (transposeM T.val) (matMul G T.val))]
+  refine ⟨?_, trivial⟩
+  rw [BPair.mul_comm]
+  exact BPair.oneValue_symm hdet
 
 /-- The bounded-degree-per-grade read: the pencil's row at a grade
 carries entries of degree within that grade's own bound — each

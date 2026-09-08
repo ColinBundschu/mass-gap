@@ -1278,12 +1278,8 @@ reads collect. -/
 private theorem fourCollect (A B C D : BPair) :
     (((A + C) + (D + B)) + ((A.swap + C) + (D + B.swap))).oneValue
       ((C + D) + (C + D)) := by
-  have hAA : (A + A.swap).oneValue BPair.unit := by
-    rw [BPair.add_comm A A.swap]
-    exact BPair.swap_add_null (BPair.oneValue_refl A)
-  have hBB : (B + B.swap).oneValue BPair.unit := by
-    rw [BPair.add_comm B B.swap]
-    exact BPair.swap_add_null (BPair.oneValue_refl B)
+  have hAA : (A + A.swap).oneValue BPair.unit := BPair.add_swap_null A
+  have hBB : (B + B.swap).oneValue BPair.unit := BPair.add_swap_null B
   rw [BPair.add_add_comm (A + C) (D + B) (A.swap + C) (D + B.swap),
     BPair.add_add_comm A C A.swap C,
     BPair.add_add_comm D B D B.swap]
@@ -1302,12 +1298,8 @@ collect. -/
 private theorem fourCollectG (A B C D : BPair) :
     (((A + C) + (D + B)) + ((A + C.swap) + (D.swap + B))).oneValue
       ((A + B) + (A + B)) := by
-  have hCC : (C + C.swap).oneValue BPair.unit := by
-    rw [BPair.add_comm C C.swap]
-    exact BPair.swap_add_null (BPair.oneValue_refl C)
-  have hDD : (D + D.swap).oneValue BPair.unit := by
-    rw [BPair.add_comm D D.swap]
-    exact BPair.swap_add_null (BPair.oneValue_refl D)
+  have hCC : (C + C.swap).oneValue BPair.unit := BPair.add_swap_null C
+  have hDD : (D + D.swap).oneValue BPair.unit := BPair.add_swap_null D
   rw [BPair.add_add_comm (A + C) (D + B) (A + C.swap) (D.swap + B),
     BPair.add_add_comm A C A C.swap,
     BPair.add_add_comm D B D.swap B]

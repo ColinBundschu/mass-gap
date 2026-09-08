@@ -1,5 +1,6 @@
 import MassGap.Groundreads
 import MassGap.Carrier
+import MassGap.Pencil
 /-!
 `lem:fourpoint` — the four-point floor.  The side: at the pair fold
 `S := Σ_k w_k [1 : 6 + ĉ₂(k)]` over the adjoint square's channel
@@ -58,7 +59,7 @@ every far datum (`farPair`, `jetWindow`).
 The tail (`lem:fourpoint`'s last paragraph), at `thm:groundreads`(iii)'s
 own level — matrices and vectors over the balance pairs at the unit
 gram, the ray `[1 : τ²]` at `τ = [p : q]` cleared: the pencil's site
-datum `q²E − p²M` (`rayH`), the jet `q⁴ψ̂` (`jetVec`) and the residual
+datum `q²E − p²M` (`pencil.rayH` at the squared weights), the jet `q⁴ψ̂` (`jetVec`) and the residual
 `4q⁸ρ` (`residVec`).  `jetResidual` is the identity `Hψ̂ = ε̂ψ̂ + ρ` at
 the reads `E𝟏 = 0`, `Eψ₁ = M𝟏`, `4Eψ₂ + #p𝟏 = 4Mψ₁`; `solveFloor` the
 second-order weight's cap `ℓ²⟨ψ₂,ψ₂⟩ ≤ W²⟨ψ₁,ψ₁⟩` at the solve floor
@@ -2482,11 +2483,6 @@ second-order solve floor. -/
 open elim inertia
 
 
-/-- The pencil at the ray `[1 : τ²]` at the clearing `q²`, `q² E − p² M`,
-the site datum's read (`lem:fourpoint`'s tail). -/
-def rayH (p q : Pos) (E M : Mat) : Mat :=
-  siteDatum (matScale (q * q) E) (matScale (p * p) M)
-
 /-- The jet at the clearing `q⁴`: `q⁴ 𝟏 + p² q² ψ₁ + p⁴ ψ₂`. -/
 def jetVec (p q : Pos) (one psi1 psi2 : List BPair) : List BPair :=
   vecAdd (vecScale (BPair.ofPos (Pos.pow q 4)) one)
@@ -2792,9 +2788,7 @@ private theorem vecScale_pair_null (c d : BPair) (hcd : d.oneValue c.swap) :
       (BPair.mul_congr_left
         (BPair.oneValue_trans
           (BPair.add_congr (BPair.oneValue_refl c) hcd)
-          (BPair.oneValue_trans
-            (BPair.oneValue_of_eq (BPair.add_comm c c.swap))
-            (BPair.swap_add_null (BPair.oneValue_refl c))))) ?_
+          (BPair.add_swap_null c))) ?_
     exact BPair.unit_mul x
 
 /-- The action passes a three-term combination. -/
@@ -3071,7 +3065,7 @@ theorem jetResidual {n : Nat} (E M : Mat) (hE : sqAt E n) (hM : sqAt M n)
       (vecAdd (vecScale (BPair.ofNat 4) (matVec E psi2)) (vecScale (BPair.ofNat np) one))
       (vecScale (BPair.ofNat 4) (matVec M psi1))) :
     poly.oneValue
-      (vecScale (BPair.ofPos (4 * (q * q))) (matVec (rayH p q E M) (jetVec p q one psi1 psi2)))
+      (vecScale (BPair.ofPos (4 * (q * q))) (matVec (pencil.rayH E M (q * q) (p * p)) (jetVec p q one psi1 psi2)))
       (vecAdd ((vecScale (BPair.ofPos (Pos.pow p 4) * BPair.ofNat np)
           (jetVec p q one psi1 psi2)).map BPair.swap)
         (residVec p q np M psi1 psi2)) := by
@@ -3507,13 +3501,13 @@ theorem offLine_drift {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
     (gn gd : Pos) (hcl : groundreads.clearRead l j0 gn gd)
     (p q c : Pos) (e0 : BPair)
     (htie : matOneValue Et
-      (siteDatum (matScale c (rayH p q E M)) (matScaleB e0 (idMat n))))
+      (siteDatum (matScale c (pencil.rayH E M (q * q) (p * p))) (matScaleB e0 (idMat n))))
     (spE : Split n) (hEs : splitRead E spE) (hEp : psdAt spE)
     (W : Pos) (spU spL : Split n)
     (hcapM : capAt (matScale Pos.one (matMul (transposeM M) M))
       (matScale (W * W) (idMat n)) spU spL)
     (np : Nat) (J R : List BPair) (hJ : J.length = n) (hR : R.length = n)
-    (hres : poly.oneValue (vecScale (BPair.ofPos (4 * (q * q))) (matVec (rayH p q E M) J))
+    (hres : poly.oneValue (vecScale (BPair.ofPos (4 * (q * q))) (matVec (pencil.rayH E M (q * q) (p * p)) J))
       (vecAdd ((vecScale (BPair.ofPos (Pos.pow p 4) * BPair.ofNat np) J).map BPair.swap) R))
     (hside : BPair.ofPos (gd * c * (p * p) * W) < BPair.ofPos gn) :
     ((BPair.ofPos gn + (BPair.ofPos (gd * c * (p * p) * W)).swap)
@@ -3531,9 +3525,8 @@ theorem offLine_drift {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
   have hEtr : rowsLen n Et := rowsLen_of_sqAt hEtsq
   have hMr : rowsLen n M := rowsLen_of_sqAt hM
   have hMl : M.length = n := sqAt_len hM
-  have hray : sqAt (rayH p q E M) n :=
-    sqAt_siteDatum n _ _ (sqAt_matScale n (q * q) E hE)
-      (sqAt_matScale n (p * p) M hM)
+  have hray : sqAt (pencil.rayH E M (q * q) (p * p)) n :=
+    pencil.sqAt_rayH E M n hE hM (q * q) (p * p)
   have hphi : (residD [matVec T.val (elim.idRow n j0)] J).length = n :=
     length_residD n [matVec T.val (elim.idRow n j0)] J ⟨hpsi, trivial⟩ hJ
   obtain ⟨hker, _, hs⟩ :=
@@ -3594,7 +3587,7 @@ theorem offLine_drift {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
   have hgap := groundreads.gap_perp Et T Tw l hd j0 hj0 d0 g0 hroot0 gn gd hcl
     (residD [matVec T.val (elim.idRow n j0)] J) hphi hperp
 
-  have hIsq : sqAt (idMat n) n := inertia.sqAt_idMat n
+  have hIsq : sqAt (idMat n) n := elim.sqAt_idMat n
   have hnull : (dotN (residD [matVec T.val (elim.idRow n j0)] J)
       (matVec Et (matVec T.val (elim.idRow n j0)))).oneValue BPair.unit :=
     BPair.oneValue_trans (dotN_read _ _) (dotP_null_tail_right _ _ hker)
@@ -3639,11 +3632,11 @@ theorem offLine_drift {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
           (BPair.mul_unit _)))) ?_
     exact BPair.add_unit _
   have hEtJ : poly.oneValue (matVec Et J)
-      (vecAdd (vecScale (BPair.ofPos c) (matVec (rayH p q E M) J))
+      (vecAdd (vecScale (BPair.ofPos c) (matVec (pencil.rayH E M (q * q) (p * p)) J))
         ((vecScale e0 J).map BPair.swap)) := by
     refine poly.oneValue_trans (matVec_matOne Et _ J htie) ?_
     refine poly.oneValue_trans
-      (matVec_add (matScale c (rayH p q E M))
+      (matVec_add (matScale c (pencil.rayH E M (q * q) (p * p)))
         (matSwap (matScaleB e0 (idMat n))) J
         (by rw [hJ]; exact rowsLen_of_sqAt (sqAt_matScale n c _ hray))
         (by rw [hJ]
@@ -3653,15 +3646,15 @@ theorem offLine_drift {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
     refine elim.vecAdd_congr2 _ _ _ _
       (by rw [matVec_length, length_vecScale, matVec_length, length_matScale])
       (by rw [ground.length_map, ground.length_map, matVec_length,
-        length_vecScale, length_scaleB, idMat_len, hJ])
-      (matVec_matScale c (rayH p q E M) J) ?_
+        length_vecScale, length_scaleB, length_idMat, hJ])
+      (matVec_matScale c (pencil.rayH E M (q * q) (p * p)) J) ?_
     exact poly.swapMap_oneValue (poly.oneValue_trans
       (matVec_scaleB e0 (idMat n) J)
-      (vecScale_oneValue e0 _ _ (inertia.matVec_idMat n J hJ)))
+      (vecScale_oneValue e0 _ _ (elim.matVec_idMat n J hJ)))
   have hEJdot : (dotN (residD [matVec T.val (elim.idRow n j0)] J)
       (matVec Et J)).oneValue
       (BPair.ofPos c * dotN (residD [matVec T.val (elim.idRow n j0)] J)
-          (matVec (rayH p q E M) J)
+          (matVec (pencil.rayH E M (q * q) (p * p)) J)
         + (e0 * dotN (residD [matVec T.val (elim.idRow n j0)] J) J).swap) := by
     refine BPair.oneValue_trans (dotN_congrR _ _ _ hEtJ) ?_
     refine BPair.oneValue_trans
@@ -3674,7 +3667,7 @@ theorem offLine_drift {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
       (ground.swap_congr (dotN_scaleV _ _ _))
   have hF7 : (BPair.ofPos (4 * (q * q))
       * dotN (residD [matVec T.val (elim.idRow n j0)] J)
-          (matVec (rayH p q E M) J)).oneValue
+          (matVec (pencil.rayH E M (q * q) (p * p)) J)).oneValue
       ((BPair.ofPos (Pos.pow p 4) * BPair.ofNat np
           * dotN (residD [matVec T.val (elim.idRow n j0)] J) J).swap
         + dotN (residD [matVec T.val (elim.idRow n j0)] J) R) := by
@@ -3731,7 +3724,7 @@ theorem offLine_drift {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
           (matVec T.val (elim.idRow n j0)))]
     exact BPair.mul_congr (BPair.oneValue_symm (BPair.ofPos_mul W W))
       (BPair.oneValue_refl _)
-  have hray' : (inertia.quadForm (rayH p q E M)
+  have hray' : (inertia.quadForm (pencil.rayH E M (q * q) (p * p))
       (matVec T.val (elim.idRow n j0))).oneValue
       (BPair.ofPos (q * q) * inertia.quadForm E (matVec T.val (elim.idRow n j0))
         + (BPair.ofPos (p * p)
@@ -3742,7 +3735,7 @@ theorem offLine_drift {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
       (BPair.add_congr (quadForm_ofPos (q * q) E _)
         (ground.swap_congr (quadForm_ofPos (p * p) M _)))
   have hone : BPair.unit.oneValue
-      (BPair.ofPos c * inertia.quadForm (rayH p q E M)
+      (BPair.ofPos c * inertia.quadForm (pencil.rayH E M (q * q) (p * p))
           (matVec T.val (elim.idRow n j0))
         + (e0 * dotN (matVec T.val (elim.idRow n j0))
             (matVec T.val (elim.idRow n j0))).swap) := by
@@ -3759,8 +3752,8 @@ theorem offLine_drift {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
     refine BPair.add_congr (quadForm_ofPos c _ _) (ground.swap_congr ?_)
     exact BPair.oneValue_trans (quadForm_scaleB e0 (idMat n) _)
       (BPair.mul_congr (BPair.oneValue_refl _)
-        (dotN_congrR _ _ _ (inertia.matVec_idMat n _ hpsi)))
-  have he0s : (BPair.ofPos c * inertia.quadForm (rayH p q E M)
+        (dotN_congrR _ _ _ (elim.matVec_idMat n _ hpsi)))
+  have he0s : (BPair.ofPos c * inertia.quadForm (pencil.rayH E M (q * q) (p * p))
       (matVec T.val (elim.idRow n j0))).oneValue
       (e0 * dotN (matVec T.val (elim.idRow n j0))
         (matVec T.val (elim.idRow n j0))) :=
@@ -3838,7 +3831,7 @@ theorem offLine_drift {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
       (residD [matVec T.val (elim.idRow n j0)] J)).oneValue
       (dotN (matVec T.val (elim.idRow n j0)) (matVec T.val (elim.idRow n j0))
         * (BPair.ofPos c * dotN (residD [matVec T.val (elim.idRow n j0)] J)
-              (matVec (rayH p q E M) J)
+              (matVec (pencil.rayH E M (q * q) (p * p)) J)
           + (e0 * dotN (residD [matVec T.val (elim.idRow n j0)] J) J).swap)) :=
     BPair.oneValue_trans hQF (BPair.mul_congr (BPair.oneValue_refl _) hEJdot)
   have hgap2 : BPair.ofPos gn * dotN (residD [matVec T.val (elim.idRow n j0)] J)
@@ -5126,7 +5119,7 @@ theorem momentBracket {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
     (gn gd : Pos) (hcl : groundreads.clearRead l j0 gn gd)
     (p q c : Pos) (e0 : BPair)
     (htie : matOneValue Et
-      (siteDatum (matScale c (rayH p q E M)) (matScaleB e0 (idMat n))))
+      (siteDatum (matScale c (pencil.rayH E M (q * q) (p * p))) (matScaleB e0 (idMat n))))
     (spE : Split n) (hEs : splitRead E spE) (hEp : psdAt spE)
     (W : Pos) (spU spL : Split n)
     (hcapM : capAt (matScale Pos.one (matMul (transposeM M) M))
@@ -5622,7 +5615,7 @@ theorem gapBracket {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
     (gn gd : Pos) (hcl : groundreads.clearRead l j0 gn gd)
     (p q c : Pos) (e0 : BPair)
     (htie : matOneValue Et
-      (siteDatum (matScale c (rayH p q E M)) (matScaleB e0 (idMat n))))
+      (siteDatum (matScale c (pencil.rayH E M (q * q) (p * p))) (matScaleB e0 (idMat n))))
     (spE : Split n) (hEs : splitRead E spE) (hEp : psdAt spE)
     (W : Pos) (spU spL : Split n)
     (hcapM : capAt (matScale Pos.one (matMul (transposeM M) M))
@@ -5872,7 +5865,7 @@ theorem kappaBracket {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
     (gn gd : Pos) (hcl : groundreads.clearRead l j0 gn gd)
     (p q c : Pos) (e0 : BPair)
     (htie : matOneValue Et
-      (siteDatum (matScale c (rayH p q E M)) (matScaleB e0 (idMat n))))
+      (siteDatum (matScale c (pencil.rayH E M (q * q) (p * p))) (matScaleB e0 (idMat n))))
     (spE : Split n) (hEs : splitRead E spE) (hEp : psdAt spE)
     (W : Pos) (spU spL : Split n)
     (hcapM : capAt (matScale Pos.one (matMul (transposeM M) M))

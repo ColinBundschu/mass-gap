@@ -141,10 +141,10 @@ def collectAt (i j : Nat) (pool : List HVec) (nu : List Nat) :
     let grp := groupAt pool nu
     let coll := membersAt i j strs nu
     match grp.find? (fun g =>
-      ¬ poly.unitTail (elim.residV g.length coll g)) with
+      ¬ poly.unitTail (elim.residW g.length coll g)) with
     | none => strs
     | some g =>
-      let w := elim.residV g.length coll g
+      let w := elim.residW g.length coll g
       collectAt i j pool nu fuel
         (strs ++ [⟨⟨nu, w⟩, hAt i j nu⟩])
 
@@ -1848,7 +1848,7 @@ private theorem new_goodL (s : Shape) (i j : Nat)
     (hperpM : ∀ mu, elim.perpAll (membersAt i j strs mu))
     (hup : 0 < ground.getAt 0 nu j → ∀ kk,
       kk < (groupAt (blockSpan s) (moveAt i j nu)).length →
-      poly.unitTail (elim.residV
+      poly.unitTail (elim.residW
         (monomialsAt (moveAt i j nu)).length
         (membersAt i j strs (moveAt i j nu))
         (ground.getAt []
@@ -1856,32 +1856,32 @@ private theorem new_goodL (s : Shape) (i j : Nat)
     (g : List BPair) (hg : g.length = (monomialsAt nu).length)
     (hgsp : elim.spanRel (monomialsAt nu).length
       (groupAt (blockSpan s) nu) g)
-    (hrefuse : ¬ poly.unitTail (elim.residV (monomialsAt nu).length
+    (hrefuse : ¬ poly.unitTail (elim.residW (monomialsAt nu).length
       (membersAt i j strs nu) g)) :
     goodString i j s.length (blockSpan s)
-      ⟨⟨nu, elim.residV (monomialsAt nu).length
+      ⟨⟨nu, elim.residW (monomialsAt nu).length
         (membersAt i j strs nu) g⟩, hAt i j nu⟩ := by
   have hcolln : elim.rowsLen (monomialsAt nu).length
       (membersAt i j strs nu) := members_rowsLenL s i j strs hgood nu
-  have hwlen : (elim.residV (monomialsAt nu).length
+  have hwlen : (elim.residW (monomialsAt nu).length
       (membersAt i j strs nu) g).length = (monomialsAt nu).length :=
-    elim.length_residV _ _ g hcolln hg
+    elim.length_residW _ _ g hcolln hg
   have hwsp : elim.spanRel (monomialsAt nu).length
       (groupAt (blockSpan s) nu)
-      (elim.residV (monomialsAt nu).length
+      (elim.residW (monomialsAt nu).length
         (membersAt i j strs nu) g) :=
-    elim.spanRel_residV (monomialsAt nu).length
+    elim.spanRel_residW (monomialsAt nu).length
       (membersAt i j strs nu) (groupAt (blockSpan s) nu) g hcolln hg
       (rowsLen_groupAt nu (blockSpan s) (lowerspan.spanReads s).1)
       (members_span_getL s i j hi hj hij strs hgood nu) hgsp
   have hwperp : ∀ q, q < (membersAt i j strs nu).length →
-      (elim.dotP (elim.residV (monomialsAt nu).length
+      (elim.dotP (elim.residW (monomialsAt nu).length
           (membersAt i j strs nu) g)
         (ground.getAt [] (membersAt i j strs nu) q)).oneValue
         BPair.unit := by
     intro q hq
     rw [elim.dotP_comm]
-    exact elim.resid_perp (monomialsAt nu).length
+    exact elim.residW_perp (monomialsAt nu).length
       (membersAt i j strs nu) g hcolln hg q hq
   have hiN : i < nu.length := by
     rw [hnu]
@@ -1890,7 +1890,7 @@ private theorem new_goodL (s : Shape) (i j : Nat)
     rw [hnu]
     exact hj
   have htop : poly.unitTail (act i j (HVec.mk nu
-      (elim.residV (monomialsAt nu).length
+      (elim.residW (monomialsAt nu).length
         (membersAt i j strs nu) g))).coords := by
     by_cases hcj : 0 < ground.getAt 0 nu j
     · refine top_propL s i j hi hj hij nu _ hwlen hwsp
@@ -1906,7 +1906,9 @@ private theorem new_goodL (s : Shape) (i j : Nat)
           kk
           (rowsLen_groupAt (moveAt i j nu) (blockSpan s)
             (lowerspan.spanReads s).1) hkk)
-        ?_ (hup hcj kk hkk)
+        ?_ (poly.unitTail_oneValue_right (hup hcj kk hkk)
+          (elim.residW_eq _ _ _
+            (members_rowsLenL s i j strs hgood (moveAt i j nu))))
       exact elim.indep_det (monomialsAt (moveAt i j nu)).length
         (membersAt i j strs (moveAt i j nu))
         (members_indepL s i j hi hj hij strs hgood (moveAt i j nu)
@@ -1917,7 +1919,7 @@ private theorem new_goodL (s : Shape) (i j : Nat)
         | .inr hp => absurd hp hcj
       exact tops.act_null i j (HVec.mk nu _) hz
   have hgapLe := tops.top_gap i j hij (HVec.mk nu
-      (elim.residV (monomialsAt nu).length
+      (elim.residW (monomialsAt nu).length
         (membersAt i j strs nu) g))
     hiN hjN hwlen htop hrefuse
   exact ⟨hwlen, hnu,
@@ -1936,7 +1938,7 @@ private def StateL (s : Shape) (i j : Nat) (strs : List PairString)
     ∧ (∀ mu, elim.perpAll (membersAt i j strs mu))
     ∧ (∀ mu, 0 < ground.countOf mu done →
         ∀ k, k < (groupAt (blockSpan s) mu).length →
-          poly.unitTail (elim.residV (monomialsAt mu).length
+          poly.unitTail (elim.residW (monomialsAt mu).length
             (membersAt i j strs mu)
             (ground.getAt [] (groupAt (blockSpan s) mu) k)))
 
@@ -2047,7 +2049,7 @@ private theorem step_invL (s : Shape) (i j : Nat)
     (hperpM : ∀ mu, elim.perpAll (membersAt i j strs mu))
     (hB : ∀ mu, 0 < ground.countOf mu done → ∀ k,
       k < (groupAt (blockSpan s) mu).length →
-      poly.unitTail (elim.residV (monomialsAt mu).length
+      poly.unitTail (elim.residW (monomialsAt mu).length
         (membersAt i j strs mu)
         (ground.getAt [] (groupAt (blockSpan s) mu) k)))
     (new : PairString)
@@ -2121,7 +2123,7 @@ private theorem hup_ofL (s : Shape) (i j : Nat) (hi : i < s.length)
         ∨ 0 < ground.countOf mu (nu :: rest))
     (hcj : 0 < ground.getAt 0 nu j) :
     ∀ kk, kk < (groupAt (blockSpan s) (moveAt i j nu)).length →
-      poly.unitTail (elim.residV
+      poly.unitTail (elim.residW
         (monomialsAt (moveAt i j nu)).length
         (membersAt i j strs (moveAt i j nu))
         (ground.getAt []
@@ -2146,11 +2148,11 @@ private theorem collectAt_succL (i j : Nat) (pool : List HVec)
     (nu : List Nat) (fuel : Nat) (strs : List PairString) :
     collectAt i j pool nu (fuel + 1) strs
       = match (groupAt pool nu).find? (fun g =>
-          ¬ poly.unitTail (elim.residV g.length
+          ¬ poly.unitTail (elim.residW g.length
             (membersAt i j strs nu) g)) with
         | none => strs
         | some g => collectAt i j pool nu fuel
-            (strs ++ [⟨⟨nu, elim.residV g.length
+            (strs ++ [⟨⟨nu, elim.residW g.length
               (membersAt i j strs nu) g⟩, hAt i j nu⟩]) := rfl
 
 private theorem nu_lenL (s : Shape) (nu : List Nat) (k : Nat)
@@ -2177,14 +2179,14 @@ private theorem collect_fuelL (s : Shape) (i j : Nat)
           ≤ (membersAt i j strs nu).length + fuel →
       StateL s i j (collectAt i j (blockSpan s) nu fuel strs) done
         ∧ (∀ k, k < (groupAt (blockSpan s) nu).length →
-            poly.unitTail (elim.residV (monomialsAt nu).length
+            poly.unitTail (elim.residW (monomialsAt nu).length
               (membersAt i j
                 (collectAt i j (blockSpan s) nu fuel strs) nu)
               (ground.getAt [] (groupAt (blockSpan s) nu) k)))
   | 0, strs, hst, hb => by
     refine ⟨hst, ?_⟩
     intro k hk
-    by_cases hpass : poly.unitTail (elim.residV
+    by_cases hpass : poly.unitTail (elim.residW
         (monomialsAt nu).length (membersAt i j strs nu)
         (ground.getAt [] (groupAt (blockSpan s) nu) k))
     · exact hpass
@@ -2198,8 +2200,10 @@ private theorem collect_fuelL (s : Shape) (i j : Nat)
       have hns : ¬ elim.spanRel (monomialsAt nu).length
           (membersAt i j strs nu)
           (ground.getAt [] (groupAt (blockSpan s) nu) k) :=
-        fun hsp => hpass (elim.resid_complete _ _ _
-          (members_rowsLenL s i j strs hst.1 nu) hgn hsp)
+        fun hsp => hpass (poly.oneValue_unitTail
+          (elim.residW_eq _ _ _ (members_rowsLenL s i j strs hst.1 nu))
+          (elim.resid_complete _ _ _
+            (members_rowsLenL s i j strs hst.1 nu) hgn hsp))
       have hle := elim.span_count_le (monomialsAt nu).length
         (membersAt i j strs nu
           ++ [ground.getAt [] (groupAt (blockSpan s) nu) k])
@@ -2225,7 +2229,7 @@ private theorem collect_fuelL (s : Shape) (i j : Nat)
   | fuel + 1, strs, hst, hb => by
     rw [collectAt_succL i j (blockSpan s) nu fuel strs]
     cases hf : (groupAt (blockSpan s) nu).find? (fun g =>
-        ¬ poly.unitTail (elim.residV g.length
+        ¬ poly.unitTail (elim.residW g.length
           (membersAt i j strs nu) g)) with
     | none =>
       refine ⟨hst, ?_⟩
@@ -2236,7 +2240,7 @@ private theorem collect_fuelL (s : Shape) (i j : Nat)
         elim.rowsLen_getAt (groupAt (blockSpan s) nu) k
           (rowsLen_groupAt nu (blockSpan s)
             (lowerspan.spanReads s).1) hk
-      have hb3 : decide (¬ poly.unitTail (elim.residV
+      have hb3 : decide (¬ poly.unitTail (elim.residW
           (ground.getAt ([] : List BPair)
             (groupAt (blockSpan s) nu) k).length
           (membersAt i j strs nu)
@@ -2248,22 +2252,22 @@ private theorem collect_fuelL (s : Shape) (i j : Nat)
       exact unitTail_of_decFalseL hb3
     | some g =>
       show StateL s i j (collectAt i j (blockSpan s) nu fuel
-          (strs ++ [⟨⟨nu, elim.residV g.length
+          (strs ++ [⟨⟨nu, elim.residW g.length
             (membersAt i j strs nu) g⟩, hAt i j nu⟩])) done
         ∧ (∀ k, k < (groupAt (blockSpan s) nu).length →
-            poly.unitTail (elim.residV (monomialsAt nu).length
+            poly.unitTail (elim.residW (monomialsAt nu).length
               (membersAt i j (collectAt i j (blockSpan s) nu fuel
-                (strs ++ [⟨⟨nu, elim.residV g.length
+                (strs ++ [⟨⟨nu, elim.residW g.length
                   (membersAt i j strs nu) g⟩, hAt i j nu⟩])) nu)
               (ground.getAt [] (groupAt (blockSpan s) nu) k)))
       match findB_someL ([] : List BPair) (fun g =>
-          ¬ poly.unitTail (elim.residV g.length
+          ¬ poly.unitTail (elim.residW g.length
             (membersAt i j strs nu) g))
           (groupAt (blockSpan s) nu) g hf with
       | ⟨hgt, k, hk, hgk⟩ =>
-        have hgtrue : decide (¬ poly.unitTail (elim.residV g.length
+        have hgtrue : decide (¬ poly.unitTail (elim.residW g.length
             (membersAt i j strs nu) g)) = true := hgt
-        have hrefuse0 : ¬ poly.unitTail (elim.residV g.length
+        have hrefuse0 : ¬ poly.unitTail (elim.residW g.length
             (membersAt i j strs nu) g) := of_decide_eq_true hgtrue
         have hglen : g.length = (monomialsAt nu).length := by
           rw [← hgk]
@@ -2284,13 +2288,13 @@ private theorem collect_fuelL (s : Shape) (i j : Nat)
             (membersAt i j strs nu) :=
           members_rowsLenL s i j strs hst.1 nu
         have hwperp : ∀ q, q < (membersAt i j strs nu).length →
-            (elim.dotP (elim.residV (monomialsAt nu).length
+            (elim.dotP (elim.residW (monomialsAt nu).length
                 (membersAt i j strs nu) g)
               (ground.getAt [] (membersAt i j strs nu) q)).oneValue
               BPair.unit := by
           intro q hq
           rw [elim.dotP_comm]
-          exact elim.resid_perp (monomialsAt nu).length
+          exact elim.residW_perp (monomialsAt nu).length
             (membersAt i j strs nu) g hcolln hglen q hq
         have hgnew := new_goodL s i j hi hj hij nu hnu strs hst.1
           hst.2.1
@@ -2304,7 +2308,7 @@ private theorem collect_fuelL (s : Shape) (i j : Nat)
           exact hrefuse0 hp
         have hstep := step_invL s i j hi hj hij done strs hst.1
           hst.2.1 hst.2.2
-          ⟨⟨nu, elim.residV (monomialsAt nu).length
+          ⟨⟨nu, elim.residW (monomialsAt nu).length
             (membersAt i j strs nu) g⟩, hAt i j nu⟩
           hgnew hwperp hnotdone hdom
         refine collect_fuelL s i j hi hj hij nu done rest hsorted
@@ -2452,8 +2456,10 @@ theorem walk_spanRowL (s : Shape) (i j : Nat)
   refine elim.resid_sound (monomialsAt nu).length _ _ hrows
     (elim.rowsLen_getAt (groupAt (blockSpan s) nu) k hgrows hk)
     (elim.indep_det (monomialsAt nu).length _ hind) ?_
-  exact (walk_stateL s i j hi hj hij).2.2 nu
-    (contentsByKey_coverL i j (blockSpan s) nu hocc) k hk
+  exact poly.unitTail_oneValue_right
+    ((walk_stateL s i j hi hj hij).2.2 nu
+      (contentsByKey_coverL i j (blockSpan s) nu hocc) k hk)
+    (elim.residW_eq _ _ _ hrows)
 
 /-- The string count reads the span occupancy at every content,
 the exchange read closing the comparison of the two independent
@@ -2497,10 +2503,10 @@ def collectAtT (i j : Nat) (grp : elim.Mat) (nu : List Nat) :
   | 0, st => st
   | fuel + 1, (strs, mem, coll) =>
     match grp.find? (fun g =>
-      ¬ poly.unitTail (elim.residV g.length coll g)) with
+      ¬ poly.unitTail (elim.residW g.length coll g)) with
     | none => (strs, mem, coll)
     | some g =>
-      let w := elim.residV g.length coll g
+      let w := elim.residW g.length coll g
       collectAtT i j grp nu fuel
         (strs ++ [⟨⟨nu, w⟩, hAt i j nu⟩],
          mem ++ runGo i j (hAt i j nu) ⟨nu, w⟩,
@@ -2650,15 +2656,15 @@ private theorem collectAtT_succL (i j : Nat) (grp : elim.Mat)
     (mem : List HVec) (coll : elim.Mat) :
     collectAtT i j grp nu (fuel + 1) (strs, mem, coll)
       = match grp.find? (fun g =>
-          ¬ poly.unitTail (elim.residV g.length coll g)) with
+          ¬ poly.unitTail (elim.residW g.length coll g)) with
         | none => (strs, mem, coll)
         | some g =>
           collectAtT i j grp nu fuel
-            (strs ++ [⟨⟨nu, elim.residV g.length coll g⟩,
+            (strs ++ [⟨⟨nu, elim.residW g.length coll g⟩,
                 hAt i j nu⟩],
              mem ++ runGo i j (hAt i j nu)
-               ⟨nu, elim.residV g.length coll g⟩,
-             coll ++ [elim.residV g.length coll g]) := rfl
+               ⟨nu, elim.residW g.length coll g⟩,
+             coll ++ [elim.residW g.length coll g]) := rfl
 
 /-- The threaded collection run is the walk's, the carried pool
 and collection the strings' own reads at every fuel. -/
@@ -2676,23 +2682,23 @@ private theorem collectT_eqL (i j : Nat) (pool : List HVec)
         (memPool i j strs) (membersAt i j strs nu),
       collectAt_succL i j pool nu fuel strs]
     cases hf : (groupAt pool nu).find? (fun g =>
-        ¬ poly.unitTail (elim.residV g.length
+        ¬ poly.unitTail (elim.residW g.length
           (membersAt i j strs nu) g)) with
     | none => rfl
     | some g =>
       show collectAtT i j (groupAt pool nu) nu fuel
-          (strs ++ [⟨⟨nu, elim.residV g.length
+          (strs ++ [⟨⟨nu, elim.residW g.length
               (membersAt i j strs nu) g⟩, hAt i j nu⟩],
            memPool i j strs ++ runGo i j (hAt i j nu)
-             ⟨nu, elim.residV g.length
+             ⟨nu, elim.residW g.length
                (membersAt i j strs nu) g⟩,
            membersAt i j strs nu
-             ++ [elim.residV g.length (membersAt i j strs nu) g])
+             ++ [elim.residW g.length (membersAt i j strs nu) g])
         = _
       rw [← memPool_newL i j nu
-          (elim.residV g.length (membersAt i j strs nu) g) strs,
+          (elim.residW g.length (membersAt i j strs nu) g) strs,
         ← membersAt_newL i j nu
-          (elim.residV g.length (membersAt i j strs nu) g) strs]
+          (elim.residW g.length (membersAt i j strs nu) g) strs]
       exact collectT_eqL i j pool nu fuel _
 
 private theorem walkT_goL (i j : Nat) (pool : List HVec) :

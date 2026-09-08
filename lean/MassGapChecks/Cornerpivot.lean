@@ -1042,7 +1042,7 @@ the head's form at the witness family reads the sum's unit, the two
 sides of the kernel identity joining, and the window binder carries
 slack: the order `n = N − 1` still reads the unit, while the order
 `n = N − 2` does not, so the family's own window is the binder's
-least honest refusal. -/
+tightest refusal. -/
 
 example : (inertia.quadForm
     (wellMat 2 (qLowNum 1 10 2 8) (qLowDen 1 10 2 8) 1 10 10)
@@ -1091,7 +1091,7 @@ example : ¬ (inertia.quadForm
     (wellMat 2 (7 * qLowNum 1 10 2 1) (6 * qLowDen 1 10 2 1) 1 10 10)
     (witList 1 10) < BPair.unit) := by decide +kernel
 
-/-! The forcing clause at the least honest order: at the endpoint
+/-! The forcing clause at the two-by-two order: at the endpoint
 two the head is the two-by-two `[[-132840, -486000],
 [-486000, -165240]]` at the member line `[7 : 6]`, whose
 split is the leading-entry clearing `T = [[1, -B], [0, A]]` against
@@ -1117,66 +1117,6 @@ example : inertia.revAt spCap = 1 := by decide +kernel
 example : 1 ≤ inertia.revAt spCap :=
   witCount 1 10 2 2 2 7 6 1 (by decide +kernel) (by decide +kernel)
     rfl (by decide +kernel) spCap (by decide +kernel)
-
-/-! The cap pair at the two-by-two data, the two members the
-coordinate vectors.  At the diagonal `diag(-1, -1)` the leading
-entry sits below the sum's unit and the doubled cross read, vacant,
-sits below the diagonal product's quadruple `4`, so every split
-reads the count at two — the split at the identity's own congruence
-reads exactly two.  The two binders are isolated in turn: at the
-identity the doubled cross read still sits below the quadruple while
-the leading entry sits above the unit, and its split reads the count
-nought; at the diagonal `diag(-1, 1)` the leading entry sits below
-the unit while the quadruple is `-4`, below the vacant cross read,
-and its split reads the count one. -/
-
-private def xCap : List BPair := [BPair.ofNat 1, BPair.unit]
-private def yCap : List BPair := [BPair.unit, BPair.ofNat 1]
-private def sBoth : elim.Mat := [[⟨1, 2⟩, BPair.unit], [BPair.unit, ⟨1, 2⟩]]
-private def sOne : elim.Mat := [[⟨1, 2⟩, BPair.unit], [BPair.unit, ⟨2, 1⟩]]
-
-private def spBoth : inertia.Split 2 :=
-  ⟨⟨inertia.idMat 2, rfl⟩, ⟨inertia.idMat 2, rfl⟩,
-   [.one ⟨1, 2⟩, .one ⟨1, 2⟩], 0, rfl⟩
-private def spUnit : inertia.Split 2 :=
-  ⟨⟨inertia.idMat 2, rfl⟩, ⟨inertia.idMat 2, rfl⟩,
-   [.one ⟨2, 1⟩, .one ⟨2, 1⟩], 0, rfl⟩
-private def spOne : inertia.Split 2 :=
-  ⟨⟨inertia.idMat 2, rfl⟩, ⟨inertia.idMat 2, rfl⟩,
-   [.one ⟨1, 2⟩, .one ⟨2, 1⟩], 0, rfl⟩
-
-example : inertia.splitRead sBoth spBoth := by decide +kernel
-example : inertia.splitRead (inertia.idMat 2) spUnit := by decide +kernel
-example : inertia.splitRead sOne spOne := by decide +kernel
-
-example : 2 ≤ inertia.revAt spBoth :=
-  capForcing sBoth xCap yCap rfl rfl (by decide +kernel) (by decide +kernel)
-    spBoth (by decide +kernel)
-
-example : inertia.revAt spBoth = 2 := by decide +kernel
-
-example : ¬ (inertia.quadForm (inertia.idMat 2) xCap < BPair.unit) := by
-  decide +kernel
-
-example : (elim.dotN xCap (elim.matVec (inertia.idMat 2) yCap)
-      + elim.dotN yCap (elim.matVec (inertia.idMat 2) xCap))
-    * (elim.dotN xCap (elim.matVec (inertia.idMat 2) yCap)
-      + elim.dotN yCap (elim.matVec (inertia.idMat 2) xCap))
-  < BPair.ofNat 4 * (inertia.quadForm (inertia.idMat 2) xCap
-      * inertia.quadForm (inertia.idMat 2) yCap) := by decide +kernel
-
-example : ¬ (2 ≤ inertia.revAt spUnit) := by decide +kernel
-
-example : inertia.quadForm sOne xCap < BPair.unit := by decide +kernel
-
-example : ¬ ((elim.dotN xCap (elim.matVec sOne yCap)
-      + elim.dotN yCap (elim.matVec sOne xCap))
-    * (elim.dotN xCap (elim.matVec sOne yCap)
-      + elim.dotN yCap (elim.matVec sOne xCap))
-  < BPair.ofNat 4 * (inertia.quadForm sOne xCap
-      * inertia.quadForm sOne yCap)) := by decide +kernel
-
-example : ¬ (2 ≤ inertia.revAt spOne) := by decide +kernel
 
 /-! Clause (vi)'s count spine runs at the same sample.  At the member
 line `[7 : 6]` and the endpoint `N = 8` the walk's minors read
@@ -1293,7 +1233,7 @@ example : elim.matOneValue
       (inertia.matScaleB
         (BPair.ofNat ((2 + 1) * (1 * qLowNum 1 10 2 2))
           * BPair.ofPos 1 * BPair.ofPos 10)
-        (inertia.idMat 2)))
+        (elim.idMat 2)))
     (inertia.matScaleB (BPair.ofNat 6) wUp2) :=
   lineSite 2 (qLowNum 1 10 2 2) (qLowDen 1 10 2 2) 1 10 2 7 6 8 7 1 (by decide +kernel)
 
@@ -1302,7 +1242,7 @@ example : elim.matOneValue
       (inertia.matScaleB
         (BPair.ofNat ((2 + 1) * (1 * qLowNum 1 10 2 2))
           * BPair.ofPos 1 * BPair.ofPos 10)
-        (inertia.idMat 2)))
+        (elim.idMat 2)))
     (inertia.matScaleB (BPair.ofNat 6) wUp2) := by decide +kernel
 
 example : ¬ elim.matOneValue
@@ -1310,7 +1250,7 @@ example : ¬ elim.matOneValue
       (inertia.matScaleB
         (BPair.ofNat ((2 + 1) * (2 * qLowNum 1 10 2 2))
           * BPair.ofPos 1 * BPair.ofPos 10)
-        (inertia.idMat 2)))
+        (elim.idMat 2)))
     (inertia.matScaleB (BPair.ofNat 6) wUp2) := by decide +kernel
 
 /-! The multiple cut's downward closure at the endpoint two, where

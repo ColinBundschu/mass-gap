@@ -23,21 +23,18 @@ permutation read while failing the plaquette read.  The index
 action rides at the chain window over the label calculus at two
 letters: the enumeration is pinned once at its five members (three
 squares and the two rails), the content, the occupancy and the
-index closure are fixed at the action, and the congruence
-`Pmᵀ H Pm = H` holds at the free end's window matrix on the window
-list — every fiber at its one slot there, the window list's
-diagonal the index's contents — the same transposition, which moves
-a rail loop off the index, failing the closure and the congruence
-together; the place action's four binders refuse on its own
-carrier, and a three-letter fixture with fibers of four slots reads
-the congruence at the vertex witness and refuses it at the identity
-in the witness's place.
+index closure are fixed at the action — the same transposition,
+which moves a rail loop off the index, failing the closure — and
+the window list at its one slot per fiber has the index's contents
+for its diagonal; a three-letter fixture with fibers of four slots
+reads the states' transport at the vertex witness and refuses it at
+the identity in the witness's place.
 
 The chord tier rides on the translation's own link permutation
 (`permMatAt`), the cheapest faithful carrier for identities that
 are matrix-level: the side-three bench at order nine and the
 committed side-five chain at order fifteen.  The orthogonality is
-discharged at both sides by `permRead_orth` rather than decided —
+discharged at both sides by `linkIso_orth` rather than decided —
 the permutation read the module already commits is its one
 hypothesis — and the deck relation follows it, decided at side
 three and discharged by `chord_deck` at side five.  The word
@@ -129,26 +126,30 @@ orbit's own two-member compression, the descent rescaling the image
 column, with the image at the shape `lem:cellcount`'s counts
 consume and the identity descent its refusal.
 
-The magnetic member's transport reads at the side-three chain
-window beside the electric member's congruence: the plaquette list
-permuted by the translation as stated data, the plaquette terms
-at the support's shape transported plaquette by plaquette, the
-terms' sum moved along the action and commuting with the induced
-permutation matrix, decided and routed through
-`movedReadBy_termSum`, `commRead_slotM` and `commRead_slotM_dataA`,
-and the pencil interface's read at the window with its magnetic
-member commuting through `commRead_pencilM_dataA`, every binder
-at its refusal; the fibers of four slots read the transport with
-the vertex witness load-bearing at the magnetic member as at the
-electric.
+The transport reads at the side-three chain window
+(`thm:pairpencil`'s transport field at the region's own action):
+the translation with the induced vertex map reads a label-graph
+isomorphism of the chain onto itself, the plaquette list permuted
+by it as stated data, the vertex lists' Grams one value at the
+relabeled members, and every term's entry between two moved states
+the entry between the states across every changed edge, the vertex
+witness load-bearing at the isomorphism and at the terms; the
+pencil interface's read at the window passes at the plaquette terms
+stated at the support's shape.  At the torus of side three over two
+letters the bowtie of two plaquettes sharing a four-valent adjoint
+vertex reads its three members' entries one value across the
+translation, with the moved vertex's own list the relabeled
+members, the read at the members, and the moved plaquette's entry
+at the own members the contraction itself.
 
 Budget exception: the window enumeration reads through the
 content-pruned identity (`carrier.idxA_eq`), the pin's route
 rather than its statement, and the module's cost is the `apply
-perp_band` route at the forged three-by-three datum with the
-index-action band at the side-nine window beside it (`commRead`
-over `slotMat fA chW chIx` at the translation's two witnesses, with
-`occFixed` / `contentFixed` / `idxFixed` at the link witness) and
+perp_band` route at the forged three-by-three datum, the terms'
+transport at the side-three chain window and at the torus bowtie
+(each entry one contraction at the two states and at the moved
+two), the index-action reads at the side-nine window (`occFixed` /
+`contentFixed` / `idxFixed` at the link witness) and
 the pencil interface's read at the chain window, whose six cap
 splits at order six read through `inertia.splitRead` with
 `psdAt` one kernel task per split read, the kernel keeping every
@@ -157,6 +158,7 @@ split reads decided at once costs the sum of their caches where
 the reads decided one by one cost each its own.
 -/
 set_option maxHeartbeats 16000000
+set_option maxRecDepth 100000
 
 open ground lattice fusion elim carrier fiberdec
 
@@ -185,6 +187,223 @@ def loopAt (Lc i : Nat) : List places.Shape :=
   loopConf Lc i [1, 0, 0] [0, 1, 0]
 
 end fiberdec
+
+/-! The transport at a four-valent adjoint vertex, the torus of side
+three over two letters at the translation along direction zero: the
+bowtie of two plaquettes sharing the origin vertex at multiplicity
+three against the plaquette across the changed edge, the entry at
+the moved states one value with the entry at the states at the
+first member, the vertex witness exchanged for the vertex map
+refused; and the moved vertex's own list at each of its three
+members the relabeled member itself at the reordered incident
+ends, the member relabeled the read at the moved vertex's own
+coordinates. -/
+
+private def tor : Region := torusRegion 2 3
+private def thB : places.Shape := adjchar.theta 2
+private def plq (s : Nat) : List (Nat × Bool) := ground.getAt [] tor.plaqs s
+private def bowtie : List places.Shape :=
+  (List.range tor.links).map (fun l =>
+    if (plq 0).any (fun e => e.1 == l) || (plq 8).any (fun e => e.1 == l) then thB
+    else [0, 0])
+private def loop0 : List places.Shape :=
+  (List.range tor.links).map (fun l =>
+    if (plq 0).any (fun e => e.1 == l) then thB else [0, 0])
+private def ixB : List (List places.Shape) := [bowtie, loop0]
+private def keyB (k : Nat) : List Nat :=
+  (List.range tor.verts).map (fun v => if v == 0 then k else 0)
+private def keyB' (k : Nat) : List Nat :=
+  (List.range tor.verts).map (fun v => if v == 1 then k else 0)
+private def bowtie' : List places.Shape :=
+  pairpencil.permConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) tor.links bowtie
+private def loop0' : List places.Shape :=
+  pairpencil.permConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) tor.links loop0
+
+example : carrier.vmult (dataA 2) tor bowtie 0 = 3
+    ∧ carrier.vmult (dataA 2) tor bowtie' 1 = 3
+    ∧ carrier.incidentEnds (dataA 2) tor bowtie 0
+      = [(thB, true), (thB, false), (thB, true), (thB, false)]
+    ∧ carrier.incidentEnds (dataA 2) tor bowtie' 1
+      = [(thB, false), (thB, true), (thB, true), (thB, false)] := by decide +kernel
+
+/-! The states' members enter as stated data, one kernel task per
+state at the four-valent vertex's direct-tag kernel solve: the
+bowtie's and the loop's at the source keys, and the moved
+configurations' own at the permuted keys. -/
+private def msBow : List (Option (slotpower.SVec × Pos)) :=
+  [some ([([0, 0, 0, 0, 1, 1, 1, 1], ⟨5, 1⟩), ([0, 0, 0, 1, 1, 1, 0, 1], ⟨1, 3⟩), ([0, 0, 0, 1, 1, 1, 1, 0], ⟨1, 3⟩), ([0, 0, 1, 0, 1, 1, 0, 1], ⟨1, 3⟩), ([0, 0, 1, 0, 1, 1, 1, 0], ⟨1, 3⟩), ([0, 0, 1, 1, 1, 1, 0, 0], ⟨5, 1⟩), ([0, 1, 0, 0, 0, 1, 1, 1], ⟨1, 3⟩), ([0, 1, 0, 0, 1, 0, 1, 1], ⟨1, 3⟩), ([0, 1, 0, 1, 0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 0, 1, 0, 1, 1, 0], ⟨2, 1⟩), ([0, 1, 0, 1, 1, 0, 0, 1], ⟨2, 1⟩), ([0, 1, 0, 1, 1, 0, 1, 0], ⟨2, 1⟩), ([0, 1, 1, 0, 0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0, 0, 1, 1, 0], ⟨2, 1⟩), ([0, 1, 1, 0, 1, 0, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0, 1, 0, 1, 0], ⟨2, 1⟩), ([0, 1, 1, 1, 0, 1, 0, 0], ⟨1, 3⟩), ([0, 1, 1, 1, 1, 0, 0, 0], ⟨1, 3⟩), ([1, 0, 0, 0, 0, 1, 1, 1], ⟨1, 3⟩), ([1, 0, 0, 0, 1, 0, 1, 1], ⟨1, 3⟩), ([1, 0, 0, 1, 0, 1, 0, 1], ⟨2, 1⟩), ([1, 0, 0, 1, 0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 0, 1, 1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 0, 1, 1, 0, 1, 0], ⟨2, 1⟩), ([1, 0, 1, 0, 0, 1, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0, 0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 1, 0, 1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0, 1, 0, 1, 0], ⟨2, 1⟩), ([1, 0, 1, 1, 0, 1, 0, 0], ⟨1, 3⟩), ([1, 0, 1, 1, 1, 0, 0, 0], ⟨1, 3⟩), ([1, 1, 0, 0, 0, 0, 1, 1], ⟨5, 1⟩), ([1, 1, 0, 1, 0, 0, 0, 1], ⟨1, 3⟩), ([1, 1, 0, 1, 0, 0, 1, 0], ⟨1, 3⟩), ([1, 1, 1, 0, 0, 0, 0, 1], ⟨1, 3⟩), ([1, 1, 1, 0, 0, 0, 1, 0], ⟨1, 3⟩), ([1, 1, 1, 1, 0, 0, 0, 0], ⟨5, 1⟩)], 1),
+   some ([([0, 0, 0, 0], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0], ⟨2, 1⟩), ([1, 1, 1, 1], ⟨3, 1⟩)], 2),
+   some ([([0, 0, 0, 0], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0], ⟨2, 1⟩), ([1, 1, 1, 1], ⟨3, 1⟩)], 2),
+   some ([([0, 0, 0, 0], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0], ⟨2, 1⟩), ([1, 1, 1, 1], ⟨3, 1⟩)], 2),
+   some ([([0, 0, 1, 1], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨1, 2⟩), ([0, 1, 1, 0], ⟨1, 2⟩), ([1, 0, 0, 1], ⟨1, 2⟩), ([1, 0, 1, 0], ⟨1, 2⟩), ([1, 1, 0, 0], ⟨3, 1⟩)], 2),
+   some ([([], ⟨2, 1⟩)], 1),
+   some ([([0, 0, 0, 0], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0], ⟨2, 1⟩), ([1, 1, 1, 1], ⟨3, 1⟩)], 2),
+   some ([([], ⟨2, 1⟩)], 1),
+   some ([([0, 0, 1, 1], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨1, 2⟩), ([0, 1, 1, 0], ⟨1, 2⟩), ([1, 0, 0, 1], ⟨1, 2⟩), ([1, 0, 1, 0], ⟨1, 2⟩), ([1, 1, 0, 0], ⟨3, 1⟩)], 2)]
+
+private def msLoop : List (Option (slotpower.SVec × Pos)) :=
+  [some ([([0, 0, 1, 1], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨1, 2⟩), ([0, 1, 1, 0], ⟨1, 2⟩), ([1, 0, 0, 1], ⟨1, 2⟩), ([1, 0, 1, 0], ⟨1, 2⟩), ([1, 1, 0, 0], ⟨3, 1⟩)], 2),
+   some ([([0, 0, 0, 0], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0], ⟨2, 1⟩), ([1, 1, 1, 1], ⟨3, 1⟩)], 2),
+   some ([([], ⟨2, 1⟩)], 1),
+   some ([([0, 0, 0, 0], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0], ⟨2, 1⟩), ([1, 1, 1, 1], ⟨3, 1⟩)], 2),
+   some ([([0, 0, 1, 1], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨1, 2⟩), ([0, 1, 1, 0], ⟨1, 2⟩), ([1, 0, 0, 1], ⟨1, 2⟩), ([1, 0, 1, 0], ⟨1, 2⟩), ([1, 1, 0, 0], ⟨3, 1⟩)], 2),
+   some ([([], ⟨2, 1⟩)], 1),
+   some ([([], ⟨2, 1⟩)], 1),
+   some ([([], ⟨2, 1⟩)], 1),
+   some ([([], ⟨2, 1⟩)], 1)]
+
+private def msBowP : List (Option (slotpower.SVec × Pos)) :=
+  [some ([([0, 0, 0, 0], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0], ⟨2, 1⟩), ([1, 1, 1, 1], ⟨3, 1⟩)], 2),
+   some ([([0, 0, 0, 0, 1, 1, 1, 1], ⟨5, 1⟩), ([0, 0, 0, 1, 0, 1, 1, 1], ⟨1, 3⟩), ([0, 0, 0, 1, 1, 0, 1, 1], ⟨1, 3⟩), ([0, 0, 1, 0, 0, 1, 1, 1], ⟨1, 3⟩), ([0, 0, 1, 0, 1, 0, 1, 1], ⟨1, 3⟩), ([0, 0, 1, 1, 0, 0, 1, 1], ⟨5, 1⟩), ([0, 1, 0, 0, 1, 1, 0, 1], ⟨1, 3⟩), ([0, 1, 0, 0, 1, 1, 1, 0], ⟨1, 3⟩), ([0, 1, 0, 1, 0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 0, 1, 0, 1, 1, 0], ⟨2, 1⟩), ([0, 1, 0, 1, 1, 0, 0, 1], ⟨2, 1⟩), ([0, 1, 0, 1, 1, 0, 1, 0], ⟨2, 1⟩), ([0, 1, 1, 0, 0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0, 0, 1, 1, 0], ⟨2, 1⟩), ([0, 1, 1, 0, 1, 0, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0, 1, 0, 1, 0], ⟨2, 1⟩), ([0, 1, 1, 1, 0, 0, 0, 1], ⟨1, 3⟩), ([0, 1, 1, 1, 0, 0, 1, 0], ⟨1, 3⟩), ([1, 0, 0, 0, 1, 1, 0, 1], ⟨1, 3⟩), ([1, 0, 0, 0, 1, 1, 1, 0], ⟨1, 3⟩), ([1, 0, 0, 1, 0, 1, 0, 1], ⟨2, 1⟩), ([1, 0, 0, 1, 0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 0, 1, 1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 0, 1, 1, 0, 1, 0], ⟨2, 1⟩), ([1, 0, 1, 0, 0, 1, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0, 0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 1, 0, 1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0, 1, 0, 1, 0], ⟨2, 1⟩), ([1, 0, 1, 1, 0, 0, 0, 1], ⟨1, 3⟩), ([1, 0, 1, 1, 0, 0, 1, 0], ⟨1, 3⟩), ([1, 1, 0, 0, 1, 1, 0, 0], ⟨5, 1⟩), ([1, 1, 0, 1, 0, 1, 0, 0], ⟨1, 3⟩), ([1, 1, 0, 1, 1, 0, 0, 0], ⟨1, 3⟩), ([1, 1, 1, 0, 0, 1, 0, 0], ⟨1, 3⟩), ([1, 1, 1, 0, 1, 0, 0, 0], ⟨1, 3⟩), ([1, 1, 1, 1, 0, 0, 0, 0], ⟨5, 1⟩)], 1),
+   some ([([0, 0, 0, 0], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0], ⟨2, 1⟩), ([1, 1, 1, 1], ⟨3, 1⟩)], 2),
+   some ([([], ⟨2, 1⟩)], 1),
+   some ([([0, 0, 0, 0], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0], ⟨2, 1⟩), ([1, 1, 1, 1], ⟨3, 1⟩)], 2),
+   some ([([0, 0, 1, 1], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨1, 2⟩), ([0, 1, 1, 0], ⟨1, 2⟩), ([1, 0, 0, 1], ⟨1, 2⟩), ([1, 0, 1, 0], ⟨1, 2⟩), ([1, 1, 0, 0], ⟨3, 1⟩)], 2),
+   some ([([0, 0, 1, 1], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨1, 2⟩), ([0, 1, 1, 0], ⟨1, 2⟩), ([1, 0, 0, 1], ⟨1, 2⟩), ([1, 0, 1, 0], ⟨1, 2⟩), ([1, 1, 0, 0], ⟨3, 1⟩)], 2),
+   some ([([0, 0, 0, 0], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0], ⟨2, 1⟩), ([1, 1, 1, 1], ⟨3, 1⟩)], 2),
+   some ([([], ⟨2, 1⟩)], 1)]
+
+private def msLoopP : List (Option (slotpower.SVec × Pos)) :=
+  [some ([([], ⟨2, 1⟩)], 1),
+   some ([([0, 0, 1, 1], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨1, 2⟩), ([0, 1, 1, 0], ⟨1, 2⟩), ([1, 0, 0, 1], ⟨1, 2⟩), ([1, 0, 1, 0], ⟨1, 2⟩), ([1, 1, 0, 0], ⟨3, 1⟩)], 2),
+   some ([([0, 0, 0, 0], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0], ⟨2, 1⟩), ([1, 1, 1, 1], ⟨3, 1⟩)], 2),
+   some ([([], ⟨2, 1⟩)], 1),
+   some ([([0, 0, 0, 0], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨2, 1⟩), ([0, 1, 1, 0], ⟨2, 1⟩), ([1, 0, 0, 1], ⟨2, 1⟩), ([1, 0, 1, 0], ⟨2, 1⟩), ([1, 1, 1, 1], ⟨3, 1⟩)], 2),
+   some ([([0, 0, 1, 1], ⟨3, 1⟩), ([0, 1, 0, 1], ⟨1, 2⟩), ([0, 1, 1, 0], ⟨1, 2⟩), ([1, 0, 0, 1], ⟨1, 2⟩), ([1, 0, 1, 0], ⟨1, 2⟩), ([1, 1, 0, 0], ⟨3, 1⟩)], 2),
+   some ([([], ⟨2, 1⟩)], 1),
+   some ([([], ⟨2, 1⟩)], 1),
+   some ([([], ⟨2, 1⟩)], 1)]
+
+private theorem bwMembers : pairpencil.stateMembers (dataA 2) tor ixB bowtie (keyB 0) = msBow := by
+  decide +kernel
+private theorem lpMembers : pairpencil.stateMembers (dataA 2) tor ixB loop0 (keyB 0) = msLoop := by
+  decide +kernel
+private theorem bwMembersP : pairpencil.stateMembers (dataA 2) tor ixB bowtie' (keyB' 0) = msBowP := by
+  decide +kernel
+private theorem lpMembersP : pairpencil.stateMembers (dataA 2) tor ixB loop0' (keyB' 0) = msLoopP := by
+  decide +kernel
+
+/-- The bowtie term's entry between the source states, stated data:
+the contraction, the determinants' product and the clearing. -/
+private def bwE : Option (BPair × BPair × Pos) :=
+  some (⟨1761205026817, 1⟩, ⟨10587980173071744, 10587979743090048⟩, 1024)
+
+/-! The entries at the stated members, one kernel task each: the
+source entry, the moved entry one value with it, the moved entry
+at the exchanged vertex witness the unit contraction (the
+refusal), and the moved plaquette's entry between the moved
+configurations at their own members the contraction itself. The
+transport
+reads follow at
+`pairpencil.termTransportAt_of` and `termTransportAt_ne` with the
+members rewritten to their stated lists. -/
+private theorem bwSrc : pairpencil.termEntryAt (dataA 2) tor ixB (plq 8) bowtie loop0
+    (List.zipWith (fun m m' => (m, m')) msBow msLoop) = bwE := by decide +kernel
+private theorem bwMov : pairpencil.termEntryAt (dataA 2) tor ixB
+    (lattice.moveWord (torusTransl 2 3 0) (fun _ => false) (plq 8))
+    (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links bowtie)
+    (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links loop0)
+    (List.zipWith (fun m m' => (m, m'))
+      (pairpencil.movedMembers (dataA 2) tor tor (torusTranslInv 2 3 0) (shiftSite 3 0) (shiftSiteInv 3 0)
+        (fun _ => false) bowtie (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links bowtie) msBow)
+      (pairpencil.movedMembers (dataA 2) tor tor (torusTranslInv 2 3 0) (shiftSite 3 0) (shiftSiteInv 3 0)
+        (fun _ => false) loop0 (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links loop0) msLoop)) = bwE := by
+  decide +kernel
+private theorem bwMovX : pairpencil.termEntryAt (dataA 2) tor ixB
+    (lattice.moveWord (torusTransl 2 3 0) (fun _ => false) (plq 8))
+    (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links bowtie)
+    (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links loop0)
+    (List.zipWith (fun m m' => (m, m'))
+      (pairpencil.movedMembers (dataA 2) tor tor (torusTranslInv 2 3 0) (shiftSiteInv 3 0) (shiftSite 3 0)
+        (fun _ => false) bowtie (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links bowtie) msBow)
+      (pairpencil.movedMembers (dataA 2) tor tor (torusTranslInv 2 3 0) (shiftSiteInv 3 0) (shiftSite 3 0)
+        (fun _ => false) loop0 (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links loop0) msLoop))
+    = some (⟨1, 1⟩, ⟨10587980173071744, 10587979743090048⟩, 1024) := by decide +kernel
+private theorem bwOwn : pairpencil.termEntryAt (dataA 2) tor ixB
+    (moveWord (torusTransl 2 3 0) (fun _ => false) (plq 8)) bowtie' loop0'
+    (List.zipWith (fun m m' => (m, m')) msBowP msLoopP) = bwE := by
+  decide +kernel
+
+private theorem bwSrcH : pairpencil.termEntry (dataA 2) tor ixB (plq 8) bowtie (keyB 0)
+    loop0 (keyB 0) = bwE := by
+  unfold pairpencil.termEntry
+  rw [bwMembers, lpMembers]
+  exact bwSrc
+private theorem bwMovH : pairpencil.termEntryAt (dataA 2) tor ixB
+    (lattice.moveWord (torusTransl 2 3 0) (fun _ => false) (plq 8))
+    (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links bowtie)
+    (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links loop0)
+    (List.zipWith (fun m m' => (m, m'))
+      (pairpencil.movedMembers (dataA 2) tor tor (torusTranslInv 2 3 0) (shiftSite 3 0) (shiftSiteInv 3 0)
+        (fun _ => false) bowtie (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links bowtie) (pairpencil.stateMembers (dataA 2) tor ixB bowtie (keyB 0)))
+      (pairpencil.movedMembers (dataA 2) tor tor (torusTranslInv 2 3 0) (shiftSite 3 0) (shiftSiteInv 3 0)
+        (fun _ => false) loop0 (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links loop0) (pairpencil.stateMembers (dataA 2) tor ixB loop0 (keyB 0)))) = bwE := by
+  rw [bwMembers, lpMembers]
+  exact bwMov
+private theorem bwMovXH : pairpencil.termEntryAt (dataA 2) tor ixB
+    (lattice.moveWord (torusTransl 2 3 0) (fun _ => false) (plq 8))
+    (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links bowtie)
+    (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links loop0)
+    (List.zipWith (fun m m' => (m, m'))
+      (pairpencil.movedMembers (dataA 2) tor tor (torusTranslInv 2 3 0) (shiftSiteInv 3 0) (shiftSite 3 0)
+        (fun _ => false) bowtie (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links bowtie) (pairpencil.stateMembers (dataA 2) tor ixB bowtie (keyB 0)))
+      (pairpencil.movedMembers (dataA 2) tor tor (torusTranslInv 2 3 0) (shiftSiteInv 3 0) (shiftSite 3 0)
+        (fun _ => false) loop0 (pairpencil.dualConf (dataA 2) (torusTransl 2 3 0) (torusTranslInv 2 3 0) (fun _ => false)
+      tor.links loop0) (pairpencil.stateMembers (dataA 2) tor ixB loop0 (keyB 0))))
+    = some (⟨1, 1⟩, ⟨10587980173071744, 10587979743090048⟩, 1024) := by
+  rw [bwMembers, lpMembers]
+  exact bwMovX
+
+example : pairpencil.termTransport (dataA 2) tor tor ixB ixB (torusTransl 2 3 0)
+      (torusTranslInv 2 3 0) (shiftSite 3 0) (shiftSiteInv 3 0) (fun _ => false)
+      (plq 8) bowtie (keyB 0) loop0 (keyB 0) = true := by
+  unfold pairpencil.termTransport
+  exact pairpencil.termTransportAt_of _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ bwSrcH bwMovH
+    (by decide +kernel)
+example : pairpencil.termTransport (dataA 2) tor tor ixB ixB (torusTransl 2 3 0)
+      (torusTranslInv 2 3 0) (shiftSiteInv 3 0) (shiftSite 3 0) (fun _ => false)
+      (plq 8) bowtie (keyB 0) loop0 (keyB 0) = false := by
+  unfold pairpencil.termTransport
+  exact pairpencil.termTransportAt_ne _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ bwSrcH bwMovXH
+    (by decide +kernel)
+
+private def relabeledAt (k : Nat) : slotpower.SVec :=
+  match ground.getAt none (pairpencil.movedMembers (dataA 2) tor tor
+      (torusTranslInv 2 3 0) (shiftSite 3 0) (shiftSiteInv 3 0) (fun _ => false)
+      bowtie bowtie'
+      (pairpencil.stateMembers (dataA 2) tor ixB bowtie (keyB k))) 1 with
+  | some m => m.1
+  | none => []
+private def ownAt (k : Nat) : slotpower.SVec :=
+  match pairpencil.vertexMember (dataA 2) tor ixB bowtie' (keyB' k) 1 with
+  | some m => m.1
+  | none => []
+
+example : ((List.range 3).all (fun k => slotpower.oneValueV (relabeledAt k) (ownAt k))) = true
+    ∧ (relabeledAt 0).length = 36 := by decide +kernel
+
+example : pairpencil.termEntry (dataA 2) tor ixB (plq 8) bowtie (keyB 0) loop0 (keyB 0)
+    = pairpencil.termEntry (dataA 2) tor ixB
+      (moveWord (torusTransl 2 3 0) (fun _ => false) (plq 8))
+      bowtie' (keyB' 0) loop0' (keyB' 0) := by
+  unfold pairpencil.termEntry
+  rw [bwMembers, lpMembers, bwMembersP, lpMembersP, bwSrc]
+  exact bwOwn.symm
 
 /-! The two carriers' interface reads at the three windows. -/
 
@@ -235,14 +454,14 @@ example : ¬ colorRead (torusRegion 2 3) := by decide +kernel
 directions among them. -/
 
 private theorem chPerm3 :
-    permRead (chainRegion 3) (chainTransl 3) (chainTranslInv 3) := by
+    linkIso (chainRegion 3) (chainRegion 3) (chainTransl 3) (chainTranslInv 3) := by
   decide +kernel
 private theorem chPerm5 :
-    permRead (chainRegion 5) (chainTransl 5) (chainTranslInv 5) := by
+    linkIso (chainRegion 5) (chainRegion 5) (chainTransl 5) (chainTranslInv 5) := by
   decide +kernel
-example : permRead (torusRegion 2 3) (torusTransl 2 3 0)
+example : linkIso (torusRegion 2 3) (torusRegion 2 3) (torusTransl 2 3 0)
     (torusTranslInv 2 3 0) := by decide +kernel
-example : permRead (torusRegion 2 3) (torusTransl 2 3 1)
+example : linkIso (torusRegion 2 3) (torusRegion 2 3) (torusTransl 2 3 1)
     (torusTranslInv 2 3 1) := by decide +kernel
 
 /-! The composition clause (`con:lattice`): the two directions'
@@ -272,24 +491,24 @@ example : ¬ commutesRead (torusRegion 2 3) (torusTransl 2 3 0)
     (fun l => 17 - l) := by decide +kernel
 
 private theorem chEnds3 :
-    endsRead (chainRegion 3) (chainTransl 3) (chainVert 3) := by
+    endsMoved (chainRegion 3) (chainRegion 3) (chainTransl 3) (fun _ => false) (chainVert 3) := by
   decide +kernel
-example : endsRead (chainRegion 5) (chainTransl 5) (chainVert 5) := by
+example : endsMoved (chainRegion 5) (chainRegion 5) (chainTransl 5) (fun _ => false) (chainVert 5) := by
   decide +kernel
-example : endsRead (torusRegion 2 3) (torusTransl 2 3 0)
+example : endsMoved (torusRegion 2 3) (torusRegion 2 3) (torusTransl 2 3 0) (fun _ => false)
     (shiftSite 3 0) := by decide +kernel
-example : endsRead (torusRegion 2 3) (torusTransl 2 3 1)
+example : endsMoved (torusRegion 2 3) (torusRegion 2 3) (torusTransl 2 3 1) (fun _ => false)
     (shiftSite 3 1) := by decide +kernel
 
 
 private theorem chVert3 :
-    vertPermRead (chainRegion 3) (chainVert 3) (chainVertInv 3) := by
+    vertIso (chainRegion 3) (chainRegion 3) (chainVert 3) (chainVertInv 3) := by
   decide +kernel
-example : vertPermRead (chainRegion 5) (chainVert 5) (chainVertInv 5) := by
+example : vertIso (chainRegion 5) (chainRegion 5) (chainVert 5) (chainVertInv 5) := by
   decide +kernel
-example : vertPermRead (torusRegion 2 3) (shiftSite 3 0)
+example : vertIso (torusRegion 2 3) (torusRegion 2 3) (shiftSite 3 0)
     (shiftSiteInv 3 0) := by decide +kernel
-example : vertPermRead (torusRegion 2 3) (shiftSite 3 1)
+example : vertIso (torusRegion 2 3) (torusRegion 2 3) (shiftSite 3 1)
     (shiftSiteInv 3 1) := by decide +kernel
 
 example : plaqPermRead (chainRegion 3) (chainTransl 3) (fun _ => false)
@@ -314,9 +533,9 @@ example : cycleRead (torusRegion 2 3) (torusTransl 2 3 1) 3 := by decide +kernel
 /-! The refusals isolating the reads: a map paired with itself in
 place of its witness, and the iterate at a count below the side. -/
 
-example : ¬ permRead (chainRegion 3) (chainTransl 3) (chainTransl 3) := by
+example : ¬ linkIso (chainRegion 3) (chainRegion 3) (chainTransl 3) (chainTransl 3) := by
   decide +kernel
-example : ¬ permRead (torusRegion 2 3) (torusTransl 2 3 0)
+example : ¬ linkIso (torusRegion 2 3) (torusRegion 2 3) (torusTransl 2 3 0)
     (torusTransl 2 3 0) := by decide +kernel
 example : ¬ cycleRead (chainRegion 3) (chainTransl 3) 2 := by decide +kernel
 example : ¬ cycleRead (torusRegion 2 3) (torusTransl 2 3 1) 2 := by decide +kernel
@@ -329,7 +548,7 @@ identity data and at every stated position. -/
 private def swapRR : Nat → Nat :=
   fun l => if l == 0 then 3 else if l == 3 then 0 else l
 
-example : permRead (chainRegion 3) swapRR swapRR := by decide +kernel
+example : linkIso (chainRegion 3) (chainRegion 3) swapRR swapRR := by decide +kernel
 example : ¬ plaqPermRead (chainRegion 3) swapRR (fun _ => false) (fun q => q) (fun q => q)
     ∧ ((List.range 3).all (fun p =>
         !cycEq (moveWord swapRR (fun _ => false)
@@ -379,9 +598,9 @@ example : pairpencil.slotDiag fA chW (idx fA chW 12) = chDiag := by
 /-! The three index reads at the action, the witness's own map the
 relabeling: the content, the occupancy and the closure fixed. -/
 
-example : contentFixed fA chW chIx (chainTranslInv 3) := by decide +kernel
-example : occFixed fA chW chIx (chainTranslInv 3) := by decide +kernel
-example : idxFixed fA chW chIx (chainTranslInv 3) := by decide +kernel
+example : contentFixed fA chW chIx (chainTransl 3) (chainTranslInv 3) := by decide +kernel
+example : occFixed fA chW chIx (chainTransl 3) (chainTranslInv 3) := by decide +kernel
+example : idxFixed fA chW chIx (chainTransl 3) (chainTranslInv 3) := by decide +kernel
 
 /-! The content and the occupancy fixed through the theorems at
 the label calculus itself, the pinned index's members the width-two
@@ -390,19 +609,22 @@ action (`contentN_perm`) and the occupancy by the transport at the
 count laws discharged over the labels (`occupied_perm_dataA`), each
 beside the decided read above. -/
 
+private theorem chIso3 : isoRead chW chW (chainTransl 3) (chainTranslInv 3)
+    (chainVert 3) (chainVertInv 3) (fun _ => false) :=
+  ⟨chPerm3, chVert3, chEnds3⟩
 private theorem chIxLabels :
     (chIx.all (fun a => a.all (labelA 2))) = true := by decide +kernel
 private theorem chIxLen : (chIx.all (fun a => a.length == 9)) = true := by
   decide +kernel
 
-example : contentFixed (dataA 2) chW chIx (chainTranslInv 3) :=
-  contentFixed_of (dataA 2) chW chIx (chainTranslInv 3) (fun a ha =>
+example : contentFixed (dataA 2) chW chIx (chainTransl 3) (chainTranslInv 3) :=
+  contentFixed_of (dataA 2) chW chIx (chainTransl 3) (chainTranslInv 3) (fun a ha =>
     contentN_perm (dataA 2) chW (chainTransl 3) (chainTranslInv 3) chPerm3 a
       (ground.beqEqOf (ground.all_of_mem _ _ chIxLen a ha)))
-example : occFixed (dataA 2) chW chIx (chainTranslInv 3) :=
-  occFixed_of (dataA 2) chW chIx (chainTranslInv 3) (fun a ha =>
+example : occFixed (dataA 2) chW chIx (chainTransl 3) (chainTranslInv 3) :=
+  occFixed_of (dataA 2) chW chIx (chainTransl 3) (chainTranslInv 3) (fun a ha =>
     occupied_perm_dataA 2 chW chWell3 (chainTransl 3) (chainTranslInv 3)
-      (chainVert 3) (chainVertInv 3) chPerm3 chEnds3 chVert3 a
+      (chainVert 3) (chainVertInv 3) chIso3 a
       (ground.all_of_mem _ _ chIxLabels a ha))
 
 /-! The closure through the theorem at the label calculus: the
@@ -414,27 +636,19 @@ private theorem chIxPinA : idx (dataA 2) chW 12 = chIx := by
   rw [← idxA_eq]
   decide +kernel
 
-example : idxFixed (dataA 2) chW chIx (chainTranslInv 3) := by
+example : idxFixed (dataA 2) chW chIx (chainTransl 3) (chainTranslInv 3) := by
   rw [← chIxPinA]
   exact idxFixed_dataA 2 chW 12 chWell3 (chainTransl 3) (chainTranslInv 3)
-    (chainVert 3) (chainVertInv 3) chPerm3 chEnds3 chVert3
+    (chainVert 3) (chainVertInv 3) chIso3
 
-/-! The congruence's data at the pinned index, every fiber at its
-one slot: the window list is the index with the vacant key per
-member and its diagonal is the index's contents (`slotDiag_unit`'s
-instance, decided beside the theorem), the window list meets each
-member's image once, its equality read is structural on the image
-pairs, and the electric member's entries move along the
-translation — each decided and each the theorem's own at the label
-calculus — with the congruence at the free end's window matrix
-read through `commRead_slotE_dataA` beside the decided read.  The
-transposition's refusal: the moved lower rail loop meets the window
-list at no member. -/
+/-! The window list at the pinned index, every fiber at its one
+slot: the window list is the index with the vacant key per member
+and its diagonal is the index's contents (`slotDiag_unit`'s
+instance, decided beside the theorem), the list distinct at the
+distinct index through the theorem. -/
 
 private def chSlots : List (List places.Shape × List Nat) :=
   chIx.map (fun a => (a, List.replicate 6 0))
-private def chAct : List places.Shape × List Nat → List places.Shape × List Nat :=
-  slotAct (dataA 2) (chainTranslInv 3) (chainVertInv 3) 9 6
 
 example : pairpencil.slotList (dataA 2) chW chIx = chSlots := by decide +kernel
 private theorem chSlotDiag : pairpencil.slotDiag (dataA 2) chW chIx = chDiag := by
@@ -442,36 +656,11 @@ private theorem chSlotDiag : pairpencil.slotDiag (dataA 2) chW chIx = chDiag := 
 example : pairpencil.slotDiag (dataA 2) chW chIx = chDiag :=
   (pairpencil.slotDiag_unit (dataA 2) chW chIx (by decide +kernel)).trans
     (by decide +kernel)
-example : imgOnceBy (slotEq (dataA 2)) chAct
-    (pairpencil.slotList (dataA 2) chW chIx) := by decide +kernel
-example : imgEqBy (slotEq (dataA 2)) chAct
-    (pairpencil.slotList (dataA 2) chW chIx) := by decide +kernel
-example : ground.distinctList (pairpencil.slotList (dataA 2) chW chIx) := by
-  decide +kernel
-example : movedReadBy (slotEq (dataA 2)) chAct
-    (pairpencil.slotList (dataA 2) chW chIx) (pairpencil.pencilE chDiag) := by
-  decide +kernel
-private theorem chOnce : imgOnceBy (slotEq (dataA 2))
-    (slotAct (dataA 2) (chainTranslInv 3) (chainVertInv 3) chW.links chW.verts)
-    (pairpencil.slotList (dataA 2) chW chIx) := by
-  rw [← chIxPinA]
-  exact slotOnce_dataA 2 chW 12 chWell3 (chainTransl 3) (chainTranslInv 3)
-    (chainVert 3) (chainVertInv 3) chPerm3 chEnds3 chVert3
-example : imgEqBy (slotEq (dataA 2))
-    (slotAct (dataA 2) (chainTranslInv 3) (chainVertInv 3) chW.links chW.verts)
-    (pairpencil.slotList (dataA 2) chW chIx) := by
-  rw [← chIxPinA]
-  exact slotEq_dataA 2 chW 12 (chainTranslInv 3) (chainVertInv 3)
 example : ground.distinctList (pairpencil.slotList (dataA 2) chW chIx) := by
   rw [← chIxPinA]
   exact pairpencil.slotList_distinct (dataA 2) chW _
     (idx_distinct (dataA 2) chW 12 (below_distinct_dataA 2 12))
-example : ¬ imgOnceBy (slotEq (dataA 2))
-    (slotAct (dataA 2) swapRR (fun v => v) 9 6)
-    (pairpencil.slotList (dataA 2) chW chIx) := by decide +kernel
-
-/-! The magnetic member's transport at the chain window.  The
-translation permutes the plaquette list, the moved positions
+/-! The plaquette list under the translation: the moved positions
 `[1, 2, 0]` with the witness's `[2, 0, 1]` the action's plaquette
 permutation as stated data (`plaqPermRead`, each image word the
 moved position's own at the cyclic reading; the read at the
@@ -481,42 +670,18 @@ plaquette terms enter as stated data at the support's shape: per
 plaquette the matrix reading a pair at every position pair whose
 configurations meet across the plaquette's changed edge
 (`algebra.plaqRow`'s targets at the window positions), the unit
-elsewhere.  The terms' transport is decided, the terms' sum's
-moved read decided and routed through `movedReadBy_termSum`, and
-the congruence at the sum decided and routed through
-`commRead_slotM` at the pinned index with the window list met once
-by the calculus's own read (`slotOnce_dataA` at the pinned
-enumeration) and through `commRead_slotM_dataA` at the index tied
-to the window's own.  The pencil interface's read at the chain
-window closes the tier, `commRead_pencilM_dataA`'s route: the
-electric member at the window list's diagonal, the identity gram
-at its split, the three terms with their two cap splits at the
-adjoint dimension three, and the magnetic member the terms' sum,
-the induced permutation matrix commuting with the member through
-the interface's own read.  The refusals, each isolating one binder
-with its companions decided: the terms with one entry of the first
-plaquette's term forged off its moved twin at two moved positions
-part the terms' transport, the sum's moved read and the
-congruence; an entry forged at two fixed positions, the rail
-loops', parts the terms' transport alone, the sum's moved read
-and the congruence holding, the sum blind to a term's own twin at
-fixed positions; a fourth term beyond the plaquette count parts
-the sum's moved read with the transport holding, the count tie; a
-term with one row truncated parts the sum's moved read with the
-transport holding, the order binder, the entrywise sum truncating
-at the shorter operand; and a window list with one member listed
-twice under the identity action refuses the once-met read with
-the transport and the sum's moved read holding and the congruence
-parting, `commRead_slotM`'s once-met binder off the sum lemma.
-The plaquette read's one listing per plaquette refuses at a
-plaquette listed twice and at a plaquette listed beside its
+elsewhere, and the pencil interface's read at the chain window
+passes at them: the electric member at the window list's diagonal,
+the identity gram at its split, the three terms with their two cap
+splits at the adjoint dimension three, and the magnetic member the
+terms' sum.  The plaquette read's one listing per plaquette refuses
+at a plaquette listed twice and at a plaquette listed beside its
 rotation, the second at the structural distinctness holding. -/
 
 private def chPmT : Nat → Nat := fun q => ground.getAt 0 [1, 2, 0] q
 private def chPmS : Nat → Nat := fun q => ground.getAt 0 [2, 0, 1] q
 
-private theorem chPlaqT :
-    plaqPermRead chW (chainTransl 3) (fun _ => false) chPmT chPmS := by
+example : plaqPermRead chW (chainTransl 3) (fun _ => false) chPmT chPmS := by
   decide +kernel
 example : plaqPermRead chW (chainTranslInv 3) (fun _ => false) chPmS chPmT := by
   decide +kernel
@@ -534,44 +699,7 @@ private def chTerm (p : List (Nat × Bool)) : Mat :=
 private def chTerms : List Mat := chW.plaqs.map chTerm
 private def chSum : Mat := elim.msum 6 (ground.getAt [] chTerms) (List.range 3)
 
-example : termsMoved (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3)
-    chPmT chTerms := by decide +kernel
-example : movedReadBy (slotEq (dataA 2)) chAct
-    (pairpencil.slotList (dataA 2) chW chIx) chSum := by decide +kernel
-example : commRead (slotMat (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3))
-    chSum := by decide +kernel
-
-private theorem chTermsSq : (List.range chTerms.length).all (fun q =>
-    decide (sqAt (ground.getAt [] chTerms q)
-      ((pairpencil.slotList (dataA 2) chW chIx).length + 1))) = true := by
-  decide +kernel
-
-example : movedReadBy (slotEq (dataA 2))
-    (slotAct (dataA 2) (chainTranslInv 3) (chainVertInv 3) chW.links chW.verts)
-    (pairpencil.slotList (dataA 2) chW chIx)
-    (elim.msum ((pairpencil.slotList (dataA 2) chW chIx).length + 1)
-      (ground.getAt [] chTerms) (List.range chTerms.length)) :=
-  movedReadBy_termSum (dataA 2) chW chIx (chainTransl 3) (chainTranslInv 3)
-    (chainVertInv 3) chPmT chPmS chPlaqT chTerms (by decide +kernel)
-    (fun q hq => of_decide_eq_true (all_range_read _ chTermsSq q hq))
-    (by decide +kernel)
-example : commRead (slotMat (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3))
-    (elim.msum ((pairpencil.slotList (dataA 2) chW chIx).length + 1)
-      (ground.getAt [] chTerms) (List.range chTerms.length)) :=
-  commRead_slotM (dataA 2) chW chIx (chainTransl 3) (chainTranslInv 3)
-    (chainVertInv 3) chPmT chPmS chPlaqT chOnce chTerms (by decide +kernel)
-    (fun q hq => of_decide_eq_true (all_range_read _ chTermsSq q hq))
-    (by decide +kernel)
-example : commRead (slotMat (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3))
-    (elim.msum ((pairpencil.slotList (dataA 2) chW chIx).length + 1)
-      (ground.getAt [] chTerms) (List.range chTerms.length)) :=
-  commRead_slotM_dataA 2 chW 12 chIx chIxPinA chWell3 (chainTransl 3)
-    (chainTranslInv 3) (chainVert 3) (chainVertInv 3) chPmT chPmS
-    chPerm3 chEnds3 chVert3 chPlaqT chTerms (by decide +kernel)
-    (fun q hq => of_decide_eq_true (all_range_read _ chTermsSq q hq))
-    (by decide +kernel)
-
-private def chG : Mat := inertia.idMat 6
+private def chG : Mat := elim.idMat 6
 private def chP (k : Nat) : List (Nat × Bool) := ground.getAt [] chW.plaqs k
 private def chCap : Mat :=
   inertia.matScaleB (BPair.ofNat ((dataA 2).dim (dataA 2).theta)) chG
@@ -741,7 +869,7 @@ adjoint dimension read at the data), so the assembly matches
 to the kernel. -/
 
 private theorem chCapSq : sqAt chCap 6 := by decide +kernel
-private theorem chSym0 : pairpencil.symmRead (chTerm (chP 0)) := by decide +kernel
+private theorem chSym0 : elim.symmRead (chTerm (chP 0)) := by decide +kernel
 private theorem chSq0 : sqAt (chTerm (chP 0)) 6 := by decide +kernel
 private theorem chLe0 : inertia.leAt (chTerm (chP 0)) chCap chU0 := by
   decide +kernel
@@ -777,7 +905,7 @@ private theorem chEnt0R5 : (List.range 6).all (fun j =>
   decide +kernel
 private theorem chEnt0 : pairpencil.entriesRead (dataA 2) chW 6 chIx 1 chG (chP 0) (chTerm (chP 0)) :=
   (ground.all_range_succ_intro 5 (ground.all_range_succ_intro 4 (ground.all_range_succ_intro 3 (ground.all_range_succ_intro 2 (ground.all_range_succ_intro 1 (ground.all_range_succ_intro 0 rfl chEnt0R0) chEnt0R1) chEnt0R2) chEnt0R3) chEnt0R4) chEnt0R5)
-private theorem chSym1 : pairpencil.symmRead (chTerm (chP 1)) := by decide +kernel
+private theorem chSym1 : elim.symmRead (chTerm (chP 1)) := by decide +kernel
 private theorem chSq1 : sqAt (chTerm (chP 1)) 6 := by decide +kernel
 private theorem chLe1 : inertia.leAt (chTerm (chP 1)) chCap chU1 := by
   decide +kernel
@@ -813,7 +941,7 @@ private theorem chEnt1R5 : (List.range 6).all (fun j =>
   decide +kernel
 private theorem chEnt1 : pairpencil.entriesRead (dataA 2) chW 6 chIx 1 chG (chP 1) (chTerm (chP 1)) :=
   (ground.all_range_succ_intro 5 (ground.all_range_succ_intro 4 (ground.all_range_succ_intro 3 (ground.all_range_succ_intro 2 (ground.all_range_succ_intro 1 (ground.all_range_succ_intro 0 rfl chEnt1R0) chEnt1R1) chEnt1R2) chEnt1R3) chEnt1R4) chEnt1R5)
-private theorem chSym2 : pairpencil.symmRead (chTerm (chP 2)) := by decide +kernel
+private theorem chSym2 : elim.symmRead (chTerm (chP 2)) := by decide +kernel
 private theorem chSq2 : sqAt (chTerm (chP 2)) 6 := by decide +kernel
 private theorem chLe2 : inertia.leAt (chTerm (chP 2)) chCap chU2 := by
   decide +kernel
@@ -864,85 +992,93 @@ private theorem chGramRead : pairpencil.gramBlockRead (dataA 2) chW 6 chIx 1 chG
   decide +kernel
 private theorem chSpGRead : inertia.splitRead chG chSpG ∧ inertia.pdAt chSpG := by
   decide +kernel
-private theorem chPencil : pairpencil.pencilRead (dataA 2) chW 12 6 chIx 1
+example : pairpencil.pencilRead (dataA 2) chW 12 6 chIx 1
     (pairpencil.pencilE chDiag) chG chSum chSpG chTermsP :=
   ⟨chIxPinA, chDim, by decide +kernel,
     by rw [chSlotDiag]; decide +kernel, chGramRead, chSpGRead.1, chSpGRead.2,
     chTermsRead, by decide +kernel, by decide +kernel⟩
 
-example : commRead (slotMat (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3))
-    chSum :=
-  commRead_pencilM_dataA 2 chW 12 6 chIx 1 (pairpencil.pencilE chDiag) chG chSum
-    chSpG chTermsP chPencil chWell3 (chainTransl 3) (chainTranslInv 3)
-    (chainVert 3) (chainVertInv 3) chPmT chPmS chPerm3 chEnds3 chVert3 chPlaqT
-    (by decide +kernel)
+/-! The transport at the chain's translation (`thm:pairpencil`'s
+transport field at the region's own action): the translation with
+its witness and the induced vertex map with its witness read a
+label-graph isomorphism of the chain onto itself (`isoRead`, decided
+and assembled from its three reads); every moved member is a state
+of the moved window, in the moved vertex's own list's span at the
+lists' one count (`statesTransport`); every term's entry between
+two moved states is the entry between the states across every
+changed edge with the plaquette list permuted (`termsTransport`);
+and the moved states' coefficients over the window's own list
+assemble the transport's matrix (`transportMat`), the plaquette
+positions' permutation at unit clearings, congruent for the gram
+and for the magnetic member (`transportCongr`) and refused at one
+plaquette's term alone, the term moved to the next plaquette.  The
+refusals: the vertex witness exchanged for the vertex map refuses
+the isomorphism read, the states' transport and the terms'
+transport, the members read at the wrong vertices; the plaquette
+permutation exchanged for its witness refuses the terms'
+transport at its own conjunct. -/
 
-private def chTermBad : Mat :=
-  ground.matOf 6 6 (fun i j =>
-    if i == 3 && j == 4 then ⟨3, 1⟩
-    else ground.getAt BPair.unit (ground.getAt [] (chTerm (chP 0)) i) j)
-private def chTermsBad : List Mat := chTermBad :: chTerms.drop 1
+example : isoRead chW chW (chainTransl 3) (chainTranslInv 3) (chainVert 3)
+    (chainVertInv 3) (fun _ => false) := chIso3
+example : ¬ isoRead chW chW (chainTransl 3) (chainTranslInv 3) (chainVertInv 3)
+    (chainVert 3) (fun _ => false) := by decide +kernel
+example : statesTransport (dataA 2) chW chIx (chainTransl 3) (chainTranslInv 3)
+    (chainVert 3) (fun _ => false) := by decide +kernel
+example : ¬ statesTransport (dataA 2) chW chIx (chainTransl 3) (chainTranslInv 3)
+    (chainVertInv 3) (fun _ => false) := by decide +kernel
+example : termsTransport (dataA 2) chW 6 chIx (chainTransl 3) (chainTranslInv 3)
+    (chainVert 3) (chainVertInv 3) (fun _ => false) chPmT chPmS := by decide +kernel
+example : ¬ termsTransport (dataA 2) chW 6 chIx (chainTransl 3) (chainTranslInv 3)
+    (chainVertInv 3) (chainVert 3) (fun _ => false) chPmT chPmS := by decide +kernel
+example : ¬ termsTransport (dataA 2) chW 6 chIx (chainTransl 3) (chainTranslInv 3)
+    (chainVert 3) (chainVertInv 3) (fun _ => false) chPmS chPmT := by decide +kernel
 
-example : ¬ termsMoved (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3)
-    chPmT chTermsBad := by decide +kernel
-example : ¬ movedReadBy (slotEq (dataA 2)) chAct
-    (pairpencil.slotList (dataA 2) chW chIx)
-    (elim.msum 6 (ground.getAt [] chTermsBad) (List.range 3)) := by decide +kernel
-example : ¬ commRead (slotMat (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3))
-    (elim.msum 6 (ground.getAt [] chTermsBad) (List.range 3)) := by decide +kernel
+private def chTr : Mat × List BPair :=
+  transportMat (dataA 2) chW chIx 6 (chainTransl 3) (chainTranslInv 3)
+    (chainVert 3) (chainVertInv 3) (fun _ => false)
 
-private def chTermRail : Mat :=
-  ground.matOf 6 6 (fun i j =>
-    if i == 1 && j == 2 then ⟨3, 1⟩
-    else ground.getAt BPair.unit (ground.getAt [] (chTerm (chP 0)) i) j)
-private def chTermsRail : List Mat := chTermRail :: chTerms.drop 1
-
-example : ¬ termsMoved (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3)
-      chPmT chTermsRail
-    ∧ movedReadBy (slotEq (dataA 2)) chAct (pairpencil.slotList (dataA 2) chW chIx)
-      (elim.msum 6 (ground.getAt [] chTermsRail) (List.range 3))
-    ∧ commRead (slotMat (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3))
-      (elim.msum 6 (ground.getAt [] chTermsRail) (List.range 3)) := by
+example : matOneValue chTr.1 (permMatAt 6 (fun i => ground.getAt 0 [0, 1, 2, 4, 5, 3] i))
+    ∧ (chTr.2.all (fun x => decide (x.oneValue (BPair.ofNat 1)))) = true := by
+  decide +kernel
+example : transportCongr chTr.1 chTr.2 chG ∧ transportCongr chTr.1 chTr.2 chSum := by
+  decide +kernel
+example : ¬ transportCongr chTr.1 chTr.2 (ground.getAt [] chTerms 0) := by
   decide +kernel
 
-private def chTermX : Mat :=
-  ground.matOf 6 6 (fun i j => if i == 3 && j == 4 then ⟨3, 1⟩ else BPair.unit)
+/-! The two-window clause: the theta graph's plaquette neighborhood
+into the chain of three, the isomorphism's link map an injection
+with its witness reading every source key back and the traversal
+reversed at four links (`isoRead`, refused at the vacant reversal
+family: the orientations), the moved configuration the chain's own
+plaquette loop with the unimaged links at the unit under the
+witness's arbitrary values there (`pairpencil.dualConf`), and the
+term's entry at the source plaquette between its loop and itself
+one value with the entry at the moved plaquette between the moved
+states (`pairpencil.termTransport`), the reversed fundamental
+ends' tie columns read at the star. -/
 
-example : termsMoved (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3)
-      chPmT (chTerms ++ [chTermX])
-    ∧ ¬ movedReadBy (slotEq (dataA 2)) chAct (pairpencil.slotList (dataA 2) chW chIx)
-      (elim.msum 6 (ground.getAt [] (chTerms ++ [chTermX])) (List.range 4)) := by
+private def thT : Nat → Nat := fun l => ground.getAt 0 [3, 0, 6, 1, 7, 2, 4] l
+private def thS : Nat → Nat := fun l => ground.getAt 0 [1, 3, 5, 0, 6, 0, 2, 4, 0] l
+private def thRev : Nat → Bool :=
+  fun l => ground.getAt false [true, false, false, true, false, true, true] l
+private def thV : Nat → Nat := fun x => ground.getAt 0 [2, 0, 1, 3, 5, 4] x
+private def thW : Nat → Nat := fun x => ground.getAt 0 [1, 2, 0, 3, 5, 4] x
+private def thP0 : List (Nat × Bool) := ground.getAt [] thetaG.plaqs 0
+private def thLoop0 : List places.Shape :=
+  (List.range 7).map (fun l => if thP0.any (fun e => e.1 == l) then [1, 0] else [0, 0])
+private def thIx : List (List places.Shape) :=
+  [[[0, 0], [0, 0], [0, 0], [1, 0], [1, 0], [1, 0], [1, 0]],
+   [[1, 0], [1, 0], [1, 0], [1, 0], [0, 0], [0, 0], [0, 0]]]
+
+example : idx (dataA 2) thetaG 12 = thIx := by
+  rw [← idxA_eq]
   decide +kernel
-
-private def chTermRag : Mat :=
-  (List.range 6).map (fun i =>
-    if i == 3 then (ground.getAt [] (chTerm (chP 0)) 3).take 3
-    else ground.getAt [] (chTerm (chP 0)) i)
-private def chTermsRag : List Mat := chTermRag :: chTerms.drop 1
-
-example : termsMoved (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3)
-      chPmT chTermsRag
-    ∧ ¬ sqAt chTermRag 6
-    ∧ ¬ movedReadBy (slotEq (dataA 2)) chAct (pairpencil.slotList (dataA 2) chW chIx)
-      (elim.msum 6 (ground.getAt [] chTermsRag) (List.range 3)) := by
+example : isoRead thetaG chW thT thS thV thW thRev := by decide +kernel
+example : ¬ isoRead thetaG chW thT thS thV thW (fun _ => false) := by decide +kernel
+example : pairpencil.dualConf (dataA 2) thT thS thRev 9 thLoop0 = ground.getAt [] chIx 4 := by
   decide +kernel
-
-private def chIxD : List (List places.Shape) :=
-  [ground.getAt [] chIx 2, ground.getAt [] chIx 2]
-private def chSD : Mat :=
-  [[BPair.unit, BPair.unit, BPair.unit], [BPair.unit, ⟨2, 1⟩, ⟨2, 1⟩],
-   [BPair.unit, ⟨2, 1⟩, ⟨2, 1⟩]]
-
-example : plaqPermRead chW (fun l => l) (fun _ => false) (fun q => q) (fun q => q)
-    ∧ ¬ imgOnceBy (slotEq (dataA 2)) (slotAct (dataA 2) (fun l => l) (fun v => v) 9 6)
-      (pairpencil.slotList (dataA 2) chW chIxD)
-    ∧ termsMoved (dataA 2) chW chIxD (fun l => l) (fun v => v) (fun q => q)
-      [chSD, chSD, chSD]
-    ∧ movedReadBy (slotEq (dataA 2)) (slotAct (dataA 2) (fun l => l) (fun v => v) 9 6)
-      (pairpencil.slotList (dataA 2) chW chIxD)
-      (elim.msum 3 (ground.getAt [] [chSD, chSD, chSD]) (List.range 3))
-    ∧ ¬ commRead (slotMat (dataA 2) chW chIxD (fun l => l) (fun v => v))
-      (elim.msum 3 (ground.getAt [] [chSD, chSD, chSD]) (List.range 3)) := by
+example : pairpencil.termTransport (dataA 2) thetaG chW thIx chIx thT thS thV thW thRev
+    thP0 thLoop0 (List.replicate 6 0) thLoop0 (List.replicate 6 0) = true := by
   decide +kernel
 
 private def chTwice : Region :=
@@ -953,103 +1089,29 @@ private def chRot : Region :=
 example : ¬ plaqRead chTwice ∧ ¬ ground.distinctList chTwice.plaqs
     ∧ ¬ plaqRead chRot ∧ ground.distinctList chRot.plaqs := by decide +kernel
 
-/-! The congruence's four load-bearing binders at their refusals
-on the place action's own carrier, the standing conjuncts decided
-beside each: the diagonal moved — two members exchanged under the
-action at weights fourteen and nineteen; the action off
-injectivity, a constant action folding two members onto one at one
-weight; the equality read off the image pairs' structure, the
-parity read meeting each image once at a member off the image with
-the weights fixed; and the image off the list, the shift by five
-at fixed weights. -/
-
-private def swapTwo : Nat → Nat := fun a => if a = 0 then 1 else 0
-
-example : imgOnceBy (fun a b : Nat => a == b) swapTwo [0, 1]
-    ∧ imgEqBy (fun a b : Nat => a == b) swapTwo [0, 1]
-    ∧ ground.distinctList [0, 1] := by decide +kernel
-example : ¬ movedReadBy (fun a b : Nat => a == b) swapTwo [0, 1]
-    (pairpencil.pencilE [0, 14, 19]) := by decide +kernel
-example : ¬ commRead (permMatBy (fun a b : Nat => a == b) swapTwo [0, 1])
-    (pairpencil.pencilE [0, 14, 19]) := by decide +kernel
-example : imgOnceBy (fun a b : Nat => a == b) (fun _ => 0) [0, 1]
-    ∧ imgEqBy (fun a b : Nat => a == b) (fun _ => 0) [0, 1] := by
-  decide +kernel
-example : ¬ movedReadBy (fun a b : Nat => a == b) (fun _ => 0) [0, 1]
-    (pairpencil.pencilE [0, 5, 5]) := by decide +kernel
-example : ¬ commRead (permMatBy (fun a b : Nat => a == b) (fun _ => 0) [0, 1])
-    (pairpencil.pencilE [0, 5, 5]) := by decide +kernel
-
-private def eqP : Nat → Nat → Bool := fun a b => a % 2 == b % 2
-private def imgP : Nat → Nat := fun a => if a == 0 then 3 else 2
-private def wP : Nat → Nat := fun a => if a == 0 || a == 3 then 5 else 9
-
-example : imgOnceBy eqP imgP [0, 1]
-    ∧ ([0, 1].all (fun a => [0, 1].all (fun b =>
-        !(imgP a == imgP b) || (a == b)))) = true
-    ∧ ([0, 1].all (fun a => wP (imgP a) == wP a)) = true := by decide +kernel
-example : ¬ imgEqBy eqP imgP [0, 1] := by decide +kernel
-example : ¬ movedReadBy eqP imgP [0, 1] (pairpencil.pencilE [0, 5, 9]) := by
-  decide +kernel
-example : ¬ commRead (permMatBy eqP imgP [0, 1])
-    (pairpencil.pencilE [0, 5, 9]) := by decide +kernel
-
-example : imgEqBy (fun a b : Nat => a == b) (fun a => a + 5) [0, 1] := by
-  decide +kernel
-example : ¬ imgOnceBy (fun a b : Nat => a == b) (fun a => a + 5) [0, 1] := by
-  decide +kernel
-example : ¬ commRead (permMatBy (fun a b : Nat => a == b) (fun a => a + 5) [0, 1])
-    (pairpencil.pencilE [0, 4, 4]) := by decide +kernel
-
-example : commRead (slotMat (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3))
-    (pairpencil.pencilE chDiag) := by
-  rw [← chSlotDiag]
-  exact commRead_slotE_dataA 2 chW 12 chIx chIxPinA chWell3 (chainTransl 3)
-    (chainTranslInv 3) (chainVert 3) (chainVertInv 3) chPerm3 chEnds3 chVert3
-example : commRead (slotMat (dataA 2) chW chIx (chainTranslInv 3) (chainVertInv 3))
-    (pairpencil.pencilE chDiag) := by
-  decide +kernel
-
-/-! The commuting read at the free end's window matrix
-(`prop:segment`, the electric member alone at its own one-member
-site, `pairpencil.pencilE`): the place action's matrix's congruence
-fixes the diagonal at the tabulated interface as well, the three
-squares' contents at one value and the two rails' at another. -/
-
-example : commRead (slotMat fA chW chIx (chainTranslInv 3) (chainVertInv 3))
-    (pairpencil.pencilE chDiag) := by
-  decide +kernel
-
 /-! The transposition biting at the index layer: it moves the lower
 rail loop to a configuration whose rung end reads one label alone,
 so the closure fails and the congruence with it. -/
 
-example : ¬ idxFixed fA chW chIx swapRR := by decide +kernel
-example : ¬ occFixed fA chW chIx swapRR := by decide +kernel
-example : ¬ commRead (slotMat fA chW chIx swapRR (fun v => v))
-    (pairpencil.pencilE chDiag) := by
-  decide +kernel
+example : ¬ idxFixed fA chW chIx swapRR swapRR := by decide +kernel
+example : ¬ occFixed fA chW chIx swapRR swapRR := by decide +kernel
 
 /-! The window list at fibers of four slots: at three letters the
 rails at the adjoint with one rung at the adjoint, the rung's two
 ends at multiplicity two (`θ ⊗ θ ⊗ θ` holding the unit twice at
 three letters), the three members the translation's one orbit,
-twelve slots with the unit line.  The congruence holds at the
-vertex witness and refuses at the identity in its place, the moved
-key off the moved member's fiber: the vertex witness is
-load-bearing at the window list, at the electric member and at the
-magnetic — the terms' transport at a diagonal term reading each
-slot key's digit fold moves at the vertex witness and refuses at
-the identity in its place, the sum commuting at the witness. -/
+twelve slots with the unit line.  The gram's transport holds at the
+vertex witness, the two members of a rung end read at the reordered
+incident ends of the moved vertex, and refuses at the identity in
+the witness's place, the moved configuration's ends off the source
+vertex's. -/
 
 private def th3 : places.Shape := adjchar.theta 3
 private def u3 : places.Shape := [0, 0, 0]
-private def ix3 : List (List places.Shape) :=
-  [[th3, u3, u3, th3, th3, th3, th3, th3, th3],
-   [u3, th3, u3, th3, th3, th3, th3, th3, th3],
-   [u3, u3, th3, th3, th3, th3, th3, th3, th3]]
-private def act3 : List places.Shape × List Nat → List places.Shape × List Nat :=
-  slotAct (dataA 3) (chainTranslInv 3) (chainVertInv 3) 9 6
+private def a3 : List places.Shape := [th3, u3, u3, th3, th3, th3, th3, th3, th3]
+private def b3 : List places.Shape := [u3, th3, u3, th3, th3, th3, th3, th3, th3]
+private def c3 : List places.Shape := [u3, u3, th3, th3, th3, th3, th3, th3, th3]
+private def ix3 : List (List places.Shape) := [a3, b3, c3]
 
 example : (ix3.all (fun a => occupied (dataA 3) chW a)) = true
     ∧ (ix3.all (fun a => windowfinite.fibProd (dataA 3) chW a == 4)) = true := by
@@ -1059,36 +1121,59 @@ example : pairpencil.slotKeys (dataA 3) chW (ground.getAt [] ix3 0)
        [1, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0]] := by decide +kernel
 example : (pairpencil.slotList (dataA 3) chW ix3).length = 12 := by
   decide +kernel
-example : imgOnceBy (slotEq (dataA 3)) act3 (pairpencil.slotList (dataA 3) chW ix3)
-    ∧ imgEqBy (slotEq (dataA 3)) act3 (pairpencil.slotList (dataA 3) chW ix3)
-    ∧ ground.distinctList (pairpencil.slotList (dataA 3) chW ix3) := by
-  decide +kernel
-example : commRead (slotMat (dataA 3) chW ix3 (chainTranslInv 3) (chainVertInv 3))
-    (pairpencil.pencilE (pairpencil.slotDiag (dataA 3) chW ix3)) := by
-  decide +kernel
-example : ¬ imgOnceBy (slotEq (dataA 3))
-    (slotAct (dataA 3) (chainTranslInv 3) (fun v => v) 9 6)
-    (pairpencil.slotList (dataA 3) chW ix3) := by decide +kernel
-example : ¬ commRead (slotMat (dataA 3) chW ix3 (chainTranslInv 3) (fun v => v))
-    (pairpencil.pencilE (pairpencil.slotDiag (dataA 3) chW ix3)) := by
-  decide +kernel
+/-- The states' transport read at one member and one vertex, the
+read's own conjunct: the moved member in the moved vertex's list's
+span at the lists' one count. -/
+private def st3At (a : List places.Shape) (x : Nat) : Bool :=
+  let a' := pairpencil.dualConf (dataA 3) (chainTransl 3) (chainTranslInv 3) (fun _ => false)
+    chW.links a
+  match (dataA 3).pres.vertList (carrier.incidentEnds (dataA 3) chW a x),
+    (dataA 3).pres.vertList (carrier.incidentEnds (dataA 3) chW a' (chainVert 3 x)) with
+  | some l, some l' =>
+    (l.members.list.length == l'.members.list.length)
+      && l.members.list.all (fun m =>
+        slotpower.spanMemberT (dataA 3).pres.table l'.members.list
+          (pairpencil.moveMember (dataA 3) chW chW (chainTranslInv 3) (fun _ => false) a x a'
+            (chainVert 3 x) (m, l.clear)).1)
+  | none, none => true
+  | none, some _ => false
+  | some _, none => false
 
-private def slotDigits : Mat :=
-  ground.matOf 13 13 (fun i j =>
-    if i == j then
-      (if i == 0 then BPair.unit
-       else ⟨⟨ground.famFold Nat.add 0 (fun x => x)
-          (ground.getAt ([], []) (pairpencil.slotList (dataA 3) chW ix3) (i - 1)).2⟩,
-        Pos.one⟩)
-    else BPair.unit)
-
-example : termsMoved (dataA 3) chW ix3 (chainTranslInv 3) (chainVertInv 3) chPmT
-    [slotDigits, slotDigits, slotDigits] := by decide +kernel
-example : ¬ termsMoved (dataA 3) chW ix3 (chainTranslInv 3) (fun v => v) chPmT
-    [slotDigits, slotDigits, slotDigits] := by decide +kernel
-example : commRead (slotMat (dataA 3) chW ix3 (chainTranslInv 3) (chainVertInv 3))
-    (elim.msum 13 (ground.getAt [] [slotDigits, slotDigits, slotDigits])
-      (List.range 3)) := by decide +kernel
+/-! The three members' reads at the six vertices, one kernel task
+each (the rung ends' span memberships the heavy reads), assembled
+at the range introduction and the list's own reduction. -/
+private theorem st3_a3_0 : st3At a3 0 = true := by decide +kernel
+private theorem st3_a3_1 : st3At a3 1 = true := by decide +kernel
+private theorem st3_a3_2 : st3At a3 2 = true := by decide +kernel
+private theorem st3_a3_3 : st3At a3 3 = true := by decide +kernel
+private theorem st3_a3_4 : st3At a3 4 = true := by decide +kernel
+private theorem st3_a3_5 : st3At a3 5 = true := by decide +kernel
+private theorem st3_a3 : (List.range 6).all (st3At a3) = true :=
+  (ground.all_range_succ_intro 5 (ground.all_range_succ_intro 4 (ground.all_range_succ_intro 3 (ground.all_range_succ_intro 2 (ground.all_range_succ_intro 1 (ground.all_range_succ_intro 0 rfl st3_a3_0) st3_a3_1) st3_a3_2) st3_a3_3) st3_a3_4) st3_a3_5)
+private theorem st3_b3_0 : st3At b3 0 = true := by decide +kernel
+private theorem st3_b3_1 : st3At b3 1 = true := by decide +kernel
+private theorem st3_b3_2 : st3At b3 2 = true := by decide +kernel
+private theorem st3_b3_3 : st3At b3 3 = true := by decide +kernel
+private theorem st3_b3_4 : st3At b3 4 = true := by decide +kernel
+private theorem st3_b3_5 : st3At b3 5 = true := by decide +kernel
+private theorem st3_b3 : (List.range 6).all (st3At b3) = true :=
+  (ground.all_range_succ_intro 5 (ground.all_range_succ_intro 4 (ground.all_range_succ_intro 3 (ground.all_range_succ_intro 2 (ground.all_range_succ_intro 1 (ground.all_range_succ_intro 0 rfl st3_b3_0) st3_b3_1) st3_b3_2) st3_b3_3) st3_b3_4) st3_b3_5)
+private theorem st3_c3_0 : st3At c3 0 = true := by decide +kernel
+private theorem st3_c3_1 : st3At c3 1 = true := by decide +kernel
+private theorem st3_c3_2 : st3At c3 2 = true := by decide +kernel
+private theorem st3_c3_3 : st3At c3 3 = true := by decide +kernel
+private theorem st3_c3_4 : st3At c3 4 = true := by decide +kernel
+private theorem st3_c3_5 : st3At c3 5 = true := by decide +kernel
+private theorem st3_c3 : (List.range 6).all (st3At c3) = true :=
+  (ground.all_range_succ_intro 5 (ground.all_range_succ_intro 4 (ground.all_range_succ_intro 3 (ground.all_range_succ_intro 2 (ground.all_range_succ_intro 1 (ground.all_range_succ_intro 0 rfl st3_c3_0) st3_c3_1) st3_c3_2) st3_c3_3) st3_c3_4) st3_c3_5)
+example : statesTransport (dataA 3) chW ix3 (chainTransl 3) (chainTranslInv 3)
+    (chainVert 3) (fun _ => false) := by
+  show ((List.range 6).all (st3At a3) && ((List.range 6).all (st3At b3)
+    && ((List.range 6).all (st3At c3) && true))) = true
+  rw [st3_a3, st3_b3, st3_c3]
+  rfl
+example : ¬ statesTransport (dataA 3) chW ix3 (chainTransl 3) (chainTranslInv 3)
+    (fun v => v) (fun _ => false) := by decide +kernel
 
 /-! The chord tier's carriers: the translation's link permutation at
 the two sides, and the free orbit at side five — the translation
@@ -1103,9 +1188,9 @@ relation at side five is `chord_deck`'s own instance, the general
 theorem discharged at the window's shape reads. -/
 
 example : orthRead chT3 9 :=
-  permRead_orth (chainRegion 3) (chainTransl 3) (chainTranslInv 3) chPerm3
+  linkIso_orth (chainRegion 3) (chainTransl 3) (chainTranslInv 3) chPerm3
 example : orthRead chT5 15 :=
-  permRead_orth (chainRegion 5) (chainTransl 5) (chainTranslInv 5) chPerm5
+  linkIso_orth (chainRegion 5) (chainTransl 5) (chainTranslInv 5) chPerm5
 
 example : deckOpRead chT3 9 := by decide +kernel
 example : deckOpRead chT5 15 :=
@@ -1181,7 +1266,7 @@ one member, the four-member spanning list of `P_5(S)`'s kernel, and
 the identification joining the kernel read to the fixed read. -/
 
 private def orbS : Mat := chordOp orbT
-private def orbD : Mat := inertia.siteDatum orbS (inertia.idMat 5)
+private def orbD : Mat := inertia.siteDatum orbS (elim.idMat 5)
 
 private def orbLu : Mat :=
   [[BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1,
@@ -1216,17 +1301,17 @@ private def orbQ : Mat :=
 example : baseSplitRead orbT orbD 5 2 orbLu orbLk orbP orbQ := by decide +kernel
 
 private def orbSpP : inertia.Split 1 :=
-  ⟨⟨inertia.idMat 1, by decide +kernel⟩, ⟨inertia.idMat 1, by decide +kernel⟩,
+  ⟨⟨elim.idMat 1, by decide +kernel⟩, ⟨elim.idMat 1, by decide +kernel⟩,
    [.one (BPair.ofNat 5)], 0, by decide +kernel⟩
 
 private def orbSpQ : inertia.Split 4 :=
-  ⟨⟨inertia.idMat 4, by decide +kernel⟩, ⟨inertia.idMat 4, by decide +kernel⟩,
+  ⟨⟨elim.idMat 4, by decide +kernel⟩, ⟨elim.idMat 4, by decide +kernel⟩,
    [.one ((BPair.ofNat 4).swap), .one ((BPair.ofNat 28).swap),
     .one ((BPair.ofNat 42).swap), .one ((BPair.ofNat 30).swap)],
    0, by decide +kernel⟩
 
 private def orbSpS : inertia.Split 5 :=
-  ⟨⟨inertia.idMat 5, by decide +kernel⟩, ⟨inertia.idMat 5, by decide +kernel⟩,
+  ⟨⟨elim.idMat 5, by decide +kernel⟩, ⟨elim.idMat 5, by decide +kernel⟩,
    [.one (BPair.ofNat 5), .one ((BPair.ofNat 4).swap),
     .one ((BPair.ofNat 28).swap), .one ((BPair.ofNat 42).swap),
     .one ((BPair.ofNat 30).swap)], 0, by decide +kernel⟩
@@ -1354,7 +1439,7 @@ example : ¬ annihRead orbT 5 1 := by decide +kernel
 rung-and-rail transposition is a permutation of order two, its
 third power off the identity, and `fixedWordRead` fails with it. -/
 
-example : ¬ matOneValue (inertia.matPow rrM 9 3) (inertia.idMat 9) := by decide +kernel
+example : ¬ matOneValue (inertia.matPow rrM 9 3) (elim.idMat 9) := by decide +kernel
 example : ¬ fixedWordRead rrM 9 1 := by decide +kernel
 
 example : ¬ matOneValue
@@ -1379,24 +1464,24 @@ fails and the band read with it. -/
 
 example : matOneValue
     (matAdd (matMul (bandDatum orbT) (bandDatum orbT))
-      (inertia.matScaleB (BPair.ofNat 4) (inertia.idMat 5)))
+      (inertia.matScaleB (BPair.ofNat 4) (elim.idMat 5)))
     (matMul (chordOp orbT) (chordOp orbT)) := by decide +kernel
 
 example : matOneValue
     (matAdd (matMul (bandDatum orbT) (bandDatum orbT))
-      (inertia.matScaleB (BPair.ofNat 4) (inertia.idMat 5)))
+      (inertia.matScaleB (BPair.ofNat 4) (elim.idMat 5)))
     (matMul (chordOp orbT) (chordOp orbT)) :=
   chord_band 5 orbT (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 example : matOneValue
     (matAdd (matMul (bandDatum chT3) (bandDatum chT3))
-      (inertia.matScaleB (BPair.ofNat 4) (inertia.idMat 9)))
+      (inertia.matScaleB (BPair.ofNat 4) (elim.idMat 9)))
     (matMul (chordOp chT3) (chordOp chT3)) :=
   chord_band 9 chT3 (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 example : ¬ matOneValue
     (matAdd (matMul (bandDatum (chordOp orbT)) (bandDatum (chordOp orbT)))
-      (inertia.matScaleB (BPair.ofNat 4) (inertia.idMat 5)))
+      (inertia.matScaleB (BPair.ofNat 4) (elim.idMat 5)))
     (matMul (chordOp (chordOp orbT)) (chordOp (chordOp orbT))) := by decide +kernel
 
 /-! The permutation-matrix kit's instances: the composition read at
@@ -1410,26 +1495,26 @@ example : matOneValue (matMul chT3 chT3)
     (permMatAt 9 (fun l => chainTransl 3 (chainTransl 3 l))) :=
   permMatAt_mul 9 (chainTransl 3) (chainTransl 3) (by decide +kernel)
 
-example : matOneValue (permMatAt 9 (fun l => l)) (inertia.idMat 9) :=
+example : matOneValue (permMatAt 9 (fun l => l)) (elim.idMat 9) :=
   permMatAt_id 9
 
 example : transposeM chT3 = permMatAt 9 (chainTranslInv 3) :=
   transposeM_permMatAt 9 (chainTransl 3) (chainTranslInv 3)
-    (fun l hl => (permRead_at (chainRegion 3) (chainTransl 3)
+    (fun l hl => (linkIso_all (chainRegion 3) (chainTransl 3)
       (chainTranslInv 3) chPerm3 l hl).1)
-    (fun l hl => (permRead_at (chainRegion 3) (chainTransl 3)
+    (fun l hl => (linkIso_all (chainRegion 3) (chainTransl 3)
       (chainTranslInv 3) chPerm3 l hl).2.1)
 
 example : matOneValue (inertia.matPow chT5 15 5) (permMatAt 15 (iterAt (chainTransl 5) 5)) :=
   permMatAt_pow 15 (chainTransl 5) (by decide +kernel) (by decide +kernel) 5
 
-example : matOneValue (inertia.matPow chT5 15 5) (inertia.idMat 15) :=
+example : matOneValue (inertia.matPow chT5 15 5) (elim.idMat 15) :=
   cycleRead_pow (chainRegion 5) (chainTransl 5) (chainTranslInv 5) 5
     (by decide +kernel) chPerm5 chCyc5
 
 /-! The range clause refused: a map whose values leave the key
 range empties its matrix, and the composition read fails against
-the composite's own — the clause `permRead` supplies is not
+the composite's own — the clause the link isomorphism supplies is not
 decoration. -/
 
 example : ¬ matOneValue
@@ -1774,7 +1859,7 @@ example : ¬ colMemberRead 2 orbS
 
 example : ¬ perpRead 2 orbS (deckColumn 2) := by decide +kernel
 
-example : ¬ gramUnitRead 2 (inertia.idMat 5) (deckColumn 2) orbCof
+example : ¬ gramUnitRead 2 (elim.idMat 5) (deckColumn 2) orbCof
     (BPair.ofNat 50000) := by decide +kernel
 
 /-! The vector bridge at the side-five symbol: the entrywise wrap
@@ -2141,7 +2226,7 @@ private def fibP : split.PMat :=
    [[(BPair.ofNat 4).swap, BPair.ofNat 2],
     [BPair.unit, BPair.ofNat 4]]]
 
-example : fiberPencilRead 5 orbS (inertia.idMat 5) blkL blkT blkTw fibP 1
+example : fiberPencilRead 5 orbS (elim.idMat 5) blkL blkT blkTw fibP 1
     (BPair.ofNat 2) (BPair.ofNat 3) (2 : Pos) := by decide +kernel
 
 /-! The congruence refused off its own descent: the same block at
@@ -2151,9 +2236,9 @@ and the stated fiber pencil is no longer its congruence. -/
 
 example : ¬ bandCongrRead
     (split.zMat (matMul blkL (matMul orbS (transposeM blkL)))
-      (matMul blkL (matMul (inertia.idMat 5) (transposeM blkL))))
-    (⟨inertia.idMat 2, by decide +kernel⟩ : SqMat 2)
-    (⟨inertia.idMat 2, by decide +kernel⟩ : SqMat 2) fibP := by decide +kernel
+      (matMul blkL (matMul (elim.idMat 5) (transposeM blkL))))
+    (⟨elim.idMat 2, by decide +kernel⟩ : SqMat 2)
+    (⟨elim.idMat 2, by decide +kernel⟩ : SqMat 2) fibP := by decide +kernel
 
 /-! The fiber pencil produced at sides three and five: the wrap
 frame's chord operator against the unit gram, the descent entering
@@ -2177,7 +2262,7 @@ private def wrapZ (m : Nat) : split.PMat :=
   split.zMat
     (matMul (pairBase m) (matMul (wrapH m) (transposeM (pairBase m))))
     (matMul (pairBase m)
-      (matMul (inertia.idMat (2 * m + 1)) (transposeM (pairBase m))))
+      (matMul (elim.idMat (2 * m + 1)) (transposeM (pairBase m))))
 
 private def dT1 : elim.Mat :=
   [[BPair.ofNat 1, BPair.unit], [BPair.unit, BPair.ofNat 2]]
@@ -2192,14 +2277,14 @@ example : (elim.minor dT2).oneValue (BPair.ofNat 4) := by decide +kernel
 example : (elim.minor dT2).offUnit := by decide +kernel
 
 example : elim.matOneValue (matMul dT2 dTw2)
-    (inertia.matScaleB (elim.minor dT2) (inertia.idMat 4)) := by decide +kernel
+    (inertia.matScaleB (elim.minor dT2) (elim.idMat 4)) := by decide +kernel
 example : elim.matOneValue (matMul dTw2 dT2)
-    (inertia.matScaleB (elim.minor dT2) (inertia.idMat 4)) := by decide +kernel
+    (inertia.matScaleB (elim.minor dT2) (elim.idMat 4)) := by decide +kernel
 
 example : ¬ elim.matOneValue (matMul dT2
     (split.diagM [BPair.ofNat 2, BPair.ofNat 1,
       BPair.ofNat 2, BPair.ofNat 1]))
-    (inertia.matScaleB (elim.minor dT2) (inertia.idMat 4)) := by
+    (inertia.matScaleB (elim.minor dT2) (elim.idMat 4)) := by
   decide +kernel
 
 example : ¬ bandRootRead (BPair.ofNat 2) BPair.unit (1 : Pos) := by decide +kernel
@@ -2208,20 +2293,20 @@ example : ¬ bandRootRead (BPair.ofNat 2) (BPair.ofNat 4) (2 : Pos) := by
 example : ¬ bandRootRead (BPair.ofNat 4)
     (BPair.swap (BPair.ofNat 3)) (1 : Pos) := by decide +kernel
 
-example : fiberPencilRead 3 (wrapH 1) (inertia.idMat 3) (pairBase 1)
+example : fiberPencilRead 3 (wrapH 1) (elim.idMat 3) (pairBase 1)
     (⟨dT1, by decide +kernel⟩ : SqMat 2) (⟨dTw1, by decide +kernel⟩ : SqMat 2)
     (split.congrZ dT1 (wrapZ 1)) 1
     (BPair.ofNat 2) (BPair.ofNat 3) (2 : Pos) :=
-  fiberPencil_produce 1 3 (wrapH 1) (inertia.idMat 3)
+  fiberPencil_produce 1 3 (wrapH 1) (elim.idMat 3)
     (⟨dT1, by decide +kernel⟩ : SqMat 2) (⟨dTw1, by decide +kernel⟩ : SqMat 2) 2
     (BPair.ofNat 2) (BPair.ofNat 3) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : fiberPencilRead 5 (wrapH 2) (inertia.idMat 5) (pairBase 2)
+example : fiberPencilRead 5 (wrapH 2) (elim.idMat 5) (pairBase 2)
     (⟨dT2, by decide +kernel⟩ : SqMat 4) (⟨dTw2, by decide +kernel⟩ : SqMat 4)
     (split.congrZ dT2 (wrapZ 2)) 1
     (BPair.ofNat 2) (BPair.ofNat 3) (2 : Pos) :=
-  fiberPencil_produce 2 5 (wrapH 2) (inertia.idMat 5)
+  fiberPencil_produce 2 5 (wrapH 2) (elim.idMat 5)
     (⟨dT2, by decide +kernel⟩ : SqMat 4) (⟨dTw2, by decide +kernel⟩ : SqMat 4) 2
     (BPair.ofNat 2) (BPair.ofNat 3) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
@@ -2232,13 +2317,13 @@ at the order conjunct alone, the further conjuncts kept at the
 stated data. -/
 
 example : ¬ fiberPencilRead 3 [[BPair.ofNat 1, BPair.ofNat 2]]
-    (inertia.idMat 3) (pairBase 1)
+    (elim.idMat 3) (pairBase 1)
     (⟨dT1, by decide +kernel⟩ : SqMat 2) (⟨dTw1, by decide +kernel⟩ : SqMat 2)
     (split.congrZ dT1
       (split.zMat
         (matMul (pairBase 1) (matMul [[BPair.ofNat 1, BPair.ofNat 2]]
           (transposeM (pairBase 1))))
-        (matMul (pairBase 1) (matMul (inertia.idMat 3)
+        (matMul (pairBase 1) (matMul (elim.idMat 3)
           (transposeM (pairBase 1)))))) 1
     (BPair.ofNat 2) (BPair.ofNat 3) (2 : Pos) := by decide +kernel
 
@@ -2309,7 +2394,7 @@ private def gT5Sp : inertia.Split 5 :=
 example : pairpencil.gramBlockRead (dataA 2) torW 5 ixT 9 gT5
     ∧ inertia.splitRead gT5 gT5Sp ∧ inertia.pdAt gT5Sp := by decide +kernel
 example : ¬ pairpencil.gramBlockRead (dataA 2) torW 5 ixT 1
-      (matAdd (inertia.idMat 5) (e5 1 3))
+      (matAdd (elim.idMat 5) (e5 1 3))
     ∧ ¬ pairpencil.gramBlockRead (dataA 2) torW 5 ixT 1 gT5
     ∧ ¬ pairpencil.gramBlockRead (dataA 2) torW 5 ixT 9 (matAdd gT5 (e5 1 4)) := by
   decide +kernel

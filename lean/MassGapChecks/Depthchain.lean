@@ -18,6 +18,11 @@ holding.  The walk's closure: every reached member's depth sits
 below the count and every reached member sits in its listed shell,
 the theorem routes beside the decided reads, and the cross read
 refused at a matrix coupling two members the walk does not join.
+The fusion walk's reach (`lem:corner`'s near mass): at the window
+`(𝟏, θ, (4, 0))` of `dataA 2` the walk reads the third key off the
+sum's unit at two steps and the reach read holds there, decided and
+through the theorem, while at one step the key sits at the unit and
+the reach read refuses.
 -/
 
 namespace depthchainChecks
@@ -101,8 +106,8 @@ example : matOneValue (selM (depthOrder [w3] p3 3 [0]) (depthOrder [w3] p3 3 [0]
     (by decide) rfl w3 (by decide +kernel) (by decide +kernel) (by decide +kernel)
 example : crossB [w3] p3 (msum 3 (ground.getAt [] [w3]) (List.range 1)) = true :=
   msum_cross [w3] p3 3 (by decide +kernel) (by decide +kernel)
-example : crossB [w3] p3 (inertia.idMat 3) = true :=
-  memberDiag_cross [w3] p3 (inertia.idMat 3) (by decide +kernel)
+example : crossB [w3] p3 (elim.idMat 3) = true :=
+  memberDiag_cross [w3] p3 (elim.idMat 3) (by decide +kernel)
 
 /-! The join binder isolated: the two ends of the walk are joined to
 neither, and the far end's depth sits beyond the base's successor. -/
@@ -317,7 +322,7 @@ private theorem thIxPin : idx fX lattice.thetaG 48 = thIx := by
 example : pairpencil.slotDiag fX lattice.thetaG (idx fX lattice.thetaG 48)
     = [0, 32, 48, 32] := by
   rw [thIxPin]; decide +kernel
-example : pairpencil.gramBlockRead fX lattice.thetaG 4 thIx 1 (inertia.idMat 4) := by
+example : pairpencil.gramBlockRead fX lattice.thetaG 4 thIx 1 (elim.idMat 4) := by
   decide +kernel
 
 /-! The terms' supports at the changed-edge rows, one term per
@@ -434,14 +439,14 @@ joined to twelve times the gram, less four times the cleared
 magnetic member; its slabs along the shells and the assembly
 read. -/
 
-private def eTh : Mat := pairpencil.formE [0, 32, 48, 32] (inertia.idMat 4)
+private def eTh : Mat := pairpencil.formE [0, 32, 48, 32] (elim.idMat 4)
 private def sTh : Mat :=
   inertia.siteDatum
-    (matAdd eTh (inertia.matScaleB (BPair.ofNat 12) (inertia.idMat 4)))
+    (matAdd eTh (inertia.matScaleB (BPair.ofNat 12) (elim.idMat 4)))
     (inertia.matScaleB (BPair.ofNat 4) mTh)
 
-example : crossB tTh p4 (inertia.idMat 4) = true :=
-  memberDiag_cross tTh p4 (inertia.idMat 4) (by decide +kernel)
+example : crossB tTh p4 (elim.idMat 4) = true :=
+  memberDiag_cross tTh p4 (elim.idMat 4) (by decide +kernel)
 example : crossB tTh p4 eTh = true :=
   memberDiag_cross tTh p4 eTh (by decide +kernel)
 example : matOneValue (ground.getAt [] (slabDiag sTh (posShells tTh p4 4 [0])) 0)
@@ -464,3 +469,26 @@ example : matOneValue (selM (depthOrder tTh p4 4 [0]) (depthOrder tTh p4 4 [0]) 
     (by decide) rfl sTh sThSq sThSym sThCross
 
 end theta
+
+namespace walk
+open ground elim depthchain fusion fpcap
+
+private def F : Data (List Nat) := dataA 2
+private def winW : List (List Nat) := [labels.unitL 2, adjchar.theta 2, [4, 0]]
+private def pw : List (List Nat) := (List.range winW.length).map (fun j => [j])
+private def seed : List Nat :=
+  (List.range winW.length).filter (fun j => F.eqL (getAt F.unit winW j) F.unit)
+
+example : seed = [0] := by decide +kernel
+example : ¬ (getAt BPair.unit (walkVec F winW 2) 2).oneValue BPair.unit := by
+  decide +kernel
+example : reachB [fusionMat F F.theta winW] pw winW.length seed 2 2 = true := by
+  decide +kernel
+example : reachB [fusionMat F F.theta winW] pw winW.length seed 2 2 = true :=
+  walk_reach F winW 2 2 (by decide) (by decide +kernel)
+example : (getAt BPair.unit (walkVec F winW 1) 2).oneValue BPair.unit := by
+  decide +kernel
+example : reachB [fusionMat F F.theta winW] pw winW.length seed 1 2 = false := by
+  decide +kernel
+
+end walk

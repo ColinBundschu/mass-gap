@@ -228,7 +228,7 @@ the representative lists agree at one value (`con:sertables`:
 `s_i s_i μ = μ`). -/
 private theorem reflAt_invol (t : gentable.Table) (i : Nat)
     (hsq : elim.matOneValue (elim.matMul (reflM t i) (reflM t i))
-      (inertia.idMat t.rank))
+      (elim.idMat t.rank))
     (v : List BPair) (hv : v.length = t.rank) (hnv : poly.pnorm v = v) :
     reflAt t i (reflAt t i v) = v := by
   have hrows := reflM_rows t i
@@ -241,7 +241,7 @@ private theorem reflAt_invol (t : gentable.Table) (i : Nat)
       (elim.matVec_comp (reflM t i) (reflM t i) v t.rank hrows hv hrows')
       (poly.oneValue_trans
         (elim.matVec_matOne _ _ v hsq)
-        (inertia.matVec_idMat t.rank v hv)))
+        (elim.matVec_idMat t.rank v hv)))
   show poly.pnorm (elim.matVec (reflM t i)
     (poly.pnorm (elim.matVec (reflM t i) v))) = v
   refine Eq.trans (poly.pnorm_congr _ _ ?_ hall) hnv
@@ -261,7 +261,7 @@ reflection's square with the side flipped back, and a kept member is
 kept again. -/
 theorem flipAt_invol (t : gentable.Table) (i : Nat)
     (hsq : elim.matOneValue (elim.matMul (reflM t i) (reflM t i))
-      (inertia.idMat t.rank)) (vp : List BPair × Bool) :
+      (elim.idMat t.rank)) (vp : List BPair × Bool) :
     flipAt t i (flipAt t i vp) = vp := by
   by_cases hg : vp.1.length = t.rank ∧ poly.pnorm vp.1 = vp.1
   · have e1 : flipAt t i vp = (reflAt t i vp.1, !vp.2) := by
@@ -651,7 +651,7 @@ theorem reflAt_pnorm (t : gentable.Table) (i : Nat)
 rank's order. -/
 theorem reflAt_invol' (t : gentable.Table) (i : Nat)
     (hsq : elim.matOneValue (elim.matMul (reflM t i) (reflM t i))
-      (inertia.idMat t.rank))
+      (elim.idMat t.rank))
     (v : List BPair) (hv : v.length = t.rank) :
     reflAt t i (reflAt t i v) = poly.pnorm v := by
   have hrows := reflM_rows t i
@@ -664,7 +664,7 @@ theorem reflAt_invol' (t : gentable.Table) (i : Nat)
       (elim.matVec_comp (reflM t i) (reflM t i) v t.rank hrows hv hrows')
       (poly.oneValue_trans
         (elim.matVec_matOne _ _ v hsq)
-        (inertia.matVec_idMat t.rank v hv)))
+        (elim.matVec_idMat t.rank v hv)))
   show poly.pnorm (elim.matVec (reflM t i)
     (poly.pnorm (elim.matVec (reflM t i) v))) = poly.pnorm v
   refine poly.pnorm_congr _ _ ?_ hall
@@ -793,25 +793,6 @@ private theorem perm_ne_si (t : gentable.Table) (F : FundData)
     hpsq i hi j hj
   rw [he, perm_fix t F hi hshape hsq hpsq hpi hrd] at h2
   exact h2.symm
-
-private theorem containsB_filter (P : Nat → Bool) (n y : Nat) :
-    ground.containsB (List.filter P (List.range n)) y
-      = (P y && decide (y < n)) := by
-  show decide (0 < ground.countOf y (List.filter P (List.range n))) = _
-  rw [ground.countOf_filter P y (List.range n), ground.countOf_range y n]
-  cases hp : P y with
-  | true =>
-    rw [if_pos rfl]
-    by_cases hyn : y < n
-    · rw [if_pos hyn, decide_eq_true hyn]
-      rfl
-    · rw [if_neg hyn]
-      cases hd : decide (y < n) with
-      | true => exact absurd (of_decide_eq_true hd) hyn
-      | false => rfl
-  | false =>
-    rw [if_neg (ground.boolNe rfl)]
-    rfl
 
 /-- The involution reads back: the double flip is the family
 itself. -/
@@ -3346,6 +3327,62 @@ theorem rhoRead_derived (t : gentable.Table) (F : FundData)
     exact ground.leB_not_lt (ground.leB_refl BPair.unit)
       (BPair.lt_congr (BPair.add_unit BPair.unit) hfin
         (ground.ltB_add hdp (Or.inr hdq)))
+
+/-- The reflection's join read (`con:gentable`: `s_i μ` the content
+at the join `μ = s_i μ + μ(α_i^∨) α_i`, at the coroot presentation):
+the key joined to its own coordinate's multiple of the letter's
+Cartan row's balance partner, normed — the matrix action read entry
+by entry, one row in place of the matrix. -/
+def reflF (t : gentable.Table) (i : Nat) (y : List BPair) : List BPair :=
+  poly.pnorm (elim.vecAdd y
+    (elim.vecScale (getAt BPair.unit y i) (poly.neg (cartRowV t i))))
+
+/-- The join read is the reflection's image at every letter and a
+key of the rank's order: at a letter of the rank the entrywise
+expansion, and at a letter past it both reads the key's own
+representative, the coordinate there the unit and the matrix the
+identity's. -/
+theorem reflF_eq (t : gentable.Table) (i : Nat)
+    (y : List BPair) (hy : y.length = t.rank) :
+    reflF t i y = reflAt t i y := by
+  show poly.pnorm (elim.vecAdd y (refKick t i (getAt BPair.unit y i)))
+    = poly.pnorm (elim.matVec (reflM t i) y)
+  refine poly.pnorm_congr _ _ ?_ ?_
+  · rw [elim.length_vecAdd y _ t.rank hy (refKick_length t i _),
+      elim.matVec_length, reflM_length]
+  · cases Nat.lt_or_ge i t.rank with
+    | inl hi => exact poly.oneValue_symm (reflM_expand t hi y hy)
+    | inr hi =>
+      have hyi : getAt BPair.unit y i = BPair.unit :=
+        ground.getAt_over BPair.unit y i (by rw [hy]; exact hi)
+      have hK : (refKick t i (getAt BPair.unit y i)).length = t.rank :=
+        refKick_length t i _
+      refine poly.oneValue_trans
+        (elim.vecAdd_null_right y _ (hy.trans hK.symm) ?_) ?_
+      · rw [hyi]
+        exact elim.unitTail_vecScale_unit (BPair.oneValue_refl _) _
+      · refine poly.oneValue_symm (poly.oneValue_trans
+          (elim.matVec_matOne (reflM t i) (elim.idMat t.rank) y ?_)
+          (elim.matVec_idMat t.rank y hy))
+        refine elim.matOne_of_entries _ _ t.rank (reflM_length t i)
+          (reflM_rows t i) (ground.length_mapRange _ t.rank)
+          (elim.rowsLen_idMat t.rank) (fun j k hj hk => ?_)
+        rw [elim.getAt_idMat t.rank j k hj hk]
+        show (getAt BPair.unit (getAt [] (ground.matOf t.rank t.rank
+          (fun j k => BPair.add (if j == k then BPair.ofNat 1 else BPair.unit)
+            (if k == i then (getAt BPair.unit (getAt [] t.cartan i) j).swap
+              else BPair.unit))) j) k).oneValue
+          (if k = j then BPair.ofNat 1 else BPair.unit)
+        rw [ground.matOf_entry [] BPair.unit t.rank t.rank _ j k hj hk,
+          if_neg (fun h : (k == i) = true =>
+            Nat.lt_irrefl k (Nat.lt_of_lt_of_le hk
+              (ground.beqEqOf h ▸ hi)))]
+        by_cases hjk : j = k
+        · rw [if_pos (ground.eqBeqOf hjk), if_pos hjk.symm]
+          exact BPair.add_unit _
+        · rw [if_neg (fun h : (j == k) = true => hjk (ground.beqEqOf h)),
+            if_neg (fun h : k = j => hjk h.symm)]
+          exact BPair.add_unit _
 
 /-- The fixed key (`thm:assembly`'s walk, pin (a)): a dominant key
 at a simple coroot pair the unit is the letter's own fix,

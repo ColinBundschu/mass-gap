@@ -1,5 +1,6 @@
 import MassGap.Fusion
 import MassGap.Certconstruct
+import MassGap.Coeff
 /-!
 `lem:fpcap` — the fusion form's two-sided dimension cap at the
 eigen-identity's rows.  The multiplication's matrix at a stated
@@ -37,7 +38,15 @@ the count pair `mulPairNat` and the pairing folds as index folds
 which closes on the same tier's one-sided read `dotN_self_side`.
 `def:ground` carries besides the square's own
 at-or-above-the-unit read (`unitLeSq`, off `sq_side`).  What stays
-here is everything the fusion matrix shapes.
+here is everything the fusion matrix shapes.  The fusion walk
+rides on that matrix (`lem:corner`'s near mass, the return read):
+`walkVec` the walk's vector at a step count, `dimVec` the window's
+dimensions and `suppDims` the walk's supported dimensions, with
+`walk_dim` the walk's flat read at the eigen row's window identity
+on the walk's support (`walkExact`) and the seed's flat read one
+(`seedFlat`), and
+`walk_cs` the pairing's Cauchy--Schwarz at the supported side
+(`coeff.dotN_sq_le`, `con:coeff`'s pairing tier its owner).
 
 The proof is the tex's two-squares pricing collected fraction-free
 by the co-product weights: at an index pair the entry prices
@@ -681,6 +690,310 @@ theorem capLower {L : Type} (F : Data L) (lam : L) (ls : List L)
           (selfFold u ls.length hu))
         (quadFold F lam ls u hu))
       (BPair.oneValue_refl BPair.unit) hlt)
+
+/-- The fusion walk's vector at a step count: the unit letter's
+seed at the window's unit key, then at each step the dimension of
+`θ` against the walk joined to the matrix's action on it
+(`lem:corner`'s near mass, the fusion walk's return read). -/
+def walkVec {L : Type} (F : Data L) (ls : List L) : Nat → List BPair
+  | 0 => ls.map (fun x => if F.eqL x F.unit then BPair.ofPos .one else BPair.unit)
+  | k + 1 => vecAdd (vecScale (BPair.ofNat (F.dim F.theta)) (walkVec F ls k))
+      (matVec (fusionMat F F.theta ls) (walkVec F ls k))
+
+/-- The window's dimension vector: each letter's dimension at its
+own key. -/
+def dimVec {L : Type} (F : Data L) (ls : List L) : List BPair :=
+  ls.map (fun x => BPair.ofNat (F.dim x))
+
+/-- The seed's flat read one: the unit label's coordinate vector
+against the window's dimensions reads one, the vacuum's term
+(`lem:corner`'s near mass, the return read's flat read). -/
+def seedFlat {L : Type} (F : Data L) (ls : List L) : Prop :=
+  (dotN (walkVec F ls 0) (dimVec F ls)).oneValue (BPair.ofPos .one)
+
+instance {L : Type} (F : Data L) (ls : List L) : Decidable (seedFlat F ls) :=
+  inferInstanceAs (Decidable (BPair.oneValue _ _))
+
+/-- The eigen row's window identity on the walk's support: at every
+step below the count and every window key the walk reads off the
+sum's unit there, the compression's fold reads the row's own,
+`Σ_x N^x_{θ ν} d_x = d_θ d_ν` at the window's labels (`lem:fpcap`'s
+eigen-identity at the labels the walk reaches, `lem:corner`'s near
+mass at the fusion depth within the window). -/
+def walkExact {L : Type} (F : Data L) (ls : List L) (k : Nat) : Prop :=
+  ((List.range k).all (fun j => (List.range ls.length).all (fun i =>
+    decide ((ground.getAt BPair.unit (walkVec F ls j) i).oneValue BPair.unit)
+      || (ls.foldl (fun acc x =>
+            acc + F.count F.theta (ground.getAt F.unit ls i) x * F.dim x) 0
+          == F.dim F.theta * F.dim (ground.getAt F.unit ls i))))) = true
+
+instance {L : Type} (F : Data L) (ls : List L) (k : Nat) :
+    Decidable (walkExact F ls k) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The walk's supported dimensions: the letter's dimension at every
+key the walk reads off the sum's unit, the sum's unit at the keys
+the walk sits there (`lem:corner`'s pairing side). -/
+def suppDims {L : Type} (F : Data L) (ls : List L) (v : List BPair) : List BPair :=
+  (List.range ls.length).map (fun i =>
+    if (getAt BPair.unit v i).oneValue BPair.unit then BPair.unit
+    else BPair.ofNat (F.dim (getAt F.unit ls i)))
+
+/-- The walk's vector reads the window's count at every step, the
+scaled and the acted part each at the matrix's row count. -/
+theorem walkVec_length {L : Type} (F : Data L) (ls : List L) :
+    ∀ k, (walkVec F ls k).length = ls.length
+  | 0 => ground.length_map _ ls
+  | k + 1 => by
+    show (vecAdd (vecScale (BPair.ofNat (F.dim F.theta)) (walkVec F ls k))
+      (matVec (fusionMat F F.theta ls) (walkVec F ls k))).length = ls.length
+    refine elim.length_vecAdd _ _ _ ?_ ?_
+    · rw [elim.length_vecScale]
+      exact walkVec_length F ls k
+    · rw [elim.matVec_length]
+      exact ground.length_map _ ls
+
+/-- The walk's dimension pairing reads its supported pairing: the
+two dimension lists agree at every key the walk reads off the sum's
+unit, and at a key the walk sits there the summand reads the unit
+on either side. -/
+private theorem supp_read {L : Type} (F : Data L) (ls : List L) (k : Nat) :
+    (dotN (walkVec F ls k) (dimVec F ls)).oneValue
+      (dotN (walkVec F ls k) (suppDims F ls (walkVec F ls k))) := by
+  have hw : (walkVec F ls k).length = ls.length := walkVec_length F ls k
+  have hd : (dimVec F ls).length = ls.length := ground.length_map _ ls
+  have hs : (suppDims F ls (walkVec F ls k)).length = ls.length :=
+    ground.length_mapRange _ _
+  refine BPair.oneValue_trans (elim.dotN_read _ _)
+    (BPair.oneValue_trans ?_ (BPair.oneValue_symm (elim.dotN_read _ _)))
+  rw [elim.dotP_fold ls.length _ _ hw hd, elim.dotP_fold ls.length _ _ hw hs]
+  refine ground.foldB_congr_members _ _ _ (fun i hi => ?_)
+  have hin : i < ls.length := ground.ltOfMemRange (ground.mem_of_countOf_pos i _ hi)
+  by_cases hu : (getAt BPair.unit (walkVec F ls k) i).oneValue BPair.unit
+  · refine BPair.oneValue_trans
+      (BPair.oneValue_trans (BPair.mul_congr hu (BPair.oneValue_refl _))
+        (BPair.unit_mul _)) ?_
+    exact BPair.oneValue_symm
+      (BPair.oneValue_trans (BPair.mul_congr hu (BPair.oneValue_refl _))
+        (BPair.unit_mul _))
+  · have hsi : getAt BPair.unit (suppDims F ls (walkVec F ls k)) i
+        = BPair.ofNat (F.dim (getAt F.unit ls i)) := by
+      show getAt BPair.unit ((List.range ls.length).map (fun j =>
+        if (getAt BPair.unit (walkVec F ls k) j).oneValue BPair.unit
+        then BPair.unit
+        else BPair.ofNat (F.dim (getAt F.unit ls j)))) i = _
+      rw [ground.getAt_map_range BPair.unit _ ls.length i, if_pos hin,
+        if_neg hu]
+    have hdi : getAt BPair.unit (dimVec F ls) i
+        = BPair.ofNat (F.dim (getAt F.unit ls i)) :=
+      ground.getAt_map F.unit BPair.unit _ ls i hin
+    rw [hsi, hdi]
+    exact BPair.oneValue_refl _
+
+/-- `lem:corner`'s Cauchy--Schwarz at the fusion walk: the walk's
+dimension pairing is its supported pairing, and the squared pairing
+sits at or below the walk's self-pairing against the supported
+dimensions' own (`coeff.dotN_sq_le` at the two lists). -/
+theorem walk_cs {L : Type} (F : Data L) (ls : List L) (k : Nat) :
+    (dotN (walkVec F ls k) (dimVec F ls)).oneValue
+      (dotN (walkVec F ls k) (suppDims F ls (walkVec F ls k)))
+    ∧ dotN (walkVec F ls k) (dimVec F ls) * dotN (walkVec F ls k) (dimVec F ls)
+      ≤ dotN (walkVec F ls k) (walkVec F ls k)
+        * dotN (suppDims F ls (walkVec F ls k)) (suppDims F ls (walkVec F ls k)) := by
+  have hfirst := supp_read F ls k
+  refine ⟨hfirst, ?_⟩
+  refine ground.leB_congr_left
+    (BPair.mul_congr (BPair.oneValue_symm hfirst) (BPair.oneValue_symm hfirst))
+    (coeff.dotN_sq_le _ _ ?_)
+  have hs : (suppDims F ls (walkVec F ls k)).length = ls.length :=
+    ground.length_mapRange _ _
+  rw [walkVec_length F ls k, hs]
+
+/-- The dimension vector's entry at a window key. -/
+private theorem dimVec_at {L : Type} (F : Data L) (ls : List L) (i : Nat)
+    (hi : i < ls.length) :
+    ground.getAt BPair.unit (dimVec F ls) i
+      = BPair.ofNat (F.dim (ground.getAt F.unit ls i)) :=
+  ground.getAt_map F.unit BPair.unit _ ls i hi
+
+/-- The transposed action's entry at the dimension vector: the column
+fold at a window key reads the eigen row's window identity, the
+letter's dimension at the scale `d_θ`. -/
+private theorem colFold {L : Type} (F : Data L) (ls : List L) (i : Nat)
+    (hi : i < ls.length)
+    (hrow : ground.famFold Nat.add 0
+      (fun j => F.count F.theta (ground.getAt F.unit ls i)
+          (ground.getAt F.unit ls j) * F.dim (ground.getAt F.unit ls j))
+      (List.range ls.length) = F.dim F.theta * F.dim (ground.getAt F.unit ls i)) :
+    (ground.getAt BPair.unit
+        (matVec (transposeM (fusionMat F F.theta ls)) (dimVec F ls)) i).oneValue
+      (BPair.ofNat (F.dim F.theta) * ground.getAt BPair.unit (dimVec F ls) i) := by
+  have hML : (fusionMat F F.theta ls).length = ls.length := ground.length_map _ ls
+  have hMr : rowsLen ls.length (fusionMat F F.theta ls) :=
+    rowsLen_map _ ls.length ls (fun _ _ => ground.length_map _ ls)
+  have hposM : 0 < (fusionMat F F.theta ls).length := by
+    rw [hML]; exact Nat.lt_of_le_of_lt (Nat.zero_le i) hi
+  have hTL : (transposeM (fusionMat F F.theta ls)).length = ls.length :=
+    length_transposeM _ hMr hposM
+  have hdv : (dimVec F ls).length = ls.length := ground.length_map _ ls
+  have hrl : (ground.getAt [] (transposeM (fusionMat F F.theta ls)) i).length
+      = ls.length := by
+    rw [rowsLen_getAt _ i (rowsLen_transposeM _) (by rw [hTL]; exact hi)]
+    exact hML
+  have hent : ∀ j, j < ls.length →
+      ground.getAt BPair.unit
+          (ground.getAt [] (transposeM (fusionMat F F.theta ls)) i) j
+        = BPair.ofNat (F.count F.theta (ground.getAt F.unit ls i)
+            (ground.getAt F.unit ls j)) := by
+    intro j hj
+    rw [getAt_transposeM BPair.unit (fusionMat F F.theta ls) hMr i j hi
+      (by rw [hML]; exact hj)]
+    show ground.getAt BPair.unit (ground.getAt []
+      (ls.map (fun x => ls.map (fun y => BPair.ofNat (F.count F.theta y x)))) j) i = _
+    rw [ground.getAt_map F.unit [] _ ls j hj,
+      ground.getAt_map F.unit BPair.unit _ ls i hi]
+  rw [getAt_matVec _ _ i (by rw [hTL]; exact hi)]
+  refine BPair.oneValue_trans (dotN_read _ _) ?_
+  rw [dotP_fold ls.length _ _ hrl hdv]
+  refine BPair.oneValue_trans (ground.foldB_congr_members _
+    (fun j => BPair.ofNat (F.count F.theta (ground.getAt F.unit ls i)
+        (ground.getAt F.unit ls j) * F.dim (ground.getAt F.unit ls j)))
+    _ (fun j hj => ?_)) ?_
+  · have hjn : j < ls.length :=
+      ground.ltOfMemRange (ground.mem_of_countOf_pos j _ hj)
+    rw [hent j hjn, dimVec_at F ls j hjn]
+    exact BPair.oneValue_symm (BPair.ofNat_mul _ _)
+  · refine BPair.oneValue_trans (BPair.oneValue_symm (ground.ofNat_famFold _ _)) ?_
+    rw [hrow, dimVec_at F ls i hi]
+    exact BPair.ofNat_mul _ _
+
+/-- The dimension vector against the walk's action reads the scale
+`d_θ` against the pairing: the coupling's exchange at the transpose
+with the column fold at every key. -/
+private theorem actFold {L : Type} (F : Data L) (ls : List L)
+    (hpos : 0 < ls.length) (v : List BPair) (hv : v.length = ls.length)
+    (hrow : ∀ i, i < ls.length →
+      ¬ (ground.getAt BPair.unit v i).oneValue BPair.unit →
+      ground.famFold Nat.add 0
+        (fun j => F.count F.theta (ground.getAt F.unit ls i)
+            (ground.getAt F.unit ls j) * F.dim (ground.getAt F.unit ls j))
+        (List.range ls.length) = F.dim F.theta * F.dim (ground.getAt F.unit ls i)) :
+    (dotN (dimVec F ls) (matVec (fusionMat F F.theta ls) v)).oneValue
+      (BPair.ofNat (F.dim F.theta) * dotN v (dimVec F ls)) := by
+  have hML : (fusionMat F F.theta ls).length = ls.length := ground.length_map _ ls
+  have hMr : rowsLen ls.length (fusionMat F F.theta ls) :=
+    rowsLen_map _ ls.length ls (fun _ _ => ground.length_map _ ls)
+  have hposM : 0 < (fusionMat F F.theta ls).length := by rw [hML]; exact hpos
+  have hTL : (transposeM (fusionMat F F.theta ls)).length = ls.length :=
+    length_transposeM _ hMr hposM
+  have hdv : (dimVec F ls).length = ls.length := ground.length_map _ ls
+  have hmv : (matVec (transposeM (fusionMat F F.theta ls)) (dimVec F ls)).length
+      = ls.length := by rw [matVec_length]; exact hTL
+  refine BPair.oneValue_trans (BPair.oneValue_symm
+    (dotN_transpose_flip _ ls.length hMr v (dimVec F ls) hv
+      (hdv.trans hML.symm))) ?_
+  refine BPair.oneValue_trans (dotN_read _ _) ?_
+  rw [dotP_fold ls.length _ _ hv hmv]
+  refine BPair.oneValue_trans (ground.foldB_congr_members _
+    (fun i => BPair.ofNat (F.dim F.theta)
+      * (ground.getAt BPair.unit v i * ground.getAt BPair.unit (dimVec F ls) i))
+    _ (fun i hi => ?_)) ?_
+  · have hin : i < ls.length :=
+      ground.ltOfMemRange (ground.mem_of_countOf_pos i _ hi)
+    by_cases hu : (ground.getAt BPair.unit v i).oneValue BPair.unit
+    · refine BPair.oneValue_trans
+        (BPair.oneValue_trans (BPair.mul_congr hu (BPair.oneValue_refl _))
+          (BPair.unit_mul _)) ?_
+      refine BPair.oneValue_symm (BPair.oneValue_trans
+        (BPair.mul_congr (BPair.oneValue_refl _)
+          (BPair.oneValue_trans (BPair.mul_congr hu (BPair.oneValue_refl _))
+            (BPair.unit_mul _))) (BPair.mul_unit _))
+    · refine BPair.oneValue_trans
+        (BPair.mul_congr (BPair.oneValue_refl _)
+          (colFold F ls i hin (hrow i hin hu))) ?_
+      exact BPair.oneValue_of_eq (BPair.mul_left_comm _ _ _)
+  · refine BPair.oneValue_trans (ground.foldB_mul_left _ _ _) ?_
+    refine BPair.mul_congr (BPair.oneValue_refl _) ?_
+    show (bsum (fun i => ground.getAt BPair.unit v i
+      * ground.getAt BPair.unit (dimVec F ls) i) (List.range ls.length)).oneValue _
+    rw [← dotP_fold ls.length v (dimVec F ls) hv hdv]
+    exact BPair.oneValue_symm (dotN_read v (dimVec F ls))
+
+/-- The walk's flat read: the walk's vector against the window's
+dimensions reads `(2 d_θ)^k` at the step count, the seed's flat read
+one and each step's read the dimension eigen-identity's window
+instance twice, at the scaled part and at the action
+(`lem:corner`'s near mass: the return read's flat read one at
+`lem:fpcap`'s eigen-identity). -/
+private theorem walk_dim_go {L : Type} (F : Data L) (ls : List L)
+    (hseed : seedFlat F ls) :
+    ∀ k, (∀ j, j < k → ∀ i, i < ls.length →
+      ¬ (ground.getAt BPair.unit (walkVec F ls j) i).oneValue BPair.unit →
+      ground.famFold Nat.add 0
+        (fun j' => F.count F.theta (ground.getAt F.unit ls i)
+            (ground.getAt F.unit ls j') * F.dim (ground.getAt F.unit ls j'))
+        (List.range ls.length) = F.dim F.theta * F.dim (ground.getAt F.unit ls i)) →
+    (dotN (walkVec F ls k) (dimVec F ls)).oneValue
+      (bpow (BPair.ofNat (2 * F.dim F.theta)) k)
+  | 0, _ => hseed
+  | k + 1, hrow => by
+    have hpos : 0 < ls.length := by
+      cases ls with
+      | nil => exact absurd hseed (of_decide_eq_false rfl)
+      | cons _ _ => exact Nat.succ_pos _
+    have ih := walk_dim_go F ls hseed k (fun j hj => hrow j (Nat.lt_succ_of_lt hj))
+    have hML : (fusionMat F F.theta ls).length = ls.length := ground.length_map _ ls
+    have hw : (walkVec F ls k).length = ls.length := walkVec_length F ls k
+    have hdv : (dimVec F ls).length = ls.length := ground.length_map _ ls
+    show (dotN (vecAdd (vecScale (BPair.ofNat (F.dim F.theta)) (walkVec F ls k))
+      (matVec (fusionMat F F.theta ls) (walkVec F ls k))) (dimVec F ls)).oneValue _
+    refine BPair.oneValue_trans (dotN_addRow _ _ _
+      (by rw [length_vecScale, hw, hdv]) (by rw [matVec_length, hML, hdv])) ?_
+    refine BPair.oneValue_trans (BPair.add_congr (dotN_scaleRow_free _ _ _)
+      (BPair.oneValue_trans (dotN_comm _ _)
+        (actFold F ls hpos _ hw (hrow k (Nat.lt_succ_self k))))) ?_
+    refine BPair.oneValue_trans (BPair.add_congr
+      (BPair.mul_congr (BPair.oneValue_refl _) ih)
+      (BPair.mul_congr (BPair.oneValue_refl _) ih)) ?_
+    refine BPair.oneValue_trans ?_ (BPair.oneValue_symm (bpow_succ_read _ k))
+    rw [← BPair.right_distrib, Nat.two_mul]
+    exact BPair.mul_congr_left (BPair.oneValue_symm (BPair.ofNat_add _ _))
+
+/-- The eigen row's window identity decoded at a step and a key the
+walk reads off the sum's unit. -/
+private theorem walkExact_read {L : Type} (F : Data L) (ls : List L)
+    (k : Nat) (h : walkExact F ls k) (j : Nat) (hj : j < k) (i : Nat)
+    (hi : i < ls.length)
+    (hu : ¬ (ground.getAt BPair.unit (walkVec F ls j) i).oneValue BPair.unit) :
+    ground.famFold Nat.add 0
+      (fun j' => F.count F.theta (ground.getAt F.unit ls i)
+          (ground.getAt F.unit ls j') * F.dim (ground.getAt F.unit ls j'))
+      (List.range ls.length) = F.dim F.theta * F.dim (ground.getAt F.unit ls i) := by
+  have h1 := ground.all_range_read ls.length (ground.all_range_read k h j hj) i hi
+  have h2 : (ls.foldl (fun acc x =>
+      acc + F.count F.theta (ground.getAt F.unit ls i) x * F.dim x) 0
+      == F.dim F.theta * F.dim (ground.getAt F.unit ls i)) = true := by
+    match hb : decide ((ground.getAt BPair.unit (walkVec F ls j) i).oneValue
+        BPair.unit) with
+    | true => exact absurd (of_decide_eq_true hb) hu
+    | false => rw [hb] at h1; exact h1
+  have h3 := ground.beqEqOf h2
+  rw [ground.foldlSum (fun x => F.count F.theta (ground.getAt F.unit ls i) x
+      * F.dim x) ls 0, Nat.zero_add,
+    ← ground.famFold_getAt Nat.add 0 _ F.unit ls ls.length rfl] at h3
+  exact h3
+
+/-- The walk's flat read: the walk's vector against the window's
+dimensions reads `(2 d_θ)^k` at the step count, the seed's flat read
+one and each step's read the dimension eigen-identity's window
+instance twice, at the scaled part and at the action, on the walk's
+support (`lem:corner`'s near mass: the return read's flat read one at
+`lem:fpcap`'s eigen-identity at the labels the walk reaches). -/
+theorem walk_dim {L : Type} (F : Data L) (ls : List L) (k : Nat)
+    (hrow : walkExact F ls k) (hseed : seedFlat F ls) :
+    (dotN (walkVec F ls k) (dimVec F ls)).oneValue
+      (bpow (BPair.ofNat (2 * F.dim F.theta)) k) :=
+  walk_dim_go F ls hseed k (fun j hj i hi hu => walkExact_read F ls k hrow j hj i hi hu)
 
 /-- The composition read at a stated window with its intermediate
 list: the squared fundamental's entry identity

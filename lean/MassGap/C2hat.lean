@@ -310,6 +310,64 @@ theorem dfQ_full (s : Shape) :
   rw [places.rowList_full s, sqGaps_shift (rowList s),
     rho2_shift (rowList s), ground.length_bumpAt (s.length - 1) s]
 
+/-- The row total sits at or below the pair-gap fold at a vacant
+last entry: each row's pair against the vacant last row reads the
+row itself. -/
+private theorem sum_le_rho2 : ∀ (l : List Nat) (r : Nat),
+    l.length = r + 1 → ground.getAt 0 l r = 0 →
+    ground.sumNat l ≤ c2hat.rho2 l
+  | [x], 0, _, h0 => by
+    have hx : x = 0 := h0
+    rw [hx]
+    exact Nat.le_refl _
+  | [_], r + 1, hlen, _ =>
+    absurd (Nat.succ.inj hlen) (fun h => Nat.noConfusion h)
+  | _ :: _ :: _, 0, hlen, _ =>
+    absurd (Nat.succ.inj hlen) (fun h => Nat.noConfusion h)
+  | x :: y :: t, r + 1, hlen, h0 => by
+    have hlen' : (y :: t).length = r + 1 := Nat.succ.inj hlen
+    have h0' : ground.getAt 0 (y :: t) r = 0 := h0
+    have hih : ground.sumNat (y :: t) ≤ c2hat.rho2 (y :: t) :=
+      sum_le_rho2 (y :: t) r hlen' h0'
+    have hhead : x ≤ (y :: t).foldl
+        (fun acc z => acc + (x - z)) 0 := by
+      have h1 := ground.getAt_le_sumNat ((y :: t).map (fun z => x - z)) r
+      rw [ground.getAt_map 0 0 (fun z => x - z) (y :: t) r
+          (by rw [hlen']; exact Nat.lt_succ_self r), h0'] at h1
+      have h2 : ground.sumNat ((y :: t).map (fun z => x - z))
+          = ground.famFold Nat.add 0 (fun z => x - z) (y :: t) :=
+        ground.famFold_map Nat.add 0 (fun v => v) (fun z => x - z) (y :: t)
+      rw [h2] at h1
+      rw [ground.foldlSum (fun z => x - z) (y :: t) 0, Nat.zero_add]
+      exact h1
+    show Nat.add x (ground.sumNat (y :: t))
+      ≤ (y :: t).foldl (fun acc z => acc + (x - z)) 0
+        + c2hat.rho2 (y :: t)
+    exact Nat.add_le_add hhead hih
+
+/-- The degree window: the cleared Casimir read clears the count's
+multiple of a reduced shape's box total, each row's pair against
+the vacant last row reading the row itself inside the root fold
+(`prop:windowfinite`'s "the fold reads at or beyond the degree, so
+`d_f Q(λ)` clears `d_f k`"). -/
+theorem degree_le_dfQ (s : places.Shape) (r : Nat)
+    (hlen : s.length = r + 1)
+    (hred : ground.getAt 0 s r = 0) :
+    s.length * places.degree s ≤ c2hat.dfQ s := by
+  have hrl : (places.rowList s).length = r + 1 := by
+    rw [places.length_rowList, hlen]
+  have hlast : ground.getAt 0 (places.rowList s) r = 0 := by
+    rw [places.rowList_last s r hlen]
+    exact hred
+  have h1 : ground.sumNat (places.rowList s)
+      ≤ c2hat.rho2 (places.rowList s) :=
+    sum_le_rho2 (places.rowList s) r hrl hlast
+  show s.length * ground.sumNat (places.rowList s)
+    ≤ c2hat.sqGaps (places.rowList s)
+      + s.length * c2hat.rho2 (places.rowList s)
+  exact Nat.le_trans (Nat.mul_le_mul_left s.length h1)
+    (Nat.le_add_left _ _)
+
 /-- The vacant shape's cleared read is vacant. -/
 theorem dfQ_replicate_zero (n : Nat) :
     dfQ (List.replicate n 0) = 0 := by

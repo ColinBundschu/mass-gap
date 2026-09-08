@@ -32,8 +32,9 @@ at multiplicity two.  The magnetic entries read at the fibers'
 stated lists (`con:fiber`'s magnetic read): at the square over two
 and three letters the contraction reads the fusion counts, the
 loop clause's coherence, with the forged support entry refused at
-the entry conjunct alone; the loop fallback at unstated lists reads
-the count; and at the theta window over two letters at cutoff
+the entry conjunct alone; a position pair of two loops reads the
+count outright (`thm:pairpencil`'s loop clause, the contraction's
+value at the coherence pins); and at the theta window over two letters at cutoff
 twenty-six, the join of the adjoint on the shared link with the
 fundamental on the six further links beside the two loops and the
 hexagon, the whole pencil passes at the decided entries, the
@@ -46,6 +47,7 @@ together, with either doubled alone refused.  The square's terms'
 read is one theorem the pencil pass and the terms' extractions
 consume, the refusals reading their refused conjunct alone. -/
 set_option maxHeartbeats 16000000
+set_option maxRecDepth 100000
 
 open ground lattice fusion elim pairpencil
 
@@ -90,13 +92,13 @@ with pair entries at both weights, the displayed matrix at
 `[1 : 1]`. -/
 
 example : matOneValue
-    (pencilH 1 1 [0, 12, 32] (inertia.idMat 3)
+    (pencilH 1 1 [0, 12, 32] (elim.idMat 3)
  (loopMag (dataA 2) [[1, 0], adjchar.theta 2]))
     [[u, u, ⟨1, 2⟩], [u, ⟨12, 1⟩, u], [⟨1, 2⟩, u, ⟨32, 1⟩]] := by
   decide +kernel
 
 example : symmRead
-    (pencilH 2 3 [0, 12, 32] (inertia.idMat 3)
+    (pencilH 2 3 [0, 12, 32] (elim.idMat 3)
       (loopMag (dataA 2) [[1, 0], adjchar.theta 2])) := by decide +kernel
 
 /-! The pencil interface at the square window over two letters, the
@@ -106,7 +108,7 @@ own split, and the one plaquette term the fusion counts with its
 two cap splits at the adjoint dimension three. -/
 
 private def mSq : Mat := loopMag (dataA 2) [[1, 0], adjchar.theta 2]
-private def gSq : Mat := inertia.idMat 3
+private def gSq : Mat := elim.idMat 3
 private def cSq : Mat := inertia.matScaleB (BPair.ofNat 3) gSq
 /-! The square's three splits as stated data, the gram's own and the
 term's two caps (`lem:inertia`'s certificate data, re-read by
@@ -210,6 +212,22 @@ private theorem sqEntR2 : (List.range 3).all (fun j =>
   decide +kernel
 private theorem sqEnt : entriesRead (dataA 2) square 3 carrier.sqIx2 1 gSq sqP0 mSq :=
   (ground.all_range_succ_intro 2 (ground.all_range_succ_intro 1 (ground.all_range_succ_intro 0 rfl sqEntR0) sqEntR1) sqEntR2)
+
+/-! The contraction's coherence at the loop window: every occupied
+position pair's contraction reads the fusion count the entry read
+takes, one row per kernel task. -/
+example : (List.range 3).all (fun j =>
+    !rowPair (dataA 2) square carrier.sqIx2 sqP0 0 j
+      || contractAt (dataA 2) square carrier.sqIx2 1 gSq mSq sqP0 0 j) = true := by
+  decide +kernel
+example : (List.range 3).all (fun j =>
+    !rowPair (dataA 2) square carrier.sqIx2 sqP0 1 j
+      || contractAt (dataA 2) square carrier.sqIx2 1 gSq mSq sqP0 1 j) = true := by
+  decide +kernel
+example : (List.range 3).all (fun j =>
+    !rowPair (dataA 2) square carrier.sqIx2 sqP0 2 j
+      || contractAt (dataA 2) square carrier.sqIx2 1 gSq mSq sqP0 2 j) = true := by
+  decide +kernel
 private theorem sqCapAt : inertia.capAt mSq sqCap spUSq spLSq :=
   ⟨sqSq.1, sqSq.2, sqLe, sqLo, sqPsd⟩
 private theorem sqTerms : termsRead (dataA 2) square 3 carrier.sqIx2 1 gSq
@@ -294,7 +312,7 @@ against the four link scales, one exactly. -/
 example : ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2 2 gSq
     ∧ ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2 1
         [[⟨2, 1⟩, u, u], [u, ⟨3, 1⟩, u], [u, u, ⟨2, 1⟩]]
-    ∧ fibGram (dataA 2) square [[2, 0], [2, 0], [2, 0], [2, 0]]
+    ∧ fibGram (dataA 2) square carrier.sqIx2 [[2, 0], [2, 0], [2, 0], [2, 0]]
       = some [([[BPair.ofNat 3]], 1), ([[BPair.ofNat 3]], 1),
           ([[BPair.ofNat 3]], 1), ([[BPair.ofNat 3]], 1)]
     ∧ blockScale (dataA 2) square [[2, 0], [2, 0], [2, 0], [2, 0]] = 81 := by
@@ -328,24 +346,27 @@ example : symmRead mSqForged
         (inertia.mkSplit 3 (inertia.siteDatum cSq mSqForged))
         (inertia.mkSplit 3 (matAdd cSq mSqForged))
     ∧ termSupport (dataA 2) square 3 carrier.sqIx2 sqPlaq mSqForged
-    ∧ entryAt (dataA 2) square carrier.sqIx2 1 gSq mSq sqPlaq 1 1 = true
-    ∧ entryAt (dataA 2) square carrier.sqIx2 1 gSq mSq sqPlaq 0 2 = true
+    ∧ contractAt (dataA 2) square carrier.sqIx2 1 gSq mSq sqPlaq 1 1 = true
+    ∧ contractAt (dataA 2) square carrier.sqIx2 1 gSq mSq sqPlaq 0 2 = true
+    ∧ contractAt (dataA 2) square carrier.sqIx2 1 gSq mSqForged sqPlaq 1 1 = false
     ∧ entryAt (dataA 2) square carrier.sqIx2 1 gSq mSqForged sqPlaq 1 1 = false := by
   decide +kernel
 
-example : entryAt (dataA 2) square carrier.sqIx2 2 (inertia.matScaleB (BPair.ofNat 2) gSq)
+example : contractAt (dataA 2) square carrier.sqIx2 2 (inertia.matScaleB (BPair.ofNat 2) gSq)
       (inertia.matScaleB (BPair.ofNat 2) mSq) sqPlaq 1 1 = true
-    ∧ entryAt (dataA 2) square carrier.sqIx2 2 (inertia.matScaleB (BPair.ofNat 2) gSq)
+    ∧ contractAt (dataA 2) square carrier.sqIx2 2 (inertia.matScaleB (BPair.ofNat 2) gSq)
       (inertia.matScaleB (BPair.ofNat 2) mSq) sqPlaq 0 2 = true
-    ∧ entryAt (dataA 2) square carrier.sqIx2 2 (inertia.matScaleB (BPair.ofNat 2) gSq)
+    ∧ contractAt (dataA 2) square carrier.sqIx2 2 (inertia.matScaleB (BPair.ofNat 2) gSq)
       mSq sqPlaq 1 1 = false
+    ∧ contractAt (dataA 2) square carrier.sqIx2 2 gSq
+      (inertia.matScaleB (BPair.ofNat 2) mSq) sqPlaq 1 1 = false
     ∧ entryAt (dataA 2) square carrier.sqIx2 2 gSq
-      (inertia.matScaleB (BPair.ofNat 2) mSq) sqPlaq 1 1 = false := by decide +kernel
+      (inertia.matScaleB (BPair.ofNat 2) mSq) sqPlaq 1 1 = true := by decide +kernel
 
 example : lettersOf (dataA 2) = 2 ∧ wordOf (dataA 2) [0, 0] = (0, 0)
     ∧ wordOf (dataA 2) [1, 0] = (1, 0) ∧ wordOf (dataA 2) (adjchar.theta 2) = (2, 0)
-    ∧ (linkSigs (dataA 2) carrier.sqIx2).length = 12
-    ∧ linkSigAt (2, 0) true (2, 0) = [true, true, false, true, false, false]
+    ∧ fiber.linkSig (2, 0) (some true) (2, 0) (1, 1) = [true, true, false, true, false, false]
+    ∧ fiber.linkSig (2, 0) (some false) (2, 0) (1, 1) = [true, true, true, false, false, false]
     ∧ rowPair (dataA 2) square carrier.sqIx2 sqPlaq 0 2
     ∧ rowPair (dataA 2) square carrier.sqIx2 sqPlaq 1 1
     ∧ !rowPair (dataA 2) square carrier.sqIx2 sqPlaq 0 1 := by decide +kernel
@@ -362,26 +383,25 @@ example : (fiber.linkList 2 [true, true, false, true, false, false]).1.length = 
     ∧ (fiber.linkList 2 [true, false, true, false]).2
       = [[BPair.ofNat 4, BPair.ofNat 2], [BPair.ofNat 2, BPair.ofNat 4]] := by
   decide +kernel
-example : linkDataAt (dataA 2) carrier.sqIx2 [true, false, true, false]
-    = linkData 2 [true, false, true, false] :=
+example : linkDataAt (dataA 2) carrier.sqIx2 ([1, 0], some true, [1, 0])
+    = linkData (dataA 2) ([1, 0], some true, [1, 0]) :=
   linkDataAt_read (dataA 2) carrier.sqIx2 _
-example : (linkDataAt (dataA 2) carrier.sqIx2 [true, false, true, false]).2.1
+example : (linkDataAt (dataA 2) carrier.sqIx2 ([1, 0], some true, [1, 0])).2.1
     = [[BPair.ofNat 4, (BPair.ofNat 2).swap], [(BPair.ofNat 2).swap, BPair.ofNat 4]] := by
   decide +kernel
 
-/-! The boundary character's wiring at the square's first vertex:
-one pass, two boundary ends at four slots, the layout the entering
-head's exchanged pair then the leaving tail's, the pairing the two
-ends' exchange, and the four monomials pairing the entering link's
-undaggered slot with the leaving link's daggered and the leaving
-link's undaggered with the entering link's daggered. -/
+/-! The boundary factor's tensor at the letters: the mixed power's
+whole list at `(1,1)`, its coevaluation the identity's, the four
+monomials pairing the entering link's undaggered slot with the
+leaving link's daggered and the leaving link's undaggered with the
+entering link's daggered, the wiring at the square's vertex, at the
+clearing one and the unit's term withdrawn. -/
 
-example : bdryEnds square sqPlaq 1 = [(0, false), (1, true)]
-    ∧ passesAt square sqPlaq 1 = [((0, true), (1, true))]
-    ∧ bdrySig square sqPlaq 1 = [true, false, false, true]
-    ∧ bdryPerm square sqPlaq 1 = [1, 0]
-    ∧ (slotpower.gMons (bdryWiring 2 square sqPlaq 1)).map Prod.fst
-      = [[0, 0, 0, 0], [0, 1, 0, 1], [1, 0, 1, 0], [1, 1, 1, 1]] := by decide +kernel
+example : ((dataA 2).pres.bdry.1).map Prod.fst
+      = [[0, 0, 0, 0], [0, 1, 0, 1], [1, 0, 1, 0], [1, 1, 1, 1]]
+    ∧ ((dataA 2).pres.bdry.2).oneValue (BPair.ofNat 1)
+    ∧ (dataA 2).pres.lessUnit = true
+    ∧ (dataA 2).pres.bdryWord = (1, 1) := by decide +kernel
 
 /-! The square over three letters at cutoff thirty-two: the
 fundamental and its dual loops, each term entry the count one, the
@@ -389,7 +409,7 @@ loop clause's coherence at the symbolic tag's two wirings per
 link. -/
 
 private def m3 : Mat := loopMag (dataA 3) [[1, 0, 0], [0, 1, 0]]
-private def g3 : Mat := inertia.idMat 3
+private def g3 : Mat := elim.idMat 3
 private def c3 : Mat := inertia.matScaleB (BPair.ofNat 8) g3
 
 example : (dataA 3).dim (adjchar.theta 3) = 8
@@ -405,7 +425,7 @@ link. -/
 
 private def ixT3 : List (List places.Shape) := [List.replicate 4 (adjchar.theta 3)]
 
-example : entryAt (dataA 3) square ixT3 1 (inertia.idMat 2)
+example : contractAt (dataA 3) square ixT3 1 (elim.idMat 2)
     (loopMag (dataA 3) [adjchar.theta 3]) sqPlaq 0 1 = true := by decide +kernel
 
 /-! The theta window over two letters at cutoff twenty-six: the two
@@ -414,9 +434,10 @@ shared link with the fundamental on the six further links, one
 member at each trivalent vertex — at the gram diagonal with the
 join's block twelve, the two terms decided at the contraction: the
 loops' own entries one, the join's own entry eight at either
-plaquette, and its cross entry with the hexagon the balance
-partner of two at both orders, the two sides' contractions one
-value, the second plaquette's term at its reversed shared link,
+plaquette, and its cross entry with the hexagon two at both
+orders at the join member, the two sides' contractions one
+value, the second plaquette's term at its
+reversed shared link,
 the boundary wiring's slots exchanged there; the whole pencil
 passes, and the join's own entry moved to nine, the cross entry's
 side flipped and the gram's join block moved to eleven are each
@@ -426,11 +447,11 @@ private def gTh26 : Mat := ground.matOf 5 5 (fun i j =>
   if i == j then (if i == 4 then ⟨13, 1⟩ else ⟨2, 1⟩) else u)
 private def mTh0 : Mat := ground.matOf 5 5 (fun i j =>
   if i == 3 && j == 3 then ⟨2, 1⟩
-  else if (i == 2 && j == 4) || (i == 4 && j == 2) then ⟨1, 3⟩
+  else if (i == 2 && j == 4) || (i == 4 && j == 2) then ⟨3, 1⟩
   else if i == 4 && j == 4 then ⟨9, 1⟩ else u)
 private def mTh1 : Mat := ground.matOf 5 5 (fun i j =>
   if i == 1 && j == 1 then ⟨2, 1⟩
-  else if (i == 2 && j == 4) || (i == 4 && j == 2) then ⟨1, 3⟩
+  else if (i == 2 && j == 4) || (i == 4 && j == 2) then ⟨3, 1⟩
   else if i == 4 && j == 4 then ⟨9, 1⟩ else u)
 private def thP0 : List (Nat × Bool) := ground.getAt [] thetaG.plaqs 0
 private def thP1 : List (Nat × Bool) := ground.getAt [] thetaG.plaqs 1
@@ -471,12 +492,12 @@ private def thG : inertia.Split 5 :=
 private def thU0 : inertia.Split 5 :=
   ⟨⟨[[⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 4⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
-     [⟨1, 1⟩, ⟨1, 1⟩, ⟨82, 1⟩, ⟨1, 1⟩, ⟨1, 5403406870691968357⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨82, 1⟩, ⟨1, 1⟩, ⟨5403406870691968357, 1⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1594324⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨8105110306037952535, 1⟩]], rfl⟩,
    ⟨[[⟨3140085798164163223281069127, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 1046695266054721074427023043⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
-     [⟨1, 1⟩, ⟨1, 1⟩, ⟨38766491335360039793593447, 1⟩, ⟨1, 1⟩, ⟨25844327556906693195728965, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨38766491335360039793593447, 1⟩, ⟨1, 1⟩, ⟨1, 25844327556906693195728965⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1969541804367222465763⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨387420490, 1⟩]], rfl⟩,
    [.one ⟨4, 1⟩,
@@ -488,12 +509,12 @@ private def thU0 : inertia.Split 5 :=
 private def thL0 : inertia.Split 5 :=
   ⟨⟨[[⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 4⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
-     [⟨1, 1⟩, ⟨1, 1⟩, ⟨82, 1⟩, ⟨1, 1⟩, ⟨10806813741383936713, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨82, 1⟩, ⟨1, 1⟩, ⟨1, 10806813741383936713⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1594324⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨16210220612075905069, 1⟩]], rfl⟩,
    ⟨[[⟨6280171596328326446562138253, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 2093390532109442148854046085⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
-     [⟨1, 1⟩, ⟨1, 1⟩, ⟨77532982670720079587186893, 1⟩, ⟨1, 1⟩, ⟨1, 51688655113813386391457929⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨77532982670720079587186893, 1⟩, ⟨1, 1⟩, ⟨51688655113813386391457929, 1⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 3939083608734444931525⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨387420490, 1⟩]], rfl⟩,
    [.one ⟨4, 1⟩,
@@ -505,12 +526,12 @@ private def thL0 : inertia.Split 5 :=
 private def thU1 : inertia.Split 5 :=
   ⟨⟨[[⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 4⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
-     [⟨1, 1⟩, ⟨1, 1⟩, ⟨55, 1⟩, ⟨1, 1⟩, ⟨1, 210832519264920577⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨55, 1⟩, ⟨1, 1⟩, ⟨210832519264920577, 1⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 472393⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨316248778897380865, 1⟩]], rfl⟩,
    ⟨[[⟨24201729692064429659283457, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 8067243230688143219761153⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
-     [⟨1, 1⟩, ⟨1, 1⟩, ⟨448180179482674623320065, 1⟩, ⟨1, 1⟩, ⟨298786786321783082213377, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨448180179482674623320065, 1⟩, ⟨1, 1⟩, ⟨1, 298786786321783082213377⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 51232302181375699969⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨76527505, 1⟩]], rfl⟩,
    [.one ⟨4, 1⟩,
@@ -522,12 +543,12 @@ private def thU1 : inertia.Split 5 :=
 private def thL1 : inertia.Split 5 :=
   ⟨⟨[[⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 4⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
-     [⟨1, 1⟩, ⟨1, 1⟩, ⟨109, 1⟩, ⟨1, 1⟩, ⟨107946249863639334913, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨109, 1⟩, ⟨1, 1⟩, ⟨1, 107946249863639334913⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 3779137⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨161919374795459002369, 1⟩]], rfl⟩,
    ⟨[[⟨198260569637391807768850071553, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 66086856545797269256283357185⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
-     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1835746015161035257118982145, 1⟩, ⟨1, 1⟩, ⟨1, 1223830676774023504745988097⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1835746015161035257118982145, 1⟩, ⟨1, 1⟩, ⟨1223830676774023504745988097, 1⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 52461877433728716767233⟩, ⟨1, 1⟩],
      [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1224440065, 1⟩]], rfl⟩,
    [.one ⟨4, 1⟩,
@@ -621,7 +642,7 @@ example : pencilRead (dataA 2) thetaG 26 5 carrier.thIx26 1
    thSpG.1, thSpG.2, thTermsRead, by decide +kernel, by decide +kernel⟩
 
 private def mTh0Flip : Mat := ground.matOf 5 5 (fun i j =>
-  if (i == 2 && j == 4) || (i == 4 && j == 2) then ⟨3, 1⟩
+  if (i == 2 && j == 4) || (i == 4 && j == 2) then ⟨1, 3⟩
   else ground.getAt u (ground.getAt [] mTh0 i) j)
 private def gTh26Eleven : Mat := ground.matOf 5 5 (fun i j =>
   if i == 4 && j == 4 then ⟨12, 1⟩ else ground.getAt u (ground.getAt [] gTh26 i) j)
@@ -677,12 +698,12 @@ private def gTh : Mat :=
       ground.getAt u (ground.getAt [] (kron2 vg7 vg7) (i - 1)) (j - 1)
     else u)
 
-example : fibGram (dataA 3) thetaG thAll
+example : fibGram (dataA 3) thetaG [thAll] thAll
     = some [(vg3, 3), ([[BPair.ofNat 8]], 1), ([[BPair.ofNat 8]], 1), (vg3, 3),
         ([[BPair.ofNat 8]], 1), ([[BPair.ofNat 8]], 1)]
     ∧ blockScale (dataA 3) thetaG thAll = 2097152 := by decide +kernel
 example : gramBlockRead (dataA 3) thetaG 6 ix6 cTh gTh := by decide +kernel
-example : ¬ gramBlockRead (dataA 3) thetaG 6 ix6 cTh (inertia.idMat 6)
+example : ¬ gramBlockRead (dataA 3) thetaG 6 ix6 cTh (elim.idMat 6)
     ∧ ¬ gramBlockRead (dataA 3) thetaG 6 ix6 1 gTh
     ∧ ¬ gramBlockRead (dataA 3) thetaG 6 ix6 cTh (matAdd gTh (e6 1 5))
     ∧ ¬ gramBlockRead (dataA 3) thetaG 6 ix6 cTh (matAdd gTh (e6 1 2)) := by

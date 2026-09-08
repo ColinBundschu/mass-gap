@@ -260,24 +260,24 @@ decided conclusion. -/
 example : elim.spanRel (mixedinv.mixWidth 2 2)
     (mixedinv.permFlats 2 2)
     (mixedinv.flatF 2 2
-      (fun mu => elim.idList (places.monomialsAt mu).length)) := by
+      (fun mu => elim.idMat (places.monomialsAt mu).length)) := by
   decide +kernel
 
 example : elim.spanRel (mixedinv.mixWidth 2 2)
     (mixedinv.permFlats 2 2)
     (mixedinv.flatF 2 2
-      (fun mu => elim.idList (places.monomialsAt mu).length)) :=
+      (fun mu => elim.idMat (places.monomialsAt mu).length)) :=
   mixedinv.perm_span 2 2 (by decide +kernel) _
     (fun mu _ =>
-      ⟨elim.rowsLen_idList (places.monomialsAt mu).length,
-        elim.length_idList (places.monomialsAt mu).length⟩)
+      ⟨elim.rowsLen_idMat (places.monomialsAt mu).length,
+        elim.length_idMat (places.monomialsAt mu).length⟩)
     (fun mu _ i j _ _ _ x hx =>
       poly.oneValue_trans
         (elim.matVec_congr
           (units.matUnitAt (blockcount.moveAt i j mu) mu i j) _ _
-          (elim.matVec_idList (places.monomialsAt mu).length x hx))
+          (elim.matVec_idMat (places.monomialsAt mu).length x hx))
         (poly.oneValue_symm
-          (elim.matVec_idList
+          (elim.matVec_idMat
             (places.monomialsAt (blockcount.moveAt i j mu)).length
             _
             (by rw [elim.matVec_length, units.length_matUnitAt]))))
@@ -285,18 +285,18 @@ example : elim.spanRel (mixedinv.mixWidth 2 2)
 example : elim.spanRel (mixedinv.mixWidth 3 2)
     (mixedinv.permFlats 3 2)
     (mixedinv.flatF 3 2
-      (fun mu => elim.idList (places.monomialsAt mu).length)) :=
+      (fun mu => elim.idMat (places.monomialsAt mu).length)) :=
   mixedinv.perm_span 3 2 (by decide +kernel) _
     (fun mu _ =>
-      ⟨elim.rowsLen_idList (places.monomialsAt mu).length,
-        elim.length_idList (places.monomialsAt mu).length⟩)
+      ⟨elim.rowsLen_idMat (places.monomialsAt mu).length,
+        elim.length_idMat (places.monomialsAt mu).length⟩)
     (fun mu _ i j _ _ _ x hx =>
       poly.oneValue_trans
         (elim.matVec_congr
           (units.matUnitAt (blockcount.moveAt i j mu) mu i j) _ _
-          (elim.matVec_idList (places.monomialsAt mu).length x hx))
+          (elim.matVec_idMat (places.monomialsAt mu).length x hx))
         (poly.oneValue_symm
-          (elim.matVec_idList
+          (elim.matVec_idMat
             (places.monomialsAt (blockcount.moveAt i j mu)).length
             _
             (by rw [elim.matVec_length, units.length_matUnitAt]))))
@@ -351,5 +351,5 @@ frame's own. -/
 example : elim.spanRel (mixedinv.mixWidth 1 2)
     (mixedinv.permFlats 1 2)
     (mixedinv.flatF 1 2
-      (fun mu => elim.idList (places.monomialsAt mu).length)) := by
+      (fun mu => elim.idMat (places.monomialsAt mu).length)) := by
   decide +kernel

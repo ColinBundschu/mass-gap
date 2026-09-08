@@ -77,7 +77,7 @@ the root `5` outside, and at the symbol `2w - 3` the cleared root
 `3` sits inside, the count one with the vacancy's refusal. -/
 
 private def spOne (a : BPair) : Split 1 :=
-  ⟨⟨inertia.idMat 1, rfl⟩, ⟨inertia.idMat 1, rfl⟩,
+  ⟨⟨elim.idMat 1, rfl⟩, ⟨elim.idMat 1, rfl⟩,
    [.one a], 0, rfl⟩
 
 example : poly.oneValue (clearVarBT [⟨1, 6⟩, ⟨3, 1⟩]) [⟨1, 6⟩] := by

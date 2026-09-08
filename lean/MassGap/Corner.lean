@@ -4239,10 +4239,10 @@ theorem quad_diag (o twoN a c : Nat) (dR gR eR : Nat → Nat) :
 /-- The identity gram's quadratic read at the trial vector is the
 pairing fold. -/
 theorem quad_gram (o twoN a c : Nat) (dR gR : Nat → Nat) :
-    (inertia.quadForm (inertia.idMat o)
+    (inertia.quadForm (elim.idMat o)
         (trialVec o twoN a c dR gR)).oneValue
       (ground.BPair.ofNat (pairFold o twoN a c dR gR)) := by
-  have hM : inertia.idMat o
+  have hM : elim.idMat o
       = ground.matOf o o (fun i j =>
         ground.BPair.ofNat (if j = i then 1 else 0)) := by
     show ground.matOf o o (fun i j =>
@@ -4276,14 +4276,6 @@ theorem quad_rows (o twoN a c : Nat) (dR gR : Nat → Nat)
       (ground.BPair.ofNat (magFold o twoN a c dR gR NR)) :=
   quadNat o NR (trialAt twoN a c dR gR)
 
-/-- A datum below another joins the second's swap below the sum's
-unit, the gap carried across unchanged. -/
-private theorem ltUnit_of_lt {L R : ground.BPair} (h : L < R) :
-    L + R.swap < ground.BPair.unit :=
-  BPair.lt_congr (BPair.oneValue_refl _)
-    (ground.unitOfOne (BPair.oneValue_refl R))
-    (ground.ltB_add h (ground.leB_refl R.swap))
-
 /-- A lower-side quadratic witness occupies the count: at the
 counted pair a trial vector reading the site below the unit forces
 the reversal (`lem:inertia`'s forcing clause at the one-row
@@ -4316,7 +4308,7 @@ theorem rayleigh_count {o : Nat} (H G : elim.Mat) (x y : ground.Pos)
               (BPair.add_congr (BPair.oneValue_refl _)
                 (inertia.quadForm_ofPos y G phi)))
             (ground.swap_congr (inertia.quadForm_ofPos x G phi)))))
-      (BPair.oneValue_refl ground.BPair.unit) (ltUnit_of_lt hq)
+      (BPair.oneValue_refl ground.BPair.unit) (ground.ltUnit_of_lt hq)
   have hstrict : ∀ cs : List ground.BPair, cs.length = [phi].length →
       ¬ poly.unitTail cs →
       elim.dotN
@@ -4533,7 +4525,7 @@ theorem family_ground {o : Nat}
     (hy : (ground.BPair.ofPos y).oneValue (ground.BPair.ofNat
       (sM * KD * ground.prodOver (fun _ => b) (List.range (2 * p + 3))
         * (a * a) * dth)))
-    (hcount : certconstruct.countAtPair H (inertia.idMat o)
+    (hcount : certconstruct.countAtPair H (elim.idMat o)
       (x + e) y n sp) :
     1 ≤ n := by
   have hb : 0 < b := by
@@ -4764,10 +4756,10 @@ theorem family_ground {o : Nat}
           (elim.sqAt_of (ground.matOf_length o o _)
             (elim.rowsLen_matOf o o _)) hlen)
         (BPair.add_congr hE1 (ground.swap_congr hM1)))
-  refine rayleigh_count H (inertia.idMat o) (x + e) y n sp
+  refine rayleigh_count H (elim.idMat o) (x + e) y n sp
     (trialVec o twoN a c dR gR) hlen hcount ?_
   have hyq : (ground.BPair.ofPos y
-        * inertia.quadForm (inertia.idMat o)
+        * inertia.quadForm (elim.idMat o)
           (trialVec o twoN a c dR gR)).oneValue
       (ground.BPair.ofNat
         ((sM * KD
@@ -4776,7 +4768,7 @@ theorem family_ground {o : Nat}
     BPair.oneValue_trans (BPair.mul_congr hy hG1)
       (BPair.oneValue_symm (BPair.ofNat_mul _ _))
   have hxq : (ground.BPair.ofPos x
-        * inertia.quadForm (inertia.idMat o)
+        * inertia.quadForm (elim.idMat o)
           (trialVec o twoN a c dR gR)).oneValue
       (ground.BPair.ofNat
         ((sn * KN * (A * A) * ground.rise 1 (2 * p + 2)
@@ -4788,10 +4780,10 @@ theorem family_ground {o : Nat}
       (BPair.oneValue_symm (BPair.ofNat_mul _ _))
   have hle : inertia.quadForm H (trialVec o twoN a c dR gR)
         + ground.BPair.ofPos y
-          * inertia.quadForm (inertia.idMat o)
+          * inertia.quadForm (elim.idMat o)
             (trialVec o twoN a c dR gR)
       ≤ ground.BPair.ofPos x
-        * inertia.quadForm (inertia.idMat o)
+        * inertia.quadForm (elim.idMat o)
           (trialVec o twoN a c dR gR) := by
     refine ground.leB_congr
       (BPair.oneValue_symm (BPair.add_congr hHval hyq))
@@ -4802,7 +4794,7 @@ theorem family_ground {o : Nat}
       (BPair.ofNat_add _ _) (ground.leB_ofNat hnat)
   refine ground.leB_ltB_trans hle ?_
   have hQpos : ground.BPair.unit
-      < inertia.quadForm (inertia.idMat o)
+      < inertia.quadForm (elim.idMat o)
         (trialVec o twoN a c dR gR) :=
     BPair.lt_congr (BPair.oneValue_refl _)
       (BPair.oneValue_symm hG1)

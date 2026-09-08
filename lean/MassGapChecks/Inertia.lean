@@ -141,7 +141,7 @@ sits off the unit while the identity in the witness slot fails both
 product reads. -/
 example : (elim.minor spPd.T.val).offUnit := by decide +kernel
 example : ¬ clearedCongr spPd.T
-    (⟨inertia.idMat 2, by decide +kernel⟩ : elim.SqMat 2) := by decide +kernel
+    (⟨elim.idMat 2, by decide +kernel⟩ : elim.SqMat 2) := by decide +kernel
 example : matOneValue (matMul tSing.val tSing.val)
     (matScaleB (minor tSing.val) (idMat 2)) := by decide +kernel
 
@@ -722,7 +722,7 @@ example : matOneValue (matMul (idMat 2) exch2) exch2 :=
   idMat_matMul (k := 2) 2 exch2 (by decide +kernel) rfl (by decide +kernel)
 
 example : matOneValue (matMul (idMat 3) (idMat 3)) (idMat 3) :=
-  idMat_matMul (k := 3) 3 (idMat 3) (idMat_rows 3) (idMat_len 3) (by decide +kernel)
+  idMat_matMul (k := 3) 3 (idMat 3) (rowsLen_idMat 3) (length_idMat 3) (by decide +kernel)
 
 private def exFix : Mat := [[⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]]
 
@@ -944,10 +944,10 @@ example : ∀ i < 4, (List.range 4).map (fun j =>
     if i == j then BPair.ofPos Pos.one else BPair.unit)
       = elim.idRow 4 i := by decide +kernel
 example : ∀ i < 4, ∀ j < 4, ground.getAt BPair.unit
-    (ground.getAt ([] : List BPair) (inertia.idMat 4) i) j
+    (ground.getAt ([] : List BPair) (elim.idMat 4) i) j
   = (if j = i then BPair.ofNat 1 else BPair.unit) := by decide +kernel
 example : ¬ (∀ i < 3, ∀ j < 3, ground.getAt BPair.unit
-    (ground.getAt ([] : List BPair) (inertia.idMat 3) i) j
+    (ground.getAt ([] : List BPair) (elim.idMat 3) i) j
       = BPair.unit) := by decide +kernel
 
 /-! The compression corners at a `1 + 1` join: the pivot block
@@ -1392,3 +1392,98 @@ example : splitRead (siteDatum leC' leS') (spOne ⟨2, 3⟩) := by
 example : ¬ psdAt (spOne ⟨2, 3⟩) := by decide +kernel
 example : ¬ leAt leS' leC' (spOne ⟨2, 3⟩) := by decide +kernel
 example : ¬ (quadForm leS' leV ≤ quadForm leC' leV) := by decide +kernel
+
+/-! The forcing clause at two vectors at the two-by-two data, the two
+members the coordinate vectors.  At the diagonal `diag(-1, -1)` the leading
+entry sits below the sum's unit and the doubled cross read, vacant,
+sits below the diagonal product's quadruple `4`, so every split
+reads the count at two — the split at the identity's own congruence
+reads exactly two; the strict forcing at one member reads the count
+at one from the leading entry alone.  Each binder is isolated in turn: at the
+identity the doubled cross read still sits below the quadruple while
+the leading entry sits above the unit, and its split reads the count
+nought; at the diagonal `diag(-1, 1)` the leading entry sits below
+the unit while the quadruple is `-4`, below the vacant cross read,
+and its split reads the count one. -/
+
+private def xCap : List BPair := [BPair.ofNat 1, BPair.unit]
+private def yCap : List BPair := [BPair.unit, BPair.ofNat 1]
+private def sTwo : elim.Mat := [[⟨1, 2⟩, BPair.unit], [BPair.unit, ⟨1, 2⟩]]
+private def sSingle : elim.Mat := [[⟨1, 2⟩, BPair.unit], [BPair.unit, ⟨2, 1⟩]]
+
+private def spTwo : inertia.Split 2 :=
+  ⟨⟨elim.idMat 2, rfl⟩, ⟨elim.idMat 2, rfl⟩,
+   [.one ⟨1, 2⟩, .one ⟨1, 2⟩], 0, rfl⟩
+private def spNone : inertia.Split 2 :=
+  ⟨⟨elim.idMat 2, rfl⟩, ⟨elim.idMat 2, rfl⟩,
+   [.one ⟨2, 1⟩, .one ⟨2, 1⟩], 0, rfl⟩
+private def spSingle : inertia.Split 2 :=
+  ⟨⟨elim.idMat 2, rfl⟩, ⟨elim.idMat 2, rfl⟩,
+   [.one ⟨1, 2⟩, .one ⟨2, 1⟩], 0, rfl⟩
+
+example : inertia.splitRead sTwo spTwo := by decide +kernel
+example : inertia.splitRead (elim.idMat 2) spNone := by decide +kernel
+example : inertia.splitRead sSingle spSingle := by decide +kernel
+
+example : 2 ≤ inertia.revAt spTwo :=
+  inertia.capForcing sTwo xCap yCap rfl rfl (by decide +kernel) (by decide +kernel)
+    spTwo (by decide +kernel)
+
+example : inertia.revAt spTwo = 2 := by decide +kernel
+
+example : ¬ (inertia.quadForm (elim.idMat 2) xCap < BPair.unit) := by
+  decide +kernel
+
+example : (elim.dotN xCap (elim.matVec (elim.idMat 2) yCap)
+      + elim.dotN yCap (elim.matVec (elim.idMat 2) xCap))
+    * (elim.dotN xCap (elim.matVec (elim.idMat 2) yCap)
+      + elim.dotN yCap (elim.matVec (elim.idMat 2) xCap))
+  < BPair.ofNat 4 * (inertia.quadForm (elim.idMat 2) xCap
+      * inertia.quadForm (elim.idMat 2) yCap) := by decide +kernel
+
+example : ¬ (2 ≤ inertia.revAt spNone) := by decide +kernel
+
+example : inertia.quadForm sSingle xCap < BPair.unit := by decide +kernel
+
+example : ¬ ((elim.dotN xCap (elim.matVec sSingle yCap)
+      + elim.dotN yCap (elim.matVec sSingle xCap))
+    * (elim.dotN xCap (elim.matVec sSingle yCap)
+      + elim.dotN yCap (elim.matVec sSingle xCap))
+  < BPair.ofNat 4 * (inertia.quadForm sSingle xCap
+      * inertia.quadForm sSingle yCap)) := by decide +kernel
+
+example : ¬ (2 ≤ inertia.revAt spSingle) := by decide +kernel
+
+example : 1 ≤ inertia.revAt spSingle :=
+  inertia.strictForcing sSingle xCap rfl (by decide +kernel) spSingle (by decide +kernel)
+
+example : inertia.revAt spSingle = 1 := by decide +kernel
+
+example : ¬ (1 ≤ inertia.revAt spNone) := by decide +kernel
+
+/-! The positive form's cross read (`psd_cross`, `lem:corner`'s cap): at
+the positive-definite datum and the two unit vectors the exchanged
+pairings' sum `2` squares to `4` at or below four times the forms'
+product `16`, decided and through the theorem; at the diagonal datum
+with its lower-side unit the split reads but the positive read refuses,
+and the cross read parts, `0` against `4 · (2 · -1)`. -/
+example : (elim.dotN [⟨2, 1⟩, u] (elim.matVec sPd [u, ⟨2, 1⟩])
+      + elim.dotN [u, ⟨2, 1⟩] (elim.matVec sPd [⟨2, 1⟩, u]))
+    * (elim.dotN [⟨2, 1⟩, u] (elim.matVec sPd [u, ⟨2, 1⟩])
+      + elim.dotN [u, ⟨2, 1⟩] (elim.matVec sPd [⟨2, 1⟩, u]))
+    ≤ BPair.ofNat 4 * (inertia.quadForm sPd [⟨2, 1⟩, u]
+      * inertia.quadForm sPd [u, ⟨2, 1⟩]) := by decide +kernel
+example : (elim.dotN [⟨2, 1⟩, u] (elim.matVec sPd [u, ⟨2, 1⟩])
+      + elim.dotN [u, ⟨2, 1⟩] (elim.matVec sPd [⟨2, 1⟩, u]))
+    * (elim.dotN [⟨2, 1⟩, u] (elim.matVec sPd [u, ⟨2, 1⟩])
+      + elim.dotN [u, ⟨2, 1⟩] (elim.matVec sPd [⟨2, 1⟩, u]))
+    ≤ BPair.ofNat 4 * (inertia.quadForm sPd [⟨2, 1⟩, u]
+      * inertia.quadForm sPd [u, ⟨2, 1⟩]) :=
+  inertia.psd_cross sPd spPd (by decide +kernel) (by decide +kernel) _ _ rfl rfl
+example : ¬ ((elim.dotN [⟨2, 1⟩, u, u] (elim.matVec sDiag [u, ⟨2, 1⟩, u])
+      + elim.dotN [u, ⟨2, 1⟩, u] (elim.matVec sDiag [⟨2, 1⟩, u, u]))
+    * (elim.dotN [⟨2, 1⟩, u, u] (elim.matVec sDiag [u, ⟨2, 1⟩, u])
+      + elim.dotN [u, ⟨2, 1⟩, u] (elim.matVec sDiag [⟨2, 1⟩, u, u]))
+    ≤ BPair.ofNat 4 * (inertia.quadForm sDiag [⟨2, 1⟩, u, u]
+      * inertia.quadForm sDiag [u, ⟨2, 1⟩, u])) := by decide +kernel
+

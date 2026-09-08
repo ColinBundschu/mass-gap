@@ -68,22 +68,16 @@ read. -/
 def fCode (f : states.Factor) : Nat :=
   2 * f.1 + (if f.2 then 1 else 0)
 
-private def lexLe : List Nat → List Nat → Bool
-  | [], _ => true
-  | _ :: _, [] => false
-  | a :: s, b :: t =>
-    if a < b then true else if b < a then false else lexLe s t
-
 /-- The canonical rotation, the least of a cyclic word's
 readings. -/
 def canonRot (w : List Nat) : List Nat :=
   (List.range w.length).foldl (fun best k =>
     let rot := ground.rotAt k w
-    if lexLe rot best then rot else best) w
+    if !ground.lexLt best rot then rot else best) w
 
 private def insertW (w : List Nat) : List (List Nat) → List (List Nat)
   | [] => [w]
-  | v :: t => if lexLe w v then w :: v :: t else v :: insertW w t
+  | v :: t => if !ground.lexLt v w then w :: v :: t else v :: insertW w t
 
 private def sortW (ws : List (List Nat)) : List (List Nat) :=
   ws.foldl (fun acc w => insertW w acc) []
@@ -350,5 +344,17 @@ instance (F : states.FList) (c : states.Comb) (rv : Nat) :
     Decidable (memberAt F c rv) :=
   inferInstanceAs (Decidable
     (if F.length < rv then nullRead F c else directRead F c rv))
+
+/-- Two states one value at the evaluation identity: at every
+residual key of either, the two sub-states read equal at the word
+index of the key's site. -/
+def evalEqRead (F : states.FList) (a b : states.Comb) : Prop :=
+  let na := states.normalOf F a
+  let nb := states.normalOf F b
+  (states.keysOf (na ++ nb)).all (fun k =>
+    decide (combEqRead (states.siteOf F k) (states.atKey na k) (states.atKey nb k))) = true
+
+instance (F : states.FList) (a b : states.Comb) : Decidable (evalEqRead F a b) :=
+  inferInstanceAs (Decidable (_ = _))
 
 end kernel

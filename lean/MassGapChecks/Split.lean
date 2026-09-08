@@ -41,6 +41,29 @@ example : poly.oneValue (charPoly hD (idMat 2))
 example : poly.oneValue (charPoly hM (idMat 2))
     [⟨1, 4⟩, ⟨1, 3⟩, ⟨2, 1⟩] := by decide +kernel
 
+/-! The pencil polynomial at the descent's read (`charPolyD`,
+`charPolyD_eq`): the walk against the fold at the two level pairs,
+decided and through the theorem, and the square binder isolated at
+a two-row level pencil over three columns against the unit gram of
+order three, the site datum two rows wide at three keys, where the
+walk reads the leading block and the fold the three-column
+expansion. -/
+
+example : poly.oneValue (charPolyD hD (idMat 2))
+    [⟨4, 1⟩, ⟨1, 5⟩, ⟨2, 1⟩] := by decide +kernel
+example : poly.oneValue (charPolyD hM (idMat 2))
+    (charPoly hM (idMat 2)) := by decide +kernel
+example : poly.oneValue (charPolyD hM (idMat 2))
+    (charPoly hM (idMat 2)) :=
+  charPolyD_eq hM (idMat 2) (by decide +kernel)
+
+private def hW : Mat :=
+  [[⟨2, 1⟩, ⟨3, 1⟩, ⟨5, 1⟩], [⟨3, 1⟩, ⟨2, 1⟩, ⟨7, 1⟩]]
+
+example : ¬ elim.rowsLen (zMat hW (idMat 3)).length (zMat hW (idMat 3))
+    ∧ ¬ poly.oneValue (charPolyD hW (idMat 3))
+      (charPoly hW (idMat 3)) := by decide +kernel
+
 /-! The factorization reads at the stated root lists. -/
 
 example : chiRead hD (idMat 2) [(⟨2, 1⟩, 1), (⟨4, 1⟩, 1)] := by decide +kernel

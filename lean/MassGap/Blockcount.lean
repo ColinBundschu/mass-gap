@@ -120,13 +120,17 @@ later member an occupied interior lowering of a member listed at
 or before its predecessor — a round's joins are the frontier's
 images and the frontier is a suffix of the pool, so the preimage's
 key precedes the joined member's).
-The membership guard is `lem:lowerspan`'s span-membership read at
-`def:elim`'s residual — a candidate joins its content group
-exactly where the residual sits off the unit tail, the test's
-two-way certificates (`elim.resid_sound`, `elim.resid_complete`,
-`elim.indep_extend`, `elim.indep_det`) the guard's semantics.  The
+The membership guard is `lem:lowerspan`'s span membership read at
+the joined Gram (`elim.joinIndep`, `elim.joinIndep_span`: at an
+independent group a candidate sits in the group's span exactly
+where the group's Gram with the candidate reads a determinant at
+the sum's unit at the pivot walk, the extended list independent
+otherwise, `elim.joinIndep_indep`; the guard run at the pool's
+stored descents, `closeSpanS` at `elim.closeK`, with `blockSpan_eq` the
+span's read at the fresh walk).  The
 guard's soundness rides the pool groups' independence, maintained
-by the certificates from the independent seed — the seed proven at
+at every join by `elim.joinIndep_indep` from the independent seed
+— the seed proven at
 every shape (`exhibit_off_unit`: the distinguished arrangement's
 coefficient survives every tensor step, the factors' distinguished
 pair unique at the concatenation's rank) — and the closure's
@@ -350,9 +354,8 @@ private def tryAdd (pool : List HVec) (v : HVec) : List HVec :=
   if allU v.coords then pool
   else
     let group := pool.filter (fun w => w.content == v.content)
-    if poly.unitTail (elim.residV v.coords.length
-        (group.map HVec.coords) v.coords) then pool
-    else pool ++ [v]
+    if elim.joinIndep elim.dotP (group.map HVec.coords) v.coords
+    then pool ++ [v] else pool
 
 /-- The lowering closure at stated seeds: each round joins the
 frontier's occupied interior lowerings at the membership guard,
@@ -366,11 +369,37 @@ def closeSpan (d : Nat) : Nat → List HVec → List HVec →
       | some w => [w]
       | none => [])) tryAdd
 
+/-! The pool with its groups' stored descents (`def:elim`'s grown
+descent at `lem:lowerspan`'s collection): the members keyed by
+content, each content group's stored data grown by a candidate's
+pairings at the join (`elim.closeK` at `elim.joinS`), one descent
+grown a row per join, and the pool projects to the closure at the
+fresh walk (`closeSpanS_eq` at `elim.closeK_eq`). -/
+
+/-- The members' pairing at their coordinates. -/
+def dotC (v w : HVec) : BPair := elim.dotP v.coords w.coords
+
+/-- The lowering closure at the stored descents: `closeSpan`'s
+rounds at the keyed pool's join, the unit family passing the guard,
+the frontier read off the pool. -/
+def closeSpanS (d : Nat) :
+    Nat → elim.PoolS HVec (List Nat) → List HVec →
+      elim.PoolS HVec (List Nat) :=
+  elim.closeK (fun a b : List Nat => a == b) HVec.content dotC
+    (fun v => allU v.coords)
+    (fun v => (List.range (d - 1)).flatMap
+      (fun j =>
+        match lowerH j v with
+        | some w => [w]
+        | none => []))
+
 /-- The block's span: the lowering closure of the column exhibit, a
 content-graded independent list, the words' stabilization bound the
-closure's fuel. -/
+closure's fuel, the closure run at the stored descents
+(`blockSpan_eq` its read at the fresh walk). -/
 def blockSpan (s : Shape) : List HVec :=
-  closeSpan s.length (degree s * s.length) [exhibit s] [exhibit s]
+  (closeSpanS s.length (degree s * s.length)
+    (elim.seedK HVec.content dotC (exhibit s)) [exhibit s]).1
 
 /-- The span's occupancy at a content, the content grading's own
 read. -/
@@ -691,15 +720,14 @@ private theorem tryAdd_split (pool : List HVec) (v : HVec) :
   · exact Or.inl (if_pos h1)
   · have he : tryAdd pool v
         = (let group := pool.filter (fun w => w.content == v.content)
-           if poly.unitTail (elim.residV v.coords.length
-               (group.map HVec.coords) v.coords)
-           then pool else pool ++ [v]) := if_neg h1
+           if elim.joinIndep elim.dotP (group.map HVec.coords) v.coords
+           then pool ++ [v] else pool) := if_neg h1
     rw [he]
-    by_cases h2 : poly.unitTail (elim.residV v.coords.length
+    by_cases h2 : elim.joinIndep elim.dotP
       (((pool.filter (fun w => w.content == v.content)).map
-        HVec.coords)) v.coords)
-    · exact Or.inl (if_pos h2)
-    · exact Or.inr (if_neg h2)
+        HVec.coords)) v.coords = true
+    · exact Or.inr (if_pos h2)
+    · exact Or.inl (if_neg h2)
 
 private theorem foldl_tryAdd_reads (P : HVec → Prop) :
     ∀ (cands pool : List HVec), (∀ v ∈ cands, P v) →
@@ -810,68 +838,6 @@ private theorem closeSpan_reads (d : Nat) (Q R : HVec → Prop)
       (fun v hv => (hqr1 v hv).1)
     exact ⟨t1 ++ t2, by rw [ht2, ground.append_assoc],
       ground.all_of_append _ _ _ hqr1 hqr2⟩
-
-/-- The span's parametric read: a predicate at the exhibit kept by
-the occupied lowerings holds over the whole span, the members
-beyond the head lowering images with their own mark — the
-consumers instantiate the invariant (`lem:lowerspan`'s bridge). -/
-theorem blockSpan_reads (s : Shape) (Q R : HVec → Prop)
-    (hbase : Q (exhibit s))
-    (hstep : ∀ v w (j : Nat), j + 1 < s.length → Q v →
-      lowerH j v = some w → Q w ∧ R w) :
-    ∃ tail, blockSpan s = exhibit s :: tail
-      ∧ ∀ v ∈ tail, Q v ∧ R v := by
-  obtain ⟨tail, ht, hqr⟩ := closeSpan_reads s.length Q R hstep
-    (degree s * s.length) [exhibit s] [exhibit s]
-    (memAll_cons hbase memAll_nil) (memAll_cons hbase memAll_nil)
-  exact ⟨tail, ht, hqr⟩
-
-/-- The span's whole-family read, the bridge's weakening. -/
-theorem blockSpan_all (s : Shape) (Q : HVec → Prop)
-    (hbase : Q (exhibit s))
-    (hstep : ∀ v w (j : Nat), j + 1 < s.length → Q v →
-      lowerH j v = some w → Q w) :
-    ∀ v ∈ blockSpan s, Q v := by
-  obtain ⟨tail, ht, hqr⟩ := blockSpan_reads s Q (fun _ => True)
-    hbase (fun v w j hj hv hw => ⟨hstep v w j hj hv hw, trivial⟩)
-  rw [ht]
-  exact memAll_cons hbase (fun v hv => (hqr v hv).1)
-
-/-- The span's letter width: every member carries the shape's own
-letter count, the exhibit's row list at the base and the moves'
-length preservation at the step (`lem:blockirr`'s width datum). -/
-theorem blockSpan_width (s : Shape) : ∀ v ∈ blockSpan s,
-    v.content.length = s.length := by
-  refine blockSpan_all s (fun v => v.content.length = s.length)
-    ?_ ?_
-  · rw [content_exhibit s]
-    exact places.length_rowList s
-  · intro v w j _ hv hlw
-    rw [(lowerH_reads hlw).2, units.length_moveDn j v.content]
-    exact hv
-
-/-- The span's degree: every member's content reads the shape's box
-total, the exhibit's row list at the base and the moves' box
-preservation at the step, the width riding beside it
-(`lem:blockcount`(iii)'s one-degree read of a block's contents). -/
-theorem blockSpan_degree (s : Shape) : ∀ v ∈ blockSpan s,
-    sumNat v.content = degree s := by
-  have h : ∀ v ∈ blockSpan s,
-      v.content.length = s.length ∧ sumNat v.content = degree s := by
-    refine blockSpan_all s
-      (fun v => v.content.length = s.length
-        ∧ sumNat v.content = degree s) ?_ ?_
-    · rw [content_exhibit s]
-      exact ⟨places.length_rowList s, rfl⟩
-    · intro v w j hj hv hlw
-      obtain ⟨hocc, hct⟩ := lowerH_reads hlw
-      refine ⟨?_, ?_⟩
-      · rw [hct, units.length_moveDn j v.content]
-        exact hv.1
-      · rw [hct, units.sumNat_moveDn j v.content
-          (by rw [hv.1]; exact hj) hocc]
-        exact hv.2
-  exact fun v hv => (h v hv).2
 
 /-! The fundamental block's span (`lem:pieri`'s one-box factor at
 `lem:adjchar`'s block, `V` itself): at one box in the first column
@@ -1185,21 +1151,22 @@ private theorem tryAdd_std (d k : Nat) (hk : k + 1 < d) :
     exact ⟨Nat.lt_trans hik hk, Nat.ne_of_lt hik⟩
   show (if allU [BPair.ofNat 1] then (List.range (k + 1)).map (stdV d)
     else
-      if poly.unitTail (elim.residV ([BPair.ofNat 1] : List BPair).length
+      if elim.joinIndep elim.dotP
           ((((List.range (k + 1)).map (stdV d)).filter
             (fun w => w.content == unitAt d (k + 1))).map HVec.coords)
-          [BPair.ofNat 1]) then (List.range (k + 1)).map (stdV d)
-      else (List.range (k + 1)).map (stdV d) ++ [stdV d (k + 1)])
+          [BPair.ofNat 1]
+      then (List.range (k + 1)).map (stdV d) ++ [stdV d (k + 1)]
+      else (List.range (k + 1)).map (stdV d))
     = (List.range (k + 1)).map (stdV d) ++ [stdV d (k + 1)]
   rw [show allU [BPair.ofNat 1] = false from rfl,
     if_neg (fun h : (false : Bool) = true => Bool.noConfusion h),
     hfilter]
-  show (if poly.unitTail (elim.residV 1 [] [BPair.ofNat 1]) then
-      (List.range (k + 1)).map (stdV d)
-    else (List.range (k + 1)).map (stdV d) ++ [stdV d (k + 1)])
+  show (if elim.joinIndep elim.dotP ([] : elim.Mat) [BPair.ofNat 1] then
+      (List.range (k + 1)).map (stdV d) ++ [stdV d (k + 1)]
+    else (List.range (k + 1)).map (stdV d))
     = (List.range (k + 1)).map (stdV d) ++ [stdV d (k + 1)]
-  rw [if_neg (show ¬ poly.unitTail
-    (elim.residV 1 [] [BPair.ofNat 1]) from by decide +kernel)]
+  rw [if_pos (show elim.joinIndep elim.dotP ([] : elim.Mat)
+    [BPair.ofNat 1] = true from by decide +kernel)]
 
 private theorem closeSpan_nil (d fuel : Nat) (pool : List HVec) :
     closeSpan d fuel pool [] = pool := by
@@ -1270,24 +1237,6 @@ private theorem closeSpan_std (d : Nat) : ∀ (fuel k : Nat),
       rw [ground.dropLength ((List.range (k + 1)).map (stdV d)),
         closeSpan_nil d fuel ((List.range (k + 1)).map (stdV d)), hkd]
 
-/-- The fundamental block's span: at one box the closure lists the
-unit contents, one member per letter with the one-coordinate unit
-read. -/
-theorem blockSpan_fund (d : Nat) (hd : 0 < d) :
-    blockSpan (unitAt d 0)
-      = (List.range d).map (fun i =>
-          ⟨unitAt d i, [BPair.ofNat 1]⟩) := by
-  match d, hd with
-  | n + 1, _ =>
-    show closeSpan (unitAt (n + 1) 0).length
-        (degree (unitAt (n + 1) 0) * (unitAt (n + 1) 0).length)
-        [exhibit (unitAt (n + 1) 0)] [exhibit (unitAt (n + 1) 0)]
-      = (List.range (n + 1)).map (stdV (n + 1))
-    rw [length_unitAt (n + 1) 0, degree_unitAt n, Nat.one_mul, exhibit_std n]
-    exact closeSpan_std (n + 1) (n + 1) 0
-      (Nat.succ_le_succ (Nat.zero_le n))
-      (by rw [Nat.zero_add]; exact Nat.le_succ (n + 1))
-
 /-! The unit-family test's Prop reads: the Bool guard against the
 unit tail, `settledAt`'s first disjunct joined for the
 consumers. -/
@@ -1331,8 +1280,18 @@ def groupAt (pool : List HVec) (mu : List Nat) : elim.Mat :=
 collection count, `lem:lowerspan`'s joined-collection read at the
 content summand. -/
 def dimAt (pool : List HVec) (mu : List Nat) : Nat :=
-  (elim.collectOf (places.monomialsAt mu).length
+  (elim.collectW (places.monomialsAt mu).length
     (groupAt pool mu)).length
+
+/-- The dimension read at the collection's own spelling, at a group
+of the content's width. -/
+theorem dimAt_collect (pool : List HVec) (mu : List Nat)
+    (hG : elim.rowsLen (places.monomialsAt mu).length (groupAt pool mu)) :
+    dimAt pool mu
+      = (elim.collectOf (places.monomialsAt mu).length
+          (groupAt pool mu)).length := by
+  show (elim.collectW _ _).length = _
+  rw [elim.collectW_eq _ _ hG]
 
 /-- The block count at a stated carrier: the kernel dimension of
 the stacked raisings against the content summand's collected
@@ -1340,11 +1299,26 @@ list, `def:blockcount`'s read at `lem:lowerspan`'s
 joined-collection. -/
 def countAt (pool : List HVec) (mu : List Nat) : Nat :=
   elim.kernelDim
-    (elim.collectOf (places.monomialsAt mu).length
+    (elim.collectW (places.monomialsAt mu).length
       (groupAt pool mu)).length
     (elim.crossM (units.stackedRaise mu)
-      (elim.collectOf (places.monomialsAt mu).length
+      (elim.collectW (places.monomialsAt mu).length
         (groupAt pool mu)))
+
+/-- The block count at the collection's own spelling, at a group of
+the content's width. -/
+theorem countAt_collect (pool : List HVec) (mu : List Nat)
+    (hG : elim.rowsLen (places.monomialsAt mu).length (groupAt pool mu)) :
+    countAt pool mu
+      = elim.kernelDim
+          (elim.collectOf (places.monomialsAt mu).length
+            (groupAt pool mu)).length
+          (elim.crossM (units.stackedRaise mu)
+            (elim.collectOf (places.monomialsAt mu).length
+              (groupAt pool mu))) := by
+  show elim.kernelDim (elim.collectW _ _).length
+    (elim.crossM _ (elim.collectW _ _)) = _
+  rw [elim.collectW_eq _ _ hG]
 
 /-- The coordinate width at the content's enumeration. -/
 def sized (w : HVec) : Prop :=
@@ -1592,6 +1566,7 @@ theorem countAt_congr (mu : List Nat) (P P' : List HVec)
       (groupAt P mu) := rowsLen_groupAt mu P hszP
   have hG' : elim.rowsLen (places.monomialsAt mu).length
       (groupAt P' mu) := rowsLen_groupAt mu P' hszP'
+  rw [countAt_collect _ _ hG, countAt_collect _ _ hG']
   have hC := elim.collect_rowsLen (places.monomialsAt mu).length
     (groupAt P mu) hG
   have hC' := elim.collect_rowsLen (places.monomialsAt mu).length
@@ -1732,8 +1707,7 @@ occupancy: the collection keeps the whole group
 (`lem:lowerspan`'s joined-collection at an independent list). -/
 theorem dimAt_occ (P : List HVec) (hiP : indepAll P)
     (mu : List Nat) : dimAt P mu = occ mu P := by
-  show (elim.collectOf (places.monomialsAt mu).length
-    (groupAt P mu)).length = occ mu P
+  rw [dimAt_collect _ _ (indepAll_all hiP mu).1]
   rw [elim.collect_keep (places.monomialsAt mu).length
       (groupAt P mu) (indepAll_all hiP mu),
     length_groupAt mu P]
@@ -1805,22 +1779,16 @@ private theorem tryAdd_sem (pool : List HVec) (v : HVec)
   · exact Or.inl ⟨if_pos h1, Or.inl h1⟩
   · have he : tryAdd pool v
         = (let group := pool.filter (fun w => w.content == v.content)
-           if poly.unitTail (elim.residV v.coords.length
-               (group.map HVec.coords) v.coords)
-           then pool else pool ++ [v]) := if_neg h1
-    by_cases h2 : poly.unitTail (elim.residV v.coords.length
-      (groupAt pool v.content) v.coords)
-    · refine Or.inl ⟨he.trans (if_pos h2), Or.inr ?_⟩
-      exact elim.resid_sound v.coords.length _ v.coords hL rfl
-        (elim.indep_det v.coords.length _ hind') h2
-    · refine Or.inr ⟨he.trans (if_neg h2), ?_⟩
+           if elim.joinIndep elim.dotP (group.map HVec.coords) v.coords
+           then pool ++ [v] else pool) := if_neg h1
+    by_cases h2 : elim.joinIndep elim.dotP (groupAt pool v.content)
+      v.coords = true
+    · refine Or.inr ⟨he.trans (if_pos h2), ?_⟩
       intro mu _
       by_cases hmu : v.content = mu
       · cases hmu
-        have hext := elim.indep_extend v.coords.length
-          (groupAt pool v.content) v.coords hL rfl hind'
-          (fun hsp => h2 (elim.resid_complete v.coords.length _
-            v.coords hL rfl hsp))
+        have hext := (elim.joinIndep_indep v.coords.length
+          (groupAt pool v.content) v.coords hL rfl).1 h2
         have hgrp : groupAt (pool ++ [v]) v.content
             = groupAt pool v.content ++ [v.coords] := by
           rw [groupAt_append pool [v] v.content,
@@ -1838,6 +1806,15 @@ private theorem tryAdd_sem (pool : List HVec) (v : HVec)
             exact ground.append_nil _
         rw [hgrp]
         exact indepAll_all hind mu
+    · refine Or.inl ⟨he.trans (if_neg h2), Or.inr ?_⟩
+      have hf : elim.joinIndep elim.dotP (groupAt pool v.content)
+          v.coords = false := by
+        cases hb : elim.joinIndep elim.dotP (groupAt pool v.content)
+          v.coords with
+        | true => exact absurd hb h2
+        | false => rfl
+      exact (elim.joinIndep_span v.coords.length _ v.coords rfl
+        hind').1 hf
 
 private theorem foldl_tryAdd_sem :
     ∀ (imgs pool : List HVec), (∀ v ∈ pool, sized v) →
@@ -2066,31 +2043,6 @@ private theorem closeSpan_prov (d : Nat) :
         · rw [← ground.append_assoc]
           exact hp2
 
-/-- `lem:blockirr`'s provenance datum: the span lists the exhibit
-first, and every later member is an occupied interior lowering of
-a member listed at or before its own predecessor — the closure
-appending frontier images alone. -/
-theorem blockSpan_prov (s : Shape) : ∃ tail,
-    blockSpan s = exhibit s :: tail
-      ∧ ∀ k, k < tail.length →
-        ∃ i, i ≤ k ∧ ∃ j, j + 1 < s.length ∧
-          lowerH j (getAt (⟨[], []⟩ : HVec) (exhibit s :: tail) i)
-            = some (getAt (⟨[], []⟩ : HVec) tail k) := by
-  have hseed : provAt s.length [exhibit s] := by
-    intro m hm0 hm1
-    exact absurd (Nat.lt_of_lt_of_le hm0 (Nat.le_of_lt_succ hm1))
-      (Nat.lt_irrefl 0)
-  match closeSpan_prov s.length (degree s * s.length)
-      [exhibit s] [exhibit s] (fun _ hv => hv) hseed with
-  | ⟨t, ht, hpt⟩ =>
-    refine ⟨t, ht, ?_⟩
-    intro k hk
-    have hkl : k + 1 < ([exhibit s] ++ t).length :=
-      Nat.succ_lt_succ hk
-    match hpt (k + 1) (Nat.succ_pos k) hkl with
-    | ⟨i, him, j, hj, hlow⟩ =>
-      exact ⟨i, Nat.le_of_lt_succ him, j, hj, hlow⟩
-
 private theorem lowerH_fields {j : Nat} {v w : HVec}
     (h : lowerH j v = some w) :
     w.content = units.moveDn j v.content
@@ -2111,13 +2063,6 @@ private theorem lowerH_sized {j : Nat} {v w : HVec}
         = (units.matUnitAt (units.moveDn j v.content) v.content
             (j + 1) j).length from ground.length_map _ _,
       units.length_matUnitAt]
-
-/-- The exhibit is a member of its own span, the closure's head. -/
-theorem exhibit_mem (s : Shape) : exhibit s ∈ blockSpan s := by
-  match blockSpan_prov s with
-  | ⟨tail, hEq, _⟩ =>
-    rw [hEq]
-    exact List.Mem.head tail
 
 /-- The lowering moves along the coordinate class: at one content
 and one-value coordinates the images share their content and read
@@ -2896,14 +2841,50 @@ private theorem tensor_dist (v w : HVec)
   exact BPair.oneValue_trans
     (BPair.oneValue_symm (BPair.norm_oneValue _)) hu
 
+/-- The column wedge's coordinates read its content's
+enumeration. -/
+theorem wedgeC_sized (mu : List Nat) : sized (wedgeC mu) := by
+  show ((monomialsAt mu).map _).length = (monomialsAt mu).length
+  rw [ground.length_map]
+
+/-- The column wedge's content is the stated family. -/
+theorem wedgeC_clen (mu : List Nat) :
+    (wedgeC mu).content.length = mu.length := rfl
+
+/-- The column wedge's entries sit off the sum's unit, each the one
+or its balance partner at its arrangement's side. -/
+theorem wedgeC_off (mu : List Nat) :
+    ∀ i, i < (wedgeC mu).coords.length →
+      ¬ (ground.getAt BPair.unit (wedgeC mu).coords i).oneValue
+        BPair.unit := by
+  intro i hi
+  have hi' : i < (monomialsAt mu).length := by
+    rw [show (wedgeC mu).coords.length = (monomialsAt mu).length
+      from ground.length_map _ _] at hi
+    exact hi
+  show ¬ (ground.getAt BPair.unit ((monomialsAt mu).map
+      (fun m => if parity m then (BPair.ofNat 1).swap
+        else BPair.ofNat 1)) i).oneValue BPair.unit
+  rw [ground.getAt_map [] BPair.unit _ _ i hi']
+  by_cases hp : parity (ground.getAt [] (monomialsAt mu) i) = true
+  · rw [if_pos hp]
+    exact BPair.ofNat_one_swap_off
+  · rw [if_neg hp]
+    exact BPair.ofNat_one_off
+
+/-- The column wedge sits off the unit tail at its occupied
+enumeration. -/
+theorem wedgeC_off_unit (mu : List Nat) :
+    ¬ poly.unitTail (wedgeC mu).coords := by
+  intro hu
+  have hb : 0 < (wedgeC mu).coords.length := by
+    rw [wedgeC_sized mu]
+    exact monomialsAt_occupied mu
+  exact wedgeC_off mu 0 hb (poly.getAt_unitTail hu 0)
+
 /-- The wedge's coordinate family is sized: one coordinate per
 arrangement of its own content. -/
-theorem wedge_sized (d l : Nat) : sized (wedge d l) := by
-  show ((monomialsAt ((List.range d).map
-      (fun i => if i < l then 1 else 0))).map _).length
-    = (monomialsAt ((List.range d).map
-      (fun i => if i < l then 1 else 0))).length
-  rw [ground.length_map]
+theorem wedge_sized (d l : Nat) : sized (wedge d l) := wedgeC_sized _
 
 /-- The wedge's content is the letter count wide, the indicator
 family over the letters' own enumeration. -/
@@ -2914,36 +2895,8 @@ theorem wedge_clen (d l : Nat) :
 private theorem wedge_off (d l : Nat) :
     ∀ i, i < (wedge d l).coords.length →
       ¬ (ground.getAt BPair.unit (wedge d l).coords i).oneValue
-        BPair.unit := by
-  intro i hi
-  have hi' : i < (monomialsAt ((List.range d).map
-      (fun i => if i < l then 1 else 0))).length := by
-    have h2 : ((monomialsAt ((List.range d).map
-        (fun i => if i < l then 1 else 0))).map
-        (fun m => if parity m then (BPair.ofNat 1).swap
-          else BPair.ofNat 1)).length
-        = (monomialsAt ((List.range d).map
-          (fun i => if i < l then 1 else 0))).length :=
-      ground.length_map _ _
-    rw [show (wedge d l).coords.length
-        = ((monomialsAt ((List.range d).map
-          (fun i => if i < l then 1 else 0))).map
-          (fun m => if parity m then (BPair.ofNat 1).swap
-            else BPair.ofNat 1)).length from rfl, h2] at hi
-    exact hi
-  show ¬ (ground.getAt BPair.unit
-    ((monomialsAt ((List.range d).map
-      (fun i => if i < l then 1 else 0))).map
-      (fun m => if parity m then (BPair.ofNat 1).swap
-        else BPair.ofNat 1)) i).oneValue BPair.unit
-  rw [ground.getAt_map [] BPair.unit _ _ i hi']
-  by_cases hp : parity (ground.getAt [] (monomialsAt
-      ((List.range d).map (fun i => if i < l then 1 else 0))) i)
-      = true
-  · rw [if_pos hp]
-    exact BPair.ofNat_one_swap_off
-  · rw [if_neg hp]
-    exact BPair.ofNat_one_off
+        BPair.unit :=
+  wedgeC_off _
 
 private theorem map_zero_range : ∀ d : Nat,
     (List.range d).map (fun _ => (0 : Nat))
@@ -3047,6 +3000,207 @@ private theorem indep_seed (v : HVec) (hs : sized v)
     rw [hs, hcmu]
   | false => exact elim.indep_nil _
 
+
+/-- The Gram at the coordinate pairing is the coordinates' Gram. -/
+private theorem gramBy_dotC (l : List HVec) :
+    elim.gramBy dotC l = elim.gramBy elim.dotP (l.map HVec.coords) := by
+  show l.map (fun r => l.map (fun c => dotC r c))
+    = (l.map HVec.coords).map (fun r =>
+        (l.map HVec.coords).map (fun c => elim.dotP r c))
+  rw [ground.map_map HVec.coords (fun r =>
+      (l.map HVec.coords).map (fun c => elim.dotP r c)) l]
+  refine ground.map_congr_all _ _ (fun r => ?_) l
+  exact (ground.map_map HVec.coords (fun c => elim.dotP r.coords c) l).symm
+
+/-- The joined read at the coordinate pairing is the coordinates'
+joined read. -/
+private theorem joinIndep_dotC (l : List HVec) (v : HVec) :
+    elim.joinIndep dotC l v
+      = elim.joinIndep elim.dotP (l.map HVec.coords) v.coords := by
+  show (if (elim.detD (elim.gramBy dotC (l ++ [v]))).oneValue BPair.unit
+      then false else true)
+    = (if (elim.detD (elim.gramBy elim.dotP
+        (l.map HVec.coords ++ [v.coords]))).oneValue BPair.unit
+      then false else true)
+  rw [gramBy_dotC (l ++ [v]), ground.map_append HVec.coords l [v]]
+  rfl
+
+/-- The pool's join at the fresh walk is the keyed join at the
+coordinate pairing (`joinIndep_dotC`). -/
+private theorem tryAdd_eq_L (pool : List HVec) (v : HVec) :
+    tryAdd pool v
+      = elim.tryAddL (fun a b : List Nat => a == b) HVec.content dotC
+          (fun v => allU v.coords) pool v := by
+  by_cases hu : allU v.coords = true
+  · rw [show tryAdd pool v = pool from if_pos hu,
+      show elim.tryAddL (fun a b : List Nat => a == b) HVec.content dotC
+        (fun v => allU v.coords) pool v = pool from if_pos hu]
+  · rw [show tryAdd pool v
+        = (if elim.joinIndep elim.dotP
+            ((pool.filter (fun w => w.content == v.content)).map HVec.coords)
+            v.coords
+          then pool ++ [v] else pool) from if_neg hu,
+      show elim.tryAddL (fun a b : List Nat => a == b) HVec.content dotC
+          (fun v => allU v.coords) pool v
+        = (if elim.joinIndep dotC
+            (pool.filter (fun w => w.content == v.content)) v
+          then pool ++ [v] else pool) from if_neg hu,
+      joinIndep_dotC]
+
+/-- The closure at the stored descents from a member off the unit
+tail is the closure at the fresh walk: the member's own descent
+seeds the trace, its self-pairing off the sum's unit
+(`lem:lowerspan`'s pairing definiteness), every join keeps it
+(`elim.closeK_eq`), and the keyed join is the pool's own
+(`tryAdd_eq_L`). -/
+theorem closeSpanS_eq (d fuel : Nat) (w : HVec)
+    (hw : ¬ poly.unitTail w.coords) :
+    (closeSpanS d fuel (elim.seedK HVec.content dotC w) [w]).1
+      = closeSpan d fuel [w] [w] :=
+  (elim.closeK_eq (fun a b : List Nat => a == b) HVec.content dotC
+    (fun v => allU v.coords) (fun _ _ h => ground.listBeqEq h)
+    ground.listEqBeq
+    (fun u v => BPair.oneValue_of_eq (elim.dotP_comm u.coords v.coords))
+    (fun v => (List.range (d - 1)).flatMap
+      (fun j =>
+        match lowerH j v with
+        | some w => [w]
+        | none => [])) fuel w [w]
+    (elim.joinIndep_single dotC w
+      (fun hd => hw (elim.dotP_self_null w.coords hd)))).trans
+  (ground.closeByS_proj
+    (fun v => (List.range (d - 1)).flatMap
+      (fun j =>
+        match lowerH j v with
+        | some w => [w]
+        | none => []))
+    (elim.tryAddL (fun a b : List Nat => a == b) HVec.content dotC
+      (fun v => allU v.coords)) tryAdd (fun l => l) (fun _ => True)
+    (fun _ _ _ => trivial) (fun p a _ => (tryAdd_eq_L p a).symm) fuel [w] [w]
+    trivial).2
+
+/-- The span at the stored descents is the closure at the fresh
+walk: the exhibit sits off the unit tail (`exhibit_off_unit`). -/
+theorem blockSpan_eq (s : Shape) :
+    blockSpan s
+      = closeSpan s.length (degree s * s.length) [exhibit s] [exhibit s] :=
+  closeSpanS_eq _ _ _ (exhibit_off_unit s)
+
+/-- The span's parametric read: a predicate at the exhibit kept by
+the occupied lowerings holds over the whole span, the members
+beyond the head lowering images with their own mark — the
+consumers instantiate the invariant (`lem:lowerspan`'s bridge). -/
+theorem blockSpan_reads (s : Shape) (Q R : HVec → Prop)
+    (hbase : Q (exhibit s))
+    (hstep : ∀ v w (j : Nat), j + 1 < s.length → Q v →
+      lowerH j v = some w → Q w ∧ R w) :
+    ∃ tail, blockSpan s = exhibit s :: tail
+      ∧ ∀ v ∈ tail, Q v ∧ R v := by
+  obtain ⟨tail, ht, hqr⟩ := closeSpan_reads s.length Q R hstep
+    (degree s * s.length) [exhibit s] [exhibit s]
+    (memAll_cons hbase memAll_nil) (memAll_cons hbase memAll_nil)
+  rw [blockSpan_eq]
+  exact ⟨tail, ht, hqr⟩
+
+/-- The span's whole-family read, the bridge's weakening. -/
+theorem blockSpan_all (s : Shape) (Q : HVec → Prop)
+    (hbase : Q (exhibit s))
+    (hstep : ∀ v w (j : Nat), j + 1 < s.length → Q v →
+      lowerH j v = some w → Q w) :
+    ∀ v ∈ blockSpan s, Q v := by
+  obtain ⟨tail, ht, hqr⟩ := blockSpan_reads s Q (fun _ => True)
+    hbase (fun v w j hj hv hw => ⟨hstep v w j hj hv hw, trivial⟩)
+  rw [ht]
+  exact memAll_cons hbase (fun v hv => (hqr v hv).1)
+
+/-- The span's letter width: every member carries the shape's own
+letter count, the exhibit's row list at the base and the moves'
+length preservation at the step (`lem:blockirr`'s width datum). -/
+theorem blockSpan_width (s : Shape) : ∀ v ∈ blockSpan s,
+    v.content.length = s.length := by
+  refine blockSpan_all s (fun v => v.content.length = s.length)
+    ?_ ?_
+  · rw [content_exhibit s]
+    exact places.length_rowList s
+  · intro v w j _ hv hlw
+    rw [(lowerH_reads hlw).2, units.length_moveDn j v.content]
+    exact hv
+
+/-- The span's degree: every member's content reads the shape's box
+total, the exhibit's row list at the base and the moves' box
+preservation at the step, the width riding beside it
+(`lem:blockcount`(iii)'s one-degree read of a block's contents). -/
+theorem blockSpan_degree (s : Shape) : ∀ v ∈ blockSpan s,
+    sumNat v.content = degree s := by
+  have h : ∀ v ∈ blockSpan s,
+      v.content.length = s.length ∧ sumNat v.content = degree s := by
+    refine blockSpan_all s
+      (fun v => v.content.length = s.length
+        ∧ sumNat v.content = degree s) ?_ ?_
+    · rw [content_exhibit s]
+      exact ⟨places.length_rowList s, rfl⟩
+    · intro v w j hj hv hlw
+      obtain ⟨hocc, hct⟩ := lowerH_reads hlw
+      refine ⟨?_, ?_⟩
+      · rw [hct, units.length_moveDn j v.content]
+        exact hv.1
+      · rw [hct, units.sumNat_moveDn j v.content
+          (by rw [hv.1]; exact hj) hocc]
+        exact hv.2
+  exact fun v hv => (h v hv).2
+
+/-- The fundamental block's span: at one box the closure lists the
+unit contents, one member per letter with the one-coordinate unit
+read. -/
+theorem blockSpan_fund (d : Nat) (hd : 0 < d) :
+    blockSpan (unitAt d 0)
+      = (List.range d).map (fun i =>
+          ⟨unitAt d i, [BPair.ofNat 1]⟩) := by
+  match d, hd with
+  | n + 1, _ =>
+    rw [blockSpan_eq]
+    show closeSpan (unitAt (n + 1) 0).length
+        (degree (unitAt (n + 1) 0) * (unitAt (n + 1) 0).length)
+        [exhibit (unitAt (n + 1) 0)] [exhibit (unitAt (n + 1) 0)]
+      = (List.range (n + 1)).map (stdV (n + 1))
+    rw [length_unitAt (n + 1) 0, degree_unitAt n, Nat.one_mul, exhibit_std n]
+    exact closeSpan_std (n + 1) (n + 1) 0
+      (Nat.succ_le_succ (Nat.zero_le n))
+      (by rw [Nat.zero_add]; exact Nat.le_succ (n + 1))
+
+/-- `lem:blockirr`'s provenance datum: the span lists the exhibit
+first, and every later member is an occupied interior lowering of
+a member listed at or before its own predecessor — the closure
+appending frontier images alone. -/
+theorem blockSpan_prov (s : Shape) : ∃ tail,
+    blockSpan s = exhibit s :: tail
+      ∧ ∀ k, k < tail.length →
+        ∃ i, i ≤ k ∧ ∃ j, j + 1 < s.length ∧
+          lowerH j (getAt (⟨[], []⟩ : HVec) (exhibit s :: tail) i)
+            = some (getAt (⟨[], []⟩ : HVec) tail k) := by
+  have hseed : provAt s.length [exhibit s] := by
+    intro m hm0 hm1
+    exact absurd (Nat.lt_of_lt_of_le hm0 (Nat.le_of_lt_succ hm1))
+      (Nat.lt_irrefl 0)
+  rw [blockSpan_eq]
+  match closeSpan_prov s.length (degree s * s.length)
+      [exhibit s] [exhibit s] (fun _ hv => hv) hseed with
+  | ⟨t, ht, hpt⟩ =>
+    refine ⟨t, ht, ?_⟩
+    intro k hk
+    have hkl : k + 1 < ([exhibit s] ++ t).length :=
+      Nat.succ_lt_succ hk
+    match hpt (k + 1) (Nat.succ_pos k) hkl with
+    | ⟨i, him, j, hj, hlow⟩ =>
+      exact ⟨i, Nat.le_of_lt_succ him, j, hj, hlow⟩
+
+/-- The exhibit is a member of its own span, the closure's head. -/
+theorem exhibit_mem (s : Shape) : exhibit s ∈ blockSpan s := by
+  match blockSpan_prov s with
+  | ⟨tail, hEq, _⟩ =>
+    rw [hEq]
+    exact List.Mem.head tail
+
 /-- The span's semantic reads at a stated measure (`lem:lowerspan`'s
 joined-collection clause): with the measure dropping per occupied lowering,
 move-free at its floor, and the exhibit's coordinates off the unit
@@ -3088,16 +3242,13 @@ theorem blockSpan_sem (s : Shape) (meas : List Nat → Nat)
       from rfl] at heq hs hind hclosed
     refine ⟨?_, ?_, ?_⟩
     · show ∀ v ∈ blockSpan s, sized v
-      rw [show blockSpan s = closeSpan s.length
-          (degree s * s.length) [exhibit s] [exhibit s] from rfl,
-        heq]
+      rw [blockSpan_eq s, heq]
       exact hs
     · show indepAll (blockSpan s)
-      rw [show blockSpan s = closeSpan s.length
-          (degree s * s.length) [exhibit s] [exhibit s] from rfl,
-        heq]
+      rw [blockSpan_eq s, heq]
       exact hind
-    · exact hclosed
+    · rw [blockSpan_eq s]
+      exact hclosed
 
 /-! The exhibit's top read (`lem:tops`(iii)): an adjacent raising's
 image of the column exhibit reads the sum's unit at every
@@ -3130,17 +3281,6 @@ own read at a target monomial. -/
 
 private def coordAt (v : HVec) (m : List Nat) : BPair :=
   ground.getAt BPair.unit v.coords (rankOf m v.content)
-
-private theorem bsum_mulR (f : List Nat → BPair) (c : BPair) :
-    ∀ l : List (List Nat),
-      (ground.bsum (fun m => f m * c) l).oneValue (ground.bsum f l * c)
-  | [] => BPair.oneValue_symm (BPair.unit_mul c)
-  | m :: t => by
-    show (f m * c + ground.bsum (fun m => f m * c) t).oneValue
-      ((f m + ground.bsum f t) * c)
-    rw [BPair.right_distrib]
-    exact BPair.add_congr (BPair.oneValue_refl _)
-      (bsum_mulR f c t)
 
 /-! The coefficient fold against a source enumeration, the
 combination's positional read. -/
@@ -4600,7 +4740,7 @@ private theorem tensor_raise_split (j : Nat) (v w : HVec)
           (fun m1 hm1 => tensor_coord v w hlen hsv hsw m1 t2
             (hm1c m1 hm1).1 (hm1c m1 hm1).2 h2 h2m)) ?_
       exact BPair.oneValue_trans
-        (bsum_mulR (coordAt v) (coordAt w t2) _)
+        (BPair.oneValue_symm (foldB_mul_right (coordAt w t2) (coordAt v) _))
         (BPair.oneValue_trans
           (BPair.mul_congr (hv t1 hm1c) (BPair.oneValue_refl _))
           (BPair.unit_mul _))
@@ -4985,8 +5125,7 @@ private theorem addSwapCancel (a b : BPair) :
   rw [BPair.add_assoc]
   refine BPair.oneValue_trans
     (BPair.add_congr (BPair.oneValue_refl a) ?_) (BPair.add_unit a)
-  rw [BPair.add_comm b b.swap]
-  exact BPair.swap_add_null (BPair.oneValue_refl b)
+  exact BPair.add_swap_null b
 
 private theorem vecAddCancel : ∀ a b : List BPair,
     a.length = b.length →
@@ -6205,13 +6344,8 @@ private theorem wedge_full_le (d i : Nat) :
 /-- The full wedge sits off the unit tail: its head coordinate is
 the scalar one at an occupied enumeration. -/
 theorem wedge_off_unit : ∀ d : Nat,
-    ¬ poly.unitTail (wedge d d).coords := by
-  intro d hu
-  have hb : 0 < (wedge d d).coords.length := by
-    rw [wedge_sized d d]
-    exact monomialsAt_occupied (wedge d d).content
-  exact wedge_off d d 0 hb
-    (poly.getAt_unitTail hu 0)
+    ¬ poly.unitTail (wedge d d).coords :=
+  fun d => wedgeC_off_unit ((List.range d).map (fun i => if i < d then 1 else 0))
 
 private theorem getAt_moveDn_self (j : Nat) (mu : List Nat)
     (hocc : 0 < ground.getAt 0 mu j) :
@@ -6868,7 +7002,7 @@ private theorem act_tensor_halfA (i j : Nat) (v w : HVec)
       (units.unitAct j i M1)
       (fun m1 hm1 => tensor_coord v w hlen hsv hsw m1 M2
         (hm1c m1 hm1).1 (hm1c m1 hm1).2 hl2 hg2)) ?_
-  exact bsum_mulR (coordAt v) (coordAt w M2) _
+  exact BPair.oneValue_symm (foldB_mul_right (coordAt w M2) (coordAt v) _)
 
 private theorem act_tensor_halfB (i j : Nat) (v w : HVec)
     (hsv : sized v) (hsw : sized w)
@@ -8011,7 +8145,7 @@ private theorem tensorW_lower_first (d j : Nat) (hj : j + 1 < d)
           (wedge_sized d d) hsv m1 t2 (hm1c m1 hm1).1
           (hm1c m1 hm1).2 h2 h2m)) ?_
     exact BPair.oneValue_trans
-      (bsum_mulR (coordAt (wedge d d)) (coordAt v t2) _)
+      (BPair.oneValue_symm (foldB_mul_right (coordAt v t2) (coordAt (wedge d d)) _))
       (BPair.oneValue_trans
         (BPair.mul_congr (wedge_lowerNull d j hj t1 hm1c)
           (BPair.oneValue_refl _))
@@ -9247,9 +9381,10 @@ theorem dotP_tensorH : ∀ (v w v' w' : HVec),
       · exact ground.foldB_mul_left
           (coordAt v M1 * coordAt v' M1)
           (fun M2 => coordAt w M2 * coordAt w' M2) _
-  · exact bsum_mulR (fun M1 => coordAt v M1 * coordAt v' M1)
+  · exact BPair.oneValue_symm (foldB_mul_right
       (ground.bsum (fun M2 => coordAt w M2 * coordAt w' M2)
-        (monomialsAt w.content)) _
+        (monomialsAt w.content))
+      (fun M1 => coordAt v M1 * coordAt v' M1) _)
 
 private theorem tensor_place_off (v w v' w' : HVec)
     (hlen : v.content.length = w.content.length)
@@ -10182,6 +10317,7 @@ theorem countAt_pairs (A B : List HVec) (cc : List Nat)
       = elim.kernelDim (pairsAt A B cc).length
         (elim.crossM (units.stackedRaise cc)
           ((pairsAt A B cc).map HVec.coords)) := by
+  rw [countAt_collect _ _ (by rw [groupAt_fused A B cc]; exact hind.1)]
   show elim.kernelDim
       (elim.collectOf (monomialsAt cc).length
         (groupAt (fusedAt A B) cc)).length
@@ -10801,6 +10937,7 @@ theorem blockSpan_stationary : ∀ s : Shape,
         = [exhibit s]
       rw [hround]
       exact closeSpan_nil s.length f [exhibit s]
+  rw [blockSpan_eq]
   exact key (degree s * s.length)
 
 private theorem grow_ne (pool : List HVec) (c : HVec)
@@ -10905,15 +11042,17 @@ theorem closeSpan_seed_line (d fuel : Nat) (w : HVec)
       | false => rfl
     have he : tryAdd [w] v
         = (let group := [w].filter (fun u => u.content == v.content)
-           if poly.unitTail (elim.residV v.coords.length
-               (group.map HVec.coords) v.coords)
-           then [w] else [w] ++ [v]) := if_neg hall
-    by_cases h2 : poly.unitTail (elim.residV v.coords.length
-        (groupAt [w] v.content) v.coords)
-    · rw [hgrp] at h2
+           if elim.joinIndep elim.dotP (group.map HVec.coords) v.coords
+           then [w] ++ [v] else [w]) := if_neg hall
+    cases hb : elim.joinIndep elim.dotP (groupAt [w] v.content)
+      v.coords with
+    | false =>
+      rw [hgrp] at hb
       exact elim.spanRel_nil_unit v.coords.length v.coords
-        ⟨trivial, rfl, h2⟩
-    · exact absurd ((he.trans (if_neg h2)).symm.trans hfix)
+        ((elim.joinIndep_span v.coords.length ([] : elim.Mat) v.coords
+          rfl (elim.indep_nil _)).1 hb)
+    | true =>
+      exact absurd ((he.trans (if_pos hb)).symm.trans hfix)
         (fun hc => grow_ne [w] v [] (by
           rw [ground.append_nil]
           exact hc))
@@ -11299,16 +11438,15 @@ private theorem tryAdd_corr (d : Nat) (Qp Pp : List HVec)
         (groupAt Pp u.content) := by
       rw [← hNu]
       exact hLP
-    have hfwd : poly.unitTail (elim.residV u'.coords.length
-          (groupAt Qp u'.content) u'.coords) →
-        poly.unitTail (elim.residV u.coords.length
-          (groupAt Pp u.content) u.coords) := by
-      intro ht
+    have hfwd : elim.spanRel u'.coords.length
+          (groupAt Qp u'.content) u'.coords →
+        elim.spanRel u.coords.length
+          (groupAt Pp u.content) u.coords := by
+      intro hsp0
       have hsp1 : elim.spanRel (places.monomialsAt u'.content).length
           (groupAt Qp u'.content) u'.coords := by
         rw [← hsu']
-        exact elim.resid_sound _ _ _ hLQ rfl
-          (elim.indep_det _ _ hindQ') ht
+        exact hsp0
       have hsp2 := tensorW_spanRel_fwd d u'.content hdu'
         (groupAt Qp u'.content) u'.coords hsp1
       have hsp3 := spanRel_rows _
@@ -11320,19 +11458,18 @@ private theorem tryAdd_corr (d : Nat) (Qp Pp : List HVec)
         (tensorH (wedge d d) (⟨u'.content, u'.coords⟩ : HVec)).coords
         u.coords (poly.oneValue_symm hcu.2) hsp3 hNu
       rw [← hNu] at hsp4
-      exact elim.resid_complete _ _ _ hLP rfl hsp4
-    have hbwd : poly.unitTail (elim.residV u.coords.length
-          (groupAt Pp u.content) u.coords) →
-        poly.unitTail (elim.residV u'.coords.length
-          (groupAt Qp u'.content) u'.coords) := by
-      intro ht
+      exact hsp4
+    have hbwd : elim.spanRel u.coords.length
+          (groupAt Pp u.content) u.coords →
+        elim.spanRel u'.coords.length
+          (groupAt Qp u'.content) u'.coords := by
+      intro hsp0
       have hsp1 : elim.spanRel
           (places.monomialsAt (tensorH (wedge d d)
             (⟨u'.content, []⟩ : HVec)).content).length
           (groupAt Pp u.content) u.coords := by
         rw [← hNu]
-        exact elim.resid_sound _ _ _ hLP rfl
-          (elim.indep_det _ _ hindP') ht
+        exact hsp0
       have hsp2 := elim.spanRel_congr _ (groupAt Pp u.content)
         u.coords
         (tensorH (wedge d d) (⟨u'.content, u'.coords⟩ : HVec)).coords
@@ -11348,13 +11485,33 @@ private theorem tryAdd_corr (d : Nat) (Qp Pp : List HVec)
         (groupAt Qp u'.content) u'.coords
         (by rw [← hsu']; exact hLQ) hsu' hsp3
       rw [← hsu'] at hsp4
-      exact elim.resid_complete _ _ _ hLQ rfl hsp4
-    by_cases h2 : poly.unitTail (elim.residV u'.coords.length
-        (groupAt Qp u'.content) u'.coords)
-    · exact Or.inl ⟨(if_neg h1).trans (if_pos h2),
-        (if_neg h1P).trans (if_pos (hfwd h2))⟩
-    · exact Or.inr ⟨(if_neg h1).trans (if_neg h2),
-        (if_neg h1P).trans (if_neg (fun hp => h2 (hbwd hp)))⟩
+      exact hsp4
+    cases hb : elim.joinIndep elim.dotP (groupAt Qp u'.content)
+      u'.coords with
+    | true =>
+      have hQ := (elim.joinIndep_indep u'.coords.length
+        (groupAt Qp u'.content) u'.coords hLQ rfl).1 hb
+      have hP : elim.joinIndep elim.dotP (groupAt Pp u.content)
+          u.coords = true :=
+        (elim.joinIndep_indep u.coords.length (groupAt Pp u.content)
+          u.coords hLP rfl).2
+          (elim.indep_extend u.coords.length (groupAt Pp u.content)
+            u.coords hLP rfl hindP' (fun hsp =>
+              elim.indep_refuse u'.coords.length (groupAt Qp u'.content)
+                u'.coords hQ (hbwd hsp)))
+      exact Or.inr ⟨(if_neg h1).trans (if_pos hb),
+        (if_neg h1P).trans (if_pos hP)⟩
+    | false =>
+      have hP : elim.joinIndep elim.dotP (groupAt Pp u.content)
+          u.coords = false :=
+        (elim.joinIndep_span u.coords.length (groupAt Pp u.content)
+          u.coords rfl hindP').2
+          (hfwd ((elim.joinIndep_span u'.coords.length
+            (groupAt Qp u'.content) u'.coords rfl hindQ').1 hb))
+      exact Or.inl ⟨(if_neg h1).trans
+          (if_neg (fun h => Bool.noConfusion (hb.symm.trans h))),
+        (if_neg h1P).trans
+          (if_neg (fun h => Bool.noConfusion (hP.symm.trans h)))⟩
 
 private theorem lowerH_corr (d j : Nat) (v w : HVec)
     (hsv : sized v) (hsw : sized w)
@@ -11840,6 +11997,7 @@ private theorem blockSpan_corrP (lam : Shape)
       show meas (exhibit lam).content ≤ degree lam * lam.length
       rw [content_exhibit lam]
       exact hexh) memAll_nil)
+  rw [blockSpan_eq lam, blockSpan_eq (ground.bumpAt (lam.length - 1) lam)]
   show corrP lam.length
     (closeSpan lam.length (degree lam * lam.length)
       [exhibit lam] [exhibit lam])
@@ -11917,6 +12075,7 @@ theorem occupancy_addFull (lam : Shape) (meas : List Nat → Nat)
         (memAll_cons hclenQ memAll_nil)
         (memAll_cons hclenQ memAll_nil) with
     | ⟨tail, heq, htail⟩ =>
+      rw [blockSpan_eq lam]
       show ∀ v ∈ closeSpan lam.length (degree lam * lam.length)
         [exhibit lam] [exhibit lam], v.content.length = lam.length
       rw [heq]

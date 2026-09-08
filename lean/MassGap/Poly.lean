@@ -2369,10 +2369,7 @@ theorem unitTail_of_negRead : ∀ {p : Poly},
 every key. -/
 theorem add_neg : ∀ p : Poly, unitTail (add p (neg p))
   | [] => trivial
-  | c :: p => ⟨BPair.oneValue_trans
-      (BPair.oneValue_of_eq (BPair.add_comm c c.swap))
-      (BPair.swap_add_null (BPair.oneValue_refl c)),
-    add_neg p⟩
+  | c :: p => ⟨BPair.add_swap_null c, add_neg p⟩
 
 /-- The unit scalar's scaling reads the list itself, entry by
 entry. -/

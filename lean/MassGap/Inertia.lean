@@ -443,22 +443,6 @@ theorem sqAt_matScale_reflect {o : Nat} (c : Pos) (H : Mat)
   rw [hl, sqAtRows c o H hs.2]
   rfl
 
-/-- The identity at an order. -/
-def idMat (n : Nat) : Mat :=
-  (List.range n).map (elim.idRow n)
-
-/-- The identity's row is its key's indicator. -/
-theorem idMat_row (n i : Nat) (hi : i < n) :
-    ground.getAt ([] : List BPair) (idMat n) i = elim.idRow n i :=
-  ground.matOf_row [] n n _ i hi
-
-/-- The identity's entry: the key comparison's own indicator. -/
-theorem getAt_idMat (n i j : Nat) (hi : i < n) (hj : j < n) :
-    ground.getAt BPair.unit
-        (ground.getAt ([] : List BPair) (idMat n) i) j
-      = if j = i then BPair.ofNat 1 else BPair.unit :=
-  ground.matOf_entry [] BPair.unit n n _ i j hi hj
-
 /-- A split enters cleared: over pair data the congruence reads at
 an integer `T`, its determinant off equal members with the adjugate
 against the determinant the witness's solve — the two product reads
@@ -1003,114 +987,6 @@ theorem scaleId_act (w : BPair) (n : Nat) (u : List BPair)
     exact BPair.oneValue_trans
       (BPair.mul_congr (BPair.oneValue_refl _) hdiag)
       (BPair.oneValue_of_eq (BPair.mul_comm _ w))
-
-/-- The adjugate identity at the column side, carried to the action:
-the adjugate's product against the list acts as the determinant's
-scale, `adj(G) G v` the determinant against `v` at every vector of
-the order (`def:elim`'s adjugate identity, `elim.adjM_col_diag` and
-`elim.adjM_col_off` entrywise). -/
-theorem adjM_col_read (G : Mat) {n : Nat} (hsq : sqAt G n) :
-    matOneValue (matMul (adjM G) G) (matScaleB (detL G) (idMat n)) := by
-  have hGl : G.length = n := sqAt_len hsq
-  have hGr : rowsLen n G := rowsLen_of_sqAt hsq
-  cases Nat.eq_zero_or_pos n with
-  | inl hz =>
-    have hcof : ((List.range G.length).map (fun k => cofVec G k)) = [] :=
-      ground.nil_of_length_zero _ ((cofRows_len G).trans (hGl.trans hz))
-    have hA : adjM G = [] := by
-      show transposeM ((List.range G.length).map (fun k => cofVec G k)) = []
-      rw [hcof]
-      rfl
-    have hI : idMat n = [] :=
-      ground.nil_of_length_zero _ ((ground.length_mapRange _ n).trans hz)
-    rw [hA, hI]
-    trivial
-  | inr hpos =>
-    have hnG : 0 < ((List.range G.length).map (fun k => cofVec G k)).length := by
-      rw [cofRows_len G, hGl]
-      exact hpos
-    have hAl : (adjM G).length = n := by
-      show (transposeM ((List.range G.length).map
-        (fun k => cofVec G k))).length = n
-      rw [length_transposeM _ (cofRows_rowsLen G) hnG]
-      exact hGl
-    have hMl : (matMul (adjM G) G).length = n :=
-      (length_matMul (adjM G) G).trans hAl
-    have hMr : rowsLen n (matMul (adjM G) G) :=
-      rowsLen_cast (transposeLen G hGr hGl) (rowsLen_matMul (adjM G) G)
-    have hRl : (matScaleB (detL G) (idMat n)).length = n :=
-      (ground.length_map _ (idMat n)).trans (ground.length_mapRange _ n)
-    have hRr : rowsLen n (matScaleB (detL G) (idMat n)) :=
-      rowsLen_mapRows (fun z => (detL G * z).norm) (idMat n) n
-        (rowsLen_map (idRow n) n (List.range n)
-          (fun k _ => length_idRow n k))
-    refine matOne_of_entries _ _ n hMl hMr hRl hRr ?_
-    intro i j hi hj
-    rw [scaleId_row (detL G) n i hi, scaleRow_entry (detL G) n i j hj]
-    by_cases hji : j = i
-    · rw [if_pos hji, hji]
-      exact BPair.oneValue_trans (adjM_col_diag G hsq i hi)
-        (BPair.oneValue_symm
-          (BPair.oneValue_trans (BPair.norm_oneValue _)
-            (BPair.mul_ofNat_one (detL G))))
-    · rw [if_neg hji]
-      exact BPair.oneValue_trans
-        (adjM_col_off G hsq i j hi hj (fun he => hji he.symm))
-        (BPair.oneValue_symm
-          (BPair.oneValue_trans (BPair.norm_oneValue _)
-            (BPair.mul_unit (detL G))))
-
-/-- The adjugate's action against a list's own action pins a vector
-at the determinant's scale: the adjugate identity's action read
-(`adjM_col_read`) at the vector, the determinant's scaled identity
-acting as the scale itself (`def:elim`'s adjugate identity read at a
-vector). -/
-theorem det_pin {n : Nat} (S : Mat) (hsq : sqAt S n)
-    (z : List BPair) (hz : z.length = n) :
-    poly.oneValue (matVec (matMul (adjM S) S) z)
-      (vecScale (detL S) z) :=
-  poly.oneValue_trans
-    (matVec_matOne _ _ z (adjM_col_read S hsq))
-    (scaleId_act (detL S) n z hz)
-
-/-- The solve read: at a list's action on a vector reading stated
-data, the adjugate's action on the data returns the vector at the
-determinant's scale, `def:elim`'s adjugate against the list at the
-solved column. -/
-theorem adj_solve {n : Nat} (S : Mat) (hsq : sqAt S n)
-    (z w : List BPair) (hz : z.length = n)
-    (h : poly.oneValue (matVec S z) w) :
-    poly.oneValue (matVec (adjM S) w) (vecScale (detL S) z) :=
-  poly.oneValue_trans
-    (matVec_congr (adjM S) w _ (poly.oneValue_symm h))
-    (poly.oneValue_trans
-      (poly.oneValue_symm
-        (matVec_matMul (adjM S) S n (rowsLen_of_sqAt hsq) z hz))
-      (det_pin S hsq z hz))
-
-/-- A determinant off equal members refuses every kernel vector but the
-unit family: the adjugate carries `X v` back to the determinant's
-multiple of `v`, and the determinant withdraws at the product's
-injectivity. -/
-theorem matVec_null_of_det (X : Mat) {n : Nat} (hsq : sqAt X n)
-    (hdet : ¬ (minor X).oneValue BPair.unit)
-    (v : List BPair) (hv : v.length = n)
-    (h : poly.unitTail (matVec X v)) : poly.unitTail v := by
-  have hXl : X.length = n := sqAt_len hsq
-  have hXr : rowsLen n X := rowsLen_of_sqAt hsq
-  have hAr : rowsLen n (adjM X) :=
-    rowsLen_cast hXl (rowsLen_cast (cofRows_len X) (rowsLen_transposeM _))
-  have h1 : poly.unitTail (matVec (adjM X) (matVec X v)) :=
-    matVec_null (adjM X) _ h
-  have h2 : poly.unitTail (matVec (matMul (adjM X) X) v) :=
-    poly.unitTail_oneValue_right h1
-      (matVec_comp (adjM X) X v n hXr hv (rowsLen_cast hXl.symm hAr))
-  have h4 : poly.unitTail (vecScale (detL X) v) :=
-    poly.unitTail_oneValue_right h2 (det_pin X hsq v hv)
-  have hdet' : ¬ (detL X).oneValue BPair.unit := fun hzero =>
-    hdet (BPair.oneValue_trans
-      (minor_detL X (rowsLen_cast hXl.symm hXr)) hzero)
-  exact unitTail_unscale (detL X) hdet' v h4
 
 /-- Two matrices reading one value price one quadratic form. -/
 theorem quadMatOne (A B : Mat) (c : List BPair)
@@ -4980,18 +4856,6 @@ determinant's own identity. -/
 private def liftM (P Cw : Mat) (m : Nat) : Mat :=
   Cw ++ matScaleB (minor P).swap (idMat m)
 
-/-- The identity's row count at its order. -/
-theorem idMat_len (k : Nat) : (idMat k).length = k :=
-  ground.matOf_length k k _
-
-/-- The identity's rows at its order. -/
-theorem idMat_rows (k : Nat) : rowsLen k (idMat k) :=
-  elim.rowsLen_matOf k k _
-
-/-- The identity is square at its order. -/
-theorem sqAt_idMat (k : Nat) : elim.sqAt (idMat k) k :=
-  elim.sqAt_of (idMat_len k) (idMat_rows k)
-
 
 /-- The matrix's iterated product at a stated order, the power's
 carrier from the identity. -/
@@ -5002,40 +4866,23 @@ def matPow (M : Mat) (n : Nat) : Nat → Mat
 /-- The iterated product keeps the row count. -/
 theorem length_matPow (M : Mat) (n : Nat) (hM : M.length = n) :
     ∀ k, (matPow M n k).length = n
-  | 0 => idMat_len n
+  | 0 => length_idMat n
   | k + 1 => (length_matMul M (matPow M n k)).trans hM
 
 /-- The iterated product keeps the column counts. -/
 theorem rowsLen_matPow (M : Mat) (n : Nat) (hMl : M.length = n) :
     ∀ k, rowsLen n (matPow M n k)
-  | 0 => idMat_rows n
+  | 0 => rowsLen_idMat n
   | k + 1 =>
     rowsLen_cast
       (transposeLen (matPow M n k) (rowsLen_matPow M n hMl k)
         (length_matPow M n hMl k))
       (rowsLen_matMul M (matPow M n k))
 
-/-- The identity's action is the vector itself. -/
-theorem matVec_idMat (n : Nat) (u : List BPair)
-    (hu : u.length = n) : poly.oneValue (matVec (idMat n) u) u := by
-  have hid : (idMat n).length = n :=
-    ground.length_mapRange _ n
-  refine poly.oneValue_of_entries _ _ ?_ ?_
-  · rw [matVec_length, hid, hu]
-  · intro i hi
-    rw [matVec_length, hid] at hi
-    rw [show matVec (idMat n) u = (idMat n).map (fun r => dotN r u) from rfl,
-      ground.getAt_map ([] : List BPair) BPair.unit _ (idMat n) i
-        (by rw [hid]; exact hi),
-      idMat_row n i hi]
-    refine BPair.oneValue_trans (dotN_read _ u) ?_
-    rw [dotP_comm (idRow n i) u]
-    exact dotP_idRow u n i hu hi
-
 private theorem padM_len (k q : Nat) : (padM k q).length = k + q := by
   show (matScaleB (BPair.ofPos Pos.one) (idMat k)
     ++ List.replicate q (List.replicate k BPair.unit)).length = k + q
-  rw [ground.length_append, length_scaleB, idMat_len,
+  rw [ground.length_append, length_scaleB, length_idMat,
     ground.length_replicate]
 
 private theorem padM_act (k q : Nat) (x : List BPair) (hx : x.length = k) :
@@ -5046,7 +4893,7 @@ private theorem padM_act (k q : Nat) (x : List BPair) (hx : x.length = k) :
       ++ List.replicate q (List.replicate k BPair.unit)) x) _
   rw [elim.matVec_append]
   refine poly.oneValue_append _ _ _ _ ?_ ?_ ?_
-  · rw [matVec_length, length_scaleB, idMat_len, hx]
+  · rw [matVec_length, length_scaleB, length_idMat, hx]
   · exact poly.oneValue_trans (scaleId_act (BPair.ofPos Pos.one) k x hx)
       (elim.vecScale_one x)
   · exact poly.unitTail_oneValue (elim.matVec_replicate_null k q x)
@@ -5055,7 +4902,7 @@ private theorem padM_act (k q : Nat) (x : List BPair) (hx : x.length = k) :
 private theorem liftM_len (P Cw : Mat) (k q : Nat) (hCl : Cw.length = k) :
     (liftM P Cw q).length = k + q := by
   show (Cw ++ matScaleB (minor P).swap (idMat q)).length = k + q
-  rw [ground.length_append, length_scaleB, idMat_len, hCl]
+  rw [ground.length_append, length_scaleB, length_idMat, hCl]
 
 private theorem liftM_act (P Cw : Mat) (q : Nat) (w : List BPair)
     (hw : w.length = q) :
@@ -6236,7 +6083,7 @@ def padR (k m : Nat) : Mat :=
 theorem padR_len (k m : Nat) : (padR k m).length = k + m := by
   show (nullMat k m
     ++ matScaleB (BPair.ofPos Pos.one) (idMat m)).length = k + m
-  rw [ground.length_append, length_nullMat, length_scaleB, idMat_len]
+  rw [ground.length_append, length_nullMat, length_scaleB, length_idMat]
 
 /-- The trailing padding's action: the unit family above the
 vector's own. -/
@@ -7116,7 +6963,7 @@ the one-index pairing at the diagonal key (`def:elim`). -/
 theorem idMat_matMul {k : Nat} (n : Nat) (X : Mat) (hX : rowsLen k X)
     (hXl : X.length = n) (hn : 0 < n) :
     matOneValue (matMul (idMat n) X) X := by
-  have hid : (idMat n).length = n := idMat_len n
+  have hid : (idMat n).length = n := length_idMat n
   have hMl : (matMul (idMat n) X).length = n :=
     (length_matMul (idMat n) X).trans hid
   have hXt : (transposeM X).length = k :=
@@ -7168,24 +7015,24 @@ theorem transposeM_idMat : ∀ n : Nat,
   | k + 1 => by
     have hn : 0 < k + 1 := Nat.succ_pos k
     have hlt : (transposeM (idMat (k + 1))).length = k + 1 :=
-      length_transposeM (idMat (k + 1)) (idMat_rows (k + 1))
-        (by rw [idMat_len (k + 1)]; exact hn)
+      length_transposeM (idMat (k + 1)) (rowsLen_idMat (k + 1))
+        (by rw [length_idMat (k + 1)]; exact hn)
     refine ground.getAt_ext ([] : List BPair) _ _
-      (by rw [hlt, idMat_len (k + 1)]) ?_
+      (by rw [hlt, length_idMat (k + 1)]) ?_
     intro i hi
     rw [hlt] at hi
     refine ground.getAt_ext BPair.unit _ _
       (by rw [rowsLen_getAt (transposeM (idMat (k + 1))) i
           (rowsLen_transposeM (idMat (k + 1))) (by rw [hlt]; exact hi),
-        idMat_len (k + 1),
-        rowsLen_getAt (idMat (k + 1)) i (idMat_rows (k + 1))
-          (by rw [idMat_len (k + 1)]; exact hi)]) ?_
+        length_idMat (k + 1),
+        rowsLen_getAt (idMat (k + 1)) i (rowsLen_idMat (k + 1))
+          (by rw [length_idMat (k + 1)]; exact hi)]) ?_
     intro j hj
     rw [rowsLen_getAt (transposeM (idMat (k + 1))) i
         (rowsLen_transposeM (idMat (k + 1))) (by rw [hlt]; exact hi),
-      idMat_len (k + 1)] at hj
-    rw [getAt_transposeM BPair.unit (idMat (k + 1)) (idMat_rows (k + 1)) i j hi
-        (by rw [idMat_len (k + 1)]; exact hj),
+      length_idMat (k + 1)] at hj
+    rw [getAt_transposeM BPair.unit (idMat (k + 1)) (rowsLen_idMat (k + 1)) i j hi
+        (by rw [length_idMat (k + 1)]; exact hj),
       idMat_row (k + 1) j hj, idMat_row (k + 1) i hi,
       elim.getAt_idRow (k + 1) j i hi, elim.getAt_idRow (k + 1) i j hj]
     by_cases hij : i = j
@@ -7201,14 +7048,14 @@ theorem matMul_idR {k : Nat} (n : Nat) (X : Mat) (hX : rowsLen n X)
     length_transposeM X hX (by rw [hXl]; exact hk)
   have hMw : rowsLen n (matMul X (idMat n)) := by
     refine rowsLen_cast ?_ (rowsLen_matMul X (idMat n))
-    rw [transposeM_idMat n, idMat_len n]
+    rw [transposeM_idMat n, length_idMat n]
   have hMl : (matMul X (idMat n)).length = k :=
     (length_matMul X (idMat n)).trans hXl
   have h1 : matOneValue (transposeM (matMul X (idMat n)))
       (transposeM X) := by
     refine matOne_trans
       (transposeM_matMul (r := k) (n := n) (k := n) X (idMat n)
-        hX (idMat_rows n) hXl (idMat_len n) hk hn) ?_
+        hX (rowsLen_idMat n) hXl (length_idMat n) hk hn) ?_
     rw [transposeM_idMat n]
     exact idMat_matMul (k := k) n (transposeM X)
       (rowsLen_cast hXl (rowsLen_transposeM X)) hXt hn
@@ -7266,7 +7113,7 @@ theorem matPow_succR (n : Nat) (M : Mat) (hMl : M.length = n)
 theorem fixed_transpose (n : Nat) (M X : Mat) (hM : rowsLen n M)
     (hMl : M.length = n) (hn : 0 < n)
     (hXr : rowsLen n X) (hXl : X.length = n)
-    (horth : matOneValue (matMul (transposeM M) M) (inertia.idMat n))
+    (horth : matOneValue (matMul (transposeM M) M) (elim.idMat n))
     (h : matOneValue (matMul M X) X) :
     matOneValue (matMul (transposeM M) X) X := by
   have hMt : rowsLen n (transposeM M) :=
@@ -7387,8 +7234,8 @@ theorem rev_congr {n : Nat} (S T W : Mat) (c : BPair)
       rowsLen_cast hTl (rowsLen_transposeM T)
     have hWtr : rowsLen (n0 + 1) (transposeM W) :=
       rowsLen_cast hWl (rowsLen_transposeM W)
-    have hidl : (idMat (n0 + 1)).length = n0 + 1 := idMat_len (n0 + 1)
-    have hidr : rowsLen (n0 + 1) (idMat (n0 + 1)) := idMat_rows (n0 + 1)
+    have hidl : (idMat (n0 + 1)).length = n0 + 1 := length_idMat (n0 + 1)
+    have hidr : rowsLen (n0 + 1) (idMat (n0 + 1)) := rowsLen_idMat (n0 + 1)
     have hcIl : (matScaleB c (idMat (n0 + 1))).length = n0 + 1 :=
       (length_scaleB _ _).trans hidl
     have hcIr : rowsLen (n0 + 1) (matScaleB c (idMat (n0 + 1))) :=
@@ -7752,15 +7599,15 @@ private theorem blockMat_pair : ∀ (bs : List SBlock) (k : Nat)
 own entry at that key. -/
 private theorem dotN_basis (n p : Nat) (u : List BPair) (hp : p < n)
     (hu : u.length = n) :
-    (dotN (ground.getAt ([] : List BPair) (elim.idList n) p) u).oneValue
+    (dotN (ground.getAt ([] : List BPair) (elim.idMat n) p) u).oneValue
       (ground.getAt BPair.unit u p) := by
-  have he : ground.getAt BPair.unit (matVec (elim.idList n) u) p
-      = dotN (ground.getAt ([] : List BPair) (elim.idList n) p) u :=
+  have he : ground.getAt BPair.unit (matVec (elim.idMat n) u) p
+      = dotN (ground.getAt ([] : List BPair) (elim.idMat n) p) u :=
     ground.getAt_map ([] : List BPair) BPair.unit
-      (fun r => dotN r u) (elim.idList n) p
-      (by rw [elim.length_idList]; exact hp)
+      (fun r => dotN r u) (elim.idMat n) p
+      (by rw [elim.length_idMat]; exact hp)
   rw [← he]
-  exact poly.oneValue_getAt p (elim.matVec_idList n u hu)
+  exact poly.oneValue_getAt p (elim.matVec_idMat n u hu)
 
 /-- The datum's pairing is symmetric at a split: the congruence
 carries the block diagonal's own symmetry back through the
@@ -7849,18 +7696,18 @@ theorem splitRead_symm {n : Nat} (S : Mat) (sp : Split n)
   have hTr : rowsLen n (transposeM S) :=
     rowsLen_cast hSl (rowsLen_transposeM S)
   have hSij : ∀ p q : Nat, p < n → q < n →
-      (dotN (ground.getAt ([] : List BPair) (elim.idList n) p)
-        (matVec S (ground.getAt [] (elim.idList n) q))).oneValue
+      (dotN (ground.getAt ([] : List BPair) (elim.idMat n) p)
+        (matVec S (ground.getAt [] (elim.idMat n) q))).oneValue
         (ground.getAt BPair.unit (ground.getAt ([] : List BPair) S p) q) := by
     intro p q hp hq
     refine BPair.oneValue_trans
       (dotN_basis n p (matVec S _) hp ((matVec_length _ _).trans hSl)) ?_
     have hmp : ground.getAt BPair.unit
-        (matVec S (ground.getAt ([] : List BPair) (elim.idList n) q)) p
+        (matVec S (ground.getAt ([] : List BPair) (elim.idMat n) q)) p
         = dotN (ground.getAt ([] : List BPair) S p)
-          (ground.getAt [] (elim.idList n) q) :=
+          (ground.getAt [] (elim.idMat n) q) :=
       ground.getAt_map ([] : List BPair) BPair.unit
-        (fun r => dotN r (ground.getAt [] (elim.idList n) q)) S p
+        (fun r => dotN r (ground.getAt [] (elim.idMat n) q)) S p
         (by rw [hSl]; exact hp)
     rw [hmp]
     refine BPair.oneValue_trans (elim.dotN_comm _ _) ?_
@@ -7871,10 +7718,10 @@ theorem splitRead_symm {n : Nat} (S : Mat) (sp : Split n)
   rw [elim.getAt_transposeM BPair.unit S hSr i j hi (by rw [hSl]; exact hj)]
   refine BPair.oneValue_trans (BPair.oneValue_symm (hSij i j hi hj)) ?_
   refine BPair.oneValue_trans (splitRead_pair S sp h _ _
-    (rowsLen_getAt _ i (elim.rowsLen_idList n)
-      (by rw [elim.length_idList]; exact hi))
-    (rowsLen_getAt _ j (elim.rowsLen_idList n)
-      (by rw [elim.length_idList]; exact hj))) ?_
+    (rowsLen_getAt _ i (elim.rowsLen_idMat n)
+      (by rw [elim.length_idMat]; exact hi))
+    (rowsLen_getAt _ j (elim.rowsLen_idMat n)
+      (by rw [elim.length_idMat]; exact hj))) ?_
   exact hSij j i hj hi
 
 /-- The two-sided cap's symmetry read: a capped datum is symmetric,
@@ -8377,8 +8224,8 @@ private theorem cleared_adjM (T : Mat) (n : Nat) (hn : 0 < n) (hT : sqAt T n)
     minor_detL T (rowsLen_cast hTl.symm hTr)
   have hoff : ¬ (minor T).oneValue BPair.unit := fun h =>
     hd (BPair.oneValue_trans (BPair.oneValue_symm hmd) h)
-  have hIl : (idMat n).length = n := idMat_len n
-  have hIr : rowsLen n (idMat n) := idMat_rows n
+  have hIl : (idMat n).length = n := length_idMat n
+  have hIr : rowsLen n (idMat n) := rowsLen_idMat n
   have hRl : (matScaleB (minor T) (idMat n)).length = n :=
     (length_scaleB _ _).trans hIl
   have hRr : rowsLen n (matScaleB (minor T) (idMat n)) :=
@@ -8831,7 +8678,7 @@ private theorem liftV_len (Cw : Mat) (d : BPair) (k m : Nat) (VD : Mat)
   show (rowJoin (idMat k) (nullMat k m)
     ++ rowJoin (VD.map (matVec Cw)) (VD.map (vecScale d.swap))).length = k + m
   have h1 : (rowJoin (idMat k) (nullMat k m)).length = k :=
-    ground.length_zipWith (· ++ ·) (idMat k) (nullMat k m) k (idMat_len k)
+    ground.length_zipWith (· ++ ·) (idMat k) (nullMat k m) k (length_idMat k)
       (length_nullMat k m)
   have h2 : (rowJoin (VD.map (matVec Cw)) (VD.map (vecScale d.swap))).length
       = m :=
@@ -8846,7 +8693,7 @@ private theorem liftV_rows (Cw : Mat) (d : BPair) (k m : Nat) (VD : Mat)
     (hCl : Cw.length = k) (hVr : rowsLen m VD) :
     rowsLen (k + m) (liftV Cw d k m VD) := by
   refine rowsLen_append (k + m)
-    (rowsLen_rowJoin k m (idMat_rows k) (rowsLen_nullMat k m)) ?_
+    (rowsLen_rowJoin k m (rowsLen_idMat k) (rowsLen_nullMat k m)) ?_
   refine rowsLen_rowJoin k m ?_ ?_
   · exact rowsLen_map (matVec Cw) k VD
       (fun x _ => (matVec_length Cw x).trans hCl)
@@ -8860,12 +8707,12 @@ private theorem liftV_head (Cw : Mat) (d : BPair) (k m : Nat) (VD : Mat)
     ground.getAt [] (liftV Cw d k m VD) i
       = idRow k i ++ List.replicate m BPair.unit := by
   have hJl : (rowJoin (idMat k) (nullMat k m)).length = k :=
-    ground.length_zipWith (· ++ ·) _ _ k (idMat_len k) (length_nullMat k m)
+    ground.length_zipWith (· ++ ·) _ _ k (length_idMat k) (length_nullMat k m)
   show ground.getAt ([] : List BPair)
     (rowJoin (idMat k) (nullMat k m)
       ++ rowJoin (VD.map (matVec Cw)) (VD.map (vecScale d.swap))) i = _
   rw [ground.getAt_append ([] : List BPair) _ _ i, hJl, if_pos hi,
-    getAt_rowJoin (idMat k) (nullMat k m) i (by rw [idMat_len]; exact hi)
+    getAt_rowJoin (idMat k) (nullMat k m) i (by rw [length_idMat]; exact hi)
       (by rw [length_nullMat]; exact hi),
     idMat_row k i hi]
   show idRow k i ++ ground.getAt ([] : List BPair)
@@ -8881,7 +8728,7 @@ private theorem liftV_tail (Cw : Mat) (d : BPair) (k m : Nat) (VD : Mat)
       = matVec Cw (ground.getAt [] VD j)
         ++ vecScale d.swap (ground.getAt [] VD j) := by
   have hJl : (rowJoin (idMat k) (nullMat k m)).length = k :=
-    ground.length_zipWith (· ++ ·) _ _ k (idMat_len k) (length_nullMat k m)
+    ground.length_zipWith (· ++ ·) _ _ k (length_idMat k) (length_nullMat k m)
   have hMl : (VD.map (matVec Cw)).length = m :=
     (ground.length_map _ VD).trans hVl
   have hNl : (VD.map (vecScale d.swap)).length = m :=
@@ -9072,7 +8919,7 @@ private theorem detL_liftV (Cw : Mat) (d : BPair) (k m : Nat) (VD : Mat)
   | inl hm0 =>
     subst hm0
     have hlen : (liftV Cw d k 0 VD).length = (idMat k).length := by
-      rw [liftV_len Cw d k 0 VD hVl, idMat_len k, Nat.add_zero]
+      rw [liftV_len Cw d k 0 VD hVl, length_idMat k, Nat.add_zero]
     have hcong : (detL (liftV Cw d k 0 VD)).oneValue (detL (idMat k)) := by
       refine detL_congr_letters _ _ hlen ?_
       intro a ha b hb
@@ -9110,7 +8957,7 @@ private theorem detL_liftV (Cw : Mat) (d : BPair) (k m : Nat) (VD : Mat)
       (length_nullMat k m) (rowsLen_nullMat k m) hVsq
     -- the reduced trailing slab is the step's own lift
     have hTl : (transposeM (idMat k)).length = k := by
-      rw [transposeM_idMat k, idMat_len k]
+      rw [transposeM_idMat k, length_idMat k]
     have hZ1l : ((nullMat m k).map (vecScale d.swap)).length = m :=
       (ground.length_map _ _).trans (length_nullMat m k)
     have hZ1r : rowsLen k ((nullMat m k).map (vecScale d.swap)) :=
@@ -9239,9 +9086,9 @@ private theorem idMat_split (n : Nat) :
       (rowJoin (idMat 1) (nullMat 1 n)
         ++ rowJoin (nullMat n 1) (idMat n)) := by
   have hAl : (rowJoin (idMat 1) (nullMat 1 n)).length = 1 :=
-    ground.length_zipWith (· ++ ·) _ _ 1 (idMat_len 1) (length_nullMat 1 n)
+    ground.length_zipWith (· ++ ·) _ _ 1 (length_idMat 1) (length_nullMat 1 n)
   have hBl : (rowJoin (nullMat n 1) (idMat n)).length = n :=
-    ground.length_zipWith (· ++ ·) _ _ n (length_nullMat n 1) (idMat_len n)
+    ground.length_zipWith (· ++ ·) _ _ n (length_nullMat n 1) (length_idMat n)
   have hRl : (rowJoin (idMat 1) (nullMat 1 n)
       ++ rowJoin (nullMat n 1) (idMat n)).length = n + 1 := by
     rw [ground.length_append, hAl, hBl, Nat.add_comm n 1]
@@ -9249,11 +9096,11 @@ private theorem idMat_split (n : Nat) :
       ++ rowJoin (nullMat n 1) (idMat n)) := by
     refine rowsLen_append (n + 1) ?_ ?_
     · exact rowsLen_cast (Nat.add_comm 1 n)
-        (rowsLen_rowJoin 1 n (idMat_rows 1) (rowsLen_nullMat 1 n))
+        (rowsLen_rowJoin 1 n (rowsLen_idMat 1) (rowsLen_nullMat 1 n))
     · exact rowsLen_cast (Nat.add_comm 1 n)
-        (rowsLen_rowJoin 1 n (rowsLen_nullMat n 1) (idMat_rows n))
-  refine matOne_of_entries _ _ (n + 1) (idMat_len (n + 1))
-    (idMat_rows (n + 1)) hRl hRr ?_
+        (rowsLen_rowJoin 1 n (rowsLen_nullMat n 1) (rowsLen_idMat n))
+  refine matOne_of_entries _ _ (n + 1) (length_idMat (n + 1))
+    (rowsLen_idMat (n + 1)) hRl hRr ?_
   intro i j hi hj
   rw [idMat_row (n + 1) i hi, getAt_idRow (n + 1) i j hj]
   cases i with
@@ -9265,7 +9112,7 @@ private theorem idMat_split (n : Nat) :
       rw [ground.getAt_append ([] : List BPair) _ _ 0, hAl,
         if_pos (Nat.succ_pos 0),
         getAt_rowJoin (idMat 1) (nullMat 1 n) 0
-          (by rw [idMat_len]; exact Nat.succ_pos 0)
+          (by rw [length_idMat]; exact Nat.succ_pos 0)
           (by rw [length_nullMat]; exact Nat.succ_pos 0),
         idMat_row 1 0 (Nat.succ_pos 0)]
       show idRow 1 0 ++ ground.getAt ([] : List BPair)
@@ -9294,7 +9141,7 @@ private theorem idMat_split (n : Nat) :
         show i + 1 - 1 = i from rfl,
         getAt_rowJoin (nullMat n 1) (idMat n) i
           (by rw [length_nullMat]; exact hin)
-          (by rw [idMat_len]; exact hin),
+          (by rw [length_idMat]; exact hin),
         idMat_row n i hin]
       show ground.getAt ([] : List BPair)
         (List.replicate n (List.replicate 1 BPair.unit)) i ++ idRow n i = _
@@ -11164,19 +11011,19 @@ theorem headId_join {n0 k m : Nat} (hn0 : 0 < n0) :
   have hQl : (headId k m).length = k + m := by
     show ((idMat k).map (fun r => r ++ List.replicate m BPair.unit)
       ++ nullMat m (k + m)).length = k + m
-    rw [ground.length_append, ground.length_map, idMat_len,
+    rw [ground.length_append, ground.length_map, length_idMat,
       length_nullMat]
   have hLl : (headId (n0 + k) m).length = n0 + (k + m) := by
     show ((idMat (n0 + k)).map
         (fun r => r ++ List.replicate m BPair.unit)
       ++ nullMat m ((n0 + k) + m)).length = _
-    rw [ground.length_append, ground.length_map, idMat_len,
+    rw [ground.length_append, ground.length_map, length_idMat,
       length_nullMat, Nat.add_assoc]
   have hmapl : ((idMat (n0 + k)).map
       (fun r => r ++ List.replicate m BPair.unit)).length = n0 + k := by
-    rw [ground.length_map, idMat_len]
+    rw [ground.length_map, length_idMat]
   refine elim.matOne_getAt _ _ ?_ ?_
-  · rw [hLl, blockJoin_len _ _ _ (idMat_len n0)
+  · rw [hLl, blockJoin_len _ _ _ (length_idMat n0)
       (length_nullMat n0 (k + m)) hBtl hQl]
   · intro i hi
     rw [hLl] at hi
@@ -11191,7 +11038,7 @@ theorem headId_join {n0 k m : Nat} (hn0 : 0 < n0) :
       rw [ground.getAt_append ([] : List BPair) _ _ t,
         if_pos (by rw [hmapl]; exact ht),
         ground.getAt_map [] [] _ (idMat (n0 + k)) t
-          (by rw [idMat_len]; exact ht),
+          (by rw [length_idMat]; exact ht),
         idMat_row (n0 + k) t ht]
     match Nat.lt_or_ge i n0 with
     | Or.inl hin =>
@@ -11199,7 +11046,7 @@ theorem headId_join {n0 k m : Nat} (hn0 : 0 < n0) :
           = List.replicate (k + m) BPair.unit :=
         ground.getAt_replicate [] _ n0 i hin
       rw [hrowMap i (Nat.lt_of_lt_of_le hin (Nat.le_add_right n0 k)),
-        blockJoin_rowP _ _ _ (idMat_len n0)
+        blockJoin_rowP _ _ _ (length_idMat n0)
           (length_nullMat n0 (k + m)) i hin,
         idMat_row n0 i hin, idRow_split n0 k i, ground.append_assoc,
         hb1]
@@ -11212,7 +11059,7 @@ theorem headId_join {n0 k m : Nat} (hn0 : 0 < n0) :
     | Or.inr hin =>
       obtain ⟨r, rfl⟩ := Nat.le.dest hin
       have hr : r < k + m := Nat.lt_of_add_lt_add_left hi
-      rw [blockJoin_rowQ _ _ _ (idMat_len n0)
+      rw [blockJoin_rowQ _ _ _ (length_idMat n0)
         (length_nullMat n0 (k + m)) hBtl hQl r hr]
       have hrowT : poly.unitTail (ground.getAt ([] : List BPair)
           (transposeM (nullMat n0 (k + m))) r) :=
@@ -11229,9 +11076,9 @@ theorem headId_join {n0 k m : Nat} (hn0 : 0 < n0) :
             ((idMat k).map (fun r => r ++ List.replicate m BPair.unit)
               ++ nullMat m (k + m)) r = _
           rw [ground.getAt_append ([] : List BPair) _ _ r,
-            if_pos (by rw [ground.length_map, idMat_len]; exact hrk),
+            if_pos (by rw [ground.length_map, length_idMat]; exact hrk),
             ground.getAt_map [] [] _ (idMat k) r
-              (by rw [idMat_len]; exact hrk),
+              (by rw [length_idMat]; exact hrk),
             idMat_row k r hrk]
         rw [hrowMap (n0 + r) (Nat.add_lt_add_left hrk n0),
           idRow_split n0 k (n0 + r), ground.append_assoc, hrowQ]
@@ -11267,7 +11114,7 @@ theorem headId_join {n0 k m : Nat} (hn0 : 0 < n0) :
               ++ nullMat m (k + m)) (k + r2) = _
           rw [show k + r2 = ((idMat k).map
               (fun r => r ++ List.replicate m BPair.unit)).length + r2
-              by rw [ground.length_map, idMat_len],
+              by rw [ground.length_map, length_idMat],
             ground.getAt_append_add ([] : List BPair) _ _ r2]
           exact ground.getAt_replicate [] _ m r2 hr2
         rw [hrowL, hrowQ]
@@ -11279,7 +11126,7 @@ theorem headId_sq (k m : Nat) : sqAt (headId k m) (k + m) := by
   refine elim.sqAt_of ?_ ?_
   · show ((idMat k).map (fun r => r ++ List.replicate m BPair.unit)
       ++ nullMat m (k + m)).length = k + m
-    rw [ground.length_append, ground.length_map, idMat_len,
+    rw [ground.length_append, ground.length_map, length_idMat,
       length_nullMat]
   · refine elim.rowsLen_append (k + m) ?_ (rowsLen_nullMat m (k + m))
     show rowsLen (k + m) ((idMat k).map
@@ -11294,7 +11141,7 @@ theorem headId_sq (k m : Nat) : sqAt (headId k m) (k + m) := by
         intro hL
         refine ⟨?_, ih hL.2⟩
         rw [ground.length_append, ground.length_replicate, hL.1]
-    exact hgo (idMat k) (idMat_rows k)
+    exact hgo (idMat k) (rowsLen_idMat k)
 
 theorem trailPad_sq {k m : Nat} (D : Mat)
     (hD : sqAt D m) : sqAt (trailPad k D) (k + m) := by
@@ -11438,7 +11285,7 @@ theorem capAt_trailPad {k m : Nat} (D : Mat) (wn wd : Pos)
   have hD : sqAt D m := sqAt_matScale_reflect wd D h.1
   have hIdS : sqAt (matScale wn (idMat (k + m))) (k + m) :=
     sqAt_matScale (k + m) wn (idMat (k + m))
-      (sqAt_of (idMat_len (k + m)) (idMat_rows (k + m)))
+      (sqAt_of (length_idMat (k + m)) (rowsLen_idMat (k + m)))
   · have hPadS : sqAt (matScale wd (trailPad k D)) (k + m) :=
       sqAt_matScale (k + m) wd (trailPad k D) (trailPad_sq D hD)
     have hsplit : ∀ v : List BPair, v.length = k + m →
@@ -11545,17 +11392,17 @@ theorem unitSplit_read {o : Nat} (S : Mat) (hsq : sqAt S o)
     have hn : 0 < n + 1 := Nat.succ_pos n
     have hSl : S.length = n + 1 := sqAt_len hsq
     have hSr : rowsLen (n + 1) S := rowsLen_of_sqAt hsq
-    have hidl : (idMat (n + 1)).length = n + 1 := idMat_len (n + 1)
+    have hidl : (idMat (n + 1)).length = n + 1 := length_idMat (n + 1)
     have hminor : (minor (idMat (n + 1))).oneValue (BPair.ofNat 1) :=
       BPair.oneValue_trans
         (minor_detL (idMat (n + 1))
-          (rowsLen_cast hidl.symm (idMat_rows (n + 1))))
+          (rowsLen_cast hidl.symm (rowsLen_idMat (n + 1))))
         (detL_idMat (n + 1))
     have hid2 : matOneValue (matMul (idMat (n + 1)) (idMat (n + 1)))
         (matScaleB (minor (idMat (n + 1))) (idMat (n + 1))) :=
       matOne_trans
         (idMat_matMul (k := n + 1) (n + 1) (idMat (n + 1))
-          (idMat_rows (n + 1)) hidl hn)
+          (rowsLen_idMat (n + 1)) hidl hn)
         (matOne_symm (matOne_trans
           (matScaleB_congr hminor (idMat (n + 1)))
           (matScaleB_one (idMat (n + 1)))))
@@ -11575,7 +11422,7 @@ theorem unitSplit_read {o : Nat} (S : Mat) (hsq : sqAt S o)
       refine matMul_congrR (n := n + 1) (k := n + 1) (idMat (n + 1))
         (matMul S (idMat (n + 1))) S ?_ hSr ?_ hSl hn
         (matMul_idR (k := n + 1) (n + 1) S hSr hSl hn hn)
-      · exact rowsLen_cast (by rw [transposeM_idMat (n + 1), idMat_len])
+      · exact rowsLen_cast (by rw [transposeM_idMat (n + 1), length_idMat])
           (rowsLen_matMul S (idMat (n + 1)))
       · exact (length_matMul S (idMat (n + 1))).trans hSl
     exact ⟨hsq,
@@ -11714,7 +11561,7 @@ private theorem matScale_idMat_entry (c : Pos) (o i j : Nat)
         (ground.getAt ([] : List BPair) (matScale c (idMat o)) i) j
       = (if j = i then BPair.ofNat 1 else BPair.unit).scale c := by
   rw [matScale_entry c (idMat o) i j
-      (by rw [idMat_len]; exact hi)
+      (by rw [length_idMat]; exact hi)
       (by rw [idMat_row o i hi, elim.length_idRow]; exact hj),
     idMat_row o i hi, elim.getAt_idRow o i j hj]
 
@@ -11725,8 +11572,8 @@ private theorem blockMat_replicate_one (o : Nat) (c : Pos) :
     matOneValue (matScale c (idMat o))
       (blockMat (List.replicate o (SBlock.one (BPair.ofPos c))) 0) := by
   refine matOne_of_entries _ _ o ?_ ?_ ?_ ?_ ?_
-  · rw [length_matScale, idMat_len]
-  · exact rowsLen_mapRows (fun x => x.scale c) (idMat o) o (idMat_rows o)
+  · rw [length_matScale, length_idMat]
+  · exact rowsLen_mapRows (fun x => x.scale c) (idMat o) o (rowsLen_idMat o)
   · rw [blockMat_len, widthOf_replOne]
   · exact rowsLen_cast (widthOf_replOne (BPair.ofPos c) o)
       (blockMat_rows (List.replicate o (SBlock.one (BPair.ofPos c))) 0)
@@ -11760,17 +11607,17 @@ theorem scalarSplit_read {o : Nat} (c : Pos) (S : Mat)
     have hn : 0 < n + 1 := Nat.succ_pos n
     have hSl : S.length = n + 1 := sqAt_len hsq
     have hSr : rowsLen (n + 1) S := rowsLen_of_sqAt hsq
-    have hidl : (idMat (n + 1)).length = n + 1 := idMat_len (n + 1)
+    have hidl : (idMat (n + 1)).length = n + 1 := length_idMat (n + 1)
     have hminor : (minor (idMat (n + 1))).oneValue (BPair.ofNat 1) :=
       BPair.oneValue_trans
         (minor_detL (idMat (n + 1))
-          (rowsLen_cast hidl.symm (idMat_rows (n + 1))))
+          (rowsLen_cast hidl.symm (rowsLen_idMat (n + 1))))
         (detL_idMat (n + 1))
     have hid2 : matOneValue (matMul (idMat (n + 1)) (idMat (n + 1)))
         (matScaleB (minor (idMat (n + 1))) (idMat (n + 1))) :=
       matOne_trans
         (idMat_matMul (k := n + 1) (n + 1) (idMat (n + 1))
-          (idMat_rows (n + 1)) hidl hn)
+          (rowsLen_idMat (n + 1)) hidl hn)
         (matOne_symm (matOne_trans
           (matScaleB_congr hminor (idMat (n + 1)))
           (matScaleB_one (idMat (n + 1)))))
@@ -11784,7 +11631,7 @@ theorem scalarSplit_read {o : Nat} (c : Pos) (S : Mat)
       refine matMul_congrR (n := n + 1) (k := n + 1) (idMat (n + 1))
         (matMul S (idMat (n + 1))) S ?_ hSr ?_ hSl hn
         (matMul_idR (k := n + 1) (n + 1) S hSr hSl hn hn)
-      · exact rowsLen_cast (by rw [transposeM_idMat (n + 1), idMat_len])
+      · exact rowsLen_cast (by rw [transposeM_idMat (n + 1), length_idMat])
           (rowsLen_matMul S (idMat (n + 1)))
       · exact (length_matMul S (idMat (n + 1))).trans hSl
     exact ⟨hsq,
@@ -11844,11 +11691,11 @@ theorem oneSplit_read (ds : List BPair) (S : Mat)
     have hSl : S.length = (d :: t).length := sqAt_len hsq
     have hSr : rowsLen (d :: t).length S := rowsLen_of_sqAt hsq
     have hidl : (idMat (d :: t).length).length = (d :: t).length :=
-      idMat_len (d :: t).length
+      length_idMat (d :: t).length
     have hminor : (minor (idMat (d :: t).length)).oneValue (BPair.ofNat 1) :=
       BPair.oneValue_trans
         (minor_detL (idMat (d :: t).length)
-          (rowsLen_cast hidl.symm (idMat_rows (d :: t).length)))
+          (rowsLen_cast hidl.symm (rowsLen_idMat (d :: t).length)))
         (detL_idMat (d :: t).length)
     have hid2 : matOneValue
         (matMul (idMat (d :: t).length) (idMat (d :: t).length))
@@ -11856,7 +11703,7 @@ theorem oneSplit_read (ds : List BPair) (S : Mat)
           (idMat (d :: t).length)) :=
       matOne_trans
         (idMat_matMul (k := (d :: t).length) (d :: t).length
-          (idMat (d :: t).length) (idMat_rows (d :: t).length) hidl hn)
+          (idMat (d :: t).length) (rowsLen_idMat (d :: t).length) hidl hn)
         (matOne_symm (matOne_trans
           (matScaleB_congr hminor (idMat (d :: t).length))
           (matScaleB_one (idMat (d :: t).length))))
@@ -11873,7 +11720,7 @@ theorem oneSplit_read (ds : List BPair) (S : Mat)
         hSl hn
         (matMul_idR (k := (d :: t).length) (d :: t).length S hSr hSl hn hn)
       · exact rowsLen_cast
-          (by rw [transposeM_idMat (d :: t).length, idMat_len])
+          (by rw [transposeM_idMat (d :: t).length, length_idMat])
           (rowsLen_matMul S (idMat (d :: t).length))
       · exact (length_matMul S (idMat (d :: t).length)).trans hSl
     exact ⟨hsq,
@@ -11900,7 +11747,7 @@ private theorem twoSplitAt_read {a b c : BPair}
   refine ⟨rfl, ⟨BPair.ofNat_one_off, matOne_refl _, matOne_refl _⟩,
     ?_, ?_⟩
   · have hr : rowsLen 2 (matMul [[a, b], [b, c]] (idMat 2)) :=
-      rowsLen_cast (transposeLen (idMat 2) (idMat_rows 2) (idMat_len 2))
+      rowsLen_cast (transposeLen (idMat 2) (rowsLen_idMat 2) (length_idMat 2))
         (rowsLen_matMul [[a, b], [b, c]] (idMat 2))
     have hl : (matMul [[a, b], [b, c]] (idMat 2)).length = 2 :=
       (length_matMul [[a, b], [b, c]] (idMat 2)).trans rfl
@@ -12034,5 +11881,430 @@ theorem mkSplit_read (n : Nat) (S : Mat) (hS : sqAt S n)
     exact splitRead_of_VGood (n0 + 1) (Nat.succ_pos n0) S
       (mkVGo (n0 + 1) (n0 + 1) S).1 _ _ hS hread.1 hread.2.1 hread.2.2
       hTsq hAsq hbeq
+
+/-! The forcing clauses at stated members (`lem:inertia`): one
+member reading its form below the sum's unit occupies the reversal
+count at every split (`strictForcing`), and two members whose
+compressed two-by-two reads the lower side at the leading entry
+with the doubled cross read below the diagonal product's quadruple
+read the count at two or beyond (`capForcing`), the compression's
+counts at or below the full form's. -/
+
+/-- One strict member forces the count: a vector whose form at the
+datum reads below the sum's unit occupies the reversal count at
+every split, `lem:inertia`'s forcing clause at the one-member
+family. -/
+theorem strictForcing {n : Nat} (S : elim.Mat) (x : List BPair)
+    (hx : x.length = n)
+    (hq : inertia.quadForm S x < BPair.unit) :
+    ∀ sp : inertia.Split n, inertia.splitRead S sp →
+      1 ≤ inertia.revAt sp := by
+  intro sp hsp
+  refine inertia.forcing S sp hsp [x] ⟨hx, trivial⟩ ?_
+  intro cs hcs hu
+  match cs, hcs, hu with
+  | [], hcs, _ => exact Nat.noConfusion hcs
+  | _ :: _ :: _, hcs, _ => exact Nat.noConfusion (Nat.succ.inj hcs)
+  | [c], _, hu =>
+    have hcu : ¬ c.oneValue BPair.unit := fun hc => hu ⟨hc, trivial⟩
+    have hscale := inertia.quadScaleVec S c x
+      (elim.combo n [c] [x]) (elim.combo_one n c x hx)
+    exact BPair.lt_congr (BPair.oneValue_symm hscale)
+      (BPair.oneValue_refl BPair.unit)
+      (BPair.lt_congr
+        (BPair.oneValue_of_eq (BPair.mul_comm _ (c * c)))
+        (BPair.unit_mul (c * c))
+        (ground.ltB_mulPos hq (ground.sq_pos hcu)))
+
+
+/-- The count four's scale is the doubled doubling. -/
+private theorem fourRead (c : BPair) :
+    (BPair.ofNat 4 * c).oneValue (c + c + (c + c)) := by
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.ofNat_add 2 2) (BPair.oneValue_refl c)) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq
+      (BPair.right_distrib (BPair.ofNat 2) (BPair.ofNat 2) c)) ?_
+  exact BPair.add_congr (BPair.ofNat_two_mul c) (BPair.ofNat_two_mul c)
+
+/-- The doubled doubling splits over a sum. -/
+private theorem four_add (z w : BPair) :
+    (z + w) + (z + w) + ((z + w) + (z + w))
+      = (z + z + (z + z)) + (w + w + (w + w)) := by
+  rw [BPair.add_add_comm z w z w,
+    BPair.add_add_comm (z + z) (w + w) (z + z) (w + w)]
+
+/-- The completed square at the doubled leading datum: the
+quadruple of a form's three summands against the doubled leading
+datum's square. -/
+private theorem capCore (A E R : BPair) :
+    (A * A + (A * E + R)) + (A * A + (A * E + R))
+        + ((A * A + (A * E + R)) + (A * A + (A * E + R))) + E * E
+      = (A + A + E) * (A + A + E) + (R + R + (R + R)) := by
+  rw [four_add (A * A) (A * E + R), four_add (A * E) R,
+    BPair.sq_expand (A + A) E, BPair.sq_expand A A,
+    BPair.right_distrib A A E,
+    ← BPair.add_assoc (A * A + A * A + (A * A + A * A))
+      (A * E + A * E + (A * E + A * E)) (R + R + (R + R)),
+    BPair.add_right_comm (A * A + A * A + (A * A + A * A)
+        + (A * E + A * E + (A * E + A * E)))
+      (R + R + (R + R)) (E * E),
+    BPair.add_right_comm (A * A + A * A + (A * A + A * A))
+      (A * E + A * E + (A * E + A * E)) (E * E)]
+
+
+/-- Two vectors joined with the constant unit family read their own
+join. -/
+private theorem vecAddRepl2 : ∀ (A B : List BPair) (n : Nat),
+    A.length = n → B.length = n →
+    poly.oneValue
+      (elim.vecAdd A (elim.vecAdd B (List.replicate n BPair.unit)))
+      (elim.vecAdd A B)
+  | [], [], 0, _, _ => trivial
+  | [], [], _ + 1, h, _ => Nat.noConfusion h
+  | [], _ :: _, 0, _, h => Nat.noConfusion h
+  | [], _ :: _, _ + 1, h, _ => Nat.noConfusion h
+  | _ :: _, [], 0, h, _ => Nat.noConfusion h
+  | _ :: _, [], _ + 1, _, h => Nat.noConfusion h
+  | _ :: _, _ :: _, 0, h, _ => Nat.noConfusion h
+  | a :: A', b :: B', m + 1, hA, hB =>
+    ⟨BPair.add_congr (BPair.oneValue_refl a) (BPair.add_unit b),
+     vecAddRepl2 A' B' m (Nat.succ.inj hA) (Nat.succ.inj hB)⟩
+
+/-- The combination at two members is the members' scaled join. -/
+private theorem comboPair (n : Nat) (c1 c2 : BPair) (u w : List BPair)
+    (hu : u.length = n) (hw : w.length = n) :
+    poly.oneValue (elim.combo n [c1, c2] [u, w])
+      (elim.vecAdd (elim.vecScale c1 u) (elim.vecScale c2 w)) :=
+  vecAddRepl2 (elim.vecScale c1 u) (elim.vecScale c2 w) n
+    ((elim.length_vecScale c1 u).trans hu)
+    ((elim.length_vecScale c2 w).trans hw)
+
+/-- The cross pairing at two scaled vectors carries both scales. -/
+private theorem crossScale (S : elim.Mat) (c1 c2 : BPair)
+    (u w : List BPair) :
+    (elim.dotN (elim.vecScale c1 u)
+        (elim.matVec S (elim.vecScale c2 w))).oneValue
+      (c1 * (c2 * elim.dotN u (elim.matVec S w))) := by
+  refine BPair.oneValue_trans (elim.dotN_congrR _ _ _
+    (elim.matVec_vecScale_free S c2 w)) ?_
+  refine BPair.oneValue_trans
+    (elim.dotN_scaleRow_free c1 u (elim.vecScale c2 (elim.matVec S w))) ?_
+  exact BPair.mul_congr (BPair.oneValue_refl c1)
+    (elim.dotN_scaleV c2 u (elim.matVec S w))
+
+/-- The form at a two-member combination: the two squares at the
+scales' own with the cross reads at their product. -/
+private theorem quadPairExpand (S : elim.Mat) (n : Nat)
+    (hSr : elim.rowsLen n S) (hSl : S.length = n)
+    (c1 c2 : BPair) (u w : List BPair)
+    (hu : u.length = n) (hw : w.length = n) :
+    (inertia.quadForm S
+        (elim.vecAdd (elim.vecScale c1 u) (elim.vecScale c2 w))).oneValue
+      (c1 * c1 * inertia.quadForm S u
+        + (c1 * c2 * (elim.dotN u (elim.matVec S w)
+              + elim.dotN w (elim.matVec S u))
+          + c2 * c2 * inertia.quadForm S w)) := by
+  refine BPair.oneValue_trans
+    (inertia.quadAdd S n hSr hSl (elim.vecScale c1 u) (elim.vecScale c2 w)
+      ((elim.length_vecScale c1 u).trans hu)
+      ((elim.length_vecScale c2 w).trans hw)) ?_
+  refine BPair.oneValue_trans (BPair.add_congr
+    (BPair.add_congr
+      (inertia.quadScaleVec S c1 u (elim.vecScale c1 u)
+        (poly.oneValue_refl _))
+      (crossScale S c1 c2 u w))
+    (BPair.add_congr (crossScale S c2 c1 w u)
+      (inertia.quadScaleVec S c2 w (elim.vecScale c2 w)
+        (poly.oneValue_refl _)))) ?_
+  refine BPair.oneValue_of_eq ?_
+  rw [BPair.mul_left_comm c2 c1 (elim.dotN w (elim.matVec S u)),
+    ← BPair.mul_assoc c1 c2 (elim.dotN u (elim.matVec S w)),
+    ← BPair.mul_assoc c1 c2 (elim.dotN w (elim.matVec S u)),
+    BPair.add_assoc (c1 * c1 * inertia.quadForm S u)
+      (c1 * c2 * elim.dotN u (elim.matVec S w))
+      (c1 * c2 * elim.dotN w (elim.matVec S u)
+        + c2 * c2 * inertia.quadForm S w),
+    ← BPair.add_assoc (c1 * c2 * elim.dotN u (elim.matVec S w))
+      (c1 * c2 * elim.dotN w (elim.matVec S u))
+      (c2 * c2 * inertia.quadForm S w),
+    ← BPair.left_distrib (c1 * c2) (elim.dotN u (elim.matVec S w))
+      (elim.dotN w (elim.matVec S u))]
+
+/-- The form's product at the leading entry, the square's own. -/
+private theorem qMulSq (q c : BPair) : q * (c * c * q) = c * q * (c * q) := by
+  rw [BPair.mul_left_comm q (c * c) q, BPair.mul_assoc c q (c * q),
+    BPair.mul_left_comm q c q, ← BPair.mul_assoc c c (q * q)]
+
+/-- The form's product at the cross entry. -/
+private theorem qMulCross (q c1 c2 X : BPair) :
+    q * (c1 * c2 * X) = c1 * q * (c2 * X) := by
+  rw [BPair.mul_left_comm q (c1 * c2) X, BPair.mul_assoc c1 q (c2 * X),
+    BPair.mul_left_comm q c2 X, ← BPair.mul_assoc c1 c2 (q * X)]
+
+/-- The cap pair's strict read at an occupied second scale: the
+completed square against the discriminant's own comparison. -/
+private theorem capStrict {q11 q22 X c1 c2 : BPair}
+    (hq : q11 < BPair.unit)
+    (hd : X * X < BPair.ofNat 4 * (q11 * q22))
+    (hc2 : ¬ c2.oneValue BPair.unit) :
+    c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22) < BPair.unit := by
+  have hqQ : q11 * (c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22))
+      = c1 * q11 * (c1 * q11)
+        + (c1 * q11 * (c2 * X) + c2 * c2 * (q11 * q22)) := by
+    rw [BPair.left_distrib q11 (c1 * c1 * q11) (c1 * c2 * X + c2 * c2 * q22),
+      BPair.left_distrib q11 (c1 * c2 * X) (c2 * c2 * q22),
+      qMulSq q11 c1, qMulCross q11 c1 c2 X,
+      BPair.mul_left_comm q11 (c2 * c2) q22]
+  have hZ' : (c2 * c2 * (BPair.ofNat 4 * (q11 * q22))).oneValue
+      (c2 * c2 * (q11 * q22) + c2 * c2 * (q11 * q22)
+        + (c2 * c2 * (q11 * q22) + c2 * c2 * (q11 * q22))) := by
+    refine BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _)
+      (fourRead (q11 * q22))) ?_
+    refine BPair.oneValue_of_eq ?_
+    rw [BPair.left_distrib (c2 * c2) (q11 * q22 + q11 * q22)
+        (q11 * q22 + q11 * q22),
+      BPair.left_distrib (c2 * c2) (q11 * q22) (q11 * q22)]
+  have hid : (BPair.ofNat 4
+        * (q11 * (c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22)))
+      + c2 * c2 * (X * X)).oneValue
+      ((c1 * q11 + c1 * q11 + c2 * X) * (c1 * q11 + c1 * q11 + c2 * X)
+        + (c2 * c2 * (q11 * q22) + c2 * c2 * (q11 * q22)
+          + (c2 * c2 * (q11 * q22) + c2 * c2 * (q11 * q22)))) := by
+    rw [hqQ, ← BPair.mul_mul_mul_comm c2 X c2 X]
+    refine BPair.oneValue_trans (BPair.add_congr
+      (fourRead _) (BPair.oneValue_refl (c2 * X * (c2 * X)))) ?_
+    exact BPair.oneValue_of_eq
+      (capCore (c1 * q11) (c2 * X) (c2 * c2 * (q11 * q22)))
+  have hlt : c2 * c2 * (X * X)
+      < c2 * c2 * (BPair.ofNat 4 * (q11 * q22)) :=
+    BPair.lt_congr (BPair.oneValue_of_eq (BPair.mul_comm (X * X) (c2 * c2)))
+      (BPair.oneValue_of_eq
+        (BPair.mul_comm (BPair.ofNat 4 * (q11 * q22)) (c2 * c2)))
+      (ground.ltB_mulPos hd (ground.sq_pos hc2))
+  have hUV : BPair.unit
+      < c2 * c2 * (BPair.ofNat 4 * (q11 * q22))
+        + (c2 * c2 * (X * X)).swap :=
+    ground.unitLt_of_swap_lt hlt
+  have hW3 : (BPair.ofNat 4
+      * (q11 * (c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22)))).oneValue
+      ((c1 * q11 + c1 * q11 + c2 * X) * (c1 * q11 + c1 * q11 + c2 * X)
+        + (c2 * c2 * (BPair.ofNat 4 * (q11 * q22))
+          + (c2 * c2 * (X * X)).swap)) := by
+    refine BPair.oneValue_trans
+      (BPair.oneValue_symm (BPair.add_swap_self _ ((c2 * c2 * (X * X)).swap)))
+      ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr hid (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans (BPair.add_congr
+      (BPair.add_congr (BPair.oneValue_refl _) (BPair.oneValue_symm hZ'))
+      (BPair.oneValue_refl _)) ?_
+    exact BPair.oneValue_of_eq (BPair.add_assoc _ _ _)
+  have hpos : BPair.unit < BPair.ofNat 4
+      * (q11 * (c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22))) :=
+    ground.leB_ltB_trans (ground.unitLeSq (c1 * q11 + c1 * q11 + c2 * X))
+      (BPair.lt_congr (BPair.oneValue_refl _) (BPair.oneValue_symm hW3)
+        (ground.ltB_addPos hUV))
+  have hK : BPair.ofNat 4 * q11 < BPair.unit :=
+    BPair.lt_congr (BPair.oneValue_of_eq (BPair.mul_comm q11 (BPair.ofNat 4)))
+      (BPair.unit_mul (BPair.ofNat 4))
+      (ground.ltB_mulPos hq (ground.unitLtNat (by decide +kernel)))
+  have hposKQ : BPair.unit
+      < (BPair.ofNat 4 * q11).swap
+        * (c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22)).swap := by
+    refine BPair.lt_congr (BPair.oneValue_refl _) ?_ hpos
+    refine BPair.oneValue_of_eq ?_
+    rw [BPair.swap_mul_swap, BPair.mul_assoc (BPair.ofNat 4) q11
+      (c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22))]
+  have hQs : BPair.unit
+      < (c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22)).swap :=
+    inertia.scaleReflLt (ground.ltB_swap hK) hposKQ
+  exact ground.ltB_swap hQs
+
+/-- The cap pair's strict read at a vacant second scale: the leading
+entry's own strict order at an occupied first scale. -/
+private theorem capStrictVac {q11 q22 X c1 c2 : BPair}
+    (hq : q11 < BPair.unit) (hc1 : ¬ c1.oneValue BPair.unit)
+    (hc2 : c2.oneValue BPair.unit) :
+    c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22) < BPair.unit := by
+  have hv1 : (c1 * c2 * X).oneValue BPair.unit :=
+    BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_trans
+        (BPair.mul_congr (BPair.oneValue_refl c1) hc2) (BPair.mul_unit c1))
+        (BPair.oneValue_refl X)) (BPair.unit_mul X)
+  have hv2 : (c2 * c2 * q22).oneValue BPair.unit :=
+    BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_trans
+        (BPair.mul_congr hc2 (BPair.oneValue_refl c2)) (BPair.unit_mul c2))
+        (BPair.oneValue_refl q22)) (BPair.unit_mul q22)
+  refine BPair.lt_congr ?_ (BPair.oneValue_refl BPair.unit)
+    (BPair.lt_congr (BPair.oneValue_of_eq (BPair.mul_comm q11 (c1 * c1)))
+      (BPair.unit_mul (c1 * c1))
+      (ground.ltB_mulPos hq (ground.sq_pos hc1)))
+  refine BPair.oneValue_symm (BPair.oneValue_trans (BPair.add_congr
+    (BPair.oneValue_refl (c1 * c1 * q11))
+    (BPair.oneValue_trans (BPair.add_congr hv1 hv2)
+      (BPair.unit_add BPair.unit))) (BPair.add_unit (c1 * c1 * q11)))
+
+/-- The forcing clause at two vectors (`lem:cornerpivot`(v)'s cap
+pair read at `lem:inertia`): at two members whose compressed
+two-by-two reads the lower side at the leading entry and its doubled
+cross read below the diagonal product's quadruple, every split of the
+datum reads the reversal count at two or beyond — the second root
+below the cap, the compression's counts at or below the full form's. -/
+theorem capForcing : ∀ {n : Nat} (S : elim.Mat) (x x' : List BPair),
+    x.length = n → x'.length = n →
+    inertia.quadForm S x < BPair.unit →
+    (elim.dotN x (elim.matVec S x') + elim.dotN x' (elim.matVec S x))
+        * (elim.dotN x (elim.matVec S x')
+          + elim.dotN x' (elim.matVec S x))
+      < BPair.ofNat 4 * (inertia.quadForm S x * inertia.quadForm S x') →
+    ∀ sp : inertia.Split n, inertia.splitRead S sp →
+      2 ≤ inertia.revAt sp := by
+  intro n S x x' hx hx' hq hd sp hsp
+  have hSl : S.length = n := elim.sqAt_len hsp.1
+  have hSr : elim.rowsLen n S := elim.rowsLen_of_sqAt hsp.1
+  refine inertia.forcing S sp hsp [x, x'] ⟨hx, hx', trivial⟩ ?_
+  intro cs hcs hu
+  match cs, hcs, hu with
+  | [], hcs, _ => exact Nat.noConfusion hcs
+  | [_], hcs, _ => exact Nat.noConfusion (Nat.succ.inj hcs)
+  | _ :: _ :: _ :: _, hcs, _ =>
+    exact Nat.noConfusion (Nat.succ.inj (Nat.succ.inj hcs))
+  | [c1, c2], _, hu =>
+    have hexp : (inertia.quadForm S
+        (elim.combo n [c1, c2] [x, x'])).oneValue
+        (c1 * c1 * inertia.quadForm S x
+          + (c1 * c2 * (elim.dotN x (elim.matVec S x')
+                + elim.dotN x' (elim.matVec S x))
+            + c2 * c2 * inertia.quadForm S x')) :=
+      BPair.oneValue_trans
+        (inertia.quadForm_congr S (comboPair n c1 c2 x x' hx hx'))
+        (quadPairExpand S n hSr hSl c1 c2 x x' hx hx')
+    refine BPair.lt_congr (BPair.oneValue_symm hexp)
+      (BPair.oneValue_refl BPair.unit) ?_
+    match (inferInstance : Decidable (c2.oneValue BPair.unit)) with
+    | isTrue h2 => exact capStrictVac hq (fun h1 => hu ⟨h1, h2, trivial⟩) h2
+    | isFalse h2 => exact capStrict hq hd h2
+
+/-- The cross read's arithmetic: at the two-member form's three scaled
+combinations on the upper side, the cross term's square sits at or below
+four times the two forms' product. -/
+private theorem cross_arith (a b c : BPair) (ha : BPair.unit ≤ a) (hb : BPair.unit ≤ b)
+    (h1 : BPair.unit ≤ (BPair.ofNat 2 * b) * (BPair.ofNat 2 * b) * a
+      + ((BPair.ofNat 2 * b) * c.swap * c + c.swap * c.swap * b))
+    (h2 : BPair.unit ≤ c.swap * c.swap * a
+      + (c.swap * (BPair.ofNat 2 * a) * c + (BPair.ofNat 2 * a) * (BPair.ofNat 2 * a) * b))
+    (h3 : BPair.unit ≤ BPair.ofNat 1 * BPair.ofNat 1 * a
+      + (BPair.ofNat 1 * c.swap * c + c.swap * c.swap * b)) :
+    c * c ≤ BPair.ofNat 4 * (a * b) := by
+  have hcc : c.swap * c.swap = c * c := by
+    rw [BPair.swap_mul, BPair.mul_swap, BPair.swap_swap]
+  have hsc : ∀ z : BPair, z * c.swap * c = (z * (c * c)).swap := by
+    intro z; rw [BPair.mul_swap, BPair.swap_mul, BPair.mul_assoc]
+  have hcs : ∀ z : BPair, c.swap * z * c = (z * (c * c)).swap := by
+    intro z
+    rw [BPair.swap_mul, BPair.swap_mul, BPair.mul_right_comm c z c, BPair.mul_comm (c * c) z]
+  -- the doubled product's partner against the product reads the partner
+  have hpart : ∀ z w : BPair,
+      (((BPair.ofNat 2 * z) * w).swap + w * z).oneValue (z * w).swap := by
+    intro z w
+    rw [BPair.mul_assoc, BPair.mul_comm w z]
+    refine BPair.oneValue_trans (BPair.add_congr (swap_congr (BPair.ofNat_two_mul (z * w)))
+      (BPair.oneValue_refl _)) ?_
+    rw [← BPair.swap_add]
+    exact BPair.add_swap_self _ _
+  -- the two squares' scaled reads
+  have hsq1 : (BPair.ofNat 2 * b) * (BPair.ofNat 2 * b) * a
+      = b * (BPair.ofNat 2 * BPair.ofNat 2 * (a * b)) := by
+    repeat rw [← BPair.mul_assoc]
+    rw [BPair.mul_right_comm (BPair.ofNat 2 * b * BPair.ofNat 2) b a,
+      BPair.mul_right_comm (BPair.ofNat 2) b (BPair.ofNat 2),
+      BPair.mul_comm (BPair.ofNat 2 * BPair.ofNat 2) b,
+      BPair.mul_assoc b (BPair.ofNat 2) (BPair.ofNat 2)]
+  have hsq2 : (BPair.ofNat 2 * a) * (BPair.ofNat 2 * a) * b
+      = a * (BPair.ofNat 2 * BPair.ofNat 2 * (a * b)) := by
+    repeat rw [← BPair.mul_assoc]
+    rw [BPair.mul_right_comm (BPair.ofNat 2) a (BPair.ofNat 2),
+      BPair.mul_comm (BPair.ofNat 2 * BPair.ofNat 2) a,
+      BPair.mul_assoc a (BPair.ofNat 2) (BPair.ofNat 2)]
+  -- E1 ≡ b (X + Y̌), E2 ≡ a (X + Y̌)
+  have e1 : ((BPair.ofNat 2 * b) * (BPair.ofNat 2 * b) * a
+      + ((BPair.ofNat 2 * b) * c.swap * c + c.swap * c.swap * b)).oneValue
+      (b * (BPair.ofNat 2 * BPair.ofNat 2 * (a * b) + (c * c).swap)) := by
+    rw [hsq1, hsc, hcc, BPair.left_distrib, BPair.mul_swap]
+    exact BPair.add_congr (BPair.oneValue_refl _) (hpart b (c * c))
+  have e2 : (c.swap * c.swap * a
+      + (c.swap * (BPair.ofNat 2 * a) * c + (BPair.ofNat 2 * a) * (BPair.ofNat 2 * a) * b)).oneValue
+      (a * (BPair.ofNat 2 * BPair.ofNat 2 * (a * b) + (c * c).swap)) := by
+    have perm3 : ∀ p q r : BPair, p + (q + r) = r + (q + p) := by
+      intro p q r
+      rw [BPair.add_comm p, BPair.add_right_comm q r p, BPair.add_comm (q + p) r]
+    rw [hsq2, hcs, hcc, BPair.left_distrib, BPair.mul_swap, perm3]
+    exact BPair.add_congr (BPair.oneValue_refl _) (hpart a (c * c))
+  have hX : BPair.unit ≤ (a + b) * (BPair.ofNat 2 * BPair.ofNat 2 * (a * b) + (c * c).swap) := by
+    rw [BPair.right_distrib]
+    refine leB_congr_left (BPair.unit_add _) (leB_add ?_ ?_)
+    · exact leB_congr_right e2 h2
+    · exact leB_congr_right e1 h1
+  have hfin : ∀ hh : BPair.unit ≤ BPair.ofNat 2 * BPair.ofNat 2 * (a * b) + (c * c).swap,
+      c * c ≤ BPair.ofNat 4 * (a * b) := by
+    intro hh
+    have := leB_swapR hh
+    refine leB_trans (leB_congr_left (BPair.unit_add _) this) ?_
+    exact leB_congr_left (BPair.mul_congr_left (BPair.ofNat_mul 2 2))
+      (leB_refl (BPair.ofNat 4 * (a * b)))
+  refine Decidable.byCases (p := BPair.unit < a + b) (fun hpos => hfin ?_) (fun hn => ?_)
+  · refine leB_unscale hpos ?_
+    exact leB_congr_left (BPair.oneValue_symm (BPair.unit_mul _))
+      (leB_congr_right (BPair.oneValue_of_eq (BPair.mul_comm _ _)) hX)
+  · -- a + b at or below the unit: both at the unit, the cross read the third read's
+    have hab : a + b ≤ BPair.unit := leB_of_not_lt hn
+    have ha0 : a.oneValue BPair.unit :=
+      leB_antisymm (leB_trans (leB_congr_left (BPair.add_unit a) (leB_add (leB_refl a) hb)) hab) ha
+    have hb0 : b.oneValue BPair.unit :=
+      leB_antisymm (leB_trans (leB_congr_left (BPair.unit_add b) (leB_add ha (leB_refl b))) hab) hb
+    have e3 : (BPair.ofNat 1 * BPair.ofNat 1 * a
+        + (BPair.ofNat 1 * c.swap * c + c.swap * c.swap * b)).oneValue (c * c).swap := by
+      rw [hsc, hcc]
+      refine BPair.oneValue_trans (BPair.add_congr
+        (BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _) ha0) (BPair.mul_unit _))
+        (BPair.add_congr (swap_congr (BPair.ofNat_one_mul _))
+          (BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _) hb0) (BPair.mul_unit _)))) ?_
+      exact BPair.oneValue_trans (BPair.unit_add _) (BPair.add_unit _)
+    have hY : c * c ≤ BPair.unit := by
+      have := leB_swapR (leB_congr_right (BPair.oneValue_symm (BPair.unit_add _))
+        (leB_congr_right e3 h3))
+      exact leB_congr_left (BPair.unit_add _) this
+    refine leB_trans hY ?_
+    refine leB_congr_right (BPair.oneValue_symm ?_) (leB_refl _)
+    exact BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_trans (BPair.mul_congr ha0 (BPair.oneValue_refl _)) (BPair.unit_mul _)))
+      (BPair.mul_unit _)
+
+/-- The positive form's cross read at two vectors: the exchanged
+pairings' sum squares at or below four times the two forms' product,
+the form at every scaled combination of the two on its upper side at
+the split (`con:coeff`'s squared Cauchy--Schwarz at a positive
+semidefinite form; `lem:momentfold`(vi)'s cap at two stated members
+perpendicular in the gram). -/
+theorem psd_cross {n : Nat} (S : Mat) (sp : Split n) (hS : splitRead S sp)
+    (hp : psdAt sp) (u v : List BPair) (hu : u.length = n) (hv : v.length = n) :
+    (dotN u (matVec S v) + dotN v (matVec S u))
+        * (dotN u (matVec S v) + dotN v (matVec S u))
+      ≤ BPair.ofNat 4 * (quadForm S u * quadForm S v) := by
+  have hSl : S.length = n := sqAt_len hS.1
+  have hSr : rowsLen n S := rowsLen_of_sqAt hS.1
+  have hq : ∀ w : List BPair, w.length = n → BPair.unit ≤ quadForm S w :=
+    fun w hw => leB_of_not_lt (psd_all S sp hS hp w hw)
+  have hcomb : ∀ c1 c2 : BPair, BPair.unit ≤ c1 * c1 * quadForm S u
+      + (c1 * c2 * (dotN u (matVec S v) + dotN v (matVec S u))
+        + c2 * c2 * quadForm S v) := by
+    intro c1 c2
+    refine leB_congr_right (quadPairExpand S n hSr hSl c1 c2 u v hu hv) (hq _ ?_)
+    exact length_vecAdd _ _ n ((length_vecScale c1 u).trans hu)
+      ((length_vecScale c2 v).trans hv)
+  exact cross_arith (quadForm S u) (quadForm S v) _ (hq u hu) (hq v hv)
+    (hcomb _ _) (hcomb _ _) (hcomb _ _)
 
 end inertia

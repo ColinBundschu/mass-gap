@@ -1927,8 +1927,8 @@ private theorem perpCoord {n : Nat} (Et : Mat) (T Tw : SqMat n)
   have hTl : T.val.length = n := SqMat.rows T
   have hTr : rowsLen n T.val := rowsLen_of_sqAt T.shape
   have hTwl : Tw.val.length = n := SqMat.rows Tw
-  have hIl : (idMat n).length = n := idMat_len n
-  have hIr : rowsLen n (idMat n) := idMat_rows n
+  have hIl : (idMat n).length = n := length_idMat n
+  have hIr : rowsLen n (idMat n) := rowsLen_idMat n
   have hlen : l.length = n := split.rootLen Et T Tw l hd
   have hc : (matVec Tw.val x).length = n := by rw [matVec_length, hTwl]
   have hdsl : (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)).length = n := by
@@ -1972,7 +1972,7 @@ private theorem perpCoord {n : Nat} (Et : Mat) (T Tw : SqMat n)
     refine BPair.oneValue_trans
       (dotP_oneValue_right _ _ _
         (poly.oneValue_symm
-          (inertia.matVec_idMat n (matVec T.val (matVec Tw.val x))
+          (elim.matVec_idMat n (matVec T.val (matVec Tw.val x))
             (by rw [matVec_length]; exact hTl)))) ?_
     refine BPair.oneValue_trans
       (inertia.congrPair (idMat n) T.val n n hIl hIr hTl hTr
@@ -2072,7 +2072,7 @@ theorem gap_perp {n : Nat} (Et : Mat) (T Tw : SqMat n)
   have hTwl : Tw.val.length = n := SqMat.rows Tw
   have hEt : sqAt Et n := hd.1
   have hEtr : rowsLen n Et := rowsLen_of_sqAt hEt
-  have hIr : rowsLen n (idMat n) := idMat_rows n
+  have hIr : rowsLen n (idMat n) := rowsLen_idMat n
   have hlen : l.length = n := split.rootLen Et T Tw l hd
   have hdet : ¬ (minor T.val).oneValue BPair.unit := hd.2.2.1.1
   have hc : (matVec Tw.val x).length = n := by rw [matVec_length, hTwl]
@@ -3143,17 +3143,17 @@ private theorem unitGram_last {dn : BPair} {sn sd cn cd : Pos}
       × Split p.2 × Split p.2 × Split p.1 × Split p.1
       × Split p.2 × Split p.2 × Split p.2 × Split p.2)}
     (hw : spectator.driftWalk dn sn sd
-      ((((ns.take (w0 + 1)).drop j).reverse).map inertia.idMat) cn cd
+      ((((ns.take (w0 + 1)).drop j).reverse).map elim.idMat) cn cd
       Y0' Y0 ((Rs.take w0).drop j).reverse
       ((Rs'.take w0).drop j).reverse ((Xs.take w0).drop j).reverse
       ((Xs'.take w0).drop j).reverse certs)
     (hjw : j < w0) (hjR : j < Rs.length)
     (hXn : Xs.length = ns.length) (hRn : Rs.length + 1 = ns.length) :
     ground.getAt ([] : Mat)
-      ((((ns.take (w0 + 1)).drop j).reverse).map inertia.idMat)
-      certs.length = inertia.idMat (ground.getAt 0 ns j) := by
+      ((((ns.take (w0 + 1)).drop j).reverse).map elim.idMat)
+      certs.length = elim.idMat (ground.getAt 0 ns j) := by
   have hlen := spectator.driftWalk_len dn sn sd
-    ((((ns.take (w0 + 1)).drop j).reverse).map inertia.idMat) cn cd
+    ((((ns.take (w0 + 1)).drop j).reverse).map elim.idMat) cn cd
     Y0' Y0 _ _ _ _ certs hw
   have hCs : ((Rs.take w0).drop j).length = certs.length :=
     (ground.length_reverse ((Rs.take w0).drop j)).symm.trans hlen.1
@@ -3198,7 +3198,7 @@ private theorem unitGram_last {dn : BPair} {sn sd cn cd : Pos}
       < (((ns.take (w0 + 1)).drop j).reverse).length := by
     rw [ground.length_reverse, hLlen]
     exact Nat.lt_succ_self certs.length
-  have h1 := ground.getAt_map (0 : Nat) ([] : Mat) inertia.idMat
+  have h1 := ground.getAt_map (0 : Nat) ([] : Mat) elim.idMat
     (((ns.take (w0 + 1)).drop j).reverse) certs.length hbound
   have h2 : ground.getAt 0 (((ns.take (w0 + 1)).drop j).reverse)
       certs.length = ground.getAt 0 ((ns.take (w0 + 1)).drop j) 0 :=
@@ -3210,7 +3210,7 @@ private theorem unitGram_last {dn : BPair} {sn sd cn cd : Pos}
   have h4 : ground.getAt 0 (ns.take (w0 + 1)) j
       = ground.getAt 0 ns j :=
     ground.getAt_take 0 (w0 + 1) ns j (Nat.lt_succ_of_lt hjw)
-  exact h1.trans (congrArg inertia.idMat (h2.trans (h3.trans h4)))
+  exact h1.trans (congrArg elim.idMat (h2.trans (h3.trans h4)))
 
 /-- Two windows entering at their own roots' site data at one shared
 clearing instantiate the transport display at the two heads decimated
@@ -3228,7 +3228,7 @@ theorem window_transport {o : Nat} (diag off diag' off' : List Mat)
       × Split p.2 × Split p.2 × Split p.2 × Split p.2))
     (hshare : spectator.driftShareRead diag off diag' off' Xs Rs Xs' Rs'
       w0 j ns dn cn cd sn sd
-      ((((ns.take (w0 + 1)).drop j).reverse).map inertia.idMat) certs)
+      ((((ns.take (w0 + 1)).drop j).reverse).map elim.idMat) certs)
     (hocc : 0 < certs.length) (hjw : j < w0)
     (X X' : greenprod.MatQ)
     (hX : X = ground.getAt greenprod.dM Xs j)
@@ -3313,7 +3313,7 @@ theorem window_transport {o : Nat} (diag off diag' off' : List Mat)
     (greenprod.wShapeR_len hshare.1.2.2.1)
   obtain ⟨kk, spW, spW', hQ⟩ := spectator.driftShare_cap diag off diag'
     off' Xs Rs Xs' Rs' w0 j ns dn cn cd sn sd
-    ((((ns.take (w0 + 1)).drop j).reverse).map inertia.idMat)
+    ((((ns.take (w0 + 1)).drop j).reverse).map elim.idMat)
     certs hshare hocc hjw
   rw [hGl] at hQ
   have h1 : capAt
@@ -3325,7 +3325,7 @@ theorem window_transport {o : Nat} (diag off diag' off' : List Mat)
             * (ground.getAt greenprod.dM Xs j).2))
         (idMat (ground.getAt 0 ns j))) spW spW' := hQ
   have hgk : ground.getAt 0 ns j = kk :=
-    (inertia.idMat_len (ground.getAt 0 ns j)).symm.trans
+    (elim.length_idMat (ground.getAt 0 ns j)).symm.trans
       ((inertia.length_matScale _ _).symm.trans (elim.sqAt_len h1.2.1))
   subst hgk
   have h2 := inertia.capAt_trailPad
@@ -4201,7 +4201,7 @@ component at its slab's order. -/
 theorem headVec_weight : ∀ (vs : List greenprod.VecQ)
     (ns : List Nat), greenprod.vShape vs ns →
     (dotN (headVec vs) (headVec vs)).oneValue
-      (tailSum (ns.map inertia.idMat) vs).1
+      (tailSum (ns.map elim.idMat) vs).1
   | [], _, _ => BPair.oneValue_refl _
   | _ :: _, [], h => h.elim
   | u :: t, k :: ns, h => by
@@ -4212,9 +4212,9 @@ theorem headVec_weight : ∀ (vs : List greenprod.VecQ)
         (greenprod.vecScale (denProd t) u.1
           ++ greenprod.vecScale u.2 (headVec t))).oneValue
       ((inertia.quadForm (idMat k) u.1).scale
-          (tailSum (ns.map inertia.idMat) t).2
-        + (tailSum (ns.map inertia.idMat) t).1.scale (u.2 * u.2))
-    rw [tailSum_den (ns.map inertia.idMat) t]
+          (tailSum (ns.map elim.idMat) t).2
+        + (tailSum (ns.map elim.idMat) t).1.scale (u.2 * u.2))
+    rw [tailSum_den (ns.map elim.idMat) t]
     refine BPair.oneValue_trans (dotN_app _ _ _ _ rfl) ?_
     refine BPair.add_congr ?_ ?_
     · exact BPair.oneValue_trans (gvsSelf (denProd t) u.1)
@@ -5216,10 +5216,10 @@ private theorem capList_len (Gs : List Mat) :
 /-- The unit grams at a walk of orders make a gram list at that
 walk: each slab's unit gram square at its own order. -/
 private theorem unitGramShape : ∀ ns : List Nat,
-    greenprod.gramShape (ns.map inertia.idMat) ns
+    greenprod.gramShape (ns.map elim.idMat) ns
   | [] => trivial
   | k :: ns =>
-    ⟨inertia.sqAt_idMat k,
+    ⟨elim.sqAt_idMat k,
      unitGramShape ns⟩
 
 
@@ -5440,7 +5440,7 @@ theorem window_free {o : Nat} (diag off diag' off' : List Mat)
       × Split p.2 × Split p.2 × Split p.2 × Split p.2))
     (hshare : spectator.driftShareRead diag off diag' off' Xs Rs Xs' Rs'
       w0 j ns dn cn cd sn sd
-      ((((ns.take (w0 + 1)).drop j).reverse).map inertia.idMat) certs)
+      ((((ns.take (w0 + 1)).drop j).reverse).map elim.idMat) certs)
     (hocc : 0 < certs.length) (hjw : j < w0)
     (X X' : greenprod.MatQ)
     (hX : X = ground.getAt greenprod.dM Xs j)
@@ -5505,8 +5505,8 @@ theorem window_free {o : Nat} (diag off diag' off' : List Mat)
       (greenprod.vecScale s1 (headVec (List.take (j + 1) us)))
       (greenprod.vecScale s2 (matVec T.val (elim.idRow n j0))))
     (cs cs' : List ((k : Nat) × Pos × Pos × Split k))
-    (hcap1 : capList (ns.map inertia.idMat) Rs cs)
-    (hcap2 : capList (ns.map inertia.idMat) Rs' cs')
+    (hcap1 : capList (ns.map elim.idMat) Rs cs)
+    (hcap2 : capList (ns.map elim.idMat) Rs' cs')
  :
     (windowsep.mag (readGap
         (inertia.quadForm
@@ -5626,13 +5626,13 @@ theorem window_free {o : Nat} (diag off diag' off' : List Mat)
   have hwo := walkOcc hshare.2.2.2.2.2 hocc
   have hoc1 : 0 < (List.drop j cs).length := by
     refine ground.drop_pos_of_lt j cs ?_
-    rw [← capList_len (ns.map inertia.idMat) Rs cs hcap1]
+    rw [← capList_len (ns.map elim.idMat) Rs cs hcap1]
     refine takeDropOcc w0 j Rs ?_
     rw [← ground.length_reverse]
     exact hwo.1
   have hoc2 : 0 < (List.drop j cs').length := by
     refine ground.drop_pos_of_lt j cs' ?_
-    rw [← capList_len (ns.map inertia.idMat) Rs' cs' hcap2]
+    rw [← capList_len (ns.map elim.idMat) Rs' cs' hcap2]
     refine takeDropOcc w0 j Rs' ?_
     rw [← ground.length_reverse]
     exact hwo.2
@@ -5716,35 +5716,35 @@ theorem window_free {o : Nat} (diag off diag' off' : List Mat)
         (BPair.ofPos (denProd (List.drop (j + 1) us'))) _ _
         (greenprod.vecScale_ofPos _ _)) ?_
     exact sqScale _ _
-  have hpr1 := tail_price (ns.map inertia.idMat) Rs cs us ns j
+  have hpr1 := tail_price (ns.map elim.idMat) Rs cs us ns j
     (unitGramShape ns) hcap1 htel1
-  rw [ground.map_drop inertia.idMat ns (j + 1),
-    tailSum_den ((List.drop (j + 1) ns).map inertia.idMat)
+  rw [ground.map_drop elim.idMat ns (j + 1),
+    tailSum_den ((List.drop (j + 1) ns).map elim.idMat)
       (us.drop (j + 1))] at hpr1
-  have hpr2 := tail_price (ns.map inertia.idMat) Rs' cs' us' ns j
+  have hpr2 := tail_price (ns.map elim.idMat) Rs' cs' us' ns j
     (unitGramShape ns) hcap2 htel2
-  rw [ground.map_drop inertia.idMat ns (j + 1),
-    tailSum_den ((List.drop (j + 1) ns).map inertia.idMat)
+  rw [ground.map_drop elim.idMat ns (j + 1),
+    tailSum_den ((List.drop (j + 1) ns).map elim.idMat)
       (us'.drop (j + 1))] at hpr2
-  have hgj : ground.getAt ([] : Mat) (ns.map inertia.idMat) j
-      = inertia.idMat o := by
-    rw [ground.getAt_map 0 ([] : Mat) inertia.idMat ns j hjn, ho]
+  have hgj : ground.getAt ([] : Mat) (ns.map elim.idMat) j
+      = elim.idMat o := by
+    rw [ground.getAt_map 0 ([] : Mat) elim.idMat ns j hjn, ho]
   have hq1 : (inertia.quadForm
-        (ground.getAt ([] : Mat) (ns.map inertia.idMat) j)
+        (ground.getAt ([] : Mat) (ns.map elim.idMat) j)
         (ground.getAt ([], Pos.one) us j).1).oneValue
       (dotN (ground.getAt ([], Pos.one) us j).1
         (ground.getAt ([], Pos.one) us j).1) := by
     rw [hgj]
     exact dotN_congrR _ _ _
-      (inertia.matVec_idMat o _ ((vShape_at hvs1 j hjus).trans ho))
+      (elim.matVec_idMat o _ ((vShape_at hvs1 j hjus).trans ho))
   have hq2 : (inertia.quadForm
-        (ground.getAt ([] : Mat) (ns.map inertia.idMat) j)
+        (ground.getAt ([] : Mat) (ns.map elim.idMat) j)
         (ground.getAt ([], Pos.one) us' j).1).oneValue
       (dotN (ground.getAt ([], Pos.one) us' j).1
         (ground.getAt ([], Pos.one) us' j).1) := by
     rw [hgj]
     exact dotN_congrR _ _ _
-      (inertia.matVec_idMat o _ ((vShape_at hvs2 j hjus2).trans ho))
+      (elim.matVec_idMat o _ ((vShape_at hvs2 j hjus2).trans ho))
   have hpx1 := ground.leB_congr_left
     (BPair.scale_congr _ (BPair.oneValue_symm
       (headVec_weight (List.drop (j + 1) us) (List.drop (j + 1) ns)
@@ -6023,7 +6023,7 @@ private theorem tieRead (dg : List Nat) (M Et : Mat) (x : List BPair)
         (inertia.matScale (ed * sn)
           (diagO ground.bpairOps (dg.map BPair.ofNat)))
         (matSwap (inertia.matScale (ed * sd) M)))
-        (matSwap (inertia.matScaleB en (inertia.idMat n))))) :
+        (matSwap (inertia.matScaleB en (elim.idMat n))))) :
     poly.oneValue (matVec Et x)
       (vecAdd (vecAdd
           (vecScale (BPair.ofPos (ed * sn))
@@ -6052,9 +6052,9 @@ private theorem tieRead (dg : List Nat) (M Et : Mat) (x : List BPair)
   have hS2 : rowsLen n (matSwap (inertia.matScale (ed * sd) M)) :=
     rowsLen_mapRows BPair.swap _ n
       (rowsLen_mapRows (fun z => z.scale (ed * sd)) M n hMr)
-  have hS3 : rowsLen n (matSwap (inertia.matScaleB en (inertia.idMat n))) :=
+  have hS3 : rowsLen n (matSwap (inertia.matScaleB en (elim.idMat n))) :=
     rowsLen_mapRows BPair.swap _ n
-      (inertia.rowsLen_scaleB en n (inertia.idMat n) (inertia.idMat_rows n))
+      (inertia.rowsLen_scaleB en n (elim.idMat n) (elim.rowsLen_idMat n))
   have q1 : poly.oneValue
       (matVec (inertia.matScale (ed * sn)
         (diagO ground.bpairOps (dg.map BPair.ofNat))) x)
@@ -6066,7 +6066,7 @@ private theorem tieRead (dg : List Nat) (M Et : Mat) (x : List BPair)
     rw [matVec_swapM]
     exact poly.swapMap_oneValue (inertia.matVec_matScale _ M x)
   have q3 : poly.oneValue
-      (matVec (matSwap (inertia.matScaleB en (inertia.idMat n))) x)
+      (matVec (matSwap (inertia.matScaleB en (elim.idMat n))) x)
       ((vecScale en x).map BPair.swap) := by
     rw [matVec_swapM]
     exact poly.swapMap_oneValue (inertia.scaleId_act en n x hx)
@@ -6079,7 +6079,7 @@ private theorem tieRead (dg : List Nat) (M Et : Mat) (x : List BPair)
         (by rw [length_vecScale, matVec_length, hDl])
         (by rw [ground.length_map, length_vecScale, matVec_length, hMl])])
     (by rw [matVec_length, length_matSwap, inertia.length_scaleB,
-      inertia.idMat_len, ground.length_map, length_vecScale, hx]) ?_ q3
+      elim.length_idMat, ground.length_map, length_vecScale, hx]) ?_ q3
   refine poly.oneValue_trans
     (matVec_add_free n _ _ x hS1 hS2) ?_
   exact elim.vecAdd_congr2 _ _ _ _
@@ -6102,7 +6102,7 @@ theorem sourced_pencil (dg : List Nat) (C M Et : Mat)
         (inertia.matScale (ed * sn)
           (diagO ground.bpairOps (dg.map BPair.ofNat)))
         (matSwap (inertia.matScale (ed * sd) M)))
-        (matSwap (inertia.matScaleB en (inertia.idMat n)))))
+        (matSwap (inertia.matScaleB en (elim.idMat n)))))
     (hker : poly.unitTail (matVec Et psi))
     (hcomm : poly.oneValue (matVec M (matVec C psi))
       (matVec C (matVec M psi))) :
@@ -6285,7 +6285,7 @@ theorem source_weight {n : Nat} (Et : Mat) (T Tw : SqMat n)
         (inertia.matScale (ed * sn)
           (diagO ground.bpairOps (dg.map BPair.ofNat)))
         (matSwap (inertia.matScale (ed * sd) M)))
-        (matSwap (inertia.matScaleB en (inertia.idMat n)))))
+        (matSwap (inertia.matScaleB en (elim.idMat n)))))
     (hcomm : poly.oneValue
       (matVec M (matVec C (matVec T.val (elim.idRow n j0))))
       (matVec C (matVec M (matVec T.val (elim.idRow n j0))))) :
@@ -6500,7 +6500,7 @@ theorem cluster_read {n : Nat} (Et : Mat) (T Tw : SqMat n)
         (inertia.matScale (ed * sn)
           (diagO ground.bpairOps (dg.map BPair.ofNat)))
         (matSwap (inertia.matScale (ed * sd) M)))
-        (matSwap (inertia.matScaleB en (inertia.idMat n)))))
+        (matSwap (inertia.matScaleB en (elim.idMat n)))))
     (hcomm : poly.oneValue
       (matVec M (matVec C (matVec T.val (elim.idRow n j0))))
       (matVec C (matVec M (matVec T.val (elim.idRow n j0)))))
@@ -6517,7 +6517,7 @@ theorem cluster_read {n : Nat} (Et : Mat) (T Tw : SqMat n)
         (residD [matVec T.val (elim.idRow n j0)]
           (matVec C (matVec T.val (elim.idRow n j0))))))
     (cs : List ((k : Nat) × Pos × Pos × Split k))
-    (hcap : capListDown (ns.map inertia.idMat) Cs cs)
+    (hcap : capListDown (ns.map elim.idMat) Cs cs)
     (m j : Nat) (hmj : m + j = jb)
     (k m' : Nat) (hk : k = ground.sumNat (List.take m ns))
     (hkm : k + m' = n)
@@ -6525,7 +6525,7 @@ theorem cluster_read {n : Nat} (Et : Mat) (T Tw : SqMat n)
     (hAsym : matOneValue (transposeM A) A)
     (cn cd : Pos) (spA spA' : Split k)
     (hA : capAt (inertia.matScale cd A)
-      (inertia.matScale cn (inertia.idMat k)) spA spA') :
+      (inertia.matScale cn (elim.idMat k)) spA spA') :
     BPair.scale
       (windowsep.mag (readGap
         (dotN (matVec T.val (elim.idRow n j0))
@@ -6816,12 +6816,12 @@ theorem cluster_read {n : Nat} (Et : Mat) (T Tw : SqMat n)
   -- prices them at the anchor
   have hWh : (dotN (headVec (List.take m us))
       (headVec (List.take m us))).oneValue
-      (tailSum (List.take m (ns.map inertia.idMat))
+      (tailSum (List.take m (ns.map elim.idMat))
         (List.take m us)).1 := by
-    rw [ground.take_map inertia.idMat m ns]
+    rw [ground.take_map elim.idMat m ns]
     exact headVec_weight (List.take m us) (List.take m ns)
       (vShape_take m hvs)
-  have hride := ride_price (ns.map inertia.idMat) Cs cs us ns m j jb
+  have hride := ride_price (ns.map elim.idMat) Cs cs us ns m j jb
     (unitGramShape ns) hmj hcap
     (source_tele diag off Ys Cs us ws ns jb hh hs hsupp hjb)
   have hjbn : jb < ns.length := by
@@ -6829,15 +6829,15 @@ theorem cluster_read {n : Nat} (Et : Mat) (T Tw : SqMat n)
   have hujbl : (ground.getAt ([], Pos.one) us jb).1.length
       = ground.getAt 0 ns jb := vShape_at hvs jb hjb
   have hanchor : (inertia.quadForm
-      (ground.getAt [] (ns.map inertia.idMat) jb)
+      (ground.getAt [] (ns.map elim.idMat) jb)
       (ground.getAt ([], Pos.one) us jb).1).oneValue
       (dotN (ground.getAt ([], Pos.one) us jb).1
         (ground.getAt ([], Pos.one) us jb).1) := by
-    rw [ground.getAt_map 0 [] inertia.idMat ns jb hjbn]
+    rw [ground.getAt_map 0 [] elim.idMat ns jb hjbn]
     exact BPair.oneValue_symm
       (dotN_congrR _ _ _
         (poly.oneValue_symm
-          (inertia.matVec_idMat (ground.getAt 0 ns jb) _ hujbl)))
+          (elim.matVec_idMat (ground.getAt 0 ns jb) _ hujbl)))
   have hblock := blockWeight_le jb us hjb
   -- the leading segment's weight sits inside the join's
   have hpre : ((dotN (headVec (List.take (jb + 1) us))
@@ -6878,7 +6878,7 @@ theorem cluster_read {n : Nat} (Et : Mat) (T Tw : SqMat n)
       (List.take k (residD [matVec T.val (elim.idRow n j0)]
         (matVec C (matVec T.val (elim.idRow n j0)))))).scale
         (s2 * s2)).oneValue
-      ((tailSum (List.take m (ns.map inertia.idMat))
+      ((tailSum (List.take m (ns.map elim.idMat))
         (List.take m us)).1.scale
         ((denProd (List.drop m us) * denProd (List.drop m us))
           * (s1 * s1))) := by
@@ -6895,11 +6895,11 @@ theorem cluster_read {n : Nat} (Et : Mat) (T Tw : SqMat n)
               * ((ground.getAt ([], Pos.one) us jb).2
                 * (ground.getAt ([], Pos.one) us jb).2)))))
       ≤ ((inertia.quadForm
-            (ground.getAt [] (ns.map inertia.idMat) jb)
+            (ground.getAt [] (ns.map elim.idMat) jb)
             (ground.getAt ([], Pos.one) us jb).1
           * (tailFold (List.take m cs).reverse).1).scale
         (((prodN (List.take j (List.drop m cs))
-            * (tailSum (List.take m (ns.map inertia.idMat))
+            * (tailSum (List.take m (ns.map elim.idMat))
               (List.take m us)).2))
           * ((denProd (List.drop m us) * denProd (List.drop m us))
             * (s1 * s1)))) := by
@@ -6912,7 +6912,7 @@ theorem cluster_read {n : Nat} (Et : Mat) (T Tw : SqMat n)
               * (prodD (List.take j (List.drop m cs))
                 * ((ground.getAt ([], Pos.one) us jb).2
                   * (ground.getAt ([], Pos.one) us jb).2))))).oneValue
-        (((tailSum (List.take m (ns.map inertia.idMat))
+        (((tailSum (List.take m (ns.map elim.idMat))
             (List.take m us)).1.scale
           ((tailFold (List.take m cs).reverse).2
             * (prodD (List.take j (List.drop m cs))
@@ -6964,7 +6964,7 @@ theorem cluster_read {n : Nat} (Et : Mat) (T Tw : SqMat n)
             (ground.getAt ([], Pos.one) us jb).1
           * (tailFold (List.take m cs).reverse).1).scale
         ((((prodN (List.take j (List.drop m cs))
-            * (tailSum (List.take m (ns.map inertia.idMat))
+            * (tailSum (List.take m (ns.map elim.idMat))
               (List.take m us)).2))
           * ((denProd (List.drop m us) * denProd (List.drop m us))
             * (s1 * s1)))
@@ -7005,7 +7005,7 @@ theorem cluster_read {n : Nat} (Et : Mat) (T Tw : SqMat n)
     rw [BPair.scale_one]; exact hpre
   have hy5 := hy4
   rw [posC1 (prodN (List.take j (List.drop m cs)))
-      (tailSum (List.take m (ns.map inertia.idMat)) (List.take m us)).2
+      (tailSum (List.take m (ns.map elim.idMat)) (List.take m us)).2
       (denProd (List.drop m us) * denProd (List.drop m us)) (s1 * s1)
       (denProd (List.take jb us) * denProd (List.take jb us))
       (denProd (List.drop (jb + 1) us)
@@ -7017,13 +7017,13 @@ theorem cluster_read {n : Nat} (Et : Mat) (T Tw : SqMat n)
   have hy8 := ground.leB_congr_right (stepCongr hFtie) hy7
   rw [ground.mul_left_comm (s2 * s2) (gn * gn)
       (prodN (List.take j (List.drop m cs))
-        * ((tailSum (List.take m (ns.map inertia.idMat))
+        * ((tailSum (List.take m (ns.map elim.idMat))
             (List.take m us)).2
           * (denProd (List.drop m us) * denProd (List.drop m us))))] at hy8
   have hy9 := ground.leB_trans hy8 (stepLe hF1 hsw)
   rw [posC3 (ed * sn) (gd * gd) (s2 * s2)
       (prodN (List.take j (List.drop m cs)))
-      (tailSum (List.take m (ns.map inertia.idMat)) (List.take m us)).2
+      (tailSum (List.take m (ns.map elim.idMat)) (List.take m us)).2
       (denProd (List.drop m us) * denProd (List.drop m us)),
     posC2 (s2 * s2) (tailFold (List.take m cs).reverse).2
       (prodD (List.take j (List.drop m cs)))
@@ -7815,7 +7815,7 @@ private theorem solveCols {o : Nat} (M1 M2 : Mat) (s1 s2 s3 : Pos)
       (vecScale (BPair.ofPos s3) v) :=
     poly.oneValue_trans
       (inertia.matVec_matScale s3 (idMat o) _)
-      (vecScale_oneValue _ _ _ (inertia.matVec_idMat o _ hv))
+      (vecScale_oneValue _ _ _ (elim.matVec_idMat o _ hv))
   exact poly.oneValue_trans (poly.oneValue_symm h2)
     (poly.oneValue_trans (poly.oneValue_symm h1)
       (poly.oneValue_trans h0 h3))
@@ -7913,7 +7913,7 @@ theorem euc_lo_col {o : Nat} (Et : Mat) (T Tw : SqMat o)
     refine poly.oneValue_trans
       (vecScale_oneValue (BPair.ofPos (un * lc)) _ _
         (vecScale_oneValue (BPair.ofPos p) _ _
-          (inertia.matVec_idMat o _ hvl))) ?_
+          (elim.matVec_idMat o _ hvl))) ?_
     rw [vecScale_vecScale (BPair.ofPos (un * lc)) (BPair.ofPos p) _]
     exact vecScale_congr (BPair.ofPos_mul (un * lc) p) _
   have hIdj : poly.oneValue
@@ -8030,7 +8030,7 @@ private theorem colCoord {o : Nat} (Et : Mat) (T Tw : SqMat o)
   have hcl : (matVec Tw.val x).length = o := by
     rw [matVec_length, hTwl]
   have hdf := split.diagFold (idMat o) T _
-    (idMat_len o) (idMat_rows o)
+    (length_idMat o) (rowsLen_idMat o)
     (by rw [ground.length_map]; exact hlen)
     (split.congr_gram Et (idMat o) T Tw l hd)
     (elim.idRow o k) (matVec Tw.val x) (length_idRow o k) hcl
@@ -8042,7 +8042,7 @@ private theorem colCoord {o : Nat} (Et : Mat) (T Tw : SqMat o)
   refine BPair.oneValue_trans
     (dotP_oneValue_right _ _ _
       (poly.oneValue_symm
-        (inertia.matVec_idMat o _ (by rw [matVec_length, hTl])))) ?_
+        (elim.matVec_idMat o _ (by rw [matVec_length, hTl])))) ?_
   refine BPair.oneValue_trans
     (BPair.oneValue_symm (dotN_read (matVec T.val (elim.idRow o k))
       (matVec (idMat o) (matVec T.val (matVec Tw.val x))))) ?_
@@ -8480,7 +8480,7 @@ theorem matPow_col {o : Nat} (M : Mat) (hMs : sqAt M o)
     show poly.oneValue
       (elim.vecScale (BPair.ofPos .one) (elim.matVec (idMat o) v))
       (elim.vecScale (BPair.ofPos .one) v)
-    exact vecScale_oneValue _ _ _ (inertia.matVec_idMat o v hv)
+    exact vecScale_oneValue _ _ _ (elim.matVec_idMat o v hv)
   | k + 1 => by
     have hPr : rowsLen o (matPow M o k) :=
       rowsLen_matPow M o (sqAt_len hMs) k
@@ -9485,12 +9485,12 @@ theorem euc_pair_price {o : Nat} (Et : Mat) (T Tw : SqMat o)
   have hDiagG : elim.matOneValue
       (matMul (transposeM T.val) (matMul (idMat o) T.val))
       (split.diagM (split.vDiagL (idMat o) T)) := by
-    refine split.diagOfPairs (idMat o) T (idMat_len o) (idMat_rows o) ?_
+    refine split.diagOfPairs (idMat o) T (length_idMat o) (rowsLen_idMat o) ?_
     intro i j hi hj hne
     have hvl : (matVec T.val (elim.idRow o j)).length = o := by
       rw [matVec_length, hTl]
     exact BPair.oneValue_trans
-      (dotP_oneValue_right _ _ _ (inertia.matVec_idMat o _ hvl))
+      (dotP_oneValue_right _ _ _ (elim.matVec_idMat o _ hvl))
       (split.gramOff Et T Tw l hd i j hi hj hne)
   -- the three families' det-cleared fold reads
   have hFV : (minor T.val * minor T.val
@@ -9514,8 +9514,8 @@ theorem euc_pair_price {o : Nat} (Et : Mat) (T Tw : SqMat o)
       (BPair.oneValue_symm
         (BPair.mul_congr
           (BPair.oneValue_refl (minor T.val * minor T.val))
-          (dotP_oneValue_right x _ _ (inertia.matVec_idMat o x hx)))) ?_
-    exact split.pair_fold Et T Tw l hd (idMat o) (idMat_len o) (idMat_rows o)
+          (dotP_oneValue_right x _ _ (elim.matVec_idMat o x hx)))) ?_
+    exact split.pair_fold Et T Tw l hd (idMat o) (length_idMat o) (rowsLen_idMat o)
       hDiagG x x hx hx
   have hGY : (minor T.val * minor T.val * dotP y y).oneValue
       (dotP (split.vDiagL (idMat o) T)
@@ -9524,8 +9524,8 @@ theorem euc_pair_price {o : Nat} (Et : Mat) (T Tw : SqMat o)
       (BPair.oneValue_symm
         (BPair.mul_congr
           (BPair.oneValue_refl (minor T.val * minor T.val))
-          (dotP_oneValue_right y _ _ (inertia.matVec_idMat o y hy)))) ?_
-    exact split.pair_fold Et T Tw l hd (idMat o) (idMat_len o) (idMat_rows o)
+          (dotP_oneValue_right y _ _ (elim.matVec_idMat o y hy)))) ?_
+    exact split.pair_fold Et T Tw l hd (idMat o) (length_idMat o) (rowsLen_idMat o)
       hDiagG y y hy hy
   -- the carried lists' orders
   have hdsVl : (split.vDiagL (matPow Vw o (n + 1)) T).length = o :=
@@ -9614,10 +9614,10 @@ theorem euc_pair_price {o : Nat} (Et : Mat) (T Tw : SqMat o)
           * BPair.ofPos
             (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.1) := by
       refine BPair.oneValue_trans
-        (split.vDiagL_read (idMat o) T (idMat_len o) (idMat_rows o)
+        (split.vDiagL_read (idMat o) T (length_idMat o) (rowsLen_idMat o)
           j hj) ?_
       refine BPair.oneValue_trans
-        (dotP_oneValue_right _ _ _ (inertia.matVec_idMat o _ hvl)) ?_
+        (dotP_oneValue_right _ _ _ (elim.matVec_idMat o _ hvl)) ?_
       exact split.gramDiag Et T Tw l hd j hj _ _ _ hroot
     have hRpos : BPair.unit
         ≤ (a * a) * (ground.getAt BPair.unit (matVec Tw.val x) j
@@ -10052,7 +10052,7 @@ theorem tailVec_len : ∀ (kim : Nat) (ss : List GStep) (kfin : Nat)
         s.ln s.ld s.spT := h.1
     show (matVec s.T.1 (matVec s.A (tailVec ss y))).length = kim
     rw [matVec_length]
-    exact (sqAt_len hc.1).symm.trans (idMat_len kim)
+    exact (sqAt_len hc.1).symm.trans (length_idMat kim)
 
 /-- The chain's gram collapse: the applied vector's self-pairing at
 the lower clearing sits at or below the vector's own at the upper,
@@ -10077,7 +10077,7 @@ theorem tailCap : ∀ (kim : Nat) (ss : List GStep) (kfin : Nat)
       (length_matScale cd P).symm.trans (sqAt_len hcap.1)
     have hAlen : (matVec P (tailVec ss y)).length = ko :=
       (matVec_length P (tailVec ss y)).trans hPl
-    have hTl : T.1.length = kim := (sqAt_len hc.1).symm.trans (idMat_len kim)
+    have hTl : T.1.length = kim := (sqAt_len hc.1).symm.trans (length_idMat kim)
     have hzl : (matVec T.1 (matVec P (tailVec ss y))).length = kim :=
       (matVec_length T.1 (matVec P (tailVec ss y))).trans hTl
     have hw := spectator.contract_all T (idMat kim) (idMat ko) ln ld spc hc
@@ -10291,7 +10291,7 @@ private theorem conjSum_len (T A : Mat) (o : Nat)
 the product's identity read. -/
 private theorem dotIso (P : Mat) (o : Nat) (hPr : rowsLen o P)
     (horth : matOneValue (matMul (transposeM P) P)
-      (inertia.idMat o))
+      (elim.idMat o))
     (u v : List BPair) (hu : u.length = o) (hv : v.length = o) :
     (dotN (matVec P u) (matVec P v)).oneValue (dotN u v) := by
   have hflip := dotN_transpose_flip P o hPr v (matVec P u) hv
@@ -10300,9 +10300,9 @@ private theorem dotIso (P : Mat) (o : Nat) (hPr : rowsLen o P)
     poly.oneValue_trans
       (matVec_comp (transposeM P) P u o hPr hu (rowsLen_transposeM P))
       (poly.oneValue_trans
-        (matVec_matOne (matMul (transposeM P) P) (inertia.idMat o)
+        (matVec_matOne (matMul (transposeM P) P) (elim.idMat o)
           u horth)
-        (inertia.matVec_idMat o u hu))
+        (elim.matVec_idMat o u hu))
   exact BPair.oneValue_trans (BPair.oneValue_symm hflip)
     (BPair.oneValue_trans
       (dotN_congrR v (matVec (transposeM P) (matVec P u)) u hinner)
@@ -10313,7 +10313,7 @@ orthogonality strips the shared prefix. -/
 private theorem transStrip (T : Mat) (o : Nat)
     (hTl : T.length = o) (hTr : rowsLen o T)
     (horth : matOneValue (matMul (transposeM T) T)
-      (inertia.idMat o))
+      (elim.idMat o))
     (y : List BPair) (hy : y.length = o) :
     ∀ j g k, j + g = k →
     (dotN (transVec T o y j) (transVec T o y k)).oneValue
@@ -10322,7 +10322,7 @@ private theorem transStrip (T : Mat) (o : Nat)
     have hg : g = k := (Nat.zero_add g).symm.trans hk
     rw [← hg]
     exact dotN_congrL (transVec T o y 0) y (transVec T o y g)
-      (inertia.matVec_idMat o y hy)
+      (elim.matVec_idMat o y hy)
   | j + 1, g, k, hk => by
     have hk' : j + g + 1 = k := (Nat.succ_add j g).symm.trans hk
     rw [← hk']
@@ -10358,7 +10358,7 @@ translate enumerates the separations descending. -/
 private theorem crossSeg (T : Mat) (o : Nat)
     (hTl : T.length = o) (hTr : rowsLen o T)
     (horth : matOneValue (matMul (transposeM T) T)
-      (inertia.idMat o))
+      (elim.idMat o))
     (y : List BPair) (hy : y.length = o) (n : Nat) :
     ∀ m, m ≤ n →
     (dotN (transSum T o y m) (transVec T o y n)).oneValue
@@ -10382,7 +10382,7 @@ separation. -/
 theorem trans_collect (T : Mat) (o : Nat)
     (hTl : T.length = o) (hTr : rowsLen o T)
     (horth : matOneValue (matMul (transposeM T) T)
-      (inertia.idMat o))
+      (elim.idMat o))
     (y : List BPair) (hy : y.length = o) :
     ∀ n : Nat,
     (dotN (transSum T o y n) (transSum T o y n)).oneValue
@@ -10402,7 +10402,7 @@ theorem trans_collect (T : Mat) (o : Nat)
       BPair.oneValue_trans
         (transStrip T o hTl hTr horth y hy n 0 n rfl)
         (dotN_congrR y (transVec T o y 0) y
-          (inertia.matVec_idMat o y hy))
+          (elim.matVec_idMat o y hy))
     have hcross : (dotN (transSum T o y n) (transVec T o y n)
         + dotN (transVec T o y n) (transSum T o y n)).oneValue
         (BPair.ofNat 2
@@ -10737,7 +10737,7 @@ across the product's identity. -/
 private theorem fixT' (T : Mat) (o : Nat)
     (hTr : rowsLen o T)
     (horth : matOneValue (matMul (transposeM T) T)
-      (inertia.idMat o))
+      (elim.idMat o))
     (psi : List BPair) (hpsi : psi.length = o)
     (hfix : poly.oneValue (matVec T psi) psi) :
     poly.oneValue (matVec (transposeM T) psi) psi :=
@@ -10748,21 +10748,21 @@ private theorem fixT' (T : Mat) (o : Nat)
       (matVec_comp (transposeM T) T psi o hTr hpsi
         (rowsLen_transposeM T))
       (poly.oneValue_trans
-        (matVec_matOne (matMul (transposeM T) T) (inertia.idMat o)
+        (matVec_matOne (matMul (transposeM T) T) (elim.idMat o)
           psi horth)
-        (inertia.matVec_idMat o psi hpsi)))
+        (elim.matVec_idMat o psi hpsi)))
 
 /-- The transposed power fixes the ground: the fixed read iterates
 across the peeled factors. -/
 private theorem fixTPow (T : Mat) (o : Nat)
     (hTl : T.length = o) (hTr : rowsLen o T)
     (horth : matOneValue (matMul (transposeM T) T)
-      (inertia.idMat o))
+      (elim.idMat o))
     (psi : List BPair) (hpsi : psi.length = o)
     (hfix : poly.oneValue (matVec T psi) psi) :
     ∀ k, poly.oneValue
       (matVec (inertia.matPow (transposeM T) o k) psi) psi
-  | 0 => inertia.matVec_idMat o psi hpsi
+  | 0 => elim.matVec_idMat o psi hpsi
   | k + 1 =>
     poly.oneValue_trans
       (poly.oneValue_symm
@@ -10788,7 +10788,7 @@ ground. -/
 private theorem conjCollapse (T A : Mat) (o : Nat)
     (hTl : T.length = o) (hTr : rowsLen o T)
     (horth : matOneValue (matMul (transposeM T) T)
-      (inertia.idMat o))
+      (elim.idMat o))
     (psi : List BPair) (hpsi : psi.length = o)
     (hfix : poly.oneValue (matVec T psi) psi) :
     ∀ k : Nat,
@@ -10859,7 +10859,7 @@ vector's translate fold, the collapse folded. -/
 private theorem conjSum_collapse (T A : Mat) (o : Nat)
     (hTl : T.length = o) (hTr : rowsLen o T)
     (horth : matOneValue (matMul (transposeM T) T)
-      (inertia.idMat o))
+      (elim.idMat o))
     (psi : List BPair) (hpsi : psi.length = o)
     (hfix : poly.oneValue (matVec T psi) psi) :
     ∀ n, poly.oneValue (conjSum T A o psi n)
@@ -10886,7 +10886,7 @@ own counts, one located bracket per probe at every translate
 count. -/
 theorem decomp_display (T A : Mat) (o : Nat)
     (hTl : T.length = o) (hTr : rowsLen o T) (hA : sqAt A o)
-    (horth : matOneValue (matMul (transposeM T) T) (inertia.idMat o))
+    (horth : matOneValue (matMul (transposeM T) T) (elim.idMat o))
     (psi : List BPair) (hpsi : psi.length = o)
     (hfix : poly.oneValue (matVec T psi) psi)
     (dp c D : Pos) (ps : List Pos) (as ss qs : List BPair)
@@ -11412,12 +11412,12 @@ theorem pow_reach {o : Nat} (M : Mat) (hM : sqAt M o) (ns : List Nat)
     intro r hr c hc harm
     have hr' : r < o := by
       have h0 : r < (idMat o).length := hr
-      rw [idMat_len o] at h0
+      rw [length_idMat o] at h0
       exact h0
-    have hri : r < (idMat o).length := by rw [idMat_len o]; exact hr'
+    have hri : r < (idMat o).length := by rw [length_idMat o]; exact hr'
     have hc' : c < o := by
       have h0 : c < (ground.getAt ([] : List BPair) (idMat o) r).length := hc
-      rw [rowsLen_getAt (idMat o) r (idMat_rows o) hri] at h0
+      rw [rowsLen_getAt (idMat o) r (rowsLen_idMat o) hri] at h0
       exact h0
     have hne : ¬ (c = r) := by
       intro he
@@ -11869,9 +11869,9 @@ private theorem joinEntry {o : Nat} (Et Lw : Mat) (hEts : sqAt Et o)
       (by rw [rowsLen_getAt Et r hEr (by rw [hEl]; exact hr')]
           exact hcc),
     inertia.matScale_entry c (idMat o) r c'
-      (by rw [idMat_len]; exact hr')
-      (by rw [rowsLen_getAt (idMat o) r (idMat_rows o)
-            (by rw [idMat_len]; exact hr')]
+      (by rw [length_idMat]; exact hr')
+      (by rw [rowsLen_getAt (idMat o) r (rowsLen_idMat o)
+            (by rw [length_idMat]; exact hr')]
           exact hcc)] at hrow
   exact hrow
 
@@ -12732,13 +12732,6 @@ theorem scaleCount_eq (s hn hd q : Pos)
     scaleCount s hn hd = some q :=
   ground.divQuot_eq (s * hd) hn q h1 h2
 
-/-- The strict read rides an at-or-below read on its upper side. -/
-private theorem ltLe {a b c : Pos} (hab : a < b) (hbc : b ≤ c) :
-    a < c := by
-  match hbc with
-  | Or.inl e => rw [← e]; exact hab
-  | Or.inr hl => exact ground.lt_trans hab hl
-
 /-- The count is stable across a rate read between two clearings:
 a rate bracketed by `ln/ld` below and `un/ud` above carries the
 bracket of the low and high rates onto `hn/hd`, the two comparisons
@@ -12763,7 +12756,7 @@ theorem scaleCount_stable (s ln ld hn hd un ud q : Pos)
     rw [ground.mul_right_comm ln (ground.succ q) hd] at k1
     rw [ground.mul_right_comm s ld hd] at k1
     rw [ground.mul_right_comm hn ld (ground.succ q)] at k2
-    exact ltLe k1 k2
+    exact ground.lt_of_lt_of_le k1 k2
 
 /-- The vacant count is stable across the same read: a level below
 the low rate's own step is below the read rate's, so no multiple
@@ -12775,7 +12768,7 @@ theorem scaleCount_stable_vac (s ln ld hn hd : Pos)
     refine ground.lt_of_mul_lt (c := ld) ?_
     have k1 : s * ld * hd < ln * hd := ground.mul_lt_mul_right hd h2
     rw [ground.mul_right_comm s ld hd] at k1
-    exact ltLe k1 hlo
+    exact ground.lt_of_lt_of_le k1 hlo
   cases hc : scaleCount s hn hd with
   | none => rfl
   | some q' =>
@@ -12880,7 +12873,7 @@ theorem drift_mono {n : Nat} (Et Ed : Mat) (hEt : sqAt Et n)
     inertia.sqAt_matScale n g Ed hEd
   have hL : sqAt (inertia.matScale a (idMat n)) n :=
     inertia.sqAt_matScale n a (idMat n)
-      (inertia.sqAt_idMat n)
+      (elim.sqAt_idMat n)
   have hEtNull : sqAt (matAdd Et (matSwap Et)) n :=
     elim.sqAt_matAdd n Et (matSwap Et) hEt (elim.sqAt_matSwap n Et hEt)
   have hLNull : sqAt (matAdd (matSwap (inertia.matScale a (idMat n)))
@@ -13031,9 +13024,9 @@ theorem transport_electric {n : Nat} (Et Es Ed : Mat) (T Tw : SqMat n)
   have hSl : (inertia.matScale g Ed).length = n := by
     rw [inertia.length_matScale]; exact hEdl
   have hIr : rowsLen n (matScaleB delta.swap (idMat n)) :=
-    rowsLen_scaleB delta.swap n (idMat n) (idMat_rows n)
+    rowsLen_scaleB delta.swap n (idMat n) (rowsLen_idMat n)
   have hIl : (matScaleB delta.swap (idMat n)).length = n :=
-    (length_scaleB delta.swap (idMat n)).trans (idMat_len n)
+    (length_scaleB delta.swap (idMat n)).trans (length_idMat n)
   have hD2r : rowsLen n (matAdd (inertia.matScale g Ed)
       (matScaleB delta.swap (idMat n))) :=
     rowsLen_matAdd n _ _ hSr hIr
@@ -13747,11 +13740,11 @@ private theorem eShellGo :
       have hG1 : G1 = idMat k' := hunit.2.1
       have hq0 : (inertia.quadForm G0 u0.1).oneValue (dotN u0.1 u0.1) := by
         rw [hG0]
-        exact dotN_congrR u0.1 _ _ (inertia.matVec_idMat k u0.1 hw.2.1.1)
+        exact dotN_congrR u0.1 _ _ (elim.matVec_idMat k u0.1 hw.2.1.1)
       have hq1 : (inertia.quadForm G1 u1.1).oneValue (dotN u1.1 u1.1) := by
         rw [hG1]
         exact dotN_congrR u1.1 _ _
-          (inertia.matVec_idMat k' u1.1 hw.2.1.2.1)
+          (elim.matVec_idMat k' u1.1 hw.2.1.2.1)
       have hchain : (inertia.quadForm G1 u1.1).scale
             (c.2.2.1 * c.2.2.1 * Pos.one * (u0.2 * u0.2))
           ≤ (inertia.quadForm G0 u0.1).scale

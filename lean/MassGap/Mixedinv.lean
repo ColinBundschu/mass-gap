@@ -294,14 +294,15 @@ private theorem tensor_unit_row (d i : Nat) (hi : i < d)
       = j) :
     blockcount.tensorH
         (⟨nu', ground.getAt []
-          (elim.idList (monomialsAt nu').length) r⟩
+          (elim.idMat (monomialsAt nu').length) r⟩
           : blockcount.HVec)
         (⟨unitAt d i, [ground.BPair.ofNat 1]⟩ : blockcount.HVec)
       = (⟨nu, ground.getAt []
-          (elim.idList (monomialsAt nu).length) j⟩
+          (elim.idMat (monomialsAt nu).length) j⟩
           : blockcount.HVec) := by
-  rw [elim.idList_getAt (monomialsAt nu').length r hr,
-    elim.idList_getAt (monomialsAt nu).length j hj]
+  rw [elim.idMat_row (monomialsAt nu').length r hr,
+    elim.idMat_row (monomialsAt nu).length j hj, elim.idRow_set,
+    elim.idRow_set]
   show (⟨List.zipWith (fun a b => a + b) nu' (unitAt d i),
       ((List.zipWith (fun m x => (m, x)) (monomialsAt nu')
           (List.set
@@ -340,7 +341,7 @@ private theorem monPool_occ (d : Nat) (hd : 0 < d) :
       ground.sumNat nu = k →
       ∀ j, j < (places.monomialsAt nu).length →
         (⟨nu, ground.getAt []
-            (elim.idList (places.monomialsAt nu).length) j⟩
+            (elim.idMat (places.monomialsAt nu).length) j⟩
           : blockcount.HVec) ∈ monPool d k := by
   intro k
   induction k with
@@ -445,13 +446,13 @@ identity family's rows. -/
 private def idPool (nu : List Nat) : List blockcount.HVec :=
   (List.range (places.monomialsAt nu).length).map
     (fun j => ⟨nu, ground.getAt []
-      (elim.idList (places.monomialsAt nu).length) j⟩)
+      (elim.idMat (places.monomialsAt nu).length) j⟩)
 
 /-- The coordinate pool's group at its own content is the identity
 family: every member is kept and the rows are the family's own. -/
 private theorem groupAt_idPool (nu : List Nat) :
     blockcount.groupAt (idPool nu) nu
-      = elim.idList (monomialsAt nu).length := by
+      = elim.idMat (monomialsAt nu).length := by
   have hfil : (idPool nu).filter (fun w => w.content == nu)
       = idPool nu := by
     refine ground.filter_all _ (idPool nu) ?_
@@ -466,13 +467,13 @@ private theorem groupAt_idPool (nu : List Nat) :
   rw [hfil]
   show ((List.range (monomialsAt nu).length).map
       (fun j => (⟨nu, ground.getAt []
-        (elim.idList (monomialsAt nu).length) j⟩
+        (elim.idMat (monomialsAt nu).length) j⟩
         : blockcount.HVec))).map blockcount.HVec.coords = _
   rw [ground.map_map _ blockcount.HVec.coords
     (List.range (monomialsAt nu).length)]
   exact range_map_getAt ([] : List ground.BPair)
-    (monomialsAt nu).length (elim.idList (monomialsAt nu).length)
-    (elim.length_idList _)
+    (monomialsAt nu).length (elim.idMat (monomialsAt nu).length)
+    (elim.length_idMat _)
 
 /-- The coordinate pool's members are sized: the identity family's
 rows read the content enumeration's width. -/
@@ -484,11 +485,11 @@ private theorem idPool_sized (nu : List Nat) :
   | ⟨q, hqm, hq⟩ =>
     rw [← hq]
     show (ground.getAt []
-        (elim.idList (monomialsAt nu).length) q).length
+        (elim.idMat (monomialsAt nu).length) q).length
       = (monomialsAt nu).length
-    exact elim.rowsLen_getAt _ q (elim.rowsLen_idList _)
+    exact elim.rowsLen_getAt _ q (elim.rowsLen_idMat _)
       (by
-        rw [elim.length_idList]
+        rw [elim.length_idMat]
         exact ltOfMemRange hqm)
 
 /-- The power bridge: the pool's count at a content is
@@ -511,27 +512,28 @@ private theorem monPool_bridge (d : Nat) (hd : 0 < d) (k : Nat)
       ?_ ?_
     · intro q hq
       rw [groupAt_idPool (rowList lam)]
-      exact elim.span_of_full _ _ _ (elim.length_idList _)
-        (elim.indepRows_idList _)
+      exact elim.span_of_full _ _ _ (elim.length_idMat _)
+        (elim.indepRows_idMat _)
         (elim.rowsLen_getAt _ q
           (blockcount.rowsLen_groupAt (rowList lam) (monPool d k)
             hpack.1) hq)
     · intro q hq
       rw [groupAt_idPool (rowList lam)] at hq
-      rw [elim.length_idList] at hq
+      rw [elim.length_idMat] at hq
       rw [groupAt_idPool (rowList lam)]
       exact blockcount.span_of_mem
         ((monPool d k).filter (fun w => w.content == rowList lam))
         (rowList lam)
         (⟨rowList lam, ground.getAt []
-          (elim.idList (monomialsAt (rowList lam)).length) q⟩
+          (elim.idMat (monomialsAt (rowList lam)).length) q⟩
           : blockcount.HVec)
         (ground.mem_filter_to _
           (monPool_occ d hd k (rowList lam) hnud hnuk q hq)
           (ground.listEqBeq (rowList lam)))
         (blockcount.rowsLen_groupAt (rowList lam) (monPool d k)
           hpack.1)
-  rw [hstep1]
+  rw [hstep1, blockcount.countAt_collect _ _
+    (by rw [groupAt_idPool (rowList lam)]; exact elim.rowsLen_idMat _)]
   show elim.kernelDim
       (elim.collectOf (monomialsAt (rowList lam)).length
         (blockcount.groupAt (idPool (rowList lam))
@@ -542,9 +544,9 @@ private theorem monPool_bridge (d : Nat) (hd : 0 < d) (k : Nat)
             (rowList lam))))
     = _
   rw [groupAt_idPool (rowList lam),
-    elim.collect_keep _ _ (elim.indepRows_idList _),
-    elim.length_idList,
-    elim.kernelDim_idList (monomialsAt (rowList lam)).length
+    elim.collect_keep _ _ (elim.indepRows_idMat _),
+    elim.length_idMat,
+    elim.kernelDim_idMat (monomialsAt (rowList lam)).length
       (units.stackedRaise (rowList lam))
       (units.rowsLen_stackedRaise (rowList lam))]
   rfl
@@ -1602,12 +1604,8 @@ private theorem countOf_allContents_le : ∀ (d k : Nat) (mu : List Nat),
           a (List.range (k + 1)) hz]
         exact Nat.le_succ 0
       | .inr hpos =>
-        have h1 : ground.countOf a (List.range (k + 1)) = 1 := by
-          rw [ground.countOf_range] at hpos ⊢
-          by_cases ha : a < k + 1
-          · rw [if_pos ha]
-          · rw [if_neg ha] at hpos
-            exact absurd hpos (Nat.lt_irrefl 0)
+        have h1 : ground.countOf a (List.range (k + 1)) = 1 :=
+          ground.countOf_range_one (ground.ltOfCountRange hpos)
         rw [ground.famFold_pick
           (fun j => ground.countOf m (places.allContents d (k - j)))
           a (List.range (k + 1)) h1]
@@ -3010,7 +3008,7 @@ private theorem exhaust_reads (d k : Nat) (hd : 0 < d) :
     match blockcount.seedSpan_prov d (lowerspan.ht t.content) t with
     | ⟨tail, heq, _⟩ =>
       show t ∈ blockcount.blockOf d t
-      rw [show blockcount.blockOf d t = t :: tail from heq]
+      rw [(blockcount.blockOf_eq d t hnu).trans heq]
       exact List.Mem.head tail
   have htJ : t ∈ blockcount.blockJoin d
       (blockcount.exhaust d (monPool d k)) :=
@@ -3068,10 +3066,13 @@ private theorem join_null (d k : Nat) (hd : 0 < d)
       (blockcount.exhaust_top d (monPool d k) hpack.1 hpack.2.1
         hpack.2.2.2 t ht).1
     obtain ⟨hwt, hst, _⟩ := exhaust_reads d k hd t ht
+    have hnut : ¬ poly.unitTail t.coords :=
+      (blockcount.exhaust_top d (monPool d k) hpack.1 hpack.2.1
+        hpack.2.2.2 t ht).2.2.1
     match blockcount.seedSpan_prov d (lowerspan.ht t.content) t with
     | ⟨tail, heq, hprov⟩ =>
       have hyT : y ∈ t :: tail := by
-        rw [show blockcount.blockOf d t = t :: tail from heq] at hyB
+        rw [(blockcount.blockOf_eq d t hnut).trans heq] at hyB
         exact hyB
       have hall := blockcount.prov_all d t tail
         (fun x => (x.content.length = d
@@ -3235,11 +3236,11 @@ private theorem flat_null (d k : Nat) (hd : 0 < d)
   have hentry : (ground.getAt ground.BPair.unit
       (elim.matVec (T mu)
         (ground.getAt []
-          (elim.idList (places.monomialsAt mu).length) q))
+          (elim.idMat (places.monomialsAt mu).length) q))
       p).oneValue ground.BPair.unit := by
     exact poly.getAt_unitTail hnull p
   rw [elim.getAt_matVec (T mu) _ p hp] at hentry
-  have hrow := elim.dotN_idList_entry
+  have hrow := elim.dotN_idMat_entry
     (places.monomialsAt mu).length (ground.getAt [] (T mu) p)
     hplen q hq
   exact ground.BPair.oneValue_trans

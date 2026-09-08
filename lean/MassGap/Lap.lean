@@ -13,14 +13,28 @@ witness transposition at the place reading `j` (`crcTerm` at
 `places.posOf`), and the counting coefficients collected at the
 count's pair, one combination per generator
 (`lapAct`, `lapComb` the linear extension at `con:states`' generic
-extension, `scaleComb` and the concatenation the states' own sum).  The identity instances are
-the check module's pins at the word index — `Δ_U tr U = c_f tr U`,
+extension, `scaleComb` and the concatenation the states' own sum).  The identity instances
+read at the word index — `Δ_U tr U = c_f tr U`,
 the unit the kernel point at `1 = [1 : d_f] tr(U U†)`,
 `Δ_U χ_adj = d_f χ_adj`, and the graded squares
 `d_f Δ_U s + 2s = d_f (d_f + 1) s` at `s = (tr U)² + tr U²` with
 `d_f Δ_U w + (d_f + 2) w = d_f² w` at
 `w = ⟨(tr U)² : tr U²⟩` — all cleared polynomial identities in the
-residue, `rem:kernel`'s combination equality their read.
+residue, `rem:kernel`'s combination equality their read.  The joint
+insertion across a word (`prop:lap`'s clause): at an ordered factor
+pair the generator moved by the word's adjoint coefficient at the
+first factor against the generator at the second, the chain of the
+word, the letter and the dagger word placed at the first factor's
+row (its column with the memberwise swap at a daggered factor), the
+second letter at the second factor, the two letters contracted by
+the Fierz display at the weight one half (`halfP`) to the word
+member and the identity member at the count's cofactor (`states.invDfP`),
+the loops at the count's powers (`dfPow`), each daggered factor a
+swap (`jointAct`); folded over one link's factors against another's
+and extended over a state (`jointComb`): the unit word reads `Δ_W`'s
+own display, and across a loop's boundary arc the base link's
+Laplacian at the link's traversal sign, the joined site
+(`states.padState`) at the evaluation identity (`kernel.evalEqRead`).
 -/
 
 namespace lap
@@ -92,5 +106,44 @@ extension's instance at the plaquette insertion. -/
 def lapComb (F : states.FList) (W : Nat) (c : states.Comb) :
     states.Comb :=
   states.extComb (lapAct F W) c
+
+/-- The polynomial pair one half, the Fierz weight. -/
+def halfP : poly.PPair := ([⟨2, 1⟩], [⟨3, 1⟩])
+
+/-- The count's power as a pair, `wg.dfPow`'s polynomial over the
+unit. -/
+def dfPow (k : Nat) : poly.PPair := (wg.dfPow k, poly.one)
+
+/-- The joint insertion across a word at an ordered factor pair:
+the generator moved by the word's adjoint coefficient at the first
+factor against the generator at the second, the two contracted by
+the Fierz display to the word member and the identity member at
+the count's cofactor, each daggered factor a memberwise swap. -/
+def jointAct (F P : FList) (i j : Nat) (π : List Nat) : Comb :=
+  let n := F.length
+  let m := P.length
+  let L1 := n + 2 * m
+  let L2 := n + 2 * m + 1
+  let π0 := padW (2 * m + 2) π
+  let chain := (List.range m).map (fun s => n + s) ++ [L1]
+    ++ (List.range m).map (fun s => n + m + s)
+  let fi := getAt (0, false) F i
+  let fj := getAt (0, false) F j
+  let π1 := if fi.2 then chainAtCol i chain π0 else chainAtRow i chain π0
+  let π2 := if fj.2 then chainAtCol j [L2] π1 else chainAtRow j [L2] π1
+  let sgn := if fi.2 == fj.2 then poly.pOne else negP
+  let t := fierzT π2
+  let e := fierzI π2
+  [(t.1, poly.pMul halfP (poly.pMul sgn (dfPow t.2))),
+   (e.1, poly.pMul halfP (poly.pMul sgn (poly.pMul negP
+      (poly.pMul states.invDfP (dfPow e.2)))))]
+
+/-- The joint insertion of one link against another across a word,
+folded over the factor pairs, extended over a state. -/
+def jointComb (F P : FList) (l p : Nat) (c : Comb) : Comb :=
+  let is := wg.posIf F (l, false) ++ wg.posIf F (l, true)
+  let js := wg.posIf F (p, false) ++ wg.posIf F (p, true)
+  is.flatMap (fun i => js.flatMap (fun j =>
+    states.extComb (jointAct F P i j) c))
 
 end lap

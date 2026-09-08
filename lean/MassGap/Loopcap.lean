@@ -450,4 +450,228 @@ theorem cutForm (xc mxc : List BPair) (hlen : xc.length = mxc.length)
   rw [BPair.swap_sq]
   exact hsq
 
+
+/-- The coefficient list of a family against a vector, each row's
+pairing. -/
+private def coefs (T : Mat) (w : List BPair) : List BPair :=
+  T.map (fun r => dotP r w)
+
+/-- The scaled coefficient list: the moved vector's coefficients at
+a list perpendicular to the mover read the pair's multiples. -/
+private theorem coefs_scaled (n : Nat) (L : Mat) (x w : List BPair)
+    (κ a : BPair) (hL : rowsLen n L) (hw : w.length = n) (hx : x.length = n)
+    (hxL : ∀ i, i < L.length →
+      (dotP (getAt [] L i) x).oneValue BPair.unit) :
+    BPair.oneValue
+      (dotP (coefs L (vecAdd (vecScale κ w) ((vecScale a x).map BPair.swap)))
+        (coefs L (vecAdd (vecScale κ w) ((vecScale a x).map BPair.swap))))
+      (κ * (κ * dotP (coefs L w) (coefs L w))) := by
+  have hrow : ∀ j, j < L.length →
+      BPair.oneValue (getAt BPair.unit
+        (coefs L (vecAdd (vecScale κ w) ((vecScale a x).map BPair.swap))) j)
+        (getAt BPair.unit (vecScale κ (coefs L w)) j) := by
+    intro j hj
+    have hr : (getAt [] L j).length = n := rowsLen_getAt L j hL hj
+    show BPair.oneValue (getAt BPair.unit
+      (L.map (fun r => dotP r
+        (vecAdd (vecScale κ w) ((vecScale a x).map BPair.swap)))) j)
+      (getAt BPair.unit (vecScale κ (coefs L w)) j)
+    rw [ground.getAt_map ([] : List BPair) BPair.unit _ L j hj]
+    show (dotP (getAt [] L j)
+      (vecAdd (vecScale κ w) ((vecScale a x).map BPair.swap))).oneValue
+      (getAt BPair.unit (vecScale κ (coefs L w)) j)
+    have hv : getAt BPair.unit (vecScale κ (coefs L w)) j
+        = κ * dotP (getAt [] L j) w := by
+      rw [getAt_vecScale κ (coefs L w) j
+          (by show j < (L.map _).length; rw [ground.length_map]; exact hj)]
+      show κ * getAt BPair.unit (L.map (fun r => dotP r w)) j
+        = κ * dotP (getAt [] L j) w
+      rw [ground.getAt_map ([] : List BPair) BPair.unit _ L j hj]
+    rw [hv]
+    refine BPair.oneValue_trans (dotP_vecAdd (getAt [] L j) _ _
+      (by rw [length_vecScale, hw, hr])
+      (by rw [ground.length_map, length_vecScale, hx, hr])) ?_
+    rw [dotP_swapMap]
+    refine BPair.oneValue_trans (BPair.add_congr
+      (dotP_vecScale_right (getAt [] L j) w κ)
+      (swap_congr (BPair.oneValue_trans
+        (dotP_vecScale_right (getAt [] L j) x a)
+        (BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl a) (hxL j hj))
+          (BPair.mul_unit a))))) ?_
+    exact BPair.add_unit _
+  have hlen : (coefs L (vecAdd (vecScale κ w) ((vecScale a x).map BPair.swap))).length
+      = (vecScale κ (coefs L w)).length := by
+    show (L.map _).length = (vecScale κ (L.map _)).length
+    rw [length_vecScale, ground.length_map, ground.length_map]
+  have hlenL : (vecScale κ (coefs L w)).length = L.length := by
+    show (vecScale κ (L.map _)).length = L.length
+    rw [length_vecScale, ground.length_map]
+  have h1 : BPair.oneValue
+      (dotP (coefs L (vecAdd (vecScale κ w) ((vecScale a x).map BPair.swap)))
+        (coefs L (vecAdd (vecScale κ w) ((vecScale a x).map BPair.swap))))
+      (dotP (vecScale κ (coefs L w)) (vecScale κ (coefs L w))) := by
+    refine BPair.oneValue_trans (dotP_congr_left _ _ _ (fun j hj => hrow j (by
+      rw [hlen, hlenL] at hj; exact hj))) ?_
+    rw [dotP_comm (vecScale κ (coefs L w)) _]
+    refine BPair.oneValue_trans (dotP_congr_left _ _ _ (fun j hj => hrow j (by
+      rw [hlenL] at hj; exact hj))) ?_
+    rw [dotP_comm]
+    exact BPair.oneValue_refl _
+  refine BPair.oneValue_trans h1 ?_
+  refine BPair.oneValue_trans (dotP_scaleL κ (coefs L w) (vecScale κ (coefs L w))) ?_
+  exact BPair.mul_congr (BPair.oneValue_refl κ)
+    (dotP_vecScale_right (coefs L w) (coefs L w) κ)
+
+/-- `lem:loopcap`'s gradient deficit as Bessel's read at an
+orthogonal list: at a list `T` of vectors pairwise perpendicular
+with every self-pairing the index `κ`, and a vector `e` perpendicular
+to the list at self-pairing `d`, every vector `w` reads its
+coefficients' square fold against the count and its `e`-pairing's
+square against the index at or below its self-pairing against the
+index and the count — the projection fold's positive gap; at the
+adjoint block `T` is the generators' transposes flattened, `e` the
+identity, `w` the coefficient less the identity, and the reads are
+the gradient square, the deficit's square and twice the deficit. -/
+theorem gradient_deficit (n : Nat) :
+    ∀ (T : Mat) (w e : List BPair) (κ d : BPair),
+    rowsLen n T → w.length = n → e.length = n → perpAll T →
+    (∀ i, i < T.length →
+      (dotP (getAt [] T i) (getAt [] T i)).oneValue κ) →
+    BPair.unit < κ →
+    (∀ i, i < T.length → (dotP (getAt [] T i) e).oneValue BPair.unit) →
+    (dotP e e).oneValue d → BPair.unit < d →
+    dotP (coefs T w) (coefs T w) * d + dotP e w * dotP e w * κ
+      ≤ dotP w w * κ * d
+  | [], w, e, κ, d, _, hw, he, _, _, hκ, _, hd, hdp => by
+    have hcs : ¬ (dotP e e * dotP w w < dotP e w * dotP e w) :=
+      coeff.dotP_sq_le e w (he.trans hw.symm)
+    have h1 : dotP e w * dotP e w ≤ d * dotP w w :=
+      leB_congr_right (BPair.mul_congr_left hd) (leB_of_not_lt hcs)
+    have hb : BPair.unit ≤ d * dotP w w :=
+      leB_congr_left (BPair.mul_unit d)
+        (leB_mulR (Or.inr hdp) (unitLeOfSide (dotP_self_side w)))
+    have h2 : dotP e w * dotP e w * κ ≤ d * dotP w w * κ :=
+      leB_mul_mono (Or.inr hκ) hb h1 (leB_refl κ)
+    have h3 : d * dotP w w * κ = dotP w w * κ * d := by
+      rw [BPair.mul_comm d, BPair.mul_assoc, BPair.mul_comm d κ,
+        ← BPair.mul_assoc]
+    rw [h3] at h2
+    have hL : BPair.oneValue
+        (dotP (coefs [] w) (coefs [] w) * d + dotP e w * dotP e w * κ)
+        (dotP e w * dotP e w * κ) := by
+      show (BPair.unit * d + dotP e w * dotP e w * κ).oneValue _
+      exact BPair.oneValue_trans
+        (BPair.add_congr (BPair.unit_mul d) (BPair.oneValue_refl _))
+        (BPair.unit_add _)
+    exact leB_congr_left (BPair.oneValue_symm hL) h2
+  | x :: L, w, e, κ, d, hT, hw, he, hperp, hself, hκ, heT, hd, hdp => by
+    have hx : x.length = n := hT.1
+    have hL : rowsLen n L := hT.2
+    have hxx : (dotP x x).oneValue κ := hself 0 (Nat.succ_pos _)
+    have hxe : (dotP x e).oneValue BPair.unit := heT 0 (Nat.succ_pos _)
+    have hperpL : perpAll L := perpAll_tail x L hperp
+    have hselfL : ∀ i, i < L.length →
+        (dotP (getAt [] L i) (getAt [] L i)).oneValue κ :=
+      fun i hi => hself (i + 1) (Nat.succ_lt_succ hi)
+    have heTL : ∀ i, i < L.length →
+        (dotP (getAt [] L i) e).oneValue BPair.unit :=
+      fun i hi => heT (i + 1) (Nat.succ_lt_succ hi)
+    have hxL : ∀ i, i < L.length →
+        (dotP (getAt [] L i) x).oneValue BPair.unit :=
+      fun i hi => hperp (i + 1) (Nat.succ_lt_succ hi) 0 (Nat.succ_pos _)
+        (fun h => Nat.noConfusion h)
+    have hw'l : (vecAdd (vecScale κ w)
+        ((vecScale (dotP x w) x).map BPair.swap)).length = n :=
+      length_vecAdd _ _ n (by rw [length_vecScale, hw])
+        (by rw [ground.length_map, length_vecScale, hx])
+    have pairW' : ∀ r : List BPair, r.length = n →
+        BPair.oneValue (dotP r (vecAdd (vecScale κ w)
+            ((vecScale (dotP x w) x).map BPair.swap)))
+          (κ * dotP r w + (dotP x w * dotP r x).swap) := by
+      intro r hr
+      refine BPair.oneValue_trans (dotP_vecAdd r _ _
+        (by rw [length_vecScale, hw, hr])
+        (by rw [ground.length_map, length_vecScale, hx, hr])) ?_
+      rw [dotP_swapMap]
+      exact BPair.add_congr (dotP_vecScale_right r w κ)
+        (swap_congr (dotP_vecScale_right r x (dotP x w)))
+    have hxw' : BPair.oneValue (dotP x (vecAdd (vecScale κ w)
+        ((vecScale (dotP x w) x).map BPair.swap))) BPair.unit := by
+      refine BPair.oneValue_trans (pairW' x hx) ?_
+      refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl _)
+        (swap_congr (BPair.mul_congr (BPair.oneValue_refl (dotP x w)) hxx))) ?_
+      rw [BPair.mul_comm (dotP x w) κ]
+      exact BPair.add_swap_null (κ * dotP x w)
+    have hew' : BPair.oneValue (dotP e (vecAdd (vecScale κ w)
+        ((vecScale (dotP x w) x).map BPair.swap))) (κ * dotP e w) := by
+      refine BPair.oneValue_trans (pairW' e he) ?_
+      rw [dotP_comm e x]
+      refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl _)
+        (swap_congr (BPair.oneValue_trans
+          (BPair.mul_congr (BPair.oneValue_refl _) hxe)
+          (BPair.mul_unit _)))) ?_
+      exact BPair.add_unit _
+    have hww' : BPair.oneValue
+        (dotP (vecAdd (vecScale κ w) ((vecScale (dotP x w) x).map BPair.swap))
+          (vecAdd (vecScale κ w) ((vecScale (dotP x w) x).map BPair.swap)))
+        (κ * (κ * dotP w w + (dotP x w * dotP x w).swap)) := by
+      refine BPair.oneValue_trans (pairW' _ hw'l) ?_
+      rw [dotP_comm (vecAdd (vecScale κ w) ((vecScale (dotP x w) x).map BPair.swap)) x,
+        dotP_comm (vecAdd (vecScale κ w) ((vecScale (dotP x w) x).map BPair.swap)) w]
+      refine BPair.oneValue_trans (BPair.add_congr
+        (BPair.mul_congr (BPair.oneValue_refl κ) (pairW' w hw))
+        (swap_congr (BPair.oneValue_trans
+          (BPair.mul_congr (BPair.oneValue_refl _) hxw') (BPair.mul_unit _)))) ?_
+      rw [dotP_comm w x]
+      exact BPair.add_unit _
+    have hC' := coefs_scaled n L x w κ (dotP x w) hL hw hx hxL
+    have ih := gradient_deficit n L
+      (vecAdd (vecScale κ w) ((vecScale (dotP x w) x).map BPair.swap)) e κ d
+      hL hw'l he hperpL hselfL hκ heTL hd hdp
+    have ih' : κ * (κ * dotP (coefs L w) (coefs L w)) * d
+          + κ * dotP e w * (κ * dotP e w) * κ
+        ≤ κ * (κ * dotP w w + (dotP x w * dotP x w).swap) * κ * d :=
+      leB_congr (BPair.add_congr (BPair.mul_congr_left hC')
+          (BPair.mul_congr_left (BPair.mul_congr hew' hew')))
+        (BPair.mul_congr_left (BPair.mul_congr_left hww')) ih
+    have hm : BPair.unit < κ * κ :=
+      leB_ltB_trans (leB_congr_right (BPair.oneValue_symm (BPair.unit_mul κ))
+        (leB_refl BPair.unit)) (ltB_mulPos hκ hκ)
+    have hadd := leB_add (leB_refl (κ * κ * (dotP x w * dotP x w) * d)) ih'
+    have hlhs : (κ * κ) * ((dotP x w * dotP x w + dotP (coefs L w) (coefs L w)) * d
+          + dotP e w * dotP e w * κ)
+        = κ * κ * (dotP x w * dotP x w) * d
+          + (κ * (κ * dotP (coefs L w) (coefs L w)) * d
+            + κ * dotP e w * (κ * dotP e w) * κ) := by
+      rw [BPair.left_distrib, BPair.right_distrib, BPair.left_distrib,
+        BPair.add_assoc, ← BPair.mul_assoc (κ * κ) (dotP x w * dotP x w) d,
+        ← BPair.mul_assoc (κ * κ) (dotP (coefs L w) (coefs L w)) d,
+        BPair.mul_assoc κ κ (dotP (coefs L w) (coefs L w)),
+        ← BPair.mul_assoc (κ * κ) (dotP e w * dotP e w) κ,
+        BPair.mul_mul_mul_comm κ κ (dotP e w) (dotP e w)]
+    have hrhs : BPair.oneValue
+        (κ * κ * (dotP x w * dotP x w) * d
+          + κ * (κ * dotP w w + (dotP x w * dotP x w).swap) * κ * d)
+        ((κ * κ) * (dotP w w * κ * d)) := by
+      rw [BPair.left_distrib, BPair.right_distrib, BPair.right_distrib,
+        BPair.mul_swap, BPair.swap_mul, BPair.swap_mul,
+        BPair.mul_right_comm κ (dotP x w * dotP x w) κ,
+        BPair.add_left_comm]
+      refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl _)
+        (BPair.add_swap_null _)) ?_
+      refine BPair.oneValue_trans (BPair.add_unit _) ?_
+      rw [← BPair.mul_assoc (κ * κ) (dotP w w * κ) d,
+        ← BPair.mul_assoc (κ * κ) (dotP w w) κ,
+        BPair.mul_assoc κ κ (dotP w w)]
+      exact BPair.oneValue_refl _
+    have hfin : (κ * κ) * ((dotP x w * dotP x w + dotP (coefs L w) (coefs L w)) * d
+          + dotP e w * dotP e w * κ)
+        ≤ (κ * κ) * (dotP w w * κ * d) := by
+      rw [hlhs]
+      exact leB_congr_right hrhs hadd
+    rw [BPair.mul_comm (κ * κ) ((dotP x w * dotP x w + dotP (coefs L w) (coefs L w)) * d
+          + dotP e w * dotP e w * κ),
+      BPair.mul_comm (κ * κ) (dotP w w * κ * d)] at hfin
+    exact leB_unscale hm hfin
+
 end loopcap

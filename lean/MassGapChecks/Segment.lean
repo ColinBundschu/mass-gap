@@ -8,10 +8,8 @@ the site map against their named targets and their displayed values
 (the free end's electric diagonal, the interior pair `[3 : 5]`'s
 site datum, the contact end's balance partner), the homogeneity at
 the factor two decided at the fixture and consumed through
-`pencil_scale`, the literal-equality refusal at the norm-gauge
-boundary (the canonical representative does not commute with the
-rescaling literally, the one-value read the forced spelling), and
-the ray's spectral descent (`ray_count` at `u = 2` over the level
+`pencil_scale`, the rescaled pencil the pencil's rescaling entry by
+entry, and the ray's spectral descent (`ray_count` at `u = 2` over the level
 `⟨20 : 1⟩`, the base count one at its split certificate, the scaled
 certificate decided, the theorem route, and the two refusals — the
 false count at the base fixture and the forged split failing the
@@ -57,22 +55,14 @@ example : matOneValue (siteAt [4, 8] (idMat 2) mF .contact)
     [[u, ⟨1, 2⟩], [⟨1, 2⟩, u]] := by decide +kernel
 
 /-! The homogeneity at the factor two: the pencil at the weights
-`[6 : 10]` reads one value with the `[3 : 5]` pencil rescaled —
+`[6 : 10]` is the `[3 : 5]` pencil rescaled, entry by entry —
 decided at the fixture, then consumed through the theorem. -/
 
-example : matOneValue (pencilH (2 * 3) (2 * 5) [4, 8] (idMat 2) mF)
-    (matScale 2 (pencilH 3 5 [4, 8] (idMat 2) mF)) := by decide +kernel
-example : matOneValue (pencilH (2 * 3) (2 * 5) [4, 8] (idMat 2) mF)
-    (matScale 2 (pencilH 3 5 [4, 8] (idMat 2) mF)) :=
+example : pencilH (2 * 3) (2 * 5) [4, 8] (idMat 2) mF
+    = matScale 2 (pencilH 3 5 [4, 8] (idMat 2) mF) := by decide +kernel
+example : pencilH (2 * 3) (2 * 5) [4, 8] (idMat 2) mF
+    = matScale 2 (pencilH 3 5 [4, 8] (idMat 2) mF) :=
   pencil_scale 2 3 5 [4, 8] (idMat 2) mF
-
-/-! The norm-gauge boundary: the literal equality refuses at the
-fixture — the entry's canonical representative does not commute with
-the rescaling literally — so the one-value read is the homogeneity
-clause's forced spelling. -/
-
-example : ¬ (pencilH (2 * 3) (2 * 5) [4, 8] (idMat 2) mF
-    = matScale 2 (pencilH 3 5 [4, 8] (idMat 2) mF)) := by decide +kernel
 
 /-! The ray's spectral descent at `u = 2` over the level `⟨20 : 1⟩`:
 the base pencil `H ~ diag(12, 24)` with couplings `-5` reads count

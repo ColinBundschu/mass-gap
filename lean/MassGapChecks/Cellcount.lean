@@ -595,7 +595,7 @@ interior point's count refuses, the head's read carrying the same
 isolation as the foot's.
 
 The interior point's split read is its own isolated binder: at the
-honest `[[x - 3]]` boundary data a foreign positive-semidefinite
+stated `[[x - 3]]` boundary data a foreign positive-semidefinite
 split — the root pencil's interior split — refuses the interior
 read while every sibling holds and the conclusion refuses, at the
 foot and at the head alike.  The boundary's own split read carries

@@ -43,7 +43,12 @@ The enumeration's coherence is the count equation
 `countOf_monomialsAt` — the monomial list at a content holds
 exactly the monomials of the content, once each, the count read at
 the degree and the content — with `monomialsAt_distinct` its
-corollary.  The inversion-list word clause is `word_count`, the
+corollary; the enumeration blocks at the head letter
+(`monomialsAt_expand`, the unit content's instance
+`monomialsAt_ones_expand`), and at a stated prefix the arrangements
+opening at a word are the word joined to the withdrawn content's
+arrangements (`withdrawn`, the letters occupied along the
+withdrawal `wordOccupied`, `monomialsAt_prefix`).  The inversion-list word clause is `word_count`, the
 letter count the witness sum `L = c + 2w` at the returning count,
 with the one-pair moves (`inversions_adjSwap_lt`/`_gt`) and the
 grading flip (`parity_adjSwap`) beneath it, each read at the list
@@ -1146,16 +1151,6 @@ theorem rowList_pointAt : ∀ (g n e : Nat),
       = e :: (List.replicate (g + 1) e ++ List.replicate n 0)
     rw [Nat.zero_add, sumNat_pointAt g n e, rowList_pointAt g n e]
 
-/-- The scaled family's total scales with it. -/
-private theorem sumNat_scale (m : Nat) : ∀ l : List Nat,
-    sumNat (l.map (fun n => n * m)) = sumNat l * m
-  | [] => by
-    show (0 : Nat) = 0 * m
-    rw [Nat.zero_mul m]
-  | n :: t => by
-    show n * m + sumNat (t.map (fun n => n * m)) = (n + sumNat t) * m
-    rw [sumNat_scale m t, ground.mulAddR n (sumNat t) m]
-
 /-- The scaled shape's rows are the rows scaled: each row is a
 column total, and the totals scale. -/
 theorem rowList_scale (m : Nat) : ∀ s : Shape,
@@ -1166,7 +1161,14 @@ theorem rowList_scale (m : Nat) : ∀ s : Shape,
     show (n * m + sumNat (t.map (fun n => n * m)))
         :: rowList (t.map (fun n => n * m))
       = (n + sumNat t) * m :: (rowList t).map (fun n => n * m)
-    rw [sumNat_scale m t, ground.mulAddR n (sumNat t) m, rowList_scale m t]
+    have hs : sumNat (t.map (fun n => n * m)) = sumNat t * m := by
+      have h : m * sumNat t = sumNat (t.map (fun n => m * n)) := by
+        have h0 := ground.sumNat_scale m (fun x => x) t
+        rw [ground.map_id t] at h0
+        exact h0
+      rw [ground.map_congr_all (fun n => n * m) (fun n => m * n) (fun n => Nat.mul_comm n m) t,
+        ← h, Nat.mul_comm]
+    rw [hs, ground.mulAddR n (sumNat t) m, rowList_scale m t]
 
 /-- The deepest key's raise lifts every row by one: a full column
 moves each column total by one. -/
@@ -3614,28 +3616,48 @@ private theorem dipAt_replicate_one : ∀ (i e : Nat), i < e + 1 →
     have hsub : e + 1 - (i + 1) = e - i := Nat.succ_sub_succ e i
     rw [dipAt_replicate_one i e (Nat.lt_of_succ_lt_succ h), hsub]
 
+/-- The enumeration blocks at the head letter: at an occupied
+content one block per occupied letter, the letter consed onto the
+withdrawn content's arrangements (`con:places`). -/
+theorem monomialsAt_expand (mu : List Nat) (h : 0 < sumNat mu) :
+    monomialsAt mu
+      = (List.range mu.length).flatMap (fun i =>
+          if 0 < ground.getAt 0 mu i then
+            (monomialsAt (dipAt i mu)).map (fun m => i :: m)
+          else []) := by
+  cases hs : sumNat mu with
+  | zero => exact absurd h (by rw [hs]; exact Nat.lt_irrefl 0)
+  | succ n =>
+    show monGo (sumNat mu) mu = _
+    rw [hs]
+    show (if sumNat mu = 0 then [[]]
+      else (List.range mu.length).flatMap (fun i =>
+        if 0 < ground.getAt 0 mu i then
+          (monGo n (dipAt i mu)).map (fun m => i :: m)
+        else [])) = _
+    rw [if_neg (fun hz : sumNat mu = 0 => Nat.noConfusion (hs.symm.trans hz))]
+    refine ground.flatMap_congr_all _ _ (fun i => ?_) _
+    by_cases hi : 0 < ground.getAt 0 mu i
+    · rw [if_pos hi, if_pos hi]
+      show (monGo n (dipAt i mu)).map (fun m => i :: m)
+        = (monGo (sumNat (dipAt i mu)) (dipAt i mu)).map (fun m => i :: m)
+      rw [show sumNat (dipAt i mu) = n from
+        Nat.succ.inj ((sumNat_dipAt i mu hi).trans hs)]
+    · rw [if_neg hi, if_neg hi]
+
 /-- The unit-content enumeration regroups by its first letter: one
 branch per letter at the dropped key's enumeration, the letter
-consed onto the tail's arrangements. -/
+consed onto the tail's arrangements (`monomialsAt_expand` at the
+unit content). -/
 theorem monomialsAt_ones_expand (e : Nat) :
     monomialsAt (List.replicate (e + 1) 1)
       = (List.range (e + 1)).flatMap (fun j =>
           (monomialsAt (List.replicate j 1
               ++ 0 :: List.replicate (e - j) 1)).map
             (fun t => j :: t)) := by
-  show monGo (sumNat (List.replicate (e + 1) 1))
-      (List.replicate (e + 1) 1) = _
-  rw [show sumNat (List.replicate (e + 1) 1) = e + 1 from
-    sumNat_replicate_one (e + 1)]
-  show (if sumNat (List.replicate (e + 1) 1) = 0 then [[]]
-    else (List.range (List.replicate (e + 1) 1).length).flatMap
-      (fun i =>
-        if 0 < ground.getAt 0 (List.replicate (e + 1) 1) i then
-          (monGo e (dipAt i (List.replicate (e + 1) 1))).map
-            (fun m => i :: m)
-        else [])) = _
-  rw [if_neg (fun hz : sumNat (List.replicate (e + 1) 1) = 0 =>
-      nomatch ((sumNat_replicate_one (e + 1)).symm.trans hz)),
+  rw [monomialsAt_expand _ (by
+      rw [sumNat_replicate_one (e + 1)]
+      exact Nat.succ_pos e),
     show (List.replicate (e + 1) 1).length = e + 1 from
       ground.length_replicate 1 (e + 1),
     flatMap_fold, flatMap_fold]
@@ -3651,13 +3673,6 @@ theorem monomialsAt_ones_expand (e : Nat) :
       rw [ground.getAt_replicate 0 1 (e + 1) i hie]
       exact Nat.succ_pos 0),
     dipAt_replicate_one i e hie]
-  show (monGo e (List.replicate i 1
-      ++ 0 :: List.replicate (e - i) 1)).map (fun m => i :: m)
-    = (monGo (sumNat (List.replicate i 1
-        ++ 0 :: List.replicate (e - i) 1))
-      (List.replicate i 1 ++ 0 :: List.replicate (e - i) 1)).map
-      (fun t => i :: t)
-  rw [ground.sumNat_replicate_strike i e (Nat.le_of_lt_succ hie)]
 
 private theorem dipAt_append_lt {v : List Nat} :
     ∀ (i : Nat) (mu : List Nat), i < mu.length →
@@ -4313,6 +4328,125 @@ theorem monomialsAt_sum_zero (mu : List Nat) (h : sumNat mu = 0) :
   show monGo (sumNat mu) mu = [[]]
   rw [h]
   rfl
+
+/-- The content withdrawn along a word: the occupancy dipped at
+each letter in turn, the withdrawn content of `con:places`'
+blocking. -/
+def withdrawn : List Nat → List Nat → List Nat
+  | [], mu => mu
+  | a :: w, mu => withdrawn w (dipAt a mu)
+
+/-- A word's letters occupied along the withdrawal: each letter
+occupied in the content the earlier letters left. -/
+def wordOccupied : List Nat → List Nat → Bool
+  | [], _ => true
+  | a :: w, mu =>
+    if 0 < ground.getAt 0 mu a then wordOccupied w (dipAt a mu) else false
+
+/-- The enumeration at a stated prefix: the arrangements opening at
+a word are the word joined to the withdrawn content's arrangements,
+one per arrangement in the enumeration's own order, and vacant
+where a letter of the word sits unoccupied along the withdrawal
+(`con:places`' blocking at the head letter, one letter per
+step). -/
+theorem monomialsAt_prefix : ∀ (w mu : List Nat),
+    (monomialsAt mu).filter (fun ls => ls.take w.length == w)
+      = if wordOccupied w mu then
+          (monomialsAt (withdrawn w mu)).map (fun q => w ++ q)
+        else []
+  | [], mu => by
+    rw [ground.filter_all
+      (fun ls : List Nat => ls.take ([] : List Nat).length == []) _
+      (fun x _ => rfl)]
+    show monomialsAt mu = (monomialsAt mu).map (fun q => q)
+    exact (ground.map_id _).symm
+  | a :: w, mu => by
+    cases hs : sumNat mu with
+    | zero =>
+      have hz : ground.getAt 0 mu a = 0 :=
+        Nat.eq_zero_of_le_zero (hs ▸ ground.getAt_le_sumNat mu a)
+      rw [monomialsAt_sum_zero mu hs,
+        ground.filter_cons_false
+          (p := fun ls : List Nat => ls.take (a :: w).length == a :: w) rfl]
+      show ([] : List (List Nat))
+        = if (if 0 < ground.getAt 0 mu a then wordOccupied w (dipAt a mu)
+            else false) = true then _ else []
+      rw [hz, if_neg (Nat.lt_irrefl 0),
+        if_neg (fun h : (false : Bool) = true => Bool.noConfusion h)]
+    | succ n =>
+      rw [monomialsAt_expand mu (by rw [hs]; exact Nat.succ_pos n),
+        ground.filter_flatMap]
+      have hblk : ∀ i,
+          (if 0 < ground.getAt 0 mu i then
+              (monomialsAt (dipAt i mu)).map (fun m => i :: m)
+            else []).filter (fun ls => ls.take (a :: w).length == a :: w)
+          = if i = a then
+              (if 0 < ground.getAt 0 mu a then
+                (if wordOccupied w (dipAt a mu) then
+                  (monomialsAt (withdrawn w (dipAt a mu))).map
+                    (fun q => (a :: w) ++ q)
+                else [])
+              else [])
+            else [] := by
+        intro i
+        by_cases hia : i = a
+        · rw [if_pos hia, hia]
+          by_cases hocc : 0 < ground.getAt 0 mu a
+          · rw [if_pos hocc, if_pos hocc, ground.filter_map,
+              ground.filter_congr _ (fun q : List Nat => q.take w.length == w)
+                (fun q => by
+                  show ((a == a) && (q.take w.length == w))
+                    = (q.take w.length == w)
+                  rw [ground.eqBeqOf rfl, Bool.true_and]),
+              monomialsAt_prefix w (dipAt a mu)]
+            cases hw : wordOccupied w (dipAt a mu) with
+            | true =>
+              rw [if_pos rfl, if_pos rfl, ground.map_map]
+              rfl
+            | false =>
+              rw [if_neg (fun h : (false : Bool) = true => Bool.noConfusion h),
+                if_neg (fun h : (false : Bool) = true => Bool.noConfusion h)]
+              rfl
+          · rw [if_neg hocc, if_neg hocc]
+            rfl
+        · rw [if_neg hia]
+          by_cases hocc : 0 < ground.getAt 0 mu i
+          · rw [if_pos hocc, ground.filter_map,
+              ground.filter_false _ _ (fun q _ => by
+                show ((i == a) && (q.take w.length == w)) = false
+                rw [ground.neBeqOf hia, Bool.false_and])]
+            rfl
+          · rw [if_neg hocc]
+            rfl
+      rw [ground.flatMap_congr_all _ _ hblk]
+      have hlt : ∀ i, i ∈ List.range mu.length → i < mu.length := fun i hi => by
+        have hc := ground.countOf_pos_of_mem hi
+        rw [ground.countOf_range i mu.length] at hc
+        by_cases hil : i < mu.length
+        · exact hil
+        · rw [if_neg hil] at hc
+          exact absurd hc (Nat.lt_irrefl 0)
+      by_cases ha : a < mu.length
+      · rw [ground.flatMap_pick _ a (List.range mu.length)
+            (fun x _ hx => by rw [if_neg hx]) (ground.countOf_range_one ha),
+          if_pos rfl]
+        show _ = if (if 0 < ground.getAt 0 mu a then wordOccupied w (dipAt a mu)
+            else false) = true then
+            (monomialsAt (withdrawn w (dipAt a mu))).map (fun q => (a :: w) ++ q)
+          else []
+        by_cases hocc : 0 < ground.getAt 0 mu a
+        · rw [if_pos hocc, if_pos hocc]
+        · rw [if_neg hocc, if_neg hocc,
+            if_neg (fun h : (false : Bool) = true => Bool.noConfusion h)]
+      · have hz : ground.getAt 0 mu a = 0 :=
+          ground.getAt_over 0 mu a (Nat.le_of_not_lt ha)
+        rw [ground.flatMap_nil _ _ (fun i hi => by
+          rw [if_neg (fun he : i = a => ha (he ▸ hlt i hi))])]
+        show ([] : List (List Nat))
+          = if (if 0 < ground.getAt 0 mu a then wordOccupied w (dipAt a mu)
+              else false) = true then _ else []
+        rw [hz, if_neg (Nat.lt_irrefl 0),
+          if_neg (fun h : (false : Bool) = true => Bool.noConfusion h)]
 
 /-- The arrangement count grows with a further box: at a key inside
 the letter list the raised content enumerates at least as many

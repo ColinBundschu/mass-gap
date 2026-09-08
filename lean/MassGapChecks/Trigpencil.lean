@@ -23,6 +23,11 @@ level pair's site datum over it at the unit chord gram, the symbol
 at `symbolAt`'s display with three refusals, the boundary
 coefficients against the one-variable minors, and the evaluation
 coherence at a stated level point with a forged point refusing.
+The symbol against the gram's determinant is one value at every
+stated list: at a committed order-two level pair and a unit
+congruence of determinant two, the congruent pencil's symbol parts
+from the pencil's own while the cleared pair reads one value, the
+theorem's route beside the decided read.
 -/
 
 open ground elim
@@ -134,3 +139,51 @@ example : trigpencil.gradeBoundRead
     [[[BPair.ofNat 2, BPair.unit, BPair.unit]]] [0] := by decide +kernel
 example : ¬ trigpencil.gradeBoundRead
     [[[BPair.unit, BPair.ofNat 2]]] [0] := by decide +kernel
+
+/-! The symbol against the gram's determinant at a committed level
+pair: the congruent pencil's own determinant parts from the pencil's
+at a congruence of determinant two, the four the congruence's
+square, while the cleared pair reads one value, decided and routed
+through `symbolOf_congr`. -/
+
+private def hM : Mat := [[BPair.ofNat 2, BPair.ofNat 1], [BPair.ofNat 1, BPair.ofNat 3]]
+private def gM : Mat := [[BPair.ofNat 1, BPair.unit], [BPair.unit, BPair.ofNat 2]]
+private def tM : SqMat 2 :=
+  ⟨[[BPair.ofNat 2, BPair.ofNat 1], [BPair.unit, BPair.ofNat 1]], by decide +kernel⟩
+
+example : ¬ poly.oneValue (split.pminor (split.congrZ tM.val (split.zMat hM gM)))
+      (split.charPoly hM gM)
+    ∧ (detL tM.val).oneValue (BPair.ofNat 2)
+    ∧ poly.oneValue
+      (poly.mul [(trigpencil.symbolOf hM gM).2]
+        (split.pminor (split.congrZ tM.val (split.zMat hM gM))))
+      (poly.mul [detL (matMul (transposeM tM.val) (matMul gM tM.val))]
+        (trigpencil.symbolOf hM gM).1) := by decide +kernel
+example : poly.oneValue
+      (poly.mul [(trigpencil.symbolOf hM gM).2]
+        (split.pminor (split.congrZ tM.val (split.zMat hM gM))))
+      (poly.mul [detL (matMul (transposeM tM.val) (matMul gM tM.val))]
+        (trigpencil.symbolOf hM gM).1) :=
+  trigpencil.symbolOf_congr hM gM tM (by decide +kernel) (by decide +kernel)
+
+/-! The symbol's descent read (`symbolD`, `symbolD_eq`): both
+members one value with the symbol's at the level pair, decided and
+through the theorem, and the congruence read decided at the
+descent's members; the two shape binders are the pivot walks'
+frames, refused at their owners. -/
+
+example : poly.oneValue (trigpencil.symbolD hM gM).1
+      (trigpencil.symbolOf hM gM).1
+    ∧ (trigpencil.symbolD hM gM).2.oneValue
+      (trigpencil.symbolOf hM gM).2 := by decide +kernel
+example : poly.oneValue (trigpencil.symbolD hM gM).1
+      (trigpencil.symbolOf hM gM).1
+    ∧ (trigpencil.symbolD hM gM).2.oneValue
+      (trigpencil.symbolOf hM gM).2 :=
+  trigpencil.symbolD_eq hM gM (by decide +kernel) (by decide +kernel)
+example : poly.oneValue
+      (poly.mul [(trigpencil.symbolD hM gM).2]
+        (split.pminor (split.congrZ tM.val (split.zMat hM gM))))
+      (poly.mul [detL (matMul (transposeM tM.val) (matMul gM tM.val))]
+        (trigpencil.symbolD hM gM).1) := by decide +kernel
+

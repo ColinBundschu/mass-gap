@@ -259,8 +259,60 @@ lower-side block — the cap's scale load-bearing. -/
 
 private def capForge : elim.Mat := [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨1, 2⟩]]
 private def spForge : inertia.Split 2 :=
-  ⟨⟨inertia.idMat 2, rfl⟩, ⟨inertia.idMat 2, rfl⟩,
+  ⟨⟨elim.idMat 2, rfl⟩, ⟨elim.idMat 2, rfl⟩,
    [.one ⟨2, 1⟩, .one ⟨1, 2⟩], 0, rfl⟩
 
 example : inertia.splitRead capForge spForge := by decide +kernel
 example : inertia.revAt spForge = 1 := by decide +kernel
+
+/-! `con:coeff`'s joined square at a two-by-two instance: the
+generator `xA`, antisymmetric at its swap, joined to the symmetric
+multiplier `gS` squares to `[[8, 18], [18, 41]]`, and the display's
+members read the one value, `xA^T xA` the identity, `gS gS`
+`[[13, 21], [21, 34]]`, the swapped product `[[-3, -5], [2, 3]]`
+and `gS xA` `[[-3, 2], [-5, 3]]`; the theorem route passes at the
+two symmetry reads.  The multiplier's symmetry is load-bearing:
+at the asymmetric `gAs` the joined square reads `[[4, 8], [8, 41]]`
+against the display's `[[4, 18], [4, 33]]`, refused. -/
+
+private def xA : Mat := [[BPair.unit, ⟨2, 1⟩], [⟨1, 2⟩, BPair.unit]]
+
+private def gS : Mat := [[⟨3, 1⟩, ⟨4, 1⟩], [⟨4, 1⟩, ⟨6, 1⟩]]
+
+private def gAs : Mat := [[⟨3, 1⟩, ⟨4, 1⟩], [⟨2, 1⟩, ⟨6, 1⟩]]
+
+private def jsqX (X G : Mat) : Mat :=
+  matMul (transposeM (matAdd X G)) (matAdd X G)
+
+private def jdispX (X G : Mat) : Mat :=
+  matAdd (matAdd (matMul (transposeM X) X) (matMul G G))
+    (matAdd (matSwap (matMul X G)) (matMul G X))
+
+private def jsq (G : Mat) : Mat := jsqX xA G
+
+private def jdisp (G : Mat) : Mat := jdispX xA G
+
+/-- The generator off its transpose's swap: `[[0, 2], [1, 0]]`. -/
+private def xB : Mat := [[BPair.unit, ⟨3, 1⟩], [⟨2, 1⟩, BPair.unit]]
+
+example : matOneValue (jsq gS) [[⟨9, 1⟩, ⟨19, 1⟩], [⟨19, 1⟩, ⟨42, 1⟩]] := by
+  decide +kernel
+example : matOneValue (jdisp gS) [[⟨9, 1⟩, ⟨19, 1⟩], [⟨19, 1⟩, ⟨42, 1⟩]] := by
+  decide +kernel
+example : matOneValue (jsq gS) (jdisp gS) :=
+  joined_sq 2 xA gS (by decide) (by decide) (by decide)
+    (by decide +kernel) (by decide +kernel)
+example : matOneValue (jsq gS) (jdisp gS) := by decide +kernel
+example : ¬ matOneValue (transposeM gAs) gAs := by decide +kernel
+example : matOneValue (jsq gAs) [[⟨5, 1⟩, ⟨9, 1⟩], [⟨9, 1⟩, ⟨42, 1⟩]] := by
+  decide +kernel
+example : matOneValue (jdisp gAs) [[⟨5, 1⟩, ⟨19, 1⟩], [⟨5, 1⟩, ⟨34, 1⟩]] := by
+  decide +kernel
+example : ¬ matOneValue (jsq gAs) (jdisp gAs) := by decide +kernel
+
+/-! The generator's transpose read is load-bearing: at `xB`, whose
+transpose is off its swap, the joined square reads against the
+display, refused. -/
+
+example : ¬ matOneValue (transposeM xB) (matSwap xB) := by decide +kernel
+example : ¬ matOneValue (jsqX xB gS) (jdispX xB gS) := by decide +kernel

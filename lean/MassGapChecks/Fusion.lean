@@ -114,6 +114,8 @@ example : (((dataA 3).below 18).all (fun l =>
     if casPos (dataA 3) l then true else false)) = true := by decide +kernel
 example : belowSound (dataA 2) 8 := by decide +kernel
 example : belowSound (dataA 3) 18 := by decide +kernel
+example : belowSound (dataA 6) 35 ∧ ((dataA 6).below 35).length = 2 := by
+  decide +kernel
 example : (dataA 2).below 3 = [[1, 0]] := by decide +kernel
 example : (dataA 2).below 8 = [[1, 0], [2, 0]] := by decide +kernel
 example : (dataA 3).below 18

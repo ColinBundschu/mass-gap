@@ -2,6 +2,7 @@ import MassGap.Fiber
 import MassGap.Adjchar
 import MassGap.Xfusion
 import MassGap.Carrier
+import MassGap.Memberdata
 /-!
 The check module for `con:fiber`: the batteries re-read the fiber's
 pairing by kernel `decide` at the presentation's own values —
@@ -114,15 +115,17 @@ the three-end adjoint vertex over three letters at both
 orientations and at the two-end symbolic reads. -/
 
 example : (vertListSym 3 [(th 3, true), (th 3, true), (th 3, false)]).members.gram
-      = slotpower.gramOf
+      = slotpower.gramT (memtable.lettersT 3)
         (vertListSym 3 [(th 3, true), (th 3, true), (th 3, false)]).members.list
     ∧ (vertListSym 3 [(th 3, true), (th 3, false), (th 3, false)]).members.gram
-      = slotpower.gramOf
+      = slotpower.gramT (memtable.lettersT 3)
         (vertListSym 3 [(th 3, true), (th 3, false), (th 3, false)]).members.list
     ∧ (vertListSym 2 [(th 2, true), (th 2, false)]).members.gram
-      = slotpower.gramOf (vertListSym 2 [(th 2, true), (th 2, false)]).members.list
+      = slotpower.gramT (memtable.lettersT 2)
+        (vertListSym 2 [(th 2, true), (th 2, false)]).members.list
     ∧ (vertListSym 3 [(fd 3, true), (fd 3, false)]).members.gram
-      = slotpower.gramOf (vertListSym 3 [(fd 3, true), (fd 3, false)]).members.list := by
+      = slotpower.gramT (memtable.lettersT 3)
+        (vertListSym 3 [(fd 3, true), (fd 3, false)]).members.list := by
   decide +kernel
 
 /-! The direct route's scale at two ends beside the coevaluation's:
@@ -161,7 +164,7 @@ private def eigenRead (d : Nat) (es : List (Shape × Bool)) : Bool :=
   (places.perms k).all (fun σ =>
     let v := projVertex d es [(σ, BPair.ofNat 1)]
     ends.all (fun e =>
-      vOneValue (linkCasC d e.1 e.2 v)
+      slotpower.oneValueV (linkCasC d e.1 e.2 v)
         (v.map (fun t => (t.1, t.2 * BPair.ofNat (c2hat.dfQ (th d)))))))
 
 example : eigenRead 3 [(th 3, true), (th 3, true), (th 3, false)] = true
@@ -245,7 +248,7 @@ private def casTie (d k : Nat) (F : FList) (W : Nat) (rs cs : List Nat)
   let l := fiber.linkCasC d rs cs [(σ, BPair.ofNat 1)]
   let a := actAtRes d k F W σ
   ((l ++ a.map (fun e => (e.1, BPair.unit))).map Prod.fst).all (fun w =>
-    let x := fiber.coefAt w l
+    let x := slotpower.coefAt w l
     let y := a.foldl (fun acc e => if e.1 == w then acc + e.2 else acc)
       (⟨BPair.unit, Pos.one⟩ : CPair)
     ((⟨BPair.ofNat (2 * d), Pos.one⟩ : CPair) * y).oneValue ⟨x, Pos.one⟩)
@@ -294,3 +297,108 @@ example : (coevW [[BPair.ofNat 4, BPair.ofNat 2], [BPair.ofNat 2, BPair.ofNat 4]
         (elim.matMul [[BPair.ofNat 4, BPair.ofNat 2], [BPair.ofNat 2, BPair.ofNat 4]]
           (coevW [[BPair.ofNat 4, BPair.ofNat 2], [BPair.ofNat 2, BPair.ofNat 4]]).1)
         [[BPair.ofNat 12, BPair.unit], [BPair.unit, BPair.ofNat 12]] := by decide +kernel
+
+/-! The presentation field at a member (`con:memtable`; `presT`):
+`B_2`'s generating table, the defining table joined to the spinor's
+at nine keys, the reach list the vector and the spinor among the
+keys, `θ = 2ω_2` the spinor's top squared in degree two, the
+fundamentals' involution the identity. The vertex lists: the
+two-end reads at opposite orientations the through pairing's
+projections at the blocks' counts, the spinor against its dual at
+four, the vector at five and the adjoint at ten; at one
+orientation the dual pair's tensor projected, the counts again at
+either orientation, and the vacant list at two labels off the dual
+pair; the three-end spinor pair against the vector one member
+(`N^v_{ss} = 1`) at the kernel's weighted read twenty (the paired
+keys' weight two against the null key's one), refused at the
+identity weight; the untouched vertex the scalar one and a one-end
+vertex vacant; the boundary factor's word `(2, 0)` with its
+coevaluation at twenty-eight monomials; the link list at the
+spinor's boundary link one member and the spinor's own link the
+block's count; the reach read's tops at their degrees with the
+blocks' counts at `B_2`, `B_3`, `C_3`, `D_4` and `G_2`; and the
+dual coherence, the dual pair carrying each fundamental's block
+onto its dual's, at `B_2`, `C_3`, `D_4` and `D_5`'s spinor pair. -/
+
+private def presB2 : Pres (List Nat) :=
+  presT (memtable.genB 2) (fusion.reachB 2) (fun i => i) [0, 2]
+
+private def vlAt (es : List (List Nat × Bool)) : Option (Nat × elim.Mat × Pos) :=
+  (presB2.vertList es).map (fun l => (l.members.list.length, listGram l))
+
+example : vlAt [([0, 1], true), ([0, 1], false)] = some (1, [[BPair.ofNat 4]], Pos.one) := by
+  decide +kernel
+example : vlAt [([1, 0], true), ([1, 0], false)] = some (1, [[BPair.ofNat 5]], Pos.one) := by
+  decide +kernel
+example : vlAt [([0, 1], true), ([0, 1], true), ([1, 0], false)]
+    = some (1, [[BPair.ofNat 20]], Pos.one) := by decide +kernel
+example : vlAt [([0, 2], true), ([0, 2], false)] = some (1, [[BPair.ofNat 10]], Pos.one) := by
+  decide +kernel
+example : vlAt [([1, 0], true), ([1, 0], true)] = some (1, [[BPair.ofNat 5]], Pos.one) := by
+  decide +kernel
+example : vlAt [([0, 1], true), ([0, 1], true)] = some (1, [[BPair.ofNat 4]], Pos.one) := by
+  decide +kernel
+example : vlAt [([0, 1], false), ([0, 1], false)] = some (1, [[BPair.ofNat 4]], Pos.one) := by
+  decide +kernel
+example : vlAt [([0, 2], true), ([0, 2], true)] = some (1, [[BPair.ofNat 10]], Pos.one) := by
+  decide +kernel
+example : vlAt [([1, 0], true), ([0, 1], true)] = some (0, [], Pos.one)
+    ∧ vlAt [([1, 0], true), ([0, 1], false)] = some (0, [], Pos.one) := by decide +kernel
+example : vlAt [] = some (1, [[BPair.ofNat 1]], Pos.one)
+    ∧ vlAt [([0, 1], true)] = some (0, [], Pos.one)
+    ∧ presB2.bdryWord = (2, 0)
+    ∧ presB2.lessUnit = false
+    ∧ (presB2.vertList []).map (fun l => l.members.letters) = some 9 := by decide +kernel
+example : presB2.bdry.1.length = 28 := by decide +kernel
+example : (presB2.linkList ([0, 1], some true, [0, 1])).1.length = 1
+    ∧ (presB2.linkList ([0, 1], none, [0, 1])).2 = [[BPair.ofNat 4]] := by decide +kernel
+
+/-- The `B_2` table at the identity in place of its dual pair, the
+one-orientation read parting from the block's count. -/
+private def presB2ident : Pres (List Nat) :=
+  presT { memtable.genB 2 with dual := some (memtable.unitWt 9, Pos.one) }
+    (fusion.reachB 2) (fun i => i) [0, 2]
+
+example : ¬ ((presB2ident.vertList [([1, 0], true), ([1, 0], true)]).map
+    (fun l => listGram l) = some ([[BPair.ofNat 5]], Pos.one)) := by decide +kernel
+
+/-- The `B_2` table at the identity weight, the three-end Gram
+parting from the weighted read. -/
+private def presB2unit : Pres (List Nat) :=
+  presT { memtable.genB 2 with wt := memtable.unitWt 9, wtInv := memtable.unitWt 9, wtDet := 1 }
+    (fusion.reachB 2) (fun i => i) [0, 2]
+
+example : (presB2unit.vertList [([0, 1], true), ([0, 1], true), ([1, 0], false)]).map
+    (fun l => listGram l) = some ([[BPair.ofNat 12]], Pos.one) := by decide +kernel
+
+/-! The reach read's tops with their degrees, and the blocks'
+counts at the fundamentals and at `θ`. -/
+
+private def topsB2 := fundTops (memtable.genB 2) (fusion.reachB 2)
+private def topsB3 := fundTops (memtable.genB 3) (fusion.reachB 3)
+private def topsC3 := fundTops (memtable.definingC 3) (fusion.reachC 3)
+private def topsD4 := fundTops (memtable.genD 4) (fusion.reachD 4)
+private def topsG2 := fundTops memtable.genG2 [none, some (0, 0)]
+
+example : topsB2.map (fun t => t.map Prod.snd) = [some 1, some 1]
+    ∧ topsB3.map (fun t => t.map Prod.snd) = [some 1, some 2, some 1]
+    ∧ topsC3.map (fun t => t.map Prod.snd) = [some 1, some 2, some 3]
+    ∧ topsD4.map (fun t => t.map Prod.snd) = [some 1, some 2, some 1, some 1]
+    ∧ topsG2.map (fun t => t.map Prod.snd) = [some 1, some 2] := by decide +kernel
+example : (blockAt (memtable.genB 2) topsB2 [1, 0]).length = 5
+    ∧ (blockAt (memtable.genB 2) topsB2 [0, 1]).length = 4
+    ∧ (blockAt (memtable.genB 2) topsB2 [0, 2]).length = 10 := by decide +kernel
+example : (blockAt (memtable.genB 3) topsB3 [0, 1, 0]).length = 21
+    ∧ (blockAt (memtable.definingC 3) topsC3 [0, 0, 1]).length = 14
+    ∧ (blockAt (memtable.genD 4) topsD4 [0, 1, 0, 0]).length = 28
+    ∧ (blockAt memtable.genG2 topsG2 [0, 1]).length = 14 := by decide +kernel
+
+example : dualCoherent (memtable.genB 2) topsB2 (fun i => i) [1, 0] = true
+    ∧ dualCoherent (memtable.genB 2) topsB2 (fun i => i) [0, 1] = true
+    ∧ dualCoherent (memtable.genB 2) topsB2 (fun i => i) [0, 2] = true
+    ∧ dualCoherent (memtable.definingC 3) topsC3 (fun i => i) [0, 1, 0] = true
+    ∧ dualCoherent (memtable.genD 4) topsD4 (fun i => i) [0, 0, 1, 0] = true := by
+  decide +kernel
+example : dualCoherent (memtable.genD 5) (fundTops (memtable.genD 5) (fusion.reachD 5))
+    (fun i => if i == 3 then 4 else if i == 4 then 3 else i) [0, 0, 0, 1, 0] = true := by
+  decide +kernel

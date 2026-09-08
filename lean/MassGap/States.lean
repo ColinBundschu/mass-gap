@@ -23,7 +23,26 @@ at the pairs' product — and a state's coefficient at a wiring is
 the literal key's fold over the combination (`coeffAtW`, the
 generator basis's read).  An action's linear extension over a state
 is the per-generator images at the coefficients' products
-(`extComb`, the insertion reads' shared carrier).
+(`extComb`, the insertion reads' shared carrier).  The wiring
+surgery the generator insertions read: a word's dagger read
+(`daggerW`), fresh positions padded at the tail (`padW`), a chain of
+positions placed at a factor's row or after its column
+(`chainAtRow`, `chainAtCol`), the last position contracted through
+with a self-wired position a loop at the count (`contractLast`), and
+two letters at the last two positions contracted by the Fierz
+display, the transposition member at the letters' columns exchanged
+and the identity member outright (`fierzT`, `fierzI`).  The unit at
+a word's factors, the word's evaluation loops at the count's
+cofactor each, joins a state to the site with the word and its
+dagger read (`padState`, `invDfP`).  The evaluation contraction
+(`con:states`' clause): the contractible pairs (`evalPairs`), one
+contraction at the first pair with the further positions moved down
+(`evalStep`, `delPos`), the contractions at every factor to closure
+with the loops counted (`contractAll`), the residual read at the
+site's positions along the relabeling (`relabelTo`, `residualKey`),
+and a state's normal form, the entries at their residual keys with
+the loops at the coefficients (`normalOf`, `keysOf`, `atKey`,
+`siteOf`).
 -/
 
 namespace states
@@ -433,5 +452,173 @@ theorem permAt_swapW (n a b : Nat) :
           ground.countOf_range (e + a) a,
           if_neg (fun hc => absurd (Nat.lt_of_le_of_lt
             (Nat.le_add_left a e) hc) (Nat.lt_irrefl a))]
+
+/-- A factor list's dagger read: the reversed list at the dagger reads
+flipped, the word `P̄` of a word `P`. -/
+def daggerW (P : FList) : FList := (P.reverse).map (fun f => (f.1, !f.2))
+
+/-- The wiring with `t` fresh positions appended at the tail, each
+wired to itself until placed. -/
+def padW (t : Nat) (π : List Nat) : List Nat :=
+  π ++ (List.range t).map (fun s => π.length + s)
+
+/-- A chain of positions `c` placed between `π(k)` and `k` in order:
+the first's row against `π(k)`'s column, each further's row against
+the prior's column, and `k`'s row against the last's column. -/
+def chainAtRow (k : Nat) (c : List Nat) (π : List Nat) : List Nat :=
+  match c with
+  | [] => π
+  | c0 :: cs =>
+    let π1 := π.set c0 (getAt 0 π k)
+    let π2 := (List.range cs.length).foldl (fun acc s =>
+      acc.set (getAt 0 cs s) (getAt 0 (c0 :: cs) s)) π1
+    π2.set k (getAt 0 (c0 :: cs) cs.length)
+
+/-- A chain placed after `k`: the first's row against `k`'s column,
+each further's row against the prior's column, and the factor whose
+row met `k`'s column now meets the last's. -/
+def chainAtCol (k : Nat) (c : List Nat) (π : List Nat) : List Nat :=
+  match c with
+  | [] => π
+  | c0 :: cs =>
+    let x := places.posOf k π
+    let π1 := π.set c0 k
+    let π2 := (List.range cs.length).foldl (fun acc s =>
+      acc.set (getAt 0 cs s) (getAt 0 (c0 :: cs) s)) π1
+    π2.set x (getAt 0 (c0 :: cs) cs.length)
+
+/-- The last position contracted through: the factor whose row met
+its column now meets the column its row met; a position wired to
+itself is a loop, the count read. -/
+def contractLast (π : List Nat) : List Nat × Nat :=
+  match π.length with
+  | 0 => ([], 0)
+  | n + 1 =>
+    let L := n
+    let out := getAt 0 π L
+    let x := places.posOf L π
+    if x == L then (π.take n, 1) else ((π.set x out).take n, 0)
+
+/-- Two letters at the last two positions contracted by the Fierz
+display: the transposition member exchanges the letters' columns
+before contracting both, the identity member contracts them
+outright; each returns the wiring with its loop count. -/
+def fierzT (π : List Nat) : List Nat × Nat :=
+  match π.length with
+  | 0 => ([], 0)
+  | 1 => ([], 0)
+  | n + 2 =>
+    let a := getAt 0 π n
+    let b := getAt 0 π (n + 1)
+    let π' := (π.set n b).set (n + 1) a
+    let r1 := contractLast π'
+    let r2 := contractLast r1.1
+    (r2.1, r1.2 + r2.2)
+
+def fierzI (π : List Nat) : List Nat × Nat :=
+  let r1 := contractLast π
+  let r2 := contractLast r1.1
+  (r2.1, r1.2 + r2.2)
+
+/-- One evaluation contraction: an undaggered and a daggered factor
+of one link wired at the product withdraw, the wiring spliced
+across the pair, the positions beyond them moved down. -/
+def delPos (p : Nat) (π : List Nat) : List Nat :=
+  (π.eraseIdx p).map (fun v => if p < v then v - 1 else v)
+
+/-- The count's cofactor `[1 : d_f]`, the loop value's own. -/
+def invDfP : poly.PPair := ([⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩])
+
+/-- The unit at a word's factors: a state on the site joined to the
+word and its dagger read, each word factor wired in a two-cycle with
+its own dagger copy, the loops at the count's cofactor each. -/
+def padState (F P : FList) (c : Comb) : Comb :=
+  let n := F.length
+  let m := P.length
+  let loops := (List.range m).map (fun s => n + m + m - 1 - s)
+    ++ (List.range m).map (fun s => n + m - 1 - s)
+  c.map (fun e => (e.1 ++ loops,
+    (List.range m).foldl (fun acc _ => poly.pMul acc invDfP) e.2))
+
+/-- The contractible pairs: an undaggered and a daggered factor of
+one link wired at the product, read at the wiring's edges, one
+candidate per position (its row against the column it meets). -/
+def evalPairs (F : FList) (π : List Nat) : List (Nat × Nat) :=
+  (List.range F.length).flatMap (fun a =>
+    let b := getAt 0 π a
+    let fa := getAt (0, false) F a
+    let fb := getAt (0, false) F b
+    if fa.1 == fb.1 && fa.2 != fb.2 then
+      (if fa.2 == false then [(a, b)] else [(b, a)])
+    else [])
+
+/-- One evaluation contraction at the first contractible pair: the
+factor whose row met the second's column now meets the column the
+first's row met, a pair closing on itself a loop at the count, the
+two positions withdrawn with the further positions moved down. -/
+def evalStep (F : FList) (π : List Nat) : FList × List Nat × Nat :=
+  match evalPairs F π with
+  | [] => (F, π, 0)
+  | (u, v) :: _ =>
+    let fs := if getAt 0 π v == u then (u, v) else (v, u)
+    let x := places.posOf fs.2 π
+    let loop := if x == fs.1 then 1 else 0
+    let π1 := π.set x (getAt 0 π fs.1)
+    let hi := if u < v then v else u
+    let lo := if u < v then u else v
+    ((F.eraseIdx hi).eraseIdx lo, delPos lo (delPos hi π1), loop)
+
+def evalAllGo : Nat → FList → List Nat → Nat → FList × List Nat × Nat
+  | 0, F, π, k => (F, π, k)
+  | fuel + 1, F, π, k =>
+    let r := evalStep F π
+    if r.2.1.length == π.length then (F, π, k)
+    else evalAllGo fuel r.1 r.2.1 (k + r.2.2)
+
+/-- The evaluation contractions at every factor iterated to closure,
+the loops counted. -/
+def contractAll (F : FList) (π : List Nat) : FList × List Nat × Nat :=
+  evalAllGo F.length F π 0
+
+/-- A factor list's positions read at a further list's, each factor
+at the first unmatched position of its own reads. -/
+def relabelGo (F : FList) : List Nat → FList → List Nat → List Nat
+  | _, [], acc => acc
+  | used, f :: G, acc =>
+    let p := ((List.range F.length).filter (fun q =>
+      getAt (0, false) F q == f && countOf q used == 0)).headD F.length
+    relabelGo F (p :: used) G (acc ++ [p])
+
+def relabelTo (F G : FList) : List Nat := relabelGo F [] G []
+
+/-- A residual wiring read at the site's positions: the residual's
+factors relabeled to the site's first unmatched positions, the
+key their sorted list and the wiring in the key's rank coordinates. -/
+def residualKey (F G : FList) (π : List Nat) : List Nat × List Nat :=
+  let r := relabelTo F G
+  let key := (List.range F.length).filter (fun p => 0 < ground.countOf p r)
+  (key, (List.range G.length).map (fun q =>
+    let g := places.posOf (getAt 0 key q) r
+    places.posOf (getAt 0 r (getAt 0 π g)) key))
+
+/-- A state's entries at their residual keys after every evaluation
+contraction, the loops at the coefficient. -/
+def normalOf (F : FList) (c : Comb) : List (List Nat × (List Nat × poly.PPair)) :=
+  c.map (fun e =>
+    let r := contractAll F e.1
+    let k := residualKey F r.1 r.2.1
+    (k.1, (k.2, poly.pMul e.2 ((List.range r.2.2).foldl (fun acc _ =>
+      poly.pMul acc ([⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩])) poly.pOne))))
+
+/-- The residual keys occupied by a state. -/
+def keysOf (l : List (List Nat × (List Nat × poly.PPair))) : List (List Nat) :=
+  l.foldl (fun acc e => if acc.any (fun k => k == e.1) then acc else acc ++ [e.1]) []
+
+/-- The sub-state at one residual key. -/
+def atKey (l : List (List Nat × (List Nat × poly.PPair))) (k : List Nat) : Comb :=
+  (l.filter (fun e => e.1 == k)).map (fun e => e.2)
+
+/-- The site's factors at a residual key. -/
+def siteOf (F : FList) (k : List Nat) : FList := k.map (fun p => getAt (0, false) F p)
 
 end states

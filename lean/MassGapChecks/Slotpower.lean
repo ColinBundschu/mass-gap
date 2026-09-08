@@ -14,20 +14,20 @@ at the blocks' counts against the closure at the standard action
 on the daggered slot reading below the count, the block's raising
 kernel one line, the unit weight at the tensors of a block against
 its dual and its refusal at unmatched weights with the fused span
-at the unit weight throughout, the graded vector at a stated
-monomial family and the primitive representative's scale
-invariance, the unit's action at one slot folding to the carrier's
-action at the occupied moves, the wiring tensors pairing at the
-cycle count and at `lem:mixedinv`'s flat forms, and the through
-pairing's projection at the block's count at the wiring and at the
-star, the star's raw self-pairing at the factorial's multiple of
-the count, the projection's soundness at every pool member, the
-fused span's groups at the ends' weight lists with the projection
-group by group one value with the whole span's and its refusals at
-a forged grouping, the cycle-count Gram one value with the wiring
-tensors' pairings, and the tensor at the target's enumeration one
-value with the scattered fold and parting at unequal letter
-counts. -/
+at the unit weight throughout, the collection at a stated
+monomial family with the unit entries withdrawn and the primitive
+representative's scale invariance, the table's action at one slot
+one value with the carrier's action at the occupied moves, the
+wiring tensors pairing at the cycle count and at `lem:mixedinv`'s
+flat forms, and the through pairing's projection at the block's
+count at the wiring and at the star, the star's raw self-pairing
+at the factorial's multiple of the count, the projection's
+soundness at every pool member, the fused span's groups at the
+ends' weight lists with the projection group by group one value
+with the whole span's and its refusals at a forged grouping, the
+cycle-count Gram one value with the wiring tensors' pairings, and
+the tensor at the target's enumeration one value with the
+scattered fold and parting at unequal letter counts. -/
 set_option maxHeartbeats 4000000
 
 open ground places slotpower
@@ -35,6 +35,7 @@ open ground places slotpower
 private def th (d : Nat) : Shape := adjchar.theta d
 private def fd (d : Nat) : Shape := ground.bumpAt 0 (labels.unitL d)
 private def fdb (d : Nat) : Shape := labels.dualL (fd d)
+private def tabL (d : Nat) : memtable.Table := memtable.lettersT d
 
 example : wordPair 2 (th 2) = (2, 0) ∧ wordPair 3 (th 3) = (1, 1)
     ∧ wordPair 4 (th 4) = (1, 1) ∧ wordPair 4 (fd 4) = (1, 0)
@@ -89,9 +90,22 @@ example : blockcount.tensorS (blockcount.wedge 4 2) (blockcount.wedge 4 2)
 example : blockcount.tensorS v1 tall ≠ blockcount.tensorH v1 tall := by
   decide +kernel
 
+/-! The sparse tensor is the dense tensor's occupied family: at two
+wedges over four letters and at a wedge against the dual wedge
+over three, `tensorV` at the exhibits' occupied monomials one value
+with `blockcount.tensorS`'s. -/
+
+example : oneValueV (tensorV (ofH (blockcount.wedge 4 2)) (ofH (blockcount.wedge 4 2)))
+      (ofH (blockcount.tensorS (blockcount.wedge 4 2) (blockcount.wedge 4 2))) = true
+    ∧ oneValueV (tensorV (ofH (blockcount.wedge 3 1)) (ofH (dualWedge 3 2)))
+      (ofH (blockcount.tensorS (blockcount.wedge 3 1) (dualWedge 3 2))) = true
+    ∧ oneValueV (tensorV (ofH v1) (ofH w1)) (ofH (blockcount.tensorS v1 w1)) = true := by
+  decide +kernel
+
 /-! The weight at two contents, the unit-weight read at canonical
-and non-canonical representatives with its refusal, and the
-projection's reduced representative at a shared count over
+and non-canonical representatives with its refusal, the collection
+at a stated monomial family with the unit entries withdrawn, and
+the projection's reduced representative at a shared count over
 negative and non-canonical coordinates, the all-unit vector
 collapsing the clearing to one. -/
 
@@ -100,12 +114,15 @@ example : weightAt [2, 0, 1] [1, 1, 0]
     ∧ unitWeightAt [BPair.ofNat 2, ⟨3, 1⟩, ⟨5, 3⟩] = true
     ∧ unitWeightAt [BPair.ofNat 2, ⟨3, 1⟩, ⟨5, 4⟩] = false
     ∧ unitWeightAt [] = true
-    ∧ reducePr ([⟨[1, 0], [⟨1, 7⟩, ⟨5, 1⟩]⟩], (4 : Pos))
-      = ([⟨[1, 0], [⟨1, 4⟩, ⟨3, 1⟩]⟩], (2 : Pos))
-    ∧ reducePr ([⟨[1, 0], [⟨3, 9⟩, BPair.unit]⟩], (9 : Pos))
-      = ([⟨[1, 0], [⟨1, 3⟩, BPair.unit]⟩], (3 : Pos))
-    ∧ reducePr ([⟨[1, 0], [BPair.unit, BPair.unit]⟩], (6 : Pos))
-      = ([⟨[1, 0], [BPair.unit, BPair.unit]⟩], (1 : Pos)) := by
+    ∧ collect [([1, 0], BPair.ofNat 1), ([0, 1], BPair.ofNat 1), ([1, 0], BPair.ofNat 1)]
+      = [([0, 1], BPair.ofNat 1), ([1, 0], BPair.ofNat 2)]
+    ∧ collect [([0], ⟨4, 4⟩), ([1], ⟨5, 3⟩)] = [([1], BPair.ofNat 2)]
+    ∧ reduceV ([([1, 0], ⟨1, 7⟩), ([0, 1], ⟨5, 1⟩)], (4 : Pos))
+      = ([([1, 0], ⟨1, 4⟩), ([0, 1], ⟨3, 1⟩)], (2 : Pos))
+    ∧ reduceV ([([1, 0], ⟨3, 9⟩)], (9 : Pos)) = ([([1, 0], ⟨1, 3⟩)], (3 : Pos))
+    ∧ reduceV ([], (6 : Pos)) = ([], (1 : Pos))
+    ∧ prim (scaleV (BPair.ofNat 5) (ofH (blockTop 3 (th 3))))
+      = prim (ofH (blockTop 3 (th 3))) := by
   decide +kernel
 
 /-! The dual wedge at the complement's length sits on the last
@@ -118,7 +135,8 @@ example : (dualWedge 3 2).content = [0, 1, 1]
   decide +kernel
 
 private def topKilled (d : Nat) (s : Shape) : Bool :=
-  (List.range (d - 1)).all (fun i => gtrim (raiseS (labelSig d s) i [blockTop d s]) == [])
+  (List.range (d - 1)).all (fun i =>
+    raiseT (tabL d) (labelSig d s) i (ofH (blockTop d s)) == [])
 
 private def wrongTop (d : Nat) (s : Shape) : blockcount.HVec :=
   (botCols d s).foldl (fun acc l => blockcount.tensorH acc (blockcount.wedge d (d - l)))
@@ -128,7 +146,7 @@ private def wrongTop (d : Nat) (s : Shape) : blockcount.HVec :=
 example : topKilled 3 (th 3) = true ∧ topKilled 3 (fdb 3) = true
     ∧ topKilled 4 (th 4) = true
     ∧ (List.range 2).all (fun i =>
-        gtrim (raiseS (labelSig 3 (th 3)) i [wrongTop 3 (th 3)]) == []) = false := by
+        raiseT (tabL 3) (labelSig 3 (th 3)) i (ofH (wrongTop 3 (th 3))) == []) = false := by
   decide +kernel
 
 /-! The blocks' spans at the word pairs read the blocks' counts:
@@ -145,28 +163,77 @@ example : (blockSpanAt 2 (th 2)).length = 3
     ∧ (blockSpanAt 4 (th 4)).length = 15
     ∧ (blockSpanAt 4 [0, 1, 0, 0]).length = 6 := by decide +kernel
 
+/-! The block at the stored descents against the closure at the
+fresh walk from the top's own join (`blockSpanAt_eq`), decided at
+the adjoint over three letters; the symmetry binder of
+`blockSpanT_eq` refused at the letters' weight joined one entry off
+the diagonal, the two closures parting; the weighted read at the
+`B_2` defining table's top, the two closures one list of five; and
+at a symmetric indefinite weight whose top pairs against itself at
+the unit, the top refused at the vacant pool, the two closures one
+list where the closure seeded at the top outright parts. -/
+
+example : blockSpanAt 3 (th 3)
+    = closeT (tabL 3) (labelSig 3 (th 3))
+        ((labelSig 3 (th 3)).length * (tabL 3).keys + 1)
+        (tryAddT (tabL 3) (labelSig 3 (th 3)) [] (ofH (blockTop 3 (th 3))))
+        [ofH (blockTop 3 (th 3))] := by decide +kernel
+
+private def asymL : memtable.Table :=
+  { tabL 3 with wt := [(0, 0, BPair.ofNat 1), (1, 1, BPair.ofNat 1),
+      (2, 2, BPair.ofNat 1), (0, 1, BPair.ofNat 1)] }
+private def asymTop : SVec := [([1, 0], BPair.ofNat 1), ([2, 2], BPair.ofNat 1)]
+
+example : ¬ memtable.symmWt asymL
+    ∧ ¬ (blockSpanT asymL [false, true] asymTop
+        = closeT asymL [false, true] ([false, true].length * asymL.keys + 1)
+            (tryAddT asymL [false, true] [] asymTop) [asymTop]) := by
+  decide +kernel
+
+private def bTop : SVec := [([0], BPair.ofNat 1)]
+
+example : memtable.symmWt (memtable.definingB 2)
+    ∧ blockSpanT (memtable.definingB 2) [false] bTop
+      = closeT (memtable.definingB 2) [false]
+          ([false].length * (memtable.definingB 2).keys + 1)
+          (tryAddT (memtable.definingB 2) [false] [] bTop) [bTop]
+    ∧ (blockSpanT (memtable.definingB 2) [false] bTop).length = 5 := by
+  decide +kernel
+
+private def isoL : memtable.Table :=
+  { tabL 3 with
+      wt := [(0, 1, BPair.ofNat 1), (1, 0, BPair.ofNat 1), (2, 2, BPair.ofNat 1)],
+      hdiag := [[BPair.unit, BPair.unit, BPair.unit],
+        [BPair.unit, BPair.unit, BPair.unit]] }
+private def isoTop : SVec := [([0], BPair.ofNat 1)]
+
+example : memtable.symmWt isoL
+    ∧ elim.joinIndep (fun u v => (dotT isoL (unitWtRead isoL) u v).norm) []
+        isoTop = false
+    ∧ blockSpanT isoL [false] isoTop
+      = closeT isoL [false] ([false].length * isoL.keys + 1)
+          (tryAddT isoL [false] [] isoTop) [isoTop]
+    ∧ ¬ (blockSpanT isoL [false] isoTop
+        = closeT isoL [false] ([false].length * isoL.keys + 1)
+            [isoTop] [isoTop]) := by decide +kernel
+
 /-- The lowering at the standard action on every slot, the dual
 action withdrawn. -/
-private def lowerStd (sig : List Bool) (i : Nat) (g : GVec) : GVec :=
-  g.foldl (fun acc v => (List.range sig.length).foldl (fun acc2 s =>
-    match slotAct s (i + 1) i v with
-    | none => acc2
-    | some w => gjoin acc2 w) acc) []
+private def lowerStd (d : Nat) (sig : List Bool) (i : Nat) (v : SVec) : SVec :=
+  collect ((List.range sig.length).flatMap (fun s =>
+    actT (ground.getAt [] (tabL d).lowers i) false s v))
 
-/-- The membership read at the whole pool's Gram. -/
-private def joinAll (pool : List GVec) (g : GVec) : List GVec :=
-  if (elim.detD (gramOf (pool ++ [g]))).oneValue BPair.unit then pool else pool ++ [g]
-
-private def closeStd (d : Nat) (s : Shape) : List GVec :=
+private def closeStd (d : Nat) (s : Shape) : List SVec :=
   let sig := labelSig d s
-  ground.closeBy (fun g => (List.range (d - 1)).map (fun i => gtrim (lowerStd sig i g)))
-    joinAll (sig.length * d + 1) [[blockTop d s]] [[blockTop d s]]
+  ground.closeBy (fun v => ((List.range (d - 1)).map (fun i => lowerStd d sig i v)).filter
+      (fun w => w.length != 0))
+    (tryAddT (tabL d) sig) (sig.length * d + 1) [ofH (blockTop d s)] [ofH (blockTop d s)]
 
 example : (closeStd 3 (th 3)).length = 3 := by decide +kernel
 
-example : (kernelAt 3 (labelSig 3 (th 3)) (blockSpanAt 3 (th 3))).length = 1
-    ∧ (kernelAt 3 (labelSig 3 (fdb 3)) (blockSpanAt 3 (fdb 3))).length = 1
-    ∧ (kernelAt 4 (labelSig 4 [0, 1, 1, 0]) (blockSpanAt 4 [0, 1, 1, 0])).length = 1 := by
+example : (kernelT (tabL 3) (labelSig 3 (th 3)) (blockSpanAt 3 (th 3))).length = 1
+    ∧ (kernelT (tabL 3) (labelSig 3 (fdb 3)) (blockSpanAt 3 (fdb 3))).length = 1
+    ∧ (kernelT (tabL 4) (labelSig 4 [0, 1, 1, 0]) (blockSpanAt 4 [0, 1, 1, 0])).length = 1 := by
   decide +kernel
 
 /-! The unit weight: a block's top tensored with its own at the
@@ -175,50 +242,33 @@ member's off it; the fused span of the adjoint against its dual at
 three letters holds the weight-matched pairs, ten, every member at
 the unit weight. -/
 
-example : gUnitWeight 3 [false, true, true, false]
-      (gtensor [blockTop 3 (th 3)] [blockTop 3 (th 3)]) = true
-    ∧ gUnitWeight 3 [false, true, true, false]
-      (gtensor [blockTop 3 (th 3)] (ground.getAt [] (blockSpanAt 3 (th 3)) 1)) = false
-    ∧ (fusedSpan 3 [(th 3, true), (th 3, false)]).length = 10
-    ∧ (fusedSpan 3 [(th 3, true), (th 3, false)]).all
-        (gUnitWeight 3 (vertexSig 3 [(th 3, true), (th 3, false)])) = true := by
+private def unitW (d : Nat) (sig : List Bool) (v : SVec) : Bool :=
+  (weightV (tabL d) sig v).all (fun x => decide (x.oneValue BPair.unit))
+
+example : unitW 3 [false, true, true, false]
+      (tensorV (ofH (blockTop 3 (th 3))) (ofH (blockTop 3 (th 3)))) = true
+    ∧ unitW 3 [false, true, true, false]
+      (tensorV (ofH (blockTop 3 (th 3))) (ground.getAt [] (blockSpanAt 3 (th 3)) 1)) = false
+    ∧ (fusedSpanT (tabL 3) (endBlocks 3 [(th 3, true), (th 3, false)])).length = 10
+    ∧ (fusedSpanT (tabL 3) (endBlocks 3 [(th 3, true), (th 3, false)])).all
+        (unitW 3 (vertexSig 3 [(th 3, true), (th 3, false)])) = true := by
   decide +kernel
 
-/-! The graded vector at a stated monomial family scatters each
-coefficient at its monomial's rank, one piece per content; and the
-primitive representative is one value across a scale. -/
+/-! The table's action at one slot is the carrier's action at an
+occupied move: the letters' raising at a slot on an exhibit one
+value with `blockcount.act` there, at the adjoint's top over three
+letters and at the exhibits' tensors. -/
 
-private def gm : GVec :=
-  gOfMons 3 [([1, 0], BPair.ofNat 1), ([0, 1], BPair.ofNat 1), ([1, 0], BPair.ofNat 1)]
+private def actTie (d i j : Nat) (v : blockcount.HVec) : Bool :=
+  let m : memtable.SMap := if i < j then ground.getAt [] (tabL d).raises i
+    else ground.getAt [] (tabL d).lowers j
+  oneValueV (collect ((List.range v.content.length).flatMap (fun s => actT m false s (ofH v))))
+    (ofH (blockcount.act i j v))
 
-example : gm.length = 1
-    ∧ List.zipWith (fun x n => decide (x.oneValue (BPair.ofNat n)))
-        (pieceAt [1, 1, 0] gm) [1, 2] = [true, true]
-    ∧ gprim (gscale (BPair.ofNat 5) [blockTop 3 (th 3)]) = gprim [blockTop 3 (th 3)] := by
-  decide +kernel
-
-/-! The unit's action at one slot folds to the carrier's action at
-an occupied move: the slot fold's one piece reads the moved content
-with the coordinates' gap at the unit family. -/
-
-private def actFold (n i j : Nat) (v : blockcount.HVec) : GVec :=
-  (List.range n).foldl (fun acc s =>
-    match slotAct s i j v with
-    | none => acc
-    | some w => gjoin acc w) []
-
-private def actTie (n i j : Nat) (v : blockcount.HVec) : Bool :=
-  match actFold n i j v with
-  | [] => false
-  | [w] => w.content == (blockcount.act i j v).content
-      && blockcount.allU (elim.vecAdd w.coords (poly.neg (blockcount.act i j v).coords))
-  | _ :: _ :: _ => false
-
-example : actTie 2 1 0 (blockTop 3 (th 3)) = true
-    ∧ actTie 2 2 0 (blockTop 3 (th 3)) = true
-    ∧ actTie 3 1 0 (blockcount.exhibit [1, 1, 0]) = true
+example : actTie 3 1 0 (blockcount.exhibit [1, 1, 0]) = true
     ∧ actTie 3 2 1 (blockcount.tensorH (blockcount.wedge 3 2) (blockcount.wedge 3 1)) = true
-    ∧ actTie 3 2 0 (blockcount.tensorH (blockcount.wedge 3 2) (blockcount.wedge 3 1)) = true := by
+    ∧ actTie 3 0 1 (blockcount.tensorH (blockcount.wedge 3 2) (blockcount.wedge 3 1)) = true
+    ∧ actTie 3 1 2 (blockcount.exhibit [2, 1, 0]) = true := by
   decide +kernel
 
 /-! The wirings' tensors pair at the cycle count: at two rows over
@@ -229,35 +279,58 @@ pair. -/
 
 private def sig2 : List Bool := [false, false, true, true]
 
-/-! A graded vector's occupied monomials read back the family it
-was scattered from, each at its coefficient: the identity wiring's
-nine monomials, the letter at the paired slots, one at each, and
-the exchanged wiring's family scattered again one value with the
-wiring at every content and at the pairing. -/
+/-! A wiring's family: the identity wiring's nine monomials, the
+letter at the paired slots, one at each. -/
 
-example : (gMons (wiringG 3 sig2 [0, 1])).length = 9
-    ∧ ((gMons (wiringG 3 sig2 [0, 1])).map Prod.fst).all (fun m =>
+example : (wiringG 3 sig2 [0, 1]).length = 9
+    ∧ ((wiringG 3 sig2 [0, 1]).map Prod.fst).all (fun m =>
         getAt 0 m 0 == getAt 0 m 2 && getAt 0 m 1 == getAt 0 m 3) = true
-    ∧ ((gMons (wiringG 3 sig2 [0, 1])).map Prod.snd).all (fun x =>
-        decide (x.oneValue (BPair.ofNat 1))) = true
-    ∧ (gOfMons 3 (gMons (wiringG 3 sig2 [1, 0]))).map (fun v => v.content)
-      = (wiringG 3 sig2 [1, 0]).map (fun v => v.content)
-    ∧ (gdot (gOfMons 3 (gMons (wiringG 3 sig2 [1, 0]))) (wiringG 3 sig2 [1, 0])).oneValue
-      (BPair.ofNat 9) := by
+    ∧ ((wiringG 3 sig2 [0, 1]).map Prod.snd).all (fun x =>
+        decide (x.oneValue (BPair.ofNat 1))) = true := by
   decide +kernel
 
-example : (gdot (wiringG 3 sig2 [0, 1]) (wiringG 3 sig2 [0, 1])).oneValue (BPair.ofNat 9)
-    ∧ (gdot (wiringG 3 sig2 [0, 1]) (wiringG 3 sig2 [1, 0])).oneValue (BPair.ofNat 3)
+private def dot3 (u v : SVec) : BPair := dotT (tabL 3) true u v
+
+example : (dot3 (wiringG 3 sig2 [0, 1]) (wiringG 3 sig2 [0, 1])).oneValue (BPair.ofNat 9)
+    ∧ (dot3 (wiringG 3 sig2 [0, 1]) (wiringG 3 sig2 [1, 0])).oneValue (BPair.ofNat 3)
     ∧ (places.perms 2).all (fun σ => (places.perms 2).all (fun τ =>
-        decide ((gdot (wiringG 3 sig2 σ) (wiringG 3 sig2 τ)).oneValue
+        decide ((dot3 (wiringG 3 sig2 σ) (wiringG 3 sig2 τ)).oneValue
           (elim.dotP (mixedinv.flatF 3 2 (mixedinv.permMat σ))
             (mixedinv.flatF 3 2 (mixedinv.permMat τ)))))) = true
     ∧ mixedinv.cycleGram 3 2
-      = gramOf ((places.perms 2).map (wiringG 3 [false, true, true, false]))
+      = gramT (tabL 3) ((places.perms 2).map (wiringG 3 [false, true, true, false]))
     ∧ mixedinv.cycleGram 2 3
-      = gramOf ((places.perms 3).map
+      = gramT (tabL 2) ((places.perms 3).map
           (wiringG 2 [false, false, false, true, true, true])) := by
   decide +kernel
+
+/-! The star's family at the withdrawn content's arrangements
+against the permutations opening at the arrangement
+(`starFam_perms`), decided over four letters at a two-letter and a
+one-letter arrangement, vacant at a repeated letter, and through
+the theorem. -/
+
+example : starFam 4 [1, 0]
+    = (perms 4).filterMap (fun ls =>
+        if ls.take 2 == [1, 0] then
+          some (ls.drop 2,
+            if parity ls then (BPair.ofNat 1).swap else BPair.ofNat 1)
+        else none)
+    ∧ starFam 4 [2]
+      = (perms 4).filterMap (fun ls =>
+          if ls.take 1 == [2] then
+            some (ls.drop 1,
+              if parity ls then (BPair.ofNat 1).swap else BPair.ofNat 1)
+          else none)
+    ∧ (starFam 4 [1, 0]).length = 2
+    ∧ starFam 4 [1, 1] = [] := by decide +kernel
+example : starFam 4 [1, 0]
+    = (perms 4).filterMap (fun ls =>
+        if ls.take 2 == [1, 0] then
+          some (ls.drop 2,
+            if parity ls then (BPair.ofNat 1).swap else BPair.ofNat 1)
+        else none) :=
+  starFam_perms 4 [1, 0]
 
 /-! The through pairing and its projection: at the adjoint against
 its dual over three letters the pairing is the wiring, its
@@ -273,32 +346,31 @@ multiple of the count six, and at the two tie columns of the
 pairing. -/
 
 example : (throughPair 3 (th 3, true) (th 3, false)).2 = Pos.one
-    ∧ (gdot (throughPair 3 (th 3, true) (th 3, false)).1
+    ∧ (dot3 (throughPair 3 (th 3, true) (th 3, false)).1
         (throughPair 3 (th 3, true) (th 3, false)).1).oneValue (BPair.ofNat 9)
     ∧ (throughPair 3 (fd 3, true) (fd 3, true)).1 = []
     ∧ posVal (throughPair 4 ([0, 1, 0, 0], true) ([0, 1, 0, 0], true)).2 = 2
-    ∧ (gdot (throughPair 4 ([0, 1, 0, 0], true) ([0, 1, 0, 0], true)).1
+    ∧ (dotT (tabL 4) true (throughPair 4 ([0, 1, 0, 0], true) ([0, 1, 0, 0], true)).1
         (throughPair 4 ([0, 1, 0, 0], true) ([0, 1, 0, 0], true)).1).oneValue
         (BPair.ofNat 24)
     ∧ posVal (throughPair 4 ([0, 2, 0, 0], true) ([0, 2, 0, 0], true)).2 = 4 := by
   decide +kernel
 
-private def prTh3 : GVec × Pos :=
-  projectS (fusedSpan 3 [(th 3, true), (th 3, false)])
-    (throughPair 3 (th 3, true) (th 3, false)).1
-private def prTh2 : GVec × Pos :=
-  projectS (fusedSpan 2 [(th 2, true), (th 2, true)])
-    (throughPair 2 (th 2, true) (th 2, true)).1
+private def span3 : List SVec := fusedSpanT (tabL 3) (endBlocks 3 [(th 3, true), (th 3, false)])
+private def span2 : List SVec := fusedSpanT (tabL 2) (endBlocks 2 [(th 2, true), (th 2, true)])
+private def tp3 : SVec := (throughPair 3 (th 3, true) (th 3, false)).1
+private def tp2 : SVec := (throughPair 2 (th 2, true) (th 2, true)).1
+private def prTh3 : SVec × Pos := projectT (tabL 3) span3 tp3
+private def prTh2 : SVec × Pos := projectT (tabL 2) span2 tp2
 
-example : (gdot prTh3.1 prTh3.1).oneValue
+example : (dot3 prTh3.1 prTh3.1).oneValue
     (BPair.ofNat (8 * posVal prTh3.2 * posVal prTh3.2)) := by decide +kernel
-example : (gdot prTh2.1 prTh2.1).oneValue
+example : (dotT (tabL 2) true prTh2.1 prTh2.1).oneValue
     (BPair.ofNat (3 * posVal prTh2.2 * posVal prTh2.2)) := by decide +kernel
 example : posVal prTh3.2 = 12
-    ∧ (fusedSpan 3 [(th 3, true), (th 3, false)]).all (fun u =>
-        decide ((gdot u prTh3.1).oneValue
-          (gdot u (throughPair 3 (th 3, true) (th 3, false)).1
-            * BPair.ofNat (posVal prTh3.2)))) = true := by decide +kernel
+    ∧ span3.all (fun u =>
+        decide ((dot3 u prTh3.1).oneValue
+          (dot3 u tp3 * BPair.ofNat (posVal prTh3.2)))) = true := by decide +kernel
 
 /-! The fused span's groups at the ends' weight lists, the adjoint
 against its dual over three letters at seven groups with the unit
@@ -306,15 +378,14 @@ weight's four, and the projection group by group the one solve's
 own read: the same coevaluation at the count eight, its clearing
 reduced to three. -/
 
-private def prG3 : GVec × Pos :=
-  projectGroups (fusedGroups 3 [(th 3, true), (th 3, false)])
-    (throughPair 3 (th 3, true) (th 3, false)).1
+private def groups3 : List (List SVec) :=
+  fusedGroupsT (tabL 3) (endBlocks 3 [(th 3, true), (th 3, false)])
+private def prG3 : SVec × Pos := projectGroupsT (tabL 3) groups3 tp3
 
-example : (fusedGroups 3 [(th 3, true), (th 3, false)]).map (fun g => g.length)
-      = [1, 1, 1, 4, 1, 1, 1]
+example : groups3.map (fun g => g.length) = [1, 1, 1, 4, 1, 1, 1]
     ∧ posVal prG3.2 = 3
-    ∧ (gdot prG3.1 prG3.1).oneValue (BPair.ofNat (8 * 3 * 3))
-    ∧ (gdot prG3.1 prTh3.1).oneValue (BPair.ofNat (8 * 3 * 12)) := by decide +kernel
+    ∧ (dot3 prG3.1 prG3.1).oneValue (BPair.ofNat (8 * 3 * 3))
+    ∧ (dot3 prG3.1 prTh3.1).oneValue (BPair.ofNat (8 * 3 * 12)) := by decide +kernel
 
 /-! The grouped solve is the whole span's solve at its reduced
 representative, vector and clearing, at the adjoint against its
@@ -325,48 +396,43 @@ vector at the reduced clearing; and the groups are pairwise
 orthogonal at five vertices with every block member and through
 pairing at one weight. -/
 
-private def tp2 : GVec := (throughPair 2 (th 2, true) (th 2, true)).1
-private def tpF : GVec := (throughPair 3 (fd 3, true) (fd 3, false)).1
-private def tp3 : GVec := (throughPair 3 (th 3, true) (th 3, false)).1
-private def prN3 : GVec × Pos :=
-  projectGroups (fusedGroups 3 [(th 3, true), (th 3, false)])
-    (gscale (BPair.ofNat 1).swap tp3)
-private def prNW : GVec × Pos :=
-  projectS (fusedSpan 3 [(th 3, true), (th 3, false)])
-    (gscale (BPair.ofNat 1).swap tp3)
-private def pr5 : GVec × Pos :=
-  projectGroups (fusedGroups 3 [(th 3, true), (th 3, false)])
-    (gscale (BPair.ofNat 5) tp3)
+private def tpF : SVec := (throughPair 3 (fd 3, true) (fd 3, false)).1
+private def spanF : List SVec := fusedSpanT (tabL 3) (endBlocks 3 [(fd 3, true), (fd 3, false)])
+private def groupsF : List (List SVec) :=
+  fusedGroupsT (tabL 3) (endBlocks 3 [(fd 3, true), (fd 3, false)])
+private def groups2 : List (List SVec) :=
+  fusedGroupsT (tabL 2) (endBlocks 2 [(th 2, true), (th 2, true)])
+private def prN3 : SVec × Pos :=
+  projectGroupsT (tabL 3) groups3 (scaleV (BPair.ofNat 1).swap tp3)
+private def prNW : SVec × Pos := projectT (tabL 3) span3 (scaleV (BPair.ofNat 1).swap tp3)
+private def pr5 : SVec × Pos := projectGroupsT (tabL 3) groups3 (scaleV (BPair.ofNat 5) tp3)
 
-example : reducePr prTh3 = prG3
-    ∧ reducePr (projectS (fusedSpan 2 [(th 2, true), (th 2, true)]) tp2)
-      = projectGroups (fusedGroups 2 [(th 2, true), (th 2, true)]) tp2
-    ∧ reducePr (projectS (fusedSpan 3 [(fd 3, true), (fd 3, false)]) tpF)
-      = projectGroups (fusedGroups 3 [(fd 3, true), (fd 3, false)]) tpF
-    ∧ prN3.2 = prG3.2 ∧ gtrim (gadd prN3.1 prG3.1) = []
-    ∧ prNW.2 = prTh3.2 ∧ gtrim (gadd prNW.1 prTh3.1) = []
+example : reduceV prTh3 = prG3
+    ∧ reduceV (projectT (tabL 2) span2 tp2) = projectGroupsT (tabL 2) groups2 tp2
+    ∧ reduceV (projectT (tabL 3) spanF tpF) = projectGroupsT (tabL 3) groupsF tpF
+    ∧ prN3.2 = prG3.2 ∧ addV prN3.1 prG3.1 = []
+    ∧ prNW.2 = prTh3.2 ∧ addV prNW.1 prTh3.1 = []
     ∧ pr5.2 = prG3.2
-    ∧ gtrim (gadd pr5.1 (gscale (BPair.ofNat 5).swap prG3.1)) = [] := by
+    ∧ addV pr5.1 (scaleV (BPair.ofNat 5).swap prG3.1) = [] := by
   decide +kernel
 
 /-- Every cross-group pairing the sum's unit. -/
-private def groupsOrth (gs : List (List GVec)) : Bool :=
+private def groupsOrth (d : Nat) (gs : List (List SVec)) : Bool :=
   (List.range gs.length).all (fun i => (List.range gs.length).all (fun j =>
     i == j || (getAt [] gs i).all (fun u => (getAt [] gs j).all (fun v =>
-      decide ((gdot u v).oneValue BPair.unit)))))
+      decide ((dotT (tabL d) true u v).oneValue BPair.unit)))))
 
 /-- Every occupied monomial's weight the vector's. -/
-private def homog (d : Nat) (sig : List Bool) (g : GVec) : Bool :=
-  g.all (fun v => (List.zipWith (fun m x => (m, x)) (monomialsAt v.content)
-    v.coords).all (fun p =>
-      decide (p.2.oneValue BPair.unit) || weightOf d sig p.1 == gWeight d sig g))
+private def homog (d : Nat) (sig : List Bool) (v : SVec) : Bool :=
+  v.all (fun p => weightT (tabL d) sig p.1 == weightV (tabL d) sig v)
 
-example : groupsOrth (fusedGroups 3 [(th 3, true), (th 3, false)]) = true
-    ∧ groupsOrth (fusedGroups 2 [(th 2, true), (th 2, true)]) = true
-    ∧ groupsOrth (fusedGroups 3 [(fd 3, true), (fd 3, false)]) = true
-    ∧ groupsOrth (fusedGroups 2 [(th 2, true), (th 2, true), (th 2, false)]) = true
-    ∧ groupsOrth (fusedGroups 2
-        [(fd 2, true), (fd 2, true), (fd 2, true), (fd 2, true)]) = true := by
+example : groupsOrth 3 groups3 = true
+    ∧ groupsOrth 2 groups2 = true
+    ∧ groupsOrth 3 groupsF = true
+    ∧ groupsOrth 2 (fusedGroupsT (tabL 2)
+        (endBlocks 2 [(th 2, true), (th 2, true), (th 2, false)])) = true
+    ∧ groupsOrth 2 (fusedGroupsT (tabL 2)
+        (endBlocks 2 [(fd 2, true), (fd 2, true), (fd 2, true), (fd 2, true)])) = true := by
   decide +kernel
 example : (blockSpanAt 3 (th 3)).all (homog 3 (labelSig 3 (th 3))) = true
     ∧ (blockSpanAt 4 (th 4)).all (homog 4 (labelSig 4 (th 4))) = true
@@ -383,36 +449,40 @@ beside the daggered in place of their balance) splitting one
 weight into several, each parting the coevaluation's self-pairing
 from the count at the clearing squared. -/
 
-private def forgedSplit : List (List GVec) :=
-  (fusedGroups 3 [(th 3, true), (th 3, false)]).flatMap (fun g =>
-    if g.length == 4 then [g.take 2, g.drop 2] else [g])
+private def forgedSplit : List (List SVec) :=
+  groups3.flatMap (fun g => if g.length == 4 then [g.take 2, g.drop 2] else [g])
 
-private def pairKey (d : Nat) (sig : List Bool) (g : GVec) : List Nat × List Nat :=
-  let m := g.foldl (fun (acc : Option (List Nat)) v =>
-    match acc with
-    | some _ => acc
-    | none => (List.zipWith (fun m x => (m, x)) (monomialsAt v.content)
-        v.coords).foldl (fun acc2 p =>
-          match acc2 with
-          | some _ => acc2
-          | none => if decide (p.2.oneValue BPair.unit) then none else some p.1)
-        none) none
-  match m with
+private def pairKey (d : Nat) (sig : List Bool) (v : SVec) : List Nat × List Nat :=
+  match v.head? with
   | none => ([], [])
-  | some m => (content d ((upSlots sig).map (fun s => getAt 0 m s)),
-      content d ((downSlots sig).map (fun s => getAt 0 m s)))
+  | some p => (content d ((upSlots sig).map (fun s => getAt 0 p.1 s)),
+      content d ((downSlots sig).map (fun s => getAt 0 p.1 s)))
 
-private def forgedPair : List (List GVec) :=
+private def forgedPair : List (List SVec) :=
   let es := [(th 3, true), (th 3, false)]
-  let keyed := (fusedSpan 3 es).map (fun g => (g, pairKey 3 (vertexSig 3 es) g))
+  let keyed := span3.map (fun g => (g, pairKey 3 (vertexSig 3 es) g))
   (ground.dedupF (keyed.map Prod.snd)).map (fun key =>
     (keyed.filter (fun t => t.2 == key)).map Prod.fst)
 
-private def prS : GVec × Pos := projectGroups forgedSplit tp3
-private def prP : GVec × Pos := projectGroups forgedPair tp3
+private def prS : SVec × Pos := projectGroupsT (tabL 3) forgedSplit tp3
+private def prP : SVec × Pos := projectGroupsT (tabL 3) forgedPair tp3
 
 example : forgedSplit.map (fun g => g.length) = [1, 1, 1, 2, 2, 1, 1, 1]
-    ∧ forgedPair.map (fun g => g.length) = [2, 4, 2, 1, 1]
-    ∧ ¬ (gdot prS.1 prS.1).oneValue (BPair.ofNat (8 * posVal prS.2 * posVal prS.2))
-    ∧ ¬ (gdot prP.1 prP.1).oneValue
+    ∧ forgedPair.map (fun g => g.length) = [2, 2, 4, 1, 1]
+    ∧ ¬ (dot3 prS.1 prS.1).oneValue (BPair.ofNat (8 * posVal prS.2 * posVal prS.2))
+    ∧ ¬ (dot3 prP.1 prP.1).oneValue
         (BPair.ofNat (8 * posVal prP.2 * posVal prP.2)) := by decide +kernel
+
+/-! The paired tensor and the through pairing at a table: the
+letters' identity at two slot pairs reads the four monomials of
+the two-letter wiring at the clearing one, and the span membership
+at the letters reads the projection inside the span and refuses the
+target off it. -/
+
+example : (throughT (tabL 2) [(0, 2), (1, 3)] 4).1
+      = [([0, 0, 0, 0], BPair.ofNat 1), ([0, 1, 0, 1], BPair.ofNat 1),
+         ([1, 0, 1, 0], BPair.ofNat 1), ([1, 1, 1, 1], BPair.ofNat 1)]
+    ∧ (throughT (tabL 2) [(0, 2), (1, 3)] 4).2 = Pos.one
+    ∧ dualThroughT (tabL 2) [(0, 1)] 2 = none
+    ∧ spanMemberT (tabL 3) span3 prTh3.1 = true
+    ∧ spanMemberT (tabL 3) span3 tp3 = false := by decide +kernel

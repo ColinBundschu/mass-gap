@@ -30,7 +30,8 @@ the tail recursion's certificate, every split of the assembled
 datum reads the pivots' fold, the coherence read `countSplitRead`
 its consumable spelling (`countSplit_read`) — and the determinant
 split `det S = Π_i det X_i` reads at the cleared minors (`minorQ`,
-`detProdRead`), the batteries' instances the pins.  The count
+`detProdRead`, the instance deciding at the descent's reads
+`minorQD` and `elim.detD`), the batteries' instances the pins.  The count
 split's engine is the telescoped families: from a seed at one slab
 the tail witnesses telescope downward (`liftMat`, each step the
 witness's swapped action at the accumulated clearings), the
@@ -682,6 +683,32 @@ instance {n : Nat} (S : Mat) (diag off : List Mat)
 the order's power, one composite pair. -/
 def minorQ (X : MatQ) : CPair := ⟨minor X.1, Pos.powC X.2 X.1.length⟩
 
+/-- The cleared minor at the descent's read: the descent determinant
+against the clearing at the order's power, `minorQ`'s value at a
+square block (`minorQD_eq`). -/
+def minorQD (X : MatQ) : CPair :=
+  ⟨elim.detD X.1, Pos.powC X.2 X.1.length⟩
+
+/-- The descent reads the cleared minor at a square block. -/
+theorem minorQD_eq (X : MatQ) (hsq : rowsLen X.1.length X.1) :
+    CPair.oneValue (minorQ X) (minorQD X) :=
+  CPair.num_oneValue
+    (BPair.oneValue_trans (minor_detL _ hsq)
+      (BPair.oneValue_symm (detD_eq _ hsq))) _
+
+/-- The cleared minors' fold reads at the descent at every list of
+the stated orders, from seeds of one value. -/
+private theorem foldMinorQ_eq : ∀ (Xs : List MatQ) (ns : List Nat),
+    qShape Xs ns → ∀ (a a' : CPair), a.oneValue a' →
+      (Xs.foldl (fun a X => a * minorQ X) a).oneValue
+        (Xs.foldl (fun a X => a * minorQD X) a')
+  | [], _, _, _, _, h => h
+  | _ :: _, [], h, _, _, _ => nomatch h
+  | X :: Xs, k :: ns, h, a, a', ha =>
+    foldMinorQ_eq Xs ns h.2 _ _
+      (CPair.mul_congr ha (minorQD_eq X
+        (by rw [sqAt_len h.1]; exact rowsLen_of_sqAt h.1)))
+
 /-- The determinant split's read: `det S = Π_i det X_i` at the
 cleared minors, the coherence the batteries' pins. -/
 def detProdRead (diag off : List Mat) (Xs : List MatQ)
@@ -691,10 +718,11 @@ def detProdRead (diag off : List Mat) (Xs : List MatQ)
   ∧ CPair.oneValue ⟨minor (assemble diag off), .one⟩
       (Xs.foldl (fun a X => a * minorQ X) ⟨BPair.ofPos .one, .one⟩)
 
-/-- The split's read transports to the descent's read at a square
+/-- The split's read transports to the descent's reads at a square
 assembled list: the determinant is a read of the value, the
-first-component congruence carrying it across the composite
-pair. -/
+first-component congruence carrying it across the composite pair,
+and the blocks' minors read at the descent at the stated orders'
+shape. -/
 private theorem detProdRead_walk (diag off : List Mat)
     (Xs : List MatQ) (ns : List Nat)
     (hsq : elim.rowsLen (assemble diag off).length
@@ -703,7 +731,7 @@ private theorem detProdRead_walk (diag off : List Mat)
     (slabShape diag off ns
      ∧ qShape Xs ns
      ∧ CPair.oneValue ⟨elim.detD (assemble diag off), .one⟩
-        (Xs.foldl (fun a X => a * minorQ X)
+        (Xs.foldl (fun a X => a * minorQD X)
           ⟨BPair.ofPos .one, .one⟩)) := by
   have hB : (elim.detD (assemble diag off)).oneValue
       (minor (assemble diag off)) :=
@@ -712,8 +740,11 @@ private theorem detProdRead_walk (diag off : List Mat)
   have hc := ground.CPair.num_congr
     (BPair.oneValue_symm hB) Pos.one
     (Xs.foldl (fun a X => a * minorQ X) ⟨BPair.ofPos .one, .one⟩)
-  exact ⟨fun h => ⟨h.1, h.2.1, hc.mp h.2.2⟩,
-    fun h => ⟨h.1, h.2.1, hc.mpr h.2.2⟩⟩
+  exact ⟨fun h => ⟨h.1, h.2.1, CPair.oneValue_trans (hc.mp h.2.2)
+      (foldMinorQ_eq Xs ns h.2.1 _ _ (CPair.oneValue_refl _))⟩,
+    fun h => ⟨h.1, h.2.1, hc.mpr (CPair.oneValue_trans h.2.2
+      (CPair.oneValue_symm
+        (foldMinorQ_eq Xs ns h.2.1 _ _ (CPair.oneValue_refl _))))⟩⟩
 
 instance (diag off : List Mat) (Xs : List MatQ) (ns : List Nat) :
     Decidable (detProdRead diag off Xs ns) :=
@@ -1477,13 +1508,13 @@ private theorem tieStep (dn : BPair) (X X' : MatQ) (j : Nat)
         (elim.length_nullMat n0 _) (elim.rowsLen_nullMat n0 _))
   -- the head-block tie at the shared clearing
   have hidsq : sqAt (idMat n0) n0 :=
-    inertia.sqAt_idMat n0
+    elim.sqAt_idMat n0
   have hsProws : rowsLen n0
       (matScaleB (dn.scale (X.2 * X'.2)) (idMat n0)) :=
-    inertia.rowsLen_scaleB _ n0 _ (inertia.idMat_rows n0)
+    inertia.rowsLen_scaleB _ n0 _ (elim.rowsLen_idMat n0)
   have hsPlen : (matScaleB (dn.scale (X.2 * X'.2))
       (idMat n0)).length = n0 :=
-    (inertia.length_scaleB _ _).trans (inertia.idMat_len n0)
+    (inertia.length_scaleB _ _).trans (elim.length_idMat n0)
   have hPnrows : rowsLen n0
       (matAdd (matScaleB (dn.scale (X.2 * X'.2)) (idMat n0))
         (elim.nullMat n0 n0)) :=
@@ -1502,7 +1533,7 @@ private theorem tieStep (dn : BPair) (X X' : MatQ) (j : Nat)
     refine elim.matAdd_cong2 n0 _ _ _ _
       (elim.rowsLen_mapRows _ A n0 (elim.rowsLen_of_sqAt hA))
       (elim.rowsLen_mapRows _ _ n0
-        (inertia.rowsLen_scaleB dn n0 _ (inertia.idMat_rows n0)))
+        (inertia.rowsLen_scaleB dn n0 _ (elim.rowsLen_idMat n0)))
       (elim.rowsLen_mapRows _ A n0 (elim.rowsLen_of_sqAt hA))
       hPnrows (elim.matOne_refl _) ?_
     refine elim.matOne_trans
@@ -2022,9 +2053,7 @@ private theorem vecAdd_moveR : ∀ (Xv Q P : List BPair),
          (BPair.oneValue_of_eq (BPair.add_assoc x q q.swap))
          (BPair.oneValue_trans
            (BPair.add_congr (BPair.oneValue_refl x)
-             (BPair.oneValue_trans
-               (BPair.oneValue_of_eq (BPair.add_comm q q.swap))
-               (BPair.swap_add_null (BPair.oneValue_refl q))))
+             (BPair.add_swap_null q))
            (BPair.add_unit x))),
      vecAdd_moveR Xv Q P (Nat.succ.inj hl) (Nat.succ.inj hl') h.2⟩
 
@@ -2065,7 +2094,7 @@ private theorem liftMat_cons_act (k : Nat) (R : MatQ) (Rs : List MatQ)
       ++ matMul (liftMat R.1.length Rs) (matSwap R.1)) w) _
   rw [elim.matVec_append]
   refine poly.oneValue_append _ _ _ _ ?_ ?_ ?_
-  · rw [matVec_length, length_scaleB, idMat_len, length_vecScale, hw]
+  · rw [matVec_length, length_scaleB, length_idMat, length_vecScale, hw]
   · exact scaleId_act _ k w hw
   · exact matVec_matMul _ _ k
       (rowsLen_mapRows BPair.swap R.1 k hR) w hw
@@ -2598,7 +2627,7 @@ private theorem lift_read : ∀ (diag off : List Mat) (Xs Rs : List MatQ)
     refine ⟨?_, ?_⟩
     · show (matScaleB (BPair.ofPos Pos.one)
         (idMat (ground.getAt 0 ns 0))).length = A.length
-      rw [length_scaleB, idMat_len, hAl]
+      rw [length_scaleB, length_idMat, hAl]
     · intro w hw
       have hsub : A.length - ground.getAt 0 ns 0 = 0 := by
         rw [hAl, Nat.sub_self]
@@ -2672,7 +2701,7 @@ private theorem lift_read : ∀ (diag off : List Mat) (Xs Rs : List MatQ)
           show ((matScaleB (BPair.ofPos (clProd (R0 :: Rt))) (idMat n0))
             ++ matMul (liftMat R0.1.length Rt) (matSwap R0.1)).length
             = n0 + (assemble As Bs).length
-          rw [ground.length_append, length_scaleB, idMat_len,
+          rw [ground.length_append, length_scaleB, length_idMat,
             length_matMul, rectAt_len hR0, hIH.1]
 
 /-! Clause (ii)'s pricing tier: the pairing's symmetry as a read at
@@ -3093,7 +3122,7 @@ private theorem fam_cons (A B : Mat) (As Bs : List Mat)
     show ((matScaleB (BPair.ofPos (clProd (R0 :: Rt))) (idMat n0))
       ++ matMul (liftMat R0.1.length Rt) (matSwap R0.1)).length
       = n0 + (liftMat R0.1.length Rt).length
-    rw [ground.length_append, length_scaleB, idMat_len, length_matMul]
+    rw [ground.length_append, length_scaleB, length_idMat, length_matMul]
   have hLrows : rowsLen n0 (lowerList s.2) :=
     rowsLen_cast hs1 (lowerList_rowsLen s.2)
   have hCrows : rowsLen n0 (complList s.2) :=
@@ -3384,7 +3413,7 @@ private theorem fam_read : ∀ (diag off : List Mat) (Xs Rs : List MatQ)
         have hL0 : (liftMat A.length ([] : List MatQ)).length = A.length := by
           show (matScaleB (BPair.ofPos Pos.one)
             (idMat A.length)).length = A.length
-          rw [length_scaleB, idMat_len]
+          rw [length_scaleB, length_idMat]
         have hfam : ∀ (L : Mat) (cs : List BPair), rowsLen A.length L →
             poly.oneValue (combo A.length cs
               (L.map (matVec (liftMat A.length ([] : List MatQ)))))

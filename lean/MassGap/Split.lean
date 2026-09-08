@@ -6,7 +6,9 @@ degree one), its determinant the pencil polynomial `χ` (`charPoly`,
 the first-row fold at polynomial entries, `pminor`, whose value a
 joint relabeling of the row and the column keys leaves at one
 value — `pminor_reindex`, `thm:restoration`'s derivation clause at
-this carrier), the
+this carrier; its descent read `charPolyD` at `elim.pdetD`, one
+value at a square site datum, `charPolyD_eq`, the read the
+instances decide through), the
 factorization read `χ = det G · Π ⟨x : ε_j⟩` at a stated root list
 cleared to pair data (`chiRead`, `linFac` the cleared linear
 factor), the count identity `count(a) = #{j : ε_j < a}` at the
@@ -100,6 +102,18 @@ theorem zMat_len : ∀ (H G : Mat) (n : Nat),
 /-- The pencil polynomial `χ`, the site datum's determinant. -/
 def charPoly (H G : Mat) : Poly := pminor (zMat H G)
 
+/-- The pencil polynomial at the descent's read: the site datum's
+determinant at the pivot walk (`elim.pdetD`), `charPoly`'s value
+at a square level pair (`charPolyD_eq`). -/
+def charPolyD (H G : Mat) : Poly := elim.pdetD (zMat H G)
+
+/-- The walk reads the fold at a square site datum: `def:elim`'s
+pivot descent against the first-row fold at polynomial entries. -/
+theorem charPolyD_eq (H G : Mat)
+    (hZ : elim.rowsLen (zMat H G).length (zMat H G)) :
+    poly.oneValue (charPolyD H G) (charPoly H G) :=
+  elim.pdetD_eq (zMat H G) hZ
+
 /-- The cleared linear factor `d x - n` at a root's pair data. -/
 def linFac (n : BPair) (d : Pos) : Poly := [BPair.swap n, BPair.ofPos d]
 
@@ -114,7 +128,7 @@ def chiRead (H G : Mat) (roots : List (BPair × Pos)) : Prop :=
 
 /-- The factorization read transports to the descent's reads at
 square frames: both determinants are reads of the value, the
-pencil's at `pdetD` and the frame's at `detD`. -/
+pencil's at `charPolyD` and the frame's at `detD`. -/
 private theorem chiRead_walk (H G : Mat) (roots : List (BPair × Pos))
     (hZ : elim.rowsLen (zMat H G).length (zMat H G))
     (hG : elim.rowsLen G.length G) :
@@ -122,18 +136,18 @@ private theorem chiRead_walk (H G : Mat) (roots : List (BPair × Pos))
     poly.oneValue
       (poly.mul
         [BPair.ofPos (roots.foldl (fun a r => a * r.2) Pos.one)]
-        (elim.pdetD (zMat H G)))
+        (charPolyD H G))
       (poly.mul [elim.detD G]
         (poly.prodFold (roots.map (fun r => linFac r.1 r.2)))) := by
-  have hL : poly.oneValue (elim.pdetD (zMat H G)) (charPoly H G) :=
-    elim.pdetD_eq (zMat H G) hZ
+  have hL : poly.oneValue (charPolyD H G) (charPoly H G) :=
+    charPolyD_eq H G hZ
   have hB : (elim.detD G).oneValue (minor G) :=
     BPair.oneValue_trans (elim.detD_eq G hG)
       (BPair.oneValue_symm (elim.minor_detL G hG))
   have h1 : poly.oneValue
       (poly.mul
         [BPair.ofPos (roots.foldl (fun a r => a * r.2) Pos.one)]
-        (elim.pdetD (zMat H G)))
+        (charPolyD H G))
       (poly.mul
         [BPair.ofPos (roots.foldl (fun a r => a * r.2) Pos.one)]
         (charPoly H G)) :=
@@ -1374,7 +1388,7 @@ private theorem congrZ_entry (T : Mat) (Z : PMat) (o : Nat)
 /-- The congruence identity's determinant: the exchanged lists'
 product collects to the descent's determinant squared against the
 pencil polynomial (`lem:inertia`; `def:elim`). -/
-private theorem pminor_congrZ {o : Nat} (H G : Mat) (T : SqMat o)
+theorem pminor_congrZ {o : Nat} (H G : Mat) (T : SqMat o)
     (hH : sqAt H o) (hG : sqAt G o) :
     poly.oneValue (pminor (congrZ T.val (zMat H G)))
       (poly.mul [detL T.val * detL T.val] (charPoly H G)) := by
@@ -2417,7 +2431,7 @@ private theorem vOff {n : Nat} (Et : Mat) (T Tw : SqMat n)
       (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).2.1)
     (poly.oneValue_trans
       (eigenColumn Et (idMat n) T Tw l j _ _ _ hd hjl rfl)
-      (vecScale_oneValue _ _ _ (inertia.matVec_idMat n _ hvl)))
+      (vecScale_oneValue _ _ _ (elim.matVec_idMat n _ hvl)))
 
 /-- The congruated gap's diagonal entry at a root: the root's first
 member against its scale. -/
@@ -2440,7 +2454,7 @@ theorem diagEntryV {n : Nat} (Et : Mat) (T Tw : SqMat n)
       (rowsLen_of_sqAt hd.1) j hj nj gj dj hroot nj (BPair.ofPos dj)
       (poly.oneValue_trans
         (eigenColumn Et (idMat n) T Tw l j nj gj dj hd hjl hroot)
-        (vecScale_oneValue _ _ _ (inertia.matVec_idMat n _ hvl)))) ?_
+        (vecScale_oneValue _ _ _ (elim.matVec_idMat n _ hvl)))) ?_
   refine BPair.oneValue_of_eq ?_
   rw [← BPair.mul_assoc nj gj (BPair.ofPos dj),
     BPair.mul_comm (nj * gj) (BPair.ofPos dj)]

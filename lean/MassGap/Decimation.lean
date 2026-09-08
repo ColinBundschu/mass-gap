@@ -594,13 +594,8 @@ theorem dom_quad (S : Mat) (n : Nat) (d : List BPair)
   have hSr : rowsLen n S := rowsLen_of_sqAt hsq
   have hsymE : ∀ i j, i < n → j < n →
       (ground.getAt BPair.unit (ground.getAt [] S i) j).oneValue
-        (ground.getAt BPair.unit (ground.getAt [] S j) i) := by
-    intro i j hi hj
-    have e := poly.oneValue_getAt j
-      (matOne_entries S (transposeM S) hsym i (by rw [hSl]; exact hi))
-    rw [getAt_transposeM BPair.unit S hSr i j hi
-      (by rw [hSl]; exact hj)] at e
-    exact e
+        (ground.getAt BPair.unit (ground.getAt [] S j) i) :=
+    fun i j hi hj => symmRead_entry S hsq hsym i j hi hj
   refine ground.leB_congr (BPair.oneValue_symm (dotN_read d _))
     (BPair.oneValue_symm (quadP_read S v)) ?_
   exact dom_quadGo n S d v hSl hSr hd hv hsymE hdom

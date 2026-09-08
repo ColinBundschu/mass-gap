@@ -215,6 +215,27 @@ example : wCount wB2
       (reflAt tB2 0 (poly.pnorm [BPair.ofNat 5, BPair.ofNat 5])) false
     = wCount wB2 (poly.pnorm [BPair.ofNat 5, BPair.ofNat 5]) true := by decide +kernel
 
+/-! The reflection's join read (`reflF`, `reflF_eq`): the key
+joined to its coordinate's multiple of the letter's Cartan row's
+balance partner is the matrix action's image, decided at both
+letters of `B_2` at the shifted top, at a letter past the rank
+(both spellings the key's own representative), and beside the
+theorem route; the key's order binder is isolated at a short key,
+where the join read truncates at the key and the matrix action
+reads the rank's order. -/
+
+example : reflF tB2 0 (poly.pnorm (rhoV tB2))
+    = reflAt tB2 0 (poly.pnorm (rhoV tB2)) := by decide +kernel
+example : reflF tB2 1 (poly.pnorm (rhoV tB2))
+    = reflAt tB2 1 (poly.pnorm (rhoV tB2)) := by decide +kernel
+example : reflF tB2 1 (poly.pnorm (rhoV tB2))
+    = reflAt tB2 1 (poly.pnorm (rhoV tB2)) :=
+  reflF_eq tB2 1 _ (by decide +kernel)
+example : reflF tB2 5 (poly.pnorm (rhoV tB2))
+    = reflAt tB2 5 (poly.pnorm (rhoV tB2)) := by decide +kernel
+example : ¬ (reflF tB2 0 [BPair.ofNat 3] = reflAt tB2 0 [BPair.ofNat 3]) := by
+  decide +kernel
+
 /-! The subset fold's transport at its own conclusion: the graded
 count at a reflected key against the count at the key on the other
 side, read at both letters of `B_2` at the top key and once at a

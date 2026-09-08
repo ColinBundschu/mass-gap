@@ -29,19 +29,3 @@ example : dimSect (tabulate (dataA 2) 12) thetaG 12 = 3 :=
 example : dimSect (tabulate (dataA 2) 18) thetaG 18 = 4 :=
   dimSect_at (tabulate (dataA 2) 18) thetaG 18 4 carrier.thIx18
     carrier.thIx18_pin (by decide +kernel)
-
-
-/-! `degree_le_dfQ`'s route at the reduced shape `[2, 1, 0]`: the
-cleared read thirty-two clears the count's multiple of the degree,
-twelve; the reduced binder isolated at `[1]`, whose count multiple
-of the degree exceeds its vacant cleared read. -/
-
-example : (3 : Nat) * places.degree [2, 1, 0]
-    ≤ c2hat.dfQ [2, 1, 0] :=
-  degree_le_dfQ [2, 1, 0] 2 rfl rfl
-example : (3 : Nat) * places.degree [2, 1, 0] = 12 := by decide +kernel
-example : c2hat.dfQ [2, 1, 0] = 32 := by decide +kernel
-example : ¬ ((1 : Nat) * places.degree [1] ≤ c2hat.dfQ [1]) := by
-  decide +kernel
-example : ([1] : places.Shape).length = 0 + 1 := by decide +kernel
-example : ¬ (ground.getAt 0 [1] 0 = 0) := by decide +kernel

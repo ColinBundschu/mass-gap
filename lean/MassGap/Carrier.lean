@@ -785,15 +785,20 @@ theorem confMem_of_mem {L : Type} (F : Data L) (a : List L) :
       rw [confMem_of_mem F a t h2]
       cases eqConf F a b <;> rfl
 
+/-- The occupied incident ends at a vertex with their link keys,
+the incident walk at the unoccupied keys withdrawn, in the order
+the vertex list's ends read. -/
+def occIncident {L : Type} (F : Data L) (R : Region)
+    (a : List L) (v : Nat) : List (Nat × Bool) :=
+  (incident R v).filter (fun e => !F.eqL (getAt F.unit a e.1) F.unit)
+
 /-- The incident support ends at a vertex: each occupied incident
 link's label with its orientation read, `true` at the tail and
 `false` at the head, the unoccupied keys withdrawn — the vertex
 list's datum at the interface's presentation field. -/
 def incidentEnds {L : Type} (F : Data L) (R : Region)
     (a : List L) (v : Nat) : List (L × Bool) :=
-  (incident R v).filterMap (fun e =>
-    let l := getAt F.unit a e.1
-    if F.eqL l F.unit then none else some (l, e.2))
+  (occIncident F R a v).map (fun e => (getAt F.unit a e.1, e.2))
 
 /-- The incident support labels at a vertex, the incoming links
 dualized, the unoccupied keys withdrawn at the support read, the

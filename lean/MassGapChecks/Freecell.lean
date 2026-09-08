@@ -20,6 +20,12 @@ carrier.
 cleared evaluation keeps the constant key alone at the clearing's
 stated power, so the cell's matrix is the electric level datum
 `diag(-λ, 4-λ, 12-λ)` rescaled there, the free end's diagonal read.
+`freePMat_eval`'s read at the point `[3 : 2]`: the cleared
+evaluation is the ray `[4 : 9]`'s pencil at the level scaled by the
+clearing four, decided beside the theorem, the point binder refused
+at the neighbor ray; and `freePMat_sym` at the record's symmetric
+members, decided beside the theorem, the magnetic member's symmetry
+binder refused at a one-sided coupling.
 
 The free end is interior to its cell.  The content list is the
 electric diagonal's own `(0, 4, 12)`.  At the level one, off that
@@ -179,6 +185,44 @@ example : ¬ matOneValue
     (matScaleB (ground.bpow (BPair.ofPos 1) 2)
       (siteDatum (matAdd eWalk (matScale 1 gK2))
         (matScale 2 gK2))) := by decide +kernel
+
+/-! The carrier's cleared evaluation at the root-coordinate point
+`[3 : 2]`: the ray `[4 : 9]`'s pencil at the level `⟨2 : 1⟩` scaled
+by the clearing four, decided and through `freePMat_eval`; the
+point binder refuses at the neighbor `[2 : 2]`'s ray against the
+`[3 : 2]` evaluation. -/
+
+example : matOneValue
+    (cellcount.evalPC (freePMat eWalk mWalk gK2 2 1) (BPair.ofPos 3) 2 2)
+    (siteDatum (matAdd (pencil.rayH eWalk mWalk (2 * 2) (3 * 3))
+      (matScale (2 * 2 * 1) gK2)) (matScale (2 * 2 * 2) gK2)) := by
+  decide +kernel
+example : matOneValue
+    (cellcount.evalPC (freePMat eWalk mWalk gK2 2 1) (BPair.ofPos 3) 2 2)
+    (siteDatum (matAdd (pencil.rayH eWalk mWalk (2 * 2) (3 * 3))
+      (matScale (2 * 2 * 1) gK2)) (matScale (2 * 2 * 2) gK2)) :=
+  freecell.freePMat_eval eWalk mWalk gK2 2 1 3 (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) 3 2
+example : ¬ matOneValue
+    (cellcount.evalPC (freePMat eWalk mWalk gK2 2 1) (BPair.ofPos 3) 2 2)
+    (siteDatum (matAdd (pencil.rayH eWalk mWalk (2 * 2) (2 * 2))
+      (matScale (2 * 2 * 1) gK2)) (matScale (2 * 2 * 2) gK2)) := by
+  decide +kernel
+
+/-! The carrier's symmetry at the record's symmetric members,
+decided and through `freePMat_sym`; the magnetic member's symmetry
+binder refuses at a one-sided coupling, the carrier asymmetric
+with it. -/
+
+private def mAs : Mat := [[u, ⟨2, 1⟩, u], [u, u, u], [u, u, u]]
+
+example : split.pSymAt (freePMat eWalk mWalk gK2 2 1) 3 := by decide +kernel
+example : split.pSymAt (freePMat eWalk mWalk gK2 2 1) 3 :=
+  freecell.freePMat_sym eWalk mWalk gK2 2 1 3 (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+example : ¬ symmRead mAs := by decide +kernel
+example : ¬ split.pSymAt (freePMat eWalk mAs gK2 2 1) 3 := by decide +kernel
 
 /-! The two cells' one carrier: at `τ² = 1` the free cell reads the
 near-contact head's own site at the same level. -/

@@ -662,3 +662,63 @@ example : ¬ (BPair.ofNat 2 * BPair.ofNat 4
     < dotP orthYA orthXB * dotP orthYA orthXB) :=
   cutSq orthYA orthXB rfl 2 (BPair.ofNat 4) (BPair.ofNat 4)
     (by decide +kernel) (by decide +kernel)
+
+/-! `lem:loopcap`'s gradient deficit at Bessel's read: the two
+perpendicular rows `tB` at self-pairing `2`, the vector `eB`
+perpendicular to both at self-pairing `5`, and `wB = (1, 2, 3, 4)`:
+the coefficients read `3` and `-1`, their square fold `10`, the
+`e`-pairing `11`, the self-pairing `30`, so the comparison is
+`10 · 5 + 121 · 2 = 292 ≤ 300 = 30 · 2 · 5`, the theorem route and
+the kernel agreeing.  The perpendicularity is load-bearing: at
+`tC`, two rows of self-pairing `2` pairing at `1`, with `eC` the
+last coordinate and `wC = (1, 1, 1, 0)` the coefficients read `2`
+and `2`, the fold `8`, and `8 · 1 + 0 ≤ 3 · 2 · 1 = 6` is refused. -/
+
+private def one : BPair := BPair.ofNat 1
+
+private def tB : Mat := [[one, one, BPair.unit, BPair.unit],
+  [one, one.swap, BPair.unit, BPair.unit]]
+
+private def eB : List BPair := [BPair.unit, BPair.unit, one, BPair.ofNat 2]
+
+private def wB : List BPair := [one, BPair.ofNat 2, BPair.ofNat 3, BPair.ofNat 4]
+
+private def tC : Mat := [[one, one, BPair.unit, BPair.unit],
+  [BPair.unit, one, one, BPair.unit]]
+
+private def eC : List BPair := [BPair.unit, BPair.unit, BPair.unit, one]
+
+private def wC : List BPair := [one, one, one, BPair.unit]
+
+private abbrev bessel (T : Mat) (w e : List BPair) (κ d : BPair) : Prop :=
+  dotP (T.map (fun r => dotP r w)) (T.map (fun r => dotP r w)) * d
+    + dotP e w * dotP e w * κ ≤ dotP w w * κ * d
+
+example : bessel tB wB eB (BPair.ofNat 2) (BPair.ofNat 5) := by decide +kernel
+example : BPair.oneValue
+    (dotP (tB.map (fun r => dotP r wB)) (tB.map (fun r => dotP r wB)))
+    (BPair.ofNat 10) := by decide +kernel
+example : bessel tB wB eB (BPair.ofNat 2) (BPair.ofNat 5) :=
+  gradient_deficit 4 tB wB eB (BPair.ofNat 2) (BPair.ofNat 5) (by decide)
+    (by decide) (by decide) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
+example : ¬ perpAll tC := by decide +kernel
+example : ¬ bessel tC wC eC (BPair.ofNat 2) (BPair.ofNat 1) := by decide +kernel
+
+/-! The further binders: the rows' self-pairing tie at the index
+(at `κ = 1` against the rows' `2` the display reads `171 ≤ 150`,
+refused), the vector's self-pairing tie (at `d = 4` against `5` it
+reads `282 ≤ 240`, refused), and the vector perpendicular to the
+rows (at `e = w`, self-pairing `30`, the display reads `2100 ≤ 1800`,
+refused, the first row pairing `w` at `3`).  The index's and the
+self-pairing's positivity are the tex's frame, the adjoint's index
+and the identity's trace at the block. -/
+
+example : ¬ (dotP (getAt [] tB 0) (getAt [] tB 0)).oneValue (BPair.ofNat 1) := by
+  decide +kernel
+example : ¬ bessel tB wB eB (BPair.ofNat 1) (BPair.ofNat 5) := by decide +kernel
+example : ¬ (dotP eB eB).oneValue (BPair.ofNat 4) := by decide +kernel
+example : ¬ bessel tB wB eB (BPair.ofNat 2) (BPair.ofNat 4) := by decide +kernel
+example : ¬ (dotP (getAt [] tB 0) wB).oneValue BPair.unit := by decide +kernel
+example : (dotP wB wB).oneValue (BPair.ofNat 30) := by decide +kernel
+example : ¬ bessel tB wB wB (BPair.ofNat 2) (BPair.ofNat 30) := by decide +kernel

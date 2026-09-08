@@ -303,5 +303,5 @@ example : ¬ clsDualLaw { dataD 5 with dual := fun a => a }
 example : ¬ driftLaw { dataB 2 with c2N := fun _ => 1 } [0,2] := by decide +kernel
 example : ¬ cartanLaw
     (dataOf (sertables.tableB 2) (gramOf (sertables.tableB 2)) 0
-      (fusion.clsB 2) (fun x y => (x + y) % 2) (fun _ => 0))
+      (fusion.clsB 2) (fun x y => (x + y) % 2) (fun _ => 0) (fiber.presNone _))
     [0,2] [0,2] := by decide +kernel

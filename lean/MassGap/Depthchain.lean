@@ -44,6 +44,12 @@ position shells at the joined step's depth move
 at the terms' own joins (`msum_cross`), and the gram with the
 electric member's form at the fibers' orthogonal sum
 (`memberDiag_cross`).
+The fusion walk's return read closes the chain at the label window
+(`walk_reach`, `lem:corner`'s near mass): a walk vector off the
+sum's unit at a key is reached from the unit letters' keys within
+the step count, the walk's scaled part keeping a key reached and
+its acted part joining a key to the keys the walk reads off the
+unit at the step before.
 -/
 
 namespace depthchain
@@ -1088,5 +1094,143 @@ theorem memberDiag_cross (terms : List Mat) (pos : List (List Nat)) (M : Mat)
     rw [heq, Bool.false_or] at hab
     show (false || joined terms pos a b || _) = true
     rw [Bool.false_or, hab, Bool.or_true]
+
+/-- A pairing off the sum's unit names a key whose two entries sit
+off it: a key reading either entry at the unit prices its summand
+there, and the pairing of such summands reads the unit. -/
+private theorem dotN_off : ∀ (r v : List BPair),
+    ¬ (dotN r v).oneValue BPair.unit →
+    ∃ j, j < v.length ∧ ¬ (getAt BPair.unit r j).oneValue BPair.unit
+      ∧ ¬ (getAt BPair.unit v j).oneValue BPair.unit
+  | [], _, h => absurd (BPair.oneValue_refl BPair.unit) h
+  | _ :: _, [], h => absurd (BPair.oneValue_refl BPair.unit) h
+  | a :: s, b :: t, h => by
+    have hstep : (dotN s t).oneValue BPair.unit →
+        (dotN (a :: s) (b :: t)).oneValue BPair.unit ∨
+          ((a * b).oneValue BPair.unit →
+            (dotN (a :: s) (b :: t)).oneValue BPair.unit) := by
+      intro hst
+      cases hab : a.isUnitRep || b.isUnitRep with
+      | true =>
+        refine Or.inl ?_
+        show (if a.isUnitRep || b.isUnitRep then dotN s t
+          else (a * b + dotN s t).norm).oneValue BPair.unit
+        rw [hab, if_pos rfl]
+        exact hst
+      | false =>
+        refine Or.inr (fun hab0 => ?_)
+        show (if a.isUnitRep || b.isUnitRep then dotN s t
+          else (a * b + dotN s t).norm).oneValue BPair.unit
+        rw [hab, if_neg Bool.noConfusion]
+        exact BPair.oneValue_trans (BPair.norm_oneValue _)
+          (BPair.add_units hab0 hst)
+    by_cases ha : a.oneValue BPair.unit
+    · have hab0 : (a * b).oneValue BPair.unit :=
+        BPair.oneValue_trans (BPair.mul_congr ha (BPair.oneValue_refl b))
+          (BPair.unit_mul b)
+      have hst : ¬ (dotN s t).oneValue BPair.unit := fun hst =>
+        match hstep hst with
+        | Or.inl hx => h hx
+        | Or.inr hx => h (hx hab0)
+      match dotN_off s t hst with
+      | ⟨j, hj, hr, hv⟩ => exact ⟨j + 1, Nat.succ_lt_succ hj, hr, hv⟩
+    · by_cases hb : b.oneValue BPair.unit
+      · have hab0 : (a * b).oneValue BPair.unit :=
+          BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl a) hb)
+            (BPair.mul_unit a)
+        have hst : ¬ (dotN s t).oneValue BPair.unit := fun hst =>
+          match hstep hst with
+          | Or.inl hx => h hx
+          | Or.inr hx => h (hx hab0)
+        match dotN_off s t hst with
+        | ⟨j, hj, hr, hv⟩ => exact ⟨j + 1, Nat.succ_lt_succ hj, hr, hv⟩
+      · exact ⟨0, Nat.succ_pos _, ha, hb⟩
+
+/-- The fusion walk's return read (`lem:corner`'s near mass): a walk
+vector off the sum's unit at a key is reached from the unit letters'
+keys within the step count, the positions the keys' own singletons.
+The seed reads the unit letters alone; at a step the scaled part
+keeps a key reached and the acted part joins it to a key its row
+reads off the unit, the walk there off the unit at the step
+before. -/
+theorem walk_reach {L : Type} (F : fusion.Data L) (ls : List L) (k i : Nat)
+    (hi : i < ls.length)
+    (hoff : ¬ (getAt BPair.unit (fpcap.walkVec F ls k) i).oneValue BPair.unit) :
+    reachB [fpcap.fusionMat F F.theta ls] ((List.range ls.length).map (fun j => [j])) ls.length
+      ((List.range ls.length).filter (fun j => F.eqL (getAt F.unit ls j) F.unit)) k i = true := by
+  induction k generalizing i with
+  | zero =>
+    have hg : getAt BPair.unit (fpcap.walkVec F ls 0) i
+        = if F.eqL (getAt F.unit ls i) F.unit then BPair.ofPos Pos.one
+          else BPair.unit := by
+      show getAt BPair.unit (ls.map (fun x =>
+        if F.eqL x F.unit then BPair.ofPos Pos.one else BPair.unit)) i = _
+      exact ground.getAt_map F.unit BPair.unit _ ls i hi
+    cases hc : F.eqL (getAt F.unit ls i) F.unit with
+    | false =>
+      rw [hg, hc] at hoff
+      exact absurd (BPair.oneValue_refl _) hoff
+    | true =>
+      show containsB ((List.range ls.length).filter
+        (fun j => F.eqL (getAt F.unit ls j) F.unit)) i = true
+      exact decide_eq_true
+        (countOf_pos_of_mem (mem_filter_to _ (memRange hi) hc))
+  | succ k ih =>
+    have hwl : (fpcap.walkVec F ls k).length = ls.length :=
+      fpcap.walkVec_length F ls k
+    have hMl : (fpcap.fusionMat F F.theta ls).length = ls.length :=
+      ground.length_map _ ls
+    have hg : getAt BPair.unit (fpcap.walkVec F ls (k + 1)) i
+        = getAt BPair.unit
+            (vecScale (BPair.ofNat (F.dim F.theta)) (fpcap.walkVec F ls k)) i
+          + getAt BPair.unit
+            (matVec (fpcap.fusionMat F F.theta ls) (fpcap.walkVec F ls k)) i := by
+      show getAt BPair.unit (vecAdd
+        (vecScale (BPair.ofNat (F.dim F.theta)) (fpcap.walkVec F ls k))
+        (matVec (fpcap.fusionMat F F.theta ls) (fpcap.walkVec F ls k))) i = _
+      refine elim.getAt_vecAdd _ _ i ?_ ?_
+      · rw [elim.length_vecScale, hwl]
+        exact hi
+      · rw [elim.matVec_length, hMl]
+        exact hi
+    rw [hg] at hoff
+    by_cases hA : (getAt BPair.unit
+        (vecScale (BPair.ofNat (F.dim F.theta)) (fpcap.walkVec F ls k)) i).oneValue
+      BPair.unit
+    · have hB : ¬ (getAt BPair.unit
+          (matVec (fpcap.fusionMat F F.theta ls) (fpcap.walkVec F ls k)) i).oneValue
+            BPair.unit := fun hB => hoff (BPair.add_units hA hB)
+      rw [elim.getAt_matVec _ _ i (by rw [hMl]; exact hi)] at hB
+      match dotN_off _ _ hB with
+      | ⟨j, hj, hr, hv⟩ =>
+        have hjn : j < ls.length := by
+          rw [hwl] at hj
+          exact hj
+        refine reach_step _ _ _ _ k i j hi ?_ (ih j hjn hv)
+        have hpi : getAt ([] : List Nat)
+            ((List.range ls.length).map (fun m => [m])) i = [i] := by
+          rw [ground.getAt_map_range ([] : List Nat) (fun m => [m]) ls.length i,
+            if_pos hi]
+        have hpj : getAt ([] : List Nat)
+            ((List.range ls.length).map (fun m => [m])) j = [j] := by
+          rw [ground.getAt_map_range ([] : List Nat) (fun m => [m]) ls.length j,
+            if_pos hjn]
+        have hat : joinedAt [fpcap.fusionMat F F.theta ls] i j = true := by
+          refine any_of_mem _ (List.Mem.head []) ?_
+          rw [decide_eq_false hr]
+          rfl
+        show ((getAt [] ((List.range ls.length).map (fun m => [m])) i).any
+          (fun p => (getAt [] ((List.range ls.length).map (fun m => [m])) j).any
+            (fun q => joinedAt [fpcap.fusionMat F F.theta ls] p q))) = true
+        rw [hpi, hpj]
+        exact any_of_mem _ (List.Mem.head []) (any_of_mem _ (List.Mem.head []) hat)
+    · have hwi : ¬ (getAt BPair.unit (fpcap.walkVec F ls k) i).oneValue
+          BPair.unit := fun hwi => hA (by
+        rw [elim.getAt_vecScale _ _ i (by rw [hwl]; exact hi)]
+        exact BPair.oneValue_trans
+          (BPair.mul_congr (BPair.oneValue_refl _) hwi) (BPair.mul_unit _))
+      exact decide_eq_true (countOf_pos_of_mem
+        (reach_mono _ _ _ _ k i hi
+          (mem_of_countOf_pos i _ (of_decide_eq_true (ih i hi hwi)))))
 
 end depthchain

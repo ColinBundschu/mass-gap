@@ -32,7 +32,7 @@ cell the moment folds' solve returns the truncated moment vector
 from the streams' reads: the adjugate of `lem:momentfold`(ii)'s
 square system against the streams' data reads the moment vector at
 the determinant's scale (`moment_solve` at
-`momentfold.momSys_read` and `inertia.adj_solve`), the
+`momentfold.momSys_read` and `elim.adj_solve`), the
 determinant's clearance the located divisor read over the corner
 base (`lem:cellcount`).
 
@@ -158,7 +158,7 @@ the square system at a stated degree against the streams' data reads
 the truncated moment vector at the determinant's scale — the moment
 folds' solve returning the vector from the streams' reads, the
 adjugate's solve read at the system's read (`momentfold.momSys_read`,
-`inertia.adj_solve`). -/
+`elim.adj_solve`). -/
 theorem moment_solve (a b psi : List BPair) (p2 p1 p0 β : BPair)
     (K : Nat) (h : momentfold.recRead a b psi)
     (hp : momentfold.diagProf a p2 p1 p0)
@@ -175,7 +175,7 @@ theorem moment_solve (a b psi : List BPair) (p2 p1 p0 β : BPair)
     rw [ground.length_append, ground.length_append, ground.length_map,
       ground.length_map, ground.length_range]
     rfl
-  exact inertia.adj_solve _
+  exact elim.adj_solve _
     (sqAt_of (momentfold.momSys_len K p2 p1 p0 β hK)
       (momentfold.momSys_rowsLen K p2 p1 p0 β))
     _ _ hlen (momentfold.momSys_read a b psi p2 p1 p0 β K h hp hb hK)

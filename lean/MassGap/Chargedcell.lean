@@ -1174,27 +1174,27 @@ its source. -/
 private theorem fluxAt_move (n : Nat) (R : lattice.Region)
     (t s : Nat → Nat) (g : Nat → Nat) (mv : Nat → Nat) (c : Nat)
     (a : List Shape)
-    (hperm : fiberdec.permRead R t s)
+    (hperm : lattice.linkIso R R t s)
     (hmv : cutMoveRead R t g mv)
     (hinj : ∀ u v, u < c → v < c → mv u = mv v → u = v)
     (hg : ∀ v', v' < R.verts → g v' < c)
     (hwell : lattice.wellRead R)
     (x x0 : Nat) (hx0 : mv x0 = x) (hx0c : x0 < c) :
     fluxAt n R g x
-        (fiberdec.permConf (fusion.dataA n) s R.links a)
+        (pairpencil.permConf (fusion.dataA n) t s R.links a)
       = fluxAt n R g x0 a := by
-  rw [fluxAt_read n R g x (fiberdec.permConf (fusion.dataA n) s
+  rw [fluxAt_read n R g x (pairpencil.permConf (fusion.dataA n) t s
       R.links a),
     fluxAt_read n R g x0 a]
   have hts : ∀ l : Nat, l < R.links →
       s (t l) = l ∧ t (s l) = l ∧ t l < R.links ∧ s l < R.links :=
-    fun l hl => fiberdec.permRead_at R t s hperm l hl
+    fun l hl => lattice.linkIso_all R t s hperm l hl
   refine (ground.famFold_reindex Nat.add 0 Nat.add_comm Nat.add_assoc
     (fun l =>
       if (!(g (getAt 0 R.head l) == g (getAt 0 R.tail l)))
           && (g (getAt 0 R.tail l) == x)
         then (fusion.dataA n).cls (getAt (fusion.dataA n).unit
-          (fiberdec.permConf (fusion.dataA n) s R.links a) l)
+          (pairpencil.permConf (fusion.dataA n) t s R.links a) l)
         else 0)
     (ground.distinctList_range R.links)
     (fun y hy => (hts y (ground.ltOfMem hy)).1)
@@ -1216,18 +1216,10 @@ private theorem fluxAt_move (n : Nat) (R : lattice.Region)
   have hAc : g (getAt 0 R.head m) < c := hg _ hend.2
   have hBc : g (getAt 0 R.tail m) < c := hg _ hend.1
   have hval : getAt (fusion.dataA n).unit
-        (fiberdec.permConf (fusion.dataA n) s R.links a) (t m)
+        (pairpencil.permConf (fusion.dataA n) t s R.links a) (t m)
       = getAt (fusion.dataA n).unit a m := by
-    show getAt (fusion.dataA n).unit
-        ((List.range R.links).map
-          (fun l => getAt (fusion.dataA n).unit a (s l))) (t m)
-      = getAt (fusion.dataA n).unit a m
-    rw [ground.getAt_map_range (fusion.dataA n).unit
-        (fun l => getAt (fusion.dataA n).unit a (s l)) R.links (t m),
-      if_pos (hts m hmr).2.2.1]
-    show getAt (fusion.dataA n).unit a (s (t m))
-      = getAt (fusion.dataA n).unit a m
-    rw [(hts m hmr).1]
+    rw [fiberdec.getAt_permConf (fusion.dataA n) t s R.links a (t m)
+      (hts m hmr).2.2.1 (by rw [(hts m hmr).1]), (hts m hmr).1]
   have e1 : (mv (g (getAt 0 R.head m)) == mv (g (getAt 0 R.tail m)))
       = (g (getAt 0 R.head m) == g (getAt 0 R.tail m)) := by
     by_cases hab : g (getAt 0 R.head m) = g (getAt 0 R.tail m)
@@ -1246,7 +1238,7 @@ private theorem fluxAt_move (n : Nat) (R : lattice.Region)
   show (if (!(g (getAt 0 R.head (t m)) == g (getAt 0 R.tail (t m))))
         && (g (getAt 0 R.tail (t m)) == x)
       then (fusion.dataA n).cls (getAt (fusion.dataA n).unit
-        (fiberdec.permConf (fusion.dataA n) s R.links a) (t m))
+        (pairpencil.permConf (fusion.dataA n) t s R.links a) (t m))
       else 0)
     = (if (!(g (getAt 0 R.head m) == g (getAt 0 R.tail m)))
         && (g (getAt 0 R.tail m) == x0)
@@ -1262,7 +1254,7 @@ located, and the conservation reads the base cut's class back
 (`lem:chargedcell`(i)'s translation clause). -/
 theorem chargeT_perm (n d L : Nat) (a : List Shape)
     (t s : Nat → Nat) (mv : Nat → Nat → Nat) (pre : Nat → Nat)
-    (hperm : fiberdec.permRead (fiberdec.torusRegion d L) t s)
+    (hperm : lattice.linkIso (fiberdec.torusRegion d L) (fiberdec.torusRegion d L) t s)
     (hcuts : ∀ e, e < d → transCutRead (fiberdec.torusRegion d L)
       (fun v => fiberdec.digitAt L e v) L)
     (hmove : ∀ e, e < d → cutMoveRead (fiberdec.torusRegion d L) t
@@ -1274,7 +1266,7 @@ theorem chargeT_perm (n d L : Nat) (a : List Shape)
     (hocc : carrier.occupied (fusion.dataA n)
       (fiberdec.torusRegion d L) a = true)
     (hwidth : (a.all (fun sh => sh.length == n)) = true) :
-    chargeT n d L (fiberdec.permConf (fusion.dataA n) s
+    chargeT n d L (pairpencil.permConf (fusion.dataA n) t s
         (fiberdec.torusRegion d L).links a)
       = chargeT n d L a := by
   refine ground.map_congr_members _ _ (List.range d) (fun e he => ?_)
@@ -1285,7 +1277,7 @@ theorem chargeT_perm (n d L : Nat) (a : List Shape)
       (fun w => fiberdec.digitAt L e w) L (hcuts e hed) v hv
   show fluxAt n (fiberdec.torusRegion d L)
       (fun v => fiberdec.digitAt L e v) 0
-      (fiberdec.permConf (fusion.dataA n) s
+      (pairpencil.permConf (fusion.dataA n) t s
         (fiberdec.torusRegion d L).links a) % n
     = fluxAt n (fiberdec.torusRegion d L)
       (fun v => fiberdec.digitAt L e v) 0 a % n

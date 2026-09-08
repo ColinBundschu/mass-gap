@@ -176,12 +176,11 @@ private theorem sq_step (a b S P Q Cr K : BPair)
   have hnull : ((a * b * S + a * b * S)
       + ((a * b * S).swap + (a * b * S).swap)).oneValue BPair.unit := by
     rw [BPair.add_add_comm (a * b * S) (a * b * S)
-        (a * b * S).swap (a * b * S).swap,
-      BPair.add_comm (a * b * S) (a * b * S).swap]
+        (a * b * S).swap (a * b * S).swap]
     exact BPair.oneValue_trans
       (BPair.add_congr
-        (BPair.swap_add_null (BPair.oneValue_refl (a * b * S)))
-        (BPair.swap_add_null (BPair.oneValue_refl (a * b * S))))
+        (BPair.add_swap_null (a * b * S))
+        (BPair.add_swap_null (a * b * S)))
       (BPair.unit_add BPair.unit)
   rw [BPair.sq_expand (a * b) S, BPair.mul_mul_mul_comm a b a b,
     BPair.right_distrib (a * a) P (b * b + Q),
@@ -236,5 +235,123 @@ theorem dotN_sq_le (u v : List BPair) (h : u.length = v.length) :
     (BPair.oneValue_symm (BPair.mul_congr (dotN_read u v) (dotN_read u v)))
     (BPair.oneValue_symm (BPair.mul_congr (dotN_read u u) (dotN_read v v)))
     (ground.leB_of_not_lt (dotP_sq_le u v h))
+
+/-- `con:coeff`'s joined square: a generator action joined to a
+coefficient multiplication at its own involution image squares to
+the generator's square, the multiplier's square, and the balance
+partner of the multiplication by the generator's read of the
+multiplier, the commutator's read — the generator's transpose its
+memberwise swap and the multiplier's its own, the pair's scale
+absorbed into the generator. -/
+theorem joined_sq (n : Nat) (X G : Mat) (hX : sqAt X n) (hG : sqAt G n)
+    (hn : 0 < n)
+    (hXa : matOneValue (transposeM X) (matSwap X))
+    (hGs : matOneValue (transposeM G) G) :
+    matOneValue (matMul (transposeM (matAdd X G)) (matAdd X G))
+      (matAdd (matAdd (matMul (transposeM X) X) (matMul G G))
+        (matAdd (matSwap (matMul X G)) (matMul G X))) := by
+  have hXr : rowsLen n X := rowsLen_of_sqAt hX
+  have hGr : rowsLen n G := rowsLen_of_sqAt hG
+  have hXl : X.length = n := sqAt_len hX
+  have hGl : G.length = n := sqAt_len hG
+  have hX0 : 0 < X.length := hXl ▸ hn
+  have hG0 : 0 < G.length := hGl ▸ hn
+  have hXG : X.length = G.length := by rw [hXl, hGl]
+  have hSl : (matAdd X G).length = n := by
+    rw [length_matAdd X G hXG, hXl]
+  have hXtr : rowsLen n (transposeM X) := by
+    have h := rowsLen_transposeM X
+    rw [hXl] at h
+    exact h
+  have hGtr : rowsLen n (transposeM G) := by
+    have h := rowsLen_transposeM G
+    rw [hGl] at h
+    exact h
+  have hStr : rowsLen n (transposeM (matAdd X G)) := by
+    have h := rowsLen_transposeM (matAdd X G)
+    rw [hSl] at h
+    exact h
+  have hXtl : (transposeM X).length = n := length_transposeM X hXr hX0
+  have hGtl : (transposeM G).length = n := length_transposeM G hGr hG0
+  have hT : transposeM (matAdd X G)
+      = matAdd (transposeM X) (transposeM G) :=
+    transposeM_matAdd X G hXr hGr hXG hX0
+  rw [hT]
+  have h1 : matOneValue
+      (matMul (matAdd (transposeM X) (transposeM G)) (matAdd X G))
+      (matAdd (matMul (transposeM X) (matAdd X G))
+        (matMul (transposeM G) (matAdd X G))) :=
+    matMul_addL n (matAdd X G) hStr (transposeM X) (transposeM G)
+      hXtr hGtr
+  have h2 : matOneValue (matMul (transposeM X) (matAdd X G))
+      (matAdd (matMul (transposeM X) X) (matMul (transposeM X) G)) :=
+    matMul_addR X G hXr hGr hXG hX0 (transposeM X)
+      (by rw [hXl]; exact hXtr)
+  have h3 : matOneValue (matMul (transposeM G) (matAdd X G))
+      (matAdd (matMul (transposeM G) X) (matMul (transposeM G) G)) :=
+    matMul_addR X G hXr hGr hXG hX0 (transposeM G)
+      (by rw [hXl]; exact hGtr)
+  have h4 : matOneValue (matMul (transposeM X) G)
+      (matSwap (matMul X G)) := by
+    rw [← matMul_swapL]
+    exact matMul_congrL _ _ G hXa
+  have h5 : matOneValue (matMul (transposeM G) X) (matMul G X) :=
+    matMul_congrL _ _ X hGs
+  have h6 : matOneValue (matMul (transposeM G) G) (matMul G G) :=
+    matMul_congrL _ _ G hGs
+  -- row widths of every summand
+  have rXtX : rowsLen n (matMul (transposeM X) X) :=
+    rowsLen_matMul_of (transposeM X) X (fun _ => hX0) hXr
+  have rXtG : rowsLen n (matMul (transposeM X) G) :=
+    rowsLen_matMul_of (transposeM X) G (fun _ => hG0) hGr
+  have rGtX : rowsLen n (matMul (transposeM G) X) :=
+    rowsLen_matMul_of (transposeM G) X (fun _ => hX0) hXr
+  have rGtG : rowsLen n (matMul (transposeM G) G) :=
+    rowsLen_matMul_of (transposeM G) G (fun _ => hG0) hGr
+  have rGX : rowsLen n (matMul G X) :=
+    rowsLen_matMul_of G X (fun _ => hX0) hXr
+  have rGG : rowsLen n (matMul G G) :=
+    rowsLen_matMul_of G G (fun _ => hG0) hGr
+  have sXG : sqAt (matMul X G) n :=
+    sqAt_of (by rw [length_matMul, hXl])
+      (rowsLen_matMul_of X G (fun _ => hG0) hGr)
+  have rSw : rowsLen n (matSwap (matMul X G)) :=
+    rowsLen_of_sqAt (sqAt_matSwap n (matMul X G) sXG)
+  have rXtS : rowsLen n (matMul (transposeM X) (matAdd X G)) :=
+    rowsLen_matMul_of (transposeM X) (matAdd X G)
+      (fun _ => hSl ▸ hn) (rowsLen_matAdd n X G hXr hGr)
+  have rGtS : rowsLen n (matMul (transposeM G) (matAdd X G)) :=
+    rowsLen_matMul_of (transposeM G) (matAdd X G)
+      (fun _ => hSl ▸ hn) (rowsLen_matAdd n X G hXr hGr)
+  have hA : matOneValue
+      (matMul (matAdd (transposeM X) (transposeM G)) (matAdd X G))
+      (matAdd (matAdd (matMul (transposeM X) X) (matMul (transposeM X) G))
+        (matAdd (matMul (transposeM G) X) (matMul (transposeM G) G))) :=
+    matOne_trans h1
+      (matAdd_cong2 n _ _ _ _ rXtS rGtS
+        (rowsLen_matAdd n _ _ rXtX rXtG) (rowsLen_matAdd n _ _ rGtX rGtG)
+        h2 h3)
+  have hB : matOneValue
+      (matAdd (matAdd (matMul (transposeM X) X) (matMul (transposeM X) G))
+        (matAdd (matMul (transposeM G) X) (matMul (transposeM G) G)))
+      (matAdd (matAdd (matMul (transposeM X) X) (matSwap (matMul X G)))
+        (matAdd (matMul G X) (matMul G G))) :=
+    matAdd_cong2 n _ _ _ _
+      (rowsLen_matAdd n _ _ rXtX rXtG) (rowsLen_matAdd n _ _ rGtX rGtG)
+      (rowsLen_matAdd n _ _ rXtX rSw) (rowsLen_matAdd n _ _ rGX rGG)
+      (matAdd_cong2 n _ _ _ _ rXtX rXtG rXtX rSw (matOne_refl _) h4)
+      (matAdd_cong2 n _ _ _ _ rGtX rGtG rGX rGG h5 h6)
+  have hre : matAdd (matAdd (matMul (transposeM X) X) (matSwap (matMul X G)))
+        (matAdd (matMul G X) (matMul G G))
+      = matAdd (matAdd (matMul (transposeM X) X) (matMul G G))
+        (matAdd (matSwap (matMul X G)) (matMul G X)) := by
+    rw [matAdd_assoc (matMul (transposeM X) X) (matSwap (matMul X G)),
+      matAdd_comm (matMul G X) (matMul G G),
+      ← matAdd_assoc (matSwap (matMul X G)) (matMul G G) (matMul G X),
+      matAdd_comm (matSwap (matMul X G)) (matMul G G),
+      matAdd_assoc (matMul G G) (matSwap (matMul X G)) (matMul G X),
+      ← matAdd_assoc (matMul (transposeM X) X) (matMul G G)]
+  rw [← hre]
+  exact matOne_trans hA hB
 
 end coeff

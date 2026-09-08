@@ -48,32 +48,44 @@ the crossed pair's difference read, so an isolating forge of the
 transport's difference binder is unconstructible at these cells —
 the recorded class of `MassGapChecks/Flatstep.lean`'s joint tie.
 
-The cell tier: one order-one cell at the carrier
-`levelPMat [5] [-1] [1]` over the segment `[2, 33/16]`, three level
-carriers — the window's anchor `⟨3 : 1⟩` and top `⟨9 : 1⟩` each at
-count one, and the level `⟨1 : 2⟩` positive semidefinite — each with
-its pivot cover at the priced side read.  `cellcount.cellCount`
-carries each sampled count from the lower endpoint to an interior
-point, and `cellPsd` the vacant one, each beside its own `decide`.
-The refusals: a point below the segment, where the membership
-refuses and the anchor's count reads naught against the window's
-one; the vacant sample forged onto the anchor carrier, whose count
-one refuses it and whose target split refuses the
-positive-semidefinite read; and the point `5/2` beyond the cell's
-top, refusing the upper membership with the count occupied there.
+The cell tier: one order-one cell at the free cell's carrier over
+`E = [5]`, `M = [-1]` and the unit gram — the level pair
+`⟨13 : 1⟩ < ⟨17 : 1⟩` at the values `12` and `16`, the carriers
+`τ² − 7` and `τ² − 11` at the gap four — on the segment `[0, 1]`
+from the free end, both at count one, each with its pivot cover at
+the priced side read and the free end's own sample; `cellRead`,
+`cellsRead` and `cellsTop` decided, the pair `[1 : 2]` under the gap
+and doubled under it (`gapsAt`, read at the member through
+`gapsAt_mem`) with `[2 : 1]` refused.  `point_flat` carries the
+window to the point `[1 : 2]`'s ray `[4 : 1]`, the pencil `21` at
+the site data `-27` and `-43`, beside its own `decide`.  The
+refusals: the sample's split forged onto a positive block, the gap
+one beyond the level tie, the vacant count, the foot shifted beyond
+the cell's top, and the point `[3 : 1]` beyond the list's top past
+the anchor carrier's root at `√7`, the anchor's count the sum's unit
+there and the window false.
 
-The chain: two cells at the shared endpoint `33/16` on the
-positive-semidefinite carrier, the second running to `17/8`, each
-with its cover and its vacant sample at its foot; `chainPsd` reads
-the point `67/32` of the second cell from the chain, beside its own
-`decide`.  The refusals: the chain extended by a third cell to
-`5/2` refuses at that cell's cover at both side spellings — the
-segment crosses the carrier's root, and the refusal is the root's
-own, a root-free segment of the same width passing at the same
-bound and cover shape while a far narrower root-containing segment
-still refuses — and the point `5/2` beyond the chain's top refuses
-the membership with the count occupied there, the conclusion
-false.
+The ray tier at the one list: the ray `[1 : 1]` at the top `[1 : 1]`,
+the cap `W = 2` and the scale `q = 48` — the neighbor `p = 47`, the
+gap `95`, the width `190` and the transported gap `8836` pinned as
+data, the pair `[1 : 2]` doubled under the cell's gap reading
+`4·48² ≤ 2·8836` and the window at the ray's pencil scaled by `48²`
+at the shifted levels, the site data `-14014` and `-22850`, through
+`ray_flat` beside their own `decide`.  The refusals: the pair
+`[1 : 1]` doubled beyond the gap with its scaled read false against
+`8836`, and the ray `[1 : 8]` beyond the top's square, the neighbor
+`135` past the list and the anchor's count the sum's unit at
+`τ² = 8`, the window false; the scale's two reads and the cap are the
+tex's stated frame (`thm:gappos`(v)'s `q` and `thm:truncation`'s
+cap), the cap's own refusals `flat_transport`'s above.
+
+The priced cap at the identity gram: the order-two datum
+`[[0, -1], [-1, 0]]` capped entrywise at one, the scaled identity at
+`ρ = 2` clearing `o·e = 2`, the sum and the site datum each positive
+semidefinite through `capId_hi` and `capId_lo` beside their own
+`decide`; the clearing's binder refused at `ρ = 1` against the
+entries `-2`, the sum indefinite, and the cap's at the entries `-3`
+against the cap one.
 
 The cutoff's price: the two-block window `[[2,1],[1,10]]` at unit
 grams, the magnetic datum `[[-1,1],[1,-1]]` capped at the width two
@@ -288,163 +300,237 @@ example : countAtPair hWf gU 13 (1 + 2) 1 (sp1 ⟨1, 2⟩) := by decide +kernel
 example : ¬ vacFlat hWf gU (7 + 2) 1 13 (1 + 2) 1 (sp1 ⟨2, 1⟩) (sp1 ⟨1, 2⟩) := by
   decide +kernel
 
-/-! The cell tier's fixture: the order-one carrier
-`levelPMat [5] [-1] [1]` — the level datum at the constant key, the
-magnetic member at the top — over the segment `[2, 33/16]`, the
-covers one designated entry each at the bound `[3 : 1]`. -/
+/-! The cell tier's fixture: the order-one carrier at `E = [5]`,
+`M = [-1]` and the unit gram — the level datum at the constant key
+and the magnetic member's balance partner `+1` at the `τ²` key, so
+the level-`⟨13 : 1⟩` carrier reads `τ² − 7` and the level-`⟨17 : 1⟩`
+carrier `τ² − 11` — over the segment `[0, 1]` from the free end,
+both carriers on their lower side there at count one, the covers one
+designated entry each at the bound `[2 : 1]` and the clearing one,
+the sample the free end itself. -/
 
 private def mA : elim.Mat := [[⟨6, 1⟩]]
-private def mB : elim.Mat := [[⟨1, 2⟩]]
-private def mG : elim.Mat := [[⟨2, 1⟩]]
+private def mM : elim.Mat := [[⟨1, 2⟩]]
+private def gI : elim.Mat := [[⟨2, 1⟩]]
 
-private def pmA : split.PMat := levelPMat mA mB mG 3 1 [BPair.unit]
-private def pmT : split.PMat := levelPMat mA mB mG 9 1 [BPair.unit]
-private def pmP : split.PMat := levelPMat mA mB mG 1 2 [BPair.unit]
+private def cfoot : CPair := ⟨BPair.unit, 1⟩
+private def ctop : CPair := ⟨BPair.ofPos 1, 1⟩
 
-private def clo : CPair := ⟨⟨3, 1⟩, 1⟩
-private def chi : CPair := ⟨⟨34, 1⟩, 16⟩
+private def cvL : Cover :=
+  Cover.one ctop 0 false ⟨3, 1⟩ ⟨2, 1⟩ Cover.nought Cover.done
 
-private def cvA : Cover :=
-  Cover.one chi 0 false ⟨4, 1⟩ ⟨2, 1⟩ Cover.nought Cover.done
-private def cvP : Cover :=
-  Cover.one chi 0 true ⟨4, 1⟩ ⟨2, 1⟩ Cover.nought Cover.done
+private def cellF : Cell 1 :=
+  ⟨cfoot, ctop, 13, 1, 17, 1, 4, cvL, cvL, BPair.unit, 1, 1,
+   inertia.mkSplit 1 (evalPC (freecell.freePMat mA mM gI 13 1) BPair.unit 1 2),
+   inertia.mkSplit 1 (evalPC (freecell.freePMat mA mM gI 17 1) BPair.unit 1 2)⟩
 
-private theorem covA : coverRead pmA 1 2 clo chi cvA := by decide +kernel
-private theorem covT : coverRead pmT 1 2 clo chi cvA := by decide +kernel
-private theorem covP : coverRead pmP 1 2 clo chi cvP := by decide +kernel
+example : cellRead mA mM gI cellF := by decide +kernel
+example : cellsRead mA mM gI cfoot [cellF] := by decide +kernel
+example : cellsTop cfoot [cellF] = ctop := rfl
 
-/-! The window's two counts and the vacant count at the lower
-endpoint, and the three target splits at the interior point
-`65/32`. -/
+/-! The pair against the cell's gap four at `E₀ = 4`: `[1 : 2]` under
+the gap and, doubled, under half of it; `[2 : 1]` refused. -/
 
-private theorem smpA : countAt pmA 2 ⟨3, 1⟩ 1 1
-    (inertia.mkSplit 1 (evalPC pmA ⟨3, 1⟩ 1 2)) := by decide +kernel
-private theorem smpT : countAt pmT 2 ⟨3, 1⟩ 1 1
-    (inertia.mkSplit 1 (evalPC pmT ⟨3, 1⟩ 1 2)) := by decide +kernel
-private theorem smpP : countAt pmP 2 ⟨3, 1⟩ 1 0
-    (inertia.mkSplit 1 (evalPC pmP ⟨3, 1⟩ 1 2)) := by decide +kernel
+example : gapsAt 4 1 2 [cellF] := by decide +kernel
+example : gapsAt 4 (2 * 1) 2 [cellF] := by decide +kernel
+example : ¬ gapsAt 4 2 1 [cellF] := by decide +kernel
+example : 4 * 1 ≤ 2 * cellF.gp := gapsAt_mem (by decide +kernel : gapsAt 4 1 2 [cellF])
+  (List.Mem.head [])
 
-private theorem tgtA : splitRead (evalPC pmA ⟨66, 1⟩ 32 2)
-    (inertia.mkSplit 1 (evalPC pmA ⟨66, 1⟩ 32 2)) :=
+/-! The root coordinate's rays read their cells directly: at the
+point `[1 : 2]` the ray `[4 : 1]`'s pencil `20 + 1 = 21` reads count
+one at both levels scaled by four, the site data `-27` and `-43`,
+through `point_flat` beside its own `decide`. -/
+
+private def rayF : elim.Mat := pencil.rayH mA mM (2 * 2) (1 * 1)
+private def sitA : elim.Mat :=
+  siteDatum (matAdd rayF (matScale (2 * 2 * 1) gI)) (matScale (2 * 2 * 13) gI)
+private def sitT : elim.Mat :=
+  siteDatum (matAdd rayF (matScale (2 * 2 * 1) gI)) (matScale (2 * 2 * 17) gI)
+
+private theorem rdA : splitRead sitA (inertia.mkSplit 1 sitA) :=
   inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
-private theorem tgtT : splitRead (evalPC pmT ⟨66, 1⟩ 32 2)
-    (inertia.mkSplit 1 (evalPC pmT ⟨66, 1⟩ 32 2)) :=
-  inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
-private theorem tgtP : splitRead (evalPC pmP ⟨66, 1⟩ 32 2)
-    (inertia.mkSplit 1 (evalPC pmP ⟨66, 1⟩ 32 2)) :=
-  inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
-
-private theorem tgtA1 :
-    inertia.revAt (inertia.mkSplit 1 (evalPC pmA ⟨66, 1⟩ 32 2)) = 1 :=
-  cellCount pmA 2 1 clo chi cvA covA
-    ⟨3, 1⟩ 1 (by decide +kernel) (by decide +kernel) _ smpA
-    ⟨66, 1⟩ 32 (by decide +kernel) (by decide +kernel) _ tgtA
-
-example : inertia.revAt (inertia.mkSplit 1 (evalPC pmT ⟨66, 1⟩ 32 2)) = 1 :=
-  cellCount pmT 2 1 clo chi cvA covT
-    ⟨3, 1⟩ 1 (by decide +kernel) (by decide +kernel) _ smpT
-    ⟨66, 1⟩ 32 (by decide +kernel) (by decide +kernel) _ tgtT
-
-example : inertia.revAt (inertia.mkSplit 1 (evalPC pmA ⟨66, 1⟩ 32 2)) = 1
-    ∧ inertia.revAt (inertia.mkSplit 1 (evalPC pmT ⟨66, 1⟩ 32 2)) = 1 := by
-  decide +kernel
-
-example : inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨66, 1⟩ 32 2)) :=
-  cellPsd pmP 2 clo chi cvP covP
-    ⟨3, 1⟩ 1 (by decide +kernel) (by decide +kernel) _ smpP
-    ⟨66, 1⟩ 32 (by decide +kernel) (by decide +kernel) _ tgtP
-
-example : inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨66, 1⟩ 32 2)) := by
-  decide +kernel
-
-/-! The segment membership's binder: at the point one, below the
-segment, the membership refuses and the anchor carrier's count reads
-naught against the window's one — the transported conclusion
-false. -/
-
-example : ¬ (clo ≤ (⟨⟨2, 1⟩, 1⟩ : CPair)) := by decide +kernel
-example : ¬ (inertia.revAt (inertia.mkSplit 1 (evalPC pmA ⟨2, 1⟩ 1 2))
-    = 1) := by decide +kernel
-
-/-! The vacant sample's binder: the anchor carrier reads count one
-at the lower endpoint, refusing the vacant sample, and its target
-split refuses the positive-semidefinite read. -/
-
-example : ¬ countAt pmA 2 ⟨3, 1⟩ 1 0
-    (inertia.mkSplit 1 (evalPC pmA ⟨3, 1⟩ 1 2)) := by decide +kernel
-example : ¬ inertia.psdAt (inertia.mkSplit 1 (evalPC pmA ⟨66, 1⟩ 32 2)) :=
-  fun hc => Nat.noConfusion (tgtA1.symm.trans hc)
-
-/-! The target's upper membership: the point `5/2` beyond the cell's
-top refuses it, the count occupied there. -/
-
-example : ¬ ((⟨⟨6, 1⟩, 2⟩ : CPair) ≤ chi) := by decide +kernel
-example : ¬ inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨6, 1⟩ 2 2)) := by
-  decide +kernel
-
-/-! The chain: two cells at the shared endpoint `33/16`, the second
-running to `17/8`, each with its cover and its vacant sample at its
-foot. -/
-
-private def chi2 : CPair := ⟨⟨18, 1⟩, 8⟩
-
-private def cvP2 : Cover :=
-  Cover.one chi2 0 true ⟨4, 1⟩ ⟨2, 1⟩ Cover.nought Cover.done
-
-private def cells2 :
-    List (CPair × Cover × (BPair × Pos) × Split 1) :=
-  [(chi, cvP, (⟨3, 1⟩, 1), inertia.mkSplit 1 (evalPC pmP ⟨3, 1⟩ 1 2)),
-   (chi2, cvP2, (⟨34, 1⟩, 16),
-     inertia.mkSplit 1 (evalPC pmP ⟨34, 1⟩ 16 2))]
-
-private theorem chain2 : chainRead pmP 2 0 clo cells2 := by decide +kernel
-
-private theorem tgt2 : splitRead (evalPC pmP ⟨68, 1⟩ 32 2)
-    (inertia.mkSplit 1 (evalPC pmP ⟨68, 1⟩ 32 2)) :=
+private theorem rdT : splitRead sitT (inertia.mkSplit 1 sitT) :=
   inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
 
-example : inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨68, 1⟩ 32 2)) :=
-  chainPsd pmP 2 clo _ _ chain2 ⟨68, 1⟩ 32 (by decide +kernel)
-    (by decide +kernel) _ tgt2
+example : matOneValue rayF [[⟨22, 1⟩]] := by decide +kernel
+example : matOneValue sitA [[⟨1, 28⟩]] := by decide +kernel
+example : matOneValue sitT [[⟨1, 44⟩]] := by decide +kernel
 
-example : inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨68, 1⟩ 32 2)) := by
+example : vacFlat rayF gI (2 * 2 * 13) (2 * 2 * 1) (2 * 2 * 17) (2 * 2 * 1) 1
+    (inertia.mkSplit 1 sitA) (inertia.mkSplit 1 sitT) :=
+  point_flat mA mM gI (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    cfoot cellF [] (by decide +kernel) 1 2 (by decide +kernel) (by decide +kernel)
+    _ _ rdA rdT
+example : vacFlat rayF gI (2 * 2 * 13) (2 * 2 * 1) (2 * 2 * 17) (2 * 2 * 1) 1
+    (inertia.mkSplit 1 sitA) (inertia.mkSplit 1 sitT) := by decide +kernel
+
+/-! The refusals, one per binder.  The list's read: the sample's
+split forged onto a positive block, the level tie at a gap one
+beyond, and the vacant count; the foot shifted beyond the cell's
+top; and the point beyond the list's top, `[3 : 1]` past the anchor
+carrier's root at `√7`, where the anchor's count reads the sum's
+unit against the window's one — the conclusion false with the
+membership refused. -/
+
+example : ¬ cellRead mA mM gI { cellF with spA := sp1 ⟨3, 1⟩ } := by
+  decide +kernel
+example : ¬ cellRead mA mM gI { cellF with gp := 5 } := by decide +kernel
+example : ¬ cellRead mA mM gI { cellF with g := 0 } := by decide +kernel
+example : ¬ cellsRead mA mM gI ⟨BPair.ofNat 2, 1⟩ [cellF] := by decide +kernel
+
+private def rayB : elim.Mat := pencil.rayH mA mM (1 * 1) (3 * 3)
+private def sitB : elim.Mat :=
+  siteDatum (matAdd rayB (matScale (1 * 1 * 1) gI)) (matScale (1 * 1 * 13) gI)
+
+example : ¬ ((⟨BPair.ofPos 3, 1⟩ : CPair) ≤ cellsTop cfoot [cellF]) := by
+  decide +kernel
+example : splitRead sitB (inertia.mkSplit 1 sitB) :=
+  inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
+example : inertia.revAt (inertia.mkSplit 1 sitB) = 0 := by decide +kernel
+example : ¬ vacFlat rayB gI (1 * 1 * 13) (1 * 1 * 1) (1 * 1 * 17) (1 * 1 * 1) 1
+    (inertia.mkSplit 1 sitB) (inertia.mkSplit 1 sitT) := by decide +kernel
+
+/-! The further pair rays at the same list: the ray `[1 : 1]` at the
+list's top `[1 : 1]`, the magnetic cap `W = 2` against the unit
+gram, and the stated scale `q = (1 + 1)·4·2·(2 + 1) = 48`.  The
+neighbor `p = 47` reads `47² < 48² ≤ 48²`, the weights' gap `95`,
+the width `190`, and the transported gap `4·48² − 380 = 8836`, the
+pair `[1 : 2]` doubled under the cell's gap reading `4·48² ≤ 2·8836`
+at the scale; the window at the ray's pencil scaled by `48²` reads
+count one at the shifted levels through `ray_flat` beside its own
+`decide`. -/
+
+private def spG1 : Split 1 := inertia.mkSplit 1 gI
+private theorem rdG : splitRead gI spG1 :=
+  inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
+private def spU1 : Split 1 := inertia.mkSplit 1 (siteDatum (matScale 2 gI) mM)
+private def spL1 : Split 1 := inertia.mkSplit 1 (matAdd (matScale 2 gI) mM)
+private theorem capR : capAt mM (matScale 2 gI) spU1 spL1 := by decide +kernel
+private theorem cellsR : cellsRead mA mM gI cfoot [cellF] := by decide +kernel
+private theorem gapsR : gapsAt 4 (2 * 1) 2 [cellF] := by decide +kernel
+
+example : rayQ 1 2 1 = 48 ∧ rayP 1 1 48 = 47 ∧ rayGap 1 1 48 = 95
+    ∧ rayRho 1 1 48 2 = 190 ∧ rayGp 1 1 48 2 cellF [] = 8836 := by
   decide +kernel
 
-/-! The chain's boundary is a located root: a third cell to `5/2`
-crosses the carrier's root, its cover refusing, and the extended
-chain with it; the point `5/2` beyond the standing chain's top
-refuses the membership with the count occupied there. -/
+example : 4 * (1 * 1) * (rayQ 1 2 1 * rayQ 1 2 1)
+    ≤ 2 * rayGp 1 1 (rayQ 1 2 1) 2 cellF [] :=
+  (ray_flat mA mM gI (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    spG1 rdG (by decide +kernel) 2 spU1 spL1 capR cellF [] cellsR
+    4 1 2 gapsR 1 1 rfl 1 1 (by decide +kernel)).2.1
+example : 4 * (1 * 1) * (rayQ 1 2 1 * rayQ 1 2 1)
+    ≤ 2 * rayGp 1 1 (rayQ 1 2 1) 2 cellF [] := by decide +kernel
 
-private def chi3 : CPair := ⟨⟨6, 1⟩, 2⟩
+private def sitRa : elim.Mat :=
+  siteDatum (matAdd (matScale (rayQ 1 2 1 * rayQ 1 2 1) (pencil.rayH mA mM 1 1))
+      (matScale (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).ay)) gI))
+    (matScale (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).ax)
+      + rayRho 1 1 (rayQ 1 2 1) 2) gI)
+private def sitRt : elim.Mat :=
+  siteDatum (matAdd (matScale (rayQ 1 2 1 * rayQ 1 2 1) (pencil.rayH mA mM 1 1))
+      (matScale (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).ty)
+        + rayRho 1 1 (rayQ 1 2 1) 2) gI))
+    (matScale (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).tx)) gI)
+private theorem rdRa : splitRead sitRa (inertia.mkSplit 1 sitRa) :=
+  inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
+private theorem rdRt : splitRead sitRt (inertia.mkSplit 1 sitRt) :=
+  inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
 
-private def cvP3 : Cover :=
-  Cover.one chi3 0 true ⟨4, 1⟩ ⟨2, 1⟩ Cover.nought Cover.done
+example : matOneValue sitRa [[⟨1, 14015⟩]] := by decide +kernel
+example : matOneValue sitRt [[⟨1, 22851⟩]] := by decide +kernel
 
-example : ¬ coverRead pmP 1 2 chi2 chi3 cvP3 := by decide +kernel
-example : ¬ coverRead pmP 1 2 chi2 chi3
-    (Cover.one chi3 0 false ⟨4, 1⟩ ⟨2, 1⟩ Cover.nought Cover.done) := by
+example : vacFlat (matScale (rayQ 1 2 1 * rayQ 1 2 1) (pencil.rayH mA mM 1 1)) gI
+    (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).ax)
+      + rayRho 1 1 (rayQ 1 2 1) 2)
+    (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).ay))
+    (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).tx))
+    (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).ty)
+      + rayRho 1 1 (rayQ 1 2 1) 2)
+    (rayCell 1 1 (rayQ 1 2 1) cellF []).g (inertia.mkSplit 1 sitRa) (inertia.mkSplit 1 sitRt) :=
+  (ray_flat mA mM gI (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    spG1 rdG (by decide +kernel) 2 spU1 spL1 capR cellF [] cellsR
+    4 1 2 gapsR 1 1 rfl 1 1 (by decide +kernel)).2.2 _ _ rdRa rdRt
+example : vacFlat (matScale (rayQ 1 2 1 * rayQ 1 2 1) (pencil.rayH mA mM 1 1)) gI
+    (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).ax)
+      + rayRho 1 1 (rayQ 1 2 1) 2)
+    (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).ay))
+    (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).tx))
+    (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).ty)
+      + rayRho 1 1 (rayQ 1 2 1) 2)
+    (rayCell 1 1 (rayQ 1 2 1) cellF []).g (inertia.mkSplit 1 sitRa) (inertia.mkSplit 1 sitRt) := by
   decide +kernel
 
-/-! The refusal is the root's, not the width's: a root-free segment
-of the same width passes at the same bound and cover shape, and a
-root-containing segment far narrower still refuses at both side
-spellings. -/
+/-! The ray tier's refusals.  The pair's binder: `[1 : 1]` doubled
+sits beyond the cell's gap, and at the scale `48²` the transported
+gap `8836` sits under `4·48² = 9216`, the pair's read false.  The
+ray's binder: the ray `[1 : 8]` beyond the top's square, where the
+neighbor `p = 135` sits past the list and the anchor carrier reads
+its upper side at `τ² = 8`, the transported anchor count the sum's
+unit against the cell's one. -/
 
-example : coverRead pmP 1 2 (⟨⟨4, 1⟩, 2⟩ : CPair) (⟨⟨16, 1⟩, 8⟩ : CPair)
-    (Cover.one ⟨⟨16, 1⟩, 8⟩ 0 true ⟨4, 1⟩ ⟨2, 1⟩ Cover.nought
-      Cover.done) := by decide +kernel
-example : ¬ coverRead pmP 1 2 (⟨⟨40, 1⟩, 16⟩ : CPair) chi3
-    (Cover.one chi3 0 true ⟨4, 1⟩ ⟨2, 1⟩ Cover.nought Cover.done) := by
+example : ¬ gapsAt 4 (2 * 1) 1 [cellF] := by decide +kernel
+example : ¬ (4 * (1 * 1) * (rayQ 1 2 1 * rayQ 1 2 1)
+    ≤ 1 * rayGp 1 1 (rayQ 1 2 1) 2 cellF []) := by decide +kernel
+
+example : ¬ (8 * (1 * 1) ≤ 1 * 1 * 1) := by decide +kernel
+example : rayP 1 8 48 = 135 := by decide +kernel
+
+private def sitXa : elim.Mat :=
+  siteDatum (matAdd (matScale (48 * 48) (pencil.rayH mA mM 1 8))
+      (matScale (1 * (48 * 48 * (rayCell 1 8 48 cellF []).ay)) gI))
+    (matScale (1 * (48 * 48 * (rayCell 1 8 48 cellF []).ax) + rayRho 1 8 48 2) gI)
+private def sitXt : elim.Mat :=
+  siteDatum (matAdd (matScale (48 * 48) (pencil.rayH mA mM 1 8))
+      (matScale (1 * (48 * 48 * (rayCell 1 8 48 cellF []).ty) + rayRho 1 8 48 2) gI))
+    (matScale (1 * (48 * 48 * (rayCell 1 8 48 cellF []).tx)) gI)
+
+example : splitRead sitXa (inertia.mkSplit 1 sitXa) :=
+  inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
+example : splitRead sitXt (inertia.mkSplit 1 sitXt) :=
+  inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
+example : inertia.revAt (inertia.mkSplit 1 sitXa) = 0 := by decide +kernel
+example : ¬ vacFlat (matScale (48 * 48) (pencil.rayH mA mM 1 8)) gI
+    (1 * (48 * 48 * (rayCell 1 8 48 cellF []).ax) + rayRho 1 8 48 2)
+    (1 * (48 * 48 * (rayCell 1 8 48 cellF []).ay))
+    (1 * (48 * 48 * (rayCell 1 8 48 cellF []).tx))
+    (1 * (48 * 48 * (rayCell 1 8 48 cellF []).ty) + rayRho 1 8 48 2)
+    (rayCell 1 8 48 cellF []).g (inertia.mkSplit 1 sitXa) (inertia.mkSplit 1 sitXt) := by
   decide +kernel
-example : ¬ coverRead pmP 1 2 (⟨⟨40, 1⟩, 16⟩ : CPair) chi3
-    (Cover.one chi3 0 false ⟨4, 1⟩ ⟨2, 1⟩ Cover.nought Cover.done) := by
+
+/-! The priced cap at the identity gram (`capId_lo`, `capId_hi`):
+the order-two datum `[[0, -1], [-1, 0]]` capped entrywise at one,
+the scaled identity at `ρ = 2` clearing `o·e = 2`, the sum and the
+site datum each positive semidefinite, through the theorems beside
+their own `decide`; the clearing's binder refuses at `ρ = 1` against
+the entries `-2`, the sum indefinite, and the cap's at the entries
+`-3` against the cap one at `ρ = 2`. -/
+
+private def sCap : elim.Mat := [[BPair.unit, ⟨1, 2⟩], [⟨1, 2⟩, BPair.unit]]
+private def sCap2 : elim.Mat := [[BPair.unit, ⟨1, 3⟩], [⟨1, 3⟩, BPair.unit]]
+private def sCap3 : elim.Mat := [[BPair.unit, ⟨1, 4⟩], [⟨1, 4⟩, BPair.unit]]
+
+example : inertia.psdAt (inertia.mkSplit 2 (matAdd (matScale 2 (idMat 2)) sCap)) :=
+  capId_hi 2 sCap ⟨2, 1⟩ 2 _ (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+    (inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel))
+example : inertia.psdAt (inertia.mkSplit 2 (matAdd (matScale 2 (idMat 2)) sCap)) := by
   decide +kernel
-example : ¬ chainRead pmP 2 0 clo (cells2 ++
-    [(chi3, cvP3, (⟨6, 1⟩, 2),
-      inertia.mkSplit 1 (evalPC pmP ⟨6, 1⟩ 2 2))]) := by decide +kernel
-example : ¬ ((⟨⟨6, 1⟩, 2⟩ : CPair) ≤ chainHi clo cells2) := by
+example : inertia.psdAt (inertia.mkSplit 2 (siteDatum (matScale 2 (idMat 2)) sCap)) :=
+  capId_lo 2 sCap ⟨2, 1⟩ 2 _ (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+    (inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel))
+example : inertia.psdAt (inertia.mkSplit 2 (siteDatum (matScale 2 (idMat 2)) sCap)) := by
   decide +kernel
-example : ¬ inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨6, 1⟩ 2 2)) := by
+
+example : magCap ⟨3, 1⟩ sCap2 := by decide +kernel
+example : ¬ (BPair.ofNat 2 * ⟨3, 1⟩ ≤ BPair.ofPos 1) := by decide +kernel
+example : ¬ inertia.psdAt (inertia.mkSplit 2 (matAdd (matScale 1 (idMat 2)) sCap2)) := by
+  decide +kernel
+example : ¬ magCap ⟨2, 1⟩ sCap3 := by decide +kernel
+example : ¬ inertia.psdAt (inertia.mkSplit 2 (matAdd (matScale 2 (idMat 2)) sCap3)) := by
   decide +kernel
 
 /-! The cutoff's price: the two-block window at unit grams, the
@@ -651,156 +737,4 @@ example : ¬ (inertia.revAt (inertia.mkSplit 3
     (siteDatum (matScale 1 et3) (matScale 16 (idMat 3)))) = 1) := by
   decide +kernel
 example : ¬ speccut.specRead (l3.map (fun r => (r.1, r.2.1))) 4 4 1 := by
-  decide +kernel
-
-/-! The gap tier at the cell fixture: the committed gap `[2, 33/16]`
-on the positive-semidefinite carrier, the anchored margin at the
-lower endpoint — the level two against the margin one — the bound
-pair `(8, 2)`, the derivative fold capped at sixteen, and the
-clearing comparison `16 ≤ 16` at the width's own denominator. -/
-
-private def spML : Split 1 :=
-  inertia.mkSplit 1 (siteDatum (evalPC pmP ⟨3, 1⟩ 1 2)
-    (matScale 1 (idMat 1)))
-
-private theorem margL : splitRead (siteDatum (evalPC pmP ⟨3, 1⟩ 1 2)
-    (matScale 1 (idMat 1))) spML :=
-  inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
-
-example : inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨66, 1⟩ 32 2)) :=
-  gapPsd_lo pmP ⟨3, 1⟩ 1 ⟨34, 1⟩ 16 ⟨9, 1⟩ ⟨3, 1⟩ ⟨17, 1⟩ 1 spML
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    margL (by decide +kernel) (by decide +kernel)
-    ⟨66, 1⟩ 32 (by decide +kernel) (by decide +kernel) _ tgtP
-
-/-! The upper anchor at the same gap: the margin certificate at
-`33/16`'s own clearing, the level `447` against the margin `400`,
-the clearing comparison `4096 ≤ 6400`. -/
-
-private def spMH : Split 1 :=
-  inertia.mkSplit 1 (siteDatum (evalPC pmP ⟨34, 1⟩ 16 2)
-    (matScale 400 (idMat 1)))
-
-private theorem margH : splitRead (siteDatum (evalPC pmP ⟨34, 1⟩ 16 2)
-    (matScale 400 (idMat 1))) spMH :=
-  inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
-
-example : inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨66, 1⟩ 32 2)) :=
-  gapPsd_hi pmP ⟨3, 1⟩ 1 ⟨34, 1⟩ 16 ⟨9, 1⟩ ⟨3, 1⟩ ⟨17, 1⟩ 400 spMH
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    margH (by decide +kernel) (by decide +kernel)
-    ⟨66, 1⟩ 32 (by decide +kernel) (by decide +kernel) _ tgtP
-
-/-! The gap binders' refusals: the magnitude bound at a bound pair
-too small, the fold cap one below the fold, the margin beyond the
-anchor's level, and the clearing comparison at a cap one beyond
-the priced width. -/
-
-example : ¬ (stage.cmag (⟨⟨3, 1⟩, 1⟩ : CPair) * stage.ofB ⟨3, 1⟩
-    ≤ stage.ofB ⟨2, 1⟩) := by decide +kernel
-example : ¬ foldCap pmP ⟨9, 1⟩ ⟨3, 1⟩ ⟨16, 1⟩ := by decide +kernel
-example : ¬ inertia.psdAt (inertia.mkSplit 1
-    (siteDatum (evalPC pmP ⟨3, 1⟩ 1 2) (matScale 3 (idMat 1)))) := by
-  decide +kernel
-example : ¬ (BPair.ofNat 1
-    * ((⟨18, 1⟩ * ((⟨34, 1⟩ : BPair).scale 1
-        + ((⟨3, 1⟩ : BPair).swap).scale 16)).scale
-      (ground.Pos.pow 1 2))
-    ≤ (BPair.ofPos 1).scale (16 * 1)) := by decide +kernel
-
-/-! The certificate reads: the committed gap's certificate at the
-lower anchor, the zipped list read with its length refusals, and
-the strict fold base's refusal at the unit base. -/
-
-private def gcL : GapCert 1 := ⟨⟨9, 1⟩, ⟨3, 1⟩, ⟨17, 1⟩, 1, spML, true⟩
-
-example : gapRead pmP 2 clo chi gcL := by decide +kernel
-
-example : gapsRead pmP 2 [(clo, chi)] [gcL] := by decide +kernel
-example : ¬ gapsRead pmP 2 [(clo, chi)] ([] : List (GapCert 1)) := by
-  decide +kernel
-example : ¬ gapsRead pmP 2 ([] : List (CPair × CPair)) [gcL] := by
-  decide +kernel
-example : ¬ gapRead pmP 2 clo chi
-    ⟨⟨9, 1⟩, ⟨1, 1⟩, ⟨17, 1⟩, 1, spML, true⟩ := by decide +kernel
-
-/-! The interior read at the closed union: two segments' chains, the
-first ending at `33/16` and the second footed at `17/8`, the
-committed gap between them at the `33/16`-anchored certificate with
-margin `256` against the level `447` and the clearing at equality
-`32768 = 32768`; the gap's interior point `133/64` and the second
-chain's own point `17/8` each read through the theorem beside the
-decide, with the anchoring and ordering refusals. -/
-
-private def pc1 : Piece 1 :=
-  Piece.seg clo [(chi, cvP, (⟨3, 1⟩, 1),
-    inertia.mkSplit 1 (evalPC pmP ⟨3, 1⟩ 1 2))]
-
-private def cvP4 : Cover :=
-  Cover.one ⟨⟨10, 1⟩, 4⟩ 0 true ⟨4, 1⟩ ⟨2, 1⟩ Cover.nought Cover.done
-
-private def pc2 : Piece 1 :=
-  Piece.seg chi2 [(⟨⟨10, 1⟩, 4⟩, cvP4, (⟨18, 1⟩, 8),
-    inertia.mkSplit 1 (evalPC pmP ⟨18, 1⟩ 8 2))]
-
-private def gcM : GapCert 1 :=
-  ⟨⟨9, 1⟩, ⟨3, 1⟩, ⟨17, 1⟩, 256,
-    inertia.mkSplit 1 (siteDatum (evalPC pmP ⟨34, 1⟩ 16 2)
-      (matScale 256 (idMat 1))), true⟩
-
-private theorem cread2 : closedRead pmP 2 clo [pc1, pc2] := by
-  decide +kernel
-
-private theorem gread2 :
-    gapsRead pmP 2 (closedGaps (closedHi clo [pc1]) [pc2]) [gcM] := by
-  decide +kernel
-
-private theorem tgtG : splitRead (evalPC pmP ⟨134, 1⟩ 64 2)
-    (inertia.mkSplit 1 (evalPC pmP ⟨134, 1⟩ 64 2)) :=
-  inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
-
-example : inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨134, 1⟩ 64 2)) :=
-  interiorPsd pmP clo pc1 [pc2] [gcM] (by decide +kernel)
-    (by decide +kernel) (by decide +kernel) cread2 gread2
-    ⟨134, 1⟩ 64 (by decide +kernel) (by decide +kernel) _ tgtG
-
-example : inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨134, 1⟩ 64 2)) := by
-  decide +kernel
-
-example : inertia.psdAt (inertia.mkSplit 1 (evalPC pmP ⟨68, 1⟩ 32 2)) :=
-  interiorPsd pmP clo pc1 [pc2] [gcM] (by decide +kernel)
-    (by decide +kernel) (by decide +kernel) cread2 gread2
-    ⟨68, 1⟩ 32 (by decide +kernel) (by decide +kernel) _ tgt2
-
-example : ¬ startsAt chi [pc1, pc2] := by decide +kernel
-example : ¬ closedRead pmP 2 chi2 [pc1, pc2] := by decide +kernel
-example : ¬ ((⟨⟨6, 1⟩, 2⟩ : CPair) ≤ closedHi clo [pc1, pc2]) := by
-  decide +kernel
-
-/-! The junction arm at the rational-root carrier `25 - 4t²`: the
-boundary point `5/2` at its own split — the kernel's, the lower
-list vacant — with the flanking positive-semidefinite sample at
-`2`, the read passing at either tie side there, and refused at a
-sample beyond the root. -/
-
-private def pmJ : split.PMat :=
-  levelPMat [[⟨26, 1⟩]] [[⟨1, 5⟩]] [[⟨2, 1⟩]] 1 1 [BPair.unit]
-
-private def spbJ : Split 1 :=
-  inertia.mkSplit 1 (evalPC pmJ ⟨6, 1⟩ 2 2)
-private def sptJ : Split 1 :=
-  inertia.mkSplit 1 (evalPC pmJ ⟨3, 1⟩ 1 2)
-
-example : closedRead pmJ 2 ⟨⟨6, 1⟩, 2⟩
-    [Piece.junc ⟨6, 1⟩ 2 spbJ ⟨3, 1⟩ 1 sptJ true ⟨9, 1⟩ ⟨3, 1⟩] := by
-  decide +kernel
-example : closedRead pmJ 2 ⟨⟨6, 1⟩, 2⟩
-    [Piece.junc ⟨6, 1⟩ 2 spbJ ⟨3, 1⟩ 1 sptJ false ⟨9, 1⟩ ⟨3, 1⟩] := by
-  decide +kernel
-example : ¬ closedRead pmJ 2 ⟨⟨6, 1⟩, 2⟩
-    [Piece.junc ⟨6, 1⟩ 2 spbJ ⟨7, 1⟩ 2
-      (inertia.mkSplit 1 (evalPC pmJ ⟨7, 1⟩ 2 2)) true
-      ⟨9, 1⟩ ⟨3, 1⟩] := by
   decide +kernel

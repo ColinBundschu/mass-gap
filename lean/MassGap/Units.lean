@@ -2015,14 +2015,6 @@ private theorem cross_rows (MA MB : elim.Mat) (c1 c2 : BPair)
           (BPair.oneValue_symm (elim.dotN_read _ _))
           (BPair.oneValue_refl _)))
 
-private theorem getAt_beyond {α : Type} (d : α) :
-    ∀ (l : List α) (i : Nat), ¬ i < l.length →
-      ground.getAt d l i = d
-  | [], _, _ => rfl
-  | _ :: _, 0, h => absurd (Nat.succ_pos _) h
-  | _ :: t, i + 1, h =>
-    getAt_beyond d t i (fun hlt => h (Nat.succ_lt_succ hlt))
-
 private theorem count_read (mu : List Nat) (p : Nat) (s : List Nat)
     (hl : s.length = sumNat mu) (hc : content mu.length s = mu) :
     ground.countOf p s = ground.getAt 0 mu p := by
@@ -2034,7 +2026,7 @@ private theorem count_read (mu : List Nat) (p : Nat) (s : List Nat)
       ground.getAt_map 0 0 (fun t => ground.countOf t s)
         (List.range mu.length) p (by rw [length_range]; exact hp),
       getAt_range mu.length p hp]
-  · rw [getAt_beyond 0 mu p hp]
+  · rw [ground.getAt_over 0 mu p (Nat.le_of_not_lt hp)]
     match Nat.eq_zero_or_pos (ground.countOf p s) with
     | .inl hz => exact hz
     | .inr hpos =>

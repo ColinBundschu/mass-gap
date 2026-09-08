@@ -9,80 +9,23 @@ The TeX is authoritative, and the Lean is its transcription: every top-level Lea
 
 ## Status
 
-`theory.tex` is a nominally complete proof, to the extent that any proof only reviewed by its author can be considered complete. Any changes that need to be made, significant or minor, will be made in the TeX first and reflected in Lean. The Lean tree is
-a mostly complete transcription of the TeX proof: this section says exactly which parts are and are
-not formalized.
+`theory.tex` is a nominally complete proof, to the extent that any proof reviewed only by its author can be called complete. Every change, significant or minor, is made in the TeX first and then reflected in Lean. The Lean tree is a mostly complete transcription; the docstring at the head of each module under [lean/MassGap/](lean/MassGap/) states exactly which clauses of its label it formalizes, and this section gives the overview.
 
-`thm:main` has three clauses. These are stated over the domain `main.Member`
-([lean/MassGap/Main.lean](lean/MassGap/Main.lean)): the $A$-series at every residue,
-$B_\ell$, $C_\ell$, and $D_\ell$ at their index floors, and $G_2$, $F_4$, $E_6$,
-$E_7$, and $E_8$ once each.
+`thm:main` has three clauses, stated over the domain `main.Member` ([lean/MassGap/Main.lean](lean/MassGap/Main.lean)): the $A$-series at every residue, $B_\ell$, $C_\ell$ and $D_\ell$ at their index floors, and $G_2$, $F_4$, $E_6$, $E_7$ and $E_8$ once each.
 
-Formalized:
+**Formalized.** All three clauses hold at every member of the classification at their committed instances: clause (i), gap positivity, at each member's floor window (`main.clauseI_all`); clause (ii), the contact pair $(3, H_r)$ together with the window half that every named cut edge is a located root of the window pencil's symbol attained at a word image, at the TeX's own quantifier (`main.clauseII_all`); and clause (iii)'s member layer, the corner cell's floor datum through the one disconjugacy certificate transported across the residues (`main.clauseIII_all`). The label calculus, the carrier and pencil interfaces, the count certificates, the fibering and decimation tiers, the ground reads, the corner certificate and the tail read's floor-line certificate are landed beneath them.
 
-- **Clause (i), gap positivity, is closed for every member at its floor window**:
-  `main.clauseI_all` proves both committed chain reads and the required tie throughout the classification. The series cases are parametric in rank at the diagonal windows; $D_4$'s four-loop window and $E_8$'s coupled window are handled separately.  The clause's window-level interface is landed beside it: the pencil interface at the window list (`pairpencil.pencilRead`: the order tie, the electric member, the gram's block read and the magnetic member's terms at their caps and supports), the gram's block content as each index member's fiber presentation Gram (`pairpencil.gramBlockRead`), the presentation carrier of the fibers' vertex lists (`fusion.Data.vertList`, with the Gram its derived read), and the fibering's index action with `lem:fiberdec`'s commuting datum at the electric member as a theorem at every region admitting the action (`fiberdec.commRead_slotE_dataA`).
-- **Clause (ii) is closed at both of its halves**: `main.clauseII_all` proves the contact pair $(3,H_r)$ throughout the classification (the order count, base collection, excess-harmonic value, and occupancy families parametrically over every residue and rank; the fixed members by kernel `decide` in [lean/MassGapChecks/Main.lean](lean/MassGapChecks/Main.lean)), and the window half, that at every window and coupling whose cut names an edge the edge is a located root of the window pencil's symbol attained at a word image with the two moments at equality and the first positive, is `attained.attained_at` with the root read `divisorid.rootIff`, stated at the TeX's own quantifier.
-- **Clause (iii)'s member layer is closed for every member**: `main.clauseIII` is `lem:corner`'s cell-floor datum at the member's derived residue (the member's tail scale, its endpoint key, and the residue-one and transported cells), and `main.clauseIII_all` holds it at the whole domain through the one corner disconjugacy certificate transported across the residues (`lem:cornerpivot`(vi)).
+**Open.** Four items separate the committed instances from the theorem at its own quantifiers:
 
-- **The requirement mirrors** `lem:sectorspan` and `lem:attained`.
-- **Clause (iii)'s support tiers, whole**: `lem:cornerpivot`
-  (the corner disconjugacy certificate, all seven clauses: the
-  walk, profile, crossing, dominance, ground-witness, count and
-  block-chain tiers, the graded box devices, the block chain's
-  ball tier, and the emitted disconjugacy store with its
-  certificate kernel-decided whole), `lem:spectator`'s derivation
-  tier, `thm:groundreads` (clauses (i)-(vii) with (v')),
-  `lem:momentfold` (the moment streams, the graded system, the
-  truncation cap, the scale comparison and the datum assembly),
-  `lem:fourpoint`, `lem:corner` (the corner count, the shifted
-  scaling, the drift, the grade key, the caps and counts, and the
-  cell floor with the corner-output clauses of `thm:decomp` and
-  `thm:twoaction`), `lem:cone`, `thm:continuum`,
-  `thm:reconstruct`, `thm:restoration`'s first tier, the depth
-  chain of a window (`con:depthchain`, the block chain
-  `lem:cornerpivot`(vii)'s certificate runs on, at the window
-  index), the probe cap `lem:attained`(iv), and the gradient read
-  of `thm:momentform`.
+- Clause (i) at every region, cutoff and interior end-weight ray: the cell list past the free cell, the counts on the decimated head across a cell, and the truncation modulus with the meet over the directed windows.
+- The chain's height at the contact end, the tail read `thm:continuum`(iii) consumes for the spacing: the scale key under which a window's height sits below a stated floor, and its join at `main`.
+- Clause (iii)'s composite statement at `main`: the datum-level closure and site counts, the corner cell's positive extent, and each cell's edge read at a word image.
+- The reverse correspondence walk, every TeX label reached from a Lean namespace.
 
-Open (no Lean yet):
-
-- **Clause (i) at its own quantifiers**: the theorem that at every
-  region and cutoff of the directed family and every interior
-  end-weight ray the window cut holds at one positive pair.  Its
-  remaining reads are the members' vertex lists beyond two ends
-  (`fusion.Data.vertList` reads `none` there, so every member
-  window with a vertex of three or more ends is refused until it
-  lands), the decimation onto its cells with the cell list closing
-  at the corner cell, the truncation modulus at the window level
-  with the meet over the directed windows, and the read's cost at
-  its named owners; the landed clause is the floor-window instance
-  at every member.
-- **The chain's height at the contact end**: the tail read that
-  `thm:continuum`(iii) consumes for the spacing, that at every
-  floor pair a scale key exists under which the chain's height
-  sits below the floor at every further scale.  It is derived in
-  three steps, each TeX-first: the theta chain's block data (the
-  depth chain at the theta window, with the certificate decided on
-  it), the probe's two moments at the chain's ground (the
-  loop-difference probe's channel fold and connected second-order
-  read), and the tail read itself at `lem:corner`.
-- **Clause (iii)'s composite statement at `main`**: the datum-level
-  closure and site counts (`continuum.counts_stable`,
-  `momentfold.datum_close`, `thm:groundreads`(vii)), the corner
-  cell's positive extent with the contact end interior, and each
-  cell's edge read at a word image, joined to `main.clauseIII`.
-- **The reverse correspondence walk**: every TeX label reached
-  from a Lean namespace.
-
-Long-term future work:
-
-- Write a standalone repository (hopefully with community input) to define a neutral statement of the Yang-Mills problem in Lean using conventional types and Mathlib. As with this repository, it will be TeX-first, with Lean formalizing the specification.
-- Write an adapter that connects my proof to the neutral interface.
-- Submit the work for peer review and possibly also to somewhere like [Palomar](https://palomar-registry.org/).
+**Long-term.** A standalone repository, with community input where possible, stating the Yang-Mills problem neutrally in Lean over conventional types and Mathlib, TeX-first like this one; an adapter from this proof to that interface; and submission for peer review, possibly also to a registry such as [Palomar](https://palomar-registry.org/).
 
 The snapshot was taken from the development repository at commit
-`3f7c59800ec6b6a4395507a8ecf4485ed15893b2` (2026-09-05).
+`5ba0ca30d6e0113b9cd526b150f50c26e6227b3f` (2026-09-08).
 
 ## Proof Methodology
 

@@ -22,6 +22,7 @@ import MassGap.Channels
 import MassGap.Xfusion
 import MassGap.Gentable
 import MassGap.Sertables
+import MassGap.Memtable
 import MassGap.Row
 import MassGap.Excess
 import MassGap.Walkresidue
@@ -112,6 +113,7 @@ import MassGap.Cornerpivot
 import MassGap.Cornerblock
 import MassGap.Cornerstore
 import MassGap.Cornerfloor
+import MassGap.Cornercert
 import MassGap.Decomp
 import MassGap.Freecell
 import MassGap.Bridge

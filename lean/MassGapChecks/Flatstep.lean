@@ -6,7 +6,10 @@ sector pair joined to an order-two fiber.
 
 The window: the vacuum sector's pencil `H_p = [2]` against the unit
 gram carries one count at both levels of the ordered pair
-`⟨4 : 1⟩ < ⟨6 : 1⟩` (the levels three and five), the clear sector's
+`⟨4 : 1⟩ < ⟨6 : 1⟩` (the levels three and five), and at the
+rescaling two the doubled pencil carries the window at the doubled
+levels (`vacFlat_scale`, the scaled anchor split's binder refused at
+a forged block), the clear sector's
 `H_q = [6]` carries the sum's unit at both, and the fiber's
 `H = diag(2, 6)` reads the two sectors' block join at the
 kernel-literal coupling `List.replicate 1 (List.replicate 1
@@ -71,6 +74,24 @@ one count each. -/
 
 example : vacFlat hV (idMat 1) 4 1 6 1 1 (sp1 ⟨1, 2⟩) (sp1 ⟨1, 4⟩) := by
   decide +kernel
+
+/-! The window at the rescaling two (`vacFlat_scale`): the pencil
+and both levels doubled, the site data `-2` and `-6` at one count
+each, through the theorem beside its own `decide`; the scaled
+anchor split's binder refuses at a forged block, the read parting
+from the doubled site. -/
+
+example : vacFlat (matScale 2 hV) (idMat 1) (2 * 4) (2 * 1) (2 * 6) (2 * 1) 1
+    (sp1 ⟨1, 3⟩) (sp1 ⟨1, 7⟩) :=
+  vacFlat_scale 2 hV (idMat 1) 4 1 6 1 1 (sp1 ⟨1, 2⟩) (sp1 ⟨1, 4⟩)
+    (sp1 ⟨1, 3⟩) (sp1 ⟨1, 7⟩) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel)
+example : vacFlat (matScale 2 hV) (idMat 1) (2 * 4) (2 * 1) (2 * 6) (2 * 1) 1
+    (sp1 ⟨1, 3⟩) (sp1 ⟨1, 7⟩) := by decide +kernel
+example : ¬ splitRead (siteDatum (matAdd (matScale 2 hV) (matScale (2 * 1) (idMat 1)))
+    (matScale (2 * 4) (idMat 1))) (sp1 ⟨1, 2⟩) := by decide +kernel
+example : ¬ vacFlat (matScale 2 hV) (idMat 1) (2 * 4) (2 * 1) (2 * 6) (2 * 1) 1
+    (sp1 ⟨1, 2⟩) (sp1 ⟨1, 7⟩) := by decide +kernel
 
 /-! The clear sector at the same pair: the site data are `3` and
 `1`, the sum's unit at both counts. -/

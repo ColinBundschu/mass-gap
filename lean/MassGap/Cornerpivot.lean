@@ -156,9 +156,7 @@ scale's square, `witVal N m = m²(N²−m²)`, its truncated difference
 the family's own read — equal members at the endpoint `N` and the
 sum's unit past it.  Its three sums (`witSq`, `witSqM`, `witSqMM`)
 and the bond-square sum `witDiffSq` are read against the power sums
-`powSum k n = Σ_{m≤n} m^k`, whose eleven closed reads
-(`powSum0_closed` … `powSum10_closed`) come from the binomial step
-identity at each key; the four bridges (`witSq_bridge`,
+`ground.powSum` at their closed reads; the four bridges (`witSq_bridge`,
 `witSqM_bridge`, `witSqMM_bridge`, `witDiffSq_bridge`) decompose the
 family's sums per depth at the gap witness `m² + g = N²`, and the
 four closed reads (`witSq_closed`, `witSqM_closed`, `witSqMM_closed`,
@@ -214,8 +212,7 @@ evaluated at `crossDiagEval`), and the completed square at the
 entries forces the count: at a leading entry below the sum's unit
 and a doubled cross read below the diagonal product's quadruple,
 every split reads the reversal count at two or beyond
-(`capForcing`, with `capStrict` and `capStrictVac` the two scale
-classes), so at a cap line beyond both endpoints' rates whose
+(`inertia.capForcing`), so at a cap line beyond both endpoints' rates whose
 discriminant comparison holds at the closed entries the second root
 sits below the cap (`capPair`), the comparisons polynomial in the
 scale — the cell's own reads.
@@ -351,11 +348,11 @@ whose deeper keys are priced by the columns' piece caps.  At both
 slabs vacant at the origin the collapse is the stripped collapse's
 scale shift (`profStrip`, `profVac`, `depthPoly_profStrip`).
 
-The universal count identities of this tier are settled through two
-devices, each a private engine: an expression's key form over two
-variables (`Mir`, `mirEq`) for the polynomial identities, and a
-product's count-and-exponent form over a stated datum list (`Mon`,
-`monEq`) for the monomial ones.
+The universal count identities of this tier are settled through
+Ground's two devices: an expression's key form over two variables
+(`ground.Mir`, `ground.mirEq`) for the polynomial identities, and a
+product's count-and-exponent form over a stated datum list
+(`ground.Mon`, `ground.monEq`) for the monomial ones.
 
 The bundled certificate closes the count read at every scale and
 order at once.  Its objects are the boundary comparison `seedProf`
@@ -8111,11 +8108,6 @@ the square-scale pair's balance at the scale's square withdrawn
 read — equal members at the endpoint and the sum's unit beyond. -/
 def witVal (N m : Nat) : Nat := m * m * (N * N - m * m)
 
-/-- The power sum `S_k(n) = Σ_{m=1}^{n} m^k`, the closed reads'
-shared carrier (`def:poly`'s binomial identities close it). -/
-def powSum (k n : Nat) : Nat :=
-  ground.sumNat ((List.range n).map (fun j => (j + 1) ^ k))
-
 /-- The family's square sum. -/
 def witSq (N : Nat) : Nat :=
   ground.sumNat ((List.range N).map (fun k => (witVal N (k + 1)) ^ 2))
@@ -8129,9 +8121,6 @@ def witSqM (N : Nat) : Nat :=
 def witSqMM (N : Nat) : Nat :=
   ground.sumNat ((List.range N).map
     (fun k => (k + 1) * (k + 1) * (witVal N (k + 1)) ^ 2))
-
-/-- The margin of two naturals, the trichotomy's one value. -/
-def marg (a b : Nat) : Nat := (a - b) + (b - a)
 
 /-- The difference sum, `Σ ⟨x_{m+1}:x_m⟩²` at the cleared bond pair
 `(2m+1)·⟨N² : 2m²+2m+1⟩`, the margin's square per depth. -/
@@ -8204,542 +8193,11 @@ def wellClosedPoly : poly.Poly :=
    BPair.unit, BPair.unit, BPair.unit, BPair.ofNat 80]
 
 /-! `lem:cornerpivot`(v)'s arithmetic tier: the ground witness
-family, its power sums with their closed reads, the lower rate's
-two data with the endpoint key, and the telescope, form and kernel
-identities the tex's three displays carry.
-
-The universal count identities the tier consumes — the power sums'
-binomial steps, the bridges' per-depth reads and the closed reads'
-assemblies — are settled through one device: an expression mirrors
-into a count family over two variables, the outer variable's keys
-carrying the inner variable's own families (`Mir.keys`), the
-mirror's value is the expression itself (`Mir.val`), the Horner
-reads agree with the expression node by node (`Mir.read`), and two
-expressions whose mirrored families reduce alike read one value
-(`mirEq`). -/
-
-/-- The count family's Horner read at a count. -/
-private def hread : List Nat → Nat → Nat
-  | [], _ => 0
-  | c :: p, g => c + g * hread p g
-
-/-- Two count families' convolution. -/
-private def hmul : List Nat → List Nat → List Nat
-  | [], _ => []
-  | c :: p, q => hadd (q.map (fun d => c * d)) (0 :: hmul p q)
-
-private theorem hread_add : ∀ (p q : List Nat) (n : Nat),
-    hread (hadd p q) n = hread p n + hread q n
-  | [], q, n => (Nat.zero_add (hread q n)).symm
-  | c :: p, [], n => (Nat.add_zero (hread (c :: p) n)).symm
-  | c :: p, d :: q, n => by
-    show c + d + n * hread (hadd p q) n
-      = c + n * hread p n + (d + n * hread q n)
-    rw [hread_add p q n, Nat.left_distrib n (hread p n) (hread q n),
-      Nat.add_add_add_comm c d (n * hread p n) (n * hread q n)]
-
-private theorem hread_scale : ∀ (q : List Nat) (c n : Nat),
-    hread (q.map (fun d => c * d)) n = c * hread q n
-  | [], c, _ => (Nat.mul_zero c).symm
-  | d :: q, c, n => by
-    show c * d + n * hread (q.map (fun d => c * d)) n
-      = c * (d + n * hread q n)
-    rw [hread_scale q c n, Nat.left_distrib c d (n * hread q n),
-      ground.mulLeftComm n c (hread q n)]
-
-private theorem hread_mul : ∀ (p q : List Nat) (n : Nat),
-    hread (hmul p q) n = hread p n * hread q n
-  | [], q, n => (Nat.zero_mul (hread q n)).symm
-  | c :: p, q, n => by
-    show hread (hadd (q.map (fun d => c * d)) (0 :: hmul p q)) n
-      = (c + n * hread p n) * hread q n
-    rw [hread_add (q.map (fun d => c * d)) (0 :: hmul p q) n,
-      hread_scale q c n]
-    show c * hread q n + (0 + n * hread (hmul p q) n)
-      = (c + n * hread p n) * hread q n
-    rw [hread_mul p q n, Nat.zero_add,
-      ground.mulAddR c (n * hread p n) (hread q n),
-      ground.mulAssoc n (hread p n) (hread q n)]
-
-private theorem hread_cst (c g : Nat) : hread [c] g = c := by
-  show c + g * 0 = c
-  rw [Nat.mul_zero g, Nat.add_zero c]
-
-private theorem hread_lin (a b g : Nat) : hread [a, b] g = a + g * b := by
-  show a + g * (b + g * 0) = a + g * b
-  rw [Nat.mul_zero g, Nat.add_zero b]
-
-/-- The two-variable Horner read: the outer variable's keys are the
-inner variable's own count families. -/
-private def h2read : List (List Nat) → Nat → Nat → Nat
-  | [], _, _ => 0
-  | c :: p, m, g => hread c g + m * h2read p m g
-
-private def h2add : List (List Nat) → List (List Nat) → List (List Nat)
-  | [], q => q
-  | c :: p, [] => c :: p
-  | c :: p, d :: q => hadd c d :: h2add p q
-
-private def h2mul : List (List Nat) → List (List Nat) → List (List Nat)
-  | [], _ => []
-  | c :: p, q => h2add (q.map (fun d => hmul c d)) ([] :: h2mul p q)
-
-private theorem h2read_add : ∀ (p q : List (List Nat)) (m g : Nat),
-    h2read (h2add p q) m g = h2read p m g + h2read q m g
-  | [], q, m, g => (Nat.zero_add (h2read q m g)).symm
-  | c :: p, [], m, g => (Nat.add_zero (h2read (c :: p) m g)).symm
-  | c :: p, d :: q, m, g => by
-    show hread (hadd c d) g + m * h2read (h2add p q) m g
-      = hread c g + m * h2read p m g + (hread d g + m * h2read q m g)
-    rw [hread_add c d g, h2read_add p q m g,
-      Nat.left_distrib m (h2read p m g) (h2read q m g),
-      Nat.add_add_add_comm (hread c g) (hread d g)
-        (m * h2read p m g) (m * h2read q m g)]
-
-private theorem h2read_scale : ∀ (q : List (List Nat)) (c : List Nat)
-    (m g : Nat),
-    h2read (q.map (fun d => hmul c d)) m g = hread c g * h2read q m g
-  | [], c, _, g => (Nat.mul_zero (hread c g)).symm
-  | d :: q, c, m, g => by
-    show hread (hmul c d) g + m * h2read (q.map (fun d => hmul c d)) m g
-      = hread c g * (hread d g + m * h2read q m g)
-    rw [hread_mul c d g, h2read_scale q c m g,
-      Nat.left_distrib (hread c g) (hread d g) (m * h2read q m g),
-      ground.mulLeftComm m (hread c g) (h2read q m g)]
-
-private theorem h2read_mul : ∀ (p q : List (List Nat)) (m g : Nat),
-    h2read (h2mul p q) m g = h2read p m g * h2read q m g
-  | [], q, m, g => (Nat.zero_mul (h2read q m g)).symm
-  | c :: p, q, m, g => by
-    show h2read (h2add (q.map (fun d => hmul c d)) ([] :: h2mul p q)) m g
-      = (hread c g + m * h2read p m g) * h2read q m g
-    rw [h2read_add (q.map (fun d => hmul c d)) ([] :: h2mul p q) m g,
-      h2read_scale q c m g]
-    show hread c g * h2read q m g + (0 + m * h2read (h2mul p q) m g)
-      = (hread c g + m * h2read p m g) * h2read q m g
-    rw [h2read_mul p q m g, Nat.zero_add,
-      ground.mulAddR (hread c g) (m * h2read p m g) (h2read q m g),
-      ground.mulAssoc m (h2read p m g) (h2read q m g)]
-
-private def h2pow (p : List (List Nat)) : Nat → List (List Nat)
-  | 0 => [[1]]
-  | k + 1 => h2mul p (h2pow p k)
-
-private theorem h2read_pow (p : List (List Nat)) (m g : Nat) :
-    ∀ k : Nat, h2read (h2pow p k) m g = h2read p m g ^ k
-  | 0 => by
-    show hread [1] g + m * 0 = h2read p m g ^ 0
-    rw [hread_cst 1 g, Nat.mul_zero m, Nat.add_zero 1, Nat.pow_zero]
-  | k + 1 => by
-    rw [show h2pow p (k + 1) = h2mul p (h2pow p k) from rfl,
-      h2read_mul p (h2pow p k) m g, h2read_pow p m g k, Nat.pow_succ,
-      Nat.mul_comm (h2read p m g) (h2read p m g ^ k)]
-
-set_option genInjectivity false in
-/-- The mirrored expression over two variables: the constants, the
-two variables, and the sum, the product and the stated power. -/
-private inductive Mir where
-  | cst : Nat → Mir
-  | x : Mir
-  | y : Mir
-  | add : Mir → Mir → Mir
-  | mul : Mir → Mir → Mir
-  | pow : Mir → Nat → Mir
-
-/-- The mirror's count families, one key family per outer key. -/
-private def Mir.keys : Mir → List (List Nat)
-  | .cst c => [[c]]
-  | .x => [[0], [1]]
-  | .y => [[0, 1]]
-  | .add a b => h2add a.keys b.keys
-  | .mul a b => h2mul a.keys b.keys
-  | .pow a k => h2pow a.keys k
-
-/-- The mirror's own value at the two counts. -/
-private def Mir.val (m g : Nat) : Mir → Nat
-  | .cst c => c
-  | .x => m
-  | .y => g
-  | .add a b => a.val m g + b.val m g
-  | .mul a b => a.val m g * b.val m g
-  | .pow a k => a.val m g ^ k
-
-/-- The mirrored families' Horner read is the expression's value. -/
-private theorem Mir.read (m g : Nat) : ∀ e : Mir,
-    h2read e.keys m g = e.val m g
-  | .cst c => by
-    show hread [c] g + m * 0 = c
-    rw [hread_cst c g, Nat.mul_zero m, Nat.add_zero c]
-  | .x => by
-    show hread [0] g + m * (hread [1] g + m * 0) = m
-    rw [hread_cst 0 g, hread_cst 1 g, Nat.mul_zero m, Nat.add_zero 1,
-      Nat.mul_one m, Nat.zero_add m]
-  | .y => by
-    show hread [0, 1] g + m * 0 = g
-    rw [hread_lin 0 1 g, Nat.mul_zero m, Nat.add_zero (0 + g * 1),
-      Nat.mul_one g, Nat.zero_add g]
-  | .add a b => by
-    show h2read (h2add a.keys b.keys) m g = a.val m g + b.val m g
-    rw [h2read_add a.keys b.keys m g, Mir.read m g a, Mir.read m g b]
-  | .mul a b => by
-    show h2read (h2mul a.keys b.keys) m g = a.val m g * b.val m g
-    rw [h2read_mul a.keys b.keys m g, Mir.read m g a, Mir.read m g b]
-  | .pow a k => by
-    show h2read (h2pow a.keys k) m g = a.val m g ^ k
-    rw [h2read_pow a.keys m g k, Mir.read m g a]
-
-/-- The vacant families' padding, the key window the mirrors are
-compared inside. -/
-private def zeroPad : List (List Nat) :=
-  List.replicate 32 (List.replicate 16 0)
-
-private theorem hread_zeroRow (g : Nat) :
-    ∀ J : Nat, hread (List.replicate J 0) g = 0
-  | 0 => rfl
-  | J + 1 => by
-    show 0 + g * hread (List.replicate J 0) g = 0
-    rw [hread_zeroRow g J, Nat.mul_zero g, Nat.add_zero 0]
-
-private theorem h2read_zeroRows (m g : Nat) :
-    ∀ K : Nat, h2read (List.replicate K (List.replicate 16 0)) m g = 0
-  | 0 => rfl
-  | K + 1 => by
-    show hread (List.replicate 16 0) g
-        + m * h2read (List.replicate K (List.replicate 16 0)) m g = 0
-    rw [hread_zeroRow g 16, h2read_zeroRows m g K, Nat.mul_zero m,
-      Nat.add_zero 0]
-
-private theorem h2read_zeroPad (m g : Nat) : h2read zeroPad m g = 0 :=
-  h2read_zeroRows m g 32
-
-/-- A count family agreeing with a mirror's padded families reads
-the mirror's own value. -/
-private theorem mirRaw (m g : Nat) (K : List (List Nat)) (b : Mir)
-    (h : h2add K zeroPad = h2add b.keys zeroPad) :
-    h2read K m g = b.val m g := by
-  have hK : h2read (h2add K zeroPad) m g = h2read K m g := by
-    rw [h2read_add K zeroPad m g, h2read_zeroPad m g, Nat.add_zero]
-  have hb : h2read (h2add b.keys zeroPad) m g = b.val m g := by
-    rw [h2read_add b.keys zeroPad m g, h2read_zeroPad m g,
-      Nat.add_zero, Mir.read m g b]
-  rw [← hK, ← hb, h]
-
-/-- Two mirrors whose padded count families agree read one value at
-every count pair. -/
-private theorem mirEq (m g : Nat) (a b : Mir)
-    (h : h2add a.keys zeroPad = h2add b.keys zeroPad) :
-    a.val m g = b.val m g :=
-  (Mir.read m g a).symm.trans (mirRaw m g a.keys b h)
-
-/-- A one-variable count family enters the two-variable read at its
-one-count keys. -/
-private theorem hreadRow : ∀ (L : List Nat) (N : Nat),
-    hread L N = h2read (L.map (fun c => [c])) N 0
-  | [], _ => rfl
-  | c :: t, N => by
-    show c + N * hread t N
-      = hread [c] 0 + N * h2read (t.map (fun c => [c])) N 0
-    rw [hread_cst c 0, hreadRow t N]
-
-/-- The power sum grows at its endpoint by the arriving depth's own
-power. -/
-private theorem powSum_succ (k n : Nat) :
-    powSum k (n + 1) = powSum k n + (n + 1) ^ k := by
-  show ground.sumNat (((List.range (n + 1))).map (fun j => (j + 1) ^ k))
-    = ground.sumNat ((List.range n).map (fun j => (j + 1) ^ k))
-      + (n + 1) ^ k
-  rw [ground.range_succ n, ground.map_append, ground.sumNat_append]
-  rfl
-
-/-- A count family's total scales through its scalar. -/
-private theorem sumNat_scale (c : Nat) (f : Nat → Nat)
-    (l : List Nat) :
-    c * ground.sumNat (l.map f)
-      = ground.sumNat (l.map (fun x => c * f x)) := by
-  rw [ground.sumMap f l, ground.sumMap (fun x => c * f x) l]
-  exact ground.famFold_mul c f l
-
-/-- The closed read's induction: the base at the vacant endpoint and
-one step identity per depth settle the cleared read at every
-endpoint. -/
-private theorem sumClosed (k a : Nat) (L R : Nat → Nat)
-    (hb : L 0 = R 0)
-    (hs : ∀ n : Nat, R (n + 1) + L n = R n + L (n + 1) + a * (n + 1) ^ k) :
-    ∀ n : Nat, a * powSum k n + L n = R n
-  | 0 => by
-    show a * 0 + L 0 = R 0
-    rw [Nat.mul_zero a, Nat.zero_add]
-    exact hb
-  | n + 1 => by
-    refine ground.addCancelR (L n) ?_
-    rw [powSum_succ k n,
-      Nat.left_distrib a (powSum k n) ((n + 1) ^ k), hs n,
-      Nat.add_right_comm (a * powSum k n) (a * (n + 1) ^ k) (L (n + 1)),
-      Nat.add_assoc (a * powSum k n + L (n + 1)) (a * (n + 1) ^ k) (L n),
-      Nat.add_comm (a * (n + 1) ^ k) (L n),
-      ← Nat.add_assoc (a * powSum k n + L (n + 1)) (L n) (a * (n + 1) ^ k),
-      Nat.add_right_comm (a * powSum k n) (L (n + 1)) (L n),
-      sumClosed k a L R hb hs n,
-      Nat.add_right_comm (R n) (L (n + 1)) (a * (n + 1) ^ k)]
-
-/-- The power sum's step identity at the key 1. -/
-private theorem powStep1 (n : Nat) :
-    (n + 1) ^ 2 + (n + 1)
-      = n ^ 2 + n + 2 * (n + 1) ^ 1 :=
-  mirEq n 0 (Mir.add (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 2) (Mir.add
-    Mir.x (Mir.cst 1))) (Mir.add (Mir.add (Mir.pow Mir.x 2) Mir.x)
-    (Mir.mul (Mir.cst 2) (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 1))) (by decide +kernel)
-
-/-- The power sum's step identity at the key 2. -/
-private theorem powStep2 (n : Nat) :
-    2 * (n + 1) ^ 3 + 3 * (n + 1) ^ 2 + (n + 1)
-      = 2 * n ^ 3 + 3 * n ^ 2 + n + 6 * (n + 1) ^ 2 :=
-  mirEq n 0 (Mir.add (Mir.add (Mir.mul (Mir.cst 2) (Mir.pow (Mir.add Mir.x
-    (Mir.cst 1)) 3)) (Mir.mul (Mir.cst 3) (Mir.pow (Mir.add Mir.x (Mir.cst
-    1)) 2))) (Mir.add Mir.x (Mir.cst 1))) (Mir.add (Mir.add (Mir.add
-    (Mir.mul (Mir.cst 2) (Mir.pow Mir.x 3)) (Mir.mul (Mir.cst 3) (Mir.pow
-    Mir.x 2))) Mir.x) (Mir.mul (Mir.cst 6) (Mir.pow (Mir.add Mir.x
-    (Mir.cst 1)) 2))) (by decide +kernel)
-
-/-- The power sum's step identity at the key 3. -/
-private theorem powStep3 (n : Nat) :
-    (n + 1) ^ 4 + 2 * (n + 1) ^ 3 + (n + 1) ^ 2
-      = n ^ 4 + 2 * n ^ 3 + n ^ 2 + 4 * (n + 1) ^ 3 :=
-  mirEq n 0 (Mir.add (Mir.add (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 4)
-    (Mir.mul (Mir.cst 2) (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 3)))
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 2)) (Mir.add (Mir.add (Mir.add
-    (Mir.pow Mir.x 4) (Mir.mul (Mir.cst 2) (Mir.pow Mir.x 3))) (Mir.pow
-    Mir.x 2)) (Mir.mul (Mir.cst 4) (Mir.pow (Mir.add Mir.x (Mir.cst 1))
-    3))) (by decide +kernel)
-
-/-- The power sum's step identity at the key 4. -/
-private theorem powStep4 (n : Nat) :
-    6 * (n + 1) ^ 5 + 15 * (n + 1) ^ 4 + 10 * (n + 1) ^ 3 + n
-      = 6 * n ^ 5 + 15 * n ^ 4 + 10 * n ^ 3 + ((n + 1)) + 30 * (n + 1) ^ 4
-        :=
-  mirEq n 0 (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 6) (Mir.pow
-    (Mir.add Mir.x (Mir.cst 1)) 5)) (Mir.mul (Mir.cst 15) (Mir.pow
-    (Mir.add Mir.x (Mir.cst 1)) 4))) (Mir.mul (Mir.cst 10) (Mir.pow
-    (Mir.add Mir.x (Mir.cst 1)) 3))) Mir.x) (Mir.add (Mir.add (Mir.add
-    (Mir.add (Mir.mul (Mir.cst 6) (Mir.pow Mir.x 5)) (Mir.mul (Mir.cst 15)
-    (Mir.pow Mir.x 4))) (Mir.mul (Mir.cst 10) (Mir.pow Mir.x 3))) (Mir.add
-    Mir.x (Mir.cst 1))) (Mir.mul (Mir.cst 30) (Mir.pow (Mir.add Mir.x
-    (Mir.cst 1)) 4))) (by decide +kernel)
-
-/-- The power sum's step identity at the key 5. -/
-private theorem powStep5 (n : Nat) :
-    2 * (n + 1) ^ 6 + 6 * (n + 1) ^ 5 + 5 * (n + 1) ^ 4 + n ^ 2
-      = 2 * n ^ 6 + 6 * n ^ 5 + 5 * n ^ 4 + ((n + 1) ^ 2) + 12 * (n + 1) ^
-        5 :=
-  mirEq n 0 (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 2) (Mir.pow
-    (Mir.add Mir.x (Mir.cst 1)) 6)) (Mir.mul (Mir.cst 6) (Mir.pow (Mir.add
-    Mir.x (Mir.cst 1)) 5))) (Mir.mul (Mir.cst 5) (Mir.pow (Mir.add Mir.x
-    (Mir.cst 1)) 4))) (Mir.pow Mir.x 2)) (Mir.add (Mir.add (Mir.add
-    (Mir.add (Mir.mul (Mir.cst 2) (Mir.pow Mir.x 6)) (Mir.mul (Mir.cst 6)
-    (Mir.pow Mir.x 5))) (Mir.mul (Mir.cst 5) (Mir.pow Mir.x 4))) (Mir.pow
-    (Mir.add Mir.x (Mir.cst 1)) 2)) (Mir.mul (Mir.cst 12) (Mir.pow
-    (Mir.add Mir.x (Mir.cst 1)) 5))) (by decide +kernel)
-
-/-- The power sum's step identity at the key 6. -/
-private theorem powStep6 (n : Nat) :
-    6 * (n + 1) ^ 7 + 21 * (n + 1) ^ 6 + 21 * (n + 1) ^ 5 + (n + 1) + 7 *
-      n ^ 3
-      = 6 * n ^ 7 + 21 * n ^ 6 + 21 * n ^ 5 + n + (7 * (n + 1) ^ 3) + 42 *
-        (n + 1) ^ 6 :=
-  mirEq n 0 (Mir.add (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 6)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 7)) (Mir.mul (Mir.cst 21)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 6))) (Mir.mul (Mir.cst 21)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 5))) (Mir.add Mir.x (Mir.cst 1)))
-    (Mir.mul (Mir.cst 7) (Mir.pow Mir.x 3))) (Mir.add (Mir.add (Mir.add
-    (Mir.add (Mir.add (Mir.mul (Mir.cst 6) (Mir.pow Mir.x 7)) (Mir.mul
-    (Mir.cst 21) (Mir.pow Mir.x 6))) (Mir.mul (Mir.cst 21) (Mir.pow Mir.x
-    5))) Mir.x) (Mir.mul (Mir.cst 7) (Mir.pow (Mir.add Mir.x (Mir.cst 1))
-    3))) (Mir.mul (Mir.cst 42) (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 6)))
-    (by decide +kernel)
-
-/-- The power sum's step identity at the key 7. -/
-private theorem powStep7 (n : Nat) :
-    3 * (n + 1) ^ 8 + 12 * (n + 1) ^ 7 + 14 * (n + 1) ^ 6 + 2 * (n + 1) ^
-      2 + 7 * n ^ 4
-      = 3 * n ^ 8 + 12 * n ^ 7 + 14 * n ^ 6 + 2 * n ^ 2 + (7 * (n + 1) ^
-        4) + 24 * (n + 1) ^ 7 :=
-  mirEq n 0 (Mir.add (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 3)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 8)) (Mir.mul (Mir.cst 12)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 7))) (Mir.mul (Mir.cst 14)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 6))) (Mir.mul (Mir.cst 2)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 2))) (Mir.mul (Mir.cst 7)
-    (Mir.pow Mir.x 4))) (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add
-    (Mir.mul (Mir.cst 3) (Mir.pow Mir.x 8)) (Mir.mul (Mir.cst 12) (Mir.pow
-    Mir.x 7))) (Mir.mul (Mir.cst 14) (Mir.pow Mir.x 6))) (Mir.mul (Mir.cst
-    2) (Mir.pow Mir.x 2))) (Mir.mul (Mir.cst 7) (Mir.pow (Mir.add Mir.x
-    (Mir.cst 1)) 4))) (Mir.mul (Mir.cst 24) (Mir.pow (Mir.add Mir.x
-    (Mir.cst 1)) 7))) (by decide +kernel)
-
-/-- The power sum's step identity at the key 8. -/
-private theorem powStep8 (n : Nat) :
-    10 * (n + 1) ^ 9 + 45 * (n + 1) ^ 8 + 60 * (n + 1) ^ 7 + 20 * (n + 1)
-      ^ 3 + (42 * n ^ 5 + 3 * n)
-      = 10 * n ^ 9 + 45 * n ^ 8 + 60 * n ^ 7 + 20 * n ^ 3 + (42 * (n + 1)
-        ^ 5 + 3 * (n + 1)) + 90 * (n + 1) ^ 8 :=
-  mirEq n 0 (Mir.add (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 10)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 9)) (Mir.mul (Mir.cst 45)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 8))) (Mir.mul (Mir.cst 60)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 7))) (Mir.mul (Mir.cst 20)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 3))) (Mir.add (Mir.mul (Mir.cst
-    42) (Mir.pow Mir.x 5)) (Mir.mul (Mir.cst 3) Mir.x))) (Mir.add (Mir.add
-    (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 10) (Mir.pow Mir.x 9))
-    (Mir.mul (Mir.cst 45) (Mir.pow Mir.x 8))) (Mir.mul (Mir.cst 60)
-    (Mir.pow Mir.x 7))) (Mir.mul (Mir.cst 20) (Mir.pow Mir.x 3))) (Mir.add
-    (Mir.mul (Mir.cst 42) (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 5))
-    (Mir.mul (Mir.cst 3) (Mir.add Mir.x (Mir.cst 1))))) (Mir.mul (Mir.cst
-    90) (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 8))) (by decide +kernel)
-
-/-- The power sum's step identity at the key 9. -/
-private theorem powStep9 (n : Nat) :
-    2 * (n + 1) ^ 10 + 10 * (n + 1) ^ 9 + 15 * (n + 1) ^ 8 + 10 * (n + 1)
-      ^ 4 + (14 * n ^ 6 + 3 * n ^ 2)
-      = 2 * n ^ 10 + 10 * n ^ 9 + 15 * n ^ 8 + 10 * n ^ 4 + (14 * (n + 1)
-        ^ 6 + 3 * (n + 1) ^ 2) + 20 * (n + 1) ^ 9 :=
-  mirEq n 0 (Mir.add (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 2)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 10)) (Mir.mul (Mir.cst 10)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 9))) (Mir.mul (Mir.cst 15)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 8))) (Mir.mul (Mir.cst 10)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 4))) (Mir.add (Mir.mul (Mir.cst
-    14) (Mir.pow Mir.x 6)) (Mir.mul (Mir.cst 3) (Mir.pow Mir.x 2))))
-    (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 2)
-    (Mir.pow Mir.x 10)) (Mir.mul (Mir.cst 10) (Mir.pow Mir.x 9))) (Mir.mul
-    (Mir.cst 15) (Mir.pow Mir.x 8))) (Mir.mul (Mir.cst 10) (Mir.pow Mir.x
-    4))) (Mir.add (Mir.mul (Mir.cst 14) (Mir.pow (Mir.add Mir.x (Mir.cst
-    1)) 6)) (Mir.mul (Mir.cst 3) (Mir.pow (Mir.add Mir.x (Mir.cst 1))
-    2)))) (Mir.mul (Mir.cst 20) (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 9)))
-    (by decide +kernel)
-
-/-- The power sum's step identity at the key 10. -/
-private theorem powStep10 (n : Nat) :
-    6 * (n + 1) ^ 11 + 33 * (n + 1) ^ 10 + 55 * (n + 1) ^ 9 + 66 * (n + 1)
-      ^ 5 + 5 * (n + 1) + (66 * n ^ 7 + 33 * n ^ 3)
-      = 6 * n ^ 11 + 33 * n ^ 10 + 55 * n ^ 9 + 66 * n ^ 5 + 5 * n + (66 *
-        (n + 1) ^ 7 + 33 * (n + 1) ^ 3) + 66 * (n + 1) ^ 10 :=
-  mirEq n 0 (Mir.add (Mir.add (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst
-    6) (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 11)) (Mir.mul (Mir.cst 33)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 10))) (Mir.mul (Mir.cst 55)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 9))) (Mir.mul (Mir.cst 66)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 5))) (Mir.mul (Mir.cst 5)
-    (Mir.add Mir.x (Mir.cst 1)))) (Mir.add (Mir.mul (Mir.cst 66) (Mir.pow
-    Mir.x 7)) (Mir.mul (Mir.cst 33) (Mir.pow Mir.x 3)))) (Mir.add (Mir.add
-    (Mir.add (Mir.add (Mir.add (Mir.add (Mir.mul (Mir.cst 6) (Mir.pow
-    Mir.x 11)) (Mir.mul (Mir.cst 33) (Mir.pow Mir.x 10))) (Mir.mul
-    (Mir.cst 55) (Mir.pow Mir.x 9))) (Mir.mul (Mir.cst 66) (Mir.pow Mir.x
-    5))) (Mir.mul (Mir.cst 5) Mir.x)) (Mir.add (Mir.mul (Mir.cst 66)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 7)) (Mir.mul (Mir.cst 33)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 3)))) (Mir.mul (Mir.cst 66)
-    (Mir.pow (Mir.add Mir.x (Mir.cst 1)) 10))) (by decide +kernel)
-
-/-- The vacant key's power sum is the endpoint's own count. -/
-theorem powSum0_closed : ∀ n : Nat, powSum 0 n = n
-  | 0 => rfl
-  | n + 1 => by
-    rw [powSum_succ 0 n, powSum0_closed n, Nat.pow_zero]
-
-/-- The power sum's closed read at the key 1, cross-added. -/
-theorem powSum1_closed (n : Nat) :
-    2 * powSum 1 n
-      = n ^ 2 + n :=
-  sumClosed 1 2 (fun _ => 0) (fun n => n ^ 2 + n) rfl powStep1 n
-
-/-- The power sum's closed read at the key 2, cross-added. -/
-theorem powSum2_closed (n : Nat) :
-    6 * powSum 2 n
-      = 2 * n ^ 3 + 3 * n ^ 2 + n :=
-  sumClosed 2 6 (fun _ => 0) (fun n => 2 * n ^ 3 + 3 * n ^ 2 + n) rfl
-    powStep2 n
-
-/-- The power sum's closed read at the key 3, cross-added. -/
-theorem powSum3_closed (n : Nat) :
-    4 * powSum 3 n
-      = n ^ 4 + 2 * n ^ 3 + n ^ 2 :=
-  sumClosed 3 4 (fun _ => 0) (fun n => n ^ 4 + 2 * n ^ 3 + n ^ 2) rfl
-    powStep3 n
-
-/-- The power sum's closed read at the key 4, cross-added. -/
-theorem powSum4_closed (n : Nat) :
-    30 * powSum 4 n + n
-      = 6 * n ^ 5 + 15 * n ^ 4 + 10 * n ^ 3 :=
-  sumClosed 4 30 (fun n => n) (fun n => 6 * n ^ 5 + 15 * n ^ 4 + 10 * n ^
-    3) rfl powStep4 n
-
-/-- The power sum's closed read at the key 5, cross-added. -/
-theorem powSum5_closed (n : Nat) :
-    12 * powSum 5 n + n ^ 2
-      = 2 * n ^ 6 + 6 * n ^ 5 + 5 * n ^ 4 :=
-  sumClosed 5 12 (fun n => n ^ 2) (fun n => 2 * n ^ 6 + 6 * n ^ 5 + 5 * n
-    ^ 4) rfl powStep5 n
-
-/-- The power sum's closed read at the key 6, cross-added. -/
-theorem powSum6_closed (n : Nat) :
-    42 * powSum 6 n + 7 * n ^ 3
-      = 6 * n ^ 7 + 21 * n ^ 6 + 21 * n ^ 5 + n :=
-  sumClosed 6 42 (fun n => 7 * n ^ 3) (fun n => 6 * n ^ 7 + 21 * n ^ 6 +
-    21 * n ^ 5 + n) rfl powStep6 n
-
-/-- The power sum's closed read at the key 7, cross-added. -/
-theorem powSum7_closed (n : Nat) :
-    24 * powSum 7 n + 7 * n ^ 4
-      = 3 * n ^ 8 + 12 * n ^ 7 + 14 * n ^ 6 + 2 * n ^ 2 :=
-  sumClosed 7 24 (fun n => 7 * n ^ 4) (fun n => 3 * n ^ 8 + 12 * n ^ 7 +
-    14 * n ^ 6 + 2 * n ^ 2) rfl powStep7 n
-
-/-- The power sum's closed read at the key 8, cross-added. -/
-theorem powSum8_closed (n : Nat) :
-    90 * powSum 8 n + 42 * n ^ 5 + 3 * n
-      = 10 * n ^ 9 + 45 * n ^ 8 + 60 * n ^ 7 + 20 * n ^ 3 :=
-  by
-  rw [Nat.add_assoc (90 * powSum 8 n) (42 * n ^ 5) (3 * n)]
-  exact
-    sumClosed 8 90 (fun n => 42 * n ^ 5 + 3 * n) (fun n => 10 * n ^ 9 + 45
-      * n ^ 8 + 60 * n ^ 7 + 20 * n ^ 3) rfl powStep8 n
-
-/-- The power sum's closed read at the key 9, cross-added. -/
-theorem powSum9_closed (n : Nat) :
-    20 * powSum 9 n + 14 * n ^ 6 + 3 * n ^ 2
-      = 2 * n ^ 10 + 10 * n ^ 9 + 15 * n ^ 8 + 10 * n ^ 4 :=
-  by
-  rw [Nat.add_assoc (20 * powSum 9 n) (14 * n ^ 6) (3 * n ^ 2)]
-  exact
-    sumClosed 9 20 (fun n => 14 * n ^ 6 + 3 * n ^ 2) (fun n => 2 * n ^ 10
-      + 10 * n ^ 9 + 15 * n ^ 8 + 10 * n ^ 4) rfl powStep9 n
-
-/-- The power sum's closed read at the key 10, cross-added. -/
-theorem powSum10_closed (n : Nat) :
-    66 * powSum 10 n + 66 * n ^ 7 + 33 * n ^ 3
-      = 6 * n ^ 11 + 33 * n ^ 10 + 55 * n ^ 9 + 66 * n ^ 5 + 5 * n :=
-  by
-  rw [Nat.add_assoc (66 * powSum 10 n) (66 * n ^ 7) (33 * n ^ 3)]
-  exact
-    sumClosed 10 66 (fun n => 66 * n ^ 7 + 33 * n ^ 3) (fun n => 6 * n ^
-      11 + 33 * n ^ 10 + 55 * n ^ 9 + 66 * n ^ 5 + 5 * n) rfl powStep10 n
-
-/-- A product's square at the factors' squares. -/
-private theorem mulSq (a b : Nat) :
-    (a * b) ^ 2
-      = a ^ 2 * b ^ 2 :=
-  mirEq a b (Mir.pow (Mir.mul Mir.x Mir.y) 2) (Mir.mul (Mir.pow Mir.x 2)
-    (Mir.pow Mir.y 2)) (by decide +kernel)
-
-/-- The doubled product at its two orders. -/
-private theorem twoMul (a b : Nat) :
-    2 * a * b
-      = a * b + b * a :=
-  mirEq a b (Mir.mul (Mir.mul (Mir.cst 2) Mir.x) Mir.y) (Mir.add (Mir.mul
-    Mir.x Mir.y) (Mir.mul Mir.y Mir.x)) (by decide +kernel)
-
-/-- The gap's square against the shifted pair's crossed product. -/
-private theorem margShiftSq (b d : Nat) :
-    d ^ 2 + 2 * (b + d) * b
-      = (b + d) * (b + d) + b * b :=
-  mirEq b d (Mir.add (Mir.pow Mir.y 2) (Mir.mul (Mir.mul (Mir.cst 2)
-    (Mir.add Mir.x Mir.y)) Mir.x)) (Mir.add (Mir.mul (Mir.add Mir.x Mir.y)
-    (Mir.add Mir.x Mir.y)) (Mir.mul Mir.x Mir.x)) (by decide +kernel)
+family, its sums against the power sums' closed reads
+(`ground.powSum`), the lower rate's two data with the endpoint key,
+and the telescope, form and kernel identities the tex's three
+displays carry, the count identities settled at the mirror device
+(`ground.mirEq`). -/
 
 /-- The family's square at a depth, in the depth and the gap. -/
 private theorem sqTerm0 (m g : Nat) :
@@ -8803,79 +8261,6 @@ private theorem diffCore (m X : Nat) :
     1)) 2) (Mir.mul (Mir.mul (Mir.cst 2) Mir.y) (Mir.add (Mir.add (Mir.mul
     (Mir.mul (Mir.cst 2) Mir.x) Mir.x) (Mir.mul (Mir.cst 2) Mir.x))
     (Mir.cst 1))))) (by decide +kernel)
-
-/-- The margin at a shifted first datum is the shift. -/
-private theorem margShift (b d : Nat) : marg (b + d) b = d := by
-  show b + d - b + (b - (b + d)) = d
-  rw [ground.addSubSelfL b d, ground.subLe b (b + d) (Nat.le_add_right b d),
-    Nat.add_zero d]
-
-/-- The margin reads one value at either order. -/
-private theorem margComm (a b : Nat) : marg a b = marg b a :=
-  Nat.add_comm (a - b) (b - a)
-
-/-- The margin's square against the doubled product reads the two
-squares, the trichotomy's one identity. -/
-private theorem margSqNat (a b : Nat) :
-    marg a b ^ 2 + 2 * a * b = a * a + b * b := by
-  match Nat.le_total b a with
-  | Or.inl h =>
-    have hd : b + (a - b) = a :=
-      (Nat.add_comm b (a - b)).trans (ground.subAdd h)
-    have key : marg (b + (a - b)) b ^ 2 + 2 * (b + (a - b)) * b
-        = (b + (a - b)) * (b + (a - b)) + b * b := by
-      rw [margShift b (a - b)]
-      exact margShiftSq b (a - b)
-    rw [hd] at key
-    exact key
-  | Or.inr h =>
-    have hd : a + (b - a) = b :=
-      (Nat.add_comm a (b - a)).trans (ground.subAdd h)
-    have key : marg (a + (b - a)) a ^ 2 + 2 * (a + (b - a)) * a
-        = (a + (b - a)) * (a + (b - a)) + a * a := by
-      rw [margShift a (b - a)]
-      exact margShiftSq a (b - a)
-    rw [hd] at key
-    rw [margComm a b, ground.mulRightComm 2 a b, Nat.add_comm (a * a) (b *
-      b)]
-    exact key
-
-/-- The count pair's square: the two squares against the doubled
-crossed product. -/
-private theorem ofCounts_sq (a b : Nat) :
-    (BPair.ofCounts a b * BPair.ofCounts a b).oneValue
-      (BPair.ofCounts (a * a + b * b) (a * b + b * a)) := by
-  refine BPair.oneValue_symm ?_
-  show (BPair.ofNat (a * a + b * b)
-      + (BPair.ofNat (a * b + b * a)).swap).oneValue
-    ((BPair.ofNat a + (BPair.ofNat b).swap)
-      * (BPair.ofNat a + (BPair.ofNat b).swap))
-  rw [BPair.sq_expand_swap (BPair.ofNat a) (BPair.ofNat b)]
-  refine BPair.add_congr ?_ ?_
-  · exact BPair.oneValue_trans (BPair.ofNat_add (a * a) (b * b))
-      (BPair.add_congr (BPair.ofNat_mul a a) (BPair.ofNat_mul b b))
-  · refine BPair.oneValue_trans
-      (ground.swap_congr (BPair.ofNat_add (a * b) (b * a))) ?_
-    rw [← BPair.swap_add (BPair.ofNat (a * b)) (BPair.ofNat (b * a))]
-    exact BPair.add_congr (ground.swap_congr (BPair.ofNat_mul a b))
-      (ground.swap_congr
-        (BPair.oneValue_trans (BPair.ofNat_mul b a)
-          (BPair.oneValue_of_eq
-            (BPair.mul_comm (BPair.ofNat b) (BPair.ofNat a)))))
-
-/-- The margin's square is the balance pair's own square read, the
-trichotomy's one generic lemma. -/
-theorem margSq_read (a b : Nat) :
-    (BPair.ofNat (marg a b ^ 2)).oneValue
-      (BPair.ofCounts a b * BPair.ofCounts a b) := by
-  have h0 : (BPair.ofNat (marg a b ^ 2)).oneValue
-      (BPair.ofCounts (marg a b ^ 2) 0) :=
-    BPair.oneValue_symm (BPair.add_unit (BPair.ofNat (marg a b ^ 2)))
-  refine BPair.oneValue_trans h0 ?_
-  refine BPair.oneValue_trans (BPair.ofCounts_crossed ?_)
-    (BPair.oneValue_symm (ofCounts_sq a b))
-  rw [← twoMul a b, Nat.add_zero (a * a + b * b)]
-  exact margSqNat a b
 
 /-- The seeded sum moves its last summand past an arriving one, at
 five standing summands. -/
@@ -11184,9 +10569,9 @@ private theorem gapOfAdd {X W Y : BPair} (h : (X + W).oneValue Y) :
     (Y + X.swap).oneValue W := by
   refine BPair.oneValue_trans
     (BPair.add_congr (BPair.oneValue_symm h) (BPair.oneValue_refl X.swap)) ?_
-  rw [BPair.add_right_comm X W X.swap, BPair.add_comm X X.swap]
+  rw [BPair.add_right_comm X W X.swap]
   refine BPair.oneValue_trans (BPair.add_congr
-    (BPair.swap_add_null (BPair.oneValue_refl X)) (BPair.oneValue_refl W)) ?_
+    (BPair.add_swap_null X) (BPair.oneValue_refl W)) ?_
   exact BPair.unit_add W
 
 /-- The line identity at a depth: the rate's second datum scales a
@@ -11510,32 +10895,6 @@ theorem witStrict : ∀ (en ed : Pos) (r N n a b g : Nat),
     (ground.ltB_swap (ground.unitLtNat
       (Nat.mul_pos hg (Nat.mul_pos hqn hqd))))
 
-/-- One strict member forces the count: a vector whose form at the
-datum reads below the sum's unit occupies the reversal count at
-every split, `lem:inertia`'s forcing clause at the one-member
-family. -/
-theorem strictForcing {n : Nat} (S : elim.Mat) (x : List BPair)
-    (hx : x.length = n)
-    (hq : inertia.quadForm S x < BPair.unit) :
-    ∀ sp : inertia.Split n, inertia.splitRead S sp →
-      1 ≤ inertia.revAt sp := by
-  intro sp hsp
-  refine inertia.forcing S sp hsp [x] ⟨hx, trivial⟩ ?_
-  intro cs hcs hu
-  match cs, hcs, hu with
-  | [], hcs, _ => exact Nat.noConfusion hcs
-  | _ :: _ :: _, hcs, _ => exact Nat.noConfusion (Nat.succ.inj hcs)
-  | [c], _, hu =>
-    have hcu : ¬ c.oneValue BPair.unit := fun hc => hu ⟨hc, trivial⟩
-    have hscale := inertia.quadScaleVec S c x
-      (elim.combo n [c] [x]) (elim.combo_one n c x hx)
-    exact BPair.lt_congr (BPair.oneValue_symm hscale)
-      (BPair.oneValue_refl BPair.unit)
-      (BPair.lt_congr
-        (BPair.oneValue_of_eq (BPair.mul_comm _ (c * c)))
-        (BPair.unit_mul (c * c))
-        (ground.ltB_mulPos hq (ground.sq_pos hcu)))
-
 /-- The family is the count's own witness at every member line: one
 lower-side member forces the reversal count occupied at every split
 of the head's datum (`lem:inertia`'s forcing clause). -/
@@ -11548,282 +10907,8 @@ theorem witCount : ∀ (en ed : Pos) (r N n a b g : Nat),
         sp →
       1 ≤ inertia.revAt sp := by
   intro en ed r N n a b g hN h hab hg sp hsp
-  exact strictForcing _ (witList N n) (witList_len N n)
+  exact inertia.strictForcing _ (witList N n) (witList_len N n)
     (witStrict en ed r N n a b g hN h hab hg) sp hsp
-
-/-- The count four's scale is the doubled doubling. -/
-private theorem fourRead (c : BPair) :
-    (BPair.ofNat 4 * c).oneValue (c + c + (c + c)) := by
-  refine BPair.oneValue_trans
-    (BPair.mul_congr (BPair.ofNat_add 2 2) (BPair.oneValue_refl c)) ?_
-  refine BPair.oneValue_trans
-    (BPair.oneValue_of_eq
-      (BPair.right_distrib (BPair.ofNat 2) (BPair.ofNat 2) c)) ?_
-  exact BPair.add_congr (BPair.ofNat_two_mul c) (BPair.ofNat_two_mul c)
-
-/-- The doubled doubling splits over a sum. -/
-private theorem four_add (z w : BPair) :
-    (z + w) + (z + w) + ((z + w) + (z + w))
-      = (z + z + (z + z)) + (w + w + (w + w)) := by
-  rw [BPair.add_add_comm z w z w,
-    BPair.add_add_comm (z + z) (w + w) (z + z) (w + w)]
-
-/-- The completed square at the doubled leading datum: the
-quadruple of a form's three summands against the doubled leading
-datum's square. -/
-private theorem capCore (A E R : BPair) :
-    (A * A + (A * E + R)) + (A * A + (A * E + R))
-        + ((A * A + (A * E + R)) + (A * A + (A * E + R))) + E * E
-      = (A + A + E) * (A + A + E) + (R + R + (R + R)) := by
-  rw [four_add (A * A) (A * E + R), four_add (A * E) R,
-    BPair.sq_expand (A + A) E, BPair.sq_expand A A,
-    BPair.right_distrib A A E,
-    ← BPair.add_assoc (A * A + A * A + (A * A + A * A))
-      (A * E + A * E + (A * E + A * E)) (R + R + (R + R)),
-    BPair.add_right_comm (A * A + A * A + (A * A + A * A)
-        + (A * E + A * E + (A * E + A * E)))
-      (R + R + (R + R)) (E * E),
-    BPair.add_right_comm (A * A + A * A + (A * A + A * A))
-      (A * E + A * E + (A * E + A * E)) (E * E)]
-
-
-/-- Two vectors joined with the constant unit family read their own
-join. -/
-private theorem vecAddRepl2 : ∀ (A B : List BPair) (n : Nat),
-    A.length = n → B.length = n →
-    poly.oneValue
-      (elim.vecAdd A (elim.vecAdd B (List.replicate n BPair.unit)))
-      (elim.vecAdd A B)
-  | [], [], 0, _, _ => trivial
-  | [], [], _ + 1, h, _ => Nat.noConfusion h
-  | [], _ :: _, 0, _, h => Nat.noConfusion h
-  | [], _ :: _, _ + 1, h, _ => Nat.noConfusion h
-  | _ :: _, [], 0, h, _ => Nat.noConfusion h
-  | _ :: _, [], _ + 1, _, h => Nat.noConfusion h
-  | _ :: _, _ :: _, 0, h, _ => Nat.noConfusion h
-  | a :: A', b :: B', m + 1, hA, hB =>
-    ⟨BPair.add_congr (BPair.oneValue_refl a) (BPair.add_unit b),
-     vecAddRepl2 A' B' m (Nat.succ.inj hA) (Nat.succ.inj hB)⟩
-
-/-- The combination at two members is the members' scaled join. -/
-private theorem comboPair (n : Nat) (c1 c2 : BPair) (u w : List BPair)
-    (hu : u.length = n) (hw : w.length = n) :
-    poly.oneValue (elim.combo n [c1, c2] [u, w])
-      (elim.vecAdd (elim.vecScale c1 u) (elim.vecScale c2 w)) :=
-  vecAddRepl2 (elim.vecScale c1 u) (elim.vecScale c2 w) n
-    ((elim.length_vecScale c1 u).trans hu)
-    ((elim.length_vecScale c2 w).trans hw)
-
-/-- The cross pairing at two scaled vectors carries both scales. -/
-private theorem crossScale (S : elim.Mat) (c1 c2 : BPair)
-    (u w : List BPair) :
-    (elim.dotN (elim.vecScale c1 u)
-        (elim.matVec S (elim.vecScale c2 w))).oneValue
-      (c1 * (c2 * elim.dotN u (elim.matVec S w))) := by
-  refine BPair.oneValue_trans (elim.dotN_congrR _ _ _
-    (elim.matVec_vecScale_free S c2 w)) ?_
-  refine BPair.oneValue_trans
-    (elim.dotN_scaleRow_free c1 u (elim.vecScale c2 (elim.matVec S w))) ?_
-  exact BPair.mul_congr (BPair.oneValue_refl c1)
-    (elim.dotN_scaleV c2 u (elim.matVec S w))
-
-/-- The form at a two-member combination: the two squares at the
-scales' own with the cross reads at their product. -/
-private theorem quadPairExpand (S : elim.Mat) (n : Nat)
-    (hSr : elim.rowsLen n S) (hSl : S.length = n)
-    (c1 c2 : BPair) (u w : List BPair)
-    (hu : u.length = n) (hw : w.length = n) :
-    (inertia.quadForm S
-        (elim.vecAdd (elim.vecScale c1 u) (elim.vecScale c2 w))).oneValue
-      (c1 * c1 * inertia.quadForm S u
-        + (c1 * c2 * (elim.dotN u (elim.matVec S w)
-              + elim.dotN w (elim.matVec S u))
-          + c2 * c2 * inertia.quadForm S w)) := by
-  refine BPair.oneValue_trans
-    (inertia.quadAdd S n hSr hSl (elim.vecScale c1 u) (elim.vecScale c2 w)
-      ((elim.length_vecScale c1 u).trans hu)
-      ((elim.length_vecScale c2 w).trans hw)) ?_
-  refine BPair.oneValue_trans (BPair.add_congr
-    (BPair.add_congr
-      (inertia.quadScaleVec S c1 u (elim.vecScale c1 u)
-        (poly.oneValue_refl _))
-      (crossScale S c1 c2 u w))
-    (BPair.add_congr (crossScale S c2 c1 w u)
-      (inertia.quadScaleVec S c2 w (elim.vecScale c2 w)
-        (poly.oneValue_refl _)))) ?_
-  refine BPair.oneValue_of_eq ?_
-  rw [BPair.mul_left_comm c2 c1 (elim.dotN w (elim.matVec S u)),
-    ← BPair.mul_assoc c1 c2 (elim.dotN u (elim.matVec S w)),
-    ← BPair.mul_assoc c1 c2 (elim.dotN w (elim.matVec S u)),
-    BPair.add_assoc (c1 * c1 * inertia.quadForm S u)
-      (c1 * c2 * elim.dotN u (elim.matVec S w))
-      (c1 * c2 * elim.dotN w (elim.matVec S u)
-        + c2 * c2 * inertia.quadForm S w),
-    ← BPair.add_assoc (c1 * c2 * elim.dotN u (elim.matVec S w))
-      (c1 * c2 * elim.dotN w (elim.matVec S u))
-      (c2 * c2 * inertia.quadForm S w),
-    ← BPair.left_distrib (c1 * c2) (elim.dotN u (elim.matVec S w))
-      (elim.dotN w (elim.matVec S u))]
-
-/-- The form's product at the leading entry, the square's own. -/
-private theorem qMulSq (q c : BPair) : q * (c * c * q) = c * q * (c * q) := by
-  rw [BPair.mul_left_comm q (c * c) q, BPair.mul_assoc c q (c * q),
-    BPair.mul_left_comm q c q, ← BPair.mul_assoc c c (q * q)]
-
-/-- The form's product at the cross entry. -/
-private theorem qMulCross (q c1 c2 X : BPair) :
-    q * (c1 * c2 * X) = c1 * q * (c2 * X) := by
-  rw [BPair.mul_left_comm q (c1 * c2) X, BPair.mul_assoc c1 q (c2 * X),
-    BPair.mul_left_comm q c2 X, ← BPair.mul_assoc c1 c2 (q * X)]
-
-/-- A scaled datum's square at the scale's own square. -/
-private theorem scaleSq (c X : BPair) : c * X * (c * X) = c * c * (X * X) := by
-  rw [BPair.mul_assoc c X (c * X), BPair.mul_left_comm X c X,
-    ← BPair.mul_assoc c c (X * X)]
-
-/-- The cap pair's strict read at an occupied second scale: the
-completed square against the discriminant's own comparison. -/
-private theorem capStrict {q11 q22 X c1 c2 : BPair}
-    (hq : q11 < BPair.unit)
-    (hd : X * X < BPair.ofNat 4 * (q11 * q22))
-    (hc2 : ¬ c2.oneValue BPair.unit) :
-    c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22) < BPair.unit := by
-  have hqQ : q11 * (c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22))
-      = c1 * q11 * (c1 * q11)
-        + (c1 * q11 * (c2 * X) + c2 * c2 * (q11 * q22)) := by
-    rw [BPair.left_distrib q11 (c1 * c1 * q11) (c1 * c2 * X + c2 * c2 * q22),
-      BPair.left_distrib q11 (c1 * c2 * X) (c2 * c2 * q22),
-      qMulSq q11 c1, qMulCross q11 c1 c2 X,
-      BPair.mul_left_comm q11 (c2 * c2) q22]
-  have hZ' : (c2 * c2 * (BPair.ofNat 4 * (q11 * q22))).oneValue
-      (c2 * c2 * (q11 * q22) + c2 * c2 * (q11 * q22)
-        + (c2 * c2 * (q11 * q22) + c2 * c2 * (q11 * q22))) := by
-    refine BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _)
-      (fourRead (q11 * q22))) ?_
-    refine BPair.oneValue_of_eq ?_
-    rw [BPair.left_distrib (c2 * c2) (q11 * q22 + q11 * q22)
-        (q11 * q22 + q11 * q22),
-      BPair.left_distrib (c2 * c2) (q11 * q22) (q11 * q22)]
-  have hid : (BPair.ofNat 4
-        * (q11 * (c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22)))
-      + c2 * c2 * (X * X)).oneValue
-      ((c1 * q11 + c1 * q11 + c2 * X) * (c1 * q11 + c1 * q11 + c2 * X)
-        + (c2 * c2 * (q11 * q22) + c2 * c2 * (q11 * q22)
-          + (c2 * c2 * (q11 * q22) + c2 * c2 * (q11 * q22)))) := by
-    rw [hqQ, ← scaleSq c2 X]
-    refine BPair.oneValue_trans (BPair.add_congr
-      (fourRead _) (BPair.oneValue_refl (c2 * X * (c2 * X)))) ?_
-    exact BPair.oneValue_of_eq
-      (capCore (c1 * q11) (c2 * X) (c2 * c2 * (q11 * q22)))
-  have hlt : c2 * c2 * (X * X)
-      < c2 * c2 * (BPair.ofNat 4 * (q11 * q22)) :=
-    BPair.lt_congr (BPair.oneValue_of_eq (BPair.mul_comm (X * X) (c2 * c2)))
-      (BPair.oneValue_of_eq
-        (BPair.mul_comm (BPair.ofNat 4 * (q11 * q22)) (c2 * c2)))
-      (ground.ltB_mulPos hd (ground.sq_pos hc2))
-  have hUV : BPair.unit
-      < c2 * c2 * (BPair.ofNat 4 * (q11 * q22))
-        + (c2 * c2 * (X * X)).swap :=
-    ground.unitLt_of_swap_lt hlt
-  have hW3 : (BPair.ofNat 4
-      * (q11 * (c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22)))).oneValue
-      ((c1 * q11 + c1 * q11 + c2 * X) * (c1 * q11 + c1 * q11 + c2 * X)
-        + (c2 * c2 * (BPair.ofNat 4 * (q11 * q22))
-          + (c2 * c2 * (X * X)).swap)) := by
-    refine BPair.oneValue_trans
-      (BPair.oneValue_symm (BPair.add_swap_self _ ((c2 * c2 * (X * X)).swap)))
-      ?_
-    refine BPair.oneValue_trans
-      (BPair.add_congr hid (BPair.oneValue_refl _)) ?_
-    refine BPair.oneValue_trans (BPair.add_congr
-      (BPair.add_congr (BPair.oneValue_refl _) (BPair.oneValue_symm hZ'))
-      (BPair.oneValue_refl _)) ?_
-    exact BPair.oneValue_of_eq (BPair.add_assoc _ _ _)
-  have hpos : BPair.unit < BPair.ofNat 4
-      * (q11 * (c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22))) :=
-    ground.leB_ltB_trans (ground.unitLeSq (c1 * q11 + c1 * q11 + c2 * X))
-      (BPair.lt_congr (BPair.oneValue_refl _) (BPair.oneValue_symm hW3)
-        (ground.ltB_addPos hUV))
-  have hK : BPair.ofNat 4 * q11 < BPair.unit :=
-    BPair.lt_congr (BPair.oneValue_of_eq (BPair.mul_comm q11 (BPair.ofNat 4)))
-      (BPair.unit_mul (BPair.ofNat 4))
-      (ground.ltB_mulPos hq (ground.unitLtNat (by decide +kernel)))
-  have hposKQ : BPair.unit
-      < (BPair.ofNat 4 * q11).swap
-        * (c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22)).swap := by
-    refine BPair.lt_congr (BPair.oneValue_refl _) ?_ hpos
-    refine BPair.oneValue_of_eq ?_
-    rw [BPair.swap_mul_swap, BPair.mul_assoc (BPair.ofNat 4) q11
-      (c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22))]
-  have hQs : BPair.unit
-      < (c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22)).swap :=
-    inertia.scaleReflLt (ground.ltB_swap hK) hposKQ
-  exact ground.ltB_swap hQs
-
-/-- The cap pair's strict read at a vacant second scale: the leading
-entry's own strict order at an occupied first scale. -/
-private theorem capStrictVac {q11 q22 X c1 c2 : BPair}
-    (hq : q11 < BPair.unit) (hc1 : ¬ c1.oneValue BPair.unit)
-    (hc2 : c2.oneValue BPair.unit) :
-    c1 * c1 * q11 + (c1 * c2 * X + c2 * c2 * q22) < BPair.unit := by
-  have hv1 : (c1 * c2 * X).oneValue BPair.unit :=
-    BPair.oneValue_trans
-      (BPair.mul_congr (BPair.oneValue_trans
-        (BPair.mul_congr (BPair.oneValue_refl c1) hc2) (BPair.mul_unit c1))
-        (BPair.oneValue_refl X)) (BPair.unit_mul X)
-  have hv2 : (c2 * c2 * q22).oneValue BPair.unit :=
-    BPair.oneValue_trans
-      (BPair.mul_congr (BPair.oneValue_trans
-        (BPair.mul_congr hc2 (BPair.oneValue_refl c2)) (BPair.unit_mul c2))
-        (BPair.oneValue_refl q22)) (BPair.unit_mul q22)
-  refine BPair.lt_congr ?_ (BPair.oneValue_refl BPair.unit)
-    (BPair.lt_congr (BPair.oneValue_of_eq (BPair.mul_comm q11 (c1 * c1)))
-      (BPair.unit_mul (c1 * c1))
-      (ground.ltB_mulPos hq (ground.sq_pos hc1)))
-  refine BPair.oneValue_symm (BPair.oneValue_trans (BPair.add_congr
-    (BPair.oneValue_refl (c1 * c1 * q11))
-    (BPair.oneValue_trans (BPair.add_congr hv1 hv2)
-      (BPair.unit_add BPair.unit))) (BPair.add_unit (c1 * c1 * q11)))
-
-/-- The cap pair's read: at two members whose compressed two-by-two
-reads the lower side at the leading entry and its doubled cross read
-below the diagonal product's quadruple, every split of the datum
-reads the reversal count at two or beyond — the second root below
-the cap, the compression's counts at or below the full form's. -/
-theorem capForcing : ∀ {n : Nat} (S : elim.Mat) (x x' : List BPair),
-    x.length = n → x'.length = n →
-    inertia.quadForm S x < BPair.unit →
-    (elim.dotN x (elim.matVec S x') + elim.dotN x' (elim.matVec S x))
-        * (elim.dotN x (elim.matVec S x')
-          + elim.dotN x' (elim.matVec S x))
-      < BPair.ofNat 4 * (inertia.quadForm S x * inertia.quadForm S x') →
-    ∀ sp : inertia.Split n, inertia.splitRead S sp →
-      2 ≤ inertia.revAt sp := by
-  intro n S x x' hx hx' hq hd sp hsp
-  have hSl : S.length = n := elim.sqAt_len hsp.1
-  have hSr : elim.rowsLen n S := elim.rowsLen_of_sqAt hsp.1
-  refine inertia.forcing S sp hsp [x, x'] ⟨hx, hx', trivial⟩ ?_
-  intro cs hcs hu
-  match cs, hcs, hu with
-  | [], hcs, _ => exact Nat.noConfusion hcs
-  | [_], hcs, _ => exact Nat.noConfusion (Nat.succ.inj hcs)
-  | _ :: _ :: _ :: _, hcs, _ =>
-    exact Nat.noConfusion (Nat.succ.inj (Nat.succ.inj hcs))
-  | [c1, c2], _, hu =>
-    have hexp : (inertia.quadForm S
-        (elim.combo n [c1, c2] [x, x'])).oneValue
-        (c1 * c1 * inertia.quadForm S x
-          + (c1 * c2 * (elim.dotN x (elim.matVec S x')
-                + elim.dotN x' (elim.matVec S x))
-            + c2 * c2 * inertia.quadForm S x')) :=
-      BPair.oneValue_trans
-        (inertia.quadForm_congr S (comboPair n c1 c2 x x' hx hx'))
-        (quadPairExpand S n hSr hSl c1 c2 x x' hx hx')
-    refine BPair.lt_congr (BPair.oneValue_symm hexp)
-      (BPair.oneValue_refl BPair.unit) ?_
-    match (inferInstance : Decidable (c2.oneValue BPair.unit)) with
-    | isTrue h2 => exact capStrictVac hq (fun h1 => hu ⟨h1, h2, trivial⟩) h2
-    | isFalse h2 => exact capStrict hq hd h2
 
 /-- The walk's minor at a depth, the walk recursion's first member. -/
 def wellWalk (r qn qd : Nat) (en ed : Pos) (k : Nat) : BPair :=
@@ -11902,7 +10987,7 @@ private theorem margP_sq (x : BPair) (h : ¬ x.oneValue BPair.unit) :
     (BPair.mul_congr (countsOfPair x) (countsOfPair x))
 
 /-- The order-one identity carrier. -/
-private def id1 : elim.SqMat 1 := ⟨inertia.idMat 1, by decide +kernel⟩
+private def id1 : elim.SqMat 1 := ⟨elim.idMat 1, by decide +kernel⟩
 
 /-- The order-one identity congruence, its own adjugate at the
 determinant one. -/
@@ -11922,19 +11007,19 @@ private theorem splitRead_one (x y : BPair) (hx : ¬ x.oneValue BPair.unit)
       (inertia.blockMat [inertia.SBlock.one x] 0) := ⟨⟨hy, trivial⟩, trivial⟩
   refine ⟨rfl, cc1, ?_, ?_⟩
   · show elim.matOneValue
-      (elim.matMul (elim.transposeM (inertia.idMat 1))
-        (elim.matMul [[y]] (inertia.idMat 1)))
+      (elim.matMul (elim.transposeM (elim.idMat 1))
+        (elim.matMul [[y]] (elim.idMat 1)))
       (inertia.blockMat [inertia.SBlock.one x] 0)
     rw [inertia.transposeM_idMat 1]
     refine elim.matOne_trans ?_ hy1
     refine elim.matOne_trans ?_
       (inertia.idMat_matMul (k := 1) 1 [[y]] hSr rfl (by decide +kernel))
-    exact elim.matMul_congrR (n := 1) (k := 1) (inertia.idMat 1)
-      (elim.matMul [[y]] (inertia.idMat 1)) [[y]]
+    exact elim.matMul_congrR (n := 1) (k := 1) (elim.idMat 1)
+      (elim.matMul [[y]] (elim.idMat 1)) [[y]]
       (elim.rowsLen_cast
-        (by rw [inertia.transposeM_idMat 1, inertia.idMat_len 1])
-        (elim.rowsLen_matMul [[y]] (inertia.idMat 1)))
-      hSr ((elim.length_matMul [[y]] (inertia.idMat 1)).trans rfl) rfl
+        (by rw [inertia.transposeM_idMat 1, elim.length_idMat 1])
+        (elim.rowsLen_matMul [[y]] (elim.idMat 1)))
+      hSr ((elim.length_matMul [[y]] (elim.idMat 1)).trans rfl) rfl
       (by decide +kernel)
       (inertia.matMul_idR (k := 1) 1 [[y]] hSr rfl (by decide +kernel) (by decide +kernel))
   · show (!(decide (x.oneValue BPair.unit)) && true) = true
@@ -12536,19 +11621,19 @@ private theorem splitRead_oneK (y : BPair) (hy : y.oneValue BPair.unit) :
     ⟨⟨hy, trivial⟩, trivial⟩
   refine ⟨rfl, cc1, ?_, rfl⟩
   show elim.matOneValue
-    (elim.matMul (elim.transposeM (inertia.idMat 1))
-      (elim.matMul [[y]] (inertia.idMat 1)))
+    (elim.matMul (elim.transposeM (elim.idMat 1))
+      (elim.matMul [[y]] (elim.idMat 1)))
     (inertia.blockMat [] 1)
   rw [inertia.transposeM_idMat 1]
   refine elim.matOne_trans ?_ hy1
   refine elim.matOne_trans ?_
     (inertia.idMat_matMul (k := 1) 1 [[y]] hSr rfl (by decide +kernel))
-  exact elim.matMul_congrR (n := 1) (k := 1) (inertia.idMat 1)
-    (elim.matMul [[y]] (inertia.idMat 1)) [[y]]
+  exact elim.matMul_congrR (n := 1) (k := 1) (elim.idMat 1)
+    (elim.matMul [[y]] (elim.idMat 1)) [[y]]
     (elim.rowsLen_cast
-      (by rw [inertia.transposeM_idMat 1, inertia.idMat_len 1])
-      (elim.rowsLen_matMul [[y]] (inertia.idMat 1)))
-    hSr ((elim.length_matMul [[y]] (inertia.idMat 1)).trans rfl) rfl
+      (by rw [inertia.transposeM_idMat 1, elim.length_idMat 1])
+      (elim.rowsLen_matMul [[y]] (elim.idMat 1)))
+    hSr ((elim.length_matMul [[y]] (elim.idMat 1)).trans rfl) rfl
     (by decide +kernel)
     (inertia.matMul_idR (k := 1) 1 [[y]] hSr rfl (by decide +kernel) (by decide +kernel))
 
@@ -14176,7 +13261,7 @@ private theorem minorSpotZero (r qn qd : Nat) (en ed : Pos) :
     (wellWalk r qn qd en ed 2) (wellWalk_rec r qn qd en ed 0)
 
 /-- The order-two identity congruence. -/
-private def id2 : elim.SqMat 2 := ⟨inertia.idMat 2, by decide +kernel⟩
+private def id2 : elim.SqMat 2 := ⟨elim.idMat 2, by decide +kernel⟩
 
 private theorem cc2 : inertia.clearedCongr id2 id2 := by decide +kernel
 
@@ -14197,19 +13282,19 @@ private theorem splitRead_two (a b c : BPair)
      ⟨BPair.oneValue_refl b, BPair.oneValue_refl c, trivial⟩, trivial⟩
   refine ⟨rfl, cc2, ?_, ?_⟩
   · show elim.matOneValue
-      (elim.matMul (elim.transposeM (inertia.idMat 2))
-        (elim.matMul [[a, b], [b, c]] (inertia.idMat 2)))
+      (elim.matMul (elim.transposeM (elim.idMat 2))
+        (elim.matMul [[a, b], [b, c]] (elim.idMat 2)))
       (inertia.blockMat [inertia.SBlock.two a b c] 0)
     rw [inertia.transposeM_idMat 2]
     refine elim.matOne_trans ?_ hy1
     refine elim.matOne_trans ?_
       (inertia.idMat_matMul (k := 2) 2 [[a, b], [b, c]] hSr rfl (by decide +kernel))
-    exact elim.matMul_congrR (n := 2) (k := 2) (inertia.idMat 2)
-      (elim.matMul [[a, b], [b, c]] (inertia.idMat 2)) [[a, b], [b, c]]
+    exact elim.matMul_congrR (n := 2) (k := 2) (elim.idMat 2)
+      (elim.matMul [[a, b], [b, c]] (elim.idMat 2)) [[a, b], [b, c]]
       (elim.rowsLen_cast
-        (by rw [inertia.transposeM_idMat 2, inertia.idMat_len 2])
-        (elim.rowsLen_matMul [[a, b], [b, c]] (inertia.idMat 2)))
-      hSr ((elim.length_matMul [[a, b], [b, c]] (inertia.idMat 2)).trans rfl)
+        (by rw [inertia.transposeM_idMat 2, elim.length_idMat 2])
+        (elim.rowsLen_matMul [[a, b], [b, c]] (elim.idMat 2)))
+      hSr ((elim.length_matMul [[a, b], [b, c]] (elim.idMat 2)).trans rfl)
       rfl (by decide +kernel)
       (inertia.matMul_idR (k := 2) 2 [[a, b], [b, c]] hSr rfl (by decide +kernel)
         (by decide +kernel))
@@ -14609,7 +13694,7 @@ theorem lineSite : ∀ (r qn qd : Nat) (en ed : Pos) (n a b a' b' gg : Nat),
         (inertia.matScaleB
           (BPair.ofNat ((r + 1) * (gg * qn))
             * BPair.ofPos en * BPair.ofPos ed)
-          (inertia.idMat n)))
+          (elim.idMat n)))
       (inertia.matScaleB (BPair.ofNat b)
         (wellMat r (a' * qn) (b' * qd) en ed n)) := by
   intro r qn qd en ed n a b a' b' gg hab
@@ -14633,13 +13718,13 @@ theorem lineSite : ∀ (r qn qd : Nat) (en ed : Pos) (n a b a' b' gg : Nat),
       exact hM1l
     have hBl : (inertia.matScaleB
         (BPair.ofNat ((r + 1) * (gg * qn)) * BPair.ofPos en * BPair.ofPos ed)
-        (inertia.idMat (m + 1))).length = m + 1 := by
+        (elim.idMat (m + 1))).length = m + 1 := by
       rw [inertia.length_scaleB]
-      exact inertia.idMat_len (m + 1)
+      exact elim.length_idMat (m + 1)
     have hAr := inertia.rowsLen_scaleB (BPair.ofNat b') (m + 1) _ hM1r
     have hBr := inertia.rowsLen_scaleB
       (BPair.ofNat ((r + 1) * (gg * qn)) * BPair.ofPos en * BPair.ofPos ed)
-      (m + 1) _ (inertia.idMat_rows (m + 1))
+      (m + 1) _ (elim.rowsLen_idMat (m + 1))
     refine elim.matOne_of_entries _ _ (m + 1)
       ((elim.length_matAdd _ _ (hAl.trans hBl.symm)).trans hAl)
       (elim.rowsLen_matAdd (m + 1) _ _ hAr hBr)
@@ -14650,12 +13735,12 @@ theorem lineSite : ∀ (r qn qd : Nat) (en ed : Pos) (n a b a' b' gg : Nat),
         (by rw [hAl]; exact hi) (by rw [hBl]; exact hi) hj,
       hsc (BPair.ofNat b') _ (m + 1) i j hM1r (by rw [hM1l]; exact hi) hj,
       hsc (BPair.ofNat ((r + 1) * (gg * qn)) * BPair.ofPos en * BPair.ofPos ed)
-        _ (m + 1) i j (inertia.idMat_rows (m + 1))
-        (by rw [inertia.idMat_len]; exact hi) hj,
+        _ (m + 1) i j (elim.rowsLen_idMat (m + 1))
+        (by rw [elim.length_idMat]; exact hi) hj,
       hsc (BPair.ofNat b) _ (m + 1) i j hM2r (by rw [hM2l]; exact hi) hj,
       wellEntry r (a * qn) (b * qd) en ed m i j hi hj,
       wellEntry r (a' * qn) (b' * qd) en ed m i j hi hj,
-      inertia.getAt_idMat (m + 1) i j hi hj]
+      elim.getAt_idMat (m + 1) i j hi hj]
     match Nat.decEq j i with
     | isTrue hji =>
       rw [hji, greenprod.chainAt_diag, greenprod.chainAt_diag, if_pos rfl,
@@ -14704,7 +13789,7 @@ private theorem lineGap (r qn qd : Nat) (en ed : Pos) (n a b a' b' gg : Nat)
           (wellMat r (a * qn) (b * qd) en ed n)))
       (inertia.matScaleB
         (BPair.ofNat ((r + 1) * (gg * qn)) * BPair.ofPos en * BPair.ofPos ed)
-        (inertia.idMat n)) := by
+        (elim.idMat n)) := by
   cases n with
   | zero => trivial
   | succ m =>
@@ -14725,14 +13810,14 @@ private theorem lineGap (r qn qd : Nat) (en ed : Pos) (n a b a' b' gg : Nat)
         (inertia.matScaleB
           (BPair.ofNat ((r + 1) * (gg * qn)) * BPair.ofPos en
             * BPair.ofPos ed)
-          (inertia.idMat (m + 1))) :=
-      inertia.rowsLen_scaleB _ _ _ (inertia.idMat_rows (m + 1))
+          (elim.idMat (m + 1))) :=
+      inertia.rowsLen_scaleB _ _ _ (elim.rowsLen_idMat (m + 1))
     have hWl : (((inertia.matScaleB
           (BPair.ofNat ((r + 1) * (gg * qn)) * BPair.ofPos en
             * BPair.ofPos ed)
-          (inertia.idMat (m + 1)))) : elim.Mat).length = m + 1 := by
+          (elim.idMat (m + 1)))) : elim.Mat).length = m + 1 := by
       rw [inertia.length_scaleB]
-      exact inertia.idMat_len (m + 1)
+      exact elim.length_idMat (m + 1)
     have hSXr : elim.rowsLen (m + 1) (elim.matSwap (inertia.matScaleB (BPair.ofNat b')
           (wellMat r (a * qn) (b * qd) en ed (m + 1)))) :=
       elim.rowsLen_mapRows _ _ (m + 1) hXr
@@ -14741,7 +13826,7 @@ private theorem lineGap (r qn qd : Nat) (en ed : Pos) (n a b a' b' gg : Nat)
           (wellMat r (a * qn) (b * qd) en ed (m + 1))) (inertia.matScaleB
           (BPair.ofNat ((r + 1) * (gg * qn)) * BPair.ofPos en
             * BPair.ofPos ed)
-          (inertia.idMat (m + 1)))) :=
+          (elim.idMat (m + 1)))) :=
       elim.rowsLen_matAdd (m + 1) _ _ hXr hWr
     have hnull : elim.matNull
         (elim.matAdd (elim.matSwap (inertia.matScaleB (BPair.ofNat b')
@@ -14755,7 +13840,7 @@ private theorem lineGap (r qn qd : Nat) (en ed : Pos) (n a b a' b' gg : Nat)
         = (((inertia.matScaleB
           (BPair.ofNat ((r + 1) * (gg * qn)) * BPair.ofPos en
             * BPair.ofPos ed)
-          (inertia.idMat (m + 1)))) : elim.Mat).length := by
+          (elim.idMat (m + 1)))) : elim.Mat).length := by
       rw [elim.length_matAdd _ _ (elim.length_matSwap _),
         elim.length_matSwap, hXl, hWl]
     have hZr : elim.rowsLen (m + 1)
@@ -14769,7 +13854,7 @@ private theorem lineGap (r qn qd : Nat) (en ed : Pos) (n a b a' b' gg : Nat)
           (wellMat r (a * qn) (b * qd) en ed (m + 1))))) (inertia.matScaleB
           (BPair.ofNat ((r + 1) * (gg * qn)) * BPair.ofPos en
             * BPair.ofPos ed)
-          (inertia.idMat (m + 1)))
+          (elim.idMat (m + 1)))
     refine elim.matOne_trans
       (elim.matAdd_cong2 (m + 1) _ _ _ _ hYr hSXr hAr hSXr
         (elim.matOne_symm hLS) (elim.matOne_refl _)) ?_
@@ -14777,7 +13862,7 @@ private theorem lineGap (r qn qd : Nat) (en ed : Pos) (n a b a' b' gg : Nat)
           (wellMat r (a * qn) (b * qd) en ed (m + 1))) (inertia.matScaleB
           (BPair.ofNat ((r + 1) * (gg * qn)) * BPair.ofPos en
             * BPair.ofPos ed)
-          (inertia.idMat (m + 1)))) (elim.matSwap (inertia.matScaleB (BPair.ofNat b')
+          (elim.idMat (m + 1)))) (elim.matSwap (inertia.matScaleB (BPair.ofNat b')
           (wellMat r (a * qn) (b * qd) en ed (m + 1)))),
       ← elim.matAdd_assoc]
     exact elim.matAdd_nullL _ _ hnull hZl hZr hWr
@@ -14841,14 +13926,14 @@ theorem cutMono : ∀ (r qn qd : Nat) (en ed : Pos) (n a b a' b' : Nat),
         ground.unitLtMul
           (ground.unitLtMul (ground.unitLtNat (Nat.pos_of_ne_zero hK))
             (ground.unitLtOfPos en)) (ground.unitLtOfPos ed)
-      have hid : inertia.splitRead (inertia.idMat n)
+      have hid : inertia.splitRead (elim.idMat n)
           (inertia.scalarSplit n Pos.one) :=
-        inertia.scalarSplit_read Pos.one (inertia.idMat n)
-          (inertia.sqAt_idMat n)
+        inertia.scalarSplit_read Pos.one (elim.idMat n)
+          (elim.sqAt_idMat n)
           (by rw [inertia.matScale_one]; exact elim.matOne_refl _)
       have hspd := inertia.splitRead_congr _ _ hsqD (elim.matOne_symm hgap) _
         (inertia.scaleSplit_read _ (ground.offOfUnitLt hWpos)
-          (inertia.idMat n) (inertia.scalarSplit n Pos.one) hid)
+          (elim.idMat n) (inertia.scalarSplit n Pos.one) hid)
       have hpsd : inertia.psdAt (inertia.scaleSplit
           (BPair.ofNat ((r + 1) * ((a * b' - a' * b) * qn))
             * BPair.ofPos en * BPair.ofPos ed)
@@ -15401,7 +14486,7 @@ theorem capPair : ∀ (en ed : Pos) (r N N' n A B G G' : Nat),
   have h11v := witLineRead en ed r N n A B G h hG
   have h22v := witLineRead en ed r N' n A B G' (Nat.le_trans hNN h) hG'
   have hcr := crossRead r A B N N' n en ed hNN h
-  refine capForcing _ (witList N n) (witList N' n) (witList_len N n)
+  refine inertia.capForcing _ (witList N n) (witList N' n) (witList_len N n)
     (witList_len N' n)
     (BPair.lt_congr (BPair.oneValue_symm h11v)
       (BPair.oneValue_refl BPair.unit)

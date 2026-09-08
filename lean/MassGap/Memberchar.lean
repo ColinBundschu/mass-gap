@@ -852,12 +852,7 @@ private theorem lineCap (t : gentable.Table) (F : FundData)
   refine ⟨n, ?_⟩
   have hA := rootHt t F hshape hgsym hrd hj
   have hstep : BPair.ofNat n < BPair.ofNat (n + 1) :=
-    BPair.lt_congr (BPair.unit_add (BPair.ofNat n))
-      (BPair.oneValue_trans
-        (BPair.oneValue_of_eq (BPair.add_comm _ _))
-        (BPair.oneValue_symm (BPair.ofNat_succ n)))
-      (ground.ltB_add (show BPair.unit < BPair.ofNat 1 from
-        ground.unitLtOfNat 0) (ground.leB_refl (BPair.ofNat n)))
+    ground.ltB_ofNat (Nat.le_refl (n + 1))
   have hmul : BPair.ofNat (n + 1)
       ≤ BPair.ofNat (n + 1) * dotB F (rhoV t) (posCorootV t j) :=
     ground.leB_congr_left (BPair.mul_ofNat_one (BPair.ofNat (n + 1)))
@@ -1876,7 +1871,7 @@ private theorem reflCond_pos (t : gentable.Table) (i : Nat)
 
 private theorem reflCond_invol (t : gentable.Table) (i : Nat)
     (hsq : elim.matOneValue (elim.matMul (reflM t i) (reflM t i))
-      (inertia.idMat t.rank)) (v : List BPair) :
+      (elim.idMat t.rank)) (v : List BPair) :
     reflCond t i (reflCond t i v) = v := by
   by_cases hg : v.length = t.rank ∧ poly.pnorm v = v
   · rw [reflCond_pos t i v hg, reflCond_pos t i (reflAt t i v)
