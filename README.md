@@ -13,19 +13,25 @@ The TeX is authoritative, and the Lean is its transcription: every top-level Lea
 
 `thm:main` has three clauses, stated over the domain `main.Member` ([lean/MassGap/Main.lean](lean/MassGap/Main.lean)): the $A$-series at every residue, $B_\ell$, $C_\ell$ and $D_\ell$ at their index floors, and $G_2$, $F_4$, $E_6$, $E_7$ and $E_8$ once each.
 
-**Formalized.** All three clauses hold at every member of the classification at their committed instances: clause (i), gap positivity, at each member's floor window (`main.clauseI_all`); clause (ii), the contact pair $(3, H_r)$ together with the window half that every named cut edge is a located root of the window pencil's symbol attained at a word image, at the TeX's own quantifier (`main.clauseII_all`); and clause (iii)'s member layer, the corner cell's floor datum through the one disconjugacy certificate transported across the residues (`main.clauseIII_all`). The label calculus, the carrier and pencil interfaces, the count certificates, the fibering and decimation tiers, the ground reads, the corner certificate and the tail read's floor-line certificate are landed beneath them.
+**Formalized in Lean.** All three clauses hold at every member of the classification at their committed instances:
+- Clause (i), gap positivity, at each member's floor window (`main.clauseI_all`)
+- Clause (ii), the contact pair $(3, H_r)$ together with the window half that every named cut edge is a located root of the window pencil's symbol attained at a word image, at the TeX's own quantifier (`main.clauseII_all`)
+- Clause (iii)'s member layer, the corner cell's floor datum through the one disconjugacy certificate transported across the residues (`main.clauseIII_all`).
 
-**Open.** Four items separate the committed instances from the theorem at its own quantifiers:
+The label calculus, the carrier and pencil interfaces, the count certificates, the fibering and decimation tiers, the ground reads, the corner certificate and the tail read's floor-line certificate are landed beneath them.
+
+**Not Yet Formalized in Lean.** These items are not yet transcribed from the TeX:
 
 - Clause (i) at every region, cutoff and interior end-weight ray: the cell list past the free cell, the counts on the decimated head across a cell, and the truncation modulus with the meet over the directed windows.
 - The chain's height at the contact end, the tail read `thm:continuum`(iii) consumes for the spacing: the scale key under which a window's height sits below a stated floor, and its join at `main`.
 - Clause (iii)'s composite statement at `main`: the datum-level closure and site counts, the corner cell's positive extent, and each cell's edge read at a word image.
 - The reverse correspondence walk, every TeX label reached from a Lean namespace.
 
-**Long-term.** A standalone repository, with community input where possible, stating the Yang-Mills problem neutrally in Lean over conventional types and Mathlib, TeX-first like this one; an adapter from this proof to that interface; and submission for peer review, possibly also to a registry such as [Palomar](https://palomar-registry.org/).
+**Long-term Objectives.** These items are not directly related to the formalization of the proof, but are essential work.
 
-The snapshot was taken from the development repository at commit
-`5ba0ca30d6e0113b9cd526b150f50c26e6227b3f` (2026-09-08).
+- Create a standalone repository, with community input where possible, stating the Yang-Mills problem neutrally in Lean over conventional types and Mathlib, TeX-first like this one
+- Create an adapter from this proof to that neutral interface
+- Submit the proof for peer review, possibly also to a registry such as [Palomar](https://palomar-registry.org/).
 
 ## Proof Methodology
 
