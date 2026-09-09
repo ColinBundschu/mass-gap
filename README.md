@@ -151,7 +151,7 @@ $$
 
 in the abelian theory (`prop:anchor`). Thus the two ingredients that produce the mass point (the adjoint self-fusion channel and its positive fusion strictness) are absent. The argument therefore neither states nor derives a mass gap for $U(1)$.
 
-### "Does the construction satisfy exact Euclidean covariance, given that the corner height $h=\sqrt{2}\,a\Delta$ is bracketed at every scale? You prove the degree-4 anisotropy has *positive multiplicity*. Your own theorem seems to forbid exact $O(4)$ invariance."
+### "Does the construction satisfy exact Euclidean covariance, given that the corner height $`h=\sqrt{2} \, a\Delta`$ is bracketed at every scale? You prove the degree-4 anisotropy has *positive multiplicity*. Your own theorem seems to forbid exact $O(4)$ invariance."
 
 The answer is a reconstruction, not a claim that the lattice correlation functions become exactly covariant at some fixed spacing. At finite spacing the lattice families remain $B_d$-invariant and contain genuine degree-four anisotropic terms. The construction does not discard or deny those terms in the lattice data.
 
