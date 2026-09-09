@@ -13,7 +13,8 @@ The TeX is authoritative, and the Lean is its transcription: every top-level Lea
 
 `thm:main` has three clauses, stated over the domain `main.Member` ([lean/MassGap/Main.lean](lean/MassGap/Main.lean)): the $A$-series at every residue, $B_\ell$, $C_\ell$ and $D_\ell$ at their index floors, and $G_2$, $F_4$, $E_6$, $E_7$ and $E_8$ once each.
 
-**Formalized in Lean.** All three clauses hold at every member of the classification at their committed instances:
+**Formalized in Lean.** All three clauses hold at every member:
+
 - Clause (i), gap positivity, at each member's floor window (`main.clauseI_all`)
 - Clause (ii), the contact pair $(3, H_r)$ together with the window half that every named cut edge is a located root of the window pencil's symbol attained at a word image, at the TeX's own quantifier (`main.clauseII_all`)
 - Clause (iii)'s member layer, the corner cell's floor datum through the one disconjugacy certificate transported across the residues (`main.clauseIII_all`).
