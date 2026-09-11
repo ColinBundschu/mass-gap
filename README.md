@@ -9,8 +9,6 @@ The TeX is authoritative, and the Lean is its transcription. To enforce this str
 
 ## Status
 
-While `theory.tex` is in theory a complete proof, this should be weighed against the fact that it has only been reviewed by its author for completeness and correctness. The transcription of `theory.tex` into Lean is mostly complete, and this section details which proofs in `theory.tex` are and are not formalized in Lean.
-
 `thm:main` has three clauses, stated over the domain `main.Member` ([lean/MassGap/Main.lean](lean/MassGap/Main.lean)): the $A$-series at every residue, $B_\ell$, $C_\ell$ and $D_\ell$ at their index floors, and $G_2$, $F_4$, $E_6$, $E_7$ and $E_8$ once each.
 
 **Formalized in Lean.** All three clauses hold at every member:
@@ -185,14 +183,6 @@ Because the construction is Hamiltonian. Osterwalder–Schrader reconstruction i
 * nontriviality to the positive connected four-point floor in `lem:fourpoint`, which separates the reconstructed object from every generalized free field.
 
 This is the manuscript's claimed Hamiltonian replacement for OS reconstruction; it is not itself an OS reconstruction from a Euclidean measure.
-
-### "$`c_1^3e^{-H_r}`$ smells like numerology because it has the harmonic numbers in an exponent. Is it even a computed energy?"
-
-What the theory *determines* is the contact pair $(3,H_r)$ as two divisor reads: the order count $3=1+2$ (the mass point's simple pole plus the $\iota$-symmetrized weight's two base orders, off the renewal witness $G_0=z+c_1zG_0$, `thm:channeldiv`) read at the base $c_1$, and the ruler excess $H_r$ (the tower's generating object against the harmonic ruler, an exact finitely-supported polynomial identity, `thm:walkresidue`). The exponential form is those coordinates read against the classical rulers $(\ln c_1,1)$ described as "the axes the usual formulation measures with" (`rem:dictionary`). Nothing is fitted and nothing converges: the harmonic number arrives as the value at $1$ of an exact polynomial with the geometric derivative, forced by the tower pairing $\varphi_m=r/(m+r)$. It is not an energy: the contact pair is two counts of the walk's data, free of unit and of scale (`thm:unitschain`), the walk's mass point an isolated pole below its band at base two and at the band's edge at base one (`thm:channeldiv`). The quantity that restores as an energy is a window cut's edge, $`E_0\,\kappa\,C_2(\mathrm{adj})`$ at the edge's pair $\kappa$ (`rem:dictionary`, "The gap").
-
-### "Has anyone actually verified this?"
-
-This work has not been independently verified. The current release has a reproducible Lean build and an empty axiom report for the declarations listed above. That establishes derivability of the encoded statements. It does not establish that the remaining TeX has been transcribed, that the dictionary faithfully states conventional Yang-Mills, or that the argument has survived expert review.
 
 ## Citing
 
