@@ -26,7 +26,6 @@ The label calculus, the carrier and pencil interfaces, the count certificates, t
 - Clause (i) at every region, cutoff and interior end-weight ray: the cell list past the free cell, the counts on the decimated head across a cell, and the truncation modulus with the meet over the directed windows.
 - The chain's height at the contact end, the tail read `thm:continuum`(iii) consumes for the spacing: the scale key under which a window's height sits below a stated floor, and its join at `main`.
 - Clause (iii)'s composite statement at `main`: the datum-level closure and site counts, the corner cell's positive extent, and each cell's edge read at a word image.
-- The reverse correspondence walk, every TeX label reached from a Lean namespace.
 
 **Long-term Objectives.** These items are not directly related to the formalization of the proof, but are essential work.
 
