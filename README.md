@@ -80,17 +80,6 @@ declaration reads the same way in any file importing the libraries:
 
 each reports `does not depend on any axioms`.
 
-## Reading the tree
-
-- [lean/MassGap.lean](lean/MassGap.lean) lists the content modules,
-  `Ground` (the positive naturals with pairs as data, `def:ground`)
-  first, then the label calculus, the interfaces, the certificates,
-  the chain, and `Main`; each module's own `import` lines are its
-  dependency order.
-- [lean/MassGapChecks/](lean/MassGapChecks/) mirrors the content modules
-  file for file. Each battery pins committed data, and a refusal
-  (`example : ¬ …`) pins the hypothesis it isolates.
-
 ## FAQ
 
 The questions below aggregate, in roughly their original order and tone, objections raised by various reviewers of the repository.
