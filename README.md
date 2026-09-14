@@ -109,7 +109,7 @@ The deviations are systematic, not decorative: they mark exactly the places wher
 
 ### "There is no bibliography. Zero citations."
 
-This omission is **temporary**, not an assertion that public mathematical claims require no engagement with the literature. During transcription, I repeatedly load the complete TeX into context for AI-assisted cross-checking against the rest of the proof. At approximately 500,000 tokens, the document already consumes substantial cost and working context. Once the Lean transcription is complete, I will add an abstract, introduction, literature positioning, bibliography, and the remaining conventional front matter.
+This omission is **temporary**, not an assertion that public mathematical claims require no engagement with the literature. During transcription, I repeatedly load the complete TeX into context for AI-assisted cross-checking against the rest of the proof. At approximately 500,000 tokens with the proof environments excluded, the document already consumes substantial cost and working context. Once the Lean transcription is complete, I will add an abstract, introduction, literature positioning, bibliography, and the remaining conventional front matter.
 
 ### "Renormalization, asymptotic freedom, beta function, continuum limit: zero occurrences. A Yang–Mills proof cannot fail to contain these."
 
