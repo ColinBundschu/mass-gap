@@ -47,21 +47,27 @@ symbol and its square polynomial the isotropic coefficient.
 The locus block reads the decimated determinant's root locus at a
 symmetric two-by-two pencil, `1 + x` and `4 + x` on the diagonal
 with the coupling `2`, at the clearing power one and the pivot at
-the first key: at the level one both determinants sit off the
-unit and at the level nought both read it, each direction routed
-through `locus_defl` beside the decided pair; the pivot binder is
-isolated at the level minus one, where the pivot reads the unit
-and the two determinants part; the shape binder at a pencil
-holding a square coupling beyond the clearing power, read at the
-point one over the clearing two, where the saturated evaluation
-parts from the deflation's; and the permutation binder at the
-repeated key, the two determinants parting at the level one — the
-symmetry binder `thm:pairpencil`'s frame recorded at an asymmetric
-pencil whose two determinants still read together, and the pivot
-orders `lem:cellcount`'s designated places' frame.
+the first key, the once-cleared deflation at the clearing two: at
+the level one both determinants sit off the unit and at the level
+nought both read it, each direction routed through `locus_defl`
+beside the decided pair; the pivot binder is isolated at an
+order-three pencil, `x − 1` at the pivot key with the couplings one
+and the trailing block the identity, at the level one, where the
+pivot reads the unit and the two determinants part, the
+once-cleared deflation's the coupling's repeated row; the shape
+binder at a pencil holding a square pivot beyond the clearing
+power, read at the point one over the clearing two, where the
+saturated evaluation parts from the deflation's cleared read; and
+the permutation binder at the repeated key, the two determinants
+parting at the level one — the symmetry binder `thm:pairpencil`'s
+frame recorded at an asymmetric pencil whose two determinants
+still read together, and the pivot list's occupancy
+`lem:cellcount`'s designated minor.
 -/
 
-open ground poly cone
+namespace cone
+
+open ground poly
 
 /-! The committed momentum profile at two directions. -/
 
@@ -77,18 +83,18 @@ private def cF (g : List (List Nat)) : Poly :=
   else if g == [[2, 2]] then cC
   else []
 
-example : vacG 2 = [[0, 0]] := by decide +kernel
-example : isoG 2 = [[2, 0]] := by decide +kernel
-example : 0 < ground.countOf (vacG 2) (restoration.momBox 1 2 0) := by
+theorem pin1 : vacG 2 = [[0, 0]] := by decide +kernel
+theorem pin2 : isoG 2 = [[2, 0]] := by decide +kernel
+theorem pin3 : 0 < ground.countOf (vacG 2) (restoration.momBox 1 2 0) := by
   decide +kernel
-example : 0 < ground.countOf (isoG 2) (restoration.momBox 1 2 2) := by
+theorem pin4 : 0 < ground.countOf (isoG 2) (restoration.momBox 1 2 2) := by
   decide +kernel
 
-example : profRead 2 cF := by decide +kernel
-example : bdInvP 2 1 cF := by decide +kernel
-example : bdInvP 2 2 cF := by decide +kernel
-example : bdInvP 2 3 cF := by decide +kernel
-example : bdInvP 2 4 cF := by decide +kernel
+theorem pin5 : profRead 2 cF := by decide +kernel
+theorem pin6 : bdInvP 2 1 cF := by decide +kernel
+theorem pin7 : bdInvP 2 2 cF := by decide +kernel
+theorem pin8 : bdInvP 2 3 cF := by decide +kernel
+theorem pin9 : bdInvP 2 4 cF := by decide +kernel
 
 /-! The two clauses isolated: an odd occupancy refuses the
 reflection alone, a one-sided vacancy the transposition alone. -/
@@ -96,28 +102,28 @@ reflection alone, a one-sided vacancy the transposition alone. -/
 private def oddForge (g : List (List Nat)) : Poly :=
   if g == [[1, 0]] then [⟨2, 1⟩] else cF g
 
-example : ¬ bdInvP 2 1 oddForge := by decide +kernel
-example : bdInvP 2 2 oddForge := by decide +kernel
+theorem pin10 : ¬ bdInvP 2 1 oddForge := by decide +kernel
+theorem pin11 : bdInvP 2 2 oddForge := by decide +kernel
 
 private def swapForge (g : List (List Nat)) : Poly :=
   if g == [[0, 2]] then [] else cF g
 
-example : ¬ bdInvP 2 2 swapForge := by decide +kernel
-example : bdInvP 2 1 swapForge := by decide +kernel
+theorem pin12 : ¬ bdInvP 2 2 swapForge := by decide +kernel
+theorem pin13 : bdInvP 2 1 swapForge := by decide +kernel
 
 /-! The degree-two read at the second square and at the cross grid,
 routed and decided. -/
 
-example : oneValue (cF [[0, 2]])
+theorem pin14 : oneValue (cF [[0, 2]])
     (scaleP (restoration.ipFam 1 2 0 0 [[0, 2]]) (cF (isoG 2))) :=
   deg2_iso 2 cF (by decide +kernel) [[0, 2]] (by decide +kernel)
-example : oneValue (cF [[0, 2]])
+theorem pin15 : oneValue (cF [[0, 2]])
     (scaleP (restoration.ipFam 1 2 0 0 [[0, 2]]) (cF (isoG 2))) := by
   decide +kernel
-example : oneValue (cF [[1, 1]])
+theorem pin16 : oneValue (cF [[1, 1]])
     (scaleP (restoration.ipFam 1 2 0 0 [[1, 1]]) (cF (isoG 2))) :=
   deg2_iso 2 cF (by decide +kernel) [[1, 1]] (by decide +kernel)
-example : oneValue (cF [[1, 1]])
+theorem pin17 : oneValue (cF [[1, 1]])
     (scaleP (restoration.ipFam 1 2 0 0 [[1, 1]]) (cF (isoG 2))) := by
   decide +kernel
 
@@ -128,10 +134,10 @@ isotropic identity refuses there. -/
 private def offBox (g : List (List Nat)) : Poly :=
   if g == [[3, 0]] then [⟨2, 1⟩] else cF g
 
-example : ground.countOf [[3, 0]] (restoration.momBox 1 2 2) = 0 := by
+theorem pin18 : ground.countOf [[3, 0]] (restoration.momBox 1 2 2) = 0 := by
   decide +kernel
-example : bdInvP 2 2 offBox := by decide +kernel
-example : ¬ oneValue (offBox [[3, 0]])
+theorem pin19 : bdInvP 2 2 offBox := by decide +kernel
+theorem pin20 : ¬ oneValue (offBox [[3, 0]])
     (scaleP (restoration.ipFam 1 2 0 0 [[3, 0]]) (offBox (isoG 2))) := by
   decide +kernel
 
@@ -139,18 +145,18 @@ example : ¬ oneValue (offBox [[3, 0]])
 at the square's grid off the degree-three box and the parity binder
 at degree two, the one cell refusing both. -/
 
-example : unitTail (cF [[2, 1]]) :=
+theorem pin21 : unitTail (cF [[2, 1]]) :=
   odd_vac 2 3 rfl cF (by decide +kernel) [[2, 1]] (by decide +kernel)
-example : unitTail (cF [[2, 1]]) := by decide +kernel
-example : ground.countOf [[2, 0]] (restoration.momBox 1 2 3) = 0 := by
+theorem pin22 : unitTail (cF [[2, 1]]) := by decide +kernel
+theorem pin23 : ground.countOf [[2, 0]] (restoration.momBox 1 2 3) = 0 := by
   decide +kernel
-example : bdInvP 2 3 cF := by decide +kernel
-example : ¬ unitTail (cF [[2, 0]]) := by decide +kernel
+theorem pin24 : bdInvP 2 3 cF := by decide +kernel
+theorem pin25 : ¬ unitTail (cF [[2, 0]]) := by decide +kernel
 
 /-! The degree-four read at the cross grid and at a fourth power,
 routed and decided. -/
 
-example : oneValue (add (cF [[2, 2]]) (cF [[2, 2]]))
+theorem pin26 : oneValue (add (cF [[2, 2]]) (cF [[2, 2]]))
     (add (scaleP (restoration.prodIP 1 2 0 0 0 0 [[2, 2]])
         (cF (restoration.crossG 2 0 1)))
       (scaleP (restoration.quFam 1 2 0 [[2, 2]])
@@ -158,7 +164,7 @@ example : oneValue (add (cF [[2, 2]]) (cF [[2, 2]]))
             (cF (restoration.quGrid 1 2 0 0)))
           (neg (cF (restoration.crossG 2 0 1)))))) :=
   deg4_dir 2 cF (by decide +kernel) [[2, 2]] (by decide +kernel)
-example : oneValue (add (cF [[2, 2]]) (cF [[2, 2]]))
+theorem pin27 : oneValue (add (cF [[2, 2]]) (cF [[2, 2]]))
     (add (scaleP (restoration.prodIP 1 2 0 0 0 0 [[2, 2]])
         (cF (restoration.crossG 2 0 1)))
       (scaleP (restoration.quFam 1 2 0 [[2, 2]])
@@ -166,7 +172,7 @@ example : oneValue (add (cF [[2, 2]]) (cF [[2, 2]]))
             (cF (restoration.quGrid 1 2 0 0)))
           (neg (cF (restoration.crossG 2 0 1)))))) := by
   decide +kernel
-example : oneValue (add (cF [[0, 4]]) (cF [[0, 4]]))
+theorem pin28 : oneValue (add (cF [[0, 4]]) (cF [[0, 4]]))
     (add (scaleP (restoration.prodIP 1 2 0 0 0 0 [[0, 4]])
         (cF (restoration.crossG 2 0 1)))
       (scaleP (restoration.quFam 1 2 0 [[0, 4]])
@@ -174,7 +180,7 @@ example : oneValue (add (cF [[0, 4]]) (cF [[0, 4]]))
             (cF (restoration.quGrid 1 2 0 0)))
           (neg (cF (restoration.crossG 2 0 1)))))) :=
   deg4_dir 2 cF (by decide +kernel) [[0, 4]] (by decide +kernel)
-example : oneValue (add (cF [[0, 4]]) (cF [[0, 4]]))
+theorem pin29 : oneValue (add (cF [[0, 4]]) (cF [[0, 4]]))
     (add (scaleP (restoration.prodIP 1 2 0 0 0 0 [[0, 4]])
         (cF (restoration.crossG 2 0 1)))
       (scaleP (restoration.quFam 1 2 0 [[0, 4]])
@@ -190,10 +196,10 @@ four while the direction identity refuses there. -/
 private def offSix (g : List (List Nat)) : Poly :=
   if g == [[6, 0]] then [⟨2, 1⟩] else cF g
 
-example : ground.countOf [[6, 0]] (restoration.momBox 1 2 4) = 0 := by
+theorem pin30 : ground.countOf [[6, 0]] (restoration.momBox 1 2 4) = 0 := by
   decide +kernel
-example : bdInvP 2 4 offSix := by decide +kernel
-example : ¬ oneValue (add (offSix [[6, 0]]) (offSix [[6, 0]]))
+theorem pin31 : bdInvP 2 4 offSix := by decide +kernel
+theorem pin32 : ¬ oneValue (add (offSix [[6, 0]]) (offSix [[6, 0]]))
     (add (scaleP (restoration.prodIP 1 2 0 0 0 0 [[6, 0]])
         (offSix (restoration.crossG 2 0 1)))
       (scaleP (restoration.quFam 1 2 0 [[6, 0]])
@@ -205,7 +211,7 @@ example : ¬ oneValue (add (offSix [[6, 0]]) (offSix [[6, 0]]))
 /-! The cone read at the profile, its isotropic component read at
 the first square. -/
 
-example : oneValue (cF [[2, 0]])
+theorem pin33 : oneValue (cF [[2, 0]])
     (scaleP (restoration.ipFam 1 2 0 0 [[2, 0]]) (cF (isoG 2))) :=
   (cone_read 2 cF (by decide +kernel)).1 [[2, 0]] (by decide +kernel)
 
@@ -217,11 +223,11 @@ private def cU : Poly := [⟨5, 1⟩, ⟨7, 1⟩]
 private def cV : Poly := [⟨25, 1⟩, ⟨1, 19⟩]
 private def c1 : BPair := ⟨1, 57⟩
 
-example : stage.bracketRead cE := by decide +kernel
-example : stage.isolRead cE 1 4 := by decide +kernel
-example : stage.reduceRead cE cS0 := by decide +kernel
-example : stage.witnessRead cE (deriv cS0) cU cV c1 := by decide +kernel
-example : rootRead cE cS0 cU cV c1 1 4 := by decide +kernel
+theorem pin34 : stage.bracketRead cE := by decide +kernel
+theorem pin35 : stage.isolRead cE 1 4 := by decide +kernel
+theorem pin36 : stage.reduceRead cE cS0 := by decide +kernel
+theorem pin37 : stage.witnessRead cE (deriv cS0) cU cV c1 := by decide +kernel
+theorem pin38 : rootRead cE cS0 cU cV c1 1 4 := by decide +kernel
 
 /-! The root conjunct isolated at the extension `x² − 3`, the
 bracket, the isolation and a witness holding there; the witness
@@ -232,16 +238,16 @@ private def cE3 : stage.Ext :=
 private def cU3 : Poly := [⟨8, 1⟩, ⟨7, 1⟩]
 private def cV3 : Poly := [⟨16, 1⟩, ⟨1, 19⟩]
 
-example : stage.bracketRead cE3 := by decide +kernel
-example : stage.isolRead cE3 1 4 := by decide +kernel
-example : stage.witnessRead cE3 (deriv cS0) cU3 cV3 ⟨1, 60⟩ := by
+theorem pin39 : stage.bracketRead cE3 := by decide +kernel
+theorem pin40 : stage.isolRead cE3 1 4 := by decide +kernel
+theorem pin41 : stage.witnessRead cE3 (deriv cS0) cU3 cV3 ⟨1, 60⟩ := by
   decide +kernel
-example : ¬ stage.reduceRead cE3 cS0 := by decide +kernel
-example : ¬ rootRead cE3 cS0 cU3 cV3 ⟨1, 60⟩ 1 4 := by decide +kernel
+theorem pin42 : ¬ stage.reduceRead cE3 cS0 := by decide +kernel
+theorem pin43 : ¬ rootRead cE3 cS0 cU3 cV3 ⟨1, 60⟩ 1 4 := by decide +kernel
 
-example : ¬ stage.witnessRead cE (deriv cS0) cU [⟨25, 1⟩] c1 := by
+theorem pin44 : ¬ stage.witnessRead cE (deriv cS0) cU [⟨25, 1⟩] c1 := by
   decide +kernel
-example : ¬ rootRead cE cS0 cU [⟨25, 1⟩] c1 1 4 := by decide +kernel
+theorem pin45 : ¬ rootRead cE cS0 cU [⟨25, 1⟩] c1 1 4 := by decide +kernel
 
 /-! The cofactor's value and its identity, routed and decided; the
 identity refused at a forged cofactor, the witness binder isolated
@@ -249,16 +255,16 @@ at a forged witness, and the coefficient at the profile routed
 through `prof_coef` at the profile whose unit-monomial polynomial
 is the symbol. -/
 
-example : oneValue (locCoef cE cS2 cU) [⟨1, 13⟩, ⟨1, 19⟩] := by
+theorem pin46 : oneValue (locCoef cE cS2 cU) [⟨1, 13⟩, ⟨1, 19⟩] := by
   decide +kernel
 
-example : stage.reduceRead cE
+theorem pin47 : stage.reduceRead cE
     (add (mul (locCoef cE cS2 cU) (deriv cS0)) (scaleP c1 cS2)) :=
   locCoef_read cE cS0 cS2 cU cV c1 (by decide +kernel)
-example : stage.reduceRead cE
+theorem pin48 : stage.reduceRead cE
     (add (mul (locCoef cE cS2 cU) (deriv cS0)) (scaleP c1 cS2)) := by
   decide +kernel
-example : ¬ stage.reduceRead cE
+theorem pin49 : ¬ stage.reduceRead cE
     (add (mul [⟨1, 13⟩] (deriv cS0)) (scaleP c1 cS2)) := by decide +kernel
 
 private def uForge : Poly := [⟨5, 1⟩]
@@ -266,18 +272,18 @@ private def uForge : Poly := [⟨5, 1⟩]
 private def cG (g : List (List Nat)) : Poly :=
   if g == [[0, 0]] then cS0 else cF g
 
-example : rootRead cE (cG (vacG 2)) cU cV c1 1 4 := by decide +kernel
-example : stage.reduceRead cE
+theorem pin50 : rootRead cE (cG (vacG 2)) cU cV c1 1 4 := by decide +kernel
+theorem pin51 : stage.reduceRead cE
     (add (mul (locCoef cE (cG (isoG 2)) cU) (deriv (cG (vacG 2))))
       (scaleP c1 (cG (isoG 2)))) :=
   prof_coef 2 cG cE cU cV c1 1 4 (by decide +kernel)
-example : stage.reduceRead cE
+theorem pin52 : stage.reduceRead cE
     (add (mul (locCoef cE (cG (isoG 2)) cU) (deriv (cG (vacG 2))))
       (scaleP c1 (cG (isoG 2)))) := by decide +kernel
 
-example : ¬ stage.witnessRead cE (deriv cS0) uForge cV c1 := by
+theorem pin53 : ¬ stage.witnessRead cE (deriv cS0) uForge cV c1 := by
   decide +kernel
-example : ¬ stage.reduceRead cE
+theorem pin54 : ¬ stage.reduceRead cE
     (add (mul (locCoef cE cS2 uForge) (deriv cS0)) (scaleP c1 cS2)) := by
   decide +kernel
 
@@ -286,51 +292,64 @@ example : ¬ stage.reduceRead cE
 private def lP : split.PMat :=
   [[[⟨2, 1⟩, ⟨2, 1⟩], [⟨3, 1⟩]], [[⟨3, 1⟩], [⟨5, 1⟩, ⟨2, 1⟩]]]
 
-example : cellcount.pShapeAt lP 2 1 := by decide +kernel
-example : split.pSymAt lP 2 := by decide +kernel
-example : 0 < ground.countOf ([0] ++ [1]) (places.perms 2) := by
+theorem pin55 : cellcount.pShapeAt lP 2 1 := by decide +kernel
+theorem pin56 : split.pSymAt lP 2 := by decide +kernel
+theorem pin57 : 0 < ground.countOf ([0] ++ [1]) (places.perms 2) := by
   decide +kernel
 
 /-! At the level one both determinants sit off the unit, at the level
 nought both read it. -/
 
-example : ¬ (elim.minor (elim.selM [0] [0] (cellcount.evalPC lP ⟨2, 1⟩ 1 1))).oneValue BPair.unit := by decide +kernel
-example : ¬ (elim.minor (cellcount.evalPC (cellcount.pdefl [0] [1] lP)
-    ⟨2, 1⟩ 1 ((2 * ([0] : List Nat).length + 1) * 1))).oneValue
+theorem pin58 : ¬ (elim.minor (elim.selM [0] [0] (cellcount.evalPC lP ⟨2, 1⟩ 1 1))).oneValue BPair.unit := by decide +kernel
+theorem pin59 : ¬ (elim.minor (cellcount.evalPC (cellcount.pdeflP [0] [1] lP)
+    ⟨2, 1⟩ 1 ((([0] : List Nat).length + 1) * 1))).oneValue
       BPair.unit := by decide +kernel
-example : ¬ (elim.minor (cellcount.evalPC lP ⟨2, 1⟩ 1 1)).oneValue
+theorem pin60 : ¬ (elim.minor (cellcount.evalPC lP ⟨2, 1⟩ 1 1)).oneValue
     BPair.unit := by decide +kernel
-example : ¬ (elim.minor (cellcount.evalPC (cellcount.pdefl [0] [1] lP)
-    ⟨2, 1⟩ 1 ((2 * ([0] : List Nat).length + 1) * 1))).oneValue
+theorem pin61 : ¬ (elim.minor (cellcount.evalPC (cellcount.pdeflP [0] [1] lP)
+    ⟨2, 1⟩ 1 ((([0] : List Nat).length + 1) * 1))).oneValue
       BPair.unit :=
   fun h => (by decide +kernel : ¬ (elim.minor
       (cellcount.evalPC lP ⟨2, 1⟩ 1 1)).oneValue BPair.unit)
     ((locus_defl (o := 2) lP 1 [0] [1] ⟨2, 1⟩ 1 (by decide +kernel)
-      (by decide +kernel) (Or.inl rfl) (by decide +kernel)
+      (by decide +kernel) (Nat.succ_pos 0) (by decide +kernel)
       (by decide +kernel)).mp h)
 
-example : ¬ (elim.minor (elim.selM [0] [0] (cellcount.evalPC lP ⟨1, 1⟩ 1 1))).oneValue BPair.unit := by decide +kernel
-example : (elim.minor (cellcount.evalPC (cellcount.pdefl [0] [1] lP)
-    ⟨1, 1⟩ 1 ((2 * ([0] : List Nat).length + 1) * 1))).oneValue
+theorem pin62 : ¬ (elim.minor (elim.selM [0] [0] (cellcount.evalPC lP ⟨1, 1⟩ 1 1))).oneValue BPair.unit := by decide +kernel
+theorem pin63 : (elim.minor (cellcount.evalPC (cellcount.pdeflP [0] [1] lP)
+    ⟨1, 1⟩ 1 ((([0] : List Nat).length + 1) * 1))).oneValue
       BPair.unit := by decide +kernel
-example : (elim.minor (cellcount.evalPC lP ⟨1, 1⟩ 1 1)).oneValue
+theorem pin64 : (elim.minor (cellcount.evalPC lP ⟨1, 1⟩ 1 1)).oneValue
     BPair.unit := by decide +kernel
-example : (elim.minor (cellcount.evalPC (cellcount.pdefl [0] [1] lP)
-    ⟨1, 1⟩ 1 ((2 * ([0] : List Nat).length + 1) * 1))).oneValue
+theorem pin65 : (elim.minor (cellcount.evalPC (cellcount.pdeflP [0] [1] lP)
+    ⟨1, 1⟩ 1 ((([0] : List Nat).length + 1) * 1))).oneValue
       BPair.unit :=
   (locus_defl (o := 2) lP 1 [0] [1] ⟨1, 1⟩ 1 (by decide +kernel)
-    (by decide +kernel) (Or.inl rfl) (by decide +kernel)
+    (by decide +kernel) (Nat.succ_pos 0) (by decide +kernel)
     (by decide +kernel)).mpr
     (by decide +kernel)
 
-/-! The pivot binder isolated at the level minus one, where the
-pivot reads the unit and the two determinants part. -/
+/-! The pivot binder isolated at an order-three pencil, `x − 1` at
+the pivot key with the couplings one and the trailing block the
+identity, at the level one, where the pivot reads the unit and the
+two determinants part: the once-cleared deflation is the coupling's
+square's balance partner, a repeated row, its determinant the unit,
+while the pencil's own sits off it; the further binders hold there,
+the frame of the refusal. -/
 
-example : (elim.minor (elim.selM [0] [0] (cellcount.evalPC lP ⟨1, 2⟩ 1 1))).oneValue BPair.unit := by decide +kernel
-example : ¬ ((elim.minor (cellcount.evalPC (cellcount.pdefl [0] [1] lP)
-      ⟨1, 2⟩ 1 ((2 * ([0] : List Nat).length + 1) * 1))).oneValue
+private def lQ : split.PMat :=
+  [[[⟨1, 2⟩, ⟨2, 1⟩], [⟨2, 1⟩], [⟨2, 1⟩]],
+   [[⟨2, 1⟩], [⟨2, 1⟩], []],
+   [[⟨2, 1⟩], [], [⟨2, 1⟩]]]
+
+theorem pin66 : cellcount.pShapeAt lQ 3 1 ∧ split.pSymAt lQ 3
+    ∧ 0 < ground.countOf ([0] ++ [1, 2]) (places.perms 3)
+    ∧ (elim.minor (elim.selM [0] [0] (cellcount.evalPC lQ ⟨2, 1⟩ 1 1))).oneValue
+        BPair.unit := by decide +kernel
+theorem pin67 : ¬ ((elim.minor (cellcount.evalPC (cellcount.pdeflP [0] [1, 2] lQ)
+      ⟨2, 1⟩ 1 ((([0] : List Nat).length + 1) * 1))).oneValue
         BPair.unit
-    ↔ (elim.minor (cellcount.evalPC lP ⟨1, 2⟩ 1 1)).oneValue
+    ↔ (elim.minor (cellcount.evalPC lQ ⟨2, 1⟩ 1 1)).oneValue
         BPair.unit) := by decide +kernel
 
 /-! The symmetry binder is `thm:pairpencil`'s frame, the route's
@@ -342,27 +361,30 @@ reading the lower coupling itself. -/
 private def lA : split.PMat :=
   [[[⟨2, 1⟩, ⟨2, 1⟩], [⟨3, 1⟩]], [[⟨4, 1⟩], [⟨5, 1⟩, ⟨2, 1⟩]]]
 
-example : cellcount.pShapeAt lA 2 1 := by decide +kernel
-example : ¬ split.pSymAt lA 2 := by decide +kernel
-example : ((elim.minor (cellcount.evalPC (cellcount.pdefl [0] [1] lA)
-      ⟨1, 1⟩ 1 ((2 * ([0] : List Nat).length + 1) * 1))).oneValue
+theorem pin68 : cellcount.pShapeAt lA 2 1 := by decide +kernel
+theorem pin69 : ¬ split.pSymAt lA 2 := by decide +kernel
+theorem pin70 : ((elim.minor (cellcount.evalPC (cellcount.pdeflP [0] [1] lA)
+      ⟨1, 1⟩ 1 ((([0] : List Nat).length + 1) * 1))).oneValue
         BPair.unit
     ↔ (elim.minor (cellcount.evalPC lA ⟨1, 1⟩ 1 1)).oneValue
         BPair.unit) := by decide +kernel
 
-/-! The shape binder isolated at a square term beyond the clearing
-power: the truncated evaluation reads the unit while the deflation's
-sits off it. -/
+/-! The shape binder isolated at a square pivot beyond the clearing
+power, read at the point one over the clearing two: the pencil's
+saturated evaluation reads the pivot at the square's own read and
+the couplings at the clearing, its determinant off the unit, while
+the once-cleared deflation's cleared read parts from it at the
+unit. -/
 
 private def lB : split.PMat :=
-  [[[⟨2, 1⟩, ⟨2, 1⟩], [BPair.unit, BPair.unit, ⟨2, 1⟩]],
-   [[BPair.unit, BPair.unit, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]]]
+  [[[BPair.unit, BPair.unit, ⟨2, 1⟩], [⟨2, 1⟩]],
+   [[⟨2, 1⟩], [⟨2, 1⟩]]]
 
-example : ¬ cellcount.pShapeAt lB 2 1 := by decide +kernel
-example : split.pSymAt lB 2 := by decide +kernel
-example : ¬ (elim.minor (elim.selM [0] [0] (cellcount.evalPC lB ⟨3, 1⟩ 2 1))).oneValue BPair.unit := by decide +kernel
-example : ¬ ((elim.minor (cellcount.evalPC (cellcount.pdefl [0] [1] lB)
-      ⟨3, 1⟩ 2 ((2 * ([0] : List Nat).length + 1) * 1))).oneValue
+theorem pin71 : ¬ cellcount.pShapeAt lB 2 1 := by decide +kernel
+theorem pin72 : split.pSymAt lB 2 := by decide +kernel
+theorem pin73 : ¬ (elim.minor (elim.selM [0] [0] (cellcount.evalPC lB ⟨3, 1⟩ 2 1))).oneValue BPair.unit := by decide +kernel
+theorem pin74 : ¬ ((elim.minor (cellcount.evalPC (cellcount.pdeflP [0] [1] lB)
+      ⟨3, 1⟩ 2 ((([0] : List Nat).length + 1) * 1))).oneValue
         BPair.unit
     ↔ (elim.minor (cellcount.evalPC lB ⟨3, 1⟩ 2 1)).oneValue
         BPair.unit) := by decide +kernel
@@ -370,10 +392,12 @@ example : ¬ ((elim.minor (cellcount.evalPC (cellcount.pdefl [0] [1] lB)
 /-! The permutation binder isolated at the repeated key, the two
 determinants parting at the level one. -/
 
-example : ¬ (0 < ground.countOf ([0] ++ [0]) (places.perms 2)) := by
+theorem pin75 : ¬ (0 < ground.countOf ([0] ++ [0]) (places.perms 2)) := by
   decide +kernel
-example : ¬ ((elim.minor (cellcount.evalPC (cellcount.pdefl [0] [0] lP)
-      ⟨2, 1⟩ 1 ((2 * ([0] : List Nat).length + 1) * 1))).oneValue
+theorem pin76 : ¬ ((elim.minor (cellcount.evalPC (cellcount.pdeflP [0] [0] lP)
+      ⟨2, 1⟩ 1 ((([0] : List Nat).length + 1) * 1))).oneValue
         BPair.unit
     ↔ (elim.minor (cellcount.evalPC lP ⟨2, 1⟩ 1 1)).oneValue
         BPair.unit) := by decide +kernel
+
+end cone

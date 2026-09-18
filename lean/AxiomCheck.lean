@@ -18,12 +18,10 @@ Run from this directory, after `lake build`:
 
     lake env lean AxiomCheck.lean
 
-The batteries of `MassGapChecks` are `example` declarations,
-kernel-checked at `lake build` and not constants of the
-environment; the build refuses a `sorry` anywhere in either
-library outright, `lakefile.toml` setting `warningAsError`, so
-the `declaration uses sorry` diagnostic is a build error and
-`lake build` completing is the read that no `sorry` exists.
+The batteries of `MassGapChecks` are named theorems, kernel-checked
+at `lake build` and included in this constant scan. The build refuses
+a `sorry` anywhere in either library, with `warningAsError` set in
+`lakefile.toml`.
 -/
 
 open Lean in

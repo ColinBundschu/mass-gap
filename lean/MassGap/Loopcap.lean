@@ -42,6 +42,19 @@ comparison reading back at the trichotomy (`ground.leB_of_sq_le`),
 so the form and its memberwise swap each sit at or below the count
 against the gram.  `prop:wg`'s presentation Gram is the recorded
 site; `thm:truncation`'s member cap is the consumer.
+
+The member reads: the block's index `κ_λ`
+(`indexAt`) with the closure's joined index (`joinedIndex`), the
+adjoint tie's pair `t_λ` (`tieAt`) with `t_L` the least over the
+closure (`tieLeast`), the second member's pair `c^z_λ` at the block's
+dimension (`secondMember`), the residual cap `c^⊥_λ` (`residualCap`)
+and the adjoint's `c^⊥_θ` (`adjResidualCap`), the coordinates' tie
+`c_{β,λ}` (`coordTie`), the off-class index `κ'_λ`
+(`offClassIndex`), the dispersion's pair `c_ϱ` (`dispersion`, its
+term per label `dispersionAt`), the closure's least dimension `d₋`
+(`leastDim`) and the second-order pair `s_L` (`secondOrder`), every
+read a pair at the member's tables and the residue with the
+Casimirs' cleared second member withdrawn.
 -/
 
 namespace loopcap
@@ -58,77 +71,6 @@ theorem shiftUpper {L : Type} (F : fusion.Data L) (ls : List L)
     ¬ (ground.BPair.ofNat (F.dim F.theta) * elim.dotN u u
         < inertia.quadForm (pairpencil.loopMag F ls) u) :=
   fpcap.capUpper F F.theta (F.unit :: ls) hsym hrow hdim u hu
-
-/-! The equality diagonal: at pairwise-distinct labels the window's
-squares collect from the positional delta's double fold, over
-`def:ground`'s delta pick (`bsum_pick`, a key occupied once in an
-index family read off the delta family's fold). -/
-
-/-- The equality diagonal as the delta double fold: at a positional
-delta the window's squares collect from the double fold. -/
-private theorem deltaFold (n : Nat) (dl : Nat → Nat → Nat)
-    (uu : Nat → BPair)
-    (hdl : ∀ i j, i < n → j < n →
-      dl i j = if i = j then 1 else 0) :
-    (bsum (fun i => uu i * uu i) (List.range n)).oneValue
-      (bsum (fun i => bsum (fun j =>
-        BPair.ofNat (dl i j) * (uu i * uu j)) (List.range n))
-        (List.range n)) := by
-  refine foldB_congr_members _ _ (List.range n) (fun i hi => ?_)
-  have hin : i < n := ground.ltOfMem hi
-  refine BPair.oneValue_symm (BPair.oneValue_trans
-    (foldB_congr_members _ (fun j => if i = j then uu i * uu j
-      else BPair.unit) (List.range n) (fun j hj => ?_))
-    (bsum_pick (fun j => uu i * uu j) (List.range n) i ?_))
-  · have hjn : j < n := ground.ltOfMem hj
-    rw [hdl i j hin hjn]
-    by_cases hij : i = j
-    · rw [if_pos hij, if_pos hij,
-        BPair.mul_comm (BPair.ofNat 1) (uu i * uu j)]
-      exact BPair.mul_ofNat_one _
-    · rw [if_neg hij, if_neg hij]
-      exact BPair.unit_mul _
-  · rw [ground.countOf_range_one hin]
-
-/-- The two folds merge at the composition's count: the window's
-squares against the shifted form collect to the composed count's own
-double fold. -/
-private theorem sumFold (n : Nat) (dl NN CC : Nat → Nat → Nat)
-    (uu : Nat → BPair)
-    (hdl : ∀ i j, i < n → j < n →
-      dl i j = if i = j then 1 else 0)
-    (hC : ∀ i j, i < n → j < n → CC i j = NN i j + dl i j) :
-    (bsum (fun i => uu i * uu i) (List.range n)
-      + bsum (fun i => bsum (fun j => BPair.ofNat (NN i j)
-          * (uu i * uu j)) (List.range n)) (List.range n)).oneValue
-      (bsum (fun i => bsum (fun j => BPair.ofNat (CC i j)
-        * (uu i * uu j)) (List.range n)) (List.range n)) := by
-  refine BPair.oneValue_trans
-    (BPair.add_congr (deltaFold n dl uu hdl) (BPair.oneValue_refl _))
-    ?_
-  refine BPair.oneValue_trans (BPair.oneValue_symm
-    (foldB_add
-      (fun i => bsum (fun j => BPair.ofNat (dl i j) * (uu i * uu j))
-        (List.range n))
-      (fun i => bsum (fun j => BPair.ofNat (NN i j) * (uu i * uu j))
-        (List.range n)) (List.range n))) ?_
-  refine foldB_congr_members _ _ (List.range n) (fun i hi => ?_)
-  have hin : i < n := ground.ltOfMem hi
-  refine BPair.oneValue_trans (BPair.oneValue_symm
-    (foldB_add (fun j => BPair.ofNat (dl i j) * (uu i * uu j))
-      (fun j => BPair.ofNat (NN i j) * (uu i * uu j))
-      (List.range n))) ?_
-  refine foldB_congr_members _ _ (List.range n) (fun j hj => ?_)
-  have hjn : j < n := ground.ltOfMem hj
-  show (BPair.ofNat (dl i j) * (uu i * uu j)
-      + BPair.ofNat (NN i j) * (uu i * uu j)).oneValue
-    (BPair.ofNat (CC i j) * (uu i * uu j))
-  rw [← BPair.right_distrib]
-  refine BPair.mul_congr_left ?_
-  rw [hC i j hin hjn]
-  refine BPair.oneValue_symm (BPair.oneValue_trans
-    (BPair.ofNat_add (NN i j) (dl i j)) ?_)
-  exact BPair.oneValue_of_eq (BPair.add_comm _ _)
 
 /-- The composition's Gram collection: a double index fold whose
 count is the further fold of a family's products collects to the
@@ -271,21 +213,6 @@ private theorem crossVec {L : Type} (F : fusion.Data L) (fl : L)
     (F.unit :: ls) i (ground.ltOfMem hi)]
   exact BPair.oneValue_refl _
 
-/-- The index read's pointwise decode: at a window key pair the
-label equality reads the key equality, both ways. -/
-private theorem distRead {L : Type} {F : fusion.Data L}
-    {ls : List L} (h : fpcap.distinctAt F ls) (i j : Nat)
-    (hi : i < ls.length) (hj : j < ls.length) :
-    (F.eqL (ground.getAt F.unit ls i)
-        (ground.getAt F.unit ls j) = true
-      ↔ i = j) := by
-  have hb : F.eqL (ground.getAt F.unit ls i)
-      (ground.getAt F.unit ls j) = (i == j) :=
-    ground.beqEqOf (ground.all_range_read ls.length
-      (ground.all_range_read ls.length h i hi) j hj)
-  rw [hb]
-  exact ⟨fun he => ground.beqEqOf he, fun he => ground.eqBeqOf he⟩
-
 /-- The shifted term's lower side at a loop window: the form with
 the gram at or above the sum's unit — `χ_θ + 1` the squared
 fundamental's Gram at the composition read, the window's labels
@@ -327,20 +254,12 @@ theorem shiftLower {L : Type} (F : fusion.Data L) (fl : L)
     (BPair.add_congr (selfFold u (ls.length + 1) hu) hq)
   · intro i j hi hj
     by_cases hij : i = j
-    · rw [if_pos ((distRead hdist i j hi hj).mpr hij), if_pos hij]
-    · rw [if_neg (fun he => hij ((distRead hdist i j hi hj).mp he)),
+    · rw [if_pos ((fpcap.distinctAt_read hdist i j hi hj).mpr hij), if_pos hij]
+    · rw [if_neg (fun he => hij ((fpcap.distinctAt_read hdist i j hi hj).mp he)),
         if_neg hij]
   · intro i j hi hj
-    have h0 := ground.beqEqOf
-      (ground.all_range_read (F.unit :: ls).length
-        (ground.all_range_read (F.unit :: ls).length hcomp i hi) j hj)
-    rw [foldlSum (fun c =>
-        F.count fl (ground.getAt F.unit (F.unit :: ls) i) c
-          * F.count fl (ground.getAt F.unit (F.unit :: ls) j) c)
-        cs 0,
-      Nat.zero_add,
-      ← ground.famFold_getAt Nat.add 0 _ F.unit cs cs.length rfl]
-      at h0
+    have h0 := fpcap.compRead_read hcomp i j hi hj
+    rw [← ground.famFold_getAt Nat.add 0 _ F.unit cs cs.length rfl] at h0
     exact h0
 
 /-! The loop-cut tier: the joined slot coordinates' pairing at the
@@ -638,40 +557,134 @@ theorem gradient_deficit (n : Nat) :
       leB_ltB_trans (leB_congr_right (BPair.oneValue_symm (BPair.unit_mul κ))
         (leB_refl BPair.unit)) (ltB_mulPos hκ hκ)
     have hadd := leB_add (leB_refl (κ * κ * (dotP x w * dotP x w) * d)) ih'
-    have hlhs : (κ * κ) * ((dotP x w * dotP x w + dotP (coefs L w) (coefs L w)) * d
-          + dotP e w * dotP e w * κ)
-        = κ * κ * (dotP x w * dotP x w) * d
+    have hlhs : ((κ * κ) * ((dotP x w * dotP x w + dotP (coefs L w) (coefs L w)) * d
+          + dotP e w * dotP e w * κ)).oneValue
+        (κ * κ * (dotP x w * dotP x w) * d
           + (κ * (κ * dotP (coefs L w) (coefs L w)) * d
-            + κ * dotP e w * (κ * dotP e w) * κ) := by
-      rw [BPair.left_distrib, BPair.right_distrib, BPair.left_distrib,
-        BPair.add_assoc, ← BPair.mul_assoc (κ * κ) (dotP x w * dotP x w) d,
-        ← BPair.mul_assoc (κ * κ) (dotP (coefs L w) (coefs L w)) d,
-        BPair.mul_assoc κ κ (dotP (coefs L w) (coefs L w)),
-        ← BPair.mul_assoc (κ * κ) (dotP e w * dotP e w) κ,
-        BPair.mul_mul_mul_comm κ κ (dotP e w) (dotP e w)]
+            + κ * dotP e w * (κ * dotP e w) * κ)) :=
+      polEqB [κ, d, dotP x w, dotP (coefs L w) (coefs L w), dotP e w]
+        (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.add (Pol.mul (Pol.add (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 2))) (Pol.mon (Mon.var 3))) (Pol.mon (Mon.var 1))) (Pol.mul (Pol.mul (Pol.mon (Mon.var 4)) (Pol.mon (Mon.var 4))) (Pol.mon (Mon.var 0)))))
+        (Pol.add (Pol.mul (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 2)))) (Pol.mon (Mon.var 1))) (Pol.add (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 3)))) (Pol.mon (Mon.var 1))) (Pol.mul (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 4))) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 4)))) (Pol.mon (Mon.var 0)))))
+        (by decide +kernel)
     have hrhs : BPair.oneValue
         (κ * κ * (dotP x w * dotP x w) * d
           + κ * (κ * dotP w w + (dotP x w * dotP x w).swap) * κ * d)
         ((κ * κ) * (dotP w w * κ * d)) := by
-      rw [BPair.left_distrib, BPair.right_distrib, BPair.right_distrib,
-        BPair.mul_swap, BPair.swap_mul, BPair.swap_mul,
-        BPair.mul_right_comm κ (dotP x w * dotP x w) κ,
-        BPair.add_left_comm]
+      refine BPair.oneValue_trans
+        (polEqB [κ, d, dotP x w, dotP w w, (dotP x w * dotP x w).swap]
+          (Pol.add (Pol.mul (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 2)))) (Pol.mon (Mon.var 1))) (Pol.mul (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 3))) (Pol.mon (Mon.var 4)))) (Pol.mon (Mon.var 0))) (Pol.mon (Mon.var 1))))
+          (Pol.add (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.mul (Pol.mul (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 0))) (Pol.mon (Mon.var 1)))) (Pol.mul (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.mon (Mon.var 1))) (Pol.add (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 2))) (Pol.mon (Mon.var 4)))))
+          (by decide +kernel)) ?_
       refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl _)
-        (BPair.add_swap_null _)) ?_
-      refine BPair.oneValue_trans (BPair.add_unit _) ?_
-      rw [← BPair.mul_assoc (κ * κ) (dotP w w * κ) d,
-        ← BPair.mul_assoc (κ * κ) (dotP w w) κ,
-        BPair.mul_assoc κ κ (dotP w w)]
-      exact BPair.oneValue_refl _
+        (BPair.mul_congr (BPair.oneValue_refl _)
+          (BPair.add_swap_null (dotP x w * dotP x w)))) ?_
+      refine BPair.oneValue_trans
+        (BPair.add_congr (BPair.oneValue_refl _) (BPair.mul_unit _)) ?_
+      exact BPair.add_unit _
     have hfin : (κ * κ) * ((dotP x w * dotP x w + dotP (coefs L w) (coefs L w)) * d
           + dotP e w * dotP e w * κ)
-        ≤ (κ * κ) * (dotP w w * κ * d) := by
-      rw [hlhs]
-      exact leB_congr_right hrhs hadd
+        ≤ (κ * κ) * (dotP w w * κ * d) :=
+      leB_congr (BPair.oneValue_symm hlhs) hrhs hadd
     rw [BPair.mul_comm (κ * κ) ((dotP x w * dotP x w + dotP (coefs L w) (coefs L w)) * d
           + dotP e w * dotP e w * κ),
       BPair.mul_comm (κ * κ) (dotP w w * κ * d)] at hfin
     exact leB_unscale hm hfin
+
+/-! `lem:loopcap`'s member reads: the index, the adjoint tie's pair,
+the residual cap, the coordinates' tie, the dispersion's pair and the
+second-order pair, each a read of the member's tables (`con:fusion`'s
+fields at the member's instantiation) at the member's derived residue
+`r` (the interface's field), the form's point `C₂(θ) = 2 (r + 1)`
+(`prop:anchor`), and its floor label `f₀`, the cleared Casimir's second member withdrawn from
+every quotient of two Casimirs.  A pair positive by its shape is a
+scalar pair (`ground.Pair`) and a pair whose first datum reads the
+sum's unit a composite (`ground.CPair`); a least or largest member
+over a list is the trichotomy fold from a seed (`ground.leastBy`);
+and the closure enters occupied, its first member beside the rest. -/
+
+/-- The block's index `κ_λ = [C₂(λ) d_λ : dim G]`, the Casimir the
+cleared read's multiple of `C₂(θ)`. -/
+def indexAt {L : Type} (F : fusion.Data L) (l : L) : Pair :=
+  ⟨posOfNat (F.c2N l * (2 * (F.residue + 1)) * F.dim l), posOfNat (F.c2D * F.dim F.theta)⟩
+
+/-- The joined index `κ_Σ`, the closure's indices' fold from its
+first member. -/
+def joinedIndex {L : Type} (F : fusion.Data L) (l : L) (t : List L) : Pair :=
+  t.foldl (fun acc m => acc + indexAt F m) (indexAt F l)
+
+/-- The adjoint tie's pair `t_λ = [C₂(λ + λ̄) : κ_λ]`, the Casimirs'
+cleared second member and the form's point withdrawn:
+`[ĉ₂(λ + λ̄) dim G : ĉ₂(λ) d_λ]` at the cleared reads. -/
+def tieAt {L : Type} (F : fusion.Data L) (l : L) : Pair :=
+  ⟨posOfNat (F.c2N (F.add l (F.dual l)) * F.dim F.theta), posOfNat (F.c2N l * F.dim l)⟩
+
+/-- `t_L`, the least tie over the closure, one trichotomy fold. -/
+def tieLeast {L : Type} (F : fusion.Data L) (l : L) (t : List L) : Pair :=
+  leastBy (fun x y => decide (x ≤ y)) (tieAt F l) (t.map (tieAt F))
+
+/-- The second member's pair `c^z_λ` at the block's dimension `d`:
+`[4 Σ_{j ≤ d-2} j² Σ_{2 ≤ k < d} C(d, k) (4d)^{k-2} : d²]`, the
+first datum the sum's unit at a dimension below three. -/
+def secondMember (d : Nat) : CPair :=
+  ⟨BPair.ofNat (4 * sumNat ((List.range (d - 1)).map (fun j => j * j))
+    * sumNat ((List.range (d - 2)).map (fun i => pasc d (i + 2) * (4 * d) ^ i))),
+   posOfNat (d * d)⟩
+
+/-- The residual cap
+`c^⊥_λ = [4 C₂(λ) C₂(λ + λ̄) : κ_λ C₂(f₀)] + [c^z_λ : d_λ]` at the
+member floor `f₀`, the first summand at the cleared reads
+`[4 ĉ₂(λ + λ̄) dim G : d_λ ĉ₂(f₀)]` and the second summand at a
+label distinct from its dual, vacant at a self-dual label. -/
+def residualCap {L : Type} (F : fusion.Data L) (f0 l : L) : CPair :=
+  let first : CPair := CPair.ofPair
+    ⟨posOfNat (4 * F.c2N (F.add l (F.dual l)) * F.dim F.theta),
+     posOfNat (F.dim l * F.c2N f0)⟩ .one
+  if F.eqL l (F.dual l) then first
+  else first + secondMember (F.dim l) * CPair.ofPair ⟨1, posOfNat (F.dim l)⟩ .one
+
+/-- The adjoint's residual cap `c^⊥_θ = [4 C₂(2θ) : C₂(f₀)]`. -/
+def adjResidualCap {L : Type} (F : fusion.Data L) (f0 : L) : Pair :=
+  ⟨posOfNat (4 * F.c2N (F.add F.theta F.theta)), posOfNat (F.c2N f0)⟩
+
+/-- The coordinates' tie
+`c_{β,λ} = [3 (t_λ² ([1 : d_θ] + c^⊥_θ) + 4 t_λ) : κ_θ]` at
+`κ_θ = 2 (r + 1)`. -/
+def coordTie {L : Type} (F : fusion.Data L) (f0 l : L) : Pair :=
+  Pair.ofPos 3
+    * (tieAt F l * tieAt F l * (⟨1, posOfNat (F.dim F.theta)⟩ + adjResidualCap F f0)
+      + Pair.ofPos 4 * tieAt F l)
+    * ⟨1, posOfSucc (2 * F.residue + 1)⟩
+
+/-- The closure's members off `λ`'s dual class. -/
+def offClass {L : Type} (F : fusion.Data L) (ls : List L) (l : L) : List L :=
+  ls.filter (fun m => !(F.eqL m l || F.eqL m (F.dual l)))
+
+/-- `κ'_λ`, the indices' fold over the closure's members off `λ`'s
+dual class, the sum's unit at a closure of one dual class. -/
+def offClassIndex {L : Type} (F : fusion.Data L) (ls : List L) (l : L) : CPair :=
+  CPair.sum ((offClass F ls l).map (fun m => CPair.ofPair (indexAt F m) .one))
+
+/-- The dispersion's term at a label,
+`c^⊥_λ + [2 κ_λ κ'_λ : κ_Σ] c_{β,λ}`, the second summand the doubled
+index against the off-class index at the coordinates' tie's cofactor
+at the joined index. -/
+def dispersionAt {L : Type} (F : fusion.Data L) (f0 l : L) (t : List L) (m : L) : CPair :=
+  residualCap F f0 m
+    + CPair.ofPair (Pair.ofPos 2 * indexAt F m) .one * offClassIndex F (l :: t) m
+      * CPair.ofPair ((coordTie F f0 m).cofactor (joinedIndex F l t)) .one
+
+/-- The dispersion's pair `c_ϱ`, the largest term over the closure,
+one trichotomy fold. -/
+def dispersion {L : Type} (F : fusion.Data L) (f0 l : L) (t : List L) : CPair :=
+  leastBy (fun x y => decide (y ≤ x)) (dispersionAt F f0 l t l)
+    (t.map (dispersionAt F f0 l t))
+
+/-- The closure's least dimension `d₋`, one trichotomy fold. -/
+def leastDim {L : Type} (F : fusion.Data L) (l : L) (t : List L) : Nat :=
+  t.foldl (fun acc m => natMin acc (F.dim m)) (F.dim l)
+
+/-- The second-order pair `s_L = [1 : d₋] + c_ϱ`. -/
+def secondOrder {L : Type} (F : fusion.Data L) (f0 l : L) (t : List L) : CPair :=
+  CPair.ofPair ⟨1, posOfNat (leastDim F l t)⟩ .one + dispersion F f0 l t
 
 end loopcap

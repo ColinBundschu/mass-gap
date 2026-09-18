@@ -37,7 +37,8 @@ polynomial-pair tier its symbolic read.  The one-variable
 `symbolRead` reads the display at a one-variable pencil, and the
 two meet at the symbol's boundary coefficients — the constant
 reads the chord pencil's own determinant at the even order and
-the leading reads the gram's, the batteries' pins.  The symbol
+the leading reads the gram's (`split.ppminor_ppzMat_top`), the batteries'
+pins.  The symbol
 against the gram's determinant (`symbolOf`) is one value at every
 stated list of the fiber (`symbolOf_congr`): at a unit congruence of
 the level pair the congruent pencil's determinant against its gram's
@@ -80,7 +81,7 @@ def symbolDisp (D : poly.PPoly) (dOut dIn : Nat) : Prop :=
   ∧ ((D.take (dOut + 1)).all (fun p => decide
       (poly.unitTail (p.drop (dIn + 1))))) = true
 
-instance (D : poly.PPoly) (dOut dIn : Nat) :
+instance instTrigpencil1 (D : poly.PPoly) (dOut dIn : Nat) :
     Decidable (symbolDisp D dOut dIn) :=
   inferInstanceAs (Decidable (¬ _ ∧ _ ∧ _ = _))
 
@@ -169,7 +170,7 @@ stated inner bound. -/
 def symbolAt (Z : split.PPMat) (dOut dIn : Nat) : Prop :=
   symbolDisp (split.ppminor Z) dOut dIn
 
-instance (Z : split.PPMat) (dOut dIn : Nat) :
+instance instTrigpencil2 (Z : split.PPMat) (dOut dIn : Nat) :
     Decidable (symbolAt Z dOut dIn) :=
   match elim.decRowsLen Z.length Z with
   | isTrue hsq =>
@@ -184,7 +185,7 @@ def symbolDispP (p : poly.Poly) (d : Nat) : Prop :=
   ¬ (ground.getAt BPair.unit p d).oneValue BPair.unit
   ∧ poly.unitTail (p.drop (d + 1))
 
-instance (p : poly.Poly) (d : Nat) : Decidable (symbolDispP p d) :=
+instance instTrigpencil3 (p : poly.Poly) (d : Nat) : Decidable (symbolDispP p d) :=
   inferInstanceAs (Decidable (¬ _ ∧ _))
 
 /-- The one-variable display is a read of the value. -/
@@ -209,7 +210,7 @@ display. -/
 def symbolRead (S : split.PMat) (d : Nat) : Prop :=
   symbolDispP (split.pminor S) d
 
-instance (S : split.PMat) (d : Nat) : Decidable (symbolRead S d) :=
+instance instTrigpencil4 (S : split.PMat) (d : Nat) : Decidable (symbolRead S d) :=
   match elim.decRowsLen S.length S with
   | isTrue hsq =>
     decidable_of_iff _ (symbolDispP_congr (elim.pdetD_eq S hsq) d)
@@ -291,7 +292,7 @@ def gradeBoundRead (S : split.PMat) (bounds : List Nat) : Prop :=
         (poly.unitTail
           (p.drop (ground.getAt 0 bounds i + 1)))))) = true
 
-instance (S : split.PMat) (bounds : List Nat) :
+instance instTrigpencil5 (S : split.PMat) (bounds : List Nat) :
     Decidable (gradeBoundRead S bounds) :=
   inferInstanceAs (Decidable (_ = _ ∧ _ = _))
 
@@ -305,7 +306,7 @@ def psymRead (S : split.PMat) (o : Nat) : Prop :=
       (ground.getAt ([] : List BPair) (ground.getAt [] S i) j)
       (ground.getAt ([] : List BPair) (ground.getAt [] S j) i))))) = true
 
-instance (S : split.PMat) (o : Nat) : Decidable (psymRead S o) :=
+instance instTrigpencil6 (S : split.PMat) (o : Nat) : Decidable (psymRead S o) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The symbol's deck symmetry: the pencil's own symmetry with
@@ -349,7 +350,7 @@ private theorem deckSym_walk (S : split.PMat) (m : Nat)
         (BPair.oneValue_symm (hg i))
         (BPair.oneValue_trans hw (hg (2 * m - i))))
 
-instance (S : split.PMat) (o m : Nat) :
+instance instTrigpencil7 (S : split.PMat) (o m : Nat) :
     Decidable (deckSymmetryRead S o m) :=
   match elim.decRowsLen S.length S with
   | isTrue hsq =>

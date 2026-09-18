@@ -1,6 +1,5 @@
 import MassGap.Decimation
-import MassGapChecks.Fiberdec
-import MassGap.Fiberdec
+import MassGap.Deck
 /-!
 The check module for `thm:decimation`(i): the batteries re-read the
 border direction's three reads by kernel `decide` at committed
@@ -8,17 +7,23 @@ instances.  The boundary defect at the label calculus of fundamental
 count two and three — the vacuum's magnetic diagonal read at
 `fusion.unitLaw`'s `(θ, 𝟏)` instance — with the refusal at a forged
 interface whose count reads one at the vacuum triple while its `θ`
-sits off the unit's dual.  The border blocking at the plaquette
-chain of nine squares: the vacant configuration's class at the head
-with two elementary loops and their join grouped by the
-band-component count, the window pencil the assembled `1 + 2 + 1`
-tridiagonal, with four refusals — the loops' join placed in the
-one-component group, the component conjunct alone refusing; a
-scalar slab list against the groups' own lengths, the order
-identity alone refusing; a duplicated loop in the one-component
-group, the distinctness fold refusing with the counts standing; and
-the scalar pencil against the blocking's own slab data, the
-assembled read alone refusing.  The walk pencil's
+sits off the unit's dual.  The depth chain at a three-key walk of one
+term with one position per member (`con:depthchain`'s frame): the
+chain from the base is the walk itself, its slab data the walk's
+entries, the tail recursion's pivots `-2/3, 3/2, 2` at the
+witnesses `2/3, 1/2`, and the walk's count reads the pivots' fold,
+one on both sides, through the theorem and decided, with the cross
+read load-bearing at a datum coupling the walk's two ends, its count
+parting from the fold at the same chain data, and the places'
+permutation load-bearing at the walk with corner `-1` read from the
+base `2`, the lower unit moving from the head pivot to the tail's
+with the two counts one through the theorem.  The decimated count
+at the walk pencil's level-`10` datum: the tower key dropped, its
+block `21` positive definite, the deflation onto the head the
+adjugate-solved datum `[[-4431, 0], [0, 441]]`, the count one on
+both sides through the theorem and decided, and the dropped block's
+positivity load-bearing at the vacuum key dropped instead, its
+block `-10` parting the count from its deflation.  The walk pencil's
 jump arithmetic at `H([1 : 1])` over the square window: the value
 matrix with diagonal `(0, 11, 31)` and the outer coupling `-1`, the
 ground jump from level `-1` to level `0` at counts `0` and `1`, the
@@ -36,15 +41,18 @@ joint record committed at the two conjuncts' one forgery.
 Clause (ii)'s batteries ride the dominance tier.  The comparison's
 pins at the tridiagonal of diagonal `5` and coupling `2`, with the
 refusals at a diagonal beneath its own off-row fold and at a
-lower-side scalar, and the width-blindness joint record — a vacant
+lower-side scalar; the gaps `(3, 1, 3)` read off the datum, every
+one beyond the sum's unit, the positive-definite read at the
+occupied gaps through the theorem and decided, and the gaps'
+positivity load-bearing at the datum `[[1, 1], [1, 1]]`, its split's
+kernel block occupied; and the width-blindness joint record — a vacant
 row reads its comparison at the units, the square frame the
-theorems' own binder, `sqAt` at `dom_quad` directly and inside
+theorems' own binder, `sqAt` at `dom_form` directly and inside
 `splitRead` at `dom_psd` and `dom_count`, the frame's refusal
 pinned at the ragged datum's one length-matched order.  The priced
 form's direct pin at the gaps `(3, 1, 3)` against the coordinates
-`(1, -1, 2)`, the theorem's route with the kernel's beside it, the
-gap family's count tie the comparison's frame at the truncating
-folds' two survivals, and the symmetry load-bearing at the
+`(1, -1, 2)`, the theorem's route with the kernel's beside it, and
+the symmetry load-bearing at the
 dominance-clear datum `[[1,1],[0,0]]`, the priced form parting at
 the coordinates `(1, -2)` with the transpose read the one refusing
 binder.  The upper-side theorem at that datum's cleared
@@ -116,20 +124,23 @@ forged leading split, at a comparison boundary retagged as a jump,
 at a comparison off its straddle, and at a forged Bézout
 witness.
 -/
+
+namespace decimation
 set_option maxHeartbeats 16000000
 
-open ground lattice fusion elim inertia certconstruct decimation fiberdec
+open ground lattice fusion elim inertia certconstruct
 
 private def u : BPair := BPair.unit
-
+private def spKer : Split 1 :=
+  ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [], 1, rfl⟩
 /-! The boundary defect at the label calculus's two instantiations:
 `N^𝟏_{θ𝟏}` is `prop:repring`'s unit read at the pair `(θ, 𝟏)` —
 `fusion.unitLaw`'s own instance — and `θ` sits off the unit's dual
 at both fundamental counts, so the count reads the sum's unit. -/
 
-example : fusion.unitLaw (fusion.dataA 2) (fusion.dataA 2).theta
+theorem pin1 : fusion.unitLaw (fusion.dataA 2) (fusion.dataA 2).theta
     (fusion.dataA 2).unit := by decide +kernel
-example : fusion.unitLaw (fusion.dataA 3) (fusion.dataA 3).theta
+theorem pin2 : fusion.unitLaw (fusion.dataA 3) (fusion.dataA 3).theta
     (fusion.dataA 3).unit := by decide +kernel
 
 /-! The forged interface refuses: an interface over the naturals
@@ -141,102 +152,113 @@ private def FV : fusion.Data Nat :=
   ⟨(fun x y => x == y), (fun _ => ground.eqBeqOf rfl),
    0, (fun x => x), (fun x y => x + y), 1,
    (fun _ _ _ => 1), (fun _ _ => [0]),
-   (fun _ => 1), (fun _ => 1), 1, 1, (fun _ => []),
+   (fun _ => 1), (fun _ => 1), 1, 1, 1, (fun _ => []),
    (fun _ => 0), (fun _ _ => 0), (fun _ => 0), (fiber.presNone _)⟩
 
-example : ¬ (FV.eqL FV.theta (FV.dual FV.unit) = true) := by decide +kernel
-example : ¬ fusion.unitLaw FV FV.theta FV.unit := by decide +kernel
+theorem pin3 : ¬ (FV.eqL FV.theta (FV.dual FV.unit) = true) := by decide +kernel
+theorem pin4 : ¬ fusion.unitLaw FV FV.theta FV.unit := by decide +kernel
 
-/-! The border blocking at the plaquette chain of nine squares over
-the label calculus of fundamental count three.  The index is two
-elementary loops four squares apart and their join; the blocking
-groups the two loops at one band component and the join at two, so
-the order list is the unit line ahead of the groups' own lengths,
-`[1, 2, 1]`, and the window pencil is the assembled block
-tridiagonal at those orders. -/
+/-! Clause (i) at a three-key walk of one term with one position per
+member (`con:depthchain`'s frame): the depth chain from the base is
+the walk itself, its slab data the walk's entries at the slab shape,
+the tail recursion's pivots `-2/3, 3/2, 2` at the witnesses
+`2/3, 1/2`, the walk's split at the mixed leading block
+`[[0,1],[1,2]]` ahead of `2`, one lower unit, and the count reads the
+pivots' fold, one on both sides, through the theorem and decided.
+The cross read is load-bearing: a datum coupling the walk's two
+ends, which the term does not join, refuses it, and its count parts
+from the fold at the same chain data, the coupled corner `-3`
+carrying a second lower unit. -/
 
-private def R9 : lattice.Region := fiberdec.chainRegion 9
-private def FA : fusion.Data places.Shape := fusion.dataA 3
+private def w3 : Mat :=
+  [[u, ⟨2, 1⟩, u], [⟨2, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩], [u, ⟨2, 1⟩, ⟨3, 1⟩]]
+private def p3 : List (List Nat) := [[0], [1], [2]]
+private def sh3 : List (List Nat) := depthchain.posShells [w3] p3 3 [0]
+private def xs3 : List greenprod.MatQ :=
+  [⟨[[⟨1, 3⟩]], 3⟩, ⟨[[⟨4, 1⟩]], 2⟩, ⟨[[⟨3, 1⟩]], 1⟩]
+private def rs3 : List greenprod.MatQ :=
+  [⟨[[⟨3, 1⟩]], 3⟩, ⟨[[⟨2, 1⟩]], 2⟩]
+private def sps3 : List ((k : Nat) × Split k) :=
+  [⟨1, ⟨⟨[[⟨2, 1⟩]], rfl⟩, ⟨[[⟨2, 1⟩]], rfl⟩, [.one ⟨1, 3⟩], 0, rfl⟩⟩,
+   ⟨1, ⟨⟨[[⟨2, 1⟩]], rfl⟩, ⟨[[⟨2, 1⟩]], rfl⟩, [.one ⟨4, 1⟩], 0, rfl⟩⟩,
+   ⟨1, ⟨⟨[[⟨2, 1⟩]], rfl⟩, ⟨[[⟨2, 1⟩]], rfl⟩, [.one ⟨3, 1⟩], 0, rfl⟩⟩]
+private def spW3 : Split 3 :=
+  ⟨⟨[[⟨2, 1⟩, u, ⟨1, 2⟩], [u, ⟨2, 1⟩, u], [u, u, ⟨2, 1⟩]], rfl⟩,
+   ⟨[[⟨2, 1⟩, u, ⟨2, 1⟩], [u, ⟨2, 1⟩, u], [u, u, ⟨2, 1⟩]], rfl⟩,
+   [.two u ⟨2, 1⟩ ⟨3, 1⟩, .one ⟨3, 1⟩], 0, rfl⟩
 
-private def cf0 : List places.Shape := loopAt 9 0
-private def cf4 : List places.Shape := loopAt 9 4
-private def cfJ : List places.Shape :=
-  stableentries.joinConf FA R9 cf0 cf4
-private def cfV : List places.Shape :=
-  (List.range R9.links).map (fun _ => [0, 0, 0])
+theorem pin5 : sh3 = [[0], [1], [2]] := by decide +kernel
+theorem pin6 : greenprod.tailRead (depthchain.slabDiag w3 sh3)
+    (depthchain.slabOff w3 sh3) xs3 rs3 [1, 1, 1] := by decide +kernel
+theorem pin7 : greenprod.revListRead xs3 sps3 := by decide +kernel
+theorem pin8 : splitRead w3 spW3 := by decide +kernel
+theorem pin9 : splitRead (greenprod.assemble (depthchain.slabDiag w3 sh3)
+    (depthchain.slabOff w3 sh3)) spW3 := by decide +kernel
+theorem pin10 : revAt spW3 = greenprod.revFold sps3 :=
+  chain_count [w3] p3 3 [0] 3 (by decide +kernel) (by decide +kernel)
+    (by decide) rfl w3 (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) xs3 rs3 [1, 1, 1] sps3
+    (by decide +kernel) (by decide +kernel) spW3 (by decide +kernel)
+    spW3 (by decide +kernel)
+theorem pin11 : revAt spW3 = 1 := by decide +kernel
+theorem pin12 : greenprod.revFold sps3 = 1 := by decide +kernel
 
-example : (grading.components FA R9 cfV).length = 0 := by decide +kernel
-example : (grading.components FA R9 cf0).length = 1 := by decide +kernel
-example : (grading.components FA R9 cf4).length = 1 := by decide +kernel
-example : (grading.components FA R9 cfJ).length = 2 := by decide +kernel
+/-! The places' permutation is load-bearing at a base off the head:
+the walk with corner `-1` read from the base `2` lists the positions
+`2, 1, 0`, its slab data the reversed walk's, the tail recursion's
+pivots `5/3, 3, -1` at the witnesses `1/3, -1`, the walk's own split
+at the diagonal `-1, 3, 15` and the reversed datum's at `2, 6, -15`,
+the lower unit moving from the head pivot to the tail's, and the two
+counts one through the theorem at the permutation and decided. -/
 
-private def ixC : List (List places.Shape) := [cfV, cf0, cf4, cfJ]
-private def gsC : List (List (List places.Shape)) :=
-  [[cfV], [cf0, cf4], [cfJ]]
+private def wR : Mat :=
+  [[⟨1, 2⟩, ⟨2, 1⟩, u], [⟨2, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩], [u, ⟨2, 1⟩, ⟨3, 1⟩]]
+private def shR : List (List Nat) := depthchain.posShells [wR] p3 3 [2]
+private def xsR : List greenprod.MatQ :=
+  [⟨[[⟨6, 1⟩]], 3⟩, ⟨[[⟨4, 1⟩]], 1⟩, ⟨[[⟨1, 2⟩]], 1⟩]
+private def rsR : List greenprod.MatQ :=
+  [⟨[[⟨2, 1⟩]], 3⟩, ⟨[[⟨1, 2⟩]], 1⟩]
+private def spsR : List ((k : Nat) × Split k) :=
+  [⟨1, ⟨⟨[[⟨2, 1⟩]], rfl⟩, ⟨[[⟨2, 1⟩]], rfl⟩, [.one ⟨6, 1⟩], 0, rfl⟩⟩,
+   ⟨1, ⟨⟨[[⟨2, 1⟩]], rfl⟩, ⟨[[⟨2, 1⟩]], rfl⟩, [.one ⟨4, 1⟩], 0, rfl⟩⟩,
+   ⟨1, ⟨⟨[[⟨2, 1⟩]], rfl⟩, ⟨[[⟨2, 1⟩]], rfl⟩, [.one ⟨1, 2⟩], 0, rfl⟩⟩]
+private def spR : Split 3 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨2, 1⟩, ⟨1, 2⟩], [u, ⟨2, 1⟩, ⟨1, 2⟩], [u, u, ⟨4, 1⟩]], rfl⟩,
+   ⟨[[⟨4, 1⟩, ⟨1, 4⟩, u], [u, ⟨4, 1⟩, ⟨2, 1⟩], [u, u, ⟨2, 1⟩]], rfl⟩,
+   [.one ⟨1, 2⟩, .one ⟨4, 1⟩, .one ⟨16, 1⟩], 0, rfl⟩
+private def spRr : Split 3 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 2⟩, ⟨2, 1⟩], [u, ⟨3, 1⟩, ⟨1, 3⟩], [u, u, ⟨4, 1⟩]], rfl⟩,
+   ⟨[[⟨7, 1⟩, ⟨4, 1⟩, u], [u, ⟨4, 1⟩, ⟨3, 1⟩], [u, u, ⟨3, 1⟩]], rfl⟩,
+   [.one ⟨3, 1⟩, .one ⟨7, 1⟩, .one ⟨1, 16⟩], 0, rfl⟩
 
-private def diagC : List Mat :=
-  [[[⟨2, 1⟩]], [[⟨4, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨4, 1⟩]], [[⟨5, 1⟩]]]
-private def offC : List Mat := [[[⟨2, 1⟩, u]], [[⟨2, 1⟩], [u]]]
-private def hC : Mat := greenprod.assemble diagC offC
+theorem pin13 : shR = [[2], [1], [0]] := by decide +kernel
+theorem pin14 : greenprod.tailRead (depthchain.slabDiag wR shR)
+    (depthchain.slabOff wR shR) xsR rsR [1, 1, 1] := by decide +kernel
+theorem pin15 : greenprod.revListRead xsR spsR := by decide +kernel
+theorem pin16 : splitRead wR spR := by decide +kernel
+theorem pin17 : splitRead (greenprod.assemble (depthchain.slabDiag wR shR)
+    (depthchain.slabOff wR shR)) spRr := by decide +kernel
+theorem pin18 : revAt spR = greenprod.revFold spsR :=
+  chain_count [wR] p3 3 [2] 3 (by decide +kernel) (by decide +kernel)
+    (by decide) rfl wR (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) xsR rsR [1, 1, 1] spsR
+    (by decide +kernel) (by decide +kernel) spR (by decide +kernel)
+    spRr (by decide +kernel)
+theorem pin19 : revAt spR = 1 := by decide +kernel
+theorem pin20 : revAt spRr = 1 := by decide +kernel
 
-example : chainBlockRead FA R9 ixC gsC hC diagC offC [1, 2, 1] := by decide +kernel
+private def wY : Mat :=
+  [[u, ⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩, ⟨1, 4⟩]]
+private def spY : Split 3 :=
+  ⟨⟨[[⟨2, 1⟩, u, ⟨2, 1⟩], [u, ⟨2, 1⟩, ⟨1, 2⟩], [u, u, ⟨2, 1⟩]], rfl⟩,
+   ⟨[[⟨2, 1⟩, u, ⟨1, 2⟩], [u, ⟨2, 1⟩, ⟨2, 1⟩], [u, u, ⟨2, 1⟩]], rfl⟩,
+   [.two u ⟨2, 1⟩ ⟨3, 1⟩, .one ⟨1, 4⟩], 0, rfl⟩
 
-/-! The mis-grouping refuses at the component conjunct alone: the
-join placed with one loop in the leading group, the index its own
-concatenation, so the blocking's first conjunct passes with the slab
-shape, the order identity and the pencil's read beside it, while the
-join's two components sit against the leading group's one. -/
-
-private def ixM : List (List places.Shape) := [cfV, cf0, cfJ, cf4]
-private def gsM : List (List (List places.Shape)) :=
-  [[cfV], [cf0, cfJ], [cf4]]
-
-example : confListEq FA (gsM.flatMap (fun g => g)) ixM = true := by
-  decide +kernel
-example : [1, 2, 1] = gsM.map List.length := by decide +kernel
-example : ¬ ((grading.components FA R9 cfJ).length = 1) := by decide +kernel
-example : ¬ chainBlockRead FA R9 ixM gsM hC diagC offC [1, 2, 1] := by decide +kernel
-
-/-! The order identity refuses on its own: the scalar slab list at
-three slabs of order one against the blocking's own group lengths.
-The index reads its concatenation, the component counts hold, the
-shape read holds at the scalar orders and the pencil is the
-assembled datum, so the order list `[1, 1, 1]` against
-`1 :: [2, 1]` is the one conjunct that parts. -/
-
-private def diagS : List Mat := [[[⟨2, 1⟩]], [[⟨4, 1⟩]], [[⟨5, 1⟩]]]
-private def offS : List Mat := [[[⟨2, 1⟩]], [[⟨2, 1⟩]]]
-private def hS : Mat := greenprod.assemble diagS offS
-
-example : confListEq FA (gsC.flatMap (fun g => g)) ixC = true := by
-  decide +kernel
-example : greenprod.slabShape diagS offS [1, 1, 1] := by decide +kernel
-example : matOneValue hS (greenprod.assemble diagS offS) := by decide +kernel
-example : ¬ ([1, 1, 1] = gsC.map List.length) := by decide +kernel
-example : ¬ chainBlockRead FA R9 ixC gsC hS diagS offS [1, 1, 1] := by decide +kernel
-
-
-/-! The distinctness fold refuses on its own: the one-component
-group holding one loop twice, every count read standing beside
-it. -/
-
-private def ixD : List (List places.Shape) := [cfV, cf0, cf0, cfJ]
-private def gsD : List (List (List places.Shape)) :=
-  [[cfV], [cf0, cf0], [cfJ]]
-
-example : confListEq FA (gsD.flatMap (fun g => g)) ixD = true := by
-  decide +kernel
-example : ¬ (distinctGo FA [cf0, cf0] = true) := by decide +kernel
-example : ¬ chainBlockRead FA R9 ixD gsD hC diagC offC [1, 2, 1] := by
-  decide +kernel
-
-/-! The assembled read refuses on its own: the scalar pencil against
-the blocking's own slab data, every index and shape conjunct
-standing beside it. -/
-
-example : ¬ matOneValue hS (greenprod.assemble diagC offC) := by decide +kernel
-example : ¬ chainBlockRead FA R9 ixC gsC hS diagC offC [1, 2, 1] := by
-  decide +kernel
+theorem pin21 : depthchain.crossB [w3] p3 wY = false := by decide +kernel
+theorem pin22 : splitRead wY spY := by decide +kernel
+theorem pin23 : ¬ (revAt spY = greenprod.revFold sps3) := by decide +kernel
 
 /-! The walk pencil's jump arithmetic.  The window pencil at the
 square's label index and the weight pair `[1 : 1]` is the value
@@ -260,7 +282,7 @@ private def wH : Mat :=
     (pairpencil.loopMag (fusion.dataA 2) [[1, 0], adjchar.theta 2])
 private def wG : Mat := idMat 3
 
-example : matOneValue wH
+theorem pin24 : matOneValue wH
     [[u, u, ⟨1, 2⟩], [u, ⟨12, 1⟩, u], [⟨1, 2⟩, u, ⟨32, 1⟩]] := by decide +kernel
 
 private def spA : Split 3 :=
@@ -283,34 +305,34 @@ private def spD : Split 3 :=
    ⟨[[⟨1, 13⟩, u, ⟨1, 2⟩], [u, ⟨1, 13⟩, u], [u, u, ⟨2, 1⟩]], rfl⟩,
    [.one ⟨1, 13⟩, .one ⟨1, 2⟩, .one ⟨2749, 1⟩], 0, rfl⟩
 
-example : countAtPair wH wG 1 2 0 spA := by decide +kernel
-example : countAtPair wH wG 1 1 1 spB := by decide +kernel
-example : countAtPair wH wG 11 1 1 spC := by decide +kernel
-example : countAtPair wH wG 13 1 2 spD := by decide +kernel
+theorem pin25 : countAtPair wH wG 1 2 0 spA := by decide +kernel
+theorem pin26 : countAtPair wH wG 1 1 1 spB := by decide +kernel
+theorem pin27 : countAtPair wH wG 11 1 1 spC := by decide +kernel
+theorem pin28 : countAtPair wH wG 13 1 2 spD := by decide +kernel
 
 /-! The two jumps: the ground jump at the ordered pair
 `[1 : 2] < [1 : 1]` with the count moving from the sum's unit by
 one, and the second at `[11 : 1] < [13 : 1]` with the count moving
 from one to two. -/
 
-example : jumpPairAt wH wG 1 2 1 1 0 1 spA spB := by decide +kernel
-example : jumpPairAt wH wG 11 1 13 1 1 1 spC spD := by decide +kernel
+theorem pin29 : jumpPairAt wH wG 1 2 1 1 0 1 spA spB := by decide +kernel
+theorem pin30 : jumpPairAt wH wG 11 1 13 1 1 1 spC spD := by decide +kernel
 
 /-! The level as the two jumps' distance: `[12 : 1]` sits inside the
 brackets' gap, `13 ≤ 14` at the lower end and `14 ≤ 16` at the
 upper. -/
 
-example : levelDistRead wH wG 1 2 1 1 11 1 13 1 12 1 1 1
+theorem pin31 : levelDistRead wH wG 1 2 1 1 11 1 13 1 12 1 1 1
     spA spB spC spD := by decide +kernel
 
 /-! The two ends refuse, the stated level the one datum moved:
 `[10 : 1]` sits below the second jump's lower bracket, and
 `[15 : 1]` beyond the second jump's upper. -/
 
-example : ¬ levelDistRead wH wG 1 2 1 1 11 1 13 1 10 1 1 1
+theorem pin32 : ¬ levelDistRead wH wG 1 2 1 1 11 1 13 1 10 1 1 1
     spA spB spC spD := by decide +kernel
 
-example : ¬ levelDistRead wH wG 1 2 1 1 11 1 13 1 15 1 1 1
+theorem pin33 : ¬ levelDistRead wH wG 1 2 1 1 11 1 13 1 15 1 1 1
     spA spB spC spD := by decide +kernel
 
 /-! The ordering conjunct refuses on its own: a wide ground bracket
@@ -328,12 +350,12 @@ private def spF : Split 3 :=
    ⟨[[⟨33, 1⟩, u, ⟨2, 1⟩], [u, ⟨33, 1⟩, u], [u, u, ⟨2, 1⟩]], rfl⟩,
    [.one ⟨1, 33⟩, .one ⟨1, 22⟩, .one ⟨1, 993⟩], 0, rfl⟩
 
-example : countAtPair wH wG 25 1 2 spE := by decide +kernel
-example : countAtPair wH wG 33 1 3 spF := by decide +kernel
-example : jumpPairAt wH wG 1 2 25 1 0 2 spA spE := by decide +kernel
-example : jumpPairAt wH wG 13 1 33 1 2 1 spD spF := by decide +kernel
-example : ¬ (25 + 1 ≤ 13 + 1) := by decide +kernel
-example : ¬ levelDistRead wH wG 1 2 25 1 13 1 33 1 12 1 2 1
+theorem pin34 : countAtPair wH wG 25 1 2 spE := by decide +kernel
+theorem pin35 : countAtPair wH wG 33 1 3 spF := by decide +kernel
+theorem pin36 : jumpPairAt wH wG 1 2 25 1 0 2 spA spE := by decide +kernel
+theorem pin37 : jumpPairAt wH wG 13 1 33 1 2 1 spD spF := by decide +kernel
+theorem pin38 : ¬ (25 + 1 ≤ 13 + 1) := by decide +kernel
+theorem pin39 : ¬ levelDistRead wH wG 1 2 25 1 13 1 33 1 12 1 2 1
     spA spE spD spF := by decide +kernel
 
 /-! The jump read's order and gap conjuncts share their one
@@ -341,9 +363,49 @@ forgery: the counting function is monotone in its level, so an
 exchanged level pair forces the vacant gap — the two conjuncts'
 joint record, the count reads standing beside them. -/
 
-example : countAtPair wH wG 1 1 1 spB := by decide +kernel
-example : countAtPair wH wG 1 2 0 spA := by decide +kernel
-example : ¬ jumpPairAt wH wG 1 1 1 2 1 0 spB spA := by decide +kernel
+theorem pin40 : countAtPair wH wG 1 1 1 spB := by decide +kernel
+theorem pin41 : countAtPair wH wG 1 2 0 spA := by decide +kernel
+theorem pin42 : ¬ jumpPairAt wH wG 1 1 1 2 1 0 spB spA := by decide +kernel
+
+/-! The decimated count at the walk pencil's level-`10` datum
+`H - 10 G`, the diagonal `(-10, 1, 21)` with the outer coupling
+`-1`: the tower key `2` dropped, its block `21` positive definite,
+the deflation onto the head `[0, 1]` the scaled datum
+`[[-4431, 0], [0, 441]]` at the adjugate's solve, and the count one
+on both sides, through the theorem and decided.  The dropped
+block's positivity is load-bearing: dropping the vacuum key `0`,
+whose block `-10` reads one lower unit, parts the count from its
+deflation `[[100, 0], [0, 2110]]`, every further binder standing. -/
+
+private def sL10 : Mat :=
+  inertia.siteDatum (matAdd wH (matScale 1 wG)) (matScale 11 wG)
+private def spDiag2 (a b : BPair) : Split 2 :=
+  ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [.one a, .one b], 0, rfl⟩
+
+theorem pin43 : matOneValue sL10
+    [[⟨1, 11⟩, u, ⟨1, 2⟩], [u, ⟨2, 1⟩, u], [⟨1, 2⟩, u, ⟨22, 1⟩]] := by
+  decide +kernel
+theorem pin44 : splitRead (selM [2] [2] sL10) (inertia.oneSplit [⟨22, 1⟩]) := by decide +kernel
+theorem pin45 : pdAt (inertia.oneSplit [⟨22, 1⟩]) := by decide +kernel
+theorem pin46 : splitRead (inertia.deflMat (selM [2] [2] sL10)
+    (selM [2] [0, 1] sL10) (selM [0, 1] [0, 1] sL10)
+    (matMul (adjM (selM [2] [2] sL10)) (selM [2] [0, 1] sL10)))
+    (spDiag2 ⟨1, 4432⟩ ⟨442, 1⟩) := by decide +kernel
+theorem pin47 : revAt spC = revAt (spDiag2 ⟨1, 4432⟩ ⟨442, 1⟩) :=
+  head_count sL10 [2] [0, 1] (by decide) (by decide +kernel)
+    (by decide +kernel) rfl (by decide +kernel) (by decide +kernel)
+    (inertia.oneSplit [⟨22, 1⟩]) (by decide +kernel) (by decide +kernel)
+    spC (by decide +kernel) (spDiag2 ⟨1, 4432⟩ ⟨442, 1⟩) (by decide +kernel)
+theorem pin48 : revAt (spDiag2 ⟨1, 4432⟩ ⟨442, 1⟩) = 1 := by decide +kernel
+
+theorem pin49 : splitRead (selM [0] [0] sL10) (inertia.oneSplit [⟨1, 11⟩]) := by decide +kernel
+theorem pin50 : ¬ pdAt (inertia.oneSplit [⟨1, 11⟩]) := by decide +kernel
+theorem pin51 : splitRead (inertia.deflMat (selM [0] [0] sL10)
+    (selM [0] [1, 2] sL10) (selM [1, 2] [1, 2] sL10)
+    (matMul (adjM (selM [0] [0] sL10)) (selM [0] [1, 2] sL10)))
+    (spDiag2 ⟨101, 1⟩ ⟨2111, 1⟩) := by decide +kernel
+theorem pin52 : ¬ (revAt spC = revAt (spDiag2 ⟨101, 1⟩ ⟨2111, 1⟩)) := by
+  decide +kernel
 
 /-! Clause (ii)'s dominance comparison at the tridiagonal of
 diagonal `5` and coupling `2`: each row's off-row magnitude fold —
@@ -352,7 +414,7 @@ The refusals part at one row apiece: a diagonal `1` beneath the fold
 `2`, and a scalar datum on the lower side, whose vacant off-row fold
 sits above it.  The comparison is width-blind — a vacant row reads
 its own comparison at the units and passes — and the square frame
-is the theorems' own binder, `sqAt` at `dom_quad` directly and
+is the theorems' own binder, `sqAt` at `dom_form` directly and
 inside `splitRead` at `dom_psd` and `dom_count`: the ragged datum
 refuses `sqAt` at its one length-matched order, the joint record's
 pinned half. -/
@@ -360,11 +422,11 @@ pinned half. -/
 private def SD3 : Mat :=
   [[⟨6, 1⟩, ⟨3, 1⟩, u], [⟨3, 1⟩, ⟨6, 1⟩, ⟨3, 1⟩], [u, ⟨3, 1⟩, ⟨6, 1⟩]]
 
-example : domAt SD3 := by decide +kernel
-example : ¬ domAt [[⟨2, 1⟩, ⟨3, 1⟩], [⟨3, 1⟩, ⟨2, 1⟩]] := by decide +kernel
-example : ¬ domAt [[⟨1, 2⟩]] := by decide +kernel
-example : domAt [[⟨2, 1⟩], []] := by decide +kernel
-example : ¬ sqAt [[⟨2, 1⟩], []] 2 := by decide +kernel
+theorem pin53 : domAt SD3 := by decide +kernel
+theorem pin54 : ¬ domAt [[⟨2, 1⟩, ⟨3, 1⟩], [⟨3, 1⟩, ⟨2, 1⟩]] := by decide +kernel
+theorem pin55 : ¬ domAt [[⟨1, 2⟩]] := by decide +kernel
+theorem pin56 : domAt [[⟨2, 1⟩], []] := by decide +kernel
+theorem pin57 : ¬ sqAt [[⟨2, 1⟩], []] 2 := by decide +kernel
 
 /-! The upper-side theorem at that datum.  The cleared congruence
 takes the columns `e₀`, `(-2, 5, 0)`, `(4, -10, 21)`, each of them
@@ -379,9 +441,37 @@ private def spP : Split 3 :=
    ⟨[[⟨106, 1⟩, ⟨43, 1⟩, u], [u, ⟨22, 1⟩, ⟨11, 1⟩], [u, u, ⟨6, 1⟩]], rfl⟩,
    [.one ⟨6, 1⟩, .one ⟨106, 1⟩, .one ⟨1786, 1⟩], 0, rfl⟩
 
-example : splitRead SD3 spP := by decide +kernel
-example : psdAt spP := dom_psd SD3 spP (by decide +kernel) (by decide +kernel)
-example : revAt spP = 0 := by decide +kernel
+theorem pin58 : splitRead SD3 spP := by decide +kernel
+theorem pin59 : psdAt spP := dom_psd SD3 spP (by decide +kernel) (by decide +kernel)
+theorem pin60 : revAt spP = 0 := by decide +kernel
+
+/-! The gaps read off the datum: `(3, 1, 3)`, each the diagonal `5`
+against the row's off-row fold, every one beyond the sum's unit; the
+positive-definite read holds through the theorem at the occupied
+gaps, the kernel block vacant, and decided.  The gaps' positivity is
+load-bearing: the datum `[[1, 1], [1, 1]]` reads the comparison at
+vacant gaps with its split's kernel block occupied, the positivity
+fold the one refusing binder. -/
+
+theorem pin61 : (ground.getAt BPair.unit (gapOf 0 SD3) 0).oneValue ⟨4, 1⟩ := by
+  decide +kernel
+theorem pin62 : (ground.getAt BPair.unit (gapOf 0 SD3) 1).oneValue ⟨2, 1⟩ := by
+  decide +kernel
+theorem pin63 : (ground.getAt BPair.unit (gapOf 0 SD3) 2).oneValue ⟨4, 1⟩ := by
+  decide +kernel
+theorem pin64 : gapPos SD3 := by decide +kernel
+theorem pin65 : pdAt spP := dom_pd SD3 (by decide +kernel) spP (by decide +kernel)
+theorem pin66 : pdAt spP := by decide +kernel
+
+private def SK2 : Mat := [[⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]]
+private def spK2 : Split 2 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 2⟩], [u, ⟨2, 1⟩]], rfl⟩,
+   ⟨[[⟨2, 1⟩, ⟨2, 1⟩], [u, ⟨2, 1⟩]], rfl⟩, [.one ⟨2, 1⟩], 1, rfl⟩
+
+theorem pin67 : splitRead SK2 spK2 := by decide +kernel
+theorem pin68 : domAt SK2 := by decide +kernel
+theorem pin69 : ¬ gapPos SK2 := by decide +kernel
+theorem pin70 : ¬ pdAt spK2 := by decide +kernel
 
 /-! The comparison is load-bearing: at the scalar datum `-1` the
 congruence, the block read and the blocks' nonsingularity all pass
@@ -392,9 +482,9 @@ private def SN : Mat := [[⟨1, 2⟩]]
 private def spN : Split 1 :=
   ⟨⟨[[⟨2, 1⟩]], rfl⟩, ⟨[[⟨2, 1⟩]], rfl⟩, [.one ⟨1, 2⟩], 0, rfl⟩
 
-example : splitRead SN spN := by decide +kernel
-example : ¬ domAt SN := by decide +kernel
-example : ¬ psdAt spN := by decide +kernel
+theorem pin71 : splitRead SN spN := by decide +kernel
+theorem pin72 : ¬ domAt SN := by decide +kernel
+theorem pin73 : ¬ psdAt spN := by decide +kernel
 
 /-! The forged split refuses at the last pivot moved by one, the
 congruence's own columns standing beside it. -/
@@ -402,7 +492,7 @@ congruence's own columns standing beside it. -/
 private def spF3 : Split 3 :=
   ⟨spP.T, spP.Tw, [.one ⟨6, 1⟩, .one ⟨106, 1⟩, .one ⟨1785, 1⟩], 0, rfl⟩
 
-example : ¬ splitRead SD3 spF3 := by decide +kernel
+theorem pin74 : ¬ splitRead SD3 spF3 := by decide +kernel
 
 /-! The certificate parts the conclusion at a lower-side leading
 block: the forged split refuses the congruence's read while the
@@ -412,45 +502,20 @@ conclusion. -/
 private def spF4 : Split 3 :=
   ⟨spP.T, spP.Tw, [.one ⟨1, 2⟩, .one ⟨106, 1⟩, .one ⟨1786, 1⟩], 0, rfl⟩
 
-example : ¬ splitRead SD3 spF4 := by decide +kernel
-example : ¬ psdAt spF4 := by decide +kernel
+theorem pin75 : ¬ splitRead SD3 spF4 := by decide +kernel
+theorem pin76 : ¬ psdAt spF4 := by decide +kernel
 
-/-! The priced form at the gaps `(3, 1, 3)`, each row's comparison
-exact — the off-row fold joined to the gap reads the diagonal `5` —
-against the coordinates `(1, -1, 2)`: the gaps' fold of squares
-reads `16` and the form reads `18`.  The bounded comparison enters
-through the range fold's pointwise read, and the kernel prices the
-display beside the theorem's route. -/
+/-! The priced form at the gaps `(3, 1, 3)` against the coordinates
+`(1, -1, 2)`: the gaps' fold of squares reads `16` and the form
+reads `18`, through the theorem and decided. -/
 
-private def dC : List BPair := [⟨4, 1⟩, ⟨2, 1⟩, ⟨4, 1⟩]
 private def vC : List BPair := [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]
 
-private theorem hdom3 : ∀ i, i < 3 →
-    decimation.offFold i (ground.getAt [] SD3 i)
-      + ground.getAt BPair.unit dC i
-      ≤ ground.getAt BPair.unit (ground.getAt [] SD3 i) i :=
-  fun i hi => of_decide_eq_true
-    (ground.all_range_read
-      (f := fun j => decide (decimation.offFold j (ground.getAt [] SD3 j)
-        + ground.getAt BPair.unit dC j
-        ≤ ground.getAt BPair.unit (ground.getAt [] SD3 j) j))
-      3 (by decide +kernel) i hi)
-
-example : dotN dC (List.zipWith (· * ·) vC vC) ≤ dotN vC (matVec SD3 vC) :=
-  dom_quad SD3 3 dC (by decide +kernel) rfl (by decide +kernel) hdom3 vC rfl
-
-example : dotN dC (List.zipWith (· * ·) vC vC)
+theorem pin77 : dotN (gapOf 0 SD3) (List.zipWith (· * ·) vC vC)
+    ≤ dotN vC (matVec SD3 vC) :=
+  dom_form SD3 (by decide +kernel) (by decide +kernel) vC rfl
+theorem pin78 : dotN (gapOf 0 SD3) (List.zipWith (· * ·) vC vC)
     ≤ dotN vC (matVec SD3 vC) := by decide +kernel
-
-/-! The gap family's count tie is the comparison's frame, one gap
-per row at the truncating folds: a short family and a long family
-each read their comparison with the priced conclusion kept, the
-long family's surplus entry beyond the coordinates' fold unread. -/
-
-example : dotN [⟨4, 1⟩] (List.zipWith (· * ·) vC vC)
-    ≤ dotN vC (matVec SD3 vC) := by decide +kernel
-example : dotN [⟨4, 1⟩, ⟨2, 1⟩, ⟨4, 1⟩, ⟨9999, 1⟩]
-    (List.zipWith (· * ·) vC vC) ≤ dotN vC (matVec SD3 vC) := by decide +kernel
 
 /-! The symmetry is load-bearing at the priced form: the datum
 `[[1,1],[0,0]]` is square and dominance-clear at vacant gaps, the
@@ -460,10 +525,10 @@ two magnitudes. -/
 
 private def SX : Mat := [[⟨2, 1⟩, ⟨2, 1⟩], [u, u]]
 
-example : sqAt SX 2 := by decide +kernel
-example : domAt SX := by decide +kernel
-example : ¬ matOneValue SX (transposeM SX) := by decide +kernel
-example : ¬ (dotN [u, u]
+theorem pin79 : sqAt SX 2 := by decide +kernel
+theorem pin80 : domAt SX := by decide +kernel
+theorem pin81 : ¬ matOneValue SX (transposeM SX) := by decide +kernel
+theorem pin82 : ¬ (dotN [u, u]
       (List.zipWith (· * ·) [⟨2, 1⟩, ⟨1, 3⟩] [⟨2, 1⟩, ⟨1, 3⟩])
     ≤ dotN [⟨2, 1⟩, ⟨1, 3⟩] (matVec SX [⟨2, 1⟩, ⟨1, 3⟩])) := by decide +kernel
 
@@ -501,21 +566,21 @@ private def SP4 : Split 4 :=
      [u, u, ⟨6, 1⟩, ⟨3, 1⟩], [u, u, u, ⟨2, 1⟩]], rfl⟩,
    [.two u ⟨3, 1⟩ ⟨6, 1⟩, .one ⟨6, 1⟩, .one ⟨106, 1⟩], 0, rfl⟩
 
-example : greenprod.tailRead diagT offT xsT rsT [1, 1, 1, 1] := by decide +kernel
-example : greenprod.revListRead xsT spsT := by decide +kernel
-example : matOneValue (greenprod.assemble (diagT.drop 1) (offT.drop 1)) SD3 := by
+theorem pin83 : greenprod.tailRead diagT offT xsT rsT [1, 1, 1, 1] := by decide +kernel
+theorem pin84 : greenprod.revListRead xsT spsT := by decide +kernel
+theorem pin85 : matOneValue (greenprod.assemble (diagT.drop 1) (offT.drop 1)) SD3 := by
   decide +kernel
-example : splitRead (greenprod.assemble diagT offT) SP4 := by decide +kernel
-example : splitRead (greenprod.assemble (diagT.drop 1) (offT.drop 1)) spP := by
+theorem pin86 : splitRead (greenprod.assemble diagT offT) SP4 := by decide +kernel
+theorem pin87 : splitRead (greenprod.assemble (diagT.drop 1) (offT.drop 1)) spP := by
   decide +kernel
-example : domAt (greenprod.assemble (diagT.drop 1) (offT.drop 1)) := by decide +kernel
+theorem pin88 : domAt (greenprod.assemble (diagT.drop 1) (offT.drop 1)) := by decide +kernel
 
-example : revAt SP4 = greenprod.revFold (spsT.take 1) :=
+theorem pin89 : revAt SP4 = greenprod.revFold (spsT.take 1) :=
   dom_count diagT offT xsT rsT [1, 1, 1, 1] spsT SP4 1 spP
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : revAt SP4 = 1 := by decide +kernel
-example : greenprod.revFold (spsT.take 1) = 1 := by decide +kernel
+theorem pin90 : revAt SP4 = 1 := by decide +kernel
+theorem pin91 : greenprod.revFold (spsT.take 1) = 1 := by decide +kernel
 
 /-! The comparison isolates the telescope: the two-slab chain of
 boundary diagonal at the sum's unit and tail `-1` at coupling `2`
@@ -543,14 +608,14 @@ private def spTN : Split 1 :=
 private def spTF : Split 1 :=
   ⟨⟨[[⟨2, 1⟩]], rfl⟩, ⟨[[⟨2, 1⟩]], rfl⟩, [.one ⟨2, 1⟩], 0, rfl⟩
 
-example : greenprod.tailRead diagN offN xsN rsN [1, 1] := by decide +kernel
-example : greenprod.revListRead xsN spsN := by decide +kernel
-example : splitRead (greenprod.assemble diagN offN) SPN := by decide +kernel
-example : splitRead (greenprod.assemble (diagN.drop 1) (offN.drop 1)) spTN := by
+theorem pin92 : greenprod.tailRead diagN offN xsN rsN [1, 1] := by decide +kernel
+theorem pin93 : greenprod.revListRead xsN spsN := by decide +kernel
+theorem pin94 : splitRead (greenprod.assemble diagN offN) SPN := by decide +kernel
+theorem pin95 : splitRead (greenprod.assemble (diagN.drop 1) (offN.drop 1)) spTN := by
   decide +kernel
-example : ¬ domAt (greenprod.assemble (diagN.drop 1) (offN.drop 1)) := by decide +kernel
-example : ¬ (revAt SPN = greenprod.revFold (spsN.take 1)) := by decide +kernel
-example : ¬ splitRead (greenprod.assemble (diagN.drop 1) (offN.drop 1)) spTF := by
+theorem pin96 : ¬ domAt (greenprod.assemble (diagN.drop 1) (offN.drop 1)) := by decide +kernel
+theorem pin97 : ¬ (revAt SPN = greenprod.revFold (spsN.take 1)) := by decide +kernel
+theorem pin98 : ¬ splitRead (greenprod.assemble (diagN.drop 1) (offN.drop 1)) spTF := by
   decide +kernel
 
 /-! The located region at the tower tail's shape: the diagonal
@@ -569,12 +634,12 @@ private def SG5 : Mat :=
 private def HG : Mat :=
   [[⟨7, 1⟩, ⟨3, 1⟩, u], [⟨3, 1⟩, ⟨11, 1⟩, ⟨3, 1⟩], [u, ⟨3, 1⟩, ⟨15, 1⟩]]
 
-example : matOneValue (inertia.siteDatum HG (matScale 3 (idMat 3))) SG3 := by
+theorem pin99 : matOneValue (inertia.siteDatum HG (matScale 3 (idMat 3))) SG3 := by
   decide +kernel
-example : matOneValue (inertia.siteDatum HG (matScale 5 (idMat 3))) SG5 := by
+theorem pin100 : matOneValue (inertia.siteDatum HG (matScale 5 (idMat 3))) SG5 := by
   decide +kernel
-example : domAt SG3 := by decide +kernel
-example : ¬ domAt SG5 := by decide +kernel
+theorem pin101 : domAt SG3 := by decide +kernel
+theorem pin102 : ¬ domAt SG5 := by decide +kernel
 
 /-! The constant-coefficient instance.  At the `(5, 2)` chain the
 pivot recursion's fixed point solves `X² - 5X + 4`, the deck
@@ -588,17 +653,17 @@ transfer taken at the clearing reads the root pair's interior member
 `1` — the walk's boundary recursion (`thm:channeldiv`) at this
 tail. -/
 
-example : deck.pairRead ⟨5, 1⟩ ⟨2, 1⟩ ⟨6, 1⟩ 2 1 := by decide +kernel
+theorem pin103 : deck.pairRead ⟨5, 1⟩ ⟨2, 1⟩ ⟨6, 1⟩ 2 1 := by decide +kernel
 
 private def Xstar : greenprod.MatQ := ⟨[[⟨5, 1⟩]], 1⟩
 private def Rstar : greenprod.MatQ := ⟨[[⟨2, 1⟩]], 2⟩
 
-example : greenprod.oneValueQ (greenprod.mulQ Xstar Rstar)
+theorem pin104 : greenprod.oneValueQ (greenprod.mulQ Xstar Rstar)
     (greenprod.ofM [[⟨3, 1⟩]]) := by decide +kernel
-example : greenprod.oneValueQ (greenprod.addQ Xstar
+theorem pin105 : greenprod.oneValueQ (greenprod.addQ Xstar
     (greenprod.mulQ (greenprod.ofM [[⟨3, 1⟩]]) Rstar))
     (greenprod.ofM [[⟨6, 1⟩]]) := by decide +kernel
-example : greenprod.oneValueQ (greenprod.mulQ Rstar (greenprod.ofM [[⟨3, 1⟩]]))
+theorem pin106 : greenprod.oneValueQ (greenprod.mulQ Rstar (greenprod.ofM [[⟨3, 1⟩]]))
     (greenprod.ofM [[⟨2, 1⟩]]) := by decide +kernel
 
 /-! Clause (iii)'s slab tier at the bulk chain of head diagonal `3`
@@ -614,10 +679,6 @@ the ball of radius one around the center at the deviations
 `1/21, 1/5, 1`.  The constancy fold is one read per slab: a third
 slab forged to `6` parts it alone. -/
 
-private def spKer : Split 1 :=
-  ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [], 1, rfl⟩
-private def spOne (a : BPair) : Split 1 :=
-  ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [.one a], 0, rfl⟩
 
 private def diagB : List Mat :=
   [[[⟨4, 1⟩]], [[⟨6, 1⟩]], [[⟨6, 1⟩]], [[⟨6, 1⟩]]]
@@ -633,17 +694,17 @@ private def YB : greenprod.MatQ := ⟨[[⟨5, 1⟩]], 1⟩
 private def XB : greenprod.MatQ := ⟨[[⟨2, 1⟩]], 2⟩
 private def GB : Mat := [[⟨2, 1⟩]]
 private def bspsB : List (Split 1 × Split 1) :=
-  [(spOne ⟨148, 128⟩, spOne ⟨149, 127⟩),
-   (spOne ⟨36, 32⟩, spOne ⟨37, 31⟩), (spKer, spOne ⟨9, 7⟩)]
+  [(inertia.oneSplit [⟨148, 128⟩], inertia.oneSplit [⟨149, 127⟩]),
+   (inertia.oneSplit [⟨36, 32⟩], inertia.oneSplit [⟨37, 31⟩]), (spKer, inertia.oneSplit [⟨9, 7⟩])]
 
-example : greenprod.tailRead diagB offB xsB rsB [1, 1, 1, 1] := by decide +kernel
-example : ((List.range diagB.length).all (fun i =>
+theorem pin107 : greenprod.tailRead diagB offB xsB rsB [1, 1, 1, 1] := by decide +kernel
+theorem pin108 : ((List.range diagB.length).all (fun i =>
     decide (i < 1) || decide (matOneValue
       (ground.getAt [] diagB i) AB))) = true := by decide +kernel
-example : ((List.range offB.length).all (fun i =>
+theorem pin109 : ((List.range offB.length).all (fun i =>
     decide (i < 1) || decide (matOneValue
       (ground.getAt [] offB i) BB))) = true := by decide +kernel
-example : ¬ (((List.range diagB.length).all (fun i =>
+theorem pin110 : ¬ (((List.range diagB.length).all (fun i =>
     decide (i < 1) || decide (matOneValue
       (ground.getAt []
         [[[⟨4, 1⟩]], [[⟨6, 1⟩]], [[⟨7, 1⟩]], [[⟨6, 1⟩]]] i)
@@ -673,44 +734,44 @@ chain, every further conjunct standing each time. -/
 private def symB : poly.Poly :=
   deckfactor.symbolOf (spectator.deckPoly AB BB) 1
 
-example : poly.oneValue symB [⟨1, 6⟩, ⟨3, 1⟩] := by decide +kernel
-example : poly.oneValue (deckfactor.clearVarBT symB) [⟨1, 6⟩] := by
+theorem pin111 : poly.oneValue symB [⟨1, 6⟩, ⟨3, 1⟩] := by decide +kernel
+theorem pin112 : poly.oneValue (deckfactor.clearVarBT symB) [⟨1, 6⟩] := by
   decide +kernel
-example : deckfactor.bandClear symB (spOne ⟨2, 1⟩)
-    (spOne ⟨10, 1⟩) := by decide +kernel
+theorem pin113 : deckfactor.bandClear symB (inertia.oneSplit [⟨2, 1⟩])
+    (inertia.oneSplit [⟨10, 1⟩]) := by decide +kernel
 
-example : bulkRead diagB offB xsB rsB [1, 1, 1, 1] AB BB YB XB
-    1 GB 1 2 3 1 1 1 1 2 2 3 spKer spKer (spOne ⟨2, 1⟩)
-    (spOne ⟨2, 1⟩) bspsB (spOne ⟨2, 1⟩) (spOne ⟨10, 1⟩) := by decide +kernel
-example : ¬ bulkRead diagB offB xsB rsB [1, 1, 1, 1] AB BB YB XB
-    1 GB 1 2 3 1 1 1 1 2 1 3 spKer spKer (spOne ⟨2, 1⟩)
-    (spOne ⟨2, 1⟩) bspsB (spOne ⟨2, 1⟩) (spOne ⟨10, 1⟩) := by decide +kernel
-example : ¬ bulkRead diagB offB xsB rsB [1, 1, 1, 1] AB BB YB XB
-    1 GB 1 3 3 1 1 1 1 2 4 9 spKer spKer (spOne ⟨2, 1⟩)
-    (spOne ⟨2, 1⟩) bspsB (spOne ⟨2, 1⟩) (spOne ⟨10, 1⟩) := by decide +kernel
-example : ¬ bulkRead diagB offB xsB rsB [1, 1, 1, 1] AB BB YB
+theorem pin114 : bulkRead diagB offB xsB rsB [1, 1, 1, 1] AB BB YB XB
+    1 GB 1 2 3 1 1 1 1 2 2 3 spKer spKer (inertia.oneSplit [⟨2, 1⟩])
+    (inertia.oneSplit [⟨2, 1⟩]) bspsB (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨10, 1⟩]) := by decide +kernel
+theorem pin115 : ¬ bulkRead diagB offB xsB rsB [1, 1, 1, 1] AB BB YB XB
+    1 GB 1 2 3 1 1 1 1 2 1 3 spKer spKer (inertia.oneSplit [⟨2, 1⟩])
+    (inertia.oneSplit [⟨2, 1⟩]) bspsB (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨10, 1⟩]) := by decide +kernel
+theorem pin116 : ¬ bulkRead diagB offB xsB rsB [1, 1, 1, 1] AB BB YB XB
+    1 GB 1 3 3 1 1 1 1 2 4 9 spKer spKer (inertia.oneSplit [⟨2, 1⟩])
+    (inertia.oneSplit [⟨2, 1⟩]) bspsB (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨10, 1⟩]) := by decide +kernel
+theorem pin117 : ¬ bulkRead diagB offB xsB rsB [1, 1, 1, 1] AB BB YB
     (⟨[[⟨2, 1⟩]], 3⟩ : greenprod.MatQ)
-    1 GB 1 2 3 1 1 1 1 2 2 3 (spOne ⟨6, 1⟩) spKer (spOne ⟨2, 1⟩)
-    (spOne ⟨2, 1⟩) bspsB (spOne ⟨2, 1⟩) (spOne ⟨10, 1⟩) := by decide +kernel
-example : ¬ bulkRead diagB offB xsB rsB [1, 1, 1, 1] AB BB YB XB
-    1 GB 1 2 5 1 1 1 1 2 3 5 spKer spKer (spOne ⟨2, 1⟩)
-    (spOne ⟨2, 1⟩) bspsB (spOne ⟨2, 1⟩) (spOne ⟨10, 1⟩) := by decide +kernel
-example : ¬ bulkRead diagB offB xsB rsB [1, 1, 1, 1] AB BB YB XB
-    1 GB 1 2 3 1 1 1 1 2 2 3 spKer spKer (spOne ⟨2, 1⟩)
-    (spOne ⟨2, 1⟩) bspsB (spOne ⟨3, 1⟩) (spOne ⟨10, 1⟩) := by decide +kernel
+    1 GB 1 2 3 1 1 1 1 2 2 3 (inertia.oneSplit [⟨6, 1⟩]) spKer (inertia.oneSplit [⟨2, 1⟩])
+    (inertia.oneSplit [⟨2, 1⟩]) bspsB (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨10, 1⟩]) := by decide +kernel
+theorem pin118 : ¬ bulkRead diagB offB xsB rsB [1, 1, 1, 1] AB BB YB XB
+    1 GB 1 2 5 1 1 1 1 2 3 5 spKer spKer (inertia.oneSplit [⟨2, 1⟩])
+    (inertia.oneSplit [⟨2, 1⟩]) bspsB (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨10, 1⟩]) := by decide +kernel
+theorem pin119 : ¬ bulkRead diagB offB xsB rsB [1, 1, 1, 1] AB BB YB XB
+    1 GB 1 2 3 1 1 1 1 2 2 3 spKer spKer (inertia.oneSplit [⟨2, 1⟩])
+    (inertia.oneSplit [⟨2, 1⟩]) bspsB (inertia.oneSplit [⟨3, 1⟩]) (inertia.oneSplit [⟨10, 1⟩]) := by decide +kernel
 
 private def xsBf : List greenprod.MatQ :=
   [⟨[[⟨172, 1⟩]], 85⟩, ⟨[[⟨86, 1⟩]], 21⟩, ⟨[[⟨23, 1⟩]], 5⟩,
    ⟨[[⟨6, 1⟩]], 1⟩]
 private def bspsBf : List (Split 1 × Split 1) :=
-  [(spOne ⟨148, 128⟩, spOne ⟨149, 127⟩),
-   (spOne ⟨36, 33⟩, spOne ⟨38, 31⟩), (spKer, spOne ⟨9, 7⟩)]
+  [(inertia.oneSplit [⟨148, 128⟩], inertia.oneSplit [⟨149, 127⟩]),
+   (inertia.oneSplit [⟨36, 33⟩], inertia.oneSplit [⟨38, 31⟩]), (spKer, inertia.oneSplit [⟨9, 7⟩])]
 
-example : spectator.ballList YB GB 1 1 (xsBf.drop 1) bspsBf := by
+theorem pin120 : spectator.ballList YB GB 1 1 (xsBf.drop 1) bspsBf := by
   decide +kernel
-example : ¬ bulkRead diagB offB xsBf rsB [1, 1, 1, 1] AB BB YB XB
-    1 GB 1 2 3 1 1 1 1 2 2 3 spKer spKer (spOne ⟨2, 1⟩)
-    (spOne ⟨2, 1⟩) bspsBf (spOne ⟨2, 1⟩) (spOne ⟨10, 1⟩) := by decide +kernel
+theorem pin121 : ¬ bulkRead diagB offB xsBf rsB [1, 1, 1, 1] AB BB YB XB
+    1 GB 1 2 3 1 1 1 1 2 2 3 spKer spKer (inertia.oneSplit [⟨2, 1⟩])
+    (inertia.oneSplit [⟨2, 1⟩]) bspsBf (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨10, 1⟩]) := by decide +kernel
 
 private def diagB' : List Mat :=
   [[[⟨4, 1⟩]], [[⟨6, 1⟩]], [[⟨7, 1⟩]], [[⟨6, 1⟩]]]
@@ -720,18 +781,18 @@ private def xsB' : List greenprod.MatQ :=
 private def rsB' : List greenprod.MatQ :=
   [⟨[[⟨27, 1⟩]], 55⟩, ⟨[[⟨6, 1⟩]], 13⟩, ⟨[[⟨3, 1⟩]], 5⟩]
 private def bspsB' : List (Split 1 × Split 1) :=
-  [(spOne ⟨486, 423⟩, spOne ⟨501, 408⟩),
-   (spKer, spOne ⟨220, 160⟩), (spOne ⟨42, 41⟩, spOne ⟨47, 36⟩)]
+  [(inertia.oneSplit [⟨486, 423⟩], inertia.oneSplit [⟨501, 408⟩]),
+   (spKer, inertia.oneSplit [⟨220, 160⟩]), (inertia.oneSplit [⟨42, 41⟩], inertia.oneSplit [⟨47, 36⟩])]
 
-example : greenprod.tailRead diagB' offB xsB' rsB' [1, 1, 1, 1] := by
+theorem pin122 : greenprod.tailRead diagB' offB xsB' rsB' [1, 1, 1, 1] := by
   decide +kernel
-example : spectator.floorRead YB GB 2 1 6 5 (spOne ⟨41, 37⟩) := by
+theorem pin123 : spectator.floorRead YB GB 2 1 6 5 (inertia.oneSplit [⟨41, 37⟩]) := by
   decide +kernel
-example : spectator.ballList YB GB 6 5 (xsB'.drop 1) bspsB' := by
+theorem pin124 : spectator.ballList YB GB 6 5 (xsB'.drop 1) bspsB' := by
   decide +kernel
-example : ¬ bulkRead diagB' offB xsB' rsB' [1, 1, 1, 1] AB BB YB XB
-    1 GB 1 2 2 1 6 5 2 5 4 5 spKer (spOne ⟨41, 37⟩) (spOne ⟨3, 1⟩)
-    (spOne ⟨3, 1⟩) bspsB' (spOne ⟨2, 1⟩) (spOne ⟨10, 1⟩) := by decide +kernel
+theorem pin125 : ¬ bulkRead diagB' offB xsB' rsB' [1, 1, 1, 1] AB BB YB XB
+    1 GB 1 2 2 1 6 5 2 5 4 5 spKer (inertia.oneSplit [⟨41, 37⟩]) (inertia.oneSplit [⟨3, 1⟩])
+    (inertia.oneSplit [⟨3, 1⟩]) bspsB' (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨10, 1⟩]) := by decide +kernel
 
 private def offBf : List Mat := [[[⟨3, 1⟩]], [[⟨3, 1⟩]], [[⟨4, 1⟩]]]
 private def xsBo : List greenprod.MatQ :=
@@ -740,16 +801,16 @@ private def xsBo : List greenprod.MatQ :=
 private def rsBo : List greenprod.MatQ :=
   [⟨[[⟨9, 1⟩]], 15⟩, ⟨[[⟨6, 1⟩]], 8⟩, ⟨[[⟨4, 1⟩]], 5⟩]
 private def bspsBo : List (Split 1 × Split 1) :=
-  [(spOne ⟨29, 24⟩, spOne ⟨28, 25⟩),
-   (spOne ⟨36, 27⟩, spOne ⟨32, 31⟩), (spKer, spOne ⟨9, 7⟩)]
+  [(inertia.oneSplit [⟨29, 24⟩], inertia.oneSplit [⟨28, 25⟩]),
+   (inertia.oneSplit [⟨36, 27⟩], inertia.oneSplit [⟨32, 31⟩]), (spKer, inertia.oneSplit [⟨9, 7⟩])]
 
-example : greenprod.tailRead diagB offBf xsBo rsBo [1, 1, 1, 1] := by
+theorem pin126 : greenprod.tailRead diagB offBf xsBo rsBo [1, 1, 1, 1] := by
   decide +kernel
-example : spectator.ballList YB GB 1 1 (xsBo.drop 1) bspsBo := by
+theorem pin127 : spectator.ballList YB GB 1 1 (xsBo.drop 1) bspsBo := by
   decide +kernel
-example : ¬ bulkRead diagB offBf xsBo rsBo [1, 1, 1, 1] AB BB YB XB
-    1 GB 1 2 3 1 1 1 1 2 2 3 spKer spKer (spOne ⟨2, 1⟩)
-    (spOne ⟨2, 1⟩) bspsBo (spOne ⟨2, 1⟩) (spOne ⟨10, 1⟩) := by decide +kernel
+theorem pin128 : ¬ bulkRead diagB offBf xsBo rsBo [1, 1, 1, 1] AB BB YB XB
+    1 GB 1 2 3 1 1 1 1 2 2 3 spKer spKer (inertia.oneSplit [⟨2, 1⟩])
+    (inertia.oneSplit [⟨2, 1⟩]) bspsBo (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨10, 1⟩]) := by decide +kernel
 
 /-! The two windows' shared decimated data at the spectator families
 `tridiag(3,3,3; 1,1)` and `tridiag(3,3,4; 1,1)`, the perturbation at
@@ -795,62 +856,62 @@ private def ysV : List greenprod.MatQ :=
 private def csV : List greenprod.MatQ :=
   [⟨[[⟨2, 1⟩]], 3⟩, ⟨[[⟨4, 1⟩]], 8⟩]
 
-example : greenprod.tailRead diagV offW xsV rsV [1, 1, 1] := by decide +kernel
+theorem pin129 : greenprod.tailRead diagV offW xsV rsV [1, 1, 1] := by decide +kernel
 
-example : spectator.headShareRead diagW offW diagV offW ysW csW ysV csV
+theorem pin130 : spectator.headShareRead diagW offW diagV offW ysW csW ysV csV
     2 [1, 1, 1] := by decide +kernel
-example : spectator.tailSandwichRead diagW offW diagV offW xsW rsW xsV rsV
+theorem pin131 : spectator.tailSandwichRead diagW offW diagV offW xsW rsW xsV rsV
     2 [1, 1, 1] := by decide +kernel
-example : ¬ spectator.tailSandwichRead diagW offW diagW' offW xsW rsW
+theorem pin132 : ¬ spectator.tailSandwichRead diagW offW diagW' offW xsW rsW
     xsW' rsW 2 [1, 1, 1] := by decide +kernel
-example : ¬ spectator.headShareRead diagW offW diagW' offW ysW csW
+theorem pin133 : ¬ spectator.headShareRead diagW offW diagW' offW ysW csW
     ysW' csW' 2 [1, 1, 1] := by decide +kernel
 
-example : spectator.capStepRead ⟨[[⟨2, 1⟩]], 3⟩ ⟨[[⟨2, 1⟩]], 4⟩
+theorem pin134 : spectator.capStepRead ⟨[[⟨2, 1⟩]], 3⟩ ⟨[[⟨2, 1⟩]], 4⟩
     ⟨[[⟨12, 1⟩]], 4⟩ ⟨[[⟨9, 1⟩]], 3⟩ ⟨[[⟨5, 1⟩]], 1⟩ ⟨[[⟨4, 1⟩]], 1⟩
-    GB GB 1 1 1 3 1 4 spKer spKer spKer (spOne ⟨3, 1⟩)
-    (spOne ⟨13, 1⟩) (spOne ⟨589, 1⟩) := by decide +kernel
+    GB GB 1 1 1 3 1 4 spKer spKer spKer (inertia.oneSplit [⟨3, 1⟩])
+    (inertia.oneSplit [⟨13, 1⟩]) (inertia.oneSplit [⟨589, 1⟩]) := by decide +kernel
 
-example : windowShareRead diagW offW diagV offW xsW rsW xsV rsV
+theorem pin135 : windowShareRead diagW offW diagV offW xsW rsW xsV rsV
     ysW csW ysV csV 2 0 [1, 1, 1] 1 1 [GB, GB, GB]
-    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, spOne ⟨3, 1⟩,
-       spOne ⟨13, 1⟩, spOne ⟨589, 1⟩⟩,
-     ⟨(1, 1), (3, 8), (4, 11), spKer, spKer, spOne ⟨13, 1⟩,
-       spOne ⟨589, 1⟩, spOne ⟨188057, 1⟩,
-       spOne ⟨9109145, 1⟩⟩] := by decide +kernel
+    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, inertia.oneSplit [⟨3, 1⟩],
+       inertia.oneSplit [⟨13, 1⟩], inertia.oneSplit [⟨589, 1⟩]⟩,
+     ⟨(1, 1), (3, 8), (4, 11), spKer, spKer, inertia.oneSplit [⟨13, 1⟩],
+       inertia.oneSplit [⟨589, 1⟩], inertia.oneSplit [⟨188057, 1⟩],
+       inertia.oneSplit [⟨9109145, 1⟩]⟩] := by decide +kernel
 
 /-- The walk stopped at the observable's depth one: the one certificate
 over the gap of one slab reads, and the two-certificate list refuses
 there, the walk's own count. -/
-example : windowShareRead diagW offW diagV offW xsW rsW xsV rsV
+theorem pin136 : windowShareRead diagW offW diagV offW xsW rsW xsV rsV
     ysW csW ysV csV 2 1 [1, 1, 1] 1 1 [GB, GB]
-    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, spOne ⟨3, 1⟩,
-       spOne ⟨13, 1⟩, spOne ⟨589, 1⟩⟩] := by decide +kernel
-example : ¬ windowShareRead diagW offW diagV offW xsW rsW xsV rsV
+    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, inertia.oneSplit [⟨3, 1⟩],
+       inertia.oneSplit [⟨13, 1⟩], inertia.oneSplit [⟨589, 1⟩]⟩] := by decide +kernel
+theorem pin137 : ¬ windowShareRead diagW offW diagV offW xsW rsW xsV rsV
     ysW csW ysV csV 2 1 [1, 1, 1] 1 1 [GB, GB]
-    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, spOne ⟨3, 1⟩,
-       spOne ⟨13, 1⟩, spOne ⟨589, 1⟩⟩,
-     ⟨(1, 1), (3, 8), (4, 11), spKer, spKer, spOne ⟨13, 1⟩,
-       spOne ⟨589, 1⟩, spOne ⟨188057, 1⟩,
-       spOne ⟨9109145, 1⟩⟩] := by decide +kernel
+    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, inertia.oneSplit [⟨3, 1⟩],
+       inertia.oneSplit [⟨13, 1⟩], inertia.oneSplit [⟨589, 1⟩]⟩,
+     ⟨(1, 1), (3, 8), (4, 11), spKer, spKer, inertia.oneSplit [⟨13, 1⟩],
+       inertia.oneSplit [⟨589, 1⟩], inertia.oneSplit [⟨188057, 1⟩],
+       inertia.oneSplit [⟨9109145, 1⟩]⟩] := by decide +kernel
 
-example : ¬ windowShareRead diagW offW diagW' offW xsW rsW xsW' rsW
+theorem pin138 : ¬ windowShareRead diagW offW diagW' offW xsW rsW xsW' rsW
     ysW csW ysW' csW' 2 0 [1, 1, 1] 1 1 [GB, GB, GB]
-    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, spOne ⟨3, 1⟩,
-       spOne ⟨13, 1⟩, spOne ⟨589, 1⟩⟩,
-     ⟨(1, 1), (3, 8), (4, 11), spKer, spKer, spOne ⟨13, 1⟩,
-       spOne ⟨589, 1⟩, spOne ⟨188057, 1⟩,
-       spOne ⟨9109145, 1⟩⟩] := by decide +kernel
-example : ¬ windowShareRead diagW offW diagV offW xsW rsW xsV rsV
+    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, inertia.oneSplit [⟨3, 1⟩],
+       inertia.oneSplit [⟨13, 1⟩], inertia.oneSplit [⟨589, 1⟩]⟩,
+     ⟨(1, 1), (3, 8), (4, 11), spKer, spKer, inertia.oneSplit [⟨13, 1⟩],
+       inertia.oneSplit [⟨589, 1⟩], inertia.oneSplit [⟨188057, 1⟩],
+       inertia.oneSplit [⟨9109145, 1⟩]⟩] := by decide +kernel
+theorem pin139 : ¬ windowShareRead diagW offW diagV offW xsW rsW xsV rsV
     ysW csW ysV csV 2 0 [1, 1, 1] 1 1 [GB, GB, GB] [] := by
   decide +kernel
-example : ¬ windowShareRead diagW offW diagV offW xsW rsW xsV rsV
+theorem pin140 : ¬ windowShareRead diagW offW diagV offW xsW rsW xsV rsV
     ysW csW ysV csV 2 0 [1, 1, 1] 1 2 [GB, GB, GB]
-    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, spOne ⟨3, 1⟩,
-       spOne ⟨13, 1⟩, spOne ⟨589, 1⟩⟩,
-     ⟨(1, 1), (3, 8), (4, 11), spKer, spKer, spOne ⟨13, 1⟩,
-       spOne ⟨589, 1⟩, spOne ⟨188057, 1⟩,
-       spOne ⟨9109145, 1⟩⟩] := by decide +kernel
+    [⟨(1, 1), (1, 3), (1, 4), spKer, spKer, spKer, inertia.oneSplit [⟨3, 1⟩],
+       inertia.oneSplit [⟨13, 1⟩], inertia.oneSplit [⟨589, 1⟩]⟩,
+     ⟨(1, 1), (3, 8), (4, 11), spKer, spKer, inertia.oneSplit [⟨13, 1⟩],
+       inertia.oneSplit [⟨589, 1⟩], inertia.oneSplit [⟨188057, 1⟩],
+       inertia.oneSplit [⟨9109145, 1⟩]⟩] := by decide +kernel
 
 /-! The decimated count at the ball: the four-slab chain of the
 count telescope carries its dropped pivots `85/21, 21/5, 5` inside
@@ -858,16 +919,16 @@ the ball of radius one around the deck pivot `4` at the floor
 `y0 = 3`, the gram the unit, and the count is the head slab's own
 fold, one on both sides. -/
 
-example : spectator.ballList YB GB 1 1 (xsT.drop 1) bspsB := by decide +kernel
+theorem pin141 : spectator.ballList YB GB 1 1 (xsT.drop 1) bspsB := by decide +kernel
 
-example : revAt SP4 = greenprod.revFold (spsT.take 1) :=
+theorem pin142 : revAt SP4 = greenprod.revFold (spsT.take 1) :=
   ball_count diagT offT xsT rsT [1, 1, 1, 1] spsT SP4 1 YB GB 3 1 1 1
     spKer bspsB
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : ¬ spectator.ballList YB GB 1 1 (xsN.drop 1)
-    [(spOne ⟨7, 1⟩, spOne ⟨1, 5⟩)] := by decide +kernel
+theorem pin143 : ¬ spectator.ballList YB GB 1 1 (xsN.drop 1)
+    [(inertia.oneSplit [⟨7, 1⟩], inertia.oneSplit [⟨1, 5⟩])] := by decide +kernel
 
 /-! The emitted record at the head pencil `S(x) = [[10 - 2x, 1],
 [1, 10 - 2x]]`, the clearing power one and the sample weight `2`:
@@ -888,8 +949,8 @@ private def ctR : cellcount.DivCert :=
    [⟨6, 1⟩, ⟨1, 2⟩], [⟨100, 1⟩, ⟨1, 41⟩, ⟨5, 1⟩], [⟨3, 1⟩],
    [⟨6, 1⟩, ⟨1, 2⟩], 1, 1, 1, 1, ⟨1, 3⟩, ⟨1, 3⟩⟩
 
-example : cellcount.divRead (split.pminor sR) ctR := by decide +kernel
-example : poly.oneValue (deckfactor.clearVarBT ctR.sq)
+theorem pin144 : cellcount.divRead (split.pminor sR) ctR := by decide +kernel
+theorem pin145 : poly.oneValue (deckfactor.clearVarBT ctR.sq)
     [⟨397, 1⟩, ⟨1, 41⟩] := by decide +kernel
 
 /-! The record's data.  The shared Hermite pairing of the cleared
@@ -931,21 +992,21 @@ private def pDeckR : poly.Poly := [⟨1, 23⟩, ⟨4, 1⟩]
 
 private def bndsR : List (Bound 2) :=
   [.jump spB1, .jump spB2,
-   .cmp pDomR spB3 ⟨1, spOne ⟨2, 1⟩, spOne ⟨1, 5⟩⟩,
-   .cmp pDeckR spB4 ⟨1, spOne ⟨2, 1⟩, spOne ⟨1, 3⟩⟩]
+   .cmp pDomR spB3 ⟨1, inertia.oneSplit [⟨2, 1⟩], inertia.oneSplit [⟨1, 5⟩]⟩,
+   .cmp pDeckR spB4 ⟨1, inertia.oneSplit [⟨2, 1⟩], inertia.oneSplit [⟨1, 3⟩]⟩]
 
 private def recR : DivRecord 2 2 := ⟨sR, 1, 2, ctR, spHDR, cellsR, bndsR⟩
 
-example : recordRead recR := by decide +kernel
+theorem pin146 : recordRead recR := by decide +kernel
 
-example : recR.cells.map (fun x => x.2.1) = [0, 1, 2, 2, 2] := by decide +kernel
+theorem pin147 : recR.cells.map (fun x => x.2.1) = [0, 1, 2, 2, 2] := by decide +kernel
 
 /-! The shape refuses at the truncating folds' own law: the boundary
 list dropped to three against five cells, every surviving boundary
 reading its binding while the count tie parts — the zip would
 truncate silently, so the length conjunct is the guard. -/
 
-example : ¬ recordRead
+theorem pin148 : ¬ recordRead
     (⟨sR, 1, 2, ctR, spHDR, cellsR, bndsR.take 3⟩ : DivRecord 2 2) := by
   decide +kernel
 
@@ -956,7 +1017,7 @@ sum's unit, every boundary beside it at its binding. -/
 private def cellsF : List (BPair × Nat × Split 2) :=
   (⟨9, 1⟩, 1, spTwo ⟨5, 1⟩ ⟨3, 1⟩ ⟨5, 1⟩) :: cellsR.drop 1
 
-example : ¬ recordRead
+theorem pin149 : ¬ recordRead
     (⟨sR, 1, 2, ctR, spHDR, cellsF, bndsR⟩ : DivRecord 2 2) := by decide +kernel
 
 /-! The split forge isolates the congruence read: the leading
@@ -966,7 +1027,7 @@ count kept. -/
 private def cellsS : List (BPair × Nat × Split 2) :=
   (⟨9, 1⟩, 0, spTwo ⟨6, 1⟩ ⟨3, 1⟩ ⟨5, 1⟩) :: cellsR.drop 1
 
-example : ¬ recordRead
+theorem pin150 : ¬ recordRead
     (⟨sR, 1, 2, ctR, spHDR, cellsS, bndsR⟩ : DivRecord 2 2) := by decide +kernel
 
 /-! The forged certificate isolates the divisor's witness inside
@@ -979,8 +1040,8 @@ private def ctF : cellcount.DivCert :=
    [⟨6, 1⟩, ⟨1, 2⟩], [⟨100, 1⟩, ⟨1, 41⟩, ⟨5, 1⟩], [⟨4, 1⟩],
    [⟨6, 1⟩, ⟨1, 2⟩], 1, 1, 1, 1, ⟨1, 3⟩, ⟨1, 3⟩⟩
 
-example : ¬ cellcount.divRead (split.pminor sR) ctF := by decide +kernel
-example : ¬ recordRead
+theorem pin151 : ¬ cellcount.divRead (split.pminor sR) ctF := by decide +kernel
+theorem pin152 : ¬ recordRead
     (⟨sR, 1, 2, ctF, spHDR, cellsR, bndsR⟩ : DivRecord 2 2) := by decide +kernel
 
 /-! The tag forgery: a comparison boundary retagged as a jump
@@ -990,9 +1051,9 @@ unit there — the segment `[24, 28]` off the roots `18` and `22`. -/
 
 private def bndsG : List (Bound 2) :=
   [.jump spB1, .jump spB2, .jump spB3,
-   .cmp pDeckR spB4 ⟨1, spOne ⟨2, 1⟩, spOne ⟨1, 3⟩⟩]
+   .cmp pDeckR spB4 ⟨1, inertia.oneSplit [⟨2, 1⟩], inertia.oneSplit [⟨1, 3⟩]⟩]
 
-example : ¬ recordRead
+theorem pin153 : ¬ recordRead
     (⟨sR, 1, 2, ctR, spHDR, cellsR, bndsG⟩ : DivRecord 2 2) := by decide +kernel
 
 /-! The comparison off its straddle: the third boundary carrying
@@ -1005,13 +1066,15 @@ the binding's stated one is the conjunct that parts. -/
 
 private def bndsI : List (Bound 2) :=
   [.jump spB1, .jump spB2,
-   .cmp pDeckR spB3 ⟨1, spOne ⟨2, 1⟩, spOne ⟨17, 1⟩⟩,
-   .cmp pDeckR spB4 ⟨1, spOne ⟨2, 1⟩, spOne ⟨1, 3⟩⟩]
+   .cmp pDeckR spB3 ⟨1, inertia.oneSplit [⟨2, 1⟩], inertia.oneSplit [⟨17, 1⟩]⟩,
+   .cmp pDeckR spB4 ⟨1, inertia.oneSplit [⟨2, 1⟩], inertia.oneSplit [⟨1, 3⟩]⟩]
 
-example : hermitesign.segCountRead (deckfactor.clearVarBT pDeckR)
+theorem pin154 : hermitesign.segCountRead (deckfactor.clearVarBT pDeckR)
     (deckfactor.clearAt pDeckR ⟨13, 1⟩)
     (deckfactor.clearAt pDeckR ⟨15, 1⟩) 2 0
-    (spOne ⟨2, 1⟩) (spOne ⟨17, 1⟩) := by decide +kernel
+    (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨17, 1⟩]) := by decide +kernel
 
-example : ¬ recordRead
+theorem pin155 : ¬ recordRead
     (⟨sR, 1, 2, ctR, spHDR, cellsR, bndsI⟩ : DivRecord 2 2) := by decide +kernel
+
+end decimation

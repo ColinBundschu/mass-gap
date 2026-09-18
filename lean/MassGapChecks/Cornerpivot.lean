@@ -51,12 +51,6 @@ rate's denominator at the degenerate rate `[0 : 0]`, where the bond
 weight and the cleared diagonal both collapse to the sum's unit —
 with the numerator's forcing at that denominator recorded beside it.
 
-The evaluated glue's battery runs the magnitude price at three
-profiles beside their theorem routes and the dominance glue at two
-sites, the scale-carrying `−500η` off entry and the depth-carrying
-`−100u` one, the box membership's isolation at the second — its
-own section's account.
-
 The residue transport's battery (`lem:cornerpivot`(vi)) runs the
 count transport at the residue three against the residue-two well
 at the doubled second scale member, the member's count vacant
@@ -80,8 +74,10 @@ keys `151` and `364` below the tex's key floors, which are the
 ceiling's reads.
 -/
 
+namespace cornerpivot
 
-open ground elim inertia cornerpivot
+
+open ground elim inertia
 
 
 /-! The bond weights: the stage-gauge unit, the weight `2`, and the
@@ -179,17 +175,17 @@ private def dCross : Nat → BPair := fun k =>
 minor pair at the depth three reads `(21, 55)`, and the recursion
 read at the depth two stands beside its decided anchor. -/
 
-example : (walkGo bOne aThree 3).1.oneValue (BPair.ofNat 21) := by decide +kernel
+theorem pin1 : (walkGo bOne aThree 3).1.oneValue (BPair.ofNat 21) := by decide +kernel
 
-example : (walkGo bOne aThree 3).2.oneValue (BPair.ofNat 55) := by decide +kernel
+theorem pin2 : (walkGo bOne aThree 3).2.oneValue (BPair.ofNat 55) := by decide +kernel
 
-example : walkGo bOne aThree 0 = (BPair.ofNat 1, aThree 0) := walk_zero bOne aThree
+theorem pin3 : walkGo bOne aThree 0 = (BPair.ofNat 1, aThree 0) := walk_zero bOne aThree
 
-example :
+theorem pin4 :
     ((walkGo bOne aThree 3).2 + bOne * bOne * (walkGo bOne aThree 2).1).oneValue
       (aThree 3 * (walkGo bOne aThree 2).2) := by decide +kernel
 
-example :
+theorem pin5 :
     ((walkGo bOne aThree 3).2 + bOne * bOne * (walkGo bOne aThree 2).1).oneValue
       (aThree 3 * (walkGo bOne aThree 2).2) :=
   walk_rec bOne aThree 2
@@ -197,19 +193,19 @@ example :
 /-! The walk at the bond weight `2` and the constant diagonal `5`:
 the minor pair at the depth two reads `(21, 85)`. -/
 
-example : (walkGo bTwo aFive 2).1.oneValue (BPair.ofNat 21) := by decide +kernel
+theorem pin6 : (walkGo bTwo aFive 2).1.oneValue (BPair.ofNat 21) := by decide +kernel
 
-example : (walkGo bTwo aFive 2).2.oneValue (BPair.ofNat 85) := by decide +kernel
+theorem pin7 : (walkGo bTwo aFive 2).2.oneValue (BPair.ofNat 85) := by decide +kernel
 
 /-! Clause (i) at the segment of length two: the minors of the
 diagonal `3` at the unit bond against the constant list `v ≡ 1`, the
 conclusion at the depth two decided beside the theorem route. -/
 
-example :
+theorem pin8 :
     BPair.unit < dMin 3 ∧ bOne * (dMin 2 * vOne 3) ≤ dMin 3 * vOne 2 := by
   decide +kernel
 
-example :
+theorem pin9 :
     BPair.unit < dMin 3 ∧ bOne * (dMin 2 * vOne 3) ≤ dMin 3 * vOne 2 :=
   pivot_clears aThree vOne dMin bOne 2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -219,11 +215,11 @@ example :
 `5` on the segment of length one, the entry read `2 · 5 ≤ 21` at the
 depth one decided beside the theorem route. -/
 
-example :
+theorem pin10 :
     BPair.unit < dBeta 2 ∧ bTwo * (dBeta 1 * vOne 2) ≤ dBeta 2 * vOne 1 := by
   decide +kernel
 
-example :
+theorem pin11 :
     BPair.unit < dBeta 2 ∧ bTwo * (dBeta 1 * vOne 2) ≤ dBeta 2 * vOne 1 :=
   pivot_clears aFive vOne dBeta bTwo 1 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -235,7 +231,7 @@ degenerates — the five further binders hold at the list
 positivity fails at the depth naught, where the minor carries equal
 members. -/
 
-example :
+theorem pin12 :
     (∀ k, k < 1 →
         (dBond (k + 2) + BPair.unit * BPair.unit * dBond k).oneValue
           (aThree (k + 1) * dBond (k + 1)))
@@ -251,7 +247,7 @@ example :
 `1, 3, -1` the five further binders hold and the conclusion's
 positivity fails at the depth one. -/
 
-example :
+theorem pin13 :
     BPair.unit < bOne
       ∧ (∀ k, k < 2 →
         bOne * (vOne k + vOne (k + 2)) ≤ aThree (k + 1) * vOne (k + 1))
@@ -268,7 +264,7 @@ constant list's termwise read `2 ≤ 1` fails, the five further
 binders hold, and the conclusion's positivity fails at the depth
 one. -/
 
-example :
+theorem pin14 :
     BPair.unit < bOne
       ∧ (∀ k, k < 2 →
         (dFlat (k + 2) + bOne * bOne * dFlat k).oneValue
@@ -285,7 +281,7 @@ the termwise read `-2 ≤ -1` holds with the four further binders, the
 list's positivity fails, and the conclusion's positivity fails at
 the depth one. -/
 
-example :
+theorem pin15 :
     BPair.unit < bOne
       ∧ (∀ k, k < 2 →
         (dFlat (k + 2) + bOne * bOne * dFlat k).oneValue
@@ -301,7 +297,7 @@ example :
 further binders hold, the head minor sits below the sum's unit, and
 the conclusion's positivity fails at the depth naught. -/
 
-example :
+theorem pin16 :
     BPair.unit < bOne
       ∧ (∀ k, k < 2 →
         (dNegHead (k + 2) + bOne * bOne * dNegHead k).oneValue
@@ -317,7 +313,7 @@ example :
 the five further binders hold, the head's entry read fails, and the
 conclusion's positivity fails at the depth naught. -/
 
-example :
+theorem pin17 :
     BPair.unit < bOne
       ∧ (∀ k, k < 2 →
         (dCross (k + 2) + bOne * bOne * dCross k).oneValue
@@ -344,11 +340,11 @@ private def cOne : BPair := BPair.ofNat 1
 
 /-! The rebound `-4 < -3`, decided beside its route. -/
 
-example : (cD2 + bOne * bOne * cD0).oneValue (cAp * cD1) := by decide +kernel
+theorem pin18 : (cD2 + bOne * bOne * cD0).oneValue (cAp * cD1) := by decide +kernel
 
-example : cD2 < cAp * cD1 := by decide +kernel
+theorem pin19 : cD2 < cAp * cD1 := by decide +kernel
 
-example : cD2 < cAp * cD1 :=
+theorem pin20 : cD2 < cAp * cD1 :=
   rebound cAp bOne cD0 cD1 cD2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
@@ -356,7 +352,7 @@ example : cD2 < cAp * cD1 :=
 `D_2 = 4` the recursion and the bond's positivity hold, the
 predecessor's positivity fails, and the conclusion `4 < 3` fails. -/
 
-example :
+theorem pin21 :
     (BPair.ofNat 4 + bOne * bOne * (⟨1, 2⟩ : BPair)).oneValue
         (cAp * BPair.ofNat 1)
       ∧ BPair.unit < bOne * bOne
@@ -368,7 +364,7 @@ holds at `D_1 = ⟨2 : 2⟩`, `D_2 = 0`, the predecessor's positivity
 holds, the bond square's positivity fails, and the conclusion fails
 at equal members. -/
 
-example :
+theorem pin22 :
     (BPair.unit + BPair.unit * BPair.unit * BPair.ofNat 1).oneValue
         (cAp * (⟨2, 2⟩ : BPair))
       ∧ BPair.unit < BPair.ofNat 1
@@ -380,7 +376,7 @@ example :
 predecessor's hold, the recursion fails, and the conclusion
 `100 < 3` fails. -/
 
-example :
+theorem pin23 :
     BPair.unit < bOne * bOne
       ∧ BPair.unit < cD0
       ∧ ¬ ((BPair.ofNat 100 + bOne * bOne * cD0).oneValue
@@ -390,17 +386,17 @@ example :
 /-! The swapped recursion at the crossing triple, decided beside its
 route. -/
 
-example : (cD2.swap + bOne * bOne * cD0.swap).oneValue (cAp * cD1.swap) := by
+theorem pin24 : (cD2.swap + bOne * bOne * cD0.swap).oneValue (cAp * cD1.swap) := by
   decide +kernel
 
-example : (cD2.swap + bOne * bOne * cD0.swap).oneValue (cAp * cD1.swap) :=
+theorem pin25 : (cD2.swap + bOne * bOne * cD0.swap).oneValue (cAp * cD1.swap) :=
   rec_swap (by decide +kernel)
 
 /-! The swapped recursion's `hrec` isolated: at the forged triple
 `D_k = 1`, `D_{k+1} = -1`, `D_{k+2} = 1` the recursion fails and the
 swapped read fails with it. -/
 
-example :
+theorem pin26 :
     ¬ ((BPair.ofNat 1 + bOne * bOne * cD0).oneValue (cAp * cD1))
       ∧ ¬ ((BPair.ofNat 1).swap + bOne * bOne * cD0.swap).oneValue
         (cAp * cD1.swap) := by decide +kernel
@@ -408,9 +404,9 @@ example :
 /-! The reseed at the crossing: `β · (D_1.swap · v_2) = 1` at or
 below `D_2.swap · v_1 = 4`, decided beside its route. -/
 
-example : bOne * (cD1.swap * cOne) ≤ cD2.swap * cOne := by decide +kernel
+theorem pin27 : bOne * (cD1.swap * cOne) ≤ cD2.swap * cOne := by decide +kernel
 
-example : bOne * (cD1.swap * cOne) ≤ cD2.swap * cOne :=
+theorem pin28 : bOne * (cD1.swap * cOne) ≤ cD2.swap * cOne :=
   seed_after_crossing cAp bOne cD0 cD1 cD2 cOne cOne (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
@@ -419,7 +415,7 @@ example : bOne * (cD1.swap * cOne) ≤ cD2.swap * cOne :=
 `D_2 = 2` the four further binders hold, the crossing read fails,
 and the conclusion `-1 ≤ -2` fails. -/
 
-example :
+theorem pin29 :
     ((BPair.ofNat 2 + bOne * bOne * cD0).oneValue (cAp * BPair.ofNat 1))
       ∧ BPair.unit ≤ cD0
       ∧ BPair.unit < cOne
@@ -432,7 +428,7 @@ example :
 `v_2 = -3` the four further binders hold, the list's positivity
 fails, and the conclusion `-3 ≤ -4` fails. -/
 
-example :
+theorem pin30 :
     (cD2 + bOne * bOne * cD0).oneValue (cAp * cD1)
       ∧ BPair.unit ≤ cD0
       ∧ cD1 < BPair.unit
@@ -445,7 +441,7 @@ example :
 `v_2 = 5` the four further binders hold, the termwise read `5 ≤ 3`
 fails, and the conclusion `5 ≤ 4` fails. -/
 
-example :
+theorem pin31 :
     (cD2 + bOne * bOne * cD0).oneValue (cAp * cD1)
       ∧ BPair.unit ≤ cD0
       ∧ cD1 < BPair.unit
@@ -459,7 +455,7 @@ example :
 predecessor's upper-side-or-equal read fails, and the conclusion
 `1 ≤ -1` fails. -/
 
-example :
+theorem pin32 :
     (BPair.ofNat 1 + bOne * bOne * (⟨1, 5⟩ : BPair)).oneValue (cAp * cD1)
       ∧ cD1 < BPair.unit
       ∧ BPair.unit < cOne
@@ -472,7 +468,7 @@ example :
 triple `D_0 = 1`, `D_1 = -1`, `D_2 = 100` the four further binders
 hold, the recursion fails, and the conclusion `1 ≤ -100` fails. -/
 
-example :
+theorem pin33 :
     BPair.unit ≤ cD0
       ∧ cD1 < BPair.unit
       ∧ BPair.unit < cOne
@@ -484,17 +480,17 @@ example :
 /-! Clause (iv)'s termwise read at `a = 3`, `β = 1`, `c = 2`:
 `4 ≤ 6`, decided beside its route. -/
 
-example : bOne * (BPair.ofNat 2 + BPair.ofNat 2) ≤ cAp * BPair.ofNat 2 := by
+theorem pin34 : bOne * (BPair.ofNat 2 + BPair.ofNat 2) ≤ cAp * BPair.ofNat 2 := by
   decide +kernel
 
-example : bOne * (BPair.ofNat 2 + BPair.ofNat 2) ≤ cAp * BPair.ofNat 2 :=
+theorem pin35 : bOne * (BPair.ofNat 2 + BPair.ofNat 2) ≤ cAp * BPair.ofNat 2 :=
   const_term cAp bOne (BPair.ofNat 2) (by decide +kernel) (by decide +kernel)
 
 /-! The constant list's positivity binder isolated: at `c = -1` the
 diagonal's clearance holds, the list's read at or above the sum's
 unit fails, and the conclusion `-2 ≤ -3` fails. -/
 
-example :
+theorem pin36 :
     bOne * BPair.ofNat 2 ≤ cAp
       ∧ ¬ (BPair.unit ≤ (⟨1, 2⟩ : BPair))
       ∧ ¬ (bOne * ((⟨1, 2⟩ : BPair) + (⟨1, 2⟩ : BPair))
@@ -504,7 +500,7 @@ example :
 the list's read holds, the clearance of the bond's double fails, and
 the conclusion `2 ≤ 1` fails. -/
 
-example :
+theorem pin37 :
     BPair.unit ≤ cOne
       ∧ ¬ (bOne * BPair.ofNat 2 ≤ BPair.ofNat 1)
       ∧ ¬ (bOne * (cOne + cOne) ≤ BPair.ofNat 1 * cOne) := by decide +kernel
@@ -513,9 +509,9 @@ example :
 the diagonal `3`: the minor at the depth three sits above the sum's
 unit, decided beside its route. -/
 
-example : BPair.unit < dMin 3 := by decide +kernel
+theorem pin38 : BPair.unit < dMin 3 := by decide +kernel
 
-example : BPair.unit < dMin 3 :=
+theorem pin39 : BPair.unit < dMin 3 :=
   tail_clear aThree dMin bOne 2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) 2
     (Nat.le_refl 2)
@@ -524,7 +520,7 @@ example : BPair.unit < dMin 3 :=
 further binders hold, the clearance of the bond's double fails, and
 the conclusion's positivity fails at the depth one. -/
 
-example :
+theorem pin40 :
     BPair.unit < bOne
       ∧ (∀ k, k < 2 →
         (dFlat (k + 2) + bOne * bOne * dFlat k).oneValue
@@ -538,7 +534,7 @@ example :
 `-1, -1, -2` keeps the four further binders and fails the conclusion
 at the depth naught. -/
 
-example :
+theorem pin41 :
     BPair.unit < bOne
       ∧ (∀ k, k < 2 →
         (dNegHead (k + 2) + bOne * bOne * dNegHead k).oneValue
@@ -552,7 +548,7 @@ example :
 list `1, -1, -4` keeps the four further binders, fails the head's
 order read, and fails the conclusion at the depth naught. -/
 
-example :
+theorem pin42 :
     BPair.unit < bOne
       ∧ (∀ k, k < 2 →
         (dCross (k + 2) + bOne * bOne * dCross k).oneValue
@@ -567,7 +563,7 @@ the diagonal at the sum's unit the recursion degenerates, the three
 further binders hold at the minors `1, ⟨2 : 2⟩, 0`, the bond's
 positivity fails, and the conclusion fails at the depth naught. -/
 
-example :
+theorem pin43 :
     (∀ k, k < 1 →
         (dBond (k + 2) + BPair.unit * BPair.unit * dBond k).oneValue
           (BPair.ofNat 0 * dBond (k + 1)))
@@ -582,7 +578,7 @@ minors `1, 3, -1` the three further binders hold, the recursion
 fails at the first depth, and the conclusion's positivity fails at
 the depth one. -/
 
-example :
+theorem pin44 :
     (∀ k, k < 2 → bOne * BPair.ofNat 2 ≤ aThree (k + 1))
       ∧ BPair.unit < dForge 0
       ∧ bOne * dForge 0 ≤ dForge 1
@@ -595,16 +591,16 @@ example :
 sum's unit, the boundary's unit seed `U_1 = 1`, and `U_4 = 21`, with
 the recurrence at the depth one decided beside its route. -/
 
-example : uWalk cAp 0 = BPair.unit := uWalk_zero cAp
+theorem pin45 : uWalk cAp 0 = BPair.unit := uWalk_zero cAp
 
-example : uWalk cAp 1 = BPair.ofNat 1 := uWalk_one cAp
+theorem pin46 : uWalk cAp 1 = BPair.ofNat 1 := uWalk_one cAp
 
-example : (uWalk cAp 4).oneValue (BPair.ofNat 21) := by decide +kernel
+theorem pin47 : (uWalk cAp 4).oneValue (BPair.ofNat 21) := by decide +kernel
 
-example : (uWalk cAp 3 + uWalk cAp 1).oneValue (cAp * uWalk cAp 2) := by
+theorem pin48 : (uWalk cAp 3 + uWalk cAp 1).oneValue (cAp * uWalk cAp 2) := by
   decide +kernel
 
-example : (uWalk cAp 3 + uWalk cAp 1).oneValue (cAp * uWalk cAp 2) :=
+theorem pin49 : (uWalk cAp 3 + uWalk cAp 1).oneValue (cAp * uWalk cAp 2) :=
   uWalk_rec cAp 1
 
 /-! The profile tier's shared fixture: the profile `1 − s` at the
@@ -627,24 +623,24 @@ two, the termwise comparison at the depths one and two —
 and the supersolution read collecting them at the shared collapse
 list. -/
 
-example : profShape vProf 1 := by decide +kernel
+theorem pin50 : profShape vProf 1 := by decide +kernel
 
-example : profPos vProf 1 64 1 1 2 := by decide +kernel
+theorem pin51 : profPos vProf 1 64 1 1 2 := by decide +kernel
 
-example : termRead vProf 2 2 1 1 64 1 1 := by decide +kernel
+theorem pin52 : termRead vProf 2 2 1 1 64 1 1 := by decide +kernel
 
-example : termRead vProf 2 2 1 1 64 1 2 := by decide +kernel
+theorem pin53 : termRead vProf 2 2 1 1 64 1 2 := by decide +kernel
 
-example : superRead vProf 2 2 1 1 64 1 1 2 := by decide +kernel
+theorem pin54 : superRead vProf 2 2 1 1 64 1 1 2 := by decide +kernel
 
 /-! The segment read's two projection bridges at the fixture: the
 profile's positivity and the termwise reads, each the collapse
 list's own member read. -/
 
-example : profPos vProf 1 64 1 1 2 :=
+theorem pin55 : profPos vProf 1 64 1 1 2 :=
   superRead_pos (by decide +kernel : superRead vProf 2 2 1 1 64 1 1 2)
 
-example : termRead vProf 2 2 1 1 64 1 (1 + 1) :=
+theorem pin56 : termRead vProf 2 2 1 1 64 1 (1 + 1) :=
   superRead_term (by decide +kernel : superRead vProf 2 2 1 1 64 1 1 2)
     1 (by decide +kernel)
 
@@ -652,21 +648,21 @@ example : termRead vProf 2 2 1 1 64 1 (1 + 1) :=
 decided beside its route, and the shifted-tail read at that
 data. -/
 
-example :
+theorem pin57 :
     (ground.getAt BPair.unit (termPoly vProf 2 2 1 1) 0).oneValue
       BPair.unit := by decide +kernel
 
-example :
+theorem pin58 :
     (ground.getAt BPair.unit (termPoly vProf 2 2 1 1) 0).oneValue
       BPair.unit :=
   termPoly_base vProf 2 2 1 1
 
-example :
+theorem pin59 :
     poly.oneValue (termPoly vProf 2 2 1 1)
       (poly.shiftUp 1 (List.drop 1 (termPoly vProf 2 2 1 1))) := by
   decide +kernel
 
-example :
+theorem pin60 :
     poly.oneValue (termPoly vProf 2 2 1 1)
       (poly.shiftUp 1 (List.drop 1 (termPoly vProf 2 2 1 1))) :=
   termPoly_shift vProf 2 2 1 1
@@ -676,7 +672,7 @@ multiple of the neighbour depths' cleared sum at or below the
 diagonal's multiple of the standing depth, decided beside its
 route. -/
 
-example :
+theorem pin61 :
     BPair.ofNat ((2 + 1) * 1) * BPair.ofPos 64 * BPair.ofPos 64
         * (poly.evalClear (depthPoly vProf 1) (BPair.ofPos 1) 64 1
            + poly.evalClear (depthPoly vProf (1 + 2)) (BPair.ofPos 1) 64 1)
@@ -684,7 +680,7 @@ example :
         * poly.evalClear (depthPoly vProf (1 + 1)) (BPair.ofPos 1) 64 1 := by
   decide +kernel
 
-example :
+theorem pin62 :
     BPair.ofNat ((2 + 1) * 1) * BPair.ofPos 64 * BPair.ofPos 64
         * (poly.evalClear (depthPoly vProf 1) (BPair.ofPos 1) 64 1
            + poly.evalClear (depthPoly vProf (1 + 2)) (BPair.ofPos 1) 64 1)
@@ -696,7 +692,7 @@ example :
 `[1, 1, 1]` and the clearing naught the shape read fails and the
 depth collapse's key count clears the power, refused together. -/
 
-example :
+theorem pin63 :
     ¬ profShape (([[BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1]],
         []) : poly.PPoly × poly.PPoly) 0
       ∧ ¬ ((depthPoly (([[BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1]],
@@ -709,7 +705,7 @@ at the truncated clearing while the shape read and the unpacked
 comparison refuse — the shape conjunct the faithfulness's own
 guard. -/
 
-example :
+theorem pin64 :
     termRead (([], [[BPair.ofNat 1, BPair.ofNat 1]])
         : poly.PPoly × poly.PPoly) 2 2 1 1 64 0 1
       ∧ ¬ profShape (([], [[BPair.ofNat 1, BPair.ofNat 1]])
@@ -730,7 +726,7 @@ profile and the scale `[1 : 4]` the shape read holds, the comparison
 read fails at the depth two, and the unpacked comparison fails with
 it. -/
 
-example :
+theorem pin65 :
     profShape vProf 1
       ∧ ¬ termRead vProf 2 2 1 1 4 1 2
       ∧ ¬ (BPair.ofNat ((2 + 1) * 1) * BPair.ofPos 4 * BPair.ofPos 4
@@ -755,7 +751,7 @@ private def dProf : Nat → BPair := fun k =>
 /-! The supersolution clears the pivots to the depth two, decided
 beside its route. -/
 
-example :
+theorem pin66 :
     BPair.unit < dProf (2 + 1)
       ∧ BPair.ofNat ((2 + 1) * 1) * BPair.ofPos 64 * BPair.ofPos 64
           * (dProf 2 * poly.evalClear (depthPoly vProf (1 + 2 + 1))
@@ -763,7 +759,7 @@ example :
         ≤ dProf (2 + 1) * poly.evalClear (depthPoly vProf (1 + 2))
             (BPair.ofPos 1) 64 1 := by decide +kernel
 
-example :
+theorem pin67 :
     BPair.unit < dProf (2 + 1)
       ∧ BPair.ofNat ((2 + 1) * 1) * BPair.ofPos 64 * BPair.ofPos 64
           * (dProf 2 * poly.evalClear (depthPoly vProf (1 + 2 + 1))
@@ -791,7 +787,7 @@ private def dHsr : Nat → BPair := fun k =>
   | 1 => BPair.ofNat 1
   | _ => (⟨1, 36469⟩ : BPair)
 
-example :
+theorem pin68 :
     (∀ k, k < 1 →
         (dHsr (k + 2)
             + BPair.ofNat ((2 + 1) * 1) * BPair.ofPos 8 * BPair.ofPos 8
@@ -819,7 +815,7 @@ private def dRec : Nat → BPair := fun k =>
   | 1 => BPair.ofNat 24204
   | _ => (⟨1, 2⟩ : BPair)
 
-example :
+theorem pin69 :
     superRead vProf 2 2 1 1 64 1 1 1
       ∧ BPair.unit < dRec 0
       ∧ BPair.ofNat ((2 + 1) * 1) * BPair.ofPos 64 * BPair.ofPos 64
@@ -848,7 +844,7 @@ private def dHead : Nat → BPair := fun k =>
   | 1 => (⟨1, 2⟩ : BPair)
   | _ => BPair.ofNat 150970720
 
-example :
+theorem pin70 :
     superRead vProf 2 2 1 1 64 1 1 1
       ∧ (∀ k, k < 1 →
         (dHead (k + 2)
@@ -877,7 +873,7 @@ private def dSeed : Nat → BPair := fun k =>
   | 1 => (⟨1, 2⟩ : BPair)
   | _ => (⟨1, 151019169⟩ : BPair)
 
-example :
+theorem pin71 :
     superRead vProf 2 2 1 1 64 1 1 1
       ∧ (∀ k, k < 1 →
         (dSeed (k + 2)
@@ -911,7 +907,7 @@ private def dQd : Nat → BPair := fun k =>
   | 1 => (⟨2, 2⟩ : BPair)
   | _ => BPair.unit
 
-example :
+theorem pin72 :
     superRead vProf 2 0 0 1 64 1 1 1
       ∧ (∀ k, k < 1 →
         (dQd (k + 2)
@@ -933,7 +929,7 @@ diagonal reads `−384` at every depth while the profile's collapse
 reads `60` at the depth two, so the termwise comparison at the depth
 one fails and the supersolution read with it. -/
 
-example : ¬ superRead vProf 2 2 0 1 64 1 1 1 := by decide +kernel
+theorem pin73 : ¬ superRead vProf 2 2 0 1 64 1 1 1 := by decide +kernel
 
 
 
@@ -951,48 +947,48 @@ tex's displayed pairs: `[16 : 630]` reads `[8 : 315]` and
 `[80 : 6930]` reads `[8 : 693]`, each cross-multiplied, while
 `[44 : 105]` is the displayed pair outright. -/
 
-example : witVal 8 3 = 495 := by decide +kernel
+theorem pin74 : witVal 8 3 = 495 := by decide +kernel
 
-example : witSq 8 = 3403332 := by decide +kernel
+theorem pin75 : witSq 8 = 3403332 := by decide +kernel
 
-example : witSqM 8 = 17844624 := by decide +kernel
+theorem pin76 : witSqM 8 = 17844624 := by decide +kernel
 
-example : witSqMM 8 = 98691732 := by decide +kernel
+theorem pin77 : witSqMM 8 = 98691732 := by decide +kernel
 
-example : witDiffSq 8 = 829575 := by decide +kernel
+theorem pin78 : witDiffSq 8 = 829575 := by decide +kernel
 
-example : powSum 4 8 = 8772 := by decide +kernel
+theorem pin79 : powSum 4 8 = 8772 := by decide +kernel
 
-example : powSum 10 5 = 10874275 := by decide +kernel
+theorem pin80 : powSum 10 5 = 10874275 := by decide +kernel
 
-example : qLowNum 1 10 2 8 = 787587120 := by decide +kernel
+theorem pin81 : qLowNum 1 10 2 8 = 787587120 := by decide +kernel
 
-example : qLowDen 1 10 2 8 = 102099960 := by decide +kernel
+theorem pin82 : qLowDen 1 10 2 8 = 102099960 := by decide +kernel
 
-example : endRead 1 10 2 8 := by decide +kernel
+theorem pin83 : endRead 1 10 2 8 := by decide +kernel
 
-example : endRead 1 10 1 7 := by decide +kernel
+theorem pin84 : endRead 1 10 1 7 := by decide +kernel
 
-example : witSq 2 = 9 := by decide +kernel
+theorem pin85 : witSq 2 = 9 := by decide +kernel
 
-example : witDiffSq 2 = 9 := by decide +kernel
+theorem pin86 : witDiffSq 2 = 9 := by decide +kernel
 
-example : witSq 1 = 0 := by decide +kernel
+theorem pin87 : witSq 1 = 0 := by decide +kernel
 
-example : witDiffSq 1 = 0 := by decide +kernel
+theorem pin88 : witDiffSq 1 = 0 := by decide +kernel
 
-example : ground.getAt BPair.unit sqClosedPoly 9 = BPair.ofNat 16 := by
+theorem pin89 : ground.getAt BPair.unit sqClosedPoly 9 = BPair.ofNat 16 := by
   decide +kernel
 
-example : ground.getAt BPair.unit diffClosedPoly 7 = BPair.ofNat 44 := by
+theorem pin90 : ground.getAt BPair.unit diffClosedPoly 7 = BPair.ofNat 44 := by
   decide +kernel
 
-example : ground.getAt BPair.unit wellClosedPoly 11 = BPair.ofNat 80 := by
+theorem pin91 : ground.getAt BPair.unit wellClosedPoly 11 = BPair.ofNat 80 := by
   decide +kernel
 
-example : 16 * 315 = 8 * 630 := by decide +kernel
+theorem pin92 : 16 * 315 = 8 * 630 := by decide +kernel
 
-example : 80 * 693 = 8 * 6930 := by decide +kernel
+theorem pin93 : 80 * 693 = 8 * 6930 := by decide +kernel
 
 /-! The difference sum's closed read carries its endpoint binder:
 at the endpoint naught the cleared read's two sides sit apart at
@@ -1001,10 +997,10 @@ difference polynomial's evaluation refuses with it — the polynomial
 reads its constant key `−105` at the vacant argument while the
 cleared sum is the sum's unit. -/
 
-example : ¬ (105 * witDiffSq 0 + 147 * 0 ^ 5 + 105 * 0 ^ 4 + 23 * 0 + 105
+theorem pin94 : ¬ (105 * witDiffSq 0 + 147 * 0 ^ 5 + 105 * 0 ^ 4 + 23 * 0 + 105
     = 44 * 0 ^ 7 + 126 * 0 ^ 3 + 210 * 0 ^ 2) := by decide +kernel
 
-example : ¬ ((poly.eval diffClosedPoly (BPair.ofNat 0)).oneValue
+theorem pin95 : ¬ ((poly.eval diffClosedPoly (BPair.ofNat 0)).oneValue
     (BPair.ofNat (105 * witDiffSq 0))) := by decide +kernel
 
 /-! The endpoint key's three conjuncts isolated.  At the scale pair
@@ -1015,25 +1011,25 @@ holds the depth and the predecessor's refusal while the comparison
 fails, and the endpoint `9` holds the depth and the comparison while
 the predecessor already reads the comparison. -/
 
-example : ¬ endRead 10 1 1 1 := by decide +kernel
+theorem pin96 : ¬ endRead 10 1 1 1 := by decide +kernel
 
-example : 363 * (1 + 1) * 1 ^ 2 ≤ 40 * 1 ^ 4 * 10 ^ 2 := by decide +kernel
+theorem pin97 : 363 * (1 + 1) * 1 ^ 2 ≤ 40 * 1 ^ 4 * 10 ^ 2 := by decide +kernel
 
-example : ¬ 363 * (1 + 1) * 1 ^ 2 ≤ 40 * (1 - 1) ^ 4 * 10 ^ 2 := by
+theorem pin98 : ¬ 363 * (1 + 1) * 1 ^ 2 ≤ 40 * (1 - 1) ^ 4 * 10 ^ 2 := by
   decide +kernel
 
-example : ¬ endRead 1 10 2 7 := by decide +kernel
+theorem pin99 : ¬ endRead 1 10 2 7 := by decide +kernel
 
-example : 2 ≤ 7 := by decide +kernel
+theorem pin100 : 2 ≤ 7 := by decide +kernel
 
-example : ¬ 363 * (2 + 1) * 10 ^ 2 ≤ 40 * (7 - 1) ^ 4 * 1 ^ 2 := by
+theorem pin101 : ¬ 363 * (2 + 1) * 10 ^ 2 ≤ 40 * (7 - 1) ^ 4 * 1 ^ 2 := by
   decide +kernel
 
-example : ¬ endRead 1 10 2 9 := by decide +kernel
+theorem pin102 : ¬ endRead 1 10 2 9 := by decide +kernel
 
-example : 2 ≤ 9 := by decide +kernel
+theorem pin103 : 2 ≤ 9 := by decide +kernel
 
-example : 363 * (2 + 1) * 10 ^ 2 ≤ 40 * 9 ^ 4 * 1 ^ 2 := by decide +kernel
+theorem pin104 : 363 * (2 + 1) * 10 ^ 2 ≤ 40 * 9 ^ 4 * 1 ^ 2 := by decide +kernel
 
 /-! The count tier runs at the sample's endpoint data —
 `r = 2`, the scale pair `[1 : 10]`, the endpoint `N = 8` — where the
@@ -1044,20 +1040,20 @@ slack: the order `n = N − 1` still reads the unit, while the order
 `n = N − 2` does not, so the family's own window is the binder's
 tightest refusal. -/
 
-example : (inertia.quadForm
+theorem pin105 : (inertia.quadForm
     (wellMat 2 (qLowNum 1 10 2 8) (qLowDen 1 10 2 8) 1 10 10)
     (witList 8 10)).oneValue BPair.unit :=
   witQuad 1 10 2 8 10 (by decide +kernel)
 
-example : (inertia.quadForm
+theorem pin106 : (inertia.quadForm
     (wellMat 2 (qLowNum 1 10 2 8) (qLowDen 1 10 2 8) 1 10 10)
     (witList 8 10)).oneValue BPair.unit := by decide +kernel
 
-example : (inertia.quadForm
+theorem pin107 : (inertia.quadForm
     (wellMat 2 (qLowNum 1 10 2 4) (qLowDen 1 10 2 4) 1 10 3)
     (witList 4 3)).oneValue BPair.unit := by decide +kernel
 
-example : ¬ (inertia.quadForm
+theorem pin108 : ¬ (inertia.quadForm
     (wellMat 2 (qLowNum 1 10 2 4) (qLowDen 1 10 2 4) 1 10 2)
     (witList 4 2)).oneValue BPair.unit := by decide +kernel
 
@@ -1069,25 +1065,25 @@ own equal-members read; the occupancy binder is isolated at the
 endpoint one, where the family is vacant at every depth and the form
 again reads the unit. -/
 
-example : inertia.quadForm
+theorem pin109 : inertia.quadForm
     (wellMat 2 (7 * qLowNum 1 10 2 8) (6 * qLowDen 1 10 2 8) 1 10 10)
     (witList 8 10) < BPair.unit :=
   witStrict 1 10 2 8 10 7 6 1 (by decide +kernel) (by decide +kernel)
     rfl (by decide +kernel)
 
-example : inertia.quadForm
+theorem pin110 : inertia.quadForm
     (wellMat 2 (7 * qLowNum 1 10 2 8) (6 * qLowDen 1 10 2 8) 1 10 10)
     (witList 8 10) < BPair.unit := by decide +kernel
 
-example : ¬ (inertia.quadForm
+theorem pin111 : ¬ (inertia.quadForm
     (wellMat 2 (1 * qLowNum 1 10 2 8) (1 * qLowDen 1 10 2 8) 1 10 10)
     (witList 8 10) < BPair.unit) := by decide +kernel
 
-example : (inertia.quadForm
+theorem pin112 : (inertia.quadForm
     (wellMat 2 (1 * qLowNum 1 10 2 8) (1 * qLowDen 1 10 2 8) 1 10 10)
     (witList 8 10)).oneValue BPair.unit := by decide +kernel
 
-example : ¬ (inertia.quadForm
+theorem pin113 : ¬ (inertia.quadForm
     (wellMat 2 (7 * qLowNum 1 10 2 1) (6 * qLowDen 1 10 2 1) 1 10 10)
     (witList 1 10) < BPair.unit) := by decide +kernel
 
@@ -1110,11 +1106,11 @@ private def spCap : inertia.Split 2 :=
    [.one aCap, .one ((aCap * (aCap * cCap + (bCap * bCap).swap)).norm)],
    0, rfl⟩
 
-example : inertia.splitRead sCap spCap := by decide +kernel
+theorem pin114 : inertia.splitRead sCap spCap := by decide +kernel
 
-example : inertia.revAt spCap = 1 := by decide +kernel
+theorem pin115 : inertia.revAt spCap = 1 := by decide +kernel
 
-example : 1 ≤ inertia.revAt spCap :=
+theorem pin116 : 1 ≤ inertia.revAt spCap :=
   witCount 1 10 2 2 2 7 6 1 (by decide +kernel) (by decide +kernel)
     rfl (by decide +kernel) spCap (by decide +kernel)
 
@@ -1151,48 +1147,48 @@ private theorem wP5lo : ∀ k, k < 5 →
     BPair.unit < wellWalk 2 (qLowNum 1 10 2 8) (6 * qLowDen 1 10 2 8)
       1 10 (k + 1) := by decide +kernel
 
-example : inertia.splitRead wA5 (inertia.mkSplit 5 wA5) := by decide +kernel
+theorem pin117 : inertia.splitRead wA5 (inertia.mkSplit 5 wA5) := by decide +kernel
 
-example : inertia.revAt (inertia.mkSplit 5 wA5) = 1 :=
+theorem pin118 : inertia.revAt (inertia.mkSplit 5 wA5) = 1 :=
   certRevOne 2 (7 * qLowNum 1 10 2 8) (6 * qLowDen 1 10 2 8) 1 10 5 2
     (by decide +kernel) wA5lo wA5hi (inertia.mkSplit 5 wA5) (by decide +kernel)
 
-example : inertia.revAt (inertia.mkSplit 5 wA5) = 1 := by decide +kernel
+theorem pin119 : inertia.revAt (inertia.mkSplit 5 wA5) = 1 := by decide +kernel
 
-example : inertia.splitRead wP5 (inertia.mkSplit 5 wP5) := by decide +kernel
+theorem pin120 : inertia.splitRead wP5 (inertia.mkSplit 5 wP5) := by decide +kernel
 
-example : inertia.revAt (inertia.mkSplit 5 wP5) = 0 :=
+theorem pin121 : inertia.revAt (inertia.mkSplit 5 wP5) = 0 :=
   certRevZero 2 (qLowNum 1 10 2 8) (6 * qLowDen 1 10 2 8) 1 10 5
     wP5lo (inertia.mkSplit 5 wP5) (by decide +kernel)
 
-example : inertia.revAt (inertia.mkSplit 5 wP5) = 0 := by decide +kernel
+theorem pin122 : inertia.revAt (inertia.mkSplit 5 wP5) = 0 := by decide +kernel
 
 /-! The crossing window is isolated at the positive line: both sign
 families hold at `c = 5`, the crossing depth's own binder `c < n` is
 the only one that fails, and the conclusion fails with it — the count
 there is vacant, not one. -/
 
-example : ¬ (5 < 5) := by decide +kernel
+theorem pin123 : ¬ (5 < 5) := by decide +kernel
 
-example : ¬ (∀ k, 2 ≤ k → k < 5 →
+theorem pin124 : ¬ (∀ k, 2 ≤ k → k < 5 →
     wellWalk 2 (qLowNum 1 10 2 8) (6 * qLowDen 1 10 2 8) 1 10 (k + 1)
       < BPair.unit) := by
   intro h
   exact absurd (h 2 (by decide +kernel) (by decide +kernel)) (by decide +kernel)
 
-example : ¬ (inertia.revAt (inertia.mkSplit 5 wP5) = 1) := by decide +kernel
+theorem pin125 : ¬ (inertia.revAt (inertia.mkSplit 5 wP5) = 1) := by decide +kernel
 
 /-! The crossing-free arm's own binder is refused at the crossing
 line: its minors leave the upper side at the depth three, and the
 count there is one rather than vacant. -/
 
-example : ¬ (∀ k, k < 5 →
+theorem pin126 : ¬ (∀ k, k < 5 →
     BPair.unit < wellWalk 2 (7 * qLowNum 1 10 2 8) (6 * qLowDen 1 10 2 8)
       1 10 (k + 1)) := by
   intro h
   exact absurd (h 2 (by decide +kernel)) (by decide +kernel)
 
-example : ¬ (inertia.revAt (inertia.mkSplit 5 wA5) = 0) := by decide +kernel
+theorem pin127 : ¬ (inertia.revAt (inertia.mkSplit 5 wA5) = 0) := by decide +kernel
 
 /-! The pivots' cleared data at the endpoint two, where the member
 line's first minor reads `−165240`: the margin's carrier is that
@@ -1200,17 +1196,17 @@ minor's own count, the boundary pivot reads its slab's diagonal, and
 the pivot against the recursion's witness reads the off block's
 exchange. -/
 
-example : ground.posVal
+theorem pin128 : ground.posVal
     (margP (wellWalk 2 (7 * qLowNum 1 10 2 2) (6 * qLowDen 1 10 2 2) 1 10 1))
   = 165240 := by decide +kernel
 
-example : greenprod.oneValueQ
+theorem pin129 : greenprod.oneValueQ
     (pivotQ 2 (7 * qLowNum 1 10 2 2) (6 * qLowDen 1 10 2 2) 1 10 1)
     (greenprod.ofM
       [[wellDiag 2 (7 * qLowNum 1 10 2 2) (6 * qLowDen 1 10 2 2) 1 10 1]]) := by
   decide +kernel
 
-example : greenprod.oneValueQ
+theorem pin130 : greenprod.oneValueQ
     (greenprod.mulQ
       (pivotQ 2 (7 * qLowNum 1 10 2 2) (6 * qLowDen 1 10 2 2) 1 10 2)
       (pivotR 2 (7 * qLowNum 1 10 2 2) (6 * qLowDen 1 10 2 2) 1 10 2))
@@ -1228,7 +1224,7 @@ private def wLo2 : elim.Mat :=
 private def wUp2 : elim.Mat :=
   wellMat 2 (8 * qLowNum 1 10 2 2) (7 * qLowDen 1 10 2 2) 1 10 2
 
-example : elim.matOneValue
+theorem pin131 : elim.matOneValue
     (elim.matAdd (inertia.matScaleB (BPair.ofNat 7) wLo2)
       (inertia.matScaleB
         (BPair.ofNat ((2 + 1) * (1 * qLowNum 1 10 2 2))
@@ -1237,7 +1233,7 @@ example : elim.matOneValue
     (inertia.matScaleB (BPair.ofNat 6) wUp2) :=
   lineSite 2 (qLowNum 1 10 2 2) (qLowDen 1 10 2 2) 1 10 2 7 6 8 7 1 (by decide +kernel)
 
-example : elim.matOneValue
+theorem pin132 : elim.matOneValue
     (elim.matAdd (inertia.matScaleB (BPair.ofNat 7) wLo2)
       (inertia.matScaleB
         (BPair.ofNat ((2 + 1) * (1 * qLowNum 1 10 2 2))
@@ -1245,7 +1241,7 @@ example : elim.matOneValue
         (elim.idMat 2)))
     (inertia.matScaleB (BPair.ofNat 6) wUp2) := by decide +kernel
 
-example : ¬ elim.matOneValue
+theorem pin133 : ¬ elim.matOneValue
     (elim.matAdd (inertia.matScaleB (BPair.ofNat 7) wLo2)
       (inertia.matScaleB
         (BPair.ofNat ((2 + 1) * (2 * qLowNum 1 10 2 2))
@@ -1269,42 +1265,42 @@ private theorem wLo2hi : ∀ k, 0 ≤ k → k < 2 →
   intro k _ hk
   exact h k hk
 
-example : inertia.splitRead wLo2 (inertia.mkSplit 2 wLo2) := by decide +kernel
+theorem pin134 : inertia.splitRead wLo2 (inertia.mkSplit 2 wLo2) := by decide +kernel
 
-example : inertia.splitRead wUp2 (inertia.mkSplit 2 wUp2) := by decide +kernel
+theorem pin135 : inertia.splitRead wUp2 (inertia.mkSplit 2 wUp2) := by decide +kernel
 
-example : inertia.revAt (inertia.mkSplit 2 wUp2) = 1 :=
+theorem pin136 : inertia.revAt (inertia.mkSplit 2 wUp2) = 1 :=
   cutFlat 1 10 2 2 2 0 7 6 8 7 1 (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) rfl (by decide +kernel) (by decide +kernel)
     (fun k hk => absurd hk (Nat.not_lt_zero k)) wLo2hi
     (inertia.mkSplit 2 wLo2) (by decide +kernel)
     (inertia.mkSplit 2 wUp2) (by decide +kernel)
 
-example : inertia.revAt (inertia.mkSplit 2 wUp2) = 1 := by decide +kernel
+theorem pin137 : inertia.revAt (inertia.mkSplit 2 wUp2) = 1 := by decide +kernel
 
-example : ¬ (7 * 7 ≤ 8 * 6) := by decide +kernel
+theorem pin138 : ¬ (7 * 7 ≤ 8 * 6) := by decide +kernel
 
-example : 8 * 6 ≤ 7 * 7 := by decide +kernel
+theorem pin139 : 8 * 6 ≤ 7 * 7 := by decide +kernel
 
 /-! The lower rate's two data are occupied at the endpoint eight, and
 each of the three binders is isolated: at the endpoint one the family
 is vacant and both data read nought, while at a vacant scale member
 the denominator alone dies with the numerator standing. -/
 
-example : 0 < qLowNum 1 10 2 8 ∧ 0 < qLowDen 1 10 2 8 :=
+theorem pin140 : 0 < qLowNum 1 10 2 8 ∧ 0 < qLowDen 1 10 2 8 :=
   qLowPos 1 10 2 8 (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : ¬ (0 < qLowNum 1 10 2 1) := by decide +kernel
+theorem pin141 : ¬ (0 < qLowNum 1 10 2 1) := by decide +kernel
 
-example : ¬ (0 < qLowDen 1 10 2 1) := by decide +kernel
+theorem pin142 : ¬ (0 < qLowDen 1 10 2 1) := by decide +kernel
 
-example : ¬ (0 < qLowDen 0 10 2 8) := by decide +kernel
+theorem pin143 : ¬ (0 < qLowDen 0 10 2 8) := by decide +kernel
 
-example : 0 < qLowNum 0 10 2 8 := by decide +kernel
+theorem pin144 : 0 < qLowNum 0 10 2 8 := by decide +kernel
 
-example : ¬ (0 < qLowDen 1 0 2 8) := by decide +kernel
+theorem pin145 : ¬ (0 < qLowDen 1 0 2 8) := by decide +kernel
 
-example : 0 < qLowNum 1 0 2 8 := by decide +kernel
+theorem pin146 : 0 < qLowNum 1 0 2 8 := by decide +kernel
 
 /-! The composed cut at an interior head: the endpoint four at the
 scale pair `[1:3]`, the head order five holding the family whole, and
@@ -1314,9 +1310,9 @@ running the vacant-gap arm.  The regime read beside them: at the
 endpoint's key already holding at the depth one, the endpoint depth
 is the two outright, the leastness's own arm. -/
 
-example : endRead 1 3 2 4 := by decide +kernel
+theorem pin147 : endRead 1 3 2 4 := by decide +kernel
 
-example : endRead 10 1 1 2 := by decide +kernel
+theorem pin148 : endRead 10 1 1 2 := by decide +kernel
 
 private def wLo45 : elim.Mat :=
   wellMat 2 (7 * qLowNum 1 3 2 4) (6 * qLowDen 1 3 2 4) 1 3 5
@@ -1333,16 +1329,16 @@ private theorem wLo45hi : ∀ k, 0 ≤ k → k < 5 →
   intro k _ hk
   exact h k hk
 
-example : inertia.revAt (inertia.mkSplit 5 wUp45) = 1 :=
+theorem pin149 : inertia.revAt (inertia.mkSplit 5 wUp45) = 1 :=
   cutFlat 1 3 2 4 5 0 7 6 8 7 1 (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) rfl (by decide +kernel) (by decide +kernel)
     (fun k hk => absurd hk (Nat.not_lt_zero k)) wLo45hi
     (inertia.mkSplit 5 wLo45) (by decide +kernel)
     (inertia.mkSplit 5 wUp45) (by decide +kernel)
 
-example : inertia.revAt (inertia.mkSplit 5 wUp45) = 1 := by decide +kernel
+theorem pin150 : inertia.revAt (inertia.mkSplit 5 wUp45) = 1 := by decide +kernel
 
-example : inertia.revAt (inertia.mkSplit 5 wLo45) = 1 :=
+theorem pin151 : inertia.revAt (inertia.mkSplit 5 wLo45) = 1 :=
   cutFlat 1 3 2 4 5 0 7 6 7 6 1 (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) rfl (by decide +kernel) (by decide +kernel)
     (fun k hk => absurd hk (Nat.not_lt_zero k)) wLo45hi
@@ -1377,244 +1373,244 @@ private def wCap45 : elim.Mat :=
 
 private def wCapN : elim.Mat := wellMat 2 12 1 1 3 4
 
-example : crossSq 4 2 = 45 := by decide +kernel
-example : crossSqM 4 2 = 45 := by decide +kernel
-example : crossSqMM 4 2 = 45 := by decide +kernel
-example : crossBond 4 2 = 144 := by decide +kernel
+theorem pin152 : crossSq 4 2 = 45 := by decide +kernel
+theorem pin153 : crossSqM 4 2 = 45 := by decide +kernel
+theorem pin154 : crossSqMM 4 2 = 45 := by decide +kernel
+theorem pin155 : crossBond 4 2 = 144 := by decide +kernel
 
-example : (crossVal 2 12 1 1 3 4 2).oneValue (BPair.ofNat 11556).swap := by
+theorem pin156 : (crossVal 2 12 1 1 3 4 2).oneValue (BPair.ofNat 11556).swap := by
   decide +kernel
 
-example : (elim.dotN (witList 4 4) (elim.matVec wCapN (witList 2 4))
+theorem pin157 : (elim.dotN (witList 4 4) (elim.matVec wCapN (witList 2 4))
     + elim.dotN (witList 2 4)
       (elim.matVec wCapN (witList 4 4))).oneValue
     (crossVal 2 12 1 1 3 4 2) :=
   crossRead 2 12 1 4 2 4 1 3 (by decide +kernel) (by decide +kernel)
 
-example : (elim.dotN (witList 4 4) (elim.matVec wCapN (witList 2 4))
+theorem pin158 : (elim.dotN (witList 4 4) (elim.matVec wCapN (witList 2 4))
     + elim.dotN (witList 2 4)
       (elim.matVec wCapN (witList 4 4))).oneValue
     (crossVal 2 12 1 1 3 4 2) := by
   decide +kernel
 
-example : (inertia.quadForm wCapN (witList 4 4)).oneValue
+theorem pin159 : (inertia.quadForm wCapN (witList 4 4)).oneValue
     (BPair.ofNat 238500).swap :=
   witLineRead 1 3 2 4 4 12 1 238500 (by decide +kernel)
     (by decide +kernel)
 
-example : (inertia.quadForm wCapN (witList 4 4)).oneValue
+theorem pin160 : (inertia.quadForm wCapN (witList 4 4)).oneValue
     (BPair.ofNat 238500).swap := by decide +kernel
 
-example : (inertia.quadForm wCapN (witList 2 4)).oneValue
+theorem pin161 : (inertia.quadForm wCapN (witList 2 4)).oneValue
     (BPair.ofNat 378).swap :=
   witLineRead 1 3 2 2 4 12 1 378 (by decide +kernel) (by decide +kernel)
 
-example : 2 ≤ inertia.revAt (inertia.mkSplit 4 wCapN) :=
+theorem pin162 : 2 ≤ inertia.revAt (inertia.mkSplit 4 wCapN) :=
   capPair 1 3 2 4 2 4 12 1 238500 378 (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (inertia.mkSplit 4 wCapN) (by decide +kernel)
 
-example : 2 ≤ inertia.revAt (inertia.mkSplit 4 wCapN) := by decide +kernel
+theorem pin163 : 2 ≤ inertia.revAt (inertia.mkSplit 4 wCapN) := by decide +kernel
 
 private def wCap9 : elim.Mat := wellMat 2 9 1 1 3 4
 
-example : qLowNum 1 3 2 4 * 1 + 63054 = 9 * qLowDen 1 3 2 4 := by
+theorem pin164 : qLowNum 1 3 2 4 * 1 + 63054 = 9 * qLowDen 1 3 2 4 := by
   decide +kernel
-example : ¬ (crossVal 2 9 1 1 3 4 4 * crossVal 2 9 1 1 3 4 4
+theorem pin165 : ¬ (crossVal 2 9 1 1 3 4 4 * crossVal 2 9 1 1 3 4 4
     < BPair.ofNat (4 * (63054 * 63054))) := by decide +kernel
-example : inertia.revAt (inertia.mkSplit 4 wCap9) = 1 := by decide +kernel
-example : inertia.splitRead wCap9 (inertia.mkSplit 4 wCap9) := by
+theorem pin166 : inertia.revAt (inertia.mkSplit 4 wCap9) = 1 := by decide +kernel
+theorem pin167 : inertia.splitRead wCap9 (inertia.mkSplit 4 wCap9) := by
   decide +kernel
 
-example : crossVal 2 9 1 1 3 4 2 * crossVal 2 9 1 1 3 4 2
+theorem pin168 : crossVal 2 9 1 1 3 4 2 * crossVal 2 9 1 1 3 4 2
     < BPair.ofNat (4 * (238500 * 135)) := by decide +kernel
-example : qLowNum 1 3 2 2 * 1 + 135 = 9 * qLowDen 1 3 2 2 := by
+theorem pin169 : qLowNum 1 3 2 2 * 1 + 135 = 9 * qLowDen 1 3 2 2 := by
   decide +kernel
-example : ¬ (qLowNum 1 3 2 4 * 1 + 238500 = 9 * qLowDen 1 3 2 4) := by
+theorem pin170 : ¬ (qLowNum 1 3 2 4 * 1 + 238500 = 9 * qLowDen 1 3 2 4) := by
   decide +kernel
 
-example : crossVal 2 9 1 1 3 4 2 * crossVal 2 9 1 1 3 4 2
+theorem pin171 : crossVal 2 9 1 1 3 4 2 * crossVal 2 9 1 1 3 4 2
     < BPair.ofNat (4 * (63054 * 135000)) := by decide +kernel
-example : ¬ (qLowNum 1 3 2 2 * 1 + 135000 = 9 * qLowDen 1 3 2 2) := by
+theorem pin172 : ¬ (qLowNum 1 3 2 2 * 1 + 135000 = 9 * qLowDen 1 3 2 2) := by
   decide +kernel
 
-example : crossVal 2 12 1 1 3 4 2 * crossVal 2 12 1 1 3 4 2
+theorem pin173 : crossVal 2 12 1 1 3 4 2 * crossVal 2 12 1 1 3 4 2
     < BPair.ofNat (4 * (238500 * 378)) := by decide +kernel
-example : inertia.revAt
+theorem pin174 : inertia.revAt
     (inertia.mkSplit 1 (wellMat 2 12 1 1 3 1)) = 1 := by decide +kernel
-example : inertia.splitRead (wellMat 2 12 1 1 3 1)
+theorem pin175 : inertia.splitRead (wellMat 2 12 1 1 3 1)
     (inertia.mkSplit 1 (wellMat 2 12 1 1 3 1)) := by decide +kernel
 
-example : qLowNum 1 3 2 2 * 1 + 216 = 10 * qLowDen 1 3 2 2 := by
+theorem pin176 : qLowNum 1 3 2 2 * 1 + 216 = 10 * qLowDen 1 3 2 2 := by
   decide +kernel
-example : qLowNum 1 3 2 4 * 1 + 121536 = 10 * qLowDen 1 3 2 4 := by
+theorem pin177 : qLowNum 1 3 2 4 * 1 + 121536 = 10 * qLowDen 1 3 2 4 := by
   decide +kernel
-example : crossVal 2 10 1 1 3 2 4 * crossVal 2 10 1 1 3 2 4
+theorem pin178 : crossVal 2 10 1 1 3 2 4 * crossVal 2 10 1 1 3 2 4
     < BPair.ofNat (4 * (216 * 121536)) := by decide +kernel
-example : inertia.revAt
+theorem pin179 : inertia.revAt
     (inertia.mkSplit 2 (wellMat 2 10 1 1 3 2)) = 1 := by decide +kernel
-example : inertia.splitRead (wellMat 2 10 1 1 3 2)
+theorem pin180 : inertia.splitRead (wellMat 2 10 1 1 3 2)
     (inertia.mkSplit 2 (wellMat 2 10 1 1 3 2)) := by decide +kernel
 
 /-! The rates\' gap at the cut member `[7:6]`, its data occupied and
 its tie the one cross-multiplied identity. -/
 
-example : gapLow 1 3 2 4 1 6 = (463284, 350892) := by decide +kernel
+theorem pin181 : gapLow 1 3 2 4 1 6 = (463284, 350892) := by decide +kernel
 
-example : 0 < (gapLow 1 3 2 4 1 6).1 ∧ 0 < (gapLow 1 3 2 4 1 6).2 :=
+theorem pin182 : 0 < (gapLow 1 3 2 4 1 6).1 ∧ 0 < (gapLow 1 3 2 4 1 6).2 :=
   gapLow_pos 1 3 2 4 1 6 (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : qLowNum 1 3 2 4 * (6 * qLowDen 1 3 2 4)
+theorem pin183 : qLowNum 1 3 2 4 * (6 * qLowDen 1 3 2 4)
       + 1 * qLowNum 1 3 2 4 * qLowDen 1 3 2 4
     = 7 * qLowNum 1 3 2 4 * qLowDen 1 3 2 4 :=
   gapLow_tie 1 3 2 4 1 6 7 rfl
 
-example : qLowNum 1 3 2 4 * (6 * qLowDen 1 3 2 4)
+theorem pin184 : qLowNum 1 3 2 4 * (6 * qLowDen 1 3 2 4)
       + 1 * qLowNum 1 3 2 4 * qLowDen 1 3 2 4
     = 7 * qLowNum 1 3 2 4 * qLowDen 1 3 2 4 := by decide +kernel
 
 /-! The arithmetic tier's statements at decided instances: each
 theorem's read beside its own kernel decide, one pair per statement. -/
 
-example : powSum 0 8 = 8 :=
+theorem pin185 : powSum 0 8 = 8 :=
   powSum0_closed 8
 
-example : powSum 0 8 = 8 := by decide +kernel
+theorem pin186 : powSum 0 8 = 8 := by decide +kernel
 
-example : 2 * powSum 1 8 = 8 ^ 2 + 8 :=
+theorem pin187 : 2 * powSum 1 8 = 8 ^ 2 + 8 :=
   powSum1_closed 8
 
-example : 2 * powSum 1 8 = 8 ^ 2 + 8 := by decide +kernel
+theorem pin188 : 2 * powSum 1 8 = 8 ^ 2 + 8 := by decide +kernel
 
-example : 6 * powSum 2 8 = 2 * 8 ^ 3 + 3 * 8 ^ 2 + 8 :=
+theorem pin189 : 6 * powSum 2 8 = 2 * 8 ^ 3 + 3 * 8 ^ 2 + 8 :=
   powSum2_closed 8
 
-example : 6 * powSum 2 8 = 2 * 8 ^ 3 + 3 * 8 ^ 2 + 8 := by decide +kernel
+theorem pin190 : 6 * powSum 2 8 = 2 * 8 ^ 3 + 3 * 8 ^ 2 + 8 := by decide +kernel
 
-example : 4 * powSum 3 8 = 8 ^ 4 + 2 * 8 ^ 3 + 8 ^ 2 :=
+theorem pin191 : 4 * powSum 3 8 = 8 ^ 4 + 2 * 8 ^ 3 + 8 ^ 2 :=
   powSum3_closed 8
 
-example : 4 * powSum 3 8 = 8 ^ 4 + 2 * 8 ^ 3 + 8 ^ 2 := by decide +kernel
+theorem pin192 : 4 * powSum 3 8 = 8 ^ 4 + 2 * 8 ^ 3 + 8 ^ 2 := by decide +kernel
 
-example : 30 * powSum 4 8 + 8 = 6 * 8 ^ 5 + 15 * 8 ^ 4 + 10 * 8 ^ 3 :=
+theorem pin193 : 30 * powSum 4 8 + 8 = 6 * 8 ^ 5 + 15 * 8 ^ 4 + 10 * 8 ^ 3 :=
   powSum4_closed 8
 
-example : 30 * powSum 4 8 + 8 = 6 * 8 ^ 5 + 15 * 8 ^ 4 + 10 * 8 ^ 3 := by decide +kernel
+theorem pin194 : 30 * powSum 4 8 + 8 = 6 * 8 ^ 5 + 15 * 8 ^ 4 + 10 * 8 ^ 3 := by decide +kernel
 
-example : 12 * powSum 5 8 + 8 ^ 2 = 2 * 8 ^ 6 + 6 * 8 ^ 5 + 5 * 8 ^ 4 :=
+theorem pin195 : 12 * powSum 5 8 + 8 ^ 2 = 2 * 8 ^ 6 + 6 * 8 ^ 5 + 5 * 8 ^ 4 :=
   powSum5_closed 8
 
-example : 12 * powSum 5 8 + 8 ^ 2 = 2 * 8 ^ 6 + 6 * 8 ^ 5 + 5 * 8 ^ 4 := by decide +kernel
+theorem pin196 : 12 * powSum 5 8 + 8 ^ 2 = 2 * 8 ^ 6 + 6 * 8 ^ 5 + 5 * 8 ^ 4 := by decide +kernel
 
-example : 42 * powSum 6 8 + 7 * 8 ^ 3 = 6 * 8 ^ 7 + 21 * 8 ^ 6 + 21 * 8 ^ 5 + 8 :=
+theorem pin197 : 42 * powSum 6 8 + 7 * 8 ^ 3 = 6 * 8 ^ 7 + 21 * 8 ^ 6 + 21 * 8 ^ 5 + 8 :=
   powSum6_closed 8
 
-example : 42 * powSum 6 8 + 7 * 8 ^ 3 = 6 * 8 ^ 7 + 21 * 8 ^ 6 + 21 * 8 ^ 5 + 8 := by decide +kernel
+theorem pin198 : 42 * powSum 6 8 + 7 * 8 ^ 3 = 6 * 8 ^ 7 + 21 * 8 ^ 6 + 21 * 8 ^ 5 + 8 := by decide +kernel
 
-example : 24 * powSum 7 8 + 7 * 8 ^ 4 = 3 * 8 ^ 8 + 12 * 8 ^ 7 + 14 * 8 ^ 6 + 2 * 8 ^ 2 :=
+theorem pin199 : 24 * powSum 7 8 + 7 * 8 ^ 4 = 3 * 8 ^ 8 + 12 * 8 ^ 7 + 14 * 8 ^ 6 + 2 * 8 ^ 2 :=
   powSum7_closed 8
 
-example : 24 * powSum 7 8 + 7 * 8 ^ 4 = 3 * 8 ^ 8 + 12 * 8 ^ 7 + 14 * 8 ^ 6 + 2 * 8 ^ 2 := by decide +kernel
+theorem pin200 : 24 * powSum 7 8 + 7 * 8 ^ 4 = 3 * 8 ^ 8 + 12 * 8 ^ 7 + 14 * 8 ^ 6 + 2 * 8 ^ 2 := by decide +kernel
 
-example : 90 * powSum 8 8 + 42 * 8 ^ 5 + 3 * 8 = 10 * 8 ^ 9 + 45 * 8 ^ 8 + 60 * 8 ^ 7 + 20 * 8 ^ 3 :=
+theorem pin201 : 90 * powSum 8 8 + 42 * 8 ^ 5 + 3 * 8 = 10 * 8 ^ 9 + 45 * 8 ^ 8 + 60 * 8 ^ 7 + 20 * 8 ^ 3 :=
   powSum8_closed 8
 
-example : 90 * powSum 8 8 + 42 * 8 ^ 5 + 3 * 8 = 10 * 8 ^ 9 + 45 * 8 ^ 8 + 60 * 8 ^ 7 + 20 * 8 ^ 3 := by decide +kernel
+theorem pin202 : 90 * powSum 8 8 + 42 * 8 ^ 5 + 3 * 8 = 10 * 8 ^ 9 + 45 * 8 ^ 8 + 60 * 8 ^ 7 + 20 * 8 ^ 3 := by decide +kernel
 
-example : 20 * powSum 9 8 + 14 * 8 ^ 6 + 3 * 8 ^ 2 = 2 * 8 ^ 10 + 10 * 8 ^ 9 + 15 * 8 ^ 8 + 10 * 8 ^ 4 :=
+theorem pin203 : 20 * powSum 9 8 + 14 * 8 ^ 6 + 3 * 8 ^ 2 = 2 * 8 ^ 10 + 10 * 8 ^ 9 + 15 * 8 ^ 8 + 10 * 8 ^ 4 :=
   powSum9_closed 8
 
-example : 20 * powSum 9 8 + 14 * 8 ^ 6 + 3 * 8 ^ 2 = 2 * 8 ^ 10 + 10 * 8 ^ 9 + 15 * 8 ^ 8 + 10 * 8 ^ 4 := by decide +kernel
+theorem pin204 : 20 * powSum 9 8 + 14 * 8 ^ 6 + 3 * 8 ^ 2 = 2 * 8 ^ 10 + 10 * 8 ^ 9 + 15 * 8 ^ 8 + 10 * 8 ^ 4 := by decide +kernel
 
-example : 66 * powSum 10 5 + 66 * 5 ^ 7 + 33 * 5 ^ 3 = 6 * 5 ^ 11 + 33 * 5 ^ 10 + 55 * 5 ^ 9 + 66 * 5 ^ 5 + 5 * 5 :=
+theorem pin205 : 66 * powSum 10 5 + 66 * 5 ^ 7 + 33 * 5 ^ 3 = 6 * 5 ^ 11 + 33 * 5 ^ 10 + 55 * 5 ^ 9 + 66 * 5 ^ 5 + 5 * 5 :=
   powSum10_closed 5
 
-example : 66 * powSum 10 5 + 66 * 5 ^ 7 + 33 * 5 ^ 3 = 6 * 5 ^ 11 + 33 * 5 ^ 10 + 55 * 5 ^ 9 + 66 * 5 ^ 5 + 5 * 5 := by decide +kernel
+theorem pin206 : 66 * powSum 10 5 + 66 * 5 ^ 7 + 33 * 5 ^ 3 = 6 * 5 ^ 11 + 33 * 5 ^ 10 + 55 * 5 ^ 9 + 66 * 5 ^ 5 + 5 * 5 := by decide +kernel
 
-example : witSq 8 + 2 * 8 ^ 2 * powSum 6 8 = 8 ^ 4 * powSum 4 8 + powSum 8 8 :=
+theorem pin207 : witSq 8 + 2 * 8 ^ 2 * powSum 6 8 = 8 ^ 4 * powSum 4 8 + powSum 8 8 :=
   witSq_bridge 8
 
-example : witSq 8 + 2 * 8 ^ 2 * powSum 6 8 = 8 ^ 4 * powSum 4 8 + powSum 8 8 := by decide +kernel
+theorem pin208 : witSq 8 + 2 * 8 ^ 2 * powSum 6 8 = 8 ^ 4 * powSum 4 8 + powSum 8 8 := by decide +kernel
 
-example : witSqM 8 + 2 * 8 ^ 2 * powSum 7 8 = 8 ^ 4 * powSum 5 8 + powSum 9 8 :=
+theorem pin209 : witSqM 8 + 2 * 8 ^ 2 * powSum 7 8 = 8 ^ 4 * powSum 5 8 + powSum 9 8 :=
   witSqM_bridge 8
 
-example : witSqM 8 + 2 * 8 ^ 2 * powSum 7 8 = 8 ^ 4 * powSum 5 8 + powSum 9 8 := by decide +kernel
+theorem pin210 : witSqM 8 + 2 * 8 ^ 2 * powSum 7 8 = 8 ^ 4 * powSum 5 8 + powSum 9 8 := by decide +kernel
 
-example : witSqMM 8 + 2 * 8 ^ 2 * powSum 8 8 = 8 ^ 4 * powSum 6 8 + powSum 10 8 :=
+theorem pin211 : witSqMM 8 + 2 * 8 ^ 2 * powSum 8 8 = 8 ^ 4 * powSum 6 8 + powSum 10 8 :=
   witSqMM_bridge 8
 
-example : witSqMM 8 + 2 * 8 ^ 2 * powSum 8 8 = 8 ^ 4 * powSum 6 8 + powSum 10 8 := by decide +kernel
+theorem pin212 : witSqMM 8 + 2 * 8 ^ 2 * powSum 8 8 = 8 ^ 4 * powSum 6 8 + powSum 10 8 := by decide +kernel
 
-example : witDiffSq 8 + 2 * 8 ^ 2 * powSum 0 (8 - 1) + 12 * 8 ^ 2 * powSum 1 (8 - 1) + 28 * 8 ^ 2 * powSum 2 (8 - 1) + 32 * 8 ^ 2 * powSum 3 (8 - 1) + 16 * 8 ^ 2 * powSum 4 (8 - 1) = powSum 0 (8 - 1) + 8 ^ 4 * powSum 0 (8 - 1) + 8 * powSum 1 (8 - 1) + 4 * 8 ^ 4 * powSum 1 (8 - 1) + 28 * powSum 2 (8 - 1) + 4 * 8 ^ 4 * powSum 2 (8 - 1) + 56 * powSum 3 (8 - 1) + 68 * powSum 4 (8 - 1) + 48 * powSum 5 (8 - 1) + 16 * powSum 6 (8 - 1) :=
+theorem pin213 : witDiffSq 8 + 2 * 8 ^ 2 * powSum 0 (8 - 1) + 12 * 8 ^ 2 * powSum 1 (8 - 1) + 28 * 8 ^ 2 * powSum 2 (8 - 1) + 32 * 8 ^ 2 * powSum 3 (8 - 1) + 16 * 8 ^ 2 * powSum 4 (8 - 1) = powSum 0 (8 - 1) + 8 ^ 4 * powSum 0 (8 - 1) + 8 * powSum 1 (8 - 1) + 4 * 8 ^ 4 * powSum 1 (8 - 1) + 28 * powSum 2 (8 - 1) + 4 * 8 ^ 4 * powSum 2 (8 - 1) + 56 * powSum 3 (8 - 1) + 68 * powSum 4 (8 - 1) + 48 * powSum 5 (8 - 1) + 16 * powSum 6 (8 - 1) :=
   witDiffSq_bridge 8
 
-example : witDiffSq 8 + 2 * 8 ^ 2 * powSum 0 (8 - 1) + 12 * 8 ^ 2 * powSum 1 (8 - 1) + 28 * 8 ^ 2 * powSum 2 (8 - 1) + 32 * 8 ^ 2 * powSum 3 (8 - 1) + 16 * 8 ^ 2 * powSum 4 (8 - 1) = powSum 0 (8 - 1) + 8 ^ 4 * powSum 0 (8 - 1) + 8 * powSum 1 (8 - 1) + 4 * 8 ^ 4 * powSum 1 (8 - 1) + 28 * powSum 2 (8 - 1) + 4 * 8 ^ 4 * powSum 2 (8 - 1) + 56 * powSum 3 (8 - 1) + 68 * powSum 4 (8 - 1) + 48 * powSum 5 (8 - 1) + 16 * powSum 6 (8 - 1) := by decide +kernel
+theorem pin214 : witDiffSq 8 + 2 * 8 ^ 2 * powSum 0 (8 - 1) + 12 * 8 ^ 2 * powSum 1 (8 - 1) + 28 * 8 ^ 2 * powSum 2 (8 - 1) + 32 * 8 ^ 2 * powSum 3 (8 - 1) + 16 * 8 ^ 2 * powSum 4 (8 - 1) = powSum 0 (8 - 1) + 8 ^ 4 * powSum 0 (8 - 1) + 8 * powSum 1 (8 - 1) + 4 * 8 ^ 4 * powSum 1 (8 - 1) + 28 * powSum 2 (8 - 1) + 4 * 8 ^ 4 * powSum 2 (8 - 1) + 56 * powSum 3 (8 - 1) + 68 * powSum 4 (8 - 1) + 48 * powSum 5 (8 - 1) + 16 * powSum 6 (8 - 1) := by decide +kernel
 
-example : 630 * witSq 8 + 105 * 8 ^ 5 + 21 * 8 = 16 * 8 ^ 9 + 110 * 8 ^ 3 :=
+theorem pin215 : 630 * witSq 8 + 105 * 8 ^ 5 + 21 * 8 = 16 * 8 ^ 9 + 110 * 8 ^ 3 :=
   witSq_closed 8
 
-example : 630 * witSq 8 + 105 * 8 ^ 5 + 21 * 8 = 16 * 8 ^ 9 + 110 * 8 ^ 3 := by decide +kernel
+theorem pin216 : 630 * witSq 8 + 105 * 8 ^ 5 + 21 * 8 = 16 * 8 ^ 9 + 110 * 8 ^ 3 := by decide +kernel
 
-example : 60 * witSqM 8 + 12 * 8 ^ 6 + 9 * 8 ^ 2 = 8 ^ 10 + 20 * 8 ^ 4 :=
+theorem pin217 : 60 * witSqM 8 + 12 * 8 ^ 6 + 9 * 8 ^ 2 = 8 ^ 10 + 20 * 8 ^ 4 :=
   witSqM_closed 8
 
-example : 60 * witSqM 8 + 12 * 8 ^ 6 + 9 * 8 ^ 2 = 8 ^ 10 + 20 * 8 ^ 4 := by decide +kernel
+theorem pin218 : 60 * witSqM 8 + 12 * 8 ^ 6 + 9 * 8 ^ 2 = 8 ^ 10 + 20 * 8 ^ 4 := by decide +kernel
 
-example : 6930 * witSqMM 8 + 1617 * 8 ^ 7 + 3003 * 8 ^ 3 = 80 * 8 ^ 11 + 4015 * 8 ^ 5 + 525 * 8 :=
+theorem pin219 : 6930 * witSqMM 8 + 1617 * 8 ^ 7 + 3003 * 8 ^ 3 = 80 * 8 ^ 11 + 4015 * 8 ^ 5 + 525 * 8 :=
   witSqMM_closed 8
 
-example : 6930 * witSqMM 8 + 1617 * 8 ^ 7 + 3003 * 8 ^ 3 = 80 * 8 ^ 11 + 4015 * 8 ^ 5 + 525 * 8 := by decide +kernel
+theorem pin220 : 6930 * witSqMM 8 + 1617 * 8 ^ 7 + 3003 * 8 ^ 3 = 80 * 8 ^ 11 + 4015 * 8 ^ 5 + 525 * 8 := by decide +kernel
 
-example : 105 * witDiffSq 8 + 147 * 8 ^ 5 + 105 * 8 ^ 4 + 23 * 8 + 105 = 44 * 8 ^ 7 + 126 * 8 ^ 3 + 210 * 8 ^ 2 :=
+theorem pin221 : 105 * witDiffSq 8 + 147 * 8 ^ 5 + 105 * 8 ^ 4 + 23 * 8 + 105 = 44 * 8 ^ 7 + 126 * 8 ^ 3 + 210 * 8 ^ 2 :=
   witDiffSq_closed 8 (by decide +kernel)
 
-example : 105 * witDiffSq 8 + 147 * 8 ^ 5 + 105 * 8 ^ 4 + 23 * 8 + 105 = 44 * 8 ^ 7 + 126 * 8 ^ 3 + 210 * 8 ^ 2 := by decide +kernel
+theorem pin222 : 105 * witDiffSq 8 + 147 * 8 ^ 5 + 105 * 8 ^ 4 + 23 * 8 + 105 = 44 * 8 ^ 7 + 126 * 8 ^ 3 + 210 * 8 ^ 2 := by decide +kernel
 
-example : (BPair.ofNat (marg 7 3 ^ 2)).oneValue (BPair.ofCounts 7 3 * BPair.ofCounts 7 3) :=
+theorem pin223 : (BPair.ofNat (marg 7 3 ^ 2)).oneValue (BPair.ofCounts 7 3 * BPair.ofCounts 7 3) :=
   margSq_read 7 3
 
-example : (BPair.ofNat (marg 7 3 ^ 2)).oneValue (BPair.ofCounts 7 3 * BPair.ofCounts 7 3) := by decide +kernel
+theorem pin224 : (BPair.ofNat (marg 7 3 ^ 2)).oneValue (BPair.ofCounts 7 3 * BPair.ofCounts 7 3) := by decide +kernel
 
-example : (BPair.ofNat (marg 3 7 ^ 2)).oneValue (BPair.ofCounts 3 7 * BPair.ofCounts 3 7) :=
+theorem pin225 : (BPair.ofNat (marg 3 7 ^ 2)).oneValue (BPair.ofCounts 3 7 * BPair.ofCounts 3 7) :=
   margSq_read 3 7
 
-example : (BPair.ofNat (marg 3 7 ^ 2)).oneValue (BPair.ofCounts 3 7 * BPair.ofCounts 3 7) := by decide +kernel
+theorem pin226 : (BPair.ofNat (marg 3 7 ^ 2)).oneValue (BPair.ofCounts 3 7 * BPair.ofCounts 3 7) := by decide +kernel
 
-example : (poly.eval sqClosedPoly (BPair.ofNat 8)).oneValue (BPair.ofNat (630 * witSq 8)) :=
+theorem pin227 : (poly.eval sqClosedPoly (BPair.ofNat 8)).oneValue (BPair.ofNat (630 * witSq 8)) :=
   sqClosedPoly_eval 8
 
-example : (poly.eval sqClosedPoly (BPair.ofNat 8)).oneValue (BPair.ofNat (630 * witSq 8)) := by decide +kernel
+theorem pin228 : (poly.eval sqClosedPoly (BPair.ofNat 8)).oneValue (BPair.ofNat (630 * witSq 8)) := by decide +kernel
 
-example : (poly.eval diffClosedPoly (BPair.ofNat 8)).oneValue (BPair.ofNat (105 * witDiffSq 8)) :=
+theorem pin229 : (poly.eval diffClosedPoly (BPair.ofNat 8)).oneValue (BPair.ofNat (105 * witDiffSq 8)) :=
   diffClosedPoly_eval 8 (by decide +kernel)
 
-example : (poly.eval diffClosedPoly (BPair.ofNat 8)).oneValue (BPair.ofNat (105 * witDiffSq 8)) := by decide +kernel
+theorem pin230 : (poly.eval diffClosedPoly (BPair.ofNat 8)).oneValue (BPair.ofNat (105 * witDiffSq 8)) := by decide +kernel
 
-example : (poly.eval wellClosedPoly (BPair.ofNat 8)).oneValue (BPair.ofNat (6930 * witSqMM 8)) :=
+theorem pin231 : (poly.eval wellClosedPoly (BPair.ofNat 8)).oneValue (BPair.ofNat (6930 * witSqMM 8)) :=
   wellClosedPoly_eval 8
 
-example : (poly.eval wellClosedPoly (BPair.ofNat 8)).oneValue (BPair.ofNat (6930 * witSqMM 8)) := by decide +kernel
+theorem pin232 : (poly.eval wellClosedPoly (BPair.ofNat 8)).oneValue (BPair.ofNat (6930 * witSqMM 8)) := by decide +kernel
 
-example : 4 * 1 ^ 2 * 80 * 630 * (11 * (2 + 1) * 10) = 6930 * (1 * 10 * (2 + 1) * 16) * (20 * 1) :=
+theorem pin233 : 4 * 1 ^ 2 * 80 * 630 * (11 * (2 + 1) * 10) = 6930 * (1 * 10 * (2 + 1) * 16) * (20 * 1) :=
   topWell_read 1 10 2
 
-example : 4 * 1 ^ 2 * 80 * 630 * (11 * (2 + 1) * 10) = 6930 * (1 * 10 * (2 + 1) * 16) * (20 * 1) := by decide +kernel
+theorem pin234 : 4 * 1 ^ 2 * 80 * 630 * (11 * (2 + 1) * 10) = 6930 * (1 * 10 * (2 + 1) * 16) * (20 * 1) := by decide +kernel
 
-example : (2 + 1) * 10 ^ 2 * 44 * 630 * (2 * 1) = 105 * (1 * 10 * (2 + 1) * 16) * (33 * 10) :=
+theorem pin235 : (2 + 1) * 10 ^ 2 * 44 * 630 * (2 * 1) = 105 * (1 * 10 * (2 + 1) * 16) * (33 * 10) :=
   topDiff_read 1 10 2
 
-example : (2 + 1) * 10 ^ 2 * 44 * 630 * (2 * 1) = 105 * (1 * 10 * (2 + 1) * 16) * (33 * 10) := by decide +kernel
+theorem pin236 : (2 + 1) * 10 ^ 2 * 44 * 630 * (2 * 1) = 105 * (1 * 10 * (2 + 1) * 16) * (33 * 10) := by decide +kernel
 
-example : (20 * 1 * 8 ^ 2) * (2 * 1 * 8 ^ 2) = 363 * (2 + 1) * 10 ^ 2
+theorem pin237 : (20 * 1 * 8 ^ 2) * (2 * 1 * 8 ^ 2) = 363 * (2 + 1) * 10 ^ 2
     ↔ 40 * 8 ^ 4 * 1 ^ 2 = 363 * (2 + 1) * 10 ^ 2 :=
   keyEq_read 1 10 2 8
 
-example : ((20 * 1 * 8 ^ 2) * (2 * 1 * 8 ^ 2) = 363 * (2 + 1) * 10 ^ 2
+theorem pin238 : ((20 * 1 * 8 ^ 2) * (2 * 1 * 8 ^ 2) = 363 * (2 + 1) * 10 ^ 2
     ↔ 40 * 8 ^ 4 * 1 ^ 2 = 363 * (2 + 1) * 10 ^ 2) := by decide +kernel
 
-example : (BPair.ofNat (2 * witSq 4)).oneValue
+theorem pin239 : (BPair.ofNat (2 * witSq 4)).oneValue
     (BPair.ofNat (2 * ground.sumNat ((List.range 4).map (fun k =>
         witVal 4 (k + 1) * witVal 4 (k + 2))))
       + BPair.ofNat ((witVal 4 1) ^ 2)
@@ -1624,7 +1620,7 @@ example : (BPair.ofNat (2 * witSq 4)).oneValue
         (List.range 4)) :=
   witTele 4
 
-example : (BPair.ofNat (2 * witSq 4)).oneValue
+theorem pin240 : (BPair.ofNat (2 * witSq 4)).oneValue
     (BPair.ofNat (2 * ground.sumNat ((List.range 4).map (fun k =>
         witVal 4 (k + 1) * witVal 4 (k + 2))))
       + BPair.ofNat ((witVal 4 1) ^ 2)
@@ -1633,7 +1629,7 @@ example : (BPair.ofNat (2 * witSq 4)).oneValue
             * BPair.ofCounts (witVal 4 (k + 2)) (witVal 4 (k + 1)))
         (List.range 4)) := by decide +kernel
 
-example : (ground.bsum (fun k =>
+theorem pin241 : (ground.bsum (fun k =>
         poly.evalClear (diagPoly 1 3 2 (k + 1)) (BPair.ofPos 1) 1 2
           * (BPair.ofNat (witVal 2 (k + 1))
               * BPair.ofNat (witVal 2 (k + 1))))
@@ -1659,7 +1655,7 @@ example : (ground.bsum (fun k =>
         (List.range 2)) :=
   witForm 1 3 2 2 1 1
 
-example : (ground.bsum (fun k =>
+theorem pin242 : (ground.bsum (fun k =>
         poly.evalClear (diagPoly 1 3 2 (k + 1)) (BPair.ofPos 1) 1 2
           * (BPair.ofNat (witVal 2 (k + 1))
               * BPair.ofNat (witVal 2 (k + 1))))
@@ -1715,57 +1711,57 @@ private def twoSlab : poly.PPoly × poly.PPoly :=
   ([[BPair.unit, BPair.ofNat 1], [BPair.ofNat 2]],
    [[BPair.ofNat 1], [BPair.ofNat 1]])
 
-example : poly.oneValue (depthPoly (profAdd sh1 u1) 2)
+theorem pin243 : poly.oneValue (depthPoly (profAdd sh1 u1) 2)
     (poly.add (depthPoly sh1 2) (depthPoly u1 2)) := by decide +kernel
 
-example : poly.oneValue (depthPoly (profAdd sh1 u1) 2)
+theorem pin244 : poly.oneValue (depthPoly (profAdd sh1 u1) 2)
     (poly.add (depthPoly sh1 2) (depthPoly u1 2)) :=
   depthPoly_profAdd sh1 u1 2
 
-example : poly.oneValue (depthPoly (profMul twoSlab u1) 2)
+theorem pin245 : poly.oneValue (depthPoly (profMul twoSlab u1) 2)
     (poly.mul (depthPoly twoSlab 2) (depthPoly u1 2)) := by decide +kernel
 
-example : poly.oneValue (depthPoly (profMul twoSlab u1) 2)
+theorem pin246 : poly.oneValue (depthPoly (profMul twoSlab u1) 2)
     (poly.mul (depthPoly twoSlab 2) (depthPoly u1 2)) :=
   depthPoly_profMul twoSlab u1 2
 
-example : poly.oneValue (depthPoly (profShift sh1) 3) (depthPoly sh1 4) := by
+theorem pin247 : poly.oneValue (depthPoly (profShift sh1) 3) (depthPoly sh1 4) := by
   decide +kernel
 
-example : poly.oneValue (depthPoly (profShift sh1) 3) (depthPoly sh1 4) :=
+theorem pin248 : poly.oneValue (depthPoly (profShift sh1) 3) (depthPoly sh1 4) :=
   depthPoly_profShift sh1 3
 
-example : poly.oneValue (depthPoly (profShift twoSlab) 1)
+theorem pin249 : poly.oneValue (depthPoly (profShift twoSlab) 1)
     (depthPoly twoSlab 2) := by decide +kernel
 
-example : poly.oneValue (depthPoly (profShift twoSlab) 1)
+theorem pin250 : poly.oneValue (depthPoly (profShift twoSlab) 1)
     (depthPoly twoSlab 2) :=
   depthPoly_profShift twoSlab 1
 
-example : poly.oneValue (depthPoly (profScale 3 twoSlab) 2)
+theorem pin251 : poly.oneValue (depthPoly (profScale 3 twoSlab) 2)
     (poly.scaleP (BPair.ofNat 3) (depthPoly twoSlab 2)) := by decide +kernel
 
-example : poly.oneValue (depthPoly (profScale 3 twoSlab) 2)
+theorem pin252 : poly.oneValue (depthPoly (profScale 3 twoSlab) 2)
     (poly.scaleP (BPair.ofNat 3) (depthPoly twoSlab 2)) :=
   depthPoly_profScale twoSlab 3 2
 
-example : poly.oneValue (depthPoly (profNeg twoSlab) 2)
+theorem pin253 : poly.oneValue (depthPoly (profNeg twoSlab) 2)
     (poly.neg (depthPoly twoSlab 2)) := by decide +kernel
 
-example : poly.oneValue (depthPoly (profNeg twoSlab) 2)
+theorem pin254 : poly.oneValue (depthPoly (profNeg twoSlab) 2)
     (poly.neg (depthPoly twoSlab 2)) :=
   depthPoly_profNeg twoSlab 2
 
-example : poly.oneValue (depthPoly (diagProf 1 3 2) 2) (diagPoly 1 3 2 2) := by
+theorem pin255 : poly.oneValue (depthPoly (diagProf 1 3 2) 2) (diagPoly 1 3 2 2) := by
   decide +kernel
 
-example : poly.oneValue (depthPoly (diagProf 1 3 2) 2) (diagPoly 1 3 2 2) :=
+theorem pin256 : poly.oneValue (depthPoly (diagProf 1 3 2) 2) (diagPoly 1 3 2 2) :=
   depthPoly_diagProf 1 3 2 2
 
-example : poly.oneValue (depthPoly (termProf u1 1 3 2) 1)
+theorem pin257 : poly.oneValue (depthPoly (termProf u1 1 3 2) 1)
     (termPoly u1 1 3 2 1) := by decide +kernel
 
-example : poly.oneValue (depthPoly (termProf u1 1 3 2) 1)
+theorem pin258 : poly.oneValue (depthPoly (termProf u1 1 3 2) 1)
     (termPoly u1 1 3 2 1) :=
   depthPoly_termProf u1 1 3 2 1
 
@@ -1783,28 +1779,28 @@ private def boxC : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
    BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1, 1⟩
 
-example : boxRead boxV (BPair.ofNat 1) 1 boxC := by decide +kernel
+theorem pin259 : boxRead boxV (BPair.ofNat 1) 1 boxC := by decide +kernel
 
-example : boxRead boxV (BPair.ofNat 1) 1
+theorem pin260 : boxRead boxV (BPair.ofNat 1) 1
     { boxC with cuts := ([] : List CPair) } := by decide +kernel
 
-example : BPair.unit
+theorem pin261 : BPair.unit
     < poly.evalClear (depthPoly boxV 2) (BPair.ofPos 1) 1 1 := by
   decide +kernel
 
-example : BPair.unit
+theorem pin262 : BPair.unit
     < poly.evalClear (depthPoly boxV 2) (BPair.ofPos 1) 1 boxC.K :=
   boxRead_pos boxV (BPair.ofNat 1) 1 boxC (by decide +kernel) 2 1 1
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 -- the box device at a genuinely rational ceiling, the fourth
-example : boxRead boxV (BPair.ofNat 1) 4 boxC := by decide +kernel
+theorem pin263 : boxRead boxV (BPair.ofNat 1) 4 boxC := by decide +kernel
 
-example : BPair.unit
+theorem pin264 : BPair.unit
     < poly.evalClear (depthPoly boxV 2) (BPair.ofPos 1) 8 1 := by
   decide +kernel
 
-example : BPair.unit
+theorem pin265 : BPair.unit
     < poly.evalClear (depthPoly boxV 2) (BPair.ofPos 1) 8 boxC.K :=
   boxRead_pos boxV (BPair.ofNat 1) 4 boxC (by decide +kernel) 2 1 8
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -1825,13 +1821,13 @@ private def armC : BoxCert :=
    BPair.ofNat 2, BPair.ofNat 1, BPair.ofNat 4,
    BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 5, BPair.ofNat 2, 2⟩
 
-example : boxRead armV (BPair.ofNat 1) 1 armC := by decide +kernel
+theorem pin266 : boxRead armV (BPair.ofNat 1) 1 armC := by decide +kernel
 
-example : BPair.unit
+theorem pin267 : BPair.unit
     < poly.evalClear (depthPoly armV 1) (BPair.ofPos 1) 1 2 := by
   decide +kernel
 
-example : BPair.unit
+theorem pin268 : BPair.unit
     < poly.evalClear (depthPoly armV 1) (BPair.ofPos 1) 1 armC.K :=
   boxRead_pos armV (BPair.ofNat 1) 1 armC (by decide +kernel) 1 1 1
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -1849,20 +1845,20 @@ private def wC : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
    BPair.unit, BPair.unit, BPair.ofNat 1, BPair.unit, 1⟩
 
-example : boxRead wV (BPair.ofNat 1) 1 wC := by decide +kernel
+theorem pin269 : boxRead wV (BPair.ofNat 1) 1 wC := by decide +kernel
 
-example : BPair.unit
+theorem pin270 : BPair.unit
     < poly.evalClear (depthPoly wV 2) (BPair.ofPos 1) 1 wC.K :=
   boxRead_pos wV (BPair.ofNat 1) 1 wC (by decide +kernel) 2 1 1
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 -- the ceiling fold's price of the same key, and the floors' join
 -- at that price refusing the chain
-example : (capS (BPair.ofNat 1) 1 (BPair.ofNat 4) 1
+theorem pin271 : (capS (BPair.ofNat 1) 1 (BPair.ofNat 4) 1
     (wV.1.map (List.drop 1))).oneValue (BPair.ofNat 1000) := by
   decide +kernel
 
-example : ¬ chainRead (poly.add (profBase wV)
+theorem pin272 : ¬ chainRead (poly.add (profBase wV)
     (poly.neg [BPair.ofNat 1000 + BPair.ofNat 1]))
     (BPair.ofNat 8) (BPair.ofNat 2)
     (wC.lo :: wC.cuts ++ [wC.hi]) := by decide +kernel
@@ -1879,45 +1875,45 @@ private def nC : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
    BPair.ofNat 4, BPair.unit, BPair.ofNat 1, BPair.unit, 1⟩
 
-example : boxRead nV (BPair.ofNat 1) 1 nC := by decide +kernel
+theorem pin273 : boxRead nV (BPair.ofNat 1) 1 nC := by decide +kernel
 
-example : BPair.unit
+theorem pin274 : BPair.unit
     < poly.evalClear (depthPoly nV 2) (BPair.ofPos 1) 1 nC.K :=
   boxRead_pos nV (BPair.ofNat 1) 1 nC (by decide +kernel) 2 1 1
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : chainRead [BPair.ofNat 8] (BPair.ofNat 8) (BPair.ofNat 2)
+theorem pin275 : chainRead [BPair.ofNat 8] (BPair.ofNat 8) (BPair.ofNat 2)
     [stage.unitC, ⟨BPair.ofNat 2, 1⟩, ⟨BPair.ofNat 4, 1⟩] := by
   decide +kernel
 
-example : stage.unitC < stage.evalC [BPair.ofNat 8] ⟨BPair.ofNat 3, 1⟩ :=
+theorem pin276 : stage.unitC < stage.evalC [BPair.ofNat 8] ⟨BPair.ofNat 3, 1⟩ :=
   chainRead_all [BPair.ofNat 8] (BPair.ofNat 8) (BPair.ofNat 2)
     [stage.unitC, ⟨BPair.ofNat 2, 1⟩, ⟨BPair.ofNat 4, 1⟩]
     ⟨BPair.ofNat 3, 1⟩ (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
-example : lowRead [BPair.ofNat 10, BPair.ofNat 1] (BPair.ofNat 1) 1 1 := by
+theorem pin277 : lowRead [BPair.ofNat 10, BPair.ofNat 1] (BPair.ofNat 1) 1 1 := by
   decide +kernel
 
-example : BPair.unit < poly.evalClear [BPair.ofNat 10, BPair.ofNat 1]
+theorem pin278 : BPair.unit < poly.evalClear [BPair.ofNat 10, BPair.ofNat 1]
     (BPair.ofPos 1) 1 1 :=
   lowRead_pos [BPair.ofNat 10, BPair.ofNat 1] (BPair.ofNat 1) 1 1
     (by decide +kernel) (by decide +kernel) 1 1 (by decide +kernel)
 
 -- the scale-tail read at a genuinely rational ceiling, the fourth
-example : lowRead [BPair.ofNat 10, BPair.ofNat 1] (BPair.ofNat 1) 4 1 := by
+theorem pin279 : lowRead [BPair.ofNat 10, BPair.ofNat 1] (BPair.ofNat 1) 4 1 := by
   decide +kernel
 
-example : BPair.unit < poly.evalClear [BPair.ofNat 10, BPair.ofNat 1]
+theorem pin280 : BPair.unit < poly.evalClear [BPair.ofNat 10, BPair.ofNat 1]
     (BPair.ofPos 1) 8 1 :=
   lowRead_pos [BPair.ofNat 10, BPair.ofNat 1] (BPair.ofNat 1) 4 1
     (by decide +kernel) (by decide +kernel) 1 8 (by decide +kernel)
 
-example : stepClear ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 9, 1⟩
+theorem pin281 : stepClear ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 9, 1⟩
     (BPair.ofNat 1) 1 := by
   decide +kernel
 
-example : (⟨BPair.ofNat ((2 + 1) * (2 + 1)) * BPair.ofPos 1, 1⟩ : CPair)
+theorem pin282 : (⟨BPair.ofNat ((2 + 1) * (2 + 1)) * BPair.ofPos 1, 1⟩ : CPair)
     ≤ ⟨BPair.ofNat 9, 1⟩ :=
   stepClear_step ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 9, 1⟩ (BPair.ofNat 1) 1
     (by decide +kernel) 2 1 1 (by decide +kernel) (by decide +kernel)
@@ -1967,23 +1963,23 @@ private abbrev slabCapD (V : poly.PPoly × poly.PPoly) (e0n : BPair)
 elaborates exactly where the name's body is the box read's own
 clause, so a respell of either side refuses the build. -/
 
-example (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
+theorem pin283 (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
     (C : BoxCert) (h : boxRead V e0n e0d C) : floorChain V C :=
   h.2.2.2.2.1
 
-example (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
+theorem pin284 (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
     (C : BoxCert) (h : boxRead V e0n e0d C) : linChain V e0n e0d C :=
   h.2.2.2.2.2.2.1
 
-example (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
+theorem pin285 (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
     (C : BoxCert) (h : boxRead V e0n e0d C) : sqChain V e0n e0d C :=
   h.2.2.2.2.2.2.2.1
 
-example (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
+theorem pin286 (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
     (C : BoxCert) (h : boxRead V e0n e0d C) : tailCapB V e0n e0d C :=
   h.2.2.2.2.2.2.2.2.1
 
-example (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
+theorem pin287 (V : poly.PPoly × poly.PPoly) (e0n : BPair) (e0d : Pos)
     (C : BoxCert) (h : boxRead V e0n e0d C) : slabCapD V e0n e0d C :=
   h.2.2.2.2.2.2.2.2.2
 
@@ -2004,11 +2000,11 @@ private def sC : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
    BPair.ofNat 1, BPair.ofNat 100, BPair.ofNat 1, BPair.ofNat 1, 0⟩
 
-example : ¬ boxRead sV (BPair.ofNat 1) 1 sC := by decide +kernel
+theorem pin288 : ¬ boxRead sV (BPair.ofNat 1) 1 sC := by decide +kernel
 
-example : ¬ profShape sV sC.K := by decide +kernel
+theorem pin289 : ¬ profShape sV sC.K := by decide +kernel
 
-example : sC.hi ≤ stage.ofB sC.shB
+theorem pin290 : sC.hi ≤ stage.ofB sC.shB
     ∧ BPair.unit ≤ sC.f2L ∧ BPair.unit ≤ sC.f2D
     ∧ floorChain sV sC
     ∧ BPair.unit ≤ sC.f1L
@@ -2017,12 +2013,12 @@ example : sC.hi ≤ stage.ofB sC.shB
     ∧ tailCapB sV (BPair.ofNat 1) 1 sC
     ∧ slabCapD sV (BPair.ofNat 1) 1 sC := by decide +kernel
 
-example : BPair.ofPos 2 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 2
+theorem pin291 : BPair.ofPos 2 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 2
     ∧ sC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 2, 2⟩ : CPair)
     ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 2, 2⟩ : CPair) ≤ sC.hi := by
   decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin292 : ¬ (BPair.unit
     < poly.evalClear (depthPoly sV 1) (BPair.ofPos 2) 2 sC.K) := by
   decide +kernel
 
@@ -2041,11 +2037,11 @@ private def fC : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 3,
    BPair.ofNat 1, BPair.ofNat 75, BPair.ofNat 1, BPair.ofNat 1, 3⟩
 
-example : ¬ boxRead fV (BPair.ofNat 1) 1 fC := by decide +kernel
+theorem pin293 : ¬ boxRead fV (BPair.ofNat 1) 1 fC := by decide +kernel
 
-example : ¬ (fC.hi ≤ stage.ofB fC.shB) := by decide +kernel
+theorem pin294 : ¬ (fC.hi ≤ stage.ofB fC.shB) := by decide +kernel
 
-example : profShape fV fC.K
+theorem pin295 : profShape fV fC.K
     ∧ BPair.unit ≤ fC.f2L ∧ BPair.unit ≤ fC.f2D
     ∧ floorChain fV fC
     ∧ BPair.unit ≤ fC.f1L
@@ -2054,12 +2050,12 @@ example : profShape fV fC.K
     ∧ tailCapB fV (BPair.ofNat 1) 1 fC
     ∧ slabCapD fV (BPair.ofNat 1) 1 fC := by decide +kernel
 
-example : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
+theorem pin296 : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
     ∧ fC.lo ≤ (⟨BPair.ofNat (2 * 2) * BPair.ofPos 1, 1⟩ : CPair)
     ∧ (⟨BPair.ofNat (2 * 2) * BPair.ofPos 1, 1⟩ : CPair) ≤ fC.hi := by
   decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin297 : ¬ (BPair.unit
     < poly.evalClear (depthPoly fV 2) (BPair.ofPos 1) 1 fC.K) := by
   decide +kernel
 
@@ -2078,11 +2074,11 @@ private def gC : BoxCert :=
    BPair.ofNat 1, BPair.ofNat 1, (BPair.ofNat 81).swap,
    BPair.ofNat 1, 1⟩
 
-example : ¬ boxRead gV (BPair.ofNat 1) 1 gC := by decide +kernel
+theorem pin298 : ¬ boxRead gV (BPair.ofNat 1) 1 gC := by decide +kernel
 
-example : ¬ (BPair.unit ≤ gC.f2L) := by decide +kernel
+theorem pin299 : ¬ (BPair.unit ≤ gC.f2L) := by decide +kernel
 
-example : profShape gV gC.K
+theorem pin300 : profShape gV gC.K
     ∧ gC.hi ≤ stage.ofB gC.shB
     ∧ BPair.unit ≤ gC.f2D
     ∧ floorChain gV gC
@@ -2092,11 +2088,11 @@ example : profShape gV gC.K
     ∧ tailCapB gV (BPair.ofNat 1) 1 gC
     ∧ slabCapD gV (BPair.ofNat 1) 1 gC := by decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin301 : ¬ (BPair.unit
     < poly.evalClear (depthPoly gV 1) (BPair.ofPos 1) 1 gC.K) := by
   decide +kernel
 
-example : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
+theorem pin302 : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
     ∧ gC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair)
     ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair) ≤ gC.hi := by
   decide +kernel
@@ -2114,11 +2110,11 @@ private def gdC : BoxCert :=
    BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1,
    (BPair.ofNat 81).swap, 2⟩
 
-example : ¬ boxRead gdV (BPair.ofNat 1) 1 gdC := by decide +kernel
+theorem pin303 : ¬ boxRead gdV (BPair.ofNat 1) 1 gdC := by decide +kernel
 
-example : ¬ (BPair.unit ≤ gdC.f2D) := by decide +kernel
+theorem pin304 : ¬ (BPair.unit ≤ gdC.f2D) := by decide +kernel
 
-example : profShape gdV gdC.K
+theorem pin305 : profShape gdV gdC.K
     ∧ gdC.hi ≤ stage.ofB gdC.shB
     ∧ BPair.unit ≤ gdC.f2L
     ∧ floorChain gdV gdC
@@ -2128,11 +2124,11 @@ example : profShape gdV gdC.K
     ∧ tailCapB gdV (BPair.ofNat 1) 1 gdC
     ∧ slabCapD gdV (BPair.ofNat 1) 1 gdC := by decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin306 : ¬ (BPair.unit
     < poly.evalClear (depthPoly gdV 1) (BPair.ofPos 1) 1 gdC.K) := by
   decide +kernel
 
-example : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
+theorem pin307 : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
     ∧ gdC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair)
     ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair) ≤ gdC.hi := by
   decide +kernel
@@ -2151,11 +2147,11 @@ private def bC : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
    BPair.ofNat 17, BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1, 1⟩
 
-example : ¬ boxRead bV (BPair.ofNat 1) 1 bC := by decide +kernel
+theorem pin308 : ¬ boxRead bV (BPair.ofNat 1) 1 bC := by decide +kernel
 
-example : ¬ floorChain bV bC := by decide +kernel
+theorem pin309 : ¬ floorChain bV bC := by decide +kernel
 
-example : profShape bV bC.K
+theorem pin310 : profShape bV bC.K
     ∧ bC.hi ≤ stage.ofB bC.shB
     ∧ BPair.unit ≤ bC.f2L ∧ BPair.unit ≤ bC.f2D
     ∧ BPair.unit ≤ bC.f1L
@@ -2164,11 +2160,11 @@ example : profShape bV bC.K
     ∧ tailCapB bV (BPair.ofNat 1) 1 bC
     ∧ slabCapD bV (BPair.ofNat 1) 1 bC := by decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin311 : ¬ (BPair.unit
     < poly.evalClear (depthPoly bV 1) (BPair.ofPos 1) 1 bC.K) := by
   decide +kernel
 
-example : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
+theorem pin312 : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
     ∧ bC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair)
     ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair) ≤ bC.hi := by
   decide +kernel
@@ -2188,11 +2184,11 @@ private def rC : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
    (BPair.ofNat 8).swap, BPair.unit, BPair.ofNat 2, BPair.unit, 1⟩
 
-example : ¬ boxRead rV (BPair.ofNat 1) 1 rC := by decide +kernel
+theorem pin313 : ¬ boxRead rV (BPair.ofNat 1) 1 rC := by decide +kernel
 
-example : ¬ (BPair.unit ≤ rC.f1L) := by decide +kernel
+theorem pin314 : ¬ (BPair.unit ≤ rC.f1L) := by decide +kernel
 
-example : profShape rV rC.K
+theorem pin315 : profShape rV rC.K
     ∧ rC.hi ≤ stage.ofB rC.shB
     ∧ BPair.unit ≤ rC.f2L ∧ BPair.unit ≤ rC.f2D
     ∧ floorChain rV rC
@@ -2201,12 +2197,12 @@ example : profShape rV rC.K
     ∧ tailCapB rV (BPair.ofNat 1) 1 rC
     ∧ slabCapD rV (BPair.ofNat 1) 1 rC := by decide +kernel
 
-example : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 2
+theorem pin316 : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 2
     ∧ rC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 2⟩ : CPair)
     ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 2⟩ : CPair) ≤ rC.hi := by
   decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin317 : ¬ (BPair.unit
     < poly.evalClear (depthPoly rV 1) (BPair.ofPos 1) 2 rC.K) := by
   decide +kernel
 
@@ -2222,11 +2218,11 @@ private def lC : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
    BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1, 1⟩
 
-example : ¬ boxRead lV (BPair.ofNat 1) 1 lC := by decide +kernel
+theorem pin318 : ¬ boxRead lV (BPair.ofNat 1) 1 lC := by decide +kernel
 
-example : ¬ linChain lV (BPair.ofNat 1) 1 lC := by decide +kernel
+theorem pin319 : ¬ linChain lV (BPair.ofNat 1) 1 lC := by decide +kernel
 
-example : profShape lV lC.K
+theorem pin320 : profShape lV lC.K
     ∧ lC.hi ≤ stage.ofB lC.shB
     ∧ BPair.unit ≤ lC.f2L ∧ BPair.unit ≤ lC.f2D
     ∧ floorChain lV lC
@@ -2235,11 +2231,11 @@ example : profShape lV lC.K
     ∧ tailCapB lV (BPair.ofNat 1) 1 lC
     ∧ slabCapD lV (BPair.ofNat 1) 1 lC := by decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin321 : ¬ (BPair.unit
     < poly.evalClear (depthPoly lV 1) (BPair.ofPos 1) 1 lC.K) := by
   decide +kernel
 
-example : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
+theorem pin322 : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
     ∧ lC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair)
     ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair) ≤ lC.hi := by
   decide +kernel
@@ -2257,11 +2253,11 @@ private def uC : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
    BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1, 1⟩
 
-example : ¬ boxRead uV (BPair.ofNat 1) 1 uC := by decide +kernel
+theorem pin323 : ¬ boxRead uV (BPair.ofNat 1) 1 uC := by decide +kernel
 
-example : ¬ sqChain uV (BPair.ofNat 1) 1 uC := by decide +kernel
+theorem pin324 : ¬ sqChain uV (BPair.ofNat 1) 1 uC := by decide +kernel
 
-example : profShape uV uC.K
+theorem pin325 : profShape uV uC.K
     ∧ uC.hi ≤ stage.ofB uC.shB
     ∧ BPair.unit ≤ uC.f2L ∧ BPair.unit ≤ uC.f2D
     ∧ floorChain uV uC
@@ -2270,11 +2266,11 @@ example : profShape uV uC.K
     ∧ tailCapB uV (BPair.ofNat 1) 1 uC
     ∧ slabCapD uV (BPair.ofNat 1) 1 uC := by decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin326 : ¬ (BPair.unit
     < poly.evalClear (depthPoly uV 1) (BPair.ofPos 1) 1 uC.K) := by
   decide +kernel
 
-example : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
+theorem pin327 : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
     ∧ uC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair)
     ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair) ≤ uC.hi := by
   decide +kernel
@@ -2292,11 +2288,11 @@ private def tC : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
    BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1, 2⟩
 
-example : boxRead tV (BPair.ofNat 1) 4 tC := by decide +kernel
+theorem pin328 : boxRead tV (BPair.ofNat 1) 4 tC := by decide +kernel
 
-example : ¬ boxRead tV (BPair.ofNat 1) 1 tC := by decide +kernel
+theorem pin329 : ¬ boxRead tV (BPair.ofNat 1) 1 tC := by decide +kernel
 
-example : ¬ tailCapB tV (BPair.ofNat 1) 1 tC := by decide +kernel
+theorem pin330 : ¬ tailCapB tV (BPair.ofNat 1) 1 tC := by decide +kernel
 
 /-- The deeper u⁰ fold's isolating refusal: a deep u⁰ key past the
 vacant floor's reach drives the collapse below the sum's unit, the
@@ -2311,11 +2307,11 @@ private def tC2 : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
    BPair.ofNat 1, BPair.unit, BPair.ofNat 1, BPair.unit, 2⟩
 
-example : ¬ boxRead tV2 (BPair.ofNat 1) 1 tC2 := by decide +kernel
+theorem pin331 : ¬ boxRead tV2 (BPair.ofNat 1) 1 tC2 := by decide +kernel
 
-example : ¬ tailCapB tV2 (BPair.ofNat 1) 1 tC2 := by decide +kernel
+theorem pin332 : ¬ tailCapB tV2 (BPair.ofNat 1) 1 tC2 := by decide +kernel
 
-example : profShape tV2 tC2.K
+theorem pin333 : profShape tV2 tC2.K
     ∧ tC2.hi ≤ stage.ofB tC2.shB
     ∧ BPair.unit ≤ tC2.f2L ∧ BPair.unit ≤ tC2.f2D
     ∧ floorChain tV2 tC2
@@ -2324,12 +2320,12 @@ example : profShape tV2 tC2.K
     ∧ sqChain tV2 (BPair.ofNat 1) 1 tC2
     ∧ slabCapD tV2 (BPair.ofNat 1) 1 tC2 := by decide +kernel
 
-example : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
+theorem pin334 : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
     ∧ tC2.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair)
     ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair) ≤ tC2.hi := by
   decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin335 : ¬ (BPair.unit
     < poly.evalClear (depthPoly tV2 1) (BPair.ofPos 1) 1 tC2.K) := by
   decide +kernel
 
@@ -2345,11 +2341,11 @@ private def dC : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
    BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1, 2⟩
 
-example : boxRead dV (BPair.ofNat 1) 4 dC := by decide +kernel
+theorem pin336 : boxRead dV (BPair.ofNat 1) 4 dC := by decide +kernel
 
-example : ¬ boxRead dV (BPair.ofNat 1) 1 dC := by decide +kernel
+theorem pin337 : ¬ boxRead dV (BPair.ofNat 1) 1 dC := by decide +kernel
 
-example : ¬ slabCapD dV (BPair.ofNat 1) 1 dC := by decide +kernel
+theorem pin338 : ¬ slabCapD dV (BPair.ofNat 1) 1 dC := by decide +kernel
 
 /-- The deeper u¹ fold's isolating refusal: a deep u¹ key past the
 vacant floor's square drives the collapse below the sum's unit,
@@ -2364,11 +2360,11 @@ private def dC2 : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
    BPair.ofNat 1, BPair.unit, BPair.ofNat 1, BPair.unit, 2⟩
 
-example : ¬ boxRead dV2 (BPair.ofNat 1) 1 dC2 := by decide +kernel
+theorem pin339 : ¬ boxRead dV2 (BPair.ofNat 1) 1 dC2 := by decide +kernel
 
-example : ¬ slabCapD dV2 (BPair.ofNat 1) 1 dC2 := by decide +kernel
+theorem pin340 : ¬ slabCapD dV2 (BPair.ofNat 1) 1 dC2 := by decide +kernel
 
-example : profShape dV2 dC2.K
+theorem pin341 : profShape dV2 dC2.K
     ∧ dC2.hi ≤ stage.ofB dC2.shB
     ∧ BPair.unit ≤ dC2.f2L ∧ BPair.unit ≤ dC2.f2D
     ∧ floorChain dV2 dC2
@@ -2377,12 +2373,12 @@ example : profShape dV2 dC2.K
     ∧ sqChain dV2 (BPair.ofNat 1) 1 dC2
     ∧ tailCapB dV2 (BPair.ofNat 1) 1 dC2 := by decide +kernel
 
-example : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
+theorem pin342 : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
     ∧ dC2.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair)
     ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 1⟩ : CPair) ≤ dC2.hi := by
   decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin343 : ¬ (BPair.unit
     < poly.evalClear (depthPoly dV2 1) (BPair.ofPos 1) 1 dC2.K) := by
   decide +kernel
 
@@ -2401,29 +2397,29 @@ private def pC : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
    BPair.ofNat 41, BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1, 2⟩
 
-example : boxRead pV (BPair.ofNat 1) 1 pC := by decide +kernel
+theorem pin344 : boxRead pV (BPair.ofNat 1) 1 pC := by decide +kernel
 
 -- the box's top: `hhi` refused at the depth three
-example : ¬ ((⟨BPair.ofNat (3 * 3) * BPair.ofPos 1, 1⟩ : CPair)
+theorem pin345 : ¬ ((⟨BPair.ofNat (3 * 3) * BPair.ofPos 1, 1⟩ : CPair)
     ≤ pC.hi) := by decide +kernel
 
-example : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
+theorem pin346 : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
     ∧ pC.lo ≤ (⟨BPair.ofNat (3 * 3) * BPair.ofPos 1, 1⟩ : CPair) := by
   decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin347 : ¬ (BPair.unit
     < poly.evalClear (depthPoly pV 3) (BPair.ofPos 1) 1 pC.K) := by
   decide +kernel
 
 -- the ceiling: `he` refused at the scale four
-example : ¬ (BPair.ofPos 4 * BPair.ofPos 1
+theorem pin348 : ¬ (BPair.ofPos 4 * BPair.ofPos 1
     ≤ BPair.ofNat 1 * BPair.ofPos 1) := by decide +kernel
 
-example : pC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 4, 1⟩ : CPair)
+theorem pin349 : pC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 4, 1⟩ : CPair)
     ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 4, 1⟩ : CPair) ≤ pC.hi := by
   decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin350 : ¬ (BPair.unit
     < poly.evalClear (depthPoly pV 1) (BPair.ofPos 4) 1 pC.K) := by
   decide +kernel
 
@@ -2439,83 +2435,83 @@ private def oC : BoxCert :=
    BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
    BPair.ofNat 1, BPair.unit, BPair.ofNat 1, BPair.unit, 1⟩
 
-example : boxRead oV (BPair.ofNat 1) 1 oC := by decide +kernel
+theorem pin351 : boxRead oV (BPair.ofNat 1) 1 oC := by decide +kernel
 
-example : ¬ (oC.lo
+theorem pin352 : ¬ (oC.lo
     ≤ (⟨BPair.ofNat (0 * 0) * BPair.ofPos 1, 1⟩ : CPair)) := by
   decide +kernel
 
-example : (⟨BPair.ofNat (0 * 0) * BPair.ofPos 1, 1⟩ : CPair) ≤ oC.hi
+theorem pin353 : (⟨BPair.ofNat (0 * 0) * BPair.ofPos 1, 1⟩ : CPair) ≤ oC.hi
     ∧ BPair.ofPos 1 * BPair.ofPos 1
       ≤ BPair.ofNat 1 * BPair.ofPos 1 := by decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin354 : ¬ (BPair.unit
     < poly.evalClear (depthPoly oV 0) (BPair.ofPos 1) 1 oC.K) := by
   decide +kernel
 
 -- one piece of a chained cover refused, the surviving piece decided
-example : ¬ chainRead [BPair.ofNat 8] (BPair.ofNat 8) (BPair.ofNat 2)
+theorem pin355 : ¬ chainRead [BPair.ofNat 8] (BPair.ofNat 8) (BPair.ofNat 2)
     [stage.unitC, ⟨BPair.ofNat 4, 1⟩, ⟨BPair.ofNat 2, 1⟩] := by
   decide +kernel
 
-example : chainRead [BPair.ofNat 8] (BPair.ofNat 8) (BPair.ofNat 2)
+theorem pin356 : chainRead [BPair.ofNat 8] (BPair.ofNat 8) (BPair.ofNat 2)
     [stage.unitC, ⟨BPair.ofNat 4, 1⟩] := by decide +kernel
 
 -- the step clearance's two conjuncts
-example : ¬ stepClear stage.unitC stage.unitC (BPair.ofNat 1) 1 := by
+theorem pin357 : ¬ stepClear stage.unitC stage.unitC (BPair.ofNat 1) 1 := by
   decide +kernel
 
-example : stage.ofB (BPair.ofNat 4) * (stage.unitC * stage.ofB (BPair.ofNat 1))
+theorem pin358 : stage.ofB (BPair.ofNat 4) * (stage.unitC * stage.ofB (BPair.ofNat 1))
     ≤ (stage.unitC + CPair.swap stage.unitC
         + CPair.swap (stage.ofB (BPair.ofNat 1)))
       * (stage.unitC + CPair.swap stage.unitC
         + CPair.swap (stage.ofB (BPair.ofNat 1))) := by decide +kernel
 
-example : ¬ stepClear ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 6, 1⟩
+theorem pin359 : ¬ stepClear ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 6, 1⟩
     (BPair.ofNat 1) 1 := by
   decide +kernel
 
-example : (⟨BPair.ofNat 4, 1⟩ : CPair) + stage.ofB (BPair.ofNat 1)
+theorem pin360 : (⟨BPair.ofNat 4, 1⟩ : CPair) + stage.ofB (BPair.ofNat 1)
     ≤ ⟨BPair.ofNat 6, 1⟩ := by decide +kernel
 
-example : ¬ ((⟨BPair.ofNat ((2 + 1) * (2 + 1)) * BPair.ofPos 1, 1⟩ : CPair)
+theorem pin361 : ¬ ((⟨BPair.ofNat ((2 + 1) * (2 + 1)) * BPair.ofPos 1, 1⟩ : CPair)
     ≤ ⟨BPair.ofNat 6, 1⟩) := by decide +kernel
 
 -- the scale-tail read's two conjuncts
-example : ¬ lowRead [BPair.unit, BPair.ofNat 1]
+theorem pin362 : ¬ lowRead [BPair.unit, BPair.ofNat 1]
     (BPair.ofNat 1).swap 1 1 := by
   decide +kernel
 
-example : (BPair.ofNat 1).swap
+theorem pin363 : (BPair.ofNat 1).swap
     * capF (BPair.ofNat 1).swap 1 1
         (List.drop 1 [BPair.unit, BPair.ofNat 1])
     < ground.getAt BPair.unit [BPair.unit, BPair.ofNat 1] 0
       * BPair.ofPos (Pos.powC 1 (1 + 1)) := by
   decide +kernel
 
-example : ¬ lowRead [BPair.ofNat 1, (BPair.ofNat 4).swap]
+theorem pin364 : ¬ lowRead [BPair.ofNat 1, (BPair.ofNat 4).swap]
     (BPair.ofNat 1) 1 1 := by
   decide +kernel
 
 -- the cleared conjunct isolated at the rational ceiling: the tail's
 -- price passes at the unit ceiling and fails at the ceiling three
 -- halves
-example : lowRead [BPair.ofNat 3, BPair.ofNat 2] (BPair.ofNat 1) 1 1 := by
+theorem pin365 : lowRead [BPair.ofNat 3, BPair.ofNat 2] (BPair.ofNat 1) 1 1 := by
   decide +kernel
 
-example : ¬ lowRead [BPair.ofNat 3, BPair.ofNat 2]
+theorem pin366 : ¬ lowRead [BPair.ofNat 3, BPair.ofNat 2]
     (BPair.ofNat 3) 2 1 := by
   decide +kernel
 
-example : BPair.unit
+theorem pin367 : BPair.unit
     < ground.getAt BPair.unit [BPair.ofNat 3, BPair.ofNat 2] 0 := by
   decide +kernel
 
-example : BPair.unit
+theorem pin368 : BPair.unit
     < ground.getAt BPair.unit [BPair.ofNat 1, (BPair.ofNat 4).swap] 0 := by
   decide +kernel
 
-example : ¬ (BPair.unit < poly.evalClear
+theorem pin369 : ¬ (BPair.unit < poly.evalClear
     [BPair.ofNat 1, (BPair.ofNat 4).swap] (BPair.ofPos 1) 1 1) := by
   decide +kernel
 
@@ -2531,20 +2527,20 @@ against the other line's head at one shared line pair, and the
 scale pairs' positive members are the pair carrier's own frame
 (`def:ground`'s occupied data). -/
 
-example : inertia.revAt (inertia.mkSplit 5 wCap45) = 3 := by decide +kernel
+theorem pin370 : inertia.revAt (inertia.mkSplit 5 wCap45) = 3 := by decide +kernel
 
-example : inertia.revAt (inertia.mkSplit 5 wUp45) = 1 := by decide +kernel
+theorem pin371 : inertia.revAt (inertia.mkSplit 5 wUp45) = 1 := by decide +kernel
 
-example : inertia.revAt (inertia.mkSplit 5 wLo45) = 1 := by decide +kernel
+theorem pin372 : inertia.revAt (inertia.mkSplit 5 wLo45) = 1 := by decide +kernel
 
-example : inertia.revAt (inertia.mkSplit 5 wUp45)
+theorem pin373 : inertia.revAt (inertia.mkSplit 5 wUp45)
     ≤ inertia.revAt (inertia.mkSplit 5 wCap45) :=
   cutMono 2 (qLowNum 1 3 2 4) (qLowDen 1 3 2 4) 1 3 5 2 1 8 7
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (inertia.mkSplit 5 wCap45) (by decide +kernel)
     (inertia.mkSplit 5 wUp45) (by decide +kernel)
 
-example : inertia.revAt (inertia.mkSplit 5 wUp45)
+theorem pin374 : inertia.revAt (inertia.mkSplit 5 wUp45)
     ≤ inertia.revAt (inertia.mkSplit 5 wLo45) :=
   cutMono 2 (qLowNum 1 3 2 4) (qLowDen 1 3 2 4) 1 3 5 7 6 8 7
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -2553,17 +2549,17 @@ example : inertia.revAt (inertia.mkSplit 5 wUp45)
 
 -- the cross-multiplied order refused at the exchanged lines, the
 -- conclusion failing with it
-example : ¬ ((2 : Nat) * 7 ≤ 8 * 1) := by decide +kernel
+theorem pin375 : ¬ ((2 : Nat) * 7 ≤ 8 * 1) := by decide +kernel
 
-example : ¬ (inertia.revAt (inertia.mkSplit 5 wCap45)
+theorem pin376 : ¬ (inertia.revAt (inertia.mkSplit 5 wCap45)
     ≤ inertia.revAt (inertia.mkSplit 5 wUp45)) := by decide +kernel
 
 -- the two certificate hypotheses refused at splits forged against
 -- the other line's head, the line pair shared so the order holds
-example : ¬ inertia.splitRead wCap45 (inertia.mkSplit 5 wUp45) := by
+theorem pin377 : ¬ inertia.splitRead wCap45 (inertia.mkSplit 5 wUp45) := by
   decide +kernel
 
-example : ¬ inertia.splitRead wUp45 (inertia.mkSplit 5 wCap45) := by
+theorem pin378 : ¬ inertia.splitRead wUp45 (inertia.mkSplit 5 wCap45) := by
   decide +kernel
 
 /-! The scale strip and its collapse bridge.  The vacancy fixture
@@ -2576,15 +2572,15 @@ it, the u⁰-slab's own vacancy standing. -/
 private def vacV : poly.PPoly × poly.PPoly :=
   ([[BPair.unit, BPair.ofNat 5]], [[BPair.unit, BPair.ofNat 3]])
 
-example : profVac vacV := by decide +kernel
+theorem pin379 : profVac vacV := by decide +kernel
 
-example : profStrip vacV = ([[BPair.ofNat 5]], [[BPair.ofNat 3]]) := by
+theorem pin380 : profStrip vacV = ([[BPair.ofNat 5]], [[BPair.ofNat 3]]) := by
   decide +kernel
 
-example : poly.oneValue (depthPoly vacV 2)
+theorem pin381 : poly.oneValue (depthPoly vacV 2)
     (poly.shiftUp 1 (depthPoly (profStrip vacV) 2)) := by decide +kernel
 
-example : poly.oneValue (depthPoly vacV 2)
+theorem pin382 : poly.oneValue (depthPoly vacV 2)
     (poly.shiftUp 1 (depthPoly (profStrip vacV) 2)) :=
   depthPoly_profStrip vacV 2 (by decide +kernel)
 
@@ -2593,16 +2589,16 @@ origin with the scale key five, the u-slab's origin three. -/
 private def gradV : poly.PPoly × poly.PPoly :=
   ([[BPair.unit, BPair.ofNat 5]], [[BPair.ofNat 3]])
 
-example : ¬ profVac gradV := by decide +kernel
+theorem pin383 : ¬ profVac gradV := by decide +kernel
 
-example : poly.unitTail (profBase gradV) := by decide +kernel
+theorem pin384 : poly.unitTail (profBase gradV) := by decide +kernel
 
-example : ¬ poly.oneValue (depthPoly gradV 2)
+theorem pin385 : ¬ poly.oneValue (depthPoly gradV 2)
     (poly.shiftUp 1 (depthPoly (profStrip gradV) 2)) := by decide +kernel
 
-example : profBaseU gradV = [BPair.ofNat 3] := by decide +kernel
+theorem pin386 : profBaseU gradV = [BPair.ofNat 3] := by decide +kernel
 
-example : profLin gradV = [BPair.ofNat 5] := by decide +kernel
+theorem pin387 : profLin gradV = [BPair.ofNat 5] := by decide +kernel
 
 /-- The fixture certificate: the box `[0 : 4]` at one piece, the
 stated cap two — the cap's square scale four reaching the box's
@@ -2610,23 +2606,23 @@ top — and the shape clearing one. -/
 private def gradC : GradCert :=
   ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [], [2], 0, 1⟩
 
-example : gradRead gradV (BPair.ofNat 1) 1 gradC := by decide +kernel
+theorem pin388 : gradRead gradV (BPair.ofNat 1) 1 gradC := by decide +kernel
 
-example : stage.unitC ≤ pieceB gradV stage.unitC ⟨BPair.ofNat 4, 1⟩
+theorem pin389 : stage.unitC ≤ pieceB gradV stage.unitC ⟨BPair.ofNat 4, 1⟩
     ∧ stage.unitC < pieceL gradV (BPair.ofNat 1) 1 0 2
         stage.unitC ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 4, 1⟩ := by decide +kernel
 
-example : BPair.unit
+theorem pin390 : BPair.unit
     < poly.evalClear (depthPoly gradV 2) (BPair.ofPos 1) 1 gradC.K :=
   gradRead_pos gradV (BPair.ofNat 1) 1 gradC (by decide +kernel) 2 1 1
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : BPair.unit
+theorem pin391 : BPair.unit
     < poly.evalClear (depthPoly gradV 1) (BPair.ofPos 1) 1 gradC.K :=
   gradRead_pos gradV (BPair.ofNat 1) 1 gradC (by decide +kernel) 1 1 1
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : BPair.unit
+theorem pin392 : BPair.unit
     < poly.evalClear (depthPoly gradV 2) (BPair.ofPos 1) 1 1 := by
   decide +kernel
 
@@ -2637,14 +2633,14 @@ top. -/
 private def gradCR : GradCert :=
   ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [], [2], 0, 1⟩
 
-example : gradRead gradV (BPair.ofNat 1) 4 gradCR := by decide +kernel
+theorem pin393 : gradRead gradV (BPair.ofNat 1) 4 gradCR := by decide +kernel
 
-example : BPair.unit
+theorem pin394 : BPair.unit
     < poly.evalClear (depthPoly gradV 2) (BPair.ofPos 1) 8 gradCR.K :=
   gradRead_pos gradV (BPair.ofNat 1) 4 gradCR (by decide +kernel) 2 1 8
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : BPair.unit
+theorem pin395 : BPair.unit
     < poly.evalClear (depthPoly gradV 2) (BPair.ofPos 1) 8 1 := by
   decide +kernel
 
@@ -2661,13 +2657,13 @@ private def wDg4 : elim.Mat := wellMat 2 16 3 3 4 4
 
 private def wDg2 : elim.Mat := wellMat 2 16 3 3 4 2
 
-example : wellWalk 2 16 3 3 4 1 = BPair.ofNat 36 := by decide +kernel
+theorem pin396 : wellWalk 2 16 3 3 4 1 = BPair.ofNat 36 := by decide +kernel
 
-example : (wellWalk 2 16 3 3 4 2).oneValue BPair.unit := by decide +kernel
+theorem pin397 : (wellWalk 2 16 3 3 4 2).oneValue BPair.unit := by decide +kernel
 
-example : wellWalk 2 16 3 3 4 3 < BPair.unit := by decide +kernel
+theorem pin398 : wellWalk 2 16 3 3 4 3 < BPair.unit := by decide +kernel
 
-example : wellWalk 2 16 3 3 4 4 < BPair.unit := by decide +kernel
+theorem pin399 : wellWalk 2 16 3 3 4 4 < BPair.unit := by decide +kernel
 
 private theorem dgLo : ∀ k, k < 1 → BPair.unit < wellWalk 2 16 3 3 4 (k + 1) := by
   decide +kernel
@@ -2681,51 +2677,51 @@ private theorem dgHi : ∀ k, 1 + 1 ≤ k → k < 4 →
   exact h (k - 2)
     (Nat.lt_succ_of_le (Nat.sub_le_sub_right (Nat.le_of_lt_succ hk2) 2))
 
-example : inertia.splitRead wDg4 (inertia.mkSplit 4 wDg4) := by decide +kernel
+theorem pin400 : inertia.splitRead wDg4 (inertia.mkSplit 4 wDg4) := by decide +kernel
 
-example : inertia.revAt (inertia.mkSplit 4 wDg4) = 1 :=
+theorem pin401 : inertia.revAt (inertia.mkSplit 4 wDg4) = 1 :=
   certRevOneMixed 2 16 3 3 4 4 1 (by decide +kernel) dgLo dgHi
     (inertia.mkSplit 4 wDg4) (by decide +kernel)
 
-example : inertia.revAt (inertia.mkSplit 4 wDg4) = 1 := by decide +kernel
+theorem pin402 : inertia.revAt (inertia.mkSplit 4 wDg4) = 1 := by decide +kernel
 
 private theorem dgKernLo : ∀ k, k + 1 < 2 →
     BPair.unit < wellWalk 2 16 3 3 4 (k + 1) := by decide +kernel
 
-example : inertia.splitRead wDg2 (inertia.mkSplit 2 wDg2) := by decide +kernel
+theorem pin403 : inertia.splitRead wDg2 (inertia.mkSplit 2 wDg2) := by decide +kernel
 
-example : inertia.revAt (inertia.mkSplit 2 wDg2) = 0 :=
+theorem pin404 : inertia.revAt (inertia.mkSplit 2 wDg2) = 0 :=
   certRevZeroKern 2 16 3 3 4 2 dgKernLo (by decide +kernel)
     (inertia.mkSplit 2 wDg2) (by decide +kernel)
 
-example : inertia.revAt (inertia.mkSplit 2 wDg2) = 0 := by decide +kernel
+theorem pin405 : inertia.revAt (inertia.mkSplit 2 wDg2) = 0 := by decide +kernel
 
 -- the degeneracy binder refused at the crossing family's order
 -- three: the shallow family holds with the last walk off equal
 -- members, and the count is one, not vacant
-example : ¬ ((wellWalk 2 (7 * qLowNum 1 10 2 8) (6 * qLowDen 1 10 2 8)
+theorem pin406 : ¬ ((wellWalk 2 (7 * qLowNum 1 10 2 8) (6 * qLowDen 1 10 2 8)
     1 10 3).oneValue BPair.unit) := by decide +kernel
 
-example : ∀ k, k + 1 < 3 →
+theorem pin407 : ∀ k, k + 1 < 3 →
     BPair.unit < wellWalk 2 (7 * qLowNum 1 10 2 8)
       (6 * qLowDen 1 10 2 8) 1 10 (k + 1) := by decide +kernel
 
-example : inertia.splitRead
+theorem pin408 : inertia.splitRead
     (wellMat 2 (7 * qLowNum 1 10 2 8) (6 * qLowDen 1 10 2 8) 1 10 3)
     (inertia.mkSplit 3
       (wellMat 2 (7 * qLowNum 1 10 2 8)
         (6 * qLowDen 1 10 2 8) 1 10 3)) := by decide +kernel
 
-example : ¬ (inertia.revAt (inertia.mkSplit 3
+theorem pin409 : ¬ (inertia.revAt (inertia.mkSplit 3
     (wellMat 2 (7 * qLowNum 1 10 2 8) (6 * qLowDen 1 10 2 8) 1 10 3))
     = 0) := by decide +kernel
 
 -- the certificate hypothesis refused at a split forged against the
 -- boundary-degenerate head, its count one against the vacant read
-example : ¬ inertia.splitRead (wellMat 2 16 3 3 4 2)
+theorem pin410 : ¬ inertia.splitRead (wellMat 2 16 3 3 4 2)
     (inertia.mkSplit 2 wUp2) := by decide +kernel
 
-example : ¬ (inertia.revAt (inertia.mkSplit 2 wUp2) = 0) := by
+theorem pin411 : ¬ (inertia.revAt (inertia.mkSplit 2 wUp2) = 0) := by
   decide +kernel
 
 /-! The spot's own binder is isolated at the boundary: at the order
@@ -2740,40 +2736,40 @@ family holds.  The deep family's own refusal reads at the
 crossing-free walk: the positive line holds every further binder at
 the spot nought with the count vacant, not one. -/
 
-example : ¬ (1 + 2 ≤ 2) := by decide +kernel
+theorem pin412 : ¬ (1 + 2 ≤ 2) := by decide +kernel
 
-example : ¬ (∀ k, 0 + 1 ≤ k → k < 5 →
+theorem pin413 : ¬ (∀ k, 0 + 1 ≤ k → k < 5 →
     wellWalk 2 (qLowNum 1 10 2 8) (6 * qLowDen 1 10 2 8) 1 10 (k + 1)
       < BPair.unit) := fun h =>
   absurd (h 1 (by decide +kernel) (by decide +kernel)) (by decide +kernel)
 
-example : (0 : Nat) + 2 ≤ 5 := by decide +kernel
+theorem pin414 : (0 : Nat) + 2 ≤ 5 := by decide +kernel
 
-example : (∀ k, k < 1 → BPair.unit < wellWalk 2 16 3 3 4 (k + 1))
+theorem pin415 : (∀ k, k < 1 → BPair.unit < wellWalk 2 16 3 3 4 (k + 1))
     ∧ (wellWalk 2 16 3 3 4 (1 + 1)).oneValue BPair.unit
     ∧ (∀ k, 1 + 1 ≤ k → k < 2 →
         wellWalk 2 16 3 3 4 (k + 1) < BPair.unit) :=
   ⟨by decide +kernel, by decide +kernel,
    fun k hk1 hk2 => absurd (Nat.lt_of_lt_of_le hk2 hk1) (Nat.lt_irrefl k)⟩
 
-example : ¬ (inertia.revAt (inertia.mkSplit 2 wDg2) = 1) := by decide +kernel
+theorem pin416 : ¬ (inertia.revAt (inertia.mkSplit 2 wDg2) = 1) := by decide +kernel
 
 /-! The shallow family's isolating refusal: a head whose last read
 is equal members with the first minor on the lower side — the
 degeneracy and the certificate hold, the shallow family alone is
 refused, and the count is one rather than vacant. -/
 
-example : (wellWalk 3 30 3 2 4 2).oneValue BPair.unit := by decide +kernel
+theorem pin417 : (wellWalk 3 30 3 2 4 2).oneValue BPair.unit := by decide +kernel
 
-example : ¬ (∀ k, k + 1 < 2 →
+theorem pin418 : ¬ (∀ k, k + 1 < 2 →
     BPair.unit < wellWalk 3 30 3 2 4 (k + 1)) := by
   intro h
   exact absurd (h 0 (by decide +kernel)) (by decide +kernel)
 
-example : inertia.splitRead (wellMat 3 30 3 2 4 2)
+theorem pin419 : inertia.splitRead (wellMat 3 30 3 2 4 2)
     (inertia.mkSplit 2 (wellMat 3 30 3 2 4 2)) := by decide +kernel
 
-example : ¬ (inertia.revAt (inertia.mkSplit 2 (wellMat 3 30 3 2 4 2))
+theorem pin420 : ¬ (inertia.revAt (inertia.mkSplit 2 (wellMat 3 30 3 2 4 2))
     = 0) := by decide +kernel
 
 /-! The graded device's committed refusals, each isolating one
@@ -2797,21 +2793,21 @@ private def gsV : poly.PPoly × poly.PPoly :=
 private def gsC : GradCert :=
   ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [], [2], 0, 1⟩
 
-example : ¬ gradRead gsV (BPair.ofNat 1) 1 gsC := by decide +kernel
+theorem pin421 : ¬ gradRead gsV (BPair.ofNat 1) 1 gsC := by decide +kernel
 
-example : ¬ profShape gsV gsC.K := by decide +kernel
+theorem pin422 : ¬ profShape gsV gsC.K := by decide +kernel
 
-example : poly.unitTail (profBase gsV)
+theorem pin423 : poly.unitTail (profBase gsV)
     ∧ chainK gsV (BPair.ofNat 1) 1 gsC.hi gsC.hk
         (gsC.lo :: gsC.cuts ++ [gsC.hi]) gsC.mcaps := by
   decide +kernel
 
-example : BPair.ofPos 2 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 2
+theorem pin424 : BPair.ofPos 2 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 2
     ∧ gsC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 2, 2⟩ : CPair)
     ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 2, 2⟩ : CPair) ≤ gsC.hi := by
   decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin425 : ¬ (BPair.unit
     < poly.evalClear (depthPoly gsV 1) (BPair.ofPos 2) 2 gsC.K) := by
   decide +kernel
 
@@ -2819,23 +2815,23 @@ example : ¬ (BPair.unit
 private def occV : poly.PPoly × poly.PPoly :=
   ([[BPair.ofNat 7, BPair.ofNat 5]], [[BPair.ofNat 3]])
 
-example : ¬ gradRead occV (BPair.ofNat 1) 1 gradC := by decide +kernel
+theorem pin426 : ¬ gradRead occV (BPair.ofNat 1) 1 gradC := by decide +kernel
 
-example : ¬ poly.unitTail (profBase occV) := by decide +kernel
+theorem pin427 : ¬ poly.unitTail (profBase occV) := by decide +kernel
 
-example : profShape occV gradC.K
+theorem pin428 : profShape occV gradC.K
     ∧ chainK occV (BPair.ofNat 1) 1 gradC.hi gradC.hk
         (gradC.lo :: gradC.cuts ++ [gradC.hi]) gradC.mcaps := by
   decide +kernel
 
 -- the stated cap's square scale at a forged cap under the top
-example : ¬ gradRead gradV (BPair.ofNat 1) 1
+theorem pin429 : ¬ gradRead gradV (BPair.ofNat 1) 1
     { gradC with mcaps := [1] } := by decide +kernel
 
-example : ¬ ((⟨BPair.ofNat 4, 1⟩ : CPair)
+theorem pin430 : ¬ ((⟨BPair.ofNat 4, 1⟩ : CPair)
     ≤ ⟨BPair.ofNat (1 * 1) * BPair.ofNat 1, 1⟩) := by decide +kernel
 
-example : stage.unitC ≤ pieceB gradV stage.unitC ⟨BPair.ofNat 4, 1⟩
+theorem pin431 : stage.unitC ≤ pieceB gradV stage.unitC ⟨BPair.ofNat 4, 1⟩
     ∧ stage.unitC < pieceL gradV (BPair.ofNat 1) 1 0 1
         stage.unitC ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 4, 1⟩ := by decide +kernel
 
@@ -2850,18 +2846,18 @@ private def uLbV : poly.PPoly × poly.PPoly :=
 private def uLbC : GradCert :=
   ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [], [0], 0, 2⟩
 
-example : ¬ gradRead uLbV (BPair.ofNat 1) 1 uLbC := by decide +kernel
+theorem pin432 : ¬ gradRead uLbV (BPair.ofNat 1) 1 uLbC := by decide +kernel
 
-example : ¬ ((⟨BPair.ofNat 4, 1⟩ : CPair)
+theorem pin433 : ¬ ((⟨BPair.ofNat 4, 1⟩ : CPair)
     ≤ ⟨BPair.ofNat (0 * 0) * BPair.ofNat 1, 1⟩) := by decide +kernel
 
-example : profShape uLbV uLbC.K
+theorem pin434 : profShape uLbV uLbC.K
     ∧ poly.unitTail (profBase uLbV)
     ∧ stage.unitC ≤ pieceB uLbV stage.unitC ⟨BPair.ofNat 4, 1⟩
     ∧ stage.unitC < pieceL uLbV (BPair.ofNat 1) 1 0 0
         stage.unitC ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 4, 1⟩ := by decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin435 : ¬ (BPair.unit
     < poly.evalClear (depthPoly uLbV 1) (BPair.ofPos 1) 1 uLbC.K) := by
   decide +kernel
 
@@ -2875,42 +2871,42 @@ private def bflV : poly.PPoly × poly.PPoly :=
 private def bflC : GradCert :=
   ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [], [2], 0, 1⟩
 
-example : ¬ gradRead bflV (BPair.ofNat 1) 1 bflC := by decide +kernel
+theorem pin436 : ¬ gradRead bflV (BPair.ofNat 1) 1 bflC := by decide +kernel
 
-example : ¬ (stage.unitC
+theorem pin437 : ¬ (stage.unitC
     ≤ pieceB bflV stage.unitC ⟨BPair.ofNat 4, 1⟩) := by decide +kernel
 
-example : profShape bflV bflC.K
+theorem pin438 : profShape bflV bflC.K
     ∧ poly.unitTail (profBase bflV) := by decide +kernel
 
-example : stage.unitC < (⟨BPair.ofNat 4, 1⟩ : CPair)
+theorem pin439 : stage.unitC < (⟨BPair.ofNat 4, 1⟩ : CPair)
     ∧ (⟨BPair.ofNat 4, 1⟩ : CPair)
       ≤ ⟨BPair.ofNat (2 * 2) * BPair.ofNat 1, 1⟩ := by decide +kernel
 
-example : stage.unitC
+theorem pin440 : stage.unitC
     < pieceL bflV (BPair.ofNat 1) 1 0 2 stage.unitC
         ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 4, 1⟩ := by decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin441 : ¬ (BPair.unit
     < poly.evalClear (depthPoly bflV 2) (BPair.ofPos 1) 1 bflC.K) := by
   decide +kernel
 
 -- the caps' one-per-piece shape: the withdrawn and the excess list
-example : ¬ gradRead gradV (BPair.ofNat 1) 1
+theorem pin442 : ¬ gradRead gradV (BPair.ofNat 1) 1
     { gradC with mcaps := [] } := by decide +kernel
 
-example : ¬ gradRead gradV (BPair.ofNat 1) 1
+theorem pin443 : ¬ gradRead gradV (BPair.ofNat 1) 1
     { gradC with mcaps := [2, 2] } := by decide +kernel
 
 -- the chain's stalled piece inside the composite cover
-example : ¬ gradRead gradV (BPair.ofNat 1) 1
+theorem pin444 : ¬ gradRead gradV (BPair.ofNat 1) 1
     { gradC with cuts := [⟨BPair.ofNat 4, 1⟩], mcaps := [2, 2] } := by
   decide +kernel
 
-example : ¬ pieceKeep gradV (BPair.ofNat 1) 1 ⟨BPair.ofNat 4, 1⟩ 0 2
+theorem pin445 : ¬ pieceKeep gradV (BPair.ofNat 1) 1 ⟨BPair.ofNat 4, 1⟩ 0 2
     ⟨BPair.ofNat 4, 1⟩ ⟨BPair.ofNat 4, 1⟩ := by decide +kernel
 
-example : pieceKeep gradV (BPair.ofNat 1) 1 ⟨BPair.ofNat 4, 1⟩ 0 2
+theorem pin446 : pieceKeep gradV (BPair.ofNat 1) 1 ⟨BPair.ofNat 4, 1⟩ 0 2
     stage.unitC ⟨BPair.ofNat 4, 1⟩ := by decide +kernel
 
 -- the u-slab's deep tail at the stated cap's multiple: the price
@@ -2919,41 +2915,41 @@ example : pieceKeep gradV (BPair.ofNat 1) 1 ⟨BPair.ofNat 4, 1⟩ 0 2
 private def capUV : poly.PPoly × poly.PPoly :=
   ([[BPair.unit, BPair.ofNat 5]], [[BPair.ofNat 3, BPair.ofNat 9]])
 
-example : gradRead capUV (BPair.ofNat 1) 4
+theorem pin447 : gradRead capUV (BPair.ofNat 1) 4
     ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [], [2], 9, 2⟩ := by decide +kernel
 
-example : ¬ gradRead capUV (BPair.ofNat 1) 1
+theorem pin448 : ¬ gradRead capUV (BPair.ofNat 1) 1
     ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [], [1], 9, 2⟩ := by decide +kernel
 
-example : ¬ (stage.unitC < pieceL capUV (BPair.ofNat 1) 1 9 1
+theorem pin449 : ¬ (stage.unitC < pieceL capUV (BPair.ofNat 1) 1 9 1
     stage.unitC ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 1, 1⟩) := by decide +kernel
 
-example : profShape capUV 2
+theorem pin450 : profShape capUV 2
     ∧ poly.unitTail (profBase capUV)
     ∧ (⟨BPair.ofNat 1, 1⟩ : CPair)
         ≤ ⟨BPair.ofNat (1 * 1) * BPair.ofNat 1, 1⟩ := by decide +kernel
 
 -- the ceiling's first member load-bearing at the same tail
-example : ¬ gradRead capUV (BPair.ofNat 4) 4
+theorem pin451 : ¬ gradRead capUV (BPair.ofNat 4) 4
     ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [], [2], 9, 2⟩ := by decide +kernel
 
-example : ¬ (stage.unitC < pieceL capUV (BPair.ofNat 4) 4 9 2
+theorem pin452 : ¬ (stage.unitC < pieceL capUV (BPair.ofNat 4) 4 9 2
     stage.unitC ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 1, 1⟩) := by decide +kernel
 
 -- the u⁰-slab's deep tail at the ceiling's powers
 private def capBV : poly.PPoly × poly.PPoly :=
   ([[BPair.unit, BPair.ofNat 5, BPair.ofNat 9]], [[BPair.ofNat 3]])
 
-example : gradRead capBV (BPair.ofNat 1) 4
+theorem pin453 : gradRead capBV (BPair.ofNat 1) 4
     ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [], [2], 9, 2⟩ := by decide +kernel
 
-example : ¬ gradRead capBV (BPair.ofNat 1) 1
+theorem pin454 : ¬ gradRead capBV (BPair.ofNat 1) 1
     ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [], [1], 9, 2⟩ := by decide +kernel
 
-example : ¬ (stage.unitC < pieceL capBV (BPair.ofNat 1) 1 9 1
+theorem pin455 : ¬ (stage.unitC < pieceL capBV (BPair.ofNat 1) 1 9 1
     stage.unitC ⟨BPair.ofNat 1, 1⟩ ⟨BPair.ofNat 1, 1⟩) := by decide +kernel
 
-example : profShape capBV 2
+theorem pin456 : profShape capBV 2
     ∧ poly.unitTail (profBase capBV) := by decide +kernel
 
 -- the tail's handover key is load-bearing: at a sloped u-column
@@ -2963,19 +2959,19 @@ private def hybV : poly.PPoly × poly.PPoly :=
   ([[BPair.unit, BPair.ofNat 13]],
    [[BPair.ofNat 3, BPair.ofNat 8], [BPair.unit, (BPair.ofNat 8).swap]])
 
-example : gradRead hybV (BPair.ofNat 1) 1
+theorem pin457 : gradRead hybV (BPair.ofNat 1) 1
     ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [⟨BPair.ofNat 1, 2⟩],
      [1, 1], 2, 3⟩ := by decide +kernel
 
-example : ¬ gradRead hybV (BPair.ofNat 1) 1
+theorem pin458 : ¬ gradRead hybV (BPair.ofNat 1) 1
     ⟨stage.unitC, ⟨BPair.ofNat 1, 1⟩, [⟨BPair.ofNat 1, 2⟩],
      [1, 1], 0, 3⟩ := by decide +kernel
 
-example : ¬ (stage.unitC < pieceL hybV (BPair.ofNat 1) 1 0 1
+theorem pin459 : ¬ (stage.unitC < pieceL hybV (BPair.ofNat 1) 1 0 1
     stage.unitC ⟨BPair.ofNat 1, 2⟩ ⟨BPair.ofNat 1, 1⟩) := by
   decide +kernel
 
-example : stage.unitC < pieceL hybV (BPair.ofNat 1) 1 2 1
+theorem pin460 : stage.unitC < pieceL hybV (BPair.ofNat 1) 1 2 1
     stage.unitC ⟨BPair.ofNat 1, 2⟩ ⟨BPair.ofNat 1, 1⟩ := by
   decide +kernel
 
@@ -2998,51 +2994,51 @@ square four at the ceiling one. -/
 private def gvC : GradCert :=
   ⟨⟨BPair.ofNat 1, 1⟩, ⟨BPair.ofNat 4, 1⟩, [], [2], 0, 1⟩
 
-example : gradRead gvV (BPair.ofNat 1) 1 gvC := by decide +kernel
+theorem pin461 : gradRead gvV (BPair.ofNat 1) 1 gvC := by decide +kernel
 
 -- the line arm sits on its lower side, the squared arm the
 -- piece's own read
-example : ¬ (stage.unitC < pieceL gvV (BPair.ofNat 1) 1 0 2
+theorem pin462 : ¬ (stage.unitC < pieceL gvV (BPair.ofNat 1) 1 0 2
     gvC.lo gvC.hi gvC.hi) := by decide +kernel
 
-example : stage.unitC < pieceB gvV gvC.lo gvC.hi
+theorem pin463 : stage.unitC < pieceB gvV gvC.lo gvC.hi
     ∧ (⟨BPair.ofNat 1, 1⟩ : CPair)
         * (pieceX gvV (BPair.ofNat 1) 1 0 2 gvC.lo gvC.hi gvC.hi
           * pieceX gvV (BPair.ofNat 1) 1 0 2 gvC.lo gvC.hi gvC.hi)
       < gvC.lo * (pieceB gvV gvC.lo gvC.hi
           * pieceB gvV gvC.lo gvC.hi) := by decide +kernel
 
-example : BPair.unit
+theorem pin464 : BPair.unit
     < poly.evalClear (depthPoly gvV 1) (BPair.ofPos 1) 1 gvC.K :=
   gradRead_pos gvV (BPair.ofNat 1) 1 gvC (by decide +kernel) 1 1 1
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : BPair.unit
+theorem pin465 : BPair.unit
     < poly.evalClear (depthPoly gvV 2) (BPair.ofPos 1) 1 gvC.K :=
   gradRead_pos gvV (BPair.ofNat 1) 1 gvC (by decide +kernel) 2 1 1
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : BPair.unit
+theorem pin466 : BPair.unit
     < poly.evalClear (depthPoly gvV 1) (BPair.ofPos 1) 1 gvC.K := by
   decide +kernel
 
 -- the box's floor refuses the depth nought, its collapse on the
 -- lower side
-example : ¬ (gvC.lo
+theorem pin467 : ¬ (gvC.lo
     ≤ (⟨BPair.ofNat (0 * 0) * BPair.ofPos 1, 1⟩ : CPair)) := by
   decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin468 : ¬ (BPair.unit
     < poly.evalClear (depthPoly gvV 0) (BPair.ofPos 1) 1 gvC.K) := by
   decide +kernel
 
 -- the ceiling's two members at the squared comparison's moved
 -- clearing: the matched clearing passes, the moved one refuses
-example : gradRead gvV (BPair.ofNat 4) 4 gvC := by decide +kernel
+theorem pin469 : gradRead gvV (BPair.ofNat 4) 4 gvC := by decide +kernel
 
-example : ¬ gradRead gvV (BPair.ofNat 4) 1 gvC := by decide +kernel
+theorem pin470 : ¬ gradRead gvV (BPair.ofNat 4) 1 gvC := by decide +kernel
 
-example : ¬ ((⟨BPair.ofNat 4, 1⟩ : CPair)
+theorem pin471 : ¬ ((⟨BPair.ofNat 4, 1⟩ : CPair)
     * (pieceX gvV (BPair.ofNat 4) 1 0 2 gvC.lo gvC.hi gvC.hi
       * pieceX gvV (BPair.ofNat 4) 1 0 2 gvC.lo gvC.hi gvC.hi)
     < gvC.lo * (pieceB gvV gvC.lo gvC.hi
@@ -3052,11 +3048,11 @@ example : ¬ ((⟨BPair.ofNat 4, 1⟩ : CPair)
 private def gvW : poly.PPoly × poly.PPoly :=
   ([[BPair.unit, (BPair.ofNat 2).swap]], ([] : poly.PPoly))
 
-example : ¬ gradRead gvW (BPair.ofNat 1) 1 gvC := by decide +kernel
+theorem pin472 : ¬ gradRead gvW (BPair.ofNat 1) 1 gvC := by decide +kernel
 
-example : poly.unitTail (profBaseU gvW) := by decide +kernel
+theorem pin473 : poly.unitTail (profBaseU gvW) := by decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin474 : ¬ (BPair.unit
     < poly.evalClear (depthPoly gvW 1) (BPair.ofPos 1) 1 gvC.K) := by
   decide +kernel
 
@@ -3070,30 +3066,30 @@ private def gxV : poly.PPoly × poly.PPoly :=
 private def gxC : GradCert :=
   ⟨⟨BPair.ofNat 1, 2⟩, ⟨BPair.ofNat 1, 1⟩, [], [2], 0, 1⟩
 
-example : gradRead gxV (BPair.ofNat 1) 4 gxC := by decide +kernel
+theorem pin475 : gradRead gxV (BPair.ofNat 1) 4 gxC := by decide +kernel
 
 -- the scale bound refused at the scale one half
-example : ¬ (BPair.ofPos 1 * BPair.ofPos 4
+theorem pin476 : ¬ (BPair.ofPos 1 * BPair.ofPos 4
     ≤ BPair.ofNat 1 * BPair.ofPos 2) := by decide +kernel
 
-example : gxC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 2⟩ : CPair)
+theorem pin477 : gxC.lo ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 2⟩ : CPair)
     ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 2⟩ : CPair) ≤ gxC.hi := by
   decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin478 : ¬ (BPair.unit
     < poly.evalClear (depthPoly gxV 1) (BPair.ofPos 1) 2 gxC.K) := by
   decide +kernel
 
 -- the box's floor refused at the scale one quarter
-example : ¬ (gxC.lo
+theorem pin479 : ¬ (gxC.lo
     ≤ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 4⟩ : CPair)) := by
   decide +kernel
 
-example : BPair.ofPos 1 * BPair.ofPos 4 ≤ BPair.ofNat 1 * BPair.ofPos 4
+theorem pin480 : BPair.ofPos 1 * BPair.ofPos 4 ≤ BPair.ofNat 1 * BPair.ofPos 4
     ∧ (⟨BPair.ofNat (1 * 1) * BPair.ofPos 1, 4⟩ : CPair) ≤ gxC.hi := by
   decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin481 : ¬ (BPair.unit
     < poly.evalClear (depthPoly gxV 1) (BPair.ofPos 1) 4 gxC.K) := by
   decide +kernel
 
@@ -3107,257 +3103,17 @@ private def gyV : poly.PPoly × poly.PPoly :=
 private def gyC : GradCert :=
   ⟨stage.unitC, ⟨BPair.ofNat 4, 1⟩, [], [2], 0, 2⟩
 
-example : gradRead gyV (BPair.ofNat 1) 1 gyC := by decide +kernel
+theorem pin482 : gradRead gyV (BPair.ofNat 1) 1 gyC := by decide +kernel
 
-example : ¬ ((⟨BPair.ofNat (3 * 3) * BPair.ofPos 1, 1⟩ : CPair)
+theorem pin483 : ¬ ((⟨BPair.ofNat (3 * 3) * BPair.ofPos 1, 1⟩ : CPair)
     ≤ gyC.hi) := by decide +kernel
 
-example : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
+theorem pin484 : BPair.ofPos 1 * BPair.ofPos 1 ≤ BPair.ofNat 1 * BPair.ofPos 1
     ∧ gyC.lo ≤ (⟨BPair.ofNat (3 * 3) * BPair.ofPos 1, 1⟩ : CPair) := by
   decide +kernel
 
-example : ¬ (BPair.unit
+theorem pin485 : ¬ (BPair.unit
     < poly.evalClear (depthPoly gyV 3) (BPair.ofPos 1) 1 gyC.K) := by
-  decide +kernel
-
-/-! The profile-matrix stage runs at the two-key center family
-`[[1, u], [u, s]]`, the constant one and the kernel's two generators
-at the corners: the collapse values at the depth three read the
-scale's own powers — the u-slab's `3`, the square scale's `9`, and
-the kernel's `u · u = ηs` at the square key `9` — with the constant
-one's product returning the u-slab unchanged.  Each of the six
-collapse bridges is decided raw at that family and beside its
-theorem route, the constant family's at the stated matrix
-`[[2, 1], [1, 3]]`. -/
-
-private def blU : poly.PPoly × poly.PPoly :=
-  (([] : poly.PPoly), [[BPair.ofNat 1]])
-private def blOne : poly.PPoly × poly.PPoly :=
-  ([[BPair.ofNat 1]], ([] : poly.PPoly))
-private def blS : poly.PPoly × poly.PPoly :=
-  ([([] : poly.Poly), [BPair.ofNat 1]], ([] : poly.PPoly))
-private def blA : List (List (poly.PPoly × poly.PPoly)) :=
-  [[blOne, blU], [blU, blS]]
-
-example : poly.oneValue (depthPoly blU 3) [BPair.unit, BPair.ofNat 3] := by
-  decide +kernel
-
-example : poly.oneValue (depthPoly blS 3) [BPair.unit, BPair.ofNat 9] := by
-  decide +kernel
-
--- the kernel's u · u = ηs read
-example : poly.oneValue (depthPoly (profMul blU blU) 3)
-    [BPair.unit, BPair.unit, BPair.ofNat 9] := by decide +kernel
-
-example : poly.oneValue
-    (depthPoly (profMul ([poly.one], ([] : poly.PPoly)) blU) 3)
-    (depthPoly blU 3) := by decide +kernel
-
-example : split.pmatOneValue (pfmDepth 3 (pfmMul blA blA))
-    (split.pmatMul (pfmDepth 3 blA) (pfmDepth 3 blA)) := by decide +kernel
-
-example : split.pmatOneValue (pfmDepth 3 (pfmMul blA blA))
-    (split.pmatMul (pfmDepth 3 blA) (pfmDepth 3 blA)) :=
-  pfmDepth_mul blA blA 3
-
-example : split.pmatOneValue (pfmDepth 3 (pfmAdd blA blA))
-    (split.pmatAdd (pfmDepth 3 blA) (pfmDepth 3 blA)) := by decide +kernel
-
-example : split.pmatOneValue (pfmDepth 3 (pfmAdd blA blA))
-    (split.pmatAdd (pfmDepth 3 blA) (pfmDepth 3 blA)) :=
-  pfmDepth_add blA blA 3
-
-example : split.pmatOneValue (pfmDepth 3 (pfmSwap blA))
-    (split.pswapM (pfmDepth 3 blA)) := by decide +kernel
-
-example : split.pmatOneValue (pfmDepth 3 (pfmSwap blA))
-    (split.pswapM (pfmDepth 3 blA)) := pfmDepth_swap blA 3
-
-example : split.pmatOneValue (pfmDepth 3 (pfmShift blA))
-    (pfmDepth (3 + 1) blA) := by decide +kernel
-
-example : split.pmatOneValue (pfmDepth 3 (pfmShift blA))
-    (pfmDepth (3 + 1) blA) := pfmDepth_shift blA 3
-
-example : split.pmatOneValue (pfmDepth 3 (pfmTr blA))
-    (elim.transposeO poly.polyOps (pfmDepth 3 blA)) := by decide +kernel
-
-example : split.pmatOneValue (pfmDepth 3 (pfmTr blA))
-    (elim.transposeO poly.polyOps (pfmDepth 3 blA)) := pfmDepth_tr blA 3
-
-example : split.pmatOneValue
-    (pfmDepth 3 (ofMatProf [[BPair.ofNat 2, BPair.unit],
-      [BPair.unit, BPair.ofNat 3]]))
-    (([[BPair.ofNat 2, BPair.unit], [BPair.unit, BPair.ofNat 3]] :
-        elim.Mat).map (fun r => r.map (fun c => ([c] : poly.Poly)))) := by
-  decide +kernel
-
-example : split.pmatOneValue
-    (pfmDepth 3 (ofMatProf [[BPair.ofNat 2, BPair.unit],
-      [BPair.unit, BPair.ofNat 3]]))
-    (([[BPair.ofNat 2, BPair.unit], [BPair.unit, BPair.ofNat 3]] :
-        elim.Mat).map (fun r => r.map (fun c => ([c] : poly.Poly)))) :=
-  pfmDepth_ofMat [[BPair.ofNat 2, BPair.unit],
-    [BPair.unit, BPair.ofNat 3]] 3
-
-/-! The evaluated glue runs at the ceiling `[1 : 200]`, the scale
-`[1 : 200]` and the shared clearing power two.  The magnitude price
-is read at three profiles at the depth three, the scale `[1 : 2]`
-and the clearing two: the constant `10`, whose collapse `40` is its
-own magnitude; the mixed-sign scale profile `−2 + 4η`, whose
-collapse cancels at the sum's unit against the magnitude profile's
-`16`; and the u-carrying profile `−2 + u`, whose collapse `−2`
-prices at the magnitude profile's `14` — each decided raw beside
-its theorem route.  The glue reads two sites, the diagonal `10`
-against a scale-carrying and against a depth-carrying off entry.
-At the off entry `−500η` the rows certify at the box
-`(3, 0, 1, 0; 2)` on `[[1 : 2], [2 : 1]]` and the depth-twelve
-composite point `144/200` sits inside it, the row comparison
-`100000 ≤ 400000` with the evaluated form closing at the
-replicate-unit slack.  At the off entry `−100u` the off-row fold
-grows with the depth, the rows certify at the box on
-`[[1 : 2], [5 : 4]]` with the u-slab floor eight at its squared
-price — the device's second-slab arms occupied — and the box
-membership is the load-bearing binder: at the depth twelve the
-comparison reads `240000 ≤ 400000` and the evaluated datum is
-dominant, while at the depth twenty-one the composite point
-`441/200` runs past the box top, the membership read decides false
-with the certificate walk standing, and the evaluated conclusion
-parts, `420000` past the diagonal's `400000`. -/
-
-private def bl2Diag : poly.PPoly × poly.PPoly :=
-  ([[BPair.ofNat 10]], ([] : poly.PPoly))
-private def bl2Mix : poly.PPoly × poly.PPoly :=
-  ([[(⟨1, 3⟩ : BPair), BPair.ofNat 4]], ([] : poly.PPoly))
-private def bl2MixU : poly.PPoly × poly.PPoly :=
-  ([[(⟨1, 3⟩ : BPair)]], [[BPair.ofNat 1]])
-
-example : windowsep.mag (evalProf bl2Diag 3 1 2 2)
-    ≤ evalProf (magProf bl2Diag) 3 1 2 2 := by decide +kernel
-
-example : windowsep.mag (evalProf bl2Diag 3 1 2 2)
-    ≤ evalProf (magProf bl2Diag) 3 1 2 2 :=
-  evalProf_mag bl2Diag 3 1 2 2
-
-example : windowsep.mag (evalProf bl2Mix 3 1 2 2)
-    ≤ evalProf (magProf bl2Mix) 3 1 2 2 := by decide +kernel
-
-example : windowsep.mag (evalProf bl2Mix 3 1 2 2)
-    ≤ evalProf (magProf bl2Mix) 3 1 2 2 :=
-  evalProf_mag bl2Mix 3 1 2 2
-
-example : windowsep.mag (evalProf bl2MixU 3 1 2 2)
-    ≤ evalProf (magProf bl2MixU) 3 1 2 2 := by decide +kernel
-
-example : windowsep.mag (evalProf bl2MixU 3 1 2 2)
-    ≤ evalProf (magProf bl2MixU) 3 1 2 2 :=
-  evalProf_mag bl2MixU 3 1 2 2
-
--- the three collapses and their magnitude profiles' own
-example : poly.oneValue (depthPoly bl2Mix 3) [(⟨1, 3⟩ : BPair), BPair.ofNat 4]
-    ∧ poly.oneValue (depthPoly bl2MixU 3) [(⟨1, 3⟩ : BPair), BPair.ofNat 3] := by
-  decide +kernel
-
-private def bl2Off : poly.PPoly × poly.PPoly :=
-  ([[BPair.unit, (BPair.ofNat 500).swap]], ([] : poly.PPoly))
-
-private def bl2Bx : BoxCert :=
-  ⟨⟨BPair.ofNat 1, 2⟩, ⟨BPair.ofNat 2, 1⟩, [], [], [],
-   BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
-   BPair.ofNat 3, BPair.unit, BPair.ofNat 1, BPair.unit, 2⟩
-
-private def bl2Row : List (poly.PPoly × poly.PPoly) := [bl2Diag, bl2Off]
-
-private def bl2Site : List (List (poly.PPoly × poly.PPoly)) :=
-  [[bl2Diag, bl2Off], [bl2Off, bl2Diag]]
-
-example : domRowRead (BPair.ofNat 1) 200 0 bl2Row bl2Bx := by decide +kernel
-
-example : decimation.offFold 0
-      (bl2Row.map (fun e => evalProf e 12 1 200 2))
-    ≤ ground.getAt BPair.unit
-      (bl2Row.map (fun e => evalProf e 12 1 200 2)) 0 := by decide +kernel
-
-example : decimation.offFold 0
-      (bl2Row.map (fun e => evalProf e 12 1 200 2))
-    ≤ ground.getAt BPair.unit
-      (bl2Row.map (fun e => evalProf e 12 1 200 2)) 0 :=
-  domRow_le (BPair.ofNat 1) 200 0 12 2 1 200 bl2Row bl2Bx
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-
-example : domCertGo (BPair.ofNat 1) 200 0 bl2Site [bl2Bx, bl2Bx] := by
-  decide +kernel
-
-example : decimation.domAt (evalPfm bl2Site 12 1 200 2) := by decide +kernel
-
-example : decimation.domAt (evalPfm bl2Site 12 1 200 2) :=
-  domCert_domAt (BPair.ofNat 1) 200 12 2 1 200 bl2Site [bl2Bx, bl2Bx]
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-
-example : elim.sqAt (evalPfm bl2Site 12 1 200 2) bl2Site.length := by
-  decide +kernel
-
-example : elim.matOneValue (evalPfm bl2Site 12 1 200 2)
-    (elim.transposeM (evalPfm bl2Site 12 1 200 2)) := by decide +kernel
-
-example : ∀ v : List BPair, v.length = bl2Site.length →
-    BPair.unit ≤ inertia.quadForm (evalPfm bl2Site 12 1 200 2) v :=
-  domCert_form (BPair.ofNat 1) 200 12 2 1 200 bl2Site [bl2Bx, bl2Bx]
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    (by decide +kernel) (by decide +kernel)
-
--- the depth-carrying site: the off entry `−100u`, the fold growing
--- with the depth
-private def bl2OffU : poly.PPoly × poly.PPoly :=
-  (([] : poly.PPoly), [[(BPair.ofNat 100).swap]])
-
-private def bl2BxU : BoxCert :=
-  ⟨⟨BPair.ofNat 1, 2⟩, ⟨BPair.ofNat 5, 4⟩, [], [], [],
-   BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 2,
-   BPair.ofNat 1, BPair.unit, BPair.ofNat 8, BPair.unit, 1⟩
-
-private def bl2RowU : List (poly.PPoly × poly.PPoly) := [bl2Diag, bl2OffU]
-
-private def bl2SiteU : List (List (poly.PPoly × poly.PPoly)) :=
-  [[bl2Diag, bl2OffU], [bl2OffU, bl2Diag]]
-
-example : domRowRead (BPair.ofNat 1) 200 0 bl2RowU bl2BxU := by
-  decide +kernel
-
-example : domCertGo (BPair.ofNat 1) 200 0 bl2SiteU [bl2BxU, bl2BxU] := by
-  decide +kernel
-
-example : decimation.domAt (evalPfm bl2SiteU 12 1 200 2) := by
-  decide +kernel
-
-example : decimation.domAt (evalPfm bl2SiteU 12 1 200 2) :=
-  domCert_domAt (BPair.ofNat 1) 200 12 2 1 200 bl2SiteU [bl2BxU, bl2BxU]
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-
-example : elim.sqAt (evalPfm bl2SiteU 12 1 200 2) bl2SiteU.length := by
-  decide +kernel
-
-example : elim.matOneValue (evalPfm bl2SiteU 12 1 200 2)
-    (elim.transposeM (evalPfm bl2SiteU 12 1 200 2)) := by decide +kernel
-
-example : ∀ v : List BPair, v.length = bl2SiteU.length →
-    BPair.unit ≤ inertia.quadForm (evalPfm bl2SiteU 12 1 200 2) v :=
-  domCert_form (BPair.ofNat 1) 200 12 2 1 200 bl2SiteU [bl2BxU, bl2BxU]
-    (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    (by decide +kernel) (by decide +kernel)
-
--- the box membership load-bearing at the depth twenty-one: the
--- composite point past the box top, the certificate walk standing,
--- and the evaluated conclusion parted
-example : ¬ (([bl2BxU, bl2BxU].all (fun g =>
-      decide (g.lo ≤ (⟨BPair.ofNat (21 * 21) * BPair.ofPos 1, 200⟩
-        : CPair))
-      && decide ((⟨BPair.ofNat (21 * 21) * BPair.ofPos 1, 200⟩
-        : CPair) ≤ g.hi)
-      && Nat.ble (g.K + 1) (2 + 1))) = true) := by decide +kernel
-
-example : ¬ decimation.domAt (evalPfm bl2SiteU 21 1 200 2) := by
   decide +kernel
 
 /-! ## The well head's reads
@@ -3370,49 +3126,49 @@ the well's entries at the order three read the chain
 chart at the tower's diagonal list and the bond list through
 `wellEntry`, the diagonal, bond and far cells decided beside it. -/
 
-example : (wellDiag 2 3 2 2 3 1).oneValue
+theorem pin527 : (wellDiag 2 3 2 2 3 1).oneValue
     (BPair.ofNat 2 * (BPair.ofNat ((2 + 1) * 2) * BPair.ofPos 3 * BPair.ofPos 3)
       + (BPair.ofNat (4 * 2 * (1 * 1 + 2 * 1)) * BPair.ofPos 2 * BPair.ofPos 2
         + (BPair.ofNat ((2 + 1) * 3) * BPair.ofPos 2 * BPair.ofPos 3).swap)) := by
   decide +kernel
-example : (wellDiag 2 3 2 2 3 1).oneValue
+theorem pin528 : (wellDiag 2 3 2 2 3 1).oneValue
     (BPair.ofNat 2 * (BPair.ofNat ((2 + 1) * 2) * BPair.ofPos 3 * BPair.ofPos 3)
       + (BPair.ofNat (4 * 2 * (1 * 1 + 2 * 1)) * BPair.ofPos 2 * BPair.ofPos 2
         + (BPair.ofNat ((2 + 1) * 3) * BPair.ofPos 2 * BPair.ofPos 3).swap)) :=
   wellDiag_read 2 3 2 1 2 3
 
-example : (wellDiag 2 3 2 2 3 1).oneValue
+theorem pin529 : (wellDiag 2 3 2 2 3 1).oneValue
     (BPair.ofNat (2 * ((2 + 1) * 2 * 3 * 3) + 4 * 2 * (1 * 1 + 2 * 1) * 2 * 2)
       + (BPair.ofNat ((2 + 1) * 3 * 2 * 3)).swap) := by decide +kernel
-example : (wellDiag 2 3 2 2 3 1).oneValue
+theorem pin530 : (wellDiag 2 3 2 2 3 1).oneValue
     (BPair.ofNat (2 * ((2 + 1) * 2 * 3 * 3) + 4 * 2 * (1 * 1 + 2 * 1) * 2 * 2)
       + (BPair.ofNat ((2 + 1) * 3 * 2 * 3)).swap) :=
   wellDiag_count 2 3 2 1 2 3
 
-example : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 1) 1
+theorem pin531 : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 1) 1
     = greenprod.chainAt (wDiagE 2 3 2 2 3 3) (wOffE 2 2 3 3) 1 1 := by
   decide +kernel
-example : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 1) 1
+theorem pin532 : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 1) 1
     = greenprod.chainAt (wDiagE 2 3 2 2 3 3) (wOffE 2 2 3 3) 1 1 :=
   wellEntry 2 3 2 2 3 2 1 1 (by decide +kernel) (by decide +kernel)
-example : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 1) 2
+theorem pin533 : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 1) 2
     = greenprod.chainAt (wDiagE 2 3 2 2 3 3) (wOffE 2 2 3 3) 1 2 :=
   wellEntry 2 3 2 2 3 2 1 2 (by decide +kernel) (by decide +kernel)
-example : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 0) 2
+theorem pin534 : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 0) 2
     = BPair.unit := by decide +kernel
-example : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 1) 2
+theorem pin535 : ground.getAt BPair.unit (ground.getAt [] (wellMat 2 3 2 2 3 3) 1) 2
     = (wellBond 2 2 3).swap := by decide +kernel
 
 /-! ## The residue transport (`lem:cornerpivot`(vi)) -/
 
-example : matOneValue (transposeM (wellMat 2 3 2 2 3 3)) (wellMat 2 3 2 2 3 3) := by
+theorem pin536 : matOneValue (transposeM (wellMat 2 3 2 2 3 3)) (wellMat 2 3 2 2 3 3) := by
   decide +kernel
-example : matOneValue (transposeM (wellMat 2 3 2 2 3 3)) (wellMat 2 3 2 2 3 3) :=
+theorem pin537 : matOneValue (transposeM (wellMat 2 3 2 2 3 3)) (wellMat 2 3 2 2 3 3) :=
   wellMat_sym 2 3 2 2 3 3
 
-example : revAt (mkSplit 5 (wellMat 3 4 1 1 1 5)) = 0 := by decide +kernel
-example : revAt (mkSplit 5 (wellMat 2 8 1 1 2 5)) = 1 := by decide +kernel
-example : revAt (mkSplit 5 (wellMat 3 4 1 1 1 5))
+theorem pin538 : revAt (mkSplit 5 (wellMat 3 4 1 1 1 5)) = 0 := by decide +kernel
+theorem pin539 : revAt (mkSplit 5 (wellMat 2 8 1 1 2 5)) = 1 := by decide +kernel
+theorem pin540 : revAt (mkSplit 5 (wellMat 3 4 1 1 1 5))
     ≤ revAt (mkSplit 5 (wellMat 2 8 1 1 2 5)) :=
   well_dominate 3 4 1 2 8 1 (by decide) (by decide) 1 1 1 2 5
     (fun k _ _ => resDiag 3 4 1 8 1 (by decide) 1 1 1 2 (by decide +kernel)
@@ -3422,8 +3178,8 @@ example : revAt (mkSplit 5 (wellMat 3 4 1 1 1 5))
 /-- The ordering binder is load-bearing: at the rate `20` the
 member's count reads two against the reference's one, and the
 diagonal comparison refuses at the depth one. -/
-example : revAt (mkSplit 5 (wellMat 3 20 1 1 1 5)) = 2 := by decide +kernel
-example : ¬ ((2 + 1) * 1 * 2 * 2 * ((3 + 1) * 20 * 1 * 1)
+theorem pin541 : revAt (mkSplit 5 (wellMat 3 20 1 1 1 5)) = 2 := by decide +kernel
+theorem pin542 : ¬ ((2 + 1) * 1 * 2 * 2 * ((3 + 1) * 20 * 1 * 1)
       + (3 + 1) * 1 * 1 * 1
         * (2 * ((2 + 1) * 1 * 2 * 2) + 4 * 1 * (1 * 1 + 2 * 1) * 1 * 1)
     ≤ (2 + 1) * 1 * 2 * 2
@@ -3432,9 +3188,9 @@ example : ¬ ((2 + 1) * 1 * 2 * 2 * ((3 + 1) * 20 * 1 * 1)
 
 /-- `resDiag`'s residue binder: at the residue one with the tie
 tight the depth-one comparison refuses. -/
-example : (1 + 1) * (3 * 3) * (2 * 2) ≤ 3 * (5 * 5) * (1 * 1) := by decide
-example : 9 * 1 * 5 * 1 ≤ 8 * 1 * 2 * 3 := by decide
-example : ¬ ((2 + 1) * 1 * 5 * 5 * ((1 + 1) * 9 * 1 * 2)
+theorem pin543 : (1 + 1) * (3 * 3) * (2 * 2) ≤ 3 * (5 * 5) * (1 * 1) := by decide
+theorem pin544 : 9 * 1 * 5 * 1 ≤ 8 * 1 * 2 * 3 := by decide
+theorem pin545 : ¬ ((2 + 1) * 1 * 5 * 5 * ((1 + 1) * 9 * 1 * 2)
       + (1 + 1) * 1 * 2 * 2
         * (2 * ((2 + 1) * 1 * 5 * 5) + 4 * 1 * (1 * 1 + 2 * 1) * 3 * 3)
     ≤ (2 + 1) * 1 * 5 * 5
@@ -3443,8 +3199,8 @@ example : ¬ ((2 + 1) * 1 * 5 * 5 * ((1 + 1) * 9 * 1 * 2)
 
 /-- `resDiag`'s tie binder: at a doubled first member the tie refuses
 and the depth-one comparison with it. -/
-example : ¬ ((2 + 1) * (2 * 2) * (1 * 1) ≤ 3 * (1 * 1) * (1 * 1)) := by decide
-example : ¬ ((2 + 1) * 1 * 1 * 1 * ((2 + 1) * 16 * 1 * 1)
+theorem pin546 : ¬ ((2 + 1) * (2 * 2) * (1 * 1) ≤ 3 * (1 * 1) * (1 * 1)) := by decide
+theorem pin547 : ¬ ((2 + 1) * 1 * 1 * 1 * ((2 + 1) * 16 * 1 * 1)
       + (2 + 1) * 1 * 1 * 1
         * (2 * ((2 + 1) * 1 * 1 * 1) + 4 * 1 * (1 * 1 + 2 * 1) * 2 * 2)
     ≤ (2 + 1) * 1 * 1 * 1
@@ -3453,15 +3209,15 @@ example : ¬ ((2 + 1) * 1 * 1 * 1 * ((2 + 1) * 16 * 1 * 1)
 
 /-- `resDiag`'s rate binder: at nine against eight the depth-one
 comparison refuses. -/
-example : ¬ (9 * 1 * 1 * 1 ≤ 8 * 1 * 1 * 1) := by decide
-example : ¬ ((2 + 1) * 1 * 1 * 1 * ((2 + 1) * 9 * 1 * 1)
+theorem pin548 : ¬ (9 * 1 * 1 * 1 ≤ 8 * 1 * 1 * 1) := by decide
+theorem pin549 : ¬ ((2 + 1) * 1 * 1 * 1 * ((2 + 1) * 9 * 1 * 1)
       + (2 + 1) * 1 * 1 * 1
         * (2 * ((2 + 1) * 1 * 1 * 1) + 4 * 1 * (1 * 1 + 2 * 1) * 1 * 1)
     ≤ (2 + 1) * 1 * 1 * 1
         * (2 * ((2 + 1) * 1 * 1 * 1) + 4 * 1 * (1 * 1 + 2 * 1) * 1 * 1)
       + (2 + 1) * 1 * 1 * 1 * ((2 + 1) * 8 * 1 * 1)) := by decide
 
-example : (2 + 1) * 1 * posVal 1 * posVal 1 * ((1 + 1) * 8 * posVal 1 * posVal 1)
+theorem pin550 : (2 + 1) * 1 * posVal 1 * posVal 1 * ((1 + 1) * 8 * posVal 1 * posVal 1)
       + (1 + 1) * 1 * posVal 1 * posVal 1
         * (2 * ((2 + 1) * 1 * posVal 1 * posVal 1)
            + 4 * 1 * (1 * 1 + 2 * 1) * posVal 1 * posVal 1)
@@ -3473,49 +3229,51 @@ example : (2 + 1) * 1 * posVal 1 * posVal 1 * ((1 + 1) * 8 * posVal 1 * posVal 1
 
 /-- `oneDiag`'s rate binder: at nine against eight the depth-one
 comparison refuses. -/
-example : ¬ ((2 + 1) * 1 * 1 * 1 * ((1 + 1) * 9 * 1 * 1)
+theorem pin551 : ¬ ((2 + 1) * 1 * 1 * 1 * ((1 + 1) * 9 * 1 * 1)
       + (1 + 1) * 1 * 1 * 1
         * (2 * ((2 + 1) * 1 * 1 * 1) + 4 * 1 * (1 * 1 + 2 * 1) * 1 * 1)
     ≤ (2 + 1) * 1 * 1 * 1
         * (2 * ((1 + 1) * 1 * 1 * 1) + 4 * 1 * (1 * 1 + 1 * 1) * 1 * 1)
       + (1 + 1) * 1 * 1 * 1 * ((2 + 1) * 8 * 1 * 1)) := by decide
 
-example : (2 + 1) * (26 * 26) * (1 * 1) ≤ 3 * ((5 * 3 * 3) * (5 * 3 * 3)) * (1 * 1) :=
+theorem pin552 : (2 + 1) * (26 * 26) * (1 * 1) ≤ 3 * ((5 * 3 * 3) * (5 * 3 * 3)) * (1 * 1) :=
   tieRead 1 1 2 3 (by decide)
-example : (2 + 1) * (26 * 26) * (1 * 1) ≤ 3 * ((5 * 3 * 3) * (5 * 3 * 3)) * (1 * 1) := by
+theorem pin553 : (2 + 1) * (26 * 26) * (1 * 1) ≤ 3 * ((5 * 3 * 3) * (5 * 3 * 3)) * (1 * 1) := by
   decide
 /-- The tie's key binder: at the key one the comparison refuses and
 the tie with it. -/
-example : ¬ (363 * (2 + 1) * 1 ^ 2 ≤ 40 * 1 ^ 4 * 1 ^ 2) := by decide
-example : ¬ ((2 + 1) * (26 * 26) * (1 * 1) ≤ 3 * ((5 * 1 * 1) * (5 * 1 * 1)) * (1 * 1)) := by
+theorem pin554 : ¬ (363 * (2 + 1) * 1 ^ 2 ≤ 40 * 1 ^ 4 * 1 ^ 2) := by decide
+theorem pin555 : ¬ ((2 + 1) * (26 * 26) * (1 * 1) ≤ 3 * ((5 * 1 * 1) * (5 * 1 * 1)) * (1 * 1)) := by
   decide
 
-example : posVal (tieScaleD 3) = 45 := by decide
-example : posVal (tieScaleD 3) = 5 * 3 * 3 := tieScaleD_val 3 (by decide)
-example : ¬ (posVal (tieScaleD 0) = 5 * 0 * 0) := by decide
+theorem pin556 : posVal (tieScaleD 3) = 45 := by decide
+theorem pin557 : posVal (tieScaleD 3) = 5 * 3 * 3 := tieScaleD_val 3 (by decide)
+theorem pin558 : ¬ (posVal (tieScaleD 0) = 5 * 0 * 0) := by decide
 
-example : 6 * 1652 ^ 2 * (363 * (20 * witSqMM 1652 + 1652 * witSqM 1652)
+theorem pin559 : 6 * 1652 ^ 2 * (363 * (20 * witSqMM 1652 + 1652 * witSqM 1652)
       + 200 * (1652 - 1) ^ 4 * (witDiffSq 1652 + (1652 * 1652 - 1) ^ 2))
     ≤ 41600 * (1652 - 1) ^ 4 * witSq 1652 := resPoly 1652 (by decide)
-example : 6 * 1652 ^ 2 * (363 * (20 * witSqMM 1652 + 1652 * witSqM 1652)
+theorem pin560 : 6 * 1652 ^ 2 * (363 * (20 * witSqMM 1652 + 1652 * witSqM 1652)
       + 200 * (1652 - 1) ^ 4 * (witDiffSq 1652 + (1652 * 1652 - 1) ^ 2))
     ≤ 41600 * (1652 - 1) ^ 4 * witSq 1652 := by decide +kernel
-example : ¬ (6 * 150 ^ 2 * (363 * (20 * witSqMM 150 + 150 * witSqM 150)
+theorem pin561 : ¬ (6 * 150 ^ 2 * (363 * (20 * witSqMM 150 + 150 * witSqM 150)
       + 200 * (150 - 1) ^ 4 * (witDiffSq 150 + (150 * 150 - 1) ^ 2))
     ≤ 41600 * (150 - 1) ^ 4 * witSq 150) := by decide +kernel
-example : 6 * 151 ^ 2 * (363 * (20 * witSqMM 151 + 151 * witSqM 151)
+theorem pin562 : 6 * 151 ^ 2 * (363 * (20 * witSqMM 151 + 151 * witSqM 151)
       + 200 * (151 - 1) ^ 4 * (witDiffSq 151 + (151 * 151 - 1) ^ 2))
     ≤ 41600 * (151 - 1) ^ 4 * witSq 151 := by decide +kernel
 
-example : 2050 * 1495 ^ 2 * (726 * (witSqMM 1495 + witSqM 1495)
+theorem pin563 : 2050 * 1495 ^ 2 * (726 * (witSqMM 1495 + witSqM 1495)
       + 20 * (1495 - 1) ^ 4 * (witDiffSq 1495 + (1495 * 1495 - 1) ^ 2))
     ≤ 1363200 * (1495 - 1) ^ 4 * witSq 1495 := onePoly 1495 (by decide)
-example : 2050 * 1495 ^ 2 * (726 * (witSqMM 1495 + witSqM 1495)
+theorem pin564 : 2050 * 1495 ^ 2 * (726 * (witSqMM 1495 + witSqM 1495)
       + 20 * (1495 - 1) ^ 4 * (witDiffSq 1495 + (1495 * 1495 - 1) ^ 2))
     ≤ 1363200 * (1495 - 1) ^ 4 * witSq 1495 := by decide +kernel
-example : ¬ (2050 * 363 ^ 2 * (726 * (witSqMM 363 + witSqM 363)
+theorem pin565 : ¬ (2050 * 363 ^ 2 * (726 * (witSqMM 363 + witSqM 363)
       + 20 * (363 - 1) ^ 4 * (witDiffSq 363 + (363 * 363 - 1) ^ 2))
     ≤ 1363200 * (363 - 1) ^ 4 * witSq 363) := by decide +kernel
-example : 2050 * 364 ^ 2 * (726 * (witSqMM 364 + witSqM 364)
+theorem pin566 : 2050 * 364 ^ 2 * (726 * (witSqMM 364 + witSqM 364)
       + 20 * (364 - 1) ^ 4 * (witDiffSq 364 + (364 * 364 - 1) ^ 2))
     ≤ 1363200 * (364 - 1) ^ 4 * witSq 364 := by decide +kernel
+
+end cornerpivot

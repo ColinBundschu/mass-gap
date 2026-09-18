@@ -29,18 +29,20 @@ a product state read at either block order — three product cells,
 the three key binders refused one apiece, the vacant-coefficient
 cell, and the window list's right sides row by row.
 -/
+
+namespace algebra
 set_option maxHeartbeats 16000000
 set_option maxRecDepth 8192
 
-open ground lattice fusion algebra
+open ground lattice fusion
 
 private def uA : List places.Shape := List.replicate 4 (labels.unitL 2)
 
 /-! The unit law's row, the far factorization's per-link read. -/
 
-example : (dataA 2).row (labels.unitL 2) (adjchar.theta 2)
+theorem pin1 : (dataA 2).row (labels.unitL 2) (adjchar.theta 2)
     = [adjchar.theta 2] := by decide +kernel
-example : (dataA 3).row (labels.unitL 3) (adjchar.theta 3)
+theorem pin2 : (dataA 3).row (labels.unitL 3) (adjchar.theta 3)
     = [adjchar.theta 3] := by decide +kernel
 
 /-! The plaquette rows at the square: the unit assignment's one
@@ -48,32 +50,32 @@ target, the fundamental loop's constant loops with the diagonal
 among them, and the `θ`-loop's with the all-unit member dropped to
 the unit line. -/
 
-example : plaqRow (dataA 2) square sqPlaq uA
+theorem pin3 : plaqRow (dataA 2) square sqPlaq uA
     = [List.replicate 4 [2, 0]] := by decide +kernel
-example : plaqRow (dataA 2) square sqPlaq (List.replicate 4 [1, 0])
+theorem pin4 : plaqRow (dataA 2) square sqPlaq (List.replicate 4 [1, 0])
     = [List.replicate 4 [3, 0], List.replicate 4 [1, 0]] := by decide +kernel
-example : plaqRow (dataA 2) square sqPlaq (List.replicate 4 [2, 0])
+theorem pin5 : plaqRow (dataA 2) square sqPlaq (List.replicate 4 [2, 0])
     = [List.replicate 4 [4, 0], List.replicate 4 [2, 0]] := by decide +kernel
-example : plaqRow (dataA 3) square sqPlaq (List.replicate 4 [1, 0, 0])
+theorem pin6 : plaqRow (dataA 3) square sqPlaq (List.replicate 4 [1, 0, 0])
     = [List.replicate 4 [2, 1, 0], List.replicate 4 [0, 2, 0],
        List.replicate 4 [1, 0, 0]] := by decide +kernel
 
 /-! The involution's reads: contour reversal at the linkwise
 duals. -/
 
-example : conj (dataA 3) (List.replicate 4 [1, 0, 0])
+theorem pin7 : conj (dataA 3) (List.replicate 4 [1, 0, 0])
     = List.replicate 4 [0, 1, 0] := by decide +kernel
-example : conj (dataA 3) (conj (dataA 3) (List.replicate 4 [1, 0, 0]))
+theorem pin8 : conj (dataA 3) (conj (dataA 3) (List.replicate 4 [1, 0, 0]))
     = List.replicate 4 [1, 0, 0] := by decide +kernel
-example : conj (dataA 3) (List.replicate 4 (adjchar.theta 3))
+theorem pin9 : conj (dataA 3) (List.replicate 4 (adjchar.theta 3))
     = List.replicate 4 (adjchar.theta 3) := by decide +kernel
 
 /-! The unit-coordinate read: one at the unit assignment, the sum's
 unit at an occupied support. -/
 
-example : evalConf (dataA 2) uA = 1 := by decide +kernel
-example : evalConf (dataA 2) (List.replicate 4 [1, 0]) = 0 := by decide +kernel
-example : evalConf (dataA 2) (List.replicate 4 (adjchar.theta 2))
+theorem pin10 : evalConf (dataA 2) uA = 1 := by decide +kernel
+theorem pin11 : evalConf (dataA 2) (List.replicate 4 [1, 0]) = 0 := by decide +kernel
+theorem pin12 : evalConf (dataA 2) (List.replicate 4 (adjchar.theta 2))
     = 0 := by decide +kernel
 
 /-! The determination at the presentation Gram: the two-factor site
@@ -102,34 +104,34 @@ private def dM1 := genericlift.ppminor dG1
 determinant `d_f²` — `Eval(|tr U|⁴) = 2` the Weingarten pairing's
 own value. -/
 
-example : genericlift.crossNull
+theorem pin13 : genericlift.crossNull
     (ground.getAt poly.pZero (ground.getAt [] dG 0) 0)
     ([⟨3, 1⟩], poly.one) := by decide +kernel
-example : genericlift.crossNull
+theorem pin14 : genericlift.crossNull
     (ground.getAt poly.pZero (ground.getAt [] dG 0) 1)
     (wg.dfPow 1, poly.one) := by decide +kernel
-example : genericlift.crossNull dM (wg.dfPow 2, poly.one) := by decide +kernel
+theorem pin15 : genericlift.crossNull dM (wg.dfPow 2, poly.one) := by decide +kernel
 
 /-! The solve's verification and its coordinates: the pairing
 identity whole, the first coordinate the determinant and the second
 the sum's unit, with the adjugate's solved witness beside them. -/
 
-example : algebra.prodReadAt dG dM dRhs dX := by decide +kernel
-example : elim.matOcc dG = true := by decide +kernel
-example : genericlift.crossNull (ground.getAt poly.pZero dX 0)
+theorem pin16 : algebra.prodReadAt dG dM dRhs dX := by decide +kernel
+theorem pin17 : elim.matOcc dG = true := by decide +kernel
+theorem pin18 : genericlift.crossNull (ground.getAt poly.pZero dX 0)
     dM := by decide +kernel
-example : genericlift.crossNull (ground.getAt poly.pZero dX 1)
+theorem pin19 : genericlift.crossNull (ground.getAt poly.pZero dX 1)
     poly.pZero := by decide +kernel
-example : genericlift.ppadjRead dG := by decide +kernel
+theorem pin20 : genericlift.ppadjRead dG := by decide +kernel
 
 /-! The beyond-window agreement: the one-member window solves the
 identity too, and the two coordinates read one value at the cleared
 cross comparison — each side scaled by the other window's
 determinant, `2 · d_f² = d_f² · 2`. -/
 
-example : algebra.prodRead dF2 [(0, false)] [(0, true)]
+theorem pin21 : algebra.prodRead dF2 [(0, false)] [(0, true)]
     dWs1 dAU dUD dX1 := by decide +kernel
-example : genericlift.crossNull
+theorem pin22 : genericlift.crossNull
     (poly.pMul (ground.getAt poly.pZero dX1 0) dM)
     (poly.pMul (ground.getAt poly.pZero dX 0) dM1)
   := by decide +kernel
@@ -137,7 +139,7 @@ example : genericlift.crossNull
 /-! The isolating refusal: the forged vector at the determinant in
 the null coordinate's place. -/
 
-example : ¬ algebra.prodReadAt dG dM dRhs [dM, dM] := by decide +kernel
+theorem pin23 : ¬ algebra.prodReadAt dG dM dRhs [dM, dM] := by decide +kernel
 
 /-! `prop:algebra`'s commutativity at the presentation carrier: the
 pairing against a product state reads one value at either block
@@ -158,31 +160,31 @@ private def kaM : states.Comb :=
   [([1, 0], poly.pOne), ([0, 1], poly.pOne)]
 private def kbM : states.Comb := [([0, 1], poly.pOne)]
 
-example : genericlift.crossNull
+theorem pin24 : genericlift.crossNull
     (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv1 (states.mulComb dAU dUD))
     (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv1 (states.mulComb dUD dAU)) := by
   decide +kernel
-example : genericlift.crossNull
+theorem pin25 : genericlift.crossNull
     (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv1 (states.mulComb dAU dUD))
     (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv1 (states.mulComb dUD dAU)) :=
   prodComm dF2 kU kD kv1 dAU dUD (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
-example : genericlift.crossNull
+theorem pin26 : genericlift.crossNull
     (wg.pairFull wg.evalPhi dF2 (dF2 ++ kV2) kv1 (states.mulComb kaM kbM))
     (wg.pairFull wg.evalPhi dF2 (kV2 ++ dF2) kv1 (states.mulComb kbM kaM)) := by
   decide +kernel
-example : genericlift.crossNull
+theorem pin27 : genericlift.crossNull
     (wg.pairFull wg.evalPhi dF2 (dF2 ++ kV2) kv1 (states.mulComb kaM kbM))
     (wg.pairFull wg.evalPhi dF2 (kV2 ++ dF2) kv1 (states.mulComb kbM kaM)) :=
   prodComm dF2 dF2 kV2 kv1 kaM kbM (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
-example : genericlift.crossNull
+theorem pin28 : genericlift.crossNull
     (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv2 (states.mulComb dAU dUD))
     (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv2 (states.mulComb dUD dAU)) := by
   decide +kernel
-example : genericlift.crossNull
+theorem pin29 : genericlift.crossNull
     (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv2 (states.mulComb dAU dUD))
     (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv2 (states.mulComb dUD dAU)) :=
   prodComm dF2 kU kD kv2 dAU dUD (by decide +kernel)
@@ -197,25 +199,25 @@ private def kFv : states.Comb := [([0, 0], poly.pOne)]
 private def kaF : states.Comb := [([5], poly.pOne)]
 private def kbF : states.Comb := [([1], poly.pOne)]
 
-example : ¬ genericlift.crossNull
+theorem pin30 : ¬ genericlift.crossNull
     (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kFv (states.mulComb dAU dUD))
     (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kFv (states.mulComb dUD dAU)) := by
   decide +kernel
-example : ¬ ((kFv.all (fun e =>
+theorem pin31 : ¬ ((kFv.all (fun e =>
     decide (states.permAt e.1 dF2.length))) = true) := by decide +kernel
 
-example : ¬ genericlift.crossNull
+theorem pin32 : ¬ genericlift.crossNull
     (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv1 (states.mulComb kaF dUD))
     (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv1 (states.mulComb dUD kaF)) := by
   decide +kernel
-example : ¬ ((kaF.all (fun e =>
+theorem pin33 : ¬ ((kaF.all (fun e =>
     decide (states.permAt e.1 kU.length))) = true) := by decide +kernel
 
-example : ¬ genericlift.crossNull
+theorem pin34 : ¬ genericlift.crossNull
     (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv1 (states.mulComb dAU kbF))
     (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv1 (states.mulComb kbF dAU)) := by
   decide +kernel
-example : ¬ ((kbF.all (fun e =>
+theorem pin35 : ¬ ((kbF.all (fun e =>
     decide (states.permAt e.1 kD.length))) = true) := by decide +kernel
 
 /-! The vacant-coefficient cell: a coefficient whose second member
@@ -227,12 +229,12 @@ occupancy anywhere in the accumulation. -/
 private def kVac : poly.PPair := (poly.one, ([] : poly.Poly))
 private def kaVac : states.Comb := [([0], kVac)]
 
-example : poly.unitTail kVac.2 := by decide +kernel
-example : genericlift.crossNull
+theorem pin36 : poly.unitTail kVac.2 := by decide +kernel
+theorem pin37 : genericlift.crossNull
     (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv1 (states.mulComb kaVac dUD))
     (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv1 (states.mulComb dUD kaVac)) := by
   decide +kernel
-example : genericlift.crossNull
+theorem pin38 : genericlift.crossNull
     (wg.pairFull wg.evalPhi dF2 (kU ++ kD) kv1 (states.mulComb kaVac dUD))
     (wg.pairFull wg.evalPhi dF2 (kD ++ kU) kv1 (states.mulComb dUD kaVac)) :=
   prodComm dF2 kU kD kv1 kaVac dUD (by decide +kernel)
@@ -241,11 +243,13 @@ example : genericlift.crossNull
 /-! The window list's right sides carry the exchange row by row, at
 the two-member window. -/
 
-example : genericlift.pprowEq
+theorem pin39 : genericlift.pprowEq
     (algebra.prodRhs dF2 kU kD dWs dAU dUD)
     (algebra.prodRhs dF2 kD kU dWs dUD dAU) := by decide +kernel
-example : genericlift.pprowEq
+theorem pin40 : genericlift.pprowEq
     (algebra.prodRhs dF2 kU kD dWs dAU dUD)
     (algebra.prodRhs dF2 kD kU dWs dUD dAU) :=
   prodRhsComm dF2 kU kD dWs dAU dUD (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
+
+end algebra

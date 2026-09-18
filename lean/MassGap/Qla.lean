@@ -39,33 +39,9 @@ def memberAt {L : Type} (F : fusion.Data L) (bound C : Nat)
     ((leastwindow.suppLinks F a).all (fun l => l < bound))
       && decide (carrier.contentN F a ≤ C))) = true
 
-instance {L : Type} (F : fusion.Data L) (bound C : Nat)
+instance instQla1 {L : Type} (F : fusion.Data L) (bound C : Nat)
     (as : List (List L)) : Decidable (memberAt F bound C as) :=
   inferInstanceAs (Decidable (_ = _))
-
-/-- A member's content sits at or below the fold's own value, the
-max fold read from any seed. -/
-private theorem le_contentFold {L : Type} (F : fusion.Data L) :
-    ∀ (as : List (List L)) (m : Nat) (k : Nat), k < as.length →
-      carrier.contentN F (ground.getAt [] as k)
-        ≤ as.foldl (fun m a => Nat.max m (carrier.contentN F a)) m
-  | [], _, k, hk => absurd hk (Nat.not_lt_zero k)
-  | a :: t, m, 0, _ => by
-    show carrier.contentN F a
-      ≤ t.foldl _ (Nat.max m (carrier.contentN F a))
-    exact Nat.le_trans (ground.le_max_right m _) (seedFold F t _)
-  | a :: t, m, k + 1, hk =>
-    le_contentFold F t (Nat.max m (carrier.contentN F a)) k
-      (Nat.lt_of_succ_lt_succ hk)
-where
-  /-- The seed rides the max fold. -/
-  seedFold {L : Type} (F : fusion.Data L) :
-      ∀ (as : List (List L)) (m : Nat),
-        m ≤ as.foldl (fun m a => Nat.max m (carrier.contentN F a)) m
-    | [], m => Nat.le_refl m
-    | a :: t, m =>
-      Nat.le_trans (ground.le_max_left m (carrier.contentN F a))
-        (seedFold F t (Nat.max m (carrier.contentN F a)))
 
 /-- The self-window read: an element over a region's index is a
 member at the region's own link count and its members' largest
@@ -84,7 +60,7 @@ theorem member_self {L : Type} (F : fusion.Data L)
         ≤ leastwindow.windowContent F as))) = true
   refine ground.all_of_getAt ([] : List L) _ as (fun k hk => ?_)
   refine ground.andIntroB ?_ (decide_eq_true
-    (le_contentFold F as 0 k hk))
+    (ground.foldMax_mem (carrier.contentN F) as 0 _ (ground.mem_getAt ([] : List L) as k hk)))
   have hlen : (ground.getAt ([] : List L) as k).length = R.links :=
     ground.beqEqOf (ground.all_getAt ([] : List L) as hw k hk)
   refine ground.all_of_getAt 0 _ _ (fun j hj => ?_)
@@ -132,7 +108,7 @@ def windSupp {L : Type} (F : fusion.Data L) (R : lattice.Region)
         && (!(g (ground.getAt 0 R.head l)
               == g (ground.getAt 0 R.tail l)))))) = true
 
-instance {L : Type} (F : fusion.Data L) (R : lattice.Region)
+instance instQla2 {L : Type} (F : fusion.Data L) (R : lattice.Region)
     (g : Nat → Nat) (c : Nat) (a : List L) :
     Decidable (windSupp F R g c a) :=
   inferInstanceAs (Decidable (_ = _))
@@ -144,25 +120,6 @@ private def pickAt {L : Type} (F : fusion.Data L)
     Nat :=
   ground.getAt 0 ((carrier.support F R a).filter (fun l =>
     g (ground.getAt 0 R.tail l) == x)) 0
-
-/-- The support is a distinct key family, the range filter's own
-counts. -/
-private theorem support_distinct {L : Type} (F : fusion.Data L)
-    (R : lattice.Region) (a : List L) :
-    ground.distinctList (carrier.support F R a) := by
-  intro x hx
-  have h := ground.mem_filter_of _ _ _ hx
-  rw [show carrier.support F R a
-      = (List.range R.links).filter (fun l =>
-        !(F.eqL (ground.getAt F.unit a l) F.unit)) from rfl,
-    ground.countOf_filter _ x (List.range R.links), if_pos h.2,
-    ground.countOf_range x R.links]
-  cases hlt : decide (x < R.links) with
-  | true => rw [if_pos (of_decide_eq_true hlt)]; exact Nat.le_refl 1
-  | false =>
-    rw [if_neg (fun hc => Bool.noConfusion
-      ((decide_eq_true hc).symm.trans hlt))]
-    exact Nat.le_succ 0
 
 /-- A winding's pick at a cut sits in the support at the cut's own
 grade, the crossing witness's filter read. -/
@@ -294,7 +251,7 @@ theorem noWind {L : Type} (F : fusion.Data L) (R : lattice.Region)
       (fun v => (picks_count F R g c a hws v).1)
       (fun v hv => (picks_count F R g c a hws v).2
         (ground.countOf_pos_of_mem hv))
-      (support_distinct F R a)
+      (carrier.support_distinct F R a)
   rw [ground.length_mapRange] at hle
   exact Nat.lt_irrefl c (Nat.lt_of_le_of_lt hle h)
 

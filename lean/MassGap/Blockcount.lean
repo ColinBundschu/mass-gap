@@ -117,8 +117,8 @@ letter width (`blockSpan_width`, the exhibit's row list at the
 base and the moves' length preservation at the step) and the
 indexed provenance (`blockSpan_prov`, the head equation with every
 later member an occupied interior lowering of a member listed at
-or before its predecessor — a round's joins are the frontier's
-images and the frontier is a suffix of the pool, so the preimage's
+or before its predecessor — a round's joins are the fresh members'
+images and the fresh members are a suffix of the pool, so the preimage's
 key precedes the joined member's).
 The membership guard is `lem:lowerspan`'s span membership read at
 the joined Gram (`elim.joinIndep`, `elim.joinIndep_span`: at an
@@ -223,7 +223,7 @@ def HVec.decEq : (a b : HVec) → Decidable (a = b)
       else isFalse (fun hh => h2 (congrArg HVec.coords hh))
     else isFalse (fun hh => h1 (congrArg HVec.content hh))
 
-instance : DecidableEq HVec := HVec.decEq
+instance instBlockcount1 : DecidableEq HVec := HVec.decEq
 
 /-- The wedge tensor at a stated indicator content: the swap-graded
 sum over the arrangements, each monomial on its permutation's
@@ -358,7 +358,7 @@ private def tryAdd (pool : List HVec) (v : HVec) : List HVec :=
     then pool ++ [v] else pool
 
 /-- The lowering closure at stated seeds: each round joins the
-frontier's occupied interior lowerings at the membership guard,
+fresh members' occupied interior lowerings at the membership guard,
 the fuel the stabilization bound — `blockSpan`'s engine at the
 exhibit seeds, the exhaustion tier's at a stated top's. -/
 def closeSpan (d : Nat) : Nat → List HVec → List HVec →
@@ -381,7 +381,7 @@ def dotC (v w : HVec) : BPair := elim.dotP v.coords w.coords
 
 /-- The lowering closure at the stored descents: `closeSpan`'s
 rounds at the keyed pool's join, the unit family passing the guard,
-the frontier read off the pool. -/
+the fresh members read off the pool. -/
 def closeSpanS (d : Nat) :
     Nat → elim.PoolS HVec (List Nat) → List HVec →
       elim.PoolS HVec (List Nat) :=
@@ -399,7 +399,7 @@ closure's fuel, the closure run at the stored descents
 (`blockSpan_eq` its read at the fresh walk). -/
 def blockSpan (s : Shape) : List HVec :=
   (closeSpanS s.length (degree s * s.length)
-    (elim.seedK HVec.content dotC (exhibit s)) [exhibit s]).1
+    (elim.seedK HVec.content dotC (exhibit s)) [exhibit s]).1.reverse
 
 /-- The span's occupancy at a content, the content grading's own
 read. -/
@@ -732,21 +732,8 @@ private theorem tryAdd_split (pool : List HVec) (v : HVec) :
 private theorem foldl_tryAdd_reads (P : HVec → Prop) :
     ∀ (cands pool : List HVec), (∀ v ∈ cands, P v) →
       ∃ tail, cands.foldl tryAdd pool = pool ++ tail
-        ∧ ∀ v ∈ tail, P v
-  | [], pool, _ => ⟨[], (ground.append_nil pool).symm, memAll_nil⟩
-  | c :: cs, pool, h => by
-    show ∃ tail, cs.foldl tryAdd (tryAdd pool c) = pool ++ tail
-      ∧ ∀ v ∈ tail, P v
-    cases tryAdd_split pool c with
-    | inl he =>
-      rw [he]
-      exact foldl_tryAdd_reads P cs pool (memAll_tail h)
-    | inr he =>
-      rw [he]
-      obtain ⟨t2, ht2, hp2⟩ := foldl_tryAdd_reads P cs (pool ++ [c])
-        (memAll_tail h)
-      exact ⟨c :: t2, by rw [ht2, ground.append_assoc]; rfl,
-        memAll_cons (memAll_head h) hp2⟩
+        ∧ ∀ v ∈ tail, P v :=
+  ground.foldl_join_reads tryAdd tryAdd_split P
 
 private theorem cand_one (Q R : HVec → Prop) (d : Nat)
     (hstep : ∀ v w (j : Nat), j + 1 < d → Q v →
@@ -773,71 +760,17 @@ private theorem cand_one (Q R : HVec → Prop) (d : Nat)
         (hstep v w k (hk k (Nat.lt_succ_self k)) hv hlw) memAll_nil
     | none => exact memAll_nil
 
-private theorem cand_all (Q R : HVec → Prop) (d : Nat)
-    (hstep : ∀ v w (j : Nat), j + 1 < d → Q v →
-      lowerH j v = some w → Q w ∧ R w) :
-    ∀ fr : List HVec, (∀ v ∈ fr, Q v) →
-      ∀ w ∈ fr.flatMap (fun v => (List.range (d - 1)).flatMap
-          (fun j =>
-            match lowerH j v with
-            | some w => [w]
-            | none => [])), Q w ∧ R w
-  | [], _ => memAll_nil
-  | v :: fs, h =>
-    ground.all_of_append _ _ _
-      (cand_one Q R d hstep v (memAll_head h) (d - 1)
-        (fun _ hj => ground.succ_lt_of_lt_pred hj))
-      (cand_all Q R d hstep fs (memAll_tail h))
 
 private theorem closeSpan_reads (d : Nat) (Q R : HVec → Prop)
     (hstep : ∀ v w (j : Nat), j + 1 < d → Q v →
       lowerH j v = some w → Q w ∧ R w) :
-    ∀ (fuel : Nat) (pool frontier : List HVec),
-      (∀ v ∈ pool, Q v) → (∀ v ∈ frontier, Q v) →
-      ∃ tail, closeSpan d fuel pool frontier = pool ++ tail
-        ∧ ∀ v ∈ tail, Q v ∧ R v
-  | 0, pool, _, _, _ =>
-    ⟨[], (ground.append_nil pool).symm, memAll_nil⟩
-  | _ + 1, pool, [], _, _ =>
-    ⟨[], (ground.append_nil pool).symm, memAll_nil⟩
-  | fuel + 1, pool, v :: fs, hp, hf => by
-    show ∃ tail,
-      (let pool' :=
-        ((v :: fs).flatMap (fun v => (List.range (d - 1)).flatMap
-          (fun j =>
-            match lowerH j v with
-            | some w => [w]
-            | none => []))).foldl tryAdd pool
-       closeSpan d fuel pool' (pool'.drop pool.length))
-        = pool ++ tail ∧ ∀ v ∈ tail, Q v ∧ R v
-    obtain ⟨t1, ht1, hqr1⟩ := foldl_tryAdd_reads
-      (fun v => Q v ∧ R v)
-      ((v :: fs).flatMap (fun v => (List.range (d - 1)).flatMap
-        (fun j =>
-          match lowerH j v with
-          | some w => [w]
-          | none => [])))
-      pool (cand_all Q R d hstep (v :: fs) hf)
-    show ∃ tail,
-      closeSpan d fuel
-        (((v :: fs).flatMap (fun v =>
-          (List.range (d - 1)).flatMap (fun j =>
-            match lowerH j v with
-            | some w => [w]
-            | none => []))).foldl tryAdd pool)
-        ((((v :: fs).flatMap (fun v =>
-          (List.range (d - 1)).flatMap (fun j =>
-            match lowerH j v with
-            | some w => [w]
-            | none => []))).foldl tryAdd pool).drop pool.length)
-        = pool ++ tail ∧ ∀ v ∈ tail, Q v ∧ R v
-    rw [ht1, ground.drop_append_self pool t1]
-    obtain ⟨t2, ht2, hqr2⟩ := closeSpan_reads d Q R hstep fuel
-      (pool ++ t1) t1
-      (ground.all_of_append _ _ _ hp (fun v hv => (hqr1 v hv).1))
-      (fun v hv => (hqr1 v hv).1)
-    exact ⟨t1 ++ t2, by rw [ht2, ground.append_assoc],
-      ground.all_of_append _ _ _ hqr1 hqr2⟩
+    ∀ (fuel : Nat) (pool fresh : List HVec),
+      (∀ v ∈ pool, Q v) → (∀ v ∈ fresh, Q v) →
+      ∃ tail, closeSpan d fuel pool fresh = pool ++ tail
+        ∧ ∀ v ∈ tail, Q v ∧ R v :=
+  ground.closeBy_reads Q R _ tryAdd tryAdd_split
+    (fun v hv => cand_one Q R d hstep v hv (d - 1)
+      (fun _ hj => ground.succ_lt_of_lt_pred hj))
 
 /-! The fundamental block's span (`lem:pieri`'s one-box factor at
 `lem:adjchar`'s block, `V` itself): at one box in the first column
@@ -1168,12 +1101,6 @@ private theorem tryAdd_std (d k : Nat) (hk : k + 1 < d) :
   rw [if_pos (show elim.joinIndep elim.dotP ([] : elim.Mat)
     [BPair.ofNat 1] = true from by decide +kernel)]
 
-private theorem closeSpan_nil (d fuel : Nat) (pool : List HVec) :
-    closeSpan d fuel pool [] = pool := by
-  cases fuel with
-  | zero => rfl
-  | succ _ => rfl
-
 private theorem closeSpan_std (d : Nat) : ∀ (fuel k : Nat),
     k + 1 ≤ d → d ≤ k + fuel + 1 →
     closeSpan d fuel ((List.range (k + 1)).map (stdV d)) [stdV d k]
@@ -1235,7 +1162,8 @@ private theorem closeSpan_std (d : Nat) : ∀ (fuel k : Nat),
             ((List.range (k + 1)).map (stdV d)).length)
         = (List.range d).map (stdV d)
       rw [ground.dropLength ((List.range (k + 1)).map (stdV d)),
-        closeSpan_nil d fuel ((List.range (k + 1)).map (stdV d)), hkd]
+        (show closeSpan d fuel ((List.range (k + 1)).map (stdV d)) [] = _ from
+          ground.closeBy_nil _ _ fuel _), hkd]
 
 /-! The unit-family test's Prop reads: the Bool guard against the
 unit tail, `settledAt`'s first disjunct joined for the
@@ -1324,7 +1252,7 @@ theorem countAt_collect (pool : List HVec) (mu : List Nat)
 def sized (w : HVec) : Prop :=
   w.coords.length = (places.monomialsAt w.content).length
 
-instance (w : HVec) : Decidable (sized w) :=
+instance instBlockcount2 (w : HVec) : Decidable (sized w) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The group independence at every content the pool carries, the
@@ -1333,7 +1261,7 @@ def indepAll (pool : List HVec) : Prop :=
   ∀ mu ∈ pool.map HVec.content,
     elim.indepRows (places.monomialsAt mu).length (groupAt pool mu)
 
-instance (pool : List HVec) : Decidable (indepAll pool) :=
+instance instBlockcount3 (pool : List HVec) : Decidable (indepAll pool) :=
   inferInstanceAs (Decidable (∀ mu ∈ pool.map HVec.content,
     elim.indepRows (places.monomialsAt mu).length (groupAt pool mu)))
 
@@ -1343,7 +1271,7 @@ def settledAt (pool : List HVec) (w : HVec) : Prop :=
   allU w.coords = true
     ∨ elim.spanRel w.coords.length (groupAt pool w.content) w.coords
 
-instance (pool : List HVec) (w : HVec) : Decidable (settledAt pool w) :=
+instance instBlockcount4 (pool : List HVec) (w : HVec) : Decidable (settledAt pool w) :=
   inferInstanceAs (Decidable (_ ∨ _))
 
 /-- The read at an option: the stated predicate at a present
@@ -1353,7 +1281,7 @@ def optRead (P : HVec → Prop) [DecidablePred P] :
   | some w => P w
   | none => True
 
-instance (P : HVec → Prop) [DecidablePred P] (o : Option HVec) :
+instance instBlockcount5 (P : HVec → Prop) [DecidablePred P] (o : Option HVec) :
     Decidable (optRead P o) :=
   match o with
   | some w => inferInstanceAs (Decidable (P w))
@@ -1364,7 +1292,7 @@ adjacent lowering image is settled. -/
 def closedAt (pool : List HVec) (d : Nat) : Prop :=
   ∀ v ∈ pool, ∀ j < d - 1, optRead (settledAt pool) (lowerH j v)
 
-instance (pool : List HVec) (d : Nat) : Decidable (closedAt pool d) :=
+instance instBlockcount6 (pool : List HVec) (d : Nat) : Decidable (closedAt pool d) :=
   inferInstanceAs (Decidable (∀ v ∈ pool, ∀ j < d - 1,
     optRead (settledAt pool) (lowerH j v)))
 
@@ -1489,16 +1417,9 @@ theorem groupAt_nil_of_not_mem (pool : List HVec) (mu : List Nat)
 own extension: off the pool's contents the group is vacant. -/
 theorem indepAll_all {pool : List HVec} (h : indepAll pool)
     (mu : List Nat) :
-    elim.indepRows (places.monomialsAt mu).length
-      (groupAt pool mu) :=
-  match Nat.eq_zero_or_pos
-      (ground.countOf mu (pool.map HVec.content)) with
-  | .inr hp => h mu (ground.mem_of_countOf_pos mu _ hp)
-  | .inl hz => by
-    rw [groupAt_nil_of_not_mem pool mu (fun hm =>
-      absurd (ground.countOf_pos_of_mem hm)
-        (by rw [hz]; exact Nat.lt_irrefl 0))]
-    exact elim.indep_nil _
+    elim.indepRows (places.monomialsAt mu).length (groupAt pool mu) :=
+  elim.indepGroups_at (fun a b => a == b) (fun _ _ he => ground.listBeqEq he)
+    HVec.content HVec.coords (fun nu => (places.monomialsAt nu).length) pool h mu
 
 /-- A sized pool's group at a content has the content
 enumeration's width at every row. -/
@@ -1541,11 +1462,7 @@ theorem spanRel_groupAt_mem (P : List HVec) (x : HVec) (hx : x ∈ P)
     ground.mem_map_to HVec.coords
       (ground.mem_filter_to (fun w => w.content == x.content) hx
         (ground.listEqBeq x.content))
-  match ground.getAt_of_mem ([] : List BPair) hmem with
-  | ⟨k, hk, he⟩ =>
-    rw [← he]
-    exact elim.spanRel_getAt _ _ k hk
-      (rowsLen_groupAt x.content P hsz)
+  exact elim.spanRel_of_mem _ _ _ (rowsLen_groupAt x.content P hsz) hmem
 
 /-- The count reads the pool through its group's span alone,
 `def:blockcount`'s own well-definedness: two stated carriers whose
@@ -1785,27 +1702,13 @@ private theorem tryAdd_sem (pool : List HVec) (v : HVec)
       v.coords = true
     · refine Or.inr ⟨he.trans (if_pos h2), ?_⟩
       intro mu _
-      by_cases hmu : v.content = mu
-      · cases hmu
-        have hext := (elim.joinIndep_indep v.coords.length
-          (groupAt pool v.content) v.coords hL rfl).1 h2
-        have hgrp : groupAt (pool ++ [v]) v.content
-            = groupAt pool v.content ++ [v.coords] := by
-          rw [groupAt_append pool [v] v.content,
-            groupAt_cons v [] v.content,
-            ground.listEqBeq v.content]
-          rfl
-        rw [hgrp, ← hv]
-        exact hext
-      · have hgrp : groupAt (pool ++ [v]) mu = groupAt pool mu := by
-          rw [groupAt_append pool [v] mu, groupAt_cons v [] mu]
-          cases hb : v.content == mu with
-          | true => exact absurd (ground.listBeqEq hb) hmu
-          | false =>
-            show groupAt pool mu ++ groupAt ([] : List HVec) mu = _
-            exact ground.append_nil _
-        rw [hgrp]
-        exact indepAll_all hind mu
+      apply elim.indepGroups_append (fun a b => a == b)
+        (fun _ _ he => ground.listBeqEq he) ground.listEqBeq HVec.content HVec.coords
+        (fun nu => (places.monomialsAt nu).length) pool v (indepAll_all hind)
+      have hext := (elim.joinIndep_indep v.coords.length
+        (groupAt pool v.content) v.coords hL rfl).1 h2
+      rw [hv] at hext
+      exact hext
     · refine Or.inl ⟨he.trans (if_neg h2), Or.inr ?_⟩
       have hf : elim.joinIndep elim.dotP (groupAt pool v.content)
           v.coords = false := by
@@ -1816,55 +1719,31 @@ private theorem tryAdd_sem (pool : List HVec) (v : HVec)
       exact (elim.joinIndep_span v.coords.length _ v.coords rfl
         hind').1 hf
 
-private theorem foldl_tryAdd_sem :
-    ∀ (imgs pool : List HVec), (∀ v ∈ pool, sized v) →
-      (∀ v ∈ imgs, sized v) → indepAll pool →
-      ∃ ext, imgs.foldl tryAdd pool = pool ++ ext
-        ∧ indepAll (pool ++ ext)
-        ∧ (∀ w ∈ imgs, settledAt (pool ++ ext) w)
-        ∧ (∀ Q : HVec → Prop, (∀ v ∈ imgs, Q v) → ∀ v ∈ ext, Q v)
-  | [], pool, _, _, hind =>
-    ⟨[], (ground.append_nil pool).symm,
-      by rw [ground.append_nil pool]; exact hind,
-      memAll_nil, fun _ _ => memAll_nil⟩
-  | w :: imgs', pool, hs, hi, hind => by
-    show ∃ ext, imgs'.foldl tryAdd (tryAdd pool w) = pool ++ ext
+private theorem foldl_tryAdd_sem (imgs pool : List HVec)
+    (hs : ∀ v ∈ pool, sized v) (hi : ∀ v ∈ imgs, sized v) (hind : indepAll pool) :
+    ∃ ext, imgs.foldl tryAdd pool = pool ++ ext
       ∧ indepAll (pool ++ ext)
-      ∧ (∀ x ∈ w :: imgs', settledAt (pool ++ ext) x)
-      ∧ (∀ Q : HVec → Prop, (∀ v ∈ w :: imgs', Q v) →
-          ∀ v ∈ ext, Q v)
-    cases tryAdd_sem pool w hs (memAll_head hi) hind with
-    | inl hcase =>
-      rw [hcase.1]
-      match foldl_tryAdd_sem imgs' pool hs (memAll_tail hi)
-          hind with
-      | ⟨ext, heq, hind2, hsetts, htrans⟩ =>
-        refine ⟨ext, heq, hind2, memAll_cons ?_ hsetts,
-          fun Q hQ => htrans Q (memAll_tail hQ)⟩
-        exact settled_mono pool ext w hs
-          (htrans sized (memAll_tail hi)) (memAll_head hi) hcase.2
-    | inr hcase =>
-      rw [hcase.1]
-      match foldl_tryAdd_sem imgs' (pool ++ [w])
-          (ground.all_of_append _ _ _ hs
-            (memAll_cons (memAll_head hi) memAll_nil))
-          (memAll_tail hi) hcase.2 with
-      | ⟨ext', heq, hind2, hsetts, htrans⟩ =>
-        have hassoc : pool ++ [w] ++ ext' = pool ++ (w :: ext') := by
-          rw [ground.append_assoc]
-          rfl
-        refine ⟨w :: ext', by rw [heq, hassoc],
-          by rw [← hassoc]; exact hind2, memAll_cons ?_ ?_,
-          fun Q hQ => memAll_cons (memAll_head hQ)
-            (htrans Q (memAll_tail hQ))⟩
-        · rw [← hassoc]
-          exact settled_mono (pool ++ [w]) ext' w
-            (ground.all_of_append _ _ _ hs
-              (memAll_cons (memAll_head hi) memAll_nil))
-            (htrans sized (memAll_tail hi)) (memAll_head hi)
-            (settled_member pool w hs (memAll_head hi))
-        · rw [← hassoc]
-          exact hsetts
+      ∧ (∀ w ∈ imgs, settledAt (pool ++ ext) w)
+      ∧ (∀ Q : HVec → Prop, (∀ v ∈ imgs, Q v) → ∀ v ∈ ext, Q v) := by
+  let I := fun P : List HVec => (∀ v ∈ P, sized v) ∧ indepAll P
+  have hjoin : ∀ P v, I P → sized v → I (tryAdd P v) ∧ settledAt (tryAdd P v) v := by
+    intro P v hP hv
+    cases tryAdd_sem P v hP.1 hv hP.2 with
+    | inl h => rw [h.1]; exact ⟨hP, h.2⟩
+    | inr h =>
+      rw [h.1]
+      exact ⟨⟨ground.all_of_append _ _ _ hP.1 (memAll_cons hv memAll_nil), h.2⟩,
+        settled_member P v hP.1 hv⟩
+  have hmono : ∀ P ext v, I P → I (P ++ ext) → sized v → settledAt P v → settledAt (P ++ ext) v := by
+    intro P ext v hP hQ hv hs'
+    exact settled_mono P ext v hP.1
+      (fun x hx => hQ.1 x (ground.mem_append_right P hx)) hv hs'
+  have hsem := ground.foldl_join_sem tryAdd sized I settledAt tryAdd_split hjoin hmono
+    imgs pool ⟨hs, hind⟩ hi
+  obtain ⟨ext, he, hm⟩ := ground.foldl_join_reads tryAdd tryAdd_split (fun v => v ∈ imgs)
+    imgs pool (fun _ h => h)
+  rw [he] at hsem
+  exact ⟨ext, he, hsem.1.2, hsem.2, fun Q hQ v hv => hQ v (hm v hv)⟩
 
 /-- A per-member read over a joined image family: every member's
 image list at the read puts the joined list at it whole. -/
@@ -1919,31 +1798,31 @@ private theorem memAll_range_of (P : HVec → Prop)
     rw [ground.append_nil (g n)]
     exact h n (Nat.lt_succ_self n)
 
-/-- The image family of a frontier at a letter count: the occupied
+/-- The image family of the fresh members at a letter count: the occupied
 adjacent lowerings, the closure round's own enumeration. -/
-private def imgsOf (d : Nat) (frontier : List HVec) : List HVec :=
-  frontier.flatMap (fun v => (List.range (d - 1)).flatMap
+private def imgsOf (d : Nat) (fresh : List HVec) : List HVec :=
+  fresh.flatMap (fun v => (List.range (d - 1)).flatMap
     (fun j =>
       match lowerH j v with
       | some w => [w]
       | none => []))
 
 private theorem imgs_closed (d : Nat) (R : List HVec)
-    (frontier : List HVec)
-    (h : ∀ w ∈ imgsOf d frontier, settledAt R w) :
-    ∀ v ∈ frontier, ∀ j w, j < d - 1 → lowerH j v = some w →
+    (fresh : List HVec)
+    (h : ∀ w ∈ imgsOf d fresh, settledAt R w) :
+    ∀ v ∈ fresh, ∀ j w, j < d - 1 → lowerH j v = some w →
       settledAt R w := by
   intro v hvm j w hj heq
-  have hv := memAll_flatMap_to _ _ frontier h v hvm
+  have hv := memAll_flatMap_to _ _ fresh h v hvm
   have hj' := memAll_range_to _ _ (d - 1) hv j hj
   rw [heq] at hj'
   exact hj' w (List.Mem.head [])
 
 private theorem imgs_of_build (P : HVec → Prop) (A : HVec → Prop)
-    (d : Nat) (frontier : List HVec) (ha : ∀ v ∈ frontier, A v)
+    (d : Nat) (fresh : List HVec) (ha : ∀ v ∈ fresh, A v)
     (h : ∀ v j w, A v → j < d - 1 → lowerH j v = some w → P w) :
-    ∀ w ∈ imgsOf d frontier, P w := by
-  refine memAll_flatMap_of P A _ ?_ frontier ha
+    ∀ w ∈ imgsOf d fresh, P w := by
+  refine memAll_flatMap_of P A _ ?_ fresh ha
   intro v hav
   refine memAll_range_of P _ (d - 1) ?_
   intro j hj
@@ -1952,8 +1831,8 @@ private theorem imgs_of_build (P : HVec → Prop) (A : HVec → Prop)
   | some w => exact memAll_cons (h v j w hav hj heq) memAll_nil
 
 /-! The pool's indexed provenance (`lem:blockirr`'s `hprov`
-datum): a closure round appends only the frontier's own lowering
-images, and the frontier is a suffix of the pool, so every joined
+datum): a closure round appends only the fresh members' own lowering
+images, and the fresh members are a suffix of the pool, so every joined
 member names an occupied interior lowering of a member listed
 strictly before it. -/
 
@@ -2006,11 +1885,11 @@ private theorem prov_append (d : Nat) (pool ext : List HVec)
           exact hlow
 
 /-- The closure keeps the indexed provenance: the round's joins
-are the frontier's images, the frontier itself listed. -/
+are the fresh members' images, the fresh members themselves listed. -/
 private theorem closeSpan_prov (d : Nat) :
-    ∀ (fuel : Nat) (pool frontier : List HVec),
-      (∀ v ∈ frontier, v ∈ pool) → provAt d pool →
-      ∃ tail, closeSpan d fuel pool frontier = pool ++ tail
+    ∀ (fuel : Nat) (pool fresh : List HVec),
+      (∀ v ∈ fresh, v ∈ pool) → provAt d pool →
+      ∃ tail, closeSpan d fuel pool fresh = pool ++ tail
         ∧ provAt d (pool ++ tail)
   | 0, pool, _, _, hp =>
     ⟨[], (ground.append_nil pool).symm, by
@@ -2098,20 +1977,20 @@ private theorem closeSpan_sem (d : Nat) (meas : List Nat → Nat)
     (hdrop : ∀ (j : Nat) (v w : HVec), j < d - 1 →
       lowerH j v = some w → K v →
       meas w.content + 1 = meas v.content) :
-    ∀ (fuel : Nat) (done frontier : List HVec),
-      (∀ v ∈ done ++ frontier, sized v) →
-      (∀ v ∈ done ++ frontier, K v) →
-      indepAll (done ++ frontier) →
+    ∀ (fuel : Nat) (done fresh : List HVec),
+      (∀ v ∈ done ++ fresh, sized v) →
+      (∀ v ∈ done ++ fresh, K v) →
+      indepAll (done ++ fresh) →
       (∀ v ∈ done, ∀ j w, j < d - 1 → lowerH j v = some w →
-        settledAt (done ++ frontier) w) →
-      (∀ w ∈ frontier, meas w.content ≤ fuel) →
-      ∃ ext, closeSpan d fuel (done ++ frontier) frontier
-          = (done ++ frontier) ++ ext
-        ∧ (∀ v ∈ (done ++ frontier) ++ ext, sized v)
-        ∧ (∀ v ∈ (done ++ frontier) ++ ext, K v)
-        ∧ indepAll ((done ++ frontier) ++ ext)
-        ∧ closedAt (closeSpan d fuel (done ++ frontier) frontier) d
-  | 0, done, frontier, hs, hk, hind, hdone, hht => by
+        settledAt (done ++ fresh) w) →
+      (∀ w ∈ fresh, meas w.content ≤ fuel) →
+      ∃ ext, closeSpan d fuel (done ++ fresh) fresh
+          = (done ++ fresh) ++ ext
+        ∧ (∀ v ∈ (done ++ fresh) ++ ext, sized v)
+        ∧ (∀ v ∈ (done ++ fresh) ++ ext, K v)
+        ∧ indepAll ((done ++ fresh) ++ ext)
+        ∧ closedAt (closeSpan d fuel (done ++ fresh) fresh) d
+  | 0, done, fresh, hs, hk, hind, hdone, hht => by
     refine ⟨[], (ground.append_nil _).symm, ?_, ?_, ?_, ?_⟩
     · rw [ground.append_nil]
       exact hs
@@ -3055,12 +2934,12 @@ seeds the trace, its self-pairing off the sum's unit
 (`tryAdd_eq_L`). -/
 theorem closeSpanS_eq (d fuel : Nat) (w : HVec)
     (hw : ¬ poly.unitTail w.coords) :
-    (closeSpanS d fuel (elim.seedK HVec.content dotC w) [w]).1
+    (closeSpanS d fuel (elim.seedK HVec.content dotC w) [w]).1.reverse
       = closeSpan d fuel [w] [w] :=
   (elim.closeK_eq (fun a b : List Nat => a == b) HVec.content dotC
     (fun v => allU v.coords) (fun _ _ h => ground.listBeqEq h)
     ground.listEqBeq
-    (fun u v => BPair.oneValue_of_eq (elim.dotP_comm u.coords v.coords))
+    (fun u v => elim.dotP_comm u.coords v.coords)
     (fun v => (List.range (d - 1)).flatMap
       (fun j =>
         match lowerH j v with
@@ -3171,7 +3050,7 @@ theorem blockSpan_fund (d : Nat) (hd : 0 < d) :
 /-- `lem:blockirr`'s provenance datum: the span lists the exhibit
 first, and every later member is an occupied interior lowering of
 a member listed at or before its own predecessor — the closure
-appending frontier images alone. -/
+appending the fresh members' images alone. -/
 theorem blockSpan_prov (s : Shape) : ∃ tail,
     blockSpan s = exhibit s :: tail
       ∧ ∀ k, k < tail.length →
@@ -9698,13 +9577,6 @@ private theorem fvecOf_cons_neg (α : List Nat) (r : List BPair)
     = fvecOf α r len A C
   rw [hb]
 
-private theorem unitTail_at : ∀ (u : List BPair) (j : Nat),
-    poly.unitTail u →
-    (ground.getAt BPair.unit u j).oneValue BPair.unit
-  | [], _, _ => BPair.oneValue_refl BPair.unit
-  | _ :: _, 0, h => h.1
-  | _ :: t, j + 1, h => unitTail_at t j h.2
-
 private theorem length_chunksAt (α : List Nat) :
     ∀ (A : List HVec) (C : List (List BPair)), A.length = C.length →
       (chunksAt α A C).length
@@ -10103,7 +9975,7 @@ private theorem head_unit (B : List HVec) (cc : List Nat) (d kA : Nat)
       (BPair.oneValue_symm
         (getAt_fvecOf B cc v.content vk.coords j hjp (v :: A)
           (c :: C) hfit))
-      (unitTail_at _ j (hfv vk hvk))
+      (poly.getAt_unitTail (hfv vk hvk) j)
   have hcolunit : poly.unitTail
       (chunkCol j (chunksAt v.content (v :: A) (c :: C))) := by
     refine elim.indep_perp_null (monomialsAt v.content).length
@@ -10119,8 +9991,7 @@ private theorem head_unit (B : List HVec) (cc : List Nat) (d kA : Nat)
     · exact perp_all_rows (monomialsAt v.content).length
         ((v :: A).filter (fun w => w.content == v.content)) _
         (rowsLen_groupAt v.content (v :: A) hsz) hcolperp
-  have hhead := unitTail_at
-    (chunkCol j (chunksAt v.content (v :: A) (c :: C))) 0 hcolunit
+  have hhead := poly.getAt_unitTail hcolunit 0
   have hceq : ground.getAt BPair.unit
       (chunkCol j (chunksAt v.content (v :: A) (c :: C))) 0
       = ground.getAt BPair.unit c j := by
@@ -10847,7 +10718,7 @@ theorem act_tensorW_unit (d j : Nat) (hj : j + 1 < d) (v : HVec)
 
 /-! `lem:dualread`(ii)'s stationarity: at a shape whose exhibit's
 every interior lowering image reads the sum's unit, the closure's
-first round refuses every candidate and the frontier empties, so
+first round refuses every candidate and the fresh list empties, so
 the span is the exhibit's own singleton. -/
 
 private theorem foldl_tryAdd_unit :
@@ -10936,7 +10807,7 @@ theorem blockSpan_stationary : ∀ s : Shape,
             [exhibit s].length)
         = [exhibit s]
       rw [hround]
-      exact closeSpan_nil s.length f [exhibit s]
+      exact ground.closeBy_nil _ _ f [exhibit s]
   rw [blockSpan_eq]
   exact key (degree s * s.length)
 
@@ -11763,7 +11634,7 @@ private theorem closeSpan_flush (d : Nat) :
           poolP.length)
       = poolP
     rw [foldl_tryAdd_unit _ _ hunit, ground.dropLength]
-    exact closeSpan_nil d fp poolP
+    exact ground.closeBy_nil _ _ fp poolP
 
 private theorem closeSpan_corr (d : Nat) (meas : List Nat → Nat)
     (K : HVec → Prop)
@@ -11797,7 +11668,8 @@ private theorem closeSpan_corr (d : Nat) (meas : List Nat → Nat)
   | _ + 1, fuelP, doneQ, [], doneP, [], _, hcD, hcF, _, _, _, _, _,
       _, _ => by
     show corrP d (doneQ ++ []) (closeSpan d fuelP (doneP ++ []) [])
-    rw [closeSpan_nil d fuelP (doneP ++ [])]
+    rw [show closeSpan d fuelP (doneP ++ []) [] = doneP ++ [] from
+      ground.closeBy_nil _ _ fuelP (doneP ++ [])]
     exact corrP_append d hcD hcF
   | _ + 1, _, _, [], _, _ :: _, _, _, hcF, _, _, _, _, _, _, _ =>
     hcF.elim

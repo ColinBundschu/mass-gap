@@ -5,9 +5,12 @@ import MassGap.Serpairing
 table is a table space (`con:gentable`) over a stated key list: the
 pairing a stated weight (`Table.wt`, sparse, the coordinate fold
 at the weights, its entry at a key pair `wtAt`, one value with its
-transpose entry by entry at `symmWt`, the read at every key pair
-`wtAt_symm`, the letters' at `lettersT_symm`), its cleared partner
-at the
+transpose entry by entry at `symmWt`, the sparse one-value read at
+the transpose, the read at every key pair `wtAt_symm`, the letters'
+at `lettersT_symm`, and positive definite at a stated split of its
+dense form at `posWtRead`, the dense form `denseWt` the entries
+scattered over the keys with `denseWt_entry` its entry read), its
+cleared partner at the
 clearing (`wtInv`, `wtDet`, the dual pairing's solved witness at
 `weightRead`), the simple triples stated sparse matrices over the
 keys (`raises`, `lowers`, the coroot diagonals `hdiag`), read at
@@ -23,6 +26,9 @@ introduced from the three decided one by one at
 `dualRead_intro`), the identification of the dual block on the
 coordinate family with the dual label's block; the letters' table
 has none, its device the star (`con:slotpower`). The sparse maps
+join at one sorted walk (`sAddS` on `ground.mergeJoin`, the two
+collected maps walked together at the joined key's canonical sum,
+`sAddS_eq` its read as the collected join `sAdd`) and
 multiply at one sorted walk (`smul` on `ground.mergeCross`, the
 first's entries at their source keys against the second's at
 their target keys). The tables: the letters' table at the
@@ -73,6 +79,16 @@ its commutator and occupied (`closureAt`) over a store covering
 the positive list (`foldsCover`); a store computes height by
 height at the least occupied key whose withdrawn fold is stored
 (`rootStore`) or enters as a committed record.
+
+The coroot-column reads (`keyWeight_read`, `keyWeight_getAt`)
+identify every key weight with the stored diagonal entries at their
+stated widths. A sparse action has its signed key-weight move at
+`keyMoveRead`, both entry keys inside the generating carrier. G2's
+folded table has the simple Cartan-row moves for the standard and
+dual actions (`genG2_raisingGrade`, `genG2_loweringGrade`).
+Sparse equivalence gives one entry value at every key pair
+(`sOneValue_wtAt`), and the actual G2 simple raising and lowering
+maps are transpose pairs in both orders (`genG2_transpose`).
 -/
 
 namespace memtable
@@ -80,8 +96,6 @@ open ground
 
 /-- A sparse map over the keys: entries `(target, source, coefficient)`. -/
 abbrev SMap := List (Nat × Nat × BPair)
-
-private def keyEq (a b : Nat × Nat) : Bool := a.1 == b.1 && a.2 == b.2
 
 private def keyLt (a b : Nat × Nat) : Bool := a.1 < b.1 || (a.1 == b.1 && a.2 < b.2)
 
@@ -94,7 +108,7 @@ private def keyed (m : SMap) : List ((Nat × Nat) × BPair) :=
 coefficients joined at their canonical representatives and the
 unit entries withdrawn (`ground.collectBy`). -/
 def collect (m : SMap) : SMap :=
-  (collectBy keyLt keyEq (keyed m)).map (fun p => (p.1.1, p.1.2, p.2))
+  (collectBy keyLt pairBeq (keyed m)).map (fun p => (p.1.1, p.1.2, p.2))
 
 /-- The product of two sparse maps, the first applied after the
 second: the first's entries in their runs at the source keys walked
@@ -116,6 +130,16 @@ def sNeg (a : SMap) : SMap := a.map (fun e => (e.1, e.2.1, e.2.2.swap))
 /-- The join of two maps. -/
 def sAdd (a b : SMap) : SMap := collect (a ++ b)
 
+/-- The join of two maps at the merge: the keyed forms collected
+(their own sorted joins at collected maps) and walked together at
+the joined key's canonical sum, the unit entries withdrawn
+(`ground.mergeJoin`; `sAddS_eq` its read as the join). -/
+def sAddS (a b : SMap) : SMap :=
+  let ka := collectBy keyLt pairBeq (keyed a)
+  let kb := collectBy keyLt pairBeq (keyed b)
+  ((mergeJoin keyLt pairBeq (fun y x => (y + x).norm) (ka.length + kb.length) ka kb).filter
+    (fun p => !p.2.isUnitRep)).map (fun p => (p.1.1, p.1.2, p.2))
+
 /-- A diagonal map at a stated list. -/
 def sDiag (l : List BPair) : SMap :=
   (List.range l.length).filterMap (fun k =>
@@ -125,7 +149,7 @@ def sDiag (l : List BPair) : SMap :=
 /-- Two maps one value at every key pair either occupies
 (`ground.oneValueBy`). -/
 def sOneValue (a b : SMap) : Bool :=
-  oneValueBy keyLt keyEq (keyed a) (keyed b)
+  oneValueBy keyLt pairBeq (keyed a) (keyed b)
 
 /-- A map scaled entrywise at a natural. -/
 def sScale (n : Nat) (m : SMap) : SMap :=
@@ -161,6 +185,68 @@ def keyWeights (T : Table) : List (List BPair) :=
 def keyWeight (T : Table) (k : Nat) : List BPair :=
   getAt [] (keyWeights T) k
 
+/-- The coroot columns' fold keeps one list per table key. -/
+private theorem keyColumns_length (n : Nat) : ∀ hs : List (List BPair),
+    elim.rowsLen n hs →
+    (hs.foldr (fun h acc => List.zipWith List.cons h acc)
+      (List.replicate n [])).length = n
+  | [], _ => length_replicate [] n
+  | h :: hs, hh =>
+    length_zipWith List.cons h _ n hh.1 (keyColumns_length n hs hh.2)
+
+/-- A coroot column's entries are the diagonal reads at its key. -/
+private theorem keyColumns_get (n k : Nat) (hk : k < n) :
+    ∀ hs : List (List BPair), elim.rowsLen n hs →
+    getAt [] (hs.foldr (fun h acc => List.zipWith List.cons h acc)
+      (List.replicate n [])) k = hs.map (fun h => getAt BPair.unit h k)
+  | [], _ => getAt_replicate [] [] n k hk
+  | h :: hs, hh => by
+    change getAt [] (List.zipWith List.cons h
+      (hs.foldr (fun h acc => List.zipWith List.cons h acc) (List.replicate n []))) k
+      = getAt BPair.unit h k :: hs.map (fun h => getAt BPair.unit h k)
+    rw [getAt_zipWith BPair.unit [] [] List.cons h _ k
+      (by rw [hh.1]; exact hk) (by rw [keyColumns_length n hs hh.2]; exact hk),
+      keyColumns_get n k hk hs hh.2]
+
+/-- The key-weight list has one member per table key at the
+diagonals' stated widths. -/
+theorem keyWeights_length (T : Table) (h : elim.rowsLen T.keys T.hdiag) :
+    (keyWeights T).length = T.keys := keyColumns_length T.keys T.hdiag h
+
+/-- A key's coroot list is the diagonal family read at that key. -/
+theorem keyWeight_read (T : Table) (h : elim.rowsLen T.keys T.hdiag)
+    (k : Nat) (hk : k < T.keys) :
+    keyWeight T k = T.hdiag.map (fun d => getAt BPair.unit d k) :=
+  keyColumns_get T.keys k hk T.hdiag h
+
+/-- Each valid key has one coroot entry per simple index. -/
+theorem keyWeight_length (T : Table) (h : elim.rowsLen T.keys T.hdiag)
+    (hr : T.hdiag.length = T.rank) (k : Nat) (hk : k < T.keys) :
+    (keyWeight T k).length = T.rank := by
+  rw [keyWeight_read T h k hk, length_map, hr]
+
+/-- The coroot at a valid key and simple index is the stored
+diagonal entry, with the two indices exchanged. -/
+theorem keyWeight_getAt (T : Table) (h : elim.rowsLen T.keys T.hdiag)
+    (k i : Nat) (hk : k < T.keys) (hi : i < T.hdiag.length) :
+    getAt BPair.unit (keyWeight T k) i = getAt BPair.unit (getAt [] T.hdiag i) k := by
+  rw [keyWeight_read T h k hk,
+    getAt_map [] BPair.unit (fun d => getAt BPair.unit d k) T.hdiag i hi]
+
+/-- A sparse map's grading at signed slot weights: each entry
+joins its source's weight to the stated move at its target,
+with both keys inside the finite generating carrier. -/
+def keyMoveRead (T : Table) (M : SMap) (neg : Bool) (delta : List BPair) : Prop :=
+  delta.length = T.rank ∧
+    M.all (fun e => decide (e.1 < T.keys) && decide (e.2.1 < T.keys)
+      && decide (poly.oneValue
+        (if neg then (keyWeight T e.1).map BPair.swap else keyWeight T e.1)
+        (elim.vecAdd (if neg then (keyWeight T e.2.1).map BPair.swap else keyWeight T e.2.1)
+          delta))) = true
+
+instance instMemtable9 (T : Table) (M : SMap) (neg : Bool) (delta : List BPair) :
+    Decidable (keyMoveRead T M neg delta) := inferInstanceAs (Decidable (_ ∧ _))
+
 /-- The triple display at a simple index: `Eᵀ W = W F`,
 `E F − F E = H` and `F H − H F = 2 F`, the three one-value reads. -/
 def tripleRead (T : Table) (i : Nat) : Prop :=
@@ -168,24 +254,32 @@ def tripleRead (T : Table) (i : Nat) : Prop :=
    let F := getAt [] T.lowers i
    let H := sDiag (getAt [] T.hdiag i)
    sOneValue (smul (sT E) T.wt) (smul T.wt F)
-     && sOneValue (sAdd (smul E F) (sNeg (smul F E))) H
-     && sOneValue (sAdd (smul F H) (sNeg (smul H F))) (sAdd F F)) = true
+     && sOneValue (sAddS (smul E F) (sNeg (smul F E))) H
+     && sOneValue (sAddS (smul F H) (sNeg (smul H F))) (sAddS F F)) = true
 
-instance (T : Table) (i : Nat) : Decidable (tripleRead T i) :=
+instance instMemtable1 (T : Table) (i : Nat) : Decidable (tripleRead T i) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The identity weight at a key count. -/
 def unitWt (n : Nat) : SMap := (List.range n).map (fun k => (k, k, BPair.ofNat 1))
 
-/-- The weight's witness read: the weight against its stated
-cleared partner reads the clearing's diagonal, the solved witness
-of the dual pairing (`def:elim`'s adjugate identity). -/
-def weightRead (T : Table) : Prop :=
-  sOneValue (smul T.wt T.wtInv)
-    (sDiag (List.replicate T.keys (BPair.ofNat T.wtDet))) = true
+/-- The weight's shape read: every entry at two keys of the key
+list, the weight total over the stated list (`con:gentable`'s one
+pair read per content pair). -/
+def wtShape (T : Table) : Bool :=
+  T.wt.all (fun e => decide (e.1 < T.keys) && decide (e.2.1 < T.keys))
 
-instance (T : Table) : Decidable (weightRead T) :=
-  inferInstanceAs (Decidable (_ = _))
+/-- The weight's witness read: the weight over the key list, and
+against its stated cleared partner reading the clearing's diagonal,
+the solved witness of the dual pairing (`def:elim`'s adjugate
+identity). -/
+def weightRead (T : Table) : Prop :=
+  wtShape T = true
+    ∧ sOneValue (smul T.wt T.wtInv)
+      (sDiag (List.replicate T.keys (BPair.ofNat T.wtDet))) = true
+
+instance instMemtable6 (T : Table) : Decidable (weightRead T) :=
+  inferInstanceAs (Decidable (_ ∧ _))
 
 /-- The weight's entry at a target and a source key, the entries'
 fold. -/
@@ -193,15 +287,14 @@ def wtAt (m : SMap) (t s : Nat) : BPair :=
   m.foldl (fun acc e => if e.1 == t && e.2.1 == s then acc + e.2.2 else acc)
     BPair.unit
 
-/-- The weight's symmetry read: the weight one value with its
-transpose entry by entry, the pairing symmetric at the exchange
-(`lem:lowerspan`'s reads at it). -/
-def symmWt (T : Table) : Prop :=
-  T.wt.all (fun e =>
-    decide ((wtAt T.wt e.2.1 e.1).oneValue (wtAt T.wt e.1 e.2.1))) = true
+/-- The weight's symmetry read: the weight over the key list and
+one value with its transpose entry by entry, the pairing symmetric
+at the exchange, the sparse one-value read at the transpose
+(`sOneValue`). -/
+def symmWt (T : Table) : Prop := wtShape T = true ∧ sOneValue (sT T.wt) T.wt = true
 
-instance (T : Table) : Decidable (symmWt T) :=
-  inferInstanceAs (Decidable (_ = _))
+instance instMemtable7 (T : Table) : Decidable (symmWt T) :=
+  inferInstanceAs (Decidable (_ ∧ _))
 
 /-- The entry read as the family fold at the key pair's guard. -/
 theorem wtAt_read (m : SMap) (t s : Nat) :
@@ -212,51 +305,280 @@ theorem wtAt_read (m : SMap) (t s : Nat) :
       (fun e : Nat × Nat × BPair => e.2.2) m BPair.unit)
     (BPair.unit_add _)
 
-/-- A vacant key pair reads the sum's unit. -/
-private theorem wtAt_vacant (m : SMap) (t s : Nat)
-    (h : ∀ e ∈ m, (e.1 == t && e.2.1 == s) = false) :
-    (wtAt m t s).oneValue BPair.unit :=
-  BPair.oneValue_trans (wtAt_read m t s) (foldB_null _ m (fun e he => by
-    show (if e.1 == t && e.2.1 == s then e.2.2 else BPair.unit).oneValue
-      BPair.unit
-    rw [h e (mem_of_countOf_pos e m he),
-      if_neg (fun hh : (false : Bool) = true => Bool.noConfusion hh)]
-    exact BPair.oneValue_refl _))
+/-- Sparse maps at one value have one entry read at every
+target and source, including keys outside their supports. -/
+theorem sOneValue_wtAt (A B : SMap) (h : sOneValue A B = true) (t s : Nat) :
+    (wtAt A t s).oneValue (wtAt B t s) := by
+  have hk := keyFoldB_oneValueBy keyLt pairBeq pairBeq_read (keyed A) (keyed B) h (t, s)
+  unfold keyFoldB keyed at hk
+  rw [famFold_map, famFold_map] at hk
+  exact BPair.oneValue_trans (wtAt_read A t s)
+    (BPair.oneValue_trans hk (BPair.oneValue_symm (wtAt_read B t s)))
+
+/-- The key order is the lexicographic order at the pair's list. -/
+private theorem keyLt_lex (a b : Nat × Nat) : keyLt a b = lexLt [a.1, a.2] [b.1, b.2] := by
+  show (decide (a.1 < b.1) || (a.1 == b.1 && decide (a.2 < b.2)))
+    = (decide (a.1 < b.1) || (a.1 == b.1 && (decide (a.2 < b.2) || (a.2 == b.2 && false))))
+  cases decide (a.2 < b.2) <;> cases (a.2 == b.2) <;> cases (a.1 == b.1)
+    <;> cases decide (a.1 < b.1) <;> rfl
+
+/-- The key test is the list equality at the pair's list. -/
+private theorem pairBeq_lex (a b : Nat × Nat) : pairBeq a b = ([a.1, a.2] == [b.1, b.2]) := by
+  show (a.1 == b.1 && a.2 == b.2) = ((a.1 == b.1) && ((a.2 == b.2) && true))
+  cases (a.2 == b.2) <;> cases (a.1 == b.1) <;> rfl
+
+/-- The entry at a key pair is the keyed form's fold at the pair. -/
+private theorem wtAt_keyed (m : SMap) (t s : Nat) :
+    (wtAt m t s).oneValue (keyFoldB pairBeq (t, s) (keyed m)) :=
+  BPair.oneValue_trans (wtAt_read m t s)
+    (BPair.oneValue_of_eq (famFold_map BPair.add BPair.unit
+      (fun p : (Nat × Nat) × BPair => if pairBeq p.1 (t, s) then p.2 else BPair.unit)
+      (fun e : Nat × Nat × BPair => ((e.1, e.2.1), e.2.2)) m).symm)
+
+/-- The transpose's entry at a key pair is the entry at the
+exchanged pair. -/
+theorem wtAt_sT (m : SMap) (t s : Nat) :
+    (wtAt (sT m) t s).oneValue (wtAt m s t) := by
+  refine BPair.oneValue_trans (wtAt_read (sT m) t s) ?_
+  refine BPair.oneValue_trans
+    (BPair.oneValue_of_eq (famFold_map BPair.add BPair.unit _ _ m)) ?_
+  refine BPair.oneValue_trans (foldB_congr_members _
+    (fun e : Nat × Nat × BPair => if e.1 == s && e.2.1 == t then e.2.2 else BPair.unit)
+    m (fun e _ => ?_)) (BPair.oneValue_symm (wtAt_read m s t))
+  show (if e.2.1 == t && e.1 == s then e.2.2 else BPair.unit).oneValue
+    (if e.1 == s && e.2.1 == t then e.2.2 else BPair.unit)
+  cases h1 : (e.2.1 == t) with
+  | true =>
+    cases h2 : (e.1 == s) with
+    | true => exact BPair.oneValue_refl _
+    | false => exact BPair.oneValue_refl _
+  | false =>
+    cases h2 : (e.1 == s) with
+    | true => exact BPair.oneValue_refl _
+    | false => exact BPair.oneValue_refl _
+
+/-- The key order refuses a key against itself. -/
+private theorem keyLt_irrefl (a : Nat × Nat) : keyLt a a = false := by
+  rw [keyLt_lex]
+  exact lexLt_irrefl _
+
+/-- The key order is transitive. -/
+private theorem keyLt_trans (a b c : Nat × Nat) (h1 : keyLt a b = true)
+    (h2 : keyLt b c = true) : keyLt a c = true := by
+  rw [keyLt_lex] at h1 h2 ⊢
+  exact lexLt_trans _ _ _ h1 h2
+
+/-- Two keys at the equality refused and the order refused read the
+order the other way. -/
+private theorem keyLt_tri (a b : Nat × Nat) (he : pairBeq a b = false)
+    (hl : keyLt a b = false) : keyLt b a = true := by
+  rw [pairBeq_lex] at he
+  rw [keyLt_lex] at hl ⊢
+  exact lexLt_tri _ _ he hl
+
+/-- The keyed form of a join is the keyed forms' join. -/
+private theorem keyed_append (a b : SMap) : keyed (a ++ b) = keyed a ++ keyed b :=
+  map_append _ a b
+
+/-- The merged join is the collected join: two sorted lists at
+canonical off-unit entries reading one fold at every key
+(`ground.sorted_unique`), the merge's members the collected forms'
+own or their joins at one key (`ground.mem_mergeJoin`), the merge's
+fold the two collected forms' and the collection's the
+concatenation's. -/
+theorem sAddS_eq (a b : SMap) : sAddS a b = sAdd a b := by
+  show (((mergeJoin keyLt pairBeq (fun y x => (y + x).norm)
+      ((collectBy keyLt pairBeq (keyed a)).length + (collectBy keyLt pairBeq (keyed b)).length)
+      (collectBy keyLt pairBeq (keyed a)) (collectBy keyLt pairBeq (keyed b))).filter
+      (fun p => !p.2.isUnitRep)).map (fun p => (p.1.1, p.1.2, p.2)))
+    = (collectBy keyLt pairBeq (keyed (a ++ b))).map (fun p => (p.1.1, p.1.2, p.2))
+  refine congrArg _ ?_
+  refine sorted_unique keyLt pairBeq keyLt_trans pairBeq_read keyLt_irrefl pairBeq_refl
+    _ _ ?_ (collectBy_sorted keyLt pairBeq keyLt_trans pairBeq_read keyLt_tri _)
+    (fun p hp => ?_) (fun p hp => mem_normFilter _ p hp) ?_
+  · exact sorted_filter keyLt keyLt_trans _ _
+      (mergeJoin_sorted keyLt pairBeq _ keyLt_trans pairBeq_read keyLt_tri _ _ _
+        (Nat.le_refl _)
+        (collectBy_sorted keyLt pairBeq keyLt_trans pairBeq_read keyLt_tri _)
+        (collectBy_sorted keyLt pairBeq keyLt_trans pairBeq_read keyLt_tri _))
+  · obtain ⟨hm, hf⟩ := mem_filter_of _ _ p hp
+    refine ⟨?_, ?_⟩
+    · cases mem_mergeJoin keyLt pairBeq _ _ _ _ p hm with
+      | inl h => exact (mem_normFilter _ p h).1
+      | inr h =>
+        cases h with
+        | inl h => exact (mem_normFilter _ p h).1
+        | inr h =>
+          obtain ⟨x, y, _, _, hpx⟩ := h
+          rw [hpx]
+          exact BPair.norm_congr (BPair.norm_oneValue _)
+    · cases hu : p.2.isUnitRep with
+      | false => rfl
+      | true =>
+        rw [hu] at hf
+        exact Bool.noConfusion hf
+  · intro k
+    refine BPair.oneValue_trans (keyFoldB_unitFilter pairBeq k _) ?_
+    refine BPair.oneValue_trans (keyFoldB_mergeJoin keyLt pairBeq pairBeq_read _
+      (fun _ _ => BPair.norm_oneValue _) k _ _ _) ?_
+    refine BPair.oneValue_trans (BPair.add_congr
+      (keyFoldB_collectBy keyLt pairBeq pairBeq_read k _)
+      (keyFoldB_collectBy keyLt pairBeq pairBeq_read k _)) ?_
+    refine BPair.oneValue_trans (BPair.oneValue_symm
+      (famFold_append_ov bpairFoldLaws _ (keyed a) (keyed b))) ?_
+    rw [← keyed_append a b]
+    exact BPair.oneValue_symm (keyFoldB_collectBy keyLt pairBeq pairBeq_read k _)
+
 
 /-- At the symmetry read the entry reads one value at its two
-orders at every key pair: an occupied pair reads its own entry, an
-occupied partner reads the partner's, and a vacant pair reads the
-sum's unit both ways. -/
+orders at every key pair: the collected transpose against the
+collected weight read at every key's fold
+(`ground.keyFoldB_oneValueBy`), the transpose's entry the entry at
+the exchanged pair. -/
 theorem wtAt_symm (T : Table) (hw : symmWt T) (t s : Nat) :
     (wtAt T.wt t s).oneValue (wtAt T.wt s t) := by
-  have hall := all_of_mem _ T.wt hw
-  cases h1 : T.wt.any (fun e => e.1 == t && e.2.1 == s) with
-  | true =>
-    obtain ⟨e, he, hc⟩ := mem_of_any _ T.wt h1
-    obtain ⟨h1', h2'⟩ := andSplitB hc
-    have ht : e.1 = t := beqEqOf h1'
-    have hs : e.2.1 = s := beqEqOf h2'
-    have hx := of_decide_eq_true (hall e he)
-    rw [ht, hs] at hx
-    exact BPair.oneValue_symm hx
-  | false =>
-    have hv : (wtAt T.wt t s).oneValue BPair.unit :=
-      wtAt_vacant T.wt t s (fun e he =>
-        boolFalseOfNot (all_of_mem _ T.wt (all_not_of_any_false _ T.wt h1) e he))
-    cases h2 : T.wt.any (fun e => e.1 == s && e.2.1 == t) with
+  have h := keyFoldB_oneValueBy keyLt pairBeq pairBeq_read _ _ hw.2 (t, s)
+  refine BPair.oneValue_symm ?_
+  refine BPair.oneValue_trans (BPair.oneValue_symm (wtAt_sT T.wt t s)) ?_
+  refine BPair.oneValue_trans (wtAt_keyed (sT T.wt) t s) ?_
+  exact BPair.oneValue_trans h (BPair.oneValue_symm (wtAt_keyed T.wt t s))
+
+/-- The weight's dense form over the keys: every entry scattered
+into the null matrix at its key pair, the entries at one pair
+joined, `def:elim`'s occupancy family of entries total over the key
+list. -/
+def denseWt (T : Table) : elim.Mat :=
+  T.wt.foldl (fun M e =>
+    M.set e.1 ((getAt [] M e.1).set e.2.1
+      (getAt BPair.unit (getAt [] M e.1) e.2.1 + e.2.2)))
+    (elim.nullMat T.keys T.keys)
+
+/-- A write past the count is the list itself. -/
+private theorem set_ge {α : Type} : ∀ (m : List α) (k : Nat) (b : α),
+    m.length ≤ k → m.set k b = m
+  | [], _, _, _ => rfl
+  | _ :: _, 0, _, h => absurd h (Nat.not_succ_le_zero _)
+  | x :: t, k + 1, b, h => by
+    show x :: t.set k b = x :: t
+    rw [set_ge t k b (Nat.le_of_succ_le_succ h)]
+
+/-- One entry scattered keeps the rows' widths. -/
+private theorem rowsLen_scatter (n : Nat) (M : elim.Mat) (hr : elim.rowsLen n M)
+    (i j : Nat) (x : BPair) :
+    elim.rowsLen n (M.set i ((getAt [] M i).set j
+      (getAt BPair.unit (getAt [] M i) j + x))) := by
+  cases Nat.lt_or_ge i M.length with
+  | inl hi =>
+    refine elim.rowsLen_intro _ ?_
+    intro k hk
+    rw [length_set] at hk
+    by_cases hki : k = i
+    · rw [hki, getAt_set_self [] _ M i hi, length_set]
+      exact elim.rowsLen_getAt M i hr hi
+    · rw [getAt_set_ne [] M i k _ hki]
+      exact elim.rowsLen_getAt M k hr hk
+  | inr hi =>
+    rw [set_ge _ _ _ hi]
+    exact hr
+
+/-- A scattered entry's read at its own pair joins the entry, and at
+every further pair reads the matrix's own. -/
+private theorem scatter_entry (n : Nat) (M : elim.Mat) (hl : M.length = n)
+    (hr : elim.rowsLen n M) (i j : Nat) (x : BPair) (t s : Nat) (ht : t < n)
+    (hs : s < n) :
+    getAt BPair.unit (getAt [] (M.set i ((getAt [] M i).set j
+        (getAt BPair.unit (getAt [] M i) j + x))) t) s
+      = if i == t && j == s then getAt BPair.unit (getAt [] M t) s + x
+        else getAt BPair.unit (getAt [] M t) s := by
+  by_cases hit : i = t
+  · rw [hit, getAt_set_self [] _ M t (by rw [hl]; exact ht), eqBeqOf rfl, Bool.true_and]
+    by_cases hjs : j = s
+    · rw [hjs, getAt_set_self BPair.unit _ _ s
+        (by rw [elim.rowsLen_getAt M t hr (by rw [hl]; exact ht)]; exact hs),
+        eqBeqOf rfl, if_pos rfl]
+    · rw [getAt_set_ne BPair.unit _ j s _ (fun h => hjs h.symm),
+        neBeqOf hjs, if_neg (fun h : false = true => Bool.noConfusion h)]
+  · rw [getAt_set_ne [] M i t _ (fun h => hit h.symm), neBeqOf hit, Bool.false_and,
+      if_neg (fun h : false = true => Bool.noConfusion h)]
+
+/-- The scatter over a list reads every entry as the matrix's own
+joined to the list's fold at the pair. -/
+private theorem scatter_read (n t s : Nat) (ht : t < n) (hs : s < n) :
+    ∀ (l : SMap) (M : elim.Mat), M.length = n → elim.rowsLen n M →
+      (getAt BPair.unit (getAt [] (l.foldl (fun M e =>
+        M.set e.1 ((getAt [] M e.1).set e.2.1
+          (getAt BPair.unit (getAt [] M e.1) e.2.1 + e.2.2))) M) t) s).oneValue
+      (getAt BPair.unit (getAt [] M t) s + wtAt l t s)
+  | [], M, _, _ => BPair.oneValue_symm (BPair.add_unit _)
+  | e :: l, M, hl, hr => by
+    show (getAt BPair.unit (getAt [] (l.foldl (fun M e =>
+        M.set e.1 ((getAt [] M e.1).set e.2.1
+          (getAt BPair.unit (getAt [] M e.1) e.2.1 + e.2.2)))
+        (M.set e.1 ((getAt [] M e.1).set e.2.1
+          (getAt BPair.unit (getAt [] M e.1) e.2.1 + e.2.2)))) t) s).oneValue _
+    refine BPair.oneValue_trans (scatter_read n t s ht hs l _
+      (by rw [length_set]; exact hl) (rowsLen_scatter n M hr _ _ _)) ?_
+    rw [scatter_entry n M hl hr e.1 e.2.1 e.2.2 t s ht hs]
+    refine BPair.oneValue_trans ?_ (BPair.add_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_symm (wtAt_read (e :: l) t s)))
+    refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl _)
+      (wtAt_read l t s)) ?_
+    show ((if e.1 == t && e.2.1 == s then getAt BPair.unit (getAt [] M t) s + e.2.2
+        else getAt BPair.unit (getAt [] M t) s) + famFold BPair.add BPair.unit
+          (fun e => if e.1 == t && e.2.1 == s then e.2.2 else BPair.unit) l).oneValue
+      (getAt BPair.unit (getAt [] M t) s
+        + ((if e.1 == t && e.2.1 == s then e.2.2 else BPair.unit)
+          + famFold BPair.add BPair.unit
+            (fun e => if e.1 == t && e.2.1 == s then e.2.2 else BPair.unit) l))
+    cases e.1 == t && e.2.1 == s with
     | true =>
-      obtain ⟨e, he, hc⟩ := mem_of_any _ T.wt h2
-      obtain ⟨h1', h2'⟩ := andSplitB hc
-      have ht : e.1 = s := beqEqOf h1'
-      have hs : e.2.1 = t := beqEqOf h2'
-      have hx := of_decide_eq_true (hall e he)
-      rw [ht, hs] at hx
-      exact hx
+      rw [if_pos rfl, if_pos rfl]
+      exact BPair.oneValue_of_eq (BPair.add_assoc _ _ _)
     | false =>
-      have hv2 : (wtAt T.wt s t).oneValue BPair.unit :=
-        wtAt_vacant T.wt s t (fun e he =>
-          boolFalseOfNot (all_of_mem _ T.wt (all_not_of_any_false _ T.wt h2) e he))
-      exact BPair.oneValue_trans hv (BPair.oneValue_symm hv2)
+      rw [if_neg (fun h : false = true => Bool.noConfusion h),
+        if_neg (fun h : false = true => Bool.noConfusion h)]
+      refine BPair.oneValue_symm ?_
+      refine BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.add_assoc _ _ _).symm) ?_
+      exact BPair.add_congr (BPair.add_unit _) (BPair.oneValue_refl _)
+
+/-- The scatter over a list keeps the matrix's shape. -/
+private theorem scatter_shape (n : Nat) : ∀ (l : SMap) (M : elim.Mat), M.length = n →
+    elim.rowsLen n M →
+    (l.foldl (fun M e => M.set e.1 ((getAt [] M e.1).set e.2.1
+        (getAt BPair.unit (getAt [] M e.1) e.2.1 + e.2.2))) M).length = n
+      ∧ elim.rowsLen n (l.foldl (fun M e => M.set e.1 ((getAt [] M e.1).set e.2.1
+        (getAt BPair.unit (getAt [] M e.1) e.2.1 + e.2.2))) M)
+  | [], _, hl, hr => ⟨hl, hr⟩
+  | e :: l, M, hl, hr =>
+    scatter_shape n l _ (by rw [length_set]; exact hl) (rowsLen_scatter n M hr _ _ _)
+
+/-- The dense weight is square at the key count. -/
+theorem sqAt_denseWt (T : Table) : elim.sqAt (denseWt T) T.keys :=
+  elim.sqAt_of
+    (scatter_shape T.keys T.wt _ (elim.length_nullMat _ _) (elim.rowsLen_nullMat _ _)).1
+    (scatter_shape T.keys T.wt _ (elim.length_nullMat _ _) (elim.rowsLen_nullMat _ _)).2
+
+/-- The dense weight's entry at a key pair is the weight's entry
+there. -/
+theorem denseWt_entry (T : Table) (t s : Nat) (ht : t < T.keys) (hs : s < T.keys) :
+    (getAt BPair.unit (getAt [] (denseWt T) t) s).oneValue (wtAt T.wt t s) := by
+  refine BPair.oneValue_trans (scatter_read T.keys t s ht hs T.wt _
+    (elim.length_nullMat _ _) (elim.rowsLen_nullMat _ _)) ?_
+  show (getAt BPair.unit (getAt [] (List.replicate T.keys
+    (List.replicate T.keys BPair.unit)) t) s + wtAt T.wt t s).oneValue _
+  rw [getAt_replicate [] _ T.keys t ht, getAt_replicate BPair.unit BPair.unit T.keys s hs]
+  exact BPair.unit_add _
+
+/-- The weight's positivity read: the weight over the key list and
+positive definite at a stated split of the dense weight at the key
+count, every block on its upper side with the kernel vacant
+(`inertia.splitRead`, `inertia.pdAt`), the pairing positive
+(`lem:lowerspan`'s reads at it). -/
+def posWtRead (T : Table) {n : Nat} (sp : inertia.Split n) : Prop :=
+  wtShape T = true ∧ T.keys = n ∧ inertia.splitRead (denseWt T) sp ∧ inertia.pdAt sp
+
+instance instMemtable8 (T : Table) {n : Nat} (sp : inertia.Split n) : Decidable (posWtRead T sp) :=
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
 
 /-- The dual pair's content read: every entry at two keys of
 partnered weights, the coroot lists joining to the unit fold, the
@@ -273,7 +595,7 @@ at the sum's unit, the doubled table at the standard action
 twice. -/
 def dualInvAt (T : Table) (c : SMap) (i : Nat) : Bool :=
   let E := getAt [] T.raises i
-  sOneValue (sAdd (smul E c) (smul c (sT E))) []
+  sOneValue (sAddS (smul E c) (smul c (sT E))) []
 
 /-- The dual pair's isometry: `wtDet · cᵀ W c = ν² · wtInv` at the
 clearing `ν`, the identification of the dual block with the dual
@@ -294,7 +616,7 @@ def dualCheck (T : Table) : Bool :=
 /-- The dual pair's read (`con:memtable`). -/
 def dualRead (T : Table) : Prop := dualCheck T = true
 
-instance (T : Table) : Decidable (dualRead T) :=
+instance instMemtable4 (T : Table) : Decidable (dualRead T) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The dual pair's read at its three reads decided one by one:
@@ -327,18 +649,33 @@ def lettersT (d : Nat) : Table :=
      else BPair.unit)),
    none⟩
 
-/-- The letters' weight is symmetric: every entry diagonal. -/
+/-- The unit weight is its own transpose. -/
+private theorem sT_unitWt (d : Nat) : sT (unitWt d) = unitWt d := by
+  show ((List.range d).map (fun k => (k, k, BPair.ofNat 1))).map
+      (fun e => (e.2.1, e.1, e.2.2))
+    = (List.range d).map (fun k => (k, k, BPair.ofNat 1))
+  rw [ground.map_map]
+
+/-- The letters' weight is symmetric: the unit weight its own
+transpose, one value with itself (`ground.oneValueBy_refl`). -/
 theorem lettersT_symm (d : Nat) : symmWt (lettersT d) := by
-  refine all_of_mem_intro _ _ (fun e he => ?_)
-  obtain ⟨k, _, hk⟩ := mem_map_of _ _ e he
-  rw [← hk]
-  exact decide_eq_true (BPair.oneValue_refl _)
+  refine ⟨?_, ?_⟩
+  · show ((List.range d).map (fun k => (k, k, BPair.ofNat 1))).all
+      (fun e => decide (e.1 < d) && decide (e.2.1 < d)) = true
+    rw [all_map]
+    refine all_range_intro d (fun i hi => ?_)
+    show (decide (i < d) && decide (i < d)) = true
+    rw [decide_eq_true hi]
+    rfl
+  · show sOneValue (sT (unitWt d)) (unitWt d) = true
+    rw [sT_unitWt]
+    exact oneValueBy_refl keyLt pairBeq pairBeq_refl _
 
 /-! The spinor table at the paired keys. -/
 
 /-- A bit family's read at a key: the occupancy of the unprimed key
 `i` in the family `n`. -/
-def bitAt (n i : Nat) : Nat := n / 2 ^ i % 2
+def bitAt (n i : Nat) : Nat := baseDigit 2 i n
 
 /-- The sign at a key: the balance partner of one at an odd count
 of occupied keys below `i`, one otherwise. -/
@@ -516,6 +853,60 @@ def foldT (T : Table) (orbits : List (List Nat)) : Table :=
 the three outer simples' orbit against the center's. -/
 def genG2 : Table := foldT (definingD 4) [[0, 2, 3], [1]]
 
+/-- G2's folded coroot diagonals are two rows over its eight
+generating keys. -/
+theorem genG2_diagonals : elim.rowsLen genG2.keys genG2.hdiag
+    ∧ genG2.hdiag.length = genG2.rank := by decide +kernel
+
+/-- Every stored G2 simple map acts inside the generating key
+list, for both the raising and the lowering. -/
+theorem genG2_actionKeys : ∀ i, i < genG2.rank →
+    (getAt [] genG2.raises i).all (fun e => decide (e.1 < genG2.keys)) = true
+      ∧ (getAt [] genG2.lowers i).all (fun e => decide (e.1 < genG2.keys)) = true := by
+  decide +kernel
+
+/-- G2's generating pairing is symmetric at its folded table. -/
+theorem genG2_symmWt : symmWt genG2 := by decide +kernel
+
+/-- The actual G2 simple maps are transpose pairs at their
+sparse entry reads, in both orders. -/
+theorem genG2_transpose : ∀ i, i < genG2.rank →
+    sOneValue (sT (getAt [] genG2.raises i)) (getAt [] genG2.lowers i) = true ∧
+    sOneValue (sT (getAt [] genG2.lowers i)) (getAt [] genG2.raises i) = true := by
+  decide +kernel
+
+/-- G2's simple raising shifts the coroot weight by its
+Cartan row, at the standard and dual slot actions. -/
+theorem genG2_raisingGrade : ∀ i, i < genG2.rank →
+    keyMoveRead genG2 (getAt [] genG2.raises i) false (getAt [] sertables.tableG2.cartan i)
+      ∧ keyMoveRead genG2 (getAt [] genG2.lowers i) true (getAt [] sertables.tableG2.cartan i) := by
+  decide +kernel
+
+/-- G2's simple lowering shifts by the Cartan row's balance
+partner, at the standard and dual slot actions. -/
+theorem genG2_loweringGrade : ∀ i, i < genG2.rank →
+    keyMoveRead genG2 (getAt [] genG2.lowers i) false (poly.neg (getAt [] sertables.tableG2.cartan i))
+      ∧ keyMoveRead genG2 (getAt [] genG2.raises i) true (poly.neg (getAt [] sertables.tableG2.cartan i)) := by
+  decide +kernel
+
+/-- The shifted G2 key heights: three joined to the coroot
+functional with coefficients three and five, at its natural margin.
+Both simple Cartan rows have functional value one. -/
+def keyHeightsG2 : List Nat :=
+  (List.range genG2.keys).map (fun k => BPair.marginN
+    (BPair.ofNat 3 + BPair.ofNat 3 * getAt BPair.unit (keyWeight genG2 k) 0
+      + BPair.ofNat 5 * getAt BPair.unit (keyWeight genG2 k) 1))
+
+/-- The actual G2 keys have heights from the sum's unit through
+six, and every stored simple lowering drops the height by one. -/
+theorem genG2_height :
+    keyHeightsG2.length = genG2.keys
+      ∧ keyHeightsG2.all (fun h => decide (h ≤ 6)) = true
+      ∧ (List.range genG2.rank).all (fun i =>
+        (getAt [] genG2.lowers i).all (fun e =>
+          getAt 0 keyHeightsG2 e.1 + 1 == getAt 0 keyHeightsG2 e.2.1)) = true := by
+  decide +kernel
+
 /-! The adjoint table at a simply-laced member's displayed root
 list with the cocycle. -/
 
@@ -648,6 +1039,217 @@ def adjointT (t : gentable.Table) : Table :=
 /-- The `E_8` adjoint table. -/
 def adjointE8 : Table := adjointT sertables.tableE8
 
+/-- The entry of a join is the two maps' entries' sum. -/
+private theorem wtAt_append (a b : SMap) (t s : Nat) :
+    (wtAt (a ++ b) t s).oneValue (wtAt a t s + wtAt b t s) :=
+  BPair.oneValue_trans (wtAt_read _ t s)
+    (BPair.oneValue_trans (famFold_append_ov bpairFoldLaws _ a b)
+      (BPair.add_congr (BPair.oneValue_symm (wtAt_read a t s))
+        (BPair.oneValue_symm (wtAt_read b t s))))
+
+/-- The dense reading's entry at a key pair inside the shape is the
+matrix's own. -/
+private theorem wtAt_ofDense (M : elim.Mat) (n : Nat) (hl : M.length = n)
+    (hr : elim.rowsLen n M) (t s : Nat) (ht : t < n) (hs : s < n) :
+    (wtAt (ofDense M) t s).oneValue (getAt BPair.unit (getAt [] M t) s) := by
+  refine BPair.oneValue_trans (wtAt_read _ t s) ?_
+  show (famFold BPair.add BPair.unit
+    (fun e : Nat × Nat × BPair => if e.1 == t && e.2.1 == s then e.2.2 else BPair.unit)
+    ((List.range M.length).flatMap (fun r =>
+      (List.range (getAt [] M r).length).filterMap (fun c =>
+        if (getAt BPair.unit (getAt [] M r) c).isUnitRep then none
+        else some (r, c, getAt BPair.unit (getAt [] M r) c))))).oneValue _
+  refine BPair.oneValue_trans (famFold_flatMap_ov bpairFoldLaws _ _ _) ?_
+  rw [hl]
+  refine foldB_pickRange _ t _ n ht ?_ (fun r hr' hrt => ?_)
+  · refine BPair.oneValue_trans (famFold_filterMap_ov bpairFoldLaws _ _ _) ?_
+    rw [elim.rowsLen_getAt M t hr (by rw [hl]; exact ht)]
+    refine foldB_pickRange _ s _ n hs ?_ (fun c hc hcs => ?_)
+    · cases hu : (getAt BPair.unit (getAt [] M t) s).isUnitRep with
+      | true =>
+        rw [BPair.unit_of_isUnitRep hu]
+        exact BPair.oneValue_refl _
+      | false =>
+        show (if t == t && s == s then getAt BPair.unit (getAt [] M t) s
+          else BPair.unit).oneValue _
+        rw [eqBeqOf rfl, eqBeqOf rfl]
+        exact BPair.oneValue_refl _
+    · cases (getAt BPair.unit (getAt [] M t) c).isUnitRep with
+      | true => exact BPair.oneValue_refl _
+      | false =>
+        show (if t == t && c == s then getAt BPair.unit (getAt [] M t) c
+          else BPair.unit).oneValue _
+        rw [neBeqOf hcs]
+        cases (t == t) <;> exact BPair.oneValue_refl _
+  · refine BPair.oneValue_trans (famFold_filterMap_ov bpairFoldLaws _ _ _) ?_
+    refine foldB_nullRange _ _ (fun c _ => ?_)
+    cases (getAt BPair.unit (getAt [] M r) c).isUnitRep with
+    | true => exact BPair.oneValue_refl _
+    | false =>
+      show (if r == t && c == s then getAt BPair.unit (getAt [] M r) c
+        else BPair.unit).oneValue _
+      rw [neBeqOf hrt]
+      exact BPair.oneValue_refl _
+
+/-- The dense reading's entry at a key pair off the shape is the
+unit. -/
+private theorem wtAt_ofDense_off (M : elim.Mat) (n : Nat) (hl : M.length = n)
+    (hr : elim.rowsLen n M) (t s : Nat) (h : n ≤ t ∨ n ≤ s) :
+    (wtAt (ofDense M) t s).oneValue BPair.unit := by
+  refine BPair.oneValue_trans (wtAt_read _ t s) ?_
+  show (famFold BPair.add BPair.unit
+    (fun e : Nat × Nat × BPair => if e.1 == t && e.2.1 == s then e.2.2 else BPair.unit)
+    ((List.range M.length).flatMap (fun r =>
+      (List.range (getAt [] M r).length).filterMap (fun c =>
+        if (getAt BPair.unit (getAt [] M r) c).isUnitRep then none
+        else some (r, c, getAt BPair.unit (getAt [] M r) c))))).oneValue _
+  refine BPair.oneValue_trans (famFold_flatMap_ov bpairFoldLaws _ _ _) ?_
+  refine foldB_nullRange _ _ (fun r hr' => ?_)
+  refine BPair.oneValue_trans (famFold_filterMap_ov bpairFoldLaws _ _ _) ?_
+  refine foldB_nullRange _ _ (fun c hc => ?_)
+  cases (getAt BPair.unit (getAt [] M r) c).isUnitRep with
+  | true => exact BPair.oneValue_refl _
+  | false =>
+    show (if r == t && c == s then getAt BPair.unit (getAt [] M r) c
+      else BPair.unit).oneValue _
+    cases h with
+    | inl ht =>
+      rw [neBeqOf (Nat.ne_of_lt (Nat.lt_of_lt_of_le (by rw [← hl]; exact hr') ht))]
+      exact BPair.oneValue_refl _
+    | inr hs =>
+      rw [elim.rowsLen_getAt M r hr hr'] at hc
+      rw [neBeqOf (Nat.ne_of_lt (Nat.lt_of_lt_of_le hc hs))]
+      cases (r == t) <;> exact BPair.oneValue_refl _
+
+/-- The shifted key test reads the unshifted one. -/
+private theorem shiftBeq (n a b : Nat) : (a + n == n + b) = (a == b) := by
+  by_cases hab : a = b
+  · rw [hab, eqBeqOf rfl, Nat.add_comm]
+    exact eqBeqOf rfl
+  · rw [neBeqOf hab]
+    refine neBeqOf (fun hh => hab ?_)
+    refine addCancelL n ?_
+    rw [Nat.add_comm n a]
+    exact hh
+
+/-- The shifted map's entry at a key below the shift is the unit. -/
+private theorem wtAt_shiftS_lo (n : Nat) (m : SMap) (t s : Nat) (h : t < n ∨ s < n) :
+    (wtAt (shiftS n m) t s).oneValue BPair.unit := by
+  refine BPair.oneValue_trans (wtAt_read _ t s) ?_
+  show (famFold BPair.add BPair.unit
+    (fun e : Nat × Nat × BPair => if e.1 == t && e.2.1 == s then e.2.2 else BPair.unit)
+    (m.map (fun e => (e.1 + n, e.2.1 + n, e.2.2)))).oneValue _
+  refine BPair.oneValue_trans (BPair.oneValue_of_eq (famFold_map BPair.add BPair.unit _ _ m)) ?_
+  refine foldB_null _ m (fun e _ => ?_)
+  show (if e.1 + n == t && e.2.1 + n == s then e.2.2 else BPair.unit).oneValue BPair.unit
+  cases h with
+  | inl ht =>
+    rw [neBeqOf (fun hh : e.1 + n = t =>
+      Nat.not_lt_of_le (Nat.le_add_left n e.1) (by rw [hh]; exact ht))]
+    exact BPair.oneValue_refl _
+  | inr hs =>
+    rw [neBeqOf (fun hh : e.2.1 + n = s =>
+      Nat.not_lt_of_le (Nat.le_add_left n e.2.1) (by rw [hh]; exact hs))]
+    cases (e.1 + n == t) <;> exact BPair.oneValue_refl _
+
+/-- The shifted map's entry at shifted keys is the map's own. -/
+private theorem wtAt_shiftS_hi (n : Nat) (m : SMap) (i j : Nat) :
+    (wtAt (shiftS n m) (n + i) (n + j)).oneValue (wtAt m i j) := by
+  refine BPair.oneValue_trans (wtAt_read _ _ _) ?_
+  refine BPair.oneValue_trans ?_ (BPair.oneValue_symm (wtAt_read m i j))
+  show (famFold BPair.add BPair.unit
+    (fun e : Nat × Nat × BPair => if e.1 == n + i && e.2.1 == n + j then e.2.2 else BPair.unit)
+    (m.map (fun e => (e.1 + n, e.2.1 + n, e.2.2)))).oneValue _
+  refine BPair.oneValue_trans (BPair.oneValue_of_eq (famFold_map BPair.add BPair.unit _ _ m)) ?_
+  refine foldB_congr_members _ _ m (fun e _ => ?_)
+  show (if e.1 + n == n + i && e.2.1 + n == n + j then e.2.2 else BPair.unit).oneValue
+    (if e.1 == i && e.2.1 == j then e.2.2 else BPair.unit)
+  rw [shiftBeq n e.1 i, shiftBeq n e.2.1 j]
+  exact BPair.oneValue_refl _
+
+/-- The identity weight's entry is the key comparison's indicator. -/
+private theorem wtAt_unitWt (m i j : Nat) (hi : i < m) :
+    (wtAt (unitWt m) i j).oneValue (if j = i then BPair.ofNat 1 else BPair.unit) := by
+  refine BPair.oneValue_trans (wtAt_read _ i j) ?_
+  show (famFold BPair.add BPair.unit
+    (fun e : Nat × Nat × BPair => if e.1 == i && e.2.1 == j then e.2.2 else BPair.unit)
+    ((List.range m).map (fun k => (k, k, BPair.ofNat 1)))).oneValue _
+  refine BPair.oneValue_trans (BPair.oneValue_of_eq (famFold_map BPair.add BPair.unit _ _ _)) ?_
+  by_cases hji : j = i
+  · rw [if_pos hji, hji]
+    refine foldB_pickRange _ i _ m hi ?_ (fun k _ hki => ?_)
+    · show (if i == i && i == i then BPair.ofNat 1 else BPair.unit).oneValue _
+      rw [eqBeqOf rfl]
+      exact BPair.oneValue_refl _
+    · show (if k == i && k == i then BPair.ofNat 1 else BPair.unit).oneValue _
+      rw [neBeqOf hki]
+      exact BPair.oneValue_refl _
+  · rw [if_neg hji]
+    refine foldB_nullRange _ m (fun k _ => ?_)
+    show (if k == i && k == j then BPair.ofNat 1 else BPair.unit).oneValue _
+    by_cases hki : k = i
+    · rw [hki, neBeqOf (fun h => hji h.symm)]
+      cases (i == i) <;> exact BPair.oneValue_refl _
+    · rw [neBeqOf hki]
+      exact BPair.oneValue_refl _
+
+/-- The fold keeps the keys and the weight, so its dense weight is
+the table's own. -/
+theorem denseWt_foldT (T : Table) (o : List (List Nat)) : denseWt (foldT T o) = denseWt T := rfl
+
+/-- The adjoint table's dense weight is the Cartan reads' block
+diagonal with the root keys' identity, the pairing's stated form
+(`con:memtable`'s adjoint table). -/
+theorem denseWt_adjointT (t : gentable.Table) (hc : elim.sqAt t.cartan t.rank) :
+    elim.matOneValue (denseWt (adjointT t))
+      (inertia.blockDiag t.rank (2 * t.posFolds.length) t.cartan
+        (elim.idMat (2 * t.posFolds.length))) := by
+  have hsq : elim.sqAt (denseWt (adjointT t)) (t.rank + 2 * t.posFolds.length) :=
+    sqAt_denseWt (adjointT t)
+  have hcl := elim.sqAt_len hc
+  have hcr := elim.rowsLen_of_sqAt hc
+  refine elim.matOne_of_entries _ _ (t.rank + 2 * t.posFolds.length) (elim.sqAt_len hsq)
+    (elim.rowsLen_of_sqAt hsq)
+    (inertia.length_blockDiag _ _ _ _ hcl (elim.length_idMat _))
+    (inertia.rowsLen_blockDiag _ _ _ _ hcr (elim.rowsLen_idMat _)) ?_
+  intro i j hi hj
+  refine BPair.oneValue_trans (denseWt_entry (adjointT t) i j hi hj) ?_
+  show (wtAt (ofDense t.cartan ++ shiftS t.rank (unitWt (2 * t.posFolds.length))) i j).oneValue _
+  refine BPair.oneValue_trans (wtAt_append _ _ i j) ?_
+  cases blockIdx t.rank _ i hi with
+  | inl hia =>
+    cases blockIdx t.rank _ j hj with
+    | inl hja =>
+      rw [inertia.blockDiag_ll _ _ _ _ hcl hcr i j hia hja]
+      exact BPair.oneValue_trans
+        (BPair.add_congr (wtAt_ofDense _ _ hcl hcr i j hia hja)
+          (wtAt_shiftS_lo _ _ i j (Or.inl hia)))
+        (BPair.add_unit _)
+    | inr hex =>
+      obtain ⟨k, hk, hjk⟩ := hex
+      rw [hjk, inertia.blockDiag_lh _ _ _ _ hcl hcr i k hia hk]
+      exact BPair.oneValue_trans
+        (BPair.add_congr (wtAt_ofDense_off _ _ hcl hcr i _ (Or.inr (Nat.le_add_right _ _)))
+          (wtAt_shiftS_lo _ _ i _ (Or.inl hia)))
+        (BPair.add_unit _)
+  | inr hex =>
+    obtain ⟨k, hk, hik⟩ := hex
+    cases blockIdx t.rank _ j hj with
+    | inl hja =>
+      rw [hik, inertia.blockDiag_hl _ _ _ _ hcl (elim.length_idMat _) k j hk hja]
+      exact BPair.oneValue_trans
+        (BPair.add_congr (wtAt_ofDense_off _ _ hcl hcr _ j (Or.inl (Nat.le_add_right _ _)))
+          (wtAt_shiftS_lo _ _ _ j (Or.inr hja)))
+        (BPair.add_unit _)
+    | inr hex =>
+      obtain ⟨l, hl, hjl⟩ := hex
+      rw [hik, hjl, inertia.blockDiag_hh _ _ _ _ hcl (elim.length_idMat _) k l hk,
+        elim.getAt_idMat _ k l hk hl]
+      exact BPair.oneValue_trans
+        (BPair.add_congr (wtAt_ofDense_off _ _ hcl hcr _ _ (Or.inl (Nat.le_add_right _ _)))
+          (BPair.oneValue_trans (wtAt_shiftS_hi _ _ k l) (wtAt_unitWt _ k l hk)))
+        (BPair.unit_add _)
+
 /-- A signed root's pairing against a stated fold, the fold's coroot
 reads folded at the fold's coefficients, at the root's side. -/
 def gradeAt (t : gentable.Table) (g : List Nat) (b : SRoot) : BPair :=
@@ -720,7 +1322,7 @@ abbrev WordEntry := List Nat × Nat × SMap
 /-- The commutator of a simple raising against a stored word. -/
 def commWord (T : Table) (j : Nat) (R : SMap) : SMap :=
   let E := getAt [] T.raises j
-  sAdd (smul E R) (sNeg (smul R E))
+  sAddS (smul E R) (sNeg (smul R E))
 
 /-- A positive fold's word at a stated key over a store of words: a
 simple fold its own raising, and a further fold the commutator of
@@ -777,7 +1379,7 @@ computed one (`rootStore`) or a committed record re-read here. -/
 def closureRead (T : Table) (t : gentable.Table) (st : List WordEntry) : Prop :=
   (foldsCover t st && (List.range st.length).all (closureAt T t st)) = true
 
-instance (T : Table) (t : gentable.Table) (st : List WordEntry) :
+instance instMemtable5 (T : Table) (t : gentable.Table) (st : List WordEntry) :
     Decidable (closureRead T t st) :=
   inferInstanceAs (Decidable (_ = _))
 

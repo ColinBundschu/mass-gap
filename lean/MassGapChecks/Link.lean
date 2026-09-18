@@ -11,9 +11,11 @@ with `d_f Δ_L w + (d_f + 2) w = d_f² w` at
 `E = 3 Δ_U + Δ_L + 3 Δ_V`, the `Δ_V` read the sum's unit at the
 `V`-free state — all cleared polynomial identities in the
 residue. -/
+
+namespace link
 set_option maxHeartbeats 4000000
 
-open ground poly genericlift states kernel lap link
+open ground poly genericlift states kernel lap
 
 private def fU : FList := [(0, false)]
 private def fAdj : FList := [(0, false), (0, true)]
@@ -25,23 +27,25 @@ private def wC : Comb := [([0, 1], pOne), ([1, 0], negP)]
 private def dfp1 : PPair := ([⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩])
 private def dfp2 : PPair := ([⟨4, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩])
 
-example : combEqRead fU (linkComb fU [([0], pOne)])
+theorem pin1 : combEqRead fU (linkComb fU [([0], pOne)])
     (scaleComb cfP [([0], pOne)]) := by decide +kernel
-example : combEqRead fAdj (linkComb fAdj adjC)
+theorem pin2 : combEqRead fAdj (linkComb fAdj adjC)
     (scaleComb dfP adjC) := by decide +kernel
-example : combEqRead fUV
+theorem pin3 : combEqRead fUV
     (scaleComb dfP (linkComb fUV sC) ++ scaleComb (natP 2) sC)
     (scaleComb (pMul dfP dfp1) sC) := by decide +kernel
-example : combEqRead fUV
+theorem pin4 : combEqRead fUV
     (scaleComb dfP (linkComb fUV wC) ++ scaleComb dfp2 wC)
     (scaleComb (pMul dfP dfP) wC) := by decide +kernel
 
 /-! The module energy at the two-plaquette weights, `Δ_V` reading
 the sum's unit at the `V`-free state. -/
 
-example : combEqRead fAdj (lapComb fAdj 1 adjC) [] := by decide +kernel
-example : combEqRead fAdj
+theorem pin5 : combEqRead fAdj (lapComb fAdj 1 adjC) [] := by decide +kernel
+theorem pin6 : combEqRead fAdj
     (scaleComb (natP 3) (lapComb fAdj 0 adjC)
       ++ linkComb fAdj adjC
       ++ scaleComb (natP 3) (lapComb fAdj 1 adjC))
     (scaleComb (pMul (natP 4) dfP) adjC) := by decide +kernel
+
+end link

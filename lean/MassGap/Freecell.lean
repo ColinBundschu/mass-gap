@@ -168,7 +168,7 @@ theorem freePMat_sym (E M G : Mat) (x y : Pos) (o : Nat)
         (by rw [hGrow i hi y]; exact hj),
       matScale_entry x G i j (by rw [hGl]; exact hi)
         (by rw [hGrow i hi x]; exact hj)]
-  refine split.pSymAt_of _ o (fun i j hi hj => ?_)
+  refine elim.symAtO_of _ _ _ o (fun i j hi hj => ?_)
   rw [freePMat_entry E M G x y o hE hM hG i j hi hj,
     freePMat_entry E M G x y o hE hM hG j i hj hi, hsite i j hi hj,
     hsite j i hj hi]

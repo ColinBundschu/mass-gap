@@ -35,7 +35,7 @@ def multRead {o : Nat} (H G : Mat) (ln ld hn hd wn wd : Pos)
   certconstruct.desigWhole H G ln ld hn hd wn wd m spl sph
   ∧ psdAt spl
 
-instance {o : Nat} (H G : Mat) (ln ld hn hd wn wd : Pos) (m : Nat)
+instance instSO1 {o : Nat} (H G : Mat) (ln ld hn hd wn wd : Pos) (m : Nat)
     (spl sph : Split o) :
     Decidable (multRead H G ln ld hn hd wn wd m spl sph) :=
   inferInstanceAs (Decidable (_ ∧ _))
@@ -50,7 +50,7 @@ def symRead {n : Nat} (H g : SqMat n) (psi : Vec n) : Prop :=
   ∧ (poly.oneValue (matVec g.val psi.val) psi.val
     ∨ poly.oneValue (matVec g.val psi.val) (psi.val.map BPair.swap))
 
-instance {n : Nat} (H g : SqMat n) (psi : Vec n) :
+instance instSO2 {n : Nat} (H g : SqMat n) (psi : Vec n) :
     Decidable (symRead H g psi) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ (_ ∨ _)))
 

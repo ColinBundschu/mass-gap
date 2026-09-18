@@ -12,9 +12,11 @@ one concatenation, the `θ`-loop entering on the far boundary with
 the configuration kept), and the near case's changed-edge read at
 the shared link (the row splitting at that link's fusion row alone,
 the further boundary links at the unit law's `θ`). -/
+
+namespace stableentries
 set_option maxHeartbeats 16000000
 
-open ground lattice fusion stableentries fiberdec
+open ground lattice fusion fiberdec
 
 private def twoSq : Region :=
   ⟨8, 8, [0, 1, 2, 3, 4, 5, 6, 7], [1, 2, 3, 0, 5, 6, 7, 4],
@@ -44,21 +46,21 @@ private def fLoop7 : List places.Shape :=
 disjoint square far, the shared-link plaquette near through the
 joint vertex. -/
 
-example : nearPlaq (dataA 2) twoSq fLoop8 plaqA = true := by decide +kernel
-example : nearPlaq (dataA 2) twoSq fLoop8 plaqB = false := by decide +kernel
-example : nearPlaq (dataA 2) thetaG fLoop7 plaqBT = true := by decide +kernel
+theorem pin1 : nearPlaq (dataA 2) twoSq fLoop8 plaqA = true := by decide +kernel
+theorem pin2 : nearPlaq (dataA 2) twoSq fLoop8 plaqB = false := by decide +kernel
+theorem pin3 : nearPlaq (dataA 2) thetaG fLoop7 plaqBT = true := by decide +kernel
 
 /-! The far row's factorization: one concatenation, the `θ`-loop on
 the far boundary with the configuration kept. -/
 
-example : farRead (dataA 2) twoSq fLoop8 plaqB := by decide +kernel
-example : farRead (dataA 3) twoSq fLoop8c plaqB := by decide +kernel
+theorem pin4 : farRead (dataA 2) twoSq fLoop8 plaqB := by decide +kernel
+theorem pin5 : farRead (dataA 3) twoSq fLoop8c plaqB := by decide +kernel
 
 /-! The near case's changed-edge read at the shared link: the row
 splits at that link's fusion row alone, the further boundary links
 at the unit law's `θ`. -/
 
-example : algebra.plaqRow (dataA 2) thetaG plaqBT fLoop7
+theorem pin6 : algebra.plaqRow (dataA 2) thetaG plaqBT fLoop7
     = [[[1, 0], [1, 0], [1, 0], [3, 0], [2, 0], [2, 0], [2, 0]],
        [[1, 0], [1, 0], [1, 0], [1, 0], [2, 0], [2, 0], [2, 0]]] := by
   decide +kernel
@@ -74,32 +76,32 @@ private def R9 : Region := fiberdec.chainRegion 9
 /-! The reach at one link: the square's own rung meets its
 boundary, the rung four squares along does not. -/
 
-example : nearLink R9 (ground.getAt [] R9.plaqs 0) 0 = true := by decide +kernel
-example : nearLink R9 (ground.getAt [] R9.plaqs 0) 4 = false := by
+theorem pin7 : nearLink R9 (ground.getAt [] R9.plaqs 0) 0 = true := by decide +kernel
+theorem pin8 : nearLink R9 (ground.getAt [] R9.plaqs 0) 4 = false := by
   decide +kernel
 
 /-! The vertex-disjoint read: the four-apart pair holds it, the
 adjacent pair refuses it at the shared rung's two vertices. -/
 
-example : carrier.occupied (dataA 3) R9 (loopAt 9 0) = true := by decide +kernel
-example : disjSupp (dataA 3) R9 (loopAt 9 0) (loopAt 9 4) := by decide +kernel
-example : ¬ disjSupp (dataA 3) R9 (loopAt 9 0) (loopAt 9 1) := by
+theorem pin9 : carrier.occupied (dataA 3) R9 (loopAt 9 0) = true := by decide +kernel
+theorem pin10 : disjSupp (dataA 3) R9 (loopAt 9 0) (loopAt 9 4) := by decide +kernel
+theorem pin11 : ¬ disjSupp (dataA 3) R9 (loopAt 9 0) (loopAt 9 1) := by
   decide +kernel
 
 /-! The join's fiber: the created loop's corners at the unit law,
 every vertex multiplicity the parts' product. -/
 
-example : carrier.occupied (dataA 3) R9
+theorem pin12 : carrier.occupied (dataA 3) R9
     (joinConf (dataA 3) R9 (loopAt 9 0) (loopAt 9 4)) = true := by
   decide +kernel
-example : windowfinite.fibProd (dataA 3) R9 (loopAt 9 0) = 1 := by
+theorem pin13 : windowfinite.fibProd (dataA 3) R9 (loopAt 9 0) = 1 := by
   decide +kernel
-example : windowfinite.fibProd (dataA 3) R9 (loopAt 9 4) = 1 := by
+theorem pin14 : windowfinite.fibProd (dataA 3) R9 (loopAt 9 4) = 1 := by
   decide +kernel
-example : windowfinite.fibProd (dataA 3) R9
+theorem pin15 : windowfinite.fibProd (dataA 3) R9
     (joinConf (dataA 3) R9 (loopAt 9 0) (loopAt 9 4)) = 1 := by
   decide +kernel
-example : ((List.range R9.verts).all (fun v =>
+theorem pin16 : ((List.range R9.verts).all (fun v =>
     carrier.vmult (dataA 3) R9
         (joinConf (dataA 3) R9 (loopAt 9 0) (loopAt 9 4)) v
       == carrier.vmult (dataA 3) R9 (loopAt 9 0) v
@@ -109,12 +111,12 @@ example : ((List.range R9.verts).all (fun v =>
 /-! The factorization's theorem route at the four-apart pair with
 its computed twin. -/
 
-example : windowfinite.fibProd (dataA 3) R9
+theorem pin17 : windowfinite.fibProd (dataA 3) R9
       (joinConf (dataA 3) R9 (loopAt 9 0) (loopAt 9 4))
     = windowfinite.fibProd (dataA 3) R9 (loopAt 9 0)
       * windowfinite.fibProd (dataA 3) R9 (loopAt 9 4) :=
   fibProd_join (dataA 3) R9 (loopAt 9 0) (loopAt 9 4) (by decide +kernel)
-example : windowfinite.fibProd (dataA 3) R9
+theorem pin18 : windowfinite.fibProd (dataA 3) R9
       (joinConf (dataA 3) R9 (loopAt 9 0) (loopAt 9 4))
     = windowfinite.fibProd (dataA 3) R9 (loopAt 9 0)
       * windowfinite.fibProd (dataA 3) R9 (loopAt 9 4) := by decide +kernel
@@ -123,9 +125,9 @@ example : windowfinite.fibProd (dataA 3) R9
 factorizes at the loop, the neighbouring plaquette refuses the
 factorization through the shared vertices. -/
 
-example : farRead (dataA 3) R9 (loopAt 9 0)
+theorem pin19 : farRead (dataA 3) R9 (loopAt 9 0)
     (ground.getAt [] R9.plaqs 4) := by decide +kernel
-example : ¬ farRead (dataA 3) R9 (loopAt 9 0)
+theorem pin20 : ¬ farRead (dataA 3) R9 (loopAt 9 0)
     (ground.getAt [] R9.plaqs 1) := by decide +kernel
 
 /-! The factorization at occupied multiplicities: two adjoint
@@ -143,13 +145,15 @@ private def adjB : List places.Shape :=
         || l == 16 || l == 23 || l == 24 || l == 25
       then [1, 1, 0] else [0, 0, 0])
 
-example : windowfinite.fibProd (dataA 3) R9 adjA = 16 := by decide +kernel
-example : windowfinite.fibProd (dataA 3) R9 adjB = 16 := by decide +kernel
-example : disjSupp (dataA 3) R9 adjA adjB := by decide +kernel
-example : windowfinite.fibProd (dataA 3) R9
+theorem pin21 : windowfinite.fibProd (dataA 3) R9 adjA = 16 := by decide +kernel
+theorem pin22 : windowfinite.fibProd (dataA 3) R9 adjB = 16 := by decide +kernel
+theorem pin23 : disjSupp (dataA 3) R9 adjA adjB := by decide +kernel
+theorem pin24 : windowfinite.fibProd (dataA 3) R9
     (joinConf (dataA 3) R9 adjA adjB) = 256 := by decide +kernel
-example : windowfinite.fibProd (dataA 3) R9
+theorem pin25 : windowfinite.fibProd (dataA 3) R9
       (joinConf (dataA 3) R9 adjA adjB)
     = windowfinite.fibProd (dataA 3) R9 adjA
       * windowfinite.fibProd (dataA 3) R9 adjB :=
   fibProd_join (dataA 3) R9 adjA adjB (by decide +kernel)
+
+end stableentries

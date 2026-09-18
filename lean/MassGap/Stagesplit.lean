@@ -67,7 +67,7 @@ def facRead (P g A : Poly) (cg cA : Pos) : Prop :=
   poly.oneValue (poly.mul (poly.topped g cg) A)
     (P.map (fun x => x.scale cA))
 
-instance (P g A : Poly) (cg cA : Pos) :
+instance instStagesplit1 (P g A : Poly) (cg cA : Pos) :
     Decidable (facRead P g A cg cA) :=
   poly.decOneValue _ _
 
@@ -78,7 +78,7 @@ def bezRead (P Q g u v : Poly) (cg : Pos) (c : BPair) : Prop :=
   ∧ poly.oneValue (poly.add (poly.mul u P) (poly.mul v Q))
       (poly.mul [c] (poly.topped g cg))
 
-instance (P Q g u v : Poly) (cg : Pos) (c : BPair) :
+instance instStagesplit2 (P Q g u v : Poly) (cg : Pos) (c : BPair) :
     Decidable (bezRead P Q g u v cg c) :=
   @instDecidableAnd _ _ (@instDecidableNot _ inferInstance)
     (poly.decOneValue _ _)
@@ -91,7 +91,7 @@ def gcdRead (P Q g A B u v : Poly) (cg cA cB : Pos) (c : BPair) :
   facRead P g A cg cA ∧ facRead Q g B cg cB
   ∧ bezRead P Q g u v cg c
 
-instance (P Q g A B u v : Poly) (cg cA cB : Pos) (c : BPair) :
+instance instStagesplit3 (P Q g A B u v : Poly) (cg cA cB : Pos) (c : BPair) :
     Decidable (gcdRead P Q g A B u v cg cA cB c) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
@@ -108,7 +108,7 @@ def sqfreeRead (P g A B S u v u2 v2 : Poly) (cg cA cB cS : Pos)
   ∧ poly.oneValue (poly.add (poly.mul u2 S) (poly.mul v2 (poly.deriv S)))
       [c2]
 
-instance (P g A B S u v u2 v2 : Poly) (cg cA cB cS : Pos)
+instance instStagesplit4 (P g A B S u v u2 v2 : Poly) (cg cA cB cS : Pos)
     (c c2 : BPair) :
     Decidable (sqfreeRead P g A B S u v u2 v2 cg cA cB cS c c2) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ ¬ _ ∧ _))
@@ -157,7 +157,7 @@ def valueNullRead (E : stage.Ext) (p g A S1 : Poly)
   ∧ poly.oneValue (poly.mul (poly.monic g) S1) (poly.monic E.pol)
   ∧ stage.bracketRead ⟨g, E.lo, E.hi⟩
 
-instance (E : stage.Ext) (p g A S1 : Poly) (wn wd : Pos) :
+instance instStagesplit5 (E : stage.Ext) (p g A S1 : Poly) (wn wd : Pos) :
     Decidable (valueNullRead E p g A S1 wn wd) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _))
 
@@ -179,7 +179,7 @@ def valueUnitRead (E : stage.Ext) (p g S1 u v : Poly)
   ∧ c.offUnit
   ∧ poly.oneValue (poly.add (poly.mul u p) (poly.mul v S1)) [c]
 
-instance (E : stage.Ext) (p g S1 u v : Poly) (c : BPair)
+instance instStagesplit6 (E : stage.Ext) (p g S1 u v : Poly) (c : BPair)
     (wn wd : Pos) :
     Decidable (valueUnitRead E p g S1 u v c wn wd) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ (_ ∨ _) ∧ ¬ _ ∧ _))
@@ -200,7 +200,7 @@ def defRead (D : QDatum) : Prop :=
   BPair.oneValue (D.h * D.h + D.g) (BPair.ofNat 4 * D.q)
   ∧ BPair.unit < D.g
 
-instance (D : QDatum) : Decidable (defRead D) :=
+instance instStagesplit7 (D : QDatum) : Decidable (defRead D) :=
   inferInstanceAs (Decidable (_ ∧ _))
 
 /-- The discriminant datum `D` at `D + 4q = h²`, the trichotomy's
@@ -208,7 +208,7 @@ carrier. -/
 def discRead (h q D : BPair) : Prop :=
   BPair.oneValue (D + BPair.ofNat 4 * q) (h * h)
 
-instance (h q D : BPair) : Decidable (discRead h q D) :=
+instance instStagesplit8 (h q D : BPair) : Decidable (discRead h q D) :=
   inferInstanceAs (Decidable (BPair.oneValue _ _))
 
 /-- A stated root's relation read at the stage:
@@ -216,7 +216,7 @@ instance (h q D : BPair) : Decidable (discRead h q D) :=
 def rootRead (h q z : BPair) : Prop :=
   BPair.oneValue (z * z + q) (h * z)
 
-instance (h q z : BPair) : Decidable (rootRead h q z) :=
+instance instStagesplit9 (h q z : BPair) : Decidable (rootRead h q z) :=
   inferInstanceAs (Decidable (BPair.oneValue _ _))
 
 /-- The located pairs' relation, `z² + 1` at its below-top list:
@@ -230,7 +230,7 @@ def rootReadI (h q a b : BPair) : Prop :=
     (poly.add (poly.remMul iList [a, b] [a, b]) [q])
     (poly.mul [h] [a, b])
 
-instance (h q a b : BPair) : Decidable (rootReadI h q a b) :=
+instance instStagesplit10 (h q a b : BPair) : Decidable (rootReadI h q a b) :=
   poly.decOneValue _ _
 
 /-- The key swap at a quadratic's remainder lists: the other
@@ -250,7 +250,7 @@ def sqrtRead (a b w u v : BPair) : Prop :=
   ∧ BPair.oneValue (BPair.ofNat 2 * (v * v) + a) w
   ∧ poly.oneValue (poly.remMul iList [u, v] [u, v]) [a, b]
 
-instance (a b w u v : BPair) : Decidable (sqrtRead a b w u v) :=
+instance instStagesplit11 (a b w u v : BPair) : Decidable (sqrtRead a b w u v) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
 
 /-! The splitting data: the factor lists with the product's
@@ -271,7 +271,7 @@ def factorsRead (P : Poly) (c : Pos) (lead : BPair)
       (poly.mul [lead]
         (poly.prodFold (roots.map poly.linFacM ++ quads.map quadFacM)))
 
-instance (P : Poly) (c : Pos) (lead : BPair) (roots : List BPair)
+instance instStagesplit12 (P : Poly) (c : Pos) (lead : BPair) (roots : List BPair)
     (quads : List QDatum) :
     Decidable (factorsRead P c lead roots quads) :=
   inferInstanceAs (Decidable (¬ _ ∧ _ = _ ∧ _))
@@ -518,7 +518,7 @@ def gWitnessRead (d : Nat) (tw : TowerData d) (v w : TE d)
       ((opsAt d tw).add ((opsAt d tw).mul v w)
         ((opsAt d tw).swap (gConst d c))) = true
 
-instance (d : Nat) (tw : TowerData d) (v w : TE d) (c : BPair) :
+instance instStagesplit13 (d : Nat) (tw : TowerData d) (v w : TE d) (c : BPair) :
     Decidable (gWitnessRead d tw v w c) :=
   inferInstanceAs (Decidable (¬ _ ∧ _ = _))
 

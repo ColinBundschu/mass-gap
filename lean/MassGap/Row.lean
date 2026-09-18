@@ -76,7 +76,7 @@ member. -/
 def lenFoldRead (t : Table) (v : Nat) : Prop :=
   (lenFoldAll t).oneValue (BPair.ofNat (2 * t.lenDen * v))
 
-instance (t : Table) (v : Nat) : Decidable (lenFoldRead t v) :=
+instance instRow1 (t : Table) (v : Nat) : Decidable (lenFoldRead t v) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-! The tie analysis's content data (`prop:row`'s member ties):
@@ -117,7 +117,7 @@ def thetaFamRead (t : Table) (L : List (List BPair)) : Prop :=
           ∧ (nu = poly.pnorm (posCorootV t j)
              ∨ nu = poly.pnorm (poly.neg (posCorootV t j))))
 
-instance (t : Table) (L : List (List BPair)) :
+instance instRow2 (t : Table) (L : List (List BPair)) :
     Decidable (thetaFamRead t L) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
@@ -172,7 +172,7 @@ def sqAtRead (F : FundData) (W : List (List BPair × Bool))
     (v : List BPair) : Prop :=
   ∀ vp ∈ W, (dotB F vp.1 vp.1).oneValue (dotB F v v)
 
-instance (F : FundData) (W : List (List BPair × Bool))
+instance instRow3 (F : FundData) (W : List (List BPair × Bool))
     (v : List BPair) : Decidable (sqAtRead F W v) :=
   inferInstanceAs (Decidable (∀ vp ∈ W, _))
 
@@ -193,7 +193,7 @@ def rhoLenRead (t : Table) (F : FundData) : Prop :=
       → ∃ i, i + 1 < t.rank + 1
           ∧ j = ground.getAt 0 F.simplePos i)
 
-instance (t : Table) (F : FundData) : Decidable (rhoLenRead t F) :=
+instance instRow4 (t : Table) (F : FundData) : Decidable (rhoLenRead t F) :=
   inferInstanceAs (Decidable (∀ j, j < t.posFolds.length → _ ∧ _ ∧ _))
 
 /-! The complement join: the two guarded walks over one key list

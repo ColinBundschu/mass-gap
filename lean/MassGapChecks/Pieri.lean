@@ -14,41 +14,43 @@ off-row target's vacant read, and the depth binder's refusals at the
 vacant and the one-row widths, where the row's count is occupied
 against a vacant fusion count.
 -/
+
+namespace pieri
 set_option maxHeartbeats 4000000
 
-open ground places pieri
+open ground places
 
 /-! The rows, the one-box additions on the column multiset. -/
 
-example : oneBox 2 = [1, 0] := rfl
-example : row [1, 0] = [[2, 0], [0, 1]] := rfl
-example : row [1, 1, 0] = [[2, 1, 0], [0, 2, 0], [1, 0, 1]] := rfl
-example : row [1, 0, 0] = [[2, 0, 0], [0, 1, 0]] := rfl
-example : row [2, 0, 0] = [[3, 0, 0], [1, 1, 0]] := rfl
+theorem pin1 : oneBox 2 = [1, 0] := rfl
+theorem pin2 : row [1, 0] = [[2, 0], [0, 1]] := rfl
+theorem pin3 : row [1, 1, 0] = [[2, 1, 0], [0, 2, 0], [1, 0, 1]] := rfl
+theorem pin4 : row [1, 0, 0] = [[2, 0, 0], [0, 1, 0]] := rfl
+theorem pin5 : row [2, 0, 0] = [[3, 0, 0], [1, 1, 0]] := rfl
 
 /-! The row read against the definitional count. -/
 
-example : pieri.read [1, 0] [2, 0] := by decide +kernel
-example : pieri.read [1, 0] [0, 1] := by decide +kernel
-example : pieri.read [1, 0] [1, 1] := by decide +kernel
-example : pieri.read [1, 0, 0] [2, 0, 0] := by decide +kernel
-example : pieri.read [1, 0, 0] [0, 1, 0] := by decide +kernel
-example : pieri.read [2, 0, 0] [0, 0, 1] := by decide +kernel
+theorem pin6 : pieri.read [1, 0] [2, 0] := by decide +kernel
+theorem pin7 : pieri.read [1, 0] [0, 1] := by decide +kernel
+theorem pin8 : pieri.read [1, 0] [1, 1] := by decide +kernel
+theorem pin9 : pieri.read [1, 0, 0] [2, 0, 0] := by decide +kernel
+theorem pin10 : pieri.read [1, 0, 0] [0, 1, 0] := by decide +kernel
+theorem pin11 : pieri.read [2, 0, 0] [0, 0, 1] := by decide +kernel
 
 /-! The general theorem's own route at the same data, the grown
 column's arm beside the new column's. -/
 
-example : pieri.read [1, 0] [2, 0] :=
+theorem pin12 : pieri.read [1, 0] [2, 0] :=
   pieri.readAll [1, 0] [2, 0] (by decide +kernel) rfl
-example : pieri.read [1, 0] [1, 1] :=
+theorem pin13 : pieri.read [1, 0] [1, 1] :=
   pieri.readAll [1, 0] [1, 1] (by decide +kernel) rfl
-example : pieri.read [2, 0, 0] [0, 0, 1] :=
+theorem pin14 : pieri.read [2, 0, 0] [0, 0, 1] :=
   pieri.readAll [2, 0, 0] [0, 0, 1] (by decide +kernel) rfl
-example : pieri.read [1, 0] [0, 1] :=
+theorem pin15 : pieri.read [1, 0] [0, 1] :=
   pieri.readAll [1, 0] [0, 1] (by decide +kernel) rfl
-example : pieri.read [1, 1, 0] [1, 0, 1] :=
+theorem pin16 : pieri.read [1, 1, 0] [1, 0, 1] :=
   pieri.readAll [1, 1, 0] [1, 0, 1] (by decide +kernel) rfl
-example : pieri.read [1, 1, 0] [0, 2, 0] :=
+theorem pin17 : pieri.read [1, 1, 0] [0, 2, 0] :=
   pieri.readAll [1, 1, 0] [0, 2, 0] (by decide +kernel) rfl
 
 /-! The theorem's two binders.  The positive width is load-bearing:
@@ -58,41 +60,41 @@ width is unrefusable at either direction — a narrow or a wide
 target sits off every row member and off the fused pool alike, both
 counts vacant. -/
 
-example : ¬ pieri.read [] [] := by decide +kernel
-example : pieri.read [1, 0] [1] := by decide +kernel
-example : pieri.read [1, 0] [1, 1, 0] := by decide +kernel
+theorem pin18 : ¬ pieri.read [] [] := by decide +kernel
+theorem pin19 : pieri.read [1, 0] [1] := by decide +kernel
+theorem pin20 : pieri.read [1, 0] [1, 1, 0] := by decide +kernel
 
 /-! The complement's one-column shape and its row: the dominant
 one-box withdrawals of the full-column raise. -/
 
-example : pieri.complBox 2 = [1, 0] := rfl
-example : pieri.complBox 3 = [0, 1, 0] := rfl
-example : pieri.rowD [1, 0] = [[0, 1], [2, 0]] := rfl
-example : pieri.rowD [2, 0] = [[1, 1], [3, 0]] := rfl
-example : pieri.rowD [1, 1, 0] = [[0, 1, 1], [2, 0, 1], [1, 2, 0]] := rfl
-example : pieri.rowD [2, 2, 0] = [[1, 2, 1], [3, 1, 1], [2, 3, 0]] := rfl
+theorem pin21 : pieri.complBox 2 = [1, 0] := rfl
+theorem pin22 : pieri.complBox 3 = [0, 1, 0] := rfl
+theorem pin23 : pieri.rowD [1, 0] = [[0, 1], [2, 0]] := rfl
+theorem pin24 : pieri.rowD [2, 0] = [[1, 1], [3, 0]] := rfl
+theorem pin25 : pieri.rowD [1, 1, 0] = [[0, 1, 1], [2, 0, 1], [1, 2, 0]] := rfl
+theorem pin26 : pieri.rowD [2, 2, 0] = [[1, 2, 1], [3, 1, 1], [2, 3, 0]] := rfl
 
 /-! The complement read against the definitional count at the two
 depths, an off-row target's vacant read beside the occupied ones. -/
 
-example : pieri.readD [1, 0] [0, 1] := by decide +kernel
-example : pieri.readD [2, 0] [1, 1] := by decide +kernel
-example : pieri.readD [2, 0] [3, 0] := by decide +kernel
-example : pieri.readD [1, 1, 0] [0, 1, 1] := by decide +kernel
-example : pieri.readD [1, 1, 0] [0, 2, 0] := by decide +kernel
+theorem pin27 : pieri.readD [1, 0] [0, 1] := by decide +kernel
+theorem pin28 : pieri.readD [2, 0] [1, 1] := by decide +kernel
+theorem pin29 : pieri.readD [2, 0] [3, 0] := by decide +kernel
+theorem pin30 : pieri.readD [1, 1, 0] [0, 1, 1] := by decide +kernel
+theorem pin31 : pieri.readD [1, 1, 0] [0, 2, 0] := by decide +kernel
 
 /-! The general theorem's own route at the same data, both binders
 decided. -/
 
-example : pieri.readD [1, 0] [0, 1] :=
+theorem pin32 : pieri.readD [1, 0] [0, 1] :=
   pieri.readAllD [1, 0] [0, 1] (by decide +kernel) rfl
-example : pieri.readD [2, 0] [1, 1] :=
+theorem pin33 : pieri.readD [2, 0] [1, 1] :=
   pieri.readAllD [2, 0] [1, 1] (by decide +kernel) rfl
-example : pieri.readD [1, 1, 0] [1, 2, 0] :=
+theorem pin34 : pieri.readD [1, 1, 0] [1, 2, 0] :=
   pieri.readAllD [1, 1, 0] [1, 2, 0] (by decide +kernel) rfl
-example : pieri.readD [2, 2, 0] [1, 2, 1] :=
+theorem pin35 : pieri.readD [2, 2, 0] [1, 2, 1] :=
   pieri.readAllD [2, 2, 0] [1, 2, 1] (by decide +kernel) rfl
-example : pieri.readD [2, 2, 0] [2, 3, 0] :=
+theorem pin36 : pieri.readD [2, 2, 0] [2, 3, 0] :=
   pieri.readAllD [2, 2, 0] [2, 3, 0] (by decide +kernel) rfl
 
 /-! The depth binder is load-bearing at both ends.  At the vacant
@@ -104,8 +106,10 @@ distinguishes.  The matched width is unrefusable at either
 direction — a narrow or a wide target sits off every row member and
 off the fused pool alike. -/
 
-example : ¬ pieri.readD [] [] := by decide +kernel
-example : pieri.rowD [1] = [[1]] := rfl
-example : ¬ pieri.readD [1] [1] := by decide +kernel
-example : pieri.readD [1, 0] [1] := by decide +kernel
-example : pieri.readD [1, 0] [1, 1, 0] := by decide +kernel
+theorem pin37 : ¬ pieri.readD [] [] := by decide +kernel
+theorem pin38 : pieri.rowD [1] = [[1]] := rfl
+theorem pin39 : ¬ pieri.readD [1] [1] := by decide +kernel
+theorem pin40 : pieri.readD [1, 0] [1] := by decide +kernel
+theorem pin41 : pieri.readD [1, 0] [1, 1, 0] := by decide +kernel
+
+end pieri

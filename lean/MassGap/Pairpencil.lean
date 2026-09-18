@@ -74,8 +74,9 @@ term, the gram, withdrawn at the field's `lessUnit`), the vertex
 tensor the three
 members' weighted pairing against the links' members at every tuple
 of the links' member indices (`vertexTensor` at the blocks
-`blocksAt` and the sub-monomials `subMon`, the pairing
-`slotpower.monDotT` at the table's weight, the members
+`blocksAt` and the sub-monomials `subMon`, the pairing the
+sub-monomial's coefficient in the link member applied at the
+table's weight, `slotpower.applyWt` once per member, the members
 `vertexMember` through the window's vertex-list store `endsStore`,
 `vertListAt` the field's own read at `vertListAt_read`), and the
 contraction the fold over the vertices at the open links'
@@ -93,12 +94,14 @@ links with the labels dualized at the reversed traversals and the
 unimaged keys at the unit, `dualConf`, and the members moved,
 `movedMembers` at `moveMember` — the slot map column by column at
 the two labels' columns, `slotMap` at `slotpower.transportSlots`
-and `colsOf` at the field's column dual, the place action
-`slotpower.relabelV` along it, the star `slotpower.starAt` at the
-tie columns of the reversed ends with the clearing scaled at their
-factorials at the letters, and the table's dual pair at every
-reversed slot at a member with the clearing scaled at its clearing
-squared per slot read into the standard action — the term's entry at
+and `colsOf` at the field's column dual, the member read through
+the identification along it, `slotpower.identifyV` with its
+clearing `slotpower.identifyClear`: the place action along the
+map, the star at the tie columns of the reversed ends with the
+clearing scaled at their factorials at the letters, and the
+table's dual pair at every reversed slot at a member at the pair's
+clearing per slot, the pairing scaled at its square — the term's
+entry at
 the moved states one value with the entry at the states,
 `termTransportAt` at stated moved data and `termEntryAt` the
 contraction at stated members), the region's own action's instance
@@ -106,7 +109,45 @@ over the window list in the module that owns the action, and the
 whole `pencilRead` at the fields this module owns, every read at a
 stated index tied to the window's own; at a loop
 window the fields read off the fusion counts, `loopMag` the
-magnetic term with the identity gram, the check module's pins.
+magnetic term with the identity gram, the check module's pins.  The
+window positions whose configuration reads a stated predicate are
+`placesAt`, position nought at the unit configuration, and the slot
+diagonal at a position is its configuration's content
+(`slotDiag_posConf`).  The terms' sum at a joined term is the term
+added to the further terms' sum (`termSum_cons`), square and
+symmetric at the terms' reads (`termSum_read`), and
+`thm:truncation`'s magnetic cap is the terms' summed
+(`termSum_cap`: the terms' sum capped two-sidedly at the terms'
+count times the closure's dimension fold against the gram, the fold
+the adjoint dimension at the adjoint list,
+`inertia.capAt_add` one term at a time); and the removed block's
+floor is the electric member's read at the contents
+(`removed_floor`: at stated positions whose contents sit at or beyond
+a stated floor, the removed block's own among them, the electric
+member less the floor's multiple of the gram reads every split
+positive semidefinite,
+`inertia.blockScaled_psd` at the positions grouped by configuration,
+the gram's cross entries at the sum's unit across configurations at a
+label domain with one spelling per label).  The pencil's nesting
+read is `thm:truncation`'s projection at the window's positions: the
+head places, the positions at content at or below the truncation
+cutoff with the unit line among them, and the removed places, the
+rest (`headPlaces`, `remPlaces`); the window list at the index
+filtered at a configuration read is the window list filtered at the
+read (`slotList_filter`, `slotList_places`, a member at its kept
+position `slotList_head`), so the head places enumerate the
+truncated index's own window list in order (`posConf_head`,
+`posKey_head`, the truncated order at `length_headPlaces`); the
+head and removed places partition the order (`places_perm`) at
+their contents (`places_content`); the gram and the electric form
+join at the places with the cross block the null matrix
+(`gram_nest` at `def:carrier`'s orthogonal sum, `elec_nest`, two
+positions at distinct contents at distinct configurations), the
+electric form symmetric (`formE_symm`), the magnetic member joins
+with its coupling (`mag_nest`), and the removed block's floor reads
+the cutoff's successor (`removed_nest`).  The electric form's shape
+and entries are `sqAt_formE`, `formE_entry` and `formE_entry_unit`,
+the slot diagonal's count `length_slotDiag`.
 -/
 
 namespace pairpencil
@@ -168,6 +209,13 @@ def slotDiag {L : Type} (F : Data L) (R : Region) (ix : List (List L)) :
     List Nat :=
   0 :: (slotList F R ix).map (fun p => carrier.contentN F p.1)
 
+/-- The slot diagonal's count is the window list's with the unit
+line. -/
+theorem length_slotDiag {L : Type} (F : Data L) (R : Region) (ix : List (List L)) :
+    (slotDiag F R ix).length = (slotList F R ix).length + 1 := by
+  show ((slotList F R ix).map (fun p => carrier.contentN F p.1)).length + 1 = _
+  rw [length_map]
+
 /-- The configuration at a window position: the unit configuration
 at position zero, the window list's member past it, a position past
 the order reading the unit configuration. -/
@@ -211,6 +259,29 @@ theorem mem_slotList_of {L : Type} (F : Data L) (R : Region)
   obtain ⟨k, hk, hkp⟩ := mem_map_of _ _ p hp
   rw [← hkp]
   exact ⟨ha, hk⟩
+
+/-- Every position's configuration reads a label domain holding the
+unit at every index member's labels: the unit configuration at
+position nought, a window list member past it, and a position past
+the order at the unit configuration. -/
+theorem posConf_labels {L : Type} (F : Data L) (R : Region)
+    (ix : List (List L)) (P : L → Bool) (hunitP : P F.unit = true)
+    (hix : ∀ a, a ∈ ix → a.all P = true) :
+    ∀ i, (posConf F R ix i).all P = true
+  | 0 => all_of_mem_intro P _ (fun l hl => by
+      rw [mem_replicate_eq F.unit R.links l hl]
+      exact hunitP)
+  | k + 1 => by
+    show ((getAt (carrier.unitConf F R, []) (slotList F R ix) k).1).all P = true
+    cases Nat.lt_or_ge k (slotList F R ix).length with
+    | inl hk =>
+      exact hix _ (mem_slotList_of F R ix _
+        (mem_getAt (carrier.unitConf F R, []) _ k hk)).1
+    | inr hk =>
+      rw [getAt_over _ _ k hk]
+      exact all_of_mem_intro P _ (fun l hl => by
+        rw [mem_replicate_eq F.unit R.links l hl]
+        exact hunitP)
 
 /-- The window list over a distinct index is distinct: a member's
 count is its configuration's in the index against its key's in the
@@ -269,6 +340,29 @@ def formE (diag : List Nat) (G : Mat) : Mat :=
     (BPair.ofNat (ground.getAt 0 diag i)
       * ground.getAt BPair.unit (ground.getAt [] G i) j).norm)
 
+/-- The electric form is square at its diagonal's count. -/
+theorem sqAt_formE (diag : List Nat) (G : Mat) (n : Nat) (hdl : diag.length = n) :
+    sqAt (formE diag G) n :=
+  sqAt_of ((ground.matOf_length _ _ _).trans hdl) (rowsLen_cast hdl (rowsLen_matOf _ _ _))
+
+/-- The electric form's entry: the row's content against the gram's
+entry, at the pair's canonical read. -/
+theorem formE_entry (diag : List Nat) (G : Mat) (i j : Nat)
+    (hi : i < diag.length) (hj : j < diag.length) :
+    ground.getAt BPair.unit (ground.getAt [] (formE diag G) i) j
+      = (BPair.ofNat (ground.getAt 0 diag i)
+          * ground.getAt BPair.unit (ground.getAt [] G i) j).norm :=
+  ground.matOf_entry [] BPair.unit _ _ _ i j hi hj
+
+/-- The electric form's entry reads the sum's unit where the gram's
+does. -/
+theorem formE_entry_unit (diag : List Nat) (G : Mat) (i j : Nat)
+    (hi : i < diag.length) (hj : j < diag.length)
+    (h : (ground.getAt BPair.unit (ground.getAt [] G i) j).oneValue BPair.unit) :
+    (ground.getAt BPair.unit (ground.getAt [] (formE diag G) i) j).oneValue BPair.unit := by
+  rw [formE_entry diag G i j hi hj]
+  exact BPair.oneValue_trans (BPair.norm_oneValue _) (oneValue_mul_unit _ _ h)
+
 /-- The pair `(α E : β M)`'s site datum `H([α : β])` at the window:
 `pencil.rayH` at the electric member's form against the gram
 (`formE`, each row at its slot's content) and the magnetic matrix,
@@ -293,12 +387,11 @@ def vertListAt {L : Type} [DecidableEq L] (F : Data L) (R : Region)
     (ix : List (List L)) (es : List (L × Bool)) : Option fiber.VList :=
   keyAt (fun a b => decide (a = b)) (F.pres.vertList es) es (endsStore F R ix)
 
-/-- The stored read is the field's: every store entry holds the
-field's value at its key, the store built by joins at the field's
-own reads. -/
-theorem vertListAt_read {L : Type} [DecidableEq L] (F : Data L) (R : Region)
-    (ix : List (List L)) (es : List (L × Bool)) :
-    vertListAt F R ix es = F.pres.vertList es := by
+/-- Every store entry holds the field's value at its key, the store
+built by joins at the field's own reads. -/
+private theorem endsStore_mem {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) :
+    ∀ e, e ∈ endsStore F R ix → e.2 = F.pres.vertList e.1 := by
   have hv : ∀ (a : List L) (vs : List Nat)
       (acc : List (List (L × Bool) × Option fiber.VList)),
       (∀ e, e ∈ acc → e.2 = F.pres.vertList e.1) →
@@ -343,18 +436,54 @@ theorem vertListAt_read {L : Type} [DecidableEq L] (F : Data L) (R : Region)
     induction l with
     | nil => intro acc h; exact h
     | cons a t ih => intro acc h; exact ih _ (hv a _ acc h)
-  exact keyAt_store (fun a b => decide (a = b)) (fun _ _ h => of_decide_eq_true h)
-    F.pres.vertList es _ (hst (carrier.unitConf F R :: ix) [] (fun _ h => nomatch h))
+  exact hst (carrier.unitConf F R :: ix) [] (fun _ h => nomatch h)
+
+/-- The stored read is the field's (`endsStore_mem`). -/
+theorem vertListAt_read {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) (es : List (L × Bool)) :
+    vertListAt F R ix es = F.pres.vertList es :=
+  keyAt_store (fun a b => decide (a = b)) (fun _ _ h => of_decide_eq_true h)
+    F.pres.vertList es _ (endsStore_mem F R ix)
+
+/-- The vertex Grams read once per incident-end list of the window,
+the vertex-list store's lists at their Grams (`fiber.listGram`). -/
+def gramStore {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) : List (List (L × Bool) × Option (Mat × Pos)) :=
+  (endsStore F R ix).map (fun e => (e.1, e.2.map fiber.listGram))
 
 /-- The vertex Gram at an incident-end list through the window's
-vertex-list store: the list's own Gram where the list is stated,
-the two-end coevaluation's count at the label data off it
-(`fusion.vertGramOf` at the stored read). -/
+Gram store: the list's own Gram where the list is stated, the
+two-end coevaluation's count at the label data off it
+(`fusion.vertGramOf` at the stored read; `vertGramAt_read` its
+read as the field's list's Gram). -/
 def vertGramAt {L : Type} [DecidableEq L] (F : Data L) (R : Region)
     (ix : List (List L)) (es : List (L × Bool)) : Option (Mat × Pos) :=
-  match vertListAt F R ix es with
-  | some l => some (fiber.listGram l)
+  match keyAt (fun a b => decide (a = b)) ((F.pres.vertList es).map fiber.listGram) es
+      (gramStore F R ix) with
+  | some g => some g
   | none => fiber.twoEndGram F.eqL F.dual F.dim es
+
+/-- The stored Gram is the field's list's Gram at every incident-end
+list, the store's entries the field's own (`endsStore_mem`). -/
+theorem vertGramAt_read {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) (es : List (L × Bool)) :
+    vertGramAt F R ix es
+      = (match (F.pres.vertList es).map fiber.listGram with
+        | some g => some g
+        | none => fiber.twoEndGram F.eqL F.dual F.dim es) := by
+  have h : keyAt (fun a b => decide (a = b)) ((F.pres.vertList es).map fiber.listGram) es
+      (gramStore F R ix) = (F.pres.vertList es).map fiber.listGram :=
+    keyAt_store (fun a b => decide (a = b)) (fun _ _ h => of_decide_eq_true h)
+      (fun es => (F.pres.vertList es).map fiber.listGram) es _ (fun e he => by
+        obtain ⟨e', he', hee⟩ := ground.mem_map_of _ _ e he
+        rw [← hee]
+        show e'.2.map fiber.listGram = (F.pres.vertList e'.1).map fiber.listGram
+        rw [endsStore_mem F R ix e' he'])
+  show (match keyAt (fun a b => decide (a = b)) ((F.pres.vertList es).map fiber.listGram) es
+      (gramStore F R ix) with
+    | some g => some g
+    | none => fiber.twoEndGram F.eqL F.dual F.dim es) = _
+  rw [h]
 
 /-- The loop configuration at a label around a plaquette: the
 label at the boundary's forward entries, its dual at the reversed,
@@ -451,7 +580,7 @@ def gramBlockRead {L : Type} [DecidableEq L] (F : Data L) (R : Region)
             (ground.getAt [] G i) j).oneValue BPair.unit)))) = true
   ∧ memberBlocks F R ix c G = true
 
-instance {L : Type} [DecidableEq L] (F : Data L) (R : Region) (n : Nat)
+instance instPairpencil1 {L : Type} [DecidableEq L] (F : Data L) (R : Region) (n : Nat)
     (ix : List (List L)) (c : Pos) (G : Mat) : Decidable (gramBlockRead F R n ix c G) :=
   inferInstanceAs (Decidable (_ ∧ _ = _ ∧ _ = _))
 
@@ -477,7 +606,7 @@ def termSupport {L : Type} (F : Data L) (R : Region) (n : Nat)
           (ground.getAt [] M i) j).oneValue BPair.unit)
         || rowPair F R ix p i j))) = true
 
-instance {L : Type} (F : Data L) (R : Region) (n : Nat) (ix : List (List L))
+instance instPairpencil2 {L : Type} (F : Data L) (R : Region) (n : Nat) (ix : List (List L))
     (p : List (Nat × Bool)) (M : Mat) :
     Decidable (termSupport F R n ix p M) :=
   inferInstanceAs (Decidable (_ = _))
@@ -539,16 +668,17 @@ state's key with the list's clearing, vacant where the list is
 unstated. -/
 def vertexMember {L : Type} [DecidableEq L] (F : Data L) (R : Region)
     (ix : List (List L)) (a : List L) (k : List Nat) (v : Nat) :
-    Option (slotpower.SVec × Pos) :=
+    Option (slotpower.WVec × Pos) :=
   match vertListAt F R ix (carrier.incidentEnds F R a v) with
   | none => none
-  | some l => some (getAt [] l.members.list (getAt 0 k v), l.clear)
+  | some l =>
+    some (⟨_, getAt (slotpower.emptyV _) l.members.list (getAt 0 k v)⟩, l.clear)
 
 /-- A state's members at its fiber key, one per vertex of the
 region. -/
 def stateMembers {L : Type} [DecidableEq L] (F : Data L) (R : Region)
     (ix : List (List L)) (a : List L) (k : List Nat) :
-    List (Option (slotpower.SVec × Pos)) :=
+    List (Option (slotpower.WVec × Pos)) :=
   (List.range R.verts).map (vertexMember F R ix a k)
 
 /-- The slot map of a moved vertex: per occupied end of the moved
@@ -584,13 +714,18 @@ def slotMap {L : Type} (F : Data L) (R R' : Region) (s : Nat → Nat)
     (([], [], []), 0)).1
 
 /-- A link's coevaluation data at its combined signature: the
-invariant list, the Gram's adjugate and the determinant
-(`fiber.linkList`, `fiber.coevW`). -/
+invariant list, the list applied at the table's weight
+(`slotpower.applyWt`, the list itself at the unit weight), the
+Gram's adjugate and the determinant (`fiber.linkList`,
+`fiber.coevW`). -/
 def linkData {L : Type} (F : Data L) (t : L × Option Bool × L) :
-    List slotpower.SVec × elim.Mat × BPair :=
+    slotpower.WList × slotpower.WList × elim.Mat × BPair :=
   let lg := F.pres.linkList t
   let cw := fiber.coevW lg.2
-  (lg.1, cw.1, cw.2)
+  (lg.1,
+   ⟨lg.1.1, if slotpower.unitWtRead F.pres.table then lg.1.2
+     else lg.1.2.map (slotpower.applyWt F.pres.table)⟩,
+   cw.1, cw.2)
 
 /-- The window's link keys: per pair of the window's labels, the
 unit among them, a boundary link's key, and a label's own off the
@@ -604,7 +739,7 @@ def linkKeys {L : Type} [DecidableEq L] (F : Data L) (ix : List (List L)) :
 /-- The link data read once per key of the window: the store over
 the window's keys, the read itself off them. -/
 def linkDataAt {L : Type} [DecidableEq L] (F : Data L) (ix : List (List L))
-    (t : L × Option Bool × L) : List slotpower.SVec × elim.Mat × BPair :=
+    (t : L × Option Bool × L) : slotpower.WList × slotpower.WList × elim.Mat × BPair :=
   keyAt (fun a b => decide (a = b)) (linkData F t) t
     ((linkKeys F ix).map (fun s => (s, linkData F s)))
 
@@ -639,22 +774,24 @@ def blocksAt (ws : List (Nat × Nat)) (bd : List (Option Bool)) (ws' : List (Nat
 member indices the three members' pairing against the links'
 members at the vertex's combined slots, the coordinate pairing on
 the vertex's slot power — one value per tuple in the tuples'
-enumeration order, the fold over the three members' monomial
-triples with each link's members read once per triple at the
-sub-monomial, a triple withdrawn where some link's every read is
-the sum's unit (its product with every tuple's further factors the
-unit) and the tuples' sums reduced once at the fold's end. -/
-def vertexTensor (T : memtable.Table) (uw : Bool) (mi mw mj : slotpower.SVec)
+enumeration order, the links' members entering applied at the
+table's weight (`slotpower.applyWt` at the link data,
+`slotpower.monDotT_apply`), the fold over the three members'
+monomial triples with each link's members read at the triple's
+sub-monomial's coefficient (`slotpower.coefAt`), a triple withdrawn
+where some link's every read is the sum's unit (its product with
+every tuple's further factors the unit) and the tuples' sums
+reduced once at the fold's end. -/
+def vertexTensor (mi mw mj : slotpower.WVec)
     (blocks : List (Nat × Nat × Nat × Nat × Nat × Nat))
-    (Ys : List (List slotpower.SVec)) : List BPair :=
-  let triples := mi.flatMap (fun a =>
-    mw.flatMap (fun w => mj.map (fun b =>
+    (Ys : List slotpower.WList) : List BPair :=
+  let triples := mi.2.val.flatMap (fun a =>
+    mw.2.val.flatMap (fun w => mj.2.val.map (fun b =>
       ((a.2 * w.2 * b.2).norm, blocks.map (subMon a.1 w.1 b.1)))))
-  let tuples := ground.prodLists (Ys.map (fun Y => List.range Y.length))
+  let tuples := ground.prodLists (Ys.map (fun Y => List.range Y.2.length))
   (triples.foldl (fun acc tr =>
     let vecs := (List.range Ys.length).map (fun e =>
-      let m := getAt [] tr.2 e
-      (getAt [] Ys e).map (fun y => slotpower.monDotT T uw m y))
+      (getAt ⟨0, []⟩ Ys e).2.map (fun y => slotpower.coefAt (getAt [] tr.2 e) y))
     if vecs.any (fun v => v.all (fun x => decide (x.oneValue BPair.unit))) then acc
     else
       List.zipWith (fun t a =>
@@ -670,10 +807,10 @@ and a link met at its second end closes at the adjugate weight of
 its two members, the value the vertex tensor's at the tuple; the
 assignments collected at their keys in the keys' order with the
 vacant terms withdrawn (`ground.collectBy`). -/
-def stepVertex (es : List (Nat × Bool)) (Ys : List (List slotpower.SVec))
+def stepVertex (es : List (Nat × Bool)) (Ys : List slotpower.WList)
     (adjs : List elim.Mat) (pv : List BPair)
     (st : List (List Nat × BPair)) : List (List Nat × BPair) :=
-  let tuples := ground.prodLists (Ys.map (fun Y => List.range Y.length))
+  let tuples := ground.prodLists (Ys.map (fun Y => List.range Y.2.length))
   let contribs := st.flatMap (fun kv =>
     (List.zipWith (fun t x => (t, x)) tuples pv).filterMap (fun tp =>
       let r := (List.range es.length).foldl (fun (r : List Nat × BPair) e =>
@@ -696,14 +833,12 @@ product, vacant where a member is unstated — the entry
 clearings. -/
 def termEntryAt {L : Type} [DecidableEq L] (F : Data L) (R : Region)
     (ix : List (List L)) (p : List (Nat × Bool)) (a b : List L)
-    (ms : List (Option (slotpower.SVec × Pos) × Option (slotpower.SVec × Pos))) :
+    (ms : List (Option (slotpower.WVec × Pos) × Option (slotpower.WVec × Pos))) :
     Option (BPair × BPair × Pos) :=
-  let T := F.pres.table
-  let uw := slotpower.unitWtRead T
   let wth := F.pres.bdryWord
   if ms.all (fun q => q.1.isSome && q.2.isSome) then
-    let mem := fun (o : Option (slotpower.SVec × Pos)) =>
-      o.getD ([], Pos.one)
+    let mem := fun (o : Option (slotpower.WVec × Pos)) =>
+      o.getD (⟨0, slotpower.emptyV 0⟩, Pos.one)
     let wa := (List.range R.links).map (fun l => wordOf F (getAt F.unit a l))
     let wb := (List.range R.links).map (fun l => wordOf F (getAt F.unit b l))
     let bd := (List.range R.links).map (fun l =>
@@ -712,12 +847,12 @@ def termEntryAt {L : Type} [DecidableEq L] (F : Data L) (R : Region)
       linkDataAt F ix (getAt F.unit a l, getAt none bd l, getAt F.unit b l))
     let st := (List.range R.verts).foldl (fun st v =>
       let es := incident R v
-      let Ys := es.map (fun e => (getAt ([], [], BPair.unit) ld e.1).1)
-      let adjs := es.map (fun e => (getAt ([], [], BPair.unit) ld e.1).2.1)
+      let Ys := es.map (fun e => (getAt (⟨0, []⟩, ⟨0, []⟩, [], BPair.unit) ld e.1).2.1)
+      let adjs := es.map (fun e => (getAt (⟨0, []⟩, ⟨0, []⟩, [], BPair.unit) ld e.1).2.2.1)
       let q := getAt (none, none) ms v
       let onBd := es.any (fun e => (getAt none bd e.1).isSome)
-      let pv := vertexTensor T uw (mem q.1).1
-        (if onBd then F.pres.bdry.1 else slotpower.unitV) (mem q.2).1
+      let pv := vertexTensor (mem q.1).1
+        (if onBd then F.pres.bdry.1 else ⟨0, slotpower.unitV⟩) (mem q.2).1
         (blocksAt (es.map (fun e => getAt (0, 0) wa e.1))
           (es.map (fun e => getAt none bd e.1))
           (es.map (fun e => getAt (0, 0) wb e.1)) (wth.1 + wth.2)) Ys
@@ -725,7 +860,7 @@ def termEntryAt {L : Type} [DecidableEq L] (F : Data L) (R : Region)
       [(List.replicate R.links 0, BPair.ofNat 1)]
     some (keyAt (fun a b => a == b) BPair.unit (List.replicate R.links 0) st,
       p.foldl (fun acc _ => acc * F.pres.bdry.2)
-        (ld.foldl (fun acc e => acc * e.2.2) (BPair.ofNat 1)),
+        (ld.foldl (fun acc e => acc * e.2.2.2) (BPair.ofNat 1)),
       ms.foldl (fun acc q => acc * (mem q.1).2 * (mem q.2).2) Pos.one)
   else none
 
@@ -750,35 +885,26 @@ slot (`con:memtable`'s identification of the dual block with the
 dual label's block). -/
 def moveMember {L : Type} (F : Data L) (R R' : Region) (s : Nat → Nat)
     (rev : Nat → Bool) (a : List L) (x : Nat) (a' : List L) (x' : Nat)
-    (m : slotpower.SVec × Pos) : slotpower.SVec × Pos :=
+    (m : slotpower.WVec × Pos) : slotpower.WVec × Pos :=
   let d := lettersOf F
   let T := F.pres.table
   let sm := slotMap F R R' s rev a x a' x'
-  let v := slotpower.relabelV sm.1 m.1
-  match T.dual with
-  | none =>
-    (sm.2.1.foldl (fun g sl => slotpower.starAt d sl g) v,
-     sm.2.1.foldl (fun c sl => c * ground.posOfSucc (ground.factorial sl.length - 1)) m.2)
-  | some (c, nu) =>
-    let mOut := memtable.smul c T.wt
-    let mIn := memtable.smul (memtable.sT c) T.wt
-    sm.2.2.foldl (fun (g : slotpower.SVec × Pos) e =>
-      (e.1.foldl (fun w sl => slotpower.actT (if e.2 then mOut else mIn) false sl w) g.1,
-       if e.2 then g.2 else e.1.foldl (fun cl _ => cl * nu * nu) g.2)) (v, m.2)
+  (⟨_, slotpower.identifyV d T sm.1 sm.2.1 sm.2.2 m.1.2⟩,
+   slotpower.identifyClear T sm.2.1 sm.2.2 m.2)
 
 /-- A moved state's members: at a vertex the isomorphism reaches,
 the source vertex's member moved (`moveMember`); off the image the
 untouched vertex's own list's member, the scalar one. -/
 def movedMembers {L : Type} (F : Data L) (R R' : Region) (s v w : Nat → Nat)
-    (rev : Nat → Bool) (a a' : List L) (ms : List (Option (slotpower.SVec × Pos))) :
-    List (Option (slotpower.SVec × Pos)) :=
+    (rev : Nat → Bool) (a a' : List L) (ms : List (Option (slotpower.WVec × Pos))) :
+    List (Option (slotpower.WVec × Pos)) :=
   (List.range R'.verts).map (fun x' =>
     let x := w x'
     if x < R.verts && v x == x' then
       (getAt none ms x).map (moveMember F R R' s rev a x a' x')
     else
       match F.pres.vertList [] with
-      | some l => some (getAt [] l.members.list 0, l.clear)
+      | some l => some (⟨_, getAt (slotpower.emptyV _) l.members.list 0⟩, l.clear)
       | none => none)
 
 /-- The term's transport read at stated moved data: the term's entry
@@ -790,7 +916,7 @@ def termTransportAt {L : Type} [DecidableEq L] (F : Data L) (R R' : Region)
     (ix ix' : List (List L)) (t : Nat → Nat) (rev : Nat → Bool)
     (p : List (Nat × Bool)) (a : List L) (k : List Nat) (b : List L)
     (k' : List Nat) (a' b' : List L)
-    (ma mb : List (Option (slotpower.SVec × Pos))) : Bool :=
+    (ma mb : List (Option (slotpower.WVec × Pos))) : Bool :=
   match termEntry F R ix p a k b k',
     termEntryAt F R' ix' (moveWord t rev p) a' b'
       (List.zipWith (fun m m' => (m, m')) ma mb) with
@@ -810,7 +936,7 @@ theorem termTransportAt_of {L : Type} [DecidableEq L] (F : Data L) (R R' : Regio
     (ix ix' : List (List L)) (t : Nat → Nat) (rev : Nat → Bool)
     (p : List (Nat × Bool)) (a : List L) (k : List Nat) (b : List L)
     (k' : List Nat) (a' b' : List L)
-    (ma mb : List (Option (slotpower.SVec × Pos))) (r r' : BPair × BPair × Pos)
+    (ma mb : List (Option (slotpower.WVec × Pos))) (r r' : BPair × BPair × Pos)
     (h : termEntry F R ix p a k b k' = some r)
     (h' : termEntryAt F R' ix' (lattice.moveWord t rev p) a' b'
       (List.zipWith (fun m m' => (m, m')) ma mb) = some r')
@@ -827,7 +953,7 @@ theorem termTransportAt_ne {L : Type} [DecidableEq L] (F : Data L) (R R' : Regio
     (ix ix' : List (List L)) (t : Nat → Nat) (rev : Nat → Bool)
     (p : List (Nat × Bool)) (a : List L) (k : List Nat) (b : List L)
     (k' : List Nat) (a' b' : List L)
-    (ma mb : List (Option (slotpower.SVec × Pos))) (r r' : BPair × BPair × Pos)
+    (ma mb : List (Option (slotpower.WVec × Pos))) (r r' : BPair × BPair × Pos)
     (h : termEntry F R ix p a k b k' = some r)
     (h' : termEntryAt F R' ix' (lattice.moveWord t rev p) a' b'
       (List.zipWith (fun m m' => (m, m')) ma mb) = some r')
@@ -886,6 +1012,21 @@ def entryAt {L : Type} [DecidableEq L] (F : Data L) (R : Region)
   | none, _ => contractAt F R ix c G M p i j
   | some _, none => contractAt F R ix c G M p i j
 
+/-- The entry read at two loops of the plaquette: the entry is the
+fusion count `N^x_{θ y}` at the two loop labels at the window's
+clearing (`thm:pairpencil`'s loop clause). -/
+theorem entryAt_loop {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (ix : List (List L)) (c : Pos) (G M : Mat) (p : List (Nat × Bool))
+    (i j : Nat) (x y : L)
+    (hx : loopLabel F R p (posConf F R ix i) = some x)
+    (hy : loopLabel F R p (posConf F R ix j) = some y)
+    (h : entryAt F R ix c G M p i j = true) :
+    (ground.getAt BPair.unit (ground.getAt [] M i) j).oneValue
+      (BPair.ofPos c * BPair.ofNat (F.count F.theta y x)) := by
+  unfold entryAt at h
+  rw [hx, hy] at h
+  exact of_decide_eq_true h
+
 /-- A plaquette term's entries: every position pair across the
 plaquette's changed edge at the entry read, the far pairs the
 support read's own. -/
@@ -895,15 +1036,16 @@ def entriesRead {L : Type} [DecidableEq L] (F : Data L) (R : Region)
   ((List.range n).all (fun i => (List.range n).all (fun j =>
       !rowPair F R ix p i j || entryAt F R ix c G M p i j))) = true
 
-instance {L : Type} [DecidableEq L] (F : Data L) (R : Region) (n : Nat)
+instance instPairpencil3 {L : Type} [DecidableEq L] (F : Data L) (R : Region) (n : Nat)
     (ix : List (List L)) (c : Pos) (G : Mat) (p : List (Nat × Bool)) (M : Mat) :
     Decidable (entriesRead F R n ix c G p M) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The plaquette terms' reads along the region's plaquette list,
 each term with its two cap splits: symmetric, capped two-sidedly at
-the adjoint dimension's multiple of the gram (`lem:loopcap`, the
-cap reading the term's order), supported across its changed edge,
+the closure's dimension fold's multiple of the gram, the fold the
+adjoint dimension at the adjoint list (`lem:loopcap`, the cap
+reading the term's order), supported across its changed edge,
 and its entries the plaquette multiplication's read at the fibers'
 stated lists (`con:fiber`'s magnetic read), the loop window's
 count at a pair of two loops. -/
@@ -963,6 +1105,715 @@ keys. -/
 def termSum (n : Nat) (terms : List (Mat × Split n × Split n)) : Mat :=
   elim.msum n (ground.getAt [] (terms.map Prod.fst)) (List.range terms.length)
 
+/-- The terms' sum at a joined term: the term added to the further
+terms' sum (`elim.msum_range_cons` at the terms' keys). -/
+theorem termSum_cons (n : Nat) (t : Mat × Split n × Split n)
+    (ts : List (Mat × Split n × Split n)) :
+    termSum n (t :: ts) = matAdd t.1 (termSum n ts) := by
+  show elim.msum n (ground.getAt [] (t.1 :: ts.map Prod.fst)) (List.range (ts.length + 1))
+    = matAdd t.1 (elim.msum n (ground.getAt [] (ts.map Prod.fst)) (List.range ts.length))
+  rw [elim.msum_range_cons]
+  rfl
+
+/-- The terms' sum at the terms' reads in one pass: square at the
+order and symmetric (the sum's shape and symmetry the summands' own,
+`elim.symmRead_matAdd`), and at a square symmetric gram capped
+two-sidedly at the terms' count times the closure's dimension fold
+against the gram, the terms' caps summed one at a time
+(`inertia.capAt_add`), the partial sums' splits the construction's
+own (`inertia.mkSplit`), and at the vacant term list the null matrix
+at the vacant weight. -/
+private theorem termSum_all {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (n : Nat) (ix : List (List L)) (c : Pos) (G : Mat) :
+    ∀ (ps : List (List (Nat × Bool))) (ts : List (Mat × Split n × Split n)),
+      termsRead F R n ix c G ps ts →
+      (sqAt (termSum n ts) n ∧ symmRead (termSum n ts))
+      ∧ (sqAt G n → symmRead G → ∀ (spU spL : Split n),
+        splitRead (siteDatum (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G)
+          (termSum n ts)) spU →
+        splitRead (matAdd (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G)
+          (termSum n ts)) spL →
+        capAt (termSum n ts) (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G) spU spL)
+  | [], [], _ => by
+    refine ⟨⟨elim.sqAt_of (elim.length_nullMat n n) (elim.rowsLen_nullMat n n),
+      elim.symmRead_nullMat n⟩, fun hG _ spU spL hU hL => ?_⟩
+    have hN : elim.matNull (matScaleB (BPair.ofNat (0 * F.dim F.theta)) G) := by
+      rw [Nat.zero_mul]
+      exact inertia.matNull_scaleB_unit BPair.ofNat_zero G
+    have hnull : elim.matNull (termSum n []) := elim.matNull_nullMat n n
+    have hform : ∀ (X : Mat), elim.matNull X → ∀ u : List BPair, u.length = n →
+        BPair.unit ≤ dotN u (matVec X u) := fun X hX u _ =>
+      ground.leB_congr_right (BPair.oneValue_symm
+        (elim.dotN_nullR u _ (elim.matVec_matNull X u hX))) (ground.leB_refl _)
+    refine ⟨elim.sqAt_of (elim.length_nullMat n n) (elim.rowsLen_nullMat n n),
+      inertia.sqAt_scaleB _ n G hG, ⟨hU, ?_⟩, hL, ?_⟩
+    · exact inertia.psdAt_of_form _ spU
+        (hform _ (elim.matNull_matAdd hN (elim.matNull_matSwap _ hnull))) hU
+    · exact inertia.psdAt_of_form _ spL (hform _ (elim.matNull_matAdd hN hnull)) hL
+  | [], _ :: _, h => h.elim
+  | _ :: _, [], h => h.elim
+  | _ :: ps, t :: ts, h => by
+    obtain ⟨hsym, hcap, _, _, hrest⟩ := h
+    have ihAll := termSum_all F R n ix c G ps ts hrest
+    obtain ⟨hS2, hS2s⟩ := ihAll.1
+    refine ⟨?_, fun hG hGs spU spL hU hL => ?_⟩
+    · rw [termSum_cons n t ts]
+      exact ⟨elim.sqAt_matAdd n _ _ hcap.1 hS2,
+        elim.symmRead_matAdd n _ _ hcap.1 hS2 hsym hS2s⟩
+    have hC2 : sqAt (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G) n :=
+      inertia.sqAt_scaleB _ n G hG
+    have hC2s : symmRead (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G) :=
+      inertia.symmRead_matScaleB _ n G hG hGs
+    have hC1 : sqAt (matScaleB (BPair.ofNat (F.dim F.theta)) G) n :=
+      inertia.sqAt_scaleB _ n G hG
+    have hU2 := inertia.mkSplit_read n
+      (siteDatum (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G) (termSum n ts))
+      (inertia.sqAt_siteDatum n _ _ hC2 hS2)
+      (elim.matOne_symm (inertia.symmRead_siteDatum n _ _ hC2 hS2 hC2s hS2s))
+    have hL2 := inertia.mkSplit_read n
+      (matAdd (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G) (termSum n ts))
+      (elim.sqAt_matAdd n _ _ hC2 hS2)
+      (elim.matOne_symm (elim.symmRead_matAdd n _ _ hC2 hS2 hC2s hS2s))
+    have ih := ihAll.2 hG hGs _ _ hU2 hL2
+    -- the caps' sum at the joined weight
+    have hCsum : matOneValue
+        (matAdd (matScaleB (BPair.ofNat (F.dim F.theta)) G)
+          (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G))
+        (matScaleB (BPair.ofNat ((ts.length + 1) * F.dim F.theta)) G) := by
+      refine elim.matOne_trans (inertia.matScaleB_add _ _ G) ?_
+      refine inertia.matScaleB_congr ?_ G
+      refine BPair.oneValue_symm (BPair.oneValue_trans ?_ (BPair.ofNat_add _ _))
+      rw [Nat.succ_mul, Nat.add_comm]
+      exact BPair.oneValue_refl _
+    have hSsum : matOneValue (matAdd t.1 (termSum n ts)) (termSum n (t :: ts)) := by
+      rw [termSum_cons n t ts]
+      exact elim.matOne_refl _
+    have hCsq : sqAt (matAdd (matScaleB (BPair.ofNat (F.dim F.theta)) G)
+        (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G)) n :=
+      elim.sqAt_matAdd n _ _ hC1 hC2
+    have hSsq : sqAt (matAdd t.1 (termSum n ts)) n := elim.sqAt_matAdd n _ _ hcap.1 hS2
+    have hCsq' : sqAt (matScaleB (BPair.ofNat ((ts.length + 1) * F.dim F.theta)) G) n :=
+      inertia.sqAt_scaleB _ n G hG
+    have hSsq' : sqAt (termSum n (t :: ts)) n := by
+      rw [termSum_cons n t ts]; exact hSsq
+    have hsiteOV : matOneValue
+        (siteDatum (matAdd (matScaleB (BPair.ofNat (F.dim F.theta)) G)
+            (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G))
+          (matAdd t.1 (termSum n ts)))
+        (siteDatum (matScaleB (BPair.ofNat ((ts.length + 1) * F.dim F.theta)) G)
+          (termSum n (t :: ts))) :=
+      elim.matAdd_cong2 n _ _ _ _ (elim.rowsLen_of_sqAt hCsq)
+        (elim.rowsLen_mapRows BPair.swap _ n (elim.rowsLen_of_sqAt hSsq))
+        (elim.rowsLen_of_sqAt hCsq')
+        (elim.rowsLen_mapRows BPair.swap _ n (elim.rowsLen_of_sqAt hSsq'))
+        hCsum (elim.matSwap_congr hSsum)
+    have haddOV : matOneValue
+        (matAdd (matAdd (matScaleB (BPair.ofNat (F.dim F.theta)) G)
+            (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G))
+          (matAdd t.1 (termSum n ts)))
+        (matAdd (matScaleB (BPair.ofNat ((ts.length + 1) * F.dim F.theta)) G)
+          (termSum n (t :: ts))) :=
+      elim.matAdd_cong2 n _ _ _ _ (elim.rowsLen_of_sqAt hCsq) (elim.rowsLen_of_sqAt hSsq)
+        (elim.rowsLen_of_sqAt hCsq') (elim.rowsLen_of_sqAt hSsq') hCsum hSsum
+    have hU' := inertia.splitRead_congr _ _ (inertia.sqAt_siteDatum n _ _ hCsq hSsq)
+      (elim.matOne_symm hsiteOV) spU hU
+    have hL' := inertia.splitRead_congr _ _ (elim.sqAt_matAdd n _ _ hCsq hSsq)
+      (elim.matOne_symm haddOV) spL hL
+    have hadd := inertia.capAt_add t.1 (matScaleB (BPair.ofNat (F.dim F.theta)) G)
+      (termSum n ts) (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G)
+      t.2.1 t.2.2 _ _ spU spL hcap ih hU' hL'
+    exact inertia.capAt_congr _ _ _ _ spU spL hadd hSsq' hCsq' hSsum hCsum
+
+/-- The terms' sum is square at the order and symmetric at the terms'
+reads, the sum's shape and symmetry the summands' own
+(`termsRead`'s shape and symmetry conjuncts; `elim.symmRead_matAdd`). -/
+theorem termSum_read {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (n : Nat) (ix : List (List L)) (c : Pos) (G : Mat) :
+    ∀ (ps : List (List (Nat × Bool))) (ts : List (Mat × Split n × Split n)),
+      termsRead F R n ix c G ps ts →
+        sqAt (termSum n ts) n ∧ symmRead (termSum n ts) :=
+  fun ps ts h => (termSum_all F R n ix c G ps ts h).1
+
+/-- The magnetic member's cap from the terms' (`thm:truncation`: each
+plaquette term capped two-sidedly as a form at the closure's
+dimension fold, so the sum is capped two-sidedly, the closure's
+dimension fold times the region's plaquette count): the terms' sum
+is capped at the terms' count times the closure's dimension fold
+against the gram, the fold the adjoint dimension at the adjoint
+list, the terms' caps summed one at a time
+(`inertia.capAt_add`, `lem:inertia`'s sum of two-sided caps). -/
+theorem termSum_cap {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (n : Nat) (ix : List (List L)) (c : Pos) (G : Mat)
+    (hG : sqAt G n) (hGs : symmRead G) :
+    ∀ (ps : List (List (Nat × Bool))) (ts : List (Mat × Split n × Split n)),
+      termsRead F R n ix c G ps ts →
+      ∀ (spU spL : Split n),
+        splitRead (siteDatum (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G)
+          (termSum n ts)) spU →
+        splitRead (matAdd (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G)
+          (termSum n ts)) spL →
+        capAt (termSum n ts) (matScaleB (BPair.ofNat (ts.length * F.dim F.theta)) G) spU spL :=
+  fun ps ts h => (termSum_all F R n ix c G ps ts h).2 hG hGs
+
+/-- The window positions whose configuration reads a stated
+predicate, position nought read at the unit configuration. -/
+def placesAt {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (n : Nat) (P : List L → Bool) : List Nat :=
+  (List.range n).filter (fun i => P (posConf F R ix i))
+
+/-- The slot diagonal at a position is its configuration's content:
+the unit line at the unit configuration's, a window list member's
+at its own. -/
+theorem slotDiag_posConf {L : Type} (F : Data L) (R : Region) (ix : List (List L)) :
+    ∀ i, i < (slotList F R ix).length + 1 →
+      ground.getAt 0 (slotDiag F R ix) i = carrier.contentN F (posConf F R ix i)
+  | 0, _ => by
+    show 0 = carrier.contentN F (carrier.unitConf F R)
+    rw [carrier.contentN_unitConf F R]
+  | k + 1, hk => by
+    show ground.getAt 0 ((slotList F R ix).map (fun p => carrier.contentN F p.1)) k
+      = carrier.contentN F (ground.getAt (carrier.unitConf F R, []) (slotList F R ix) k).1
+    exact ground.getAt_map (carrier.unitConf F R, []) 0 _ _ k (Nat.lt_of_succ_lt_succ hk)
+
+/-- The weight `⟨a : c⟩` at a natural at or beyond the positive's value
+sits on its upper side. -/
+private theorem unitLe_ofNat_swap (a : Nat) (c : Pos) (h : posVal c ≤ a) :
+    BPair.unit ≤ BPair.ofNat a + (BPair.ofPos c).swap := by
+  have h1 : BPair.ofNat (posVal c) ≤ BPair.ofNat a := ground.leB_ofNat h
+  have h1' : (BPair.ofNat (posVal c)).fst + (BPair.ofNat a).snd
+      ≤ (BPair.ofNat a).fst + (BPair.ofNat (posVal c)).snd := h1
+  show Pos.one + ((BPair.ofNat a).snd + (BPair.ofNat (posVal c)).fst)
+    ≤ (BPair.ofNat a).fst + (BPair.ofNat (posVal c)).snd + Pos.one
+  rw [ground.add_comm Pos.one, ground.add_comm ((BPair.ofNat a).snd) _]
+  exact ground.posLeAdd h1' (Or.inl rfl)
+
+/-- The removed block's floor (`thm:truncation`: the removed block's
+electric diagonal sits at or above the cutoff): at the positions
+whose content sits at or beyond a stated floor, the electric member
+less the floor's multiple of the gram reads every split positive
+semidefinite — the electric member the gram's form at the contents,
+a positive-semidefinite gram scaled groupwise at the positions'
+configurations (`inertia.blockScaled_psd` at the positions grouped
+by configuration, `elim.placesBy`), the cross entries at the sum's
+unit across configurations (`gramBlockRead` at a label domain with
+one spelling per label) and the weights at the contents against the
+floor on their upper side at the places. -/
+theorem removed_floor {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (n : Nat) (ix : List (List L)) (c : Pos) (G : Mat)
+    (hnl : (slotList F R ix).length + 1 = n)
+    (hG : sqAt G n) (spG : Split n) (hGr : splitRead G spG) (hGp : psdAt spG)
+    (hgram : gramBlockRead F R n ix c G)
+    (P : L → Bool) (hunitP : P F.unit = true)
+    (hix : ∀ a, a ∈ ix → a.all P = true)
+    (hred : ∀ x y, P x = true → P y = true → F.eqL x y = true → x = y)
+    (cf : Pos) (rem : List Nat) (hb : (rem.all (fun i => Nat.blt i n)) = true)
+    (hk0 : 0 < rem.length)
+    (hcont : ∀ i, i ∈ rem → posVal cf ≤ carrier.contentN F (posConf F R ix i))
+    (sp : Split rem.length)
+    (hsp : splitRead (siteDatum (selM rem rem (formE (slotDiag F R ix) G))
+      (matScale cf (selM rem rem G))) sp) :
+    psdAt sp := by
+  have hn : 0 < n := by rw [← hnl]; exact Nat.succ_pos _
+  have hdl : (slotDiag F R ix).length = n := by rw [length_slotDiag]; exact hnl
+  have hE : sqAt (formE (slotDiag F R ix) G) n := sqAt_formE _ G n hdl
+  have hX : sqAt (siteDatum (formE (slotDiag F R ix) G) (matScale cf G)) n :=
+    inertia.sqAt_siteDatum n _ _ hE (inertia.sqAt_matScale n cf G hG)
+  -- the split at the selected site datum
+  have hsp' : splitRead (selM rem rem
+      (siteDatum (formE (slotDiag F R ix) G) (matScale cf G))) sp :=
+    inertia.splitRead_congr _ _
+      (elim.sqAt_of (elim.length_selM _ _ _) (elim.rowsLen_selM _ _ _))
+      (inertia.selM_site_scale _ _ G cf n hE hG hb) sp hsp
+  -- the groups by configuration
+  have hpart := elim.placesBy_partition (fun i => posConf F R ix i) n
+  have hlab : ∀ i, (posConf F R ix i).all P = true := posConf_labels F R ix P hunitP hix
+  have hcrossG := (ground.all_range_read n hgram.2.1)
+  refine inertia.blockScaled_psd G _ hG hX hn spG hGr hGp
+    (elim.placesBy (fun i => posConf F R ix i) n) hpart.1 hpart.2.1 hpart.2.2.1 hpart.2.2.2
+    (fun j i hj hi hne => ?_)
+    (fun j => BPair.ofNat (carrier.contentN F (posConf F R ix j)) + (BPair.ofPos cf).swap)
+    (fun j i hj hi hg => by
+      rw [elim.placesBy_key_eq (fun i => posConf F R ix i) n j i hj hi hg]
+      exact BPair.oneValue_refl _)
+    (fun j i hj hi => ?_) rem hb hk0 (fun i hi => ?_) sp hsp'
+  · -- the cross entries at distinct configurations
+    have hrow := ground.all_range_read n (hcrossG j hj) i hi
+    cases hc : carrier.eqConf F (posConf F R ix j) (posConf F R ix i) with
+    | true =>
+      exact absurd (elim.placesBy_groupOf_eq (fun i => posConf F R ix i) n j i hj hi
+        (carrier.eqConf_eq F P hred _ _ (hlab j) (hlab i) hc)) hne
+    | false =>
+      rw [hc] at hrow
+      exact of_decide_eq_true hrow
+  · -- the entry tie at the row's weight
+    have hjl : j < (slotDiag F R ix).length := by rw [hdl]; exact hj
+    have hil : i < (slotDiag F R ix).length := by rw [hdl]; exact hi
+    have hGl : G.length = n := elim.sqAt_len hG
+    have hGr' : rowsLen n G := elim.rowsLen_of_sqAt hG
+    have hcG : sqAt (matScale cf G) n := inertia.sqAt_matScale n cf G hG
+    have hswap : ground.getAt [] (matSwap (matScale cf G)) j
+        = (ground.getAt [] (matScale cf G) j).map BPair.swap :=
+      elim.getAt_matSwap _ j (by rw [inertia.length_matScale, hGl]; exact hj)
+    have hrowc : (ground.getAt [] (matScale cf G) j).length = n :=
+      elim.rowsLen_getAt _ j (elim.rowsLen_of_sqAt hcG) (by rw [inertia.length_matScale, hGl]; exact hj)
+    have eX : ground.getAt BPair.unit
+        (ground.getAt [] (siteDatum (formE (slotDiag F R ix) G) (matScale cf G)) j) i
+        = (BPair.ofNat (ground.getAt 0 (slotDiag F R ix) j)
+            * ground.getAt BPair.unit (ground.getAt [] G j) i).norm
+          + ((ground.getAt BPair.unit (ground.getAt [] G j) i).scale cf).swap := by
+      show ground.getAt BPair.unit
+        (ground.getAt [] (matAdd (formE (slotDiag F R ix) G) (matSwap (matScale cf G))) j) i = _
+      have hswr : rowsLen n (matSwap (matScale cf G)) :=
+        elim.rowsLen_mapRows BPair.swap _ n (elim.rowsLen_of_sqAt hcG)
+      have hswl : j < (matSwap (matScale cf G)).length := by
+        rw [elim.length_matSwap, inertia.length_matScale, hGl]; exact hj
+      rw [elim.entry_matAdd _ _ n (elim.rowsLen_of_sqAt hE) hswr j i
+        (by rw [elim.sqAt_len hE]; exact hj) hswl hi,
+        hswap, ground.getAt_map BPair.unit BPair.unit BPair.swap _ i (by rw [hrowc]; exact hi),
+        inertia.matScale_entry cf G j i (by rw [hGl]; exact hj)
+          (by rw [elim.rowsLen_getAt _ j hGr' (by rw [hGl]; exact hj)]; exact hi)]
+      show ground.getAt BPair.unit
+        (ground.getAt [] (ground.matOf (slotDiag F R ix).length (slotDiag F R ix).length
+          (fun i j => (BPair.ofNat (ground.getAt 0 (slotDiag F R ix) i)
+            * ground.getAt BPair.unit (ground.getAt [] G i) j).norm)) j) i + _ = _
+      rw [ground.matOf_entry [] BPair.unit _ _ _ j i hjl hil]
+    rw [eX, slotDiag_posConf F R ix j (by rw [hnl]; exact hj)]
+    refine BPair.oneValue_trans (BPair.add_congr (BPair.norm_oneValue _)
+      (ground.swap_congr (BPair.oneValue_symm (BPair.ofPos_scale cf _)))) ?_
+    refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl _)
+      (BPair.oneValue_of_eq (BPair.swap_mul _ _).symm)) ?_
+    exact BPair.oneValue_of_eq (BPair.right_distrib _ _ _).symm
+  · -- the places' weights on their upper side
+    exact unitLe_ofNat_swap _ cf (hcont i hi)
+
+/-! The pencil's nesting read: `thm:truncation`'s projection `Π` at
+the window's positions, the head and removed places and the pencil's
+members joined at them. -/
+
+/-- The head places at a truncation cutoff: the window positions
+whose configuration's content sits at or below the cutoff, the unit
+line among them (the sector's own head at a cutoff is
+`contactcell.headAt`, the labels' instance one layer down). -/
+def headPlaces {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (n C : Nat) : List Nat :=
+  placesAt F R ix n (fun a => decide (carrier.contentN F a ≤ C))
+
+/-- The removed places at a truncation cutoff: the window positions
+whose configuration's content sits beyond the cutoff
+(`contactcell.exclAt` the labels' instance). -/
+def remPlaces {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (n C : Nat) : List Nat :=
+  placesAt F R ix n (fun a => decide (C < carrier.contentN F a))
+
+/-- The window list at a filtered index is the window list filtered
+at the read of each member's configuration, one list in the window
+list's order. -/
+theorem slotList_filter {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (P : List L → Bool) :
+    slotList F R (ix.filter P) = (slotList F R ix).filter (fun q => P q.1) := by
+  show (ix.filter P).flatMap (fun a => (slotKeys F R a).map (fun k => (a, k)))
+    = (ix.flatMap (fun a => (slotKeys F R a).map (fun k => (a, k)))).filter
+        (fun q => P q.1)
+  rw [flatMap_filter, filter_flatMap]
+  refine flatMap_congr_all _ _ (fun a => ?_) ix
+  rw [filter_map]
+  cases hP : P a with
+  | true =>
+    rw [if_pos rfl, filter_all _ _ (fun k _ => by show P a = true; exact hP)]
+  | false =>
+    rw [if_neg Bool.false_ne_true,
+      filter_false _ _ (fun k _ => by show P a = false; exact hP)]
+    rfl
+
+/-- The places at a read holding the unit configuration: the unit
+line at the head, then the window list's positions at the read
+moved past it. -/
+theorem placesAt_unit {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (P : List L → Bool) (hP : P (carrier.unitConf F R) = true) :
+    placesAt F R ix ((slotList F R ix).length + 1) P
+      = 0 :: ((List.range (slotList F R ix).length).filter (fun r =>
+          P (getAt (carrier.unitConf F R, []) (slotList F R ix) r).1)).map
+            (fun j => j + 1) := by
+  show (List.range ((slotList F R ix).length + 1)).filter (fun i => P (posConf F R ix i)) = _
+  rw [range_cons, filter_cons_true (p := fun i => P (posConf F R ix i))
+      (show P (posConf F R ix 0) = true from hP),
+    filter_map]
+  rfl
+
+/-- The truncated index's window list is the window list read at
+the kept positions. -/
+theorem slotList_places {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (P : List L → Bool) :
+    slotList F R (ix.filter P)
+      = ((List.range (slotList F R ix).length).filter (fun r =>
+          P (getAt (carrier.unitConf F R, []) (slotList F R ix) r).1)).map
+            (getAt (carrier.unitConf F R, []) (slotList F R ix)) := by
+  rw [slotList_filter, filter_map_range (carrier.unitConf F R, [])]
+
+/-- A truncated window list member is the window list's member at
+its kept position. -/
+theorem slotList_head {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (P : List L → Bool) (m : Nat)
+    (hm : m < ((List.range (slotList F R ix).length).filter (fun r =>
+        P (getAt (carrier.unitConf F R, []) (slotList F R ix) r).1)).length) :
+    getAt (carrier.unitConf F R, []) (slotList F R (ix.filter P)) m
+      = getAt (carrier.unitConf F R, []) (slotList F R ix)
+          (getAt 0 ((List.range (slotList F R ix).length).filter (fun r =>
+            P (getAt (carrier.unitConf F R, []) (slotList F R ix) r).1)) m) := by
+  rw [slotList_places, getAt_map 0 (carrier.unitConf F R, []) _ _ m hm]
+
+/-- The head places' count is the truncated window list's with the
+unit line. -/
+theorem length_headPlaces {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (C : Nat) :
+    (headPlaces F R ix ((slotList F R ix).length + 1) C).length
+      = (slotList F R (ix.filter (fun a => decide (carrier.contentN F a ≤ C)))).length + 1 := by
+  show (placesAt F R ix _ _).length = _
+  rw [placesAt_unit F R ix _ (by
+      rw [carrier.contentN_unitConf]
+      exact decide_eq_true (Nat.zero_le C)),
+    slotList_places]
+  show ((List.filter _ (List.range _)).map (fun j => j + 1)).length + 1 = _
+  rw [length_map, length_map]
+
+/-- The truncated window's positions at the head places: the
+truncated position is the unit line at the head and the kept
+position moved past the unit line beyond it. -/
+private theorem headPlaces_pos {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (C : Nat) (j : Nat)
+    (hj : j < (headPlaces F R ix ((slotList F R ix).length + 1) C).length) :
+    (j = 0 ∧ getAt 0 (headPlaces F R ix ((slotList F R ix).length + 1) C) 0 = 0)
+    ∨ ∃ m, j = m + 1
+      ∧ m < ((List.range (slotList F R ix).length).filter (fun r =>
+          decide (carrier.contentN F
+            (getAt (carrier.unitConf F R, []) (slotList F R ix) r).1 ≤ C))).length
+      ∧ getAt 0 (headPlaces F R ix ((slotList F R ix).length + 1) C) j
+        = getAt 0 ((List.range (slotList F R ix).length).filter (fun r =>
+            decide (carrier.contentN F
+              (getAt (carrier.unitConf F R, []) (slotList F R ix) r).1 ≤ C))) m + 1 := by
+  have hu : decide (carrier.contentN F (carrier.unitConf F R) ≤ C) = true := by
+    rw [carrier.contentN_unitConf]
+    exact decide_eq_true (Nat.zero_le C)
+  have hj' : j < (placesAt F R ix ((slotList F R ix).length + 1)
+      (fun a => decide (carrier.contentN F a ≤ C))).length := hj
+  show (j = 0 ∧ getAt 0 (placesAt F R ix _ _) 0 = 0) ∨ ∃ m, j = m + 1 ∧ _
+    ∧ getAt 0 (placesAt F R ix _ _) j = _
+  rw [placesAt_unit F R ix _ hu] at hj' ⊢
+  cases j with
+  | zero => exact Or.inl ⟨rfl, rfl⟩
+  | succ m =>
+    have hm : m < ((List.range (slotList F R ix).length).filter (fun r =>
+        decide (carrier.contentN F
+          (getAt (carrier.unitConf F R, []) (slotList F R ix) r).1 ≤ C))).length := by
+      have h := hj'
+      rw [show ∀ l : List Nat, (0 :: l).length = l.length + 1 from fun _ => rfl,
+        length_map] at h
+      exact Nat.lt_of_succ_lt_succ h
+    refine Or.inr ⟨m, rfl, hm, ?_⟩
+    show getAt 0 (((List.range (slotList F R ix).length).filter _).map (fun j => j + 1)) m = _
+    rw [getAt_map 0 0 (fun j => j + 1) _ m hm]
+
+/-- The configuration at a truncated window position is the
+configuration at its head place. -/
+theorem posConf_head {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (C : Nat) :
+    ∀ j, j < (headPlaces F R ix ((slotList F R ix).length + 1) C).length →
+      posConf F R (ix.filter (fun a => decide (carrier.contentN F a ≤ C))) j
+        = posConf F R ix
+            (getAt 0 (headPlaces F R ix ((slotList F R ix).length + 1) C) j) := by
+  intro j hj
+  cases headPlaces_pos F R ix C j hj with
+  | inl h => rw [h.1, h.2]; rfl
+  | inr h =>
+    obtain ⟨m, hjm, hm, hp⟩ := h
+    subst hjm
+    rw [hp]
+    show (getAt (carrier.unitConf F R, []) (slotList F R
+      (ix.filter (fun a => decide (carrier.contentN F a ≤ C)))) m).1 = _
+    rw [slotList_head F R ix _ m hm]
+    rfl
+
+/-- The fiber key at a truncated window position is the key at its
+head place. -/
+theorem posKey_head {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (C : Nat) :
+    ∀ j, j < (headPlaces F R ix ((slotList F R ix).length + 1) C).length →
+      posKey F R (ix.filter (fun a => decide (carrier.contentN F a ≤ C))) j
+        = posKey F R ix
+            (getAt 0 (headPlaces F R ix ((slotList F R ix).length + 1) C) j) := by
+  intro j hj
+  cases headPlaces_pos F R ix C j hj with
+  | inl h => rw [h.1, h.2]; rfl
+  | inr h =>
+    obtain ⟨m, hjm, hm, hp⟩ := h
+    subst hjm
+    rw [hp]
+    show (getAt (carrier.unitConf F R, []) (slotList F R
+      (ix.filter (fun a => decide (carrier.contentN F a ≤ C)))) m).2 = _
+    rw [slotList_head F R ix _ m hm]
+    rfl
+
+/-- The head and removed places partition the order: distinct, at
+the order's count, each list below the order, and the unit line
+among the head places. -/
+theorem places_perm {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (n C : Nat) (hn : 0 < n) :
+    distinctList (headPlaces F R ix n C ++ remPlaces F R ix n C)
+    ∧ (headPlaces F R ix n C ++ remPlaces F R ix n C).length = n
+    ∧ ((headPlaces F R ix n C).all (fun i => Nat.blt i n)) = true
+    ∧ ((remPlaces F R ix n C).all (fun i => Nat.blt i n)) = true
+    ∧ 0 < (headPlaces F R ix n C).length := by
+  have hh : headPlaces F R ix n C
+      = (List.range n).filter (fun i => decide (carrier.contentN F (posConf F R ix i) ≤ C)) :=
+    rfl
+  have hr : remPlaces F R ix n C
+      = (List.range n).filter (fun i => !(decide (carrier.contentN F (posConf F R ix i) ≤ C))) := by
+    refine filter_congr _ _ (fun i => ?_) _
+    show decide (C < carrier.contentN F (posConf F R ix i))
+      = !(decide (carrier.contentN F (posConf F R ix i) ≤ C))
+    cases hc : decide (carrier.contentN F (posConf F R ix i) ≤ C) with
+    | true => exact decide_eq_false (Nat.not_lt.mpr (of_decide_eq_true hc))
+    | false => exact decide_eq_true (Nat.lt_of_not_le (of_decide_eq_false hc))
+  have h0 : 0 ∈ headPlaces F R ix n C := by
+    rw [hh]
+    refine mem_filter_to _ ?_ ?_
+    · rw [← getAt_range n 0 hn]
+      exact mem_getAt 0 _ 0 (by rw [length_range]; exact hn)
+    · show decide (carrier.contentN F (carrier.unitConf F R) ≤ C) = true
+      rw [carrier.contentN_unitConf]
+      exact decide_eq_true (Nat.zero_le C)
+  refine ⟨?_, ?_, ?_, ?_, List.length_pos_of_mem h0⟩
+  · rw [hh, hr]
+    refine distinctList_append_disjoint _ _
+      (distinctList_filter (fun i => decide (carrier.contentN F (posConf F R ix i) ≤ C)) _
+        (distinctList_range n))
+      (distinctList_filter (fun i => !(decide (carrier.contentN F (posConf F R ix i) ≤ C))) _
+        (distinctList_range n))
+      (fun x hx hx' => ?_)
+    have h1 := (mem_filter_of _ _ x hx).2
+    have h2 := (mem_filter_of _ _ x hx').2
+    rw [h1] at h2
+    exact Bool.noConfusion h2
+  · rw [hh, hr, length_append, length_filter_split, length_range]
+  · rw [hh]
+    exact all_of_mem_intro _ _ (fun x hx => ltBlt (ltOfMemRange (mem_filter_of _ _ x hx).1))
+  · rw [hr]
+    exact all_of_mem_intro _ _ (fun x hx => ltBlt (ltOfMemRange (mem_filter_of _ _ x hx).1))
+
+/-- A head place's configuration reads content at or below the
+cutoff, a removed place's beyond it. -/
+theorem places_content {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+    (n C : Nat) :
+    (∀ i, i ∈ headPlaces F R ix n C → carrier.contentN F (posConf F R ix i) ≤ C)
+    ∧ (∀ i, i ∈ remPlaces F R ix n C → C < carrier.contentN F (posConf F R ix i)) :=
+  ⟨fun i hi => of_decide_eq_true (mem_filter_of _ _ i hi).2,
+   fun i hi => of_decide_eq_true (mem_filter_of _ _ i hi).2⟩
+
+/-- The gram's cross block between the head and removed places is
+the null matrix (`def:carrier`'s gram, the orthogonal sum of the
+unit line's pairing and the fibers' own: two positions at distinct
+contents sit at distinct configurations, whose pairing reads the
+sum's unit, `gramBlockRead`'s cross clause at a label domain with
+one spelling per label), and at the places' permutation the gram
+joins its two diagonal selections at the null coupling. -/
+theorem gram_nest {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (n : Nat) (ix : List (List L)) (c : Pos) (G : Mat) (hn : 0 < n)
+    (hG : sqAt G n) (hsym : symmRead G)
+    (hgram : gramBlockRead F R n ix c G)
+    (P : L → Bool) (hunitP : P F.unit = true)
+    (hix : ∀ a, a ∈ ix → a.all P = true)
+    (hred : ∀ x y, P x = true → P y = true → F.eqL x y = true → x = y)
+    (C : Nat) :
+    matNull (selM (headPlaces F R ix n C) (remPlaces F R ix n C) G)
+    ∧ matOneValue (selM (headPlaces F R ix n C ++ remPlaces F R ix n C)
+        (headPlaces F R ix n C ++ remPlaces F R ix n C) G)
+      (blockJoin (selM (headPlaces F R ix n C) (headPlaces F R ix n C) G)
+        (nullMat (headPlaces F R ix n C).length (remPlaces F R ix n C).length)
+        (selM (remPlaces F R ix n C) (remPlaces F R ix n C) G)) := by
+  obtain ⟨_, _, hbh, hbr, hk0⟩ := places_perm F R ix n C hn
+  obtain ⟨hhead, hrem⟩ := places_content F R ix n C
+  have hcross : matNull (selM (headPlaces F R ix n C) (remPlaces F R ix n C) G) := by
+    refine matNull_of_getAt _ (fun p hp => ?_)
+    rw [length_selM] at hp
+    refine poly.unitTail_of_getAt (fun q => ?_)
+    cases Nat.lt_or_ge q (remPlaces F R ix n C).length with
+    | inr hq =>
+      rw [getAt_over _ _ q (by
+        rw [rowsLen_getAt _ p (rowsLen_selM _ G _) (by rw [length_selM]; exact hp)]
+        exact hq)]
+      exact BPair.oneValue_refl _
+    | inl hq =>
+      rw [getAt_selM _ _ G p q hp hq]
+      have hi : getAt 0 (headPlaces F R ix n C) p ∈ headPlaces F R ix n C :=
+        mem_getAt 0 _ p hp
+      have hj : getAt 0 (remPlaces F R ix n C) q ∈ remPlaces F R ix n C :=
+        mem_getAt 0 _ q hq
+      have hin : getAt 0 (headPlaces F R ix n C) p < n :=
+        bltLt (all_of_mem _ _ hbh _ hi)
+      have hjn : getAt 0 (remPlaces F R ix n C) q < n :=
+        bltLt (all_of_mem _ _ hbr _ hj)
+      have h2 := all_range_read n hgram.2.1 _ hin
+      have h3 := all_range_read n h2 _ hjn
+      cases orSplitB h3 with
+      | inr hu => exact of_decide_eq_true hu
+      | inl he =>
+        have heq := carrier.eqConf_eq F P hred _ _
+          (posConf_labels F R ix P hunitP hix _) (posConf_labels F R ix P hunitP hix _) he
+        have hc1 := hhead _ hi
+        have hc2 := hrem _ hj
+        rw [heq] at hc1
+        exact absurd (Nat.lt_of_lt_of_le hc2 hc1) (Nat.lt_irrefl _)
+  refine ⟨hcross, ?_⟩
+  refine matOne_trans (selM_blockJoin G _ _ n hG (matOne_symm hsym) hk0 hbh hbr) ?_
+  refine blockJoin_congr _ _ _ _ _ _ (rowsLen_selM _ G _) (rowsLen_selM _ G _)
+    (length_selM _ _ _) (length_nullMat _ _) (rowsLen_selM _ G _) (rowsLen_nullMat _ _)
+    (matOne_refl _) ?_ (matOne_refl _)
+  exact matOne_of_null _ _ _ hcross (matNull_nullMat _ _)
+    ((length_selM _ _ _).trans (length_nullMat _ _).symm)
+    (rowsLen_selM _ G _) (rowsLen_nullMat _ _)
+
+/-- The electric member's form is symmetric (`thm:pairpencil`: the
+electric member against the pairing identity, hence symmetric): two
+positions at distinct configurations pair at the sum's unit both
+ways, and two at one configuration read one content, the gram's
+symmetry riding the shared scale. -/
+theorem formE_symm {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (n : Nat) (ix : List (List L)) (c : Pos) (G : Mat)
+    (hnl : (slotList F R ix).length + 1 = n)
+    (hG : sqAt G n) (hsym : symmRead G)
+    (hgram : gramBlockRead F R n ix c G)
+    (P : L → Bool) (hunitP : P F.unit = true)
+    (hix : ∀ a, a ∈ ix → a.all P = true)
+    (hred : ∀ x y, P x = true → P y = true → F.eqL x y = true → x = y) :
+    symmRead (formE (slotDiag F R ix) G) := by
+  have hdl : (slotDiag F R ix).length = n := by rw [length_slotDiag]; exact hnl
+  have hE : sqAt (formE (slotDiag F R ix) G) n := sqAt_formE _ G n hdl
+  refine matOne_of_entries _ _ n (sqAt_len hE) (rowsLen_of_sqAt hE)
+    (length_transposeM_sq _ hE) (rowsLen_cast (sqAt_len hE) (rowsLen_transposeM _))
+    (fun i j hi hj => ?_)
+  rw [getAt_transposeM BPair.unit _ (rowsLen_of_sqAt hE) i j hi (by rw [sqAt_len hE]; exact hj),
+    formE_entry _ G i j (by rw [hdl]; exact hi) (by rw [hdl]; exact hj),
+    formE_entry _ G j i (by rw [hdl]; exact hj) (by rw [hdl]; exact hi)]
+  have hGs := symmRead_entry G hG hsym i j hi hj
+  have h3 := all_range_read n (all_range_read n hgram.2.1 i hi) j hj
+  refine BPair.oneValue_trans (BPair.norm_oneValue _)
+    (BPair.oneValue_trans ?_ (BPair.oneValue_symm (BPair.norm_oneValue _)))
+  cases orSplitB h3 with
+  | inr hu =>
+    have hu' := of_decide_eq_true hu
+    refine BPair.oneValue_trans (oneValue_mul_unit _ _ hu') ?_
+    refine BPair.oneValue_symm (oneValue_mul_unit _ _ ?_)
+    exact BPair.oneValue_trans (BPair.oneValue_symm hGs) hu'
+  | inl he =>
+    have heq := carrier.eqConf_eq F P hred _ _
+      (posConf_labels F R ix P hunitP hix _) (posConf_labels F R ix P hunitP hix _) he
+    rw [slotDiag_posConf F R ix i (by rw [hnl]; exact hi),
+      slotDiag_posConf F R ix j (by rw [hnl]; exact hj), heq]
+    exact BPair.mul_congr (BPair.oneValue_refl _) hGs
+
+/-- The electric member's cross block between the head and removed
+places is the null matrix (`thm:truncation`: the diagonal electric
+operator reads its off-block part at the sum's unit), the form's
+entries the gram's scaled at the contents, and at the places'
+permutation the electric member joins its two diagonal selections
+at the null coupling. -/
+theorem elec_nest {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (n : Nat) (ix : List (List L)) (c : Pos) (G : Mat)
+    (hnl : (slotList F R ix).length + 1 = n)
+    (hG : sqAt G n) (hsym : symmRead G)
+    (hgram : gramBlockRead F R n ix c G)
+    (P : L → Bool) (hunitP : P F.unit = true)
+    (hix : ∀ a, a ∈ ix → a.all P = true)
+    (hred : ∀ x y, P x = true → P y = true → F.eqL x y = true → x = y)
+    (C : Nat) :
+    matNull (selM (headPlaces F R ix n C) (remPlaces F R ix n C)
+      (formE (slotDiag F R ix) G))
+    ∧ matOneValue (selM (headPlaces F R ix n C ++ remPlaces F R ix n C)
+        (headPlaces F R ix n C ++ remPlaces F R ix n C) (formE (slotDiag F R ix) G))
+      (blockJoin (selM (headPlaces F R ix n C) (headPlaces F R ix n C)
+          (formE (slotDiag F R ix) G))
+        (nullMat (headPlaces F R ix n C).length (remPlaces F R ix n C).length)
+        (selM (remPlaces F R ix n C) (remPlaces F R ix n C)
+          (formE (slotDiag F R ix) G))) := by
+  have hn : 0 < n := by rw [← hnl]; exact Nat.succ_pos _
+  obtain ⟨hcross, _⟩ := gram_nest F R n ix c G hn hG hsym hgram P hunitP hix hred C
+  obtain ⟨_, _, hbh, hbr, hk0⟩ := places_perm F R ix n C hn
+  have hdl : (slotDiag F R ix).length = n := by rw [length_slotDiag]; exact hnl
+  have hE : sqAt (formE (slotDiag F R ix) G) n := sqAt_formE _ G n hdl
+  have hEsym : symmRead (formE (slotDiag F R ix) G) :=
+    formE_symm F R n ix c G hnl hG hsym hgram P hunitP hix hred
+  have hcrossE : matNull (selM (headPlaces F R ix n C) (remPlaces F R ix n C)
+      (formE (slotDiag F R ix) G)) := by
+    refine matNull_of_getAt _ (fun p hp => ?_)
+    rw [length_selM] at hp
+    refine poly.unitTail_of_getAt (fun q => ?_)
+    cases Nat.lt_or_ge q (remPlaces F R ix n C).length with
+    | inr hq =>
+      rw [getAt_over _ _ q (by
+        rw [rowsLen_getAt _ p (rowsLen_selM _ _ _) (by rw [length_selM]; exact hp)]
+        exact hq)]
+      exact BPair.oneValue_refl _
+    | inl hq =>
+      have hu := poly.getAt_unitTail (matNull_rowAt _ hcross p) q
+      rw [getAt_selM _ _ G p q hp hq] at hu
+      rw [getAt_selM _ _ _ p q hp hq]
+      have hin : getAt 0 (headPlaces F R ix n C) p < n :=
+        bltLt (all_of_mem _ _ hbh _ (mem_getAt 0 _ p hp))
+      have hjn : getAt 0 (remPlaces F R ix n C) q < n :=
+        bltLt (all_of_mem _ _ hbr _ (mem_getAt 0 _ q hq))
+      exact formE_entry_unit _ G _ _ (by rw [hdl]; exact hin) (by rw [hdl]; exact hjn) hu
+  refine ⟨hcrossE, ?_⟩
+  refine matOne_trans (selM_blockJoin _ _ _ n hE (matOne_symm hEsym) hk0 hbh hbr) ?_
+  refine blockJoin_congr _ _ _ _ _ _ (rowsLen_selM _ _ _) (rowsLen_selM _ _ _)
+    (length_selM _ _ _) (length_nullMat _ _) (rowsLen_selM _ _ _) (rowsLen_nullMat _ _)
+    (matOne_refl _) ?_ (matOne_refl _)
+  exact matOne_of_null _ _ _ hcrossE (matNull_nullMat _ _)
+    ((length_selM _ _ _).trans (length_nullMat _ _).symm)
+    (rowsLen_selM _ _ _) (rowsLen_nullMat _ _)
+
+/-- The magnetic member at the places' permutation joins its two
+diagonal selections at the coupling, the selection between the head
+and removed places (`thm:truncation`'s off-block coupling, the
+magnetic one alone), the terms' sum symmetric at the terms' reads. -/
+theorem mag_nest {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (n : Nat) (ix : List (List L)) (c : Pos) (G : Mat) (hn : 0 < n)
+    (ps : List (List (Nat × Bool))) (terms : List (Mat × Split n × Split n))
+    (ht : termsRead F R n ix c G ps terms) (C : Nat) :
+    matOneValue (selM (headPlaces F R ix n C ++ remPlaces F R ix n C)
+        (headPlaces F R ix n C ++ remPlaces F R ix n C) (termSum n terms))
+      (blockJoin (selM (headPlaces F R ix n C) (headPlaces F R ix n C) (termSum n terms))
+        (selM (headPlaces F R ix n C) (remPlaces F R ix n C) (termSum n terms))
+        (selM (remPlaces F R ix n C) (remPlaces F R ix n C) (termSum n terms))) := by
+  obtain ⟨_, _, hbh, hbr, hk0⟩ := places_perm F R ix n C hn
+  obtain ⟨hMsq, hMsym⟩ := termSum_read F R n ix c G ps terms ht
+  exact selM_blockJoin _ _ _ n hMsq (matOne_symm hMsym) hk0 hbh hbr
+
+/-- The removed block's floor at the truncation cutoff
+(`thm:truncation`: the removed block's electric diagonal sits at or
+above the cutoff): at the removed places, whose contents sit beyond
+the cutoff, the electric member less the cutoff's successor's multiple
+of the gram reads every split positive semidefinite
+(`removed_floor` at the removed places). -/
+theorem removed_nest {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (n : Nat) (ix : List (List L)) (c : Pos) (G : Mat)
+    (hnl : (slotList F R ix).length + 1 = n)
+    (hG : sqAt G n) (spG : Split n) (hGr : splitRead G spG) (hGp : psdAt spG)
+    (hgram : gramBlockRead F R n ix c G)
+    (P : L → Bool) (hunitP : P F.unit = true)
+    (hix : ∀ a, a ∈ ix → a.all P = true)
+    (hred : ∀ x y, P x = true → P y = true → F.eqL x y = true → x = y)
+    (C : Nat) (cf : Pos) (hcf : posVal cf ≤ C + 1)
+    (hk0 : 0 < (remPlaces F R ix n C).length)
+    (sp : Split (remPlaces F R ix n C).length)
+    (hsp : splitRead (siteDatum
+      (selM (remPlaces F R ix n C) (remPlaces F R ix n C) (formE (slotDiag F R ix) G))
+      (matScale cf (selM (remPlaces F R ix n C) (remPlaces F R ix n C) G))) sp) :
+    psdAt sp := by
+  obtain ⟨_, _, _, hbr, _⟩ := places_perm F R ix n C (by rw [← hnl]; exact Nat.succ_pos _)
+  exact removed_floor F R n ix c G hnl hG spG hGr hGp hgram P hunitP hix hred cf _
+    hbr hk0 (fun i hi =>
+      Nat.le_trans hcf (Nat.succ_le_of_lt ((places_content F R ix n C).2 i hi))) sp hsp
+
 /-- The pencil interface's read at a window: the stated index the
 window's own, the order tie at the window list's count, the
 electric member the gram's form at the window list's diagonal, the
@@ -985,7 +1836,7 @@ def pencilRead {L : Type} [DecidableEq L] (F : Data L) (R : Region)
   ∧ sqAt M n
   ∧ matOneValue M (termSum n terms)
 
-instance {L : Type} [DecidableEq L] (F : Data L) (R : Region) (C n : Nat)
+instance instPairpencil4 {L : Type} [DecidableEq L] (F : Data L) (R : Region) (C n : Nat)
     (ix : List (List L)) (c : Pos) (E G M : Mat) (spG : Split n)
     (terms : List (Mat × Split n × Split n)) :
     Decidable (pencilRead F R C n ix c E G M spG terms) :=

@@ -59,7 +59,7 @@ def squareRead (s : Shape) : Prop :=
   s.length * sumSq (rowList s)
     = degree s * degree s + sqGaps (rowList s)
 
-instance (s : Shape) : Decidable (squareRead s) :=
+instance instC2hat1 (s : Shape) : Decidable (squareRead s) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-! The fold kit: the constant block's gaps, the block prefix's
@@ -477,5 +477,73 @@ theorem squareAll (s : places.Shape) : c2hat.squareRead s := by
   rw [← places.length_rowList s]
   exact squareRows (rowList s) (fun p hp =>
     places.rowList_le s p (by rw [← places.length_rowList s]; exact hp))
+
+/-- The gap fold at the list's place pairs (`def:c2hat`). -/
+theorem rho2_pairs : ∀ l : List Nat,
+    rho2 l = famFold Nat.add 0
+      (fun p => getAt 0 l p.1 - getAt 0 l p.2) (pairsOf l.length)
+  | [] => rfl
+  | x :: t => by
+    show t.foldl (fun acc y => acc + (x - y)) 0 + rho2 t
+      = famFold Nat.add 0
+        (fun p => getAt 0 (x :: t) p.1 - getAt 0 (x :: t) p.2)
+        (pairsOf (t.length + 1))
+    rw [ground.foldlSum (fun y => x - y) t 0, Nat.zero_add,
+      ground.famFold_relist Nat.add 0 Nat.add_comm Nat.add_assoc
+        _ (pairsOf (t.length + 1))
+        ((List.range t.length).map (fun k => ((0, k + 1) : Nat × Nat))
+          ++ (pairsOf t.length).map
+            (fun p => ((p.1 + 1, p.2 + 1) : Nat × Nat)))
+        (places.countOf_pairs_split t.length),
+      ground.famFold_append Nat.add 0 Nat.add_assoc Nat.zero_add
+        (fun p : Nat × Nat => getAt 0 (x :: t) p.1 - getAt 0 (x :: t) p.2) _ _,
+      ground.famFold_map Nat.add 0
+        (fun p : Nat × Nat => getAt 0 (x :: t) p.1 - getAt 0 (x :: t) p.2)
+        (fun k => ((0, k + 1) : Nat × Nat)) (List.range t.length),
+      ground.famFold_map Nat.add 0
+        (fun p : Nat × Nat => getAt 0 (x :: t) p.1 - getAt 0 (x :: t) p.2)
+        (fun p => ((p.1 + 1, p.2 + 1) : Nat × Nat)) (pairsOf t.length), rho2_pairs t]
+    change famFold Nat.add 0 (fun y => x - y) t
+        + famFold Nat.add 0 (fun p => getAt 0 t p.1 - getAt 0 t p.2)
+          (pairsOf t.length)
+      = famFold Nat.add 0 (fun k => x - (getAt 0 t k))
+          (List.range t.length)
+        + famFold Nat.add 0 (fun p => getAt 0 t p.1 - getAt 0 t p.2)
+          (pairsOf t.length)
+    rw [ground.famFold_getAt Nat.add 0 (fun y => x - y) 0 t t.length rfl]
+
+/-- The squared-gap fold at the list's place pairs (`def:c2hat`). -/
+theorem sqGaps_pairs : ∀ l : List Nat,
+    sqGaps l = famFold Nat.add 0
+      (fun p => (getAt 0 l p.1 - getAt 0 l p.2) * (getAt 0 l p.1 - getAt 0 l p.2)) (pairsOf l.length)
+  | [] => rfl
+  | x :: t => by
+    show t.foldl (fun acc y => acc + (x - y) * (x - y)) 0 + sqGaps t
+      = famFold Nat.add 0
+        (fun p => (getAt 0 (x :: t) p.1 - getAt 0 (x :: t) p.2) * (getAt 0 (x :: t) p.1 - getAt 0 (x :: t) p.2))
+        (pairsOf (t.length + 1))
+    rw [ground.foldlSum (fun y => (x - y) * (x - y)) t 0, Nat.zero_add,
+      ground.famFold_relist Nat.add 0 Nat.add_comm Nat.add_assoc
+        _ (pairsOf (t.length + 1))
+        ((List.range t.length).map (fun k => ((0, k + 1) : Nat × Nat))
+          ++ (pairsOf t.length).map
+            (fun p => ((p.1 + 1, p.2 + 1) : Nat × Nat)))
+        (places.countOf_pairs_split t.length),
+      ground.famFold_append Nat.add 0 Nat.add_assoc Nat.zero_add
+        (fun p : Nat × Nat => (getAt 0 (x :: t) p.1 - getAt 0 (x :: t) p.2) * (getAt 0 (x :: t) p.1 - getAt 0 (x :: t) p.2)) _ _,
+      ground.famFold_map Nat.add 0
+        (fun p : Nat × Nat => (getAt 0 (x :: t) p.1 - getAt 0 (x :: t) p.2) * (getAt 0 (x :: t) p.1 - getAt 0 (x :: t) p.2))
+        (fun k => ((0, k + 1) : Nat × Nat)) (List.range t.length),
+      ground.famFold_map Nat.add 0
+        (fun p : Nat × Nat => (getAt 0 (x :: t) p.1 - getAt 0 (x :: t) p.2) * (getAt 0 (x :: t) p.1 - getAt 0 (x :: t) p.2))
+        (fun p => ((p.1 + 1, p.2 + 1) : Nat × Nat)) (pairsOf t.length), sqGaps_pairs t]
+    change famFold Nat.add 0 (fun y => (x - y) * (x - y)) t
+        + famFold Nat.add 0 (fun p => (getAt 0 t p.1 - getAt 0 t p.2) * (getAt 0 t p.1 - getAt 0 t p.2))
+          (pairsOf t.length)
+      = famFold Nat.add 0 (fun k => (x - (getAt 0 t k)) * (x - (getAt 0 t k)))
+          (List.range t.length)
+        + famFold Nat.add 0 (fun p => (getAt 0 t p.1 - getAt 0 t p.2) * (getAt 0 t p.1 - getAt 0 t p.2))
+          (pairsOf t.length)
+    rw [ground.famFold_getAt Nat.add 0 (fun y => (x - y) * (x - y)) 0 t t.length rfl]
 
 end c2hat

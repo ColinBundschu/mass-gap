@@ -13,6 +13,8 @@ further states.  The integer coefficients' batteries are
 `MassGapChecks/Xfusion`'s, the anchors at the sector's own
 module.
 -/
+
+namespace xdata
 set_option maxRecDepth 8192
 set_option maxHeartbeats 4000000
 
@@ -20,13 +22,13 @@ open genericlift states res twoplaq poly
 
 /-! The vacuum's deflation certificates at the two sites. -/
 
-example : res.deflateRead siteQ1 [phiAdj] phiAdj := by decide +kernel
-example : res.deflateRead siteQ2 [phiAdj] phiAdj := by decide +kernel
+theorem pin1 : res.deflateRead siteQ1 [phiAdj] phiAdj := by decide +kernel
+theorem pin2 : res.deflateRead siteQ2 [phiAdj] phiAdj := by decide +kernel
 
 /-! The discriminating refusal: the squared trace's dressing reads
 its self-pairing occupied. -/
 
-example : ¬ genericlift.crossNull
+theorem pin3 : ¬ genericlift.crossNull
     (wg.pairFull wg.evalPhi siteQ1 siteQ1
       (res.deflate siteQ1 [phiAdj] [([0, 1], pOne)])
       (res.deflate siteQ1 [phiAdj] [([0, 1], pOne)]))
@@ -35,14 +37,16 @@ example : ¬ genericlift.crossNull
 /-! The two dressing reads through the theorems, the routes beside
 the certificates. -/
 
-example : genericlift.crossNull
+theorem pin4 : genericlift.crossNull
     (wg.pairFull wg.evalPhi siteQ1 siteQ1
       (res.deflate siteQ1 [phiAdj] phiAdj)
       (res.deflate siteQ1 [phiAdj] phiAdj))
     poly.pZero := xdata.vacDressU_null
 
-example : genericlift.crossNull
+theorem pin5 : genericlift.crossNull
     (wg.pairFull wg.evalPhi siteQ2 siteQ2
       (res.deflate siteQ2 [phiAdj] phiAdj)
       (res.deflate siteQ2 [phiAdj] phiAdj))
     poly.pZero := xdata.vacDressV_null
+
+end xdata

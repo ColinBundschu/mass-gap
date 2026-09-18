@@ -18,14 +18,16 @@ one's width binder the frame, its probe record standing where a
 refusal would.
 -/
 
+namespace blockcount.fusiondata
+
 open ground places blockcount
 
 /-- The committed top's shape inverse reads back. -/
-example : rowList (shapeOf [2, 1]) = [2, 1] := by decide +kernel
+theorem pin1 : rowList (shapeOf [2, 1]) = [2, 1] := by decide +kernel
 
 /-- The committed top's closure pool reads the shape's own count,
 `seedBlock_dim` applied whole. -/
-example : (closeSpan 2 (lowerspan.ht [2, 1])
+theorem pin2 : (closeSpan 2 (lowerspan.ht [2, 1])
       [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
         BPair.unit]⟩ : HVec)]
       [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
@@ -37,7 +39,7 @@ example : (closeSpan 2 (lowerspan.ht [2, 1])
     (lowerspan.ht [2, 1]) (Nat.le_refl _)
 
 /-- The display's two counts decided at the committed data. -/
-example : (closeSpan 2 (lowerspan.ht [2, 1])
+theorem pin3 : (closeSpan 2 (lowerspan.ht [2, 1])
       [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
         BPair.unit]⟩ : HVec)]
       [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
@@ -47,7 +49,7 @@ example : (closeSpan 2 (lowerspan.ht [2, 1])
 /-- The committed top's closure pool reads the shape's own
 occupancy content by content, `seedBlock_occ` applied whole at
 the block's two contents. -/
-example : occ [2, 1] (closeSpan 2 (lowerspan.ht [2, 1])
+theorem pin4 : occ [2, 1] (closeSpan 2 (lowerspan.ht [2, 1])
       [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
         BPair.unit]⟩ : HVec)]
       [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
@@ -58,7 +60,7 @@ example : occ [2, 1] (closeSpan 2 (lowerspan.ht [2, 1])
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (lowerspan.ht [2, 1]) (Nat.le_refl _) [2, 1]
 
-example : occ [1, 2] (closeSpan 2 (lowerspan.ht [2, 1])
+theorem pin5 : occ [1, 2] (closeSpan 2 (lowerspan.ht [2, 1])
       [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
         BPair.unit]⟩ : HVec)]
       [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
@@ -70,12 +72,12 @@ example : occ [1, 2] (closeSpan 2 (lowerspan.ht [2, 1])
     (lowerspan.ht [2, 1]) (Nat.le_refl _) [1, 2]
 
 /-- The two occupancies' shared values at the committed data. -/
-example : occ [2, 1] (blockSpan (shapeOf [2, 1])) = 1
+theorem pin6 : occ [2, 1] (blockSpan (shapeOf [2, 1])) = 1
     ∧ occ [1, 2] (blockSpan (shapeOf [2, 1])) = 1 := by decide +kernel
 
 /-- The fuel bound at a strictly larger fuel, the at-or-beyond
 read exercised off the reflexive instance. -/
-example : occ [2, 1] (closeSpan 2 (lowerspan.ht [2, 1] + 1)
+theorem pin7 : occ [2, 1] (closeSpan 2 (lowerspan.ht [2, 1] + 1)
       [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
         BPair.unit]⟩ : HVec)]
       [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
@@ -91,13 +93,13 @@ example : occ [2, 1] (closeSpan 2 (lowerspan.ht [2, 1] + 1)
 rounds, the symmetric block's top at the two-box row then the
 column pair's antisymmetric survivor, the residual carrier dying
 at the second block. -/
-example : (exhaust 2
+theorem pin8 : (exhaust 2
       [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩,
         ⟨[1, 1], [BPair.unit, BPair.ofNat 1]⟩,
         ⟨[0, 2], [BPair.ofNat 1]⟩]).length = 2 := by decide +kernel
 
-example : (exhaust 2
+theorem pin9 : (exhaust 2
       [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩,
         ⟨[1, 1], [BPair.unit, BPair.ofNat 1]⟩,
@@ -106,13 +108,13 @@ example : (exhaust 2
 
 /-- The pick reads at the committed carrier: the height-maximal
 member off the unit tail, its three reads decided. -/
-example : pickTop
+theorem pin10 : pickTop
       [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩,
         ⟨[0, 2], [BPair.ofNat 1]⟩]
     = some ⟨[2, 0], [BPair.ofNat 1]⟩ := by decide +kernel
 
-example : pickTop
+theorem pin11 : pickTop
       [(⟨[1, 0], [BPair.unit]⟩ : HVec)] = none := by decide +kernel
 
 /-! The producer's theorem reads: the pick's top read, the
@@ -123,7 +125,7 @@ refusals, every surviving co-binder kernel-decided beside each. -/
 
 /-- The committed block reads its literal members: the top, the
 paired lowering, and the doubled bottom. -/
-example : closeSpan 2 (lowerspan.ht [2, 0])
+theorem pin12 : closeSpan 2 (lowerspan.ht [2, 0])
     [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)]
     [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)]
   = [⟨[2, 0], [BPair.ofNat 1]⟩,
@@ -131,7 +133,7 @@ example : closeSpan 2 (lowerspan.ht [2, 0])
      ⟨[0, 2], [BPair.ofNat 2]⟩] := by decide +kernel
 
 /-- The pick's top read applied whole at the carrier. -/
-example : ∀ j, j < 2 → ∀ i, i < j →
+theorem pin13 : ∀ j, j < 2 → ∀ i, i < j →
     poly.unitTail (act i j
       (⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)).coords :=
   pickTop_top 2
@@ -145,7 +147,7 @@ example : ∀ j, j < 2 → ∀ i, i < j →
 /-- The pick's closure hypothesis is load-bearing: at the
 unclosed singleton the pick's raising image sits off the unit
 tail — the surviving co-binders decided beside the refusal. -/
-example : ((∀ x ∈ [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
+theorem pin14 : ((∀ x ∈ [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
       x.content.length = 2)
     ∧ (∀ x ∈ [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
       ¬ poly.unitTail x.coords)
@@ -162,7 +164,7 @@ example : ((∀ x ∈ [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
 
 /-- The residual carrier's closure applied whole at the carrier
 against the committed block. -/
-example : ∀ y ∈ residCarrier
+theorem pin15 : ∀ y ∈ residCarrier
       [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩,
         ⟨[1, 1], [BPair.unit, BPair.ofNat 1]⟩,
@@ -193,7 +195,7 @@ example : ∀ y ∈ residCarrier
 the unclosed singleton against the vacant block the residual's
 raising image escapes — the surviving co-binders decided beside
 the refusal. -/
-example : ((∀ x ∈ [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
+theorem pin16 : ((∀ x ∈ [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
       sized x)
     ∧ (∀ x ∈ [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
       x.content.length = 2)
@@ -217,7 +219,7 @@ example : ((∀ x ∈ [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
 unclosed one-member block the carrier's residuals lose the
 withdrawn image — the surviving co-binders decided beside the
 refusal. -/
-example : ((∀ x ∈
+theorem pin17 : ((∀ x ∈
       [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩,
         ⟨[1, 1], [BPair.unit, BPair.ofNat 1]⟩,
@@ -257,7 +259,7 @@ example : ((∀ x ∈
 
 /-- The residual carrier's reads applied whole at the carrier
 against the committed block. -/
-example : (∀ y ∈ residCarrier
+theorem pin18 : (∀ y ∈ residCarrier
       [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩,
         ⟨[1, 1], [BPair.unit, BPair.ofNat 1]⟩,
@@ -270,7 +272,7 @@ example : (∀ y ∈ residCarrier
 
 /-- The exhaustion's members are tops, applied whole at the
 degree-two monomial carrier. -/
-example : ∀ w ∈ exhaust 2
+theorem pin19 : ∀ w ∈ exhaust 2
       [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩,
         ⟨[1, 1], [BPair.unit, BPair.ofNat 1]⟩,
@@ -289,7 +291,7 @@ example : ∀ w ∈ exhaust 2
 /-- The closure at a dependent stated block: the collected groups
 read the residuals whole, the joined-collection read's own
 instance. -/
-example : ∀ y ∈ residCarrier
+theorem pin20 : ∀ y ∈ residCarrier
     [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
       ⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩,
       ⟨[1, 1], [BPair.unit, BPair.ofNat 1]⟩,
@@ -311,7 +313,7 @@ example : ∀ y ∈ residCarrier
 
 /-- The closure applied whole at the width-three degree-two
 carrier against the symmetric block. -/
-example : ∀ y ∈ residCarrier
+theorem pin21 : ∀ y ∈ residCarrier
       [(⟨[2, 0, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[1, 1, 0], [BPair.ofNat 1, BPair.unit]⟩,
         ⟨[1, 1, 0], [BPair.unit, BPair.ofNat 1]⟩,
@@ -356,7 +358,7 @@ example : ∀ y ∈ residCarrier
 
 /-- The producer at the width-three degree-two carrier: the
 symmetric top then the antisymmetric survivor. -/
-example : (exhaust 3
+theorem pin22 : (exhaust 3
       [(⟨[2, 0, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[1, 1, 0], [BPair.ofNat 1, BPair.unit]⟩,
         ⟨[1, 1, 0], [BPair.unit, BPair.ofNat 1]⟩,
@@ -377,7 +379,7 @@ the off-unit and closure binders the orthogonality half's. -/
 
 /-- The completeness applied whole at the degree-two monomial
 carrier. -/
-example : ∀ x ∈
+theorem pin23 : ∀ x ∈
       [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩,
         ⟨[1, 1], [BPair.unit, BPair.ofNat 1]⟩,
@@ -398,7 +400,7 @@ example : ∀ x ∈
 
 /-- The completeness applied whole at the width-three degree-two
 carrier. -/
-example : ∀ x ∈
+theorem pin24 : ∀ x ∈
       [(⟨[2, 0, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[1, 1, 0], [BPair.ofNat 1, BPair.unit]⟩,
         ⟨[1, 1, 0], [BPair.unit, BPair.ofNat 1]⟩,
@@ -435,7 +437,7 @@ example : ∀ x ∈
 /-- The round's strict decrease: the pick's residual at its own
 block reads the unit family, and the residual carrier is strictly
 shorter. -/
-example : allU (residAt
+theorem pin25 : allU (residAt
       (closeSpan 2 (lowerspan.ht [2, 0])
         [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)]
         [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)])
@@ -453,7 +455,7 @@ example : allU (residAt
 /-- The fuel binder is load-bearing: at fuel short of the
 carrier's length an off-unit member escapes the empty join — the
 surviving co-binders decided beside the refusal. -/
-example : ((∀ x ∈ [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)], sized x)
+theorem pin26 : ((∀ x ∈ [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)], sized x)
       ∧ (∀ x ∈ [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)],
         x.content.length = 2))
     ∧ ¬ ∀ x ∈ [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)],
@@ -464,7 +466,7 @@ example : ((∀ x ∈ [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)], sized x)
 
 /-- The completeness at an unclosed carrier: the closure binder is
 the orthogonality half's, the span read holding without it. -/
-example : ∀ x ∈
+theorem pin27 : ∀ x ∈
       [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec),
         ⟨[2, 0], [BPair.ofNat 1]⟩],
     elim.spanRel x.coords.length
@@ -476,7 +478,7 @@ example : ∀ x ∈
 /-- The completeness at a unit-bearing carrier: the off-unit
 binder is the producer's top read's, the span read holding
 without it. -/
-example : ∀ x ∈
+theorem pin28 : ∀ x ∈
       [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[1, 1], [BPair.unit, BPair.unit]⟩],
     elim.spanRel x.coords.length
@@ -496,7 +498,7 @@ it. -/
 `[2,0]`-block against the antisymmetric line, the doubled
 antisymmetric top's residual and combination both tops of their
 sides. -/
-example :
+theorem pin29 :
     elim.spanRel (places.monomialsAt [1, 1]).length
       (groupAt [(⟨[1, 1], [BPair.ofNat 1,
           (BPair.ofNat 1).swap]⟩ : HVec)] [1, 1])
@@ -537,7 +539,7 @@ example :
 /-- The head's closure binder is load-bearing: at the raising-open
 head list the top's residual reads an occupied raising image — the
 surviving co-binders decided beside the refusal. -/
-example :
+theorem pin30 :
     ((∀ x ∈ [(⟨[2, 1], [BPair.ofNat 2, BPair.ofNat 1,
         BPair.ofNat 1]⟩ : HVec),
         ⟨[3, 0], [BPair.ofNat 1]⟩],
@@ -590,7 +592,7 @@ example :
 /-- The tail's closure binder is load-bearing: at the raising-open
 tail list the residual sits in the tail's span while its raising
 image reads occupied. -/
-example :
+theorem pin31 :
     ((∀ x ∈ [(⟨[2, 1], [BPair.ofNat 2, BPair.ofNat 1,
         BPair.ofNat 1]⟩ : HVec),
         ⟨[3, 0], [BPair.ofNat 1]⟩],
@@ -626,7 +628,7 @@ example :
 
 /-- The content's perpendicularity binder is load-bearing: at two
 crossing top lines the residual escapes the tail's span. -/
-example :
+theorem pin32 :
     ((∀ j, j < 2 → ∀ i, i < j →
       poly.unitTail (elim.matVec
         (units.matUnitAt (moveAt i j [2, 1]) [2, 1] i j)
@@ -655,7 +657,7 @@ example :
 /-- The moved contents' perpendicularity binder is load-bearing:
 at sides perpendicular at the content but crossing at the raised
 one, the residual's raising image reads occupied. -/
-example :
+theorem pin33 :
     ((∀ x ∈ [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
         (BPair.ofNat 1).swap]⟩ : HVec),
         ⟨[3, 0], [BPair.ofNat 1]⟩],
@@ -693,7 +695,7 @@ example :
 of the tail's own span the residual keeps the occupied image —
 the surviving co-binders decided beside the refusal, the span
 read among them. -/
-example :
+theorem pin34 :
     ((∀ x ∈ [(⟨[2, 1], [BPair.ofNat 2, BPair.ofNat 1,
         BPair.ofNat 1]⟩ : HVec),
         ⟨[3, 0], [BPair.ofNat 1]⟩],
@@ -722,7 +724,7 @@ example :
 
 /-- The span binder is load-bearing: off the joined span the
 residual escapes the tail. -/
-example :
+theorem pin35 :
     ((∀ j, j < 2 → ∀ i, i < j →
       poly.unitTail (elim.matVec
         (units.matUnitAt (moveAt i j [2, 1]) [2, 1] i j)
@@ -752,7 +754,7 @@ the doubled pool. -/
 /-- The count adds over the committed orthogonal split,
 `countAt_append` applied whole: the symmetric block against the
 wedge line at width two, every binder decided. -/
-example : countAt (blockSpan (shapeOf [2, 0]) ++ blockSpan (shapeOf [1, 1]))
+theorem pin36 : countAt (blockSpan (shapeOf [2, 0]) ++ blockSpan (shapeOf [1, 1]))
       [1, 1]
     = countAt (blockSpan (shapeOf [2, 0])) [1, 1]
       + countAt (blockSpan (shapeOf [1, 1])) [1, 1] :=
@@ -764,7 +766,7 @@ perpendicularity's moved content on both sides: the two blocks at
 row lists `[3, 0]` and `[2, 1]` share the moved content `[2, 1]`
 above `[1, 2]`, so the split's raised pairing quantifier reads an
 occupied pair, and each side's count at `[1, 2]` is nought. -/
-example : countAt (blockSpan (shapeOf [3, 0]) ++ blockSpan (shapeOf [2, 1]))
+theorem pin37 : countAt (blockSpan (shapeOf [3, 0]) ++ blockSpan (shapeOf [2, 1]))
       [1, 2]
     = countAt (blockSpan (shapeOf [3, 0])) [1, 2]
       + countAt (blockSpan (shapeOf [2, 1])) [1, 2] :=
@@ -773,7 +775,7 @@ example : countAt (blockSpan (shapeOf [3, 0]) ++ blockSpan (shapeOf [2, 1]))
 
 /-- The occupied-move instance's value: nought on both sides and
 at the join. -/
-example : countAt (blockSpan (shapeOf [3, 0])
+theorem pin38 : countAt (blockSpan (shapeOf [3, 0])
       ++ blockSpan (shapeOf [2, 1])) [1, 2] = 0
     ∧ (groupAt (blockSpan (shapeOf [3, 0])) [2, 1]).length = 1
     ∧ (groupAt (blockSpan (shapeOf [2, 1])) [2, 1]).length = 1 := by
@@ -781,7 +783,7 @@ example : countAt (blockSpan (shapeOf [3, 0])
 
 /-- The joined pool's own value at the wedge content: the wedge
 line's one against the symmetric block's nought. -/
-example : countAt (blockSpan (shapeOf [2, 0])
+theorem pin39 : countAt (blockSpan (shapeOf [2, 0])
       ++ blockSpan (shapeOf [1, 1])) [1, 1] = 1 := by decide +kernel
 
 /-- Refusal at the split's content perpendicularity,
@@ -790,19 +792,19 @@ the sizes, the closure and the raised perpendicularity (the moved
 group above `[2, 0]` is unoccupied, pinned below) while the
 `[2, 0]` groups are parallel, the count reads the one collection,
 and the sum doubles it. -/
-example : ¬ (countAt (blockSpan (shapeOf [2, 0])
+theorem pin40 : ¬ (countAt (blockSpan (shapeOf [2, 0])
       ++ blockSpan (shapeOf [2, 0])) [2, 0]
     = countAt (blockSpan (shapeOf [2, 0])) [2, 0]
       + countAt (blockSpan (shapeOf [2, 0])) [2, 0]) := by decide +kernel
 
 /-- The sizes binder survives the refusal's forgery: every member
 of the block sits at its content's enumeration width. -/
-example : (∀ x ∈ blockSpan (shapeOf [2, 0]), sized x) := by decide +kernel
+theorem pin41 : (∀ x ∈ blockSpan (shapeOf [2, 0]), sized x) := by decide +kernel
 
 /-- The closure binder survives it too: at the doubled pool every
 member's adjacent raising image is settled inside the pool's own
 group. -/
-example : (∀ x ∈ blockSpan (shapeOf [2, 0]) ++ blockSpan (shapeOf [2, 0]),
+theorem pin42 : (∀ x ∈ blockSpan (shapeOf [2, 0]) ++ blockSpan (shapeOf [2, 0]),
     ∀ i, i + 1 < ([2, 0] : List Nat).length →
       settledAt (blockSpan (shapeOf [2, 0])
         ++ blockSpan (shapeOf [2, 0])) (act i (i + 1) x)) := by decide +kernel
@@ -813,7 +815,7 @@ isolates the content perpendicularity alone.  Its own isolating
 refusal — a pair perpendicular at the content and parallel at an
 occupied moved content — is landed below, at two width-two pools
 sharing one member at the raised content. -/
-example : ∀ i, i + 1 < ([2, 0] : List Nat).length →
+theorem pin43 : ∀ i, i + 1 < ([2, 0] : List Nat).length →
     ∀ k, k < (groupAt (blockSpan (shapeOf [2, 0]))
       (moveAt i (i + 1) [2, 0])).length →
     ∀ l, l < (groupAt (blockSpan (shapeOf [2, 0]))
@@ -844,22 +846,22 @@ private def upB : List HVec :=
    ⟨[2, 0], [BPair.ofNat 1]⟩]
 
 /-- The sizes binders survive at both pools. -/
-example : ∀ x ∈ upA, sized x := by decide +kernel
+theorem pin44 : ∀ x ∈ upA, sized x := by decide +kernel
 
-example : ∀ x ∈ upB, sized x := by decide +kernel
+theorem pin45 : ∀ x ∈ upB, sized x := by decide +kernel
 
 /-- The closure binders survive at both pools: the `[1, 1]`
 member's raising image sits inside its own pool's `[2, 0]` group's
 span, and the `[2, 0]` member's image reads the sum's unit. -/
-example : ∀ x ∈ upA, ∀ i, i + 1 < ([1, 1] : List Nat).length →
+theorem pin46 : ∀ x ∈ upA, ∀ i, i + 1 < ([1, 1] : List Nat).length →
     settledAt upA (act i (i + 1) x) := by decide +kernel
 
-example : ∀ x ∈ upB, ∀ i, i + 1 < ([1, 1] : List Nat).length →
+theorem pin47 : ∀ x ∈ upB, ∀ i, i + 1 < ([1, 1] : List Nat).length →
     settledAt upB (act i (i + 1) x) := by decide +kernel
 
 /-- The content perpendicularity survives: the two pools' `[1, 1]`
 groups pair at the sum's unit. -/
-example : ∀ k, k < (groupAt upA [1, 1]).length →
+theorem pin48 : ∀ k, k < (groupAt upA [1, 1]).length →
     ∀ l, l < (groupAt upB [1, 1]).length →
     (elim.dotP (ground.getAt [] (groupAt upA [1, 1]) k)
       (ground.getAt [] (groupAt upB [1, 1]) l)).oneValue
@@ -867,7 +869,7 @@ example : ∀ k, k < (groupAt upA [1, 1]).length →
 
 /-- The raised perpendicularity refuses: the shared member at the
 raised content pairs with itself off the sum's unit. -/
-example : ¬ (∀ i, i + 1 < ([1, 1] : List Nat).length →
+theorem pin49 : ¬ (∀ i, i + 1 < ([1, 1] : List Nat).length →
     ∀ k, k < (groupAt upA (moveAt i (i + 1) [1, 1])).length →
     ∀ l, l < (groupAt upB (moveAt i (i + 1) [1, 1])).length →
     (elim.dotP
@@ -877,11 +879,11 @@ example : ¬ (∀ i, i + 1 < ([1, 1] : List Nat).length →
       BPair.unit) := by decide +kernel
 
 /-- The additivity parts at the withdrawn read. -/
-example : ¬ (countAt (upA ++ upB) [1, 1]
+theorem pin50 : ¬ (countAt (upA ++ upB) [1, 1]
     = countAt upA [1, 1] + countAt upB [1, 1]) := by decide +kernel
 
 /-- Its values: the join's one against the two sides' nought. -/
-example : countAt (upA ++ upB) [1, 1] = 1
+theorem pin51 : countAt (upA ++ upB) [1, 1] = 1
     ∧ countAt upA [1, 1] = 0
     ∧ countAt upB [1, 1] = 0 := by decide +kernel
 
@@ -895,7 +897,7 @@ with the surviving binders pinned. -/
 
 /-- The theorem applied whole at the committed block's own content:
 the pool at its computed head-cons form, every binder decided. -/
-example : countAt (blockSpan (shapeOf [2, 0])) [2, 0]
+theorem pin52 : countAt (blockSpan (shapeOf [2, 0])) [2, 0]
     = if ([2, 0] : List Nat) = [2, 0] then 1 else 0 := by
   rw [show blockSpan (shapeOf [2, 0])
       = (⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)
@@ -906,7 +908,7 @@ example : countAt (blockSpan (shapeOf [2, 0])) [2, 0]
 
 /-- The same instance at the block's other occupied content: the
 delta reads nought. -/
-example : countAt (blockSpan (shapeOf [2, 0])) [1, 1]
+theorem pin53 : countAt (blockSpan (shapeOf [2, 0])) [1, 1]
     = if ([1, 1] : List Nat) = [2, 0] then 1 else 0 := by
   rw [show blockSpan (shapeOf [2, 0])
       = (⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)
@@ -917,7 +919,7 @@ example : countAt (blockSpan (shapeOf [2, 0])) [1, 1]
 
 /-- The same instance at a content the block does not carry: the
 vacant group's own nought. -/
-example : countAt (blockSpan (shapeOf [2, 0])) [3, 1]
+theorem pin54 : countAt (blockSpan (shapeOf [2, 0])) [3, 1]
     = if ([3, 1] : List Nat) = [2, 0] then 1 else 0 := by
   rw [show blockSpan (shapeOf [2, 0])
       = (⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)
@@ -928,14 +930,14 @@ example : countAt (blockSpan (shapeOf [2, 0])) [3, 1]
 
 /-- Refusal at `hoff`: at the unit-head singleton the count at the
 head's own content reads nought against the delta's one. -/
-example : ¬ (countAt [(⟨[1, 1], [BPair.unit, BPair.unit]⟩ : HVec)]
+theorem pin55 : ¬ (countAt [(⟨[1, 1], [BPair.unit, BPair.unit]⟩ : HVec)]
     [1, 1] = 1) := by decide +kernel
 
 /-- The surviving binders at the unit-head singleton — the sizes,
 the widths and the closure, the unit member's actions themselves at
 the unit — so the refusal isolates `hoff`, pinned beside as the
 head's own unit tail. -/
-example : (∀ w ∈ [(⟨[1, 1], [BPair.unit, BPair.unit]⟩ : HVec)],
+theorem pin56 : (∀ w ∈ [(⟨[1, 1], [BPair.unit, BPair.unit]⟩ : HVec)],
       sized w)
     ∧ (∀ w ∈ [(⟨[1, 1], [BPair.unit, BPair.unit]⟩ : HVec)],
       w.content.length = 2)
@@ -950,13 +952,13 @@ example : (∀ w ∈ [(⟨[1, 1], [BPair.unit, BPair.unit]⟩ : HVec)],
 sits off the unit with a vacuous provenance, but its raising
 escapes the singleton pool, and the count at its own content reads
 nought against the delta's one. -/
-example : ¬ (countAt
+theorem pin57 : ¬ (countAt
     [(⟨[1, 1], [BPair.ofNat 1, BPair.ofNat 1]⟩ : HVec)] [1, 1]
       = 1) := by decide +kernel
 
 /-- The closure's own failure at that singleton, the refusal's
 isolated binder. -/
-example : ¬ (∀ w ∈ [(⟨[1, 1],
+theorem pin58 : ¬ (∀ w ∈ [(⟨[1, 1],
       [BPair.ofNat 1, BPair.ofNat 1]⟩ : HVec)],
     ∀ i < 2, ∀ j < 2, ¬ i = j →
       settledAt [(⟨[1, 1], [BPair.ofNat 1, BPair.ofNat 1]⟩ : HVec)]
@@ -964,7 +966,7 @@ example : ¬ (∀ w ∈ [(⟨[1, 1],
 
 /-- The other binders survive that forgery: the size, the width and
 the head off the sum's unit. -/
-example : (∀ w ∈ [(⟨[1, 1],
+theorem pin59 : (∀ w ∈ [(⟨[1, 1],
         [BPair.ofNat 1, BPair.ofNat 1]⟩ : HVec)], sized w)
     ∧ (∀ w ∈ [(⟨[1, 1],
         [BPair.ofNat 1, BPair.ofNat 1]⟩ : HVec)],
@@ -975,12 +977,12 @@ example : (∀ w ∈ [(⟨[1, 1],
 /-- Refusal at `hprov`: the reordered union — the wedge line ahead
 of the symmetric block — reads one at the off-head content against
 the delta's nought. -/
-example : ¬ (countAt (blockSpan (shapeOf [1, 1])
+theorem pin60 : ¬ (countAt (blockSpan (shapeOf [1, 1])
       ++ blockSpan (shapeOf [2, 0])) [2, 0]
     = if ([2, 0] : List Nat) = [1, 1] then 1 else 0) := by decide +kernel
 
 /-- The union's own head-cons form. -/
-example : blockSpan (shapeOf [1, 1]) ++ blockSpan (shapeOf [2, 0])
+theorem pin61 : blockSpan (shapeOf [1, 1]) ++ blockSpan (shapeOf [2, 0])
     = (⟨[1, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap]⟩ : HVec)
       :: [⟨[2, 0], [BPair.ofNat 1]⟩,
           ⟨[1, 1], [BPair.ofNat 1, BPair.ofNat 1]⟩,
@@ -989,7 +991,7 @@ example : blockSpan (shapeOf [1, 1]) ++ blockSpan (shapeOf [2, 0])
 /-- The provenance's own failure at that union, the refusal's
 isolated binder: the symmetric block's top is no lowering image of
 any earlier member. -/
-example : ¬ (∀ k, k < [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin62 : ¬ (∀ k, k < [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
       ⟨[1, 1], [BPair.ofNat 1, BPair.ofNat 1]⟩,
       ⟨[0, 2], [BPair.ofNat 2]⟩].length →
     ∃ i, i ≤ k ∧ ∃ j, j + 1 < 2 ∧
@@ -1005,7 +1007,7 @@ example : ¬ (∀ k, k < [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
 
 /-- The other binders survive it: the sizes, the widths, the
 closure at the union, and the head off the sum's unit. -/
-example : (∀ w ∈ blockSpan (shapeOf [1, 1])
+theorem pin63 : (∀ w ∈ blockSpan (shapeOf [1, 1])
         ++ blockSpan (shapeOf [2, 0]), sized w)
     ∧ (∀ w ∈ blockSpan (shapeOf [1, 1])
         ++ blockSpan (shapeOf [2, 0]), w.content.length = 2)
@@ -1021,7 +1023,7 @@ example : (∀ w ∈ blockSpan (shapeOf [1, 1])
 eight-member block at row list `[2, 1]` reads one at its own top
 and nought at the doubly-occupied `[1, 1, 1]`, the theorem applied
 whole at the computed head-cons form with the values beside. -/
-example : countAt (blockSpan (shapeOf [2, 1, 0])) [2, 1, 0]
+theorem pin64 : countAt (blockSpan (shapeOf [2, 1, 0])) [2, 1, 0]
     = if ([2, 1, 0] : List Nat) = [2, 1, 0] then 1 else 0 := by
   rw [show blockSpan (shapeOf [2, 1, 0])
       = ground.getAt (⟨[], []⟩ : HVec)
@@ -1030,7 +1032,7 @@ example : countAt (blockSpan (shapeOf [2, 1, 0])) [2, 1, 0]
   exact countAt_block 3 _ _ (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) [2, 1, 0]
 
-example : countAt (blockSpan (shapeOf [2, 1, 0])) [2, 1, 0] = 1
+theorem pin65 : countAt (blockSpan (shapeOf [2, 1, 0])) [2, 1, 0] = 1
     ∧ countAt (blockSpan (shapeOf [2, 1, 0])) [1, 1, 1] = 0 := by
   decide +kernel
 
@@ -1089,14 +1091,14 @@ private theorem unitCarrier_cl : ∀ x ∈ unitCarrier, ∀ i, i < 2 → ∀ j, 
 
 /-- The producer's two rounds at the committed pair: the symmetric
 top then the wedge line's own. -/
-example : (exhaust 2 orthPair).length = 2
+theorem pin66 : (exhaust 2 orthPair).length = 2
     ∧ (exhaust 2 orthPair).map HVec.content = [[2, 0], [1, 1]] := by
   decide +kernel
 
 /-- The blocks' perpendicularity applied whole at the committed
 pair, the second round's block against the first at the wedge
 content. -/
-example : ∀ k, k < (groupAt (blockOf 2
+theorem pin67 : ∀ k, k < (groupAt (blockOf 2
       (ground.getAt (⟨[], []⟩ : HVec) (exhaust 2 orthPair) 0))
       [1, 1]).length →
     ∀ l, l < (groupAt (blockOf 2
@@ -1114,7 +1116,7 @@ example : ∀ k, k < (groupAt (blockOf 2
 
 /-- The display's own value at the computed pools: one row per
 block at the wedge content, their pairing at the sum's unit. -/
-example : (groupAt (blockOf 2
+theorem pin68 : (groupAt (blockOf 2
       (ground.getAt (⟨[], []⟩ : HVec) (exhaust 2 orthPair) 0))
       [1, 1]).length = 1
     ∧ (groupAt (blockOf 2
@@ -1136,55 +1138,55 @@ example : (groupAt (blockOf 2
   decide +kernel
 
 /-- The settled read applied whole at the committed pair. -/
-example : ∀ y ∈ blockJoin 2 (exhaust 2 orthPair),
+theorem pin69 : ∀ y ∈ blockJoin 2 (exhaust 2 orthPair),
     sized y ∧ y.content.length = 2 ∧ settledAt orthPair y :=
   exhaust_settle 2 orthPair orthPair_sz orthPair_wid orthPair_cl
 
 /-- The settled read's own value at the computed join. -/
-example : ∀ y ∈ blockJoin 2 (exhaust 2 orthPair),
+theorem pin70 : ∀ y ∈ blockJoin 2 (exhaust 2 orthPair),
     sized y ∧ y.content.length = 2 ∧ settledAt orthPair y := by
   decide +kernel
 
 /-- The join's independence applied whole at the committed
 pair. -/
-example : indepAll (blockJoin 2 (exhaust 2 orthPair)) :=
+theorem pin71 : indepAll (blockJoin 2 (exhaust 2 orthPair)) :=
   exhaust_indep 2 orthPair orthPair_sz orthPair_wid orthPair_cl
 
 /-- The independence's own value at the computed join. -/
-example : indepAll (blockJoin 2 (exhaust 2 orthPair)) := by decide +kernel
+theorem pin72 : indepAll (blockJoin 2 (exhaust 2 orthPair)) := by decide +kernel
 
 /-- The settled read applied whole at the width-three block. -/
-example : ∀ y ∈ blockJoin 3 (exhaust 3 wideBlock),
+theorem pin73 : ∀ y ∈ blockJoin 3 (exhaust 3 wideBlock),
     sized y ∧ y.content.length = 3 ∧ settledAt wideBlock y :=
   exhaust_settle 3 wideBlock wideBlock_sz wideBlock_wid wideBlock_cl
 
 /-- Its own value at the computed join. -/
-example : ∀ y ∈ blockJoin 3 (exhaust 3 wideBlock),
+theorem pin74 : ∀ y ∈ blockJoin 3 (exhaust 3 wideBlock),
     sized y ∧ y.content.length = 3 ∧ settledAt wideBlock y := by
   decide +kernel
 
 /-- The join's independence applied whole at the width-three
 block. -/
-example : indepAll (blockJoin 3 (exhaust 3 wideBlock)) :=
+theorem pin75 : indepAll (blockJoin 3 (exhaust 3 wideBlock)) :=
   exhaust_indep 3 wideBlock wideBlock_sz wideBlock_wid wideBlock_cl
 
 /-- Its own value at the computed join. -/
-example : indepAll (blockJoin 3 (exhaust 3 wideBlock)) := by decide +kernel
+theorem pin76 : indepAll (blockJoin 3 (exhaust 3 wideBlock)) := by decide +kernel
 
 /-- The producer's off-unit binder is off the top theorem's path:
 the committed carrier carries a member at the sum's unit, so the
 withdrawn read refuses outright. -/
-example : sized unitMember ∧ poly.unitTail unitMember.coords
+theorem pin77 : sized unitMember ∧ poly.unitTail unitMember.coords
     ∧ ¬ (∀ x ∈ unitCarrier, ¬ poly.unitTail x.coords) := by decide +kernel
 
 /-- The unit member is invisible to the descent: the producer
 reads the symmetric block's own exhaustion, one round. -/
-example : exhaust 2 unitCarrier = exhaust 2 (blockSpan (shapeOf [2, 0]))
+theorem pin78 : exhaust 2 unitCarrier = exhaust 2 (blockSpan (shapeOf [2, 0]))
     ∧ (exhaust 2 unitCarrier).length = 1 := by decide +kernel
 
 /-- The exhaustion's members are tops at that carrier, the top
 theorem applied whole without the withdrawn read. -/
-example : ∀ w ∈ exhaust 2 unitCarrier,
+theorem pin79 : ∀ w ∈ exhaust 2 unitCarrier,
     sized w ∧ w.content.length = 2
       ∧ (¬ poly.unitTail w.coords)
       ∧ ∀ j, j < 2 → ∀ i, i < j →
@@ -1225,111 +1227,111 @@ private def wedgeAlone : List HVec :=
 
 /-- The count at the block's own top content, `countAt_exhaust`
 applied whole. -/
-example : countAt symBlock [2, 0] = occ [2, 0] (exhaust 2 symBlock) :=
+theorem pin80 : countAt symBlock [2, 0] = occ [2, 0] (exhaust 2 symBlock) :=
   countAt_exhaust 2 symBlock symBlock_sz symBlock_wid symBlock_cl
     [2, 0]
 
 /-- Its two sides' shared value. -/
-example : countAt symBlock [2, 0] = 1
+theorem pin81 : countAt symBlock [2, 0] = 1
     ∧ occ [2, 0] (exhaust 2 symBlock) = 1 := by decide +kernel
 
 /-- The count at the block's paired lowering content, the
 occupied content off the produced tops'. -/
-example : countAt symBlock [1, 1] = occ [1, 1] (exhaust 2 symBlock) :=
+theorem pin82 : countAt symBlock [1, 1] = occ [1, 1] (exhaust 2 symBlock) :=
   countAt_exhaust 2 symBlock symBlock_sz symBlock_wid symBlock_cl
     [1, 1]
 
-example : countAt symBlock [1, 1] = 0
+theorem pin83 : countAt symBlock [1, 1] = 0
     ∧ occ [1, 1] (exhaust 2 symBlock) = 0 := by decide +kernel
 
 /-- The count at a content the carrier does not carry. -/
-example : countAt symBlock [3, 1] = occ [3, 1] (exhaust 2 symBlock) :=
+theorem pin84 : countAt symBlock [3, 1] = occ [3, 1] (exhaust 2 symBlock) :=
   countAt_exhaust 2 symBlock symBlock_sz symBlock_wid symBlock_cl
     [3, 1]
 
-example : countAt symBlock [3, 1] = 0
+theorem pin85 : countAt symBlock [3, 1] = 0
     ∧ occ [3, 1] (exhaust 2 symBlock) = 0 := by decide +kernel
 
 /-- The count at the committed orthogonal pair's two top
 contents, the descent's two rounds read one each. -/
-example : countAt orthPair [2, 0] = occ [2, 0] (exhaust 2 orthPair) :=
+theorem pin86 : countAt orthPair [2, 0] = occ [2, 0] (exhaust 2 orthPair) :=
   countAt_exhaust 2 orthPair orthPair_sz orthPair_wid orthPair_cl
     [2, 0]
 
-example : countAt orthPair [1, 1] = occ [1, 1] (exhaust 2 orthPair) :=
+theorem pin87 : countAt orthPair [1, 1] = occ [1, 1] (exhaust 2 orthPair) :=
   countAt_exhaust 2 orthPair orthPair_sz orthPair_wid orthPair_cl
     [1, 1]
 
 /-- The pair's two shared values, one at each top content. -/
-example : countAt orthPair [2, 0] = 1
+theorem pin88 : countAt orthPair [2, 0] = 1
     ∧ occ [2, 0] (exhaust 2 orthPair) = 1
     ∧ countAt orthPair [1, 1] = 1
     ∧ occ [1, 1] (exhaust 2 orthPair) = 1 := by decide +kernel
 
 /-- The count at the width-three block's own top content and at
 its doubly-occupied interior content. -/
-example : countAt wideBlock [2, 1, 0]
+theorem pin89 : countAt wideBlock [2, 1, 0]
     = occ [2, 1, 0] (exhaust 3 wideBlock) :=
   countAt_exhaust 3 wideBlock wideBlock_sz wideBlock_wid wideBlock_cl
     [2, 1, 0]
 
-example : countAt wideBlock [1, 1, 1]
+theorem pin90 : countAt wideBlock [1, 1, 1]
     = occ [1, 1, 1] (exhaust 3 wideBlock) :=
   countAt_exhaust 3 wideBlock wideBlock_sz wideBlock_wid wideBlock_cl
     [1, 1, 1]
 
-example : countAt wideBlock [2, 1, 0] = 1
+theorem pin91 : countAt wideBlock [2, 1, 0] = 1
     ∧ occ [2, 1, 0] (exhaust 3 wideBlock) = 1
     ∧ countAt wideBlock [1, 1, 1] = 0
     ∧ occ [1, 1, 1] (exhaust 3 wideBlock) = 0 := by decide +kernel
 
 /-- The dimension display applied whole at the symmetric block. -/
-example : dimOf symBlock = ground.famFold Nat.add 0
+theorem pin92 : dimOf symBlock = ground.famFold Nat.add 0
     (fun mu => countAt symBlock mu * (blockSpan (shapeOf mu)).length)
-    (ground.dedupL ((exhaust 2 symBlock).map HVec.content)) :=
+    (ground.dedupF ((exhaust 2 symBlock).map HVec.content)) :=
   dimOf_countAt 2 symBlock symBlock_sz symBlock_wid symBlock_cl
 
 /-- The block's own dimension. -/
-example : dimOf symBlock = 3 := by decide +kernel
+theorem pin93 : dimOf symBlock = 3 := by decide +kernel
 
 /-- The dimension display applied whole at the committed
 orthogonal pair, the two blocks' dimensions added. -/
-example : dimOf orthPair = ground.famFold Nat.add 0
+theorem pin94 : dimOf orthPair = ground.famFold Nat.add 0
     (fun mu => countAt orthPair mu * (blockSpan (shapeOf mu)).length)
-    (ground.dedupL ((exhaust 2 orthPair).map HVec.content)) :=
+    (ground.dedupF ((exhaust 2 orthPair).map HVec.content)) :=
   dimOf_countAt 2 orthPair orthPair_sz orthPair_wid orthPair_cl
 
-example : dimOf orthPair = 4 := by decide +kernel
+theorem pin95 : dimOf orthPair = 4 := by decide +kernel
 
 /-- The dimension display applied whole at the redundant carrier,
 and the discriminator beside it: the repeated member joins the
 carrier's length while the collection refuses it, so the
 dimension sits strictly below. -/
-example : dimOf dupCarrier = ground.famFold Nat.add 0
+theorem pin96 : dimOf dupCarrier = ground.famFold Nat.add 0
     (fun mu => countAt dupCarrier mu
       * (blockSpan (shapeOf mu)).length)
-    (ground.dedupL ((exhaust 2 dupCarrier).map HVec.content)) :=
+    (ground.dedupF ((exhaust 2 dupCarrier).map HVec.content)) :=
   dimOf_countAt 2 dupCarrier dupCarrier_sz dupCarrier_wid dupCarrier_cl
 
-example : dimOf dupCarrier = 3 ∧ dupCarrier.length = 4 := by decide +kernel
+theorem pin97 : dimOf dupCarrier = 3 ∧ dupCarrier.length = 4 := by decide +kernel
 
 /-- The dimension display applied whole at the width-three
 block. -/
-example : dimOf wideBlock = ground.famFold Nat.add 0
+theorem pin98 : dimOf wideBlock = ground.famFold Nat.add 0
     (fun mu => countAt wideBlock mu * (blockSpan (shapeOf mu)).length)
-    (ground.dedupL ((exhaust 3 wideBlock).map HVec.content)) :=
+    (ground.dedupF ((exhaust 3 wideBlock).map HVec.content)) :=
   dimOf_countAt 3 wideBlock wideBlock_sz wideBlock_wid wideBlock_cl
 
-example : dimOf wideBlock = 8 := by decide +kernel
+theorem pin99 : dimOf wideBlock = 8 := by decide +kernel
 
 /-- The closure binder is load-bearing: at the lone wedge line the
 carrier's count sits at nought while the descent produces its own
 top, so the count read refuses — the surviving binders and the two
 refused values decided beside, `hcl` the withdrawn read. -/
-example : ¬ (countAt wedgeAlone [1, 1]
+theorem pin100 : ¬ (countAt wedgeAlone [1, 1]
     = occ [1, 1] (exhaust 2 wedgeAlone)) := by decide +kernel
 
-example : (∀ x ∈ wedgeAlone, sized x)
+theorem pin101 : (∀ x ∈ wedgeAlone, sized x)
     ∧ (∀ x ∈ wedgeAlone, x.content.length = 2)
     ∧ countAt wedgeAlone [1, 1] = 0
     ∧ occ [1, 1] (exhaust 2 wedgeAlone) = 1
@@ -1339,69 +1341,69 @@ example : (∀ x ∈ wedgeAlone, sized x)
 /-- The closure binder at the settling read: the lone wedge line's
 produced block escapes the carrier's span, so the settled
 conclusion refuses at the withdrawn closure. -/
-example : ¬ (∀ y ∈ blockJoin 2 (exhaust 2 wedgeAlone),
+theorem pin102 : ¬ (∀ y ∈ blockJoin 2 (exhaust 2 wedgeAlone),
     sized y ∧ y.content.length = 2 ∧ settledAt wedgeAlone y) := by
   decide +kernel
 
 /-- The closure binder at the dimension display: the lone wedge
 line's dimension reads one against the display's fold at nought,
 the refused count the coefficient. -/
-example : ¬ (dimOf wedgeAlone = ground.famFold Nat.add 0
+theorem pin103 : ¬ (dimOf wedgeAlone = ground.famFold Nat.add 0
     (fun mu => countAt wedgeAlone mu
       * (blockSpan (shapeOf mu)).length)
-    (ground.dedupL ((exhaust 2 wedgeAlone).map HVec.content))) := by
+    (ground.dedupF ((exhaust 2 wedgeAlone).map HVec.content))) := by
   decide +kernel
 
-example : dimOf wedgeAlone = 1
+theorem pin104 : dimOf wedgeAlone = 1
     ∧ ground.famFold Nat.add 0
       (fun mu => countAt wedgeAlone mu
         * (blockSpan (shapeOf mu)).length)
-      (ground.dedupL ((exhaust 2 wedgeAlone).map HVec.content))
+      (ground.dedupF ((exhaust 2 wedgeAlone).map HVec.content))
       = 0 := by decide +kernel
 
 /-- The graded display applied whole at the symmetric block's
 three contents, the off-carrier content among them. -/
-example : dimAt symBlock [2, 0]
+theorem pin105 : dimAt symBlock [2, 0]
     = ground.famFold Nat.add 0
         (fun nu => countAt symBlock nu
           * occ [2, 0] (blockSpan (shapeOf nu)))
-        (ground.dedupL ((exhaust 2 symBlock).map HVec.content)) :=
+        (ground.dedupF ((exhaust 2 symBlock).map HVec.content)) :=
   gradedDim_countAt 2 symBlock symBlock_sz symBlock_wid symBlock_cl
     [2, 0]
 
-example : dimAt symBlock [1, 1]
+theorem pin106 : dimAt symBlock [1, 1]
     = ground.famFold Nat.add 0
         (fun nu => countAt symBlock nu
           * occ [1, 1] (blockSpan (shapeOf nu)))
-        (ground.dedupL ((exhaust 2 symBlock).map HVec.content)) :=
+        (ground.dedupF ((exhaust 2 symBlock).map HVec.content)) :=
   gradedDim_countAt 2 symBlock symBlock_sz symBlock_wid symBlock_cl
     [1, 1]
 
-example : dimAt symBlock [3, 1]
+theorem pin107 : dimAt symBlock [3, 1]
     = ground.famFold Nat.add 0
         (fun nu => countAt symBlock nu
           * occ [3, 1] (blockSpan (shapeOf nu)))
-        (ground.dedupL ((exhaust 2 symBlock).map HVec.content)) :=
+        (ground.dedupF ((exhaust 2 symBlock).map HVec.content)) :=
   gradedDim_countAt 2 symBlock symBlock_sz symBlock_wid symBlock_cl
     [3, 1]
 
 /-- The three graded values at the committed block. -/
-example : dimAt symBlock [2, 0] = 1
+theorem pin108 : dimAt symBlock [2, 0] = 1
     ∧ dimAt symBlock [1, 1] = 1
     ∧ dimAt symBlock [3, 1] = 0 := by decide +kernel
 
 /-- The graded display at the orthogonal pair's shared content:
 the fold sums over the two blocks, one summand each. -/
-example : dimAt orthPair [1, 1]
+theorem pin109 : dimAt orthPair [1, 1]
     = ground.famFold Nat.add 0
         (fun nu => countAt orthPair nu
           * occ [1, 1] (blockSpan (shapeOf nu)))
-        (ground.dedupL ((exhaust 2 orthPair).map HVec.content)) :=
+        (ground.dedupF ((exhaust 2 orthPair).map HVec.content)) :=
   gradedDim_countAt 2 orthPair orthPair_sz orthPair_wid orthPair_cl
     [1, 1]
 
 /-- The shared content's value with its two summands. -/
-example : dimAt orthPair [1, 1] = 2
+theorem pin110 : dimAt orthPair [1, 1] = 2
     ∧ countAt orthPair [2, 0]
         * occ [1, 1] (blockSpan (shapeOf [2, 0])) = 1
     ∧ countAt orthPair [1, 1]
@@ -1410,34 +1412,34 @@ example : dimAt orthPair [1, 1] = 2
 /-- The graded display at the redundant carrier: the collection's
 count refuses the repetition where the raw occupancy reads it,
 the display at the collected side. -/
-example : dimAt dupCarrier [2, 0]
+theorem pin111 : dimAt dupCarrier [2, 0]
     = ground.famFold Nat.add 0
         (fun nu => countAt dupCarrier nu
           * occ [2, 0] (blockSpan (shapeOf nu)))
-        (ground.dedupL ((exhaust 2 dupCarrier).map HVec.content)) :=
+        (ground.dedupF ((exhaust 2 dupCarrier).map HVec.content)) :=
   gradedDim_countAt 2 dupCarrier dupCarrier_sz dupCarrier_wid
     dupCarrier_cl [2, 0]
 
-example : dimAt dupCarrier [2, 0] = 1
+theorem pin112 : dimAt dupCarrier [2, 0] = 1
     ∧ occ [2, 0] dupCarrier = 2 := by decide +kernel
 
 /-- The closure binder at the graded display: the lone wedge
 line's content reads one against the display's fold at nought,
 `hcl` the withdrawn read with the two refused values decided
 beside. -/
-example : ¬ (dimAt wedgeAlone [1, 1]
+theorem pin113 : ¬ (dimAt wedgeAlone [1, 1]
     = ground.famFold Nat.add 0
         (fun nu => countAt wedgeAlone nu
           * occ [1, 1] (blockSpan (shapeOf nu)))
-        (ground.dedupL
+        (ground.dedupF
           ((exhaust 2 wedgeAlone).map HVec.content))) := by
   decide +kernel
 
-example : dimAt wedgeAlone [1, 1] = 1
+theorem pin114 : dimAt wedgeAlone [1, 1] = 1
     ∧ ground.famFold Nat.add 0
         (fun nu => countAt wedgeAlone nu
           * occ [1, 1] (blockSpan (shapeOf nu)))
-        (ground.dedupL ((exhaust 2 wedgeAlone).map HVec.content))
+        (ground.dedupF ((exhaust 2 wedgeAlone).map HVec.content))
       = 0 := by decide +kernel
 
 /-! The graded display's repeated top: the triple-fused carrier
@@ -1464,10 +1466,12 @@ private theorem triCarrier_cl : ∀ x ∈ triCarrier, ∀ i, i < 2 → ∀ j,
     j < 2 → ¬ i = j → settledAt triCarrier (act i j x) :=
   triCarrier_pack.2.2
 
-/-- The carrier's two tops with their counts, and the graded
-dimension at the repeated one. -/
-example : ground.dedupL ((exhaust 2 triCarrier).map HVec.content)
-      = [[3, 0], [2, 1]]
+/-- The carrier's two tops, each once in the contents' index at
+the index's count two, with their counts, and the graded dimension
+at the repeated one. -/
+theorem pin115 : ground.countOf [3, 0] (ground.dedupF ((exhaust 2 triCarrier).map HVec.content)) = 1
+    ∧ ground.countOf [2, 1] (ground.dedupF ((exhaust 2 triCarrier).map HVec.content)) = 1
+    ∧ (ground.dedupF ((exhaust 2 triCarrier).map HVec.content)).length = 2
     ∧ countAt triCarrier [3, 0] = 1
     ∧ countAt triCarrier [2, 1] = 2
     ∧ dimAt triCarrier [2, 1] = 3 := by decide +kernel
@@ -1476,18 +1480,18 @@ example : ground.dedupL ((exhaust 2 triCarrier).map HVec.content)
 the carrier's own top list: the symmetric block's occupancy at
 `[2, 1]` enters at the single top's count one and the mixed
 block's at the repeated top's two. -/
-example : dimAt triCarrier [2, 1]
+theorem pin116 : dimAt triCarrier [2, 1]
     = ground.famFold Nat.add 0
         (fun nu => countAt triCarrier nu
           * occ [2, 1] (blockSpan (shapeOf nu)))
         [[3, 0], [2, 1]] := by decide +kernel
 
 /-- The graded display applied whole at the repeated top. -/
-example : dimAt triCarrier [2, 1]
+theorem pin117 : dimAt triCarrier [2, 1]
     = ground.famFold Nat.add 0
         (fun nu => countAt triCarrier nu
           * occ [2, 1] (blockSpan (shapeOf nu)))
-        (ground.dedupL ((exhaust 2 triCarrier).map HVec.content)) :=
+        (ground.dedupF ((exhaust 2 triCarrier).map HVec.content)) :=
   gradedDim_countAt 2 triCarrier triCarrier_sz triCarrier_wid
     triCarrier_cl [2, 1]
 
@@ -1497,16 +1501,16 @@ withdrawn read with the surviving binders decided beside — the
 length display refuses with the occupancy. -/
 private def wU : HVec := ⟨[2, 0], [BPair.unit]⟩
 
-example : sized wU ∧ wU.content.length = 2
+theorem pin118 : sized wU ∧ wU.content.length = 2
     ∧ poly.unitTail wU.coords
     ∧ (∀ j, j < 2 → ∀ i, i < j →
         poly.unitTail (act i j wU).coords) := by decide +kernel
 
-example : ¬ (occ [1, 1] (closeSpan 2 (lowerspan.ht wU.content)
+theorem pin119 : ¬ (occ [1, 1] (closeSpan 2 (lowerspan.ht wU.content)
       [wU] [wU])
     = occ [1, 1] (blockSpan (shapeOf wU.content))) := by decide +kernel
 
-example : ¬ ((closeSpan 2 (lowerspan.ht wU.content)
+theorem pin120 : ¬ ((closeSpan 2 (lowerspan.ht wU.content)
       [wU] [wU]).length
     = (blockSpan (shapeOf wU.content)).length) := by decide +kernel
 
@@ -1517,12 +1521,12 @@ surviving binders decided beside. -/
 private def wLow : HVec :=
   ground.getAt (⟨[], []⟩ : HVec) symBlock 1
 
-example : sized wLow ∧ wLow.content.length = 2
+theorem pin121 : sized wLow ∧ wLow.content.length = 2
     ∧ ¬ poly.unitTail wLow.coords
     ∧ ¬ (∀ j, j < 2 → ∀ i, i < j →
         poly.unitTail (act i j wLow).coords) := by decide +kernel
 
-example : ¬ (occ [0, 2] (closeSpan 2 (lowerspan.ht wLow.content)
+theorem pin122 : ¬ (occ [0, 2] (closeSpan 2 (lowerspan.ht wLow.content)
       [wLow] [wLow])
     = occ [0, 2] (blockSpan (shapeOf wLow.content))) := by decide +kernel
 
@@ -1533,20 +1537,20 @@ binders decided beside. -/
 private def w3 : HVec :=
   ground.getAt (⟨[], []⟩ : HVec) (blockSpan (shapeOf [1, 1, 0])) 0
 
-example : sized w3 ∧ ¬ (w3.content.length = 2)
+theorem pin123 : sized w3 ∧ ¬ (w3.content.length = 2)
     ∧ ¬ poly.unitTail w3.coords
     ∧ (∀ j, j < 2 → ∀ i, i < j →
         poly.unitTail (act i j w3).coords) := by decide +kernel
 
-example : ¬ (occ [1, 0, 1] (closeSpan 2 (lowerspan.ht w3.content)
+theorem pin124 : ¬ (occ [1, 0, 1] (closeSpan 2 (lowerspan.ht w3.content)
       [w3] [w3])
     = occ [1, 0, 1] (blockSpan (shapeOf w3.content))) := by decide +kernel
 
 /-- The fuel bound is load-bearing: at fuel nought the closure
 never opens, `hfuel` the withdrawn read decided beside. -/
-example : ¬ (lowerspan.ht [2, 0] ≤ 0) := by decide +kernel
+theorem pin125 : ¬ (lowerspan.ht [2, 0] ≤ 0) := by decide +kernel
 
-example : ¬ (occ [1, 1] (closeSpan 2 0
+theorem pin126 : ¬ (occ [1, 1] (closeSpan 2 0
       [ground.getAt (⟨[], []⟩ : HVec) symBlock 0]
       [ground.getAt (⟨[], []⟩ : HVec) symBlock 0])
     = occ [1, 1] (blockSpan (shapeOf [2, 0]))) := by decide +kernel
@@ -1559,30 +1563,30 @@ private def mixedWidth : List HVec :=
   symBlock ++ [ground.getAt (⟨[], []⟩ : HVec)
     (blockSpan (shapeOf [1, 1, 0])) 0]
 
-example : (∀ x ∈ mixedWidth, sized x)
+theorem pin127 : (∀ x ∈ mixedWidth, sized x)
     ∧ ¬ (∀ x ∈ mixedWidth, x.content.length = 2) := by decide +kernel
 
-example : ∀ x ∈ mixedWidth, ∀ i, i < 2 → ∀ j, j < 2 → ¬ i = j →
+theorem pin128 : ∀ x ∈ mixedWidth, ∀ i, i < 2 → ∀ j, j < 2 → ¬ i = j →
     settledAt mixedWidth (act i j x) := by decide +kernel
 
-example : ¬ (dimAt mixedWidth [1, 0, 1]
+theorem pin129 : ¬ (dimAt mixedWidth [1, 0, 1]
     = ground.famFold Nat.add 0
         (fun nu => countAt mixedWidth nu
           * occ [1, 0, 1] (blockSpan (shapeOf nu)))
-        (ground.dedupL
+        (ground.dedupF
           ((exhaust 2 mixedWidth).map HVec.content))) := by decide +kernel
 
-example : ¬ (dimOf mixedWidth = ground.famFold Nat.add 0
+theorem pin130 : ¬ (dimOf mixedWidth = ground.famFold Nat.add 0
     (fun mu => countAt mixedWidth mu
       * (blockSpan (shapeOf mu)).length)
-    (ground.dedupL
+    (ground.dedupF
       ((exhaust 2 mixedWidth).map HVec.content))) := by decide +kernel
 
-example : dimOf mixedWidth = 4
+theorem pin131 : dimOf mixedWidth = 4
     ∧ ground.famFold Nat.add 0
         (fun mu => countAt mixedWidth mu
           * (blockSpan (shapeOf mu)).length)
-        (ground.dedupL ((exhaust 2 mixedWidth).map HVec.content))
+        (ground.dedupF ((exhaust 2 mixedWidth).map HVec.content))
       = 6 := by decide +kernel
 
 /-- The size binders are the frame at both displays: the padded
@@ -1593,32 +1597,32 @@ record standing where a refusal would. -/
 private def padBlock : List HVec :=
   symBlock.map (fun w => ⟨w.content, w.coords ++ [BPair.unit]⟩)
 
-example : ¬ (∀ x ∈ padBlock, sized x)
+theorem pin132 : ¬ (∀ x ∈ padBlock, sized x)
     ∧ (∀ x ∈ padBlock, x.content.length = 2) := by decide +kernel
 
-example : dimOf padBlock = ground.famFold Nat.add 0
+theorem pin133 : dimOf padBlock = ground.famFold Nat.add 0
     (fun mu => countAt padBlock mu
       * (blockSpan (shapeOf mu)).length)
-    (ground.dedupL ((exhaust 2 padBlock).map HVec.content)) := by
+    (ground.dedupF ((exhaust 2 padBlock).map HVec.content)) := by
   decide +kernel
 
-example : dimAt padBlock [1, 1] = ground.famFold Nat.add 0
+theorem pin134 : dimAt padBlock [1, 1] = ground.famFold Nat.add 0
     (fun nu => countAt padBlock nu
       * occ [1, 1] (blockSpan (shapeOf nu)))
-    (ground.dedupL ((exhaust 2 padBlock).map HVec.content)) := by
+    (ground.dedupF ((exhaust 2 padBlock).map HVec.content)) := by
   decide +kernel
 
 /-- The graded display at the width-three block's doubly occupied
 content: the occupancy above one read against the count. -/
-example : dimAt wideBlock [1, 1, 1]
+theorem pin135 : dimAt wideBlock [1, 1, 1]
     = ground.famFold Nat.add 0
         (fun nu => countAt wideBlock nu
           * occ [1, 1, 1] (blockSpan (shapeOf nu)))
-        (ground.dedupL ((exhaust 3 wideBlock).map HVec.content)) :=
+        (ground.dedupF ((exhaust 3 wideBlock).map HVec.content)) :=
   gradedDim_countAt 3 wideBlock wideBlock_sz wideBlock_wid
     wideBlock_cl [1, 1, 1]
 
-example : dimAt wideBlock [1, 1, 1] = 2
+theorem pin136 : dimAt wideBlock [1, 1, 1] = 2
     ∧ occ [1, 1, 1] (blockSpan (shapeOf [2, 1, 0])) = 2 := by decide +kernel
 
 /-- The closure binder at the join's independence: two seeds at one
@@ -1630,33 +1634,33 @@ private def escPair : List HVec :=
   [⟨[2, 1], [BPair.ofNat 2, BPair.unit, BPair.unit]⟩,
    ⟨[2, 1], [BPair.unit, BPair.ofNat 2, BPair.unit]⟩]
 
-example : ¬ indepAll (blockJoin 2 (exhaust 2 escPair)) := by decide +kernel
+theorem pin137 : ¬ indepAll (blockJoin 2 (exhaust 2 escPair)) := by decide +kernel
 
-example : (∀ x ∈ escPair, sized x)
+theorem pin138 : (∀ x ∈ escPair, sized x)
     ∧ (∀ x ∈ escPair, x.content.length = 2)
     ∧ ¬ (∀ x ∈ escPair, ∀ i, i < 2 → ∀ j, j < 2 → ¬ i = j →
       settledAt escPair (act i j x)) := by decide +kernel
 
 /-- The unit-bearing carrier reads the symmetric block's own count
 and dimension, the unit member invisible to both. -/
-example : countAt unitCarrier [2, 0]
+theorem pin139 : countAt unitCarrier [2, 0]
     = occ [2, 0] (exhaust 2 unitCarrier) :=
   countAt_exhaust 2 unitCarrier unitCarrier_sz unitCarrier_wid unitCarrier_cl
     [2, 0]
 
-example : countAt unitCarrier [1, 1]
+theorem pin140 : countAt unitCarrier [1, 1]
     = occ [1, 1] (exhaust 2 unitCarrier) :=
   countAt_exhaust 2 unitCarrier unitCarrier_sz unitCarrier_wid unitCarrier_cl
     [1, 1]
 
-example : dimOf unitCarrier = ground.famFold Nat.add 0
+theorem pin141 : dimOf unitCarrier = ground.famFold Nat.add 0
     (fun mu => countAt unitCarrier mu
       * (blockSpan (shapeOf mu)).length)
-    (ground.dedupL ((exhaust 2 unitCarrier).map HVec.content)) :=
+    (ground.dedupF ((exhaust 2 unitCarrier).map HVec.content)) :=
   dimOf_countAt 2 unitCarrier unitCarrier_sz unitCarrier_wid unitCarrier_cl
 
 /-- Its values, the symmetric block's own throughout. -/
-example : dimOf unitCarrier = 3
+theorem pin142 : dimOf unitCarrier = 3
     ∧ countAt unitCarrier [2, 0] = 1
     ∧ occ [2, 0] (exhaust 2 unitCarrier) = 1
     ∧ countAt unitCarrier [1, 1] = 0
@@ -1675,71 +1679,71 @@ carries its probe record rather than a refusal. -/
 applied whole at the one-box row's symmetric target: the one letter
 width is the display's only binder, the two blocks' independence
 the derivation's own (`lowerspan.spanReads`). -/
-example : fusionCount [1, 0] [1, 0] [2, 0]
+theorem pin143 : fusionCount [1, 0] [1, 0] [2, 0]
     = countAt (fusedAt (blockSpan [1, 0]) (blockSpan [1, 0]))
       (rowList [2, 0]) :=
   fusionCount_countAt [1, 0] [1, 0] [2, 0] (by decide +kernel)
 
 /-- Its two sides' one value. -/
-example : fusionCount [1, 0] [1, 0] [2, 0] = 1
+theorem pin144 : fusionCount [1, 0] [1, 0] [2, 0] = 1
     ∧ countAt (fusedAt (blockSpan [1, 0]) (blockSpan [1, 0]))
       (rowList [2, 0]) = 1 := by decide +kernel
 
 /-- The shape's own block reads the delta at its row list, the
 theorem applied whole on and off the content at the one-box row's
 block and at the one-column block. -/
-example : countAt (blockSpan [1, 0]) [1, 0]
+theorem pin145 : countAt (blockSpan [1, 0]) [1, 0]
     = if ([1, 0] : List Nat) = rowList [1, 0] then 1 else 0 :=
   countAt_blockSpan [1, 0] [1, 0]
 
-example : countAt (blockSpan [1, 0]) [2, 0]
+theorem pin146 : countAt (blockSpan [1, 0]) [2, 0]
     = if ([2, 0] : List Nat) = rowList [1, 0] then 1 else 0 :=
   countAt_blockSpan [1, 0] [2, 0]
 
-example : countAt (blockSpan [0, 1]) [1, 1]
+theorem pin147 : countAt (blockSpan [0, 1]) [1, 1]
     = if ([1, 1] : List Nat) = rowList [0, 1] then 1 else 0 :=
   countAt_blockSpan [0, 1] [1, 1]
 
-example : countAt (blockSpan [0, 1]) [0, 0]
+theorem pin148 : countAt (blockSpan [0, 1]) [0, 0]
     = if ([0, 0] : List Nat) = rowList [0, 1] then 1 else 0 :=
   countAt_blockSpan [0, 1] [0, 0]
 
 /-- The four values, the delta's occupied read at each block's own
 row list and nought at every other content. -/
-example : countAt (blockSpan [1, 0]) [1, 0] = 1
+theorem pin149 : countAt (blockSpan [1, 0]) [1, 0] = 1
     ∧ countAt (blockSpan [1, 0]) [2, 0] = 0
     ∧ countAt (blockSpan [0, 1]) [1, 1] = 1
     ∧ countAt (blockSpan [0, 1]) [0, 0] = 0 := by decide +kernel
 
 /-- The unit shape's own span, the exhibit's singleton — no letter
 occupied, so no interior lowering is present. -/
-example : (blockSpan ([0, 0] : Shape)).length = 1 := by decide +kernel
+theorem pin150 : (blockSpan ([0, 0] : Shape)).length = 1 := by decide +kernel
 
 /-- The unit read applied whole at the one-box row's own shape, at
 a target off it, and at the two-box row. -/
-example : fusionCount [1, 0]
+theorem pin151 : fusionCount [1, 0]
       (List.replicate ([1, 0] : Shape).length 0) [1, 0]
     = if ([1, 0] : Shape) = [1, 0] then 1 else 0 :=
   fusionCount_unit [1, 0] [1, 0] rfl
 
-example : fusionCount [1, 0]
+theorem pin152 : fusionCount [1, 0]
       (List.replicate ([1, 0] : Shape).length 0) [2, 0]
     = if ([2, 0] : Shape) = [1, 0] then 1 else 0 :=
   fusionCount_unit [1, 0] [2, 0] (by decide +kernel)
 
-example : fusionCount [2, 0]
+theorem pin153 : fusionCount [2, 0]
       (List.replicate ([2, 0] : Shape).length 0) [2, 0]
     = if ([2, 0] : Shape) = [2, 0] then 1 else 0 :=
   fusionCount_unit [2, 0] [2, 0] rfl
 
 /-- The unit read's values at two letters, the shape's own target
 occupied once and every other target vacant. -/
-example : fusionCount [1, 0] [0, 0] [1, 0] = 1
+theorem pin154 : fusionCount [1, 0] [0, 0] [1, 0] = 1
     ∧ fusionCount [1, 0] [0, 0] [2, 0] = 0
     ∧ fusionCount [1, 0] [0, 0] [0, 1] = 0 := by decide +kernel
 
 /-- The unit read at three letters, the crown instance. -/
-example : fusionCount [1, 1, 0] [0, 0, 0] [1, 1, 0] = 1 := by decide +kernel
+theorem pin155 : fusionCount [1, 1, 0] [0, 0, 0] [1, 1, 0] = 1 := by decide +kernel
 
 /-! `fusionCount_unit`'s width binder `hca` is the frame
 (`con:places`' one letter width), not a load-bearing read: at a
@@ -1748,34 +1752,34 @@ alone, no pair row matches the target's row list, and both sides
 read nought — the width refused at the fixture and the conclusion
 still standing, so no refusal exists to commit. -/
 
-example : ¬ (([1, 0, 0] : Shape).length
+theorem pin156 : ¬ (([1, 0, 0] : Shape).length
     = ([1, 0] : Shape).length) := by decide +kernel
 
-example : fusionCount [1, 0] [0, 0] [1, 0, 0]
+theorem pin157 : fusionCount [1, 0] [0, 0] [1, 0, 0]
     = if ([1, 0, 0] : Shape) = [1, 0] then 1 else 0 := by decide +kernel
 
 /-! `fusionCount_comm`'s own reads: the two orders of one pair of
 shapes at one target read one count, the theorem applied whole
 beside the decided values. -/
 
-example : fusionCount [1, 0] [2, 0] [3, 0]
+theorem pin158 : fusionCount [1, 0] [2, 0] [3, 0]
     = fusionCount [2, 0] [1, 0] [3, 0] :=
   fusionCount_comm [1, 0] [2, 0] [3, 0] (by decide +kernel)
 
-example : fusionCount [1, 0] [2, 0] [1, 1]
+theorem pin159 : fusionCount [1, 0] [2, 0] [1, 1]
     = fusionCount [2, 0] [1, 0] [1, 1] :=
   fusionCount_comm [1, 0] [2, 0] [1, 1] (by decide +kernel)
 
 /-- The crown instance at three letters, the theorem applied whole
 at the decided value. -/
-example : fusionCount [1, 0, 0] [2, 0, 0] [1, 1, 0]
+theorem pin160 : fusionCount [1, 0, 0] [2, 0, 0] [1, 1, 0]
     = fusionCount [2, 0, 0] [1, 0, 0] [1, 1, 0] :=
   fusionCount_comm [1, 0, 0] [2, 0, 0] [1, 1, 0] (by decide +kernel)
 
-example : fusionCount [1, 0] [2, 0] [3, 0]
+theorem pin161 : fusionCount [1, 0] [2, 0] [3, 0]
     = fusionCount [2, 0] [1, 0] [3, 0] := by decide +kernel
 
-example : fusionCount [1, 0] [2, 0] [1, 1]
+theorem pin162 : fusionCount [1, 0] [2, 0] [1, 1]
     = fusionCount [2, 0] [1, 0] [1, 1] := by decide +kernel
 
 /-! `fusionCount_comm`'s width binder `hba`, its isolating
@@ -1785,7 +1789,7 @@ two enumerations at distinct pair lists.  The binder is
 load-bearing; single-occupied-letter ragged pairs read the two
 orders equal, the artifact recorded beside the refusal. -/
 
-example : ¬ (([1, 1] : Shape).length
+theorem pin163 : ¬ (([1, 1] : Shape).length
     = ([2, 1, 0] : Shape).length) := by decide +kernel
 
 private theorem hOrdA : fusionCount [2, 1, 0] [1, 1] [2, 1] = 1 := by
@@ -1794,13 +1798,13 @@ private theorem hOrdA : fusionCount [2, 1, 0] [1, 1] [2, 1] = 1 := by
 private theorem hOrdB : fusionCount [1, 1] [2, 1, 0] [2, 1] = 0 := by
   decide +kernel
 
-example : ¬ (fusionCount [2, 1, 0] [1, 1] [2, 1]
+theorem pin164 : ¬ (fusionCount [2, 1, 0] [1, 1] [2, 1]
     = fusionCount [1, 1] [2, 1, 0] [2, 1]) :=
   fun h => absurd (hOrdA.symm.trans (h.trans hOrdB)) (by decide +kernel)
 
 /-- A single-occupied-letter ragged pair reads the two orders
 equal, the truncation artifact off the refusal's shape. -/
-example : fusionCount [1, 0] [0, 1, 0, 0] [1, 1]
+theorem pin165 : fusionCount [1, 0] [0, 1, 0, 0] [1, 1]
     = fusionCount [0, 1, 0, 0] [1, 0] [1, 1] := by decide +kernel
 
 /-! `lem:blockcount`(iii)'s block transport applied whole
@@ -1812,7 +1816,7 @@ the shape's `blockSpan` distinct lists, the counts one value. -/
 /-- Both sides' values decided first: one at the two crossing
 contents the fused pools carry, nought at the third and at a
 content neither carries. -/
-example : countAt (fusedAt ((⟨[2, 0], [BPair.ofNat 2]⟩ : HVec)
+theorem pin166 : countAt (fusedAt ((⟨[2, 0], [BPair.ofNat 2]⟩ : HVec)
         :: [⟨[1, 1], [BPair.ofNat 2, BPair.ofNat 2]⟩,
             ⟨[0, 2], [BPair.ofNat 4]⟩])
       (blockSpan (shapeOf [1, 0]))) [3, 0] = 1
@@ -1839,14 +1843,14 @@ example : countAt (fusedAt ((⟨[2, 0], [BPair.ofNat 2]⟩ : HVec)
 
 /-- The pool and the shape's block are distinct lists: the
 transport is no identity here. -/
-example : ¬ (((⟨[2, 0], [BPair.ofNat 2]⟩ : HVec)
+theorem pin167 : ¬ (((⟨[2, 0], [BPair.ofNat 2]⟩ : HVec)
       :: [⟨[1, 1], [BPair.ofNat 2, BPair.ofNat 2]⟩,
           ⟨[0, 2], [BPair.ofNat 4]⟩])
     = blockSpan (shapeOf [2, 0])) := by decide +kernel
 
 /-- The theorem applied whole at the crossing content, every binder
 decided. -/
-example : countAt (fusedAt ((⟨[2, 0], [BPair.ofNat 2]⟩ : HVec)
+theorem pin168 : countAt (fusedAt ((⟨[2, 0], [BPair.ofNat 2]⟩ : HVec)
       :: [⟨[1, 1], [BPair.ofNat 2, BPair.ofNat 2]⟩,
           ⟨[0, 2], [BPair.ofNat 4]⟩]) (blockSpan (shapeOf [1, 0])))
       [3, 0]
@@ -1858,7 +1862,7 @@ example : countAt (fusedAt ((⟨[2, 0], [BPair.ofNat 2]⟩ : HVec)
 
 /-- The same instance at a content the fused pools do not carry:
 both counts nought. -/
-example : countAt (fusedAt ((⟨[2, 0], [BPair.ofNat 2]⟩ : HVec)
+theorem pin169 : countAt (fusedAt ((⟨[2, 0], [BPair.ofNat 2]⟩ : HVec)
       :: [⟨[1, 1], [BPair.ofNat 2, BPair.ofNat 2]⟩,
           ⟨[0, 2], [BPair.ofNat 4]⟩]) (blockSpan (shapeOf [1, 0])))
       [5, 0]
@@ -1879,12 +1883,12 @@ with its independence refused and the display still holding. -/
 /-- `hind`'s forgery: the block pool with its `[1, 1]` member
 repeated refuses the independence while every other binder
 survives, and the display still reads. -/
-example : ¬ indepAll ((⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin170 : ¬ indepAll ((⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)
     :: [⟨[1, 1], [BPair.ofNat 1, BPair.ofNat 1]⟩,
         ⟨[1, 1], [BPair.ofNat 1, BPair.ofNat 1]⟩,
         ⟨[0, 2], [BPair.ofNat 2]⟩]) := by decide +kernel
 
-example : (∀ w ∈ (⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin171 : (∀ w ∈ (⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)
         :: [⟨[1, 1], [BPair.ofNat 1, BPair.ofNat 1]⟩,
             ⟨[1, 1], [BPair.ofNat 1, BPair.ofNat 1]⟩,
             ⟨[0, 2], [BPair.ofNat 2]⟩], sized w)
@@ -1905,7 +1909,7 @@ example : (∀ w ∈ (⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)
       (act i j (⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)).coords) := by
   decide +kernel
 
-example : countAt (fusedAt ((⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin172 : countAt (fusedAt ((⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [⟨[1, 1], [BPair.ofNat 1, BPair.ofNat 1]⟩,
           ⟨[1, 1], [BPair.ofNat 1, BPair.ofNat 1]⟩,
           ⟨[0, 2], [BPair.ofNat 2]⟩]) (blockSpan (shapeOf [1, 0])))
@@ -1916,18 +1920,18 @@ example : countAt (fusedAt ((⟨[2, 0], [BPair.ofNat 1]⟩ : HVec)
 /-- `hiC`'s forgery: the second factor with its `[0, 1]` member
 repeated refuses the independence while its sizes and widths
 survive, and the display still reads. -/
-example : ¬ indepAll [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin173 : ¬ indepAll [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
     ⟨[0, 1], [BPair.ofNat 1]⟩, ⟨[0, 1], [BPair.ofNat 1]⟩] := by
   decide +kernel
 
-example : (∀ y ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin174 : (∀ y ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[0, 1], [BPair.ofNat 1]⟩, ⟨[0, 1], [BPair.ofNat 1]⟩],
       sized y)
     ∧ (∀ y ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[0, 1], [BPair.ofNat 1]⟩, ⟨[0, 1], [BPair.ofNat 1]⟩],
       y.content.length = 2) := by decide +kernel
 
-example : countAt (fusedAt ((⟨[2, 0], [BPair.ofNat 2]⟩ : HVec)
+theorem pin175 : countAt (fusedAt ((⟨[2, 0], [BPair.ofNat 2]⟩ : HVec)
       :: [⟨[1, 1], [BPair.ofNat 2, BPair.ofNat 2]⟩,
           ⟨[0, 2], [BPair.ofNat 4]⟩])
       [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
@@ -1946,10 +1950,10 @@ decided beside it, and the letter-width frame's isolating refusal.
 /-- The dimension display at the two unit blocks, `fusionCount_dim`
 applied whole: the graded fold reads 1*3 + 1*1 against the two
 blocks' counts' product 2*2. -/
-example : ground.famFold Nat.add 0
+theorem pin176 : ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 0] [1, 0] (places.shapeOf mu)
         * (blockSpan (places.shapeOf mu)).length)
-      (ground.dedupL
+      (ground.dedupF
         ((exhaust [1, 0].length
           (fusedAt (blockSpan [1, 0]) (blockSpan [1, 0]))).map
           HVec.content))
@@ -1958,34 +1962,34 @@ example : ground.famFold Nat.add 0
 
 /-- The display's summands at that instance, the two occupied
 contents' counts against their block dimensions. -/
-example : ground.famFold Nat.add 0
+theorem pin177 : ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 0] [1, 0] (places.shapeOf mu)
         * (blockSpan (places.shapeOf mu)).length)
-      (ground.dedupL
+      (ground.dedupF
         ((exhaust [1, 0].length
           (fusedAt (blockSpan [1, 0]) (blockSpan [1, 0]))).map
           HVec.content))
     = 4 := by decide +kernel
 
-example : (blockSpan [1, 0]).length * (blockSpan [1, 0]).length = 4 := by
+theorem pin178 : (blockSpan [1, 0]).length * (blockSpan [1, 0]).length = 4 := by
   decide +kernel
 
 /-- The display at the exchanged second shape, `fusionCount_dim`
 applied whole. -/
-example : ground.famFold Nat.add 0
+theorem pin179 : ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 0] [0, 1] (places.shapeOf mu)
         * (blockSpan (places.shapeOf mu)).length)
-      (ground.dedupL
+      (ground.dedupF
         ((exhaust [1, 0].length
           (fusedAt (blockSpan [1, 0]) (blockSpan [0, 1]))).map
           HVec.content))
     = (blockSpan [1, 0]).length * (blockSpan [0, 1]).length :=
   fusionCount_dim [1, 0] [0, 1] (by decide +kernel)
 
-example : ground.famFold Nat.add 0
+theorem pin180 : ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 0] [0, 1] (places.shapeOf mu)
         * (blockSpan (places.shapeOf mu)).length)
-      (ground.dedupL
+      (ground.dedupF
         ((exhaust [1, 0].length
           (fusedAt (blockSpan [1, 0]) (blockSpan [0, 1]))).map
           HVec.content))
@@ -1995,10 +1999,10 @@ example : ground.famFold Nat.add 0
 display reads one against the two blocks' counts' product two, so
 the letter-width binder is load-bearing at this clause — unlike the
 unit read's, which the probes leave unrefused. -/
-example : ¬ (ground.famFold Nat.add 0
+theorem pin181 : ¬ (ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 0] [1] (places.shapeOf mu)
         * (blockSpan (places.shapeOf mu)).length)
-      (ground.dedupL
+      (ground.dedupF
         ((exhaust [1, 0].length
           (fusedAt (blockSpan [1, 0]) (blockSpan [1]))).map
           HVec.content))
@@ -2020,19 +2024,19 @@ distinct degrees where the tensor's vanishing read
 /-- The degree read itself refuses at the mixed carrier, at both
 occupied degrees: the two heads read distinct degrees, so no one
 degree serves. -/
-example : ¬ (∀ x ∈ blockSpan [1, 0] ++ blockSpan [2, 0],
+theorem pin182 : ¬ (∀ x ∈ blockSpan [1, 0] ++ blockSpan [2, 0],
     ground.sumNat x.content = 1) := by decide +kernel
 
-example : ¬ (∀ x ∈ blockSpan [1, 0] ++ blockSpan [2, 0],
+theorem pin183 : ¬ (∀ x ∈ blockSpan [1, 0] ++ blockSpan [2, 0],
     ground.sumNat x.content = 2) := by decide +kernel
 
-example : ground.sumNat (exhibit [1, 0]).content = 1
+theorem pin184 : ground.sumNat (exhibit [1, 0]).content = 1
     ∧ ground.sumNat (exhibit [2, 0]).content = 2 := by decide +kernel
 
 /-- The refuting carrier's stated data: sizes, widths, the
 carrier's closure at every distinct letter pair, and the
 independence. -/
-example : (∀ x ∈ blockSpan [1, 0] ++ blockSpan [2, 0], sized x)
+theorem pin185 : (∀ x ∈ blockSpan [1, 0] ++ blockSpan [2, 0], sized x)
     ∧ (∀ x ∈ blockSpan [1, 0] ++ blockSpan [2, 0],
         x.content.length = 2)
     ∧ (∀ x ∈ blockSpan [1, 0] ++ blockSpan [2, 0], ∀ i < 2, ∀ j < 2,
@@ -2041,16 +2045,16 @@ example : (∀ x ∈ blockSpan [1, 0] ++ blockSpan [2, 0], sized x)
     ∧ indepAll (blockSpan [1, 0] ++ blockSpan [2, 0]) := by decide +kernel
 
 /-- The fused count at the refuting content. -/
-example : countAt (fusedAt (blockSpan [1, 0] ++ blockSpan [2, 0])
+theorem pin186 : countAt (fusedAt (blockSpan [1, 0] ++ blockSpan [2, 0])
       (blockSpan [1, 0] ++ blockSpan [2, 0])) [3, 0] = 1 := by decide +kernel
 
 /-- The per-top display at the same data, two against the fused
 count's one. -/
-example : ground.famFold Nat.add 0
+theorem pin187 : ground.famFold Nat.add 0
       (fun mu => countAt (blockSpan [1, 0] ++ blockSpan [2, 0]) mu
         * countAt (fusedAt (blockSpan (places.shapeOf mu))
             (blockSpan [1, 0] ++ blockSpan [2, 0])) [3, 0])
-      (ground.dedupL ((exhaust 2
+      (ground.dedupF ((exhaust 2
         (blockSpan [1, 0] ++ blockSpan [2, 0])).map HVec.content))
     = 2 := by decide +kernel
 
@@ -2060,13 +2064,13 @@ value. -/
 
 /-- The expansion applied whole at the fundamental block against
 itself, the display's sum the fused count. -/
-example : countAt (fusedAt (blockSpan [1, 0]) (blockSpan [1, 0]))
+theorem pin188 : countAt (fusedAt (blockSpan [1, 0]) (blockSpan [1, 0]))
       [2, 0]
     = ground.famFold Nat.add 0
         (fun mu => countAt (blockSpan [1, 0]) mu
           * countAt (fusedAt (blockSpan (places.shapeOf mu))
               (blockSpan [1, 0])) [2, 0])
-        (ground.dedupL (((exhaust 2 (blockSpan [1, 0]))).map
+        (ground.dedupF (((exhaust 2 (blockSpan [1, 0]))).map
           HVec.content)) :=
   countAt_fused_exhaust 2 1 (blockSpan [1, 0]) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (blockSpan [1, 0])
@@ -2074,46 +2078,46 @@ example : countAt (fusedAt (blockSpan [1, 0]) (blockSpan [1, 0]))
 
 /-- The associativity display applied whole at three distinct
 shapes, the two exhaustion carriers distinct lists. -/
-example : ground.famFold Nat.add 0
+theorem pin189 : ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 0] [2, 0] (places.shapeOf mu)
         * fusionCount (places.shapeOf mu) [0, 1] [1, 2])
-      (ground.dedupL ((exhaust 2
+      (ground.dedupF ((exhaust 2
         (fusedAt (blockSpan [1, 0]) (blockSpan [2, 0]))).map
         HVec.content))
     = ground.famFold Nat.add 0
       (fun mu => fusionCount [2, 0] [0, 1] (places.shapeOf mu)
         * fusionCount [1, 0] (places.shapeOf mu) [1, 2])
-      (ground.dedupL ((exhaust 2
+      (ground.dedupF ((exhaust 2
         (fusedAt (blockSpan [2, 0]) (blockSpan [0, 1]))).map
         HVec.content)) :=
   fusionCount_assoc [1, 0] [2, 0] [0, 1] [1, 2] rfl rfl rfl
 
 /-- The distinct-shape display at the second target. -/
-example : ground.famFold Nat.add 0
+theorem pin190 : ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 0] [2, 0] (places.shapeOf mu)
         * fusionCount (places.shapeOf mu) [0, 1] [3, 1])
-      (ground.dedupL ((exhaust 2
+      (ground.dedupF ((exhaust 2
         (fusedAt (blockSpan [1, 0]) (blockSpan [2, 0]))).map
         HVec.content))
     = ground.famFold Nat.add 0
       (fun mu => fusionCount [2, 0] [0, 1] (places.shapeOf mu)
         * fusionCount [1, 0] (places.shapeOf mu) [3, 1])
-      (ground.dedupL ((exhaust 2
+      (ground.dedupF ((exhaust 2
         (fusedAt (blockSpan [2, 0]) (blockSpan [0, 1]))).map
         HVec.content)) :=
   fusionCount_assoc [1, 0] [2, 0] [0, 1] [3, 1] rfl rfl rfl
 
 /-- The two sides' value at the first target, decided each. -/
-example : ground.famFold Nat.add 0
+theorem pin191 : ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 0] [2, 0] (places.shapeOf mu)
         * fusionCount (places.shapeOf mu) [0, 1] [1, 2])
-      (ground.dedupL ((exhaust 2
+      (ground.dedupF ((exhaust 2
         (fusedAt (blockSpan [1, 0]) (blockSpan [2, 0]))).map
         HVec.content)) = 1
     ∧ ground.famFold Nat.add 0
       (fun mu => fusionCount [2, 0] [0, 1] (places.shapeOf mu)
         * fusionCount [1, 0] (places.shapeOf mu) [1, 2])
-      (ground.dedupL ((exhaust 2
+      (ground.dedupF ((exhaust 2
         (fusedAt (blockSpan [2, 0]) (blockSpan [0, 1]))).map
         HVec.content)) = 1 := by decide +kernel
 
@@ -2127,32 +2131,34 @@ reading both sides at nought. -/
 
 /-- `hba`'s isolating refusal: the wider middle factor parts the
 two sums. -/
-example : ¬ (ground.famFold Nat.add 0
+theorem pin192 : ¬ (ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 0] [1, 1, 0] (places.shapeOf mu)
         * fusionCount (places.shapeOf mu) [1, 0] [3, 0])
-      (ground.dedupL ((exhaust 2
+      (ground.dedupF ((exhaust 2
         (fusedAt (blockSpan [1, 0]) (blockSpan [1, 1, 0]))).map
         HVec.content))
     = ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 1, 0] [1, 0] (places.shapeOf mu)
         * fusionCount [1, 0] (places.shapeOf mu) [3, 0])
-      (ground.dedupL ((exhaust 2
+      (ground.dedupF ((exhaust 2
         (fusedAt (blockSpan [1, 1, 0]) (blockSpan [1, 0]))).map
         HVec.content))) := by
   rw [blockcount.span110_pin]; decide +kernel
 
 /-- `hca`'s isolating refusal: the wider third factor parts the
 two sums. -/
-example : ¬ (ground.famFold Nat.add 0
+theorem pin193 : ¬ (ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 0] [1, 0] (places.shapeOf mu)
         * fusionCount (places.shapeOf mu) [1, 1, 0] [4, 0])
-      (ground.dedupL ((exhaust 2
+      (ground.dedupF ((exhaust 2
         (fusedAt (blockSpan [1, 0]) (blockSpan [1, 0]))).map
         HVec.content))
     = ground.famFold Nat.add 0
       (fun mu => fusionCount [1, 0] [1, 1, 0] (places.shapeOf mu)
         * fusionCount [1, 0] (places.shapeOf mu) [4, 0])
-      (ground.dedupL ((exhaust 2
+      (ground.dedupF ((exhaust 2
         (fusedAt (blockSpan [1, 0]) (blockSpan [1, 1, 0]))).map
         HVec.content))) := by
   rw [blockcount.span110_pin]; decide +kernel
+
+end blockcount.fusiondata

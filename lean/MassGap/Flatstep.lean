@@ -59,7 +59,7 @@ def vacFlat {o : Nat} (H G : Mat) (hx hy tx ty : Pos) (g : Nat)
   countAtPair H G hx hy g spa ∧ countAtPair H G tx ty g spt
   ∧ 1 ≤ g ∧ hx + ty < tx + hy
 
-instance {o : Nat} (H G : Mat) (hx hy tx ty : Pos) (g : Nat)
+instance instFlatstep1 {o : Nat} (H G : Mat) (hx hy tx ty : Pos) (g : Nat)
     (spa spt : Split o) : Decidable (vacFlat H G hx hy tx ty g spa spt) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
 
@@ -86,19 +86,19 @@ private theorem joinCount {k m : Nat} (Hp Gp Hq Gq H G : Mat)
     (x y : Pos) (a b : Nat) (spP : Split k) (spQ : Split m)
     (spS : Split (k + m))
     (hp : splitRead
-      (siteDatum (matAdd Hp (matScale y Gp)) (matScale x Gp)) spP)
+      (certconstruct.levelDatum Hp Gp x y) spP)
     (hpn : revAt spP = a)
     (hq : splitRead
-      (siteDatum (matAdd Hq (matScale y Gq)) (matScale x Gq)) spQ)
+      (certconstruct.levelDatum Hq Gq x y) spQ)
     (hqn : revAt spQ = b)
     (htie : matOneValue
-      (siteDatum (matAdd H (matScale y G)) (matScale x G))
+      (certconstruct.levelDatum H G x y)
       (blockJoin
-        (siteDatum (matAdd Hp (matScale y Gp)) (matScale x Gp))
+        (certconstruct.levelDatum Hp Gp x y)
         (elim.nullMat k m)
-        (siteDatum (matAdd Hq (matScale y Gq)) (matScale x Gq))))
+        (certconstruct.levelDatum Hq Gq x y)))
     (hS : splitRead
-      (siteDatum (matAdd H (matScale y G)) (matScale x G)) spS) :
+      (certconstruct.levelDatum H G x y) spS) :
     revAt spS = a + b := by
   have hjoin := inertia.splitRead_congr _ _
     (sqJoin _ _ _ hp.1 hq.1 hS.1 htie) htie spS hS
@@ -118,21 +118,21 @@ theorem flat_window {k m : Nat} (Hp Gp Hq Gq H G : Mat)
     (hqt : countAtPair Hq Gq tx ty 0 sqt)
     (hH : sqAt H (k + m)) (hG : sqAt G (k + m))
     (htiea : matOneValue
-      (siteDatum (matAdd H (matScale hy G)) (matScale hx G))
+      (certconstruct.levelDatum H G hx hy)
       (blockJoin
-        (siteDatum (matAdd Hp (matScale hy Gp)) (matScale hx Gp))
+        (certconstruct.levelDatum Hp Gp hx hy)
         (elim.nullMat k m)
-        (siteDatum (matAdd Hq (matScale hy Gq)) (matScale hx Gq))))
+        (certconstruct.levelDatum Hq Gq hx hy)))
     (htiet : matOneValue
-      (siteDatum (matAdd H (matScale ty G)) (matScale tx G))
+      (certconstruct.levelDatum H G tx ty)
       (blockJoin
-        (siteDatum (matAdd Hp (matScale ty Gp)) (matScale tx Gp))
+        (certconstruct.levelDatum Hp Gp tx ty)
         (elim.nullMat k m)
-        (siteDatum (matAdd Hq (matScale ty Gq)) (matScale tx Gq))))
+        (certconstruct.levelDatum Hq Gq tx ty)))
     (hSa : splitRead
-      (siteDatum (matAdd H (matScale hy G)) (matScale hx G)) spSa)
+      (certconstruct.levelDatum H G hx hy) spSa)
     (hSt : splitRead
-      (siteDatum (matAdd H (matScale ty G)) (matScale tx G)) spSt) :
+      (certconstruct.levelDatum H G tx ty) spSt) :
     vacFlat H G hx hy tx ty g spSa spSt :=
   ⟨⟨hH, hG, hSa,
      joinCount Hp Gp Hq Gq H G hx hy g 0 spa sqa spSa
@@ -156,12 +156,12 @@ theorem countAtPair_roots {o : Nat} (H G : Mat)
       sp') :
     split.rootsBelow roots x Pos.one = g := by
   have hsp' : splitRead
-      (siteDatum (matAdd H (matScale y G)) (matScale x G)) sp' := by
+      (certconstruct.levelDatum H G x y) sp' := by
     have hs := hcr.2.2.2.2.1
     rw [inertia.matScale_one (matAdd H (matScale y G))] at hs
     exact hs
   rw [← hcr.2.2.2.2.2, inertia.rev_exchange
-    (siteDatum (matAdd H (matScale y G)) (matScale x G)) sp' sp
+    (certconstruct.levelDatum H G x y) sp' sp
     hsp' h.2.2.1]
   exact h.2.2.2
 

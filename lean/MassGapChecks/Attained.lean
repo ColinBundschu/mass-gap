@@ -50,7 +50,9 @@ own reads inside `split.diagRead`) are the certificate Props'
 standing shape convention and carry no refusal of their own.
 -/
 
-open ground elim inertia attained
+namespace attained
+
+open ground elim inertia
 
 private def u : BPair := BPair.unit
 
@@ -74,7 +76,7 @@ projection. -/
 private def roots3 : List (BPair × Pos) :=
   [(u, 1), (⟨13, 1⟩, 1), (⟨33, 1⟩, 1)]
 
-example : l3.map (fun r => (r.1, r.2.1)) = roots3 := by decide +kernel
+theorem pin1 : l3.map (fun r => (r.1, r.2.1)) = roots3 := by decide +kernel
 
 /-- The certificate at the window: the identity congruence carries
 the pencil to the located roots' diagonal. -/
@@ -92,7 +94,7 @@ private theorem heP : edgeRead roots3 4 3 1 := by decide +kernel
 /-- The attainment at the named edge, the composite read the
 consumers cite: the edge root's eigen column with its two moments
 at equality and the first strictly above the sum's unit. -/
-example : ∃ j, j < 3
+theorem pin2 : ∃ j, j < 3
     ∧ ((inertia.quadForm (matMul et3 et3)
           (matVec id3.val (elim.idRow 3 j))).scale (1 : Pos)).oneValue
         ((inertia.quadForm et3
@@ -106,8 +108,8 @@ root `16` sits beyond the edge `12`, so the spectral read holds
 while no root is at the edge. -/
 private def rootsGap : List (BPair × Pos) := [(u, 1), (⟨17, 1⟩, 1)]
 
-example : speccut.specRead rootsGap 4 3 1 := by decide +kernel
-example : ¬ edgeRead rootsGap 4 3 1 := by decide +kernel
+theorem pin3 : speccut.specRead rootsGap 4 3 1 := by decide +kernel
+theorem pin4 : ¬ edgeRead rootsGap 4 3 1 := by decide +kernel
 
 /-- The refusal isolating the spectral read: at the edge `16` the
 root `16` names it while the occupied root `12` sits strictly
@@ -115,17 +117,17 @@ below, so the edge conjunct holds and the spectral read alone
 fails. -/
 private def rootsAt : List (BPair × Pos) := [(⟨13, 1⟩, 1), (⟨17, 1⟩, 1)]
 
-example : (rootsAt.any (fun r =>
+theorem pin5 : (rootsAt.any (fun r =>
     decide ((r.1.scale (1 : Pos)).oneValue
       (BPair.ofPos ((4 : Pos) * 4 * r.2))))) = true := by decide +kernel
-example : ¬ speccut.specRead rootsAt 4 4 1 := by decide +kernel
-example : ¬ edgeRead rootsAt 4 4 1 := by decide +kernel
+theorem pin6 : ¬ speccut.specRead rootsAt 4 4 1 := by decide +kernel
+theorem pin7 : ¬ edgeRead rootsAt 4 4 1 := by decide +kernel
 
 /-- The window's own read one clearing further out: at the edge
 `16` the root `12` sits below it and no root names it, so both
 conjuncts fail. -/
-example : ¬ speccut.specRead roots3 4 4 1 := by decide +kernel
-example : ¬ edgeRead roots3 4 4 1 := by decide +kernel
+theorem pin8 : ¬ speccut.specRead roots3 4 4 1 := by decide +kernel
+theorem pin9 : ¬ edgeRead roots3 4 4 1 := by decide +kernel
 
 /-! Clause (ii): the eigen column's two moments at the root at the
 edge. -/
@@ -134,10 +136,10 @@ edge. -/
 second column. -/
 private def y1 : List BPair := matVec id3.val (elim.idRow 3 1)
 
-example : y1 = [u, ⟨2, 1⟩, u] := by decide +kernel
+theorem pin10 : y1 = [u, ⟨2, 1⟩, u] := by decide +kernel
 
-example : (inertia.quadForm et3 y1).oneValue ⟨13, 1⟩ := by decide +kernel
-example : (inertia.quadForm (matMul et3 et3) y1).oneValue ⟨145, 1⟩ := by
+theorem pin11 : (inertia.quadForm et3 y1).oneValue ⟨13, 1⟩ := by decide +kernel
+theorem pin12 : (inertia.quadForm (matMul et3 et3) y1).oneValue ⟨145, 1⟩ := by
   decide +kernel
 
 private theorem hmom1 :
@@ -147,7 +149,7 @@ private theorem hmom1 :
 private theorem hpos1 : BPair.unit < inertia.quadForm et3 y1 := by
   decide +kernel
 
-example : ((inertia.quadForm (matMul et3 et3)
+theorem pin13 : ((inertia.quadForm (matMul et3 et3)
       (matVec id3.val (elim.idRow 3 1))).scale (1 : Pos)).oneValue
     ((inertia.quadForm et3
       (matVec id3.val (elim.idRow 3 1))).scale ((4 : Pos) * 3))
@@ -162,15 +164,15 @@ with it, `1024` against `384` at the two clearings, every other
 binder holding. -/
 private def y2 : List BPair := matVec id3.val (elim.idRow 3 2)
 
-example : ground.getAt (BPair.unit, Pos.one, BPair.unit) l3 2
+theorem pin14 : ground.getAt (BPair.unit, Pos.one, BPair.unit) l3 2
     = (⟨33, 1⟩, (1 : Pos), ⟨2, 1⟩) := rfl
-example : ¬ ((⟨33, 1⟩ : BPair).scale (1 : Pos)).oneValue
+theorem pin15 : ¬ ((⟨33, 1⟩ : BPair).scale (1 : Pos)).oneValue
     (BPair.ofPos ((4 : Pos) * 3 * 1)) := by decide +kernel
-example : (inertia.quadForm (matMul et3 et3) y2).oneValue ⟨1025, 1⟩ := by
+theorem pin16 : (inertia.quadForm (matMul et3 et3) y2).oneValue ⟨1025, 1⟩ := by
   decide +kernel
-example : ((inertia.quadForm et3 y2).scale ((4 : Pos) * 3)).oneValue
+theorem pin17 : ((inertia.quadForm et3 y2).scale ((4 : Pos) * 3)).oneValue
     ⟨385, 1⟩ := by decide +kernel
-example : ¬ ((inertia.quadForm (matMul et3 et3) y2).scale (1 : Pos)).oneValue
+theorem pin18 : ¬ ((inertia.quadForm (matMul et3 et3) y2).scale (1 : Pos)).oneValue
     ((inertia.quadForm et3 y2).scale ((4 : Pos) * 3)) := by decide +kernel
 
 /-! Clause (iii): the weight reading at the located roots. -/
@@ -179,8 +181,8 @@ example : ¬ ((inertia.quadForm (matMul et3 et3) y2).scale (1 : Pos)).oneValue
 edge. -/
 private def yK : List BPair := [⟨2, 1⟩, ⟨2, 1⟩, u]
 
-example : (inertia.quadForm et3 yK).oneValue ⟨13, 1⟩ := by decide +kernel
-example : (inertia.quadForm (matMul et3 et3) yK).oneValue ⟨145, 1⟩ := by
+theorem pin19 : (inertia.quadForm et3 yK).oneValue ⟨13, 1⟩ := by decide +kernel
+theorem pin20 : (inertia.quadForm (matMul et3 et3) yK).oneValue ⟨145, 1⟩ := by
   decide +kernel
 
 /-- The moments read equal members at the two clearings there. -/
@@ -188,21 +190,21 @@ private theorem hmomK :
     ((inertia.quadForm (matMul et3 et3) yK).scale (1 : Pos)).oneValue
       ((inertia.quadForm et3 yK).scale ((4 : Pos) * 3)) := by decide +kernel
 
-example : ((u : BPair).oneValue BPair.unit)
+theorem pin21 : ((u : BPair).oneValue BPair.unit)
     ∨ ((u : BPair).scale (1 : Pos)).oneValue
       (BPair.ofPos ((4 : Pos) * 3 * 1)) := by decide +kernel
 
-example : ((u : BPair).oneValue BPair.unit)
+theorem pin22 : ((u : BPair).oneValue BPair.unit)
     ∨ ((u : BPair).scale (1 : Pos)).oneValue
       (BPair.ofPos ((4 : Pos) * 3 * 1)) :=
   weights_at et3 id3 id3 l3 4 3 1 hdP hsP yK (by decide +kernel)
     hmomK 0 (by decide +kernel) u ⟨2, 1⟩ 1 rfl (by decide +kernel)
 
-example : ((⟨13, 1⟩ : BPair).oneValue BPair.unit)
+theorem pin23 : ((⟨13, 1⟩ : BPair).oneValue BPair.unit)
     ∨ ((⟨13, 1⟩ : BPair).scale (1 : Pos)).oneValue
       (BPair.ofPos ((4 : Pos) * 3 * 1)) := by decide +kernel
 
-example : ((⟨13, 1⟩ : BPair).oneValue BPair.unit)
+theorem pin24 : ((⟨13, 1⟩ : BPair).oneValue BPair.unit)
     ∨ ((⟨13, 1⟩ : BPair).scale (1 : Pos)).oneValue
       (BPair.ofPos ((4 : Pos) * 3 * 1)) :=
   weights_at et3 id3 id3 l3 4 3 1 hdP hsP yK (by decide +kernel)
@@ -213,7 +215,7 @@ kernel and edge roots the moments read equal members while the
 third coordinate's weight sits at the sum's unit, and the root
 `32`'s disjunction is the refused conclusion, its pin the `hmom`
 refusal's below. -/
-example : ¬ (BPair.unit < (ground.getAt BPair.unit (matVec id3.val yK) 2
+theorem pin25 : ¬ (BPair.unit < (ground.getAt BPair.unit (matVec id3.val yK) 2
     * ground.getAt BPair.unit (matVec id3.val yK) 2)
     * (⟨2, 1⟩ * BPair.ofPos (1 : Pos))) := by decide +kernel
 
@@ -223,16 +225,16 @@ coordinate is occupied, and the root is neither at the kernel point
 nor at the edge. -/
 private def yBad : List BPair := [u, u, ⟨2, 1⟩]
 
-example : ¬ ((inertia.quadForm (matMul et3 et3) yBad).scale (1 : Pos)).oneValue
+theorem pin26 : ¬ ((inertia.quadForm (matMul et3 et3) yBad).scale (1 : Pos)).oneValue
     ((inertia.quadForm et3 yBad).scale ((4 : Pos) * 3)) := by decide +kernel
-example : BPair.unit < (ground.getAt BPair.unit (matVec id3.val yBad) 2
+theorem pin27 : BPair.unit < (ground.getAt BPair.unit (matVec id3.val yBad) 2
     * ground.getAt BPair.unit (matVec id3.val yBad) 2)
     * (⟨2, 1⟩ * BPair.ofPos (1 : Pos)) := by decide +kernel
-example : ¬ (((⟨33, 1⟩ : BPair).oneValue BPair.unit)
+theorem pin28 : ¬ (((⟨33, 1⟩ : BPair).oneValue BPair.unit)
     ∨ ((⟨33, 1⟩ : BPair).scale (1 : Pos)).oneValue
       (BPair.ofPos ((4 : Pos) * 3 * 1))) := by decide +kernel
 
-example : ground.getAt (BPair.unit, Pos.one, BPair.unit) l3 1
+theorem pin29 : ground.getAt (BPair.unit, Pos.one, BPair.unit) l3 1
       = (⟨13, 1⟩, (1 : Pos), ⟨2, 1⟩)
     ∧ ((⟨13, 1⟩ : BPair).scale (1 : Pos)).oneValue
       (BPair.ofPos ((4 : Pos) * 3 * 1))
@@ -240,7 +242,7 @@ example : ground.getAt (BPair.unit, Pos.one, BPair.unit) l3 1
         * ground.getAt BPair.unit (matVec id3.val y1) 1)
         * (⟨2, 1⟩ * BPair.ofPos (1 : Pos)) := by decide +kernel
 
-example : ∃ j, j < 3 ∧ ∃ nj gj : BPair, ∃ dj : Pos,
+theorem pin30 : ∃ j, j < 3 ∧ ∃ nj gj : BPair, ∃ dj : Pos,
     ground.getAt (BPair.unit, Pos.one, BPair.unit) l3 j = (nj, dj, gj)
     ∧ (nj.scale (1 : Pos)).oneValue (BPair.ofPos ((4 : Pos) * 3 * dj))
     ∧ BPair.unit < (ground.getAt BPair.unit (matVec id3.val y1) j
@@ -254,21 +256,21 @@ moments still read equal members while the first moment sits at the
 sum's unit, and the weight at the edge coordinate fails. -/
 private def yU : List BPair := [u, u, u]
 
-example : ((inertia.quadForm (matMul et3 et3) yU).scale (1 : Pos)).oneValue
+theorem pin31 : ((inertia.quadForm (matMul et3 et3) yU).scale (1 : Pos)).oneValue
     ((inertia.quadForm et3 yU).scale ((4 : Pos) * 3)) := by decide +kernel
-example : ¬ (BPair.unit < inertia.quadForm et3 yU) := by decide +kernel
-example : ¬ (BPair.unit < (ground.getAt BPair.unit (matVec id3.val yU) 1
+theorem pin32 : ¬ (BPair.unit < inertia.quadForm et3 yU) := by decide +kernel
+theorem pin33 : ¬ (BPair.unit < (ground.getAt BPair.unit (matVec id3.val yU) 1
     * ground.getAt BPair.unit (matVec id3.val yU) 1)
     * (⟨2, 1⟩ * BPair.ofPos (1 : Pos))) := by decide +kernel
-example : ¬ ((u : BPair).scale (1 : Pos)).oneValue
+theorem pin34 : ¬ ((u : BPair).scale (1 : Pos)).oneValue
     (BPair.ofPos ((4 : Pos) * 3 * 1)) := by decide +kernel
 
 /-- The refusal isolating `hmom` in the occupancy read: at the
 vector supported on the root `32` the first moment is strictly
 above the sum's unit while the moments read unequal members, and
 the located root at that coordinate is off the edge. -/
-example : BPair.unit < inertia.quadForm et3 yBad := by decide +kernel
-example : ¬ (BPair.unit < (ground.getAt BPair.unit (matVec id3.val yBad) 1
+theorem pin35 : BPair.unit < inertia.quadForm et3 yBad := by decide +kernel
+theorem pin36 : ¬ (BPair.unit < (ground.getAt BPair.unit (matVec id3.val yBad) 1
     * ground.getAt BPair.unit (matVec id3.val yBad) 1)
     * (⟨2, 1⟩ * BPair.ofPos (1 : Pos))) := by decide +kernel
 
@@ -290,28 +292,28 @@ private def l2 : List (BPair × Pos × BPair) :=
 
 private def y2v : List BPair := [⟨5, 1⟩, ⟨4, 1⟩]
 
-example : split.diagRead et2 (elim.idMat 2) id2 id2 l2 := by
+theorem pin37 : split.diagRead et2 (elim.idMat 2) id2 id2 l2 := by
   decide +kernel
-example : ¬ speccut.specRead (l2.map (fun r => (r.1, r.2.1))) 4 3 1 := by
+theorem pin38 : ¬ speccut.specRead (l2.map (fun r => (r.1, r.2.1))) 4 3 1 := by
   decide +kernel
-example : ((inertia.quadForm (matMul et2 et2) y2v).scale (1 : Pos)).oneValue
+theorem pin39 : ((inertia.quadForm (matMul et2 et2) y2v).scale (1 : Pos)).oneValue
     ((inertia.quadForm et2 y2v).scale ((4 : Pos) * 3)) := by decide +kernel
-example : BPair.unit < inertia.quadForm et2 y2v := by decide +kernel
-example : BPair.unit < (ground.getAt BPair.unit (matVec id2.val y2v) 0
+theorem pin40 : BPair.unit < inertia.quadForm et2 y2v := by decide +kernel
+theorem pin41 : BPair.unit < (ground.getAt BPair.unit (matVec id2.val y2v) 0
     * ground.getAt BPair.unit (matVec id2.val y2v) 0)
     * (⟨2, 1⟩ * BPair.ofPos (1 : Pos)) := by decide +kernel
-example : ¬ (((⟨7, 1⟩ : BPair).oneValue BPair.unit)
+theorem pin42 : ¬ (((⟨7, 1⟩ : BPair).oneValue BPair.unit)
     ∨ ((⟨7, 1⟩ : BPair).scale (1 : Pos)).oneValue
       (BPair.ofPos ((4 : Pos) * 3 * 1))) := by decide +kernel
-example : ¬ ((⟨17, 1⟩ : BPair).scale (1 : Pos)).oneValue
+theorem pin43 : ¬ ((⟨17, 1⟩ : BPair).scale (1 : Pos)).oneValue
     (BPair.ofPos ((4 : Pos) * 3 * 1)) := by decide +kernel
 
 /-! The moments' packaging: `thm:momentform`'s two reads at the
 carrier are the quadratic reads at the gap and at its square. -/
 
-example {n : Nat} (E : SqMat n) (Y : Vec n) :
+theorem pin44 {n : Nat} (E : SqMat n) (Y : Vec n) :
     momentform.mu1 E Y = inertia.quadForm E.val Y.val := rfl
-example {n : Nat} (E : SqMat n) (Y : Vec n) :
+theorem pin45 {n : Nat} (E : SqMat n) (Y : Vec n) :
     momentform.mu2 E Y = inertia.quadForm (matMul E.val E.val) Y.val := rfl
 
 /-! Clause (iv): the probe cap at the eigen column of the root `12`
@@ -329,10 +331,12 @@ private theorem hsp16 : splitRead (siteDatum
     (matScale (1 : Pos) (matMul et3 et3)) (matScale ((4 : Pos) * 4) et3)) sp16 :=
   mkSplit_read 3 _ (by decide +kernel) (by decide +kernel)
 
-example : (inertia.quadForm (matMul et3 et3) y1).scale (1 : Pos)
+theorem pin46 : (inertia.quadForm (matMul et3 et3) y1).scale (1 : Pos)
     < (inertia.quadForm et3 y1).scale ((4 : Pos) * 4) := by decide +kernel
-example : ¬ speccut.specRead (l3.map (fun r => (r.1, r.2.1))) 4 4 1 :=
+theorem pin47 : ¬ speccut.specRead (l3.map (fun r => (r.1, r.2.1))) 4 4 1 :=
   probe_cap et3 id3 id3 l3 4 4 1 hdP sp16 hsp16 y1 (by decide +kernel)
     (by decide +kernel)
-example : ¬ ((inertia.quadForm (matMul et3 et3) y1).scale (1 : Pos)
+theorem pin48 : ¬ ((inertia.quadForm (matMul et3 et3) y1).scale (1 : Pos)
     < (inertia.quadForm et3 y1).scale ((4 : Pos) * 3)) := by decide +kernel
+
+end attained

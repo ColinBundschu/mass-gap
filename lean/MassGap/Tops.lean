@@ -2,17 +2,17 @@ import MassGap.Blockcount
 /-!
 `lem:tops` — the tops at the units carrier.  Clause (i),
 `max_top`: a pool member whose raising-moved contents are
-unoccupied reads every raising image at the unit tail — the
+vacant reads every raising image at the unit tail — the
 settled read at the vacant group, the image homogeneous at a
 content off every occupied summand (`vacant_settled`, the group's
 row count at the occupancy with `elim.spanRel_nil_unit` the
-vacant span's read).  Clause (iii) is the landed exhibit tier,
+vacant span's read).  Clause (iii) is the exhibit tier,
 `blockcount.exhibit_top` and `blockcount.exhibit_top_all`, cited
-at its consumers.  Clause (ii), the top
+where read.  Clause (ii), the top
 content's dominance, is `dominant` at the crossed exchange's
-pairing read, the tex's matrix-units sentence.  The
-exhaustion tier (`lem:blockcount`(i)) is the arriving consumer,
-the maximal-content top its selection.
+pairing read, the tex's matrix-units sentence.
+`lem:blockcount`(i)'s exhaustion reads clause (i) at its
+maximal-content top.
 -/
 
 namespace tops

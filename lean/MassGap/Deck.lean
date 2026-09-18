@@ -140,7 +140,7 @@ def dPow (x : DElem) : Nat → DElem
 def dNull (x : DElem) : Prop :=
   poly.unitTail x.1 ∧ poly.unitTail x.2
 
-instance (x : DElem) : Decidable (dNull x) :=
+instance instDeck1 (x : DElem) : Decidable (dNull x) :=
   @instDecidableAnd _ _ (poly.decUnitTail _) (poly.decUnitTail _)
 
 /-- The plus read `y^{2b} + 1 = y^b p_b(w)` at the key `b`, the
@@ -151,7 +151,7 @@ def plusRead (bp : Nat) : Prop :=
     (dSwap (dMul (dPow yE (bp + 1))
       ((pFam (ground.posOfSucc bp)), []))))
 
-instance (bp : Nat) : Decidable (plusRead bp) :=
+instance instDeck2 (bp : Nat) : Decidable (plusRead bp) :=
   inferInstanceAs (Decidable (dNull _))
 
 /-- The word read `⟨y^{2b} : 1⟩ = ⟨y² : 1⟩ y^e Q_b(w)` at the join
@@ -161,7 +161,7 @@ def wordRead (e : Nat) : Prop :=
     (dSwap (dMul (dMul (dAdd (dPow yE 2) (dSwap oneE)) (dPow yE e))
       ((qFam (ground.posOfSucc e)), []))))
 
-instance (e : Nat) : Decidable (wordRead e) :=
+instance instDeck3 (e : Nat) : Decidable (wordRead e) :=
   inferInstanceAs (Decidable (dNull _))
 
 /-- The root pair's collected read at a shared clearing: the
@@ -176,7 +176,7 @@ def pairRead (zn zn' wn : BPair) (c : Pos) (bp : Nat) : Prop :=
       (ground.bpow zn (bp + 1) + ground.bpow zn' (bp + 1))
       (poly.evalClear (pFam (ground.posOfSucc bp)) wn c (bp + 1))
 
-instance (zn zn' wn : BPair) (c : Pos) (bp : Nat) :
+instance instDeck4 (zn zn' wn : BPair) (c : Pos) (bp : Nat) :
     Decidable (pairRead zn zn' wn c bp) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
@@ -260,7 +260,7 @@ def divTwoRead (m : Nat) : Prop :=
   poly.oneValue (poly.div [(BPair.ofNat 2).swap] (pSum m)).2
     [BPair.ofNat (2 * m + 1)]
 
-instance (m : Nat) : Decidable (divTwoRead m) := poly.decOneValue _ _
+instance instDeck5 (m : Nat) : Decidable (divTwoRead m) := poly.decOneValue _ _
 
 /-- The division display at the monic `⟨x : 2⟩` holds at every side:
 the remainder is the Horner read at that divisor's own root
@@ -739,7 +739,7 @@ witness; the class read is the witness's own existence. -/
 def pCong (m : Nat) (c a b : Poly) : Prop :=
   poly.oneValue a (poly.add b (poly.mul (pSum m) c))
 
-instance (m : Nat) (c a b : Poly) : Decidable (pCong m c a b) :=
+instance instDeck6 (m : Nat) (c a b : Poly) : Decidable (pCong m c a b) :=
   poly.decOneValue _ _
 
 /-- A class read is a congruence, the multiple the null
@@ -1054,7 +1054,7 @@ read, one value at every representative of the top. -/
 def monicRead (m : Nat) : Prop :=
   poly.oneValue (poly.monic ((pSum m).dropLast)) (pSum m)
 
-instance (m : Nat) : Decidable (monicRead m) :=
+instance instDeck7 (m : Nat) : Decidable (monicRead m) :=
   poly.decOneValue _ _
 
 /-! The display's own monicity, `def:deck`'s parity induction: the
@@ -1465,7 +1465,7 @@ the depth's parity member. -/
 def divPartnerRead (m : Nat) : Prop :=
   poly.oneValue (poly.div [BPair.ofNat 2] (pSum m)).2 [parityMember m]
 
-instance (m : Nat) : Decidable (divPartnerRead m) := poly.decOneValue _ _
+instance instDeck8 (m : Nat) : Decidable (divPartnerRead m) := poly.decOneValue _ _
 
 /-- The partner division display holds at every side: the remainder
 is the Horner read at that divisor's own root

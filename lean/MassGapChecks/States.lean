@@ -12,13 +12,15 @@ concatenation's refusal, and the absent key at the sum's unit.  The
 block swap's cells close the file: the three-block relabeling's
 entries, its width, and its wiring read with the one-below
 refusal. -/
+
+namespace states
 set_option maxHeartbeats 4000000
 
-open ground poly states genericlift
+open ground poly genericlift
 
-example : permAt [1, 0, 3, 2] 4 := by decide +kernel
-example : ¬ permAt [1, 1] 2 := by decide +kernel
-example : ¬ permAt [0, 1] 3 := by decide +kernel
+theorem pin1 : permAt [1, 0, 3, 2] 4 := by decide +kernel
+theorem pin2 : ¬ permAt [1, 1] 2 := by decide +kernel
+theorem pin3 : ¬ permAt [0, 1] 3 := by decide +kernel
 
 /-! The presentation's product: the second site's wiring shifted by
 the first's length, the coefficients read at the literal keys.  The
@@ -29,37 +31,37 @@ private def cfP : PPair :=
   ([BPair.unit, ⟨3, 1⟩, ⟨2, 1⟩], [⟨3, 1⟩, ⟨3, 1⟩])
 private def negP : PPair := ([⟨1, 2⟩], [⟨2, 1⟩])
 
-example : crossNull (coeffAtW (mulComb [([0, 1], pOne)] [([1, 0], pOne)])
+theorem pin4 : crossNull (coeffAtW (mulComb [([0, 1], pOne)] [([1, 0], pOne)])
     [0, 1, 3, 2]) pOne := by decide +kernel
-example : crossNull (coeffAtW (mulComb [([0, 1], cfP)] [([1, 0], negP)])
+theorem pin5 : crossNull (coeffAtW (mulComb [([0, 1], cfP)] [([1, 0], negP)])
     [0, 1, 3, 2])
     ([BPair.unit, ⟨1, 3⟩, ⟨1, 2⟩], [⟨3, 1⟩, ⟨3, 1⟩]) := by decide +kernel
-example : crossNull (coeffAtW [([0, 1], cfP), ([0, 1], negP)] [0, 1])
+theorem pin6 : crossNull (coeffAtW [([0, 1], cfP), ([0, 1], negP)] [0, 1])
     ([⟨1, 3⟩, BPair.unit, ⟨2, 1⟩], [⟨3, 1⟩, ⟨3, 1⟩]) := by decide +kernel
-example : crossNull (coeffAtW (mulComb [([0, 1], pOne)] [([1, 0], pOne)])
+theorem pin7 : crossNull (coeffAtW (mulComb [([0, 1], pOne)] [([1, 0], pOne)])
     [0, 1, 2, 3]) pZero := by decide +kernel
 
-example : permAt (getAt [] ((mulComb [([0, 1], pOne)]
+theorem pin8 : permAt (getAt [] ((mulComb [([0, 1], pOne)]
     [([1, 0], pOne)]).map (fun e => e.1)) 0) 4 := by decide +kernel
-example : ¬ permAt ([0, 1] ++ [1, 0]) 4 := by decide +kernel
+theorem pin9 : ¬ permAt ([0, 1] ++ [1, 0]) 4 := by decide +kernel
 
 /-! The wiring bridges: the width read against the enumeration,
 both directions, the entries' bound, and the concatenation at the
 shifted block — each decided beside its theorem route. -/
 
-example : 0 < ground.countOf [2, 0, 1] (places.perms 3) := by
+theorem pin10 : 0 < ground.countOf [2, 0, 1] (places.perms 3) := by
   decide +kernel
-example : 0 < ground.countOf [2, 0, 1] (places.perms 3) :=
+theorem pin11 : 0 < ground.countOf [2, 0, 1] (places.perms 3) :=
   permAt_member (by decide +kernel)
-example : permAt [2, 0, 1] 3 :=
+theorem pin12 : permAt [2, 0, 1] 3 :=
   member_permAt (by decide +kernel)
-example : ground.countOf 5 [2, 0, 1] = 0 := by decide +kernel
-example : (2 : Nat) < 3 :=
+theorem pin13 : ground.countOf 5 [2, 0, 1] = 0 := by decide +kernel
+theorem pin14 : (2 : Nat) < 3 :=
   permAt_entries (π := [2, 0, 1]) (m := 3)
     (by decide +kernel) 2 (by decide +kernel)
-example : permAt ([1, 0] ++ shiftW 2 [0, 2, 1]) 5 := by
+theorem pin15 : permAt ([1, 0] ++ shiftW 2 [0, 2, 1]) 5 := by
   decide +kernel
-example : permAt ([1, 0] ++ shiftW 2 [0, 2, 1]) 5 :=
+theorem pin16 : permAt ([1, 0] ++ shiftW 2 [0, 2, 1]) 5 :=
   permAt_concat (πa := [1, 0]) (πb := [0, 2, 1]) (la := 2)
     (lb := 3) (by decide +kernel) (by decide +kernel)
 
@@ -69,28 +71,28 @@ block read across the third and the third read back — the site
 `n = 2`, `a = 3`, `b = 1` with the wiring read at each block and the
 width refused one below. -/
 
-example : swapW 2 3 1 = [0, 1, 5, 2, 3, 4] := by decide +kernel
-example : (swapW 2 3 1).length = 2 + (1 + 3) := by decide +kernel
-example : (swapW 2 3 1).length = 2 + (1 + 3) := length_swapW 2 3 1
-example : (shiftW 4 [0, 2, 1]).length = [0, 2, 1].length :=
+theorem pin17 : swapW 2 3 1 = [0, 1, 5, 2, 3, 4] := by decide +kernel
+theorem pin18 : (swapW 2 3 1).length = 2 + (1 + 3) := by decide +kernel
+theorem pin19 : (swapW 2 3 1).length = 2 + (1 + 3) := length_swapW 2 3 1
+theorem pin20 : (shiftW 4 [0, 2, 1]).length = [0, 2, 1].length :=
   length_shiftW 4 [0, 2, 1]
 
-example : ground.getAt 0 (swapW 2 3 1) 1 = 1 := by decide +kernel
-example : ground.getAt 0 (swapW 2 3 1) 1 = 1 :=
+theorem pin21 : ground.getAt 0 (swapW 2 3 1) 1 = 1 := by decide +kernel
+theorem pin22 : ground.getAt 0 (swapW 2 3 1) 1 = 1 :=
   getAt_swapW_low 2 3 1 1 (by decide +kernel)
-example : ground.getAt 0 (swapW 2 3 1) (2 + 0) = 2 + (3 + 0) := by
+theorem pin23 : ground.getAt 0 (swapW 2 3 1) (2 + 0) = 2 + (3 + 0) := by
   decide +kernel
-example : ground.getAt 0 (swapW 2 3 1) (2 + 0) = 2 + (3 + 0) :=
+theorem pin24 : ground.getAt 0 (swapW 2 3 1) (2 + 0) = 2 + (3 + 0) :=
   getAt_swapW_mid 2 3 1 0 (by decide +kernel)
-example : ground.getAt 0 (swapW 2 3 1) (2 + (1 + 2)) = 2 + 2 := by
+theorem pin25 : ground.getAt 0 (swapW 2 3 1) (2 + (1 + 2)) = 2 + 2 := by
   decide +kernel
-example : ground.getAt 0 (swapW 2 3 1) (2 + (1 + 2)) = 2 + 2 :=
+theorem pin26 : ground.getAt 0 (swapW 2 3 1) (2 + (1 + 2)) = 2 + 2 :=
   getAt_swapW_high 2 3 1 2 (by decide +kernel)
 
-example : permAt (swapW 2 3 1) (2 + (3 + 1)) := by decide +kernel
-example : permAt (swapW 2 3 1) (2 + (3 + 1)) := permAt_swapW 2 3 1
-example : ¬ permAt (swapW 2 3 1) 5 := by decide +kernel
-example : permAt (swapW 1 2 2) (1 + (2 + 2)) := permAt_swapW 1 2 2
+theorem pin27 : permAt (swapW 2 3 1) (2 + (3 + 1)) := by decide +kernel
+theorem pin28 : permAt (swapW 2 3 1) (2 + (3 + 1)) := permAt_swapW 2 3 1
+theorem pin29 : ¬ permAt (swapW 2 3 1) 5 := by decide +kernel
+theorem pin30 : permAt (swapW 1 2 2) (1 + (2 + 2)) := permAt_swapW 1 2 2
 
 /-! The wiring surgery of the generator insertions (`con:states`'
 evaluation contraction and `prop:lap`'s joint insertion).  A chain
@@ -112,20 +114,22 @@ residual `(U1, U1†)` at the two-cycle keys the site's positions
 `(U1†, U0)` reads `[2, 0]`, and the unit at the word `U0` joins the
 two-cycle at the word's own loop, `[1, 0, 3, 2]` at `[1 : d_f]`. -/
 
-example : chainAtRow 1 [3, 4] (padW 3 [1, 0]) = [1, 4, 2, 0, 3] := by decide +kernel
-example : chainAtCol 1 [3, 4] (padW 3 [1, 0]) = [4, 0, 2, 1, 3] := by decide +kernel
-example : contractLast [2, 0, 1] = ([1, 0], 0) := by decide +kernel
-example : contractLast [1, 0, 2] = ([1, 0], 1) := by decide +kernel
-example : fierzT [3, 0, 2, 1] = ([1, 0], 0) := by decide +kernel
-example : fierzI [3, 0, 2, 1] = ([1, 0], 1) := by decide +kernel
-example : evalStep [(0, false), (0, true)] [1, 0] = ([], [], 1) := by decide +kernel
-example : evalStep [(0, false), (1, false), (1, true), (0, true)] [3, 0, 1, 2]
+theorem pin31 : chainAtRow 1 [3, 4] (padW 3 [1, 0]) = [1, 4, 2, 0, 3] := by decide +kernel
+theorem pin32 : chainAtCol 1 [3, 4] (padW 3 [1, 0]) = [4, 0, 2, 1, 3] := by decide +kernel
+theorem pin33 : contractLast [2, 0, 1] = ([1, 0], 0) := by decide +kernel
+theorem pin34 : contractLast [1, 0, 2] = ([1, 0], 1) := by decide +kernel
+theorem pin35 : fierzT [3, 0, 2, 1] = ([1, 0], 0) := by decide +kernel
+theorem pin36 : fierzI [3, 0, 2, 1] = ([1, 0], 1) := by decide +kernel
+theorem pin37 : evalStep [(0, false), (0, true)] [1, 0] = ([], [], 1) := by decide +kernel
+theorem pin38 : evalStep [(0, false), (1, false), (1, true), (0, true)] [3, 0, 1, 2]
     = ([(1, false), (1, true)], [1, 0], 0) := by decide +kernel
-example : padState [(0, false), (0, true)] [(0, false)] [([1, 0], poly.pOne)]
+theorem pin39 : padState [(0, false), (0, true)] [(0, false)] [([1, 0], poly.pOne)]
     = [([1, 0, 3, 2], poly.pMul poly.pOne invDfP)] := by decide +kernel
-example : contractAll [(0, false), (1, false), (1, true), (0, true)] [3, 0, 1, 2]
+theorem pin40 : contractAll [(0, false), (1, false), (1, true), (0, true)] [3, 0, 1, 2]
     = ([], [], 1) := by decide +kernel
-example : residualKey [(0, false), (1, false), (1, true), (0, true)]
+theorem pin41 : residualKey [(0, false), (1, false), (1, true), (0, true)]
     [(1, false), (1, true)] [1, 0] = ([1, 2], [1, 0]) := by decide +kernel
-example : relabelTo [(0, false), (1, false), (1, true), (0, true)]
+theorem pin42 : relabelTo [(0, false), (1, false), (1, true), (0, true)]
     [(1, true), (0, false)] = [2, 0] := by decide +kernel
+
+end states

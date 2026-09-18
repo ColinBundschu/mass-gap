@@ -1,4 +1,5 @@
 import MassGap.Cornerfloor
+import MassGap.Contactdrift
 import MassGap.Momentfold
 import MassGap.Cone
 import MassGap.Gappos
@@ -23,12 +24,12 @@ slabs), and a Euclidean pair's read within the pair
 bracket (`groundreads.euc_pair_price` at the pair `u`), two scales'
 reads within the scale sandwich's priced bracket
 (`groundreads.scale_read`).  On the corner disconjugacy certificate's
-head, the walk's band-one head (`corner.headM`, `cornerpivot.wellMat`),
+head, the walk's band-one head (`cornerfloor.headM`, `cornerpivot.wellMat`),
 the floor locates the clearance at every tail scale
-(`corner.cut_flat`, `corner.cut_flat_T` and `corner.cut_flat_S` at
+(`cornerfloor.cut_flat`, `cornerfloor.cut_flat_T` and `cornerfloor.cut_flat_S` at
 every scale under the ceiling), the
 ground-level sandwich sums to one cofactor read at the upper
-family's rate (`ground.widthSum` at `corner.rate_close`'s rate), the
+family's rate (`ground.widthSum` at `contactdrift.rate_close`'s rate), the
 heights read two-sided at the certificate's rates
 (`cornerpivot.witCount` from below, `cornerpivot.certCount` from
 above), and a datum's scale reads close on the moment folds'
@@ -47,10 +48,10 @@ read (`groundreads.lead_tail_null`, `groundreads.prop_bracket`);
 separated reads pair to their product within the crossing
 certificates' brackets (`groundreads.cluster_read`); the certificate's
 head's heights are two-sided located data at its positive located
-floor (`corner.cut_flat`, `corner.cut_flat_T`, `corner.cut_flat_S`,
-`corner.floor_pos`), and the chain's ground sits at or below the
+floor (`cornerfloor.cut_flat`, `cornerfloor.cut_flat_T`, `cornerfloor.cut_flat_S`,
+`cornerfloor.floor_pos`), and the chain's ground sits at or below the
 head's line, the head its leading block
-(`corner.ground_below_line` at `truncation.count_head_le`), so the
+(`cornerfloor.ground_below_line` at `truncation.count_head_le`), so the
 spectral data sit at the ground in the corner scale there: at a head pencil whose level gap ties to the
 ground level (`def:pencil`'s `ε₀ G + Ẽ = H`), the count one at a
 corner line reads the gap's count one at the line's gap level
@@ -69,13 +70,13 @@ every direction count with no scale datum).
 Clause (iii).  The spacing is an output: the chain's height at a
 scale is located between the ray's floor and its caps, one output
 bracket per scale — the certificate's head's two-sided datum, its
-floor's two members (`corner.floorN`, `corner.floorD`) positive by
-their shape (`corner.floor_pos`), the count one at every cut
-member's line (`corner.cut_flat`, `corner.cut_flat_T`,
-`corner.cut_flat_S`, `corner.line_count`), the chain's ground at or
-below the line (`corner.ground_below_line`) and its second root at
+floor's two members (`cornerfloor.floorN`, `cornerfloor.floorD`) positive by
+their shape (`cornerfloor.floor_pos`), the count one at every cut
+member's line (`cornerfloor.cut_flat`, `cornerfloor.cut_flat_T`,
+`cornerfloor.cut_flat_S`, `cornerfloor.line_count`), the chain's ground at or
+below the line (`cornerfloor.ground_below_line`) and its second root at
 or below the head's (`truncation.count_head_le`,
-`contactcell.count_bord_le`), and every probe's two moments' read
+`contactcell.truncPair`), and every probe's two moments' read
 capping the chain's edge beside it (`attained.probe_cap`).
 -/
 
@@ -125,7 +126,7 @@ def countsStable (D : Datum) (ln ld un ud : Pos) : Prop :=
   (D.supports.all (fun s =>
     decide (siteCount s ln ld = siteCount s un ud))) = true
 
-instance (D : Datum) (ln ld un ud : Pos) :
+instance instContinuum1 (D : Datum) (ln ld un ud : Pos) :
     Decidable (countsStable D ln ld un ud) :=
   inferInstanceAs (Decidable (_ = _))
 

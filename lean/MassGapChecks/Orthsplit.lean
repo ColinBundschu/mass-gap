@@ -14,12 +14,14 @@ partner the operator pair, and the residual member's image reads
 the sum's unit against every moved row.
 -/
 
+namespace orthsplit
+
 open ground
 
 /-- The committed instance: the swap's transpose partner keeps the
 diagonal row's span, the perpendicular's adjoint read, and the
 perpendicular read. -/
-example : (∀ k, k < [[BPair.ofNat 1, BPair.ofNat 1]].length →
+theorem pin1 : (∀ k, k < [[BPair.ofNat 1, BPair.ofNat 1]].length →
       (elim.dotP
         (elim.matVec [[BPair.unit, BPair.ofNat 1],
           [BPair.ofNat 1, BPair.unit]]
@@ -42,7 +44,7 @@ example : (∀ k, k < [[BPair.ofNat 1, BPair.ofNat 1]].length →
 
 /-- The committed instance reads `perp_invariant` applied whole,
 the two content groups coinciding at the diagonal. -/
-example : ∀ k, k < [[BPair.ofNat 1, BPair.ofNat 1]].length →
+theorem pin2 : ∀ k, k < [[BPair.ofNat 1, BPair.ofNat 1]].length →
     (elim.dotP
       (elim.matVec [[BPair.unit, BPair.ofNat 1],
         [BPair.ofNat 1, BPair.unit]]
@@ -62,14 +64,14 @@ example : ∀ k, k < [[BPair.ofNat 1, BPair.ofNat 1]].length →
 line the swap's image leaves the span — the adjoint and
 perpendicular reads hold, the invariance refuses, and the
 conclusion refuses with it. -/
-example : ¬ (∀ k, k < [[BPair.ofNat 1, BPair.unit]].length →
+theorem pin3 : ¬ (∀ k, k < [[BPair.ofNat 1, BPair.unit]].length →
     elim.spanRel 2 [[BPair.ofNat 1, BPair.unit]]
       (elim.matVec [[BPair.unit, BPair.ofNat 1],
         [BPair.ofNat 1, BPair.unit]]
         (ground.getAt [] [[BPair.ofNat 1, BPair.unit]] k)))
   := by decide +kernel
 
-example : (∀ k, k < [[BPair.ofNat 1, BPair.unit]].length →
+theorem pin4 : (∀ k, k < [[BPair.ofNat 1, BPair.unit]].length →
       (elim.dotP [BPair.unit, BPair.ofNat 1]
         (ground.getAt [] [[BPair.ofNat 1, BPair.unit]]
           k)).oneValue BPair.unit)
@@ -105,7 +107,7 @@ private def lowerUnit : elim.Mat := units.matUnitAt [1, 1] [0, 2] 0 1
 
 /-- The cross-content conclusion decided outright, the instance
 kernel-confirmed independently of the theorem. -/
-example : ∀ k, k < movedGroup.length →
+theorem pin5 : ∀ k, k < movedGroup.length →
     (elim.dotP (elim.matVec raiseUnit residMember.coords)
       (ground.getAt [] movedGroup k)).oneValue BPair.unit := by decide +kernel
 
@@ -113,9 +115,11 @@ example : ∀ k, k < movedGroup.length →
 whole: the residual perpendicular to its own content group, the
 transpose partner carrying every moved row into that group's span,
 and the raised image perpendicular to the moved group. -/
-example : ∀ k, k < movedGroup.length →
+theorem pin6 : ∀ k, k < movedGroup.length →
     (elim.dotP (elim.matVec raiseUnit residMember.coords)
       (ground.getAt [] movedGroup k)).oneValue BPair.unit :=
   orthsplit.perp_invariant 2 raiseUnit lowerUnit srcGroup movedGroup
     residMember.coords (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
+
+end orthsplit

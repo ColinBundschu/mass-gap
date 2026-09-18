@@ -116,7 +116,7 @@ def PairString.decEq : (a b : PairString) → Decidable (a = b)
       else isFalse (fun he => hh (congrArg PairString.ht he))
     else isFalse (fun he => ht (congrArg PairString.top he))
 
-instance : DecidableEq PairString := PairString.decEq
+instance instStrings1 : DecidableEq PairString := PairString.decEq
 
 /-- The string's member at a depth. -/
 def memberAt (i j : Nat) (s : PairString) (b : Nat) : HVec :=
@@ -287,22 +287,7 @@ reads). -/
 
 /-! The counting kit the coefficient identity rides: the
 successors' subtraction, the sum's own withdrawal, the sum's right
-cancellation, and the crossed collection at the depth's step. -/
-
-private theorem crossSum (X Y m g : Nat) :
-    X + Y + (m + g) = Y + g + (m + X) := by
-  rw [Nat.add_assoc Y g (m + X), Nat.add_comm g (m + X),
-    ← Nat.add_assoc Y (m + X) g, ← Nat.add_assoc (X + Y) m g,
-    Nat.add_comm X Y, Nat.add_assoc Y X m, Nat.add_comm X m]
-
-private theorem coeffCross (b g m : Nat) :
-    (b + 1) * ((b + 1 + g) - b) + (m + g)
-      = (b + 1 + 1) * ((b + 1 + g) - (b + 1)) + (m + (b + 1)) := by
-  rw [Nat.add_assoc b 1 g, addSubSelfL b (1 + g),
-    ← Nat.add_assoc b 1 g, addSubSelfL (b + 1) g,
-    Nat.left_distrib (b + 1) 1 g, Nat.mul_one,
-    ground.mulAddR (b + 1) 1 g, Nat.one_mul g]
-  exact crossSum (b + 1) ((b + 1) * g) m g
+cancellation, and `ground.coeffCross` at the depth's step. -/
 
 private theorem raise_exch_top (i j : Nat) (hij : ¬ i = j)
     (y : HVec) (hocc : 0 < ground.getAt 0 y.content i)
@@ -573,7 +558,7 @@ theorem iterAct_raise (i j : Nat) (hij : ¬ i = j)
               Nat.add_assoc (ground.getAt 0 v.content j) g (b + 1),
               Nat.add_comm (b + 1) g]
           rw [hci, cy.2.2.1, ← hg]
-          exact coeffCross b g (ground.getAt 0 v.content j)
+          exact ground.coeffCross b g (ground.getAt 0 v.content j)
       have hsplit2 : poly.oneValue
           (elim.vecAdd
             (elim.vecScale (BPair.ofNat ((b + 1) * (h - b)))
@@ -848,7 +833,7 @@ def goodString (i j d : Nat) (pool : List HVec)
     ∧ elim.spanRel (monomialsAt str.top.content).length
         (groupAt pool str.top.content) str.top.coords
 
-instance (i j d : Nat) (pool : List HVec) (str : PairString) :
+instance instStrings2 (i j d : Nat) (pool : List HVec) (str : PairString) :
     Decidable (goodString i j d pool str) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
 
@@ -998,29 +983,6 @@ private def sortedKeyL (i j : Nat) : List (List Nat) → Prop
   | mu :: t => (∀ nu, 0 < ground.countOf nu t →
       hKey i j nu ≤ hKey i j mu) ∧ sortedKeyL i j t
 
-private theorem countOf_insertL (i j : Nat) (mu x : List Nat) :
-    ∀ l : List (List Nat),
-      ground.countOf x (ground.insertKeyDesc (hKey i j) mu l)
-        = ground.countOf x (mu :: l)
-  | [] => rfl
-  | nu :: t => by
-    show ground.countOf x
-        (if hKey i j nu < hKey i j mu then mu :: nu :: t
-         else nu :: ground.insertKeyDesc (hKey i j) mu t)
-      = ground.countOf x (mu :: nu :: t)
-    by_cases hc : hKey i j nu < hKey i j mu
-    · rw [if_pos hc]
-    · rw [if_neg hc]
-      rw [ground.countOf_cons x nu (ground.insertKeyDesc (hKey i j) mu t),
-        ground.countOf_cons x mu (nu :: t),
-        ground.countOf_cons x nu t,
-        countOf_insertL i j mu x t, ground.countOf_cons x mu t]
-      show (if x = nu then 1 else 0)
-          + ((if x = mu then 1 else 0) + ground.countOf x t)
-        = (if x = mu then 1 else 0)
-          + ((if x = nu then 1 else 0) + ground.countOf x t)
-      rw [Nat.add_left_comm]
-
 private theorem sorted_insertL (i j : Nat) (mu : List Nat) :
     ∀ l : List (List Nat), sortedKeyL i j l →
       sortedKeyL i j (ground.insertKeyDesc (hKey i j) mu l)
@@ -1043,7 +1005,7 @@ private theorem sorted_insertL (i j : Nat) (mu : List Nat) :
       rw [if_neg hc]
       refine ⟨?_, sorted_insertL i j mu t hs.2⟩
       intro x hx
-      rw [countOf_insertL i j mu x t] at hx
+      rw [ground.countOf_insertKeyDesc (hKey i j) mu x t] at hx
       by_cases hxm : x = mu
       · rw [hxm]
         match Nat.lt_or_ge (hKey i j nu) (hKey i j mu) with
@@ -1073,7 +1035,7 @@ private theorem countOf_foldL (i j : Nat) (x : List Nat) :
           (ground.insertKeyDesc (hKey i j) mu acc))
       = ground.countOf x (mu :: t) + ground.countOf x acc
     rw [countOf_foldL i j x t (ground.insertKeyDesc (hKey i j) mu acc),
-      countOf_insertL i j mu x acc]
+      ground.countOf_insertKeyDesc (hKey i j) mu x acc]
     rw [ground.countOf_cons x mu acc, ground.countOf_cons x mu t,
       ← Nat.add_assoc,
       Nat.add_comm (ground.countOf x t) (if x = mu then 1 else 0)]

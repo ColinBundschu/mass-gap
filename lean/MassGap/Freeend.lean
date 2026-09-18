@@ -7,7 +7,7 @@ free end the pencil is its electric member, diagonal over the window
 index (`def:pencil`), so the level is the least occupied content —
 the read `levelRead`, the display's value at or below every index
 content and attained; the window's labels read their Casimirs at or
-beyond the floor (`belowFloor`, `lem:casfloor`'s read at the
+beyond the floor (`fusion.belowFloor`, `lem:casfloor`'s read at the
 below-cutoff enumeration); and the attainment is the floor's label
 around one plaquette's boundary (`attainConf`, each corner at the
 unit law, `prop:E0`'s module its `θ` instance).  `K = ĉ₂(f)` at the
@@ -48,18 +48,8 @@ def levelRead {L : Type} (F : Data L) (R : Region) (C v : Nat) :
    (ix.all (fun a => v ≤ carrier.contentN F a))
      && (ix.any (fun a => carrier.contentN F a == v))) = true
 
-instance {L : Type} (F : Data L) (R : Region) (C v : Nat) :
+instance instFreeend1 {L : Type} (F : Data L) (R : Region) (C v : Nat) :
     Decidable (levelRead F R C v) :=
-  inferInstanceAs (Decidable (_ = _))
-
-/-- The window's floor read: every below-cutoff label's Casimir at
-or beyond the floor, `lem:casfloor`'s read at the window's own
-labels. -/
-def belowFloor {L : Type} (F : Data L) (K f : Nat) : Prop :=
-  ((F.below K).all (fun l => f ≤ F.c2N l)) = true
-
-instance {L : Type} (F : Data L) (K f : Nat) :
-    Decidable (belowFloor F K f) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The level read at a stated enumeration: the value at or below

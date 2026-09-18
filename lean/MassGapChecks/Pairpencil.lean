@@ -45,11 +45,24 @@ the cross entry's side and the gram's join block each refused; and
 the entry read at the clearing two, the gram and the term doubled
 together, with either doubled alone refused.  The square's terms'
 read is one theorem the pencil pass and the terms' extractions
-consume, the refusals reading their refused conjunct alone. -/
+consume, the refusals reading their refused conjunct alone.  The
+magnetic member's cap from the terms' (`termSum_cap`) reads at the
+square's one term, the terms' sum capped at the closure's dimension
+fold three, the adjoint list's, against the gram through the theorem
+beside its own `decide`.
+The removed block's floor (`removed_floor`) reads at the square's
+contents `0, 12, 32`: at the floor thirteen the places hold the
+adjoint loop alone and the electric member less the floor's multiple
+of the gram reads nineteen, at the floor twelve both loops with the
+fundamental's read at the sum's unit, each positive semidefinite
+through the theorem beside its own `decide`; the places' occupancy
+binder refuses at the floor thirty-three past every content. -/
+
+namespace pairpencil
 set_option maxHeartbeats 16000000
 set_option maxRecDepth 100000
 
-open ground lattice fusion elim pairpencil
+open ground lattice fusion elim
 
 private def u : BPair := BPair.unit
 
@@ -57,22 +70,22 @@ private def u : BPair := BPair.unit
 `(𝟏, f, θ)`: the vacuum defect, the `f` diagonal one, and the base
 `c₁ = 1`. -/
 
-example : matOneValue (loopMag (dataA 2) [[1, 0], adjchar.theta 2])
+theorem pin1 : matOneValue (loopMag (dataA 2) [[1, 0], adjchar.theta 2])
     [[u, u, ⟨2, 1⟩], [u, ⟨2, 1⟩, u], [⟨2, 1⟩, u, ⟨2, 1⟩]] := by
   decide +kernel
 
 /-! At three letters the base reads `c₁ = 2`, the further entries
 the counts' own. -/
 
-example : matOneValue (loopMag (dataA 3) [[1, 0, 0], adjchar.theta 3])
+theorem pin2 : matOneValue (loopMag (dataA 3) [[1, 0, 0], adjchar.theta 3])
     [[u, u, ⟨2, 1⟩], [u, ⟨2, 1⟩, u], [⟨2, 1⟩, u, ⟨3, 1⟩]] := by
   decide +kernel
 
 /-! The symmetry at the self-dual `θ`, both letter counts. -/
 
-example : symmRead (loopMag (dataA 2) [[1, 0], adjchar.theta 2]) := by
+theorem pin3 : symmRead (loopMag (dataA 2) [[1, 0], adjchar.theta 2]) := by
   decide +kernel
-example : symmRead (loopMag (dataA 3) [[1, 0, 0], adjchar.theta 3]) := by
+theorem pin4 : symmRead (loopMag (dataA 3) [[1, 0, 0], adjchar.theta 3]) := by
   decide +kernel
 
 /-! The window list's diagonal with the unit line at its head, the
@@ -80,10 +93,10 @@ committed windows' reads: at the square over two letters and at the
 theta window over the tabulated interface, every fiber at one
 slot. -/
 
-example : slotDiag (dataA 2) square (carrier.idx (dataA 2) square 32)
+theorem pin5 : slotDiag (dataA 2) square (carrier.idx (dataA 2) square 32)
     = [0, 12, 32] := by
   rw [carrier.sqIx2_pin]; decide +kernel
-example : slotDiag (tabulate (dataA 2) 18) thetaG
+theorem pin6 : slotDiag (tabulate (dataA 2) 18) thetaG
     (carrier.idx (tabulate (dataA 2) 18) thetaG 18) = [0, 12, 18, 12] := by
   rw [carrier.thIx18_pin]; decide +kernel
 
@@ -91,13 +104,13 @@ example : slotDiag (tabulate (dataA 2) 18) thetaG
 with pair entries at both weights, the displayed matrix at
 `[1 : 1]`. -/
 
-example : matOneValue
+theorem pin7 : matOneValue
     (pencilH 1 1 [0, 12, 32] (elim.idMat 3)
  (loopMag (dataA 2) [[1, 0], adjchar.theta 2]))
     [[u, u, ⟨1, 2⟩], [u, ⟨12, 1⟩, u], [⟨1, 2⟩, u, ⟨32, 1⟩]] := by
   decide +kernel
 
-example : symmRead
+theorem pin8 : symmRead
     (pencilH 2 3 [0, 12, 32] (elim.idMat 3)
       (loopMag (dataA 2) [[1, 0], adjchar.theta 2])) := by decide +kernel
 
@@ -141,8 +154,8 @@ private def spLSq : inertia.Split 3 :=
    [.one ⟨4, 1⟩, .one ⟨37, 1⟩, .one ⟨42769, 1⟩],
    0, rfl⟩
 
-example : (dataA 2).dim (adjchar.theta 2) = 3 := by decide +kernel
-example : posConf (dataA 2) square (carrier.idx (dataA 2) square 32) 0
+theorem pin9 : (dataA 2).dim (adjchar.theta 2) = 3 := by decide +kernel
+theorem pin10 : posConf (dataA 2) square (carrier.idx (dataA 2) square 32) 0
       = carrier.unitConf (dataA 2) square
     ∧ posConf (dataA 2) square (carrier.idx (dataA 2) square 32) 1
       = [[1, 0], [1, 0], [1, 0], [1, 0]]
@@ -155,16 +168,16 @@ one slot, the vacant key over the four vertices, the window list's
 diagonal the index's contents at the unit fiber products, and the
 window list's count with the unit line the window dimension. -/
 
-example : slotList (dataA 2) square carrier.sqIx2
+theorem pin11 : slotList (dataA 2) square carrier.sqIx2
     = [([[1, 0], [1, 0], [1, 0], [1, 0]], [0, 0, 0, 0]),
        ([[2, 0], [2, 0], [2, 0], [2, 0]], [0, 0, 0, 0])] := by decide +kernel
-example : slotDiag (dataA 2) square carrier.sqIx2 = 0 :: carrier.sqIx2.map
+theorem pin12 : slotDiag (dataA 2) square carrier.sqIx2 = 0 :: carrier.sqIx2.map
     (carrier.contentN (dataA 2)) :=
   slotDiag_unit (dataA 2) square carrier.sqIx2 (by decide +kernel)
-example : (slotList (dataA 2) square (carrier.idx (dataA 2) square 32)).length + 1
+theorem pin13 : (slotList (dataA 2) square (carrier.idx (dataA 2) square 32)).length + 1
     = windowfinite.dimSect (dataA 2) square 32 :=
   slotList_dimSect (dataA 2) square 32
-example : (slotList (dataA 2) square carrier.sqIx2).length + 1 = 3 := by
+theorem pin14 : (slotList (dataA 2) square carrier.sqIx2).length + 1 = 3 := by
   decide +kernel
 
 /-! A fiber of four slots: the adjoint on every link of the theta
@@ -175,14 +188,14 @@ the multiplicity refused. -/
 
 private def thAll : List places.Shape := List.replicate 7 (adjchar.theta 3)
 
-example : slotKeys (dataA 3) thetaG thAll
+theorem pin15 : slotKeys (dataA 3) thetaG thAll
     = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0],
        [1, 0, 0, 0, 0, 0], [1, 0, 0, 1, 0, 0]] := by decide +kernel
-example : windowfinite.fibProd (dataA 3) thetaG thAll = 4 := by decide +kernel
-example : (slotKeys (dataA 3) thetaG thAll).length
+theorem pin16 : windowfinite.fibProd (dataA 3) thetaG thAll = 4 := by decide +kernel
+theorem pin17 : (slotKeys (dataA 3) thetaG thAll).length
     = windowfinite.fibProd (dataA 3) thetaG thAll :=
   length_slotKeys (dataA 3) thetaG thAll
-example : ground.countOf [0, 0, 0, 2, 0, 0] (slotKeys (dataA 3) thetaG thAll) = 0
+theorem pin18 : ground.countOf [0, 0, 0, 2, 0, 0] (slotKeys (dataA 3) thetaG thAll) = 0
     ∧ ground.countOf [0, 0, 0, 1, 0] (slotKeys (dataA 3) thetaG thAll) = 0 := by
   decide +kernel
 /-- The square's one term at its reads, the contraction the module's
@@ -216,15 +229,15 @@ private theorem sqEnt : entriesRead (dataA 2) square 3 carrier.sqIx2 1 gSq sqP0 
 /-! The contraction's coherence at the loop window: every occupied
 position pair's contraction reads the fusion count the entry read
 takes, one row per kernel task. -/
-example : (List.range 3).all (fun j =>
+theorem pin19 : (List.range 3).all (fun j =>
     !rowPair (dataA 2) square carrier.sqIx2 sqP0 0 j
       || contractAt (dataA 2) square carrier.sqIx2 1 gSq mSq sqP0 0 j) = true := by
   decide +kernel
-example : (List.range 3).all (fun j =>
+theorem pin20 : (List.range 3).all (fun j =>
     !rowPair (dataA 2) square carrier.sqIx2 sqP0 1 j
       || contractAt (dataA 2) square carrier.sqIx2 1 gSq mSq sqP0 1 j) = true := by
   decide +kernel
-example : (List.range 3).all (fun j =>
+theorem pin21 : (List.range 3).all (fun j =>
     !rowPair (dataA 2) square carrier.sqIx2 sqP0 2 j
       || contractAt (dataA 2) square carrier.sqIx2 1 gSq mSq sqP0 2 j) = true := by
   decide +kernel
@@ -235,7 +248,7 @@ private theorem sqTerms : termsRead (dataA 2) square 3 carrier.sqIx2 1 gSq
   rw [sqPlaqs]
   exact ⟨sqSym, sqCapAt, sqSupp, sqEnt, trivial⟩
 
-example : pencilRead (dataA 2) square 32 3 carrier.sqIx2 1 (pencilE [0, 12, 32])
+theorem pin22 : pencilRead (dataA 2) square 32 3 carrier.sqIx2 1 (pencilE [0, 12, 32])
     gSq mSq spGSq [(mSq, spUSq, spLSq)] :=
   ⟨carrier.sqIx2_pin, by decide +kernel, by decide +kernel, by decide +kernel,
    by decide +kernel, by decide +kernel, by decide +kernel, sqTerms,
@@ -248,7 +261,7 @@ the term scaled to four against the dimension three, the order tie
 at two, and the magnetic member doubled against its one term's
 sum. -/
 
-example : ¬ pencilRead (dataA 2) square 32 3 carrier.sqIx2 1 (pencilE [0, 12, 32])
+theorem pin23 : ¬ pencilRead (dataA 2) square 32 3 carrier.sqIx2 1 (pencilE [0, 12, 32])
     gSq (inertia.matScaleB (BPair.ofNat 2) mSq) spGSq
     [(mSq, spUSq, spLSq)] :=
   fun h => absurd h.2.2.2.2.2.2.2.2.2 (by decide +kernel)
@@ -261,7 +274,7 @@ private def mSqRag : Mat :=
   (List.range 3).map (fun i =>
     if i == 0 then ground.getAt [] mSq 0 ++ [BPair.unit] else ground.getAt [] mSq i)
 
-example : matOneValue mSqRag (termSum 3 [(mSq, spUSq, spLSq)])
+theorem pin24 : matOneValue mSqRag (termSum 3 [(mSq, spUSq, spLSq)])
     ∧ ¬ sqAt mSqRag 3
     ∧ ¬ pencilRead (dataA 2) square 32 3 carrier.sqIx2 1 (pencilE [0, 12, 32])
         gSq mSqRag spGSq [(mSq, spUSq, spLSq)] :=
@@ -271,9 +284,9 @@ example : matOneValue mSqRag (termSum 3 [(mSq, spUSq, spLSq)])
 /-! The terms' reads' two extractions at the square's one term: the
 terms' count the plaquettes' and the term square at the order. -/
 
-example : [(mSq, spUSq, spLSq)].length = square.plaqs.length :=
+theorem pin25 : [(mSq, spUSq, spLSq)].length = square.plaqs.length :=
   termsRead_len (dataA 2) square 3 carrier.sqIx2 1 gSq _ _ sqTerms
-example : sqAt mSq 3 :=
+theorem pin26 : sqAt mSq 3 :=
   termsRead_sq (dataA 2) square 3 carrier.sqIx2 1 gSq square.plaqs
     [(mSq, spUSq, spLSq)] sqTerms 0 (by decide)
 
@@ -287,29 +300,29 @@ private def spUSqR : inertia.Split 3 :=
   inertia.mkSplit 3 (inertia.siteDatum cSq mSqR)
 private def spLSqR : inertia.Split 3 := inertia.mkSplit 3 (matAdd cSq mSqR)
 
-example : ¬ (carrier.idx (dataA 2) square 32 = carrier.sqIx2.reverse)
+theorem pin27 : ¬ (carrier.idx (dataA 2) square 32 = carrier.sqIx2.reverse)
     ∧ windowfinite.dimSect (dataA 2) square 32 = 3
     ∧ matOneValue (pencilE [0, 32, 12]) (formE (slotDiag (dataA 2) square
         carrier.sqIx2.reverse) gSq)
     ∧ gramBlockRead (dataA 2) square 3 carrier.sqIx2.reverse 1 gSq := by
   decide +kernel
-example : ¬ pencilRead (dataA 2) square 32 3 carrier.sqIx2.reverse 1
+theorem pin28 : ¬ pencilRead (dataA 2) square 32 3 carrier.sqIx2.reverse 1
     (pencilE [0, 32, 12]) gSq mSqR spGSq [(mSqR, spUSqR, spLSqR)] :=
   fun h => absurd h.1 (by decide +kernel)
 
-example : ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2 1
+theorem pin29 : ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2 1
     [[⟨3, 1⟩, u, u], [u, ⟨2, 1⟩, u], [u, u, ⟨2, 1⟩]] := by decide +kernel
-example : ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2 1
+theorem pin30 : ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2 1
     [[⟨2, 1⟩, u, u], [u, ⟨2, 1⟩, ⟨2, 1⟩], [u, ⟨2, 1⟩, ⟨2, 1⟩]] := by
   decide +kernel
-example : gramBlockRead (dataA 2) square 3 carrier.sqIx2 1 gSq := by decide +kernel
+theorem pin31 : gramBlockRead (dataA 2) square 3 carrier.sqIx2 1 gSq := by decide +kernel
 
 /-! The block content isolated at the square: the identity gram
 refused at the clearing two, and a loop block doubled at the
 clearing one refused — each loop's block the four coevaluations
 against the four link scales, one exactly. -/
 
-example : ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2 2 gSq
+theorem pin32 : ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2 2 gSq
     ∧ ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2 1
         [[⟨2, 1⟩, u, u], [u, ⟨3, 1⟩, u], [u, u, ⟨2, 1⟩]]
     ∧ fibGram (dataA 2) square carrier.sqIx2 [[2, 0], [2, 0], [2, 0], [2, 0]]
@@ -317,10 +330,10 @@ example : ¬ gramBlockRead (dataA 2) square 3 carrier.sqIx2 2 gSq
           ([[BPair.ofNat 3]], 1), ([[BPair.ofNat 3]], 1)]
     ∧ blockScale (dataA 2) square [[2, 0], [2, 0], [2, 0], [2, 0]] = 81 := by
   decide +kernel
-example : ¬ termSupport (dataA 2) square 3 carrier.sqIx2 sqPlaq
+theorem pin33 : ¬ termSupport (dataA 2) square 3 carrier.sqIx2 sqPlaq
     [[u, u, ⟨2, 1⟩], [u, ⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩]] := by
   decide +kernel
-example : termSupport (dataA 2) square 3 carrier.sqIx2 sqPlaq mSq := by
+theorem pin34 : termSupport (dataA 2) square 3 carrier.sqIx2 sqPlaq mSq := by
   decide +kernel
 
 /-! The magnetic entries at the square over two letters: the
@@ -341,7 +354,7 @@ private def mSqForged : Mat :=
   ground.matOf 3 3 (fun i j =>
     if i == 1 && j == 1 then ⟨3, 1⟩ else ground.getAt u (ground.getAt [] mSq i) j)
 
-example : symmRead mSqForged
+theorem pin35 : symmRead mSqForged
     ∧ inertia.capAt mSqForged cSq
         (inertia.mkSplit 3 (inertia.siteDatum cSq mSqForged))
         (inertia.mkSplit 3 (matAdd cSq mSqForged))
@@ -352,7 +365,7 @@ example : symmRead mSqForged
     ∧ entryAt (dataA 2) square carrier.sqIx2 1 gSq mSqForged sqPlaq 1 1 = false := by
   decide +kernel
 
-example : contractAt (dataA 2) square carrier.sqIx2 2 (inertia.matScaleB (BPair.ofNat 2) gSq)
+theorem pin36 : contractAt (dataA 2) square carrier.sqIx2 2 (inertia.matScaleB (BPair.ofNat 2) gSq)
       (inertia.matScaleB (BPair.ofNat 2) mSq) sqPlaq 1 1 = true
     ∧ contractAt (dataA 2) square carrier.sqIx2 2 (inertia.matScaleB (BPair.ofNat 2) gSq)
       (inertia.matScaleB (BPair.ofNat 2) mSq) sqPlaq 0 2 = true
@@ -363,7 +376,7 @@ example : contractAt (dataA 2) square carrier.sqIx2 2 (inertia.matScaleB (BPair.
     ∧ entryAt (dataA 2) square carrier.sqIx2 2 gSq
       (inertia.matScaleB (BPair.ofNat 2) mSq) sqPlaq 1 1 = true := by decide +kernel
 
-example : lettersOf (dataA 2) = 2 ∧ wordOf (dataA 2) [0, 0] = (0, 0)
+theorem pin37 : lettersOf (dataA 2) = 2 ∧ wordOf (dataA 2) [0, 0] = (0, 0)
     ∧ wordOf (dataA 2) [1, 0] = (1, 0) ∧ wordOf (dataA 2) (adjchar.theta 2) = (2, 0)
     ∧ fiber.linkSig (2, 0) (some true) (2, 0) (1, 1) = [true, true, false, true, false, false]
     ∧ fiber.linkSig (2, 0) (some false) (2, 0) (1, 1) = [true, true, true, false, false, false]
@@ -377,17 +390,19 @@ tag, five kernel members, and the fundamental loop's link two of
 each at the symbolic tag, two wirings; the stored read is the link
 data's own. -/
 
-example : (fiber.linkList 2 [true, true, false, true, false, false]).1.length = 5
+theorem pin38 : (fiber.linkList 2 [true, true, false, true, false, false]).1.length = 5
     ∧ (fiber.linkList 2 [true, false, true, false]).1.length = 2
     ∧ (fiber.linkList 2 []).1.length = 1
     ∧ (fiber.linkList 2 [true, false, true, false]).2
       = [[BPair.ofNat 4, BPair.ofNat 2], [BPair.ofNat 2, BPair.ofNat 4]] := by
   decide +kernel
-example : linkDataAt (dataA 2) carrier.sqIx2 ([1, 0], some true, [1, 0])
+theorem pin39 : linkDataAt (dataA 2) carrier.sqIx2 ([1, 0], some true, [1, 0])
     = linkData (dataA 2) ([1, 0], some true, [1, 0]) :=
   linkDataAt_read (dataA 2) carrier.sqIx2 _
-example : (linkDataAt (dataA 2) carrier.sqIx2 ([1, 0], some true, [1, 0])).2.1
-    = [[BPair.ofNat 4, (BPair.ofNat 2).swap], [(BPair.ofNat 2).swap, BPair.ofNat 4]] := by
+theorem pin40 : (linkDataAt (dataA 2) carrier.sqIx2 ([1, 0], some true, [1, 0])).2.2.1
+    = [[BPair.ofNat 4, (BPair.ofNat 2).swap], [(BPair.ofNat 2).swap, BPair.ofNat 4]]
+    ∧ (linkDataAt (dataA 2) carrier.sqIx2 ([1, 0], some true, [1, 0])).2.1
+      = (linkDataAt (dataA 2) carrier.sqIx2 ([1, 0], some true, [1, 0])).1 := by
   decide +kernel
 
 /-! The boundary factor's tensor at the letters: the mixed power's
@@ -397,8 +412,9 @@ leaving link's daggered and the leaving link's undaggered with the
 entering link's daggered, the wiring at the square's vertex, at the
 clearing one and the unit's term withdrawn. -/
 
-example : ((dataA 2).pres.bdry.1).map Prod.fst
+theorem pin41 : ((dataA 2).pres.bdry.1).2.val.map Prod.fst
       = [[0, 0, 0, 0], [0, 1, 0, 1], [1, 0, 1, 0], [1, 1, 1, 1]]
+    ∧ ((dataA 2).pres.bdry.1).1 = 4
     ∧ ((dataA 2).pres.bdry.2).oneValue (BPair.ofNat 1)
     ∧ (dataA 2).pres.lessUnit = true
     ∧ (dataA 2).pres.bdryWord = (1, 1) := by decide +kernel
@@ -412,9 +428,9 @@ private def m3 : Mat := loopMag (dataA 3) [[1, 0, 0], [0, 1, 0]]
 private def g3 : Mat := elim.idMat 3
 private def c3 : Mat := inertia.matScaleB (BPair.ofNat 8) g3
 
-example : (dataA 3).dim (adjchar.theta 3) = 8
+theorem pin42 : (dataA 3).dim (adjchar.theta 3) = 8
     ∧ matOneValue m3 [[u, u, u], [u, ⟨2, 1⟩, u], [u, u, ⟨2, 1⟩]] := by decide +kernel
-example : pencilRead (dataA 3) square 32 3 carrier.sqIx3 1 (pencilE [0, 32, 32])
+theorem pin43 : pencilRead (dataA 3) square 32 3 carrier.sqIx3 1 (pencilE [0, 32, 32])
     g3 m3 (inertia.mkSplit 3 g3)
     [(m3, inertia.mkSplit 3 (inertia.siteDatum c3 m3),
       inertia.mkSplit 3 (matAdd c3 m3))] := by decide +kernel
@@ -425,7 +441,7 @@ link. -/
 
 private def ixT3 : List (List places.Shape) := [List.replicate 4 (adjchar.theta 3)]
 
-example : contractAt (dataA 3) square ixT3 1 (elim.idMat 2)
+theorem pin44 : contractAt (dataA 3) square ixT3 1 (elim.idMat 2)
     (loopMag (dataA 3) [adjchar.theta 3]) sqPlaq 0 1 = true := by decide +kernel
 
 /-! The theta window over two letters at cutoff twenty-six: the two
@@ -631,12 +647,12 @@ private theorem thGram : gramBlockRead (dataA 2) thetaG 5 carrier.thIx26 1 gTh26
   decide +kernel
 private theorem thSpG : inertia.splitRead gTh26 thG ∧ inertia.pdAt thG := by decide +kernel
 
-example : slotDiag (dataA 2) thetaG carrier.thIx26 = [0, 12, 18, 12, 26] := by
+theorem pin45 : slotDiag (dataA 2) thetaG carrier.thIx26 = [0, 12, 18, 12, 26] := by
   decide +kernel
 private theorem thDim : windowfinite.dimSect (dataA 2) thetaG 26 = 5 := by
   rw [windowfinite.dimSect, carrier.thIx26_pin]
   decide +kernel
-example : pencilRead (dataA 2) thetaG 26 5 carrier.thIx26 1
+theorem pin46 : pencilRead (dataA 2) thetaG 26 5 carrier.thIx26 1
     (formE [0, 12, 18, 12, 26] gTh26) gTh26 (matAdd mTh0 mTh1) thG thTerms :=
   ⟨carrier.thIx26_pin, thDim, by decide +kernel, by decide +kernel, thGram,
    thSpG.1, thSpG.2, thTermsRead, by decide +kernel, by decide +kernel⟩
@@ -649,7 +665,7 @@ private def gTh26Eleven : Mat := ground.matOf 5 5 (fun i j =>
 private def mTh0Join9 : Mat := ground.matOf 5 5 (fun i j =>
   if i == 4 && j == 4 then ⟨10, 1⟩ else ground.getAt u (ground.getAt [] mTh0 i) j)
 
-example : ¬ entriesRead (dataA 2) thetaG 5 carrier.thIx26 1 gTh26 thP0 mTh0Join9
+theorem pin47 : ¬ entriesRead (dataA 2) thetaG 5 carrier.thIx26 1 gTh26 thP0 mTh0Join9
     ∧ ¬ entriesRead (dataA 2) thetaG 5 carrier.thIx26 1 gTh26 thP0 mTh0Flip
     ∧ ¬ entriesRead (dataA 2) thetaG 5 carrier.thIx26 1 gTh26Eleven thP0 mTh0
     ∧ symmRead mTh0Flip
@@ -668,7 +684,7 @@ private def e6 (i j : Nat) : Mat :=
   ground.matOf 6 6 (fun a b =>
     if (a == i && b == j) || (a == j && b == i) then ⟨2, 1⟩ else u)
 
-example : (slotList (dataA 3) thetaG ix6).length = 5 := by decide +kernel
+theorem pin48 : (slotList (dataA 3) thetaG ix6).length = 5 := by decide +kernel
 
 /-! The gram's block content at the four-slot fiber: the two
 trivalent vertices' Grams `[[56, -16], [-16, 56]]` at the second
@@ -698,23 +714,168 @@ private def gTh : Mat :=
       ground.getAt u (ground.getAt [] (kron2 vg7 vg7) (i - 1)) (j - 1)
     else u)
 
-example : fibGram (dataA 3) thetaG [thAll] thAll
+theorem pin49 : fibGram (dataA 3) thetaG [thAll] thAll
     = some [(vg3, 3), ([[BPair.ofNat 8]], 1), ([[BPair.ofNat 8]], 1), (vg3, 3),
         ([[BPair.ofNat 8]], 1), ([[BPair.ofNat 8]], 1)]
     ∧ blockScale (dataA 3) thetaG thAll = 2097152 := by decide +kernel
-example : gramBlockRead (dataA 3) thetaG 6 ix6 cTh gTh := by decide +kernel
-example : ¬ gramBlockRead (dataA 3) thetaG 6 ix6 cTh (elim.idMat 6)
+theorem pin50 : gramBlockRead (dataA 3) thetaG 6 ix6 cTh gTh := by decide +kernel
+theorem pin51 : ¬ gramBlockRead (dataA 3) thetaG 6 ix6 cTh (elim.idMat 6)
     ∧ ¬ gramBlockRead (dataA 3) thetaG 6 ix6 1 gTh
     ∧ ¬ gramBlockRead (dataA 3) thetaG 6 ix6 cTh (matAdd gTh (e6 1 5))
     ∧ ¬ gramBlockRead (dataA 3) thetaG 6 ix6 cTh (matAdd gTh (e6 1 2)) := by
   decide +kernel
-example : inertia.pdAt (inertia.mkSplit 6 gTh) := by decide +kernel
+theorem pin52 : inertia.pdAt (inertia.mkSplit 6 gTh) := by decide +kernel
 
-example : ¬ inertia.capAt (inertia.matScaleB (BPair.ofNat 4) mSq) cSq
+theorem pin53 : ¬ inertia.capAt (inertia.matScaleB (BPair.ofNat 4) mSq) cSq
     (inertia.mkSplit 3 (inertia.siteDatum cSq
       (inertia.matScaleB (BPair.ofNat 4) mSq)))
     (inertia.mkSplit 3 (matAdd cSq
       (inertia.matScaleB (BPair.ofNat 4) mSq))) := by
   decide +kernel
-example : ¬ (windowfinite.dimSect (dataA 2) square 32 = 2) := by
+theorem pin54 : ¬ (windowfinite.dimSect (dataA 2) square 32 = 2) := by
   decide +kernel
+
+/-! The magnetic member's cap from the terms' at the square's one
+term, and the removed block's floor at the square's contents. -/
+
+private def ts1 : List (Mat × inertia.Split 3 × inertia.Split 3) := [(mSq, spUSq, spLSq)]
+private def cU1 : Mat := inertia.siteDatum (inertia.matScaleB (BPair.ofNat (ts1.length * (dataA 2).dim (dataA 2).theta)) gSq) (termSum 3 ts1)
+private def cL1 : Mat := matAdd (inertia.matScaleB (BPair.ofNat (ts1.length * (dataA 2).dim (dataA 2).theta)) gSq) (termSum 3 ts1)
+
+theorem pin55 : inertia.capAt (termSum 3 ts1)
+    (inertia.matScaleB (BPair.ofNat (ts1.length * (dataA 2).dim (dataA 2).theta)) gSq)
+    (inertia.mkSplit 3 cU1) (inertia.mkSplit 3 cL1) :=
+  termSum_cap (dataA 2) square 3 carrier.sqIx2 1 gSq (by decide +kernel) (by decide +kernel)
+    square.plaqs ts1 sqTerms _ _
+    (inertia.mkSplit_read 3 cU1 (by decide +kernel) (by decide +kernel))
+    (inertia.mkSplit_read 3 cL1 (by decide +kernel) (by decide +kernel))
+theorem pin56 : inertia.capAt (termSum 3 ts1)
+    (inertia.matScaleB (BPair.ofNat (ts1.length * (dataA 2).dim (dataA 2).theta)) gSq)
+    (inertia.mkSplit 3 cU1) (inertia.mkSplit 3 cL1) := by decide +kernel
+
+private def eSq : Mat := formE (slotDiag (dataA 2) square carrier.sqIx2) gSq
+private def rem13 : List Nat :=
+  placesAt (dataA 2) square carrier.sqIx2 3 (fun a => decide (posVal 13 ≤ carrier.contentN (dataA 2) a))
+private def site13 : Mat :=
+  inertia.siteDatum (selM rem13 rem13 eSq) (inertia.matScale 13 (selM rem13 rem13 gSq))
+private def rem12 : List Nat :=
+  placesAt (dataA 2) square carrier.sqIx2 3 (fun a => decide (posVal 12 ≤ carrier.contentN (dataA 2) a))
+private def site12 : Mat :=
+  inertia.siteDatum (selM rem12 rem12 eSq) (inertia.matScale 12 (selM rem12 rem12 gSq))
+private theorem gSq_read : inertia.splitRead gSq (inertia.mkSplit 3 gSq) :=
+  inertia.mkSplit_read 3 gSq (by decide +kernel) (by decide +kernel)
+private theorem cont13 : (rem13.all (fun i => decide (posVal 13
+    ≤ carrier.contentN (dataA 2) (posConf (dataA 2) square carrier.sqIx2 i)))) = true := by
+  decide +kernel
+private theorem cont12 : (rem12.all (fun i => decide (posVal 12
+    ≤ carrier.contentN (dataA 2) (posConf (dataA 2) square carrier.sqIx2 i)))) = true := by
+  decide +kernel
+private theorem ixLab : (carrier.sqIx2.all (fun a => a.all (labelA 2))) = true := by
+  decide +kernel
+
+theorem pin57 : rem13 = [2] ∧ rem12 = [1, 2] ∧ matOneValue site13 [[⟨20, 1⟩]]
+    ∧ matOneValue site12 [[u, u], [u, ⟨21, 1⟩]] := by decide +kernel
+theorem pin58 : inertia.psdAt (inertia.mkSplit 1 site13) :=
+  removed_floor (dataA 2) square 3 carrier.sqIx2 1 gSq (by decide +kernel) (by decide +kernel)
+    (inertia.mkSplit 3 gSq) gSq_read (by decide +kernel) pin31 (labelA 2) (labelA_unit 2)
+    (fun a ha => ground.all_of_mem _ _ ixLab a ha) (eqL_labelA 2) 13 rem13
+    (by decide +kernel) (by decide +kernel)
+    (fun i hi => of_decide_eq_true (ground.all_of_mem _ _ cont13 i hi))
+    (inertia.mkSplit 1 site13)
+    (inertia.mkSplit_read 1 site13 (by decide +kernel) (by decide +kernel))
+theorem pin59 : inertia.psdAt (inertia.mkSplit 1 site13) := by decide +kernel
+theorem pin60 : inertia.psdAt (inertia.mkSplit 2 site12) :=
+  removed_floor (dataA 2) square 3 carrier.sqIx2 1 gSq (by decide +kernel) (by decide +kernel)
+    (inertia.mkSplit 3 gSq) gSq_read (by decide +kernel) pin31 (labelA 2) (labelA_unit 2)
+    (fun a ha => ground.all_of_mem _ _ ixLab a ha) (eqL_labelA 2) 12 rem12
+    (by decide +kernel) (by decide +kernel)
+    (fun i hi => of_decide_eq_true (ground.all_of_mem _ _ cont12 i hi))
+    (inertia.mkSplit 2 site12)
+    (inertia.mkSplit_read 2 site12 (by decide +kernel) (by decide +kernel))
+theorem pin61 : inertia.psdAt (inertia.mkSplit 2 site12) := by decide +kernel
+theorem pin62 : ¬ (0 < (placesAt (dataA 2) square carrier.sqIx2 3
+    (fun a => decide (posVal 33 ≤ carrier.contentN (dataA 2) a))).length) := by
+  decide +kernel
+
+/-! The pencil's nesting read at the square window truncated at the
+cutoff twelve: the head places the unit line with the fundamental
+loop and the removed place the adjoint loop, the truncated index the
+fundamental loop alone; the truncated window list is the window
+list filtered at the content read, the truncated position one the
+head place one's configuration and key; the places partition the
+order three, distinct and covering, and at the vacant order the
+head places are vacant, the order's positivity bitten; the identity gram and the electric form join at
+the places with the null cross block, the electric form's two
+diagonal selections at the displayed contents, the form symmetric
+through the theorem; the magnetic member's cross block is occupied
+at the unit line's pairing with the adjoint loop, the coupling the
+truncation's off-block part; and the removed block's floor at the
+cutoff's successor through the nesting read, and the head places'
+count the truncated window list's with the unit line. -/
+
+private def hd12 : List Nat := headPlaces (dataA 2) square carrier.sqIx2 3 12
+private def rm12 : List Nat := remPlaces (dataA 2) square carrier.sqIx2 3 12
+private def ixH : List (List places.Shape) :=
+  carrier.sqIx2.filter (fun a => decide (carrier.contentN (dataA 2) a ≤ 12))
+
+theorem pin63 : hd12 = [0, 1] ∧ rm12 = [2] ∧ ixH = [[[1, 0], [1, 0], [1, 0], [1, 0]]] := by
+  decide +kernel
+theorem pin64 : slotList (dataA 2) square ixH
+    = (slotList (dataA 2) square carrier.sqIx2).filter
+        (fun q => decide (carrier.contentN (dataA 2) q.1 ≤ 12)) :=
+  slotList_filter (dataA 2) square carrier.sqIx2 _
+theorem pin65 : posConf (dataA 2) square ixH 1
+      = posConf (dataA 2) square carrier.sqIx2 (ground.getAt 0 hd12 1)
+    ∧ posKey (dataA 2) square ixH 1
+      = posKey (dataA 2) square carrier.sqIx2 (ground.getAt 0 hd12 1) :=
+  ⟨posConf_head (dataA 2) square carrier.sqIx2 12 1 (by decide +kernel),
+   posKey_head (dataA 2) square carrier.sqIx2 12 1 (by decide +kernel)⟩
+theorem pin66 : posConf (dataA 2) square ixH 1 = [[1, 0], [1, 0], [1, 0], [1, 0]]
+    ∧ ground.getAt 0 hd12 1 = 1 := by decide +kernel
+theorem pin67 : ground.distinctList (hd12 ++ rm12) ∧ (hd12 ++ rm12).length = 3
+    ∧ (hd12.all (fun i => Nat.blt i 3)) = true ∧ (rm12.all (fun i => Nat.blt i 3)) = true
+    ∧ 0 < hd12.length :=
+  places_perm (dataA 2) square carrier.sqIx2 3 12 (by decide)
+theorem pin68 : ¬ (0 < (headPlaces (dataA 2) square carrier.sqIx2 0 12).length) := by
+  decide +kernel
+theorem pin69 : matNull (selM hd12 rm12 gSq)
+    ∧ matOneValue (selM (hd12 ++ rm12) (hd12 ++ rm12) gSq)
+      (inertia.blockJoin (selM hd12 hd12 gSq) (nullMat hd12.length rm12.length)
+        (selM rm12 rm12 gSq)) :=
+  gram_nest (dataA 2) square 3 carrier.sqIx2 1 gSq (by decide) (by decide +kernel)
+    (by decide +kernel) pin31 (labelA 2) (labelA_unit 2)
+    (fun a ha => ground.all_of_mem _ _ ixLab a ha) (eqL_labelA 2) 12
+theorem pin70 : matNull (selM hd12 rm12 eSq)
+    ∧ matOneValue (selM (hd12 ++ rm12) (hd12 ++ rm12) eSq)
+      (inertia.blockJoin (selM hd12 hd12 eSq) (nullMat hd12.length rm12.length)
+        (selM rm12 rm12 eSq)) :=
+  elec_nest (dataA 2) square 3 carrier.sqIx2 1 gSq (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) pin31 (labelA 2) (labelA_unit 2)
+    (fun a ha => ground.all_of_mem _ _ ixLab a ha) (eqL_labelA 2) 12
+theorem pin71 : matNull (selM hd12 rm12 eSq)
+    ∧ matOneValue (selM hd12 hd12 eSq) [[u, u], [u, ⟨13, 1⟩]]
+    ∧ matOneValue (selM rm12 rm12 eSq) [[⟨33, 1⟩]] := by decide +kernel
+theorem pin72 : symmRead eSq :=
+  formE_symm (dataA 2) square 3 carrier.sqIx2 1 gSq (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) pin31 (labelA 2) (labelA_unit 2)
+    (fun a ha => ground.all_of_mem _ _ ixLab a ha) (eqL_labelA 2)
+theorem pin73 : ¬ matNull (selM hd12 rm12 mSq)
+    ∧ matOneValue (selM hd12 rm12 mSq) [[⟨2, 1⟩], [u]] := by decide +kernel
+theorem pin74 : matOneValue (selM (hd12 ++ rm12) (hd12 ++ rm12) (termSum 3 ts1))
+    (inertia.blockJoin (selM hd12 hd12 (termSum 3 ts1)) (selM hd12 rm12 (termSum 3 ts1))
+      (selM rm12 rm12 (termSum 3 ts1))) :=
+  mag_nest (dataA 2) square 3 carrier.sqIx2 1 gSq (by decide) square.plaqs ts1 sqTerms 12
+private def siteRm12 : Mat :=
+  inertia.siteDatum (selM rm12 rm12 eSq) (inertia.matScale 13 (selM rm12 rm12 gSq))
+
+theorem pin75 : inertia.psdAt (inertia.mkSplit 1 siteRm12) :=
+  removed_nest (dataA 2) square 3 carrier.sqIx2 1 gSq (by decide +kernel) (by decide +kernel)
+    (inertia.mkSplit 3 gSq) gSq_read (by decide +kernel) pin31 (labelA 2) (labelA_unit 2)
+    (fun a ha => ground.all_of_mem _ _ ixLab a ha) (eqL_labelA 2) 12 13 (by decide)
+    (by decide +kernel) (inertia.mkSplit 1 siteRm12)
+    (inertia.mkSplit_read 1 siteRm12 (by decide +kernel) (by decide +kernel))
+theorem pin76 : (headPlaces (dataA 2) square carrier.sqIx2 3 12).length
+    = (slotList (dataA 2) square ixH).length + 1 :=
+  length_headPlaces (dataA 2) square carrier.sqIx2 12
+
+end pairpencil

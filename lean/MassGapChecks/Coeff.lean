@@ -34,7 +34,9 @@ committed instance beside the refusal — the corollary's
 hypothesis is the identity route's frame.
 -/
 
-open ground elim coeff
+namespace coeff
+
+open ground elim
 
 private def u0 : List BPair := [⟨2, 1⟩, ⟨3, 1⟩]
 
@@ -56,59 +58,59 @@ private def vp : List BPair := [⟨3, 1⟩, ⟨1, 3⟩]
 the cross fold each read their value, and the display joins
 them. -/
 
-example : (dotP u0 v0).oneValue (BPair.ofNat 7) := by decide +kernel
+theorem pin1 : (dotP u0 v0).oneValue (BPair.ofNat 7) := by decide +kernel
 
-example : (dotP u0 u0).oneValue (BPair.ofNat 5) := by decide +kernel
+theorem pin2 : (dotP u0 u0).oneValue (BPair.ofNat 5) := by decide +kernel
 
-example : (dotP v0 v0).oneValue (BPair.ofNat 17) := by decide +kernel
+theorem pin3 : (dotP v0 v0).oneValue (BPair.ofNat 17) := by decide +kernel
 
-example : (crossSq u0 v0).oneValue (BPair.ofNat 36) := by decide +kernel
+theorem pin4 : (crossSq u0 v0).oneValue (BPair.ofNat 36) := by decide +kernel
 
-example : (dotP u0 v0 * dotP u0 v0 + crossSq u0 v0).oneValue
+theorem pin5 : (dotP u0 v0 * dotP u0 v0 + crossSq u0 v0).oneValue
     (dotP u0 u0 * dotP v0 v0) := by decide +kernel
 
 /-! The three-place list pair: three place pairs enter the cross
 fold, one of them vacant. -/
 
-example : (crossSq u2 v2).oneValue (BPair.ofNat 20) := by decide +kernel
+theorem pin6 : (crossSq u2 v2).oneValue (BPair.ofNat 20) := by decide +kernel
 
-example : (dotP u2 v2 * dotP u2 v2 + crossSq u2 v2).oneValue
+theorem pin7 : (dotP u2 v2 * dotP u2 v2 + crossSq u2 v2).oneValue
     (dotP u2 u2 * dotP v2 v2) := by decide +kernel
 
 /-! The order's read taken through the theorem, the hypothesis the
 lists' own length read. -/
 
-example : ¬ (dotP u0 u0 * dotP v0 v0 < dotP u0 v0 * dotP u0 v0) :=
+theorem pin8 : ¬ (dotP u0 u0 * dotP v0 v0 < dotP u0 v0 * dotP u0 v0) :=
   coeff.dotP_sq_le u0 v0 rfl
 
-example : ¬ (dotP u2 u2 * dotP v2 v2 < dotP u2 v2 * dotP u2 v2) :=
+theorem pin9 : ¬ (dotP u2 u2 * dotP v2 v2 < dotP u2 v2 * dotP u2 v2) :=
   coeff.dotP_sq_le u2 v2 rfl
 
 /-! The equality case at proportional lists: the cross fold reads
 the sum's unit and the squared pairing reads the product. -/
 
-example : (crossSq up vp).oneValue BPair.unit := by decide +kernel
+theorem pin10 : (crossSq up vp).oneValue BPair.unit := by decide +kernel
 
-example : (dotP up vp * dotP up vp).oneValue
+theorem pin11 : (dotP up vp * dotP up vp).oneValue
     (dotP up up * dotP vp vp) := by decide +kernel
 
-example : (dotP up vp * dotP up vp + crossSq up vp).oneValue
+theorem pin12 : (dotP up vp * dotP up vp + crossSq up vp).oneValue
     (dotP up up * dotP vp vp) := by decide +kernel
 
 /-! The length hypothesis is load-bearing: at mismatched lists the
 identity's members stand apart, the pairing's fold stopping at the
 shorter list while the self-pairings read their own. -/
 
-example : (dotP u1 v1 * dotP u1 v1 + crossSq u1 v1).oneValue
+theorem pin13 : (dotP u1 v1 * dotP u1 v1 + crossSq u1 v1).oneValue
     (BPair.ofNat 1) := by decide +kernel
 
-example : (dotP u1 u1 * dotP v1 v1).oneValue (BPair.ofNat 2) := by
+theorem pin14 : (dotP u1 u1 * dotP v1 v1).oneValue (BPair.ofNat 2) := by
   decide +kernel
 
-example : ¬ (dotP u1 u1 * dotP v1 v1
+theorem pin15 : ¬ (dotP u1 u1 * dotP v1 v1
     < dotP u1 v1 * dotP u1 v1) := by decide +kernel
 
-example : ¬ (dotP u1 v1 * dotP u1 v1 + crossSq u1 v1).oneValue
+theorem pin16 : ¬ (dotP u1 v1 * dotP u1 v1 + crossSq u1 v1).oneValue
     (dotP u1 u1 * dotP v1 v1) := by decide +kernel
 
 /-! The member cap's instance reads at the presentation Gram
@@ -156,7 +158,7 @@ private def entryAt (F : states.FList)
   let p := pairEv F c1 c2 rv
   p.1.oneValue (BPair.ofNat v * p.2)
 
-private instance (F : states.FList)
+private instance instCoeffChk1 (F : states.FList)
     (c1 c2 : List (List Nat × BPair × BPair)) (rv v : Nat) :
     Decidable (entryAt F c1 c2 rv v) :=
   inferInstanceAs (Decidable (BPair.oneValue _ _))
@@ -176,33 +178,33 @@ private def mpS (rv : Nat) : List (List Nat × BPair × BPair) :=
 
 /-! The Gram's entries at both counts. -/
 
-example : entryAt cF4 (uS 2) (uS 2) 2 1 := by decide +kernel
-example : entryAt cF4 (uS 2) (pS 2) 2 1 := by decide +kernel
-example : entryAt cF4 (pS 2) (pS 2) 2 2 := by decide +kernel
-example : entryAt cF4 (uS 3) (uS 3) 3 1 := by decide +kernel
-example : entryAt cF4 (uS 3) (pS 3) 3 1 := by decide +kernel
-example : entryAt cF4 (pS 3) (pS 3) 3 2 := by decide +kernel
+theorem pin17 : entryAt cF4 (uS 2) (uS 2) 2 1 := by decide +kernel
+theorem pin18 : entryAt cF4 (uS 2) (pS 2) 2 1 := by decide +kernel
+theorem pin19 : entryAt cF4 (pS 2) (pS 2) 2 2 := by decide +kernel
+theorem pin20 : entryAt cF4 (uS 3) (uS 3) 3 1 := by decide +kernel
+theorem pin21 : entryAt cF4 (uS 3) (pS 3) 3 1 := by decide +kernel
+theorem pin22 : entryAt cF4 (pS 3) (pS 3) 3 2 := by decide +kernel
 
 /-! The form's entries: the count two's last read `3` against the
 count three's `4`, the residue's own move. -/
 
-example : entryAt cF4 (uS 2) (muS 2) 2 0 := by decide +kernel
-example : entryAt cF4 (uS 2) (mpS 2) 2 1 := by decide +kernel
-example : entryAt cF4 (pS 2) (muS 2) 2 1 := by decide +kernel
-example : entryAt cF4 (pS 2) (mpS 2) 2 3 := by decide +kernel
-example : entryAt cF4 (uS 3) (muS 3) 3 0 := by decide +kernel
-example : entryAt cF4 (uS 3) (mpS 3) 3 1 := by decide +kernel
-example : entryAt cF4 (pS 3) (muS 3) 3 1 := by decide +kernel
-example : entryAt cF4 (pS 3) (mpS 3) 3 4 := by decide +kernel
+theorem pin23 : entryAt cF4 (uS 2) (muS 2) 2 0 := by decide +kernel
+theorem pin24 : entryAt cF4 (uS 2) (mpS 2) 2 1 := by decide +kernel
+theorem pin25 : entryAt cF4 (pS 2) (muS 2) 2 1 := by decide +kernel
+theorem pin26 : entryAt cF4 (pS 2) (mpS 2) 2 3 := by decide +kernel
+theorem pin27 : entryAt cF4 (uS 3) (muS 3) 3 0 := by decide +kernel
+theorem pin28 : entryAt cF4 (uS 3) (mpS 3) 3 1 := by decide +kernel
+theorem pin29 : entryAt cF4 (pS 3) (muS 3) 3 1 := by decide +kernel
+theorem pin30 : entryAt cF4 (pS 3) (mpS 3) 3 4 := by decide +kernel
 
 /-! The squared-image Gram's entries. -/
 
-example : entryAt cF4 (muS 2) (muS 2) 2 1 := by decide +kernel
-example : entryAt cF4 (muS 2) (mpS 2) 2 2 := by decide +kernel
-example : entryAt cF4 (mpS 2) (mpS 2) 2 6 := by decide +kernel
-example : entryAt cF4 (muS 3) (muS 3) 3 1 := by decide +kernel
-example : entryAt cF4 (muS 3) (mpS 3) 3 3 := by decide +kernel
-example : entryAt cF4 (mpS 3) (mpS 3) 3 13 := by decide +kernel
+theorem pin31 : entryAt cF4 (muS 2) (muS 2) 2 1 := by decide +kernel
+theorem pin32 : entryAt cF4 (muS 2) (mpS 2) 2 2 := by decide +kernel
+theorem pin33 : entryAt cF4 (mpS 2) (mpS 2) 2 6 := by decide +kernel
+theorem pin34 : entryAt cF4 (muS 3) (muS 3) 3 1 := by decide +kernel
+theorem pin35 : entryAt cF4 (muS 3) (mpS 3) 3 3 := by decide +kernel
+theorem pin36 : entryAt cF4 (mpS 3) (mpS 3) 3 13 := by decide +kernel
 
 /-! The cap comparisons at the committed counts, each positive
 semidefinite at its split: at the count two, `d_θ = 3`,
@@ -242,16 +244,16 @@ private def spC3 : inertia.Split 2 :=
    ⟨[[⟨64, 1⟩, ⟨62, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]], rfl⟩,
    [.one ⟨64, 1⟩, .one ⟨222013, 1⟩], 0, rfl⟩
 
-example : inertia.splitRead capA2 spA2 := by decide +kernel
-example : inertia.psdAt spA2 := by decide +kernel
-example : inertia.splitRead capB2 spB2 := by decide +kernel
-example : inertia.psdAt spB2 := by decide +kernel
-example : inertia.splitRead capW spW := by decide +kernel
-example : inertia.psdAt spW := by decide +kernel
-example : inertia.splitRead capB3 spB3 := by decide +kernel
-example : inertia.psdAt spB3 := by decide +kernel
-example : inertia.splitRead capC3 spC3 := by decide +kernel
-example : inertia.psdAt spC3 := by decide +kernel
+theorem pin37 : inertia.splitRead capA2 spA2 := by decide +kernel
+theorem pin38 : inertia.psdAt spA2 := by decide +kernel
+theorem pin39 : inertia.splitRead capB2 spB2 := by decide +kernel
+theorem pin40 : inertia.psdAt spB2 := by decide +kernel
+theorem pin41 : inertia.splitRead capW spW := by decide +kernel
+theorem pin42 : inertia.psdAt spW := by decide +kernel
+theorem pin43 : inertia.splitRead capB3 spB3 := by decide +kernel
+theorem pin44 : inertia.psdAt spB3 := by decide +kernel
+theorem pin45 : inertia.splitRead capC3 spC3 := by decide +kernel
+theorem pin46 : inertia.psdAt spC3 := by decide +kernel
 
 /-! The forged scale's refusal: the two-sided read at one in place
 of `d_θ` at the count two, `G - F = [[1, 0], [0, -1]]`, one
@@ -262,8 +264,8 @@ private def spForge : inertia.Split 2 :=
   ⟨⟨elim.idMat 2, rfl⟩, ⟨elim.idMat 2, rfl⟩,
    [.one ⟨2, 1⟩, .one ⟨1, 2⟩], 0, rfl⟩
 
-example : inertia.splitRead capForge spForge := by decide +kernel
-example : inertia.revAt spForge = 1 := by decide +kernel
+theorem pin47 : inertia.splitRead capForge spForge := by decide +kernel
+theorem pin48 : inertia.revAt spForge = 1 := by decide +kernel
 
 /-! `con:coeff`'s joined square at a two-by-two instance: the
 generator `xA`, antisymmetric at its swap, joined to the symmetric
@@ -295,24 +297,26 @@ private def jdisp (G : Mat) : Mat := jdispX xA G
 /-- The generator off its transpose's swap: `[[0, 2], [1, 0]]`. -/
 private def xB : Mat := [[BPair.unit, ⟨3, 1⟩], [⟨2, 1⟩, BPair.unit]]
 
-example : matOneValue (jsq gS) [[⟨9, 1⟩, ⟨19, 1⟩], [⟨19, 1⟩, ⟨42, 1⟩]] := by
+theorem pin49 : matOneValue (jsq gS) [[⟨9, 1⟩, ⟨19, 1⟩], [⟨19, 1⟩, ⟨42, 1⟩]] := by
   decide +kernel
-example : matOneValue (jdisp gS) [[⟨9, 1⟩, ⟨19, 1⟩], [⟨19, 1⟩, ⟨42, 1⟩]] := by
+theorem pin50 : matOneValue (jdisp gS) [[⟨9, 1⟩, ⟨19, 1⟩], [⟨19, 1⟩, ⟨42, 1⟩]] := by
   decide +kernel
-example : matOneValue (jsq gS) (jdisp gS) :=
+theorem pin51 : matOneValue (jsq gS) (jdisp gS) :=
   joined_sq 2 xA gS (by decide) (by decide) (by decide)
     (by decide +kernel) (by decide +kernel)
-example : matOneValue (jsq gS) (jdisp gS) := by decide +kernel
-example : ¬ matOneValue (transposeM gAs) gAs := by decide +kernel
-example : matOneValue (jsq gAs) [[⟨5, 1⟩, ⟨9, 1⟩], [⟨9, 1⟩, ⟨42, 1⟩]] := by
+theorem pin52 : matOneValue (jsq gS) (jdisp gS) := by decide +kernel
+theorem pin53 : ¬ matOneValue (transposeM gAs) gAs := by decide +kernel
+theorem pin54 : matOneValue (jsq gAs) [[⟨5, 1⟩, ⟨9, 1⟩], [⟨9, 1⟩, ⟨42, 1⟩]] := by
   decide +kernel
-example : matOneValue (jdisp gAs) [[⟨5, 1⟩, ⟨19, 1⟩], [⟨5, 1⟩, ⟨34, 1⟩]] := by
+theorem pin55 : matOneValue (jdisp gAs) [[⟨5, 1⟩, ⟨19, 1⟩], [⟨5, 1⟩, ⟨34, 1⟩]] := by
   decide +kernel
-example : ¬ matOneValue (jsq gAs) (jdisp gAs) := by decide +kernel
+theorem pin56 : ¬ matOneValue (jsq gAs) (jdisp gAs) := by decide +kernel
 
 /-! The generator's transpose read is load-bearing: at `xB`, whose
 transpose is off its swap, the joined square reads against the
 display, refused. -/
 
-example : ¬ matOneValue (transposeM xB) (matSwap xB) := by decide +kernel
-example : ¬ matOneValue (jsqX xB gS) (jdispX xB gS) := by decide +kernel
+theorem pin57 : ¬ matOneValue (transposeM xB) (matSwap xB) := by decide +kernel
+theorem pin58 : ¬ matOneValue (jsqX xB gS) (jdispX xB gS) := by decide +kernel
+
+end coeff

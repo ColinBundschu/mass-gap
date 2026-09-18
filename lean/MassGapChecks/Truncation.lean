@@ -23,7 +23,7 @@ whose difference site `[[1,1],[1,4]]` is positive semidefinite).
 `shift_psd` reads that difference site through the polarization at
 the scaled tie — its fourfold rescaling IS the shift site — and
 `removed_psd` closes the removed block at the cross-added level tie
-`x + W + g = c + y` (`10 + 2 + 1 = 12 + 1`) with the diagonal at
+`x + W ≤ c + y` (`10 + 2 ≤ 12 + 1`) with the diagonal at
 twelve, the block's magnetic part capped inside it, and the removed
 pencil eleven.
 
@@ -48,11 +48,12 @@ capped at `[3 : 1]` takes the vector `[1]` to the squared display
 value — parts the cap at its upper site datum `[-1]` and the display
 at `4 ≤ 1`.
 -/
-set_option maxHeartbeats 4000000
-
-open ground elim inertia certconstruct truncation
 
 namespace truncation
+set_option maxHeartbeats 4000000
+
+open ground elim inertia certconstruct
+
 
 def u : BPair := BPair.unit
 
@@ -123,27 +124,26 @@ private def blockLow : Mat :=
     (elim.nullMat 1 1)
     (siteDatum (matAdd qRem (matScale 1 gRem)) (matScale 10 gRem))
 
-end truncation
 
 /-! The polarization display decided: `shiftSite 2 4` at the fixture
 reads `[[4,4],[4,16]]`, split at the shear to `diag(4, 12)` and
 positive semidefinite — the cofactor tie `ς c_W = W²` at `4 · 1 = 4`
 riding the display. -/
 
-example : splitRead (shiftSite 2 4 bCoup gHead gRem)
+theorem pin1 : splitRead (shiftSite 2 4 bCoup gHead gRem)
     (spShear ⟨5, 1⟩ ⟨13, 1⟩) := by decide +kernel
-example : psdAt (spShear ⟨5, 1⟩ ⟨13, 1⟩) := by decide +kernel
+theorem pin2 : psdAt (spShear ⟨5, 1⟩ ⟨13, 1⟩) := by decide +kernel
 
 /-! The cap at the weight two: the site datum `[[3,-1],[-1,3]]`
 splits at the determinant-three congruence to `diag(3, 24)` and the
 sum `[[1,1],[1,1]]` at the shear to `diag(1, 0)`, its kernel block
 trailing — both counts vacant, the two-sided cap read whole. -/
 
-example : splitRead (siteDatum (matScale 2 gFull) mFull)
+theorem pin3 : splitRead (siteDatum (matScale 2 gFull) mFull)
     (spThree ⟨4, 1⟩ ⟨25, 1⟩) := by decide +kernel
-example : splitRead (matAdd (matScale 2 gFull) mFull)
+theorem pin4 : splitRead (matAdd (matScale 2 gFull) mFull)
     (spShearK ⟨2, 1⟩) := by decide +kernel
-example : capAt mFull (matScale 2 gFull)
+theorem pin5 : capAt mFull (matScale 2 gFull)
     (spThree ⟨4, 1⟩ ⟨25, 1⟩) (spShearK ⟨2, 1⟩) := by decide +kernel
 
 /-! `polar_psd`'s theorem route at the fixture: every hypothesis
@@ -151,7 +151,7 @@ discharged by the kernel — the cap, the two blocking ties, the four
 order reads and the coupling's shape — and the shift site's positive
 semidefiniteness the theorem's own conclusion. -/
 
-example : psdAt (spShear ⟨5, 1⟩ ⟨13, 1⟩) :=
+theorem pin6 : psdAt (spShear ⟨5, 1⟩ ⟨13, 1⟩) :=
   polar_psd (k := 1) (m := 1) mFull gFull mHead mRem bCoup gHead gRem 2 4
     (spThree ⟨4, 1⟩ ⟨25, 1⟩) (spShearK ⟨2, 1⟩)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -163,27 +163,27 @@ reads one at the determinant-three congruence, the head reads one at
 five and one at six, and the removed block reads the sum's unit at
 nine — the clear bracket at the head's two ends. -/
 
-example : countAtPair hFull gFull 6 1 1 (spThree ⟨1, 4⟩ ⟨49, 1⟩) := by
+theorem pin7 : countAtPair hFull gFull 6 1 1 (spThree ⟨1, 4⟩ ⟨49, 1⟩) := by
   decide +kernel
-example : countAtPair pHead gHead 6 1 1 (inertia.spOne ⟨1, 4⟩) := by decide +kernel
-example : countAtPair pHead gHead 7 1 1 (inertia.spOne ⟨1, 5⟩) := by decide +kernel
-example : countAtPair qRem gRem 10 1 0 (inertia.spOne ⟨2, 1⟩) := by decide +kernel
+theorem pin8 : countAtPair pHead gHead 6 1 1 (inertia.oneSplit [⟨1, 4⟩]) := by decide +kernel
+theorem pin9 : countAtPair pHead gHead 7 1 1 (inertia.oneSplit [⟨1, 5⟩]) := by decide +kernel
+theorem pin10 : countAtPair qRem gRem 10 1 0 (inertia.oneSplit [⟨2, 1⟩]) := by decide +kernel
 
 /-! `count_head_le`'s route: the head block's count sits at or below
 the full pencil's own, the blocking tie the fiber datum's site read
 at one level — the full pencil's site at five IS the join of the two
 blocks' sites over the shared coupling. -/
 
-example : matOneValue siteFull
+theorem pin11 : matOneValue siteFull
     (inertia.blockJoin
       (siteDatum (matAdd pHead (matScale 1 gHead)) (matScale 6 gHead))
       bCoup
       (siteDatum (matAdd qRem (matScale 1 gRem)) (matScale 6 gRem))) := by
   decide +kernel
 
-example : (1 : Nat) ≤ 1 :=
+theorem pin12 : (1 : Nat) ≤ 1 :=
   count_head_le (k := 1) (m := 1) hFull gFull pHead gHead bCoup qRem gRem
-    6 1 1 1 (inertia.spOne ⟨1, 4⟩) (spThree ⟨1, 4⟩ ⟨49, 1⟩)
+    6 1 1 1 (inertia.oneSplit [⟨1, 4⟩]) (spThree ⟨1, 4⟩ ⟨49, 1⟩)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 /-! `count_full_le`'s route: the shifted block diagonal `[[-4],[1]]`
@@ -193,15 +193,15 @@ vacant at the vacant coupling — and the difference site
 semidefinite, so the full pencil's count sits at or below the head's
 shifted one. -/
 
-example : splitRead blockDiag (spId ⟨1, 5⟩ ⟨2, 1⟩) := by decide +kernel
-example : splitRead (siteDatum siteFull blockDiag)
+theorem pin13 : splitRead blockDiag (spId ⟨1, 5⟩ ⟨2, 1⟩) := by decide +kernel
+theorem pin14 : splitRead (siteDatum siteFull blockDiag)
     (spShear ⟨2, 1⟩ ⟨4, 1⟩) := by decide +kernel
-example : psdAt (spShear ⟨2, 1⟩ ⟨4, 1⟩) := by decide +kernel
+theorem pin15 : psdAt (spShear ⟨2, 1⟩ ⟨4, 1⟩) := by decide +kernel
 
-example : (1 : Nat) ≤ 1 :=
+theorem pin16 : (1 : Nat) ≤ 1 :=
   count_full_le (k := 1) (m := 1) hFull gFull pHead gHead qRem gRem
     6 1 7 1 10 1 1 1
-    (spThree ⟨1, 4⟩ ⟨49, 1⟩) (inertia.spOne ⟨1, 5⟩) (inertia.spOne ⟨2, 1⟩)
+    (spThree ⟨1, 4⟩ ⟨49, 1⟩) (inertia.oneSplit [⟨1, 5⟩]) (inertia.oneSplit [⟨2, 1⟩])
     (spId ⟨1, 5⟩ ⟨2, 1⟩) (spShear ⟨2, 1⟩ ⟨4, 1⟩)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
@@ -211,10 +211,10 @@ polarization discharges the difference site's positive
 semidefiniteness through the scaled tie, the reversal count blind to
 the positive factor. -/
 
-example : matOneValue (matScale 4 (siteDatum siteFull blockDiag))
+theorem pin17 : matOneValue (matScale 4 (siteDatum siteFull blockDiag))
     (shiftSite 2 4 bCoup gHead gRem) := by decide +kernel
 
-example : psdAt (spShear ⟨2, 1⟩ ⟨4, 1⟩) :=
+theorem pin18 : psdAt (spShear ⟨2, 1⟩ ⟨4, 1⟩) :=
   shift_psd (k := 1) (m := 1) mFull gFull mHead mRem bCoup gHead gRem
     blockDiag siteFull 2 4 (spThree ⟨4, 1⟩ ⟨25, 1⟩) (spShearK ⟨2, 1⟩)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -225,21 +225,21 @@ example : psdAt (spShear ⟨2, 1⟩ ⟨4, 1⟩) :=
 twelve sits at or above the cutoff `c = 12` (its site datum the
 kernel block alone), the block's magnetic part `[-1]` is capped
 inside the block at the weight two, and the level tie
-`10 + 2 + 1 = 12 + 1` cross-adds the clearance one — the removed
-pencil eleven then reads two at nine, positive semidefinite. -/
+`10 + 2 ≤ 12 + 1` holds at the clearance one — the removed pencil
+eleven then reads two at nine, positive semidefinite. -/
 
 private def deRem : Mat := [[⟨13, 1⟩]]
 private def qFloor : Mat := [[⟨12, 1⟩]]
 
-example : matOneValue qFloor (matAdd deRem mRem) := by decide +kernel
-example : splitRead (siteDatum deRem (matScale 12 gRem)) spKern := by decide +kernel
-example : capAt mRem (matScale 2 gRem) (inertia.spOne ⟨4, 1⟩) (inertia.spOne ⟨2, 1⟩) := by
+theorem pin19 : matOneValue qFloor (matAdd deRem mRem) := by decide +kernel
+theorem pin20 : splitRead (siteDatum deRem (matScale 12 gRem)) spKern := by decide +kernel
+theorem pin21 : capAt mRem (matScale 2 gRem) (inertia.oneSplit [⟨4, 1⟩]) (inertia.oneSplit [⟨2, 1⟩]) := by
   decide +kernel
-example : (10 : Pos) + 2 + 1 = 12 + 1 := by decide +kernel
+theorem pin22 : (10 : Pos) + 2 ≤ 12 + 1 := by decide +kernel
 
-example : psdAt (inertia.spOne ⟨3, 1⟩) :=
-  removed_psd (m := 1) qFloor deRem mRem gRem 12 2 10 1 1
-    spKern (inertia.spOne ⟨2, 1⟩) (inertia.spOne ⟨2, 1⟩) (inertia.spOne ⟨3, 1⟩)
+theorem pin23 : psdAt (inertia.oneSplit [⟨3, 1⟩]) :=
+  removed_psd (m := 1) qFloor deRem mRem gRem 12 2 10 1
+    spKern (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨3, 1⟩])
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
@@ -252,14 +252,14 @@ its sum `[[1,5],[5,1]]` splitting to `diag(1, −24)`. -/
 private def bForge : Mat := [[⟨6, 1⟩]]
 private def mForge : Mat := inertia.blockJoin mHead bForge mRem
 
-example : splitRead (shiftSite 2 4 bForge gHead gRem)
+theorem pin24 : splitRead (shiftSite 2 4 bForge gHead gRem)
     (spWide ⟨5, 1⟩ ⟨1, 85⟩) := by decide +kernel
-example : ¬ psdAt (spWide ⟨5, 1⟩ ⟨1, 85⟩) := by decide +kernel
-example : splitRead (siteDatum (matScale 2 gFull) mForge)
+theorem pin25 : ¬ psdAt (spWide ⟨5, 1⟩ ⟨1, 85⟩) := by decide +kernel
+theorem pin26 : splitRead (siteDatum (matScale 2 gFull) mForge)
     (spSkew ⟨4, 1⟩ ⟨1, 49⟩) := by decide +kernel
-example : splitRead (matAdd (matScale 2 gFull) mForge)
+theorem pin27 : splitRead (matAdd (matScale 2 gFull) mForge)
     (spWide ⟨2, 1⟩ ⟨1, 25⟩) := by decide +kernel
-example : ¬ capAt mForge (matScale 2 gFull)
+theorem pin28 : ¬ capAt mForge (matScale 2 gFull)
     (spSkew ⟨4, 1⟩ ⟨1, 49⟩) (spWide ⟨2, 1⟩ ⟨1, 25⟩) := by decide +kernel
 
 /-! `count_shift_le`'s route, the display composed: the full pencil's
@@ -268,12 +268,12 @@ block vacant at nine, the cap and the scaled tie the polarization's
 own data — the bracket display's read whole at the fixture, the
 width the cofactor's own at `4 · 1 = 2²`. -/
 
-example : (1 : Nat) ≤ 1 :=
+theorem pin29 : (1 : Nat) ≤ 1 :=
   count_shift_le (k := 1) (m := 1) hFull gFull mFull mHead mRem
     pHead gHead qRem gRem bCoup 6 1 1 2 4 1 1
     (spThree ⟨4, 1⟩ ⟨25, 1⟩) (spShearK ⟨2, 1⟩)
     (spThree ⟨1, 4⟩ ⟨49, 1⟩) (spId ⟨1, 5⟩ ⟨2, 1⟩)
-    (spShear ⟨2, 1⟩ ⟨4, 1⟩) (inertia.spOne ⟨1, 5⟩) (inertia.spOne ⟨2, 1⟩)
+    (spShear ⟨2, 1⟩ ⟨4, 1⟩) (inertia.oneSplit [⟨1, 5⟩]) (inertia.oneSplit [⟨2, 1⟩])
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -285,13 +285,13 @@ it, the head's count vacant at one against the full pencil's one.
 Every co-binder survives: the block diagonal `diag(1,1)` splits
 positive semidefinite and the removed block's vacant count holds. -/
 
-example : countAtPair pHead gHead 2 1 0 (inertia.spOne ⟨2, 1⟩) := by decide +kernel
-example : splitRead blockLow (spId ⟨2, 1⟩ ⟨2, 1⟩) := by decide +kernel
-example : psdAt (spId ⟨2, 1⟩ ⟨2, 1⟩) := by decide +kernel
-example : splitRead (siteDatum siteFull blockLow)
+theorem pin30 : countAtPair pHead gHead 2 1 0 (inertia.oneSplit [⟨2, 1⟩]) := by decide +kernel
+theorem pin31 : splitRead blockLow (spId ⟨2, 1⟩ ⟨2, 1⟩) := by decide +kernel
+theorem pin32 : psdAt (spId ⟨2, 1⟩ ⟨2, 1⟩) := by decide +kernel
+theorem pin33 : splitRead (siteDatum siteFull blockLow)
     (spMix ⟨1, 5⟩ ⟨2, 1⟩ ⟨5, 1⟩) := by decide +kernel
-example : ¬ psdAt (spMix ⟨1, 5⟩ ⟨2, 1⟩ ⟨5, 1⟩) := by decide +kernel
-example : ¬ ((1 : Nat) ≤ 0) := by decide +kernel
+theorem pin34 : ¬ psdAt (spMix ⟨1, 5⟩ ⟨2, 1⟩ ⟨5, 1⟩) := by decide +kernel
+theorem pin35 : ¬ ((1 : Nat) ≤ 0) := by decide +kernel
 
 /-! The floor binder's refusal: at the forged removed pencil `[3]` the
 full pencil `[[2,1],[1,3]]` is negative definite at five and reads
@@ -299,17 +299,15 @@ count two against the head's one, so the monotone comparison's
 conclusion fails; the removed block's own vacant count at nine is
 refused beside it, its site reading `[-6]`. -/
 
-namespace truncation
 def qForge : Mat := [[⟨4, 1⟩]]
 def hForge : Mat := inertia.blockJoin pHead bCoup qForge
-end truncation
 
-example : countAtPair hForge gFull 6 1 2 (spThree ⟨1, 4⟩ ⟨1, 16⟩) := by
+theorem pin36 : countAtPair hForge gFull 6 1 2 (spThree ⟨1, 4⟩ ⟨1, 16⟩) := by
   decide +kernel
-example : countAtPair pHead gHead 6 1 1 (inertia.spOne ⟨1, 4⟩) := by decide +kernel
-example : ¬ ((2 : Nat) ≤ 1) := by decide +kernel
-example : ¬ countAtPair qForge gRem 10 1 0 (inertia.spOne ⟨1, 7⟩) := by decide +kernel
-example : countAtPair qForge gRem 10 1 1 (inertia.spOne ⟨1, 7⟩) := by decide +kernel
+theorem pin37 : countAtPair pHead gHead 6 1 1 (inertia.oneSplit [⟨1, 4⟩]) := by decide +kernel
+theorem pin38 : ¬ ((2 : Nat) ≤ 1) := by decide +kernel
+theorem pin39 : ¬ countAtPair qForge gRem 10 1 0 (inertia.oneSplit [⟨1, 7⟩]) := by decide +kernel
+theorem pin40 : countAtPair qForge gRem 10 1 1 (inertia.oneSplit [⟨1, 7⟩]) := by decide +kernel
 
 /-! The clear bracket's refusal: at the forged head pencil `[5]` the
 head reads the sum's unit at five and one at six, the bracket
@@ -317,16 +315,14 @@ occupied, while the full pencil `[[5,1],[1,10]]` reads one at five —
 the two head counts part and the compression's transported integer
 is refused. -/
 
-namespace truncation
 def pForge : Mat := [[⟨6, 1⟩]]
 def hBracket : Mat := inertia.blockJoin pForge bCoup qRem
-end truncation
 
-example : countAtPair pForge gHead 6 1 0 spKern := by decide +kernel
-example : countAtPair pForge gHead 7 1 1 (inertia.spOne ⟨1, 2⟩) := by decide +kernel
-example : countAtPair hBracket gFull 6 1 1 (spMix u ⟨2, 1⟩ ⟨6, 1⟩) := by
+theorem pin41 : countAtPair pForge gHead 6 1 0 spKern := by decide +kernel
+theorem pin42 : countAtPair pForge gHead 7 1 1 (inertia.oneSplit [⟨1, 2⟩]) := by decide +kernel
+theorem pin43 : countAtPair hBracket gFull 6 1 1 (spMix u ⟨2, 1⟩ ⟨6, 1⟩) := by
   decide +kernel
-example : ¬ ((1 : Nat) = 0) := by decide +kernel
+theorem pin44 : ¬ ((1 : Nat) = 0) := by decide +kernel
 
 /-! `thm:groundreads`(v)'s growth chain caps its probe through
 `cap_sq`: the head pencil `[2]` capped at `[3 : 1]` — the upper site
@@ -336,26 +332,28 @@ beside the theorem route. -/
 
 private def vOne : List BPair := [⟨2, 1⟩]
 
-example : capAt (matScale 1 pHead) (matScale 3 (idMat 1))
-    (inertia.spOne ⟨2, 1⟩) (inertia.spOne ⟨6, 1⟩) := by decide +kernel
+theorem pin45 : capAt (matScale 1 pHead) (matScale 3 (idMat 1))
+    (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨6, 1⟩]) := by decide +kernel
 
-example : (dotN (matVec pHead vOne) (matVec pHead vOne)).scale ((1 : Pos) * 1)
+theorem pin46 : (dotN (matVec pHead vOne) (matVec pHead vOne)).scale ((1 : Pos) * 1)
     ≤ (dotN vOne vOne).scale ((3 : Pos) * 3) := by decide +kernel
 
-example : (dotN (matVec pHead vOne) (matVec pHead vOne)).scale ((1 : Pos) * 1)
+theorem pin47 : (dotN (matVec pHead vOne) (matVec pHead vOne)).scale ((1 : Pos) * 1)
     ≤ (dotN vOne vOne).scale ((3 : Pos) * 3) :=
-  cap_sq pHead 3 1 (inertia.spOne ⟨2, 1⟩) (inertia.spOne ⟨6, 1⟩)
+  cap_sq pHead 3 1 (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨6, 1⟩])
     (by decide +kernel) vOne rfl
 
 /-- The refusal isolating `cap_sq`'s cap binder: at `[1 : 1]`, below
 the probe's own value, the upper site datum reads `[-1]` at one
 lower-side block, the cap refused and the display parting at `4`
 against `1`. -/
-example : splitRead (siteDatum (matScale 1 (idMat 1)) (matScale 1 pHead))
-    (inertia.spOne ⟨1, 2⟩) := by decide +kernel
-example : ¬ psdAt (inertia.spOne ⟨1, 2⟩) := by decide +kernel
-example : ¬ capAt (matScale 1 pHead) (matScale 1 (idMat 1))
-    (inertia.spOne ⟨1, 2⟩) (inertia.spOne ⟨4, 1⟩) := by decide +kernel
-example : ¬ ((dotN (matVec pHead vOne)
+theorem pin48 : splitRead (siteDatum (matScale 1 (idMat 1)) (matScale 1 pHead))
+    (inertia.oneSplit [⟨1, 2⟩]) := by decide +kernel
+theorem pin49 : ¬ psdAt (inertia.oneSplit [⟨1, 2⟩]) := by decide +kernel
+theorem pin50 : ¬ capAt (matScale 1 pHead) (matScale 1 (idMat 1))
+    (inertia.oneSplit [⟨1, 2⟩]) (inertia.oneSplit [⟨4, 1⟩]) := by decide +kernel
+theorem pin51 : ¬ ((dotN (matVec pHead vOne)
       (matVec pHead vOne)).scale ((1 : Pos) * 1)
     ≤ (dotN vOne vOne).scale ((1 : Pos) * 1)) := by decide +kernel
+
+end truncation

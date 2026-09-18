@@ -144,7 +144,7 @@ def antiH (d : Nat) (X : List (List poly.Poly)) : Prop :=
       && decide (BPair.oneValue (ground.getAt BPair.unit f 1)
         (ground.getAt BPair.unit e 1))))) = true
 
-instance (d : Nat) (X : List (List poly.Poly)) :
+instance instGenerators1 (d : Nat) (X : List (List poly.Poly)) :
     Decidable (antiH d X) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -215,7 +215,7 @@ private theorem antiH_diagX (d p : Nat) : antiH d (diagX d p) := by
 def antiHAll (d : Nat) : Prop :=
   ((genList d).all (fun X => decide (antiH d X))) = true
 
-instance (d : Nat) : Decidable (antiHAll d) :=
+instance instGenerators2 (d : Nat) : Decidable (antiHAll d) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- Every displayed generator is anti-Hermitian, the three families
@@ -299,7 +299,7 @@ def iTRead (d : Nat) : Prop :=
           (ground.getAt [] (ground.getAt [] XT.2 i) j))
         (ground.getAt [] (ground.getAt [] XT.1 i) j)))))) = true
 
-instance (d : Nat) : Decidable (iTRead d) :=
+instance instGenerators3 (d : Nat) : Decidable (iTRead d) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The trace of a product at the formal-`i` carrier, the row
@@ -320,7 +320,7 @@ def gramReal (d : Nat) : Prop :=
     decide (BPair.oneValue
       (ground.getAt BPair.unit (traceMul d X Y) 1) BPair.unit)))) = true
 
-instance (d : Nat) : Decidable (gramReal d) :=
+instance instGenerators4 (d : Nat) : Decidable (gramReal d) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The trace-pairing Gram at the `re` components, the projection
@@ -351,10 +351,10 @@ widths). -/
 def gramIndep (d : Nat) : Prop :=
   ¬ (detG d).oneValue BPair.unit
 
-instance (d : Nat) : Decidable (gramIndep d) :=
+instance instGenerators5 (d : Nat) : Decidable (gramIndep d) :=
   inferInstanceAs (Decidable (¬ _))
 
-instance (d : Nat) : Decidable (gramSolve d) :=
+instance instGenerators6 (d : Nat) : Decidable (gramSolve d) :=
   inferInstanceAs (Decidable (elim.matOneValue _ _))
 
 /-- The Kronecker read at two keys. -/
@@ -398,7 +398,7 @@ def fierzRead (d : Nat) : Prop :=
           (poly.scaleP (BPair.ofNat d)
             (fierzSAt gs ag p q r s))))))))) = true
 
-instance (d : Nat) : Decidable (fierzRead d) :=
+instance instGenerators7 (d : Nat) : Decidable (fierzRead d) :=
   inferInstanceAs (Decidable (_ = _))
 
 

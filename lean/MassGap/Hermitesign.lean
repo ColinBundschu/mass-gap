@@ -85,7 +85,7 @@ def defBlockRead (D : stagesplit.QDatum) (a b : BPair) : Prop :=
       + ((BPair.ofNat 2 * a + D.h * b) * (BPair.ofNat 2 * a + D.h * b)
         + D.g * (b * b)) * D.g)
 
-instance (D : stagesplit.QDatum) (a b : BPair) :
+instance instHermitesign1 (D : stagesplit.QDatum) (a b : BPair) :
     Decidable (defBlockRead D a b) :=
   inferInstanceAs (Decidable (BPair.oneValue _ _))
 
@@ -111,7 +111,7 @@ def sideUpperRead {o1 o2 : Nat} (s p : Poly) (ln ln' : BPair)
   ∧ splitRead (pencilB s p ln ln' c) spB
   ∧ rankAt spH + 2 * revAt spB = rankAt spB + 2 * revAt spH + 2
 
-instance {o1 o2 : Nat} (s p : Poly) (ln ln' : BPair) (c wn wd : Pos)
+instance instHermitesign2 {o1 o2 : Nat} (s p : Poly) (ln ln' : BPair) (c wn wd : Pos)
     (spH : Split o1) (spB : Split o2) :
     Decidable (sideUpperRead s p ln ln' c wn wd spH spB) :=
   inferInstanceAs (Decidable (_ ∧ ¬ _ ∧ ¬ _ ∧ _ ∧ _ ∧ _ = _))
@@ -127,13 +127,13 @@ def sideLowerRead {o1 o2 : Nat} (s p : Poly) (ln ln' : BPair)
   ∧ splitRead (pencilB s p ln ln' c) spB
   ∧ rankAt spH + 2 * revAt spB + 2 = rankAt spB + 2 * revAt spH
 
-instance {o1 o2 : Nat} (s p : Poly) (ln ln' : BPair) (c wn wd : Pos)
+instance instHermitesign3 {o1 o2 : Nat} (s p : Poly) (ln ln' : BPair) (c wn wd : Pos)
     (spH : Split o1) (spB : Split o2) :
     Decidable (sideLowerRead s p ln ln' c wn wd spH spB) :=
   inferInstanceAs (Decidable (_ ∧ ¬ _ ∧ ¬ _ ∧ _ ∧ _ ∧ _ = _))
 
 /-- The segment count at the unit weight over any endpoint pair off
-the roots: every real root inside the closed segment adds one
+the roots: every located root inside the closed segment adds one
 reversal to the bracket pencil beyond `H₁`'s,
 `rev H₁ + # = rev 𝖡`, the isolating bracket the one-root
 instance. -/
@@ -146,7 +146,7 @@ def segCountRead {o1 o2 : Nat} (s : Poly) (ln ln' : BPair) (c : Pos)
   ∧ splitRead (pencilB s poly.one ln ln' c) spB
   ∧ revAt spH + k = revAt spB
 
-instance {o1 o2 : Nat} (s : Poly) (ln ln' : BPair) (c : Pos)
+instance instHermitesign4 {o1 o2 : Nat} (s : Poly) (ln ln' : BPair) (c : Pos)
     (k : Nat) (spH : Split o1) (spB : Split o2) :
     Decidable (segCountRead s ln ln' c k spH spB) :=
   inferInstanceAs (Decidable (_ ∧ ¬ _ ∧ ¬ _ ∧ _ ∧ _ ∧ _ = _))

@@ -8,24 +8,28 @@ at stated cutoffs, the fundamental loop's window at two, the two
 label loops at three, and the theta graph's two squares with the
 hexagon entering at its content's cutoff.
 -/
+
+namespace windowfinite
 set_option maxHeartbeats 16000000
 
-open ground lattice fusion windowfinite
+open ground lattice fusion
 
 /-! The square's window dimensions: the fundamental loop alone,
 then the two label loops. -/
 
-example : dimSect (dataA 2) square 12 = 2 := by decide +kernel
-example : dimSect (dataA 2) square 32 = 3 := by decide +kernel
+theorem pin1 : dimSect (dataA 2) square 12 = 2 := by decide +kernel
+theorem pin2 : dimSect (dataA 2) square 32 = 3 := by decide +kernel
 
 /-! The theta graph's window dimensions: the two squares' loops,
 the hexagon entering at its content's cutoff. -/
 
-example : (carrier.idx (tabulate (dataA 2) 12) thetaG 12).length = 2 := by
+theorem pin3 : (carrier.idx (tabulate (dataA 2) 12) thetaG 12).length = 2 := by
   rw [carrier.thIx12_pin]; decide +kernel
-example : dimSect (tabulate (dataA 2) 12) thetaG 12 = 3 :=
+theorem pin4 : dimSect (tabulate (dataA 2) 12) thetaG 12 = 3 :=
   dimSect_at (tabulate (dataA 2) 12) thetaG 12 3 carrier.thIx12
     carrier.thIx12_pin (by decide +kernel)
-example : dimSect (tabulate (dataA 2) 18) thetaG 18 = 4 :=
+theorem pin5 : dimSect (tabulate (dataA 2) 18) thetaG 18 = 4 :=
   dimSect_at (tabulate (dataA 2) 18) thetaG 18 4 carrier.thIx18
     carrier.thIx18_pin (by decide +kernel)
+
+end windowfinite

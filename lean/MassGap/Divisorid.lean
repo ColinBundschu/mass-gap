@@ -30,12 +30,16 @@ the evaluated data (`poly.pevalB`): the resultant evaluates to the
 evaluated polynomials' resultant (`pevalB_presultant`), a common
 root reads a resultant at the unit through the adjugate row's solve
 (`resultant_unit_of_roots`), and off the crossing read's locus, at
-the pencil polynomial's leading coefficient off the unit there (the
-leading coefficients multiply to it, `elim.ptop_pmul`, so the
-content's and every factor's read unequal members), every root of
-the pencil polynomial is a root of exactly one factor, simple in it,
-at the factor's place as its multiplicity (`specialize`,
-`poly.multAt` the count of iterated divisions).
+the level pair's site datum over polynomial entries with the gram
+positive definite at the base point, the pencil polynomial's leading
+x-coefficient is the gram's determinant there (`split.ptop_ppzMat`
+at `elim.eval_minorP`), off the unit at the split's vacant kernel
+block (`inertia.minor_of_kern`), so the leading coefficients
+multiply to it (`elim.ptop_pmul`) with the content's and every
+factor's read unequal members, and every root of the pencil
+polynomial is a root of exactly one factor, simple in it, at the
+factor's place as its multiplicity (`specialize`, `poly.multAt` the
+count of iterated divisions).
 
 Clause (iii)'s cell read: the one pencil at two levels `l < h`,
 the carriers the level datum's own (`cellcount.levelPMat`), and on
@@ -139,13 +143,8 @@ theorem deflRoot {k m : Nat} (P B Q Cw : Mat)
     (Iff.intro Or.inr (fun hh => match hh with
       | .inl hp => absurd hp hPnz
       | .inr hd => hd)).trans (BPair.mul_unit_iff _ _).symm
-  have h2 : (ground.bpow (minor P) (2 * m) * minor (blockJoin P B Q)).oneValue
-        BPair.unit
-      ↔ (minor (blockJoin P B Q)).oneValue BPair.unit :=
-    (BPair.mul_unit_iff _ _).trans (Iff.intro (fun hh => match hh with
-      | .inl hp => absurd hp (bpow_off (minor P) hPnz (2 * m))
-      | .inr hd => hd) Or.inr)
-  exact h1.trans ((BPair.unit_iff h).trans h2)
+  exact h1.trans ((BPair.unit_iff h).trans
+    (BPair.powMul_unit_iff (minor P) _ (2 * m) hPnz))
 
 /-! `thm:divisorid`(ii)'s crossing-read tier at the two-variable
 carrier: the squarefree split's reads and the crossing divisor `D`,
@@ -198,7 +197,7 @@ occupied with its top coefficient off the unit tail. -/
 def topOff (P : poly.PPoly) : Prop :=
   1 < P.length ∧ ¬ poly.unitTail (poly.ptop P)
 
-instance (P : poly.PPoly) : Decidable (topOff P) :=
+instance instDivisorid1 (P : poly.PPoly) : Decidable (topOff P) :=
   @instDecidableAnd _ _ inferInstance (@instDecidableNot _ (poly.decUnitTail _))
 
 /-- The coefficients' iterated greatest common divisor at the
@@ -216,7 +215,7 @@ private def decContentRead : ∀ (g : poly.Poly) (t : List poly.Poly),
       Decidable ((poly.vnorm g).length ≤ 1))
   | _, _ :: t => @instDecidableAnd _ _ inferInstance (decContentRead _ t)
 
-private instance (g : poly.Poly) (t : List poly.Poly) :
+private instance instDivisorid2 (g : poly.Poly) (t : List poly.Poly) :
     Decidable (contentRead g t) := decContentRead g t
 
 /-- Gauss primitivity over the base's polynomial ring: the
@@ -231,7 +230,7 @@ private def decPrimitiveP : ∀ P : poly.PPoly, Decidable (primitiveP P)
   | [] => isFalse (fun h => h)
   | c :: t => decContentRead (poly.vnorm c) t
 
-instance (P : poly.PPoly) : Decidable (primitiveP P) := decPrimitiveP P
+instance instDivisorid3 (P : poly.PPoly) : Decidable (primitiveP P) := decPrimitiveP P
 
 /-- Every listed factor sits at the resultant's stated site and is
 primitive over the base's polynomial ring. -/
@@ -245,7 +244,7 @@ private def decPrimAll : ∀ S : List poly.PPoly, Decidable (primAll S)
     @instDecidableAnd _ _ inferInstance
       (@instDecidableAnd _ _ inferInstance (decPrimAll t))
 
-instance (S : List poly.PPoly) : Decidable (primAll S) := decPrimAll S
+instance instDivisorid4 (S : List poly.PPoly) : Decidable (primAll S) := decPrimAll S
 
 /-- `thm:divisorid`(ii)'s split `χ = c ∏_j S_j^j` over the base's
 polynomial pairs, each `S_j` primitive at its stated top with the
@@ -253,7 +252,7 @@ contents collected into the base polynomial `c`. -/
 def splitRead (χ : poly.PPoly) (c : poly.Poly) (S : List poly.PPoly) : Prop :=
   poly.ppOneValue χ (poly.pmul [c] (splitProd S)) ∧ primAll S
 
-instance (χ : poly.PPoly) (c : poly.Poly) (S : List poly.PPoly) :
+instance instDivisorid5 (χ : poly.PPoly) (c : poly.Poly) (S : List poly.PPoly) :
     Decidable (splitRead χ c S) :=
   @instDecidableAnd _ _ inferInstance (decPrimAll S)
 
@@ -334,7 +333,7 @@ def crossD (S : List poly.PPoly) : poly.Poly :=
 `D`'s located root locus alone. -/
 def crossOff (S : List poly.PPoly) : Prop := ¬ poly.unitTail (crossD S)
 
-instance (S : List poly.PPoly) : Decidable (crossOff S) :=
+instance instDivisorid6 (S : List poly.PPoly) : Decidable (crossOff S) :=
   @instDecidableNot _ (poly.decUnitTail _)
 
 
@@ -574,18 +573,29 @@ private theorem evalSplit_mult (t r : BPair) :
         Nat.add_assoc, Nat.add_comm 1 j]
 
 
-/-- `thm:divisorid`(ii)'s specialization: at a base point off the
-crossing read's locus with the pencil polynomial's leading
-coefficient off the unit there — the leading coefficients multiply to
-it, so the content's and every factor's read unequal members and the
-degrees hold — every root of the pencil polynomial is a root of
-exactly one factor, simple in it, at the factor's place as its
-multiplicity in the pencil polynomial: root collisions sit on the
-crossing read's locus alone. -/
-theorem specialize (χ : poly.PPoly) (c : poly.Poly) (S : List poly.PPoly)
+/-- `thm:divisorid`(ii)'s specialization at the level pair's site
+datum over polynomial entries, the pencil polynomial its
+determinant (`split.ppminor` at `split.ppzMat`): at a base point off
+the crossing read's locus where the gram evaluates positive definite
+(the split's read at the evaluated gram), the pencil polynomial's
+leading x-coefficient is the gram's determinant there
+(`split.ptop_ppzMat`; `elim.eval_minorP`), off the unit at the
+split's vacant kernel block (`inertia.minor_of_kern`) — the leading
+coefficients multiply to it, so the content's and every factor's
+read unequal members and the degrees hold — and every root of the
+pencil polynomial is a root of exactly one factor, simple in it, at
+the factor's place as its multiplicity in the pencil polynomial:
+root collisions sit on the crossing read's locus alone. -/
+theorem specialize (H G : split.PMat) (n : Nat)
+    (hH : H.length = n) (hHr : elim.rowsLen n H)
+    (hG : G.length = n) (hGr : elim.rowsLen n G)
+    (χ : poly.PPoly) (hχ : χ = split.ppminor (split.ppzMat H G))
+    (c : poly.Poly) (S : List poly.PPoly)
     (h : splitRead χ c S) (t : BPair)
     (hD : ¬ (poly.eval (crossD S) t).oneValue BPair.unit)
-    (hlead : ¬ (poly.eval (poly.ptop χ) t).oneValue BPair.unit)
+    (sp : inertia.Split n)
+    (hsp : inertia.splitRead (G.map (fun row => poly.pevalB row t)) sp)
+    (hpd : inertia.pdAt sp)
     (r : BPair) (hr : poly.isRoot (poly.pevalB χ t) r) :
     ∃ j, j < S.length
       ∧ poly.isRoot (poly.pevalB (ground.getAt [] S j) t) r
@@ -593,6 +603,24 @@ theorem specialize (χ : poly.PPoly) (c : poly.Poly) (S : List poly.PPoly)
       ∧ (∀ i, i < S.length →
           poly.isRoot (poly.pevalB (ground.getAt [] S i) t) r → i = j)
       ∧ poly.multAt [r.swap] (poly.pevalB χ t) = j + 1 := by
+  -- the leading x-coefficient is the gram's determinant at the base
+  -- point, off the unit at the positive-definite split's vacant
+  -- kernel block
+  have hlead : ¬ (poly.eval (poly.ptop χ) t).oneValue BPair.unit := by
+    intro hu
+    have hdet : ¬ (elim.minor
+        (G.map (fun row => poly.pevalB row t))).oneValue BPair.unit :=
+      inertia.minor_of_kern _ sp hsp hpd.2
+    apply hdet
+    have h1 : (poly.eval (poly.ptop χ) t).oneValue
+        (poly.eval (split.pminor G) t) := by
+      rw [hχ]
+      exact poly.eval_congr (split.ptop_ppzMat H G n hH hHr hG hGr) t
+    have h2 : (poly.eval (split.pminor G) t).oneValue
+        (elim.minor (G.map (fun row => poly.pevalB row t))) :=
+      elim.eval_minorP G t (by rw [hG]; exact hGr)
+    exact BPair.oneValue_trans (BPair.oneValue_symm h2)
+      (BPair.oneValue_trans (BPair.oneValue_symm h1) hu)
   have hE : poly.oneValue (poly.pevalB χ t)
       (poly.mul [poly.eval c t] (evalSplit t 1 S)) :=
     poly.oneValue_trans (poly.pevalB_congr t h.1)
@@ -707,9 +735,10 @@ theorem specialize (χ : poly.PPoly) (c : poly.Poly) (S : List poly.PPoly)
 
 /-- `thm:divisorid`(iii)'s cell read: the one pencil at two levels
 `l < h`, the carriers the level datum's own — on a cell certified
-at both, a point reading the pair at `l` positive semidefinite and
-the count `n` at `h` transports both reads to every point of the
-cell, the ground multiplicity one integer on the cell; the
+at both, the carriers symmetric at both (`lem:cellcount`'s symmetric-pencil hypothesis at the level carrier), a point reading the pair
+at `l` positive semidefinite and the count `n` at `h` transports
+both reads to every point of the cell, the ground multiplicity one
+integer on the cell; the
 boundary's two-sided bracket counts are the emitted records'
 entries with clause (ii) confining a move to a ground collision on
 the crossing read's locus. -/
@@ -721,6 +750,8 @@ theorem groundMult {o : Nat} (A B G : elim.Mat) (mid : List BPair)
       o (mid.length + 1) lo hi covl)
     (hch : cellcount.coverRead (cellcount.levelPMat A B G xh yh mid)
       o (mid.length + 1) lo hi covh)
+    (hsyml : split.pSymAt (cellcount.levelPMat A B G xl yl mid) o)
+    (hsymh : split.pSymAt (cellcount.levelPMat A B G xh yh mid) o)
     (xn : BPair) (xc : Pos) (yn : BPair) (yc : Pos)
     (hlx : lo ≤ (⟨xn, xc⟩ : CPair)) (hxh : (⟨xn, xc⟩ : CPair) ≤ hi)
     (hly : lo ≤ (⟨yn, yc⟩ : CPair)) (hyh : (⟨yn, yc⟩ : CPair) ≤ hi)
@@ -738,10 +769,10 @@ theorem groundMult {o : Nat} (A B G : elim.Mat) (mid : List BPair)
         yn yc (mid.length + 1)) spyh) :
     inertia.psdAt spyl ∧ inertia.revAt spyh = n :=
   ⟨cellcount.cellCount (cellcount.levelPMat A B G xl yl mid)
-      (mid.length + 1) 0 lo hi covl hcl xn xc hlx hxh spxl hx0
+      (mid.length + 1) 0 lo hi covl hcl hsyml xn xc hlx hxh spxl hx0
       yn yc hly hyh spyl hyl,
    cellcount.cellCount (cellcount.levelPMat A B G xh yh mid)
-      (mid.length + 1) n lo hi covh hch xn xc hlx hxh spxh hxn
+      (mid.length + 1) n lo hi covh hch hsymh xn xc hlx hxh spxh hxn
       yn yc hly hyh spyh hyh2⟩
 
 end divisorid

@@ -195,6 +195,35 @@ degree. -/
 def allMon (d k : Nat) : List (List Nat) :=
   ground.prodLists (List.replicate k (List.range d))
 
+/-- Every monomial of the power's basis at a degree reads that
+degree's length. -/
+theorem allMon_widths (d k : Nat) : (allMon d k).all (fun m => m.length == k) = true := by
+  refine ground.all_of_mem_intro _ _ (fun m hm => ?_)
+  have h := (ground.mem_prodLists_of 0 _ m hm).1
+  rw [ground.length_replicate] at h
+  exact decide_eq_true h
+
+/-- Every width-matched monomial on the letter keys occurs once
+in the power's full monomial list. -/
+theorem allMon_count (d k : Nat) (m : List Nat) (hm : m.length = k)
+    (hk : m.all (fun x => decide (x < d)) = true) :
+    ground.countOf m (allMon d k) = 1 := by
+  unfold allMon
+  rw [ground.countOf_prodLists 0 _ (fun D hD => by
+    rw [ground.mem_replicate_eq (List.range d) k D hD]
+    exact ground.distinctList_range d)]
+  apply if_pos
+  refine ⟨hm.trans (ground.length_replicate (List.range d) k).symm, ?_⟩
+  intro i hi
+  rw [ground.getAt_replicate [] (List.range d) k i
+    (by rw [ground.length_replicate] at hi; exact hi)]
+  have him : i < m.length := by
+    rw [hm, ← ground.length_replicate (List.range d) k]; exact hi
+  have hx : ground.getAt 0 m i < d := of_decide_eq_true
+    (ground.all_of_mem _ m hk _ (ground.mem_getAt 0 m i him))
+  rw [ground.countOf_range_one hx]
+  exact Nat.succ_pos 0
+
 /-- A member's position in a stated list, the list's own count
 beyond it. -/
 def idxOf {α : Type} [BEq α] (m : α) : List α → Nat :=
@@ -648,6 +677,17 @@ theorem monomialsAt_distinct (mu : List Nat) :
   · rw [if_neg h]
     exact Nat.le_succ 0
 
+/-- Every monomial at a content reads the content's degree. -/
+theorem monomialsAt_widths (mu : List Nat) :
+    (monomialsAt mu).all (fun m => m.length == sumNat mu) = true := by
+  refine ground.all_of_mem_intro _ _ (fun m hm => ?_)
+  have h := ground.countOf_pos_of_mem hm
+  rw [countOf_monomialsAt] at h
+  by_cases hc : m.length = sumNat mu ∧ content mu.length m = mu
+  · exact decide_eq_true hc.1
+  · rw [if_neg hc] at h
+    exact absurd h (Nat.lt_irrefl 0)
+
 /-! The inversion-list word clause (`con:places`): composing with an
 adjacent transposition moves the inversion list by exactly one pair
 — the adjacent pair's read flips, the pairs meeting the two places
@@ -1089,6 +1129,13 @@ theorem rowList_replicate_zero : ∀ n : Nat,
         :: rowList (List.replicate n 0) = 0 :: List.replicate n 0
     rw [sumNat_replicate_zero n, Nat.zero_add 0,
       rowList_replicate_zero n]
+
+/-- A shape at the vacant degree is its width's unit shape:
+every row count is vacant, and the row list reads its columns back. -/
+theorem eq_unit_of_degree_zero (s : Shape) (h : degree s = 0) :
+    s = List.replicate s.length 0 := by
+  apply rowList_inj
+  rw [ground.replicate_of_sum_zero (rowList s) h, length_rowList, rowList_replicate_zero]
 
 /-- The vacant shape's degree is the sum's unit. -/
 theorem degree_replicate_zero (n : Nat) :
@@ -3777,14 +3824,6 @@ enumeration's own length.  The block identity
 exactly, the cofactor derived on the kernel's fuel-structural
 `Nat.div.go` at Ground (`ground.divMulSelf`). -/
 
-private theorem factorial_pos : ∀ n : Nat, 0 < factorial n
-  | 0 => Nat.lt_succ_self 0
-  | n + 1 => by
-    show 0 < (n + 1) * factorial n
-    rw [Nat.succ_mul]
-    exact Nat.lt_of_lt_of_le (factorial_pos n)
-      (Nat.le_add_left (factorial n) (n * factorial n))
-
 private theorem prodNat_factorial_pos : ∀ mu : List Nat,
     0 < prodNat (mu.map factorial)
   | [] => Nat.lt_succ_self 0
@@ -4184,6 +4223,90 @@ theorem countOf_pairs_split (D : Nat) :
               rw [← h1, ← h2]
               exact ⟨(pairs_mem D r hr).1, (pairs_mem D r hr).2⟩))]
 
+/-- Complementary lists at reversed places have the same fold of
+pair gaps (`con:places`' complement display). The pair involution
+exchanges the two reversed places; the common sum identifies the
+gaps by the sum's injectivity (`def:ground`). -/
+theorem pairGapFold_complement {β : Type}
+    (op : β → β → β) (unit : β)
+    (hcomm : ∀ x y, op x y = op y x)
+    (hassoc : ∀ x y z, op (op x y) z = op x (op y z))
+    (l m : List Nat) (c : Nat)
+    (hlen : m.length = l.length)
+    (hjoin : List.zipWith Nat.add l m.reverse = List.replicate l.length c)
+    (f : Nat → β) :
+    famFold op unit (fun p => f (getAt 0 l p.1 - getAt 0 l p.2))
+      (pairsOf l.length)
+    = famFold op unit (fun p => f (getAt 0 m p.1 - getAt 0 m p.2))
+      (pairsOf m.length) := by
+  have hbound : ∀ i, i < l.length → i ≤ l.length - 1 := by
+    intro i hi
+    cases l with
+    | nil => exact absurd hi (Nat.not_lt_zero i)
+    | cons x t => exact Nat.le_of_lt_succ hi
+  have hindex : ∀ i, i < l.length → i + (l.length - 1 - i) + 1 = l.length := by
+    intro i hi
+    rw [ground.natAddSubCancel (hbound i hi)]
+    exact ground.subAdd (Nat.lt_of_le_of_lt (Nat.zero_le i) hi)
+  have hentry : ∀ i, i < l.length →
+      getAt 0 l i + getAt 0 m (l.length - 1 - i) = c := by
+    intro i hi
+    have h := congrArg (fun t => getAt 0 t i) hjoin
+    rw [ground.getAt_zipWith 0 0 0 Nat.add l m.reverse i hi
+        (by rw [ground.length_reverse, hlen]; exact hi),
+      ground.getAt_replicate 0 c l.length i hi,
+      ground.getAt_reverse 0 m i (l.length - 1 - i)
+        (by rw [hlen]; exact hindex i hi)] at h
+    exact h
+  have hmap : ∀ p : Nat × Nat, 0 < countOf p (pairsOf l.length) →
+      0 < countOf (l.length - 1 - p.2, l.length - 1 - p.1)
+        (pairsOf l.length) := by
+    intro p hp
+    obtain ⟨hij, hj⟩ := pairs_mem l.length p hp
+    have hi := Nat.lt_trans hij hj
+    refine pairs_complete l.length ?_ (ground.predSubLt hi)
+    have ht : p.1 + (l.length - 1 - p.2) < l.length - 1 := by
+      have hh := Nat.add_lt_add_left hij (l.length - 1 - p.2)
+      rw [ground.subAdd (hbound p.2 hj),
+        Nat.add_comm (l.length - 1 - p.2) p.1] at hh
+      exact hh
+    have hh : p.1 + (l.length - 1 - p.2)
+        < p.1 + (l.length - 1 - p.1) := by
+      rw [ground.natAddSubCancel (hbound p.1 hi)]
+      exact ht
+    exact Nat.lt_of_add_lt_add_left hh
+  have hround : ∀ p : Nat × Nat, 0 < countOf p (pairsOf l.length) →
+      (l.length - 1 - (l.length - 1 - p.1),
+        l.length - 1 - (l.length - 1 - p.2)) = p := by
+    intro p hp
+    obtain ⟨hij, hj⟩ := pairs_mem l.length p hp
+    rw [ground.natSubSubCancel _ _ (hbound p.1 (Nat.lt_trans hij hj)),
+      ground.natSubSubCancel _ _ (hbound p.2 hj)]
+  rw [hlen]
+  have hr := ground.famFold_reindex op unit hcomm hassoc
+    (fun p : Nat × Nat => f (getAt 0 m p.1 - getAt 0 m p.2))
+    (l := pairsOf l.length)
+    (g := fun p => (l.length - 1 - p.2, l.length - 1 - p.1))
+    (h := fun p => (l.length - 1 - p.2, l.length - 1 - p.1))
+    (fun p _ => pairs_distinct l.length p) hround hround hmap hmap
+  rw [hr]
+  refine ground.famFold_congr_members op unit _ _ _ ?_
+  intro p hp
+  obtain ⟨hij, hj⟩ := pairs_mem l.length p hp
+  apply congrArg f
+  have he := (hentry p.1 (Nat.lt_trans hij hj)).trans (hentry p.2 hj).symm
+  calc
+    getAt 0 l p.1 - getAt 0 l p.2
+      = (getAt 0 l p.1 + getAt 0 m (l.length - 1 - p.1))
+        - (getAt 0 l p.2 + getAt 0 m (l.length - 1 - p.1)) :=
+      (ground.addSubAddR _ _ _).symm
+    _ = (getAt 0 l p.2 + getAt 0 m (l.length - 1 - p.2))
+        - (getAt 0 l p.2 + getAt 0 m (l.length - 1 - p.1)) := by rw [he]
+    _ = getAt 0 m (l.length - 1 - p.2) - getAt 0 m (l.length - 1 - p.1) := by
+      rw [Nat.add_comm (getAt 0 l p.2) (getAt 0 m (l.length - 1 - p.2)),
+        Nat.add_comm (getAt 0 l p.2) (getAt 0 m (l.length - 1 - p.1)),
+        ground.addSubAddR]
+
 /-- A list's inversion count reads over the place pairs: one
 reversed-order test per pair. -/
 theorem inversions_pairs : ∀ t : List Nat,
@@ -4219,27 +4342,6 @@ theorem inversions_pairs : ∀ t : List Nat,
     rfl
 
 
-private theorem fold_mul_right (F : Nat → Nat) (c : Nat) :
-    ∀ l : List Nat,
-      ground.famFold Nat.add 0 F l * c
-        = ground.famFold Nat.add 0 (fun x => F x * c) l
-  | [] => Nat.zero_mul c
-  | a :: t => by
-    show (F a + ground.famFold Nat.add 0 F t) * c = _
-    rw [ground.mulAddR (F a) (ground.famFold Nat.add 0 F t) c,
-      fold_mul_right F c t]
-    rfl
-
-private theorem fold_mul_left (F : Nat → Nat) (c : Nat) :
-    ∀ l : List Nat,
-      ground.famFold Nat.add 0 (fun x => c * F x) l
-        = c * ground.famFold Nat.add 0 F l
-  | [] => (Nat.mul_zero c).symm
-  | a :: t => by
-    show c * F a + ground.famFold Nat.add 0 (fun x => c * F x) t
-      = c * (F a + ground.famFold Nat.add 0 F t)
-    rw [fold_mul_left F c t, Nat.mul_add]
-
 private theorem len_monGo : ∀ (fuel : Nat) (mu : List Nat),
     sumNat mu = fuel →
     (monGo fuel mu).length * prodNat (mu.map factorial)
@@ -4256,7 +4358,7 @@ private theorem len_monGo : ∀ (fuel : Nat) (mu : List Nat),
       = factorial (fuel + 1)
     rw [if_neg (fun hc : sumNat mu = 0 =>
       Nat.noConfusion (h.symm.trans hc)),
-      ground.length_flatMap, fold_mul_right,
+      ground.length_flatMap, ← ground.famFold_mulR,
       ground.famFold_congr_all Nat.add 0 _
         (fun b => factorial fuel * ground.getAt 0 mu b)
         (fun b => by
@@ -4280,7 +4382,7 @@ private theorem len_monGo : ∀ (fuel : Nat) (mu : List Nat),
               | g + 1 => exact absurd (hg ▸ Nat.succ_pos g) hb
             rw [hz, Nat.zero_mul, Nat.mul_zero])
         (List.range mu.length),
-      fold_mul_left (fun i => ground.getAt 0 mu i) (factorial fuel)
+      ← ground.famFold_mul (factorial fuel) (fun i => ground.getAt 0 mu i)
         (List.range mu.length),
       sumIndex mu, h]
     show factorial fuel * (fuel + 1) = (fuel + 1) * factorial fuel

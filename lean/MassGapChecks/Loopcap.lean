@@ -37,9 +37,11 @@ and `cutForm` returns the two-sided read.  The orthogonality pin
 at `x = y = 𝟏` runs `cutSq` at the vacant contraction, the block
 orthogonality's identity instance.
 -/
+
+namespace loopcap
 set_option maxHeartbeats 16000000
 
-open ground fusion elim loopcap
+open ground fusion elim
 
 private def F : Data (List Nat) := dataA 2
 
@@ -54,10 +56,10 @@ private def u0 : List BPair := [BPair.unit, BPair.unit]
 /-! The loop window's magnetic matrix is the fusion form's own at
 `θ` over the unit-headed list, the walk's `[[0, 1], [1, 1]]`. -/
 
-example : pairpencil.loopMag F ls
+theorem pin1 : pairpencil.loopMag F ls
     = fpcap.fusionMat F F.theta (F.unit :: ls) := rfl
 
-example : pairpencil.loopMag F ls
+theorem pin2 : pairpencil.loopMag F ls
     = [[BPair.ofNat 0, BPair.ofNat 1],
        [BPair.ofNat 1, BPair.ofNat 1]] := by decide +kernel
 
@@ -65,26 +67,26 @@ example : pairpencil.loopMag F ls
 the swap-signed pair at the window's least occupied value, and the
 unit vector at the sum's unit exactly. -/
 
-example : (dotN u1 u1
+theorem pin3 : (dotN u1 u1
       + inertia.quadForm (pairpencil.loopMag F ls) u1).oneValue
     (BPair.ofNat 13) := by decide +kernel
 
-example : (dotN u2 u2
+theorem pin4 : (dotN u2 u2
       + inertia.quadForm (pairpencil.loopMag F ls) u2).oneValue
     (BPair.ofNat 1) := by decide +kernel
 
-example : (dotN u0 u0
+theorem pin5 : (dotN u0 u0
       + inertia.quadForm (pairpencil.loopMag F ls) u0).oneValue
     BPair.unit := by decide +kernel
 
 /-! The upper side's decided values at the same vectors: the `θ`
 dimension against the gram. -/
 
-example : ¬ (BPair.ofNat (F.dim F.theta) * dotN u1 u1
+theorem pin6 : ¬ (BPair.ofNat (F.dim F.theta) * dotN u1 u1
     < inertia.quadForm (pairpencil.loopMag F ls) u1) := by
   decide +kernel
 
-example : ¬ (BPair.ofNat (F.dim F.theta) * dotN u2 u2
+theorem pin7 : ¬ (BPair.ofNat (F.dim F.theta) * dotN u2 u2
     < inertia.quadForm (pairpencil.loopMag F ls) u2) := by
   decide +kernel
 
@@ -109,26 +111,26 @@ private theorem distWin : fpcap.distinctAt F (F.unit :: ls) := by
 /-! The theorems' own instances at the window, both sides at both
 occupied vectors. -/
 
-example : ¬ (dotN u1 u1
+theorem pin8 : ¬ (dotN u1 u1
       + inertia.quadForm (pairpencil.loopMag F ls) u1
     < BPair.unit) :=
   shiftLower F [1, 0] ls [[1, 0], [3, 0]] compWin distWin u1 rfl
 
-example : ¬ (dotN u2 u2
+theorem pin9 : ¬ (dotN u2 u2
       + inertia.quadForm (pairpencil.loopMag F ls) u2
     < BPair.unit) :=
   shiftLower F [1, 0] ls [[1, 0], [3, 0]] compWin distWin u2 rfl
 
-example : ¬ (dotN u0 u0
+theorem pin10 : ¬ (dotN u0 u0
       + inertia.quadForm (pairpencil.loopMag F ls) u0
     < BPair.unit) :=
   shiftLower F [1, 0] ls [[1, 0], [3, 0]] compWin distWin u0 rfl
 
-example : ¬ (BPair.ofNat (F.dim F.theta) * dotN u1 u1
+theorem pin11 : ¬ (BPair.ofNat (F.dim F.theta) * dotN u1 u1
     < inertia.quadForm (pairpencil.loopMag F ls) u1) :=
   shiftUpper F ls symWin rowWin dimWin u1 rfl
 
-example : ¬ (BPair.ofNat (F.dim F.theta) * dotN u2 u2
+theorem pin12 : ¬ (BPair.ofNat (F.dim F.theta) * dotN u2 u2
     < inertia.quadForm (pairpencil.loopMag F ls) u2) :=
   shiftUpper F ls symWin rowWin dimWin u2 rfl
 
@@ -147,11 +149,11 @@ private def ub : List BPair :=
   [(BPair.ofNat 3).swap, BPair.ofNat 1, BPair.ofNat 2,
    (BPair.ofNat 1).swap, (BPair.ofNat 1).swap]
 
-example : dotN ub ub
+theorem pin13 : dotN ub ub
       + inertia.quadForm (pairpencil.loopMag F lsBad) ub
     < BPair.unit := by decide +kernel
 
-example : fpcap.compRead F [1, 0] (F.unit :: lsBad)
+theorem pin14 : fpcap.compRead F [1, 0] (F.unit :: lsBad)
     [[1, 0], [3, 0], [5, 0]] := by decide +kernel
 
 /-! The three-letter window `(𝟏, θ, [4,0])`: the interior row
@@ -163,7 +165,7 @@ private def ls3 : List (List Nat) := [adjchar.theta 2, [4, 0]]
 private def u3 : List BPair :=
   [BPair.ofNat 1, (BPair.ofNat 2).swap, BPair.ofNat 1]
 
-example : ¬ (BPair.ofNat (F.dim F.theta) * dotN u3 u3
+theorem pin15 : ¬ (BPair.ofNat (F.dim F.theta) * dotN u3 u3
     < inertia.quadForm (pairpencil.loopMag F ls3) u3) :=
   shiftUpper F ls3 (by decide +kernel) (by decide +kernel) (by decide +kernel) u3 rfl
 
@@ -181,26 +183,26 @@ private def xb2 : List BPair := [⟨3, 1⟩, ⟨1, 1⟩]
 /-- The display at the vacant pairing: the two self-pairings read
 `2 = 2 · 1` and `8 = 2 · 4`, the cross fold vacant, and the
 squared comparison holds outright. -/
-example : (dotP ya1 ya1).oneValue (BPair.ofNat 2 * ⟨2, 1⟩) := by decide +kernel
+theorem pin16 : (dotP ya1 ya1).oneValue (BPair.ofNat 2 * ⟨2, 1⟩) := by decide +kernel
 
-example : (dotP xb1 xb1).oneValue (BPair.ofNat 2 * ⟨5, 1⟩) := by decide +kernel
+theorem pin17 : (dotP xb1 xb1).oneValue (BPair.ofNat 2 * ⟨5, 1⟩) := by decide +kernel
 
-example : (dotP ya1 xb1).oneValue BPair.unit := by decide +kernel
+theorem pin18 : (dotP ya1 xb1).oneValue BPair.unit := by decide +kernel
 
-example : ¬ (BPair.ofNat 2 * ⟨2, 1⟩ * (BPair.ofNat 2 * ⟨5, 1⟩)
+theorem pin19 : ¬ (BPair.ofNat 2 * ⟨2, 1⟩ * (BPair.ofNat 2 * ⟨5, 1⟩)
     < dotP ya1 xb1 * dotP ya1 xb1) := by decide +kernel
 
-example : ¬ (BPair.ofNat 2 * ⟨2, 1⟩ * (BPair.ofNat 2 * ⟨5, 1⟩)
+theorem pin20 : ¬ (BPair.ofNat 2 * ⟨2, 1⟩ * (BPair.ofNat 2 * ⟨5, 1⟩)
     < dotP ya1 xb1 * dotP ya1 xb1) :=
   cutSq ya1 xb1 rfl 2 ⟨2, 1⟩ ⟨5, 1⟩ (by decide +kernel) (by decide +kernel)
 
 /-- The display at an occupied pairing: the pairing's square reads
 `4` against the grams' product `8`, the gap the cross fold's. -/
-example : (dotP xb2 xb2).oneValue (BPair.ofNat 2 * ⟨3, 1⟩) := by decide +kernel
+theorem pin21 : (dotP xb2 xb2).oneValue (BPair.ofNat 2 * ⟨3, 1⟩) := by decide +kernel
 
-example : (dotP ya1 xb2).oneValue (BPair.ofNat 2) := by decide +kernel
+theorem pin22 : (dotP ya1 xb2).oneValue (BPair.ofNat 2) := by decide +kernel
 
-example : ¬ (BPair.ofNat 2 * ⟨2, 1⟩ * (BPair.ofNat 2 * ⟨3, 1⟩)
+theorem pin23 : ¬ (BPair.ofNat 2 * ⟨2, 1⟩ * (BPair.ofNat 2 * ⟨3, 1⟩)
     < dotP ya1 xb2 * dotP ya1 xb2) :=
   cutSq ya1 xb2 rfl 2 ⟨2, 1⟩ ⟨3, 1⟩ (by decide +kernel) (by decide +kernel)
 
@@ -209,25 +211,25 @@ example : ¬ (BPair.ofNat 2 * ⟨2, 1⟩ * (BPair.ofNat 2 * ⟨3, 1⟩)
 `1 = 1 · 1`, while the first reads `4` against `1` and refuses, and
 the conclusion parts — the count's square `1` sits strictly below
 the pairing's square `4`. -/
-example : ¬ (dotP [(⟨3, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)]).oneValue
+theorem pin24 : ¬ (dotP [(⟨3, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)]).oneValue
     (BPair.ofNat 1 * ⟨2, 1⟩) := by decide +kernel
 
-example : (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
+theorem pin25 : (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
     (BPair.ofNat 1 * ⟨2, 1⟩) := by decide +kernel
 
-example : BPair.ofNat 1 * ⟨2, 1⟩ * (BPair.ofNat 1 * ⟨2, 1⟩)
+theorem pin26 : BPair.ofNat 1 * ⟨2, 1⟩ * (BPair.ofNat 1 * ⟨2, 1⟩)
     < dotP [(⟨3, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]
       * dotP [(⟨3, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)] := by decide +kernel
 
 /-- The image's read back at the unit count: the pairing, the two
 self-pairings and the conclusion all read `1`. -/
-example : (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
+theorem pin27 : (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
     (⟨2, 1⟩ : BPair) := by decide +kernel
 
-example : ¬ (BPair.ofNat (1 * 1) * ⟨2, 1⟩ < (⟨2, 1⟩ : BPair)) := by
+theorem pin28 : ¬ (BPair.ofNat (1 * 1) * ⟨2, 1⟩ < (⟨2, 1⟩ : BPair)) := by
   decide +kernel
 
-example : ¬ (BPair.ofNat (1 * 1) * ⟨2, 1⟩ < (⟨2, 1⟩ : BPair)) :=
+theorem pin29 : ¬ (BPair.ofNat (1 * 1) * ⟨2, 1⟩ < (⟨2, 1⟩ : BPair)) :=
   cutCap [⟨2, 1⟩] [⟨2, 1⟩] rfl 1 ⟨2, 1⟩ ⟨2, 1⟩
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
@@ -235,24 +237,24 @@ example : ¬ (BPair.ofNat (1 * 1) * ⟨2, 1⟩ < (⟨2, 1⟩ : BPair)) :=
 pins `N = 2` and the second self-pairing still reads `1 = 1 · 1`,
 while the first reads `4` against `1 · 2` and refuses; the squared
 count against the gram then sits strictly below `N`. -/
-example : (dotP [(⟨3, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
+theorem pin30 : (dotP [(⟨3, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
     (⟨3, 1⟩ : BPair) := by decide +kernel
 
-example : ¬ (dotP [(⟨3, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)]).oneValue
+theorem pin31 : ¬ (dotP [(⟨3, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)]).oneValue
     (BPair.ofNat 1 * ⟨3, 1⟩) := by decide +kernel
 
-example : BPair.ofNat (1 * 1) * ⟨2, 1⟩ < (⟨3, 1⟩ : BPair) := by decide +kernel
+theorem pin32 : BPair.ofNat (1 * 1) * ⟨2, 1⟩ < (⟨3, 1⟩ : BPair) := by decide +kernel
 
 /-- The two-sided form read at the unit count: the window's gram
 reads `1`, the form reads `1`, and both the form and its swap sit
 at or below the count against the gram. -/
-example : (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
+theorem pin33 : (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
     (BPair.ofNat 1) := by decide +kernel
 
-example : ¬ (BPair.ofNat (1 * 1) * BPair.ofNat 1
+theorem pin34 : ¬ (BPair.ofNat (1 * 1) * BPair.ofNat 1
     < dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]) := by decide +kernel
 
-example : (⟨2, 1⟩ : BPair) ≤ BPair.ofNat 1 * BPair.ofNat 1
+theorem pin35 : (⟨2, 1⟩ : BPair) ≤ BPair.ofNat 1 * BPair.ofNat 1
     ∧ (⟨2, 1⟩ : BPair).swap ≤ BPair.ofNat 1 * BPair.ofNat 1 :=
   cutForm [⟨2, 1⟩] [⟨2, 1⟩] rfl 1 (BPair.ofNat 1) ⟨2, 1⟩
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -261,31 +263,31 @@ example : (⟨2, 1⟩ : BPair) ≤ BPair.ofNat 1 * BPair.ofNat 1
 and the cap holds at `1`, while the window's gram reads `9`
 against the stated `1` and refuses; the form then sits strictly
 above the count against the stated gram. -/
-example : ¬ (dotP [(⟨4, 1⟩ : BPair)] [(⟨4, 1⟩ : BPair)]).oneValue
+theorem pin36 : ¬ (dotP [(⟨4, 1⟩ : BPair)] [(⟨4, 1⟩ : BPair)]).oneValue
     (⟨2, 1⟩ : BPair) := by decide +kernel
 
-example : (⟨4, 1⟩ : BPair).oneValue
+theorem pin37 : (⟨4, 1⟩ : BPair).oneValue
     (dotP [(⟨4, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]) := by decide +kernel
 
-example : ¬ (BPair.ofNat (1 * 1) * ⟨2, 1⟩
+theorem pin38 : ¬ (BPair.ofNat (1 * 1) * ⟨2, 1⟩
     < dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]) := by decide +kernel
 
-example : ¬ ((⟨4, 1⟩ : BPair) ≤ BPair.ofNat 1 * ⟨2, 1⟩) := by decide +kernel
+theorem pin39 : ¬ ((⟨4, 1⟩ : BPair) ≤ BPair.ofNat 1 * ⟨2, 1⟩) := by decide +kernel
 
 /-- Refusal isolating `hcap` at the form read: the window's gram
 reads `1` and the form reads `2`, while the image's own gram reads
 `4` above the squared count's `1` and the cap refuses; the form
 then sits strictly above the count against the gram. -/
-example : (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
+theorem pin40 : (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
     (⟨2, 1⟩ : BPair) := by decide +kernel
 
-example : (⟨3, 1⟩ : BPair).oneValue
+theorem pin41 : (⟨3, 1⟩ : BPair).oneValue
     (dotP [(⟨2, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)]) := by decide +kernel
 
-example : BPair.ofNat (1 * 1) * ⟨2, 1⟩
+theorem pin42 : BPair.ofNat (1 * 1) * ⟨2, 1⟩
     < dotP [(⟨3, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)] := by decide +kernel
 
-example : ¬ ((⟨3, 1⟩ : BPair) ≤ BPair.ofNat 1 * ⟨2, 1⟩) := by decide +kernel
+theorem pin43 : ¬ ((⟨3, 1⟩ : BPair) ≤ BPair.ofNat 1 * ⟨2, 1⟩) := by decide +kernel
 
 /-! The remaining load-bearing binders' isolating refusals: `hx`
 at the display and at the image's read back, `hP` at the image's
@@ -297,13 +299,13 @@ data. -/
 reads `1 = 1 · 1` while the second reads `1` against the stated
 `-1` and refuses, and the conclusion parts — the grams' product
 sits strictly below the pairing's square. -/
-example : (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
+theorem pin44 : (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
     (BPair.ofNat 1 * ⟨2, 1⟩) := by decide +kernel
 
-example : ¬ (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
+theorem pin45 : ¬ (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
     (BPair.ofNat 1 * ⟨1, 2⟩) := by decide +kernel
 
-example : BPair.ofNat 1 * ⟨2, 1⟩ * (BPair.ofNat 1 * ⟨1, 2⟩)
+theorem pin46 : BPair.ofNat 1 * ⟨2, 1⟩ * (BPair.ofNat 1 * ⟨1, 2⟩)
     < dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]
       * dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)] := by decide +kernel
 
@@ -312,16 +314,16 @@ lists and the vacant count both contractions hold at the stated
 data, while the pairing reads the sum's unit against the stated
 `1` and refuses; the vacant count against the gram sits strictly
 below the stated `N`. -/
-example : (dotP [BPair.unit] [BPair.unit]).oneValue
+theorem pin47 : (dotP [BPair.unit] [BPair.unit]).oneValue
     (BPair.ofNat 0 * ⟨2, 1⟩) := by decide +kernel
 
-example : (dotP [BPair.unit] [BPair.unit]).oneValue
+theorem pin48 : (dotP [BPair.unit] [BPair.unit]).oneValue
     (BPair.ofNat 0 * BPair.unit) := by decide +kernel
 
-example : ¬ (dotP [BPair.unit] [BPair.unit]).oneValue
+theorem pin49 : ¬ (dotP [BPair.unit] [BPair.unit]).oneValue
     (⟨2, 1⟩ : BPair) := by decide +kernel
 
-example : BPair.ofNat (0 * 0) * BPair.unit < (⟨2, 1⟩ : BPair) := by
+theorem pin50 : BPair.ofNat (0 * 0) * BPair.unit < (⟨2, 1⟩ : BPair) := by
   decide +kernel
 
 /-- Refusal isolating `hx` at the image's read back: the pairing
@@ -329,26 +331,26 @@ pins `N = 1` and the first contraction holds at the unit-count
 pins above, while the second self-pairing reads `1` against the
 stated `-1` and refuses; the squared count against the stated
 gram sits strictly below `N`. -/
-example : ¬ (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
+theorem pin51 : ¬ (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
     (BPair.ofNat 1 * (⟨1, 2⟩ : BPair)) := by decide +kernel
 
-example : BPair.ofNat (1 * 1) * ⟨1, 2⟩ < (⟨2, 1⟩ : BPair) := by
+theorem pin52 : BPair.ofNat (1 * 1) * ⟨1, 2⟩ < (⟨2, 1⟩ : BPair) := by
   decide +kernel
 
 /-- Refusal isolating `hQ` at the form read: the window's gram and
 the cap hold at the unit-count pins above, while the form reads
 `1` against the stated `3` and refuses; the stated form sits
 strictly above the count against the gram. -/
-example : ¬ ((⟨4, 1⟩ : BPair)).oneValue
+theorem pin53 : ¬ ((⟨4, 1⟩ : BPair)).oneValue
     (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]) := by decide +kernel
 
-example : ¬ ((⟨4, 1⟩ : BPair) ≤ BPair.ofNat 1 * BPair.ofNat 1) := by
+theorem pin54 : ¬ ((⟨4, 1⟩ : BPair) ≤ BPair.ofNat 1 * BPair.ofNat 1) := by
   decide +kernel
 
 /-- The image's read back at the vacant count, through the theorem:
 the contraction at the count's unit forces the vacant lists and
 the conclusion reads outright, the vacant arm's own route. -/
-example : ¬ (BPair.ofNat (0 * 0) * BPair.unit < BPair.unit) :=
+theorem pin55 : ¬ (BPair.ofNat (0 * 0) * BPair.unit < BPair.unit) :=
   cutCap [BPair.unit] [BPair.unit] rfl 0 BPair.unit BPair.unit
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
@@ -364,34 +366,34 @@ private def yaS : List BPair := [⟨2, 1⟩, ⟨1, 1⟩]
 /-- The display's survival at the mismatched pair: `ya1` against
 the one-place `(2)`, the truncated pairing reading `2` against the
 grams' product `8`, the first self-pairing's pin standing above. -/
-example : (dotP [(⟨3, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)]).oneValue
+theorem pin56 : (dotP [(⟨3, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)]).oneValue
     (BPair.ofNat 2 * ⟨3, 1⟩) := by decide +kernel
 
-example : ¬ (BPair.ofNat 2 * ⟨2, 1⟩ * (BPair.ofNat 2 * ⟨3, 1⟩)
+theorem pin57 : ¬ (BPair.ofNat 2 * ⟨2, 1⟩ * (BPair.ofNat 2 * ⟨3, 1⟩)
     < dotP ya1 [⟨3, 1⟩] * dotP ya1 [⟨3, 1⟩]) := by decide +kernel
 
 /-- The image's read back at the mismatched pair: the truncated
 pairing pins `N = 1` and the two self-pairings read `1`. -/
-example : (dotP yaS [⟨2, 1⟩]).oneValue (⟨2, 1⟩ : BPair) := by decide +kernel
+theorem pin58 : (dotP yaS [⟨2, 1⟩]).oneValue (⟨2, 1⟩ : BPair) := by decide +kernel
 
-example : (dotP yaS yaS).oneValue (BPair.ofNat 1 * ⟨2, 1⟩) := by decide +kernel
+theorem pin59 : (dotP yaS yaS).oneValue (BPair.ofNat 1 * ⟨2, 1⟩) := by decide +kernel
 
-example : (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
+theorem pin60 : (dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]).oneValue
     (BPair.ofNat 1 * ⟨2, 1⟩) := by decide +kernel
 
-example : ¬ (BPair.ofNat (1 * 1) * ⟨2, 1⟩ < (⟨2, 1⟩ : BPair)) := by
+theorem pin61 : ¬ (BPair.ofNat (1 * 1) * ⟨2, 1⟩ < (⟨2, 1⟩ : BPair)) := by
   decide +kernel
 
 /-- The form read at the mismatched pair: the window's gram reads
 `1`, the form reads `1`, and both sides of the conclusion hold. -/
-example : (dotP yaS yaS).oneValue (BPair.ofNat 1) := by decide +kernel
+theorem pin62 : (dotP yaS yaS).oneValue (BPair.ofNat 1) := by decide +kernel
 
-example : (⟨2, 1⟩ : BPair).oneValue (dotP yaS [⟨2, 1⟩]) := by decide +kernel
+theorem pin63 : (⟨2, 1⟩ : BPair).oneValue (dotP yaS [⟨2, 1⟩]) := by decide +kernel
 
-example : ¬ (BPair.ofNat (1 * 1) * BPair.ofNat 1
+theorem pin64 : ¬ (BPair.ofNat (1 * 1) * BPair.ofNat 1
     < dotP [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]) := by decide +kernel
 
-example : (⟨2, 1⟩ : BPair) ≤ BPair.ofNat 1 * BPair.ofNat 1
+theorem pin65 : (⟨2, 1⟩ : BPair) ≤ BPair.ofNat 1 * BPair.ofNat 1
     ∧ (⟨2, 1⟩ : BPair).swap ≤ BPair.ofNat 1 * BPair.ofNat 1 := by
   decide +kernel
 
@@ -480,25 +482,25 @@ private def cutXB : List BPair := xbSlot ++ xbSlot ++ xbSlot ++ xbSlot
 /-! The slot reads: `72`, `72` and `36`, the joined reads their
 fourfold. -/
 
-example : (dotP yaPos yaPos).oneValue (BPair.ofNat 72) := by decide +kernel
+theorem pin66 : (dotP yaPos yaPos).oneValue (BPair.ofNat 72) := by decide +kernel
 
-example : (dotP yaNeg yaNeg).oneValue (BPair.ofNat 72) := by decide +kernel
+theorem pin67 : (dotP yaNeg yaNeg).oneValue (BPair.ofNat 72) := by decide +kernel
 
-example : (dotP xbSlot xbSlot).oneValue (BPair.ofNat 72) := by decide +kernel
+theorem pin68 : (dotP xbSlot xbSlot).oneValue (BPair.ofNat 72) := by decide +kernel
 
-example : (dotP yaPos xbSlot).oneValue (BPair.ofNat 36) := by decide +kernel
+theorem pin69 : (dotP yaPos xbSlot).oneValue (BPair.ofNat 36) := by decide +kernel
 
-example : (dotP yaNeg xbSlot).oneValue (BPair.ofNat 36) := by decide +kernel
+theorem pin70 : (dotP yaNeg xbSlot).oneValue (BPair.ofNat 36) := by decide +kernel
 
 /-- The joined pairing is the cut datum `N = 144`. -/
-example : (dotP cutYA cutXB).oneValue (BPair.ofNat 144) := by decide +kernel
+theorem pin71 : (dotP cutYA cutXB).oneValue (BPair.ofNat 144) := by decide +kernel
 
 /-- The joined self-pairings read the count `d_f = 2` against the
 grams, both sides at `144`. -/
-example : (dotP cutYA cutYA).oneValue
+theorem pin72 : (dotP cutYA cutYA).oneValue
     (BPair.ofNat 2 * BPair.ofNat 144) := by decide +kernel
 
-example : (dotP cutXB cutXB).oneValue
+theorem pin73 : (dotP cutXB cutXB).oneValue
     (BPair.ofNat 2 * BPair.ofNat 144) := by decide +kernel
 
 /-- The image's read back at the cut datum, through the theorem. -/
@@ -523,7 +525,7 @@ private def winMXC : List BPair :=
 
 /-- The window's gram, cleared: `⟨x, x⟩ = 1` at `e² = 144`, the
 `Gx` the form read consumes. -/
-example : (dotP winXC winXC).oneValue (BPair.ofNat 144) := by decide +kernel
+theorem pin74 : (dotP winXC winXC).oneValue (BPair.ofNat 144) := by decide +kernel
 
 /-- The coherence pin tying the window to the cut datum:
 `⟨χ_f x, χ_f x⟩ = 1` reads the same `144`. -/
@@ -531,13 +533,13 @@ private theorem winCoh :
     (dotP winMXC winMXC).oneValue (BPair.ofNat 144) := by decide +kernel
 
 /-- The form at the window: `⟨x, χ_f x⟩` vacant. -/
-example : BPair.unit.oneValue (dotP winXC winMXC) := by decide +kernel
+theorem pin75 : BPair.unit.oneValue (dotP winXC winMXC) := by decide +kernel
 
 /-- The two-sided form read through the theorem, the cap the cut
 datum's own conclusion carried across the coherence pin — the
 composition's tie the one clearing, `c = e = 12` on both
 realizations. -/
-example : BPair.unit ≤ BPair.ofNat 2 * BPair.ofNat 144
+theorem pin76 : BPair.unit ≤ BPair.ofNat 2 * BPair.ofNat 144
     ∧ BPair.unit.swap ≤ BPair.ofNat 2 * BPair.ofNat 144 :=
   cutForm winXC winMXC rfl 2 (BPair.ofNat 144) BPair.unit
     (by decide +kernel) (by decide +kernel)
@@ -581,17 +583,17 @@ private def cutXBTh : List BPair :=
   xbTh ++ xbTh ++ xbTh ++ xbTh ++ xbTh ++ xbTh ++ xbTh ++ xbTh
     ++ xbTh
 
-example : (dotP cutYATh cutYATh).oneValue
+theorem pin77 : (dotP cutYATh cutYATh).oneValue
     (BPair.ofNat 3 * BPair.ofNat 9) := by decide +kernel
 
-example : (dotP cutXBTh cutXBTh).oneValue
+theorem pin78 : (dotP cutXBTh cutXBTh).oneValue
     (BPair.ofNat 3 * BPair.ofNat 9) := by decide +kernel
 
-example : (dotP cutYATh cutXBTh).oneValue BPair.unit := by decide +kernel
+theorem pin79 : (dotP cutYATh cutXBTh).oneValue BPair.unit := by decide +kernel
 
 /-- The member display through the theorem at the vacant
 pairing. -/
-example : ¬ (BPair.ofNat 3 * BPair.ofNat 9
+theorem pin80 : ¬ (BPair.ofNat 3 * BPair.ofNat 9
       * (BPair.ofNat 3 * BPair.ofNat 9)
     < dotP cutYATh cutXBTh * dotP cutYATh cutXBTh) :=
   cutSq cutYATh cutXBTh rfl 3 (BPair.ofNat 9) (BPair.ofNat 9)
@@ -606,18 +608,18 @@ private def xcTh : List BPair :=
 private def mxcTh : List BPair :=
   BPair.unit :: List.replicate 9 (BPair.ofNat 1)
 
-example : (dotP xcTh xcTh).oneValue (BPair.ofNat 9) := by decide +kernel
+theorem pin81 : (dotP xcTh xcTh).oneValue (BPair.ofNat 9) := by decide +kernel
 
 /-- The coherence pin: `⟨χ_θ, χ_θ⟩ = 1` reads `9` at the
 clearing. -/
-example : (dotP mxcTh mxcTh).oneValue (BPair.ofNat 9) := by decide +kernel
+theorem pin82 : (dotP mxcTh mxcTh).oneValue (BPair.ofNat 9) := by decide +kernel
 
-example : BPair.unit.oneValue (dotP xcTh mxcTh) := by decide +kernel
+theorem pin83 : BPair.unit.oneValue (dotP xcTh mxcTh) := by decide +kernel
 
 /-- The member's two-sided form read at `d_θ = 3` through the
 theorem, the cap decided at the image's gram against the squared
 count. -/
-example : BPair.unit ≤ BPair.ofNat 3 * BPair.ofNat 9
+theorem pin84 : BPair.unit ≤ BPair.ofNat 3 * BPair.ofNat 9
     ∧ BPair.unit.swap ≤ BPair.ofNat 3 * BPair.ofNat 9 :=
   cutForm xcTh mxcTh rfl 3 (BPair.ofNat 9) BPair.unit
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -646,18 +648,18 @@ private def orthXB : List BPair :=
 
 /-- The joined self-pairings: `d_f · ⟨𝟏, 𝟏⟩ = 2` uncleared, `8` at
 `c² = 4`, so the gram is `4` at the count `2`. -/
-example : (dotP orthYA orthYA).oneValue
+theorem pin85 : (dotP orthYA orthYA).oneValue
     (BPair.ofNat 2 * BPair.ofNat 4) := by decide +kernel
 
-example : (dotP orthXB orthXB).oneValue
+theorem pin86 : (dotP orthXB orthXB).oneValue
     (BPair.ofNat 2 * BPair.ofNat 4) := by decide +kernel
 
 /-- The cross read is vacant: `⟨𝟏, χ_f⟩ = 0`, the block
 orthogonality at disjoint frames. -/
-example : (dotP orthYA orthXB).oneValue BPair.unit := by decide +kernel
+theorem pin87 : (dotP orthYA orthXB).oneValue BPair.unit := by decide +kernel
 
 /-- The display through the theorem at the orthogonality pin. -/
-example : ¬ (BPair.ofNat 2 * BPair.ofNat 4
+theorem pin88 : ¬ (BPair.ofNat 2 * BPair.ofNat 4
       * (BPair.ofNat 2 * BPair.ofNat 4)
     < dotP orthYA orthXB * dotP orthYA orthXB) :=
   cutSq orthYA orthXB rfl 2 (BPair.ofNat 4) (BPair.ofNat 4)
@@ -694,16 +696,16 @@ private abbrev bessel (T : Mat) (w e : List BPair) (κ d : BPair) : Prop :=
   dotP (T.map (fun r => dotP r w)) (T.map (fun r => dotP r w)) * d
     + dotP e w * dotP e w * κ ≤ dotP w w * κ * d
 
-example : bessel tB wB eB (BPair.ofNat 2) (BPair.ofNat 5) := by decide +kernel
-example : BPair.oneValue
+theorem pin89 : bessel tB wB eB (BPair.ofNat 2) (BPair.ofNat 5) := by decide +kernel
+theorem pin90 : BPair.oneValue
     (dotP (tB.map (fun r => dotP r wB)) (tB.map (fun r => dotP r wB)))
     (BPair.ofNat 10) := by decide +kernel
-example : bessel tB wB eB (BPair.ofNat 2) (BPair.ofNat 5) :=
+theorem pin91 : bessel tB wB eB (BPair.ofNat 2) (BPair.ofNat 5) :=
   gradient_deficit 4 tB wB eB (BPair.ofNat 2) (BPair.ofNat 5) (by decide)
     (by decide) (by decide) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
-example : ¬ perpAll tC := by decide +kernel
-example : ¬ bessel tC wC eC (BPair.ofNat 2) (BPair.ofNat 1) := by decide +kernel
+theorem pin92 : ¬ perpAll tC := by decide +kernel
+theorem pin93 : ¬ bessel tC wC eC (BPair.ofNat 2) (BPair.ofNat 1) := by decide +kernel
 
 /-! The further binders: the rows' self-pairing tie at the index
 (at `κ = 1` against the rows' `2` the display reads `171 ≤ 150`,
@@ -714,11 +716,47 @@ refused, the first row pairing `w` at `3`).  The index's and the
 self-pairing's positivity are the tex's frame, the adjoint's index
 and the identity's trace at the block. -/
 
-example : ¬ (dotP (getAt [] tB 0) (getAt [] tB 0)).oneValue (BPair.ofNat 1) := by
+theorem pin94 : ¬ (dotP (getAt [] tB 0) (getAt [] tB 0)).oneValue (BPair.ofNat 1) := by
   decide +kernel
-example : ¬ bessel tB wB eB (BPair.ofNat 1) (BPair.ofNat 5) := by decide +kernel
-example : ¬ (dotP eB eB).oneValue (BPair.ofNat 4) := by decide +kernel
-example : ¬ bessel tB wB eB (BPair.ofNat 2) (BPair.ofNat 4) := by decide +kernel
-example : ¬ (dotP (getAt [] tB 0) wB).oneValue BPair.unit := by decide +kernel
-example : (dotP wB wB).oneValue (BPair.ofNat 30) := by decide +kernel
-example : ¬ bessel tB wB wB (BPair.ofNat 2) (BPair.ofNat 30) := by decide +kernel
+theorem pin95 : ¬ bessel tB wB eB (BPair.ofNat 1) (BPair.ofNat 5) := by decide +kernel
+theorem pin96 : ¬ (dotP eB eB).oneValue (BPair.ofNat 4) := by decide +kernel
+theorem pin97 : ¬ bessel tB wB eB (BPair.ofNat 2) (BPair.ofNat 4) := by decide +kernel
+theorem pin98 : ¬ (dotP (getAt [] tB 0) wB).oneValue BPair.unit := by decide +kernel
+theorem pin99 : (dotP wB wB).oneValue (BPair.ofNat 30) := by decide +kernel
+theorem pin100 : ¬ bessel tB wB wB (BPair.ofNat 2) (BPair.ofNat 30) := by decide +kernel
+
+/-! The member reads at the `A`-series' fundamental pair: at the
+residue two the index reads one, the adjoint tie's pair six with
+`t_L` six at the closure, the second member's pair `[4 : 3]` at the
+dimension three, the residual cap `[220 : 9]`, the adjoint's `24`,
+the joined index two, and the second-order pair `[223 : 9]`; at the
+residue one the tie four, the second member's pair vacant, the
+residual cap sixteen and the second-order pair `[33 : 2]`; the
+off-class index vacant at a closure of one dual class, and the tie's
+order refused against five. -/
+
+private def f3 : places.Shape := [1, 0, 0]
+
+private def cl3 : List places.Shape := [f3, labels.dualL f3]
+
+private def f2 : places.Shape := [1, 0]
+
+theorem pin101 : (indexAt (dataA 3) f3).oneValue ⟨1, 1⟩
+    ∧ (tieAt (dataA 3) f3).oneValue ⟨6, 1⟩
+    ∧ (tieLeast (dataA 3) f3 [labels.dualL f3]).oneValue ⟨6, 1⟩
+    ∧ (secondMember 3).oneValue (CPair.ofPair ⟨4, 3⟩ .one) := by decide +kernel
+theorem pin102 : (residualCap (dataA 3) f3 f3).oneValue (CPair.ofPair ⟨220, 9⟩ .one)
+    ∧ (adjResidualCap (dataA 3) f3).oneValue ⟨24, 1⟩
+    ∧ (joinedIndex (dataA 3) f3 [labels.dualL f3]).oneValue ⟨2, 1⟩
+    ∧ (offClassIndex (dataA 3) cl3 f3).oneValue ⟨BPair.unit, 1⟩
+    ∧ leastDim (dataA 3) f3 [labels.dualL f3] = 3 := by decide +kernel
+theorem pin103 : (secondOrder (dataA 3) f3 f3 [labels.dualL f3]).oneValue
+    (CPair.ofPair ⟨223, 9⟩ .one) := by decide +kernel
+theorem pin104 : (tieAt (dataA 2) f2).oneValue ⟨4, 1⟩
+    ∧ (secondMember 2).oneValue ⟨BPair.unit, 1⟩
+    ∧ (residualCap (dataA 2) f2 f2).oneValue (CPair.ofPair ⟨16, 1⟩ .one)
+    ∧ (secondOrder (dataA 2) f2 f2 [labels.dualL f2]).oneValue
+        (CPair.ofPair ⟨33, 2⟩ .one) := by decide +kernel
+theorem pin105 : ¬ (tieAt (dataA 3) f3 ≤ ⟨5, 1⟩) := by decide +kernel
+
+end loopcap

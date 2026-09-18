@@ -1,7 +1,11 @@
 import MassGap.Ground
 /-!
 `def:poly` — a polynomial over the balance pairs is the recursion
-`P = c + z Q`, a constant read with a shifted family, finitely deep;
+`P = c + z Q`, a constant read with a shifted family, finitely deep
+(a top off the sum's unit putting the list's length at its top key's
+successor, `len_of_top_off`; the iterated carrier's outer
+representative `ptrim`, the outer occupancy family read to its top,
+one value with its list at `ptrim_ov`);
 equivalently its occupancy family of coefficients at the variable's
 monomials, here the total coefficient list at the monomial keys, the
 recursion the list's own cons.  The tex's ground-pair reading lands
@@ -219,7 +223,7 @@ def decUnitTailO {γ : Type} (ops : DOps γ) (R : DRead γ) :
   | [] => isTrue trivial
   | _ :: p => @instDecidableAnd _ _ (R.dec _ _) (decUnitTailO ops R p)
 
-instance {γ : Type} (ops : DOps γ) (R : DRead γ) (p : List γ) :
+instance instPoly1 {γ : Type} (ops : DOps γ) (R : DRead γ) (p : List γ) :
     Decidable (unitTailO ops R p) := decUnitTailO ops R p
 
 /-- The one-value read's decision, the entry read's fold. -/
@@ -231,7 +235,7 @@ def decListOV {γ : Type} (ops : DOps γ) (R : DRead γ) :
   | _ :: p, _ :: q =>
     @instDecidableAnd _ _ (R.dec _ _) (decListOV ops R p q)
 
-instance {γ : Type} (ops : DOps γ) (R : DRead γ) (p q : List γ) :
+instance instPoly2 {γ : Type} (ops : DOps γ) (R : DRead γ) (p q : List γ) :
     Decidable (listOV ops R p q) := decListOV ops R p q
 
 /-- The list carrier's own read bundle over an entry read, the
@@ -239,6 +243,15 @@ level's one-value read at the level below's own. -/
 def listRead {γ : Type} (ops : DOps γ) (R : DRead γ) :
     DRead (List γ) :=
   ⟨listOV ops R, decListOV ops R⟩
+
+/-- A matched read over an entry read is the list carrier's own
+read at the level's bundle, the two lists of one length. -/
+theorem lov_of_matched {γ : Type} (ops : DOps γ) (R : DRead γ) :
+    ∀ {p q : List γ}, ground.matchedOV R p q → listOV ops R p q
+  | [], [], _ => trivial
+  | [], _ :: _, h => h.elim
+  | _ :: _, [], h => h.elim
+  | _ :: _, _ :: _, h => ⟨h.1, lov_of_matched ops R h.2⟩
 
 /-- A tail beyond the shorter top reads one value against the sum's
 unit at every key. -/
@@ -252,13 +265,13 @@ def oneValue : Poly → Poly → Prop := listOV bpairOps bpairRead
 def decUnitTail (p : Poly) : Decidable (unitTail p) :=
   decUnitTailO bpairOps bpairRead p
 
-instance (p : Poly) : Decidable (unitTail p) := decUnitTail p
+instance instPoly3 (p : Poly) : Decidable (unitTail p) := decUnitTail p
 
 /-- The one-value read's decision at the balance-pair entries. -/
 def decOneValue (p q : Poly) : Decidable (oneValue p q) :=
   decListOV bpairOps bpairRead p q
 
-instance (p q : Poly) : Decidable (oneValue p q) := decOneValue p q
+instance instPoly4 (p q : Poly) : Decidable (oneValue p q) := decOneValue p q
 
 /-! The division at a monic `S`, the descent from the top. -/
 
@@ -302,7 +315,7 @@ value at every key, the descent's read. -/
 def divRead (s P : Poly) : Prop :=
   oneValue (add (mul (monic s) (div s P).1) (div s P).2) P
 
-instance (s P : Poly) : Decidable (divRead s P) := decOneValue _ _
+instance instPoly5 (s P : Poly) : Decidable (divRead s P) := decOneValue _ _
 
 /-- The remainder lists at a monic `S`: sums componentwise, the
 product the convolution's remainder at the division by `S`. -/
@@ -386,7 +399,7 @@ their end. -/
 def reads (p : BPair) (u v : Nat) : Prop :=
   p.oneValue ⟨posOfSucc u, posOfSucc v⟩
 
-instance (p : BPair) (u v : Nat) : Decidable (reads p u v) :=
+instance instPoly6 (p : BPair) (u v : Nat) : Decidable (reads p u v) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The sum's unit reads the vacant gap. -/
@@ -635,6 +648,13 @@ def topO {γ : Type} (ops : DOps γ) : List γ → γ
 
 /-- The top key's coefficient, the unit at the length-gauge tail. -/
 def top : Poly → BPair := topO bpairOps
+
+/-- A top off the sum's unit puts the list's length at its top key's
+successor. -/
+theorem len_of_top_off : ∀ {q : Poly},
+    ¬ (top q).oneValue BPair.unit → q.length = (q.length - 1) + 1
+  | [], h => absurd (BPair.oneValue_refl BPair.unit) h
+  | _ :: _, _ => rfl
 
 /-- The top key's entry at a stated list is its last member, the
 length-gauge read of the top. -/
@@ -934,6 +954,41 @@ theorem add_len_le : ∀ (p q : Poly) (n : Nat), p.length ≤ n →
     Nat.succ_le_succ (add_len_le p q n (Nat.le_of_succ_le_succ hp)
       (Nat.le_of_succ_le_succ hq))
 
+/-- The lifted sum's length at a shared cap, at every entry
+bundle. -/
+theorem addLenLeO {γ : Type} (ops : DOps γ) :
+    ∀ (p q : List γ) (n : Nat), p.length ≤ n → q.length ≤ n →
+      (addLO ops p q).length ≤ n
+  | [], q, _, _, hq => hq
+  | _ :: _, [], _, hp, _ => hp
+  | _ :: p, _ :: q, n, hp, hq => by
+    match n, hp, hq with
+    | n + 1, hp, hq =>
+      show (addLO ops p q).length + 1 ≤ n + 1
+      exact Nat.succ_le_succ (addLenLeO ops p q n
+        (Nat.le_of_succ_le_succ hp) (Nat.le_of_succ_le_succ hq))
+
+/-- A family's lifted sum at a shared cap sits within the cap, at
+every entry bundle. -/
+theorem foldAddLeO {γ : Type} (ops : DOps γ)
+    (g : List Nat → List γ) (n : Nat) :
+    ∀ l : List (List Nat),
+    (∀ q, 0 < ground.countOf q l → (g q).length ≤ n) →
+    (ground.famFold (addLO ops) [] g l).length ≤ n
+  | [], _ => Nat.zero_le n
+  | a :: t, h => by
+    show (addLO ops (g a) (ground.famFold (addLO ops) [] g t)).length ≤ n
+    exact addLenLeO ops _ _ n
+      (h a (by rw [ground.countOf_head]; exact Nat.succ_pos _))
+      (foldAddLeO ops g n t (fun q hq => h q (ground.countOf_cons_pos hq)))
+
+/-- A family's sum at a stated key cap sits within the cap. -/
+theorem length_famFold_le (g : Nat → Poly) (n : Nat)
+    (hg : ∀ k, (g k).length ≤ n) :
+    ∀ l : List Nat, (ground.famFold add [] g l).length ≤ n
+  | [] => Nat.zero_le _
+  | a :: t => add_len_le _ _ n (hg a) (length_famFold_le g n hg t)
+
 private theorem add_snoc : ∀ (p q : Poly), p.length = q.length →
     ∀ z : BPair, add p (q ++ [z]) = add p q ++ [z]
   | [], [], _, _ => rfl
@@ -988,19 +1043,20 @@ theorem add_lenR : ∀ p q : Poly, p.length ≤ q.length →
     show (add p q).length + 1 = q.length + 1
     rw [add_lenR p q (Nat.le_of_succ_le_succ h)]
 
-/-- The convolution's length at the factors' own: the degrees add,
-the vacant factor's product vacant. -/
-theorem mul_len_le : ∀ (p q : Poly) (a b : Nat),
+/-- The lifted product's length at split caps, at every entry
+bundle: the convolution's keys run to the caps' sum. -/
+theorem mulLenLeO {γ : Type} (ops : DOps γ) :
+    ∀ (p q : List γ) (a b : Nat),
     p.length ≤ a + 1 → q.length ≤ b + 1 →
-    (mul p q).length ≤ a + b + 1
+    (mulLO ops p q).length ≤ a + b + 1
   | [], _, _, _, _, _ => Nat.zero_le _
   | c :: p, q, a, b, hp, hq => by
-    show (add (q.map (fun d => c * d))
-      (BPair.unit :: mul p q)).length ≤ a + b + 1
-    refine add_len_le _ _ _ ?_ ?_
+    show (addLO ops (q.map (ops.mul c))
+      (ops.unit :: mulLO ops p q)).length ≤ a + b + 1
+    refine addLenLeO ops _ _ _ ?_ ?_
     · rw [ground.length_map]
       exact Nat.le_trans hq (Nat.le_add_left (b + 1) a)
-    · show (mul p q).length + 1 ≤ a + b + 1
+    · show (mulLO ops p q).length + 1 ≤ a + b + 1
       cases a with
       | zero =>
         cases p with
@@ -1011,12 +1067,18 @@ theorem mul_len_le : ∀ (p q : Poly) (a b : Nat),
           exact absurd (Nat.le_of_succ_le_succ hp)
             (Nat.not_succ_le_zero s.length)
       | succ a' =>
-        have hIH := mul_len_le p q a' b
+        have hIH := mulLenLeO ops p q a' b
           (Nat.le_of_succ_le_succ hp) hq
         have he : a' + 1 + b + 1 = a' + b + 1 + 1 := by
           rw [Nat.add_right_comm a' 1 b]
         rw [he]
         exact Nat.succ_le_succ hIH
+
+/-- The convolution's length at the factors' own: the degrees add,
+the vacant factor's product vacant. -/
+theorem mul_len_le : ∀ (p q : Poly) (a b : Nat),
+    p.length ≤ a + 1 → q.length ≤ b + 1 →
+    (mul p q).length ≤ a + b + 1 := mulLenLeO bpairOps
 
 /-- The key shift: the coefficient list moved up by a natural key,
 the vacated places the sum's unit. -/
@@ -1107,6 +1169,11 @@ theorem append_unit (p : Poly) {v : Poly} (h : unitTail v) :
 /-- The memberwise swap entrywise, the negation read at the balance
 pairs. -/
 def neg : Poly → Poly := polyOps.swap
+
+/-- A linear polynomial `⟨cu : cd⟩ + s n` at natural data, the constant
+a balance pair and the slope a natural. -/
+def linP (cu cd s : Nat) : Poly :=
+  [⟨ground.posOfSucc cu, ground.posOfSucc cd⟩, ⟨ground.posOfSucc s, ground.posOfSucc 0⟩]
 
 /-- The vacant content is its own negation, the unit's swap read
 entrywise. -/
@@ -2097,7 +2164,7 @@ Horner read — has its two members equal. -/
 def isRoot (P : Poly) (r : BPair) : Prop :=
   (eval P r).oneValue BPair.unit
 
-instance (P : Poly) (r : BPair) : Decidable (isRoot P r) :=
+instance instPoly7 (P : Poly) (r : BPair) : Decidable (isRoot P r) :=
   inferInstanceAs (Decidable (BPair.oneValue _ _))
 
 /-- At a linear factor `⟨z : r⟩` the remainder is the Horner read
@@ -2105,7 +2172,7 @@ at `r`. -/
 def hornerRead (P : Poly) (r : BPair) : Prop :=
   oneValue (div [r.swap] P).2 [eval P r]
 
-instance (P : Poly) (r : BPair) : Decidable (hornerRead P r) :=
+instance instPoly8 (P : Poly) (r : BPair) : Decidable (hornerRead P r) :=
   decOneValue _ _
 
 /-- The cleared evaluation's walk along the coefficient list: the
@@ -4544,6 +4611,16 @@ theorem ptop_getAt (P : PPoly) (n : Nat) (h : P.length = n + 1) :
 coefficient. -/
 def pnegP : PPoly → PPoly := (polyO polyOps).swap
 
+/-- The outer length gauge's tail dropped at the value test, the
+outer occupancy family read to its top: the largest outer key at a
+coefficient off the unit tail. -/
+def ptrim : PPoly → PPoly
+  | [] => []
+  | c :: t =>
+    match ptrim t with
+    | [] => if decide (unitTail c) then [] else [c]
+    | d :: t' => c :: d :: t'
+
 /-- The representative list at every coefficient. -/
 def pnormP (P : PPoly) : PPoly := P.map pnorm
 
@@ -4638,8 +4715,12 @@ do, a key beyond one list's top read against the sum's unit — the
 one recursion at the coefficient carrier's read. -/
 def ppOneValue : PPoly → PPoly → Prop := listOV polyOps polyRead
 
-instance (P Q : PPoly) : Decidable (ppOneValue P Q) :=
+instance instPoly9 (P Q : PPoly) : Decidable (ppOneValue P Q) :=
   decListOV polyOps polyRead P Q
+
+/-- The iterated carrier's own read bundle, the one-value read with
+its decision — the tower's step at the polynomial entries. -/
+def ppolyRead : DRead PPoly := listRead polyOps polyRead
 
 /-- The representative map reads its argument back at the iterated
 carrier's one-value read, coefficient by coefficient. -/
@@ -4700,7 +4781,7 @@ the sum's unit — the one recursion at the coefficient carrier's
 read. -/
 def ppUnitTail : PPoly → Prop := unitTailO polyOps polyRead
 
-instance (P : PPoly) : Decidable (ppUnitTail P) :=
+instance instPoly10 (P : PPoly) : Decidable (ppUnitTail P) :=
   decUnitTailO polyOps polyRead P
 
 /-- The iterated one-value read pulls a unit tail back. -/
@@ -4743,6 +4824,31 @@ theorem ppOneValue_getAt : ∀ (k : Nat) {P Q : PPoly},
   | k + 1, _ :: _, [], h =>
     ppOneValue_getAt k (lovNilO polyOps polyRead h.2)
   | k + 1, _ :: _, _ :: _, h => ppOneValue_getAt k h.2
+
+/-- The outer representative reads one value with its list, the
+dropped tail's coefficients each a unit tail. -/
+theorem ptrim_ov : ∀ P : PPoly, ppOneValue (ptrim P) P
+  | [] => trivial
+  | c :: t => by
+    have ih := ptrim_ov t
+    show ppOneValue (match ptrim t with
+      | [] => if decide (unitTail c) then [] else [c]
+      | d :: t' => c :: d :: t') (c :: t)
+    cases ht : ptrim t with
+    | nil =>
+      rw [ht] at ih
+      show ppOneValue (if decide (unitTail c) then [] else [c]) (c :: t)
+      cases hc : decide (unitTail c) with
+      | true =>
+        show ppOneValue [] (c :: t)
+        exact ⟨unitTail_oneValue (of_decide_eq_true hc) trivial, ih⟩
+      | false =>
+        show ppOneValue [c] (c :: t)
+        exact ⟨oneValue_refl c, ih⟩
+    | cons d t' =>
+      rw [ht] at ih
+      show ppOneValue (c :: d :: t') (c :: t)
+      exact ⟨oneValue_refl c, ih⟩
 
 /-- Two outer polynomials reading one value at occupied outer tops
 read one value at the tops: the lists' lengths agree, a longer
@@ -5159,42 +5265,6 @@ each coefficient's Horner read, the result a polynomial in the outer
 variable over the pairs. -/
 def pevalB (P : PPoly) (t : BPair) : Poly := P.map (fun c => eval c t)
 
-/-- The evaluation reads the outer sum as the sum. -/
-theorem pevalB_padd : ∀ (P Q : PPoly) (t : BPair),
-    oneValue (pevalB (padd P Q) t) (add (pevalB P t) (pevalB Q t))
-  | [], _, _ => oneValue_refl _
-  | _ :: _, [], _ => oneValue_refl _
-  | c :: P, d :: Q, t =>
-    ⟨eval_add c d t, pevalB_padd P Q t⟩
-
-/-- The evaluation reads the outer product as the product. -/
-theorem pevalB_pmul : ∀ (P Q : PPoly) (t : BPair),
-    oneValue (pevalB (pmul P Q) t) (mul (pevalB P t) (pevalB Q t))
-  | [], _, _ => trivial
-  | c :: P, Q, t => by
-    show oneValue (pevalB (padd (Q.map (mul c)) ([] :: pmul P Q)) t)
-      (add ((Q.map (fun d => eval d t)).map (fun x => eval c t * x))
-        (BPair.unit :: mul (pevalB P t) (pevalB Q t)))
-    refine oneValue_trans (pevalB_padd _ _ t) ?_
-    refine add_congr ?_ ⟨BPair.oneValue_refl _, pevalB_pmul P Q t⟩
-    show oneValue ((Q.map (mul c)).map (fun d => eval d t))
-      ((Q.map (fun d => eval d t)).map (fun x => eval c t * x))
-    rw [ground.map_map, ground.map_map]
-    exact oneValue_map _ _ Q (fun d _ => eval_mul c d t)
-
-/-- A unit-tailed outer polynomial evaluates to a unit tail. -/
-theorem pevalB_ppUnitTail (t : BPair) : ∀ {P : PPoly}, ppUnitTail P →
-    unitTail (pevalB P t)
-  | [], _ => trivial
-  | _ :: _, h => ⟨eval_congr h.1 t, pevalB_ppUnitTail t h.2⟩
-
-/-- The coefficientwise evaluation passes the outer one-value read. -/
-theorem pevalB_congr (t : BPair) : ∀ {P Q : PPoly}, ppOneValue P Q →
-    oneValue (pevalB P t) (pevalB Q t)
-  | [], _, h => pevalB_ppUnitTail t h
-  | _ :: _, [], h => ⟨eval_congr h.1 t, pevalB_ppUnitTail t h.2⟩
-  | _ :: _, _ :: _, h => ⟨eval_congr h.1 t, pevalB_congr t h.2⟩
-
 /-- The evaluated outer polynomial's top is the outer top's
 evaluation, the coefficientwise map keeping the length gauge. -/
 theorem top_pevalB : ∀ (P : PPoly) (t : BPair),
@@ -5202,5 +5272,306 @@ theorem top_pevalB : ∀ (P : PPoly) (t : BPair),
   | [], _ => rfl
   | [_], _ => rfl
   | _ :: c :: P, t => top_pevalB (c :: P) t
+
+/-! The inner evaluation at a composite point, `def:poly`'s
+evaluation at the entry carrier cleared at one stated power: the
+coefficientwise evaluation `pevalB` is its read at the clearing
+one, and the outer sum, product, balance partner and one-value laws
+are read once at the cleared evaluation and passed to `pevalB`
+through that read. -/
+
+/-- The inner evaluation at a composite point `[tn : tc]` cleared
+at one stated power across the coefficients: `tc^Kt` times the
+polynomial's read at the point, a polynomial in the outer
+variable. -/
+def pevalCP (P : PPoly) (tn : BPair) (tc : Pos) (Kt : Nat) : Poly :=
+  P.map (fun c => evalClear c tn tc Kt)
+
+/-- Every coefficient within a stated inner power, the degree cap the
+split-power product read takes. -/
+def innerLe (P : PPoly) (Kt : Nat) : Prop :=
+  (P.all (fun c => Nat.ble c.length (Kt + 1))) = true
+
+instance instPoly11 (P : PPoly) (Kt : Nat) : Decidable (innerLe P Kt) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The inner-degree read at a tail. -/
+theorem innerLe_tail {c : Poly} {P : PPoly} {Kt : Nat}
+    (h : innerLe (c :: P) Kt) : innerLe P Kt := by
+  show (P.all (fun c => Nat.ble c.length (Kt + 1))) = true
+  have h' : (Nat.ble c.length (Kt + 1)
+    && P.all (fun c => Nat.ble c.length (Kt + 1))) = true := h
+  exact (ground.andSplitB h').2
+
+/-- The inner-degree read at a head. -/
+theorem innerLe_head {c : Poly} {P : PPoly} {Kt : Nat}
+    (h : innerLe (c :: P) Kt) : c.length ≤ Kt + 1 := by
+  have h' : (Nat.ble c.length (Kt + 1)
+    && P.all (fun c => Nat.ble c.length (Kt + 1))) = true := h
+  exact Nat.le_of_ble_eq_true (ground.andSplitB h').1
+
+/-- The inner-degree read at every key, the vacant keys' lists
+within any power. -/
+theorem innerLe_getAt {Kt : Nat} : ∀ {P : PPoly}, innerLe P Kt →
+    ∀ k : Nat, (ground.getAt [] P k).length ≤ Kt + 1
+  | [], _, _ => Nat.zero_le _
+  | _ :: _, h, 0 => innerLe_head h
+  | _ :: _, h, k + 1 => innerLe_getAt (innerLe_tail h) k
+
+/-- The inner-degree read holds at every further power. -/
+theorem innerLe_of_le : ∀ {P : PPoly} {K K' : Nat}, innerLe P K → K ≤ K' →
+    innerLe P K'
+  | [], _, _, _, _ => rfl
+  | c :: P, K, K', h, hK => by
+    show (Nat.ble c.length (K' + 1)
+      && P.all (fun c => Nat.ble c.length (K' + 1))) = true
+    exact ground.andIntroB
+      (Nat.ble_eq_true_of_le
+        (Nat.le_trans (innerLe_head h) (Nat.succ_le_succ hK)))
+      (innerLe_of_le (innerLe_tail h) hK)
+
+/-- The inner top, the largest of the coefficients' tops: the least
+inner power every coefficient sits within. -/
+def innerTop (P : PPoly) : Nat :=
+  ground.famFold Nat.max 0 (fun c => c.length - 1) P
+
+/-- Every coefficient sits within the inner top. -/
+theorem innerLe_innerTop : ∀ P : PPoly, innerLe P (innerTop P)
+  | [] => rfl
+  | c :: P => by
+    show (Nat.ble c.length (Nat.max (c.length - 1) (innerTop P) + 1)
+      && P.all (fun d =>
+        Nat.ble d.length (Nat.max (c.length - 1) (innerTop P) + 1))) = true
+    exact ground.andIntroB
+      (Nat.ble_eq_true_of_le
+        (Nat.le_trans (ground.lePredSucc c.length)
+          (Nat.succ_le_succ (ground.le_max_left _ _))))
+      (innerLe_of_le (innerLe_innerTop P) (ground.le_max_right _ _))
+
+/-- The inner evaluation keeps the key count. -/
+theorem length_pevalCP (P : PPoly) (tn : BPair) (tc : Pos) (Kt : Nat) :
+    (pevalCP P tn tc Kt).length = P.length :=
+  ground.length_map _ P
+
+/-- The inner evaluation reads the outer sum as the sum. -/
+theorem pevalCP_padd : ∀ (P Q : PPoly) (tn : BPair) (tc : Pos) (Kt : Nat),
+    oneValue (pevalCP (padd P Q) tn tc Kt)
+      (add (pevalCP P tn tc Kt) (pevalCP Q tn tc Kt))
+  | [], _, _, _, _ => oneValue_refl _
+  | _ :: _, [], _, _, _ => oneValue_refl _
+  | c :: P, d :: Q, tn, tc, Kt =>
+    ⟨evalClear_add c d tn tc Kt, pevalCP_padd P Q tn tc Kt⟩
+
+/-- A unit-tailed outer polynomial evaluates to a unit tail. -/
+theorem pevalCP_ppUnitTail (tn : BPair) (tc : Pos) (Kt : Nat) :
+    ∀ {P : PPoly}, ppUnitTail P → unitTail (pevalCP P tn tc Kt)
+  | [], _ => trivial
+  | _ :: _, h =>
+    ⟨BPair.oneValue_trans (evalClear_congr h.1 tn tc Kt)
+      (evalClear_nil tn tc Kt ▸ BPair.oneValue_refl _),
+     pevalCP_ppUnitTail tn tc Kt h.2⟩
+
+/-- The inner evaluation passes the outer one-value read. -/
+theorem pevalCP_congr (tn : BPair) (tc : Pos) (Kt : Nat) :
+    ∀ {P Q : PPoly}, ppOneValue P Q →
+    oneValue (pevalCP P tn tc Kt) (pevalCP Q tn tc Kt)
+  | [], _, h => pevalCP_ppUnitTail tn tc Kt h
+  | _ :: _, [], h =>
+    ⟨BPair.oneValue_trans (evalClear_congr h.1 tn tc Kt)
+      (evalClear_nil tn tc Kt ▸ BPair.oneValue_refl _),
+     pevalCP_ppUnitTail tn tc Kt h.2⟩
+  | _ :: _, _ :: _, h =>
+    ⟨evalClear_congr h.1 tn tc Kt, pevalCP_congr tn tc Kt h.2⟩
+
+/-- The inner evaluation reads the balance partner as the swap. -/
+theorem pevalCP_pnegP : ∀ (P : PPoly) (tn : BPair) (tc : Pos) (Kt : Nat),
+    oneValue (pevalCP (pnegP P) tn tc Kt) (neg (pevalCP P tn tc Kt))
+  | [], _, _, _ => trivial
+  | c :: P, tn, tc, Kt =>
+    ⟨evalClear_neg c tn tc Kt, pevalCP_pnegP P tn tc Kt⟩
+
+/-- A coefficient's scaled evaluation at the split powers: the
+product of a coefficient against every coefficient of a list reads
+the products at the powers' sum. -/
+private theorem pevalCP_mapMul (c : Poly) (K1 K2 : Nat) (hc : c.length ≤ K1 + 1)
+    (tn : BPair) (tc : Pos) :
+    ∀ Q : PPoly, innerLe Q K2 →
+    oneValue (pevalCP (Q.map (mul c)) tn tc (K1 + K2))
+      ((pevalCP Q tn tc K2).map (fun x => evalClear c tn tc K1 * x))
+  | [], _ => trivial
+  | d :: Q, hQ =>
+    ⟨evalClear_mul c d tn tc K1 K2 hc (innerLe_head hQ),
+     pevalCP_mapMul c K1 K2 hc tn tc Q (innerLe_tail hQ)⟩
+
+/-- The inner evaluation reads the outer product as the product at
+the split powers, every coefficient of each factor within its
+stated power. -/
+theorem pevalCP_pmul : ∀ (P Q : PPoly) (K1 K2 : Nat), innerLe P K1 → innerLe Q K2 →
+    ∀ (tn : BPair) (tc : Pos),
+    oneValue (pevalCP (pmul P Q) tn tc (K1 + K2))
+      (mul (pevalCP P tn tc K1) (pevalCP Q tn tc K2))
+  | [], _, _, _, _, _, _, _ => trivial
+  | c :: P, Q, K1, K2, hP, hQ, tn, tc => by
+    show oneValue (pevalCP (padd (Q.map (mul c)) ([] :: pmul P Q)) tn tc (K1 + K2))
+      (add ((pevalCP Q tn tc K2).map (fun x => evalClear c tn tc K1 * x))
+        (BPair.unit :: mul (pevalCP P tn tc K1) (pevalCP Q tn tc K2)))
+    refine oneValue_trans (pevalCP_padd _ _ tn tc (K1 + K2)) ?_
+    refine add_congr
+      (pevalCP_mapMul c K1 K2 (innerLe_head hP) tn tc Q hQ) ?_
+    exact ⟨BPair.oneValue_refl _, pevalCP_pmul P Q K1 K2 (innerLe_tail hP) hQ tn tc⟩
+
+/-- The cleared evaluation at the clearing one is the Horner read at
+every stated power. -/
+theorem evalClear_clearOne (p : Poly) (x : BPair) (K : Nat) :
+    (evalClear p x Pos.one K).oneValue (eval p x) := by
+  refine BPair.oneValue_trans (evalClear_read p x Pos.one K) ?_
+  refine BPair.oneValue_trans ?_ (BPair.oneValue_symm (eval_famFold p x))
+  refine ground.foldB_congr_members _ _ (List.range p.length) (fun k _ => ?_)
+  exact BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl _) (ground.bpow_one (K - k)))
+    (BPair.mul_one_read _)
+
+/-- The inner evaluation at the clearing one is the coefficientwise
+evaluation, at every stated power. -/
+theorem pevalCP_one (P : PPoly) (t : BPair) (K : Nat) :
+    oneValue (pevalCP P t Pos.one K) (pevalB P t) :=
+  oneValue_map _ _ P (fun c _ => evalClear_clearOne c t K)
+
+/-- The evaluation reads the outer sum as the sum. -/
+theorem pevalB_padd (P Q : PPoly) (t : BPair) :
+    oneValue (pevalB (padd P Q) t) (add (pevalB P t) (pevalB Q t)) :=
+  oneValue_trans (oneValue_symm (pevalCP_one _ t 0))
+    (oneValue_trans (pevalCP_padd P Q t Pos.one 0)
+      (add_congr (pevalCP_one P t 0) (pevalCP_one Q t 0)))
+
+/-- The evaluation reads the outer product as the product. -/
+theorem pevalB_pmul (P Q : PPoly) (t : BPair) :
+    oneValue (pevalB (pmul P Q) t) (mul (pevalB P t) (pevalB Q t)) :=
+  oneValue_trans (oneValue_symm (pevalCP_one _ t (innerTop P + innerTop Q)))
+    (oneValue_trans
+      (pevalCP_pmul P Q (innerTop P) (innerTop Q)
+        (innerLe_innerTop P) (innerLe_innerTop Q) t Pos.one)
+      (oneValue_trans (mul_congr_left (pevalCP_one P t _) _)
+        (mul_congr _ (pevalCP_one Q t _))))
+
+/-- A unit-tailed outer polynomial evaluates to a unit tail. -/
+theorem pevalB_ppUnitTail (t : BPair) {P : PPoly} (h : ppUnitTail P) :
+    unitTail (pevalB P t) :=
+  oneValue_unitTail (oneValue_symm (pevalCP_one P t 0))
+    (pevalCP_ppUnitTail t Pos.one 0 h)
+
+/-- The coefficientwise evaluation passes the outer one-value read. -/
+theorem pevalB_congr (t : BPair) {P Q : PPoly} (h : ppOneValue P Q) :
+    oneValue (pevalB P t) (pevalB Q t) :=
+  oneValue_trans (oneValue_symm (pevalCP_one P t 0))
+    (oneValue_trans (pevalCP_congr t Pos.one 0 h) (pevalCP_one Q t 0))
+
+/-! The inner-degree read at the outer sum, product, balance
+partner and representative map, the inner top within every inner
+power the coefficients sit within, and the inner evaluation at a
+further power as the evaluation at a power the coefficients sit
+within rescaled at the gap. -/
+
+/-- The inner-degree read passes the outer sum. -/
+theorem innerLe_padd : ∀ {P Q : PPoly} {K : Nat},
+    innerLe P K → innerLe Q K → innerLe (padd P Q) K
+  | [], _, _, _, hQ => hQ
+  | _ :: _, [], _, hP, _ => hP
+  | c :: P, d :: Q, K, hP, hQ => by
+    show (Nat.ble (add c d).length (K + 1)
+      && (padd P Q).all (fun e => Nat.ble e.length (K + 1))) = true
+    exact ground.andIntroB
+      (Nat.ble_eq_true_of_le
+        (add_len_le c d (K + 1) (innerLe_head hP) (innerLe_head hQ)))
+      (innerLe_padd (innerLe_tail hP) (innerLe_tail hQ))
+
+/-- The inner-degree read passes a coefficient's rescaling of a
+list at the split caps. -/
+private theorem innerLe_mapMul {c : Poly} {K1 : Nat} (hc : c.length ≤ K1 + 1) :
+    ∀ {Q : PPoly} {K2 : Nat}, innerLe Q K2 → innerLe (Q.map (mul c)) (K1 + K2)
+  | [], _, _ => rfl
+  | d :: Q, K2, hQ => by
+    show (Nat.ble (mul c d).length (K1 + K2 + 1)
+      && (Q.map (mul c)).all (fun e => Nat.ble e.length (K1 + K2 + 1))) = true
+    exact ground.andIntroB
+      (Nat.ble_eq_true_of_le (mul_len_le c d K1 K2 hc (innerLe_head hQ)))
+      (innerLe_mapMul hc (innerLe_tail hQ))
+
+/-- The inner-degree read passes the outer product at the split
+caps. -/
+theorem innerLe_pmul : ∀ {P Q : PPoly} {K1 K2 : Nat},
+    innerLe P K1 → innerLe Q K2 → innerLe (pmul P Q) (K1 + K2)
+  | [], _, _, _, _, _ => rfl
+  | c :: P, Q, K1, K2, hP, hQ => by
+    show innerLe (padd (Q.map (mul c)) ([] :: pmul P Q)) (K1 + K2)
+    refine innerLe_padd (innerLe_mapMul (innerLe_head hP) hQ) ?_
+    show (Nat.ble 0 (K1 + K2 + 1)
+      && (pmul P Q).all (fun e => Nat.ble e.length (K1 + K2 + 1))) = true
+    exact ground.andIntroB rfl (innerLe_pmul (innerLe_tail hP) hQ)
+
+/-- The inner-degree read passes the balance partner. -/
+theorem innerLe_pnegP : ∀ {P : PPoly} {K : Nat},
+    innerLe P K → innerLe (pnegP P) K
+  | [], _, _ => rfl
+  | c :: P, K, h => by
+    show (Nat.ble (neg c).length (K + 1)
+      && (P.map neg).all (fun e => Nat.ble e.length (K + 1))) = true
+    rw [length_neg]
+    exact ground.andIntroB (Nat.ble_eq_true_of_le (innerLe_head h))
+      (innerLe_pnegP (innerLe_tail h))
+
+/-- The inner-degree read passes the representative map. -/
+theorem innerLe_pnormP : ∀ {P : PPoly} {K : Nat},
+    innerLe P K → innerLe (pnormP P) K
+  | [], _, _ => rfl
+  | c :: P, K, h => by
+    show (Nat.ble (pnorm c).length (K + 1)
+      && (P.map pnorm).all (fun e => Nat.ble e.length (K + 1))) = true
+    rw [pnorm_length]
+    exact ground.andIntroB (Nat.ble_eq_true_of_le (innerLe_head h))
+      (innerLe_pnormP (innerLe_tail h))
+
+/-- The inner top sits within every inner power the coefficients
+sit within. -/
+theorem innerTop_le : ∀ {P : PPoly} {K : Nat}, innerLe P K → innerTop P ≤ K
+  | [], _, _ => Nat.zero_le _
+  | c :: P, K, h => by
+    show Nat.max (c.length - 1) (innerTop P) ≤ K
+    exact ground.max_le (Nat.pred_le_pred (innerLe_head h))
+      (innerTop_le (innerLe_tail h))
+
+/-- The inner evaluation at a further power is the evaluation at a
+power the coefficients sit within, rescaled by the second datum's
+power at the gap. -/
+theorem pevalCP_pow (tn : BPair) (tc : Pos) {K J : Nat} (hJK : J ≤ K) :
+    ∀ {P : PPoly}, innerLe P J →
+    oneValue (pevalCP P tn tc K)
+      (scaleP (ground.bpow (BPair.ofPos tc) (K - J)) (pevalCP P tn tc J))
+  | [], _ => trivial
+  | c :: _, h =>
+    ⟨BPair.oneValue_trans (evalClear_pow c tn tc K J (innerLe_head h) hJK)
+      (BPair.oneValue_symm (BPair.norm_oneValue _)),
+     pevalCP_pow tn tc hJK (innerLe_tail h)⟩
+
+/-- The balance partner keeps a unit tail. -/
+theorem neg_unitTail : ∀ {p : Poly}, unitTail p → unitTail (neg p)
+  | [], _ => trivial
+  | _ :: _, h => ⟨ground.swap_congr h.1, neg_unitTail h.2⟩
+
+/-- The balance partner passes the one-value read. -/
+theorem neg_congr : ∀ {p q : Poly}, oneValue p q → oneValue (neg p) (neg q)
+  | [], [], _ => trivial
+  | [], _ :: _, h => ⟨ground.swap_congr h.1, neg_unitTail h.2⟩
+  | _ :: _, [], h => ⟨ground.swap_congr h.1, neg_unitTail h.2⟩
+  | _ :: _, _ :: _, h => ⟨ground.swap_congr h.1, neg_congr h.2⟩
+
+/-- The product's unit at the vacant clearing power reads the unit
+member. -/
+theorem evalClear_one (ln : BPair) (c : Pos) :
+    (evalClear one ln c 0).oneValue (BPair.ofPos Pos.one) := by
+  refine BPair.oneValue_trans (evalClear_read one ln c 0) ?_
+  refine BPair.oneValue_trans (BPair.add_unit _) ?_
+  refine BPair.oneValue_trans (BPair.mul_one_read _) ?_
+  exact BPair.mul_one_read _
 
 end poly

@@ -378,7 +378,7 @@ def transCutRead (R : lattice.Region) (g : Nat → Nat) (c : Nat) :
       (g e.2 == g e.1)
         || (g e.2 == (g e.1 + 1) % c)))) = true
 
-instance (R : lattice.Region) (g : Nat → Nat) (c : Nat) :
+instance instChargedcell1 (R : lattice.Region) (g : Nat → Nat) (c : Nat) :
     Decidable (transCutRead R g c) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -412,7 +412,7 @@ def cutMoveRead (R : lattice.Region) (t : Nat → Nat)
       && (g (getAt 0 R.head (t l)) == mv (g hd)))
     R.tail R.head 0 = true
 
-instance (R : lattice.Region) (t : Nat → Nat) (g : Nat → Nat)
+instance instChargedcell2 (R : lattice.Region) (t : Nat → Nat) (g : Nat → Nat)
     (mv : Nat → Nat) : Decidable (cutMoveRead R t g mv) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -1329,12 +1329,6 @@ floor, and the directions' crossing families disjoint per link. -/
 
 
 
-/-- The reduction keeps the cleared read, `con:labels`' descent at
-the withdrawn full columns. -/
-private theorem dfQ_reduce (s : Shape) :
-    c2hat.dfQ (labels.reduce s) = c2hat.dfQ s :=
-  Eq.symm (labels.c2Class_all s)
-
 /-- The reduced shape reads the unit occupancy at its full-column
 key. -/
 private theorem reduce_red (d : Nat) (s : Shape)
@@ -1712,7 +1706,7 @@ private theorem famMember (n : Nat) (hn : 0 < n) (s : Shape)
       ((labels.length_reduce s).trans (ground.beqEqOf hs))
       (reduce_red n' s (ground.beqEqOf hs))
       (ality_reduce (n' + 1) s (ground.beqEqOf hs))
-    rw [dfQ_reduce s] at h
+    rw [← labels.c2Class_all s] at h
     exact h
 
 /-- A label family's net class reads its floor at or below the
@@ -1759,51 +1753,6 @@ private theorem famSub (n : Nat) (hn : 0 < n) : ∀ ls : List Shape,
 
 
 
-/-- The content at the label calculus as a family fold: the unit
-keys read the sum's unit, every further key its label's cleared
-Casimir. -/
-private theorem contentN_fam (n : Nat) (a : List Shape) :
-    carrier.contentN (fusion.dataA n) a
-      = famFold Nat.add 0 (fun s =>
-          if (fusion.dataA n).eqL s (fusion.dataA n).unit then 0
-          else c2hat.dfQ s) a := by
-  have hstep : ∀ (acc : Nat) (l : Shape),
-      (if (fusion.dataA n).eqL l (fusion.dataA n).unit then acc
-        else acc + c2hat.dfQ l)
-      = acc + (if (fusion.dataA n).eqL l (fusion.dataA n).unit then 0
-        else c2hat.dfQ l) := by
-    intro acc l
-    cases (fusion.dataA n).eqL l (fusion.dataA n).unit with
-    | true => exact (Nat.add_zero acc).symm
-    | false => exact rfl
-  show a.foldl (fun acc l =>
-      if (fusion.dataA n).eqL l (fusion.dataA n).unit then acc
-      else acc + c2hat.dfQ l) 0
-    = famFold Nat.add 0 (fun s =>
-        if (fusion.dataA n).eqL s (fusion.dataA n).unit then 0
-        else c2hat.dfQ s) a
-  rw [ground.foldl_congr _ (fun acc l => acc
-      + (if (fusion.dataA n).eqL l (fusion.dataA n).unit then 0
-        else c2hat.dfQ l)) hstep a 0,
-    ground.foldlSum (fun s =>
-      if (fusion.dataA n).eqL s (fusion.dataA n).unit then 0
-      else c2hat.dfQ s) a 0, Nat.zero_add]
-
-/-- The content at the key range: the configuration's fold read
-key by key at the region's own link keys. -/
-private theorem contentN_famFold (n : Nat) (a : List Shape) :
-    carrier.contentN (fusion.dataA n) a
-      = famFold Nat.add 0 (fun l =>
-          if (fusion.dataA n).eqL (getAt (fusion.dataA n).unit a l)
-              (fusion.dataA n).unit
-            then 0
-            else c2hat.dfQ (getAt (fusion.dataA n).unit a l))
-        (List.range a.length) := by
-  rw [contentN_fam n a,
-    ← ground.famFold_getAt Nat.add 0 (fun s =>
-        if (fusion.dataA n).eqL s (fusion.dataA n).unit then 0
-        else c2hat.dfQ s) (fusion.dataA n).unit a a.length rfl]
-
 /-- A label reading the unit reads the vacant Casimir: the
 reduction is the unit's own and the vacant shape's read is
 vacant. -/
@@ -1814,7 +1763,7 @@ private theorem dfQ_unitEq (n : Nat) (s : Shape)
     ground.listBeqEq
       (show (labels.reduce s == labels.reduce (labels.unitL n)) = true
         from h)
-  rw [← dfQ_reduce s, hre, dfQ_reduce (labels.unitL n)]
+  rw [labels.c2Class_all s, hre, ← labels.c2Class_all (labels.unitL n)]
   exact c2hat.dfQ_replicate_zero n
 
 /-- A guarded keyed image's fold is the guarded fold at the source
@@ -2008,7 +1957,7 @@ private theorem crossFloorContent (n d : Nat) (R : lattice.Region)
           (c2hat.dfQ (getAt (fusion.dataA n).unit a l)) (hdisj l hl))
         (Nat.le_of_eq
           (Nat.mul_one (c2hat.dfQ (getAt (fusion.dataA n).unit a l))))
-  · rw [contentN_famFold n a]
+  · rw [carrier.contentN_range (fusion.dataA n) a]
     refine ground.famFold_range_dom _ a.length R.links (fun l hl => ?_)
     rw [ground.getAt_over (fusion.dataA n).unit a l hl]
     exact if_pos ((fusion.dataA n).eqLRefl (fusion.dataA n).unit)
@@ -2061,7 +2010,7 @@ def cutDisjRead (d L : Nat) : Prop :=
           (getAt 0 (fiberdec.torusRegion d L).tail l)))).length
       ≤ 1)) = true
 
-instance (d L : Nat) : Decidable (cutDisjRead d L) :=
+instance instChargedcell3 (d L : Nat) : Decidable (cutDisjRead d L) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The winding floor at the torus: an occupied configuration's
@@ -2109,17 +2058,6 @@ theorem windFloor (n d L : Nat) (a : List Shape)
                 ≤ 1))) = true from hdisj) l hl))
       hocc hwidth
 
-/-- The unit label's reduction is the label itself: the vacant
-family already reads the unit occupancy at its full-column key. -/
-private theorem reduce_unitL : ∀ n : Nat,
-    labels.reduce (labels.unitL n) = labels.unitL n
-  | 0 => rfl
-  | k + 1 => by
-    show labels.reduce (List.replicate (k + 1) 0)
-      = List.replicate (k + 1) 0
-    rw [← ground.replicate_snoc 0 k,
-      labels.reduce_snoc (List.replicate k 0) 0]
-
 /-- An extra crossing at the unit class prices its label at the
 unit class's least nonunit read: a label of the stated width whose
 class is the unit's and whose own read is off the unit label clears
@@ -2142,7 +2080,7 @@ theorem unitCrossFloor (n : Nat) (s : Shape)
           ground.replicate_of_sum_zero (labels.reduce s) hz
         have hre : labels.reduce s
             = labels.reduce (labels.unitL (n' + 1)) := by
-          rw [reduce_unitL (n' + 1)]
+          rw [labels.reduce_unit (n' + 1)]
           show labels.reduce s = List.replicate (n' + 1) 0
           rw [hrep, (labels.length_reduce s).trans hlen]
         have htrue : (fusion.dataA (n' + 1)).eqL s
@@ -2159,7 +2097,7 @@ theorem unitCrossFloor (n : Nat) (s : Shape)
       (reduce_red n' s hlen)
       ((ality_reduce (n' + 1) s hlen).trans hc0)
       hocc
-    rw [dfQ_reduce s] at h
+    rw [← labels.c2Class_all s] at h
     exact h
 
 /-- A refused unit-class read is a positive class code. -/
@@ -2976,7 +2914,7 @@ def chargeGroupsAt (n d L : Nat) :
   | _ :: _, [] => false
   | c :: cs, g :: gs =>
     (g.all (fun a => chargeT n d L a == c))
-      && decimation.distinctGo (fusion.dataA n) g
+      && carrier.distinctConf (fusion.dataA n) g
       && chargeGroupsAt n d L cs gs
 
 /-- The sectors' vacant couplings at the stated orders, one
@@ -2996,7 +2934,7 @@ couplings vacant. -/
 def chargeBlockRead (n d L : Nat) (ix : List (List Shape))
     (cs : List (List Nat)) (gs : List (List (List Shape)))
     (H : elim.Mat) (diag : List elim.Mat) (ns : List Nat) : Prop :=
-  decimation.confListEq (fusion.dataA n) (gs.flatMap (fun g => g)) ix
+  carrier.confListEq (fusion.dataA n) (gs.flatMap (fun g => g)) ix
       = true
   ∧ chargeGroupsAt n d L cs gs = true
   ∧ ground.distinctList cs
@@ -3004,7 +2942,7 @@ def chargeBlockRead (n d L : Nat) (ix : List (List Shape))
   ∧ greenprod.slabShape diag (unitOffs ns) ns
   ∧ elim.matOneValue H (greenprod.assemble diag (unitOffs ns))
 
-instance (n d L : Nat) (ix : List (List Shape))
+instance instChargedcell4 (n d L : Nat) (ix : List (List Shape))
     (cs : List (List Nat)) (gs : List (List (List Shape)))
     (H : elim.Mat) (diag : List elim.Mat) (ns : List Nat) :
     Decidable (chargeBlockRead n d L ix cs gs H diag ns) :=

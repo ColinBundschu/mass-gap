@@ -8,18 +8,18 @@ off-block coupling of `H` is the magnetic form's alone, `E` being
 diagonal reading its off-block part at the sum's unit.  The magnetic
 part's two-sided cap is the stated cap datum `inertia.capAt` at
 `W · G` — the per-plaquette pricing `lem:loopcap`'s at the interface
-tier, arriving with the member pencil families, `W = β #p d_θ` the
-adjoint dimension against the region's plaquette count — and the two
+tier, arriving with the member pencil families, `W = β #p d_L` the
+closure's dimension fold against the region's plaquette count — and the two
 blocking ties are the pencil's `M` at `[M₁, B; Bᵀ, M₂]` and its gram
 at the block diagonal `[G₁, ·; ·, G₂]` over `elim.nullMat`'s vacant
 slab, the coupling block `B` shared by both.
 
 `removed_psd` reads the removed block's floor at the cross-added
-comparison `W + f ≥ αΛ_C`: at a level tie `x + W + g = c + y` the
+join `W + f = αΛ_C`: at the level tie `x + W ≤ c + y` the
 removed block's site datum reads one value with the diagonal's own
-datum, the cap's lower split at `W G₂ + M₂`, and a positive gram
-multiple, and the three at-or-above reads meet the witness's strict
-one.
+datum, the cap's lower split at `W G₂ + M₂`, and the gap's gram
+multiple, the null matrix at the equality, and the three at-or-above
+reads meet the witness's strict one.
 
 `shiftSite` is the polarization display's matrix at the witness gap's
 clearing, `[W²G₁, ςB; ςBᵀ, ς²G₂]`, and `polar_psd` reads it positive
@@ -41,8 +41,9 @@ the compression side, the head block's count at or below the fiber
 datum's own (`inertia.rev_head_le` at the site tie).  `count_shift_le`
 composes the shifted side whole at the raised levels, and beside
 `count_head_le` it prices the bracket display
-`E₀ ς 𝒦 ≤ E₀ ς 𝒦_Λ + β² #p² d_θ²` — one pair comparison each way at
-every `α`, the cut level read at `thm:gappos`'s tier.
+`E₀ ς 𝒦reg_Λ ≤ E₀ ς 𝒦_(Λ,C) + β² #p² d_L²` at the stated
+simple-ground cutoff tail. The regional comparison fixes the region;
+the global cut is the meet of all finite-window cuts (`def:K`).
 -/
 
 namespace truncation
@@ -96,16 +97,12 @@ private theorem sqRead (w : Pos) (A : Mat) (u : List BPair) :
 vector is the shift site's own read at the outer weight beside the
 two diagonal blocks. -/
 private theorem polarL (w gx gy t mx qy : BPair) :
-    w * (gx + gy) + ((mx + w * t) + (w * t + qy))
-      = w * ((gx + t) + (t + gy)) + (mx + qy) := by
-  rw [BPair.left_distrib w gx gy, BPair.left_distrib w (gx + t) (t + gy),
-    BPair.left_distrib w gx t, BPair.left_distrib w t gy,
-    BPair.add_add_comm (w * gx) (w * gy) (mx + w * t) (w * t + qy),
-    BPair.add_comm mx (w * t),
-    BPair.add_left_comm (w * gy) (w * t) qy,
-    BPair.add_add_comm (w * gx + w * t) (w * t + w * gy) mx qy,
-    BPair.add_assoc (w * gx) (w * t) mx,
-    BPair.add_assoc (w * t) (w * gy) qy]
+    (w * (gx + gy) + ((mx + w * t) + (w * t + qy))).oneValue
+      (w * ((gx + t) + (t + gy)) + (mx + qy)) :=
+  polEqB [w, gx, gy, t, mx, qy]
+    (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.add (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 2)))) (Pol.add (Pol.add (Pol.mon (Mon.var 4)) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 3)))) (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 3))) (Pol.mon (Mon.var 5)))))
+    (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.add (Pol.add (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 3))) (Pol.add (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 2))))) (Pol.add (Pol.mon (Mon.var 4)) (Pol.mon (Mon.var 5))))
+    (by decide +kernel)
 
 /-- A datum and its partner withdraw from the two reads' join. -/
 private theorem addSwapCollect (z K : BPair) :
@@ -126,11 +123,11 @@ private theorem polarClose (w z gx gy t mx qy : BPair)
       ≤ w * (gx + gy) + ((mx.swap + w * t) + (w * t + qy.swap)))
     (hz : ((gx + t) + (t + gy)).oneValue z)
     (hlt : z < BPair.unit) (hw : BPair.unit < w) : False := by
-  rw [polarL w gx gy t mx qy] at h1
-  rw [polarL w gx gy t mx.swap qy.swap] at h2
-  have h2' : BPair.unit ≤ w * ((gx + t) + (t + gy)) + (mx + qy).swap := h2
+  have h1' := ground.leB_congr_right (polarL w gx gy t mx qy) h1
+  have h2' : BPair.unit ≤ w * ((gx + t) + (t + gy)) + (mx + qy).swap :=
+    ground.leB_congr_right (polarL w gx gy t mx.swap qy.swap) h2
   have hsum := ground.leB_congr_right (addSwapCollect _ _)
-    (ground.unitLeAdd h1 h2')
+    (ground.unitLeAdd h1' h2')
   have hzz : (w * ((gx + t) + (t + gy))).oneValue (w * z) :=
     BPair.mul_congr (BPair.oneValue_refl w) hz
   have hfin : BPair.unit ≤ w * z + w * z :=
@@ -416,11 +413,10 @@ private theorem polarSym (A : Mat) (n : Nat) (hAr : rowsLen n A)
         (BPair.oneValue_trans (dotN_vecScale_pair A b b y y)
           (BPair.mul_congr (BPair.oneValue_refl b)
             (BPair.mul_congr (BPair.oneValue_refl b) hyy))))) ?_
-  refine BPair.oneValue_of_eq ?_
-  rw [BPair.mul_left_comm b a Axy,
-    BPair.add_comm (a * (b * Axy)) (b * (b * Ayy)),
-    BPair.add_add_comm (a * (a * Axx)) (a * (b * Axy))
-      (b * (b * Ayy)) (a * (b * Axy))]
+  exact polEqB [a, b, Axx, Axy, Ayy]
+    (Pol.add (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 2)))) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 3))))) (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 3)))) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 4))))))
+    (Pol.add (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 2)))) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 4))))) (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 3)))) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 3))))))
+    (by decide +kernel)
 
 /-- The form at the partner combination, the second weight entering
 at its balance partner: the diagonal reads stand and the two cross
@@ -475,17 +471,14 @@ private theorem capClose (wn wd : Pos) (S R Sd Rd : BPair)
         + BPair.ofPos wd * (Sd + (Rd + Rd).swap))).oneValue
       (BPair.ofPos wn * (S + S)
         + (BPair.ofPos wd * ((Rd + Rd) + (Rd + Rd))).swap) := by
-    rw [BPair.add_add_comm (BPair.ofPos wn * (S + (R + R)))
-        ((BPair.ofPos wd * (Sd + (Rd + Rd))).swap)
-        (BPair.ofPos wn * (S + (R + R).swap))
-        (BPair.ofPos wd * (Sd + (Rd + Rd).swap)),
-      ← BPair.left_distrib (BPair.ofPos wn) (S + (R + R))
-        (S + (R + R).swap),
-      ← BPair.mul_swap (BPair.ofPos wd) (Sd + (Rd + Rd)),
-      ← BPair.left_distrib (BPair.ofPos wd) ((Sd + (Rd + Rd)).swap)
-        (Sd + (Rd + Rd).swap),
+    rw [← BPair.mul_swap (BPair.ofPos wd) (Sd + (Rd + Rd)),
       ← BPair.mul_swap (BPair.ofPos wd) ((Rd + Rd) + (Rd + Rd)),
       ← BPair.swap_add (Rd + Rd) (Rd + Rd)]
+    refine BPair.oneValue_trans (polEqB [BPair.ofPos wn, BPair.ofPos wd, S, R, Sd, Rd, (R + R).swap,
+      (Sd + (Rd + Rd)).swap, (Rd + Rd).swap]
+      (Pol.add (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.add (Pol.mon (Mon.var 2)) (Pol.add (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 3))))) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 7)))) (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.add (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 6)))) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.add (Pol.mon (Mon.var 4)) (Pol.mon (Mon.var 8))))))
+      (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.add (Pol.add (Pol.mon (Mon.var 2)) (Pol.add (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 3)))) (Pol.add (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 6))))) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.add (Pol.mon (Mon.var 7)) (Pol.add (Pol.mon (Mon.var 4)) (Pol.mon (Mon.var 8))))))
+      (by decide +kernel)) ?_
     exact BPair.add_congr
       (BPair.mul_congr (BPair.oneValue_refl (BPair.ofPos wn)) hcw)
       (BPair.mul_congr (BPair.oneValue_refl (BPair.ofPos wd)) hcv)
@@ -858,7 +851,7 @@ monotone side and the join closing the comparison
 weighting's own read: the shift site's weights are `W²`, `ς`, `ς²`
 by construction, so the weighting tie at the raised levels reads the
 cofactor at every occupied gram.  The bracket display
-`E₀ ς 𝒦 ≤ E₀ ς 𝒦_Λ + β² #p² d_θ²` is this read beside
+`E₀ ς 𝒦 ≤ E₀ ς 𝒦_Λ + β² #p² d_L²` is this read beside
 `count_head_le`'s, the width the cofactor's own. -/
 theorem count_shift_le {k m : Nat} (H G M M1 M2 P G1 Q G2 B : Mat)
     (x y cw W s : Pos) (nf nh : Nat)
@@ -901,22 +894,23 @@ theorem count_shift_le {k m : Nat} (H G M M1 M2 P G1 Q G2 B : Mat)
       (siteDatum (matAdd H (matScale y G)) (matScale x G))
       W s spU spL hcap hMt hGt hM1 hM2l hG1 hG2 hB hBr htieD spd hd)
 
-/-- `thm:truncation`'s removed block: its electric diagonal sits at
-or above the cutoff and its magnetic part is capped inside the block,
-so at the level tie `x + W + g = c + y` — the floor's cross-added
-comparison `W + f ≥ αΛ_C` — the removed block's site datum reads one
-value with the diagonal's own datum, the cap's lower split and a
-positive gram multiple, three at-or-above reads whose join refuses a
-vector below the sum's unit. -/
-theorem removed_psd {m : Nat} (Q De M2 G2 : Mat) (c W x y g : Pos)
+/-- The removed block's site datum at a shift on the upper side: at
+the level's read against the electric diagonal, the cap's lower
+split and the shift joined, the site datum reads one value with
+their sum, three at-or-above reads whose join refuses a vector
+below the sum's unit. -/
+private theorem removedCore {m : Nat} (Q De M2 G2 S : Mat) (c W x y : Pos)
     (spDi spG spL sp : Split m)
     (hQt : matOneValue Q (matAdd De M2))
     (hdi : splitRead (siteDatum De (matScale c G2)) spDi)
     (hpdi : psdAt spDi)
-    (hg : splitRead G2 spG) (hpg : psdAt spG)
+    (hg : splitRead G2 spG)
     (hL : splitRead (matAdd (matScale W G2) M2) spL)
     (hpL : psdAt spL)
-    (hlev : x + W + g = c + y)
+    (hS : sqAt S m)
+    (hpS : ∀ u : List BPair, u.length = m → BPair.unit ≤ quadForm S u)
+    (hshift : matOneValue (matAdd (matScale y G2) (matSwap (matScale x G2)))
+      (matAdd (matSwap (matScale c G2)) (matAdd (matScale W G2) S)))
     (hs : splitRead
       (siteDatum (matAdd Q (matScale y G2)) (matScale x G2)) sp) :
     psdAt sp := by
@@ -924,63 +918,50 @@ theorem removed_psd {m : Nat} (Q De M2 G2 : Mat) (c W x y g : Pos)
   have hG2r : rowsLen m G2 := elim.rowsLen_of_sqAt hG2
   have hD1 : sqAt (siteDatum De (matScale c G2)) m := hdi.1
   have hD2 : sqAt (matAdd (matScale W G2) M2) m := hL.1
-  have hD3 : sqAt (matScale g G2) m := sqAt_matScale m g G2 hG2
   have hRsq : sqAt (matAdd (matAdd (siteDatum De (matScale c G2))
-      (matAdd (matScale W G2) M2)) (matScale g G2)) m :=
-    elim.sqAt_matAdd m _ _ (elim.sqAt_matAdd m _ _ hD1 hD2) hD3
+      (matAdd (matScale W G2) M2)) S) m :=
+    elim.sqAt_matAdd m _ _ (elim.sqAt_matAdd m _ _ hD1 hD2) hS
   have hZ1 : rowsLen m (matAdd (matScale y G2) (matSwap (matScale x G2))) :=
     elim.rowsLen_matAdd m _ _
       (elim.rowsLen_mapRows (fun z => z.scale y) G2 m hG2r)
       (elim.rowsLen_mapRows BPair.swap (matScale x G2) m
         (elim.rowsLen_mapRows (fun z => z.scale x) G2 m hG2r))
   have hZ2 : rowsLen m
-      (matAdd (matSwap (matScale c G2)) (matScale (W + g) G2)) :=
+      (matAdd (matSwap (matScale c G2)) (matAdd (matScale W G2) S)) :=
     elim.rowsLen_matAdd m _ _
       (elim.rowsLen_mapRows BPair.swap (matScale c G2) m
         (elim.rowsLen_mapRows (fun z => z.scale c) G2 m hG2r))
-      (elim.rowsLen_mapRows (fun z => z.scale (W + g)) G2 m hG2r)
+      (elim.rowsLen_matAdd m _ _
+        (elim.rowsLen_mapRows (fun z => z.scale W) G2 m hG2r)
+        (elim.rowsLen_of_sqAt hS))
   have hSeq : siteDatum (matAdd Q (matScale y G2)) (matScale x G2)
       = matAdd Q (matAdd (matScale y G2) (matSwap (matScale x G2))) :=
     elim.matAdd_assoc Q (matScale y G2) (matSwap (matScale x G2))
   have hReq : matAdd (matAdd (siteDatum De (matScale c G2))
-        (matAdd (matScale W G2) M2)) (matScale g G2)
+        (matAdd (matScale W G2) M2)) S
       = matAdd (matAdd De M2)
-        (matAdd (matSwap (matScale c G2)) (matScale (W + g) G2)) := by
+        (matAdd (matSwap (matScale c G2)) (matAdd (matScale W G2) S)) := by
     show matAdd (matAdd (matAdd De (matSwap (matScale c G2)))
-        (matAdd (matScale W G2) M2)) (matScale g G2) = _
+        (matAdd (matScale W G2) M2)) S = _
     rw [elim.matAdd_comm (matScale W G2) M2,
       elim.matAdd_shuffle De (matSwap (matScale c G2)) M2 (matScale W G2),
       elim.matAdd_assoc (matAdd De M2)
-        (matAdd (matSwap (matScale c G2)) (matScale W G2)) (matScale g G2),
-      elim.matAdd_assoc (matSwap (matScale c G2)) (matScale W G2)
-        (matScale g G2),
-      ← matScale_addW W g G2]
+        (matAdd (matSwap (matScale c G2)) (matScale W G2)) S,
+      elim.matAdd_assoc (matSwap (matScale c G2)) (matScale W G2) S]
   have hSrow : rowsLen m
       (matAdd Q (matAdd (matScale y G2) (matSwap (matScale x G2)))) := by
     rw [← hSeq]
     exact elim.rowsLen_of_sqAt hs.1
   have hRrow : rowsLen m (matAdd (matAdd De M2)
-      (matAdd (matSwap (matScale c G2)) (matScale (W + g) G2))) := by
+      (matAdd (matSwap (matScale c G2)) (matAdd (matScale W G2) S))) := by
     rw [← hReq]
     exact elim.rowsLen_of_sqAt hRsq
   have htie : matOneValue
       (siteDatum (matAdd Q (matScale y G2)) (matScale x G2))
       (matAdd (matAdd (siteDatum De (matScale c G2))
-        (matAdd (matScale W G2) M2)) (matScale g G2)) := by
+        (matAdd (matScale W G2) M2)) S) := by
     rw [hSeq, hReq]
-    have hpair : (BPair.mk y x).oneValue (BPair.mk (W + g) c) := by
-      show y + c = W + g + x
-      rw [ground.add_comm y c, ← hlev, ground.add_comm x W,
-        ground.add_assoc W x g, ground.add_comm x g,
-        ← ground.add_assoc W g x]
-    have hlevel : matOneValue
-        (matAdd (matScale y G2) (matSwap (matScale x G2)))
-        (matAdd (matSwap (matScale c G2)) (matScale (W + g) G2)) := by
-      rw [elim.matAdd_comm (matSwap (matScale c G2)) (matScale (W + g) G2)]
-      exact elim.matOne_trans (inertia.levelScaleB y x G2)
-        (elim.matOne_trans (inertia.matScaleB_congr hpair G2)
-          (elim.matOne_symm (inertia.levelScaleB (W + g) c G2)))
-    exact elim.matAdd_congT m Q (matAdd De M2) _ _ hQt hlevel hZ1 hZ2 hSrow hRrow
+    exact elim.matAdd_congT m Q (matAdd De M2) _ _ hQt hshift hZ1 hZ2 hSrow hRrow
   cases Nat.eq_zero_or_pos (revAt sp) with
   | inl h => exact h
   | inr hocc =>
@@ -990,11 +971,6 @@ theorem removed_psd {m : Nat} (Q De M2 G2 : Mat) (c W x y g : Pos)
     have hp2 : BPair.unit ≤ quadForm (matAdd (matScale W G2) M2) u :=
       ground.leB_of_not_lt
         (psd_all _ spL hL hpL u hu)
-    have hpG : BPair.unit ≤ quadForm G2 u :=
-      ground.leB_of_not_lt (psd_all _ spG hg hpg u hu)
-    have hp3 : BPair.unit ≤ quadForm (matScale g G2) u :=
-      ground.leB_congr_right (BPair.oneValue_symm (quadForm_scale g G2 u))
-        (ground.unitLeScale g hpG)
     have hadd2 := quadForm_add (siteDatum De (matScale c G2))
       (matAdd (matScale W G2) M2) u
       ((elim.sqAt_len hD1).trans hu.symm)
@@ -1003,22 +979,92 @@ theorem removed_psd {m : Nat} (Q De M2 G2 : Mat) (c W x y g : Pos)
       (elim.rowsLen_cast hu.symm (elim.rowsLen_of_sqAt hD2))
     have hadd1 := quadForm_add
       (matAdd (siteDatum De (matScale c G2)) (matAdd (matScale W G2) M2))
-      (matScale g G2) u
+      S u
       ((elim.sqAt_len (elim.sqAt_matAdd m _ _ hD1 hD2)).trans hu.symm)
       (elim.rowsLen_cast hu.symm
         (elim.rowsLen_of_sqAt (elim.sqAt_matAdd m _ _ hD1 hD2)))
-      ((elim.sqAt_len hD3).trans hu.symm)
-      (elim.rowsLen_cast hu.symm (elim.rowsLen_of_sqAt hD3))
+      ((elim.sqAt_len hS).trans hu.symm)
+      (elim.rowsLen_cast hu.symm (elim.rowsLen_of_sqAt hS))
     have hsum : BPair.unit ≤ quadForm (matAdd
         (matAdd (siteDatum De (matScale c G2))
-          (matAdd (matScale W G2) M2)) (matScale g G2)) u :=
+          (matAdd (matScale W G2) M2)) S) u :=
       ground.leB_congr_right
         (BPair.oneValue_symm (BPair.oneValue_trans hadd1
           (BPair.add_congr hadd2
-            (BPair.oneValue_refl (quadForm (matScale g G2) u)))))
-        (ground.unitLeAdd (ground.unitLeAdd hp1 hp2) hp3)
+            (BPair.oneValue_refl (quadForm S u)))))
+        (ground.unitLeAdd (ground.unitLeAdd hp1 hp2) (hpS u hu))
     exact absurd hlt (ground.leB_not_lt
       (ground.leB_congr_right
         (BPair.oneValue_symm (quadMatOne _ _ u htie)) hsum))
+
+/-- `thm:truncation`'s removed block: its electric diagonal sits at
+or above the cutoff and its magnetic part is capped inside the block,
+so at the level tie `x + W ≤ c + y` — the floor's cross-added
+comparison `W + f ≥ αΛ_C` at the admissible cutoff's own gap — the
+removed block's site datum reads one value with the diagonal's own
+datum, the cap's lower split and the gap's gram multiple, the null
+matrix at the equality, three at-or-above reads whose join refuses a
+vector below the sum's unit. -/
+theorem removed_psd {m : Nat} (Q De M2 G2 : Mat) (c W x y : Pos)
+    (spDi spG spL sp : Split m)
+    (hQt : matOneValue Q (matAdd De M2))
+    (hdi : splitRead (siteDatum De (matScale c G2)) spDi)
+    (hpdi : psdAt spDi)
+    (hg : splitRead G2 spG) (hpg : psdAt spG)
+    (hL : splitRead (matAdd (matScale W G2) M2) spL)
+    (hpL : psdAt spL)
+    (hlev : x + W ≤ c + y)
+    (hs : splitRead
+      (siteDatum (matAdd Q (matScale y G2)) (matScale x G2)) sp) :
+    psdAt sp := by
+  have hG2 : sqAt G2 m := hg.1
+  have hG2r : rowsLen m G2 := elim.rowsLen_of_sqAt hG2
+  cases hlev with
+  | inl heq =>
+    have hpair : (BPair.mk y x).oneValue (BPair.mk W c) := by
+      show y + c = W + x
+      rw [ground.add_comm y c, ← heq, ground.add_comm x W]
+    have hNsq : sqAt (elim.nullMat m m) m :=
+      elim.sqAt_of (elim.length_nullMat m m) (elim.rowsLen_nullMat m m)
+    have hNnull : elim.matNull (elim.nullMat m m) := elim.matNull_nullMat m m
+    have hWr : rowsLen m (matScale W G2) :=
+      elim.rowsLen_mapRows (fun z => z.scale W) G2 m hG2r
+    have hcr : rowsLen m (matSwap (matScale c G2)) :=
+      elim.rowsLen_mapRows BPair.swap (matScale c G2) m
+        (elim.rowsLen_mapRows (fun z => z.scale c) G2 m hG2r)
+    refine removedCore Q De M2 G2 (elim.nullMat m m) c W x y spDi spG spL sp
+      hQt hdi hpdi hg hL hpL hNsq
+      (fun u hu => ground.leB_of_not_lt
+        (psd_all _ (unitSplit m) (unitSplit_read _ hNsq hNnull) (unitSplit_psd m) u hu))
+      ?_ hs
+    refine elim.matOne_trans (levelScaleB y x G2)
+      (elim.matOne_trans (matScaleB_congr hpair G2) ?_)
+    refine elim.matOne_trans (elim.matOne_symm (levelScaleB W c G2)) ?_
+    rw [elim.matAdd_comm (matScale W G2) (matSwap (matScale c G2))]
+    exact elim.matAdd_cong2 m _ _ _ _ hcr hWr hcr
+      (elim.rowsLen_matAdd m _ _ hWr (elim.rowsLen_nullMat m m)) (elim.matOne_refl _)
+      (elim.matOne_symm (elim.matAdd_nullR (matScale W G2) (elim.nullMat m m)
+        (sqAt_matScale m W G2 hG2) hNsq hNnull))
+  | inr hgap =>
+    obtain ⟨gp, hgp⟩ := hgap
+    have hpair : (BPair.mk y x).oneValue (BPair.mk (W + gp) c) := by
+      show y + c = W + gp + x
+      rw [ground.add_comm y c, ← hgp, ground.add_comm x W,
+        ground.add_assoc W x gp, ground.add_comm x gp,
+        ← ground.add_assoc W gp x]
+    have hlevel : matOneValue
+        (matAdd (matScale y G2) (matSwap (matScale x G2)))
+        (matAdd (matSwap (matScale c G2)) (matScale (W + gp) G2)) := by
+      rw [elim.matAdd_comm (matSwap (matScale c G2)) (matScale (W + gp) G2)]
+      exact elim.matOne_trans (levelScaleB y x G2)
+        (elim.matOne_trans (matScaleB_congr hpair G2)
+          (elim.matOne_symm (levelScaleB (W + gp) c G2)))
+    rw [matScale_addW W gp G2] at hlevel
+    exact removedCore Q De M2 G2 (matScale gp G2) c W x y spDi spG spL sp
+      hQt hdi hpdi hg hL hpL (sqAt_matScale m gp G2 hG2)
+      (fun u hu => ground.leB_congr_right
+        (BPair.oneValue_symm (quadForm_scale gp G2 u))
+        (ground.unitLeScale gp (ground.leB_of_not_lt (psd_all _ spG hg hpg u hu))))
+      hlevel hs
 
 end truncation

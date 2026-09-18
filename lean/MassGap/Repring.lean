@@ -3,9 +3,9 @@ import MassGap.Weyldim
 /-!
 `prop:repring` — a fusion computation is a representation
 computation, the label index's calculus: the counts are
-`lem:blockcount`'s on labels by `con:labels`, and the layer's
-three reads land here with the deferred blockcount identities at
-their recorded consumer.  The unit read `N^𝟏_{ab} = δ_{a b̄}`
+`lem:blockcount`'s on labels by `con:labels`, and the module holds
+the proposition's reads with `lem:blockcount`(iii)'s associativity
+and (ii)'s dimension identity at labels.  The unit read `N^𝟏_{ab} = δ_{a b̄}`
 (`unitRead`, holding at every matched-width pair by
 `unitRead_all`: the unit label's count is the full-column-power
 count of `lem:dualread`(iii), one exactly at the dual label); the
@@ -21,9 +21,10 @@ associativity fold over the matched-degree shapes
 dimension identity `Σ_c N^c_{ab} d_c = d_a d_b` over the
 matched-degree shapes (`dimRead`, `lem:blockcount`(ii)'s sum at
 the tensor product, the dimensions `cor:weyldim`'s gap-product
-route).  Instances are the check module's pins; the exhaustion
-and the counts' block reads stay `lem:blockcount`'s own,
-`def:blockcount`'s layer.
+route, `dimRead_all` at `labels.bridgeFold` and
+`blockcount.fusionCount_dim`). Instances are the check module's
+pins; the exhaustion and the counts' block reads stay `lem:blockcount`'s own at
+`def:blockcount`'s carrier.
 -/
 
 namespace repring
@@ -35,7 +36,7 @@ def unitRead (a b : Shape) : Prop :=
   countL a b (unitL a.length)
     = (if reduce a = dualL b then 1 else 0)
 
-instance (a b : Shape) : Decidable (unitRead a b) :=
+instance instRepring1 (a b : Shape) : Decidable (unitRead a b) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The unit label's own lift is the full-column power: the
@@ -129,7 +130,7 @@ def orthoRead (a b : Shape) : Prop :=
   countL a (dualL b) (unitL a.length)
     = (if reduce a = reduce b then 1 else 0)
 
-instance (a b : Shape) : Decidable (orthoRead a b) :=
+instance instRepring2 (a b : Shape) : Decidable (orthoRead a b) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The orthonormality holds at every matched-width pair: the unit
@@ -156,14 +157,14 @@ one value at every argument dualized with the symmetry. -/
 def invRead (a b c : Shape) : Prop :=
   countL (dualL a) b c = countL a c b
 
-instance (a b c : Shape) : Decidable (invRead a b c) :=
+instance instRepring3 (a b c : Shape) : Decidable (invRead a b c) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The triple count's symmetry at a stated argument rotation,
 `m{a,b,c} = m{b,c,a}`. -/
 def mSymRead (a b c : Shape) : Prop := m3 a b c = m3 b c a
 
-instance (a b c : Shape) : Decidable (mSymRead a b c) :=
+instance instRepring4 (a b c : Shape) : Decidable (mSymRead a b c) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- A divisor's multiple splits its summands' remainders: at a
@@ -274,7 +275,7 @@ private theorem rotFold (a b c : Shape) (M : Nat)
             (labels.addFulls (ground.sumNat c) a)
             (places.shapeOf mu)
             (dualread.fulls a.length (M + ground.sumNat c)))
-      (ground.dedupL ((blockcount.exhaust a.length
+      (ground.dedupF ((blockcount.exhaust a.length
         (blockcount.fusedAt (blockcount.blockSpan b)
           (blockcount.blockSpan c))).map blockcount.HVec.content)) := by
   have hXl : (labels.addFulls (ground.sumNat c) a).length = a.length :=
@@ -500,7 +501,7 @@ def assocRead (a b c dd : Shape) : Prop :=
     = ((allShapes a.length (degree b + degree c)).foldl (fun acc f =>
       acc + steinberg.count b c f * countL a f dd) 0)
 
-instance (a b c dd : Shape) : Decidable (assocRead a b c dd) :=
+instance instRepring5 (a b c dd : Shape) : Decidable (assocRead a b c dd) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The associativity fold at every label quadruple of one width:
@@ -524,13 +525,41 @@ theorem assocRead_all (a b c dd : Shape)
 
 /-- The dimension identity `Σ_c N^c_{ab} d_c = d_a d_b` over the
 matched-degree shapes: `lem:blockcount`(ii)'s sum at the tensor
-product, the deferred read at its recorded consumer. -/
+product, with the dimensions of `cor:weyldim`. -/
 def dimRead (a b : Shape) : Prop :=
   ((allShapes a.length (degree a + degree b)).foldl (fun acc c =>
       acc + steinberg.count a b c * weyldim.dimOf c) 0)
     = weyldim.dimOf a * weyldim.dimOf b
 
-instance (a b : Shape) : Decidable (dimRead a b) :=
+instance instRepring6 (a b : Shape) : Decidable (dimRead a b) :=
   inferInstanceAs (Decidable (_ = _))
+
+/-- The dimension identity at every matched-width pair. The
+shape enumeration reads the fused pool's count through
+`labels.bridgeFold`, with each block dimension at
+`weyldim.dimOf_spanLen` (`lem:blockcount`(ii),(iii);
+`cor:weyldim`). The width tie is the two factors' common letter
+list in `lem:blockcount`(iii). -/
+theorem dimRead_all (a b : Shape) (hba : b.length = a.length) :
+    dimRead a b := by
+  show ((allShapes a.length (degree a + degree b)).foldl
+      (fun acc c => acc + steinberg.count a b c * weyldim.dimOf c) 0)
+    = weyldim.dimOf a * weyldim.dimOf b
+  rw [ground.foldlSum
+    (fun c => steinberg.count a b c * weyldim.dimOf c) _ 0, Nat.zero_add]
+  rw [ground.famFold_congr_members Nat.add 0 _
+      (fun c => blockcount.fusionCount a b c * weyldim.dimOf c)
+      (allShapes a.length (degree a + degree b))
+      (fun c hc => by
+        rw [steinberg.count_fusion a b c hba
+          (allShapes_sound a.length (degree a + degree b) c
+            (ground.mem_of_countOf_pos c _ hc)).1]),
+    labels.bridgeFold a b hba weyldim.dimOf,
+    ground.famFold_congr_all Nat.add 0 _
+      (fun mu => blockcount.fusionCount a b (shapeOf mu)
+        * (blockcount.blockSpan (shapeOf mu)).length)
+      (fun mu => by rw [weyldim.dimOf_spanLen (shapeOf mu)]),
+    blockcount.fusionCount_dim a b hba,
+    weyldim.dimOf_spanLen a, weyldim.dimOf_spanLen b]
 
 end repring

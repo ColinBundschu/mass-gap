@@ -2,7 +2,7 @@ import MassGap.Cornerpivot
 
 /-! # The corner disconjugacy certificate: the store
 
-`lem:cornerpivot`(vii)'s certificate data at the residue two and
+`lem:cornerpivot`'s certificate data at the residue two and
 the stated rate `[8:1]`: the pre profile — the cleared
 chart of the boundary mix at the stated degrees — with its two
 graded devices, the two-step overlap's middle top and the boundary

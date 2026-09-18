@@ -9,10 +9,16 @@ the decimation's validity cells: at a level point where the
 designated pivot's evaluated minor sits off the unit, the cleared
 deflation's evaluated determinant reads the unit exactly where the
 pencil's own does (`locus_defl`) — the deflation's cleared
-evaluation is the evaluated blocks' own deflation
-(`cellcount.evalPC_pdefl` at the pivot's block reads,
-`cellcount.pivotReads`), `thm:divisorid`(i)'s Schur factor reads
-the re-blocked pencil's determinant at the pivot
+evaluation is the evaluated blocks' once-cleared deflation at the
+evaluated witness (`cellcount.evalPC_pdeflP`, the witness's solve
+`cellcount.pdeflW_solve`, the selected blocks' reads
+`elim.transposeM_selM` and `inertia.selM_blockJoin`), the doubled
+deflation's determinant is the pivot minor's power at the trailing
+order against the once-cleared one's (`inertia.deflMat_scaleP`,
+`inertia.minor_scaleB`) with the power off the unit at the pivot
+(`ground.BPair.powMul_unit_iff`, `def:ground`'s product injectivity), so the two
+determinants read the unit together, `thm:divisorid`(i)'s Schur
+factor reads the re-blocked pencil's determinant at the pivot
 (`divisorid.deflRoot`), and the re-blocked pencil's determinant is
 the pencil's own at the places' permutation (`elim.detL_reindex`,
 `def:elim`'s exchanged reads), the key bounds and the joined
@@ -85,7 +91,7 @@ def bdInvP (d D : Nat) (F : List (List Nat) → Poly) : Prop :=
       !decide (i < j)
         || decide (oneValue (F (restoration.swapDirs i j g)) (F g))))))) = true
 
-instance (d D : Nat) (F : List (List Nat) → Poly) :
+instance instCone1 (d D : Nat) (F : List (List Nat) → Poly) :
     Decidable (bdInvP d D F) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -94,7 +100,7 @@ degree through four. -/
 def profRead (d : Nat) (F : List (List Nat) → Poly) : Prop :=
   bdInvP d 1 F ∧ bdInvP d 2 F ∧ bdInvP d 3 F ∧ bdInvP d 4 F
 
-instance (d : Nat) (F : List (List Nat) → Poly) :
+instance instCone2 (d : Nat) (F : List (List Nat) → Poly) :
     Decidable (profRead d F) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
 
@@ -239,7 +245,7 @@ def rootRead (E : stage.Ext) (S0 u v : Poly) (c : BPair) (wn wd : Pos) :
   stage.bracketRead E ∧ stage.isolRead E wn wd ∧ stage.reduceRead E S0
   ∧ stage.witnessRead E (deriv S0) u v c
 
-instance (E : stage.Ext) (S0 u v : Poly) (c : BPair) (wn wd : Pos) :
+instance instCone3 (E : stage.Ext) (S0 u v : Poly) (c : BPair) (wn wd : Pos) :
     Decidable (rootRead E S0 u v c wn wd) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
 
@@ -333,23 +339,26 @@ minor sits off it. -/
 
 /-- The decimated determinant's root locus is the fiber symbol's
 own: at a level point where the designated pivot's evaluated minor
-sits off the unit, the cleared deflation's evaluated determinant
-reads the unit exactly where the pencil's own does — the
-deflation's cleared evaluation the evaluated blocks' deflation,
+sits off the unit, the once-cleared deflation's evaluated
+determinant reads the unit exactly where the pencil's own does — the
+deflation's cleared evaluation the evaluated blocks' once-cleared
+deflation, the doubled deflation's determinant the pivot minor's
+power against it with the power off the unit at the pivot,
 `thm:divisorid`(i)'s Schur factor at the re-blocked pencil, and the
 re-blocked pencil's determinant the pencil's own at the places'
 permutation, the pivot and trailing keys one member of the
-permutations. -/
+permutations; the pivot list occupied, `lem:cellcount`'s designated
+minor at every order. -/
 theorem locus_defl {o : Nat} (S : split.PMat) (K : Nat)
     (idx rest : List Nat) (ln : BPair) (c : Pos)
     (hsh : cellcount.pShapeAt S o K) (hsym : split.pSymAt S o)
-    (hk : idx.length = 1 ∨ idx.length = 2)
+    (hk0 : 0 < idx.length)
     (hperm : 0 < ground.countOf (idx ++ rest) (places.perms o))
     (hpiv : ¬ (elim.minor
       (elim.selM idx idx (cellcount.evalPC S ln c K))).oneValue
         BPair.unit) :
-    (elim.minor (cellcount.evalPC (cellcount.pdefl idx rest S) ln c
-        ((2 * idx.length + 1) * K))).oneValue BPair.unit
+    (elim.minor (cellcount.evalPC (cellcount.pdeflP idx rest S) ln c
+        ((idx.length + 1) * K))).oneValue BPair.unit
       ↔ (elim.minor (cellcount.evalPC S ln c K)).oneValue BPair.unit := by
   obtain ⟨hsgl, _, hbnd, _⟩ := places.perm_member_reads hperm
   have hidx : (idx.all (fun i => Nat.blt i o)) = true :=
@@ -360,46 +369,61 @@ theorem locus_defl {o : Nat} (S : split.PMat) (K : Nat)
     ground.all_of_getAt 0 _ rest (fun p hp => ground.ltBlt (hbnd _
       (ground.countOf_append_right _ idx
         (ground.countOf_pos_of_mem (ground.mem_getAt 0 rest p hp)))))
-  have hlen : idx.length + rest.length = o := by
-    rw [← ground.length_append]; exact hsgl
-  have hdefl := cellcount.evalPC_pdefl (o := o) S K idx rest ln c hsh hsym hk
-    hidx hrest
   have hMsq : elim.sqAt (cellcount.evalPC S ln c K) o :=
     cellcount.evalPC_sqAt hsh ln c
   have hMsym : elim.matOneValue (elim.transposeM (cellcount.evalPC S ln c K))
       (cellcount.evalPC S ln c K) :=
-    elim.matOne_symm (cellcount.evalPC_symAt S o K ln c hsh hsym)
-  obtain ⟨hPsq, hBl, hBr, hQsq, hCwl, hCwr, hPs, hPw, hTBl, hCt, hJoin, hJsq⟩ :=
-    cellcount.pivotReads _ idx rest o hMsq hMsym hk hidx hrest
+    elim.matOne_symm (cellcount.evalPC_symAt S o K ln c
+      (cellcount.pShape_len hsh) (cellcount.pShape_rows hsh) hsym)
+  have hdefl := cellcount.evalPC_pdeflP (o := o) S K idx rest ln c hsh hMsym hk0
+    hidx hrest
+  -- the selected blocks' reads at the evaluated pencil and the
+  -- evaluated witness
+  obtain ⟨hPsq, hBl, hBr, hQsq, hPs, hTBl, hJoin, hJsq⟩ :=
+    inertia.pivotBlocks (cellcount.evalPC S ln c K) idx rest o hMsq hMsym hk0
+      hidx hrest
+  have hCwl : (cellcount.evalPC (cellcount.pdeflW idx rest S) ln c
+      (idx.length * K)).length = idx.length :=
+    (cellcount.length_evalPC _ _ _ _).trans (cellcount.length_pdeflW _ _ _)
+  have hCwr : elim.rowsLen rest.length
+      (cellcount.evalPC (cellcount.pdeflW idx rest S) ln c (idx.length * K)) :=
+    cellcount.rowsLen_evalPC _ _ ln c _ (cellcount.rowsLen_pdeflW idx rest S hk0)
+  have hCt : (elim.transposeM (cellcount.evalPC (cellcount.pdeflW idx rest S)
+      ln c (idx.length * K))).length = rest.length :=
+    elim.length_transposeM _ hCwr (by rw [hCwl]; exact hk0)
+  have hPw := cellcount.pdeflW_solve S K idx rest ln c (cellcount.ent_ble hsh) hk0
   have hroot := divisorid.deflRoot (k := idx.length) (m := rest.length)
     _ _ _ _ hPsq hBl hBr hQsq hCwl hCwr hPs hPw hpiv
-  -- the cleared deflation's evaluated determinant is the evaluated
-  -- blocks' deflation's
-  have hDsq : elim.sqAt (cellcount.evalPC (cellcount.pdefl idx rest S) ln c
-      ((2 * idx.length + 1) * K)) rest.length :=
-    cellcount.evalPC_sqAt (cellcount.pShape_pdefl S o K idx rest hsh hk) ln c
-  have hdet1 : (elim.minor (cellcount.evalPC (cellcount.pdefl idx rest S) ln c
-        ((2 * idx.length + 1) * K))).oneValue
-      (elim.minor (inertia.deflMat
-        (elim.selM idx idx (cellcount.evalPC S ln c K))
-        (elim.selM idx rest (cellcount.evalPC S ln c K))
-        (elim.selM rest rest (cellcount.evalPC S ln c K))
-        (elim.matMul
-          (cellcount.adj2v idx.length
-            (elim.selM idx idx (cellcount.evalPC S ln c K)))
-          (elim.selM idx rest (cellcount.evalPC S ln c K))))) := by
-    refine BPair.oneValue_trans (elim.minor_detL _
-      (elim.rowsLen_cast (elim.sqAt_len hDsq).symm
-        (elim.rowsLen_of_sqAt hDsq))) ?_
-    refine BPair.oneValue_trans (elim.detL_congr_letters _ _
-      (elim.matOne_length hdefl) (fun a ha b _ =>
-        poly.oneValue_getAt b (ground.matched_entry [] hdefl a ha))) ?_
-    refine BPair.oneValue_symm (elim.minor_detL _ ?_)
-    have hsq := inertia.sqAt_deflMat
-      (elim.selM idx idx (cellcount.evalPC S ln c K)) _ _ _ rest.length
-      hTBl hCt (elim.sqAt_len hQsq) (elim.rowsLen_of_sqAt hQsq)
-    exact elim.rowsLen_cast (elim.sqAt_len hsq).symm
-      (elim.rowsLen_of_sqAt hsq)
+  -- the once-cleared deflation's evaluated determinant is the
+  -- evaluated blocks' once-cleared deflation's
+  have hDsq : elim.sqAt (cellcount.evalPC (cellcount.pdeflP idx rest S) ln c
+      ((idx.length + 1) * K)) rest.length :=
+    cellcount.evalPC_sqAt (cellcount.pShape_pdeflP S o K idx rest hsh) ln c
+  have hDPsq := inertia.sqAt_deflMatP
+    (elim.selM idx idx (cellcount.evalPC S ln c K))
+    (elim.selM idx rest (cellcount.evalPC S ln c K))
+    (elim.selM rest rest (cellcount.evalPC S ln c K))
+    (cellcount.evalPC (cellcount.pdeflW idx rest S) ln c (idx.length * K))
+    rest.length hTBl hCt (elim.sqAt_len hQsq) (elim.rowsLen_of_sqAt hQsq)
+  have hdet1 := elim.minor_congr _ _ hDsq hDPsq hdefl
+  -- the doubled deflation's determinant is the pivot minor's power
+  -- at the trailing order against the once-cleared one's, the power
+  -- off the unit at the pivot
+  have hMr : elim.rowsLen rest.length (elim.matMul
+      (elim.transposeM (elim.selM idx rest (cellcount.evalPC S ln c K)))
+      (cellcount.evalPC (cellcount.pdeflW idx rest S) ln c (idx.length * K))) :=
+    elim.rowsLen_cast hCt (elim.rowsLen_matMul _ _)
+  have hD2sq := inertia.sqAt_deflMat
+    (elim.selM idx idx (cellcount.evalPC S ln c K))
+    (elim.selM idx rest (cellcount.evalPC S ln c K))
+    (elim.selM rest rest (cellcount.evalPC S ln c K))
+    (cellcount.evalPC (cellcount.pdeflW idx rest S) ln c (idx.length * K))
+    rest.length hTBl hCt (elim.sqAt_len hQsq) (elim.rowsLen_of_sqAt hQsq)
+  have hscale := BPair.oneValue_trans
+    (elim.minor_congr _ _ hD2sq (inertia.sqAt_scaleB _ _ _ hDPsq)
+      (inertia.deflMat_scaleP _ _ _ _ rest.length (elim.rowsLen_of_sqAt hQsq)
+        hMr))
+    (inertia.minor_scaleB _ _ _ hDPsq)
   -- the re-blocked pencil's determinant is the pencil's own
   have hSl : (elim.selM (idx ++ rest) (idx ++ rest)
       (cellcount.evalPC S ln c K)).length = o := by
@@ -428,6 +452,9 @@ theorem locus_defl {o : Nat} (S : split.PMat) (K : Nat)
     · exact BPair.oneValue_symm (elim.minor_detL _
         (elim.rowsLen_cast (elim.sqAt_len hMsq).symm
           (elim.rowsLen_of_sqAt hMsq)))
-  exact (BPair.unit_iff hdet1).trans (hroot.trans (BPair.unit_iff hdet2))
+  exact (BPair.unit_iff hdet1).trans
+    (((BPair.unit_iff hscale).trans
+      (BPair.powMul_unit_iff _ _ rest.length hpiv)).symm.trans
+      (hroot.trans (BPair.unit_iff hdet2)))
 
 end cone

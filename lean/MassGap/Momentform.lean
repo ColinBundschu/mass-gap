@@ -1,29 +1,22 @@
 import MassGap.Certconstruct
 /-!
-`thm:momentform` — the two-moment form: a probe's moments depend on
-it through `y = A ψ` alone (`probeVec`, the matrix against the
-ground), the moments the quadratic reads `μ₁ = ⟨y, Ẽ y⟩` and
-`μ₂ = ⟨y, Ẽ² y⟩` (`mu1`, `mu2` at `thm:certconstruct`'s form
-fold), and the requirement per probe is one cleared inequality
-(`reqRead`, the coupling entering through the state alone).  For a
-multiplication probe the commutator is the electric member's,
-`[H, f] = [E, f]` (`commE` at the diagonal's gaps, the magnetic
-member commuting by `prop:algebra`), and the second moment's
-operator is `Q₂(f) = [E, f]† [E, f]` (`q2`).  The commutator's action
-on a vector reads the diagonal's action of the multiplication's read
-joined to the multiplication's action of the diagonal's at the
-memberwise swap, the swap the subtraction (`commE_read`, the
-diagonal's row against a vector its stated gap at the row's key).
-The evaluation displays `μ₂(f) = ω(Q₂(f))` and `μ₁(f) = ω(f†[E, f])`
-(`thm:coeffone`'s exact line read at the state) are the check
-module's coherence pins at the free end's ground; the multiplication
-family's sufficiency — `A ↦ A ψ` linear with the word sector its
-image — is `lem:statespace`'s layer with `def:pencil`'s sector.
-The pairings below read at the unit gram, the committed loop
-windows' own; the fibered gram rides `prop:wg`'s site.  The
-commutator's fold truncates at the shorter operand, the
-certificate Props' standing shape convention; the probe's order
-is the carrier's own.
+`thm:momentform` — the two-moment form on the projected word images.
+
+`probeVec` is the compressed probe applied to the window ground.
+`mu1` and `mu2` are the level gap's quadratic read and its square's
+read at that vector, and `reqRead` is their cleared comparison.
+`q2` is the tex's operator `[K, A]† [K, A]` at the supplied window
+Hamiltonian action and compressed probe. At the ground equation its
+expectation is the second moment (`thm:coeffone`'s vector identity).
+
+The electric commutator `commE` reads the diagonal's entry gaps;
+`commE_read` is its displayed vector identity. The tex's boundary
+contraction specifies when it reads the window commutator on the
+ground, the free end among those instances. Its gradient identity
+also reads the probe's projection terms. The pairings here are at
+the unit gram, where `GD = S` reads `D = S`; the second-moment
+form `Cᵀ G C` then reads `Cᵀ C`. The operators' shape is the
+supplied carrier's.
 -/
 
 namespace momentform
@@ -44,13 +37,13 @@ def mu2 {n : Nat} (Et : SqMat n) (y : Vec n) : BPair :=
   inertia.quadForm (matMul Et.val Et.val) y.val
 
 /-- The requirement's read at a probe: `μ₂ ≥ γ μ₁` at the level
-`[gn : gd]`, cleared at the carrier's one order — the coupling
-entering through the state alone. -/
+`[gn : gd]`, cleared at the carrier's one order, with the level gap
+read at the supplied window pencil and ground. -/
 def reqRead {n : Nat} (Et : SqMat n) (y : Vec n) (gn gd : Pos) :
     Prop :=
   ¬ (mu2 Et y).scale gd < (mu1 Et y).scale gn
 
-instance {n : Nat} (Et : SqMat n) (y : Vec n) (gn gd : Pos) :
+instance instMomentform1 {n : Nat} (Et : SqMat n) (y : Vec n) (gn gd : Pos) :
     Decidable (reqRead Et y gn gd) :=
   inferInstanceAs (Decidable (¬ _ < _))
 
@@ -63,10 +56,11 @@ def commE (dg : List Nat) (F : Mat) : Mat :=
       ((BPair.ofNat di + (BPair.ofNat dj).swap) * e).norm) dg row)
     dg F
 
-/-- The second moment's operator `Q₂(f) = [E, f]† [E, f]`, positive
-by its shape. -/
-def q2 (dg : List Nat) (F : Mat) : Mat :=
-  let c := commE dg F
+/-- The second moment's operator `Q₂(f) = [K, f]† [K, f]` at the
+window's Hamiltonian action and compressed probe (`thm:momentform`),
+positive by its shape at the unit gram. -/
+def q2 (K F : Mat) : Mat :=
+  let c := matAdd (matMul K F) (matSwap (matMul F K))
   matMul (transposeM c) c
 
 /-! `thm:coeffone`'s electric commutator at the diagonal: the
@@ -137,21 +131,26 @@ private theorem rowCommE (c : BPair) : ∀ (dg : List Nat) (r v : List BPair),
       (BPair.add_congr
         (BPair.mul_congr_left (BPair.norm_oneValue _))
         (rowCommE c dg r v (Nat.succ.inj hdg) (Nat.succ.inj hr))) ?_
-    refine BPair.oneValue_of_eq ?_
-    rw [BPair.right_distrib c ((BPair.ofNat d).swap) e,
-      BPair.right_distrib (c * e) ((BPair.ofNat d).swap * e) x,
-      BPair.mul_assoc c e x,
-      BPair.swap_mul (BPair.ofNat d) e,
-      BPair.swap_mul (BPair.ofNat d * e) x,
-      BPair.mul_assoc (BPair.ofNat d) e x,
-      BPair.left_distrib c (e * x) (dotP r v),
-      BPair.mul_left_comm e (BPair.ofNat d) x,
-      ← BPair.swap_add (BPair.ofNat d * (e * x))
-        (dotP r (List.zipWith (fun dj y => BPair.ofNat dj * y) dg v)),
-      BPair.add_add_comm (c * (e * x))
-        ((BPair.ofNat d * (e * x)).swap) (c * dotP r v)
-        ((dotP r (List.zipWith
-          (fun dj y => BPair.ofNat dj * y) dg v)).swap)]
+    have hT : ((BPair.ofNat d).swap * e * x).oneValue
+        ((e * (BPair.ofNat d * x)).swap) := by
+      rw [BPair.swap_mul, BPair.swap_mul,
+        BPair.mul_left_comm' e (BPair.ofNat d) x]
+      exact BPair.oneValue_refl _
+    refine BPair.oneValue_trans (polEqB [c, e, x, dotP r v, (BPair.ofNat d).swap,
+      (dotP r (List.zipWith (fun dj y => BPair.ofNat dj * y) dg v)).swap]
+      (Pol.add (Pol.mul (Pol.mul (Pol.add (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 4))) (Pol.mon (Mon.var 1))) (Pol.mon (Mon.var 2))) (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 3))) (Pol.mon (Mon.var 5))))
+      (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.add (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 2))) (Pol.mon (Mon.var 3)))) (Pol.add (Pol.mul (Pol.mul (Pol.mon (Mon.var 4)) (Pol.mon (Mon.var 1))) (Pol.mon (Mon.var 2))) (Pol.mon (Mon.var 5))))
+      (by decide +kernel)) ?_
+    show (c * (e * x + dotP r v)
+        + ((BPair.ofNat d).swap * e * x
+          + (dotP r (List.zipWith
+              (fun dj y => BPair.ofNat dj * y) dg v)).swap)).oneValue
+      (c * (e * x + dotP r v)
+        + ((e * (BPair.ofNat d * x)).swap
+          + (dotP r (List.zipWith
+              (fun dj y => BPair.ofNat dj * y) dg v)).swap))
+    exact BPair.add_congr (BPair.oneValue_refl _)
+      (BPair.add_congr hT (BPair.oneValue_refl _))
 
 /-- `thm:coeffone`'s electric commutator at the diagonal: the
 commutator's action on a vector is the diagonal's action of the

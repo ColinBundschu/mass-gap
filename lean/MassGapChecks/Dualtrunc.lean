@@ -30,15 +30,17 @@ forged head pencil `[5]` reads the sum's unit at five and one at six,
 so the bracket's two ends part and no integer is pinned, while the
 full pencil reads one at five.
 -/
+
+namespace dualtrunc
 set_option maxHeartbeats 4000000
 
-open ground elim inertia certconstruct truncation dualtrunc
+open ground elim inertia certconstruct truncation
 
 /-! The admissibility comparison at its data, and the moved cutoff's
 refusal at the comparison's own equality. -/
 
-example : admRead 1 20 6 1 2 1 1 := by decide +kernel
-example : ¬ admRead 1 11 6 1 2 1 1 := by decide +kernel
+theorem pin1 : admRead 1 20 6 1 2 1 1 := by decide +kernel
+theorem pin2 : ¬ admRead 1 11 6 1 2 1 1 := by decide +kernel
 
 /-! `pin_count`'s route at the fixture: the head's two counts at five
 and six are one integer, the blocking tie reads the full pencil's
@@ -47,16 +49,16 @@ removed block's count is vacant at nine, and the difference site is
 positive semidefinite — so the full pencil's count is that integer,
 the two transports meeting on it. -/
 
-example : countAtPair pHead gHead 6 1 1 (inertia.spOne ⟨1, 4⟩) := by decide +kernel
-example : countAtPair pHead gHead 7 1 1 (inertia.spOne ⟨1, 5⟩) := by decide +kernel
-example : countAtPair qRem gRem 10 1 0 (inertia.spOne ⟨2, 1⟩) := by decide +kernel
-example : countAtPair hFull gFull 6 1 1 (spThree ⟨1, 4⟩ ⟨49, 1⟩) := by
+theorem pin3 : countAtPair pHead gHead 6 1 1 (inertia.oneSplit [⟨1, 4⟩]) := by decide +kernel
+theorem pin4 : countAtPair pHead gHead 7 1 1 (inertia.oneSplit [⟨1, 5⟩]) := by decide +kernel
+theorem pin5 : countAtPair qRem gRem 10 1 0 (inertia.oneSplit [⟨2, 1⟩]) := by decide +kernel
+theorem pin6 : countAtPair hFull gFull 6 1 1 (spThree ⟨1, 4⟩ ⟨49, 1⟩) := by
   decide +kernel
 
-example : (1 : Nat) = 1 :=
+theorem pin7 : (1 : Nat) = 1 :=
   pin_count (k := 1) (m := 1) hFull gFull pHead gHead bCoup qRem gRem
     6 1 7 1 10 1 1 1
-    (inertia.spOne ⟨1, 4⟩) (inertia.spOne ⟨1, 5⟩) (inertia.spOne ⟨2, 1⟩)
+    (inertia.oneSplit [⟨1, 4⟩]) (inertia.oneSplit [⟨1, 5⟩]) (inertia.oneSplit [⟨2, 1⟩])
     (spThree ⟨1, 4⟩ ⟨49, 1⟩) (spId ⟨1, 5⟩ ⟨2, 1⟩)
     (spShear ⟨2, 1⟩ ⟨4, 1⟩)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -67,18 +69,20 @@ full pencil is negative definite at five and reads count two, so the
 pinned integer one is refused; the removed block's own vacant count
 at nine is refused beside it, its site reading `[-6]`. -/
 
-example : countAtPair hForge gFull 6 1 2 (spThree ⟨1, 4⟩ ⟨1, 16⟩) := by
+theorem pin8 : countAtPair hForge gFull 6 1 2 (spThree ⟨1, 4⟩ ⟨1, 16⟩) := by
   decide +kernel
-example : ¬ ((2 : Nat) = 1) := by decide +kernel
-example : ¬ countAtPair qForge gRem 10 1 0 (inertia.spOne ⟨1, 7⟩) := by decide +kernel
+theorem pin9 : ¬ ((2 : Nat) = 1) := by decide +kernel
+theorem pin10 : ¬ countAtPair qForge gRem 10 1 0 (inertia.oneSplit [⟨1, 7⟩]) := by decide +kernel
 
 /-! The clear bracket's refusal: at the forged head pencil `[5]` the
 head reads the sum's unit at five and one at six, so the bracket's
 two ends carry no one integer, while the full pencil `[[5,1],[1,10]]`
 reads one at five — the pin's two head reads part. -/
 
-example : countAtPair pForge gHead 6 1 0 spKern := by decide +kernel
-example : countAtPair pForge gHead 7 1 1 (inertia.spOne ⟨1, 2⟩) := by decide +kernel
-example : countAtPair hBracket gFull 6 1 1 (spMix u ⟨2, 1⟩ ⟨6, 1⟩) := by
+theorem pin11 : countAtPair pForge gHead 6 1 0 spKern := by decide +kernel
+theorem pin12 : countAtPair pForge gHead 7 1 1 (inertia.oneSplit [⟨1, 2⟩]) := by decide +kernel
+theorem pin13 : countAtPair hBracket gFull 6 1 1 (spMix u ⟨2, 1⟩ ⟨6, 1⟩) := by
   decide +kernel
-example : ¬ ((1 : Nat) = 0) := by decide +kernel
+theorem pin14 : ¬ ((1 : Nat) = 0) := by decide +kernel
+
+end dualtrunc

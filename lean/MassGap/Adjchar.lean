@@ -868,11 +868,11 @@ private theorem occ_split (k : Nat) (m : List Nat) :
   have hkey : ∀ c : Shape, c.length = k + 2 →
       blockcount.countAt (fusedK k) (places.rowList c) = 1 →
       ground.countOf (places.rowList c)
-        (ground.dedupL ((blockcount.exhaust (pieri.complBox (k + 2)).length
+        (ground.dedupF ((blockcount.exhaust (pieri.complBox (k + 2)).length
         (fusedK k)).map blockcount.HVec.content)) = 1 := by
     intro c _ hone
-    refine Nat.le_antisymm (ground.countOf_dedupL_le _ _) ?_
-    refine ground.countOf_pos_of_mem (ground.mem_dedupL ?_)
+    refine Nat.le_antisymm (ground.countOf_dedupF_le _ _) ?_
+    refine ground.countOf_pos_of_mem (ground.mem_dedupF ?_)
     refine ground.mem_of_countOf_pos _ _ ?_
     rw [← blockcount.occ_eq_countOf,
       ← blockcount.countAt_exhaust (pieri.complBox (k + 2)).length
@@ -880,13 +880,13 @@ private theorem occ_split (k : Nat) (m : List Nat) :
       hone]
     exact Nat.succ_pos 0
   have hcTh : ground.countOf (places.rowList (theta (k + 2)))
-      (ground.dedupL ((blockcount.exhaust (pieri.complBox (k + 2)).length
+      (ground.dedupF ((blockcount.exhaust (pieri.complBox (k + 2)).length
         (fusedK k)).map blockcount.HVec.content)) = 1 :=
     hkey (theta (k + 2)) (length_theta (k + 2)) (by
       rw [hcnt (theta (k + 2)) (length_theta (k + 2)), if_pos rfl,
         if_neg (theta_ne_fulls k)])
   have hcFu : ground.countOf (List.replicate (k + 2) 1)
-      (ground.dedupL ((blockcount.exhaust (pieri.complBox (k + 2)).length
+      (ground.dedupF ((blockcount.exhaust (pieri.complBox (k + 2)).length
         (fusedK k)).map blockcount.HVec.content)) = 1 := by
     have h := hkey (dualread.fulls (k + 2) 1)
       (dualread.length_fulls (k + 2) 1) (by
@@ -898,7 +898,7 @@ private theorem occ_split (k : Nat) (m : List Nat) :
       (fun nu => blockcount.countAt (fusedK k) nu
         * blockcount.occ m
             (blockcount.blockSpan (places.shapeOf nu)))
-      (ground.dedupL ((blockcount.exhaust (pieri.complBox (k + 2)).length
+      (ground.dedupF ((blockcount.exhaust (pieri.complBox (k + 2)).length
         (fusedK k)).map blockcount.HVec.content))
       = ground.famFold Nat.add 0
         (fun nu =>
@@ -909,13 +909,13 @@ private theorem occ_split (k : Nat) (m : List Nat) :
             blockcount.occ m
               (blockcount.blockSpan (dualread.fulls (k + 2) 1))
             else 0))
-        (ground.dedupL ((blockcount.exhaust (pieri.complBox (k + 2)).length
+        (ground.dedupF ((blockcount.exhaust (pieri.complBox (k + 2)).length
         (fusedK k)).map blockcount.HVec.content)) := by
     refine ground.famFold_congr_members Nat.add 0 _ _ _ ?_
     intro nu hnu
     have hnuE : nu ∈ (blockcount.exhaust (pieri.complBox (k + 2)).length
         (fusedK k)).map blockcount.HVec.content :=
-      ground.mem_of_dedupL (ground.mem_of_countOf_pos nu _ hnu)
+      ground.mem_of_dedupF (ground.mem_of_countOf_pos nu _ hnu)
     have hrlnu : places.rowList (places.shapeOf nu) = nu :=
       hrl nu hnuE
     have hcs := hcnt (places.shapeOf nu)
@@ -948,21 +948,21 @@ private theorem occ_split (k : Nat) (m : List Nat) :
       (fun nu => if nu = places.rowList (theta (k + 2)) then
         blockcount.occ m (blockcount.blockSpan (theta (k + 2)))
         else 0)
-      (ground.dedupL ((blockcount.exhaust (pieri.complBox (k + 2)).length
+      (ground.dedupF ((blockcount.exhaust (pieri.complBox (k + 2)).length
         (fusedK k)).map blockcount.HVec.content))
       = blockcount.occ m (blockcount.blockSpan (theta (k + 2))) :=
     ground.famFold_pick
       (fun _ => blockcount.occ m
         (blockcount.blockSpan (theta (k + 2))))
       (places.rowList (theta (k + 2)))
-      (ground.dedupL ((blockcount.exhaust (pieri.complBox (k + 2)).length
+      (ground.dedupF ((blockcount.exhaust (pieri.complBox (k + 2)).length
         (fusedK k)).map blockcount.HVec.content)) hcTh
   have hpick2 : ground.famFold Nat.add 0
       (fun nu => if nu = List.replicate (k + 2) 1 then
         blockcount.occ m
           (blockcount.blockSpan (dualread.fulls (k + 2) 1))
         else 0)
-      (ground.dedupL ((blockcount.exhaust (pieri.complBox (k + 2)).length
+      (ground.dedupF ((blockcount.exhaust (pieri.complBox (k + 2)).length
         (fusedK k)).map blockcount.HVec.content))
       = blockcount.occ m
         (blockcount.blockSpan (dualread.fulls (k + 2) 1)) :=
@@ -970,7 +970,7 @@ private theorem occ_split (k : Nat) (m : List Nat) :
       (fun _ => blockcount.occ m
         (blockcount.blockSpan (dualread.fulls (k + 2) 1)))
       (List.replicate (k + 2) 1)
-      (ground.dedupL ((blockcount.exhaust (pieri.complBox (k + 2)).length
+      (ground.dedupF ((blockcount.exhaust (pieri.complBox (k + 2)).length
         (fusedK k)).map blockcount.HVec.content)) hcFu
   rw [← blockcount.dimAt_occ (fusedK k) hiP m,
     blockcount.gradedDim_countAt (pieri.complBox (k + 2)).length

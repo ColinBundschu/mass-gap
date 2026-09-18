@@ -47,6 +47,13 @@ Its tier — the gap product at a weight, the two principal folds and
 their degree data, the assembly instance, the convolution transfer,
 the exchange and the gap comparison — is enumerated at its own
 section below.
+
+The dimension is positive at every shape (`dimOf_pos`) and one
+at the unit (`dimOf_unit`), the span's exhibit and scalar line.
+At G2 the principal degree counts exchange at arbitrary pairs of
+coroot keys by word reversal (`dmap_exchange_G2`), and every
+relisting at equal graded key counts keeps those degree counts
+(`dmap_counts`).
 -/
 
 namespace weyldim
@@ -75,7 +82,7 @@ def read (s : Shape) : Prop :=
   dimOf s * gapProd (display (List.replicate s.length 0))
     = gapProd (display s)
 
-instance (s : Shape) : Decidable (read s) :=
+instance instWeyldim1 (s : Shape) : Decidable (read s) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-! The A-series telescope tier (`cor:weyldim`'s first paragraph):
@@ -3435,21 +3442,21 @@ private def prodCar (s : Shape) : List (List Nat × List Nat) :=
 /-- The occupied keys' cover: the joint keys with the shifted
 alternant's own, deduplicated. -/
 private def keyList (s : Shape) : List (List Nat) :=
-  ground.dedupL (((prodCar s).map (keyJ s))
+  ground.dedupF (((prodCar s).map (keyJ s))
     ++ ((places.perms s.length).map
       (places.expo (display s))))
 
 /-- The keys' distinct cover reads each once. -/
 private theorem keyList_dist (s : Shape) :
     ∀ y, ground.countOf y (keyList s) ≤ 1 :=
-  fun y => ground.countOf_dedupL_le y _
+  fun y => ground.countOf_dedupF_le y _
 
 /-- A joint member's key joins the cover once. -/
 private theorem keyJ_in_KL {s : Shape} {x : List Nat × List Nat}
     (hx : 0 < ground.countOf x (prodCar s)) :
     ground.countOf (keyJ s x) (keyList s) = 1 := by
   refine Nat.le_antisymm (keyList_dist s _) ?_
-  refine ground.countOf_pos_of_mem (ground.mem_dedupL ?_)
+  refine ground.countOf_pos_of_mem (ground.mem_dedupF ?_)
   refine ground.mem_of_countOf_pos _ _ ?_
   rw [ground.countOf_append]
   refine Nat.lt_of_lt_of_le ?_ (Nat.le_add_right _ _)
@@ -3462,7 +3469,7 @@ private theorem expoD_in_KL {s : Shape} {p : List Nat}
     ground.countOf (places.expo (display s) p) (keyList s)
       = 1 := by
   refine Nat.le_antisymm (keyList_dist s _) ?_
-  refine ground.countOf_pos_of_mem (ground.mem_dedupL ?_)
+  refine ground.countOf_pos_of_mem (ground.mem_dedupF ?_)
   refine ground.mem_of_countOf_pos _ _ ?_
   rw [ground.countOf_append]
   refine Nat.lt_of_lt_of_le ?_ (Nat.le_add_left _ _)
@@ -3961,9 +3968,9 @@ private theorem gapP_pos {b : List Nat}
       exact absurd hlt (by rw [hc]; exact Nat.lt_irrefl _)
 
 /-- The display gap product collects over the place pairs. -/
-private theorem gapProd_pairs : ∀ b : List Nat,
-    gapProd b
-      = ground.famFold Nat.mul 1 (gapP b) (pairsOf b.length)
+theorem gapProd_pairs : ∀ b : List Nat,
+    gapProd b = ground.famFold Nat.mul 1
+      (fun p => ground.getAt 0 b p.1 - ground.getAt 0 b p.2) (pairsOf b.length)
   | [] => rfl
   | x :: t => by
     show ground.famFold Nat.mul 1 (fun y => x - y) t * gapProd t
@@ -4021,7 +4028,10 @@ theorem gapProdU_pos (s : Shape) :
     mulFold_pos (gapP (unitDisp s.length))
       (pairsOf (unitDisp s.length).length)
       (fun q hq => gapP_pos (unitDisp_desc s.length) hq)
-  rw [← gapProd_pairs (unitDisp s.length)] at hpos
+  have hp : gapProd (unitDisp s.length)
+      = ground.famFold Nat.mul 1 (gapP (unitDisp s.length))
+        (pairsOf (unitDisp s.length).length) := gapProd_pairs (unitDisp s.length)
+  rw [← hp] at hpos
   exact hpos
 
 /-- The graded sum splits at the unit-gap powers: the signed fold
@@ -4203,13 +4213,17 @@ theorem spanProd (s : Shape) :
   have hgU : gapProd (display (List.replicate s.length 0))
       = ground.famFold Nat.mul 1 (gapP (unitDisp s.length))
         (pairsOf s.length) := by
-    have h0 := gapProd_pairs (unitDisp s.length)
+    have h0 : gapProd (unitDisp s.length)
+        = ground.famFold Nat.mul 1 (gapP (unitDisp s.length))
+          (pairsOf (unitDisp s.length).length) := gapProd_pairs (unitDisp s.length)
     rw [places.length_unitDisp s.length] at h0
     exact h0
   have hgD : gapProd (display s)
       = ground.famFold Nat.mul 1 (gapP (display s))
         (pairsOf s.length) := by
-    have h0 := gapProd_pairs (display s)
+    have h0 : gapProd (display s)
+        = ground.famFold Nat.mul 1 (gapP (display s))
+          (pairsOf (display s).length) := gapProd_pairs (display s)
     rw [places.length_display] at h0
     exact h0
   have hlen : (spanL s).length
@@ -4232,6 +4246,17 @@ theorem dimOf_spanLen (s : Shape) :
   exact ground.divMulSelf ((blockcount.blockSpan s).length)
     (gapProd (display (List.replicate s.length 0)))
     (gapProdU_pos s)
+
+/-- Every shape has positive dimension: its exhibit occupies
+its lowering span, whose count is the Weyl product's value. -/
+theorem dimOf_pos (s : Shape) : 0 < dimOf s := by
+  rw [dimOf_spanLen]
+  exact ground.length_pos_of_countOf (ground.countOf_pos_of_mem (blockcount.exhibit_mem s))
+
+/-- The unit shape's dimension is one, its span the scalar line. -/
+theorem dimOf_unit (n : Nat) : dimOf (List.replicate n 0) = 1 := by
+  rw [dimOf_spanLen, blockcount.blockSpan_unitShape]
+  rfl
 
 /-- `cor:weyldim`'s display holds at every shape: the exact
 division's certificate off the count identity. -/
@@ -4397,33 +4422,27 @@ theorem zipWith_descRun (c a : Nat) : ∀ k : Nat,
     rw [zipWith_descRun c a k, Nat.add_comm c (k + a),
       Nat.add_assoc k a c]
 
-/-- The run's head gap fold against the factorial: the falling
-product at the run's own floor. -/
-theorem gapHead_descRun (a : Nat) : ∀ (k m : Nat),
-    gapHead (k + m + a) (descRun a k) * ground.factorial m
-      = ground.factorial (k + m)
-  | 0, m => by
-    show 1 * ground.factorial m = ground.factorial (0 + m)
-    rw [Nat.one_mul, Nat.zero_add]
+/-- The run's head gap fold is the falling product (`ground.ffall`) at
+the run's count from the natural above its floor, one gap per member. -/
+theorem gapHead_descRun_ffall (a : Nat) : ∀ k m : Nat,
+    gapHead (k + m + a) (descRun a k) = ground.ffall (k + m) k
+  | 0, _ => rfl
   | k + 1, m => by
-    have hx : k + 1 + m + a = k + (m + 1) + a := by
+    have hx : k + 1 + m = k + (m + 1) := by
       rw [Nat.add_right_comm k 1 m, Nat.add_assoc k m 1]
-    have hs : k + (m + 1) + a - (k + a) = m + 1 := by
-      rw [show k + (m + 1) + a = k + a + (m + 1) from by
-        rw [Nat.add_right_comm k (m + 1) a], ground.addSubSelfL]
-    show gapHead (k + 1 + m + a) ((k + a) :: descRun a k)
-        * ground.factorial m = ground.factorial (k + 1 + m)
-    rw [hx]
-    show (k + (m + 1) + a - (k + a))
-        * gapHead (k + (m + 1) + a) (descRun a k)
-        * ground.factorial m = ground.factorial (k + 1 + m)
-    rw [hs, Nat.mul_comm (m + 1)
-        (gapHead (k + (m + 1) + a) (descRun a k)), ground.mulAssoc]
-    show gapHead (k + (m + 1) + a) (descRun a k)
-        * ground.factorial (m + 1) = ground.factorial (k + 1 + m)
-    rw [gapHead_descRun a k (m + 1),
-      show k + (m + 1) = k + 1 + m from by
-        rw [Nat.add_right_comm k 1 m, ← Nat.add_assoc k m 1]]
+    show (k + 1 + m + a - (k + a)) * gapHead (k + 1 + m + a) (descRun a k)
+      = (k + 1 + m - k) * ground.ffall (k + 1 + m) k
+    rw [hx, gapHead_descRun_ffall a k (m + 1), ground.addSubSelfL k (m + 1),
+      show k + (m + 1) + a = k + a + (m + 1) from by rw [Nat.add_right_comm k (m + 1) a],
+      ground.addSubSelfL (k + a) (m + 1)]
+
+/-- The run's head gap fold against the factorial: the falling
+product at the run's own floor (`ground.ffall_factorial`). -/
+theorem gapHead_descRun (a : Nat) (k m : Nat) :
+    gapHead (k + m + a) (descRun a k) * ground.factorial m
+      = ground.factorial (k + m) := by
+  rw [gapHead_descRun_ffall a k m]
+  exact ground.ffall_factorial k m
 
 /-- The run's head gap fold at the floor above it is the
 factorial. -/
@@ -4566,6 +4585,56 @@ def dmap (F : FundData) (sig : BPair) (kap : List BPair)
     (W : List (List BPair × Bool)) : List (Nat × Bool) :=
   W.map (fun vp =>
     (BPair.marginN (BPair.add sig (dotB F vp.1 kap)), vp.2))
+
+/-- Relisting a graded family at equal key counts preserves
+every shifted principal degree count. -/
+theorem dmap_counts (F : FundData) (sig : BPair) (kap : List BPair)
+    (W R : List (List BPair × Bool))
+    (h : ∀ p, ground.countOf p W = ground.countOf p R) (p : Nat × Bool) :
+    ground.countOf p (dmap F sig kap W) = ground.countOf p (dmap F sig kap R) := by
+  unfold dmap
+  rw [ground.countOf_fold, ground.countOf_fold, ground.famFold_map, ground.famFold_map]
+  exact ground.famFold_relist Nat.add 0 Nat.add_comm Nat.add_assoc _ W R h
+
+/-- G2's principal degrees exchange their two coroot keys at
+word reversal, with every multiplicity and grading preserved
+(`cor:weyldim`'s principal specialization). -/
+theorem dmap_exchange_G2 (x y : List BPair) (hx : x.length = 2) (hy : y.length = 2)
+    (p : Nat × Bool) :
+    ground.countOf p (dmap fundG2 (dotB fundG2 x y) y (weylG2 x))
+      = ground.countOf p (dmap fundG2 (dotB fundG2 y x) x (weylG2 y)) := by
+  let f := fun j => (BPair.marginN (dotB fundG2 y x
+    + dotB fundG2 (poly.pnorm (elim.matVec (weylMatG2 j) y)) x), j % 2 == 1)
+  have he (j : Nat) (hj : j < 12) :
+      (BPair.marginN (dotB fundG2 x y
+        + dotB fundG2 (poly.pnorm (elim.matVec (weylMatG2 j) x)) y), j % 2 == 1)
+        = f (weylInvG2 j) := by
+    have hm := weylMatG2_shape (weylInvG2 j) (weylInvG2_read j hj).1
+    have hxy := dotB_swap tableG2 fundG2 fundShape_G2 gramSymRead_G2 x y hx hy
+    have hw := BPair.oneValue_trans (weylMatG2_dot j hj x y hx hy)
+      (dotB_swap tableG2 fundG2 fundShape_G2 gramSymRead_G2 x _ hx
+        ((poly.pnorm_length _).trans ((elim.matVec_length _ _).trans hm.1)))
+    unfold f
+    rw [(weylInvG2_read j hj).2.2.1, BPair.marginN_congr (BPair.add_congr hxy hw)]
+  unfold dmap weylG2
+  rw [ground.map_map, ground.map_map, ground.countOf_fold, ground.countOf_fold,
+    ground.famFold_map, ground.famFold_map]
+  have hpoint : ground.famFold Nat.add 0
+      (fun j => if p = (BPair.marginN (dotB fundG2 x y
+        + dotB fundG2 (poly.pnorm (elim.matVec (weylMatG2 j) x)) y), j % 2 == 1) then 1 else 0)
+      (List.range 12)
+      = ground.famFold Nat.add 0 (fun j => if p = f (weylInvG2 j) then 1 else 0) (List.range 12) := by
+    apply ground.famFold_congr_members
+    intro j hj
+    rw [he j (ground.ltOfMem hj)]
+  refine hpoint.trans ?_
+  exact (ground.famFold_reindex Nat.add 0 Nat.add_comm Nat.add_assoc
+    (fun j => if p = f j then 1 else 0) (g := weylInvG2) (h := weylInvG2)
+    (ground.distinctList_range 12)
+    (fun j hj => (weylInvG2_read j (ground.ltOfMem hj)).2.1)
+    (fun j hj => (weylInvG2_read j (ground.ltOfMem hj)).2.1)
+    (fun j hj => ground.countOf_range_pos (weylInvG2_read j (ground.ltOfMem hj)).1)
+    (fun j hj => ground.countOf_range_pos (weylInvG2_read j (ground.ltOfMem hj)).1)).symm
 
 /-- The graded count of a signed family reads the guarded fold over
 its members. -/
@@ -4773,16 +4842,16 @@ theorem prodPos_pfold (t : gentable.Table) (F : FundData)
   refine poly.oneValue_trans
     (elim.tpairFold_subsets (gapsAt t F kap)
       (List.range t.posFolds.length) hdist) ?_
-  have hD : ∀ y, ground.countOf y (ground.dedupL
+  have hD : ∀ y, ground.countOf y (ground.dedupF
       ((sublistsOf (List.range t.posFolds.length)).map (eKey t)
         ++ W.map Prod.fst)) ≤ 1 := fun y =>
-    ground.countOf_dedupL_le y _
-  have hframe : ∀ y, 0 < ground.countOf y (ground.dedupL
+    ground.countOf_dedupF_le y _
+  have hframe : ∀ y, 0 < ground.countOf y (ground.dedupF
       ((sublistsOf (List.range t.posFolds.length)).map (eKey t)
         ++ W.map Prod.fst)) →
       y.length = t.rank ∧ poly.pnorm y = y := by
     intro y hy
-    have hmem := ground.mem_of_dedupL (ground.mem_of_countOf_pos y _ hy)
+    have hmem := ground.mem_of_dedupF (ground.mem_of_countOf_pos y _ hy)
     cases ground.mem_append_of _ _ hmem with
     | inl hin =>
       obtain ⟨S, _, hS⟩ := ground.mem_map_of (eKey t) _ y hin
@@ -4795,17 +4864,17 @@ theorem prodPos_pfold (t : gentable.Table) (F : FundData)
       exact hsh
   have hcovS : ∀ S, 0 < ground.countOf S
       (sublistsOf (List.range t.posFolds.length)) →
-      0 < ground.countOf (eKey t S) (ground.dedupL
+      0 < ground.countOf (eKey t S) (ground.dedupF
         ((sublistsOf (List.range t.posFolds.length)).map (eKey t)
           ++ W.map Prod.fst)) := fun S hS =>
-    ground.countOf_pos_of_mem (ground.mem_dedupL
+    ground.countOf_pos_of_mem (ground.mem_dedupF
       (ground.mem_append_left _ (ground.mem_map_to (eKey t)
         (ground.mem_of_countOf_pos S _ hS))))
   have hcovW : ∀ vp, 0 < ground.countOf vp W →
-      0 < ground.countOf vp.1 (ground.dedupL
+      0 < ground.countOf vp.1 (ground.dedupF
         ((sublistsOf (List.range t.posFolds.length)).map (eKey t)
           ++ W.map Prod.fst)) := fun vp hvp =>
-    ground.countOf_pos_of_mem (ground.mem_dedupL
+    ground.countOf_pos_of_mem (ground.mem_dedupF
       (ground.mem_append_right _ (ground.mem_map_to Prod.fst
         (ground.mem_of_countOf_pos vp W hvp))))
   have hdegS : ∀ S, 0 < ground.countOf S
@@ -4957,27 +5026,27 @@ theorem pfold_conv (t : gentable.Table) (F : FundData)
     (poly.oneValue_symm (poly.foldP_flatMap _
       (fun vp => L.map (fun nu => (vp, nu))) W)) ?_
   -- the crossed degree balance at the joined keys
-  have hD : ∀ y, ground.countOf y (ground.dedupL
+  have hD : ∀ y, ground.countOf y (ground.dedupF
       ((W.flatMap (fun vp => L.map (fun nu => (vp, nu)))).map
         (fun p => poly.pnorm (elim.vecAdd p.1.1 p.2))
         ++ W'.map Prod.fst)) ≤ 1 := fun y =>
-    ground.countOf_dedupL_le y _
+    ground.countOf_dedupF_le y _
   have hcovP : ∀ p, 0 < ground.countOf p
       (W.flatMap (fun vp => L.map (fun nu => (vp, nu)))) →
       0 < ground.countOf (poly.pnorm (elim.vecAdd p.1.1 p.2))
-        (ground.dedupL
+        (ground.dedupF
           ((W.flatMap (fun vp => L.map (fun nu => (vp, nu)))).map
             (fun p => poly.pnorm (elim.vecAdd p.1.1 p.2))
             ++ W'.map Prod.fst)) := fun p hp =>
-    ground.countOf_pos_of_mem (ground.mem_dedupL
+    ground.countOf_pos_of_mem (ground.mem_dedupF
       (ground.mem_append_left _ (ground.mem_map_to _
         (ground.mem_of_countOf_pos p _ hp))))
   have hcovW' : ∀ vp, 0 < ground.countOf vp W' →
-      0 < ground.countOf vp.1 (ground.dedupL
+      0 < ground.countOf vp.1 (ground.dedupF
         ((W.flatMap (fun vp => L.map (fun nu => (vp, nu)))).map
           (fun p => poly.pnorm (elim.vecAdd p.1.1 p.2))
           ++ W'.map Prod.fst)) := fun vp hvp =>
-    ground.countOf_pos_of_mem (ground.mem_dedupL
+    ground.countOf_pos_of_mem (ground.mem_dedupF
       (ground.mem_append_right _ (ground.mem_map_to Prod.fst
         (ground.mem_of_countOf_pos vp W' hvp))))
   have hdegP : ∀ p, 0 < ground.countOf p
@@ -5246,18 +5315,7 @@ theorem memberRead (t : gentable.Table) (F : FundData)
       ground.countOf p (dmap F (dotB F (lamrho t lamV) (rhoV t))
           (rhoV t) W')
         = ground.countOf p (dmap F (dotB F (rhoV t) (lamrho t lamV))
-            (lamrho t lamV) W) := by
-    intro p
-    match Nat.eq_zero_or_pos (ground.countOf p
-        (dmap F (dotB F (lamrho t lamV) (rhoV t)) (rhoV t) W')) with
-    | Or.inr hp =>
-      exact hexch1 p (ground.mem_of_countOf_pos p _ hp)
-    | Or.inl h1 =>
-      match Nat.eq_zero_or_pos (ground.countOf p
-          (dmap F (dotB F (rhoV t) (lamrho t lamV))
-            (lamrho t lamV) W)) with
-      | Or.inr hp => exact hexch2 p (ground.mem_of_countOf_pos p _ hp)
-      | Or.inl h2 => rw [h1, h2]
+            (lamrho t lamV) W) := ground.countOf_eq_of_members _ _ hexch1 hexch2
   have h5 := pfold_exchange t F W W' lamV (fun k => by
     show ground.countOf (k, false)
         (dmap F (dotB F (lamrho t lamV) (rhoV t)) (rhoV t) W')

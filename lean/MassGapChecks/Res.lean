@@ -28,9 +28,11 @@ thirty-one, and `crossNull` closes on that degree.  The seam is the
 coefficient's own — the same read at the bare coefficients (the two
 `coeffAtW` batteries above) decides beside it, and the whole
 certificate sits inside the half-second budget's own order. -/
+
+namespace res
 set_option maxHeartbeats 4000000
 
-open ground poly genericlift states kernel lap res
+open ground poly genericlift states kernel lap
 
 private def fAdj : FList := [(0, false), (0, true)]
 
@@ -53,32 +55,34 @@ private def actU : List Nat → Comb := fun π => lapAct fAdj 0 π
 
 /-! Step 1, the deflated side. -/
 
-example : crossNull (coeffAtW (deflate fAdj [adjC] sqC) [0, 1]) pZero := by
+theorem pin1 : crossNull (coeffAtW (deflate fAdj [adjC] sqC) [0, 1]) pZero := by
   decide +kernel
-example : crossNull (coeffAtW (deflate fAdj [adjC] sqC) [1, 0]) uC := by
+theorem pin2 : crossNull (coeffAtW (deflate fAdj [adjC] sqC) [1, 0]) uC := by
   decide +kernel
-example : deflateRead fAdj [adjC] sqC := by decide +kernel
+theorem pin3 : deflateRead fAdj [adjC] sqC := by decide +kernel
 
 /-! Step 2, the support's closure. -/
 
-example : closedE actU (closeE actU 2 (suppOf sqC)) := by decide +kernel
-example : ¬ closedE actU [[0, 1]] := by decide +kernel
-example : ¬ covers [] sqC := by decide +kernel
+theorem pin4 : closedE actU (closeE actU 2 (suppOf sqC)) := by decide +kernel
+theorem pin5 : ¬ closedE actU [[0, 1]] := by decide +kernel
+theorem pin6 : ¬ covers [] sqC := by decide +kernel
 
 /-! Step 3, the solve at the kernel point. -/
 
-example : solveRead actU pOne (closeE actU 2 (suppOf unitC))
+theorem pin7 : solveRead actU pOne (closeE actU 2 (suppOf unitC))
     (scaleComb negP unitC) [] unitC := by decide +kernel
 
 /-! Step 4, the kernel member's read. -/
 
-example : nullRead fAdj ([] : Comb) := by decide +kernel
-example : ¬ nullRead fAdj sqC := by decide +kernel
+theorem pin8 : nullRead fAdj ([] : Comb) := by decide +kernel
+theorem pin9 : ¬ nullRead fAdj sqC := by decide +kernel
 
 /-! The matrix route's data at the pair carrier. -/
 
-example : ppSquare 2 (siteMat actU pOne [[0, 1], [1, 0]]) := by decide +kernel
-example : ¬ ppSquare 2 [[pOne]] := by decide +kernel
-example : ppadjRead (siteMat actU pOne [[0, 1], [1, 0]]) := by decide +kernel
-example : crossNull (pCofactor cfP dfP)
+theorem pin10 : ppSquare 2 (siteMat actU pOne [[0, 1], [1, 0]]) := by decide +kernel
+theorem pin11 : ¬ ppSquare 2 [[pOne]] := by decide +kernel
+theorem pin12 : ppadjRead (siteMat actU pOne [[0, 1], [1, 0]]) := by decide +kernel
+theorem pin13 : crossNull (pCofactor cfP dfP)
     ([BPair.unit, ⟨3, 1⟩, ⟨2, 1⟩], [⟨3, 1⟩, ⟨5, 1⟩, ⟨3, 1⟩]) := by decide +kernel
+
+end res

@@ -9,9 +9,11 @@ kernel point at the presentation `1 = [1 : d_f] tr(U U†)`;
 `d_f Δ_U s + 2s = d_f (d_f + 1) s` at `s = (tr U)² + tr U²` with
 `d_f Δ_U w + (d_f + 2) w = d_f² w` at `w = ⟨(tr U)² : tr U²⟩` —
 all cleared polynomial identities in the residue. -/
+
+namespace lap
 set_option maxHeartbeats 4000000
 
-open ground poly genericlift states kernel lap
+open ground poly genericlift states kernel
 
 private def fU : FList := [(0, false)]
 private def fAdj : FList := [(0, false), (0, true)]
@@ -24,10 +26,10 @@ private def wC : Comb := [([0, 1], pOne), ([1, 0], negP)]
 private def dfp1 : PPair := ([⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩])
 private def dfp2 : PPair := ([⟨4, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩])
 
-example : combEqRead fU (lapComb fU 0 [([0], pOne)])
+theorem pin1 : combEqRead fU (lapComb fU 0 [([0], pOne)])
     (scaleComb cfP [([0], pOne)]) := by decide +kernel
-example : combEqRead fAdj (lapComb fAdj 0 unitC) [] := by decide +kernel
-example : combEqRead fAdj (lapComb fAdj 0 adjC)
+theorem pin2 : combEqRead fAdj (lapComb fAdj 0 unitC) [] := by decide +kernel
+theorem pin3 : combEqRead fAdj (lapComb fAdj 0 adjC)
     (scaleComb dfP adjC) := by decide +kernel
 
 /-! The action at a variable key off `0`: the adjoint at the key `2`
@@ -36,20 +38,20 @@ sum's unit. -/
 
 private def fAdj2 : FList := [(2, false), (2, true)]
 
-example : combEqRead fAdj2 (lapComb fAdj2 2 adjC)
+theorem pin4 : combEqRead fAdj2 (lapComb fAdj2 2 adjC)
     (scaleComb dfP adjC) := by decide +kernel
-example : combEqRead fAdj2 (lapComb fAdj2 0 adjC) [] := by decide +kernel
-example : combEqRead fUU
+theorem pin5 : combEqRead fAdj2 (lapComb fAdj2 0 adjC) [] := by decide +kernel
+theorem pin6 : combEqRead fUU
     (scaleComb dfP (lapComb fUU 0 sC) ++ scaleComb (natP 2) sC)
     (scaleComb (pMul dfP dfp1) sC) := by decide +kernel
-example : combEqRead fUU
+theorem pin7 : combEqRead fUU
     (scaleComb dfP (lapComb fUU 0 wC) ++ scaleComb dfp2 wC)
     (scaleComb (pMul dfP dfP) wC) := by decide +kernel
 
 /-! The off-eigenvalue refusal: the adjoint at the fundamental's
 Casimir refuses. -/
 
-example : ¬ combEqRead fAdj (lapComb fAdj 0 adjC)
+theorem pin8 : ¬ combEqRead fAdj (lapComb fAdj 0 adjC)
     (scaleComb cfP adjC) := by decide +kernel
 
 /-! The joint insertion across a word (`prop:lap`'s clause).  At the
@@ -66,9 +68,9 @@ link `3` traversed backward, `tr(U1 U2 U3† U4)`, the arc `U3 U2† U1†`
 reads the base's Laplacian at the balance partner, the unsigned read
 refused. -/
 
-example : combEqRead fU (jointComb fU [] 0 0 [([0], pOne)])
+theorem pin9 : combEqRead fU (jointComb fU [] 0 0 [([0], pOne)])
     (lapComb fU 0 [([0], pOne)]) := by decide +kernel
-example : combEqRead fAdj (jointComb fAdj [] 0 0 adjC)
+theorem pin10 : combEqRead fAdj (jointComb fAdj [] 0 0 adjC)
     (lapComb fAdj 0 adjC) := by decide +kernel
 
 private def fLoop : FList :=
@@ -83,21 +85,21 @@ private def arcB : FList := [(3, false), (4, false)]
 private def extA : FList := fLoop ++ arcA ++ daggerW arcA
 private def extB : FList := fLoop ++ arcB ++ daggerW arcB
 
-example : evalEqRead extA (jointComb fLoop arcA 3 1 chiC)
+theorem pin11 : evalEqRead extA (jointComb fLoop arcA 3 1 chiC)
     (padState fLoop arcA (lapComb fLoop 1 chiC)) := by decide +kernel
-example : evalEqRead extB (jointComb fLoop arcB 3 1 chiC)
+theorem pin12 : evalEqRead extB (jointComb fLoop arcB 3 1 chiC)
     (padState fLoop arcB (lapComb fLoop 1 chiC)) := by decide +kernel
-example : evalEqRead fLoop (lapComb fLoop 1 chiC) (scaleComb dfP chiC) := by decide +kernel
-example : ¬ evalEqRead fLoop (lapComb fLoop 1 chiC) (scaleComb cfP chiC) := by decide +kernel
+theorem pin13 : evalEqRead fLoop (lapComb fLoop 1 chiC) (scaleComb dfP chiC) := by decide +kernel
+theorem pin14 : ¬ evalEqRead fLoop (lapComb fLoop 1 chiC) (scaleComb cfP chiC) := by decide +kernel
 
 private def fLoopB : FList :=
   [(1, false), (2, false), (3, true), (4, false),
    (4, true), (3, false), (2, true), (1, true)]
 private def arcC : FList := [(3, false), (2, true), (1, true)]
 private def extC : FList := fLoopB ++ arcC ++ daggerW arcC
-example : evalEqRead extC (jointComb fLoopB arcC 3 1 chiC)
+theorem pin15 : evalEqRead extC (jointComb fLoopB arcC 3 1 chiC)
     (padState fLoopB arcC (scaleComb negP (lapComb fLoopB 1 chiC))) := by decide +kernel
-example : ¬ evalEqRead extC (jointComb fLoopB arcC 3 1 chiC)
+theorem pin16 : ¬ evalEqRead extC (jointComb fLoopB arcC 3 1 chiC)
     (padState fLoopB arcC (lapComb fLoopB 1 chiC)) := by decide +kernel
 
 /-! A letter wired to itself withdraws at the joint read: at
@@ -112,5 +114,7 @@ private def selfPair (π : List Nat) : Comb :=
   [(t.1, pMul halfP (dfPow t.2)),
    (e.1, pMul halfP (pMul negP (pMul invDfP (dfPow e.2))))]
 
-example : combEqRead fAdj (selfPair [3, 0, 2, 1]) [] := by decide +kernel
-example : ¬ combEqRead fAdj (selfPair [3, 0, 1, 2]) [] := by decide +kernel
+theorem pin17 : combEqRead fAdj (selfPair [3, 0, 2, 1]) [] := by decide +kernel
+theorem pin18 : ¬ combEqRead fAdj (selfPair [3, 0, 1, 2]) [] := by decide +kernel
+
+end lap

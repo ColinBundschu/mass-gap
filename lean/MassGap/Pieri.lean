@@ -48,7 +48,7 @@ one exactly at the one-box additions. -/
 def read (s c : Shape) : Prop :=
   blockcount.fusionCount s (oneBox s.length) c = ground.countOf c (row s)
 
-instance (s c : Shape) : Decidable (read s c) :=
+instance instPieri1 (s c : Shape) : Decidable (read s c) :=
   inferInstanceAs (Decidable (_ = _))
 
 
@@ -610,7 +610,7 @@ def readD (s c : Shape) : Prop :=
   blockcount.fusionCount s (complBox s.length) c
     = ground.countOf c (rowD s)
 
-instance (s c : Shape) : Decidable (readD s c) :=
+instance instPieri2 (s c : Shape) : Decidable (readD s c) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The complement factor's content at a withdrawn letter: one at

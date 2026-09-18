@@ -88,7 +88,7 @@ def gramWg (k : Nat) : split.PMat :=
 against the determinant, `𝖦 w = e_id` the solved witness. -/
 def wgPair (k : Nat) (γ : List Nat) : poly.PPair :=
   (ground.getAt []
-    (ground.getAt [] (genericlift.padj (gramWg k))
+    (ground.getAt [] (split.padj (gramWg k))
       (places.idxOf γ (places.perms k)))
     (places.idxOf (List.range k) (places.perms k)),
    split.pminor (gramWg k))
@@ -115,22 +115,23 @@ private theorem gramWg_head (k : Nat) :
     ((gramWg k).headD []).length = (places.perms k).length :=
   elim.headD_len_of _ _ (gramWg_len k) (gramWg_rows k)
 
-/-- The adjugate's row count is the enumeration's. -/
+/-- The adjugate's row count is the enumeration's
+(`split.length_padj` at the Gram). -/
 private theorem padj_len (k : Nat) :
-    (genericlift.padj (gramWg k)).length = (places.perms k).length :=
-  (ground.matOf_length (gramWg k).length (gramWg k).length _).trans
-    (gramWg_len k)
+    (split.padj (gramWg k)).length = (places.perms k).length :=
+  (split.length_padj _).trans (gramWg_len k)
 
-/-- The adjugate's rows sit at the enumeration's count. -/
+/-- The adjugate's rows sit at the enumeration's count
+(`split.rowsLen_padj` at the Gram). -/
 private theorem padj_rows (k : Nat) :
     elim.rowsLen (places.perms k).length
-      (genericlift.padj (gramWg k)) := by
+      (split.padj (gramWg k)) := by
   rw [← gramWg_len k]
-  exact elim.rowsLen_matOf _ _ _
+  exact split.rowsLen_padj _
 
 /-- The adjugate's head row sits at the enumeration's count. -/
 private theorem padj_head (k : Nat) :
-    ((genericlift.padj (gramWg k)).headD []).length
+    ((split.padj (gramWg k)).headD []).length
       = (places.perms k).length :=
   elim.headD_len_of _ _ (padj_len k) (padj_rows k)
 
@@ -377,24 +378,24 @@ private theorem gram_adj_row (k a c : Nat)
         (fun s => poly.mul
           (ground.getAt [] (ground.getAt [] (gramWg k) a) s)
           (ground.getAt [] (ground.getAt []
-            (genericlift.padj (gramWg k)) s) c))
+            (split.padj (gramWg k)) s) c))
         (List.range (places.perms k).length))
       (if c = a then split.pminor (gramWg k) else []) := by
   have haG : a < (gramWg k).length := by
     rw [gramWg_len]
     exact ha
   have hMl : (split.pmatMul (gramWg k)
-      (genericlift.padj (gramWg k))).length = (gramWg k).length :=
+      (split.padj (gramWg k))).length = (gramWg k).length :=
     ground.length_map _ (gramWg k)
   have hMr : elim.rowsLen (places.perms k).length
-      (split.pmatMul (gramWg k) (genericlift.padj (gramWg k))) :=
+      (split.pmatMul (gramWg k) (split.padj (gramWg k))) :=
     elim.rowsLen_matMulO poly.polyOps _ _ _ (padj_head k)
   have hrow := elim.matMulP_entry (gramWg k)
-    (genericlift.padj (gramWg k)) (places.perms k).length
+    (split.padj (gramWg k)) (places.perms k).length
     (places.perms k).length (gramWg_rows k) (padj_head k) a c
     (by rw [hMl] at *; exact haG) hc
   have h1 := ground.matched_entry ([] : List poly.Poly)
-    (genericlift.adjRead_all (gramWg k) (gramWg_sq k)) a
+    (split.adjRead_all (gramWg k) (gramWg_sq k)) a
     (by rw [hMl]; exact haG)
   have h2 := ground.matched_entry ([] : poly.Poly) h1 c
     (by rw [elim.rowsLen_getAt _ a hMr (by rw [hMl]; exact haG)]
@@ -410,24 +411,24 @@ private theorem gram_adj_col (k a c : Nat)
     poly.oneValue (ground.famFold poly.add []
         (fun s => poly.mul
           (ground.getAt [] (ground.getAt []
-            (genericlift.padj (gramWg k)) a) s)
+            (split.padj (gramWg k)) a) s)
           (ground.getAt [] (ground.getAt [] (gramWg k) s) c))
         (List.range (places.perms k).length))
       (if c = a then split.pminor (gramWg k) else []) := by
-  have haA : a < (genericlift.padj (gramWg k)).length := by
+  have haA : a < (split.padj (gramWg k)).length := by
     rw [padj_len]
     exact ha
-  have hMl : (split.pmatMul (genericlift.padj (gramWg k))
-      (gramWg k)).length = (genericlift.padj (gramWg k)).length :=
-    ground.length_map _ (genericlift.padj (gramWg k))
+  have hMl : (split.pmatMul (split.padj (gramWg k))
+      (gramWg k)).length = (split.padj (gramWg k)).length :=
+    ground.length_map _ (split.padj (gramWg k))
   have hMr : elim.rowsLen (places.perms k).length
-      (split.pmatMul (genericlift.padj (gramWg k)) (gramWg k)) :=
+      (split.pmatMul (split.padj (gramWg k)) (gramWg k)) :=
     elim.rowsLen_matMulO poly.polyOps _ _ _ (gramWg_head k)
-  have hrow := elim.matMulP_entry (genericlift.padj (gramWg k))
+  have hrow := elim.matMulP_entry (split.padj (gramWg k))
     (gramWg k) (places.perms k).length (places.perms k).length
     (padj_rows k) (gramWg_head k) a c haA hc
   have h1 := ground.matched_entry ([] : List poly.Poly)
-    (genericlift.adjColRead_all (gramWg k) (gramWg_sq k)) a
+    (split.adjColRead_all (gramWg k) (gramWg_sq k)) a
     (by rw [hMl]; exact haA)
   have h2 := ground.matched_entry ([] : poly.Poly) h1 c
     (by rw [elim.rowsLen_getAt _ a hMr (by rw [hMl]; exact haA)]
@@ -553,13 +554,13 @@ theorem wgCol_transport (k : Nat) (γ ρ : List Nat)
     (hr : 0 < ground.countOf ρ (places.perms k)) :
     poly.oneValue
       (ground.getAt [] (ground.getAt []
-        (genericlift.padj (gramWg k))
+        (split.padj (gramWg k))
         (places.idxOf ((places.invPerm k ρ).map (fun j =>
           ground.getAt 0 ρ (ground.getAt 0 γ j)))
           (places.perms k)))
         (places.idxOf (List.range k) (places.perms k)))
       (ground.getAt [] (ground.getAt []
-        (genericlift.padj (gramWg k))
+        (split.padj (gramWg k))
         (places.idxOf γ (places.perms k)))
         (places.idxOf (List.range k) (places.perms k))) := by
   have hidU : places.idxOf (List.range k) (places.perms k)
@@ -586,7 +587,7 @@ theorem wgCol_transport (k : Nat) (γ ρ : List Nat)
         (fun s => poly.mul
           (ground.getAt [] (ground.getAt [] (gramWg k) a) s)
           (ground.getAt [] (ground.getAt []
-            (genericlift.padj (gramWg k)) (relIx k ρ s))
+            (split.padj (gramWg k)) (relIx k ρ s))
             (places.idxOf (List.range k) (places.perms k))))
         (List.range (places.perms k).length))
         (if places.idxOf (List.range k) (places.perms k) = a
@@ -598,7 +599,7 @@ theorem wgCol_transport (k : Nat) (γ ρ : List Nat)
           (ground.getAt [] (ground.getAt [] (gramWg k) a)
             (relIx k (places.invPerm k ρ) t))
           (ground.getAt [] (ground.getAt []
-            (genericlift.padj (gramWg k)) t)
+            (split.padj (gramWg k)) t)
             (places.idxOf (List.range k) (places.perms k))))
         (g := relIx k ρ) (h := relIx k (places.invPerm k ρ))
         (ground.distinctList_range _)
@@ -619,7 +620,7 @@ theorem wgCol_transport (k : Nat) (γ ρ : List Nat)
           (ground.getAt [] (ground.getAt [] (gramWg k)
             (relIx k ρ a)) t)
           (ground.getAt [] (ground.getAt []
-            (genericlift.padj (gramWg k)) t)
+            (split.padj (gramWg k)) t)
             (places.idxOf (List.range k) (places.perms k))))
         (List.range (places.perms k).length) (fun t ht => by
           have htn : t < (places.perms k).length := ground.ltOfMem ht
@@ -644,10 +645,10 @@ theorem wgCol_transport (k : Nat) (γ ρ : List Nat)
   have hmain : ∀ r, r < (places.perms k).length →
       poly.oneValue
         (ground.getAt [] (ground.getAt []
-          (genericlift.padj (gramWg k)) r)
+          (split.padj (gramWg k)) r)
           (places.idxOf (List.range k) (places.perms k)))
         (ground.getAt [] (ground.getAt []
-          (genericlift.padj (gramWg k)) (relIx k ρ r))
+          (split.padj (gramWg k)) (relIx k ρ r))
           (places.idxOf (List.range k) (places.perms k))) := by
     intro r hr'
     refine poly.pmul_cancel (split.pminor (gramWg k)) _ _
@@ -655,16 +656,16 @@ theorem wgCol_transport (k : Nat) (γ ρ : List Nat)
     have hB1 : poly.oneValue (ground.famFold poly.add []
         (fun a => poly.mul
           (ground.getAt [] (ground.getAt []
-            (genericlift.padj (gramWg k)) r) a)
+            (split.padj (gramWg k)) r) a)
           (ground.famFold poly.add [] (fun s => poly.mul
             (ground.getAt [] (ground.getAt [] (gramWg k) a) s)
             (ground.getAt [] (ground.getAt []
-              (genericlift.padj (gramWg k)) (relIx k ρ s))
+              (split.padj (gramWg k)) (relIx k ρ s))
               (places.idxOf (List.range k) (places.perms k))))
             (List.range (places.perms k).length)))
         (List.range (places.perms k).length))
         (poly.mul (ground.getAt [] (ground.getAt []
-          (genericlift.padj (gramWg k)) r)
+          (split.padj (gramWg k)) r)
           (places.idxOf (List.range k) (places.perms k)))
           (split.pminor (gramWg k))) := by
       refine poly.oneValue_trans
@@ -672,7 +673,7 @@ theorem wgCol_transport (k : Nat) (γ ρ : List Nat)
           poly.oneValue_refl (fun h1 h2 => poly.add_congr h1 h2)
           _ (fun a => poly.mul
             (ground.getAt [] (ground.getAt []
-              (genericlift.padj (gramWg k)) r) a)
+              (split.padj (gramWg k)) r) a)
             (if places.idxOf (List.range k) (places.perms k) = a
               then split.pminor (gramWg k) else []))
           (List.range (places.perms k).length) (fun a ha =>
@@ -689,17 +690,17 @@ theorem wgCol_transport (k : Nat) (γ ρ : List Nat)
     have hB2 : poly.oneValue (ground.famFold poly.add []
         (fun a => poly.mul
           (ground.getAt [] (ground.getAt []
-            (genericlift.padj (gramWg k)) r) a)
+            (split.padj (gramWg k)) r) a)
           (ground.famFold poly.add [] (fun s => poly.mul
             (ground.getAt [] (ground.getAt [] (gramWg k) a) s)
             (ground.getAt [] (ground.getAt []
-              (genericlift.padj (gramWg k)) (relIx k ρ s))
+              (split.padj (gramWg k)) (relIx k ρ s))
               (places.idxOf (List.range k) (places.perms k))))
             (List.range (places.perms k).length)))
         (List.range (places.perms k).length))
         (poly.mul (split.pminor (gramWg k))
           (ground.getAt [] (ground.getAt []
-            (genericlift.padj (gramWg k)) (relIx k ρ r))
+            (split.padj (gramWg k)) (relIx k ρ r))
             (places.idxOf (List.range k) (places.perms k)))) := by
       refine poly.oneValue_trans
         (ground.famFold_congr_members_ov poly.oneValue poly.add []
@@ -707,10 +708,10 @@ theorem wgCol_transport (k : Nat) (γ ρ : List Nat)
           _ (fun a => ground.famFold poly.add [] (fun s =>
             poly.mul (poly.mul
               (ground.getAt [] (ground.getAt []
-                (genericlift.padj (gramWg k)) r) a)
+                (split.padj (gramWg k)) r) a)
               (ground.getAt [] (ground.getAt [] (gramWg k) a) s))
               (ground.getAt [] (ground.getAt []
-                (genericlift.padj (gramWg k)) (relIx k ρ s))
+                (split.padj (gramWg k)) (relIx k ρ s))
                 (places.idxOf (List.range k) (places.perms k))))
             (List.range (places.perms k).length))
           (List.range (places.perms k).length) (fun a _ =>
@@ -730,10 +731,10 @@ theorem wgCol_transport (k : Nat) (γ ρ : List Nat)
       refine poly.oneValue_trans
         (ground.famFold_swap_ov poly.polyFoldLaws (fun a s => poly.mul (poly.mul
             (ground.getAt [] (ground.getAt []
-              (genericlift.padj (gramWg k)) r) a)
+              (split.padj (gramWg k)) r) a)
             (ground.getAt [] (ground.getAt [] (gramWg k) a) s))
             (ground.getAt [] (ground.getAt []
-              (genericlift.padj (gramWg k)) (relIx k ρ s))
+              (split.padj (gramWg k)) (relIx k ρ s))
               (places.idxOf (List.range k) (places.perms k))))
           (List.range (places.perms k).length)
           (List.range (places.perms k).length)) ?_
@@ -743,7 +744,7 @@ theorem wgCol_transport (k : Nat) (γ ρ : List Nat)
           _ (fun s => poly.mul
             (if s = r then split.pminor (gramWg k) else [])
             (ground.getAt [] (ground.getAt []
-              (genericlift.padj (gramWg k)) (relIx k ρ s))
+              (split.padj (gramWg k)) (relIx k ρ s))
               (places.idxOf (List.range k) (places.perms k))))
           (List.range (places.perms k).length) (fun s hs =>
             poly.oneValue_trans
@@ -809,7 +810,7 @@ def varsOf (G : states.FList) : List Nat :=
 identity key's adjugate column read at the composed key. -/
 private def nOf (G : states.FList) (v : Nat) (σ τ : List Nat) : Poly :=
   ground.getAt [] (ground.getAt []
-    (genericlift.padj (gramWg (posIf G (v, false)).length))
+    (split.padj (gramWg (posIf G (v, false)).length))
     (places.idxOf (places.expo σ (places.invPerm
       (posIf G (v, false)).length τ))
       (places.perms (posIf G (v, false)).length)))
@@ -991,7 +992,7 @@ private def contractSer (gram : Nat → split.PMat) (loopPoly : Nat → Poly)
           (rE ++ pairEdges (posVar G v) (rvar G.length dag) P)
           (sE ++ pairEdges (posVar G v) (svar G.length dag invw) Q)
           (cs ++ [ground.getAt [] (ground.getAt []
-            (genericlift.padj (gram ((posVar G v).length / 2)))
+            (split.padj (gram ((posVar G v).length / 2)))
             (places.idxOf P (serpairing.allParts ((posVar G v).length / 2))))
             (places.idxOf Q
               (serpairing.allParts ((posVar G v).length / 2)))]) acc)
@@ -2790,7 +2791,7 @@ private theorem nOf_transport (G G' : states.FList) (v : Nat)
       (nOf G v (conjBy (posIf G (v, false)).length a b σ')
         (conjBy (posIf G (v, false)).length a b τ')) := by
   show poly.oneValue (ground.getAt [] (ground.getAt []
-      (genericlift.padj (gramWg (posIf G' (v, false)).length))
+      (split.padj (gramWg (posIf G' (v, false)).length))
       (places.idxOf (places.expo σ' (places.invPerm
         (posIf G' (v, false)).length τ'))
         (places.perms (posIf G' (v, false)).length)))

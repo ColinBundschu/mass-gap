@@ -68,7 +68,7 @@ matrices. -/
 def oneValueQ (a b : MatQ) : Prop :=
   matOneValue (matScale b.2 a.1) (matScale a.2 b.1)
 
-instance (a b : MatQ) : Decidable (oneValueQ a b) := decMatOneValue _ _
+instance instGreenprod1 (a b : MatQ) : Decidable (oneValueQ a b) := decMatOneValue _ _
 
 /-- The cleared product, the clearings multiplying. -/
 def mulQ (a b : MatQ) : MatQ := (matMul a.1 b.1, a.2 * b.2)
@@ -96,7 +96,7 @@ vectors. -/
 def vOneValueQ (a b : VecQ) : Prop :=
   poly.oneValue (vecScale b.2 a.1) (vecScale a.2 b.1)
 
-instance (a b : VecQ) : Decidable (vOneValueQ a b) :=
+instance instGreenprod2 (a b : VecQ) : Decidable (vOneValueQ a b) :=
   poly.decOneValue _ _
 
 /-- The cleared vectors' sum at the cross-scaled vectors. -/
@@ -156,7 +156,7 @@ def decSlabShape : ∀ (diag off : List Mat) (ns : List Nat),
           (@instDecidableAnd _ _ inferInstance
             (decSlabShape (A' :: As) Bs (k' :: ns))))
 
-instance (diag off : List Mat) (ns : List Nat) :
+instance instGreenprod3 (diag off : List Mat) (ns : List Nat) :
     Decidable (slabShape diag off ns) := decSlabShape diag off ns
 
 /-- The pivots' shape walk: one square block per slab at its stated
@@ -175,7 +175,7 @@ def decQShape : ∀ (Xs : List MatQ) (ns : List Nat),
   | _ :: Xs, _ :: ns =>
       @instDecidableAnd _ _ inferInstance (decQShape Xs ns)
 
-instance (Xs : List MatQ) (ns : List Nat) : Decidable (qShape Xs ns) :=
+instance instGreenprod4 (Xs : List MatQ) (ns : List Nat) : Decidable (qShape Xs ns) :=
   decQShape Xs ns
 
 /-- The tail witnesses' shape walk over the consecutive order
@@ -199,7 +199,7 @@ def decWShapeR : ∀ (Rs : List MatQ) (ns : List Nat),
   | _ :: Rs, _ :: k' :: ns =>
       @instDecidableAnd _ _ inferInstance (decWShapeR Rs (k' :: ns))
 
-instance (Rs : List MatQ) (ns : List Nat) : Decidable (wShapeR Rs ns) :=
+instance instGreenprod5 (Rs : List MatQ) (ns : List Nat) : Decidable (wShapeR Rs ns) :=
   decWShapeR Rs ns
 
 /-- The head witnesses' shape walk, the exchange orientation: `C_i`
@@ -222,7 +222,7 @@ def decWShapeC : ∀ (Cs : List MatQ) (ns : List Nat),
   | _ :: Cs, _ :: k' :: ns =>
       @instDecidableAnd _ _ inferInstance (decWShapeC Cs (k' :: ns))
 
-instance (Cs : List MatQ) (ns : List Nat) : Decidable (wShapeC Cs ns) :=
+instance instGreenprod6 (Cs : List MatQ) (ns : List Nat) : Decidable (wShapeC Cs ns) :=
   decWShapeC Cs ns
 
 /-- The gram list at the slab orders: one gram per slab, square at
@@ -242,7 +242,7 @@ def decGramShape : ∀ (Gs : List elim.Mat) (ns : List Nat),
   | _ :: Gs, _ :: ns =>
     @instDecidableAnd _ _ inferInstance (decGramShape Gs ns)
 
-instance (Gs : List elim.Mat) (ns : List Nat) :
+instance instGreenprod7 (Gs : List elim.Mat) (ns : List Nat) :
     Decidable (gramShape Gs ns) := decGramShape Gs ns
 
 /-- The vector blocks' length walk, one length per slab. -/
@@ -260,7 +260,7 @@ def decVShape : ∀ (us : List VecQ) (ns : List Nat),
   | _ :: us, _ :: ns =>
       @instDecidableAnd _ _ inferInstance (decVShape us ns)
 
-instance (us : List VecQ) (ns : List Nat) : Decidable (vShape us ns) :=
+instance instGreenprod8 (us : List VecQ) (ns : List Nat) : Decidable (vShape us ns) :=
   decVShape us ns
 
 /-- The block tridiagonal assembled at the slab data, the off-band
@@ -329,7 +329,7 @@ def decTailSteps : ∀ (diag off : List Mat) (Xs Rs : List MatQ),
           (@instDecidableAnd _ _ inferInstance inferInstance))
         (decTailSteps (A' :: As) Bs (X' :: Xs) Rs)
 
-instance (diag off : List Mat) (Xs Rs : List MatQ) :
+instance instGreenprod9 (diag off : List Mat) (Xs Rs : List MatQ) :
     Decidable (tailSteps diag off Xs Rs) := decTailSteps diag off Xs Rs
 
 /-- The tail recursion's read: the slab walk, the two shape walks,
@@ -342,7 +342,7 @@ def tailRead (diag off : List Mat) (Xs Rs : List MatQ)
   ∧ wShapeR Rs ns
   ∧ tailSteps diag off Xs Rs
 
-instance (diag off : List Mat) (Xs Rs : List MatQ) (ns : List Nat) :
+instance instGreenprod10 (diag off : List Mat) (Xs Rs : List MatQ) (ns : List Nat) :
     Decidable (tailRead diag off Xs Rs ns) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
 
@@ -385,7 +385,7 @@ def decHeadSteps : ∀ (diag off : List Mat) (Ys Cs : List MatQ),
           (@instDecidableAnd _ _ inferInstance inferInstance))
         (decHeadSteps (A' :: As) Bs (Y' :: Ys) Cs)
 
-instance (diag off : List Mat) (Ys Cs : List MatQ) :
+instance instGreenprod11 (diag off : List Mat) (Ys Cs : List MatQ) :
     Decidable (headSteps diag off Ys Cs) := decHeadSteps diag off Ys Cs
 
 /-- The head recursion's read: the slab walk, the two shape walks,
@@ -399,7 +399,7 @@ def headRead (diag off : List Mat) (Ys Cs : List MatQ)
   ∧ oneValueQ (ground.getAt dM Ys 0) (ofM (ground.getAt [] diag 0))
   ∧ headSteps diag off Ys Cs
 
-instance (diag off : List Mat) (Ys Cs : List MatQ) (ns : List Nat) :
+instance instGreenprod12 (diag off : List Mat) (Ys Cs : List MatQ) (ns : List Nat) :
     Decidable (headRead diag off Ys Cs ns) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _))
 
@@ -471,7 +471,7 @@ def decSolveRows : ∀ (p : VecQ) (diag off : List Mat)
       @instDecidableAnd _ _ inferInstance
         (decSolveRows _ (A' :: As) Bs (u' :: us) ws)
 
-instance (p : VecQ) (diag off : List Mat) (us ws : List VecQ) :
+instance instGreenprod13 (p : VecQ) (diag off : List Mat) (us ws : List VecQ) :
     Decidable (solveRows p diag off us ws) := decSolveRows p diag off us ws
 
 /-- The solve's read: the slab walk, the two length walks, and the
@@ -483,7 +483,7 @@ def solveRead (diag off : List Mat) (us ws : List VecQ)
   ∧ vShape ws ns
   ∧ solveRows dV diag off us ws
 
-instance (diag off : List Mat) (us ws : List VecQ) (ns : List Nat) :
+instance instGreenprod14 (diag off : List Mat) (us ws : List VecQ) (ns : List Nat) :
     Decidable (solveRead diag off us ws ns) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
 
@@ -498,7 +498,7 @@ def decSidesUnit : ∀ ws : List VecQ, Decidable (sidesUnit ws)
   | _ :: ws =>
       @instDecidableAnd _ _ (poly.decUnitTail _) (decSidesUnit ws)
 
-instance (ws : List VecQ) : Decidable (sidesUnit ws) :=
+instance instGreenprod15 (ws : List VecQ) : Decidable (sidesUnit ws) :=
   decSidesUnit ws
 
 /-- The source's support at slab `j`, the keyed walk: the source's
@@ -516,7 +516,7 @@ def decSupportAt : ∀ (ws : List VecQ) (j : Nat),
   | _ :: ws, i + 1 =>
       @instDecidableAnd _ _ (poly.decUnitTail _) (decSupportAt ws i)
 
-instance (ws : List VecQ) (j : Nat) : Decidable (supportAt ws j) :=
+instance instGreenprod16 (ws : List VecQ) (j : Nat) : Decidable (supportAt ws j) :=
   decSupportAt ws j
 
 /-- The descending telescope's walk below the source:
@@ -540,7 +540,7 @@ def decTeleDownWalk : ∀ (j : Nat) (Cs : List MatQ) (us : List VecQ),
       @instDecidableAnd _ _ inferInstance
         (decTeleDownWalk i Cs (u' :: us))
 
-instance (j : Nat) (Cs : List MatQ) (us : List VecQ) :
+instance instGreenprod17 (j : Nat) (Cs : List MatQ) (us : List VecQ) :
     Decidable (teleDownWalk j Cs us) := decTeleDownWalk j Cs us
 
 /-- The descending telescope below the source at the slab shapes. -/
@@ -548,7 +548,7 @@ def teleDown (Cs : List MatQ) (us : List VecQ) (j : Nat)
     (ns : List Nat) : Prop :=
   wShapeC Cs ns ∧ vShape us ns ∧ teleDownWalk j Cs us
 
-instance (Cs : List MatQ) (us : List VecQ) (j : Nat) (ns : List Nat) :
+instance instGreenprod18 (Cs : List MatQ) (us : List VecQ) (j : Nat) (ns : List Nat) :
     Decidable (teleDown Cs us j ns) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
@@ -581,7 +581,7 @@ def decTeleUpWalk : ∀ (j : Nat) (Rs : List MatQ) (us : List VecQ),
   | _ + 1, _ :: _, [] => isFalse (fun h => h)
   | i + 1, _ :: Rs, _ :: us => decTeleUpWalk i Rs us
 
-instance (j : Nat) (Rs : List MatQ) (us : List VecQ) :
+instance instGreenprod19 (j : Nat) (Rs : List MatQ) (us : List VecQ) :
     Decidable (teleUpWalk j Rs us) := decTeleUpWalk j Rs us
 
 /-- The walk from the source anchors at any depth within the
@@ -606,7 +606,7 @@ def teleUp (Rs : List MatQ) (us : List VecQ) (j : Nat)
     (ns : List Nat) : Prop :=
   wShapeR Rs ns ∧ vShape us ns ∧ teleUpWalk j Rs us
 
-instance (Rs : List MatQ) (us : List VecQ) (j : Nat) (ns : List Nat) :
+instance instGreenprod20 (Rs : List MatQ) (us : List VecQ) (j : Nat) (ns : List Nat) :
     Decidable (teleUp Rs us j ns) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
@@ -627,7 +627,7 @@ def greenRead (diag off : List Mat) (Xs Rs Ys Cs : List MatQ)
   ∧ teleDown Cs us j ns
   ∧ teleUp Rs us j ns
 
-instance (diag off : List Mat) (Xs Rs Ys Cs : List MatQ)
+instance instGreenprod21 (diag off : List Mat) (Xs Rs Ys Cs : List MatQ)
     (us ws : List VecQ) (j : Nat) (ns : List Nat) :
     Decidable (greenRead diag off Xs Rs Ys Cs us ws j ns) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
@@ -652,7 +652,7 @@ def decRevListRead : ∀ (Xs : List MatQ)
   | _ :: Xs, _ :: sps =>
     @instDecidableAnd _ _ inferInstance (decRevListRead Xs sps)
 
-instance (Xs : List MatQ) (sps : List ((n : Nat) × Split n)) :
+instance instGreenprod22 (Xs : List MatQ) (sps : List ((n : Nat) × Split n)) :
     Decidable (revListRead Xs sps) := decRevListRead Xs sps
 
 /-- The slab fold of the reversal counts, the fast route the
@@ -673,7 +673,7 @@ def countSplitRead {n : Nat} (S : Mat) (diag off : List Mat)
   ∧ splitRead S SP
   ∧ revAt SP = revFold sps
 
-instance {n : Nat} (S : Mat) (diag off : List Mat)
+instance instGreenprod23 {n : Nat} (S : Mat) (diag off : List Mat)
     (Xs Rs : List MatQ) (sps : List ((k : Nat) × Split k))
     (SP : Split n) (ns : List Nat) :
     Decidable (countSplitRead S diag off Xs Rs sps SP ns) :=
@@ -746,7 +746,7 @@ private theorem detProdRead_walk (diag off : List Mat)
       (CPair.oneValue_symm
         (foldMinorQ_eq Xs ns h.2.1 _ _ (CPair.oneValue_refl _))))⟩⟩
 
-instance (diag off : List Mat) (Xs : List MatQ) (ns : List Nat) :
+instance instGreenprod24 (diag off : List Mat) (Xs : List MatQ) (ns : List Nat) :
     Decidable (detProdRead diag off Xs ns) :=
   match elim.decRowsLen (assemble diag off).length
       (assemble diag off) with
@@ -1243,22 +1243,6 @@ theorem headM_sq (diag off : List Mat) (X : MatQ) (j : Nat)
     Nat.add_zero _] at h
   exact h
 
-private theorem unitTail_scaleP (w : BPair) : ∀ {r : List BPair},
-    poly.unitTail r → poly.unitTail (poly.scaleP w r)
-  | [], _ => trivial
-  | _ :: _, h => by
-    refine ⟨?_, unitTail_scaleP w h.2⟩
-    show BPair.oneValue ((w * _).norm) BPair.unit
-    refine BPair.oneValue_trans (BPair.norm_oneValue _) ?_
-    exact BPair.oneValue_trans
-      (BPair.mul_congr (BPair.oneValue_refl w) h.1)
-        (BPair.mul_unit w)
-
-private theorem nullScaleB (w : BPair) : ∀ (M : Mat),
-    elim.matNull M → elim.matNull (matScaleB w M)
-  | [], _ => trivial
-  | _ :: M, h => ⟨unitTail_scaleP w h.1, nullScaleB w M h.2⟩
-
 private theorem rowScaleP (c : Pos) (w : BPair) : ∀ r : List BPair,
     poly.oneValue ((poly.scaleP w r).map (fun x => x.scale c))
       (poly.scaleP (w.scale c) r)
@@ -1350,7 +1334,7 @@ private theorem tieBase (dn : BPair) (X X' : MatQ) (o : Nat)
     elim.sqAt_matAdd o _ _ hb hc
   have hnul : elim.matNull (matScaleB (dn.scale (X.2 * X'.2))
       (inertia.headId 0 o)) :=
-    nullScaleB _ _ (show elim.matNull (elim.nullMat o (0 + o)) from
+    matNull_scaleB _ _ (show elim.matNull (elim.nullMat o (0 + o)) from
       elim.matNull_nullMat _ _)
   have hz : (0 : Nat) + o = o := Nat.zero_add o
   have hnulS : sqAt (matScaleB (dn.scale (X.2 * X'.2))
@@ -1613,7 +1597,7 @@ private theorem tieStep (dn : BPair) (X X' : MatQ) (j : Nat)
     rw [elim.matAdd_comm]
     exact elim.matAdd_nullL _ _
       (elim.matNull_matAdd
-        (nullScaleB _ _ (elim.matNull_nullMat _ n0))
+        (matNull_scaleB _ _ (elim.matNull_nullMat _ n0))
         (elim.matNull_nullMat _ n0))
       (hNlen.trans hOlen.symm) hNrows hOrows
   have htieC : matOneValue
@@ -3584,7 +3568,7 @@ theorem withdrawn_sandwich {k k' : Nat} (X' R : MatQ) (B : Mat)
   have hcg : matOneValue (matMul (transposeM R.1) (transposeM X'.1))
       (matMul (transposeM R.1) X'.1) :=
     matMul_congrR (transposeM R.1) (transposeM X'.1) X'.1
-      hX'Tr hX'r hX'Tl hX'l hk' hX'sym
+      hX'Tr hX'r hX'Tl hX'l hX'sym
   have hstar : matOneValue (matScale (X'.2 * R.2) B)
       (matMul (transposeM R.1) X'.1) :=
     matOne_trans (matOne_symm hRHS)
@@ -3679,7 +3663,7 @@ private theorem capAssemble {X P Q U : BPair} {fn fd bn bd r : Pos}
 witness image's dot against the bond's transpose image, its square
 priced by the squared pairing at the floor and the bond's square
 cap, the bonds entering through their squares alone
-(`lem:cornerpivot`(vii)'s dominance clause); the two images read
+(`lem:cornerblock`'s dominance clause); the two images read
 their lengths off the bond's and the witness's own rectangular
 shapes. -/
 theorem sandwich_cap {o o' : Nat} (Xd R : MatQ) (B : Mat)
@@ -3995,7 +3979,7 @@ def symRead (diag : List Mat) : Prop :=
     decide (matOneValue (transposeM (ground.getAt [] diag i))
       (ground.getAt [] diag i)))) = true
 
-instance (diag : List Mat) : Decidable (symRead diag) :=
+instance instGreenprod25 (diag : List Mat) : Decidable (symRead diag) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- Clause (i)'s pivot symmetry at the tail recursion: the seed is

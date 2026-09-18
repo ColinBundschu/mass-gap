@@ -9,7 +9,7 @@
       "orcid": "0000-0001-7592-9891"
     }
   ],
-  "description": "A manuscript deriving a mass gap for lattice gauge theory over every compact simple group, constructively over the positive naturals, together with its Lean 4 formalization: two libraries, MassGap and MassGapChecks, Lean core alone, every declaration at the empty axiom set and every check module decided by the kernel. The manuscript is a nominally complete proof, to the extent that any proof reviewed only by its author can be considered complete; any change, significant or minor, is made in the TeX first and reflected in Lean. The Lean tree is a mostly complete transcription of the TeX proof, and the README states exactly which clauses of the main theorem it holds at this version and which remain open.",
+  "description": "A manuscript developing a constructive approach to the lattice mass gap over every simply connected compact simple group, together with its in-progress Lean 4 formalization: two libraries, MassGap and MassGapChecks, Lean core alone, every declaration at the empty axiom set and every check module decided by the kernel. The relativistic continuum construction includes a pending mathematical obligation for exact spacetime covariance. The TeX is authoritative and the Lean is its transcription. The README gives an overview of established results and the mathematical and formalization work still to complete.",
   "keywords": [
     "mass gap",
     "Yang-Mills",

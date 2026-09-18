@@ -84,6 +84,20 @@ def wCount (W : List (List BPair × Bool)) (y : List BPair)
     (side : Bool) : Nat :=
   countOf (y, side) W
 
+/-- A key off the rank's normed frame reads the alternant data's
+count at the count's unit: every member sits framed. -/
+theorem wCount_offFrame (t : gentable.Table)
+    (W' : List (List BPair × Bool)) (hwsh' : wShapeRead t W')
+    (y : List BPair)
+    (hoff : ¬ (y.length = t.rank ∧ poly.pnorm y = y)) (s : Bool) :
+    wCount W' y s = 0 := by
+  match h0 : ground.countOf (y, s) W' with
+  | 0 => exact h0
+  | n + 1 =>
+    refine absurd (hwsh' (y, s) (ground.mem_of_countOf_pos (y, s) W'
+      (by rw [h0]; exact Nat.succ_pos n))) (fun hfr => hoff ?_)
+    exact hfr
+
 /-- The closure read: each member's reflection image sits in the
 list at the flipped side at the member's own count
 (`con:sertables`: one further letter moves the grading by one). -/
@@ -92,7 +106,7 @@ def wCloseRead (t : gentable.Table)
   ∀ vp ∈ W, ∀ i, i < t.rank →
     countOf (reflAt t i vp.1, !vp.2) W = countOf vp W
 
-instance (t : gentable.Table) (W : List (List BPair × Bool)) :
+instance instAssembly1 (t : gentable.Table) (W : List (List BPair × Bool)) :
     Decidable (wCloseRead t W) :=
   inferInstanceAs (Decidable (∀ vp ∈ W, ∀ i, i < t.rank → _ = _))
 
@@ -116,7 +130,7 @@ def wDomAt (t : gentable.Table) (W : List (List BPair × Bool))
     poly.pnorm (elim.vecAdd (ground.getAt ([], false) W k).1
       (cartanFold t (ground.getAt [] wits k))) = v
 
-instance (t : gentable.Table) (W : List (List BPair × Bool))
+instance instAssembly2 (t : gentable.Table) (W : List (List BPair × Bool))
     (wits : List (List Nat)) (v : List BPair) :
     Decidable (wDomAt t W wits v) :=
   inferInstanceAs (Decidable (wits.length = W.length ∧
@@ -133,7 +147,7 @@ def wDomRead (t : gentable.Table) (W : List (List BPair × Bool))
     (wits : List (List Nat)) : Prop :=
   wDomAt t W wits (rhoV t)
 
-instance (t : gentable.Table) (W : List (List BPair × Bool))
+instance instAssembly3 (t : gentable.Table) (W : List (List BPair × Bool))
     (wits : List (List Nat)) : Decidable (wDomRead t W wits) :=
   inferInstanceAs (Decidable (wDomAt t W wits (rhoV t)))
 
@@ -145,7 +159,7 @@ def wTopRead (t : gentable.Table)
   countOf (poly.pnorm (rhoV t), false) W = 1
     ∧ countOf (poly.pnorm (rhoV t), true) W = 0
 
-instance (t : gentable.Table) (W : List (List BPair × Bool)) :
+instance instAssembly4 (t : gentable.Table) (W : List (List BPair × Bool)) :
     Decidable (wTopRead t W) :=
   inferInstanceAs (Decidable (_ ∧ _))
 
@@ -156,7 +170,7 @@ grading alone). -/
 def wTopAt (W : List (List BPair × Bool)) (v : List BPair) : Prop :=
   ground.countOf (v, false) W = 1 ∧ ground.countOf (v, true) W = 0
 
-instance (W : List (List BPair × Bool)) (v : List BPair) :
+instance instAssembly5 (W : List (List BPair × Bool)) (v : List BPair) :
     Decidable (wTopAt W v) :=
   inferInstanceAs (Decidable (ground.countOf (v, false) W = 1 ∧
     ground.countOf (v, true) W = 0))
@@ -170,7 +184,7 @@ def wRegRead (t : gentable.Table) (W : List (List BPair × Bool))
     vp.1 ≠ top →
     ground.countOf (vp.1, true) W = ground.countOf (vp.1, false) W
 
-instance (t : gentable.Table) (W : List (List BPair × Bool))
+instance instAssembly6 (t : gentable.Table) (W : List (List BPair × Bool))
     (top : List BPair) : Decidable (wRegRead t W top) :=
   inferInstanceAs (Decidable (∀ vp ∈ W,
     (∀ k, k < t.rank → BPair.unit < ground.getAt BPair.unit vp.1 k) →
@@ -185,7 +199,7 @@ def balanceAt (t : gentable.Table) (W : List (List BPair × Bool))
   subsetCount t y false + wCount W y true
     = subsetCount t y true + wCount W y false
 
-instance (t : gentable.Table) (W : List (List BPair × Bool))
+instance instAssembly7 (t : gentable.Table) (W : List (List BPair × Bool))
     (y : List BPair) : Decidable (balanceAt t W y) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -3384,6 +3398,592 @@ theorem reflF_eq (t : gentable.Table) (i : Nat)
             if_neg (fun h : k = j => hjk h.symm)]
           exact BPair.add_unit _
 
+/-- The reflection has the coroot width and the canonical
+representative at every key of the table's width. -/
+theorem reflF_shape (t : gentable.Table) (i : Nat) (v : List BPair)
+    (hv : v.length = t.rank) :
+    (reflF t i v).length = t.rank ∧ poly.pnorm (reflF t i v) = reflF t i v := by
+  rw [reflF_eq t i v hv]
+  exact ⟨reflAt_length t i v, reflAt_norm t i v⟩
+
+/-- A reflection reads the input's canonical value. -/
+theorem reflF_pnorm (t : gentable.Table) (i : Nat) (v : List BPair)
+    (hv : v.length = t.rank) : reflF t i (poly.pnorm v) = reflF t i v := by
+  rw [reflF_eq t i (poly.pnorm v) ((poly.pnorm_length v).trans hv),
+    reflAt_pnorm, reflF_eq t i v hv]
+
+/-- The reflected entry is the entry joined to the reflecting
+coordinate's multiple of the Cartan row's partner. -/
+theorem reflF_getAt (t : gentable.Table) (i : Nat) (v : List BPair)
+    (hv : v.length = t.rank) (j : Nat) (hj : j < t.rank) :
+    (ground.getAt BPair.unit (reflF t i v) j).oneValue
+      (ground.getAt BPair.unit v j + ground.getAt BPair.unit v i
+        * (ground.getAt BPair.unit (ground.getAt [] t.cartan i) j).swap) := by
+  have h := poly.oneValue_getAt j
+    (poly.pnorm_oneValue (elim.vecAdd v (refKick t i (ground.getAt BPair.unit v i))))
+  rw [elim.getAt_vecAdd v _ j (by rw [hv]; exact hj)
+    (by rw [refKick_length]; exact hj), refKick_getAt t i _ j hj] at h
+  exact h
+
+/-- A diagonal scaling of coroot coordinates intertwines simple
+reflections when it intertwines the Cartan rows. -/
+theorem reflF_scale (s t : gentable.Table) (hr : s.rank = t.rank)
+    (c : Nat → BPair)
+    (hcart : ∀ i, i < t.rank → ∀ j, j < t.rank →
+      (c j * ground.getAt BPair.unit (ground.getAt [] t.cartan i) j).oneValue
+        (c i * ground.getAt BPair.unit (ground.getAt [] s.cartan i) j))
+    (u v : List BPair) (hu : u.length = s.rank) (hv : v.length = t.rank)
+    (hscale : ∀ j, j < t.rank →
+      (ground.getAt BPair.unit u j).oneValue (c j * ground.getAt BPair.unit v j))
+    (i j : Nat) (hi : i < t.rank) (hj : j < t.rank) :
+    (ground.getAt BPair.unit (reflF s i u) j).oneValue
+      (c j * ground.getAt BPair.unit (reflF t i v) j) := by
+  refine BPair.oneValue_trans (reflF_getAt s i u hu j (by rw [hr]; exact hj)) ?_
+  refine BPair.oneValue_trans
+    (BPair.add_congr (hscale j hj) (BPair.mul_congr_left (hscale i hi))) ?_
+  refine BPair.oneValue_trans ?_
+    (BPair.oneValue_symm (BPair.mul_congr (BPair.oneValue_refl _) (reflF_getAt t i v hv j hj)))
+  rw [BPair.left_distrib]
+  refine BPair.add_congr (BPair.oneValue_refl _) ?_
+  rw [BPair.mul_comm (c i) (ground.getAt BPair.unit v i), BPair.mul_assoc,
+    BPair.mul_swap, BPair.mul_left_comm (c j), BPair.mul_swap]
+  exact BPair.mul_congr (BPair.oneValue_refl _) (ground.swap_congr (BPair.oneValue_symm (hcart i hi j hj)))
+
+/-- A scaled entry identity determines the canonical reflection
+at every coordinate when its common scale is off the sum's unit. -/
+theorem reflF_eq_of_scaled (t : gentable.Table) (i : Nat) (v w : List BPair)
+    (hv : v.length = t.rank) (hw : w.length = t.rank) (c : BPair)
+    (hc : ¬ c.oneValue BPair.unit)
+    (hmove : ∀ j, j < t.rank →
+      (c * ground.getAt BPair.unit v j + (c * ground.getAt BPair.unit v i)
+        * (ground.getAt BPair.unit (ground.getAt [] t.cartan i) j).swap).oneValue
+          (c * ground.getAt BPair.unit w j)) :
+    reflF t i v = poly.pnorm w := by
+  have hs := reflF_shape t i v hv
+  have hlen := hs.1.trans hw.symm
+  refine hs.2.symm.trans (poly.pnorm_congr _ _ hlen
+    (poly.oneValue_of_entries _ _ hlen (fun j hj => ?_)))
+  have hjr : j < t.rank := by rw [hs.1] at hj; exact hj
+  apply ground.mulCancel hc
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl c) (reflF_getAt t i v hv j hjr)) ?_
+  rw [BPair.left_distrib, ← BPair.mul_assoc]
+  exact hmove j hjr
+
+/-- A C interior letter exchanges its two coordinate places,
+read through the coroot display (`con:sertables`). -/
+theorem reflF_C_adjSwap (l i : Nat) (D : List BPair) (hD : D.length = l)
+    (hi : i + 1 < l) :
+    reflF (tableC l) i (corootsC D) = poly.pnorm (corootsC (ground.adjSwap i D)) := by
+  have hp : 0 < D.length := by
+    rw [hD]
+    exact Nat.lt_trans (Nat.succ_pos i) hi
+  have hiD : i + 1 < D.length := by rw [hD]; exact hi
+  have hc : (corootsC D).length = l := (corootsC_length D hp).trans hD
+  have hswap : (ground.adjSwap i D).length = l := (ground.length_adjSwap i D).trans hD
+  have hct : (corootsC (ground.adjSwap i D)).length = l :=
+    (corootsC_length _ (by rw [ground.length_adjSwap]; exact hp)).trans hswap
+  have hs := reflF_shape (tableC l) i (corootsC D) hc
+  have hlen : (reflF (tableC l) i (corootsC D)).length
+      = (corootsC (ground.adjSwap i D)).length := hs.1.trans hct.symm
+  refine hs.2.symm.trans (poly.pnorm_congr _ _ hlen
+    (poly.oneValue_of_entries _ _ hlen (fun j hj => ?_)))
+  have hjl : j < l := by rw [hs.1] at hj; exact hj
+  have hjD : j < D.length := by rw [hD]; exact hjl
+  have hcart : ground.getAt BPair.unit (ground.getAt [] (tableC l).cartan i) j = cartC l i j := by
+    rw [cartC_eq, ground.matOf_entry [] BPair.unit l l _ i j (Nat.lt_of_succ_lt hi) hjl]
+  have hr := reflF_getAt (tableC l) i (corootsC D) hc j hjl
+  rw [hcart] at hr
+  have hvj := corootsC_getAt D j hjD
+  have hvi := corootsC_getAt D i (Nat.lt_of_succ_lt hiD)
+  have ht := corootsC_getAt (ground.adjSwap i D) j (by rw [hswap]; exact hjl)
+  refine BPair.oneValue_trans hr (BPair.oneValue_trans
+    (BPair.add_congr hvj (BPair.mul_congr_left hvi))
+    (BPair.oneValue_trans ?_ (BPair.oneValue_symm ht)))
+  by_cases hji : j = i
+  · rw [hji, cartCd, ground.getAt_adjSwap_fst BPair.unit i D hiD,
+      ground.getAt_adjSwap_snd BPair.unit i D hiD]
+    refine BPair.oneValue_trans (BPair.add_mul_swap_two _) ?_
+    rw [← BPair.swap_add, BPair.swap_swap, BPair.add_comm]
+    exact BPair.oneValue_refl _
+  · by_cases hprev : j + 1 = i
+    · have hedge : ¬ j + 2 = l := Nat.ne_of_lt (show j + 1 + 1 < l from by rw [hprev]; exact hi)
+      have hswap' : j + 1 + 1 < D.length := by rw [hprev]; exact hiD
+      rw [← hprev, cartCdn1 l j hedge, BPair.swap_swap,
+        ground.getAt_adjSwap_ne BPair.unit (j + 1) D j
+          (Nat.ne_of_lt (Nat.lt_succ_self j))
+          (Nat.ne_of_lt (Nat.lt_trans (Nat.lt_succ_self j) (Nat.lt_succ_self (j + 1)))),
+        ground.getAt_adjSwap_fst BPair.unit (j + 1) D hswap']
+      exact BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl _) (BPair.mul_ofNat_one _))
+        (BPair.gap_join _ _ _)
+    · by_cases hnext : j = i + 1
+      · rw [hnext, cartCup, BPair.swap_swap,
+          ground.getAt_adjSwap_snd BPair.unit i D hiD,
+          ground.getAt_adjSwap_ne BPair.unit i D (i + 1 + 1)
+            (Nat.ne_of_gt (Nat.lt_trans (Nat.lt_succ_self i) (Nat.lt_succ_self (i + 1))))
+            (Nat.ne_of_gt (Nat.lt_succ_self (i + 1)))]
+        refine BPair.oneValue_trans
+          (BPair.add_congr (BPair.oneValue_refl _) (BPair.mul_ofNat_one _)) ?_
+        rw [BPair.add_comm]
+        exact BPair.gap_join _ _ _
+      · rw [cartCoff l i j hji hprev hnext,
+          ground.getAt_adjSwap_ne BPair.unit i D j hji hnext,
+          ground.getAt_adjSwap_ne BPair.unit i D (j + 1) hprev
+            (fun he => hji (Nat.succ.inj he))]
+        exact BPair.oneValue_trans
+          (BPair.add_congr (BPair.oneValue_refl _) (BPair.mul_unit _)) (BPair.add_unit _)
+
+/-- C's final letter flips the final coordinate, read through
+the coroot display (`con:sertables`). -/
+theorem reflF_C_last (l i : Nat) (D : List BPair) (hD : D.length = l)
+    (hi : i + 1 = l) :
+    reflF (tableC l) i (corootsC D)
+      = poly.pnorm (corootsC (D.set i (ground.getAt BPair.unit D i).swap)) := by
+  have hil : i < l := by rw [← hi]; exact Nat.lt_succ_self i
+  have hiD : i < D.length := by rw [hD]; exact hil
+  have hp : 0 < D.length := by rw [hD, ← hi]; exact Nat.succ_pos i
+  have hc : (corootsC D).length = l := (corootsC_length D hp).trans hD
+  have hset : (D.set i (ground.getAt BPair.unit D i).swap).length = l :=
+    (ground.length_set _ D i).trans hD
+  have hct : (corootsC (D.set i (ground.getAt BPair.unit D i).swap)).length = l :=
+    (corootsC_length _ (by rw [ground.length_set]; exact hp)).trans hset
+  have hs := reflF_shape (tableC l) i (corootsC D) hc
+  have hlen : (reflF (tableC l) i (corootsC D)).length
+      = (corootsC (D.set i (ground.getAt BPair.unit D i).swap)).length := hs.1.trans hct.symm
+  have hout : ground.getAt BPair.unit D (i + 1) = BPair.unit :=
+    ground.getAt_over _ D _ (by rw [hD, hi]; exact Nat.le_refl l)
+  have hvi : (ground.getAt BPair.unit (corootsC D) i).oneValue (ground.getAt BPair.unit D i) := by
+    refine BPair.oneValue_trans (corootsC_getAt D i hiD) ?_
+    rw [hout]
+    exact BPair.add_unit _
+  refine hs.2.symm.trans (poly.pnorm_congr _ _ hlen
+    (poly.oneValue_of_entries _ _ hlen (fun j hj => ?_)))
+  have hjl : j < l := by rw [hs.1] at hj; exact hj
+  have hcart : ground.getAt BPair.unit (ground.getAt [] (tableC l).cartan i) j = cartC l i j := by
+    rw [cartC_eq, ground.matOf_entry [] BPair.unit l l _ i j hil hjl]
+  have hr := reflF_getAt (tableC l) i (corootsC D) hc j hjl
+  rw [hcart] at hr
+  have hvj := corootsC_getAt D j (by rw [hD]; exact hjl)
+  have ht := corootsC_getAt (D.set i (ground.getAt BPair.unit D i).swap) j (by rw [hset]; exact hjl)
+  refine BPair.oneValue_trans hr (BPair.oneValue_trans
+    (BPair.add_congr hvj (BPair.mul_congr_left hvi))
+    (BPair.oneValue_trans ?_ (BPair.oneValue_symm ht)))
+  by_cases hji : j = i
+  · rw [hji, cartCd, ground.getAt_set_self BPair.unit _ D i hiD,
+      ground.getAt_set_ne BPair.unit D i (i + 1) _ (Nat.ne_of_gt (Nat.lt_succ_self i)), hout]
+    exact BPair.oneValue_trans
+      (BPair.add_congr (BPair.add_unit _) (BPair.oneValue_refl _))
+      (BPair.oneValue_trans (BPair.add_mul_swap_two _) (BPair.oneValue_symm (BPair.add_unit _)))
+  · by_cases hprev : j + 1 = i
+    · have hedge : j + 2 = l := (congrArg Nat.succ hprev).trans hi
+      rw [← hprev, cartCdn2 l j hedge, BPair.swap_swap,
+        ground.getAt_set_ne BPair.unit D (j + 1) j _ (Nat.ne_of_lt (Nat.lt_succ_self j)),
+        ground.getAt_set_self BPair.unit _ D (j + 1) (by rw [hprev]; exact hiD), BPair.swap_swap,
+        BPair.mul_comm _ (BPair.ofNat 2)]
+      exact BPair.oneValue_trans
+        (BPair.add_congr (BPair.oneValue_refl _)
+          (BPair.ofNat_two_mul (ground.getAt BPair.unit D (j + 1))))
+        (BPair.gap_join (ground.getAt BPair.unit D j) (ground.getAt BPair.unit D (j + 1))
+          (ground.getAt BPair.unit D (j + 1)).swap)
+    · have hnext : ¬ j = i + 1 := Nat.ne_of_lt (by rw [hi]; exact hjl)
+      rw [cartCoff l i j hji hprev hnext,
+        ground.getAt_set_ne BPair.unit D i j _ hji,
+        ground.getAt_set_ne BPair.unit D i (j + 1) _ hprev]
+      exact BPair.oneValue_trans
+        (BPair.add_congr (BPair.oneValue_refl _) (BPair.mul_unit _)) (BPair.add_unit _)
+
+/-- A C coordinate action also reads B's reflection when both
+coordinate displays have even gaps. -/
+theorem reflF_B_of_C (l i : Nat) (D E : List BPair) (hD : D.length = l) (hE : E.length = l)
+    (hi : i < l)
+    (hd : ∀ j, j + 1 < D.length →
+      (ground.getAt BPair.unit D j + (ground.getAt BPair.unit D (j + 1)).swap).marginN % 2 = 0)
+    (he : ∀ j, j + 1 < E.length →
+      (ground.getAt BPair.unit E j + (ground.getAt BPair.unit E (j + 1)).swap).marginN % 2 = 0)
+    (hmove : reflF (tableC l) i (corootsC D) = poly.pnorm (corootsC E)) :
+    reflF (tableB l) i (corootsB D) = poly.pnorm (corootsB E) := by
+  have hl : 0 < l := Nat.lt_of_le_of_lt (Nat.zero_le i) hi
+  have hdp : 0 < D.length := by rw [hD]; exact hl
+  have hep : 0 < E.length := by rw [hE]; exact hl
+  have hbd : (corootsB D).length = l := (corootsB_length D hdp).trans hD
+  have hcd : (corootsC D).length = l := (corootsC_length D hdp).trans hD
+  have hbe : (corootsB E).length = l := (corootsB_length E hep).trans hE
+  have hs := reflF_shape (tableB l) i (corootsB D) hbd
+  have hlen : (reflF (tableB l) i (corootsB D)).length = (corootsB E).length := hs.1.trans hbe.symm
+  refine hs.2.symm.trans (poly.pnorm_congr _ _ hlen
+    (poly.oneValue_of_entries _ _ hlen (fun j hj => ?_)))
+  have hjl : j < l := by rw [hs.1] at hj; exact hj
+  have hscale := reflF_scale (tableC l) (tableB l) rfl
+    (fun k => BPair.ofNat (if k + 1 = l then 1 else 2))
+    (fun k hk q hq => by
+      rw [cartB_eq, cartC_eq, ground.matOf_entry [] BPair.unit l l _ k q hk hq,
+        ground.matOf_entry [] BPair.unit l l _ k q hk hq]
+      exact cartB_C_scale l k q hk hq)
+    (corootsC D) (corootsB D) hcd hbd
+    (fun k hk => by
+      have h := corootsB_C_scale D hd k (by rw [hD]; exact hk)
+      rw [hD] at h
+      exact h) i j hi hjl
+  rw [hmove] at hscale
+  have htarget := corootsB_C_scale E he j (by rw [hE]; exact hjl)
+  rw [hE] at htarget
+  apply ground.mulCancel (c := BPair.ofNat (if j + 1 = l then 1 else 2))
+  · by_cases h : j + 1 = l
+    · rw [if_pos h]; decide +kernel
+    · rw [if_neg h]; decide +kernel
+  · exact BPair.oneValue_trans (BPair.oneValue_symm hscale)
+      (BPair.oneValue_trans (poly.oneValue_getAt j (poly.pnorm_oneValue _)) htarget)
+
+/-- Each D letter before the final one exchanges its two
+coordinate places, on the common-parity coordinate display. -/
+theorem reflF_D_adjSwap (k i : Nat) (D : List BPair) (hD : D.length = k + 2)
+    (hi : i < k + 1)
+    (hpar : ∀ a b, a < k + 2 → b < k + 2 →
+      (ground.getAt BPair.unit D a).marginN % 2 = (ground.getAt BPair.unit D b).marginN % 2) :
+    reflF (tableD (k + 2)) i (corootsD D)
+      = poly.pnorm (corootsD (ground.adjSwap i D)) := by
+  have his : i + 1 < k + 2 := Nat.succ_lt_succ hi
+  have hiD : i + 1 < D.length := by rw [hD]; exact his
+  let E := ground.adjSwap i D
+  have hE : E.length = k + 2 := (ground.length_adjSwap i D).trans hD
+  have hdp : 0 < D.length := by rw [hD]; exact Nat.succ_pos _
+  have hep : 0 < E.length := by rw [hE]; exact Nat.succ_pos _
+  have hd : ∀ j, j + 1 < k + 2 →
+      (ground.getAt BPair.unit D j + (ground.getAt BPair.unit D (j + 1)).swap).marginN % 2 = 0 := by
+    intro j hj
+    apply BPair.marginN_add_even
+    rw [BPair.marginN_swap]
+    exact hpar j (j + 1) (Nat.lt_of_succ_lt hj) hj
+  have he : ∀ j, j + 1 < k + 2 →
+      (ground.getAt BPair.unit E j + (ground.getAt BPair.unit E (j + 1)).swap).marginN % 2 = 0 := by
+    intro j hj
+    apply BPair.marginN_add_even
+    rw [BPair.marginN_swap, ground.getAt_adjSwap BPair.unit i D hiD j,
+      ground.getAt_adjSwap BPair.unit i D hiD (j + 1)]
+    exact hpar _ _ (ground.swapIx_lt (Nat.lt_of_succ_lt his) his j (Nat.lt_of_succ_lt hj))
+      (ground.swapIx_lt (Nat.lt_of_succ_lt his) his (j + 1) hj)
+  have hvi := corootsD_gap_read D i hiD (hd i his)
+  have hvf := corootsD_fork_read D k hD.symm (hd k (Nat.lt_succ_self _))
+  have hef := corootsD_fork_read E k hE.symm (he k (Nat.lt_succ_self _))
+  apply reflF_eq_of_scaled (tableD (k + 2)) i (corootsD D) (corootsD E)
+    ((corootsD_length D hdp).trans hD) ((corootsD_length E hep).trans hE)
+    (BPair.ofNat 2) (by decide +kernel)
+  intro j hj
+  have hcart : ground.getAt BPair.unit (ground.getAt [] (tableD (k + 2)).cartan i) j
+      = cartD (k + 2) i j := by
+    rw [cartD_eq, ground.matOf_entry [] BPair.unit (k + 2) (k + 2) _ i j
+      (Nat.lt_of_succ_lt his) hj]
+  rw [hcart]
+  by_cases hjc : j < k + 1
+  · have hjs : j + 1 < k + 2 := Nat.succ_lt_succ hjc
+    have hvj := corootsD_gap_read D j (by rw [hD]; exact hjs) (hd j hjs)
+    have hej := corootsD_gap_read E j (by rw [hE]; exact hjs) (he j hjs)
+    have hci := corootsC_getAt D i (by rw [hD]; exact Nat.lt_of_succ_lt his)
+    have hcj := corootsC_getAt D j (by rw [hD]; exact Nat.lt_of_succ_lt hjs)
+    have hce := corootsC_getAt E j (by rw [hE]; exact Nat.lt_of_succ_lt hjs)
+    have hr := reflF_getAt (tableC (k + 2)) i (corootsC D)
+      ((corootsC_length D hdp).trans hD) j hj
+    rw [reflF_C_adjSwap (k + 2) i D hD his, cartC_eq,
+      ground.matOf_entry [] BPair.unit (k + 2) (k + 2) _ i j (Nat.lt_of_succ_lt his) hj] at hr
+    rw [cartD_C_chain (k + 2) i j his hjs]
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_trans hvj (BPair.oneValue_symm hcj))
+        (BPair.mul_congr_left (BPair.oneValue_trans hvi (BPair.oneValue_symm hci)))) ?_
+    exact BPair.oneValue_trans (BPair.oneValue_symm hr)
+      (BPair.oneValue_trans (poly.oneValue_getAt j (poly.pnorm_oneValue _))
+        (BPair.oneValue_trans hce (BPair.oneValue_symm hej)))
+  · have hjf : j = k + 1 := Nat.le_antisymm (Nat.le_of_lt_succ hj) (Nat.le_of_not_lt hjc)
+    rw [hjf]
+    refine BPair.oneValue_trans
+      (BPair.add_congr hvf (BPair.mul_congr_left hvi))
+      (BPair.oneValue_trans ?_ (BPair.oneValue_symm hef))
+    have hneq : ¬ k + 1 = i := Nat.ne_of_gt hi
+    have hilast : ¬ i + 1 = k + 2 := Nat.ne_of_lt his
+    by_cases hprev : i + 1 = k
+    · have hedge : i + 3 = k + 2 := congrArg (fun x => x + 2) hprev
+      rw [cartDforkT (k + 2) i (k + 1) hneq hilast rfl hedge, BPair.swap_swap]
+      change BPair.oneValue _ (ground.getAt BPair.unit (ground.adjSwap i D) k + ground.getAt BPair.unit (ground.adjSwap i D) (k + 1))
+      rw [← hprev, ground.getAt_adjSwap_snd BPair.unit i D hiD,
+        ground.getAt_adjSwap_ne BPair.unit i D (i + 1 + 1)
+          (Nat.ne_of_gt (Nat.lt_trans (Nat.lt_succ_self i) (Nat.lt_succ_self (i + 1))))
+          (Nat.ne_of_gt (Nat.lt_succ_self (i + 1)))]
+      refine BPair.oneValue_trans
+        (BPair.add_congr (BPair.oneValue_refl _) (BPair.mul_ofNat_one _)) ?_
+      rw [BPair.add_comm (ground.getAt BPair.unit D (i + 1) + _), ← BPair.add_assoc]
+      exact BPair.add_congr (BPair.add_swap_self _ _) (BPair.oneValue_refl _)
+    · have hedge : ¬ i + 3 = k + 2 := fun h => hprev (Nat.succ.inj (Nat.succ.inj h))
+      rw [cartDoff (k + 2) i (k + 1) hneq (fun h => absurd h hilast)
+        (fun _ _ => hedge) (fun _ h => absurd rfl h) (fun _ h => absurd rfl h)]
+      refine BPair.oneValue_trans
+        (BPair.add_congr (BPair.oneValue_refl _) (BPair.mul_unit _))
+        (BPair.oneValue_trans (BPair.add_unit _) ?_)
+      by_cases hik : i = k
+      · change BPair.oneValue _ (ground.getAt BPair.unit (ground.adjSwap i D) k + ground.getAt BPair.unit (ground.adjSwap i D) (k + 1))
+        rw [← hik, ground.getAt_adjSwap_fst BPair.unit i D hiD,
+          ground.getAt_adjSwap_snd BPair.unit i D hiD, BPair.add_comm]
+        exact BPair.oneValue_refl _
+      · change BPair.oneValue _ (ground.getAt BPair.unit (ground.adjSwap i D) k + ground.getAt BPair.unit (ground.adjSwap i D) (k + 1))
+        rw [ground.getAt_adjSwap_ne BPair.unit i D k (fun h => hik h.symm) (fun h => hprev h.symm),
+          ground.getAt_adjSwap_ne BPair.unit i D (k + 1) hneq (fun h => hik (Nat.succ.inj h).symm)]
+        exact BPair.oneValue_refl _
+
+/-- D's final letter exchanges the final two coordinates and
+reads both at their balance partners. -/
+theorem reflF_D_last (k : Nat) (D : List BPair) (hD : D.length = k + 2)
+    (hpar : ∀ a b, a < k + 2 → b < k + 2 →
+      (ground.getAt BPair.unit D a).marginN % 2 = (ground.getAt BPair.unit D b).marginN % 2) :
+    reflF (tableD (k + 2)) (k + 1) (corootsD D)
+      = poly.pnorm (corootsD ((D.set k (ground.getAt BPair.unit D (k + 1)).swap).set (k + 1)
+        (ground.getAt BPair.unit D k).swap)) := by
+  let E := (D.set k (ground.getAt BPair.unit D (k + 1)).swap).set (k + 1)
+    (ground.getAt BPair.unit D k).swap
+  have hE : E.length = k + 2 := by rw [ground.length_set, ground.length_set, hD]
+  have hk : k < k + 2 := Nat.lt_trans (Nat.lt_succ_self k) (Nat.lt_succ_self (k + 1))
+  have hk' : k + 1 < k + 2 := Nat.lt_succ_self _
+  have hdp : 0 < D.length := by rw [hD]; exact Nat.succ_pos _
+  have hep : 0 < E.length := by rw [hE]; exact Nat.succ_pos _
+  have hread : ∀ j, j < k + 2 → ground.getAt BPair.unit E j
+      = if j = k then (ground.getAt BPair.unit D (k + 1)).swap
+        else if j = k + 1 then (ground.getAt BPair.unit D k).swap else ground.getAt BPair.unit D j := by
+    intro j _
+    change ground.getAt BPair.unit ((D.set k _).set (k + 1) _) j = _
+    by_cases hj : j = k
+    · rw [if_pos hj, hj, ground.getAt_set_ne BPair.unit _ (k + 1) k _ (Nat.ne_of_lt (Nat.lt_succ_self k)),
+        ground.getAt_set_self BPair.unit _ D k (by rw [hD]; exact hk)]
+    · rw [if_neg hj]
+      by_cases hj' : j = k + 1
+      · rw [if_pos hj', hj', ground.getAt_set_self BPair.unit _ _ (k + 1)
+          (by rw [ground.length_set, hD]; exact hk')]
+      · rw [if_neg hj', ground.getAt_set_ne BPair.unit _ (k + 1) j _ hj',
+          ground.getAt_set_ne BPair.unit D k j _ hj]
+  have hepar : ∀ j, j < k + 2 →
+      (ground.getAt BPair.unit E j).marginN % 2 = (ground.getAt BPair.unit D k).marginN % 2 := by
+    intro j hj
+    rw [hread j hj]
+    by_cases h : j = k
+    · rw [if_pos h, BPair.marginN_swap]; exact hpar (k + 1) k hk' hk
+    · rw [if_neg h]
+      by_cases h' : j = k + 1
+      · rw [if_pos h', BPair.marginN_swap]
+      · rw [if_neg h']; exact hpar j k hj hk
+  have hd : ∀ j, j + 1 < k + 2 →
+      (ground.getAt BPair.unit D j + (ground.getAt BPair.unit D (j + 1)).swap).marginN % 2 = 0 := by
+    intro j hj
+    apply BPair.marginN_add_even
+    rw [BPair.marginN_swap]
+    exact hpar j (j + 1) (Nat.lt_of_succ_lt hj) hj
+  have he : ∀ j, j + 1 < k + 2 →
+      (ground.getAt BPair.unit E j + (ground.getAt BPair.unit E (j + 1)).swap).marginN % 2 = 0 := by
+    intro j hj
+    apply BPair.marginN_add_even
+    rw [BPair.marginN_swap]
+    exact (hepar j (Nat.lt_of_succ_lt hj)).trans (hepar (j + 1) hj).symm
+  have hvi := corootsD_fork_read D k hD.symm (hd k hk')
+  have hef := corootsD_fork_read E k hE.symm (he k hk')
+  apply reflF_eq_of_scaled (tableD (k + 2)) (k + 1) (corootsD D) (corootsD E)
+    ((corootsD_length D hdp).trans hD) ((corootsD_length E hep).trans hE)
+    (BPair.ofNat 2) (by decide +kernel)
+  intro j hj
+  rw [cartD_eq, ground.matOf_entry [] BPair.unit (k + 2) (k + 2) _ (k + 1) j hk' hj]
+  by_cases hjf : j = k + 1
+  · rw [hjf, cartDd]
+    refine BPair.oneValue_trans (BPair.add_congr hvi (BPair.mul_congr_left hvi))
+      (BPair.oneValue_trans (BPair.add_mul_swap_two _) (BPair.oneValue_trans ?_ (BPair.oneValue_symm hef)))
+    rw [hread k hk, hread (k + 1) hk', if_pos rfl,
+      if_neg (Nat.succ_ne_self k), if_pos rfl, ← BPair.swap_add, BPair.add_comm]
+    exact BPair.oneValue_refl _
+  · have hjc : j < k + 1 := Nat.lt_of_le_of_ne (Nat.le_of_lt_succ hj) hjf
+    have hjs : j + 1 < k + 2 := Nat.succ_lt_succ hjc
+    have hvj := corootsD_gap_read D j (by rw [hD]; exact hjs) (hd j hjs)
+    have hej := corootsD_gap_read E j (by rw [hE]; exact hjs) (he j hjs)
+    refine BPair.oneValue_trans (BPair.add_congr hvj (BPair.mul_congr_left hvi))
+      (BPair.oneValue_trans ?_ (BPair.oneValue_symm hej))
+    rw [hread j hj, hread (j + 1) hjs]
+    by_cases hjk : j = k
+    · rw [hjk, if_pos rfl, if_neg (Nat.succ_ne_self k), if_pos rfl, BPair.swap_swap,
+        cartDoff (k + 2) (k + 1) k (Nat.ne_of_lt (Nat.lt_succ_self k))
+          (fun _ => Nat.ne_of_gt (Nat.lt_succ_self (k + 2)))
+          (fun h => absurd rfl h) (fun h => absurd rfl h) (fun h => absurd rfl h)]
+      exact BPair.oneValue_trans
+        (BPair.add_congr (BPair.oneValue_refl _) (BPair.mul_unit _))
+        (BPair.oneValue_trans (BPair.add_unit _) (BPair.oneValue_of_eq (BPair.add_comm _ _)))
+    · rw [if_neg hjk, if_neg hjf]
+      by_cases hprev : j + 1 = k
+      · have hedge : j + 3 = k + 2 := congrArg (fun x => x + 2) hprev
+        rw [if_pos hprev, BPair.swap_swap, cartDfork (k + 2) (k + 1) j hjf rfl hedge,
+          BPair.swap_swap]
+        refine BPair.oneValue_trans
+          (BPair.add_congr (BPair.oneValue_refl _) (BPair.mul_ofNat_one _)) ?_
+        rw [hprev]
+        exact BPair.gap_join (ground.getAt BPair.unit D j) (ground.getAt BPair.unit D k)
+          (ground.getAt BPair.unit D (k + 1)).swap
+      · have hedge : ¬ j + 3 = k + 2 := fun h => hprev (Nat.succ.inj (Nat.succ.inj h))
+        rw [if_neg hprev, if_neg (fun h => hjk (Nat.succ.inj h)),
+          cartDoff (k + 2) (k + 1) j hjf (fun _ => hedge)
+            (fun h => absurd rfl h) (fun h => absurd rfl h) (fun h => absurd rfl h)]
+        exact BPair.oneValue_trans
+          (BPair.add_congr (BPair.oneValue_refl _) (BPair.mul_unit _)) (BPair.add_unit _)
+
+/-- Every C letter maps the displayed family to itself at flipped
+grading, the coordinate exchanges and the final flip. -/
+theorem serWeylC_closed (l : Nat) (v : List BPair) (w : List BPair × Bool)
+    (hw : w ∈ serWeylC l v) (i : Nat) (hi : i < l) :
+    (reflF (tableC l) i w.1, !w.2) ∈ serWeylC l v := by
+  obtain ⟨p, hp, n, hn, he⟩ := serWeylC_of_mem l v w hw
+  rw [he]
+  let D := signedImage l (coordsC v) p n
+  have hD : D.length = l := signedImage_length _ _ _ _
+  have hl : 0 < l := Nat.lt_of_le_of_lt (Nat.zero_le i) hi
+  have hc : (corootsC D).length = l := (corootsC_length D (by rw [hD]; exact hl)).trans hD
+  change (reflF (tableC l) i (poly.pnorm (corootsC D)), !(places.parity p != flipParity l n)) ∈ _
+  rw [reflF_pnorm (tableC l) i (corootsC D) hc]
+  have hpp := ground.countOf_pos_of_mem hp
+  by_cases hi' : i + 1 < l
+  · obtain ⟨q, hq, m, hm, hpar, hgrade, hmove⟩ := signedImage_adjSwap l i (coordsC v) p n hpp hi'
+    have hnew := serWeylC_mem l v q m hq hm
+    have hg : (places.parity q != flipParity l m) = !(places.parity p != flipParity l n) := by
+      rw [hpar, hgrade]
+      cases places.parity p <;> cases flipParity l n <;> rfl
+    rw [hmove, hg] at hnew
+    rw [reflF_C_adjSwap l i D hD hi']
+    exact hnew
+  · have hlast : i + 1 = l := Nat.le_antisymm (Nat.succ_le_of_lt hi) (Nat.le_of_not_lt hi')
+    obtain ⟨m, hm, hpar, hmove⟩ := signedImage_flip_set l i n (coordsC v) p hi hn
+    have hnew := serWeylC_mem l v p m hpp hm
+    have hg : (places.parity p != flipParity l m) = !(places.parity p != flipParity l n) := by
+      rw [hpar]
+      cases places.parity p <;> cases flipParity l n <;> rfl
+    rw [hmove, hg] at hnew
+    rw [reflF_C_last l i D hD hlast]
+    exact hnew
+
+/-- Every B letter maps the displayed family to itself at flipped
+grading, with the half reads justified by coordinate parity. -/
+theorem serWeylB_closed (l : Nat) (v : List BPair) (hv : v.length = l)
+    (w : List BPair × Bool) (hw : w ∈ serWeylB l v) (i : Nat) (hi : i < l) :
+    (reflF (tableB l) i w.1, !w.2) ∈ serWeylB l v := by
+  obtain ⟨p, hp, n, hn, he⟩ := serWeylB_of_mem l v w hw
+  rw [he]
+  let D := signedImage l (coordsB v) p n
+  have hD : D.length = l := signedImage_length _ _ _ _
+  have hl : 0 < l := Nat.lt_of_le_of_lt (Nat.zero_le i) hi
+  have hc : (corootsB D).length = l := (corootsB_length D (by rw [hD]; exact hl)).trans hD
+  have hpp := ground.countOf_pos_of_mem hp
+  have hpar : ∀ a b, a < l → b < l →
+      (ground.getAt BPair.unit (coordsB v) a).marginN % 2
+        = (ground.getAt BPair.unit (coordsB v) b).marginN % 2 :=
+    fun a b ha hb => coordsB_parity v a b (by rw [hv]; exact ha) (by rw [hv]; exact hb)
+  have hd : ∀ j, j + 1 < D.length →
+      (ground.getAt BPair.unit D j + (ground.getAt BPair.unit D (j + 1)).swap).marginN % 2 = 0 :=
+    fun j hj => signedImage_even_gaps l (coordsB v) p n hpp hpar j (by rw [← hD]; exact hj)
+  change (reflF (tableB l) i (poly.pnorm (corootsB D)), !(places.parity p != flipParity l n)) ∈ _
+  rw [reflF_pnorm (tableB l) i (corootsB D) hc]
+  by_cases hi' : i + 1 < l
+  · obtain ⟨q, hq, m, hm, hparity, hgrade, hmove⟩ := signedImage_adjSwap l i (coordsB v) p n hpp hi'
+    have hnew := serWeylB_mem l v q m hq hm
+    have hg : (places.parity q != flipParity l m) = !(places.parity p != flipParity l n) := by
+      rw [hparity, hgrade]
+      cases places.parity p <;> cases flipParity l n <;> rfl
+    rw [hg] at hnew
+    have hr := reflF_B_of_C l i D (signedImage l (coordsB v) q m) hD
+      (signedImage_length _ _ _ _) hi hd
+      (fun j hj => signedImage_even_gaps l (coordsB v) q m hq hpar j
+        (by rw [signedImage_length] at hj; exact hj))
+      (by rw [hmove]; exact reflF_C_adjSwap l i D hD hi')
+    rw [hr]
+    exact hnew
+  · have hlast : i + 1 = l := Nat.le_antisymm (Nat.succ_le_of_lt hi) (Nat.le_of_not_lt hi')
+    obtain ⟨m, hm, hparity, hmove⟩ := signedImage_flip_set l i n (coordsB v) p hi hn
+    have hnew := serWeylB_mem l v p m hpp hm
+    have hg : (places.parity p != flipParity l m) = !(places.parity p != flipParity l n) := by
+      rw [hparity]
+      cases places.parity p <;> cases flipParity l n <;> rfl
+    rw [hg] at hnew
+    have hr := reflF_B_of_C l i D (signedImage l (coordsB v) p m) hD
+      (signedImage_length _ _ _ _) hi hd
+      (fun j hj => signedImage_even_gaps l (coordsB v) p m hpp hpar j
+        (by rw [signedImage_length] at hj; exact hj))
+      (by rw [hmove]; exact reflF_C_last l i D hD hlast)
+    rw [hr]
+    exact hnew
+
+/-- Every D letter maps the displayed even-sign family to itself
+at flipped grading, the final letter exchanging and flipping a
+coordinate pair. -/
+theorem serWeylD_closed (l : Nat) (hl : 2 ≤ l) (v : List BPair) (hv : v.length = l)
+    (w : List BPair × Bool) (hw : w ∈ serWeylD l v) (i : Nat) (hi : i < l) :
+    (reflF (tableD l) i w.1, !w.2) ∈ serWeylD l v := by
+  obtain ⟨k, hk⟩ := Nat.le.dest hl
+  rw [Nat.add_comm 2 k] at hk
+  rw [← hk] at hv hw hi ⊢
+  obtain ⟨p, hp, n, hn, hnpar, he⟩ := serWeylD_of_mem (k + 2) v w hw
+  rw [he]
+  let D := signedImage (k + 2) (coordsD v) p n
+  have hD : D.length = k + 2 := signedImage_length _ _ _ _
+  have hpp := ground.countOf_pos_of_mem hp
+  have hv2 : 2 ≤ v.length := by rw [hv]; exact Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le k))
+  have hpar : ∀ a b, a < k + 2 → b < k + 2 →
+      (ground.getAt BPair.unit D a).marginN % 2 = (ground.getAt BPair.unit D b).marginN % 2 := by
+    intro a b ha hb
+    rw [signedImage_margin (k + 2) (coordsD v) p n a ha,
+      signedImage_margin (k + 2) (coordsD v) p n b hb]
+    exact coordsD_parity v hv2 _ _ (by rw [hv]; exact places.perm_lt _ hpp a ha)
+      (by rw [hv]; exact places.perm_lt _ hpp b hb)
+  have hc : (corootsD D).length = k + 2 :=
+    (corootsD_length D (by rw [hD]; exact Nat.succ_pos _)).trans hD
+  change (reflF (tableD (k + 2)) i (poly.pnorm (corootsD D)), !(places.parity p)) ∈ _
+  rw [reflF_pnorm (tableD (k + 2)) i (corootsD D) hc]
+  by_cases hi' : i < k + 1
+  · obtain ⟨q, hq, m, hm, hpm, hg, hmove⟩ :=
+      signedImage_adjSwap (k + 2) i (coordsD v) p n hpp (Nat.succ_lt_succ hi')
+    have hnew := serWeylD_mem (k + 2) v q m hq hm (hpm.trans hnpar)
+    rw [hmove, hg] at hnew
+    rw [reflF_D_adjSwap k i D hD hi' hpar]
+    exact hnew
+  · have hilast : i = k + 1 := Nat.le_antisymm (Nat.le_of_lt_succ hi) (Nat.le_of_not_lt hi')
+    obtain ⟨q, hq, m, hm, hpm, hg, hmove⟩ :=
+      signedImage_adjSwap_flip (k + 2) k (coordsD v) p n hpp (Nat.lt_succ_self _)
+    have hnew := serWeylD_mem (k + 2) v q m hq hm (hpm.trans hnpar)
+    rw [hmove, hg] at hnew
+    rw [hilast, reflF_D_last k D hD hpar]
+    exact hnew
+
+/-- At a displayed family with distinct keys, reflection
+membership is the graded count closure read. -/
+theorem wCloseRead_of_mem (t : gentable.Table) (W : List (List BPair × Bool))
+    (hshape : wShapeRead t W) (hkeys : ground.distinctList (W.map Prod.fst))
+    (hclose : ∀ w ∈ W, ∀ i, i < t.rank → (reflF t i w.1, !w.2) ∈ W) : wCloseRead t W := by
+  intro w hw i hi
+  have h := hclose w hw i hi
+  rw [reflF_eq t i w.1 (hshape w hw).1] at h
+  rw [ground.countOf_distinct_map Prod.fst W hkeys _ h,
+    ground.countOf_distinct_map Prod.fst W hkeys w hw]
+
+/-- The strictly dominant B seed's displayed family satisfies the
+graded reflection-count read. -/
+theorem serWeylB_close (l : Nat) (hl : 0 < l) (v : List BPair) (hv : v.length = l)
+    (hp : ∀ i, i < l → BPair.unit < ground.getAt BPair.unit v i) :
+    wCloseRead (tableB l) (serWeylB l v) :=
+  wCloseRead_of_mem (tableB l) (serWeylB l v) (serWeylB_shape l hl v)
+    (serWeylB_regular l hl v hv hp) (serWeylB_closed l v hv)
+
+/-- The strictly dominant C seed's displayed family satisfies the
+graded reflection-count read. -/
+theorem serWeylC_close (l : Nat) (hl : 0 < l) (v : List BPair) (hv : v.length = l)
+    (hp : ∀ i, i < l → BPair.unit < ground.getAt BPair.unit v i) :
+    wCloseRead (tableC l) (serWeylC l v) :=
+  wCloseRead_of_mem (tableC l) (serWeylC l v) (serWeylC_shape l hl v)
+    (serWeylC_regular l hl v hv hp) (serWeylC_closed l v)
+
+/-- The strictly dominant D seed's displayed even-sign family
+satisfies the graded reflection-count read. -/
+theorem serWeylD_close (l : Nat) (hl : 2 ≤ l) (v : List BPair) (hv : v.length = l)
+    (hp : ∀ i, i < l → BPair.unit < ground.getAt BPair.unit v i) :
+    wCloseRead (tableD l) (serWeylD l v) :=
+  wCloseRead_of_mem (tableD l) (serWeylD l v)
+    (serWeylD_shape l (Nat.lt_of_lt_of_le (by decide : 0 < 2) hl) v)
+    (serWeylD_regular l hl v hv hp) (serWeylD_closed l hl v hv)
+
 /-- The fixed key (`thm:assembly`'s walk, pin (a)): a dominant key
 at a simple coroot pair the unit is the letter's own fix,
 `s_i μ = μ`. -/
@@ -3416,6 +4016,100 @@ theorem reflAt_fix (t : gentable.Table) (i : Nat)
       (elim.vecAdd_null_right y (List.replicate t.rank BPair.unit)
         (by rw [ground.length_replicate]; exact hy)
         (poly.unitTail_replicate t.rank))
+
+/-- At diagonal coroot two and an occupied two-key Cartan minor,
+distinct simple letters can share an image only at a fixed key. -/
+theorem reflF_separate (t : gentable.Table)
+    (hd : ∀ i, i < t.rank →
+      (ground.getAt BPair.unit (ground.getAt [] t.cartan i) i).oneValue (BPair.ofNat 2))
+    (hm : ∀ i, i < t.rank → ∀ j, j < t.rank → i ≠ j →
+      ¬ (ground.getAt BPair.unit (ground.getAt [] t.cartan i) j
+        * ground.getAt BPair.unit (ground.getAt [] t.cartan j) i).oneValue (BPair.ofNat 4))
+    (v : List BPair) (hv : v.length = t.rank) (hn : poly.pnorm v = v)
+    (i j : Nat) (hi : i < t.rank) (hj : j < t.rank)
+    (he : reflF t i v = reflF t j v) : i = j ∨ reflF t i v = v := by
+  by_cases hij : i = j
+  · exact Or.inl hij
+  · have hpair : ∀ s, s < t.rank → ∀ r, r < t.rank → reflF t s v = reflF t r v →
+        (ground.getAt BPair.unit v s * BPair.ofNat 2).oneValue
+          (ground.getAt BPair.unit v r * ground.getAt BPair.unit (ground.getAt [] t.cartan r) s) := by
+      intro s hs r _ hsr
+      have hself := BPair.oneValue_trans (reflF_getAt t s v hv s hs)
+        (BPair.add_congr (BPair.oneValue_refl _)
+          (BPair.mul_congr (BPair.oneValue_refl _) (ground.swap_congr (hd s hs))))
+      rw [hsr] at hself
+      have hother := reflF_getAt t r v hv s hs
+      have hsum := BPair.oneValue_trans (BPair.oneValue_symm hself) hother
+      rw [BPair.add_comm (ground.getAt BPair.unit v s)
+          (ground.getAt BPair.unit v s * (BPair.ofNat 2).swap),
+        BPair.add_comm (ground.getAt BPair.unit v s)
+          (ground.getAt BPair.unit v r * (ground.getAt BPair.unit (ground.getAt [] t.cartan r) s).swap)] at hsum
+      have hprod := ground.swap_congr (BPair.add_cancel hsum)
+      rw [BPair.mul_swap, BPair.mul_swap, BPair.swap_swap, BPair.swap_swap] at hprod
+      exact hprod
+    let x := ground.getAt BPair.unit v i
+    let y := ground.getAt BPair.unit v j
+    let a := ground.getAt BPair.unit (ground.getAt [] t.cartan i) j
+    let b := ground.getAt BPair.unit (ground.getAt [] t.cartan j) i
+    have hxy : (BPair.ofNat 2 * x).oneValue (b * y) := by
+      rw [BPair.mul_comm (BPair.ofNat 2) x, BPair.mul_comm b y]
+      exact hpair i hi j hj he
+    have hyx : (BPair.ofNat 2 * y).oneValue (a * x) := by
+      rw [BPair.mul_comm (BPair.ofNat 2) y, BPair.mul_comm a x]
+      exact hpair j hj i hi he.symm
+    have hfour : (BPair.ofNat 4 * x).oneValue ((b * a) * x) := by
+      refine BPair.oneValue_trans
+        (BPair.mul_congr (BPair.ofNat_mul 2 2) (BPair.oneValue_refl x)) ?_
+      rw [BPair.mul_assoc (BPair.ofNat 2) (BPair.ofNat 2) x, BPair.mul_assoc b a x]
+      refine BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _) hxy) ?_
+      rw [BPair.mul_left_comm (BPair.ofNat 2) b y]
+      exact BPair.mul_congr (BPair.oneValue_refl _) hyx
+    have hoff : ¬ (BPair.ofNat 4 + (b * a).swap).oneValue BPair.unit := by
+      intro hc
+      exact hm j hj i hi (fun h => hij h.symm) (BPair.oneValue_symm (ground.oneOfUnit hc))
+    have hz : ((BPair.ofNat 4 + (b * a).swap) * x).oneValue BPair.unit := by
+      rw [BPair.right_distrib, BPair.swap_mul]
+      exact ground.unitOfOne hfour
+    have hx : x.oneValue BPair.unit := ground.mul_cancel_unit hoff hz
+    refine Or.inr ?_
+    rw [reflF_eq t i v hv]
+    exact reflAt_fix t i hi v hv hn hx
+
+/-- C's distinct simple letters have distinct images off the input
+key, at every canonical coroot vector. -/
+theorem reflF_C_separate (l : Nat) (v : List BPair) (hv : v.length = l)
+    (hn : poly.pnorm v = v) (i j : Nat) (hi : i < l) (hj : j < l)
+    (he : reflF (tableC l) i v = reflF (tableC l) j v) :
+    i = j ∨ reflF (tableC l) i v = v := by
+  refine reflF_separate (tableC l) (fun k hk => cartanCDiag l k hk) ?_ v hv hn i j hi hj he
+  intro k hk q hq hne
+  rw [cartC_eq, ground.matOf_entry [] BPair.unit l l _ k q hk hq,
+    ground.matOf_entry [] BPair.unit l l _ q k hq hk]
+  exact cartC_pair l k q hne
+
+/-- B's distinct simple letters have distinct images off the input
+key, at every canonical coroot vector. -/
+theorem reflF_B_separate (l : Nat) (v : List BPair) (hv : v.length = l)
+    (hn : poly.pnorm v = v) (i j : Nat) (hi : i < l) (hj : j < l)
+    (he : reflF (tableB l) i v = reflF (tableB l) j v) :
+    i = j ∨ reflF (tableB l) i v = v := by
+  refine reflF_separate (tableB l) (fun k hk => cartanBDiag l k hk) ?_ v hv hn i j hi hj he
+  intro k hk q hq hne
+  rw [cartB_eq, ground.matOf_entry [] BPair.unit l l _ k q hk hq,
+    ground.matOf_entry [] BPair.unit l l _ q k hq hk]
+  exact cartB_pair l k q hne
+
+/-- D's distinct simple letters have distinct images off the input
+key, at every canonical coroot vector. -/
+theorem reflF_D_separate (l : Nat) (v : List BPair) (hv : v.length = l)
+    (hn : poly.pnorm v = v) (i j : Nat) (hi : i < l) (hj : j < l)
+    (he : reflF (tableD l) i v = reflF (tableD l) j v) :
+    i = j ∨ reflF (tableD l) i v = v := by
+  refine reflF_separate (tableD l) (fun k hk => cartanDDiag l k hk) ?_ v hv hn i j hi hj he
+  intro k hk q hq hne
+  rw [cartD_eq, ground.matOf_entry [] BPair.unit l l _ k q hk hq,
+    ground.matOf_entry [] BPair.unit l l _ q k hq hk]
+  exact cartD_pair l k q hne
 
 /-- The shifted key (`thm:assembly`'s walk at `prop:row`'s tie): a
 key reading the natural one at a letter's own coordinate moves by
@@ -4574,13 +5268,16 @@ factor against the joined dots collects to the gap's read. -/
 private theorem eulerMove_alg (x y z : BPair) :
     (z.swap * (y + y) + (x + y) * z).oneValue
       ((x + y.swap) * z) := by
-  rw [BPair.swap_mul z (y + y), BPair.mul_comm z (y + y),
-    BPair.right_distrib y y z, ← BPair.swap_add,
-    BPair.right_distrib x y z,
-    BPair.right_distrib x y.swap z, BPair.swap_mul y z,
-    BPair.add_add_comm ((y * z).swap) ((y * z).swap)
-      (x * z) (y * z),
-    BPair.add_comm ((y * z).swap) (x * z)]
+  rw [BPair.swap_mul z (y + y), BPair.right_distrib x y.swap z,
+    BPair.swap_mul y z]
+  have hS : ((z * (y + y)).swap).oneValue ((y * z).swap + (y * z).swap) := by
+    rw [BPair.swap_add, BPair.mul_comm z (y + y), BPair.right_distrib y y z]
+    exact BPair.oneValue_refl _
+  refine BPair.oneValue_trans (BPair.add_congr hS (BPair.oneValue_refl _)) ?_
+  refine BPair.oneValue_trans (polEqB [x, y, z, (y * z).swap]
+    (Pol.add (Pol.add (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 3))) (Pol.mul (Pol.add (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1))) (Pol.mon (Mon.var 2))))
+    (Pol.add (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 2))) (Pol.mon (Mon.var 3))) (Pol.add (Pol.mon (Mon.var 3)) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 2)))))
+    (by decide +kernel)) ?_
   refine BPair.oneValue_trans
     (BPair.add_congr (BPair.oneValue_refl _)
       (BPair.swap_add_null (BPair.oneValue_refl (y * z)))) ?_
@@ -4987,21 +5684,19 @@ beyond the unit is `ρ` on both sides — the subset fold's occupied
 family refuses at the support read's positive dots, and the Weyl
 member's witness fold clears. -/
 
-/-- The vacant family's key is `ρ` itself. -/
-private theorem eKey_nil (t : gentable.Table) : eKey t [] = rhoV t := by
-  have hrho : (rhoV t).length = t.rank :=
-    ground.length_replicate (BPair.ofNat 1) t.rank
-  have hz : (List.replicate t.rank BPair.unit).length = t.rank :=
-    ground.length_replicate BPair.unit t.rank
-  show poly.pnorm (elim.vecAdd (rhoV t)
-    (poly.neg (List.replicate t.rank BPair.unit))) = rhoV t
+/-- Withdrawing the width's unit key leaves a canonical key
+unchanged, the content difference's unit law. -/
+theorem offKey_unit (n : Nat) (v : List BPair) (hv : v.length = n) (hn : poly.pnorm v = v) :
+    poly.pnorm (elim.vecAdd v (poly.neg (List.replicate n BPair.unit))) = v := by
   rw [poly.neg_repl]
-  refine Eq.trans (poly.pnorm_congr _ (rhoV t) ?_ ?_) (pnorm_rhoV t)
-  · rw [elim.length_vecAdd (rhoV t) _ t.rank hrho hz]
-    exact hrho.symm
-  · exact elim.vecAdd_null_right (rhoV t) (List.replicate t.rank BPair.unit)
-      (by rw [ground.length_replicate]; exact hrho)
-      (poly.unitTail_replicate t.rank)
+  exact (poly.pnorm_congr _ _
+    ((elim.length_vecAdd v _ n hv (ground.length_replicate _ _)).trans hv.symm)
+    (elim.vecAdd_null_right v (List.replicate n BPair.unit)
+      (hv.trans (ground.length_replicate _ _).symm) (poly.unitTail_replicate n))).trans hn
+
+/-- The vacant family's key is `ρ` itself. -/
+private theorem eKey_nil (t : gentable.Table) : eKey t [] = rhoV t :=
+  offKey_unit t.rank (rhoV t) (ground.length_replicate _ _) (pnorm_rhoV t)
 
 /-- A family whose key dominates `ρ`'s dot is vacant: an occupied
 member's positive dot would carry the key's own dot below `ρ`'s. -/
@@ -5365,51 +6060,47 @@ dominance walk to `ρ` — the counts transport at every letter
 value, and the kept form carries the key's own dot square along the
 chain. -/
 
-/-- The kept form's transport: a reflection keeps a key's own dot
-square (`con:sertables`' four-join identity at the matrices). -/
-private theorem dotB_reflAt (t : gentable.Table) (F : FundData)
+/-- A reflection preserves the pairing of any two rank-width
+keys, the form's congruence identity at its two arguments. -/
+theorem dotB_reflAt_pair (t : gentable.Table) (F : FundData)
     (hshape : fundShape t F) (hform : reflFormRead t F)
-    {i : Nat} (hi : i < t.rank) (y : List BPair)
-    (hy : y.length = t.rank) :
-    (dotB F (reflAt t i y) (reflAt t i y)).oneValue (dotB F y y) := by
+    {i : Nat} (hi : i < t.rank) (y z : List BPair)
+    (hy : y.length = t.rank) (hz : z.length = t.rank) :
+    (dotB F (reflAt t i y) (reflAt t i z)).oneValue (dotB F y z) := by
   have hrank : 0 < t.rank := Nat.lt_of_le_of_lt (Nat.zero_le i) hi
   have hSlen : (reflM t i).length = t.rank := reflM_length t i
   have hSrows : elim.rowsLen t.rank (reflM t i) := reflM_rows t i
   have htS : (elim.transposeM (reflM t i)).length = t.rank :=
-    elim.length_transposeM (reflM t i) hSrows
-      (by rw [hSlen]; exact hrank)
-  have hM : (elim.matVec (reflM t i) y).length = t.rank :=
-    (elim.matVec_length _ _).trans hSlen
-  have hP : (reflAt t i y).length = t.rank :=
-    (poly.pnorm_length _).trans hM
-  have hMSrows : elim.rowsLen t.rank
-      (elim.matMul F.gram (reflM t i)) := by
+    elim.length_transposeM (reflM t i) hSrows (by rw [hSlen]; exact hrank)
+  have hMSrows : elim.rowsLen t.rank (elim.matMul F.gram (reflM t i)) := by
     have h := elim.rowsLen_matMul F.gram (reflM t i)
     rw [htS] at h
     exact h
   refine BPair.oneValue_trans (elim.dotP_oneValue_left _
     (elim.matVec (reflM t i) y) _ (poly.pnorm_oneValue _)) ?_
   refine BPair.oneValue_trans (elim.dotP_oneValue_right _
-    (elim.matVec F.gram (reflAt t i y))
-    (elim.matVec F.gram (elim.matVec (reflM t i) y))
-    (elim.matVec_congr F.gram _ _
-      (poly.pnorm_oneValue _))) ?_
+    (elim.matVec F.gram (reflAt t i z))
+    (elim.matVec F.gram (elim.matVec (reflM t i) z))
+    (elim.matVec_congr F.gram _ _ (poly.pnorm_oneValue _))) ?_
   refine BPair.oneValue_trans (elim.dotP_oneValue_right _ _
-    (elim.matVec (elim.matMul F.gram (reflM t i)) y)
-    (poly.oneValue_symm (elim.matVec_matMul F.gram (reflM t i)
-      t.rank hSrows y hy))) ?_
+    (elim.matVec (elim.matMul F.gram (reflM t i)) z)
+    (poly.oneValue_symm (elim.matVec_matMul F.gram (reflM t i) t.rank hSrows z hz))) ?_
   refine BPair.oneValue_trans (elim.dotP_matVec_transpose t.rank
     (reflM t i) y _ hSrows hy
-    (by rw [elim.matVec_length, elim.length_matMul, hSlen]
-        exact hshape.1)) ?_
+    (by rw [elim.matVec_length, elim.length_matMul, hSlen]; exact hshape.1)) ?_
   refine BPair.oneValue_trans (elim.dotP_oneValue_right y _
-    (elim.matVec (elim.matMul (elim.transposeM (reflM t i))
-      (elim.matMul F.gram (reflM t i))) y)
-    (poly.oneValue_symm (elim.matVec_matMul
-      (elim.transposeM (reflM t i))
-      (elim.matMul F.gram (reflM t i)) t.rank hMSrows y hy))) ?_
-  exact elim.dotP_oneValue_right y _ (elim.matVec F.gram y)
-    (elim.matVec_matOne _ _ y (hform i hi))
+    (elim.matVec (elim.matMul (elim.transposeM (reflM t i)) (elim.matMul F.gram (reflM t i))) z)
+    (poly.oneValue_symm (elim.matVec_matMul (elim.transposeM (reflM t i))
+      (elim.matMul F.gram (reflM t i)) t.rank hMSrows z hz))) ?_
+  exact elim.dotP_oneValue_right y _ (elim.matVec F.gram z)
+    (elim.matVec_matOne _ _ z (hform i hi))
+
+/-- The kept form's transport at a key's own square. -/
+private theorem dotB_reflAt (t : gentable.Table) (F : FundData)
+    (hshape : fundShape t F) (hform : reflFormRead t F)
+    {i : Nat} (hi : i < t.rank) (y : List BPair) (hy : y.length = t.rank) :
+    (dotB F (reflAt t i y) (reflAt t i y)).oneValue (dotB F y y) :=
+  dotB_reflAt_pair t F hshape hform hi y y hy hy
 
 /-- An unbalanced key is occupied. -/
 private theorem occ_of_unb (t : gentable.Table)
@@ -5555,6 +6246,18 @@ private theorem witFoldUnit (t : gentable.Table) (F : FundData)
         (ground.ltOfMem hi)))))
 
 
+/-- A natural simple-root fold joining a key to a top bounds the
+key's rho pairing by the top's. Each simple's positive pairing
+enters at its natural coefficient. -/
+theorem dotB_foldKey_le (t : gentable.Table) (F : FundData)
+    (hshape : fundShape t F) (hsp : simplePosRead t F)
+    (hrd : rhoDotRead t F) (y : List BPair) (c : List Nat)
+    (top : List BPair) (htl : top.length = t.rank)
+    (hkey : poly.pnorm (elim.vecAdd y (cartanFold t c)) = top) :
+    dotB F y (rhoV t) ≤ dotB F top (rhoV t) :=
+  ground.dom_of_split (dotB_foldKey t F hshape hsp y c top htl hkey)
+    (witFoldUnit t F hshape hrd c)
+
 /-- The family's occupied keys are height-capped: the support read's
 witness fold joins an occupied key's `ρ`-dot back to the shifted
 key's, at the fold's positive dots. -/
@@ -5570,9 +6273,7 @@ private theorem capGam (t : gentable.Table) (F : FundData)
     (hyn : poly.pnorm y = y) (s : Bool) (hs : 0 < gam y s) :
     dotB F y (rhoV t) ≤ dotB F top (rhoV t) := by
   obtain ⟨c, hkey⟩ := hgfold y hy hyn s hs
-  exact ground.dom_of_split
-    (dotB_foldKey t F hshape hsp y c top htl hkey)
-    (witFoldUnit t F hshape hrd c)
+  exact dotB_foldKey_le t F hshape hsp hrd y c top htl hkey
 
 
 /-- The alternant's occupied keys are height-capped: an occupied
@@ -5593,10 +6294,8 @@ private theorem capW (t : gentable.Table) (F : FundData)
     have h := hdom'.2 k hk
     rw [he] at h
     exact h
-  exact ground.dom_of_split
-    (dotB_foldKey t F hshape hsp y
-      (ground.getAt [] wits' k) top htl hkey)
-    (witFoldUnit t F hshape hrd (ground.getAt [] wits' k))
+  exact dotB_foldKey_le t F hshape hsp hrd y
+    (ground.getAt [] wits' k) top htl hkey
 
 
 /-- An occupied key of either datum sits at or below the shifted
@@ -6228,5 +6927,577 @@ theorem gapFold_eKey (t : gentable.Table) (F : FundData)
       · rw [if_neg hlt] at hj
         exact absurd hj (Nat.lt_irrefl 0)
 
+
+/-- A C reflection selected at a lower-side coroot strictly
+raises the coordinate pairing against rho (`lem:memberdata`'s
+dominance walk at `con:sertables`' displayed form). -/
+theorem reflF_C_rho_rise (l : Nat) (v : List BPair) (hv : v.length = l)
+    (i : Nat) (hi : i < l) (hlow : ground.getAt BPair.unit v i < BPair.unit) :
+    elim.dotP (coordsC v) (coordsC (rhoV (tableC l)))
+      < elim.dotP (coordsC (reflF (tableC l) i v)) (coordsC (rhoV (tableC l))) := by
+  let D := coordsC v
+  let R := coordsC (rhoV (tableC l))
+  have hl : 0 < l := Nat.lt_of_le_of_lt (Nat.zero_le i) hi
+  have hvp : 0 < v.length := by rw [hv]; exact hl
+  have hD : D.length = l := (coordsC_length v).trans hv
+  have hdp : 0 < D.length := by rw [hD]; exact hl
+  have hcor : (corootsC D).length = l := (corootsC_length D hdp).trans hD
+  have hrl : (rhoV (tableC l)).length = l := ground.length_replicate _ l
+  have hR : R.length = l := (coordsC_length _).trans hrl
+  have hreg := coordsC_regular (rhoV (tableC l)) (fun j hj => by
+    rw [hrl] at hj
+    change BPair.unit < ground.getAt BPair.unit (List.replicate l (BPair.ofNat 1)) j
+    rw [ground.getAt_replicate BPair.unit (BPair.ofNat 1) l j hj]
+    decide +kernel)
+  have hstep : reflF (tableC l) i v = reflF (tableC l) i (corootsC D) := by
+    have h := reflF_pnorm (tableC l) i v hv
+    rw [← corootsC_coordsC_norm v hvp, reflF_pnorm (tableC l) i (corootsC D) hcor] at h
+    exact h.symm
+  have hgap : ground.getAt BPair.unit D i + (ground.getAt BPair.unit D (i + 1)).swap < BPair.unit :=
+    BPair.lt_congr (BPair.oneValue_trans (BPair.oneValue_symm (poly.oneValue_getAt i (corootsC_coordsC v hvp)))
+      (corootsC_getAt D i (by rw [hD]; exact hi))) (BPair.oneValue_refl _) hlow
+  have hread : ∀ E : List BPair, E.length = l →
+      reflF (tableC l) i v = poly.pnorm (corootsC E) →
+      (elim.dotP (coordsC (reflF (tableC l) i v)) R).oneValue (elim.dotP E R) := by
+    intro E hE hrefl
+    rw [hrefl]
+    apply elim.dotP_oneValue_left
+    exact poly.oneValue_trans (coordsC_congr _ _ (poly.pnorm_length _) (poly.pnorm_oneValue _))
+      (coordsC_corootsC E (by rw [hE]; exact hl))
+  by_cases his : i + 1 < l
+  · have hr := hread (ground.adjSwap i D) ((ground.length_adjSwap i D).trans hD)
+      (hstep.trans (reflF_C_adjSwap l i D hD his))
+    exact BPair.lt_congr (BPair.oneValue_refl _) (BPair.oneValue_symm hr)
+      (elim.dotP_adjSwap_lt i D R (hD.trans hR.symm) (by rw [hD]; exact his)
+        (ground.ltB_of_add_unit hgap)
+        (hreg.2 i (i + 1) (Nat.lt_succ_self i) (by rw [hrl]; exact his)))
+  · have hilast : i + 1 = l := Nat.le_antisymm (Nat.succ_le_of_lt hi) (Nat.le_of_not_lt his)
+    have hout : ground.getAt BPair.unit D (i + 1) = BPair.unit :=
+      ground.getAt_over _ D _ (by rw [hD, hilast]; exact Nat.le_refl l)
+    rw [hout] at hgap
+    have hdneg := BPair.lt_congr (BPair.add_unit _) (BPair.oneValue_refl _) hgap
+    have hr := hread (D.set i (ground.getAt BPair.unit D i).swap)
+      ((ground.length_set _ D i).trans hD) (hstep.trans (reflF_C_last l i D hD hilast))
+    exact BPair.lt_congr (BPair.oneValue_refl _) (BPair.oneValue_symm hr)
+      (elim.dotP_flip_lt i D R (hD.trans hR.symm) (by rw [hD]; exact hi) hdneg
+        (hreg.1 i (by rw [hrl]; exact hi)))
+
+/-- A B reflection at a lower-side coroot strictly raises the
+pairing of its doubled coordinates against rho. -/
+theorem reflF_B_rho_rise (l : Nat) (v : List BPair) (hv : v.length = l)
+    (i : Nat) (hi : i < l) (hlow : ground.getAt BPair.unit v i < BPair.unit) :
+    elim.dotP (coordsB v) (coordsB (rhoV (tableB l)))
+      < elim.dotP (coordsB (reflF (tableB l) i v)) (coordsB (rhoV (tableB l))) := by
+  let D := coordsB v
+  let R := coordsB (rhoV (tableB l))
+  have hl : 0 < l := Nat.lt_of_le_of_lt (Nat.zero_le i) hi
+  have hvp : 0 < v.length := by rw [hv]; exact hl
+  have hD : D.length = l := (coordsB_length v).trans hv
+  have hdp : 0 < D.length := by rw [hD]; exact hl
+  have hcor : (corootsB D).length = l := (corootsB_length D hdp).trans hD
+  have hrl : (rhoV (tableB l)).length = l := ground.length_replicate _ l
+  have hR : R.length = l := (coordsB_length _).trans hrl
+  have hreg := coordsB_regular (rhoV (tableB l)) (fun j hj => by
+    rw [hrl] at hj
+    change BPair.unit < ground.getAt BPair.unit (List.replicate l (BPair.ofNat 1)) j
+    rw [ground.getAt_replicate BPair.unit (BPair.ofNat 1) l j hj]
+    decide +kernel)
+  have hpar : ∀ a b, a < l → b < l →
+      (ground.getAt BPair.unit D a).marginN % 2 = (ground.getAt BPair.unit D b).marginN % 2 :=
+    fun a b ha hb => coordsB_parity v a b (by rw [hv]; exact ha) (by rw [hv]; exact hb)
+  have hd : ∀ j, j + 1 < D.length →
+      (ground.getAt BPair.unit D j + (ground.getAt BPair.unit D (j + 1)).swap).marginN % 2 = 0 := by
+    intro j hj
+    apply BPair.marginN_add_even
+    rw [BPair.marginN_swap]
+    exact hpar j (j + 1) (by rw [← hD]; exact Nat.lt_of_succ_lt hj) (by rw [← hD]; exact hj)
+  have hstep : reflF (tableB l) i v = reflF (tableB l) i (corootsB D) := by
+    have h := reflF_pnorm (tableB l) i v hv
+    rw [← corootsB_coordsB_norm v hvp, reflF_pnorm (tableB l) i (corootsB D) hcor] at h
+    exact h.symm
+  have hbc := corootsB_C_scale D hd i (by rw [hD]; exact hi)
+  have hbneg := BPair.lt_congr (BPair.oneValue_symm (poly.oneValue_getAt i (corootsB_coordsB v hvp)))
+    (BPair.oneValue_refl _) hlow
+  have hcpos : BPair.unit < BPair.ofNat (if i + 1 = D.length then 1 else 2) := by
+    by_cases h : i + 1 = D.length
+    · rw [if_pos h]; decide +kernel
+    · rw [if_neg h]; decide +kernel
+  have hcneg : ground.getAt BPair.unit (corootsC D) i < BPair.unit := by
+    apply BPair.lt_congr (BPair.oneValue_symm hbc) (BPair.oneValue_refl _)
+    rw [BPair.mul_comm]
+    exact BPair.lt_congr (BPair.oneValue_refl _) (BPair.unit_mul _) (ground.ltB_mulPos hbneg hcpos)
+  have hgap := BPair.lt_congr (corootsC_getAt D i (by rw [hD]; exact hi)) (BPair.oneValue_refl _) hcneg
+  have hread : ∀ E : List BPair, E.length = l →
+      (∀ j, j + 1 < E.length →
+        (ground.getAt BPair.unit E j + (ground.getAt BPair.unit E (j + 1)).swap).marginN % 2 = 0) →
+      reflF (tableC l) i (corootsC D) = poly.pnorm (corootsC E) →
+      (elim.dotP (coordsB (reflF (tableB l) i v)) R).oneValue (elim.dotP E R) := by
+    intro E hE he hmove
+    rw [hstep, reflF_B_of_C l i D E hD hE hi hd he hmove]
+    apply elim.dotP_oneValue_left
+    exact poly.oneValue_trans (coordsB_congr _ _ (poly.pnorm_length _) (poly.pnorm_oneValue _))
+      (coordsB_corootsB E (by rw [hE]; exact hl) he)
+  by_cases his : i + 1 < l
+  · have hisD : i + 1 < D.length := by rw [hD]; exact his
+    have he : ∀ j, j + 1 < (ground.adjSwap i D).length →
+        (ground.getAt BPair.unit (ground.adjSwap i D) j
+          + (ground.getAt BPair.unit (ground.adjSwap i D) (j + 1)).swap).marginN % 2 = 0 := by
+      intro j hj
+      rw [ground.length_adjSwap, hD] at hj
+      apply BPair.marginN_add_even
+      rw [BPair.marginN_swap, ground.getAt_adjSwap BPair.unit i D hisD j,
+        ground.getAt_adjSwap BPair.unit i D hisD (j + 1)]
+      exact hpar _ _ (ground.swapIx_lt (Nat.lt_of_succ_lt his) his j (Nat.lt_of_succ_lt hj))
+        (ground.swapIx_lt (Nat.lt_of_succ_lt his) his (j + 1) hj)
+    have hr := hread _ ((ground.length_adjSwap i D).trans hD) he (reflF_C_adjSwap l i D hD his)
+    exact BPair.lt_congr (BPair.oneValue_refl _) (BPair.oneValue_symm hr)
+      (elim.dotP_adjSwap_lt i D R (hD.trans hR.symm) hisD (ground.ltB_of_add_unit hgap)
+        (hreg.2 i (i + 1) (Nat.lt_succ_self i) (by rw [hrl]; exact his)))
+  · have hilast : i + 1 = l := Nat.le_antisymm (Nat.succ_le_of_lt hi) (Nat.le_of_not_lt his)
+    have hmargin : ∀ j, j < l →
+        (ground.getAt BPair.unit (D.set i (ground.getAt BPair.unit D i).swap) j).marginN
+          = (ground.getAt BPair.unit D j).marginN := by
+      intro j _
+      by_cases h : j = i
+      · rw [h, ground.getAt_set_self BPair.unit _ D i (by rw [hD]; exact hi), BPair.marginN_swap]
+      · rw [ground.getAt_set_ne BPair.unit D i j _ h]
+    have he : ∀ j, j + 1 < (D.set i (ground.getAt BPair.unit D i).swap).length →
+        (ground.getAt BPair.unit (D.set i (ground.getAt BPair.unit D i).swap) j
+          + (ground.getAt BPair.unit (D.set i (ground.getAt BPair.unit D i).swap) (j + 1)).swap).marginN % 2 = 0 := by
+      intro j hj
+      rw [ground.length_set, hD] at hj
+      apply BPair.marginN_add_even
+      rw [BPair.marginN_swap, hmargin j (Nat.lt_of_succ_lt hj), hmargin (j + 1) hj]
+      exact hpar j (j + 1) (Nat.lt_of_succ_lt hj) hj
+    have hout : ground.getAt BPair.unit D (i + 1) = BPair.unit :=
+      ground.getAt_over _ D _ (by rw [hD, hilast]; exact Nat.le_refl l)
+    rw [hout] at hgap
+    have hdneg := BPair.lt_congr (BPair.add_unit _) (BPair.oneValue_refl _) hgap
+    have hr := hread _ ((ground.length_set _ D i).trans hD) he (reflF_C_last l i D hD hilast)
+    exact BPair.lt_congr (BPair.oneValue_refl _) (BPair.oneValue_symm hr)
+      (elim.dotP_flip_lt i D R (hD.trans hR.symm) (by rw [hD]; exact hi) hdneg
+        (hreg.1 i (by rw [hrl]; exact hi)))
+
+/-- A D reflection selected at a lower-side coroot strictly
+raises the doubled-coordinate pairing against rho, including
+the fork letter. -/
+theorem reflF_D_rho_rise (l : Nat) (hl : 2 ≤ l) (v : List BPair) (hv : v.length = l)
+    (i : Nat) (hi : i < l) (hlow : ground.getAt BPair.unit v i < BPair.unit) :
+    elim.dotP (coordsD v) (coordsD (rhoV (tableD l)))
+      < elim.dotP (coordsD (reflF (tableD l) i v)) (coordsD (rhoV (tableD l))) := by
+  obtain ⟨k, hk⟩ := Nat.le.dest hl
+  rw [Nat.add_comm 2 k] at hk
+  rw [← hk] at hv hi ⊢
+  have hv2 : 2 ≤ v.length := by rw [hv]; exact Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le k))
+  let D := coordsD v
+  let R := coordsD (rhoV (tableD (k + 2)))
+  have hD : D.length = k + 2 := (coordsD_length v hv2).trans hv
+  have hcor : (corootsD D).length = k + 2 :=
+    (corootsD_length D (by rw [hD]; exact Nat.succ_pos _)).trans hD
+  have hrl : (rhoV (tableD (k + 2))).length = k + 2 := ground.length_replicate _ _
+  have hr2 : 2 ≤ (rhoV (tableD (k + 2))).length := by
+    rw [hrl]; exact Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le k))
+  have hR : R.length = k + 2 := (coordsD_length _ hr2).trans hrl
+  have hreg := coordsD_regular (rhoV (tableD (k + 2))) hr2 (fun j hj => by
+    rw [hrl] at hj
+    change BPair.unit < ground.getAt BPair.unit (List.replicate (k + 2) (BPair.ofNat 1)) j
+    rw [ground.getAt_replicate BPair.unit (BPair.ofNat 1) (k + 2) j hj]
+    decide +kernel)
+  have hpar : ∀ a b, a < k + 2 → b < k + 2 →
+      (ground.getAt BPair.unit D a).marginN % 2 = (ground.getAt BPair.unit D b).marginN % 2 :=
+    fun a b ha hb => coordsD_parity v hv2 a b (by rw [hv]; exact ha) (by rw [hv]; exact hb)
+  have hd : ∀ j, j + 1 < k + 2 →
+      (ground.getAt BPair.unit D j + (ground.getAt BPair.unit D (j + 1)).swap).marginN % 2 = 0 := by
+    intro j hj
+    apply BPair.marginN_add_even
+    rw [BPair.marginN_swap]
+    exact hpar j (j + 1) (Nat.lt_of_succ_lt hj) hj
+  have hstep : reflF (tableD (k + 2)) i v = reflF (tableD (k + 2)) i (corootsD D) := by
+    have h := reflF_pnorm (tableD (k + 2)) i v hv
+    rw [← corootsD_coordsD_norm v hv2, reflF_pnorm (tableD (k + 2)) i (corootsD D) hcor] at h
+    exact h.symm
+  have hvneg := BPair.lt_congr (BPair.oneValue_symm (poly.oneValue_getAt i (corootsD_coordsD v hv2)))
+    (BPair.oneValue_refl _) hlow
+  have htwoneg : BPair.ofNat 2 * ground.getAt BPair.unit (corootsD D) i < BPair.unit := by
+    rw [BPair.mul_comm]
+    exact BPair.lt_congr (BPair.oneValue_refl _) (BPair.unit_mul _)
+      (ground.ltB_mulPos hvneg (by decide +kernel : BPair.unit < BPair.ofNat 2))
+  have hid : signedImage (k + 2) D (List.range (k + 2)) 0 = D := by
+    have h := signedImage_id D
+    rw [hD] at h
+    exact h
+  have hp : 0 < ground.countOf (List.range (k + 2)) (places.perms (k + 2)) := by
+    rw [places.countRangePerms]; exact Nat.succ_pos 0
+  have hread : ∀ p : List Nat, 0 < ground.countOf p (places.perms (k + 2)) → ∀ n,
+      reflF (tableD (k + 2)) i v = poly.pnorm (corootsD (signedImage (k + 2) D p n)) →
+      (elim.dotP (coordsD (reflF (tableD (k + 2)) i v)) R).oneValue
+        (elim.dotP (signedImage (k + 2) D p n) R) := by
+    intro p hpp n he
+    rw [he]
+    apply elim.dotP_oneValue_left
+    refine poly.oneValue_trans (coordsD_congr _ _ (poly.pnorm_length _) (poly.pnorm_oneValue _))
+      (coordsD_corootsD _ (by rw [signedImage_length]; exact Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le k))) ?_)
+    intro j hj
+    rw [signedImage_length] at hj
+    exact signedImage_even_gaps (k + 2) D p n hpp hpar j hj
+  by_cases his : i < k + 1
+  · have hi' : i + 1 < k + 2 := Nat.succ_lt_succ his
+    have hgap := BPair.lt_congr (corootsD_gap_read D i (by rw [hD]; exact hi') (hd i hi'))
+      (BPair.oneValue_refl _) htwoneg
+    obtain ⟨p, hpp, n, _, _, _, he⟩ := signedImage_adjSwap (k + 2) i D (List.range (k + 2)) 0 hp hi'
+    rw [hid] at he
+    have hr := hread p hpp n (by rw [he]; exact hstep.trans (reflF_D_adjSwap k i D hD his hpar))
+    rw [he] at hr
+    exact BPair.lt_congr (BPair.oneValue_refl _) (BPair.oneValue_symm hr)
+      (elim.dotP_adjSwap_lt i D R (hD.trans hR.symm) (by rw [hD]; exact hi')
+        (ground.ltB_of_add_unit hgap)
+        (hreg.2 i (i + 1) (Nat.lt_succ_self i) (by rw [hrl]; exact hi')).1)
+  · have hilast : i = k + 1 := Nat.le_antisymm (Nat.le_of_lt_succ hi) (Nat.le_of_not_lt his)
+    rw [hilast] at htwoneg hstep ⊢
+    have hsum := BPair.lt_congr (corootsD_fork_read D k hD.symm (hd k (Nat.lt_succ_self _)))
+      (BPair.oneValue_refl _) htwoneg
+    obtain ⟨p, hpp, n, _, _, _, he⟩ := signedImage_adjSwap_flip (k + 2) k D (List.range (k + 2)) 0 hp (Nat.lt_succ_self _)
+    rw [hid] at he
+    have hr := hread p hpp n (by rw [hilast, he]; exact hstep.trans (reflF_D_last k D hD hpar))
+    rw [hilast, he] at hr
+    have hrs : BPair.unit < ground.getAt BPair.unit R k + ground.getAt BPair.unit R (k + 1) :=
+      ground.unitLt_of_swap_lt (hreg.2 k (k + 1) (Nat.lt_succ_self k)
+        (by rw [hrl]; exact Nat.lt_succ_self _)).2
+    exact BPair.lt_congr (BPair.oneValue_refl _) (BPair.oneValue_symm hr)
+      (elim.dotP_pairFlip_lt k D R (hD.trans hR.symm) (by rw [hD]; exact Nat.lt_succ_self _) hsum hrs)
+
+/-- In a graded reflection-closed family with distinct coroot
+keys, a dominant member has every simple coroot strictly above
+the sum's unit: a unit coroot would fix the key and flip its grade. -/
+theorem wClose_strict (t : gentable.Table) (W : List (List BPair × Bool))
+    (hshape : wShapeRead t W) (hkeys : ground.distinctList (W.map Prod.fst))
+    (hclose : wCloseRead t W) (w : List BPair × Bool) (hw : w ∈ W)
+    (hdom : ∀ i, i < t.rank → BPair.unit ≤ ground.getAt BPair.unit w.1 i) :
+    ∀ i, i < t.rank → BPair.unit < ground.getAt BPair.unit w.1 i := by
+  intro i hi
+  cases hdom i hi with
+  | inr h => exact h
+  | inl h =>
+    have hfix := reflAt_fix t i hi w.1 (hshape w hw).1 (hshape w hw).2 (BPair.oneValue_symm h)
+    have hc := hclose w hw i hi
+    rw [hfix] at hc
+    have hm : (w.1, !w.2) ∈ W := ground.mem_of_countOf_pos _ W (by
+      rw [hc]; exact ground.countOf_pos_of_mem hw)
+    have he := ground.map_inj_distinct Prod.fst W hkeys w (w.1, !w.2) hw hm rfl
+    have hp := congrArg Prod.snd he
+    cases hb : w.2 <;> rw [hb] at hp <;> cases hp
+
+/-- A distinct graded orbit with one strictly dominant key
+reads at every dominant key as the even singleton at its top.
+A chamber-wall member would be fixed by an odd letter, contrary
+to the distinct key read (`con:sertables`' regular reads). -/
+theorem wCount_dominant (t : gentable.Table) (W : List (List BPair × Bool))
+    (hshape : wShapeRead t W) (hkeys : ground.distinctList (W.map Prod.fst))
+    (hclose : wCloseRead t W) (top : List BPair) (htop : wTopAt W top)
+    (hpin : ∀ p ∈ W, (∀ i, i < t.rank → BPair.unit < ground.getAt BPair.unit p.1 i) → p.1 = top)
+    (v : List BPair) (hv : ∀ i, i < t.rank → BPair.unit ≤ ground.getAt BPair.unit v i)
+    (side : Bool) : wCount W v side = if v = top then (if side then 0 else 1) else 0 := by
+  by_cases he : v = top
+  · rw [if_pos he, he]
+    cases side with
+    | false => exact htop.1
+    | true => exact htop.2
+  · rw [if_neg he]
+    apply ground.countOf_zero_of_not_mem
+    intro hm
+    exact he (hpin (v, side) hm (wClose_strict t W hshape hkeys hclose (v, side) hm hv))
+
+/-- G2's simple reflection on any displayed orbit key is the
+corresponding edge of its twelve-cycle, for every coroot seed. -/
+theorem reflF_G2_weylMat (i j : Nat) (hi : i < 2) (hj : j < 12)
+    (v : List BPair) (hv : v.length = 2) :
+    reflF tableG2 i (poly.pnorm (elim.matVec (weylMatG2 j) v))
+      = poly.pnorm (elim.matVec (weylMatG2 (weylStepG2 i j)) v) := by
+  have hs := weylMatG2_shape j hj
+  have hs' := weylMatG2_shape _ (weylStepG2_lt i hi j hj)
+  rw [reflF_eq _ _ _ (by rw [poly.pnorm_length, elim.matVec_length, hs.1]; rfl), reflAt_pnorm]
+  refine poly.pnorm_congr _ _ ?_ (poly.oneValue_trans
+    (elim.matVec_comp _ _ v 2 hs.2 hv (by rw [hs.1]; exact reflM_rows tableG2 i))
+    (elim.matVec_matOne _ _ v (weylMatG2_step i hi j hj)))
+  rw [elim.matVec_length, reflM_length, elim.matVec_length, hs'.1]
+  rfl
+
+/-- Every G2 simple image stays in the displayed graded family,
+including seeds on reflection walls. -/
+theorem weylG2_closed (v : List BPair) (hv : v.length = 2)
+    (p : List BPair × Bool) (hp : p ∈ weylG2 v) (i : Nat) (hi : i < 2) :
+    (reflF tableG2 i p.1, !p.2) ∈ weylG2 v := by
+  obtain ⟨j, hj, he⟩ := ground.mem_map_of _ _ p hp
+  have hj' := ground.ltOfMemRange hj
+  rw [← he]
+  change (reflF tableG2 i (poly.pnorm (elim.matVec (weylMatG2 j) v)), !(j % 2 == 1)) ∈ _
+  rw [reflF_G2_weylMat i j hi hj' v hv, ← weylStepG2_parity i hi j hj']
+  exact weylG2_mem v _ (weylStepG2_lt i hi j hj')
+
+/-- G2's strictly dominant displayed family has the graded
+reflection-count read at every simple letter. -/
+theorem weylG2_close (v : List BPair) (hv : v.length = 2)
+    (hp : ∀ i, i < 2 → BPair.unit < ground.getAt BPair.unit v i) :
+    wCloseRead tableG2 (weylG2 v) :=
+  wCloseRead_of_mem tableG2 (weylG2 v) (weylG2_shape v)
+    (weylG2_regular v hv hp) (weylG2_closed v hv)
+
+/-- Distinct G2 simple letters share an image only when that key
+is fixed, at every canonical two-coroot input. -/
+theorem reflF_G2_separate (v : List BPair) (hv : v.length = 2)
+    (hn : poly.pnorm v = v) (i j : Nat) (hi : i < 2) (hj : j < 2)
+    (h : reflF tableG2 i v = reflF tableG2 j v) : i = j ∨ reflF tableG2 i v = v :=
+  reflF_separate tableG2 (by decide +kernel) (by decide +kernel) v hv hn i j hi hj h
+
+/-- A lower-side G2 coroot raises the fixed member's rho pairing. -/
+theorem reflF_G2_rho_rise (v : List BPair) (hv : v.length = 2)
+    (i : Nat) (hi : i < 2) (h : ground.getAt BPair.unit v i < BPair.unit) :
+    dotB fundG2 v (rhoV tableG2) < dotB fundG2 (reflF tableG2 i v) (rhoV tableG2) := by
+  rw [reflF_eq tableG2 i v hv]
+  exact ground.ltB_trans_le (ground.ltB_addPos (by decide +kernel : BPair.unit < BPair.ofNat 1))
+    (rise_gap tableG2 fundG2 (by decide +kernel) (by decide +kernel) (by decide +kernel) i hi v hv h)
+
+/-- The positive roots whose pairings with a key lie below the
+sum's unit, counted at the displayed finite root list. -/
+def rootNegCount (t : gentable.Table) (F : FundData) (v : List BPair) : Nat :=
+  ground.famFold Nat.add 0
+    (fun j => if dotB F (posCorootV t j) v < BPair.unit then 1 else 0)
+    (List.range t.posFolds.length)
+
+/-- The negative-pairing count is bounded by the positive-root
+list's length at every key, including singular keys. -/
+theorem rootNegCount_le (t : gentable.Table) (F : FundData) (v : List BPair) :
+    rootNegCount t F v ≤ t.posFolds.length := by
+  have h := ground.famFold_le
+    (fun j => if dotB F (posCorootV t j) v < BPair.unit then 1 else 0) (fun _ => 1)
+    (List.range t.posFolds.length) (fun j _ => by
+      by_cases hj : dotB F (posCorootV t j) v < BPair.unit
+      · rw [if_pos hj]; exact Nat.le_refl 1
+      · rw [if_neg hj]; exact Nat.zero_le 1)
+  rw [ground.famFold_const, ground.length_range, Nat.mul_one] at h
+  exact h
+
+private theorem dotB_refl_transport (t : gentable.Table) (F : FundData)
+    (hshape : fundShape t F) (hsq : reflSquareRead t) (hform : reflFormRead t F)
+    (i : Nat) (hi : i < t.rank) (x v : List BPair)
+    (hx : x.length = t.rank) (hv : v.length = t.rank) :
+    (dotB F x (reflAt t i v)).oneValue (dotB F (reflAt t i x) v) := by
+  have he := dotB_reflAt_pair t F hshape hform hi (reflAt t i x) v (reflAt_length t i x) hv
+  rw [reflAt_invol' t i (hsq i hi) x hx] at he
+  exact BPair.oneValue_trans (BPair.oneValue_symm
+    (dotB_congrL F _ _ _ (poly.pnorm_oneValue x))) he
+
+/-- Reflecting at a lower-side simple coroot removes exactly one
+negative positive-root pairing. All other pairings are permuted,
+so the count gives a label-independent dominance-walk bound. -/
+theorem rootNegCount_step (t : gentable.Table) (F : FundData)
+    (hshape : fundShape t F) (hgram : gramRead t F) (hsp : simplePosRead t F)
+    (hsq : reflSquareRead t) (hpsq : permSquareRead t F)
+    (hpi : permImageRead t F) (hrd : rhoDotRead t F) (hform : reflFormRead t F)
+    (v : List BPair) (hv : v.length = t.rank) (i : Nat) (hi : i < t.rank)
+    (hneg : ground.getAt BPair.unit v i < BPair.unit) :
+    rootNegCount t F (reflF t i v) + 1 = rootNegCount t F v := by
+  rw [reflF_eq t i v hv]
+  let si := ground.getAt 0 F.simplePos i
+  let perm := fun j => ground.getAt 0 (ground.getAt [] F.perms i) j
+  let old := fun j => if dotB F (posCorootV t j) v < BPair.unit then 1 else 0
+  let new := fun j => if dotB F (posCorootV t j) (reflAt t i v) < BPair.unit then 1 else 0
+  have hsi : si < t.posFolds.length := simplePos_lt t F hshape hi
+  have hfactor : BPair.unit < BPair.ofNat (F.scale * ground.getAt 0 t.lenNums i) := by
+    have he := dotB_simple t F hshape hgram hsp hi (rhoV t) (ground.length_replicate _ _)
+    rw [rhoV_getAt t i hi] at he
+    exact BPair.lt_congr (BPair.oneValue_refl _) (BPair.oneValue_trans he (BPair.mul_ofNat_one _)) (hrd _ hsi)
+  have hold : dotB F (posCorootV t si) v < BPair.unit := by
+    refine BPair.lt_congr (BPair.oneValue_symm (dotB_simple t F hshape hgram hsp hi v hv))
+      (BPair.oneValue_refl _) ?_
+    rw [BPair.mul_comm]
+    exact ground.mulNegPos hneg hfactor
+  have hnew : BPair.unit < dotB F (posCorootV t si) (reflAt t i v) := by
+    have he := dotB_refl_transport t F hshape hsq hform i hi (posCorootV t si) v
+      (posCorootV_length t si) hv
+    rw [(hpi i hi).2] at he
+    have hn := dotB_congrL F _ _ v (poly.pnorm_oneValue (poly.neg (posCorootV t si)))
+    have hs : dotB F (poly.neg (posCorootV t si)) v = (dotB F (posCorootV t si) v).swap :=
+      elim.dotP_swap_left _ _
+    rw [hs] at hn
+    exact BPair.lt_congr (BPair.oneValue_refl _) (BPair.oneValue_symm (BPair.oneValue_trans he hn))
+      (ground.ltB_swap hold)
+  have hoff (j : Nat) (hj : j < t.posFolds.length) (hne : j ≠ si) : new j = old (perm j) := by
+    have he := dotB_refl_transport t F hshape hsq hform i hi (posCorootV t j) v (posCorootV_length t j) hv
+    rw [(hpi i hi).1 j hj hne] at he
+    have hvv := BPair.oneValue_trans he (dotB_congrL F _ _ v (poly.pnorm_oneValue _))
+    change (if dotB F (posCorootV t j) (reflAt t i v) < BPair.unit then 1 else 0)
+      = if dotB F (posCorootV t (perm j)) v < BPair.unit then 1 else 0
+    by_cases h : dotB F (posCorootV t j) (reflAt t i v) < BPair.unit
+    · rw [if_pos h, if_pos (BPair.lt_congr hvv (BPair.oneValue_refl _) h)]
+    · rw [if_neg h, if_neg (fun hp => h (BPair.lt_congr (BPair.oneValue_symm hvv) (BPair.oneValue_refl _) hp))]
+  have hpoint (j : Nat) (hj : 0 < ground.countOf j (List.range t.posFolds.length)) :
+      new j + (if j = si then 1 else 0) = old (perm j) := by
+    by_cases he : j = si
+    · rw [he, if_pos rfl, show perm si = si from perm_fix t F hi hshape hsq hpsq hpi hrd]
+      change (if dotB F (posCorootV t si) (reflAt t i v) < BPair.unit then 1 else 0) + 1
+        = if dotB F (posCorootV t si) v < BPair.unit then 1 else 0
+      rw [if_neg (ground.leB_not_lt (ground.leB_of_lt hnew)), if_pos hold]
+    · rw [if_neg he, Nat.add_zero, hoff j (ground.ltOfMem hj) he]
+  have hfold := ground.famFold_congr_members Nat.add 0 _ _ (List.range t.posFolds.length) hpoint
+  have hsplit := ground.famFold_add_ov ground.natFoldLaws new (fun j => if j = si then 1 else 0)
+    (List.range t.posFolds.length)
+  have hsum : ground.famFold Nat.add 0 new (List.range t.posFolds.length)
+      + ground.famFold Nat.add 0 (fun j => if j = si then 1 else 0) (List.range t.posFolds.length)
+      = ground.famFold Nat.add 0 (fun j => old (perm j)) (List.range t.posFolds.length) :=
+    hsplit.symm.trans hfold
+  rw [ground.famFold_indicatorFlip, ground.countOf_range_one hsi] at hsum
+  have hreindex := ground.famFold_reindex Nat.add 0 Nat.add_comm Nat.add_assoc old
+    (ground.distinctList_range t.posFolds.length) (g := perm) (h := perm)
+    (fun j hj => hpsq i hi j (ground.ltOfMem hj))
+    (fun j hj => hpsq i hi j (ground.ltOfMem hj))
+    (fun j hj => by rw [ground.countOf_range_one (perm_lt t F hshape hi (ground.ltOfMem hj))]; exact Nat.succ_pos 0)
+    (fun j hj => by rw [ground.countOf_range_one (perm_lt t F hshape hi (ground.ltOfMem hj))]; exact Nat.succ_pos 0)
+  exact hsum.trans hreindex.symm
+
+/-- A square Cartan table gives every natural simple fold the
+full coroot width. -/
+theorem cartanFold_length (t : gentable.Table) (hsq : elim.sqAt t.cartan t.rank) (c : List Nat) :
+    (cartanFold t c).length = t.rank := by
+  apply ground.foldl_invariant (fun v : List BPair => v.length = t.rank)
+  · exact ground.length_replicate _ _
+  · intro i hi v hv
+    exact elim.length_vecAdd _ _ t.rank hv ((ground.length_map _ _).trans
+      (elim.rowsLen_getAt t.cartan i (elim.rowsLen_of_sqAt hsq)
+        (by rw [elim.sqAt_len hsq]; exact ground.ltOfMemRange hi)))
+
+/-- Increasing one simple multiplicity joins exactly that
+simple root's Cartan row to the natural fold. -/
+theorem cartanFold_bump (t : gentable.Table) (hsq : elim.sqAt t.cartan t.rank)
+    (c : List Nat) (hc : c.length = t.rank) (i : Nat) (hi : i < t.rank) :
+    poly.oneValue (cartanFold t (ground.bumpAt i c))
+      (elim.vecAdd (cartanFold t c) (ground.getAt [] t.cartan i)) := by
+  have hcl := cartanFold_length t hsq c
+  have hn := cartanFold_length t hsq (ground.bumpAt i c)
+  have hrow : (ground.getAt [] t.cartan i).length = t.rank :=
+    elim.rowsLen_getAt t.cartan i (elim.rowsLen_of_sqAt hsq)
+      (by rw [elim.sqAt_len hsq]; exact hi)
+  apply poly.oneValue_of_entries _ _
+    (hn.trans (elim.length_vecAdd _ _ t.rank hcl hrow).symm)
+  intro j hj
+  have hjr : j < t.rank := by rw [← hn]; exact hj
+  rw [elim.getAt_vecAdd _ _ j (by rw [hcl]; exact hjr) (by rw [hrow]; exact hjr)]
+  let row := fun k => ground.getAt BPair.unit (ground.getAt [] t.cartan k) j
+  have hf := ground.bsum_split
+    (fun k => BPair.ofNat (ground.getAt 0 (ground.bumpAt i c) k) * row k)
+    (fun k => BPair.ofNat (ground.getAt 0 c k) * row k)
+    (fun k => if k = i then row i else BPair.unit) t.rank (fun k _ => by
+      by_cases he : k = i
+      · rw [he, ground.getAt_bumpAt_self i c (by rw [hc]; exact hi), if_pos rfl]
+        refine BPair.oneValue_trans
+          (BPair.mul_congr (BPair.ofNat_succ _) (BPair.oneValue_refl _)) ?_
+        rw [BPair.right_distrib]
+        exact BPair.add_congr (BPair.oneValue_refl _) (BPair.ofNat_one_mul _)
+      · rw [ground.getAt_bumpAt_ne i c k he, if_neg he]
+        exact BPair.oneValue_symm (BPair.add_unit _))
+  have hp : (ground.bsum (fun k => if k = i then row i else BPair.unit)
+      (List.range t.rank)).oneValue (row i) :=
+    ground.foldB_pickRange _ i (row i) t.rank hi
+      (by rw [if_pos rfl]; exact BPair.oneValue_refl _)
+      (fun k _ hk => by rw [if_neg hk]; exact BPair.oneValue_refl _)
+  exact BPair.oneValue_trans (cartanFold_getAt t (ground.bumpAt i c) hjr hn)
+    (BPair.oneValue_trans hf
+      (BPair.add_congr (BPair.oneValue_symm (cartanFold_getAt t c hjr hcl)) hp))
+
+/-- A simple lowering increments its own natural support
+witness: the moved key joined to the increased fold reads the
+original top. -/
+theorem cartanFold_lower_join (t : gentable.Table) (hsq : elim.sqAt t.cartan t.rank)
+    (lam nu : List BPair) (hn : nu.length = t.rank) (hcanon : poly.pnorm nu = nu)
+    (c : List Nat) (hc : c.length = t.rank) (i : Nat) (hi : i < t.rank)
+    (hjoin : poly.pnorm (elim.vecAdd nu (cartanFold t c)) = lam) :
+    poly.pnorm (elim.vecAdd
+      (poly.pnorm (elim.vecAdd nu (poly.neg (ground.getAt [] t.cartan i))))
+      (cartanFold t (ground.bumpAt i c))) = lam := by
+  let r := ground.getAt [] t.cartan i
+  let v := poly.pnorm (elim.vecAdd nu (poly.neg r))
+  have hr : r.length = t.rank :=
+    elim.rowsLen_getAt t.cartan i (elim.rowsLen_of_sqAt hsq)
+      (by rw [elim.sqAt_len hsq]; exact hi)
+  have hv : v.length = t.rank := (poly.pnorm_length _).trans
+    (elim.length_vecAdd nu (poly.neg r) t.rank hn ((poly.length_neg r).trans hr))
+  have hcl := cartanFold_length t hsq c
+  have hbl := cartanFold_length t hsq (ground.bumpAt i c)
+  have hback := addKey_join t.rank nu r v hn hcanon hr hv (poly.pnorm_pnorm _) rfl
+  change poly.pnorm (elim.vecAdd v (cartanFold t (ground.bumpAt i c))) = lam
+  calc
+    poly.pnorm (elim.vecAdd v (cartanFold t (ground.bumpAt i c)))
+        = poly.pnorm (elim.vecAdd v (elim.vecAdd (cartanFold t c) r)) := by
+      apply poly.pnorm_congr _ _
+        ((elim.length_vecAdd _ _ t.rank hv hbl).trans
+          (elim.length_vecAdd _ _ t.rank hv (elim.length_vecAdd _ _ t.rank hcl hr)).symm)
+      exact elim.polyOne_vecAdd _ _ _ _ (poly.oneValue_refl v) (cartanFold_bump t hsq c hc i hi)
+        rfl (hbl.trans (elim.length_vecAdd _ _ t.rank hcl hr).symm)
+    _ = poly.pnorm (elim.vecAdd (elim.vecAdd v r) (cartanFold t c)) := by
+      rw [elim.vecAdd_comm (cartanFold t c) r, ← elim.vecAdd_assoc]
+    _ = poly.pnorm (elim.vecAdd (poly.pnorm (elim.vecAdd v r)) (cartanFold t c)) :=
+      (elim.pnorm_vecAdd_left _ _ ((elim.length_vecAdd _ _ t.rank hv hr).trans hcl.symm)).symm
+    _ = lam := by rw [hback]; exact hjoin
+
+/-- A natural dominance join reads its simple fold as the
+upper key joined to the lower key's balance partner. -/
+theorem cartanFold_solve (t : gentable.Table) (hsq : elim.sqAt t.cartan t.rank)
+    (lam nu : List BPair) (hlam : lam.length = t.rank) (hnu : nu.length = t.rank)
+    (c : List Nat)
+    (hjoin : poly.pnorm (elim.vecAdd nu (cartanFold t c)) = poly.pnorm lam) :
+    poly.oneValue (cartanFold t c) (elim.vecAdd lam (poly.neg nu)) := by
+  have hcl := cartanFold_length t hsq c
+  have hgap : (elim.vecAdd lam (poly.neg nu)).length = t.rank :=
+    elim.length_vecAdd _ _ t.rank hlam ((poly.length_neg nu).trans hnu)
+  have hj : poly.oneValue (elim.vecAdd nu (cartanFold t c)) lam := by
+    have h := poly.pnorm_oneValue (elim.vecAdd nu (cartanFold t c))
+    rw [hjoin] at h
+    exact poly.oneValue_trans (poly.oneValue_symm h) (poly.pnorm_oneValue lam)
+  apply elim.vecAdd_cancel_right _ _ nu (hcl.trans hgap.symm) (hcl.trans hnu.symm)
+  rw [elim.vecAdd_comm (cartanFold t c) nu]
+  refine poly.oneValue_trans hj (poly.oneValue_symm ?_)
+  rw [elim.vecAdd_assoc, elim.vecAdd_comm (poly.neg nu) nu]
+  exact elim.vecAdd_null_right lam (elim.vecAdd nu (poly.neg nu))
+    (by rw [elim.length_vecAdd _ _ t.rank hnu ((poly.length_neg nu).trans hnu), hlam])
+    (elim.vecAdd_swap_unitTail nu)
+
+/-- Simple folds agree when their coefficients agree on the
+simple keys; coefficients past the rank have no contribution. -/
+theorem cartanFold_congr (t : gentable.Table) (hsq : elim.sqAt t.cartan t.rank)
+    (c d : List Nat) (h : ∀ i, i < t.rank → ground.getAt 0 c i = ground.getAt 0 d i) :
+    poly.oneValue (cartanFold t c) (cartanFold t d) := by
+  refine poly.oneValue_of_entries _ _
+    ((cartanFold_length t hsq c).trans (cartanFold_length t hsq d).symm) ?_
+  intro j hj
+  rw [cartanFold_length t hsq c] at hj
+  refine BPair.oneValue_trans (cartanFold_getAt t c hj (cartanFold_length t hsq c)) ?_
+  refine BPair.oneValue_trans ?_ (BPair.oneValue_symm
+    (cartanFold_getAt t d hj (cartanFold_length t hsq d)))
+  apply ground.foldB_congr_members
+  intro i hi
+  rw [h i (ground.ltOfMem hi)]
+  exact BPair.oneValue_refl _
+
+/-- The natural simple fold is the transposed Cartan action on
+its coefficient vector, at the matched coroot width. -/
+theorem cartanFold_matVec (t : gentable.Table) (hsq : elim.sqAt t.cartan t.rank)
+    (c : List Nat) (hc : c.length = t.rank) :
+    poly.oneValue (cartanFold t c) (elim.matVec (elim.transposeM t.cartan) (c.map BPair.ofNat)) := by
+  have htl := elim.sqAt_len hsq
+  have htr := elim.rowsLen_of_sqAt hsq
+  have htrans := elim.transposeLen t.cartan htr htl
+  refine poly.oneValue_of_entries _ _ (by rw [cartanFold_length t hsq c, elim.matVec_length, htrans]) ?_
+  intro i hi
+  rw [cartanFold_length t hsq c] at hi
+  have he := elim.getAt_matVec_transposeM t.cartan htr
+    (by rw [htl]; exact Nat.lt_of_le_of_lt (Nat.zero_le i) hi) (c.map BPair.ofNat)
+    ((ground.length_map BPair.ofNat c).trans (hc.trans htl.symm)) i hi
+  rw [htl] at he
+  refine BPair.oneValue_trans (cartanFold_getAt t c hi (cartanFold_length t hsq c)) ?_
+  refine BPair.oneValue_trans ?_ (BPair.oneValue_symm he)
+  apply ground.bsum_congr_range_ov
+  intro j hj
+  rw [ground.getAt_map 0 BPair.unit BPair.ofNat c j (by rw [hc]; exact hj)]
+  exact BPair.oneValue_of_eq (BPair.mul_comm _ _)
 
 end assembly

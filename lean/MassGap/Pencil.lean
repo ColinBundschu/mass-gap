@@ -33,7 +33,7 @@ construction. -/
 def diagPos {L : Type} (F : Data L) (R : Region) (C : Nat) : Prop :=
   ((elecDiag F R C).all (fun c => 0 < c)) = true
 
-instance {L : Type} (F : Data L) (R : Region) (C : Nat) :
+instance instPencil1 {L : Type} (F : Data L) (R : Region) (C : Nat) :
     Decidable (diagPos F R C) :=
   inferInstanceAs (Decidable (_ = _))
 

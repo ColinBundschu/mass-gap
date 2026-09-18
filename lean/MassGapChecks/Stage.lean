@@ -42,9 +42,11 @@ and the lower endpoint's refuses at its price alone; and the price
 conjunct's own isolation at `4 - x` on `(1, 6)` at the bound
 `[6 : 1]`, the crossing losing the side while every other conjunct
 holds. -/
+
+namespace stage
 set_option maxHeartbeats 4000000
 
-open ground poly windowsep stage
+open ground poly windowsep
 
 private def u : BPair := BPair.unit
 
@@ -54,25 +56,25 @@ private def ext2 : Ext := ⟨[⟨1, 3⟩, u], ⟨⟨6, 1⟩, 4⟩, ⟨⟨4, 1⟩
 /-! The bracket's side exchange, and the isolation at half the
 separation at the width `[1 : 4]`. -/
 
-example : bracketRead ext2 := by decide +kernel
-example : isolRead ext2 1 4 := by decide +kernel
+theorem pin1 : bracketRead ext2 := by decide +kernel
+theorem pin2 : isolRead ext2 1 4 := by decide +kernel
 
 /-! The adjunction's own reads: the descent's naming identity at
 `z³`, the Horner remainder at `3`, the product read `√2² = 2`, and
 the reduction's equal members at the polynomial itself. -/
 
-example : poly.divRead [⟨1, 3⟩, u] [u, u, u, ⟨2, 1⟩] := by decide +kernel
-example : poly.hornerRead [⟨1, 3⟩, u, ⟨2, 1⟩] ⟨4, 1⟩ := by decide +kernel
-example : poly.oneValue
+theorem pin3 : poly.divRead [⟨1, 3⟩, u] [u, u, u, ⟨2, 1⟩] := by decide +kernel
+theorem pin4 : poly.hornerRead [⟨1, 3⟩, u, ⟨2, 1⟩] ⟨4, 1⟩ := by decide +kernel
+theorem pin5 : poly.oneValue
     (poly.remMul [⟨1, 3⟩, u] [u, ⟨2, 1⟩] [u, ⟨2, 1⟩]) [⟨3, 1⟩] := by
   decide +kernel
-example : reduceRead ext2 [⟨1, 3⟩, u, ⟨2, 1⟩] := by decide +kernel
-example : ¬ reduceRead ext2 [u, ⟨2, 1⟩] := by decide +kernel
+theorem pin6 : reduceRead ext2 [⟨1, 3⟩, u, ⟨2, 1⟩] := by decide +kernel
+theorem pin7 : ¬ reduceRead ext2 [u, ⟨2, 1⟩] := by decide +kernel
 
 /-! The unit witness cleared at two: `z · z - (z² - 2) = 2`, the
 value's inverse the witness against the clearing. -/
 
-example : witnessRead ext2 [u, ⟨2, 1⟩] [u, ⟨2, 1⟩] [⟨1, 2⟩]
+theorem pin8 : witnessRead ext2 [u, ⟨2, 1⟩] [u, ⟨2, 1⟩] [⟨1, 2⟩]
     ⟨3, 1⟩ := by decide +kernel
 
 /-! The side reads at the priced brackets: `z` keeps the upper side
@@ -80,10 +82,10 @@ and `z - 3` the lower, the endpoint values clearing the width
 against the derivative's fold, and the side kept at a bracket point
 through the theorem tier. -/
 
-example : sideUpper ext2 [u, ⟨2, 1⟩] 1 4 := by decide +kernel
-example : sideLower ext2 [⟨1, 4⟩, ⟨2, 1⟩] 1 4 := by decide +kernel
+theorem pin9 : sideUpper ext2 [u, ⟨2, 1⟩] 1 4 := by decide +kernel
+theorem pin10 : sideLower ext2 [⟨1, 4⟩, ⟨2, 1⟩] 1 4 := by decide +kernel
 
-example : unitC < evalC [u, ⟨2, 1⟩] ⟨⟨5, 1⟩, 3⟩ :=
+theorem pin11 : unitC < evalC [u, ⟨2, 1⟩] ⟨⟨5, 1⟩, 3⟩ :=
   sideUpper_all ext2 [u, ⟨2, 1⟩] 1 4 (by decide +kernel) ⟨⟨5, 1⟩, 3⟩
     (by decide +kernel) (by decide +kernel)
 
@@ -98,22 +100,22 @@ at `-z - 5`, decided with the interior point through its theorem. -/
 private def pLin : Poly := [⟨6, 1⟩, ⟨2, 1⟩]
 private def pLinNeg : Poly := [⟨1, 6⟩, ⟨1, 2⟩]
 
-example : keepUpper pLin ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by decide +kernel
-example : ¬ keepUpper pLin ⟨u, 1⟩ ⟨⟨8, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by decide +kernel
-example : ¬ keepUpper pLin ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨2, 1⟩ ⟨2, 1⟩ := by decide +kernel
+theorem pin12 : keepUpper pLin ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by decide +kernel
+theorem pin13 : ¬ keepUpper pLin ⟨u, 1⟩ ⟨⟨8, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by decide +kernel
+theorem pin14 : ¬ keepUpper pLin ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨2, 1⟩ ⟨2, 1⟩ := by decide +kernel
 
-example : unitC < evalC pLin ⟨⟨2, 1⟩, 2⟩ := by decide +kernel
-example : unitC < evalC pLin ⟨⟨2, 1⟩, 2⟩ :=
+theorem pin15 : unitC < evalC pLin ⟨⟨2, 1⟩, 2⟩ := by decide +kernel
+theorem pin16 : unitC < evalC pLin ⟨⟨2, 1⟩, 2⟩ :=
   keepUpper_all pLin ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ (by decide +kernel)
     ⟨⟨2, 1⟩, 2⟩ (by decide +kernel) (by decide +kernel)
 
-example : windowsep.mag (poly.eval pLin ⟨3, 1⟩ + (poly.eval pLin u).swap)
+theorem pin17 : windowsep.mag (poly.eval pLin ⟨3, 1⟩ + (poly.eval pLin u).swap)
       * ground.bpow (⟨2, 1⟩ : BPair)
           ((poly.vnorm (poly.deriv pLin)).length - 1)
     ≤ windowsep.magFold (poly.deriv pLin) ⟨5, 1⟩ ⟨2, 1⟩
         * (⟨3, 1⟩ + u.swap) := by decide +kernel
 
-example : windowsep.mag (poly.eval pLin ⟨3, 1⟩ + (poly.eval pLin u).swap)
+theorem pin18 : windowsep.mag (poly.eval pLin ⟨3, 1⟩ + (poly.eval pLin u).swap)
       * ground.bpow (⟨2, 1⟩ : BPair)
           ((poly.vnorm (poly.deriv pLin)).length - 1)
     ≤ windowsep.magFold (poly.deriv pLin) ⟨5, 1⟩ ⟨2, 1⟩
@@ -121,9 +123,9 @@ example : windowsep.mag (poly.eval pLin ⟨3, 1⟩ + (poly.eval pLin u).swap)
   eval_gap_le pLin u ⟨3, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : keepLower pLinNeg ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by decide +kernel
+theorem pin19 : keepLower pLinNeg ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by decide +kernel
 
-example : evalC pLinNeg ⟨⟨2, 1⟩, 2⟩ < unitC :=
+theorem pin20 : evalC pLinNeg ⟨⟨2, 1⟩, 2⟩ < unitC :=
   keepLower_all pLinNeg ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ (by decide +kernel)
     ⟨⟨2, 1⟩, 2⟩ (by decide +kernel) (by decide +kernel)
 
@@ -138,22 +140,22 @@ private def pLinAlt : Poly := [⟨9, 4⟩, ⟨5, 4⟩]
 private def pLinNegAlt : Poly := [⟨4, 9⟩, ⟨4, 5⟩]
 private def pLinOff : Poly := [⟨1, 1⟩, ⟨2, 1⟩]
 
-example : poly.oneValue pLin pLinAlt := by decide +kernel
-example : keepUpper pLinAlt ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by
+theorem pin21 : poly.oneValue pLin pLinAlt := by decide +kernel
+theorem pin22 : keepUpper pLinAlt ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by
   decide +kernel
-example : keepUpper pLinAlt ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ :=
+theorem pin23 : keepUpper pLinAlt ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ :=
   keepUpper_congr (p := pLin) (by decide +kernel)
     ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ (by decide +kernel)
 
-example : poly.oneValue pLinNeg pLinNegAlt := by decide +kernel
-example : keepLower pLinNegAlt ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by
+theorem pin24 : poly.oneValue pLinNeg pLinNegAlt := by decide +kernel
+theorem pin25 : keepLower pLinNegAlt ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by
   decide +kernel
-example : keepLower pLinNegAlt ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ :=
+theorem pin26 : keepLower pLinNegAlt ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ :=
   keepLower_congr (p := pLinNeg) (by decide +kernel)
     ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ (by decide +kernel)
 
-example : ¬ poly.oneValue pLin pLinOff := by decide +kernel
-example : ¬ keepUpper pLinOff ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by
+theorem pin27 : ¬ poly.oneValue pLin pLinOff := by decide +kernel
+theorem pin28 : ¬ keepUpper pLinOff ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨5, 1⟩ ⟨2, 1⟩ := by
   decide +kernel
 
 /-! The clearing conjunct's own isolation at `1 + z - z²` on the
@@ -166,9 +168,9 @@ alone. -/
 
 private def pCtr : Poly := [⟨2, 1⟩, ⟨2, 1⟩, ⟨1, 2⟩]
 
-example : ¬ keepUpper pCtr ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ BPair.unit ⟨1, 2⟩ := by
+theorem pin29 : ¬ keepUpper pCtr ⟨u, 1⟩ ⟨⟨3, 1⟩, 1⟩ BPair.unit ⟨1, 2⟩ := by
   decide +kernel
-example : evalC pCtr ⟨⟨3, 1⟩, 1⟩ < unitC := by decide +kernel
+theorem pin30 : evalC pCtr ⟨⟨3, 1⟩, 1⟩ < unitC := by decide +kernel
 
 /-! The upper-endpoint side read (`keepLowerTop`), the same clause
 carried at the bracket's other endpoint: `x - 5` on the bracket
@@ -201,14 +203,14 @@ private theorem kltDrop :
     keepLowerTop pDrop ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨3, 1⟩ ⟨2, 1⟩ := by
   decide +kernel
 
-example : evalC pDrop ⟨⟨2, 1⟩, 1⟩ < unitC :=
+theorem pin31 : evalC pDrop ⟨⟨2, 1⟩, 1⟩ < unitC :=
   keepLowerTop_all pDrop ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨3, 1⟩ ⟨2, 1⟩
     kltDrop ⟨⟨2, 1⟩, 1⟩
     (Or.inl (ground.CPair.oneValue_refl _)) (Or.inr (by decide +kernel))
 
-example : evalC pDrop ⟨⟨4, 1⟩, 2⟩ < unitC := by decide +kernel
+theorem pin32 : evalC pDrop ⟨⟨4, 1⟩, 2⟩ < unitC := by decide +kernel
 
-example : evalC pDrop ⟨⟨4, 1⟩, 2⟩ < unitC :=
+theorem pin33 : evalC pDrop ⟨⟨4, 1⟩, 2⟩ < unitC :=
   keepLowerTop_all pDrop ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨3, 1⟩ ⟨2, 1⟩
     kltDrop ⟨⟨4, 1⟩, 2⟩
     (Or.inr (by decide +kernel)) (Or.inr (by decide +kernel))
@@ -216,60 +218,60 @@ example : evalC pDrop ⟨⟨4, 1⟩, 2⟩ < unitC :=
 private theorem kltSlope :
     keepLowerTop pSlope ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨3, 1⟩ ⟨2, 1⟩ := by
   decide +kernel
-example : ¬ keepLower pSlope ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨3, 1⟩ ⟨2, 1⟩ := by
+theorem pin34 : ¬ keepLower pSlope ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨3, 1⟩ ⟨2, 1⟩ := by
   decide +kernel
 
-example : evalC pSlope ⟨⟨2, 1⟩, 1⟩ < unitC := by decide +kernel
-example : ¬ (ofB (windowsep.magFold (poly.deriv pSlope) ⟨3, 1⟩ ⟨2, 1⟩)
+theorem pin35 : evalC pSlope ⟨⟨2, 1⟩, 1⟩ < unitC := by decide +kernel
+theorem pin36 : ¬ (ofB (windowsep.magFold (poly.deriv pSlope) ⟨3, 1⟩ ⟨2, 1⟩)
       * ((⟨⟨3, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨2, 1⟩, 1⟩)
     < CPair.swap (evalC pSlope ⟨⟨2, 1⟩, 1⟩)
         * ofB (ground.bpow (⟨2, 1⟩ : BPair)
             ((poly.vnorm (poly.deriv pSlope)).length - 1))) := by decide +kernel
 
-example : evalC pSlope ⟨⟨4, 1⟩, 2⟩ < unitC :=
+theorem pin37 : evalC pSlope ⟨⟨4, 1⟩, 2⟩ < unitC :=
   keepLowerTop_all pSlope ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨3, 1⟩ ⟨2, 1⟩
     kltSlope ⟨⟨4, 1⟩, 2⟩
     (Or.inr (by decide +kernel)) (Or.inr (by decide +kernel))
 
-example : ¬ keepLowerTop pCross ⟨⟨2, 1⟩, 1⟩ ⟨⟨7, 1⟩, 1⟩ ⟨7, 1⟩ ⟨2, 1⟩ := by
+theorem pin38 : ¬ keepLowerTop pCross ⟨⟨2, 1⟩, 1⟩ ⟨⟨7, 1⟩, 1⟩ ⟨7, 1⟩ ⟨2, 1⟩ := by
   decide +kernel
 
-example : BPair.unit < (⟨2, 1⟩ : BPair) := by decide +kernel
-example : (⟨⟨2, 1⟩, 1⟩ : CPair) < ⟨⟨7, 1⟩, 1⟩ := by decide +kernel
-example : evalC pCross ⟨⟨7, 1⟩, 1⟩ < unitC := by decide +kernel
-example : cmag (⟨⟨2, 1⟩, 1⟩ : CPair) * ofB ⟨2, 1⟩ ≤ ofB ⟨7, 1⟩ := by decide +kernel
-example : cmag (⟨⟨7, 1⟩, 1⟩ : CPair) * ofB ⟨2, 1⟩ ≤ ofB ⟨7, 1⟩ := by decide +kernel
-example : ¬ (ofB (windowsep.magFold (poly.deriv pCross) ⟨7, 1⟩ ⟨2, 1⟩)
+theorem pin39 : BPair.unit < (⟨2, 1⟩ : BPair) := by decide +kernel
+theorem pin40 : (⟨⟨2, 1⟩, 1⟩ : CPair) < ⟨⟨7, 1⟩, 1⟩ := by decide +kernel
+theorem pin41 : evalC pCross ⟨⟨7, 1⟩, 1⟩ < unitC := by decide +kernel
+theorem pin42 : cmag (⟨⟨2, 1⟩, 1⟩ : CPair) * ofB ⟨2, 1⟩ ≤ ofB ⟨7, 1⟩ := by decide +kernel
+theorem pin43 : cmag (⟨⟨7, 1⟩, 1⟩ : CPair) * ofB ⟨2, 1⟩ ≤ ofB ⟨7, 1⟩ := by decide +kernel
+theorem pin44 : ¬ (ofB (windowsep.magFold (poly.deriv pCross) ⟨7, 1⟩ ⟨2, 1⟩)
       * ((⟨⟨7, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨2, 1⟩, 1⟩)
     < CPair.swap (evalC pCross ⟨⟨7, 1⟩, 1⟩)
         * ofB (ground.bpow (⟨2, 1⟩ : BPair)
             ((poly.vnorm (poly.deriv pCross)).length - 1))) := by decide +kernel
 
-example : ¬ (evalC pCross ⟨⟨2, 1⟩, 1⟩ < unitC) := by decide +kernel
+theorem pin45 : ¬ (evalC pCross ⟨⟨2, 1⟩, 1⟩ < unitC) := by decide +kernel
 
 private def pFar : Poly := [⟨1, 21⟩, ⟨2, 1⟩]
 
-example : ¬ keepLowerTop pFar ⟨⟨2, 1⟩, 1⟩ ⟨⟨8, 1⟩, 1⟩ ⟨6, 1⟩ ⟨2, 1⟩ := by
+theorem pin46 : ¬ keepLowerTop pFar ⟨⟨2, 1⟩, 1⟩ ⟨⟨8, 1⟩, 1⟩ ⟨6, 1⟩ ⟨2, 1⟩ := by
   decide +kernel
-example : evalC pFar ⟨⟨8, 1⟩, 1⟩ < unitC := by decide +kernel
-example : ofB (windowsep.magFold (poly.deriv pFar) ⟨6, 1⟩ ⟨2, 1⟩)
+theorem pin47 : evalC pFar ⟨⟨8, 1⟩, 1⟩ < unitC := by decide +kernel
+theorem pin48 : ofB (windowsep.magFold (poly.deriv pFar) ⟨6, 1⟩ ⟨2, 1⟩)
       * ((⟨⟨8, 1⟩, 1⟩ : CPair) + CPair.swap ⟨⟨2, 1⟩, 1⟩)
     < CPair.swap (evalC pFar ⟨⟨8, 1⟩, 1⟩)
         * ofB (ground.bpow (⟨2, 1⟩ : BPair)
             ((poly.vnorm (poly.deriv pFar)).length - 1)) := by decide +kernel
-example : ¬ (cmag (⟨⟨8, 1⟩, 1⟩ : CPair) * ofB ⟨2, 1⟩ ≤ ofB ⟨6, 1⟩) := by
+theorem pin49 : ¬ (cmag (⟨⟨8, 1⟩, 1⟩ : CPair) * ofB ⟨2, 1⟩ ≤ ofB ⟨6, 1⟩) := by
   decide +kernel
 
-example : ¬ keepLowerTop pFar ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨2, 1⟩ ⟨2, 1⟩ := by
+theorem pin50 : ¬ keepLowerTop pFar ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨2, 1⟩ ⟨2, 1⟩ := by
   decide +kernel
-example : cmag (⟨⟨2, 1⟩, 1⟩ : CPair) * ofB ⟨2, 1⟩ ≤ ofB ⟨2, 1⟩ := by
+theorem pin51 : cmag (⟨⟨2, 1⟩, 1⟩ : CPair) * ofB ⟨2, 1⟩ ≤ ofB ⟨2, 1⟩ := by
   decide +kernel
-example : ¬ (cmag (⟨⟨3, 1⟩, 1⟩ : CPair) * ofB ⟨2, 1⟩ ≤ ofB ⟨2, 1⟩) := by
+theorem pin52 : ¬ (cmag (⟨⟨3, 1⟩, 1⟩ : CPair) * ofB ⟨2, 1⟩ ≤ ofB ⟨2, 1⟩) := by
   decide +kernel
 
-example : ¬ keepLowerTop pDrop ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨3, 1⟩ ⟨1, 2⟩ := by
+theorem pin53 : ¬ keepLowerTop pDrop ⟨⟨2, 1⟩, 1⟩ ⟨⟨3, 1⟩, 1⟩ ⟨3, 1⟩ ⟨1, 2⟩ := by
   decide +kernel
-example : ¬ (BPair.unit < (⟨1, 2⟩ : BPair)) := by decide +kernel
+theorem pin54 : ¬ (BPair.unit < (⟨1, 2⟩ : BPair)) := by decide +kernel
 
 /-! The piece-local kit at `1 + 2z` on the piece `(3/2, 2)`, every
 value hand-computed: the binomial rewrite at the composite point
@@ -289,44 +291,44 @@ private def pPc : Poly := [BPair.ofNat 1, BPair.ofNat 2]
 private def aPc : CPair := ⟨BPair.ofNat 3, 2⟩
 private def bPc : CPair := ⟨BPair.ofNat 2, 1⟩
 
-example : poly.oneValue (shiftC pPc (BPair.ofNat 3) 2)
+theorem pin55 : poly.oneValue (shiftC pPc (BPair.ofNat 3) 2)
     [BPair.ofNat 8, BPair.ofNat 4] := by decide +kernel
 
-example : (evalC (shiftC pPc (BPair.ofNat 3) 2)
+theorem pin56 : (evalC (shiftC pPc (BPair.ofNat 3) 2)
       ⟨BPair.ofNat 1, 4⟩).oneValue
     (evalC pPc ((⟨BPair.ofNat 3, 2⟩ : CPair) + ⟨BPair.ofNat 1, 4⟩)
       * ofB (BPair.ofPos (Pos.powC 2 (pPc.length - 1)))) := by
   decide +kernel
 
-example : (capW [BPair.ofNat 8, BPair.ofNat 4]
+theorem pin57 : (capW [BPair.ofNat 8, BPair.ofNat 4]
       ⟨BPair.ofNat 1, 2⟩).oneValue ⟨BPair.ofNat 10, 1⟩ := by
   decide +kernel
 
-example : (floorW [BPair.ofNat 8, BPair.ofNat 4]
+theorem pin58 : (floorW [BPair.ofNat 8, BPair.ofNat 4]
       ⟨BPair.ofNat 1, 2⟩).oneValue ⟨BPair.ofNat 6, 1⟩ := by
   decide +kernel
 
-example : (overC (⟨BPair.ofNat 10, 1⟩ : CPair) 2).oneValue
+theorem pin59 : (overC (⟨BPair.ofNat 10, 1⟩ : CPair) 2).oneValue
     ⟨BPair.ofNat 10, 2⟩ := by decide +kernel
 
-example : (capA pPc aPc (bPc + CPair.swap aPc)).oneValue
+theorem pin60 : (capA pPc aPc (bPc + CPair.swap aPc)).oneValue
     ⟨BPair.ofNat 5, 1⟩ := by decide +kernel
 
-example : (floorA pPc aPc (bPc + CPair.swap aPc)).oneValue
+theorem pin61 : (floorA pPc aPc (bPc + CPair.swap aPc)).oneValue
     ⟨BPair.ofNat 3, 1⟩ := by decide +kernel
 
-example : cmag (evalC pPc ⟨BPair.ofNat 7, 4⟩)
+theorem pin62 : cmag (evalC pPc ⟨BPair.ofNat 7, 4⟩)
     ≤ capA pPc aPc (bPc + CPair.swap aPc) := by decide +kernel
 
-example : cmag (evalC pPc ⟨BPair.ofNat 7, 4⟩)
+theorem pin63 : cmag (evalC pPc ⟨BPair.ofNat 7, 4⟩)
     ≤ capA pPc aPc (bPc + CPair.swap aPc) :=
   capA_le pPc (x := ⟨BPair.ofNat 7, 4⟩) (by decide +kernel)
     (by decide +kernel)
 
-example : floorA pPc aPc (bPc + CPair.swap aPc)
+theorem pin64 : floorA pPc aPc (bPc + CPair.swap aPc)
     ≤ evalC pPc ⟨BPair.ofNat 7, 4⟩ := by decide +kernel
 
-example : floorA pPc aPc (bPc + CPair.swap aPc)
+theorem pin65 : floorA pPc aPc (bPc + CPair.swap aPc)
     ≤ evalC pPc ⟨BPair.ofNat 7, 4⟩ :=
   floorA_le pPc (x := ⟨BPair.ofNat 7, 4⟩) (by decide +kernel)
     (by decide +kernel)
@@ -340,59 +342,61 @@ conclusion parts; and at the falling sibling `1 - 2z`, whose
 value drops past the top, the point three refuses the top binder
 alone and the floor's conclusion parts. -/
 
-example : ¬ (cmag (evalC pPc ⟨BPair.ofNat 3, 1⟩)
+theorem pin66 : ¬ (cmag (evalC pPc ⟨BPair.ofNat 3, 1⟩)
     ≤ capA pPc aPc (bPc + CPair.swap aPc)) := by decide +kernel
-example : aPc ≤ ⟨BPair.ofNat 3, 1⟩ := by decide +kernel
-example : ¬ ((⟨BPair.ofNat 3, 1⟩ : CPair) ≤ bPc) := by decide +kernel
+theorem pin67 : aPc ≤ ⟨BPair.ofNat 3, 1⟩ := by decide +kernel
+theorem pin68 : ¬ ((⟨BPair.ofNat 3, 1⟩ : CPair) ≤ bPc) := by decide +kernel
 
-example : ¬ (cmag (evalC pPc ⟨(BPair.ofNat 5).swap, 1⟩)
+theorem pin69 : ¬ (cmag (evalC pPc ⟨(BPair.ofNat 5).swap, 1⟩)
     ≤ capA pPc aPc (bPc + CPair.swap aPc)) := by decide +kernel
-example : ¬ (aPc ≤ (⟨(BPair.ofNat 5).swap, 1⟩ : CPair)) := by
+theorem pin70 : ¬ (aPc ≤ (⟨(BPair.ofNat 5).swap, 1⟩ : CPair)) := by
   decide +kernel
-example : (⟨(BPair.ofNat 5).swap, 1⟩ : CPair) ≤ bPc := by
+theorem pin71 : (⟨(BPair.ofNat 5).swap, 1⟩ : CPair) ≤ bPc := by
   decide +kernel
 
-example : ¬ (floorA pPc aPc (bPc + CPair.swap aPc)
+theorem pin72 : ¬ (floorA pPc aPc (bPc + CPair.swap aPc)
     ≤ evalC pPc ⟨BPair.ofNat 1, 2⟩) := by decide +kernel
-example : ¬ (aPc ≤ ⟨BPair.ofNat 1, 2⟩) := by decide +kernel
-example : (⟨BPair.ofNat 1, 2⟩ : CPair) ≤ bPc := by decide +kernel
+theorem pin73 : ¬ (aPc ≤ ⟨BPair.ofNat 1, 2⟩) := by decide +kernel
+theorem pin74 : (⟨BPair.ofNat 1, 2⟩ : CPair) ≤ bPc := by decide +kernel
 
 private def qPc : Poly := [BPair.unit, (BPair.ofNat 2).swap]
 
-example : ¬ (floorA qPc aPc (bPc + CPair.swap aPc)
+theorem pin75 : ¬ (floorA qPc aPc (bPc + CPair.swap aPc)
     ≤ evalC qPc ⟨BPair.ofNat 3, 1⟩) := by decide +kernel
-example : aPc ≤ (⟨BPair.ofNat 3, 1⟩ : CPair) := by decide +kernel
+theorem pin76 : aPc ≤ (⟨BPair.ofNat 3, 1⟩ : CPair) := by decide +kernel
 
 /-! The evaluation homomorphisms and the magnitude calculus at
 signed instances. -/
 
-example : (evalC (poly.add pPc [BPair.ofNat 2, BPair.ofNat 1])
+theorem pin77 : (evalC (poly.add pPc [BPair.ofNat 2, BPair.ofNat 1])
       ⟨BPair.ofNat 3, 2⟩).oneValue
     (evalC pPc ⟨BPair.ofNat 3, 2⟩
       + evalC [BPair.ofNat 2, BPair.ofNat 1] ⟨BPair.ofNat 3, 2⟩) := by
   decide +kernel
 
-example : (evalC (poly.mul pPc [BPair.ofNat 2, BPair.ofNat 1])
+theorem pin78 : (evalC (poly.mul pPc [BPair.ofNat 2, BPair.ofNat 1])
       ⟨BPair.ofNat 3, 2⟩).oneValue
     (evalC pPc ⟨BPair.ofNat 3, 2⟩
       * evalC [BPair.ofNat 2, BPair.ofNat 1] ⟨BPair.ofNat 3, 2⟩) := by
   decide +kernel
 
-example : (cmag ((⟨(BPair.ofNat 2).swap, 1⟩ : CPair)
+theorem pin79 : (cmag ((⟨(BPair.ofNat 2).swap, 1⟩ : CPair)
       * ⟨BPair.ofNat 3, 2⟩)).oneValue
     (cmag (⟨(BPair.ofNat 2).swap, 1⟩ : CPair)
       * cmag (⟨BPair.ofNat 3, 2⟩ : CPair)) := by decide +kernel
 
-example : cmag ((⟨(BPair.ofNat 2).swap, 1⟩ : CPair)
+theorem pin80 : cmag ((⟨(BPair.ofNat 2).swap, 1⟩ : CPair)
       + ⟨BPair.ofNat 3, 1⟩)
     ≤ cmag (⟨(BPair.ofNat 2).swap, 1⟩ : CPair)
       + cmag (⟨BPair.ofNat 3, 1⟩ : CPair) := by decide +kernel
 
-example : CPair.swap (cmag (⟨(BPair.ofNat 2).swap, 1⟩ : CPair))
+theorem pin81 : CPair.swap (cmag (⟨(BPair.ofNat 2).swap, 1⟩ : CPair))
     ≤ ⟨(BPair.ofNat 2).swap, 1⟩ := by decide +kernel
 
-example : (cmag (⟨BPair.ofNat 3, 2⟩ : CPair)).oneValue
+theorem pin82 : (cmag (⟨BPair.ofNat 3, 2⟩ : CPair)).oneValue
     ⟨BPair.ofNat 3, 2⟩ := by decide +kernel
 
-example : ((⟨BPair.ofNat 3, 2⟩ : CPair) * unitC).oneValue unitC := by
+theorem pin83 : ((⟨BPair.ofNat 3, 2⟩ : CPair) * unitC).oneValue unitC := by
   decide +kernel
+
+end stage

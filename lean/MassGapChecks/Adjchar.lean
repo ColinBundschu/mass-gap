@@ -19,58 +19,60 @@ width one where the adjoint's shape collapses onto the single
 column; its width binder is a frame, the identity standing at the
 junk widths.
 -/
+
+namespace adjchar
 set_option maxHeartbeats 4000000
 
-open ground places adjchar
+open ground places
 
 /-! The adjoint's column multisets, the two columns joining at
 `d_f = 2`. -/
 
-example : theta 2 = [2, 0] := rfl
-example : theta 3 = [1, 1, 0] := rfl
-example : theta 4 = [1, 0, 1, 0] := rfl
+theorem pin1 : theta 2 = [2, 0] := rfl
+theorem pin2 : theta 3 = [1, 1, 0] := rfl
+theorem pin3 : theta 4 = [1, 0, 1, 0] := rfl
 
 /-! The content formula's instances. -/
 
-example : multRead 2 [1, 1] = 1 := rfl
-example : multRead 3 [1, 1, 1] = 2 := rfl
-example : multRead 3 [2, 1, 0] = 1 := rfl
-example : multRead 3 [2, 0, 1] = 1 := rfl
-example : multRead 3 [3, 0, 0] = 0 := rfl
-example : multRead 3 [2, 2, 2] = 0 := rfl
-example : multRead 6 [1, 1, 1, 1, 1, 1] = 5 := rfl
+theorem pin4 : multRead 2 [1, 1] = 1 := rfl
+theorem pin5 : multRead 3 [1, 1, 1] = 2 := rfl
+theorem pin6 : multRead 3 [2, 1, 0] = 1 := rfl
+theorem pin7 : multRead 3 [2, 0, 1] = 1 := rfl
+theorem pin8 : multRead 3 [3, 0, 0] = 0 := rfl
+theorem pin9 : multRead 3 [2, 2, 2] = 0 := rfl
+theorem pin10 : multRead 6 [1, 1, 1, 1, 1, 1] = 5 := rfl
 
 /-! The coherence with `def:blockcount`'s carrier at the su(2),
 su(3) and su(4) instances, every content of the degree swept — the
 su(4) sweep the formula's check at the first fully generic
 residue. -/
 
-example : ((places.allContents 2 2).all (fun m =>
+theorem pin11 : ((places.allContents 2 2).all (fun m =>
     adjchar.multRead 2 m
       == blockcount.occupancyAt
         (blockcount.blockSpan (adjchar.theta 2)) m)) = true := by decide +kernel
 
-example : ((places.allContents 3 3).all (fun m =>
+theorem pin12 : ((places.allContents 3 3).all (fun m =>
     adjchar.multRead 3 m
       == blockcount.occupancyAt
         (blockcount.blockSpan (adjchar.theta 3)) m)) = true := by decide +kernel
 
 set_option maxHeartbeats 16000000 in
-example : ((places.allContents 4 4).all (fun m =>
+theorem pin13 : ((places.allContents 4 4).all (fun m =>
     adjchar.multRead 4 m
       == blockcount.occupancyAt
         (blockcount.blockSpan (adjchar.theta 4)) m)) = true := by decide +kernel
 
 /-! The adjoint shape's length and rows, the promoted reads. -/
 
-example : (adjchar.theta 6).length = 6 := adjchar.length_theta 6
-example : places.rowList (adjchar.theta (4 + 2))
+theorem pin14 : (adjchar.theta 6).length = 6 := adjchar.length_theta 6
+theorem pin15 : places.rowList (adjchar.theta (4 + 2))
     = 2 :: (List.replicate 4 1 ++ [0]) := adjchar.rowList_theta 4
 
 /-! The occupied content's flat read: the entrywise cap at two with
 the boxes at the fundamental count. -/
 
-example : (∀ i, ground.getAt 0 [2, 0, 1] i ≤ 2)
+theorem pin16 : (∀ i, ground.getAt 0 [2, 0, 1] i ≤ 2)
     ∧ ground.sumNat [2, 0, 1] = 3 :=
   multRead_flat 3 [2, 0, 1] (by decide +kernel)
 
@@ -79,9 +81,9 @@ example : (∀ i, ground.getAt 0 [2, 0, 1] i ≤ 2)
 the move `[2, 0, 1]` the right at the raised place `0` against the
 lowered place `1`. -/
 
-example : ∀ k, k < 3 → ground.getAt 0 [1, 1, 1] k = 1 := by decide +kernel
+theorem pin17 : ∀ k, k < 3 → ground.getAt 0 [1, 1, 1] k = 1 := by decide +kernel
 
-example : (([1, 1, 1] : List Nat).length = 3
+theorem pin18 : (([1, 1, 1] : List Nat).length = 3
       ∧ (∀ k, k < 3 → ground.getAt 0 [1, 1, 1] k = 1)
       ∧ multRead 3 [1, 1, 1] = 3 - 1)
     ∨ (([1, 1, 1] : List Nat).length = 3
@@ -93,11 +95,11 @@ example : (([1, 1, 1] : List Nat).length = 3
       ∧ multRead 3 [1, 1, 1] = 1) :=
   multRead_cases 3 [1, 1, 1] (by decide +kernel)
 
-example : ground.getAt 0 [2, 0, 1] 0 = 2 := by decide +kernel
-example : ground.getAt 0 [2, 0, 1] 1 = 0 := by decide +kernel
-example : ground.getAt 0 [2, 0, 1] 2 = 1 := by decide +kernel
+theorem pin19 : ground.getAt 0 [2, 0, 1] 0 = 2 := by decide +kernel
+theorem pin20 : ground.getAt 0 [2, 0, 1] 1 = 0 := by decide +kernel
+theorem pin21 : ground.getAt 0 [2, 0, 1] 2 = 1 := by decide +kernel
 
-example : (([2, 0, 1] : List Nat).length = 3
+theorem pin22 : (([2, 0, 1] : List Nat).length = 3
       ∧ (∀ k, k < 3 → ground.getAt 0 [2, 0, 1] k = 1)
       ∧ multRead 3 [2, 0, 1] = 3 - 1)
     ∨ (([2, 0, 1] : List Nat).length = 3
@@ -112,22 +114,22 @@ example : (([2, 0, 1] : List Nat).length = 3
 /-- Refusal isolating `hpos`: the content `[3, 0, 0]` reads off the
 list — a letter beyond two — so the read is the fold's unit and
 neither arm is available. -/
-example : ¬ 0 < multRead 3 [3, 0, 0] := by decide +kernel
+theorem pin23 : ¬ 0 < multRead 3 [3, 0, 0] := by decide +kernel
 
 /-! The content read's two arms at their own instances: the
 letter-pair move at the explicit counts, and the unit-monomial
 content at the residue's count — each decided beside the theorem's
 route. -/
 
-example : adjchar.multRead 4 [0, 2, 1, 1] = 1 := by decide +kernel
+theorem pin24 : adjchar.multRead 4 [0, 2, 1, 1] = 1 := by decide +kernel
 
-example : adjchar.multRead 4 [0, 2, 1, 1] = 1 :=
+theorem pin25 : adjchar.multRead 4 [0, 2, 1, 1] = 1 :=
   adjchar.multRead_move 4 [0, 2, 1, 1] (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
-example : adjchar.multRead 5 (List.replicate 5 1) = 5 - 1 := by decide +kernel
+theorem pin26 : adjchar.multRead 5 (List.replicate 5 1) = 5 - 1 := by decide +kernel
 
-example : adjchar.multRead 5 (List.replicate 5 1) = 5 - 1 :=
+theorem pin27 : adjchar.multRead 5 (List.replicate 5 1) = 5 - 1 :=
   adjchar.multRead_ones 5
 
 /-! `lem:adjchar`'s general theorem at `d_f = 3`: the adjoint span's
@@ -136,26 +138,26 @@ unit-monomial content at the residue's count, a letter-pair move at
 one, and an off-list content at the fold's unit — each read by the
 theorem's route and by the kernel beside it. -/
 
-example : blockcount.occupancyAt
+theorem pin28 : blockcount.occupancyAt
     (blockcount.blockSpan (adjchar.theta 3)) [1, 1, 1] = 2 := by decide +kernel
 
-example : blockcount.occupancyAt
+theorem pin29 : blockcount.occupancyAt
       (blockcount.blockSpan (adjchar.theta 3)) [1, 1, 1]
     = adjchar.multRead 3 [1, 1, 1] :=
   adjchar.occupancy 3 (by decide +kernel) [1, 1, 1] (by decide +kernel)
 
-example : blockcount.occupancyAt
+theorem pin30 : blockcount.occupancyAt
     (blockcount.blockSpan (adjchar.theta 3)) [2, 0, 1] = 1 := by decide +kernel
 
-example : blockcount.occupancyAt
+theorem pin31 : blockcount.occupancyAt
       (blockcount.blockSpan (adjchar.theta 3)) [2, 0, 1]
     = adjchar.multRead 3 [2, 0, 1] :=
   adjchar.occupancy 3 (by decide +kernel) [2, 0, 1] (by decide +kernel)
 
-example : blockcount.occupancyAt
+theorem pin32 : blockcount.occupancyAt
     (blockcount.blockSpan (adjchar.theta 3)) [3, 0, 0] = 0 := by decide +kernel
 
-example : blockcount.occupancyAt
+theorem pin33 : blockcount.occupancyAt
       (blockcount.blockSpan (adjchar.theta 3)) [3, 0, 0]
     = adjchar.multRead 3 [3, 0, 0] :=
   adjchar.occupancy 3 (by decide +kernel) [3, 0, 0] (by decide +kernel)
@@ -166,20 +168,22 @@ onto the single column `[2]`, whose block is the one line at the
 content `[2]`, while the formula reads the fold's unit at every
 content of that width, so the identity refuses with the width
 binder holding. -/
-example : ¬ (blockcount.occupancyAt
+theorem pin34 : ¬ (blockcount.occupancyAt
       (blockcount.blockSpan (adjchar.theta 1)) [2]
     = adjchar.multRead 1 [2]) := by decide +kernel
 
-example : ([2] : List Nat).length = 1 := by decide +kernel
+theorem pin35 : ([2] : List Nat).length = 1 := by decide +kernel
 
 /-- `hm` is the width frame: off the stated width both sides read
 the fold's unit, the span's members carrying the width throughout,
 so the identity holds at the junk widths and no refusal is
 constructible. -/
-example : blockcount.occupancyAt
+theorem pin36 : blockcount.occupancyAt
       (blockcount.blockSpan (adjchar.theta 3)) [1, 1]
     = adjchar.multRead 3 [1, 1] := by decide +kernel
 
-example : blockcount.occupancyAt
+theorem pin37 : blockcount.occupancyAt
       (blockcount.blockSpan (adjchar.theta 3)) [1, 1, 1, 1]
     = adjchar.multRead 3 [1, 1, 1, 1] := by decide +kernel
+
+end adjchar

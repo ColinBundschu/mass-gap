@@ -120,7 +120,7 @@ def modPresOk (F : states.FList) (i j : Nat)
       && ((ground.getAt (0, false) F p.1).1
          == (ground.getAt (0, false) F p.2).1)))) = true
 
-instance (F : states.FList) (i j : Nat) (rest : List (Nat × Nat)) :
+instance instTwoplaq1 (F : states.FList) (i j : Nat) (rest : List (Nat × Nat)) :
     Decidable (modPresOk F i j rest) :=
   inferInstanceAs (Decidable (_ ∧ _ = _))
 
@@ -132,7 +132,7 @@ def stepRead (F : states.FList) (mods : List states.Comb)
     (ws : List (List Nat)) (y x k : states.Comb) : Prop :=
   res.resRead F (eAct F) lvlE mods ws y x k
 
-instance (F : states.FList) (mods : List states.Comb)
+instance instTwoplaq2 (F : states.FList) (mods : List states.Comb)
     (ws : List (List Nat)) (y x k : states.Comb) :
     Decidable (stepRead F mods ws y x k) :=
   inferInstanceAs (Decidable (res.resRead _ _ _ _ _ _ _ _))

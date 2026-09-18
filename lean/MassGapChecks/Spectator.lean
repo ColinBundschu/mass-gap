@@ -117,9 +117,11 @@ member `-1` below the center `3`, the deviation the gram's swap at
 the quadruple scale with the upper side held at every vector; and
 the floor parts at the member at its own center `-1`, the vacant
 deviation holding both cap sides. -/
+
+namespace spectator
 set_option maxHeartbeats 4000000
 
-open ground poly elim inertia greenprod spectator
+open ground poly elim inertia greenprod
 
 private def u : BPair := BPair.unit
 
@@ -142,14 +144,14 @@ private def cs3' : List MatQ := [([[⟨2, 1⟩]], 2), ([[⟨3, 1⟩]], 5)]
 
 /-! Clause (i): the shared tail and the deviation sandwich. -/
 
-example : tailShareRead diag3 off3 diag3' off3 xs3 rs3 xs3' rs3
+theorem pin1 : tailShareRead diag3 off3 diag3' off3 xs3 rs3 xs3' rs3
     0 [1, 1, 1] := by decide +kernel
-example : sandwichRead diag3 off3 diag3' off3 ys3 cs3 ys3' cs3'
+theorem pin2 : sandwichRead diag3 off3 diag3' off3 ys3 cs3 ys3' cs3'
     0 [1, 1, 1] := by decide +kernel
-example : sandwichStep ([[⟨2, 1⟩]], 3) ([[⟨2, 1⟩]], 2)
+theorem pin3 : sandwichStep ([[⟨2, 1⟩]], 3) ([[⟨2, 1⟩]], 2)
     ([[⟨6, 1⟩]], 2) ([[⟨9, 1⟩]], 3) ([[⟨3, 1⟩]], 1)
     ([[⟨4, 1⟩]], 1) 1 1 := by decide +kernel
-example : ¬ sandwichStep ([[⟨2, 1⟩]], 3) ([[⟨2, 1⟩]], 2)
+theorem pin4 : ¬ sandwichStep ([[⟨2, 1⟩]], 3) ([[⟨2, 1⟩]], 2)
     ([[⟨7, 1⟩]], 2) ([[⟨9, 1⟩]], 3) ([[⟨3, 1⟩]], 1)
     ([[⟨4, 1⟩]], 1) 1 1 := by decide +kernel
 
@@ -165,7 +167,7 @@ fixture — the asymmetric `Y0` with every further read holding,
 the conclusion parting — the one load-bearing symmetry, the shape
 binders the committed read's own frame. -/
 
-example : oneValueQ
+theorem pin5 : oneValueQ
     (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3))
     (mulQ (transposeQ (transfer ([[⟨2, 1⟩]], 3)))
       (mulQ (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
@@ -178,40 +180,40 @@ example : oneValueQ
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
-example : oneValueQ
+theorem pin6 : oneValueQ
     (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3))
     (mulQ (transposeQ (transfer ([[⟨2, 1⟩]], 3)))
       (mulQ (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
         (transfer ([[⟨2, 1⟩]], 2)))) := by decide +kernel
-example : ¬ oneValueQ
+theorem pin7 : ¬ oneValueQ
     (mulQ (([[⟨5, 1⟩]], 1) : MatQ) ([[⟨2, 1⟩]], 3))
     (ofM [[⟨2, 1⟩]]) := by decide +kernel
-example : ¬ oneValueQ
+theorem pin8 : ¬ oneValueQ
     (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3))
     (mulQ (transposeQ (transfer ([[⟨2, 1⟩]], 3)))
       (mulQ (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨5, 1⟩]], 1))
         (transfer ([[⟨2, 1⟩]], 2)))) := by decide +kernel
-example : ¬ oneValueQ (mulQ (([[⟨4, 1⟩]], 1) : MatQ) ([[⟨2, 1⟩]], 2))
+theorem pin9 : ¬ oneValueQ (mulQ (([[⟨4, 1⟩]], 1) : MatQ) ([[⟨2, 1⟩]], 2))
     (ofM [[⟨2, 1⟩]]) := by decide +kernel
-example : ¬ oneValueQ
+theorem pin10 : ¬ oneValueQ
     (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3))
     (mulQ (transposeQ (transfer ([[⟨2, 1⟩]], 3)))
       (mulQ (devQ (([[⟨4, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
         (transfer ([[⟨2, 1⟩]], 2)))) := by decide +kernel
-example : ¬ oneValueQ
+theorem pin11 : ¬ oneValueQ
     (addQ (([[⟨10, 1⟩]], 3) : MatQ)
       (mulQ (ofM (transposeM [[⟨2, 1⟩]])) ([[⟨2, 1⟩]], 3)))
     (ofM [[⟨4, 1⟩]]) := by decide +kernel
-example : ¬ oneValueQ
+theorem pin12 : ¬ oneValueQ
     (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨10, 1⟩]], 3))
     (mulQ (transposeQ (transfer ([[⟨2, 1⟩]], 3)))
       (mulQ (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
         (transfer ([[⟨2, 1⟩]], 2)))) := by decide +kernel
-example : ¬ oneValueQ
+theorem pin13 : ¬ oneValueQ
     (addQ (([[⟨4, 1⟩]], 1) : MatQ)
       (mulQ (ofM (transposeM [[⟨2, 1⟩]])) ([[⟨2, 1⟩]], 2)))
     (ofM [[⟨4, 1⟩]]) := by decide +kernel
-example : ¬ oneValueQ
+theorem pin14 : ¬ oneValueQ
     (devQ (([[⟨4, 1⟩]], 1) : MatQ) ([[⟨9, 1⟩]], 3))
     (mulQ (transposeQ (transfer ([[⟨2, 1⟩]], 3)))
       (mulQ (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
@@ -232,20 +234,20 @@ private def aSf : Mat := [[⟨6, 1⟩, ⟨3, 1⟩], [⟨3, 1⟩, ⟨6, 1⟩]]
 private def y1A : Mat := [[⟨4, 1⟩, ⟨3, 1⟩], [⟨2, 1⟩, ⟨4, 1⟩]]
 private def y1P : Mat := [[⟨29, 1⟩, ⟨15, 1⟩], [⟨15, 1⟩, ⟨30, 1⟩]]
 
-example : oneValueQ (mulQ ((y0A, 1) : MatQ) ((cIf, 1) : MatQ))
+theorem pin15 : oneValueQ (mulQ ((y0A, 1) : MatQ) ((cIf, 1) : MatQ))
     (ofM y0A) := by decide +kernel
-example : oneValueQ (mulQ ((y0S, 1) : MatQ) ((cPf, 8) : MatQ))
+theorem pin16 : oneValueQ (mulQ ((y0S, 1) : MatQ) ((cPf, 8) : MatQ))
     (ofM y0A) := by decide +kernel
-example : oneValueQ
+theorem pin17 : oneValueQ
     (addQ ((y1A, 1) : MatQ)
       (mulQ (ofM (transposeM y0A)) ((cIf, 1) : MatQ)))
     (ofM aSf) := by decide +kernel
-example : oneValueQ
+theorem pin18 : oneValueQ
     (addQ ((y1P, 8) : MatQ)
       (mulQ (ofM (transposeM y0A)) ((cPf, 8) : MatQ)))
     (ofM aSf) := by decide +kernel
-example : ¬ matOneValue (transposeM y0A) y0A := by decide +kernel
-example : ¬ oneValueQ (devQ ((y1P, 8) : MatQ) ((y1A, 1) : MatQ))
+theorem pin19 : ¬ matOneValue (transposeM y0A) y0A := by decide +kernel
+theorem pin20 : ¬ oneValueQ (devQ ((y1P, 8) : MatQ) ((y1A, 1) : MatQ))
     (mulQ (transposeQ (transfer ((cIf, 1) : MatQ)))
       (mulQ (devQ ((y0S, 1) : MatQ) ((y0A, 1) : MatQ))
         (transfer ((cPf, 8) : MatQ)))) := by decide +kernel
@@ -268,29 +270,27 @@ private def ysV : List MatQ :=
   [([[⟨4, 1⟩]], 1), ([[⟨9, 1⟩]], 3), ([[⟨30, 1⟩]], 8)]
 private def csV : List MatQ := [([[⟨2, 1⟩]], 3), ([[⟨4, 1⟩]], 8)]
 
-example : headShareRead diag3 off3 diagV off3 ys3 cs3 ysV csV
+theorem pin21 : headShareRead diag3 off3 diagV off3 ys3 cs3 ysV csV
     2 [1, 1, 1] := by decide +kernel
-example : tailSandwichRead diag3 off3 diagV off3 xs3 rs3 xsV rsV
+theorem pin22 : tailSandwichRead diag3 off3 diagV off3 xs3 rs3 xsV rsV
     2 [1, 1, 1] := by decide +kernel
-example : ¬ tailSandwichRead diag3 off3 diag3' off3 xs3 rs3 xs3' rs3
+theorem pin23 : ¬ tailSandwichRead diag3 off3 diag3' off3 xs3 rs3 xs3' rs3
     2 [1, 1, 1] := by decide +kernel
-example : ¬ headShareRead diag3 off3 diag3' off3 ys3 cs3 ys3' cs3'
+theorem pin24 : ¬ headShareRead diag3 off3 diag3' off3 ys3 cs3 ys3' cs3'
     2 [1, 1, 1] := by decide +kernel
 
 /-! Clause (ii): the cap step at the contraction certificates. -/
 
 private def spK : Split 1 := ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [], 1, rfl⟩
-private def spOne (a : BPair) : Split 1 :=
-  ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [.one a], 0, rfl⟩
-private def sp2p : Split 1 := spOne ⟨3, 1⟩
-private def spU' : Split 1 := spOne ⟨151, 1⟩
-private def spL' : Split 1 := spOne ⟨7, 1⟩
+private def sp2p : Split 1 := inertia.oneSplit [⟨3, 1⟩]
+private def spU' : Split 1 := inertia.oneSplit [⟨151, 1⟩]
+private def spL' : Split 1 := inertia.oneSplit [⟨7, 1⟩]
 
-example : contractRead (transfer ([[⟨2, 1⟩]], 3)) [[⟨2, 1⟩]] [[⟨2, 1⟩]]
+theorem pin25 : contractRead (transfer ([[⟨2, 1⟩]], 3)) [[⟨2, 1⟩]] [[⟨2, 1⟩]]
     1 3 spK := by decide +kernel
-example : capQ (devQ ([[⟨3, 1⟩]], 1) ([[⟨4, 1⟩]], 1)) [[⟨2, 1⟩]]
+theorem pin26 : capQ (devQ ([[⟨3, 1⟩]], 1) ([[⟨4, 1⟩]], 1)) [[⟨2, 1⟩]]
     1 1 sp2p spK := by decide +kernel
-example : capStepRead ([[⟨2, 1⟩]], 3) ([[⟨2, 1⟩]], 2)
+theorem pin27 : capStepRead ([[⟨2, 1⟩]], 3) ([[⟨2, 1⟩]], 2)
     ([[⟨6, 1⟩]], 2) ([[⟨9, 1⟩]], 3) ([[⟨3, 1⟩]], 1) ([[⟨4, 1⟩]], 1)
     [[⟨2, 1⟩]] [[⟨2, 1⟩]] 1 1 1 3 1 2 spK spK sp2p spK spU'
     spL' := by decide +kernel
@@ -303,9 +303,9 @@ unprimed's), and the deviation's cap — the theorem route on both
 sides beside the decided reads, with the collected weight's margin
 refused at eleven against the collected thirteen. -/
 
-example : contractRead (transfer ([[⟨2, 1⟩]], 2)) [[⟨2, 1⟩]]
+theorem pin28 : contractRead (transfer ([[⟨2, 1⟩]], 2)) [[⟨2, 1⟩]]
     [[⟨2, 1⟩]] 1 2 spK := by decide +kernel
-example : (quadForm
+theorem pin29 : (quadForm
       (matScale 2
         (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
       [⟨2, 1⟩]).scale (1 * (3 * 3 * (2 * 2)))
@@ -318,7 +318,7 @@ example : (quadForm
     1 1 1 3 1 2 spK spK sp2p spK
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)).1 [⟨2, 1⟩] rfl
-example : (quadForm
+theorem pin30 : (quadForm
       (matScale 2
         (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
       [⟨2, 1⟩]).scale (1 * (3 * 3 * (2 * 2)))
@@ -326,7 +326,7 @@ example : (quadForm
       (1 * (1 * 1 * (2 * 2) + 1 * 1 * (3 * 3))
         * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2) := by
   decide +kernel
-example : ((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+theorem pin31 : ((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
       (1 * (1 * 1 * (2 * 2) + 1 * 1 * (3 * 3))
         * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2)).swap
     ≤ (quadForm
@@ -339,14 +339,14 @@ example : ((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
     1 1 1 3 1 2 spK spK sp2p spK
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)).2 [⟨2, 1⟩] rfl
-example : ((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+theorem pin32 : ((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
       (1 * (1 * 1 * (2 * 2) + 1 * 1 * (3 * 3))
         * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2)).swap
     ≤ (quadForm
       (matScale 2
         (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
       [⟨2, 1⟩]).scale (1 * (3 * 3 * (2 * 2))) := by decide +kernel
-example : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+theorem pin33 : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
       (11 * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2)).swap
     ≤ (quadForm
       (matScale 2
@@ -363,7 +363,7 @@ bridge records beneath them: the starved modulus parts
 lower read, and the positive deviation at the tightened cap parts
 `cap_hi`'s upper read. -/
 
-example : ¬ ((quadForm
+theorem pin34 : ¬ ((quadForm
       (matScale 2
         (devQ (([[⟨7, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
       [⟨2, 1⟩]).scale (1 * (3 * 3 * (2 * 2)))
@@ -371,46 +371,46 @@ example : ¬ ((quadForm
       (1 * (1 * 1 * (2 * 2) + 1 * 1 * (3 * 3))
         * (devQ (([[⟨7, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2)) := by
   decide +kernel
-example : ¬ contractRead (transfer ([[⟨2, 1⟩]], 3)) [[⟨2, 1⟩]]
+theorem pin35 : ¬ contractRead (transfer ([[⟨2, 1⟩]], 3)) [[⟨2, 1⟩]]
     [[⟨2, 1⟩]] 1 4 spK := by decide +kernel
-example : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+theorem pin36 : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
       (1 * (1 * 1 * (2 * 2) + 1 * 1 * (4 * 4))
         * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2)).swap
     ≤ (quadForm
       (matScale 2
         (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
       [⟨2, 1⟩]).scale (1 * (4 * 4 * (2 * 2)))) := by decide +kernel
-example : ¬ contractRead (transfer ([[⟨2, 1⟩]], 2)) [[⟨2, 1⟩]]
+theorem pin37 : ¬ contractRead (transfer ([[⟨2, 1⟩]], 2)) [[⟨2, 1⟩]]
     [[⟨2, 1⟩]] 1 3 spK := by decide +kernel
-example : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+theorem pin38 : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
       (1 * (1 * 1 * (3 * 3) + 1 * 1 * (3 * 3))
         * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2)).swap
     ≤ (quadForm
       (matScale 2
         (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
       [⟨2, 1⟩]).scale (1 * (3 * 3 * (3 * 3)))) := by decide +kernel
-example : ¬ capQ (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
+theorem pin39 : ¬ capQ (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
     [[⟨2, 1⟩]] 1 2 sp2p spK := by decide +kernel
-example : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+theorem pin40 : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
       (1 * (1 * 1 * (2 * 2) + 1 * 1 * (3 * 3))
         * (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).2)).swap
     ≤ (quadForm
       (matScale 2
         (devQ (([[⟨6, 1⟩]], 2) : MatQ) ([[⟨9, 1⟩]], 3)).1)
       [⟨2, 1⟩]).scale (2 * (3 * 3 * (2 * 2)))) := by decide +kernel
-example : ¬ ((quadForm [[⟨2, 1⟩]]
+theorem pin41 : ¬ ((quadForm [[⟨2, 1⟩]]
       (matVec [[⟨1, 2⟩]] [⟨2, 1⟩])).scale (4 * 4)
     ≤ (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (1 * 1 * (3 * 3))) := by
   decide +kernel
-example : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
+theorem pin42 : ¬ (((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
       (1 * (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1)).2)).swap
     ≤ (quadForm
       (devQ (([[⟨3, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1)).1
       [⟨2, 1⟩]).scale 2) := by
   decide +kernel
-example : ¬ capQ (devQ (([[⟨5, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
+theorem pin43 : ¬ capQ (devQ (([[⟨5, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1))
     [[⟨2, 1⟩]] 1 2 sp2p spK := by decide +kernel
-example : ¬ ((quadForm
+theorem pin44 : ¬ ((quadForm
       (devQ (([[⟨5, 1⟩]], 1) : MatQ) ([[⟨4, 1⟩]], 1)).1
       [⟨2, 1⟩]).scale 2
     ≤ (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale
@@ -420,25 +420,25 @@ example : ¬ ((quadForm
 /-! Clause (iii): the walk's cleared bulk datum `(A, B) = (5, 2)`,
 and the two-by-two deck symmetry. -/
 
-example : poly.oneValue (deckPoly [[⟨6, 1⟩]] [[⟨3, 1⟩]])
+theorem pin45 : poly.oneValue (deckPoly [[⟨6, 1⟩]] [[⟨3, 1⟩]])
     [⟨3, 1⟩, ⟨1, 6⟩, ⟨3, 1⟩] := by decide +kernel
-example : deckfactor.deckSymRead (deckPoly [[⟨6, 1⟩]] [[⟨3, 1⟩]])
+theorem pin46 : deckfactor.deckSymRead (deckPoly [[⟨6, 1⟩]] [[⟨3, 1⟩]])
     1 := by decide +kernel
-example : solventRead ([[⟨2, 1⟩]], 2) [[⟨6, 1⟩]] [[⟨3, 1⟩]] 1 := by
+theorem pin47 : solventRead ([[⟨2, 1⟩]], 2) [[⟨6, 1⟩]] [[⟨3, 1⟩]] 1 := by
   decide +kernel
-example : ¬ solventRead ([[⟨2, 1⟩]], 1) [[⟨6, 1⟩]] [[⟨3, 1⟩]] 1 := by
+theorem pin48 : ¬ solventRead ([[⟨2, 1⟩]], 1) [[⟨6, 1⟩]] [[⟨3, 1⟩]] 1 := by
   decide +kernel
-example : pivotPairRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 2) [[⟨6, 1⟩]]
+theorem pin49 : pivotPairRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 2) [[⟨6, 1⟩]]
     [[⟨3, 1⟩]] 1 := by decide +kernel
-example : pivotStepRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 2)
+theorem pin50 : pivotStepRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 2)
     ([[⟨5, 1⟩]], 1) [[⟨6, 1⟩]] [[⟨3, 1⟩]] 1 := by decide +kernel
-example : facSplitRead ([[⟨2, 1⟩]], 2) [[⟨6, 1⟩]] [[⟨3, 1⟩]] 1 := by
+theorem pin51 : facSplitRead ([[⟨2, 1⟩]], 2) [[⟨6, 1⟩]] [[⟨3, 1⟩]] 1 := by
   decide +kernel
-example : poly.oneValue
+theorem pin52 : poly.oneValue
     (deckPoly [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
       [[⟨2, 1⟩, u], [u, ⟨2, 1⟩]])
     [⟨2, 1⟩, ⟨1, 5⟩, ⟨6, 1⟩, ⟨1, 5⟩, ⟨2, 1⟩] := by decide +kernel
-example : deckfactor.deckSymRead
+theorem pin53 : deckfactor.deckSymRead
     (deckPoly [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
       [[⟨2, 1⟩, u], [u, ⟨2, 1⟩]]) 2 := by decide +kernel
 
@@ -446,51 +446,51 @@ example : deckfactor.deckSymRead
 ball certificate with its modulus data and the per-conjunct
 isolating refusals, the membership walk, and the cap chain. -/
 
-example : floorRead ([[⟨5, 1⟩]], 1) [[⟨2, 1⟩]] 3 1 1 1 spK := by decide +kernel
-example : splitRead (siteDatum (matScale (1 * 1) ([[⟨5, 1⟩]] : Mat))
-    (matScale (1 * (5 * 1 + 1 * 1)) [[⟨2, 1⟩]])) (spOne ⟨1, 3⟩) := by
+theorem pin54 : floorRead ([[⟨5, 1⟩]], 1) [[⟨2, 1⟩]] 3 1 1 1 spK := by decide +kernel
+theorem pin55 : splitRead (siteDatum (matScale (1 * 1) ([[⟨5, 1⟩]] : Mat))
+    (matScale (1 * (5 * 1 + 1 * 1)) [[⟨2, 1⟩]])) (inertia.oneSplit [⟨1, 3⟩]) := by
   decide +kernel
-example : ¬ floorRead ([[⟨5, 1⟩]], 1) [[⟨2, 1⟩]] 5 1 1 1
-    (spOne ⟨1, 3⟩) := by decide +kernel
+theorem pin56 : ¬ floorRead ([[⟨5, 1⟩]], 1) [[⟨2, 1⟩]] 5 1 1 1
+    (inertia.oneSplit [⟨1, 3⟩]) := by decide +kernel
 
-example : ballRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 2) ([[⟨5, 1⟩]], 1)
+theorem pin57 : ballRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 2) ([[⟨5, 1⟩]], 1)
     [[⟨6, 1⟩]] [[⟨3, 1⟩]] [[⟨2, 1⟩]] 1 2 3 1 1 1 1 2 2 3
-    spK spK (spOne ⟨2, 1⟩) (spOne ⟨2, 1⟩) := by decide +kernel
-example : ¬ ballRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 2) ([[⟨5, 1⟩]], 1)
+    spK spK (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨2, 1⟩]) := by decide +kernel
+theorem pin58 : ¬ ballRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 2) ([[⟨5, 1⟩]], 1)
     [[⟨6, 1⟩]] [[⟨3, 1⟩]] [[⟨2, 1⟩]] 1 2 3 1 1 1 1 2 1 3
-    spK spK (spOne ⟨2, 1⟩) (spOne ⟨2, 1⟩) := by decide +kernel
-example : ¬ ballRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 2) ([[⟨5, 1⟩]], 1)
+    spK spK (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨2, 1⟩]) := by decide +kernel
+theorem pin59 : ¬ ballRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 2) ([[⟨5, 1⟩]], 1)
     [[⟨6, 1⟩]] [[⟨3, 1⟩]] [[⟨2, 1⟩]] 1 3 3 1 1 1 1 2 4 9
-    spK spK (spOne ⟨2, 1⟩) (spOne ⟨2, 1⟩) := by decide +kernel
-example : ¬ ballRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 3) ([[⟨5, 1⟩]], 1)
+    spK spK (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨2, 1⟩]) := by decide +kernel
+theorem pin60 : ¬ ballRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 3) ([[⟨5, 1⟩]], 1)
     [[⟨6, 1⟩]] [[⟨3, 1⟩]] [[⟨2, 1⟩]] 1 2 3 1 1 1 1 2 2 3
-    (spOne ⟨6, 1⟩) spK (spOne ⟨2, 1⟩) (spOne ⟨2, 1⟩) := by decide +kernel
-example : ¬ pivotStepRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 2)
+    (inertia.oneSplit [⟨6, 1⟩]) spK (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨2, 1⟩]) := by decide +kernel
+theorem pin61 : ¬ pivotStepRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 2)
     ([[⟨6, 1⟩]], 1) [[⟨6, 1⟩]] [[⟨3, 1⟩]] 1 := by decide +kernel
-example : ¬ pivotPairRead ([[⟨4, 1⟩]], 1) ([[⟨2, 1⟩]], 2)
+theorem pin62 : ¬ pivotPairRead ([[⟨4, 1⟩]], 1) ([[⟨2, 1⟩]], 2)
     [[⟨6, 1⟩]] [[⟨3, 1⟩]] 1 := by decide +kernel
-example : capQ (devQ ([[⟨5, 1⟩]], 1) ([[⟨5, 1⟩]], 1)) [[⟨2, 1⟩]] 2 3
+theorem pin63 : capQ (devQ ([[⟨5, 1⟩]], 1) ([[⟨5, 1⟩]], 1)) [[⟨2, 1⟩]] 2 3
     sp2p sp2p := by decide +kernel
-example : ¬ ballRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 2) ([[⟨5, 1⟩]], 1)
+theorem pin64 : ¬ ballRead ([[⟨5, 1⟩]], 1) ([[⟨2, 1⟩]], 2) ([[⟨5, 1⟩]], 1)
     [[⟨6, 1⟩]] [[⟨3, 1⟩]] [[⟨2, 1⟩]] 1 2 3 1 1 1 2 3 2 3
     spK spK sp2p sp2p := by decide +kernel
 
-example : ballList ([[⟨5, 1⟩]], 1) [[⟨2, 1⟩]] 1 1
+theorem pin65 : ballList ([[⟨5, 1⟩]], 1) [[⟨2, 1⟩]] 1 1
     [([[⟨6, 1⟩]], 1), ([[⟨22, 1⟩]], 5), ([[⟨86, 1⟩]], 21)]
-    [(spK, sp2p), (spOne ⟨5, 1⟩, spOne ⟨7, 1⟩),
-     (spOne ⟨21, 1⟩, spOne ⟨23, 1⟩)] := by decide +kernel
-example : ¬ ballList ([[⟨5, 1⟩]], 1) [[⟨2, 1⟩]] 1 2
+    [(spK, sp2p), (inertia.oneSplit [⟨5, 1⟩], inertia.oneSplit [⟨7, 1⟩]),
+     (inertia.oneSplit [⟨21, 1⟩], inertia.oneSplit [⟨23, 1⟩])] := by decide +kernel
+theorem pin66 : ¬ ballList ([[⟨5, 1⟩]], 1) [[⟨2, 1⟩]] 1 2
     [([[⟨6, 1⟩]], 1), ([[⟨22, 1⟩]], 5), ([[⟨86, 1⟩]], 21)]
-    [(spK, sp2p), (spOne ⟨5, 1⟩, spOne ⟨7, 1⟩),
-     (spOne ⟨21, 1⟩, spOne ⟨23, 1⟩)] := by decide +kernel
+    [(spK, sp2p), (inertia.oneSplit [⟨5, 1⟩], inertia.oneSplit [⟨7, 1⟩]),
+     (inertia.oneSplit [⟨21, 1⟩], inertia.oneSplit [⟨23, 1⟩])] := by decide +kernel
 
 /-! The ball's positivity at the walk's tail pivot, the theorem
 route: the center's floor and the deviation's cap read the pivot's
 split at the upper side. -/
 
-example : psdAt (spOne ⟨6, 1⟩) :=
+theorem pin67 : psdAt (inertia.oneSplit [⟨6, 1⟩]) :=
   ball_psd ([[⟨6, 1⟩]], 1) ([[⟨5, 1⟩]], 1) [[⟨2, 1⟩]] 3 1 1 1
-    spK spK sp2p (spOne ⟨6, 1⟩)
+    spK spK sp2p (inertia.oneSplit [⟨6, 1⟩])
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 /-! `ball_psd`'s binder records, each parting the conclusion.  The
@@ -501,15 +501,15 @@ The cap: at the pivot `-1` about the center `4` the floor holds
 (the main battery's) while the deviation `-5` refuses the radius
 and the conclusion parts at the one reversal. -/
 
-example : capQ (devQ (([[⟨1, 2⟩]], 1) : greenprod.MatQ)
+theorem pin68 : capQ (devQ (([[⟨1, 2⟩]], 1) : greenprod.MatQ)
     (([[⟨1, 1⟩]], 1) : greenprod.MatQ)) [[⟨2, 1⟩]] 1 1
-    (spOne ⟨3, 1⟩) spK := by decide +kernel
-example : ¬ floorRead (([[⟨1, 1⟩]], 1) : greenprod.MatQ) [[⟨2, 1⟩]]
-    3 1 1 1 (spOne ⟨5, 9⟩) := by decide +kernel
-example : ¬ capQ (devQ (([[⟨1, 2⟩]], 1) : greenprod.MatQ)
+    (inertia.oneSplit [⟨3, 1⟩]) spK := by decide +kernel
+theorem pin69 : ¬ floorRead (([[⟨1, 1⟩]], 1) : greenprod.MatQ) [[⟨2, 1⟩]]
+    3 1 1 1 (inertia.oneSplit [⟨5, 9⟩]) := by decide +kernel
+theorem pin70 : ¬ capQ (devQ (([[⟨1, 2⟩]], 1) : greenprod.MatQ)
     (([[⟨5, 1⟩]], 1) : greenprod.MatQ)) [[⟨2, 1⟩]] 1 1
-    (spOne ⟨9, 3⟩) (spOne ⟨4, 8⟩) := by decide +kernel
-example : ¬ psdAt (spOne ⟨1, 2⟩) := by decide +kernel
+    (inertia.oneSplit [⟨9, 3⟩]) (inertia.oneSplit [⟨4, 8⟩]) := by decide +kernel
+theorem pin71 : ¬ psdAt (inertia.oneSplit [⟨1, 2⟩]) := by decide +kernel
 
 /-! The member's floor at the ball (`ball_floor`), the theorem
 route beside the decided read: the center `4` at floor `y0 = 3`
@@ -522,14 +522,14 @@ the floor refuses, and the floored read parts beside it — one
 refusal per load-bearing binder, the shape binders the consumers'
 own pivot frame. -/
 
-example : (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
+theorem pin72 : (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
     ≤ (quadForm [[⟨6, 1⟩]] [⟨2, 1⟩]).scale 1 :=
   ball_floor ([[⟨6, 1⟩]], 1) ([[⟨5, 1⟩]], 1) [[⟨2, 1⟩]] 3 1 1 1
     spK spK sp2p (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) [⟨2, 1⟩] rfl
-example : (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
+theorem pin73 : (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
     ≤ (quadForm [[⟨6, 1⟩]] [⟨2, 1⟩]).scale 1 := by decide +kernel
-example : ¬ ((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
+theorem pin74 : ¬ ((quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
     ≤ (quadForm [[⟨1, 2⟩]] [⟨2, 1⟩]).scale 1) := by decide +kernel
 
 /-! The member's floor at ∀-form entries throughout
@@ -539,7 +539,7 @@ beyond three times the gram, the floor read and the cap's lower
 side entering as their pointwise transports (`floor_all` and
 `cap_lo`). -/
 
-example : (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
+theorem pin75 : (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
     ≤ (quadForm [[⟨6, 1⟩]] [⟨2, 1⟩]).scale 1 :=
   ball_floor_ptw (o := 1) ([[⟨6, 1⟩]], 1) ([[⟨5, 1⟩]], 1)
     [[⟨2, 1⟩]] 3 1 1 1
@@ -551,13 +551,13 @@ example : (quadForm [[⟨2, 1⟩]] [⟨2, 1⟩]).scale (3 * 1)
       [[⟨2, 1⟩]] 1 1 spK sp2p (by decide +kernel) w hw)
     [⟨2, 1⟩] rfl
 
-example : capWalk [[[⟨2, 1⟩]], [[⟨2, 1⟩]]] 1 1 ([[⟨3, 1⟩]], 1)
+theorem pin76 : capWalk [[[⟨2, 1⟩]], [[⟨2, 1⟩]]] 1 1 ([[⟨3, 1⟩]], 1)
     ([[⟨4, 1⟩]], 1)
     [([[⟨2, 1⟩]], 3)] [([[⟨2, 1⟩]], 2)] [([[⟨9, 1⟩]], 3)]
     [([[⟨6, 1⟩]], 2)]
     [⟨(1, 1), (1, 3), (1, 2), spK, spK, sp2p, spK, spU', spL'⟩] := by
   decide +kernel
-example : ¬ capWalk [[[⟨2, 1⟩]], [[⟨2, 1⟩]]] 1 1 ([[⟨3, 1⟩]], 1)
+theorem pin77 : ¬ capWalk [[[⟨2, 1⟩]], [[⟨2, 1⟩]]] 1 1 ([[⟨3, 1⟩]], 1)
     ([[⟨4, 1⟩]], 1)
     [([[⟨2, 1⟩]], 3)] [([[⟨2, 1⟩]], 2)] [([[⟨9, 1⟩]], 3)]
     [([[⟨6, 1⟩]], 2)] [] := by decide +kernel
@@ -586,25 +586,25 @@ private def rsW : List MatQ := [([[⟨6, 1⟩]], 19), ([[⟨2, 1⟩]], 5)]
 private def certD : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
     × Split p.2 × Split p.2 × Split p.1 × Split p.1
     × Split p.2 × Split p.2 × Split p.2 × Split p.2) :=
-  [⟨(1, 1), (1, 3), (1, 5), spK, spK, spK, spOne ⟨5, 1⟩,
-      spOne ⟨121, 1⟩, spOne ⟨15421, 1⟩, spK, sp2p⟩,
-   ⟨(1, 1), (3, 8), (5, 19), spK, spK, spOne ⟨121, 1⟩,
-      spOne ⟨15421, 1⟩, spOne ⟨28299665, 1⟩,
-      spOne ⟨7056536465, 1⟩, spK, sp2p⟩]
+  [⟨(1, 1), (1, 3), (1, 5), spK, spK, spK, inertia.oneSplit [⟨5, 1⟩],
+      inertia.oneSplit [⟨121, 1⟩], inertia.oneSplit [⟨15421, 1⟩], spK, sp2p⟩,
+   ⟨(1, 1), (3, 8), (5, 19), spK, spK, inertia.oneSplit [⟨121, 1⟩],
+      inertia.oneSplit [⟨15421, 1⟩], inertia.oneSplit [⟨28299665, 1⟩],
+      inertia.oneSplit [⟨7056536465, 1⟩], spK, sp2p⟩]
 
-example : driftStep dnD ([[⟨4, 1⟩]], 8) ([[⟨6, 1⟩]], 19)
+theorem pin78 : driftStep dnD ([[⟨4, 1⟩]], 8) ([[⟨6, 1⟩]], 19)
     ([[⟨72, 1⟩]], 19) ([[⟨22, 1⟩]], 8) ([[⟨20, 1⟩]], 5)
     ([[⟨9, 1⟩]], 3) 1 1 := by decide +kernel
-example : driftShareRead diag3 off3 diagW off3 xs3 rs3 xsW rsW
+theorem pin79 : driftShareRead diag3 off3 diagW off3 xs3 rs3 xsW rsW
     2 0 [1, 1, 1] dnD 2 1 1 1 [gW, gW, gW] certD := by decide +kernel
-example : driftFold 2 1 1 1 certD = (23305382, 20793600) := by
+theorem pin80 : driftFold 2 1 1 1 certD = (23305382, 20793600) := by
   decide +kernel
 
 /-! The bundle's walk at the depth of the observable: the tied
 walk's fold-out reads the root deviation `169/152` inside the
 folded pair. -/
 
-example : ∃ (k : Nat) (spU spL : Split k),
+theorem pin81 : ∃ (k : Nat) (spU spL : Split k),
     capQ (devQ (ground.getAt dM xsW 0) (ground.getAt dM xs3 0)) gW
       (driftFold 2 1 1 1 certD).1 (driftFold 2 1 1 1 certD).2
       spU spL :=
@@ -627,28 +627,28 @@ reading the datum and the reversal count refusing. -/
 private def certDF : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
     × Split p.2 × Split p.2 × Split p.1 × Split p.1
     × Split p.2 × Split p.2 × Split p.2 × Split p.2) :=
-  [⟨(1, 1), (1, 3), (1, 5), spK, spK, spK, spOne ⟨5, 1⟩,
-      spOne ⟨121, 1⟩, spOne ⟨15421, 1⟩, spK, spK⟩,
-   ⟨(1, 1), (3, 8), (5, 19), spK, spK, spOne ⟨121, 1⟩,
-      spOne ⟨15421, 1⟩, spOne ⟨28299665, 1⟩,
-      spOne ⟨7056536465, 1⟩, spK, sp2p⟩]
+  [⟨(1, 1), (1, 3), (1, 5), spK, spK, spK, inertia.oneSplit [⟨5, 1⟩],
+      inertia.oneSplit [⟨121, 1⟩], inertia.oneSplit [⟨15421, 1⟩], spK, spK⟩,
+   ⟨(1, 1), (3, 8), (5, 19), spK, spK, inertia.oneSplit [⟨121, 1⟩],
+      inertia.oneSplit [⟨15421, 1⟩], inertia.oneSplit [⟨28299665, 1⟩],
+      inertia.oneSplit [⟨7056536465, 1⟩], spK, sp2p⟩]
 
-example : ¬ driftShareRead diag3 off3
+theorem pin82 : ¬ driftShareRead diag3 off3
     [[[⟨6, 1⟩]], [[⟨5, 1⟩]], [[⟨6, 1⟩]]] off3 xs3 rs3 xsW rsW
     2 0 [1, 1, 1] dnD 2 1 1 1 [gW, gW, gW] certD := by decide +kernel
-example : ¬ driftStep dnD ([[⟨4, 1⟩]], 8) ([[⟨6, 1⟩]], 19)
+theorem pin83 : ¬ driftStep dnD ([[⟨4, 1⟩]], 8) ([[⟨6, 1⟩]], 19)
     ([[⟨73, 1⟩]], 19) ([[⟨22, 1⟩]], 8) ([[⟨20, 1⟩]], 5)
     ([[⟨9, 1⟩]], 3) 1 1 := by decide +kernel
-example : ¬ driftShareRead diag3 off3 diagW off3 xs3 rs3 xsW rsW
+theorem pin84 : ¬ driftShareRead diag3 off3 diagW off3 xs3 rs3 xsW rsW
     2 0 [1, 1, 1] dnD 1 1 1 1 [gW, gW, gW] certD := by decide +kernel
-example : ¬ (2 < 2) := by decide +kernel
-example : ¬ driftShareRead diag3 off3 diagW off3 xs3 rs3 xsW rsW
+theorem pin85 : ¬ (2 < 2) := by decide +kernel
+theorem pin86 : ¬ driftShareRead diag3 off3 diagW off3 xs3 rs3 xsW rsW
     2 0 [1, 1, 1] dnD 2 1 1 1 [gW, gW, gW] certDF := by decide +kernel
-example : splitRead (siteDatum (matScale (1 * Pos.one) gW)
-    (matScale 2 (matScaleB dnD (idMat 1)))) (spOne ⟨1, 2⟩) := by
+theorem pin87 : splitRead (siteDatum (matScale (1 * Pos.one) gW)
+    (matScale 2 (matScaleB dnD (idMat 1)))) (inertia.oneSplit [⟨1, 2⟩]) := by
   decide +kernel
-example : ¬ capQ ((matScaleB dnD (idMat 1)), Pos.one) gW 1 2
-    (spOne ⟨1, 2⟩) (spOne ⟨4, 1⟩) := by decide +kernel
+theorem pin88 : ¬ capQ ((matScaleB dnD (idMat 1)), Pos.one) gW 1 2
+    (inertia.oneSplit [⟨1, 2⟩]) (inertia.oneSplit [⟨4, 1⟩]) := by decide +kernel
 
 /-! The tie's equal-membered case: at the drift the sum's unit the
 bundle reads the committed reversed pair `tridiag(3,3,3; 1,1)`
@@ -661,13 +661,13 @@ private def certV : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
     × Split p.2 × Split p.2 × Split p.1 × Split p.1
     × Split p.2 × Split p.2 × Split p.2 × Split p.2) :=
   [⟨(1, 1), (1, 3), (1, 4), spK, spK, spK, sp2p,
-      spOne ⟨3469, 1⟩, spOne ⟨4045, 1⟩, spOne ⟨2, 1⟩,
-      spOne ⟨2, 1⟩⟩,
-   ⟨(1, 1), (3, 8), (4, 11), spK, spK, spOne ⟨3469, 1⟩,
-      spOne ⟨4045, 1⟩, spOne ⟨446267801, 1⟩,
-      spOne ⟨455188889, 1⟩, spOne ⟨2, 1⟩, spOne ⟨2, 1⟩⟩]
+      inertia.oneSplit [⟨3469, 1⟩], inertia.oneSplit [⟨4045, 1⟩], inertia.oneSplit [⟨2, 1⟩],
+      inertia.oneSplit [⟨2, 1⟩]⟩,
+   ⟨(1, 1), (3, 8), (4, 11), spK, spK, inertia.oneSplit [⟨3469, 1⟩],
+      inertia.oneSplit [⟨4045, 1⟩], inertia.oneSplit [⟨446267801, 1⟩],
+      inertia.oneSplit [⟨455188889, 1⟩], inertia.oneSplit [⟨2, 1⟩], inertia.oneSplit [⟨2, 1⟩]⟩]
 
-example : driftShareRead diag3 off3 diagV off3 xs3 rs3 xsV rsV
+theorem pin89 : driftShareRead diag3 off3 diagV off3 xs3 rs3 xsV rsV
     2 0 [1, 1, 1] BPair.unit 1 1 1 1 [gW, gW, gW]
     certV := by decide +kernel
 
@@ -707,18 +707,18 @@ private def spD108 : Split 2 := mkSplit 2 [[⟨11, 1⟩, u], [u, ⟨9, 1⟩]]
 private def certG : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
     × Split p.2 × Split p.2 × Split p.1 × Split p.1
     × Split p.2 × Split p.2 × Split p.2 × Split p.2) :=
-  [⟨(1, 2), (1, 1), (1, 1), spD01, spD34, spK, spOne ⟨5, 1⟩,
+  [⟨(1, 2), (1, 1), (1, 1), spD01, spD34, spK, inertia.oneSplit [⟨5, 1⟩],
       spD24, spD108, spZ2, sp2I⟩,
-   ⟨(2, 1), (2, 1), (1, 1), spOne ⟨12, 1⟩, spOne ⟨8, 1⟩,
-      spD24, spD108, spOne ⟨161, 1⟩, spOne ⟨249, 1⟩, spK, sp2p⟩]
+   ⟨(2, 1), (2, 1), (1, 1), inertia.oneSplit [⟨12, 1⟩], inertia.oneSplit [⟨8, 1⟩],
+      spD24, spD108, inertia.oneSplit [⟨161, 1⟩], inertia.oneSplit [⟨249, 1⟩], spK, sp2p⟩]
 
-example : tailRead diagG offG xsG rsG [1, 2, 1] := by decide +kernel
-example : tailRead diagG' offG xsG' rsG' [1, 2, 1] := by decide +kernel
-example : driftShareRead diagG offG diagG' offG xsG rsG xsG' rsG'
+theorem pin90 : tailRead diagG offG xsG rsG [1, 2, 1] := by decide +kernel
+theorem pin91 : tailRead diagG' offG xsG' rsG' [1, 2, 1] := by decide +kernel
+theorem pin92 : driftShareRead diagG offG diagG' offG xsG rsG xsG' rsG'
     2 0 [1, 2, 1] dnD 2 1 1 1 [idMat 1, idMat 2, idMat 1]
     certG := by decide +kernel
-example : driftFold 2 1 1 1 certG = (34, 4) := by decide +kernel
-example : ∃ (k : Nat) (spU spL : Split k),
+theorem pin93 : driftFold 2 1 1 1 certG = (34, 4) := by decide +kernel
+theorem pin94 : ∃ (k : Nat) (spU spL : Split k),
     capQ (devQ (ground.getAt dM xsG' 0) (ground.getAt dM xsG 0))
       (idMat 1) (driftFold 2 1 1 1 certG).1
       (driftFold 2 1 1 1 certG).2 spU spL :=
@@ -729,7 +729,7 @@ example : ∃ (k : Nat) (spU spL : Split k),
 /-- The refusal isolating the gram list's own orders: at the unit
 gram of the wrong order at the middle slab the deep step's
 contraction certificate parts at its image gram's shape. -/
-example : ¬ driftShareRead diagG offG diagG' offG xsG rsG xsG' rsG'
+theorem pin95 : ¬ driftShareRead diagG offG diagG' offG xsG rsG xsG' rsG'
     2 0 [1, 2, 1] dnD 2 1 1 1 [idMat 1, idMat 1, idMat 1]
     certG := by decide +kernel
 
@@ -739,12 +739,12 @@ datum. -/
 private def certGF : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
     × Split p.2 × Split p.2 × Split p.1 × Split p.1
     × Split p.2 × Split p.2 × Split p.2 × Split p.2) :=
-  [⟨(1, 2), (1, 1), (1, 1), spD01, spD34, spK, spOne ⟨5, 1⟩,
+  [⟨(1, 2), (1, 1), (1, 1), spD01, spD34, spK, inertia.oneSplit [⟨5, 1⟩],
       spD24, spD108, spZ2, sp2I⟩,
-   ⟨(2, 1), (3, 1), (1, 1), spOne ⟨12, 1⟩, spOne ⟨8, 1⟩,
-      spD24, spD108, spOne ⟨161, 1⟩, spOne ⟨249, 1⟩, spK, sp2p⟩]
+   ⟨(2, 1), (3, 1), (1, 1), inertia.oneSplit [⟨12, 1⟩], inertia.oneSplit [⟨8, 1⟩],
+      spD24, spD108, inertia.oneSplit [⟨161, 1⟩], inertia.oneSplit [⟨249, 1⟩], spK, sp2p⟩]
 
-example : ¬ driftShareRead diagG offG diagG' offG xsG rsG xsG' rsG'
+theorem pin96 : ¬ driftShareRead diagG offG diagG' offG xsG rsG xsG' rsG'
     2 0 [1, 2, 1] dnD 2 1 1 1 [idMat 1, idMat 2, idMat 1]
     certGF := by decide +kernel
 
@@ -754,12 +754,12 @@ identity's parts the walk at that step's read. -/
 private def certGT : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
     × Split p.2 × Split p.2 × Split p.1 × Split p.1
     × Split p.2 × Split p.2 × Split p.2 × Split p.2) :=
-  [⟨(1, 2), (1, 1), (1, 1), spD01, spD34, spK, spOne ⟨5, 1⟩,
+  [⟨(1, 2), (1, 1), (1, 1), spD01, spD34, spK, inertia.oneSplit [⟨5, 1⟩],
       spD24, spD108, sp2I, sp2I⟩,
-   ⟨(2, 1), (2, 1), (1, 1), spOne ⟨12, 1⟩, spOne ⟨8, 1⟩,
-      spD24, spD108, spOne ⟨161, 1⟩, spOne ⟨249, 1⟩, spK, sp2p⟩]
+   ⟨(2, 1), (2, 1), (1, 1), inertia.oneSplit [⟨12, 1⟩], inertia.oneSplit [⟨8, 1⟩],
+      spD24, spD108, inertia.oneSplit [⟨161, 1⟩], inertia.oneSplit [⟨249, 1⟩], spK, sp2p⟩]
 
-example : ¬ driftShareRead diagG offG diagG' offG xsG rsG xsG' rsG'
+theorem pin97 : ¬ driftShareRead diagG offG diagG' offG xsG rsG xsG' rsG'
     2 0 [1, 2, 1] dnD 2 1 1 1 [idMat 1, idMat 2, idMat 1]
     certGT := by decide +kernel
 
@@ -772,14 +772,14 @@ slab's own two-dimensional block. -/
 private def certG1 : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
     × Split p.2 × Split p.2 × Split p.1 × Split p.1
     × Split p.2 × Split p.2 × Split p.2 × Split p.2) :=
-  [⟨(1, 2), (1, 1), (1, 1), spD01, spD34, spK, spOne ⟨5, 1⟩,
+  [⟨(1, 2), (1, 1), (1, 1), spD01, spD34, spK, inertia.oneSplit [⟨5, 1⟩],
       spD24, spD108, spZ2, sp2I⟩]
 
-example : driftShareRead diagG offG diagG' offG xsG rsG xsG' rsG'
+theorem pin98 : driftShareRead diagG offG diagG' offG xsG rsG xsG' rsG'
     2 1 [1, 2, 1] dnD 2 1 1 1 [idMat 1, idMat 2] certG1 := by
   decide +kernel
-example : driftFold 2 1 1 1 certG1 = (6, 2) := by decide +kernel
-example : ∃ (k : Nat) (spU spL : Split k),
+theorem pin99 : driftFold 2 1 1 1 certG1 = (6, 2) := by decide +kernel
+theorem pin100 : ∃ (k : Nat) (spU spL : Split k),
     capQ (devQ (ground.getAt dM xsG' 1) (ground.getAt dM xsG 1))
       (idMat 2) (driftFold 2 1 1 1 certG1).1
       (driftFold 2 1 1 1 certG1).2 spU spL :=
@@ -790,7 +790,7 @@ example : ∃ (k : Nat) (spU spL : Split k),
 /-- The refusal isolating the block list's orientation: the walk
 reads its blocks deep-first, the reversed list parting the deep
 step's contraction certificate at its image block's shape. -/
-example : ¬ driftShareRead diagG offG diagG' offG xsG rsG xsG' rsG'
+theorem pin101 : ¬ driftShareRead diagG offG diagG' offG xsG rsG xsG' rsG'
     2 1 [1, 2, 1] dnD 2 1 1 1 [idMat 2, idMat 1] certG1 := by
   decide +kernel
 
@@ -803,14 +803,14 @@ image block's shape. -/
 private def spD06 : Split 2 := mkSplit 2 [[u, u], [u, ⟨7, 1⟩]]
 private def spD126 : Split 2 := mkSplit 2 [[⟨13, 1⟩, u], [u, ⟨7, 1⟩]]
 
-example : capStepRead ([[⟨2, 1⟩, u]], 1) ([[⟨2, 1⟩, u]], 1)
+theorem pin102 : capStepRead ([[⟨2, 1⟩, u]], 1) ([[⟨2, 1⟩, u]], 1)
     ([[⟨4, 1⟩, u], [u, u]], 1) ([[u, u], [u, u]], 1)
     ([[⟨4, 1⟩]], 1) ([[u]], 1) (idMat 1) (idMat 2) 3 1 1 1 1 1
-    spD01 spD01 spK (spOne ⟨7, 1⟩) spD06 spD126 := by decide +kernel
-example : ¬ capStepRead ([[⟨2, 1⟩, u]], 1) ([[⟨2, 1⟩, u]], 1)
+    spD01 spD01 spK (inertia.oneSplit [⟨7, 1⟩]) spD06 spD126 := by decide +kernel
+theorem pin103 : ¬ capStepRead ([[⟨2, 1⟩, u]], 1) ([[⟨2, 1⟩, u]], 1)
     ([[⟨4, 1⟩, u], [u, u]], 1) ([[u, u], [u, u]], 1)
     ([[⟨4, 1⟩]], 1) ([[u]], 1) (idMat 2) (idMat 1) 3 1 1 1 1 1
-    spD01 spD01 spK (spOne ⟨7, 1⟩) spD06 spD126 := by decide +kernel
+    spD01 spD01 spK (inertia.oneSplit [⟨7, 1⟩]) spD06 spD126 := by decide +kernel
 
 /-! The derived ball and transport tier's fixture: the center
 `Ŷ = 4` at the floor `y0 = 1` and radius `ρ = 3`, the member
@@ -836,12 +836,12 @@ private def dAsym : Mat := [[u, ⟨1001, 1⟩], [⟨1, 1001⟩, u]]
 reads its two members' own forms, the second at its swap, the
 theorem route beside the decided display. -/
 
-example : (quadForm (devQ xmT ymT).1 [⟨2, 1⟩]).oneValue
+theorem pin104 : (quadForm (devQ xmT ymT).1 [⟨2, 1⟩]).oneValue
     ((quadForm xmT.1 [⟨2, 1⟩]).scale ymT.2
       + ((quadForm ymT.1 [⟨2, 1⟩]).swap).scale xmT.2) :=
   dev_expand xmT ymT [⟨2, 1⟩] rfl (by decide +kernel) rfl
     (by decide +kernel)
-example : (quadForm (devQ xmT ymT).1 [⟨2, 1⟩]).oneValue
+theorem pin105 : (quadForm (devQ xmT ymT).1 [⟨2, 1⟩]).oneValue
     ((quadForm xmT.1 [⟨2, 1⟩]).scale ymT.2
       + ((quadForm ymT.1 [⟨2, 1⟩]).swap).scale xmT.2) := by
   decide +kernel
@@ -852,12 +852,12 @@ deviation `1` at `[1 : 1]`, the middle member withdrawing and the
 two caps' cross-collected weight pricing `5 - 2` at three against
 three exactly. -/
 
-example : capQ (devQ xmT ymT) gW 2 1 spK (spOne ⟨5, 1⟩) := by
+theorem pin106 : capQ (devQ xmT ymT) gW 2 1 spK (inertia.oneSplit [⟨5, 1⟩]) := by
   decide +kernel
-example : capQ (devQ ymT ynT) gW 1 1 spK (spOne ⟨3, 1⟩) := by
+theorem pin107 : capQ (devQ ymT ynT) gW 1 1 spK (inertia.oneSplit [⟨3, 1⟩]) := by
   decide +kernel
 
-example : (∀ w : List BPair, w.length = 1 →
+theorem pin108 : (∀ w : List BPair, w.length = 1 →
       (quadForm (devQ xmT ynT).1 w).scale (1 * 1)
         ≤ (quadForm gW w).scale ((2 * 1 + 1 * 1) * (devQ xmT ynT).2))
     ∧ (∀ w : List BPair, w.length = 1 →
@@ -866,19 +866,19 @@ example : (∀ w : List BPair, w.length = 1 →
         ≤ (quadForm (devQ xmT ynT).1 w).scale (1 * 1)) :=
   dev_triangle (o := 1) xmT ymT ynT gW 2 1 1 1
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    (fun w hw => cap_hi (devQ xmT ymT) gW 2 1 spK (spOne ⟨5, 1⟩)
+    (fun w hw => cap_hi (devQ xmT ymT) gW 2 1 spK (inertia.oneSplit [⟨5, 1⟩])
       (by decide +kernel) w hw)
-    (fun w hw => cap_lo (devQ xmT ymT) gW 2 1 spK (spOne ⟨5, 1⟩)
+    (fun w hw => cap_lo (devQ xmT ymT) gW 2 1 spK (inertia.oneSplit [⟨5, 1⟩])
       (by decide +kernel) w hw)
-    (fun w hw => cap_hi (devQ ymT ynT) gW 1 1 spK (spOne ⟨3, 1⟩)
+    (fun w hw => cap_hi (devQ ymT ynT) gW 1 1 spK (inertia.oneSplit [⟨3, 1⟩])
       (by decide +kernel) w hw)
-    (fun w hw => cap_lo (devQ ymT ynT) gW 1 1 spK (spOne ⟨3, 1⟩)
+    (fun w hw => cap_lo (devQ ymT ynT) gW 1 1 spK (inertia.oneSplit [⟨3, 1⟩])
       (by decide +kernel) w hw)
 
-example : (quadForm (devQ xmT ynT).1 [⟨2, 1⟩]).scale (1 * 1)
+theorem pin109 : (quadForm (devQ xmT ynT).1 [⟨2, 1⟩]).scale (1 * 1)
     ≤ (quadForm gW [⟨2, 1⟩]).scale
       ((2 * 1 + 1 * 1) * (devQ xmT ynT).2) := by decide +kernel
-example : ((quadForm gW [⟨2, 1⟩]).scale
+theorem pin110 : ((quadForm gW [⟨2, 1⟩]).scale
       ((2 * 1 + 1 * 1) * (devQ xmT ynT).2)).swap
     ≤ (quadForm (devQ xmT ynT).1 [⟨2, 1⟩]).scale (1 * 1) := by
   decide +kernel
@@ -889,14 +889,14 @@ conclusion at its own collected weight: the leading cap starved at
 two, and the trailing cap's modulus doubled parts its read and the
 upper side at six against five. -/
 
-example : ¬ capQ (devQ xmT ymT) gW 1 1 spK (spOne ⟨5, 1⟩) := by
+theorem pin111 : ¬ capQ (devQ xmT ymT) gW 1 1 spK (inertia.oneSplit [⟨5, 1⟩]) := by
   decide +kernel
-example : ¬ ((quadForm (devQ xmT ynT).1 [⟨2, 1⟩]).scale (1 * 1)
+theorem pin112 : ¬ ((quadForm (devQ xmT ynT).1 [⟨2, 1⟩]).scale (1 * 1)
     ≤ (quadForm gW [⟨2, 1⟩]).scale
       ((1 * 1 + 1 * 1) * (devQ xmT ynT).2)) := by decide +kernel
-example : ¬ capQ (devQ ymT ynT) gW 1 2 spK (spOne ⟨3, 1⟩) := by
+theorem pin113 : ¬ capQ (devQ ymT ynT) gW 1 2 spK (inertia.oneSplit [⟨3, 1⟩]) := by
   decide +kernel
-example : ¬ ((quadForm (devQ xmT ynT).1 [⟨2, 1⟩]).scale (1 * 2)
+theorem pin114 : ¬ ((quadForm (devQ xmT ynT).1 [⟨2, 1⟩]).scale (1 * 2)
     ≤ (quadForm gW [⟨2, 1⟩]).scale
       ((2 * 2 + 1 * 1) * (devQ xmT ynT).2)) := by decide +kernel
 
@@ -906,10 +906,10 @@ cross read at the weights `1, 1` priced against the two diagonal
 gram reads at the vectors `1` and `2` — minus four and four
 against five. -/
 
-example : capQ ((dmT, 1) : MatQ) gW 1 1 (spOne ⟨3, 1⟩) spK := by
+theorem pin115 : capQ ((dmT, 1) : MatQ) gW 1 1 (inertia.oneSplit [⟨3, 1⟩]) spK := by
   decide +kernel
 
-example : (((dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)
+theorem pin116 : (((dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)
         + (dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)).scale 1
       ≤ ((dotN [⟨2, 1⟩] (matVec gW [⟨2, 1⟩])).scale (1 * 1)
           + (dotN [⟨3, 1⟩] (matVec gW [⟨3, 1⟩])).scale (1 * 1)).scale
@@ -922,18 +922,18 @@ example : (((dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)
         (1 * 1)) :=
   cap_cross (n := 1) dmT gW (1 * 1) 1 (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
-    (fun w hw => cap_hi ((dmT, 1) : MatQ) gW 1 1 (spOne ⟨3, 1⟩) spK
+    (fun w hw => cap_hi ((dmT, 1) : MatQ) gW 1 1 (inertia.oneSplit [⟨3, 1⟩]) spK
       (by decide +kernel) w hw)
-    (fun w hw => cap_lo ((dmT, 1) : MatQ) gW 1 1 (spOne ⟨3, 1⟩) spK
+    (fun w hw => cap_lo ((dmT, 1) : MatQ) gW 1 1 (inertia.oneSplit [⟨3, 1⟩]) spK
       (by decide +kernel) w hw)
     [⟨2, 1⟩] [⟨3, 1⟩] rfl rfl 1 1
 
-example : ((dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)
+theorem pin117 : ((dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)
       + (dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)).scale 1
     ≤ ((dotN [⟨2, 1⟩] (matVec gW [⟨2, 1⟩])).scale (1 * 1)
         + (dotN [⟨3, 1⟩] (matVec gW [⟨3, 1⟩])).scale (1 * 1)).scale
       (1 * 1) := by decide +kernel
-example : (((dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)
+theorem pin118 : (((dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale (1 * 1)
       + (dotN [⟨2, 1⟩] (matVec dmT [⟨3, 1⟩])).scale
         (1 * 1)).swap).scale 1
     ≤ ((dotN [⟨2, 1⟩] (matVec gW [⟨2, 1⟩])).scale (1 * 1)
@@ -946,8 +946,8 @@ refuses the transpose read and the conclusion parts at the unit
 vectors, two thousand against two — the two cap binders standing
 at that datum, its quadratic form unit-valued at every vector. -/
 
-example : ¬ matOneValue (transposeM dAsym) dAsym := by decide +kernel
-example : ¬ ((((dotN [⟨2, 1⟩, u] (matVec dAsym [u, ⟨2, 1⟩])).scale
+theorem pin119 : ¬ matOneValue (transposeM dAsym) dAsym := by decide +kernel
+theorem pin120 : ¬ ((((dotN [⟨2, 1⟩, u] (matVec dAsym [u, ⟨2, 1⟩])).scale
         (1 * 1)
       + (dotN [⟨2, 1⟩, u] (matVec dAsym [u, ⟨2, 1⟩])).scale
         (1 * 1)).scale 1)
@@ -961,13 +961,13 @@ center's witness `1/4` contracting at `λ = 1/4` and the member's
 own witness `1` priced at `λ∘ = 4/4` — the transfer factor's
 image priced at sixteen against sixteen exactly. -/
 
-example : capQ (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK := by
+theorem pin121 : capQ (devQ yT ycT) gW 3 1 (inertia.oneSplit [⟨7, 1⟩]) spK := by
   decide +kernel
-example : floorRead ycT gW 1 1 3 1 spK := by decide +kernel
-example : contractRead (transfer ccT) gW gW 1 4 spK := by
+theorem pin122 : floorRead ycT gW 1 1 3 1 spK := by decide +kernel
+theorem pin123 : contractRead (transfer ccT) gW gW 1 4 spK := by
   decide +kernel
 
-example : ∀ w : List BPair, w.length = 1 →
+theorem pin124 : ∀ w : List BPair, w.length = 1 →
     (quadForm gW (matVec (transfer cxT).1 w)).scale
         ((4 * (1 * 1)) * (4 * (1 * 1)))
       ≤ (quadForm gW w).scale
@@ -981,16 +981,16 @@ example : ∀ w : List BPair, w.length = 1 →
     (by decide +kernel)
     (ball_floor_of yT ycT gW 1 1 3 1 spK (by decide +kernel)
       (by decide +kernel) (by decide +kernel) (by decide +kernel)
-      (fun w hw => cap_lo (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK
+      (fun w hw => cap_lo (devQ yT ycT) gW 3 1 (inertia.oneSplit [⟨7, 1⟩]) spK
         (by decide +kernel) w hw))
-    (fun w hw => cap_hi (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK
+    (fun w hw => cap_hi (devQ yT ycT) gW 3 1 (inertia.oneSplit [⟨7, 1⟩]) spK
       (by decide +kernel) w hw)
-    (fun w hw => cap_lo (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK
+    (fun w hw => cap_lo (devQ yT ycT) gW 3 1 (inertia.oneSplit [⟨7, 1⟩]) spK
       (by decide +kernel) w hw)
     (fun w hw => contract_all (transfer ccT) gW gW 1 4 spK
       (by decide +kernel) w hw)
 
-example : (quadForm gW (matVec (transfer cxT).1 [⟨2, 1⟩])).scale
+theorem pin125 : (quadForm gW (matVec (transfer cxT).1 [⟨2, 1⟩])).scale
       ((4 * (1 * 1)) * (4 * (1 * 1)))
     ≤ (quadForm gW [⟨2, 1⟩]).scale
       ((1 * (1 * 1 + 3 * 1)) * (1 * (1 * 1 + 3 * 1))
@@ -1011,39 +1011,39 @@ private def cxF3 : MatQ := ([[⟨3, 1⟩]], 1)
 private def btF : Mat := [[⟨11, 1⟩]]
 private def cxF : MatQ := ([[⟨11, 1⟩]], 1)
 
-example : ¬ floorRead ycT gW 2 1 3 1 spK := by decide +kernel
-example : ¬ ((quadForm gW (matVec (transfer cxT).1 [⟨2, 1⟩])).scale
+theorem pin126 : ¬ floorRead ycT gW 2 1 3 1 spK := by decide +kernel
+theorem pin127 : ¬ ((quadForm gW (matVec (transfer cxT).1 [⟨2, 1⟩])).scale
       ((4 * (2 * 1)) * (4 * (2 * 1)))
     ≤ (quadForm gW [⟨2, 1⟩]).scale
       ((1 * (2 * 1 + 3 * 1)) * (1 * (2 * 1 + 3 * 1))
         * (cxT.2 * cxT.2))) := by decide +kernel
 
-example : ¬ capQ (devQ yT ycT) gW 1 1 (spOne ⟨5, 1⟩) spK := by
+theorem pin128 : ¬ capQ (devQ yT ycT) gW 1 1 (inertia.oneSplit [⟨5, 1⟩]) spK := by
   decide +kernel
-example : ¬ ((quadForm gW (matVec (transfer cxT).1 [⟨2, 1⟩])).scale
+theorem pin129 : ¬ ((quadForm gW (matVec (transfer cxT).1 [⟨2, 1⟩])).scale
       ((4 * (1 * 1)) * (4 * (1 * 1)))
     ≤ (quadForm gW [⟨2, 1⟩]).scale
       ((1 * (1 * 1 + 1 * 1)) * (1 * (1 * 1 + 1 * 1))
         * (cxT.2 * cxT.2))) := by decide +kernel
 
-example : ¬ contractRead (transfer ccT) gW gW 1 5 spK := by
+theorem pin130 : ¬ contractRead (transfer ccT) gW gW 1 5 spK := by
   decide +kernel
-example : ¬ ((quadForm gW (matVec (transfer cxT).1 [⟨2, 1⟩])).scale
+theorem pin131 : ¬ ((quadForm gW (matVec (transfer cxT).1 [⟨2, 1⟩])).scale
       ((5 * (1 * 1)) * (5 * (1 * 1)))
     ≤ (quadForm gW [⟨2, 1⟩]).scale
       ((1 * (1 * 1 + 3 * 1)) * (1 * (1 * 1 + 3 * 1))
         * (cxT.2 * cxT.2))) := by decide +kernel
 
-example : ¬ oneValueQ (mulQ yT cxF3) (ofM btT) := by decide +kernel
-example : ¬ ((quadForm gW (matVec (transfer cxF3).1 [⟨2, 1⟩])).scale
+theorem pin132 : ¬ oneValueQ (mulQ yT cxF3) (ofM btT) := by decide +kernel
+theorem pin133 : ¬ ((quadForm gW (matVec (transfer cxF3).1 [⟨2, 1⟩])).scale
       ((4 * (1 * 1)) * (4 * (1 * 1)))
     ≤ (quadForm gW [⟨2, 1⟩]).scale
       ((1 * (1 * 1 + 3 * 1)) * (1 * (1 * 1 + 3 * 1))
         * (cxF3.2 * cxF3.2))) := by decide +kernel
 
-example : oneValueQ (mulQ yT cxF) (ofM btF) := by decide +kernel
-example : ¬ oneValueQ (mulQ ycT ccT) (ofM btF) := by decide +kernel
-example : ¬ ((quadForm gW (matVec (transfer cxF).1 [⟨2, 1⟩])).scale
+theorem pin134 : oneValueQ (mulQ yT cxF) (ofM btF) := by decide +kernel
+theorem pin135 : ¬ oneValueQ (mulQ ycT ccT) (ofM btF) := by decide +kernel
+theorem pin136 : ¬ ((quadForm gW (matVec (transfer cxF).1 [⟨2, 1⟩])).scale
       ((4 * (1 * 1)) * (4 * (1 * 1)))
     ≤ (quadForm gW [⟨2, 1⟩]).scale
       ((1 * (1 * 1 + 3 * 1)) * (1 * (1 * 1 + 3 * 1))
@@ -1055,7 +1055,7 @@ bond `1` at the images `3` and `15/4`, the deviation `-3/4` capped
 two-sidedly at the modulus `λ∘ = 1` — minus three against twelve
 and minus twelve against minus three. -/
 
-example : (∀ w : List BPair, w.length = 1 →
+theorem pin137 : (∀ w : List BPair, w.length = 1 →
       (quadForm (devQ xdT ymidT).1 w).scale (1 * 1 * 1)
         ≤ (quadForm gW w).scale (1 * 1 * 3 * (devQ xdT ymidT).2))
     ∧ (∀ w : List BPair, w.length = 1 →
@@ -1069,21 +1069,21 @@ example : (∀ w : List BPair, w.length = 1 →
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    (fun w hw => cap_hi (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK
+    (fun w hw => cap_hi (devQ yT ycT) gW 3 1 (inertia.oneSplit [⟨7, 1⟩]) spK
       (by decide +kernel) w hw)
-    (fun w hw => cap_lo (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK
+    (fun w hw => cap_lo (devQ yT ycT) gW 3 1 (inertia.oneSplit [⟨7, 1⟩]) spK
       (by decide +kernel) w hw)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : (quadForm (devQ xdT ymidT).1 [⟨2, 1⟩]).scale (1 * 1 * 1)
+theorem pin138 : (quadForm (devQ xdT ymidT).1 [⟨2, 1⟩]).scale (1 * 1 * 1)
     ≤ (quadForm gW [⟨2, 1⟩]).scale
       (1 * 1 * 3 * (devQ xdT ymidT).2) := by decide +kernel
-example : ((quadForm gW [⟨2, 1⟩]).scale
+theorem pin139 : ((quadForm gW [⟨2, 1⟩]).scale
       (1 * 1 * 3 * (devQ xdT ymidT).2)).swap
     ≤ (quadForm (devQ xdT ymidT).1 [⟨2, 1⟩]).scale (1 * 1 * 1) := by
   decide +kernel
 
-example : (∀ w : List BPair, w.length = 1 →
+theorem pin140 : (∀ w : List BPair, w.length = 1 →
       (quadForm (devQ xdT ymidT).1 w).scale (1 * 1 * 1)
         ≤ (quadForm gW w).scale (1 * 1 * 3 * (devQ xdT ymidT).2))
     ∧ (∀ w : List BPair, w.length = 1 →
@@ -1097,9 +1097,9 @@ example : (∀ w : List BPair, w.length = 1 →
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
-    (fun w hw => cap_hi (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK
+    (fun w hw => cap_hi (devQ yT ycT) gW 3 1 (inertia.oneSplit [⟨7, 1⟩]) spK
       (by decide +kernel) w hw)
-    (fun w hw => cap_lo (devQ yT ycT) gW 3 1 (spOne ⟨7, 1⟩) spK
+    (fun w hw => cap_lo (devQ yT ycT) gW 3 1 (inertia.oneSplit [⟨7, 1⟩]) spK
       (by decide +kernel) w hw)
     (floor_all ycT gW 1 1 3 1 spK (by decide +kernel)
       (by decide +kernel) (by decide +kernel))
@@ -1112,9 +1112,9 @@ example : (∀ w : List BPair, w.length = 1 →
 tie identity refuses, four against sixteen, and the swap side parts
 beside it at minus twelve against minus forty-eight. -/
 
-example : ¬ (1 * (1 * (4 * 1)) = 1 * ((1 * 1 + 3 * 1) * 4)) := by
+theorem pin141 : ¬ (1 * (1 * (4 * 1)) = 1 * ((1 * 1 + 3 * 1) * 4)) := by
   decide +kernel
-example : ¬ (((quadForm gW [⟨2, 1⟩]).scale
+theorem pin142 : ¬ (((quadForm gW [⟨2, 1⟩]).scale
       (1 * 1 * 3 * (devQ xdT ymidT).2)).swap
     ≤ (quadForm (devQ xdT ymidT).1 [⟨2, 1⟩]).scale (4 * 4 * 1)) := by
   decide +kernel
@@ -1167,13 +1167,13 @@ private theorem dAsymLo : ∀ w : List BPair, w.length = 2 →
       (ground.leB_trans (ground.leB_swap (idPsd2 w hw))
         (dAsymUnitLe w hw)) 1
 
-example : (quadForm dAsym [⟨2, 1⟩, u]).scale 1
+theorem pin143 : (quadForm dAsym [⟨2, 1⟩, u]).scale 1
     ≤ (quadForm (idMat 2) [⟨2, 1⟩, u]).scale (1 * 1) :=
   dAsymHi [⟨2, 1⟩, u] rfl
-example : ∀ w : List BPair, w.length = 2 →
+theorem pin144 : ∀ w : List BPair, w.length = 2 →
     (quadForm dAsym w).scale 1
       ≤ (quadForm (idMat 2) w).scale (1 * 1) := dAsymHi
-example : ∀ w : List BPair, w.length = 2 →
+theorem pin145 : ∀ w : List BPair, w.length = 2 →
     ((quadForm (idMat 2) w).scale (1 * 1)).swap
       ≤ (quadForm dAsym w).scale 1 := dAsymLo
 
@@ -1284,30 +1284,30 @@ symmetries, the witnesses and joins, the floor, the contraction,
 the defect, the tie and the modulus, each decided; the caps at the
 antisymmetric deviation the ∀-form witnesses above. -/
 
-example : matOneValue (transposeM ycW.1) ycW.1 := by decide +kernel
-example : matOneValue (transposeM gI2) gI2 := by decide +kernel
-example : oneValueQ (mulQ xW cxW) (ofM (transposeM bW)) := by
+theorem pin146 : matOneValue (transposeM ycW.1) ycW.1 := by decide +kernel
+theorem pin147 : matOneValue (transposeM gI2) gI2 := by decide +kernel
+theorem pin148 : oneValueQ (mulQ xW cxW) (ofM (transposeM bW)) := by
   decide +kernel
-example : oneValueQ (addQ xdpW (mulQ (ofM bW) cxW))
+theorem pin149 : oneValueQ (addQ xdpW (mulQ (ofM bW) cxW))
     (ofM ([[⟨201, 1⟩]] : Mat)) := by decide +kernel
-example : oneValueQ (mulQ ycW ccW) (ofM (transposeM bW)) := by
+theorem pin150 : oneValueQ (mulQ ycW ccW) (ofM (transposeM bW)) := by
   decide +kernel
-example : oneValueQ (addQ ymidW (mulQ (ofM bW) ccW))
+theorem pin151 : oneValueQ (addQ ymidW (mulQ (ofM bW) ccW))
     (ofM ([[⟨201, 1⟩]] : Mat)) := by decide +kernel
-example : floorRead ycW gI2 1 1 1 1000 spF2 := by decide +kernel
-example : contractRead (transfer ccW) gI2 g4S 1 2 spK := by
+theorem pin152 : floorRead ycW gI2 1 1 1 1000 spF2 := by decide +kernel
+theorem pin153 : contractRead (transfer ccW) gI2 g4S 1 2 spK := by
   decide +kernel
-example : capQ (devQ ymidW ymidW) g4S 1 2000 (spOne ⟨5, 1⟩)
-    (spOne ⟨5, 1⟩) := by decide +kernel
-example : (1 : Pos) * (1001 * (2 * 1000))
+theorem pin154 : capQ (devQ ymidW ymidW) g4S 1 2000 (inertia.oneSplit [⟨5, 1⟩])
+    (inertia.oneSplit [⟨5, 1⟩]) := by decide +kernel
+theorem pin155 : (1 : Pos) * (1001 * (2 * 1000))
     = 1 * ((1 * 1000 + 1 * 1) * 2000) := by decide +kernel
-example : (1 : Pos) * ((2000 * 2000) * 1000)
+theorem pin156 : (1 : Pos) * ((2000 * 2000) * 1000)
       + (1001 * 1001) * (1 * 2000)
     ≤ 1 * (2000 * (2000 * 2000)) := by decide +kernel
-example : ∀ w : List BPair, w.length = 2 →
+theorem pin157 : ∀ w : List BPair, w.length = 2 →
     (quadForm (devQ xW ycW).1 w).scale 1000
       ≤ (quadForm gI2 w).scale (1 * (devQ xW ycW).2) := devWHi
-example : ∀ w : List BPair, w.length = 2 →
+theorem pin158 : ∀ w : List BPair, w.length = 2 →
     ((quadForm gI2 w).scale (1 * (devQ xW ycW).2)).swap
       ≤ (quadForm (devQ xW ycW).1 w).scale 1000 := devWLo
 
@@ -1316,14 +1316,14 @@ example : ∀ w : List BPair, w.length = 2 →
 `image_contract`'s at the image deviation `100/201` against the
 modulus. -/
 
-example : ¬ matOneValue (transposeM xW.1) xW.1 := by decide +kernel
-example : ¬ ((quadForm gI2
+theorem pin159 : ¬ matOneValue (transposeM xW.1) xW.1 := by decide +kernel
+theorem pin160 : ¬ ((quadForm gI2
       (matVec (transfer cxW).1 [⟨2, 1⟩])).scale
       ((2 * (1 * 1000)) * (2 * (1 * 1000)))
     ≤ (quadForm g4S [⟨2, 1⟩]).scale
       ((1 * (1 * 1000 + 1 * 1)) * (1 * (1 * 1000 + 1 * 1))
         * (cxW.2 * cxW.2))) := by decide +kernel
-example : ¬ ((quadForm (devQ xdpW ymidW).1 [⟨2, 1⟩]).scale
+theorem pin161 : ¬ ((quadForm (devQ xdpW ymidW).1 [⟨2, 1⟩]).scale
       (2000 * 2000 * 1000)
     ≤ (quadForm g4S [⟨2, 1⟩]).scale
       (1001 * 1001 * 1 * (devQ xdpW ymidW).2)) := by decide +kernel
@@ -1341,20 +1341,20 @@ theorem at the caps' `cap_hi`/`cap_lo` form. -/
 private def pdX : greenprod.MatQ := ([[⟨4, 1⟩]], 1)
 private def pdG : Mat := [[⟨2, 1⟩]]
 
-example : floorRead pdX pdG 1 1 1 1 (spOne ⟨2, 1⟩) := by decide +kernel
-example : capQ (devQ pdX pdX) pdG 1 1 (spOne ⟨2, 1⟩)
-    (spOne ⟨2, 1⟩) := by decide +kernel
-example : splitRead pdX.1 (spOne ⟨4, 1⟩) := by decide +kernel
-example : psdAt (spOne ⟨4, 1⟩) := by decide +kernel
+theorem pin162 : floorRead pdX pdG 1 1 1 1 (inertia.oneSplit [⟨2, 1⟩]) := by decide +kernel
+theorem pin163 : capQ (devQ pdX pdX) pdG 1 1 (inertia.oneSplit [⟨2, 1⟩])
+    (inertia.oneSplit [⟨2, 1⟩]) := by decide +kernel
+theorem pin164 : splitRead pdX.1 (inertia.oneSplit [⟨4, 1⟩]) := by decide +kernel
+theorem pin165 : psdAt (inertia.oneSplit [⟨4, 1⟩]) := by decide +kernel
 
-example : psdAt (spOne ⟨4, 1⟩) :=
-  ball_psd_of (o := 1) (o' := 1) pdX pdX pdG 1 1 1 1 (spOne ⟨2, 1⟩)
-    (spOne ⟨4, 1⟩) (by decide +kernel) (by decide +kernel)
+theorem pin166 : psdAt (inertia.oneSplit [⟨4, 1⟩]) :=
+  ball_psd_of (o := 1) (o' := 1) pdX pdX pdG 1 1 1 1 (inertia.oneSplit [⟨2, 1⟩])
+    (inertia.oneSplit [⟨4, 1⟩]) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
-    (fun w hw => cap_hi (devQ pdX pdX) pdG 1 1 (spOne ⟨2, 1⟩)
-      (spOne ⟨2, 1⟩) (by decide +kernel) w hw)
-    (fun w hw => cap_lo (devQ pdX pdX) pdG 1 1 (spOne ⟨2, 1⟩)
-      (spOne ⟨2, 1⟩) (by decide +kernel) w hw)
+    (fun w hw => cap_hi (devQ pdX pdX) pdG 1 1 (inertia.oneSplit [⟨2, 1⟩])
+      (inertia.oneSplit [⟨2, 1⟩]) (by decide +kernel) w hw)
+    (fun w hw => cap_lo (devQ pdX pdX) pdG 1 1 (inertia.oneSplit [⟨2, 1⟩])
+      (inertia.oneSplit [⟨2, 1⟩]) (by decide +kernel) w hw)
     (by decide +kernel)
 
 /-! The same pivot read at ∀-form entries throughout
@@ -1362,17 +1362,17 @@ example : psdAt (spOne ⟨4, 1⟩) :=
 read joins the two cap sides in its pointwise transport
 (`floor_all`), and the pivot's split reads the upper side. -/
 
-example : psdAt (spOne ⟨4, 1⟩) :=
+theorem pin167 : psdAt (inertia.oneSplit [⟨4, 1⟩]) :=
   ball_psd_ptw (o := 1) (o' := 1) pdX pdX pdG 1 1 1 1
-    (spOne ⟨4, 1⟩) (by decide +kernel) (by decide +kernel)
+    (inertia.oneSplit [⟨4, 1⟩]) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
-    (fun w hw => floor_all pdX pdG 1 1 1 1 (spOne ⟨2, 1⟩)
+    (fun w hw => floor_all pdX pdG 1 1 1 1 (inertia.oneSplit [⟨2, 1⟩])
       (by decide +kernel) (by decide +kernel) (by decide +kernel)
       w hw)
-    (fun w hw => cap_hi (devQ pdX pdX) pdG 1 1 (spOne ⟨2, 1⟩)
-      (spOne ⟨2, 1⟩) (by decide +kernel) w hw)
-    (fun w hw => cap_lo (devQ pdX pdX) pdG 1 1 (spOne ⟨2, 1⟩)
-      (spOne ⟨2, 1⟩) (by decide +kernel) w hw)
+    (fun w hw => cap_hi (devQ pdX pdX) pdG 1 1 (inertia.oneSplit [⟨2, 1⟩])
+      (inertia.oneSplit [⟨2, 1⟩]) (by decide +kernel) w hw)
+    (fun w hw => cap_lo (devQ pdX pdX) pdG 1 1 (inertia.oneSplit [⟨2, 1⟩])
+      (inertia.oneSplit [⟨2, 1⟩]) (by decide +kernel) w hw)
     (by decide +kernel)
 
 /-! The upper cap's binder is load-bearing, the record at the
@@ -1405,18 +1405,18 @@ private def spXN : Split 2 :=
   ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩,
    [.two ⟨3, 1⟩ ⟨2, 1⟩ ⟨1, 1⟩], 0, rfl⟩
 
-example : matOneValue (devQ xN ycN).1
+theorem pin168 : matOneValue (devQ xN ycN).1
     [[⟨1, 5⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨5, 1⟩]] := by decide +kernel
-example : (devQ xN ycN).2 = 4 := by decide +kernel
+theorem pin169 : (devQ xN ycN).2 = 4 := by decide +kernel
 
-example : sqAt xN.1 2 ∧ sqAt ycN.1 2 ∧ sqAt gN 2 := by decide +kernel
-example : floorRead ycN gN 1 2 1 1 spFN := by decide +kernel
-example : splitRead xN.1 spXN := by decide +kernel
+theorem pin170 : sqAt xN.1 2 ∧ sqAt ycN.1 2 ∧ sqAt gN 2 := by decide +kernel
+theorem pin171 : floorRead ycN gN 1 2 1 1 spFN := by decide +kernel
+theorem pin172 : splitRead xN.1 spXN := by decide +kernel
 
 /-- The lower cap side at the indefinite gram: the swapped scaled
 gram and the deviation read one value, so the side is an equality
 at every vector. -/
-example : ∀ u : List BPair, u.length = 2 →
+theorem pin173 : ∀ u : List BPair, u.length = 2 →
     ((quadForm gN u).scale (1 * (devQ xN ycN).2)).swap
       ≤ (quadForm (devQ xN ycN).1 u).scale 1 := by
   intro u _
@@ -1432,10 +1432,10 @@ example : ∀ u : List BPair, u.length = 2 →
       (matScale 1 (devQ xN ycN).1) u u (by decide +kernel)) ?_
   exact quadForm_scale 1 (devQ xN ycN).1 u
 
-example : ¬ ((quadForm (devQ xN ycN).1 [⟨1, 2⟩, ⟨3, 1⟩]).scale 1
+theorem pin174 : ¬ ((quadForm (devQ xN ycN).1 [⟨1, 2⟩, ⟨3, 1⟩]).scale 1
     ≤ (quadForm gN [⟨1, 2⟩, ⟨3, 1⟩]).scale
       (1 * (devQ xN ycN).2)) := by decide +kernel
-example : ¬ psdAt spXN := by decide +kernel
+theorem pin175 : ¬ psdAt spXN := by decide +kernel
 
 /-! The lower cap side's isolation (`ball_psd_of`): the member `-1`
 at the center `3` about the unit gram sits below the ball — the
@@ -1448,16 +1448,16 @@ private def loG : Mat := [[⟨2, 1⟩]]
 private def loYc : greenprod.MatQ := ([[⟨4, 1⟩]], 1)
 private def loX : greenprod.MatQ := ([[⟨1, 2⟩]], 1)
 
-example : floorRead loYc loG 1 1 1 1 (spOne ⟨2, 1⟩) := by decide +kernel
-example : splitRead loX.1 (spOne ⟨1, 2⟩) := by decide +kernel
+theorem pin176 : floorRead loYc loG 1 1 1 1 (inertia.oneSplit [⟨2, 1⟩]) := by decide +kernel
+theorem pin177 : splitRead loX.1 (inertia.oneSplit [⟨1, 2⟩]) := by decide +kernel
 
-example : ∀ u : List BPair, u.length = 1 →
+theorem pin178 : ∀ u : List BPair, u.length = 1 →
     (quadForm (devQ loX loYc).1 u).scale 1
       ≤ (quadForm loG u).scale (1 * (devQ loX loYc).2) := by
   intro u hu
   have hpos : BPair.unit ≤ quadForm loG u :=
     ground.leB_of_not_lt
-      (psd_all loG (spOne ⟨2, 1⟩) (by decide +kernel)
+      (psd_all loG (inertia.oneSplit [⟨2, 1⟩]) (by decide +kernel)
         (by decide +kernel) u hu)
   have hc : ((quadForm (devQ loX loYc).1 u).scale 1).oneValue
       ((((quadForm loG u).swap).scale 4).scale 1) := by
@@ -1475,11 +1475,11 @@ example : ∀ u : List BPair, u.length = 1 →
       BPair.unit.oneValue ((BPair.unit.swap.scale 4).scale 1)) ?_
   exact ground.unitLeScale (1 * (devQ loX loYc).2) hpos
 
-example : ¬ (((quadForm loG [⟨2, 1⟩]).scale
+theorem pin179 : ¬ (((quadForm loG [⟨2, 1⟩]).scale
       (1 * (devQ loX loYc).2)).swap
     ≤ (quadForm (devQ loX loYc).1 [⟨2, 1⟩]).scale 1) := by
   decide +kernel
-example : ¬ psdAt (spOne ⟨1, 2⟩) := by decide +kernel
+theorem pin180 : ¬ psdAt (inertia.oneSplit [⟨1, 2⟩]) := by decide +kernel
 
 /-! The floor's isolation (`ball_psd_of`): the member at its own
 center `-1` about the unit gram reads a vacant deviation, both cap
@@ -1489,21 +1489,21 @@ deep member's parted cell above. -/
 
 private def fYc : greenprod.MatQ := ([[⟨1, 2⟩]], 1)
 
-example : splitRead (siteDatum (matScale (1 * 1) fYc.1)
-    (matScale (fYc.2 * (1 * 1 + 1 * 1)) loG)) (spOne ⟨3, 6⟩) := by
+theorem pin181 : splitRead (siteDatum (matScale (1 * 1) fYc.1)
+    (matScale (fYc.2 * (1 * 1 + 1 * 1)) loG)) (inertia.oneSplit [⟨3, 6⟩]) := by
   decide +kernel
-example : ¬ psdAt (spOne ⟨3, 6⟩) := by decide +kernel
-example : ¬ floorRead fYc loG 1 1 1 1 (spOne ⟨3, 6⟩) := by
+theorem pin182 : ¬ psdAt (inertia.oneSplit [⟨3, 6⟩]) := by decide +kernel
+theorem pin183 : ¬ floorRead fYc loG 1 1 1 1 (inertia.oneSplit [⟨3, 6⟩]) := by
   decide +kernel
-example : splitRead fYc.1 (spOne ⟨1, 2⟩) := by decide +kernel
+theorem pin184 : splitRead fYc.1 (inertia.oneSplit [⟨1, 2⟩]) := by decide +kernel
 
-example : ∀ u : List BPair, u.length = 1 →
+theorem pin185 : ∀ u : List BPair, u.length = 1 →
     (quadForm (devQ fYc fYc).1 u).scale 1
       ≤ (quadForm loG u).scale (1 * (devQ fYc fYc).2) := by
   intro u hu
   have hpos : BPair.unit ≤ quadForm loG u :=
     ground.leB_of_not_lt
-      (psd_all loG (spOne ⟨2, 1⟩) (by decide +kernel)
+      (psd_all loG (inertia.oneSplit [⟨2, 1⟩]) (by decide +kernel)
         (by decide +kernel) u hu)
   have hz : ((quadForm (devQ fYc fYc).1 u).scale 1).oneValue
       BPair.unit := by
@@ -1528,13 +1528,13 @@ example : ∀ u : List BPair, u.length = 1 →
   refine ground.leB_congr_left (BPair.oneValue_symm hz) ?_
   exact ground.unitLeScale (1 * (devQ fYc fYc).2) hpos
 
-example : ∀ u : List BPair, u.length = 1 →
+theorem pin186 : ∀ u : List BPair, u.length = 1 →
     ((quadForm loG u).scale (1 * (devQ fYc fYc).2)).swap
       ≤ (quadForm (devQ fYc fYc).1 u).scale 1 := by
   intro u hu
   have hpos : BPair.unit ≤ quadForm loG u :=
     ground.leB_of_not_lt
-      (psd_all loG (spOne ⟨2, 1⟩) (by decide +kernel)
+      (psd_all loG (inertia.oneSplit [⟨2, 1⟩]) (by decide +kernel)
         (by decide +kernel) u hu)
   have hz : ((quadForm (devQ fYc fYc).1 u).scale 1).oneValue
       BPair.unit := by
@@ -1576,51 +1576,53 @@ private def nzXdp : MatQ := (([[BPair.ofNat 100]] : elim.Mat), (1 : Pos))
 private def nzYmid : MatQ := (([[BPair.unit]] : elim.Mat), (1 : Pos))
 private def sp0 : Split 0 := ⟨⟨[], rfl⟩, ⟨[], rfl⟩, [], 0, rfl⟩
 
-example : sqAt nzQ.1 0 ∧ sqAt nzXdp.1 1 ∧ sqAt nzYmid.1 1
+theorem pin187 : sqAt nzQ.1 0 ∧ sqAt nzXdp.1 1 ∧ sqAt nzYmid.1 1
     ∧ rectAt nzQ.1 0 1 ∧ sqAt nzA 1 ∧ rectAt nzB 1 0
     ∧ sqAt (([] : elim.Mat)) 0
     ∧ matOneValue (transposeM nzQ.1) nzQ.1
     ∧ matOneValue (transposeM ([] : elim.Mat)) ([] : elim.Mat) := by
   decide +kernel
 
-example : oneValueQ (mulQ nzQ nzQ) (ofM (transposeM nzB))
+theorem pin188 : oneValueQ (mulQ nzQ nzQ) (ofM (transposeM nzB))
     ∧ oneValueQ (addQ nzXdp (mulQ (ofM nzB) nzQ)) (ofM nzA)
     ∧ oneValueQ (addQ nzYmid (mulQ (ofM nzB) nzQ)) (ofM nzA) := by
   decide +kernel
 
-example : ∀ u : List BPair, u.length = 0 →
+theorem pin189 : ∀ u : List BPair, u.length = 0 →
     (quadForm (devQ nzQ nzQ).1 u).scale 1
       ≤ (quadForm ([] : elim.Mat) u).scale (1 * (devQ nzQ nzQ).2) :=
   cap_hi (devQ nzQ nzQ) ([] : elim.Mat) 1 1 sp0 sp0 (by decide +kernel)
 
-example : ∀ u : List BPair, u.length = 0 →
+theorem pin190 : ∀ u : List BPair, u.length = 0 →
     ((quadForm ([] : elim.Mat) u).scale (1 * (devQ nzQ nzQ).2)).swap
       ≤ (quadForm (devQ nzQ nzQ).1 u).scale 1 :=
   cap_lo (devQ nzQ nzQ) ([] : elim.Mat) 1 1 sp0 sp0 (by decide +kernel)
 
-example : ∀ u : List BPair, u.length = 0 →
+theorem pin191 : ∀ u : List BPair, u.length = 0 →
     (quadForm ([] : elim.Mat) u).scale (nzQ.2 * (1 * 1 + 1 * 1))
       ≤ (quadForm nzQ.1 u).scale (1 * 1) :=
   floor_all nzQ ([] : elim.Mat) 1 1 1 1 sp0
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : ∀ u : List BPair, u.length = 1 →
+theorem pin192 : ∀ u : List BPair, u.length = 1 →
     (quadForm ([] : elim.Mat) (matVec (transfer nzQ).1 u)).scale (1 * 1)
       ≤ (quadForm nzGd u).scale (1 * 1 * (nzQ.2 * nzQ.2)) := by
   intro u hu
   have hpos : BPair.unit ≤ quadForm nzGd u :=
     ground.leB_of_not_lt
-      (psd_all nzGd (spOne ⟨2, 1⟩) (by decide +kernel)
+      (psd_all nzGd (inertia.oneSplit [⟨2, 1⟩]) (by decide +kernel)
         (by decide +kernel) u hu)
   have hz : ((quadForm ([] : elim.Mat) ([] : List BPair)).scale
       (1 * 1)).oneValue BPair.unit := by decide +kernel
   refine ground.leB_congr_left (BPair.oneValue_symm hz) ?_
   exact ground.unitLeScale (1 * 1 * (nzQ.2 * nzQ.2)) hpos
 
-example : (1 : Pos) * (2 * (1 * 1)) = 1 * ((1 * 1 + 1 * 1) * 1) := by
+theorem pin193 : (1 : Pos) * (2 * (1 * 1)) = 1 * ((1 * 1 + 1 * 1) * 1) := by
   decide +kernel
 
-example : ¬ ((quadForm (devQ nzXdp nzYmid).1 [BPair.ofNat 1]).scale
+theorem pin194 : ¬ ((quadForm (devQ nzXdp nzYmid).1 [BPair.ofNat 1]).scale
       (1 * 1 * 1)
     ≤ (quadForm nzGd [BPair.ofNat 1]).scale
         (2 * 2 * 1 * (devQ nzXdp nzYmid).2)) := by decide +kernel
+
+end spectator

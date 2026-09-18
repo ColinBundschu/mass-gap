@@ -36,21 +36,21 @@ the chord `w` joining the level's members: `w + y₊ = c₁ + y₋`. -/
 def chordJoin (c1 : Pos) (yp ym w : Pair) : Prop :=
   (w + yp).oneValue (Pair.ofPos c1 + ym)
 
-instance (c1 : Pos) (yp ym w : Pair) : Decidable (chordJoin c1 yp ym w) :=
+instance instChordmap1 (c1 : Pos) (yp ym w : Pair) : Decidable (chordJoin c1 yp ym w) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The lower crossing join, `y₊ + 2 = c₁ + y₋`. -/
 def crossLo (c1 : Pos) (yp ym : Pair) : Prop :=
   (yp + Pair.ofPos 2).oneValue (Pair.ofPos c1 + ym)
 
-instance (c1 : Pos) (yp ym : Pair) : Decidable (crossLo c1 yp ym) :=
+instance instChordmap2 (c1 : Pos) (yp ym : Pair) : Decidable (crossLo c1 yp ym) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The upper crossing join, `y₊ = c₁ + y₋ + 2`. -/
 def crossHi (c1 : Pos) (yp ym : Pair) : Prop :=
   yp.oneValue (Pair.ofPos c1 + ym + Pair.ofPos 2)
 
-instance (c1 : Pos) (yp ym : Pair) : Decidable (crossHi c1 yp ym) :=
+instance instChordmap3 (c1 : Pos) (yp ym : Pair) : Decidable (crossHi c1 yp ym) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The double-root read: the relation's two roots are equal, the
@@ -60,7 +60,7 @@ def crossAt (c1 : Pos) (yp ym : Pair) : Prop :=
   ((Pair.ofPos c1 + ym) * (Pair.ofPos c1 + ym) + yp * yp).oneValue
     (Pair.ofPos 2 * yp * (Pair.ofPos c1 + ym) + Pair.ofPos 4)
 
-instance (c1 : Pos) (yp ym : Pair) : Decidable (crossAt c1 yp ym) :=
+instance instChordmap4 (c1 : Pos) (yp ym : Pair) : Decidable (crossAt c1 yp ym) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The band, the segment between the two crossing levels: the
@@ -70,7 +70,7 @@ def bandAt (c1 : Pos) (yp ym : Pair) : Prop :=
   ¬ (yp + Pair.ofPos 2 < Pair.ofPos c1 + ym)
   ∧ ¬ (Pair.ofPos c1 + ym + Pair.ofPos 2 < yp)
 
-instance (c1 : Pos) (yp ym : Pair) : Decidable (bandAt c1 yp ym) :=
+instance instChordmap5 (c1 : Pos) (yp ym : Pair) : Decidable (bandAt c1 yp ym) :=
   inferInstanceAs (Decidable (¬ _ ∧ ¬ _))
 
 /-- The defect's root `z*` at `c₁ z* = 1`. -/
@@ -81,7 +81,7 @@ def boundJoin (c1 : Pos) (yp ym : Pair) : Prop :=
   (Pair.ofPos c1 * yp + Pair.ofPos Pos.one).oneValue
     (Pair.ofPos c1 * ym)
 
-instance (c1 : Pos) (yp ym : Pair) : Decidable (boundJoin c1 yp ym) :=
+instance instChordmap6 (c1 : Pos) (yp ym : Pair) : Decidable (boundJoin c1 yp ym) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The relation at the defect's root, `def:deck`'s display
@@ -91,7 +91,7 @@ def defectLevel (c1 : Pos) (yp ym : Pair) : Prop :=
     + Pair.ofPos Pos.one).oneValue
     ((Pair.ofPos c1 + ym) * defectRoot c1)
 
-instance (c1 : Pos) (yp ym : Pair) : Decidable (defectLevel c1 yp ym) :=
+instance instChordmap7 (c1 : Pos) (yp ym : Pair) : Decidable (defectLevel c1 yp ym) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The evaluation cleared at `c₁²`, the proof-side spelling. -/

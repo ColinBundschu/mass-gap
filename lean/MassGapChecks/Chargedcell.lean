@@ -92,63 +92,65 @@ by the side length's multiple of the floor, the divisor's witness,
 and the level list, the multiplicities and the block structure the
 reads of that head pencil, pinned per cell at one committed
 instance. -/
+
+namespace chargedcell
 set_option maxHeartbeats 4000000
 
-open ground places chargedcell
+open ground places
 
 /-! The ality reads at `d = 3`. -/
 
-example : (fusion.dataA 3).cls (adjchar.theta 3) = 0 := by decide +kernel
-example : (fusion.dataA 3).cls (casfloor.fundShape 1 2) = 1 := by
+theorem pin1 : (fusion.dataA 3).cls (adjchar.theta 3) = 0 := by decide +kernel
+theorem pin2 : (fusion.dataA 3).cls (casfloor.fundShape 1 2) = 1 := by
   decide +kernel
-example : (fusion.dataA 3).cls (casfloor.fundShape 2 1) = 2 := by
+theorem pin3 : (fusion.dataA 3).cls (casfloor.fundShape 2 1) = 2 := by
   decide +kernel
-example : (fusion.dataA 3).cls
+theorem pin4 : (fusion.dataA 3).cls
     (labels.dualL (casfloor.fundShape 1 2)) = 2 := by decide +kernel
-example : (fusion.dataA 3).cls (labels.reduce [2, 1, 4])
+theorem pin5 : (fusion.dataA 3).cls (labels.reduce [2, 1, 4])
     = (fusion.dataA 3).cls [2, 1, 4] :=
   ality_reduce 3 [2, 1, 4] rfl
-example : (fusion.dataA 3).cls [2, 1, 4] = 1 := by decide +kernel
+theorem pin6 : (fusion.dataA 3).cls [2, 1, 4] = 1 := by decide +kernel
 
 /-! The class laws at stated pairs, the general theorems' own
 instances beside the kernel reads. -/
 
-example : fusion.clsLaw (fusion.dataA 3) (casfloor.fundShape 1 2)
+theorem pin7 : fusion.clsLaw (fusion.dataA 3) (casfloor.fundShape 1 2)
     (casfloor.fundShape 2 1) := clsLaw_all 3 _ _
-example : fusion.clsLaw (fusion.dataA 3) (adjchar.theta 3)
+theorem pin8 : fusion.clsLaw (fusion.dataA 3) (adjchar.theta 3)
     (adjchar.theta 3) := by decide +kernel
-example : fusion.clsDualLaw (fusion.dataA 3)
+theorem pin9 : fusion.clsDualLaw (fusion.dataA 3)
     (casfloor.fundShape 1 2) := clsDualLaw_all 3 _ rfl
-example : fusion.clsDualLaw (fusion.dataA 2) (adjchar.theta 2) := by
+theorem pin10 : fusion.clsDualLaw (fusion.dataA 2) (adjchar.theta 2) := by
   decide +kernel
-example : (fusion.dataA 3).cls (fusion.dataA 3).unit = 0 :=
+theorem pin11 : (fusion.dataA 3).cls (fusion.dataA 3).unit = 0 :=
   ality_unit 3
-example : fusion.clsThetaLaw (fusion.dataA 3) := clsThetaLaw_all 3
-example : fusion.clsThetaLaw (fusion.dataA 2) := by decide +kernel
+theorem pin12 : fusion.clsThetaLaw (fusion.dataA 3) := clsThetaLaw_all 3
+theorem pin13 : fusion.clsThetaLaw (fusion.dataA 2) := by decide +kernel
 
 /-! The winding floor per class against the endpoint display,
 `clsFloorN j = d_f Q(ω_j)` at the complement gap. -/
 
-example : (fusion.dataA 3).clsFloorN 1
+theorem pin14 : (fusion.dataA 3).clsFloorN 1
     = c2hat.dfQ (casfloor.fundShape 1 2) := by decide +kernel
-example : (fusion.dataA 3).clsFloorN 2
+theorem pin15 : (fusion.dataA 3).clsFloorN 2
     = c2hat.dfQ (casfloor.fundShape 2 1) := by decide +kernel
-example : (fusion.dataA 4).clsFloorN 1
+theorem pin16 : (fusion.dataA 4).clsFloorN 1
     = c2hat.dfQ (casfloor.fundShape 1 3) := by decide +kernel
-example : (fusion.dataA 3).clsFloorN 0 = 0 := by decide +kernel
+theorem pin17 : (fusion.dataA 3).clsFloorN 0 = 0 := by decide +kernel
 
 /-! The forged class data refuse, one conjunct each. -/
 
-example : ¬ (({ fusion.dataA 3 with cls := fun _ => 1 }
+theorem pin18 : ¬ (({ fusion.dataA 3 with cls := fun _ => 1 }
     : fusion.Data places.Shape).cls (fusion.dataA 3).unit = 0) := by
   decide +kernel
-example : ¬ fusion.clsLaw
+theorem pin19 : ¬ fusion.clsLaw
     { fusion.dataA 3 with clsAdd := fun x y => x + y }
     (casfloor.fundShape 1 2) (casfloor.fundShape 2 1) := by decide +kernel
-example : ¬ fusion.clsDualLaw
+theorem pin20 : ¬ fusion.clsDualLaw
     { fusion.dataA 3 with clsAdd := fun x y => x + y }
     (casfloor.fundShape 1 2) := by decide +kernel
-example : ¬ fusion.clsThetaLaw
+theorem pin21 : ¬ fusion.clsThetaLaw
     { fusion.dataA 3 with cls := fun s => places.degree s } := by
   decide +kernel
 
@@ -156,25 +158,25 @@ example : ¬ fusion.clsThetaLaw
 read at a positive invariant count, the kernel's own reads beside
 the theorem route at the label calculus. -/
 
-example : 0 < carrier.invCount (fusion.dataA 3)
+theorem pin22 : 0 < carrier.invCount (fusion.dataA 3)
     [casfloor.fundShape 1 2, labels.dualL (casfloor.fundShape 1 2)] := by
   decide +kernel
-example : clsFold (fusion.dataA 3)
+theorem pin23 : clsFold (fusion.dataA 3)
     [casfloor.fundShape 1 2, labels.dualL (casfloor.fundShape 1 2)]
     = (fusion.dataA 3).cls (labels.unitL 3) := by decide +kernel
-example : clsFold (fusion.dataA 3)
+theorem pin24 : clsFold (fusion.dataA 3)
     [casfloor.fundShape 1 2, labels.dualL (casfloor.fundShape 1 2)]
     = (fusion.dataA 3).cls (fusion.dataA 3).unit :=
   vertexLaw_all 3 _ (by decide +kernel) (by decide +kernel)
 
-example : 0 < carrier.invCount (fusion.dataA 3)
+theorem pin25 : 0 < carrier.invCount (fusion.dataA 3)
     [casfloor.fundShape 1 2, labels.dualL (casfloor.fundShape 1 2),
       labels.unitL 3] := by decide +kernel
-example : clsFold (fusion.dataA 3)
+theorem pin26 : clsFold (fusion.dataA 3)
     [casfloor.fundShape 1 2, labels.dualL (casfloor.fundShape 1 2),
       labels.unitL 3] = (fusion.dataA 3).cls (labels.unitL 3) := by
   decide +kernel
-example : clsFold (fusion.dataA 3)
+theorem pin27 : clsFold (fusion.dataA 3)
     [casfloor.fundShape 1 2, labels.dualL (casfloor.fundShape 1 2),
       labels.unitL 3]
     = (fusion.dataA 3).cls (fusion.dataA 3).unit :=
@@ -183,16 +185,16 @@ example : clsFold (fusion.dataA 3)
 /-! The positivity binder and the width binder, each refused at a
 label list moving that binder alone. -/
 
-example : carrier.invCount (fusion.dataA 3)
+theorem pin28 : carrier.invCount (fusion.dataA 3)
     [casfloor.fundShape 1 2] = 0 := by decide +kernel
-example : ([casfloor.fundShape 1 2].all (fun s => s.length == 3))
+theorem pin29 : ([casfloor.fundShape 1 2].all (fun s => s.length == 3))
     = true := by decide +kernel
-example : ¬ (clsFold (fusion.dataA 3) [casfloor.fundShape 1 2]
+theorem pin30 : ¬ (clsFold (fusion.dataA 3) [casfloor.fundShape 1 2]
     = (fusion.dataA 3).cls (fusion.dataA 3).unit) := by decide +kernel
 
-example : 0 < carrier.invCount (fusion.dataA 3) [[1], [0]] := by decide +kernel
-example : ([[1], [0]].all (fun s => s.length == 3)) = false := by decide +kernel
-example : ¬ (clsFold (fusion.dataA 3) [[1], [0]]
+theorem pin31 : 0 < carrier.invCount (fusion.dataA 3) [[1], [0]] := by decide +kernel
+theorem pin32 : ([[1], [0]].all (fun s => s.length == 3)) = false := by decide +kernel
+theorem pin33 : ¬ (clsFold (fusion.dataA 3) [[1], [0]]
     = (fusion.dataA 3).cls (fusion.dataA 3).unit) := by decide +kernel
 
 /-! The interface binders at forged fusion data over the naturals,
@@ -205,70 +207,70 @@ private def pAll : Nat → Bool := fun _ => true
 private def fHinv : fusion.Data Nat :=
   ⟨(fun a b => a % 2 == b % 2), (fun _ => ground.eqBeqOf rfl),
    0, id, (fun a b => a + b), 0, (fun _ _ _ => 0), (fun _ _ => []),
-   (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
+   (fun _ => 1), (fun _ => 0), 1, 1, 1, (fun _ => []),
    id, (fun _ _ => 0), id, (fiber.presNone _)⟩
 
-example : ∀ a b : Nat, pAll a = true → pAll b = true →
+theorem pin34 : ∀ a b : Nat, pAll a = true → pAll b = true →
     ((fHinv.row a b).all pAll) = true := fun _ _ _ _ => rfl
-example : ∀ a b : Nat, pAll a = true → pAll b = true →
+theorem pin35 : ∀ a b : Nat, pAll a = true → pAll b = true →
     fusion.clsLaw fHinv a b := fun _ _ _ _ => rfl
-example : ∀ a : Nat, pAll a = true → fusion.clsDualLaw fHinv a :=
+theorem pin36 : ∀ a : Nat, pAll a = true → fusion.clsDualLaw fHinv a :=
   fun _ _ => rfl
-example : pAll fHinv.unit = true := rfl
-example : ∀ a : Nat, pAll a = true → pAll (fHinv.dual a) = true :=
+theorem pin37 : pAll fHinv.unit = true := rfl
+theorem pin38 : ∀ a : Nat, pAll a = true → pAll (fHinv.dual a) = true :=
   fun _ _ => rfl
-example : ([2].all pAll) = true := rfl
-example : 0 < carrier.invCount fHinv [2] := by decide +kernel
-example : fHinv.eqL 2 0 = true := by decide +kernel
-example : ¬ (fHinv.cls 2 = fHinv.cls 0) := by decide +kernel
-example : ¬ (clsFold fHinv [2] = fHinv.cls fHinv.unit) := by decide +kernel
+theorem pin39 : ([2].all pAll) = true := rfl
+theorem pin40 : 0 < carrier.invCount fHinv [2] := by decide +kernel
+theorem pin41 : fHinv.eqL 2 0 = true := by decide +kernel
+theorem pin42 : ¬ (fHinv.cls 2 = fHinv.cls 0) := by decide +kernel
+theorem pin43 : ¬ (clsFold fHinv [2] = fHinv.cls fHinv.unit) := by decide +kernel
 
 private def fHdual : fusion.Data Nat :=
   ⟨(fun a b => a == b), (fun _ => ground.eqBeqOf rfl),
    0, id, (fun a b => a + b), 0, (fun _ _ _ => 0), (fun _ _ => []),
-   (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
+   (fun _ => 1), (fun _ => 0), 1, 1, 1, (fun _ => []),
    id, (fun x _ => x), id, (fiber.presNone _)⟩
 
-example : ∀ a b : Nat, pAll a = true → pAll b = true →
+theorem pin44 : ∀ a b : Nat, pAll a = true → pAll b = true →
     ((fHdual.row a b).all pAll) = true := fun _ _ _ _ => rfl
-example : ∀ a b : Nat, pAll a = true → pAll b = true →
+theorem pin45 : ∀ a b : Nat, pAll a = true → pAll b = true →
     fusion.clsLaw fHdual a b := fun _ _ _ _ => rfl
-example : ∀ a b : Nat, pAll a = true → pAll b = true →
+theorem pin46 : ∀ a b : Nat, pAll a = true → pAll b = true →
     fHdual.eqL a b = true → fHdual.cls a = fHdual.cls b :=
   fun _ _ _ _ h => ground.beqEqOf h
-example : pAll fHdual.unit = true := rfl
-example : ∀ a : Nat, pAll a = true → pAll (fHdual.dual a) = true :=
+theorem pin47 : pAll fHdual.unit = true := rfl
+theorem pin48 : ∀ a : Nat, pAll a = true → pAll (fHdual.dual a) = true :=
   fun _ _ => rfl
-example : ([1, 1].all pAll) = true := rfl
-example : 0 < carrier.invCount fHdual [1, 1] := by decide +kernel
-example : ¬ fusion.clsDualLaw fHdual 1 := by decide +kernel
-example : ¬ (clsFold fHdual [1, 1] = fHdual.cls fHdual.unit) := by decide +kernel
+theorem pin49 : ([1, 1].all pAll) = true := rfl
+theorem pin50 : 0 < carrier.invCount fHdual [1, 1] := by decide +kernel
+theorem pin51 : ¬ fusion.clsDualLaw fHdual 1 := by decide +kernel
+theorem pin52 : ¬ (clsFold fHdual [1, 1] = fHdual.cls fHdual.unit) := by decide +kernel
 
 private def fHlaw : fusion.Data Nat :=
   ⟨(fun a b => a == b), (fun _ => ground.eqBeqOf rfl),
    0, id, (fun a b => a + b), 0, (fun _ _ _ => 1), (fun _ _ => [5]),
-   (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
+   (fun _ => 1), (fun _ => 0), 1, 1, 1, (fun _ => []),
    (fun a => if a == 0 then 0 else 1), (fun x y => (x + y) % 2), id, (fiber.presNone _)⟩
 
-example : ∀ a b : Nat, pAll a = true → pAll b = true →
+theorem pin53 : ∀ a b : Nat, pAll a = true → pAll b = true →
     ((fHlaw.row a b).all pAll) = true := fun _ _ _ _ => rfl
-example : ∀ a b : Nat, pAll a = true → pAll b = true →
+theorem pin54 : ∀ a b : Nat, pAll a = true → pAll b = true →
     fHlaw.eqL a b = true → fHlaw.cls a = fHlaw.cls b :=
   fun _ _ _ _ h => congrArg fHlaw.cls (ground.beqEqOf h)
-example : ∀ a : Nat, pAll a = true → fusion.clsDualLaw fHlaw a := by
+theorem pin55 : ∀ a : Nat, pAll a = true → fusion.clsDualLaw fHlaw a := by
   intro a _
   show ((if a == 0 then 0 else 1) + (if a == 0 then 0 else 1)) % 2
     = (if (0 : Nat) == 0 then 0 else 1)
   cases h : (a == 0) with
   | true => exact rfl
   | false => exact rfl
-example : pAll fHlaw.unit = true := rfl
-example : ∀ a : Nat, pAll a = true → pAll (fHlaw.dual a) = true :=
+theorem pin56 : pAll fHlaw.unit = true := rfl
+theorem pin57 : ∀ a : Nat, pAll a = true → pAll (fHlaw.dual a) = true :=
   fun _ _ => rfl
-example : ([1, 1, 5].all pAll) = true := rfl
-example : 0 < carrier.invCount fHlaw [1, 1, 5] := by decide +kernel
-example : ¬ fusion.clsLaw fHlaw 1 1 := by decide +kernel
-example : ¬ (clsFold fHlaw [1, 1, 5] = fHlaw.cls fHlaw.unit) := by
+theorem pin58 : ([1, 1, 5].all pAll) = true := rfl
+theorem pin59 : 0 < carrier.invCount fHlaw [1, 1, 5] := by decide +kernel
+theorem pin60 : ¬ fusion.clsLaw fHlaw 1 1 := by decide +kernel
+theorem pin61 : ¬ (clsFold fHlaw [1, 1, 5] = fHlaw.cls fHlaw.unit) := by
   decide +kernel
 
 private def pHunit : Nat → Bool := fun a => a == 2
@@ -276,26 +278,26 @@ private def pHunit : Nat → Bool := fun a => a == 2
 private def fHunit : fusion.Data Nat :=
   ⟨(fun a b => a % 2 == b % 2), (fun _ => ground.eqBeqOf rfl),
    0, id, (fun a b => a + b), 0, (fun _ _ _ => 0), (fun _ _ => []),
-   (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
+   (fun _ => 1), (fun _ => 0), 1, 1, 1, (fun _ => []),
    id, (fun _ _ => 0), id, (fiber.presNone _)⟩
 
-example : ∀ a b : Nat, pHunit a = true → pHunit b = true →
+theorem pin62 : ∀ a b : Nat, pHunit a = true → pHunit b = true →
     ((fHunit.row a b).all pHunit) = true := fun _ _ _ _ => rfl
-example : ∀ a b : Nat, pHunit a = true → pHunit b = true →
+theorem pin63 : ∀ a b : Nat, pHunit a = true → pHunit b = true →
     fusion.clsLaw fHunit a b := fun _ _ _ _ => rfl
-example : ∀ a : Nat, pHunit a = true → fusion.clsDualLaw fHunit a :=
+theorem pin64 : ∀ a : Nat, pHunit a = true → fusion.clsDualLaw fHunit a :=
   fun _ _ => rfl
-example : ∀ a b : Nat, pHunit a = true → pHunit b = true →
+theorem pin65 : ∀ a b : Nat, pHunit a = true → pHunit b = true →
     fHunit.eqL a b = true → fHunit.cls a = fHunit.cls b := by
   intro a b ha hb _
   rw [ground.beqEqOf (show (a == 2) = true from ha),
     ground.beqEqOf (show (b == 2) = true from hb)]
-example : ∀ a : Nat, pHunit a = true → pHunit (fHunit.dual a) = true :=
+theorem pin66 : ∀ a : Nat, pHunit a = true → pHunit (fHunit.dual a) = true :=
   fun _ ha => ha
-example : ([2].all pHunit) = true := rfl
-example : 0 < carrier.invCount fHunit [2] := by decide +kernel
-example : pHunit fHunit.unit = false := by decide +kernel
-example : ¬ (clsFold fHunit [2] = fHunit.cls fHunit.unit) := by decide +kernel
+theorem pin67 : ([2].all pHunit) = true := rfl
+theorem pin68 : 0 < carrier.invCount fHunit [2] := by decide +kernel
+theorem pin69 : pHunit fHunit.unit = false := by decide +kernel
+theorem pin70 : ¬ (clsFold fHunit [2] = fHunit.cls fHunit.unit) := by decide +kernel
 
 private def pHdualP : Nat → Bool := fun a => a == 1 || a == 0
 
@@ -308,19 +310,19 @@ private theorem p2_cases (a : Nat) (h : pHdualP a = true) :
 private def fHdualP : fusion.Data Nat :=
   ⟨(fun a b => a % 2 == b % 2), (fun _ => ground.eqBeqOf rfl),
    0, (fun a => 2 * a), (fun a b => a + b), 0, (fun _ _ _ => 0),
-   (fun _ _ => []), (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
+   (fun _ _ => []), (fun _ => 1), (fun _ => 0), 1, 1, 1, (fun _ => []),
    (fun a => a % 3), (fun x y => (x + y) % 3), id, (fiber.presNone _)⟩
 
-example : ∀ a b : Nat, pHdualP a = true → pHdualP b = true →
+theorem pin71 : ∀ a b : Nat, pHdualP a = true → pHdualP b = true →
     ((fHdualP.row a b).all pHdualP) = true := fun _ _ _ _ => rfl
-example : ∀ a b : Nat, pHdualP a = true → pHdualP b = true →
+theorem pin72 : ∀ a b : Nat, pHdualP a = true → pHdualP b = true →
     fusion.clsLaw fHdualP a b := fun _ _ _ _ => rfl
-example : ∀ a : Nat, pHdualP a = true → fusion.clsDualLaw fHdualP a := by
+theorem pin73 : ∀ a : Nat, pHdualP a = true → fusion.clsDualLaw fHdualP a := by
   intro a ha
   cases p2_cases a ha with
   | inl h => subst h; decide +kernel
   | inr h => subst h; decide +kernel
-example : ∀ a b : Nat, pHdualP a = true → pHdualP b = true →
+theorem pin74 : ∀ a b : Nat, pHdualP a = true → pHdualP b = true →
     fHdualP.eqL a b = true → fHdualP.cls a = fHdualP.cls b := by
   intro a b ha hb he
   cases p2_cases a ha with
@@ -334,12 +336,12 @@ example : ∀ a b : Nat, pHdualP a = true → pHdualP b = true →
     cases p2_cases b hb with
     | inl k => subst k; exact absurd he (by decide +kernel)
     | inr k => subst k; rfl
-example : pHdualP fHdualP.unit = true := by decide +kernel
-example : ([0, 1].all pHdualP) = true := by decide +kernel
-example : 0 < carrier.invCount fHdualP [0, 1] := by decide +kernel
-example : pHdualP 1 = true := by decide +kernel
-example : pHdualP (fHdualP.dual 1) = false := by decide +kernel
-example : ¬ (clsFold fHdualP [0, 1] = fHdualP.cls fHdualP.unit) := by
+theorem pin75 : pHdualP fHdualP.unit = true := by decide +kernel
+theorem pin76 : ([0, 1].all pHdualP) = true := by decide +kernel
+theorem pin77 : 0 < carrier.invCount fHdualP [0, 1] := by decide +kernel
+theorem pin78 : pHdualP 1 = true := by decide +kernel
+theorem pin79 : pHdualP (fHdualP.dual 1) = false := by decide +kernel
+theorem pin80 : ¬ (clsFold fHdualP [0, 1] = fHdualP.cls fHdualP.unit) := by
   decide +kernel
 
 private def pHrow : Nat → Bool := fun a => a == 0 || a == 1 || a == 2
@@ -359,10 +361,10 @@ private def fHrow : fusion.Data Nat :=
    (fun _ => by rw [ground.eqBeqOf rfl]; exact rfl),
    0, (fun a => if a == 0 then 0 else 3 - a), (fun a b => a + b), 0,
    (fun _ _ _ => 1), (fun a b => if a == 1 && b == 1 then [5] else []),
-   (fun _ => 1), (fun _ => 0), 1, 1, (fun _ => []),
+   (fun _ => 1), (fun _ => 0), 1, 1, 1, (fun _ => []),
    (fun a => a % 3), (fun x y => (x + y) % 3), id, (fiber.presNone _)⟩
 
-example : ∀ a b : Nat, pHrow a = true → pHrow b = true →
+theorem pin81 : ∀ a b : Nat, pHrow a = true → pHrow b = true →
     fusion.clsLaw fHrow a b := by
   intro a b _ _
   show ((if a == 1 && b == 1 then [5] else []).all
@@ -374,7 +376,7 @@ example : ∀ a b : Nat, pHrow a = true → pHrow b = true →
     rw [ground.beqEqOf (ground.andSplitB h).1,
       ground.beqEqOf (ground.andSplitB h).2]
     decide +kernel
-example : ∀ a : Nat, pHrow a = true → fusion.clsDualLaw fHrow a := by
+theorem pin82 : ∀ a : Nat, pHrow a = true → fusion.clsDualLaw fHrow a := by
   intro a ha
   cases p3_cases a ha with
   | inl h => subst h; decide +kernel
@@ -382,7 +384,7 @@ example : ∀ a : Nat, pHrow a = true → fusion.clsDualLaw fHrow a := by
     cases hr with
     | inl h => subst h; decide +kernel
     | inr h => subst h; decide +kernel
-example : ∀ a b : Nat, pHrow a = true → pHrow b = true →
+theorem pin83 : ∀ a b : Nat, pHrow a = true → pHrow b = true →
     fHrow.eqL a b = true → fHrow.cls a = fHrow.cls b := by
   intro a b ha hb he
   cases ground.orSplitB
@@ -397,8 +399,8 @@ example : ∀ a b : Nat, pHrow a = true → pHrow b = true →
   | inr h =>
     rw [ground.beqEqOf (ground.andSplitB h).2] at hb
     exact absurd hb (by decide +kernel)
-example : pHrow fHrow.unit = true := by decide +kernel
-example : ∀ a : Nat, pHrow a = true → pHrow (fHrow.dual a) = true := by
+theorem pin84 : pHrow fHrow.unit = true := by decide +kernel
+theorem pin85 : ∀ a : Nat, pHrow a = true → pHrow (fHrow.dual a) = true := by
   intro a ha
   cases p3_cases a ha with
   | inl h => subst h; decide +kernel
@@ -406,11 +408,11 @@ example : ∀ a : Nat, pHrow a = true → pHrow (fHrow.dual a) = true := by
     cases hr with
     | inl h => subst h; decide +kernel
     | inr h => subst h; decide +kernel
-example : ([1, 1, 2].all pHrow) = true := by decide +kernel
-example : 0 < carrier.invCount fHrow [1, 1, 2] := by decide +kernel
-example : pHrow 1 = true := by decide +kernel
-example : ((fHrow.row 1 1).all pHrow) = false := by decide +kernel
-example : ¬ (clsFold fHrow [1, 1, 2] = fHrow.cls fHrow.unit) := by
+theorem pin86 : ([1, 1, 2].all pHrow) = true := by decide +kernel
+theorem pin87 : 0 < carrier.invCount fHrow [1, 1, 2] := by decide +kernel
+theorem pin88 : pHrow 1 = true := by decide +kernel
+theorem pin89 : ((fHrow.row 1 1).all pHrow) = false := by decide +kernel
+theorem pin90 : ¬ (clsFold fHrow [1, 1, 2] = fHrow.cls fHrow.unit) := by
   decide +kernel
 
 /-! The flux tier at the torus instance `d = 2`, `L = 3`, `n = 3`:
@@ -435,21 +437,21 @@ the first direction, every further key unoccupied. -/
 private def wind : List Shape :=
   [fundA, fundA, fundA] ++ List.replicate 15 unitA
 
-example : transCutRead torus23 cut0 3 := by decide +kernel
-example : transCutRead torus23 cut1 3 := by decide +kernel
-example : ¬ transCutRead torus23 cut0 2 := by decide +kernel
+theorem pin91 : transCutRead torus23 cut0 3 := by decide +kernel
+theorem pin92 : transCutRead torus23 cut1 3 := by decide +kernel
+theorem pin93 : ¬ transCutRead torus23 cut0 2 := by decide +kernel
 
-example : carrier.occupied (fusion.dataA 3) torus23 wind = true := by
+theorem pin94 : carrier.occupied (fusion.dataA 3) torus23 wind = true := by
   decide +kernel
-example : (wind.all (fun s => s.length == 3)) = true := by decide +kernel
+theorem pin95 : (wind.all (fun s => s.length == 3)) = true := by decide +kernel
 
-example : fluxAt 3 torus23 cut0 0 wind = 1 := by decide +kernel
-example : fluxAt 3 torus23 cut0 1 wind = 1 := by decide +kernel
-example : fluxAt 3 torus23 cut0 2 wind = 1 := by decide +kernel
-example : fluxAt 3 torus23 cut1 0 wind = 0 := by decide +kernel
-example : chargeT 3 2 3 wind = [1, 0] := by decide +kernel
+theorem pin96 : fluxAt 3 torus23 cut0 0 wind = 1 := by decide +kernel
+theorem pin97 : fluxAt 3 torus23 cut0 1 wind = 1 := by decide +kernel
+theorem pin98 : fluxAt 3 torus23 cut0 2 wind = 1 := by decide +kernel
+theorem pin99 : fluxAt 3 torus23 cut1 0 wind = 0 := by decide +kernel
+theorem pin100 : chargeT 3 2 3 wind = [1, 0] := by decide +kernel
 
-example : fluxAt 3 torus23 cut0 2 wind % 3
+theorem pin101 : fluxAt 3 torus23 cut0 2 wind % 3
     = fluxAt 3 torus23 cut0 0 wind % 3 :=
   fluxConserve 3 torus23 cut0 3 wind (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) 2 (by decide +kernel)
@@ -457,8 +459,8 @@ example : fluxAt 3 torus23 cut0 2 wind % 3
 /-! The grade binder: beyond the cut count the flux reads no
 crossing at all and the conclusion refuses. -/
 
-example : fluxAt 3 torus23 cut0 3 wind = 0 := by decide +kernel
-example : ¬ (fluxAt 3 torus23 cut0 3 wind % 3
+theorem pin102 : fluxAt 3 torus23 cut0 3 wind = 0 := by decide +kernel
+theorem pin103 : ¬ (fluxAt 3 torus23 cut0 3 wind % 3
     = fluxAt 3 torus23 cut0 0 wind % 3) := by decide +kernel
 
 /-! The occupancy binder: one open fundamental link, every other
@@ -466,12 +468,12 @@ read holding at the same region and grading. -/
 
 private def open1 : List Shape := [fundA] ++ List.replicate 17 unitA
 
-example : carrier.occupied (fusion.dataA 3) torus23 open1 = false := by
+theorem pin104 : carrier.occupied (fusion.dataA 3) torus23 open1 = false := by
   decide +kernel
-example : (open1.all (fun s => s.length == 3)) = true := by decide +kernel
-example : 0 < fluxAt 3 torus23 cut0 0 open1 := by decide +kernel
-example : fluxAt 3 torus23 cut0 1 open1 = 0 := by decide +kernel
-example : ¬ (fluxAt 3 torus23 cut0 1 open1 % 3
+theorem pin105 : (open1.all (fun s => s.length == 3)) = true := by decide +kernel
+theorem pin106 : 0 < fluxAt 3 torus23 cut0 0 open1 := by decide +kernel
+theorem pin107 : fluxAt 3 torus23 cut0 1 open1 = 0 := by decide +kernel
+theorem pin108 : ¬ (fluxAt 3 torus23 cut0 1 open1 % 3
     = fluxAt 3 torus23 cut0 0 open1 % 3) := by decide +kernel
 
 /-! The cut binder: one site's grade moved off its link's cyclic
@@ -481,8 +483,8 @@ holds. -/
 private def cutBad : Nat → Nat :=
   fun s => if s == 1 then 2 else fiberdec.digitAt 3 0 s
 
-example : ¬ transCutRead torus23 cutBad 3 := by decide +kernel
-example : ¬ (fluxAt 3 torus23 cutBad 1 wind % 3
+theorem pin109 : ¬ transCutRead torus23 cutBad 3 := by decide +kernel
+theorem pin110 : ¬ (fluxAt 3 torus23 cutBad 1 wind % 3
     = fluxAt 3 torus23 cutBad 0 wind % 3) := by decide +kernel
 
 /-! The width binder at the three-site cycle: the labels read a
@@ -494,11 +496,11 @@ private def tri : lattice.Region :=
     plaqs := [], color := [false, true, false] , tailLen := rfl, headLen := rfl }
 private def thin : List Shape := [[1], [2], [1]]
 
-example : lattice.wellRead tri := by decide +kernel
-example : transCutRead tri id 3 := by decide +kernel
-example : carrier.occupied (fusion.dataA 3) tri thin = true := by decide +kernel
-example : (thin.all (fun s => s.length == 3)) = false := by decide +kernel
-example : ¬ (fluxAt 3 tri id 1 thin % 3
+theorem pin111 : lattice.wellRead tri := by decide +kernel
+theorem pin112 : transCutRead tri id 3 := by decide +kernel
+theorem pin113 : carrier.occupied (fusion.dataA 3) tri thin = true := by decide +kernel
+theorem pin114 : (thin.all (fun s => s.length == 3)) = false := by decide +kernel
+theorem pin115 : ¬ (fluxAt 3 tri id 1 thin % 3
     = fluxAt 3 tri id 0 thin % 3) := by decide +kernel
 
 /-! The self-loop's two-ended incidence: a link at both ends reads
@@ -510,13 +512,13 @@ private def loop1 : lattice.Region :=
   { links := 1, verts := 1, tail := [0], head := [0], plaqs := [],
     color := [false] , tailLen := rfl, headLen := rfl }
 
-example : carrier.incidentLabels (fusion.dataA 3) loop1 [fundA] 0
+theorem pin116 : carrier.incidentLabels (fusion.dataA 3) loop1 [fundA] 0
     = [fundA, dualA] := by decide +kernel
-example : carrier.occupied (fusion.dataA 3) loop1 [fundA] = true := by
+theorem pin117 : carrier.occupied (fusion.dataA 3) loop1 [fundA] = true := by
   decide +kernel
-example : 0 < carrier.vmult (fusion.dataA 3) loop1 [fundA] 0 := by
+theorem pin118 : 0 < carrier.vmult (fusion.dataA 3) loop1 [fundA] 0 := by
   decide +kernel
-example : fluxAt 3 loop1 (fun _ => 0) 0 [fundA] = 0 := by decide +kernel
+theorem pin119 : fluxAt 3 loop1 (fun _ => 0) 0 [fundA] = 0 := by decide +kernel
 
 /-! The shape binder: two link ends beyond the vertex count, whose
 vertex laws the occupancy read never reaches, so a class enters the
@@ -528,12 +530,12 @@ private def outside : lattice.Region :=
 private def outConf : List Shape :=
   [fundA, fundA, adjchar.theta 3, fundA]
 
-example : ¬ lattice.wellRead outside := by decide +kernel
-example : transCutRead outside id 4 := by decide +kernel
-example : carrier.occupied (fusion.dataA 3) outside outConf = true := by
+theorem pin120 : ¬ lattice.wellRead outside := by decide +kernel
+theorem pin121 : transCutRead outside id 4 := by decide +kernel
+theorem pin122 : carrier.occupied (fusion.dataA 3) outside outConf = true := by
   decide +kernel
-example : (outConf.all (fun s => s.length == 3)) = true := by decide +kernel
-example : ¬ (fluxAt 3 outside id 2 outConf % 3
+theorem pin123 : (outConf.all (fun s => s.length == 3)) = true := by decide +kernel
+theorem pin124 : ¬ (fluxAt 3 outside id 2 outConf % 3
     = fluxAt 3 outside id 0 outConf % 3) := by decide +kernel
 
 
@@ -587,22 +589,22 @@ private def mv0 : Nat → Nat → Nat :=
 /-- The base cut's pre-images at the direction-zero translation. -/
 private def pre0 : Nat → Nat := fun e => if e == 0 then 2 else 0
 
-example : lattice.wellRead torus23 := by decide +kernel
-example : lattice.linkIso torus23 torus23 tr1 trI1 := by decide +kernel
-example : ∀ e, e < 2 → transCutRead torus23
+theorem pin125 : lattice.wellRead torus23 := by decide +kernel
+theorem pin126 : lattice.linkIso torus23 torus23 tr1 trI1 := by decide +kernel
+theorem pin127 : ∀ e, e < 2 → transCutRead torus23
     (fun v => fiberdec.digitAt 3 e v) 3 := by decide +kernel
-example : ∀ e, e < 2 → cutMoveRead torus23 tr1
+theorem pin128 : ∀ e, e < 2 → cutMoveRead torus23 tr1
     (fun v => fiberdec.digitAt 3 e v) (mv1 e) := by decide +kernel
-example : ∀ e, e < 2 → ∀ u, u < 3 → ∀ v, v < 3 →
+theorem pin129 : ∀ e, e < 2 → ∀ u, u < 3 → ∀ v, v < 3 →
     mv1 e u = mv1 e v → u = v := by decide +kernel
-example : ∀ e, e < 2 → pre1 e < 3 ∧ mv1 e (pre1 e) = 0 := by decide +kernel
+theorem pin130 : ∀ e, e < 2 → pre1 e < 3 ∧ mv1 e (pre1 e) = 0 := by decide +kernel
 
-example : ¬ (pairpencil.permConf (fusion.dataA 3) tr1 trI1
+theorem pin131 : ¬ (pairpencil.permConf (fusion.dataA 3) tr1 trI1
     (fiberdec.torusRegion 2 3).links wind = wind) := by decide +kernel
-example : chargeT 3 2 3 (pairpencil.permConf (fusion.dataA 3) tr1 trI1
+theorem pin132 : chargeT 3 2 3 (pairpencil.permConf (fusion.dataA 3) tr1 trI1
     (fiberdec.torusRegion 2 3).links wind) = [1, 0] := by decide +kernel
 
-example : chargeT 3 2 3 (pairpencil.permConf (fusion.dataA 3) tr1 trI1
+theorem pin133 : chargeT 3 2 3 (pairpencil.permConf (fusion.dataA 3) tr1 trI1
       (fiberdec.torusRegion 2 3).links wind)
     = chargeT 3 2 3 wind :=
   chargeT_perm 3 2 3 wind tr1 trI1 mv1 pre1 (by decide +kernel) (by decide +kernel)
@@ -612,10 +614,10 @@ example : chargeT 3 2 3 (pairpencil.permConf (fusion.dataA 3) tr1 trI1
 /-! The winding direction's own translation: the string is carried
 onto itself and the charge family stands. -/
 
-example : pairpencil.permConf (fusion.dataA 3) tr0 trI0
+theorem pin134 : pairpencil.permConf (fusion.dataA 3) tr0 trI0
     (fiberdec.torusRegion 2 3).links wind = wind := by decide +kernel
 
-example : chargeT 3 2 3 (pairpencil.permConf (fusion.dataA 3) tr0 trI0
+theorem pin135 : chargeT 3 2 3 (pairpencil.permConf (fusion.dataA 3) tr0 trI0
       (fiberdec.torusRegion 2 3).links wind)
     = chargeT 3 2 3 wind :=
   chargeT_perm 3 2 3 wind tr0 trI0 mv0 pre0 (by decide +kernel) (by decide +kernel)
@@ -629,12 +631,12 @@ collapsed key's label at the one link the translation reads back
 with the unit at every other, a configuration off the occupancy
 read. -/
 
-example : ¬ lattice.linkIso torus23 torus23 tr1 (fun _ => 0) := by decide +kernel
-example : pairpencil.permConf (fusion.dataA 3) tr1 (fun _ => 0)
+theorem pin136 : ¬ lattice.linkIso torus23 torus23 tr1 (fun _ => 0) := by decide +kernel
+theorem pin137 : pairpencil.permConf (fusion.dataA 3) tr1 (fun _ => 0)
       (fiberdec.torusRegion 2 3).links wind
     = (List.range 18).map (fun l => if l == tr1 0 then fundA else unitA) := by
   decide +kernel
-example : carrier.occupied (fusion.dataA 3) torus23 (pairpencil.permConf (fusion.dataA 3)
+theorem pin138 : carrier.occupied (fusion.dataA 3) torus23 (pairpencil.permConf (fusion.dataA 3)
     tr1 (fun _ => 0) (fiberdec.torusRegion 2 3).links wind) = false := by
   decide +kernel
 
@@ -646,23 +648,23 @@ the transport and injectivity hold.  The injectivity: the constant
 map refuses it with the transport refusing beside it, the joint
 tie's two reads. -/
 
-example : ¬ (∀ e, e < 2 → cutMoveRead torus23 tr1
+theorem pin139 : ¬ (∀ e, e < 2 → cutMoveRead torus23 tr1
     (fun v => fiberdec.digitAt 3 e v) ((fun _ x => x) e)) := by decide +kernel
-example : ∀ e, e < 2 → ∀ u, u < 3 → ∀ v, v < 3 →
+theorem pin140 : ∀ e, e < 2 → ∀ u, u < 3 → ∀ v, v < 3 →
     (fun (_ x : Nat) => x) e u = (fun (_ x : Nat) => x) e v → u = v := by
   decide +kernel
-example : ∀ e, e < 2 → (fun _ => (0 : Nat)) e < 3
+theorem pin141 : ∀ e, e < 2 → (fun _ => (0 : Nat)) e < 3
     ∧ (fun (_ x : Nat) => x) e ((fun _ => (0 : Nat)) e) = 0 := by decide +kernel
 
-example : ¬ (∀ e, e < 2 → (fun _ => (1 : Nat)) e < 3
+theorem pin142 : ¬ (∀ e, e < 2 → (fun _ => (1 : Nat)) e < 3
     ∧ mv1 e ((fun _ => (1 : Nat)) e) = 0) := by decide +kernel
-example : ∀ e, e < 2 → cutMoveRead torus23 tr1
+theorem pin143 : ∀ e, e < 2 → cutMoveRead torus23 tr1
     (fun v => fiberdec.digitAt 3 e v) (mv1 e) := by decide +kernel
 
-example : ¬ (∀ e, e < 2 → ∀ u, u < 3 → ∀ v, v < 3 →
+theorem pin144 : ¬ (∀ e, e < 2 → ∀ u, u < 3 → ∀ v, v < 3 →
     (fun (_ _ : Nat) => (0 : Nat)) e u = (fun (_ _ : Nat) => (0 : Nat)) e v
       → u = v) := by decide +kernel
-example : ¬ (∀ e, e < 2 → cutMoveRead torus23 tr1
+theorem pin145 : ¬ (∀ e, e < 2 → cutMoveRead torus23 tr1
     (fun v => fiberdec.digitAt 3 e v)
     ((fun (_ _ : Nat) => (0 : Nat)) e)) := by decide +kernel
 
@@ -677,26 +679,26 @@ which moves the charge. -/
 fundamental itself. -/
 private def rowMem : Shape := [0, 2, 0]
 
-example : (((fusion.dataA 3).row (adjchar.theta 3) fundA).all (fun c =>
+theorem pin146 : (((fusion.dataA 3).row (adjchar.theta 3) fundA).all (fun c =>
     Nat.beq ((fusion.dataA 3).cls c) ((fusion.dataA 3).cls fundA)))
     = true :=
   clsRow_theta 3 fundA
-example : (((fusion.dataA 3).row (adjchar.theta 3) fundA).all (fun c =>
+theorem pin147 : (((fusion.dataA 3).row (adjchar.theta 3) fundA).all (fun c =>
     Nat.beq ((fusion.dataA 3).cls c) ((fusion.dataA 3).cls fundA)))
     = true := by decide +kernel
 
-example : 0 < ground.countOf rowMem
+theorem pin148 : 0 < ground.countOf rowMem
     ((fusion.dataA 3).row (adjchar.theta 3) fundA) := by decide +kernel
-example : (fusion.dataA 3).cls rowMem = 1 := by decide +kernel
-example : ¬ ((fusion.dataA 3).eqL rowMem fundA = true) := by decide +kernel
+theorem pin149 : (fusion.dataA 3).cls rowMem = 1 := by decide +kernel
+theorem pin150 : ¬ ((fusion.dataA 3).eqL rowMem fundA = true) := by decide +kernel
 
-example : chargeT 3 2 3
+theorem pin151 : chargeT 3 2 3
     ([rowMem, fundA, fundA] ++ List.replicate 15 unitA) = [1, 0] := by
   decide +kernel
-example : chargeT 3 2 3
+theorem pin152 : chargeT 3 2 3
     ([unitA, fundA, fundA] ++ List.replicate 15 unitA) = [0, 0] := by
   decide +kernel
-example : ¬ (chargeT 3 2 3
+theorem pin153 : ¬ (chargeT 3 2 3
     ([unitA, fundA, fundA] ++ List.replicate 15 unitA) = [1, 0]) := by
   decide +kernel
 
@@ -705,67 +707,67 @@ theorem route reads the endpoint display `1 · 2 · 4` at or below
 the shape's own cleared Casimir, strictly so — the floor's
 attainment sits at the fundamentals alone. -/
 
-example : (fusion.dataA 3).clsFloorN 1 = 8 := by decide +kernel
-example : 1 * (2 + 1 - 1) * (2 + 2) ≤ c2hat.dfQ rowMem :=
+theorem pin154 : (fusion.dataA 3).clsFloorN 1 = 8 := by decide +kernel
+theorem pin155 : 1 * (2 + 1 - 1) * (2 + 2) ≤ c2hat.dfQ rowMem :=
   casfloor.classFloor 2 1 rowMem rfl rfl rfl
-example : (fusion.dataA 3).clsFloorN 1 ≤ (fusion.dataA 3).clsFloorN 2 :=
+theorem pin156 : (fusion.dataA 3).clsFloorN 1 ≤ (fusion.dataA 3).clsFloorN 2 :=
   casfloor.classFloor_fund 2 2 (by decide +kernel) (by decide +kernel)
-example : (2 : Nat) * (2 + 1 - 2) * (2 + 2) = 8 := by decide +kernel
-example : (8 : Nat) ≤ c2hat.dfQ rowMem := by decide +kernel
-example : ¬ (c2hat.dfQ rowMem = 8) := by decide +kernel
+theorem pin157 : (2 : Nat) * (2 + 1 - 2) * (2 + 2) = 8 := by decide +kernel
+theorem pin158 : (8 : Nat) ≤ c2hat.dfQ rowMem := by decide +kernel
+theorem pin159 : ¬ (c2hat.dfQ rowMem = 8) := by decide +kernel
 
 /-! The tie tier at `n = 4`: the two endpoints' floors tie exactly
 at the dual pair, and part by the crossed gaps on the two strict
 sides of the sum's trichotomy — the theorem routes beside the
 kernel's own values, with the join binder refused off the pair. -/
 
-example : (fusion.dataA 4).clsFloorN 1 = 15 := by decide +kernel
-example : (fusion.dataA 4).clsFloorN 2 = 20 := by decide +kernel
-example : (fusion.dataA 4).clsFloorN 3 = 15 := by decide +kernel
+theorem pin160 : (fusion.dataA 4).clsFloorN 1 = 15 := by decide +kernel
+theorem pin161 : (fusion.dataA 4).clsFloorN 2 = 20 := by decide +kernel
+theorem pin162 : (fusion.dataA 4).clsFloorN 3 = 15 := by decide +kernel
 
-example : (fusion.dataA 4).clsFloorN 1
+theorem pin163 : (fusion.dataA 4).clsFloorN 1
     = (fusion.dataA 4).clsFloorN 3 :=
   tieDual 4 1 3 rfl
-example : (fusion.dataA 4).clsFloorN 1
+theorem pin164 : (fusion.dataA 4).clsFloorN 1
     = (fusion.dataA 4).clsFloorN 3 := by decide +kernel
 
-example : (fusion.dataA 4).clsFloorN 1 + 1 * 1 * (4 + 1)
+theorem pin165 : (fusion.dataA 4).clsFloorN 1 + 1 * 1 * (4 + 1)
     = (fusion.dataA 4).clsFloorN 2 :=
   tieBelow 4 2 1 1 1 rfl rfl
-example : (fusion.dataA 4).clsFloorN 1 + 1 * 1 * (4 + 1)
+theorem pin166 : (fusion.dataA 4).clsFloorN 1 + 1 * 1 * (4 + 1)
     = (fusion.dataA 4).clsFloorN 2 := by decide +kernel
 
-example : (fusion.dataA 4).clsFloorN 3 + 1 * 1 * (4 + 1)
+theorem pin167 : (fusion.dataA 4).clsFloorN 3 + 1 * 1 * (4 + 1)
     = (fusion.dataA 4).clsFloorN 2 :=
   tieBeyond 4 3 2 1 1 1 rfl rfl rfl
-example : (fusion.dataA 4).clsFloorN 3 + 1 * 1 * (4 + 1)
+theorem pin168 : (fusion.dataA 4).clsFloorN 3 + 1 * 1 * (4 + 1)
     = (fusion.dataA 4).clsFloorN 2 := by decide +kernel
 
-example : ¬ ((fusion.dataA 4).clsFloorN 1
+theorem pin169 : ¬ ((fusion.dataA 4).clsFloorN 1
     = (fusion.dataA 4).clsFloorN 2) := by decide +kernel
 
 /-! The merge's strict gap at the three branches of the sum's
 trichotomy — below the residue at `n = 5`, at it at `n = 4`, and
 beyond it at `n = 3`, the last attaining the gap exactly. -/
 
-example : (fusion.dataA 5).clsFloorN ((1 + 2) % 5) + 2 * (5 + 1)
+theorem pin170 : (fusion.dataA 5).clsFloorN ((1 + 2) % 5) + 2 * (5 + 1)
     ≤ (fusion.dataA 5).clsFloorN 1 + (fusion.dataA 5).clsFloorN 2 :=
   mergeGap 5 1 2 (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
-example : (fusion.dataA 5).clsFloorN ((1 + 2) % 5) + 2 * (5 + 1)
+theorem pin171 : (fusion.dataA 5).clsFloorN ((1 + 2) % 5) + 2 * (5 + 1)
     ≤ (fusion.dataA 5).clsFloorN 1
       + (fusion.dataA 5).clsFloorN 2 := by decide +kernel
 
-example : (fusion.dataA 4).clsFloorN ((1 + 3) % 4) + 2 * (4 + 1)
+theorem pin172 : (fusion.dataA 4).clsFloorN ((1 + 3) % 4) + 2 * (4 + 1)
     ≤ (fusion.dataA 4).clsFloorN 1 + (fusion.dataA 4).clsFloorN 3 :=
   mergeGap 4 1 3 (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
-example : (fusion.dataA 4).clsFloorN ((1 + 3) % 4) + 2 * (4 + 1)
+theorem pin173 : (fusion.dataA 4).clsFloorN ((1 + 3) % 4) + 2 * (4 + 1)
     ≤ (fusion.dataA 4).clsFloorN 1
       + (fusion.dataA 4).clsFloorN 3 := by decide +kernel
 
-example : (fusion.dataA 3).clsFloorN ((2 + 2) % 3) + 2 * (3 + 1)
+theorem pin174 : (fusion.dataA 3).clsFloorN ((2 + 2) % 3) + 2 * (3 + 1)
     ≤ (fusion.dataA 3).clsFloorN 2 + (fusion.dataA 3).clsFloorN 2 :=
   mergeGap 3 2 2 (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
-example : (fusion.dataA 3).clsFloorN ((2 + 2) % 3) + 2 * (3 + 1)
+theorem pin175 : (fusion.dataA 3).clsFloorN ((2 + 2) % 3) + 2 * (3 + 1)
     = (fusion.dataA 3).clsFloorN 2
       + (fusion.dataA 3).clsFloorN 2 := by decide +kernel
 
@@ -774,16 +776,16 @@ with the other three standing: the first class vacant, the first
 class at the residue, the second class vacant, the second class at
 the residue.  Each forgery moves the conclusion. -/
 
-example : ¬ ((fusion.dataA 2).clsFloorN ((0 + 1) % 2) + 2 * (2 + 1)
+theorem pin176 : ¬ ((fusion.dataA 2).clsFloorN ((0 + 1) % 2) + 2 * (2 + 1)
     ≤ (fusion.dataA 2).clsFloorN 0
       + (fusion.dataA 2).clsFloorN 1) := by decide +kernel
-example : ¬ ((fusion.dataA 2).clsFloorN ((2 + 1) % 2) + 2 * (2 + 1)
+theorem pin177 : ¬ ((fusion.dataA 2).clsFloorN ((2 + 1) % 2) + 2 * (2 + 1)
     ≤ (fusion.dataA 2).clsFloorN 2
       + (fusion.dataA 2).clsFloorN 1) := by decide +kernel
-example : ¬ ((fusion.dataA 2).clsFloorN ((1 + 0) % 2) + 2 * (2 + 1)
+theorem pin178 : ¬ ((fusion.dataA 2).clsFloorN ((1 + 0) % 2) + 2 * (2 + 1)
     ≤ (fusion.dataA 2).clsFloorN 1
       + (fusion.dataA 2).clsFloorN 0) := by decide +kernel
-example : ¬ ((fusion.dataA 2).clsFloorN ((1 + 2) % 2) + 2 * (2 + 1)
+theorem pin179 : ¬ ((fusion.dataA 2).clsFloorN ((1 + 2) % 2) + 2 * (2 + 1)
     ≤ (fusion.dataA 2).clsFloorN 1
       + (fusion.dataA 2).clsFloorN 2) := by decide +kernel
 
@@ -799,16 +801,16 @@ occupied nowhere, undercuts the floor sum at its own content, and
 a thin-label configuration, occupied at every site, reads content
 nowhere while its cuts still carry the class. -/
 
-example : cutDisjRead 2 3 := by decide +kernel
+theorem pin180 : cutDisjRead 2 3 := by decide +kernel
 
-example : carrier.contentN (fusion.dataA 3) wind = 24 := by decide +kernel
-example : 3 * famFold Nat.add 0 (fun e =>
+theorem pin181 : carrier.contentN (fusion.dataA 3) wind = 24 := by decide +kernel
+theorem pin182 : 3 * famFold Nat.add 0 (fun e =>
     (fusion.dataA 3).clsFloorN
       (fluxAt 3 (fiberdec.torusRegion 2 3)
         (fun s => fiberdec.digitAt 3 e s) 0 wind % 3))
     (List.range 2) = 24 := by decide +kernel
 
-example : 3 * famFold Nat.add 0 (fun e =>
+theorem pin183 : 3 * famFold Nat.add 0 (fun e =>
       (fusion.dataA 3).clsFloorN
         (fluxAt 3 (fiberdec.torusRegion 2 3)
           (fun s => fiberdec.digitAt 3 e s) 0 wind % 3))
@@ -817,13 +819,13 @@ example : 3 * famFold Nat.add 0 (fun e =>
   windFloor 3 2 3 wind (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
-example : carrier.contentN (fusion.dataA 3) open1 = 8 := by decide +kernel
-example : 3 * famFold Nat.add 0 (fun e =>
+theorem pin184 : carrier.contentN (fusion.dataA 3) open1 = 8 := by decide +kernel
+theorem pin185 : 3 * famFold Nat.add 0 (fun e =>
     (fusion.dataA 3).clsFloorN
       (fluxAt 3 (fiberdec.torusRegion 2 3)
         (fun s => fiberdec.digitAt 3 e s) 0 open1 % 3))
     (List.range 2) = 24 := by decide +kernel
-example : ¬ (3 * famFold Nat.add 0 (fun e =>
+theorem pin186 : ¬ (3 * famFold Nat.add 0 (fun e =>
       (fusion.dataA 3).clsFloorN
         (fluxAt 3 (fiberdec.torusRegion 2 3)
           (fun s => fiberdec.digitAt 3 e s) 0 open1 % 3))
@@ -835,11 +837,11 @@ residue, every site still occupied. -/
 private def thin3 : List Shape :=
   [[1], [1], [1]] ++ List.replicate 15 unitA
 
-example : carrier.occupied (fusion.dataA 3) torus23 thin3 = true := by
+theorem pin187 : carrier.occupied (fusion.dataA 3) torus23 thin3 = true := by
   decide +kernel
-example : (thin3.all (fun s => s.length == 3)) = false := by decide +kernel
-example : carrier.contentN (fusion.dataA 3) thin3 = 0 := by decide +kernel
-example : ¬ (3 * famFold Nat.add 0 (fun e =>
+theorem pin188 : (thin3.all (fun s => s.length == 3)) = false := by decide +kernel
+theorem pin189 : carrier.contentN (fusion.dataA 3) thin3 = 0 := by decide +kernel
+theorem pin190 : ¬ (3 * famFold Nat.add 0 (fun e =>
       (fusion.dataA 3).clsFloorN
         (fluxAt 3 (fiberdec.torusRegion 2 3)
           (fun s => fiberdec.digitAt 3 e s) 0 thin3 % 3))
@@ -855,20 +857,20 @@ private def wind2 : List Shape :=
   [fundA, fundA, fundA, unitA, unitA, unitA, unitA, unitA, unitA,
    fundA, unitA, unitA, fundA, unitA, unitA, fundA, unitA, unitA]
 
-example : chargeT 3 2 3 wind2 = [1, 1] := by decide +kernel
-example : carrier.occupied (fusion.dataA 3) torus23 wind2 = true := by
+theorem pin191 : chargeT 3 2 3 wind2 = [1, 1] := by decide +kernel
+theorem pin192 : carrier.occupied (fusion.dataA 3) torus23 wind2 = true := by
   decide +kernel
-example : (carrier.incidentLabels (fusion.dataA 3) torus23
+theorem pin193 : (carrier.incidentLabels (fusion.dataA 3) torus23
     wind2 0).length = 4 := by decide +kernel
-example : 0 < carrier.vmult (fusion.dataA 3) torus23 wind2 0 := by
+theorem pin194 : 0 < carrier.vmult (fusion.dataA 3) torus23 wind2 0 := by
   decide +kernel
-example : carrier.contentN (fusion.dataA 3) wind2 = 48 := by decide +kernel
-example : 3 * famFold Nat.add 0 (fun e =>
+theorem pin195 : carrier.contentN (fusion.dataA 3) wind2 = 48 := by decide +kernel
+theorem pin196 : 3 * famFold Nat.add 0 (fun e =>
     (fusion.dataA 3).clsFloorN
       (fluxAt 3 (fiberdec.torusRegion 2 3)
         (fun s => fiberdec.digitAt 3 e s) 0 wind2 % 3))
     (List.range 2) = 48 := by decide +kernel
-example : 3 * famFold Nat.add 0 (fun e =>
+theorem pin197 : 3 * famFold Nat.add 0 (fun e =>
       (fusion.dataA 3).clsFloorN
         (fluxAt 3 (fiberdec.torusRegion 2 3)
           (fun s => fiberdec.digitAt 3 e s) 0 wind2 % 3))
@@ -884,16 +886,16 @@ exactly. -/
 private def wind5 : List Shape :=
   [fundA, fundA, fundA, fundA, fundA] ++ List.replicate 45 unitA
 
-example : chargeT 3 2 5 wind5 = [1, 0] := by decide +kernel
-example : carrier.occupied (fusion.dataA 3)
+theorem pin198 : chargeT 3 2 5 wind5 = [1, 0] := by decide +kernel
+theorem pin199 : carrier.occupied (fusion.dataA 3)
     (fiberdec.torusRegion 2 5) wind5 = true := by decide +kernel
-example : carrier.contentN (fusion.dataA 3) wind5 = 40 := by decide +kernel
-example : 5 * famFold Nat.add 0 (fun e =>
+theorem pin200 : carrier.contentN (fusion.dataA 3) wind5 = 40 := by decide +kernel
+theorem pin201 : 5 * famFold Nat.add 0 (fun e =>
     (fusion.dataA 3).clsFloorN
       (fluxAt 3 (fiberdec.torusRegion 2 5)
         (fun s => fiberdec.digitAt 5 e s) 0 wind5 % 3))
     (List.range 2) = 40 := by decide +kernel
-example : 5 * famFold Nat.add 0 (fun e =>
+theorem pin202 : 5 * famFold Nat.add 0 (fun e =>
       (fusion.dataA 3).clsFloorN
         (fluxAt 3 (fiberdec.torusRegion 2 5)
           (fun s => fiberdec.digitAt 5 e s) 0 wind5 % 3))
@@ -907,34 +909,34 @@ the unit whose class is the unit's clears `2 d_f²`, attained at
 `θ`'s own shape — the class binder, the unit binder and the width
 binder each forged in turn, every forgery moving the conclusion. -/
 
-example : adjchar.theta 2 = [2, 0] := by decide +kernel
-example : (fusion.dataA 2).cls (adjchar.theta 2) = 0 := by decide +kernel
-example : (fusion.dataA 2).eqL (adjchar.theta 2)
+theorem pin203 : adjchar.theta 2 = [2, 0] := by decide +kernel
+theorem pin204 : (fusion.dataA 2).cls (adjchar.theta 2) = 0 := by decide +kernel
+theorem pin205 : (fusion.dataA 2).eqL (adjchar.theta 2)
     (fusion.dataA 2).unit = false := by decide +kernel
-example : c2hat.dfQ (adjchar.theta 2) = 8 := by decide +kernel
-example : 2 * (2 * 2) ≤ c2hat.dfQ (adjchar.theta 2) :=
+theorem pin206 : c2hat.dfQ (adjchar.theta 2) = 8 := by decide +kernel
+theorem pin207 : 2 * (2 * 2) ≤ c2hat.dfQ (adjchar.theta 2) :=
   unitCrossFloor 2 (adjchar.theta 2) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
-example : 2 * (2 * 2) ≤ c2hat.dfQ (adjchar.theta 2) := by decide +kernel
+theorem pin208 : 2 * (2 * 2) ≤ c2hat.dfQ (adjchar.theta 2) := by decide +kernel
 
-example : (([1, 0] : Shape).length == 2) = true := by decide +kernel
-example : ¬ ((fusion.dataA 2).cls [1, 0] = 0) := by decide +kernel
-example : (fusion.dataA 2).eqL [1, 0] (fusion.dataA 2).unit
+theorem pin209 : (([1, 0] : Shape).length == 2) = true := by decide +kernel
+theorem pin210 : ¬ ((fusion.dataA 2).cls [1, 0] = 0) := by decide +kernel
+theorem pin211 : (fusion.dataA 2).eqL [1, 0] (fusion.dataA 2).unit
     = false := by decide +kernel
-example : ¬ (2 * (2 * 2) ≤ c2hat.dfQ [1, 0]) := by decide +kernel
+theorem pin212 : ¬ (2 * (2 * 2) ≤ c2hat.dfQ [1, 0]) := by decide +kernel
 
-example : (((fusion.dataA 2).unit.length == 2)) = true := by decide +kernel
-example : (fusion.dataA 2).cls (fusion.dataA 2).unit = 0 := by decide +kernel
-example : (fusion.dataA 2).eqL (fusion.dataA 2).unit
+theorem pin213 : (((fusion.dataA 2).unit.length == 2)) = true := by decide +kernel
+theorem pin214 : (fusion.dataA 2).cls (fusion.dataA 2).unit = 0 := by decide +kernel
+theorem pin215 : (fusion.dataA 2).eqL (fusion.dataA 2).unit
     (fusion.dataA 2).unit = true := by decide +kernel
-example : ¬ (2 * (2 * 2) ≤ c2hat.dfQ (fusion.dataA 2).unit) := by
+theorem pin216 : ¬ (2 * (2 * 2) ≤ c2hat.dfQ (fusion.dataA 2).unit) := by
   decide +kernel
 
-example : (([0] : Shape).length == 2) = false := by decide +kernel
-example : (fusion.dataA 2).cls [0] = 0 := by decide +kernel
-example : (fusion.dataA 2).eqL [0] (fusion.dataA 2).unit = false := by
+theorem pin217 : (([0] : Shape).length == 2) = false := by decide +kernel
+theorem pin218 : (fusion.dataA 2).cls [0] = 0 := by decide +kernel
+theorem pin219 : (fusion.dataA 2).eqL [0] (fusion.dataA 2).unit = false := by
   decide +kernel
-example : ¬ (2 * (2 * 2) ≤ c2hat.dfQ [0]) := by decide +kernel
+theorem pin220 : ¬ (2 * (2 * 2) ≤ c2hat.dfQ [0]) := by decide +kernel
 
 /-! The merge's strict gap at a crossing family with two nonunit
 classes: the fundamental pair at `d_f = 2` nets the unit class and
@@ -943,31 +945,31 @@ side-five family reads it below its own content — with the count
 binder refused at a lone nonunit member and the width binder at a
 family off the residue. -/
 
-example : famFold Nat.add 0 (fun s =>
+theorem pin221 : famFold Nat.add 0 (fun s =>
     if (fusion.dataA 2).cls s == 0 then 0 else 1)
     [[1, 0], [1, 0]] = 2 := by decide +kernel
-example : (fusion.dataA 2).clsFloorN
+theorem pin222 : (fusion.dataA 2).clsFloorN
     (famFold Nat.add 0 (fun s => (fusion.dataA 2).cls s)
       [[1, 0], [1, 0]] % 2) = 0 := by decide +kernel
-example : famFold Nat.add 0 (fun s => c2hat.dfQ s)
+theorem pin223 : famFold Nat.add 0 (fun s => c2hat.dfQ s)
     [[1, 0], [1, 0]] = 6 := by decide +kernel
-example : (fusion.dataA 2).clsFloorN
+theorem pin224 : (fusion.dataA 2).clsFloorN
       (famFold Nat.add 0 (fun s => (fusion.dataA 2).cls s)
         [[1, 0], [1, 0]] % 2) + 2 * (2 + 1)
     = famFold Nat.add 0 (fun s => c2hat.dfQ s) [[1, 0], [1, 0]] := by
   decide +kernel
-example : (fusion.dataA 2).clsFloorN
+theorem pin225 : (fusion.dataA 2).clsFloorN
       (famFold Nat.add 0 (fun s => (fusion.dataA 2).cls s)
         [[1, 0], [1, 0]] % 2) + 2 * (2 + 1)
     ≤ famFold Nat.add 0 (fun s => c2hat.dfQ s) [[1, 0], [1, 0]] :=
   famSubStrict 2 (by decide +kernel) [[1, 0], [1, 0]] (by decide +kernel) (by decide +kernel)
 
-example : famFold Nat.add 0 (fun s => (fusion.dataA 5).cls s)
+theorem pin226 : famFold Nat.add 0 (fun s => (fusion.dataA 5).cls s)
     [casfloor.fundShape 1 4, casfloor.fundShape 2 3] % 5 = 3 := by
   decide +kernel
-example : famFold Nat.add 0 (fun s => c2hat.dfQ s)
+theorem pin227 : famFold Nat.add 0 (fun s => c2hat.dfQ s)
     [casfloor.fundShape 1 4, casfloor.fundShape 2 3] = 60 := by decide +kernel
-example : (fusion.dataA 5).clsFloorN
+theorem pin228 : (fusion.dataA 5).clsFloorN
       (famFold Nat.add 0 (fun s => (fusion.dataA 5).cls s)
         [casfloor.fundShape 1 4, casfloor.fundShape 2 3] % 5)
       + 2 * (5 + 1)
@@ -976,27 +978,27 @@ example : (fusion.dataA 5).clsFloorN
   famSubStrict 5 (by decide +kernel)
     [casfloor.fundShape 1 4, casfloor.fundShape 2 3] (by decide +kernel)
     (by decide +kernel)
-example : (fusion.dataA 5).clsFloorN
+theorem pin229 : (fusion.dataA 5).clsFloorN
       (famFold Nat.add 0 (fun s => (fusion.dataA 5).cls s)
         [casfloor.fundShape 1 4, casfloor.fundShape 2 3] % 5)
       + 2 * (5 + 1)
     ≤ famFold Nat.add 0 (fun s => c2hat.dfQ s)
       [casfloor.fundShape 1 4, casfloor.fundShape 2 3] := by decide +kernel
 
-example : famFold Nat.add 0 (fun s =>
+theorem pin230 : famFold Nat.add 0 (fun s =>
     if (fusion.dataA 2).cls s == 0 then 0 else 1) [[1, 0]] = 1 := by
   decide +kernel
-example : ¬ ((fusion.dataA 2).clsFloorN
+theorem pin231 : ¬ ((fusion.dataA 2).clsFloorN
       (famFold Nat.add 0 (fun s => (fusion.dataA 2).cls s)
         [[1, 0]] % 2) + 2 * (2 + 1)
     ≤ famFold Nat.add 0 (fun s => c2hat.dfQ s) [[1, 0]]) := by decide +kernel
 
-example : (([[1], [1]] : List Shape).all (fun s => s.length == 2))
+theorem pin232 : (([[1], [1]] : List Shape).all (fun s => s.length == 2))
     = false := by decide +kernel
-example : famFold Nat.add 0 (fun s =>
+theorem pin233 : famFold Nat.add 0 (fun s =>
     if (fusion.dataA 2).cls s == 0 then 0 else 1) [[1], [1]] = 2 := by
   decide +kernel
-example : ¬ ((fusion.dataA 2).clsFloorN
+theorem pin234 : ¬ ((fusion.dataA 2).clsFloorN
       (famFold Nat.add 0 (fun s => (fusion.dataA 2).cls s)
         [[1], [1]] % 2) + 2 * (2 + 1)
     ≤ famFold Nat.add 0 (fun s => c2hat.dfQ s) [[1], [1]]) := by decide +kernel
@@ -1006,27 +1008,27 @@ fundamental pair at `d_f = 2` nets the unit class and attains twice
 the least nonunit floor, with the net binder refused at a lone
 nonunit member and the count binder at the all-unit family. -/
 
-example : 2 * ((2 - 1) * (2 + 1))
+theorem pin235 : 2 * ((2 - 1) * (2 + 1))
     ≤ famFold Nat.add 0 (fun s => c2hat.dfQ s) [[1, 0], [1, 0]] :=
   famNetUnit 2 (by decide +kernel) [[1, 0], [1, 0]] (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
-example : 2 * ((2 - 1) * (2 + 1))
+theorem pin236 : 2 * ((2 - 1) * (2 + 1))
     = famFold Nat.add 0 (fun s => c2hat.dfQ s) [[1, 0], [1, 0]] := by
   decide +kernel
 
-example : famFold Nat.add 0 (fun s => (fusion.dataA 2).cls s)
+theorem pin237 : famFold Nat.add 0 (fun s => (fusion.dataA 2).cls s)
     [[1, 0]] % 2 = 1 := by decide +kernel
-example : 1 ≤ famFold Nat.add 0 (fun s =>
+theorem pin238 : 1 ≤ famFold Nat.add 0 (fun s =>
     if (fusion.dataA 2).cls s == 0 then 0 else 1) [[1, 0]] := by decide +kernel
-example : ¬ (2 * ((2 - 1) * (2 + 1))
+theorem pin239 : ¬ (2 * ((2 - 1) * (2 + 1))
     ≤ famFold Nat.add 0 (fun s => c2hat.dfQ s) [[1, 0]]) := by decide +kernel
 
-example : famFold Nat.add 0 (fun s => (fusion.dataA 2).cls s)
+theorem pin240 : famFold Nat.add 0 (fun s => (fusion.dataA 2).cls s)
     [[0, 0]] % 2 = 0 := by decide +kernel
-example : famFold Nat.add 0 (fun s =>
+theorem pin241 : famFold Nat.add 0 (fun s =>
     if (fusion.dataA 2).cls s == 0 then 0 else 1) [[0, 0]] = 0 := by
   decide +kernel
-example : ¬ (2 * ((2 - 1) * (2 + 1))
+theorem pin242 : ¬ (2 * ((2 - 1) * (2 + 1))
     ≤ famFold Nat.add 0 (fun s => c2hat.dfQ s) [[0, 0]]) := by decide +kernel
 
 /-! The crossing count at the landed winding configurations: the
@@ -1034,18 +1036,18 @@ straight string crosses each of its own direction's cuts once and
 the transverse direction's not at all, so the price rides at the
 count's unit and the priced floor reads the winding floor. -/
 
-example : crossCountAt 3 (fiberdec.torusRegion 2 3)
+theorem pin243 : crossCountAt 3 (fiberdec.torusRegion 2 3)
     (fun s => fiberdec.digitAt 3 0 s) wind 0 = 1 := by decide +kernel
-example : crossCountAt 3 (fiberdec.torusRegion 2 3)
+theorem pin244 : crossCountAt 3 (fiberdec.torusRegion 2 3)
     (fun s => fiberdec.digitAt 3 0 s) wind 1 = 1 := by decide +kernel
-example : crossCountAt 3 (fiberdec.torusRegion 2 3)
+theorem pin245 : crossCountAt 3 (fiberdec.torusRegion 2 3)
     (fun s => fiberdec.digitAt 3 1 s) wind 0 = 0 := by decide +kernel
-example : famFold Nat.add 0 (fun e =>
+theorem pin246 : famFold Nat.add 0 (fun e =>
     famFold Nat.add 0 (fun x =>
       if 2 ≤ crossCountAt 3 (fiberdec.torusRegion 2 3)
             (fun s => fiberdec.digitAt 3 e s) wind x then 1 else 0)
       (List.range 3)) (List.range 2) = 0 := by decide +kernel
-example : 3 * famFold Nat.add 0 (fun e =>
+theorem pin247 : 3 * famFold Nat.add 0 (fun e =>
       (fusion.dataA 3).clsFloorN
         (fluxAt 3 (fiberdec.torusRegion 2 3)
           (fun s => fiberdec.digitAt 3 e s) 0 wind % 3))
@@ -1080,38 +1082,38 @@ private def twoRows : List Shape :=
   [fund2, fund2, fund2, fund2, fund2, fund2]
     ++ List.replicate 12 unit2
 
-example : fund2 = [1, 0] := by decide +kernel
-example : c2hat.dfQ fund2 = 3 := by decide +kernel
-example : (fusion.dataA 2).cls fund2 = 1 := by decide +kernel
+theorem pin248 : fund2 = [1, 0] := by decide +kernel
+theorem pin249 : c2hat.dfQ fund2 = 3 := by decide +kernel
+theorem pin250 : (fusion.dataA 2).cls fund2 = 1 := by decide +kernel
 
-example : carrier.occupied (fusion.dataA 2) torus23 twoRows = true := by
+theorem pin251 : carrier.occupied (fusion.dataA 2) torus23 twoRows = true := by
   decide +kernel
-example : (twoRows.all (fun s => s.length == 2)) = true := by decide +kernel
-example : chargeT 2 2 3 twoRows = [0, 0] := by decide +kernel
+theorem pin252 : (twoRows.all (fun s => s.length == 2)) = true := by decide +kernel
+theorem pin253 : chargeT 2 2 3 twoRows = [0, 0] := by decide +kernel
 
-example : crossCountAt 2 (fiberdec.torusRegion 2 3)
+theorem pin254 : crossCountAt 2 (fiberdec.torusRegion 2 3)
     (fun s => fiberdec.digitAt 3 0 s) twoRows 0 = 2 := by decide +kernel
-example : crossCountAt 2 (fiberdec.torusRegion 2 3)
+theorem pin255 : crossCountAt 2 (fiberdec.torusRegion 2 3)
     (fun s => fiberdec.digitAt 3 0 s) twoRows 1 = 2 := by decide +kernel
-example : crossCountAt 2 (fiberdec.torusRegion 2 3)
+theorem pin256 : crossCountAt 2 (fiberdec.torusRegion 2 3)
     (fun s => fiberdec.digitAt 3 0 s) twoRows 2 = 2 := by decide +kernel
-example : crossCountAt 2 (fiberdec.torusRegion 2 3)
+theorem pin257 : crossCountAt 2 (fiberdec.torusRegion 2 3)
     (fun s => fiberdec.digitAt 3 1 s) twoRows 0 = 0 := by decide +kernel
 
-example : fluxAt 2 torus23 cut0 0 twoRows % 2 = 0 := by decide +kernel
-example : 3 * famFold Nat.add 0 (fun e =>
+theorem pin258 : fluxAt 2 torus23 cut0 0 twoRows % 2 = 0 := by decide +kernel
+theorem pin259 : 3 * famFold Nat.add 0 (fun e =>
     (fusion.dataA 2).clsFloorN
       (fluxAt 2 (fiberdec.torusRegion 2 3)
         (fun s => fiberdec.digitAt 3 e s) 0 twoRows % 2))
     (List.range 2) = 0 := by decide +kernel
-example : famFold Nat.add 0 (fun e =>
+theorem pin260 : famFold Nat.add 0 (fun e =>
     famFold Nat.add 0 (fun x =>
       if 2 ≤ crossCountAt 2 (fiberdec.torusRegion 2 3)
             (fun s => fiberdec.digitAt 3 e s) twoRows x then 1 else 0)
       (List.range 3)) (List.range 2) = 3 := by decide +kernel
-example : carrier.contentN (fusion.dataA 2) twoRows = 18 := by decide +kernel
+theorem pin261 : carrier.contentN (fusion.dataA 2) twoRows = 18 := by decide +kernel
 
-example : 3 * famFold Nat.add 0 (fun e =>
+theorem pin262 : 3 * famFold Nat.add 0 (fun e =>
       (fusion.dataA 2).clsFloorN
         (fluxAt 2 (fiberdec.torusRegion 2 3)
           (fun s => fiberdec.digitAt 3 e s) 0 twoRows % 2))
@@ -1122,7 +1124,7 @@ example : 3 * famFold Nat.add 0 (fun e =>
             (fun s => fiberdec.digitAt 3 e s) twoRows x then 1 else 0)
           (List.range 3)) (List.range 2)
     = carrier.contentN (fusion.dataA 2) twoRows := by decide +kernel
-example : 3 * famFold Nat.add 0 (fun e =>
+theorem pin263 : 3 * famFold Nat.add 0 (fun e =>
       (fusion.dataA 2).clsFloorN
         (fluxAt 2 (fiberdec.torusRegion 2 3)
           (fun s => fiberdec.digitAt 3 e s) 0 twoRows % 2))
@@ -1139,7 +1141,7 @@ example : 3 * famFold Nat.add 0 (fun e =>
 /-! The price is exact at the attainment: one further extra-crossed
 cut moves the display past the configuration's own content. -/
 
-example : ¬ (3 * famFold Nat.add 0 (fun e =>
+theorem pin264 : ¬ (3 * famFold Nat.add 0 (fun e =>
       (fusion.dataA 2).clsFloorN
         (fluxAt 2 (fiberdec.torusRegion 2 3)
           (fun s => fiberdec.digitAt 3 e s) 0 twoRows % 2))
@@ -1156,12 +1158,12 @@ winding line, occupied nowhere, and the thin-label configuration,
 reading a width off the residue, each undercut their own content
 where the price rides at the count's unit. -/
 
-example : famFold Nat.add 0 (fun e =>
+theorem pin265 : famFold Nat.add 0 (fun e =>
     famFold Nat.add 0 (fun x =>
       if 2 ≤ crossCountAt 3 (fiberdec.torusRegion 2 3)
             (fun s => fiberdec.digitAt 3 e s) open1 x then 1 else 0)
       (List.range 3)) (List.range 2) = 0 := by decide +kernel
-example : ¬ (3 * famFold Nat.add 0 (fun e =>
+theorem pin266 : ¬ (3 * famFold Nat.add 0 (fun e =>
       (fusion.dataA 3).clsFloorN
         (fluxAt 3 (fiberdec.torusRegion 2 3)
           (fun s => fiberdec.digitAt 3 e s) 0 open1 % 3))
@@ -1173,12 +1175,12 @@ example : ¬ (3 * famFold Nat.add 0 (fun e =>
           (List.range 3)) (List.range 2)
     ≤ carrier.contentN (fusion.dataA 3) open1) := by decide +kernel
 
-example : famFold Nat.add 0 (fun e =>
+theorem pin267 : famFold Nat.add 0 (fun e =>
     famFold Nat.add 0 (fun x =>
       if 2 ≤ crossCountAt 3 (fiberdec.torusRegion 2 3)
             (fun s => fiberdec.digitAt 3 e s) thin3 x then 1 else 0)
       (List.range 3)) (List.range 2) = 0 := by decide +kernel
-example : ¬ (3 * famFold Nat.add 0 (fun e =>
+theorem pin268 : ¬ (3 * famFold Nat.add 0 (fun e =>
       (fusion.dataA 3).clsFloorN
         (fluxAt 3 (fiberdec.torusRegion 2 3)
           (fun s => fiberdec.digitAt 3 e s) 0 thin3 % 3))
@@ -1195,51 +1197,51 @@ two clearing comparisons, each at its theorem route beside the
 kernel's own value, with one isolating refusal per load-bearing
 binder of the tie identities. -/
 
-example : (3 : Nat) + 1 = 4 :=
+theorem pin269 : (3 : Nat) + 1 = 4 :=
   tieOnly 4 3 1 1 1 rfl rfl (by decide +kernel)
-example : ¬ ((fusion.dataA 4).clsFloorN 1 + 1 * 2 * (4 + 1)
+theorem pin270 : ¬ ((fusion.dataA 4).clsFloorN 1 + 1 * 2 * (4 + 1)
     = (fusion.dataA 4).clsFloorN 2) := by decide +kernel
-example : ¬ ((fusion.dataA 5).clsFloorN 1 + 1 * 1 * (5 + 1)
+theorem pin271 : ¬ ((fusion.dataA 5).clsFloorN 1 + 1 * 1 * (5 + 1)
     = (fusion.dataA 5).clsFloorN 3) := by decide +kernel
-example : ¬ ((fusion.dataA 4).clsFloorN 3 + 1 * 2 * (4 + 1)
+theorem pin272 : ¬ ((fusion.dataA 4).clsFloorN 3 + 1 * 2 * (4 + 1)
     = (fusion.dataA 4).clsFloorN 2) := by decide +kernel
-example : ¬ ((fusion.dataA 2).clsFloorN 3 + 2 * 2 * (2 + 1)
+theorem pin273 : ¬ ((fusion.dataA 2).clsFloorN 3 + 2 * 2 * (2 + 1)
     = (fusion.dataA 2).clsFloorN 1) := by decide +kernel
 
-example : (fusion.dataA 5).clsFloorN 1 + (fusion.dataA 5).clsFloorN 2
+theorem pin274 : (fusion.dataA 5).clsFloorN 1 + (fusion.dataA 5).clsFloorN 2
     = (fusion.dataA 5).clsFloorN (1 + 2) + 2 * (1 * 2) * (5 + 1) :=
   mergeBelow 5 1 2 2 rfl
-example : (fusion.dataA 5).clsFloorN 1 + (fusion.dataA 5).clsFloorN 2
+theorem pin275 : (fusion.dataA 5).clsFloorN 1 + (fusion.dataA 5).clsFloorN 2
     = (fusion.dataA 5).clsFloorN (1 + 2)
       + 2 * (1 * 2) * (5 + 1) := by decide +kernel
-example : (fusion.dataA 4).clsFloorN 1 + (fusion.dataA 4).clsFloorN 3
+theorem pin276 : (fusion.dataA 4).clsFloorN 1 + (fusion.dataA 4).clsFloorN 3
     = 2 * (1 * 3) * (4 + 1) :=
   mergeDrop 4 1 3 rfl
-example : (fusion.dataA 4).clsFloorN 1 + (fusion.dataA 4).clsFloorN 3
+theorem pin277 : (fusion.dataA 4).clsFloorN 1 + (fusion.dataA 4).clsFloorN 3
     = 2 * (1 * 3) * (4 + 1) := by decide +kernel
-example : (fusion.dataA 3).clsFloorN 2 + (fusion.dataA 3).clsFloorN 2
+theorem pin278 : (fusion.dataA 3).clsFloorN 2 + (fusion.dataA 3).clsFloorN 2
     = (fusion.dataA 3).clsFloorN 1 + 2 * (1 * 1) * (3 + 1) :=
   mergeBeyond 3 2 2 1 1 1 rfl rfl rfl
-example : (fusion.dataA 3).clsFloorN 2 + (fusion.dataA 3).clsFloorN 2
+theorem pin279 : (fusion.dataA 3).clsFloorN 2 + (fusion.dataA 3).clsFloorN 2
     = (fusion.dataA 3).clsFloorN 1 + 2 * (1 * 1) * (3 + 1) := by
   decide +kernel
 
-example : 2 * (2 + 1) ≤ 2 * (2 * 2) := unitCrossClears 2 (by decide +kernel)
-example : 2 * (5 + 1) ≤ 2 * (5 * 5) := unitCrossClears 5 (by decide +kernel)
-example : ¬ (2 * (1 + 1) ≤ 2 * (1 * 1)) := by decide +kernel
-example : 2 * (2 + 1) ≤ 2 * ((2 - 1) * (2 + 1)) :=
+theorem pin280 : 2 * (2 + 1) ≤ 2 * (2 * 2) := unitCrossClears 2 (by decide +kernel)
+theorem pin281 : 2 * (5 + 1) ≤ 2 * (5 * 5) := unitCrossClears 5 (by decide +kernel)
+theorem pin282 : ¬ (2 * (1 + 1) ≤ 2 * (1 * 1)) := by decide +kernel
+theorem pin283 : 2 * (2 + 1) ≤ 2 * ((2 - 1) * (2 + 1)) :=
   netUnitClears 2 (by decide +kernel)
-example : ¬ (2 * (1 + 1) ≤ 2 * ((1 - 1) * (1 + 1))) := by decide +kernel
+theorem pin284 : ¬ (2 * (1 + 1) ≤ 2 * ((1 - 1) * (1 + 1))) := by decide +kernel
 
 /-! The netted family's width binder, refused at two short labels
 netting the unit class with the count occupied. -/
 
-example : famFold Nat.add 0
+theorem pin285 : famFold Nat.add 0
     (fun s => (fusion.dataA 2).cls s) [[1], [1]] % 2 = 0 := by decide +kernel
-example : 1 ≤ famFold Nat.add 0 (fun s =>
+theorem pin286 : 1 ≤ famFold Nat.add 0 (fun s =>
     if (fusion.dataA 2).cls s == 0 then 0 else 1) [[1], [1]] := by
   decide +kernel
-example : ¬ (2 * ((2 - 1) * (2 + 1))
+theorem pin287 : ¬ (2 * ((2 - 1) * (2 + 1))
     ≤ famFold Nat.add 0 (fun s => c2hat.dfQ s) [[1], [1]]) := by
   decide +kernel
 
@@ -1258,26 +1260,26 @@ private def joint3 : List places.Shape :=
    casfloor.fundShape 1 2, labels.unitL 3, labels.unitL 3,
    casfloor.fundShape 1 2, labels.unitL 3, labels.unitL 3]
 
-example : carrier.occupied (fusion.dataA 3)
+theorem pin288 : carrier.occupied (fusion.dataA 3)
     (fiberdec.torusRegion 2 3) joint3 = true := by decide +kernel
-example : (joint3.all (fun s => s.length == 3)) = true := by decide +kernel
-example : crossCountAt 3 (fiberdec.torusRegion 2 3)
+theorem pin289 : (joint3.all (fun s => s.length == 3)) = true := by decide +kernel
+theorem pin290 : crossCountAt 3 (fiberdec.torusRegion 2 3)
     (fun s => fiberdec.digitAt 3 0 s) joint3 0 = 2 := by decide +kernel
-example : crossCountAt 3 (fiberdec.torusRegion 2 3)
+theorem pin291 : crossCountAt 3 (fiberdec.torusRegion 2 3)
     (fun s => fiberdec.digitAt 3 1 s) joint3 0 = 1 := by decide +kernel
-example : famFold Nat.add 0 (fun e =>
+theorem pin292 : famFold Nat.add 0 (fun e =>
     (fusion.dataA 3).clsFloorN
       (fluxAt 3 (fiberdec.torusRegion 2 3)
         (fun s => fiberdec.digitAt 3 e s) 0 joint3 % 3))
     (List.range 2) = 16 := by decide +kernel
-example : famFold Nat.add 0 (fun e =>
+theorem pin293 : famFold Nat.add 0 (fun e =>
     famFold Nat.add 0 (fun x =>
       if 2 ≤ crossCountAt 3 (fiberdec.torusRegion 2 3)
           (fun s => fiberdec.digitAt 3 e s) joint3 x
         then 1 else 0) (List.range 3)) (List.range 2) = 3 := by decide +kernel
-example : carrier.contentN (fusion.dataA 3) joint3 = 72 := by decide +kernel
-example : 3 * 16 + 2 * (3 + 1) * 3 = 72 := by decide +kernel
-example : 3 * famFold Nat.add 0 (fun e =>
+theorem pin294 : carrier.contentN (fusion.dataA 3) joint3 = 72 := by decide +kernel
+theorem pin295 : 3 * 16 + 2 * (3 + 1) * 3 = 72 := by decide +kernel
+theorem pin296 : 3 * famFold Nat.add 0 (fun e =>
       (fusion.dataA 3).clsFloorN
         (fluxAt 3 (fiberdec.torusRegion 2 3)
           (fun s => fiberdec.digitAt 3 e s) 0 joint3 % 3))
@@ -1296,30 +1298,30 @@ fundamental against `θ`, the three excited labels' content gaps
 against the source's at the cleared Casimir units, and the class's
 endpoint floor. -/
 
-example : (fusion.dataA 2).row [1, 0] [2, 0] = [[3, 0], [1, 0]] := by
+theorem pin297 : (fusion.dataA 2).row [1, 0] [2, 0] = [[3, 0], [1, 0]] := by
   decide +kernel
-example : c2hat.dfQ [1, 0] + 36
+theorem pin298 : c2hat.dfQ [1, 0] + 36
     = 3 * (2 * 2 * 2) + c2hat.dfQ [3, 0] := by decide +kernel
-example : c2hat.dfQ [1, 0] + 24
+theorem pin299 : c2hat.dfQ [1, 0] + 24
     = 3 * (2 * 2 * 2) + c2hat.dfQ [1, 0] := by decide +kernel
-example : (fusion.dataA 2).clsFloorN 1 = 3 := by decide +kernel
+theorem pin300 : (fusion.dataA 2).clsFloorN 1 = 3 := by decide +kernel
 
 /-! The same interface at `d_f = 3`: the row of a fundamental
 against `θ` at the column-occupancy carrier, its three members'
 content gaps over the source, the vertex gap at the vacuum, and the
 class's endpoint floor. -/
 
-example : (fusion.dataA 3).row [1, 0, 0] [1, 1, 0]
+theorem pin301 : (fusion.dataA 3).row [1, 0, 0] [1, 1, 0]
     = [[2, 1, 0], [0, 2, 0], [1, 0, 0]] := by decide +kernel
-example : c2hat.dfQ [1, 0, 0] + 78
+theorem pin302 : c2hat.dfQ [1, 0, 0] + 78
     = 3 * 18 + c2hat.dfQ [2, 1, 0] := by decide +kernel
-example : c2hat.dfQ [1, 0, 0] + 66
+theorem pin303 : c2hat.dfQ [1, 0, 0] + 66
     = 3 * 18 + c2hat.dfQ [0, 2, 0] := by decide +kernel
-example : c2hat.dfQ [1, 0, 0] + 54
+theorem pin304 : c2hat.dfQ [1, 0, 0] + 54
     = 3 * 18 + c2hat.dfQ [1, 0, 0] := by decide +kernel
-example : 4 * (fusion.dataA 3).c2D = 72 := by decide +kernel
-example : 4 * (fusion.dataA 2).c2D = 32 := by decide +kernel
-example : (fusion.dataA 3).clsFloorN 1 = 8 := by decide +kernel
+theorem pin305 : 4 * (fusion.dataA 3).c2D = 72 := by decide +kernel
+theorem pin306 : 4 * (fusion.dataA 2).c2D = 32 := by decide +kernel
+theorem pin307 : (fusion.dataA 3).clsFloorN 1 = 8 := by decide +kernel
 
 /-! The stencil at the charge-one instance: the vacuum's two atoms,
 the string's four, one far plaquette, and the string with an
@@ -1335,23 +1337,23 @@ private def strInflated : List (Pos × Pos) :=
 /-! The free end reads the winding-floor pair alone, the theorem
 route beside the kernel's own. -/
 
-example : (tension ⟨3, 8⟩ ⟨1, 1⟩ [] []).oneValue
+theorem pin308 : (tension ⟨3, 8⟩ ⟨1, 1⟩ [] []).oneValue
     (CPair.ofPair ⟨3, 8⟩ .one) := tension_free ⟨3, 8⟩ ⟨1, 1⟩ []
-example : (tension ⟨3, 8⟩ ⟨1, 1⟩ [] []).oneValue
+theorem pin309 : (tension ⟨3, 8⟩ ⟨1, 1⟩ [] []).oneValue
     (CPair.ofPair ⟨3, 8⟩ .one) := by decide +kernel
 
 /-! The far plaquette joined to both members leaves the value
 standing; joined to the string's member alone it moves the
 value. -/
 
-example : (tension ⟨3, 8⟩ ⟨1, 1⟩ (vacAtoms ++ farAtoms)
+theorem pin310 : (tension ⟨3, 8⟩ ⟨1, 1⟩ (vacAtoms ++ farAtoms)
       (strAtoms ++ farAtoms)).oneValue
     (tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strAtoms) :=
   tension_far ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strAtoms farAtoms
-example : (tension ⟨3, 8⟩ ⟨1, 1⟩ (vacAtoms ++ farAtoms)
+theorem pin311 : (tension ⟨3, 8⟩ ⟨1, 1⟩ (vacAtoms ++ farAtoms)
       (strAtoms ++ farAtoms)).oneValue
     (tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strAtoms) := by decide +kernel
-example : ¬ (tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms
+theorem pin312 : ¬ (tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms
     (strAtoms ++ farAtoms)).oneValue
     (tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strAtoms) := by decide +kernel
 
@@ -1359,20 +1361,20 @@ example : ¬ (tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms
 tension reads its upper side, and an inflated string entry carries
 it to the lower. -/
 
-example : ¬ (tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strAtoms
+theorem pin313 : ¬ (tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strAtoms
     < (tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strAtoms).swap) := by decide +kernel
-example : tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strInflated
+theorem pin314 : tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strInflated
     < (tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strInflated).swap := by decide +kernel
 
 /-! The head atom splits off the dressing fold at one committed
 atom, the theorem route beside the kernel's own. -/
 
-example : (dressFold ⟨1, 1⟩
+theorem pin315 : (dressFold ⟨1, 1⟩
       ((1, 36) :: [(1, 24), (1, 32), (1, 32)])).oneValue
     (CPair.ofPair (⟨1, 1⟩ * ⟨1 * 1, 36⟩) .one
       + dressFold ⟨1, 1⟩ [(1, 24), (1, 32), (1, 32)]) :=
   dressFold_cons ⟨1, 1⟩ (1, 36) [(1, 24), (1, 32), (1, 32)]
-example : (dressFold ⟨1, 1⟩
+theorem pin316 : (dressFold ⟨1, 1⟩
       ((1, 36) :: [(1, 24), (1, 32), (1, 32)])).oneValue
     (CPair.ofPair (⟨1, 1⟩ * ⟨1 * 1, 36⟩) .one
       + dressFold ⟨1, 1⟩ [(1, 24), (1, 32), (1, 32)]) := by decide +kernel
@@ -1382,17 +1384,17 @@ ray read one side, and off the tie the two sides part — the second
 pair's fourth power carries the string's atom past the electric
 member while the first pair's leaves it standing. -/
 
-example : (tensionAt 1 2 3 8 vacAtoms strAtoms
+theorem pin317 : (tensionAt 1 2 3 8 vacAtoms strAtoms
       < (tensionAt 1 2 3 8 vacAtoms strAtoms).swap)
     ↔ (tensionAt 2 4 3 8 vacAtoms strAtoms
       < (tensionAt 2 4 3 8 vacAtoms strAtoms).swap) :=
   tension_ray 1 2 2 4 (by decide +kernel) 3 8 vacAtoms strAtoms
-example : ¬ ((1 : Pos) * 1 = 9 * 2) := by decide +kernel
-example : ¬ (tensionAt 1 2 3 8 vacAtoms strAtoms
+theorem pin318 : ¬ ((1 : Pos) * 1 = 9 * 2) := by decide +kernel
+theorem pin319 : ¬ (tensionAt 1 2 3 8 vacAtoms strAtoms
     < (tensionAt 1 2 3 8 vacAtoms strAtoms).swap) := by decide +kernel
-example : tensionAt 9 1 3 8 vacAtoms strAtoms
+theorem pin320 : tensionAt 9 1 3 8 vacAtoms strAtoms
     < (tensionAt 9 1 3 8 vacAtoms strAtoms).swap := by decide +kernel
-example : ¬ ((tensionAt 1 2 3 8 vacAtoms strAtoms
+theorem pin321 : ¬ ((tensionAt 1 2 3 8 vacAtoms strAtoms
       < (tensionAt 1 2 3 8 vacAtoms strAtoms).swap)
     ↔ (tensionAt 9 1 3 8 vacAtoms strAtoms
       < (tensionAt 9 1 3 8 vacAtoms strAtoms).swap)) := by decide +kernel
@@ -1413,12 +1415,12 @@ private def cfV : List Shape :=
 private def cfW : List Shape :=
   (List.range R15.links).map (fun _ => [1, 0])
 
-example : chargeT 2 1 5 cfV = [0] := by decide +kernel
-example : chargeT 2 1 5 cfW = [1] := by decide +kernel
-example : carrier.occupied (fusion.dataA 2) R15 cfW = true := by decide +kernel
-example : chargeGroupsAt 2 1 5 [[0], [1]] [[cfV], [cfW]] = true := by
+theorem pin322 : chargeT 2 1 5 cfV = [0] := by decide +kernel
+theorem pin323 : chargeT 2 1 5 cfW = [1] := by decide +kernel
+theorem pin324 : carrier.occupied (fusion.dataA 2) R15 cfW = true := by decide +kernel
+theorem pin325 : chargeGroupsAt 2 1 5 [[0], [1]] [[cfV], [cfW]] = true := by
   decide +kernel
-example : ¬ (chargeGroupsAt 2 1 5 [[0], [1]] [[cfW], [cfV]]
+theorem pin326 : ¬ (chargeGroupsAt 2 1 5 [[0], [1]] [[cfW], [cfV]]
     = true) := by decide +kernel
 
 private def R19 : lattice.Region := fiberdec.torusRegion 1 9
@@ -1427,9 +1429,9 @@ private def cfV3 : List Shape :=
 private def cfW3 : List Shape :=
   (List.range R19.links).map (fun _ => [1, 0, 0])
 
-example : chargeT 3 1 9 cfV3 = [0] := by decide +kernel
-example : chargeT 3 1 9 cfW3 = [1] := by decide +kernel
-example : carrier.occupied (fusion.dataA 3) R19 cfW3 = true := by decide +kernel
+theorem pin327 : chargeT 3 1 9 cfV3 = [0] := by decide +kernel
+theorem pin328 : chargeT 3 1 9 cfW3 = [1] := by decide +kernel
+theorem pin329 : carrier.occupied (fusion.dataA 3) R19 cfW3 = true := by decide +kernel
 
 /-! The row's charge preservation at the `d = 2`, `L = 2` torus: the
 first plaquette fuses four of the eight links by `θ`, the row's
@@ -1441,10 +1443,10 @@ private def cf22 : List Shape :=
   (List.range R22.links).map (fun _ => [1, 0])
 private def p22 : List (Nat × Bool) := getAt [] R22.plaqs 0
 
-example : ((algebra.plaqRow (fusion.dataA 2) R22 p22 cf22).all
+theorem pin330 : ((algebra.plaqRow (fusion.dataA 2) R22 p22 cf22).all
     (fun b => chargeT 2 2 2 b == chargeT 2 2 2 cf22)) = true :=
   chargeRow 2 2 2 p22 cf22
-example : (algebra.plaqRow (fusion.dataA 2) R22 p22 cf22).length = 16
+theorem pin331 : (algebra.plaqRow (fusion.dataA 2) R22 p22 cf22).length = 16
     ∧ ((algebra.plaqRow (fusion.dataA 2) R22 p22 cf22).all
       (fun b => chargeT 2 2 2 b == chargeT 2 2 2 cf22)) = true := by
   decide +kernel
@@ -1467,27 +1469,27 @@ private def hQ : elim.Mat :=
   greenprod.assemble diagQ (unitOffs [1, 1])
 private def hF : elim.Mat := [[⟨11, 1⟩, u], [u, ⟨20, 1⟩]]
 
-example : greenprod.assemble diagQ (unitOffs [1, 1])
+theorem pin332 : greenprod.assemble diagQ (unitOffs [1, 1])
     = [[⟨11, 1⟩, u], [u, ⟨19, 1⟩]] := by decide +kernel
-example : chargeBlockRead 3 1 9 ixQ csQ gsQ hQ diagQ [1, 1] := by
+theorem pin333 : chargeBlockRead 3 1 9 ixQ csQ gsQ hQ diagQ [1, 1] := by
   decide +kernel
-example : ¬ chargeBlockRead 3 1 9 [cfW3, cfV3] csQ gsQ hQ diagQ
+theorem pin334 : ¬ chargeBlockRead 3 1 9 [cfW3, cfV3] csQ gsQ hQ diagQ
     [1, 1] := by decide +kernel
-example : ¬ chargeBlockRead 3 1 9 ixQ [[1], [0]] gsQ hQ diagQ
+theorem pin335 : ¬ chargeBlockRead 3 1 9 ixQ [[1], [0]] gsQ hQ diagQ
     [1, 1] := by decide +kernel
-example : decimation.confListEq (fusion.dataA 3)
+theorem pin336 : carrier.confListEq (fusion.dataA 3)
     ([[cfV3], [cfV3]].flatMap (fun g => g)) [cfV3, cfV3] = true := by
   decide +kernel
-example : chargeGroupsAt 3 1 9 [[0], [0]] [[cfV3], [cfV3]]
+theorem pin337 : chargeGroupsAt 3 1 9 [[0], [0]] [[cfV3], [cfV3]]
     = true := by decide +kernel
-example : ¬ chargeBlockRead 3 1 9 [cfV3, cfV3] [[0], [0]]
+theorem pin338 : ¬ chargeBlockRead 3 1 9 [cfV3, cfV3] [[0], [0]]
     [[cfV3], [cfV3]] hQ diagQ [1, 1] := by decide +kernel
-example : gsQ.map List.length = [1, 1] := by decide +kernel
-example : ¬ chargeBlockRead 3 1 9 ixQ csQ gsQ hQ diagQ [2, 1] := by
+theorem pin339 : gsQ.map List.length = [1, 1] := by decide +kernel
+theorem pin340 : ¬ chargeBlockRead 3 1 9 ixQ csQ gsQ hQ diagQ [2, 1] := by
   decide +kernel
-example : ¬ elim.matOneValue hF
+theorem pin341 : ¬ elim.matOneValue hF
     (greenprod.assemble diagQ (unitOffs [1, 1])) := by decide +kernel
-example : ¬ chargeBlockRead 3 1 9 ixQ csQ gsQ hF diagQ [1, 1] := by
+theorem pin342 : ¬ chargeBlockRead 3 1 9 ixQ csQ gsQ hF diagQ [1, 1] := by
   decide +kernel
 
 /-! The counts split over the charge blocks at a committed level:
@@ -1508,17 +1510,17 @@ private def spS2 : inertia.Split 2 :=
   ⟨⟨elim.idMat 2, rfl⟩, ⟨elim.idMat 2, rfl⟩,
    [.one ⟨1, 3⟩, .one ⟨7, 1⟩], 0, rfl⟩
 
-example : greenprod.assemble dgL (unitOffs [1, 1])
+theorem pin343 : greenprod.assemble dgL (unitOffs [1, 1])
     = inertia.blockJoin [[⟨1, 3⟩]]
       (List.replicate 1 (List.replicate 1 BPair.unit))
       [[⟨7, 1⟩]] := by decide +kernel
-example : inertia.splitRead
+theorem pin344 : inertia.splitRead
     (greenprod.assemble dgL (unitOffs [1, 1])) spS2 := by decide +kernel
-example : inertia.revAt spS2
+theorem pin345 : inertia.revAt spS2
     = inertia.revAt spA1 + inertia.revAt spB1 :=
   inertia.rev_join [[⟨1, 3⟩]] [[⟨7, 1⟩]] spA1 (by decide +kernel) spB1
     (by decide +kernel) spS2 (by decide +kernel)
-example : inertia.revAt spS2 = 1 := by decide +kernel
+theorem pin346 : inertia.revAt spS2 = 1 := by decide +kernel
 
 /-! The charged head's shift transport: the class-one endpoint
 floor at `d_f = 3` is the pair of eight against eighteen, the side
@@ -1532,10 +1534,10 @@ them. -/
 private def secQ0 : elim.Mat := [[⟨11, 1⟩]]
 private def gramQ1 : elim.Mat := [[⟨3, 1⟩]]
 
-example : (fusion.dataA 3).clsFloorN 1 = 8 := by decide +kernel
-example : (fusion.dataA 3).c2D = 18 := by decide +kernel
-example : 9 * 8 = 4 * 18 := by decide +kernel
-example : elim.matOneValue [[⟨19, 1⟩]]
+theorem pin347 : (fusion.dataA 3).clsFloorN 1 = 8 := by decide +kernel
+theorem pin348 : (fusion.dataA 3).c2D = 18 := by decide +kernel
+theorem pin349 : 9 * 8 = 4 * 18 := by decide +kernel
+theorem pin350 : elim.matOneValue [[⟨19, 1⟩]]
     (elim.matAdd (inertia.matScale 4 gramQ1) secQ0) := by decide +kernel
 
 private def spSh0 : inertia.Split 1 :=
@@ -1545,18 +1547,18 @@ private def spSh1 : inertia.Split 1 :=
   ⟨⟨elim.idMat 1, rfl⟩, ⟨elim.idMat 1, rfl⟩,
    [.one ⟨1, 3⟩], 0, rfl⟩
 
-example : certconstruct.countAtPair
+theorem pin351 : certconstruct.countAtPair
     (elim.matAdd (inertia.matScale 4 gramQ1) secQ0) gramQ1 7 1 0
     spSh0 := by decide +kernel
-example : certconstruct.countAtPair secQ0 gramQ1 7 (1 + 4) 0 spSh0 :=
+theorem pin352 : certconstruct.countAtPair secQ0 gramQ1 7 (1 + 4) 0 spSh0 :=
   (certconstruct.countAtPair_shift secQ0 gramQ1 4 7 1 0 spSh0
     (by decide +kernel)).mp (by decide +kernel)
-example : certconstruct.countAtPair
+theorem pin353 : certconstruct.countAtPair
     (elim.matAdd (inertia.matScale 4 gramQ1) secQ0) gramQ1 11 1 1
     spSh1 :=
   (certconstruct.countAtPair_shift secQ0 gramQ1 4 11 1 1 spSh1
     (by decide +kernel)).mpr (by decide +kernel)
-example : ¬ certconstruct.countAtPair secQ0 gramQ1 7 1 0 spSh0 := by
+theorem pin354 : ¬ certconstruct.countAtPair secQ0 gramQ1 7 1 0 spSh0 := by
   decide +kernel
 
 /-! The tension's first root located at the string's term count: at
@@ -1570,25 +1572,25 @@ private def strNine : List (Pos × Pos) :=
 private def strTen : List (Pos × Pos) :=
   List.replicate 10 ((1 : Pos), (24 : Pos))
 
-example : ¬ (tension ⟨3, 8⟩ ⟨1, 1⟩ [] strNine
+theorem pin355 : ¬ (tension ⟨3, 8⟩ ⟨1, 1⟩ [] strNine
     < (tension ⟨3, 8⟩ ⟨1, 1⟩ [] strNine).swap) := by decide +kernel
-example : ¬ ((tension ⟨3, 8⟩ ⟨1, 1⟩ [] strNine).swap
+theorem pin356 : ¬ ((tension ⟨3, 8⟩ ⟨1, 1⟩ [] strNine).swap
     < tension ⟨3, 8⟩ ⟨1, 1⟩ [] strNine) := by decide +kernel
-example : tension ⟨3, 8⟩ ⟨1, 1⟩ [] strTen
+theorem pin357 : tension ⟨3, 8⟩ ⟨1, 1⟩ [] strTen
     < (tension ⟨3, 8⟩ ⟨1, 1⟩ [] strTen).swap := by decide +kernel
 
 /-! The least-length read extends: the per-length pair at the
 length's one-member entry reads the per-cell side at every length,
 the committed instance at side nine. -/
 
-example : (CPair.ofPair (Pair.ofPos 9) .one
+theorem pin358 : (CPair.ofPair (Pair.ofPos 9) .one
       * tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strAtoms
     < (CPair.ofPair (Pair.ofPos 9) .one
       * tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strAtoms).swap)
     ↔ (tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strAtoms
       < (tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strAtoms).swap) :=
   tension_length 9 ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strAtoms
-example : ¬ (CPair.ofPair (Pair.ofPos 9) .one
+theorem pin359 : ¬ (CPair.ofPair (Pair.ofPos 9) .one
     * tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strAtoms
     < (CPair.ofPair (Pair.ofPos 9) .one
       * tension ⟨3, 8⟩ ⟨1, 1⟩ vacAtoms strAtoms).swap) := by decide +kernel
@@ -1597,18 +1599,18 @@ example : ¬ (CPair.ofPair (Pair.ofPos 9) .one
 members the folds withdraw and the value is the winding-floor
 pair, the vacant instance beside it above. -/
 
-example : (tension ⟨3, 8⟩ ⟨1, 1⟩ strAtoms strAtoms).oneValue
+theorem pin360 : (tension ⟨3, 8⟩ ⟨1, 1⟩ strAtoms strAtoms).oneValue
     (CPair.ofPair ⟨3, 8⟩ .one) :=
   tension_free ⟨3, 8⟩ ⟨1, 1⟩ strAtoms
-example : (tension ⟨3, 8⟩ ⟨1, 1⟩ strAtoms strAtoms).oneValue
+theorem pin361 : (tension ⟨3, 8⟩ ⟨1, 1⟩ strAtoms strAtoms).oneValue
     (CPair.ofPair ⟨3, 8⟩ .one) := by decide +kernel
 
 /-! The atom's read discriminates the entry's square: one atom at
 entry two reads four against its gap, the entry itself refused. -/
 
-example : (dressFold ⟨1, 1⟩ [((2 : Pos), (24 : Pos))]).oneValue
+theorem pin362 : (dressFold ⟨1, 1⟩ [((2 : Pos), (24 : Pos))]).oneValue
     (CPair.ofPair ⟨4, 24⟩ .one) := by decide +kernel
-example : ¬ (dressFold ⟨1, 1⟩ [((2 : Pos), (24 : Pos))]).oneValue
+theorem pin363 : ¬ (dressFold ⟨1, 1⟩ [((2 : Pos), (24 : Pos))]).oneValue
     (CPair.ofPair ⟨2, 24⟩ .one) := by decide +kernel
 
 /-! The charged record at the one head pencil: the two sectors'
@@ -1656,13 +1658,15 @@ private def bndsC : List (decimation.Bound 2) :=
 private def recC : decimation.DivRecord 2 2 :=
   ⟨sC, 1, 2, ctC, spHDC, cellsC, bndsC⟩
 
-example : decimation.recordRead recC := by decide +kernel
-example : recC.cells.map (fun x => x.1)
+theorem pin364 : decimation.recordRead recC := by decide +kernel
+theorem pin365 : recC.cells.map (fun x => x.1)
     = [⟨9, 1⟩, ⟨15, 1⟩, ⟨21, 1⟩] := by decide +kernel
-example : recC.cells.map (fun x => x.2.1) = [0, 1, 2] := by decide +kernel
-example : elim.matOneValue (cellcount.evalPC sC ⟨9, 1⟩ 2 1)
+theorem pin366 : recC.cells.map (fun x => x.2.1) = [0, 1, 2] := by decide +kernel
+theorem pin367 : elim.matOneValue (cellcount.evalPC sC ⟨9, 1⟩ 2 1)
     (inertia.matScale 2 (inertia.siteDatum hQ
       (inertia.matScale 4 (greenprod.assemble
         [[[⟨3, 1⟩]], [[⟨3, 1⟩]]] (unitOffs [1, 1]))))) := by decide +kernel
-example : decimation.recordRead recC
+theorem pin368 : decimation.recordRead recC
     ∧ chargeBlockRead 3 1 9 ixQ csQ gsQ hQ diagQ [1, 1] := by decide +kernel
+
+end chargedcell

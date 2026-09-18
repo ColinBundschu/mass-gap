@@ -63,7 +63,7 @@ read the cap's (`ball_psd`), and the member prices its form at
 the floor outright, at or beyond `y0`'s multiple of the gram's, at
 the cap's lower read alone (`ball_floor_of`) with the committed
 cap's instance the bridge (`ball_floor`,
-`lem:cornerpivot`(vii)'s boundary seed); the member's transfer
+`lem:cornerblock`'s boundary seed); the member's transfer
 factor is priced through the floor by the identity `Y D_T = D T̂`,
 the contraction at `λ∘` with the weighted polarization closing the
 square-root triangle exactly (`transfer_price`); the two images'
@@ -75,7 +75,7 @@ brackets at the gram list's own slab blocks (`capWalk`).  The
 companion kernels over stored towers with the graph read's tower
 sign are the emitted certificates' tier at their recorded
 consumers (`thm:decimation`(iii)'s deck divisors,
-`lem:cornerpivot`(vii)'s block chains, `thm:groundreads`'
+`lem:cornerblock`'s block chains, `thm:groundreads`'
 windows). -/
 
 namespace spectator
@@ -100,7 +100,7 @@ def sandwichStep (C C' Y1' Y1 Y0' Y0 : MatQ) (n n' : Nat) : Prop :=
   ∧ oneValueQ (devQ Y1' Y1)
       (mulQ (transposeQ (transfer C)) (mulQ (devQ Y0' Y0) (transfer C')))
 
-instance (C C' Y1' Y1 Y0' Y0 : MatQ) (n n' : Nat) :
+instance instSpectator1 (C C' Y1' Y1 Y0' Y0 : MatQ) (n n' : Nat) :
     Decidable (sandwichStep C C' Y1' Y1 Y0' Y0 n n') :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ oneValueQ _ _))
 
@@ -386,8 +386,7 @@ theorem sandwich_of_steps {n n' : Nat} (C C' Y1' Y1 Y0' Y0 : MatQ)
             (matAdd (matScale Y0.2 Y0'.1)
               (matScale Y0'.2 (matSwap Y0.1))) C'.1))
         (rowsLen_matAdd (k + 1) _ _ hr3 hr4) hDl
-        ((length_matAdd _ _ (hPl.trans hQl.symm)).trans hPl)
-        (Nat.succ_pos m) hD
+        ((length_matAdd _ _ (hPl.trans hQl.symm)).trans hPl) hD
       have haddR := matMul_addR
         (matScale (Y0.2 * (Y0'.2 * C'.2)) B)
         (matScale Y0'.2 (matSwap (matMul Y0.1 C'.1)))
@@ -400,7 +399,7 @@ theorem sandwich_of_steps {n n' : Nat} (C C' Y1' Y1 Y0' Y0 : MatQ)
       have hq3b1 := matMul_congrR (transposeM C.1) Y0.1
         (transposeM Y0.1) hY0r
         (rowsLen_cast hY0l (rowsLen_transposeM Y0.1)) hY0l
-        (transposeLen Y0.1 hY0r hY0l) (Nat.succ_pos m)
+        (transposeLen Y0.1 hY0r hY0l)
         (matOne_symm hsym0)
       have hq3b2 := transposeM_matMul Y0.1 C.1 hY0r hCr hY0l hCl
         (Nat.succ_pos m) (Nat.succ_pos m)
@@ -509,8 +508,7 @@ theorem sandwich_of_steps {n n' : Nat} (C C' Y1' Y1 Y0' Y0 : MatQ)
         (rowsLen_mapRows _ B (k + 1) hBr)
         (rowsLen_cast hTCl (rowsLen_matMul Y0.1 C.1))
         ((length_matScale (Y0.2 * C.2) B).trans hBl)
-        ((length_matMul Y0.1 C.1).trans hY0l)
-        (Nat.succ_pos m) (matOne_symm hwA)
+        ((length_matMul Y0.1 C.1).trans hY0l) (matOne_symm hwA)
       have hw2 := matMul_congrL (matMul (transposeM C.1) Y0.1)
         (matScale (Y0.2 * C.2) (transposeM B)) C.1 hq3b
       have hWs : matOneValue
@@ -771,7 +769,7 @@ def tailShareRead (diag off diag' off' : List Mat)
       Nat.ble i w0 || decide (oneValueQ (ground.getAt dM Xs' i)
         (ground.getAt dM Xs i)))) = true
 
-instance (diag off diag' off' : List Mat)
+instance instSpectator2 (diag off diag' off' : List Mat)
     (Xs Rs Xs' Rs' : List MatQ) (w0 : Nat) (ns : List Nat) :
     Decidable (tailShareRead diag off diag' off' Xs Rs Xs' Rs' w0 ns) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ = _))
@@ -799,7 +797,7 @@ def sandwichRead (diag off diag' off' : List Mat)
         (ground.getAt 0 ns (w0 + k))
         (ground.getAt 0 ns (w0 + k + 1))))) = true
 
-instance (diag off diag' off' : List Mat) (Ys Cs Ys' Cs' : List MatQ)
+instance instSpectator3 (diag off diag' off' : List Mat) (Ys Cs Ys' Cs' : List MatQ)
     (w0 : Nat) (ns : List Nat) :
     Decidable (sandwichRead diag off diag' off' Ys Cs Ys' Cs' w0 ns) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ = _ ∧ _ = _ ∧ _ = _))
@@ -814,7 +812,7 @@ def headShareRead (diag off diag' off' : List Mat)
       Nat.ble w0 i || decide (oneValueQ (ground.getAt dM Ys' i)
         (ground.getAt dM Ys i)))) = true
 
-instance (diag off diag' off' : List Mat)
+instance instSpectator4 (diag off diag' off' : List Mat)
     (Ys Cs Ys' Cs' : List MatQ) (w0 : Nat) (ns : List Nat) :
     Decidable (headShareRead diag off diag' off' Ys Cs Ys' Cs' w0 ns) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ = _))
@@ -843,7 +841,7 @@ def tailSandwichRead (diag off diag' off' : List Mat)
         (ground.getAt 0 ns (k + 1))
         (ground.getAt 0 ns k)))) = true
 
-instance (diag off diag' off' : List Mat) (Xs Rs Xs' Rs' : List MatQ)
+instance instSpectator5 (diag off diag' off' : List Mat) (Xs Rs Xs' Rs' : List MatQ)
     (w0 : Nat) (ns : List Nat) :
     Decidable (tailSandwichRead diag off diag' off' Xs Rs Xs' Rs' w0 ns) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ = _ ∧ _ = _ ∧ _ = _))
@@ -860,7 +858,7 @@ def contractRead {o : Nat} (T : MatQ) (Gi Gsr : Mat) (ln ld : Pos)
   ∧ leAt (matScale (ld * ld) (matMul (transposeM T.1) (matMul Gi T.1)))
       (matScale (ln * ln * (T.2 * T.2)) Gsr) sp
 
-instance {o : Nat} (T : MatQ) (Gi Gsr : Mat) (ln ld : Pos) (sp : Split o) :
+instance instSpectator6 {o : Nat} (T : MatQ) (Gi Gsr : Mat) (ln ld : Pos) (sp : Split o) :
     Decidable (contractRead T Gi Gsr ln ld sp) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
 
@@ -944,7 +942,7 @@ def capQ {o : Nat} (D : MatQ) (G : Mat) (cn cd : Pos)
     (spU spL : Split o) : Prop :=
   capAt (matScale cd D.1) (matScale (cn * D.2) G) spU spL
 
-instance {o : Nat} (D : MatQ) (G : Mat) (cn cd : Pos)
+instance instSpectator7 {o : Nat} (D : MatQ) (G : Mat) (cn cd : Pos)
     (spU spL : Split o) : Decidable (capQ D G cn cd spU spL) :=
   inferInstanceAs (Decidable (capAt _ _ _ _))
 
@@ -1196,7 +1194,7 @@ def capStepRead {n n' : Nat} (C C' Y1' Y1 Y0' Y0 : MatQ)
       (cn * (ln * ln * (ld' * ld') + ln' * ln' * (ld * ld)))
       (cd * (ld * ld * (ld' * ld'))) spU' spL'
 
-instance {n n' : Nat} (C C' Y1' Y1 Y0' Y0 : MatQ) (Gd Gh : Mat)
+instance instSpectator8 {n n' : Nat} (C C' Y1' Y1 Y0' Y0 : MatQ) (Gd Gh : Mat)
     (cn cd ln ld ln' ld' : Pos) (sp1 sp2 : Split n')
     (spU spL : Split n) (spU' spL' : Split n') :
     Decidable (capStepRead C C' Y1' Y1 Y0' Y0 Gd Gh cn cd ln ld
@@ -1886,7 +1884,7 @@ def solventRead (X : MatQ) (A B : Mat) (n : Nat) : Prop :=
   ∧ oneValueQ (addQ (mulQ (transposeQ (ofM B)) (mulQ X X)) (ofM B))
       (mulQ (ofM A) X)
 
-instance (X : MatQ) (A B : Mat) (n : Nat) :
+instance instSpectator9 (X : MatQ) (A B : Mat) (n : Nat) :
     Decidable (solventRead X A B n) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ oneValueQ _ _))
 
@@ -1896,7 +1894,7 @@ def pivotPairRead (Y X : MatQ) (A B : Mat) (n : Nat) : Prop :=
   ∧ oneValueQ (mulQ Y X) (ofM B)
   ∧ oneValueQ (addQ Y (mulQ (transposeQ (ofM B)) X)) (ofM A)
 
-instance (Y X : MatQ) (A B : Mat) (n : Nat) :
+instance instSpectator10 (Y X : MatQ) (A B : Mat) (n : Nat) :
     Decidable (pivotPairRead Y X A B n) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
 
@@ -1908,7 +1906,7 @@ def pivotStepRead (Y C Ynext : MatQ) (A B : Mat) (n : Nat) : Prop :=
   ∧ oneValueQ Ynext
       (addQ (ofM A) (mulQ (ofM (transposeM B)) (transfer C)))
 
-instance (Y C Ynext : MatQ) (A B : Mat) (n : Nat) :
+instance instSpectator11 (Y C Ynext : MatQ) (A B : Mat) (n : Nat) :
     Decidable (pivotStepRead Y C Ynext A B n) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
 
@@ -1930,7 +1928,7 @@ def facSplitRead (X : MatQ) (A B : Mat) (n : Nat) : Prop :=
     ((deckPMat A B).map (fun r => r.map (fun p =>
       p.map (fun x => x.scale (X.2 * X.2)))))
 
-instance (X : MatQ) (A B : Mat) (n : Nat) :
+instance instSpectator12 (X : MatQ) (A B : Mat) (n : Nat) :
     Decidable (facSplitRead X A B n) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ split.pmatOneValue _ _))
 
@@ -1941,7 +1939,7 @@ def floorRead {o : Nat} (Yc : MatQ) (G : Mat)
   leAt (matScale (Yc.2 * (y0n * rd + rn * y0d)) G)
     (matScale (y0d * rd) Yc.1) spF
 
-instance {o : Nat} (Yc : MatQ) (G : Mat) (y0n y0d rn rd : Pos)
+instance instSpectator13 {o : Nat} (Yc : MatQ) (G : Mat) (y0n y0d rn rd : Pos)
     (spF : Split o) :
     Decidable (floorRead Yc G y0n y0d rn rd spF) :=
   inferInstanceAs (Decidable (leAt _ _ _))
@@ -1963,7 +1961,7 @@ def ballRead {o : Nat} (Yc Cc Ysh : MatQ) (A B G : Mat)
   ∧ r0n * ((lcd * lcd) * rd) + (lcn * lcn) * (rn * r0d)
       ≤ rn * (r0d * (lcd * lcd))
 
-instance {o : Nat} (Yc Cc Ysh : MatQ) (A B G : Mat)
+instance instSpectator14 {o : Nat} (Yc Cc Ysh : MatQ) (A B G : Mat)
     (ln ld y0n y0d rn rd r0n r0d lcn lcd : Pos)
     (spC spF spU spL : Split o) :
     Decidable (ballRead Yc Cc Ysh A B G ln ld y0n y0d rn rd
@@ -1994,7 +1992,7 @@ def decBallList {o : Nat} (Yc : MatQ) (G : Mat) (rn rd : Pos) :
         (@instDecidableAnd _ _ inferInstance
           (decBallList Yc G rn rd Xs sps))
 
-instance {o : Nat} (Yc : MatQ) (G : Mat) (rn rd : Pos)
+instance instSpectator15 {o : Nat} (Yc : MatQ) (G : Mat) (rn rd : Pos)
     (Xs : List MatQ) (sps : List (Split o × Split o)) :
     Decidable (ballList Yc G rn rd Xs sps) :=
   decBallList Yc G rn rd Xs sps
@@ -2054,7 +2052,7 @@ def decCapWalk : ∀ (Gs : List Mat) (cn cd : Pos) (Y0' Y0 : MatQ)
       @instDecidableAnd _ _ inferInstance
         (decCapWalk _ _ _ _ _ Cs Cs' Ys Ys' certs)
 
-instance (Gs : List Mat) (cn cd : Pos) (Y0' Y0 : MatQ)
+instance instSpectator16 (Gs : List Mat) (cn cd : Pos) (Y0' Y0 : MatQ)
     (Cs Cs' Ys Ys' : List MatQ)
     (certs : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
       × Split p.2 × Split p.2 × Split p.1 × Split p.1
@@ -2076,7 +2074,7 @@ def driftStep (dn : BPair) (C C' Y1' Y1 Y0' Y0 : MatQ) (n n' : Nat) :
           (mulQ (devQ Y0' Y0) (transfer C')))
         (matScaleB dn (idMat n'), Pos.one))
 
-instance (dn : BPair) (C C' Y1' Y1 Y0' Y0 : MatQ) (n n' : Nat) :
+instance instSpectator17 (dn : BPair) (C C' Y1' Y1 Y0' Y0 : MatQ) (n n' : Nat) :
     Decidable (driftStep dn C C' Y1' Y1 Y0' Y0 n n') :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ oneValueQ _ _))
 
@@ -2101,7 +2099,7 @@ def driftCapStep {n n' : Nat} (C C' Y1' Y1 Y0' Y0 : MatQ)
         + 2 * (sn * (cd * (ld * ld * (ld' * ld')))))
       (cd * (ld * ld * (ld' * ld')) * sd) spU' spL'
 
-instance {n n' : Nat} (C C' Y1' Y1 Y0' Y0 : MatQ) (Gd Gh : Mat)
+instance instSpectator18 {n n' : Nat} (C C' Y1' Y1 Y0' Y0 : MatQ) (Gd Gh : Mat)
     (dn : BPair) (cn cd sn sd ln ld ln' ld' : Pos)
     (sp1 sp2 : Split n') (spU spL : Split n) (spU' spL' : Split n')
     (spS spS' : Split n') :
@@ -2186,7 +2184,7 @@ def decDriftWalk (dn : BPair) (sn sd : Pos) :
       @instDecidableAnd _ _ inferInstance
         (decDriftWalk dn sn sd _ _ _ _ _ Cs Cs' Ys Ys' certs)
 
-instance (dn : BPair) (sn sd : Pos) (Gs : List Mat) (cn cd : Pos)
+instance instSpectator19 (dn : BPair) (sn sd : Pos) (Gs : List Mat) (cn cd : Pos)
     (Y0' Y0 : MatQ) (Cs Cs' Ys Ys' : List MatQ)
     (certs : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
       × Split p.2 × Split p.2 × Split p.1 × Split p.1
@@ -2230,7 +2228,7 @@ def driftShareRead (diag off diag' off' : List Mat)
       ((Rs.take w0).drop j).reverse ((Rs'.take w0).drop j).reverse
       ((Xs.take w0).drop j).reverse ((Xs'.take w0).drop j).reverse certs
 
-instance (diag off diag' off' : List Mat)
+instance instSpectator20 (diag off diag' off' : List Mat)
     (Xs Rs Xs' Rs' : List MatQ) (w0 j : Nat) (ns : List Nat)
     (dn : BPair) (cn cd sn sd : Pos) (Gs : List Mat)
     (certs : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
@@ -2795,7 +2793,7 @@ theorem ball_psd {o : Nat} (X Yc : MatQ) (G : Mat)
 cap withdraws against the center's floor at the gram's read, the
 member's form at or beyond `y0`'s multiple of the gram's at every
 vector, the cleared spelling at the carriers' second data
-(`lem:cornerpivot`(vii)'s boundary seed, the dominance tail's
+(`lem:cornerblock`'s boundary seed, the dominance tail's
 entry read). -/
 theorem ball_floor {o : Nat} (X Yc : MatQ) (G : Mat)
     (y0n y0d rn rd : Pos) (spF spU spL : Split o)

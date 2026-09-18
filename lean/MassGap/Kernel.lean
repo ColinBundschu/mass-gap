@@ -94,7 +94,7 @@ factors' positions the gauge mode. -/
 def oneState (F : states.FList) (a b : List Nat) : Prop :=
   wordsOf F a = wordsOf F b
 
-instance (F : states.FList) (a b : List Nat) :
+instance instKernel1 (F : states.FList) (a b : List Nat) :
     Decidable (oneState F a b) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -111,7 +111,7 @@ second member, `def:ground`'s positive datum mirrored. -/
 def combOcc (c : states.Comb) : Prop :=
   (c.all (fun e => decide (genericlift.pairOcc e.2))) = true
 
-instance (c : states.Comb) : Decidable (combOcc c) :=
+instance instKernel2 (c : states.Comb) : Decidable (combOcc c) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- Two states read one value exactly at every word coefficient:
@@ -123,7 +123,7 @@ def combEqRead (F : states.FList) (a b : states.Comb) : Prop :=
       (coeffAt F a (wordsOf F e.1))
       (coeffAt F b (wordsOf F e.1))))) = true
 
-instance (F : states.FList) (a b : states.Comb) :
+instance instKernel3 (F : states.FList) (a b : states.Comb) :
     Decidable (combEqRead F a b) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ = _))
 
@@ -160,7 +160,7 @@ def kernelRead (F : states.FList) (keys : List (List Nat))
         && decide (genericlift.agreeAt row poly.pZero rv)))
     = true
 
-instance (F : states.FList) (keys : List (List Nat))
+instance instKernel4 (F : states.FList) (keys : List (List Nat))
     (ks : List poly.PPair) (rv : BPair) :
     Decidable (kernelRead F keys ks rv) :=
   inferInstanceAs
@@ -175,7 +175,7 @@ def nullRead (F : states.FList) (k : states.Comb) : Prop :=
     (wg.pairFull wg.evalPhi F F [(π, poly.pOne)] k)
     poly.pZero))) = true
 
-instance (F : states.FList) (k : states.Comb) :
+instance instKernel5 (F : states.FList) (k : states.Comb) :
     Decidable (nullRead F k) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -327,7 +327,7 @@ def directRead (F : states.FList) (c : states.Comb) (rv : Nat) :
         if (rowFold F c rv g).oneValue BPair.unit then true
         else false)) = true
 
-instance (F : states.FList) (c : states.Comb) (rv : Nat) :
+instance instKernel6 (F : states.FList) (c : states.Comb) (rv : Nat) :
     Decidable (directRead F c rv) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -340,7 +340,7 @@ def memberAt (F : states.FList) (c : states.Comb) (rv : Nat) :
     Prop :=
   if F.length < rv then nullRead F c else directRead F c rv
 
-instance (F : states.FList) (c : states.Comb) (rv : Nat) :
+instance instKernel7 (F : states.FList) (c : states.Comb) (rv : Nat) :
     Decidable (memberAt F c rv) :=
   inferInstanceAs (Decidable
     (if F.length < rv then nullRead F c else directRead F c rv))
@@ -354,7 +354,7 @@ def evalEqRead (F : states.FList) (a b : states.Comb) : Prop :=
   (states.keysOf (na ++ nb)).all (fun k =>
     decide (combEqRead (states.siteOf F k) (states.atKey na k) (states.atKey nb k))) = true
 
-instance (F : states.FList) (a b : states.Comb) : Decidable (evalEqRead F a b) :=
+instance instKernel8 (F : states.FList) (a b : states.Comb) : Decidable (evalEqRead F a b) :=
   inferInstanceAs (Decidable (_ = _))
 
 end kernel

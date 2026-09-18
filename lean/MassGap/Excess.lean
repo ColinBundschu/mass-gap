@@ -74,7 +74,7 @@ successor-weighted shift at the excess's coefficients. -/
 def geomRead (j : Pos) : Prop :=
   (Pair.mul (Pair.ofPos j) ⟨Pos.one, j⟩).oneValue (Pair.ofPos Pos.one)
 
-instance (j : Pos) : Decidable (geomRead j) :=
+instance instExcess1 (j : Pos) : Decidable (geomRead j) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The derivative display over the whole support, one read per
@@ -83,7 +83,7 @@ def derivRead (g : Nat) : Prop :=
   ((List.range (g + 1)).all (fun i =>
     if geomRead (posOfSucc i) then true else false)) = true
 
-instance (g : Nat) : Decidable (derivRead g) :=
+instance instExcess2 (g : Nat) : Decidable (derivRead g) :=
   inferInstanceAs (Decidable (_ = _))
 
 end excess

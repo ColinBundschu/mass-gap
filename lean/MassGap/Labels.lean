@@ -81,6 +81,13 @@ theorem reduce_snoc (s : Shape) (a : Nat) :
   show s.reverse.reverse ++ [0] = s ++ [0]
   rw [ground.reverse_reverse s]
 
+/-- Full-column withdrawal fixes the unit label at every width. -/
+theorem reduce_unit : ∀ n : Nat, reduce (unitL n) = unitL n
+  | 0 => rfl
+  | n + 1 => by
+    change reduce (List.replicate (n + 1) 0) = List.replicate (n + 1) 0
+    rw [← ground.replicate_snoc 0 n, reduce_snoc]
+
 /-- The dual at the split-off last member: the occupancy reversal
 off the full-column key. -/
 theorem dualL_snoc (s : Shape) (a : Nat) :
@@ -297,13 +304,6 @@ private theorem addFulls_bumped (m : Nat) : ∀ s : Shape,
       rw [hs, hl, ground.bumpAt_snoc s' y, addFulls_snoc m s' (y + 1),
         addFulls_snoc (m + 1) s' y, Nat.add_assoc y 1 m,
         Nat.add_comm 1 m]
-
-private theorem divZeroL : ∀ n : Nat, 0 / n = 0
-  | 0 => rfl
-  | e + 1 => by
-    have h := ground.divMulSelf 0 (e + 1) (Nat.succ_pos e)
-    rw [Nat.zero_mul] at h
-    exact h
 
 /-- The label fusion count at the matched-degree lift: the degree
 gap's full columns enter on the deficient side at the divisibility
@@ -528,7 +528,7 @@ theorem countL_matched (a b c : Shape) (hba : b.length = a.length)
   rw [countL_geRead a b c hba hca
       (by rw [hdeg]; exact Nat.le_refl (degree c))
       (by rw [hsub]; exact ground.modZeroLeft a.length),
-    hsub, divZeroL a.length, addFulls_zero c]
+    hsub, ground.divZeroLeft a.length, addFulls_zero c]
 
 
 /-- The dual label is an involution at the class representative:
@@ -940,30 +940,6 @@ theorem fusionCount_colOff (j : Nat) (a b X : Shape)
         rw [hlast0]
         exact Nat.lt_of_succ_lt_succ hlt
 
-private theorem modShift (t L : Nat) : (t + L) % L = t % L := by
-  have h := ground.modAddMul t 1 L
-  rw [Nat.one_mul] at h
-  exact h
-
-private theorem divShift (t L : Nat) (hL : 0 < L) (ht : t % L = 0) :
-    (t + L) / L = t / L + 1 := by
-  have hd := (ground.natDivRead t L hL).1
-  rw [ht, Nat.add_zero] at hd
-  have he : t + L = (t / L + 1) * L := by
-    rw [Nat.succ_mul (t / L) L, Nat.mul_comm (t / L) L, hd]
-  rw [he]
-  exact ground.divMulSelf (t / L + 1) L hL
-
-private theorem modSelf (L : Nat) : L % L = 0 := by
-  have h := ground.modMulSelf 1 L
-  rw [Nat.one_mul] at h
-  exact h
-
-private theorem divSelf (L : Nat) (hL : 0 < L) : L / L = 1 := by
-  have h := ground.divMulSelf 1 L hL
-  rw [Nat.one_mul] at h
-  exact h
-
 private theorem countL_kshift (a b c a2 b2 : Shape) (hL : 0 < a.length)
     (hlen2 : a2.length = a.length)
     (hdeg2 : degree a2 + degree b2 = degree a + degree b + a.length)
@@ -987,11 +963,11 @@ private theorem countL_kshift (a b c a2 b2 : Shape) (hL : 0 < a.length)
             Nat.add_assoc (degree a + degree b) t a.length]
           exact ground.addSubSelfL (degree a + degree b) (t + a.length)
         rw [countL_lt a2 b2 c h2, countL_lt a b c h1, hs2, hs1, hlen2,
-          modShift t a.length]
+          ground.modAddSelf t a.length]
         cases hb : (t % a.length == 0) with
         | false => rfl
         | true =>
-          rw [divShift t a.length hL (ground.beqEqOf hb)]
+          rw [ground.divAddSelf t a.length hL (ground.beqEqOf hb)]
           show steinberg.count (addFulls (t / a.length) a2) b2 c
             = steinberg.count (addFulls (t / a.length + 1) a) b c
           exact hif (t / a.length)
@@ -1021,8 +997,8 @@ private theorem countL_kshift (a b c a2 b2 : Shape) (hL : 0 < a.length)
           | zero =>
             have hL1 : 1 + u = a.length := by
               rw [← hf, Nat.add_zero]
-            rw [hL1, modSelf a.length, divSelf a.length hL,
-              ground.modZeroLeft a.length, divZeroL a.length,
+            rw [hL1, ground.modSelf a.length, ground.divSelf a.length hL,
+              ground.modZeroLeft a.length, ground.divZeroLeft a.length,
               addFulls_zero c]
             show steinberg.count a2 b2 c
               = steinberg.count (addFulls 1 a) b c
@@ -1058,11 +1034,11 @@ private theorem countL_kshift (a b c a2 b2 : Shape) (hL : 0 < a.length)
         rw [hdeg2, ← hr, Nat.add_assoc (degree c) r a.length]
         exact ground.addSubSelfL (degree c) (r + a.length)
       rw [countL_ge a b c h1, countL_ge a2 b2 c h2, hs1, hs2, hlen2,
-        modShift r a.length]
+        ground.modAddSelf r a.length]
       cases hb : (r % a.length == 0) with
       | false => rfl
       | true =>
-        rw [divShift r a.length hL (ground.beqEqOf hb)]
+        rw [ground.divAddSelf r a.length hL (ground.beqEqOf hb)]
         show steinberg.count a2 b2 (addFulls (r / a.length + 1) c)
           = steinberg.count a b (addFulls (r / a.length) c)
         exact helse (r / a.length)
@@ -1088,11 +1064,11 @@ private theorem countL_cshift (a b c c2 : Shape) (hL : 0 < a.length)
         rw [hdeg2, ← hd, Nat.add_assoc (degree a + degree b) d a.length]
         exact ground.addSubSelfL (degree a + degree b) (d + a.length)
       rw [countL_lt a b c2 h1', countL_lt a b c h1, hs1, hs2,
-        modShift d a.length]
+        ground.modAddSelf d a.length]
       cases hb : (d % a.length == 0) with
       | false => rfl
       | true =>
-        rw [divShift d a.length hL (ground.beqEqOf hb)]
+        rw [ground.divAddSelf d a.length hL (ground.beqEqOf hb)]
         show steinberg.count (addFulls (d / a.length + 1) a) b c2
           = steinberg.count (addFulls (d / a.length) a) b c
         exact hif (d / a.length)
@@ -1121,8 +1097,8 @@ private theorem countL_cshift (a b c c2 : Shape) (hL : 0 < a.length)
           | zero =>
             have heL : 1 + e = a.length := by
               rw [← he]
-            rw [heL, modSelf a.length, divSelf a.length hL,
-              ground.modZeroLeft a.length, divZeroL a.length,
+            rw [heL, ground.modSelf a.length, ground.divSelf a.length hL,
+              ground.modZeroLeft a.length, ground.divZeroLeft a.length,
               addFulls_zero c]
             show steinberg.count (addFulls 1 a) b c2
               = steinberg.count a b c
@@ -1156,11 +1132,11 @@ private theorem countL_cshift (a b c c2 : Shape) (hL : 0 < a.length)
             rw [hr, ← hw, hdeg2, Nat.add_assoc (degree c) a.length w,
               Nat.add_comm a.length w]
           rw [countL_ge a b c h1, countL_ge a b c2 h2, hs1, hs2, hrw,
-            modShift w a.length]
+            ground.modAddSelf w a.length]
           cases hb : (w % a.length == 0) with
           | false => rfl
           | true =>
-            rw [divShift w a.length hL (ground.beqEqOf hb)]
+            rw [ground.divAddSelf w a.length hL (ground.beqEqOf hb)]
             show steinberg.count a b (addFulls (w / a.length) c2)
               = steinberg.count a b (addFulls (w / a.length + 1) c)
             exact helse (w / a.length)
@@ -1468,7 +1444,7 @@ fixed. -/
 def c2ClassRead (s : Shape) : Prop :=
   c2hat.dfQ s = c2hat.dfQ (reduce s)
 
-instance (s : Shape) : Decidable (c2ClassRead s) :=
+instance instLabels1 (s : Shape) : Decidable (c2ClassRead s) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The last key's occupancy is the cleared read's own class datum:
@@ -1501,7 +1477,7 @@ stated read; `cartan_eq` the theorem at matched widths with
 `cartan_all` its read at this spelling. -/
 def cartanRead (a b : Shape) : Prop := countL a b (places.addS a b) = 1
 
-instance (a b : Shape) : Decidable (cartanRead a b) :=
+instance instLabels2 (a b : Shape) : Decidable (cartanRead a b) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-! The Cartan sharpening (`con:labels`' closing sentence): the
@@ -1801,7 +1777,7 @@ private theorem foldDeltaPick (d : Nat) (P : List blockcount.HVec)
     (hvac : ground.countOf (rowList K) ((blockcount.exhaust d P).map
         blockcount.HVec.content) = 0 → G K = 0) :
     ground.famFold Nat.add 0 (fun mu => G (places.shapeOf mu) * D mu)
-      (ground.dedupL ((blockcount.exhaust d P).map
+      (ground.dedupF ((blockcount.exhaust d P).map
         blockcount.HVec.content))
       = G K := by
   rw [ground.famFold_congr_members Nat.add 0
@@ -1810,20 +1786,20 @@ private theorem foldDeltaPick (d : Nat) (P : List blockcount.HVec)
       else 0) _ (fun x hx => by
       by_cases he : x = rowList K
       · rw [if_pos he]
-      · rw [if_neg he, hoff x (ground.mem_of_dedupL
+      · rw [if_neg he, hoff x (ground.mem_of_dedupF
           (ground.mem_of_countOf_pos x _ hx)) he, Nat.mul_zero])]
   cases Nat.eq_zero_or_pos (ground.countOf (rowList K)
       ((blockcount.exhaust d P).map blockcount.HVec.content)) with
   | inl h0 =>
     have hLz : ground.countOf (rowList K)
-        (ground.dedupL ((blockcount.exhaust d P).map
+        (ground.dedupF ((blockcount.exhaust d P).map
           blockcount.HVec.content)) = 0 := by
       cases Nat.eq_zero_or_pos (ground.countOf (rowList K)
-          (ground.dedupL ((blockcount.exhaust d P).map
+          (ground.dedupF ((blockcount.exhaust d P).map
             blockcount.HVec.content))) with
       | inl hz => exact hz
       | inr hpos =>
-        have hc := ground.countOf_pos_of_mem (ground.mem_of_dedupL
+        have hc := ground.countOf_pos_of_mem (ground.mem_of_dedupF
           (ground.mem_of_countOf_pos _ _ hpos))
         rw [h0] at hc
         exact absurd hc (Nat.lt_irrefl 0)
@@ -1832,7 +1808,7 @@ private theorem foldDeltaPick (d : Nat) (P : List blockcount.HVec)
     exact (hvac h0).symm
   | inr hpos =>
     rw [ground.famFold_pick (fun mu => G (places.shapeOf mu) * D mu)
-      (rowList K) _ (ground.countOf_dedupL_one
+      (rowList K) _ (ground.countOf_dedupF_one
         (ground.mem_of_countOf_pos _ _ hpos))]
     show G (places.shapeOf (rowList K)) * D (rowList K) = G K
     rw [places.shapeOf_rowList K, hone, Nat.mul_one]
@@ -1842,13 +1818,13 @@ private theorem foldDeltaZero (d : Nat) (P : List blockcount.HVec)
     (hoff : ∀ mu, mu ∈ (blockcount.exhaust d P).map
       blockcount.HVec.content → D mu = 0) :
     ground.famFold Nat.add 0 (fun mu => G (places.shapeOf mu) * D mu)
-      (ground.dedupL ((blockcount.exhaust d P).map
+      (ground.dedupF ((blockcount.exhaust d P).map
         blockcount.HVec.content))
       = 0 := by
   rw [ground.famFold_congr_members Nat.add 0
     (fun mu => G (places.shapeOf mu) * D mu) (fun _ => 0) _
     (fun x hx => by
-      rw [hoff x (ground.mem_of_dedupL
+      rw [hoff x (ground.mem_of_dedupF
         (ground.mem_of_countOf_pos x _ hx)), Nat.mul_zero])]
   exact ground.famFold_zero (fun _ => (0 : Nat)) (fun _ => rfl) _
 
@@ -1868,7 +1844,7 @@ theorem foldCollapseL (a b c : Shape) (p M : Nat)
           (places.shapeOf mu)
         * blockcount.fusionCount (places.shapeOf mu) c
           (dualread.fulls a.length (M + p)))
-      (ground.dedupL ((blockcount.exhaust a.length
+      (ground.dedupF ((blockcount.exhaust a.length
         (blockcount.fusedAt
           (blockcount.blockSpan (addFulls p a))
           (blockcount.blockSpan b))).map blockcount.HVec.content))
@@ -1974,7 +1950,7 @@ theorem foldCollapseR (a b c : Shape) (p M : Nat)
       (fun mu => blockcount.fusionCount b c (places.shapeOf mu)
         * blockcount.fusionCount (addFulls p a)
           (places.shapeOf mu) (dualread.fulls a.length (M + p)))
-      (ground.dedupL ((blockcount.exhaust a.length
+      (ground.dedupF ((blockcount.exhaust a.length
         (blockcount.fusedAt (blockcount.blockSpan b)
           (blockcount.blockSpan c))).map blockcount.HVec.content))
     = blockcount.fusionCount b c
@@ -2077,7 +2053,7 @@ theorem foldCollapseR_vacant (a b c : Shape) (p M : Nat)
       (fun mu => blockcount.fusionCount b c (places.shapeOf mu)
         * blockcount.fusionCount (addFulls p a)
           (places.shapeOf mu) (dualread.fulls a.length (M + p)))
-      (ground.dedupL ((blockcount.exhaust a.length
+      (ground.dedupF ((blockcount.exhaust a.length
         (blockcount.fusedAt (blockcount.blockSpan b)
           (blockcount.blockSpan c))).map blockcount.HVec.content))
     = 0 := by
@@ -2308,7 +2284,7 @@ theorem bridgeFold (a b : Shape) (hba : b.length = a.length)
     = ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount a b (places.shapeOf mu)
         * F (places.shapeOf mu))
-      (ground.dedupL ((blockcount.exhaust a.length
+      (ground.dedupF ((blockcount.exhaust a.length
         (blockcount.fusedAt (blockcount.blockSpan a)
           (blockcount.blockSpan b))).map blockcount.HVec.content)) := by
   obtain ⟨hszP, hwidP, hclP, _⟩ := blockcount.fusedSpan_pack a b hba
@@ -2338,12 +2314,12 @@ theorem bridgeFold (a b : Shape) (hba : b.length = a.length)
       0 < ground.countOf x ((blockcount.exhaust a.length
         (blockcount.fusedAt (blockcount.blockSpan a)
           (blockcount.blockSpan b))).map blockcount.HVec.content) →
-      ground.countOf x (ground.dedupL ((blockcount.exhaust a.length
+      ground.countOf x (ground.dedupF ((blockcount.exhaust a.length
         (blockcount.fusedAt (blockcount.blockSpan a)
           (blockcount.blockSpan b))).map blockcount.HVec.content))
         = 1 :=
     fun x hx =>
-      ground.countOf_dedupL_one (ground.mem_of_countOf_pos x _ hx)
+      ground.countOf_dedupF_one (ground.mem_of_countOf_pos x _ hx)
   have hD' : ∀ x : List Nat,
       0 < ground.countOf x ((blockcount.exhaust a.length
         (blockcount.fusedAt (blockcount.blockSpan a)
@@ -2404,7 +2380,7 @@ theorem bridgeFold (a b : Shape) (hba : b.length = a.length)
   have hR1 : ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount a b (places.shapeOf mu)
         * F (places.shapeOf mu))
-      (ground.dedupL ((blockcount.exhaust a.length
+      (ground.dedupF ((blockcount.exhaust a.length
         (blockcount.fusedAt (blockcount.blockSpan a)
           (blockcount.blockSpan b))).map blockcount.HVec.content))
       = ground.famFold Nat.add 0
@@ -2412,23 +2388,23 @@ theorem bridgeFold (a b : Shape) (hba : b.length = a.length)
             (blockcount.fusedAt (blockcount.blockSpan a)
               (blockcount.blockSpan b))).map blockcount.HVec.content)
           * F (places.shapeOf mu))
-        (ground.dedupL ((blockcount.exhaust a.length
+        (ground.dedupF ((blockcount.exhaust a.length
           (blockcount.fusedAt (blockcount.blockSpan a)
             (blockcount.blockSpan b))).map blockcount.HVec.content)) :=
     ground.famFold_congr_members Nat.add 0 _ _
-      (ground.dedupL ((blockcount.exhaust a.length
+      (ground.dedupF ((blockcount.exhaust a.length
         (blockcount.fusedAt (blockcount.blockSpan a)
           (blockcount.blockSpan b))).map blockcount.HVec.content))
       (fun mu hmu => by
         rw [blockcount.fusionCount_countOf a b (places.shapeOf mu) hba,
-          hrl mu (ground.mem_of_dedupL
+          hrl mu (ground.mem_of_dedupF
             (ground.mem_of_countOf_pos mu _ hmu))])
   have hR2 := ground.famFold_countCollect
     (fun mu => F (places.shapeOf mu))
     ((blockcount.exhaust a.length
       (blockcount.fusedAt (blockcount.blockSpan a)
         (blockcount.blockSpan b))).map blockcount.HVec.content)
-    (ground.dedupL ((blockcount.exhaust a.length
+    (ground.dedupF ((blockcount.exhaust a.length
       (blockcount.fusedAt (blockcount.blockSpan a)
         (blockcount.blockSpan b))).map blockcount.HVec.content)) hD
   exact ((hL1.trans hL2.symm).trans hL3.symm).trans (hR2.trans hR1.symm)
@@ -2621,7 +2597,7 @@ theorem countL_assoc (a b c dd : Shape)
                     - (degree a + degree b + degree c)) / a.length) a)
                   b (places.shapeOf mu)
                 * blockcount.fusionCount (places.shapeOf mu) c dd)
-              (ground.dedupL ((blockcount.exhaust a.length
+              (ground.dedupF ((blockcount.exhaust a.length
                 (blockcount.fusedAt (blockcount.blockSpan
                     (addFulls ((degree dd
                       - (degree a + degree b + degree c)) / a.length)
@@ -2651,7 +2627,7 @@ theorem countL_assoc (a b c dd : Shape)
                 * blockcount.fusionCount (addFulls ((degree dd
                     - (degree a + degree b + degree c)) / a.length) a)
                   (places.shapeOf mu) dd)
-              (ground.dedupL ((blockcount.exhaust a.length
+              (ground.dedupF ((blockcount.exhaust a.length
                 (blockcount.fusedAt (blockcount.blockSpan b)
                   (blockcount.blockSpan c))).map
                 blockcount.HVec.content)) := by
@@ -2758,7 +2734,7 @@ theorem countL_assoc (a b c dd : Shape)
                 * blockcount.fusionCount (places.shapeOf mu) c
                   (addFulls ((degree a + degree b + degree c
                     - degree dd) / a.length) dd))
-              (ground.dedupL ((blockcount.exhaust a.length
+              (ground.dedupF ((blockcount.exhaust a.length
                 (blockcount.fusedAt (blockcount.blockSpan a)
                   (blockcount.blockSpan b))).map
                 blockcount.HVec.content)) :=
@@ -2777,7 +2753,7 @@ theorem countL_assoc (a b c dd : Shape)
                 * blockcount.fusionCount a (places.shapeOf mu)
                   (addFulls ((degree a + degree b + degree c
                     - degree dd) / a.length) dd))
-              (ground.dedupL ((blockcount.exhaust a.length
+              (ground.dedupF ((blockcount.exhaust a.length
                 (blockcount.fusedAt (blockcount.blockSpan b)
                   (blockcount.blockSpan c))).map
                 blockcount.HVec.content)) := by
@@ -2826,5 +2802,165 @@ theorem countL_assoc (a b c dd : Shape)
                 exact hmod),
           Nat.mul_zero]
       rw [hLz, hRz]
+
+/-- The row's fold at the interface reads the matched-degree
+enumeration's own: the row lists the enumeration's occupied
+members reduced, each contributing its own count against the
+weight, and the refused members contribute the sum's unit — the
+reduced member's count is the shape's (`labels.countL_reduce`) and
+the weight reads one value along the class. -/
+theorem rowFold (x y : Shape) (W : Shape → Nat)
+    (hW : ∀ v : Shape, v.length = x.length →
+      W (labels.reduce v) = W v) :
+    ground.famFold Nat.add 0
+      (fun v => optVal (fun e => labels.countL x y e * W e)
+        (labels.emit x y v))
+      (allShapes x.length (degree x + degree y))
+    = ground.famFold Nat.add 0
+      (fun e => steinberg.count x y e * W e)
+      (allShapes x.length (degree x + degree y)) := by
+  refine ground.famFold_congr_members Nat.add 0 _ _
+    (allShapes x.length (degree x + degree y)) ?_
+  intro v hv
+  obtain ⟨hvl, hvd⟩ := allShapes_sound x.length (degree x + degree y) v
+    (ground.mem_of_countOf_pos v _ hv)
+  show optVal (fun e => labels.countL x y e * W e)
+      (if 0 < steinberg.count x y v then some (labels.reduce v)
+       else none)
+    = steinberg.count x y v * W v
+  cases Nat.eq_zero_or_pos (steinberg.count x y v) with
+  | inl hz =>
+    rw [if_neg (by rw [hz]; exact Nat.lt_irrefl 0), hz, Nat.zero_mul]
+    rfl
+  | inr hp =>
+    rw [if_pos hp]
+    show labels.countL x y (labels.reduce v) * W (labels.reduce v)
+      = steinberg.count x y v * W v
+    rw [labels.countL_reduce x y v hvl hvd, hW v hvl]
+
+/-- The dual label's cleared Casimir equals the label's read
+(`def:c2hat`). The complementary row lists have equal folds of
+gaps and squared gaps at the reversed place pairs. -/
+theorem casDual_all (s : Shape) :
+    c2hat.dfQ (dualL s) = c2hat.dfQ s := by
+  have hlen : (rowList (dualL s)).length = (rowList s).length := by
+    rw [length_rowList, length_rowList, length_dualL]
+  have hj : List.zipWith Nat.add (rowList s) (rowList (dualL s)).reverse
+      = List.replicate (rowList s).length (sumNat s) := by
+    rw [length_rowList]
+    exact join_dual_selfR s
+  have hr : c2hat.rho2 (rowList s) = c2hat.rho2 (rowList (dualL s)) := by
+    rw [c2hat.rho2_pairs, c2hat.rho2_pairs]
+    exact places.pairGapFold_complement Nat.add 0 Nat.add_comm Nat.add_assoc
+      (rowList s) (rowList (dualL s)) (sumNat s) hlen hj (fun x => x)
+  have hq : c2hat.sqGaps (rowList s) = c2hat.sqGaps (rowList (dualL s)) := by
+    rw [c2hat.sqGaps_pairs, c2hat.sqGaps_pairs]
+    exact places.pairGapFold_complement Nat.add 0 Nat.add_comm Nat.add_assoc
+      (rowList s) (rowList (dualL s)) (sumNat s) hlen hj (fun x => x * x)
+  show c2hat.sqGaps (rowList (dualL s))
+      + (dualL s).length * c2hat.rho2 (rowList (dualL s))
+    = c2hat.sqGaps (rowList s) + s.length * c2hat.rho2 (rowList s)
+  rw [length_dualL, ← hr, ← hq]
+
+/-- The dual label's dimension equals the label's dimension
+(`lem:dualread`(ii); `cor:weyldim`). The display's complementary
+places join to the row total plus the unit displays' common sum,
+so their gap products agree. -/
+theorem dimDual_all (s : Shape) :
+    weyldim.dimOf (dualL s) = weyldim.dimOf s := by
+  have hld : (display (dualL s)).length = s.length := by
+    rw [length_display, length_dualL]
+  have hlr : (display (dualL s)).reverse.length = s.length := by
+    rw [ground.length_reverse, hld]
+  have hj : List.zipWith Nat.add (display s) (display (dualL s)).reverse
+      = List.replicate s.length (sumNat s + s.length + 1) := by
+    have hz : (List.zipWith Nat.add (display s)
+        (display (dualL s)).reverse).length = s.length :=
+      ground.length_zipWith Nat.add _ _ s.length (length_display s) hlr
+    refine ground.getAt_ext 0 _ _ ?_ ?_
+    · rw [hz, ground.length_replicate]
+    · intro i hi
+      rw [hz] at hi
+      have hb : i ≤ s.length - 1 := by
+        cases s with
+        | nil => exact absurd hi (Nat.not_lt_zero i)
+        | cons x t => exact Nat.le_of_lt_succ hi
+      have hix : i + (s.length - 1 - i) + 1 = s.length := by
+        rw [ground.natAddSubCancel hb]
+        exact ground.subAdd (Nat.lt_of_le_of_lt (Nat.zero_le i) hi)
+      have hk : s.length - 1 - i < s.length := ground.predSubLt hi
+      have hrow := congrArg (fun l => getAt 0 l i) (join_dual_selfR s)
+      rw [ground.getAt_zipWith 0 0 0 (fun x y => x + y)
+          (rowList s) (rowList (dualL s)).reverse i
+          (by rw [length_rowList]; exact hi)
+          (by rw [ground.length_reverse, length_rowList, length_dualL]; exact hi),
+        ground.getAt_replicate 0 (sumNat s) s.length i hi,
+        ground.getAt_reverse 0 (rowList (dualL s)) i (s.length - 1 - i)
+          (by rw [length_rowList, length_dualL]; exact hix)] at hrow
+      have hni : s.length - i = (s.length - 1 - i) + 1 := by
+        conv => lhs; arg 1; rw [← hix]
+        rw [Nat.add_assoc, ground.addSubSelfL]
+      have hnj : s.length - (s.length - 1 - i) = i + 1 := by
+        conv => lhs; arg 1; rw [← hix]
+        rw [Nat.add_right_comm, ground.addSubSelfR]
+      have hu : (s.length - 1 - i) + 1 + (i + 1) = s.length + 1 := by
+        rw [← Nat.add_assoc, Nat.add_right_comm (s.length - 1 - i) 1 i,
+          Nat.add_comm (s.length - 1 - i) i, hix]
+      rw [ground.getAt_zipWith 0 0 0 Nat.add (display s)
+          (display (dualL s)).reverse i (by rw [length_display]; exact hi)
+          (by rw [hlr]; exact hi),
+        ground.getAt_replicate 0 (sumNat s + s.length + 1) s.length i hi,
+        ground.getAt_reverse 0 (display (dualL s)) i (s.length - 1 - i)
+          (by rw [hld]; exact hix),
+        getAt_display s i hi,
+        getAt_display (dualL s) (s.length - 1 - i)
+          (by rw [length_dualL]; exact hk), length_dualL]
+      change (getAt 0 (rowList s) i + (s.length - i))
+          + (getAt 0 (rowList (dualL s)) (s.length - 1 - i)
+            + (s.length - (s.length - 1 - i))) = sumNat s + s.length + 1
+      rw [Nat.add_add_add_comm, hrow, hni, hnj, hu, Nat.add_assoc]
+  have hp : weyldim.gapProd (display s) = weyldim.gapProd (display (dualL s)) := by
+    rw [weyldim.gapProd_pairs, weyldim.gapProd_pairs]
+    refine places.pairGapFold_complement Nat.mul 1 Nat.mul_comm ground.mulAssoc
+      (display s) (display (dualL s)) (sumNat s + s.length + 1) ?_ ?_ (fun x => x)
+    · rw [hld, length_display]
+    · rw [length_display]; exact hj
+  show weyldim.gapProd (display (dualL s))
+      / weyldim.gapProd (display (List.replicate (dualL s).length 0))
+    = weyldim.gapProd (display s)
+      / weyldim.gapProd (display (List.replicate s.length 0))
+  rw [length_dualL, ← hp]
+
+/-- The label row lists each reduced target at most once. The
+shape enumeration is distinct at one degree, and reduction is
+injective there (`con:labels`; `prop:fusionfinite`). -/
+theorem rowL_count_le (d : Nat) (a b c : Shape) :
+    ground.countOf c (rowL d a b) ≤ 1 := by
+  refine ground.countOf_filterMap_le_one (emit a b) c
+    (allShapes d (degree a + degree b)) (fun x => countOf_allShapes_le d _ x) ?_
+  intro x y hx hy hfx hfy
+  obtain ⟨_, hxr⟩ := emit_reads (show (if 0 < steinberg.count a b x
+    then some (reduce x) else none) = some c from hfx)
+  obtain ⟨_, hyr⟩ := emit_reads (show (if 0 < steinberg.count a b y
+    then some (reduce y) else none) = some c from hfy)
+  obtain ⟨hxl, hxd⟩ := allShapes_sound d _ x (ground.mem_of_countOf_pos x _ hx)
+  obtain ⟨hyl, hyd⟩ := allShapes_sound d _ y (ground.mem_of_countOf_pos y _ hy)
+  cases d with
+  | zero =>
+    exact (ground.nil_of_length_zero x hxl).trans
+      (ground.nil_of_length_zero y hyl).symm
+  | succ r => exact reduce_inj r x y hxl hyl (hxd.trans hyd.symm) (hxr.trans hyr.symm)
+
+/-- A listed row target has positive label count. The matched
+shape's count and its reduced target's count agree
+(`con:labels`), at the source label's stated width. -/
+theorem rowL_count_pos (d : Nat) (a b c : Shape) (ha : a.length = d)
+    (hc : c ∈ rowL d a b) : 0 < countL a b c := by
+  obtain ⟨x, hx, hfx⟩ := ground.mem_filterMap_of _ _ c hc
+  obtain ⟨hp, hxc⟩ := emit_reads (show (if 0 < steinberg.count a b x
+    then some (reduce x) else none) = some c from hfx)
+  obtain ⟨hw, hk⟩ := allShapes_sound d (degree a + degree b) x hx
+  rw [← hxc, countL_reduce a b x (hw.trans ha.symm) hk]
+  exact hp
 
 end labels

@@ -32,6 +32,15 @@ the `b`-identity folded over the `a`-family at the withdrawn keys
 and each channel's identity at the shifted key itself, the
 exhaustion read splitting the product family over the channels
 and the channel tops closing the display at the top's count.
+The product family's counts read its two factor families' counts
+alone (`prodFam_counts`) and are fixed by the factors' exchange
+(`prodFam_comm`), the content join's commutativity at the two folds.
+
+The product family's count is the factors' counts' product
+(`prodFam_length`). A stated tensor exhaustion reads that count
+as the sum of the channel families' dimensions, collected over
+a row at the channel tops' occurrence counts
+(`prodFam_exhaustion_length`, `prodFam_dimension`).
 -/
 
 namespace steinberg
@@ -73,7 +82,7 @@ def read (a b c : Shape) : Prop :=
   let s := gradedSums a b c
   blockcount.fusionCount a b c + s.2 = s.1
 
-instance (a b c : Shape) : Decidable (read a b c) :=
+instance instSteinberg1 (a b c : Shape) : Decidable (read a b c) :=
   inferInstanceAs (Decidable (_ = _))
 
 
@@ -715,13 +724,13 @@ private theorem middle_channels (a b c : Shape)
   obtain ⟨hszP, hwidP, hclP, hiP⟩ := fusedSpan_pack a b hba
   have hrlS := exhaust_rowList_shapeOf a.length
     (fusedAt (blockSpan a) (blockSpan b)) hszP hwidP hclP
-  have hwd : ∀ nu ∈ ground.dedupL ((exhaust a.length
+  have hwd : ∀ nu ∈ ground.dedupF ((exhaust a.length
         (fusedAt (blockSpan a) (blockSpan b))).map HVec.content),
       nu.length = a.length := by
     intro nu hnu
     exact exhaust_width a.length
       (fusedAt (blockSpan a) (blockSpan b)) hszP hwidP hclP nu
-      (ground.mem_of_dedupL hnu)
+      (ground.mem_of_dedupF hnu)
   -- the coefficient over the channels
   have hsplit : ∀ side : Bool,
       weylchar.prodCount
@@ -732,7 +741,7 @@ private theorem middle_channels (a b c : Shape)
             * weylchar.prodCount
               (fun mu => occ mu (blockSpan (shapeOf nu)))
               a.length (display c) side)
-          (ground.dedupL ((exhaust a.length
+          (ground.dedupF ((exhaust a.length
             (fusedAt (blockSpan a) (blockSpan b))).map HVec.content)) := by
     intro side
     rw [weylchar.prodCount_congr
@@ -740,7 +749,7 @@ private theorem middle_channels (a b c : Shape)
         (fun mu => ground.famFold Nat.add 0
           (fun nu => countAt (fusedAt (blockSpan a) (blockSpan b)) nu
             * occ mu (blockSpan (shapeOf nu)))
-          (ground.dedupL ((exhaust a.length
+          (ground.dedupF ((exhaust a.length
             (fusedAt (blockSpan a) (blockSpan b))).map HVec.content)))
         (fun mu => (dimAt_occ
             (fusedAt (blockSpan a) (blockSpan b)) hiP mu).symm.trans
@@ -750,7 +759,7 @@ private theorem middle_channels (a b c : Shape)
       weylchar.prodCount_famFold
         (fun nu mu => countAt (fusedAt (blockSpan a) (blockSpan b)) nu
           * occ mu (blockSpan (shapeOf nu)))
-        (ground.dedupL ((exhaust a.length
+        (ground.dedupF ((exhaust a.length
           (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
         a.length (display c) side]
     exact ground.famFold_congr_all Nat.add 0 _ _
@@ -758,10 +767,10 @@ private theorem middle_channels (a b c : Shape)
         (countAt (fusedAt (blockSpan a) (blockSpan b)) nu)
         (fun mu => occ mu (blockSpan (shapeOf nu)))
         a.length (display c) side)
-      (ground.dedupL ((exhaust a.length
+      (ground.dedupF ((exhaust a.length
         (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
   -- the channel's own identity at its shape
-  have hidn : ∀ nu ∈ ground.dedupL ((exhaust a.length
+  have hidn : ∀ nu ∈ ground.dedupF ((exhaust a.length
         (fusedAt (blockSpan a) (blockSpan b))).map HVec.content),
       weylchar.prodCount (fun mu => occ mu (blockSpan (shapeOf nu)))
           a.length (display c) false
@@ -808,14 +817,14 @@ private theorem middle_channels (a b c : Shape)
         a.length (display c) true] at hb'
     exact hb'
   -- the channels' shifted alternant counts at the Kronecker read
-  have hkron : ∀ nu ∈ ground.dedupL ((exhaust a.length
+  have hkron : ∀ nu ∈ ground.dedupF ((exhaust a.length
         (fusedAt (blockSpan a) (blockSpan b))).map HVec.content),
       ∀ side : Bool,
       weylchar.sideCount a.length (display (shapeOf nu))
           (display c) side
         = if nu = rowList c ∧ side = false then 1 else 0 :=
     fun nu hnu side => sideCount_shapeOf a.length c hca nu
-      (hrlS nu (ground.mem_of_dedupL hnu)) (hwd nu hnu) side
+      (hrlS nu (ground.mem_of_dedupF hnu)) (hwd nu hnu) side
   -- the weighted identities summed over the channels
   have hfold : ground.famFold Nat.add 0
       (fun nu => countAt (fusedAt (blockSpan a) (blockSpan b)) nu
@@ -825,7 +834,7 @@ private theorem middle_channels (a b c : Shape)
         + countAt (fusedAt (blockSpan a) (blockSpan b)) nu
           * weylchar.sideCount a.length (display (shapeOf nu))
             (display c) true)
-      (ground.dedupL ((exhaust a.length
+      (ground.dedupF ((exhaust a.length
         (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
     = ground.famFold Nat.add 0
       (fun nu => countAt (fusedAt (blockSpan a) (blockSpan b)) nu
@@ -835,7 +844,7 @@ private theorem middle_channels (a b c : Shape)
         + countAt (fusedAt (blockSpan a) (blockSpan b)) nu
           * weylchar.sideCount a.length (display (shapeOf nu))
             (display c) false)
-      (ground.dedupL ((exhaust a.length
+      (ground.dedupF ((exhaust a.length
         (fusedAt (blockSpan a) (blockSpan b))).map HVec.content)) := by
     refine ground.famFold_congr_members Nat.add 0 _ _ _ (fun nu hnu => ?_)
     rw [← Nat.left_distrib, ← Nat.left_distrib,
@@ -845,7 +854,7 @@ private theorem middle_channels (a b c : Shape)
       (fun nu => countAt (fusedAt (blockSpan a) (blockSpan b)) nu
         * weylchar.sideCount a.length (display (shapeOf nu))
           (display c) true)
-      (ground.dedupL ((exhaust a.length
+      (ground.dedupF ((exhaust a.length
         (fusedAt (blockSpan a) (blockSpan b))).map HVec.content)) = 0 := by
     refine ground.famFold_congr_members Nat.add 0 _ (fun _ => (0 : Nat)) _
       (fun nu hnu => ?_) |>.trans
@@ -857,19 +866,19 @@ private theorem middle_channels (a b c : Shape)
       (fun nu => countAt (fusedAt (blockSpan a) (blockSpan b)) nu
         * weylchar.sideCount a.length (display (shapeOf nu))
           (display c) false)
-      (ground.dedupL ((exhaust a.length
+      (ground.dedupF ((exhaust a.length
         (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
       = fusionCount a b c := by
     have hpick : ground.famFold Nat.add 0
         (fun nu => countAt (fusedAt (blockSpan a) (blockSpan b)) nu
           * weylchar.sideCount a.length (display (shapeOf nu))
             (display c) false)
-        (ground.dedupL ((exhaust a.length
+        (ground.dedupF ((exhaust a.length
           (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
         = ground.famFold Nat.add 0
           (fun nu => if nu = rowList c then
             countAt (fusedAt (blockSpan a) (blockSpan b)) nu else 0)
-          (ground.dedupL ((exhaust a.length
+          (ground.dedupF ((exhaust a.length
             (fusedAt (blockSpan a) (blockSpan b))).map HVec.content)) := by
       refine ground.famFold_congr_members Nat.add 0 _ _ _ (fun nu hnu => ?_)
       rw [hkron nu (ground.mem_of_countOf_pos nu _ hnu) false]
@@ -878,12 +887,12 @@ private theorem middle_channels (a b c : Shape)
       · rw [if_neg hc, if_neg (fun hh => hc hh.1), Nat.mul_zero]
     rw [hpick, fusionCount_countAt a b c hba]
     match Nat.eq_zero_or_pos (ground.countOf (rowList c)
-      (ground.dedupL ((exhaust a.length
+      (ground.dedupF ((exhaust a.length
         (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))) with
     | Or.inr hp =>
       rw [ground.famFold_pick
         (countAt (fusedAt (blockSpan a) (blockSpan b))) (rowList c) _
-        (Nat.le_antisymm (ground.countOf_dedupL_le (rowList c) _) hp)]
+        (Nat.le_antisymm (ground.countOf_dedupF_le (rowList c) _) hp)]
     | Or.inl h0 =>
       rw [ground.famFold_pickZero
         (countAt (fusedAt (blockSpan a) (blockSpan b))) (rowList c) _ h0,
@@ -897,33 +906,33 @@ private theorem middle_channels (a b c : Shape)
       | Or.inl hz => exact hz.symm
       | Or.inr hq =>
         exact absurd (ground.countOf_pos_of_mem
-          (ground.mem_dedupL (ground.mem_of_countOf_pos (rowList c) _ hq)))
+          (ground.mem_dedupF (ground.mem_of_countOf_pos (rowList c) _ hq)))
           (by rw [h0]; exact Nat.lt_irrefl 0)
   have hbal : ground.famFold Nat.add 0
         (fun nu => countAt (fusedAt (blockSpan a) (blockSpan b)) nu
           * weylchar.prodCount
             (fun mu => occ mu (blockSpan (shapeOf nu)))
             a.length (display c) false)
-        (ground.dedupL ((exhaust a.length
+        (ground.dedupF ((exhaust a.length
           (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
       + ground.famFold Nat.add 0
         (fun nu => countAt (fusedAt (blockSpan a) (blockSpan b)) nu
           * weylchar.sideCount a.length (display (shapeOf nu))
             (display c) true)
-        (ground.dedupL ((exhaust a.length
+        (ground.dedupF ((exhaust a.length
           (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
     = ground.famFold Nat.add 0
         (fun nu => countAt (fusedAt (blockSpan a) (blockSpan b)) nu
           * weylchar.prodCount
             (fun mu => occ mu (blockSpan (shapeOf nu)))
             a.length (display c) true)
-        (ground.dedupL ((exhaust a.length
+        (ground.dedupF ((exhaust a.length
           (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
       + ground.famFold Nat.add 0
         (fun nu => countAt (fusedAt (blockSpan a) (blockSpan b)) nu
           * weylchar.sideCount a.length (display (shapeOf nu))
             (display c) false)
-        (ground.dedupL ((exhaust a.length
+        (ground.dedupF ((exhaust a.length
           (fusedAt (blockSpan a) (blockSpan b))).map HVec.content)) := by
     rw [← ground.famFold_add_split, ← ground.famFold_add_split]
     exact hfold
@@ -1143,6 +1152,84 @@ product's content data (`cor:steinberg`'s member sentence). -/
 def prodFam (La Lb : List (List BPair)) : List (List BPair) :=
   La.flatMap (fun p => Lb.map (fun q => poly.pnorm (elim.vecAdd p q)))
 
+/-- The tensor-product content family has one occurrence per
+pair of factor occurrences, its count the product of the counts. -/
+theorem prodFam_length (A B : List (List BPair)) :
+    (prodFam A B).length = A.length * B.length := by
+  unfold prodFam
+  rw [ground.length_flatMap]
+  have he := ground.famFold_congr_all Nat.add 0
+    (fun x => (B.map (fun y => poly.pnorm (elim.vecAdd x y))).length)
+    (fun _ => B.length) (fun _ => ground.length_map _ B) A
+  rw [he, ground.famFold_const]
+
+/-- A stated exhaustion of the product by content families reads
+their lengths at the factors' product, the dimension identity at
+the finite families (`lem:blockcount`'s graded exhaustion). -/
+theorem prodFam_exhaustion_length (A B : List (List BPair)) (Ls : List (List (List BPair)))
+    (h : ∀ v, ground.countOf v (prodFam A B)
+      = ground.famFold Nat.add 0 (fun L => ground.countOf v L) Ls) :
+    ground.famFold Nat.add 0 List.length Ls = A.length * B.length := by
+  have he := ground.length_eq_of_countOf (prodFam A B) (Ls.flatMap (fun L => L))
+    (fun v => by rw [ground.countOf_flatMap]; exact h v)
+  rw [prodFam_length, ground.length_flatMap] at he
+  exact he.symm
+
+/-- The dimension-weighted count over a row is the tensor
+dimension when its channel families exhaust the product. Repeated
+channel tops enter at their occurrence counts. -/
+theorem prodFam_dimension {α : Type} [DecidableEq α] (dflt : α)
+    (dim : α → Nat) (A B : List (List BPair))
+    (tops row : List α) (Ls : List (List (List BPair)))
+    (hlen : Ls.length = tops.length)
+    (hdim : ∀ k, k < tops.length → (ground.getAt [] Ls k).length = dim (ground.getAt dflt tops k))
+    (hex : ∀ v, ground.countOf v (prodFam A B)
+      = ground.famFold Nat.add 0 (fun L => ground.countOf v L) Ls)
+    (hrow : ∀ c, 0 < ground.countOf c tops → ground.countOf c row = 1) :
+    ground.famFold Nat.add 0 (fun c => ground.countOf c tops * dim c) row = A.length * B.length := by
+  rw [← ground.famFold_countCollect dim tops row hrow]
+  have he : ground.famFold Nat.add 0 List.length Ls = ground.famFold Nat.add 0 dim tops := by
+    rw [← ground.famFold_getAt Nat.add 0 List.length [] Ls tops.length hlen,
+      ← ground.famFold_getAt Nat.add 0 dim dflt tops tops.length rfl]
+    exact ground.famFold_congr_members Nat.add 0 _ _ (List.range tops.length)
+      (fun k hk => hdim k (ground.ltOfMem hk))
+  rw [← he]
+  exact prodFam_exhaustion_length A B Ls hex
+
+/-- A tensor-product content family's occurrence counts depend
+only on the occurrence counts in its two factor families. -/
+theorem prodFam_counts (A A' B B' : List (List BPair))
+    (ha : ∀ v, ground.countOf v A = ground.countOf v A')
+    (hb : ∀ v, ground.countOf v B = ground.countOf v B') (v : List BPair) :
+    ground.countOf v (prodFam A B) = ground.countOf v (prodFam A' B') := by
+  unfold prodFam
+  rw [ground.countOf_flatMap, ground.countOf_flatMap]
+  refine Eq.trans (ground.famFold_relist Nat.add 0 Nat.add_comm Nat.add_assoc _ A A' ha) ?_
+  apply ground.famFold_congr_all
+  intro a
+  rw [ground.countOf_fold, ground.countOf_fold, ground.famFold_map, ground.famFold_map]
+  exact ground.famFold_relist Nat.add 0 Nat.add_comm Nat.add_assoc _ B B' hb
+
+/-- Exchanging the tensor factors preserves every product
+content's count, the key join's commutativity at the two folds. -/
+theorem prodFam_comm (A B : List (List BPair)) (v : List BPair) :
+    ground.countOf v (prodFam A B) = ground.countOf v (prodFam B A) := by
+  unfold prodFam
+  rw [ground.countOf_flatMap, ground.countOf_flatMap]
+  have he (X Y : List (List BPair)) :
+      ground.famFold Nat.add 0 (fun x => ground.countOf v (Y.map (fun y => poly.pnorm (elim.vecAdd x y)))) X
+        = ground.famFold Nat.add 0 (fun x => ground.famFold Nat.add 0
+          (fun y => if v = poly.pnorm (elim.vecAdd x y) then 1 else 0) Y) X := by
+    apply ground.famFold_congr_all
+    intro x
+    rw [ground.countOf_fold, ground.famFold_map]
+  rw [he A B, he B A, ground.famFold_swap]
+  apply ground.famFold_congr_all
+  intro b
+  apply ground.famFold_congr_all
+  intro a
+  rw [elim.vecAdd_comm a b]
+
 /-- `cor:steinberg`'s member display at a stated channel top: the
 top's count among the channel tops joins the odd convolution count
 to the even one at the shifted key. -/
@@ -1155,7 +1242,7 @@ def memberAt (t : gentable.Table) (Wb : List (List BPair × Bool))
     = memberchar.convCount Wb La
         (poly.pnorm (elim.vecAdd cV (rhoV t))) false
 
-instance (t : gentable.Table) (Wb : List (List BPair × Bool))
+instance instSteinberg2 (t : gentable.Table) (Wb : List (List BPair × Bool))
     (La : List (List BPair)) (cVs : List (List BPair))
     (cV : List BPair) : Decidable (memberAt t Wb La cVs cV) :=
   inferInstanceAs (Decidable (_ = _))
@@ -1177,21 +1264,6 @@ private theorem prodFam_shape (t : gentable.Table)
       elim.length_vecAdd p q t.rank (hmsha p hp).1 (hmshb q hq).1]
   · rw [← hqe]
     exact poly.pnorm_pnorm _
-
-/-- The shifted alternant's counts folded over the `a`-family: the
-family-first read of the graded product, `wCount` the count pair's
-spelling (`memberchar.convCount_wFold`, the general). -/
-private theorem wCount_shiftFold (t : gentable.Table)
-    (Wb : List (List BPair × Bool)) (La : List (List BPair))
-    (hwshb : wShapeRead t Wb) (hmsha : mShapeRead t La)
-    (y : List BPair) (hy : y.length = t.rank)
-    (hyn : poly.pnorm y = y) (s : Bool) :
-    ground.famFold Nat.add 0
-      (fun p => wCount Wb
-        (poly.pnorm (elim.vecAdd y (poly.neg p))) s) La
-      = memberchar.convCount Wb La y s :=
-  (memberchar.convCount_wFold t Wb La hwshb hmsha y hy hyn s).symm
-
 
 /-- The convolution's counts folded over the `a`-family: the
 `b`-family's convolution counts at the withdrawn keys collect at the
@@ -1500,7 +1572,7 @@ twice.  Read as `ch_a · a_{b+ρ}`, the `b`-identity
 (`memberchar.identityRead`) enters once at each `a`-member's
 withdrawn key and the two folds collect at the product family and at
 the `a`-family's own convolution (`convCount_shiftFold`,
-`wCount_shiftFold`).  Read as the channels' fold, the same identity
+`memberchar.convCount_wFold`).  Read as the channels' fold, the same identity
 enters at the key itself per channel and the exhaustion read splits
 the product family over the channels (`convCount_chanFold`).  The
 two balances share the product family's graded counts, so the shared
@@ -1672,13 +1744,14 @@ theorem memberRead (t : gentable.Table) (F : FundData)
       (fun p => wCount Wb (poly.pnorm (elim.vecAdd
         (poly.pnorm (elim.vecAdd cV (rhoV t))) (poly.neg p))) false) La
   have hbal1 := hs1.symm.trans (hfold1.trans hs2)
+  unfold wCount at hbal1
   rw [convCount_shiftFold t W Lb La hwsh hmshb hmsha
       (poly.pnorm (elim.vecAdd cV (rhoV t))) hkl hkn false,
     convCount_shiftFold t W Lb La hwsh hmshb hmsha
       (poly.pnorm (elim.vecAdd cV (rhoV t))) hkl hkn true,
-    wCount_shiftFold t Wb La hwshb hmsha
+    ← memberchar.convCount_wFold t Wb La hwshb hmsha
       (poly.pnorm (elim.vecAdd cV (rhoV t))) hkl hkn false,
-    wCount_shiftFold t Wb La hwshb hmsha
+    ← memberchar.convCount_wFold t Wb La hwshb hmsha
       (poly.pnorm (elim.vecAdd cV (rhoV t))) hkl hkn true] at hbal1
   -- the channels' identities folded over the tops
   have hfold3 : ground.famFold Nat.add 0

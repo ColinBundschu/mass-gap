@@ -387,17 +387,10 @@ private theorem walk : ∀ (diag : List Mat) (A : Mat) (off : List Mat)
     | nil => exact (hsr : False).elim
     | cons w ws1 =>
     -- the slab shapes
-    have hk : 0 < k := hslab.1
-    have hAsq : sqAt A k := hslab.2.1
-    have hAl : A.length = k := sqAt_len hAsq
-    have hAr : rowsLen k A := rowsLen_of_sqAt hAsq
     have hBl : B.length = k := greenprod.rectAt_len hslab.2.2.1
     have hBr : rowsLen k1 B := greenprod.rectAt_rows hslab.2.2.1
-    have hBt : (transposeM B).length = k1 :=
-      length_transposeM B hBr (by rw [hBl]; exact hk)
     have hXl : X.1.length = k := sqAt_len hq.1
     have hX1sq : sqAt X1.1 k1 := hq.2.1
-    have hX1l : X1.1.length = k1 := sqAt_len hX1sq
     have hRl : R.1.length = k1 := greenprod.rectAt_len hwr.1
     have hRr : rowsLen k R.1 := greenprod.rectAt_rows hwr.1
     have hRt : (transposeM R.1).length = k :=
@@ -652,12 +645,6 @@ private theorem walk : ∀ (diag : List Mat) (A : Mat) (off : List Mat)
       refine poly.oneValue_trans hadd ?_
       exact poly.add_congr (matVec_matScale R.2 X.1 u.1)
         (matVec_matScale X.2 (matMul B R.1) u.1)
-    have hZl : (vecScale (BPair.ofPos p.2)
-        (vecScale (BPair.ofPos X.2)
-          (matVec (matMul B R.1) u.1))).length = k := by
-      rw [length_vecScale, length_vecScale, matVec_length,
-        length_matMul]
-      exact hBl
     have m9 : poly.unitTail
         (poly.add
           (vecScale (BPair.ofPos R.2)
@@ -1376,7 +1363,7 @@ def decCapList :
   | Gs, _ :: Rs, _ :: cs =>
     @instDecidableAnd _ _ inferInstance (decCapList (Gs.drop 1) Rs cs)
 
-instance (Gs : List Mat) (Rs : List greenprod.MatQ)
+instance instGroundreads1 (Gs : List Mat) (Rs : List greenprod.MatQ)
     (cs : List ((k : Nat) × Pos × Pos × Split k)) :
     Decidable (capList Gs Rs cs) :=
   decCapList Gs Rs cs
@@ -1405,7 +1392,7 @@ def decCapListDown :
   | Gs, _ :: Cs, _ :: cs =>
     @instDecidableAnd _ _ inferInstance (decCapListDown (Gs.drop 1) Cs cs)
 
-instance (Gs : List Mat) (Cs : List greenprod.MatQ)
+instance instGroundreads2 (Gs : List Mat) (Cs : List greenprod.MatQ)
     (cs : List ((k : Nat) × Pos × Pos × Split k)) :
     Decidable (capListDown Gs Cs cs) :=
   decCapListDown Gs Cs cs
@@ -1961,10 +1948,6 @@ private theorem perpCoord {n : Nat} (Et : Mat) (T Tw : SqMat n)
       (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)))
       (matVec Tw.val x)).length = n := by
     rw [matVec_length, split.diagM_len]; exact hdsl
-  have hrowl : (ground.getAt ([] : List BPair)
-      (split.diagM (l.map (fun r => (r.2.2 * BPair.ofPos r.2.1).norm)))
-      j0).length = n := by
-    rw [split.diagM_rowlen _ j0 (by rw [hdsl]; exact hj0)]; exact hdsl
   have hright : (dotP (matVec T.val (elim.idRow n j0))
       (matVec T.val (matVec Tw.val x))).oneValue
       (ground.getAt BPair.unit (matVec Tw.val x) j0
@@ -2011,7 +1994,7 @@ def clearRead (l : List (BPair × Pos × BPair)) (j0 : Nat) (gn gd : Pos) :
     Prop :=
   clearGo j0 gn gd 0 l = true
 
-instance (l : List (BPair × Pos × BPair)) (j0 : Nat) (gn gd : Pos) :
+instance instGroundreads3 (l : List (BPair × Pos × BPair)) (j0 : Nat) (gn gd : Pos) :
     Decidable (clearRead l j0 gn gd) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -2070,9 +2053,6 @@ theorem gap_perp {n : Nat} (Et : Mat) (T Tw : SqMat n)
       (by rw [split.rootLen Et T Tw l hd]; exact hj) hne
   have hTl : T.val.length = n := SqMat.rows T
   have hTwl : Tw.val.length = n := SqMat.rows Tw
-  have hEt : sqAt Et n := hd.1
-  have hEtr : rowsLen n Et := rowsLen_of_sqAt hEt
-  have hIr : rowsLen n (idMat n) := rowsLen_idMat n
   have hlen : l.length = n := split.rootLen Et T Tw l hd
   have hdet : ¬ (minor T.val).oneValue BPair.unit := hd.2.2.1.1
   have hc : (matVec Tw.val x).length = n := by rw [matVec_length, hTwl]
@@ -2105,9 +2085,7 @@ theorem gap_perp {n : Nat} (Et : Mat) (T Tw : SqMat n)
             (split.diagEntryV Et T Tw l hd j hj _ _ _ rfl))
           (BPair.oneValue_refl _))) ?_
     by_cases hjj : j = j0
-    · have hnj : (ground.getAt (BPair.unit, Pos.one, BPair.unit) l j).1
-          = BPair.unit := by rw [hjj, hroot0]
-      have hsq : (ground.getAt BPair.unit (matVec Tw.val x) j
+    · have hsq : (ground.getAt BPair.unit (matVec Tw.val x) j
           * ground.getAt BPair.unit (matVec Tw.val x) j).oneValue
           BPair.unit := by
         rw [hjj]
@@ -2254,11 +2232,6 @@ theorem transport_offLine {n : Nat} (Et Es D : Mat) (T Tw : SqMat n)
       ≤ ((dotN (matVec T.val (elim.idRow n j0)) (matVec T.val (elim.idRow n j0))
           * dotN (matVec T.val (elim.idRow n j0)) (matVec T.val (elim.idRow n j0)))
           * dotN psit psit).scale (wn * wn * (gd * gd)) := by
-  have hgap : ∀ j, j < n → j ≠ j0 → ∀ (nj gj : BPair) (dj : Pos),
-      ground.getAt (BPair.unit, Pos.one, BPair.unit) l j = (nj, dj, gj) →
-      ¬ (nj.scale gd < BPair.ofPos (gn * dj)) :=
-    fun j hj hne => clearRead_at hcl j
-      (by rw [split.rootLen Et T Tw l hd]; exact hj) hne
   have hTl : T.val.length = n := SqMat.rows T
   have hEtr : rowsLen n Et := rowsLen_of_sqAt hd.1
   have hEtl : Et.length = n := sqAt_len hd.1
@@ -2474,10 +2447,11 @@ private theorem masterAlg {s t a N Qx Qp Cc al be bc bn : BPair}
     refine ground.leB_trans
       (ground.leB_mulR halbe
         (ground.leB_mulR hDpos hQp)) ?_
-    rw [BPair.mul_left_comm (s * t + (a * a).swap) bn s,
-      BPair.mul_left_comm (al * be) bn
-        ((s * t + (a * a).swap) * s),
-      BPair.mul_comm (s * t + (a * a).swap) s]
+    refine leB_congr (polEqB [bn, al, be, s, t, ((a * a).swap)]
+        (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mul (Pol.mon (Mon.mul (Mon.var 1) (Mon.var 2))) (Pol.mul (Pol.mon (Mon.var 3)) (Pol.add (Pol.mon (Mon.mul (Mon.var 3) (Mon.var 4))) (Pol.mon (Mon.var 5))))))
+        (Pol.mul (Pol.mon (Mon.mul (Mon.var 1) (Mon.var 2))) (Pol.mul (Pol.add (Pol.mon (Mon.mul (Mon.var 3) (Mon.var 4))) (Pol.mon (Mon.var 5))) (Pol.mon (Mon.mul (Mon.var 0) (Mon.var 3))))) (by decide +kernel))
+      (BPair.oneValue_refl _) (?_ : bn * (al * be * (s * (s * t + (a * a).swap))) ≤ bn * (al *
+          al * (s * s * t)))
     exact ground.leB_mulR hbn hcore
   refine ground.leB_congr_left
     (BPair.oneValue_symm
@@ -2520,6 +2494,21 @@ private theorem polarTerm {n : Nat} (A : Mat) (cn cd : Pos)
         + dotN u (matVec A w))))
   · exact BPair.oneValue_symm
       (BPair.ofPos_scale cn (p * p * dotN u u + q * q * dotN w w))
+
+/-- The width's weights regroup at the read's own scale. -/
+private theorem weightRegroup (a b c d e : BPair) :
+    (a * (b * c) * (d * e)).oneValue (d * (b * (a * (c * e)))) :=
+  polEqB [a, b, c, d, e]
+    (Pol.mon (Mon.mul (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 1) (Mon.var 2))) (Mon.mul (Mon.var 3) (Mon.var 4))))
+    (Pol.mon (Mon.mul (Mon.var 3) (Mon.mul (Mon.var 1) (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 2) (Mon.var 4)))))) (by decide +kernel)
+
+/-- The squared weights regroup at the read's own scale. -/
+private theorem weightRegroupSq (a b c d e : BPair) :
+    (a * (b * (c * c * (d * d * e)))).oneValue
+      (d * (c * (a * (b * (c * (d * e)))))) :=
+  polEqB [a, b, c, d, e]
+    (Pol.mon (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 1) (Mon.mul (Mon.mul (Mon.var 2) (Mon.var 2)) (Mon.mul (Mon.mul (Mon.var 3) (Mon.var 3)) (Mon.var 4))))))
+    (Pol.mon (Mon.mul (Mon.var 3) (Mon.mul (Mon.var 2) (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 1) (Mon.mul (Mon.var 2) (Mon.mul (Mon.var 3) (Mon.var 4)))))))) (by decide +kernel)
 
 /-- The width between the two grounds' reads at the head cap, read at
 the ground data alone: the three off-line terms, each polarized at the
@@ -2871,43 +2860,7 @@ theorem readClose {n : Nat} (A : Mat) (cn cd : Pos)
   have hmag3 := ground.leB_congr_right
     (fourB (BPair.ofPos cn * (BPair.ofPos (wn * gd) * BPair.ofPos (wn * gd)
       * (dotN psi psi * dotN psi psi * dotN psit psit)))) hmag2
-  rw [BPair.mul_assoc (BPair.ofPos cd)
-      (BPair.ofPos (wn * gd) * BPair.ofPos (gn * wd))
-      (dotN psi psi
-        * windowsep.mag (readGap (read A psi) (read A psit))),
-    BPair.mul_assoc (BPair.ofPos (wn * gd)) (BPair.ofPos (gn * wd))
-      (dotN psi psi
-        * windowsep.mag (readGap (read A psi) (read A psit))),
-    BPair.mul_left_comm (BPair.ofPos (gn * wd)) (dotN psi psi)
-      (windowsep.mag (readGap (read A psi) (read A psit))),
-    BPair.mul_left_comm (BPair.ofPos (wn * gd)) (dotN psi psi)
-      (BPair.ofPos (gn * wd)
-        * windowsep.mag (readGap (read A psi) (read A psit))),
-    BPair.mul_left_comm (BPair.ofPos cd) (dotN psi psi)
-      (BPair.ofPos (wn * gd) * (BPair.ofPos (gn * wd)
-        * windowsep.mag (readGap (read A psi) (read A psit)))),
-    BPair.mul_left_comm (BPair.ofPos cd) (BPair.ofPos (wn * gd))
-      (BPair.ofPos (gn * wd)
-        * windowsep.mag (readGap (read A psi) (read A psit))),
-    BPair.mul_assoc (BPair.ofPos (wn * gd)) (BPair.ofPos (wn * gd))
-      (dotN psi psi * dotN psi psi * dotN psit psit),
-    BPair.mul_assoc (dotN psi psi) (dotN psi psi) (dotN psit psit),
-    BPair.mul_left_comm (BPair.ofPos (wn * gd)) (dotN psi psi)
-      (dotN psi psi * dotN psit psit),
-    BPair.mul_left_comm (BPair.ofPos (wn * gd)) (dotN psi psi)
-      (BPair.ofPos (wn * gd) * (dotN psi psi * dotN psit psit)),
-    BPair.mul_left_comm (BPair.ofPos cn) (dotN psi psi)
-      (BPair.ofPos (wn * gd) * (BPair.ofPos (wn * gd)
-        * (dotN psi psi * dotN psit psit))),
-    BPair.mul_left_comm (BPair.ofPos cn) (BPair.ofPos (wn * gd))
-      (BPair.ofPos (wn * gd) * (dotN psi psi * dotN psit psit)),
-    BPair.mul_left_comm (BPair.ofPos 4) (dotN psi psi)
-      (BPair.ofPos (wn * gd) * (BPair.ofPos cn
-        * (BPair.ofPos (wn * gd) * (dotN psi psi * dotN psit psit)))),
-    BPair.mul_left_comm (BPair.ofPos 4) (BPair.ofPos (wn * gd))
-      (BPair.ofPos cn
-        * (BPair.ofPos (wn * gd) * (dotN psi psi * dotN psit psit)))]
-    at hmag3
+  have hmag3 := ground.leB_congr (weightRegroup _ _ _ _ _) (weightRegroupSq _ _ _ _ _) hmag3
   have hcut := ground.leB_unscale_left (ground.unitLtOfPos (wn * gd))
     (ground.leB_unscale_left hs hmag3)
   refine ground.leB_congr ?_ ?_ hcut
@@ -7709,7 +7662,7 @@ def eucRead (un ud kn kd N : Pos)
     (l : List (BPair × Pos × BPair)) (ws : List (Pos × Pos)) : Prop :=
   eucGo un ud kn kd N l ws = true
 
-instance (un ud kn kd N : Pos) (l : List (BPair × Pos × BPair))
+instance instGroundreads4 (un ud kn kd N : Pos) (l : List (BPair × Pos × BPair))
     (ws : List (Pos × Pos)) :
     Decidable (eucRead un ud kn kd N l ws) :=
   inferInstanceAs (Decidable (_ = _))
@@ -8250,6 +8203,13 @@ private theorem armScaleOff {un ud N : Pos} {nk : BPair}
       exact BPair.oneValue_symm (BPair.ofPos_add _ _)
     exact BPair.ofPos_off _ h1
 
+/-- The minor's factor crosses the scaled column to the outside. -/
+private theorem minorOutside (m x g d : BPair) :
+    (m * (x * (g * d))).oneValue (g * d * (x * m)) :=
+  polEqB [m, x, g, d]
+    (Pol.mon (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 1) (Mon.mul (Mon.var 2) (Mon.var 3)))))
+    (Pol.mon (Mon.mul (Mon.mul (Mon.var 2) (Mon.var 3)) (Mon.mul (Mon.var 1) (Mon.var 0)))) (by decide +kernel)
+
 /-- Clause (v)'s upper witness at a congruence column off the
 kernel: the solve identity's read at the column is the count
 against the count joined to the root's crossing, the split's
@@ -8279,14 +8239,11 @@ theorem euc_hi_col {o : Nat} (Et : Mat) (T Tw : SqMat o)
         (elim.matVec Vw (elim.matVec T.val (elim.idRow o j))))
       (elim.vecScale (BPair.ofPos ((posOfSucc n * (ud * dj)) * vc))
         (elim.matVec T.val (elim.idRow o j))) := by
-  have hTl : T.val.length = o := SqMat.rows T
   have hTwl : Tw.val.length = o := SqMat.rows Tw
   have hVl : Vw.length = o := sqAt_len hVs
   have hlen : l.length = o := split.rootLen Et T Tw l hd
   have hjl : j < l.length := by rw [hlen]; exact hj
   have hdet : ¬ (minor T.val).oneValue BPair.unit := hd.2.2.1.1
-  have hvl : (matVec T.val (elim.idRow o j)).length = o := by
-    rw [matVec_length, hTl]
   have hzl : (matVec Vw (matVec T.val (elim.idRow o j))).length = o := by
     rw [matVec_length, hVl]
   have hcl : (matVec Tw.val
@@ -8393,13 +8350,7 @@ theorem euc_hi_col {o : Nat} (Et : Mat) (T Tw : SqMat o)
     refine BPair.oneValue_trans
       (BPair.mul_congr (BPair.oneValue_refl (minor T.val))
         (BPair.mul_congr (BPair.oneValue_refl _) hGdiag)) ?_
-    refine BPair.oneValue_trans
-      (BPair.oneValue_of_eq (BPair.mul_left_comm _ _ _)) ?_
-    refine BPair.oneValue_trans
-      (BPair.mul_congr (BPair.oneValue_refl _)
-        (BPair.oneValue_of_eq (BPair.mul_comm _ _))) ?_
-    refine BPair.oneValue_trans
-      (BPair.oneValue_of_eq (BPair.mul_left_comm _ _ _)) ?_
+    refine BPair.oneValue_trans (minorOutside _ _ _ _) ?_
     exact BPair.mul_congr
       (BPair.oneValue_symm (BPair.norm_oneValue _))
       (BPair.oneValue_of_eq (BPair.mul_comm _ _))
@@ -9440,6 +9391,14 @@ private theorem pairPriceCore {dd A0 B0 Gx Gy a b : BPair}
       ≤ ((a * a) * Gx + (b * b) * Gy).scale WN
     exact h2
 
+/-- The minor's square collects across the two scaled reads. -/
+private theorem minorSqCollect (a m x b y : BPair) :
+    (a * a * (m * m * x) + b * b * (m * m * y)).oneValue
+      ((a * a * x + b * b * y) * (m * m)) :=
+  polEqB [a, m, x, b, y]
+    (Pol.add (Pol.mon (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 0)) (Mon.mul (Mon.mul (Mon.var 1) (Mon.var 1)) (Mon.var 2)))) (Pol.mon (Mon.mul (Mon.mul (Mon.var 3) (Mon.var 3)) (Mon.mul (Mon.mul (Mon.var 1) (Mon.var 1)) (Mon.var 4)))))
+    (Pol.mul (Pol.add (Pol.mon (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 0)) (Mon.var 2))) (Pol.mon (Mon.mul (Mon.mul (Mon.var 3) (Mon.var 3)) (Mon.var 4)))) (Pol.mon (Mon.mul (Mon.var 1) (Mon.var 1)))) (by decide +kernel)
+
 /-- Clause (v)'s pair-of-families pricing: a read at the two
 families' difference is priced by the weighted polarization at the
 two probes' gram reads, the spectral width the factor — the
@@ -9574,12 +9533,6 @@ theorem euc_pair_price {o : Nat} (Et : Mat) (T Tw : SqMat o)
   have hVYl : (vecScale (b * b) (List.zipWith (· * ·) (matVec Tw.val y)
       (matVec Tw.val y))).length = o := by
     rw [length_vecScale]; exact hZYYl
-  have hVall : (vecAdd
-      (vecScale (a * a) (List.zipWith (· * ·) (matVec Tw.val x)
-        (matVec Tw.val x)))
-      (vecScale (b * b) (List.zipWith (· * ·) (matVec Tw.val y)
-        (matVec Tw.val y)))).length = o :=
-    length_vecAdd _ _ o hVXl hVYl
   -- the per-root term price at a free polarization partner
   have hkey : ∀ j, j < o → ∀ z : BPair,
       (((a * b) * z).scale 2
@@ -9966,15 +9919,7 @@ theorem euc_pair_price {o : Nat} (Et : Mat) (T Tw : SqMat o)
           (BPair.oneValue_symm hGX))
         (BPair.mul_congr (BPair.oneValue_refl (b * b))
           (BPair.oneValue_symm hGY))) ?_
-    exact BPair.oneValue_of_eq (by
-      rw [BPair.mul_left_comm (a * a) (minor T.val * minor T.val)
-          (dotP x x),
-        BPair.mul_left_comm (b * b) (minor T.val * minor T.val)
-          (dotP y y),
-        ← BPair.left_distrib (minor T.val * minor T.val)
-          ((a * a) * dotP x x) ((b * b) * dotP y y),
-        BPair.mul_comm (minor T.val * minor T.val)
-          ((a * a) * dotP x x + (b * b) * dotP y y)])
+    exact minorSqCollect _ _ _ _ _
   exact pairPriceCore (ground.sq_pos hdet) hcmp1 hcmp2 e1 e1b e2
 
 set_option genInjectivity false in
@@ -10022,7 +9967,7 @@ def decGrowthTail :
     @instDecidableAnd _ _ inferInstance
       (@instDecidableAnd _ _ inferInstance (decGrowthTail s.ko ss kfin))
 
-instance (kim : Nat) (ss : List GStep) (kfin : Nat) :
+instance instGroundreads5 (kim : Nat) (ss : List GStep) (kfin : Nat) :
     Decidable (growthTail kim ss kfin) := decGrowthTail kim ss kfin
 
 /-- The chain's lower clearing: the certificate and cap second
@@ -11215,7 +11160,7 @@ def reachKeep (M : Mat) (p q : Nat) : Prop :=
     (ground.getAt BPair.unit (ground.getAt [] M r) c).oneValue
       BPair.unit
 
-instance (M : Mat) (p q : Nat) : Decidable (reachKeep M p q) :=
+instance instGroundreads6 (M : Mat) (p q : Nat) : Decidable (reachKeep M p q) :=
   Nat.decidableBallLT _ _
 
 /-- The banded read: the keep at every consecutive boundary pair of
@@ -11224,7 +11169,7 @@ def bandedAt (M : Mat) (ns : List Nat) : Prop :=
   ∀ j, j < ns.length →
     reachKeep M (ground.prefixAt j ns) (ground.prefixAt (j + 1) ns)
 
-instance (M : Mat) (ns : List Nat) : Decidable (bandedAt M ns) :=
+instance instGroundreads7 (M : Mat) (ns : List Nat) : Decidable (bandedAt M ns) :=
   Nat.decidableBallLT _ _
 
 /-- The leading support: every entry at a row or column key at or
@@ -11235,7 +11180,7 @@ def leadAt (M : Mat) (p : Nat) : Prop :=
     (ground.getAt BPair.unit (ground.getAt [] M r) c).oneValue
       BPair.unit
 
-instance (M : Mat) (p : Nat) : Decidable (leadAt M p) :=
+instance instGroundreads8 (M : Mat) (p : Nat) : Decidable (leadAt M p) :=
   Nat.decidableBallLT _ _
 
 /-- The trailing support: every entry at a row or column key before
@@ -11246,7 +11191,7 @@ def tailAt (M : Mat) (q : Nat) : Prop :=
     (ground.getAt BPair.unit (ground.getAt [] M r) c).oneValue
       BPair.unit
 
-instance (M : Mat) (q : Nat) : Decidable (tailAt M q) :=
+instance instGroundreads9 (M : Mat) (q : Nat) : Decidable (tailAt M q) :=
   Nat.decidableBallLT _ _
 
 /-- The skipping fold sits at the sum's unit where at every key one of
@@ -11342,7 +11287,7 @@ private theorem transposeM_matPow {o : Nat} (M : Mat)
       refine matOne_trans
         (matMul_congrR (n := o0 + 1) (k := o0 + 1)
           (matPow M (o0 + 1) k) (elim.transposeM M) M
-          hTMr hMr hTMl hMl ho hsym) ?_
+          hTMr hMr hTMl hMl hsym) ?_
       exact matPow_succR (o0 + 1) M hMl hMr ho k
 
 /-- The product's entry sits at the sum's unit where at every key one
@@ -11360,10 +11305,6 @@ private theorem matMul_entry_unit {n : Nat} (X Y : Mat)
       BPair.unit := by
   have hYt : (transposeM Y).length = n := transposeLen Y hYr hYl
   have hct : c < (transposeM Y).length := by rw [hYt]; exact hc
-  have hcol : (ground.getAt ([] : List BPair) (transposeM Y) c).length
-      = n := by
-    rw [rowsLen_getAt (transposeM Y) c (rowsLen_transposeM Y) hct]
-    exact hYl
   rw [getAt_matMul X Y r hr,
     ground.getAt_map ([] : List BPair) BPair.unit
       (fun cc => dotN (ground.getAt [] X r) cc) (transposeM Y) c hct]
@@ -11372,16 +11313,6 @@ private theorem matMul_entry_unit {n : Nat} (X Y : Mat)
   rw [getAt_transposeM BPair.unit Y hYr c i hc (by rw [hYl]; exact hi)]
   exact h i hi
 
-/-- The row read's converse: every row a unit tail is the null read. -/
-private theorem matNull_of_rows : ∀ (M : Mat),
-    (∀ i, i < M.length →
-      poly.unitTail (ground.getAt ([] : List BPair) M i)) →
-    elim.matNull M
-  | [], _ => trivial
-  | _ :: t, h =>
-    ⟨h 0 (Nat.succ_pos _),
-     matNull_of_rows t (fun i hi => h (i + 1) (Nat.succ_lt_succ hi))⟩
-
 /-- The entry read's converse at a stated width. -/
 private theorem matNull_of_entries {n : Nat} (M : Mat)
     (hMr : rowsLen n M)
@@ -11389,7 +11320,7 @@ private theorem matNull_of_entries {n : Nat} (M : Mat)
       (ground.getAt BPair.unit
         (ground.getAt ([] : List BPair) M r) c).oneValue BPair.unit) :
     elim.matNull M := by
-  refine matNull_of_rows M (fun i hi => ?_)
+  refine matNull_of_getAt M (fun i hi => ?_)
   refine elim.unitTail_of_getAt _ (fun p hp => ?_)
   rw [rowsLen_getAt M i hMr hi] at hp
   exact h i hi p hp
@@ -13252,7 +13183,7 @@ def decOffNull : ∀ Bs : List Mat, Decidable (offNull Bs)
   | [] => isTrue trivial
   | _ :: Bs => @instDecidableAnd _ _ inferInstance (decOffNull Bs)
 
-instance (Bs : List Mat) : Decidable (offNull Bs) := decOffNull Bs
+instance instGroundreads10 (Bs : List Mat) : Decidable (offNull Bs) := decOffNull Bs
 
 /-- The assembled electric weight is the shells' fold: at null off
 couplings the assembled image's self-pairing at the cross-cleared
@@ -13339,9 +13270,6 @@ theorem eSum_assemble : ∀ (EsL Bs : List Mat)
       -- the components and their lengths
       have hal : (greenprod.vecScale (denProd us') u.1).length = k :=
         (ground.length_map _ u.1).trans hv.1
-      have hbl : (greenprod.vecScale u.2 (headVec us')).length
-          = ground.sumNat (k' :: ns) :=
-        (ground.length_map _ (headVec us')).trans (headVec_len hv.2)
       -- the null coupling's two actions
       have hoffAct : poly.unitTail
           (matVec (greenprod.offPad (ground.sumNat (k' :: ns)) B)
@@ -13447,7 +13375,7 @@ theorem eSum_assemble : ∀ (EsL Bs : List Mat)
         (BPair.oneValue_trans (dotN_congrL _ _ _ himg)
           (dotN_congrR _ _ _ himg)) ?_
       refine BPair.oneValue_trans
-        (inertia.dotN_app _ _ _ _ rfl) ?_
+        (elim.dotN_app _ _ _ _ rfl) ?_
       show ((dotN (greenprod.vecScale (denProd us') (matVec E u.1))
             (greenprod.vecScale (denProd us') (matVec E u.1)))
           + (dotN (greenprod.vecScale u.2
@@ -13491,7 +13419,7 @@ def decECapList :
       (@instDecidableAnd _ _ inferInstance
         (decECapList (EsL.drop 1) (ns.drop 1) es))
 
-instance (EsL : List Mat) (ns : List Nat)
+instance instGroundreads11 (EsL : List Mat) (ns : List Nat)
     (es : List ((k : Nat) × Pos × Pos
       × inertia.Split k × inertia.Split k)) :
     Decidable (eCapList EsL ns es) :=
@@ -13653,7 +13581,7 @@ def decUnitGrams : ∀ (Gs : List Mat) (ns : List Nat),
   | _ :: Gs, ns => @instDecidableAnd _ _ inferInstance
       (decUnitGrams Gs (ns.drop 1))
 
-instance (Gs : List Mat) (ns : List Nat) :
+instance instGroundreads12 (Gs : List Mat) (ns : List Nat) :
     Decidable (unitGrams Gs ns) := decUnitGrams Gs ns
 
 /-- The shells' walk: at the shells' caps, the unit grams and the

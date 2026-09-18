@@ -158,7 +158,7 @@ def tableRead (d : Nat) : Prop :=
   ((allShapes d (2 * d)).all (fun c =>
     countAt d c == rowRead d c)) = true
 
-instance (d : Nat) : Decidable (tableRead d) :=
+instance instChannels1 (d : Nat) : Decidable (tableRead d) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The first closure identity, cleared: `Σ m d = (d_f² - 1)²`. -/
@@ -166,7 +166,7 @@ def dimClosure (d : Nat) : Prop :=
   (rows d).foldl (fun acc r => acc + r.2 * weyldim.dimOf r.1) 0
     = (d * d - 1) * (d * d - 1)
 
-instance (d : Nat) : Decidable (dimClosure d) :=
+instance instChannels2 (d : Nat) : Decidable (dimClosure d) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The second closure identity, cleared at the Casimir's second
@@ -176,7 +176,7 @@ def casClosure (d : Nat) : Prop :=
     (fun acc r => acc + r.2 * weyldim.dimOf r.1 * c2hat.dfQ r.1) 0
     = 4 * (d * d) * ((d * d - 1) * (d * d - 1))
 
-instance (d : Nat) : Decidable (casClosure d) :=
+instance instChannels3 (d : Nat) : Decidable (casClosure d) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-! The closed-form Casimir column (`lem:channels`' table): each

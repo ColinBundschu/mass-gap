@@ -52,9 +52,11 @@ each refuse their read and part the solve, and the degree floor is
 the square system's shape frame (`momentfold.momSys_len`), the read
 at the degree vacant holding at the padded rows.
 -/
+
+namespace reconstruct
 set_option maxHeartbeats 4000000
 
-open ground elim inertia groundreads momentfold reconstruct
+open ground elim inertia groundreads momentfold
 
 private def xP : List BPair := [⟨2, 1⟩]
 private def yP : List BPair := [⟨3, 1⟩]
@@ -83,17 +85,17 @@ private abbrev hiPinOne (vc : Pos) : Prop :=
     (ground.bpow (BPair.ofPos ((posOfSucc 2 * ((1 : Pos) * 1)) * vc)) 3
       * ((⟨2, 1⟩ : BPair) * BPair.ofPos 1))
 
-example : hiFoldOne := by decide +kernel
-example : hiPinOne 5 := by decide +kernel
-example : (dotP xP (matVec (matPow vwOne 1 3) yP)).oneValue
+theorem pin1 : hiFoldOne := by decide +kernel
+theorem pin2 : hiPinOne 5 := by decide +kernel
+theorem pin3 : (dotP xP (matVec (matPow vwOne 1 3) yP)).oneValue
     (BPair.ofPos 54) := by decide +kernel
-example : (ground.getAt BPair.unit
+theorem pin4 : (ground.getAt BPair.unit
     (split.vDiagL (matPow vwOne 1 3) tOne) 0).oneValue (BPair.ofPos 27) := by
   decide +kernel
-example : hiFoldOne :=
+theorem pin5 : hiFoldOne :=
   (euc_hi_fold etOne tOne tOne lOne hdOne 1 1 5 2 wsOne harmOne vwOne hVsOne
     hVOne xP yP rfl rfl).1
-example : hiPinOne 5 :=
+theorem pin6 : hiPinOne 5 :=
   (euc_hi_fold etOne tOne tOne lOne hdOne 1 1 5 2 wsOne harmOne vwOne hVsOne
     hVOne xP yP rfl rfl).2 0 (by decide +kernel) ⟨3, 1⟩ ⟨2, 1⟩ 1 rfl
 
@@ -112,14 +114,14 @@ private abbrev loPinOne (g lc : Pos) : Prop :=
     (ground.bpow (BPair.ofPos (g * lc)) 3
       * ((⟨2, 1⟩ : BPair) * BPair.ofPos 1))
 
-example : loFoldOne := by decide +kernel
-example : loPinOne 1 3 := by decide +kernel
-example : (dotP xP (matVec (matPow lwOne 1 3) yP)).oneValue
+theorem pin7 : loFoldOne := by decide +kernel
+theorem pin8 : loPinOne 1 3 := by decide +kernel
+theorem pin9 : (dotP xP (matVec (matPow lwOne 1 3) yP)).oneValue
     (BPair.ofPos 2) := by decide +kernel
-example : loFoldOne :=
+theorem pin10 : loFoldOne :=
   (euc_lo_fold etOne tOne tOne lOne hdOne 1 1 2 1 3 2 wsOne hwOne lwOne hLsOne
     hLOne xP yP rfl rfl).1
-example : loPinOne 1 3 :=
+theorem pin11 : loPinOne 1 3 :=
   (euc_lo_fold etOne tOne tOne lOne hdOne 1 1 2 1 3 2 wsOne hwOne lwOne hLsOne
     hLOne xP yP rfl rfl).2 0 (by decide +kernel) ⟨3, 1⟩ ⟨2, 1⟩ 1 rfl
 
@@ -146,16 +148,16 @@ private abbrev loFoldKer : Prop :=
     (dotP (split.vDiagL (matPow lwKer 2 3) id2)
       (List.zipWith (· * ·) (matVec id2.val xK) (matVec id2.val yK)))
 
-example : hiFoldKer vwKer := by decide +kernel
-example : (dotP xK (matVec (matPow vwKer 2 3) yK)).oneValue
+theorem pin12 : hiFoldKer vwKer := by decide +kernel
+theorem pin13 : (dotP xK (matVec (matPow vwKer 2 3) yK)).oneValue
     (BPair.ofPos 4833) := by decide +kernel
-example : hiFoldKer vwKer :=
+theorem pin14 : hiFoldKer vwKer :=
   (euc_hi_fold etKer id2 id2 lKer hdKer 1 1 15 2 wsKer harmKer vwKer hVsKer
     hVKer xK yK rfl rfl).1
-example : loFoldKer := by decide +kernel
-example : (dotP xK (matVec (matPow lwKer 2 3) yK)).oneValue
+theorem pin15 : loFoldKer := by decide +kernel
+theorem pin16 : (dotP xK (matVec (matPow lwKer 2 3) yK)).oneValue
     (BPair.ofPos 29) := by decide +kernel
-example : loFoldKer :=
+theorem pin17 : loFoldKer :=
   (euc_lo_fold etKer id2 id2 lKer hdKer 1 1 2 1 3 2 wsKer hwKer lwKer hLsKer
     hLKer xK yK rfl rfl).1
 
@@ -175,20 +177,20 @@ private abbrev loPinKer (j : Nat) (g : Pos) : Prop :=
     (ground.bpow (BPair.ofPos (g * 3)) 3
       * ((⟨2, 1⟩ : BPair) * BPair.ofPos 1))
 
-example : hiPinKer 0 BPair.unit := by decide +kernel
-example : hiPinKer 1 ⟨3, 1⟩ := by decide +kernel
-example : loPinKer 0 3 := by decide +kernel
-example : loPinKer 1 1 := by decide +kernel
-example : hiPinKer 0 BPair.unit :=
+theorem pin18 : hiPinKer 0 BPair.unit := by decide +kernel
+theorem pin19 : hiPinKer 1 ⟨3, 1⟩ := by decide +kernel
+theorem pin20 : loPinKer 0 3 := by decide +kernel
+theorem pin21 : loPinKer 1 1 := by decide +kernel
+theorem pin22 : hiPinKer 0 BPair.unit :=
   (euc_hi_fold etKer id2 id2 lKer hdKer 1 1 15 2 wsKer harmKer vwKer hVsKer
     hVKer xK yK rfl rfl).2 0 (by decide +kernel) BPair.unit ⟨2, 1⟩ 1 rfl
-example : hiPinKer 1 ⟨3, 1⟩ :=
+theorem pin23 : hiPinKer 1 ⟨3, 1⟩ :=
   (euc_hi_fold etKer id2 id2 lKer hdKer 1 1 15 2 wsKer harmKer vwKer hVsKer
     hVKer xK yK rfl rfl).2 1 (by decide +kernel) ⟨3, 1⟩ ⟨2, 1⟩ 1 rfl
-example : loPinKer 0 3 :=
+theorem pin24 : loPinKer 0 3 :=
   (euc_lo_fold etKer id2 id2 lKer hdKer 1 1 2 1 3 2 wsKer hwKer lwKer hLsKer
     hLKer xK yK rfl rfl).2 0 (by decide +kernel) BPair.unit ⟨2, 1⟩ 1 rfl
-example : loPinKer 1 1 :=
+theorem pin25 : loPinKer 1 1 :=
   (euc_lo_fold etKer id2 id2 lKer hdKer 1 1 2 1 3 2 wsKer hwKer lwKer hLsKer
     hLKer xK yK rfl rfl).2 1 (by decide +kernel) ⟨3, 1⟩ ⟨2, 1⟩ 1 rfl
 
@@ -196,20 +198,20 @@ example : loPinKer 1 1 :=
 
 private def probes : List (List BPair) := [xK, yK]
 
-example : matOneValue (famGram (matPow vwKer 2 3) probes)
+theorem pin26 : matOneValue (famGram (matPow vwKer 2 3) probes)
     [[⟨4105, 1⟩, ⟨4834, 1⟩], [⟨4834, 1⟩, ⟨6292, 1⟩]] := by decide +kernel
-example : splitRead (famGram (matPow vwKer 2 3) probes)
+theorem pin27 : splitRead (famGram (matPow vwKer 2 3) probes)
     (mkSplit 2 (famGram (matPow vwKer 2 3) probes)) := by decide +kernel
-example : psdAt (mkSplit 2 (famGram (matPow vwKer 2 3) probes)) := by
+theorem pin28 : psdAt (mkSplit 2 (famGram (matPow vwKer 2 3) probes)) := by
   decide +kernel
-example : psdAt (mkSplit 2 (famGram (matPow vwKer 2 3) probes)) :=
+theorem pin29 : psdAt (mkSplit 2 (famGram (matPow vwKer 2 3) probes)) :=
   family_hi_psd etKer id2 id2 lKer hdKer 1 1 15 2 wsKer harmKer vwKer hVsKer
     hVKer probes (by decide +kernel) _ (by decide +kernel)
-example : splitRead (famGram (matPow lwKer 2 3) probes)
+theorem pin30 : splitRead (famGram (matPow lwKer 2 3) probes)
     (mkSplit 2 (famGram (matPow lwKer 2 3) probes)) := by decide +kernel
-example : psdAt (mkSplit 2 (famGram (matPow lwKer 2 3) probes)) := by
+theorem pin31 : psdAt (mkSplit 2 (famGram (matPow lwKer 2 3) probes)) := by
   decide +kernel
-example : psdAt (mkSplit 2 (famGram (matPow lwKer 2 3) probes)) :=
+theorem pin32 : psdAt (mkSplit 2 (famGram (matPow lwKer 2 3) probes)) :=
   family_lo_psd etKer id2 id2 lKer hdKer 1 1 2 1 3 2 wsKer hwKer lwKer hLsKer
     hLKer probes (by decide +kernel) _ (by decide +kernel)
 
@@ -218,47 +220,47 @@ example : psdAt (mkSplit 2 (famGram (matPow lwKer 2 3) probes)) :=
 /-- The certificate's gap witness is load-bearing at the lower
 family: the forged witness `(2, 2)` refuses the certificate and parts
 the root pin. -/
-example : ¬ eucRead 1 1 2 1 (posOfSucc 2) lOne [(2, 2)] := by decide +kernel
-example : ¬ loPinOne 2 3 := by decide +kernel
+theorem pin33 : ¬ eucRead 1 1 2 1 (posOfSucc 2) lOne [(2, 2)] := by decide +kernel
+theorem pin34 : ¬ loPinOne 2 3 := by decide +kernel
 
 /-- The upper solve identity refuses at the clearing `4` and its pin
 parts there; at an upper witness off the congruence's diagonal the
 solve identity holds at no clearing and the fold parts outright. -/
-example : ¬ elim.matOneValue
+theorem pin35 : ¬ elim.matOneValue
     (matAdd (inertia.matScale (posOfSucc 2 * 1) vwOne)
       (inertia.matScale 1 (matMul etOne vwOne)))
     (inertia.matScale ((posOfSucc 2 * 1) * 4) (idMat 1)) := by decide +kernel
-example : ¬ hiPinOne 4 := by decide +kernel
+theorem pin36 : ¬ hiPinOne 4 := by decide +kernel
 
 private def vwOff : Mat := [[⟨16, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨10, 1⟩]]
 
-example : ¬ elim.matOneValue
+theorem pin37 : ¬ elim.matOneValue
     (matAdd (inertia.matScale (posOfSucc 2 * 1) vwOff)
       (inertia.matScale 1 (matMul etKer vwOff)))
     (inertia.matScale ((posOfSucc 2 * 1) * 15) (idMat 2)) := by decide +kernel
-example : ¬ hiFoldKer vwOff := by decide +kernel
+theorem pin38 : ¬ hiFoldKer vwOff := by decide +kernel
 
 /-- The lower solve identity refuses at the clearing `4` and its pin
 parts there. -/
-example : ¬ elim.matOneValue
+theorem pin39 : ¬ elim.matOneValue
     (matAdd (inertia.matScale (posOfSucc 2 * 1) lwOne)
       (inertia.matScale (1 * 4) etOne))
     (inertia.matScale ((posOfSucc 2 * 1) * 4) (idMat 1)) := by decide +kernel
-example : ¬ loPinOne 1 4 := by decide +kernel
+theorem pin40 : ¬ loPinOne 1 4 := by decide +kernel
 
 /-- The split certificate refuses at the forged scale `2`, and both
 pins part at the doubled weight. -/
 private def lTwo : List (BPair × Pos × BPair) := [(⟨3, 1⟩, 1, ⟨3, 1⟩)]
 
-example : ¬ split.diagRead etOne (idMat 1) tOne tOne lTwo := by decide +kernel
-example : eucRead 1 1 2 1 (posOfSucc 2) lTwo wsOne := by decide +kernel
-example : ¬ (ground.bpow (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1))
+theorem pin41 : ¬ split.diagRead etOne (idMat 1) tOne tOne lTwo := by decide +kernel
+theorem pin42 : eucRead 1 1 2 1 (posOfSucc 2) lTwo wsOne := by decide +kernel
+theorem pin43 : ¬ (ground.bpow (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1))
       + (⟨3, 1⟩ : BPair).scale 1) 3
     * ground.getAt BPair.unit
         (split.vDiagL (matPow vwOne 1 3) tOne) 0).oneValue
     (ground.bpow (BPair.ofPos ((posOfSucc 2 * ((1 : Pos) * 1)) * 5)) 3
       * ((⟨3, 1⟩ : BPair) * BPair.ofPos 1)) := by decide +kernel
-example : ¬ (ground.bpow (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1))) 3
+theorem pin44 : ¬ (ground.bpow (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1))) 3
     * ground.getAt BPair.unit
         (split.vDiagL (matPow lwOne 1 3) tOne) 0).oneValue
     (ground.bpow (BPair.ofPos ((1 : Pos) * 3)) 3
@@ -271,15 +273,15 @@ the pin reads outright. -/
 private def etNeg : Mat := [[⟨1, 2⟩]]
 private def lNeg : List (BPair × Pos × BPair) := [(⟨1, 2⟩, 1, ⟨2, 1⟩)]
 
-example : split.diagRead etNeg (idMat 1) tOne tOne lNeg := by decide +kernel
-example : ¬ eucRead 1 1 2 1 (posOfSucc 2) lNeg wsOne := by decide +kernel
-example : ¬ (((⟨1, 2⟩ : BPair).oneValue BPair.unit)
+theorem pin45 : split.diagRead etNeg (idMat 1) tOne tOne lNeg := by decide +kernel
+theorem pin46 : ¬ eucRead 1 1 2 1 (posOfSucc 2) lNeg wsOne := by decide +kernel
+theorem pin47 : ¬ (((⟨1, 2⟩ : BPair).oneValue BPair.unit)
     ∨ ((⟨1, 2⟩ : BPair).oneValue (BPair.ofPos 2))) := by decide +kernel
-example : elim.matOneValue
+theorem pin48 : elim.matOneValue
     (matAdd (inertia.matScale (posOfSucc 2 * 1) vwOne)
       (inertia.matScale 1 (matMul etNeg vwOne)))
     (inertia.matScale ((posOfSucc 2 * 1) * 2) (idMat 1)) := by decide +kernel
-example : (ground.bpow (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1))
+theorem pin49 : (ground.bpow (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1))
       + (⟨1, 2⟩ : BPair).scale 1) 3
     * ground.getAt BPair.unit
         (split.vDiagL (matPow vwOne 1 3) tOne) 0).oneValue
@@ -294,34 +296,34 @@ private def etM5 : Mat := [[⟨1, 6⟩]]
 private def lM5 : List (BPair × Pos × BPair) := [(⟨1, 6⟩, 1, ⟨2, 1⟩)]
 private def vwM5 : Mat := [[⟨1, 4⟩]]
 
-example : split.diagRead etM5 (idMat 1) tOne tOne lM5 := by decide +kernel
-example : ¬ (((⟨1, 6⟩ : BPair).oneValue BPair.unit)
+theorem pin50 : split.diagRead etM5 (idMat 1) tOne tOne lM5 := by decide +kernel
+theorem pin51 : ¬ (((⟨1, 6⟩ : BPair).oneValue BPair.unit)
     ∨ ((⟨1, 6⟩ : BPair).oneValue (BPair.ofPos 2))) := by decide +kernel
-example : elim.matOneValue
+theorem pin52 : elim.matOneValue
     (matAdd (inertia.matScale (posOfSucc 2 * 1) vwM5)
       (inertia.matScale 1 (matMul etM5 vwM5)))
     (inertia.matScale ((posOfSucc 2 * 1) * 2) (idMat 1)) := by decide +kernel
-example : matOneValue (famGram (matPow vwM5 1 3) [xP]) [[⟨1, 28⟩]] := by
+theorem pin53 : matOneValue (famGram (matPow vwM5 1 3) [xP]) [[⟨1, 28⟩]] := by
   decide +kernel
-example : splitRead (famGram (matPow vwM5 1 3) [xP])
+theorem pin54 : splitRead (famGram (matPow vwM5 1 3) [xP])
     (mkSplit 1 (famGram (matPow vwM5 1 3) [xP])) := by decide +kernel
-example : ¬ psdAt (mkSplit 1 (famGram (matPow vwM5 1 3) [xP])) := by
+theorem pin55 : ¬ psdAt (mkSplit 1 (famGram (matPow vwM5 1 3) [xP])) := by
   decide +kernel
 
 /-- The certificate's cap is `thm:groundreads`(v)'s frame at the lower
 family: the cap `1` refuses the certificate while the fold and the
 pins, free of the cap, read outright. -/
-example : ¬ eucRead 1 1 1 1 (posOfSucc 2) lOne wsOne := by decide +kernel
+theorem pin56 : ¬ eucRead 1 1 1 1 (posOfSucc 2) lOne wsOne := by decide +kernel
 
 /-- The probes' orders are the matched-list frame: at a probe one
 member short or one member long the fold truncates at the shorter
 operand and reads outright. -/
-example : (minor id2.val * minor id2.val
+theorem pin57 : (minor id2.val * minor id2.val
       * dotP [(⟨2, 1⟩ : BPair)] (matVec (matPow vwKer 2 3) yK)).oneValue
     (dotP (split.vDiagL (matPow vwKer 2 3) id2)
       (List.zipWith (· * ·) (matVec id2.val [(⟨2, 1⟩ : BPair)])
         (matVec id2.val yK))) := by decide +kernel
-example : (minor id2.val * minor id2.val
+theorem pin58 : (minor id2.val * minor id2.val
       * dotP [(⟨2, 1⟩ : BPair), ⟨2, 1⟩, ⟨2, 1⟩]
           (matVec (matPow vwKer 2 3) yK)).oneValue
     (dotP (split.vDiagL (matPow vwKer 2 3) id2)
@@ -341,36 +343,38 @@ private abbrev solveRead (p1 β : BPair) (psi : List BPair) (K : Nat) : Prop :=
       (momentfold.momVec psi K))
 
 set_option maxRecDepth 100000 in
-example : solveRead (BPair.ofNat 6) (BPair.ofNat 3) psiH 1 := by decide +kernel
+theorem pin59 : solveRead (BPair.ofNat 6) (BPair.ofNat 3) psiH 1 := by decide +kernel
 set_option maxRecDepth 100000 in
-example : (detL (momentfold.momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2)
+theorem pin60 : (detL (momentfold.momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2)
     (BPair.ofNat 3))).oneValue (BPair.ofNat 4) := by decide +kernel
-example : solveRead (BPair.ofNat 6) (BPair.ofNat 3) psiH 1 :=
+theorem pin61 : solveRead (BPair.ofNat 6) (BPair.ofNat 3) psiH 1 :=
   moment_solve aH bH psiH pH2 (BPair.ofNat 6) (BPair.ofNat 2) (BPair.ofNat 3) 1
     readH profH bondH (Nat.le_refl 1)
 
 /-- The bond datum, the profile's linear constant and the ground each
 refuse their read and part the solve. -/
-example : ¬ momentfold.constBond bH (BPair.ofNat 4) := by decide +kernel
+theorem pin62 : ¬ momentfold.constBond bH (BPair.ofNat 4) := by decide +kernel
 set_option maxRecDepth 100000 in
-example : ¬ solveRead (BPair.ofNat 6) (BPair.ofNat 4) psiH 1 := by
+theorem pin63 : ¬ solveRead (BPair.ofNat 6) (BPair.ofNat 4) psiH 1 := by
   decide +kernel
-example : ¬ momentfold.diagProf aH pH2 (BPair.ofNat 5) (BPair.ofNat 2) := by
+theorem pin64 : ¬ momentfold.diagProf aH pH2 (BPair.ofNat 5) (BPair.ofNat 2) := by
   decide +kernel
 set_option maxRecDepth 100000 in
-example : ¬ solveRead (BPair.ofNat 5) (BPair.ofNat 3) psiH 1 := by
+theorem pin65 : ¬ solveRead (BPair.ofNat 5) (BPair.ofNat 3) psiH 1 := by
   decide +kernel
 
 private def psiX : List BPair := [BPair.ofNat 6, BPair.ofNat 4, BPair.ofNat 3]
 
-example : ¬ momentfold.recRead aH bH psiX := by decide +kernel
+theorem pin66 : ¬ momentfold.recRead aH bH psiX := by decide +kernel
 set_option maxRecDepth 100000 in
-example : ¬ solveRead (BPair.ofNat 6) (BPair.ofNat 3) psiX 1 := by
+theorem pin67 : ¬ solveRead (BPair.ofNat 6) (BPair.ofNat 3) psiX 1 := by
   decide +kernel
 
 /-- The degree floor is the square system's shape frame
 (`momentfold.momSys_len`): at the vacant degree the read holds at the
 padded rows. -/
-example : ¬ (1 ≤ 0) := by decide +kernel
+theorem pin68 : ¬ (1 ≤ 0) := by decide +kernel
 set_option maxRecDepth 100000 in
-example : solveRead (BPair.ofNat 6) (BPair.ofNat 3) psiH 0 := by decide +kernel
+theorem pin69 : solveRead (BPair.ofNat 6) (BPair.ofNat 3) psiH 0 := by decide +kernel
+
+end reconstruct

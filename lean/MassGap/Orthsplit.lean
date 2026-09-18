@@ -3,15 +3,15 @@ import MassGap.Elim
 `lem:orthsplit` — a transpose-closed action splits orthogonally:
 the orthogonal complement of an invariant subspace is invariant.
 The pairing walks across the transpose partner
-(`perp_invariant`'s adjoint hypothesis, the units' instance
+(`perp_invariant`'s adjoint binder, the units' instance
 `units.matUnit_transpose_read`) to the source group's span, and
 `elim.perp_span` closes the fold there — the moved content's group
 the pairing's rows, the source content's group the transposed
 image's own.  The tex's invariant subspace is one; at the graded
 carrier it reads as the two content groups, and the diagonal
-instance is the two lists coinciding.  The exhaustion tier
-(`lem:blockcount`(i)) is the arriving consumer, the residual
-carrier's descent at the maximal-content top.
+instance is the two lists coinciding.  `lem:blockcount`(i)'s
+exhaustion reads it at the residual carrier's descent at the
+maximal-content top.
 -/
 
 namespace orthsplit

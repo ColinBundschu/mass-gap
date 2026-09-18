@@ -9,9 +9,11 @@ with the exclusion's theorem route at a small support, the support
 binder's refusal at the winding string itself, and the occupancy
 conjunct's isolation at the vacant configuration.
 -/
+
+namespace qla
 set_option maxHeartbeats 4000000
 
-open ground fusion adjchar qla
+open ground fusion adjchar
 
 /-! The membership fixtures: two configurations over a three-column
 chain region's width, one occupied pair. -/
@@ -26,10 +28,10 @@ private def cfgB : List places.Shape :=
   [[0, 0], [0, 0], [0, 0], theta 2, [0, 0], [0, 0], [0, 0], [0, 0],
    [0, 0]]
 
-example : memberAt (dataA 2) 9 8 [cfgA, cfgB] := by decide +kernel
-example : memberAt (dataA 2) 9 8 [cfgA, cfgB] :=
+theorem pin1 : memberAt (dataA 2) 9 8 [cfgA, cfgB] := by decide +kernel
+theorem pin2 : memberAt (dataA 2) 9 8 [cfgA, cfgB] :=
   member_self (dataA 2) chain3 [cfgA, cfgB] (by decide +kernel)
-example : memberAt (dataA 2) 12 11 [cfgA, cfgB] :=
+theorem pin3 : memberAt (dataA 2) 12 11 [cfgA, cfgB] :=
   member_of_le (dataA 2) (by decide +kernel) (by decide +kernel)
     [cfgA, cfgB] (member_self (dataA 2) chain3 [cfgA, cfgB]
       (by decide +kernel))
@@ -38,10 +40,10 @@ example : memberAt (dataA 2) 12 11 [cfgA, cfgB] :=
 configuration, the bound below a support key, and the cutoff below
 the content. -/
 
-example : ¬ ((([cfgA ++ [theta 2]] : List (List places.Shape)).all
+theorem pin4 : ¬ ((([cfgA ++ [theta 2]] : List (List places.Shape)).all
     (fun a => a.length == chain3.links)) = true) := by decide +kernel
-example : ¬ memberAt (dataA 2) 3 8 [cfgB] := by decide +kernel
-example : ¬ memberAt (dataA 2) 9 7 [cfgA] := by decide +kernel
+theorem pin5 : ¬ memberAt (dataA 2) 3 8 [cfgB] := by decide +kernel
+theorem pin6 : ¬ memberAt (dataA 2) 9 7 [cfgA] := by decide +kernel
 
 /-! The winding side: the torus chain's rail string crosses every
 cut, the support count seven at the count three. -/
@@ -52,10 +54,10 @@ private def wcfg : List places.Shape :=
 private def lcfg : List places.Shape :=
   List.replicate 7 (theta 2)
 
-example : windSupp (dataA 2) chain3 gChain 3 wcfg := by decide +kernel
-example : (carrier.support (dataA 2) chain3 wcfg).length = 3 := by
+theorem pin7 : windSupp (dataA 2) chain3 gChain 3 wcfg := by decide +kernel
+theorem pin8 : (carrier.support (dataA 2) chain3 wcfg).length = 3 := by
   decide +kernel
-example : (carrier.support (dataA 2) chain3 lcfg).length = 7 := by
+theorem pin9 : (carrier.support (dataA 2) chain3 lcfg).length = 7 := by
   decide +kernel
 
 /-! The exclusion: a two-link support cannot cross three cuts —
@@ -65,11 +67,11 @@ private def small : List places.Shape :=
   [theta 2, [0, 0], [0, 0], theta 2, [0, 0], [0, 0], [0, 0],
    [0, 0], [0, 0]]
 
-example : (carrier.support (dataA 2) chain3 small).length = 2 := by
+theorem pin10 : (carrier.support (dataA 2) chain3 small).length = 2 := by
   decide +kernel
-example : ¬ windSupp (dataA 2) chain3 gChain 3 small := by
+theorem pin11 : ¬ windSupp (dataA 2) chain3 gChain 3 small := by
   decide +kernel
-example : ¬ windSupp (dataA 2) chain3 gChain 3 small :=
+theorem pin12 : ¬ windSupp (dataA 2) chain3 gChain 3 small :=
   noWind (dataA 2) chain3 gChain 3 small (by decide +kernel)
 
 /-! The support binder's refusal: the winding string satisfies every
@@ -77,12 +79,14 @@ further read with the conclusion false — the support seven at the
 count three, the finite-support premise the exclusion's one
 carrier. -/
 
-example : ¬ ((carrier.support (dataA 2) chain3 lcfg).length < 3) := by
+theorem pin13 : ¬ ((carrier.support (dataA 2) chain3 lcfg).length < 3) := by
   decide +kernel
-example : windSupp (dataA 2) chain3 gChain 3 lcfg := by decide +kernel
+theorem pin14 : windSupp (dataA 2) chain3 gChain 3 lcfg := by decide +kernel
 
 /-! The occupancy conjunct's isolation: the vacant configuration
 crosses nothing, so the winding read refuses at every cut. -/
 
-example : ¬ windSupp (dataA 2) chain3 gChain 3
+theorem pin15 : ¬ windSupp (dataA 2) chain3 gChain 3
     (List.replicate 9 ([0, 0] : places.Shape)) := by decide +kernel
+
+end qla

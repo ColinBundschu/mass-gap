@@ -8,9 +8,11 @@ adjoint's multiplication matrices with the unit line's ground, and
 the orthonormality tie: the probes' pairings at the committed list
 read the evaluation's deltas, `prop:repring`'s display at the
 matrix tier. -/
+
+namespace statespace
 set_option maxHeartbeats 4000000
 
-open ground elim statespace
+open ground elim
 
 private def u : BPair := BPair.unit
 
@@ -24,9 +26,9 @@ private def psi0 : Vec 3 := ⟨[⟨2, 1⟩, u, u], rfl⟩
 
 /-! The pairing read at the multiplication matrices. -/
 
-example : pairRead cF cF psi0 := by decide +kernel
-example : pairRead cF cTh psi0 := by decide +kernel
-example : pairRead cTh cTh psi0 := by decide +kernel
+theorem pin1 : pairRead cF cF psi0 := by decide +kernel
+theorem pin2 : pairRead cF cTh psi0 := by decide +kernel
+theorem pin3 : pairRead cTh cTh psi0 := by decide +kernel
 
 /-! The involution's matrix at three letters, `prop:repring`'s
 fourth read: over the dual-closed index `(𝟏, f, f̄, θ)` the dual
@@ -45,24 +47,26 @@ private def mFb3 : Mat :=
   ix3.map (fun x => ix3.map (fun y =>
     BPair.ofNat ((fusion.dataA 3).count [0, 1, 0] y x)))
 
-example : matOneValue (transposeM mF3) mFb3 := by decide +kernel
-example : ¬ matOneValue (transposeM mF3) mF3 := by decide +kernel
-example : pairRead (⟨mF3, by decide +kernel⟩ : SqMat 4)
+theorem pin4 : matOneValue (transposeM mF3) mFb3 := by decide +kernel
+theorem pin5 : ¬ matOneValue (transposeM mF3) mF3 := by decide +kernel
+theorem pin6 : pairRead (⟨mF3, by decide +kernel⟩ : SqMat 4)
     (⟨mFb3, by decide +kernel⟩ : SqMat 4) ⟨[⟨2, 1⟩, u, u, u], rfl⟩ := by
   decide +kernel
 
 /-! The fourth read's own instances at the shapes. -/
 
-example : repring.invRead [1, 0, 0] [1, 1, 0] [0, 1, 0] := by decide +kernel
-example : repring.invRead [1, 0, 0] [1, 0, 0] [1, 1, 0] := by decide +kernel
-example : repring.invRead [1, 0, 0] [1, 0, 0] [1, 0, 0] := by decide +kernel
+theorem pin7 : repring.invRead [1, 0, 0] [1, 1, 0] [0, 1, 0] := by decide +kernel
+theorem pin8 : repring.invRead [1, 0, 0] [1, 0, 0] [1, 1, 0] := by decide +kernel
+theorem pin9 : repring.invRead [1, 0, 0] [1, 0, 0] [1, 0, 0] := by decide +kernel
 
 /-! The orthonormality tie: the probes' pairings read the
 evaluation's deltas at the committed list. -/
 
-example : (dotN (matVec cF.val psi0.val)
+theorem pin10 : (dotN (matVec cF.val psi0.val)
     (matVec cF.val psi0.val)).oneValue ⟨2, 1⟩ := by decide +kernel
-example : (dotN (matVec cF.val psi0.val)
+theorem pin11 : (dotN (matVec cF.val psi0.val)
     (matVec cTh.val psi0.val)).oneValue u := by decide +kernel
-example : (dotN (matVec cTh.val psi0.val)
+theorem pin12 : (dotN (matVec cTh.val psi0.val)
     (matVec cTh.val psi0.val)).oneValue ⟨2, 1⟩ := by decide +kernel
+
+end statespace

@@ -146,8 +146,10 @@ anchor; and the width arms' caps at the tight fixtures, one forge
 per cap.
 -/
 
+namespace momentfold
 
-open ground momentfold
+
+open ground
 
 private def psiF : List BPair := [BPair.ofNat 6, BPair.ofNat 3, BPair.ofNat 1]
 private def bF : List BPair := [BPair.ofNat 2, BPair.ofNat 3]
@@ -158,15 +160,15 @@ private def wKey : Nat → BPair := fun k => BPair.ofNat k
 
 private theorem readF : recRead aF bF psiF := by decide +kernel
 
-example : psiF.length = aF.length := recRead_lenA aF bF psiF readF
-example : bF.length + 1 = aF.length := recRead_lenB aF bF psiF readF
+theorem pin1 : psiF.length = aF.length := recRead_lenA aF bF psiF readF
+theorem pin2 : bF.length + 1 = aF.length := recRead_lenB aF bF psiF readF
 
 private def aForge : List BPair :=
   [BPair.ofNat 1, BPair.ofNat 5, BPair.ofNat 8]
 
-example : ¬ recRead aForge bF psiF := by decide +kernel
-example : ¬ recRows BPair.unit aF [BPair.ofNat 2] psiF := by decide +kernel
-example : ¬ recRows BPair.unit aF bF [BPair.ofNat 6, BPair.ofNat 3] := by
+theorem pin3 : ¬ recRead aForge bF psiF := by decide +kernel
+theorem pin4 : ¬ recRows BPair.unit aF [BPair.ofNat 2] psiF := by decide +kernel
+theorem pin5 : ¬ recRows BPair.unit aF bF [BPair.ofNat 6, BPair.ofNat 3] := by
   decide +kernel
 
 private def sqLo1 : BPair :=
@@ -176,12 +178,12 @@ private def sqHi1 : BPair :=
 private def sqRho1 : BPair :=
   rhoStream psiF (fun k => ground.getAt BPair.unit aF k * wOne k)
 
-example : sqLo1.oneValue (BPair.ofNat 45) := by decide +kernel
-example : sqHi1.oneValue (BPair.ofNat 45) := by decide +kernel
-example : (sqLo1 + sqHi1).oneValue (BPair.ofNat 90) := by decide +kernel
-example : sqRho1.oneValue (BPair.ofNat 90) := by decide +kernel
-example : (sqLo1 + sqHi1).oneValue sqRho1 := by decide +kernel
-example : (sqLo1 + sqHi1).oneValue sqRho1 := fold_sq aF bF psiF readF wOne
+theorem pin6 : sqLo1.oneValue (BPair.ofNat 45) := by decide +kernel
+theorem pin7 : sqHi1.oneValue (BPair.ofNat 45) := by decide +kernel
+theorem pin8 : (sqLo1 + sqHi1).oneValue (BPair.ofNat 90) := by decide +kernel
+theorem pin9 : sqRho1.oneValue (BPair.ofNat 90) := by decide +kernel
+theorem pin10 : (sqLo1 + sqHi1).oneValue sqRho1 := by decide +kernel
+theorem pin11 : (sqLo1 + sqHi1).oneValue sqRho1 := fold_sq aF bF psiF readF wOne
 
 private def sqLoK : BPair :=
   cStream psiF (fun k => ground.getAt BPair.unit bF k * wKey k)
@@ -190,19 +192,19 @@ private def sqHiK : BPair :=
 private def sqRhoK : BPair :=
   rhoStream psiF (fun k => ground.getAt BPair.unit aF k * wKey k)
 
-example : sqLoK.oneValue (BPair.ofNat 9) := by decide +kernel
-example : sqHiK.oneValue (BPair.ofNat 54) := by decide +kernel
-example : (sqLoK + sqHiK).oneValue (BPair.ofNat 63) := by decide +kernel
-example : sqRhoK.oneValue (BPair.ofNat 63) := by decide +kernel
-example : (sqLoK + sqHiK).oneValue sqRhoK := by decide +kernel
-example : (sqLoK + sqHiK).oneValue sqRhoK := fold_sq aF bF psiF readF wKey
+theorem pin12 : sqLoK.oneValue (BPair.ofNat 9) := by decide +kernel
+theorem pin13 : sqHiK.oneValue (BPair.ofNat 54) := by decide +kernel
+theorem pin14 : (sqLoK + sqHiK).oneValue (BPair.ofNat 63) := by decide +kernel
+theorem pin15 : sqRhoK.oneValue (BPair.ofNat 63) := by decide +kernel
+theorem pin16 : (sqLoK + sqHiK).oneValue sqRhoK := by decide +kernel
+theorem pin17 : (sqLoK + sqHiK).oneValue sqRhoK := fold_sq aF bF psiF readF wKey
 
 private def sqSkewK : BPair :=
   cStream psiF (fun k => ground.getAt BPair.unit bF k * wKey (k + 2))
 
-example : sqSkewK.oneValue (BPair.ofNat 99) := by decide +kernel
-example : (sqLoK + sqSkewK).oneValue (BPair.ofNat 108) := by decide +kernel
-example : ¬ (sqLoK + sqSkewK).oneValue sqRhoK := by decide +kernel
+theorem pin18 : sqSkewK.oneValue (BPair.ofNat 99) := by decide +kernel
+theorem pin19 : (sqLoK + sqSkewK).oneValue (BPair.ofNat 108) := by decide +kernel
+theorem pin20 : ¬ (sqLoK + sqSkewK).oneValue sqRhoK := by decide +kernel
 
 private def bdD1 : BPair :=
   dStream psiF (fun k => ground.getAt BPair.unit bF k * wOne (k + 1))
@@ -211,12 +213,12 @@ private def bdR1 : BPair :=
 private def bdC1 : BPair :=
   cStream psiF (fun k => ground.getAt BPair.unit aF k * wOne k)
 
-example : bdD1.oneValue (BPair.ofNat 12) := by decide +kernel
-example : bdR1.oneValue (BPair.ofNat 21) := by decide +kernel
-example : (bdD1 + bdR1).oneValue (BPair.ofNat 33) := by decide +kernel
-example : bdC1.oneValue (BPair.ofNat 33) := by decide +kernel
-example : (bdD1 + bdR1).oneValue bdC1 := by decide +kernel
-example : (bdD1 + bdR1).oneValue bdC1 := fold_bond aF bF psiF readF wOne
+theorem pin21 : bdD1.oneValue (BPair.ofNat 12) := by decide +kernel
+theorem pin22 : bdR1.oneValue (BPair.ofNat 21) := by decide +kernel
+theorem pin23 : (bdD1 + bdR1).oneValue (BPair.ofNat 33) := by decide +kernel
+theorem pin24 : bdC1.oneValue (BPair.ofNat 33) := by decide +kernel
+theorem pin25 : (bdD1 + bdR1).oneValue bdC1 := by decide +kernel
+theorem pin26 : (bdD1 + bdR1).oneValue bdC1 := fold_bond aF bF psiF readF wOne
 
 private def bdDK : BPair :=
   dStream psiF (fun k => ground.getAt BPair.unit bF k * wKey (k + 1))
@@ -225,12 +227,12 @@ private def bdRK : BPair :=
 private def bdCK : BPair :=
   cStream psiF (fun k => ground.getAt BPair.unit aF k * wKey k)
 
-example : bdDK.oneValue (BPair.ofNat 12) := by decide +kernel
-example : bdRK.oneValue (BPair.ofNat 3) := by decide +kernel
-example : (bdDK + bdRK).oneValue (BPair.ofNat 15) := by decide +kernel
-example : bdCK.oneValue (BPair.ofNat 15) := by decide +kernel
-example : (bdDK + bdRK).oneValue bdCK := by decide +kernel
-example : (bdDK + bdRK).oneValue bdCK := fold_bond aF bF psiF readF wKey
+theorem pin27 : bdDK.oneValue (BPair.ofNat 12) := by decide +kernel
+theorem pin28 : bdRK.oneValue (BPair.ofNat 3) := by decide +kernel
+theorem pin29 : (bdDK + bdRK).oneValue (BPair.ofNat 15) := by decide +kernel
+theorem pin30 : bdCK.oneValue (BPair.ofNat 15) := by decide +kernel
+theorem pin31 : (bdDK + bdRK).oneValue bdCK := by decide +kernel
+theorem pin32 : (bdDK + bdRK).oneValue bdCK := fold_bond aF bF psiF readF wKey
 
 private def rdD1 : BPair :=
   dStream psiF (fun k => ground.getAt BPair.unit bF (k + 1) * wOne k)
@@ -239,12 +241,12 @@ private def rdR1 : BPair :=
 private def rdC1 : BPair :=
   cStream psiF (fun k => ground.getAt BPair.unit aF (k + 1) * wOne k)
 
-example : rdD1.oneValue (BPair.ofNat 18) := by decide +kernel
-example : rdR1.oneValue (BPair.ofNat 99) := by decide +kernel
-example : (rdD1 + rdR1).oneValue (BPair.ofNat 117) := by decide +kernel
-example : rdC1.oneValue (BPair.ofNat 117) := by decide +kernel
-example : (rdD1 + rdR1).oneValue rdC1 := by decide +kernel
-example : (rdD1 + rdR1).oneValue rdC1 := bond2_reduce aF bF psiF readF wOne
+theorem pin33 : rdD1.oneValue (BPair.ofNat 18) := by decide +kernel
+theorem pin34 : rdR1.oneValue (BPair.ofNat 99) := by decide +kernel
+theorem pin35 : (rdD1 + rdR1).oneValue (BPair.ofNat 117) := by decide +kernel
+theorem pin36 : rdC1.oneValue (BPair.ofNat 117) := by decide +kernel
+theorem pin37 : (rdD1 + rdR1).oneValue rdC1 := by decide +kernel
+theorem pin38 : (rdD1 + rdR1).oneValue rdC1 := bond2_reduce aF bF psiF readF wOne
 
 private def rdDK : BPair :=
   dStream psiF (fun k => ground.getAt BPair.unit bF (k + 1) * wKey k)
@@ -253,28 +255,28 @@ private def rdRK : BPair :=
 private def rdCK : BPair :=
   cStream psiF (fun k => ground.getAt BPair.unit aF (k + 1) * wKey k)
 
-example : rdDK.oneValue BPair.unit := by decide +kernel
-example : rdRK.oneValue (BPair.ofNat 27) := by decide +kernel
-example : (rdDK + rdRK).oneValue (BPair.ofNat 27) := by decide +kernel
-example : rdCK.oneValue (BPair.ofNat 27) := by decide +kernel
-example : (rdDK + rdRK).oneValue rdCK := by decide +kernel
-example : (rdDK + rdRK).oneValue rdCK := bond2_reduce aF bF psiF readF wKey
+theorem pin39 : rdDK.oneValue BPair.unit := by decide +kernel
+theorem pin40 : rdRK.oneValue (BPair.ofNat 27) := by decide +kernel
+theorem pin41 : (rdDK + rdRK).oneValue (BPair.ofNat 27) := by decide +kernel
+theorem pin42 : rdCK.oneValue (BPair.ofNat 27) := by decide +kernel
+theorem pin43 : (rdDK + rdRK).oneValue rdCK := by decide +kernel
+theorem pin44 : (rdDK + rdRK).oneValue rdCK := bond2_reduce aF bF psiF readF wKey
 
-example : (BPair.ofNat 1 * BPair.ofNat 6).oneValue
+theorem pin45 : (BPair.ofNat 1 * BPair.ofNat 6).oneValue
     (BPair.ofNat 2 * BPair.ofNat 3) := by decide +kernel
-example : (ground.getAt BPair.unit aF 0 * ground.getAt BPair.unit psiF 0).oneValue
+theorem pin46 : (ground.getAt BPair.unit aF 0 * ground.getAt BPair.unit psiF 0).oneValue
     (ground.getAt BPair.unit bF 0 * ground.getAt BPair.unit psiF 1) :=
   rowHead aF bF psiF readF
 
-example : (BPair.ofNat 5 * BPair.ofNat 3).oneValue
+theorem pin47 : (BPair.ofNat 5 * BPair.ofNat 3).oneValue
     (BPair.ofNat 2 * BPair.ofNat 6 + BPair.ofNat 3 * BPair.ofNat 1) := by
   decide +kernel
-example : (ground.getAt BPair.unit aF 1 * ground.getAt BPair.unit psiF 1).oneValue
+theorem pin48 : (ground.getAt BPair.unit aF 1 * ground.getAt BPair.unit psiF 1).oneValue
     (ground.getAt BPair.unit bF 0 * ground.getAt BPair.unit psiF 0
       + ground.getAt BPair.unit bF 1 * ground.getAt BPair.unit psiF 2) :=
   rowAt aF bF psiF readF 0
 
-example : (ground.getAt BPair.unit aF 6 * ground.getAt BPair.unit psiF 6).oneValue
+theorem pin49 : (ground.getAt BPair.unit aF 6 * ground.getAt BPair.unit psiF 6).oneValue
     (ground.getAt BPair.unit bF 5 * ground.getAt BPair.unit psiF 5
       + ground.getAt BPair.unit bF 6 * ground.getAt BPair.unit psiF 7) :=
   rowAt aF bF psiF readF 5
@@ -293,43 +295,43 @@ private def sqHiG : BPair :=
 private def sqRhoG : BPair :=
   rhoStream psiF (fun k => ground.getAt BPair.unit aG k * wOne k)
 
-example : sqLoG.oneValue (BPair.ofNat 45).swap := by decide +kernel
-example : sqRhoG.oneValue (BPair.ofNat 90).swap := by decide +kernel
-example : (sqLoG + sqHiG).oneValue sqRhoG := by decide +kernel
-example : (sqLoG + sqHiG).oneValue sqRhoG := fold_sq aG bG psiF readG wOne
+theorem pin50 : sqLoG.oneValue (BPair.ofNat 45).swap := by decide +kernel
+theorem pin51 : sqRhoG.oneValue (BPair.ofNat 90).swap := by decide +kernel
+theorem pin52 : (sqLoG + sqHiG).oneValue sqRhoG := by decide +kernel
+theorem pin53 : (sqLoG + sqHiG).oneValue sqRhoG := fold_sq aG bG psiF readG wOne
 
 private def bC : List BPair := [BPair.ofNat 2, BPair.ofNat 2]
 
 private theorem profF :
     diagProf aF BPair.unit (BPair.ofNat 4) (BPair.ofNat 1) := by decide +kernel
 
-example : ¬ diagProf aF BPair.unit (BPair.ofNat 4) (BPair.ofNat 2) := by
+theorem pin54 : ¬ diagProf aF BPair.unit (BPair.ofNat 4) (BPair.ofNat 2) := by
   decide +kernel
 
 private theorem bondC : constBond bC (BPair.ofNat 2) := by decide +kernel
 
-example : ¬ constBond bF (BPair.ofNat 2) := by decide +kernel
+theorem pin55 : ¬ constBond bF (BPair.ofNat 2) := by decide +kernel
 
-example : (mrho psiF 0).oneValue (BPair.ofNat 46) := by decide +kernel
-example : (mrho psiF 1).oneValue (BPair.ofNat 11) := by decide +kernel
-example : (mrho psiF 2).oneValue (BPair.ofNat 13) := by decide +kernel
-example : (mc psiF 0).oneValue (BPair.ofNat 21) := by decide +kernel
-example : (mc psiF 1).oneValue (BPair.ofNat 3) := by decide +kernel
-example : (md psiF 0).oneValue (BPair.ofNat 6) := by decide +kernel
-example : (bSq psiF).oneValue (BPair.ofNat 36) := by decide +kernel
-example : (edgeAt psiF 1).oneValue (BPair.ofNat 2) := by decide +kernel
+theorem pin56 : (mrho psiF 0).oneValue (BPair.ofNat 46) := by decide +kernel
+theorem pin57 : (mrho psiF 1).oneValue (BPair.ofNat 11) := by decide +kernel
+theorem pin58 : (mrho psiF 2).oneValue (BPair.ofNat 13) := by decide +kernel
+theorem pin59 : (mc psiF 0).oneValue (BPair.ofNat 21) := by decide +kernel
+theorem pin60 : (mc psiF 1).oneValue (BPair.ofNat 3) := by decide +kernel
+theorem pin61 : (md psiF 0).oneValue (BPair.ofNat 6) := by decide +kernel
+theorem pin62 : (bSq psiF).oneValue (BPair.ofNat 36) := by decide +kernel
+theorem pin63 : (edgeAt psiF 1).oneValue (BPair.ofNat 2) := by decide +kernel
 
 private def profRead2 : BPair :=
   BPair.unit * BPair.ofNat (2 * 2)
     + (BPair.ofNat 4 * BPair.ofNat 2 + BPair.ofNat 1)
 
-example : (ground.getAt BPair.unit aF 2).oneValue profRead2 := by decide +kernel
-example : (ground.getAt BPair.unit aF 2).oneValue profRead2 :=
+theorem pin64 : (ground.getAt BPair.unit aF 2).oneValue profRead2 := by decide +kernel
+theorem pin65 : (ground.getAt BPair.unit aF 2).oneValue profRead2 :=
   prof_at aF BPair.unit (BPair.ofNat 4) (BPair.ofNat 1) profF 2 (by decide +kernel)
 
-example : (ground.getAt BPair.unit bC 1).oneValue (BPair.ofNat 2) := by
+theorem pin66 : (ground.getAt BPair.unit bC 1).oneValue (BPair.ofNat 2) := by
   decide +kernel
-example : (ground.getAt BPair.unit bC 1).oneValue (BPair.ofNat 2) :=
+theorem pin67 : (ground.getAt BPair.unit bC 1).oneValue (BPair.ofNat 2) :=
   bond_at bC (BPair.ofNat 2) bondC 1 (by decide +kernel)
 
 private def gOne : Nat → BPair := fun _ => BPair.ofNat 1
@@ -341,10 +343,10 @@ private def shCsum : BPair :=
     * cStream psiF (fun k => gOne k * ground.bpow (BPair.ofNat k) t))
     (List.range 3)
 
-example : shC.oneValue (BPair.ofNat 30) := by decide +kernel
-example : shCsum.oneValue (BPair.ofNat 30) := by decide +kernel
-example : shC.oneValue shCsum := by decide +kernel
-example : shC.oneValue shCsum := cShift1 psiF gOne 2
+theorem pin68 : shC.oneValue (BPair.ofNat 30) := by decide +kernel
+theorem pin69 : shCsum.oneValue (BPair.ofNat 30) := by decide +kernel
+theorem pin70 : shC.oneValue shCsum := by decide +kernel
+theorem pin71 : shC.oneValue shCsum := cShift1 psiF gOne 2
 
 private def shD : BPair :=
   dStream psiF (fun k => gOne k * ground.bpow (BPair.ofNat (k + 2)) 2)
@@ -354,31 +356,31 @@ private def shDsum : BPair :=
       * dStream psiF (fun k => gOne k * ground.bpow (BPair.ofNat k) t)))
     (List.range 3)
 
-example : shD.oneValue (BPair.ofNat 24) := by decide +kernel
-example : shDsum.oneValue (BPair.ofNat 24) := by decide +kernel
-example : shD.oneValue shDsum := by decide +kernel
-example : shD.oneValue shDsum := dShift2 psiF gOne 2
+theorem pin72 : shD.oneValue (BPair.ofNat 24) := by decide +kernel
+theorem pin73 : shDsum.oneValue (BPair.ofNat 24) := by decide +kernel
+theorem pin74 : shD.oneValue shDsum := by decide +kernel
+theorem pin75 : shD.oneValue shDsum := dShift2 psiF gOne 2
 
 private def vKey : Nat → BPair := fun k => ground.bpow (BPair.ofNat k) 1
 
 private def cbLo : BPair :=
   cStream psiF (fun k => ground.getAt BPair.unit bC k * vKey k)
 
-example : cbLo.oneValue (BPair.ofNat 6) := by decide +kernel
-example : (BPair.ofNat 2 * cStream psiF vKey).oneValue (BPair.ofNat 6) := by
+theorem pin76 : cbLo.oneValue (BPair.ofNat 6) := by decide +kernel
+theorem pin77 : (BPair.ofNat 2 * cStream psiF vKey).oneValue (BPair.ofNat 6) := by
   decide +kernel
-example : cbLo.oneValue (BPair.ofNat 2 * cStream psiF vKey) := by decide +kernel
-example : cbLo.oneValue (BPair.ofNat 2 * cStream psiF vKey) :=
+theorem pin78 : cbLo.oneValue (BPair.ofNat 2 * cStream psiF vKey) := by decide +kernel
+theorem pin79 : cbLo.oneValue (BPair.ofNat 2 * cStream psiF vKey) :=
   cBond bC psiF (BPair.ofNat 2) bondC rfl vKey
 
 private def dbUp : BPair :=
   dStream psiF (fun k => ground.getAt BPair.unit bC (k + 1) * vKey k)
 
-example : dbUp.oneValue BPair.unit := by decide +kernel
-example : (BPair.ofNat 2 * dStream psiF vKey).oneValue BPair.unit := by
+theorem pin80 : dbUp.oneValue BPair.unit := by decide +kernel
+theorem pin81 : (BPair.ofNat 2 * dStream psiF vKey).oneValue BPair.unit := by
   decide +kernel
-example : dbUp.oneValue (BPair.ofNat 2 * dStream psiF vKey) := by decide +kernel
-example : dbUp.oneValue (BPair.ofNat 2 * dStream psiF vKey) :=
+theorem pin82 : dbUp.oneValue (BPair.ofNat 2 * dStream psiF vKey) := by decide +kernel
+theorem pin83 : dbUp.oneValue (BPair.ofNat 2 * dStream psiF vKey) :=
   dBondUp bC psiF (BPair.ofNat 2) bondC rfl vKey
 
 private def rbLo : BPair :=
@@ -387,41 +389,41 @@ private def rbEdge : BPair :=
   BPair.ofNat 2 * (ground.bpow (BPair.ofNat 2) 1
     * (ground.getAt BPair.unit psiF 2 * ground.getAt BPair.unit psiF 2))
 
-example : rbLo.oneValue (BPair.ofNat 18) := by decide +kernel
-example : rbEdge.oneValue (BPair.ofNat 4) := by decide +kernel
-example : (rbLo + rbEdge).oneValue (BPair.ofNat 22) := by decide +kernel
-example : (BPair.ofNat 2 * rhoStream psiF vKey).oneValue (BPair.ofNat 22) := by
+theorem pin84 : rbLo.oneValue (BPair.ofNat 18) := by decide +kernel
+theorem pin85 : rbEdge.oneValue (BPair.ofNat 4) := by decide +kernel
+theorem pin86 : (rbLo + rbEdge).oneValue (BPair.ofNat 22) := by decide +kernel
+theorem pin87 : (BPair.ofNat 2 * rhoStream psiF vKey).oneValue (BPair.ofNat 22) := by
   decide +kernel
-example : (rbLo + rbEdge).oneValue (BPair.ofNat 2 * rhoStream psiF vKey) := by
+theorem pin88 : (rbLo + rbEdge).oneValue (BPair.ofNat 2 * rhoStream psiF vKey) := by
   decide +kernel
-example : (rbLo + rbEdge).oneValue (BPair.ofNat 2 * rhoStream psiF vKey) :=
+theorem pin89 : (rbLo + rbEdge).oneValue (BPair.ofNat 2 * rhoStream psiF vKey) :=
   rhoBond bC psiF (BPair.ofNat 2) bondC rfl vKey
 
 private def wcLo : BPair :=
   rhoStream psiF (wShift (fun t => ground.getAt BPair.unit bC t * vKey t))
 
-example : wcLo.oneValue (BPair.ofNat 2) := by decide +kernel
-example : (BPair.ofNat 2 * rhoStream psiF (wShift vKey)).oneValue
+theorem pin90 : wcLo.oneValue (BPair.ofNat 2) := by decide +kernel
+theorem pin91 : (BPair.ofNat 2 * rhoStream psiF (wShift vKey)).oneValue
     (BPair.ofNat 2) := by decide +kernel
-example : wcLo.oneValue (BPair.ofNat 2 * rhoStream psiF (wShift vKey)) := by
+theorem pin92 : wcLo.oneValue (BPair.ofNat 2 * rhoStream psiF (wShift vKey)) := by
   decide +kernel
-example : wcLo.oneValue (BPair.ofNat 2 * rhoStream psiF (wShift vKey)) :=
+theorem pin93 : wcLo.oneValue (BPair.ofNat 2 * rhoStream psiF (wShift vKey)) :=
   wCollapse bC psiF (BPair.ofNat 2) bondC rfl vKey
 
 private def wmS : BPair :=
   rhoStream psiF (wShift (fun t => ground.bpow (BPair.ofNat (t + 1)) 1))
 
-example : wmS.oneValue (BPair.ofNat 11) := by decide +kernel
-example : wmS.oneValue (mrho psiF 1) := by decide +kernel
-example : wmS.oneValue (mrho psiF 1) := wMono_succ psiF 0
+theorem pin94 : wmS.oneValue (BPair.ofNat 11) := by decide +kernel
+theorem pin95 : wmS.oneValue (mrho psiF 1) := by decide +kernel
+theorem pin96 : wmS.oneValue (mrho psiF 1) := wMono_succ psiF 0
 
 private def wmZ : BPair :=
   rhoStream psiF (wShift (fun t => ground.bpow (BPair.ofNat (t + 1)) 0))
 
-example : wmZ.oneValue (BPair.ofNat 10) := by decide +kernel
-example : (wmZ + bSq psiF).oneValue (BPair.ofNat 46) := by decide +kernel
-example : (wmZ + bSq psiF).oneValue (mrho psiF 0) := by decide +kernel
-example : (wmZ + bSq psiF).oneValue (mrho psiF 0) := wMono_zero psiF
+theorem pin97 : wmZ.oneValue (BPair.ofNat 10) := by decide +kernel
+theorem pin98 : (wmZ + bSq psiF).oneValue (BPair.ofNat 46) := by decide +kernel
+theorem pin99 : (wmZ + bSq psiF).oneValue (mrho psiF 0) := by decide +kernel
+theorem pin100 : (wmZ + bSq psiF).oneValue (mrho psiF 0) := wMono_zero psiF
 
 private def prR : BPair :=
   rhoStream psiF (fun k => ground.getAt BPair.unit aF k
@@ -430,10 +432,10 @@ private def prRead : BPair :=
   BPair.unit * mrho psiF 3
     + (BPair.ofNat 4 * mrho psiF 2 + BPair.ofNat 1 * mrho psiF 1)
 
-example : prR.oneValue (BPair.ofNat 63) := by decide +kernel
-example : prRead.oneValue (BPair.ofNat 63) := by decide +kernel
-example : prR.oneValue prRead := by decide +kernel
-example : prR.oneValue prRead :=
+theorem pin101 : prR.oneValue (BPair.ofNat 63) := by decide +kernel
+theorem pin102 : prRead.oneValue (BPair.ofNat 63) := by decide +kernel
+theorem pin103 : prR.oneValue prRead := by decide +kernel
+theorem pin104 : prR.oneValue prRead :=
   profRho aF psiF BPair.unit (BPair.ofNat 4) (BPair.ofNat 1) profF rfl 1
 
 private def pcR : BPair :=
@@ -443,10 +445,10 @@ private def pcRead : BPair :=
   BPair.unit * mc psiF 2
     + (BPair.ofNat 4 * mc psiF 1 + BPair.ofNat 1 * mc psiF 0)
 
-example : pcR.oneValue (BPair.ofNat 33) := by decide +kernel
-example : pcRead.oneValue (BPair.ofNat 33) := by decide +kernel
-example : pcR.oneValue pcRead := by decide +kernel
-example : pcR.oneValue pcRead :=
+theorem pin105 : pcR.oneValue (BPair.ofNat 33) := by decide +kernel
+theorem pin106 : pcRead.oneValue (BPair.ofNat 33) := by decide +kernel
+theorem pin107 : pcR.oneValue pcRead := by decide +kernel
+theorem pin108 : pcR.oneValue pcRead :=
   profC aF psiF BPair.unit (BPair.ofNat 4) (BPair.ofNat 1) profF rfl 0
 
 private def pcU : BPair :=
@@ -457,20 +459,19 @@ private def pcURead : BPair :=
     + ((BPair.unit + BPair.unit + BPair.ofNat 4) * mc psiF 1
       + (BPair.unit + BPair.ofNat 4 + BPair.ofNat 1) * mc psiF 0)
 
-example : pcU.oneValue (BPair.ofNat 117) := by decide +kernel
-example : pcURead.oneValue (BPair.ofNat 117) := by decide +kernel
-example : pcU.oneValue pcURead := by decide +kernel
-example : pcU.oneValue pcURead :=
+theorem pin109 : pcU.oneValue (BPair.ofNat 117) := by decide +kernel
+theorem pin110 : pcURead.oneValue (BPair.ofNat 117) := by decide +kernel
+theorem pin111 : pcU.oneValue pcURead := by decide +kernel
+theorem pin112 : pcU.oneValue pcURead :=
   profCUp aF psiF BPair.unit (BPair.ofNat 4) (BPair.ofNat 1) profF rfl 0
 
 private def prForge : BPair :=
   BPair.unit * mrho psiF 3
     + (BPair.ofNat 5 * mrho psiF 2 + BPair.ofNat 1 * mrho psiF 1)
 
-example : prForge.oneValue (BPair.ofNat 76) := by decide +kernel
-example : ¬ prR.oneValue prForge := by decide +kernel
+theorem pin113 : prForge.oneValue (BPair.ofNat 76) := by decide +kernel
+theorem pin114 : ¬ prR.oneValue prForge := by decide +kernel
 
-namespace momentfold
 
 /-- The quadratic head's fixtures, published for the sibling check
 modules reading the same head. -/
@@ -484,27 +485,26 @@ theorem profH : diagProf aH pH2 (BPair.ofNat 6) (BPair.ofNat 2) := by
   decide +kernel
 theorem bondH : constBond bH (BPair.ofNat 3) := by decide +kernel
 
-end momentfold
 
-example : ¬ diagProf aH (BPair.ofNat 2) (BPair.ofNat 6) (BPair.ofNat 2) := by
+theorem pin115 : ¬ diagProf aH (BPair.ofNat 2) (BPair.ofNat 6) (BPair.ofNat 2) := by
   decide +kernel
 
 private def bHforge : List BPair := [BPair.ofNat 3, BPair.ofNat 4]
 
-example : ¬ constBond bHforge (BPair.ofNat 3) := by decide +kernel
+theorem pin116 : ¬ constBond bHforge (BPair.ofNat 3) := by decide +kernel
 
-example : (mrho psiH 0).oneValue (BPair.ofNat 56) := by decide +kernel
-example : (mrho psiH 1).oneValue (BPair.ofNat 24) := by decide +kernel
-example : (mrho psiH 2).oneValue (BPair.ofNat 32) := by decide +kernel
-example : (mrho psiH 3).oneValue (BPair.ofNat 48) := by decide +kernel
-example : (mc psiH 0).oneValue (BPair.ofNat 32) := by decide +kernel
-example : (mc psiH 1).oneValue (BPair.ofNat 8) := by decide +kernel
-example : (mc psiH 2).oneValue (BPair.ofNat 8) := by decide +kernel
-example : (mc psiH 3).oneValue (BPair.ofNat 8) := by decide +kernel
-example : (md psiH 0).oneValue (BPair.ofNat 12) := by decide +kernel
-example : (bSq psiH).oneValue (BPair.ofNat 36) := by decide +kernel
-example : (edgeAt psiH 0).oneValue (BPair.ofNat 4) := by decide +kernel
-example : (edgeAt psiH 1).oneValue (BPair.ofNat 8) := by decide +kernel
+theorem pin117 : (mrho psiH 0).oneValue (BPair.ofNat 56) := by decide +kernel
+theorem pin118 : (mrho psiH 1).oneValue (BPair.ofNat 24) := by decide +kernel
+theorem pin119 : (mrho psiH 2).oneValue (BPair.ofNat 32) := by decide +kernel
+theorem pin120 : (mrho psiH 3).oneValue (BPair.ofNat 48) := by decide +kernel
+theorem pin121 : (mc psiH 0).oneValue (BPair.ofNat 32) := by decide +kernel
+theorem pin122 : (mc psiH 1).oneValue (BPair.ofNat 8) := by decide +kernel
+theorem pin123 : (mc psiH 2).oneValue (BPair.ofNat 8) := by decide +kernel
+theorem pin124 : (mc psiH 3).oneValue (BPair.ofNat 8) := by decide +kernel
+theorem pin125 : (md psiH 0).oneValue (BPair.ofNat 12) := by decide +kernel
+theorem pin126 : (bSq psiH).oneValue (BPair.ofNat 36) := by decide +kernel
+theorem pin127 : (edgeAt psiH 0).oneValue (BPair.ofNat 4) := by decide +kernel
+theorem pin128 : (edgeAt psiH 1).oneValue (BPair.ofNat 8) := by decide +kernel
 
 private def faLo0 : BPair :=
   (BPair.ofNat 2).swap * mrho psiH 2
@@ -514,10 +514,10 @@ private def faHi0 : BPair :=
     + BPair.ofNat 3 * ground.bsum
         (fun t => BPair.ofNat (ground.pasc 0 t) * mc psiH t) (List.range 1)
 
-example : faLo0.oneValue (BPair.ofNat 192) := by decide +kernel
-example : faHi0.oneValue (BPair.ofNat 192) := by decide +kernel
-example : faLo0.oneValue faHi0 := by decide +kernel
-example : faLo0.oneValue faHi0 :=
+theorem pin129 : faLo0.oneValue (BPair.ofNat 192) := by decide +kernel
+theorem pin130 : faHi0.oneValue (BPair.ofNat 192) := by decide +kernel
+theorem pin131 : faLo0.oneValue faHi0 := by decide +kernel
+theorem pin132 : faLo0.oneValue faHi0 :=
   fa_row aH bH psiH (BPair.ofNat 2).swap (BPair.ofNat 6) (BPair.ofNat 2)
     (BPair.ofNat 3) readH profH bondH 0
 
@@ -526,8 +526,8 @@ private def faForge0 : BPair :=
     + BPair.ofNat 4 * ground.bsum
         (fun t => BPair.ofNat (ground.pasc 0 t) * mc psiH t) (List.range 1)
 
-example : faForge0.oneValue (BPair.ofNat 256) := by decide +kernel
-example : ¬ faLo0.oneValue faForge0 := by decide +kernel
+theorem pin133 : faForge0.oneValue (BPair.ofNat 256) := by decide +kernel
+theorem pin134 : ¬ faLo0.oneValue faForge0 := by decide +kernel
 
 private def faLo1 : BPair :=
   (BPair.ofNat 2).swap * mrho psiH 3
@@ -537,10 +537,10 @@ private def faHi1 : BPair :=
     + BPair.ofNat 3 * ground.bsum
         (fun t => BPair.ofNat (ground.pasc 1 t) * mc psiH t) (List.range 2)
 
-example : faLo1.oneValue (BPair.ofNat 144) := by decide +kernel
-example : faHi1.oneValue (BPair.ofNat 144) := by decide +kernel
-example : faLo1.oneValue faHi1 := by decide +kernel
-example : faLo1.oneValue faHi1 :=
+theorem pin135 : faLo1.oneValue (BPair.ofNat 144) := by decide +kernel
+theorem pin136 : faHi1.oneValue (BPair.ofNat 144) := by decide +kernel
+theorem pin137 : faLo1.oneValue faHi1 := by decide +kernel
+theorem pin138 : faLo1.oneValue faHi1 :=
   fa_row aH bH psiH (BPair.ofNat 2).swap (BPair.ofNat 6) (BPair.ofNat 2)
     (BPair.ofNat 3) readH profH bondH 1
 
@@ -553,10 +553,10 @@ private def drHi0 : BPair :=
       + ((BPair.ofNat 2).swap + BPair.ofNat 6 + BPair.ofNat 2) * mc psiH 0)
     + BPair.ofNat 3 * edgeAt psiH 0
 
-example : drLo0.oneValue (BPair.ofNat 204) := by decide +kernel
-example : drHi0.oneValue (BPair.ofNat 204) := by decide +kernel
-example : drLo0.oneValue drHi0 := by decide +kernel
-example : drLo0.oneValue drHi0 :=
+theorem pin139 : drLo0.oneValue (BPair.ofNat 204) := by decide +kernel
+theorem pin140 : drHi0.oneValue (BPair.ofNat 204) := by decide +kernel
+theorem pin141 : drLo0.oneValue drHi0 := by decide +kernel
+theorem pin142 : drLo0.oneValue drHi0 :=
   d_row aH bH psiH (BPair.ofNat 2).swap (BPair.ofNat 6) (BPair.ofNat 2)
     (BPair.ofNat 3) readH profH bondH 0
 
@@ -569,10 +569,10 @@ private def drHi1 : BPair :=
       + ((BPair.ofNat 2).swap + BPair.ofNat 6 + BPair.ofNat 2) * mc psiH 1)
     + BPair.ofNat 3 * edgeAt psiH 1
 
-example : drLo1.oneValue (BPair.ofNat 72) := by decide +kernel
-example : drHi1.oneValue (BPair.ofNat 72) := by decide +kernel
-example : drLo1.oneValue drHi1 := by decide +kernel
-example : drLo1.oneValue drHi1 :=
+theorem pin143 : drLo1.oneValue (BPair.ofNat 72) := by decide +kernel
+theorem pin144 : drHi1.oneValue (BPair.ofNat 72) := by decide +kernel
+theorem pin145 : drLo1.oneValue drHi1 := by decide +kernel
+theorem pin146 : drLo1.oneValue drHi1 :=
   d_row aH bH psiH (BPair.ofNat 2).swap (BPair.ofNat 6) (BPair.ofNat 2)
     (BPair.ofNat 3) readH profH bondH 1
 
@@ -581,14 +581,14 @@ private def fbHi0 : BPair :=
     + (BPair.ofNat 6 * mc psiH 1 + BPair.ofNat 2 * mc psiH 0)
     + BPair.ofNat 3 * bSq psiH
 
-example : fbHi0.oneValue (BPair.ofNat 204) := by decide +kernel
-example : drLo0.oneValue fbHi0 := by decide +kernel
-example : drLo0.oneValue fbHi0 :=
+theorem pin147 : fbHi0.oneValue (BPair.ofNat 204) := by decide +kernel
+theorem pin148 : drLo0.oneValue fbHi0 := by decide +kernel
+theorem pin149 : drLo0.oneValue fbHi0 :=
   fb_row_zero aH bH psiH (BPair.ofNat 2).swap (BPair.ofNat 6) (BPair.ofNat 2)
     (BPair.ofNat 3) readH profH bondH
 
-example : drHi0.oneValue fbHi0 := by decide +kernel
-example : drHi0.oneValue fbHi0 :=
+theorem pin150 : drHi0.oneValue fbHi0 := by decide +kernel
+theorem pin151 : drHi0.oneValue fbHi0 :=
   fbd_row_zero aH bH psiH (BPair.ofNat 2).swap (BPair.ofNat 6) (BPair.ofNat 2)
     (BPair.ofNat 3) readH profH bondH
 
@@ -602,10 +602,10 @@ private def fbsHi0 : BPair :=
       + (BPair.ofNat 6 * mc psiH (s + 1) + BPair.ofNat 2 * mc psiH s)))
     (List.range 2)
 
-example : fbsLo0.oneValue (BPair.ofNat 144) := by decide +kernel
-example : fbsHi0.oneValue (BPair.ofNat 144) := by decide +kernel
-example : fbsLo0.oneValue fbsHi0 := by decide +kernel
-example : fbsLo0.oneValue fbsHi0 :=
+theorem pin152 : fbsLo0.oneValue (BPair.ofNat 144) := by decide +kernel
+theorem pin153 : fbsHi0.oneValue (BPair.ofNat 144) := by decide +kernel
+theorem pin154 : fbsLo0.oneValue fbsHi0 := by decide +kernel
+theorem pin155 : fbsLo0.oneValue fbsHi0 :=
   fb_row_succ aH bH psiH (BPair.ofNat 2).swap (BPair.ofNat 6) (BPair.ofNat 2)
     (BPair.ofNat 3) readH profH bondH 0
 
@@ -628,10 +628,10 @@ private def fbdHi0 : BPair :=
       * (ground.bpow (BPair.ofNat 2) (1 - t)
         * (BPair.ofNat 3 * mrho psiH t))) (List.range 2)
 
-example : fbdLo0.oneValue (BPair.ofNat 552) := by decide +kernel
-example : fbdHi0.oneValue (BPair.ofNat 552) := by decide +kernel
-example : fbdLo0.oneValue fbdHi0 := by decide +kernel
-example : fbdLo0.oneValue fbdHi0 :=
+theorem pin156 : fbdLo0.oneValue (BPair.ofNat 552) := by decide +kernel
+theorem pin157 : fbdHi0.oneValue (BPair.ofNat 552) := by decide +kernel
+theorem pin158 : fbdLo0.oneValue fbdHi0 := by decide +kernel
+theorem pin159 : fbdLo0.oneValue fbdHi0 :=
   fbd_row_succ aH bH psiH (BPair.ofNat 2).swap (BPair.ofNat 6) (BPair.ofNat 2)
     (BPair.ofNat 3) readH profH bondH 0
 
@@ -641,35 +641,35 @@ private def vOneH : Nat → BPair := fun k => ground.bpow (BPair.ofNat k) 0
 private def dbLoK : BPair :=
   dStream psiH (fun k => ground.getAt BPair.unit bH k * vKeyH k)
 
-example : dbLoK.oneValue BPair.unit := by decide +kernel
-example : (BPair.ofNat 3 * dStream psiH vKeyH).oneValue BPair.unit := by
+theorem pin160 : dbLoK.oneValue BPair.unit := by decide +kernel
+theorem pin161 : (BPair.ofNat 3 * dStream psiH vKeyH).oneValue BPair.unit := by
   decide +kernel
-example : dbLoK.oneValue (BPair.ofNat 3 * dStream psiH vKeyH) := by
+theorem pin162 : dbLoK.oneValue (BPair.ofNat 3 * dStream psiH vKeyH) := by
   decide +kernel
-example : dbLoK.oneValue (BPair.ofNat 3 * dStream psiH vKeyH) :=
+theorem pin163 : dbLoK.oneValue (BPair.ofNat 3 * dStream psiH vKeyH) :=
   dBond bH psiH (BPair.ofNat 3) bondH rfl vKeyH
 
 private def dbLo1 : BPair :=
   dStream psiH (fun k => ground.getAt BPair.unit bH k * vOneH k)
 
-example : dbLo1.oneValue (BPair.ofNat 36) := by decide +kernel
-example : (BPair.ofNat 3 * dStream psiH vOneH).oneValue (BPair.ofNat 36) := by
+theorem pin164 : dbLo1.oneValue (BPair.ofNat 36) := by decide +kernel
+theorem pin165 : (BPair.ofNat 3 * dStream psiH vOneH).oneValue (BPair.ofNat 36) := by
   decide +kernel
-example : dbLo1.oneValue (BPair.ofNat 3 * dStream psiH vOneH) := by
+theorem pin166 : dbLo1.oneValue (BPair.ofNat 3 * dStream psiH vOneH) := by
   decide +kernel
-example : dbLo1.oneValue (BPair.ofNat 3 * dStream psiH vOneH) :=
+theorem pin167 : dbLo1.oneValue (BPair.ofNat 3 * dStream psiH vOneH) :=
   dBond bH psiH (BPair.ofNat 3) bondH rfl vOneH
 
-example : (momVec psiH 1).length = 5 := rfl
-example : (ground.getAt BPair.unit (momVec psiH 1) 0).oneValue
+theorem pin168 : (momVec psiH 1).length = 5 := rfl
+theorem pin169 : (ground.getAt BPair.unit (momVec psiH 1) 0).oneValue
     (BPair.ofNat 56) := by decide +kernel
-example : (ground.getAt BPair.unit (momVec psiH 1) 2).oneValue
+theorem pin170 : (ground.getAt BPair.unit (momVec psiH 1) 2).oneValue
     (BPair.ofNat 32) := by decide +kernel
-example : (ground.getAt BPair.unit (momVec psiH 1) 4).oneValue
+theorem pin171 : (ground.getAt BPair.unit (momVec psiH 1) 4).oneValue
     (BPair.ofNat 36) := by decide +kernel
 
-example : (tailStream psiH wOne 1).oneValue (BPair.ofNat 20) := by decide +kernel
-example : (tailStream psiH wOne 3).oneValue BPair.unit := by decide +kernel
+theorem pin172 : (tailStream psiH wOne 1).oneValue (BPair.ofNat 20) := by decide +kernel
+theorem pin173 : (tailStream psiH wOne 3).oneValue BPair.unit := by decide +kernel
 
 private def tailLo : BPair := rhoStream psiH wOne
 private def tailHi : BPair :=
@@ -678,10 +678,10 @@ private def tailHi : BPair :=
     (List.range 1)
     + tailStream psiH wOne 1
 
-example : tailLo.oneValue (BPair.ofNat 56) := by decide +kernel
-example : tailHi.oneValue (BPair.ofNat 56) := by decide +kernel
-example : tailLo.oneValue tailHi := by decide +kernel
-example : tailLo.oneValue tailHi := tail_split psiH wOne 1
+theorem pin174 : tailLo.oneValue (BPair.ofNat 56) := by decide +kernel
+theorem pin175 : tailHi.oneValue (BPair.ofNat 56) := by decide +kernel
+theorem pin176 : tailLo.oneValue tailHi := by decide +kernel
+theorem pin177 : tailLo.oneValue tailHi := tail_split psiH wOne 1
 
 private def decayF : Nat → BPair
   | 0 => BPair.ofNat 9
@@ -707,18 +707,18 @@ private theorem decayStep : ∀ m : Nat, 0 ≤ m →
 private def decayFold : BPair :=
   ground.bsum (fun t => decayF (0 + t)) (List.range 5)
 
-example : (decayFold.scale 2).oneValue (BPair.ofNat 26) := by decide +kernel
-example : ((decayF 0).scale 3).oneValue (BPair.ofNat 27) := by decide +kernel
-example : decayFold.scale 2 ≤ (decayF 0).scale 3 := by decide +kernel
-example : decayFold.scale 2 ≤ (decayF 0).scale 3 :=
+theorem pin178 : (decayFold.scale 2).oneValue (BPair.ofNat 26) := by decide +kernel
+theorem pin179 : ((decayF 0).scale 3).oneValue (BPair.ofNat 27) := by decide +kernel
+theorem pin180 : decayFold.scale 2 ≤ (decayF 0).scale 3 := by decide +kernel
+theorem pin181 : decayFold.scale 2 ≤ (decayF 0).scale 3 :=
   tail_capped decayF 0 4 1 2 3 rfl (ground.leB_refl BPair.unit)
     (fun m hm _ => decayStep m hm)
 
-example : ¬ (decayFold.scale 3 ≤ (decayF 0).scale 3) := by decide +kernel
+theorem pin182 : ¬ (decayFold.scale 3 ≤ (decayF 0).scale 3) := by decide +kernel
 
-example : ((decayF 2).scale 2).oneValue (BPair.ofNat 2) := by decide +kernel
-example : (decayF 2).scale 2 ≤ (decayF 0).scale 3 := by decide +kernel
-example : (decayF 2).scale 2 ≤ (decayF 0).scale 3 :=
+theorem pin183 : ((decayF 2).scale 2).oneValue (BPair.ofNat 2) := by decide +kernel
+theorem pin184 : (decayF 2).scale 2 ≤ (decayF 0).scale 3 := by decide +kernel
+theorem pin185 : (decayF 2).scale 2 ≤ (decayF 0).scale 3 :=
   edge_capped decayF 0 2 (by decide +kernel) 1 2 3 rfl
     (fun k _ _ => decayPos k) (fun k hk _ => decayStep k hk)
 
@@ -727,13 +727,13 @@ private theorem turnCert :
   decide +kernel
 private theorem turnRead : (BPair.ofNat 8).scale (1 * 1 * 2)
     ≤ (BPair.ofNat 9).scale (1 * 1 * 3) := by decide +kernel
-example : ((BPair.ofNat 8 * BPair.ofNat 1).scale 2).oneValue
+theorem pin186 : ((BPair.ofNat 8 * BPair.ofNat 1).scale 2).oneValue
     (BPair.ofNat 16) := by decide +kernel
-example : ((BPair.ofNat 9 * BPair.ofNat 2).scale 3).oneValue
+theorem pin187 : ((BPair.ofNat 9 * BPair.ofNat 2).scale 3).oneValue
     (BPair.ofNat 54) := by decide +kernel
-example : (BPair.ofNat 8 * BPair.ofNat 1).scale 2
+theorem pin188 : (BPair.ofNat 8 * BPair.ofNat 1).scale 2
     ≤ (BPair.ofNat 9 * BPair.ofNat 2).scale 3 := by decide +kernel
-example : (BPair.ofNat 8 * BPair.ofNat 1).scale 2
+theorem pin189 : (BPair.ofNat 8 * BPair.ofNat 1).scale 2
     ≤ (BPair.ofNat 9 * BPair.ofNat 2).scale 3 :=
   turn_step (BPair.ofNat 1) (BPair.ofNat 2) (BPair.ofNat 8) (BPair.ofNat 9)
     1 1 3 2 turnCert turnRead (by decide +kernel)
@@ -748,12 +748,12 @@ private theorem profG2 :
     diagProf aG2 BPair.unit (BPair.ofNat 1) (BPair.ofNat 2) := by decide +kernel
 private theorem bondG2 : constBond bG2 (BPair.ofNat 2) := by decide +kernel
 
-example : (mrho psiG2 0).oneValue (BPair.ofNat 9) := by decide +kernel
-example : (mrho psiG2 1).oneValue (BPair.ofNat 6) := by decide +kernel
-example : (mc psiG2 0).oneValue (BPair.ofNat 6) := by decide +kernel
-example : (mc psiG2 1).oneValue (BPair.ofNat 2) := by decide +kernel
-example : (bSq psiG2).oneValue (BPair.ofNat 4) := by decide +kernel
-example : (edgeAt psiG2 0).oneValue (BPair.ofNat 1) := by decide +kernel
+theorem pin190 : (mrho psiG2 0).oneValue (BPair.ofNat 9) := by decide +kernel
+theorem pin191 : (mrho psiG2 1).oneValue (BPair.ofNat 6) := by decide +kernel
+theorem pin192 : (mc psiG2 0).oneValue (BPair.ofNat 6) := by decide +kernel
+theorem pin193 : (mc psiG2 1).oneValue (BPair.ofNat 2) := by decide +kernel
+theorem pin194 : (bSq psiG2).oneValue (BPair.ofNat 4) := by decide +kernel
+theorem pin195 : (edgeAt psiG2 0).oneValue (BPair.ofNat 1) := by decide +kernel
 
 private def fbdG2Lo : BPair :=
   BPair.unit * mc psiG2 2
@@ -765,10 +765,10 @@ private def fbdG2Hi : BPair :=
     + (BPair.ofNat 1 * mc psiG2 1 + BPair.ofNat 2 * mc psiG2 0)
     + BPair.ofNat 2 * bSq psiG2
 
-example : fbdG2Lo.oneValue (BPair.ofNat 22) := by decide +kernel
-example : fbdG2Hi.oneValue (BPair.ofNat 22) := by decide +kernel
-example : fbdG2Lo.oneValue fbdG2Hi := by decide +kernel
-example : fbdG2Lo.oneValue fbdG2Hi :=
+theorem pin196 : fbdG2Lo.oneValue (BPair.ofNat 22) := by decide +kernel
+theorem pin197 : fbdG2Hi.oneValue (BPair.ofNat 22) := by decide +kernel
+theorem pin198 : fbdG2Lo.oneValue fbdG2Hi := by decide +kernel
+theorem pin199 : fbdG2Lo.oneValue fbdG2Hi :=
   fbd_row_zero aG2 bG2 psiG2 BPair.unit (BPair.ofNat 1) (BPair.ofNat 2)
     (BPair.ofNat 2) readG2 profG2 bondG2
 
@@ -815,25 +815,25 @@ private theorem sqH : elim.sqAt sysH 5 := by decide +kernel
 private theorem sqG : elim.sqAt sysG 5 := by decide +kernel
 private theorem sqD : elim.sqAt dSys 5 := by decide +kernel
 
-example : dRhs.length = 5 := rfl
+theorem pin200 : dRhs.length = 5 := rfl
 
 set_option maxRecDepth 100000 in
-example : (elim.detL sysH).oneValue (BPair.ofNat 4) := by decide +kernel
-example : ¬ (elim.detL sysH).oneValue BPair.unit := by decide +kernel
-example : ¬ (elim.detL sysH).oneValue (BPair.ofNat 4).swap := by decide +kernel
-example : (elim.detL sysG).oneValue BPair.unit := by decide +kernel
-example : ¬ (elim.detL sysG).oneValue (BPair.ofNat 1) := by decide +kernel
+theorem pin201 : (elim.detL sysH).oneValue (BPair.ofNat 4) := by decide +kernel
+theorem pin202 : ¬ (elim.detL sysH).oneValue BPair.unit := by decide +kernel
+theorem pin203 : ¬ (elim.detL sysH).oneValue (BPair.ofNat 4).swap := by decide +kernel
+theorem pin204 : (elim.detL sysG).oneValue BPair.unit := by decide +kernel
+theorem pin205 : ¬ (elim.detL sysG).oneValue (BPair.ofNat 1) := by decide +kernel
 
 private def pinLo : List BPair :=
   elim.matVec (elim.matMul (elim.adjM sysH) sysH) (momVec psiH 1)
 private def pinHi : List BPair :=
   elim.vecScale (elim.detL sysH) (momVec psiH 1)
 
-example : poly.oneValue pinLo pinHi := by decide +kernel
-example : poly.oneValue pinLo pinHi :=
+theorem pin206 : poly.oneValue pinLo pinHi := by decide +kernel
+theorem pin207 : poly.oneValue pinLo pinHi :=
   elim.det_pin (n := 5) sysH sqH (momVec psiH 1) rfl
 
-example : poly.oneValue (elim.matVec dSys (momVec psiG2 1))
+theorem pin208 : poly.oneValue (elim.matVec dSys (momVec psiG2 1))
     [BPair.unit, BPair.unit, BPair.unit, BPair.unit, BPair.ofNat 6] := by
   decide +kernel
 
@@ -844,8 +844,8 @@ private def cmpHi : List BPair :=
   elim.matVec (elim.adjM sysH)
     (elim.vecAdd dRhs ((elim.matVec dSys (momVec psiG2 1)).map BPair.swap))
 
-example : poly.oneValue cmpLo cmpHi := by decide +kernel
-example : poly.oneValue cmpLo cmpHi :=
+theorem pin209 : poly.oneValue cmpLo cmpHi := by decide +kernel
+theorem pin210 : poly.oneValue cmpLo cmpHi :=
   scale_compare (n := 5) sysH sysG dSys sqH sqG sqD tieSys
     (momVec psiH 1) (momVec psiG2 1) rhsH rhsG dRhs cohH cohG tieRhs
     rfl rfl rfl
@@ -859,19 +859,19 @@ private def narrowW : List BPair := [BPair.unit]
 private def narrowWp : List BPair := [BPair.ofNat 1]
 private def narrowDw : List BPair := [(BPair.ofNat 1).swap]
 
-example : elim.sqAt narrowS 1 := by decide +kernel
-example : elim.sqAt narrowSp 1 := by decide +kernel
-example : elim.matOneValue narrowS (elim.matAdd narrowSp narrowD) := by
+theorem pin211 : elim.sqAt narrowS 1 := by decide +kernel
+theorem pin212 : elim.sqAt narrowSp 1 := by decide +kernel
+theorem pin213 : elim.matOneValue narrowS (elim.matAdd narrowSp narrowD) := by
   decide +kernel
-example : poly.oneValue (elim.matVec narrowS narrowV) narrowW := by decide +kernel
-example : poly.oneValue (elim.matVec narrowSp narrowVp) narrowWp := by
+theorem pin214 : poly.oneValue (elim.matVec narrowS narrowV) narrowW := by decide +kernel
+theorem pin215 : poly.oneValue (elim.matVec narrowSp narrowVp) narrowWp := by
   decide +kernel
-example : poly.oneValue narrowW (poly.add narrowWp narrowDw) := by decide +kernel
-example : narrowV.length = 1 := rfl
-example : narrowVp.length = 1 := rfl
-example : narrowDw.length = 1 := rfl
-example : ¬ elim.sqAt narrowD 1 := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin216 : poly.oneValue narrowW (poly.add narrowWp narrowDw) := by decide +kernel
+theorem pin217 : narrowV.length = 1 := rfl
+theorem pin218 : narrowVp.length = 1 := rfl
+theorem pin219 : narrowDw.length = 1 := rfl
+theorem pin220 : ¬ elim.sqAt narrowD 1 := by decide +kernel
+theorem pin221 : ¬ poly.oneValue
     (elim.vecScale (elim.detL narrowS)
       (elim.vecAdd narrowV (narrowVp.map BPair.swap)))
     (elim.matVec (elim.adjM narrowS)
@@ -887,17 +887,17 @@ private def bareW : List BPair := [BPair.ofNat 2]
 private def bareWp : List BPair := [BPair.ofNat 2]
 private def bareDw : List BPair := ([] : List BPair)
 
-example : elim.sqAt bareS 1 := by decide +kernel
-example : elim.sqAt bareSp 1 := by decide +kernel
-example : elim.sqAt bareD 1 := by decide +kernel
-example : elim.matOneValue bareS (elim.matAdd bareSp bareD) := by decide +kernel
-example : poly.oneValue (elim.matVec bareS bareV) bareW := by decide +kernel
-example : poly.oneValue (elim.matVec bareSp bareVp) bareWp := by decide +kernel
-example : poly.oneValue bareW (poly.add bareWp bareDw) := by decide +kernel
-example : bareV.length = 1 := rfl
-example : bareVp.length = 1 := rfl
-example : ¬ (bareDw.length = 1) := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin222 : elim.sqAt bareS 1 := by decide +kernel
+theorem pin223 : elim.sqAt bareSp 1 := by decide +kernel
+theorem pin224 : elim.sqAt bareD 1 := by decide +kernel
+theorem pin225 : elim.matOneValue bareS (elim.matAdd bareSp bareD) := by decide +kernel
+theorem pin226 : poly.oneValue (elim.matVec bareS bareV) bareW := by decide +kernel
+theorem pin227 : poly.oneValue (elim.matVec bareSp bareVp) bareWp := by decide +kernel
+theorem pin228 : poly.oneValue bareW (poly.add bareWp bareDw) := by decide +kernel
+theorem pin229 : bareV.length = 1 := rfl
+theorem pin230 : bareVp.length = 1 := rfl
+theorem pin231 : ¬ (bareDw.length = 1) := by decide +kernel
+theorem pin232 : ¬ poly.oneValue
     (elim.vecScale (elim.detL bareS)
       (elim.vecAdd bareV (bareVp.map BPair.swap)))
     (elim.matVec (elim.adjM bareS)
@@ -915,18 +915,18 @@ private def flvW : List BPair := [BPair.unit]
 private def flvWp : List BPair := [BPair.ofNat 1]
 private def flvDw : List BPair := [(BPair.ofNat 1).swap]
 
-example : elim.sqAt flvS 1 := by decide +kernel
-example : elim.sqAt flvSp 1 := by decide +kernel
-example : elim.sqAt flvD 1 := by decide +kernel
-example : elim.matOneValue flvS (elim.matAdd flvSp flvD) := by
+theorem pin233 : elim.sqAt flvS 1 := by decide +kernel
+theorem pin234 : elim.sqAt flvSp 1 := by decide +kernel
+theorem pin235 : elim.sqAt flvD 1 := by decide +kernel
+theorem pin236 : elim.matOneValue flvS (elim.matAdd flvSp flvD) := by
   decide +kernel
-example : poly.oneValue (elim.matVec flvS ([] : List BPair)) flvW := by
+theorem pin237 : poly.oneValue (elim.matVec flvS ([] : List BPair)) flvW := by
   decide +kernel
-example : poly.oneValue (elim.matVec flvSp [BPair.ofNat 1]) flvWp := by
+theorem pin238 : poly.oneValue (elim.matVec flvSp [BPair.ofNat 1]) flvWp := by
   decide +kernel
-example : poly.oneValue flvW (poly.add flvWp flvDw) := by decide +kernel
-example : ¬ (([] : List BPair).length = 1) := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin239 : poly.oneValue flvW (poly.add flvWp flvDw) := by decide +kernel
+theorem pin240 : ¬ (([] : List BPair).length = 1) := by decide +kernel
+theorem pin241 : ¬ poly.oneValue
     (elim.vecScale (elim.detL flvS)
       (elim.vecAdd ([] : List BPair) ([BPair.ofNat 1].map BPair.swap)))
     (elim.matVec (elim.adjM flvS)
@@ -938,12 +938,12 @@ private def flpW : List BPair := [BPair.ofNat 6]
 private def flpWp : List BPair := [BPair.unit]
 private def flpDw : List BPair := [BPair.ofNat 6]
 
-example : poly.oneValue (elim.matVec flvS [BPair.ofNat 3]) flpW := by
+theorem pin242 : poly.oneValue (elim.matVec flvS [BPair.ofNat 3]) flpW := by
   decide +kernel
-example : poly.oneValue (elim.matVec flvSp ([] : List BPair)) flpWp := by
+theorem pin243 : poly.oneValue (elim.matVec flvSp ([] : List BPair)) flpWp := by
   decide +kernel
-example : poly.oneValue flpW (poly.add flpWp flpDw) := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin244 : poly.oneValue flpW (poly.add flpWp flpDw) := by decide +kernel
+theorem pin245 : ¬ poly.oneValue
     (elim.vecScale (elim.detL flvS)
       (elim.vecAdd [BPair.ofNat 3] (([] : List BPair).map BPair.swap)))
     (elim.matVec (elim.adjM flvS)
@@ -956,15 +956,15 @@ private def ftieW : List BPair := [BPair.ofNat 6]
 private def ftieWp : List BPair := [BPair.ofNat 1]
 private def ftieDw : List BPair := [BPair.ofNat 5]
 
-example : elim.sqAt ftieD 1 := by decide +kernel
-example : ¬ elim.matOneValue flvS (elim.matAdd flvSp ftieD) := by
+theorem pin246 : elim.sqAt ftieD 1 := by decide +kernel
+theorem pin247 : ¬ elim.matOneValue flvS (elim.matAdd flvSp ftieD) := by
   decide +kernel
-example : poly.oneValue (elim.matVec flvS [BPair.ofNat 3]) ftieW := by
+theorem pin248 : poly.oneValue (elim.matVec flvS [BPair.ofNat 3]) ftieW := by
   decide +kernel
-example : poly.oneValue (elim.matVec flvSp [BPair.ofNat 1]) ftieWp := by
+theorem pin249 : poly.oneValue (elim.matVec flvSp [BPair.ofNat 1]) ftieWp := by
   decide +kernel
-example : poly.oneValue ftieW (poly.add ftieWp ftieDw) := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin250 : poly.oneValue ftieW (poly.add ftieWp ftieDw) := by decide +kernel
+theorem pin251 : ¬ poly.oneValue
     (elim.vecScale (elim.detL flvS)
       (elim.vecAdd [BPair.ofNat 3] ([BPair.ofNat 1].map BPair.swap)))
     (elim.matVec (elim.adjM flvS)
@@ -978,17 +978,17 @@ ground against the two-member data. -/
 private def psi4 : List BPair :=
   [BPair.ofNat 6, BPair.ofNat 4, BPair.ofNat 2, BPair.ofNat 1]
 
-example : ¬ (bC.length + 1 = psi4.length) := by decide +kernel
-example : ¬ (cStream psi4 (fun k => ground.getAt BPair.unit bC k
+theorem pin252 : ¬ (bC.length + 1 = psi4.length) := by decide +kernel
+theorem pin253 : ¬ (cStream psi4 (fun k => ground.getAt BPair.unit bC k
     * ground.bpow (BPair.ofNat k) 0)).oneValue
     (BPair.ofNat 2 * mc psi4 0) := by decide +kernel
 
 private def aP : List BPair := [BPair.ofNat 1, BPair.ofNat 5]
 
-example : diagProf aP BPair.unit (BPair.ofNat 4) (BPair.ofNat 1) := by
+theorem pin254 : diagProf aP BPair.unit (BPair.ofNat 4) (BPair.ofNat 1) := by
   decide +kernel
-example : ¬ (psi4.length = aP.length) := by decide +kernel
-example : ¬ (rhoStream psi4
+theorem pin255 : ¬ (psi4.length = aP.length) := by decide +kernel
+theorem pin256 : ¬ (rhoStream psi4
     (fun k => ground.getAt BPair.unit aP k
       * ground.bpow (BPair.ofNat k) 1)).oneValue
     (BPair.unit * mrho psi4 3
@@ -1001,41 +1001,41 @@ the clause's stated gram frame, read load-bearing at two joint
 partings, the turning pair off the unit at one forge and the
 certificate pair at the other, the conclusion refused at each. -/
 
-example : ¬ ((BPair.ofNat 3).scale (1 * 1)
+theorem pin257 : ¬ ((BPair.ofNat 3).scale (1 * 1)
     ≤ (BPair.ofNat 1).scale (1 * 1)) := by decide +kernel
-example : (BPair.ofNat 1).scale (1 * 1 * 2)
+theorem pin258 : (BPair.ofNat 1).scale (1 * 1 * 2)
     ≤ (BPair.ofNat 2).scale (1 * 1 * 1) := by decide +kernel
-example : ¬ ((BPair.ofNat 1 * BPair.ofNat 3).scale 2
+theorem pin259 : ¬ ((BPair.ofNat 1 * BPair.ofNat 3).scale 2
     ≤ (BPair.ofNat 2 * BPair.ofNat 1).scale 1) := by decide +kernel
 
-example : (BPair.ofNat 1).scale (1 * 1) ≤ (BPair.ofNat 1).scale (1 * 1) := by
+theorem pin260 : (BPair.ofNat 1).scale (1 * 1) ≤ (BPair.ofNat 1).scale (1 * 1) := by
   decide +kernel
-example : ¬ ((BPair.ofNat 3).scale (1 * 1 * 2)
+theorem pin261 : ¬ ((BPair.ofNat 3).scale (1 * 1 * 2)
     ≤ (BPair.ofNat 1).scale (1 * 1 * 1)) := by decide +kernel
-example : ¬ ((BPair.ofNat 3 * BPair.ofNat 1).scale 2
+theorem pin262 : ¬ ((BPair.ofNat 3 * BPair.ofNat 1).scale 2
     ≤ (BPair.ofNat 1 * BPair.ofNat 1).scale 1) := by decide +kernel
 
-example : (BPair.ofNat 2).scale (1 * 1) ≤ (BPair.ofNat 3).scale (1 * 1) := by
+theorem pin263 : (BPair.ofNat 2).scale (1 * 1) ≤ (BPair.ofNat 3).scale (1 * 1) := by
   decide +kernel
-example : ((BPair.ofNat 5).swap).scale (1 * 1 * 1)
+theorem pin264 : ((BPair.ofNat 5).swap).scale (1 * 1 * 1)
     ≤ ((BPair.ofNat 5).swap).scale (1 * 1 * 1) := by decide +kernel
-example : ¬ (BPair.unit ≤ (BPair.ofNat 5).swap) := by decide +kernel
-example : ¬ (((BPair.ofNat 5).swap * BPair.ofNat 2).scale 1
+theorem pin265 : ¬ (BPair.unit ≤ (BPair.ofNat 5).swap) := by decide +kernel
+theorem pin266 : ¬ (((BPair.ofNat 5).swap * BPair.ofNat 2).scale 1
     ≤ ((BPair.ofNat 5).swap * BPair.ofNat 3).scale 1) := by decide +kernel
 
-example : ((BPair.ofNat 2).swap).scale (1 * 1)
+theorem pin267 : ((BPair.ofNat 2).swap).scale (1 * 1)
     ≤ ((BPair.ofNat 1).swap).scale (1 * 1) := by decide +kernel
-example : (BPair.ofNat 1).scale (1 * 1 * 1)
+theorem pin268 : (BPair.ofNat 1).scale (1 * 1 * 1)
     ≤ (BPair.ofNat 5).scale (1 * 1 * 1) := by decide +kernel
-example : ¬ (BPair.unit ≤ (BPair.ofNat 1).swap) := by decide +kernel
-example : ¬ ((BPair.ofNat 1 * (BPair.ofNat 2).swap).scale 1
+theorem pin269 : ¬ (BPair.unit ≤ (BPair.ofNat 1).swap) := by decide +kernel
+theorem pin270 : ¬ ((BPair.ofNat 1 * (BPair.ofNat 2).swap).scale 1
     ≤ (BPair.ofNat 5 * (BPair.ofNat 1).swap).scale 1) := by decide +kernel
 
 /- The tail cap's last-member positivity, isolated at the vacant
 span's negative anchor, the anchor's own negativity the read
 above. -/
 
-example : ¬ ((ground.bsum (fun _ => (BPair.ofNat 5).swap)
+theorem pin271 : ¬ ((ground.bsum (fun _ => (BPair.ofNat 5).swap)
     (List.range 1)).scale 1
     ≤ ((BPair.ofNat 5).swap).scale 2) := by decide +kernel
 
@@ -1063,35 +1063,35 @@ private def drForm (d o : List BPair) (v : List BPair) : BPair :=
     (greenprod.assemble (d.map (fun a => [[a]]))
       (o.map (fun b => [[b]]))) v
 
-example : (drRead drD drO drU).oneValue (BPair.ofNat 10) := by
+theorem pin272 : (drRead drD drO drU).oneValue (BPair.ofNat 10) := by
   decide +kernel
-example : (drForm drD drO drU).oneValue (drRead drD drO drU) :=
+theorem pin273 : (drForm drD drO drU).oneValue (drRead drD drO drU) :=
   datum_read drD drO drU rfl rfl
-example : ¬ ((drForm drD3 drO drU3).oneValue
+theorem pin274 : ¬ ((drForm drD3 drO drU3).oneValue
     (drRead drD3 drO drU3)) := by decide +kernel
-example : ¬ ((drForm drD drO5 drU3).oneValue
+theorem pin275 : ¬ ((drForm drD drO5 drU3).oneValue
     (drRead drD drO5 drU3)) := by decide +kernel
-example : (drForm drD drO drU3).oneValue (drRead drD drO drU3) := by
+theorem pin276 : (drForm drD drO drU3).oneValue (drRead drD drO drU3) := by
   decide +kernel
-example : (drForm drD3 drO5 drU).oneValue (drRead drD3 drO5 drU) := by
+theorem pin277 : (drForm drD3 drO5 drU).oneValue (drRead drD3 drO5 drU) := by
   decide +kernel
-example : (drForm drD drO5 drU).oneValue (drRead drD drO5 drU) := by
+theorem pin278 : (drForm drD drO5 drU).oneValue (drRead drD drO5 drU) := by
   decide +kernel
 
 /- The square system at the fixtures: the assembled rows pin the
 committed matrices, the read lands by the theorem route, and the
 degree floor with the bond datum refuse at their forges. -/
 
-example : elim.matOneValue
+theorem pin279 : elim.matOneValue
     (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2) (BPair.ofNat 3))
     sysH := by decide +kernel
-example : poly.oneValue (momRhs psiH (BPair.ofNat 3) 1) rhsH := by
+theorem pin280 : poly.oneValue (momRhs psiH (BPair.ofNat 3) 1) rhsH := by
   decide +kernel
-example : (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2)
+theorem pin281 : (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2)
     (BPair.ofNat 3)).length = 5 :=
   momSys_len 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2) (BPair.ofNat 3)
     (Nat.le_refl 1)
-example : elim.rowsLen 5
+theorem pin282 : elim.rowsLen 5
     (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2) (BPair.ofNat 3)) :=
   momSys_rowsLen 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2) (BPair.ofNat 3)
 
@@ -1102,18 +1102,18 @@ private theorem sysReadH : poly.oneValue
   momSys_read aH bH psiH pH2 (BPair.ofNat 6) (BPair.ofNat 2)
     (BPair.ofNat 3) 1 readH profH bondH (Nat.le_refl 1)
 
-example : poly.oneValue
+theorem pin283 : poly.oneValue
     (elim.matVec (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2)
       (BPair.ofNat 3)) (momVec psiH 1))
     (momRhs psiH (BPair.ofNat 3) 1) := by decide +kernel
 
-example : ¬ (1 ≤ 0) := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin284 : ¬ (1 ≤ 0) := by decide +kernel
+theorem pin285 : ¬ poly.oneValue
     (elim.matVec (momSys 0 pH2 (BPair.ofNat 6) (BPair.ofNat 2)
       (BPair.ofNat 3)) (momVec psiH 0))
     (momRhs psiH (BPair.ofNat 3) 0) := by decide +kernel
-example : ¬ constBond bHforge (BPair.ofNat 3) := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin286 : ¬ constBond bHforge (BPair.ofNat 3) := by decide +kernel
+theorem pin287 : ¬ poly.oneValue
     (elim.matVec (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2)
       (BPair.ofNat 4)) (momVec psiH 1))
     (momRhs psiH (BPair.ofNat 3) 1) := by decide +kernel
@@ -1160,7 +1160,7 @@ set_option maxRecDepth 100000 in
 private theorem sqMomQ : elim.sqAt
     (momSys 1 pH2 (BPair.ofNat 4) (BPair.ofNat 2) (BPair.ofNat 2)) 5 := by
   decide +kernel
-example : elim.sqAt dSysQ 5 := by decide +kernel
+theorem pin288 : elim.sqAt dSysQ 5 := by decide +kernel
 set_option maxRecDepth 100000 in
 private theorem tieSysQ : elim.matOneValue
     (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2) (BPair.ofNat 3))
@@ -1170,7 +1170,7 @@ private theorem tieRhsQ : poly.oneValue (momRhs psiH (BPair.ofNat 3) 1)
     (poly.add (momRhs psiQ (BPair.ofNat 2) 1) dRhsQ) := by decide +kernel
 
 set_option maxRecDepth 1000000 in
-example : poly.oneValue
+theorem pin289 : poly.oneValue
     (elim.vecScale
       (elim.detL (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2)
         (BPair.ofNat 3)))
@@ -1181,7 +1181,7 @@ example : poly.oneValue
       (elim.vecAdd dRhsQ
         ((elim.matVec dSysQ (momVec psiQ 1)).map BPair.swap))) := by
   decide +kernel
-example : poly.oneValue
+theorem pin290 : poly.oneValue
     (elim.vecScale
       (elim.detL (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2)
         (BPair.ofNat 3)))
@@ -1208,7 +1208,7 @@ private def cWQ : List BPair :=
    BPair.ofNat 5]
 
 set_option maxRecDepth 1000000 in
-example : (elim.detL (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2)
+theorem pin291 : (elim.detL (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2)
       (BPair.ofNat 3))
     * (elim.dotP cWQ (momVec psiH 1)
       + (elim.dotP cWQ (momVec psiQ 1)).swap)).oneValue
@@ -1219,7 +1219,7 @@ example : (elim.detL (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2)
         (elim.vecAdd dRhsQ
           ((elim.matVec dSysQ (momVec psiQ 1)).map BPair.swap)))) := by
   decide +kernel
-example : (elim.detL (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2)
+theorem pin292 : (elim.detL (momSys 1 pH2 (BPair.ofNat 6) (BPair.ofNat 2)
       (BPair.ofNat 3))
     * (elim.dotP cWQ (momVec psiH 1)
       + (elim.dotP cWQ (momVec psiQ 1)).swap)).oneValue
@@ -1249,17 +1249,17 @@ private def cgA : elim.Mat :=
   [[BPair.ofNat 1, BPair.ofNat 4], [BPair.unit, BPair.ofNat 2]]
 private def cgPsi : List BPair := [BPair.ofNat 1, BPair.ofNat 2]
 
-example : elim.matOneValue (elim.transposeM cgM) cgM := by decide +kernel
-example : elim.matOneValue (elim.transposeM cgN) cgN := by decide +kernel
-example : (elim.dotP cgPsi (elim.matVec cgM (elim.matVec cgN cgPsi))).oneValue
+theorem pin293 : elim.matOneValue (elim.transposeM cgM) cgM := by decide +kernel
+theorem pin294 : elim.matOneValue (elim.transposeM cgN) cgN := by decide +kernel
+theorem pin295 : (elim.dotP cgPsi (elim.matVec cgM (elim.matVec cgN cgPsi))).oneValue
     (elim.dotP cgPsi (elim.matVec cgN (elim.matVec cgM cgPsi))) := by
   decide +kernel
-example : (elim.dotP cgPsi (elim.matVec cgM (elim.matVec cgN cgPsi))).oneValue
+theorem pin296 : (elim.dotP cgPsi (elim.matVec cgM (elim.matVec cgN cgPsi))).oneValue
     (elim.dotP cgPsi (elim.matVec cgN (elim.matVec cgM cgPsi))) :=
   commGround (n := 2) cgM cgN (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) cgPsi rfl
-example : ¬ elim.matOneValue (elim.transposeM cgA) cgA := by decide +kernel
-example : ¬ (elim.dotP cgPsi
+theorem pin297 : ¬ elim.matOneValue (elim.transposeM cgA) cgA := by decide +kernel
+theorem pin298 : ¬ (elim.dotP cgPsi
     (elim.matVec cgM (elim.matVec cgA cgPsi))).oneValue
     (elim.dotP cgPsi (elim.matVec cgA (elim.matVec cgM cgPsi))) := by
   decide +kernel
@@ -1274,14 +1274,14 @@ private def fuD : elim.Mat := [[BPair.unit]]
 private def foS : elim.Mat := [[BPair.ofNat 1]]
 
 -- scale_compare hv forged (w wrong)
-example : ¬ poly.oneValue (elim.matVec foS [BPair.ofNat 5])
+theorem pin299 : ¬ poly.oneValue (elim.matVec foS [BPair.ofNat 5])
     [BPair.ofNat 10] := by decide +kernel
-example : poly.oneValue (elim.matVec foS fOne) fOne := by decide +kernel
-example : poly.oneValue [BPair.ofNat 10]
+theorem pin300 : poly.oneValue (elim.matVec foS fOne) fOne := by decide +kernel
+theorem pin301 : poly.oneValue [BPair.ofNat 10]
     (poly.add fOne [BPair.ofNat 9]) := by decide +kernel
-example : elim.sqAt fuD 1 := by decide +kernel
-example : elim.matOneValue foS (elim.matAdd foS fuD) := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin302 : elim.sqAt fuD 1 := by decide +kernel
+theorem pin303 : elim.matOneValue foS (elim.matAdd foS fuD) := by decide +kernel
+theorem pin304 : ¬ poly.oneValue
     (elim.vecScale (elim.detL foS)
       (elim.vecAdd [BPair.ofNat 5] (fOne.map BPair.swap)))
     (elim.matVec (elim.adjM foS)
@@ -1289,13 +1289,13 @@ example : ¬ poly.oneValue
         ((elim.matVec fuD fOne).map BPair.swap))) := by decide +kernel
 
 -- scale_compare hv' forged (w' wrong)
-example : poly.oneValue (elim.matVec foS [BPair.ofNat 5])
+theorem pin305 : poly.oneValue (elim.matVec foS [BPair.ofNat 5])
     [BPair.ofNat 5] := by decide +kernel
-example : ¬ poly.oneValue (elim.matVec foS fOne) [BPair.ofNat 2] := by
+theorem pin306 : ¬ poly.oneValue (elim.matVec foS fOne) [BPair.ofNat 2] := by
   decide +kernel
-example : poly.oneValue [BPair.ofNat 5]
+theorem pin307 : poly.oneValue [BPair.ofNat 5]
     (poly.add [BPair.ofNat 2] [BPair.ofNat 3]) := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin308 : ¬ poly.oneValue
     (elim.vecScale (elim.detL foS)
       (elim.vecAdd [BPair.ofNat 5] (fOne.map BPair.swap)))
     (elim.matVec (elim.adjM foS)
@@ -1303,9 +1303,9 @@ example : ¬ poly.oneValue
         ((elim.matVec fuD fOne).map BPair.swap))) := by decide +kernel
 
 -- scale_compare hdw forged
-example : ¬ poly.oneValue [BPair.ofNat 5]
+theorem pin309 : ¬ poly.oneValue [BPair.ofNat 5]
     (poly.add fOne [BPair.ofNat 7]) := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin310 : ¬ poly.oneValue
     (elim.vecScale (elim.detL foS)
       (elim.vecAdd [BPair.ofNat 5] (fOne.map BPair.swap)))
     (elim.matVec (elim.adjM foS)
@@ -1314,10 +1314,10 @@ example : ¬ poly.oneValue
 
 -- det_pin hz forged (z too long)
 private def twfoS : elim.Mat := [[BPair.ofNat 2]]
-example : elim.sqAt twfoS 1 := by decide +kernel
-example : ¬ (([BPair.ofNat 3, BPair.ofNat 4] : List BPair).length = 1) := by
+theorem pin311 : elim.sqAt twfoS 1 := by decide +kernel
+theorem pin312 : ¬ (([BPair.ofNat 3, BPair.ofNat 4] : List BPair).length = 1) := by
   decide +kernel
-example : ¬ poly.oneValue
+theorem pin313 : ¬ poly.oneValue
     (elim.matVec (elim.matMul (elim.adjM twfoS) twfoS)
       [BPair.ofNat 3, BPair.ofNat 4])
     (elim.vecScale (elim.detL twfoS) [BPair.ofNat 3, BPair.ofNat 4]) := by
@@ -1330,28 +1330,28 @@ private def fpsi4X : List BPair :=
   [BPair.ofNat 6, BPair.ofNat 4, BPair.ofNat 2, BPair.ofNat 1]
 private def fvOne : Nat → BPair := fun _ => BPair.ofNat 1
 
-example : ¬ (dStream fpsi4X (fun k => ground.getAt BPair.unit fbC (k + 1)
+theorem pin314 : ¬ (dStream fpsi4X (fun k => ground.getAt BPair.unit fbC (k + 1)
     * fvOne k)).oneValue (BPair.ofNat 2 * dStream fpsi4X fvOne) := by
   decide +kernel
-example : ¬ (rhoStream fpsi4X (fun k => ground.getAt BPair.unit fbC k
+theorem pin315 : ¬ (rhoStream fpsi4X (fun k => ground.getAt BPair.unit fbC k
     * fvOne k)
     + BPair.ofNat 2 * (fvOne (fpsi4X.length - 1)
       * (ground.getAt BPair.unit fpsi4X (fpsi4X.length - 1)
         * ground.getAt BPair.unit fpsi4X (fpsi4X.length - 1)))).oneValue
     (BPair.ofNat 2 * rhoStream fpsi4X fvOne) := by decide +kernel
-example : ¬ (rhoStream fpsi4X
+theorem pin316 : ¬ (rhoStream fpsi4X
     (wShift (fun t => ground.getAt BPair.unit fbC t * fvOne t))).oneValue
     (BPair.ofNat 2 * rhoStream fpsi4X (wShift fvOne)) := by decide +kernel
 
 -- profC / profCUp hlen at the two-member profile
 private def faP : List BPair := [BPair.ofNat 1, BPair.ofNat 5]
-example : ¬ (cStream fpsi4X
+theorem pin317 : ¬ (cStream fpsi4X
     (fun k => ground.getAt BPair.unit faP k
       * ground.bpow (BPair.ofNat k) 0)).oneValue
     (BPair.unit * mc fpsi4X 2
       + (BPair.ofNat 4 * mc fpsi4X 1 + BPair.ofNat 1 * mc fpsi4X 0)) := by
   decide +kernel
-example : ¬ (cStream fpsi4X
+theorem pin318 : ¬ (cStream fpsi4X
     (fun k => ground.getAt BPair.unit faP (k + 1)
       * ground.bpow (BPair.ofNat k) 0)).oneValue
     (BPair.unit * mc fpsi4X 2
@@ -1359,14 +1359,14 @@ example : ¬ (cStream fpsi4X
         + (BPair.unit + BPair.ofNat 4 + BPair.ofNat 1) * mc fpsi4X 0)) := by
   decide +kernel
 
-example : ¬ (ground.getAt BPair.unit fbC 2).oneValue (BPair.ofNat 2) := by
+theorem pin319 : ¬ (ground.getAt BPair.unit fbC 2).oneValue (BPair.ofNat 2) := by
   decide +kernel
 
 
 -- momSys_read hp forged (wrong profile head)
-example : ¬ diagProf [BPair.ofNat 2, BPair.ofNat 6, BPair.ofNat 6]
+theorem pin320 : ¬ diagProf [BPair.ofNat 2, BPair.ofNat 6, BPair.ofNat 6]
     BPair.unit (BPair.ofNat 6) (BPair.ofNat 2) := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin321 : ¬ poly.oneValue
     (elim.matVec (momSys 1 BPair.unit (BPair.ofNat 6) (BPair.ofNat 2)
       (BPair.ofNat 3))
       (momVec [BPair.ofNat 6, BPair.ofNat 4, BPair.ofNat 2] 1))
@@ -1379,32 +1379,32 @@ private def gpsi5 : List BPair :=
   [BPair.ofNat 6, BPair.ofNat 4, BPair.ofNat 2, BPair.ofNat 1,
    BPair.ofNat 1]
 private def gvOne : Nat → BPair := fun _ => BPair.ofNat 1
-example : ¬ (gbC.length + 1 = gpsi5.length) := by decide +kernel
-example : ¬ (dStream gpsi5 (fun k => ground.getAt BPair.unit gbC k
+theorem pin322 : ¬ (gbC.length + 1 = gpsi5.length) := by decide +kernel
+theorem pin323 : ¬ (dStream gpsi5 (fun k => ground.getAt BPair.unit gbC k
     * gvOne k)).oneValue (BPair.ofNat 2 * dStream gpsi5 gvOne) := by
   decide +kernel
 
 -- prof_at hk with the F profile
 private def gaF : List BPair := [BPair.ofNat 1, BPair.ofNat 5, BPair.ofNat 9]
-example : diagProf gaF BPair.unit (BPair.ofNat 4) (BPair.ofNat 1) := by
+theorem pin324 : diagProf gaF BPair.unit (BPair.ofNat 4) (BPair.ofNat 1) := by
   decide +kernel
-example : ¬ (ground.getAt BPair.unit gaF 3).oneValue
+theorem pin325 : ¬ (ground.getAt BPair.unit gaF 3).oneValue
     (BPair.unit * BPair.ofNat (3 * 3)
       + (BPair.ofNat 4 * BPair.ofNat 3 + BPair.ofNat 1)) := by
   decide +kernel
 
 -- prodWidth cap refusals
-example : windowsep.mag (BPair.ofNat 1) ≤ BPair.ofNat 1 := by decide +kernel
-example : ¬ (windowsep.mag (BPair.ofNat 2) ≤ BPair.ofNat 1) := by
+theorem pin326 : windowsep.mag (BPair.ofNat 1) ≤ BPair.ofNat 1 := by decide +kernel
+theorem pin327 : ¬ (windowsep.mag (BPair.ofNat 2) ≤ BPair.ofNat 1) := by
   decide +kernel
-example : ¬ (windowsep.mag (BPair.ofNat 9 * BPair.ofNat 2
+theorem pin328 : ¬ (windowsep.mag (BPair.ofNat 9 * BPair.ofNat 2
       + (BPair.ofNat 1 * BPair.ofNat 1).swap)
     ≤ BPair.ofNat 1 * windowsep.mag (BPair.ofNat 9 + (BPair.ofNat 1).swap)
       + BPair.ofNat 1
         * windowsep.mag (BPair.ofNat 2 + (BPair.ofNat 1).swap)) := by
   decide +kernel
-example : windowsep.mag (BPair.ofNat 3) ≤ BPair.ofNat 3 := by decide +kernel
-example : ¬ (windowsep.mag (BPair.ofNat 9 * BPair.ofNat 2
+theorem pin329 : windowsep.mag (BPair.ofNat 3) ≤ BPair.ofNat 3 := by decide +kernel
+theorem pin330 : ¬ (windowsep.mag (BPair.ofNat 9 * BPair.ofNat 2
       + (BPair.ofNat 3 * BPair.ofNat 1).swap)
     ≤ BPair.ofNat 2 * windowsep.mag (BPair.ofNat 9 + (BPair.ofNat 3).swap)
       + BPair.ofNat 1
@@ -1416,32 +1416,32 @@ private def gr1 : BPair := BPair.ofNat 9
 private def gr2 : BPair := BPair.ofNat 2
 private def gr1p : BPair := BPair.ofNat 1
 private def gr2p : BPair := BPair.ofNat 1
-example : ¬ (windowsep.mag ((gr1 * gr2 + BPair.unit)
+theorem pin331 : ¬ (windowsep.mag ((gr1 * gr2 + BPair.unit)
       + (gr1p * gr2p + BPair.unit).swap)
     ≤ BPair.ofNat 1 * windowsep.mag (gr1 + gr1p.swap)
       + (BPair.ofNat 1 * windowsep.mag (gr2 + gr2p.swap)
         + (BPair.unit + BPair.unit))) := by decide +kernel
-example : ¬ (windowsep.mag ((gr1 * gr2 + BPair.unit)
+theorem pin332 : ¬ (windowsep.mag ((gr1 * gr2 + BPair.unit)
       + (gr1p * gr2p + BPair.unit).swap)
     ≤ BPair.ofNat 2 * windowsep.mag (gr1 + gr1p.swap)
       + (BPair.unit * windowsep.mag (gr2 + gr2p.swap)
         + (BPair.unit + BPair.unit))) := by decide +kernel
-example : ¬ (windowsep.mag ((gr1 * gr2 + BPair.unit)
+theorem pin333 : ¬ (windowsep.mag ((gr1 * gr2 + BPair.unit)
       + (gr1p * gr2p + BPair.unit).swap)
     ≤ BPair.ofNat 2 * BPair.ofNat 7
       + (BPair.ofNat 1 * windowsep.mag (gr2 + gr2p.swap)
         + (BPair.unit + BPair.unit))) := by decide +kernel
-example : ¬ (windowsep.mag ((gr1 * gr2 + BPair.unit)
+theorem pin334 : ¬ (windowsep.mag ((gr1 * gr2 + BPair.unit)
       + (gr1p * gr2p + BPair.unit).swap)
     ≤ BPair.ofNat 2 * windowsep.mag (gr1 + gr1p.swap)
       + (BPair.ofNat 1 * BPair.unit + (BPair.unit + BPair.unit))) := by
   decide +kernel
-example : ¬ (windowsep.mag ((gr1 * gr2 + BPair.ofNat 3)
+theorem pin335 : ¬ (windowsep.mag ((gr1 * gr2 + BPair.ofNat 3)
       + (gr1p * gr2p + BPair.unit).swap)
     ≤ BPair.ofNat 2 * windowsep.mag (gr1 + gr1p.swap)
       + (BPair.ofNat 1 * windowsep.mag (gr2 + gr2p.swap)
         + (BPair.ofNat 1 + BPair.unit))) := by decide +kernel
-example : ¬ (windowsep.mag ((gr1 * gr2 + BPair.unit)
+theorem pin336 : ¬ (windowsep.mag ((gr1 * gr2 + BPair.unit)
       + (gr1p * gr2p + (BPair.ofNat 3).swap).swap)
     ≤ BPair.ofNat 2 * windowsep.mag (gr1 + gr1p.swap)
       + (BPair.ofNat 1 * windowsep.mag (gr2 + gr2p.swap)
@@ -1457,28 +1457,28 @@ private def wdCY : BPair := BPair.ofNat 2
 private theorem wdCapX : windowsep.mag wdXX ≤ wdCX := by decide +kernel
 private theorem wdCapY : windowsep.mag wdY ≤ wdCY := by decide +kernel
 
-example : (windowsep.mag (wdX * wdXX + (wdY * wdYY).swap)).oneValue
+theorem pin337 : (windowsep.mag (wdX * wdXX + (wdY * wdYY).swap)).oneValue
     (BPair.ofNat 1) := by decide +kernel
-example : (wdCX * windowsep.mag (wdX + wdY.swap)
+theorem pin338 : (wdCX * windowsep.mag (wdX + wdY.swap)
     + wdCY * windowsep.mag (wdXX + wdYY.swap)).oneValue
     (BPair.ofNat 17) := by decide +kernel
-example : windowsep.mag (wdX * wdXX + (wdY * wdYY).swap)
+theorem pin339 : windowsep.mag (wdX * wdXX + (wdY * wdYY).swap)
     ≤ wdCX * windowsep.mag (wdX + wdY.swap)
       + wdCY * windowsep.mag (wdXX + wdYY.swap) := by decide +kernel
-example : windowsep.mag (wdX * wdXX + (wdY * wdYY).swap)
+theorem pin340 : windowsep.mag (wdX * wdXX + (wdY * wdYY).swap)
     ≤ wdCX * windowsep.mag (wdX + wdY.swap)
       + wdCY * windowsep.mag (wdXX + wdYY.swap) :=
   prodWidth wdX wdXX wdY wdYY wdCX wdCY wdCapX wdCapY
 
-example : (windowsep.mag (wdX * wdXX + (wdY * wdXX).swap)).oneValue
+theorem pin341 : (windowsep.mag (wdX * wdXX + (wdY * wdXX).swap)).oneValue
     (BPair.ofNat 9) := by decide +kernel
-example : (wdCX * windowsep.mag (wdX + wdY.swap)
+theorem pin342 : (wdCX * windowsep.mag (wdX + wdY.swap)
     + wdCY * windowsep.mag (wdXX + wdXX.swap)).oneValue
     (BPair.ofNat 9) := by decide +kernel
-example : windowsep.mag (wdX * wdXX + (wdY * wdXX).swap)
+theorem pin343 : windowsep.mag (wdX * wdXX + (wdY * wdXX).swap)
     ≤ wdCX * windowsep.mag (wdX + wdY.swap)
       + wdCY * windowsep.mag (wdXX + wdXX.swap) := by decide +kernel
-example : windowsep.mag (wdX * wdXX + (wdY * wdXX).swap)
+theorem pin344 : windowsep.mag (wdX * wdXX + (wdY * wdXX).swap)
     ≤ wdCX * windowsep.mag (wdX + wdY.swap)
       + wdCY * windowsep.mag (wdXX + wdXX.swap) :=
   prodWidth wdX wdXX wdY wdXX wdCX wdCY wdCapX wdCapY
@@ -1495,13 +1495,13 @@ private theorem asWid2 : windowsep.mag (wdXX + wdYY.swap) ≤ asW2 := by
 private theorem asCe : windowsep.mag asE ≤ asE := by decide +kernel
 private theorem asCep : windowsep.mag asEp ≤ asEp := by decide +kernel
 
-example : (windowsep.mag ((wdX * wdXX + asE)
+theorem pin345 : (windowsep.mag ((wdX * wdXX + asE)
     + (wdY * wdYY + asEp).swap)).oneValue BPair.unit := by decide +kernel
-example : (wdCX * asW1 + (wdCY * asW2 + (asE + asEp))).oneValue
+theorem pin346 : (wdCX * asW1 + (wdCY * asW2 + (asE + asEp))).oneValue
     (BPair.ofNat 20) := by decide +kernel
-example : windowsep.mag ((wdX * wdXX + asE) + (wdY * wdYY + asEp).swap)
+theorem pin347 : windowsep.mag ((wdX * wdXX + asE) + (wdY * wdYY + asEp).swap)
     ≤ wdCX * asW1 + (wdCY * asW2 + (asE + asEp)) := by decide +kernel
-example : windowsep.mag ((wdX * wdXX + asE) + (wdY * wdYY + asEp).swap)
+theorem pin348 : windowsep.mag ((wdX * wdXX + asE) + (wdY * wdYY + asEp).swap)
     ≤ wdCX * asW1 + (wdCY * asW2 + (asE + asEp)) :=
   assemble_close wdX wdXX wdY wdYY asE asEp wdCX wdCY asW1 asW2 asE asEp
     wdCapX wdCapY asWid1 asWid2 asCe asCep
@@ -1519,21 +1519,21 @@ private theorem readB : greenprod.solveRead dgB offB usB wsB nsB := by
   decide +kernel
 private theorem kerB : greenprod.sidesUnit wsB := by decide +kernel
 
-example : qOneValue (BPair.addQ (rhoBlock wOne dgB usB)
+theorem pin349 : qOneValue (BPair.addQ (rhoBlock wOne dgB usB)
     (BPair.addQ (cBlock wOne offB usB)
       (cBlock (fun k => wOne (k + 1)) offB usB)))
     (BPair.unit, Pos.one) := by decide +kernel
-example : qOneValue (BPair.addQ (rhoBlock wOne dgB usB)
+theorem pin350 : qOneValue (BPair.addQ (rhoBlock wOne dgB usB)
     (BPair.addQ (cBlock wOne offB usB)
       (cBlock (fun k => wOne (k + 1)) offB usB)))
     (BPair.unit, Pos.one) :=
   blockFold_sq dgB offB usB wsB nsB readB kerB wOne
 
-example : qOneValue (BPair.addQ (rhoBlock wKey dgB usB)
+theorem pin351 : qOneValue (BPair.addQ (rhoBlock wKey dgB usB)
     (BPair.addQ (cBlock wKey offB usB)
       (cBlock (fun k => wKey (k + 1)) offB usB)))
     (BPair.unit, Pos.one) := by decide +kernel
-example : qOneValue (BPair.addQ (rhoBlock wKey dgB usB)
+theorem pin352 : qOneValue (BPair.addQ (rhoBlock wKey dgB usB)
     (BPair.addQ (cBlock wKey offB usB)
       (cBlock (fun k => wKey (k + 1)) offB usB)))
     (BPair.unit, Pos.one) :=
@@ -1555,27 +1555,27 @@ private theorem read3 : greenprod.solveRead dg3 off3 us3 ws3 ns3 := by
   decide +kernel
 private theorem ker3 : greenprod.sidesUnit ws3 := by decide +kernel
 
-example : ((rhoBlock wKey dg3 us3).1).oneValue (BPair.ofNat 7).swap := by
+theorem pin353 : ((rhoBlock wKey dg3 us3).1).oneValue (BPair.ofNat 7).swap := by
   decide +kernel
-example : ((cBlock wKey off3 us3).1).oneValue (BPair.ofNat 2) := by
+theorem pin354 : ((cBlock wKey off3 us3).1).oneValue (BPair.ofNat 2) := by
   decide +kernel
-example : ((cBlock (fun k => wKey (k + 1)) off3 us3).1).oneValue
+theorem pin355 : ((cBlock (fun k => wKey (k + 1)) off3 us3).1).oneValue
     (BPair.ofNat 5) := by decide +kernel
-example : qOneValue (BPair.addQ (rhoBlock wKey dg3 us3)
+theorem pin356 : qOneValue (BPair.addQ (rhoBlock wKey dg3 us3)
     (BPair.addQ (cBlock wKey off3 us3)
       (cBlock (fun k => wKey (k + 1)) off3 us3)))
     (BPair.unit, Pos.one) := by decide +kernel
-example : qOneValue (BPair.addQ (rhoBlock wKey dg3 us3)
+theorem pin357 : qOneValue (BPair.addQ (rhoBlock wKey dg3 us3)
     (BPair.addQ (cBlock wKey off3 us3)
       (cBlock (fun k => wKey (k + 1)) off3 us3)))
     (BPair.unit, Pos.one) :=
   blockFold_sq dg3 off3 us3 ws3 ns3 read3 ker3 wKey
 
-example : (BPair.addQ (rhoBlock wKey dg3 us3)
+theorem pin358 : (BPair.addQ (rhoBlock wKey dg3 us3)
     (BPair.addQ (cBlock wKey off3 us3)
       (cBlock (fun k => wKey (k + 2)) off3 us3))).1.oneValue
     (BPair.ofNat 3) := by decide +kernel
-example : ¬ qOneValue (BPair.addQ (rhoBlock wKey dg3 us3)
+theorem pin359 : ¬ qOneValue (BPair.addQ (rhoBlock wKey dg3 us3)
     (BPair.addQ (cBlock wKey off3 us3)
       (cBlock (fun k => wKey (k + 2)) off3 us3)))
     (BPair.unit, Pos.one) := by decide +kernel
@@ -1599,11 +1599,11 @@ private theorem read2 : greenprod.solveRead dg2 off2 us2 ws2 ns2 := by
   decide +kernel
 private theorem ker2 : greenprod.sidesUnit ws2 := by decide +kernel
 
-example : qOneValue (BPair.addQ (rhoBlock wKey dg2 us2)
+theorem pin360 : qOneValue (BPair.addQ (rhoBlock wKey dg2 us2)
     (BPair.addQ (cBlock wKey off2 us2)
       (cBlock (fun k => wKey (k + 1)) off2 us2)))
     (BPair.unit, Pos.one) := by decide +kernel
-example : qOneValue (BPair.addQ (rhoBlock wKey dg2 us2)
+theorem pin361 : qOneValue (BPair.addQ (rhoBlock wKey dg2 us2)
     (BPair.addQ (cBlock wKey off2 us2)
       (cBlock (fun k => wKey (k + 1)) off2 us2)))
     (BPair.unit, Pos.one) :=
@@ -1614,14 +1614,14 @@ private def dgV : List elim.Mat :=
 private def wsV : List greenprod.VecQ :=
   [([BPair.ofNat 1], Pos.one), ([BPair.unit], Pos.one)]
 
-example : greenprod.solveRead dgV offB usB wsV nsB := by decide +kernel
-example : ¬ greenprod.sidesUnit wsV := by decide +kernel
-example : ¬ greenprod.solveRead dgB offB usB wsV nsB := by decide +kernel
-example : (BPair.addQ (rhoBlock wOne dgV usB)
+theorem pin362 : greenprod.solveRead dgV offB usB wsV nsB := by decide +kernel
+theorem pin363 : ¬ greenprod.sidesUnit wsV := by decide +kernel
+theorem pin364 : ¬ greenprod.solveRead dgB offB usB wsV nsB := by decide +kernel
+theorem pin365 : (BPair.addQ (rhoBlock wOne dgV usB)
     (BPair.addQ (cBlock wOne offB usB)
       (cBlock (fun k => wOne (k + 1)) offB usB))).1.oneValue
     (BPair.ofNat 1) := by decide +kernel
-example : ¬ qOneValue (BPair.addQ (rhoBlock wOne dgV usB)
+theorem pin366 : ¬ qOneValue (BPair.addQ (rhoBlock wOne dgV usB)
     (BPair.addQ (cBlock wOne offB usB)
       (cBlock (fun k => wOne (k + 1)) offB usB)))
     (BPair.unit, Pos.one) := by decide +kernel
@@ -1632,22 +1632,22 @@ open elim inertia
 
 private def rootsW : List (BPair × Pos) := [(⟨4, 1⟩, 1), (⟨6, 1⟩, 1), (⟨10, 1⟩, 1)]
 
-example : split.rootsBelow rootsW 2 1 = 0 := by decide +kernel
-example : 2 ≤ split.rootsBelow rootsW 6 1 := by decide +kernel
-example : ¬ (2 ≤ split.rootsBelow rootsW 4 1) := by decide +kernel
-example : split.rootsBelow rootsW 4 1 = 1 := by decide +kernel
+theorem pin367 : split.rootsBelow rootsW 2 1 = 0 := by decide +kernel
+theorem pin368 : 2 ≤ split.rootsBelow rootsW 6 1 := by decide +kernel
+theorem pin369 : ¬ (2 ≤ split.rootsBelow rootsW 4 1) := by decide +kernel
+theorem pin370 : split.rootsBelow rootsW 4 1 = 1 := by decide +kernel
 
 /-- The roots one, one and ten: the cap's count holds at six while
 the floor's count at two parts, and the band holds no root. -/
 private def rootsF : List (BPair × Pos) := [(⟨2, 1⟩, 1), (⟨2, 1⟩, 1), (⟨11, 1⟩, 1)]
 
-example : 2 ≤ split.rootsBelow rootsF 6 1 := by decide +kernel
-example : ¬ (split.rootsBelow rootsF 2 1 = 0) := by decide +kernel
-example : countBy (fun r : BPair × Pos =>
+theorem pin371 : 2 ≤ split.rootsBelow rootsF 6 1 := by decide +kernel
+theorem pin372 : ¬ (split.rootsBelow rootsF 2 1 = 0) := by decide +kernel
+theorem pin373 : countBy (fun r : BPair × Pos =>
     decide (¬ (r.1.scale 1 < BPair.ofPos (2 * r.2)) ∧ r.1.scale 1 < BPair.ofPos (6 * r.2)))
     rootsF = 0 := by decide +kernel
 
-example : ∃ i j, i < rootsW.length ∧ j < rootsW.length ∧ i ≠ j
+theorem pin374 : ∃ i j, i < rootsW.length ∧ j < rootsW.length ∧ i ≠ j
       ∧ ¬ ((getAt (BPair.unit, Pos.one) rootsW i).1.scale 1
           < BPair.ofPos (2 * (getAt (BPair.unit, Pos.one) rootsW i).2))
       ∧ ¬ ((getAt (BPair.unit, Pos.one) rootsW j).1.scale 1
@@ -1671,11 +1671,11 @@ private def spF : Split 3 :=
 private def spC : Split 3 :=
   mkSplit 3 (siteDatum (matScale 1 hW) (matScale 6 (idMat 3)))
 
-example : split.countRead hW (idMat 3) rootsW 2 1 spF := by decide +kernel
-example : split.countRead hW (idMat 3) rootsW 6 1 spC := by decide +kernel
-example : revAt spF = 0 := by decide +kernel
-example : 2 ≤ revAt spC := by decide +kernel
-example : ∃ i j, i < rootsW.length ∧ j < rootsW.length ∧ i ≠ j
+theorem pin375 : split.countRead hW (idMat 3) rootsW 2 1 spF := by decide +kernel
+theorem pin376 : split.countRead hW (idMat 3) rootsW 6 1 spC := by decide +kernel
+theorem pin377 : revAt spF = 0 := by decide +kernel
+theorem pin378 : 2 ≤ revAt spC := by decide +kernel
+theorem pin379 : ∃ i j, i < rootsW.length ∧ j < rootsW.length ∧ i ≠ j
       ∧ ¬ ((getAt (BPair.unit, Pos.one) rootsW i).1.scale 1
           < BPair.ofPos (2 * (getAt (BPair.unit, Pos.one) rootsW i).2))
       ∧ ¬ ((getAt (BPair.unit, Pos.one) rootsW j).1.scale 1
@@ -1702,7 +1702,7 @@ through the theorem; at the line `100` under the reads' sum the line's
 binder refuses and the datum `[[-38, 97], [97, 52]]` reads the count
 one. -/
 
-example : (BPair.ofNat 1 + (BPair.ofNat 3).swap) < BPair.unit
+theorem pin380 : (BPair.ofNat 1 + (BPair.ofNat 3).swap) < BPair.unit
     ∧ BPair.ofNat 2 * BPair.ofNat 2
       < BPair.ofNat 4 * ((BPair.ofNat 1 + (BPair.ofNat 3).swap)
         * (BPair.ofNat 1 + (BPair.ofNat 3).swap)) :=
@@ -1712,12 +1712,12 @@ example : (BPair.ofNat 1 + (BPair.ofNat 3).swap) < BPair.unit
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
-example : (BPair.ofNat 1 + (BPair.ofNat 3).swap) < BPair.unit
+theorem pin381 : (BPair.ofNat 1 + (BPair.ofNat 3).swap) < BPair.unit
     ∧ BPair.ofNat 2 * BPair.ofNat 2
       < BPair.ofNat 4 * ((BPair.ofNat 1 + (BPair.ofNat 3).swap)
         * (BPair.ofNat 1 + (BPair.ofNat 3).swap)) := by decide +kernel
-example : ¬ (BPair.ofNat 1 + BPair.ofNat 1 < BPair.ofNat 2) := by decide +kernel
-example : ¬ (BPair.ofNat 2 * BPair.ofNat 2
+theorem pin382 : ¬ (BPair.ofNat 1 + BPair.ofNat 1 < BPair.ofNat 2) := by decide +kernel
+theorem pin383 : ¬ (BPair.ofNat 2 * BPair.ofNat 2
       < BPair.ofNat 4 * ((BPair.ofNat 1 + (BPair.ofNat 2).swap)
         * (BPair.ofNat 1 + (BPair.ofNat 2).swap))) := by decide +kernel
 
@@ -1730,14 +1730,16 @@ private def sLow : Mat :=
   [[(BPair.ofNat 38).swap, BPair.ofNat 97], [BPair.ofNat 97, BPair.ofNat 52]]
 private def spLow : Split 2 := mkSplit 2 sLow
 
-example : splitRead sCap spCap := by decide +kernel
-example : 2 ≤ revAt spCap := by decide +kernel
-example : 2 ≤ revAt spCap :=
+theorem pin384 : splitRead sCap spCap := by decide +kernel
+theorem pin385 : 2 ≤ revAt spCap := by decide +kernel
+theorem pin386 : 2 ≤ revAt spCap :=
   cap_count sCap xCap yCap (BPair.ofNat 62) (BPair.ofNat 152) (BPair.ofNat 62)
     (BPair.ofNat 152) (BPair.ofNat 1) (BPair.ofNat 1) (BPair.ofNat 613) rfl rfl
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) spCap (by decide +kernel)
-example : ¬ (BPair.ofNat 62 + BPair.ofNat 152 < BPair.ofNat 100) := by decide +kernel
-example : splitRead sLow spLow := by decide +kernel
-example : ¬ (2 ≤ revAt spLow) := by decide +kernel
+theorem pin387 : ¬ (BPair.ofNat 62 + BPair.ofNat 152 < BPair.ofNat 100) := by decide +kernel
+theorem pin388 : splitRead sLow spLow := by decide +kernel
+theorem pin389 : ¬ (2 ≤ revAt spLow) := by decide +kernel
+
+end momentfold

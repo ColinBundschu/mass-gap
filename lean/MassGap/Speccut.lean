@@ -13,12 +13,12 @@ form compressed whole.
 
 The identification's forward direction is the theorem below at its
 stated certificate data (`spec_to_cut`): the diagonalizing
-congruence carries the level gap to a diagonal at the located
+congruence maps the level gap to a diagonal at the located
 roots (`lem:split`'s `diagRead` with the eigen-column capstone),
 the spectral read prices every root's cut summand on its upper
-side, and the congruence's own invertibility carries the read back
+side, and the congruence's adjugate witness transports the read back
 to every vector of the order — so a split of the cut's site datum
-counts no reversal, the compression keeping the read
+reads a vacant reversal count, the compression keeping the read
 (`lem:inertia`'s two transport clauses the consumption).  The
 certificates are the theorem's data: the symmetric gap, the
 congruence with its adjugate witness, the located root list with
@@ -32,10 +32,10 @@ construction (`def:pencil`'s gap at `ε₀ G + Ẽ = H`, `def:K`'s
 signs — the gap's split prices every eigen column on its upper
 side, so each root sits at or above the kernel point, and the
 cut's split then reads it at the kernel point or at or beyond the
-edge.  The floor datum is load-bearing and not decoration: the
+edge.  The floor datum is load-bearing: the
 pair `(q Ẽ² : E₀ p Ẽ)` sits on its upper side at a strictly
-negative level too (`ε (q ε − E₀ p) ≥ 0` at `ε < 0`), so without
-it the cut does not locate the spectrum — the check module's
+negative level too (`ε (q ε − E₀ p) ≥ 0` at `ε < 0`), so the cut
+locates the spectrum through the floor alone — the check module's
 one-letter window at the negative unit is the committed refusal,
 every other clause holding there while the spectral read fails.
 -/
@@ -51,7 +51,7 @@ def specRead (roots : List (BPair × Pos)) (E0 p q : Pos) : Prop :=
     decide (r.1.oneValue BPair.unit)
       || !(decide (r.1.scale q < BPair.ofPos (E0 * p * r.2))))) = true
 
-instance (roots : List (BPair × Pos)) (E0 p q : Pos) :
+instance instSpeccut1 (roots : List (BPair × Pos)) (E0 p q : Pos) :
     Decidable (specRead roots E0 p q) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -64,7 +64,7 @@ def cutTie {o : Nat} (Et : Mat) (roots : List (BPair × Pos))
   ∧ specRead roots E0 p q
   ∧ K.cutRead (matMul Et Et) Et E0 p q sp
 
-instance {o : Nat} (Et : Mat) (roots : List (BPair × Pos))
+instance instSpeccut2 {o : Nat} (Et : Mat) (roots : List (BPair × Pos))
     (E0 p q : Pos) (sp : Split o) :
     Decidable (cutTie Et roots E0 p q sp) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
@@ -280,16 +280,10 @@ private theorem rootRead {n : Nat} (Et : Mat) (T Tw : SqMat n)
         (BPair.scale_congr (E0 * p)
           (BPair.mul_congr (BPair.oneValue_refl _) qE))
         (BPair.scale_congr q qK) h1
-    rw [show BPair.ofPos dj * (nj * gj) = gj * (nj * BPair.ofPos dj) from by
-        rw [BPair.mul_left_comm (BPair.ofPos dj) nj gj,
-          BPair.mul_comm (BPair.ofPos dj) gj,
-          BPair.mul_left_comm nj gj (BPair.ofPos dj)],
-      show nj * (nj * gj) = gj * (nj * nj) from by
-        rw [BPair.mul_comm nj gj, BPair.mul_left_comm nj gj nj],
-      ← BPair.mul_scale gj (nj * BPair.ofPos dj) (E0 * p),
-      ← BPair.mul_scale gj (nj * nj) q,
-      BPair.mul_comm gj ((nj * BPair.ofPos dj).scale (E0 * p)),
-      BPair.mul_comm gj ((nj * nj).scale q)] at h2
+    rw [BPair.mul_left_comm' (BPair.ofPos dj) nj gj,
+      ← BPair.mul_assoc nj nj gj,
+      BPair.scale_mul_left (nj * BPair.ofPos dj) gj (E0 * p),
+      BPair.scale_mul_left (nj * nj) gj q] at h2
     exact ground.leB_unscale hgpos h2
   by_cases hz : nj.oneValue BPair.unit
   · rw [decide_eq_true hz]

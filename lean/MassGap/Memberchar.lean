@@ -24,6 +24,20 @@ read, a hit at any natural multiple sitting inside the search — over
 the Γ-tier's own: the Cartan row's ρ-pairing at the scaled length,
 off the Gram's defining diagonal.
 
+At a nonnegative starting rho height, a family height bound fixes
+the string cap at the heights' gap divided by the positive root's
+height (`lineAt_hit_bound`). Each line hit has one step index
+(`lineAt_count`), and the trace correction is the finite fold of
+the moved contents' counts (`gSum_height`). At the top height the
+correction is the sum's unit (`gSum_top`); the singleton unit
+family satisfies the trace read at the even rho seed
+(`recRead_unit`). Equal occurrence counts preserve the trace
+correction and the recursion (`gSum_counts`, `recRead_counts`);
+the shape and reflection reads transport across those counts
+(`mShapeRead_counts`, `symRead_counts`). The same occurrence
+counts determine both sides of every graded convolution
+(`convCount_counts`).
+
 The theorem tier stands at two publics over the family shape read
 `mShapeRead` (every member normed at the rank's order).  `convDots`
 is `thm:memberchar`'s cross-term identity `(XX)`: the recursion's
@@ -61,6 +75,14 @@ completeness (an occupied strictly dominant key joins the window at
 the capped coefficient sum) and the separation (the fall identity's
 strict read at a window key off the shifted one) sit beneath the
 regular read.
+
+The joined top of a naturally supported block and a graded
+family reads one on the even side and the vacant count on the
+odd (`convTopAt`), the two support folds' positive rho heights
+forcing both to their tops. At G2 the longest word reads each
+content at its balance partner's count (`count_neg_G2`), so the
+top's rho pairing is a nonnegative principal shift on the whole
+block (`supportRead_shift_G2`).
 -/
 
 namespace memberchar
@@ -76,6 +98,18 @@ def convCount (W : List (List BPair × Bool)) (L : List (List BPair))
       ground.famFold Nat.add 0
         (fun nu => if poly.pnorm (elim.vecAdd vp.1 nu) = y then 1 else 0) L
       else 0) W
+
+/-- The graded convolution depends on the content occurrence
+counts of its multiplicity family, including repeated keys. -/
+theorem convCount_counts (W : List (List BPair × Bool)) (L R : List (List BPair))
+    (hc : ∀ v, ground.countOf v L = ground.countOf v R) (y : List BPair) (side : Bool) :
+    convCount W L y side = convCount W R y side := by
+  apply ground.famFold_congr_all
+  intro p
+  by_cases hs : p.2 = side
+  · rw [if_pos hs, if_pos hs]
+    exact ground.famFold_relist Nat.add 0 Nat.add_comm Nat.add_assoc _ L R hc
+  · rw [if_neg hs, if_neg hs]
 
 /-- The multiplicity family's reflection invariance: each member's
 reflected key carries the member's own count (`thm:memberchar`'s
@@ -107,12 +141,12 @@ def lamRead (t : gentable.Table) (lamV : List BPair) : Prop :=
   lamV.length = t.rank ∧ poly.pnorm lamV = lamV ∧
     ∀ k, k < t.rank → BPair.unit ≤ ground.getAt BPair.unit lamV k
 
-instance (t : gentable.Table) (L : List (List BPair)) :
+instance instMemberchar1 (t : gentable.Table) (L : List (List BPair)) :
     Decidable (symRead t L) :=
   inferInstanceAs (Decidable (∀ nu ∈ L, ∀ i, i < t.rank →
     ground.countOf (reflAt t i nu) L = ground.countOf nu L))
 
-instance (t : gentable.Table) (L : List (List BPair))
+instance instMemberchar2 (t : gentable.Table) (L : List (List BPair))
     (wits : List (List Nat)) (lamV : List BPair) :
     Decidable (supportRead t L wits lamV) :=
   inferInstanceAs (Decidable (wits.length = L.length ∧
@@ -120,11 +154,11 @@ instance (t : gentable.Table) (L : List (List BPair))
       (ground.getAt [] L k)
       (cartanFold t (ground.getAt [] wits k))) = lamV))
 
-instance (L : List (List BPair)) (lamV : List BPair) :
+instance instMemberchar3 (L : List (List BPair)) (lamV : List BPair) :
     Decidable (topRead L lamV) :=
   inferInstanceAs (Decidable (ground.countOf lamV L = 1))
 
-instance (t : gentable.Table) (lamV : List BPair) :
+instance instMemberchar4 (t : gentable.Table) (lamV : List BPair) :
     Decidable (lamRead t lamV) :=
   inferInstanceAs (Decidable (lamV.length = t.rank ∧
     poly.pnorm lamV = lamV ∧
@@ -193,25 +227,6 @@ def gSum (t : gentable.Table) (F : FundData) (L : List (List BPair))
   ground.famFold BPair.add BPair.unit (fun j => gAt t F L nu j)
     (List.range t.posFolds.length)
 
-/-- The order against a cofactor: a count whose product with an
-occupied divisor sits at or below the datum sits at or below the
-division's read (`ground.natDivRead`, the naming identity at core
-`Nat.div`). -/
-private theorem le_div_of_mul_le {n m a : Nat} (hm : 0 < m)
-    (hmul : a * m ≤ n) : a ≤ n / m := by
-  have hread := ground.natDivRead n m hm
-  match Nat.lt_or_ge (n / m) a with
-  | Or.inr h => exact h
-  | Or.inl h =>
-    have he : (n / m + 1) * m = m * (n / m) + m := by
-      rw [Nat.succ_mul, Nat.mul_comm (n / m) m]
-    have h3 : m * (n / m) + m ≤ n :=
-      he ▸ Nat.le_trans (Nat.mul_le_mul_right m h) hmul
-    have h5 : n < m * (n / m) + m :=
-      Nat.lt_of_le_of_lt (Nat.le_of_eq hread.1.symm)
-        (Nat.add_lt_add_left hread.2 (m * (n / m)))
-    exact absurd h3 (Nat.not_le_of_gt h5)
-
 /-- A simple member's cleared `ρ`-dot at its margin. -/
 private def simDotAt (t : gentable.Table) (F : FundData)
     (i : Nat) : Nat :=
@@ -258,7 +273,7 @@ private theorem wBox_mem : ∀ (ds : List Nat) (D : Nat) (c : List Nat),
       (wBox ds (D - w * d)).map (fun m => w :: m))
     refine ground.mem_flatMap_to _
       (ground.memRange (Nat.lt_succ_of_le
-        (le_div_of_mul_le hd hvd))) ?_
+        (ground.le_div_of_mul_le _ _ _ hd (by rw [Nat.mul_comm]; exact hvd)))) ?_
     exact ground.mem_map_to (fun m => v :: m)
       (wBox_mem ds (D - v * d) c hlen'
         (fun k hk => hpos (k + 1) (Nat.succ_lt_succ hk)) hres)
@@ -299,11 +314,45 @@ def recRead (t : gentable.Table) (F : FundData)
             (poly.pnorm (elim.vecAdd y (poly.neg vp.1))) L)))
         (gSum t F L (poly.pnorm (elim.vecAdd y (poly.neg vp.1)))))
 
-instance (t : gentable.Table) (F : FundData)
+instance instMemberchar5 (t : gentable.Table) (F : FundData)
     (W : List (List BPair × Bool)) (L : List (List BPair))
     (lamV : List BPair) : Decidable (recRead t F W L lamV) :=
   inferInstanceAs (Decidable (∀ y ∈ domWindow t F lamV, ∀ vp ∈ W,
     BPair.oneValue _ _))
+
+/-- The trace correction depends on the multiplicity counts,
+including repeated contents, rather than the family's order. -/
+theorem gSum_counts (t : gentable.Table) (F : FundData)
+    (L R : List (List BPair)) (hc : ∀ v, ground.countOf v L = ground.countOf v R)
+    (nu : List BPair) : (gSum t F L nu).oneValue (gSum t F R nu) := by
+  apply ground.foldB_congr_members
+  intro j _
+  exact ground.famFold_relist_ov ground.bpairFoldLaws.toCommLaws BPair.unit _ L R hc
+
+/-- Equal multiplicity counts preserve the full trace recursion
+at every consumed window key and every stated Weyl key. -/
+theorem recRead_counts (t : gentable.Table) (F : FundData)
+    (W : List (List BPair × Bool)) (L R : List (List BPair)) (lamV : List BPair)
+    (hc : ∀ v, ground.countOf v L = ground.countOf v R)
+    (hr : recRead t F W R lamV) : recRead t F W L lamV := by
+  intro y hy vp hp
+  have h := hr y hy vp hp
+  change BPair.oneValue _ (_ + gSum t F L _)
+  rw [hc]
+  exact BPair.oneValue_trans h (BPair.add_congr (BPair.oneValue_refl _)
+    (BPair.oneValue_symm (gSum_counts t F L R hc _)))
+
+/-- A family's reflection invariance transports at equal
+counts, with occupied keys preserved by their positive counts. -/
+theorem symRead_counts (t : gentable.Table) (L R : List (List BPair))
+    (hc : ∀ v, ground.countOf v L = ground.countOf v R)
+    (hr : symRead t R) : symRead t L := by
+  intro nu hn i hi
+  have hm : nu ∈ R := ground.mem_of_countOf_pos nu R (by
+    rw [← hc]
+    exact ground.countOf_pos_of_mem hn)
+  rw [hc, hc]
+  exact hr nu hm i hi
 
 /-- The Cartan row's `ρ`-pairing: the row against `ρ` reads the
 scaled length at its own key (`thm:memberchar`'s eigen-read at the
@@ -428,8 +477,43 @@ theorem lineAt_of_hit (t : gentable.Table) (F : FundData)
         (ground.leB_of_lt (hrd j hj))))
       (ground.leB_refl _)
   exact (lineAt_iff t F nu mu j).mpr
-    ⟨l, le_div_of_mul_le (BPair.marginN_pos (hrd j hj))
-      (ground.BPair.ofNat_le_capN hbound), hhit⟩
+    ⟨l, ground.le_div_of_mul_le _ _ _ (BPair.marginN_pos (hrd j hj))
+      (by rw [Nat.mul_comm]; exact ground.BPair.ofNat_le_capN hbound), hhit⟩
+
+/-- A line hit below a stated height lies within the quotient of
+the available height by the positive root's height. The starting
+height's upper-side read makes its natural margin the height itself. -/
+theorem lineAt_hit_bound (t : gentable.Table) (F : FundData)
+    (hshape : fundShape t F) (hrd : rhoDotRead t F) {j : Nat}
+    (hj : j < t.posFolds.length) (nu mu : List BPair)
+    (hnu : t.rank ≤ nu.length)
+    (hpos : BPair.unit ≤ dotB F nu (rhoV t)) (top l : Nat)
+    (hmu : dotB F mu (rhoV t) ≤ BPair.ofNat top)
+    (hhit : poly.pnorm (elim.vecAdd nu
+      (elim.vecScale (BPair.ofNat (l + 1)) (posCorootV t j))) = mu) :
+    l < (top - BPair.marginN (dotB F nu (rhoV t))) /
+      BPair.marginN (dotB F (posCorootV t j) (rhoV t)) := by
+  let a := BPair.marginN (dotB F nu (rhoV t))
+  let d := BPair.marginN (dotB F (posCorootV t j) (rhoV t))
+  have hv : (dotB F mu (rhoV t)).oneValue
+      (BPair.ofNat (a + (l + 1) * d)) := by
+    refine BPair.oneValue_trans (dotB_step t F hshape nu mu hnu l hhit) ?_
+    refine BPair.oneValue_trans (BPair.add_congr
+      (BPair.ofNat_marginN hpos) ?_) (BPair.oneValue_symm (BPair.ofNat_add _ _))
+    exact BPair.oneValue_trans
+      (BPair.mul_congr (BPair.oneValue_refl _)
+        (BPair.ofNat_marginN (ground.leB_of_lt (hrd j hj))))
+      (BPair.oneValue_symm (BPair.ofNat_mul _ _))
+  have hn : a + (l + 1) * d ≤ top :=
+    ground.leB_ofNat_cancel (ground.leB_congr_left hv hmu)
+  have ha : a ≤ top := Nat.le_trans (Nat.le.intro rfl) hn
+  have hc : (l + 1) * d ≤ top - a := ground.leCancelL a (by
+    rw [ground.natAddSubCancel ha]
+    exact hn)
+  apply ground.le_div_of_mul_le (l + 1) d (top - a)
+    (BPair.marginN_pos (hrd j hj))
+  rw [Nat.mul_comm]
+  exact hc
 
 /-! The telescope: the `j`-line's fold at a key reads the fold at the
 key one step along the line, joined to that step's own weighted
@@ -667,10 +751,21 @@ rank's order, normed — the matched-list carrier (`con:places`) at
 def mShapeRead (t : gentable.Table) (L : List (List BPair)) : Prop :=
   ∀ mu ∈ L, mu.length = t.rank ∧ poly.pnorm mu = mu
 
-instance (t : gentable.Table) (L : List (List BPair)) :
+instance instMemberchar6 (t : gentable.Table) (L : List (List BPair)) :
     Decidable (mShapeRead t L) :=
   inferInstanceAs (Decidable (∀ mu ∈ L,
     mu.length = t.rank ∧ poly.pnorm mu = mu))
+
+/-- The normed rank frame of every occupied key transports at
+equal multiplicity counts, independently of the list's order. -/
+theorem mShapeRead_counts (t : gentable.Table) (L R : List (List BPair))
+    (hc : ∀ v, ground.countOf v L = ground.countOf v R)
+    (hr : mShapeRead t R) : mShapeRead t L := by
+  intro mu hm
+  apply hr mu
+  apply ground.mem_of_countOf_pos mu R
+  rw [← hc]
+  exact ground.countOf_pos_of_mem hm
 
 /-! The key moves: the shift past a stated key's move commutes with
 the move itself, and the move is its own inverse at normed keys of
@@ -817,6 +912,166 @@ private theorem lineKey_inj (t : gentable.Table) (F : FundData)
       (BPair.oneValue_of_eq (BPair.add_comm _ _))
   exact Nat.succ.inj (scaleInj (rootHt t F hshape hgsym hrd hj)
     (a + 1) (b + 1) hc)
+
+/-- A bounded string contains exactly one occurrence of a line hit,
+and no occurrence of a key off the line. The bound need only contain
+the hits; it need not agree with the line test's internal cap. -/
+theorem lineAt_count (t : gentable.Table) (F : FundData)
+    (hshape : fundShape t F) (hgsym : gramSymRead F)
+    (hrd : rhoDotRead t F) {j : Nat} (hj : j < t.posFolds.length)
+    (nu mu : List BPair) (hnu : nu.length = t.rank) (cap : Nat)
+    (hcap : ∀ l, poly.pnorm (elim.vecAdd nu
+        (elim.vecScale (BPair.ofNat (l + 1)) (posCorootV t j))) = mu →
+      l < cap) :
+    ground.famFold Nat.add 0
+        (fun l => if mu = poly.pnorm (elim.vecAdd nu
+            (elim.vecScale (BPair.ofNat (l + 1)) (posCorootV t j)))
+          then 1 else 0) (List.range cap)
+      = if lineAt t F nu mu j then 1 else 0 := by
+  by_cases hline : lineAt t F nu mu j = true
+  · rw [if_pos hline]
+    obtain ⟨l0, _, hhit⟩ := (lineAt_iff t F nu mu j).mp hline
+    have hpt : ∀ l : Nat, (if mu = poly.pnorm (elim.vecAdd nu
+        (elim.vecScale (BPair.ofNat (l + 1)) (posCorootV t j)))
+          then 1 else 0) = (if l0 = l then 1 else 0) := by
+      intro l
+      by_cases hl : l0 = l
+      · rw [if_pos hl, if_pos (by rw [← hl]; exact hhit.symm)]
+      · refine (if_neg ?_).trans (if_neg hl).symm
+        intro he
+        exact hl (lineKey_inj t F hshape hgsym hrd hj nu hnu
+          (hhit.trans he))
+    rw [ground.famFold_congr_all Nat.add 0 _ _ hpt (List.range cap),
+      ← ground.countOf_fold, ground.countOf_range_one (hcap l0 hhit)]
+  · rw [if_neg hline]
+    refine Eq.trans (ground.famFold_congr_all Nat.add 0 _
+      (fun _ => 0) (fun l => ?_) (List.range cap))
+      (ground.famFold_zero (fun _ => 0) (fun _ => rfl) _)
+    exact if_neg (fun he => hline (lineAt_of_hit t F hshape hrd hj
+      nu mu (Nat.le_of_eq hnu.symm) l he.symm))
+
+/-- The trace's root summand is the bounded string fold of the
+moved keys' multiplicities. Repeated family entries enter through
+their count, while each string key has one step index. -/
+theorem gAt_count (t : gentable.Table) (F : FundData)
+    (hshape : fundShape t F) (hgsym : gramSymRead F)
+    (hrd : rhoDotRead t F) {j : Nat} (hj : j < t.posFolds.length)
+    (L : List (List BPair)) (nu : List BPair)
+    (hnu : nu.length = t.rank) (cap : Nat)
+    (hcap : ∀ mu, 0 < ground.countOf mu L → ∀ l,
+      poly.pnorm (elim.vecAdd nu
+        (elim.vecScale (BPair.ofNat (l + 1)) (posCorootV t j))) = mu →
+      l < cap) :
+    (gAt t F L nu j).oneValue
+      (ground.bsum (fun l =>
+        let mu := poly.pnorm (elim.vecAdd nu
+          (elim.vecScale (BPair.ofNat (l + 1)) (posCorootV t j)))
+        dotB F mu (posCorootV t j) * BPair.ofNat (2 * ground.countOf mu L))
+        (List.range cap)) := by
+  let key := fun l => poly.pnorm (elim.vecAdd nu
+    (elim.vecScale (BPair.ofNat (l + 1)) (posCorootV t j)))
+  let wt := fun mu => dotB F mu (posCorootV t j) + dotB F mu (posCorootV t j)
+  refine BPair.oneValue_trans (ground.foldB_congr_members _
+    (fun mu => ground.bsum (fun l => if mu = key l then wt mu else BPair.unit)
+      (List.range cap)) L (fun mu hmu => ?_)) ?_
+  · have hc := lineAt_count t F hshape hgsym hrd hj nu mu hnu cap (hcap mu hmu)
+    have hw := ground.foldB_guard (fun l => mu = key l) (wt mu) (List.range cap)
+    change _ = (if lineAt t F nu mu j then 1 else 0) at hc
+    rw [hc] at hw
+    refine BPair.oneValue_symm (BPair.oneValue_trans hw ?_)
+    by_cases h : lineAt t F nu mu j = true
+    · rw [if_pos h, if_pos h]
+      exact BPair.ofNat_one_mul _
+    · rw [if_neg h, if_neg h]
+      exact BPair.unit_mul _
+  refine BPair.oneValue_trans (ground.foldB_swapL
+    (fun mu l => if mu = key l then wt mu else BPair.unit) L (List.range cap)) ?_
+  apply ground.foldB_congr_members
+  intro l _
+  refine BPair.oneValue_trans (ground.foldB_congr_members _
+    (fun mu => if mu = key l then wt (key l) else BPair.unit) L (fun mu _ => ?_)) ?_
+  · by_cases h : mu = key l
+    · rw [if_pos h, if_pos h, h]
+      exact BPair.oneValue_refl _
+    · rw [if_neg h, if_neg h]
+      exact BPair.oneValue_refl _
+  refine BPair.oneValue_trans (ground.foldB_indicator _ _ L) ?_
+  refine BPair.oneValue_trans (BPair.oneValue_symm
+    (BPair.oneValue_trans (BPair.ofNat_mul_mul (ground.countOf (key l) L) 2 _)
+      (BPair.mul_congr (BPair.oneValue_refl _) (BPair.ofNat_two_mul _)))) ?_
+  exact BPair.oneValue_of_eq (by rw [Nat.mul_comm, BPair.mul_comm])
+
+/-- A family's height bound gives the trace correction's finite
+string cap at the gap from the starting height to the bound. -/
+theorem gAt_height (t : gentable.Table) (F : FundData)
+    (hshape : fundShape t F) (hgsym : gramSymRead F)
+    (hrd : rhoDotRead t F) {j : Nat} (hj : j < t.posFolds.length)
+    (L : List (List BPair)) (nu : List BPair)
+    (hnu : nu.length = t.rank) (hpos : BPair.unit ≤ dotB F nu (rhoV t))
+    (top : Nat) (htop : ∀ mu, 0 < ground.countOf mu L →
+      dotB F mu (rhoV t) ≤ BPair.ofNat top) :
+    (gAt t F L nu j).oneValue
+      (ground.bsum (fun l =>
+        let mu := poly.pnorm (elim.vecAdd nu
+          (elim.vecScale (BPair.ofNat (l + 1)) (posCorootV t j)))
+        dotB F mu (posCorootV t j) * BPair.ofNat (2 * ground.countOf mu L))
+        (List.range ((top - BPair.marginN (dotB F nu (rhoV t))) /
+          BPair.marginN (dotB F (posCorootV t j) (rhoV t))))) :=
+  gAt_count t F hshape hgsym hrd hj L nu hnu _ (fun mu hmu l hhit =>
+    lineAt_hit_bound t F hshape hrd hj nu mu (Nat.le_of_eq hnu.symm)
+      hpos top l (htop mu hmu) hhit)
+
+/-- Support at natural simple folds bounds every occupied
+member's rho pairing by the top's pairing. -/
+theorem supportRead_height (t : gentable.Table) (F : FundData)
+    (hshape : fundShape t F) (hsp : simplePosRead t F)
+    (hrd : rhoDotRead t F) (L : List (List BPair))
+    (wits : List (List Nat)) (top : List BPair)
+    (htop : top.length = t.rank) (hsupp : supportRead t L wits top)
+    (mu : List BPair) (hmu : 0 < ground.countOf mu L) :
+    dotB F mu (rhoV t) ≤ dotB F top (rhoV t) := by
+  obtain ⟨k, hk, he⟩ := ground.getAt_of_mem ([] : List BPair)
+    (ground.mem_of_countOf_pos mu L hmu)
+  have hkey := hsupp.2 k hk
+  rw [he] at hkey
+  exact assembly.dotB_foldKey_le t F hshape hsp hrd mu
+    (ground.getAt [] wits k) top htop hkey
+
+/-- The whole trace correction is the positive roots' finite
+string fold at a common family-height bound. -/
+theorem gSum_height (t : gentable.Table) (F : FundData)
+    (hshape : fundShape t F) (hgsym : gramSymRead F)
+    (hrd : rhoDotRead t F) (L : List (List BPair)) (nu : List BPair)
+    (hnu : nu.length = t.rank) (hpos : BPair.unit ≤ dotB F nu (rhoV t))
+    (top : Nat) (htop : ∀ mu, 0 < ground.countOf mu L →
+      dotB F mu (rhoV t) ≤ BPair.ofNat top) :
+    (gSum t F L nu).oneValue
+      (ground.bsum (fun j => ground.bsum (fun l =>
+        let mu := poly.pnorm (elim.vecAdd nu
+          (elim.vecScale (BPair.ofNat (l + 1)) (posCorootV t j)))
+        dotB F mu (posCorootV t j) * BPair.ofNat (2 * ground.countOf mu L))
+        (List.range ((top - BPair.marginN (dotB F nu (rhoV t))) /
+          BPair.marginN (dotB F (posCorootV t j) (rhoV t)))))
+        (List.range t.posFolds.length)) :=
+  ground.foldB_congr_members _ _ _ (fun _ hj =>
+    gAt_height t F hshape hgsym hrd (ground.ltOfMem hj) L nu hnu hpos top htop)
+
+/-- At a nonnegative starting height at or above every occupied
+height, the trace correction is the sum's unit. Every positive
+root string has zero available steps. -/
+theorem gSum_top (t : gentable.Table) (F : FundData)
+    (hshape : fundShape t F) (hgsym : gramSymRead F) (hrd : rhoDotRead t F)
+    (L : List (List BPair)) (nu : List BPair) (hnu : nu.length = t.rank)
+    (hpos : BPair.unit ≤ dotB F nu (rhoV t))
+    (htop : ∀ mu, 0 < ground.countOf mu L → dotB F mu (rhoV t) ≤ dotB F nu (rhoV t)) :
+    (gSum t F L nu).oneValue BPair.unit := by
+  refine BPair.oneValue_trans
+    (gSum_height t F hshape hgsym hrd L nu hnu hpos _ (fun mu hm =>
+      ground.leB_congr_right (BPair.ofNat_marginN hpos) (htop mu hm))) ?_
+  apply ground.foldB_null
+  intro j _
+  rw [Nat.sub_self, ground.divZeroLeft]
+  exact BPair.oneValue_refl _
 
 /-- The line's heights rise with the multiple. -/
 private theorem lineHt_mono (t : gentable.Table) (F : FundData)
@@ -988,49 +1243,29 @@ private theorem lineCount (t : gentable.Table) (F : FundData)
   have hd : ∀ l : Nat, (elim.vecScale (BPair.ofNat (l + 1))
       (posCorootV t j)).length = t.rank := fun _ =>
     (elim.length_vecScale _ _).trans (posCorootV_length t j)
-  by_cases hline : lineAt t F
-      (poly.pnorm (elim.vecAdd y (poly.neg e))) mu j = true
-  · rw [if_pos hline]
-    obtain ⟨l0, _, hhit⟩ := (lineAt_iff t F _ mu j).mp hline
-    have hkey : e = poly.pnorm (elim.vecAdd
-        (poly.pnorm (elim.vecAdd y (poly.neg mu)))
-        (elim.vecScale (BPair.ofNat (l0 + 1)) (posCorootV t j))) :=
-      ((lineKey_iff t.rank y e mu _ hy (hd l0) he hen hmu hmun).mp
-        hhit).symm
-    have hlt : l0 < cap := by
-      match Nat.lt_or_ge l0 cap with
-      | Or.inl h => exact h
-      | Or.inr h =>
-        refine absurd hcap (ground.leB_not_lt ?_)
-        refine ground.leB_trans
-          (lineHt_mono t F hshape hgsym hrd hj _ hz h) ?_
-        exact ground.leB_congr_left
-          (BPair.oneValue_of_eq (congrArg (dotB F (rhoV t)) hkey)) hle
-    have hpt : ∀ l : Nat, (if e = poly.pnorm (elim.vecAdd
-        (poly.pnorm (elim.vecAdd y (poly.neg mu)))
-        (elim.vecScale (BPair.ofNat (l + 1)) (posCorootV t j)))
-          then 1 else 0) = (if l0 = l then 1 else 0) := by
-      intro l
-      by_cases hl : l0 = l
-      · rw [if_pos hl, if_pos (show e = poly.pnorm (elim.vecAdd
-          (poly.pnorm (elim.vecAdd y (poly.neg mu)))
-          (elim.vecScale (BPair.ofNat (l + 1)) (posCorootV t j))) by
-            rw [← hl]; exact hkey)]
-      · refine (if_neg ?_).trans (if_neg hl).symm
-        intro he2
-        exact hl (lineKey_inj t F hshape hgsym hrd hj _ hz
-          (hkey.symm.trans he2))
-    rw [ground.famFold_congr_all Nat.add 0 _ _ hpt (List.range cap),
-      ← ground.countOf_fold, ground.countOf_range_one hlt]
-  · rw [if_neg hline]
-    refine Eq.trans (ground.famFold_congr_all Nat.add 0 _
-      (fun _ => 0) (fun l => ?_) (List.range cap))
-      (ground.famFold_zero (fun _ => 0) (fun _ => rfl) _)
-    refine if_neg (fun he2 => hline ?_)
-    refine lineAt_of_hit t F hshape hrd hj _ mu
-      (Nat.le_of_eq hzE.symm) l ?_
-    exact (lineKey_iff t.rank y e mu _ hy (hd l) he hen hmu hmun).mpr
-      he2.symm
+  refine Eq.trans (ground.famFold_congr_all Nat.add 0 _
+    (fun l => if mu = poly.pnorm (elim.vecAdd
+      (poly.pnorm (elim.vecAdd y (poly.neg e)))
+      (elim.vecScale (BPair.ofNat (l + 1)) (posCorootV t j)))
+      then 1 else 0) (fun l => ?_) (List.range cap)) ?_
+  · have hiff := lineKey_iff t.rank y e mu _ hy (hd l) he hen hmu hmun
+    by_cases hhit : poly.pnorm (elim.vecAdd
+        (poly.pnorm (elim.vecAdd y (poly.neg e)))
+        (elim.vecScale (BPair.ofNat (l + 1)) (posCorootV t j))) = mu
+    · rw [if_pos (hiff.mp hhit).symm, if_pos hhit.symm]
+    · rw [if_neg (fun h => hhit (hiff.mpr h.symm)),
+        if_neg (fun h => hhit h.symm)]
+  apply lineAt_count t F hshape hgsym hrd hj _ mu hzE cap
+  intro l hhit
+  have hkey := (lineKey_iff t.rank y e mu _ hy (hd l) he hen hmu hmun).mp hhit
+  match Nat.lt_or_ge l cap with
+  | Or.inl h => exact h
+  | Or.inr h =>
+    refine absurd hcap (ground.leB_not_lt ?_)
+    refine ground.leB_trans
+      (lineHt_mono t F hshape hgsym hrd hj _ hz h) ?_
+    rw [hkey]
+    exact hle
 
 /-- The line's inner collection at the subset families. -/
 private theorem innerFold (t : gentable.Table) (F : FundData)
@@ -1463,21 +1698,6 @@ theorem dotB_sq_split (t : gentable.Table) (F : FundData)
     ← BPair.add_assoc (dotB F u v) (dotB F u v) (dotB F v v),
     ← BPair.add_assoc]
 
-/-- The recursion's collapse: a gap factor against the display's two
-sides leaves the correction alone. -/
-private theorem recCollapse {Q P G n : BPair}
-    (h : (Q * n).oneValue (P * n + G)) :
-    ((Q + P.swap) * n).oneValue G := by
-  rw [BPair.right_distrib, BPair.swap_mul]
-  refine BPair.oneValue_trans
-    (BPair.add_congr h (BPair.oneValue_refl _)) ?_
-  rw [BPair.add_assoc, BPair.add_comm G ((P * n).swap),
-    ← BPair.add_assoc]
-  refine BPair.oneValue_trans (BPair.add_congr
-    (ground.unitOfOne (BPair.oneValue_refl (P * n)))
-    (BPair.oneValue_refl G)) ?_
-  exact BPair.unit_add G
-
 /-- The eigen split's move: a gap against one square reads the gap
 against another joined to the two squares' own gap. -/
 private theorem eigenSplit_alg {Q p q D : BPair}
@@ -1500,21 +1720,19 @@ private theorem eigenBil_alg (A B C Rm R : BPair) :
     ((A + (B + B) + C)
       + ((((B + Rm.swap) + (B + Rm.swap)).swap)
         + (R + C.swap))).oneValue (A + (Rm + Rm) + R) := by
-  rw [BPair.add_add_comm B Rm.swap B Rm.swap, BPair.swap_add Rm Rm,
-    ← BPair.swap_add (B + B) ((Rm + Rm).swap),
-    BPair.swap_swap (Rm + Rm),
-    BPair.add_comm ((B + B).swap) (Rm + Rm),
-    BPair.add_add_comm (A + (B + B)) C
-      ((Rm + Rm) + (B + B).swap) (R + C.swap),
-    BPair.add_add_comm A (B + B) (Rm + Rm) ((B + B).swap),
-    BPair.add_comm R C.swap, ← BPair.add_assoc C C.swap R]
-  refine BPair.oneValue_trans (BPair.add_congr
-    (BPair.add_congr (BPair.oneValue_refl (A + (Rm + Rm)))
-      (ground.unitOfOne (BPair.oneValue_refl (B + B))))
-    (BPair.add_congr (ground.unitOfOne (BPair.oneValue_refl C))
-      (BPair.oneValue_refl R))) ?_
-  exact BPair.add_congr (BPair.add_unit (A + (Rm + Rm)))
-    (BPair.unit_add R)
+  show ((A + (B + B) + C)
+      + (((B.swap + Rm) + (B.swap + Rm)) + (R + C.swap))).oneValue
+    (A + (Rm + Rm) + R)
+  refine BPair.oneValue_trans (polEqB [A, B, C, Rm, R, B.swap, C.swap]
+    (Pol.add (Pol.add (Pol.add (Pol.mon (Mon.var 0)) (Pol.add (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 1)))) (Pol.mon (Mon.var 2))) (Pol.add (Pol.add (Pol.add (Pol.mon (Mon.var 5)) (Pol.mon (Mon.var 3))) (Pol.add (Pol.mon (Mon.var 5)) (Pol.mon (Mon.var 3)))) (Pol.add (Pol.mon (Mon.var 4)) (Pol.mon (Mon.var 6)))))
+    (Pol.add (Pol.add (Pol.add (Pol.mon (Mon.var 0)) (Pol.add (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 3)))) (Pol.mon (Mon.var 4))) (Pol.add (Pol.add (Pol.add (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 1))) (Pol.add (Pol.mon (Mon.var 5)) (Pol.mon (Mon.var 5)))) (Pol.add (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 6)))))
+    (by decide +kernel)) ?_
+  refine BPair.oneValue_trans (BPair.add_congr (BPair.oneValue_refl _)
+    (BPair.add_congr (BPair.add_swap_null (B + B))
+      (BPair.add_swap_null C))) ?_
+  refine BPair.oneValue_trans
+    (BPair.add_congr (BPair.oneValue_refl _) (BPair.unit_add _)) ?_
+  exact BPair.add_unit _
 
 /-- The convolution's count pair as the Weyl fold's signed fold of
 the family's counts at the moved keys. -/
@@ -1624,7 +1842,7 @@ theorem eigenAt (t : gentable.Table) (F : FundData)
     refine BPair.oneValue_trans
       (BPair.mul_congr_left (eigenSplit_alg hbil)) ?_
     rw [BPair.right_distrib]
-    refine BPair.add_congr (recCollapse (hrec y hwin vp hvpW)) ?_
+    refine BPair.add_congr (BPair.gap_mul_of_rec (hrec y hwin vp hvpW)) ?_
     rw [BPair.right_distrib, BPair.swap_mul]
     exact BPair.oneValue_refl _
   refine BPair.oneValue_trans (ground.foldB_congr_members _
@@ -1887,7 +2105,7 @@ private theorem reflCond_invol (t : gentable.Table) (i : Nat)
 read at the members is the conditioned move's count identity, so the
 count reads across at every key of the rank's order sitting at its
 representative. -/
-private theorem reflCond_count (t : gentable.Table)
+theorem count_reflAt (t : gentable.Table)
     (L : List (List BPair)) (hsq : reflSquareRead t)
     (hmsh : mShapeRead t L) (hsym : symRead t L)
     (i : Nat) (hi : i < t.rank) (x : List BPair)
@@ -1901,6 +2119,62 @@ private theorem reflCond_count (t : gentable.Table)
       exact hsym a ha i hi) x
   rw [reflCond_pos t i x ⟨hx, hxn⟩] at key
   exact key
+
+/-- G2's longest word exchanges a key with its balance partner.
+A reflection-invariant family therefore has equal counts there,
+including keys outside its support. -/
+theorem count_neg_G2 (L : List (List BPair))
+    (hm : mShapeRead tableG2 L) (hs : symRead tableG2 L)
+    (v : List BPair) (hv : v.length = 2) (hn : poly.pnorm v = v) :
+    ground.countOf (poly.pnorm (poly.neg v)) L = ground.countOf v L := by
+  let key := fun j => poly.pnorm (elim.matVec (weylMatG2 j) v)
+  have hstep (j : Nat) (hj : j < 6) :
+      ground.countOf (key (j + 1)) L = ground.countOf (key j) L := by
+    have hi : j % 2 < 2 := Nat.mod_lt j (by decide +kernel)
+    have hlt : j < 12 := Nat.lt_trans hj (by decide +kernel)
+    have hl : (key j).length = 2 := (poly.pnorm_length _).trans
+      ((elim.matVec_length _ _).trans (weylMatG2_shape j hlt).1)
+    have he := count_reflAt tableG2 L reflSquareRead_G2 hm hs (j % 2) hi
+      (key j) hl (poly.pnorm_pnorm _)
+    rw [← reflF_eq tableG2 (j % 2) (key j) hl] at he
+    change ground.countOf (reflF tableG2 (j % 2) (poly.pnorm (elim.matVec (weylMatG2 j) v))) L
+      = ground.countOf (key j) L at he
+    rw [reflF_G2_weylMat (j % 2) j hi hlt v hv, weylStepG2_prefix j hj] at he
+    exact he
+  have hzero : key 0 = poly.pnorm (poly.neg v) := by
+    apply poly.pnorm_congr
+    · rw [elim.matVec_length, poly.length_neg, hv]; rfl
+    · change poly.oneValue (elim.matVec (elim.matSwap (elim.idMat 2)) v) (poly.neg v)
+      rw [elim.matVec_swapM]
+      exact poly.swapMap_oneValue (elim.matVec_idMat 2 v hv)
+  have hsix : key 6 = v := by
+    refine Eq.trans (poly.pnorm_congr _ v ?_ (elim.matVec_idMat 2 v hv)) hn
+    rw [elim.matVec_length, hv]; rfl
+  have he := (hstep 5 (by decide +kernel)).trans
+    ((hstep 4 (by decide +kernel)).trans ((hstep 3 (by decide +kernel)).trans
+      ((hstep 2 (by decide +kernel)).trans ((hstep 1 (by decide +kernel)).trans
+        (hstep 0 (by decide +kernel))))))
+  rw [hsix, hzero] at he
+  exact he.symm
+
+/-- The principal shift by the top's rho pairing puts every
+G2 block content on the upper side. Support bounds the opposite
+content, whose count is the original content's at the longest word. -/
+theorem supportRead_shift_G2 (L : List (List BPair)) (wits : List (List Nat))
+    (top : List BPair) (htop : top.length = 2)
+    (hm : mShapeRead tableG2 L) (hs : symRead tableG2 L)
+    (hd : supportRead tableG2 L wits top) (v : List BPair) (hv : v ∈ L) :
+    BPair.unit ≤ dotB fundG2 top (rhoV tableG2) + dotB fundG2 v (rhoV tableG2) := by
+  have hcnt : 0 < ground.countOf (poly.pnorm (poly.neg v)) L := by
+    rw [count_neg_G2 L hm hs v (hm v hv).1 (hm v hv).2]
+    exact ground.countOf_pos_of_mem hv
+  have hle := supportRead_height tableG2 fundG2 fundShape_G2 simplePosRead_G2 rhoDotRead_G2
+    L wits top htop hd _ hcnt
+  have he := dotB_congrL fundG2 _ (poly.neg v) (rhoV tableG2) (poly.pnorm_oneValue _)
+  have hn : dotB fundG2 (poly.neg v) (rhoV tableG2)
+      = (dotB fundG2 v (rhoV tableG2)).swap := elim.dotP_swap_left _ _
+  rw [hn] at he
+  exact ground.leB_unit_add (ground.leB_congr_left he hle)
 
 /-- The conditioned move's positive read: a framed member moves to
 its reflected key at the flipped side. -/
@@ -1963,7 +2237,7 @@ private theorem convRefl_step (t : gentable.Table)
     (addKey_iff t.rank (reflAt t i y) k _ hry hryn hk
       (assembly.reflAt_length t i _) (assembly.reflAt_norm t i _)).mp hB
   rw [hC]
-  exact reflCond_count t L hsq hmsh hsym i hi _ hXl hXn
+  exact count_reflAt t L hsq hmsh hsym i hi _ hXl hXn
 
 /-- `thm:memberchar`'s first read of the convolution: the reflected
 key's count is the key's own on the flipped side — the family's
@@ -2137,13 +2411,12 @@ member's join to the sum's unit at every simple, where each
 summand's positive `ρ`-dot forces the count to nought, so the
 member's fold is vacant and its key is `ρ` itself. -/
 
-/-- A graded member whose moved key is occupied in the family reads
-`ρ` at its own key: the two witness folds' dots join to the sum's
-unit, every summand at or beyond it, so every count is nought and
-the member's fold absorbs. -/
-private theorem convTop_off (t : gentable.Table) (F : FundData)
+/-- At the joined top, the two natural support folds have total
+rho height at the sum's unit. Each coefficient therefore reads
+the vacant count, and the graded member is its top key. -/
+private theorem convTopAt_off (t : gentable.Table) (F : FundData)
     (L : List (List BPair)) (witsL : List (List Nat))
-    (lamV : List BPair)
+    (lamV topV : List BPair) (htopV : topV.length = t.rank)
     (hshape : fundShape t F) (hsp : simplePosRead t F)
     (hrd : rhoDotRead t F)
     (hsupp : supportRead t L witsL lamV)
@@ -2151,31 +2424,30 @@ private theorem convTop_off (t : gentable.Table) (F : FundData)
     (v : List BPair) (hvl : v.length = t.rank)
     (hvn : poly.pnorm v = v)
     (cW : List Nat)
-    (hW : poly.pnorm (elim.vecAdd v (cartanFold t cW)) = rhoV t)
+    (hW : poly.pnorm (elim.vecAdd v (cartanFold t cW)) = topV)
     (mu : List BPair)
     (hmu : poly.pnorm (elim.vecAdd
-      (poly.pnorm (elim.vecAdd lamV (rhoV t))) (poly.neg v)) = mu)
+      (poly.pnorm (elim.vecAdd lamV topV)) (poly.neg v)) = mu)
     (hpos : 0 < ground.countOf mu L) :
-    v = rhoV t := by
-  have hrl : (rhoV t).length = t.rank :=
-    ground.length_replicate (BPair.ofNat 1) t.rank
-  have htl : (poly.pnorm (elim.vecAdd lamV (rhoV t))).length = t.rank :=
+    v = topV := by
+  have hrl : topV.length = t.rank := htopV
+  have htl : (poly.pnorm (elim.vecAdd lamV topV)).length = t.rank :=
     (poly.pnorm_length _).trans
       (elim.length_vecAdd lamV _ t.rank hlam.1 hrl)
-  have htn : poly.pnorm (poly.pnorm (elim.vecAdd lamV (rhoV t)))
-      = poly.pnorm (elim.vecAdd lamV (rhoV t)) := poly.pnorm_pnorm _
+  have htn : poly.pnorm (poly.pnorm (elim.vecAdd lamV topV))
+      = poly.pnorm (elim.vecAdd lamV topV) := poly.pnorm_pnorm _
   have hnv : (poly.neg v).length = t.rank :=
     (ground.length_map BPair.swap v).trans hvl
   have hmul : mu.length = t.rank := by
     rw [← hmu, poly.pnorm_length,
-      elim.length_vecAdd (poly.pnorm (elim.vecAdd lamV (rhoV t)))
+      elim.length_vecAdd (poly.pnorm (elim.vecAdd lamV topV))
         (poly.neg v) t.rank htl hnv]
   have hmun : poly.pnorm mu = mu := by
     rw [← hmu]
     exact poly.pnorm_pnorm _
   have hjoin : poly.pnorm (elim.vecAdd v mu)
-      = poly.pnorm (elim.vecAdd lamV (rhoV t)) :=
-    (addKey_iff t.rank (poly.pnorm (elim.vecAdd lamV (rhoV t))) v mu
+      = poly.pnorm (elim.vecAdd lamV topV) :=
+    (addKey_iff t.rank (poly.pnorm (elim.vecAdd lamV topV)) v mu
       htl htn hvl hmul hmun).mpr hmu
   obtain ⟨m, hm, hme⟩ := ground.getAt_of_mem ([] : List BPair)
     (ground.mem_of_countOf_pos mu L hpos)
@@ -2185,11 +2457,11 @@ private theorem convTop_off (t : gentable.Table) (F : FundData)
     rw [hme] at h
     exact h
   have hcWlen : (cartanFold t cW).length = t.rank :=
-    cartanFold_frame t v cW (rhoV t) hrl hW
-  have h1 := assembly.dotB_foldKey t F hshape hsp v cW (rhoV t) hrl hW
+    cartanFold_frame t v cW topV hrl hW
+  have h1 := assembly.dotB_foldKey t F hshape hsp v cW topV hrl hW
   have h2 := assembly.dotB_foldKey t F hshape hsp mu
     (ground.getAt [] witsL m) lamV hlam.1 hL
-  have h3 : (dotB F (poly.pnorm (elim.vecAdd lamV (rhoV t)))
+  have h3 : (dotB F (poly.pnorm (elim.vecAdd lamV topV))
       (rhoV t)).oneValue
       (dotB F v (rhoV t) + dotB F mu (rhoV t)) := by
     refine BPair.oneValue_trans (dotB_congrL F _ (elim.vecAdd v mu)
@@ -2197,13 +2469,13 @@ private theorem convTop_off (t : gentable.Table) (F : FundData)
     have h := poly.pnorm_oneValue (elim.vecAdd v mu)
     rw [hjoin] at h
     exact h
-  have h4 : (dotB F (poly.pnorm (elim.vecAdd lamV (rhoV t)))
+  have h4 : (dotB F (poly.pnorm (elim.vecAdd lamV topV))
       (rhoV t)).oneValue
-      (dotB F lamV (rhoV t) + dotB F (rhoV t) (rhoV t)) :=
+      (dotB F lamV (rhoV t) + dotB F topV (rhoV t)) :=
     BPair.oneValue_trans
-      (dotB_congrL F _ (elim.vecAdd lamV (rhoV t)) (rhoV t)
+      (dotB_congrL F _ (elim.vecAdd lamV topV) (rhoV t)
         (poly.pnorm_oneValue _))
-      (dotB_addL t F hshape lamV (rhoV t) (rhoV t) hlam.1 hrl)
+      (dotB_addL t F hshape lamV topV (rhoV t) hlam.1 hrl)
   have hsum : (ground.famFold BPair.add BPair.unit
         (fun i => BPair.mul (BPair.ofNat (ground.getAt 0 cW i))
           (dotB F (posCorootV t (ground.getAt 0 F.simplePos i))
@@ -2214,7 +2486,7 @@ private theorem convTop_off (t : gentable.Table) (F : FundData)
           (dotB F (posCorootV t (ground.getAt 0 F.simplePos i))
             (rhoV t))) (List.range t.rank)).oneValue BPair.unit := by
     refine BPair.add_cancel
-      (c := dotB F lamV (rhoV t) + dotB F (rhoV t) (rhoV t)) ?_
+      (c := dotB F lamV (rhoV t) + dotB F topV (rhoV t)) ?_
     refine BPair.oneValue_trans
       (BPair.oneValue_of_eq (BPair.add_comm _ _)) ?_
     refine BPair.oneValue_trans (BPair.add_congr
@@ -2264,13 +2536,80 @@ private theorem convTop_off (t : gentable.Table) (F : FundData)
   rw [foldNull_key t cW hcWlen hzero v hvl hvn] at hW
   exact hW
 
-/-- `thm:memberchar`'s third read of the convolution: the shifted
-key reads one at the even grading and none at the odd — the inner
-count at each graded member the indicator of `ρ`, the two guards
-collapsing to the member's own pair, and the alternant's top read
-closing.  The height ledger runs at the support folds' positive
-`ρ`-dots alone, so the Gram's symmetry and defining reads bind no
-field and sit off the statement. -/
+/-- The convolution of a supported graded top with a supported
+block family reads one at their joined top on the even side and
+the vacant count on the odd side, the Cartan count's support read. -/
+theorem convTopAt (t : gentable.Table) (F : FundData)
+    (W : List (List BPair × Bool)) (wits : List (List Nat))
+    (L : List (List BPair)) (witsL : List (List Nat))
+    (lamV topV : List BPair) (htopV : topV.length = t.rank)
+    (hshape : fundShape t F) (hsp : simplePosRead t F)
+    (hrd : rhoDotRead t F)
+    (hwsh : wShapeRead t W) (hdom : wDomAt t W wits topV)
+    (htop : wTopAt W topV)
+    (hmsh : mShapeRead t L) (hsupp : supportRead t L witsL lamV)
+    (htopL : topRead L lamV) (hlam : lamRead t lamV) :
+    convCount W L (poly.pnorm (elim.vecAdd lamV topV)) false = 1
+      ∧ convCount W L (poly.pnorm (elim.vecAdd lamV topV)) true
+        = 0 := by
+  have hrl : topV.length = t.rank := htopV
+  have htl : (poly.pnorm (elim.vecAdd lamV topV)).length = t.rank :=
+    (poly.pnorm_length _).trans
+      (elim.length_vecAdd lamV _ t.rank hlam.1 hrl)
+  have htn : poly.pnorm (poly.pnorm (elim.vecAdd lamV topV))
+      = poly.pnorm (elim.vecAdd lamV topV) := poly.pnorm_pnorm _
+  have hfold : ∀ s : Bool,
+      convCount W L (poly.pnorm (elim.vecAdd lamV topV)) s
+        = ground.countOf (topV, s) W := by
+    intro s
+    rw [convCount_countOf t W L hwsh hmsh _ htl htn s,
+      ground.countOf_fold]
+    refine ground.famFold_congr_members Nat.add 0 _ _ W (fun vp hvp => ?_)
+    have hvpW := ground.mem_of_countOf_pos vp W hvp
+    obtain ⟨k, hk, hke⟩ := ground.getAt_of_mem
+      (([], false) : List BPair × Bool) hvpW
+    have hW : poly.pnorm (elim.vecAdd vp.1
+        (cartanFold t (ground.getAt [] wits k))) = topV := by
+      have h := hdom.2 k hk
+      rw [hke] at h
+      exact h
+    obtain ⟨hkl, hkn⟩ := hwsh vp hvpW
+    have hinner : ground.countOf (poly.pnorm (elim.vecAdd
+        (poly.pnorm (elim.vecAdd lamV topV)) (poly.neg vp.1))) L
+        = if vp.1 = topV then 1 else 0 := by
+      by_cases hvr : vp.1 = topV
+      · rw [if_pos hvr]
+        have hkey := addKey_solve t.rank
+          (poly.pnorm (elim.vecAdd lamV topV)) topV lamV
+          htl htn hrl hlam.1 hlam.2.1 rfl
+        rw [hvr, hkey]
+        exact htopL
+      · rw [if_neg hvr]
+        match Nat.eq_zero_or_pos (ground.countOf (poly.pnorm
+          (elim.vecAdd (poly.pnorm (elim.vecAdd lamV topV))
+            (poly.neg vp.1))) L) with
+        | Or.inl h0 => exact h0
+        | Or.inr hp =>
+          exact absurd (convTopAt_off t F L witsL lamV topV htopV hshape hsp hrd
+            hsupp hlam vp.1 hkl hkn (ground.getAt [] wits k) hW
+            _ rfl hp) hvr
+    rw [hinner]
+    by_cases h1 : vp.1 = topV
+    · by_cases h2 : vp.2 = s
+      · rw [if_pos h2, if_pos h1,
+          if_pos (show (topV, s) = vp by rw [← h1, ← h2])]
+      · rw [if_neg h2,
+          if_neg (fun he : (topV, s) = vp =>
+            h2 (congrArg Prod.snd he).symm)]
+    · rw [if_neg h1,
+        if_neg (fun he : (topV, s) = vp =>
+          h1 (congrArg Prod.fst he).symm)]
+      by_cases h2 : vp.2 = s
+      · rw [if_pos h2]
+      · rw [if_neg h2]
+  exact ⟨(hfold false).trans htop.1, (hfold true).trans htop.2⟩
+
+/-- The character convolution's top read at the rho alternant. -/
 private theorem convTop (t : gentable.Table) (F : FundData)
     (W : List (List BPair × Bool)) (wits : List (List Nat))
     (L : List (List BPair)) (witsL : List (List Nat))
@@ -2284,71 +2623,13 @@ private theorem convTop (t : gentable.Table) (F : FundData)
     convCount W L (poly.pnorm (elim.vecAdd lamV (rhoV t))) false = 1
       ∧ convCount W L (poly.pnorm (elim.vecAdd lamV (rhoV t))) true
         = 0 := by
-  have hrl : (rhoV t).length = t.rank :=
-    ground.length_replicate (BPair.ofNat 1) t.rank
-  have htl : (poly.pnorm (elim.vecAdd lamV (rhoV t))).length = t.rank :=
-    (poly.pnorm_length _).trans
-      (elim.length_vecAdd lamV _ t.rank hlam.1 hrl)
-  have htn : poly.pnorm (poly.pnorm (elim.vecAdd lamV (rhoV t)))
-      = poly.pnorm (elim.vecAdd lamV (rhoV t)) := poly.pnorm_pnorm _
-  have hfold : ∀ s : Bool,
-      convCount W L (poly.pnorm (elim.vecAdd lamV (rhoV t))) s
-        = ground.countOf (rhoV t, s) W := by
-    intro s
-    rw [convCount_countOf t W L hwsh hmsh _ htl htn s,
-      ground.countOf_fold]
-    refine ground.famFold_congr_members Nat.add 0 _ _ W (fun vp hvp => ?_)
-    have hvpW := ground.mem_of_countOf_pos vp W hvp
-    obtain ⟨k, hk, hke⟩ := ground.getAt_of_mem
-      (([], false) : List BPair × Bool) hvpW
-    have hW : poly.pnorm (elim.vecAdd vp.1
-        (cartanFold t (ground.getAt [] wits k))) = rhoV t := by
-      have h := hdom.2 k hk
-      rw [hke] at h
-      exact h
-    obtain ⟨hkl, hkn⟩ := hwsh vp hvpW
-    have hinner : ground.countOf (poly.pnorm (elim.vecAdd
-        (poly.pnorm (elim.vecAdd lamV (rhoV t))) (poly.neg vp.1))) L
-        = if vp.1 = rhoV t then 1 else 0 := by
-      by_cases hvr : vp.1 = rhoV t
-      · rw [if_pos hvr]
-        have hkey := addKey_solve t.rank
-          (poly.pnorm (elim.vecAdd lamV (rhoV t))) (rhoV t) lamV
-          htl htn hrl hlam.1 hlam.2.1 rfl
-        rw [hvr, hkey]
-        exact htopL
-      · rw [if_neg hvr]
-        match Nat.eq_zero_or_pos (ground.countOf (poly.pnorm
-          (elim.vecAdd (poly.pnorm (elim.vecAdd lamV (rhoV t)))
-            (poly.neg vp.1))) L) with
-        | Or.inl h0 => exact h0
-        | Or.inr hp =>
-          exact absurd (convTop_off t F L witsL lamV hshape hsp hrd
-            hsupp hlam vp.1 hkl hkn (ground.getAt [] wits k) hW
-            _ rfl hp) hvr
-    rw [hinner]
-    by_cases h1 : vp.1 = rhoV t
-    · by_cases h2 : vp.2 = s
-      · rw [if_pos h2, if_pos h1,
-          if_pos (show (rhoV t, s) = vp by rw [← h1, ← h2])]
-      · rw [if_neg h2,
-          if_neg (fun he : (rhoV t, s) = vp =>
-            h2 (congrArg Prod.snd he).symm)]
-    · rw [if_neg h1,
-        if_neg (fun he : (rhoV t, s) = vp =>
-          h1 (congrArg Prod.fst he).symm)]
-      by_cases h2 : vp.2 = s
-      · rw [if_pos h2]
-      · rw [if_neg h2]
-  refine ⟨?_, ?_⟩
-  · have h := htop.1
-    rw [assembly.pnorm_rhoV t] at h
-    rw [hfold false]
+  have ht : wTopAt W (rhoV t) := by
+    have h := htop
+    change wTopAt W (poly.pnorm (rhoV t)) at h
+    rw [assembly.pnorm_rhoV] at h
     exact h
-  · have h := htop.2
-    rw [assembly.pnorm_rhoV t] at h
-    rw [hfold true]
-    exact h
+  exact convTopAt t F W wits L witsL lamV (rhoV t) (ground.length_replicate _ _)
+    hshape hsp hrd hwsh hdom ht hmsh hsupp htopL hlam
 
 /-! The window's separation: off the shifted key every window key
 pairs strictly below it.  The window's own enumeration names the
@@ -2383,12 +2664,68 @@ private theorem domWindow_elim (t : gentable.Table) (F : FundData)
   obtain ⟨c, _, hc⟩ := ground.mem_map_of _ _ y hmem
   exact ⟨c, hc⟩
 
+/-- The unit block's singleton content family satisfies the
+trace recursion at the even rho seed. Each window key is strictly
+dominant, so its rho withdrawal has nonnegative height and its
+positive-root correction is the sum's unit. -/
+theorem recRead_unit (t : gentable.Table) (F : FundData)
+    (hshape : fundShape t F) (hgram : gramRead t F)
+    (hgsym : gramSymRead F) (hrho : gentable.rhoRead t) (hrd : rhoDotRead t F) :
+    recRead t F [(rhoV t, false)] [List.replicate t.rank BPair.unit]
+      (List.replicate t.rank BPair.unit) := by
+  let z := List.replicate t.rank BPair.unit
+  have hrl : (rhoV t).length = t.rank := ground.length_replicate _ _
+  have hnr : (poly.neg (rhoV t)).length = t.rank := (poly.length_neg _).trans hrl
+  have hzrho : (dotB F z (rhoV t)).oneValue BPair.unit :=
+    elim.dotP_null_tail_left _ _ (poly.unitTail_replicate t.rank)
+  intro y hy vp hvp
+  have he := ground.eq_of_mem_single hvp
+  rw [he]
+  let v := poly.pnorm (elim.vecAdd y (poly.neg (rhoV t)))
+  have hylen := (domWindow_shape t F z y hy).1
+  have hdy := (domWindow_elim t F z y hy).1
+  have hvlen : v.length = t.rank := (poly.pnorm_length _).trans
+    (elim.length_vecAdd _ _ t.rank hylen hnr)
+  have hvpos : ∀ i, i < t.rank → BPair.unit ≤ ground.getAt BPair.unit v i := by
+    intro i hi
+    have hv := poly.oneValue_getAt i (poly.pnorm_oneValue (elim.vecAdd y (poly.neg (rhoV t))))
+    rw [elim.getAt_vecAdd _ _ i (by rw [hylen]; exact hi) (by rw [hnr]; exact hi)] at hv
+    have hr : ground.getAt BPair.unit (poly.neg (rhoV t)) i = (BPair.ofNat 1).swap := by
+      change ground.getAt BPair.unit ((rhoV t).map BPair.swap) i = _
+      rw [ground.getAt_map BPair.unit BPair.unit BPair.swap _ i (by rw [hrl]; exact hi),
+        rhoV,
+        ground.getAt_replicate BPair.unit (BPair.ofNat 1) t.rank i hi]
+    rw [hr] at hv
+    apply ground.leB_congr_right (BPair.oneValue_symm hv)
+    apply ground.leB_unit_add
+    rw [BPair.swap_swap]
+    exact ground.oneLeOfUnitLt (hdy i hi)
+  have hvheight := assembly.dotB_dom_nonneg t F hshape hgram hgsym hrho v hvlen hvpos
+  have hg : (gSum t F [z] v).oneValue BPair.unit := by
+    apply gSum_top t F hshape hgsym hrd [z] v hvlen hvheight
+    intro mu hm
+    rw [ground.eq_of_mem_single (ground.mem_of_countOf_pos mu [z] hm)]
+    exact ground.leB_congr_left (BPair.oneValue_symm hzrho) hvheight
+  change (dotB F (poly.pnorm (elim.vecAdd z (rhoV t)))
+      (poly.pnorm (elim.vecAdd z (rhoV t))) * BPair.ofNat (ground.countOf v [z])).oneValue
+    (dotB F (poly.pnorm (elim.vecAdd v (rhoV t)))
+      (poly.pnorm (elim.vecAdd v (rhoV t))) * BPair.ofNat (ground.countOf v [z]) + gSum t F [z] v)
+  by_cases hv : v = z
+  · rw [hv] at hg ⊢
+    exact BPair.oneValue_symm (BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl _) hg) (BPair.add_unit _))
+  · have hc : ground.countOf v [z] = 0 := ground.countOf_zero_of_not_mem
+      (fun h => hv (ground.eq_of_mem_single h))
+    rw [hc]
+    refine BPair.oneValue_trans (BPair.mul_unit _) (BPair.oneValue_symm ?_)
+    exact BPair.oneValue_trans (BPair.add_congr (BPair.mul_unit _) hg) (BPair.unit_add _)
+
 /-- `thm:memberchar`'s separation read: off the shifted key every
 dominant-window key's own square sits strictly below the shifted
 key's — the joining simple fold occupied, its two pairings at the
 key and at the shifted key carrying the square split's whole
 correction. -/
-private theorem sep_lt (t : gentable.Table) (F : FundData)
+theorem sep_lt (t : gentable.Table) (F : FundData)
     (lamV : List BPair)
     (hshape : fundShape t F) (hgram : gramRead t F)
     (hgsym : gramSymRead F) (hsp : simplePosRead t F)
@@ -2527,7 +2864,7 @@ the rank's order joining the shifted key at a natural simple fold
 sits in the window — the fold's coefficient sum capped at the
 height read, every simple's `ρ`-dot at or beyond one and the key's
 own `ρ`-dot clearing `ρ`'s. -/
-private theorem domWindow_mem (t : gentable.Table) (F : FundData)
+theorem domWindow_mem (t : gentable.Table) (F : FundData)
     (lamV : List BPair)
     (hshape : fundShape t F) (hgram : gramRead t F)
     (hgsym : gramSymRead F) (hsp : simplePosRead t F)
@@ -2774,20 +3111,6 @@ private theorem convCount_offFrame (t : gentable.Table)
     exact hin
   · rw [if_neg hb]
 
-/-- A key off the rank's normed frame reads the alternant data's
-count at the count's unit: every member sits framed. -/
-private theorem wCount_offFrame (t : gentable.Table)
-    (W' : List (List BPair × Bool)) (hwsh' : wShapeRead t W')
-    (y : List BPair)
-    (hoff : ¬ (y.length = t.rank ∧ poly.pnorm y = y)) (s : Bool) :
-    wCount W' y s = 0 := by
-  match h0 : ground.countOf (y, s) W' with
-  | 0 => exact h0
-  | n + 1 =>
-    refine absurd (hwsh' (y, s) (ground.mem_of_countOf_pos (y, s) W'
-      (by rw [h0]; exact Nat.succ_pos n))) (fun hfr => hoff ?_)
-    exact hfr
-
 /-- The per-key balance of the product's data with the shifted
 alternant's: `a_ρ ch_λ`'s graded count against `a_{λ+ρ}`'s, the
 identity `a_ρ ch_λ = a_{λ+ρ}` coefficientwise
@@ -2798,7 +3121,7 @@ def identityAt (W : List (List BPair × Bool))
   convCount W L y false + wCount W' y true
     = convCount W L y true + wCount W' y false
 
-instance (W : List (List BPair × Bool)) (L : List (List BPair))
+instance instMemberchar7 (W : List (List BPair × Bool)) (L : List (List BPair))
     (W' : List (List BPair × Bool)) (y : List BPair) :
     Decidable (identityAt W L W' y) :=
   inferInstanceAs (Decidable (_ = _))

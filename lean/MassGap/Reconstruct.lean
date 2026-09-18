@@ -3,13 +3,13 @@ import MassGap.Cone
 import MassGap.Attained
 import MassGap.Statespace
 /-!
-`thm:reconstruct` — the located reconstruction: the passage from the
-Euclidean bracket families to the relativistic ones over the located
-stage, its inputs the bracketed ground reads (`thm:groundreads`),
+`thm:reconstruct` — the spectral bracket reconstruction: the
+Euclidean bracket families' spectral reads over the located stage,
+at the bracketed ground reads (`thm:groundreads`),
 the restoration counts with the cone read (`thm:restoration`;
 `lem:cone`) and the pairing's definitional positivity
-(`def:carrier`), its outputs per member and direction count at
-every window of the corner cell.
+(`def:carrier`), per member and direction count at every window
+of the corner cell.
 
 Clause (i).  Per fiber the energy roots with their weights are the
 split's own: the diagonalizing certificate's root list at its
@@ -36,12 +36,11 @@ the determinant's scale (`moment_solve` at
 determinant's clearance the located divisor read over the corner
 base (`lem:cellcount`).
 
-Clause (ii).  The relativistic bracket families are those data at
-the cone's coordinates: per probe pair the family is clause (i)'s
-weight fold over the located roots at the fiber's chord
+Clause (ii).  The root loci through degree two: per probe pair the
+family is clause (i)'s weight fold over the located roots at the fiber's chord
 (`euc_hi_fold`, `euc_lo_fold` at the fiber's diagonalized gap), and
-the roots' momentum reading is the cone's, at every located root
-the locus at the moved level reading the isotropic square at degree
+the weights are the probes' spectral weights.  At each located root,
+the locus at the moved level reads the isotropic square at degree
 two with the root's located coefficient, the odd degrees at the
 sum's unit and the direction data at degree four (`cone.cone_read`
 at the profile's degrees, `cone.prof_coef` the coefficient per
@@ -57,7 +56,7 @@ the pairing bilinear, that read clause (i)'s fold at the
 combination's coordinate squares with every entry at or above the
 sum's unit, so every split reads the upper side (`family_hi_psd`,
 `family_lo_psd`, the entries' side the pins' at the certificate's
-arms); the cut is their spectrum condition (`speccut.cutTie`;
+arms); the window's energy gap is its cut (`speccut.cutTie`;
 `speccut.spec_to_cut`, `speccut.cut_to_spec`), the word sector is
 the state's space (`statespace.pairRead`), and every read holds at
 every window ground at once (`lem:speccut`'s tie at every ground);

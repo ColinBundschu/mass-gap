@@ -9,168 +9,170 @@ with the definitional route's coherence (the crown among the
 pins), the Casimir read's class invariance, and the Cartan
 equality's instances.
 -/
+
+namespace labels
 set_option maxHeartbeats 4000000
 
-open ground places labels
+open ground places
 
 /-! The reduction and the dual label. -/
 
-example : reduce [2, 1] = [2, 0] := rfl
-example : reduce [1, 0, 2] = [1, 0, 0] := rfl
-example : dualL [1, 0, 0] = [0, 1, 0] := rfl
-example : dualL [2, 0, 0] = [0, 2, 0] := rfl
-example : dualL [1, 1, 0] = [1, 1, 0] := rfl
-example : dualL [0, 0, 0] = [0, 0, 0] := rfl
-example : dualL (dualL [2, 1, 0]) = [2, 1, 0] := rfl
-example : dualL (dualL [1, 0, 2, 0]) = [1, 0, 2, 0] := rfl
-example : unitL 3 = [0, 0, 0] := rfl
+theorem pin1 : reduce [2, 1] = [2, 0] := rfl
+theorem pin2 : reduce [1, 0, 2] = [1, 0, 0] := rfl
+theorem pin3 : dualL [1, 0, 0] = [0, 1, 0] := rfl
+theorem pin4 : dualL [2, 0, 0] = [0, 2, 0] := rfl
+theorem pin5 : dualL [1, 1, 0] = [1, 1, 0] := rfl
+theorem pin6 : dualL [0, 0, 0] = [0, 0, 0] := rfl
+theorem pin7 : dualL (dualL [2, 1, 0]) = [2, 1, 0] := rfl
+theorem pin8 : dualL (dualL [1, 0, 2, 0]) = [1, 0, 2, 0] := rfl
+theorem pin9 : unitL 3 = [0, 0, 0] := rfl
 
 /-! The label count's coherence with the definitional route at the
 matched degree, the crown triple among the pins. -/
 
-example : countL [1, 0] [1, 0] [2, 0]
+theorem pin10 : countL [1, 0] [1, 0] [2, 0]
     = blockcount.fusionCount [1, 0] [1, 0] [2, 0] := by decide +kernel
-example : countL [1, 0] [1, 0] [0, 1]
+theorem pin11 : countL [1, 0] [1, 0] [0, 1]
     = blockcount.fusionCount [1, 0] [1, 0] [0, 1] := by decide +kernel
-example : countL [1, 1, 0] [1, 1, 0] [1, 1, 1] = 2 := by decide +kernel
+theorem pin12 : countL [1, 1, 0] [1, 1, 0] [1, 1, 1] = 2 := by decide +kernel
 
 /-! The matched-degree lift in both degree directions, with the
 divisibility guard's refusals. -/
 
-example : countL [1, 0] [1, 0] (unitL 2) = 1 := by decide +kernel
-example : countL (unitL 2) [1, 0] [1, 1] = 1 := by decide +kernel
-example : countL [1, 0, 0] [1, 0, 0] (unitL 3) = 0 := by decide +kernel
-example : countL [1, 0, 0] [0, 1, 0] (unitL 3) = 1 := by decide +kernel
-example : countL [1, 1, 0] [1, 1, 0] (unitL 3) = 1 := by decide +kernel
+theorem pin13 : countL [1, 0] [1, 0] (unitL 2) = 1 := by decide +kernel
+theorem pin14 : countL (unitL 2) [1, 0] [1, 1] = 1 := by decide +kernel
+theorem pin15 : countL [1, 0, 0] [1, 0, 0] (unitL 3) = 0 := by decide +kernel
+theorem pin16 : countL [1, 0, 0] [0, 1, 0] (unitL 3) = 1 := by decide +kernel
+theorem pin17 : countL [1, 1, 0] [1, 1, 0] (unitL 3) = 1 := by decide +kernel
 
 /-! The unit label's own row, `N^c_{a 𝟏} = δ_{ac}`
 (`lem:blockcount`(iii)'s third identity at labels). -/
 
-example : countL [1, 0] (unitL 2) [1, 0] = 1 := by decide +kernel
-example : countL [1, 0] (unitL 2) [2, 0] = 0 := by decide +kernel
-example : countL [1, 1, 0] (unitL 3) [1, 1, 0] = 1 := by decide +kernel
-example : countL [1, 1, 0] (unitL 3) [1, 0, 0] = 0 := by decide +kernel
+theorem pin18 : countL [1, 0] (unitL 2) [1, 0] = 1 := by decide +kernel
+theorem pin19 : countL [1, 0] (unitL 2) [2, 0] = 0 := by decide +kernel
+theorem pin20 : countL [1, 1, 0] (unitL 3) [1, 1, 0] = 1 := by decide +kernel
+theorem pin21 : countL [1, 1, 0] (unitL 3) [1, 0, 0] = 0 := by decide +kernel
 
 /-! The matched-degree coherence as the general theorem's own
 route, the lift's discriminator against the block count, and the
 second width's refusal. -/
 
-example : countL [1, 0] [1, 0] [2, 0]
+theorem pin22 : countL [1, 0] [1, 0] [2, 0]
     = blockcount.fusionCount [1, 0] [1, 0] [2, 0] :=
   countL_matched [1, 0] [1, 0] [2, 0] rfl rfl rfl
 
-example : countL [1, 0] [1, 0] [0, 1]
+theorem pin23 : countL [1, 0] [1, 0] [0, 1]
     = blockcount.fusionCount [1, 0] [1, 0] [0, 1] :=
   countL_matched [1, 0] [1, 0] [0, 1] rfl rfl rfl
 
-example : countL [1, 1, 0] [1, 0, 0] [1, 0, 1]
+theorem pin24 : countL [1, 1, 0] [1, 0, 0] [1, 0, 1]
     = blockcount.fusionCount [1, 1, 0] [1, 0, 0] [1, 0, 1] :=
   countL_matched [1, 1, 0] [1, 0, 0] [1, 0, 1] rfl rfl rfl
 
-example : countL [1, 0] [1, 0] (unitL 2) = 1 := by decide +kernel
-example : blockcount.fusionCount [1, 0] [1, 0] (unitL 2) = 0 := by decide +kernel
+theorem pin25 : countL [1, 0] [1, 0] (unitL 2) = 1 := by decide +kernel
+theorem pin26 : blockcount.fusionCount [1, 0] [1, 0] (unitL 2) = 0 := by decide +kernel
 
-example : countL [1, 0] [1, 0, 0] [2, 0] = 0 := by decide +kernel
-example : blockcount.fusionCount [1, 0] [1, 0, 0] [2, 0] = 1 := by decide +kernel
+theorem pin27 : countL [1, 0] [1, 0, 0] [2, 0] = 0 := by decide +kernel
+theorem pin28 : blockcount.fusionCount [1, 0] [1, 0, 0] [2, 0] = 1 := by decide +kernel
 
 /-! The class move at one full column, each argument: the general
 theorem's route beside the kernel read. -/
 
-example : countL (ground.bumpAt 1 [1, 0]) [1, 0] [2, 0]
+theorem pin29 : countL (ground.bumpAt 1 [1, 0]) [1, 0] [2, 0]
     = countL [1, 0] [1, 0] [2, 0] :=
   countL_bumpA [1, 0] [1, 0] [2, 0] rfl rfl
 
-example : countL [1, 0] (ground.bumpAt 1 [1, 0]) [2, 0]
+theorem pin30 : countL [1, 0] (ground.bumpAt 1 [1, 0]) [2, 0]
     = countL [1, 0] [1, 0] [2, 0] :=
   countL_bumpB [1, 0] [1, 0] [2, 0] rfl rfl
 
-example : countL [1, 0] [1, 0] (ground.bumpAt 1 [2, 0])
+theorem pin31 : countL [1, 0] [1, 0] (ground.bumpAt 1 [2, 0])
     = countL [1, 0] [1, 0] [2, 0] :=
   countL_bumpC [1, 0] [1, 0] [2, 0] rfl rfl
 
-example : countL [1, 0, 0] (ground.bumpAt 2 [0, 1, 0]) (unitL 3)
+theorem pin32 : countL [1, 0, 0] (ground.bumpAt 2 [0, 1, 0]) (unitL 3)
     = countL [1, 0, 0] [0, 1, 0] (unitL 3) :=
   countL_bumpB [1, 0, 0] [0, 1, 0] (unitL 3) rfl rfl
 
-example : countL (ground.bumpAt 2 [1, 0, 0]) [0, 1, 0] [1, 1, 0]
+theorem pin33 : countL (ground.bumpAt 2 [1, 0, 0]) [0, 1, 0] [1, 1, 0]
     = countL [1, 0, 0] [0, 1, 0] [1, 1, 0] :=
   countL_bumpA [1, 0, 0] [0, 1, 0] [1, 1, 0] rfl rfl
 
-example : countL [1, 0, 0] [0, 1, 0] (ground.bumpAt 2 [1, 1, 0])
+theorem pin34 : countL [1, 0, 0] [0, 1, 0] (ground.bumpAt 2 [1, 1, 0])
     = countL [1, 0, 0] [0, 1, 0] [1, 1, 0] :=
   countL_bumpC [1, 0, 0] [0, 1, 0] [1, 1, 0] rfl rfl
 
-example : countL (ground.bumpAt 1 [1, 0]) [1, 0] [2, 0] = 1 := by decide +kernel
+theorem pin35 : countL (ground.bumpAt 1 [1, 0]) [1, 0] [2, 0] = 1 := by decide +kernel
 
 /-! The dual label's involution at the class representative, the
 non-reduced shapes among the instances. -/
 
-example : dualL (dualL [2, 1]) = reduce [2, 1] := dualL_dualL [2, 1]
-example : dualL (dualL [1, 0, 2]) = reduce [1, 0, 2] :=
+theorem pin36 : dualL (dualL [2, 1]) = reduce [2, 1] := dualL_dualL [2, 1]
+theorem pin37 : dualL (dualL [1, 0, 2]) = reduce [1, 0, 2] :=
   dualL_dualL [1, 0, 2]
-example : dualL (dualL [0, 3, 1, 2]) = reduce [0, 3, 1, 2] := by decide +kernel
+theorem pin38 : dualL (dualL [0, 3, 1, 2]) = reduce [0, 3, 1, 2] := by decide +kernel
 
 /-! The full-column join against the dual label, the asymmetric
 pair among the instances, with the non-constant join and the
 second width's refusals. -/
 
-example : reduce [2, 0, 0] = dualL [0, 2, 0] :=
+theorem pin39 : reduce [2, 0, 0] = dualL [0, 2, 0] :=
   join_dualL [2, 0, 0] [0, 2, 0] rfl 2 (by decide +kernel)
 
-example : List.zipWith (fun x y => x + y) (rowList [0, 2, 0])
+theorem pin40 : List.zipWith (fun x y => x + y) (rowList [0, 2, 0])
       ((rowList [2, 0, 0]).reverse)
     = List.replicate ([2, 0, 0] : Shape).length
       ((degree [2, 0, 0] + degree [0, 2, 0])
         / ([2, 0, 0] : Shape).length) :=
   dualL_join [2, 0, 0] [0, 2, 0] (by decide +kernel)
 
-example : ¬ List.zipWith (fun x y => x + y) (rowList [1, 1, 0])
+theorem pin41 : ¬ List.zipWith (fun x y => x + y) (rowList [1, 1, 0])
       ((rowList [2, 0, 0]).reverse) = List.replicate 3 2 := by decide +kernel
-example : ¬ reduce [2, 0, 0] = dualL [1, 1, 0] := by decide +kernel
+theorem pin42 : ¬ reduce [2, 0, 0] = dualL [1, 1, 0] := by decide +kernel
 
-example : List.zipWith (fun x y => x + y) (rowList [1, 0, 0])
+theorem pin43 : List.zipWith (fun x y => x + y) (rowList [1, 0, 0])
     ((rowList [1, 0]).reverse) = List.replicate 2 1 := by decide +kernel
-example : ¬ reduce [1, 0] = dualL [1, 0, 0] := by decide +kernel
+theorem pin44 : ¬ reduce [1, 0] = dualL [1, 0, 0] := by decide +kernel
 
 /-! The dimension at the class, the general theorem's route with
 one kernel read beside it. -/
 
-example : weyldim.dimOf ([] : Shape) = weyldim.dimOf (reduce []) :=
+theorem pin45 : weyldim.dimOf ([] : Shape) = weyldim.dimOf (reduce []) :=
   dimOf_class []
-example : weyldim.dimOf [1, 2] = weyldim.dimOf (reduce [1, 2]) :=
+theorem pin46 : weyldim.dimOf [1, 2] = weyldim.dimOf (reduce [1, 2]) :=
   dimOf_class [1, 2]
-example : weyldim.dimOf [0, 1, 2] = weyldim.dimOf (reduce [0, 1, 2]) :=
+theorem pin47 : weyldim.dimOf [0, 1, 2] = weyldim.dimOf (reduce [0, 1, 2]) :=
   dimOf_class [0, 1, 2]
-example : weyldim.dimOf [1, 2] = weyldim.dimOf (reduce [1, 2]) := by decide +kernel
+theorem pin48 : weyldim.dimOf [1, 2] = weyldim.dimOf (reduce [1, 2]) := by decide +kernel
 
 /-! The Casimir read's class invariance, the general theorem's own
 instances with one kernel read beside them. -/
 
-example : c2ClassRead [1, 1] := by decide +kernel
-example : c2ClassRead [2, 2] := c2Class_all _
-example : c2ClassRead [1, 0, 1] := c2Class_all _
-example : c2ClassRead [1, 1, 2] := c2Class_all _
-example : c2ClassRead [0, 1, 0, 3] := c2Class_all _
+theorem pin49 : c2ClassRead [1, 1] := by decide +kernel
+theorem pin50 : c2ClassRead [2, 2] := c2Class_all _
+theorem pin51 : c2ClassRead [1, 0, 1] := c2Class_all _
+theorem pin52 : c2ClassRead [1, 1, 2] := c2Class_all _
+theorem pin53 : c2ClassRead [0, 1, 0, 3] := c2Class_all _
 
 /-! The Cartan equality's instances. -/
 
-example : cartanRead [1, 0] [1, 0] := by decide +kernel
-example : cartanRead [1, 0] [2, 0] := by decide +kernel
-example : cartanRead [1, 0, 0] [1, 1, 0] := by decide +kernel
-example : cartanRead [1, 1, 0] [1, 1, 0] := by decide +kernel
-example : cartanRead [2, 0, 0] [0, 1, 0] := by decide +kernel
+theorem pin54 : cartanRead [1, 0] [1, 0] := by decide +kernel
+theorem pin55 : cartanRead [1, 0] [2, 0] := by decide +kernel
+theorem pin56 : cartanRead [1, 0, 0] [1, 1, 0] := by decide +kernel
+theorem pin57 : cartanRead [1, 1, 0] [1, 1, 0] := by decide +kernel
+theorem pin58 : cartanRead [2, 0, 0] [0, 1, 0] := by decide +kernel
 
 /-! The label count at the reduced target, the shape count's own
 read at the matched degrees. -/
 
-example : labels.countL [1, 0] (adjchar.theta 2)
+theorem pin59 : labels.countL [1, 0] (adjchar.theta 2)
       (labels.reduce [1, 1])
     = steinberg.count [1, 0] (adjchar.theta 2) [1, 1] := by decide +kernel
-example : labels.countL (adjchar.theta 3) (adjchar.theta 3)
+theorem pin60 : labels.countL (adjchar.theta 3) (adjchar.theta 3)
       (labels.reduce [1, 1, 1])
     = steinberg.count (adjchar.theta 3) (adjchar.theta 3) [1, 1, 1] :=
   by decide +kernel
-example : labels.countL [1, 0, 0] (adjchar.theta 3)
+theorem pin61 : labels.countL [1, 0, 0] (adjchar.theta 3)
       (labels.reduce [0, 2, 0])
     = steinberg.count [1, 0, 0] (adjchar.theta 3) [0, 2, 0] :=
   labels.countL_reduce [1, 0, 0] (adjchar.theta 3) [0, 2, 0] rfl
@@ -182,9 +184,9 @@ wrong column count and the two reads part, the unit pair against
 the one-column target the committed refusal.  The width `hca` is
 the frame: at the wide target with the tie held both reads are
 vacant and the display holds, the binder unrefusable there. -/
-example : ¬ (labels.countL [0, 0] [0, 0] (labels.reduce [0, 1])
+theorem pin62 : ¬ (labels.countL [0, 0] [0, 0] (labels.reduce [0, 1])
     = steinberg.count [0, 0] [0, 0] [0, 1]) := by decide +kernel
-example : labels.countL [1, 0] (adjchar.theta 2)
+theorem pin63 : labels.countL [1, 0] (adjchar.theta 2)
       (labels.reduce [1, 1, 0])
     = steinberg.count [1, 0] (adjchar.theta 2) [1, 1, 0] := by decide +kernel
 
@@ -194,39 +196,39 @@ the two tower steps among the pairs — the doubled first
 fundamental at the two-letter width and `θ` against `2θ` at the
 three — and the unit shape's own pair at the vacant width. -/
 
-example : blockcount.fusionCount [1, 0] [1, 0]
+theorem pin64 : blockcount.fusionCount [1, 0] [1, 0]
     (places.addS [1, 0] [1, 0]) = 1 := by decide +kernel
-example : blockcount.fusionCount [1, 0] [1, 0]
+theorem pin65 : blockcount.fusionCount [1, 0] [1, 0]
     (places.addS [1, 0] [1, 0]) = 1 :=
   cartan_eq [1, 0] [1, 0] (by decide +kernel)
 
-example : blockcount.fusionCount [2, 0] [4, 0]
+theorem pin66 : blockcount.fusionCount [2, 0] [4, 0]
     (places.addS [2, 0] [4, 0]) = 1 := by decide +kernel
-example : blockcount.fusionCount [2, 0] [4, 0]
+theorem pin67 : blockcount.fusionCount [2, 0] [4, 0]
     (places.addS [2, 0] [4, 0]) = 1 :=
   cartan_eq [2, 0] [4, 0] (by decide +kernel)
 
-example : blockcount.fusionCount [1, 1, 0] [2, 2, 0]
+theorem pin68 : blockcount.fusionCount [1, 1, 0] [2, 2, 0]
     (places.addS [1, 1, 0] [2, 2, 0]) = 1 :=
   cartan_eq [1, 1, 0] [2, 2, 0] (by decide +kernel)
 
-example : blockcount.fusionCount ([] : Shape) []
+theorem pin69 : blockcount.fusionCount ([] : Shape) []
     (places.addS [] []) = 1 :=
   cartan_eq [] [] rfl
 
-example : cartanRead [2, 0] [4, 0] := by decide +kernel
-example : cartanRead [2, 0] [4, 0] := cartan_all [2, 0] [4, 0] (by decide +kernel)
+theorem pin70 : cartanRead [2, 0] [4, 0] := by decide +kernel
+theorem pin71 : cartanRead [2, 0] [4, 0] := cartan_all [2, 0] [4, 0] (by decide +kernel)
 
-example : cartanRead [1, 1, 0] [2, 2, 0] := by decide +kernel
-example : cartanRead [1, 1, 0] [2, 2, 0] :=
+theorem pin72 : cartanRead [1, 1, 0] [2, 2, 0] := by decide +kernel
+theorem pin73 : cartanRead [1, 1, 0] [2, 2, 0] :=
   cartan_all [1, 1, 0] [2, 2, 0] (by decide +kernel)
 
-example : cartanRead [2, 0, 0] [0, 1, 0] :=
+theorem pin74 : cartanRead [2, 0, 0] [0, 1, 0] :=
   cartan_all [2, 0, 0] [0, 1, 0] (by decide +kernel)
 
 /-- The stated pair list at the column union is the head pair
 alone, the sharpening's cap read at the two-letter width. -/
-example : blockcount.pairsAt (blockcount.blockSpan [1, 0])
+theorem pin75 : blockcount.pairsAt (blockcount.blockSpan [1, 0])
       (blockcount.blockSpan [1, 0])
       (rowList (places.addS [1, 0] [1, 0]))
     = [blockcount.tensorH (blockcount.exhibit [1, 0])
@@ -238,29 +240,29 @@ the head pair's guard — the truncated column union misses the
 tensor's content — and both the fusion count and the label read
 sit off the unit. -/
 
-example : ¬ (([3] : Shape).length = ([1, 2] : Shape).length) := by decide +kernel
+theorem pin76 : ¬ (([3] : Shape).length = ([1, 2] : Shape).length) := by decide +kernel
 
-example : ¬ (blockcount.fusionCount [1, 2] [3]
+theorem pin77 : ¬ (blockcount.fusionCount [1, 2] [3]
     (places.addS [1, 2] [3]) = 1) := by decide +kernel
 
-example : ¬ cartanRead [1, 2] [3] := by decide +kernel
+theorem pin78 : ¬ cartanRead [1, 2] [3] := by decide +kernel
 
 /-! The second argument's width refusal: at a second shape one
 letter wider the bumped key is the wider shape's own and the two
 counts part, the first and target widths held beside it. -/
 
-example : ¬ (([0, 0, 1] : Shape).length = ([0, 0] : Shape).length) := by
+theorem pin79 : ¬ (([0, 0, 1] : Shape).length = ([0, 0] : Shape).length) := by
   decide +kernel
-example : countL [0, 0]
+theorem pin80 : countL [0, 0]
     (ground.bumpAt (([0, 0, 1] : Shape).length - 1) [0, 0, 1])
     [0, 0] = 1 := by decide +kernel
-example : countL [0, 0] [0, 0, 1] [0, 0] = 0 := by decide +kernel
+theorem pin81 : countL [0, 0] [0, 0, 1] [0, 0] = 0 := by decide +kernel
 
 /-! The dual pair's binder refusal: off the dual label the join
 misses the constant at the degrees' quotient. -/
 
-example : ¬ (reduce [2, 0] = dualL [1, 0]) := by decide +kernel
-example : ¬ (List.zipWith (fun x y => x + y) (rowList [1, 0])
+theorem pin82 : ¬ (reduce [2, 0] = dualL [1, 0]) := by decide +kernel
+theorem pin83 : ¬ (List.zipWith (fun x y => x + y) (rowList [1, 0])
       ((rowList [2, 0]).reverse)
     = List.replicate ([2, 0] : Shape).length
       ((degree [2, 0] + degree [1, 0])
@@ -269,17 +271,17 @@ example : ¬ (List.zipWith (fun x y => x + y) (rowList [1, 0])
 /-! `prop:repring`'s exchange at the label count, landed by the
 theorem route beside a decided instance at unequal factors. -/
 
-example : labels.countL [2, 1, 0] [1, 1, 0] [2, 2, 0]
+theorem pin84 : labels.countL [2, 1, 0] [1, 1, 0] [2, 2, 0]
     = labels.countL [1, 1, 0] [2, 1, 0] [2, 2, 0] := by decide +kernel
 
-example : labels.countL [2, 1, 0] [1, 1, 0] [2, 2, 0]
+theorem pin85 : labels.countL [2, 1, 0] [1, 1, 0] [2, 2, 0]
     = labels.countL [1, 1, 0] [2, 1, 0] [2, 2, 0] :=
   labels.countL_comm [2, 1, 0] [1, 1, 0] [2, 2, 0]
     (by decide +kernel) (by decide +kernel)
 
-example : ¬ (labels.countL [0, 0] [0, 0, 2] [0, 0]
+theorem pin86 : ¬ (labels.countL [0, 0] [0, 0, 2] [0, 0]
     = labels.countL [0, 0, 2] [0, 0] [0, 0]) := by decide +kernel
-example : ¬ (labels.countL [1, 0] [0, 0, 2] [1, 0]
+theorem pin87 : ¬ (labels.countL [1, 0] [0, 0, 2] [1, 0]
     = labels.countL [0, 0, 2] [1, 0] [1, 0]) := by decide +kernel
 
 /-! The class moves at the label data: the added full columns
@@ -290,35 +292,35 @@ dual label's own join. -/
 occupancies. -/
 private def sTri : Shape := [2, 1, 0]
 
-example : degree (addFulls 2 sTri)
+theorem pin88 : degree (addFulls 2 sTri)
     = degree sTri + 2 * sTri.length := by decide +kernel
-example : degree (addFulls 2 sTri)
+theorem pin89 : degree (addFulls 2 sTri)
     = degree sTri + 2 * sTri.length :=
   degree_addFulls 2 sTri
 
-example : rowList (addFulls 2 sTri)
+theorem pin90 : rowList (addFulls 2 sTri)
     = (rowList sTri).map (fun x => x + 2) := by decide +kernel
-example : rowList (addFulls 2 sTri)
+theorem pin91 : rowList (addFulls 2 sTri)
     = (rowList sTri).map (fun x => x + 2) :=
   rowList_addFulls 2 sTri
 
-example : degree sTri + degree (dualL sTri)
+theorem pin92 : degree sTri + degree (dualL sTri)
     = sTri.length * ground.sumNat sTri := by decide +kernel
-example : degree sTri + degree (dualL sTri)
+theorem pin93 : degree sTri + degree (dualL sTri)
     = sTri.length * ground.sumNat sTri :=
   degree_dualL_add sTri
 
-example : reduce (dualL sTri) = dualL sTri := reduce_dualL sTri
-example : dualL (addFulls 2 sTri) = dualL sTri :=
+theorem pin94 : reduce (dualL sTri) = dualL sTri := reduce_dualL sTri
+theorem pin95 : dualL (addFulls 2 sTri) = dualL sTri :=
   dualL_addFulls 2 sTri
 
 /-! The occupancy total at the added full columns reads the last
 key's own count only at an occupied width: the vacant shape
 carries no key and the added count is refused. -/
 
-example : ground.sumNat (addFulls 2 sTri)
+theorem pin96 : ground.sumNat (addFulls 2 sTri)
     = ground.sumNat sTri + 2 := by decide +kernel
-example : ¬ (ground.sumNat (addFulls 2 ([] : Shape))
+theorem pin97 : ¬ (ground.sumNat (addFulls 2 ([] : Shape))
     = ground.sumNat ([] : Shape) + 2) := by decide +kernel
 
 /-! The dual pair's own join in both orientations. -/
@@ -326,20 +328,20 @@ example : ¬ (ground.sumNat (addFulls 2 ([] : Shape))
 /-- The battery's join shape: three columns at a raised middle. -/
 private def sJoin : Shape := [1, 2, 0]
 
-example : List.zipWith (fun x y => x + y) (rowList sJoin)
+theorem pin98 : List.zipWith (fun x y => x + y) (rowList sJoin)
       ((rowList (dualL sJoin)).reverse)
     = List.replicate sJoin.length (ground.sumNat sJoin) := by
   decide +kernel
-example : List.zipWith (fun x y => x + y) (rowList sJoin)
+theorem pin99 : List.zipWith (fun x y => x + y) (rowList sJoin)
       ((rowList (dualL sJoin)).reverse)
     = List.replicate sJoin.length (ground.sumNat sJoin) :=
   join_dual_selfR sJoin
 
-example : List.zipWith (fun x y => x + y) (rowList (dualL sJoin))
+theorem pin100 : List.zipWith (fun x y => x + y) (rowList (dualL sJoin))
       ((rowList sJoin).reverse)
     = List.replicate sJoin.length (ground.sumNat sJoin) := by
   decide +kernel
-example : List.zipWith (fun x y => x + y) (rowList (dualL sJoin))
+theorem pin101 : List.zipWith (fun x y => x + y) (rowList (dualL sJoin))
       ((rowList sJoin).reverse)
     = List.replicate sJoin.length (ground.sumNat sJoin) :=
   join_dual_selfL sJoin
@@ -347,26 +349,26 @@ example : List.zipWith (fun x y => x + y) (rowList (dualL sJoin))
 /-! The label count along the class in the first argument at any
 column count, and the count at or above the target's degree. -/
 
-example : countL (addFulls 1 [1, 0]) [1, 0] [2, 0]
+theorem pin102 : countL (addFulls 1 [1, 0]) [1, 0] [2, 0]
     = countL [1, 0] [1, 0] [2, 0] := by decide +kernel
-example : countL (addFulls 1 [1, 1, 0]) [1, 1, 0] [1, 1, 1]
+theorem pin103 : countL (addFulls 1 [1, 1, 0]) [1, 1, 0] [1, 1, 1]
     = countL [1, 1, 0] [1, 1, 0] [1, 1, 1] :=
   countL_addFullsA 1 [1, 1, 0] [1, 1, 0] [1, 1, 1] rfl rfl
 
-example : countL (addFulls 1 [1, 0]) [0, 0] [0, 1]
+theorem pin104 : countL (addFulls 1 [1, 0]) [0, 0] [0, 1]
     = countL [1, 0] [0, 0] [0, 1] :=
   countL_addFullsA 1 [1, 0] [0, 0] [0, 1] rfl rfl
 
-example : countL (addFulls 0 [1, 0]) [1, 0] [0, 1]
+theorem pin105 : countL (addFulls 0 [1, 0]) [1, 0] [0, 1]
     = countL [1, 0] [1, 0] [0, 1] :=
   countL_addFullsA 0 [1, 0] [1, 0] [0, 1] rfl rfl
 
-example : countL [1, 0] [1, 0] [0, 0]
+theorem pin106 : countL [1, 0] [1, 0] [0, 0]
     = blockcount.fusionCount [1, 0] [1, 0]
       (addFulls ((degree [1, 0] + degree [1, 0]
         - degree ([0, 0] : Shape)) / ([1, 0] : Shape).length)
         [0, 0]) := by decide +kernel
-example : countL [1, 0] [1, 0] [0, 0]
+theorem pin107 : countL [1, 0] [1, 0] [0, 0]
     = blockcount.fusionCount [1, 0] [1, 0]
       (addFulls ((degree [1, 0] + degree [1, 0]
         - degree ([0, 0] : Shape)) / ([1, 0] : Shape).length)
@@ -384,12 +386,12 @@ private def sOne : Shape := [1, 0]
 /-- The collapse cells' complement shape. -/
 private def sComp : Shape := [0, 1]
 
-example : ground.famFold Nat.add 0
+theorem pin108 : ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount (addFulls 0 sOne) sOne
           (places.shapeOf mu)
         * blockcount.fusionCount (places.shapeOf mu) sComp
           (dualread.fulls sOne.length (2 + 0)))
-      (ground.dedupL ((blockcount.exhaust sOne.length
+      (ground.dedupF ((blockcount.exhaust sOne.length
         (blockcount.fusedAt (blockcount.blockSpan (addFulls 0 sOne))
           (blockcount.blockSpan sOne))).map
         blockcount.HVec.content))
@@ -397,12 +399,12 @@ example : ground.famFold Nat.add 0
       (addFulls (2 + 0 - ground.sumNat sComp) (dualL sComp)) := by
   decide +kernel
 
-example : ground.famFold Nat.add 0
+theorem pin109 : ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount (addFulls 0 sOne) sOne
           (places.shapeOf mu)
         * blockcount.fusionCount (places.shapeOf mu) sComp
           (dualread.fulls sOne.length (2 + 0)))
-      (ground.dedupL ((blockcount.exhaust sOne.length
+      (ground.dedupF ((blockcount.exhaust sOne.length
         (blockcount.fusedAt (blockcount.blockSpan (addFulls 0 sOne))
           (blockcount.blockSpan sOne))).map
         blockcount.HVec.content))
@@ -410,12 +412,12 @@ example : ground.famFold Nat.add 0
       (addFulls (2 + 0 - ground.sumNat sComp) (dualL sComp)) :=
   foldCollapseL sOne sOne sComp 0 2 rfl rfl (by decide +kernel)
 
-example : ground.famFold Nat.add 0
+theorem pin110 : ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount (addFulls 0 sComp) sComp
           (places.shapeOf mu)
         * blockcount.fusionCount (places.shapeOf mu) sComp
           (dualread.fulls sComp.length (3 + 0)))
-      (ground.dedupL ((blockcount.exhaust sComp.length
+      (ground.dedupF ((blockcount.exhaust sComp.length
         (blockcount.fusedAt (blockcount.blockSpan (addFulls 0 sComp))
           (blockcount.blockSpan sComp))).map
         blockcount.HVec.content))
@@ -424,12 +426,12 @@ example : ground.famFold Nat.add 0
   foldCollapseL sComp sComp sComp 0 3 rfl rfl
     (by decide +kernel)
 
-example : ground.famFold Nat.add 0
+theorem pin111 : ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount sOne sComp
           (places.shapeOf mu)
         * blockcount.fusionCount (addFulls 0 sOne)
           (places.shapeOf mu) (dualread.fulls sOne.length (2 + 0)))
-      (ground.dedupL ((blockcount.exhaust sOne.length
+      (ground.dedupF ((blockcount.exhaust sOne.length
         (blockcount.fusedAt (blockcount.blockSpan sOne)
           (blockcount.blockSpan sComp))).map
         blockcount.HVec.content))
@@ -437,12 +439,12 @@ example : ground.famFold Nat.add 0
       (addFulls (2 - ground.sumNat sOne) (dualL sOne)) := by
   decide +kernel
 
-example : ground.famFold Nat.add 0
+theorem pin112 : ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount sOne sComp
           (places.shapeOf mu)
         * blockcount.fusionCount (addFulls 0 sOne)
           (places.shapeOf mu) (dualread.fulls sOne.length (2 + 0)))
-      (ground.dedupL ((blockcount.exhaust sOne.length
+      (ground.dedupF ((blockcount.exhaust sOne.length
         (blockcount.fusedAt (blockcount.blockSpan sOne)
           (blockcount.blockSpan sComp))).map
         blockcount.HVec.content))
@@ -461,23 +463,23 @@ private def sUnit : Shape := [0, 0]
 past the ambient count. -/
 private def sOver : Shape := [3, 0]
 
-example : ground.famFold Nat.add 0
+theorem pin113 : ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount sUnit sUnit
           (places.shapeOf mu)
         * blockcount.fusionCount (addFulls 1 sTwo)
           (places.shapeOf mu) (dualread.fulls sTwo.length (1 + 1)))
-      (ground.dedupL ((blockcount.exhaust sTwo.length
+      (ground.dedupF ((blockcount.exhaust sTwo.length
         (blockcount.fusedAt (blockcount.blockSpan sUnit)
           (blockcount.blockSpan sUnit))).map
         blockcount.HVec.content))
     = 0 := by decide +kernel
 
-example : ground.famFold Nat.add 0
+theorem pin114 : ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount sUnit sUnit
           (places.shapeOf mu)
         * blockcount.fusionCount (addFulls 1 sTwo)
           (places.shapeOf mu) (dualread.fulls sTwo.length (1 + 1)))
-      (ground.dedupL ((blockcount.exhaust sTwo.length
+      (ground.dedupF ((blockcount.exhaust sTwo.length
         (blockcount.fusedAt (blockcount.blockSpan sUnit)
           (blockcount.blockSpan sUnit))).map
         blockcount.HVec.content))
@@ -493,12 +495,12 @@ overshooting key sits off the pool and both sides read the count's
 unit, the passing records beneath; and the vacant width reads the
 collapse whole, the theorem's own instance. -/
 
-example : ¬ (ground.famFold Nat.add 0
+theorem pin115 : ¬ (ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount (addFulls 0 sOne) sOne
           (places.shapeOf mu)
         * blockcount.fusionCount (places.shapeOf mu) sTwo
           (dualread.fulls sOne.length (1 + 0)))
-      (ground.dedupL ((blockcount.exhaust sOne.length
+      (ground.dedupF ((blockcount.exhaust sOne.length
         (blockcount.fusedAt (blockcount.blockSpan (addFulls 0 sOne))
           (blockcount.blockSpan sOne))).map
         blockcount.HVec.content))
@@ -506,13 +508,13 @@ example : ¬ (ground.famFold Nat.add 0
         (addFulls (1 + 0 - ground.sumNat sTwo) (dualL sTwo))) := by
   decide +kernel
 
-example : ¬ (ground.famFold Nat.add 0
+theorem pin116 : ¬ (ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount sOne sOne
           (places.shapeOf mu)
         * blockcount.fusionCount (addFulls 0 sTwo)
           (places.shapeOf mu)
           (dualread.fulls sTwo.length (1 + 0)))
-      (ground.dedupL ((blockcount.exhaust sTwo.length
+      (ground.dedupF ((blockcount.exhaust sTwo.length
         (blockcount.fusedAt (blockcount.blockSpan sOne)
           (blockcount.blockSpan sOne))).map
         blockcount.HVec.content))
@@ -520,15 +522,15 @@ example : ¬ (ground.famFold Nat.add 0
         (addFulls (1 - ground.sumNat sTwo) (dualL sTwo))) := by
   decide +kernel
 
-example : ground.sumNat sOver > 2 + 0 := by decide +kernel
-example : degree sOne + degree sUnit + degree sOver
+theorem pin117 : ground.sumNat sOver > 2 + 0 := by decide +kernel
+theorem pin118 : degree sOne + degree sUnit + degree sOver
     = sOne.length * 2 := by decide +kernel
-example : ground.famFold Nat.add 0
+theorem pin119 : ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount (addFulls 0 sOne) sUnit
           (places.shapeOf mu)
         * blockcount.fusionCount (places.shapeOf mu) sOver
           (dualread.fulls sOne.length (2 + 0)))
-      (ground.dedupL ((blockcount.exhaust sOne.length
+      (ground.dedupF ((blockcount.exhaust sOne.length
         (blockcount.fusedAt
           (blockcount.blockSpan (addFulls 0 sOne))
           (blockcount.blockSpan sUnit))).map
@@ -537,13 +539,13 @@ example : ground.famFold Nat.add 0
       (addFulls (2 + 0 - ground.sumNat sOver) (dualL sOver)) := by
   decide +kernel
 
-example : ground.sumNat sTwo > 1 := by decide +kernel
-example : ground.famFold Nat.add 0
+theorem pin120 : ground.sumNat sTwo > 1 := by decide +kernel
+theorem pin121 : ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount sUnit sUnit
           (places.shapeOf mu)
         * blockcount.fusionCount (addFulls 1 sTwo)
           (places.shapeOf mu) (dualread.fulls sTwo.length (1 + 1)))
-      (ground.dedupL ((blockcount.exhaust sTwo.length
+      (ground.dedupF ((blockcount.exhaust sTwo.length
         (blockcount.fusedAt (blockcount.blockSpan sUnit)
           (blockcount.blockSpan sUnit))).map
         blockcount.HVec.content))
@@ -551,12 +553,12 @@ example : ground.famFold Nat.add 0
       (addFulls (1 - ground.sumNat sTwo) (dualL sTwo)) := by
   decide +kernel
 
-example : ground.famFold Nat.add 0
+theorem pin122 : ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount (addFulls 0 ([] : Shape)) []
           (places.shapeOf mu)
         * blockcount.fusionCount (places.shapeOf mu) []
           (dualread.fulls ([] : Shape).length (0 + 0)))
-      (ground.dedupL ((blockcount.exhaust ([] : Shape).length
+      (ground.dedupF ((blockcount.exhaust ([] : Shape).length
         (blockcount.fusedAt
           (blockcount.blockSpan (addFulls 0 ([] : Shape)))
           (blockcount.blockSpan []))).map
@@ -566,13 +568,13 @@ example : ground.famFold Nat.add 0
         (dualL [])) :=
   foldCollapseL [] [] [] 0 0 rfl rfl (by decide +kernel)
 
-example : ground.famFold Nat.add 0
+theorem pin123 : ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount ([] : Shape) []
           (places.shapeOf mu)
         * blockcount.fusionCount (addFulls 0 ([] : Shape))
           (places.shapeOf mu)
           (dualread.fulls ([] : Shape).length (0 + 0)))
-      (ground.dedupL ((blockcount.exhaust ([] : Shape).length
+      (ground.dedupF ((blockcount.exhaust ([] : Shape).length
         (blockcount.fusedAt (blockcount.blockSpan ([] : Shape))
           (blockcount.blockSpan []))).map
         blockcount.HVec.content))
@@ -584,10 +586,10 @@ example : ground.famFold Nat.add 0
 /-! The class move in the target at any column count, the label
 count's own read. -/
 
-example : countL sOne sOne sComp = 1 := by decide +kernel
-example : countL sOne sOne (addFulls 2 sComp)
+theorem pin124 : countL sOne sOne sComp = 1 := by decide +kernel
+theorem pin125 : countL sOne sOne (addFulls 2 sComp)
     = countL sOne sOne sComp := by decide +kernel
-example : countL sOne sOne (addFulls 2 sComp)
+theorem pin126 : countL sOne sOne (addFulls 2 sComp)
     = countL sOne sOne sComp :=
   countL_addFullsC 2 sOne sOne sComp rfl rfl
 
@@ -598,12 +600,12 @@ columns enter the first shape. -/
 below it at the width two. -/
 private def sHi : Shape := [0, 2]
 
-example : countL sOne sOne sHi = 1 := by decide +kernel
-example : countL sOne sOne sHi
+theorem pin127 : countL sOne sOne sHi = 1 := by decide +kernel
+theorem pin128 : countL sOne sOne sHi
     = blockcount.fusionCount
       (addFulls ((degree sHi - (degree sOne + degree sOne))
         / sOne.length) sOne) sOne sHi := by decide +kernel
-example : countL sOne sOne sHi
+theorem pin129 : countL sOne sOne sHi
     = blockcount.fusionCount
       (addFulls ((degree sHi - (degree sOne + degree sOne))
         / sOne.length) sOne) sOne sHi :=
@@ -615,16 +617,16 @@ deepest key, and the isolating contrast at the refused strict
 excess: at a target whose deepest key reaches the column count the
 lifted count is occupied. -/
 
-example : ground.getAt 0 (rowList sTwo) (sOne.length - 1) < 1 := by
+theorem pin130 : ground.getAt 0 (rowList sTwo) (sOne.length - 1) < 1 := by
   decide +kernel
-example : blockcount.fusionCount (addFulls 1 sOne) sOne sTwo = 0 := by
+theorem pin131 : blockcount.fusionCount (addFulls 1 sOne) sOne sTwo = 0 := by
   decide +kernel
-example : blockcount.fusionCount (addFulls 1 sOne) sOne sTwo = 0 :=
+theorem pin132 : blockcount.fusionCount (addFulls 1 sOne) sOne sTwo = 0 :=
   fusionCount_colOff 1 sOne sOne sTwo rfl rfl (by decide +kernel)
     (by decide +kernel)
-example : ¬ (ground.getAt 0 (rowList sHi) (sOne.length - 1) < 1) := by
+theorem pin133 : ¬ (ground.getAt 0 (rowList sHi) (sOne.length - 1) < 1) := by
   decide +kernel
-example : 0 < blockcount.fusionCount (addFulls 1 sOne) sOne sHi := by
+theorem pin134 : 0 < blockcount.fusionCount (addFulls 1 sOne) sOne sHi := by
   decide +kernel
 
 /-! The letter count's positivity refused at the vacant width: the
@@ -633,27 +635,27 @@ vacant key, and both the bumped and the lifted counts read one
 against the vacancy — the two widths hold, so the binder parts
 alone. -/
 
-example : ¬ 0 < ([] : Shape).length := by decide +kernel
-example : ground.getAt 0 (rowList ([] : Shape))
+theorem pin135 : ¬ 0 < ([] : Shape).length := by decide +kernel
+theorem pin136 : ground.getAt 0 (rowList ([] : Shape))
     (([] : Shape).length - 1) = 0 := by decide +kernel
-example : ¬ (blockcount.fusionCount
+theorem pin137 : ¬ (blockcount.fusionCount
     (ground.bumpAt (([] : Shape).length - 1) []) [] [] = 0) := by
   decide +kernel
-example : ¬ (blockcount.fusionCount (addFulls 1 ([] : Shape)) [] []
+theorem pin138 : ¬ (blockcount.fusionCount (addFulls 1 ([] : Shape)) [] []
     = 0) := by decide +kernel
 
 /-! The second shape's width refused at the joint lift and at the
 lift below the target: at a second shape one letter wider the two
 counts part. -/
 
-example : ¬ (([2, 0, 0] : Shape).length = ([0, 0] : Shape).length) := by
+theorem pin139 : ¬ (([2, 0, 0] : Shape).length = ([0, 0] : Shape).length) := by
   decide +kernel
-example : ¬ (blockcount.fusionCount (addFulls 1 ([0, 0] : Shape))
+theorem pin140 : ¬ (blockcount.fusionCount (addFulls 1 ([0, 0] : Shape))
       [2, 0, 0] (addFulls 1 sOne)
     = blockcount.fusionCount [0, 0] [2, 0, 0] sOne) := by decide +kernel
-example : ¬ (([0, 0, 0] : Shape).length = ([0, 0] : Shape).length) := by
+theorem pin141 : ¬ (([0, 0, 0] : Shape).length = ([0, 0] : Shape).length) := by
   decide +kernel
-example : ¬ (countL [0, 0] [0, 0, 0] sComp
+theorem pin142 : ¬ (countL [0, 0] [0, 0, 0] sComp
     = blockcount.fusionCount
       (addFulls ((degree sComp - (degree ([0, 0] : Shape)
         + degree ([0, 0, 0] : Shape))) / ([0, 0] : Shape).length)
@@ -662,23 +664,23 @@ example : ¬ (countL [0, 0] [0, 0, 0] sComp
 /-! The carrier bridge at the two enumerations, the degree its own
 weight. -/
 
-example : ground.famFold Nat.add 0
+theorem pin143 : ground.famFold Nat.add 0
       (fun e => blockcount.fusionCount sOne sOne e * degree e)
       (allShapes sOne.length (degree sOne + degree sOne))
     = ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount sOne sOne (places.shapeOf mu)
         * degree (places.shapeOf mu))
-      (ground.dedupL ((blockcount.exhaust sOne.length
+      (ground.dedupF ((blockcount.exhaust sOne.length
         (blockcount.fusedAt (blockcount.blockSpan sOne)
           (blockcount.blockSpan sOne))).map
         blockcount.HVec.content)) := by decide +kernel
-example : ground.famFold Nat.add 0
+theorem pin144 : ground.famFold Nat.add 0
       (fun e => blockcount.fusionCount sOne sOne e * degree e)
       (allShapes sOne.length (degree sOne + degree sOne))
     = ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount sOne sOne (places.shapeOf mu)
         * degree (places.shapeOf mu))
-      (ground.dedupL ((blockcount.exhaust sOne.length
+      (ground.dedupF ((blockcount.exhaust sOne.length
         (blockcount.fusedAt (blockcount.blockSpan sOne)
           (blockcount.blockSpan sOne))).map
         blockcount.HVec.content)) :=
@@ -687,16 +689,16 @@ example : ground.famFold Nat.add 0
 /-! The bridge's letter width refused: at a second shape one
 letter wider the enumeration's fold and the pool's part. -/
 
-example : ¬ (([1, 0, 0] : Shape).length = sOne.length) := by
+theorem pin145 : ¬ (([1, 0, 0] : Shape).length = sOne.length) := by
   decide +kernel
-example : ¬ (ground.famFold Nat.add 0
+theorem pin146 : ¬ (ground.famFold Nat.add 0
       (fun e => blockcount.fusionCount sOne [1, 0, 0] e * degree e)
       (allShapes sOne.length (degree sOne + degree ([1, 0, 0] : Shape)))
     = ground.famFold Nat.add 0
       (fun mu => blockcount.fusionCount sOne [1, 0, 0]
           (places.shapeOf mu)
         * degree (places.shapeOf mu))
-      (ground.dedupL ((blockcount.exhaust sOne.length
+      (ground.dedupF ((blockcount.exhaust sOne.length
         (blockcount.fusedAt (blockcount.blockSpan sOne)
           (blockcount.blockSpan [1, 0, 0]))).map
         blockcount.HVec.content))) := by decide +kernel
@@ -711,18 +713,18 @@ sums still read one value. -/
 degree one full column below it at the width two. -/
 private def dLift : Shape := [1, 2]
 
-example : ground.famFold Nat.add 0
+theorem pin147 : ground.famFold Nat.add 0
       (fun e => steinberg.count sOne sOne e * countL e sOne sOne)
       (allShapes sOne.length (degree sOne + degree sOne)) = 2 := by
   decide +kernel
-example : ground.famFold Nat.add 0
+theorem pin148 : ground.famFold Nat.add 0
       (fun e => steinberg.count sOne sOne e * countL e sOne sOne)
       (allShapes sOne.length (degree sOne + degree sOne))
     = ground.famFold Nat.add 0
       (fun f => steinberg.count sOne sOne f * countL sOne f sOne)
       (allShapes sOne.length (degree sOne + degree sOne)) := by
   decide +kernel
-example : ground.famFold Nat.add 0
+theorem pin149 : ground.famFold Nat.add 0
       (fun e => steinberg.count sOne sOne e * countL e sOne sOne)
       (allShapes sOne.length (degree sOne + degree sOne))
     = ground.famFold Nat.add 0
@@ -730,18 +732,18 @@ example : ground.famFold Nat.add 0
       (allShapes sOne.length (degree sOne + degree sOne)) :=
   countL_assoc sOne sOne sOne sOne rfl rfl rfl
 
-example : ground.famFold Nat.add 0
+theorem pin150 : ground.famFold Nat.add 0
       (fun e => steinberg.count sOne sOne e * countL e sOne dLift)
       (allShapes sOne.length (degree sOne + degree sOne)) = 2 := by
   decide +kernel
-example : ground.famFold Nat.add 0
+theorem pin151 : ground.famFold Nat.add 0
       (fun e => steinberg.count sOne sOne e * countL e sOne dLift)
       (allShapes sOne.length (degree sOne + degree sOne))
     = ground.famFold Nat.add 0
       (fun f => steinberg.count sOne sOne f * countL sOne f dLift)
       (allShapes sOne.length (degree sOne + degree sOne)) := by
   decide +kernel
-example : ground.famFold Nat.add 0
+theorem pin152 : ground.famFold Nat.add 0
       (fun e => steinberg.count sOne sOne e * countL e sOne dLift)
       (allShapes sOne.length (degree sOne + degree sOne))
     = ground.famFold Nat.add 0
@@ -749,20 +751,77 @@ example : ground.famFold Nat.add 0
       (allShapes sOne.length (degree sOne + degree sOne)) :=
   countL_assoc sOne sOne sOne dLift rfl rfl rfl
 
-example : ¬ (degree sOne + degree sOne + degree sOne - degree sComp)
+theorem pin153 : ¬ (degree sOne + degree sOne + degree sOne - degree sComp)
     % sOne.length = 0 := by decide +kernel
-example : ground.famFold Nat.add 0
+theorem pin154 : ground.famFold Nat.add 0
       (fun e => steinberg.count sOne sOne e * countL e sOne sComp)
       (allShapes sOne.length (degree sOne + degree sOne)) = 0 := by
   decide +kernel
-example : ground.famFold Nat.add 0
+theorem pin155 : ground.famFold Nat.add 0
       (fun f => steinberg.count sOne sOne f * countL sOne f sComp)
       (allShapes sOne.length (degree sOne + degree sOne)) = 0 := by
   decide +kernel
-example : ground.famFold Nat.add 0
+theorem pin156 : ground.famFold Nat.add 0
       (fun e => steinberg.count sOne sOne e * countL e sOne sComp)
       (allShapes sOne.length (degree sOne + degree sOne))
     = ground.famFold Nat.add 0
       (fun f => steinberg.count sOne sOne f * countL sOne f sComp)
       (allShapes sOne.length (degree sOne + degree sOne)) :=
   countL_assoc sOne sOne sOne sComp rfl rfl rfl
+
+/-! The weighted row transport at the dimension, with the
+class-invariance refusal at the degree. At the two fundamentals'
+product, the full-column channel reduces to the unit label, so its
+dimension is fixed and its degree changes. -/
+
+theorem pin157 : ground.famFold Nat.add 0
+    (fun v => ground.optVal (fun e => countL [1, 0] [1, 0] e * weyldim.dimOf e)
+      (emit [1, 0] [1, 0] v)) (allShapes 2 2)
+    = ground.famFold Nat.add 0
+      (fun e => steinberg.count [1, 0] [1, 0] e * weyldim.dimOf e) (allShapes 2 2) :=
+  rowFold [1, 0] [1, 0] weyldim.dimOf (fun c _ => (dimOf_class c).symm)
+theorem pin158 : ground.famFold Nat.add 0
+    (fun v => ground.optVal (fun e => countL [1, 0] [1, 0] e * weyldim.dimOf e)
+      (emit [1, 0] [1, 0] v)) (allShapes 2 2)
+    = ground.famFold Nat.add 0
+      (fun e => steinberg.count [1, 0] [1, 0] e * weyldim.dimOf e) (allShapes 2 2) := by
+  decide +kernel
+theorem pin159 : ¬ (ground.famFold Nat.add 0
+    (fun v => ground.optVal (fun e => countL [1, 0] [1, 0] e * degree e)
+      (emit [1, 0] [1, 0] v)) (allShapes 2 2)
+    = ground.famFold Nat.add 0
+      (fun e => steinberg.count [1, 0] [1, 0] e * degree e) (allShapes 2 2)) := by
+  decide +kernel
+theorem pin160 : ¬ degree (reduce [0, 1]) = degree [0, 1] := by decide +kernel
+
+/-! The duality reads at an asymmetric reduced shape and at a
+full-column representative, with the involution's actual labels
+and the computed invariants beside the general theorems. -/
+
+theorem pin161 : c2hat.dfQ (dualL [2, 1, 0, 0]) = c2hat.dfQ [2, 1, 0, 0] :=
+  casDual_all [2, 1, 0, 0]
+theorem pin162 : weyldim.dimOf (dualL [2, 1, 0, 0]) = weyldim.dimOf [2, 1, 0, 0] :=
+  dimDual_all [2, 1, 0, 0]
+theorem pin163 : dualL [2, 1, 0, 0] = [0, 1, 2, 0]
+    ∧ c2hat.dfQ [0, 1, 2, 0] = c2hat.dfQ [2, 1, 0, 0]
+    ∧ weyldim.dimOf [0, 1, 2, 0] = weyldim.dimOf [2, 1, 0, 0] := by decide +kernel
+theorem pin164 : c2hat.dfQ (dualL [2, 1, 0, 3]) = c2hat.dfQ [2, 1, 0, 3] :=
+  casDual_all [2, 1, 0, 3]
+theorem pin165 : weyldim.dimOf (dualL [2, 1, 0, 3]) = weyldim.dimOf [2, 1, 0, 3] :=
+  dimDual_all [2, 1, 0, 3]
+theorem pin166 : dualL [2, 1, 0, 3] = [0, 1, 2, 0]
+    ∧ c2hat.dfQ [0, 1, 2, 0] = c2hat.dfQ [2, 1, 0, 3]
+    ∧ weyldim.dimOf [0, 1, 2, 0] = weyldim.dimOf [2, 1, 0, 3] := by decide +kernel
+theorem pin167 : c2hat.dfQ (dualL []) = c2hat.dfQ [] := casDual_all []
+theorem pin168 : weyldim.dimOf (dualL []) = weyldim.dimOf [] := dimDual_all []
+
+/-! The row's uniqueness at reduced targets and arbitrary input
+representatives, at zero width as well. -/
+
+theorem pin169 (d : Nat) (a b c : places.Shape) : countOf c (rowL d a b) ≤ 1 :=
+  rowL_count_le d a b c
+theorem pin170 : rowL 2 [1, 0] [1, 0] = [[2, 0], [0, 0]] := by decide +kernel
+
+theorem pin171 (n : Nat) : reduce (unitL n) = unitL n := reduce_unit n
+
+end labels

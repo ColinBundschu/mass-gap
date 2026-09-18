@@ -30,6 +30,8 @@ from the pencil's own while the cleared pair reads one value, the
 theorem's route beside the decided read.
 -/
 
+namespace trigpencil
+
 open ground elim
 
 /-! The committed fiber pencil: `lem:deckfactor`'s assembled symbol
@@ -42,26 +44,26 @@ private def fibS : split.PMat := [[symA, zP], [zP, symA]]
 /-! The diagonal entry is the deck-symmetric assembly at half-degree
 one, `lem:deckfactor`'s coherence its own read. -/
 
-example : deckfactor.symbolRead symA 1 := by decide +kernel
-example : deckfactor.deckSymRead symA 1 := by decide +kernel
+theorem pin1 : deckfactor.symbolRead symA 1 := by decide +kernel
+theorem pin2 : deckfactor.deckSymRead symA 1 := by decide +kernel
 
 /-! The theorem's three reads at the pencil. -/
 
-example : trigpencil.symbolRead fibS 4 := by decide +kernel
-example : trigpencil.gradeBoundRead fibS [2, 2] := by decide +kernel
-example : trigpencil.deckSymmetryRead fibS 2 2 := by decide +kernel
+theorem pin3 : trigpencil.symbolRead fibS 4 := by decide +kernel
+theorem pin4 : trigpencil.gradeBoundRead fibS [2, 2] := by decide +kernel
+theorem pin5 : trigpencil.deckSymmetryRead fibS 2 2 := by decide +kernel
 
 /-! The refusals. -/
 
-example : ¬ trigpencil.symbolRead fibS 3 := by decide +kernel
-example : ¬ trigpencil.gradeBoundRead fibS [1, 2] := by decide +kernel
-example : ¬ trigpencil.deckSymmetryRead [[symA, zP], [[], symA]] 2 2 := by
+theorem pin6 : ¬ trigpencil.symbolRead fibS 3 := by decide +kernel
+theorem pin7 : ¬ trigpencil.gradeBoundRead fibS [1, 2] := by decide +kernel
+theorem pin8 : ¬ trigpencil.deckSymmetryRead [[symA, zP], [[], symA]] 2 2 := by
   decide +kernel
 
 /-! The refused pencil's own determinant stays deck-symmetric: the
 symmetry the read catches is the pencil's, not the symbol's. -/
 
-example : deckfactor.deckSymRead (split.pminor [[symA, zP], [[], symA]]) 2 := by
+theorem pin9 : deckfactor.deckSymRead (split.pminor [[symA, zP], [[], symA]]) 2 := by
   decide +kernel
 
 /-! The two-variable symbol at the committed pencil: the level
@@ -74,20 +76,25 @@ at the sum's unit. -/
 private def pId : split.PMat := [[poly.one, []], [[], poly.one]]
 private def Z2 : split.PPMat := split.ppzMat fibS pId
 
-example : trigpencil.symbolAt Z2 2 4 := by decide +kernel
-example : ¬ trigpencil.symbolAt Z2 1 4 := by decide +kernel
-example : ¬ trigpencil.symbolAt Z2 2 3 := by decide +kernel
-example : ¬ trigpencil.symbolAt
+theorem pin10 : trigpencil.symbolAt Z2 2 4 := by decide +kernel
+theorem pin11 : ¬ trigpencil.symbolAt Z2 1 4 := by decide +kernel
+theorem pin12 : ¬ trigpencil.symbolAt Z2 2 3 := by decide +kernel
+theorem pin13 : ¬ trigpencil.symbolAt
     (split.ppzMat fibS [[[], []], [[], []]]) 2 4 := by decide +kernel
 
 /-! The symbol's boundary coefficients read the one-variable
 minors: the constant reads the chord pencil's own determinant at
-the even order, and the leading reads the gram's. -/
+the even order, and the leading reads the gram's, decided and
+through `split.ppminor_ppzMat_top`. -/
 
-example : poly.oneValue (ground.getAt [] (split.ppminor Z2) 0)
+theorem pin14 : poly.oneValue (ground.getAt [] (split.ppminor Z2) 0)
     (split.pminor fibS) := by decide +kernel
-example : poly.oneValue (ground.getAt [] (split.ppminor Z2) 2)
+theorem pin15 : poly.oneValue (ground.getAt [] (split.ppminor Z2) 2)
     (split.pminor pId) := by decide +kernel
+theorem pin16 : poly.oneValue (ground.getAt [] (split.ppminor Z2) 2)
+    (split.pminor pId) :=
+  split.ppminor_ppzMat_top fibS pId 2 rfl (by decide +kernel) rfl
+    (by decide +kernel)
 
 /-! The evaluation coherence at a stated level point: the outer
 evaluation of the symbol reads one value with the minor of the
@@ -97,9 +104,9 @@ private def lnPt : BPair := BPair.ofNat 3
 private def evZ : split.PMat :=
   Z2.map (fun r => r.map (fun P => poly.pevalC P [lnPt] 2 1))
 
-example : poly.oneValue (poly.pevalC (split.ppminor Z2) [lnPt] 2 2)
+theorem pin17 : poly.oneValue (poly.pevalC (split.ppminor Z2) [lnPt] 2 2)
     (split.pminor evZ) := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin18 : ¬ poly.oneValue
     (poly.pevalC (split.ppminor Z2) [BPair.ofNat 5] 2 2)
     (split.pminor evZ) := by decide +kernel
 
@@ -119,25 +126,25 @@ private def zOne : poly.Poly :=
   [BPair.ofPos Pos.one, BPair.ofPos Pos.one]
 private def cancS : split.PMat := [[zP, zOne], [zOne, zP]]
 
-example : trigpencil.symbolRead cancS 1 := by decide +kernel
-example : ¬ trigpencil.symbolRead cancS 2 := by decide +kernel
+theorem pin19 : trigpencil.symbolRead cancS 1 := by decide +kernel
+theorem pin20 : ¬ trigpencil.symbolRead cancS 2 := by decide +kernel
 
-example : trigpencil.symbolRead
+theorem pin21 : trigpencil.symbolRead
     [[zP, zOne, zP], [zOne, zP, zOne]] 2 := by decide +kernel
-example : ¬ trigpencil.symbolRead
+theorem pin22 : ¬ trigpencil.symbolRead
     [[zP, zOne, zP], [zOne, zP, zOne]] 1 := by decide +kernel
 
 private def wE1 : poly.PPoly := [[], poly.one]
 private def wE2 : poly.PPoly := [poly.one, poly.one]
 
-example : trigpencil.symbolAt [[wE1, wE2], [wE2, wE1]] 1 0 := by
+theorem pin23 : trigpencil.symbolAt [[wE1, wE2], [wE2, wE1]] 1 0 := by
   decide +kernel
-example : ¬ trigpencil.symbolAt [[wE1, wE2], [wE2, wE1]] 2 0 := by
+theorem pin24 : ¬ trigpencil.symbolAt [[wE1, wE2], [wE2, wE1]] 2 0 := by
   decide +kernel
 
-example : trigpencil.gradeBoundRead
+theorem pin25 : trigpencil.gradeBoundRead
     [[[BPair.ofNat 2, BPair.unit, BPair.unit]]] [0] := by decide +kernel
-example : ¬ trigpencil.gradeBoundRead
+theorem pin26 : ¬ trigpencil.gradeBoundRead
     [[[BPair.unit, BPair.ofNat 2]]] [0] := by decide +kernel
 
 /-! The symbol against the gram's determinant at a committed level
@@ -151,7 +158,7 @@ private def gM : Mat := [[BPair.ofNat 1, BPair.unit], [BPair.unit, BPair.ofNat 2
 private def tM : SqMat 2 :=
   ⟨[[BPair.ofNat 2, BPair.ofNat 1], [BPair.unit, BPair.ofNat 1]], by decide +kernel⟩
 
-example : ¬ poly.oneValue (split.pminor (split.congrZ tM.val (split.zMat hM gM)))
+theorem pin27 : ¬ poly.oneValue (split.pminor (split.congrZ tM.val (split.zMat hM gM)))
       (split.charPoly hM gM)
     ∧ (detL tM.val).oneValue (BPair.ofNat 2)
     ∧ poly.oneValue
@@ -159,7 +166,7 @@ example : ¬ poly.oneValue (split.pminor (split.congrZ tM.val (split.zMat hM gM)
         (split.pminor (split.congrZ tM.val (split.zMat hM gM))))
       (poly.mul [detL (matMul (transposeM tM.val) (matMul gM tM.val))]
         (trigpencil.symbolOf hM gM).1) := by decide +kernel
-example : poly.oneValue
+theorem pin28 : poly.oneValue
       (poly.mul [(trigpencil.symbolOf hM gM).2]
         (split.pminor (split.congrZ tM.val (split.zMat hM gM))))
       (poly.mul [detL (matMul (transposeM tM.val) (matMul gM tM.val))]
@@ -172,18 +179,19 @@ through the theorem, and the congruence read decided at the
 descent's members; the two shape binders are the pivot walks'
 frames, refused at their owners. -/
 
-example : poly.oneValue (trigpencil.symbolD hM gM).1
+theorem pin29 : poly.oneValue (trigpencil.symbolD hM gM).1
       (trigpencil.symbolOf hM gM).1
     ∧ (trigpencil.symbolD hM gM).2.oneValue
       (trigpencil.symbolOf hM gM).2 := by decide +kernel
-example : poly.oneValue (trigpencil.symbolD hM gM).1
+theorem pin30 : poly.oneValue (trigpencil.symbolD hM gM).1
       (trigpencil.symbolOf hM gM).1
     ∧ (trigpencil.symbolD hM gM).2.oneValue
       (trigpencil.symbolOf hM gM).2 :=
   trigpencil.symbolD_eq hM gM (by decide +kernel) (by decide +kernel)
-example : poly.oneValue
+theorem pin31 : poly.oneValue
       (poly.mul [(trigpencil.symbolD hM gM).2]
         (split.pminor (split.congrZ tM.val (split.zMat hM gM))))
       (poly.mul [detL (matMul (transposeM tM.val) (matMul gM tM.val))]
         (trigpencil.symbolD hM gM).1) := by decide +kernel
 
+end trigpencil

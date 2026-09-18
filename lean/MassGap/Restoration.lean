@@ -1,5 +1,4 @@
 import MassGap.Fiberdec
-import MassGap.Form
 /-!
 `thm:restoration`, first tier — the signed coordinate
 permutations' action at the torus family (`con:lattice`'s field).
@@ -111,7 +110,7 @@ map carries a composite shift to the moved key's composite. -/
 def bdKey (d L : Nat) (p' : Nat → Nat) (f : Nat → Bool)
     (ks : List Nat) : List Nat :=
   (List.range d).map (fun e' =>
-    if f (p' e') then (L - ground.getAt 0 ks (p' e')) % L
+    if f (p' e') then ground.getAt 0 (fiberdec.invKey L ks) (p' e')
     else ground.getAt 0 ks (p' e'))
 
 /-- The moved key's conjugation tie: the member's link map carries
@@ -124,7 +123,7 @@ def keyMoveRead (R : Region) (d L : Nat) (g : Nat → Nat)
     decide (fiberdec.intertwineRead R g (fiberdec.compShift d L ks)
       (fiberdec.compShift d L (bdKey d L p' f ks))))) = true
 
-instance (R : Region) (d L : Nat) (g p' : Nat → Nat)
+instance instRestoration1 (R : Region) (d L : Nat) (g p' : Nat → Nat)
     (f : Nat → Bool) : Decidable (keyMoveRead R d L g p' f) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -136,7 +135,7 @@ def transformMoved (d L m : Nat) (w w' : List (List Nat) → BPair)
   ((argBox d L m).all (fun ks =>
     decide (BPair.oneValue (w' (ks.map (bdKey d L p' f))) (w ks)))) = true
 
-instance (d L m : Nat) (w w' : List (List Nat) → BPair)
+instance instRestoration2 (d L m : Nat) (w w' : List (List Nat) → BPair)
     (p' : Nat → Nat) (f : Nat → Bool) :
     Decidable (transformMoved d L m w w' p' f) :=
   inferInstanceAs (Decidable (_ = _))
@@ -147,22 +146,10 @@ def transformFixed (d L m : Nat) (w : List (List Nat) → BPair)
     (p' : Nat → Nat) (f : Nat → Bool) : Prop :=
   transformMoved d L m w w p' f
 
-instance (d L m : Nat) (w : List (List Nat) → BPair)
+instance instRestoration3 (d L m : Nat) (w : List (List Nat) → BPair)
     (p' : Nat → Nat) (f : Nat → Bool) :
     Decidable (transformFixed d L m w p' f) :=
   inferInstanceAs (Decidable (transformMoved d L m w w p' f))
-
-/-- The self-dual theta at the label calculus: the complement
-arithmetic reads the adjoint back (`prop:form`'s `dualL_theta`),
-the interface law at every fundamental count from two. -/
-theorem thetaSelfDual_all (d : Nat) (hd : 2 ≤ d) :
-    fusion.thetaSelfDual (fusion.dataA d) := by
-  show (fusion.dataA d).eqL
-    ((fusion.dataA d).dual (fusion.dataA d).theta)
-    (fusion.dataA d).theta = true
-  rw [show (fusion.dataA d).dual (fusion.dataA d).theta
-      = (fusion.dataA d).theta from form.dualL_theta d hd]
-  exact (fusion.dataA d).eqLRefl _
 
 /-! The invariant half's carrier: the momenta as formal
 coordinates.  A degree-`D` monomial at `m` arguments and `d`
@@ -222,7 +209,7 @@ def bdInvAt (m d D : Nat) (c : List (List Nat) → BPair) : Prop :=
       !decide (i < j)
         || decide ((c (swapDirs i j g)).oneValue (c g))))))) = true
 
-instance (m d D : Nat) (c : List (List Nat) → BPair) :
+instance instRestoration4 (m d D : Nat) (c : List (List Nat) → BPair) :
     Decidable (bdInvAt m d D c) :=
   inferInstanceAs (Decidable (_ = _))
 

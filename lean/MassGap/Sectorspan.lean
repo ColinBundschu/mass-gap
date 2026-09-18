@@ -47,7 +47,7 @@ over the product window's list at the window's width. -/
 def spanRead (n : Nat) (S : Mat) : Prop :=
   rowsLen n S ∧ elim.rank S = n
 
-instance (n : Nat) (S : Mat) : Decidable (spanRead n S) :=
+instance instSectorspan1 (n : Nat) (S : Mat) : Decidable (spanRead n S) :=
   inferInstanceAs (Decidable (_ ∧ _))
 
 /-- The adjoint display: the pairing against a multiplied element

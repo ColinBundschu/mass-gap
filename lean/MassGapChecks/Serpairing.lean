@@ -33,43 +33,45 @@ doubled-degree invariance reads and the further Gram instances sit
 beyond the battery allowance, `gramReadB 2 2` and the sign
 vector's invariance the two kept boundary reads.
 -/
+
+namespace serpairing
 set_option maxHeartbeats 4000000
 
-open ground serpairing
+open ground
 
 /-! The pair-partition count `(2k-1)!!` with the count theorem
 consumed at every pair count. -/
 
-example : dfac 1 = 1 := by decide +kernel
-example : dfac 2 = 3 := by decide +kernel
-example : dfac 3 = 15 := by decide +kernel
-example : dfac 4 = 105 := by decide +kernel
+theorem pin1 : dfac 1 = 1 := by decide +kernel
+theorem pin2 : dfac 2 = 3 := by decide +kernel
+theorem pin3 : dfac 3 = 15 := by decide +kernel
+theorem pin4 : dfac 4 = 105 := by decide +kernel
 
-example (k : Nat) : (allParts k).length = dfac k := length_allParts k
+theorem pin5 (k : Nat) : (allParts k).length = dfac k := length_allParts k
 
 /-! The loop fold at the two-pair partitions through the Gram
 entries, the enumeration's positional order
 `[(0,1),(2,3)]`, `[(0,2),(1,3)]`, `[(0,3),(1,2)]`. -/
 
-example : getAt [] (getAt [] (gramBD 2) 0) 0 = dimPow 2 := by decide +kernel
-example : getAt [] (getAt [] (gramBD 2) 1) 1 = dimPow 2 := by decide +kernel
-example : getAt [] (getAt [] (gramBD 2) 2) 2 = dimPow 2 := by decide +kernel
-example : getAt [] (getAt [] (gramBD 2) 0) 1 = dimPow 1 := by decide +kernel
-example : getAt [] (getAt [] (gramBD 2) 0) 2 = dimPow 1 := by decide +kernel
+theorem pin6 : getAt [] (getAt [] (gramBD 2) 0) 0 = dimPow 2 := by decide +kernel
+theorem pin7 : getAt [] (getAt [] (gramBD 2) 1) 1 = dimPow 2 := by decide +kernel
+theorem pin8 : getAt [] (getAt [] (gramBD 2) 2) 2 = dimPow 2 := by decide +kernel
+theorem pin9 : getAt [] (getAt [] (gramBD 2) 0) 1 = dimPow 1 := by decide +kernel
+theorem pin10 : getAt [] (getAt [] (gramBD 2) 0) 2 = dimPow 1 := by decide +kernel
 
-example : getAt [] (getAt [] (gramC 2) 0) 0 = rankPow 2 := by decide +kernel
-example : getAt [] (getAt [] (gramC 2) 0) 1 = rankPow 1 := by decide +kernel
-example : getAt [] (getAt [] (gramC 2) 0) 2 = poly.neg (rankPow 1) := by
+theorem pin11 : getAt [] (getAt [] (gramC 2) 0) 0 = rankPow 2 := by decide +kernel
+theorem pin12 : getAt [] (getAt [] (gramC 2) 0) 1 = rankPow 1 := by decide +kernel
+theorem pin13 : getAt [] (getAt [] (gramC 2) 0) 2 = poly.neg (rankPow 1) := by
   decide +kernel
 
 /-! The invariance reads: the dual-pair vectors against the simple
 raisings at one pair each. -/
 
-example : invRead 5 [sertables.raiseB 2 0, sertables.raiseB 2 1]
+theorem pin14 : invRead 5 [sertables.raiseB 2 0, sertables.raiseB 2 1]
     (partVec 5 1 (dualB 2) [(0, 1)]) := by decide +kernel
-example : invRead 6 [sertables.raiseC 3 0, sertables.raiseC 3 1,
+theorem pin15 : invRead 6 [sertables.raiseC 3 0, sertables.raiseC 3 1,
     sertables.raiseC 3 2] (partVec 6 1 (dualC 3) [(0, 1)]) := by decide +kernel
-example : invRead 8 [sertables.raiseD 4 0, sertables.raiseD 4 1,
+theorem pin16 : invRead 8 [sertables.raiseD 4 0, sertables.raiseD 4 1,
     sertables.raiseD 4 2, sertables.raiseD 4 3]
     (partVec 8 1 (dualD 4) [(0, 1)]) := by decide +kernel
 
@@ -79,10 +81,10 @@ unit content, the raisings annihilating it with the content
 conjunct refusing, and the unit vector at the unit-content monomial
 `[0, 2]` refuses at the annihilation. -/
 
-example : ¬ invRead 5 [sertables.raiseB 2 0, sertables.raiseB 2 1]
+theorem pin17 : ¬ invRead 5 [sertables.raiseB 2 0, sertables.raiseB 2 1]
     (units.scatterAt 0 (BPair.ofNat 1)
       ((places.allMon 5 2).map (fun _ => BPair.unit))) := by decide +kernel
-example : ¬ invRead 5 [sertables.raiseB 2 0, sertables.raiseB 2 1]
+theorem pin18 : ¬ invRead 5 [sertables.raiseB 2 0, sertables.raiseB 2 1]
     (units.scatterAt (places.idxOf [0, 2] (places.allMon 5 2))
       (BPair.ofNat 1)
       ((places.allMon 5 2).map (fun _ => BPair.unit))) := by decide +kernel
@@ -99,35 +101,37 @@ private def dualBForged : elim.Mat :=
       else if r == 4 && c == 4 then BPair.ofNat 2
       else BPair.unit)
 
-example : ¬ invRead 5 [sertables.raiseB 2 0, sertables.raiseB 2 1]
+theorem pin19 : ¬ invRead 5 [sertables.raiseB 2 0, sertables.raiseB 2 1]
     (partVec 5 1 dualBForged [(0, 1)]) := by decide +kernel
 
 /-! The in-carrier Gram identities: `B_2` at the cleared pairing's
 scale, `C_3` and `D_4` at the identity weight. -/
 
-example : gramReadB 2 1 := by decide +kernel
-example : gramReadB 2 2 := by decide +kernel
-example : gramReadC 3 1 := by decide +kernel
-example : gramReadD 4 1 := by decide +kernel
+theorem pin20 : gramReadB 2 1 := by decide +kernel
+theorem pin21 : gramReadB 2 2 := by decide +kernel
+theorem pin22 : gramReadC 3 1 := by decide +kernel
+theorem pin23 : gramReadD 4 1 := by decide +kernel
 
 /-! The `D` tie at the `ℓ = 2` data instance: the arrangement sign
 vector is annihilated by both raisings and its residual against
 the partition span sits off the unit tail. -/
 
-example : invRead 4 [sertables.raiseD 2 0, sertables.raiseD 2 1]
+theorem pin24 : invRead 4 [sertables.raiseD 2 0, sertables.raiseD 2 1]
     (epsVec 2) := by decide +kernel
 
 private def dSpan : elim.Mat :=
   (allParts 2).map (partVec 4 2 (dualD 2))
 
-example : ¬ poly.unitTail (elim.residV 256 dSpan (epsVec 2)) := by decide +kernel
+theorem pin25 : ¬ poly.unitTail (elim.residV 256 dSpan (epsVec 2)) := by decide +kernel
 
 /-! The committed refusal: the `B` Gram identity's scale forged to
 `2^1` in place of `2^2`, the weighted dot (`dotWB`) against the
 mismatched multiple. -/
 
-example : ¬ ((dotWB (pwListB 2 (places.allMon 5 2))
+theorem pin26 : ¬ ((dotWB (pwListB 2 (places.allMon 5 2))
     (partVec 5 1 (dualB 2) [(0, 1)])
     (partVec 5 1 (dualB 2) [(0, 1)])).oneValue
     (BPair.ofNat 2 * poly.eval (getAt [] (getAt [] (gramBD 1) 0) 0)
       (BPair.ofNat (gentable.residue (sertables.tableB 2))))) := by decide +kernel
+
+end serpairing

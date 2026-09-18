@@ -2,16 +2,19 @@ import MassGap.Pairpencil
 import MassGap.Certconstruct
 /-!
 `def:K` — the invariant's cut: at a coupling and a pair
-`κ = [p : q]`, membership is the pair `(q Ẽ² : E₀ p Ẽ)` positive
-semidefinite at every window, each test one reversal count on a
+`κ = [p : q]`, the finite-window test is the form pair
+`(q SD : E₀ p S)` positive semidefinite, each test one reversal count on a
 form pair (`cutRead`, the split the test's certificate,
 `lem:inertia`'s read with the pair cleared to integer coefficients,
-the positive rescaling fixing the count); the level gap `Ẽ` enters
-at its floor certificate, `ε₀ G + Ẽ = H` with the pair at the floor
+the positive rescaling fixing the count); the level-gap form `S` enters
+at its floor certificate, `ε₀ G + S = H` with the pair at the floor
 positive semidefinite and the ground occupied (`floorRead`,
 `gapMat` the cleared site datum); clause (i)'s membership is the
-meet of these window tests over the directed family, each window's
-test `cutRead`'s read at its certificate with the window's pencil
+meet of the finite tests at every region and every cutoff, each
+at its own ground and whole detector. The regional cutoff-tail
+cut is an auxiliary read: every global member gives every strict
+subfloor's tail from cutoff key one. Each window's
+test is `cutRead`'s read at its certificate with the window's pencil
 the chain assembly's presentation (`thm:pairpencil` the pencils'
 entry, `thm:gappos`'s tier the per-window derivation), the member
 instantiations reading through `thm:main`'s wiring at their floor
@@ -19,14 +22,15 @@ windows, the main check module's pins.  The compression to
 the word sector reads at
 `thm:coeffone`'s exact line — at the free end the word sector is the
 window itself (`lem:freeend`), and the free-end reading closes
-here: the level gap is the electric member at the window list's
+here: the level-gap form is the electric member at the window list's
 diagonal (`freeGap`, the unit line at its head), the cut's pair is diagonal with the entries
 `c ⟨q c : E₀ p⟩`, and the cut holds at every pair at or below the
-member floor and fails beyond, the floor's edge neutral — the
+member floor and, where the floor loop is admitted, fails beyond,
+the floor's edge neutral — the
 check module's pins at the committed windows, `lem:casfloor`'s
 floors with `prop:E0`'s count the levels' data, the first computed
 value of the invariant.  The descent tier carries
-`thm:unitschain`'s scaling form at the cut: the square at the
+`prop:segment`'s scaling form at the cut: the square at the
 ray factor's square against the gap and the level's first member
 at the factor (`cutRead_scale`, `cutRead_unscale`), the reversal
 blind to the positive multiple (`lem:inertia`).
@@ -49,28 +53,28 @@ def floorRead {o : Nat} (H G : Mat) (en : BPair) (ed : Pos) (sp : Split o) : Pro
   sqAt H o ∧ sqAt G o
   ∧ splitRead (gapMat H G en ed) sp ∧ psdAt sp ∧ 1 ≤ sp.kern
 
-instance {o : Nat} (H G : Mat) (en : BPair) (ed : Pos) (sp : Split o) :
+instance instK1 {o : Nat} (H G : Mat) (en : BPair) (ed : Pos) (sp : Split o) :
     Decidable (floorRead H G en ed sp) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _))
 
-/-- The cut's test at a window: the pair `(q Ẽ² : E₀ p Ẽ)` positive
+/-- The cut's test at a window: the form pair `(q SD : E₀ p S)` positive
 semidefinite at the split certificate, one reversal count on the
-form pair — the two compressed forms entering as data, the square's
-compression `(Ẽ²)_Λ` beside the gap's `(Ẽ)_Λ`, the detector form
-compressed whole; at the free end the word sector is the window
-itself and the square is the gap's own (`lem:freeend`). -/
+form pair: the two compressed forms `(SD)_Λ` and `S_Λ` enter
+as data, with `D` the Gram solve at `GD = S`. The detector form
+is compressed whole. At the free end the word sector is the window
+itself and `D` is the electric action (`lem:freeend`). -/
 def cutRead {o : Nat} (Esq Et : Mat) (E0 p q : Pos) (sp : Split o) : Prop :=
   sqAt Esq o ∧ sqAt Et o
   ∧ leAt (matScale (E0 * p) Et) (matScale q Esq) sp
 
-instance {o : Nat} (Esq Et : Mat) (E0 p q : Pos) (sp : Split o) :
+instance instK2 {o : Nat} (Esq Et : Mat) (E0 p q : Pos) (sp : Split o) :
     Decidable (cutRead Esq Et E0 p q sp) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
 /-- The cut datum's rescaling: the site datum at the `u²`-scaled
 square, the `u`-scaled gap and the `u`-scaled level is the base
 datum's `u²`-multiple, the square's two scale steps against the
-gap's one (`thm:unitschain`'s degree-one homogeneity at the cut's
+gap's one (`prop:segment`'s degree-one homogeneity at the cut's
 own carrier). -/
 private theorem cutScale (u : Pos) (Esq Et : Mat) (E0 p q : Pos) :
     matScale (u * u) (siteDatum (matScale q Esq)
@@ -96,7 +100,7 @@ private theorem cutScale (u : Pos) (Esq Et : Mat) (E0 p q : Pos) :
         ground.mul_comm p u,
         ← ground.mul_assoc E0 (u * p) u]]
 
-/-- The cut descends along the ray (`thm:unitschain`): the cut at
+/-- The cut descends along the ray (`prop:segment`): the cut at
 the `u²`-scaled square, the `u`-scaled gap and the level's first
 member at the `u`-multiple reads with the base cut — the square of
 the `u`-scaled gap the two scale steps — the scaled certificate's
@@ -115,7 +119,7 @@ theorem cutRead_scale {o : Nat} (u : Pos) (Esq Et : Mat)
      h.2.2.1 (by rw [cutScale u Esq Et E0 p q]; exact h')).trans
      h.2.2.2⟩
 
-/-- The descent's return (`thm:unitschain`): a cut at the
+/-- The descent's return (`prop:segment`): a cut at the
 `u`-scaled data and level reads back at the base, the base split
 stated data. -/
 theorem cutRead_unscale {o : Nat} (u : Pos) (Esq Et : Mat)

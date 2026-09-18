@@ -10,42 +10,44 @@ fundamental loop occupied, the single link and the all-`f` theta
 assignment refused — the degree-one endpoint and the odd parity),
 and the window index's members at stated cutoffs.
 -/
+
+namespace carrier
 set_option maxHeartbeats 4000000
 
-open ground places lattice fusion carrier
+open ground places lattice fusion
 
 /-! The invariant count's row fold. -/
 
-example : invCount (dataA 2) [] = 1 := by decide +kernel
-example : invCount (dataA 2) [[1, 0]] = 0 := by decide +kernel
-example : invCount (dataA 2) [[1, 0], [1, 0]] = 1 := by decide +kernel
-example : invCount (dataA 3) [[1, 0, 0], [0, 1, 0]] = 1 := by decide +kernel
-example : invCount (dataA 3) [[1, 0, 0], [1, 0, 0]] = 0 := by decide +kernel
-example : invCount (dataA 3) [[1, 0, 0], [1, 0, 0], [1, 0, 0]] = 1 := by
+theorem pin1 : invCount (dataA 2) [] = 1 := by decide +kernel
+theorem pin2 : invCount (dataA 2) [[1, 0]] = 0 := by decide +kernel
+theorem pin3 : invCount (dataA 2) [[1, 0], [1, 0]] = 1 := by decide +kernel
+theorem pin4 : invCount (dataA 3) [[1, 0, 0], [0, 1, 0]] = 1 := by decide +kernel
+theorem pin5 : invCount (dataA 3) [[1, 0, 0], [1, 0, 0]] = 0 := by decide +kernel
+theorem pin6 : invCount (dataA 3) [[1, 0, 0], [1, 0, 0], [1, 0, 0]] = 1 := by
   decide +kernel
-example : invCount (dataA 3) [[1, 1, 0], [1, 1, 0], [1, 1, 0]] = 2 := by
+theorem pin7 : invCount (dataA 3) [[1, 1, 0], [1, 1, 0], [1, 1, 0]] = 2 := by
   decide +kernel
-example : invCount (dataA 3) [[1, 1, 0], [1, 1, 0], [1, 1, 0]]
+theorem pin8 : invCount (dataA 3) [[1, 1, 0], [1, 1, 0], [1, 1, 0]]
     = (dataA 3).c1 := by decide +kernel
 
 /-! The content fold at the cleared second member. -/
 
-example : contentN (dataA 2) [[1, 0], [1, 0], [1, 0], [1, 0]] = 12 := by
+theorem pin9 : contentN (dataA 2) [[1, 0], [1, 0], [1, 0], [1, 0]] = 12 := by
   decide +kernel
-example : contentN (dataA 2) [[1, 0], [0, 0], [2, 0], [0, 0]] = 11 := by
+theorem pin10 : contentN (dataA 2) [[1, 0], [0, 0], [2, 0], [0, 0]] = 11 := by
   decide +kernel
 
 /-! The vertex multiplicities and the occupied reads at the
 square: the fundamental loop occupied at every corner's unit
 multiplicity, the single link refused at its degree-one ends. -/
 
-example : vmult (dataA 2) square [[1, 0], [1, 0], [1, 0], [1, 0]] 0
+theorem pin11 : vmult (dataA 2) square [[1, 0], [1, 0], [1, 0], [1, 0]] 0
     = 1 := by decide +kernel
-example : occupied (dataA 2) square [[1, 0], [1, 0], [1, 0], [1, 0]]
+theorem pin12 : occupied (dataA 2) square [[1, 0], [1, 0], [1, 0], [1, 0]]
     = true := by decide +kernel
-example : occupied (dataA 2) square [[1, 0], [0, 0], [0, 0], [0, 0]]
+theorem pin13 : occupied (dataA 2) square [[1, 0], [0, 0], [0, 0], [0, 0]]
     = false := by decide +kernel
-example : occupied (dataA 2) square
+theorem pin14 : occupied (dataA 2) square
     [[2, 0], [2, 0], [2, 0], [2, 0]] = true := by decide +kernel
 
 /-! The incoming dualization at three letters: the constant
@@ -53,24 +55,24 @@ fundamental loop occupied (each corner `f` against the incoming
 dual's dual), the alternating `f`, `f̄` assignment refused at the
 corners' matched pair. -/
 
-example : occupied (dataA 3) square
+theorem pin15 : occupied (dataA 3) square
     [[1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0]] = true := by decide +kernel
-example : occupied (dataA 3) square
+theorem pin16 : occupied (dataA 3) square
     [[1, 0, 0], [0, 1, 0], [1, 0, 0], [0, 1, 0]] = false := by decide +kernel
 
 /-! The all-`f` theta assignment refused at the shared ends' odd
 parity. -/
 
-example : occupied (tabulate (dataA 2) 3) thetaG
+theorem pin17 : occupied (tabulate (dataA 2) 3) thetaG
     [[1, 0], [1, 0], [1, 0], [1, 0], [1, 0], [1, 0], [1, 0]]
     = false := by decide +kernel
 
 /-! The window index's members at stated cutoffs: the fundamental
 loop alone below the next label's loop. -/
 
-example : (idx (dataA 2) square 12).length = 1 := by
+theorem pin18 : (idx (dataA 2) square 12).length = 1 := by
   rw [← idxA_eq]; decide +kernel
-example : (idx (dataA 2) square 32).length = 2 := by
+theorem pin19 : (idx (dataA 2) square 32).length = 2 := by
   rw [← idxA_eq]; decide +kernel
 
 /-! The pruned walk reads the enumeration itself
@@ -78,19 +80,19 @@ example : (idx (dataA 2) square 32).length = 2 := by
 the committed windows and at a window where the refusal bites at
 depth. -/
 
-example : idxA (dataA 2) square 12
+theorem pin20 : idxA (dataA 2) square 12
     = idx (dataA 2) square 12 := by decide +kernel
-example : idxA (tabulate (dataA 2) 12) thetaG 12
+theorem pin21 : idxA (tabulate (dataA 2) 12) thetaG 12
     = idx (tabulate (dataA 2) 12) thetaG 12 := by decide +kernel
 
 /-! The tabulated route's coherence with the interface at stated
 reads. -/
 
-example : (tabulate (dataA 2) 12).count [1, 0] [1, 0] [2, 0]
+theorem pin22 : (tabulate (dataA 2) 12).count [1, 0] [1, 0] [2, 0]
     = (dataA 2).count [1, 0] [1, 0] [2, 0] := by decide +kernel
-example : (tabulate (dataA 2) 12).count [1, 0] [1, 0] (labels.unitL 2)
+theorem pin23 : (tabulate (dataA 2) 12).count [1, 0] [1, 0] (labels.unitL 2)
     = (dataA 2).count [1, 0] [1, 0] (labels.unitL 2) := by decide +kernel
-example : (tabulate (dataA 2) 12).row [1, 0] [1, 0]
+theorem pin24 : (tabulate (dataA 2) 12).row [1, 0] [1, 0]
     = (dataA 2).row [1, 0] [1, 0] := by decide +kernel
 
 /-! The committed window enumerations, the tier's shared fixtures:
@@ -98,7 +100,6 @@ each a stated value of `def:carrier`'s index at a committed window,
 its pin `prop:windowfinite`'s content-pruned walk (`idxA_eq`), the
 consuming modules' reads the named displays' applications. -/
 
-namespace carrier
 
 /-- The square window at two letters, cutoff 32: the fundamental
 loop with the two-box loop. -/
@@ -122,15 +123,15 @@ private theorem sqLoop2_mem : sqLoop2 ∈ idx (dataA 2) square 32 := by
   rw [sqIx2_pin]
   exact List.Mem.tail _ (List.Mem.head _)
 
-example : sqLoop2.length = square.links
+theorem pin25 : sqLoop2.length = square.links
     ∧ contentN (dataA 2) sqLoop2 ≤ 32
     ∧ occupied (dataA 2) square sqLoop2 = true :=
   let h := idx_sound (dataA 2) square 32 sqLoop2 sqLoop2_mem
   ⟨h.1, h.2.2.2.1, h.2.2.2.2⟩
-example : sqLoop2.length = square.links
+theorem pin26 : sqLoop2.length = square.links
     ∧ contentN (dataA 2) sqLoop2 ≤ 32
     ∧ occupied (dataA 2) square sqLoop2 = true := by decide +kernel
-example : sqLoop1 ∈ idx (dataA 2) square 32 :=
+theorem pin27 : sqLoop1 ∈ idx (dataA 2) square 32 :=
   mem_idx (dataA 2) square 32 sqLoop1 rfl
     (fun l hl => by
       have hall : (sqLoop1.all (fun x =>
@@ -142,22 +143,22 @@ example : sqLoop1 ∈ idx (dataA 2) square 32 :=
       rw [← ground.listBeqEq hml]
       exact hm)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
-example : ground.countOf sqLoop2 (idx (dataA 2) square 12) = 0 := by
+theorem pin28 : ground.countOf sqLoop2 (idx (dataA 2) square 12) = 0 := by
   rw [← idxA_eq]
   decide +kernel
-example : confMem (dataA 2) sqLoop2 sqIx2 = true :=
+theorem pin29 : confMem (dataA 2) sqLoop2 sqIx2 = true :=
   confMem_of_mem (dataA 2) sqLoop2 sqIx2 (List.Mem.tail _ (List.Mem.head _))
-example : confMem (dataA 2) sqLoop2 sqIx2 = true := by decide +kernel
-example : eqConf (dataA 2) sqLoop1 sqLoop1 = true := eqConf_refl (dataA 2) _
+theorem pin30 : confMem (dataA 2) sqLoop2 sqIx2 = true := by decide +kernel
+theorem pin31 : eqConf (dataA 2) sqLoop1 sqLoop1 = true := eqConf_refl (dataA 2) _
 
 /-! The index is distinct at the distinct label carrier, decided
 beside its route, and the equality read is structural on the
 labels at the calculus. -/
 
-example : ground.distinctList sqIx2 := by decide +kernel
-example : ground.distinctList (idx (dataA 2) square 32) :=
+theorem pin32 : ground.distinctList sqIx2 := by decide +kernel
+theorem pin33 : ground.distinctList (idx (dataA 2) square 32) :=
   idx_distinct (dataA 2) square 32 (below_distinct_dataA 2 32)
-example : eqConf (dataA 2) sqLoop1 [[1, 0], [1, 0], [1, 0], [1, 0]] = true
+theorem pin34 : eqConf (dataA 2) sqLoop1 [[1, 0], [1, 0], [1, 0], [1, 0]] = true
     → sqLoop1 = [[1, 0], [1, 0], [1, 0], [1, 0]] :=
   eqConf_labelA 2 sqLoop1 _ (by decide +kernel) (by decide +kernel)
 
@@ -203,5 +204,53 @@ def thIx26 : List (List places.Shape) :=
 
 theorem thIx26_pin : idx (dataA 2) thetaG 26 = thIx26 := by
   rw [← idxA_eq]; decide +kernel
+
+/-! The window index nests (`thm:truncation`'s projection as the
+index): the square's index at the cutoff twelve is the index at
+thirty-two filtered at content at or below twelve, through the
+theorem at the `A`-series' enumeration laws, the two lists decided
+at the pruned read; and the refusal at a forged enumeration whose
+larger cutoff lists the adjoint alone, the nesting law bitten. -/
+
+theorem pin35 : idx (dataA 2) square 12
+    = (idx (dataA 2) square 32).filter (fun a => decide (contentN (dataA 2) a ≤ 12)) :=
+  idx_filter (dataA 2) square 12 32 (by decide) (belowNest_dataA 2 12 32 (by decide))
+    (belowNonunit_dataA 2 32)
+theorem pin36 : idx (dataA 2) square 12 = [[[1, 0], [1, 0], [1, 0], [1, 0]]] := by
+  rw [← idxA_eq]; decide +kernel
+theorem pin37 : ¬ (idx { dataA 2 with
+      below := fun C => if C == 32 then [[2, 0]] else (dataA 2).below C } square 12
+    = (idx { dataA 2 with
+      below := fun C => if C == 32 then [[2, 0]] else (dataA 2).below C } square 32).filter
+        (fun a => decide (contentN (dataA 2) a ≤ 12))) := by
+  rw [← idxA_eq, ← idxA_eq]; decide +kernel
+
+/-! The two further binders bitten: at an enumeration constant
+across the cutoffs the nesting and nonunit laws hold at the reversed
+cutoff pair while the index at twelve holds the fundamental loop and
+the index at three is vacant; and at the theta window with the unit
+label joined to the larger cutoff's enumeration at a Casimir beyond
+the smaller cutoff, the nesting law holds, the nonunit law refuses,
+and the larger index lists each loop at every unit spelling of its
+vacant links, eighteen members against two. -/
+
+private def fConst : Data places.Shape := { dataA 2 with below := fun _ => [[1, 0]] }
+private def fUnit : Data places.Shape := { tabulate (dataA 2) 18 with
+  below := fun C => if C == 18 then (dataA 2).unit :: (tabulate (dataA 2) 18).below 18
+    else (tabulate (dataA 2) 18).below C,
+  c2N := fun l => if l == (dataA 2).unit then 50 else c2hat.dfQ l }
+
+theorem pin38 : belowNest fConst 12 3 ∧ belowNonunit fConst 3
+    ∧ ¬ (idx fConst square 12
+      = (idx fConst square 3).filter (fun a => decide (contentN fConst a ≤ 12))) := by
+  refine ⟨by decide +kernel, by decide +kernel, ?_⟩
+  rw [← idxA_eq, ← idxA_eq]; decide +kernel
+theorem pin39 : belowNest fUnit 12 18 ∧ ¬ belowNonunit fUnit 18
+    ∧ (idxA fUnit thetaG 18).length = 18 ∧ (idxA fUnit thetaG 12).length = 2
+    ∧ ¬ (idx fUnit thetaG 12
+      = (idx fUnit thetaG 18).filter (fun a => decide (contentN fUnit a ≤ 12))) := by
+  refine ⟨by decide +kernel, by decide +kernel, by decide +kernel, by decide +kernel, ?_⟩
+  rw [← idxA_eq, ← idxA_eq]; decide +kernel
+
 
 end carrier

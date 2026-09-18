@@ -1,4 +1,5 @@
 name = "MassGap"
+moreLeanArgs = ["-Dprofiler=true", "-Dprofiler.threshold=1000"]
 defaultTargets = ["MassGap", "MassGapChecks"]
 testDriver = "MassGapChecks"
 

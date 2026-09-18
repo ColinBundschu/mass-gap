@@ -128,14 +128,14 @@ private theorem fold_swap_invariant (lam : Shape) (F : List Nat → Nat)
   have hmem : ∀ x : List Nat,
       0 < ground.countOf x ((blockSpan lam).map HVec.content) →
       ground.countOf x
-          (ground.dedupL ((blockSpan lam).map HVec.content)) = 1 :=
-    fun x hx => ground.countOf_dedupL_one (ground.mem_of_countOf_pos x _ hx)
+          (ground.dedupF ((blockSpan lam).map HVec.content)) = 1 :=
+    fun x hx => ground.countOf_dedupF_one (ground.mem_of_countOf_pos x _ hx)
   have hswapCnt : ∀ x : List Nat,
       ground.countOf x
-          ((ground.dedupL ((blockSpan lam).map HVec.content)).map
+          ((ground.dedupF ((blockSpan lam).map HVec.content)).map
             (places.swapPair i j))
         = ground.countOf (places.swapPair i j x)
-          (ground.dedupL ((blockSpan lam).map HVec.content)) :=
+          (ground.dedupF ((blockSpan lam).map HVec.content)) :=
     fun x => ground.countOf_map_iff (places.swapPair i j) _ x
       (places.swapPair i j x)
       (fun v _ => ⟨fun hxv => by
@@ -145,7 +145,7 @@ private theorem fold_swap_invariant (lam : Shape) (F : List Nat → Nat)
   have hmem' : ∀ x : List Nat,
       0 < ground.countOf x ((blockSpan lam).map HVec.content) →
       ground.countOf x
-          ((ground.dedupL ((blockSpan lam).map HVec.content)).map
+          ((ground.dedupF ((blockSpan lam).map HVec.content)).map
             (places.swapPair i j)) = 1 := by
     intro x hx
     rw [hswapCnt x]
@@ -154,29 +154,29 @@ private theorem fold_swap_invariant (lam : Shape) (F : List Nat → Nat)
     exact hx
   have e2 := ground.famFold_countCollect F
     ((blockSpan lam).map HVec.content)
-    ((ground.dedupL ((blockSpan lam).map HVec.content)).map
+    ((ground.dedupF ((blockSpan lam).map HVec.content)).map
       (places.swapPair i j)) hmem'
   have e3 := ground.famFold_map Nat.add 0
     (fun m => ground.countOf m ((blockSpan lam).map HVec.content) * F m)
     (places.swapPair i j)
-    (ground.dedupL ((blockSpan lam).map HVec.content))
+    (ground.dedupF ((blockSpan lam).map HVec.content))
   have e4 : ground.famFold Nat.add 0
         (fun m => ground.countOf (places.swapPair i j m)
             ((blockSpan lam).map HVec.content)
           * F (places.swapPair i j m))
-        (ground.dedupL ((blockSpan lam).map HVec.content))
+        (ground.dedupF ((blockSpan lam).map HVec.content))
       = ground.famFold Nat.add 0
         (fun m => ground.countOf m ((blockSpan lam).map HVec.content)
           * F (places.swapPair i j m))
-        (ground.dedupL ((blockSpan lam).map HVec.content)) :=
+        (ground.dedupF ((blockSpan lam).map HVec.content)) :=
     ground.famFold_congr_members Nat.add 0 _ _ _
       (fun m hm => by
-        rw [hsym m (ground.mem_of_dedupL
+        rw [hsym m (ground.mem_of_dedupF
           (ground.mem_of_countOf_pos m _ hm)) i hi j hj])
   have e5 := ground.famFold_countCollect
     (fun mu => F (places.swapPair i j mu))
     ((blockSpan lam).map HVec.content)
-    (ground.dedupL ((blockSpan lam).map HVec.content)) hmem
+    (ground.dedupF ((blockSpan lam).map HVec.content)) hmem
   rw [← ground.famFold_map Nat.add 0
       (fun mu => F (places.swapPair i j mu)) HVec.content (blockSpan lam),
     ← ground.famFold_map Nat.add 0 F HVec.content (blockSpan lam),
@@ -1350,10 +1350,10 @@ theorem sumRec (lam : Shape) :
     rw [← hvc]
     exact blockcount.blockSpan_width lam v hv
   have hbase := sumRec_gen lam ((blockSpan lam).map HVec.content)
-    (ground.dedupL (weylchar.recKeys lam.length
+    (ground.dedupF (weylchar.recKeys lam.length
       ((blockSpan lam).map HVec.content)))
-    hL (fun _ h => ground.mem_of_dedupL h)
-    (fun x hx => ground.countOf_dedupL_one hx)
+    hL (fun _ h => ground.mem_of_dedupF h)
+    (fun x hx => ground.countOf_dedupF_one hx)
     (casimir.recRead_def lam)
   rw [ground.famFold_map Nat.add 0 (fun kap => wCross kap)
       HVec.content (blockSpan lam),
@@ -1385,7 +1385,7 @@ private theorem fold_channels (a b : Shape) (hba : b.length = a.length)
         (fun mu => fusionCount a b (places.shapeOf mu)
           * ground.famFold Nat.add 0 (fun v => W v.content)
               (blockSpan (places.shapeOf mu)))
-        (ground.dedupL
+        (ground.dedupF
           ((exhaust a.length
             (fusedAt (blockSpan a) (blockSpan b))).map HVec.content)) := by
   obtain ⟨hszP, hwidP, hclP, hiP⟩ := fusedSpan_pack a b hba
@@ -1394,9 +1394,9 @@ private theorem fold_channels (a b : Shape) (hba : b.length = a.length)
   have hD : ∀ x : List Nat,
       0 < ground.countOf x
         ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content) →
-      ground.countOf x (ground.dedupL
+      ground.countOf x (ground.dedupF
         ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content)) = 1 :=
-    fun x hx => ground.countOf_dedupL_one (ground.mem_of_countOf_pos x _ hx)
+    fun x hx => ground.countOf_dedupF_one (ground.mem_of_countOf_pos x _ hx)
   have hposF := channel_content a b hba
   have hstep : ∀ m : List Nat,
       ground.countOf m
@@ -1404,7 +1404,7 @@ private theorem fold_channels (a b : Shape) (hba : b.length = a.length)
       = ground.famFold Nat.add 0
           (fun nu => countAt (fusedAt (blockSpan a) (blockSpan b)) nu
             * (occ m (blockSpan (places.shapeOf nu)) * W m))
-          (ground.dedupL ((exhaust a.length
+          (ground.dedupF ((exhaust a.length
             (fusedAt (blockSpan a) (blockSpan b))).map HVec.content)) := by
     intro m
     rw [← occ_eq_countOf m (fusedAt (blockSpan a) (blockSpan b)),
@@ -1414,38 +1414,38 @@ private theorem fold_channels (a b : Shape) (hba : b.length = a.length)
       ← ground.famFold_mulR (W m)
         (fun nu => countAt (fusedAt (blockSpan a) (blockSpan b)) nu
           * occ m (blockSpan (places.shapeOf nu)))
-        (ground.dedupL ((exhaust a.length
+        (ground.dedupF ((exhaust a.length
           (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))]
     exact ground.famFold_congr_all Nat.add 0 _ _
       (fun nu => ground.mulAssoc _ _ _)
-      (ground.dedupL ((exhaust a.length
+      (ground.dedupF ((exhaust a.length
         (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
   rw [← ground.famFold_map Nat.add 0 W HVec.content
       (fusedAt (blockSpan a) (blockSpan b)),
     ground.famFold_countCollect W
       ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content)
-      (ground.dedupL
+      (ground.dedupF
         ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content)) hD,
     ground.famFold_congr_all Nat.add 0 _ _ hstep
-      (ground.dedupL
+      (ground.dedupF
         ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content)),
     ground.famFold_swap
       (fun (m : List Nat) (nu : List Nat) =>
         countAt (fusedAt (blockSpan a) (blockSpan b)) nu
           * (occ m (blockSpan (places.shapeOf nu)) * W m))
-      (ground.dedupL
+      (ground.dedupF
         ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content))
-      (ground.dedupL ((exhaust a.length
+      (ground.dedupF ((exhaust a.length
         (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))]
   refine ground.famFold_congr_members Nat.add 0 _ _ _ ?_
   intro nu hnu
-  have hnuE : nu ∈ ground.dedupL ((exhaust a.length
+  have hnuE : nu ∈ ground.dedupF ((exhaust a.length
       (fusedAt (blockSpan a) (blockSpan b))).map HVec.content) :=
     ground.mem_of_countOf_pos nu _ hnu
   have hfc : fusionCount a b (places.shapeOf nu)
       = countAt (fusedAt (blockSpan a) (blockSpan b)) nu := by
     rw [fusionCount_countAt a b (places.shapeOf nu) hba,
-      hrl nu (ground.mem_of_dedupL hnuE)]
+      hrl nu (ground.mem_of_dedupF hnuE)]
   rw [hfc]
   match Nat.eq_zero_or_pos
       (countAt (fusedAt (blockSpan a) (blockSpan b)) nu) with
@@ -1460,7 +1460,7 @@ private theorem fold_channels (a b : Shape) (hba : b.length = a.length)
     have hcover : ∀ x : List Nat,
         0 < ground.countOf x
           ((blockSpan (places.shapeOf nu)).map HVec.content) →
-        ground.countOf x (ground.dedupL
+        ground.countOf x (ground.dedupF
           ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content)) = 1 := by
       intro x hx
       refine hD x (hposF nu hnuE hp x ?_)
@@ -1469,18 +1469,18 @@ private theorem fold_channels (a b : Shape) (hba : b.length = a.length)
     rw [← ground.famFold_mul
         (countAt (fusedAt (blockSpan a) (blockSpan b)) nu)
         (fun m => occ m (blockSpan (places.shapeOf nu)) * W m)
-        (ground.dedupL
+        (ground.dedupF
           ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content)),
       ground.famFold_congr_all Nat.add 0
         (fun m => occ m (blockSpan (places.shapeOf nu)) * W m)
         (fun m => ground.countOf m
           ((blockSpan (places.shapeOf nu)).map HVec.content) * W m)
         (fun m => by rw [occ_eq_countOf])
-        (ground.dedupL
+        (ground.dedupF
           ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content)),
       ← ground.famFold_countCollect W
         ((blockSpan (places.shapeOf nu)).map HVec.content)
-        (ground.dedupL
+        (ground.dedupF
           ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content)) hcover,
       ground.famFold_map Nat.add 0 W HVec.content
         (blockSpan (places.shapeOf nu))]
@@ -1945,7 +1945,7 @@ private theorem foldRec (d : Nat) (s t : Shape)
         (fun mu => fusionCount s t (places.shapeOf mu)
           * (weylchar.stdSq (places.display (places.shapeOf mu))
             * (blockSpan (places.shapeOf mu)).length))
-        (ground.dedupL ((exhaust s.length
+        (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content))
       + 2 * ((places.pairsOf d).length * mom11 (fusedAt (blockSpan s) (blockSpan t)))
     = d * mom2At 0 (fusedAt (blockSpan s) (blockSpan t))
@@ -1954,29 +1954,29 @@ private theorem foldRec (d : Nat) (s t : Shape)
       + 2 * ((places.pairsOf d).length * mom2At 0 (fusedAt (blockSpan s) (blockSpan t))) := by
   obtain ⟨hszP, hwidP, hclP, hiP⟩ := fusedSpan_pack s t hts
   have hwd : ∀ mu : List Nat, 0 < ground.countOf mu
-      (ground.dedupL ((exhaust s.length
+      (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)) → mu.length = d := by
     intro mu hmu
     rw [exhaust_width s.length
       (fusedAt (blockSpan s) (blockSpan t)) hszP hwidP hclP mu
-      (ground.mem_of_dedupL (ground.mem_of_countOf_pos mu _ hmu))]
+      (ground.mem_of_dedupF (ground.mem_of_countOf_pos mu _ hmu))]
     exact hsd
   have hc1 : ground.famFold Nat.add 0
       (fun mu => fusionCount s t (places.shapeOf mu) * mom1 (blockSpan
-        (places.shapeOf mu))) (ground.dedupL ((exhaust s.length
+        (places.shapeOf mu))) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content))
     = mom1 (fusedAt (blockSpan s) (blockSpan t)) :=
     (fold_channels s t hts (fun mu => ground.getAt 0 mu 0)).symm
   have hc2 : ground.famFold Nat.add 0
       (fun mu => fusionCount s t (places.shapeOf mu) * mom2At 0 (blockSpan
-        (places.shapeOf mu))) (ground.dedupL ((exhaust s.length
+        (places.shapeOf mu))) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content))
     = mom2At 0 (fusedAt (blockSpan s) (blockSpan t)) :=
     (fold_channels s t hts
       (fun mu => ground.getAt 0 mu 0 * ground.getAt 0 mu 0)).symm
   have hc11 : ground.famFold Nat.add 0
       (fun mu => fusionCount s t (places.shapeOf mu) * mom11 (blockSpan
-        (places.shapeOf mu))) (ground.dedupL ((exhaust s.length
+        (places.shapeOf mu))) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content))
     = mom11 (fusedAt (blockSpan s) (blockSpan t)) :=
     (fold_channels s t hts
@@ -1987,12 +1987,12 @@ private theorem foldRec (d : Nat) (s t : Shape)
         * (weylchar.stdSq (places.display (places.shapeOf mu))
             * (blockSpan (places.shapeOf mu)).length
           + 2 * ((places.pairsOf d).length * mom11 (blockSpan (places.shapeOf
-            mu))))) (ground.dedupL ((exhaust s.length
+            mu))))) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content))
     = ground.famFold Nat.add 0
         (fun mu => fusionCount s t (places.shapeOf mu)
           * (weylchar.stdSq (places.display (places.shapeOf mu))
-            * (blockSpan (places.shapeOf mu)).length)) (ground.dedupL ((exhaust s.length
+            * (blockSpan (places.shapeOf mu)).length)) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content))
       + 2 * ((places.pairsOf d).length * mom11 (fusedAt (blockSpan s) (blockSpan t))) := by
     rw [ground.famFold_congr_all Nat.add 0 _
@@ -2007,7 +2007,7 @@ private theorem foldRec (d : Nat) (s t : Shape)
                 * (blockSpan (places.shapeOf mu)).length)
               (2 * ((places.pairsOf d).length * mom11 (blockSpan (places.shapeOf mu)))),
             pull4 (fusionCount s t (places.shapeOf mu)) 2 ((places.pairsOf d).length)
-              (mom11 (blockSpan (places.shapeOf mu)))]) (ground.dedupL ((exhaust s.length
+              (mom11 (blockSpan (places.shapeOf mu)))]) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)),
       ground.famFold_add_split
         (fun mu => fusionCount s t (places.shapeOf mu)
@@ -2015,16 +2015,16 @@ private theorem foldRec (d : Nat) (s t : Shape)
             * (blockSpan (places.shapeOf mu)).length))
         (fun mu => 2 * ((places.pairsOf d).length
           * (fusionCount s t (places.shapeOf mu) * mom11 (blockSpan
-            (places.shapeOf mu))))) (ground.dedupL ((exhaust s.length
+            (places.shapeOf mu))))) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)),
       ← ground.famFold_mul 2
         (fun mu => (places.pairsOf d).length
           * (fusionCount s t (places.shapeOf mu) * mom11 (blockSpan
-            (places.shapeOf mu)))) (ground.dedupL ((exhaust s.length
+            (places.shapeOf mu)))) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)),
       ← ground.famFold_mul ((places.pairsOf d).length)
         (fun mu => fusionCount s t (places.shapeOf mu) * mom11 (blockSpan
-          (places.shapeOf mu))) (ground.dedupL ((exhaust s.length
+          (places.shapeOf mu))) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)),
       hc11]
   have step2 : ground.famFold Nat.add 0
@@ -2033,7 +2033,7 @@ private theorem foldRec (d : Nat) (s t : Shape)
           + 2 * (mom1 (blockSpan (places.shapeOf mu)) * ground.sumNat (places.unitDisp d))
           + (blockSpan (places.shapeOf mu)).length * weylchar.stdSq (places.unitDisp d)
           + 2 * ((places.pairsOf d).length * mom2At 0 (blockSpan
-            (places.shapeOf mu))))) (ground.dedupL ((exhaust s.length
+            (places.shapeOf mu))))) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content))
     = d * mom2At 0 (fusedAt (blockSpan s) (blockSpan t))
       + 2 * (mom1 (fusedAt (blockSpan s) (blockSpan t)) * ground.sumNat (places.unitDisp d))
@@ -2064,7 +2064,7 @@ private theorem foldRec (d : Nat) (s t : Shape)
             ← ground.mulAssoc (fusionCount s t (places.shapeOf mu))
               ((blockSpan (places.shapeOf mu)).length) (weylchar.stdSq (places.unitDisp d)),
             pull4 (fusionCount s t (places.shapeOf mu)) 2 ((places.pairsOf d).length)
-              (mom2At 0 (blockSpan (places.shapeOf mu)))]) (ground.dedupL ((exhaust s.length
+              (mom2At 0 (blockSpan (places.shapeOf mu)))]) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)),
       ground.famFold_add_split
         (fun mu => d * (fusionCount s t (places.shapeOf mu) * mom2At 0
@@ -2075,7 +2075,7 @@ private theorem foldRec (d : Nat) (s t : Shape)
             mu)).length * weylchar.stdSq (places.unitDisp d))
         (fun mu => 2 * ((places.pairsOf d).length
           * (fusionCount s t (places.shapeOf mu) * mom2At 0 (blockSpan
-            (places.shapeOf mu))))) (ground.dedupL ((exhaust s.length
+            (places.shapeOf mu))))) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)),
       ground.famFold_add_split
         (fun mu => d * (fusionCount s t (places.shapeOf mu) * mom2At 0
@@ -2084,44 +2084,44 @@ private theorem foldRec (d : Nat) (s t : Shape)
             (places.shapeOf mu)) * ground.sumNat (places.unitDisp d)))
         (fun mu => fusionCount s t (places.shapeOf mu) * (blockSpan
           (places.shapeOf mu)).length * weylchar.stdSq (places.unitDisp d))
-          (ground.dedupL ((exhaust s.length
+          (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)),
       ground.famFold_add_split
         (fun mu => d * (fusionCount s t (places.shapeOf mu) * mom2At 0
           (blockSpan (places.shapeOf mu))))
         (fun mu => 2 * (fusionCount s t (places.shapeOf mu) * mom1 (blockSpan
           (places.shapeOf mu)) * ground.sumNat (places.unitDisp d)))
-          (ground.dedupL ((exhaust s.length
+          (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)),
       ← ground.famFold_mul d
         (fun mu => fusionCount s t (places.shapeOf mu) * mom2At 0 (blockSpan
-          (places.shapeOf mu))) (ground.dedupL ((exhaust s.length
+          (places.shapeOf mu))) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)),
       ← ground.famFold_mul 2
         (fun mu => fusionCount s t (places.shapeOf mu) * mom1 (blockSpan
           (places.shapeOf mu)) * ground.sumNat (places.unitDisp d))
-          (ground.dedupL ((exhaust s.length
+          (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)),
       ground.famFold_mulR (ground.sumNat (places.unitDisp d))
         (fun mu => fusionCount s t (places.shapeOf mu) * mom1 (blockSpan
-          (places.shapeOf mu))) (ground.dedupL ((exhaust s.length
+          (places.shapeOf mu))) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)),
       ground.famFold_mulR (weylchar.stdSq (places.unitDisp d))
         (fun mu => fusionCount s t (places.shapeOf mu) * (blockSpan
-          (places.shapeOf mu)).length) (ground.dedupL ((exhaust s.length
+          (places.shapeOf mu)).length) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)),
       ← ground.famFold_mul 2
         (fun mu => (places.pairsOf d).length
           * (fusionCount s t (places.shapeOf mu) * mom2At 0 (blockSpan
-            (places.shapeOf mu)))) (ground.dedupL ((exhaust s.length
+            (places.shapeOf mu)))) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)),
       ← ground.famFold_mul ((places.pairsOf d).length)
         (fun mu => fusionCount s t (places.shapeOf mu) * mom2At 0 (blockSpan
-          (places.shapeOf mu))) (ground.dedupL ((exhaust s.length
+          (places.shapeOf mu))) (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)),
       hc1, hc2, hdim]
   rw [← step1, ← step2]
-  refine ground.famFold_congr_members Nat.add 0 _ _ (ground.dedupL ((exhaust s.length
+  refine ground.famFold_congr_members Nat.add 0 _ _ (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan t))).map HVec.content)) ?_
   intro mu hmu
   exact congrArg (fun z => fusionCount s t (places.shapeOf mu) * z)
@@ -2324,7 +2324,7 @@ private theorem driftFold (d : Nat) (hd : 2 ≤ d) (s : Shape)
     ground.famFold Nat.add 0
         (fun mu => fusionCount s (adjchar.theta d) (places.shapeOf mu)
           * (blockSpan (places.shapeOf mu)).length * c2hat.dfQ (places.shapeOf mu))
-        (ground.dedupL ((exhaust s.length
+        (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content))
       = (blockSpan s).length * (blockSpan (adjchar.theta d)).length
         * (c2hat.dfQ s + 2 * d * d) := by
@@ -2334,27 +2334,27 @@ private theorem driftFold (d : Nat) (hd : 2 ≤ d) (s : Shape)
   have htd : (adjchar.theta d).length = d := adjchar.length_theta d
   obtain ⟨hszP, hwidP, hclP, hiP⟩ := fusedSpan_pack s (adjchar.theta d) hts
   have hwd : ∀ mu : List Nat, 0 < ground.countOf mu
-      (ground.dedupL ((exhaust s.length
+      (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
             HVec.content)) → mu.length = d := by
     intro mu hmu
     rw [exhaust_width s.length
       (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))
       hszP hwidP hclP mu
-      (ground.mem_of_dedupL (ground.mem_of_countOf_pos mu _ hmu))]
+      (ground.mem_of_dedupF (ground.mem_of_countOf_pos mu _ hmu))]
     exact hsd
   have hrl := exhaust_rowList_shapeOf s.length (fusedAt (blockSpan s)
     (blockSpan (adjchar.theta d))) hszP hwidP hclP
   have hdeg : ∀ mu : List Nat, 0 < ground.countOf mu
-      (ground.dedupL ((exhaust s.length
+      (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
             HVec.content)) → places.degree (places.shapeOf mu) = places.degree s + d := by
     intro mu hmu
     show ground.sumNat (places.rowList (places.shapeOf mu)) = _
-    rw [hrl mu (ground.mem_of_dedupL
+    rw [hrl mu (ground.mem_of_dedupF
         (ground.mem_of_countOf_pos mu _ hmu)),
       exhaust_degree s (adjchar.theta d) hts mu
-        (ground.mem_of_dedupL
+        (ground.mem_of_dedupF
           (ground.mem_of_countOf_pos mu _ hmu)),
       adjchar.degree_theta d hd]
   have hdim := blockcount.fusionCount_dim s (adjchar.theta d) hts
@@ -2370,7 +2370,7 @@ private theorem driftFold (d : Nat) (hd : 2 ≤ d) (s : Shape)
       (fun mu => fusionCount s (adjchar.theta d) (places.shapeOf mu)
         * (weylchar.stdSq (places.display (places.shapeOf mu))
           * (blockSpan (places.shapeOf mu)).length))
-      (ground.dedupL ((exhaust s.length
+      (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content)))
     (places.pairsOf d).length d (ground.sumNat (places.unitDisp d))
     (weylchar.stdSq (places.unitDisp d))
@@ -2409,12 +2409,12 @@ private theorem driftFold (d : Nat) (hd : 2 ≤ d) (s : Shape)
         (fun mu => fusionCount s (adjchar.theta d) (places.shapeOf mu)
           * (weylchar.stdSq (places.display (places.shapeOf mu))
             * (blockSpan (places.shapeOf mu)).length))
-        (ground.dedupL ((exhaust s.length
+        (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content))
       = ground.famFold Nat.add 0
           (fun mu => fusionCount s (adjchar.theta d) (places.shapeOf mu)
             * (blockSpan (places.shapeOf mu)).length * c2hat.dfQ (places.shapeOf mu))
-          (ground.dedupL ((exhaust s.length
+          (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content))
         + (((places.degree s + d) * (places.degree s + d)
       + d * (d + 1) * (places.degree s + d) + d * weylchar.stdSq
@@ -2423,7 +2423,7 @@ private theorem driftFold (d : Nat) (hd : 2 ≤ d) (s : Shape)
         (fun mu => fusionCount s (adjchar.theta d) (places.shapeOf mu)
           * (weylchar.stdSq (places.display (places.shapeOf mu))
             * (blockSpan (places.shapeOf mu)).length))
-        (ground.dedupL ((exhaust s.length
+        (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content)),
       ground.famFold_congr_members Nat.add 0 _
         (fun mu => fusionCount s (adjchar.theta d) (places.shapeOf mu)
@@ -2432,7 +2432,7 @@ private theorem driftFold (d : Nat) (hd : 2 ≤ d) (s : Shape)
       + d * (d + 1) * (places.degree s + d) + d * weylchar.stdSq (places.unitDisp d)))
             * (fusionCount s (adjchar.theta d) (places.shapeOf mu) *
               (blockSpan (places.shapeOf mu)).length))
-        (ground.dedupL ((exhaust s.length
+        (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content))
         (fun mu hmu => by
           have hq : d * weylchar.stdSq (places.display (places.shapeOf mu))
@@ -2474,13 +2474,13 @@ private theorem driftFold (d : Nat) (hd : 2 ≤ d) (s : Shape)
       + d * (d + 1) * (places.degree s + d) + d * weylchar.stdSq (places.unitDisp d)))
           * (fusionCount s (adjchar.theta d) (places.shapeOf mu) * (blockSpan
             (places.shapeOf mu)).length))
-        (ground.dedupL ((exhaust s.length
+        (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content)),
       ← ground.famFold_mul ((((places.degree s + d) * (places.degree s + d)
       + d * (d + 1) * (places.degree s + d) + d * weylchar.stdSq (places.unitDisp d))))
         (fun mu => fusionCount s (adjchar.theta d) (places.shapeOf mu) *
           (blockSpan (places.shapeOf mu)).length)
-        (ground.dedupL ((exhaust s.length
+        (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content)),
       hdim]
   -- the converted display at the two factors and the cross term
@@ -2488,14 +2488,14 @@ private theorem driftFold (d : Nat) (hd : 2 ≤ d) (s : Shape)
   show ground.famFold Nat.add 0
       (fun mu => fusionCount s (adjchar.theta d) (places.shapeOf mu)
         * (blockSpan (places.shapeOf mu)).length * c2hat.dfQ (places.shapeOf mu))
-      (ground.dedupL ((exhaust s.length
+      (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content))
     = _
   refine assembleFinal
     (ground.famFold Nat.add 0
       (fun mu => fusionCount s (adjchar.theta d) (places.shapeOf mu)
         * (blockSpan (places.shapeOf mu)).length * c2hat.dfQ (places.shapeOf mu))
-      (ground.dedupL ((exhaust s.length
+      (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content)))
     (blockSpan s).length (blockSpan (adjchar.theta d)).length
     (places.degree s) d
@@ -2507,7 +2507,7 @@ private theorem driftFold (d : Nat) (hd : 2 ≤ d) (s : Shape)
         (fun mu => fusionCount s (adjchar.theta d) (places.shapeOf mu)
           * (weylchar.stdSq (places.display (places.shapeOf mu))
             * (blockSpan (places.shapeOf mu)).length))
-        (ground.dedupL ((exhaust s.length
+        (ground.dedupF ((exhaust s.length
           (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content)))
       (weylchar.stdSq (places.unitDisp d) * ((blockSpan s).length * (blockSpan
         (adjchar.theta d)).length)),
@@ -2537,29 +2537,17 @@ own data — the guarded enumeration's survivors, the label count at
 the reduced target, and the enumeration's bridge to the channels'
 index. -/
 
-/-- The dimension is one value at the class: the withdrawn full
-column moves the display together. -/
-private theorem dimOf_reduce (c : Shape) (hc : 0 < c.length) :
-    weyldim.dimOf (labels.reduce c) = weyldim.dimOf c := by
-  cases c with
-  | nil => exact absurd hc (Nat.lt_irrefl 0)
-  | cons x t =>
-    match ground.snoc_split t.length (x :: t) rfl with
-    | ⟨s', j, hs, _⟩ =>
-      rw [hs, labels.reduce_snoc s' j, weyldim.dimOf_snoc s' j]
-
 /-- `thm:drift`'s display at the label calculus: the
 dimension-weighted adjoint row's Casimir fold reads
 `d_R d_θ (d_f Q(R) + 2 d_f²)` at every shape of the width.  The
 row's guarded enumeration reads each survivor at its own reduced
 label — the count at the matched-degree lift
 (`labels.countL_reduce`) with the dimension and the cleared
-Casimir one value at the class (`weyldim.dimOf_snoc`,
+Casimir one value at the class (`labels.dimOf_class`,
 `labels.c2Class_all`) — the fast count is the block count
-(`cor:steinberg`), and the enumeration bridges to the channels'
-index, each channel listed once at its own degree and every
-off-channel shape's count vacant.  The fold then closes at
-`driftFold`: the summed recursion (`sumRec`) at each channel
+(`cor:steinberg`), with `labels.rowFold` reading the weighted row
+and `labels.bridgeFold` reading the exhaustion's index. The fold
+then closes at `driftFold`: the summed recursion (`sumRec`) at each channel
 against the two factors', the fused family split over the channels
 (`blockcount.gradedDim_countAt`) and over the factors, the moments
 at the degree folds, and the square identity closing at the shared
@@ -2567,207 +2555,61 @@ channel degree with the dimension display
 (`blockcount.fusionCount_dim`) and `d_f Q(θ) = 2 d_f²`. -/
 theorem readAll (d : Nat) (hd : 2 ≤ d) (s : Shape)
     (hs : s.length = d) : fusion.driftLaw (fusion.dataA d) s := by
-  have hd0 : 0 < d := Nat.lt_of_lt_of_le Nat.zero_lt_two hd
   have hts : (adjchar.theta d).length = s.length := by
     rw [adjchar.length_theta d, hs]
-  have htd : (adjchar.theta d).length = d := adjchar.length_theta d
-  obtain ⟨hszP, hwidP, hclP, hiP⟩ := fusedSpan_pack s (adjchar.theta d) hts
-  have hrl := exhaust_rowList_shapeOf s.length (fusedAt (blockSpan s)
-    (blockSpan (adjchar.theta d))) hszP hwidP hclP
-  have hwd : ∀ mu : List Nat, 0 < ground.countOf mu
-      (ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
-          HVec.content)) → mu.length = d := by
-    intro mu hmu
-    rw [exhaust_width s.length
-      (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))
-      hszP hwidP hclP mu
-      (ground.mem_of_dedupL (ground.mem_of_countOf_pos mu _ hmu))]
-    exact hs
-  have hdeg : ∀ mu : List Nat, 0 < ground.countOf mu
-      (ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
-          HVec.content)) → places.degree (places.shapeOf mu) = (places.degree
-          s + places.degree (adjchar.theta d)) := by
-    intro mu hmu
-    show ground.sumNat (places.rowList (places.shapeOf mu)) = _
-    rw [hrl mu (ground.mem_of_dedupL
-        (ground.mem_of_countOf_pos mu _ hmu)),
-      exhaust_degree s (adjchar.theta d) hts mu
-        (ground.mem_of_dedupL
-          (ground.mem_of_countOf_pos mu _ hmu))]
-  -- the image of the channels' index sits once in the enumeration
-  have hES1 : ∀ c : Shape, 0 < ground.countOf c ((ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
-          HVec.content)).map places.shapeOf) →
-      ground.countOf c ((ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
-          HVec.content)).map places.shapeOf) = 1 := by
-    intro c hc
-    obtain ⟨mu, hmu, hmuc⟩ := ground.mem_map_of places.shapeOf
-      (ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
-          HVec.content)) c (ground.mem_of_countOf_pos c _ hc)
-    rw [← hmuc,
-      ground.countOf_map_inj places.shapeOf mu (ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content))
-        (fun y hy hyc => by
-          rw [← hrl y (ground.mem_of_dedupL
-              (ground.mem_of_countOf_pos y _ hy)),
-            ← hrl mu (ground.mem_of_dedupL
-              (ground.mem_of_countOf_pos mu _
-                (ground.countOf_pos_of_mem hmu))),
-            hyc])]
-    exact Nat.le_antisymm (ground.countOf_dedupL_le mu _)
-      (ground.countOf_pos_of_mem hmu)
-  have hEScov : ∀ c : Shape, 0 < ground.countOf c ((ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
-          HVec.content)).map places.shapeOf) →
-      ground.countOf c (places.allShapes d (places.degree s + places.degree
-        (adjchar.theta d))) = 1 := by
-    intro c hc
-    obtain ⟨mu, hmu, hmuc⟩ := ground.mem_map_of places.shapeOf
-      (ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
-          HVec.content)) c (ground.mem_of_countOf_pos c _ hc)
-    have hmuP : 0 < ground.countOf mu (ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content)) :=
-      ground.countOf_pos_of_mem hmu
-    have hlen : c.length = d := by
-      rw [← hmuc, places.length_shapeOf mu]
-      exact hwd mu hmuP
-    have hdc : places.degree c = (places.degree s + places.degree (adjchar.theta d)) := by
-      rw [← hmuc]
-      exact hdeg mu hmuP
-    refine Nat.le_antisymm (places.countOf_allShapes_le d (places.degree s +
-      places.degree (adjchar.theta d)) c) ?_
-    refine ground.countOf_pos_of_mem ?_
-    rw [← hdc]
-    exact places.mem_allShapes d c hlen
-  -- an off-image shape of the enumeration carries no fusion
-  have hoff : ∀ c : Shape,
-      0 < ground.countOf c (places.allShapes d (places.degree s +
-        places.degree (adjchar.theta d))) →
-      ground.countOf c ((ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
-          HVec.content)).map places.shapeOf) = 0 →
-      blockcount.fusionCount s (adjchar.theta d) c = 0 := by
-    intro c hc hz
-    have hcs : c.length = s.length := by
-      rw [(places.allShapes_sound d (places.degree s + places.degree (adjchar.theta d)) c
-        (ground.mem_of_countOf_pos c _ hc)).1, hs]
-    rw [blockcount.fusionCount_countOf s (adjchar.theta d) c hts]
-    match Nat.eq_zero_or_pos (ground.countOf (places.rowList c)
-      ((exhaust s.length (fusedAt (blockSpan s) (blockSpan (adjchar.theta
-        d)))).map HVec.content)) with
-    | .inl h0 => exact h0
-    | .inr hp =>
-      exfalso
-      have hmem : c ∈ ((ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
-          HVec.content)).map places.shapeOf) := by
-        rw [← places.shapeOf_rowList c]
-        exact ground.mem_map_to places.shapeOf
-          (ground.mem_dedupL (ground.mem_of_countOf_pos _ _ hp))
-      have := ground.countOf_pos_of_mem hmem
-      rw [hz] at this
-      exact absurd this (Nat.lt_irrefl 0)
-  -- the row's guarded values at the reduced labels
-  have hterm : ∀ c : Shape,
-      0 < ground.countOf c (places.allShapes d (places.degree s +
-        places.degree (adjchar.theta d))) →
-      ground.optVal
-        (fun c' => labels.countL s (adjchar.theta d) c' * weyldim.dimOf c'
-          * c2hat.dfQ c')
-        (labels.emit s (adjchar.theta d) c)
-      = blockcount.fusionCount s (adjchar.theta d) c * weyldim.dimOf c
-        * c2hat.dfQ c := by
-    intro c hc
-    obtain ⟨hcl, hck⟩ := places.allShapes_sound d (places.degree s +
-      places.degree (adjchar.theta d)) c
-      (ground.mem_of_countOf_pos c _ hc)
-    have hcs : c.length = s.length := by rw [hcl, hs]
-    have hcpos : 0 < c.length := by rw [hcl]; exact hd0
-    rw [show labels.emit s (adjchar.theta d) c
-      = (if 0 < steinberg.count s (adjchar.theta d) c
-          then some (labels.reduce c) else none) from rfl]
-    by_cases hg : 0 < steinberg.count s (adjchar.theta d) c
-    · rw [if_pos hg]
-      show labels.countL s (adjchar.theta d) (labels.reduce c)
-          * weyldim.dimOf (labels.reduce c)
-          * c2hat.dfQ (labels.reduce c) = _
-      rw [labels.countL_reduce s (adjchar.theta d) c hcs hck,
-        dimOf_reduce c hcpos, ← labels.c2Class_all c,
-        steinberg.count_fusion s (adjchar.theta d) c hts hcs]
-    · rw [if_neg hg]
-      show (0 : Nat) = _
-      match Nat.eq_zero_or_pos (steinberg.count s (adjchar.theta d) c) with
-      | .inl h0 =>
-        rw [← steinberg.count_fusion s (adjchar.theta d) c hts hcs, h0,
-          Nat.zero_mul, Nat.zero_mul]
-      | .inr hp => exact absurd hp hg
-  -- the enumeration bridges to the channels' index
-  have hbridge : ground.famFold Nat.add 0
-      (fun c => blockcount.fusionCount s (adjchar.theta d) c * weyldim.dimOf c
-        * c2hat.dfQ c) (places.allShapes d (places.degree s + places.degree (adjchar.theta d)))
+  have hrow := labels.rowFold s (adjchar.theta d)
+    (fun c => weyldim.dimOf c * c2hat.dfQ c)
+    (fun c _ => by rw [← labels.dimOf_class c, ← labels.c2Class_all c])
+  have hbridge := labels.bridgeFold s (adjchar.theta d) hts
+    (fun c => weyldim.dimOf c * c2hat.dfQ c)
+  have hcount : ground.famFold Nat.add 0
+      (fun c => steinberg.count s (adjchar.theta d) c
+        * (weyldim.dimOf c * c2hat.dfQ c))
+      (places.allShapes s.length (places.degree s + places.degree (adjchar.theta d)))
     = ground.famFold Nat.add 0
-      (fun mu => blockcount.fusionCount s (adjchar.theta d) (places.shapeOf mu)
-        * (blockSpan (places.shapeOf mu)).length
-        * c2hat.dfQ (places.shapeOf mu)) (ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content)) := by
-    rw [ground.famFold_congr_members Nat.add 0
-        (fun c => blockcount.fusionCount s (adjchar.theta d) c * weyldim.dimOf c
-        * c2hat.dfQ c)
-        (fun c => ground.countOf c ((ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
-          HVec.content)).map places.shapeOf)
-          * (blockcount.fusionCount s (adjchar.theta d) c
-            * weyldim.dimOf c * c2hat.dfQ c))
-        (places.allShapes d (places.degree s + places.degree (adjchar.theta d)))
-        (fun c hc => by
-          match Nat.eq_zero_or_pos (ground.countOf c ((ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
-          HVec.content)).map places.shapeOf)) with
-          | .inl h0 =>
-            rw [h0, Nat.zero_mul, hoff c hc h0, Nat.zero_mul,
-              Nat.zero_mul]
-          | .inr hp => rw [hES1 c hp, Nat.one_mul]),
-      ← ground.famFold_countCollect
-        (fun c => blockcount.fusionCount s (adjchar.theta d) c * weyldim.dimOf c
-        * c2hat.dfQ c)
-        ((ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map
-          HVec.content)).map places.shapeOf) (places.allShapes d
-          (places.degree s + places.degree (adjchar.theta d))) hEScov,
-      ground.famFold_map Nat.add 0
-        (fun c => blockcount.fusionCount s (adjchar.theta d) c * weyldim.dimOf c
-        * c2hat.dfQ c)
-        places.shapeOf (ground.dedupL ((exhaust s.length
-        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content))]
-    exact ground.famFold_congr_all Nat.add 0 _ _
-      (fun mu => by rw [weyldim.dimOf_spanLen (places.shapeOf mu)])
-      (ground.dedupL ((exhaust s.length
+      (fun c => fusionCount s (adjchar.theta d) c
+        * (weyldim.dimOf c * c2hat.dfQ c))
+      (places.allShapes s.length (places.degree s + places.degree (adjchar.theta d))) := by
+    refine ground.famFold_congr_members Nat.add 0 _ _ _ ?_
+    intro c hc
+    rw [steinberg.count_fusion s (adjchar.theta d) c hts
+      (places.allShapes_sound s.length _ c
+        (ground.mem_of_countOf_pos c _ hc)).1]
+  have hdim : ground.famFold Nat.add 0
+      (fun mu => fusionCount s (adjchar.theta d) (places.shapeOf mu)
+        * (weyldim.dimOf (places.shapeOf mu) * c2hat.dfQ (places.shapeOf mu)))
+      (ground.dedupF ((exhaust s.length
         (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content))
+    = ground.famFold Nat.add 0
+      (fun mu => fusionCount s (adjchar.theta d) (places.shapeOf mu)
+        * (blockSpan (places.shapeOf mu)).length * c2hat.dfQ (places.shapeOf mu))
+      (ground.dedupF ((exhaust s.length
+        (fusedAt (blockSpan s) (blockSpan (adjchar.theta d)))).map HVec.content)) :=
+    ground.famFold_congr_all Nat.add 0 _ _ (fun mu => by
+      rw [weyldim.dimOf_spanLen (places.shapeOf mu), ground.mulAssoc]) _
+  have hidx : places.allShapes d
+      (places.degree s + places.degree (adjchar.theta d))
+    = places.allShapes s.length
+      (places.degree s + places.degree (adjchar.theta d)) :=
+    congrArg (fun n => places.allShapes n
+      (places.degree s + places.degree (adjchar.theta d))) hs.symm
   show ((places.allShapes d (places.degree s + places.degree (adjchar.theta d))).filterMap
       (labels.emit s (adjchar.theta d))).foldl
       (fun acc c => acc + labels.countL s (adjchar.theta d) c * weyldim.dimOf c
         * c2hat.dfQ c) 0
     = weyldim.dimOf s * weyldim.dimOf (adjchar.theta d)
       * (c2hat.dfQ s + 2 * d * d)
-  rw [ground.foldlSum
-      (fun c => labels.countL s (adjchar.theta d) c * weyldim.dimOf c
-        * c2hat.dfQ c) _ 0,
-    Nat.zero_add,
-    ground.famFold_filterMap
-      (labels.emit s (adjchar.theta d))
-      (fun c => labels.countL s (adjchar.theta d) c * weyldim.dimOf c
-        * c2hat.dfQ c)
-      (places.allShapes d (places.degree s + places.degree (adjchar.theta d))),
-    ground.famFold_congr_members Nat.add 0 _
-      (fun c => blockcount.fusionCount s (adjchar.theta d) c * weyldim.dimOf c
-        * c2hat.dfQ c) (places.allShapes d (places.degree s + places.degree
-          (adjchar.theta d))) hterm,
-    hbridge, driftFold d hd s hs,
+  rw [hidx,
+    ground.foldlSum (fun c => labels.countL s (adjchar.theta d) c
+      * weyldim.dimOf c * c2hat.dfQ c) _ 0, Nat.zero_add,
+    ground.famFold_congr_all Nat.add 0 _
+      (fun c => labels.countL s (adjchar.theta d) c
+        * (weyldim.dimOf c * c2hat.dfQ c))
+      (fun c => ground.mulAssoc _ _ _),
+    ground.famFold_filterMap (labels.emit s (adjchar.theta d))
+      (fun c => labels.countL s (adjchar.theta d) c
+        * (weyldim.dimOf c * c2hat.dfQ c)),
+    hrow, hcount, hbridge, hdim, driftFold d hd s hs,
     weyldim.dimOf_spanLen s, weyldim.dimOf_spanLen (adjchar.theta d)]
 
 /-! The strictness read (`cor:weyldim`'s factor comparison): a
@@ -3053,5 +2895,18 @@ theorem strict (s : Shape) (hred : labels.reduce s = s)
   refine Nat.le_of_mul_le_mul_right ?_ (weyldim.gapProdU_pos s)
   rw [hU]
   exact hmain
+
+/-- Dimension strictness depends only on the label's class.
+A nonunit class has positive degree after full-column withdrawal. -/
+theorem strict_class (s : Shape) (hne : labels.reduce s ≠ labels.unitL s.length) :
+    2 ≤ weyldim.dimOf s := by
+  rw [labels.dimOf_class]
+  apply strict (labels.reduce s) (labels.reduce_reduce s)
+  cases Nat.eq_zero_or_pos (places.degree (labels.reduce s)) with
+  | inl hz =>
+    have he := places.eq_unit_of_degree_zero (labels.reduce s) hz
+    rw [labels.length_reduce] at he
+    exact False.elim (hne he)
+  | inr hp => exact hp
 
 end drift

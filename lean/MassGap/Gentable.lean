@@ -62,7 +62,7 @@ positivity, the cofactor's whole verification. -/
 def residueRead (t : Table) : Prop :=
   residue t * (2 * t.lenDen) = lenFold t t.thetaFold ∧ 0 < residue t
 
-instance (t : Table) : Decidable (residueRead t) :=
+instance instGentable1 (t : Table) : Decidable (residueRead t) :=
   inferInstanceAs (Decidable (_ ∧ _))
 
 /-- The cleared form fold `2 lenDen · ⟨Σ f α, Σ g α⟩`: the halved
@@ -78,7 +78,7 @@ def thetaNormRead (t : Table) : Prop :=
   (formNum t t.thetaFold t.thetaFold).oneValue
     (BPair.ofNat (4 * t.lenDen))
 
-instance (t : Table) : Decidable (thetaNormRead t) :=
+instance instGentable2 (t : Table) : Decidable (thetaNormRead t) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The form's symmetry at the simple pairs, the halved products'
@@ -92,7 +92,7 @@ def symRead (t : Table) : Prop :=
           * BPair.ofNat (getAt 0 t.lenNums i))
     then true else false))) = true
 
-instance (t : Table) : Decidable (symRead t) :=
+instance instGentable3 (t : Table) : Decidable (symRead t) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The root fold's coroot read at a key: `(2ρ)(α_j^∨)`, the fold
@@ -107,7 +107,7 @@ def rhoRead (t : Table) : Prop :=
     if (rho2Coroot t j).oneValue (BPair.ofNat 2) then true else false))
     = true
 
-instance (t : Table) : Decidable (rhoRead t) :=
+instance instGentable4 (t : Table) : Decidable (rhoRead t) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The positive list's count. -/
@@ -120,7 +120,7 @@ def occRead (t : Table) : Prop :=
   (t.posFolds.all (fun f =>
     0 < f.foldl (fun a b => a + b) 0)) = true
 
-instance (t : Table) : Decidable (occRead t) :=
+instance instGentable5 (t : Table) : Decidable (occRead t) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The shape read: the key list's count reads every field's
@@ -133,7 +133,7 @@ def shapeRead (t : Table) : Prop :=
     && t.thetaFold.length == t.rank
     && t.posFolds.all (fun f => f.length == t.rank)) = true
 
-instance (t : Table) : Decidable (shapeRead t) :=
+instance instGentable6 (t : Table) : Decidable (shapeRead t) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The first table, the powers with the matrix units

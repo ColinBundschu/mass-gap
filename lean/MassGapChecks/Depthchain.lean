@@ -18,40 +18,42 @@ holding.  The walk's closure: every reached member's depth sits
 below the count and every reached member sits in its listed shell,
 the theorem routes beside the decided reads, and the cross read
 refused at a matrix coupling two members the walk does not join.
-The fusion walk's reach (`lem:corner`'s near mass): at the window
+The fusion walk's reach (`lem:cornerkey`'s near mass): at the window
 `(𝟏, θ, (4, 0))` of `dataA 2` the walk reads the third key off the
 sum's unit at two steps and the reach read holds there, decided and
 through the theorem, while at one step the key sits at the unit and
 the reach read refuses.
 -/
 
+namespace depthchain
+
 namespace depthchainChecks
-open ground elim depthchain
+open ground elim
 
 private def u : BPair := BPair.unit
 private def w3 : Mat :=
   [[u, ⟨2, 1⟩, u], [⟨2, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩], [u, ⟨2, 1⟩, ⟨3, 1⟩]]
 private def p3 : List (List Nat) := [[0], [1], [2]]
 
-example : joinedAt [w3] 0 1 = true := by decide +kernel
-example : joined [w3] p3 0 1 = true := by decide +kernel
-example : joined [w3] p3 1 2 = true := by decide +kernel
-example : joined [w3] p3 0 2 = false := by decide +kernel
-example : reach [w3] p3 3 [0] 1 = [0, 1] := by decide +kernel
-example : reach [w3] p3 3 [0] 2 = [0, 1, 2] := by decide +kernel
-example : depthOf [w3] p3 3 [0] 0 = 0 := by decide +kernel
-example : depthOf [w3] p3 3 [0] 1 = 1 := by decide +kernel
-example : depthOf [w3] p3 3 [0] 2 = 2 := by decide +kernel
-example : shell [w3] p3 3 [0] 1 = [1] := by decide +kernel
-example : shells [w3] p3 3 [0] = [[0], [1], [2]] := by decide +kernel
-example : posShells [w3] p3 3 [0] = [[0], [1], [2]] := by decide +kernel
-example : depthOrder [w3] p3 3 [0] = [0, 1, 2] := by decide +kernel
-example : selM (depthOrder [w3] p3 3 [0]) (depthOrder [w3] p3 3 [0]) w3 = w3 := by
+theorem pin1 : joinedAt [w3] 0 1 = true := by decide +kernel
+theorem pin2 : joined [w3] p3 0 1 = true := by decide +kernel
+theorem pin3 : joined [w3] p3 1 2 = true := by decide +kernel
+theorem pin4 : joined [w3] p3 0 2 = false := by decide +kernel
+theorem pin5 : reach [w3] p3 3 [0] 1 = [0, 1] := by decide +kernel
+theorem pin6 : reach [w3] p3 3 [0] 2 = [0, 1, 2] := by decide +kernel
+theorem pin7 : depthOf [w3] p3 3 [0] 0 = 0 := by decide +kernel
+theorem pin8 : depthOf [w3] p3 3 [0] 1 = 1 := by decide +kernel
+theorem pin9 : depthOf [w3] p3 3 [0] 2 = 2 := by decide +kernel
+theorem pin10 : shell [w3] p3 3 [0] 1 = [1] := by decide +kernel
+theorem pin11 : shells [w3] p3 3 [0] = [[0], [1], [2]] := by decide +kernel
+theorem pin12 : posShells [w3] p3 3 [0] = [[0], [1], [2]] := by decide +kernel
+theorem pin13 : depthOrder [w3] p3 3 [0] = [0, 1, 2] := by decide +kernel
+theorem pin14 : selM (depthOrder [w3] p3 3 [0]) (depthOrder [w3] p3 3 [0]) w3 = w3 := by
   decide +kernel
 
-example : depthOf [w3] p3 3 [0] 2 ≤ depthOf [w3] p3 3 [0] 1 + 1 :=
+theorem pin15 : depthOf [w3] p3 3 [0] 2 ≤ depthOf [w3] p3 3 [0] 1 + 1 :=
   depth_step [w3] p3 3 [0] 2 1 (by decide) (by decide +kernel)
-example : joined [w3] p3 0 1 = joined [w3] p3 1 0 :=
+theorem pin16 : joined [w3] p3 0 1 = joined [w3] p3 1 0 :=
   joined_symm [w3] p3 3 (by decide +kernel) (by decide +kernel) 0 1
 
 /-! The walk's closure at the three-key walk: every member's depth
@@ -59,13 +61,13 @@ below the count and every member in its listed shell, decided and
 through the theorems; and a fourth member off the walk sits at the
 budget's cap, off every listed shell. -/
 
-example : depthOf [w3] p3 3 [0] 2 < 3 :=
+theorem pin17 : depthOf [w3] p3 3 [0] 2 < 3 :=
   depth_lt [w3] p3 3 [0] (by decide +kernel) (by decide +kernel) (by decide)
     2 2 (by decide +kernel)
-example : 2 ∈ ground.getAt [] (shells [w3] p3 3 [0]) (depthOf [w3] p3 3 [0] 2) :=
+theorem pin18 : 2 ∈ ground.getAt [] (shells [w3] p3 3 [0]) (depthOf [w3] p3 3 [0] 2) :=
   mem_shells [w3] p3 3 [0] (by decide +kernel) (by decide +kernel) (by decide)
     2 2 (by decide) (by decide +kernel)
-example : 0 < (shell [w3] p3 3 [0] 1).length :=
+theorem pin19 : 0 < (shell [w3] p3 3 [0] 1).length :=
   shell_contiguous [w3] p3 3 [0] (by decide +kernel) 1 2 (by decide)
     (ground.mem_of_countOf_pos _ _ (by decide +kernel))
 
@@ -74,9 +76,9 @@ private def w4 : Mat :=
    [u, u, u, ⟨3, 1⟩]]
 private def p4 : List (List Nat) := [[0], [1], [2], [3]]
 
-example : depthOf [w4] p4 4 [0] 3 = 4 := by decide +kernel
-example : shells [w4] p4 4 [0] = [[0], [1], [2]] := by decide +kernel
-example : (List.range 4).all (fun k => !reachB [w4] p4 4 [0] k 3) = true := by
+theorem pin20 : depthOf [w4] p4 4 [0] 3 = 4 := by decide +kernel
+theorem pin21 : shells [w4] p4 4 [0] = [[0], [1], [2]] := by decide +kernel
+theorem pin22 : (List.range 4).all (fun k => !reachB [w4] p4 4 [0] k 3) = true := by
   decide +kernel
 
 /-! The slab data along the walk's shells: the diagonal blocks the
@@ -84,35 +86,35 @@ walk's own entries, the bonds its unit bonds, the slab shape at the
 orders one each, the off-band read holding, and the assembly read
 decided beside its theorem route. -/
 
-example : slabDiag w3 (posShells [w3] p3 3 [0]) = [[[u]], [[⟨3, 1⟩]], [[⟨3, 1⟩]]] := by
+theorem pin23 : slabDiag w3 (posShells [w3] p3 3 [0]) = [[[u]], [[⟨3, 1⟩]], [[⟨3, 1⟩]]] := by
   decide +kernel
-example : slabOff w3 (posShells [w3] p3 3 [0]) = [[[⟨2, 1⟩]], [[⟨2, 1⟩]]] := by
+theorem pin24 : slabOff w3 (posShells [w3] p3 3 [0]) = [[[⟨2, 1⟩]], [[⟨2, 1⟩]]] := by
   decide +kernel
-example : greenprod.slabShape (slabDiag w3 (posShells [w3] p3 3 [0]))
+theorem pin25 : greenprod.slabShape (slabDiag w3 (posShells [w3] p3 3 [0]))
     (slabOff w3 (posShells [w3] p3 3 [0])) [1, 1, 1] := by decide +kernel
-example : greenprod.slabShape (slabDiag w3 (posShells [w3] p3 3 [0]))
+theorem pin26 : greenprod.slabShape (slabDiag w3 (posShells [w3] p3 3 [0]))
     (slabOff w3 (posShells [w3] p3 3 [0]))
     ((posShells [w3] p3 3 [0]).map List.length) :=
   slabs_shape w3 (posShells [w3] p3 3 [0]) (by decide +kernel) (by decide +kernel)
-example : offBandB w3 (posShells [w3] p3 3 [0]) = true := by decide +kernel
-example : crossB [w3] p3 w3 = true := by decide +kernel
-example : matOneValue (selM (depthOrder [w3] p3 3 [0]) (depthOrder [w3] p3 3 [0]) w3)
+theorem pin27 : offBandB w3 (posShells [w3] p3 3 [0]) = true := by decide +kernel
+theorem pin28 : crossB [w3] p3 w3 = true := by decide +kernel
+theorem pin29 : matOneValue (selM (depthOrder [w3] p3 3 [0]) (depthOrder [w3] p3 3 [0]) w3)
     (greenprod.assemble (slabDiag w3 (posShells [w3] p3 3 [0]))
       (slabOff w3 (posShells [w3] p3 3 [0]))) := by decide +kernel
-example : matOneValue (selM (depthOrder [w3] p3 3 [0]) (depthOrder [w3] p3 3 [0]) w3)
+theorem pin30 : matOneValue (selM (depthOrder [w3] p3 3 [0]) (depthOrder [w3] p3 3 [0]) w3)
     (greenprod.assemble (slabDiag w3 (posShells [w3] p3 3 [0]))
       (slabOff w3 (posShells [w3] p3 3 [0]))) :=
   depth_assemble [w3] p3 3 [0] 3 (by decide +kernel) (by decide +kernel)
     (by decide) rfl w3 (by decide +kernel) (by decide +kernel) (by decide +kernel)
-example : crossB [w3] p3 (msum 3 (ground.getAt [] [w3]) (List.range 1)) = true :=
+theorem pin31 : crossB [w3] p3 (msum 3 (ground.getAt [] [w3]) (List.range 1)) = true :=
   msum_cross [w3] p3 3 (by decide +kernel) (by decide +kernel)
-example : crossB [w3] p3 (elim.idMat 3) = true :=
+theorem pin32 : crossB [w3] p3 (elim.idMat 3) = true :=
   memberDiag_cross [w3] p3 (elim.idMat 3) (by decide +kernel)
 
 /-! The join binder isolated: the two ends of the walk are joined to
 neither, and the far end's depth sits beyond the base's successor. -/
 
-example : ¬ (depthOf [w3] p3 3 [0] 2 ≤ depthOf [w3] p3 3 [0] 0 + 1) := by
+theorem pin33 : ¬ (depthOf [w3] p3 3 [0] 2 ≤ depthOf [w3] p3 3 [0] 0 + 1) := by
   decide +kernel
 
 /-! The assembly's binders isolated.  At the shell list `[[0], [2], [1]]`,
@@ -125,12 +127,12 @@ the matrix's own; and the cross read refuses at a matrix coupling
 the walk's two ends, which the walk's terms do not join, the
 assembly parting there. -/
 
-example : offBandB w3 [[0], [2], [1]] = false := by decide +kernel
-example : ¬ matOneValue (selM ([[0], [2], [1]].flatMap (fun s => s))
+theorem pin34 : offBandB w3 [[0], [2], [1]] = false := by decide +kernel
+theorem pin35 : ¬ matOneValue (selM ([[0], [2], [1]].flatMap (fun s => s))
       ([[0], [2], [1]].flatMap (fun s => s)) w3)
     (greenprod.assemble (slabDiag w3 [[0], [2], [1]])
       (slabOff w3 [[0], [2], [1]])) := by decide +kernel
-example : matOneValue (selM ([[0], [1], [2]].flatMap (fun s => s))
+theorem pin36 : matOneValue (selM ([[0], [1], [2]].flatMap (fun s => s))
       ([[0], [1], [2]].flatMap (fun s => s)) w3)
     (greenprod.assemble (slabDiag w3 [[0], [1], [2]])
       (slabOff w3 [[0], [1], [2]])) :=
@@ -139,9 +141,9 @@ example : matOneValue (selM ([[0], [1], [2]].flatMap (fun s => s))
 
 private def wA : Mat := [[u, ⟨2, 1⟩], [⟨3, 1⟩, u]]
 
-example : offBandB wA [[0], [1]] = true := by decide +kernel
-example : ¬ matOneValue (transposeM wA) wA := by decide +kernel
-example : ¬ matOneValue (selM ([[0], [1]].flatMap (fun s => s))
+theorem pin37 : offBandB wA [[0], [1]] = true := by decide +kernel
+theorem pin38 : ¬ matOneValue (transposeM wA) wA := by decide +kernel
+theorem pin39 : ¬ matOneValue (selM ([[0], [1]].flatMap (fun s => s))
       ([[0], [1]].flatMap (fun s => s)) wA)
     (greenprod.assemble (slabDiag wA [[0], [1]])
       (slabOff wA [[0], [1]])) := by decide +kernel
@@ -149,8 +151,8 @@ example : ¬ matOneValue (selM ([[0], [1]].flatMap (fun s => s))
 private def wX : Mat :=
   [[u, ⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩]]
 
-example : crossB [w3] p3 wX = false := by decide +kernel
-example : ¬ matOneValue (selM (depthOrder [w3] p3 3 [0]) (depthOrder [w3] p3 3 [0]) wX)
+theorem pin40 : crossB [w3] p3 wX = false := by decide +kernel
+theorem pin41 : ¬ matOneValue (selM (depthOrder [w3] p3 3 [0]) (depthOrder [w3] p3 3 [0]) wX)
     (greenprod.assemble (slabDiag wX (posShells [w3] p3 3 [0]))
       (slabOff wX (posShells [w3] p3 3 [0]))) := by decide +kernel
 
@@ -170,7 +172,7 @@ unit label through the row law (`fusion.rowLaw_dataA`, the
 unit-column counts off the row). -/
 
 namespace square
-open ground elim depthchain lattice fusion carrier
+open ground elim lattice fusion carrier
 
 private def u : BPair := BPair.unit
 private def fS : Data places.Shape := tabulate (xData (dataA 2)) 96
@@ -180,21 +182,21 @@ private def sqIx : List (List places.Shape) :=
 private theorem sqIxPin : idx fS lattice.square 96 = sqIx := by
   rw [← idxA_eq]; decide +kernel
 
-example : pairpencil.slotDiag fS lattice.square (idx fS lattice.square 96)
+theorem pin42 : pairpencil.slotDiag fS lattice.square (idx fS lattice.square 96)
     = [0, 32, 96] := by
   rw [sqIxPin]; decide +kernel
 
 private def mSq : Mat := pairpencil.loopMag (dataA 2) [[2, 0], [4, 0]]
 private def p3 : List (List Nat) := [[0], [1], [2]]
 
-example : mSq = [[u, ⟨2, 1⟩, u], [⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩], [u, ⟨2, 1⟩, ⟨2, 1⟩]] := by
+theorem pin43 : mSq = [[u, ⟨2, 1⟩, u], [⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩], [u, ⟨2, 1⟩, ⟨2, 1⟩]] := by
   decide +kernel
-example : shells [mSq] p3 3 [0] = [[0], [1], [2]] := by decide +kernel
-example : slabDiag mSq (posShells [mSq] p3 3 [0]) = [[[u]], [[⟨2, 1⟩]], [[⟨2, 1⟩]]] := by
+theorem pin44 : shells [mSq] p3 3 [0] = [[0], [1], [2]] := by decide +kernel
+theorem pin45 : slabDiag mSq (posShells [mSq] p3 3 [0]) = [[[u]], [[⟨2, 1⟩]], [[⟨2, 1⟩]]] := by
   decide +kernel
-example : slabOff mSq (posShells [mSq] p3 3 [0]) = [[[⟨2, 1⟩]], [[⟨2, 1⟩]]] := by
+theorem pin46 : slabOff mSq (posShells [mSq] p3 3 [0]) = [[[⟨2, 1⟩]], [[⟨2, 1⟩]]] := by
   decide +kernel
-example : matOneValue (selM (depthOrder [mSq] p3 3 [0]) (depthOrder [mSq] p3 3 [0]) mSq)
+theorem pin47 : matOneValue (selM (depthOrder [mSq] p3 3 [0]) (depthOrder [mSq] p3 3 [0]) mSq)
     (greenprod.assemble (slabDiag mSq (posShells [mSq] p3 3 [0]))
       (slabOff mSq (posShells [mSq] p3 3 [0]))) :=
   depth_assemble [mSq] p3 3 [0] 3 (by decide +kernel) (by decide +kernel)
@@ -259,15 +261,15 @@ private theorem mSq3Pin : mSq3 = mSq3L := by
   rw [c02, c04]
   decide +kernel
 
-example : (dataA 3).row th3 th3 = [l2, l4, l3, th3, v0] := by decide +kernel
-example : shells [mSq3L] [[0], [1], [2], [3], [4]] 5 [0] = [[0], [1], [2, 3, 4]] := by
+theorem pin48 : (dataA 3).row th3 th3 = [l2, l4, l3, th3, v0] := by decide +kernel
+theorem pin49 : shells [mSq3L] [[0], [1], [2], [3], [4]] 5 [0] = [[0], [1], [2, 3, 4]] := by
   decide +kernel
-example : selM [0, 1, 2] [0, 1, 2] mSq3L
+theorem pin50 : selM [0, 1, 2] [0, 1, 2] mSq3L
     = [[u, ⟨2, 1⟩, u], [⟨2, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩], [u, ⟨2, 1⟩, ⟨3, 1⟩]] := by
   decide +kernel
-example : slabOff mSq3L (posShells [mSq3L] [[0], [1], [2], [3], [4]] 5 [0])
+theorem pin51 : slabOff mSq3L (posShells [mSq3L] [[0], [1], [2], [3], [4]] 5 [0])
     = [[[⟨2, 1⟩]], [[⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩]]] := by decide +kernel
-example : matOneValue
+theorem pin52 : matOneValue
     (selM (depthOrder [mSq3] [[0], [1], [2], [3], [4]] 5 [0])
       (depthOrder [mSq3] [[0], [1], [2], [3], [4]] 5 [0]) mSq3)
     (greenprod.assemble (slabDiag mSq3 (posShells [mSq3] [[0], [1], [2], [3], [4]] 5 [0]))
@@ -305,7 +307,7 @@ dual representative `[1 : 12]` and the level one, cleared at twelve,
 assembled from its slabs along the shells. -/
 
 namespace theta
-open ground elim depthchain lattice fusion carrier poly states twoplaq network
+open ground elim lattice fusion carrier poly states twoplaq network
   genericlift
 
 private def u : BPair := BPair.unit
@@ -319,10 +321,10 @@ private def p4 : List (List Nat) := [[0], [1], [2], [3]]
 private theorem thIxPin : idx fX lattice.thetaG 48 = thIx := by
   rw [← idxA_eq]; decide +kernel
 
-example : pairpencil.slotDiag fX lattice.thetaG (idx fX lattice.thetaG 48)
+theorem pin53 : pairpencil.slotDiag fX lattice.thetaG (idx fX lattice.thetaG 48)
     = [0, 32, 48, 32] := by
   rw [thIxPin]; decide +kernel
-example : pairpencil.gramBlockRead fX lattice.thetaG 4 thIx 1 (elim.idMat 4) := by
+theorem pin54 : pairpencil.gramBlockRead fX lattice.thetaG 4 thIx 1 (elim.idMat 4) := by
   decide +kernel
 
 /-! The terms' supports at the changed-edge rows, one term per
@@ -358,9 +360,9 @@ private def t2 : Mat :=
 
 private def tTh : List Mat := [t1, t2]
 
-example : ((List.range 4).all (fun i => (List.range 4).all (fun j =>
+theorem pin55 : ((List.range 4).all (fun i => (List.range 4).all (fun j =>
     joinedAt tTh i j == joinedAt suppT i j))) = true := by decide +kernel
-example : ((List.range 2).all (fun q => (List.range 4).all (fun i =>
+theorem pin56 : ((List.range 2).all (fun q => (List.range 4).all (fun i =>
     (List.range 4).all (fun j =>
       joinedAt [ground.getAt [] tTh q] i j
         == joinedAt [ground.getAt [] suppT q] i j)))) = true := by decide +kernel
@@ -372,59 +374,59 @@ adjoint character at the two-plaquette site, its self-pairing one
 and its pairing against the module pair `[1 : r(r + 2)]`, read at
 the residue one as `[1 : 3]`. -/
 
-example : pairpencil.loopMag (dataA 2) [[2, 0]] = [[u, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]] := by
+theorem pin57 : pairpencil.loopMag (dataA 2) [[2, 0]] = [[u, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]] := by
   decide +kernel
 
 private def outC : Comb :=
   [([2, 3, 0, 1], pOne), ([1, 0, 3, 2], ([⟨1, 2⟩], [⟨2, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩]))]
 private def bondP : PPair := ([⟨2, 1⟩], [⟨1, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩])
 
-example : crossNull (fiber.pairP siteQ12 siteQ12 outC outC) pOne := by
+theorem pin58 : crossNull (fiber.pairP siteQ12 siteQ12 outC outC) pOne := by
   decide +kernel
-example : crossNull (fiber.pairP siteQ12 siteQ12 outC q12) bondP := by
+theorem pin59 : crossNull (fiber.pairP siteQ12 siteQ12 outC q12) bondP := by
   decide +kernel
-example : agreeAt bondP ([⟨2, 1⟩], [⟨4, 1⟩]) (BPair.ofNat 1) := by decide +kernel
-example : ¬ agreeAt bondP ([⟨2, 1⟩], [⟨2, 1⟩]) (BPair.ofNat 1) := by decide +kernel
+theorem pin60 : agreeAt bondP ([⟨2, 1⟩], [⟨4, 1⟩]) (BPair.ofNat 1) := by decide +kernel
+theorem pin61 : ¬ agreeAt bondP ([⟨2, 1⟩], [⟨2, 1⟩]) (BPair.ofNat 1) := by decide +kernel
 
 /-! The depth chain at the two terms. -/
 
 private def mTh : Mat := msum 4 (ground.getAt [] tTh) (List.range 2)
 
-example : matOneValue mTh [[u, ⟨4, 1⟩, u, ⟨4, 1⟩], [⟨4, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩, u],
+theorem pin62 : matOneValue mTh [[u, ⟨4, 1⟩, u, ⟨4, 1⟩], [⟨4, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩, u],
     [u, ⟨2, 1⟩, u, ⟨2, 1⟩], [⟨4, 1⟩, u, ⟨2, 1⟩, ⟨4, 1⟩]] := by decide +kernel
-example : joined tTh p4 0 1 = true := by decide +kernel
-example : joined tTh p4 0 3 = true := by decide +kernel
-example : joined tTh p4 0 2 = false := by decide +kernel
-example : joined tTh p4 1 2 = true := by decide +kernel
-example : joined tTh p4 1 3 = false := by decide +kernel
-example : joined tTh p4 2 2 = false := by decide +kernel
-example : (List.range 4).map (fun a => depthOf tTh p4 4 [0] a) = [0, 1, 2, 1] := by
+theorem pin63 : joined tTh p4 0 1 = true := by decide +kernel
+theorem pin64 : joined tTh p4 0 3 = true := by decide +kernel
+theorem pin65 : joined tTh p4 0 2 = false := by decide +kernel
+theorem pin66 : joined tTh p4 1 2 = true := by decide +kernel
+theorem pin67 : joined tTh p4 1 3 = false := by decide +kernel
+theorem pin68 : joined tTh p4 2 2 = false := by decide +kernel
+theorem pin69 : (List.range 4).map (fun a => depthOf tTh p4 4 [0] a) = [0, 1, 2, 1] := by
   decide +kernel
-example : shells tTh p4 4 [0] = [[0], [1, 3], [2]] := by
+theorem pin70 : shells tTh p4 4 [0] = [[0], [1, 3], [2]] := by
   decide +kernel
-example : depthOrder tTh p4 4 [0] = [0, 1, 3, 2] := by decide +kernel
-example : depthOf tTh p4 4 [0] 1 ≤ depthOf tTh p4 4 [0] 0 + 1 :=
+theorem pin71 : depthOrder tTh p4 4 [0] = [0, 1, 3, 2] := by decide +kernel
+theorem pin72 : depthOf tTh p4 4 [0] 1 ≤ depthOf tTh p4 4 [0] 0 + 1 :=
   depth_step tTh p4 4 [0] 1 0 (by decide) (by decide +kernel)
 
-example : crossB tTh p4 mTh = true := by decide +kernel
-example : crossB tTh p4 mTh = true :=
+theorem pin73 : crossB tTh p4 mTh = true := by decide +kernel
+theorem pin74 : crossB tTh p4 mTh = true :=
   msum_cross tTh p4 4 (by decide +kernel) (by decide +kernel)
-example : matOneValue (ground.getAt [] (slabDiag mTh (posShells tTh p4 4 [0])) 0)
+theorem pin75 : matOneValue (ground.getAt [] (slabDiag mTh (posShells tTh p4 4 [0])) 0)
     [[u]] := by decide +kernel
-example : matOneValue (ground.getAt [] (slabDiag mTh (posShells tTh p4 4 [0])) 1)
+theorem pin76 : matOneValue (ground.getAt [] (slabDiag mTh (posShells tTh p4 4 [0])) 1)
     [[⟨4, 1⟩, u], [u, ⟨4, 1⟩]] := by decide +kernel
-example : matOneValue (ground.getAt [] (slabDiag mTh (posShells tTh p4 4 [0])) 2)
+theorem pin77 : matOneValue (ground.getAt [] (slabDiag mTh (posShells tTh p4 4 [0])) 2)
     [[u]] := by decide +kernel
-example : matOneValue (ground.getAt [] (slabOff mTh (posShells tTh p4 4 [0])) 0)
+theorem pin78 : matOneValue (ground.getAt [] (slabOff mTh (posShells tTh p4 4 [0])) 0)
     [[⟨4, 1⟩, ⟨4, 1⟩]] := by decide +kernel
-example : matOneValue (ground.getAt [] (slabOff mTh (posShells tTh p4 4 [0])) 1)
+theorem pin79 : matOneValue (ground.getAt [] (slabOff mTh (posShells tTh p4 4 [0])) 1)
     [[⟨2, 1⟩], [⟨2, 1⟩]] := by decide +kernel
-example : greenprod.slabShape (slabDiag mTh (posShells tTh p4 4 [0]))
+theorem pin80 : greenprod.slabShape (slabDiag mTh (posShells tTh p4 4 [0]))
     (slabOff mTh (posShells tTh p4 4 [0])) [1, 2, 1] := by decide +kernel
-example : matOneValue (selM (depthOrder tTh p4 4 [0]) (depthOrder tTh p4 4 [0]) mTh)
+theorem pin81 : matOneValue (selM (depthOrder tTh p4 4 [0]) (depthOrder tTh p4 4 [0]) mTh)
     (greenprod.assemble (slabDiag mTh (posShells tTh p4 4 [0]))
       (slabOff mTh (posShells tTh p4 4 [0]))) := by decide +kernel
-example : matOneValue (selM (depthOrder tTh p4 4 [0]) (depthOrder tTh p4 4 [0]) mTh)
+theorem pin82 : matOneValue (selM (depthOrder tTh p4 4 [0]) (depthOrder tTh p4 4 [0]) mTh)
     (greenprod.assemble (slabDiag mTh (posShells tTh p4 4 [0]))
       (slabOff mTh (posShells tTh p4 4 [0]))) :=
   depth_assemble tTh p4 4 [0] 4 (by decide +kernel) (by decide +kernel)
@@ -445,24 +447,24 @@ private def sTh : Mat :=
     (matAdd eTh (inertia.matScaleB (BPair.ofNat 12) (elim.idMat 4)))
     (inertia.matScaleB (BPair.ofNat 4) mTh)
 
-example : crossB tTh p4 (elim.idMat 4) = true :=
+theorem pin83 : crossB tTh p4 (elim.idMat 4) = true :=
   memberDiag_cross tTh p4 (elim.idMat 4) (by decide +kernel)
-example : crossB tTh p4 eTh = true :=
+theorem pin84 : crossB tTh p4 eTh = true :=
   memberDiag_cross tTh p4 eTh (by decide +kernel)
-example : matOneValue (ground.getAt [] (slabDiag sTh (posShells tTh p4 4 [0])) 0)
+theorem pin85 : matOneValue (ground.getAt [] (slabDiag sTh (posShells tTh p4 4 [0])) 0)
     [[⟨13, 1⟩]] := by decide +kernel
-example : matOneValue (ground.getAt [] (slabDiag sTh (posShells tTh p4 4 [0])) 1)
+theorem pin86 : matOneValue (ground.getAt [] (slabDiag sTh (posShells tTh p4 4 [0])) 1)
     [[⟨33, 1⟩, u], [u, ⟨33, 1⟩]] := by decide +kernel
-example : matOneValue (ground.getAt [] (slabDiag sTh (posShells tTh p4 4 [0])) 2)
+theorem pin87 : matOneValue (ground.getAt [] (slabDiag sTh (posShells tTh p4 4 [0])) 2)
     [[⟨61, 1⟩]] := by decide +kernel
-example : matOneValue (ground.getAt [] (slabOff sTh (posShells tTh p4 4 [0])) 0)
+theorem pin88 : matOneValue (ground.getAt [] (slabOff sTh (posShells tTh p4 4 [0])) 0)
     [[⟨1, 13⟩, ⟨1, 13⟩]] := by decide +kernel
-example : matOneValue (ground.getAt [] (slabOff sTh (posShells tTh p4 4 [0])) 1)
+theorem pin89 : matOneValue (ground.getAt [] (slabOff sTh (posShells tTh p4 4 [0])) 1)
     [[⟨1, 5⟩], [⟨1, 5⟩]] := by decide +kernel
 private theorem sThSq : sqAt sTh 4 := by decide +kernel
 private theorem sThSym : matOneValue (transposeM sTh) sTh := by decide +kernel
 private theorem sThCross : crossB tTh p4 sTh = true := by decide +kernel
-example : matOneValue (selM (depthOrder tTh p4 4 [0]) (depthOrder tTh p4 4 [0]) sTh)
+theorem pin90 : matOneValue (selM (depthOrder tTh p4 4 [0]) (depthOrder tTh p4 4 [0]) sTh)
     (greenprod.assemble (slabDiag sTh (posShells tTh p4 4 [0]))
       (slabOff sTh (posShells tTh p4 4 [0]))) :=
   depth_assemble tTh p4 4 [0] 4 (by decide +kernel) (by decide +kernel)
@@ -471,7 +473,7 @@ example : matOneValue (selM (depthOrder tTh p4 4 [0]) (depthOrder tTh p4 4 [0]) 
 end theta
 
 namespace walk
-open ground elim depthchain fusion fpcap
+open ground elim fusion fpcap
 
 private def F : Data (List Nat) := dataA 2
 private def winW : List (List Nat) := [labels.unitL 2, adjchar.theta 2, [4, 0]]
@@ -479,16 +481,18 @@ private def pw : List (List Nat) := (List.range winW.length).map (fun j => [j])
 private def seed : List Nat :=
   (List.range winW.length).filter (fun j => F.eqL (getAt F.unit winW j) F.unit)
 
-example : seed = [0] := by decide +kernel
-example : ¬ (getAt BPair.unit (walkVec F winW 2) 2).oneValue BPair.unit := by
+theorem pin91 : seed = [0] := by decide +kernel
+theorem pin92 : ¬ (getAt BPair.unit (walkVec F winW 2) 2).oneValue BPair.unit := by
   decide +kernel
-example : reachB [fusionMat F F.theta winW] pw winW.length seed 2 2 = true := by
+theorem pin93 : reachB [fusionMat F F.theta winW] pw winW.length seed 2 2 = true := by
   decide +kernel
-example : reachB [fusionMat F F.theta winW] pw winW.length seed 2 2 = true :=
+theorem pin94 : reachB [fusionMat F F.theta winW] pw winW.length seed 2 2 = true :=
   walk_reach F winW 2 2 (by decide) (by decide +kernel)
-example : (getAt BPair.unit (walkVec F winW 1) 2).oneValue BPair.unit := by
+theorem pin95 : (getAt BPair.unit (walkVec F winW 1) 2).oneValue BPair.unit := by
   decide +kernel
-example : reachB [fusionMat F F.theta winW] pw winW.length seed 1 2 = false := by
+theorem pin96 : reachB [fusionMat F F.theta winW] pw winW.length seed 1 2 = false := by
   decide +kernel
 
 end walk
+
+end depthchain

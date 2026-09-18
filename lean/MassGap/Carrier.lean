@@ -22,11 +22,21 @@ beside it (`idxA`, a link label refused at the step where the
 running content passes the cutoff, `idxA_eq` the identity), its
 membership read both ways (`idx_sound`, `mem_idx`: the width, the
 label carrier, the occupied support, the content and the occupancy
-the five data), and its distinctness at a distinct label carrier
-(`idx_distinct`).  The index's equality read is the label equality
+the five data), its distinctness at a distinct label carrier
+(`idx_distinct`), and its nesting across cutoffs
+(`idx_filter`, `prop:windowfinite`'s two-cutoff read at
+`def:carrier`'s directed windows: at a nested enumeration listing
+nonunit labels alone, the index at a cutoff is the index at a larger
+cutoff filtered at content at or below the cutoff, one list in the
+larger index's order, an occupied label's Casimir at or below its
+configuration's content at `c2N_le_contentN`).  The index's
+equality read is the label equality
 key by key (`eqConf`, `eqConf_read`, `eqConf_intro`, `eqConf_refl`),
 structural on the labels at the label calculus (`eqConf_labelA`),
-and a member reads its membership at it (`confMem_of_mem`); the
+and a member reads its membership at it (`confMem_of_mem`), two
+configuration lists read one value memberwise (`confListEq`) and a
+list's pairwise distinctness at that equality is one fold
+(`distinctConf`); the
 invariant count is a multiset read at the count laws over a label
 domain (`invCount_relist`).  The
 fibers, the pairing and the colimit land with their consumers (`prop:leastwindow`,
@@ -46,31 +56,6 @@ private theorem filter_flatMap {α β : Type} (f : α → List β) (p : β → B
     show (f x ++ t.flatMap f).filter p
       = (f x).filter p ++ t.flatMap (fun y => (f y).filter p)
     rw [filter_append p (f x) (t.flatMap f), filter_flatMap f p t]
-
-/-- Two filters in succession read the conjoined predicate, the
-outer one applied at the inner's survivors. -/
-private theorem filter_filter {α : Type} (p q : α → Bool) :
-    ∀ l : List α, (l.filter q).filter p = l.filter (fun a => q a && p a)
-  | [] => rfl
-  | a :: t => by
-    show (match q a with
-          | true => a :: t.filter q
-          | false => t.filter q).filter p
-       = (match q a && p a with
-          | true => a :: t.filter (fun b => q b && p b)
-          | false => t.filter (fun b => q b && p b))
-    cases hq : q a with
-    | false => exact filter_filter p q t
-    | true =>
-      show (match p a with
-            | true => a :: (t.filter q).filter p
-            | false => (t.filter q).filter p)
-         = (match p a with
-            | true => a :: t.filter (fun b => q b && p b)
-            | false => t.filter (fun b => q b && p b))
-      cases hp : p a with
-      | false => exact filter_filter p q t
-      | true => exact congrArg (List.cons a) (filter_filter p q t)
 
 /-- The content's one step: an occupied label joins its Casimir
 read, the unit passes. -/
@@ -94,6 +79,24 @@ many at the region's key range. -/
 def support {L : Type} (F : Data L) (R : Region) (a : List L) :
     List Nat :=
   occKeys F R.links a
+
+/-- The support is a distinct key family, the range filter's own
+counts. -/
+theorem support_distinct {L : Type} (F : Data L) (R : Region) (a : List L) :
+    ground.distinctList (support F R a) := by
+  intro x hx
+  have h := ground.mem_filter_of _ _ _ hx
+  rw [show support F R a
+      = (List.range R.links).filter (fun l =>
+        !(F.eqL (ground.getAt F.unit a l) F.unit)) from rfl,
+    ground.countOf_filter _ x (List.range R.links), if_pos h.2,
+    ground.countOf_range x R.links]
+  cases hlt : decide (x < R.links) with
+  | true => rw [if_pos (of_decide_eq_true hlt)]; exact Nat.le_refl 1
+  | false =>
+    rw [if_neg (fun hc => Bool.noConfusion
+      ((decide_eq_true hc).symm.trans hlt))]
+    exact Nat.le_succ 0
 
 private def invGo {L : Type} (F : Data L) :
     Nat → List L → Nat
@@ -375,7 +378,7 @@ private theorem rowSum_double {L : Type} [DecidableEq L] (F : Data L)
 holding every trailing row of either side. -/
 private def rowUnion {L : Type} [DecidableEq L] (F : Data L)
     (a b c : L) : List L :=
-  ground.dedupL ((F.row a b).flatMap (fun e => F.row e c)
+  ground.dedupF ((F.row a b).flatMap (fun e => F.row e c)
     ++ (F.row a c).flatMap (fun e => F.row e b))
 
 /-- The union holds the first family's rows. -/
@@ -383,7 +386,7 @@ private theorem rowUnion_left {L : Type} [DecidableEq L] (F : Data L)
     (a b c e : L) (he : 0 < ground.countOf e (F.row a b)) (x : L)
     (hx : 0 < ground.countOf x (F.row e c)) :
     0 < ground.countOf x (rowUnion F a b c) :=
-  ground.countOf_pos_of_mem (ground.mem_dedupL
+  ground.countOf_pos_of_mem (ground.mem_dedupF
     (ground.mem_append_left _ (ground.mem_flatMap_to _
       (ground.mem_of_countOf_pos e _ he)
       (ground.mem_of_countOf_pos x _ hx))))
@@ -393,7 +396,7 @@ private theorem rowUnion_right {L : Type} [DecidableEq L] (F : Data L)
     (a b c e : L) (he : 0 < ground.countOf e (F.row a c)) (x : L)
     (hx : 0 < ground.countOf x (F.row e b)) :
     0 < ground.countOf x (rowUnion F a b c) :=
-  ground.countOf_pos_of_mem (ground.mem_dedupL
+  ground.countOf_pos_of_mem (ground.mem_dedupF
     (ground.mem_append_right _ (ground.mem_flatMap_to _
       (ground.mem_of_countOf_pos e _ he)
       (ground.mem_of_countOf_pos x _ hx))))
@@ -401,7 +404,7 @@ private theorem rowUnion_right {L : Type} [DecidableEq L] (F : Data L)
 /-- The union is distinct. -/
 private theorem rowUnion_distinct {L : Type} [DecidableEq L] (F : Data L)
     (a b c : L) : ground.distinctList (rowUnion F a b c) :=
-  fun x _ => ground.countOf_dedupL_le x _
+  fun x _ => ground.countOf_dedupF_le x _
 
 /-- The union sits in the domain at domain labels, the rows closed. -/
 private theorem rowUnion_P {L : Type} [DecidableEq L] (F : Data L)
@@ -409,7 +412,7 @@ private theorem rowUnion_P {L : Type} [DecidableEq L] (F : Data L)
     (hb : P b = true) (hc : P c = true) :
     (rowUnion F a b c).all P = true := by
   refine ground.all_of_mem_intro P _ (fun x hx => ?_)
-  match ground.mem_append_of _ _ (ground.mem_of_dedupL hx) with
+  match ground.mem_append_of _ _ (ground.mem_of_dedupF hx) with
   | Or.inl h1 =>
     match ground.mem_flatMap_of _ _ _ h1 with
     | ⟨e, he, hxe⟩ =>
@@ -750,25 +753,29 @@ theorem eqConf_read {L : Type} (F : Data L) :
     | zero => exact hxy
     | succ i => exact hf i (Nat.lt_of_succ_lt_succ hi)
 
+/-- At a label domain with one spelling per label, two configurations
+over the domain reading equal are one list: the equality read's keys
+at the domain's structural equality, key by key
+(`con:labels`' one reduced shape per label). -/
+theorem eqConf_eq {L : Type} (F : Data L) (P : L → Bool)
+    (hred : ∀ x y, P x = true → P y = true → F.eqL x y = true → x = y)
+    (a b : List L) (ha : a.all P = true) (hb : b.all P = true)
+    (he : eqConf F a b = true) : a = b := by
+  obtain ⟨hl, hk⟩ := eqConf_read F a b he
+  refine getAt_ext F.unit a b hl (fun i hi => ?_)
+  have hi' : i < b.length := by
+    rw [← hl]
+    exact hi
+  exact hred _ _ (all_of_mem P a ha _ (mem_getAt F.unit a i hi))
+    (all_of_mem P b hb _ (mem_getAt F.unit b i hi')) (hk i hi)
+
 /-- At the label calculus the equality read is structural on the
 labels: two configurations over the width-`d` labels reading equal
 are one list, the reduced representatives their own. -/
 theorem eqConf_labelA (d : Nat) (a b : List places.Shape)
     (ha : a.all (labelA d) = true) (hb : b.all (labelA d) = true)
-    (h : eqConf (dataA d) a b = true) : a = b := by
-  obtain ⟨hl, hf⟩ := eqConf_read (dataA d) a b h
-  refine getAt_ext (dataA d).unit a b hl (fun i hi => ?_)
-  have hi' : i < b.length := by
-    rw [← hl]
-    exact hi
-  have hx := labelA_red d (getAt (dataA d).unit a i)
-    (all_of_mem _ _ ha _ (mem_getAt (dataA d).unit a i hi))
-  have hy := labelA_red d (getAt (dataA d).unit b i)
-    (all_of_mem _ _ hb _ (mem_getAt (dataA d).unit b i hi'))
-  have he : (labels.reduce (getAt (dataA d).unit a i)
-      == labels.reduce (getAt (dataA d).unit b i)) = true := hf i hi
-  rw [hx, hy] at he
-  exact listBeqEq he
+    (h : eqConf (dataA d) a b = true) : a = b :=
+  eqConf_eq (dataA d) (labelA d) (fusion.eqL_labelA d) a b ha hb h
 
 /-- A member of a stated family reads its membership at the
 interface equality. -/
@@ -784,6 +791,32 @@ theorem confMem_of_mem {L : Type} (F : Data L) (a : List L) :
     | tail _ h2 =>
       rw [confMem_of_mem F a t h2]
       cases eqConf F a b <;> rfl
+
+/-- A configuration in a stated family at the interface equality
+reads one member of the family at that equality. -/
+theorem confMem_to {L : Type} [DecidableEq L] (F : Data L) (a : List L) :
+    ∀ l : List (List L), confMem F a l = true →
+      ∃ b, 0 < ground.countOf b l ∧ eqConf F a b = true
+  | [], h => Bool.noConfusion h
+  | b :: t, h => by
+    have h' : (eqConf F a b || confMem F a t) = true := h
+    cases ground.orSplitB h' with
+    | inl h1 => exact ⟨b, by rw [ground.countOf_head]; exact Nat.succ_pos _, h1⟩
+    | inr h2 =>
+      obtain ⟨b', hb', he⟩ := confMem_to F a t h2
+      exact ⟨b', ground.countOf_cons_pos hb', he⟩
+
+/-- Two configuration lists at one value, the interface equality
+member for member. -/
+def confListEq {L : Type} (F : Data L) :
+    List (List L) → List (List L) → Bool :=
+  ground.listEqBy (eqConf F)
+
+/-- A configuration list's pairwise distinctness at the interface
+equality, each member off the further members. -/
+def distinctConf {L : Type} (F : Data L) : List (List L) → Bool
+  | [] => true
+  | a :: r => !(confMem F a r) && distinctConf F r
 
 /-- The occupied incident ends at a vertex with their link keys,
 the incident walk at the unoccupied keys withdrawn, in the order
@@ -841,6 +874,27 @@ region: the unit line's own index member, the vacant support. -/
 def unitConf {L : Type} (F : Data L) (R : Region) : List L :=
   List.replicate R.links F.unit
 
+/-- The unit configuration's content is the sum's unit
+(`def:pencil`: the electric operator reads the unit line as its
+kernel, the content `def:carrier`'s at the vacant support): every key
+reads the unit label, the fold's step keeping its accumulator. -/
+theorem contentN_unitConf {L : Type} (F : Data L) (R : Region) :
+    contentN F (unitConf F R) = 0 := by
+  have h : ∀ (k : Nat) (a : Nat),
+      (List.replicate k F.unit).foldl (contentStep F) a = a := by
+    intro k
+    induction k with
+    | zero => intro a; rfl
+    | succ k ih =>
+      intro a
+      show (List.replicate k F.unit).foldl (contentStep F) (contentStep F a F.unit) = a
+      rw [show contentStep F a F.unit = a from by
+        show (if F.eqL F.unit F.unit then a else a + F.c2N F.unit) = a
+        rw [F.eqLRefl F.unit]
+        rfl]
+      exact ih a
+  exact h R.links 0
+
 /-- The touched vertices, the support's endpoints. -/
 def touched {L : Type} (F : Data L) (R : Region) (a : List L) :
     List Nat :=
@@ -870,6 +924,61 @@ theorem vmult_pos {L : Type} (F : Data L) (R : Region) (a : List L)
     have hall : (touched F R a).all
         (fun w => decide (0 < vmult F R a w)) = true := ha
     exact of_decide_eq_true (ground.all_of_mem _ _ hall v hmem)
+
+/-- An occupied link's two ends read occupied incident lists: the
+link's forward end sits in the tail's incident family and its
+reversed end in the head's, each at the label's own read. -/
+theorem incidentLabels_occ {L : Type} (F : Data L) (R : Region)
+    (a : List L) (k : Nat) (hk : k < R.links)
+    (hocc : F.eqL (getAt F.unit a k) F.unit = false) :
+    ¬ (incidentLabels F R a (getAt 0 R.tail k)).length = 0
+      ∧ ¬ (incidentLabels F R a (getAt 0 R.head k)).length = 0 := by
+  have hlab : ∀ (v : Nat) (o : Bool), (k, o) ∈ incident R v →
+      ¬ (incidentLabels F R a v).length = 0 := by
+    intro v o hinc h0
+    have hmem : (if o then getAt F.unit a k else F.dual (getAt F.unit a k))
+        ∈ incidentLabels F R a v := by
+      refine ground.mem_filterMap_to _ hinc ?_
+      show (if F.eqL (getAt F.unit a k) F.unit then none
+            else if o then some (getAt F.unit a k)
+            else some (F.dual (getAt F.unit a k)))
+        = some (if o then getAt F.unit a k else F.dual (getAt F.unit a k))
+      rw [if_neg (ground.boolNe hocc)]
+      cases o <;> rfl
+    cases hl : incidentLabels F R a v with
+    | nil => rw [hl] at hmem; exact nomatch hmem
+    | cons x t => rw [hl] at h0; exact Nat.noConfusion h0
+  refine ⟨hlab _ true ?_, hlab _ false ?_⟩
+  · rw [incident_read R (getAt 0 R.tail k)]
+    refine ground.mem_flatMap_to _ (ground.memRange hk) ?_
+    show (k, true) ∈
+      (if getAt 0 R.tail k == getAt 0 R.tail k then [(k, true)] else [])
+        ++ (if getAt 0 R.head k == getAt 0 R.tail k then [(k, false)] else [])
+    rw [if_pos (ground.eqBeqOf rfl)]
+    exact ground.mem_append_left _ (List.Mem.head [])
+  · rw [incident_read R (getAt 0 R.head k)]
+    refine ground.mem_flatMap_to _ (ground.memRange hk) ?_
+    show (k, false) ∈
+      (if getAt 0 R.tail k == getAt 0 R.head k then [(k, true)] else [])
+        ++ (if getAt 0 R.head k == getAt 0 R.head k then [(k, false)] else [])
+    rw [if_pos (ground.eqBeqOf rfl)]
+    exact ground.mem_append_right _ (List.Mem.head [])
+
+/-- An occupied link's two ends are touched vertices at the region's
+shape read. -/
+theorem end_touched {L : Type} (F : Data L) (R : Region)
+    (hw : wellRead R) (a : List L) (k : Nat) (hk : k < R.links)
+    (hocc : F.eqL (getAt F.unit a k) F.unit = false) :
+    getAt 0 R.tail k ∈ touched F R a ∧ getAt 0 R.head k ∈ touched F R a := by
+  have hread : ∀ v : Nat, v < R.verts →
+      ¬ (incidentLabels F R a v).length = 0 → v ∈ touched F R a := by
+    intro v hv hne
+    refine ground.mem_filter_to _ (ground.memRange hv) ?_
+    show (!((incidentLabels F R a v).length == 0)) = true
+    rw [ground.neBeqOf hne]
+    rfl
+  exact ⟨hread _ (endLt R hw k hk).1 (incidentLabels_occ F R a k hk hocc).1,
+    hread _ (endLt R hw k hk).2 (incidentLabels_occ F R a k hk hocc).2⟩
 
 /-- The window index at the region and cutoff: the occupied
 configurations at an occupied support and content at or below the
@@ -1033,6 +1142,82 @@ theorem contentN_range {L : Type} (F : Data L) : ∀ a : List L,
         (fun k => if F.eqL (getAt F.unit a k) F.unit then 0
           else F.c2N (getAt F.unit a k)) (List.range a.length)
     exact Nat.add_comm _ _
+
+/-- The content at its additive spelling: the fold over the
+configuration's own keys, an occupied key at its Casimir and the
+unit key at the sum's unit. -/
+theorem contentN_fam {L : Type} (F : Data L) (x : List L) :
+    contentN F x
+      = ground.famFold Nat.add 0
+        (fun l => if F.eqL l F.unit then 0 else F.c2N l) x := by
+  show x.foldl (fun acc l =>
+      if F.eqL l F.unit then acc else acc + F.c2N l) 0 = _
+  rw [ground.foldl_congr (fun acc l => if F.eqL l F.unit then acc else acc + F.c2N l)
+      (fun acc l => acc + (if F.eqL l F.unit then 0 else F.c2N l))
+      (fun acc l => by cases F.eqL l F.unit <;> rfl) x 0,
+    ground.foldlSum (fun l => if F.eqL l F.unit then 0 else F.c2N l) x 0,
+    Nat.zero_add]
+
+/-- An occupied label's cleared Casimir sits at or below its
+configuration's content, the content the occupied labels' fold. -/
+theorem c2N_le_contentN {L : Type} (F : Data L) (a : List L) (l : L) (hl : l ∈ a)
+    (hu : F.eqL l F.unit = false) : F.c2N l ≤ contentN F a := by
+  rw [contentN_fam]
+  have h := famFold_mem_le (fun l => if F.eqL l F.unit then 0 else F.c2N l) a l hl
+  rw [if_neg (fun h' => Bool.false_ne_true (hu.symm.trans h'))] at h
+  exact h
+
+/-- The window index nests (`prop:windowfinite`'s two-cutoff read:
+`def:carrier`'s inclusion of a window into the larger one at the
+window list's own positions): at a nested enumeration listing
+nonunit labels alone, the index at a cutoff is the index at a larger
+cutoff filtered at content at or below the cutoff, one list in the
+larger index's order — a configuration at content at or below the
+cutoff reads every occupied label's Casimir at or below it
+(`c2N_le_contentN`), so the enumeration's pointwise filter and the
+content's are one filter of the product lists
+(`ground.filter_prodLists`). -/
+theorem idx_filter {L : Type} [DecidableEq L] (F : Data L) (R : Region) (C C' : Nat)
+    (hCC : C ≤ C') (hnest : belowNest F C C') (hnon : belowNonunit F C') :
+    idx F R C = (idx F R C').filter (fun a => decide (contentN F a ≤ C)) := by
+  have hlab : F.unit :: F.below C
+      = (F.unit :: F.below C').filter (fun l =>
+          F.eqL l F.unit || decide (F.c2N l ≤ C)) := by
+    rw [filter_cons, F.eqLRefl F.unit]
+    show F.unit :: F.below C = F.unit :: (F.below C').filter _
+    rw [show F.below C = (F.below C').filter (fun l => decide (F.c2N l ≤ C)) from hnest]
+    exact congrArg (List.cons F.unit) (filter_congr_mem _ _ (F.below C') (fun l hl => by
+      have hne := all_of_mem _ _ hnon l (mem_of_countOf_pos l _ hl)
+      show decide (F.c2N l ≤ C) = (F.eqL l F.unit || decide (F.c2N l ≤ C))
+      cases he : F.eqL l F.unit with
+      | false => rfl
+      | true => rw [he] at hne; exact nomatch hne))
+  show (prodLists (List.replicate R.links (F.unit :: F.below C))).filter
+      (fun a => (a.any (fun l => !(F.eqL l F.unit))) && contentN F a ≤ C && occupied F R a)
+    = ((prodLists (List.replicate R.links (F.unit :: F.below C'))).filter
+        (fun a => (a.any (fun l => !(F.eqL l F.unit))) && contentN F a ≤ C'
+          && occupied F R a)).filter (fun a => decide (contentN F a ≤ C))
+  have hrep : List.replicate R.links
+      ((F.unit :: F.below C').filter (fun l => F.eqL l F.unit || decide (F.c2N l ≤ C)))
+    = (List.replicate R.links (F.unit :: F.below C')).map
+        (fun D => D.filter (fun l => F.eqL l F.unit || decide (F.c2N l ≤ C))) :=
+    (map_replicate _ _ _).symm
+  rw [hlab, hrep, ← filter_prodLists, filter_filter, filter_filter]
+  refine filter_congr_mem _ _ _ (fun a ha => ?_)
+  cases hc : decide (contentN F a ≤ C) with
+  | false => rw [Bool.and_false, Bool.false_and, Bool.and_false, Bool.and_false]
+  | true =>
+    have hc' : decide (contentN F a ≤ C') = true :=
+      decide_eq_true (Nat.le_trans (of_decide_eq_true hc) hCC)
+    have hall : (a.all (fun l => F.eqL l F.unit || decide (F.c2N l ≤ C))) = true := by
+      refine all_of_mem_intro _ _ (fun l hl => ?_)
+      cases he : F.eqL l F.unit with
+      | true => rfl
+      | false =>
+        rw [Bool.false_or]
+        exact decide_eq_true (Nat.le_trans (c2N_le_contentN F a l hl he)
+          (of_decide_eq_true hc))
+    rw [hall, hc', Bool.true_and, Bool.and_true, Bool.and_true]
 
 private def assignsA {L : Type} (F : Data L) (C : Nat) :
     Nat → List (Nat × List L)

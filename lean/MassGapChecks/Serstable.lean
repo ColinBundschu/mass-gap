@@ -19,96 +19,97 @@ padded word against the leading sums, their doubles and the word's
 total at the last key or the last two keys.
 -/
 
-open serstable
+namespace serstable
+
 
 /-! The `B` member's reads at the word `[2, 1]` and the rank four. -/
 
-example : casfloor.corootRead (sertables.tableB 4) (endB [2, 1] 4) := by
+theorem pin1 : casfloor.corootRead (sertables.tableB 4) (endB [2, 1] 4) := by
   decide +kernel
-example : casfloor.corootRead (sertables.tableB 4) (endB [2, 1] 4) :=
+theorem pin2 : casfloor.corootRead (sertables.tableB 4) (endB [2, 1] 4) :=
   corootRead_B [2, 1] 4 (by decide +kernel) (by decide +kernel)
 
-example : casfloor.c2Read (sertables.tableB 4) (endB [2, 1] 4)
+theorem pin3 : casfloor.c2Read (sertables.tableB 4) (endB [2, 1] 4)
     (casNumB [2, 1] 4) (casDenB 4) := by decide +kernel
-example : casfloor.c2Read (sertables.tableB 4) (endB [2, 1] 4)
+theorem pin4 : casfloor.c2Read (sertables.tableB 4) (endB [2, 1] 4)
     (casNumB [2, 1] 4) (casDenB 4) :=
   casRead_B [2, 1] 4 (by decide +kernel) (by decide +kernel)
 
 /-! The `C` member's reads at the same word and rank. -/
 
-example : casfloor.corootRead (sertables.tableC 4) (endC [2, 1] 4) := by
+theorem pin5 : casfloor.corootRead (sertables.tableC 4) (endC [2, 1] 4) := by
   decide +kernel
-example : casfloor.corootRead (sertables.tableC 4) (endC [2, 1] 4) :=
+theorem pin6 : casfloor.corootRead (sertables.tableC 4) (endC [2, 1] 4) :=
   corootRead_C [2, 1] 4 (by decide +kernel) (by decide +kernel)
 
-example : casfloor.c2Read (sertables.tableC 4) (endC [2, 1] 4)
+theorem pin7 : casfloor.c2Read (sertables.tableC 4) (endC [2, 1] 4)
     (casNumC [2, 1] 4) (casDenC 4) := by decide +kernel
-example : casfloor.c2Read (sertables.tableC 4) (endC [2, 1] 4)
+theorem pin8 : casfloor.c2Read (sertables.tableC 4) (endC [2, 1] 4)
     (casNumC [2, 1] 4) (casDenC 4) :=
   casRead_C [2, 1] 4 (by decide +kernel) (by decide +kernel)
 
 /-! The `D` member's reads at the same word and the rank five. -/
 
-example : casfloor.corootRead (sertables.tableD 5) (endD [2, 1] 5) := by
+theorem pin9 : casfloor.corootRead (sertables.tableD 5) (endD [2, 1] 5) := by
   decide +kernel
-example : casfloor.corootRead (sertables.tableD 5) (endD [2, 1] 5) :=
+theorem pin10 : casfloor.corootRead (sertables.tableD 5) (endD [2, 1] 5) :=
   corootRead_D [2, 1] 5 (by decide +kernel) (by decide +kernel)
 
-example : casfloor.c2Read (sertables.tableD 5) (endD [2, 1] 5)
+theorem pin11 : casfloor.c2Read (sertables.tableD 5) (endD [2, 1] 5)
     (casNumD [2, 1] 5) (casDenD 5) := by decide +kernel
-example : casfloor.c2Read (sertables.tableD 5) (endD [2, 1] 5)
+theorem pin12 : casfloor.c2Read (sertables.tableD 5) (endD [2, 1] 5)
     (casNumD [2, 1] 5) (casDenD 5) :=
   casRead_D [2, 1] 5 (by decide +kernel) (by decide +kernel)
 
 /-! The theorems at a longer word and at the vacant word, the
 clearance met with room and at its own boundary. -/
 
-example : casfloor.corootRead (sertables.tableB 6) (endB [5, 3, 3, 1] 6) :=
+theorem pin13 : casfloor.corootRead (sertables.tableB 6) (endB [5, 3, 3, 1] 6) :=
   corootRead_B [5, 3, 3, 1] 6 (by decide +kernel) (by decide +kernel)
-example : casfloor.c2Read (sertables.tableD 7) (endD [5, 3, 3, 1, 1] 7)
+theorem pin14 : casfloor.c2Read (sertables.tableD 7) (endD [5, 3, 3, 1, 1] 7)
     (casNumD [5, 3, 3, 1, 1] 7) (casDenD 7) :=
   casRead_D [5, 3, 3, 1, 1] 7 (by decide +kernel) (by decide +kernel)
-example : casfloor.c2Read (sertables.tableD 2) (endD [] 2)
+theorem pin15 : casfloor.c2Read (sertables.tableD 2) (endD [] 2)
     (casNumD [] 2) (casDenD 2) :=
   casRead_D [] 2 (by decide +kernel) (by decide +kernel)
 
 /-! The descent binder is load-bearing: the ascending word's fold
 refuses the coroot identities. -/
 
-example : ¬ casfloor.corootRead (sertables.tableB 4) (endB [1, 2] 4) := by
+theorem pin16 : ¬ casfloor.corootRead (sertables.tableB 4) (endB [1, 2] 4) := by
   decide +kernel
 
 /-! The clearance `a + 2 ≤ ℓ` is load-bearing at `D`, the last-pair
 join breaking one rank short, and at `B`, the doubled last key
 breaking at the word's own length. -/
 
-example : ¬ casfloor.corootRead (sertables.tableD 4) (endD [2, 1, 1] 4) := by
+theorem pin17 : ¬ casfloor.corootRead (sertables.tableD 4) (endD [2, 1, 1] 4) := by
   decide +kernel
-example : ¬ casfloor.corootRead (sertables.tableB 2) (endB [2, 1] 2) := by
+theorem pin18 : ¬ casfloor.corootRead (sertables.tableB 2) (endB [2, 1] 2) := by
   decide +kernel
 
 /-! At `B` and `C` the rank one short of the clearance survives:
 the binder is the statement's reach frame, not a refusal
 boundary. -/
 
-example : casfloor.corootRead (sertables.tableB 3) (endB [2, 1] 3) := by
+theorem pin19 : casfloor.corootRead (sertables.tableB 3) (endB [2, 1] 3) := by
   decide +kernel
-example : casfloor.corootRead (sertables.tableC 3) (endC [2, 1] 3) := by
+theorem pin20 : casfloor.corootRead (sertables.tableC 3) (endC [2, 1] 3) := by
   decide +kernel
 
 /-! The member and the simple folds at their values, with the
 Casimir numerators and denominators beside them. -/
 
-example : member [2, 1] 4 = [1, 1, 0, 0] := by decide +kernel
-example : foldB [2, 1] 4 = [2, 3, 3, 3] := by decide +kernel
-example : foldC [2, 1] 4 = [4, 6, 6, 3] := by decide +kernel
-example : foldD [2, 1] 5 = [4, 6, 6, 3, 3] := by decide +kernel
-example : casNumB [2, 1] 4 = 24 := by decide +kernel
-example : casNumC [2, 1] 4 = 27 := by decide +kernel
-example : casNumD [2, 1] 5 = 27 := by decide +kernel
-example : casDenB 4 = 14 := by decide +kernel
-example : casDenC 4 = 20 := by decide +kernel
-example : casDenD 5 = 16 := by decide +kernel
+theorem pin21 : member [2, 1] 4 = [1, 1, 0, 0] := by decide +kernel
+theorem pin22 : foldB [2, 1] 4 = [2, 3, 3, 3] := by decide +kernel
+theorem pin23 : foldC [2, 1] 4 = [4, 6, 6, 3] := by decide +kernel
+theorem pin24 : foldD [2, 1] 5 = [4, 6, 6, 3, 3] := by decide +kernel
+theorem pin25 : casNumB [2, 1] 4 = 24 := by decide +kernel
+theorem pin26 : casNumC [2, 1] 4 = 27 := by decide +kernel
+theorem pin27 : casNumD [2, 1] 5 = 27 := by decide +kernel
+theorem pin28 : casDenB 4 = 14 := by decide +kernel
+theorem pin29 : casDenC 4 = 20 := by decide +kernel
+theorem pin30 : casDenD 5 = 16 := by decide +kernel
 
 /-! ## The dimension tier: the cross-multiplied gap identity
 
@@ -118,13 +119,13 @@ denominator against the gap product at `member + ρ`.  Each series'
 identity is decided at its word and rank and routed through the
 general theorem beside it. -/
 
-example : dimNumB [2, 1] 4 * ground.famFold Nat.mul 1
+theorem pin31 : dimNumB [2, 1] 4 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableB 4) (List.replicate 4 1))
     (List.range (sertables.tableB 4).posFolds.length)
   = dimDenB [2, 1] 4 * ground.famFold Nat.mul 1
       (gapAt (sertables.tableB 4) (memberRho [2, 1] 4))
       (List.range (sertables.tableB 4).posFolds.length) := by decide +kernel
-example : dimNumB [2, 1] 4 * ground.famFold Nat.mul 1
+theorem pin32 : dimNumB [2, 1] 4 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableB 4) (List.replicate 4 1))
     (List.range (sertables.tableB 4).posFolds.length)
   = dimDenB [2, 1] 4 * ground.famFold Nat.mul 1
@@ -132,13 +133,13 @@ example : dimNumB [2, 1] 4 * ground.famFold Nat.mul 1
       (List.range (sertables.tableB 4).posFolds.length) :=
   dimGap_B [2, 1] 4 (by decide +kernel) (by decide +kernel)
 
-example : dimNumC [2, 1] 4 * ground.famFold Nat.mul 1
+theorem pin33 : dimNumC [2, 1] 4 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableC 4) (List.replicate 4 1))
     (List.range (sertables.tableC 4).posFolds.length)
   = dimDenC [2, 1] 4 * ground.famFold Nat.mul 1
       (gapAt (sertables.tableC 4) (memberRho [2, 1] 4))
       (List.range (sertables.tableC 4).posFolds.length) := by decide +kernel
-example : dimNumC [2, 1] 4 * ground.famFold Nat.mul 1
+theorem pin34 : dimNumC [2, 1] 4 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableC 4) (List.replicate 4 1))
     (List.range (sertables.tableC 4).posFolds.length)
   = dimDenC [2, 1] 4 * ground.famFold Nat.mul 1
@@ -146,13 +147,13 @@ example : dimNumC [2, 1] 4 * ground.famFold Nat.mul 1
       (List.range (sertables.tableC 4).posFolds.length) :=
   dimGap_C [2, 1] 4 (by decide +kernel) (by decide +kernel)
 
-example : dimNumD [2, 1] 5 * ground.famFold Nat.mul 1
+theorem pin35 : dimNumD [2, 1] 5 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableD 5) (List.replicate 5 1))
     (List.range (sertables.tableD 5).posFolds.length)
   = dimDenD [2, 1] 5 * ground.famFold Nat.mul 1
       (gapAt (sertables.tableD 5) (memberRho [2, 1] 5))
       (List.range (sertables.tableD 5).posFolds.length) := by decide +kernel
-example : dimNumD [2, 1] 5 * ground.famFold Nat.mul 1
+theorem pin36 : dimNumD [2, 1] 5 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableD 5) (List.replicate 5 1))
     (List.range (sertables.tableD 5).posFolds.length)
   = dimDenD [2, 1] 5 * ground.famFold Nat.mul 1
@@ -163,13 +164,13 @@ example : dimNumD [2, 1] 5 * ground.famFold Nat.mul 1
 /-! The `D` identity at a longer word, decided and through the
 theorem. -/
 
-example : dimNumD [2, 2, 1] 5 * ground.famFold Nat.mul 1
+theorem pin37 : dimNumD [2, 2, 1] 5 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableD 5) (List.replicate 5 1))
     (List.range (sertables.tableD 5).posFolds.length)
   = dimDenD [2, 2, 1] 5 * ground.famFold Nat.mul 1
       (gapAt (sertables.tableD 5) (memberRho [2, 2, 1] 5))
       (List.range (sertables.tableD 5).posFolds.length) := by decide +kernel
-example : dimNumD [2, 2, 1] 5 * ground.famFold Nat.mul 1
+theorem pin38 : dimNumD [2, 2, 1] 5 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableD 5) (List.replicate 5 1))
     (List.range (sertables.tableD 5).posFolds.length)
   = dimDenD [2, 2, 1] 5 * ground.famFold Nat.mul 1
@@ -181,14 +182,14 @@ example : dimNumD [2, 2, 1] 5 * ground.famFold Nat.mul 1
 identity reads one against one at the vacant content, and the
 `B` word of length four at the rank six. -/
 
-example : dimNumB [] 4 * ground.famFold Nat.mul 1
+theorem pin39 : dimNumB [] 4 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableB 4) (List.replicate 4 1))
     (List.range (sertables.tableB 4).posFolds.length)
   = dimDenB [] 4 * ground.famFold Nat.mul 1
       (gapAt (sertables.tableB 4) (memberRho [] 4))
       (List.range (sertables.tableB 4).posFolds.length) :=
   dimGap_B [] 4 (by decide +kernel) (by decide +kernel)
-example : dimNumB [5, 3, 3, 1] 6 * ground.famFold Nat.mul 1
+theorem pin40 : dimNumB [5, 3, 3, 1] 6 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableB 6) (List.replicate 6 1))
     (List.range (sertables.tableB 6).posFolds.length)
   = dimDenB [5, 3, 3, 1] 6 * ground.famFold Nat.mul 1
@@ -201,7 +202,7 @@ the ascending word's numerator and denominator refuse the
 cross-multiplied read, the padded word's gaps truncating at the
 raised entry. -/
 
-example : ¬ (dimNumB [1, 2] 4 * ground.famFold Nat.mul 1
+theorem pin41 : ¬ (dimNumB [1, 2] 4 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableB 4) (List.replicate 4 1))
     (List.range (sertables.tableB 4).posFolds.length)
   = dimDenB [1, 2] 4 * ground.famFold Nat.mul 1
@@ -212,13 +213,13 @@ example : ¬ (dimNumB [1, 2] 4 * ground.famFold Nat.mul 1
 last-pair join breaks one rank short, and at `B`, where the word's
 own length leaves the short key inside the word. -/
 
-example : ¬ (dimNumD [2, 1, 1] 4 * ground.famFold Nat.mul 1
+theorem pin42 : ¬ (dimNumD [2, 1, 1] 4 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableD 4) (List.replicate 4 1))
     (List.range (sertables.tableD 4).posFolds.length)
   = dimDenD [2, 1, 1] 4 * ground.famFold Nat.mul 1
       (gapAt (sertables.tableD 4) (memberRho [2, 1, 1] 4))
       (List.range (sertables.tableD 4).posFolds.length)) := by decide +kernel
-example : ¬ (dimNumB [2, 1] 2 * ground.famFold Nat.mul 1
+theorem pin43 : ¬ (dimNumB [2, 1] 2 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableB 2) (List.replicate 2 1))
     (List.range (sertables.tableB 2).posFolds.length)
   = dimDenB [2, 1] 2 * ground.famFold Nat.mul 1
@@ -229,13 +230,13 @@ example : ¬ (dimNumB [2, 1] 2 * ground.famFold Nat.mul 1
 identities survive: the binder is the statement's reach frame at
 those series, not a refusal boundary. -/
 
-example : dimNumB [2, 1] 3 * ground.famFold Nat.mul 1
+theorem pin44 : dimNumB [2, 1] 3 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableB 3) (List.replicate 3 1))
     (List.range (sertables.tableB 3).posFolds.length)
   = dimDenB [2, 1] 3 * ground.famFold Nat.mul 1
       (gapAt (sertables.tableB 3) (memberRho [2, 1] 3))
       (List.range (sertables.tableB 3).posFolds.length) := by decide +kernel
-example : dimNumC [2, 1] 3 * ground.famFold Nat.mul 1
+theorem pin45 : dimNumC [2, 1] 3 * ground.famFold Nat.mul 1
     (gapAt (sertables.tableC 3) (List.replicate 3 1))
     (List.range (sertables.tableC 3).posFolds.length)
   = dimDenC [2, 1] 3 * ground.famFold Nat.mul 1
@@ -248,7 +249,7 @@ example : dimNumC [2, 1] 3 * ground.famFold Nat.mul 1
 against a coroot list at the concrete gap, decided over three
 coroot lists and routed through the general theorem per list. -/
 
-example : ∀ j, j < (sertables.tableB 2).posFolds.length →
+theorem pin46 : ∀ j, j < (sertables.tableB 2).posFolds.length →
     ∀ v ∈ [[1, 1], [2, 1], [3, 2]],
     (sertables.dotB sertables.fundB2
         (sertables.posCorootV (sertables.tableB 2) j)
@@ -256,7 +257,7 @@ example : ∀ j, j < (sertables.tableB 2).posFolds.length →
       (ground.BPair.ofNat (sertables.fundB2.scale
         * gapAt (sertables.tableB 2) v j)) := by decide +kernel
 
-example : ∀ j, j < (sertables.tableB 2).posFolds.length →
+theorem pin47 : ∀ j, j < (sertables.tableB 2).posFolds.length →
     (sertables.dotB sertables.fundB2
         (sertables.posCorootV (sertables.tableB 2) j)
         ([3, 2].map ground.BPair.ofNat)).oneValue
@@ -264,7 +265,7 @@ example : ∀ j, j < (sertables.tableB 2).posFolds.length →
         * gapAt (sertables.tableB 2) [3, 2] j)) :=
   fun j hj => gapAt_dotB (sertables.tableB 2) sertables.fundB2
     (by decide +kernel) (by decide +kernel) j hj [3, 2] (by decide +kernel)
-example : ∀ j, j < (sertables.tableG2).posFolds.length →
+theorem pin48 : ∀ j, j < (sertables.tableG2).posFolds.length →
     (sertables.dotB sertables.fundG2
         (sertables.posCorootV (sertables.tableG2) j)
         ([1, 1].map ground.BPair.ofNat)).oneValue
@@ -276,16 +277,16 @@ example : ∀ j, j < (sertables.tableG2).posFolds.length →
 /-! The raised member, the concrete gaps and the dimension data at
 their values. -/
 
-example : memberRho [2, 1] 4 = [2, 2, 1, 1] := by decide +kernel
-example : (List.range (sertables.tableB 4).posFolds.length).map
+theorem pin49 : memberRho [2, 1] 4 = [2, 2, 1, 1] := by decide +kernel
+theorem pin50 : (List.range (sertables.tableB 4).posFolds.length).map
     (gapAt (sertables.tableB 4) (memberRho [2, 1] 4))
   = [4, 8, 4, 10, 6, 2, 18, 14, 10, 12, 8, 4, 11, 7, 3, 1] := by decide +kernel
-example : dimNumB [2, 1] 4 = 139708800 := by decide +kernel
-example : dimDenB [2, 1] 4 = 604800 := by decide +kernel
-example : dimNumC [2, 1] 4 = 96768000 := by decide +kernel
-example : dimDenC [2, 1] 4 = 604800 := by decide +kernel
-example : dimNumD [2, 2, 1] 5 = 258660864000 := by decide +kernel
-example : dimDenD [2, 2, 1] 5 = 87091200 := by decide +kernel
+theorem pin51 : dimNumB [2, 1] 4 = 139708800 := by decide +kernel
+theorem pin52 : dimDenB [2, 1] 4 = 604800 := by decide +kernel
+theorem pin53 : dimNumC [2, 1] 4 = 96768000 := by decide +kernel
+theorem pin54 : dimDenC [2, 1] 4 = 604800 := by decide +kernel
+theorem pin55 : dimNumD [2, 2, 1] 5 = 258660864000 := by decide +kernel
+theorem pin56 : dimDenD [2, 2, 1] 5 = 87091200 := by decide +kernel
 
 /-! ## The row tier: the letter fold at the vacant target
 
@@ -406,44 +407,44 @@ private theorem d4Fam : row.thetaFamRead (sertables.tableD 4) (thFamOf (sertable
 
 /-! The members' data at their reads. -/
 
-example : sertables.fundShape (sertables.tableB 3) fundB3 := by decide +kernel
-example : sertables.gramRead (sertables.tableB 3) fundB3 := by decide +kernel
-example : sertables.simplePosRead (sertables.tableB 3) fundB3 := by decide +kernel
-example : sertables.rhoDotRead (sertables.tableB 3) fundB3 := by decide +kernel
-example : sertables.permImageRead (sertables.tableB 3) fundB3 := by decide +kernel
-example : row.rhoLenRead (sertables.tableB 3) fundB3 := by decide +kernel
-example : row.thetaFamRead (sertables.tableB 3) (thFamOf (sertables.tableB 3) 9) := by
+theorem pin57 : sertables.fundShape (sertables.tableB 3) fundB3 := by decide +kernel
+theorem pin58 : sertables.gramRead (sertables.tableB 3) fundB3 := by decide +kernel
+theorem pin59 : sertables.simplePosRead (sertables.tableB 3) fundB3 := by decide +kernel
+theorem pin60 : sertables.rhoDotRead (sertables.tableB 3) fundB3 := by decide +kernel
+theorem pin61 : sertables.permImageRead (sertables.tableB 3) fundB3 := by decide +kernel
+theorem pin62 : row.rhoLenRead (sertables.tableB 3) fundB3 := by decide +kernel
+theorem pin63 : row.thetaFamRead (sertables.tableB 3) (thFamOf (sertables.tableB 3) 9) := by
   decide +kernel
 
-example : sertables.fundShape (sertables.tableC 3) fundC3 := by decide +kernel
-example : sertables.gramRead (sertables.tableC 3) fundC3 := by decide +kernel
-example : sertables.simplePosRead (sertables.tableC 3) fundC3 := by decide +kernel
-example : sertables.rhoDotRead (sertables.tableC 3) fundC3 := by decide +kernel
-example : sertables.permImageRead (sertables.tableC 3) fundC3 := by decide +kernel
-example : row.rhoLenRead (sertables.tableC 3) fundC3 := by decide +kernel
-example : row.thetaFamRead (sertables.tableC 3) (thFamOf (sertables.tableC 3) 9) := by
+theorem pin64 : sertables.fundShape (sertables.tableC 3) fundC3 := by decide +kernel
+theorem pin65 : sertables.gramRead (sertables.tableC 3) fundC3 := by decide +kernel
+theorem pin66 : sertables.simplePosRead (sertables.tableC 3) fundC3 := by decide +kernel
+theorem pin67 : sertables.rhoDotRead (sertables.tableC 3) fundC3 := by decide +kernel
+theorem pin68 : sertables.permImageRead (sertables.tableC 3) fundC3 := by decide +kernel
+theorem pin69 : row.rhoLenRead (sertables.tableC 3) fundC3 := by decide +kernel
+theorem pin70 : row.thetaFamRead (sertables.tableC 3) (thFamOf (sertables.tableC 3) 9) := by
   decide +kernel
 
-example : sertables.fundShape (sertables.tableD 4) fundD4 := by decide +kernel
-example : sertables.gramRead (sertables.tableD 4) fundD4 := by decide +kernel
-example : sertables.simplePosRead (sertables.tableD 4) fundD4 := by decide +kernel
-example : sertables.rhoDotRead (sertables.tableD 4) fundD4 := by decide +kernel
-example : sertables.permImageRead (sertables.tableD 4) fundD4 := by decide +kernel
-example : row.rhoLenRead (sertables.tableD 4) fundD4 := by decide +kernel
-example : row.thetaFamRead (sertables.tableD 4) (thFamOf (sertables.tableD 4) 12) := by
+theorem pin71 : sertables.fundShape (sertables.tableD 4) fundD4 := by decide +kernel
+theorem pin72 : sertables.gramRead (sertables.tableD 4) fundD4 := by decide +kernel
+theorem pin73 : sertables.simplePosRead (sertables.tableD 4) fundD4 := by decide +kernel
+theorem pin74 : sertables.rhoDotRead (sertables.tableD 4) fundD4 := by decide +kernel
+theorem pin75 : sertables.permImageRead (sertables.tableD 4) fundD4 := by decide +kernel
+theorem pin76 : row.rhoLenRead (sertables.tableD 4) fundD4 := by decide +kernel
+theorem pin77 : row.thetaFamRead (sertables.tableD 4) (thFamOf (sertables.tableD 4) 12) := by
   decide +kernel
 
 /-! The members at the vacant word: every raise at one, the fold the
 letters' own reads. -/
 
-example : member [] 2 = [0, 0] := by decide +kernel
-example : memberRho [] 2 = [1, 1] := by decide +kernel
+theorem pin78 : member [] 2 = [0, 0] := by decide +kernel
+theorem pin79 : memberRho [] 2 = [1, 1] := by decide +kernel
 
-example : letterFold (sertables.tableB 2) [] 2
+theorem pin80 : letterFold (sertables.tableB 2) [] 2
     (List.replicate 2 ground.BPair.unit)
     (thFamOf (sertables.tableB 2) 4)
   = ground.countOf 0 (member [] 2) := by decide +kernel
-example : letterFold (sertables.tableB 2) [] 2
+theorem pin81 : letterFold (sertables.tableB 2) [] 2
     (List.replicate 2 ground.BPair.unit)
     (thFamOf (sertables.tableB 2) 4)
   = ground.countOf 0 (member [] 2) :=
@@ -455,15 +456,15 @@ example : letterFold (sertables.tableB 2) [] 2
 doubled simple off the content list, so the raised key's own count
 is nought and the fold falls to the remaining letters. -/
 
-example : member [1] 3 = [1, 0, 0] := by decide +kernel
-example : memberRho [1] 3 = [2, 1, 1] := by decide +kernel
-example : member [1] 4 = [1, 0, 0, 0] := by decide +kernel
-example : memberRho [1] 4 = [2, 1, 1, 1] := by decide +kernel
+theorem pin82 : member [1] 3 = [1, 0, 0] := by decide +kernel
+theorem pin83 : memberRho [1] 3 = [2, 1, 1] := by decide +kernel
+theorem pin84 : member [1] 4 = [1, 0, 0, 0] := by decide +kernel
+theorem pin85 : memberRho [1] 4 = [2, 1, 1, 1] := by decide +kernel
 
-example : letterFold (sertables.tableB 3) [1] 3
+theorem pin86 : letterFold (sertables.tableB 3) [1] 3
     (List.replicate 3 ground.BPair.unit)
     (thFamOf (sertables.tableB 3) 9) = 2 := by decide +kernel
-example : letterFold (sertables.tableB 3) [1] 3
+theorem pin87 : letterFold (sertables.tableB 3) [1] 3
     (List.replicate 3 ground.BPair.unit)
     (thFamOf (sertables.tableB 3) 9)
   = ground.countOf 0 (member [1] 3) :=
@@ -471,10 +472,10 @@ example : letterFold (sertables.tableB 3) [1] 3
     b3Fund b3Gram b3Simple b3RhoDot b3RhoLen
     b3Fam
 
-example : letterFold (sertables.tableC 3) [1] 3
+theorem pin88 : letterFold (sertables.tableC 3) [1] 3
     (List.replicate 3 ground.BPair.unit)
     (thFamOf (sertables.tableC 3) 9) = 2 := by decide +kernel
-example : letterFold (sertables.tableC 3) [1] 3
+theorem pin89 : letterFold (sertables.tableC 3) [1] 3
     (List.replicate 3 ground.BPair.unit)
     (thFamOf (sertables.tableC 3) 9)
   = ground.countOf 0 (member [1] 3) :=
@@ -482,10 +483,10 @@ example : letterFold (sertables.tableC 3) [1] 3
     c3Fund c3Gram c3Simple c3RhoDot c3RhoLen
     c3Fam
 
-example : letterFold (sertables.tableD 4) [1] 4
+theorem pin90 : letterFold (sertables.tableD 4) [1] 4
     (List.replicate 4 ground.BPair.unit)
     (thFamOf (sertables.tableD 4) 12) = 3 := by decide +kernel
-example : letterFold (sertables.tableD 4) [1] 4
+theorem pin91 : letterFold (sertables.tableD 4) [1] 4
     (List.replicate 4 ground.BPair.unit)
     (thFamOf (sertables.tableD 4) 12)
   = ground.countOf 0 (member [1] 4) :=
@@ -506,10 +507,10 @@ private def thFamB3Cut : List (List ground.BPair) :=
     ++ (List.range 9).map (fun j =>
          poly.pnorm (poly.neg (sertables.posCorootV (sertables.tableB 3) j)))
 
-example : ¬ row.thetaFamRead (sertables.tableB 3) thFamB3Cut := by decide +kernel
-example : letterFold (sertables.tableB 3) [1] 3
+theorem pin92 : ¬ row.thetaFamRead (sertables.tableB 3) thFamB3Cut := by decide +kernel
+theorem pin93 : letterFold (sertables.tableB 3) [1] 3
     (List.replicate 3 ground.BPair.unit) thFamB3Cut = 1 := by decide +kernel
-example : ¬ (letterFold (sertables.tableB 3) [1] 3
+theorem pin94 : ¬ (letterFold (sertables.tableB 3) [1] 3
     (List.replicate 3 ground.BPair.unit) thFamB3Cut
   = ground.countOf 0 (member [1] 3)) := by decide +kernel
 /-! ## `lem:serstable`(ii)'s row tier: the two convolution counts
@@ -560,32 +561,32 @@ private theorem d3RhoLen : row.rhoLenRead (sertables.tableD 3) (fundD3) := by de
 private theorem d3MShape : memberchar.mShapeRead (sertables.tableD 3) (thFamOf (sertables.tableD 3) 6) := by decide +kernel
 private theorem d3Fam : row.thetaFamRead (sertables.tableD 3) (thFamOf (sertables.tableD 3) 6) := by decide +kernel
 
-example : sertables.fundShape (sertables.tableD 3) fundD3 := by decide +kernel
-example : sertables.gramRead (sertables.tableD 3) fundD3 := by decide +kernel
-example : sertables.gramSymRead fundD3 := by decide +kernel
-example : sertables.reflSquareRead (sertables.tableD 3) := by decide +kernel
-example : sertables.simplePosRead (sertables.tableD 3) fundD3 := by
+theorem pin95 : sertables.fundShape (sertables.tableD 3) fundD3 := by decide +kernel
+theorem pin96 : sertables.gramRead (sertables.tableD 3) fundD3 := by decide +kernel
+theorem pin97 : sertables.gramSymRead fundD3 := by decide +kernel
+theorem pin98 : sertables.reflSquareRead (sertables.tableD 3) := by decide +kernel
+theorem pin99 : sertables.simplePosRead (sertables.tableD 3) fundD3 := by
   decide +kernel
-example : sertables.rhoDotRead (sertables.tableD 3) fundD3 := by decide +kernel
-example : sertables.permImageRead (sertables.tableD 3) fundD3 := by
+theorem pin100 : sertables.rhoDotRead (sertables.tableD 3) fundD3 := by decide +kernel
+theorem pin101 : sertables.permImageRead (sertables.tableD 3) fundD3 := by
   decide +kernel
-example : row.rhoLenRead (sertables.tableD 3) fundD3 := by decide +kernel
-example : row.thetaFamRead (sertables.tableD 3)
+theorem pin102 : row.rhoLenRead (sertables.tableD 3) fundD3 := by decide +kernel
+theorem pin103 : row.thetaFamRead (sertables.tableD 3)
     (thFamOf (sertables.tableD 3) 6) := by decide +kernel
-example : memberchar.mShapeRead (sertables.tableD 3)
+theorem pin104 : memberchar.mShapeRead (sertables.tableD 3)
     (thFamOf (sertables.tableD 3) 6) := by decide +kernel
 
-example : sertables.fundShape (sertables.tableD 2) fundD2 := by decide +kernel
-example : sertables.gramRead (sertables.tableD 2) fundD2 := by decide +kernel
-example : sertables.gramSymRead fundD2 := by decide +kernel
-example : sertables.reflSquareRead (sertables.tableD 2) := by decide +kernel
-example : sertables.simplePosRead (sertables.tableD 2) fundD2 := by
+theorem pin105 : sertables.fundShape (sertables.tableD 2) fundD2 := by decide +kernel
+theorem pin106 : sertables.gramRead (sertables.tableD 2) fundD2 := by decide +kernel
+theorem pin107 : sertables.gramSymRead fundD2 := by decide +kernel
+theorem pin108 : sertables.reflSquareRead (sertables.tableD 2) := by decide +kernel
+theorem pin109 : sertables.simplePosRead (sertables.tableD 2) fundD2 := by
   decide +kernel
-example : sertables.rhoDotRead (sertables.tableD 2) fundD2 := by decide +kernel
-example : row.rhoLenRead (sertables.tableD 2) fundD2 := by decide +kernel
-example : row.thetaFamRead (sertables.tableD 2)
+theorem pin110 : sertables.rhoDotRead (sertables.tableD 2) fundD2 := by decide +kernel
+theorem pin111 : row.rhoLenRead (sertables.tableD 2) fundD2 := by decide +kernel
+theorem pin112 : row.thetaFamRead (sertables.tableD 2)
     (thFamOf (sertables.tableD 2) 2) := by decide +kernel
-example : memberchar.mShapeRead (sertables.tableD 2)
+theorem pin113 : memberchar.mShapeRead (sertables.tableD 2)
     (thFamOf (sertables.tableD 2) 2) := by decide +kernel
 
 /-- `B_2`'s shifted key at the vacant word, its Weyl orbit graded -/
@@ -1099,19 +1100,19 @@ at the first ranks where all three families' generic shapes appear
 — the chain's interior keys at `B` and `C`, and the fork's own
 middle at `D`. -/
 
-example : ∀ j, j < (sertables.tableB 4).posFolds.length →
+theorem pin114 : ∀ j, j < (sertables.tableB 4).posFolds.length →
     gentable.formNum (sertables.tableB 4)
         (ground.getAt [] (sertables.tableB 4).posFolds j)
         (ground.getAt [] (sertables.tableB 4).posFolds j)
       ≤ ground.BPair.ofNat 4 := by decide +kernel
 
-example : ∀ j, j < (sertables.tableC 4).posFolds.length →
+theorem pin115 : ∀ j, j < (sertables.tableC 4).posFolds.length →
     gentable.formNum (sertables.tableC 4)
         (ground.getAt [] (sertables.tableC 4).posFolds j)
         (ground.getAt [] (sertables.tableC 4).posFolds j)
       ≤ ground.BPair.ofNat 4 := by decide +kernel
 
-example : ∀ j, j < (sertables.tableD 5).posFolds.length →
+theorem pin116 : ∀ j, j < (sertables.tableD 5).posFolds.length →
     gentable.formNum (sertables.tableD 5)
         (ground.getAt [] (sertables.tableD 5).posFolds j)
         (ground.getAt [] (sertables.tableD 5).posFolds j)
@@ -1140,14 +1141,14 @@ private theorem b2Sq : row.sqAtRead sertables.fundB2 wB2v
       (sertables.rhoV (sertables.tableB 2)))) := by decide +kernel
 /-- `B_2` at the vacant word: the contents' cap through the
 theorem, `lem:serstable`(ii)'s derived read at the series table. -/
-example : ∀ z ∈ (thFamOf (sertables.tableB 2) 4),
+theorem pin117 : ∀ z ∈ (thFamOf (sertables.tableB 2) 4),
     sertables.dotB sertables.fundB2 z z
       ≤ ground.BPair.ofNat (4 * (sertables.fundB2).scale) :=
   serstable.contentCap_B 2 sertables.fundB2 (thFamOf (sertables.tableB 2) 4)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 
-example : memberchar.convCount wB2v (thFamOf (sertables.tableB 2) 4)
+theorem pin118 : memberchar.convCount wB2v (thFamOf (sertables.tableB 2) 4)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [] 2)
             (sertables.rhoV (sertables.tableB 2))))
@@ -1161,7 +1162,7 @@ example : memberchar.convCount wB2v (thFamOf (sertables.tableB 2) 4)
       = letterFold (sertables.tableB 2) [] 2 (List.replicate 2 ground.BPair.unit) (thFamOf (sertables.tableB 2) 4) := by
   decide +kernel
 
-example : memberchar.convCount wB2v (thFamOf (sertables.tableB 2) 4)
+theorem pin119 : memberchar.convCount wB2v (thFamOf (sertables.tableB 2) 4)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [] 2)
             (sertables.rhoV (sertables.tableB 2))))
@@ -1182,7 +1183,7 @@ example : memberchar.convCount wB2v (thFamOf (sertables.tableB 2) 4)
     b2Shape b2Close b2Dom b2Top b2Sq
     b2MShape b2Fam (by decide +kernel) (by decide +kernel)
 
-example : memberchar.convCount wB2v (thFamOf (sertables.tableB 2) 4)
+theorem pin120 : memberchar.convCount wB2v (thFamOf (sertables.tableB 2) 4)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [] 2)
             (sertables.rhoV (sertables.tableB 2))))
@@ -1196,7 +1197,7 @@ example : memberchar.convCount wB2v (thFamOf (sertables.tableB 2) 4)
       = letterFold (sertables.tableB 2) [] 2 (poly.pnorm (sertables.posCorootV (sertables.tableB 2) 2)) (thFamOf (sertables.tableB 2) 4) := by
   decide +kernel
 
-example : memberchar.convCount wB2v (thFamOf (sertables.tableB 2) 4)
+theorem pin121 : memberchar.convCount wB2v (thFamOf (sertables.tableB 2) 4)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [] 2)
             (sertables.rhoV (sertables.tableB 2))))
@@ -1238,14 +1239,14 @@ private theorem b3Sq : row.sqAtRead fundB3 wB3
     (poly.pnorm (elim.vecAdd (memberV [1] 3)
       (sertables.rhoV (sertables.tableB 3)))) := by decide +kernel
 /-- `B_3` at the word `[1]`: the contents' cap. -/
-example : ∀ z ∈ (thFamOf (sertables.tableB 3) 9),
+theorem pin122 : ∀ z ∈ (thFamOf (sertables.tableB 3) 9),
     sertables.dotB fundB3 z z
       ≤ ground.BPair.ofNat (4 * (fundB3).scale) :=
   serstable.contentCap_B 3 fundB3 (thFamOf (sertables.tableB 3) 9)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 
-example : memberchar.convCount wB3 (thFamOf (sertables.tableB 3) 9)
+theorem pin123 : memberchar.convCount wB3 (thFamOf (sertables.tableB 3) 9)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1] 3)
             (sertables.rhoV (sertables.tableB 3))))
@@ -1259,7 +1260,7 @@ example : memberchar.convCount wB3 (thFamOf (sertables.tableB 3) 9)
       = letterFold (sertables.tableB 3) [1] 3 (List.replicate 3 ground.BPair.unit) (thFamOf (sertables.tableB 3) 9) := by
   decide +kernel
 
-example : memberchar.convCount wB3 (thFamOf (sertables.tableB 3) 9)
+theorem pin124 : memberchar.convCount wB3 (thFamOf (sertables.tableB 3) 9)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1] 3)
             (sertables.rhoV (sertables.tableB 3))))
@@ -1280,7 +1281,7 @@ example : memberchar.convCount wB3 (thFamOf (sertables.tableB 3) 9)
     b3Shape b3Close b3Dom b3Top b3Sq
     b3MShape b3Fam (by decide +kernel) (by decide +kernel)
 
-example : memberchar.convCount wB3 (thFamOf (sertables.tableB 3) 9)
+theorem pin125 : memberchar.convCount wB3 (thFamOf (sertables.tableB 3) 9)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1] 3)
             (sertables.rhoV (sertables.tableB 3))))
@@ -1294,7 +1295,7 @@ example : memberchar.convCount wB3 (thFamOf (sertables.tableB 3) 9)
       = letterFold (sertables.tableB 3) [1] 3 (poly.pnorm (sertables.posCorootV (sertables.tableB 3) 6)) (thFamOf (sertables.tableB 3) 9) := by
   decide +kernel
 
-example : memberchar.convCount wB3 (thFamOf (sertables.tableB 3) 9)
+theorem pin126 : memberchar.convCount wB3 (thFamOf (sertables.tableB 3) 9)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1] 3)
             (sertables.rhoV (sertables.tableB 3))))
@@ -1336,14 +1337,14 @@ private theorem c3Sq : row.sqAtRead fundC3 wC3
     (poly.pnorm (elim.vecAdd (memberV [1] 3)
       (sertables.rhoV (sertables.tableC 3)))) := by decide +kernel
 /-- `C_3` at the word `[1]`: the contents' cap. -/
-example : ∀ z ∈ (thFamOf (sertables.tableC 3) 9),
+theorem pin127 : ∀ z ∈ (thFamOf (sertables.tableC 3) 9),
     sertables.dotB fundC3 z z
       ≤ ground.BPair.ofNat (4 * (fundC3).scale) :=
   serstable.contentCap_C 3 fundC3 (thFamOf (sertables.tableC 3) 9)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 
-example : memberchar.convCount wC3 (thFamOf (sertables.tableC 3) 9)
+theorem pin128 : memberchar.convCount wC3 (thFamOf (sertables.tableC 3) 9)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1] 3)
             (sertables.rhoV (sertables.tableC 3))))
@@ -1357,7 +1358,7 @@ example : memberchar.convCount wC3 (thFamOf (sertables.tableC 3) 9)
       = letterFold (sertables.tableC 3) [1] 3 (List.replicate 3 ground.BPair.unit) (thFamOf (sertables.tableC 3) 9) := by
   decide +kernel
 
-example : memberchar.convCount wC3 (thFamOf (sertables.tableC 3) 9)
+theorem pin129 : memberchar.convCount wC3 (thFamOf (sertables.tableC 3) 9)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1] 3)
             (sertables.rhoV (sertables.tableC 3))))
@@ -1378,7 +1379,7 @@ example : memberchar.convCount wC3 (thFamOf (sertables.tableC 3) 9)
     c3Shape c3Close c3Dom c3Top c3Sq
     c3MShape c3Fam (by decide +kernel) (by decide +kernel)
 
-example : memberchar.convCount wC3 (thFamOf (sertables.tableC 3) 9)
+theorem pin130 : memberchar.convCount wC3 (thFamOf (sertables.tableC 3) 9)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1] 3)
             (sertables.rhoV (sertables.tableC 3))))
@@ -1392,7 +1393,7 @@ example : memberchar.convCount wC3 (thFamOf (sertables.tableC 3) 9)
       = letterFold (sertables.tableC 3) [1] 3 (poly.pnorm (sertables.posCorootV (sertables.tableC 3) 3)) (thFamOf (sertables.tableC 3) 9) := by
   decide +kernel
 
-example : memberchar.convCount wC3 (thFamOf (sertables.tableC 3) 9)
+theorem pin131 : memberchar.convCount wC3 (thFamOf (sertables.tableC 3) 9)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1] 3)
             (sertables.rhoV (sertables.tableC 3))))
@@ -1432,14 +1433,14 @@ private theorem d3Sq : row.sqAtRead fundD3 wD3
     (poly.pnorm (elim.vecAdd (memberV [1] 3)
       (sertables.rhoV (sertables.tableD 3)))) := by decide +kernel
 /-- `D_3` at the word `[1]`: the contents' cap. -/
-example : ∀ z ∈ (thFamOf (sertables.tableD 3) 6),
+theorem pin132 : ∀ z ∈ (thFamOf (sertables.tableD 3) 6),
     sertables.dotB fundD3 z z
       ≤ ground.BPair.ofNat (4 * (fundD3).scale) :=
   serstable.contentCap_D 3 fundD3 (thFamOf (sertables.tableD 3) 6)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 
-example : memberchar.convCount wD3 (thFamOf (sertables.tableD 3) 6)
+theorem pin133 : memberchar.convCount wD3 (thFamOf (sertables.tableD 3) 6)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1] 3)
             (sertables.rhoV (sertables.tableD 3))))
@@ -1453,7 +1454,7 @@ example : memberchar.convCount wD3 (thFamOf (sertables.tableD 3) 6)
       = letterFold (sertables.tableD 3) [1] 3 (List.replicate 3 ground.BPair.unit) (thFamOf (sertables.tableD 3) 6) := by
   decide +kernel
 
-example : memberchar.convCount wD3 (thFamOf (sertables.tableD 3) 6)
+theorem pin134 : memberchar.convCount wD3 (thFamOf (sertables.tableD 3) 6)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1] 3)
             (sertables.rhoV (sertables.tableD 3))))
@@ -1474,7 +1475,7 @@ example : memberchar.convCount wD3 (thFamOf (sertables.tableD 3) 6)
     d3Shape d3Close d3Dom d3Top d3Sq
     d3MShape d3Fam (by decide +kernel) (by decide +kernel)
 
-example : memberchar.convCount wD3 (thFamOf (sertables.tableD 3) 6)
+theorem pin135 : memberchar.convCount wD3 (thFamOf (sertables.tableD 3) 6)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1] 3)
             (sertables.rhoV (sertables.tableD 3))))
@@ -1488,7 +1489,7 @@ example : memberchar.convCount wD3 (thFamOf (sertables.tableD 3) 6)
       = letterFold (sertables.tableD 3) [1] 3 (poly.pnorm (sertables.posCorootV (sertables.tableD 3) 3)) (thFamOf (sertables.tableD 3) 6) := by
   decide +kernel
 
-example : memberchar.convCount wD3 (thFamOf (sertables.tableD 3) 6)
+theorem pin136 : memberchar.convCount wD3 (thFamOf (sertables.tableD 3) 6)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1] 3)
             (sertables.rhoV (sertables.tableD 3))))
@@ -1513,16 +1514,16 @@ example : memberchar.convCount wD3 (thFamOf (sertables.tableD 3) 6)
 balance partner joins the member at a negative coroot pair, and both
 counts leave the theorem's values. -/
 
-example : ¬ (∀ k, k < 3 → ground.BPair.unit ≤ ground.getAt
+theorem pin137 : ¬ (∀ k, k < 3 → ground.BPair.unit ≤ ground.getAt
     ground.BPair.unit (poly.pnorm (elim.vecAdd (memberV [1] 3)
       (poly.pnorm (poly.neg
         (sertables.posCorootV (sertables.tableB 3) 5))))) k) := by
   decide +kernel
-example : 0 < ground.countOf (poly.pnorm (poly.neg
+theorem pin138 : 0 < ground.countOf (poly.pnorm (poly.neg
     (sertables.posCorootV (sertables.tableB 3) 5)))
     (thFamOf (sertables.tableB 3) 9) := by decide +kernel
 
-example : ¬ (memberchar.convCount wB3 (thFamOf (sertables.tableB 3) 9)
+theorem pin139 : ¬ (memberchar.convCount wB3 (thFamOf (sertables.tableB 3) 9)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1] 3)
             (sertables.rhoV (sertables.tableB 3))))
@@ -1542,23 +1543,23 @@ not refusal boundaries: below the clearance at `D_2` and at `B_3`,
 and against the descent at `B_3`'s ascending word, the reads stand
 and the two counts keep the theorem's values. -/
 
-example : ¬ (List.length [1] + 2 ≤ 2) := by decide +kernel
+theorem pin140 : ¬ (List.length [1] + 2 ≤ 2) := by decide +kernel
 
-example : sertables.wShapeRead (sertables.tableD 2) wD2 := by decide +kernel
-example : assembly.wCloseRead (sertables.tableD 2) wD2 := by decide +kernel
-example : assembly.wTopAt wD2
+theorem pin141 : sertables.wShapeRead (sertables.tableD 2) wD2 := by decide +kernel
+theorem pin142 : assembly.wCloseRead (sertables.tableD 2) wD2 := by decide +kernel
+theorem pin143 : assembly.wTopAt wD2
     (poly.pnorm (elim.vecAdd (memberV [1] 2)
       (sertables.rhoV (sertables.tableD 2)))) := by decide +kernel
-example : assembly.wDomAt (sertables.tableD 2) wD2 wD2wits
+theorem pin144 : assembly.wDomAt (sertables.tableD 2) wD2 wD2wits
     (poly.pnorm (elim.vecAdd (memberV [1] 2)
       (sertables.rhoV (sertables.tableD 2)))) := by decide +kernel
-example : row.sqAtRead fundD2 wD2
+theorem pin145 : row.sqAtRead fundD2 wD2
     (poly.pnorm (elim.vecAdd (memberV [1] 2)
       (sertables.rhoV (sertables.tableD 2)))) := by decide +kernel
-example : ∀ z ∈ (thFamOf (sertables.tableD 2) 2), sertables.dotB fundD2 z z
+theorem pin146 : ∀ z ∈ (thFamOf (sertables.tableD 2) 2), sertables.dotB fundD2 z z
     ≤ ground.BPair.ofNat (4 * (fundD2).scale) := by decide +kernel
 
-example : memberchar.convCount wD2 (thFamOf (sertables.tableD 2) 2)
+theorem pin147 : memberchar.convCount wD2 (thFamOf (sertables.tableD 2) 2)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1] 2)
             (sertables.rhoV (sertables.tableD 2))))
@@ -1573,23 +1574,23 @@ example : memberchar.convCount wD2 (thFamOf (sertables.tableD 2) 2)
   decide +kernel
 
 
-example : ¬ (List.length [1, 1] + 2 ≤ 3) := by decide +kernel
+theorem pin148 : ¬ (List.length [1, 1] + 2 ≤ 3) := by decide +kernel
 
-example : sertables.wShapeRead (sertables.tableB 3) wB3c := by decide +kernel
-example : assembly.wCloseRead (sertables.tableB 3) wB3c := by decide +kernel
-example : assembly.wTopAt wB3c
+theorem pin149 : sertables.wShapeRead (sertables.tableB 3) wB3c := by decide +kernel
+theorem pin150 : assembly.wCloseRead (sertables.tableB 3) wB3c := by decide +kernel
+theorem pin151 : assembly.wTopAt wB3c
     (poly.pnorm (elim.vecAdd (memberV [1, 1] 3)
       (sertables.rhoV (sertables.tableB 3)))) := by decide +kernel
-example : assembly.wDomAt (sertables.tableB 3) wB3c wB3cwits
+theorem pin152 : assembly.wDomAt (sertables.tableB 3) wB3c wB3cwits
     (poly.pnorm (elim.vecAdd (memberV [1, 1] 3)
       (sertables.rhoV (sertables.tableB 3)))) := by decide +kernel
-example : row.sqAtRead fundB3 wB3c
+theorem pin153 : row.sqAtRead fundB3 wB3c
     (poly.pnorm (elim.vecAdd (memberV [1, 1] 3)
       (sertables.rhoV (sertables.tableB 3)))) := by decide +kernel
-example : ∀ z ∈ (thFamOf (sertables.tableB 3) 9), sertables.dotB fundB3 z z
+theorem pin154 : ∀ z ∈ (thFamOf (sertables.tableB 3) 9), sertables.dotB fundB3 z z
     ≤ ground.BPair.ofNat (4 * (fundB3).scale) := by decide +kernel
 
-example : memberchar.convCount wB3c (thFamOf (sertables.tableB 3) 9)
+theorem pin155 : memberchar.convCount wB3c (thFamOf (sertables.tableB 3) 9)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1, 1] 3)
             (sertables.rhoV (sertables.tableB 3))))
@@ -1604,25 +1605,25 @@ example : memberchar.convCount wB3c (thFamOf (sertables.tableB 3) 9)
   decide +kernel
 
 
-example : ¬ (∀ i, i + 1 < List.length [1, 2] →
+theorem pin156 : ¬ (∀ i, i + 1 < List.length [1, 2] →
     ground.getAt 0 [1, 2] (i + 1) ≤ ground.getAt 0 [1, 2] i) := by
   decide +kernel
 
-example : sertables.wShapeRead (sertables.tableB 3) wB3s := by decide +kernel
-example : assembly.wCloseRead (sertables.tableB 3) wB3s := by decide +kernel
-example : assembly.wTopAt wB3s
+theorem pin157 : sertables.wShapeRead (sertables.tableB 3) wB3s := by decide +kernel
+theorem pin158 : assembly.wCloseRead (sertables.tableB 3) wB3s := by decide +kernel
+theorem pin159 : assembly.wTopAt wB3s
     (poly.pnorm (elim.vecAdd (memberV [1, 2] 3)
       (sertables.rhoV (sertables.tableB 3)))) := by decide +kernel
-example : assembly.wDomAt (sertables.tableB 3) wB3s wB3swits
+theorem pin160 : assembly.wDomAt (sertables.tableB 3) wB3s wB3swits
     (poly.pnorm (elim.vecAdd (memberV [1, 2] 3)
       (sertables.rhoV (sertables.tableB 3)))) := by decide +kernel
-example : row.sqAtRead fundB3 wB3s
+theorem pin161 : row.sqAtRead fundB3 wB3s
     (poly.pnorm (elim.vecAdd (memberV [1, 2] 3)
       (sertables.rhoV (sertables.tableB 3)))) := by decide +kernel
-example : ∀ z ∈ (thFamOf (sertables.tableB 3) 9), sertables.dotB fundB3 z z
+theorem pin162 : ∀ z ∈ (thFamOf (sertables.tableB 3) 9), sertables.dotB fundB3 z z
     ≤ ground.BPair.ofNat (4 * (fundB3).scale) := by decide +kernel
 
-example : memberchar.convCount wB3s (thFamOf (sertables.tableB 3) 9)
+theorem pin163 : memberchar.convCount wB3s (thFamOf (sertables.tableB 3) 9)
         (poly.pnorm (elim.vecAdd
           (poly.pnorm (elim.vecAdd (memberV [1, 2] 3)
             (sertables.rhoV (sertables.tableB 3))))
@@ -1648,35 +1649,35 @@ dimension pair's cross-multiplied read is decided at the same words
 and routed through its bridge, at the vacant word and at a longer
 one beside them. -/
 
-example : (poly.eval (casPolyB [2, 1]) (ground.BPair.ofNat 4)).oneValue
+theorem pin164 : (poly.eval (casPolyB [2, 1]) (ground.BPair.ofNat 4)).oneValue
     (ground.BPair.ofNat (casNumB [2, 1] 4)) := by decide +kernel
-example : (poly.eval (casPolyB [2, 1]) (ground.BPair.ofNat 4)).oneValue
+theorem pin165 : (poly.eval (casPolyB [2, 1]) (ground.BPair.ofNat 4)).oneValue
     (ground.BPair.ofNat (casNumB [2, 1] 4)) :=
   casPolyB_eval [2, 1] 4 (by decide +kernel)
 
-example : (poly.eval (casPolyC [2, 1]) (ground.BPair.ofNat 4)).oneValue
+theorem pin166 : (poly.eval (casPolyC [2, 1]) (ground.BPair.ofNat 4)).oneValue
     (ground.BPair.ofNat (casNumC [2, 1] 4)) := by decide +kernel
-example : (poly.eval (casPolyC [2, 1]) (ground.BPair.ofNat 4)).oneValue
+theorem pin167 : (poly.eval (casPolyC [2, 1]) (ground.BPair.ofNat 4)).oneValue
     (ground.BPair.ofNat (casNumC [2, 1] 4)) :=
   casPolyC_eval [2, 1] 4 (by decide +kernel)
 
-example : (poly.eval (casPolyD [2, 1]) (ground.BPair.ofNat 5)).oneValue
+theorem pin168 : (poly.eval (casPolyD [2, 1]) (ground.BPair.ofNat 5)).oneValue
     (ground.BPair.ofNat (casNumD [2, 1] 5)) := by decide +kernel
-example : (poly.eval (casPolyD [2, 1]) (ground.BPair.ofNat 5)).oneValue
+theorem pin169 : (poly.eval (casPolyD [2, 1]) (ground.BPair.ofNat 5)).oneValue
     (ground.BPair.ofNat (casNumD [2, 1] 5)) :=
   casPolyD_eval [2, 1] 5 (by decide +kernel)
 
 /-! The theorems at the vacant word, at a longer word, and at the
 clearance's own boundary, where the rank reads the word's length. -/
 
-example : (poly.eval (casPolyB []) (ground.BPair.ofNat 4)).oneValue
+theorem pin170 : (poly.eval (casPolyB []) (ground.BPair.ofNat 4)).oneValue
     (ground.BPair.ofNat (casNumB [] 4)) :=
   casPolyB_eval [] 4 (by decide +kernel)
-example : (poly.eval (casPolyD [5, 3, 3, 1, 1])
+theorem pin171 : (poly.eval (casPolyD [5, 3, 3, 1, 1])
       (ground.BPair.ofNat 7)).oneValue
     (ground.BPair.ofNat (casNumD [5, 3, 3, 1, 1] 7)) :=
   casPolyD_eval [5, 3, 3, 1, 1] 7 (by decide +kernel)
-example : (poly.eval (casPolyB [2, 1]) (ground.BPair.ofNat 2)).oneValue
+theorem pin172 : (poly.eval (casPolyB [2, 1]) (ground.BPair.ofNat 2)).oneValue
     (ground.BPair.ofNat (casNumB [2, 1] 2)) :=
   casPolyB_eval [2, 1] 2 (by decide +kernel)
 
@@ -1684,44 +1685,44 @@ example : (poly.eval (casPolyB [2, 1]) (ground.BPair.ofNat 2)).oneValue
 length the truncated key reads part from the polynomial's value at
 every series. -/
 
-example : ¬ (poly.eval (casPolyB [1, 1])
+theorem pin173 : ¬ (poly.eval (casPolyB [1, 1])
     (ground.BPair.ofNat 1)).oneValue
       (ground.BPair.ofNat (casNumB [1, 1] 1)) := by decide +kernel
-example : ¬ (poly.eval (casPolyC [1, 1])
+theorem pin174 : ¬ (poly.eval (casPolyC [1, 1])
     (ground.BPair.ofNat 0)).oneValue
       (ground.BPair.ofNat (casNumC [1, 1] 0)) := by decide +kernel
-example : ¬ (poly.eval (casPolyD [1, 1])
+theorem pin175 : ¬ (poly.eval (casPolyD [1, 1])
     (ground.BPair.ofNat 1)).oneValue
       (ground.BPair.ofNat (casNumD [1, 1] 1)) := by decide +kernel
 
 /-! The dimension pair's cross-multiplied read at the committed
 words, decided and through the theorem. -/
 
-example : (poly.eval (dimPolyNumB [2, 1]) (ground.BPair.ofNat 4)
+theorem pin176 : (poly.eval (dimPolyNumB [2, 1]) (ground.BPair.ofNat 4)
     * ground.BPair.ofNat (dimDenB [2, 1] 4)).oneValue
   (poly.eval (dimPolyDenB [2, 1]) (ground.BPair.ofNat 4)
     * ground.BPair.ofNat (dimNumB [2, 1] 4)) := by decide +kernel
-example : (poly.eval (dimPolyNumB [2, 1]) (ground.BPair.ofNat 4)
+theorem pin177 : (poly.eval (dimPolyNumB [2, 1]) (ground.BPair.ofNat 4)
     * ground.BPair.ofNat (dimDenB [2, 1] 4)).oneValue
   (poly.eval (dimPolyDenB [2, 1]) (ground.BPair.ofNat 4)
     * ground.BPair.ofNat (dimNumB [2, 1] 4)) :=
   dimPolyB_eval [2, 1] 4 (by decide +kernel) (by decide +kernel)
 
-example : (poly.eval (dimPolyNumC [2, 1]) (ground.BPair.ofNat 4)
+theorem pin178 : (poly.eval (dimPolyNumC [2, 1]) (ground.BPair.ofNat 4)
     * ground.BPair.ofNat (dimDenC [2, 1] 4)).oneValue
   (poly.eval (dimPolyDenC [2, 1]) (ground.BPair.ofNat 4)
     * ground.BPair.ofNat (dimNumC [2, 1] 4)) := by decide +kernel
-example : (poly.eval (dimPolyNumC [2, 1]) (ground.BPair.ofNat 4)
+theorem pin179 : (poly.eval (dimPolyNumC [2, 1]) (ground.BPair.ofNat 4)
     * ground.BPair.ofNat (dimDenC [2, 1] 4)).oneValue
   (poly.eval (dimPolyDenC [2, 1]) (ground.BPair.ofNat 4)
     * ground.BPair.ofNat (dimNumC [2, 1] 4)) :=
   dimPolyC_eval [2, 1] 4 (by decide +kernel) (by decide +kernel)
 
-example : (poly.eval (dimPolyNumD [2, 1]) (ground.BPair.ofNat 5)
+theorem pin180 : (poly.eval (dimPolyNumD [2, 1]) (ground.BPair.ofNat 5)
     * ground.BPair.ofNat (dimDenD [2, 1] 5)).oneValue
   (poly.eval (dimPolyDenD [2, 1]) (ground.BPair.ofNat 5)
     * ground.BPair.ofNat (dimNumD [2, 1] 5)) := by decide +kernel
-example : (poly.eval (dimPolyNumD [2, 1]) (ground.BPair.ofNat 5)
+theorem pin181 : (poly.eval (dimPolyNumD [2, 1]) (ground.BPair.ofNat 5)
     * ground.BPair.ofNat (dimDenD [2, 1] 5)).oneValue
   (poly.eval (dimPolyDenD [2, 1]) (ground.BPair.ofNat 5)
     * ground.BPair.ofNat (dimNumD [2, 1] 5)) :=
@@ -1729,12 +1730,12 @@ example : (poly.eval (dimPolyNumD [2, 1]) (ground.BPair.ofNat 5)
 
 /-! The dimension bridge at the vacant word and at a longer one. -/
 
-example : (poly.eval (dimPolyNumB []) (ground.BPair.ofNat 4)
+theorem pin182 : (poly.eval (dimPolyNumB []) (ground.BPair.ofNat 4)
     * ground.BPair.ofNat (dimDenB [] 4)).oneValue
   (poly.eval (dimPolyDenB []) (ground.BPair.ofNat 4)
     * ground.BPair.ofNat (dimNumB [] 4)) :=
   dimPolyB_eval [] 4 (by decide +kernel) (by decide +kernel)
-example : (poly.eval (dimPolyNumD [2, 2, 1]) (ground.BPair.ofNat 6)
+theorem pin183 : (poly.eval (dimPolyNumD [2, 2, 1]) (ground.BPair.ofNat 6)
     * ground.BPair.ofNat (dimDenD [2, 2, 1] 6)).oneValue
   (poly.eval (dimPolyDenD [2, 2, 1]) (ground.BPair.ofNat 6)
     * ground.BPair.ofNat (dimNumD [2, 2, 1] 6)) :=
@@ -1746,11 +1747,11 @@ stands at an ascending word, where the difference factors truncate
 on both sides alike, and at the rank reading the word's own length,
 where the tail telescopes are vacant on both sides. -/
 
-example : (poly.eval (dimPolyNumB [1, 2]) (ground.BPair.ofNat 4)
+theorem pin184 : (poly.eval (dimPolyNumB [1, 2]) (ground.BPair.ofNat 4)
     * ground.BPair.ofNat (dimDenB [1, 2] 4)).oneValue
   (poly.eval (dimPolyDenB [1, 2]) (ground.BPair.ofNat 4)
     * ground.BPair.ofNat (dimNumB [1, 2] 4)) := by decide +kernel
-example : (poly.eval (dimPolyNumB [2, 1]) (ground.BPair.ofNat 2)
+theorem pin185 : (poly.eval (dimPolyNumB [2, 1]) (ground.BPair.ofNat 2)
     * ground.BPair.ofNat (dimDenB [2, 1] 2)).oneValue
   (poly.eval (dimPolyDenB [2, 1]) (ground.BPair.ofNat 2)
     * ground.BPair.ofNat (dimNumB [2, 1] 2)) := by decide +kernel
@@ -1765,10 +1766,10 @@ carries the occupied diagonal at each series, its single channel
 against the two remaining vacant keys.  Each read is decided at its
 data and routed through the theorem beside it. -/
 
-example : ground.countOf (poly.pnorm (elim.vecScale
+theorem pin186 : ground.countOf (poly.pnorm (elim.vecScale
       (ground.BPair.ofNat 1) (memberV [] 2))) []
     + ground.countOf 0 (member [] 2) = 2 := by decide +kernel
-example : ground.countOf (poly.pnorm (elim.vecScale
+theorem pin187 : ground.countOf (poly.pnorm (elim.vecScale
       (ground.BPair.ofNat 1) (memberV [] 2))) []
     + ground.countOf 0 (member [] 2) = 2 :=
   diagRead_B [] 2 sertables.fundB2 wB2v wB2vwits
@@ -1778,11 +1779,11 @@ example : ground.countOf (poly.pnorm (elim.vecScale
     b2Shape b2Close b2Dom b2Top b2Sq
     b2MShape b2Fam (by decide +kernel) (by decide +kernel)
 
-example : ground.countOf (poly.pnorm (elim.vecScale
+theorem pin188 : ground.countOf (poly.pnorm (elim.vecScale
       (ground.BPair.ofNat 1) (memberV [1] 3)))
       [poly.pnorm (elim.vecScale (ground.BPair.ofNat 1) (memberV [1] 3))]
     + ground.countOf 0 (member [1] 3) = 3 := by decide +kernel
-example : ground.countOf (poly.pnorm (elim.vecScale
+theorem pin189 : ground.countOf (poly.pnorm (elim.vecScale
       (ground.BPair.ofNat 1) (memberV [1] 3)))
       [poly.pnorm (elim.vecScale (ground.BPair.ofNat 1) (memberV [1] 3))]
     + ground.countOf 0 (member [1] 3) = 3 :=
@@ -1793,7 +1794,7 @@ example : ground.countOf (poly.pnorm (elim.vecScale
     b3Shape b3Close b3Dom b3Top b3Sq
     b3MShape b3Fam (by decide +kernel) (by decide +kernel)
 
-example : ground.countOf (poly.pnorm (elim.vecScale
+theorem pin190 : ground.countOf (poly.pnorm (elim.vecScale
       (ground.BPair.ofNat 1) (memberV [1] 3)))
       [poly.pnorm (elim.vecScale (ground.BPair.ofNat 1) (memberV [1] 3))]
     + ground.countOf 0 (member [1] 3) = 3 :=
@@ -1804,7 +1805,7 @@ example : ground.countOf (poly.pnorm (elim.vecScale
     c3Shape c3Close c3Dom c3Top c3Sq
     c3MShape c3Fam (by decide +kernel) (by decide +kernel)
 
-example : ground.countOf (poly.pnorm (elim.vecScale
+theorem pin191 : ground.countOf (poly.pnorm (elim.vecScale
       (ground.BPair.ofNat 1) (memberV [1] 3)))
       [poly.pnorm (elim.vecScale (ground.BPair.ofNat 1) (memberV [1] 3))]
     + ground.countOf 0 (member [1] 3) = 3 :=
@@ -1822,13 +1823,13 @@ at their pairing with the count vacant, `C_3`'s identity tie alone
 at count one, and `D_3`'s last-pair boundary member at the reach
 clearance's least rank, its count one. -/
 
-example : steinberg.memberAt (sertables.tableB 3) wB3
+theorem pin192 : steinberg.memberAt (sertables.tableB 3) wB3
     (thFamOf (sertables.tableB 3) 9) []
     (poly.pnorm (elim.vecAdd (memberV [1] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableB 3) 6)))) := by
   decide +kernel
 
-example : ground.countOf
+theorem pin193 : ground.countOf
     (poly.pnorm (elim.vecAdd (memberV [1] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableB 3) 6))))
     ([] : List (List ground.BPair)) ≤ 1 :=
@@ -1840,14 +1841,14 @@ example : ground.countOf
     b3Shape b3Close b3Dom b3Top b3Sq
     b3MShape b3Fam (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : ground.countOf
+theorem pin194 : ground.countOf
     (poly.pnorm (elim.vecAdd (memberV [1] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableC 3) 3))))
     [poly.pnorm (elim.vecAdd (memberV [1] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableC 3) 3)))]
     = 1 := by decide +kernel
 
-example : steinberg.memberAt (sertables.tableC 3) wC3
+theorem pin195 : steinberg.memberAt (sertables.tableC 3) wC3
     (thFamOf (sertables.tableC 3) 9)
     [poly.pnorm (elim.vecAdd (memberV [1] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableC 3) 3)))]
@@ -1855,7 +1856,7 @@ example : steinberg.memberAt (sertables.tableC 3) wC3
       (poly.pnorm (sertables.posCorootV (sertables.tableC 3) 3)))) := by
   decide +kernel
 
-example : ground.countOf
+theorem pin196 : ground.countOf
     (poly.pnorm (elim.vecAdd (memberV [1] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableC 3) 3))))
     [poly.pnorm (elim.vecAdd (memberV [1] 3)
@@ -1871,7 +1872,7 @@ example : ground.countOf
     c3Shape c3Close c3Dom c3Top c3Sq
     c3MShape c3Fam (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : steinberg.memberAt (sertables.tableD 3) wD3
+theorem pin197 : steinberg.memberAt (sertables.tableD 3) wD3
     (thFamOf (sertables.tableD 3) 6)
     [poly.pnorm (elim.vecAdd (memberV [1] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableD 3) 2)))]
@@ -1879,7 +1880,7 @@ example : steinberg.memberAt (sertables.tableD 3) wD3
       (poly.pnorm (sertables.posCorootV (sertables.tableD 3) 2)))) := by
   decide +kernel
 
-example : ground.countOf
+theorem pin198 : ground.countOf
     (poly.pnorm (elim.vecAdd (memberV [1] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableD 3) 2))))
     [poly.pnorm (elim.vecAdd (memberV [1] 3)
@@ -1898,7 +1899,7 @@ example : ground.countOf
 /-- The `D` boundary member at the rank beyond the least: the
 last-pair difference member's target loses its dominance, the moved
 key's balance partner against the vacant member entry. -/
-example : ¬ (∀ k, k < 4 → ground.BPair.unit ≤ ground.getAt
+theorem pin199 : ¬ (∀ k, k < 4 → ground.BPair.unit ≤ ground.getAt
     ground.BPair.unit (poly.pnorm (elim.vecAdd (memberV [1] 4)
       (poly.pnorm (sertables.posCorootV (sertables.tableD 4) 5)))) k) := by
   decide +kernel
@@ -1908,7 +1909,7 @@ the highest root's coroot content over the vacant word, the entry at
 the word's two-clearance vacant — `D_4` at both the interior key and
 the fork's last key, the four-clearance met. -/
 
-example : ground.getAt ground.BPair.unit
+theorem pin200 : ground.getAt ground.BPair.unit
     (poly.pnorm (elim.vecAdd (memberV [] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableB 3) 3)))) 2
     = ground.BPair.unit :=
@@ -1916,7 +1917,7 @@ example : ground.getAt ground.BPair.unit
     (poly.pnorm (sertables.posCorootV (sertables.tableB 3) 3)) 2
     b3MShape b3Fam (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : ground.getAt ground.BPair.unit
+theorem pin201 : ground.getAt ground.BPair.unit
     (poly.pnorm (elim.vecAdd (memberV [] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableC 3) 6)))) 2
     = ground.BPair.unit :=
@@ -1924,7 +1925,7 @@ example : ground.getAt ground.BPair.unit
     (poly.pnorm (sertables.posCorootV (sertables.tableC 3) 6)) 2
     c3MShape c3Fam (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : ground.getAt ground.BPair.unit
+theorem pin202 : ground.getAt ground.BPair.unit
     (poly.pnorm (elim.vecAdd (memberV [] 4)
       (poly.pnorm (sertables.posCorootV (sertables.tableD 4) 6)))) 2
     = ground.BPair.unit :=
@@ -1933,7 +1934,7 @@ example : ground.getAt ground.BPair.unit
     d4MShape d4Fam (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : ground.getAt ground.BPair.unit
+theorem pin203 : ground.getAt ground.BPair.unit
     (poly.pnorm (elim.vecAdd (memberV [] 4)
       (poly.pnorm (sertables.posCorootV (sertables.tableD 4) 6)))) 3
     = ground.BPair.unit :=
@@ -1949,38 +1950,38 @@ and `D`'s four-clearance guard at the sum pair whose coroot content
 occupies the fork key at the three-clearance rank — the last key's
 own read at the boundary-adjacent geometry. -/
 
-example : ¬ (∀ k, k < 3 → ground.BPair.unit ≤ ground.getAt
+theorem pin204 : ¬ (∀ k, k < 3 → ground.BPair.unit ≤ ground.getAt
     ground.BPair.unit (poly.pnorm (elim.vecAdd (memberV [] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableB 3) 8)))) k) := by
   decide +kernel
-example : 0 < ground.countOf
+theorem pin205 : 0 < ground.countOf
     (poly.pnorm (sertables.posCorootV (sertables.tableB 3) 8))
     (thFamOf (sertables.tableB 3) 9) := by decide +kernel
-example : ¬ (ground.getAt ground.BPair.unit
+theorem pin206 : ¬ (ground.getAt ground.BPair.unit
     (poly.pnorm (elim.vecAdd (memberV [] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableB 3) 8)))) 2
     = ground.BPair.unit) := by decide +kernel
 
-example : ground.countOf
+theorem pin207 : ground.countOf
     ([ground.BPair.unit, ground.BPair.unit, ground.BPair.ofNat 2])
     (thFamOf (sertables.tableB 3) 9) = 0 := by decide +kernel
-example : ∀ k, k < 3 → ground.BPair.unit ≤ ground.getAt
+theorem pin208 : ∀ k, k < 3 → ground.BPair.unit ≤ ground.getAt
     ground.BPair.unit (poly.pnorm (elim.vecAdd (memberV [] 3)
       [ground.BPair.unit, ground.BPair.unit, ground.BPair.ofNat 2]))
     k := by decide +kernel
-example : ¬ (ground.getAt ground.BPair.unit
+theorem pin209 : ¬ (ground.getAt ground.BPair.unit
     (poly.pnorm (elim.vecAdd (memberV [] 3)
       [ground.BPair.unit, ground.BPair.unit, ground.BPair.ofNat 2]))
     2 = ground.BPair.unit) := by decide +kernel
 
-example : 0 < ground.countOf
+theorem pin210 : 0 < ground.countOf
     (poly.pnorm (sertables.posCorootV (sertables.tableD 3) 3))
     (thFamOf (sertables.tableD 3) 6) := by decide +kernel
-example : ∀ k, k < 3 → ground.BPair.unit ≤ ground.getAt
+theorem pin211 : ∀ k, k < 3 → ground.BPair.unit ≤ ground.getAt
     ground.BPair.unit (poly.pnorm (elim.vecAdd (memberV [] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableD 3) 3))))
     k := by decide +kernel
-example : ¬ (ground.getAt ground.BPair.unit
+theorem pin212 : ¬ (ground.getAt ground.BPair.unit
     (poly.pnorm (elim.vecAdd (memberV [] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableD 3) 3)))) 2
     = ground.BPair.unit) := by decide +kernel
@@ -1999,191 +2000,191 @@ members (a raised family column reads count one), and the `C`
 witness's off-window binder is load-bearing at the two-key dipole
 inside the window. -/
 
-example : serstable.fDiff 1 3 0 = 0 ∧ serstable.fDiff 1 3 1 = 1
+theorem pin213 : serstable.fDiff 1 3 0 = 0 ∧ serstable.fDiff 1 3 1 = 1
     ∧ serstable.fDiff 1 3 2 = 1 ∧ serstable.fDiff 1 3 3 = 0 := by
   decide +kernel
-example : serstable.fSumB 4 1 2 0 = 0 ∧ serstable.fSumB 4 1 2 1 = 1
+theorem pin214 : serstable.fSumB 4 1 2 0 = 0 ∧ serstable.fSumB 4 1 2 1 = 1
     ∧ serstable.fSumB 4 1 2 2 = 2 ∧ serstable.fSumB 4 1 2 3 = 2 := by
   decide +kernel
-example : serstable.fSumC 3 1 2 0 = 0 ∧ serstable.fSumC 3 1 2 1 = 1
+theorem pin215 : serstable.fSumC 3 1 2 0 = 0 ∧ serstable.fSumC 3 1 2 1 = 1
     ∧ serstable.fSumC 3 1 2 2 = 2 ∧ serstable.fSumC 3 1 2 3 = 1 := by
   decide +kernel
-example : serstable.fLong 3 1 0 = 0 ∧ serstable.fLong 3 1 1 = 2
+theorem pin216 : serstable.fLong 3 1 0 = 0 ∧ serstable.fLong 3 1 1 = 2
     ∧ serstable.fLong 3 1 2 = 2 ∧ serstable.fLong 3 1 3 = 1 := by
   decide +kernel
 
-example : serstable.nbB 4 (serstable.fSumB 4 1 2) 0 = 1
+theorem pin217 : serstable.nbB 4 (serstable.fSumB 4 1 2) 0 = 1
     ∧ serstable.nbB 4 (serstable.fSumB 4 1 2) 1 = 2
     ∧ serstable.nbB 4 (serstable.fSumB 4 1 2) 2 = 3
     ∧ serstable.nbB 4 (serstable.fSumB 4 1 2) 3 = 4 := by decide +kernel
-example : serstable.nbC 4 (serstable.fLong 3 1) 0 = 2
+theorem pin218 : serstable.nbC 4 (serstable.fLong 3 1) 0 = 2
     ∧ serstable.nbC 4 (serstable.fLong 3 1) 1 = 2
     ∧ serstable.nbC 4 (serstable.fLong 3 1) 2 = 4
     ∧ serstable.nbC 4 (serstable.fLong 3 1) 3 = 2 := by decide +kernel
 
-example : (serstable.cartB 4 2 3).oneValue (ground.BPair.ofCounts 0 2)
-    ∧ (serstable.cartB 4 1 2).oneValue (ground.BPair.ofCounts 0 1)
-    ∧ (serstable.cartB 4 2 1).oneValue (ground.BPair.ofCounts 0 1)
-    ∧ (serstable.cartB 4 3 3).oneValue (ground.BPair.ofCounts 2 0)
-    ∧ (serstable.cartB 4 0 2).oneValue ground.BPair.unit := by
+theorem pin219 : (sertables.cartB 4 2 3).oneValue (ground.BPair.ofCounts 0 2)
+    ∧ (sertables.cartB 4 1 2).oneValue (ground.BPair.ofCounts 0 1)
+    ∧ (sertables.cartB 4 2 1).oneValue (ground.BPair.ofCounts 0 1)
+    ∧ (sertables.cartB 4 3 3).oneValue (ground.BPair.ofCounts 2 0)
+    ∧ (sertables.cartB 4 0 2).oneValue ground.BPair.unit := by
   decide +kernel
-example : (serstable.cartC 4 3 2).oneValue (ground.BPair.ofCounts 0 2)
-    ∧ (serstable.cartC 4 2 3).oneValue (ground.BPair.ofCounts 0 1)
-    ∧ (serstable.cartC 4 1 1).oneValue (ground.BPair.ofCounts 2 0)
-    ∧ (serstable.cartC 4 0 3).oneValue ground.BPair.unit := by
+theorem pin220 : (sertables.cartC 4 3 2).oneValue (ground.BPair.ofCounts 0 2)
+    ∧ (sertables.cartC 4 2 3).oneValue (ground.BPair.ofCounts 0 1)
+    ∧ (sertables.cartC 4 1 1).oneValue (ground.BPair.ofCounts 2 0)
+    ∧ (sertables.cartC 4 0 3).oneValue ground.BPair.unit := by
   decide +kernel
 
 /-! The enumeration order of the positive-list builders: the
 leading entries of the fold lists at the rank four. -/
 
-example : ground.getAt [] (sertables.foldsB 4) 0
+theorem pin221 : ground.getAt [] (sertables.foldsB 4) 0
     = (List.range 4).map (serstable.fDiff 0 1) := by decide +kernel
-example : ground.getAt [] (sertables.foldsC 4) 0
+theorem pin222 : ground.getAt [] (sertables.foldsC 4) 0
     = (List.range 4).map (serstable.fDiff 0 1) := by decide +kernel
 
 /-! The column caps at an instance, with the family binder's
 refusal at the constant-three family. -/
 
-example : 2 * serstable.fSumB 4 1 2 2
+theorem pin223 : 2 * serstable.fSumB 4 1 2 2
       ≤ serstable.nbB 4 (serstable.fSumB 4 1 2) 2 + 2
     ∧ serstable.nbB 4 (serstable.fSumB 4 1 2) 2
       ≤ 2 * serstable.fSumB 4 1 2 2 + 2 := by decide +kernel
-example : 2 * serstable.fSumB 4 1 2 2
+theorem pin224 : 2 * serstable.fSumB 4 1 2 2
       ≤ serstable.nbB 4 (serstable.fSumB 4 1 2) 2 + 2
     ∧ serstable.nbB 4 (serstable.fSumB 4 1 2) 2
       ≤ 2 * serstable.fSumB 4 1 2 2 + 2 :=
   serstable.colB_magLe (serstable.fSumB 4 1 2) 2 4 (by decide +kernel)
     (Or.inr (Or.inl ⟨1, 2, by decide +kernel, by decide +kernel, rfl⟩))
-example : ¬ (2 * (3 : Nat) ≤ serstable.nbB 3 (fun _ => 3) 0 + 2) := by
+theorem pin225 : ¬ (2 * (3 : Nat) ≤ serstable.nbB 3 (fun _ => 3) 0 + 2) := by
   decide +kernel
 
-example : 2 * serstable.fLong 3 1 1
+theorem pin226 : 2 * serstable.fLong 3 1 1
       ≤ serstable.nbC 4 (serstable.fLong 3 1) 1 + 2
     ∧ serstable.nbC 4 (serstable.fLong 3 1) 1
       ≤ 2 * serstable.fLong 3 1 1 + 2 := by decide +kernel
-example : 2 * serstable.fLong 3 1 1
+theorem pin227 : 2 * serstable.fLong 3 1 1
       ≤ serstable.nbC 4 (serstable.fLong 3 1) 1 + 2
     ∧ serstable.nbC 4 (serstable.fLong 3 1) 1
       ≤ 2 * serstable.fLong 3 1 1 + 2 :=
   serstable.colC_magLe (serstable.fLong 3 1) 1 4 (by decide +kernel)
     (Or.inr (Or.inr ⟨3, 1, rfl, by decide +kernel, rfl⟩))
-example : ¬ (2 * (3 : Nat) ≤ serstable.nbC 3 (fun _ => 3) 0 + 2) := by
+theorem pin228 : ¬ (2 * (3 : Nat) ≤ serstable.nbC 3 (fun _ => 3) 0 + 2) := by
   decide +kernel
 
 /-! The window reads at instances, each beside its theorem
 route. -/
 
-example : (2 * serstable.fDiff 2 3 2
+theorem pin229 : (2 * serstable.fDiff 2 3 2
       = serstable.fDiff 2 3 1 + serstable.fDiff 2 3 3 + 2)
     ↔ (2 = 2 ∧ 3 = 3) := by decide +kernel
-example : (2 * serstable.fDiff 2 3 2
+theorem pin230 : (2 * serstable.fDiff 2 3 2
       = serstable.fDiff 2 3 1 + serstable.fDiff 2 3 3 + 2)
     ↔ (2 = 2 ∧ 3 = 3) :=
   serstable.fDiff_two 2 3 1 4 (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : ¬ 2 * serstable.fSumB 4 1 2 2
+theorem pin231 : ¬ 2 * serstable.fSumB 4 1 2 2
     = serstable.fSumB 4 1 2 1 + serstable.fSumB 4 1 2 3 + 2 := by
   decide +kernel
-example : ¬ 2 * serstable.fSumB 4 1 2 2
+theorem pin232 : ¬ 2 * serstable.fSumB 4 1 2 2
     = serstable.fSumB 4 1 2 1 + serstable.fSumB 4 1 2 3 + 2 :=
   serstable.fSumB_two 1 2 1 4 (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : ¬ 2 * serstable.fDiff 1 4 2
+theorem pin233 : ¬ 2 * serstable.fDiff 1 4 2
     = serstable.fDiff 1 4 1 + serstable.fDiff 1 4 3 + 2 := by
   decide +kernel
-example : ¬ 2 * serstable.fDiff 1 4 2
+theorem pin234 : ¬ 2 * serstable.fDiff 1 4 2
     = serstable.fDiff 1 4 1 + serstable.fDiff 1 4 3 + 2 :=
   serstable.fShort_two 1 1 4 (by decide +kernel) (by decide +kernel)
 
-example : ¬ serstable.fSumB 4 1 2 1 + serstable.fSumB 4 1 2 3
+theorem pin235 : ¬ serstable.fSumB 4 1 2 1 + serstable.fSumB 4 1 2 3
     = 2 * serstable.fSumB 4 1 2 2 + 2 := by decide +kernel
-example : ¬ serstable.fSumB 4 1 2 1 + serstable.fSumB 4 1 2 3
+theorem pin236 : ¬ serstable.fSumB 4 1 2 1 + serstable.fSumB 4 1 2 3
     = 2 * serstable.fSumB 4 1 2 2 + 2 :=
   serstable.colB_notNegTwo (serstable.fSumB 4 1 2) 1 4
     (by decide +kernel)
     (Or.inr (Or.inl ⟨1, 2, by decide +kernel, by decide +kernel, rfl⟩))
 
-example : ¬ serstable.fDiff 1 3 0 + serstable.fDiff 1 3 2
+theorem pin237 : ¬ serstable.fDiff 1 3 0 + serstable.fDiff 1 3 2
     = 2 * serstable.fDiff 1 3 1 + 2 := by decide +kernel
-example : ¬ serstable.fDiff 1 3 0 + serstable.fDiff 1 3 2
+theorem pin238 : ¬ serstable.fDiff 1 3 0 + serstable.fDiff 1 3 2
     = 2 * serstable.fDiff 1 3 1 + 2 :=
   serstable.fDiff_negTwo_refuse 1 3 0 (by decide +kernel)
 
-example : 2 * serstable.fDiff 2 3 0
+theorem pin239 : 2 * serstable.fDiff 2 3 0
     = serstable.nbB 4 (serstable.fDiff 2 3) 0 := by decide +kernel
-example : 2 * serstable.fDiff 2 3 0
+theorem pin240 : 2 * serstable.fDiff 2 3 0
     = serstable.nbB 4 (serstable.fDiff 2 3) 0 :=
   serstable.fDiff_narrow_off 1 4 0 (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : 2 * serstable.fDiff 1 3 4
+theorem pin241 : 2 * serstable.fDiff 1 3 4
     = serstable.nbB 5 (serstable.fDiff 1 3) 4 := by decide +kernel
-example : 2 * serstable.fDiff 1 3 4
+theorem pin242 : 2 * serstable.fDiff 1 3 4
     = serstable.nbB 5 (serstable.fDiff 1 3) 4 :=
   serstable.fDiff_off 1 3 4 5 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : 2 * serstable.fSumB 5 1 3 4
+theorem pin243 : 2 * serstable.fSumB 5 1 3 4
     = serstable.nbB 5 (serstable.fSumB 5 1 3) 4 := by decide +kernel
-example : 2 * serstable.fSumB 5 1 3 4
+theorem pin244 : 2 * serstable.fSumB 5 1 3 4
     = serstable.nbB 5 (serstable.fSumB 5 1 3) 4 :=
   serstable.fSumB_off 1 3 4 5 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : ¬ 2 * serstable.fSumC 3 1 2 1
+theorem pin245 : ¬ 2 * serstable.fSumC 3 1 2 1
     = serstable.fSumC 3 1 2 0 + serstable.fSumC 3 1 2 2 + 2 := by
   decide +kernel
-example : ¬ 2 * serstable.fSumC 3 1 2 1
+theorem pin246 : ¬ 2 * serstable.fSumC 3 1 2 1
     = serstable.fSumC 3 1 2 0 + serstable.fSumC 3 1 2 2 + 2 :=
   serstable.fSumC_two_refuse 3 1 2 0 (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
-example : ¬ serstable.fSumC 3 1 2 0 + serstable.fSumC 3 1 2 2
+theorem pin247 : ¬ serstable.fSumC 3 1 2 0 + serstable.fSumC 3 1 2 2
     = 2 * serstable.fSumC 3 1 2 1 + 2 := by decide +kernel
-example : ¬ serstable.fSumC 3 1 2 0 + serstable.fSumC 3 1 2 2
+theorem pin248 : ¬ serstable.fSumC 3 1 2 0 + serstable.fSumC 3 1 2 2
     = 2 * serstable.fSumC 3 1 2 1 + 2 :=
   serstable.fSumC_negTwo_refuse 3 1 2 0 (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
-example : (2 * serstable.fLong 3 1 1
+theorem pin249 : (2 * serstable.fLong 3 1 1
       = serstable.fLong 3 1 0 + serstable.fLong 3 1 2 + 2)
     ↔ (1 = 1 ∧ 2 < 3) := by decide +kernel
-example : (2 * serstable.fLong 3 1 1
+theorem pin250 : (2 * serstable.fLong 3 1 1
       = serstable.fLong 3 1 0 + serstable.fLong 3 1 2 + 2)
     ↔ (1 = 1 ∧ 2 < 3) :=
   serstable.fLong_two_head 3 1 0 (by decide +kernel)
     (by decide +kernel)
 
-example : (serstable.fLong 3 2 0 + serstable.fLong 3 2 2
+theorem pin251 : (serstable.fLong 3 2 0 + serstable.fLong 3 2 2
       = 2 * serstable.fLong 3 2 1 + 2)
     ↔ (2 = 2 ∧ 2 < 3) := by decide +kernel
-example : (serstable.fLong 3 2 0 + serstable.fLong 3 2 2
+theorem pin252 : (serstable.fLong 3 2 0 + serstable.fLong 3 2 2
       = 2 * serstable.fLong 3 2 1 + 2)
     ↔ (2 = 2 ∧ 2 < 3) :=
   serstable.fLong_negTwo 3 2 0 (by decide +kernel) (by decide +kernel)
 
-example : 2 * serstable.fDiff 1 2 3
+theorem pin253 : 2 * serstable.fDiff 1 2 3
     = serstable.nbC 4 (serstable.fDiff 1 2) 3 := by decide +kernel
-example : 2 * serstable.fDiff 1 2 3
+theorem pin254 : 2 * serstable.fDiff 1 2 3
     = serstable.nbC 4 (serstable.fDiff 1 2) 3 :=
   serstable.fDiffC_narrow_off 0 4 3 (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : 2 * serstable.fLong 3 1 3
+theorem pin255 : 2 * serstable.fLong 3 1 3
     = serstable.nbC 4 (serstable.fLong 3 1) 3 := by decide +kernel
-example : 2 * serstable.fLong 3 1 3
+theorem pin256 : 2 * serstable.fLong 3 1 3
     = serstable.nbC 4 (serstable.fLong 3 1) 3 :=
   serstable.fLong_off 3 1 3 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
-example : 2 * serstable.fSumC 3 1 2 3
+theorem pin257 : 2 * serstable.fSumC 3 1 2 3
     = serstable.nbC 4 (serstable.fSumC 3 1 2) 3 := by decide +kernel
-example : 2 * serstable.fSumC 3 1 2 3
+theorem pin258 : 2 * serstable.fSumC 3 1 2 3
     = serstable.nbC 4 (serstable.fSumC 3 1 2) 3 :=
   serstable.fSumC_off 3 1 2 3 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -2192,23 +2193,23 @@ example : 2 * serstable.fSumC 3 1 2 3
 /-! The coroot vector entries at both limbs, and the raised
 entry. -/
 
-example : (ground.getAt ground.BPair.unit
+theorem pin259 : (ground.getAt ground.BPair.unit
     (poly.pnorm (sertables.posCorootV (sertables.tableB 4) 0)) 1).oneValue
     (ground.BPair.ofCounts (2 * serstable.fDiff 0 1 1)
       (serstable.nbB 4 (serstable.fDiff 0 1) 1)) := by decide +kernel
-example : (ground.getAt ground.BPair.unit
+theorem pin260 : (ground.getAt ground.BPair.unit
     (poly.pnorm (sertables.posCorootV (sertables.tableB 4) 0)) 1).oneValue
     (ground.BPair.ofCounts (2 * serstable.fDiff 0 1 1)
       (serstable.nbB 4 (serstable.fDiff 0 1) 1)) :=
   serstable.posCorootV_entry 4 0 1 (serstable.fDiff 0 1)
     (by decide +kernel) (by decide +kernel)
 
-example : (ground.getAt ground.BPair.unit
+theorem pin261 : (ground.getAt ground.BPair.unit
     (poly.pnorm (poly.neg
       (sertables.posCorootV (sertables.tableB 4) 0))) 1).oneValue
     (ground.BPair.ofCounts (serstable.nbB 4 (serstable.fDiff 0 1) 1)
       (2 * serstable.fDiff 0 1 1)) := by decide +kernel
-example : (ground.getAt ground.BPair.unit
+theorem pin262 : (ground.getAt ground.BPair.unit
     (poly.pnorm (poly.neg
       (sertables.posCorootV (sertables.tableB 4) 0))) 1).oneValue
     (ground.BPair.ofCounts (serstable.nbB 4 (serstable.fDiff 0 1) 1)
@@ -2216,23 +2217,23 @@ example : (ground.getAt ground.BPair.unit
   serstable.negCorootV_entry 4 0 1 (serstable.fDiff 0 1)
     (by decide +kernel) (by decide +kernel)
 
-example : (ground.getAt ground.BPair.unit
+theorem pin263 : (ground.getAt ground.BPair.unit
     (poly.pnorm (sertables.posCorootV (sertables.tableC 4) 0)) 1).oneValue
     (ground.BPair.ofCounts (2 * serstable.fDiff 0 1 1)
       (serstable.nbC 4 (serstable.fDiff 0 1) 1)) := by decide +kernel
-example : (ground.getAt ground.BPair.unit
+theorem pin264 : (ground.getAt ground.BPair.unit
     (poly.pnorm (sertables.posCorootV (sertables.tableC 4) 0)) 1).oneValue
     (ground.BPair.ofCounts (2 * serstable.fDiff 0 1 1)
       (serstable.nbC 4 (serstable.fDiff 0 1) 1)) :=
   serstable.posCorootV_entryC 4 0 1 (serstable.fDiff 0 1)
     (by decide +kernel) (by decide +kernel)
 
-example : (ground.getAt ground.BPair.unit
+theorem pin265 : (ground.getAt ground.BPair.unit
     (poly.pnorm (poly.neg
       (sertables.posCorootV (sertables.tableC 4) 0))) 1).oneValue
     (ground.BPair.ofCounts (serstable.nbC 4 (serstable.fDiff 0 1) 1)
       (2 * serstable.fDiff 0 1 1)) := by decide +kernel
-example : (ground.getAt ground.BPair.unit
+theorem pin266 : (ground.getAt ground.BPair.unit
     (poly.pnorm (poly.neg
       (sertables.posCorootV (sertables.tableC 4) 0))) 1).oneValue
     (ground.BPair.ofCounts (serstable.nbC 4 (serstable.fDiff 0 1) 1)
@@ -2240,7 +2241,7 @@ example : (ground.getAt ground.BPair.unit
   serstable.negCorootV_entryC 4 0 1 (serstable.fDiff 0 1)
     (by decide +kernel) (by decide +kernel)
 
-example : (ground.getAt ground.BPair.unit
+theorem pin267 : (ground.getAt ground.BPair.unit
     (poly.pnorm (elim.vecAdd
       [ground.BPair.ofNat 2, ground.BPair.unit, ground.BPair.unit]
       (elim.vecScale (ground.BPair.ofNat 2)
@@ -2250,7 +2251,7 @@ example : (ground.getAt ground.BPair.unit
       + ground.BPair.ofNat 2 * ground.getAt ground.BPair.unit
           (ground.getAt [] (sertables.tableB 3).cartan 1) 0) := by
   decide +kernel
-example : (ground.getAt ground.BPair.unit
+theorem pin268 : (ground.getAt ground.BPair.unit
     (poly.pnorm (elim.vecAdd
       [ground.BPair.ofNat 2, ground.BPair.unit, ground.BPair.unit]
       (elim.vecScale (ground.BPair.ofNat 2)
@@ -2266,14 +2267,14 @@ example : (ground.getAt ground.BPair.unit
 and witness occupancy refusals at both members and the off-window
 refusal at `C`. -/
 
-example : row.thetaCount (sertables.tableB 4)
+theorem pin269 : row.thetaCount (sertables.tableB 4)
     (poly.pnorm (elim.vecAdd
       [ground.BPair.unit, ground.BPair.unit, ground.BPair.unit,
        ground.BPair.ofNat 2]
       (elim.vecScale (ground.BPair.ofNat 1)
         (ground.getAt [] (sertables.tableB 4).cartan 1)))) = 0 := by
   decide +kernel
-example : row.thetaCount (sertables.tableB 4)
+theorem pin270 : row.thetaCount (sertables.tableB 4)
     (poly.pnorm (elim.vecAdd
       [ground.BPair.unit, ground.BPair.unit, ground.BPair.unit,
        ground.BPair.ofNat 2]
@@ -2283,7 +2284,7 @@ example : row.thetaCount (sertables.tableB 4)
     (by decide +kernel) 3 (by decide +kernel)
     (Or.inr (by decide +kernel)) (by decide +kernel)
 
-example : ¬ row.thetaCount (sertables.tableB 5)
+theorem pin271 : ¬ row.thetaCount (sertables.tableB 5)
     (poly.pnorm (elim.vecAdd
       [ground.BPair.ofNat 2, ground.BPair.ofCounts 0 2,
        ground.BPair.ofNat 1, ground.BPair.ofNat 1,
@@ -2292,20 +2293,20 @@ example : ¬ row.thetaCount (sertables.tableB 5)
         (ground.getAt [] (sertables.tableB 5).cartan 1)))) = 0 := by
   decide +kernel
 
-example : ¬ row.thetaCount (sertables.tableB 4)
+theorem pin272 : ¬ row.thetaCount (sertables.tableB 4)
     (poly.pnorm (elim.vecAdd (List.replicate 4 ground.BPair.unit)
       (elim.vecScale (ground.BPair.ofNat 1)
         (ground.getAt [] (sertables.tableB 4).cartan 1)))) = 0 := by
   decide +kernel
 
-example : row.thetaCount (sertables.tableC 5)
+theorem pin273 : row.thetaCount (sertables.tableC 5)
     (poly.pnorm (elim.vecAdd
       [ground.BPair.unit, ground.BPair.unit, ground.BPair.unit,
        ground.BPair.ofNat 2, ground.BPair.unit]
       (elim.vecScale (ground.BPair.ofNat 1)
         (ground.getAt [] (sertables.tableC 5).cartan 1)))) = 0 := by
   decide +kernel
-example : row.thetaCount (sertables.tableC 5)
+theorem pin274 : row.thetaCount (sertables.tableC 5)
     (poly.pnorm (elim.vecAdd
       [ground.BPair.unit, ground.BPair.unit, ground.BPair.unit,
        ground.BPair.ofNat 2, ground.BPair.unit]
@@ -2315,7 +2316,7 @@ example : row.thetaCount (sertables.tableC 5)
     (by decide +kernel) 3 (by decide +kernel)
     (Or.inr (by decide +kernel)) (by decide +kernel)
 
-example : ¬ row.thetaCount (sertables.tableC 5)
+theorem pin275 : ¬ row.thetaCount (sertables.tableC 5)
     (poly.pnorm (elim.vecAdd
       [ground.BPair.ofNat 1, ground.BPair.ofCounts 0 2,
        ground.BPair.unit, ground.BPair.ofNat 2,
@@ -2324,7 +2325,7 @@ example : ¬ row.thetaCount (sertables.tableC 5)
         (ground.getAt [] (sertables.tableC 5).cartan 1)))) = 0 := by
   decide +kernel
 
-example : ¬ row.thetaCount (sertables.tableC 4)
+theorem pin276 : ¬ row.thetaCount (sertables.tableC 4)
     (poly.pnorm (elim.vecAdd
       [ground.BPair.ofCounts 0 1, ground.BPair.unit,
        ground.BPair.ofNat 1, ground.BPair.unit]
@@ -2332,7 +2333,7 @@ example : ¬ row.thetaCount (sertables.tableC 4)
         (ground.getAt [] (sertables.tableC 4).cartan 1)))) = 0 := by
   decide +kernel
 
-example : ¬ row.thetaCount (sertables.tableC 4)
+theorem pin277 : ¬ row.thetaCount (sertables.tableC 4)
     (poly.pnorm (elim.vecAdd (List.replicate 4 ground.BPair.unit)
       (elim.vecScale (ground.BPair.ofNat 1)
         (ground.getAt [] (sertables.tableC 4).cartan 1)))) = 0 := by
@@ -2342,7 +2343,7 @@ example : ¬ row.thetaCount (sertables.tableC 4)
 function at the θ content list, the theorem route beside the
 decided twin. -/
 
-example : serstable.letterFoldAt (sertables.tableB 3)
+theorem pin278 : serstable.letterFoldAt (sertables.tableB 3)
     (serstable.memberRho [1] 3)
     (poly.pnorm (sertables.posCorootV (sertables.tableB 3) 0))
     (thFamOf (sertables.tableB 3) 9)
@@ -2350,7 +2351,7 @@ example : serstable.letterFoldAt (sertables.tableB 3)
       (serstable.memberRho [1] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableB 3) 0)) := by
   decide +kernel
-example : serstable.letterFoldAt (sertables.tableB 3)
+theorem pin279 : serstable.letterFoldAt (sertables.tableB 3)
     (serstable.memberRho [1] 3)
     (poly.pnorm (sertables.posCorootV (sertables.tableB 3) 0))
     (thFamOf (sertables.tableB 3) 9)
@@ -2358,3 +2359,45 @@ example : serstable.letterFoldAt (sertables.tableB 3)
       (serstable.memberRho [1] 3)
       (poly.pnorm (sertables.posCorootV (sertables.tableB 3) 0)) :=
   serstable.letterFoldAt_val (sertables.tableB 3) _ _ _ b3Fam
+
+/-! Exchanging the D fork interchanges paired difference and sum
+root factors. The product keeps its value even when its individual
+factors change. -/
+
+theorem pin280 (k : Nat) (v : List Nat) (hv : v.length = k + 2) :
+    ground.prodOver (gapAt (sertables.tableD (k + 2)) (ground.adjSwap k v))
+        (List.range (sertables.tableD (k + 2)).posFolds.length)
+      = ground.prodOver (gapAt (sertables.tableD (k + 2)) v)
+        (List.range (sertables.tableD (k + 2)).posFolds.length) := gapProd_forkSwap_D k v hv
+theorem pin281 : ground.dotNat (sertables.diffFold 3 0 2) [4, 10, 6]
+      = ground.dotNat (sertables.sumFoldD 3 0 2) [4, 6, 10]
+    ∧ ground.dotNat (sertables.sumFoldD 3 0 2) [4, 10, 6]
+      = ground.dotNat (sertables.diffFold 3 0 2) [4, 6, 10]
+    ∧ ground.dotNat (sertables.diffFold 3 0 2) [4, 10, 6]
+      ≠ ground.dotNat (sertables.diffFold 3 0 2) [4, 6, 10] := by decide +kernel
+
+/-- Every rank's actual rho factors are occupied, including
+all three series' terminal-root families. -/
+theorem pin282 (l j : Nat) (hj : j < (sertables.tableB l).posFolds.length) :
+    0 < gapAt (sertables.tableB l) (List.replicate l 1) j := gapAt_rho_pos_B l j hj
+
+theorem pin283 (l j : Nat) (hj : j < (sertables.tableC l).posFolds.length) :
+    0 < gapAt (sertables.tableC l) (List.replicate l 1) j := gapAt_rho_pos_C l j hj
+
+theorem pin284 (l j : Nat) (hj : j < (sertables.tableD l).posFolds.length) :
+    0 < gapAt (sertables.tableD l) (List.replicate l 1) j := gapAt_rho_pos_D l j hj
+
+theorem pin285 (t : gentable.Table) (hl : t.lenNums.length = t.rank)
+    (m : List Nat) (hm : m.length = t.rank) (j : Nat) :
+    gapAt t (List.replicate t.rank 1) j ≤ gapAt t (m.map (fun n => n + 1)) j :=
+  gapAt_shift_le t hl m hm j
+
+/-- A simple-root factor reads its key alone, with the length's
+own clearing kept in the comparison. -/
+theorem pin286 (m : List Nat) (hm : m.length = 2) :
+    gapAt sertables.tableG2 m 1 = 6 * ground.getAt 0 m 1 :=
+  gapAt_simple sertables.tableG2 rfl 1 1 (by decide +kernel) rfl m hm
+
+theorem pin287 : gapAt { sertables.tableG2 with posFolds := [[0, 0]] } [1, 1] 0 = 0 := by decide +kernel
+
+end serstable

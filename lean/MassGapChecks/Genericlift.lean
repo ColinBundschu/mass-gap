@@ -9,12 +9,8 @@ cross datum at the sum's unit, and the lift certificate at three
 apart arguments — with the difference pair `[t² - 1 : t - 1]`
 against `[t + 1 : 1]` beside it and the off-value refusals.
 Clause (ii) at the pencils `[[t,1],[1,t]]` and
-`[[t,1,0],[1,t,1],[0,1,t]]` — the adjugate's solved witness
-`M adj(M) = det(M) 1` with the determinants `t² - 1` and
-`t³ - 2t` occupied, decided and through the theorem route in both
-product orders, the square binder a clearance at the ragged frame
-whose missing entry sits beyond the walked keys and load-bearing
-at the wide first row, where both orders refuse.  Clause (iii) at
+`[[t,1,0],[1,t,1],[0,1,t]]` — the determinants `t² - 1` and
+`t³ - 2t` occupied.  Clause (iii) at
 `t + 2`, `(t+1)(t+2)` and
 `1 - t` — the radius clearances with the under-radius refusal, the
 settled sides, and the beyond-radius evaluation pins — with the
@@ -35,10 +31,37 @@ reduction's cost at `con:res`' step-1 magnitude, the module's
 heaviest read.  The pair adjugate's descent beside clause (ii):
 the walk adjugate against the fold adjugate at the occupied square
 frames, the occupied ragged frame's refusal, and the
-vacant-membered frame's fold-branch record. -/
+vacant-membered frame's fold-branch record.  Clause (v) at three
+members: `1 + ℓ + ℓ² − 2^ℓ`, whose computed natural is sixteen at
+the start `4m² = 16` (the tail degree two) and whose settled side
+is the lower one, with the root at nought and the upper side
+through the rank four the window below the natural; `100 (1 + ℓ + ℓ²)
++ 2^ℓ`, whose comparison refuses at the start sixteen and holds at
+seventeen, the computed natural past the start; and the tex's own
+stencil caps, `3 · 2^ℓ` at `B_ℓ` and the even-rank `D_ℓ` cap
+`3 (2ℓ + 2^{ℓ−1})` cleared at two.  The batteries decide the
+computed naturals, the tail degree and fold, the leading margin's
+positivity by kernel and through the theorem, the settled side by
+kernel and through `expoUpper` and `expoLower`, the two closures by
+kernel and through the theorems, the records' two certificates
+with the clearance binder's refusal, the computed naturals' fold
+with its refusal one below, and the outer representative: a fold
+stated with a vacant top coefficient reads its data at the
+representative's top.  The binder classification: `expoUpper` and
+`expoLower` take the top's side (load-bearing: the fold `1 + ℓ + ℓ²
+− 2^ℓ` refuses the upper top and its read at forty refuses the
+upper side; the cap `3 · 2^ℓ` refuses the lower top and its read at
+three refuses the lower side) and the natural at or beyond the
+computed one (load-bearing, the conclusion refused at the rank four
+below the natural sixteen); `expoRootsCert`'s clearance is
+load-bearing (refused one below at the rank four's upper read) and
+its floor and roots are the record's own data decided in the
+certificate. -/
+
+namespace genericlift
 set_option maxHeartbeats 4000000
 
-open ground poly elim genericlift
+open ground poly elim
 
 private def u : BPair := BPair.unit
 
@@ -47,18 +70,15 @@ private def u : BPair := BPair.unit
 private def xP : PPair := ([u, ⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩])
 private def yP : PPair := ([u, ⟨2, 1⟩], [⟨2, 1⟩])
 
-example : agreeAt xP yP ⟨3, 1⟩ := by decide +kernel
-example : crossNull xP yP := by decide +kernel
-example : liftRead xP yP [⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩] := by decide +kernel
-example : crossNull ([⟨1, 2⟩, u, ⟨2, 1⟩], [⟨1, 2⟩, ⟨2, 1⟩])
+theorem pin1 : agreeAt xP yP ⟨3, 1⟩ := by decide +kernel
+theorem pin2 : crossNull xP yP := by decide +kernel
+theorem pin3 : liftRead xP yP [⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩] := by decide +kernel
+theorem pin4 : crossNull ([⟨1, 2⟩, u, ⟨2, 1⟩], [⟨1, 2⟩, ⟨2, 1⟩])
     ([⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩]) := by decide +kernel
-example : ¬ crossNull yP ([⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩]) := by decide +kernel
-example : ¬ liftRead yP ([⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩])
+theorem pin5 : ¬ crossNull yP ([⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩]) := by decide +kernel
+theorem pin6 : ¬ liftRead yP ([⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩])
     [⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩] := by decide +kernel
-example : ¬ pairwiseApart [⟨2, 1⟩, ⟨3, 2⟩] := by decide +kernel
-
-/-! Clause (ii): the adjugate's solved witness at the two
-pencils. -/
+theorem pin7 : ¬ pairwiseApart [⟨2, 1⟩, ⟨3, 2⟩] := by decide +kernel
 
 private def m2 : split.PMat :=
   [[[u, ⟨2, 1⟩], [⟨2, 1⟩]], [[⟨2, 1⟩], [u, ⟨2, 1⟩]]]
@@ -67,81 +87,26 @@ private def m3 : split.PMat :=
    [[⟨2, 1⟩], [u, ⟨2, 1⟩], [⟨2, 1⟩]],
    [[], [⟨2, 1⟩], [u, ⟨2, 1⟩]]]
 
-example : adjRead m2 := by decide +kernel
-example : detOcc m2 := by decide +kernel
-example : adjRead m3 := by decide +kernel
-example : detOcc m3 := by decide +kernel
+theorem pin9 : detOcc m2 := by decide +kernel
+theorem pin11 : detOcc m3 := by decide +kernel
 
-/-! The solved witness through its theorem route at the square
-frame, both product orders. -/
-
-example : adjRead m2 := adjRead_all m2 (by decide +kernel)
-
-example : split.pmatOneValue (split.pmatMul (padj m2) m2)
-    (split.pdiag (List.replicate m2.length (split.pminor m2))) :=
-  adjColRead_all m2 (by decide +kernel)
-
-example : split.pmatOneValue (split.pmatMul (padj m3) m3)
-    (split.pdiag (List.replicate m3.length (split.pminor m3))) := by
-  decide +kernel
-
-/-! The descent's adjugate against the fold's at the value, decided
-and read through the theorem's route at the decided square frame. -/
-
-example : split.pmatOneValue (padjD m3) (padj m3) := by decide +kernel
-example : split.pmatOneValue (padjD m2) (padj m2) :=
-  padjD_eq m2 (by decide +kernel)
-
-/-! The square binder isolated at a ragged frame, and the settled
-side's reads at the value's representative — a tail of
-equal-membered coefficients moves the representative with both
-reads held. -/
-
-private def ragP3 : split.PMat :=
-  [[[⟨2, 1⟩], [⟨1, 2⟩], [⟨3, 1⟩]],
-   [[⟨1, 3⟩], [⟨5, 1⟩]],
-   [[⟨2, 1⟩], [⟨2, 1⟩], [⟨1, 2⟩]]]
-
-example : ¬ split.pmatOneValue (padjD ragP3) (padj ragP3) := by
-  decide +kernel
-
-/-- The solved witness at the ragged frames: `ragP3`'s missing entry
-sits beyond the walked keys, so the identity reads anyway and the
-square binder is a clearance there; at the wide first row the
-out-of-range column carries no cofactor and both product orders
-refuse, the binder load-bearing. -/
-example : adjRead ragP3 := by decide +kernel
-
-example : split.pmatOneValue (split.pmatMul (padj ragP3) ragP3)
-    (split.pdiag (List.replicate ragP3.length
-      (split.pminor ragP3))) := by decide +kernel
-
-private def ragWide : split.PMat :=
-  [[poly.one, poly.one, poly.one], [poly.one]]
-
-example : ¬ adjRead ragWide := by decide +kernel
-
-example : ¬ split.pmatOneValue (split.pmatMul (padj ragWide) ragWide)
-    (split.pdiag (List.replicate ragWide.length
-      (split.pminor ragWide))) := by decide +kernel
-
-example : topUpper [⟨3, 1⟩, ⟨2, 1⟩, ⟨5, 5⟩] := by decide +kernel
-example : topLower [⟨2, 1⟩, ⟨1, 2⟩, ⟨4, 4⟩] := by decide +kernel
-example : poly.oneValue (split.pminor m3)
+theorem pin22 : topUpper [⟨3, 1⟩, ⟨2, 1⟩, ⟨5, 5⟩] := by decide +kernel
+theorem pin23 : topLower [⟨2, 1⟩, ⟨1, 2⟩, ⟨4, 4⟩] := by decide +kernel
+theorem pin24 : poly.oneValue (split.pminor m3)
     [u, ⟨1, 3⟩, u, ⟨2, 1⟩] := by decide +kernel
 
 /-! Clause (iii): the radius clearances, the settled sides, and the
 beyond-radius evaluation pins. -/
 
-example : radiusClears [⟨3, 1⟩, ⟨2, 1⟩] 3 := by decide +kernel
-example : ¬ radiusClears [⟨3, 1⟩, ⟨2, 1⟩] 2 := by decide +kernel
-example : topUpper [⟨3, 1⟩, ⟨2, 1⟩] := by decide +kernel
-example : BPair.unit < poly.eval [⟨3, 1⟩, ⟨2, 1⟩] ⟨4, 1⟩ := by decide +kernel
-example : clearsPair ([⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩], [⟨3, 1⟩, ⟨2, 1⟩])
+theorem pin25 : radiusClears [⟨3, 1⟩, ⟨2, 1⟩] 3 := by decide +kernel
+theorem pin26 : ¬ radiusClears [⟨3, 1⟩, ⟨2, 1⟩] 2 := by decide +kernel
+theorem pin27 : topUpper [⟨3, 1⟩, ⟨2, 1⟩] := by decide +kernel
+theorem pin28 : BPair.unit < poly.eval [⟨3, 1⟩, ⟨2, 1⟩] ⟨4, 1⟩ := by decide +kernel
+theorem pin29 : clearsPair ([⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩], [⟨3, 1⟩, ⟨2, 1⟩])
     4 := by decide +kernel
-example : topUpper [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] := by decide +kernel
-example : topLower [⟨2, 1⟩, ⟨1, 2⟩] := by decide +kernel
-example : poly.eval [⟨2, 1⟩, ⟨1, 2⟩] ⟨5, 1⟩ < BPair.unit := by decide +kernel
+theorem pin30 : topUpper [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] := by decide +kernel
+theorem pin31 : topLower [⟨2, 1⟩, ⟨1, 2⟩] := by decide +kernel
+theorem pin32 : poly.eval [⟨2, 1⟩, ⟨1, 2⟩] ⟨5, 1⟩ < BPair.unit := by decide +kernel
 
 /-! Clause (iii)'s side theorem at `lem:rankstable`'s own
 polynomial data and at two small literals.  The θ family's `2 z²`
@@ -163,41 +128,41 @@ private def numQ : Poly := rankstable.dimNum [0, 1] [0, 1]
 private def lowQ : Poly := [⟨3, 1⟩, ⟨1, 4⟩]
 private def offQ : Poly := [⟨1, 6⟩, ⟨2, 1⟩]
 
-example : topUpper casQ := by decide +kernel
-example : radiusClears casQ (ground.posOfSucc 2) := by decide +kernel
-example : ¬ radiusClears casQ (ground.posOfSucc 0) := by decide +kernel
-example : BPair.unit < poly.eval casQ (BPair.ofPos (ground.posOfSucc 5)) := by
+theorem pin33 : topUpper casQ := by decide +kernel
+theorem pin34 : radiusClears casQ (ground.posOfSucc 2) := by decide +kernel
+theorem pin35 : ¬ radiusClears casQ (ground.posOfSucc 0) := by decide +kernel
+theorem pin36 : BPair.unit < poly.eval casQ (BPair.ofPos (ground.posOfSucc 5)) := by
   decide +kernel
-example : BPair.unit < poly.eval casQ (BPair.ofPos (ground.posOfSucc 5)) :=
+theorem pin37 : BPair.unit < poly.eval casQ (BPair.ofPos (ground.posOfSucc 5)) :=
   sideUpper casQ (ground.posOfSucc 2) (by decide +kernel) (by decide +kernel)
     (ground.posOfSucc 5) (by decide +kernel)
 
-example : topUpper denQ := by decide +kernel
-example : radiusClears denQ (ground.posOfSucc 1) := by decide +kernel
-example : BPair.unit < poly.eval denQ (BPair.ofPos (ground.posOfSucc 3)) := by
+theorem pin38 : topUpper denQ := by decide +kernel
+theorem pin39 : radiusClears denQ (ground.posOfSucc 1) := by decide +kernel
+theorem pin40 : BPair.unit < poly.eval denQ (BPair.ofPos (ground.posOfSucc 3)) := by
   decide +kernel
-example : BPair.unit < poly.eval denQ (BPair.ofPos (ground.posOfSucc 3)) :=
+theorem pin41 : BPair.unit < poly.eval denQ (BPair.ofPos (ground.posOfSucc 3)) :=
   sideUpper denQ (ground.posOfSucc 1) (by decide +kernel) (by decide +kernel)
     (ground.posOfSucc 3) (by decide +kernel)
 
-example : topUpper numQ := by decide +kernel
+theorem pin42 : topUpper numQ := by decide +kernel
 
-example : topLower lowQ := by decide +kernel
-example : radiusClears lowQ (ground.posOfSucc 1) := by decide +kernel
-example : poly.eval lowQ (BPair.ofPos (ground.posOfSucc 4)) < BPair.unit := by
+theorem pin43 : topLower lowQ := by decide +kernel
+theorem pin44 : radiusClears lowQ (ground.posOfSucc 1) := by decide +kernel
+theorem pin45 : poly.eval lowQ (BPair.ofPos (ground.posOfSucc 4)) < BPair.unit := by
   decide +kernel
-example : poly.eval lowQ (BPair.ofPos (ground.posOfSucc 4)) < BPair.unit :=
+theorem pin46 : poly.eval lowQ (BPair.ofPos (ground.posOfSucc 4)) < BPair.unit :=
   sideLower lowQ (ground.posOfSucc 1) (by decide +kernel) (by decide +kernel)
     (ground.posOfSucc 4) (by decide +kernel)
 
-example : topUpper offQ := by decide +kernel
-example : poly.eval offQ (BPair.ofPos (ground.posOfSucc 1)) < BPair.unit := by
+theorem pin47 : topUpper offQ := by decide +kernel
+theorem pin48 : poly.eval offQ (BPair.ofPos (ground.posOfSucc 1)) < BPair.unit := by
   decide +kernel
-example : ¬ radiusClears offQ (ground.posOfSucc 1) := by decide +kernel
-example : radiusClears offQ (ground.posOfSucc 5) := by decide +kernel
-example : BPair.unit < poly.eval offQ (BPair.ofPos (ground.posOfSucc 6)) := by
+theorem pin49 : ¬ radiusClears offQ (ground.posOfSucc 1) := by decide +kernel
+theorem pin50 : radiusClears offQ (ground.posOfSucc 5) := by decide +kernel
+theorem pin51 : BPair.unit < poly.eval offQ (BPair.ofPos (ground.posOfSucc 6)) := by
   decide +kernel
-example : BPair.unit < poly.eval offQ (BPair.ofPos (ground.posOfSucc 6)) :=
+theorem pin52 : BPair.unit < poly.eval offQ (BPair.ofPos (ground.posOfSucc 6)) :=
   sideUpper offQ (ground.posOfSucc 5) (by decide +kernel) (by decide +kernel)
     (ground.posOfSucc 6) (by decide +kernel)
 
@@ -223,61 +188,61 @@ private def numSC : Poly := serstable.dimPolyNumC [2]
 private def denSC : Poly := serstable.dimPolyDenC [2]
 private def offSD : Poly := serstable.casPolyD [1, 1, 1, 1]
 
-example : topUpper casSB := by decide +kernel
-example : radiusClears casSB (ground.posOfSucc 1) := by decide +kernel
-example : ¬ radiusClears casSB (ground.posOfSucc 0) := by decide +kernel
-example : BPair.unit < poly.eval casSB (BPair.ofPos (ground.posOfSucc 4)) := by
+theorem pin53 : topUpper casSB := by decide +kernel
+theorem pin54 : radiusClears casSB (ground.posOfSucc 1) := by decide +kernel
+theorem pin55 : ¬ radiusClears casSB (ground.posOfSucc 0) := by decide +kernel
+theorem pin56 : BPair.unit < poly.eval casSB (BPair.ofPos (ground.posOfSucc 4)) := by
   decide +kernel
-example : BPair.unit < poly.eval casSB (BPair.ofPos (ground.posOfSucc 4)) :=
+theorem pin57 : BPair.unit < poly.eval casSB (BPair.ofPos (ground.posOfSucc 4)) :=
   sideUpper casSB (ground.posOfSucc 1) (by decide +kernel) (by decide +kernel)
     (ground.posOfSucc 4) (by decide +kernel)
 
-example : topUpper numSC := by decide +kernel
-example : radiusClears numSC (ground.posOfSucc 4) := by decide +kernel
-example : ¬ radiusClears numSC (ground.posOfSucc 3) := by decide +kernel
-example : BPair.unit < poly.eval numSC (BPair.ofPos (ground.posOfSucc 6)) := by
+theorem pin58 : topUpper numSC := by decide +kernel
+theorem pin59 : radiusClears numSC (ground.posOfSucc 4) := by decide +kernel
+theorem pin60 : ¬ radiusClears numSC (ground.posOfSucc 3) := by decide +kernel
+theorem pin61 : BPair.unit < poly.eval numSC (BPair.ofPos (ground.posOfSucc 6)) := by
   decide +kernel
-example : BPair.unit < poly.eval numSC (BPair.ofPos (ground.posOfSucc 6)) :=
+theorem pin62 : BPair.unit < poly.eval numSC (BPair.ofPos (ground.posOfSucc 6)) :=
   sideUpper numSC (ground.posOfSucc 4) (by decide +kernel) (by decide +kernel)
     (ground.posOfSucc 6) (by decide +kernel)
 
-example : topUpper denSC := by decide +kernel
-example : radiusClears denSC (ground.posOfSucc 4) := by decide +kernel
-example : BPair.unit < poly.eval denSC (BPair.ofPos (ground.posOfSucc 6)) :=
+theorem pin63 : topUpper denSC := by decide +kernel
+theorem pin64 : radiusClears denSC (ground.posOfSucc 4) := by decide +kernel
+theorem pin65 : BPair.unit < poly.eval denSC (BPair.ofPos (ground.posOfSucc 6)) :=
   sideUpper denSC (ground.posOfSucc 4) (by decide +kernel) (by decide +kernel)
     (ground.posOfSucc 6) (by decide +kernel)
 
-example : topLower (poly.neg casSB) := by decide +kernel
-example : radiusClears (poly.neg casSB) (ground.posOfSucc 1) := by decide +kernel
-example : poly.eval (poly.neg casSB) (BPair.ofPos (ground.posOfSucc 4))
+theorem pin66 : topLower (poly.neg casSB) := by decide +kernel
+theorem pin67 : radiusClears (poly.neg casSB) (ground.posOfSucc 1) := by decide +kernel
+theorem pin68 : poly.eval (poly.neg casSB) (BPair.ofPos (ground.posOfSucc 4))
     < BPair.unit := by decide +kernel
-example : poly.eval (poly.neg casSB) (BPair.ofPos (ground.posOfSucc 4))
+theorem pin69 : poly.eval (poly.neg casSB) (BPair.ofPos (ground.posOfSucc 4))
     < BPair.unit :=
   sideLower (poly.neg casSB) (ground.posOfSucc 1) (by decide +kernel) (by decide +kernel)
     (ground.posOfSucc 4) (by decide +kernel)
 
-example : topUpper offSD := by decide +kernel
-example : poly.eval offSD (BPair.ofPos (ground.posOfSucc 0)) < BPair.unit := by
+theorem pin70 : topUpper offSD := by decide +kernel
+theorem pin71 : poly.eval offSD (BPair.ofPos (ground.posOfSucc 0)) < BPair.unit := by
   decide +kernel
-example : ¬ radiusClears offSD (ground.posOfSucc 1) := by decide +kernel
-example : radiusClears offSD (ground.posOfSucc 2) := by decide +kernel
-example : BPair.unit < poly.eval offSD (BPair.ofPos (ground.posOfSucc 3)) := by
+theorem pin72 : ¬ radiusClears offSD (ground.posOfSucc 1) := by decide +kernel
+theorem pin73 : radiusClears offSD (ground.posOfSucc 2) := by decide +kernel
+theorem pin74 : BPair.unit < poly.eval offSD (BPair.ofPos (ground.posOfSucc 3)) := by
   decide +kernel
-example : BPair.unit < poly.eval offSD (BPair.ofPos (ground.posOfSucc 3)) :=
+theorem pin75 : BPair.unit < poly.eval offSD (BPair.ofPos (ground.posOfSucc 3)) :=
   sideUpper offSD (ground.posOfSucc 2) (by decide +kernel) (by decide +kernel)
     (ground.posOfSucc 3) (by decide +kernel)
 
 /-! Clause (iv)'s radii fold over the series' own three members. -/
 
-example : clearsAll [casSB, numSC, denSC] (ground.posOfSucc 4) := by decide +kernel
-example : ¬ clearsAll [casSB, numSC, denSC] (ground.posOfSucc 3) := by decide +kernel
+theorem pin76 : clearsAll [casSB, numSC, denSC] (ground.posOfSucc 4) := by decide +kernel
+theorem pin77 : ¬ clearsAll [casSB, numSC, denSC] (ground.posOfSucc 3) := by decide +kernel
 
 /-! Clause (iv): the radii's fold over the stated members. -/
 
-example : clearsAll
+theorem pin78 : clearsAll
     [[⟨3, 1⟩, ⟨2, 1⟩], [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨1, 2⟩]]
     4 := by decide +kernel
-example : ¬ clearsAll
+theorem pin79 : ¬ clearsAll
     [[⟨3, 1⟩, ⟨2, 1⟩], [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨1, 2⟩]]
     2 := by decide +kernel
 
@@ -297,20 +262,20 @@ private def dfP : PPair := ([⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩])
 
 private def pm2 : PPMat := [[cfP, pOne], [negP, dfP]]
 
-example : crossNull (ppminor pm2)
+theorem pin80 : crossNull (ppminor pm2)
     ([⟨3, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩], [⟨3, 1⟩]) := by decide +kernel
-example : ppadjRead pm2 := by decide +kernel
-example : pprowEq (ppmatVec pm2 [pOne, negP])
+theorem pin81 : ppadjRead pm2 := by decide +kernel
+theorem pin82 : pprowEq (ppmatVec pm2 [pOne, negP])
     [([⟨1, 3⟩, u, ⟨2, 1⟩], [⟨3, 1⟩, ⟨3, 1⟩]),
      ([⟨1, 3⟩, ⟨1, 2⟩], [⟨2, 1⟩])] := by decide +kernel
 
 private def pm3 : PPMat :=
   [[dfP, pOne, pZero], [pZero, dfP, negP], [negP, pZero, cfP]]
 
-example : ppadjRead pm3 := by decide +kernel
+theorem pin83 : ppadjRead pm3 := by decide +kernel
 
-example : ¬ ppmatEq [[pOne]] [] := by decide +kernel
-example : ¬ ppmatEq (ppmatMul pm2 (ppadj pm2))
+theorem pin84 : ¬ ppmatEq [[pOne]] [] := by decide +kernel
+theorem pin85 : ¬ ppmatEq (ppmatMul pm2 (ppadj pm2))
     (ppdiag (List.replicate 2 pOne)) := by decide +kernel
 
 /-! The ragged reads, pinned: at an off-square input the fold's
@@ -318,8 +283,8 @@ out-of-range defaults annihilate the extra column and `ppadjRead`
 holds vacuously, while a row-length mismatch refuses — the shape is
 `ppSquare`'s read at the consumer, this pair the committed record. -/
 
-example : ppadjRead [[pOne, pOne]] := by decide +kernel
-example : ¬ ppadjRead [[pOne, pOne, pOne], [pOne]] := by decide +kernel
+theorem pin86 : ppadjRead [[pOne, pOne]] := by decide +kernel
+theorem pin87 : ¬ ppadjRead [[pOne, pOne, pOne], [pOne]] := by decide +kernel
 
 /-! The pair adjugate at the descent: the walk adjugate reads the
 fold adjugate at the occupied square frame — the branch records,
@@ -327,11 +292,11 @@ the value pins with the theorem route, the occupied ragged frame's
 refusal isolating the square binder, and the vacant-membered
 square frame's record at the fold branch. -/
 
-example : elim.matOcc pm2 = true := by decide +kernel
-example : elim.matOcc pm3 = true := by decide +kernel
-example : ppmatEq (ppadjD pm2) (ppadj pm2) := by decide +kernel
-example : ppmatEq (ppadjD pm3) (ppadj pm3) := by decide +kernel
-example : ppmatEq (ppadjD pm3) (ppadj pm3) :=
+theorem pin88 : elim.matOcc pm2 = true := by decide +kernel
+theorem pin89 : elim.matOcc pm3 = true := by decide +kernel
+theorem pin90 : ppmatEq (ppadjD pm2) (ppadj pm2) := by decide +kernel
+theorem pin91 : ppmatEq (ppadjD pm3) (ppadj pm3) := by decide +kernel
+theorem pin92 : ppmatEq (ppadjD pm3) (ppadj pm3) :=
   ppadjD_eq pm3 (by decide +kernel)
 
 private def rag3 : PPMat :=
@@ -339,14 +304,14 @@ private def rag3 : PPMat :=
    [([⟨2, 1⟩], [⟨3, 1⟩]), dfP],
    [cfP, pOne, dfP]]
 
-example : elim.matOcc rag3 = true := by decide +kernel
-example : ¬ ppmatEq (ppadjD rag3) (ppadj rag3) := by decide +kernel
+theorem pin93 : elim.matOcc rag3 = true := by decide +kernel
+theorem pin94 : ¬ ppmatEq (ppadjD rag3) (ppadj rag3) := by decide +kernel
 
 private def vacPP : PPMat :=
   [[(poly.one, ([] : poly.Poly)), pOne], [pOne, pOne]]
 
-example : elim.matOcc vacPP = false := by decide +kernel
-example : ppadjRead vacPP := by decide +kernel
+theorem pin95 : elim.matOcc vacPP = false := by decide +kernel
+theorem pin96 : ppadjRead vacPP := by decide +kernel
 
 /-! The certified reduction and its bridge.  At the Casimir pair
 the descent's tuple decides with a constant divisor, so the moved
@@ -364,27 +329,27 @@ private def q2R : Poly := [⟨4, 1⟩, ⟨2, 1⟩]
 private def rPair : PPair := (poly.mul wR q1R, poly.mul wR q2R)
 private def halfR : PPair := ([⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩])
 
-example : crossNull (pReduce cfP) cfP := by decide +kernel
-example : crossNull (pReduce cfP) cfP := pReduce_read cfP
-example : pReduce cfP = cfP := by decide +kernel
+theorem pin97 : crossNull (pReduce cfP) cfP := by decide +kernel
+theorem pin98 : crossNull (pReduce cfP) cfP := pReduce_read cfP
+theorem pin99 : pReduce cfP = cfP := by decide +kernel
 
-example : crossNull (pReduce rPair) rPair := by decide +kernel
-example : crossNull (pReduce rPair) (q1R, q2R) := by decide +kernel
-example : (pReduce rPair).1.length = 2 := by decide +kernel
-example : (pReduce rPair).2.length = 2 := by decide +kernel
+theorem pin100 : crossNull (pReduce rPair) rPair := by decide +kernel
+theorem pin101 : crossNull (pReduce rPair) (q1R, q2R) := by decide +kernel
+theorem pin102 : (pReduce rPair).1.length = 2 := by decide +kernel
+theorem pin103 : (pReduce rPair).2.length = 2 := by decide +kernel
 
-example : crossNull (pReduce ([], [])) ([], []) := by decide +kernel
-example : pReduce ([], []) = ([], []) := by decide +kernel
-example : crossNull (pReduce ([], [])) ([], []) := pReduce_read ([], [])
+theorem pin104 : crossNull (pReduce ([], [])) ([], []) := by decide +kernel
+theorem pin105 : pReduce ([], []) = ([], []) := by decide +kernel
+theorem pin106 : crossNull (pReduce ([], [])) ([], []) := pReduce_read ([], [])
 
 /-! The second spelling: `1/(z+1)` added to itself reads
 `2/(z+1)`, the doubled denominator's common factor stripped. -/
 
-example : crossNull (pAddR halfR halfR) ([⟨3, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]) := by
+theorem pin107 : crossNull (pAddR halfR halfR) ([⟨3, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]) := by
   decide +kernel
-example : (pAddR halfR halfR).1.length = 1 := by decide +kernel
-example : (pAddR halfR halfR).2.length = 2 := by decide +kernel
-example : crossNull (pAddR halfR halfR) (pAdd halfR halfR) :=
+theorem pin108 : (pAddR halfR halfR).1.length = 1 := by decide +kernel
+theorem pin109 : (pAddR halfR halfR).2.length = 2 := by decide +kernel
+theorem pin110 : crossNull (pAddR halfR halfR) (pAdd halfR halfR) :=
   pReduce_read (pAdd halfR halfR)
 
 /-! The reduction at the recorded fold seam: `con:res`' step-1
@@ -403,10 +368,65 @@ private def adjCR : states.Comb :=
 private def defR : PPair :=
   states.coeffAtW (res.deflate fAdjR [adjCR] sqCR) [1, 0]
 
-example : defR.1.length = 1 := by decide +kernel
-example : defR.2.length = 2 := by decide +kernel
-example : crossNull (pReduce defR) defR := by decide +kernel
-example : (pReduce defR).1.length = 1 := by decide +kernel
-example : (pReduce defR).2.length = 2 := by decide +kernel
-example : crossNull defR ([⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]) := by
+theorem pin111 : defR.1.length = 1 := by decide +kernel
+theorem pin112 : defR.2.length = 2 := by decide +kernel
+theorem pin113 : crossNull (pReduce defR) defR := by decide +kernel
+theorem pin114 : (pReduce defR).1.length = 1 := by decide +kernel
+theorem pin115 : (pReduce defR).2.length = 2 := by decide +kernel
+theorem pin116 : crossNull defR ([⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]) := by
   decide +kernel
+
+/-! Clause (v): the rank read at three members. -/
+
+/-- `1 + ℓ + ℓ² − 2^ℓ`. -/
+private def eA : PPoly := [[⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩], [⟨1, 2⟩]]
+/-- `100 (1 + ℓ + ℓ²) + 2^ℓ`. -/
+private def eB : PPoly := [[⟨101, 1⟩, ⟨101, 1⟩, ⟨101, 1⟩], [⟨2, 1⟩]]
+/-- The `B_ℓ` stencil cap `3 · 2^ℓ`. -/
+private def capB : PPoly := [[], [⟨4, 1⟩]]
+/-- The even-rank `D_ℓ` stencil cap `3 (2ℓ + 2^{ℓ-1})` cleared at
+two, `12 ℓ + 3 · 2^ℓ`. -/
+private def capD : PPoly := [[u, ⟨13, 1⟩], [⟨4, 1⟩]]
+
+theorem pin117 : expoTailDeg eA = 2 := by decide +kernel
+theorem pin118 : (expoTailFold eA).oneValue (BPair.ofNat 3) := by decide +kernel
+theorem pin119 : expoKey eA = 16 := by decide +kernel
+theorem pin120 : expoKey eB = 17 := by decide +kernel
+theorem pin121 : ¬ expoPred eB 16 := by decide +kernel
+theorem pin122 : expoKey capB = 2 := by decide +kernel
+theorem pin123 : expoKey capD = 5 := by decide +kernel
+theorem pin124 : BPair.unit < windowsep.leadMargin [⟨1, 4⟩, ⟨2, 1⟩, ⟨3, 1⟩] := by
+  decide +kernel
+theorem pin125 : BPair.unit < windowsep.leadMargin [⟨1, 4⟩, ⟨2, 1⟩, ⟨3, 1⟩] :=
+  windowsep.unitLt_leadMargin _ (by decide +kernel)
+theorem pin126 : expoEval eA 16 < BPair.unit := by decide +kernel
+theorem pin127 : ¬ (expoEval eA 4 < BPair.unit) := by decide +kernel
+theorem pin128 : (expoEval eA 0).oneValue BPair.unit := by decide +kernel
+theorem pin129 : expoEval eA 40 < BPair.unit :=
+  expoLower eA (by decide +kernel) 40 (by decide +kernel)
+theorem pin130 : BPair.unit < expoEval capB 3 :=
+  expoUpper capB (by decide +kernel) 3 (by decide +kernel)
+theorem pin131 : BPair.unit < expoEval eB 17 := by decide +kernel
+theorem pin132 : (expoEval (padd eA eB) 5).oneValue (expoEval eA 5 + expoEval eB 5) := by
+  decide +kernel
+theorem pin133 : (expoEval (padd eA eB) 5).oneValue (expoEval eA 5 + expoEval eB 5) :=
+  expoEval_padd eA eB 5
+theorem pin134 : (expoEval (pmul eA capD) 3).oneValue (expoEval eA 3 * expoEval capD 3) := by
+  decide +kernel
+theorem pin135 : (expoEval (pmul eA capD) 3).oneValue (expoEval eA 3 * expoEval capD 3) :=
+  expoEval_pmul eA capD 3
+theorem pin136 : expoSideCert ⟨eA, 0, 5, [0]⟩ := by decide +kernel
+theorem pin137 : ¬ expoSideCert ⟨[[u]], 0, 0, []⟩ := by decide +kernel
+theorem pin138 : expoRootsCert ⟨eA, 0, 5, [0]⟩ := by decide +kernel
+theorem pin139 : ¬ expoRootsCert ⟨eA, 0, 4, [0]⟩ := by decide +kernel
+theorem pin140 : expoRootsCert ⟨capD, 4, 4, []⟩ := by decide +kernel
+theorem pin141 : expoClearsAll [eA, eB, capB, capD] 17 := by decide +kernel
+theorem pin142 : ¬ expoClearsAll [eA, eB, capB, capD] 16 := by decide +kernel
+theorem pin143 : ¬ topUpper (expoTop eA) := by decide +kernel
+theorem pin144 : ¬ (BPair.unit < expoEval eA 40) := by decide +kernel
+theorem pin145 : ¬ topLower (expoTop capB) := by decide +kernel
+theorem pin146 : ¬ (expoEval capB 3 < BPair.unit) := by decide +kernel
+theorem pin147 : expoKey (eA ++ [[]]) = 16 := by decide +kernel
+theorem pin148 : expoSideCert ⟨[[⟨2, 1⟩], [u]], 0, 0, []⟩ := by decide +kernel
+
+end genericlift

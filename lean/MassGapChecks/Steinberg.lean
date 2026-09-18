@@ -25,48 +25,50 @@ both sides decided beside the applied theorem, and the derived
 identity `count_fusion` routes the fast count onto the
 kernel-dimension count at the fundamental against the adjoint.
 -/
+
+namespace steinberg
 set_option maxHeartbeats 4000000
 
-open ground places sertables steinberg
+open ground places sertables
 
 /-! The sorted display `λ + u` as counts, the beta-set's own row
 read. -/
 
-example : display [1, 1, 0] = [5, 3, 1] := rfl
-example : display [2, 0] = [4, 1] := rfl
-example : betaSet [1, 1, 0]
+theorem pin1 : display [1, 1, 0] = [5, 3, 1] := rfl
+theorem pin2 : display [2, 0] = [4, 1] := rfl
+theorem pin3 : betaSet [1, 1, 0]
     = (display [1, 1, 0]).map (fun x => posOfSucc (x - 1)) := by decide +kernel
 
 /-! The read against the definitional count: the su(2) scale and
 the su(3) fundamentals, a mismatched degree among them. -/
 
-example : steinberg.read [2, 0] [2, 0] [4, 0] := by decide +kernel
-example : steinberg.read [2, 0] [2, 0] [0, 2] := by decide +kernel
-example : steinberg.read [2, 0] [2, 0] [2, 1] := by decide +kernel
-example : steinberg.read [1, 0, 0] [1, 0, 0] [2, 0, 0] := by decide +kernel
-example : steinberg.read [1, 0, 0] [1, 0, 0] [0, 1, 0] := by decide +kernel
-example : steinberg.read [1, 0] [2, 0] [2, 0] := by decide +kernel
+theorem pin4 : steinberg.read [2, 0] [2, 0] [4, 0] := by decide +kernel
+theorem pin5 : steinberg.read [2, 0] [2, 0] [0, 2] := by decide +kernel
+theorem pin6 : steinberg.read [2, 0] [2, 0] [2, 1] := by decide +kernel
+theorem pin7 : steinberg.read [1, 0, 0] [1, 0, 0] [2, 0, 0] := by decide +kernel
+theorem pin8 : steinberg.read [1, 0, 0] [1, 0, 0] [0, 1, 0] := by decide +kernel
+theorem pin9 : steinberg.read [1, 0] [2, 0] [2, 0] := by decide +kernel
 
 /-- A read at an occupied odd sum: the unit-shape factor's tie
 admits the swap beside the identity, one multiplicity on each side,
 the subtractive clause exercised at the definitional count. -/
-example : steinberg.gradedSums [2, 0] [0, 0] [0, 1] = (1, 1) := by decide +kernel
-example : steinberg.read [2, 0] [0, 0] [0, 1] := by decide +kernel
+theorem pin10 : steinberg.gradedSums [2, 0] [0, 0] [0, 1] = (1, 1) := by decide +kernel
+theorem pin11 : steinberg.read [2, 0] [0, 0] [0, 1] := by decide +kernel
 
 /-! `cor:steinberg`'s general theorem at the decided triples, the
 theorem route beside each standing pin: the su(2) square's Cartan
 and adjoint channels, an unequal factor pair, the occupied odd
 sum, and the su(3) `r = 2` crown at its count two. -/
 
-example : steinberg.read [2, 0] [2, 0] [4, 0] :=
+theorem pin12 : steinberg.read [2, 0] [2, 0] [4, 0] :=
   steinberg.readAll [2, 0] [2, 0] [4, 0] rfl rfl
-example : steinberg.read [2, 0] [2, 0] [2, 1] :=
+theorem pin13 : steinberg.read [2, 0] [2, 0] [2, 1] :=
   steinberg.readAll [2, 0] [2, 0] [2, 1] rfl rfl
-example : steinberg.read [1, 0] [2, 0] [2, 0] :=
+theorem pin14 : steinberg.read [1, 0] [2, 0] [2, 0] :=
   steinberg.readAll [1, 0] [2, 0] [2, 0] rfl rfl
-example : steinberg.read [2, 0] [0, 0] [0, 1] :=
+theorem pin15 : steinberg.read [2, 0] [0, 0] [0, 1] :=
   steinberg.readAll [2, 0] [0, 0] [0, 1] rfl rfl
-example : steinberg.read [1, 1, 0] [1, 1, 0] [1, 1, 1] :=
+theorem pin16 : steinberg.read [1, 1, 0] [1, 1, 0] [1, 1, 1] :=
   steinberg.readAll [1, 1, 0] [1, 1, 0] [1, 1, 1] rfl rfl
 
 /-- The theorem's two width binders isolated.  `hba` is
@@ -78,33 +80,33 @@ binder unrefusable in either direction.  Off matched degree at
 the stated width the display stands too, both sums vacant with the
 count at nought — the display is degree-blind, the width alone
 `cor:steinberg`'s frame. -/
-example : ¬ steinberg.read [1, 0] [1] [0, 0] := by decide +kernel
-example : steinberg.read [1, 0] [1, 0] [1] := by decide +kernel
-example : steinberg.read [1, 0] [1, 0] [1, 1, 0] := by decide +kernel
-example : steinberg.read [1, 0] [1, 0] [0, 0] := by decide +kernel
+theorem pin17 : ¬ steinberg.read [1, 0] [1] [0, 0] := by decide +kernel
+theorem pin18 : steinberg.read [1, 0] [1, 0] [1] := by decide +kernel
+theorem pin19 : steinberg.read [1, 0] [1, 0] [1, 1, 0] := by decide +kernel
+theorem pin20 : steinberg.read [1, 0] [1, 0] [0, 0] := by decide +kernel
 
 /-! The fast values at the su(2) square, the reads' value halves. -/
 
-example : steinberg.count [2, 0] [2, 0] [4, 0] = 1 := by decide +kernel
-example : steinberg.count [2, 0] [2, 0] [0, 2] = 1 := by decide +kernel
+theorem pin21 : steinberg.count [2, 0] [2, 0] [4, 0] = 1 := by decide +kernel
+theorem pin22 : steinberg.count [2, 0] [2, 0] [0, 2] = 1 := by decide +kernel
 
 /-- The walk's parameter at `r = 1` through the fast read: the
 adjoint's multiplicity in its square at the matched-degree shape
 reads one. -/
-example : steinberg.count [2, 0] [2, 0] [2, 1] = 1 := by decide +kernel
+theorem pin23 : steinberg.count [2, 0] [2, 0] [2, 1] = 1 := by decide +kernel
 
 /-- The walk's parameter at `r = 2`: the multiplicity reads two.
 The definitional value at this triple is the `def:blockcount`
 battery's crown pin; the two value pins together read the display
 at the crown, the count's gap forcing the even side's clearance. -/
-example : steinberg.count [1, 1, 0] [1, 1, 0] [1, 1, 1] = 2 := by decide +kernel
+theorem pin24 : steinberg.count [1, 1, 0] [1, 1, 0] [1, 1, 1] = 2 := by decide +kernel
 
 /-- The walk's parameter at `r = 3`, the first residue beyond the
 channel degenerations: the multiplicity reads two at the generic
 regime.  The cost is the su(4) adjoint span's, the multiplicity's
 definitional route; the span exits this read at `lem:adjchar`'s
 layer, the adjoint's contents explicit there. -/
-example : steinberg.count [1, 0, 1, 0] [1, 0, 1, 0] [1, 0, 1, 1] = 2 := by
+theorem pin25 : steinberg.count [1, 0, 1, 0] [1, 0, 1, 0] [1, 0, 1, 1] = 2 := by
   decide +kernel
 
 /-! The member tier's batteries at `B_2`, the spinor square.  The
@@ -285,17 +287,17 @@ private def witsWsB2 : List (List (List Nat)) := [witsB2, wpwitsB2, witsWadjB2]
 /-! The spinor factor's own reads: the top's frame, the family's
 three, and the shifted alternant's five. -/
 
-example : memberchar.lamRead tB2 spinB2 := by decide +kernel
-example : memberchar.mShapeRead tB2 LspinB2 := by decide +kernel
-example : memberchar.symRead tB2 LspinB2 := by decide +kernel
-example : memberchar.supportRead tB2 LspinB2 witsSpinB2 spinB2 := by decide +kernel
-example : memberchar.topRead LspinB2 spinB2 := by decide +kernel
+theorem pin26 : memberchar.lamRead tB2 spinB2 := by decide +kernel
+theorem pin27 : memberchar.mShapeRead tB2 LspinB2 := by decide +kernel
+theorem pin28 : memberchar.symRead tB2 LspinB2 := by decide +kernel
+theorem pin29 : memberchar.supportRead tB2 LspinB2 witsSpinB2 spinB2 := by decide +kernel
+theorem pin30 : memberchar.topRead LspinB2 spinB2 := by decide +kernel
 
-example : sertables.wShapeRead tB2 WspinB2 := by decide +kernel
-example : assembly.wCloseRead tB2 WspinB2 := by decide +kernel
-example : assembly.wDomAt tB2 WspinB2 witsWspinB2 (shk spinB2) := by decide +kernel
-example : assembly.wTopAt WspinB2 (shk spinB2) := by decide +kernel
-example : assembly.wRegRead tB2 WspinB2 (shk spinB2) := by decide +kernel
+theorem pin31 : sertables.wShapeRead tB2 WspinB2 := by decide +kernel
+theorem pin32 : assembly.wCloseRead tB2 WspinB2 := by decide +kernel
+theorem pin33 : assembly.wDomAt tB2 WspinB2 witsWspinB2 (shk spinB2) := by decide +kernel
+theorem pin34 : assembly.wTopAt WspinB2 (shk spinB2) := by decide +kernel
+theorem pin35 : assembly.wRegRead tB2 WspinB2 (shk spinB2) := by decide +kernel
 
 /-- The spinor factor's recursion read, the `b`-side.  The pin is
 carried by each of the three applications below, so it is named
@@ -306,56 +308,56 @@ private theorem hrecSpinB2 :
 /-! The three channels' eleven reads, one pin per read at the
 concrete index.  The unit channel first. -/
 
-example : memberchar.mShapeRead tB2 (ground.getAt [] LsB2 0) := by decide +kernel
-example : memberchar.symRead tB2 (ground.getAt [] LsB2 0) := by decide +kernel
-example : memberchar.supportRead tB2 (ground.getAt [] LsB2 0)
+theorem pin36 : memberchar.mShapeRead tB2 (ground.getAt [] LsB2 0) := by decide +kernel
+theorem pin37 : memberchar.symRead tB2 (ground.getAt [] LsB2 0) := by decide +kernel
+theorem pin38 : memberchar.supportRead tB2 (ground.getAt [] LsB2 0)
     (ground.getAt [] witssB2 0) (ground.getAt [] cVsB2 0) := by decide +kernel
-example : memberchar.topRead (ground.getAt [] LsB2 0)
+theorem pin39 : memberchar.topRead (ground.getAt [] LsB2 0)
     (ground.getAt [] cVsB2 0) := by decide +kernel
-example : memberchar.lamRead tB2 (ground.getAt [] cVsB2 0) := by decide +kernel
-example : sertables.wShapeRead tB2 (ground.getAt [] WsB2 0) := by decide +kernel
-example : assembly.wCloseRead tB2 (ground.getAt [] WsB2 0) := by decide +kernel
-example : assembly.wDomAt tB2 (ground.getAt [] WsB2 0)
+theorem pin40 : memberchar.lamRead tB2 (ground.getAt [] cVsB2 0) := by decide +kernel
+theorem pin41 : sertables.wShapeRead tB2 (ground.getAt [] WsB2 0) := by decide +kernel
+theorem pin42 : assembly.wCloseRead tB2 (ground.getAt [] WsB2 0) := by decide +kernel
+theorem pin43 : assembly.wDomAt tB2 (ground.getAt [] WsB2 0)
     (ground.getAt [] witsWsB2 0) (shk (ground.getAt [] cVsB2 0)) := by decide +kernel
-example : assembly.wTopAt (ground.getAt [] WsB2 0)
+theorem pin44 : assembly.wTopAt (ground.getAt [] WsB2 0)
     (shk (ground.getAt [] cVsB2 0)) := by decide +kernel
-example : assembly.wRegRead tB2 (ground.getAt [] WsB2 0)
+theorem pin45 : assembly.wRegRead tB2 (ground.getAt [] WsB2 0)
     (shk (ground.getAt [] cVsB2 0)) := by decide +kernel
 
 /-! The vector channel. -/
 
-example : memberchar.mShapeRead tB2 (ground.getAt [] LsB2 1) := by decide +kernel
-example : memberchar.symRead tB2 (ground.getAt [] LsB2 1) := by decide +kernel
-example : memberchar.supportRead tB2 (ground.getAt [] LsB2 1)
+theorem pin46 : memberchar.mShapeRead tB2 (ground.getAt [] LsB2 1) := by decide +kernel
+theorem pin47 : memberchar.symRead tB2 (ground.getAt [] LsB2 1) := by decide +kernel
+theorem pin48 : memberchar.supportRead tB2 (ground.getAt [] LsB2 1)
     (ground.getAt [] witssB2 1) (ground.getAt [] cVsB2 1) := by decide +kernel
-example : memberchar.topRead (ground.getAt [] LsB2 1)
+theorem pin49 : memberchar.topRead (ground.getAt [] LsB2 1)
     (ground.getAt [] cVsB2 1) := by decide +kernel
-example : memberchar.lamRead tB2 (ground.getAt [] cVsB2 1) := by decide +kernel
-example : sertables.wShapeRead tB2 (ground.getAt [] WsB2 1) := by decide +kernel
-example : assembly.wCloseRead tB2 (ground.getAt [] WsB2 1) := by decide +kernel
-example : assembly.wDomAt tB2 (ground.getAt [] WsB2 1)
+theorem pin50 : memberchar.lamRead tB2 (ground.getAt [] cVsB2 1) := by decide +kernel
+theorem pin51 : sertables.wShapeRead tB2 (ground.getAt [] WsB2 1) := by decide +kernel
+theorem pin52 : assembly.wCloseRead tB2 (ground.getAt [] WsB2 1) := by decide +kernel
+theorem pin53 : assembly.wDomAt tB2 (ground.getAt [] WsB2 1)
     (ground.getAt [] witsWsB2 1) (shk (ground.getAt [] cVsB2 1)) := by decide +kernel
-example : assembly.wTopAt (ground.getAt [] WsB2 1)
+theorem pin54 : assembly.wTopAt (ground.getAt [] WsB2 1)
     (shk (ground.getAt [] cVsB2 1)) := by decide +kernel
-example : assembly.wRegRead tB2 (ground.getAt [] WsB2 1)
+theorem pin55 : assembly.wRegRead tB2 (ground.getAt [] WsB2 1)
     (shk (ground.getAt [] cVsB2 1)) := by decide +kernel
 
 /-! The adjoint channel. -/
 
-example : memberchar.mShapeRead tB2 (ground.getAt [] LsB2 2) := by decide +kernel
-example : memberchar.symRead tB2 (ground.getAt [] LsB2 2) := by decide +kernel
-example : memberchar.supportRead tB2 (ground.getAt [] LsB2 2)
+theorem pin56 : memberchar.mShapeRead tB2 (ground.getAt [] LsB2 2) := by decide +kernel
+theorem pin57 : memberchar.symRead tB2 (ground.getAt [] LsB2 2) := by decide +kernel
+theorem pin58 : memberchar.supportRead tB2 (ground.getAt [] LsB2 2)
     (ground.getAt [] witssB2 2) (ground.getAt [] cVsB2 2) := by decide +kernel
-example : memberchar.topRead (ground.getAt [] LsB2 2)
+theorem pin59 : memberchar.topRead (ground.getAt [] LsB2 2)
     (ground.getAt [] cVsB2 2) := by decide +kernel
-example : memberchar.lamRead tB2 (ground.getAt [] cVsB2 2) := by decide +kernel
-example : sertables.wShapeRead tB2 (ground.getAt [] WsB2 2) := by decide +kernel
-example : assembly.wCloseRead tB2 (ground.getAt [] WsB2 2) := by decide +kernel
-example : assembly.wDomAt tB2 (ground.getAt [] WsB2 2)
+theorem pin60 : memberchar.lamRead tB2 (ground.getAt [] cVsB2 2) := by decide +kernel
+theorem pin61 : sertables.wShapeRead tB2 (ground.getAt [] WsB2 2) := by decide +kernel
+theorem pin62 : assembly.wCloseRead tB2 (ground.getAt [] WsB2 2) := by decide +kernel
+theorem pin63 : assembly.wDomAt tB2 (ground.getAt [] WsB2 2)
     (ground.getAt [] witsWsB2 2) (shk (ground.getAt [] cVsB2 2)) := by decide +kernel
-example : assembly.wTopAt (ground.getAt [] WsB2 2)
+theorem pin64 : assembly.wTopAt (ground.getAt [] WsB2 2)
     (shk (ground.getAt [] cVsB2 2)) := by decide +kernel
-example : assembly.wRegRead tB2 (ground.getAt [] WsB2 2)
+theorem pin65 : assembly.wRegRead tB2 (ground.getAt [] WsB2 2)
     (shk (ground.getAt [] cVsB2 2)) := by decide +kernel
 
 /-! The three channels' recursion reads, the tier's heavy pins:
@@ -409,33 +411,33 @@ private theorem hchB2 : ∀ k, k < cVsB2.length →
 joins of the spinor family with itself, and every key's count in
 them the three channel families' fold. -/
 
-example : (steinberg.prodFam LspinB2 LspinB2).length = 16 := by decide +kernel
+theorem pin66 : (steinberg.prodFam LspinB2 LspinB2).length = 16 := by decide +kernel
 
-example : ∀ v ∈ steinberg.prodFam LspinB2 LspinB2,
+theorem pin67 : ∀ v ∈ steinberg.prodFam LspinB2 LspinB2,
     ground.countOf v (steinberg.prodFam LspinB2 LspinB2)
       = ground.famFold Nat.add 0
           (fun L' => ground.countOf v L') LsB2 := by decide +kernel
 
-example : ∀ k, k < LsB2.length → ∀ v ∈ ground.getAt [] LsB2 k,
+theorem pin68 : ∀ k, k < LsB2.length → ∀ v ∈ ground.getAt [] LsB2 k,
     ground.countOf v (steinberg.prodFam LspinB2 LspinB2)
       = ground.famFold Nat.add 0
           (fun L' => ground.countOf v L') LsB2 := by decide +kernel
 
-example : ground.countOf zeroV (steinberg.prodFam LspinB2 LspinB2) = 4 := by
+theorem pin69 : ground.countOf zeroV (steinberg.prodFam LspinB2 LspinB2) = 4 := by
   decide +kernel
-example : ground.countOf lamB2 (steinberg.prodFam LspinB2 LspinB2) = 2 := by
+theorem pin70 : ground.countOf lamB2 (steinberg.prodFam LspinB2 LspinB2) = 2 := by
   decide +kernel
-example : ground.countOf adjB2 (steinberg.prodFam LspinB2 LspinB2) = 1 := by
+theorem pin71 : ground.countOf adjB2 (steinberg.prodFam LspinB2 LspinB2) = 1 := by
   decide +kernel
 
-example : LsB2.length = cVsB2.length := by decide +kernel
+theorem pin72 : LsB2.length = cVsB2.length := by decide +kernel
 
 /-! `cor:steinberg`'s member display applied whole, once per channel
 top, every binder discharged at the data with the recursion tier
 entering by term — and its computed twin beside each, the display
 read directly by the kernel. -/
 
-example : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 zeroV :=
+theorem pin73 : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 zeroV :=
   steinberg.memberRead tB2 sertables.fundB2 wB2 witsB2 LspinB2 witsSpinB2
     spinB2 WspinB2 witsWspinB2 LspinB2 LsB2 witssB2 cVsB2 WsB2 witsWsB2
     zeroV
@@ -446,9 +448,9 @@ example : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 zeroV :=
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) hchB2 (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 zeroV := by decide +kernel
+theorem pin74 : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 zeroV := by decide +kernel
 
-example : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 lamB2 :=
+theorem pin75 : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 lamB2 :=
   steinberg.memberRead tB2 sertables.fundB2 wB2 witsB2 LspinB2 witsSpinB2
     spinB2 WspinB2 witsWspinB2 LspinB2 LsB2 witssB2 cVsB2 WsB2 witsWsB2
     lamB2
@@ -459,9 +461,9 @@ example : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 lamB2 :=
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) hchB2 (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 lamB2 := by decide +kernel
+theorem pin76 : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 lamB2 := by decide +kernel
 
-example : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 adjB2 :=
+theorem pin77 : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 adjB2 :=
   steinberg.memberRead tB2 sertables.fundB2 wB2 witsB2 LspinB2 witsSpinB2
     spinB2 WspinB2 witsWspinB2 LspinB2 LsB2 witssB2 cVsB2 WsB2 witsWsB2
     adjB2
@@ -472,29 +474,29 @@ example : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 adjB2 :=
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) hchB2 (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 adjB2 := by decide +kernel
+theorem pin78 : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 adjB2 := by decide +kernel
 
 /-! The display's own sides at each channel top: the top's count
 among the channel tops reads one, and the two convolution counts at
 its shifted key read one even and none odd, the gap one at every
 channel. -/
 
-example : ground.countOf zeroV cVsB2 = 1 := by decide +kernel
-example : memberchar.convCount WspinB2 LspinB2 (shk zeroV) false = 1 := by
+theorem pin79 : ground.countOf zeroV cVsB2 = 1 := by decide +kernel
+theorem pin80 : memberchar.convCount WspinB2 LspinB2 (shk zeroV) false = 1 := by
   decide +kernel
-example : memberchar.convCount WspinB2 LspinB2 (shk zeroV) true = 0 := by
-  decide +kernel
-
-example : ground.countOf lamB2 cVsB2 = 1 := by decide +kernel
-example : memberchar.convCount WspinB2 LspinB2 (shk lamB2) false = 1 := by
-  decide +kernel
-example : memberchar.convCount WspinB2 LspinB2 (shk lamB2) true = 0 := by
+theorem pin81 : memberchar.convCount WspinB2 LspinB2 (shk zeroV) true = 0 := by
   decide +kernel
 
-example : ground.countOf adjB2 cVsB2 = 1 := by decide +kernel
-example : memberchar.convCount WspinB2 LspinB2 (shk adjB2) false = 1 := by
+theorem pin82 : ground.countOf lamB2 cVsB2 = 1 := by decide +kernel
+theorem pin83 : memberchar.convCount WspinB2 LspinB2 (shk lamB2) false = 1 := by
   decide +kernel
-example : memberchar.convCount WspinB2 LspinB2 (shk adjB2) true = 0 := by
+theorem pin84 : memberchar.convCount WspinB2 LspinB2 (shk lamB2) true = 0 := by
+  decide +kernel
+
+theorem pin85 : ground.countOf adjB2 cVsB2 = 1 := by decide +kernel
+theorem pin86 : memberchar.convCount WspinB2 LspinB2 (shk adjB2) false = 1 := by
+  decide +kernel
+theorem pin87 : memberchar.convCount WspinB2 LspinB2 (shk adjB2) true = 0 := by
   decide +kernel
 
 /-! The vacant-channel read at a dominant top off the exhaustion,
@@ -504,13 +506,13 @@ sides vacant. -/
 
 private def offV : List BPair := [BPair.ofNat 2, BPair.unit]
 
-example : memberchar.lamRead tB2 offV := by decide +kernel
-example : ground.countOf offV cVsB2 = 0 := by decide +kernel
-example : memberchar.convCount WspinB2 LspinB2 (shk offV) false = 0 := by
+theorem pin88 : memberchar.lamRead tB2 offV := by decide +kernel
+theorem pin89 : ground.countOf offV cVsB2 = 0 := by decide +kernel
+theorem pin90 : memberchar.convCount WspinB2 LspinB2 (shk offV) false = 0 := by
   decide +kernel
-example : memberchar.convCount WspinB2 LspinB2 (shk offV) true = 0 := by
+theorem pin91 : memberchar.convCount WspinB2 LspinB2 (shk offV) true = 0 := by
   decide +kernel
-example : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 offV := by decide +kernel
+theorem pin92 : steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 offV := by decide +kernel
 
 /-! The refusal batteries, one forge per load-bearing binder.
 
@@ -540,20 +542,20 @@ private def witsAdjDrop : List (List Nat) :=
 
 private def LsDrop : List (List (List BPair)) := [LunitB2, mB2, LadjDrop]
 
-example : memberchar.mShapeRead tB2 LadjDrop := by decide +kernel
-example : memberchar.symRead tB2 LadjDrop := by decide +kernel
-example : memberchar.topRead LadjDrop adjB2 := by decide +kernel
-example : memberchar.supportRead tB2 LadjDrop witsAdjDrop adjB2 := by decide +kernel
+theorem pin93 : memberchar.mShapeRead tB2 LadjDrop := by decide +kernel
+theorem pin94 : memberchar.symRead tB2 LadjDrop := by decide +kernel
+theorem pin95 : memberchar.topRead LadjDrop adjB2 := by decide +kernel
+theorem pin96 : memberchar.supportRead tB2 LadjDrop witsAdjDrop adjB2 := by decide +kernel
 
-example : ground.famFold Nat.add 0
+theorem pin97 : ground.famFold Nat.add 0
     (fun L' => ground.countOf zeroV L') LsDrop = 3 := by decide +kernel
 
-example : ¬ (∀ v ∈ steinberg.prodFam LspinB2 LspinB2,
+theorem pin98 : ¬ (∀ v ∈ steinberg.prodFam LspinB2 LspinB2,
     ground.countOf v (steinberg.prodFam LspinB2 LspinB2)
       = ground.famFold Nat.add 0
           (fun L' => ground.countOf v L') LsDrop) := by decide +kernel
 
-example : ¬ (∀ k, k < LsDrop.length → ∀ v ∈ ground.getAt [] LsDrop k,
+theorem pin99 : ¬ (∀ k, k < LsDrop.length → ∀ v ∈ ground.getAt [] LsDrop k,
     ground.countOf v (steinberg.prodFam LspinB2 LspinB2)
       = ground.famFold Nat.add 0
           (fun L' => ground.countOf v L') LsDrop) := by decide +kernel
@@ -566,7 +568,7 @@ count reads one against the genuine two.  The refused display is
 pinned at that instance with the genuine family's read beside it,
 the full `¬ recRead` decide priced past the module budget. -/
 
-example : ¬ BPair.oneValue
+theorem pin100 : ¬ BPair.oneValue
     (BPair.mul (sertables.dotB sertables.fundB2 (shk adjB2) (shk adjB2))
       (BPair.ofNat (ground.countOf zeroV LadjDrop)))
     (BPair.add
@@ -574,7 +576,7 @@ example : ¬ BPair.oneValue
         (BPair.ofNat (ground.countOf zeroV LadjDrop)))
       (memberchar.gSum tB2 sertables.fundB2 LadjDrop zeroV)) := by decide +kernel
 
-example : BPair.oneValue
+theorem pin101 : BPair.oneValue
     (BPair.mul (sertables.dotB sertables.fundB2 (shk adjB2) (shk adjB2))
       (BPair.ofNat (ground.countOf zeroV LadjB2)))
     (BPair.add
@@ -596,42 +598,42 @@ private def witssDup : List (List (List Nat)) := witssB2 ++ [mwitsB2]
 private def WsDup : List (List (List BPair × Bool)) := WsB2 ++ [wpB2]
 private def witsWsDup : List (List (List Nat)) := witsWsB2 ++ [wpwitsB2]
 
-example : LsDup.length = cVsDup.length := by decide +kernel
+theorem pin102 : LsDup.length = cVsDup.length := by decide +kernel
 
-example : memberchar.mShapeRead tB2 (ground.getAt [] LsDup 3) := by decide +kernel
-example : memberchar.symRead tB2 (ground.getAt [] LsDup 3) := by decide +kernel
-example : memberchar.supportRead tB2 (ground.getAt [] LsDup 3)
+theorem pin103 : memberchar.mShapeRead tB2 (ground.getAt [] LsDup 3) := by decide +kernel
+theorem pin104 : memberchar.symRead tB2 (ground.getAt [] LsDup 3) := by decide +kernel
+theorem pin105 : memberchar.supportRead tB2 (ground.getAt [] LsDup 3)
     (ground.getAt [] witssDup 3) (ground.getAt [] cVsDup 3) := by decide +kernel
-example : memberchar.topRead (ground.getAt [] LsDup 3)
+theorem pin106 : memberchar.topRead (ground.getAt [] LsDup 3)
     (ground.getAt [] cVsDup 3) := by decide +kernel
-example : memberchar.lamRead tB2 (ground.getAt [] cVsDup 3) := by decide +kernel
-example : sertables.wShapeRead tB2 (ground.getAt [] WsDup 3) := by decide +kernel
-example : assembly.wCloseRead tB2 (ground.getAt [] WsDup 3) := by decide +kernel
-example : assembly.wDomAt tB2 (ground.getAt [] WsDup 3)
+theorem pin107 : memberchar.lamRead tB2 (ground.getAt [] cVsDup 3) := by decide +kernel
+theorem pin108 : sertables.wShapeRead tB2 (ground.getAt [] WsDup 3) := by decide +kernel
+theorem pin109 : assembly.wCloseRead tB2 (ground.getAt [] WsDup 3) := by decide +kernel
+theorem pin110 : assembly.wDomAt tB2 (ground.getAt [] WsDup 3)
     (ground.getAt [] witsWsDup 3) (shk (ground.getAt [] cVsDup 3)) := by decide +kernel
-example : assembly.wTopAt (ground.getAt [] WsDup 3)
+theorem pin111 : assembly.wTopAt (ground.getAt [] WsDup 3)
     (shk (ground.getAt [] cVsDup 3)) := by decide +kernel
-example : assembly.wRegRead tB2 (ground.getAt [] WsDup 3)
+theorem pin112 : assembly.wRegRead tB2 (ground.getAt [] WsDup 3)
     (shk (ground.getAt [] cVsDup 3)) := by decide +kernel
 
-example : memberchar.recRead tB2 sertables.fundB2 wB2
+theorem pin113 : memberchar.recRead tB2 sertables.fundB2 wB2
     (ground.getAt [] LsDup 3) (ground.getAt [] cVsDup 3) := hrecVecB2
 
-example : ground.famFold Nat.add 0
+theorem pin114 : ground.famFold Nat.add 0
     (fun L' => ground.countOf lamB2 L') LsDup = 3 := by decide +kernel
 
-example : ¬ (∀ v ∈ steinberg.prodFam LspinB2 LspinB2,
+theorem pin115 : ¬ (∀ v ∈ steinberg.prodFam LspinB2 LspinB2,
     ground.countOf v (steinberg.prodFam LspinB2 LspinB2)
       = ground.famFold Nat.add 0
           (fun L' => ground.countOf v L') LsDup) := by decide +kernel
 
-example : ¬ (∀ k, k < LsDup.length → ∀ v ∈ ground.getAt [] LsDup k,
+theorem pin116 : ¬ (∀ k, k < LsDup.length → ∀ v ∈ ground.getAt [] LsDup k,
     ground.countOf v (steinberg.prodFam LspinB2 LspinB2)
       = ground.famFold Nat.add 0
           (fun L' => ground.countOf v L') LsDup) := by decide +kernel
 
-example : ground.countOf lamB2 cVsDup = 2 := by decide +kernel
-example : ¬ steinberg.memberAt tB2 WspinB2 LspinB2 cVsDup lamB2 := by decide +kernel
+theorem pin117 : ground.countOf lamB2 cVsDup = 2 := by decide +kernel
+theorem pin118 : ¬ steinberg.memberAt tB2 WspinB2 LspinB2 cVsDup lamB2 := by decide +kernel
 
 /-! `hlL`: the channel tops extended by `2ω₁ = (2,0)` at three
 families.  The theorem's fold runs over the tops' count and the
@@ -645,11 +647,11 @@ the conclusion needs. -/
 
 private def cVsExt : List (List BPair) := cVsB2 ++ [offV]
 
-example : ¬ (LsB2.length = cVsExt.length) := by decide +kernel
-example : ground.countOf offV cVsExt = 1 := by decide +kernel
-example : ¬ memberchar.topRead (ground.getAt [] LsB2 3)
+theorem pin119 : ¬ (LsB2.length = cVsExt.length) := by decide +kernel
+theorem pin120 : ground.countOf offV cVsExt = 1 := by decide +kernel
+theorem pin121 : ¬ memberchar.topRead (ground.getAt [] LsB2 3)
     (ground.getAt [] cVsExt 3) := by decide +kernel
-example : ¬ steinberg.memberAt tB2 WspinB2 LspinB2 cVsExt offV := by decide +kernel
+theorem pin122 : ¬ steinberg.memberAt tB2 WspinB2 LspinB2 cVsExt offV := by decide +kernel
 
 /-! The exhaustion's blind face: a spurious channel at a vacant
 family.  The tops extended by `2ω₁` with the family list extended by
@@ -663,21 +665,21 @@ against two vacant convolution counts. -/
 private def LsSpur : List (List (List BPair)) :=
   LsB2 ++ [([] : List (List BPair))]
 
-example : LsSpur.length = cVsExt.length := by decide +kernel
+theorem pin123 : LsSpur.length = cVsExt.length := by decide +kernel
 
-example : ∀ v ∈ steinberg.prodFam LspinB2 LspinB2,
+theorem pin124 : ∀ v ∈ steinberg.prodFam LspinB2 LspinB2,
     ground.countOf v (steinberg.prodFam LspinB2 LspinB2)
       = ground.famFold Nat.add 0
           (fun L' => ground.countOf v L') LsSpur := by decide +kernel
 
-example : ∀ k, k < LsSpur.length → ∀ v ∈ ground.getAt [] LsSpur k,
+theorem pin125 : ∀ k, k < LsSpur.length → ∀ v ∈ ground.getAt [] LsSpur k,
     ground.countOf v (steinberg.prodFam LspinB2 LspinB2)
       = ground.famFold Nat.add 0
           (fun L' => ground.countOf v L') LsSpur := by decide +kernel
 
-example : ¬ memberchar.topRead (ground.getAt [] LsSpur 3)
+theorem pin126 : ¬ memberchar.topRead (ground.getAt [] LsSpur 3)
     (ground.getAt [] cVsExt 3) := by decide +kernel
-example : ¬ steinberg.memberAt tB2 WspinB2 LspinB2 cVsExt offV := by decide +kernel
+theorem pin127 : ¬ steinberg.memberAt tB2 WspinB2 LspinB2 cVsExt offV := by decide +kernel
 
 /-! `hcV`: the stated top off its own frame.  The unnormed unit
 content — the natural one joined to its swap — refuses at the
@@ -692,24 +694,24 @@ private def badNorm : List BPair :=
 private def badDom : List BPair := [(BPair.ofNat 1).swap, BPair.unit]
 private def badLen : List BPair := [BPair.ofNat 1]
 
-example : ¬ memberchar.lamRead tB2 badNorm := by decide +kernel
-example : ¬ memberchar.lamRead tB2 badDom := by decide +kernel
-example : ¬ memberchar.lamRead tB2 badLen := by decide +kernel
+theorem pin128 : ¬ memberchar.lamRead tB2 badNorm := by decide +kernel
+theorem pin129 : ¬ memberchar.lamRead tB2 badDom := by decide +kernel
+theorem pin130 : ¬ memberchar.lamRead tB2 badLen := by decide +kernel
 
-example : poly.pnorm badNorm = zeroV := by decide +kernel
-example : shk badNorm = shk zeroV := by decide +kernel
-example : ground.countOf badNorm cVsB2 = 0 := by decide +kernel
-example : ¬ steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 badNorm := by decide +kernel
+theorem pin131 : poly.pnorm badNorm = zeroV := by decide +kernel
+theorem pin132 : shk badNorm = shk zeroV := by decide +kernel
+theorem pin133 : ground.countOf badNorm cVsB2 = 0 := by decide +kernel
+theorem pin134 : ¬ steinberg.memberAt tB2 WspinB2 LspinB2 cVsB2 badNorm := by decide +kernel
 
 /-! The two graded sums as the parity-guarded folds, at the `su(2)`
 scale's own triple. -/
 
-example : steinberg.sumsWith
+theorem pin135 : steinberg.sumsWith
       (blockcount.occupancyAt (blockcount.blockSpan [2, 0])) 2
       [2, 0] [4, 0]
     = (1, 0) := by decide +kernel
 
-example : (ground.famFold Nat.add 0
+theorem pin136 : (ground.famFold Nat.add 0
       (fun p => if places.parity p = false then
         weylchar.multAtGap
           (blockcount.occupancyAt (blockcount.blockSpan [2, 0]))
@@ -722,7 +724,7 @@ example : (ground.famFold Nat.add 0
           (display [4, 0]) (places.expo (display [2, 0]) p) else 0)
       (places.perms 2)) = (1, 0) := by decide +kernel
 
-example : steinberg.sumsWith
+theorem pin137 : steinberg.sumsWith
       (blockcount.occupancyAt (blockcount.blockSpan [2, 0])) 2
       [2, 0] [4, 0]
     = (ground.famFold Nat.add 0
@@ -746,7 +748,7 @@ count through the derived identity: the fundamental against the
 adjoint at the two-letter data, the display's gap withdrawn at the
 shared graded sum. -/
 
-example : steinberg.count [1, 0] (adjchar.theta 2) [1, 1]
+theorem pin138 : steinberg.count [1, 0] (adjchar.theta 2) [1, 1]
     = blockcount.fusionCount [1, 0] (adjchar.theta 2) [1, 1] :=
   steinberg.count_fusion [1, 0] (adjchar.theta 2) [1, 1] rfl rfl
 
@@ -756,8 +758,46 @@ against the kernel count's nought, the committed refusal.  `hca`
 is the frame: at the wide third shape with `hba` held both counts
 are vacant and the identity holds, the binder unrefusable
 there. -/
-example : ¬ (steinberg.count [1, 0] [1] [0, 0]
+theorem pin139 : ¬ (steinberg.count [1, 0] [1] [0, 0]
     = blockcount.fusionCount [1, 0] [1] [0, 0]) := by decide +kernel
-example : steinberg.count [1, 0] (adjchar.theta 2) [1, 1, 0]
+theorem pin140 : steinberg.count [1, 0] (adjchar.theta 2) [1, 1, 0]
     = blockcount.fusionCount [1, 0] (adjchar.theta 2) [1, 1, 0] :=
   by decide +kernel
+
+/-- Tensor-factor exchange preserves content multiplicities at
+every key, including keys outside the product's support. -/
+theorem pin141 (A B : List (List BPair)) (v : List BPair) :
+    ground.countOf v (prodFam A B) = ground.countOf v (prodFam B A) := prodFam_comm A B v
+
+/-- Repeated factor keys keep their multiplicity under relisting. -/
+theorem pin142 (A B : List (List BPair)) (v : List BPair) :
+    ground.countOf v (prodFam A.reverse B.reverse) = ground.countOf v (prodFam A B) :=
+  prodFam_counts _ A _ B (fun x => ground.countOf_reverse x A) (fun x => ground.countOf_reverse x B) v
+
+theorem pin143 : ground.countOf [BPair.ofNat 3] (prodFam [[BPair.ofNat 1], [BPair.ofNat 1]] [[BPair.ofNat 2]]) = 2
+    ∧ ground.countOf [BPair.ofNat 3] (prodFam [[BPair.ofNat 1]] [[BPair.ofNat 2]]) = 1 := by decide +kernel
+
+
+/-- Product counts include repeated occurrences in both factors. -/
+theorem pin144 (A B : List (List BPair)) : (prodFam A B).length = A.length * B.length :=
+  prodFam_length A B
+
+theorem pin145 (A B : List (List BPair)) (Ls : List (List (List BPair)))
+    (h : ∀ v, ground.countOf v (prodFam A B) = ground.famFold Nat.add 0 (fun L => ground.countOf v L) Ls) :
+    ground.famFold Nat.add 0 List.length Ls = A.length * B.length :=
+  prodFam_exhaustion_length A B Ls h
+
+/-- A repeated channel contributes twice while the row lists
+its top once; dimensions collect at the occurrence counts. -/
+theorem pin146 : ground.famFold Nat.add 0 (fun c => ground.countOf c ([0, 0] : List Nat) * 1) [0]
+    = ([[], []] : List (List BPair)).length * ([[]] : List (List BPair)).length := by
+  apply prodFam_dimension 0 (fun _ : Nat => 1) [[], []] [[]] [0, 0] [0] [[[]], [[]]] rfl
+    (by decide +kernel) (fun _ => rfl)
+  intro c hc
+  cases c with
+  | zero => rfl
+  | succ c =>
+    change 0 < 0 at hc
+    exact False.elim (Nat.lt_irrefl 0 hc)
+
+end steinberg

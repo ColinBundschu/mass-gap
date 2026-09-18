@@ -33,7 +33,7 @@ def renewalRead (c1 : Pos) (d : Nat) : Prop :=
   oneValue (g0List c1 (d + 1))
     (add (mono 1) (scaleP (BPair.ofPos c1) (shiftUp 1 (g0List c1 d))))
 
-instance (c1 : Pos) (d : Nat) : Decidable (renewalRead c1 d) :=
+instance instChannelreads1 (c1 : Pos) (d : Nat) : Decidable (renewalRead c1 d) :=
   decOneValue _ _
 
 /-- The mass point `z*` at `c₁ z* = 1`, the clearing factor's
@@ -41,7 +41,7 @@ root, its witness the cross-multiplied read. -/
 def massRead (c1 : Pos) : Prop :=
   (Pair.mul (Pair.ofPos c1) ⟨Pos.one, c1⟩).oneValue (Pair.ofPos Pos.one)
 
-instance (c1 : Pos) : Decidable (massRead c1) :=
+instance instChannelreads2 (c1 : Pos) : Decidable (massRead c1) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The ι-symmetrized weight's factor list over the second member:
@@ -63,7 +63,7 @@ point off the sum's unit by the pair's own shape. -/
 def poleOrderRead (c1 : Pos) : Prop :=
   massRead c1 ∧ (top (getAt [] (factors c1) 0)).offUnit
 
-instance (c1 : Pos) : Decidable (poleOrderRead c1) :=
+instance instChannelreads3 (c1 : Pos) : Decidable (poleOrderRead c1) :=
   inferInstanceAs (Decidable (_ ∧ _))
 
 /-- The conjugation read: the second factor is the first's
@@ -72,7 +72,7 @@ at degree one. -/
 def conjRead (c1 : Pos) : Prop :=
   oneValue ((getAt [] (factors c1) 0).reverse) (getAt [] (factors c1) 1)
 
-instance (c1 : Pos) : Decidable (conjRead c1) := decOneValue _ _
+instance instChannelreads4 (c1 : Pos) : Decidable (conjRead c1) := decOneValue _ _
 
 /-- The order count: the pole order added to the factor list's
 count. -/

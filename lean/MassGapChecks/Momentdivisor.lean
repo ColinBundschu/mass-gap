@@ -10,9 +10,11 @@ moments refuse the requirement, the refusal decided raw at the
 exhibited vector.  The split's positivity is isolated at the
 occupied count: beyond the edge the semidefinite read fails
 outright, so the spectrum direction has no hypothesis there. -/
+
+namespace momentdivisor
 set_option maxHeartbeats 4000000
 
-open ground elim inertia momentdivisor
+open ground elim inertia
 
 private def u : BPair := BPair.unit
 
@@ -44,27 +46,29 @@ private def sp16 : Split 3 :=
 /-! The spectrum direction at the edge: the requirement carried
 onto the probes, each moment read decided raw beside it. -/
 
-example : momentform.reqRead et3s ⟨[u, ⟨2, 1⟩, u], rfl⟩ 12 1 :=
+theorem pin1 : momentform.reqRead et3s ⟨[u, ⟨2, 1⟩, u], rfl⟩ 12 1 :=
   window_intro et3s 12 1 sp12 (by decide +kernel) (by decide +kernel)
     ⟨[u, ⟨2, 1⟩, u], rfl⟩
-example : momentform.reqRead et3s ⟨[u, ⟨2, 1⟩, u], rfl⟩ 12 1 := by
+theorem pin2 : momentform.reqRead et3s ⟨[u, ⟨2, 1⟩, u], rfl⟩ 12 1 := by
   decide +kernel
-example : momentform.reqRead et3s ⟨[u, ⟨2, 1⟩, ⟨2, 1⟩], rfl⟩ 12 1 :=
+theorem pin3 : momentform.reqRead et3s ⟨[u, ⟨2, 1⟩, ⟨2, 1⟩], rfl⟩ 12 1 :=
   window_intro et3s 12 1 sp12 (by decide +kernel) (by decide +kernel)
     ⟨[u, ⟨2, 1⟩, ⟨2, 1⟩], rfl⟩
-example : momentform.reqRead et3s ⟨[u, ⟨2, 1⟩, ⟨2, 1⟩], rfl⟩ 12 1 := by
+theorem pin4 : momentform.reqRead et3s ⟨[u, ⟨2, 1⟩, ⟨2, 1⟩], rfl⟩ 12 1 := by
   decide +kernel
 
 /-! The failing direction beyond the edge: the occupied count's
 split carries a probe refusing the requirement, the refusal
 decided raw at the fundamental loop's vector. -/
 
-example : ∃ y : Vec 3, ¬ momentform.reqRead et3s y 16 1 :=
+theorem pin5 : ∃ y : Vec 3, ¬ momentform.reqRead et3s y 16 1 :=
   window_elim et3s 16 1 sp16 (by decide +kernel) (by decide +kernel)
-example : ¬ momentform.reqRead et3s ⟨[u, ⟨2, 1⟩, u], rfl⟩ 16 1 := by
+theorem pin6 : ¬ momentform.reqRead et3s ⟨[u, ⟨2, 1⟩, u], rfl⟩ 16 1 := by
   decide +kernel
 
 /-! The semidefinite read is isolated at the occupied count: beyond
 the edge the split's own positivity is refused. -/
 
-example : ¬ psdAt sp16 := by decide +kernel
+theorem pin7 : ¬ psdAt sp16 := by decide +kernel
+
+end momentdivisor

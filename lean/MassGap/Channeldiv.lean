@@ -15,9 +15,8 @@ exactly at base two, `crossLo_members` at the crossing's member
 pair, the infrared contact — at base one the mass point sits at
 the crossing, the crossing read's equal-members outcome with the
 order count fixed.
-The divisor's derivation — the boundary pivot recursion, the
-truncations' error law and the deck involution's orbit — lands
-with the decimation layer's consumers; `thm:chordmap` reads the
+The boundary pivot recursion, the truncations' error law and the
+deck involution's orbit are the tex proof's; `thm:chordmap` reads the
 level joins (the bound-state join `c₁ y₊ + 1 = c₁ y₋`, the two
 crossing joins and the band's width four), and the coherence
 `chord_bound` reads this theorem's symbol as that theorem's chord
@@ -38,7 +37,7 @@ def symbolRead (c1 : Pos) : Prop :=
   (Pair.mul (Pair.ofPos c1) (chord c1)).oneValue
     (Pair.ofPos (Pos.one + c1 * c1))
 
-instance (c1 : Pos) : Decidable (symbolRead c1) :=
+instance instChanneldiv1 (c1 : Pos) : Decidable (symbolRead c1) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The crossing pair `⟨w² : 4⟩` at the chord, the composite
@@ -53,7 +52,7 @@ def crossingRead (c1 : Pos) : Prop :=
   (crossPair c1).oneValue
     ⟨(⟨c1 * c1, Pos.one⟩ : BPair) * ⟨c1 * c1, Pos.one⟩, c1 * c1⟩
 
-instance (c1 : Pos) : Decidable (crossingRead c1) :=
+instance instChanneldiv2 (c1 : Pos) : Decidable (crossingRead c1) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The mass weight's margin `⟨1 : z*²⟩`, the composite
@@ -65,7 +64,7 @@ def marginRead (c1 : Pos) : Prop :=
   (CPair.mul (margin c1) (margin c1)).oneValue
     (CPair.mul (crossPair c1) (CPair.ofPair ⟨Pos.one, c1 * c1⟩ Pos.one))
 
-instance (c1 : Pos) : Decidable (marginRead c1) :=
+instance instChanneldiv3 (c1 : Pos) : Decidable (marginRead c1) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The mass weight's sum with its complement: the pair
@@ -75,7 +74,7 @@ def weightSumRead (c1 : Pos) : Prop :=
   (margin c1 + CPair.ofPair ⟨Pos.one, c1 * c1⟩ Pos.one).oneValue
     (CPair.ofPair (Pair.ofPos Pos.one) Pos.one)
 
-instance (c1 : Pos) : Decidable (weightSumRead c1) :=
+instance instChanneldiv4 (c1 : Pos) : Decidable (weightSumRead c1) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The base collects at the orders' sum:
@@ -83,7 +82,7 @@ instance (c1 : Pos) : Decidable (weightSumRead c1) :=
 def baseRead (c1 : Pos) : Prop :=
   c1 * (c1 * c1) = Pos.pow c1 (channelreads.orderCount c1)
 
-instance (c1 : Pos) : Decidable (baseRead c1) :=
+instance instChanneldiv5 (c1 : Pos) : Decidable (baseRead c1) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The base collects at every base: `c₁ · c₁² = c₁³` at the order

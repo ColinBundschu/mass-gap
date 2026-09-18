@@ -44,19 +44,21 @@ through its theorem, with the refusals parting the three reads, the
 floor, the cap, the perpendicularity and the clearance one at a time.
 -/
 
-open ground fusion fourpoint
+namespace fourpoint
+
+open ground fusion
 
 /-! `SU(2)`: the channel list, the pair fold and the pair sum at
 their values. -/
 
-example : chanList (dataA 2)
+theorem pin1 : chanList (dataA 2)
     = [(posOfSucc 4, posOfSucc 71), (posOfSucc 2, posOfSucc 55),
        (Pos.one, posOfSucc 47)] := by decide +kernel
-example : ((pairFold (dataA 2)).1.scale 1134).oneValue
+theorem pin2 : ((pairFold (dataA 2)).1.scale 1134).oneValue
     ((BPair.ofPos 145).scale (pairFold (dataA 2)).2) := by decide +kernel
 
 /-- The side at `SU(2)`, decided raw and through the theorem. -/
-example : ((BPair.ofPos 8 * (pairFold (dataA 2)).1).scale
+theorem pin3 : ((BPair.ofPos 8 * (pairFold (dataA 2)).1).scale
       ((pairRead (dataA 2)).2 * (posOfSucc 2 * posOfSucc 2
         * (posOfSucc 2 * posOfSucc 2)))).oneValue
     (((BPair.ofPos Pos.one).scale
@@ -64,7 +66,7 @@ example : ((BPair.ofPos 8 * (pairFold (dataA 2)).1).scale
           * (posOfSucc 2 * posOfSucc 2)))
       + (pairRead (dataA 2)).1).scale (pairFold (dataA 2)).2) := by
   decide +kernel
-example : ((BPair.ofPos 8 * (pairFold (dataA 2)).1).scale
+theorem pin4 : ((BPair.ofPos 8 * (pairFold (dataA 2)).1).scale
       ((pairRead (dataA 2)).2 * (posOfSucc 2 * posOfSucc 2
         * (posOfSucc 2 * posOfSucc 2)))).oneValue
     (((BPair.ofPos Pos.one).scale
@@ -76,26 +78,26 @@ example : ((BPair.ofPos 8 * (pairFold (dataA 2)).1).scale
 
 /-- The margin at `SU(2)` decided raw: `1 + 1/1134 ≤ 8 S`; the
 fold's own value `26/1134` reads exact and one beyond refuses. -/
-example : ((BPair.ofPos Pos.one).scale
+theorem pin5 : ((BPair.ofPos Pos.one).scale
       (42 * (posOfSucc 2 * posOfSucc 2 * posOfSucc 2))
     + BPair.ofNat (dataA 2).c1).scale (pairFold (dataA 2)).2
     ≤ (BPair.ofPos 8 * (pairFold (dataA 2)).1).scale
       (42 * (posOfSucc 2 * posOfSucc 2 * posOfSucc 2)) := by decide +kernel
-example : ((BPair.ofPos Pos.one).scale 1134 + BPair.ofPos 26).scale
+theorem pin6 : ((BPair.ofPos Pos.one).scale 1134 + BPair.ofPos 26).scale
       (pairFold (dataA 2)).2
     ≤ (BPair.ofPos 8 * (pairFold (dataA 2)).1).scale 1134 := by decide +kernel
-example : ¬ (((BPair.ofPos Pos.one).scale 1134 + BPair.ofPos 27).scale
+theorem pin7 : ¬ (((BPair.ofPos Pos.one).scale 1134 + BPair.ofPos 27).scale
       (pairFold (dataA 2)).2
     ≤ (BPair.ofPos 8 * (pairFold (dataA 2)).1).scale 1134) := by
   decide +kernel
 
 /-- The index datum pins: the unit channel at index `2` and `θ` at
 `1`, the unit off index `1`. -/
-example : getAt (Pos.one, Pos.one) (chanList (dataA 2)) 2
+theorem pin8 : getAt (Pos.one, Pos.one) (chanList (dataA 2)) 2
     = (Pos.one, posOfSucc 47) := by decide +kernel
-example : getAt (Pos.one, Pos.one) (chanList (dataA 2)) 1
+theorem pin9 : getAt (Pos.one, Pos.one) (chanList (dataA 2)) 1
     = (posOfSucc 2, posOfSucc 55) := by decide +kernel
-example : ¬ (getAt (Pos.one, Pos.one) (chanList (dataA 2)) 1
+theorem pin10 : ¬ (getAt (Pos.one, Pos.one) (chanList (dataA 2)) 1
     = (Pos.one, posOfSucc 47)) := by decide +kernel
 
 /-! The refusals, each parting one binder alone at `SU(2)`. -/
@@ -106,10 +108,10 @@ completeness and the side. -/
 private def rowGrown : Data places.Shape :=
   { dataA 2 with row := fun a b => (dataA 2).row a b ++ [(dataA 2).unit] }
 
-example : ¬ dimLaw rowGrown rowGrown.theta rowGrown.theta := by decide +kernel
-example : driftLaw rowGrown rowGrown.theta := by decide +kernel
-example : rowGrown.c2N rowGrown.theta = 7 + 1 := by decide +kernel
-example : ¬ ((BPair.ofPos 8 * (pairFold rowGrown).1).scale
+theorem pin11 : ¬ dimLaw rowGrown rowGrown.theta rowGrown.theta := by decide +kernel
+theorem pin12 : driftLaw rowGrown rowGrown.theta := by decide +kernel
+theorem pin13 : rowGrown.c2N rowGrown.theta = 7 + 1 := by decide +kernel
+theorem pin14 : ¬ ((BPair.ofPos 8 * (pairFold rowGrown).1).scale
       ((pairRead rowGrown).2 * (posOfSucc 2 * posOfSucc 2
         * (posOfSucc 2 * posOfSucc 2)))).oneValue
     (((BPair.ofPos Pos.one).scale
@@ -125,10 +127,10 @@ private def casRaised : Data places.Shape :=
   { dataA 2 with c2N := fun s =>
       if c2hat.dfQ s == 24 then 25 else c2hat.dfQ s }
 
-example : ¬ driftLaw casRaised casRaised.theta := by decide +kernel
-example : dimLaw casRaised casRaised.theta casRaised.theta := by decide +kernel
-example : casRaised.c2N casRaised.theta = 7 + 1 := by decide +kernel
-example : ¬ ((BPair.ofPos 8 * (pairFold casRaised).1).scale
+theorem pin15 : ¬ driftLaw casRaised casRaised.theta := by decide +kernel
+theorem pin16 : dimLaw casRaised casRaised.theta casRaised.theta := by decide +kernel
+theorem pin17 : casRaised.c2N casRaised.theta = 7 + 1 := by decide +kernel
+theorem pin18 : ¬ ((BPair.ofPos 8 * (pairFold casRaised).1).scale
       ((pairRead casRaised).2 * (posOfSucc 2 * posOfSucc 2
         * (posOfSucc 2 * posOfSucc 2)))).oneValue
     (((BPair.ofPos Pos.one).scale
@@ -143,10 +145,10 @@ side. -/
 private def casShifted : Data places.Shape :=
   { dataA 2 with c2N := fun s => c2hat.dfQ s + 1 }
 
-example : ¬ (casShifted.c2N casShifted.theta = 7 + 1) := by decide +kernel
-example : dimLaw casShifted casShifted.theta casShifted.theta := by decide +kernel
-example : driftLaw casShifted casShifted.theta := by decide +kernel
-example : ¬ ((BPair.ofPos 8 * (pairFold casShifted).1).scale
+theorem pin19 : ¬ (casShifted.c2N casShifted.theta = 7 + 1) := by decide +kernel
+theorem pin20 : dimLaw casShifted casShifted.theta casShifted.theta := by decide +kernel
+theorem pin21 : driftLaw casShifted casShifted.theta := by decide +kernel
+theorem pin22 : ¬ ((BPair.ofPos 8 * (pairFold casShifted).1).scale
       ((pairRead casShifted).2 * (posOfSucc 2 * posOfSucc 2
         * (posOfSucc 2 * posOfSucc 2)))).oneValue
     (((BPair.ofPos Pos.one).scale
@@ -159,9 +161,9 @@ example : ¬ ((BPair.ofPos 8 * (pairFold casShifted).1).scale
 and parts the `θ` weight read and the margin. -/
 private def baseForged : Data places.Shape := { dataA 2 with c1 := 27 }
 
-example : ¬ (baseForged.c1 * baseForged.dim baseForged.theta = 2 + 1) := by
+theorem pin23 : ¬ (baseForged.c1 * baseForged.dim baseForged.theta = 2 + 1) := by
   decide +kernel
-example : ¬ (((BPair.ofPos Pos.one).scale
+theorem pin24 : ¬ (((BPair.ofPos Pos.one).scale
       (42 * (posOfSucc 2 * posOfSucc 2 * posOfSucc 2))
     + BPair.ofNat baseForged.c1).scale (pairFold baseForged).2
     ≤ (BPair.ofPos 8 * (pairFold baseForged).1).scale
@@ -176,7 +178,7 @@ private def tauZero (F : Data places.Shape) : Prop :=
   (getAt bpairQOps.unit
     (kappa4 (poly.polyO bpairQOps) (jetMoment F)) 0).1.oneValue BPair.unit
 
-private instance (F : Data places.Shape) : Decidable (tauZero F) :=
+private instance instFourpointChk1 (F : Data places.Shape) : Decidable (tauZero F) :=
   inferInstanceAs (Decidable (BPair.oneValue _ _))
 
 /-- The `τ²` read: the partition fold's key one is the unit. -/
@@ -184,7 +186,7 @@ private def tauTwo (F : Data places.Shape) : Prop :=
   (getAt bpairQOps.unit
     (kappa4 (poly.polyO bpairQOps) (jetMoment F)) 1).1.oneValue BPair.unit
 
-private instance (F : Data places.Shape) : Decidable (tauTwo F) :=
+private instance instFourpointChk2 (F : Data places.Shape) : Decidable (tauTwo F) :=
   inferInstanceAs (Decidable (BPair.oneValue _ _))
 
 /-- The `τ⁴` read: the partition fold's key two is
@@ -198,7 +200,7 @@ private def tauFour (F : Data places.Shape) : Prop :=
         (getAt bpairQOps.unit
           (kappa4 (poly.polyO bpairQOps) (jetMoment F)) 2).2)
 
-private instance (F : Data places.Shape) : Decidable (tauFour F) :=
+private instance instFourpointChk3 (F : Data places.Shape) : Decidable (tauFour F) :=
   inferInstanceAs (Decidable (BPair.oneValue _ _))
 
 /-- The jet moments as the normalized pairing at a datum, the three
@@ -214,7 +216,7 @@ private def jetReadAt (F : Data places.Shape) (a b : Nat) : Prop :=
       (getAt bpairQOps.unit
         ((poly.polyO bpairQOps).mul (jetMoment F a b) (jetPair F 0 0)) 2)
 
-private instance (F : Data places.Shape) (a b : Nat) : Decidable (jetReadAt F a b) :=
+private instance instFourpointChk4 (F : Data places.Shape) (a b : Nat) : Decidable (jetReadAt F a b) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
 /-! The margin and the collection through the theorem routes at ten
@@ -241,18 +243,18 @@ private theorem hypsA2 : (dataA 2).c2D = 7 + 1
         (fun k => if casPos (dataA 2) k then true else false) = true := by
   decide +kernel
 
-example : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 2 * posOfSucc 2 * posOfSucc 2))
+theorem pin25 : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 2 * posOfSucc 2 * posOfSucc 2))
     + BPair.ofNat (dataA 2).c1).scale (pairFold (dataA 2)).2
     ≤ (BPair.ofPos 8 * (pairFold (dataA 2)).1).scale (42 * (posOfSucc 2 * posOfSucc 2 * posOfSucc 2)) :=
   margin (dataA 2) 7 2 2 hypsA2.1 hypsA2.2.1 hypsA2.2.2.1
     hypsA2.2.2.2.1 hypsA2.2.2.2.2.1 2 1 hypsA2.2.2.2.2.2.1
     hypsA2.2.2.2.2.2.2.1 hypsA2.2.2.2.2.2.2.2.1
 
-example : tauZero (dataA 2) ∧ tauTwo (dataA 2) ∧ tauFour (dataA 2) :=
+theorem pin26 : tauZero (dataA 2) ∧ tauTwo (dataA 2) ∧ tauFour (dataA 2) :=
   collection (dataA 2) hypsA2.2.2.2.2.2.2.2.2.1 hypsA2.2.2.2.2.2.2.2.2.2.1
     hypsA2.2.2.2.2.2.2.2.2.2.2.1 hypsA2.2.2.2.2.2.2.2.2.2.2.2.1
 
-example : jetReadAt (dataA 2) 2 2 :=
+theorem pin27 : jetReadAt (dataA 2) 2 2 :=
   jetRead (dataA 2) 2 2 hypsA2.2.2.2.2.2.2.2.2.1 hypsA2.2.2.2.2.2.2.2.2.2.1
 
 private theorem hypsA3 : (dataA 3).c2D = 17 + 1
@@ -273,18 +275,18 @@ private theorem hypsA3 : (dataA 3).c2D = 17 + 1
         (fun k => if casPos (dataA 3) k then true else false) = true := by
   decide +kernel
 
-example : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 7 * posOfSucc 7 * posOfSucc 7))
+theorem pin28 : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 7 * posOfSucc 7 * posOfSucc 7))
     + BPair.ofNat (dataA 3).c1).scale (pairFold (dataA 3)).2
     ≤ (BPair.ofPos 8 * (pairFold (dataA 3)).1).scale (42 * (posOfSucc 7 * posOfSucc 7 * posOfSucc 7)) :=
   margin (dataA 3) 17 7 15 hypsA3.1 hypsA3.2.1 hypsA3.2.2.1
     hypsA3.2.2.2.1 hypsA3.2.2.2.2.1 4 3 hypsA3.2.2.2.2.2.1
     hypsA3.2.2.2.2.2.2.1 hypsA3.2.2.2.2.2.2.2.1
 
-example : tauZero (dataA 3) ∧ tauTwo (dataA 3) ∧ tauFour (dataA 3) :=
+theorem pin29 : tauZero (dataA 3) ∧ tauTwo (dataA 3) ∧ tauFour (dataA 3) :=
   collection (dataA 3) hypsA3.2.2.2.2.2.2.2.2.1 hypsA3.2.2.2.2.2.2.2.2.2.1
     hypsA3.2.2.2.2.2.2.2.2.2.2.1 hypsA3.2.2.2.2.2.2.2.2.2.2.2.1
 
-example : jetReadAt (dataA 3) 2 2 :=
+theorem pin30 : jetReadAt (dataA 3) 2 2 :=
   jetRead (dataA 3) 2 2 hypsA3.2.2.2.2.2.2.2.2.1 hypsA3.2.2.2.2.2.2.2.2.2.1
 
 private theorem hypsA4 : (dataA 4).c2D = 31 + 1
@@ -305,18 +307,18 @@ private theorem hypsA4 : (dataA 4).c2D = 31 + 1
         (fun k => if casPos (dataA 4) k then true else false) = true := by
   decide +kernel
 
-example : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 14 * posOfSucc 14 * posOfSucc 14))
+theorem pin31 : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 14 * posOfSucc 14 * posOfSucc 14))
     + BPair.ofNat (dataA 4).c1).scale (pairFold (dataA 4)).2
     ≤ (BPair.ofPos 8 * (pairFold (dataA 4)).1).scale (42 * (posOfSucc 14 * posOfSucc 14 * posOfSucc 14)) :=
   margin (dataA 4) 31 14 29 hypsA4.1 hypsA4.2.1 hypsA4.2.2.1
     hypsA4.2.2.2.1 hypsA4.2.2.2.2.1 5 4 hypsA4.2.2.2.2.2.1
     hypsA4.2.2.2.2.2.2.1 hypsA4.2.2.2.2.2.2.2.1
 
-example : tauZero (dataA 4) ∧ tauTwo (dataA 4) ∧ tauFour (dataA 4) :=
+theorem pin32 : tauZero (dataA 4) ∧ tauTwo (dataA 4) ∧ tauFour (dataA 4) :=
   collection (dataA 4) hypsA4.2.2.2.2.2.2.2.2.1 hypsA4.2.2.2.2.2.2.2.2.2.1
     hypsA4.2.2.2.2.2.2.2.2.2.2.1 hypsA4.2.2.2.2.2.2.2.2.2.2.2.1
 
-example : jetReadAt (dataA 4) 2 2 :=
+theorem pin33 : jetReadAt (dataA 4) 2 2 :=
   jetRead (dataA 4) 2 2 hypsA4.2.2.2.2.2.2.2.2.1 hypsA4.2.2.2.2.2.2.2.2.2.1
 
 private theorem hypsB2 : (dataB 2).c2D = 23 + 1
@@ -337,18 +339,18 @@ private theorem hypsB2 : (dataB 2).c2D = 23 + 1
         (fun k => if casPos (dataB 2) k then true else false) = true := by
   decide +kernel
 
-example : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 9 * posOfSucc 9 * posOfSucc 9))
+theorem pin34 : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 9 * posOfSucc 9 * posOfSucc 9))
     + BPair.ofNat (dataB 2).c1).scale (pairFold (dataB 2)).2
     ≤ (BPair.ofPos 8 * (pairFold (dataB 2)).1).scale (42 * (posOfSucc 9 * posOfSucc 9 * posOfSucc 9)) :=
   margin (dataB 2) 23 9 9 hypsB2.1 hypsB2.2.1 hypsB2.2.2.1
     hypsB2.2.2.2.1 hypsB2.2.2.2.2.1 0 1 hypsB2.2.2.2.2.2.1
     hypsB2.2.2.2.2.2.2.1 hypsB2.2.2.2.2.2.2.2.1
 
-example : tauZero (dataB 2) ∧ tauTwo (dataB 2) ∧ tauFour (dataB 2) :=
+theorem pin35 : tauZero (dataB 2) ∧ tauTwo (dataB 2) ∧ tauFour (dataB 2) :=
   collection (dataB 2) hypsB2.2.2.2.2.2.2.2.2.1 hypsB2.2.2.2.2.2.2.2.2.2.1
     hypsB2.2.2.2.2.2.2.2.2.2.2.1 hypsB2.2.2.2.2.2.2.2.2.2.2.2.1
 
-example : jetReadAt (dataB 2) 2 2 :=
+theorem pin36 : jetReadAt (dataB 2) 2 2 :=
   jetRead (dataB 2) 2 2 hypsB2.2.2.2.2.2.2.2.2.1 hypsB2.2.2.2.2.2.2.2.2.2.1
 
 private theorem hypsB3 : (dataB 3).c2D = 39 + 1
@@ -369,18 +371,18 @@ private theorem hypsB3 : (dataB 3).c2D = 39 + 1
         (fun k => if casPos (dataB 3) k then true else false) = true := by
   decide +kernel
 
-example : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 20 * posOfSucc 20 * posOfSucc 20))
+theorem pin37 : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 20 * posOfSucc 20 * posOfSucc 20))
     + BPair.ofNat (dataB 3).c1).scale (pairFold (dataB 3)).2
     ≤ (BPair.ofPos 8 * (pairFold (dataB 3)).1).scale (42 * (posOfSucc 20 * posOfSucc 20 * posOfSucc 20)) :=
   margin (dataB 3) 39 20 20 hypsB3.1 hypsB3.2.1 hypsB3.2.2.1
     hypsB3.2.2.2.1 hypsB3.2.2.2.2.1 0 2 hypsB3.2.2.2.2.2.1
     hypsB3.2.2.2.2.2.2.1 hypsB3.2.2.2.2.2.2.2.1
 
-example : tauZero (dataB 3) ∧ tauTwo (dataB 3) ∧ tauFour (dataB 3) :=
+theorem pin38 : tauZero (dataB 3) ∧ tauTwo (dataB 3) ∧ tauFour (dataB 3) :=
   collection (dataB 3) hypsB3.2.2.2.2.2.2.2.2.1 hypsB3.2.2.2.2.2.2.2.2.2.1
     hypsB3.2.2.2.2.2.2.2.2.2.2.1 hypsB3.2.2.2.2.2.2.2.2.2.2.2.1
 
-example : jetReadAt (dataB 3) 2 2 :=
+theorem pin39 : jetReadAt (dataB 3) 2 2 :=
   jetRead (dataB 3) 2 2 hypsB3.2.2.2.2.2.2.2.2.1 hypsB3.2.2.2.2.2.2.2.2.2.1
 
 private theorem hypsC3 : (dataC 3).c2D = 31 + 1
@@ -401,18 +403,18 @@ private theorem hypsC3 : (dataC 3).c2D = 31 + 1
         (fun k => if casPos (dataC 3) k then true else false) = true := by
   decide +kernel
 
-example : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 20 * posOfSucc 20 * posOfSucc 20))
+theorem pin40 : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 20 * posOfSucc 20 * posOfSucc 20))
     + BPair.ofNat (dataC 3).c1).scale (pairFold (dataC 3)).2
     ≤ (BPair.ofPos 8 * (pairFold (dataC 3)).1).scale (42 * (posOfSucc 20 * posOfSucc 20 * posOfSucc 20)) :=
   margin (dataC 3) 31 20 20 hypsC3.1 hypsC3.2.1 hypsC3.2.2.1
     hypsC3.2.2.2.1 hypsC3.2.2.2.2.1 0 3 hypsC3.2.2.2.2.2.1
     hypsC3.2.2.2.2.2.2.1 hypsC3.2.2.2.2.2.2.2.1
 
-example : tauZero (dataC 3) ∧ tauTwo (dataC 3) ∧ tauFour (dataC 3) :=
+theorem pin41 : tauZero (dataC 3) ∧ tauTwo (dataC 3) ∧ tauFour (dataC 3) :=
   collection (dataC 3) hypsC3.2.2.2.2.2.2.2.2.1 hypsC3.2.2.2.2.2.2.2.2.2.1
     hypsC3.2.2.2.2.2.2.2.2.2.2.1 hypsC3.2.2.2.2.2.2.2.2.2.2.2.1
 
-example : jetReadAt (dataC 3) 2 2 :=
+theorem pin42 : jetReadAt (dataC 3) 2 2 :=
   jetRead (dataC 3) 2 2 hypsC3.2.2.2.2.2.2.2.2.1 hypsC3.2.2.2.2.2.2.2.2.2.1
 
 private theorem hypsD4 : (dataD 4).c2D = 95 + 1
@@ -433,18 +435,18 @@ private theorem hypsD4 : (dataD 4).c2D = 95 + 1
         (fun k => if casPos (dataD 4) k then true else false) = true := by
   decide +kernel
 
-example : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 27 * posOfSucc 27 * posOfSucc 27))
+theorem pin43 : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 27 * posOfSucc 27 * posOfSucc 27))
     + BPair.ofNat (dataD 4).c1).scale (pairFold (dataD 4)).2
     ≤ (BPair.ofPos 8 * (pairFold (dataD 4)).1).scale (42 * (posOfSucc 27 * posOfSucc 27 * posOfSucc 27)) :=
   margin (dataD 4) 95 27 27 hypsD4.1 hypsD4.2.1 hypsD4.2.2.1
     hypsD4.2.2.2.1 hypsD4.2.2.2.2.1 0 3 hypsD4.2.2.2.2.2.1
     hypsD4.2.2.2.2.2.2.1 hypsD4.2.2.2.2.2.2.2.1
 
-example : tauZero (dataD 4) ∧ tauTwo (dataD 4) ∧ tauFour (dataD 4) :=
+theorem pin44 : tauZero (dataD 4) ∧ tauTwo (dataD 4) ∧ tauFour (dataD 4) :=
   collection (dataD 4) hypsD4.2.2.2.2.2.2.2.2.1 hypsD4.2.2.2.2.2.2.2.2.2.1
     hypsD4.2.2.2.2.2.2.2.2.2.2.1 hypsD4.2.2.2.2.2.2.2.2.2.2.2.1
 
-example : jetReadAt (dataD 4) 2 2 :=
+theorem pin45 : jetReadAt (dataD 4) 2 2 :=
   jetRead (dataD 4) 2 2 hypsD4.2.2.2.2.2.2.2.2.1 hypsD4.2.2.2.2.2.2.2.2.2.1
 
 private theorem hypsG2 : (dataG2).c2D = 47 + 1
@@ -465,18 +467,18 @@ private theorem hypsG2 : (dataG2).c2D = 47 + 1
         (fun k => if casPos (dataG2) k then true else false) = true := by
   decide +kernel
 
-example : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 13 * posOfSucc 13 * posOfSucc 13))
+theorem pin46 : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 13 * posOfSucc 13 * posOfSucc 13))
     + BPair.ofNat (dataG2).c1).scale (pairFold (dataG2)).2
     ≤ (BPair.ofPos 8 * (pairFold (dataG2)).1).scale (42 * (posOfSucc 13 * posOfSucc 13 * posOfSucc 13)) :=
   margin (dataG2) 47 13 13 hypsG2.1 hypsG2.2.1 hypsG2.2.2.1
     hypsG2.2.2.2.1 hypsG2.2.2.2.2.1 0 1 hypsG2.2.2.2.2.2.1
     hypsG2.2.2.2.2.2.2.1 hypsG2.2.2.2.2.2.2.2.1
 
-example : tauZero (dataG2) ∧ tauTwo (dataG2) ∧ tauFour (dataG2) :=
+theorem pin47 : tauZero (dataG2) ∧ tauTwo (dataG2) ∧ tauFour (dataG2) :=
   collection (dataG2) hypsG2.2.2.2.2.2.2.2.2.1 hypsG2.2.2.2.2.2.2.2.2.2.1
     hypsG2.2.2.2.2.2.2.2.2.2.2.1 hypsG2.2.2.2.2.2.2.2.2.2.2.2.1
 
-example : jetReadAt (dataG2) 2 2 :=
+theorem pin48 : jetReadAt (dataG2) 2 2 :=
   jetRead (dataG2) 2 2 hypsG2.2.2.2.2.2.2.2.2.1 hypsG2.2.2.2.2.2.2.2.2.2.1
 
 private theorem hypsF4 : (dataF4).c2D = 35 + 1
@@ -497,18 +499,18 @@ private theorem hypsF4 : (dataF4).c2D = 35 + 1
         (fun k => if casPos (dataF4) k then true else false) = true := by
   decide +kernel
 
-example : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 51 * posOfSucc 51 * posOfSucc 51))
+theorem pin49 : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 51 * posOfSucc 51 * posOfSucc 51))
     + BPair.ofNat (dataF4).c1).scale (pairFold (dataF4)).2
     ≤ (BPair.ofPos 8 * (pairFold (dataF4)).1).scale (42 * (posOfSucc 51 * posOfSucc 51 * posOfSucc 51)) :=
   margin (dataF4) 35 51 51 hypsF4.1 hypsF4.2.1 hypsF4.2.2.1
     hypsF4.2.2.2.1 hypsF4.2.2.2.2.1 0 3 hypsF4.2.2.2.2.2.1
     hypsF4.2.2.2.2.2.2.1 hypsF4.2.2.2.2.2.2.2.1
 
-example : tauZero (dataF4) ∧ tauTwo (dataF4) ∧ tauFour (dataF4) :=
+theorem pin50 : tauZero (dataF4) ∧ tauTwo (dataF4) ∧ tauFour (dataF4) :=
   collection (dataF4) hypsF4.2.2.2.2.2.2.2.2.1 hypsF4.2.2.2.2.2.2.2.2.2.1
     hypsF4.2.2.2.2.2.2.2.2.2.2.1 hypsF4.2.2.2.2.2.2.2.2.2.2.2.1
 
-example : jetReadAt (dataF4) 2 2 :=
+theorem pin51 : jetReadAt (dataF4) 2 2 :=
   jetRead (dataF4) 2 2 hypsF4.2.2.2.2.2.2.2.2.1 hypsF4.2.2.2.2.2.2.2.2.2.1
 
 private theorem hypsE6 : (dataE6).c2D = 143 + 1
@@ -529,18 +531,18 @@ private theorem hypsE6 : (dataE6).c2D = 143 + 1
         (fun k => if casPos (dataE6) k then true else false) = true := by
   decide +kernel
 
-example : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 77 * posOfSucc 77 * posOfSucc 77))
+theorem pin52 : ((BPair.ofPos Pos.one).scale (42 * (posOfSucc 77 * posOfSucc 77 * posOfSucc 77))
     + BPair.ofNat (dataE6).c1).scale (pairFold (dataE6)).2
     ≤ (BPair.ofPos 8 * (pairFold (dataE6)).1).scale (42 * (posOfSucc 77 * posOfSucc 77 * posOfSucc 77)) :=
   margin (dataE6) 143 77 77 hypsE6.1 hypsE6.2.1 hypsE6.2.2.1
     hypsE6.2.2.2.1 hypsE6.2.2.2.2.1 0 2 hypsE6.2.2.2.2.2.1
     hypsE6.2.2.2.2.2.2.1 hypsE6.2.2.2.2.2.2.2.1
 
-example : tauZero (dataE6) ∧ tauTwo (dataE6) ∧ tauFour (dataE6) :=
+theorem pin53 : tauZero (dataE6) ∧ tauTwo (dataE6) ∧ tauFour (dataE6) :=
   collection (dataE6) hypsE6.2.2.2.2.2.2.2.2.1 hypsE6.2.2.2.2.2.2.2.2.2.1
     hypsE6.2.2.2.2.2.2.2.2.2.2.1 hypsE6.2.2.2.2.2.2.2.2.2.2.2.1
 
-example : jetReadAt (dataE6) 2 2 :=
+theorem pin54 : jetReadAt (dataE6) 2 2 :=
   jetRead (dataE6) 2 2 hypsE6.2.2.2.2.2.2.2.2.1 hypsE6.2.2.2.2.2.2.2.2.2.1
 
 /-! The jet tier at `SU(2)`: the free moments `1, 0, 1, 1, 3` (the
@@ -550,33 +552,33 @@ and the partition fold at the displayed orders — the unit at `τ⁰`
 and `τ²`, and `c₁²⟨S : [1 : 8]⟩ = 13/4536` at `τ⁴`, decided exact
 at `13` and refused one beyond. -/
 
-example : moment (dataA 2) 0 = 1 := by decide +kernel
-example : moment (dataA 2) 1 = 0 := by decide +kernel
-example : moment (dataA 2) 2 = 1 := by decide +kernel
-example : moment (dataA 2) 3 = 1 := by decide +kernel
-example : moment (dataA 2) 4 = 3 := by decide +kernel
-example : powCount (dataA 2) 2 (dataA 2).theta = 1 := by decide +kernel
-example : powCount (dataA 2) 2 [4, 0] = 1 := by decide +kernel
-example : powCount (dataA 2) 0 (dataA 2).theta = 0 := by decide +kernel
-example : jetMoment (dataA 2) 1 0
+theorem pin55 : moment (dataA 2) 0 = 1 := by decide +kernel
+theorem pin56 : moment (dataA 2) 1 = 0 := by decide +kernel
+theorem pin57 : moment (dataA 2) 2 = 1 := by decide +kernel
+theorem pin58 : moment (dataA 2) 3 = 1 := by decide +kernel
+theorem pin59 : moment (dataA 2) 4 = 3 := by decide +kernel
+theorem pin60 : powCount (dataA 2) 2 (dataA 2).theta = 1 := by decide +kernel
+theorem pin61 : powCount (dataA 2) 2 [4, 0] = 1 := by decide +kernel
+theorem pin62 : powCount (dataA 2) 0 (dataA 2).theta = 0 := by decide +kernel
+theorem pin63 : jetMoment (dataA 2) 1 0
     = [(BPair.ofNat 0, Pos.one), (BPair.ofNat 1, 2), jetD (dataA 2) 1 0] := by
   decide +kernel
-example : jetMoment (dataA 2) 2 2
+theorem pin64 : jetMoment (dataA 2) 2 2
     = [(BPair.ofNat 1, Pos.one), (BPair.ofNat 2, 2), jetD (dataA 2) 2 2] := by
   decide +kernel
 /-- `D₂₂ = 3793/4536` and `D₂₀ = 7/24` at `SU(2)`. -/
-example : ((jetD (dataA 2) 2 2).1.scale 4536).oneValue
+theorem pin65 : ((jetD (dataA 2) 2 2).1.scale 4536).oneValue
     ((BPair.ofPos 3793).scale (jetD (dataA 2) 2 2).2) := by decide +kernel
-example : ((jetD (dataA 2) 2 0).1.scale 24).oneValue
+theorem pin66 : ((jetD (dataA 2) 2 0).1.scale 24).oneValue
     ((BPair.ofPos 7).scale (jetD (dataA 2) 2 0).2) := by decide +kernel
-example : tauZero (dataA 2) := by decide +kernel
-example : tauTwo (dataA 2) := by decide +kernel
-example : ((getAt bpairQOps.unit
+theorem pin67 : tauZero (dataA 2) := by decide +kernel
+theorem pin68 : tauTwo (dataA 2) := by decide +kernel
+theorem pin69 : ((getAt bpairQOps.unit
       (kappa4 (poly.polyO bpairQOps) (jetMoment (dataA 2))) 2).1.scale 4536).oneValue
     ((BPair.ofPos 13).scale (getAt bpairQOps.unit
       (kappa4 (poly.polyO bpairQOps) (jetMoment (dataA 2))) 2).2) := by
   decide +kernel
-example : ¬ (((getAt bpairQOps.unit
+theorem pin70 : ¬ (((getAt bpairQOps.unit
       (kappa4 (poly.polyO bpairQOps) (jetMoment (dataA 2))) 2).1.scale 4536).oneValue
     ((BPair.ofPos 14).scale (getAt bpairQOps.unit
       (kappa4 (poly.polyO bpairQOps) (jetMoment (dataA 2))) 2).2)) := by
@@ -591,30 +593,30 @@ exactly — and the gram `1, 0, 1/8`; the jet moments then read as the
 normalized pairing through the theorem at the members, and a window's
 read at a far datum through `jetWindow`. -/
 
-example : ((oneRead (dataA 2) 3 2).1.scale 1).oneValue
+theorem pin71 : ((oneRead (dataA 2) 3 2).1.scale 1).oneValue
     ((BPair.ofPos 1).scale (oneRead (dataA 2) 3 2).2) := by decide +kernel
-example : ((twoRead (dataA 2) 2 2).1.scale 2268).oneValue
+theorem pin72 : ((twoRead (dataA 2) 2 2).1.scale 2268).oneValue
     ((BPair.ofPos 523).scale (twoRead (dataA 2) 2 2).2) := by decide +kernel
-example : ((getAt bpairQOps.unit (jetPair (dataA 2) 2 2) 0).1.scale 1).oneValue
+theorem pin73 : ((getAt bpairQOps.unit (jetPair (dataA 2) 2 2) 0).1.scale 1).oneValue
     ((BPair.ofPos 1).scale (getAt bpairQOps.unit (jetPair (dataA 2) 2 2) 0).2) := by
   decide +kernel
-example : ((getAt bpairQOps.unit (jetPair (dataA 2) 2 2) 1).1.scale 1).oneValue
+theorem pin74 : ((getAt bpairQOps.unit (jetPair (dataA 2) 2 2) 1).1.scale 1).oneValue
     ((BPair.ofPos 1).scale (getAt bpairQOps.unit (jetPair (dataA 2) 2 2) 1).2) := by
   decide +kernel
-example : ((getAt bpairQOps.unit (jetPair (dataA 2) 2 2) 2).1.scale 567).oneValue
+theorem pin75 : ((getAt bpairQOps.unit (jetPair (dataA 2) 2 2) 2).1.scale 567).oneValue
     ((BPair.ofPos 545).scale (getAt bpairQOps.unit (jetPair (dataA 2) 2 2) 2).2) := by
   decide +kernel
-example : bpairQRead.rel (getAt bpairQOps.unit (jetPair (dataA 2) 2 2) 2)
+theorem pin76 : bpairQRead.rel (getAt bpairQOps.unit (jetPair (dataA 2) 2 2) 2)
     (BPair.addQ (jetD (dataA 2) 2 2) (BPair.ofNat 1, 8)) := by decide +kernel
-example : (getAt bpairQOps.unit (jetPair (dataA 2) 0 0) 0) = (BPair.ofNat 1, Pos.one) := by
+theorem pin77 : (getAt bpairQOps.unit (jetPair (dataA 2) 0 0) 0) = (BPair.ofNat 1, Pos.one) := by
   decide +kernel
-example : bpairQRead.rel (getAt bpairQOps.unit (jetPair (dataA 2) 0 0) 1) bpairQOps.unit := by
+theorem pin78 : bpairQRead.rel (getAt bpairQOps.unit (jetPair (dataA 2) 0 0) 1) bpairQOps.unit := by
   decide +kernel
-example : bpairQRead.rel (getAt bpairQOps.unit (jetPair (dataA 2) 0 0) 2) (BPair.ofNat 1, 8) := by
+theorem pin79 : bpairQRead.rel (getAt bpairQOps.unit (jetPair (dataA 2) 0 0) 2) (BPair.ofNat 1, 8) := by
   decide +kernel
 
-example : jetReadAt (dataA 2) 2 2 := by decide +kernel
-example : jetReadAt (dataA 2) 1 0 := by decide +kernel
+theorem pin80 : jetReadAt (dataA 2) 2 2 := by decide +kernel
+theorem pin81 : jetReadAt (dataA 2) 1 0 := by decide +kernel
 
 /-- A window's read at a far datum, the three key reads of
 `jetWindow`'s conclusion. -/
@@ -629,13 +631,13 @@ private def jetWindowAt (F : Data places.Shape) (a b : Nat) (f : BPair × Pos) :
       (getAt bpairQOps.unit
         ((poly.polyO bpairQOps).mul (jetMoment F a b) (farPair F 0 0 f)) 2)
 
-private instance (F : Data places.Shape) (a b : Nat) (f : BPair × Pos) :
+private instance instFourpointChk5 (F : Data places.Shape) (a b : Nat) (f : BPair × Pos) :
     Decidable (jetWindowAt F a b f) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
 /-- A window's read at a far datum, decided and through the theorem. -/
-example : jetWindowAt (dataA 2) 2 2 (BPair.ofNat 3, 5) := by decide +kernel
-example : jetWindowAt (dataA 2) 2 2 (BPair.ofNat 3, 5) :=
+theorem pin82 : jetWindowAt (dataA 2) 2 2 (BPair.ofNat 3, 5) := by decide +kernel
+theorem pin83 : jetWindowAt (dataA 2) 2 2 (BPair.ofNat 3, 5) :=
   jetWindow (dataA 2) 2 2 (BPair.ofNat 3, 5) (by decide +kernel) (by decide +kernel)
 
 /-! The collection's refusals, each parting one read alone at
@@ -655,23 +657,23 @@ private def unitTheta : Data places.Shape :=
       rw [(dataA 2).eqLRefl l]
       rfl }
 
-example : ¬ (moment unitTheta 1 = 0) := by decide +kernel
-example : moment unitTheta 3 = unitTheta.c1 := by decide +kernel
-example : powCount unitTheta 2 unitTheta.theta = unitTheta.c1 := by decide +kernel
-example : ¬ tauFour unitTheta := by decide +kernel
-example : bpairQRead.rel (getAt bpairQOps.unit (jetPair unitTheta 0 0) 0)
+theorem pin84 : ¬ (moment unitTheta 1 = 0) := by decide +kernel
+theorem pin85 : moment unitTheta 3 = unitTheta.c1 := by decide +kernel
+theorem pin86 : powCount unitTheta 2 unitTheta.theta = unitTheta.c1 := by decide +kernel
+theorem pin87 : ¬ tauFour unitTheta := by decide +kernel
+theorem pin88 : bpairQRead.rel (getAt bpairQOps.unit (jetPair unitTheta 0 0) 0)
     (getAt bpairQOps.unit
       ((poly.polyO bpairQOps).mul (jetMoment unitTheta 0 0) (jetPair unitTheta 0 0)) 0) := by
   decide +kernel
-example : ¬ bpairQRead.rel (getAt bpairQOps.unit (jetPair unitTheta 0 0) 1)
+theorem pin89 : ¬ bpairQRead.rel (getAt bpairQOps.unit (jetPair unitTheta 0 0) 1)
     (getAt bpairQOps.unit
       ((poly.polyO bpairQOps).mul (jetMoment unitTheta 0 0) (jetPair unitTheta 0 0)) 1) := by
   decide +kernel
-example : ¬ bpairQRead.rel (getAt bpairQOps.unit (jetPair unitTheta 0 0) 2)
+theorem pin90 : ¬ bpairQRead.rel (getAt bpairQOps.unit (jetPair unitTheta 0 0) 2)
     (getAt bpairQOps.unit
       ((poly.polyO bpairQOps).mul (jetMoment unitTheta 0 0) (jetPair unitTheta 0 0)) 2) := by
   decide +kernel
-example : ¬ bpairQRead.rel (getAt bpairQOps.unit (farPair unitTheta 0 0 (BPair.ofNat 3, 5)) 2)
+theorem pin91 : ¬ bpairQRead.rel (getAt bpairQOps.unit (farPair unitTheta 0 0 (BPair.ofNat 3, 5)) 2)
     (getAt bpairQOps.unit
       ((poly.polyO bpairQOps).mul (jetMoment unitTheta 0 0)
         (farPair unitTheta 0 0 (BPair.ofNat 3, 5))) 2) := by
@@ -692,20 +694,20 @@ private def dualMoved : Data places.Shape :=
   { dataA 2 with
     dual := fun l => if (dataA 2).eqL l [2, 0] then [4, 0] else (dataA 2).dual l }
 
-example : ¬ (moment dualMoved 2 = 1) := by decide +kernel
-example : moment dualMoved 1 = 0 := by decide +kernel
-example : moment dualMoved 3 = dualMoved.c1 := by decide +kernel
-example : powCount dualMoved 2 dualMoved.theta = dualMoved.c1 := by decide +kernel
-example : tauFour dualMoved := by decide +kernel
-example : bpairQRead.rel (getAt bpairQOps.unit (jetPair dualMoved 0 0) 1)
+theorem pin92 : ¬ (moment dualMoved 2 = 1) := by decide +kernel
+theorem pin93 : moment dualMoved 1 = 0 := by decide +kernel
+theorem pin94 : moment dualMoved 3 = dualMoved.c1 := by decide +kernel
+theorem pin95 : powCount dualMoved 2 dualMoved.theta = dualMoved.c1 := by decide +kernel
+theorem pin96 : tauFour dualMoved := by decide +kernel
+theorem pin97 : bpairQRead.rel (getAt bpairQOps.unit (jetPair dualMoved 0 0) 1)
     (getAt bpairQOps.unit
       ((poly.polyO bpairQOps).mul (jetMoment dualMoved 0 0) (jetPair dualMoved 0 0)) 1) := by
   decide +kernel
-example : ¬ bpairQRead.rel (getAt bpairQOps.unit (jetPair dualMoved 0 0) 2)
+theorem pin98 : ¬ bpairQRead.rel (getAt bpairQOps.unit (jetPair dualMoved 0 0) 2)
     (getAt bpairQOps.unit
       ((poly.polyO bpairQOps).mul (jetMoment dualMoved 0 0) (jetPair dualMoved 0 0)) 2) := by
   decide +kernel
-example : ¬ bpairQRead.rel (getAt bpairQOps.unit (farPair dualMoved 0 0 (BPair.ofNat 3, 5)) 2)
+theorem pin99 : ¬ bpairQRead.rel (getAt bpairQOps.unit (farPair dualMoved 0 0 (BPair.ofNat 3, 5)) 2)
     (getAt bpairQOps.unit
       ((poly.polyO bpairQOps).mul (jetMoment dualMoved 0 0)
         (farPair dualMoved 0 0 (BPair.ofNat 3, 5))) 2) := by
@@ -724,10 +726,10 @@ private def cubicMoved : Data places.Shape :=
       rw [(dataA 2).eqLRefl l]
       rfl }
 
-example : ¬ (moment cubicMoved 3 = cubicMoved.c1) := by decide +kernel
-example : moment cubicMoved 1 = 0 := by decide +kernel
-example : powCount cubicMoved 2 cubicMoved.theta = cubicMoved.c1 := by decide +kernel
-example : ¬ tauFour cubicMoved := by decide +kernel
+theorem pin100 : ¬ (moment cubicMoved 3 = cubicMoved.c1) := by decide +kernel
+theorem pin101 : moment cubicMoved 1 = 0 := by decide +kernel
+theorem pin102 : powCount cubicMoved 2 cubicMoved.theta = cubicMoved.c1 := by decide +kernel
+theorem pin103 : ¬ tauFour cubicMoved := by decide +kernel
 
 /-- The square's `θ`-count: the involution at `θ`'s twin with `2θ`
 read equal to `θ` one way parts the square's count alone, and the
@@ -742,11 +744,11 @@ private def squareMoved : Data places.Shape :=
       rw [(dataA 2).eqLRefl l]
       rfl }
 
-example : ¬ (powCount squareMoved 2 squareMoved.theta = squareMoved.c1) := by
+theorem pin104 : ¬ (powCount squareMoved 2 squareMoved.theta = squareMoved.c1) := by
   decide +kernel
-example : moment squareMoved 1 = 0 := by decide +kernel
-example : moment squareMoved 3 = squareMoved.c1 := by decide +kernel
-example : ¬ tauFour squareMoved := by decide +kernel
+theorem pin105 : moment squareMoved 1 = 0 := by decide +kernel
+theorem pin106 : moment squareMoved 3 = squareMoved.c1 := by decide +kernel
+theorem pin107 : ¬ tauFour squareMoved := by decide +kernel
 
 /-! The tail's residual tier at a two-key pencil: `E = diag(0, 4)`,
 `M = [[0, 4], [4, 64]]`, the reads `E𝟏 = 0`, `Eψ₁ = M𝟏` and
@@ -795,10 +797,10 @@ private theorem htieT : matOneValue etT
   decide +kernel
 
 /-- The jet's identity decided and through the theorem. -/
-example : poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jT))
+theorem pin108 : poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jT))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 16) jT).map BPair.swap) rT) := by
   decide +kernel
-example : poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jT))
+theorem pin109 : poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jT))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 16) jT).map BPair.swap) rT) :=
   jetResidual (n := 2) eT mT (by decide +kernel) (by decide +kernel) oneT psi1T psi2T
     (by decide +kernel) (by decide +kernel) (by decide +kernel) 16 5 32 hE0T hE1T hE2T
@@ -808,26 +810,26 @@ kernel, the module read at an asymmetric magnetic member, and the
 second-order read at a plaquette count one beyond, each parting the
 identity alone. -/
 private def eK : Mat := [[⟨2, 1⟩, uT], [uT, ⟨5, 1⟩]]
-example : ¬ poly.unitTail (matVec eK oneT) := by decide +kernel
-example : poly.oneValue (matVec eK psi1T) (matVec mT oneT) := by decide +kernel
-example : poly.oneValue
+theorem pin110 : ¬ poly.unitTail (matVec eK oneT) := by decide +kernel
+theorem pin111 : poly.oneValue (matVec eK psi1T) (matVec mT oneT) := by decide +kernel
+theorem pin112 : poly.oneValue
     (vecAdd (vecScale (BPair.ofNat 4) (matVec eK psi2T)) (vecScale (BPair.ofNat 16) oneT))
     (vecScale (BPair.ofNat 4) (matVec mT psi1T)) := by decide +kernel
-example : ¬ poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eK mT (32 * 32) (5 * 5)) jT))
+theorem pin113 : ¬ poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eK mT (32 * 32) (5 * 5)) jT))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 16) jT).map BPair.swap) rT) := by
   decide +kernel
 private def mA : Mat := [[uT, ⟨5, 1⟩], [⟨6, 1⟩, ⟨65, 1⟩]]
-example : ¬ poly.oneValue (matVec eT psi1T) (matVec mA oneT) := by decide +kernel
-example : poly.oneValue
+theorem pin114 : ¬ poly.oneValue (matVec eT psi1T) (matVec mA oneT) := by decide +kernel
+theorem pin115 : poly.oneValue
     (vecAdd (vecScale (BPair.ofNat 4) (matVec eT psi2T)) (vecScale (BPair.ofNat 16) oneT))
     (vecScale (BPair.ofNat 4) (matVec mA psi1T)) := by decide +kernel
-example : ¬ poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mA (32 * 32) (5 * 5)) jT))
+theorem pin116 : ¬ poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mA (32 * 32) (5 * 5)) jT))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 16) jT).map BPair.swap)
       (residVec 5 32 16 mA psi1T psi2T)) := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin117 : ¬ poly.oneValue
     (vecAdd (vecScale (BPair.ofNat 4) (matVec eT psi2T)) (vecScale (BPair.ofNat 17) oneT))
     (vecScale (BPair.ofNat 4) (matVec mT psi1T)) := by decide +kernel
-example : ¬ poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jT))
+theorem pin118 : ¬ poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jT))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 17) jT).map BPair.swap)
       (residVec 5 32 17 mT psi1T psi2T)) := by decide +kernel
 
@@ -836,42 +838,42 @@ floor forged to `5` refuses beside its own read's refusal, the cap
 forged to `64` parts the cap read and to `63` the display, and the
 perpendicularity forged at a unit off the kernel at a tied magnetic
 member parts the display alone. -/
-example : (dotN psi2T psi2T).scale 4 ≤ (quadForm eT psi2T).scale 1 := by decide +kernel
-example : (dotN psi2T psi2T).scale (4 * 4)
+theorem pin119 : (dotN psi2T psi2T).scale 4 ≤ (quadForm eT psi2T).scale 1 := by decide +kernel
+theorem pin120 : (dotN psi2T psi2T).scale (4 * 4)
     ≤ (BPair.ofPos (65 * 65) * dotN psi1T psi1T).scale (1 * 1) := by decide +kernel
-example : (dotN psi2T psi2T).scale (4 * 4)
+theorem pin121 : (dotN psi2T psi2T).scale (4 * 4)
     ≤ (BPair.ofPos (65 * 65) * dotN psi1T psi1T).scale (1 * 1) :=
   solveFloor eT mT (by decide +kernel) (by decide +kernel) oneT psi1T psi2T
     (by decide +kernel) (by decide +kernel) (by decide +kernel) 16 hE2T (by decide +kernel)
     4 1 (by decide +kernel) 65 spUT spLT hcapT
-example : ¬ ((dotN psi2T psi2T).scale 5 ≤ (quadForm eT psi2T).scale 1) := by decide +kernel
-example : ¬ ((dotN psi2T psi2T).scale (5 * 5)
+theorem pin122 : ¬ ((dotN psi2T psi2T).scale 5 ≤ (quadForm eT psi2T).scale 1) := by decide +kernel
+theorem pin123 : ¬ ((dotN psi2T psi2T).scale (5 * 5)
     ≤ (BPair.ofPos (65 * 65) * dotN psi1T psi1T).scale (1 * 1)) := by decide +kernel
-example : ¬ capAt mm (matScale (64 * 64) (idMat 2))
+theorem pin124 : ¬ capAt mm (matScale (64 * 64) (idMat 2))
     (mkSplit 2 (siteDatum (matScale (64 * 64) (idMat 2)) mm))
     (mkSplit 2 (matAdd (matScale (64 * 64) (idMat 2)) mm)) := by decide +kernel
-example : ¬ ((dotN psi2T psi2T).scale (4 * 4)
+theorem pin125 : ¬ ((dotN psi2T psi2T).scale (4 * 4)
     ≤ (BPair.ofPos (63 * 63) * dotN psi1T psi1T).scale (1 * 1)) := by decide +kernel
 private def oneP : List BPair := [⟨2, 1⟩, ⟨1, 2⟩]
 private def mP : Mat := [[uT, ⟨5, 1⟩], [⟨5, 1⟩, ⟨61, 1⟩]]
 private def mmP : Mat := matScale Pos.one (matMul (transposeM mP) mP)
-example : poly.oneValue
+theorem pin126 : poly.oneValue
     (vecAdd (vecScale (BPair.ofNat 4) (matVec eT psi2T)) (vecScale (BPair.ofNat 16) oneP))
     (vecScale (BPair.ofNat 4) (matVec mP psi1T)) := by decide +kernel
-example : ¬ (dotN psi2T oneP).oneValue BPair.unit := by decide +kernel
-example : capAt mmP (matScale (63 * 63) (idMat 2))
+theorem pin127 : ¬ (dotN psi2T oneP).oneValue BPair.unit := by decide +kernel
+theorem pin128 : capAt mmP (matScale (63 * 63) (idMat 2))
     (mkSplit 2 (siteDatum (matScale (63 * 63) (idMat 2)) mmP))
     (mkSplit 2 (matAdd (matScale (63 * 63) (idMat 2)) mmP)) := by decide +kernel
 
 /-- The residual's weight decided and through the theorem; the cap
 forged at a magnetic member grown past it parts the cap read and the
 display. -/
-example : dotN rT rT
+theorem pin129 : dotN rT rT
     ≤ (BPair.ofNat (4 * (16 * 16)) * dotN psi1T psi1T).scale (Pos.pow 32 4 * Pos.pow 5 12)
       + (BPair.ofPos (64 * (65 * 65)) * dotN psi2T psi2T).scale (Pos.pow 32 4 * Pos.pow 5 12)
       + (BPair.ofNat (2 * (16 * 16)) * dotN psi2T psi2T).scale (Pos.pow 5 16) := by
   decide +kernel
-example : dotN rT rT
+theorem pin130 : dotN rT rT
     ≤ (BPair.ofNat (4 * (16 * 16)) * dotN psi1T psi1T).scale (Pos.pow 32 4 * Pos.pow 5 12)
       + (BPair.ofPos (64 * (65 * 65)) * dotN psi2T psi2T).scale (Pos.pow 32 4 * Pos.pow 5 12)
       + (BPair.ofNat (2 * (16 * 16)) * dotN psi2T psi2T).scale (Pos.pow 5 16) :=
@@ -879,10 +881,10 @@ example : dotN rT rT
     16 5 32 65 spUT spLT hcapT
 private def mG : Mat := [[uT, ⟨5, 1⟩], [⟨5, 1⟩, ⟨1001, 1⟩]]
 private def mmG : Mat := matScale Pos.one (matMul (transposeM mG) mG)
-example : ¬ capAt mmG (matScale (65 * 65) (idMat 2))
+theorem pin131 : ¬ capAt mmG (matScale (65 * 65) (idMat 2))
     (mkSplit 2 (siteDatum (matScale (65 * 65) (idMat 2)) mmG))
     (mkSplit 2 (matAdd (matScale (65 * 65) (idMat 2)) mmG)) := by decide +kernel
-example : ¬ (dotN (residVec 5 32 16 mG psi1T psi2T) (residVec 5 32 16 mG psi1T psi2T)
+theorem pin132 : ¬ (dotN (residVec 5 32 16 mG psi1T psi2T) (residVec 5 32 16 mG psi1T psi2T)
     ≤ (BPair.ofNat (4 * (16 * 16)) * dotN psi1T psi1T).scale (Pos.pow 32 4 * Pos.pow 5 12)
       + (BPair.ofPos (64 * (65 * 65)) * dotN psi2T psi2T).scale (Pos.pow 32 4 * Pos.pow 5 12)
       + (BPair.ofNat (2 * (16 * 16)) * dotN psi2T psi2T).scale (Pos.pow 5 16)) := by
@@ -893,15 +895,15 @@ the displayed identity decided, the sum's square cap decided and
 through the theorem at the per-term caps read off the committed
 certificate, and the certificate's two directions through
 `inertia.cap_vec` and `inertia.capAt_of_sq`. -/
-example : (dotN (vecSumL 2 [psi1T, psi2T]) (vecSumL 2 [psi1T, psi2T])
+theorem pin133 : (dotN (vecSumL 2 [psi1T, psi2T]) (vecSumL 2 [psi1T, psi2T])
       + gapFold [psi1T, psi2T]).oneValue
     (BPair.ofNat 2 * selfSumL [psi1T, psi2T]) := by decide +kernel
-example : ¬ (BPair.ofNat (2 * 2) * (BPair.ofPos (65 * 65) * dotN psi1T psi1T)
+theorem pin134 : ¬ (BPair.ofNat (2 * 2) * (BPair.ofPos (65 * 65) * dotN psi1T psi1T)
     < dotN (matVec (matSumL 2 [mT, mT]) psi1T) (matVec (matSumL 2 [mT, mT]) psi1T)) := by
   decide +kernel
 private theorem hMsT : ∀ i, i < ([mT, mT] : List Mat).length →
     ground.getAt [] [mT, mT] i = mT := by decide +kernel
-example : ¬ (BPair.ofNat (2 * 2) * (BPair.ofPos (65 * 65) * dotN psi1T psi1T)
+theorem pin135 : ¬ (BPair.ofNat (2 * 2) * (BPair.ofPos (65 * 65) * dotN psi1T psi1T)
     < dotN (matVec (matSumL 2 [mT, mT]) psi1T) (matVec (matSumL 2 [mT, mT]) psi1T)) :=
   matSumL_sq_cap 2 [mT, mT]
     (fun i hi => by rw [hMsT i hi]; exact (by decide +kernel : sqAt mT 2)) 65
@@ -910,16 +912,16 @@ example : ¬ (BPair.ofNat (2 * 2) * (BPair.ofPos (65 * 65) * dotN psi1T psi1T)
       exact ground.leB_not_lt
         (inertia.cap_vec mT (by decide +kernel) 65 spUT spLT hcapT x hx))
     psi1T (by decide +kernel)
-example : dotN (matVec mT psi2T) (matVec mT psi2T)
+theorem pin136 : dotN (matVec mT psi2T) (matVec mT psi2T)
     ≤ BPair.ofPos (65 * 65) * dotN psi2T psi2T := by decide +kernel
-example : dotN (matVec mT psi2T) (matVec mT psi2T)
+theorem pin137 : dotN (matVec mT psi2T) (matVec mT psi2T)
     ≤ BPair.ofPos (65 * 65) * dotN psi2T psi2T :=
   inertia.cap_vec mT (by decide +kernel) 65 spUT spLT hcapT psi2T (by decide +kernel)
-example : capAt mm (matScale (65 * 65) (idMat 2)) spUT spLT :=
+theorem pin138 : capAt mm (matScale (65 * 65) (idMat 2)) spUT spLT :=
   inertia.capAt_of_sq mT (by decide +kernel) 65
     (fun v hv => inertia.cap_vec mT (by decide +kernel) 65 spUT spLT hcapT v hv)
     spUT spLT (by decide +kernel) (by decide +kernel)
-example : dotN (vecAdd psi1T psi2T) (vecAdd psi1T psi2T)
+theorem pin139 : dotN (vecAdd psi1T psi2T) (vecAdd psi1T psi2T)
     ≤ BPair.ofNat 2 * (dotN psi1T psi1T + dotN psi2T psi2T) := by decide +kernel
 
 /-- The off-line bound at the drift, decided and through the theorem:
@@ -933,12 +935,12 @@ private theorem hresT : poly.oneValue
     (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jT))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 16) jT).map BPair.swap) rT) := by
   decide +kernel
-example : ((BPair.ofPos 2504 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
+theorem pin140 : ((BPair.ofPos 2504 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
       * (BPair.ofPos 2504 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
       * dotN (residD [psiT] jT) (residD [psiT] jT)).scale (16 * Pos.pow 32 4)
     ≤ (dotN psiT psiT * dotN psiT psiT * dotN rT rT).scale (1 * 1 * (1 * 1)) := by
   decide +kernel
-example : ((BPair.ofPos 2504 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
+theorem pin141 : ((BPair.ofPos 2504 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
       * (BPair.ofPos 2504 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
       * dotN (residD [matVec tT.val (elim.idRow 2 0)] jT)
           (residD [matVec tT.val (elim.idRow 2 0)] jT)).scale (16 * Pos.pow 32 4)
@@ -953,16 +955,16 @@ private def jX : List BPair := [⟨2, 1⟩, ⟨1, 26⟩]
 private def rX : List BPair :=
   vecAdd (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jX))
     (vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 16) jX)
-example : poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jX))
+theorem pin142 : poly.oneValue (vecScale (BPair.ofPos (4 * (32 * 32))) (matVec (pencil.rayH eT mT (32 * 32) (5 * 5)) jX))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 5 4) * BPair.ofNat 16) jX).map BPair.swap) rX) := by
   decide +kernel
-example : ((BPair.ofPos 2504 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
+theorem pin143 : ((BPair.ofPos 2504 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
       * (BPair.ofPos 2504 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
       * dotN (residD [psiT] jX) (residD [psiT] jX)).scale (16 * Pos.pow 32 4)
     ≤ (dotN psiT psiT * dotN psiT psiT * dotN rX rX).scale (1 * 1 * (1 * 1)) := by
   decide +kernel
-example : ¬ groundreads.clearRead lT 0 8000 1 := by decide +kernel
-example : ¬ (((BPair.ofPos 8000 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
+theorem pin144 : ¬ groundreads.clearRead lT 0 8000 1 := by decide +kernel
+theorem pin145 : ¬ (((BPair.ofPos 8000 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
       * (BPair.ofPos 8000 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap)
       * dotN (residD [psiT] jX) (residD [psiT] jX)).scale (16 * Pos.pow 32 4)
     ≤ (dotN psiT psiT * dotN psiT psiT * dotN rX rX).scale (1 * 1 * (1 * 1))) := by
@@ -982,7 +984,7 @@ private def spAT : Split 2 := mkSplit 2 (siteDatum (matScale 3 (idMat 2)) (matSc
 private def spAT' : Split 2 := mkSplit 2 (matAdd (matScale 3 (idMat 2)) (matScale 1 aT))
 private theorem hAT : capAt (matScale 1 aT) (matScale 3 (idMat 2)) spAT spAT' := by
   decide +kernel
-example : windowsep.mag
+theorem pin146 : windowsep.mag
       ((dotN jT (matVec aT jT)).scale (Pos.pow 32 4 * (1 * 16))
         + ((jetDisplay aT oneT psi1T psi2T 5 32 * dotN jT jT).scale (1 * 16)).swap)
     ≤ truncCap 3 1 16 (dotN oneT (matVec aT oneT))
@@ -990,7 +992,7 @@ example : windowsep.mag
         (BPair.ofNat 2 * dotN oneT (matVec aT psi2T) + dotN psi1T (matVec aT psi1T)
           + (dotN oneT (matVec aT oneT) * dotN psi1T psi1T).swap)
         (dotN psi1T psi1T) (BPair.ofNat 4225) 5 32 := by decide +kernel
-example : windowsep.mag
+theorem pin147 : windowsep.mag
       ((dotN jT (matVec aT jT)).scale (Pos.pow 32 4 * (1 * 16))
         + ((jetDisplay aT oneT psi1T psi2T 5 32 * dotN jT jT).scale (1 * 16)).swap)
     ≤ truncCap 3 1 16 (dotN oneT (matVec aT oneT))
@@ -1002,10 +1004,10 @@ example : windowsep.mag
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (BPair.ofNat 4225) 16 (by decide +kernel) 5 32
 private def aB : Mat := [[⟨2, 1⟩, uT], [uT, ⟨301, 1⟩]]
-example : ¬ capAt (matScale 1 aB) (matScale 3 (idMat 2))
+theorem pin148 : ¬ capAt (matScale 1 aB) (matScale 3 (idMat 2))
     (mkSplit 2 (siteDatum (matScale 3 (idMat 2)) (matScale 1 aB)))
     (mkSplit 2 (matAdd (matScale 3 (idMat 2)) (matScale 1 aB))) := by decide +kernel
-example : ¬ windowsep.mag
+theorem pin149 : ¬ windowsep.mag
       ((dotN jT (matVec aB jT)).scale (Pos.pow 32 4 * (1 * 16))
         + ((jetDisplay aB oneT psi1T psi2T 5 32 * dotN jT jT).scale (1 * 16)).swap)
     ≤ truncCap 3 1 16 (dotN oneT (matVec aB oneT))
@@ -1013,8 +1015,8 @@ example : ¬ windowsep.mag
         (BPair.ofNat 2 * dotN oneT (matVec aB psi2T) + dotN psi1T (matVec aB psi1T)
           + (dotN oneT (matVec aB oneT) * dotN psi1T psi1T).swap)
         (dotN psi1T psi1T) (BPair.ofNat 4225) 5 32 := by decide +kernel
-example : ¬ ((dotN psi2T psi2T).scale 16 ≤ BPair.ofNat 1) := by decide +kernel
-example : ¬ windowsep.mag
+theorem pin150 : ¬ ((dotN psi2T psi2T).scale 16 ≤ BPair.ofNat 1) := by decide +kernel
+theorem pin151 : ¬ windowsep.mag
       ((dotN jT (matVec aT jT)).scale (Pos.pow 32 4 * (1 * 16))
         + ((jetDisplay aT oneT psi1T psi2T 5 32 * dotN jT jT).scale (1 * 16)).swap)
     ≤ truncCap 3 1 16 (dotN oneT (matVec aT oneT))
@@ -1024,8 +1026,8 @@ example : ¬ windowsep.mag
         (dotN psi1T psi1T) (BPair.ofNat 1) 5 32 := by decide +kernel
 private def fourT : List BPair := [⟨3, 1⟩, uT]
 private def jF : List BPair := jetVec 5 32 fourT psi1T psi2T
-example : ¬ (dotN fourT fourT).oneValue (BPair.ofNat 1) := by decide +kernel
-example : ¬ windowsep.mag
+theorem pin152 : ¬ (dotN fourT fourT).oneValue (BPair.ofNat 1) := by decide +kernel
+theorem pin153 : ¬ windowsep.mag
       ((dotN jF (matVec aT jF)).scale (Pos.pow 32 4 * (1 * 16))
         + ((jetDisplay aT fourT psi1T psi2T 5 32 * dotN jF jF).scale (1 * 16)).swap)
     ≤ truncCap 3 1 16 (dotN fourT (matVec aT fourT))
@@ -1035,8 +1037,8 @@ example : ¬ windowsep.mag
         (dotN psi1T psi1T) (BPair.ofNat 4225) 5 32 := by decide +kernel
 private def tiltT : List BPair := [⟨2, 1⟩, ⟨2, 1⟩]
 private def jP : List BPair := jetVec 5 32 oneT tiltT psi2T
-example : ¬ (dotN oneT tiltT).oneValue BPair.unit := by decide +kernel
-example : ¬ windowsep.mag
+theorem pin154 : ¬ (dotN oneT tiltT).oneValue BPair.unit := by decide +kernel
+theorem pin155 : ¬ windowsep.mag
       ((dotN jP (matVec aT jP)).scale (Pos.pow 32 4 * (1 * 16))
         + ((jetDisplay aT oneT tiltT psi2T 5 32 * dotN jP jP).scale (1 * 16)).swap)
     ≤ truncCap 3 1 16 (dotN oneT (matVec aT oneT))
@@ -1052,12 +1054,12 @@ binders at the conclusion: the first root cap forged to `1`, the drift's
 datum forged to `10¹⁵` against the read `879`, and the clearance forged
 to `10¹²` with its datum tied, the clearance read refusing at the
 list's second root `2505`. -/
-example : (windowsep.mag (groundreads.readGap (groundreads.read aT psiT)
+theorem pin156 : (windowsep.mag (groundreads.readGap (groundreads.read aT psiT)
       (groundreads.read aT jT))).scale (2504 * (879 * Pos.pow 32 6) * 1)
     ≤ (dotN psiT psiT * dotN jT jT).scale
         (4 * (3 * (2504 * 1 * Pos.pow 5 6 * (2081 * (32 * 32) + 91 * (5 * 5))) * 1)) := by
   decide +kernel
-example : (windowsep.mag (groundreads.readGap
+theorem pin157 : (windowsep.mag (groundreads.readGap
       (groundreads.read aT (matVec tT.val (elim.idRow 2 0)))
       (groundreads.read aT (jetVec 5 32 oneT psi1T psi2T)))).scale
       (2504 * (879 * Pos.pow 32 6) * 1)
@@ -1070,25 +1072,25 @@ example : (windowsep.mag (groundreads.readGap
     (by decide +kernel) (by decide +kernel) 16 hE0T hE1T hE2T (by decide +kernel)
     (by decide +kernel) (by decide +kernel) 879 (by decide +kernel) 2081 91
     (by decide +kernel) (by decide +kernel) aT 3 1 spAT spAT' hAT
-example : ¬ (BPair.ofNat (4 * (16 * 16)) * dotN psi1T psi1T
+theorem pin158 : ¬ (BPair.ofNat (4 * (16 * 16)) * dotN psi1T psi1T
     + BPair.ofPos (64 * (65 * 65)) * dotN psi2T psi2T ≤ BPair.ofPos (16 * (1 * 1))) := by
   decide +kernel
-example : ¬ (windowsep.mag (groundreads.readGap (groundreads.read aT psiT)
+theorem pin159 : ¬ (windowsep.mag (groundreads.readGap (groundreads.read aT psiT)
       (groundreads.read aT jT))).scale (2504 * (879 * Pos.pow 32 6) * 1)
     ≤ (dotN psiT psiT * dotN jT jT).scale
         (4 * (3 * (2504 * 1 * Pos.pow 5 6 * (1 * (32 * 32) + 91 * (5 * 5))) * 1)) := by
   decide +kernel
-example : ¬ (BPair.ofPos 2504 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap).oneValue
+theorem pin160 : ¬ (BPair.ofPos 2504 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap).oneValue
     (BPair.ofPos 1000000000000000) := by decide +kernel
-example : ¬ (windowsep.mag (groundreads.readGap (groundreads.read aT psiT)
+theorem pin161 : ¬ (windowsep.mag (groundreads.readGap (groundreads.read aT psiT)
       (groundreads.read aT jT))).scale (2504 * (1000000000000000 * Pos.pow 32 6) * 1)
     ≤ (dotN psiT psiT * dotN jT jT).scale
         (4 * (3 * (2504 * 1 * Pos.pow 5 6 * (2081 * (32 * 32) + 91 * (5 * 5))) * 1)) := by
   decide +kernel
-example : ¬ groundreads.clearRead lT 0 1000000000000 1 := by decide +kernel
-example : (BPair.ofPos 1000000000000 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap).oneValue
+theorem pin162 : ¬ groundreads.clearRead lT 0 1000000000000 1 := by decide +kernel
+theorem pin163 : (BPair.ofPos 1000000000000 + (BPair.ofPos (1 * 1 * (5 * 5) * 65)).swap).oneValue
     (BPair.ofPos 999999998375) := by decide +kernel
-example : ¬ (windowsep.mag (groundreads.readGap (groundreads.read aT psiT)
+theorem pin164 : ¬ (windowsep.mag (groundreads.readGap (groundreads.read aT psiT)
       (groundreads.read aT jT))).scale (1000000000000 * (999999998375 * Pos.pow 32 6) * 1)
     ≤ (dotN psiT psiT * dotN jT jT).scale
         (4 * (3 * (1000000000000 * 1 * Pos.pow 5 6 * (2081 * (32 * 32) + 91 * (5 * 5))) * 1)) := by
@@ -1114,34 +1116,34 @@ private theorem hgapF : ∀ a : Nat, a ≤ 2 → ∀ b : Nat, b ≤ 2 → 0 < a 
           (DF.2 * Pos.pow 1 e)
         ≤ DF.1.scale (BPair.addQ (muF a b) (bpairQOps.swap (nuF a b))).2 := by
   decide +kernel
-example : (windowsep.mag (BPair.addQ (kappa4 bpairQOps muF)
+theorem pin165 : (windowsep.mag (BPair.addQ (kappa4 bpairQOps muF)
         (bpairQOps.swap (kappa4 bpairQOps nuF))).1).scale (poly.nsmulO bpairQOps DF 75).2
       ≤ (poly.nsmulO bpairQOps DF 75).1.scale
           (BPair.addQ (kappa4 bpairQOps muF) (bpairQOps.swap (kappa4 bpairQOps nuF))).2 := by
   decide +kernel
-example : (windowsep.mag (BPair.addQ (kappa4 bpairQOps muF)
+theorem pin166 : (windowsep.mag (BPair.addQ (kappa4 bpairQOps muF)
         (bpairQOps.swap (kappa4 bpairQOps nuF))).1).scale (poly.nsmulO bpairQOps DF 75).2
       ≤ (poly.nsmulO bpairQOps DF 75).1.scale
           (BPair.addQ (kappa4 bpairQOps muF) (bpairQOps.swap (kappa4 bpairQOps nuF))).2 :=
   foldBracket muF nuF 1 DF hcapF hgapF
 private def muB : Nat → Nat → BPair × Pos := fun _ _ => (BPair.ofNat 3, Pos.one)
-example : ¬ (∀ a : Nat, a ≤ 2 → ∀ b : Nat, b ≤ 2 → 0 < a + b →
+theorem pin167 : ¬ (∀ a : Nat, a ≤ 2 → ∀ b : Nat, b ≤ 2 → 0 < a + b →
       windowsep.mag (muB a b).1 ≤ (BPair.ofPos (Pos.pow 1 (a + b))).scale (muB a b).2
       ∧ windowsep.mag (nuF a b).1 ≤ (BPair.ofPos (Pos.pow 1 (a + b))).scale (nuF a b).2) := by
   decide +kernel
-example : ¬ (windowsep.mag (BPair.addQ (kappa4 bpairQOps muB)
+theorem pin168 : ¬ (windowsep.mag (BPair.addQ (kappa4 bpairQOps muB)
         (bpairQOps.swap (kappa4 bpairQOps nuF))).1).scale (poly.nsmulO bpairQOps DF 75).2
       ≤ (poly.nsmulO bpairQOps DF 75).1.scale
           (BPair.addQ (kappa4 bpairQOps muB) (bpairQOps.swap (kappa4 bpairQOps nuF))).2 := by
   decide +kernel
 private def DG : BPair × Pos := (BPair.ofNat 1, 1000)
-example : ¬ (∀ a : Nat, a ≤ 2 → ∀ b : Nat, b ≤ 2 → 0 < a + b →
+theorem pin169 : ¬ (∀ a : Nat, a ≤ 2 → ∀ b : Nat, b ≤ 2 → 0 < a + b →
       ∀ e : Nat, e ≤ 4 → a + b + e = 4 →
       (windowsep.mag (BPair.addQ (muF a b) (bpairQOps.swap (nuF a b))).1).scale
           (DG.2 * Pos.pow 1 e)
         ≤ DG.1.scale (BPair.addQ (muF a b) (bpairQOps.swap (nuF a b))).2) := by
   decide +kernel
-example : ¬ (windowsep.mag (BPair.addQ (kappa4 bpairQOps muF)
+theorem pin170 : ¬ (windowsep.mag (BPair.addQ (kappa4 bpairQOps muF)
         (bpairQOps.swap (kappa4 bpairQOps nuF))).1).scale (poly.nsmulO bpairQOps DG 75).2
       ≤ (poly.nsmulO bpairQOps DG 75).1.scale
           (BPair.addQ (kappa4 bpairQOps muF) (bpairQOps.swap (kappa4 bpairQOps nuF))).2 := by
@@ -1200,7 +1202,7 @@ private theorem hE2W : poly.oneValue
     (vecScale (BPair.ofNat 4) (matVec mW psi1W)) := by decide +kernel
 
 -- the moments' bracket through the theorem, the root caps' boundaries parted
-example : (windowsep.mag (groundreads.readGap (groundreads.read aT psiW)
+theorem pin171 : (windowsep.mag (groundreads.readGap (groundreads.read aT psiW)
       (groundreads.read aT jW))).scale (10 * (1 * Pos.pow 1 6) * 1)
     ≤ (dotN psiW psiW * dotN jW jW).scale
         (4 * (3 * (10 * 1 * Pos.pow 1 6 * (520 * (1 * 1) + 634 * (1 * 1))) * 1)) :=
@@ -1210,15 +1212,15 @@ example : (windowsep.mag (groundreads.readGap (groundreads.read aT psiW)
     (by decide +kernel) (by decide +kernel) 64 hE0W hE1W hE2W (by decide +kernel)
     (by decide +kernel) (by decide +kernel) 1 (by decide +kernel) 520 634
     (by decide +kernel) (by decide +kernel) aT 3 1 spAT spAT' hAT
-example : ¬ (BPair.ofNat (4 * (64 * 64)) * dotN psi1W psi1W
+theorem pin172 : ¬ (BPair.ofNat (4 * (64 * 64)) * dotN psi1W psi1W
     + BPair.ofPos (64 * (9 * 9)) * dotN psi2W psi2W ≤ BPair.ofPos (16 * (519 * 519))) := by
   decide +kernel
-example : ¬ (BPair.ofNat (2 * (64 * 64)) * dotN psi2W psi2W
+theorem pin173 : ¬ (BPair.ofNat (2 * (64 * 64)) * dotN psi2W psi2W
     ≤ BPair.ofPos (16 * (633 * 633))) := by decide +kernel
 
 -- the factor's move bracket, decided and through the theorem, the weight
 -- cap's boundary and the two cover pins
-example : (windowsep.mag (groundreads.readGap
+theorem pin174 : (windowsep.mag (groundreads.readGap
       (groundreads.read aT psiW)
       (jetDisplay aT oneT psi1W psi2W 1 1, BPair.ofPos (Pos.pow 1 4)))).scale
       (10 * (1 * Pos.pow 1 6) * 1 * (1 * 1 * Pos.pow 1 8))
@@ -1231,7 +1233,7 @@ example : (windowsep.mag (groundreads.readGap
               + (dotN oneT (matVec aT oneT) * dotN psi1W psi1W).swap)
             (dotN psi1W psi1W) (BPair.ofNat 784) 1 1
           * dotN psiW psiW).scale (10 * (1 * Pos.pow 1 6) * 1) := by decide +kernel
-example : (windowsep.mag (groundreads.readGap
+theorem pin175 : (windowsep.mag (groundreads.readGap
       (groundreads.read aT (matVec tW.val (elim.idRow 2 0)))
       (jetDisplay aT oneT psi1W psi2W 1 1, BPair.ofPos (Pos.pow 1 4)))).scale
       (10 * (1 * Pos.pow 1 6) * 1 * (1 * 1 * Pos.pow 1 8))
@@ -1253,15 +1255,15 @@ example : (windowsep.mag (groundreads.readGap
     (by decide +kernel) (by decide +kernel) 1 (by decide +kernel) 520 634
     (by decide +kernel) (by decide +kernel) aT 3 1 spAT spAT' hAT
     (BPair.ofNat 784) 1 (by decide +kernel)
-example : ¬ ((dotN psi2W psi2W).scale 1 ≤ BPair.ofNat 783) := by decide +kernel
-example : (windowsep.mag (groundreads.readGap
+theorem pin176 : ¬ ((dotN psi2W psi2W).scale 1 ≤ BPair.ofNat 783) := by decide +kernel
+theorem pin177 : (windowsep.mag (groundreads.readGap
       (groundreads.read aT psiW)
       (jetDisplay aT oneT psi1W psi2W 1 1, BPair.ofPos (Pos.pow 1 4)))).scale
       (10 * (1 * Pos.pow 1 6) * 1 * (1 * 1 * Pos.pow 1 8))
     ≤ (dotN psiW psiW * dotN jW jW).scale
         (4 * (3 * (10 * 1 * Pos.pow 1 6 * (520 * (1 * 1) + 634 * (1 * 1))) * 1)
           * (Pos.pow 1 4 * (1 * 1))) := by decide +kernel
-example : (windowsep.mag (groundreads.readGap
+theorem pin178 : (windowsep.mag (groundreads.readGap
       (groundreads.read aT psiW)
       (jetDisplay aT oneT psi1W psi2W 1 1, BPair.ofPos (Pos.pow 1 4)))).scale
       (10 * (1 * Pos.pow 1 6) * 1 * (1 * 1 * Pos.pow 1 8))
@@ -1275,7 +1277,7 @@ example : (windowsep.mag (groundreads.readGap
 -- the fold's bracket at the window carrier, decided and through the
 -- theorem, the datum's equality and both partings
 private def dW : BPair × Pos := (BPair.ofPos 512164636632, 1)
-example : (windowsep.mag (BPair.addQ
+theorem pin179 : (windowsep.mag (BPair.addQ
       (kappa4 bpairQOps (fun _ _ => (quadForm aT psiW, (5 : Pos))))
       (bpairQOps.swap (kappa4 bpairQOps (fun _ _ =>
         (jetDisplay aT oneT psi1W psi2W 1 1, Pos.pow 1 4))))).1).scale
@@ -1285,7 +1287,7 @@ example : (windowsep.mag (BPair.addQ
           (kappa4 bpairQOps (fun _ _ => (quadForm aT psiW, (5 : Pos))))
           (bpairQOps.swap (kappa4 bpairQOps (fun _ _ =>
             (jetDisplay aT oneT psi1W psi2W 1 1, Pos.pow 1 4))))).2 := by decide +kernel
-example : (windowsep.mag (BPair.addQ
+theorem pin180 : (windowsep.mag (BPair.addQ
       (kappa4 bpairQOps (fun _ _ =>
         (quadForm aT (matVec tW.val (elim.idRow 2 0)), (5 : Pos))))
       (bpairQOps.swap (kappa4 bpairQOps (fun _ _ =>
@@ -1306,14 +1308,14 @@ example : (windowsep.mag (BPair.addQ
     (fun _ _ => aT) (fun _ _ => 3) (fun _ _ => 1) (fun _ _ => spAT) (fun _ _ => spAT')
     (fun _ _ _ _ _ => hAT) (fun _ _ => BPair.ofNat 784) (fun _ _ => 1)
     (fun _ _ _ _ _ => by decide +kernel) dW (by decide +kernel) (by decide +kernel)
-example : ¬ (∀ a : Nat, a ≤ 2 → ∀ b : Nat, b ≤ 2 → 0 < a + b →
+theorem pin181 : ¬ (∀ a : Nat, a ≤ 2 → ∀ b : Nat, b ≤ 2 → 0 < a + b →
     windowsep.mag (quadForm aT psiW)
         ≤ (BPair.ofPos (Pos.pow 32 (a + b))).scale 5
       ∧ windowsep.mag (jetDisplay aT oneT psi1W psi2W 1 1)
         ≤ (BPair.ofPos (Pos.pow 32 (a + b))).scale (Pos.pow 1 4)) := by decide +kernel
-example : ¬ ((dotN psiW psiW).oneValue (BPair.ofPos 4)) := by decide +kernel
+theorem pin182 : ¬ ((dotN psiW psiW).oneValue (BPair.ofPos 4)) := by decide +kernel
 private def dV : BPair × Pos := (BPair.ofPos 512164636631, 1)
-example : ¬ (∀ a : Nat, a ≤ 2 → ∀ b : Nat, b ≤ 2 → 0 < a + b →
+theorem pin183 : ¬ (∀ a : Nat, a ≤ 2 → ∀ b : Nat, b ≤ 2 → 0 < a + b →
     ∀ e : Nat, e ≤ 4 → a + b + e = 4 →
     ((dotN psiW psiW * dotN jW jW).scale
           (4 * (3 * (10 * 1 * Pos.pow 1 6 * (520 * (1 * 1) + 634 * (1 * 1))) * 1)
@@ -1328,7 +1330,7 @@ example : ¬ (∀ a : Nat, a ≤ 2 → ∀ b : Nat, b ≤ 2 → 0 < a + b →
       ≤ (dV.1.scale (5 * Pos.pow 1 4)).scale
           (10 * (1 * Pos.pow 1 6) * 1 * (1 * 1 * Pos.pow 1 8))) := by decide +kernel
 private def dR : BPair × Pos := (BPair.ofPos 89223, 1)
-example : ¬ (windowsep.mag (BPair.addQ
+theorem pin184 : ¬ (windowsep.mag (BPair.addQ
       (kappa4 bpairQOps (fun _ _ => (quadForm aT psiW, (5 : Pos))))
       (bpairQOps.swap (kappa4 bpairQOps (fun _ _ =>
         (jetDisplay aT oneT psi1W psi2W 1 1, Pos.pow 1 4))))).1).scale
@@ -1339,7 +1341,7 @@ example : ¬ (windowsep.mag (BPair.addQ
           (bpairQOps.swap (kappa4 bpairQOps (fun _ _ =>
             (jetDisplay aT oneT psi1W psi2W 1 1, Pos.pow 1 4))))).2 := by decide +kernel
 private def dS : BPair × Pos := (BPair.ofPos 89224, 1)
-example : (windowsep.mag (BPair.addQ
+theorem pin185 : (windowsep.mag (BPair.addQ
       (kappa4 bpairQOps (fun _ _ => (quadForm aT psiW, (5 : Pos))))
       (bpairQOps.swap (kappa4 bpairQOps (fun _ _ =>
         (jetDisplay aT oneT psi1W psi2W 1 1, Pos.pow 1 4))))).1).scale
@@ -1361,60 +1363,60 @@ and the segment at the ray one, the further binders held. -/
 private def stF : poly.Poly := [BPair.ofNat 1]
 private def cF : BPair := BPair.ofNat 2
 private def compF : poly.Poly := compPoly 4 1 1 1 1 1 cF stF stF
-example : stage.evalC compF ⟨BPair.ofPos 4, 1 * 1⟩ < stage.unitC := by decide +kernel
-example : stage.evalC compF ⟨BPair.ofPos 4, 1 * 1⟩ < stage.unitC :=
+theorem pin186 : stage.evalC compF ⟨BPair.ofPos 4, 1 * 1⟩ < stage.unitC := by decide +kernel
+theorem pin187 : stage.evalC compF ⟨BPair.ofPos 4, 1 * 1⟩ < stage.unitC :=
   compCross 4 1 1 1 1 1 cF stF stF
-example : stage.evalC (compPoly 9 2 3 2 5 1 (BPair.ofNat 11).swap
+theorem pin188 : stage.evalC (compPoly 9 2 3 2 5 1 (BPair.ofNat 11).swap
       [(BPair.ofNat 5).swap, (BPair.ofNat 7).swap] [BPair.ofNat 3])
     ⟨BPair.ofPos 9, 2 * 3⟩ < stage.unitC :=
   compCross 9 2 3 2 5 1 (BPair.ofNat 11).swap
     [(BPair.ofNat 5).swap, (BPair.ofNat 7).swap] [BPair.ofNat 3]
 private theorem hkeepF : stage.keepUpper compF stage.unitC ⟨BPair.ofPos 1, 512⟩
     (BPair.ofNat 1) (BPair.ofNat 1) := by decide +kernel
-example : ¬ stage.keepUpper compF stage.unitC ⟨BPair.ofPos 1, 256⟩
+theorem pin189 : ¬ stage.keepUpper compF stage.unitC ⟨BPair.ofPos 1, 256⟩
     (BPair.ofNat 1) (BPair.ofNat 1) := by decide +kernel
-example : cF.scale (1048576 * Pos.pow 1 4)
+theorem pin190 : cF.scale (1048576 * Pos.pow 1 4)
     ≤ (BPair.ofNat 2 * BPair.ofNat 2).scale (Pos.pow 32 4) := by decide +kernel
-example : cF.scale (1048576 * Pos.pow 1 4)
+theorem pin191 : cF.scale (1048576 * Pos.pow 1 4)
     ≤ (BPair.ofNat 2 * BPair.ofNat 2).scale (Pos.pow 32 4) :=
   cellFloor 4 1 1 1 1 1 cF stF stF ⟨BPair.ofPos 1, 512⟩ (BPair.ofNat 1) (BPair.ofNat 1)
     hkeepF 1 32 (by decide +kernel) (BPair.ofNat 2) 1048576 1 0
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 -- the certificate's refusal at the observable's balance partner, the
 -- conclusion refused at the tied read
-example : ¬ stage.keepUpper (compPoly 4 1 1 1 1 1 (cF.swap) stF stF) stage.unitC
+theorem pin192 : ¬ stage.keepUpper (compPoly 4 1 1 1 1 1 (cF.swap) stF stF) stage.unitC
     ⟨BPair.ofPos 1, 512⟩ (BPair.ofNat 1) (BPair.ofNat 1) := by decide +kernel
-example : ((((BPair.ofPos 4).scale (32 * 32)
+theorem pin193 : ((((BPair.ofPos 4).scale (32 * 32)
       + ((BPair.ofPos (1 * 1)).scale (1 * 1)).swap)
     * windowsep.mag ((cF.swap).scale (Pos.pow 32 4)
         + ((cF.swap).scale (1048576 * Pos.pow 1 4)).swap)).scale (Pos.pow 32 (2 * 1))
   ≤ (poly.evalClear (tailPoly 4 1 1 1 1 1 stF stF)
         (BPair.ofPos (1 * 1)) (32 * 32) 1).scale (1048576 * Pos.pow 1 6)) := by
   decide +kernel
-example : ¬ ((cF.swap).scale (1048576 * Pos.pow 1 4)
+theorem pin194 : ¬ ((cF.swap).scale (1048576 * Pos.pow 1 4)
     ≤ (BPair.ofNat 2 * cF.swap).scale (Pos.pow 32 4)) := by decide +kernel
 -- the bracket's refusal at the read's balance partner
-example : ¬ ((((BPair.ofPos 4).scale (32 * 32)
+theorem pin195 : ¬ ((((BPair.ofPos 4).scale (32 * 32)
       + ((BPair.ofPos (1 * 1)).scale (1 * 1)).swap)
     * windowsep.mag (((BPair.ofNat 2).swap).scale (Pos.pow 32 4)
         + (cF.scale (1048576 * Pos.pow 1 4)).swap)).scale (Pos.pow 32 (2 * 1))
   ≤ (poly.evalClear (tailPoly 4 1 1 1 1 1 stF stF)
         (BPair.ofPos (1 * 1)) (32 * 32) 1).scale (1048576 * Pos.pow 1 6)) := by
   decide +kernel
-example : ¬ (cF.scale (1048576 * Pos.pow 1 4)
+theorem pin196 : ¬ (cF.scale (1048576 * Pos.pow 1 4)
     ≤ (BPair.ofNat 2 * (BPair.ofNat 2).swap).scale (Pos.pow 32 4)) := by decide +kernel
 -- the segment's refusal at the ray one, the further binders held at the
 -- unit read
-example : ¬ ((⟨BPair.ofPos (1 * 1), 1 * 1⟩ : CPair) ≤ ⟨BPair.ofPos 1, 512⟩) := by
+theorem pin197 : ¬ ((⟨BPair.ofPos (1 * 1), 1 * 1⟩ : CPair) ≤ ⟨BPair.ofPos 1, 512⟩) := by
   decide +kernel
-example : ((((BPair.ofPos 4).scale (1 * 1)
+theorem pin198 : ((((BPair.ofPos 4).scale (1 * 1)
       + ((BPair.ofPos (1 * 1)).scale (1 * 1)).swap)
     * windowsep.mag (BPair.unit.scale (Pos.pow 1 4)
         + (cF.scale (1048576 * Pos.pow 1 4)).swap)).scale (Pos.pow 1 (2 * 1))
   ≤ (poly.evalClear (tailPoly 4 1 1 1 1 1 stF stF)
         (BPair.ofPos (1 * 1)) (1 * 1) 1).scale (1048576 * Pos.pow 1 6)) := by
   decide +kernel
-example : ¬ (cF.scale (1048576 * Pos.pow 1 4)
+theorem pin199 : ¬ (cF.scale (1048576 * Pos.pow 1 4)
     ≤ (BPair.ofNat 2 * BPair.unit).scale (Pos.pow 1 4)) := by decide +kernel
 
 /-- The second-order perpendicular read's refusal at `ψ₂` on the unit's
@@ -1423,9 +1425,9 @@ caps' keys, and the tight weight cap `[1 : 1]` parts the conclusion with
 every further binder held. -/
 private def psi2Z : List BPair := [⟨2, 1⟩, uT]
 private def jZ : List BPair := jetVec 5 32 oneT psi1T psi2Z
-example : (dotN psi2Z psi2Z).scale 1 ≤ BPair.ofNat 1 := by decide +kernel
-example : ¬ (dotN oneT psi2Z).oneValue BPair.unit := by decide +kernel
-example : ¬ (windowsep.mag
+theorem pin200 : (dotN psi2Z psi2Z).scale 1 ≤ BPair.ofNat 1 := by decide +kernel
+theorem pin201 : ¬ (dotN oneT psi2Z).oneValue BPair.unit := by decide +kernel
+theorem pin202 : ¬ (windowsep.mag
       ((dotN jZ (matVec aT jZ)).scale (Pos.pow 32 4 * (1 * 1))
         + ((jetDisplay aT oneT psi1T psi2Z 5 32 * dotN jZ jZ).scale (1 * 1)).swap)
     ≤ truncCap 3 1 1 (dotN oneT (matVec aT oneT))
@@ -1451,19 +1453,19 @@ private def spLN : Split 2 := mkSplit 2 (matAdd (matScale (1 * 1) (idMat 2)) mmN
 private def jN : List BPair := [uT, ⟨2, 1⟩]
 private def rN : List BPair := [uT, ⟨5, 1⟩]
 private def psiN : List BPair := matVec tN.val (elim.idRow 2 0)
-example : split.diagRead etN (idMat 2) tN tN lN := by decide +kernel
-example : groundreads.clearRead lN 0 5 1 := by decide +kernel
-example : matOneValue etN
+theorem pin203 : split.diagRead etN (idMat 2) tN tN lN := by decide +kernel
+theorem pin204 : groundreads.clearRead lN 0 5 1 := by decide +kernel
+theorem pin205 : matOneValue etN
     (siteDatum (matScale Pos.one (pencil.rayH eN mN (1 * 1) (1 * 1))) (matScaleB ⟨1, 5⟩ (idMat 2))) := by
   decide +kernel
-example : splitRead eN spEN := by decide +kernel
-example : capAt mmN (matScale (1 * 1) (idMat 2)) spUN spLN := by decide +kernel
-example : poly.oneValue (vecScale (BPair.ofPos (4 * (1 * 1))) (matVec (pencil.rayH eN mN (1 * 1) (1 * 1)) jN))
+theorem pin206 : splitRead eN spEN := by decide +kernel
+theorem pin207 : capAt mmN (matScale (1 * 1) (idMat 2)) spUN spLN := by decide +kernel
+theorem pin208 : poly.oneValue (vecScale (BPair.ofPos (4 * (1 * 1))) (matVec (pencil.rayH eN mN (1 * 1) (1 * 1)) jN))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 1 4) * BPair.ofNat 0) jN).map BPair.swap) rN) := by
   decide +kernel
-example : BPair.ofPos (1 * Pos.one * (1 * 1) * 1) < BPair.ofPos 5 := by decide +kernel
-example : ¬ psdAt spEN := by decide +kernel
-example : ¬ (((BPair.ofPos 5 + (BPair.ofPos (1 * Pos.one * (1 * 1) * 1)).swap)
+theorem pin209 : BPair.ofPos (1 * Pos.one * (1 * 1) * 1) < BPair.ofPos 5 := by decide +kernel
+theorem pin210 : ¬ psdAt spEN := by decide +kernel
+theorem pin211 : ¬ (((BPair.ofPos 5 + (BPair.ofPos (1 * Pos.one * (1 * 1) * 1)).swap)
       * (BPair.ofPos 5 + (BPair.ofPos (1 * Pos.one * (1 * 1) * 1)).swap)
       * dotN (residD [psiN] jN) (residD [psiN] jN)).scale (16 * Pos.pow 1 4)
     ≤ (dotN psiN psiN * dotN psiN psiN * dotN rN rN).scale
@@ -1483,20 +1485,22 @@ private def spES : Split 2 := mkSplit 2 eS
 private def mmS : Mat := matScale Pos.one (matMul (transposeM mS) mS)
 private def spUS : Split 2 := mkSplit 2 (siteDatum (matScale (3 * 3) (idMat 2)) mmS)
 private def spLS : Split 2 := mkSplit 2 (matAdd (matScale (3 * 3) (idMat 2)) mmS)
-example : split.diagRead etS (idMat 2) tN tN lS := by decide +kernel
-example : groundreads.clearRead lS 0 1 1 := by decide +kernel
-example : matOneValue etS
+theorem pin212 : split.diagRead etS (idMat 2) tN tN lS := by decide +kernel
+theorem pin213 : groundreads.clearRead lS 0 1 1 := by decide +kernel
+theorem pin214 : matOneValue etS
     (siteDatum (matScale Pos.one (pencil.rayH eS mS (1 * 1) (1 * 1))) (matScaleB BPair.unit (idMat 2))) := by
   decide +kernel
-example : splitRead eS spES ∧ psdAt spES := by decide +kernel
-example : capAt mmS (matScale (3 * 3) (idMat 2)) spUS spLS := by decide +kernel
-example : poly.oneValue (vecScale (BPair.ofPos (4 * (1 * 1))) (matVec (pencil.rayH eS mS (1 * 1) (1 * 1)) jN))
+theorem pin215 : splitRead eS spES ∧ psdAt spES := by decide +kernel
+theorem pin216 : capAt mmS (matScale (3 * 3) (idMat 2)) spUS spLS := by decide +kernel
+theorem pin217 : poly.oneValue (vecScale (BPair.ofPos (4 * (1 * 1))) (matVec (pencil.rayH eS mS (1 * 1) (1 * 1)) jN))
     (vecAdd ((vecScale (BPair.ofPos (Pos.pow 1 4) * BPair.ofNat 0) jN).map BPair.swap) rN) := by
   decide +kernel
-example : ¬ (BPair.ofPos (1 * Pos.one * (1 * 1) * 3) < BPair.ofPos 1) := by decide +kernel
-example : ¬ (((BPair.ofPos 1 + (BPair.ofPos (1 * Pos.one * (1 * 1) * 3)).swap)
+theorem pin218 : ¬ (BPair.ofPos (1 * Pos.one * (1 * 1) * 3) < BPair.ofPos 1) := by decide +kernel
+theorem pin219 : ¬ (((BPair.ofPos 1 + (BPair.ofPos (1 * Pos.one * (1 * 1) * 3)).swap)
       * (BPair.ofPos 1 + (BPair.ofPos (1 * Pos.one * (1 * 1) * 3)).swap)
       * dotN (residD [psiN] jN) (residD [psiN] jN)).scale (16 * Pos.pow 1 4)
     ≤ (dotN psiN psiN * dotN psiN psiN * dotN rN rN).scale
         (1 * 1 * (Pos.one * Pos.one))) := by
   decide +kernel
+
+end fourpoint

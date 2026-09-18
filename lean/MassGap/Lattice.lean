@@ -128,13 +128,33 @@ def startOf (R : Region) (e : Nat × Bool) : Nat :=
 def endOf (R : Region) (e : Nat × Bool) : Nat :=
   if e.2 then getAt 0 R.head e.1 else getAt 0 R.tail e.1
 
+/-- An oriented entry's two ends are its link's tail and head, in
+either order. -/
+theorem edge_ends (R : Region) (e : Nat × Bool) :
+    (startOf R e = getAt 0 R.tail e.1 ∧ endOf R e = getAt 0 R.head e.1)
+      ∨ (startOf R e = getAt 0 R.head e.1
+        ∧ endOf R e = getAt 0 R.tail e.1) := by
+  cases he : e.2 with
+  | true =>
+    refine Or.inl ⟨?_, ?_⟩
+    · show (if e.2 then getAt 0 R.tail e.1 else getAt 0 R.head e.1) = _
+      rw [if_pos he]
+    · show (if e.2 then getAt 0 R.head e.1 else getAt 0 R.tail e.1) = _
+      rw [if_pos he]
+  | false =>
+    refine Or.inr ⟨?_, ?_⟩
+    · show (if e.2 then getAt 0 R.tail e.1 else getAt 0 R.head e.1) = _
+      rw [if_neg (ground.boolNe he)]
+    · show (if e.2 then getAt 0 R.head e.1 else getAt 0 R.tail e.1) = _
+      rw [if_neg (ground.boolNe he)]
+
 /-- The coloring read: every link's two ends at the two colors,
 the even-cycle read's witness. -/
 def colorRead (R : Region) : Prop :=
   ((R.tail.zip R.head).all (fun e =>
     getAt false R.color e.1 != getAt false R.color e.2)) = true
 
-instance (R : Region) : Decidable (colorRead R) :=
+instance instLattice1 (R : Region) : Decidable (colorRead R) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The simplicity read: two vertices share at most one link. -/
@@ -145,7 +165,7 @@ def simpleRead (R : Region) : Prop :=
         || (e.1 == v && e.2 == u))).length
       ≤ 1))) = true
 
-instance (R : Region) : Decidable (simpleRead R) :=
+instance instLattice2 (R : Region) : Decidable (simpleRead R) :=
   inferInstanceAs (Decidable (_ = _))
 
 private def keysDistinct : List (Nat × Bool) → Bool
@@ -209,7 +229,7 @@ def plaqRead (R : Region) : Prop :=
             | e' :: _ => endOf R e' == startOf R e))
     && cycDistinct R.plaqs) = true
 
-instance (R : Region) : Decidable (plaqRead R) :=
+instance instLattice3 (R : Region) : Decidable (plaqRead R) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The plaquette list is distinct at the plaquette read, the
@@ -226,6 +246,19 @@ theorem plaqRead_distinct (R : Region) (h : plaqRead R) :
     rw [hb] at h1
     exact absurd h1 (by decide)
 
+/-- A plaquette of the region at the plaquette read: a word of four
+entries at the region's link keys. -/
+theorem plaqRead_word (R : Region) (h : plaqRead R) (p : List (Nat × Bool))
+    (hp : p ∈ R.plaqs) :
+    p.length = 4 ∧ (p.all (fun e => e.1 < R.links)) = true := by
+  have h1 := (andSplitB h).1
+  have hp' := all_of_mem _ R.plaqs h1 p hp
+  have h2 := andSplitB hp'
+  have h3 := andSplitB h2.1
+  have h4 := andSplitB h3.1
+  have h5 := andSplitB h4.1
+  exact ⟨beqEqOf h5.1, h4.2⟩
+
 /-- The plaquette permutation read at a link map and its reversal
 family: the action's plaquette permutation enters as data with its
 witness, the two composing to the identity below the count both
@@ -241,7 +274,7 @@ def plaqPermRead (R : Region) (t : Nat → Nat) (rev : Nat → Bool)
       && cycEq (moveWord t rev (ground.getAt [] R.plaqs q))
           (ground.getAt [] R.plaqs (pm q)))) = true
 
-instance (R : Region) (t : Nat → Nat) (rev : Nat → Bool)
+instance instLattice4 (R : Region) (t : Nat → Nat) (rev : Nat → Bool)
     (pm pm' : Nat → Nat) : Decidable (plaqPermRead R t rev pm pm') :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -256,7 +289,7 @@ def endsMoved (R R' : Region) (t : Nat → Nat) (rev : Nat → Bool)
       && (getAt 0 R'.head (t l) == v (if rev l then tl else hd)))
     R.tail R.head 0 = true
 
-instance (R R' : Region) (t : Nat → Nat) (rev : Nat → Bool) (v : Nat → Nat) :
+instance instLattice5 (R R' : Region) (t : Nat → Nat) (rev : Nat → Bool) (v : Nat → Nat) :
     Decidable (endsMoved R R' t rev v) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -287,7 +320,7 @@ back. -/
 def linkIso (R R' : Region) (t s : Nat → Nat) : Prop :=
   ((List.range R.links).all (fun l => (t l < R'.links) && (s (t l) == l))) = true
 
-instance (R R' : Region) (t s : Nat → Nat) : Decidable (linkIso R R' t s) :=
+instance instLattice6 (R R' : Region) (t s : Nat → Nat) : Decidable (linkIso R R' t s) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- A vertex map's isomorphism read from one region into another:
@@ -296,7 +329,7 @@ source vertex back. -/
 def vertIso (R R' : Region) (v w : Nat → Nat) : Prop :=
   ((List.range R.verts).all (fun x => (v x < R'.verts) && (w (v x) == x))) = true
 
-instance (R R' : Region) (v w : Nat → Nat) : Decidable (vertIso R R' v w) :=
+instance instLattice7 (R R' : Region) (v w : Nat → Nat) : Decidable (vertIso R R' v w) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- A label-graph isomorphism's carrier read from one region into
@@ -308,7 +341,7 @@ it. -/
 def isoRead (R R' : Region) (t s v w : Nat → Nat) (rev : Nat → Bool) : Prop :=
   linkIso R R' t s ∧ vertIso R R' v w ∧ endsMoved R R' t rev v
 
-instance (R R' : Region) (t s v w : Nat → Nat) (rev : Nat → Bool) :
+instance instLattice8 (R R' : Region) (t s v w : Nat → Nat) (rev : Nat → Bool) :
     Decidable (isoRead R R' t s v w rev) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
@@ -354,6 +387,121 @@ theorem vertIso_all (R : Region) (v w : Nat → Nat) (h : vertIso R R v w)
   ⟨(vertIso_at R R v w h x hx).2, (vertIso_inv R v w h x hx).2,
     (vertIso_at R R v w h x hx).1, (vertIso_inv R v w h x hx).1⟩
 
+/-- The vertex map's images compare as their sources below the
+count, the witness reading the sources back. -/
+theorem vertIso_beq (R : Region) (v w : Nat → Nat) (h : vertIso R R v w)
+    (p x : Nat) (hp : p < R.verts) (hx : x < R.verts) :
+    (v p == v x) = (p == x) := by
+  cases hpx : (p == x) with
+  | true =>
+    rw [beqEqOf hpx]
+    exact eqBeqOf rfl
+  | false =>
+    refine neBeqOf (fun he => ?_)
+    have hpx' : p = x := by
+      rw [← (vertIso_all R v w h p hp).1, he, (vertIso_all R v w h x hx).1]
+    rw [eqBeqOf hpx'] at hpx
+    exact Bool.noConfusion hpx
+
+/-- The plaquette permutation read at a plaquette key: the image
+and the witness's image below the count, the two compositions the
+key, and the moved word the image's plaquette at the cyclic
+reading. -/
+theorem plaqPermRead_at (R : Region) (t : Nat → Nat) (rev : Nat → Bool)
+    (pm pm' : Nat → Nat) (h : plaqPermRead R t rev pm pm') (q : Nat)
+    (hq : q < R.plaqs.length) :
+    pm q < R.plaqs.length ∧ pm' q < R.plaqs.length ∧ pm' (pm q) = q
+      ∧ pm (pm' q) = q
+      ∧ cycEq (moveWord t rev (getAt [] R.plaqs q)) (getAt [] R.plaqs (pm q)) = true := by
+  have h1 := all_range_read _ h q hq
+  have h2 := andSplitB h1
+  have h3 := andSplitB h2.1
+  have h4 := andSplitB h3.1
+  have h5 := andSplitB h4.1
+  exact ⟨of_decide_eq_true h5.1, of_decide_eq_true h5.2, beqEqOf h4.2,
+    beqEqOf h3.2, h2.2⟩
+
+/-- A boundary word's fold at its entries' keys is one value across
+the cyclic readings: a rotation keeps the entries and the reversal
+keeps their keys. -/
+theorem cycEq_any_keys (g : Nat → Bool) (w w' : List (Nat × Bool))
+    (h : cycEq w w' = true) :
+    w.any (fun e => g e.1) = w'.any (fun e => g e.1) := by
+  have h' : (decide (w = w')
+      || (List.range w'.length).any (fun k => decide (w = rotAt k w'))
+      || (List.range w'.length).any (fun k =>
+        decide (w = rotAt k (revWord w')))) = true := h
+  cases orSplitB h' with
+  | inl h1 =>
+    cases orSplitB h1 with
+    | inl h2 => rw [of_decide_eq_true h2]
+    | inr h2 =>
+      obtain ⟨k, _, hk⟩ := mem_of_any _ _ h2
+      rw [of_decide_eq_true hk, any_rotAt]
+  | inr h1 =>
+    obtain ⟨k, _, hk⟩ := mem_of_any _ _ h1
+    rw [of_decide_eq_true hk, any_rotAt]
+    show ((w'.reverse).map (fun e => (e.1, !e.2))).any (fun e => g e.1) = _
+    rw [any_map, any_reverse]
+
+/-- A fold over the plaquette list reindexed at an action's
+permutation: the moved plaquette's read is the plaquette's. -/
+theorem plaqPerm_any (R : Region) (t : Nat → Nat) (rev : Nat → Bool)
+    (pm pm' : Nat → Nat) (hpm : plaqPermRead R t rev pm pm')
+    (f f' : List (Nat × Bool) → Bool)
+    (key : ∀ q, q < R.plaqs.length →
+      f' (getAt [] R.plaqs (pm q)) = f (getAt [] R.plaqs q)) :
+    R.plaqs.any f' = R.plaqs.any f := by
+  cases hb : R.plaqs.any f with
+  | true =>
+    obtain ⟨p, hp, hpp⟩ := mem_of_any _ R.plaqs hb
+    obtain ⟨q, hq, hpq⟩ := getAt_of_mem [] hp
+    refine any_of_mem _ (mem_getAt [] R.plaqs (pm q) (plaqPermRead_at R t rev pm pm' hpm q hq).1) ?_
+    rw [key q hq, hpq]
+    exact hpp
+  | false =>
+    refine any_false_of_all_not _ _ (all_of_mem_intro _ _ (fun p hp => ?_))
+    obtain ⟨q, hq, hpq⟩ := getAt_of_mem [] hp
+    have hq' := plaqPermRead_at R t rev pm pm' hpm q hq
+    have h3 := all_of_mem _ _ (all_not_of_any_false _ R.plaqs hb) _
+      (mem_getAt [] R.plaqs (pm' q) hq'.2.1)
+    have hk := key (pm' q) hq'.2.1
+    rw [hq'.2.2.2.1] at hk
+    rw [← hpq]
+    show (!(f' (getAt [] R.plaqs q))) = true
+    rw [hk]
+    exact h3
+
+/-- The all-fold over the plaquette list reindexed at an action's
+permutation. -/
+theorem plaqPerm_all (R : Region) (t : Nat → Nat) (rev : Nat → Bool)
+    (pm pm' : Nat → Nat) (hpm : plaqPermRead R t rev pm pm')
+    (f f' : List (Nat × Bool) → Bool)
+    (key : ∀ q, q < R.plaqs.length →
+      f' (getAt [] R.plaqs (pm q)) = f (getAt [] R.plaqs q)) :
+    R.plaqs.all f' = R.plaqs.all f := by
+  cases hb : R.plaqs.all f with
+  | true =>
+    refine all_of_mem_intro _ _ (fun p hp => ?_)
+    obtain ⟨q, hq, hpq⟩ := getAt_of_mem [] hp
+    have hq' := plaqPermRead_at R t rev pm pm' hpm q hq
+    have hk := key (pm' q) hq'.2.1
+    rw [hq'.2.2.2.1] at hk
+    rw [← hpq, hk]
+    exact all_of_mem _ _ hb _ (mem_getAt [] R.plaqs (pm' q) hq'.2.1)
+  | false =>
+    cases hb' : R.plaqs.all f' with
+    | false => rfl
+    | true =>
+      have hnot : R.plaqs.all f = true := by
+        refine all_of_mem_intro _ _ (fun p hp => ?_)
+        obtain ⟨q, hq, hpq⟩ := getAt_of_mem [] hp
+        rw [← hpq, ← key q hq]
+        exact all_of_mem _ _ hb' _
+          (mem_getAt [] R.plaqs (pm q) (plaqPermRead_at R t rev pm pm' hpm q hq).1)
+      rw [hnot] at hb
+      exact Bool.noConfusion hb
+
 /-- The endpoint read at the vacant reversal family: the moved
 link's tail and head are the vertex map's values at the link's
 own. -/
@@ -370,7 +518,7 @@ def wellRead (R : Region) : Prop :=
     && R.tail.all (fun v => v < R.verts)
     && R.head.all (fun v => v < R.verts)) = true
 
-instance (R : Region) : Decidable (wellRead R) :=
+instance instLattice9 (R : Region) : Decidable (wellRead R) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- Every link's two ends are vertices of the region at the shape
@@ -412,5 +560,65 @@ def thetaG : Region :=
 /-- The square's one boundary, the region's plaquette field
 read. -/
 def sqPlaq : List (Nat × Bool) := ground.getAt [] square.plaqs 0
+
+
+/-! A plaquette's pass at a vertex, read at the entries' keys: one
+value across the cyclic readings, and moved along a region
+action. -/
+
+/-- A plaquette's pass at a vertex, read at the entries' keys
+alone. -/
+private def keyVert (R : Region) (k x : Nat) : Bool :=
+  (getAt 0 R.tail k == x) || (getAt 0 R.head k == x)
+
+private theorem plaqVert_keys (R : Region) (p : List (Nat × Bool)) (x : Nat) :
+    p.any (fun e => startOf R e == x || endOf R e == x)
+      = p.any (fun e => keyVert R e.1 x) := by
+  refine any_congr_all _ _ (fun e => ?_) p
+  cases e with
+  | mk k b =>
+    cases b with
+    | true => rfl
+    | false =>
+      show ((getAt 0 R.head k == x) || (getAt 0 R.tail k == x))
+        = ((getAt 0 R.tail k == x) || (getAt 0 R.head k == x))
+      rw [Bool.or_comm]
+
+/-- The pass at a vertex is one value across a plaquette's cyclic
+readings. -/
+theorem plaqVert_cyc (R : Region) (w w' : List (Nat × Bool))
+    (hc : cycEq w w' = true) (x : Nat) :
+    w.any (fun e => startOf R e == x || endOf R e == x)
+      = w'.any (fun e => startOf R e == x || endOf R e == x) := by
+  rw [plaqVert_keys, plaqVert_keys]
+  exact cycEq_any_keys (fun k => keyVert R k x) w w' hc
+
+/-- The pass at a vertex transports along a region action: the moved
+plaquette passes at the moved vertex exactly where the plaquette
+passes at the vertex. -/
+theorem plaqVert_move (R : Region) (hw : wellRead R) (t s v w : Nat → Nat)
+    (h : isoRead R R t s v w (fun _ => false)) (p : List (Nat × Bool))
+    (hp : (p.all (fun e => e.1 < R.links)) = true) (x : Nat) (hx : x < R.verts) :
+    (moveWord t (fun _ => false) p).any (fun e => startOf R e == v x || endOf R e == v x)
+      = p.any (fun e => startOf R e == x || endOf R e == x) := by
+  rw [plaqVert_keys, plaqVert_keys]
+  show (p.map (fun e => (t e.1, xor e.2 ((fun _ => false) e.1)))).any
+      (fun e => keyVert R e.1 (v x)) = _
+  rw [any_map]
+  refine any_congr_of_mem _ _ p (fun e he => ?_)
+  have hk : e.1 < R.links := of_decide_eq_true (all_of_mem _ p hp e he)
+  show ((getAt 0 R.tail (t e.1) == v x) || (getAt 0 R.head (t e.1) == v x))
+    = ((getAt 0 R.tail e.1 == x) || (getAt 0 R.head e.1 == x))
+  rw [(endsMoved_vac R t v h.2.2 e.1 hk).1, (endsMoved_vac R t v h.2.2 e.1 hk).2,
+    vertIso_beq R v w h.2.1 _ _ (endLt R hw e.1 hk).1 hx,
+    vertIso_beq R v w h.2.1 _ _ (endLt R hw e.1 hk).2 hx]
+
+/-- The per-vertex plaquette count at the family's boxes
+(`con:lattice`'s direction read): at two directions or beyond a vertex
+sits on at most `2d(d − 1)` plaquettes, four in each plane at the
+vertex, and at one direction on at most two, the consecutive squares
+sharing one link. -/
+def vertexPlaq (d : Nat) : Pos :=
+  if d ≤ 1 then 2 else ground.posOfNat (2 * d * (d - 1))
 
 end lattice

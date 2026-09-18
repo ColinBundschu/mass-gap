@@ -7,7 +7,14 @@ the defining tables of `B_2`, `C_3` and `D_4` (the `B` table at its
 cleared pairing), the joined generating tables at `B_2` and `D_4`,
 `G_2`'s fold of `D_4`'s defining table, and the fixed members'
 tables at every simple index; the weights' symmetry reads at every
-table, one entry joined off the diagonal refused; the closure reads
+table, one entry joined off the diagonal refused; the weights'
+positivity reads at every table at its stated split, `E_8`'s and
+`F_4`'s at the block sum of the Cartan's cleared split with the root
+keys' identity through the block tier's theorems, the root-key
+tables at the scalar split, the diagonal tables outright, with the
+refusals at an order off the key count, an indefinite weight and a
+split off the weight; the sparse join at the merge one list with
+the collected join; the closure reads
 at the computed
 word stores at `B_2`, `C_3`, `D_4`, `G_2`, `E_7`, `E_6` and `F_4`,
 and at `E_8` at the committed word store, the cover one kernel task
@@ -34,20 +41,22 @@ parting), a store at one key the fold leaves vacant (the step
 vacant), and a store at one fold repeated (the cover parting).
 -/
 
+namespace memtable
+
 set_option maxRecDepth 100000
 
-open ground memtable
+open ground
 
 /-! The letters and the spinors. -/
 
-example : tripleRead (lettersT 3) 0 ∧ tripleRead (lettersT 3) 1 := by
+theorem pin1 : tripleRead (lettersT 3) 0 ∧ tripleRead (lettersT 3) 1 := by
   decide +kernel
 
-example : tripleRead (spinorT 2 false) 0 ∧ tripleRead (spinorT 2 false) 1 := by
+theorem pin2 : tripleRead (spinorT 2 false) 0 ∧ tripleRead (spinorT 2 false) 1 := by
   decide +kernel
-example : tripleRead (spinorT 3 false) 0 ∧ tripleRead (spinorT 3 false) 1
+theorem pin3 : tripleRead (spinorT 3 false) 0 ∧ tripleRead (spinorT 3 false) 1
     ∧ tripleRead (spinorT 3 false) 2 := by decide +kernel
-example : tripleRead (spinorT 4 true) 0 ∧ tripleRead (spinorT 4 true) 1
+theorem pin4 : tripleRead (spinorT 4 true) 0 ∧ tripleRead (spinorT 4 true) 1
     ∧ tripleRead (spinorT 4 true) 2 ∧ tripleRead (spinorT 4 true) 3 := by
   decide +kernel
 
@@ -57,19 +66,19 @@ double. -/
 private def spinB2atD : Table :=
   { spinorT 2 false with hdiag := (List.range 2).map (spinorH 2 true) }
 
-example : ¬ tripleRead spinB2atD 1 := by decide +kernel
+theorem pin5 : ¬ tripleRead spinB2atD 1 := by decide +kernel
 
 /-! The defining tables and the joins. -/
 
-example : tripleRead (definingB 2) 0 ∧ tripleRead (definingB 2) 1 := by
+theorem pin6 : tripleRead (definingB 2) 0 ∧ tripleRead (definingB 2) 1 := by
   decide +kernel
-example : tripleRead (definingC 3) 0 ∧ tripleRead (definingC 3) 1
+theorem pin7 : tripleRead (definingC 3) 0 ∧ tripleRead (definingC 3) 1
     ∧ tripleRead (definingC 3) 2 := by decide +kernel
-example : tripleRead (definingD 4) 0 ∧ tripleRead (definingD 4) 1
+theorem pin8 : tripleRead (definingD 4) 0 ∧ tripleRead (definingD 4) 1
     ∧ tripleRead (definingD 4) 2 ∧ tripleRead (definingD 4) 3 := by
   decide +kernel
-example : tripleRead (genB 2) 0 ∧ tripleRead (genB 2) 1 := by decide +kernel
-example : tripleRead (genD 4) 0 ∧ tripleRead (genD 4) 1
+theorem pin9 : tripleRead (genB 2) 0 ∧ tripleRead (genB 2) 1 := by decide +kernel
+theorem pin10 : tripleRead (genD 4) 0 ∧ tripleRead (genD 4) 1
     ∧ tripleRead (genD 4) 2 ∧ tripleRead (genD 4) 3 := by decide +kernel
 
 /-- The `B_2` short move's forged raising: the doubled entry read
@@ -78,40 +87,40 @@ private def forgedShortB2 : Table :=
   { definingB 2 with raises := [ground.getAt [] (definingB 2).raises 0,
       [(1, 4, BPair.ofNat 1), (4, 3, BPair.ofNat 1)]] }
 
-example : ¬ tripleRead forgedShortB2 1 := by decide +kernel
+theorem pin11 : ¬ tripleRead forgedShortB2 1 := by decide +kernel
 
 /-- The `B_2` defining table at the plain identity in place of the
 cleared pairing. -/
 private def plainWtB2 : Table := { definingB 2 with wt := unitWt 5 }
 
-example : ¬ tripleRead plainWtB2 1 := by decide +kernel
+theorem pin12 : ¬ tripleRead plainWtB2 1 := by decide +kernel
 
 /-! The fold. -/
 
-example : tripleRead genG2 0 ∧ tripleRead genG2 1 := by decide +kernel
+theorem pin13 : tripleRead genG2 0 ∧ tripleRead genG2 1 := by decide +kernel
 
 /-- `D_4`'s defining table folded at a list off the orbits, the
 center joined to two outer simples. -/
 private def offOrbitG2 : Table := foldT (definingD 4) [[0, 1, 2], [3]]
 
-example : ¬ tripleRead offOrbitG2 0 := by decide +kernel
+theorem pin14 : ¬ tripleRead offOrbitG2 0 := by decide +kernel
 
 /-! The closure reads. -/
 
-example : closureRead (definingB 2) (sertables.tableB 2)
+theorem pin15 : closureRead (definingB 2) (sertables.tableB 2)
     (rootStore (definingB 2) (sertables.tableB 2)) := by decide +kernel
-example : closureRead (definingC 3) (sertables.tableC 3)
+theorem pin16 : closureRead (definingC 3) (sertables.tableC 3)
     (rootStore (definingC 3) (sertables.tableC 3)) := by decide +kernel
-example : closureRead (genD 4) (sertables.tableD 4)
+theorem pin17 : closureRead (genD 4) (sertables.tableD 4)
     (rootStore (genD 4) (sertables.tableD 4)) := by decide +kernel
-example : closureRead genG2 sertables.tableG2 (rootStore genG2 sertables.tableG2) := by decide +kernel
+theorem pin18 : closureRead genG2 sertables.tableG2 (rootStore genG2 sertables.tableG2) := by decide +kernel
 
 /-- The `C_3` defining table at the raisings withdrawn to the first
 simple index alone, the further words vacant. -/
 private def starvedC3 : Table :=
   { definingC 3 with raises := [ground.getAt [] (definingC 3).raises 0] }
 
-example : ¬ closureRead starvedC3 (sertables.tableC 3)
+theorem pin19 : ¬ closureRead starvedC3 (sertables.tableC 3)
     (rootStore starvedC3 (sertables.tableC 3)) := by decide +kernel
 
 /-- The `C_3` store at its last word doubled, an occupied word off
@@ -120,7 +129,7 @@ private def doubledC3 : List WordEntry :=
   let st := rootStore (definingC 3) (sertables.tableC 3)
   st.take 8 ++ (st.drop 8).map (fun p => (p.1, p.2.1, sScale 2 p.2.2))
 
-example : ¬ closureRead (definingC 3) (sertables.tableC 3) doubledC3 := by
+theorem pin20 : ¬ closureRead (definingC 3) (sertables.tableC 3) doubledC3 := by
   decide +kernel
 
 /-- A word store built at the last simple key occupied in each fold
@@ -135,7 +144,7 @@ private def storeLast (T : Table) (t : gentable.Table) : List WordEntry :=
 
 /-- The last-key store's keys differ from the least-key store's,
 and the read passes at both: the key is the store's own datum. -/
-example : ((storeLast (definingC 3) (sertables.tableC 3)).map (fun p => p.2.1)
+theorem pin21 : ((storeLast (definingC 3) (sertables.tableC 3)).map (fun p => p.2.1)
       ≠ (rootStore (definingC 3) (sertables.tableC 3)).map (fun p => p.2.1))
     ∧ closureRead (definingC 3) (sertables.tableC 3) (storeLast (definingC 3) (sertables.tableC 3))
     ∧ closureRead genG2 sertables.tableG2 (storeLast genG2 sertables.tableG2) := by
@@ -148,7 +157,7 @@ private def keyOffC3 : List WordEntry :=
   let st := rootStore (definingC 3) (sertables.tableC 3)
   st.take 4 ++ (st.drop 4).map (fun p => if p.1 == [0, 1, 1] then (p.1, 0, p.2.2) else p)
 
-example : ¬ closureRead (definingC 3) (sertables.tableC 3) keyOffC3 := by
+theorem pin22 : ¬ closureRead (definingC 3) (sertables.tableC 3) keyOffC3 := by
   decide +kernel
 
 /-- The `C_3` store at its last entry's fold repeated from the
@@ -157,50 +166,188 @@ private def uncoveredC3 : List WordEntry :=
   let st := rootStore (definingC 3) (sertables.tableC 3)
   st.take 8 ++ (st.drop 8).map (fun p => ((ground.getAt ([], 0, []) st 0).1, p.2.1, p.2.2))
 
-example : foldsCover (sertables.tableC 3) uncoveredC3 = false := by decide +kernel
+theorem pin23 : foldsCover (sertables.tableC 3) uncoveredC3 = false := by decide +kernel
 
 /-! The weights' witnesses: every table's weight against its
 cleared partner reads the clearing's diagonal. -/
 
-example : weightRead (lettersT 3) ∧ weightRead (spinorT 2 false)
+theorem pin24 : weightRead (lettersT 3) ∧ weightRead (spinorT 2 false)
     ∧ weightRead (definingB 2) ∧ weightRead (definingC 3)
     ∧ weightRead (genB 2) ∧ weightRead (genD 4) ∧ weightRead genG2 := by decide +kernel
-example : weightRead adjointE8 := by decide +kernel
-example : weightRead genE7 ∧ weightRead genE6 ∧ weightRead genF4 := by decide +kernel
+theorem pin25 : weightRead adjointE8 := by decide +kernel
+theorem pin26 : weightRead genE7 ∧ weightRead genE6 ∧ weightRead genF4 := by decide +kernel
 
 /-- The `B_2` defining table at the plain identity as the weight's
 partner, the paired keys' doubled weight parting. -/
 private def plainInvB2 : Table := { definingB 2 with wtInv := unitWt 5, wtDet := 1 }
 
-example : ¬ weightRead plainInvB2 := by decide +kernel
+theorem pin27 : ¬ weightRead plainInvB2 := by decide +kernel
 
 /-! The weights' symmetry: every table's weight one value with its
 transpose. -/
 
-example : symmWt (lettersT 3) ∧ symmWt (spinorT 2 false)
+theorem pin28 : symmWt (lettersT 3) ∧ symmWt (spinorT 2 false)
     ∧ symmWt (spinorT 3 false) ∧ symmWt (spinorT 4 true) ∧ symmWt (spinorT 5 true)
     ∧ symmWt (definingB 2) ∧ symmWt (definingC 3) ∧ symmWt (definingD 4)
     ∧ symmWt (genB 2) ∧ symmWt (genD 4) ∧ symmWt genG2 := by decide +kernel
-example : symmWt adjointE8 := by decide +kernel
-example : symmWt genE7 ∧ symmWt genE6 ∧ symmWt genF4 := by decide +kernel
+theorem pin29 : symmWt adjointE8 := by decide +kernel
+theorem pin30 : symmWt genE7 ∧ symmWt genE6 ∧ symmWt genF4 := by decide +kernel
 
 /-- The `B_2` defining table at one entry joined off the diagonal,
 the transpose parting there. -/
 private def offSymB2 : Table :=
   { definingB 2 with wt := (0, 1, BPair.ofNat 1) :: (definingB 2).wt }
 
-example : ¬ symmWt offSymB2 := by decide +kernel
+theorem pin31 : ¬ symmWt offSymB2 := by decide +kernel
+
+/-! The join at the merge (`sAddS`): one list with the collected
+join at two maps over shared keys with a cancelling entry, by
+kernel and through `sAddS_eq`, and the unit entries withdrawn at a
+map joined to its balance partner. -/
+
+private def sm1 : SMap := [(0, 1, BPair.ofNat 2), (2, 0, (BPair.ofNat 1).swap)]
+private def sm2 : SMap := [(2, 0, BPair.ofNat 1), (0, 1, BPair.ofNat 3), (1, 1, BPair.ofNat 2)]
+
+theorem pin74 : sAddS sm1 sm2 = sAdd sm1 sm2 ∧ (sAddS sm1 sm2).length = 2
+    ∧ sAddS sm1 (sNeg sm1) = [] := by decide +kernel
+theorem pin75 : sAddS sm1 sm2 = sAdd sm1 sm2 := sAddS_eq sm1 sm2
+
+/-! The weights' positivity read at every stated table: the `E_8`
+adjoint table and `F_4`'s at the block sum of the Cartan's stated
+cleared split with the root keys' identity, read through
+`inertia.splitRead_blockSplit` and `pdAt_blockSplit` at the dense
+weight's block form (`denseWt_adjointT`, the fold's at
+`denseWt_foldT`); the `E_7` and `E_6` root-key tables at the scalar
+split; the diagonal tables decided outright; and the refusals at an
+order off the key count, at an indefinite weight, at a split off the
+weight, and at an entry off the key list. -/
+
+private def c8Split : inertia.Split 8 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩, ⟨3, 1⟩, ⟨3, 1⟩, ⟨3, 1⟩, ⟨3, 1⟩],
+     [⟨1, 1⟩, ⟨2, 1⟩, ⟨1, 1⟩, ⟨4, 1⟩, ⟨4, 1⟩, ⟨4, 1⟩, ⟨4, 1⟩, ⟨4, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨3, 1⟩, ⟨5, 1⟩, ⟨5, 1⟩, ⟨5, 1⟩, ⟨5, 1⟩, ⟨5, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨7, 1⟩, ⟨7, 1⟩, ⟨7, 1⟩, ⟨7, 1⟩, ⟨7, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨6, 1⟩, ⟨6, 1⟩, ⟨6, 1⟩, ⟨6, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨5, 1⟩, ⟨5, 1⟩, ⟨5, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨4, 1⟩, ⟨4, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨3, 1⟩]], rfl⟩,
+   ⟨[[⟨1441, 1⟩, ⟨1, 1⟩, ⟨1, 721⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1441, 1⟩, ⟨1, 1⟩, ⟨1, 721⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨721, 1⟩, ⟨1, 481⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨241, 1⟩, ⟨1, 289⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨289, 1⟩, ⟨1, 361⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨361, 1⟩, ⟨1, 481⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨481, 1⟩, ⟨1, 721⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨721, 1⟩]], rfl⟩,
+   [.one ⟨3, 1⟩, .one ⟨3, 1⟩, .one ⟨7, 1⟩, .one ⟨31, 1⟩, .one ⟨21, 1⟩, .one ⟨13, 1⟩,
+    .one ⟨7, 1⟩, .one ⟨3, 1⟩], 0, rfl⟩
+
+private def c6Split : inertia.Split 6 :=
+  ⟨⟨[[⟨2, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩, ⟨3, 1⟩, ⟨3, 1⟩],
+     [⟨1, 1⟩, ⟨2, 1⟩, ⟨1, 1⟩, ⟨4, 1⟩, ⟨4, 1⟩, ⟨4, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨3, 1⟩, ⟨5, 1⟩, ⟨5, 1⟩, ⟨5, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨7, 1⟩, ⟨7, 1⟩, ⟨7, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨6, 1⟩, ⟨6, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨5, 1⟩]], rfl⟩,
+   ⟨[[⟨241, 1⟩, ⟨1, 1⟩, ⟨1, 121⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨241, 1⟩, ⟨1, 1⟩, ⟨1, 121⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨121, 1⟩, ⟨1, 81⟩, ⟨1, 1⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨41, 1⟩, ⟨1, 49⟩, ⟨1, 1⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨49, 1⟩, ⟨1, 61⟩],
+     [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨61, 1⟩]], rfl⟩,
+   [.one ⟨3, 1⟩, .one ⟨3, 1⟩, .one ⟨7, 1⟩, .one ⟨31, 1⟩, .one ⟨21, 1⟩, .one ⟨13, 1⟩],
+   0, rfl⟩
+
+-- the Cartan splits read at the stated data
+theorem pin76 : inertia.splitRead sertables.tableE8.cartan c8Split ∧ inertia.pdAt c8Split := by
+  decide +kernel
+theorem pin77 : inertia.splitRead sertables.tableE6.cartan c6Split ∧ inertia.pdAt c6Split := by
+  decide +kernel
+
+-- `E_8` and `F_4`: the block sum's read at the block diagonal, the dense weight's stated form
+theorem pin78 : posWtRead adjointE8 (inertia.blockSplit c8Split (inertia.scalarSplit 240 Pos.one)) :=
+  ⟨by decide +kernel, rfl,
+   inertia.splitRead_congr (inertia.blockDiag 8 240 sertables.tableE8.cartan (elim.idMat 240))
+     (denseWt adjointE8) (sqAt_denseWt _)
+     (elim.matOne_symm (denseWt_adjointT sertables.tableE8 (by decide +kernel))) _
+     (inertia.splitRead_blockSplit _ _ c8Split (inertia.scalarSplit 240 Pos.one)
+       (by decide +kernel) (inertia.scalarSplit_read_idMat 240)),
+   inertia.pdAt_blockSplit _ _ (by decide +kernel) (by decide +kernel)⟩
+theorem pin79 : posWtRead genF4 (inertia.blockSplit c6Split (inertia.scalarSplit 72 Pos.one)) :=
+  ⟨by decide +kernel, rfl,
+   inertia.splitRead_congr (inertia.blockDiag 6 72 sertables.tableE6.cartan (elim.idMat 72))
+     (denseWt genF4) (sqAt_denseWt _)
+     (by
+       have h : denseWt genF4 = denseWt (adjointT sertables.tableE6) := denseWt_foldT _ _
+       rw [h]
+       exact elim.matOne_symm (denseWt_adjointT sertables.tableE6 (by decide +kernel))) _
+     (inertia.splitRead_blockSplit _ _ c6Split (inertia.scalarSplit 72 Pos.one)
+       (by decide +kernel) (inertia.scalarSplit_read_idMat 72)),
+   inertia.pdAt_blockSplit _ _ (by decide +kernel) (by decide +kernel)⟩
+
+-- the root-key tables at the unit weight
+theorem pin80 : posWtRead genE7 (inertia.scalarSplit 56 Pos.one) :=
+  ⟨by decide +kernel, rfl,
+   inertia.scalarSplit_read Pos.one _ (sqAt_denseWt _) (by decide +kernel),
+   by decide +kernel⟩
+theorem pin81 : posWtRead genE6 (inertia.scalarSplit 54 Pos.one) :=
+  ⟨by decide +kernel, rfl,
+   inertia.scalarSplit_read Pos.one _ (sqAt_denseWt _) (by decide +kernel),
+   by decide +kernel⟩
+
+-- the diagonal tables decided outright
+theorem pin82 : posWtRead (lettersT 3) (inertia.scalarSplit 3 Pos.one)
+    ∧ posWtRead (spinorT 2 false) (inertia.scalarSplit 4 Pos.one)
+    ∧ posWtRead (spinorT 3 false) (inertia.scalarSplit 8 Pos.one)
+    ∧ posWtRead (spinorT 4 true) (inertia.scalarSplit 16 Pos.one)
+    ∧ posWtRead (definingB 2) (inertia.oneSplit [⟨4, 2⟩, ⟨4, 2⟩, ⟨4, 2⟩, ⟨4, 2⟩, ⟨3, 2⟩])
+    ∧ posWtRead (definingC 3) (inertia.scalarSplit 6 Pos.one)
+    ∧ posWtRead (definingD 4) (inertia.scalarSplit 8 Pos.one)
+    ∧ posWtRead (genB 2) (inertia.oneSplit [⟨4, 2⟩, ⟨4, 2⟩, ⟨4, 2⟩, ⟨4, 2⟩, ⟨3, 2⟩,
+        ⟨3, 2⟩, ⟨3, 2⟩, ⟨3, 2⟩, ⟨3, 2⟩])
+    ∧ posWtRead (genD 4) (inertia.scalarSplit 24 Pos.one)
+    ∧ posWtRead genG2 (inertia.scalarSplit 8 Pos.one) := by decide +kernel
+theorem pin83 : posWtRead (spinorT 5 true) (inertia.scalarSplit 32 Pos.one) := by decide +kernel
+
+/-- The `B_2` defining table at the null key's weight on its lower
+side, indefinite. -/
+private def negB2 : Table :=
+  { definingB 2 with wt := [(0, 0, ⟨4, 2⟩), (1, 1, ⟨4, 2⟩), (2, 2, ⟨4, 2⟩),
+      (3, 3, ⟨4, 2⟩), (4, 4, ⟨2, 3⟩)] }
+
+-- refusals: the order off the key count, the indefinite weight, and a split off the weight
+theorem pin84 : ¬ posWtRead (lettersT 3) (inertia.scalarSplit 4 Pos.one)
+    ∧ ¬ posWtRead negB2 (inertia.oneSplit [⟨4, 2⟩, ⟨4, 2⟩, ⟨4, 2⟩, ⟨4, 2⟩, ⟨2, 3⟩])
+    ∧ ¬ posWtRead (definingB 2) (inertia.scalarSplit 5 Pos.one) := by decide +kernel
+
+/-- The letters' table with one weight entry beyond the key list,
+the shape read refusing it at every weight read where the dense form
+would drop it. -/
+private def tOut : Table :=
+  { lettersT 3 with wt := (lettersT 3).wt ++ [(5, 5, BPair.ofNat 7)] }
+/-- The letters' table with one entry at a key off the list on either
+side. -/
+private def tOutOff : Table :=
+  { lettersT 3 with wt := (lettersT 3).wt ++ [(0, 5, BPair.ofNat 7), (5, 0, BPair.ofNat 7)] }
+
+theorem pin85 : wtShape (lettersT 3) = true ∧ wtShape tOut = false ∧ wtShape tOutOff = false
+    ∧ ¬ symmWt tOut ∧ ¬ weightRead tOut ∧ ¬ posWtRead tOut (inertia.scalarSplit 3 Pos.one)
+    ∧ ¬ symmWt tOutOff ∧ ¬ posWtRead tOutOff (inertia.scalarSplit 3 Pos.one)
+    ∧ (wtAt tOut.wt 5 5).oneValue (BPair.ofNat 7)
+    ∧ (getAt BPair.unit (getAt [] (denseWt tOut) 5) 5).oneValue BPair.unit := by
+  decide +kernel
+
 
 /-! The dual pairs: the invariance and the isometry at every
 member table, the spinor tables at both series, the defining
 tables, the joins, `G_2`'s fold, and the fixed members' tables;
 the letters' table holds none. -/
 
-example : dualRead (spinorT 2 false) ∧ dualRead (spinorT 3 false)
+theorem pin32 : dualRead (spinorT 2 false) ∧ dualRead (spinorT 3 false)
     ∧ dualRead (spinorT 4 true) ∧ dualRead (spinorT 5 true) := by decide +kernel
-example : dualRead (definingB 2) ∧ dualRead (definingC 3) ∧ dualRead (definingD 4) := by
+theorem pin33 : dualRead (definingB 2) ∧ dualRead (definingC 3) ∧ dualRead (definingD 4) := by
   decide +kernel
-example : dualRead (genB 2) ∧ dualRead (genB 3) ∧ dualRead (genD 4) ∧ dualRead genG2 := by
+theorem pin34 : dualRead (genB 2) ∧ dualRead (genB 3) ∧ dualRead (genD 4) ∧ dualRead genG2 := by
   decide +kernel
 /-! The `E_7` and `E_6` tables' dual reads at their three reads
 decided one by one, one kernel task per simple index at the
@@ -226,7 +373,7 @@ private theorem e7Inv5 : dualInvAt genE7 c7 5 = true := by decide +kernel
 private theorem e7Inv6 : dualInvAt genE7 c7 6 = true := by decide +kernel
 private theorem e7Iso : dualIso genE7 c7 Pos.one = true := by decide +kernel
 
-example : dualRead genE7 :=
+theorem pin35 : dualRead genE7 :=
   dualRead_intro genE7 c7 Pos.one rfl e7Entries
     (show (List.range 7).all (dualInvAt genE7 c7) = true from
       ground.all_range_succ_intro 6 (ground.all_range_succ_intro 5
@@ -245,7 +392,7 @@ private theorem e6Inv4 : dualInvAt genE6 c6 4 = true := by decide +kernel
 private theorem e6Inv5 : dualInvAt genE6 c6 5 = true := by decide +kernel
 private theorem e6Iso : dualIso genE6 c6 nu6 = true := by decide +kernel
 
-example : dualRead genE6 :=
+theorem pin36 : dualRead genE6 :=
   dualRead_intro genE6 c6 nu6 rfl e6Entries
     (show (List.range 6).all (dualInvAt genE6 c6) = true from
       ground.all_range_succ_intro 5 (ground.all_range_succ_intro 4
@@ -253,7 +400,7 @@ example : dualRead genE6 :=
           (ground.all_range_succ_intro 1 (ground.all_range_succ_intro 0 rfl e6Inv0)
             e6Inv1) e6Inv2) e6Inv3) e6Inv4) e6Inv5)
     e6Iso
-example : dualRead genF4 := by decide +kernel
+theorem pin37 : dualRead genF4 := by decide +kernel
 /-! The `E_8` adjoint table's dual read at its three reads decided
 one by one, the invariance one kernel task per simple index and
 the fold assembled at the range introduction, the read's own
@@ -273,7 +420,7 @@ private theorem e8Inv6 : dualInvAt adjointE8 c8 6 = true := by decide +kernel
 private theorem e8Inv7 : dualInvAt adjointE8 c8 7 = true := by decide +kernel
 private theorem e8Iso : dualIso adjointE8 c8 nu8 = true := by decide +kernel
 
-example : dualRead adjointE8 :=
+theorem pin38 : dualRead adjointE8 :=
   dualRead_intro adjointE8 c8 nu8 rfl e8Entries
     (show (List.range 8).all (dualInvAt adjointE8 c8) = true from
       ground.all_range_succ_intro 7 (ground.all_range_succ_intro 6
@@ -282,7 +429,7 @@ example : dualRead adjointE8 :=
             (ground.all_range_succ_intro 1 (ground.all_range_succ_intro 0 rfl e8Inv0)
               e8Inv1) e8Inv2) e8Inv3) e8Inv4) e8Inv5) e8Inv6) e8Inv7)
     e8Iso
-example : ¬ dualRead (lettersT 3) := by decide +kernel
+theorem pin39 : ¬ dualRead (lettersT 3) := by decide +kernel
 
 /-- The `B_2` spinor table's dual pair at one flipped side, the
 invariance parting. -/
@@ -291,7 +438,7 @@ private def flippedSpinC : Table :=
       (spinorC 2).map (fun e => if e.1 == 0 then (e.1, e.2.1, e.2.2.swap) else e),
       Pos.one) }
 
-example : ¬ dualRead flippedSpinC := by decide +kernel
+theorem pin40 : ¬ dualRead flippedSpinC := by decide +kernel
 
 /-- The `B_2` defining table at the identity in place of its dual
 pair, the three reads parting: the identity pairs each key with
@@ -299,14 +446,14 @@ itself at a weight off the unit. -/
 private def identDualB2 : Table :=
   { definingB 2 with dual := some (unitWt 5, posOfSucc 1) }
 
-example : ¬ dualRead identDualB2 := by decide +kernel
+theorem pin41 : ¬ dualRead identDualB2 := by decide +kernel
 
 /-- The `B_2` spinor table's dual pair at one entry moved to a key
 pair off the unit weight, the entries' read parting on its own. -/
 private def movedSpinC : SMap :=
   (spinorC 2).map (fun e => if e.1 == 0 then (e.1, e.1, e.2.2) else e)
 
-example : dualEntries (spinorT 2 false) movedSpinC = false
+theorem pin42 : dualEntries (spinorT 2 false) movedSpinC = false
     ∧ dualEntries (spinorT 2 false) (spinorC 2) = true := by decide +kernel
 
 /-- The `56`'s dual pair at the first key's row flipped, the pairs
@@ -316,7 +463,7 @@ private def flipped56 : Table :=
   { genE7 with dual := (genE7.dual).map (fun p =>
       (p.1.map (fun e => if e.1 == 0 then (e.1, e.2.1, e.2.2.swap) else e), p.2)) }
 
-example : ¬ dualRead flipped56 := by decide +kernel
+theorem pin43 : ¬ dualRead flipped56 := by decide +kernel
 
 /-! The fixed members' tables, one triple display per example: the
 `E_8` adjoint table at every simple index, the `56` at `E_7`'s
@@ -324,36 +471,36 @@ simples, the `27` with its dual at `E_6`'s, and `F_4`'s fold at
 every simple index, the folded short pair among them; and the key
 counts, `248`, `56`, `54` and `78`. -/
 
-example : adjointE8.keys = 248 ∧ genE7.keys = 56 ∧ genE6.keys = 54 ∧ genF4.keys = 78 := by
+theorem pin44 : adjointE8.keys = 248 ∧ genE7.keys = 56 ∧ genE6.keys = 54 ∧ genF4.keys = 78 := by
   decide +kernel
-example : tripleRead adjointE8 0 := by decide +kernel
-example : tripleRead adjointE8 1 := by decide +kernel
-example : tripleRead adjointE8 2 := by decide +kernel
-example : tripleRead adjointE8 3 := by decide +kernel
-example : tripleRead adjointE8 4 := by decide +kernel
-example : tripleRead adjointE8 5 := by decide +kernel
-example : tripleRead adjointE8 6 := by decide +kernel
-example : tripleRead adjointE8 7 := by decide +kernel
-example : tripleRead genE7 0 := by decide +kernel
-example : tripleRead genE7 1 := by decide +kernel
-example : tripleRead genE7 2 := by decide +kernel
-example : tripleRead genE7 3 := by decide +kernel
-example : tripleRead genE7 4 := by decide +kernel
-example : tripleRead genE7 5 := by decide +kernel
-example : tripleRead genE7 6 := by decide +kernel
-example : tripleRead genE6 0 := by decide +kernel
-example : tripleRead genE6 1 := by decide +kernel
-example : tripleRead genE6 2 := by decide +kernel
-example : tripleRead genE6 3 := by decide +kernel
-example : tripleRead genE6 4 := by decide +kernel
-example : tripleRead genE6 5 := by decide +kernel
-example : tripleRead genF4 0 := by decide +kernel
-example : tripleRead genF4 1 := by decide +kernel
-example : tripleRead genF4 2 := by decide +kernel
-example : tripleRead genF4 3 := by decide +kernel
-example : closureRead genE7 sertables.tableE7 (rootStore genE7 sertables.tableE7) := by decide +kernel
-example : closureRead genE6 sertables.tableE6 (rootStore genE6 sertables.tableE6) := by decide +kernel
-example : closureRead genF4 sertables.tableF4 (rootStore genF4 sertables.tableF4) := by decide +kernel
+theorem pin45 : tripleRead adjointE8 0 := by decide +kernel
+theorem pin46 : tripleRead adjointE8 1 := by decide +kernel
+theorem pin47 : tripleRead adjointE8 2 := by decide +kernel
+theorem pin48 : tripleRead adjointE8 3 := by decide +kernel
+theorem pin49 : tripleRead adjointE8 4 := by decide +kernel
+theorem pin50 : tripleRead adjointE8 5 := by decide +kernel
+theorem pin51 : tripleRead adjointE8 6 := by decide +kernel
+theorem pin52 : tripleRead adjointE8 7 := by decide +kernel
+theorem pin53 : tripleRead genE7 0 := by decide +kernel
+theorem pin54 : tripleRead genE7 1 := by decide +kernel
+theorem pin55 : tripleRead genE7 2 := by decide +kernel
+theorem pin56 : tripleRead genE7 3 := by decide +kernel
+theorem pin57 : tripleRead genE7 4 := by decide +kernel
+theorem pin58 : tripleRead genE7 5 := by decide +kernel
+theorem pin59 : tripleRead genE7 6 := by decide +kernel
+theorem pin60 : tripleRead genE6 0 := by decide +kernel
+theorem pin61 : tripleRead genE6 1 := by decide +kernel
+theorem pin62 : tripleRead genE6 2 := by decide +kernel
+theorem pin63 : tripleRead genE6 3 := by decide +kernel
+theorem pin64 : tripleRead genE6 4 := by decide +kernel
+theorem pin65 : tripleRead genE6 5 := by decide +kernel
+theorem pin66 : tripleRead genF4 0 := by decide +kernel
+theorem pin67 : tripleRead genF4 1 := by decide +kernel
+theorem pin68 : tripleRead genF4 2 := by decide +kernel
+theorem pin69 : tripleRead genF4 3 := by decide +kernel
+theorem pin70 : closureRead genE7 sertables.tableE7 (rootStore genE7 sertables.tableE7) := by decide +kernel
+theorem pin71 : closureRead genE6 sertables.tableE6 (rootStore genE6 sertables.tableE6) := by decide +kernel
+theorem pin72 : closureRead genF4 sertables.tableF4 (rootStore genF4 sertables.tableF4) := by decide +kernel
 
 /-- The `E_8` adjoint table's word store, the commutator words
 along the fold descent at the positive folds in height order,
@@ -618,7 +765,7 @@ private theorem e8Clo80 : (List.range 20).all (fun r =>
 private theorem e8Clo100 : (List.range 20).all (fun r =>
     closureAt adjointE8 sertables.tableE8 e8Store (100 + r)) = true := by decide +kernel
 
-example : closureRead adjointE8 sertables.tableE8 e8Store :=
+theorem pin73 : closureRead adjointE8 sertables.tableE8 e8Store :=
   closureRead_intro adjointE8 sertables.tableE8 e8Store e8Cover
     (show (List.range 120).all (closureAt adjointE8 sertables.tableE8 e8Store) = true
       from
@@ -628,3 +775,48 @@ example : closureRead adjointE8 sertables.tableE8 e8Store :=
         (ground.all_range_block_intro 40
         (ground.all_range_block_intro 20
         (ground.all_range_block_intro 0 rfl 20 e8Clo0) 20 e8Clo20) 20 e8Clo40) 20 e8Clo60) 20 e8Clo80) 20 e8Clo100)
+
+/-- The folded table's key weights are its stored diagonal
+columns at every valid key and simple index. -/
+theorem pin86 (k i : Nat) (hk : k < genG2.keys) (hi : i < genG2.hdiag.length) :
+    getAt BPair.unit (keyWeight genG2 k) i = getAt BPair.unit (getAt [] genG2.hdiag i) k :=
+  keyWeight_getAt genG2 genG2_diagonals.1 k i hk hi
+
+theorem pin87 (k : Nat) (hk : k < genG2.keys) : (keyWeight genG2 k).length = 2 :=
+  keyWeight_length genG2 genG2_diagonals.1 genG2_diagonals.2 k hk
+
+theorem pin88 (i : Nat) (hi : i < genG2.rank) :
+    keyMoveRead genG2 (getAt [] genG2.raises i) false (getAt [] sertables.tableG2.cartan i)
+      ∧ keyMoveRead genG2 (getAt [] genG2.lowers i) true (getAt [] sertables.tableG2.cartan i) :=
+  genG2_raisingGrade i hi
+
+theorem pin89 (i : Nat) (hi : i < genG2.rank) :
+    keyMoveRead genG2 (getAt [] genG2.lowers i) false (poly.neg (getAt [] sertables.tableG2.cartan i))
+      ∧ keyMoveRead genG2 (getAt [] genG2.raises i) true (poly.neg (getAt [] sertables.tableG2.cartan i)) :=
+  genG2_loweringGrade i hi
+
+/-- A wrong direction, a wrong source key and a short move list
+are refused independently by the finite grading read. -/
+theorem pin90 : ¬ keyMoveRead genG2 (getAt [] genG2.lowers 0) false (getAt [] sertables.tableG2.cartan 0)
+    ∧ ¬ keyMoveRead genG2 [(0, 8, BPair.ofNat 1)] false [BPair.unit, BPair.unit]
+    ∧ ¬ keyMoveRead genG2 [] false [BPair.unit] := by decide +kernel
+
+/-- A key off the carrier has a vacant weight; shortened
+coroot diagonals truncate the transposed key family. -/
+theorem pin91 : (keyWeight genG2 8).length = 0
+    ∧ (keyWeight { genG2 with hdiag := [[BPair.ofNat 1]] } 1).length = 0 := by
+  decide +kernel
+
+/-- The shifted coroot heights read the actual eight-key table. -/
+theorem pin92 : keyHeightsG2 = [6, 5, 4, 3, 0, 1, 2, 3] := by decide +kernel
+
+/-- Sparse-map equivalence reads every entry, including off-support keys. -/
+theorem pin93 (A B : SMap) (h : sOneValue A B = true) (t s : Nat) :
+    (wtAt A t s).oneValue (wtAt B t s) := sOneValue_wtAt A B h t s
+
+/-- Both actual simple maps of G2 read their stored transpose pair. -/
+theorem pin94 : ∀ i, i < genG2.rank →
+    sOneValue (sT (getAt [] genG2.raises i)) (getAt [] genG2.lowers i) = true ∧
+    sOneValue (sT (getAt [] genG2.lowers i)) (getAt [] genG2.raises i) = true := genG2_transpose
+
+end memtable

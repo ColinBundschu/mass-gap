@@ -47,9 +47,11 @@ key's comparison at the key and refused at its predecessor, the
 key's read at the residue two assembled by kernel reduction, and the
 tied scale under the ceiling at the residue-two key.
 -/
+
+namespace main
 set_option maxHeartbeats 4000000
 
-open ground gentable sertables row main lattice elim inertia fusion
+open ground gentable sertables row lattice elim inertia fusion
 
 /-! Clause (ii) at every committed member through the theorem
 routes: `clauseII` is definitionally `thm:closing`'s read at the
@@ -58,79 +60,79 @@ theorem's own battery, and the wiring reads here through the
 occupancy door at the same members with the series' routes at
 ranks past every decide. -/
 
-example : clauseII (.A 0) := clauseII_A 0
-example : clauseII (.A 1) := clauseII_A 1
-example : clauseII (.A 4) := clauseII_A 4
-example : clauseII (.A 30) := clauseII_A 30
-example : clauseII (.B 0) := clauseII_B 0
-example : clauseII (.B 1) := clauseII_B 1
-example : clauseII (.B 2) := clauseII_B 2
-example : clauseII (.B 28) := clauseII_B 28
-example : clauseII (.C 0) := clauseII_C 0
-example : clauseII (.C 1) := clauseII_C 1
-example : clauseII (.C 28) := clauseII_C 28
-example : clauseII (.D 0) := clauseII_D 0
-example : clauseII (.D 1) := clauseII_D 1
-example : clauseII (.D 28) := clauseII_D 28
-example : clauseII .G2 := clauseII_all .G2
-example : clauseII .F4 := clauseII_all .F4
-example : clauseII .E6 := clauseII_all .E6
-example : clauseII .E7 := clauseII_all .E7
-example : clauseII .E8 := clauseII_all .E8
+theorem pin1 : clauseII (.A 0) := clauseII_A 0
+theorem pin2 : clauseII (.A 1) := clauseII_A 1
+theorem pin3 : clauseII (.A 4) := clauseII_A 4
+theorem pin4 : clauseII (.A 30) := clauseII_A 30
+theorem pin5 : clauseII (.B 0) := clauseII_B 0
+theorem pin6 : clauseII (.B 1) := clauseII_B 1
+theorem pin7 : clauseII (.B 2) := clauseII_B 2
+theorem pin8 : clauseII (.B 28) := clauseII_B 28
+theorem pin9 : clauseII (.C 0) := clauseII_C 0
+theorem pin10 : clauseII (.C 1) := clauseII_C 1
+theorem pin11 : clauseII (.C 28) := clauseII_C 28
+theorem pin12 : clauseII (.D 0) := clauseII_D 0
+theorem pin13 : clauseII (.D 1) := clauseII_D 1
+theorem pin14 : clauseII (.D 28) := clauseII_D 28
+theorem pin15 : clauseII .G2 := clauseII_all .G2
+theorem pin16 : clauseII .F4 := clauseII_all .F4
+theorem pin17 : clauseII .E6 := clauseII_all .E6
+theorem pin18 : clauseII .E7 := clauseII_all .E7
+theorem pin19 : clauseII .E8 := clauseII_all .E8
 
 /-! The residues and bases through the carried datum, the members
 item's displayed values. -/
 
-example : main.residue (.A 0) = 1 := by decide +kernel
-example : main.residue (.B 0) = 2 := by decide +kernel
-example : main.residue (.C 0) = 3 := by decide +kernel
-example : main.residue (.D 0) = 5 := by decide +kernel
-example : main.residue .E8 = 29 := by decide +kernel
-example : main.base (.A 0) = 1 := by decide +kernel
-example : main.base (.A 1) = 2 := by decide +kernel
-example : main.base (.B 0) = 1 := by decide +kernel
-example : main.base .E8 = 1 := by decide +kernel
+theorem pin20 : main.residue (.A 0) = 1 := by decide +kernel
+theorem pin21 : main.residue (.B 0) = 2 := by decide +kernel
+theorem pin22 : main.residue (.C 0) = 3 := by decide +kernel
+theorem pin23 : main.residue (.D 0) = 5 := by decide +kernel
+theorem pin24 : main.residue .E8 = 29 := by decide +kernel
+theorem pin25 : main.base (.A 0) = 1 := by decide +kernel
+theorem pin26 : main.base (.A 1) = 2 := by decide +kernel
+theorem pin27 : main.base (.B 0) = 1 := by decide +kernel
+theorem pin28 : main.base .E8 = 1 := by decide +kernel
 
 /-! The low-index coincidences at the floors.  `Sp(1)` at
 `SU(2)`: the exact table identity. -/
 
-example : (tableC 1).rank = (tableA 1).rank := rfl
-example : (tableC 1).lenNums = (tableA 1).lenNums := rfl
-example : (tableC 1).lenDen = (tableA 1).lenDen := rfl
-example : (tableC 1).cartan = (tableA 1).cartan := rfl
-example : (tableC 1).posFolds = (tableA 1).posFolds := rfl
-example : (tableC 1).thetaFold = (tableA 1).thetaFold := rfl
+theorem pin29 : (tableC 1).rank = (tableA 1).rank := rfl
+theorem pin30 : (tableC 1).lenNums = (tableA 1).lenNums := rfl
+theorem pin31 : (tableC 1).lenDen = (tableA 1).lenDen := rfl
+theorem pin32 : (tableC 1).cartan = (tableA 1).cartan := rfl
+theorem pin33 : (tableC 1).posFolds = (tableA 1).posFolds := rfl
+theorem pin34 : (tableC 1).thetaFold = (tableA 1).thetaFold := rfl
 
 /-! `Sp(2)` at `Spin(5)` and `Spin(6)` at `SU(4)`: the derived
 reads' agreements across the relabelings. -/
 
-example : gentable.residue (tableC 2) = gentable.residue (tableB 2) := by
+theorem pin35 : gentable.residue (tableC 2) = gentable.residue (tableB 2) := by
   decide +kernel
-example : dTheta (tableC 2) = dTheta (tableB 2) := by decide +kernel
-example : supportCount (tableC 2) = supportCount (tableB 2) := by decide +kernel
-example : posCount (tableC 2) = posCount (tableB 2) := by decide +kernel
-example : gentable.residue (tableD 3) = gentable.residue (tableA 3) := by
+theorem pin36 : dTheta (tableC 2) = dTheta (tableB 2) := by decide +kernel
+theorem pin37 : supportCount (tableC 2) = supportCount (tableB 2) := by decide +kernel
+theorem pin38 : posCount (tableC 2) = posCount (tableB 2) := by decide +kernel
+theorem pin39 : gentable.residue (tableD 3) = gentable.residue (tableA 3) := by
   decide +kernel
-example : dTheta (tableD 3) = dTheta (tableA 3) := by decide +kernel
-example : supportCount (tableD 3) = supportCount (tableA 3) := by decide +kernel
-example : posCount (tableD 3) = posCount (tableA 3) := by decide +kernel
+theorem pin40 : dTheta (tableD 3) = dTheta (tableA 3) := by decide +kernel
+theorem pin41 : supportCount (tableD 3) = supportCount (tableA 3) := by decide +kernel
+theorem pin42 : posCount (tableD 3) = posCount (tableA 3) := by decide +kernel
 
 /-! `Spin(4)`'s exit from the simple list: the fork clause
 degenerates to two disjoint keys at `ℓ = 2`. -/
 
-example : (tableD 2).cartan
+theorem pin43 : (tableD 2).cartan
     = [[BPair.ofNat 2, BPair.unit], [BPair.unit, BPair.ofNat 2]] := rfl
 
 /-! The wiring's base coherence: the interface's `c1` against the
 table's support count, one value at the walked members. -/
 
-example : (data (.A 0)).c1 = base (.A 0) := by decide +kernel
-example : (data (.A 1)).c1 = base (.A 1) := by decide +kernel
-example : (data (.B 0)).c1 = base (.B 0) := by decide +kernel
-example : (data (.B 1)).c1 = base (.B 1) := by decide +kernel
-example : (data (.C 0)).c1 = base (.C 0) := by decide +kernel
-example : (data (.D 0)).c1 = base (.D 0) := by decide +kernel
-example : (data .G2).c1 = base .G2 := by decide +kernel
+theorem pin44 : (data (.A 0)).c1 = base (.A 0) := by decide +kernel
+theorem pin45 : (data (.A 1)).c1 = base (.A 1) := by decide +kernel
+theorem pin46 : (data (.B 0)).c1 = base (.B 0) := by decide +kernel
+theorem pin47 : (data (.B 1)).c1 = base (.B 1) := by decide +kernel
+theorem pin48 : (data (.C 0)).c1 = base (.C 0) := by decide +kernel
+theorem pin49 : (data (.D 0)).c1 = base (.D 0) := by decide +kernel
+theorem pin50 : (data .G2).c1 = base .G2 := by decide +kernel
 
 /-! The wiring's θ-Casimir read: `c2D`, the θ key's Gram
 evaluation, reads `C₂(θ) = 2(r+1)` at the member's clearing scale
@@ -138,18 +140,18 @@ evaluation, reads `C₂(θ) = 2(r+1)` at the member's clearing scale
 member with the five fixed among them; the `A`-arm is the theorem
 at every residue (`casfloor.thetaRead`, `dfQ(θ) = 2d_f²`). -/
 
-example (g : Nat) :
+theorem pin51 (g : Nat) :
     (data (.A g)).c2N ((data (.A g)).theta) = (data (.A g)).c2D :=
   casfloor.thetaRead g
-example : (data (.B 0)).c2D = 24 := by decide +kernel
-example : (data (.B 1)).c2D = 40 := by decide +kernel
-example : (data (.C 0)).c2D = 32 := by decide +kernel
-example : (data (.D 0)).c2D = 96 := by decide +kernel
-example : (data .G2).c2D = 48 := by decide +kernel
-example : (data .F4).c2D = 36 := by decide +kernel
-example : (data .E6).c2D = 144 := by decide +kernel
-example : (data .E7).c2D = 144 := by decide +kernel
-example : (data .E8).c2D = 120 := by decide +kernel
+theorem pin52 : (data (.B 0)).c2D = 24 := by decide +kernel
+theorem pin53 : (data (.B 1)).c2D = 40 := by decide +kernel
+theorem pin54 : (data (.C 0)).c2D = 32 := by decide +kernel
+theorem pin55 : (data (.D 0)).c2D = 96 := by decide +kernel
+theorem pin56 : (data .G2).c2D = 48 := by decide +kernel
+theorem pin57 : (data .F4).c2D = 36 := by decide +kernel
+theorem pin58 : (data .E6).c2D = 144 := by decide +kernel
+theorem pin59 : (data .E7).c2D = 144 := by decide +kernel
+theorem pin60 : (data .E8).c2D = 120 := by decide +kernel
 
 /-! The member windows at the committed square, the free-end
 level the member's floor. -/
@@ -163,29 +165,29 @@ the clearing twenty-four, the level its four-link read. -/
 four-link read. -/
 private def etB : Mat := [[u, u], [u, ⟨41, 1⟩]]
 
-example : K.freeGap (data (.B 0)) square 40 (idMat 2) = etB
+theorem pin61 : K.freeGap (data (.B 0)) square 40 (idMat 2) = etB
     ∧ freeend.levelRead (data (.B 0)) square 40 40 := by decide +kernel
-example : freeend.belowFloor (data (.B 0)) 40 10 := by decide +kernel
-example : carrier.contentN (data (.B 0))
+theorem pin62 : fusion.belowFloor (data (.B 0)) 40 10 := by decide +kernel
+theorem pin63 : carrier.contentN (data (.B 0))
     (freeend.attainConf (data (.B 0)) square sqPlaq [0, 1]) = 40 := by
   decide +kernel
-example : carrier.occupied (data (.B 0)) square
+theorem pin64 : carrier.occupied (data (.B 0)) square
     (freeend.attainConf (data (.B 0)) square sqPlaq [0, 1]) = true := by
   decide +kernel
-example : K.floorRead etB (idMat 2) u 1
+theorem pin65 : K.floorRead etB (idMat 2) u 1
     (⟨⟨exch2, by decide +kernel⟩, ⟨exch2w, by decide +kernel⟩, [.one ⟨41, 1⟩], 1, rfl⟩
       : Split 2) := by decide +kernel
-example : K.cutRead (matMul etB etB) etB 4 10 1
+theorem pin66 : K.cutRead (matMul etB etB) etB 4 10 1
     (⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [], 2, rfl⟩ : Split 2) := by
   decide +kernel
-example : splitRead
+theorem pin67 : splitRead
     (siteDatum (matScale 1 (matMul etB etB)) (matScale 44 etB))
     (⟨⟨exch2, by decide +kernel⟩, ⟨exch2w, by decide +kernel⟩, [.one ⟨1, 161⟩], 1, rfl⟩
       : Split 2) := by decide +kernel
-example : ¬ K.cutRead (matMul etB etB) etB 4 11 1
+theorem pin68 : ¬ K.cutRead (matMul etB etB) etB 4 11 1
     (⟨⟨exch2, by decide +kernel⟩, ⟨exch2w, by decide +kernel⟩, [.one ⟨1, 161⟩], 1, rfl⟩
       : Split 2) := by decide +kernel
-example : certconstruct.witnessRead (matMul etB etB)
+theorem pin69 : certconstruct.witnessRead (matMul etB etB)
     (matScale 44 etB) [u, ⟨2, 1⟩] := by decide +kernel
 
 /-! The pencil interface at `Spin(5)`'s floor window, the index the
@@ -196,8 +198,8 @@ member's fusion counts, `winM`'s diagonal, capped two-sidedly at the
 adjoint dimension ten (`thm:pairpencil`'s fields at a loop window
 through `thm:main`'s wiring). -/
 
-example : (data (.B 0)).dim ((data (.B 0)).theta) = 10 := by decide +kernel
-example : pairpencil.pencilRead (data (.B 0)) square 40 2
+theorem pin70 : (data (.B 0)).dim ((data (.B 0)).theta) = 10 := by decide +kernel
+theorem pin71 : pairpencil.pencilRead (data (.B 0)) square 40 2
     ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) 1 (winE (.B 0))
     (idMat 2) (winM (.B 0)) (inertia.mkSplit 2 (idMat 2))
     [(winM (.B 0),
@@ -216,7 +218,7 @@ gram doubled alone. -/
 
 private def winMDbl : Mat := [[u, u], [u, ⟨3, 1⟩]]
 
-example : pairpencil.loopLabel (data (.B 0)) square sqPlaq
+theorem pin72 : pairpencil.loopLabel (data (.B 0)) square sqPlaq
       (List.replicate 4 (ground.getAt (data (.B 0)).unit (winLabels (.B 0)) 0))
       = some (ground.getAt (data (.B 0)).unit (winLabels (.B 0)) 0)
     ∧ pairpencil.loopLabel (data (.B 0)) square sqPlaq
@@ -250,10 +252,10 @@ corners the spinor's coevaluations at the count four, reads the
 fusion count one the loop clause takes; and the vacuum's own
 entry, the boundary links' lists vacant at the `θ` block alone,
 reads the vacant contraction against the count's unit. -/
-example : pairpencil.contractAt (data (.B 0)) square
+theorem pin73 : pairpencil.contractAt (data (.B 0)) square
     ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) 1 (idMat 2)
     (winM (.B 0)) sqPlaq 1 1 = true := by decide +kernel
-example : pairpencil.contractAt (data (.B 0)) square
+theorem pin74 : pairpencil.contractAt (data (.B 0)) square
     ((winLabels (.B 0)).map (fun l => List.replicate 4 l)) 1 (idMat 2)
     (winM (.B 0)) sqPlaq 0 0 = true := by decide +kernel
 
@@ -262,29 +264,29 @@ floor `14` at the clearing thirty-two. -/
 
 private def etC : Mat := [[u, u], [u, ⟨57, 1⟩]]
 
-example : K.freeGap (data (.C 0)) square 56 (idMat 2) = etC
+theorem pin75 : K.freeGap (data (.C 0)) square 56 (idMat 2) = etC
     ∧ freeend.levelRead (data (.C 0)) square 56 56 := by decide +kernel
-example : freeend.belowFloor (data (.C 0)) 56 14 := by decide +kernel
-example : carrier.contentN (data (.C 0))
+theorem pin76 : fusion.belowFloor (data (.C 0)) 56 14 := by decide +kernel
+theorem pin77 : carrier.contentN (data (.C 0))
     (freeend.attainConf (data (.C 0)) square sqPlaq [1, 0, 0]) = 56 := by
   decide +kernel
-example : carrier.occupied (data (.C 0)) square
+theorem pin78 : carrier.occupied (data (.C 0)) square
     (freeend.attainConf (data (.C 0)) square sqPlaq [1, 0, 0]) = true := by
   decide +kernel
-example : K.floorRead etC (idMat 2) u 1
+theorem pin79 : K.floorRead etC (idMat 2) u 1
     (⟨⟨exch2, by decide +kernel⟩, ⟨exch2w, by decide +kernel⟩, [.one ⟨57, 1⟩], 1, rfl⟩
       : Split 2) := by decide +kernel
-example : K.cutRead (matMul etC etC) etC 4 14 1
+theorem pin80 : K.cutRead (matMul etC etC) etC 4 14 1
     (⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [], 2, rfl⟩ : Split 2) := by
   decide +kernel
-example : splitRead
+theorem pin81 : splitRead
     (siteDatum (matScale 1 (matMul etC etC)) (matScale 60 etC))
     (⟨⟨exch2, by decide +kernel⟩, ⟨exch2w, by decide +kernel⟩, [.one ⟨1, 225⟩], 1, rfl⟩
       : Split 2) := by decide +kernel
-example : ¬ K.cutRead (matMul etC etC) etC 4 15 1
+theorem pin82 : ¬ K.cutRead (matMul etC etC) etC 4 15 1
     (⟨⟨exch2, by decide +kernel⟩, ⟨exch2w, by decide +kernel⟩, [.one ⟨1, 225⟩], 1, rfl⟩
       : Split 2) := by decide +kernel
-example : certconstruct.witnessRead (matMul etC etC)
+theorem pin83 : certconstruct.witnessRead (matMul etC etC)
     (matScale 60 etC) [u, ⟨2, 1⟩] := by decide +kernel
 
 /-! `G_2`'s window at cutoff ninety-six: the short dominant root's
@@ -293,36 +295,36 @@ read beside the series'. -/
 
 private def etG : Mat := [[u, u], [u, ⟨97, 1⟩]]
 
-example : K.freeGap (data .G2) square 96 (idMat 2) = etG
+theorem pin84 : K.freeGap (data .G2) square 96 (idMat 2) = etG
     ∧ freeend.levelRead (data .G2) square 96 96 := by decide +kernel
-example : freeend.belowFloor (data .G2) 96 24 := by decide +kernel
-example : carrier.contentN (data .G2)
+theorem pin85 : fusion.belowFloor (data .G2) 96 24 := by decide +kernel
+theorem pin86 : carrier.contentN (data .G2)
     (freeend.attainConf (data .G2) square sqPlaq [1, 0]) = 96 := by
   decide +kernel
-example : carrier.occupied (data .G2) square
+theorem pin87 : carrier.occupied (data .G2) square
     (freeend.attainConf (data .G2) square sqPlaq [1, 0]) = true := by
   decide +kernel
-example : K.floorRead etG (idMat 2) u 1
+theorem pin88 : K.floorRead etG (idMat 2) u 1
     (⟨⟨exch2, by decide +kernel⟩, ⟨exch2w, by decide +kernel⟩, [.one ⟨97, 1⟩], 1, rfl⟩
       : Split 2) := by decide +kernel
-example : K.cutRead (matMul etG etG) etG 4 24 1
+theorem pin89 : K.cutRead (matMul etG etG) etG 4 24 1
     (⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [], 2, rfl⟩ : Split 2) := by
   decide +kernel
-example : splitRead
+theorem pin90 : splitRead
     (siteDatum (matScale 1 (matMul etG etG)) (matScale 100 etG))
     (⟨⟨exch2, by decide +kernel⟩, ⟨exch2w, by decide +kernel⟩, [.one ⟨1, 385⟩], 1, rfl⟩
       : Split 2) := by decide +kernel
-example : ¬ K.cutRead (matMul etG etG) etG 4 25 1
+theorem pin91 : ¬ K.cutRead (matMul etG etG) etG 4 25 1
     (⟨⟨exch2, by decide +kernel⟩, ⟨exch2w, by decide +kernel⟩, [.one ⟨1, 385⟩], 1, rfl⟩
       : Split 2) := by decide +kernel
-example : certconstruct.witnessRead (matMul etG etG)
+theorem pin92 : certconstruct.witnessRead (matMul etG etG)
     (matScale 100 etG) [u, ⟨2, 1⟩] := by decide +kernel
 
 /-! The `A`-arm's window through the wiring: the fundamental floor
 `3` at the clearing eight, `lem:freeend`'s label-calculus read at
 the carried datum. -/
 
-example : freeend.levelRead (data (.A 0)) square 12 12 := by
+theorem pin93 : freeend.levelRead (data (.A 0)) square 12 12 := by
   decide +kernel
 
 /-! Clause (i)'s member sweeps at the committed floor windows: the
@@ -347,95 +349,95 @@ refusing the count; and the universal theorem's routes beside the decided twins 
 `clauseI_all` outright, one series route per series at a rank past
 every decide. -/
 
-example : clauseI (.A 0) := by decide +kernel
-example : clauseI (.A 1) := by decide +kernel
-example : clauseI (.A 2) := by decide +kernel
-example : clauseI (.A 3) := by decide +kernel
-example : clauseI (.A 4) := by decide +kernel
-example : clauseI (.B 1) := by decide +kernel
-example : clauseI (.B 2) := by decide +kernel
-example : clauseI (.C 0) := by decide +kernel
-example : clauseI (.C 1) := by decide +kernel
-example : clauseI (.D 0) := clauseI_all (.D 0)
-example : clauseI (.D 1) := by decide +kernel
-example : clauseI .G2 := by decide +kernel
-example : clauseI .F4 := by decide +kernel
-example : clauseI .E6 := by decide +kernel
-example : clauseI .E7 := by decide +kernel
-example : clauseI .E8 := clauseI_all .E8
+theorem pin94 : clauseI (.A 0) := by decide +kernel
+theorem pin95 : clauseI (.A 1) := by decide +kernel
+theorem pin96 : clauseI (.A 2) := by decide +kernel
+theorem pin97 : clauseI (.A 3) := by decide +kernel
+theorem pin98 : clauseI (.A 4) := by decide +kernel
+theorem pin99 : clauseI (.B 1) := by decide +kernel
+theorem pin100 : clauseI (.B 2) := by decide +kernel
+theorem pin101 : clauseI (.C 0) := by decide +kernel
+theorem pin102 : clauseI (.C 1) := by decide +kernel
+theorem pin103 : clauseI (.D 0) := clauseI_all (.D 0)
+theorem pin104 : clauseI (.D 1) := by decide +kernel
+theorem pin105 : clauseI .G2 := by decide +kernel
+theorem pin106 : clauseI .F4 := by decide +kernel
+theorem pin107 : clauseI .E6 := by decide +kernel
+theorem pin108 : clauseI .E7 := by decide +kernel
+theorem pin109 : clauseI .E8 := clauseI_all .E8
 
-example : clauseI (.A 7) := clauseI_all (.A 7)
-example : clauseI (.B 30) := clauseI_all (.B 30)
-example : clauseI (.C 30) := clauseI_all (.C 30)
-example : clauseI (.D 30) := clauseI_all (.D 30)
+theorem pin110 : clauseI (.A 7) := clauseI_all (.A 7)
+theorem pin111 : clauseI (.B 30) := clauseI_all (.B 30)
+theorem pin112 : clauseI (.C 30) := clauseI_all (.C 30)
+theorem pin113 : clauseI (.D 30) := clauseI_all (.D 30)
 
 /-- `Spin(5)`'s clause read, named once and consumed at its own pin
 and the theorem route's hypothesis. -/
 private theorem clB0 : clauseI (.B 0) := by decide +kernel
 
-example : clauseI (.B 0) := clB0
+theorem pin114 : clauseI (.B 0) := clB0
 
 /-! The window data: the enumeration ties at the committed orders,
 the cutoffs the floor contents' four-link reads, the magnetic
 matrices the wiring's own walks, and the electric matrices the
 standing committed level gaps. -/
 
-example : (winLabels (.A 0)).length + 1 = winO (.A 0) := by decide +kernel
-example : (winLabels (.A 1)).length + 1 = winO (.A 1) := by decide +kernel
-example : (winLabels (.A 2)).length + 1 = winO (.A 2) := by decide +kernel
-example : (winLabels (.A 3)).length + 1 = winO (.A 3) := by decide +kernel
-example : (winLabels (.A 4)).length + 1 = winO (.A 4) := by decide +kernel
-example : (winLabels (.B 0)).length + 1 = winO (.B 0) := by decide +kernel
-example : (winLabels (.B 1)).length + 1 = winO (.B 1) := by decide +kernel
-example : (winLabels (.B 2)).length + 1 = winO (.B 2) := by decide +kernel
-example : (winLabels (.C 0)).length + 1 = winO (.C 0) := by decide +kernel
-example : (winLabels (.C 1)).length + 1 = winO (.C 1) := by decide +kernel
-example : (winLabels (.D 0)).length + 1 = winO (.D 0) := by decide +kernel
-example : (winLabels (.D 1)).length + 1 = winO (.D 1) := by decide +kernel
-example : (winLabels .G2).length + 1 = winO .G2 := by decide +kernel
-example : (winLabels .F4).length + 1 = winO .F4 := by decide +kernel
-example : (winLabels .E6).length + 1 = winO .E6 := by decide +kernel
-example : (winLabels .E7).length + 1 = winO .E7 := by decide +kernel
-example : (winLabels .E8).length + 1 = winO .E8 := by decide +kernel
+theorem pin115 : (winLabels (.A 0)).length + 1 = winO (.A 0) := by decide +kernel
+theorem pin116 : (winLabels (.A 1)).length + 1 = winO (.A 1) := by decide +kernel
+theorem pin117 : (winLabels (.A 2)).length + 1 = winO (.A 2) := by decide +kernel
+theorem pin118 : (winLabels (.A 3)).length + 1 = winO (.A 3) := by decide +kernel
+theorem pin119 : (winLabels (.A 4)).length + 1 = winO (.A 4) := by decide +kernel
+theorem pin120 : (winLabels (.B 0)).length + 1 = winO (.B 0) := by decide +kernel
+theorem pin121 : (winLabels (.B 1)).length + 1 = winO (.B 1) := by decide +kernel
+theorem pin122 : (winLabels (.B 2)).length + 1 = winO (.B 2) := by decide +kernel
+theorem pin123 : (winLabels (.C 0)).length + 1 = winO (.C 0) := by decide +kernel
+theorem pin124 : (winLabels (.C 1)).length + 1 = winO (.C 1) := by decide +kernel
+theorem pin125 : (winLabels (.D 0)).length + 1 = winO (.D 0) := by decide +kernel
+theorem pin126 : (winLabels (.D 1)).length + 1 = winO (.D 1) := by decide +kernel
+theorem pin127 : (winLabels .G2).length + 1 = winO .G2 := by decide +kernel
+theorem pin128 : (winLabels .F4).length + 1 = winO .F4 := by decide +kernel
+theorem pin129 : (winLabels .E6).length + 1 = winO .E6 := by decide +kernel
+theorem pin130 : (winLabels .E7).length + 1 = winO .E7 := by decide +kernel
+theorem pin131 : (winLabels .E8).length + 1 = winO .E8 := by decide +kernel
 
-example : winCut (.A 0) = 12 ∧ winCut (.A 1) = 32 ∧ winCut (.A 2) = 60
+theorem pin132 : winCut (.A 0) = 12 ∧ winCut (.A 1) = 32 ∧ winCut (.A 2) = 60
     ∧ winCut (.B 0) = 40 ∧ winCut (.B 1) = 84 ∧ winCut (.B 2) = 128
     ∧ winCut (.C 0) = 56 ∧ winCut (.C 1) = 72 ∧ winCut (.D 0) = 224
     ∧ winCut (.D 1) = 288 ∧ winCut .G2 = 96 ∧ winCut .F4 = 96
     ∧ winCut .E6 = 416 ∧ winCut .E7 = 456 ∧ winCut .E8 = 480 := by
   decide +kernel
 
-example : winM (.A 0) = pairpencil.loopMag (data (.A 0))
+theorem pin133 : winM (.A 0) = pairpencil.loopMag (data (.A 0))
     (winLabels (.A 0)) := by decide +kernel
-example : winM (.A 1) = pairpencil.loopMag (data (.A 1))
+theorem pin134 : winM (.A 1) = pairpencil.loopMag (data (.A 1))
     (winLabels (.A 1)) := by decide +kernel
-example : winM (.A 2) = pairpencil.loopMag (data (.A 2))
+theorem pin135 : winM (.A 2) = pairpencil.loopMag (data (.A 2))
     (winLabels (.A 2)) := by decide +kernel
-example : winM (.B 0) = pairpencil.loopMag (data (.B 0))
+theorem pin136 : winM (.B 0) = pairpencil.loopMag (data (.B 0))
     (winLabels (.B 0)) := by decide +kernel
-example : winM (.B 1) = pairpencil.loopMag (data (.B 1))
+theorem pin137 : winM (.B 1) = pairpencil.loopMag (data (.B 1))
     (winLabels (.B 1)) := by decide +kernel
-example : winM (.B 2) = pairpencil.loopMag (data (.B 2))
+theorem pin138 : winM (.B 2) = pairpencil.loopMag (data (.B 2))
     (winLabels (.B 2)) := by decide +kernel
-example : winM (.C 0) = pairpencil.loopMag (data (.C 0))
+theorem pin139 : winM (.C 0) = pairpencil.loopMag (data (.C 0))
     (winLabels (.C 0)) := by decide +kernel
-example : winM (.C 1) = pairpencil.loopMag (data (.C 1))
+theorem pin140 : winM (.C 1) = pairpencil.loopMag (data (.C 1))
     (winLabels (.C 1)) := by decide +kernel
-example : winM (.D 0) = pairpencil.loopMag (data (.D 0))
+theorem pin141 : winM (.D 0) = pairpencil.loopMag (data (.D 0))
     (winLabels (.D 0)) := by decide +kernel
-example : winM (.D 1) = pairpencil.loopMag (data (.D 1))
+theorem pin142 : winM (.D 1) = pairpencil.loopMag (data (.D 1))
     (winLabels (.D 1)) := by decide +kernel
-example : winM .G2 = pairpencil.loopMag (data .G2)
+theorem pin143 : winM .G2 = pairpencil.loopMag (data .G2)
     (winLabels .G2) := by decide +kernel
-example : winM .F4 = pairpencil.loopMag (data .F4)
+theorem pin144 : winM .F4 = pairpencil.loopMag (data .F4)
     (winLabels .F4) := by decide +kernel
-example : winM .E6 = pairpencil.loopMag (data .E6)
+theorem pin145 : winM .E6 = pairpencil.loopMag (data .E6)
     (winLabels .E6) := by decide +kernel
 
-example : winE (.B 0) = etB := by decide +kernel
-example : winE (.C 0) = etC := by decide +kernel
-example : winE .G2 = etG := by decide +kernel
-example : winE (.A 1) = K.freeGap (data (.A 1)) square (winCut (.A 1))
+theorem pin146 : winE (.B 0) = etB := by decide +kernel
+theorem pin147 : winE (.C 0) = etC := by decide +kernel
+theorem pin148 : winE .G2 = etG := by decide +kernel
+theorem pin149 : winE (.A 1) = K.freeGap (data (.A 1)) square (winCut (.A 1))
     (idMat (winO (.A 1))) := by
   decide +kernel
 
@@ -450,50 +452,54 @@ private def spHalfB0 : Split 2 :=
 private def spHalfB0T : Split 2 :=
   ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [.one ⟨1, 81⟩, .one ⟨80, 1⟩], 0, rfl⟩
 
-example : splitRead (siteDatum
+theorem pin150 : splitRead (siteDatum
     (matAdd (pencil.rayH (winE (.B 0)) (winM (.B 0)) (2 * 2) (1 * 1))
       (matScale (2 * 2 * 1) (idMat 2))) (matScale (2 * 2 * 2) (idMat 2)))
     spHalfB0 := by decide +kernel
-example : splitRead (siteDatum
+theorem pin151 : splitRead (siteDatum
     (matAdd (pencil.rayH (winE (.B 0)) (winM (.B 0)) (2 * 2) (1 * 1))
       (matScale (2 * 2 * 1) (idMat 2))) (matScale (2 * 2 * winLvl (.B 0)) (idMat 2)))
     spHalfB0T := by decide +kernel
 
-example : flatstep.vacFlat (pencil.rayH (winE (.B 0)) (winM (.B 0)) (2 * 2) (1 * 1))
+theorem pin152 : flatstep.vacFlat (pencil.rayH (winE (.B 0)) (winM (.B 0)) (2 * 2) (1 * 1))
     (idMat 2) (2 * 2 * 2) (2 * 2 * 1) (2 * 2 * winLvl (.B 0)) (2 * 2 * 1) 1
     spHalfB0 spHalfB0T :=
   clauseI_counts (.B 0) clB0 1 2 (by decide +kernel) (by decide +kernel)
     spHalfB0 spHalfB0T (by decide +kernel) (by decide +kernel)
-example : flatstep.vacFlat (pencil.rayH (winE (.B 0)) (winM (.B 0)) (2 * 2) (1 * 1))
+theorem pin153 : flatstep.vacFlat (pencil.rayH (winE (.B 0)) (winM (.B 0)) (2 * 2) (1 * 1))
     (idMat 2) (2 * 2 * 2) (2 * 2 * 1) (2 * 2 * winLvl (.B 0)) (2 * 2 * 1) 1
     spHalfB0 spHalfB0T := by decide +kernel
 
 /-! The refusals, one per binder. -/
 
-example : ¬ gappos.gapsAt 4 (ground.posOfSucc (2 * winFloorN (.B 0) - 1)) 4
+theorem pin154 : ¬ gappos.gapsAt 4 (ground.posOfSucc (2 * winFloorN (.B 0) - 1)) 4
     [winCell (.B 0)] := by decide +kernel
 
-example : ¬ gappos.cellRead (winE (.B 0)) (winM (.B 0)) (idMat 2)
+theorem pin155 : ¬ gappos.cellRead (winE (.B 0)) (winM (.B 0)) (idMat 2)
     { winCell (.B 0) with gp := ground.posOfSucc (2 * winFloorN (.B 0) - 1) } := by
   decide +kernel
 
 private def spForgeB0 : Split 2 :=
   ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [.one ⟨2, 1⟩, .one ⟨40, 1⟩], 0, rfl⟩
 
-example : ¬ gappos.cellsRead (winE (.B 0)) (winM (.B 0)) (idMat 2) winFoot
-    [{ winCell (.B 0) with spA := spForgeB0 }] := by decide +kernel
+private def winCellForgeB0 : gappos.Cell (winO (.B 0)) :=
+  ⟨winFoot, winTop, 2, 1, winLvl (.B 0), 1, winGap (.B 0), [], ⟨2, 1⟩, ⟨2, 1⟩,
+   winCover (.B 0), winCover (.B 0), BPair.unit, 1, 1, spForgeB0, sampleHi (.B 0)⟩
 
-example : ¬ gappos.cellsRead (winE (.B 0)) (winM (.B 0)) (idMat 2)
+theorem pin156 : ¬ gappos.cellsRead (winE (.B 0)) (winM (.B 0)) (idMat 2) winFoot
+    [winCellForgeB0] := by decide +kernel
+
+theorem pin157 : ¬ gappos.cellsRead (winE (.B 0)) (winM (.B 0)) (idMat 2)
     ⟨BPair.ofNat 2, 1⟩ [winCell (.B 0)] := by decide +kernel
 
 private def covFar : cellcount.Cover :=
-  cellcount.diagCover ⟨BPair.ofNat 2, 1⟩ ⟨2, 1⟩ ⟨2, 1⟩ 1
+  cellcount.vacCover ⟨BPair.ofNat 2, 1⟩ ⟨2, 1⟩ ⟨2, 1⟩ 1
 
-example : ¬ gappos.cellsRead (winE (.B 0)) (winM (.B 0)) (idMat 2) winFoot
+theorem pin158 : ¬ gappos.cellsRead (winE (.B 0)) (winM (.B 0)) (idMat 2) winFoot
     [{ winCell (.B 0) with hi := ⟨BPair.ofNat 2, 1⟩, covA := covFar, covT := covFar }] := by
   decide +kernel
 
-example : ¬ cellcount.countAt
+theorem pin159 : ¬ cellcount.countAt
     (freecell.freePMat (winE (.B 0)) (winM (.B 0)) (elim.idMat 2)
       (ground.posOfSucc (4 * winFloorN (.B 0) + 1)) 1) 2
     BPair.unit 1 1
@@ -505,24 +511,102 @@ example : ¬ cellcount.countAt
 /-! Clause (iii) at the committed members through the theorem routes,
 the member scale and key read beside them. -/
 
-example : clauseIII (.A 0) := clauseIII_all (.A 0)
-example : clauseIII (.A 1) := clauseIII_all (.A 1)
-example : clauseIII (.A 30) := clauseIII_all (.A 30)
-example : clauseIII (.B 0) := clauseIII_all (.B 0)
-example : clauseIII (.C 0) := clauseIII_all (.C 0)
-example : clauseIII (.D 0) := clauseIII_all (.D 0)
-example : clauseIII .G2 := clauseIII_all .G2
-example : clauseIII .E8 := clauseIII_all .E8
+theorem pin160 : clauseIII (.A 0) := clauseIII_all (.A 0)
+theorem pin161 : clauseIII (.A 1) := clauseIII_all (.A 1)
+theorem pin162 : clauseIII (.A 30) := clauseIII_all (.A 30)
+theorem pin163 : clauseIII (.B 0) := clauseIII_all (.B 0)
+theorem pin164 : clauseIII (.C 0) := clauseIII_all (.C 0)
+theorem pin165 : clauseIII (.D 0) := clauseIII_all (.D 0)
+theorem pin166 : clauseIII .G2 := clauseIII_all .G2
+theorem pin167 : clauseIII .E8 := clauseIII_all .E8
 
-example : posVal (cornerScaleD 2) = 4718592 := by decide +kernel
-example : cornerKey 1 = 2990 := by decide +kernel
-example : cornerKey 2 = 4962 := by decide +kernel
-example : keyRead 1 2990 := by decide +kernel
-example : ¬ keyRead 1 2989 := by decide +kernel
-example : keyRead 2 4962 := by decide +kernel
-example : ¬ keyRead 2 4961 := by decide +kernel
-example : cornerpivot.endRead (posVal 1) (posVal (cornerScaleD 2)) 2 (cornerKey 2) := by
+theorem pin168 : posVal (cornerScaleD 2) = 4718592 := by decide +kernel
+theorem pin169 : cornerKey 1 = 2990 := by decide +kernel
+theorem pin170 : cornerKey 2 = 4962 := by decide +kernel
+
+/-! The endpoint key's fast read: the halving at the key's comparison
+from the depth two, twenty-three steps where the walk runs three
+thousand, decided beside the walk and one key with it through
+`cornerKeyD_eq`. -/
+theorem pin171 : cornerKeyD 1 = 2990 ∧ cornerKeyD 2 = 4962 := by decide +kernel
+theorem pin172 : cornerKey 2 = cornerKeyD 2 := (cornerKeyD_eq 2).symm
+theorem pin173 : keyRead 1 2990 := by decide +kernel
+theorem pin174 : ¬ keyRead 1 2989 := by decide +kernel
+theorem pin175 : keyRead 2 4962 := by decide +kernel
+theorem pin176 : ¬ keyRead 2 4961 := by decide +kernel
+theorem pin177 : cornerpivot.endRead (posVal 1) (posVal (cornerScaleD 2)) 2 (cornerKey 2) := by
   decide +kernel
-example : BPair.ofPos 26 * BPair.ofPos cornerpivot.disconjC.e0d
+theorem pin178 : BPair.ofPos 26 * BPair.ofPos cornerpivot.disconjC.e0d
     ≤ cornerpivot.disconjC.e0n * BPair.ofPos (cornerpivot.tieScaleD (cornerKey 2)) := by
   decide +kernel
+
+/-! The finite-list laws at every member and cutoff, with the
+same theorem reading the series' full rank ranges and the five
+fixed members. -/
+
+theorem pin179 (m : Member) (k : Nat) : fusion.belowSound (data m) k :=
+  belowSound_all m k
+theorem pin180 (m : Member) (k : Nat) : fusion.belowNonunit (data m) k :=
+  belowNonunit_all m k
+theorem pin181 (m : Member) (k : Nat) : distinctList ((data m).unit :: (data m).below k) :=
+  below_distinct_all m k
+theorem pin182 (m : Member) (a b : places.Shape) : distinctList ((data m).row a b) :=
+  row_distinct_all m a b
+theorem pin183 : fusion.belowSound (data (.B 0)) 8
+    ∧ fusion.belowNonunit (data .G2) 48 := by decide +kernel
+
+/-! The A-series laws together at the classified residue one,
+with reducedness and cutoff order isolated by their refusals. -/
+
+theorem pin184 :
+    fusion.commLaw (data (.A 0)) [1, 0] [1, 0] [2, 0]
+    ∧ fusion.unitLaw (data (.A 0)) [1, 0] [1, 0]
+    ∧ fusion.cartanLaw (data (.A 0)) [1, 0] [1, 0]
+    ∧ fusion.assocLaw (data (.A 0)) [1, 0] [1, 0] [2, 0] [2, 0]
+    ∧ fusion.rowLaw (data (.A 0)) [1, 0] [1, 0] [2, 0]
+    ∧ fusion.unitRowLaw (data (.A 0)) [1, 0]
+    ∧ fusion.dimLaw (data (.A 0)) [1, 0] [1, 0]
+    ∧ fusion.casPos (data (.A 0)) [1, 0]
+    ∧ fusion.driftLaw (data (.A 0)) [1, 0]
+    ∧ fusion.clsLaw (data (.A 0)) [1, 0] [1, 0]
+    ∧ fusion.clsDualLaw (data (.A 0)) [1, 0]
+    ∧ fusion.clsThetaLaw (data (.A 0))
+    ∧ fusion.casDualLaw (data (.A 0)) [1, 0]
+    ∧ fusion.dimDualLaw (data (.A 0)) [1, 0]
+    ∧ fusion.thetaSelfDual (data (.A 0))
+    ∧ fusion.belowSound (data (.A 0)) 8
+    ∧ fusion.belowNest (data (.A 0)) 8 24
+    ∧ fusion.belowNonunit (data (.A 0)) 8 :=
+  fusionLaws_A 0 [1, 0] [1, 0] [2, 0] [2, 0] 8 24
+    rfl rfl rfl rfl rfl rfl (by decide)
+theorem pin185 : ¬ fusion.unitRowLaw (data (.A 0)) [0, 1] := by decide +kernel
+theorem pin186 : ¬ fusion.rowLaw (data (.A 0)) [1, 0] [1, 0] [0, 1] := by decide +kernel
+theorem pin187 : ¬ fusion.belowNest (data (.A 0)) 8 0 := by decide +kernel
+theorem pin188 : ¬ fusion.casPos (data (.A 0)) [1] := by decide +kernel
+theorem pin189 (m : Member) (a b c : places.Shape)
+    (ha : a.length = (data m).unit.length) (hc : c ∈ (data m).row a b) :
+    0 < (data m).count a b c := row_count_pos_all m a b c ha hc
+
+/-- The dimension reads quantify over the classification itself. -/
+theorem pin190 (m : Member) (a : places.Shape) : 0 < (data m).dim a := dim_pos_all m a
+
+theorem pin191 (m : Member) : (data m).dim (data m).unit = 1 := dim_unit_all m
+
+theorem pin192 (m : Member) (a : places.Shape) (hw : a.length = (data m).unit.length)
+    (hu : (data m).eqL a (data m).unit = false) : 2 ≤ (data m).dim a := dim_strict_all m a hw hu
+
+theorem pin193 (m : Member) (a b : places.Shape) (h : (data m).eqL a b = true) :
+    (data m).dim a = (data m).dim b := dim_eqL_all m a b h
+
+theorem pin194 (m : Member) (a : places.Shape) (hw : a.length = (data m).unit.length) :
+    (data m).dim a = 1 ↔ (data m).eqL a (data m).unit = true := dim_one_all m a hw
+
+/-- A wrong-width A spelling may have dimension one while its
+interface equality refuses the unit at the declared width. -/
+theorem pin195 : (data (.A 0)).dim [] = 1 ∧ (data (.A 0)).eqL [] (data (.A 0)).unit = false := by
+  decide +kernel
+
+theorem pin196 : (data (.A 0)).dim [0, 9] = 1 :=
+  (dim_one_all (.A 0) [0, 9] rfl).2 (by decide +kernel)
+
+end main

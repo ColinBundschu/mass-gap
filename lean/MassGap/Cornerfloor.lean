@@ -1,7 +1,7 @@
 import MassGap.Corner
 import MassGap.Cornerpivot
 /-!
-`lem:corner`'s cell floor at the seam: the flat step's height extent
+`lem:cornerfloor` at the seam: the flat step's height extent
 on the corner cell, read at the corner disconjugacy certificate's
 own lines, its positivity the certificate's, and the window's
 transport to the chain.
@@ -74,10 +74,17 @@ datum's site tie, the compression's counts at or below the chain's
 (`truncation.count_head_le`, `lem:inertia`'s compression), so the
 chain's count at the member line is occupied and its ground sits at
 or below the line.
+
+The extent interval's mixed window closes the module: three scales
+of the corner ray at one level and one common clearing, the counts
+monotone in the scale (`corner.dual_count_mono`), read the window
+flat at count one across the interval (`interval_flat`), and the
+height at the level clears the interval's floor wherever the top
+scale's does (`height_clears`).
 -/
 
-namespace corner
-open ground elim inertia certconstruct
+namespace cornerfloor
+open ground elim inertia certconstruct corner
 
 /-- The tower's electric read at the corner head, cleared at the
 residue's constant: the diagonal `4(m² + rm)` at the depths
@@ -610,7 +617,7 @@ def cellRead (r : Nat) (C : cornerpivot.DisconjCert) (en ed : Pos)
   ∧ a * cornerpivot.qLowNum (posVal en) (posVal ed) r N * C.qcD
       ≤ C.qcN * (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N)
 
-instance (r : Nat) (C : cornerpivot.DisconjCert) (en ed : Pos)
+instance instCornerfloor1 (r : Nat) (C : cornerpivot.DisconjCert) (en ed : Pos)
     (N a b g : Nat) : Decidable (cellRead r C en ed N a b g) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
 
@@ -679,7 +686,7 @@ def cellReadT (r : Nat) (C : cornerpivot.DisconjCert) (en ed : Pos)
       ≤ C.qcN * 26
         * (b * cornerpivot.qLowDen (posVal en) (posVal ed) r N * posVal ed)
 
-instance (r : Nat) (C : cornerpivot.DisconjCert) (en ed : Pos)
+instance instCornerfloor2 (r : Nat) (C : cornerpivot.DisconjCert) (en ed : Pos)
     (N a b g : Nat) : Decidable (cellReadT r C en ed N a b g) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
 
@@ -698,7 +705,7 @@ def cellReadS (C : cornerpivot.DisconjCert) (en ed : Pos) (N a b g : Nat) :
   ∧ a * cornerpivot.qLowNum (posVal en) (posVal ed) 1 N * C.qcD
       ≤ C.qcN * (b * cornerpivot.qLowDen (posVal en) (posVal ed) 1 N)
 
-instance (C : cornerpivot.DisconjCert) (en ed : Pos) (N a b g : Nat) :
+instance instCornerfloor3 (C : cornerpivot.DisconjCert) (en ed : Pos) (N a b g : Nat) :
     Decidable (cellReadS C en ed N a b g) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
 
@@ -899,13 +906,13 @@ theorem base_count (r qd c : Nat) (hqd : 1 ≤ qd) (en ed : Pos) (n : Nat)
 at or below the chain's (`lem:inertia`), so at the well's site tied
 as the chain's leading block the chain's count at the member line is
 occupied, its ground at or below the line; the bordered pencil's
-counts sit at or above (`contactcell.count_bord_le`), the chain's
+counts sit at or above (`contactcell.truncPair`), the chain's
 second root at or beyond every level the bordered pencil counts at
 most one, the two root bounds exchanging. -/
 
 /-- The chain's count at the member line is occupied: the seam
 pencil's count one at a line of count one (`line_count`, the count
-one the cell floor's stated datum at the member line, `lem:corner`)
+one the cell floor's stated datum at the member line, `lem:cornerfloor`)
 carried to the chain whose site the seam's leading block ties
 (`truncation.count_head_le`). -/
 theorem ground_below_line (r qn qd c : Nat) (hqd : 1 ≤ qd) (en ed : Pos)
@@ -934,4 +941,66 @@ theorem ground_below_line (r qn qd c : Nat) (hqd : 1 ≤ qd) (en ed : Pos)
   truncation.count_head_le H G _ (idMat n) B Q G2 _ _ 1 nf sp' spF hB htie
     (line_count r qn qd c hqd en ed n 1 sp sp' hsp hone hsp') hf
 
-end corner
+/-! The extent interval's mixed window: three scales of the corner
+ray at one level and one common clearing, the counts monotone in the
+scale (`dual_count_mono`), so the ground's read at the interval's
+top with the second's at its bottom reads the window flat at count
+one across the interval, and the height at the fixed level clears the
+interval's floor wherever the top scale's does. -/
+
+/-- The mixed window: at the bottom scale the count sits at or below
+one (the second root at or beyond the level) and at the top scale at
+or above one (the ground at or below it), so every scale between
+reads count one, the counts monotone in the scale at the common
+clearing. -/
+theorem interval_flat {o : Nat} (E M G : Mat)
+    (enb edb en ed ent edt x y : Pos) (nb n nt : Nat)
+    (spb sp spt spE spg1 spg2 : Split o) (g1 g2 : Pos)
+    (hg1 : enb * enb * (ed * ed) + g1 = en * en * (edb * edb))
+    (hg2 : en * en * (edt * edt) + g2 = ent * ent * (ed * ed))
+    (hE : splitRead E spE) (hEpsd : psdAt spE)
+    (hsg1 : splitRead (matScale (edt * edt * g1) E) spg1)
+    (hsg2 : splitRead (matScale (edb * edb * g2) E) spg2)
+    (hb : certconstruct.countAtPair
+      (matScale (edt * edt * (ed * ed)) (cornerPencil E M enb edb))
+      G x y nb spb)
+    (h : certconstruct.countAtPair
+      (matScale (edb * edb * (edt * edt)) (cornerPencil E M en ed))
+      G x y n sp)
+    (ht : certconstruct.countAtPair
+      (matScale (edb * edb * (ed * ed)) (cornerPencil E M ent edt))
+      G x y nt spt)
+    (hnb : nb ≤ 1) (hnt : 1 ≤ nt) : n = 1 := by
+  have hup : nt ≤ n :=
+    dual_count_mono E M G (edb * edb) ent edt en ed g2 x y nt n
+      spt sp spE spg2 hg2 hE hEpsd hsg2 ht h
+  have hdown : n ≤ nb := by
+    rw [ground.mul_comm (edb * edb) (edt * edt)] at h
+    exact dual_count_mono E M G (edt * edt) en ed enb edb g1 x y n nb
+      sp spb spE spg1 hg1 hE hEpsd hsg1 h hb
+  exact Nat.le_antisymm (Nat.le_trans hdown hnb) (Nat.le_trans hnt hup)
+
+/-- The height clears the interval's floor: at one level the height
+is the level's cofactor at the scale, so a floor cleared at the
+interval's top scale is cleared at every scale at or below it, the
+comparison cross-multiplied at the scales' members. -/
+theorem height_clears (kn kd ln ld en ed ent edt : Pos)
+    (hs : en * edt ≤ ent * ed)
+    (hf : kn * ent * ld ≤ ln * (kd * edt)) :
+    kn * en * ld ≤ ln * (kd * ed) := by
+  refine ground.le_of_mul_le (c := edt) ?_
+  have h1 : kn * en * ld * edt ≤ kn * ent * ld * ed := by
+    have h2 : en * edt * (kn * ld) ≤ ent * ed * (kn * ld) :=
+      ground.mul_le_mul_right (kn * ld) hs
+    rw [ground.mul_right_comm kn en ld, ground.mul_assoc (kn * ld) en edt,
+      ground.mul_right_comm kn ent ld, ground.mul_assoc (kn * ld) ent ed,
+      ground.mul_comm (kn * ld) (en * edt), ground.mul_comm (kn * ld) (ent * ed)]
+    exact h2
+  have h3 : kn * ent * ld * ed ≤ ln * (kd * edt) * ed :=
+    ground.mul_le_mul_right ed hf
+  rw [ground.mul_assoc ln (kd * edt) ed, ground.mul_assoc kd edt ed,
+    ground.mul_comm edt ed, ← ground.mul_assoc kd ed edt,
+    ← ground.mul_assoc ln (kd * ed) edt] at h3
+  exact ground.le_trans h1 h3
+
+end cornerfloor

@@ -36,7 +36,7 @@ def contentRead {L : Type} (F : Data L) (R : Region)
     (p : List (Nat × Bool)) : Prop :=
   carrier.contentN F (moduleConf F R p) = 4 * F.c2N F.theta
 
-instance {L : Type} (F : Data L) (R : Region)
+instance instE01 {L : Type} (F : Data L) (R : Region)
     (p : List (Nat × Bool)) : Decidable (contentRead F R p) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -46,7 +46,7 @@ def occRead {L : Type} (F : Data L) (R : Region)
     (p : List (Nat × Bool)) : Prop :=
   carrier.occupied F R (moduleConf F R p) = true
 
-instance {L : Type} (F : Data L) (R : Region)
+instance instE02 {L : Type} (F : Data L) (R : Region)
     (p : List (Nat × Bool)) : Decidable (occRead F R p) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -58,7 +58,7 @@ def memberRead {L : Type} (F : Data L) (R : Region) (C : Nat)
   ((carrier.idx F R C).any (fun a =>
     carrier.eqConf F a (moduleConf F R p))) = true
 
-instance {L : Type} (F : Data L) (R : Region) (C : Nat)
+instance instE03 {L : Type} (F : Data L) (R : Region) (C : Nat)
     (p : List (Nat × Bool)) : Decidable (memberRead F R C p) :=
   inferInstanceAs (Decidable (_ = _))
 

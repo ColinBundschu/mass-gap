@@ -39,40 +39,42 @@ the convolution's degree binder refused one power short of the
 first factor's own.
 -/
 
-open ground poly
+namespace poly
+
+open ground
 
 /-! The product's unit at its consumption: the convolution reads a
 polynomial off, and the Horner read is the scalar one. -/
 
-example : oneValue (mul one [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩])
+theorem pin1 : oneValue (mul one [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩])
     [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩] := by decide +kernel
 
-example : BPair.oneValue (eval one ⟨6, 1⟩) (BPair.ofPos .one) := by
+theorem pin2 : BPair.oneValue (eval one ⟨6, 1⟩) (BPair.ofPos .one) := by
   decide +kernel
 
 /-! The sum and the convolution. -/
 
-example : oneValue (add [⟨2, 1⟩, ⟨3, 1⟩] [⟨1, 2⟩]) [⟨1, 1⟩, ⟨3, 1⟩] := by
+theorem pin3 : oneValue (add [⟨2, 1⟩, ⟨3, 1⟩] [⟨1, 2⟩]) [⟨1, 1⟩, ⟨3, 1⟩] := by
   decide +kernel
 
-example : oneValue (mul [⟨2, 1⟩, ⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 2⟩])
+theorem pin4 : oneValue (mul [⟨2, 1⟩, ⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 2⟩])
     [⟨2, 1⟩, ⟨1, 1⟩, ⟨1, 2⟩] := by decide +kernel
 
 /-! The Horner read: `P = 5 + 2z + z^3` at `z = 2` reads `17`. -/
 
-example : BPair.oneValue
+theorem pin5 : BPair.oneValue
     (eval [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩] ⟨3, 1⟩) ⟨18, 1⟩ := by decide +kernel
 
 /-! The derivative and its Leibniz rule. -/
 
-example : oneValue (deriv [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩])
+theorem pin6 : oneValue (deriv [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩])
     [⟨3, 1⟩, ⟨1, 1⟩, ⟨4, 1⟩] := by decide +kernel
 
-example : oneValue (deriv (mul [⟨2, 1⟩, ⟨3, 1⟩] [⟨1, 2⟩, ⟨2, 1⟩, ⟨4, 1⟩]))
+theorem pin7 : oneValue (deriv (mul [⟨2, 1⟩, ⟨3, 1⟩] [⟨1, 2⟩, ⟨2, 1⟩, ⟨4, 1⟩]))
     (add (mul (deriv [⟨2, 1⟩, ⟨3, 1⟩]) [⟨1, 2⟩, ⟨2, 1⟩, ⟨4, 1⟩])
       (mul [⟨2, 1⟩, ⟨3, 1⟩] (deriv [⟨1, 2⟩, ⟨2, 1⟩, ⟨4, 1⟩]))) := by
   decide +kernel
-example : oneValue (deriv (mul [⟨2, 1⟩, ⟨3, 1⟩] [⟨1, 2⟩, ⟨2, 1⟩, ⟨4, 1⟩]))
+theorem pin8 : oneValue (deriv (mul [⟨2, 1⟩, ⟨3, 1⟩] [⟨1, 2⟩, ⟨2, 1⟩, ⟨4, 1⟩]))
     (add (mul (deriv [⟨2, 1⟩, ⟨3, 1⟩]) [⟨1, 2⟩, ⟨2, 1⟩, ⟨4, 1⟩])
       (mul [⟨2, 1⟩, ⟨3, 1⟩] (deriv [⟨1, 2⟩, ⟨2, 1⟩, ⟨4, 1⟩]))) :=
   deriv_mul _ _
@@ -80,14 +82,14 @@ example : oneValue (deriv (mul [⟨2, 1⟩, ⟨3, 1⟩] [⟨1, 2⟩, ⟨2, 1⟩,
 /-! The division at a monic: `z^3 + 2z + 5 = (z^2 + 1) z + (z + 5)`,
 the quotient, the remainder and the naming identity. -/
 
-example : divRead [⟨2, 1⟩, ⟨1, 1⟩] [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩] := by
+theorem pin9 : divRead [⟨2, 1⟩, ⟨1, 1⟩] [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩] := by
   decide +kernel
 
-example : oneValue
+theorem pin10 : oneValue
     (div [⟨2, 1⟩, ⟨1, 1⟩] [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩]).1
     [⟨1, 1⟩, ⟨2, 1⟩] := by decide +kernel
 
-example : oneValue
+theorem pin11 : oneValue
     (div [⟨2, 1⟩, ⟨1, 1⟩] [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩]).2
     [⟨6, 1⟩, ⟨2, 1⟩] := by decide +kernel
 
@@ -96,20 +98,20 @@ quotient and a shifted remainder representative read the same pair
 (`div_unique`), and the below-top dividend reads the vacant
 quotient. -/
 
-example : oneValue [⟨1, 1⟩, ⟨2, 1⟩, ⟨4, 4⟩]
+theorem pin12 : oneValue [⟨1, 1⟩, ⟨2, 1⟩, ⟨4, 4⟩]
       (div [⟨2, 1⟩, ⟨1, 1⟩] [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩]).1
     ∧ oneValue [⟨8, 3⟩, ⟨3, 2⟩]
       (div [⟨2, 1⟩, ⟨1, 1⟩] [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩]).2 :=
   div_unique [⟨2, 1⟩, ⟨1, 1⟩] [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩]
     [⟨1, 1⟩, ⟨2, 1⟩, ⟨4, 4⟩] [⟨8, 3⟩, ⟨3, 2⟩] rfl (by decide +kernel)
 
-example : oneValue [] (div [⟨2, 1⟩, ⟨1, 1⟩] [⟨4, 1⟩]).1
+theorem pin13 : oneValue [] (div [⟨2, 1⟩, ⟨1, 1⟩] [⟨4, 1⟩]).1
     ∧ oneValue [⟨4, 1⟩, ⟨1, 1⟩] (div [⟨2, 1⟩, ⟨1, 1⟩] [⟨4, 1⟩]).2 :=
   div_unique [⟨2, 1⟩, ⟨1, 1⟩] [⟨4, 1⟩] [] [⟨4, 1⟩, ⟨1, 1⟩] rfl (by decide +kernel)
 
 /-- At the linear factor `z - 2` the remainder is the Horner read at
 `2`: `P(2) = 17`. -/
-example : oneValue
+theorem pin14 : oneValue
     (div [⟨1, 3⟩] [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩]).2 [⟨18, 1⟩] := by
   decide +kernel
 
@@ -120,20 +122,20 @@ of three, and the degree-two list `5z² + 2z + 7` against
 `⟨x : 1̌⟩`, whose root is one.  Each bench sits twice, the kernel's
 own read beside the general theorem's. -/
 
-example : oneValue (div [BPair.ofNat 3] (deck.pSum 2)).2
+theorem pin15 : oneValue (div [BPair.ofNat 3] (deck.pSum 2)).2
     [eval (deck.pSum 2) (BPair.ofNat 3).swap] := by decide +kernel
 
-example : oneValue (div [BPair.ofNat 3] (deck.pSum 2)).2
+theorem pin16 : oneValue (div [BPair.ofNat 3] (deck.pSum 2)).2
     [eval (deck.pSum 2) (BPair.ofNat 3).swap] := by
   exact div_linear_eval (BPair.ofNat 3) (deck.pSum 2)
 
-example : oneValue
+theorem pin17 : oneValue
     (div [(BPair.ofNat 1).swap]
       [BPair.ofNat 7, BPair.ofNat 2, BPair.ofNat 5]).2
     [eval [BPair.ofNat 7, BPair.ofNat 2, BPair.ofNat 5]
       (BPair.ofNat 1)] := by decide +kernel
 
-example : oneValue
+theorem pin18 : oneValue
     (div [(BPair.ofNat 1).swap]
       [BPair.ofNat 7, BPair.ofNat 2, BPair.ofNat 5]).2
     [eval [BPair.ofNat 7, BPair.ofNat 2, BPair.ofNat 5]
@@ -144,24 +146,24 @@ example : oneValue
 /-! The remainder lists at `z^2 + 1`: `z · z` reads the balance
 partner of one. -/
 
-example : oneValue (remMul [⟨2, 1⟩, ⟨1, 1⟩] [⟨1, 1⟩, ⟨2, 1⟩]
+theorem pin19 : oneValue (remMul [⟨2, 1⟩, ⟨1, 1⟩] [⟨1, 1⟩, ⟨2, 1⟩]
     [⟨1, 1⟩, ⟨2, 1⟩]) [⟨1, 2⟩, ⟨1, 1⟩] := by decide +kernel
 
 /-! The division at the edges: the dividend below the top, and the
 constant divisor. -/
 
-example : divRead [⟨2, 1⟩, ⟨1, 1⟩] [⟨4, 1⟩] := by decide +kernel
-example : divRead [] [⟨6, 1⟩, ⟨3, 1⟩] := by decide +kernel
+theorem pin20 : divRead [⟨2, 1⟩, ⟨1, 1⟩] [⟨4, 1⟩] := by decide +kernel
+theorem pin21 : divRead [] [⟨6, 1⟩, ⟨3, 1⟩] := by decide +kernel
 
 /-! The root and multiplicity reads at `(z-2)^2 (z-3)`, and the
 linear factor's Horner remainder. -/
 
-example : isRoot [⟨1, 13⟩, ⟨17, 1⟩, ⟨1, 8⟩, ⟨2, 1⟩] ⟨3, 1⟩ := by decide +kernel
-example : ¬ isRoot [⟨1, 13⟩, ⟨17, 1⟩, ⟨1, 8⟩, ⟨2, 1⟩] ⟨2, 1⟩ := by decide +kernel
-example : multAt [⟨1, 3⟩] [⟨1, 13⟩, ⟨17, 1⟩, ⟨1, 8⟩, ⟨2, 1⟩] = 2 := by decide +kernel
-example : multAt [⟨1, 4⟩] [⟨1, 13⟩, ⟨17, 1⟩, ⟨1, 8⟩, ⟨2, 1⟩] = 1 := by decide +kernel
-example : multAt [⟨1, 2⟩] [⟨1, 13⟩, ⟨17, 1⟩, ⟨1, 8⟩, ⟨2, 1⟩] = 0 := by decide +kernel
-example : hornerRead [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩] ⟨3, 1⟩ := by decide +kernel
+theorem pin22 : isRoot [⟨1, 13⟩, ⟨17, 1⟩, ⟨1, 8⟩, ⟨2, 1⟩] ⟨3, 1⟩ := by decide +kernel
+theorem pin23 : ¬ isRoot [⟨1, 13⟩, ⟨17, 1⟩, ⟨1, 8⟩, ⟨2, 1⟩] ⟨2, 1⟩ := by decide +kernel
+theorem pin24 : multAt [⟨1, 3⟩] [⟨1, 13⟩, ⟨17, 1⟩, ⟨1, 8⟩, ⟨2, 1⟩] = 2 := by decide +kernel
+theorem pin25 : multAt [⟨1, 4⟩] [⟨1, 13⟩, ⟨17, 1⟩, ⟨1, 8⟩, ⟨2, 1⟩] = 1 := by decide +kernel
+theorem pin26 : multAt [⟨1, 2⟩] [⟨1, 13⟩, ⟨17, 1⟩, ⟨1, 8⟩, ⟨2, 1⟩] = 0 := by decide +kernel
+theorem pin27 : hornerRead [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩] ⟨3, 1⟩ := by decide +kernel
 
 /-! The product's top tier and the root reads, at the two quadratics
 `P = z² + 3z + 2` and `Q = 2z² − z + 1`, whose product is
@@ -178,55 +180,55 @@ factor.  The roots at the linear factors `z − 1` and `z − 2`: the
 product's root one, the off-root three refused, and the third
 power's root one with the off-root two refused. -/
 
-example : oneValue (mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩])
+theorem pin28 : oneValue (mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩])
     [⟨3, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩, ⟨6, 1⟩, ⟨3, 1⟩] := by decide +kernel
 
-example : BPair.oneValue
+theorem pin29 : BPair.oneValue
     (top (mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]))
     (top [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] * top [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]) := by
   decide +kernel
-example : BPair.oneValue
+theorem pin30 : BPair.oneValue
     (top (mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]))
     (top [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] * top [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]) :=
   top_mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]
 
-example : (mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]).length + 1
+theorem pin31 : (mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]).length + 1
     = ([⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] : Poly).length
       + ([⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩] : Poly).length := by decide +kernel
-example : (mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]).length + 1
+theorem pin32 : (mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]).length + 1
     = ([⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] : Poly).length
       + ([⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩] : Poly).length :=
   length_mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]
     (by decide +kernel) (by decide +kernel)
 
-example : BPair.oneValue
+theorem pin33 : BPair.oneValue
     (top (mul [⟨2, 1⟩, ⟨1, 1⟩] [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]))
     (top [⟨2, 1⟩, ⟨1, 1⟩] * top [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]) := by decide +kernel
-example : ¬ ((mul [] [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]).length + 1
+theorem pin34 : ¬ ((mul [] [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]).length + 1
     = ([] : Poly).length + ([⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩] : Poly).length) := by
   decide +kernel
 
-example : ¬ unitTail
+theorem pin35 : ¬ unitTail
     (mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 2⟩, ⟨3, 1⟩]) := by decide +kernel
-example : unitTail (mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨1, 1⟩, ⟨1, 1⟩]) := by decide +kernel
-example : unitTail ([⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] : Poly)
+theorem pin36 : unitTail (mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨1, 1⟩, ⟨1, 1⟩]) := by decide +kernel
+theorem pin37 : unitTail ([⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] : Poly)
     ∨ unitTail ([⟨1, 1⟩, ⟨1, 1⟩] : Poly) :=
   unitTail_mul_of (by decide +kernel)
-example : unitTail (mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨1, 1⟩, ⟨1, 1⟩]) :=
+theorem pin38 : unitTail (mul [⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] [⟨1, 1⟩, ⟨1, 1⟩]) :=
   of_unitTail_mul (Or.inr (by decide +kernel))
 
-example : isRoot (mul [⟨1, 2⟩, ⟨2, 1⟩] [⟨1, 3⟩, ⟨2, 1⟩]) ⟨2, 1⟩ := by decide +kernel
-example : isRoot (mul [⟨1, 2⟩, ⟨2, 1⟩] [⟨1, 3⟩, ⟨2, 1⟩]) ⟨2, 1⟩ :=
+theorem pin39 : isRoot (mul [⟨1, 2⟩, ⟨2, 1⟩] [⟨1, 3⟩, ⟨2, 1⟩]) ⟨2, 1⟩ := by decide +kernel
+theorem pin40 : isRoot (mul [⟨1, 2⟩, ⟨2, 1⟩] [⟨1, 3⟩, ⟨2, 1⟩]) ⟨2, 1⟩ :=
   (isRoot_mul [⟨1, 2⟩, ⟨2, 1⟩] [⟨1, 3⟩, ⟨2, 1⟩] ⟨2, 1⟩).mpr
     (Or.inl (by decide +kernel))
-example : ¬ isRoot (mul [⟨1, 2⟩, ⟨2, 1⟩] [⟨1, 3⟩, ⟨2, 1⟩]) ⟨4, 1⟩ := by decide +kernel
+theorem pin41 : ¬ isRoot (mul [⟨1, 2⟩, ⟨2, 1⟩] [⟨1, 3⟩, ⟨2, 1⟩]) ⟨4, 1⟩ := by decide +kernel
 
-example : isRoot (powOf [⟨1, 2⟩, ⟨2, 1⟩] 3) ⟨2, 1⟩ := by decide +kernel
-example : isRoot (powOf [⟨1, 2⟩, ⟨2, 1⟩] 3) ⟨2, 1⟩ :=
+theorem pin42 : isRoot (powOf [⟨1, 2⟩, ⟨2, 1⟩] 3) ⟨2, 1⟩ := by decide +kernel
+theorem pin43 : isRoot (powOf [⟨1, 2⟩, ⟨2, 1⟩] 3) ⟨2, 1⟩ :=
   (isRoot_powOf [⟨1, 2⟩, ⟨2, 1⟩] ⟨2, 1⟩ 3 (by decide +kernel)).mpr (by decide +kernel)
-example : ¬ isRoot (powOf [⟨1, 2⟩, ⟨2, 1⟩] 3) ⟨3, 1⟩ := by decide +kernel
+theorem pin44 : ¬ isRoot (powOf [⟨1, 2⟩, ⟨2, 1⟩] 3) ⟨3, 1⟩ := by decide +kernel
 
-example : ¬ isRoot one ⟨2, 1⟩ := isRoot_one ⟨2, 1⟩
+theorem pin45 : ¬ isRoot one ⟨2, 1⟩ := isRoot_one ⟨2, 1⟩
 
 /-! The monic display's own read at a value-one top
 (`monic_dropLast_oneValue`): a list whose top reads the scalar one
@@ -236,14 +238,14 @@ two-key list whose top reads three, and at the one-key list whose
 only member reads two — the length binder naming nothing but the
 key the top read is taken at, so a refused read is the top's. -/
 
-example : oneValue (monic [BPair.ofNat 3, BPair.ofNat 1].dropLast)
+theorem pin46 : oneValue (monic [BPair.ofNat 3, BPair.ofNat 1].dropLast)
     [BPair.ofNat 3, BPair.ofNat 1] :=
   monic_dropLast_oneValue [BPair.ofNat 3, BPair.ofNat 1] 1 rfl (by decide +kernel)
 
-example : ¬ oneValue (monic [BPair.ofNat 1, BPair.ofNat 3].dropLast)
+theorem pin47 : ¬ oneValue (monic [BPair.ofNat 1, BPair.ofNat 3].dropLast)
     [BPair.ofNat 1, BPair.ofNat 3] := by decide +kernel
 
-example : ¬ oneValue (monic ([BPair.ofNat 2] : Poly).dropLast)
+theorem pin48 : ¬ oneValue (monic ([BPair.ofNat 2] : Poly).dropLast)
     [BPair.ofNat 2] := by decide +kernel
 
 /-! The entry beyond a list's top is the stated default
@@ -252,13 +254,13 @@ a null pair rescales to a unit tail at every polynomial
 (`scaleP_null`) — the pair `⟨3 : 3⟩` reads the sum's unit off the
 canonical representative. -/
 
-example : getAt BPair.unit [⟨6, 1⟩, ⟨3, 1⟩] 5 = BPair.unit :=
+theorem pin49 : getAt BPair.unit [⟨6, 1⟩, ⟨3, 1⟩] 5 = BPair.unit :=
   getAt_over BPair.unit _ 5 (by decide +kernel)
 
-example : unitTail (scaleP ⟨3, 3⟩ [⟨6, 1⟩, ⟨2, 1⟩]) :=
+theorem pin50 : unitTail (scaleP ⟨3, 3⟩ [⟨6, 1⟩, ⟨2, 1⟩]) :=
   scaleP_null (by decide +kernel) _
 
-example : ¬ (⟨3, 3⟩ : BPair) = BPair.unit := by decide +kernel
+theorem pin51 : ¬ (⟨3, 3⟩ : BPair) = BPair.unit := by decide +kernel
 
 /-! The value's representative reads one value with its own
 polynomial (`vnorm_ov`), and the memberwise swap commutes with
@@ -267,28 +269,28 @@ every read the side theorem consumes: the representative
 read (`eval_neg`) — the tail of equal-membered coefficients dropped
 either way. -/
 
-example : oneValue (vnorm [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩])
+theorem pin52 : oneValue (vnorm [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩])
     [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩] := by decide +kernel
-example : oneValue (vnorm [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩])
+theorem pin53 : oneValue (vnorm [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩])
     [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩] :=
   vnorm_ov [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩]
-example : vnorm [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩]
+theorem pin54 : vnorm [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩]
     = [⟨1, 3⟩, ⟨1, 1⟩, ⟨2, 1⟩] := by decide +kernel
 
-example : vnorm (neg [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩])
+theorem pin55 : vnorm (neg [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩])
     = neg (vnorm [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩]) := by decide +kernel
-example : vnorm (neg [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩])
+theorem pin56 : vnorm (neg [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩])
     = neg (vnorm [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩]) :=
   vnorm_neg [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩, ⟨5, 5⟩]
 
-example : top (neg [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩])
+theorem pin57 : top (neg [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩])
     = (top [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩]).swap := by decide +kernel
-example : top (neg ([] : Poly)) = (top ([] : Poly)).swap :=
+theorem pin58 : top (neg ([] : Poly)) = (top ([] : Poly)).swap :=
   top_neg []
 
-example : eval (neg [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩]) ⟨4, 1⟩
+theorem pin59 : eval (neg [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩]) ⟨4, 1⟩
     = (eval [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩] ⟨4, 1⟩).swap := by decide +kernel
-example : eval (neg [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩]) ⟨4, 1⟩
+theorem pin60 : eval (neg [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩]) ⟨4, 1⟩
     = (eval [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩] ⟨4, 1⟩).swap :=
   eval_neg [⟨1, 3⟩, ⟨4, 4⟩, ⟨2, 1⟩] ⟨4, 1⟩
 
@@ -300,29 +302,29 @@ each decided and through its theorem, with the occupancy binder
 refused at a unit-valued head and the vacant read decided beside
 it. -/
 
-example : vnorm [⟨1, 4⟩, ⟨3, 1⟩, ⟨2, 2⟩] = [⟨1, 4⟩, ⟨3, 1⟩] := by
+theorem pin61 : vnorm [⟨1, 4⟩, ⟨3, 1⟩, ⟨2, 2⟩] = [⟨1, 4⟩, ⟨3, 1⟩] := by
   decide +kernel
-example : vnorm [⟨1, 4⟩, ⟨3, 1⟩, ⟨2, 2⟩]
+theorem pin62 : vnorm [⟨1, 4⟩, ⟨3, 1⟩, ⟨2, 2⟩]
     = (⟨1, 4⟩ : BPair).norm :: [⟨3, 1⟩] := by decide +kernel
-example : vnorm [⟨1, 4⟩, ⟨3, 1⟩, ⟨2, 2⟩]
+theorem pin63 : vnorm [⟨1, 4⟩, ⟨3, 1⟩, ⟨2, 2⟩]
     = (⟨1, 4⟩ : BPair).norm :: [⟨3, 1⟩] :=
   vnorm_cons_occ ⟨1, 4⟩ ⟨3, 1⟩ [⟨3, 1⟩, ⟨2, 2⟩] [] (by decide +kernel)
 
-example : vnorm [⟨3, 1⟩, ⟨2, 2⟩] = [(⟨3, 1⟩ : BPair).norm] := by
+theorem pin64 : vnorm [⟨3, 1⟩, ⟨2, 2⟩] = [(⟨3, 1⟩ : BPair).norm] := by
   decide +kernel
-example : vnorm [⟨3, 1⟩, ⟨2, 2⟩] = [(⟨3, 1⟩ : BPair).norm] :=
+theorem pin65 : vnorm [⟨3, 1⟩, ⟨2, 2⟩] = [(⟨3, 1⟩ : BPair).norm] :=
   vnorm_cons_off ⟨3, 1⟩ [⟨2, 2⟩] (by decide +kernel) (by decide +kernel)
 
-example : vnorm [⟨2, 2⟩, ⟨5, 5⟩] = [] := by decide +kernel
+theorem pin66 : vnorm [⟨2, 2⟩, ⟨5, 5⟩] = [] := by decide +kernel
 
-example : ¬ vnorm [⟨2, 2⟩, ⟨5, 5⟩] = [(⟨2, 2⟩ : BPair).norm] := by
+theorem pin67 : ¬ vnorm [⟨2, 2⟩, ⟨5, 5⟩] = [(⟨2, 2⟩ : BPair).norm] := by
   decide +kernel
 
 /-! A coefficient family against a polynomial family (`scaleDot`):
 each coefficient rescales its own polynomial and the rescalings sum
 key by key — `2·(1 + z) + 3·1` reads `5 + 2 z`. -/
 
-example : oneValue
+theorem pin68 : oneValue
     (scaleDot [BPair.ofNat 2, BPair.ofNat 3]
       [[BPair.ofNat 1, BPair.ofNat 1], [BPair.ofNat 1]])
     [BPair.ofNat 5, BPair.ofNat 2] := by decide +kernel
@@ -331,32 +333,32 @@ example : oneValue
 spelling on both sides, the geometric word and the pair at a
 gap. -/
 
-example : oneValue (mono 2) [⟨1, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩] := by decide +kernel
-example : mono 0 = one := rfl
-example : oneValue (smono false 1) [⟨1, 1⟩, ⟨2, 1⟩] := by decide +kernel
-example : oneValue (smono true 2) [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 2⟩] := by
+theorem pin69 : oneValue (mono 2) [⟨1, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩] := by decide +kernel
+theorem pin70 : mono 0 = one := rfl
+theorem pin71 : oneValue (smono false 1) [⟨1, 1⟩, ⟨2, 1⟩] := by decide +kernel
+theorem pin72 : oneValue (smono true 2) [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 2⟩] := by
   decide +kernel
-example : oneValue (gword 3) [⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩] := by decide +kernel
-example : gword 0 = [] := rfl
-example : oneValue (tpair 1) [⟨1, 2⟩, ⟨2, 1⟩] := by decide +kernel
-example : oneValue (tpair 2) [⟨1, 2⟩, ⟨1, 1⟩, ⟨2, 1⟩] := by decide +kernel
+theorem pin73 : oneValue (gword 3) [⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩] := by decide +kernel
+theorem pin74 : gword 0 = [] := rfl
+theorem pin75 : oneValue (tpair 1) [⟨1, 2⟩, ⟨2, 1⟩] := by decide +kernel
+theorem pin76 : oneValue (tpair 2) [⟨1, 2⟩, ⟨1, 1⟩, ⟨2, 1⟩] := by decide +kernel
 
 /-! The geometric word's Horner read at the natural one, and the
 pair's split off the word, at the gaps two and three. -/
 
-example : (eval (gword 2) (BPair.ofNat 1)).oneValue (BPair.ofNat 2)
+theorem pin77 : (eval (gword 2) (BPair.ofNat 1)).oneValue (BPair.ofNat 2)
     := by decide +kernel
-example : (eval (gword 3) (BPair.ofNat 1)).oneValue (BPair.ofNat 3)
+theorem pin78 : (eval (gword 3) (BPair.ofNat 1)).oneValue (BPair.ofNat 3)
     := by decide +kernel
-example : oneValue (tpair 2) (mul (tpair 1) (gword 2)) := by decide +kernel
-example : oneValue (tpair 3) (mul (tpair 1) (gword 3)) := by decide +kernel
+theorem pin79 : oneValue (tpair 2) (mul (tpair 1) (gword 2)) := by decide +kernel
+theorem pin80 : oneValue (tpair 3) (mul (tpair 1) (gword 3)) := by decide +kernel
 
 /-! The signed-monomial fold's coefficient read at a three-member
 family, mixed sides with one repeated key: at that key the count
 pair reads one even and one odd, and at the other key one even
 alone. -/
 
-example : (ground.getAt BPair.unit
+theorem pin81 : (ground.getAt BPair.unit
     (ground.famFold add [] (fun x : Nat × Bool => smono x.2 x.1)
       [(1, false), (1, true), (2, false)]) 1).oneValue
   (BPair.ofCounts
@@ -367,7 +369,7 @@ example : (ground.getAt BPair.unit
       (([(1, false), (1, true), (2, false)] : List (Nat × Bool)).map
         (fun x => (x.1, x.2))))) := by decide +kernel
 
-example : (ground.getAt BPair.unit
+theorem pin82 : (ground.getAt BPair.unit
     (ground.famFold add [] (fun x : Nat × Bool => smono x.2 x.1)
       [(1, false), (1, true), (2, false)]) 2).oneValue
   (BPair.ofCounts 1 0) := by decide +kernel
@@ -375,7 +377,7 @@ example : (ground.getAt BPair.unit
 /-! The monic cancellation exercised theorem-route: two spellings
 of `2 - z` at the shared monic factor `z + 1`. -/
 
-example : oneValue [⟨3, 1⟩, ⟨1, 2⟩] [⟨4, 2⟩, ⟨2, 3⟩] :=
+theorem pin83 : oneValue [⟨3, 1⟩, ⟨1, 2⟩] [⟨4, 2⟩, ⟨2, 3⟩] :=
   mul_cancel_monic [⟨2, 1⟩] (by decide +kernel)
 
 /-! `cor:weyldim`'s member factors: the pair product over an
@@ -383,13 +385,13 @@ occupied-gap family collects one `<t:1>` per member against the
 geometric words, and the words' Horner read at the natural one is
 the gaps' own product. -/
 
-example : oneValue
+theorem pin84 : oneValue
     (ground.famFold mul one (fun j => tpair (j + 1)) (List.range 2))
     (mul (powOf (tpair 1) (List.range 2).length)
       (ground.famFold mul one (fun j => gword (j + 1))
         (List.range 2))) := by decide +kernel
 
-example : (eval (ground.famFold mul one (fun j => gword (j + 1))
+theorem pin85 : (eval (ground.famFold mul one (fun j => gword (j + 1))
       (List.range 2)) (BPair.ofNat 1)).oneValue
     (BPair.ofNat (ground.famFold Nat.mul 1 (fun j => j + 1)
       (List.range 2))) := by decide +kernel
@@ -403,31 +405,31 @@ power's refusal below the degree beside it. -/
 
 private def zVar : Poly := [BPair.unit, BPair.ofPos Pos.one]
 
-example : ppOneValue (pmul [zVar] [zVar, one])
+theorem pin86 : ppOneValue (pmul [zVar] [zVar, one])
     [mul zVar zVar, zVar] := by decide +kernel
-example : ¬ ppOneValue (pmul [zVar] [zVar, one])
+theorem pin87 : ¬ ppOneValue (pmul [zVar] [zVar, one])
     [mul zVar zVar, one] := by decide +kernel
-example : ppOneValue (padd [zVar] [[], one]) [zVar, one] := by decide +kernel
-example : ¬ ppOneValue (padd [zVar] [[], one]) [zVar, zVar] := by
+theorem pin88 : ppOneValue (padd [zVar] [[], one]) [zVar, one] := by decide +kernel
+theorem pin89 : ¬ ppOneValue (padd [zVar] [[], one]) [zVar, zVar] := by
   decide +kernel
 
 private def qBand : Poly :=
   [BPair.ofNat 4, BPair.unit, (BPair.ofNat 1).swap]
 
-example : oneValue (pevalC [zVar, one] qBand 4 1)
+theorem pin90 : oneValue (pevalC [zVar, one] qBand 4 1)
     [BPair.ofNat 4, BPair.ofNat 4, (BPair.ofNat 1).swap] := by decide +kernel
-example : ¬ oneValue (pevalC [zVar, one] [BPair.ofNat 4] 4 1)
+theorem pin91 : ¬ oneValue (pevalC [zVar, one] [BPair.ofNat 4] 4 1)
     [BPair.ofNat 4, BPair.ofNat 4, (BPair.ofNat 1).swap] := by decide +kernel
-example : ¬ oneValue (pevalC [zVar, one] qBand 4 0)
+theorem pin92 : ¬ oneValue (pevalC [zVar, one] qBand 4 0)
     [BPair.ofNat 4, BPair.ofNat 4, (BPair.ofNat 1).swap] := by decide +kernel
 
 /-! The monic linear factor's Horner read: the value against the
 root's balance partner, decided and applied through its theorem. -/
 
-example : (eval (linFacM ⟨3, 1⟩) ⟨5, 1⟩).oneValue (⟨5, 1⟩ + (⟨3, 1⟩ : BPair).swap) := by
+theorem pin93 : (eval (linFacM ⟨3, 1⟩) ⟨5, 1⟩).oneValue (⟨5, 1⟩ + (⟨3, 1⟩ : BPair).swap) := by
   decide +kernel
 
-example : (eval (linFacM ⟨3, 1⟩) ⟨5, 1⟩).oneValue (⟨5, 1⟩ + (⟨3, 1⟩ : BPair).swap) :=
+theorem pin94 : (eval (linFacM ⟨3, 1⟩) ⟨5, 1⟩).oneValue (⟨5, 1⟩ + (⟨3, 1⟩ : BPair).swap) :=
   eval_linFacM ⟨3, 1⟩ ⟨5, 1⟩
 
 /-! The Horner read collected to the monomial fold at `5 + 2z + z³`
@@ -435,12 +437,12 @@ against the point two, decided and through its theorem. -/
 
 private def pMono : Poly := [⟨6, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩]
 
-example : (eval pMono ⟨3, 1⟩).oneValue
+theorem pin95 : (eval pMono ⟨3, 1⟩).oneValue
     (ground.famFold BPair.add BPair.unit
       (fun k => ground.getAt BPair.unit pMono k * ground.bpow ⟨3, 1⟩ k)
       (List.range pMono.length)) := by decide +kernel
 
-example : (eval pMono ⟨3, 1⟩).oneValue
+theorem pin96 : (eval pMono ⟨3, 1⟩).oneValue
     (ground.famFold BPair.add BPair.unit
       (fun k => ground.getAt BPair.unit pMono k * ground.bpow ⟨3, 1⟩ k)
       (List.range pMono.length)) :=
@@ -454,20 +456,20 @@ each decided and through its theorem. -/
 
 private def sQc : Poly := [⟨1, 3⟩, BPair.unit, ⟨2, 1⟩]
 
-example : (eval (clearVar sQc 2 2) ⟨4, 1⟩).oneValue
+theorem pin97 : (eval (clearVar sQc 2 2) ⟨4, 1⟩).oneValue
     (evalClear sQc ⟨4, 1⟩ 2 2) := by decide +kernel
 
-example : (eval (clearVar sQc 2 2) ⟨4, 1⟩).oneValue
+theorem pin98 : (eval (clearVar sQc 2 2) ⟨4, 1⟩).oneValue
     (evalClear sQc ⟨4, 1⟩ 2 2) :=
   eval_clearVar sQc 2 2 ⟨4, 1⟩
 
-example : oneValue (deriv (clearVar sQc 2 2)) (clearVar (deriv sQc) 2 1) := by
+theorem pin99 : oneValue (deriv (clearVar sQc 2 2)) (clearVar (deriv sQc) 2 1) := by
   decide +kernel
 
-example : oneValue (deriv (clearVar sQc 2 2)) (clearVar (deriv sQc) 2 1) :=
+theorem pin100 : oneValue (deriv (clearVar sQc 2 2)) (clearVar (deriv sQc) 2 1) :=
   deriv_clearVar sQc 2 2
 
-example : (clearVar sQc 2 2).length = sQc.length :=
+theorem pin101 : (clearVar sQc 2 2).length = sQc.length :=
   length_clearVar sQc 2 2
 
 /-! The clearing's ring reads at `z² - 2` against `z + 5`: the sum
@@ -480,34 +482,34 @@ key two reads `5` against `15`. -/
 
 private def pB' : Poly := [⟨6, 1⟩, ⟨2, 1⟩]
 
-example : oneValue (clearVar (add sQc pB') 2 2)
+theorem pin102 : oneValue (clearVar (add sQc pB') 2 2)
     (add (clearVar sQc 2 2) (clearVar pB' 2 2)) := by decide +kernel
 
-example : oneValue (clearVar (add sQc pB') 2 2)
+theorem pin103 : oneValue (clearVar (add sQc pB') 2 2)
     (add (clearVar sQc 2 2) (clearVar pB' 2 2)) :=
   clearVar_add sQc pB' 2 2
 
-example : clearVar (neg sQc) 2 2 = neg (clearVar sQc 2 2) := by
+theorem pin104 : clearVar (neg sQc) 2 2 = neg (clearVar sQc 2 2) := by
   decide +kernel
 
-example : clearVar (neg sQc) 2 2 = neg (clearVar sQc 2 2) :=
+theorem pin105 : clearVar (neg sQc) 2 2 = neg (clearVar sQc 2 2) :=
   clearVar_neg sQc 2 2
 
-example : oneValue (clearVar (mul sQc pB') 2 (2 + 1))
+theorem pin106 : oneValue (clearVar (mul sQc pB') 2 (2 + 1))
     (mul (clearVar sQc 2 2) (clearVar pB' 2 1)) := by decide +kernel
 
-example : oneValue (clearVar (mul sQc pB') 2 (2 + 1))
+theorem pin107 : oneValue (clearVar (mul sQc pB') 2 (2 + 1))
     (mul (clearVar sQc 2 2) (clearVar pB' 2 1)) :=
   clearVar_mul sQc pB' 2 2 1 (Nat.le_refl _) (Nat.le_refl _)
 
-example : oneValue (clearVar (mul sQc pB') 3 (2 + 1))
+theorem pin108 : oneValue (clearVar (mul sQc pB') 3 (2 + 1))
     (mul (clearVar sQc 3 2) (clearVar pB' 3 1)) := by decide +kernel
 
-example : oneValue (clearVar (mul sQc pB') 3 (2 + 1))
+theorem pin109 : oneValue (clearVar (mul sQc pB') 3 (2 + 1))
     (mul (clearVar sQc 3 2) (clearVar pB' 3 1)) :=
   clearVar_mul sQc pB' 3 2 1 (Nat.le_refl _) (Nat.le_refl _)
 
-example : ¬ oneValue (clearVar (mul sQc pB') 3 (1 + 1))
+theorem pin110 : ¬ oneValue (clearVar (mul sQc pB') 3 (1 + 1))
     (mul (clearVar sQc 3 1) (clearVar pB' 3 1)) := by decide +kernel
 
 /-! The cleared evaluation at an end-shaped list: at the unit middle
@@ -516,16 +518,16 @@ at the point's, `[3, 0, 2]` at the point `⟨4 : 1⟩` over the clearing
 two reading `3·4 + 2·9`; an occupied middle refuses the read, its
 own term surviving. -/
 
-example : (evalClear [⟨4, 1⟩, BPair.unit, ⟨3, 1⟩] ⟨4, 1⟩ 2 2).oneValue
+theorem pin111 : (evalClear [⟨4, 1⟩, BPair.unit, ⟨3, 1⟩] ⟨4, 1⟩ 2 2).oneValue
     (ground.bpow (BPair.ofPos 2) 2 * ⟨4, 1⟩
       + ground.bpow ⟨4, 1⟩ 2 * ⟨3, 1⟩) := by decide +kernel
 
-example : (evalClear [⟨4, 1⟩, BPair.unit, ⟨3, 1⟩] ⟨4, 1⟩ 2 2).oneValue
+theorem pin112 : (evalClear [⟨4, 1⟩, BPair.unit, ⟨3, 1⟩] ⟨4, 1⟩ 2 2).oneValue
     (ground.bpow (BPair.ofPos 2) 2 * ⟨4, 1⟩
       + ground.bpow ⟨4, 1⟩ 2 * ⟨3, 1⟩) :=
   evalClear_ends ⟨4, 1⟩ ⟨3, 1⟩ [BPair.unit] (by decide +kernel) ⟨4, 1⟩ 2
 
-example : ¬ (evalClear [⟨4, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩] ⟨4, 1⟩ 2 2).oneValue
+theorem pin113 : ¬ (evalClear [⟨4, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩] ⟨4, 1⟩ 2 2).oneValue
     (ground.bpow (BPair.ofPos 2) 2 * ⟨4, 1⟩
       + ground.bpow ⟨4, 1⟩ 2 * ⟨3, 1⟩) := by decide +kernel
 
@@ -543,17 +545,63 @@ private def uCo : Poly := [⟨4, 3⟩, ⟨5, 4⟩]
 
 private def vCo : Poly := [⟨2, 1⟩, ⟨2, 1⟩, BPair.unit]
 
-example : oneValue (mul dOcc uCo) (mul dOcc vCo) := by decide +kernel
+theorem pin114 : oneValue (mul dOcc uCo) (mul dOcc vCo) := by decide +kernel
 
-example : oneValue uCo vCo := by decide +kernel
+theorem pin115 : oneValue uCo vCo := by decide +kernel
 
-example : oneValue uCo vCo :=
+theorem pin116 : oneValue uCo vCo :=
   pmul_cancel dOcc uCo vCo (by decide +kernel) (by decide +kernel)
 
-example : ¬ oneValue (mul dOcc uCo) (mul dOcc [⟨3, 1⟩, ⟨2, 1⟩]) := by
+theorem pin117 : ¬ oneValue (mul dOcc uCo) (mul dOcc [⟨3, 1⟩, ⟨2, 1⟩]) := by
   decide +kernel
 
-example : ¬ (oneValue (mul ([] : Poly) one) (mul ([] : Poly) [])
+theorem pin118 : ¬ (oneValue (mul ([] : Poly) one) (mul ([] : Poly) [])
     → oneValue one ([] : Poly)) := by decide +kernel
 
-example : unitTail ([] : Poly) := by decide +kernel
+theorem pin119 : unitTail ([] : Poly) := by decide +kernel
+
+/-! The inner evaluation at a composite point, at
+`P(t, s) = (1 + 2t) + (3 + t) s` and `Q(t, s) = (2 + t) + 4 s`: the
+evaluation at `t = 2` (`[5, 5]` at the clearing one, `[10, 10]` at
+the representative `[4 : 2]`), the key count kept, the inner-degree
+cap decided at the power one and refused at the power nought, the
+outer sum and product at the split powers decided and through the
+theorem with the product's conclusion parting at a power below a
+factor's degree, the inner top read at one and at two on a ragged
+list with the cap holding there through its theorem, and the
+clearing-one read against the coefficientwise evaluation. -/
+
+private def PQ1 : PPoly := [[BPair.ofNat 1, BPair.ofNat 2], [BPair.ofNat 3, BPair.ofNat 1]]
+private def PQ2 : PPoly := [[BPair.ofNat 2, BPair.ofNat 1], [BPair.ofNat 4]]
+private def PQ3 : PPoly := [[BPair.ofNat 2], [BPair.ofNat 1, BPair.unit, BPair.ofNat 5], [BPair.ofNat 3]]
+
+theorem pin120 : oneValue (pevalCP PQ1 (BPair.ofNat 2) 1 1)
+    [BPair.ofNat 5, BPair.ofNat 5] := by decide +kernel
+theorem pin121 : oneValue (pevalCP PQ1 (BPair.ofNat 4) 2 1)
+    [BPair.ofNat 10, BPair.ofNat 10] := by decide +kernel
+theorem pin122 : (pevalCP PQ1 (BPair.ofNat 2) 1 1).length = PQ1.length := by
+  decide +kernel
+theorem pin123 : innerLe PQ1 1 := by decide +kernel
+theorem pin124 : ¬ innerLe PQ1 0 := by decide +kernel
+theorem pin125 : oneValue (pevalCP (padd PQ1 PQ2) (BPair.ofNat 2) 1 1)
+    (add (pevalCP PQ1 (BPair.ofNat 2) 1 1) (pevalCP PQ2 (BPair.ofNat 2) 1 1)) := by
+  decide +kernel
+theorem pin126 : oneValue (pevalCP (pmul PQ1 PQ2) (BPair.ofNat 2) 1 (1 + 1))
+    (mul (pevalCP PQ1 (BPair.ofNat 2) 1 1) (pevalCP PQ2 (BPair.ofNat 2) 1 1)) := by
+  decide +kernel
+theorem pin127 : oneValue (pevalCP (pmul PQ1 PQ2) (BPair.ofNat 3) 2 (1 + 1))
+    (mul (pevalCP PQ1 (BPair.ofNat 3) 2 1) (pevalCP PQ2 (BPair.ofNat 3) 2 1)) :=
+  pevalCP_pmul PQ1 PQ2 1 1 (by decide +kernel) (by decide +kernel) (BPair.ofNat 3) 2
+theorem pin128 : ¬ oneValue (pevalCP (pmul PQ1 PQ2) (BPair.ofNat 3) 2 (0 + 1))
+    (mul (pevalCP PQ1 (BPair.ofNat 3) 2 0) (pevalCP PQ2 (BPair.ofNat 3) 2 1)) := by
+  decide +kernel
+theorem pin129 : innerTop PQ1 = 1 := by decide +kernel
+theorem pin130 : innerTop PQ3 = 2 := by decide +kernel
+theorem pin131 : innerLe PQ3 (innerTop PQ3) := innerLe_innerTop PQ3
+theorem pin132 : ¬ innerLe PQ3 1 := by decide +kernel
+theorem pin133 : oneValue (pevalCP PQ1 (BPair.ofNat 2) 1 3) (pevalB PQ1 (BPair.ofNat 2)) := by
+  decide +kernel
+theorem pin134 : oneValue (pevalCP PQ3 (BPair.ofNat 3) 1 2) (pevalB PQ3 (BPair.ofNat 3)) :=
+  pevalCP_one PQ3 (BPair.ofNat 3) 2
+
+end poly

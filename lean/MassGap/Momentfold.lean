@@ -57,8 +57,8 @@ and the far edge's reads (`fbd_row_zero`, `fbd_row_succ`).  The
 truncated moment vector is the two streams' reads through a stated
 degree with the boundary square (`momVec`), and a commutator's
 ground read is of equal members, two symmetric data's composed
-actions pairing at one value in either order (`commGround`), which
-is why the folds rather than commutators close the system.
+actions pairing at one value in either order (`commGround`), the
+folds the streams' two reads.
 
 Clause (ii)'s square system.  The identities at weights through the
 stated degree, with the base reads and the boundary square, are one
@@ -179,14 +179,14 @@ def decRecRows : ∀ (p : BPair) (a b psi : List BPair),
       @instDecidableAnd _ _ inferInstance
         (decRecRows _ (a' :: as) bs (x' :: xs))
 
-instance (p : BPair) (a b psi : List BPair) :
+instance instMomentfold1 (p : BPair) (a b psi : List BPair) :
     Decidable (recRows p a b psi) := decRecRows p a b psi
 
 /-- The ground's recurrence: the walk at the unit seed. -/
 def recRead (a b psi : List BPair) : Prop :=
   recRows BPair.unit a b psi
 
-instance (a b psi : List BPair) : Decidable (recRead a b psi) :=
+instance instMomentfold2 (a b psi : List BPair) : Decidable (recRead a b psi) :=
   decRecRows BPair.unit a b psi
 
 /-! The three streams at a list split off its head key: the head
@@ -255,17 +255,19 @@ private theorem seedUnit (W : Nat → BPair) (g : BPair) :
 /-- The five-summand regrouping the square fold's collection takes:
 the two bond heads join their own tails. -/
 private theorem sqCollect (P Q S Z1 Z2 : BPair) :
-    P + Q + (S + (Z1 + Z2)) = P + (Q + Z1 + (S + Z2)) := by
-  rw [BPair.add_assoc P Q (S + (Z1 + Z2)), BPair.add_assoc Q Z1 (S + Z2),
-    BPair.add_left_comm S Z1 Z2]
+    (P + Q + (S + (Z1 + Z2))).oneValue (P + (Q + Z1 + (S + Z2))) :=
+  polEqB [P, Q, S, Z1, Z2]
+    (Pol.add (Pol.add (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1))) (Pol.add (Pol.mon (Mon.var 2)) (Pol.add (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 4)))))
+    (Pol.add (Pol.mon (Mon.var 0)) (Pol.add (Pol.add (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 3))) (Pol.add (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 4))))) (by decide +kernel)
 
 /-- The five-summand regrouping the bond fold's collection takes:
 the second-bond head joins its own tail and the square head joins
 its. -/
 private theorem bondCollect (P Q S D Z : BPair) :
-    P + Q + (S + (D + Z)) = P + (S + D + (Q + Z)) := by
-  rw [BPair.add_assoc P Q (S + (D + Z)), BPair.add_left_comm Q S (D + Z),
-    BPair.add_left_comm Q D Z, BPair.add_assoc S D (Q + Z)]
+    (P + Q + (S + (D + Z))).oneValue (P + (S + D + (Q + Z))) :=
+  polEqB [P, Q, S, D, Z]
+    (Pol.add (Pol.add (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1))) (Pol.add (Pol.mon (Mon.var 2)) (Pol.add (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 4)))))
+    (Pol.add (Pol.mon (Mon.var 0)) (Pol.add (Pol.add (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 3))) (Pol.add (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 4))))) (by decide +kernel)
 
 /-! The walk's reads: the two lengths, the head row at the
 accumulated seed, and the interior rows at every key. -/
@@ -426,16 +428,17 @@ private theorem foldSqGo : ∀ (p : BPair) (a b psi : List BPair),
             + cStream (x1 :: xs)
               (fun k => ground.getAt BPair.unit bs k * W (k + 2)) :=
         cStream_cons _ _ _
-      have hExp : (p + b0 * x1) * (W 0 * x0)
-          = W 0 * (p * x0) + b0 * W 0 * (x0 * x1) := by
-        rw [BPair.right_distrib, BPair.mul_left_comm p (W 0) x0,
-          BPair.mul_mul_mul_comm b0 x1 (W 0) x0, BPair.mul_comm x1 x0]
+      have hExp : ((p + b0 * x1) * (W 0 * x0)).oneValue
+          (W 0 * (p * x0) + b0 * W 0 * (x0 * x1)) :=
+        polEqB [p, b0, x1, (W 0), x0]
+            (Pol.mul (Pol.add (Pol.mon (Mon.var 0)) (Pol.mon (Mon.mul (Mon.var 1) (Mon.var 2)))) (Pol.mon (Mon.mul (Mon.var 3) (Mon.var 4))))
+            (Pol.add (Pol.mon (Mon.mul (Mon.var 3) (Mon.mul (Mon.var 0) (Mon.var 4)))) (Pol.mon (Mon.mul (Mon.mul (Mon.var 1) (Mon.var 3)) (Mon.mul (Mon.var 4) (Mon.var 2))))) (by decide +kernel)
       have hHead : (a0 * W 0 * (x0 * x0)).oneValue
           (W 0 * (p * x0) + b0 * W 0 * (x0 * x1)) :=
         BPair.oneValue_trans
           (BPair.oneValue_of_eq (BPair.mul_mul_mul_comm a0 (W 0) x0 x0))
           (BPair.oneValue_trans (BPair.mul_congr_left h.1)
-            (BPair.oneValue_of_eq hExp))
+            hExp)
       have hSh : W 1 * (b0 * x0 * x1) = b0 * W 1 * (x0 * x1) :=
         (BPair.mul_left_comm (W 1) (b0 * x0) x1).trans
           (BPair.mul_mul_mul_comm b0 (W 1) x0 x1).symm
@@ -451,12 +454,12 @@ private theorem foldSqGo : ∀ (p : BPair) (a b psi : List BPair),
           (BPair.add_congr (BPair.oneValue_of_eq hSh) (BPair.oneValue_refl _))
       rw [hLdec, hC1, hC2]
       exact BPair.oneValue_trans (BPair.add_congr hHead hIh)
-        (BPair.oneValue_of_eq (sqCollect (W 0 * (p * x0))
+        (sqCollect (W 0 * (p * x0))
           (b0 * W 0 * (x0 * x1)) (b0 * W 1 * (x0 * x1))
           (cStream (x1 :: xs)
             (fun k => ground.getAt BPair.unit bs k * W (k + 1)))
           (cStream (x1 :: xs)
-            (fun k => ground.getAt BPair.unit bs k * W (k + 2)))))
+            (fun k => ground.getAt BPair.unit bs k * W (k + 2))))
 
 /-- The bond fold at an accumulated seed: the bond stream against the
 diagonal weight reads the seed term at the next ground joined to the
@@ -532,16 +535,17 @@ private theorem foldBondGo : ∀ (p : BPair) (a b psi : List BPair),
             (BPair.add_congr (BPair.unit_mul (x1 * x1))
               (BPair.oneValue_refl _))
             (BPair.unit_add _))
-      have hExp : (p + b0 * x1) * (W 0 * x1)
-          = W 0 * (p * x1) + b0 * W 0 * (x1 * x1) := by
-        rw [BPair.right_distrib, BPair.mul_left_comm p (W 0) x1,
-          BPair.mul_mul_mul_comm b0 x1 (W 0) x1]
+      have hExp : ((p + b0 * x1) * (W 0 * x1)).oneValue
+          (W 0 * (p * x1) + b0 * W 0 * (x1 * x1)) :=
+        polEqB [p, b0, x1, (W 0)]
+            (Pol.mul (Pol.add (Pol.mon (Mon.var 0)) (Pol.mon (Mon.mul (Mon.var 1) (Mon.var 2)))) (Pol.mon (Mon.mul (Mon.var 3) (Mon.var 2))))
+            (Pol.add (Pol.mon (Mon.mul (Mon.var 3) (Mon.mul (Mon.var 0) (Mon.var 2)))) (Pol.mon (Mon.mul (Mon.mul (Mon.var 1) (Mon.var 3)) (Mon.mul (Mon.var 2) (Mon.var 2))))) (by decide +kernel)
       have hHead : (a0 * W 0 * (x0 * x1)).oneValue
           (W 0 * (p * x1) + b0 * W 0 * (x1 * x1)) :=
         BPair.oneValue_trans
           (BPair.oneValue_of_eq (BPair.mul_mul_mul_comm a0 (W 0) x0 x1))
           (BPair.oneValue_trans (BPair.mul_congr_left h.1)
-            (BPair.oneValue_of_eq hExp))
+            hExp)
       have hSh : W 1 * (b0 * x0 * ground.getAt BPair.unit xs 0)
           = b0 * W 1 * (x0 * ground.getAt BPair.unit xs 0) :=
         (BPair.mul_left_comm (W 1) (b0 * x0)
@@ -562,13 +566,13 @@ private theorem foldBondGo : ∀ (p : BPair) (a b psi : List BPair),
       rw [hLdec, hD, hRho, hRho2]
       refine BPair.oneValue_trans (BPair.add_congr hHead hIh) ?_
       refine BPair.oneValue_trans
-        (BPair.oneValue_of_eq (bondCollect (W 0 * (p * x1))
+        (bondCollect (W 0 * (p * x1))
           (b0 * W 0 * (x1 * x1))
           (b0 * W 1 * (x0 * ground.getAt BPair.unit xs 0))
           (dStream (x1 :: xs)
             (fun k => ground.getAt BPair.unit bs k * W (k + 2)))
           (rhoStream xs
-            (fun k => ground.getAt BPair.unit bs k * W (k + 1))))) ?_
+            (fun k => ground.getAt BPair.unit bs k * W (k + 1)))) ?_
       exact BPair.oneValue_symm
         (BPair.add_congr (BPair.oneValue_refl _)
           (BPair.add_congr (BPair.oneValue_refl _)
@@ -630,33 +634,19 @@ private theorem bondTerm (a b psi : List BPair) (h : recRead a b psi)
         (ground.getAt BPair.unit psi (k + 1)),
       BPair.mul_mul_mul_comm (ground.getAt BPair.unit a (k + 1)) (W k)
         (ground.getAt BPair.unit psi (k + 1)) (ground.getAt BPair.unit psi k)]
-  have eR : (ground.getAt BPair.unit b k * ground.getAt BPair.unit psi k
-        + ground.getAt BPair.unit b (k + 1)
-          * ground.getAt BPair.unit psi (k + 2))
-        * (W k * ground.getAt BPair.unit psi k)
-      = ground.getAt BPair.unit b (k + 1) * W k
-          * (ground.getAt BPair.unit psi k
-            * ground.getAt BPair.unit psi (k + 2))
-        + ground.getAt BPair.unit b k * W k
-          * (ground.getAt BPair.unit psi k
-            * ground.getAt BPair.unit psi k) := by
-    rw [BPair.right_distrib,
-      BPair.mul_mul_mul_comm (ground.getAt BPair.unit b k)
-        (ground.getAt BPair.unit psi k) (W k) (ground.getAt BPair.unit psi k),
-      BPair.mul_mul_mul_comm (ground.getAt BPair.unit b (k + 1))
-        (ground.getAt BPair.unit psi (k + 2)) (W k)
-        (ground.getAt BPair.unit psi k),
-      BPair.mul_comm (ground.getAt BPair.unit psi (k + 2))
-        (ground.getAt BPair.unit psi k),
-      BPair.add_comm (ground.getAt BPair.unit b k * W k
-          * (ground.getAt BPair.unit psi k * ground.getAt BPair.unit psi k))
-        (ground.getAt BPair.unit b (k + 1) * W k
-          * (ground.getAt BPair.unit psi k
-            * ground.getAt BPair.unit psi (k + 2)))]
+  have eR : ((ground.getAt BPair.unit b k * ground.getAt BPair.unit psi k + ground.getAt BPair.unit b (k
+      + 1) * ground.getAt BPair.unit psi (k + 2)) * (W k * ground.getAt BPair.unit psi k)).oneValue
+      (ground.getAt BPair.unit b (k + 1) * W k * (ground.getAt BPair.unit psi k * ground.getAt BPair.unit psi (k
+          + 2)) + ground.getAt BPair.unit b k * W k * (ground.getAt BPair.unit psi k *
+          ground.getAt BPair.unit psi k)) :=
+    polEqB [(getAt BPair.unit b k), (getAt BPair.unit psi k), (getAt BPair.unit b (k + 1)),
+        (getAt BPair.unit psi (k + 2)), (W k)]
+        (Pol.mul (Pol.add (Pol.mon (Mon.mul (Mon.var 0) (Mon.var 1))) (Pol.mon (Mon.mul (Mon.var 2) (Mon.var 3)))) (Pol.mon (Mon.mul (Mon.var 4) (Mon.var 1))))
+        (Pol.add (Pol.mon (Mon.mul (Mon.mul (Mon.var 2) (Mon.var 4)) (Mon.mul (Mon.var 1) (Mon.var 3)))) (Pol.mon (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 4)) (Mon.mul (Mon.var 1) (Mon.var 1))))) (by decide +kernel)
   exact BPair.oneValue_symm
     (BPair.oneValue_trans (BPair.oneValue_of_eq eL)
       (BPair.oneValue_trans (BPair.mul_congr_left (rowAt a b psi h k))
-        (BPair.oneValue_of_eq eR)))
+        eR))
 
 /-- The second-bond reduction: one further fold of the recurrence
 sends the second-bond stream and the square stream at the bond weight
@@ -684,8 +674,7 @@ theorem bond2_reduce (a b psi : List BPair) (h : recRead a b psi)
 
 /-- A commutator's ground read is of equal members: two symmetric
 data's composed actions against a vector pair the vector at one
-value in either order, each pairing walked across the symmetry —
-the folds rather than commutators close the system. -/
+value in either order, each pairing walked across the symmetry. -/
 theorem commGround {n : Nat} (M N : elim.Mat)
     (hM : elim.sqAt M n) (hN : elim.sqAt N n)
     (hsM : elim.matOneValue (elim.transposeM M) M)
@@ -746,21 +735,21 @@ def decProfWalk (p2 p1 p0 : BPair) : ∀ (k : Nat) (l : List BPair),
   | k, _ :: t =>
       @instDecidableAnd _ _ inferInstance (decProfWalk p2 p1 p0 (k + 1) t)
 
-instance (p2 p1 p0 : BPair) (k : Nat) (l : List BPair) :
+instance instMomentfold3 (p2 p1 p0 : BPair) (k : Nat) (l : List BPair) :
     Decidable (profWalk p2 p1 p0 k l) := decProfWalk p2 p1 p0 k l
 
 /-- The diagonal at a quadratic profile: the walk from the head key. -/
 def diagProf (a : List BPair) (p2 p1 p0 : BPair) : Prop :=
   profWalk p2 p1 p0 0 a
 
-instance (a : List BPair) (p2 p1 p0 : BPair) :
+instance instMomentfold4 (a : List BPair) (p2 p1 p0 : BPair) :
     Decidable (diagProf a p2 p1 p0) := decProfWalk p2 p1 p0 0 a
 
 /-- The bond list at one datum: every entry reads that datum. -/
 def constBond (b : List BPair) (β : BPair) : Prop :=
   poly.oneValue b (List.replicate b.length β)
 
-instance (b : List BPair) (β : BPair) : Decidable (constBond b β) :=
+instance instMomentfold5 (b : List BPair) (β : BPair) : Decidable (constBond b β) :=
   poly.decOneValue _ _
 
 /-- The profile walk's entry read at every key below its count, the
@@ -1156,10 +1145,10 @@ private theorem powSquare (m j : Nat) :
 
 /-- A three-summand head distributes through two further factors. -/
 private theorem sumThreeMul (X Y Z B P : BPair) :
-    (X + (Y + Z)) * B * P = X * B * P + (Y * B * P + Z * B * P) := by
-  rw [BPair.right_distrib X (Y + Z) B, BPair.right_distrib Y Z B,
-    BPair.right_distrib (X * B) (Y * B + Z * B) P,
-    BPair.right_distrib (Y * B) (Z * B) P]
+    ((X + (Y + Z)) * B * P).oneValue (X * B * P + (Y * B * P + Z * B * P)) :=
+  polEqB [X, Y, Z, B, P]
+    (Pol.mul (Pol.mul (Pol.add (Pol.mon (Mon.var 0)) (Pol.add (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 2)))) (Pol.mon (Mon.var 3))) (Pol.mon (Mon.var 4)))
+    (Pol.add (Pol.mon (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 3)) (Mon.var 4))) (Pol.add (Pol.mon (Mon.mul (Mon.mul (Mon.var 1) (Mon.var 3)) (Mon.var 4))) (Pol.mon (Mon.mul (Mon.mul (Mon.var 2) (Mon.var 3)) (Mon.var 4))))) (by decide +kernel)
 
 /-- The profiled summand expands onto the three neighboring powers at the
 profile's constants. -/
@@ -1169,7 +1158,7 @@ private theorem profTerm (p2 p1 p0 : BPair) (m j : Nat) (P : BPair) :
       (p2 * (ground.bpow (BPair.ofNat m) (j + 2) * P)
         + (p1 * (ground.bpow (BPair.ofNat m) (j + 1) * P)
           + p0 * (ground.bpow (BPair.ofNat m) j * P))) :=
-  BPair.oneValue_trans (BPair.oneValue_of_eq (sumThreeMul _ _ _ _ _))
+  BPair.oneValue_trans (sumThreeMul _ _ _ _ _)
     (BPair.add_congr
       (BPair.oneValue_trans
         (BPair.mul_congr_left
@@ -1270,38 +1259,6 @@ theorem profC (a psi : List BPair) (p2 p1 p0 : BPair)
           (prof_at a p2 p1 p0 h m (by rw [← hlen]; exact hm))))
         (profTerm p2 p1 p0 m j _))
 
-/-- The shifted profile's middle constant distributes over the key. -/
-private theorem upCoeff (p2 p1 c : BPair) :
-    (p2 + p2 + p1) * c = p2 * c + p2 * c + p1 * c := by
-  rw [BPair.right_distrib (p2 + p2) p1 c, BPair.right_distrib p2 p2 c]
-
-/-- The seven-summand regrouping the shifted profile's collection takes. -/
-private theorem upRegroup (A B D E F G : BPair) :
-    A + (B + (B + D)) + (E + F + G)
-      = A + (B + B + E + (D + F + G)) := by
-  rw [BPair.add_assoc A (B + (B + D)) (E + F + G),
-    BPair.add_assoc B (B + D) (E + F + G),
-    BPair.add_assoc B D (E + F + G),
-    BPair.add_assoc E F G,
-    BPair.add_assoc (B + B) E (D + F + G),
-    BPair.add_assoc B B (E + (D + F + G)),
-    BPair.add_assoc D F G,
-    BPair.add_left_comm D E (F + G)]
-
-/-- The shifted profile's head distributes over its summands. -/
-private theorem upExpand (p2 p1 p0 c cc u : BPair) :
-    p2 * (cc + (c + (c + u))) + (p1 * (c + u) + p0)
-      = p2 * cc + (p2 * c + (p2 * c + p2 * u)) + (p1 * c + p1 * u + p0) := by
-  rw [BPair.left_distrib p2 cc (c + (c + u)), BPair.left_distrib p2 c (c + u),
-    BPair.left_distrib p2 c u, BPair.left_distrib p1 c u]
-
-/-- The shifted profile's summands collect at the shifted constants. -/
-private theorem upCollect (p2 p1 p0 c cc : BPair) :
-    p2 * cc + (p2 * c + (p2 * c + p2)) + (p1 * c + p1 + p0)
-      = p2 * cc + ((p2 + p2 + p1) * c + (p2 + p1 + p0)) := by
-  rw [upCoeff p2 p1 c]
-  exact upRegroup (p2 * cc) (p2 * c) p2 (p1 * c) p1 p0
-
 /-- The quadratic profile at the raised key is the profile at the key
 with the constants shifted: the squared constant joins twice at the
 linear place and once at the constant place. -/
@@ -1326,20 +1283,9 @@ private theorem quadShift (p2 p1 p0 : BPair) (k : Nat) :
     (BPair.add_congr (BPair.mul_congr (BPair.oneValue_refl p2) hofn)
       (BPair.add_congr (BPair.mul_congr (BPair.oneValue_refl p1)
         (BPair.ofNat_succ k)) (BPair.oneValue_refl p0))) ?_
-  refine BPair.oneValue_trans
-    (BPair.oneValue_of_eq (upExpand p2 p1 p0 (BPair.ofNat k)
-      (BPair.ofNat (k * k)) (BPair.ofNat 1))) ?_
-  refine BPair.oneValue_trans
-    (BPair.add_congr
-      (BPair.add_congr (BPair.oneValue_refl _)
-        (BPair.add_congr (BPair.oneValue_refl _)
-          (BPair.add_congr (BPair.oneValue_refl _)
-            (BPair.mul_ofNat_one p2))))
-      (BPair.add_congr
-        (BPair.add_congr (BPair.oneValue_refl _) (BPair.mul_ofNat_one p1))
-        (BPair.oneValue_refl p0))) ?_
-  exact BPair.oneValue_of_eq
-    (upCollect p2 p1 p0 (BPair.ofNat k) (BPair.ofNat (k * k)))
+  exact polEqB [p2, (BPair.ofNat (k * k)), (BPair.ofNat k), p1, p0]
+      (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.add (Pol.mon (Mon.var 1)) (Pol.add (Pol.mon (Mon.var 2)) (Pol.add (Pol.mon (Mon.var 2)) (Pol.mon (Mon.cst 1)))))) (Pol.add (Pol.mul (Pol.mon (Mon.var 3)) (Pol.add (Pol.mon (Mon.var 2)) (Pol.mon (Mon.cst 1)))) (Pol.mon (Mon.var 4))))
+      (Pol.add (Pol.mon (Mon.mul (Mon.var 0) (Mon.var 1))) (Pol.add (Pol.mul (Pol.add (Pol.add (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.mon (Mon.var 3))) (Pol.mon (Mon.var 2))) (Pol.add (Pol.add (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 3))) (Pol.mon (Mon.var 4))))) (by decide +kernel)
 
 /-- The bond stream against the profiled diagonal at the raised key
 expands onto three neighboring bond moments at the shifted constants,
@@ -1773,10 +1719,7 @@ private theorem dotP_addAt : ∀ (r v : List BPair) (k : Nat) (x : BPair),
   | y :: r, c :: v, 0, x, _ => by
     show ((x + y) * c + elim.dotP r v).oneValue
       (x * c + (y * c + elim.dotP r v))
-    rw [BPair.mul_comm (x + y) c, BPair.left_distrib c x y,
-      BPair.mul_comm c x, BPair.mul_comm c y]
-    exact BPair.oneValue_of_eq
-      (BPair.add_assoc (x * c) (y * c) (elim.dotP r v))
+    exact BPair.oneValue_of_eq (by rw [BPair.right_distrib, BPair.add_assoc])
   | y :: r, c :: v, k + 1, x, hk => by
     show (y * c + elim.dotP (addAt r k x) v).oneValue
       (x * ground.getAt BPair.unit v k + (y * c + elim.dotP r v))
@@ -2217,6 +2160,14 @@ private theorem swapCoef (a c d : BPair) :
     ((a * c).swap) * d = (a * (c * d)).swap := by
   rw [BPair.swap_mul, BPair.mul_assoc]
 
+/-- A row's four summands peel at the count and the power. -/
+private theorem topPeel (N P A B C E : BPair) :
+    (N * (P * (A + (B + C) + E))).oneValue
+      (N * (P * A) + (N * (P * B) + N * (P * C)) + N * (P * E)) :=
+  polEqB [N, P, A, B, C, E]
+    (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.add (Pol.add (Pol.mon (Mon.var 2)) (Pol.add (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 4)))) (Pol.mon (Mon.var 5)))))
+    (Pol.add (Pol.add (Pol.mon (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 1) (Mon.var 2)))) (Pol.add (Pol.mon (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 1) (Mon.var 3)))) (Pol.mon (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 1) (Mon.var 4)))))) (Pol.mon (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 1) (Mon.var 5))))) (by decide +kernel)
+
 /-- The reduced second fold's row at a raised height reads the
 Pascal edge fold's balance partner against the moment vector, the
 shared top withdrawing across `fbd_row_succ`'s two sides. -/
@@ -2392,43 +2343,7 @@ private theorem fbdRowSucc_read (a b psi : List BPair)
           + BPair.ofNat (ground.pasc (j + 1) t)
             * (ground.bpow (BPair.ofNat 2) (j + 1 - t)
               * (β * edgeAt psi t)))
-        (List.range (j + 2)) (fun t _ => BPair.oneValue_of_eq (by
-          rw [BPair.left_distrib
-              (ground.bpow (BPair.ofNat 2) (j + 1 - t))
-              (p2 * mc psi (t + 2)
-                + ((p2 + p2 + p1) * mc psi (t + 1)
-                  + (p2 + p1 + p0) * mc psi t))
-              (β * edgeAt psi t),
-            BPair.left_distrib
-              (ground.bpow (BPair.ofNat 2) (j + 1 - t))
-              (p2 * mc psi (t + 2))
-              ((p2 + p2 + p1) * mc psi (t + 1)
-                + (p2 + p1 + p0) * mc psi t),
-            BPair.left_distrib
-              (ground.bpow (BPair.ofNat 2) (j + 1 - t))
-              ((p2 + p2 + p1) * mc psi (t + 1))
-              ((p2 + p1 + p0) * mc psi t),
-            BPair.left_distrib (BPair.ofNat (ground.pasc (j + 1) t))
-              (ground.bpow (BPair.ofNat 2) (j + 1 - t)
-                  * (p2 * mc psi (t + 2))
-                + (ground.bpow (BPair.ofNat 2) (j + 1 - t)
-                    * ((p2 + p2 + p1) * mc psi (t + 1))
-                  + ground.bpow (BPair.ofNat 2) (j + 1 - t)
-                    * ((p2 + p1 + p0) * mc psi t)))
-              (ground.bpow (BPair.ofNat 2) (j + 1 - t)
-                * (β * edgeAt psi t)),
-            BPair.left_distrib (BPair.ofNat (ground.pasc (j + 1) t))
-              (ground.bpow (BPair.ofNat 2) (j + 1 - t)
-                * (p2 * mc psi (t + 2)))
-              (ground.bpow (BPair.ofNat 2) (j + 1 - t)
-                  * ((p2 + p2 + p1) * mc psi (t + 1))
-                + ground.bpow (BPair.ofNat 2) (j + 1 - t)
-                  * ((p2 + p1 + p0) * mc psi t)),
-            BPair.left_distrib (BPair.ofNat (ground.pasc (j + 1) t))
-              (ground.bpow (BPair.ofNat 2) (j + 1 - t)
-                * ((p2 + p2 + p1) * mc psi (t + 1)))
-              (ground.bpow (BPair.ofNat 2) (j + 1 - t)
-                * ((p2 + p1 + p0) * mc psi t))]))) ?_
+        (List.range (j + 2)) (fun t _ => topPeel _ _ _ _ _ _)) ?_
     refine BPair.oneValue_trans
       (ground.foldB_add _ _ (List.range (j + 2))) ?_
     refine BPair.add_congr ?_ (BPair.oneValue_refl _)
@@ -3991,7 +3906,7 @@ theorem two_lines (roots : List (BPair × Pos)) (fn fd cn cd : Pos)
 /-- The two lines at the pencil's count reads: at a floor level whose
 count read is vacant and a cap level whose count read is two or
 beyond, `split.countRead`'s tie of the split's count to the roots
-below the level, two distinct located roots sit in the lines' band,
+below the level, two distinct root positions sit in the lines' band,
 the window's second root at or below the cap and its ground at or
 beyond the floor. -/
 theorem two_lines_at {o : Nat} (H G : Mat) (roots : List (BPair × Pos))

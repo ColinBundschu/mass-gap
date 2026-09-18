@@ -5,37 +5,39 @@ block count's identity with the path count at the tableau
 instances — the read decided against `def:blockcount`'s
 kernel-dimension count and run through the general theorem.
 -/
+
+namespace mixedinv
 set_option maxHeartbeats 4000000
 
-open ground places mixedinv
+open ground places
 
 /-! The read against the definitional count. -/
 
-example : mixedinv.read [2, 0] := by decide +kernel
-example : mixedinv.read [1, 1] := by decide +kernel
-example : mixedinv.read [1, 1, 0] := by decide +kernel
-example : mixedinv.read [0, 0, 1] := by decide +kernel
+theorem pin1 : mixedinv.read [2, 0] := by decide +kernel
+theorem pin2 : mixedinv.read [1, 1] := by decide +kernel
+theorem pin3 : mixedinv.read [1, 1, 0] := by decide +kernel
+theorem pin4 : mixedinv.read [0, 0, 1] := by decide +kernel
 
 /-! The general theorem's own route at the standing instances. -/
 
-example : mixedinv.read [1, 1] := mixedinv.readAll [1, 1]
-example : mixedinv.read [1, 1, 0] := mixedinv.readAll [1, 1, 0]
-example : mixedinv.read [0, 0, 1] := mixedinv.readAll [0, 0, 1]
+theorem pin5 : mixedinv.read [1, 1] := mixedinv.readAll [1, 1]
+theorem pin6 : mixedinv.read [1, 1, 0] := mixedinv.readAll [1, 1, 0]
+theorem pin7 : mixedinv.read [0, 0, 1] := mixedinv.readAll [0, 0, 1]
 
 /-! The theorem carries no binder: the vacant shape and the vacant
 content both stand, each decided at the kernel, and the vacant
 shape runs through the theorem beside its decide. -/
 
-example : mixedinv.read [] := by decide +kernel
-example : mixedinv.read [0, 0, 0] := by decide +kernel
-example : mixedinv.read [] := mixedinv.readAll []
+theorem pin8 : mixedinv.read [] := by decide +kernel
+theorem pin9 : mixedinv.read [0, 0, 0] := by decide +kernel
+theorem pin10 : mixedinv.read [] := mixedinv.readAll []
 
 /-! Both removal arms at one shape: `[1, 0, 1]`'s paths join at
 three, the count decided against the definitional one and read
 through the theorem. -/
 
-example : mixedinv.read [1, 0, 1] := by decide +kernel
-example : mixedinv.read [1, 0, 1] := mixedinv.readAll [1, 0, 1]
+theorem pin11 : mixedinv.read [1, 0, 1] := by decide +kernel
+theorem pin12 : mixedinv.read [1, 0, 1] := mixedinv.readAll [1, 0, 1]
 
 /-! The carrier tier's batteries: the permutation matrices at the
 two-letter content, the moved read decided at the kernel and run
@@ -47,11 +49,11 @@ binder's refusal — at `k > d` the flats are dependent. -/
 identity assignment reads the diagonal, the swap the
 antidiagonal. -/
 
-example : mixedinv.permMat [0, 1] [1, 1]
+theorem pin13 : mixedinv.permMat [0, 1] [1, 1]
     = [[ground.BPair.ofNat 1, ground.BPair.unit],
        [ground.BPair.unit, ground.BPair.ofNat 1]] := by decide +kernel
 
-example : mixedinv.permMat [1, 0] [1, 1]
+theorem pin14 : mixedinv.permMat [1, 0] [1, 1]
     = [[ground.BPair.unit, ground.BPair.ofNat 1],
        [ground.BPair.ofNat 1, ground.BPair.unit]] := by decide +kernel
 
@@ -59,7 +61,7 @@ example : mixedinv.permMat [1, 0] [1, 1]
 two-letter content against the `E_{01}` move at a concrete vector —
 decided at the kernel and read through the theorem. -/
 
-example : poly.oneValue
+theorem pin15 : poly.oneValue
     (elim.matVec
       (units.matUnitAt (blockcount.moveAt 0 1 [1, 1]) [1, 1] 0 1)
       (elim.matVec (mixedinv.permMat [1, 0] [1, 1])
@@ -69,7 +71,7 @@ example : poly.oneValue
         (units.matUnitAt (blockcount.moveAt 0 1 [1, 1]) [1, 1] 0 1)
         [ground.BPair.ofNat 1, ground.BPair.ofNat 2])) := by decide +kernel
 
-example : poly.oneValue
+theorem pin16 : poly.oneValue
     (elim.matVec
       (units.matUnitAt (blockcount.moveAt 0 1 [1, 1]) [1, 1] 0 1)
       (elim.matVec (mixedinv.permMat [1, 0] [1, 1])
@@ -85,23 +87,23 @@ example : poly.oneValue
 /-! The independence decided at two sizes and read through the
 theorem. -/
 
-example : elim.indepRows (mixedinv.mixWidth 2 2)
+theorem pin17 : elim.indepRows (mixedinv.mixWidth 2 2)
     (mixedinv.permFlats 2 2) := by decide +kernel
 
-example : elim.indepRows (mixedinv.mixWidth 3 2)
+theorem pin18 : elim.indepRows (mixedinv.mixWidth 3 2)
     (mixedinv.permFlats 3 2) := by decide +kernel
 
-example : elim.indepRows (mixedinv.mixWidth 2 2)
+theorem pin19 : elim.indepRows (mixedinv.mixWidth 2 2)
     (mixedinv.permFlats 2 2) := mixedinv.perm_indep 2 2 (by decide +kernel)
 
-example : elim.indepRows (mixedinv.mixWidth 3 2)
+theorem pin20 : elim.indepRows (mixedinv.mixWidth 3 2)
     (mixedinv.permFlats 3 2) := mixedinv.perm_indep 3 2 (by decide +kernel)
 
 /-! The width binder's refusal: beyond the letter count the six
 degree-three flats over two letters are dependent — `k ≤ d` is
 load-bearing. -/
 
-example : ¬ elim.indepRows (mixedinv.mixWidth 2 3)
+theorem pin21 : ¬ elim.indepRows (mixedinv.mixWidth 2 3)
     (mixedinv.permFlats 2 3) := by decide +kernel
 
 /-! The Gram tier's batteries: the four cycle-count pins decided
@@ -111,28 +113,28 @@ three letters, and the mixed three-letter pair at one cycle — with
 the cycle fold's length pinned at a two-cycle instance and the
 membership binder's refusal at a non-permutation. -/
 
-example : (elim.dotP (mixedinv.flatF 2 2 (mixedinv.permMat [0, 1]))
+theorem pin22 : (elim.dotP (mixedinv.flatF 2 2 (mixedinv.permMat [0, 1]))
     (mixedinv.flatF 2 2 (mixedinv.permMat [0, 1]))).oneValue
     (ground.BPair.ofNat
       (2 ^ (places.cyclesOf
         (places.expo [0, 1] (places.invPerm 2 [0, 1]))).length))
     := by decide +kernel
 
-example : (elim.dotP (mixedinv.flatF 2 2 (mixedinv.permMat [0, 1]))
+theorem pin23 : (elim.dotP (mixedinv.flatF 2 2 (mixedinv.permMat [0, 1]))
     (mixedinv.flatF 2 2 (mixedinv.permMat [1, 0]))).oneValue
     (ground.BPair.ofNat
       (2 ^ (places.cyclesOf
         (places.expo [0, 1] (places.invPerm 2 [1, 0]))).length))
     := by decide +kernel
 
-example : (elim.dotP (mixedinv.flatF 3 2 (mixedinv.permMat [0, 1]))
+theorem pin24 : (elim.dotP (mixedinv.flatF 3 2 (mixedinv.permMat [0, 1]))
     (mixedinv.flatF 3 2 (mixedinv.permMat [1, 0]))).oneValue
     (ground.BPair.ofNat
       (3 ^ (places.cyclesOf
         (places.expo [0, 1] (places.invPerm 2 [1, 0]))).length))
     := by decide +kernel
 
-example : (elim.dotP (mixedinv.flatF 3 3 (mixedinv.permMat [0, 2, 1]))
+theorem pin25 : (elim.dotP (mixedinv.flatF 3 3 (mixedinv.permMat [0, 2, 1]))
     (mixedinv.flatF 3 3 (mixedinv.permMat [1, 0, 2]))).oneValue
     (ground.BPair.ofNat
       (3 ^ (places.cyclesOf
@@ -141,28 +143,28 @@ example : (elim.dotP (mixedinv.flatF 3 3 (mixedinv.permMat [0, 2, 1]))
 
 /-! The same four pins through the theorem. -/
 
-example : (elim.dotP (mixedinv.flatF 2 2 (mixedinv.permMat [0, 1]))
+theorem pin26 : (elim.dotP (mixedinv.flatF 2 2 (mixedinv.permMat [0, 1]))
     (mixedinv.flatF 2 2 (mixedinv.permMat [0, 1]))).oneValue
     (ground.BPair.ofNat
       (2 ^ (places.cyclesOf
         (places.expo [0, 1] (places.invPerm 2 [0, 1]))).length))
     := mixedinv.perm_gram 2 2 [0, 1] [0, 1] (by decide +kernel) (by decide +kernel)
 
-example : (elim.dotP (mixedinv.flatF 2 2 (mixedinv.permMat [0, 1]))
+theorem pin27 : (elim.dotP (mixedinv.flatF 2 2 (mixedinv.permMat [0, 1]))
     (mixedinv.flatF 2 2 (mixedinv.permMat [1, 0]))).oneValue
     (ground.BPair.ofNat
       (2 ^ (places.cyclesOf
         (places.expo [0, 1] (places.invPerm 2 [1, 0]))).length))
     := mixedinv.perm_gram 2 2 [0, 1] [1, 0] (by decide +kernel) (by decide +kernel)
 
-example : (elim.dotP (mixedinv.flatF 3 2 (mixedinv.permMat [0, 1]))
+theorem pin28 : (elim.dotP (mixedinv.flatF 3 2 (mixedinv.permMat [0, 1]))
     (mixedinv.flatF 3 2 (mixedinv.permMat [1, 0]))).oneValue
     (ground.BPair.ofNat
       (3 ^ (places.cyclesOf
         (places.expo [0, 1] (places.invPerm 2 [1, 0]))).length))
     := mixedinv.perm_gram 3 2 [0, 1] [1, 0] (by decide +kernel) (by decide +kernel)
 
-example : (elim.dotP (mixedinv.flatF 3 3 (mixedinv.permMat [0, 2, 1]))
+theorem pin29 : (elim.dotP (mixedinv.flatF 3 3 (mixedinv.permMat [0, 2, 1]))
     (mixedinv.flatF 3 3 (mixedinv.permMat [1, 0, 2]))).oneValue
     (ground.BPair.ofNat
       (3 ^ (places.cyclesOf
@@ -173,7 +175,7 @@ example : (elim.dotP (mixedinv.flatF 3 3 (mixedinv.permMat [0, 2, 1]))
 assignment beside a held member the Gram read fails — the pairing
 is the permutations' own. -/
 
-example : ¬ (elim.dotP (mixedinv.flatF 2 2 (mixedinv.permMat [0, 0]))
+theorem pin30 : ¬ (elim.dotP (mixedinv.flatF 2 2 (mixedinv.permMat [0, 0]))
     (mixedinv.flatF 2 2 (mixedinv.permMat [0, 1]))).oneValue
     (ground.BPair.ofNat
       (2 ^ (places.cyclesOf
@@ -183,7 +185,7 @@ example : ¬ (elim.dotP (mixedinv.flatF 2 2 (mixedinv.permMat [0, 0]))
 /-! The Gram's second membership binder: the mirrored refusal at
 the repeated-letter assignment on the second slot. -/
 
-example : ¬ (elim.dotP (mixedinv.flatF 2 2 (mixedinv.permMat [0, 1]))
+theorem pin31 : ¬ (elim.dotP (mixedinv.flatF 2 2 (mixedinv.permMat [0, 1]))
     (mixedinv.flatF 2 2 (mixedinv.permMat [0, 0]))).oneValue
     (ground.BPair.ofNat
       (2 ^ (places.cyclesOf
@@ -196,7 +198,7 @@ bounds and the distinctness `con:units`' index frame with the
 content membership the enumeration's, each surviving its drop at
 the kernel. -/
 
-example : ¬ poly.oneValue
+theorem pin32 : ¬ poly.oneValue
     (elim.matVec (units.matUnitAt (blockcount.moveAt 0 1 [1, 1]) [1, 1] 0 1)
       (elim.matVec (mixedinv.permMat [0, 0] [1, 1])
         [ground.BPair.ofNat 1, ground.BPair.ofNat 2]))
@@ -204,7 +206,7 @@ example : ¬ poly.oneValue
       (elim.matVec (units.matUnitAt (blockcount.moveAt 0 1 [1, 1]) [1, 1] 0 1)
         [ground.BPair.ofNat 1, ground.BPair.ofNat 2])) := by decide +kernel
 
-example : poly.oneValue
+theorem pin33 : poly.oneValue
     (elim.matVec (units.matUnitAt (blockcount.moveAt 0 2 [1, 1]) [1, 1] 0 2)
       (elim.matVec (mixedinv.permMat [1, 0] [1, 1])
         [ground.BPair.ofNat 1, ground.BPair.ofNat 2]))
@@ -212,7 +214,7 @@ example : poly.oneValue
       (elim.matVec (units.matUnitAt (blockcount.moveAt 0 2 [1, 1]) [1, 1] 0 2)
         [ground.BPair.ofNat 1, ground.BPair.ofNat 2])) := by decide +kernel
 
-example : poly.oneValue
+theorem pin34 : poly.oneValue
     (elim.matVec (units.matUnitAt (blockcount.moveAt 3 1 [1, 1]) [1, 1] 3 1)
       (elim.matVec (mixedinv.permMat [1, 0] [1, 1])
         [ground.BPair.ofNat 1, ground.BPair.ofNat 2]))
@@ -220,7 +222,7 @@ example : poly.oneValue
       (elim.matVec (units.matUnitAt (blockcount.moveAt 3 1 [1, 1]) [1, 1] 3 1)
         [ground.BPair.ofNat 1, ground.BPair.ofNat 2])) := by decide +kernel
 
-example : poly.oneValue
+theorem pin35 : poly.oneValue
     (elim.matVec (units.matUnitAt (blockcount.moveAt 0 0 [1, 1]) [1, 1] 0 0)
       (elim.matVec (mixedinv.permMat [1, 0] [1, 1])
         [ground.BPair.ofNat 1, ground.BPair.ofNat 2]))
@@ -228,7 +230,7 @@ example : poly.oneValue
       (elim.matVec (units.matUnitAt (blockcount.moveAt 0 0 [1, 1]) [1, 1] 0 0)
         [ground.BPair.ofNat 1, ground.BPair.ofNat 2])) := by decide +kernel
 
-example : poly.oneValue
+theorem pin36 : poly.oneValue
     (elim.matVec (units.matUnitAt (blockcount.moveAt 0 1 [2, 1]) [2, 1] 0 1)
       (elim.matVec (mixedinv.permMat [1, 0] [2, 1])
         [ground.BPair.ofNat 1, ground.BPair.ofNat 2, ground.BPair.ofNat 3]))
@@ -243,9 +245,9 @@ kernel's reach here is the assignment fold over the flats' Gram, a
 determinant at the flat count's order, so the decides sit at the
 counts below four. -/
 
-example : elim.indepRows (mixedinv.mixWidth 3 3)
+theorem pin37 : elim.indepRows (mixedinv.mixWidth 3 3)
     (mixedinv.permFlats 3 3) := by decide +kernel
-example : elim.indepRows (mixedinv.mixWidth 3 3)
+theorem pin38 : elim.indepRows (mixedinv.mixWidth 3 3)
     (mixedinv.permFlats 3 3) := mixedinv.perm_indep 3 3 (by decide +kernel)
 
 /-! The span theorem's batteries.  The identity family — one
@@ -257,13 +259,13 @@ quantify over an infinite type, so the theorem routes carry them
 as terms; the refusals isolate each load-bearing binder at a
 decided conclusion. -/
 
-example : elim.spanRel (mixedinv.mixWidth 2 2)
+theorem pin39 : elim.spanRel (mixedinv.mixWidth 2 2)
     (mixedinv.permFlats 2 2)
     (mixedinv.flatF 2 2
       (fun mu => elim.idMat (places.monomialsAt mu).length)) := by
   decide +kernel
 
-example : elim.spanRel (mixedinv.mixWidth 2 2)
+theorem pin40 : elim.spanRel (mixedinv.mixWidth 2 2)
     (mixedinv.permFlats 2 2)
     (mixedinv.flatF 2 2
       (fun mu => elim.idMat (places.monomialsAt mu).length)) :=
@@ -282,7 +284,7 @@ example : elim.spanRel (mixedinv.mixWidth 2 2)
             _
             (by rw [elim.matVec_length, units.length_matUnitAt]))))
 
-example : elim.spanRel (mixedinv.mixWidth 3 2)
+theorem pin41 : elim.spanRel (mixedinv.mixWidth 3 2)
     (mixedinv.permFlats 3 2)
     (mixedinv.flatF 3 2
       (fun mu => elim.idMat (places.monomialsAt mu).length)) :=
@@ -305,7 +307,7 @@ example : elim.spanRel (mixedinv.mixWidth 3 2)
 identity and swap families' entrywise sum sits in the permutation
 span at the two-letter power. -/
 
-example : elim.spanRel (mixedinv.mixWidth 2 2)
+theorem pin42 : elim.spanRel (mixedinv.mixWidth 2 2)
     (mixedinv.permFlats 2 2)
     (mixedinv.flatF 2 2
       (fun mu => elim.matAdd (mixedinv.permMat [0, 1] mu)
@@ -318,13 +320,13 @@ length held, and a second row breaks the length read with the row
 widths held — either way the flat form sits off the width and the
 conclusion refuses. -/
 
-example : ¬ elim.spanRel (mixedinv.mixWidth 1 1)
+theorem pin43 : ¬ elim.spanRel (mixedinv.mixWidth 1 1)
     (mixedinv.permFlats 1 1)
     (mixedinv.flatF 1 1
       (fun _ => [[ground.BPair.ofNat 1, ground.BPair.ofNat 1]]))
     := by decide +kernel
 
-example : ¬ elim.spanRel (mixedinv.mixWidth 1 1)
+theorem pin44 : ¬ elim.spanRel (mixedinv.mixWidth 1 1)
     (mixedinv.permFlats 1 1)
     (mixedinv.flatF 1 1
       (fun _ => [[ground.BPair.ofNat 1], [ground.BPair.ofNat 1]]))
@@ -335,7 +337,7 @@ at the two contents of `(2, 1)` is off the equivariance — the one
 permutation flat cannot reach it, the conclusion refused with the
 frames held. -/
 
-example : ¬ elim.spanRel (mixedinv.mixWidth 2 1)
+theorem pin45 : ¬ elim.spanRel (mixedinv.mixWidth 2 1)
     (mixedinv.permFlats 2 1)
     (mixedinv.flatF 2 1
       (fun mu => if mu = [1, 0] then [[ground.BPair.ofNat 2]]
@@ -348,8 +350,10 @@ beyond the letter count while their independence fails — so the
 binder holds no refusal at this instance, the theorem's route the
 frame's own. -/
 
-example : elim.spanRel (mixedinv.mixWidth 1 2)
+theorem pin46 : elim.spanRel (mixedinv.mixWidth 1 2)
     (mixedinv.permFlats 1 2)
     (mixedinv.flatF 1 2
       (fun mu => elim.idMat (places.monomialsAt mu).length)) := by
   decide +kernel
+
+end mixedinv

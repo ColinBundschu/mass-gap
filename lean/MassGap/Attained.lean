@@ -38,7 +38,7 @@ def edgeRead (roots : List (BPair × Pos)) (E0 p q : Pos) : Prop :=
         decide ((r.1.scale q).oneValue
           (BPair.ofPos (E0 * p * r.2))))) = true
 
-instance (roots : List (BPair × Pos)) (E0 p q : Pos) :
+instance instAttained1 (roots : List (BPair × Pos)) (E0 p q : Pos) :
     Decidable (edgeRead roots E0 p q) :=
   inferInstanceAs (Decidable (_ ∧ _))
 

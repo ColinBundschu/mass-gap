@@ -8,9 +8,9 @@ the state's read of the product's action, the transport identity
 the label index is the transpose, `prop:repring`'s fourth read
 `N^c_{ā b} = N^b_{a c}`, the dual pair's pins the check module's
 at three letters).  The reads run at the unit gram, the committed
-loop windows' own; the fibered gram rides `prop:wg`'s site.  The sector's cyclicity — `A ↦ A ψ` linear with
-`Sect∞ ψ` its image — rides the prose at `def:pencil`'s sector,
-the reads the displays'.
+loop windows' own; the fibered gram is `prop:wg`'s.  The sector's
+cyclicity, `A ↦ A ψ` linear with `Sect∞ ψ` its image, is
+`def:pencil`'s word sector, the image itself.
 -/
 
 namespace statespace
@@ -24,7 +24,7 @@ def pairRead {n : Nat} (A B : SqMat n) (psi : Vec n) : Prop :=
     (dotN psi.val
       (matVec (matMul (transposeM A.val) B.val) psi.val))
 
-instance {n : Nat} (A B : SqMat n) (psi : Vec n) :
+instance instStatespace1 {n : Nat} (A B : SqMat n) (psi : Vec n) :
     Decidable (pairRead A B psi) :=
   inferInstanceAs (Decidable (BPair.oneValue _ _))
 

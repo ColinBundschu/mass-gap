@@ -7,6 +7,10 @@ the assembled read's kernel verification the content module's own
 at its stated data, and the certificate's derived rates read at the
 store. -/
 
+namespace cornerpivot.cornerstore
+
 open ground cornerpivot
 
-example : certRead preR disconjC := disconjC_read
+theorem pin1 : certRead preR disconjC := disconjC_read
+
+end cornerpivot.cornerstore

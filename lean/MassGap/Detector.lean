@@ -30,7 +30,7 @@ def factorRead (n : BPair) (d gn gd : Pos) : Prop :=
   ((n * n).scale gd + (n * BPair.ofPos (gn * d)).swap).oneValue
     (datum n d gn gd)
 
-instance (n : BPair) (d gn gd : Pos) :
+instance instDetector1 (n : BPair) (d gn gd : Pos) :
     Decidable (factorRead n d gn gd) :=
   inferInstanceAs (Decidable (BPair.oneValue _ _))
 
@@ -46,7 +46,7 @@ weights. -/
 def passRead (ws : List (Pos × BPair)) (d gn gd : Pos) : Prop :=
   ¬ detFold ws d gn gd < BPair.unit
 
-instance (ws : List (Pos × BPair)) (d gn gd : Pos) :
+instance instDetector2 (ws : List (Pos × BPair)) (d gn gd : Pos) :
     Decidable (passRead ws d gn gd) :=
   inferInstanceAs (Decidable (¬ _ < _))
 

@@ -64,7 +64,7 @@ consumers' own data. -/
 def admRead (s LamC x y W vn vd : Pos) : Prop :=
   vn * (x + W) + W * W * vd < vn * (s * LamC) + vn * y
 
-instance (s LamC x y W vn vd : Pos) :
+instance instDualtrunc1 (s LamC x y W vn vd : Pos) :
     Decidable (admRead s LamC x y W vn vd) :=
   inferInstanceAs (Decidable (_ < _))
 

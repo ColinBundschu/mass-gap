@@ -1,12 +1,12 @@
-import MassGapChecks.Contactcell
 import MassGap.Divisorid
 import MassGap.Freecell
 /-!
 The check module for `lem:freecell`: the batteries re-read the free
 cell's carrier and the free end's own evaluation by kernel `decide`
-at the `d = 2` `X`-sector record of `lem:contactcell` — the electric
-diagonal `4ĉ₂ = (0, 4, 12)` at the same clearing, the walk matrix as
-the magnetic member, and the unit gram.
+at the adjoint list's one-plaquette sector at the residue one, the
+tower (`prop:row`; `thm:sector`) — the electric diagonal
+`4ĉ₂ = (0, 4, 12)` at the tower labels, the tower matrix as the
+magnetic member, and the unit gram.
 
 `freePMat` is the affine-in-`τ²` list: the level datum at the
 constant key, the sum's unit at the middle key and the magnetic
@@ -51,11 +51,27 @@ the extent `τ₁` at the tie `τ₁² = 3` located there.  Its two refusals: th
 bracket `[2, 3]` refusing the occupied count, and the straddle
 `[0, 2]` refusing the vacant one.
 -/
-set_option maxHeartbeats 4000000
-
-open ground poly elim inertia certconstruct contactcell freecell
 
 namespace freecell
+set_option maxHeartbeats 4000000
+
+open ground poly elim inertia certconstruct contactcell
+
+def u : BPair := BPair.unit
+
+/-! The tower record at the residue one: the electric diagonal
+`4ĉ₂ = (0, 4, 12)`, the tower matrix `J` at the base one, the
+pencil's site `E − M` at the unit scale and the unit gram. -/
+
+def eWalk : Mat := [[u, u, u], [u, ⟨5, 1⟩, u], [u, u, ⟨13, 1⟩]]
+def mWalk : Mat :=
+  [[u, ⟨2, 1⟩, u], [⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩], [u, ⟨2, 1⟩, ⟨2, 1⟩]]
+def pK1 : Mat := [[u, ⟨1, 2⟩], [⟨1, 2⟩, ⟨4, 1⟩]]
+def bCoup : Mat := [[u], [⟨1, 2⟩]]
+def qRem : Mat := [[⟨12, 1⟩]]
+def hK2 : Mat := inertia.blockJoin pK1 bCoup qRem
+def gK2 : Mat := idMat 3
+
 
 /-! The permuted three-order certificates the free record's diagonal
 cells clear at: the kernel key sent to the trailing block. -/
@@ -88,13 +104,12 @@ def spBr (t a b : BPair) : Split 2 :=
   ⟨⟨[[⟨2, 1⟩, t], [u, a]], rfl⟩, ⟨[[a, t.swap], [u, ⟨2, 1⟩]], rfl⟩,
    [.one a, .one b], 0, rfl⟩
 
-end freecell
 
 /-! The free cell's carrier at the record, level one: the level
 datum at the constant key, the sum's unit at the middle key and the
 magnetic member's balance partner at the `τ²` key. -/
 
-example : split.pmatOneValue (freePMat eWalk mWalk gK2 2 1)
+theorem pin1 : split.pmatOneValue (freePMat eWalk mWalk gK2 2 1)
     [[[⟨1, 2⟩, u, u], [u, u, ⟨1, 2⟩], [u, u, u]],
      [[u, u, ⟨1, 2⟩], [⟨4, 1⟩, u, ⟨1, 2⟩], [u, u, ⟨1, 2⟩]],
      [[u, u, u], [u, u, ⟨1, 2⟩], [⟨12, 1⟩, u, ⟨1, 2⟩]]] := by decide +kernel
@@ -113,64 +128,64 @@ private def mWr : Mat :=
   [[u, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩], [u, ⟨2, 1⟩, ⟨2, 1⟩]]
 private def gWr : Mat := [[⟨2, 1⟩], [u, ⟨2, 1⟩, u], [u, u, ⟨2, 1⟩]]
 
-example : getAt [] (getAt [] (freePMat eWalk mWalk gK2 2 1) 1) 2
+theorem pin2 : getAt [] (getAt [] (freePMat eWalk mWalk gK2 2 1) 1) 2
     = getAt u (getAt [] (siteDatum (matAdd eWalk (matScale 1 gK2))
         (matScale 2 gK2)) 1) 2
       :: ([u] ++ [(getAt u (getAt [] mWalk 1) 2).swap]) := by
   decide +kernel
-example : getAt [] (getAt [] (freePMat eWalk mWalk gK2 2 1) 1) 2
+theorem pin3 : getAt [] (getAt [] (freePMat eWalk mWalk gK2 2 1) 1) 2
     = getAt u (getAt [] (siteDatum (matAdd eWalk (matScale 1 gK2))
         (matScale 2 gK2)) 1) 2
       :: ([u] ++ [(getAt u (getAt [] mWalk 1) 2).swap]) :=
   freecell.freePMat_entry eWalk mWalk gK2 2 1 3 (by decide +kernel)
     (by decide +kernel) (by decide +kernel) 1 2 (by decide +kernel)
     (by decide +kernel)
-example : ¬ (getAt [] (getAt [] (freePMat eWr mWalk gK2 2 1) 0) 2
+theorem pin4 : ¬ (getAt [] (getAt [] (freePMat eWr mWalk gK2 2 1) 0) 2
     = getAt u (getAt [] (siteDatum (matAdd eWr (matScale 1 gK2))
         (matScale 2 gK2)) 0) 2
       :: ([u] ++ [(getAt u (getAt [] mWalk 0) 2).swap])) := by
   decide +kernel
-example : ¬ (getAt [] (getAt [] (freePMat eWalk mWr gK2 2 1) 0) 2
+theorem pin5 : ¬ (getAt [] (getAt [] (freePMat eWalk mWr gK2 2 1) 0) 2
     = getAt u (getAt [] (siteDatum (matAdd eWalk (matScale 1 gK2))
         (matScale 2 gK2)) 0) 2
       :: ([u] ++ [(getAt u (getAt [] mWr 0) 2).swap])) := by
   decide +kernel
-example : ¬ (getAt [] (getAt [] (freePMat eWalk mWalk gWr 2 1) 0) 2
+theorem pin6 : ¬ (getAt [] (getAt [] (freePMat eWalk mWalk gWr 2 1) 0) 2
     = getAt u (getAt [] (siteDatum (matAdd eWalk (matScale 1 gWr))
         (matScale 2 gWr)) 0) 2
       :: ([u] ++ [(getAt u (getAt [] mWalk 0) 2).swap])) := by
   decide +kernel
-example : ¬ (getAt [] (getAt [] (freePMat eWalk mWalk gK2 2 1) 3) 1
+theorem pin7 : ¬ (getAt [] (getAt [] (freePMat eWalk mWalk gK2 2 1) 3) 1
     = getAt u (getAt [] (siteDatum (matAdd eWalk (matScale 1 gK2))
         (matScale 2 gK2)) 3) 1
       :: ([u] ++ [(getAt u (getAt [] mWalk 3) 1).swap])) := by
   decide +kernel
-example : ¬ (getAt [] (getAt [] (freePMat eWalk mWalk gK2 2 1) 1) 3
+theorem pin8 : ¬ (getAt [] (getAt [] (freePMat eWalk mWalk gK2 2 1) 1) 3
     = getAt u (getAt [] (siteDatum (matAdd eWalk (matScale 1 gK2))
         (matScale 2 gK2)) 1) 3
       :: ([u] ++ [(getAt u (getAt [] mWalk 1) 3).swap])) := by
   decide +kernel
 
-example : cellcount.pShapeAt (freePMat eWalk mWalk gK2 2 1) 3 2 := by
+theorem pin9 : cellcount.pShapeAt (freePMat eWalk mWalk gK2 2 1) 3 2 := by
   decide +kernel
-example : cellcount.pShapeAt (freePMat eWalk mWalk gK2 2 1) 3 2 :=
+theorem pin10 : cellcount.pShapeAt (freePMat eWalk mWalk gK2 2 1) 3 2 :=
   freecell.pShapeAt_freePMat eWalk mWalk gK2 2 1 3 (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
-example : ¬ cellcount.pShapeAt (freePMat eWalk mWr gK2 2 1) 3 2 := by
+theorem pin11 : ¬ cellcount.pShapeAt (freePMat eWalk mWr gK2 2 1) 3 2 := by
   decide +kernel
 
 /-! `endEval`'s route at the record: at the coupling's unit point the
 cell's matrix is the electric level datum at the clearing's
 rescaling, the free end's diagonal read. -/
 
-example : matOneValue
+theorem pin12 : matOneValue
     (cellcount.evalPC (freePMat eWalk mWalk gK2 2 1) BPair.unit 1 2)
     (matScaleB (ground.bpow (BPair.ofPos 1) 2)
       (siteDatum (matAdd eWalk (matScale 1 gK2)) (matScale 2 gK2))) :=
   freecell.endEval eWalk mWalk gK2 2 1 1 3 (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : matOneValue
+theorem pin13 : matOneValue
     (cellcount.evalPC (freePMat eWalk mWalk gK2 2 1) BPair.unit 1 2)
     [[⟨1, 2⟩, u, u], [u, ⟨4, 1⟩, u], [u, u, ⟨12, 1⟩]] := by decide +kernel
 
@@ -178,7 +193,7 @@ example : matOneValue
 two rows the `zipWith` carrier shortens and the length-strict read
 parts — the stated order is what keeps the carrier whole. -/
 
-example : ¬ matOneValue
+theorem pin14 : ¬ matOneValue
     (cellcount.evalPC
       (freePMat eWalk [[u, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]] gK2 2 1)
       BPair.unit 1 2)
@@ -192,18 +207,18 @@ by the clearing four, decided and through `freePMat_eval`; the
 point binder refuses at the neighbor `[2 : 2]`'s ray against the
 `[3 : 2]` evaluation. -/
 
-example : matOneValue
+theorem pin15 : matOneValue
     (cellcount.evalPC (freePMat eWalk mWalk gK2 2 1) (BPair.ofPos 3) 2 2)
     (siteDatum (matAdd (pencil.rayH eWalk mWalk (2 * 2) (3 * 3))
       (matScale (2 * 2 * 1) gK2)) (matScale (2 * 2 * 2) gK2)) := by
   decide +kernel
-example : matOneValue
+theorem pin16 : matOneValue
     (cellcount.evalPC (freePMat eWalk mWalk gK2 2 1) (BPair.ofPos 3) 2 2)
     (siteDatum (matAdd (pencil.rayH eWalk mWalk (2 * 2) (3 * 3))
       (matScale (2 * 2 * 1) gK2)) (matScale (2 * 2 * 2) gK2)) :=
   freecell.freePMat_eval eWalk mWalk gK2 2 1 3 (by decide +kernel)
     (by decide +kernel) (by decide +kernel) 3 2
-example : ¬ matOneValue
+theorem pin17 : ¬ matOneValue
     (cellcount.evalPC (freePMat eWalk mWalk gK2 2 1) (BPair.ofPos 3) 2 2)
     (siteDatum (matAdd (pencil.rayH eWalk mWalk (2 * 2) (2 * 2))
       (matScale (2 * 2 * 1) gK2)) (matScale (2 * 2 * 2) gK2)) := by
@@ -216,18 +231,18 @@ with it. -/
 
 private def mAs : Mat := [[u, ⟨2, 1⟩, u], [u, u, u], [u, u, u]]
 
-example : split.pSymAt (freePMat eWalk mWalk gK2 2 1) 3 := by decide +kernel
-example : split.pSymAt (freePMat eWalk mWalk gK2 2 1) 3 :=
+theorem pin18 : split.pSymAt (freePMat eWalk mWalk gK2 2 1) 3 := by decide +kernel
+theorem pin19 : split.pSymAt (freePMat eWalk mWalk gK2 2 1) 3 :=
   freecell.freePMat_sym eWalk mWalk gK2 2 1 3 (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
-example : ¬ symmRead mAs := by decide +kernel
-example : ¬ split.pSymAt (freePMat eWalk mAs gK2 2 1) 3 := by decide +kernel
+theorem pin20 : ¬ symmRead mAs := by decide +kernel
+theorem pin21 : ¬ split.pSymAt (freePMat eWalk mAs gK2 2 1) 3 := by decide +kernel
 
 /-! The two cells' one carrier: at `τ² = 1` the free cell reads the
 near-contact head's own site at the same level. -/
 
-example : matOneValue
+theorem pin22 : matOneValue
     (cellcount.evalPC (freePMat eWalk mWalk gK2 2 1) ⟨2, 1⟩ 1 2)
     (siteDatum (matAdd hK2 (matScale 1 gK2)) (matScale 2 gK2)) := by
   decide +kernel
@@ -236,10 +251,10 @@ example : matOneValue
 content list `(0, 4, 12)`, the cell's determinant reads unequal
 members. -/
 
-example : (elim.minor
+theorem pin23 : (elim.minor
     (cellcount.evalPC (freePMat eWalk mWalk gK2 2 1) BPair.unit 1 2)).offUnit
   := by decide +kernel
-example : (elim.minor
+theorem pin24 : (elim.minor
     (cellcount.evalPC (freePMat eWalk mWalk gK2 6 1) BPair.unit 1 2)).offUnit
   := by decide +kernel
 
@@ -248,36 +263,36 @@ members and the boundary clause takes over: at nought the evaluated
 cell is positive semidefinite with its kernel block trailing, and at
 four the closed endpoint carries one reversal. -/
 
-example : (elim.minor
+theorem pin25 : (elim.minor
     (cellcount.evalPC (freePMat eWalk mWalk gK2 1 1) BPair.unit 1 2)).oneValue
     BPair.unit := by decide +kernel
-example : splitRead
+theorem pin26 : splitRead
     (cellcount.evalPC (freePMat eWalk mWalk gK2 1 1) BPair.unit 1 2)
     (spLead ⟨5, 1⟩ ⟨13, 1⟩) := by decide +kernel
-example : psdAt (spLead ⟨5, 1⟩ ⟨13, 1⟩) := by decide +kernel
+theorem pin27 : psdAt (spLead ⟨5, 1⟩ ⟨13, 1⟩) := by decide +kernel
 
-example : (elim.minor
+theorem pin28 : (elim.minor
     (cellcount.evalPC (freePMat eWalk mWalk gK2 5 1) BPair.unit 1 2)).oneValue
     BPair.unit := by decide +kernel
-example : splitRead
+theorem pin29 : splitRead
     (cellcount.evalPC (freePMat eWalk mWalk gK2 5 1) BPair.unit 1 2)
     (spMid ⟨1, 5⟩ ⟨9, 1⟩) := by decide +kernel
-example : revAt (spMid ⟨1, 5⟩ ⟨9, 1⟩) = 1 := by decide +kernel
-example : ¬ psdAt (spMid ⟨1, 5⟩ ⟨9, 1⟩) := by decide +kernel
+theorem pin30 : revAt (spMid ⟨1, 5⟩ ⟨9, 1⟩) = 1 := by decide +kernel
+theorem pin31 : ¬ psdAt (spMid ⟨1, 5⟩ ⟨9, 1⟩) := by decide +kernel
 
 /-! The extent certificate at the one-site free record: the divisor
 `3 − τ²` at its own squarefree part, the cleared monic `y² − 3` at
 the unit magnitude, the vacant segment up to `τ = 1` and the bracket
 `[1, 2]` holding the extent. -/
 
-example : split.pmatOneValue (freePMat eOne mOne gOne 2 1)
+theorem pin32 : split.pmatOneValue (freePMat eOne mOne gOne 2 1)
     [[[⟨4, 1⟩, u, ⟨1, 2⟩]]] := by decide +kernel
-example : poly.oneValue dFree [⟨4, 1⟩, u, ⟨1, 2⟩] := by decide +kernel
-example : cellcount.divRead dFree ctF := by decide +kernel
-example : poly.oneValue (deckfactor.clearVarBT ctF.sq) [⟨1, 4⟩, u] := by
+theorem pin33 : poly.oneValue dFree [⟨4, 1⟩, u, ⟨1, 2⟩] := by decide +kernel
+theorem pin34 : cellcount.divRead dFree ctF := by decide +kernel
+theorem pin35 : poly.oneValue (deckfactor.clearVarBT ctF.sq) [⟨1, 4⟩, u] := by
   decide +kernel
-example : (deckfactor.clearAt ctF.sq ⟨2, 1⟩).oneValue ⟨2, 1⟩ := by decide +kernel
-example : extRead dFree ctF ⟨2, 1⟩ ⟨3, 1⟩ 1
+theorem pin36 : (deckfactor.clearAt ctF.sq ⟨2, 1⟩).oneValue ⟨2, 1⟩ := by decide +kernel
+theorem pin37 : extRead dFree ctF ⟨2, 1⟩ ⟨3, 1⟩ 1
     spHerm (spBr ⟨7, 1⟩ ⟨7, 1⟩ ⟨433, 1⟩)
     spHerm (spBr ⟨19, 1⟩ ⟨11, 1⟩ ⟨1, 241⟩) := by decide +kernel
 
@@ -286,21 +301,21 @@ example : extRead dFree ctF ⟨2, 1⟩ ⟨3, 1⟩ 1
 the straddle `[0, 2]` carries one where the leading segment wants
 none. -/
 
-example : hermitesign.segCountRead (deckfactor.clearVarBT ctF.sq)
+theorem pin38 : hermitesign.segCountRead (deckfactor.clearVarBT ctF.sq)
     (deckfactor.clearAt ctF.sq ⟨3, 1⟩) (deckfactor.clearAt ctF.sq ⟨4, 1⟩)
     1 0 spHerm (spBr ⟨31, 1⟩ ⟨19, 1⟩ ⟨1297, 1⟩) := by decide +kernel
-example : ¬ hermitesign.segCountRead (deckfactor.clearVarBT ctF.sq)
+theorem pin39 : ¬ hermitesign.segCountRead (deckfactor.clearVarBT ctF.sq)
     (deckfactor.clearAt ctF.sq ⟨3, 1⟩) (deckfactor.clearAt ctF.sq ⟨4, 1⟩)
     1 1 spHerm (spBr ⟨31, 1⟩ ⟨19, 1⟩ ⟨1297, 1⟩) := by decide +kernel
-example : hermitesign.segCountRead (deckfactor.clearVarBT ctF.sq)
+theorem pin40 : hermitesign.segCountRead (deckfactor.clearVarBT ctF.sq)
     (deckfactor.clearAt ctF.sq BPair.unit)
     (deckfactor.clearAt ctF.sq ⟨3, 1⟩)
     1 1 spHerm (spBr ⟨13, 1⟩ ⟨7, 1⟩ ⟨1, 217⟩) := by decide +kernel
-example : ¬ hermitesign.segCountRead (deckfactor.clearVarBT ctF.sq)
+theorem pin41 : ¬ hermitesign.segCountRead (deckfactor.clearVarBT ctF.sq)
     (deckfactor.clearAt ctF.sq BPair.unit)
     (deckfactor.clearAt ctF.sq ⟨3, 1⟩)
     1 0 spHerm (spBr ⟨13, 1⟩ ⟨7, 1⟩ ⟨1, 217⟩) := by decide +kernel
-example : ¬ extRead dFree ctF ⟨3, 1⟩ ⟨4, 1⟩ 1
+theorem pin42 : ¬ extRead dFree ctF ⟨3, 1⟩ ⟨4, 1⟩ 1
     spHerm (spBr ⟨13, 1⟩ ⟨7, 1⟩ ⟨1, 217⟩)
     spHerm (spBr ⟨31, 1⟩ ⟨19, 1⟩ ⟨1297, 1⟩) := by decide +kernel
 
@@ -330,17 +345,18 @@ private theorem covFlr : cellcount.coverRead sFl 3 2 loF hi4 cvFl := by
 private theorem covFhr : cellcount.coverRead sFh 3 2 loF hi4 cvFh := by
   decide +kernel
 
-example :
+theorem pin43 :
     inertia.psdAt (inertia.mkSplit 3 (cellcount.evalPC sFl ⟨2, 1⟩ 4 2))
     ∧ inertia.revAt (inertia.mkSplit 3 (cellcount.evalPC sFh ⟨2, 1⟩ 4 2))
       = 1 := by decide +kernel
 
-example :
+theorem pin44 :
     inertia.psdAt (inertia.mkSplit 3 (cellcount.evalPC sFl ⟨2, 1⟩ 4 2))
     ∧ inertia.revAt (inertia.mkSplit 3 (cellcount.evalPC sFh ⟨2, 1⟩ 4 2))
       = 1 :=
   divisorid.groundMult eWalk (elim.matSwap mWalk) gK2 [BPair.unit]
     1 2 2 1 (by decide +kernel) loF hi4 cvFl cvFh covFlr covFhr
+    (by decide +kernel) (by decide +kernel)
     ⟨1, 1⟩ 1 ⟨2, 1⟩ 4 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) 1
     (inertia.mkSplit 3 (cellcount.evalPC sFl ⟨1, 1⟩ 1 2))
@@ -350,3 +366,5 @@ example :
     (inertia.mkSplit 3 (cellcount.evalPC sFh ⟨2, 1⟩ 4 2))
     (inertia.mkSplit_read 3 _ (by decide +kernel) (by decide +kernel))
     (inertia.mkSplit_read 3 _ (by decide +kernel) (by decide +kernel))
+
+end freecell

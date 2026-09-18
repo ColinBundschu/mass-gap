@@ -60,7 +60,7 @@ def permAt (π : List Nat) (m : Nat) : Prop :=
   π.length = m
   ∧ ((List.range m).all (fun j => ground.countOf j π == 1)) = true
 
-instance (π : List Nat) (m : Nat) : Decidable (permAt π m) :=
+instance instStates1 (π : List Nat) (m : Nat) : Decidable (permAt π m) :=
   inferInstanceAs (Decidable (_ ∧ _ = _))
 
 /-- A state: a formal combination of the generators at

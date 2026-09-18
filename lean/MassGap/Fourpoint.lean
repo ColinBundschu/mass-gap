@@ -3217,6 +3217,17 @@ theorem solveFloor {n : Nat} (E M : Mat) (hE : sqAt E n) (hM : sqAt M n)
         (ground.unitLeMul (ground.leB_of_lt (ground.unitLtOfPos (W * W))) hQ1)
         (ld * ld))
 
+/-- The residual's three weights distribute at the doubled count. -/
+private theorem residDistrib (a b c d e f g : BPair) :
+    (BPair.ofNat 2 * (BPair.ofNat 2 * (a * b * (a * b) * c + d * d * (e * f))
+        + g * b * (g * b) * f)).oneValue
+      (BPair.ofNat 2 * (BPair.ofNat 2 * (a * b * (a * b) * c))
+        + BPair.ofNat 2 * (BPair.ofNat 2 * (d * d * (e * f)))
+        + BPair.ofNat 2 * (g * b * (g * b) * f)) :=
+  polEqB [a, b, c, d, e, f, g]
+    (Pol.mul (Pol.mon (Mon.cst 2)) (Pol.add (Pol.mul (Pol.mon (Mon.cst 2)) (Pol.add (Pol.mon (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.mul (Mon.var 0) (Mon.var 1))) (Mon.var 2))) (Pol.mon (Mon.mul (Mon.mul (Mon.var 3) (Mon.var 3)) (Mon.mul (Mon.var 4) (Mon.var 5)))))) (Pol.mon (Mon.mul (Mon.mul (Mon.mul (Mon.var 6) (Mon.var 1)) (Mon.mul (Mon.var 6) (Mon.var 1))) (Mon.var 5)))))
+    (Pol.add (Pol.add (Pol.mon (Mon.mul (Mon.cst 2) (Mon.mul (Mon.cst 2) (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.mul (Mon.var 0) (Mon.var 1))) (Mon.var 2))))) (Pol.mon (Mon.mul (Mon.cst 2) (Mon.mul (Mon.cst 2) (Mon.mul (Mon.mul (Mon.var 3) (Mon.var 3)) (Mon.mul (Mon.var 4) (Mon.var 5))))))) (Pol.mon (Mon.mul (Mon.cst 2) (Mon.mul (Mon.mul (Mon.mul (Mon.var 6) (Mon.var 1)) (Mon.mul (Mon.var 6) (Mon.var 1))) (Mon.var 5))))) (by decide +kernel)
+
 /-- The residual's weight (`lem:fourpoint`'s tail): the squares' fold twice
 at the residual's three terms with the magnetic member's square cap,
 `⟨ρ,ρ⟩ ≤ τ¹²(4[#p:4]²⟨ψ₁,ψ₁⟩ + 4W²⟨ψ₂,ψ₂⟩ + 2τ⁴[#p:4]²⟨ψ₂,ψ₂⟩)` cleared at
@@ -3317,30 +3328,10 @@ theorem residWeight {n : Nat} (M : Mat) (hM : sqAt M n) (psi1 psi2 : List BPair)
         (posPair (Pos.pow q 4 * Pos.pow p 12) (64 * (W * W))
           (dotN psi2 psi2)))
   refine ground.leB_congr_right ?_ (ground.leB_refl _)
-  rw [BPair.left_distrib (BPair.ofNat 2)
-      (BPair.ofNat 2 * ((BPair.ofPos (q * q * Pos.pow p 6) * BPair.ofNat np)
-        * (BPair.ofPos (q * q * Pos.pow p 6) * BPair.ofNat np)
-        * dotN psi1 psi1
-        + BPair.ofPos (4 * (q * q) * Pos.pow p 6)
-          * BPair.ofPos (4 * (q * q) * Pos.pow p 6)
-          * (BPair.ofPos (W * W) * dotN psi2 psi2)))
-      ((BPair.ofPos (Pos.pow p 8) * BPair.ofNat np)
-        * (BPair.ofPos (Pos.pow p 8) * BPair.ofNat np)
-        * dotN psi2 psi2),
-    BPair.left_distrib (BPair.ofNat 2)
-      ((BPair.ofPos (q * q * Pos.pow p 6) * BPair.ofNat np)
-        * (BPair.ofPos (q * q * Pos.pow p 6) * BPair.ofNat np)
-        * dotN psi1 psi1)
-      (BPair.ofPos (4 * (q * q) * Pos.pow p 6)
-        * BPair.ofPos (4 * (q * q) * Pos.pow p 6)
-        * (BPair.ofPos (W * W) * dotN psi2 psi2)),
-    BPair.left_distrib (BPair.ofNat 2)
-      (BPair.ofNat 2 * ((BPair.ofPos (q * q * Pos.pow p 6) * BPair.ofNat np)
-        * (BPair.ofPos (q * q * Pos.pow p 6) * BPair.ofNat np)
-        * dotN psi1 psi1))
-      (BPair.ofNat 2 * (BPair.ofPos (4 * (q * q) * Pos.pow p 6)
-        * BPair.ofPos (4 * (q * q) * Pos.pow p 6)
-        * (BPair.ofPos (W * W) * dotN psi2 psi2)))]
+  refine BPair.oneValue_trans
+    (residDistrib (BPair.ofPos (q * q * p.pow 6)) (BPair.ofNat np) (dotN psi1 psi1)
+      (BPair.ofPos (4 * (q * q) * p.pow 6)) (BPair.ofPos (W * W)) (dotN psi2 psi2)
+      (BPair.ofPos (p.pow 8))) ?_
   exact BPair.add_congr (BPair.add_congr hT1 hT2) hT3
 
 
@@ -3523,7 +3514,6 @@ theorem offLine_drift {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
   have hEtsq : sqAt Et n := hd.1
   have hEtl : Et.length = n := sqAt_len hEtsq
   have hEtr : rowsLen n Et := rowsLen_of_sqAt hEtsq
-  have hMr : rowsLen n M := rowsLen_of_sqAt hM
   have hMl : M.length = n := sqAt_len hM
   have hray : sqAt (pencil.rayH E M (q * q) (p * p)) n :=
     pencil.sqAt_rayH E M n hE hM (q * q) (p * p)
@@ -3690,9 +3680,6 @@ theorem offLine_drift {n : Nat} (E M Et : Mat) (hE : sqAt E n) (hM : sqAt M n)
   have hqpos : BPair.unit ≤ BPair.ofPos (q * q) :=
     ground.leB_of_lt (ground.unitLtOfPos (q * q))
   have hWpos : BPair.unit ≤ BPair.ofPos W := ground.leB_of_lt (ground.unitLtOfPos W)
-  have honeMul : ∀ x : BPair, (BPair.ofPos Pos.one * x).oneValue x := fun x =>
-    BPair.oneValue_trans (BPair.ofPos_scale Pos.one x)
-      (BPair.oneValue_of_eq (BPair.scale_one x))
   have hQE : BPair.unit ≤ inertia.quadForm E (matVec T.val (elim.idRow n j0)) :=
     ground.leB_of_not_lt (inertia.psd_all E spE hEs hEp _ hpsi)
   have hMMle : dotN (matVec M (matVec T.val (elim.idRow n j0)))
@@ -4154,8 +4141,10 @@ private theorem sym3 (s0 s1 s2 : Pos) (a00 a01 a02 a11 a12 a22 : BPair)
       (a00.scale w0 + ((a01 + a01).scale w1
         + (((a02 + a02) + a11).scale w2
           + ((a12 + a12).scale w3 + a22.scale w4)))) := by
-  rw [BPair.left_distrib, BPair.left_distrib, BPair.left_distrib,
-    BPair.left_distrib, BPair.left_distrib, BPair.left_distrib]
+  refine BPair.oneValue_trans (polEqB [(BPair.ofPos s0), a00, (BPair.ofPos s1), a01,
+      (BPair.ofPos s2), a02, a11, a12, a22]
+      (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.add (Pol.mon (Mon.mul (Mon.var 0) (Mon.var 1))) (Pol.add (Pol.mon (Mon.mul (Mon.var 2) (Mon.var 3))) (Pol.mon (Mon.mul (Mon.var 4) (Mon.var 5)))))) (Pol.add (Pol.mul (Pol.mon (Mon.var 2)) (Pol.add (Pol.mon (Mon.mul (Mon.var 0) (Mon.var 3))) (Pol.add (Pol.mon (Mon.mul (Mon.var 2) (Mon.var 6))) (Pol.mon (Mon.mul (Mon.var 4) (Mon.var 7)))))) (Pol.mul (Pol.mon (Mon.var 4)) (Pol.add (Pol.mon (Mon.mul (Mon.var 0) (Mon.var 5))) (Pol.add (Pol.mon (Mon.mul (Mon.var 2) (Mon.var 7))) (Pol.mon (Mon.mul (Mon.var 4) (Mon.var 8))))))))
+      (Pol.add (Pol.add (Pol.mon (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 0) (Mon.var 1)))) (Pol.add (Pol.mon (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 2) (Mon.var 3)))) (Pol.mon (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 4) (Mon.var 5)))))) (Pol.add (Pol.add (Pol.mon (Mon.mul (Mon.var 2) (Mon.mul (Mon.var 0) (Mon.var 3)))) (Pol.add (Pol.mon (Mon.mul (Mon.var 2) (Mon.mul (Mon.var 2) (Mon.var 6)))) (Pol.mon (Mon.mul (Mon.var 2) (Mon.mul (Mon.var 4) (Mon.var 7)))))) (Pol.add (Pol.mon (Mon.mul (Mon.var 4) (Mon.mul (Mon.var 0) (Mon.var 5)))) (Pol.add (Pol.mon (Mon.mul (Mon.var 4) (Mon.mul (Mon.var 2) (Mon.var 7)))) (Pol.mon (Mon.mul (Mon.var 4) (Mon.mul (Mon.var 4) (Mon.var 8)))))))) (by decide +kernel)) (?_ : (BPair.ofPos s0 * (BPair.ofPos s0 * a00) + (BPair.ofPos s0 * (BPair.ofPos s1 * a01) + BPair.ofPos s0 * (BPair.ofPos s2 * a02)) + (BPair.ofPos s1 * (BPair.ofPos s0 * a01) + (BPair.ofPos s1 * (BPair.ofPos s1 * a11) + BPair.ofPos s1 * (BPair.ofPos s2 * a12)) + (BPair.ofPos s2 * (BPair.ofPos s0 * a02) + (BPair.ofPos s2 * (BPair.ofPos s1 * a12) + BPair.ofPos s2 * (BPair.ofPos s2 * a22))))).oneValue (a00.scale w0 + ((a01 + a01).scale w1 + ((a02 + a02 + a11).scale w2 + ((a12 + a12).scale w3 + a22.scale w4)))))
   refine BPair.oneValue_trans
     (BPair.add_congr
       (BPair.add_congr (leafScale s0 s0 w0 a00 e0)
@@ -5568,22 +5557,10 @@ private theorem readGap_chain (r r' r'' : BPair × BPair) :
     ((r''.1 * r.2 + (r.1 * r''.2).swap) * r'.2)
   rw [BPair.right_distrib, BPair.right_distrib, BPair.right_distrib,
     BPair.swap_mul, BPair.swap_mul, BPair.swap_mul]
-  refine BPair.oneValue_trans
-    (BPair.oneValue_of_eq
-      (BPair.add_add_comm (r'.1 * r.2 * r''.2)
-        ((r.1 * r'.2 * r''.2).swap) (r''.1 * r'.2 * r.2)
-        ((r'.1 * r''.2 * r.2).swap))) ?_
-  refine BPair.oneValue_trans
-    (BPair.add_congr
-      (BPair.oneValue_trans
-        (BPair.oneValue_of_eq
-          (BPair.add_comm (r'.1 * r.2 * r''.2) (r''.1 * r'.2 * r.2)))
-        (BPair.oneValue_refl _))
-      (BPair.oneValue_refl _)) ?_
-  refine BPair.oneValue_trans
-    (BPair.oneValue_of_eq
-      (BPair.add_add_comm (r''.1 * r'.2 * r.2) (r'.1 * r.2 * r''.2)
-        ((r.1 * r'.2 * r''.2).swap) ((r'.1 * r''.2 * r.2).swap))) ?_
+  refine BPair.oneValue_trans (polEqB [r'.fst, r.snd, r''.snd, ((r.fst * r'.snd * r''.snd).swap), r''.fst,
+      r'.snd, ((r'.fst * r''.snd * r.snd).swap)]
+      (Pol.add (Pol.add (Pol.mon (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2))) (Pol.mon (Mon.var 3))) (Pol.add (Pol.mon (Mon.mul (Mon.mul (Mon.var 4) (Mon.var 5)) (Mon.var 1))) (Pol.mon (Mon.var 6))))
+      (Pol.add (Pol.add (Pol.mon (Mon.mul (Mon.mul (Mon.var 4) (Mon.var 5)) (Mon.var 1))) (Pol.mon (Mon.var 3))) (Pol.add (Pol.mon (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2))) (Pol.mon (Mon.var 6)))) (by decide +kernel)) (?_ : (r''.fst * r'.snd * r.snd + (r.fst * r'.snd * r''.snd).swap + (r'.fst * r.snd * r''.snd + (r'.fst * r''.snd * r.snd).swap)).oneValue (r''.fst * r.snd * r'.snd + (r.fst * r''.snd * r'.snd).swap))
   refine BPair.oneValue_trans
     (BPair.add_congr
       (BPair.add_congr

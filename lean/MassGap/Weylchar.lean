@@ -614,7 +614,7 @@ def recRead (lam : Shape) (L : List (List Nat)) : Prop :=
             (unitDisp lam.length)) * countOf nu L
         + 2 * movedFst (fun chi => countOf chi L) nu
 
-instance (lam : Shape) (L : List (List Nat)) :
+instance instWeylchar1 (lam : Shape) (L : List (List Nat)) :
     Decidable (recRead lam L) :=
   inferInstanceAs (Decidable (∀ nu ∈ recKeys lam.length L,
     nu.length = lam.length →
@@ -638,7 +638,7 @@ def symRead (d : Nat) (L : List (List Nat)) : Prop :=
   ∀ nu ∈ L, ∀ i, i < d → ∀ j, j < d →
     countOf (swapPair i j nu) L = countOf nu L
 
-instance (d : Nat) (L : List (List Nat)) :
+instance instWeylchar2 (d : Nat) (L : List (List Nat)) :
     Decidable (symRead d L) :=
   inferInstanceAs (Decidable (∀ nu ∈ L, ∀ i, i < d → ∀ j, j < d →
     countOf (swapPair i j nu) L = countOf nu L))
@@ -659,7 +659,7 @@ def domGo : Nat → List Nat → List Nat → Bool
 unit slack. -/
 def domBy (nu mu : List Nat) : Prop := domGo 0 nu mu = true
 
-instance (nu mu : List Nat) : Decidable (domBy nu mu) :=
+instance instWeylchar3 (nu mu : List Nat) : Decidable (domBy nu mu) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The support clause at a stated multiplicity, the ∀-form over
@@ -675,7 +675,7 @@ at a content dominated by the top, `ν ⪯ λ` (`lem:lowerspan`'s read,
 def supportRead (lam : Shape) (L : List (List Nat)) : Prop :=
   ∀ nu ∈ L, domBy nu (rowList lam)
 
-instance (lam : Shape) (L : List (List Nat)) :
+instance instWeylchar4 (lam : Shape) (L : List (List Nat)) :
     Decidable (supportRead lam L) :=
   inferInstanceAs (Decidable (∀ nu ∈ L, domBy nu (rowList lam)))
 
@@ -689,7 +689,7 @@ line (`lem:lowerspan`'s read). -/
 def topRead (lam : Shape) (L : List (List Nat)) : Prop :=
   countOf (rowList lam) L = 1
 
-instance (lam : Shape) (L : List (List Nat)) :
+instance instWeylchar5 (lam : Shape) (L : List (List Nat)) :
     Decidable (topRead lam L) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -704,7 +704,7 @@ def identityAt (mult : List Nat → Nat) (lam : Shape)
     = prodCount mult lam.length y true
       + sideCount lam.length (display lam) y false
 
-instance (mult : List Nat → Nat) (lam : Shape) (y : List Nat) :
+instance instWeylchar6 (mult : List Nat → Nat) (lam : Shape) (y : List Nat) :
     Decidable (identityAt mult lam y) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -1840,7 +1840,7 @@ def eigenAt (mult : List Nat → Nat) (lam : Shape)
     = stdSq (display lam) * prodCount mult lam.length y false
       + stdSq y * prodCount mult lam.length y true
 
-instance (mult : List Nat → Nat) (lam : Shape) (y : List Nat) :
+instance instWeylchar7 (mult : List Nat → Nat) (lam : Shape) (y : List Nat) :
     Decidable (eigenAt mult lam y) :=
   inferInstanceAs (Decidable (_ = _))
 

@@ -111,9 +111,24 @@ lands the cut tie whole at the edge `[8 : 1]`, beside its own
 `decide`; at the edge sixteen the top level's count reads two
 against the ground's one — the top-count binder's refusal, the
 spectral read false there.
+
+The flat window across the truncation (`flat_shift`, `flat_compress`)
+at the two-block window: the head's flat window from the level three
+to the level six at count one, the shift cap two at the witness gap
+two (`2·2 = 2²`) and the removed block's floor eleven at the top's tie
+`7 + 2 + 2 + 1 = 11 + 1`, reads at the whole window from the level
+three to the level four, the top lowered by the cap, through the
+theorem beside its own `decide`; the whole window's flat window from
+the level three to the level six compresses to the head's from the
+level five, the anchor raised by the cap.  The width binder's
+refusals: the head's top at the level five leaves the lowered top at
+the anchor, the level order false, and the whole's window at the cap
+three leaves the raised anchor at the top.
 -/
 
-open ground elim inertia certconstruct flatstep gappos cellcount
+namespace gappos
+
+open ground elim inertia certconstruct flatstep cellcount
 
 /-- The unit gram at order one. -/
 private def gU : Mat := [[⟨2, 1⟩]]
@@ -151,7 +166,7 @@ private theorem cVa : countAtPair hV gU 10 (1 + 2) 1 (sp1 ⟨1, 3⟩) := by
 private theorem cWa : countAtPair hW gU 10 1 1 (sp1 ⟨1, 7⟩) := by
   decide +kernel
 
-example : 1 ≤ 1 :=
+theorem pin1 : 1 ≤ 1 :=
   sandwich_lo hV hW sD gU 2 10 1 1 1 (sp1 ⟨1, 3⟩) (sp1 ⟨1, 7⟩) spK
     (sp1 ⟨5, 1⟩) tie1 cap1 cVa cWa
 
@@ -164,7 +179,7 @@ private theorem cVb : countAtPair hV gU 6 (1 + 2) 0 (sp1 ⟨3, 1⟩) := by
 private theorem cWb : countAtPair hW gU 6 1 1 (sp1 ⟨1, 3⟩) := by
   decide +kernel
 
-example : 0 ≤ 1 :=
+theorem pin2 : 0 ≤ 1 :=
   sandwich_lo hV hW sD gU 2 6 1 0 1 (sp1 ⟨3, 1⟩) (sp1 ⟨1, 3⟩) spK
     (sp1 ⟨5, 1⟩) tie1 cap1 cVb cWb
 
@@ -175,7 +190,7 @@ by the width both read one, the tight cap's equality. -/
 private theorem cVc : countAtPair hV gU (6 + 2) 1 1 (sp1 ⟨1, 3⟩) := by
   decide +kernel
 
-example : 1 ≤ 1 :=
+theorem pin3 : 1 ≤ 1 :=
   sandwich_hi hV hW sD gU 2 6 1 1 1 (sp1 ⟨1, 3⟩) (sp1 ⟨1, 3⟩) spK
     (sp1 ⟨5, 1⟩) tie1 cap1 cWb cVc
 
@@ -194,7 +209,7 @@ private theorem cWd : countAtPair hW gU 4 1 0 spK := by decide +kernel
 private theorem cVd : countAtPair hV2 gU (4 + 2) 1 1 (sp1 ⟨1, 2⟩) := by
   decide +kernel
 
-example : 0 ≤ 1 :=
+theorem pin4 : 0 ≤ 1 :=
   sandwich_hi hV2 hW sD2 gU 2 4 1 1 0 (sp1 ⟨1, 2⟩) spK (sp1 ⟨2, 1⟩)
     (sp1 ⟨4, 1⟩) tie2 cap2 cWd cVd
 
@@ -216,13 +231,13 @@ private theorem cWanch : countAtPair hW gU (7 + 2) 1 1 (sp1 ⟨1, 6⟩) := by
 private theorem cWtop : countAtPair hW gU 13 (1 + 2) 1 (sp1 ⟨1, 8⟩) := by
   decide +kernel
 
-example : vacFlat hW gU (7 + 2) 1 13 (1 + 2) 1 (sp1 ⟨1, 6⟩) (sp1 ⟨1, 8⟩) :=
+theorem pin5 : vacFlat hW gU (7 + 2) 1 13 (1 + 2) 1 (sp1 ⟨1, 6⟩) (sp1 ⟨1, 8⟩) :=
   flat_transport hV hW sD gU 2 7 1 13 1 1 1 1
     (sp1 ⟨1, 2⟩) (sp1 ⟨1, 8⟩) (sp1 ⟨1, 6⟩) (sp1 ⟨1, 8⟩) (sp1 ⟨3, 1⟩)
     spK (sp1 ⟨5, 1⟩) tie1 cap1 winV (by decide +kernel) crossD
     (by decide +kernel) cWanch cWtop
 
-example : vacFlat hW gU (7 + 2) 1 13 (1 + 2) 1 (sp1 ⟨1, 6⟩) (sp1 ⟨1, 8⟩) := by
+theorem pin6 : vacFlat hW gU (7 + 2) 1 13 (1 + 2) 1 (sp1 ⟨1, 6⟩) (sp1 ⟨1, 8⟩) := by
   decide +kernel
 
 /-! The cap's upper binder: at the site datum `[4]` against the same
@@ -233,14 +248,14 @@ refusing there. -/
 private def sF : Mat := [[⟨5, 1⟩]]
 private def hVc : Mat := [[⟨8, 1⟩]]
 
-example : matOneValue hVc (matAdd hW sF) := by decide +kernel
-example : splitRead (siteDatum (matScale 2 gU) sF) (sp1 ⟨1, 3⟩) := by
+theorem pin7 : matOneValue hVc (matAdd hW sF) := by decide +kernel
+theorem pin8 : splitRead (siteDatum (matScale 2 gU) sF) (sp1 ⟨1, 3⟩) := by
   decide +kernel
-example : ¬ psdAt (sp1 ⟨1, 3⟩) := by decide +kernel
-example : splitRead (matAdd (matScale 2 gU) sF) (sp1 ⟨7, 1⟩) := by
+theorem pin9 : ¬ psdAt (sp1 ⟨1, 3⟩) := by decide +kernel
+theorem pin10 : splitRead (matAdd (matScale 2 gU) sF) (sp1 ⟨7, 1⟩) := by
   decide +kernel
-example : psdAt (sp1 ⟨7, 1⟩) := by decide +kernel
-example : ¬ capAt sF (matScale 2 gU) (sp1 ⟨1, 3⟩) (sp1 ⟨7, 1⟩) := by
+theorem pin11 : psdAt (sp1 ⟨7, 1⟩) := by decide +kernel
+theorem pin12 : ¬ capAt sF (matScale 2 gU) (sp1 ⟨1, 3⟩) (sp1 ⟨7, 1⟩) := by
   decide +kernel
 
 /-! The cap's lower binder: at the site datum `[-4]` the pencil
@@ -252,17 +267,17 @@ lower comparison's conclusion is false at the level `⟨3 : 1⟩`, the
 private def sD3 : Mat := [[⟨1, 5⟩]]
 private def hV3 : Mat := [[⟨1, 2⟩]]
 
-example : matOneValue hV3 (matAdd hW sD3) := by decide +kernel
-example : splitRead (siteDatum (matScale 2 gU) sD3) (sp1 ⟨7, 1⟩) := by
+theorem pin13 : matOneValue hV3 (matAdd hW sD3) := by decide +kernel
+theorem pin14 : splitRead (siteDatum (matScale 2 gU) sD3) (sp1 ⟨7, 1⟩) := by
   decide +kernel
-example : psdAt (sp1 ⟨7, 1⟩) := by decide +kernel
-example : splitRead (matAdd (matScale 2 gU) sD3) (sp1 ⟨1, 3⟩) := by
+theorem pin15 : psdAt (sp1 ⟨7, 1⟩) := by decide +kernel
+theorem pin16 : splitRead (matAdd (matScale 2 gU) sD3) (sp1 ⟨1, 3⟩) := by
   decide +kernel
-example : ¬ psdAt (sp1 ⟨1, 3⟩) := by decide +kernel
-example : ¬ capAt sD3 (matScale 2 gU) (sp1 ⟨7, 1⟩) (sp1 ⟨1, 3⟩) := by
+theorem pin17 : ¬ psdAt (sp1 ⟨1, 3⟩) := by decide +kernel
+theorem pin18 : ¬ capAt sD3 (matScale 2 gU) (sp1 ⟨7, 1⟩) (sp1 ⟨1, 3⟩) := by
   decide +kernel
-example : countAtPair hV3 gU 3 (1 + 2) 1 (sp1 ⟨1, 2⟩) := by decide +kernel
-example : countAtPair hW gU 3 1 0 (sp1 ⟨2, 1⟩) := by decide +kernel
+theorem pin19 : countAtPair hV3 gU 3 (1 + 2) 1 (sp1 ⟨1, 2⟩) := by decide +kernel
+theorem pin20 : countAtPair hW gU 3 1 0 (sp1 ⟨2, 1⟩) := by decide +kernel
 
 /-! The tie's own binder: the pencil `[0]` against `H' + S = [5]`.
 The cap stands and the lower comparison's conclusion is false at the
@@ -271,19 +286,19 @@ level `⟨4 : 1⟩` — the `v`-count at the raised level one against the
 
 private def hV0 : Mat := [[⟨1, 1⟩]]
 
-example : ¬ matOneValue hV0 (matAdd hW sD) := by decide +kernel
-example : countAtPair hV0 gU 4 (1 + 2) 1 (sp1 ⟨1, 2⟩) := by decide +kernel
-example : countAtPair hW gU 4 1 0 spK := by decide +kernel
+theorem pin21 : ¬ matOneValue hV0 (matAdd hW sD) := by decide +kernel
+theorem pin22 : countAtPair hV0 gU 4 (1 + 2) 1 (sp1 ⟨1, 2⟩) := by decide +kernel
+theorem pin23 : countAtPair hW gU 4 1 0 spK := by decide +kernel
 
 /-! The margin's own binder: the window's top moved to `⟨9 : 1⟩`,
 one count there and the coupling `v`'s window standing.  The two
 transported counts read one at the crossed anchor and the crossed
 top, while the crossed pair's order `12 < 10` refuses. -/
 
-example : vacFlat hV gU 7 1 9 1 1 (sp1 ⟨1, 2⟩) (sp1 ⟨1, 4⟩) := by
+theorem pin24 : vacFlat hV gU 7 1 9 1 1 (sp1 ⟨1, 2⟩) (sp1 ⟨1, 4⟩) := by
   decide +kernel
-example : countAtPair hW gU 9 (1 + 2) 1 (sp1 ⟨1, 4⟩) := by decide +kernel
-example : ¬ vacFlat hW gU (7 + 2) 1 9 (1 + 2) 1 (sp1 ⟨1, 6⟩) (sp1 ⟨1, 4⟩) := by
+theorem pin25 : countAtPair hW gU 9 (1 + 2) 1 (sp1 ⟨1, 4⟩) := by decide +kernel
+theorem pin26 : ¬ vacFlat hW gU (7 + 2) 1 9 (1 + 2) 1 (sp1 ⟨1, 6⟩) (sp1 ⟨1, 4⟩) := by
   decide +kernel
 
 /-! The tie's binder at the transport: the `v'`-pencil `[9]` breaks
@@ -294,10 +309,10 @@ transported window refuses at its first conjunct. -/
 
 private def hWf : Mat := [[⟨10, 1⟩]]
 
-example : ¬ matOneValue hV (matAdd hWf sD) := by decide +kernel
-example : countAtPair hWf gU (7 + 2) 1 0 (sp1 ⟨2, 1⟩) := by decide +kernel
-example : countAtPair hWf gU 13 (1 + 2) 1 (sp1 ⟨1, 2⟩) := by decide +kernel
-example : ¬ vacFlat hWf gU (7 + 2) 1 13 (1 + 2) 1 (sp1 ⟨2, 1⟩) (sp1 ⟨1, 2⟩) := by
+theorem pin27 : ¬ matOneValue hV (matAdd hWf sD) := by decide +kernel
+theorem pin28 : countAtPair hWf gU (7 + 2) 1 0 (sp1 ⟨2, 1⟩) := by decide +kernel
+theorem pin29 : countAtPair hWf gU 13 (1 + 2) 1 (sp1 ⟨1, 2⟩) := by decide +kernel
+theorem pin30 : ¬ vacFlat hWf gU (7 + 2) 1 13 (1 + 2) 1 (sp1 ⟨2, 1⟩) (sp1 ⟨1, 2⟩) := by
   decide +kernel
 
 /-! The cell tier's fixture: the order-one carrier at `E = [5]`,
@@ -320,21 +335,21 @@ private def cvL : Cover :=
   Cover.one ctop 0 false ⟨3, 1⟩ ⟨2, 1⟩ Cover.nought Cover.done
 
 private def cellF : Cell 1 :=
-  ⟨cfoot, ctop, 13, 1, 17, 1, 4, cvL, cvL, BPair.unit, 1, 1,
+  ⟨cfoot, ctop, 13, 1, 17, 1, 4, [], ⟨2, 1⟩, ⟨2, 1⟩, cvL, cvL, BPair.unit, 1, 1,
    inertia.mkSplit 1 (evalPC (freecell.freePMat mA mM gI 13 1) BPair.unit 1 2),
    inertia.mkSplit 1 (evalPC (freecell.freePMat mA mM gI 17 1) BPair.unit 1 2)⟩
 
-example : cellRead mA mM gI cellF := by decide +kernel
-example : cellsRead mA mM gI cfoot [cellF] := by decide +kernel
-example : cellsTop cfoot [cellF] = ctop := rfl
+theorem pin31 : cellRead mA mM gI cellF := by decide +kernel
+theorem pin32 : cellsRead mA mM gI cfoot [cellF] := by decide +kernel
+theorem pin33 : cellsTop cfoot [cellF] = ctop := rfl
 
 /-! The pair against the cell's gap four at `E₀ = 4`: `[1 : 2]` under
 the gap and, doubled, under half of it; `[2 : 1]` refused. -/
 
-example : gapsAt 4 1 2 [cellF] := by decide +kernel
-example : gapsAt 4 (2 * 1) 2 [cellF] := by decide +kernel
-example : ¬ gapsAt 4 2 1 [cellF] := by decide +kernel
-example : 4 * 1 ≤ 2 * cellF.gp := gapsAt_mem (by decide +kernel : gapsAt 4 1 2 [cellF])
+theorem pin34 : gapsAt 4 1 2 [cellF] := by decide +kernel
+theorem pin35 : gapsAt 4 (2 * 1) 2 [cellF] := by decide +kernel
+theorem pin36 : ¬ gapsAt 4 2 1 [cellF] := by decide +kernel
+theorem pin37 : 4 * 1 ≤ 2 * cellF.gp := gapsAt_mem (by decide +kernel : gapsAt 4 1 2 [cellF])
   (List.Mem.head [])
 
 /-! The root coordinate's rays read their cells directly: at the
@@ -353,16 +368,17 @@ private theorem rdA : splitRead sitA (inertia.mkSplit 1 sitA) :=
 private theorem rdT : splitRead sitT (inertia.mkSplit 1 sitT) :=
   inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
 
-example : matOneValue rayF [[⟨22, 1⟩]] := by decide +kernel
-example : matOneValue sitA [[⟨1, 28⟩]] := by decide +kernel
-example : matOneValue sitT [[⟨1, 44⟩]] := by decide +kernel
+theorem pin38 : matOneValue rayF [[⟨22, 1⟩]] := by decide +kernel
+theorem pin39 : matOneValue sitA [[⟨1, 28⟩]] := by decide +kernel
+theorem pin40 : matOneValue sitT [[⟨1, 44⟩]] := by decide +kernel
 
-example : vacFlat rayF gI (2 * 2 * 13) (2 * 2 * 1) (2 * 2 * 17) (2 * 2 * 1) 1
+theorem pin41 : vacFlat rayF gI (2 * 2 * 13) (2 * 2 * 1) (2 * 2 * 17) (2 * 2 * 1) 1
     (inertia.mkSplit 1 sitA) (inertia.mkSplit 1 sitT) :=
   point_flat mA mM gI (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
     cfoot cellF [] (by decide +kernel) 1 2 (by decide +kernel) (by decide +kernel)
     _ _ rdA rdT
-example : vacFlat rayF gI (2 * 2 * 13) (2 * 2 * 1) (2 * 2 * 17) (2 * 2 * 1) 1
+theorem pin42 : vacFlat rayF gI (2 * 2 * 13) (2 * 2 * 1) (2 * 2 * 17) (2 * 2 * 1) 1
     (inertia.mkSplit 1 sitA) (inertia.mkSplit 1 sitT) := by decide +kernel
 
 /-! The refusals, one per binder.  The list's read: the sample's
@@ -373,22 +389,27 @@ carrier's root at `√7`, where the anchor's count reads the sum's
 unit against the window's one — the conclusion false with the
 membership refused. -/
 
-example : ¬ cellRead mA mM gI { cellF with spA := sp1 ⟨3, 1⟩ } := by
+private def cellF3 : Cell 1 :=
+  ⟨cfoot, ctop, 13, 1, 17, 1, 4, [], ⟨2, 1⟩, ⟨2, 1⟩, cvL, cvL, BPair.unit, 1, 1,
+   sp1 ⟨3, 1⟩,
+   inertia.mkSplit 1 (evalPC (freecell.freePMat mA mM gI 17 1) BPair.unit 1 2)⟩
+
+theorem pin43 : ¬ cellRead mA mM gI cellF3 := by
   decide +kernel
-example : ¬ cellRead mA mM gI { cellF with gp := 5 } := by decide +kernel
-example : ¬ cellRead mA mM gI { cellF with g := 0 } := by decide +kernel
-example : ¬ cellsRead mA mM gI ⟨BPair.ofNat 2, 1⟩ [cellF] := by decide +kernel
+theorem pin44 : ¬ cellRead mA mM gI { cellF with gp := 5 } := by decide +kernel
+theorem pin45 : ¬ cellRead mA mM gI { cellF with g := 0 } := by decide +kernel
+theorem pin46 : ¬ cellsRead mA mM gI ⟨BPair.ofNat 2, 1⟩ [cellF] := by decide +kernel
 
 private def rayB : elim.Mat := pencil.rayH mA mM (1 * 1) (3 * 3)
 private def sitB : elim.Mat :=
   siteDatum (matAdd rayB (matScale (1 * 1 * 1) gI)) (matScale (1 * 1 * 13) gI)
 
-example : ¬ ((⟨BPair.ofPos 3, 1⟩ : CPair) ≤ cellsTop cfoot [cellF]) := by
+theorem pin47 : ¬ ((⟨BPair.ofPos 3, 1⟩ : CPair) ≤ cellsTop cfoot [cellF]) := by
   decide +kernel
-example : splitRead sitB (inertia.mkSplit 1 sitB) :=
+theorem pin48 : splitRead sitB (inertia.mkSplit 1 sitB) :=
   inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
-example : inertia.revAt (inertia.mkSplit 1 sitB) = 0 := by decide +kernel
-example : ¬ vacFlat rayB gI (1 * 1 * 13) (1 * 1 * 1) (1 * 1 * 17) (1 * 1 * 1) 1
+theorem pin49 : inertia.revAt (inertia.mkSplit 1 sitB) = 0 := by decide +kernel
+theorem pin50 : ¬ vacFlat rayB gI (1 * 1 * 13) (1 * 1 * 1) (1 * 1 * 17) (1 * 1 * 1) 1
     (inertia.mkSplit 1 sitB) (inertia.mkSplit 1 sitT) := by decide +kernel
 
 /-! The further pair rays at the same list: the ray `[1 : 1]` at the
@@ -410,17 +431,35 @@ private theorem capR : capAt mM (matScale 2 gI) spU1 spL1 := by decide +kernel
 private theorem cellsR : cellsRead mA mM gI cfoot [cellF] := by decide +kernel
 private theorem gapsR : gapsAt 4 (2 * 1) 2 [cellF] := by decide +kernel
 
-example : rayQ 1 2 1 = 48 ∧ rayP 1 1 48 = 47 ∧ rayGap 1 1 48 = 95
+theorem pin51 : rayQ 1 2 1 = 48 ∧ rayP 1 1 48 = 47 ∧ rayGap 1 1 48 = 95
     ∧ rayRho 1 1 48 2 = 190 ∧ rayGp 1 1 48 2 cellF [] = 8836 := by
   decide +kernel
 
-example : 4 * (1 * 1) * (rayQ 1 2 1 * rayQ 1 2 1)
+/-! The least key's fast read: the halving search at the fixture's
+comparison decided beside the walk through `rayKD_eq`, and the neighbor
+at the scale `10⁶` for the rays `[1 : 1]` and `[3 : 7]`, where the walk
+runs a million keys and the halving forty and forty-three, read through
+the equality. -/
+
+theorem pin52 : rayKD 1 1 48 = 46 := by decide +kernel
+theorem pin53 : rayP 1 1 48 = posOfSucc (rayKD 1 1 48) :=
+  congrArg posOfSucc (rayKD_eq 1 1 48).symm
+theorem pin54 : rayP 1 1 1000000 = 999999 := by
+  show posOfSucc (rayK 1 1 1000000) = 999999
+  rw [← rayKD_eq]
+  decide +kernel
+theorem pin55 : rayP 3 7 1000000 = 1527525 := by
+  show posOfSucc (rayK 3 7 1000000) = 1527525
+  rw [← rayKD_eq]
+  decide +kernel
+
+theorem pin56 : 4 * (1 * 1) * (rayQ 1 2 1 * rayQ 1 2 1)
     ≤ 2 * rayGp 1 1 (rayQ 1 2 1) 2 cellF [] :=
   (ray_flat mA mM gI (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     spG1 rdG (by decide +kernel) 2 spU1 spL1 capR cellF [] cellsR
     4 1 2 gapsR 1 1 rfl 1 1 (by decide +kernel)).2.1
-example : 4 * (1 * 1) * (rayQ 1 2 1 * rayQ 1 2 1)
+theorem pin57 : 4 * (1 * 1) * (rayQ 1 2 1 * rayQ 1 2 1)
     ≤ 2 * rayGp 1 1 (rayQ 1 2 1) 2 cellF [] := by decide +kernel
 
 private def sitRa : elim.Mat :=
@@ -438,10 +477,10 @@ private theorem rdRa : splitRead sitRa (inertia.mkSplit 1 sitRa) :=
 private theorem rdRt : splitRead sitRt (inertia.mkSplit 1 sitRt) :=
   inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
 
-example : matOneValue sitRa [[⟨1, 14015⟩]] := by decide +kernel
-example : matOneValue sitRt [[⟨1, 22851⟩]] := by decide +kernel
+theorem pin58 : matOneValue sitRa [[⟨1, 14015⟩]] := by decide +kernel
+theorem pin59 : matOneValue sitRt [[⟨1, 22851⟩]] := by decide +kernel
 
-example : vacFlat (matScale (rayQ 1 2 1 * rayQ 1 2 1) (pencil.rayH mA mM 1 1)) gI
+theorem pin60 : vacFlat (matScale (rayQ 1 2 1 * rayQ 1 2 1) (pencil.rayH mA mM 1 1)) gI
     (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).ax)
       + rayRho 1 1 (rayQ 1 2 1) 2)
     (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).ay))
@@ -453,7 +492,7 @@ example : vacFlat (matScale (rayQ 1 2 1 * rayQ 1 2 1) (pencil.rayH mA mM 1 1)) g
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     spG1 rdG (by decide +kernel) 2 spU1 spL1 capR cellF [] cellsR
     4 1 2 gapsR 1 1 rfl 1 1 (by decide +kernel)).2.2 _ _ rdRa rdRt
-example : vacFlat (matScale (rayQ 1 2 1 * rayQ 1 2 1) (pencil.rayH mA mM 1 1)) gI
+theorem pin61 : vacFlat (matScale (rayQ 1 2 1 * rayQ 1 2 1) (pencil.rayH mA mM 1 1)) gI
     (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).ax)
       + rayRho 1 1 (rayQ 1 2 1) 2)
     (1 * (rayQ 1 2 1 * rayQ 1 2 1 * (rayCell 1 1 (rayQ 1 2 1) cellF []).ay))
@@ -471,12 +510,12 @@ neighbor `p = 135` sits past the list and the anchor carrier reads
 its upper side at `τ² = 8`, the transported anchor count the sum's
 unit against the cell's one. -/
 
-example : ¬ gapsAt 4 (2 * 1) 1 [cellF] := by decide +kernel
-example : ¬ (4 * (1 * 1) * (rayQ 1 2 1 * rayQ 1 2 1)
+theorem pin62 : ¬ gapsAt 4 (2 * 1) 1 [cellF] := by decide +kernel
+theorem pin63 : ¬ (4 * (1 * 1) * (rayQ 1 2 1 * rayQ 1 2 1)
     ≤ 1 * rayGp 1 1 (rayQ 1 2 1) 2 cellF []) := by decide +kernel
 
-example : ¬ (8 * (1 * 1) ≤ 1 * 1 * 1) := by decide +kernel
-example : rayP 1 8 48 = 135 := by decide +kernel
+theorem pin64 : ¬ (8 * (1 * 1) ≤ 1 * 1 * 1) := by decide +kernel
+theorem pin65 : rayP 1 8 48 = 135 := by decide +kernel
 
 private def sitXa : elim.Mat :=
   siteDatum (matAdd (matScale (48 * 48) (pencil.rayH mA mM 1 8))
@@ -487,12 +526,12 @@ private def sitXt : elim.Mat :=
       (matScale (1 * (48 * 48 * (rayCell 1 8 48 cellF []).ty) + rayRho 1 8 48 2) gI))
     (matScale (1 * (48 * 48 * (rayCell 1 8 48 cellF []).tx)) gI)
 
-example : splitRead sitXa (inertia.mkSplit 1 sitXa) :=
+theorem pin66 : splitRead sitXa (inertia.mkSplit 1 sitXa) :=
   inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
-example : splitRead sitXt (inertia.mkSplit 1 sitXt) :=
+theorem pin67 : splitRead sitXt (inertia.mkSplit 1 sitXt) :=
   inertia.mkSplit_read 1 _ (by decide +kernel) (by decide +kernel)
-example : inertia.revAt (inertia.mkSplit 1 sitXa) = 0 := by decide +kernel
-example : ¬ vacFlat (matScale (48 * 48) (pencil.rayH mA mM 1 8)) gI
+theorem pin68 : inertia.revAt (inertia.mkSplit 1 sitXa) = 0 := by decide +kernel
+theorem pin69 : ¬ vacFlat (matScale (48 * 48) (pencil.rayH mA mM 1 8)) gI
     (1 * (48 * 48 * (rayCell 1 8 48 cellF []).ax) + rayRho 1 8 48 2)
     (1 * (48 * 48 * (rayCell 1 8 48 cellF []).ay))
     (1 * (48 * 48 * (rayCell 1 8 48 cellF []).tx))
@@ -512,25 +551,25 @@ private def sCap : elim.Mat := [[BPair.unit, ⟨1, 2⟩], [⟨1, 2⟩, BPair.uni
 private def sCap2 : elim.Mat := [[BPair.unit, ⟨1, 3⟩], [⟨1, 3⟩, BPair.unit]]
 private def sCap3 : elim.Mat := [[BPair.unit, ⟨1, 4⟩], [⟨1, 4⟩, BPair.unit]]
 
-example : inertia.psdAt (inertia.mkSplit 2 (matAdd (matScale 2 (idMat 2)) sCap)) :=
+theorem pin70 : inertia.psdAt (inertia.mkSplit 2 (matAdd (matScale 2 (idMat 2)) sCap)) :=
   capId_hi 2 sCap ⟨2, 1⟩ 2 _ (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
     (inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel))
-example : inertia.psdAt (inertia.mkSplit 2 (matAdd (matScale 2 (idMat 2)) sCap)) := by
+theorem pin71 : inertia.psdAt (inertia.mkSplit 2 (matAdd (matScale 2 (idMat 2)) sCap)) := by
   decide +kernel
-example : inertia.psdAt (inertia.mkSplit 2 (siteDatum (matScale 2 (idMat 2)) sCap)) :=
+theorem pin72 : inertia.psdAt (inertia.mkSplit 2 (siteDatum (matScale 2 (idMat 2)) sCap)) :=
   capId_lo 2 sCap ⟨2, 1⟩ 2 _ (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
     (inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel))
-example : inertia.psdAt (inertia.mkSplit 2 (siteDatum (matScale 2 (idMat 2)) sCap)) := by
+theorem pin73 : inertia.psdAt (inertia.mkSplit 2 (siteDatum (matScale 2 (idMat 2)) sCap)) := by
   decide +kernel
 
-example : magCap ⟨3, 1⟩ sCap2 := by decide +kernel
-example : ¬ (BPair.ofNat 2 * ⟨3, 1⟩ ≤ BPair.ofPos 1) := by decide +kernel
-example : ¬ inertia.psdAt (inertia.mkSplit 2 (matAdd (matScale 1 (idMat 2)) sCap2)) := by
+theorem pin74 : magCap ⟨3, 1⟩ sCap2 := by decide +kernel
+theorem pin75 : ¬ (BPair.ofNat 2 * ⟨3, 1⟩ ≤ BPair.ofPos 1) := by decide +kernel
+theorem pin76 : ¬ inertia.psdAt (inertia.mkSplit 2 (matAdd (matScale 1 (idMat 2)) sCap2)) := by
   decide +kernel
-example : ¬ magCap ⟨2, 1⟩ sCap3 := by decide +kernel
-example : ¬ inertia.psdAt (inertia.mkSplit 2 (matAdd (matScale 2 (idMat 2)) sCap3)) := by
+theorem pin77 : ¬ magCap ⟨2, 1⟩ sCap3 := by decide +kernel
+theorem pin78 : ¬ inertia.psdAt (inertia.mkSplit 2 (matAdd (matScale 2 (idMat 2)) sCap3)) := by
   decide +kernel
 
 /-! The cutoff's price: the two-block window at unit grams, the
@@ -579,9 +618,9 @@ private theorem rdB2 : splitRead siteB2 (inertia.mkSplit 2 siteB2) :=
 private theorem rdDf : splitRead siteDf (inertia.mkSplit 2 siteDf) :=
   inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel)
 
-example : inertia.psdAt (inertia.mkSplit 2 siteF) :=
+theorem pin79 : inertia.psdAt (inertia.mkSplit 2 siteF) :=
   truncCut (k := 1) (m := 1) hF gF mF mH mR pH gH qR deR gR bC
-    1 1 1 2 4 7 1
+    1 1 1 2 4 7
     (spT ⟨4, 1⟩ ⟨25, 1⟩) (spShK ⟨2, 1⟩)
     (inertia.mkSplit 2 siteF) (inertia.mkSplit 2 siteB2)
     (inertia.mkSplit 2 siteDf)
@@ -597,14 +636,14 @@ example : inertia.psdAt (inertia.mkSplit 2 siteF) :=
     (by decide +kernel) (by decide +kernel)
     (by decide +kernel) rdB2 rdDf
 
-example : inertia.psdAt (inertia.mkSplit 2 siteF) := by decide +kernel
+theorem pin80 : inertia.psdAt (inertia.mkSplit 2 siteF) := by decide +kernel
 
 /-! The compression binder: at the level three the head's count
 occupies at the raised level, refusing the vacant cut, and the
 window's own datum reads one — the conclusion false. -/
 
-example : ¬ countAtPair pH gH (3 + 1) 1 0 (sp1 ⟨2, 1⟩) := by decide +kernel
-example : ¬ inertia.psdAt (inertia.mkSplit 2
+theorem pin81 : ¬ countAtPair pH gH (3 + 1) 1 0 (sp1 ⟨2, 1⟩) := by decide +kernel
+theorem pin82 : ¬ inertia.psdAt (inertia.mkSplit 2
     (siteDatum (matAdd hF (matScale 1 gF)) (matScale 3 gF))) := by
   decide +kernel
 
@@ -621,23 +660,23 @@ private def hFt : Mat := blockJoin pHt bCt qRt
 private def mHt : Mat := [[bU]]
 private def mFt : Mat := blockJoin mHt bCt mHt
 
-example : capAt mFt (matScale 4 gF)
+theorem pin83 : capAt mFt (matScale 4 gF)
     (inertia.mkSplit 2 (siteDatum (matScale 4 gF) mFt))
     (inertia.mkSplit 2 (matAdd (matScale 4 gF) mFt)) := by decide +kernel
-example : countAtPair pHt gH (1 + 1) 1 0 (inertia.mkSplit 1 (siteDatum
+theorem pin84 : countAtPair pHt gH (1 + 1) 1 0 (inertia.mkSplit 1 (siteDatum
     (matAdd pHt (matScale 1 gH)) (matScale (1 + 1) gH))) := by
   decide +kernel
-example : countAtPair qRt gR (1 + 1) 1 0 (inertia.mkSplit 1 (siteDatum
+theorem pin85 : countAtPair qRt gR (1 + 1) 1 0 (inertia.mkSplit 1 (siteDatum
     (matAdd qRt (matScale 1 gR)) (matScale (1 + 1) gR))) := by
   decide +kernel
-example : ¬ matOneValue (matScale 1 (siteDatum
+theorem pin86 : ¬ matOneValue (matScale 1 (siteDatum
       (siteDatum (matAdd hFt (matScale 1 gF)) (matScale 1 gF))
       (blockJoin
         (siteDatum (matAdd pHt (matScale 1 gH)) (matScale (1 + 1) gH))
         (elim.nullMat 1 1)
         (siteDatum (matAdd qRt (matScale 1 gR)) (matScale (1 + 1) gR)))))
     (truncation.shiftSite 4 1 bCt gH gR) := by decide +kernel
-example : ¬ inertia.psdAt (inertia.mkSplit 2
+theorem pin87 : ¬ inertia.psdAt (inertia.mkSplit 2
     (siteDatum (matAdd hFt (matScale 1 gF)) (matScale 1 gF))) := by
   decide +kernel
 
@@ -650,19 +689,19 @@ private def bCc : Mat := [[⟨6, 1⟩]]
 private def hFc : Mat := blockJoin pH bCc qR
 private def mFc : Mat := blockJoin mH bCc mR
 
-example : matOneValue (matScale 4 (siteDatum
+theorem pin88 : matOneValue (matScale 4 (siteDatum
       (siteDatum (matAdd hFc (matScale 1 gF)) (matScale 1 gF))
       (blockJoin
         (siteDatum (matAdd pH (matScale 1 gH)) (matScale (1 + 1) gH))
         (elim.nullMat 1 1)
         (siteDatum (matAdd qR (matScale 1 gR)) (matScale (1 + 4) gR)))))
     (truncation.shiftSite 2 4 bCc gH gR) := by decide +kernel
-example : ¬ inertia.psdAt (inertia.mkSplit 2
+theorem pin89 : ¬ inertia.psdAt (inertia.mkSplit 2
     (siteDatum (matScale 2 gF) mFc)) := by decide +kernel
-example : ¬ capAt mFc (matScale 2 gF)
+theorem pin90 : ¬ capAt mFc (matScale 2 gF)
     (inertia.mkSplit 2 (siteDatum (matScale 2 gF) mFc))
     (inertia.mkSplit 2 (matAdd (matScale 2 gF) mFc)) := by decide +kernel
-example : ¬ inertia.psdAt (inertia.mkSplit 2
+theorem pin91 : ¬ inertia.psdAt (inertia.mkSplit 2
     (siteDatum (matAdd hFc (matScale 1 gF)) (matScale 1 gF))) := by
   decide +kernel
 
@@ -678,23 +717,23 @@ private def bCr : Mat := [[⟨5, 1⟩]]
 private def hFr : Mat := blockJoin pHr bCr qRr
 private def mFr : Mat := blockJoin mHt bCr mHt
 
-example : capAt mFr (matScale 4 gF)
+theorem pin92 : capAt mFr (matScale 4 gF)
     (inertia.mkSplit 2 (siteDatum (matScale 4 gF) mFr))
     (inertia.mkSplit 2 (matAdd (matScale 4 gF) mFr)) := by decide +kernel
-example : matOneValue (matScale 4 (siteDatum
+theorem pin93 : matOneValue (matScale 4 (siteDatum
       (siteDatum (matAdd hFr (matScale 1 gF)) (matScale 1 gF))
       (blockJoin
         (siteDatum (matAdd pHr (matScale 1 gH)) (matScale (1 + 4) gH))
         (elim.nullMat 1 1)
         (siteDatum (matAdd qRr (matScale 1 gR)) (matScale (1 + 4) gR)))))
     (truncation.shiftSite 4 4 bCr gH gR) := by decide +kernel
-example : countAtPair pHr gH (1 + 4) 1 0 (inertia.mkSplit 1 (siteDatum
+theorem pin94 : countAtPair pHr gH (1 + 4) 1 0 (inertia.mkSplit 1 (siteDatum
     (matAdd pHr (matScale 1 gH)) (matScale (1 + 4) gH))) := by
   decide +kernel
-example : (1 : Pos) + 4 + 4 + 1 = 9 + 1 := by decide +kernel
-example : ¬ inertia.psdAt (inertia.mkSplit 1
+theorem pin95 : (1 : Pos) + 4 + 4 + 1 = 9 + 1 := by decide +kernel
+theorem pin96 : ¬ inertia.psdAt (inertia.mkSplit 1
     (siteDatum qRr (matScale 9 gR))) := by decide +kernel
-example : ¬ inertia.psdAt (inertia.mkSplit 2
+theorem pin97 : ¬ inertia.psdAt (inertia.mkSplit 2
     (siteDatum (matAdd hFr (matScale 1 gF)) (matScale 1 gF))) := by
   decide +kernel
 
@@ -720,21 +759,184 @@ private def spWt : Split 3 :=
 private theorem crt : split.countRead et3 (idMat 3)
     (l3.map (fun r => (r.1, r.2.1))) 11 1 spWt := by decide +kernel
 
-example : speccut.cutTie et3 (l3.map (fun r => (r.1, r.2.1))) 4 2 1
+theorem pin98 : speccut.cutTie et3 (l3.map (fun r => (r.1, r.2.1))) 4 2 1
     spCut3 :=
   windowCut et3 id3 id3 l3 4 2 1 1 (by decide +kernel)
     (by decide +kernel) 11 1 spWt crt (by decide +kernel)
     (by decide +kernel) spCut3 (by decide +kernel)
 
-example : speccut.cutTie et3 (l3.map (fun r => (r.1, r.2.1))) 4 2 1
+theorem pin99 : speccut.cutTie et3 (l3.map (fun r => (r.1, r.2.1))) 4 2 1
     spCut3 := by decide +kernel
 
 /-! The top-count binder: at the edge sixteen the top level's count
 reads two against the ground's one, and the spectral read is false
 there — the window's cut refused at the wider edge. -/
 
-example : ¬ (inertia.revAt (inertia.mkSplit 3
+theorem pin100 : ¬ (inertia.revAt (inertia.mkSplit 3
     (siteDatum (matScale 1 et3) (matScale 16 (idMat 3)))) = 1) := by
   decide +kernel
-example : ¬ speccut.specRead (l3.map (fun r => (r.1, r.2.1))) 4 4 1 := by
+theorem pin101 : ¬ speccut.specRead (l3.map (fun r => (r.1, r.2.1))) 4 4 1 := by
   decide +kernel
+
+/-! The cell on the decimated head at an occupied tower: the
+order-two window `E = diag(6, 40)`, `M` the balance partner of one
+at every entry and the unit gram, the tower place the second key.
+At the level pair `⟨13 : 1⟩ < ⟨17 : 1⟩` the carriers read
+`[[τ² − 6, τ²], [τ², 28 + τ²]]` and `[[τ² − 10, τ²], [τ², 24 + τ²]]`,
+the tower rows' dominance polynomials `28 + τ²` and `24 + τ²` on
+their upper sides over `[0, 1]` at the bound two, and the tower
+deflations at the head, cleared once, `22τ² − 168` and
+`14τ² − 240`, keep their lower sides there at count one,
+the flat window at `τ = 1/2` read through `cell_flat` beside its own
+`decide`; the refusals: the tower place two beyond the order, the
+dominance bound one half below the segment's top, and the segment's
+foot below the sum's unit. -/
+
+private def eT : elim.Mat := [[⟨7, 1⟩, BPair.unit], [BPair.unit, ⟨41, 1⟩]]
+private def mT : elim.Mat := [[⟨1, 2⟩, ⟨1, 2⟩], [⟨1, 2⟩, ⟨1, 2⟩]]
+private def gT : elim.Mat := idMat 2
+private def hdA : split.PMat := pdeflP [1] (compl [1] 2) (freecell.freePMat eT mT gT 13 1)
+private def hdT : split.PMat := pdeflP [1] (compl [1] 2) (freecell.freePMat eT mT gT 17 1)
+private def cellTw : Cell 2 :=
+  ⟨cfoot, ctop, 13, 1, 17, 1, 4, [1], ⟨3, 1⟩, ⟨2, 1⟩, cvL, cvL, BPair.unit, 1, 1,
+   inertia.mkSplit 1 (evalPC hdA BPair.unit 1 4),
+   inertia.mkSplit 1 (evalPC hdT BPair.unit 1 4)⟩
+
+theorem pin102 : compl [1] 2 = [0] := rfl
+theorem pin103 : poly.oneValue (ground.getAt [] (ground.getAt [] hdA 0) 0)
+    [⟨1, 169⟩, BPair.unit, ⟨23, 1⟩] := by decide +kernel
+theorem pin104 : decimation.domRead (split.pselM [1] [1] (freecell.freePMat eT mT gT 13 1))
+    cfoot ctop ⟨3, 1⟩ ⟨2, 1⟩ := by decide +kernel
+theorem pin105 : cellRead eT mT gT cellTw := by decide +kernel
+theorem pin106 : cellsRead eT mT gT cfoot [cellTw] := by decide +kernel
+private def cellTw2 : Cell 2 :=
+  ⟨cfoot, ctop, 13, 1, 17, 1, 4, [2], ⟨3, 1⟩, ⟨2, 1⟩, cvL, cvL, BPair.unit, 1, 1,
+   inertia.mkSplit 2 (evalPC (pdeflP [2] (compl [2] 2) (freecell.freePMat eT mT gT 13 1))
+     BPair.unit 1 4),
+   inertia.mkSplit 2 (evalPC (pdeflP [2] (compl [2] 2) (freecell.freePMat eT mT gT 17 1))
+     BPair.unit 1 4)⟩
+
+theorem pin107 : ¬ cellRead eT mT gT cellTw2 := by decide +kernel
+theorem pin108 : ¬ cellRead eT mT gT { cellTw with dN := ⟨2, 1⟩, dD := ⟨3, 1⟩ } := by
+  decide +kernel
+
+private def rayT : elim.Mat := pencil.rayH eT mT (2 * 2) (1 * 1)
+private def sitTA : elim.Mat :=
+  siteDatum (matAdd rayT (matScale (2 * 2 * 1) gT)) (matScale (2 * 2 * 13) gT)
+private def sitTT : elim.Mat :=
+  siteDatum (matAdd rayT (matScale (2 * 2 * 1) gT)) (matScale (2 * 2 * 17) gT)
+private theorem rdTA : splitRead sitTA (inertia.mkSplit 2 sitTA) :=
+  inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel)
+private theorem rdTT : splitRead sitTT (inertia.mkSplit 2 sitTT) :=
+  inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel)
+
+theorem pin109 : vacFlat rayT gT (2 * 2 * 13) (2 * 2 * 1) (2 * 2 * 17) (2 * 2 * 1) 1
+    (inertia.mkSplit 2 sitTA) (inertia.mkSplit 2 sitTT) :=
+  cell_flat eT mT gT (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    cellTw (by decide +kernel) 1 2 (by decide +kernel) (by decide +kernel)
+    _ _ rdTA rdTT
+theorem pin110 : vacFlat rayT gT (2 * 2 * 13) (2 * 2 * 1) (2 * 2 * 17) (2 * 2 * 1) 1
+    (inertia.mkSplit 2 sitTA) (inertia.mkSplit 2 sitTT) := by decide +kernel
+theorem pin111 : ¬ cellRead eT mT gT { cellTw with lo := ⟨⟨1, 2⟩, 2⟩ } := by
+  decide +kernel
+
+/-! The flat window across the truncation: the head's window from
+the level three to the level six at count one, the cap two at the
+witness gap two, the removed floor eleven at the top's tie. -/
+
+private def lvF (x y : Pos) : Mat := levelDatum hF gF x y
+private theorem rdF41 : splitRead (lvF 4 1) (inertia.mkSplit 2 (lvF 4 1)) :=
+  inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel)
+private theorem rdF73 : splitRead (lvF 7 3) (inertia.mkSplit 2 (lvF 7 3)) :=
+  inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel)
+private theorem rdF71 : splitRead (lvF 7 1) (inertia.mkSplit 2 (lvF 7 1)) :=
+  inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel)
+private def bdA : Mat := blockJoin (levelDatum pH gH 6 1) (elim.nullMat 1 1) (levelDatum qR gR 6 1)
+private def bdT : Mat := blockJoin (levelDatum pH gH 9 3) (elim.nullMat 1 1) (levelDatum qR gR 9 3)
+private theorem rdBA : splitRead bdA (inertia.mkSplit 2 bdA) :=
+  inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel)
+private theorem rdBT : splitRead bdT (inertia.mkSplit 2 bdT) :=
+  inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel)
+private theorem rdDA : splitRead (siteDatum (lvF 4 1) bdA) (inertia.mkSplit 2 (siteDatum (lvF 4 1) bdA)) :=
+  inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel)
+private theorem rdDT : splitRead (siteDatum (lvF 7 3) bdT) (inertia.mkSplit 2 (siteDatum (lvF 7 3) bdT)) :=
+  inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel)
+private theorem rdGF : splitRead gF (inertia.mkSplit 2 gF) :=
+  inertia.mkSplit_read 2 _ (by decide +kernel) (by decide +kernel)
+
+theorem pin112 : vacFlat hF gF 4 1 7 (1 + 2) 1
+    (inertia.mkSplit 2 (lvF 4 1)) (inertia.mkSplit 2 (lvF 7 (1 + 2))) :=
+  flat_shift (k := 1) (m := 1) hF gF mF mH mR pH gH qR deR gR bC
+    4 1 7 1 2 2 2 11 1 (revAt (inertia.mkSplit 2 (lvF 4 1)))
+    (revAt (inertia.mkSplit 2 (lvF 7 (1 + 2)))) 1
+    (spT ⟨4, 1⟩ ⟨25, 1⟩) (spShK ⟨2, 1⟩)
+    (sp1 ⟨1, 2⟩) (sp1 ⟨1, 5⟩) (sp1 ⟨1, 4⟩) (sp1 ⟨2, 1⟩)
+    (sp1 ⟨6, 1⟩) (sp1 ⟨5, 1⟩) spK (sp1 ⟨2, 1⟩) (sp1 ⟨2, 1⟩)
+    (inertia.mkSplit 2 bdA) (inertia.mkSplit 2 (siteDatum (lvF 4 1) bdA))
+    (inertia.mkSplit 2 bdT) (inertia.mkSplit 2 (siteDatum (lvF 7 3) bdT))
+    (inertia.mkSplit 2 (lvF 4 1)) (inertia.mkSplit 2 (lvF 7 (1 + 2))) (inertia.mkSplit 2 gF)
+    capF
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) rdGF (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) rdBA rdDA
+    (by decide +kernel) rdBT rdDT
+    ⟨by decide +kernel, by decide +kernel, rdF41, rfl⟩
+    ⟨by decide +kernel, by decide +kernel, rdF73, rfl⟩
+    (by decide +kernel)
+theorem pin113 : vacFlat hF gF 4 1 7 (1 + 2) 1
+    (inertia.mkSplit 2 (lvF 4 1)) (inertia.mkSplit 2 (lvF 7 (1 + 2))) := by
+  decide +kernel
+
+/-! The width binder's refusal: the head's top at the level five
+leaves the lowered top at the anchor's level, the order false. -/
+
+theorem pin114 : ¬ ((4 : Pos) + (1 + 2) < 6 + 1) := by decide +kernel
+theorem pin115 : ¬ vacFlat hF gF 4 1 6 (1 + 2) 1
+    (inertia.mkSplit 2 (lvF 4 1)) (inertia.mkSplit 2 (lvF 6 (1 + 2))) := by
+  decide +kernel
+
+/-! The compression: the whole window's flat window from the level
+three to the level six reads at the head from the level five, the
+anchor raised by the cap. -/
+
+theorem pin116 : vacFlat pH gH (4 + 2) 1 7 1 1 (sp1 ⟨1, 4⟩) (sp1 ⟨1, 5⟩) :=
+  flat_compress (k := 1) (m := 1) hF gF mF mH mR pH gH qR deR gR bC
+    4 1 7 1 2 2 2 11 1 1 1
+    (spT ⟨4, 1⟩ ⟨25, 1⟩) (spShK ⟨2, 1⟩)
+    (sp1 ⟨1, 4⟩) (sp1 ⟨1, 5⟩) (sp1 ⟨2, 1⟩)
+    (sp1 ⟨6, 1⟩) spK (sp1 ⟨2, 1⟩) (sp1 ⟨2, 1⟩)
+    (inertia.mkSplit 2 bdA) (inertia.mkSplit 2 (siteDatum (lvF 4 1) bdA))
+    (inertia.mkSplit 2 (lvF 4 1)) (inertia.mkSplit 2 (lvF 7 1))
+    capF
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+    ⟨⟨by decide +kernel, by decide +kernel, rdF41, by decide +kernel⟩,
+     ⟨by decide +kernel, by decide +kernel, rdF71, by decide +kernel⟩,
+     Nat.le_refl 1, by decide +kernel⟩
+    (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) rdBA rdDA
+    (by decide +kernel)
+theorem pin117 : vacFlat pH gH (4 + 2) 1 7 1 1 (sp1 ⟨1, 4⟩) (sp1 ⟨1, 5⟩) := by
+  decide +kernel
+
+/-! The width binder's refusal at the compression: the cap three
+raises the anchor to the top's level, the order false. -/
+
+theorem pin118 : ¬ ((4 : Pos) + 3 + 1 < 7 + 1) := by decide +kernel
+theorem pin119 : ¬ vacFlat pH gH (4 + 3) 1 7 1 1 (sp1 ⟨1, 5⟩) (sp1 ⟨1, 5⟩) := by
+  decide +kernel
+
+end gappos

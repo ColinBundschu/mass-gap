@@ -37,75 +37,74 @@ the scalar two (`inertia.scalarSplit` at its upper-side read and
 the diagonal `diag(2, 2)`'s split) and the two levels' difference
 site at the pencil `diag(1, 3)` reading that scalar copy
 (`siteDiff_scalar`, the cross-added level order's margin two). -/
+
+namespace certconstruct
 set_option maxHeartbeats 4000000
 
-open ground elim inertia certconstruct
+open ground elim inertia
 
 private def u : BPair := BPair.unit
 
 private def hD : Mat := [[⟨2, 1⟩, u], [u, ⟨4, 1⟩]]
 
-private def spLt (a b : BPair) : Split 2 :=
-  ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [.one a, .one b], 0, rfl⟩
-
 /-! The pair-level counts at their splits: `count(2) = 1` at the
 datum `diag(-1, 1)` and `count(4) = 2` at `diag(-3, -1)`. -/
 
-example : countRead hD (idMat 2) 2 1 1 (spLt ⟨1, 2⟩ ⟨2, 1⟩) := by decide +kernel
-example : countRead hD (idMat 2) 4 1 2 (spLt ⟨1, 4⟩ ⟨1, 2⟩) := by decide +kernel
+theorem pin1 : countRead hD (idMat 2) 2 1 1 (inertia.oneSplit [⟨1, 2⟩, ⟨2, 1⟩]) := by decide +kernel
+theorem pin2 : countRead hD (idMat 2) 4 1 2 (inertia.oneSplit [⟨1, 4⟩, ⟨1, 2⟩]) := by decide +kernel
 
 /-! The balance-pair level's coherence: `count⟨3 : 1⟩` is the
 level-two count, the second member cross-added onto the pencil's
 side. -/
 
-example : countAtPair hD (idMat 2) 3 1 1 (spLt ⟨1, 2⟩ ⟨2, 1⟩) := by
+theorem pin3 : countAtPair hD (idMat 2) 3 1 1 (inertia.oneSplit [⟨1, 2⟩, ⟨2, 1⟩]) := by
   decide +kernel
 
 /-! The designation of the jump at three: the levels `[5:2] < [7:2]`
 at counts one and two, the gap one, the bracket's whole
 verification. -/
 
-example : desigRead hD (idMat 2) 5 2 7 2 1
-    (spLt ⟨1, 4⟩ ⟨2, 1⟩) (spLt ⟨1, 6⟩ ⟨1, 2⟩) := by decide +kernel
+theorem pin4 : desigRead hD (idMat 2) 5 2 7 2 1
+    (inertia.oneSplit [⟨1, 4⟩, ⟨2, 1⟩]) (inertia.oneSplit [⟨1, 6⟩, ⟨1, 2⟩]) := by decide +kernel
 
 /-! The least root's sharpening: the pair at `[1:2]` positive
 semidefinite and the count at `[3:2]` occupied. -/
 
-example : leastRead hD (idMat 2) 1 2 3 2
-    (spLt ⟨2, 1⟩ ⟨6, 1⟩) (spLt ⟨1, 2⟩ ⟨4, 1⟩) := by decide +kernel
+theorem pin5 : leastRead hD (idMat 2) 1 2 3 2
+    (inertia.oneSplit [⟨2, 1⟩, ⟨6, 1⟩]) (inertia.oneSplit [⟨1, 2⟩, ⟨4, 1⟩]) := by decide +kernel
 
 /-! Clause (2)'s witness at `(H : 2G)`: the first coordinate's
 vector reads the exceeded pair, the elimination's lower-side
 column. -/
 
-example : witnessRead hD (matScale 2 (idMat 2)) [⟨2, 1⟩, u] := by
+theorem pin6 : witnessRead hD (matScale 2 (idMat 2)) [⟨2, 1⟩, u] := by
   decide +kernel
 
 /-! The pair-order refusal: a mismatched pair is refused at the
 leaf read's own conjuncts, the truncation's compression off the
 claim. -/
 
-example : ¬ countRead [[⟨2, 1⟩, u, u], [u, ⟨2, 1⟩, u], [u, u, ⟨2, 1⟩]]
-    (idMat 2) 2 1 2 (spLt ⟨1, 2⟩ ⟨1, 2⟩) := by decide +kernel
+theorem pin7 : ¬ countRead [[⟨2, 1⟩, u, u], [u, ⟨2, 1⟩, u], [u, u, ⟨2, 1⟩]]
+    (idMat 2) 2 1 2 (inertia.oneSplit [⟨1, 2⟩, ⟨1, 2⟩]) := by decide +kernel
 
 /-! The shift transport: the pencil shifted by twice the gram reads
 its count at the level's member raised by two — the two endpoint
 certificates decided, the theorem route both ways, and the
 unshifted level's refusal isolating the shift. -/
 
-example : countAtPair (matAdd (matScale 2 (idMat 2)) hD) (idMat 2)
-    3 1 0 (spLt ⟨2, 1⟩ ⟨4, 1⟩) := by decide +kernel
-example : countAtPair hD (idMat 2) 3 3 0 (spLt ⟨2, 1⟩ ⟨4, 1⟩) := by
+theorem pin8 : countAtPair (matAdd (matScale 2 (idMat 2)) hD) (idMat 2)
+    3 1 0 (inertia.oneSplit [⟨2, 1⟩, ⟨4, 1⟩]) := by decide +kernel
+theorem pin9 : countAtPair hD (idMat 2) 3 3 0 (inertia.oneSplit [⟨2, 1⟩, ⟨4, 1⟩]) := by
   decide +kernel
-example : countAtPair hD (idMat 2) 3 (1 + 2) 0 (spLt ⟨2, 1⟩ ⟨4, 1⟩) :=
-  (countAtPair_shift hD (idMat 2) 2 3 1 0 (spLt ⟨2, 1⟩ ⟨4, 1⟩)
+theorem pin10 : countAtPair hD (idMat 2) 3 (1 + 2) 0 (inertia.oneSplit [⟨2, 1⟩, ⟨4, 1⟩]) :=
+  (countAtPair_shift hD (idMat 2) 2 3 1 0 (inertia.oneSplit [⟨2, 1⟩, ⟨4, 1⟩])
     (by decide +kernel)).mp (by decide +kernel)
-example : countAtPair (matAdd (matScale 2 (idMat 2)) hD) (idMat 2)
-    3 1 0 (spLt ⟨2, 1⟩ ⟨4, 1⟩) :=
-  (countAtPair_shift hD (idMat 2) 2 3 1 0 (spLt ⟨2, 1⟩ ⟨4, 1⟩)
+theorem pin11 : countAtPair (matAdd (matScale 2 (idMat 2)) hD) (idMat 2)
+    3 1 0 (inertia.oneSplit [⟨2, 1⟩, ⟨4, 1⟩]) :=
+  (countAtPair_shift hD (idMat 2) 2 3 1 0 (inertia.oneSplit [⟨2, 1⟩, ⟨4, 1⟩])
     (by decide +kernel)).mpr (by decide +kernel)
-example : ¬ countAtPair hD (idMat 2) 3 1 0
-    (spLt ⟨2, 1⟩ ⟨4, 1⟩) := by decide +kernel
+theorem pin12 : ¬ countAtPair hD (idMat 2) 3 1 0
+    (inertia.oneSplit [⟨2, 1⟩, ⟨4, 1⟩]) := by decide +kernel
 
 /-! The pencil-shape binder: a three-order pencil truncates to the
 gram's order under the sum, so the shifted certificate holds while
@@ -115,11 +114,11 @@ isolating record. -/
 private def hT : Mat :=
   [[⟨2, 1⟩, u, u], [u, ⟨4, 1⟩, u], [u, u, ⟨6, 1⟩]]
 
-example : ¬ elim.sqAt hT 2 := by decide +kernel
-example : countAtPair (matAdd (matScale 2 (idMat 2)) hT) (idMat 2)
-    3 1 0 (spLt ⟨2, 1⟩ ⟨4, 1⟩) := by decide +kernel
-example : ¬ countAtPair hT (idMat 2) 3 3 0
-    (spLt ⟨2, 1⟩ ⟨4, 1⟩) := by decide +kernel
+theorem pin13 : ¬ elim.sqAt hT 2 := by decide +kernel
+theorem pin14 : countAtPair (matAdd (matScale 2 (idMat 2)) hT) (idMat 2)
+    3 1 0 (inertia.oneSplit [⟨2, 1⟩, ⟨4, 1⟩]) := by decide +kernel
+theorem pin15 : ¬ countAtPair hT (idMat 2) 3 3 0
+    (inertia.oneSplit [⟨2, 1⟩, ⟨4, 1⟩]) := by decide +kernel
 
 /-! The seam transport (`lem:dualtrunc`): the ray's positive factor
 rescales the pencil and both of the level's members together, the
@@ -130,17 +129,17 @@ unscaled datum `diag(-1, 1)` rescaled: the scaled certificate by
 `decide`, then the theorem route forward, then the `σ`-side read
 back at `p²σ = q²` with `p = 1`, `σ = 4`. -/
 
-example : countAtPair (matScale 4 hD) (idMat 2) 12 4 1
-    (spLt ⟨1, 5⟩ ⟨5, 1⟩) := by decide +kernel
+theorem pin16 : countAtPair (matScale 4 hD) (idMat 2) 12 4 1
+    (inertia.oneSplit [⟨1, 5⟩, ⟨5, 1⟩]) := by decide +kernel
 
-example : countAtPair (matScale 4 hD) (idMat 2) (4 * 3) (4 * 1) 1
-    (spLt ⟨1, 5⟩ ⟨5, 1⟩) :=
-  countAtPair_scale 4 hD (idMat 2) 3 1 1 (spLt ⟨1, 2⟩ ⟨2, 1⟩)
-    (spLt ⟨1, 5⟩ ⟨5, 1⟩) (by decide +kernel) (by decide +kernel)
+theorem pin17 : countAtPair (matScale 4 hD) (idMat 2) (4 * 3) (4 * 1) 1
+    (inertia.oneSplit [⟨1, 5⟩, ⟨5, 1⟩]) :=
+  countAtPair_scale 4 hD (idMat 2) 3 1 1 (inertia.oneSplit [⟨1, 2⟩, ⟨2, 1⟩])
+    (inertia.oneSplit [⟨1, 5⟩, ⟨5, 1⟩]) (by decide +kernel) (by decide +kernel)
 
-example : countAtPair hD (idMat 2) 3 1 1 (spLt ⟨1, 2⟩ ⟨2, 1⟩) :=
-  countAtPair_unscale 4 hD (idMat 2) 3 1 1 (spLt ⟨1, 2⟩ ⟨2, 1⟩)
-    (spLt ⟨1, 5⟩ ⟨5, 1⟩) (by decide +kernel) (by decide +kernel)
+theorem pin18 : countAtPair hD (idMat 2) 3 1 1 (inertia.oneSplit [⟨1, 2⟩, ⟨2, 1⟩]) :=
+  countAtPair_unscale 4 hD (idMat 2) 3 1 1 (inertia.oneSplit [⟨1, 2⟩, ⟨2, 1⟩])
+    (inertia.oneSplit [⟨1, 5⟩, ⟨5, 1⟩]) (by decide +kernel) (by decide +kernel)
 
 /-! The factor's refusals, each isolating one binder of the
 transport.  (a) The factor `c` shared by the pencil `matScale c H`
@@ -153,12 +152,12 @@ refuses.  (c) The count `n`, carried from the unscaled certificate
 by the reversal's blindness: the scaled datum's one negative block
 refuses the count two. -/
 
-example : ¬ countAtPair (matScale 4 hD) (idMat 2) 9 3 1
-    (spLt ⟨1, 5⟩ ⟨5, 1⟩) := by decide +kernel
-example : ¬ countAtPair (matScale 4 hD) (idMat 2) 12 1 1
-    (spLt ⟨1, 5⟩ ⟨5, 1⟩) := by decide +kernel
-example : ¬ countAtPair (matScale 4 hD) (idMat 2) 12 4 2
-    (spLt ⟨1, 5⟩ ⟨5, 1⟩) := by decide +kernel
+theorem pin19 : ¬ countAtPair (matScale 4 hD) (idMat 2) 9 3 1
+    (inertia.oneSplit [⟨1, 5⟩, ⟨5, 1⟩]) := by decide +kernel
+theorem pin20 : ¬ countAtPair (matScale 4 hD) (idMat 2) 12 1 1
+    (inertia.oneSplit [⟨1, 5⟩, ⟨5, 1⟩]) := by decide +kernel
+theorem pin21 : ¬ countAtPair (matScale 4 hD) (idMat 2) 12 4 2
+    (inertia.oneSplit [⟨1, 5⟩, ⟨5, 1⟩]) := by decide +kernel
 
 /-! The pencil's order rides the scaled certificate alone: the
 rescaling keeps the row count and every row's width, so the square
@@ -166,7 +165,7 @@ read reflects across it (`countAtPair_unscale`'s derivation) — the
 three-order pencil's scaled read refusing here, its unscaled read
 refusing at the shift battery above. -/
 
-example : ¬ elim.sqAt (matScale 4 hT) 2 := by decide +kernel
+theorem pin22 : ¬ elim.sqAt (matScale 4 hT) 2 := by decide +kernel
 
 /-! The count's monotone read (`countAtPair_mono`): at the gram's
 unit and the level `⟨5 : 1⟩` the upper pencil `diag(3, 5)` reads the
@@ -181,27 +180,27 @@ refuses. -/
 private def hU : Mat := [[⟨4, 1⟩, u], [u, ⟨6, 1⟩]]
 
 private theorem monoUp :
-    countAtPair hU (idMat 2) 5 1 1 (spLt ⟨1, 2⟩ ⟨2, 1⟩) := by
+    countAtPair hU (idMat 2) 5 1 1 (inertia.oneSplit [⟨1, 2⟩, ⟨2, 1⟩]) := by
   decide +kernel
 private theorem monoLo :
-    countAtPair hD (idMat 2) 5 1 2 (spLt ⟨1, 4⟩ ⟨1, 2⟩) := by
+    countAtPair hD (idMat 2) 5 1 2 (inertia.oneSplit [⟨1, 4⟩, ⟨1, 2⟩]) := by
   decide +kernel
 private theorem monoSite : splitRead (siteDatum
     (siteDatum (matAdd hU (matScale 1 (idMat 2))) (matScale 5 (idMat 2)))
     (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 5 (idMat 2))))
-    (spLt ⟨3, 1⟩ ⟨3, 1⟩) := by decide +kernel
-private theorem monoPsd : psdAt (spLt ⟨3, 1⟩ ⟨3, 1⟩) := by decide +kernel
+    (inertia.oneSplit [⟨3, 1⟩, ⟨3, 1⟩]) := by decide +kernel
+private theorem monoPsd : psdAt (inertia.oneSplit [⟨3, 1⟩, ⟨3, 1⟩]) := by decide +kernel
 
-example : (1 : Nat) ≤ 2 :=
+theorem pin23 : (1 : Nat) ≤ 2 :=
   countAtPair_mono hU hD (idMat 2) 5 1 5 1 1 2
-    (spLt ⟨1, 2⟩ ⟨2, 1⟩) (spLt ⟨1, 4⟩ ⟨1, 2⟩) (spLt ⟨3, 1⟩ ⟨3, 1⟩)
+    (inertia.oneSplit [⟨1, 2⟩, ⟨2, 1⟩]) (inertia.oneSplit [⟨1, 4⟩, ⟨1, 2⟩]) (inertia.oneSplit [⟨3, 1⟩, ⟨3, 1⟩])
     monoSite monoPsd monoUp monoLo
 
-example : splitRead (siteDatum
+theorem pin24 : splitRead (siteDatum
     (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 5 (idMat 2)))
     (siteDatum (matAdd hU (matScale 1 (idMat 2))) (matScale 5 (idMat 2))))
-    (spLt ⟨1, 3⟩ ⟨1, 3⟩) := by decide +kernel
-example : ¬ psdAt (spLt ⟨1, 3⟩ ⟨1, 3⟩) := by decide +kernel
+    (inertia.oneSplit [⟨1, 3⟩, ⟨1, 3⟩]) := by decide +kernel
+theorem pin25 : ¬ psdAt (inertia.oneSplit [⟨1, 3⟩, ⟨1, 3⟩]) := by decide +kernel
 
 /-! The monotone read's level face: at the one pencil `diag(1, 3)`
 the level `⟨3 : 1⟩` reads count one and the level `⟨5 : 1⟩` count
@@ -210,17 +209,17 @@ lower level's count at or below the higher's, the general's second
 face with the pencil fixed and the level moved. -/
 
 private theorem faceLo :
-    countAtPair hD (idMat 2) 3 1 1 (spLt ⟨1, 2⟩ ⟨2, 1⟩) := by
+    countAtPair hD (idMat 2) 3 1 1 (inertia.oneSplit [⟨1, 2⟩, ⟨2, 1⟩]) := by
   decide +kernel
 
-example : splitRead (siteDatum
+theorem pin26 : splitRead (siteDatum
     (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 3 (idMat 2)))
     (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 5 (idMat 2))))
-    (spLt ⟨3, 1⟩ ⟨3, 1⟩) := by decide +kernel
+    (inertia.oneSplit [⟨3, 1⟩, ⟨3, 1⟩]) := by decide +kernel
 
-example : (1 : Nat) ≤ 2 :=
+theorem pin27 : (1 : Nat) ≤ 2 :=
   countAtPair_mono hD hD (idMat 2) 3 1 5 1 1 2
-    (spLt ⟨1, 2⟩ ⟨2, 1⟩) (spLt ⟨1, 4⟩ ⟨1, 2⟩) (spLt ⟨3, 1⟩ ⟨3, 1⟩)
+    (inertia.oneSplit [⟨1, 2⟩, ⟨2, 1⟩]) (inertia.oneSplit [⟨1, 4⟩, ⟨1, 2⟩]) (inertia.oneSplit [⟨3, 1⟩, ⟨3, 1⟩])
     (by decide +kernel) monoPsd faceLo monoLo
 
 /-! The cross identity (`countAtPair_cross`): the level `⟨3 : 1⟩`
@@ -229,15 +228,15 @@ split — the site matrices tie entrywise — while the weight applied
 to the first member alone moves the site off the stated split, the
 both-members binder's refusal. -/
 
-example : countAtPair hD (idMat 2) (3 + 2) (1 + 2) 1
-    (spLt ⟨1, 2⟩ ⟨2, 1⟩) :=
-  countAtPair_cross hD (idMat 2) 2 3 1 1 (spLt ⟨1, 2⟩ ⟨2, 1⟩) faceLo
+theorem pin28 : countAtPair hD (idMat 2) (3 + 2) (1 + 2) 1
+    (inertia.oneSplit [⟨1, 2⟩, ⟨2, 1⟩]) :=
+  countAtPair_cross hD (idMat 2) 2 3 1 1 (inertia.oneSplit [⟨1, 2⟩, ⟨2, 1⟩]) faceLo
 
-example : countAtPair hD (idMat 2) (3 + 2) (1 + 2) 1
-    (spLt ⟨1, 2⟩ ⟨2, 1⟩) := by decide +kernel
+theorem pin29 : countAtPair hD (idMat 2) (3 + 2) (1 + 2) 1
+    (inertia.oneSplit [⟨1, 2⟩, ⟨2, 1⟩]) := by decide +kernel
 
-example : ¬ countAtPair hD (idMat 2) (3 + 2) 1 1
-    (spLt ⟨1, 2⟩ ⟨2, 1⟩) := by decide +kernel
+theorem pin30 : ¬ countAtPair hD (idMat 2) (3 + 2) 1 1
+    (inertia.oneSplit [⟨1, 2⟩, ⟨2, 1⟩]) := by decide +kernel
 
 /-! The count-to-drift join at the one-place head `H = [3]` over the
 unit gram (`count_below_occupied`): the level `⟨1 : 1⟩` reads the
@@ -251,30 +250,27 @@ count is one, its vacant read refused at the same failing order. -/
 
 private def hO : Mat := [[⟨4, 1⟩]]
 
-private def spOne (a : BPair) : Split 1 :=
-  ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [.one a], 0, rfl⟩
-
-private theorem drVac : countAtPair hO (idMat 1) 1 1 0 (spOne ⟨4, 1⟩) := by
+private theorem drVac : countAtPair hO (idMat 1) 1 1 0 (inertia.oneSplit [⟨4, 1⟩]) := by
   decide +kernel
 
-private theorem drOcc : countAtPair hO (idMat 1) 5 1 1 (spOne ⟨1, 2⟩) := by
+private theorem drOcc : countAtPair hO (idMat 1) 5 1 1 (inertia.oneSplit [⟨1, 2⟩]) := by
   decide +kernel
 
-example : (1 : Pos) + 1 < (5 : Pos) + 1 := by decide +kernel
+theorem pin31 : (1 : Pos) + 1 < (5 : Pos) + 1 := by decide +kernel
 
-example : (1 : Pos) + 1 < (5 : Pos) + 1 :=
-  count_below_occupied hO 1 1 5 1 1 (spOne ⟨4, 1⟩) (spOne ⟨1, 2⟩)
+theorem pin32 : (1 : Pos) + 1 < (5 : Pos) + 1 :=
+  count_below_occupied hO 1 1 5 1 1 (inertia.oneSplit [⟨4, 1⟩]) (inertia.oneSplit [⟨1, 2⟩])
     drVac drOcc (Nat.le_refl 1)
 
-example : countAtPair hO (idMat 1) 3 1 0 (spOne ⟨2, 1⟩) := by decide +kernel
-example : countAtPair hO (idMat 1) 2 1 0 (spOne ⟨3, 1⟩) := by decide +kernel
-example : ¬ (1 ≤ 0) := by decide +kernel
-example : ¬ ((3 : Pos) + 1 < (2 : Pos) + 1) := by decide +kernel
+theorem pin33 : countAtPair hO (idMat 1) 3 1 0 (inertia.oneSplit [⟨2, 1⟩]) := by decide +kernel
+theorem pin34 : countAtPair hO (idMat 1) 2 1 0 (inertia.oneSplit [⟨3, 1⟩]) := by decide +kernel
+theorem pin35 : ¬ (1 ≤ 0) := by decide +kernel
+theorem pin36 : ¬ ((3 : Pos) + 1 < (2 : Pos) + 1) := by decide +kernel
 
-example : countAtPair hO (idMat 1) 6 1 1 (spOne ⟨1, 3⟩) := by decide +kernel
-example : countAtPair hO (idMat 1) 7 1 1 (spOne ⟨1, 4⟩) := by decide +kernel
-example : ¬ countAtPair hO (idMat 1) 7 1 0 (spOne ⟨1, 4⟩) := by decide +kernel
-example : ¬ ((7 : Pos) + 1 < (6 : Pos) + 1) := by decide +kernel
+theorem pin37 : countAtPair hO (idMat 1) 6 1 1 (inertia.oneSplit [⟨1, 3⟩]) := by decide +kernel
+theorem pin38 : countAtPair hO (idMat 1) 7 1 1 (inertia.oneSplit [⟨1, 4⟩]) := by decide +kernel
+theorem pin39 : ¬ countAtPair hO (idMat 1) 7 1 0 (inertia.oneSplit [⟨1, 4⟩]) := by decide +kernel
+theorem pin40 : ¬ ((7 : Pos) + 1 < (6 : Pos) + 1) := by decide +kernel
 
 /-! The scalar certificate at the order two and the scalar two
 (`inertia.scalarSplit`): the identity congruence with one positive
@@ -284,24 +280,24 @@ the vacant off-diagonal. -/
 
 private def hSc : Mat := [[⟨3, 1⟩, u], [u, ⟨3, 1⟩]]
 
-example : psdAt (scalarSplit 2 2) := by decide +kernel
-example : psdAt (scalarSplit 2 2) := scalarSplit_psd 2 2
+theorem pin41 : psdAt (scalarSplit 2 2) := by decide +kernel
+theorem pin42 : psdAt (scalarSplit 2 2) := scalarSplit_psd 2 2
 
-example : splitRead hSc (scalarSplit 2 2) := by decide +kernel
-example : splitRead hSc (scalarSplit 2 2) :=
+theorem pin43 : splitRead hSc (scalarSplit 2 2) := by decide +kernel
+theorem pin44 : splitRead hSc (scalarSplit 2 2) :=
   scalarSplit_read 2 hSc (by decide +kernel) (by decide +kernel)
 
 /-! The scalar-copy binder isolates: a matrix off the unit gram's
 scalar copy — occupied off the diagonal — refuses the scalar
 certificate while its shape read holds. -/
 
-example : elim.sqAt [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]] 2 := by
+theorem pin45 : elim.sqAt [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]] 2 := by
   decide +kernel
 
-example : ¬ matOneValue [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
+theorem pin46 : ¬ matOneValue [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
     (matScale 2 (idMat 2)) := by decide +kernel
 
-example : ¬ splitRead [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
+theorem pin47 : ¬ splitRead [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
     (scalarSplit 2 2) := by decide +kernel
 
 /-! The difference site at the pencil `diag(1, 3)` and the levels
@@ -309,13 +305,13 @@ example : ¬ splitRead [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
 own site reads the gram's scalar copy at the cross-added level
 order's margin two. -/
 
-example : matOneValue
+theorem pin48 : matOneValue
     (siteDatum
       (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 1 (idMat 2)))
       (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 3 (idMat 2))))
     (matScale 2 (idMat 2)) := by decide +kernel
 
-example : matOneValue
+theorem pin49 : matOneValue
     (siteDatum
       (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 1 (idMat 2)))
       (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 3 (idMat 2))))
@@ -327,10 +323,12 @@ example : matOneValue
 wrong margin's scalar copy refuses the difference-site read while
 the level identity at the stated margin holds beside it. -/
 
-example : (1 : Pos) + 1 + 2 = 3 + 1 := by decide +kernel
+theorem pin50 : (1 : Pos) + 1 + 2 = 3 + 1 := by decide +kernel
 
-example : ¬ matOneValue
+theorem pin51 : ¬ matOneValue
     (siteDatum
       (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 1 (idMat 2)))
       (siteDatum (matAdd hD (matScale 1 (idMat 2))) (matScale 3 (idMat 2))))
     (matScale 1 (idMat 2)) := by decide +kernel
+
+end certconstruct

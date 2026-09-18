@@ -164,7 +164,9 @@ the transport's electric factor and the shells' fold one object at
 the shared fixture.
 -/
 
-open ground elim inertia greenprod spectator groundreads
+namespace groundreads
+
+open ground elim inertia greenprod spectator
 
 private def u : BPair := BPair.unit
 
@@ -178,15 +180,15 @@ private def usK : List VecQ := [⟨[⟨2, 1⟩], 1⟩, ⟨[⟨1, 3⟩], 1⟩, �
 private def wsK : List VecQ := [⟨[u], 1⟩, ⟨[u], 1⟩, ⟨[u], 1⟩]
 private def nsK : List Nat := [1, 1, 1]
 
-example : tailRead diagK offK xsK rsK nsK := by decide +kernel
-example : solveRead diagK offK usK wsK nsK := by decide +kernel
+theorem pin1 : tailRead diagK offK xsK rsK nsK := by decide +kernel
+theorem pin2 : solveRead diagK offK usK wsK nsK := by decide +kernel
 private theorem hwK : sidesUnit wsK := by decide +kernel
 
 /-! Clause (ii), the kernel telescope: decided raw, and by the route. -/
 
-example : teleUp rsK usK 0 nsK := by decide +kernel
+theorem pin3 : teleUp rsK usK 0 nsK := by decide +kernel
 
-example : teleUp rsK usK 0 nsK :=
+theorem pin4 : teleUp rsK usK 0 nsK :=
   kernel_tele diagK offK xsK rsK nsK usK wsK (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
@@ -194,56 +196,54 @@ example : teleUp rsK usK 0 nsK :=
 the unit value, the solve and the sides standing. -/
 private def rsF : List MatQ := [⟨[[⟨3, 1⟩]], 1⟩, ⟨[[⟨3, 1⟩]], 2⟩]
 
-example : ¬ tailRead diagK offK xsK rsF nsK := by decide +kernel
-example : ¬ teleUp rsF usK 0 nsK := by decide +kernel
+theorem pin5 : ¬ tailRead diagK offK xsK rsF nsK := by decide +kernel
+theorem pin6 : ¬ teleUp rsF usK 0 nsK := by decide +kernel
 
 /-- The refusal isolating the solve read: the third component forged
 to two, the tail and the sides standing. -/
 private def usF : List VecQ := [⟨[⟨2, 1⟩], 1⟩, ⟨[⟨1, 3⟩], 1⟩, ⟨[⟨3, 1⟩], 1⟩]
 
-example : ¬ solveRead diagK offK usF wsK nsK := by decide +kernel
-example : ¬ teleUp rsK usF 0 nsK := by decide +kernel
+theorem pin7 : ¬ solveRead diagK offK usF wsK nsK := by decide +kernel
+theorem pin8 : ¬ teleUp rsK usF 0 nsK := by decide +kernel
 
 /-- The refusal isolating the sides' read: the forged third component
 solves the chain at occupied second and third sides, the tail and the
 solve standing while the sides and the telescope refuse. -/
 private def wsF : List VecQ := [⟨[u], 1⟩, ⟨[⟨2, 1⟩], 1⟩, ⟨[⟨3, 1⟩], 1⟩]
 
-example : solveRead diagK offK usF wsF nsK := by decide +kernel
-example : ¬ sidesUnit wsF := by decide +kernel
+theorem pin9 : solveRead diagK offK usF wsF nsK := by decide +kernel
+theorem pin10 : ¬ sidesUnit wsF := by decide +kernel
 
 /-! Clause (ii), the one-step cap at the transfer factor `R_3`. -/
 
 private def gK : Mat := [[⟨2, 1⟩]]
 private def gsK : List Mat := [gK, gK, gK]
 private def spK : Split 1 := ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [], 1, rfl⟩
-private def spOne (a : BPair) : Split 1 :=
-  ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [.one a], 0, rfl⟩
 private def r3 : MatQ := ⟨[[⟨2, 1⟩]], 2⟩
 private def v2 : List BPair := [⟨1, 3⟩]
 
-example : contractRead (transfer r3) gK gK 1 2 spK := by decide +kernel
-example : contractRead (transfer r3) gK gK 3 2 (spOne ⟨33, 1⟩) := by
+theorem pin11 : contractRead (transfer r3) gK gK 1 2 spK := by decide +kernel
+theorem pin12 : contractRead (transfer r3) gK gK 3 2 (inertia.oneSplit [⟨33, 1⟩]) := by
   decide +kernel
 
-example : (inertia.quadForm gK (matVec (transfer r3).1 v2)).scale (2 * 2)
+theorem pin13 : (inertia.quadForm gK (matVec (transfer r3).1 v2)).scale (2 * 2)
     ≤ (inertia.quadForm gK v2).scale (1 * 1 * (r3.2 * r3.2)) := by
   decide +kernel
 
-example : (inertia.quadForm gK (matVec (transfer r3).1 v2)).scale (2 * 2)
+theorem pin14 : (inertia.quadForm gK (matVec (transfer r3).1 v2)).scale (2 * 2)
     ≤ (inertia.quadForm gK v2).scale (1 * 1 * (r3.2 * r3.2)) :=
   spectator.contract_all (transfer r3) gK gK 1 2 spK (by decide +kernel) v2
     (by decide +kernel)
 
-example : (inertia.quadForm gK (matVec (transfer r3).1 v2)).scale (2 * 2)
+theorem pin15 : (inertia.quadForm gK (matVec (transfer r3).1 v2)).scale (2 * 2)
     ≤ (inertia.quadForm gK v2).scale (3 * 3 * (r3.2 * r3.2)) :=
-  spectator.contract_all (transfer r3) gK gK 3 2 (spOne ⟨33, 1⟩) (by decide +kernel)
+  spectator.contract_all (transfer r3) gK gK 3 2 (inertia.oneSplit [⟨33, 1⟩]) (by decide +kernel)
     v2 (by decide +kernel)
 
 /-- The refusal isolating the certificate: the pair `[1 : 3]` sits below
 the factor's own modulus, the split refused and the display with it. -/
-example : ¬ contractRead (transfer r3) gK gK 1 3 spK := by decide +kernel
-example : ¬ ((inertia.quadForm gK (matVec (transfer r3).1 v2)).scale (3 * 3)
+theorem pin16 : ¬ contractRead (transfer r3) gK gK 1 3 spK := by decide +kernel
+theorem pin17 : ¬ ((inertia.quadForm gK (matVec (transfer r3).1 v2)).scale (3 * 3)
     ≤ (inertia.quadForm gK v2).scale (1 * 1 * (r3.2 * r3.2))) := by
   decide +kernel
 
@@ -252,14 +252,14 @@ example : ¬ ((inertia.quadForm gK (matVec (transfer r3).1 v2)).scale (3 * 3)
 private def csK : List ((k : Nat) × Pos × Pos × Split k) :=
   [⟨1, 2, 1, spK⟩, ⟨1, 1, 2, spK⟩]
 
-example : greenprod.gramShape gsK nsK := by decide +kernel
-example : capList gsK rsK csK := by decide +kernel
-example : prodN csK = 4 := by decide +kernel
-example : prodD csK = 4 := by decide +kernel
-example : prodN (csK.take 1) = 4 := by decide +kernel
-example : prodD (csK.take 1) = 1 := by decide +kernel
+theorem pin18 : greenprod.gramShape gsK nsK := by decide +kernel
+theorem pin19 : capList gsK rsK csK := by decide +kernel
+theorem pin20 : prodN csK = 4 := by decide +kernel
+theorem pin21 : prodD csK = 4 := by decide +kernel
+theorem pin22 : prodN (csK.take 1) = 4 := by decide +kernel
+theorem pin23 : prodD (csK.take 1) = 1 := by decide +kernel
 
-example : (inertia.quadForm gK (ground.getAt ([], Pos.one) usK 2).1).scale
+theorem pin24 : (inertia.quadForm gK (ground.getAt ([], Pos.one) usK 2).1).scale
       (prodD (csK.take 2)
         * ((ground.getAt ([], Pos.one) usK 0).2
           * (ground.getAt ([], Pos.one) usK 0).2))
@@ -268,7 +268,7 @@ example : (inertia.quadForm gK (ground.getAt ([], Pos.one) usK 2).1).scale
         * ((ground.getAt ([], Pos.one) usK 2).2
           * (ground.getAt ([], Pos.one) usK 2).2)) := by decide +kernel
 
-example : (inertia.quadForm gK (ground.getAt ([], Pos.one) usK 2).1).scale
+theorem pin25 : (inertia.quadForm gK (ground.getAt ([], Pos.one) usK 2).1).scale
       (prodD (csK.take 2)
         * ((ground.getAt ([], Pos.one) usK 0).2
           * (ground.getAt ([], Pos.one) usK 0).2))
@@ -279,7 +279,7 @@ example : (inertia.quadForm gK (ground.getAt ([], Pos.one) usK 2).1).scale
   weight_chain gsK rsK csK usK nsK (by decide +kernel) (by decide +kernel)
     (by decide +kernel) 2 (by decide +kernel)
 
-example : (inertia.quadForm gK (ground.getAt ([], Pos.one) usK 1).1).scale
+theorem pin26 : (inertia.quadForm gK (ground.getAt ([], Pos.one) usK 1).1).scale
       (prodD (csK.take 1)
         * ((ground.getAt ([], Pos.one) usK 0).2
           * (ground.getAt ([], Pos.one) usK 0).2))
@@ -296,8 +296,8 @@ and the depth-one comparison with it. -/
 private def csF : List ((k : Nat) × Pos × Pos × Split k) :=
   [⟨1, 1, 1, spK⟩, ⟨1, 1, 2, spK⟩]
 
-example : ¬ capList gsK rsK csF := by decide +kernel
-example : ¬ ((inertia.quadForm gK (ground.getAt ([], Pos.one) usK 1).1).scale
+theorem pin27 : ¬ capList gsK rsK csF := by decide +kernel
+theorem pin28 : ¬ ((inertia.quadForm gK (ground.getAt ([], Pos.one) usK 1).1).scale
       (prodD (csF.take 1)
         * ((ground.getAt ([], Pos.one) usK 0).2
           * (ground.getAt ([], Pos.one) usK 0).2))
@@ -309,7 +309,7 @@ example : ¬ ((inertia.quadForm gK (ground.getAt ([], Pos.one) usK 1).1).scale
 /-- The refusal isolating the telescope: at the forged third component
 the certificate list stands while the telescope and the depth-two
 comparison refuse. -/
-example : ¬ ((inertia.quadForm gK (ground.getAt ([], Pos.one) usF 2).1).scale
+theorem pin29 : ¬ ((inertia.quadForm gK (ground.getAt ([], Pos.one) usF 2).1).scale
       (prodD (csK.take 2)
         * ((ground.getAt ([], Pos.one) usF 0).2
           * (ground.getAt ([], Pos.one) usF 0).2))
@@ -322,13 +322,11 @@ example : ¬ ((inertia.quadForm gK (ground.getAt ([], Pos.one) usF 2).1).scale
 the kernel root first. -/
 
 private def et2 : Mat := [[u, u], [u, ⟨52, 1⟩]]
-namespace groundreads
 
 /-- The identity congruence at order two, published for the sibling
 check modules. -/
 def id2 : SqMat 2 := ⟨idMat 2, by decide +kernel⟩
 
-end groundreads
 private def l2 : List (BPair × Pos × BPair) :=
   [(u, 1, ⟨2, 1⟩), (⟨52, 1⟩, 1, ⟨2, 1⟩)]
 private def e0 : List BPair := [⟨2, 1⟩, u]
@@ -346,13 +344,13 @@ private theorem hroot02 : ground.getAt (BPair.unit, Pos.one, BPair.unit) l2 0
 
 /-! Clause (i): the ground column at the kernel root, and the reads. -/
 
-example : poly.unitTail (matVec et2 (psiK)) := by
+theorem pin30 : poly.unitTail (matVec et2 (psiK)) := by
   decide +kernel
-example : ¬ poly.unitTail (psiK) := by decide +kernel
-example : BPair.unit < dotN (psiK)
+theorem pin31 : ¬ poly.unitTail (psiK) := by decide +kernel
+theorem pin32 : BPair.unit < dotN (psiK)
     (psiK) := by decide +kernel
 
-example : poly.unitTail (matVec et2 (psiK))
+theorem pin33 : poly.unitTail (matVec et2 (psiK))
     ∧ ¬ poly.unitTail (psiK)
     ∧ BPair.unit < dotN (psiK)
         (psiK) :=
@@ -360,7 +358,7 @@ example : poly.unitTail (matVec et2 (psiK))
 
 /-- The refusal isolating the kernel root: the second key's root sits
 off the unit, its column off the gap's kernel. -/
-example : ¬ poly.unitTail (matVec et2 (matVec id2.val (elim.idRow 2 1))) := by
+theorem pin34 : ¬ poly.unitTail (matVec et2 (matVec id2.val (elim.idRow 2 1))) := by
   decide +kernel
 
 /-! The later ground `(4, 1)` and the off-line reads at the column. -/
@@ -368,12 +366,12 @@ example : ¬ poly.unitTail (matVec et2 (matVec id2.val (elim.idRow 2 1))) := by
 private def ps2 : List BPair := [⟨5, 1⟩, ⟨2, 1⟩]
 private def a2 : Mat := [[⟨3, 1⟩, u], [u, ⟨1, 3⟩]]
 
-example : ((read a2 e0).1).oneValue ⟨3, 1⟩ := by decide +kernel
-example : ((read a2 ps2).2).oneValue ⟨18, 1⟩ := by decide +kernel
-example : (readGap (read a2 e0) (read a2 ps2)).oneValue ⟨1, 5⟩ := by
+theorem pin35 : ((read a2 e0).1).oneValue ⟨3, 1⟩ := by decide +kernel
+theorem pin36 : ((read a2 ps2).2).oneValue ⟨18, 1⟩ := by decide +kernel
+theorem pin37 : (readGap (read a2 e0) (read a2 ps2)).oneValue ⟨1, 5⟩ := by
   decide +kernel
 
-example : poly.oneValue (residD [e0] ps2)
+theorem pin38 : poly.oneValue (residD [e0] ps2)
       (vecAdd (vecScale (dotN e0 e0) ps2)
         ((vecScale (dotN e0 ps2) e0).map BPair.swap))
     ∧ (dotN (residD [e0] ps2) (residD [e0] ps2)).oneValue
@@ -381,7 +379,7 @@ example : poly.oneValue (residD [e0] ps2)
         * (dotN e0 e0 * dotN ps2 ps2 + (dotN e0 ps2 * dotN e0 ps2).swap)) := by
   decide +kernel
 
-example : poly.oneValue (residD [e0] ps2)
+theorem pin39 : poly.oneValue (residD [e0] ps2)
       (vecAdd (vecScale (dotN e0 e0) ps2)
         ((vecScale (dotN e0 ps2) e0).map BPair.swap))
     ∧ (dotN (residD [e0] ps2) (residD [e0] ps2)).oneValue
@@ -394,27 +392,27 @@ example : poly.oneValue (residD [e0] ps2)
 private theorem hcl2 : clearRead l2 0 51 1 := by decide +kernel
 private theorem hpt2 : ps2.length = 2 := by decide +kernel
 
-example : ¬ clearRead l2 0 54 1 := by decide +kernel
-example : ¬ clearRead l2 1 51 1 := by decide +kernel
+theorem pin40 : ¬ clearRead l2 0 54 1 := by decide +kernel
+theorem pin41 : ¬ clearRead l2 1 51 1 := by decide +kernel
 
-example : (dotN (psiK) e1).oneValue BPair.unit := by
+theorem pin42 : (dotN (psiK) e1).oneValue BPair.unit := by
   decide +kernel
-example : (dotN e1 e1).scale 51 ≤ (inertia.quadForm et2 e1).scale 1 := by
+theorem pin43 : (dotN e1 e1).scale 51 ≤ (inertia.quadForm et2 e1).scale 1 := by
   decide +kernel
-example : (dotN e1 e1).scale 51 ≤ (inertia.quadForm et2 e1).scale 1 :=
+theorem pin44 : (dotN e1 e1).scale 51 ≤ (inertia.quadForm et2 e1).scale 1 :=
   gap_perp et2 id2 id2 l2 hd2 0 hj02 1 ⟨2, 1⟩ hroot02 51 1 hcl2 e1
     (by decide +kernel) (by decide +kernel)
 
 /-- The refusal isolating the clearance: at `[54 : 1]` the read refuses
 and the display with it. -/
-example : ¬ ((dotN e1 e1).scale 54 ≤ (inertia.quadForm et2 e1).scale 1) := by
+theorem pin45 : ¬ ((dotN e1 e1).scale 54 ≤ (inertia.quadForm et2 e1).scale 1) := by
   decide +kernel
 
 /-- The refusal isolating the perpendicularity: the kernel column itself,
 off the perpendicular, reads its self-pairing against the gap's unit. -/
-example : ¬ (dotN (psiK) e0).oneValue BPair.unit := by
+theorem pin46 : ¬ (dotN (psiK) e0).oneValue BPair.unit := by
   decide +kernel
-example : ¬ ((dotN e0 e0).scale 51 ≤ (inertia.quadForm et2 e0).scale 1) := by
+theorem pin47 : ¬ ((dotN e0 e0).scale 51 ≤ (inertia.quadForm et2 e0).scale 1) := by
   decide +kernel
 
 /-! Clause (iii): the transport display at the later gap `Et + D`. -/
@@ -431,13 +429,13 @@ private theorem hcap13 : capAt (matScale 1 d2) (matScale 13 (idMat 2))
     spU13 spL13 := by decide +kernel
 private theorem hker2 : poly.unitTail (matVec es2 ps2) := by decide +kernel
 
-example : (dotN (residD [psiK] ps2)
+theorem pin48 : (dotN (residD [psiK] ps2)
         (residD [psiK] ps2)).scale (51 * 51 * (1 * 1))
       ≤ ((dotN (psiK) (psiK)
           * dotN (psiK) (psiK))
           * dotN ps2 ps2).scale (13 * 13 * (1 * 1)) := by decide +kernel
 
-example : (dotN (residD [psiK] ps2)
+theorem pin49 : (dotN (residD [psiK] ps2)
         (residD [psiK] ps2)).scale (51 * 51 * (1 * 1))
       ≤ ((dotN (psiK) (psiK)
           * dotN (psiK) (psiK))
@@ -447,8 +445,8 @@ example : (dotN (residD [psiK] ps2)
 
 /-- The refusal isolating the kernel read: the second coordinate sits off
 the later gap's kernel, and its whole weight is off the line. -/
-example : ¬ poly.unitTail (matVec es2 e1) := by decide +kernel
-example : ¬ ((dotN (residD [e0] e1) (residD [e0] e1)).scale (51 * 51 * (1 * 1))
+theorem pin50 : ¬ poly.unitTail (matVec es2 e1) := by decide +kernel
+theorem pin51 : ¬ ((dotN (residD [e0] e1) (residD [e0] e1)).scale (51 * 51 * (1 * 1))
       ≤ ((dotN e0 e0 * dotN e0 e0) * dotN e1 e1).scale (13 * 13 * (1 * 1))) := by
   decide +kernel
 
@@ -459,15 +457,15 @@ private def spU12 : Split 2 :=
 private def spL12 : Split 2 :=
   mkSplit 2 (matAdd (matScale 12 (idMat 2)) (matScale 1 d2))
 
-example : ¬ capAt (matScale 1 d2) (matScale 12 (idMat 2)) spU12 spL12 := by
+theorem pin52 : ¬ capAt (matScale 1 d2) (matScale 12 (idMat 2)) spU12 spL12 := by
   decide +kernel
-example : ¬ ((dotN (residD [e0] ps2) (residD [e0] ps2)).scale (51 * 51 * (1 * 1))
+theorem pin53 : ¬ ((dotN (residD [e0] ps2) (residD [e0] ps2)).scale (51 * 51 * (1 * 1))
       ≤ ((dotN e0 e0 * dotN e0 e0) * dotN ps2 ps2).scale (12 * 12 * (1 * 1))) := by
   decide +kernel
 
 /-- The refusal isolating the clearance: at `[54 : 1]` the display
 refuses beside the read's own refusal above. -/
-example : ¬ ((dotN (residD [e0] ps2) (residD [e0] ps2)).scale (54 * 54 * (1 * 1))
+theorem pin54 : ¬ ((dotN (residD [e0] ps2) (residD [e0] ps2)).scale (54 * 54 * (1 * 1))
       ≤ ((dotN e0 e0 * dotN e0 e0) * dotN ps2 ps2).scale (13 * 13 * (1 * 1))) := by
   decide +kernel
 
@@ -476,9 +474,9 @@ kernel `(1, -1)` half off the line, the display refusing at the cap. -/
 private def es4 : Mat := [[⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]]
 private def v11 : List BPair := [⟨2, 1⟩, ⟨1, 2⟩]
 
-example : ¬ matOneValue es4 (matAdd et2 d2) := by decide +kernel
-example : poly.unitTail (matVec es4 v11) := by decide +kernel
-example : ¬ ((dotN (residD [e0] v11) (residD [e0] v11)).scale (51 * 51 * (1 * 1))
+theorem pin55 : ¬ matOneValue es4 (matAdd et2 d2) := by decide +kernel
+theorem pin56 : poly.unitTail (matVec es4 v11) := by decide +kernel
+theorem pin57 : ¬ ((dotN (residD [e0] v11) (residD [e0] v11)).scale (51 * 51 * (1 * 1))
       ≤ ((dotN e0 e0 * dotN e0 e0) * dotN v11 v11).scale (13 * 13 * (1 * 1))) := by
   decide +kernel
 
@@ -493,12 +491,12 @@ private def spA' : Split 2 :=
 private theorem hA2 : capAt (matScale 1 a2) (matScale 2 (idMat 2)) spA spA' := by
   decide +kernel
 
-example : (windowsep.mag (readGap (read a2 (psiK))
+theorem pin58 : (windowsep.mag (readGap (read a2 (psiK))
         (read a2 ps2))).scale (51 * 1 * 1)
       ≤ (dotN (psiK) (psiK)
           * dotN ps2 ps2).scale (4 * (2 * 13 * 1)) := by decide +kernel
 
-example : (windowsep.mag (readGap (read a2 (psiK))
+theorem pin59 : (windowsep.mag (readGap (read a2 (psiK))
         (read a2 ps2))).scale (51 * 1 * 1)
       ≤ (dotN (psiK) (psiK)
           * dotN ps2 ps2).scale (4 * (2 * 13 * 1)) :=
@@ -507,10 +505,10 @@ example : (windowsep.mag (readGap (read a2 (psiK))
 
 /-- The width display at the clearance `[1 : 1]` below the cap `13`: the
 read at every order, decided beside the route at that clearance. -/
-example : (windowsep.mag (readGap (read a2 psiK) (read a2 ps2))).scale (1 * 1 * 1)
+theorem pin60 : (windowsep.mag (readGap (read a2 psiK) (read a2 ps2))).scale (1 * 1 * 1)
       ≤ (dotN psiK psiK * dotN ps2 ps2).scale (4 * (2 * 13 * 1)) := by
   decide +kernel
-example : (windowsep.mag (readGap (read a2 psiK) (read a2 ps2))).scale (1 * 1 * 1)
+theorem pin61 : (windowsep.mag (readGap (read a2 psiK) (read a2 ps2))).scale (1 * 1 * 1)
       ≤ (dotN psiK psiK * dotN ps2 ps2).scale (4 * (2 * 13 * 1)) :=
   transport_read et2 es2 d2 a2 id2 id2 l2 hd2 0 hj02 1 ⟨2, 1⟩ hroot02 1 1
     (by decide +kernel) htie2 13 1 spU13 spL13 hcap13 2 1 spA spA' hA2 ps2
@@ -519,7 +517,7 @@ example : (windowsep.mag (readGap (read a2 psiK) (read a2 ps2))).scale (1 * 1 * 
 /-- The refusal isolating the kernel read in the width: the second
 coordinate reads the head cap's two extremes against the column's, the
 gap four self-pairings wide. -/
-example : ¬ ((windowsep.mag (readGap (read a2 e0) (read a2 e1))).scale (51 * 1 * 1)
+theorem pin62 : ¬ ((windowsep.mag (readGap (read a2 e0) (read a2 e1))).scale (51 * 1 * 1)
       ≤ (dotN e0 e0 * dotN e1 e1).scale (4 * (2 * 13 * 1))) := by decide +kernel
 
 /-- The refusal isolating the head cap: `[[0, 2], [2, 0]]` at half its
@@ -530,9 +528,9 @@ private def spB : Split 2 :=
 private def spB' : Split 2 :=
   mkSplit 2 (matAdd (matScale 1 (idMat 2)) (matScale 2 a3))
 
-example : ¬ capAt (matScale 2 a3) (matScale 1 (idMat 2)) spB spB' := by
+theorem pin63 : ¬ capAt (matScale 2 a3) (matScale 1 (idMat 2)) spB spB' := by
   decide +kernel
-example : ¬ ((windowsep.mag (readGap (read a3 e0) (read a3 ps2))).scale (51 * 1 * 2)
+theorem pin64 : ¬ ((windowsep.mag (readGap (read a3 e0) (read a3 ps2))).scale (51 * 1 * 2)
       ≤ (dotN e0 e0 * dotN ps2 ps2).scale (4 * (1 * 13 * 1))) := by decide +kernel
 
 /-! Clause (iii): the two windows at one shared clearing, the
@@ -550,8 +548,8 @@ private def xsL : List MatQ :=
   [([[u]], 1), ([[⟨3, 1⟩]], 1), ([[⟨2, 1⟩]], 1)]
 private def rsL : List MatQ := [([[⟨2, 1⟩]], 1), ([[⟨3, 1⟩]], 1)]
 
-example : tailRead diagE offE xsE rsE nsE := by decide +kernel
-example : tailRead diagL offE xsL rsL nsE := by decide +kernel
+theorem pin65 : tailRead diagE offE xsE rsE nsE := by decide +kernel
+theorem pin66 : tailRead diagL offE xsL rsL nsE := by decide +kernel
 
 /-- The tied walk's one step at the two transfer factors `1/2` and
 `2`, the seed pair `3` at the deepest deviation `-3`, the step's cap
@@ -560,17 +558,17 @@ pair `[59 : 8]` at the halving's clearing. -/
 private def certE : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
     × Split p.2 × Split p.2 × Split p.1 × Split p.1
     × Split p.2 × Split p.2 × Split p.2 × Split p.2) :=
-  [⟨(1, 1), (1, 2), (2, 1), spK, spK, spOne ⟨7, 1⟩, spK,
-      spOne ⟨76, 1⟩, spOne ⟨44, 1⟩, spK, spOne ⟨3, 1⟩⟩]
+  [⟨(1, 1), (1, 2), (2, 1), spK, spK, inertia.oneSplit [⟨7, 1⟩], spK,
+      inertia.oneSplit [⟨76, 1⟩], inertia.oneSplit [⟨44, 1⟩], spK, inertia.oneSplit [⟨3, 1⟩]⟩]
 
 private theorem hshareE : driftShareRead diagE offE diagL offE
     xsE rsE xsL rsL 2 1 nsE dnE 3 1 1 1
     ((((nsE.take (2 + 1)).drop 1).reverse).map elim.idMat)
     certE := by decide +kernel
 
-example : driftFold 3 1 1 1 certE = (59, 8) := by decide +kernel
+theorem pin67 : driftFold 3 1 1 1 certE = (59, 8) := by decide +kernel
 
-example : ∃ (k : Nat) (spU spL : Split k),
+theorem pin68 : ∃ (k : Nat) (spU spL : Split k),
     capQ (devQ (ground.getAt dM xsL 1) (ground.getAt dM xsE 1)) (idMat 1)
       (driftFold 3 1 1 1 certE).1 (driftFold 3 1 1 1 certE).2 spU spL :=
   driftShare_cap diagE offE diagL offE xsE rsE xsL rsL 2 1 nsE dnE
@@ -590,16 +588,16 @@ private def lE : List (BPair × Pos × BPair) :=
   [(u, 1, ⟨6, 1⟩), (⟨6, 1⟩, 1, ⟨6, 1⟩)]
 private def psL : List BPair := [⟨2, 1⟩, ⟨1, 2⟩]
 
-example : matOneValue (greenprod.headM diagE offE xE 1)
+theorem pin69 : matOneValue (greenprod.headM diagE offE xE 1)
     [[⟨2, 1⟩, ⟨3, 1⟩], [⟨3, 1⟩, ⟨5, 1⟩]] := by decide +kernel
-example : matOneValue (greenprod.headM diagL offE xL 1)
+theorem pin70 : matOneValue (greenprod.headM diagL offE xL 1)
     [[⟨3, 1⟩, ⟨3, 1⟩], [⟨3, 1⟩, ⟨3, 1⟩]] := by decide +kernel
 
 private theorem hdE : split.diagRead
     (matScale xL.2 (greenprod.headM diagE offE xE 1)) (idMat 2)
     tE twE lE := by decide +kernel
 
-example : matVec tE.val (elim.idRow 2 0) = [⟨3, 1⟩, ⟨1, 2⟩] := by
+theorem pin71 : matVec tE.val (elim.idRow 2 0) = [⟨3, 1⟩, ⟨1, 2⟩] := by
   decide +kernel
 
 private theorem hclE : clearRead lE 0 5 1 := by decide +kernel
@@ -617,8 +615,8 @@ private def drE : Mat :=
 private def padE : Mat :=
   inertia.trailPad 1 (greenprod.addQ xL (greenprod.swapQ xE)).1
 
-example : matOneValue padE [[u, u], [u, ⟨1, 3⟩]] := by decide +kernel
-example : matOneValue (matAdd (matScale xL.2
+theorem pin72 : matOneValue padE [[u, u], [u, ⟨1, 3⟩]] := by decide +kernel
+theorem pin73 : matOneValue (matAdd (matScale xL.2
       (greenprod.headM diagE offE xE 1)) (matAdd drE padE))
     (matScale xE.2 (greenprod.headM diagL offE xL 1)) := by decide +kernel
 
@@ -660,7 +658,7 @@ private theorem hLFE : splitRead (matAdd
 `diag(2, -2)` at `2`: the gap `-12` at the two reads `[6 : 5]` and
 `[0 : 2]`, the display `12 · 40 ≤ 10 · 536`. -/
 
-example : (windowsep.mag (readGap
+theorem pin74 : (windowsep.mag (readGap
       (read a2 (matVec tE.val (elim.idRow 2 0))) (read a2 psL))).scale
     (5 * (1 * (driftFold 3 1 1 1 certE).2) * 1)
     ≤ (dotN (matVec tE.val (elim.idRow 2 0))
@@ -668,7 +666,7 @@ example : (windowsep.mag (readGap
       (4 * (2 * (1 * ((driftFold 3 1 1 1 certE).1 * (xL.2 * xE.2))
         + (driftFold 3 1 1 1 certE).2 * 1) * 1)) := by decide +kernel
 
-example : (windowsep.mag (readGap
+theorem pin75 : (windowsep.mag (readGap
       (read a2 (matVec tE.val (elim.idRow 2 0))) (read a2 psL))).scale
     (5 * (1 * (driftFold 3 1 1 1 certE).2) * 1)
     ≤ (dotN (matVec tE.val (elim.idRow 2 0))
@@ -685,11 +683,11 @@ example : (windowsep.mag (readGap
 /-- The refusal isolating the walk's occupancy: at the vacant
 certificate list the two windows' shared read parts at its walk,
 whose lists are occupied at the observable's depth. -/
-example : ¬ driftShareRead diagE offE diagL offE xsE rsE xsL rsL
+theorem pin76 : ¬ driftShareRead diagE offE diagL offE xsE rsE xsL rsL
     2 1 nsE dnE 3 1 1 1
     ((((nsE.take (2 + 1)).drop 1).reverse).map elim.idMat) [] := by
   decide +kernel
-example : ¬ (0 < ([] : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
+theorem pin77 : ¬ (0 < ([] : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
     × Split p.2 × Split p.2 × Split p.1 × Split p.1
     × Split p.2 × Split p.2 × Split p.2 × Split p.2)).length) := by
   decide +kernel
@@ -697,11 +695,11 @@ example : ¬ (0 < ([] : List ((p : Nat × Nat) × (Pos × Pos) × (Pos × Pos)
 /-- The refusal isolating the depth below the perturbation slab: at
 the depth of that slab the walk's lists are vacant and name no
 cap. -/
-example : ¬ driftShareRead diagE offE diagL offE xsE rsE xsL rsL
+theorem pin78 : ¬ driftShareRead diagE offE diagL offE xsE rsE xsL rsL
     2 2 nsE dnE 3 1 1 1
     ((((nsE.take (2 + 1)).drop 2).reverse).map elim.idMat)
     certE := by decide +kernel
-example : ¬ (2 < 2) := by decide +kernel
+theorem pin79 : ¬ (2 < 2) := by decide +kernel
 
 /-- The refusal isolating the drift's own cap: at the narrowed pair
 `[1 : 2]` the drift's leading block sits beyond the identity's weight,
@@ -711,7 +709,7 @@ private def spDU2 : Split 2 :=
 private def spDL2 : Split 2 :=
   mkSplit 2 (matAdd (matScale 1 (idMat 2)) (matScale 2 drE))
 
-example : ¬ capAt (matScale 2 drE) (matScale 1 (idMat 2)) spDU2 spDL2 := by
+theorem pin80 : ¬ capAt (matScale 2 drE) (matScale 1 (idMat 2)) spDU2 spDL2 := by
   decide +kernel
 
 /-- The refusal isolating the head cap: at `1` the observable
@@ -721,18 +719,18 @@ private def spAU2 : Split 2 :=
 private def spAL2 : Split 2 :=
   mkSplit 2 (matAdd (matScale 1 (idMat 2)) (matScale 1 a2))
 
-example : ¬ capAt (matScale 1 a2) (matScale 1 (idMat 2)) spAU2 spAL2 := by
+theorem pin81 : ¬ capAt (matScale 1 a2) (matScale 1 (idMat 2)) spAU2 spAL2 := by
   decide +kernel
 
 /-- The refusal isolating the later ground: the equal-membered vector
 `(1, 1)` sits off the later head's kernel, its image reading `(4, 4)`. -/
-example : ¬ poly.unitTail (matVec
+theorem pin82 : ¬ poly.unitTail (matVec
     (matScale xE.2 (greenprod.headM diagL offE xL 1))
     [⟨2, 1⟩, ⟨2, 1⟩]) := by decide +kernel
 
 /-- The refusal isolating the clearance: at `[6 : 1]` the one further
 root sits below the level. -/
-example : ¬ clearRead lE 0 6 1 := by decide +kernel
+theorem pin83 : ¬ clearRead lE 0 6 1 := by decide +kernel
 
 /-! The full read's extension: the gap at the clearing scales, the
 cross-cleared head, and the tail weights' price. -/
@@ -746,19 +744,19 @@ private def gY : BPair := ⟨4, 1⟩
 private def thX : BPair := ⟨2, 1⟩
 private def thY : BPair := ⟨1, 3⟩
 
-example : (windowsep.mag (readGap
+theorem pin84 : (windowsep.mag (readGap
     (aX.scale 2, gX.scale 2 + thX) (aY.scale 3, gY.scale 3 + thY))).oneValue
     ⟨38, 1⟩ := by decide +kernel
-example : (windowsep.mag (readGap (aX, gX) (aY, gY))).oneValue ⟨8, 1⟩ := by
+theorem pin85 : (windowsep.mag (readGap (aX, gX) (aY, gY))).oneValue ⟨8, 1⟩ := by
   decide +kernel
 
-example : windowsep.mag (readGap
+theorem pin86 : windowsep.mag (readGap
       (aX.scale 2, gX.scale 2 + thX) (aY.scale 3, gY.scale 3 + thY))
     ≤ (windowsep.mag (readGap (aX, gX) (aY, gY))).scale (2 * 3)
       + ((windowsep.mag (aY * thX)).scale 3
         + (windowsep.mag (aX * thY)).scale 2) := by decide +kernel
 
-example : windowsep.mag (readGap
+theorem pin87 : windowsep.mag (readGap
       (aX.scale 2, gX.scale 2 + thX) (aY.scale 3, gY.scale 3 + thY))
     ≤ (windowsep.mag (readGap (aX, gX) (aY, gY))).scale (2 * 3)
       + ((windowsep.mag (aY * thX)).scale 3
@@ -768,17 +766,17 @@ example : windowsep.mag (readGap
 /-- The extension at equal-membered tail weights reads the head gap's
 own rescaling: the two cross terms sit at the sum's unit and the
 comparison is tight at `42`. -/
-example : windowsep.mag (readGap
+theorem pin88 : windowsep.mag (readGap
       (aX.scale 2, gX.scale 2 + u) (aY.scale 3, gY.scale 3 + u))
     ≤ (windowsep.mag (readGap (aX, gX) (aY, gY))).scale (2 * 3)
       + ((windowsep.mag (aY * u)).scale 3
         + (windowsep.mag (aX * u)).scale 2) := by decide +kernel
 
-example : (windowsep.mag (readGap
+theorem pin89 : (windowsep.mag (readGap
     (aX.scale 2, gX.scale 2 + u) (aY.scale 3, gY.scale 3 + u))).oneValue
     ⟨43, 1⟩ := by decide +kernel
 
-example : windowsep.mag (readGap
+theorem pin90 : windowsep.mag (readGap
       (aX.scale 2, gX.scale 2 + u) (aY.scale 3, gY.scale 3 + u))
     ≤ (windowsep.mag (readGap (aX, gX) (aY, gY))).scale (2 * 3)
       + ((windowsep.mag (aY * u)).scale 3
@@ -790,8 +788,8 @@ example : windowsep.mag (readGap
 
 private def usH : List VecQ := [⟨[⟨2, 1⟩, ⟨1, 2⟩], 2⟩, ⟨[⟨4, 1⟩], 3⟩]
 
-example : denProd usH = 6 := by decide +kernel
-example : poly.oneValue (headVec usH) [⟨4, 1⟩, ⟨1, 4⟩, ⟨7, 1⟩] := by
+theorem pin91 : denProd usH = 6 := by decide +kernel
+theorem pin92 : poly.oneValue (headVec usH) [⟨4, 1⟩, ⟨1, 4⟩, ⟨7, 1⟩] := by
   decide +kernel
 
 /-! The far-end closure at the chain: the cross-cleared head
@@ -800,23 +798,23 @@ each depth — the depth-one display decided raw and landed through
 `head_kernel`, the vacant and full depths by the route — with the
 refusal at a family off the kernel. -/
 
-example : poly.unitTail (matVec
+theorem pin93 : poly.unitTail (matVec
     (headM diagK offK (ground.getAt dM xsK 1) 1)
     (headVec (List.take 2 usK))) := by decide +kernel
 
-example : poly.unitTail (matVec
+theorem pin94 : poly.unitTail (matVec
     (headM diagK offK (ground.getAt dM xsK 1) 1)
     (headVec (List.take 2 usK))) :=
   head_kernel diagK offK xsK rsK usK wsK nsK 1 (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : poly.unitTail (matVec
+theorem pin95 : poly.unitTail (matVec
     (headM diagK offK (ground.getAt dM xsK 0) 0)
     (headVec (List.take 1 usK))) :=
   head_kernel diagK offK xsK rsK usK wsK nsK 0 (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : poly.unitTail (matVec
+theorem pin96 : poly.unitTail (matVec
     (headM diagK offK (ground.getAt dM xsK 2) 2)
     (headVec (List.take 3 usK))) :=
   head_kernel diagK offK xsK rsK usK wsK nsK 2 (by decide +kernel)
@@ -825,7 +823,7 @@ example : poly.unitTail (matVec
 /-- The refusal at a family off the kernel: the forged third
 component solves the rows only at occupied sides, and the decimated
 head's read refuses at the depth holding the forged component. -/
-example : ¬ poly.unitTail (matVec
+theorem pin97 : ¬ poly.unitTail (matVec
     (headM diagK offK (ground.getAt dM xsK 2) 2)
     (headVec (List.take 3 usF))) := by decide +kernel
 
@@ -836,21 +834,21 @@ the joined head's over the blocks at or below that depth, and the
 head's self-pairing reads the tail weights' sum at the unit grams of
 the slabs' own orders. -/
 
-example : poly.oneValue (headVec usK)
+theorem pin98 : poly.oneValue (headVec usK)
     (greenprod.vecScale (denProd (List.drop 1 usK))
         (headVec (List.take 1 usK))
       ++ greenprod.vecScale (denProd (List.take 1 usK))
         (headVec (List.drop 1 usK))) :=
   headVec_split 1 usK
 
-example : (dotN (ground.getAt ([], Pos.one) usK 1).1
+theorem pin99 : (dotN (ground.getAt ([], Pos.one) usK 1).1
       (ground.getAt ([], Pos.one) usK 1).1).scale
     (denProd (List.take 1 usK) * denProd (List.take 1 usK))
     ≤ dotN (headVec (List.take (1 + 1) usK))
       (headVec (List.take (1 + 1) usK)) :=
   blockWeight_le 1 usK (by decide +kernel)
 
-example : (dotN (headVec usK) (headVec usK)).oneValue
+theorem pin100 : (dotN (headVec usK) (headVec usK)).oneValue
     (tailSum (nsK.map elim.idMat) usK).1 :=
   headVec_weight usK nsK (by decide +kernel)
 
@@ -859,13 +857,13 @@ weights `4` and `1` beyond the head sum to `5` at the joined clearing
 `1`, and the certificates `[2 : 1]` and `[1 : 2]` fold to `[20 : 4]`,
 the comparison tight at `20`. -/
 
-example : (tailSum (gsK.drop 1) (usK.drop 1)).1.oneValue ⟨6, 1⟩ := by
+theorem pin101 : (tailSum (gsK.drop 1) (usK.drop 1)).1.oneValue ⟨6, 1⟩ := by
   decide +kernel
-example : (tailSum (gsK.drop 1) (usK.drop 1)).2 = 1 := by decide +kernel
-example : (tailFold csK).1.oneValue ⟨21, 1⟩ := by decide +kernel
-example : (tailFold csK).2 = 4 := by decide +kernel
+theorem pin102 : (tailSum (gsK.drop 1) (usK.drop 1)).2 = 1 := by decide +kernel
+theorem pin103 : (tailFold csK).1.oneValue ⟨21, 1⟩ := by decide +kernel
+theorem pin104 : (tailFold csK).2 = 4 := by decide +kernel
 
-example : (tailSum (gsK.drop (0 + 1)) (usK.drop (0 + 1))).1.scale
+theorem pin105 : (tailSum (gsK.drop (0 + 1)) (usK.drop (0 + 1))).1.scale
       ((tailFold (csK.drop 0)).2
         * ((ground.getAt ([], Pos.one) usK 0).2
           * (ground.getAt ([], Pos.one) usK 0).2))
@@ -873,7 +871,7 @@ example : (tailSum (gsK.drop (0 + 1)) (usK.drop (0 + 1))).1.scale
         * (tailFold (csK.drop 0)).1).scale
       (tailSum (gsK.drop (0 + 1)) (usK.drop (0 + 1))).2 := by decide +kernel
 
-example : (tailSum (gsK.drop (0 + 1)) (usK.drop (0 + 1))).1.scale
+theorem pin106 : (tailSum (gsK.drop (0 + 1)) (usK.drop (0 + 1))).1.scale
       ((tailFold (csK.drop 0)).2
         * ((ground.getAt ([], Pos.one) usK 0).2
           * (ground.getAt ([], Pos.one) usK 0).2))
@@ -886,8 +884,8 @@ example : (tailSum (gsK.drop (0 + 1)) (usK.drop (0 + 1))).1.scale
 /-- The refusal isolating the certificate list: at the first
 certificate forged to `[1 : 1]`, below the factor `R_2`'s own modulus,
 the fold reads `[5 : 4]` and the price refuses at `20` against `5`. -/
-example : (tailFold csF).1.oneValue ⟨6, 1⟩ := by decide +kernel
-example : ¬ ((tailSum (gsK.drop (0 + 1)) (usK.drop (0 + 1))).1.scale
+theorem pin107 : (tailFold csF).1.oneValue ⟨6, 1⟩ := by decide +kernel
+theorem pin108 : ¬ ((tailSum (gsK.drop (0 + 1)) (usK.drop (0 + 1))).1.scale
       ((tailFold (csF.drop 0)).2
         * ((ground.getAt ([], Pos.one) usK 0).2
           * (ground.getAt ([], Pos.one) usK 0).2))
@@ -916,22 +914,22 @@ private def gsV : List Mat := [elim.idMat 1, elim.idMat 2]
 private def usV : List VecQ := [u0V, u1V]
 private def rsV : List MatQ := [rV]
 private def csV : List ((k : Nat) × Pos × Pos × Split k) :=
-  [⟨1, 2, 1, spOne ⟨12, 1⟩⟩]
+  [⟨1, 2, 1, inertia.oneSplit [⟨12, 1⟩]⟩]
 
-example : greenprod.gramShape gsV nsV := by decide +kernel
-example : teleUp rsV usV 0 nsV := by decide +kernel
-example : capList gsV rsV csV := by decide +kernel
-example : contractRead (transfer rV) (elim.idMat 2) (elim.idMat 1)
-    2 1 (spOne ⟨12, 1⟩) := by decide +kernel
-example : prodN (csV.take 1) = 4 := by decide +kernel
-example : prodD (csV.take 1) = 1 := by decide +kernel
-example : (tailSum (gsV.drop 1) (usV.drop 1)).1.oneValue ⟨6, 1⟩ := by
+theorem pin109 : greenprod.gramShape gsV nsV := by decide +kernel
+theorem pin110 : teleUp rsV usV 0 nsV := by decide +kernel
+theorem pin111 : capList gsV rsV csV := by decide +kernel
+theorem pin112 : contractRead (transfer rV) (elim.idMat 2) (elim.idMat 1)
+    2 1 (inertia.oneSplit [⟨12, 1⟩]) := by decide +kernel
+theorem pin113 : prodN (csV.take 1) = 4 := by decide +kernel
+theorem pin114 : prodD (csV.take 1) = 1 := by decide +kernel
+theorem pin115 : (tailSum (gsV.drop 1) (usV.drop 1)).1.oneValue ⟨6, 1⟩ := by
   decide +kernel
-example : (tailSum (gsV.drop 1) (usV.drop 1)).2 = 4 := by decide +kernel
-example : (tailFold csV).1.oneValue ⟨5, 1⟩ := by decide +kernel
-example : (tailFold csV).2 = 1 := by decide +kernel
+theorem pin116 : (tailSum (gsV.drop 1) (usV.drop 1)).2 = 4 := by decide +kernel
+theorem pin117 : (tailFold csV).1.oneValue ⟨5, 1⟩ := by decide +kernel
+theorem pin118 : (tailFold csV).2 = 1 := by decide +kernel
 
-example : (inertia.quadForm (ground.getAt [] gsV 1)
+theorem pin119 : (inertia.quadForm (ground.getAt [] gsV 1)
       (ground.getAt ([], Pos.one) usV 1).1).scale
       (prodD (csV.take 1)
         * ((ground.getAt ([], Pos.one) usV 0).2
@@ -942,7 +940,7 @@ example : (inertia.quadForm (ground.getAt [] gsV 1)
         * ((ground.getAt ([], Pos.one) usV 1).2
           * (ground.getAt ([], Pos.one) usV 1).2)) := by decide +kernel
 
-example : (inertia.quadForm (ground.getAt [] gsV 1)
+theorem pin120 : (inertia.quadForm (ground.getAt [] gsV 1)
       (ground.getAt ([], Pos.one) usV 1).1).scale
       (prodD (csV.take 1)
         * ((ground.getAt ([], Pos.one) usV 0).2
@@ -955,7 +953,7 @@ example : (inertia.quadForm (ground.getAt [] gsV 1)
   weight_chain gsV rsV csV usV nsV (by decide +kernel) (by decide +kernel)
     (by decide +kernel) 1 (by decide +kernel)
 
-example : (tailSum (gsV.drop (0 + 1)) (usV.drop (0 + 1))).1.scale
+theorem pin121 : (tailSum (gsV.drop (0 + 1)) (usV.drop (0 + 1))).1.scale
       ((tailFold (csV.drop 0)).2
         * ((ground.getAt ([], Pos.one) usV 0).2
           * (ground.getAt ([], Pos.one) usV 0).2))
@@ -964,7 +962,7 @@ example : (tailSum (gsV.drop (0 + 1)) (usV.drop (0 + 1))).1.scale
         * (tailFold (csV.drop 0)).1).scale
       (tailSum (gsV.drop (0 + 1)) (usV.drop (0 + 1))).2 := by decide +kernel
 
-example : (tailSum (gsV.drop (0 + 1)) (usV.drop (0 + 1))).1.scale
+theorem pin122 : (tailSum (gsV.drop (0 + 1)) (usV.drop (0 + 1))).1.scale
       ((tailFold (csV.drop 0)).2
         * ((ground.getAt ([], Pos.one) usV 0).2
           * (ground.getAt ([], Pos.one) usV 0).2))
@@ -979,9 +977,9 @@ example : (tailSum (gsV.drop (0 + 1)) (usV.drop (0 + 1))).1.scale
 member one beyond, the image slab's form reading `20` against the
 source's `16`. -/
 private def csVF : List ((k : Nat) × Pos × Pos × Split k) :=
-  [⟨1, 2, 2, spOne ⟨12, 1⟩⟩]
+  [⟨1, 2, 2, inertia.oneSplit [⟨12, 1⟩]⟩]
 
-example : ¬ capList gsV rsV csVF := by decide +kernel
+theorem pin123 : ¬ capList gsV rsV csVF := by decide +kernel
 
 /-! The composing bracket: the two windows' full reads of the head
 cap `diag(2, -2)` within one display.  Each chain's ground runs the
@@ -1020,7 +1018,7 @@ private theorem hcolW : poly.oneValue
   decide +kernel
 
 
-example :
+theorem pin124 :
     (windowsep.mag (readGap
         (inertia.quadForm
           (inertia.headPad (ground.sumNat (List.drop 2 nsE)) a2)
@@ -1097,7 +1095,7 @@ example :
                     * (denProd (List.take 1 usW)
                       * denProd (List.take 1 usW)))))))) := by decide +kernel
 
-example :
+theorem pin125 :
     (windowsep.mag (readGap
         (inertia.quadForm
           (inertia.headPad (ground.sumNat (List.drop 2 nsE)) a2)
@@ -1198,7 +1196,7 @@ private theorem hcolW3 : poly.oneValue
   decide +kernel
 
 
-example :
+theorem pin126 :
     (windowsep.mag (readGap
         (inertia.quadForm
           (inertia.headPad (ground.sumNat (List.drop 2 nsE)) a2)
@@ -1286,7 +1284,7 @@ example :
 /-- The refusal isolating the collinearity: at the column's own scale
 the earlier window's decimated head sits off it, the head twice the
 column at the kernel root. -/
-example : ¬ poly.oneValue
+theorem pin127 : ¬ poly.oneValue
     (greenprod.vecScale 1 (headVec (List.take 2 usW)))
     (greenprod.vecScale 1 (matVec tE.val (elim.idRow 2 0))) := by
   decide +kernel
@@ -1296,7 +1294,7 @@ pair `[1 : 3]` sits below the transfer factor's own modulus. -/
 private def csWF : List ((k : Nat) × Pos × Pos × Split k) :=
   [⟨1, 1, 3, spK⟩, ⟨1, 1, 2, spK⟩]
 
-example : ¬ capList (nsE.map elim.idMat) rsE csWF := by decide +kernel
+theorem pin128 : ¬ capList (nsE.map elim.idMat) rsE csWF := by decide +kernel
 
 /-! The composing bracket at trailing blocks of the slabs' own
 orders: each chain one slab deeper at order two, the window and its
@@ -1326,8 +1324,8 @@ private def xsLx : List MatQ :=
 private def rsLx : List MatQ :=
   [([[⟨2, 1⟩]], 1), ([[⟨3, 1⟩]], 1), ([[⟨3, 1⟩], [⟨2, 1⟩]], 1)]
 
-example : tailRead diagEx offEx xsEx rsEx nsX := by decide +kernel
-example : tailRead diagLx offEx xsLx rsLx nsX := by decide +kernel
+theorem pin129 : tailRead diagEx offEx xsEx rsEx nsX := by decide +kernel
+theorem pin130 : tailRead diagLx offEx xsLx rsLx nsX := by decide +kernel
 
 private theorem hshareEx : driftShareRead diagEx offEx diagLx offEx
     xsEx rsEx xsLx rsLx 2 1 nsX dnE 3 1 1 1
@@ -1347,9 +1345,9 @@ private def usLx : List VecQ :=
 private def wsKx : List VecQ :=
   [⟨[u], 1⟩, ⟨[u], 1⟩, ⟨[u], 1⟩, ⟨[u, u], 1⟩]
 private def csWx : List ((k : Nat) × Pos × Pos × Split k) :=
-  [⟨1, 1, 2, spK⟩, ⟨1, 1, 2, spK⟩, ⟨1, 2, 1, spOne ⟨12, 1⟩⟩]
+  [⟨1, 1, 2, spK⟩, ⟨1, 1, 2, spK⟩, ⟨1, 2, 1, inertia.oneSplit [⟨12, 1⟩]⟩]
 private def csLx : List ((k : Nat) × Pos × Pos × Split k) :=
-  [⟨1, 1, 1, spK⟩, ⟨1, 2, 1, spK⟩, ⟨1, 3, 1, spOne ⟨5, 1⟩⟩]
+  [⟨1, 1, 1, spK⟩, ⟨1, 2, 1, spK⟩, ⟨1, 3, 1, inertia.oneSplit [⟨5, 1⟩]⟩]
 
 private theorem hsWx : solveRead diagEx offEx usWx wsKx nsX := by
   decide +kernel
@@ -1367,7 +1365,7 @@ private theorem hcolWx : poly.oneValue
 
 /-- Each chain's trailing blocks walk the slabs' own orders. -/
 
-example :
+theorem pin131 :
     (windowsep.mag (readGap
         (inertia.quadForm
           (inertia.headPad (ground.sumNat (List.drop 2 nsX)) a2)
@@ -1444,7 +1442,7 @@ example :
                     * (denProd (List.take 1 usWx)
                       * denProd (List.take 1 usWx)))))))) := by decide +kernel
 
-example :
+theorem pin132 :
     (windowsep.mag (readGap
         (inertia.quadForm
           (inertia.headPad (ground.sumNat (List.drop 2 nsX)) a2)
@@ -1534,23 +1532,23 @@ varying-order chain: the image gram at the wrong order, the source
 gram at the wrong order, and the vacant factor at a positive
 order. -/
 
-example : ¬ contractRead (transfer rV) (elim.idMat 1)
-    (elim.idMat 1) 2 1 (spOne ⟨12, 1⟩) := by decide +kernel
-example : ¬ contractRead (transfer rV) (elim.idMat 2)
-    (elim.idMat 2) 2 1 (spOne ⟨12, 1⟩) := by decide +kernel
+theorem pin133 : ¬ contractRead (transfer rV) (elim.idMat 1)
+    (elim.idMat 1) 2 1 (inertia.oneSplit [⟨12, 1⟩]) := by decide +kernel
+theorem pin134 : ¬ contractRead (transfer rV) (elim.idMat 2)
+    (elim.idMat 2) 2 1 (inertia.oneSplit [⟨12, 1⟩]) := by decide +kernel
 
 private def spNil : Split 0 := ⟨⟨[], rfl⟩, ⟨[], rfl⟩, [], 0, rfl⟩
 
-example : ¬ contractRead (transfer ⟨([] : Mat), 3⟩)
-    (elim.idMat 2) (elim.idMat 1) 2 1 (spOne ⟨12, 1⟩) := by
+theorem pin135 : ¬ contractRead (transfer ⟨([] : Mat), 3⟩)
+    (elim.idMat 2) (elim.idMat 1) 2 1 (inertia.oneSplit [⟨12, 1⟩]) := by
   decide +kernel
 
 /-! The vacant factor at the vacant order: the certificate reads and
 the priced step's display closes at the unit reads. -/
 
-example : contractRead (transfer ⟨([] : Mat), 3⟩) ([] : Mat) ([] : Mat)
+theorem pin136 : contractRead (transfer ⟨([] : Mat), 3⟩) ([] : Mat) ([] : Mat)
     2 1 spNil := by decide +kernel
-example : (inertia.quadForm ([] : Mat)
+theorem pin137 : (inertia.quadForm ([] : Mat)
       (matVec (matSwap ([] : Mat)) ([] : List BPair))).scale (1 * 1)
     ≤ (inertia.quadForm ([] : Mat) ([] : List BPair)).scale
       (2 * 2 * (3 * 3)) :=
@@ -1561,16 +1559,16 @@ example : (inertia.quadForm ([] : Mat)
 slab's gram priced by the certificate's square against the source's,
 decided beside the theorem route. -/
 
-example : (inertia.quadForm (elim.idMat 2)
+theorem pin138 : (inertia.quadForm (elim.idMat 2)
       (matVec (matSwap rV.1) u0V.1)).scale (1 * 1)
     ≤ (inertia.quadForm (elim.idMat 1) u0V.1).scale
       (2 * 2 * (rV.2 * rV.2)) := by decide +kernel
-example : (inertia.quadForm (elim.idMat 2)
+theorem pin139 : (inertia.quadForm (elim.idMat 2)
       (matVec (matSwap rV.1) u0V.1)).scale (1 * 1)
     ≤ (inertia.quadForm (elim.idMat 1) u0V.1).scale
       (2 * 2 * (rV.2 * rV.2)) :=
   spectator.contract_all (transfer rV) (elim.idMat 2) (elim.idMat 1) 2 1
-    (spOne ⟨12, 1⟩) (by decide +kernel) u0V.1 rfl
+    (inertia.oneSplit [⟨12, 1⟩]) (by decide +kernel) u0V.1 rfl
 
 /-! Clause (iv), the rearrangement: the joint read's cofactor
 against the squared self-pairing splits into the reads' product and
@@ -1581,7 +1579,7 @@ pair, the values `9600 = 1920 + 7680`, and landed through
 
 private def bS : Mat := [[⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]]
 
-example : (dotN (headVec (List.take 2 usW))
+theorem pin140 : (dotN (headVec (List.take 2 usW))
       (matVec a2 (matVec bS (headVec (List.take 2 usW))))
       * (dotN (headVec (List.take 2 usW)) (headVec (List.take 2 usW))
         * dotN (headVec (List.take 2 usW))
@@ -1595,7 +1593,7 @@ example : (dotN (headVec (List.take 2 usW))
             (matVec bS (headVec (List.take 2 usW))))) := by
   decide +kernel
 
-example : (dotN (headVec (List.take 2 usW))
+theorem pin141 : (dotN (headVec (List.take 2 usW))
       (matVec a2 (matVec bS (headVec (List.take 2 usW))))
       * (dotN (headVec (List.take 2 usW)) (headVec (List.take 2 usW))
         * dotN (headVec (List.take 2 usW))
@@ -1661,14 +1659,14 @@ private theorem kerOK : poly.unitTail (matVec etS psiS) := by decide +kernel
 private theorem commOK : poly.oneValue (matVec mS (matVec cS psiS))
     (matVec cS (matVec mS psiS)) := by decide +kernel
 
-example : poly.oneValue (matVec etS (residD [psiS] (matVec cS psiS)))
+theorem pin142 : poly.oneValue (matVec etS (residD [psiS] (matVec cS psiS)))
     (vecScale (dotN psiS psiS * BPair.ofPos ((1 : Pos) * 1))
       (matVec (momentform.commE dgS cS) psiS)) :=
   sourced_pencil dgS cS mS etS psiS 2 1 1 1 enS rfl
     ⟨rfl, rfl, trivial⟩ rfl ⟨rfl, rfl, trivial⟩ rfl
     ⟨rfl, rfl, trivial⟩ rfl tieOK kerOK commOK
 
-example : poly.oneValue (matVec etS (residD [psiS] (matVec cS psiS)))
+theorem pin143 : poly.oneValue (matVec etS (residD [psiS] (matVec cS psiS)))
     (vecScale (dotN psiS psiS * BPair.ofPos ((1 : Pos) * 1))
       (matVec (momentform.commE dgS cS) psiS)) := by decide +kernel
 
@@ -1677,10 +1675,10 @@ gap's kernel. -/
 
 private def psiF : List BPair := [u, ⟨2, 1⟩]
 
-example : ¬ poly.unitTail (matVec etS psiF) := by decide +kernel
-example : poly.oneValue (matVec mS (matVec cS psiF))
+theorem pin144 : ¬ poly.unitTail (matVec etS psiF) := by decide +kernel
+theorem pin145 : poly.oneValue (matVec mS (matVec cS psiF))
     (matVec cS (matVec mS psiF)) := by decide +kernel
-example : ¬ poly.oneValue (matVec etS (residD [psiF] (matVec cS psiF)))
+theorem pin146 : ¬ poly.oneValue (matVec etS (residD [psiF] (matVec cS psiF)))
     (vecScale (dotN psiF psiF * BPair.ofPos ((1 : Pos) * 1))
       (matVec (momentform.commE dgS cS) psiF)) := by decide +kernel
 
@@ -1692,11 +1690,11 @@ private def mF : Mat := [[⟨3, 1⟩, u], [u, ⟨4, 1⟩]]
 
 private def etF : Mat := tieS mF
 
-example : matOneValue etF (tieS mF) := by decide +kernel
-example : poly.unitTail (matVec etF psiS) := by decide +kernel
-example : ¬ poly.oneValue (matVec mF (matVec cS psiS))
+theorem pin147 : matOneValue etF (tieS mF) := by decide +kernel
+theorem pin148 : poly.unitTail (matVec etF psiS) := by decide +kernel
+theorem pin149 : ¬ poly.oneValue (matVec mF (matVec cS psiS))
     (matVec cS (matVec mF psiS)) := by decide +kernel
-example : ¬ poly.oneValue (matVec etF (residD [psiS] (matVec cS psiS)))
+theorem pin150 : ¬ poly.oneValue (matVec etF (residD [psiS] (matVec cS psiS)))
     (vecScale (dotN psiS psiS * BPair.ofPos ((1 : Pos) * 1))
       (matVec (momentform.commE dgS cS) psiS)) := by decide +kernel
 
@@ -1706,9 +1704,9 @@ committed one. -/
 
 private def etB : Mat := [[u, u], [u, ⟨6, 1⟩]]
 
-example : ¬ matOneValue etB (tieS mS) := by decide +kernel
-example : poly.unitTail (matVec etB psiS) := by decide +kernel
-example : ¬ poly.oneValue (matVec etB (residD [psiS] (matVec cS psiS)))
+theorem pin151 : ¬ matOneValue etB (tieS mS) := by decide +kernel
+theorem pin152 : poly.unitTail (matVec etB psiS) := by decide +kernel
+theorem pin153 : ¬ poly.oneValue (matVec etB (residD [psiS] (matVec cS psiS)))
     (vecScale (dotN psiS psiS * BPair.ofPos ((1 : Pos) * 1))
       (matVec (momentform.commE dgS cS) psiS)) := by decide +kernel
 
@@ -1733,7 +1731,7 @@ private def gCount (a b c : Nat) : Nat := if c = gMul a b then 1 else 0
 private def gRow (a b : Nat) : List Nat := [gMul a b]
 private def gF : fusion.Data Nat :=
   ⟨gEq, gEqRefl, 0, (fun l => l), gMul, 1,
-   gCount, gRow, (fun _ => 1), (fun _ => 1), 1, 1,
+   gCount, gRow, (fun _ => 1), (fun _ => 1), 1, 1, 1,
    (fun _ => []), (fun _ => 0), gMul, (fun _ => 0), (fiber.presNone _)⟩
 private def gWin : List Nat := [0, 1, 2, 3]
 private def gPsi : List BPair := [BPair.ofNat 1, BPair.ofNat 1,
@@ -1749,24 +1747,24 @@ private def gEt : Mat := matAdd (matAdd
     (matSwap (inertia.matScaleB gEn (elim.idMat 4)))
 
 -- the reach read and the commutation through the theorem route
-example : fpcap.commReach gF 1 2 gWin gPsi := by decide +kernel
-example : poly.oneValue (matVec gM (matVec gC gPsi))
+theorem pin154 : fpcap.commReach gF 1 2 gWin gPsi := by decide +kernel
+theorem pin155 : poly.oneValue (matVec gM (matVec gC gPsi))
     (matVec gC (matVec gM gPsi)) :=
   fpcap.multComm gF 1 2 gWin gPsi (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
 -- the tie, the kernel read, and the display
-example : matOneValue gEt (matAdd (matAdd
+theorem pin156 : matOneValue gEt (matAdd (matAdd
     (inertia.matScale ((1 : Pos) * 1)
       (diagO ground.bpairOps (gDg.map BPair.ofNat)))
     (matSwap (inertia.matScale ((1 : Pos) * 1) gM)))
     (matSwap (inertia.matScaleB gEn (elim.idMat 4)))) := by
   decide +kernel
-example : poly.unitTail (matVec gEt gPsi) := by decide +kernel
+theorem pin157 : poly.unitTail (matVec gEt gPsi) := by decide +kernel
 
 -- the joined route: the sourced pencil with the commutation
 -- discharged by the window commutation theorem
-example : poly.oneValue (matVec gEt (residD [gPsi] (matVec gC gPsi)))
+theorem pin158 : poly.oneValue (matVec gEt (residD [gPsi] (matVec gC gPsi)))
     (vecScale (dotN gPsi gPsi * BPair.ofPos ((1 : Pos) * 1))
       (matVec (momentform.commE gDg gC) gPsi)) :=
   sourced_pencil gDg gC gM gEt gPsi 4 1 1 1 gEn
@@ -1776,7 +1774,7 @@ example : poly.oneValue (matVec gEt (residD [gPsi] (matVec gC gPsi)))
     (fpcap.multComm gF 1 2 gWin gPsi (by decide +kernel)
       (by decide +kernel) (by decide +kernel))
 -- the display beside the route, decided whole
-example : poly.oneValue (matVec gEt (residD [gPsi] (matVec gC gPsi)))
+theorem pin159 : poly.oneValue (matVec gEt (residD [gPsi] (matVec gC gPsi)))
     (vecScale (dotN gPsi gPsi * BPair.ofPos ((1 : Pos) * 1))
       (matVec (momentform.commE gDg gC) gPsi)) := by decide +kernel
 
@@ -1788,8 +1786,8 @@ private def bSy : Mat := [[⟨2, 1⟩, BPair.unit],
   [BPair.unit, ⟨3, 1⟩]]
 private def pvNS : List BPair := [⟨2, 1⟩, ⟨3, 1⟩]
 
-example : ¬ matOneValue (transposeM aNS) aNS := by decide +kernel
-example : ¬ (dotN pvNS (matVec aNS (matVec bSy pvNS))
+theorem pin160 : ¬ matOneValue (transposeM aNS) aNS := by decide +kernel
+theorem pin161 : ¬ (dotN pvNS (matVec aNS (matVec bSy pvNS))
       * (dotN pvNS pvNS * dotN pvNS pvNS)).oneValue
     (inertia.quadForm aNS pvNS * inertia.quadForm bSy pvNS
         * dotN pvNS pvNS
@@ -1947,7 +1945,7 @@ private theorem hAsqA : sqAt AobsA 1 := by decide +kernel
 route. -/
 
 -- the descending telescope below the source, raw
-example : teleDown csheadA usA 2 nsA := by decide +kernel
+theorem pin162 : teleDown csheadA usA 2 nsA := by decide +kernel
 
 -- and by `source_tele`, the head read carrying the solve's rows
 private theorem hteleA : teleDown csheadA usA 2 nsA :=
@@ -1956,7 +1954,7 @@ private theorem hteleA : teleDown csheadA usA 2 nsA :=
 
 -- the ride's price at `m = j = 1`, the source slab at key two:
 -- the head block's weight `1` against the anchor's `10`
-example :
+theorem pin163 :
     (tailSum (List.take 1 (nsA.map elim.idMat))
         (List.take 1 usA)).1.scale
         ((tailFold (List.take 1 capsA).reverse).2
@@ -1972,7 +1970,7 @@ example :
               (List.take 1 usA)).2)) := by
   decide +kernel
 
-example :
+theorem pin164 :
     (tailSum (List.take 1 (nsA.map elim.idMat))
         (List.take 1 usA)).1.scale
         ((tailFold (List.take 1 capsA).reverse).2
@@ -1990,7 +1988,7 @@ example :
     rfl hcapA hteleA
 
 -- the source's weight: the off-line residual `12` against `16 · 8`
-example :
+theorem pin165 :
     BPair.scale
         (dotN (phiA)
           (phiA))
@@ -2006,7 +2004,7 @@ example :
         (((1 : Pos) * 1) * (((1 : Pos) * 1) * (1 * 1))) := by
   decide +kernel
 
-example :
+theorem pin166 :
     BPair.scale
         (dotN (phiA)
           (phiA))
@@ -2025,7 +2023,7 @@ example :
     (by decide +kernel) rfl htieA hcommA
 
 -- the cluster's close: the two reads' gap `8` inside `528`
-example :
+theorem pin167 :
     BPair.scale
       (windowsep.mag (readGap
         (dotN colA
@@ -2063,7 +2061,7 @@ example :
         1 := by
   decide +kernel
 
-example :
+theorem pin168 :
     BPair.scale
       (windowsep.mag (readGap
         (dotN colA
@@ -2232,14 +2230,14 @@ private theorem hAsqB : sqAt AobsB 1 := by decide +kernel
 /-! Fixture `B`'s four displays, each decided raw beside its theorem
 route. -/
 
-example : teleDown csheadB usB 2 nsB := by decide +kernel
+theorem pin169 : teleDown csheadB usB 2 nsB := by decide +kernel
 
 private theorem hteleB : teleDown csheadB usB 2 nsB :=
   source_tele diagB offB ysB csheadB usB wsB nsB 2 hhB hsB hsuppB
     (by decide +kernel)
 
 -- the ride's price: the head block's weight `9216` against `106560`
-example :
+theorem pin170 :
     (tailSum (List.take 1 (nsB.map elim.idMat))
         (List.take 1 usB)).1.scale
         ((tailFold (List.take 1 capsB).reverse).2
@@ -2255,7 +2253,7 @@ example :
               (List.take 1 usB)).2)) := by
   decide +kernel
 
-example :
+theorem pin171 :
     (tailSum (List.take 1 (nsB.map elim.idMat))
         (List.take 1 usB)).1.scale
         ((tailFold (List.take 1 capsB).reverse).2
@@ -2273,7 +2271,7 @@ example :
     rfl hcapB hteleB
 
 -- the source's weight: `12480 · 4 = 49920` against `900 · 80 = 72000`
-example :
+theorem pin172 :
     BPair.scale
         (dotN (phiB)
           (phiB))
@@ -2289,7 +2287,7 @@ example :
         (((1 : Pos) * 1) * (((1 : Pos) * 1) * (1 * 1))) := by
   decide +kernel
 
-example :
+theorem pin173 :
     BPair.scale
         (dotN (phiB)
           (phiB))
@@ -2308,7 +2306,7 @@ example :
     (by decide +kernel) rfl htieB hcommB
 
 -- the cluster's close: the gap `103680` inside `19512900`
-example :
+theorem pin174 :
     BPair.scale
       (windowsep.mag (readGap
         (dotN colB
@@ -2346,7 +2344,7 @@ example :
         1 := by
   decide +kernel
 
-example :
+theorem pin175 :
     BPair.scale
       (windowsep.mag (readGap
         (dotN colB
@@ -2399,10 +2397,10 @@ private def u0R : VecQ := ([BPair.unit], 1)
 private def w0R : VecQ := ([BPair.unit], 1)
 private def A0R : Mat := [[BPair.unit]]
 
-example : headRead [A0R] [] [Y0R] [] [1] := by decide +kernel
-example : solveRead [A0R] [] [u0R] [w0R] [1] := by decide +kernel
-example : supportAt [w0R] 1 := by decide +kernel
-example : ¬ teleDown [] [u0R] 1 [1] := by decide +kernel
+theorem pin176 : headRead [A0R] [] [Y0R] [] [1] := by decide +kernel
+theorem pin177 : solveRead [A0R] [] [u0R] [w0R] [1] := by decide +kernel
+theorem pin178 : supportAt [w0R] 1 := by decide +kernel
+theorem pin179 : ¬ teleDown [] [u0R] 1 [1] := by decide +kernel
 
 /-- The refusal isolating `ride_price`'s certificate list `hc`: the
 second contraction certificate forged to `[1 : 4]`, four times the
@@ -2416,10 +2414,10 @@ private def spCAF : Split 2 :=
 private def capsAF : List ((k : Nat) × Pos × Pos × Split k) :=
   [⟨1, 1, 1, spCA0⟩, ⟨2, 1, 4, spCAF⟩]
 
-example : ¬ capListDown (nsA.map elim.idMat) csheadA capsAF := by
+theorem pin180 : ¬ capListDown (nsA.map elim.idMat) csheadA capsAF := by
   decide +kernel
 
-example :
+theorem pin181 :
     ¬ ((tailSum (List.take 1 (nsA.map elim.idMat))
         (List.take 1 usA)).1.scale
         ((tailFold (List.take 1 capsAF).reverse).2
@@ -2439,9 +2437,9 @@ example :
 fixture `B` the level forged to `20` sits above the chain's own first
 occupied root `2`, the clearance read refuses and the weight's display
 parts at `12480 · 400` against `72000`. -/
-example : ¬ clearRead lB 0 20 1 := by decide +kernel
+theorem pin182 : ¬ clearRead lB 0 20 1 := by decide +kernel
 
-example :
+theorem pin183 :
     ¬ (BPair.scale
         (dotN (phiB)
           (phiB))
@@ -2468,11 +2466,11 @@ private def spFA' : Split 1 :=
   mkSplit 1 (matAdd (matScale 1 (elim.idMat 1))
     (matScale 200 AobsA))
 
-example : ¬ capAt (inertia.matScale 200 AobsA)
+theorem pin184 : ¬ capAt (inertia.matScale 200 AobsA)
     (inertia.matScale 1 (elim.idMat 1)) spFA spFA' := by
   decide +kernel
 
-example :
+theorem pin185 :
     ¬ (BPair.scale
       (windowsep.mag (readGap
         (dotN colA
@@ -2516,7 +2514,7 @@ display reads the solved vectors at their clearings alone, every
 clearing entering both sides with the right side at the square, so
 no solve forge parts the display: the tie binder is priced through
 the ride, and its refusal is the read's own. -/
-example : ¬ poly.oneValue
+theorem pin186 : ¬ poly.oneValue
     (greenprod.vecScale 3 (headVec usA))
     (greenprod.vecScale 1
       (phiA)) := by
@@ -2590,7 +2588,6 @@ the positive one, its certificate at the two arms, and its two
 solved witnesses — published for the sibling check modules reading
 the Euclidean families. -/
 
-namespace groundreads
 
 def etOne : Mat := [[⟨3, 1⟩]]
 def tOne : SqMat 1 := ⟨[[⟨2, 1⟩]], by decide +kernel⟩
@@ -2636,17 +2633,16 @@ theorem hVKer : elim.matOneValue
       (inertia.matScale 1 (matMul etKer vwKer)))
     (inertia.matScale ((posOfSucc 2 * 1) * 15) (idMat 2)) := by decide +kernel
 
-end groundreads
 
 /-- The refusal isolating the certificate's cap: at `kn = 1` the
 root's representative `2` sits beyond the cap `1 · 1`, the kernel arm
 refused at the root's own occupancy. -/
-example : ¬ eucRead 1 1 1 1 (posOfSucc 2) lOne wsOne := by decide +kernel
+theorem pin187 : ¬ eucRead 1 1 1 1 (posOfSucc 2) lOne wsOne := by decide +kernel
 
 /-- The refusal isolating the certificate's gap identity: at the
 witness `(2, 2)` the arm reads `1 · 2 + 2 = 4` against the level's
 `3 · (1 · 1)`. -/
-example : ¬ eucRead 1 1 2 1 (posOfSucc 2) lOne [(2, 2)] := by decide +kernel
+theorem pin188 : ¬ eucRead 1 1 2 1 (posOfSucc 2) lOne [(2, 2)] := by decide +kernel
 
 /-- The refusal isolating the certificate's arm: at the gap `[-2]`,
 its own diagonal read standing at the congruence, the negative
@@ -2655,8 +2651,8 @@ positive representative at the other. -/
 private def etNeg : Mat := [[⟨1, 3⟩]]
 private def lNeg : List (BPair × Pos × BPair) := [(⟨1, 3⟩, 1, ⟨2, 1⟩)]
 
-example : split.diagRead etNeg (idMat 1) tOne tOne lNeg := by decide +kernel
-example : ¬ eucRead 1 1 2 1 (posOfSucc 2) lNeg wsOne := by decide +kernel
+theorem pin189 : split.diagRead etNeg (idMat 1) tOne tOne lNeg := by decide +kernel
+theorem pin190 : ¬ eucRead 1 1 2 1 (posOfSucc 2) lNeg wsOne := by decide +kernel
 
 /-- The certificate's arm at the upper witness is the solve's own
 datum: at the root `-3` under `N = 3` and `un = ud = d = 1` the
@@ -2665,9 +2661,9 @@ there, so the solve identity refuses at the witness `[3]` at the
 clearing `2` as at every witness and clearing. -/
 private def etZ : Mat := [[⟨1, 4⟩]]
 
-example : (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1))
+theorem pin191 : (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1))
     + (⟨1, 4⟩ : BPair).scale 1).oneValue BPair.unit := by decide +kernel
-example : ¬ elim.matOneValue
+theorem pin192 : ¬ elim.matOneValue
     (matAdd (inertia.matScale (posOfSucc 2 * 1) vwOne)
       (inertia.matScale 1 (matMul etZ vwOne)))
     (inertia.matScale ((posOfSucc 2 * 1) * 2) (idMat 1)) := by decide +kernel
@@ -2676,13 +2672,13 @@ example : ¬ elim.matOneValue
 positive arm and the upper witness at the certificate's own arm
 disjunction, each decided beside its theorem route. -/
 
-example : poly.oneValue
+theorem pin193 : poly.oneValue
     (elim.vecScale (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1)))
       (elim.matVec lwOne (elim.matVec tOne.val (elim.idRow 1 0))))
     (elim.vecScale (BPair.ofPos ((1 : Pos) * 3))
       (elim.matVec tOne.val (elim.idRow 1 0))) := by decide +kernel
 
-example : poly.oneValue
+theorem pin194 : poly.oneValue
     (elim.vecScale (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1)))
       (elim.matVec lwOne (elim.matVec tOne.val (elim.idRow 1 0))))
     (elim.vecScale (BPair.ofPos ((1 : Pos) * 3))
@@ -2691,14 +2687,14 @@ example : poly.oneValue
     (by decide +kernel) ⟨3, 1⟩ ⟨2, 1⟩ 1 2 1 rfl (by decide +kernel)
     (by decide +kernel)
 
-example : poly.oneValue
+theorem pin195 : poly.oneValue
     (elim.vecScale (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1))
         + (⟨3, 1⟩ : BPair).scale 1)
       (elim.matVec vwOne (elim.matVec tOne.val (elim.idRow 1 0))))
     (elim.vecScale (BPair.ofPos ((posOfSucc 2 * ((1 : Pos) * 1)) * 5))
       (elim.matVec tOne.val (elim.idRow 1 0))) := by decide +kernel
 
-example : poly.oneValue
+theorem pin196 : poly.oneValue
     (elim.vecScale (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1))
         + (⟨3, 1⟩ : BPair).scale 1)
       (elim.matVec vwOne (elim.matVec tOne.val (elim.idRow 1 0))))
@@ -2711,13 +2707,13 @@ example : poly.oneValue
 /-! The kernel column at the order-two gap: the lower witness keeps
 the column whole at the full gap's instance. -/
 
-example : poly.oneValue
+theorem pin197 : poly.oneValue
     (elim.vecScale (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1)))
       (elim.matVec lwKer (elim.matVec id2.val (elim.idRow 2 0))))
     (elim.vecScale (BPair.ofPos ((posOfSucc 2 * ((1 : Pos) * 1)) * 3))
       (elim.matVec id2.val (elim.idRow 2 0))) := by decide +kernel
 
-example : poly.oneValue
+theorem pin198 : poly.oneValue
     (elim.vecScale (BPair.ofPos (posOfSucc 2 * ((1 : Pos) * 1)))
       (elim.matVec lwKer (elim.matVec id2.val (elim.idRow 2 0))))
     (elim.vecScale (BPair.ofPos ((posOfSucc 2 * ((1 : Pos) * 1)) * 3))
@@ -2740,21 +2736,21 @@ private def gramKer (j : Nat) : BPair :=
     * BPair.ofPos
       (ground.getAt (BPair.unit, Pos.one, BPair.unit) lKer j).2.1).norm
 
-example : (brkKer 0).oneValue BPair.unit := by decide +kernel
-example : BPair.unit ≤ brkKer 0 := by decide +kernel
-example : BPair.unit < brkKer 1 := by decide +kernel
-example : (brkKer 1).oneValue (BPair.ofPos 16308) := by decide +kernel
+theorem pin199 : (brkKer 0).oneValue BPair.unit := by decide +kernel
+theorem pin200 : BPair.unit ≤ brkKer 0 := by decide +kernel
+theorem pin201 : BPair.unit < brkKer 1 := by decide +kernel
+theorem pin202 : (brkKer 1).oneValue (BPair.ofPos 16308) := by decide +kernel
 
-example : (brkKer 0).scale (posOfSucc 2 * (((1 : Pos) * 1) * ((1 : Pos) * 1)))
+theorem pin203 : (brkKer 0).scale (posOfSucc 2 * (((1 : Pos) * 1) * ((1 : Pos) * 1)))
     ≤ (gramKer 0).scale (((1 : Pos) * 1 * (2 * 2)) * Pos.pow (3 * 15) 3) := by
   decide +kernel
-example : (brkKer 1).scale (posOfSucc 2 * (((1 : Pos) * 1) * ((1 : Pos) * 1)))
+theorem pin204 : (brkKer 1).scale (posOfSucc 2 * (((1 : Pos) * 1) * ((1 : Pos) * 1)))
     ≤ (gramKer 1).scale (((1 : Pos) * 1 * (2 * 2)) * Pos.pow (3 * 15) 3) := by
   decide +kernel
-example : ((brkKer 1).scale (posOfSucc 2
+theorem pin205 : ((brkKer 1).scale (posOfSucc 2
     * (((1 : Pos) * 1) * ((1 : Pos) * 1)))).oneValue (BPair.ofPos 48924) := by
   decide +kernel
-example : ((gramKer 1).scale
+theorem pin206 : ((gramKer 1).scale
     (((1 : Pos) * 1 * (2 * 2)) * Pos.pow (3 * 15) 3)).oneValue
     (BPair.ofPos 364500) := by decide +kernel
 
@@ -2765,7 +2761,7 @@ two sides read at their values. -/
 private def xPair : List BPair := [⟨2, 1⟩]
 private def yPair : List BPair := [⟨3, 1⟩]
 
-example : (windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
+theorem pin207 : (windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
       * ((elim.dotP xPair
           (elim.matVec (matPow vwOne 1 3) yPair)).scale (Pos.pow 3 3)
         + ((elim.dotP xPair
@@ -2776,7 +2772,7 @@ example : (windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
         + (BPair.ofPos 1 * BPair.ofPos 1) * elim.dotP yPair yPair).scale
       (((1 : Pos) * 1 * (2 * 2)) * Pos.pow (3 * 5) 3) := by decide +kernel
 
-example : (windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
+theorem pin208 : (windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
       * ((elim.dotP xPair
           (elim.matVec (matPow vwOne 1 3) yPair)).scale (Pos.pow 3 3)
         + ((elim.dotP xPair
@@ -2790,7 +2786,7 @@ example : (windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
     lwOne vwOne hLsOne hVsOne hLOne hVOne xPair yPair rfl rfl
     (BPair.ofPos 1) (BPair.ofPos 1)
 
-example : ((windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
+theorem pin209 : ((windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
       * ((elim.dotP xPair
           (elim.matVec (matPow vwOne 1 3) yPair)).scale (Pos.pow 3 3)
         + ((elim.dotP xPair
@@ -2800,21 +2796,21 @@ example : ((windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
       * (((1 : Pos) * 1) * ((1 : Pos) * 1))))).oneValue
     (BPair.ofPos 7248) := by decide +kernel
 
-example : (((BPair.ofPos 1 * BPair.ofPos 1) * elim.dotP xPair xPair
+theorem pin210 : (((BPair.ofPos 1 * BPair.ofPos 1) * elim.dotP xPair xPair
       + (BPair.ofPos 1 * BPair.ofPos 1) * elim.dotP yPair yPair).scale
     (((1 : Pos) * 1 * (2 * 2)) * Pos.pow (3 * 5) 3)).oneValue
     (BPair.ofPos 67500) := by decide +kernel
 
 /-- The refusal isolating the lower witness's certificate: at
 `lc = 4` the solve identity reads `11` against the level's `12`. -/
-example : ¬ elim.matOneValue
+theorem pin211 : ¬ elim.matOneValue
     (matAdd (inertia.matScale (posOfSucc 2 * 1) lwOne)
       (inertia.matScale (1 * 4) etOne))
     (inertia.matScale ((posOfSucc 2 * 1) * 4) (idMat 1)) := by decide +kernel
 
 /-- The refusal isolating the upper witness's certificate: at
 `vc = 4` the solve identity reads `15` against the level's `12`. -/
-example : ¬ elim.matOneValue
+theorem pin212 : ¬ elim.matOneValue
     (matAdd (inertia.matScale (posOfSucc 2 * 1) vwOne)
       (inertia.matScale 1 (matMul etOne vwOne)))
     (inertia.matScale ((posOfSucc 2 * 1) * 4) (idMat 1)) := by decide +kernel
@@ -2824,10 +2820,10 @@ member comparison and the width at the count two, the two one-count
 arms, and the chained arms at two added counts, each decided beside
 its theorem route. -/
 
-example : Pos.pow 2 (2 + 1) * Pos.pow (posOfSucc 2 * 1 + 1) (2 + 1)
+theorem pin213 : Pos.pow 2 (2 + 1) * Pos.pow (posOfSucc 2 * 1 + 1) (2 + 1)
     ≤ Pos.pow (posOfSucc 2 * 1) (2 + 1)
       * Pos.pow (posOfSucc 2 * 1) (2 + 1) := by decide +kernel
-example : Pos.pow 2 (2 + 1) * Pos.pow (posOfSucc 2 * 1 + 1) (2 + 1)
+theorem pin214 : Pos.pow 2 (2 + 1) * Pos.pow (posOfSucc 2 * 1 + 1) (2 + 1)
     ≤ Pos.pow (posOfSucc 2 * 1) (2 + 1)
       * Pos.pow (posOfSucc 2 * 1) (2 + 1) :=
   euc_le 1 1 2 2 (by decide +kernel)
@@ -2835,17 +2831,17 @@ example : Pos.pow 2 (2 + 1) * Pos.pow (posOfSucc 2 * 1 + 1) (2 + 1)
 /-- The member comparison's split binder is load-bearing: at the
 gap five the split identity refuses and the comparison parts at
 eight thousand against seven hundred twenty-nine. -/
-example : ¬ ((1 : Pos) + 5 = posOfSucc 2 * 1) := by decide +kernel
-example : ¬ (Pos.pow 5 (2 + 1) * Pos.pow (posOfSucc 2 * 1 + 1) (2 + 1)
+theorem pin215 : ¬ ((1 : Pos) + 5 = posOfSucc 2 * 1) := by decide +kernel
+theorem pin216 : ¬ (Pos.pow 5 (2 + 1) * Pos.pow (posOfSucc 2 * 1 + 1) (2 + 1)
     ≤ Pos.pow (posOfSucc 2 * 1) (2 + 1)
       * Pos.pow (posOfSucc 2 * 1) (2 + 1)) := by decide +kernel
 
-example : Pos.pow (posOfSucc 2 * 1) (2 + 1) * Pos.pow (posOfSucc 2 * 1) (2 + 1)
+theorem pin217 : Pos.pow (posOfSucc 2 * 1) (2 + 1) * Pos.pow (posOfSucc 2 * 1) (2 + 1)
       * (posOfSucc 2 * (1 * 1))
     ≤ (Pos.pow 2 (2 + 1) * (posOfSucc 2 * (1 * 1))
         + 1 * 1 * Pos.pow (posOfSucc 2 * 1) (2 + 1))
       * Pos.pow (posOfSucc 2 * 1 + 1) (2 + 1) := by decide +kernel
-example : Pos.pow (posOfSucc 2 * 1) (2 + 1) * Pos.pow (posOfSucc 2 * 1) (2 + 1)
+theorem pin218 : Pos.pow (posOfSucc 2 * 1) (2 + 1) * Pos.pow (posOfSucc 2 * 1) (2 + 1)
       * (posOfSucc 2 * (1 * 1))
     ≤ (Pos.pow 2 (2 + 1) * (posOfSucc 2 * (1 * 1))
         + 1 * 1 * Pos.pow (posOfSucc 2 * 1) (2 + 1))
@@ -2856,27 +2852,27 @@ example : Pos.pow (posOfSucc 2 * 1) (2 + 1) * Pos.pow (posOfSucc 2 * 1) (2 + 1)
 split identity refuses and the width display parts at two thousand
 one hundred eighty-seven against one thousand nine hundred
 twenty. -/
-example : ¬ ((1 : Pos) + 1 = posOfSucc 2 * 1) := by decide +kernel
-example : ¬ (Pos.pow (posOfSucc 2 * 1) (2 + 1)
+theorem pin219 : ¬ ((1 : Pos) + 1 = posOfSucc 2 * 1) := by decide +kernel
+theorem pin220 : ¬ (Pos.pow (posOfSucc 2 * 1) (2 + 1)
       * Pos.pow (posOfSucc 2 * 1) (2 + 1) * (posOfSucc 2 * (1 * 1))
     ≤ (Pos.pow 1 (2 + 1) * (posOfSucc 2 * (1 * 1))
         + 1 * 1 * Pos.pow (posOfSucc 2 * 1) (2 + 1))
       * Pos.pow (posOfSucc 2 * 1 + 1) (2 + 1)) := by decide +kernel
 
-example : Pos.pow (posOfSucc (0 + 1) * 1) (0 + 2)
+theorem pin221 : Pos.pow (posOfSucc (0 + 1) * 1) (0 + 2)
       * Pos.pow (posOfSucc 0 * 1 + 1) (0 + 1)
     ≤ Pos.pow (posOfSucc 0 * 1) (0 + 1)
       * Pos.pow (posOfSucc (0 + 1) * 1 + 1) (0 + 2) := by decide +kernel
-example : Pos.pow (posOfSucc (0 + 1) * 1) (0 + 2)
+theorem pin222 : Pos.pow (posOfSucc (0 + 1) * 1) (0 + 2)
       * Pos.pow (posOfSucc 0 * 1 + 1) (0 + 1)
     ≤ Pos.pow (posOfSucc 0 * 1) (0 + 1)
       * Pos.pow (posOfSucc (0 + 1) * 1 + 1) (0 + 2) :=
   euc_hi_mono 1 1 0
 
-example : Pos.pow 1 (1 + 1) * Pos.pow (posOfSucc (1 + 1) * 1) (1 + 2)
+theorem pin223 : Pos.pow 1 (1 + 1) * Pos.pow (posOfSucc (1 + 1) * 1) (1 + 2)
     ≤ Pos.pow (1 + 1) (1 + 2) * Pos.pow (posOfSucc 1 * 1) (1 + 1) := by
   decide +kernel
-example : Pos.pow 1 (1 + 1) * Pos.pow (posOfSucc (1 + 1) * 1) (1 + 2)
+theorem pin224 : Pos.pow 1 (1 + 1) * Pos.pow (posOfSucc (1 + 1) * 1) (1 + 2)
     ≤ Pos.pow (1 + 1) (1 + 2) * Pos.pow (posOfSucc 1 * 1) (1 + 1) :=
   euc_lo_mono 1 1 1 1 (by decide +kernel)
 
@@ -2887,7 +2883,7 @@ denominator, with equality exactly at the split `g = N D`, so the
 display holds at every gap and denominator — decided across the
 gaps one through ten and denominators one through five at the
 counts up to five. -/
-example : (List.range 6).all (fun n => (List.range 10).all (fun gi =>
+theorem pin225 : (List.range 6).all (fun n => (List.range 10).all (fun gi =>
     (List.range 5).all (fun di => decide (
       Pos.pow (posOfSucc gi) (n + 1)
           * Pos.pow (posOfSucc (n + 1) * posOfSucc di) (n + 2)
@@ -2895,15 +2891,15 @@ example : (List.range 6).all (fun n => (List.range 10).all (fun gi =>
           * Pos.pow (posOfSucc n * posOfSucc di) (n + 1))))) = true := by
   decide +kernel
 
-example : (1 : Pos) + gapUp 1 1 2 = posOfSucc (1 + 2) * 1 := by decide +kernel
-example : (1 : Pos) + gapUp 1 1 2 = posOfSucc (1 + 2) * 1 :=
+theorem pin226 : (1 : Pos) + gapUp 1 1 2 = posOfSucc (1 + 2) * 1 := by decide +kernel
+theorem pin227 : (1 : Pos) + gapUp 1 1 2 = posOfSucc (1 + 2) * 1 :=
   gapUp_eq 1 1 1 1 (by decide +kernel) 2
 
-example : Pos.pow (posOfSucc (0 + 2) * 1) (0 + 2 + 1)
+theorem pin228 : Pos.pow (posOfSucc (0 + 2) * 1) (0 + 2 + 1)
       * Pos.pow (posOfSucc 0 * 1 + 1) (0 + 1)
     ≤ Pos.pow (posOfSucc 0 * 1) (0 + 1)
       * Pos.pow (posOfSucc (0 + 2) * 1 + 1) (0 + 2 + 1) := by decide +kernel
-example : Pos.pow (posOfSucc (0 + 2) * 1) (0 + 2 + 1)
+theorem pin229 : Pos.pow (posOfSucc (0 + 2) * 1) (0 + 2 + 1)
       * Pos.pow (posOfSucc 0 * 1 + 1) (0 + 1)
     ≤ Pos.pow (posOfSucc 0 * 1) (0 + 1)
       * Pos.pow (posOfSucc (0 + 2) * 1 + 1) (0 + 2 + 1) :=
@@ -2911,22 +2907,22 @@ example : Pos.pow (posOfSucc (0 + 2) * 1) (0 + 2 + 1)
 
 /-- The upper chained arm's direction is its own: at the same data
 the reversed display reads `64` against `54`. -/
-example : ¬ (Pos.pow (posOfSucc 0 * 1) (0 + 1)
+theorem pin230 : ¬ (Pos.pow (posOfSucc 0 * 1) (0 + 1)
       * Pos.pow (posOfSucc (0 + 2) * 1 + 1) (0 + 2 + 1)
     ≤ Pos.pow (posOfSucc (0 + 2) * 1) (0 + 2 + 1)
       * Pos.pow (posOfSucc 0 * 1 + 1) (0 + 1)) := by decide +kernel
 
-example : Pos.pow 1 (1 + 1) * Pos.pow (posOfSucc (1 + 2) * 1) (1 + 2 + 1)
+theorem pin231 : Pos.pow 1 (1 + 1) * Pos.pow (posOfSucc (1 + 2) * 1) (1 + 2 + 1)
     ≤ Pos.pow (gapUp 1 1 2) (1 + 2 + 1)
       * Pos.pow (posOfSucc 1 * 1) (1 + 1) := by decide +kernel
-example : Pos.pow 1 (1 + 1) * Pos.pow (posOfSucc (1 + 2) * 1) (1 + 2 + 1)
+theorem pin232 : Pos.pow 1 (1 + 1) * Pos.pow (posOfSucc (1 + 2) * 1) (1 + 2 + 1)
     ≤ Pos.pow (gapUp 1 1 2) (1 + 2 + 1)
       * Pos.pow (posOfSucc 1 * 1) (1 + 1) :=
   euc_lo_mono_le 1 1 1 1 (by decide +kernel) 2
 
 /-- The lower chained arm's direction is its own: at the same data
 the reversed display reads `324` against `256`. -/
-example : ¬ (Pos.pow (gapUp 1 1 2) (1 + 2 + 1)
+theorem pin233 : ¬ (Pos.pow (gapUp 1 1 2) (1 + 2 + 1)
       * Pos.pow (posOfSucc 1 * 1) (1 + 1)
     ≤ Pos.pow 1 (1 + 1) * Pos.pow (posOfSucc (1 + 2) * 1) (1 + 2 + 1)) := by
   decide +kernel
@@ -2939,21 +2935,21 @@ decided beside their theorem routes. -/
 private def aGrow : Mat := [[⟨3, 1⟩]]
 private def stepGrow : GStep :=
   ⟨1, ([[⟨2, 1⟩]], 1), aGrow, 2, 1, 3, 1,
-    spOne ⟨4, 1⟩, spOne ⟨2, 1⟩, spOne ⟨6, 1⟩⟩
+    inertia.oneSplit [⟨4, 1⟩], inertia.oneSplit [⟨2, 1⟩], inertia.oneSplit [⟨6, 1⟩]⟩
 
 private theorem hgrow : growthTail 1 [stepGrow] 1 := by decide +kernel
 
-example : growthTail 1 [stepGrow, stepGrow, stepGrow] 1 := by decide +kernel
+theorem pin234 : growthTail 1 [stepGrow, stepGrow, stepGrow] 1 := by decide +kernel
 
-example : (dotN (tailVec [stepGrow] yPair) (tailVec [stepGrow] yPair)).scale
+theorem pin235 : (dotN (tailVec [stepGrow] yPair) (tailVec [stepGrow] yPair)).scale
       (growthD [stepGrow])
     ≤ (dotN yPair yPair).scale (growthN [stepGrow]) := by decide +kernel
-example : (dotN (tailVec [stepGrow] yPair) (tailVec [stepGrow] yPair)).scale
+theorem pin236 : (dotN (tailVec [stepGrow] yPair) (tailVec [stepGrow] yPair)).scale
       (growthD [stepGrow])
     ≤ (dotN yPair yPair).scale (growthN [stepGrow]) :=
   tailCap 1 [stepGrow] 1 yPair hgrow rfl
 
-example : (windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
+theorem pin237 : (windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
       * dotN xPair (matVec aGrow (tailVec [stepGrow] yPair)))).scale
     ((2 * 1) * growthD [stepGrow])
     ≤ ((BPair.ofPos 1 * BPair.ofPos 1) * dotN xPair xPair).scale
@@ -2961,21 +2957,21 @@ example : (windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
       + ((BPair.ofPos 1 * BPair.ofPos 1) * dotN yPair yPair).scale
         (3 * growthN [stepGrow]) := by decide +kernel
 
-example : (windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
+theorem pin238 : (windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
       * dotN xPair (matVec aGrow (tailVec [stepGrow] yPair)))).scale
     ((2 * 1) * growthD [stepGrow])
     ≤ ((BPair.ofPos 1 * BPair.ofPos 1) * dotN xPair xPair).scale
         (3 * growthD [stepGrow])
       + ((BPair.ofPos 1 * BPair.ofPos 1) * dotN yPair yPair).scale
         (3 * growthN [stepGrow]) :=
-  growth_cap aGrow 3 1 (spOne ⟨2, 1⟩) (spOne ⟨6, 1⟩) (by decide +kernel)
+  growth_cap aGrow 3 1 (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨6, 1⟩]) (by decide +kernel)
     [stepGrow] 1 hgrow xPair yPair rfl rfl (BPair.ofPos 1) (BPair.ofPos 1)
 
-example : ((windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
+theorem pin239 : ((windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
       * dotN xPair (matVec aGrow (tailVec [stepGrow] yPair)))).scale
     ((2 * 1) * growthD [stepGrow])).oneValue (BPair.ofPos 16) := by
   decide +kernel
-example : (((BPair.ofPos 1 * BPair.ofPos 1) * dotN xPair xPair).scale
+theorem pin240 : (((BPair.ofPos 1 * BPair.ofPos 1) * dotN xPair xPair).scale
       (3 * growthD [stepGrow])
     + ((BPair.ofPos 1 * BPair.ofPos 1) * dotN yPair yPair).scale
       (3 * growthN [stepGrow])).oneValue (BPair.ofPos 435) := by decide +kernel
@@ -2984,8 +2980,8 @@ example : (((BPair.ofPos 1 * BPair.ofPos 1) * dotN xPair xPair).scale
 against ten the capped site datum reads one below twenty and the
 chain display parts at one hundred sixty against one hundred
 forty-five. -/
-example : ¬ inertia.psdAt (spOne ⟨1, 20⟩) := by decide +kernel
-example : ¬ ((windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
+theorem pin241 : ¬ inertia.psdAt (inertia.oneSplit [⟨1, 20⟩]) := by decide +kernel
+theorem pin242 : ¬ ((windowsep.mag ((BPair.ofPos 1 * BPair.ofPos 1)
       * dotN xPair (matVec aGrow (tailVec [stepGrow] yPair)))).scale
     ((2 * 10) * growthD [stepGrow])
     ≤ ((BPair.ofPos 1 * BPair.ofPos 1) * dotN xPair xPair).scale
@@ -2998,21 +2994,21 @@ transfer `[2]` under the factor `[1 : 1]` the step's site datum reads
 `1 − 4` at one lower-side block, the probe's head cap standing. -/
 private def stepFlat : GStep :=
   ⟨1, ([[⟨3, 1⟩]], 1), aGrow, 1, 1, 3, 1,
-    spOne ⟨1, 4⟩, spOne ⟨2, 1⟩, spOne ⟨6, 1⟩⟩
+    inertia.oneSplit [⟨1, 4⟩], inertia.oneSplit [⟨2, 1⟩], inertia.oneSplit [⟨6, 1⟩]⟩
 
-example : splitRead (siteDatum
+theorem pin243 : splitRead (siteDatum
     (matScale (1 * 1 * ((1 : Pos) * 1)) (idMat 1))
     (matScale ((1 : Pos) * 1)
       (matMul (transposeM stepFlat.T.1)
-        (matMul (idMat 1) stepFlat.T.1)))) (spOne ⟨1, 4⟩) := by
+        (matMul (idMat 1) stepFlat.T.1)))) (inertia.oneSplit [⟨1, 4⟩]) := by
   decide +kernel
-example : ¬ psdAt (spOne ⟨1, 4⟩) := by decide +kernel
-example : ¬ growthTail 1 [stepFlat] 1 := by decide +kernel
+theorem pin244 : ¬ psdAt (inertia.oneSplit [⟨1, 4⟩]) := by decide +kernel
+theorem pin245 : ¬ growthTail 1 [stepFlat] 1 := by decide +kernel
 
 /-- The refusal isolating the chain's order thread: the one-step
 chain leaves at its own exit order, so a chain entering at one and
 leaving at two parts at the vacant tail. -/
-example : ¬ growthTail 1 [stepGrow] 2 := by decide +kernel
+theorem pin246 : ¬ growthTail 1 [stepGrow] 2 := by decide +kernel
 
 
 /-! Clause (v')'s batteries run at three translation fixtures.  The
@@ -3047,19 +3043,19 @@ private def diagA3 : Mat :=
 private def psi3 : List BPair :=
   [BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1]
 
-example : (dotN (transSum cycT3 3 (matVec diagA3 psi3) 2)
+theorem pin247 : (dotN (transSum cycT3 3 (matVec diagA3 psi3) 2)
       (transSum cycT3 3 (matVec diagA3 psi3) 2)).oneValue
     (collectFold (dotN (matVec diagA3 psi3) (matVec diagA3 psi3))
       (fun s => dotN (matVec diagA3 psi3)
         (transVec cycT3 3 (matVec diagA3 psi3) s)) 2) := by
   decide +kernel
-example : (dotN (transSum cycT3 3 (matVec diagA3 psi3) 3)
+theorem pin248 : (dotN (transSum cycT3 3 (matVec diagA3 psi3) 3)
       (transSum cycT3 3 (matVec diagA3 psi3) 3)).oneValue
     (collectFold (dotN (matVec diagA3 psi3) (matVec diagA3 psi3))
       (fun s => dotN (matVec diagA3 psi3)
         (transVec cycT3 3 (matVec diagA3 psi3) s)) 3) := by
   decide +kernel
-example : (dotN (transSum cycT3 3 (matVec diagA3 psi3) 2)
+theorem pin249 : (dotN (transSum cycT3 3 (matVec diagA3 psi3) 2)
       (transSum cycT3 3 (matVec diagA3 psi3) 2)).oneValue
     (collectFold (dotN (matVec diagA3 psi3) (matVec diagA3 psi3))
       (fun s => dotN (matVec diagA3 psi3)
@@ -3071,9 +3067,9 @@ private def shearT : Mat :=
   [[BPair.ofNat 1, BPair.ofNat 1], [u, BPair.ofNat 1]]
 private def yTwo : List BPair := [BPair.ofNat 2, BPair.ofNat 1]
 
-example : ¬ matOneValue (matMul (transposeM shearT) shearT)
+theorem pin250 : ¬ matOneValue (matMul (transposeM shearT) shearT)
     (elim.idMat 2) := by decide +kernel
-example : ¬ (dotN (transSum shearT 2 yTwo 2)
+theorem pin251 : ¬ (dotN (transSum shearT 2 yTwo 2)
       (transSum shearT 2 yTwo 2)).oneValue
     (collectFold (dotN yTwo yTwo)
       (fun s => dotN yTwo (transVec shearT 2 yTwo s)) 2) := by
@@ -3102,8 +3098,8 @@ private def v1rhs (ws : Nat → BPair) : BPair :=
       ws 2)
     (2 * (9 * 9))
 
-example : v1lhs asV1 ≤ v1rhs wsV1 := by decide +kernel
-example : v1lhs asV1 ≤ v1rhs wsV1 := by
+theorem pin252 : v1lhs asV1 ≤ v1rhs wsV1 := by decide +kernel
+theorem pin253 : v1lhs asV1 ≤ v1rhs wsV1 := by
   have hwB : ∀ s, s < 2 → (1 ≤ s →
       windowsep.mag (readGap
           (dotN (matVec diagA3 psi3)
@@ -3122,67 +3118,67 @@ example : v1lhs asV1 ≤ v1rhs wsV1 := by
 
 private def asInv : List BPair :=
   [BPair.ofNat 100, (BPair.ofNat 70).swap]
-example : ¬ (∀ i, i < 2 →
+theorem pin254 : ¬ (∀ i, i < 2 →
     (ground.getAt u asV1 i).oneValue (ground.getAt u asInv i)) := by
   decide +kernel
-example : (BPair.scale (dotN psi3 (matVec diagA3 psi3)) (2 * 9)).oneValue
+theorem pin255 : (BPair.scale (dotN psi3 (matVec diagA3 psi3)) (2 * 9)).oneValue
     (BPair.scale
       (dotP (([(1 : Pos), (1 : Pos)]).map BPair.ofPos) asInv) 3) := by
   decide +kernel
-example : ¬ (v1lhs asInv ≤ v1rhs wsV1) := by decide +kernel
+theorem pin256 : ¬ (v1lhs asInv ≤ v1rhs wsV1) := by decide +kernel
 
-example : ¬ (∀ i, i < 2 →
+theorem pin257 : ¬ (∀ i, i < 2 →
     ground.getAt u asInv i * ground.getAt u asInv i
       ≤ BPair.scale (ground.getAt u qsV1 i) 9) := by decide +kernel
 
 private def asA : List BPair :=
   [(BPair.ofNat 12).swap, (BPair.ofNat 18).swap]
-example : ¬ (BPair.scale (dotN psi3 (matVec diagA3 psi3)) (2 * 9)).oneValue
+theorem pin258 : ¬ (BPair.scale (dotN psi3 (matVec diagA3 psi3)) (2 * 9)).oneValue
     (BPair.scale
       (dotP (([(1 : Pos), (1 : Pos)]).map BPair.ofPos) asA) 3) := by
   decide +kernel
-example : (∀ i, i < 2 →
+theorem pin259 : (∀ i, i < 2 →
     ground.getAt u asA i * ground.getAt u asA i
       ≤ BPair.scale (ground.getAt u qsV1 i) 9) := by decide +kernel
-example : ¬ (v1lhs asA ≤ v1rhs wsV1) := by decide +kernel
+theorem pin260 : ¬ (v1lhs asA ≤ v1rhs wsV1) := by decide +kernel
 
 private def asQ : List BPair := [BPair.ofNat 120, (BPair.ofNat 90).swap]
 private def qsQ : List BPair := [BPair.ofNat 1600, BPair.ofNat 900]
-example : (BPair.scale (dotN psi3 (matVec diagA3 psi3)) (2 * 9)).oneValue
+theorem pin261 : (BPair.scale (dotN psi3 (matVec diagA3 psi3)) (2 * 9)).oneValue
     (BPair.scale
       (dotP (([(1 : Pos), (1 : Pos)]).map BPair.ofPos) asQ) 3) := by
   decide +kernel
-example : (∀ i, i < 2 →
+theorem pin262 : (∀ i, i < 2 →
     ground.getAt u asQ i * ground.getAt u asQ i
       ≤ BPair.scale (ground.getAt u qsQ i) 9) := by decide +kernel
-example : ¬ (BPair.scale
+theorem pin263 : ¬ (BPair.scale
       (dotN (conjSum cycT3 diagA3 3 psi3 2)
         (conjSum cycT3 diagA3 3 psi3 2)) (2 * 9)).oneValue
     (BPair.ofNat (2 * 2)
       * BPair.scale
           (dotP (([(1 : Pos), (1 : Pos)]).map BPair.ofPos) qsQ) 3) := by
   decide +kernel
-example : ¬ (v1lhs asQ ≤ v1rhs wsV1) := by decide +kernel
+theorem pin264 : ¬ (v1lhs asQ ≤ v1rhs wsV1) := by decide +kernel
 
 private def asD : List BPair := [BPair.ofNat 16, BPair.ofNat 7]
 private def qsD : List BPair := [BPair.ofNat 30, BPair.ofNat 12]
-example : ¬ (ground.bsum BPair.ofPos [(1 : Pos), (2 : Pos)]).oneValue
+theorem pin265 : ¬ (ground.bsum BPair.ofPos [(1 : Pos), (2 : Pos)]).oneValue
     (BPair.ofPos 2) := by decide +kernel
-example : (BPair.scale (dotN psi3 (matVec diagA3 psi3)) (2 * 9)).oneValue
+theorem pin266 : (BPair.scale (dotN psi3 (matVec diagA3 psi3)) (2 * 9)).oneValue
     (BPair.scale
       (dotP (([(1 : Pos), (2 : Pos)]).map BPair.ofPos) asD) 3) := by
   decide +kernel
-example : (BPair.scale
+theorem pin267 : (BPair.scale
       (dotN (conjSum cycT3 diagA3 3 psi3 2)
         (conjSum cycT3 diagA3 3 psi3 2)) (2 * 9)).oneValue
     (BPair.ofNat (2 * 2)
       * BPair.scale
           (dotP (([(1 : Pos), (2 : Pos)]).map BPair.ofPos) qsD) 3) := by
   decide +kernel
-example : (∀ i, i < 2 →
+theorem pin268 : (∀ i, i < 2 →
     ground.getAt u asD i * ground.getAt u asD i
       ≤ BPair.scale (ground.getAt u qsD i) 9) := by decide +kernel
-example : ¬ (BPair.ofNat (2 * 2)
+theorem pin269 : ¬ (BPair.ofNat (2 * 2)
     * BPair.scale
         (dotP (([(1 : Pos), (2 : Pos)]).map BPair.ofPos)
           (asD.map (fun a =>
@@ -3232,30 +3228,30 @@ private def v6rhs (ws : Nat → BPair) : BPair :=
       ws 2)
     (2 * (60 * 60))
 
-example : windowsep.mag (readGap
+theorem pin270 : windowsep.mag (readGap
     (dotN (matVec diagA6 psi6) (transVec cycT6 6 (matVec diagA6 psi6) 1),
       BPair.ofPos 6)
     (dotN psi6 (matVec diagA6 psi6) * dotN psi6 (matVec diagA6 psi6),
       BPair.ofPos (6 * 6))) ≤ BPair.ofNat 12 := by decide +kernel
-example : ¬ (windowsep.mag (readGap
+theorem pin271 : ¬ (windowsep.mag (readGap
     (dotN (matVec diagA6 psi6) (transVec cycT6 6 (matVec diagA6 psi6) 1),
       BPair.ofPos 6)
     (dotN psi6 (matVec diagA6 psi6) * dotN psi6 (matVec diagA6 psi6),
       BPair.ofPos (6 * 6))) ≤ BPair.ofNat 11) := by decide +kernel
-example : (BPair.scale (dotN psi6 (matVec diagA6 psi6)) (2 * 60)).oneValue
+theorem pin272 : (BPair.scale (dotN psi6 (matVec diagA6 psi6)) (2 * 60)).oneValue
     (BPair.scale
       (dotP (([(1 : Pos), (1 : Pos)]).map BPair.ofPos) asV6) 6) := by
   decide +kernel
-example : (BPair.scale
+theorem pin273 : (BPair.scale
       (dotN (conjSum cycT6 diagA6 6 psi6 2)
         (conjSum cycT6 diagA6 6 psi6 2)) (2 * 60)).oneValue
     (BPair.ofNat (2 * 2)
       * BPair.scale
           (dotP (([(1 : Pos), (1 : Pos)]).map BPair.ofPos) qsV6) 6) := by
   decide +kernel
-example : v6lhs ≤ v6rhs (fun _ => BPair.ofNat 12) := by decide +kernel
-example : v6lhs ≤ v6rhs (fun _ => BPair.ofNat 5) := by decide +kernel
-example : ¬ (v6lhs ≤ v6rhs (fun _ => BPair.ofNat 4)) := by decide +kernel
+theorem pin274 : v6lhs ≤ v6rhs (fun _ => BPair.ofNat 12) := by decide +kernel
+theorem pin275 : v6lhs ≤ v6rhs (fun _ => BPair.ofNat 5) := by decide +kernel
+theorem pin276 : ¬ (v6lhs ≤ v6rhs (fun _ => BPair.ofNat 4)) := by decide +kernel
 
 private def swapT2 : Mat :=
   [[u, BPair.ofNat 1], [BPair.ofNat 1, u]]
@@ -3265,23 +3261,23 @@ private def psiOff : List BPair := [BPair.ofNat 1, u]
 private def asF : List BPair := [BPair.ofNat 5, (BPair.ofNat 5).swap]
 private def qsF : List BPair := [BPair.ofNat 25, BPair.ofNat 25]
 
-example : ¬ poly.oneValue (matVec swapT2 psiOff) psiOff := by
+theorem pin277 : ¬ poly.oneValue (matVec swapT2 psiOff) psiOff := by
   decide +kernel
-example : (BPair.scale (dotN psiOff (matVec offA2 psiOff)) (2 * 1)).oneValue
+theorem pin278 : (BPair.scale (dotN psiOff (matVec offA2 psiOff)) (2 * 1)).oneValue
     (BPair.scale
       (dotP (([(1 : Pos), (1 : Pos)]).map BPair.ofPos) asF) 1) := by
   decide +kernel
-example : (BPair.scale
+theorem pin279 : (BPair.scale
       (dotN (conjSum swapT2 offA2 2 psiOff 2)
         (conjSum swapT2 offA2 2 psiOff 2)) (2 * 1)).oneValue
     (BPair.ofNat (2 * 2)
       * BPair.scale
           (dotP (([(1 : Pos), (1 : Pos)]).map BPair.ofPos) qsF) 1) := by
   decide +kernel
-example : (∀ i, i < 2 →
+theorem pin280 : (∀ i, i < 2 →
     ground.getAt u asF i * ground.getAt u asF i
       ≤ BPair.scale (ground.getAt u qsF i) 1) := by decide +kernel
-example : ¬ (BPair.ofNat (2 * 2)
+theorem pin281 : ¬ (BPair.ofNat (2 * 2)
     * BPair.scale
         (dotP (([(1 : Pos), (1 : Pos)]).map BPair.ofPos)
           (asF.map (fun a =>
@@ -3325,7 +3321,7 @@ private theorem hdB6 : split.diagRead etB6 (idMat 3) tB6 twB6 lB6 := by
 private def wsB6 : List (Pos × Pos) := [(4,1), (3,2), (1,4)]
 private theorem hwB6 : eucRead 1 5 4 1 (posOfSucc 0) lB6 wsB6 := by
   decide +kernel
-example : ¬ eucRead 1 1 4 1 (posOfSucc 0) lB6 [(4,1), (3,1), (1,1)] := by
+theorem pin282 : ¬ eucRead 1 1 4 1 (posOfSucc 0) lB6 [(4,1), (3,1), (1,1)] := by
   decide +kernel
 
 -- Lw = I - Et at lc = 1; Vw = adj(I+Et) at vc = 40
@@ -3349,9 +3345,9 @@ private theorem hVB : elim.matOneValue
 -- witness's beside it as the join route's decide tie
 private theorem hbandEtB : bandedAt etB6 [1, 1, 1] := by decide +kernel
 private theorem hbandB : bandedAt lwB [1, 1, 1] := by decide +kernel
-example : groundreads.reachKeep lwB 1 2 := by decide +kernel
-example : ¬ groundreads.reachKeep vwB 1 2 := by decide +kernel
-example : ¬ bandedAt vwB [1, 1, 1] := by decide +kernel
+theorem pin283 : groundreads.reachKeep lwB 1 2 := by decide +kernel
+theorem pin284 : ¬ groundreads.reachKeep vwB 1 2 := by decide +kernel
+theorem pin285 : ¬ bandedAt vwB [1, 1, 1] := by decide +kernel
 
 -- the observables: A at key 0, A' at key 2, both symmetric
 private def aB : Mat := [[⟨3,1⟩, u, u], [u, u, u], [u, u, u]]
@@ -3364,8 +3360,8 @@ private theorem hleadB : leadAt aB (ground.prefixAt 1 [1,1,1]) := by
   decide +kernel
 private theorem htailB : tailAt apB
     (ground.prefixAt (1 + (0 + 1)) [1,1,1]) := by decide +kernel
-example : ¬ leadAt apB 1 := by decide +kernel
-example : ¬ tailAt aB 2 := by decide +kernel
+theorem pin286 : ¬ leadAt apB 1 := by decide +kernel
+theorem pin287 : ¬ tailAt aB 2 := by decide +kernel
 
 -- the caps as certificate data
 private def spAU : Split 3 :=
@@ -3392,7 +3388,7 @@ private def spLL : Split 3 :=
   mkSplit 3 (matAdd (matScale 4 (idMat 3)) (matScale 1 lwB))
 private theorem hcapLB : capAt (matScale 1 lwB)
     (matScale 4 (idMat 3)) spLU spLL := by decide +kernel
-example : ¬ capAt (matScale 1 vwB) (matScale 359 (idMat 3))
+theorem pin288 : ¬ capAt (matScale 1 vwB) (matScale 359 (idMat 3))
     spVU spVL := by decide +kernel
 
 -- shape frames
@@ -3409,7 +3405,7 @@ private def e2B : List BPair := [u, u, ⟨2,1⟩]
 
 /-- The propagation bracket by the theorem route at the banded
 fixture. -/
-example :
+theorem pin289 :
     (windowsep.mag
       (elim.dotP e0B (elim.matVec (matPow vwB 3 (0 + 1))
           (elim.matVec aB (elim.matVec (matPow vwB 3 (0 + 1))
@@ -3444,15 +3440,15 @@ example :
     e0B e2B (by decide +kernel) (by decide +kernel)
 
 -- the reach at the powers, theorem route beside the decide
-example : reachKeep (matPow lwB 3 2) (ground.prefixAt 0 [1,1,1])
+theorem pin290 : reachKeep (matPow lwB 3 2) (ground.prefixAt 0 [1,1,1])
     (ground.prefixAt (0 + 2) [1,1,1]) :=
   pow_reach lwB hlwsq [1,1,1] hnsB hbandB 0 2
-example : reachKeep (matPow lwB 3 2) (ground.prefixAt 0 [1,1,1])
+theorem pin291 : reachKeep (matPow lwB 3 2) (ground.prefixAt 0 [1,1,1])
     (ground.prefixAt 2 [1,1,1]) := by decide +kernel
-example : ¬ reachKeep (matPow lwB 3 2) 1 2 := by decide +kernel
+theorem pin292 : ¬ reachKeep (matPow lwB 3 2) 1 2 := by decide +kernel
 
 -- the annihilation, theorem route beside the decide
-example : elim.matNull
+theorem pin293 : elim.matNull
       (matMul (matMul (matPow lwB 3 (0 + 1))
         (matMul aB (matPow lwB 3 (0 + 1)))) apB)
     ∧ elim.matNull
@@ -3493,43 +3489,43 @@ private theorem hheadG : greenprod.headRead dgG offG ysG csG
 private theorem hsolveG : greenprod.solveRead dgG offG usG wsG
     [1,1,1] := by decide +kernel
 private theorem hsuppG : greenprod.supportAt wsG 2 := by decide +kernel
-example : greenprod.teleDown csG usG 2 [1,1,1] :=
+theorem pin294 : greenprod.teleDown csG usG 2 [1,1,1] :=
   source_tele dgG offG ysG csG usG wsG [1,1,1] 2 hheadG hsolveG
     hsuppG (by decide +kernel)
-example : greenprod.teleDownWalk 2 csG usG := by decide +kernel
+theorem pin295 : greenprod.teleDownWalk 2 csG usG := by decide +kernel
 
 -- the boundary-fill frame isolated: at a NON-filling ns the banded
 -- read still holds while the widened-keep conclusion fails
-example : bandedAt lwB [1, 1] := by decide +kernel
-example : ¬ ground.prefixAt ([1,1] : List Nat).length [1,1] = 3 := by
+theorem pin296 : bandedAt lwB [1, 1] := by decide +kernel
+theorem pin297 : ¬ ground.prefixAt ([1,1] : List Nat).length [1,1] = 3 := by
   decide +kernel
-example : ¬ reachKeep (matPow lwB 3 2) (ground.prefixAt 1 [1,1])
+theorem pin298 : ¬ reachKeep (matPow lwB 3 2) (ground.prefixAt 1 [1,1])
     (ground.prefixAt (1 + 2) [1,1]) := by decide +kernel
 
 /-! The join bridges: the witness's band and symmetry derived
 through the join, each theorem route beside its decide tie
 (`hbandB`, `hsymLB`), with the binders isolated at forges. -/
 
-example : bandedAt lwB [1, 1, 1] :=
+theorem pin299 : bandedAt lwB [1, 1, 1] :=
   banded_of_join etB6 lwB hetsq hlwsq (posOfSucc 0 * 5) (1 * 5)
     ((posOfSucc 0 * 5) * 5) hLB [1, 1, 1] hbandEtB
-example : elim.matOneValue (elim.transposeM lwB) lwB :=
+theorem pin300 : elim.matOneValue (elim.transposeM lwB) lwB :=
   sym_of_join etB6 lwB hetsq hlwsq
     (split.sym_of_diagRead etB6 tB6 twB6 lB6 hdB6) (posOfSucc 0 * 5)
     (1 * 5) ((posOfSucc 0 * 5) * 5) hLB
-example : elim.matOneValue (elim.transposeM lwB) lwB := by
+theorem pin301 : elim.matOneValue (elim.transposeM lwB) lwB := by
   decide +kernel
 
 -- the symmetry binder isolated: at the asymmetric gap the join
 -- holds while both symmetry reads refuse
 private def et2F : Mat := [[⟨2, 1⟩, ⟨2, 1⟩], [u, ⟨2, 1⟩]]
 private def lw2F : Mat := [[⟨5, 1⟩, ⟨1, 2⟩], [u, ⟨5, 1⟩]]
-example : elim.matOneValue
+theorem pin302 : elim.matOneValue
     (matAdd (inertia.matScale 1 lw2F) (inertia.matScale 1 et2F))
     (inertia.matScale 5 (idMat 2)) := by decide +kernel
-example : ¬ elim.matOneValue (elim.transposeM et2F) et2F := by
+theorem pin303 : ¬ elim.matOneValue (elim.transposeM et2F) et2F := by
   decide +kernel
-example : ¬ elim.matOneValue (elim.transposeM lw2F) lw2F := by
+theorem pin304 : ¬ elim.matOneValue (elim.transposeM lw2F) lw2F := by
   decide +kernel
 
 -- the band binder isolated: at the off-band gap the join holds
@@ -3540,114 +3536,114 @@ private def et3F : Mat :=
 private def lw3F : Mat :=
   [[⟨3, 1⟩, ⟨1, 2⟩, ⟨1, 2⟩], [⟨1, 2⟩, ⟨4, 1⟩, ⟨1, 2⟩],
    [⟨1, 2⟩, ⟨1, 2⟩, ⟨3, 1⟩]]
-example : elim.matOneValue
+theorem pin305 : elim.matOneValue
     (matAdd (inertia.matScale 1 lw3F) (inertia.matScale 1 et3F))
     (inertia.matScale 5 (idMat 3)) := by decide +kernel
-example : ¬ bandedAt et3F [1, 1, 1] := by decide +kernel
-example : ¬ bandedAt lw3F [1, 1, 1] := by decide +kernel
+theorem pin306 : ¬ bandedAt et3F [1, 1, 1] := by decide +kernel
+theorem pin307 : ¬ bandedAt lw3F [1, 1, 1] := by decide +kernel
 
 /-! The power cap at `k = 2`: the route, the decide, and the sharp
 refusal at the top eigendirection, `256` against `255`. -/
 
 private def z16 : List BPair := [⟨2, 1⟩, ⟨1, 3⟩, ⟨2, 1⟩]
-example : (elim.dotP (elim.matVec (matPow lwB 3 2) z16)
+theorem pin308 : (elim.dotP (elim.matVec (matPow lwB 3 2) z16)
       (elim.matVec (matPow lwB 3 2) z16)).scale (Pos.pow (1 * 1) 2)
     ≤ (elim.dotP z16 z16).scale (Pos.pow (4 * 4) 2) :=
   cap_pow lwB 4 1 spLU spLL hcapLB z16 (by decide +kernel) 2
-example : (elim.dotP (elim.matVec (matPow lwB 3 2) z16)
+theorem pin309 : (elim.dotP (elim.matVec (matPow lwB 3 2) z16)
       (elim.matVec (matPow lwB 3 2) z16)).scale (Pos.pow (1 * 1) 2)
     ≤ (elim.dotP z16 z16).scale (Pos.pow (4 * 4) 2) := by
   decide +kernel
-example : ¬ ((elim.dotP (elim.matVec (matPow lwB 3 2) z16)
+theorem pin310 : ¬ ((elim.dotP (elim.matVec (matPow lwB 3 2) z16)
       (elim.matVec (matPow lwB 3 2) z16)).scale (Pos.pow (1 * 1) 2)
     ≤ (elim.dotP z16 z16).scale 255) := by decide +kernel
 
 -- the sandwich standalone, the route beside the decide
-example : leadAt
+theorem pin311 : leadAt
     (matMul (matPow lwB 3 (0 + 1))
       (matMul aB (matPow lwB 3 (0 + 1))))
     (ground.prefixAt (1 + (0 + 1)) [1, 1, 1]) :=
   lead_sandwich lwB aB hlwsq hasq [1, 1, 1] hnsB hbandB 1 (0 + 1)
     hleadB
-example : leadAt
+theorem pin312 : leadAt
     (matMul (matPow lwB 3 (0 + 1))
       (matMul aB (matPow lwB 3 (0 + 1))))
     (ground.prefixAt (1 + (0 + 1)) [1, 1, 1]) := by decide +kernel
 
 -- the observables' symmetry binder: the asymmetric forge refuses
 private def aAsF : Mat := [[u, ⟨2, 1⟩, u], [u, u, u], [u, u, u]]
-example : ¬ elim.matOneValue (elim.transposeM aAsF) aAsF := by
+theorem pin313 : ¬ elim.matOneValue (elim.transposeM aAsF) aAsF := by
   decide +kernel
 
 -- the fixture tie: the gap is its blocks' assembly
-example : greenprod.assemble
+theorem pin314 : greenprod.assemble
     [[[⟨4, 1⟩]], [[⟨3, 1⟩]], [[⟨4, 1⟩]]]
     [[[⟨2, 1⟩]], [[⟨2, 1⟩]]] = etB6 := by rfl
 
 /-! Clause (vii): the scale count at the division's quotient, the
 two comparisons its whole read. -/
 
-example : scaleCount 7 2 1 = some 3 := by decide +kernel
-example : scaleCount 6 2 1 = some 3 := by decide +kernel
-example : scaleCount 1 2 1 = none := by decide +kernel
-example : scaleCount 7 15 8 = some 3 := by decide +kernel
-example : (2 : Pos) * 3 ≤ 7 * 1 ∧ (7 : Pos) * 1 < 2 * ground.succ 3 :=
+theorem pin315 : scaleCount 7 2 1 = some 3 := by decide +kernel
+theorem pin316 : scaleCount 6 2 1 = some 3 := by decide +kernel
+theorem pin317 : scaleCount 1 2 1 = none := by decide +kernel
+theorem pin318 : scaleCount 7 15 8 = some 3 := by decide +kernel
+theorem pin319 : (2 : Pos) * 3 ≤ 7 * 1 ∧ (7 : Pos) * 1 < 2 * ground.succ 3 :=
   scaleCount_read 7 2 1 3 (by decide +kernel)
-example : (1 : Pos) * 1 < 2 :=
+theorem pin320 : (1 : Pos) * 1 < 2 :=
   scaleCount_vac 1 2 1 (by decide +kernel)
-example : scaleCount 7 2 1 = some 3 :=
+theorem pin321 : scaleCount 7 2 1 = some 3 :=
   scaleCount_eq 7 2 1 3 (by decide +kernel) (by decide +kernel)
 
 /-- The bracket constancy: the ends' comparisons pin the count at
 every scale between, the route beside the decide. -/
-example : scaleCount 7 15 8 = some 3 :=
+theorem pin322 : scaleCount 7 15 8 = some 3 :=
   scaleCount_stable 7 9 5 15 8 2 1 3 (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
-example : scaleCount 1 15 8 = none :=
+theorem pin323 : scaleCount 1 15 8 = none :=
   scaleCount_stable_vac 1 9 5 15 8 (by decide +kernel)
     (by decide +kernel)
 
 /-- The refusal isolating the upper end's comparison: at the forged
 scale beyond the bracket the count parts from the pinned value. -/
-example : ¬ ((3 : Pos) * 3 ≤ 7 * 1) := by decide +kernel
-example : ¬ (scaleCount 7 3 1 = some 3) := by decide +kernel
+theorem pin324 : ¬ ((3 : Pos) * 3 ≤ 7 * 1) := by decide +kernel
+theorem pin325 : ¬ (scaleCount 7 3 1 = some 3) := by decide +kernel
 /-- The refusal isolating the lower end's comparison: below the
 bracket the count moves past the pinned value. -/
-example : ¬ ((7 : Pos) * 1 < 1 * ground.succ 3) := by decide +kernel
-example : ¬ (scaleCount 7 1 1 = some 3) := by decide +kernel
+theorem pin326 : ¬ ((7 : Pos) * 1 < 1 * ground.succ 3) := by decide +kernel
+theorem pin327 : ¬ (scaleCount 7 1 1 = some 3) := by decide +kernel
 /-- The refusals isolating the two bracket orders at the same
 forged rates: the further binders stand while the order refuses,
 the conclusion refusals above the shared reads. -/
-example : (2 : Pos) * 1 ≤ 3 * 1 := by decide +kernel
-example : (2 : Pos) * 3 ≤ 7 * 1 := by decide +kernel
-example : (7 : Pos) * 1 < 2 * ground.succ 3 := by decide +kernel
-example : ¬ ((3 : Pos) * 1 ≤ 2 * 1) := by decide +kernel
-example : (1 : Pos) * 1 ≤ 2 * 1 := by decide +kernel
-example : ¬ ((2 : Pos) * 1 ≤ 1 * 1) := by decide +kernel
+theorem pin328 : (2 : Pos) * 1 ≤ 3 * 1 := by decide +kernel
+theorem pin329 : (2 : Pos) * 3 ≤ 7 * 1 := by decide +kernel
+theorem pin330 : (7 : Pos) * 1 < 2 * ground.succ 3 := by decide +kernel
+theorem pin331 : ¬ ((3 : Pos) * 1 ≤ 2 * 1) := by decide +kernel
+theorem pin332 : (1 : Pos) * 1 ≤ 2 * 1 := by decide +kernel
+theorem pin333 : ¬ ((2 : Pos) * 1 ≤ 1 * 1) := by decide +kernel
 
 /-! Clause (vii): the width sum at the rate, the route beside the
 refusal isolating the rate binder. -/
 
-example : (ground.bsum id [(⟨9, 1⟩ : BPair), ⟨5, 1⟩, ⟨3, 1⟩]).scale 1
+theorem pin334 : (ground.bsum id [(⟨9, 1⟩ : BPair), ⟨5, 1⟩, ⟨3, 1⟩]).scale 1
     ≤ (ground.getAt BPair.unit
         [(⟨9, 1⟩ : BPair), ⟨5, 1⟩, ⟨3, 1⟩] 0).scale 2 :=
   widthSum 1 1 2 (by decide +kernel) [⟨9, 1⟩, ⟨5, 1⟩, ⟨3, 1⟩]
     (by decide +kernel) (by decide +kernel)
-example : (ground.bsum id [(⟨9, 1⟩ : BPair), ⟨5, 1⟩, ⟨3, 1⟩]).scale 1
+theorem pin335 : (ground.bsum id [(⟨9, 1⟩ : BPair), ⟨5, 1⟩, ⟨3, 1⟩]).scale 1
     ≤ (ground.getAt BPair.unit
         [(⟨9, 1⟩ : BPair), ⟨5, 1⟩, ⟨3, 1⟩] 0).scale 2 := by
   decide +kernel
-example : ¬ widthRate 1 2 [(⟨9, 1⟩ : BPair), ⟨9, 1⟩, ⟨9, 1⟩] := by
+theorem pin336 : ¬ widthRate 1 2 [(⟨9, 1⟩ : BPair), ⟨9, 1⟩, ⟨9, 1⟩] := by
   decide +kernel
-example : ¬ ((ground.bsum id [(⟨9, 1⟩ : BPair), ⟨9, 1⟩, ⟨9, 1⟩]).scale 1
+theorem pin337 : ¬ ((ground.bsum id [(⟨9, 1⟩ : BPair), ⟨9, 1⟩, ⟨9, 1⟩]).scale 1
     ≤ (ground.getAt BPair.unit
         [(⟨9, 1⟩ : BPair), ⟨9, 1⟩, ⟨9, 1⟩] 0).scale 2) := by
   decide +kernel
 /-- The refusal isolating the last member's positivity: at one
 member below the sum's unit the rate read is vacuous and the
 telescope refuses. -/
-example : ¬ unitLast [(⟨1, 9⟩ : BPair)] := by decide +kernel
-example : ¬ ((ground.bsum id [(⟨1, 9⟩ : BPair)]).scale 1
+theorem pin338 : ¬ unitLast [(⟨1, 9⟩ : BPair)] := by decide +kernel
+theorem pin339 : ¬ ((ground.bsum id [(⟨1, 9⟩ : BPair)]).scale 1
     ≤ (ground.getAt BPair.unit [(⟨1, 9⟩ : BPair)] 0).scale 2) := by
   decide +kernel
 
@@ -3666,30 +3662,30 @@ private theorem hEd7 : sqAt ed7 2 := by decide +kernel
 
 /-- The drift's trial read at the kernel column: the electric weight
 `53` at its defining tie, the route beside the decide. -/
-example : ((dotN psiK (matVec ed7 psiK)).scale 1).oneValue
+theorem pin340 : ((dotN psiK (matVec ed7 psiK)).scale 1).oneValue
     ((dotN psiK psiK).scale 53) := by decide +kernel
-example : ((dotN psiK
+theorem pin341 : ((dotN psiK
       (matVec (matAdd et2 (inertia.matScale 1 ed7)) psiK)).scale 1).oneValue
     ((dotN psiK psiK).scale (1 * 53)) :=
   drift_trial et2 ed7 id2 id2 l2 hd2 0 hj02 1 ⟨2, 1⟩ hroot02 hEd7 1 53 1
     (by decide +kernel)
-example : ((dotN psiK
+theorem pin342 : ((dotN psiK
       (matVec (matAdd et2 (inertia.matScale 1 ed7)) psiK)).scale 1).oneValue
     ((dotN psiK psiK).scale (1 * 53)) := by decide +kernel
 /-- The refusals isolating the trial's data: the weight tie forged
 by one refuses with the display, and at the designation moved to
 the second key the tie holds at that column's own weight while the
 display refuses — the trial column the earlier ground's alone. -/
-example : ¬ (((dotN psiK (matVec ed7 psiK)).scale 1).oneValue
+theorem pin343 : ¬ (((dotN psiK (matVec ed7 psiK)).scale 1).oneValue
     ((dotN psiK psiK).scale 52)) := by decide +kernel
-example : ¬ (((dotN psiK
+theorem pin344 : ¬ (((dotN psiK
       (matVec (matAdd et2 (inertia.matScale 1 ed7)) psiK)).scale 1).oneValue
     ((dotN psiK psiK).scale (1 * 52))) := by decide +kernel
-example : ((dotN (matVec id2.val (elim.idRow 2 1))
+theorem pin345 : ((dotN (matVec id2.val (elim.idRow 2 1))
       (matVec ed7 (matVec id2.val (elim.idRow 2 1)))).scale 1).oneValue
     ((dotN (matVec id2.val (elim.idRow 2 1))
       (matVec id2.val (elim.idRow 2 1))).scale 17) := by decide +kernel
-example : ¬ (((dotN (matVec id2.val (elim.idRow 2 1))
+theorem pin346 : ¬ (((dotN (matVec id2.val (elim.idRow 2 1))
       (matVec (matAdd et2 (inertia.matScale 1 ed7))
         (matVec id2.val (elim.idRow 2 1)))).scale 1).oneValue
     ((dotN (matVec id2.val (elim.idRow 2 1))
@@ -3698,13 +3694,13 @@ example : ¬ (((dotN (matVec id2.val (elim.idRow 2 1))
 
 /-- The transport display at the electric weights, the route beside
 the decide. -/
-example : (dotN (residD [psiK] ps2) (residD [psiK] ps2)).scale (51 * 51)
+theorem pin347 : (dotN (residD [psiK] ps2) (residD [psiK] ps2)).scale (51 * 51)
     ≤ (((dotN psiK psiK * dotN psiK psiK)
         * ((dotN (matVec ed7 ps2) (matVec ed7 ps2)).scale (1 * 1)
           + (⟨53, 1⟩ * ⟨53, 1⟩) * dotN ps2 ps2))).scale (2 * (1 * 1)) :=
   transport_electric et2 es7 ed7 id2 id2 l2 hd2 0 hj02 1 ⟨2, 1⟩ hroot02
     51 1 hcl2 hEd7 1 ⟨53, 1⟩ htie7 ps2 hpt2 hker7
-example : (dotN (residD [psiK] ps2) (residD [psiK] ps2)).scale (51 * 51)
+theorem pin348 : (dotN (residD [psiK] ps2) (residD [psiK] ps2)).scale (51 * 51)
     ≤ (((dotN psiK psiK * dotN psiK psiK)
         * ((dotN (matVec ed7 ps2) (matVec ed7 ps2)).scale (1 * 1)
           + (⟨53, 1⟩ * ⟨53, 1⟩) * dotN ps2 ps2))).scale (2 * (1 * 1)) := by
@@ -3713,8 +3709,8 @@ example : (dotN (residD [psiK] ps2) (residD [psiK] ps2)).scale (51 * 51)
 /-- The refusal isolating the clearance at the display's own level:
 at the forged clearance `500` the read refuses and the display with
 it. -/
-example : ¬ clearRead l2 0 500 1 := by decide +kernel
-example : ¬ ((dotN (residD [psiK] ps2) (residD [psiK] ps2)).scale (500 * 500)
+theorem pin349 : ¬ clearRead l2 0 500 1 := by decide +kernel
+theorem pin350 : ¬ ((dotN (residD [psiK] ps2) (residD [psiK] ps2)).scale (500 * 500)
     ≤ (((dotN psiK psiK * dotN psiK psiK)
         * ((dotN (matVec ed7 ps2) (matVec ed7 ps2)).scale (1 * 1)
           + (⟨53, 1⟩ * ⟨53, 1⟩) * dotN ps2 ps2))).scale (2 * (1 * 1))) := by
@@ -3723,11 +3719,11 @@ example : ¬ ((dotN (residD [psiK] ps2) (residD [psiK] ps2)).scale (500 * 500)
 /-- The refusals isolating the tie and the kernel read, hypothesis
 level: the drift forged by one and the second coordinate off the
 later gap's kernel. -/
-example : ¬ matOneValue es7
+theorem pin351 : ¬ matOneValue es7
     (matAdd et2 (matAdd (inertia.matScale 1 ed7)
       (inertia.matScaleB (⟨52, 1⟩ : BPair).swap (idMat 2)))) := by
   decide +kernel
-example : ¬ poly.unitTail (matVec es7 e1) := by decide +kernel
+theorem pin352 : ¬ poly.unitTail (matVec es7 e1) := by decide +kernel
 
 /-- The display-level refusals at the vacant electric datum: at
 `Ed` vacant and the drift the sum's unit the display collapses, so
@@ -3735,16 +3731,16 @@ the forged tie and the forged kernel read each refuse with the
 display itself, the further binders standing. -/
 private def edZ : Mat := [[u, u], [u, u]]
 private def esF : Mat := [[⟨2, 1⟩, ⟨1, 5⟩], [⟨2, 1⟩, ⟨1, 5⟩]]
-example : sqAt edZ 2 := by decide +kernel
-example : poly.unitTail (matVec esF ps2) := by decide +kernel
-example : ¬ matOneValue esF (matAdd et2 (matAdd (inertia.matScale 1 edZ)
+theorem pin353 : sqAt edZ 2 := by decide +kernel
+theorem pin354 : poly.unitTail (matVec esF ps2) := by decide +kernel
+theorem pin355 : ¬ matOneValue esF (matAdd et2 (matAdd (inertia.matScale 1 edZ)
     (inertia.matScaleB (BPair.unit : BPair).swap (idMat 2)))) := by
   decide +kernel
-example : matOneValue et2 (matAdd et2 (matAdd (inertia.matScale 1 edZ)
+theorem pin356 : matOneValue et2 (matAdd et2 (matAdd (inertia.matScale 1 edZ)
     (inertia.matScaleB (BPair.unit : BPair).swap (idMat 2)))) := by
   decide +kernel
-example : ¬ poly.unitTail (matVec et2 ps2) := by decide +kernel
-example : ¬ ((dotN (residD [psiK] ps2)
+theorem pin357 : ¬ poly.unitTail (matVec et2 ps2) := by decide +kernel
+theorem pin358 : ¬ ((dotN (residD [psiK] ps2)
       (residD [psiK] ps2)).scale (51 * 51)
     ≤ (((dotN psiK psiK * dotN psiK psiK)
         * ((dotN (matVec edZ ps2) (matVec edZ ps2)).scale (1 * 1)
@@ -3759,19 +3755,19 @@ private theorem hwid7 :
       + (⟨53, 1⟩ * ⟨53, 1⟩) * dotN ps2 ps2).scale (2 * (1 * 1))
     ≤ (dotN ps2 ps2).scale (103 * 103) := by decide +kernel
 
-example : (windowsep.mag (readGap (read a2 psiK) (read a2 ps2))).scale
+theorem pin359 : (windowsep.mag (readGap (read a2 psiK) (read a2 ps2))).scale
       (51 * 1 * 1)
     ≤ (dotN psiK psiK * dotN ps2 ps2).scale (4 * (2 * 103 * 1)) :=
   scale_read et2 es7 ed7 a2 id2 id2 l2 hd2 0 hj02 1 ⟨2, 1⟩ hroot02 51 1
     hcl2 hEd7 1 ⟨53, 1⟩ htie7 ps2 hpt2 hker7 103 1 hwid7 2 1
     spA spA' hA2
-example : (windowsep.mag (readGap (read a2 psiK) (read a2 ps2))).scale
+theorem pin360 : (windowsep.mag (readGap (read a2 psiK) (read a2 ps2))).scale
       (51 * 1 * 1)
     ≤ (dotN psiK psiK * dotN ps2 ps2).scale (4 * (2 * 103 * 1)) := by
   decide +kernel
 /-- The refusal isolating the width binder: at the forged width `10`
 the composite's domination refuses. -/
-example : ¬ (((dotN (matVec ed7 ps2) (matVec ed7 ps2)).scale (1 * 1)
+theorem pin361 : ¬ (((dotN (matVec ed7 ps2) (matVec ed7 ps2)).scale (1 * 1)
       + (⟨53, 1⟩ * ⟨53, 1⟩) * dotN ps2 ps2).scale (2 * (1 * 1))
     ≤ (dotN ps2 ps2).scale (10 * 10)) := by decide +kernel
 
@@ -3786,20 +3782,20 @@ private def sp20 : Split 2 := mkSplit 2 a20
 private def sp20' : Split 2 := mkSplit 2 a20'
 private def spd7 : Split 2 := mkSplit 2 (inertia.matScale 1 ed7)
 
-example : inertia.revAt sp20 = 1 := by decide +kernel
-example : inertia.revAt sp20' = 0 := by decide +kernel
-example : inertia.revAt sp20' ≤ inertia.revAt sp20 :=
+theorem pin362 : inertia.revAt sp20 = 1 := by decide +kernel
+theorem pin363 : inertia.revAt sp20' = 0 := by decide +kernel
+theorem pin364 : inertia.revAt sp20' ≤ inertia.revAt sp20 :=
   drift_mono et2 ed7 (by decide +kernel) hEd7 1 20 spd7 sp20 sp20'
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 /-- The refusal at the reversed order: the earlier pencil's count
 sits strictly above the later's at the fixture, so the datum's
 direction is load-bearing. -/
-example : ¬ (inertia.revAt sp20 ≤ inertia.revAt sp20') := by
+theorem pin365 : ¬ (inertia.revAt sp20 ≤ inertia.revAt sp20') := by
   decide +kernel
 /-- The refusal isolating the positive-semidefinite binder: the
 datum's memberwise swap refuses the split's read. -/
-example : ¬ inertia.psdAt (mkSplit 2
+theorem pin366 : ¬ inertia.psdAt (mkSplit 2
     (inertia.matScale 1 (matSwap ed7))) := by decide +kernel
 
 /-! Clause (vii): the electric square weight on the shells at the
@@ -3822,13 +3818,13 @@ private def ecs7 : List ((k : Nat) × Pos × Pos × Split k × Split k) :=
   [⟨1, 2, 1, spE0U, spE0L⟩, ⟨1, 1, 1, spE1U, spE1L⟩,
    ⟨1, 3, 1, spE2U, spE2L⟩]
 
-example : eCapList esl7 nsK ecs7 := by decide +kernel
-example : ((eFold ecs7 csK).1).oneValue (BPair.ofPos 68) := by
+theorem pin367 : eCapList esl7 nsK ecs7 := by decide +kernel
+theorem pin368 : ((eFold ecs7 csK).1).oneValue (BPair.ofPos 68) := by
   decide +kernel
-example : (eFold ecs7 csK).2 = 4 := by decide +kernel
-example : ((eSum esl7 usK).1).oneValue ⟨18, 1⟩ := by decide +kernel
+theorem pin369 : (eFold ecs7 csK).2 = 4 := by decide +kernel
+theorem pin370 : ((eSum esl7 usK).1).oneValue ⟨18, 1⟩ := by decide +kernel
 
-example : (eSum esl7 usK).1.scale
+theorem pin371 : (eSum esl7 usK).1.scale
       ((eFold ecs7 csK).2
         * ((ground.getAt ([], Pos.one) usK 0).2
           * (ground.getAt ([], Pos.one) usK 0).2))
@@ -3838,7 +3834,7 @@ example : (eSum esl7 usK).1.scale
   electric_shells esl7 gsK rsK csK ecs7 usK nsK (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
-example : (eSum esl7 usK).1.scale
+theorem pin372 : (eSum esl7 usK).1.scale
       ((eFold ecs7 csK).2
         * ((ground.getAt ([], Pos.one) usK 0).2
           * (ground.getAt ([], Pos.one) usK 0).2))
@@ -3853,8 +3849,8 @@ with it. -/
 private def ecs7F : List ((k : Nat) × Pos × Pos × Split k × Split k) :=
   [⟨1, 1, 1, spE1U, spE1L⟩, ⟨1, 1, 1, spE1U, spE1L⟩,
    ⟨1, 3, 1, spE2U, spE2L⟩]
-example : ¬ eCapList esl7 nsK ecs7F := by decide +kernel
-example : ¬ ((eSum esl7 usK).1.scale
+theorem pin373 : ¬ eCapList esl7 nsK ecs7F := by decide +kernel
+theorem pin374 : ¬ ((eSum esl7 usK).1.scale
       ((eFold ecs7F csK).2
         * ((ground.getAt ([], Pos.one) usK 0).2
           * (ground.getAt ([], Pos.one) usK 0).2))
@@ -3874,17 +3870,17 @@ private def us2 : List greenprod.VecQ := [⟨[⟨2, 1⟩], 1⟩, ⟨[⟨1, 1⟩]
 private def edA : Mat := greenprod.assemble esl2 bs2
 private def esA : Mat := [[⟨1, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨51, 1⟩]]
 
-example : (dotN (matVec edA (headVec us2))
+theorem pin375 : (dotN (matVec edA (headVec us2))
       (matVec edA (headVec us2))).oneValue (eSum esl2 us2).1 :=
   eSum_assemble esl2 bs2 us2 [1, 1] (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
-example : (dotN (matVec edA (headVec us2))
+theorem pin376 : (dotN (matVec edA (headVec us2))
       (matVec edA (headVec us2))).oneValue (eSum esl2 us2).1 := by
   decide +kernel
 /-- The refusal isolating the couplings' vacancy: at an occupied
 coupling the assembled read leaves the shells' fold. -/
-example : ¬ offNull [[[(⟨2, 1⟩ : BPair)]]] := by decide +kernel
-example : ¬ (dotN
+theorem pin377 : ¬ offNull [[[(⟨2, 1⟩ : BPair)]]] := by decide +kernel
+theorem pin378 : ¬ (dotN
       (matVec (greenprod.assemble esl2 [[[(⟨2, 1⟩ : BPair)]]])
         (headVec us2))
       (matVec (greenprod.assemble esl2 [[[(⟨2, 1⟩ : BPair)]]])
@@ -3894,7 +3890,7 @@ example : ¬ (dotN
 /-- The transport display at the assembled electric datum: the
 later gap's kernel vector the cross-cleared head, the display's
 electric factor the assembled read the fold ties. -/
-example : (dotN (residD [psiK] (headVec us2))
+theorem pin379 : (dotN (residD [psiK] (headVec us2))
       (residD [psiK] (headVec us2))).scale (51 * 51)
     ≤ (((dotN psiK psiK * dotN psiK psiK)
         * ((dotN (matVec edA (headVec us2))
@@ -3906,7 +3902,7 @@ example : (dotN (residD [psiK] (headVec us2))
     hroot02 51 1 hcl2 (by decide +kernel) 1 ⟨3, 1⟩
     (by decide +kernel) (headVec us2) (by decide +kernel)
     (by decide +kernel)
-example : (dotN (residD [psiK] (headVec us2))
+theorem pin380 : (dotN (residD [psiK] (headVec us2))
       (residD [psiK] (headVec us2))).scale (51 * 51)
     ≤ (((dotN psiK psiK * dotN psiK psiK)
         * ((dotN (matVec edA (headVec us2))
@@ -3915,3 +3911,5 @@ example : (dotN (residD [psiK] (headVec us2))
             * dotN (headVec us2) (headVec us2)))).scale
         (2 * (1 * 1)) := by
   decide +kernel
+
+end groundreads

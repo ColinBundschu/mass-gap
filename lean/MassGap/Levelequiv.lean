@@ -28,7 +28,7 @@ def opRead {o : Nat} (Esq Et : Mat) (gn gd : Pos) (sp : Split o) : Prop :=
   sqAt Esq o ∧ sqAt Et o
   ∧ leAt (matScale gn Et) (matScale gd Esq) sp
 
-instance {o : Nat} (Esq Et : Mat) (gn gd : Pos) (sp : Split o) :
+instance instLevelequiv1 {o : Nat} (Esq Et : Mat) (gn gd : Pos) (sp : Split o) :
     Decidable (opRead Esq Et gn gd sp) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
@@ -41,7 +41,7 @@ def reqReadAt {n : Nat} (Esq Et : SqMat n) (y : Vec n)
   ¬ (inertia.quadForm Esq.val y.val).scale gd
       < (inertia.quadForm Et.val y.val).scale gn
 
-instance {n : Nat} (Esq Et : SqMat n) (y : Vec n) (gn gd : Pos) :
+instance instLevelequiv2 {n : Nat} (Esq Et : SqMat n) (y : Vec n) (gn gd : Pos) :
     Decidable (reqReadAt Esq Et y gn gd) :=
   inferInstanceAs (Decidable (¬ _ < _))
 

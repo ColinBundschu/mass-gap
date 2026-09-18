@@ -29,21 +29,31 @@ comparisons and the monotone read along that distance
 `certconstruct.countAtPair_mono`).
 
 The cell tier carries clause (iv)'s per-cell reads at
-`lem:freecell`'s carrier.  A `Cell` is one located segment of the
-root coordinate with its fixed level pair `⟨ax : ay⟩ < ⟨tx : ty⟩` at
-the gap witness `gp`, the two level carriers' pivot covers over the
-segment, and one sample point at the ground count `g ≥ 1` on both
-carriers with its two splits; `cellRead` is the cell's decidable
-read, and `cellsRead` the list's from a stated point, each cell's
-segment containing the running point and the next cell read from
-its top, so two consecutive segments overlap and the list's closed
-union is the segments' union (`cellsTop` the last top, `locateCell`
-the point's cell, the first whose top is at or beyond it).  On a
-cell the flat window holds at every root-coordinate point of the
-segment (`cell_flat`): at the point `[n : c]` the ray `[c² : n²]`'s
-pencil `pencil.rayH` reads count `g` at both levels scaled by the
-clearing `c²`, each count a cell function read once
-(`cellcount.cellCount` at the carrier's cleared evaluation,
+`lem:freecell`'s carrier on the decimated head.  A `Cell` is one
+located segment of the root coordinate with its fixed level pair
+`⟨ax : ay⟩ < ⟨tx : ty⟩` at the gap witness `gp`, the tower places
+`tw` with the dominance read's bound `[dN : dD]`, the two level
+carriers' pivot covers over the segment at the decimated head
+(`decimation.towerHead`, the tower block's deflation cleared once at the
+head's order `o − k` and the clearing `(k + 1)·2`, the carrier itself
+at a vacant tower), and one sample point at the ground count
+`g ≥ 1` on both deflated carriers with its two splits; `cellRead` is
+the cell's decidable read, the covers and counts joined to the tower
+places' frame and both carriers' dominance reads over the segment
+(`decimation.domRead`), and `cellsRead` the list's from a stated
+point, each cell's segment containing the running point and the next
+cell read from its top, so two consecutive segments overlap and the
+list's closed union is the segments' union (`cellsTop` the last top,
+`locateCell` the point's cell, the first whose top is at or beyond
+it).  On a cell the flat window holds at every root-coordinate point
+of the segment (`cell_flat`): at the point `[n : c]` the ray
+`[c² : n²]`'s pencil `pencil.rayH` reads count `g` at both levels
+scaled by the clearing `c²`, each count the sample's read through
+the tower's decimation, the tower block positive definite at the
+point by the dominance read (`decimation.dom_segment`,
+`decimation.dom_pd`), the count the deflated head's
+(`inertia.rev_placesP` at `cellcount.evalPC_pdeflP`) and the head's
+count one integer over the segment (`cellcount.cellCountP`,
 `freecell.freePMat_eval` the bridge), and the level order keeps.
 `locate_read` places every point from the list's foot to its top
 in its located cell's segment, the fold locating the point by the
@@ -58,7 +68,9 @@ off the root coordinate reads its window at the root-coordinate
 ray `[q² : p²]`: `rayP` is the least natural at the squared
 comparison `βq² ≤ (p+1)²α`, one decidable read over the keys at or
 below the weight `βq²` (`rayPred` at the key's successor, `rayK` the
-least key, `ground.firstAt`), so `p²α < βq² ≤ (p+1)²α`; `rayGap` is
+least key, `ground.firstAt`; `rayKD` its fast read, the halving
+search `ground.bisectFrom` at the comparison stepping up the keys, one
+key with the walk by `rayKD_eq`), so `p²α < βq² ≤ (p+1)²α`; `rayGap` is
 the weights' gap `βq²` against `p²α`, the margin read
 (`BPair.marginPos`, `def:ground`'s difference), at or below
 `(2p+1)α`; `rayRho` the sandwich's width, the gap's multiple of the
@@ -88,7 +100,20 @@ reads the cut itself at the level — the counting comparison of
 `truncation.count_shift_le` at the compression's vacant count, the
 removed block's vacancy derived at the admissible cutoff's data
 (`truncCut`), the bracket display
-`E₀ς𝒦_Λ ≤ E₀ς𝒦(v) + β²#p²d_θ²` realized at that one comparison.
+`E₀ς𝒦_(Λ,C) ≤ E₀ς𝒦reg_Λ(v) + β²#p²d_L²` at the fixed region
+and the stated simple-ground cutoff tail.
+The flat window itself transports across the truncation at the
+priced width (`flat_shift`): the head's flat window from the anchor
+to the top reads at the whole window at the anchor and at the top
+lowered by the shift cap, the anchor's count squeezed between the
+compression side and the shift side at the anchor raised by the cap
+(the head flat there by the monotone read), the lowered top's between
+the shift side at the crossed top and the anchor's own, the removed
+block vacant at both levels at its floor, and the level order kept at
+the width beyond the cap; and it compresses the other way
+(`flat_compress`), the whole window's flat window reading at the head
+from the anchor raised by the cap to the top, the tex's two cuts'
+values bracketing each other at the priced width.
 
 The window reaches the cut (clauses (iii) and (v), `thm:flatstep`'s
 identification at `lem:speccut`): at one located root list read
@@ -107,7 +132,7 @@ decidable read, and `capId_lo`/`capId_hi`, the site datum of the
 scaled identity against an entrywise-capped symmetric datum and
 their sum, every split positive semidefinite at the count's
 clearing `o·e ≤ ρ` — the dominance comparison priced by the cap
-over the peeled rows (`decimation.dom_quad` at the joined row's
+over the peeled rows (`decimation.dom_unit` at the joined row's
 fold, the cap rejoined at the diagonal key) with `lem:inertia`'s
 witness refused.
 -/
@@ -231,7 +256,7 @@ every entry's magnitude at or below the stated bound. -/
 def magCap (e : BPair) (S : Mat) : Prop :=
   (S.all (fun r => r.all (fun x => decide (windowsep.mag x ≤ e)))) = true
 
-instance (e : BPair) (S : Mat) : Decidable (magCap e S) :=
+instance instGappos1 (e : BPair) (S : Mat) : Decidable (magCap e S) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The cap's entry read at stated keys. -/
@@ -387,7 +412,7 @@ private theorem symAdd (o : Nat) (S : Mat) (rho : ground.Pos)
       (inertia.transposeM_matScale rho o (idMat o)
         (elim.rowsLen_of_sqAt (elim.sqAt_idMat o)))
       (inertia.matScale_matOne rho
-        (by rw [inertia.transposeM_idMat o]; exact elim.matOne_refl _))
+        (by rw [elim.transposeM_idMat o]; exact elim.matOne_refl _))
   exact elim.matOne_symm
     (elim.transposeM_matAdd_sym (matScale rho (idMat o)) S
       (sqAt_scaleId o rho) hS hsI (elim.matOne_symm hsym))
@@ -411,7 +436,6 @@ private theorem capQuad (o : Nat) (S : Mat) (e : BPair)
   have hdom : ∀ i, i < o →
       decimation.offFold i (ground.getAt ([] : List BPair)
           (matAdd (matScale rho (idMat o)) S) i)
-        + ground.getAt BPair.unit (List.replicate o BPair.unit) i
       ≤ ground.getAt BPair.unit (ground.getAt ([] : List BPair)
           (matAdd (matScale rho (idMat o)) S) i) i := by
     intro i hi
@@ -424,7 +448,7 @@ private theorem capQuad (o : Nat) (S : Mat) (e : BPair)
     have hrSl : (ground.getAt ([] : List BPair) S i).length = o :=
       elim.rowsLen_getAt _ i (elim.rowsLen_of_sqAt hS)
         (by rw [hSl]; exact hi)
-    rw [hrow, ground.getAt_replicate_self BPair.unit o i,
+    rw [hrow,
       elim.getAt_vecAdd _ _ i (by rw [hrXl]; exact hi)
         (by rw [hrSl]; exact hi),
       entry_scaleId o rho i i hi hi, if_pos rfl]
@@ -466,17 +490,16 @@ private theorem capQuad (o : Nat) (S : Mat) (e : BPair)
         ground.one_mul rho, ground.add_assoc rho Pos.one rho,
         ground.add_comm Pos.one rho,
         ← ground.add_assoc rho rho Pos.one]
-    refine ground.leB_congr_left
-      (BPair.oneValue_symm (BPair.add_unit _)) ?_
     exact ground.leB_trans hmv
       (ground.leB_add (Or.inl hscale1) hswapii)
   have hDsq : sqAt (matAdd (matScale rho (idMat o)) S) o :=
     elim.sqAt_matAdd o _ S hIsq hS
-  exact decimation.dom_quad
-    (matAdd (matScale rho (idMat o)) S) o
-    (List.replicate o BPair.unit) hDsq
-    (ground.length_replicate BPair.unit o)
-    (symAdd o S rho hS hsym) hdom u hu
+  refine ground.leB_congr_left
+    (BPair.oneValue_symm (elim.dotN_nullL (List.replicate o BPair.unit)
+      (List.zipWith (· * ·) u u) (poly.unitTail_replicate o))) ?_
+  exact decimation.dom_unit (matAdd (matScale rho (idMat o)) S) hDsq
+    (symAdd o S rho hS hsym)
+    (decimation.domAt_of_rows (n := o) _ (elim.sqAt_len hDsq) hdom) u hu
 
 /-- The entrywise cap at the memberwise swap, the magnitudes
 swap-blind. -/
@@ -501,43 +524,6 @@ private theorem magCap_swap {e : BPair} {S : Mat} (h : magCap e S) :
     windowsep.mag_swap]
   exact ground.all_getAt BPair.unit _
     (ground.all_getAt ([] : List BPair) _ h i hil) j hjl
-
-/-- The memberwise swap keeps the entrywise symmetry. -/
-private theorem swapSym (o : Nat) (S : Mat) (hS : sqAt S o)
-    (hsym : symmRead S) :
-    symmRead (elim.matSwap S) := by
-  have hSsq := elim.sqAt_matSwap o S hS
-  have hDl := elim.sqAt_len hSsq
-  have hDr := elim.rowsLen_of_sqAt hSsq
-  have hTl : (transposeM (elim.matSwap S)).length = o :=
-    elim.transposeLen _ hDr hDl
-  have hTr : elim.rowsLen o (transposeM (elim.matSwap S)) := by
-    have h0 := elim.rowsLen_transposeM (elim.matSwap S)
-    rw [hDl] at h0
-    exact h0
-  refine elim.matOne_of_entries _ _ o hDl hDr hTl hTr ?_
-  intro i j hi hj
-  have hent : ∀ a b : Nat, a < o → b < o →
-      ground.getAt BPair.unit (ground.getAt ([] : List BPair)
-          (elim.matSwap S) a) b
-        = (ground.getAt BPair.unit
-            (ground.getAt ([] : List BPair) S a) b).swap := by
-    intro a b ha hb
-    have hal : a < S.length := by
-      rw [elim.sqAt_len hS]
-      exact ha
-    have hbl : b < (ground.getAt ([] : List BPair) S a).length := by
-      rw [elim.rowsLen_getAt _ a (elim.rowsLen_of_sqAt hS) hal]
-      exact hb
-    show ground.getAt BPair.unit (ground.getAt ([] : List BPair)
-        (S.map (fun r => r.map BPair.swap)) a) b = _
-    rw [ground.getAt_map ([] : List BPair) ([] : List BPair)
-        (fun r => r.map BPair.swap) S a hal,
-      ground.getAt_map BPair.unit BPair.unit BPair.swap _ b hbl]
-  rw [elim.getAt_transposeM BPair.unit _ hDr i j hi
-      (by rw [hDl]; exact hj),
-    hent i j hi hj, hent j i hj hi]
-  exact ground.swap_congr (elim.symmRead_entry S hS hsym i j hi hj)
 
 /-- (`thm:gappos`(v)'s priced cap, the upper side at the identity
 gram): the scaled identity joined to an entrywise-capped symmetric
@@ -572,7 +558,7 @@ theorem capId_lo (o : Nat) (S : Mat) (e : BPair)
     (h : splitRead (siteDatum (matScale rho (idMat o)) S) sp) :
     psdAt sp :=
   capId_hi o (elim.matSwap S) e rho sp
-    (elim.sqAt_matSwap o S hS) (swapSym o S hS hsym)
+    (elim.sqAt_matSwap o S hS) (elim.symmRead_matSwap S hsym)
     (magCap_swap hcap) hcl h
 
 /-- The sandwich's lower comparison (`thm:gappos`(v)): at couplings
@@ -727,9 +713,12 @@ set_option genInjectivity false in
 /-- One cell of the flat window's list read at its data
 (`thm:gappos`(ii), (iv)): the cell's located segment `[lo, hi]` in
 the root coordinate, its level pair `⟨ax : ay⟩ < ⟨tx : ty⟩` with the
-gap witness, the two level carriers' pivot covers over the segment,
-one sample point with its count at both carriers, and the two sample
-splits. -/
+gap witness, the tower places `tw` with the dominance read's bound
+`[dN : dD]` (`thm:decimation`(ii)'s tower block, `lem:freecell`'s
+dominance family), the two level carriers' pivot covers over the
+segment at the cleared tower deflation, one sample point with its
+count at both deflated carriers, and the two sample splits at the
+head's order. -/
 structure Cell (o : Nat) where
   lo : CPair
   hi : CPair
@@ -738,30 +727,59 @@ structure Cell (o : Nat) where
   tx : Pos
   ty : Pos
   gp : Pos
+  tw : List Nat
+  dN : BPair
+  dD : BPair
   covA : cellcount.Cover
   covT : cellcount.Cover
   sn : BPair
   sc : Pos
   g : Nat
-  spA : Split o
-  spT : Split o
+  spA : Split (cellcount.compl tw o).length
+  spT : Split (cellcount.compl tw o).length
 
-/-- The cell's read: both level carriers covered over the segment
-(`lem:cellcount`'s pivot cover at `lem:freecell`'s carrier), the
-sample inside the segment at the ground count `g ≥ 1` on both, and
-the level pair's gap. -/
+/-- The cell's read: both level carriers' tower deflations, cleared
+once, covered over the segment at the head's order, the complement
+places' count, and the clearing `(k + 1)·2` (`lem:cellcount`'s
+pivot cover at `lem:freecell`'s carrier deflated at the tower
+places, `cellcount.pdeflP`), the sample
+inside the segment at the ground count `g ≥ 1` on both, the level
+pair's gap, the tower places inside the order and distinct, and both
+carriers' tower blocks dominant over the segment at the stated bound
+(`decimation.domRead`, `thm:decimation`(ii)'s comparison as one read
+in the root coordinate); at a vacant tower the decimated head is the
+carrier itself at the window's order (`decimation.towerHead`); and the
+segment sits at or
+beyond the sum's unit in the root coordinate, the free end its
+foot (`thm:gappos`(ii)'s free cell at the free end, the root
+coordinate's segment from the free end in `thm:main`(i)'s
+proof). -/
 def cellRead {o : Nat} (E M G : Mat) (c : Cell o) : Prop :=
-  cellcount.coverRead (freecell.freePMat E M G c.ax c.ay) o 2 c.lo c.hi c.covA
-  ∧ cellcount.coverRead (freecell.freePMat E M G c.tx c.ty) o 2 c.lo c.hi c.covT
+  cellcount.coverRead
+    (decimation.towerHead c.tw o (freecell.freePMat E M G c.ax c.ay))
+    (cellcount.compl c.tw o).length ((c.tw.length + 1) * 2) c.lo c.hi c.covA
+  ∧ cellcount.coverRead
+    (decimation.towerHead c.tw o (freecell.freePMat E M G c.tx c.ty))
+    (cellcount.compl c.tw o).length ((c.tw.length + 1) * 2) c.lo c.hi c.covT
   ∧ c.lo ≤ (⟨c.sn, c.sc⟩ : CPair)
   ∧ (⟨c.sn, c.sc⟩ : CPair) ≤ c.hi
-  ∧ cellcount.countAt (freecell.freePMat E M G c.ax c.ay) 2 c.sn c.sc c.g c.spA
-  ∧ cellcount.countAt (freecell.freePMat E M G c.tx c.ty) 2 c.sn c.sc c.g c.spT
+  ∧ cellcount.countAt
+    (decimation.towerHead c.tw o (freecell.freePMat E M G c.ax c.ay))
+    ((c.tw.length + 1) * 2) c.sn c.sc c.g c.spA
+  ∧ cellcount.countAt
+    (decimation.towerHead c.tw o (freecell.freePMat E M G c.tx c.ty))
+    ((c.tw.length + 1) * 2) c.sn c.sc c.g c.spT
   ∧ 1 ≤ c.g
   ∧ c.ax + c.ty + c.gp = c.tx + c.ay
+  ∧ cellcount.pieceRead o c.tw
+  ∧ decimation.domRead (split.pselM c.tw c.tw (freecell.freePMat E M G c.ax c.ay))
+      c.lo c.hi c.dN c.dD
+  ∧ decimation.domRead (split.pselM c.tw c.tw (freecell.freePMat E M G c.tx c.ty))
+      c.lo c.hi c.dN c.dD
+  ∧ stage.unitC ≤ c.lo
 
-instance {o : Nat} (E M G : Mat) (c : Cell o) : Decidable (cellRead E M G c) :=
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ = _))
+instance instGappos2 {o : Nat} (E M G : Mat) (c : Cell o) : Decidable (cellRead E M G c) :=
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ = _ ∧ _ ∧ _ ∧ _ ∧ _))
 
 /-- The cell list from a stated point: each cell's read, its segment
 containing the running covered point, and the next cell from its
@@ -780,7 +798,7 @@ def decCellsRead {o : Nat} (E M G : Mat) :
     have : Decidable (cellsRead E M G c.hi rest) := decCellsRead E M G c.hi rest
     inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
 
-instance {o : Nat} (E M G : Mat) (cur : CPair) (l : List (Cell o)) :
+instance instGappos3 {o : Nat} (E M G : Mat) (cur : CPair) (l : List (Cell o)) :
     Decidable (cellsRead E M G cur l) := decCellsRead E M G cur l
 
 /-- The list's top: the last cell's own. -/
@@ -800,7 +818,7 @@ the flat window). -/
 def gapsAt {o : Nat} (E0 kn kd : Pos) (cells : List (Cell o)) : Prop :=
   (cells.all (fun c => decide (E0 * kn ≤ kd * c.gp))) = true
 
-instance {o : Nat} (E0 kn kd : Pos) (cells : List (Cell o)) :
+instance instGappos4 {o : Nat} (E0 kn kd : Pos) (cells : List (Cell o)) :
     Decidable (gapsAt E0 kn kd cells) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -810,14 +828,174 @@ theorem gapsAt_mem {o : Nat} {E0 kn kd : Pos} {cells : List (Cell o)}
     E0 * kn ≤ kd * c.gp :=
   of_decide_eq_true (ground.all_of_mem _ cells h c hc)
 
+/-- One level carrier's count at a point of the cell's segment is the
+sample's (`thm:gappos`(iv) at the decimated head): the tower block
+evaluates positive definite at every point of the segment, the
+dominance read along it (`decimation.dom_segment`,
+`decimation.dom_pd`) with its determinant on its upper side
+(`inertia.minor_pos_of_pd`), so the carrier's count is its tower
+deflation's, cleared once, at the further places
+(`inertia.rev_placesP` at `cellcount.evalPC_pdeflP`, the solve
+`cellcount.pdeflW_solve`), and the deflated head's count is one
+integer over the segment (`cellcount.cellCountP` at
+`cellcount.evalPC_pdeflP_symm`, the deflation symmetric at every
+segment point where the pivot sits off the unit); at a vacant tower
+the deflation is the carrier itself. -/
+private theorem headCount {o : Nat} (E M G : Mat)
+    (hE : sqAt E o) (hM : sqAt M o) (hG : sqAt G o)
+    (hEs : symmRead E) (hMs : symmRead M) (hGs : symmRead G)
+    (x y : Pos) (tw : List Nat) (dN dD : BPair) (lo hi : CPair)
+    (cov : cellcount.Cover) (sn : BPair) (sc : Pos) (g : Nat)
+    (sp : Split (cellcount.compl tw o).length)
+    (hcov : cellcount.coverRead
+      (decimation.towerHead tw o (freecell.freePMat E M G x y))
+      (cellcount.compl tw o).length ((tw.length + 1) * 2) lo hi cov)
+    (hls : lo ≤ (⟨sn, sc⟩ : CPair)) (hsu : (⟨sn, sc⟩ : CPair) ≤ hi)
+    (hcnt : cellcount.countAt
+      (decimation.towerHead tw o (freecell.freePMat E M G x y))
+      ((tw.length + 1) * 2) sn sc g sp)
+    (hpiece : cellcount.pieceRead o tw)
+    (hdom : decimation.domRead
+      (split.pselM tw tw (freecell.freePMat E M G x y)) lo hi dN dD)
+    (hfoot : stage.unitC ≤ lo)
+    (n cc : Pos)
+    (hlo : lo ≤ (⟨BPair.ofPos n, cc⟩ : CPair))
+    (hhi : (⟨BPair.ofPos n, cc⟩ : CPair) ≤ hi)
+    (spx : Split o)
+    (hx : splitRead (cellcount.evalPC (freecell.freePMat E M G x y)
+      (BPair.ofPos n) cc 2) spx) :
+    revAt spx = g := by
+  have hsh := freecell.pShapeAt_freePMat E M G x y o hE hM hG
+  have hsymP := freecell.freePMat_sym E M G x y o hE hM hG hEs hMs hGs
+  have hsymE : ∀ (zn : BPair) (zc : Pos),
+      matOneValue
+        (transposeM (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2))
+        (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2) :=
+    fun zn zc => matOne_symm (cellcount.evalPC_symAt _ o 2 zn zc
+      (cellcount.pShape_len hsh) (cellcount.pShape_rows hsh) hsymP)
+  match tw, sp, hcov, hcnt, hpiece, hdom with
+  | [], sp, hcov, hcnt, hpiece, _ =>
+    have hL : (cellcount.compl [] o).length = o :=
+      (Nat.zero_add _).symm.trans
+        (cellcount.compl_length (o := o) (idx := []) hpiece.2 hpiece.1)
+    revert hx
+    revert spx
+    rw [← hL]
+    intro spx hx
+    exact cellcount.cellCountP _ 2 g lo hi cov hcov (fun zn zc _ _ => hsymE zn zc)
+      sn sc hls hsu sp hcnt (BPair.ofPos n) cc hlo hhi spx hx
+  | i :: t, sp, hcov, hcnt, hpiece, hdom =>
+    have hk0 : 0 < (i :: t).length := Nat.succ_pos _
+    have hidx : ((i :: t).all (fun k => Nat.blt k o)) = true := hpiece.1
+    have hrest : ((cellcount.compl (i :: t) o).all (fun j => Nat.blt j o)) = true :=
+      cellcount.all_compl (i :: t) o
+    have hTsq : ∀ (zn : BPair) (zc : Pos), sqAt (selM (i :: t) (i :: t)
+        (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2))
+        (i :: t).length :=
+      fun _ _ => sqAt_of (length_selM _ _ _) (rowsLen_selM (i :: t) _ (i :: t))
+    have hTsym : ∀ (zn : BPair) (zc : Pos), matOneValue
+        (transposeM (selM (i :: t) (i :: t)
+          (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2)))
+        (selM (i :: t) (i :: t)
+          (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2)) :=
+      fun zn zc => transposeM_selM (i :: t) (i :: t) _ o
+        (cellcount.evalPC_sqAt hsh zn zc) (hsymE zn zc) hk0 hidx hidx
+    have hT : ∀ (zn : BPair) (zc : Pos), splitRead
+        (selM (i :: t) (i :: t)
+          (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2))
+        (mkSplit (i :: t).length (selM (i :: t) (i :: t)
+          (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2))) :=
+      fun zn zc => mkSplit_read _ _ (hTsq zn zc) (hTsym zn zc)
+    have hpdAt : ∀ (zn : BPair) (zc : Pos), lo ≤ (⟨zn, zc⟩ : CPair) →
+        (⟨zn, zc⟩ : CPair) ≤ hi →
+        pdAt (mkSplit (i :: t).length (selM (i :: t) (i :: t)
+          (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2))) := by
+      intro zn zc hlz hzh
+      have hgp : decimation.gapPos (selM (i :: t) (i :: t)
+          (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2)) := by
+        rw [cellcount.selM_evalPC zn zc 2 _ (i :: t) (i :: t)]
+        exact decimation.dom_segment _ 2 lo hi dN dD hdom
+          (cellcount.deg_pselM _ 2 (cellcount.ent_ble hsh) (i :: t) (i :: t))
+          zn (stage.unitC_le_fst (CPair.le_trans hfoot hlz)) zc hlz hzh
+      exact decimation.dom_pd _ hgp _ (hT zn zc)
+    have hPposAt : ∀ (zn : BPair) (zc : Pos), lo ≤ (⟨zn, zc⟩ : CPair) →
+        (⟨zn, zc⟩ : CPair) ≤ hi →
+        BPair.unit < minor (selM (i :: t) (i :: t)
+          (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2)) :=
+      fun zn zc hlz hzh => minor_pos_of_pd _ _ (hT zn zc) (hpdAt zn zc hlz hzh)
+    have hshD := cellcount.pShape_pdeflP (freecell.freePMat E M G x y) o 2 (i :: t)
+      (cellcount.compl (i :: t) o) hsh
+    have hDsq := cellcount.evalPC_sqAt hshD (BPair.ofPos n) cc
+    have hDsym : ∀ (zn : BPair) (zc : Pos), lo ≤ (⟨zn, zc⟩ : CPair) →
+        (⟨zn, zc⟩ : CPair) ≤ hi →
+        matOneValue
+          (transposeM (cellcount.evalPC (cellcount.pdeflP (i :: t)
+            (cellcount.compl (i :: t) o) (freecell.freePMat E M G x y)) zn zc
+              (((i :: t).length + 1) * 2)))
+          (cellcount.evalPC (cellcount.pdeflP (i :: t)
+            (cellcount.compl (i :: t) o) (freecell.freePMat E M G x y)) zn zc
+              (((i :: t).length + 1) * 2)) :=
+      fun zn zc hlz hzh => cellcount.evalPC_pdeflP_symm (o := o) _ 2 (i :: t) _ zn zc hsh
+        (hsymE zn zc) hk0 hidx hrest (ground.offOfUnitLt (hPposAt zn zc hlz hzh))
+    have hD := mkSplit_read _ _ hDsq (hDsym (BPair.ofPos n) cc hlo hhi)
+    have hgD := cellcount.cellCountP _ _ g lo hi cov hcov hDsym sn sc hls hsu sp hcnt
+      (BPair.ofPos n) cc hlo hhi _ hD
+    have hdefl := cellcount.evalPC_pdeflP (o := o) _ 2 (i :: t) (cellcount.compl (i :: t) o)
+      (BPair.ofPos n) cc hsh (hsymE (BPair.ofPos n) cc) hk0 hidx hrest
+    have hPw := cellcount.pdeflW_solve _ 2 (i :: t) (cellcount.compl (i :: t) o)
+      (BPair.ofPos n) cc (cellcount.ent_ble hsh) hk0
+    have hCwl : (cellcount.evalPC (cellcount.pdeflW (i :: t) (cellcount.compl (i :: t) o)
+        (freecell.freePMat E M G x y)) (BPair.ofPos n) cc ((i :: t).length * 2)).length
+        = (i :: t).length :=
+      (cellcount.length_evalPC _ _ _ _).trans (cellcount.length_pdeflW _ _ _)
+    have hCwr : rowsLen (cellcount.compl (i :: t) o).length
+        (cellcount.evalPC (cellcount.pdeflW (i :: t) (cellcount.compl (i :: t) o)
+          (freecell.freePMat E M G x y)) (BPair.ofPos n) cc ((i :: t).length * 2)) :=
+      cellcount.rowsLen_evalPC _ _ _ _ _ (cellcount.rowsLen_pdeflW (i :: t) _ _ hk0)
+    have hBel : (selM (i :: t) (cellcount.compl (i :: t) o)
+        (cellcount.evalPC (freecell.freePMat E M G x y) (BPair.ofPos n) cc 2)).length
+        = (i :: t).length :=
+      length_selM _ _ _
+    have hDefSq := sqAt_deflMatP
+      (selM (i :: t) (i :: t)
+        (cellcount.evalPC (freecell.freePMat E M G x y) (BPair.ofPos n) cc 2))
+      (selM (i :: t) (cellcount.compl (i :: t) o)
+        (cellcount.evalPC (freecell.freePMat E M G x y) (BPair.ofPos n) cc 2))
+      (selM (cellcount.compl (i :: t) o) (cellcount.compl (i :: t) o)
+        (cellcount.evalPC (freecell.freePMat E M G x y) (BPair.ofPos n) cc 2))
+      (cellcount.evalPC (cellcount.pdeflW (i :: t) (cellcount.compl (i :: t) o)
+        (freecell.freePMat E M G x y)) (BPair.ofPos n) cc ((i :: t).length * 2))
+      (cellcount.compl (i :: t) o).length
+      (length_transposeM _ (rowsLen_selM _ _ _) (by rw [hBel]; exact hk0))
+      (length_transposeM _ hCwr (by rw [hCwl]; exact hk0))
+      (length_selM _ _ _) (rowsLen_selM _ _ _)
+    have hD' := splitRead_congr _ _ hDefSq hdefl _ hD
+    have hlen : ((i :: t) ++ cellcount.compl (i :: t) o).length = o := by
+      rw [ground.length_append]
+      exact cellcount.compl_length hpiece.2 hidx
+    have hb : (((i :: t) ++ cellcount.compl (i :: t) o).all (fun k => Nat.blt k o)) = true := by
+      rw [ground.all_append, hidx, hrest]
+      rfl
+    have hMsq : sqAt (cellcount.evalPC (freecell.freePMat E M G x y)
+        (BPair.ofPos n) cc 2) o :=
+      cellcount.evalPC_sqAt hsh _ _
+    have h := rev_placesP _ (i :: t) (cellcount.compl (i :: t) o) hk0 hMsq
+      (hsymE (BPair.ofPos n) cc) hlen
+      (cellcount.distinct_append_compl (o := o) hpiece.2) hb _ hCwl hCwr hPw
+      (minor_pos_of_pd _ _ (hT (BPair.ofPos n) cc) (hpdAt (BPair.ofPos n) cc hlo hhi))
+      spx hx _ (hT (BPair.ofPos n) cc) _ hD'
+    rw [h, (hpdAt (BPair.ofPos n) cc hlo hhi).1, Nat.zero_add]
+    exact hgD
+
 /-- A cell's flat window at every root-coordinate point of its
 segment (`thm:gappos`(iv)): at the point `[n : c]` the ray
 `[c² : n²]`'s pencil reads count `g` at both levels scaled by the
-clearing, the counts cell functions read once
-(`cellcount.cellCount` at the carrier's cleared evaluation,
-`freecell.freePMat_eval` the bridge), and the level order keeps. -/
+clearing, each count the cell's sample read at the point through the
+tower's decimation (`headCount`, `freecell.freePMat_eval` the bridge
+to the carrier's cleared evaluation), and the level order keeps. -/
 theorem cell_flat {o : Nat} (E M G : Mat)
     (hE : sqAt E o) (hM : sqAt M o) (hG : sqAt G o)
+    (hEs : symmRead E) (hMs : symmRead M) (hGs : symmRead G)
     (c : Cell o) (hc : cellRead E M G c) (n cc : Pos)
     (hlo : c.lo ≤ (⟨BPair.ofPos n, cc⟩ : CPair))
     (hhi : (⟨BPair.ofPos n, cc⟩ : CPair) ≤ c.hi)
@@ -843,19 +1021,141 @@ theorem cell_flat {o : Nat} (E M G : Mat)
     splitRead_congr _ _ (cellcount.evalPC_sqAt hshT _ _)
       (matOne_symm (freecell.freePMat_eval E M G c.tx c.ty o hE hM hG n cc))
       spt ht
+  obtain ⟨hcA, hcT, hls, hsu, hnA, hnT, hg1, hgap, hpiece, hdA, hdT, hfoot⟩ := hc
   have hga : revAt spa = c.g :=
-    cellcount.cellCount _ 2 c.g c.lo c.hi c.covA hc.1 c.sn c.sc hc.2.2.1
-      hc.2.2.2.1 c.spA hc.2.2.2.2.1 (BPair.ofPos n) cc hlo hhi spa ha'
+    headCount E M G hE hM hG hEs hMs hGs c.ax c.ay c.tw c.dN c.dD c.lo c.hi
+      c.covA c.sn c.sc c.g c.spA hcA hls hsu hnA hpiece hdA hfoot n cc hlo hhi spa ha'
   have hgt : revAt spt = c.g :=
-    cellcount.cellCount _ 2 c.g c.lo c.hi c.covT hc.2.1 c.sn c.sc hc.2.2.1
-      hc.2.2.2.1 c.spT hc.2.2.2.2.2.1 (BPair.ofPos n) cc hlo hhi spt ht'
-  refine ⟨⟨hP, hG, ha, hga⟩, ⟨hP, hG, ht, hgt⟩, hc.2.2.2.2.2.2.1, ?_⟩
+    headCount E M G hE hM hG hEs hMs hGs c.tx c.ty c.tw c.dN c.dD c.lo c.hi
+      c.covT c.sn c.sc c.g c.spT hcT hls hsu hnT hpiece hdT hfoot n cc hlo hhi spt ht'
+  refine ⟨⟨hP, hG, ha, hga⟩, ⟨hP, hG, ht, hgt⟩, hg1, ?_⟩
   have hlt : (c.ax + c.ty) * (cc * cc) < (c.tx + c.ay) * (cc * cc) :=
-    ground.mul_lt_mul_right (cc * cc) ⟨c.gp, hc.2.2.2.2.2.2.2⟩
+    ground.mul_lt_mul_right (cc * cc) ⟨c.gp, hgap⟩
   rw [ground.right_distrib, ground.right_distrib, ground.mul_comm c.ax (cc * cc),
     ground.mul_comm c.ty (cc * cc), ground.mul_comm c.tx (cc * cc),
     ground.mul_comm c.ay (cc * cc)] at hlt
   exact hlt
+
+
+/-- One level carrier's determinant off the sum's unit at every
+point of a covered segment: at the tower places the carrier's block
+is positive definite by the dominance read
+(`inertia.minor_pos_of_pd`) and its once-cleared deflation is covered
+(`cellcount.cover_rootfreeP`), so the carrier's determinant is off
+the unit (`cellcount.pdeflP_rootfree`); at a vacant tower the head is
+the carrier itself and the cover reads it. -/
+private theorem carrierRootfree {o : Nat} (E M G : Mat)
+    (hE : sqAt E o) (hM : sqAt M o) (hG : sqAt G o)
+    (hEs : symmRead E) (hMs : symmRead M) (hGs : symmRead G)
+    (x y : Pos) (tw : List Nat) (dN dD : BPair) (lo hi : CPair)
+    (cov : cellcount.Cover)
+    (hcov : cellcount.coverRead
+      (decimation.towerHead tw o (freecell.freePMat E M G x y))
+      (cellcount.compl tw o).length ((tw.length + 1) * 2) lo hi cov)
+    (hpiece : cellcount.pieceRead o tw)
+    (hdom : decimation.domRead
+      (split.pselM tw tw (freecell.freePMat E M G x y)) lo hi dN dD)
+    (hfoot : stage.unitC ≤ lo) (hlt : lo < hi)
+    (zn : BPair) (zc : Pos)
+    (hlz : lo ≤ (⟨zn, zc⟩ : CPair)) (hzh : (⟨zn, zc⟩ : CPair) ≤ hi) :
+    ¬ (minor (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2)).oneValue
+      BPair.unit := by
+  have hsh := freecell.pShapeAt_freePMat E M G x y o hE hM hG
+  have hsymP := freecell.freePMat_sym E M G x y o hE hM hG hEs hMs hGs
+  have hsymE : ∀ (zn : BPair) (zc : Pos),
+      matOneValue
+        (transposeM (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2))
+        (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2) :=
+    fun zn zc => matOne_symm (cellcount.evalPC_symAt _ o 2 zn zc
+      (cellcount.pShape_len hsh) (cellcount.pShape_rows hsh) hsymP)
+  match tw, hcov, hpiece, hdom with
+  | [], hcov, hpiece, _ =>
+    have hL : (cellcount.compl [] o).length = o :=
+      (Nat.zero_add _).symm.trans
+        (cellcount.compl_length (o := o) (idx := []) hpiece.2 hpiece.1)
+    have hshS : cellcount.pShapeAt (decimation.towerHead [] o
+        (freecell.freePMat E M G x y)) (cellcount.compl [] o).length 2 := by
+      rw [hL]
+      exact hsh
+    exact cellcount.cover_rootfreeP cov _ _ 2 lo hi hcov hshS
+      (fun zn zc _ _ => hsymE zn zc) hlt zn zc hlz hzh
+  | i :: t, hcov, hpiece, hdom =>
+    have hk0 : 0 < (i :: t).length := Nat.succ_pos _
+    have hidx : ((i :: t).all (fun k => Nat.blt k o)) = true := hpiece.1
+    have hrest : ((cellcount.compl (i :: t) o).all (fun j => Nat.blt j o)) = true :=
+      cellcount.all_compl (i :: t) o
+    have hTsq : ∀ (zn : BPair) (zc : Pos), sqAt (selM (i :: t) (i :: t)
+        (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2))
+        (i :: t).length :=
+      fun _ _ => sqAt_of (length_selM _ _ _) (rowsLen_selM (i :: t) _ (i :: t))
+    have hTsym : ∀ (zn : BPair) (zc : Pos), matOneValue
+        (transposeM (selM (i :: t) (i :: t)
+          (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2)))
+        (selM (i :: t) (i :: t)
+          (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2)) :=
+      fun zn zc => transposeM_selM (i :: t) (i :: t) _ o
+        (cellcount.evalPC_sqAt hsh zn zc) (hsymE zn zc) hk0 hidx hidx
+    have hT : ∀ (zn : BPair) (zc : Pos), splitRead
+        (selM (i :: t) (i :: t)
+          (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2))
+        (mkSplit (i :: t).length (selM (i :: t) (i :: t)
+          (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2))) :=
+      fun zn zc => mkSplit_read _ _ (hTsq zn zc) (hTsym zn zc)
+    have hpdAt : ∀ (zn : BPair) (zc : Pos), lo ≤ (⟨zn, zc⟩ : CPair) →
+        (⟨zn, zc⟩ : CPair) ≤ hi →
+        pdAt (mkSplit (i :: t).length (selM (i :: t) (i :: t)
+          (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2))) := by
+      intro zn zc hlz hzh
+      have hgp : decimation.gapPos (selM (i :: t) (i :: t)
+          (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2)) := by
+        rw [cellcount.selM_evalPC zn zc 2 _ (i :: t) (i :: t)]
+        exact decimation.dom_segment _ 2 lo hi dN dD hdom
+          (cellcount.deg_pselM _ 2 (cellcount.ent_ble hsh) (i :: t) (i :: t))
+          zn (stage.unitC_le_fst (CPair.le_trans hfoot hlz)) zc hlz hzh
+      exact decimation.dom_pd _ hgp _ (hT zn zc)
+    have hPposAt : ∀ (zn : BPair) (zc : Pos), lo ≤ (⟨zn, zc⟩ : CPair) →
+        (⟨zn, zc⟩ : CPair) ≤ hi →
+        BPair.unit < minor (selM (i :: t) (i :: t)
+          (cellcount.evalPC (freecell.freePMat E M G x y) zn zc 2)) :=
+      fun zn zc hlz hzh => minor_pos_of_pd _ _ (hT zn zc) (hpdAt zn zc hlz hzh)
+    have hshD := cellcount.pShape_pdeflP (freecell.freePMat E M G x y) o 2 (i :: t)
+      (cellcount.compl (i :: t) o) hsh
+    have hDsym : ∀ (zn : BPair) (zc : Pos), lo ≤ (⟨zn, zc⟩ : CPair) →
+        (⟨zn, zc⟩ : CPair) ≤ hi →
+        matOneValue
+          (transposeM (cellcount.evalPC (cellcount.pdeflP (i :: t)
+            (cellcount.compl (i :: t) o) (freecell.freePMat E M G x y)) zn zc
+              (((i :: t).length + 1) * 2)))
+          (cellcount.evalPC (cellcount.pdeflP (i :: t)
+            (cellcount.compl (i :: t) o) (freecell.freePMat E M G x y)) zn zc
+              (((i :: t).length + 1) * 2)) :=
+      fun zn zc hlz hzh => cellcount.evalPC_pdeflP_symm (o := o) _ 2 (i :: t) _ zn zc hsh
+        (hsymE zn zc) hk0 hidx hrest (ground.offOfUnitLt (hPposAt zn zc hlz hzh))
+    have hD := cellcount.cover_rootfreeP cov _ _ _ lo hi hcov hshD hDsym hlt zn zc hlz hzh
+    exact cellcount.pdeflP_rootfree _ 2 (i :: t) hpiece hsh hk0 zn zc (hsymE zn zc)
+      (ground.offOfUnitLt (hPposAt zn zc hlz hzh)) hD
+
+/-- The cell's covers read both level carriers' determinants off the
+sum's unit at every point of the cell's segment (`lem:cellcount`'s
+root-freeness read at `lem:freecell`'s jump family, the pencil
+determinant's roots at the certificate's fixed pair): the tower's
+dominance and the covers beneath it (`carrierRootfree`). -/
+theorem cell_rootfree {o : Nat} (E M G : Mat)
+    (hE : sqAt E o) (hM : sqAt M o) (hG : sqAt G o)
+    (hEs : symmRead E) (hMs : symmRead M) (hGs : symmRead G)
+    (c : Cell o) (hc : cellRead E M G c) (hlt : c.lo < c.hi)
+    (zn : BPair) (zc : Pos)
+    (hlz : c.lo ≤ (⟨zn, zc⟩ : CPair)) (hzh : (⟨zn, zc⟩ : CPair) ≤ c.hi) :
+    ¬ (minor (cellcount.evalPC (freecell.freePMat E M G c.ax c.ay) zn zc 2)).oneValue
+        BPair.unit
+    ∧ ¬ (minor (cellcount.evalPC (freecell.freePMat E M G c.tx c.ty) zn zc 2)).oneValue
+        BPair.unit :=
+  ⟨carrierRootfree E M G hE hM hG hEs hMs hGs c.ax c.ay c.tw c.dN c.dD c.lo c.hi
+    c.covA hc.1 hc.2.2.2.2.2.2.2.2.1 hc.2.2.2.2.2.2.2.2.2.1
+    hc.2.2.2.2.2.2.2.2.2.2.2 hlt zn zc hlz hzh,
+   carrierRootfree E M G hE hM hG hEs hMs hGs c.tx c.ty c.tw c.dN c.dD c.lo c.hi
+    c.covT hc.2.1 hc.2.2.2.2.2.2.2.2.1 hc.2.2.2.2.2.2.2.2.2.2.1
+    hc.2.2.2.2.2.2.2.2.2.2.2 hlt zn zc hlz hzh⟩
 
 /-- Every point from the list's foot to its top sits in the segment
 of its located cell, a member of the list at its read
@@ -888,9 +1188,11 @@ theorem locate_read {o : Nat} (E M G : Mat) :
 /-- The root coordinate's rays read their cells directly
 (`thm:gappos`(v)): at every point `[n : c]` from the list's foot to
 its top the located cell's flat window holds at the ray
-`[c² : n²]`'s pencil. -/
+`[c² : n²]`'s pencil, the members' symmetry reads
+`lem:cellcount`'s symmetric-pencil hypothesis at the carrier. -/
 theorem point_flat {o : Nat} (E M G : Mat)
     (hE : sqAt E o) (hM : sqAt M o) (hG : sqAt G o)
+    (hEs : symmRead E) (hMs : symmRead M) (hGs : symmRead G)
     (cur : CPair) (c0 : Cell o) (cells : List (Cell o))
     (hcells : cellsRead E M G cur (c0 :: cells))
     (n cc : Pos) (h1 : cur ≤ (⟨BPair.ofPos n, cc⟩ : CPair))
@@ -909,7 +1211,8 @@ theorem point_flat {o : Nat} (E M G : Mat)
       (cc * cc * (locateCell c0 cells ⟨BPair.ofPos n, cc⟩).ty)
       (locateCell c0 cells ⟨BPair.ofPos n, cc⟩).g spa spt :=
   have hl := locate_read E M G cur c0 cells hcells _ h1 h2
-  cell_flat E M G hE hM hG _ hl.2.1 n cc hl.2.2.1 hl.2.2.2 spa spt ha ht
+  cell_flat E M G hE hM hG hEs hMs hGs _ hl.2.1 n cc hl.2.2.1 hl.2.2.2 spa spt
+    ha ht
 
 /-! The further pair rays (`thm:gappos`(v)): a ray `[α : β]` off the
 root coordinate reads its window at the root-coordinate ray
@@ -927,7 +1230,7 @@ def rayQ (al W tn : Pos) : Pos := (al + 1) * (4 * W * (2 * tn + 1))
 def rayPred (al be q : Pos) (k : Nat) : Prop :=
   be * (q * q) ≤ posOfSucc (k + 1) * posOfSucc (k + 1) * al
 
-instance (al be q : Pos) : DecidablePred (rayPred al be q) :=
+instance instGappos5 (al be q : Pos) : DecidablePred (rayPred al be q) :=
   fun _ => inferInstanceAs (Decidable (_ ≤ _))
 
 /-- The least key at the squared comparison, the search over the keys
@@ -939,6 +1242,12 @@ def rayK (al be q : Pos) : Nat :=
 at the squared comparison: the least key's successor,
 `p²α < βq² ≤ (p+1)²α`. -/
 def rayP (al be q : Pos) : Pos := posOfSucc (rayK al be q)
+
+/-- The least key's fast read: the halving search at the squared
+comparison from the origin over the keys at or below the weight's own
+value (`ground.bisectFrom`), one key with the walk (`rayKD_eq`). -/
+def rayKD (al be q : Pos) : Nat :=
+  bisectFrom (rayPred al be q) 0 (posVal (be * (q * q)))
 
 /-- The weights' gap, `βq²` against `p²α`: the margin read
 (`def:ground`'s difference at the balance pair). -/
@@ -972,16 +1281,31 @@ private theorem ltOfNotLe {a b : Pos} (h : ¬ b ≤ a) : a < b :=
   | .eq e => absurd (Or.inl e.symm) h
   | .gt g hg => absurd (Or.inr ⟨g, hg⟩) h
 
-/-- The search hits at the weight's own key. -/
-private theorem rayK_hit (al be q : Pos) : rayPred al be q (rayK al be q) := by
-  refine firstAt_hit (rayPred al be q) (posVal (be * (q * q))) 0 ?_
-  show be * (q * q) ≤ posOfSucc (0 + posVal (be * (q * q)) + 1)
-    * posOfSucc (0 + posVal (be * (q * q)) + 1) * al
-  rw [Nat.zero_add]
+/-- The comparison holds at the weight's own key. -/
+private theorem rayPred_bound (al be q : Pos) :
+    rayPred al be q (posVal (be * (q * q))) := by
   show be * (q * q) ≤ (be * (q * q) + Pos.one + Pos.one)
     * (be * (q * q) + Pos.one + Pos.one) * al
   exact ground.le_trans (posLeSelfAdd _ _) (ground.le_trans (posLeSelfAdd _ _)
     (ground.le_trans (leMulR _ _) (leMulR _ _)))
+
+/-- The search hits at the weight's own key. -/
+private theorem rayK_hit (al be q : Pos) : rayPred al be q (rayK al be q) :=
+  firstAt_hit (rayPred al be q) (posVal (be * (q * q))) 0
+    (by rw [Nat.zero_add]; exact rayPred_bound al be q)
+
+/-- The comparison steps up the keys, the successor's square at or
+beyond the key's. -/
+private theorem rayPred_step (al be q : Pos) (k : Nat) (h : rayPred al be q k) :
+    rayPred al be q (k + 1) := by
+  have hs : posOfSucc (k + 1) ≤ posOfSucc (k + 1 + 1) :=
+    posLeSelfAdd (posOfSucc (k + 1)) Pos.one
+  exact ground.le_trans h (ground.mul_le_mul_right al (posSqMono hs))
+
+/-- The fast read is the walk's key: the least held key at the
+comparison stepping up the keys. -/
+theorem rayKD_eq (al be q : Pos) : rayKD al be q = rayK al be q :=
+  bisectFrom_eq_firstAt _ (rayPred_step al be q) 0 _
 
 /-- The neighbor's two reads at a ray beyond `α`: `p²α < βq² ≤ (p+1)²α`. -/
 private theorem rayP_read (al be q : Pos) (h : al < be * (q * q)) :
@@ -1113,7 +1437,7 @@ theorem ray_core {o : Nat} (E M G : Mat)
     gapsAt_mem hgaps hl.1
   generalize locateCell c0 cells ⟨BPair.ofPos p, q⟩ = c at hl hk2 ⊢
   obtain ⟨_, hc, hlo, hhi⟩ := hl
-  have htie := hc.2.2.2.2.2.2.2
+  have htie := hc.2.2.2.2.2.2.2.1
   rw [ground.mul_comm 2 kn, ← ground.mul_assoc E0 kn 2] at hk2
   -- the gap of the weights and its bound
   have hkk_le : kk ≤ (2 * p + 1) * al := by
@@ -1187,10 +1511,11 @@ theorem ray_core {o : Nat} (E M G : Mat)
           (BPair.ofPos p) q 2)) := by
     intro x y hsym hsh
     have hr := mkSplit_read o _ (cellcount.evalPC_sqAt hsh (BPair.ofPos p) q)
-      (matOne_symm (cellcount.evalPC_symAt _ o 2 (BPair.ofPos p) q hsh hsym))
+      (matOne_symm (cellcount.evalPC_symAt _ o 2 (BPair.ofPos p) q
+        (cellcount.pShape_len hsh) (cellcount.pShape_rows hsh) hsym))
     exact splitRead_congr _ _ (siteSq _ _ _ hP)
       (freecell.freePMat_eval E M G x y o hE hM hG p q) _ hr
-  have hw0 := cell_flat E M G hE hM hG c hc p q hlo hhi _ _
+  have hw0 := cell_flat E M G hE hM hG hEs hMs hGs c hc p q hlo hhi _ _
     (mkAt c.ax c.ay hsymA hshA) (mkAt c.tx c.ty hsymT hshT)
   -- the window scaled by α
   have scaleSite : ∀ (u v : Pos),
@@ -1295,26 +1620,11 @@ theorem ray_core {o : Nat} (E M G : Mat)
     have hH' : sqAt (matScale (q * q) (pencil.rayH E M al be)) o :=
       sqAt_matScale o _ _ (pencil.sqAt_rayH E M o hE hM al be)
     -- the two levels' difference site at the target, the gram's scalar copy
-    have hdiff := siteDiff_scalar (matScale (q * q) (pencil.rayH E M al be)) G hH' hG
-      (al * (q * q * c.ax) + kk * W) (al * (q * q * c.ay))
+    have hsplit := levelDiff_split (matScale (q * q) (pencil.rayH E M al be)) G hH' hG
+      spG hGr hGp (al * (q * q * c.ax) + kk * W) (al * (q * q * c.ay))
       (al * (q * q * c.tx)) (al * (q * q * c.ty) + kk * W) gp' hgap
-    have hoffg : ¬ (BPair.ofPos gp').oneValue BPair.unit :=
-      ground.offOfUnitLt (ground.unitLtOfPos gp')
-    have hspd0 := scaleSplit_read (BPair.ofPos gp') hoffg G spG hGr
-    have hspd : splitRead (siteDatum
-        (siteDatum (matAdd (matScale (q * q) (pencil.rayH E M al be))
-          (matScale (al * (q * q * c.ay)) G))
-          (matScale (al * (q * q * c.ax) + kk * W) G))
-        (siteDatum (matAdd (matScale (q * q) (pencil.rayH E M al be))
-          (matScale (al * (q * q * c.ty) + kk * W) G))
-          (matScale (al * (q * q * c.tx)) G))) (scaleSplit (BPair.ofPos gp') spG) := by
-      refine splitRead_congr _ _ (sqAt_siteDatum o _ _ (siteSq _ _ _ hH') (siteSq _ _ _ hH'))
-        ?_ _ hspd0
-      exact matOne_trans (matOne_symm (matScale_scaleB gp' G)) (matOne_symm hdiff)
-    have hpd : psdAt (scaleSplit (BPair.ofPos gp') spG) := by
-      show revAt (scaleSplit (BPair.ofPos gp') spG) = 0
-      rw [scaleSplit_rev (BPair.ofPos gp') (ground.unitLtOfPos gp') spG]
-      exact hGp
+    have hspd := hsplit.1
+    have hpd := hsplit.2
     exact flat_transport (matScale al (pencil.rayH E M (q * q) (p * p)))
       (matScale (q * q) (pencil.rayH E M al be)) (matScale kk M) G (kk * W)
       (al * (q * q * c.ax)) (al * (q * q * c.ay)) (al * (q * q * c.tx))
@@ -1387,12 +1697,12 @@ whose compression reads the cut at the level raised by the cofactor
 width reads the cut itself at the level — the removed block's
 vacancy derived at the admissible cutoff's own data, the electric
 diagonal at or above the cutoff with the block's magnetic cap and
-the floor tie `x + ς + W + g = c + y`
+the floor tie `x + ς + W ≤ c + y`
 (`truncation.removed_psd`), and the window cuts transported to
 `𝒦(v)` within the priced modulus (`truncation.count_shift_le` at
 the vacant counts). -/
 theorem truncCut {k m : Nat} (H G M M1 M2 P G1 Q De G2 B : Mat)
-    (x y cw W s c g : Pos)
+    (x y cw W s c : Pos)
     (spU spL spF spD spd : Split (k + m))
     (spH : Split k) (spR spDi spG spB : Split m)
     (hcap : capAt M (matScale W G) spU spL)
@@ -1418,7 +1728,7 @@ theorem truncCut {k m : Nat} (H G M M1 M2 P G1 Q De G2 B : Mat)
     (hgB : splitRead G2 spG) (hpg : psdAt spG)
     (hL : splitRead (matAdd (matScale W G2) M2) spB)
     (hpL : psdAt spB)
-    (hlev : x + s + W + g = c + y)
+    (hlev : x + s + W ≤ c + y)
     (hsR : splitRead
       (siteDatum (matAdd Q (matScale y G2)) (matScale (x + s) G2)) spR)
     (hD : splitRead (blockJoin
@@ -1434,7 +1744,7 @@ theorem truncCut {k m : Nat} (H G M M1 M2 P G1 Q De G2 B : Mat)
       spd) :
     psdAt spF := by
   have hrPsd : psdAt spR :=
-    truncation.removed_psd Q De M2 G2 c W (x + s) y g spDi spG spB spR
+    truncation.removed_psd Q De M2 G2 c W (x + s) y spDi spG spB spR
       hQt hdi hpdi hgB hpg hL hpL hlev hsR
   have hr : countAtPair Q G2 (x + s) y 0 spR := ⟨hQ, hG2, hsR, hrPsd⟩
   have hf : countAtPair H G x y (revAt spF) spF := ⟨hH, hG, hsF, rfl⟩
@@ -1473,5 +1783,203 @@ theorem windowCut {n : Nat} (Et : Mat) (T Tw : SqMat n)
       (Nat.le_trans (Nat.le_of_eq hker.symm)
         (split.kernel_le_below _ (E0 * p) q)))
     sp hsp
+
+/-! The flat window across the truncation (`thm:truncation`; `thm:gappos`(iii)):
+a compression lowers each count and each level's downward shift is at most
+the shift cap, so the two cuts' values bracket each other at the priced
+width, the flat window carried each way with one end moved by the cap. -/
+
+/-- The removed block's floor tie at a level below the top: the top's
+tie `tx + ς + W ≤ c + ty` descends to the anchor `⟨ax : ay⟩` sitting
+below the lowered top by the margin. -/
+private theorem tieBelow (ax ay tx ty s W c cw mg : Pos)
+    (hlev : tx + s + W ≤ c + ty) (hmg : ax + (ty + cw) + mg = tx + ay) :
+    ax + s + W ≤ c + ay := by
+  have e : ax + s + W + (cw + mg) + ty = tx + s + W + ay := by
+    rw [ground.add_assoc ax s W, ground.add_right_comm ax (s + W) (cw + mg),
+      ground.add_right_comm (ax + (cw + mg)) (s + W) ty,
+      ground.add_assoc ax (cw + mg) ty, ground.add_right_comm cw mg ty,
+      ground.add_comm cw ty, ← ground.add_assoc ax (ty + cw) mg, hmg,
+      ground.add_right_comm (tx + s) W ay, ground.add_right_comm tx s ay,
+      ground.add_assoc (tx + ay) s W]
+  have h1 : tx + s + W + ay ≤ c + ty + ay := ground.posLeAdd hlev (Or.inl rfl)
+  rw [← e, ground.add_right_comm c ty ay] at h1
+  exact ground.le_trans (ground.posLeSelfAdd (ax + s + W) (cw + mg))
+    (ground.posLeCancelR h1)
+
+/-- The top's tie lowered by the shift cap: `tx + ς + W ≤ c + (ty + c_W)`. -/
+private theorem tieLowered (tx ty s W c cw : Pos)
+    (hlev : tx + s + W ≤ c + ty) :
+    tx + s + W ≤ c + (ty + cw) := by
+  rw [← ground.add_assoc c ty cw]
+  exact ground.le_trans hlev (ground.posLeSelfAdd (c + ty) cw)
+
+/-- The flat window transports across the truncation at the priced
+width (`thm:truncation`: a compression lowers each count, each
+level's downward shift is at most `c_W`, so the two cuts' values
+bracket each other at the priced width; `thm:gappos`(iii)): at the
+magnetic cap, the polarization tie at the two levels and the removed
+block's floor at the top's tie, the head's flat window from the
+anchor `⟨ax : ay⟩` to the top `⟨tx : ty⟩` at the count `n` reads at
+the whole window at the anchor and at the top lowered by the shift
+cap, `⟨tx : ty + c_W⟩` — the anchor's count squeezed between the
+compression side (`truncation.count_head_le`) and the shift side at
+the anchor raised by `c_W` (`truncation.count_shift_le`, the head
+flat there by the monotone read), the lowered top's between the
+shift side at the crossed top (`certconstruct.countAtPair_cross`)
+and the anchor's own (`certconstruct.countAtPair_mono`), the
+removed block vacant at both levels at its floor
+(`truncation.removed_psd`), and the level order kept at the width
+beyond `c_W`. -/
+theorem flat_shift {k m : Nat} (H G M M1 M2 P G1 Q De G2 B : Mat)
+    (ax ay tx ty cw W s c : Pos) (n na nt nm : Nat)
+    (spU spL : Split (k + m))
+    (spHa spHt spHm spG1 : Split k)
+    (spRa spRt spDi spG spB : Split m)
+    (spDa spda spDt spdt spA spT spGf : Split (k + m))
+    (hcap : capAt M (matScale W G) spU spL)
+    (hMt : matOneValue M (blockJoin M1 B M2))
+    (hGt : matOneValue G (blockJoin G1 (elim.nullMat k m) G2))
+    (hM1 : sqAt M1 k) (hM2l : M2.length = m)
+    (hG1 : sqAt G1 k) (hG2 : sqAt G2 m)
+    (hB : B.length = k) (hBr : rowsLen m B)
+    (hH : sqAt H (k + m)) (hG : sqAt G (k + m)) (hQ : sqAt Q m)
+    (hG1r : splitRead G1 spG1) (hG1p : psdAt spG1)
+    (hGr : splitRead G spGf) (hGp : psdAt spGf)
+    (hw : vacFlat P G1 ax ay tx ty n spHa spHt)
+    (hhm : countAtPair P G1 (ax + cw) ay nm spHm)
+    (hQt : matOneValue Q (matAdd De M2))
+    (hdi : splitRead (siteDatum De (matScale c G2)) spDi) (hpdi : psdAt spDi)
+    (hgB : splitRead G2 spG) (hpg : psdAt spG)
+    (hL : splitRead (matAdd (matScale W G2) M2) spB) (hpL : psdAt spB)
+    (hlev : tx + s + W ≤ c + ty)
+    (hsRa : splitRead (levelDatum Q G2 (ax + s) ay) spRa)
+    (hsRt : splitRead (levelDatum Q G2 (tx + s) (ty + cw)) spRt)
+    (htieA : matOneValue (levelDatum H G ax ay)
+      (blockJoin (levelDatum P G1 ax ay) B (levelDatum Q G2 ax ay)))
+    (htieDA : matOneValue (matScale s (siteDatum (levelDatum H G ax ay)
+        (blockJoin (levelDatum P G1 (ax + cw) ay) (elim.nullMat k m)
+          (levelDatum Q G2 (ax + s) ay))))
+      (truncation.shiftSite W s B G1 G2))
+    (hDa : splitRead (blockJoin (levelDatum P G1 (ax + cw) ay) (elim.nullMat k m)
+      (levelDatum Q G2 (ax + s) ay)) spDa)
+    (hda : splitRead (siteDatum (levelDatum H G ax ay)
+      (blockJoin (levelDatum P G1 (ax + cw) ay) (elim.nullMat k m)
+        (levelDatum Q G2 (ax + s) ay))) spda)
+    (htieDT : matOneValue (matScale s (siteDatum (levelDatum H G tx (ty + cw))
+        (blockJoin (levelDatum P G1 (tx + cw) (ty + cw)) (elim.nullMat k m)
+          (levelDatum Q G2 (tx + s) (ty + cw)))))
+      (truncation.shiftSite W s B G1 G2))
+    (hDt : splitRead (blockJoin (levelDatum P G1 (tx + cw) (ty + cw)) (elim.nullMat k m)
+      (levelDatum Q G2 (tx + s) (ty + cw))) spDt)
+    (hdt : splitRead (siteDatum (levelDatum H G tx (ty + cw))
+      (blockJoin (levelDatum P G1 (tx + cw) (ty + cw)) (elim.nullMat k m)
+        (levelDatum Q G2 (tx + s) (ty + cw)))) spdt)
+    (hA : countAtPair H G ax ay na spA)
+    (hT : countAtPair H G tx (ty + cw) nt spT)
+    (hmargin : ax + (ty + cw) < tx + ay) :
+    vacFlat H G ax ay tx (ty + cw) n spA spT := by
+  obtain ⟨mg, hmg⟩ := hmargin
+  have hP : sqAt P k := hw.1.1
+  -- the removed block vacant at the two levels
+  have hrA : countAtPair Q G2 (ax + s) ay 0 spRa :=
+    ⟨hQ, hG2, hsRa, truncation.removed_psd Q De M2 G2 c W (ax + s) ay
+      spDi spG spB spRa hQt hdi hpdi hgB hpg hL hpL
+      (tieBelow ax ay tx ty s W c cw mg hlev hmg) hsRa⟩
+  have hrT : countAtPair Q G2 (tx + s) (ty + cw) 0 spRt :=
+    ⟨hQ, hG2, hsRt, truncation.removed_psd Q De M2 G2 c W (tx + s) (ty + cw)
+      spDi spG spB spRt hQt hdi hpdi hgB hpg hL hpL
+      (tieLowered tx ty s W c cw hlev) hsRt⟩
+  -- the anchor: the compression side and the shift side
+  have h1 : n ≤ na :=
+    truncation.count_head_le H G P G1 B Q G2 ax ay n na spHa spA hB htieA hw.1 hA
+  have h2 : na ≤ nm :=
+    truncation.count_shift_le H G M M1 M2 P G1 Q G2 B ax ay cw W s na nm
+      spU spL spA spDa spda spHm spRa hcap hMt hGt hM1 hM2l hG1 hG2 hB hBr
+      htieDA hA hhm hrA hDa hda
+  have hmH := levelDiff_split P G1 hP hG1 spG1 hG1r hG1p (ax + cw) ay tx ty mg
+    (by rw [ground.add_assoc ax cw ty, ground.add_comm cw ty]; exact hmg)
+  have h3 : nm ≤ n :=
+    countAtPair_mono P P G1 (ax + cw) ay tx ty nm n spHm spHt _ hmH.1 hmH.2 hhm hw.2.1
+  -- the lowered top: the shift side at the crossed top and the anchor's read
+  have h4 : nt ≤ n :=
+    truncation.count_shift_le H G M M1 M2 P G1 Q G2 B tx (ty + cw) cw W s nt n
+      spU spL spT spDt spdt spHt spRt hcap hMt hGt hM1 hM2l hG1 hG2 hB hBr
+      htieDT hT (countAtPair_cross P G1 cw tx ty n spHt hw.2.1) hrT hDt hdt
+  have hmF := levelDiff_split H G hH hG spGf hGr hGp ax ay tx (ty + cw) mg hmg
+  have h5 : na ≤ nt :=
+    countAtPair_mono H H G ax ay tx (ty + cw) na nt spA spT _ hmF.1 hmF.2 hA hT
+  have hna : na = n := Nat.le_antisymm (Nat.le_trans h2 h3) h1
+  have hnt : nt = n := Nat.le_antisymm h4 (Nat.le_trans (Nat.le_of_eq hna.symm) h5)
+  exact ⟨hna ▸ hA, hnt ▸ hT, hw.2.2.1, ⟨mg, hmg⟩⟩
+
+/-- The flat window compresses across the truncation at the priced
+width (`thm:truncation`'s bracket read the other way; `lem:dualtrunc`):
+the whole window's flat window from the anchor `⟨ax : ay⟩` to the
+top `⟨tx : ty⟩` at the count `n` reads at the head at the anchor
+raised by the shift cap, `⟨ax + c_W : ay⟩`, and at the top — the
+raised anchor's count at or beyond the whole's anchor count by the
+shift side (`truncation.count_shift_le`), the top's at or below the
+whole's by the compression side (`truncation.count_head_le`), the
+two squeezed by the head's monotone read, the removed block vacant
+at the anchor's level at its floor (`truncation.removed_psd`), and
+the level order kept at the width beyond `c_W`. -/
+theorem flat_compress {k m : Nat} (H G M M1 M2 P G1 Q De G2 B : Mat)
+    (ax ay tx ty cw W s c : Pos) (n na nt : Nat)
+    (spU spL : Split (k + m))
+    (spHa spHt spG1 : Split k)
+    (spRa spDi spG spB : Split m)
+    (spDa spda spA spT : Split (k + m))
+    (hcap : capAt M (matScale W G) spU spL)
+    (hMt : matOneValue M (blockJoin M1 B M2))
+    (hGt : matOneValue G (blockJoin G1 (elim.nullMat k m) G2))
+    (hM1 : sqAt M1 k) (hM2l : M2.length = m)
+    (hG1 : sqAt G1 k) (hG2 : sqAt G2 m)
+    (hB : B.length = k) (hBr : rowsLen m B)
+    (hQ : sqAt Q m)
+    (hG1r : splitRead G1 spG1) (hG1p : psdAt spG1)
+    (hw : vacFlat H G ax ay tx ty n spA spT)
+    (hha : countAtPair P G1 (ax + cw) ay na spHa)
+    (hht : countAtPair P G1 tx ty nt spHt)
+    (hQt : matOneValue Q (matAdd De M2))
+    (hdi : splitRead (siteDatum De (matScale c G2)) spDi) (hpdi : psdAt spDi)
+    (hgB : splitRead G2 spG) (hpg : psdAt spG)
+    (hL : splitRead (matAdd (matScale W G2) M2) spB) (hpL : psdAt spB)
+    (hlev : tx + s + W ≤ c + ty)
+    (hsRa : splitRead (levelDatum Q G2 (ax + s) ay) spRa)
+    (htieT : matOneValue (levelDatum H G tx ty)
+      (blockJoin (levelDatum P G1 tx ty) B (levelDatum Q G2 tx ty)))
+    (htieDA : matOneValue (matScale s (siteDatum (levelDatum H G ax ay)
+        (blockJoin (levelDatum P G1 (ax + cw) ay) (elim.nullMat k m)
+          (levelDatum Q G2 (ax + s) ay))))
+      (truncation.shiftSite W s B G1 G2))
+    (hDa : splitRead (blockJoin (levelDatum P G1 (ax + cw) ay) (elim.nullMat k m)
+      (levelDatum Q G2 (ax + s) ay)) spDa)
+    (hda : splitRead (siteDatum (levelDatum H G ax ay)
+      (blockJoin (levelDatum P G1 (ax + cw) ay) (elim.nullMat k m)
+        (levelDatum Q G2 (ax + s) ay))) spda)
+    (hmargin : ax + cw + ty < tx + ay) :
+    vacFlat P G1 (ax + cw) ay tx ty n spHa spHt := by
+  obtain ⟨mg, hmg⟩ := hmargin
+  have hP : sqAt P k := hha.1
+  have hmg' : ax + (ty + cw) + mg = tx + ay := by
+    rw [← ground.add_assoc ax ty cw, ground.add_right_comm ax ty cw]
+    exact hmg
+  have hrA : countAtPair Q G2 (ax + s) ay 0 spRa :=
+    ⟨hQ, hG2, hsRa, truncation.removed_psd Q De M2 G2 c W (ax + s) ay
+      spDi spG spB spRa hQt hdi hpdi hgB hpg hL hpL
+      (tieBelow ax ay tx ty s W c cw mg hlev hmg') hsRa⟩
+  have h1 : n ≤ na :=
+    truncation.count_shift_le H G M M1 M2 P G1 Q G2 B ax ay cw W s n na
+      spU spL spA spDa spda spHa spRa hcap hMt hGt hM1 hM2l hG1 hG2 hB hBr
+      htieDA hw.1 hha hrA hDa hda
+  have h2 : nt ≤ n :=
+    truncation.count_head_le H G P G1 B Q G2 tx ty nt n spHt spT hB htieT hht hw.2.1
+  have hmH := levelDiff_split P G1 hP hG1 spG1 hG1r hG1p (ax + cw) ay tx ty mg hmg
+  have h3 : na ≤ nt :=
+    countAtPair_mono P P G1 (ax + cw) ay tx ty na nt spHa spHt _ hmH.1 hmH.2 hha hht
+  have hna : na = n := Nat.le_antisymm (Nat.le_trans h3 h2) h1
+  have hnt : nt = n := Nat.le_antisymm h2 (Nat.le_trans h1 h3)
+  exact ⟨hna ▸ hha, hnt ▸ hht, hw.2.2.1, ⟨mg, hmg⟩⟩
 
 end gappos

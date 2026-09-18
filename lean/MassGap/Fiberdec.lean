@@ -345,8 +345,9 @@ squares per site and direction pair. -/
 digit weight. -/
 private def stride (L e : Nat) : Nat := L ^ e
 
-/-- A site key's digit at a direction. -/
-def digitAt (L e s : Nat) : Nat := s / stride L e % L
+/-- A site key's digit at a direction, the positional read at the
+base `L` (`ground.baseDigit`). -/
+def digitAt (L e s : Nat) : Nat := ground.baseDigit L e s
 
 /-- The site key shifted by a stated count of steps along a
 direction, the cycle closing at the side length. -/
@@ -361,6 +362,11 @@ def shiftSite (L e s : Nat) : Nat := shiftBy L e 1 s
 step's witness at the complementary count. -/
 def shiftSiteInv (L e s : Nat) : Nat := shiftBy L e (L - 1) s
 
+/-- The complementary key list: each count's complement to the side,
+the composite shift's witness. -/
+def invKey (L : Nat) (ks : List Nat) : List Nat :=
+  ks.map (fun k => (L - k) % L)
+
 /-- The torus link key at a direction and a site. -/
 private def linkAt (d L e s : Nat) : Nat := e * L ^ d + s
 
@@ -373,9 +379,9 @@ private def torusPlaq (d L e f s : Nat) : List (Nat × Bool) :=
    (linkAt d L e (shiftSite L f s), false),
    (linkAt d L f s, false)]
 
-/-- A site key's coordinate sum, the two-coloring's own read. -/
-private def coordSum (d L s : Nat) : Nat :=
-  (List.range d).foldl (fun acc e => acc + digitAt L e s) 0
+/-- A site key's coordinate sum, the two-coloring's own read
+(`ground.digitSum` at the base `L`). -/
+private def coordSum (d L s : Nat) : Nat := ground.digitSum L d s
 
 /-- The torus window at a direction count and a side length: the
 sites the naturals below `L^d`, the links `d · L^d` at the key
@@ -497,7 +503,7 @@ composite at either side one map. -/
 def intertwineRead (R : Region) (g t t' : Nat → Nat) : Prop :=
   ((List.range R.links).all (fun l => g (t l) == t' (g l))) = true
 
-instance (R : Region) (g t t' : Nat → Nat) :
+instance instFiberdec1 (R : Region) (g t t' : Nat → Nat) :
     Decidable (intertwineRead R g t t') :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -514,7 +520,7 @@ direction carried to itself. -/
 def commutesRead (R : Region) (t s : Nat → Nat) : Prop :=
   intertwineRead R t s s
 
-instance (R : Region) (t s : Nat → Nat) :
+instance instFiberdec2 (R : Region) (t s : Nat → Nat) :
     Decidable (commutesRead R t s) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -541,7 +547,7 @@ the identity on the key range. -/
 def cycleRead (R : Region) (t : Nat → Nat) (n : Nat) : Prop :=
   ((List.range R.links).all (fun l => iterAt t n l == l)) = true
 
-instance (R : Region) (t : Nat → Nat) (n : Nat) :
+instance instFiberdec3 (R : Region) (t : Nat → Nat) (n : Nat) :
     Decidable (cycleRead R t n) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -556,7 +562,7 @@ def dualContentFixed {L : Type} (F : Data L) (R : Region)
   (ix.all (fun a =>
     contentN F (dualConf F t s rev R.links a) == contentN F a)) = true
 
-instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+instance instFiberdec4 {L : Type} (F : Data L) (R : Region) (ix : List (List L))
     (t s : Nat → Nat) (rev : Nat → Bool) :
     Decidable (dualContentFixed F R ix t s rev) :=
   inferInstanceAs (Decidable (_ = _))
@@ -565,7 +571,7 @@ def contentFixed {L : Type} (F : Data L) (R : Region)
     (ix : List (List L)) (t s : Nat → Nat) : Prop :=
   dualContentFixed F R ix t s (fun _ => false)
 
-instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+instance instFiberdec5 {L : Type} (F : Data L) (R : Region) (ix : List (List L))
     (t s : Nat → Nat) : Decidable (contentFixed F R ix t s) :=
   inferInstanceAs (Decidable (dualContentFixed F R ix t s _))
 
@@ -576,7 +582,7 @@ def dualOccFixed {L : Type} (F : Data L) (R : Region)
   (ix.all (fun a =>
     occupied F R (dualConf F t s rev R.links a) == occupied F R a)) = true
 
-instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+instance instFiberdec6 {L : Type} (F : Data L) (R : Region) (ix : List (List L))
     (t s : Nat → Nat) (rev : Nat → Bool) :
     Decidable (dualOccFixed F R ix t s rev) :=
   inferInstanceAs (Decidable (_ = _))
@@ -585,7 +591,7 @@ def occFixed {L : Type} (F : Data L) (R : Region) (ix : List (List L))
     (t s : Nat → Nat) : Prop :=
   dualOccFixed F R ix t s (fun _ => false)
 
-instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+instance instFiberdec7 {L : Type} (F : Data L) (R : Region) (ix : List (List L))
     (t s : Nat → Nat) : Decidable (occFixed F R ix t s) :=
   inferInstanceAs (Decidable (dualOccFixed F R ix t s _))
 
@@ -596,7 +602,7 @@ def dualIdxFixed {L : Type} (F : Data L) (R : Region)
   (ix.all (fun a =>
     carrier.confMem F (dualConf F t s rev R.links a) ix)) = true
 
-instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+instance instFiberdec8 {L : Type} (F : Data L) (R : Region) (ix : List (List L))
     (t s : Nat → Nat) (rev : Nat → Bool) :
     Decidable (dualIdxFixed F R ix t s rev) :=
   inferInstanceAs (Decidable (_ = _))
@@ -605,7 +611,7 @@ def idxFixed {L : Type} (F : Data L) (R : Region) (ix : List (List L))
     (t s : Nat → Nat) : Prop :=
   dualIdxFixed F R ix t s (fun _ => false)
 
-instance {L : Type} (F : Data L) (R : Region) (ix : List (List L))
+instance instFiberdec9 {L : Type} (F : Data L) (R : Region) (ix : List (List L))
     (t s : Nat → Nat) : Decidable (idxFixed F R ix t s) :=
   inferInstanceAs (Decidable (dualIdxFixed F R ix t s _))
 
@@ -649,7 +655,7 @@ def orthRead (Pm : Mat) (n : Nat) : Prop :=
   matOneValue (matMul Pm (transposeM Pm)) (elim.idMat n)
   ∧ matOneValue (matMul (transposeM Pm) Pm) (elim.idMat n)
 
-instance (Pm : Mat) (n : Nat) : Decidable (orthRead Pm n) :=
+instance instFiberdec10 (Pm : Mat) (n : Nat) : Decidable (orthRead Pm n) :=
   inferInstanceAs (Decidable (_ ∧ _))
 
 /-- The deck relation at the translation's matrix, `T² + 1 = S T`
@@ -658,7 +664,7 @@ def deckOpRead (Pm : Mat) (n : Nat) : Prop :=
   matOneValue (matAdd (matMul Pm Pm) (elim.idMat n))
     (matMul (chordOp Pm) Pm)
 
-instance (Pm : Mat) (n : Nat) : Decidable (deckOpRead Pm n) :=
+instance instFiberdec11 (Pm : Mat) (n : Nat) : Decidable (deckOpRead Pm n) :=
   inferInstanceAs (Decidable (matOneValue _ _))
 
 /-- The word identity at the operator, `Σ_{a+b+1=L} T^b = T^m P_L(S)`
@@ -666,7 +672,7 @@ at `2m+1 = L`: the geometric word reads its deck symbol. -/
 def wordOpRead (Pm : Mat) (n m : Nat) : Prop :=
   matOneValue (wordSum Pm n (2 * m + 1)) (chordWord Pm n m)
 
-instance (Pm : Mat) (n m : Nat) : Decidable (wordOpRead Pm n m) :=
+instance instFiberdec12 (Pm : Mat) (n m : Nat) : Decidable (wordOpRead Pm n m) :=
   inferInstanceAs (Decidable (matOneValue _ _))
 
 /-- The word's two fixed reads at `T^L = 1`: the word is its own
@@ -677,7 +683,7 @@ def fixedWordRead (Pm : Mat) (n m : Nat) : Prop :=
   ∧ matOneValue (matMul (transposeM Pm) (chordWord Pm n m))
       (chordWord Pm n m)
 
-instance (Pm : Mat) (n m : Nat) : Decidable (fixedWordRead Pm n m) :=
+instance instFiberdec13 (Pm : Mat) (n m : Nat) : Decidable (fixedWordRead Pm n m) :=
   inferInstanceAs (Decidable (_ ∧ _))
 
 /-- The annihilation `S P_L(S) = 2 P_L(S)`, the orthogonal `T^m`
@@ -688,7 +694,7 @@ def annihRead (Pm : Mat) (n m : Nat) : Prop :=
     (inertia.matScaleB (BPair.ofNat 2)
       (polyEvalM (deck.pSum m) (chordOp Pm) n))
 
-instance (Pm : Mat) (n m : Nat) : Decidable (annihRead Pm n m) :=
+instance instFiberdec14 (Pm : Mat) (n m : Nat) : Decidable (annihRead Pm n m) :=
   inferInstanceAs (Decidable (matOneValue _ _))
 
 /-! The permutation matrix's own composition and power reads, the
@@ -880,7 +886,7 @@ theorem permMatAt_pow (n : Nat) (t : Nat → Nat) (hn : 0 < n)
       (matMul_congrR (n := n) (k := n) (permMatAt n t)
         (inertia.matPow (permMatAt n t) n k) (permMatAt n (iterAt t k))
         hsh.1 (rowsLen_permMatAt n (iterAt t k)) hsh.2
-        (length_permMatAt n (iterAt t k)) hn
+        (length_permMatAt n (iterAt t k))
         (permMatAt_pow n t hn ht k)) ?_
     refine matOne_trans
       (permMatAt_mul n t (iterAt t k) (iterAt_range n t ht k)) ?_
@@ -942,6 +948,30 @@ theorem contentN_perm {L : Type} (F : Data L) (R : Region)
     exact ground.countOf_range_pos
       (linkIso_all R t s h x (ground.ltOfMem hx)).2.2.1
 
+/-- The support moves along the link map: a key sits in the relabeled
+configuration's support exactly where its witness key sits in the
+configuration's. -/
+theorem support_perm {L : Type} (F : Data L) (R : Region) (t s : Nat → Nat)
+    (h : linkIso R R t s) (a : List L) (x : Nat) (hx : x < R.links) :
+    x ∈ carrier.support F R (permConf F t s R.links a)
+      ↔ s x ∈ carrier.support F R a := by
+  have hg : ground.getAt F.unit (permConf F t s R.links a) x
+      = ground.getAt F.unit a (s x) :=
+    getAt_permConf F t s R.links a x hx (linkIso_all R t s h x hx).2.1
+  constructor
+  · intro hm
+    have hocc : (!(F.eqL (ground.getAt F.unit (permConf F t s R.links a) x) F.unit)) = true :=
+      (ground.mem_filter_of _ _ x hm).2
+    rw [hg] at hocc
+    exact ground.mem_filter_to _ (ground.memRange (linkIso_all R t s h x hx).2.2.2) hocc
+  · intro hm
+    have hocc : (!(F.eqL (ground.getAt F.unit a (s x)) F.unit)) = true :=
+      (ground.mem_filter_of _ _ (s x) hm).2
+    refine ground.mem_filter_to _ (ground.memRange hx) ?_
+    show (!(F.eqL (ground.getAt F.unit (permConf F t s R.links a) x) F.unit)) = true
+    rw [hg]
+    exact hocc
+
 /-! `lem:fiberdec`'s index action as theorems over the region's own
 translation: the endpoint and vertex reads at a key, the incident
 labels transported along the induced vertex map as one multiset, the
@@ -977,17 +1007,6 @@ private theorem countOf_filterMap {α β : Type} [DecidableEq β]
       show ground.countOf x (y :: t.filterMap f)
         = (if x = y then 1 else 0) + _
       rw [ground.countOf_cons, countOf_filterMap f x t]
-
-/-- The vertex map's images compare as their sources below the
-count, the witness reading the sources back. -/
-private theorem beq_map (R : Region) (v w : Nat → Nat)
-    (h : vertIso R R v w) (p x : Nat) (hp : p < R.verts)
-    (hx : x < R.verts) : (v p == v x) = (p == x) := by
-  by_cases hpx : p = x
-  · rw [hpx, ground.eqBeqOf (rfl : v x = v x), ground.eqBeqOf (rfl : x = x)]
-  · rw [ground.neBeqOf hpx, ground.neBeqOf (fun he : v p = v x =>
-      hpx (Eq.trans (Eq.trans (vertIso_all R v w h p hp).1.symm
-        (congrArg w he)) (vertIso_all R v w h x hx).1))]
 
 /-- One link's incident fold: the two endpoint reads' conditional
 singletons. -/
@@ -1060,8 +1079,8 @@ theorem incident_perm {L : Type} [DecidableEq L] (F : Data L)
       ((if ground.getAt 0 R.tail l == x then [(l, true)] else [])
         ++ (if ground.getAt 0 R.head l == x then [(l, false)] else []))
   rw [(endsMoved_vac R t v h.2.2 l hll).1, (endsMoved_vac R t v h.2.2 l hll).2,
-    beq_map R v w h.2.1 _ x (endLt R hw l hll).1 hx,
-    beq_map R v w h.2.1 _ x (endLt R hw l hll).2 hx,
+    vertIso_beq R v w h.2.1 _ x (endLt R hw l hll).1 hx,
+    vertIso_beq R v w h.2.1 _ x (endLt R hw l hll).2 hx,
     inc_fold, inc_fold, hM true, hM false]
 
 /-- The incident labels of a domain configuration read the domain:
@@ -1156,6 +1175,31 @@ theorem vmult_perm {L : Type} [DecidableEq L] (F : Data L)
       (permConf_all F t s R.links P hunit a ha) (v x))
     (fun lab => incident_perm F R hw t s v w h a x hx lab)
 
+/-- The touched vertices move along the vertex map: the incident
+labels one multiset at the moved vertex, their count with them. -/
+theorem touched_perm {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (hw : wellRead R) (t s v w : Nat → Nat)
+    (h : isoRead R R t s v w (fun _ => false)) (a : List L) (y : Nat)
+    (hy : y < R.verts) :
+    v y ∈ carrier.touched F R (permConf F t s R.links a)
+      ↔ y ∈ carrier.touched F R a := by
+  have hlen : (carrier.incidentLabels F R (permConf F t s R.links a) (v y)).length
+      = (carrier.incidentLabels F R a y).length :=
+    ground.length_eq_of_countOf _ _ (fun lab => incident_perm F R hw t s v w h a y hy lab)
+  constructor
+  · intro hm
+    have hocc : ((carrier.incidentLabels F R (permConf F t s R.links a) (v y)).length
+        != 0) = true := (ground.mem_filter_of _ _ _ hm).2
+    rw [hlen] at hocc
+    exact ground.mem_filter_to _ (ground.memRange hy) hocc
+  · intro hm
+    have hocc : ((carrier.incidentLabels F R a y).length != 0) = true :=
+      (ground.mem_filter_of _ _ _ hm).2
+    refine ground.mem_filter_to _ (ground.memRange (vertIso_all R v w h.2.1 y hy).2.2.1) ?_
+    show ((carrier.incidentLabels F R (permConf F t s R.links a) (v y)).length != 0) = true
+    rw [hlen]
+    exact hocc
+
 /-- The occupancy is fixed at the index action: the touched vertices
 move along the vertex map, each at its transported multiplicity —
 `occFixed`'s read at every domain configuration of a region admitting
@@ -1175,11 +1219,6 @@ theorem occupied_perm {L : Type} [DecidableEq L] (F : Data L)
       rowLaw F a b c)
     (a : List L) (ha : a.all P = true) :
     carrier.occupied F R (permConf F t s R.links a) = carrier.occupied F R a := by
-  have hlen : ∀ x, x < R.verts →
-      (carrier.incidentLabels F R (permConf F t s R.links a) (v x)).length
-        = (carrier.incidentLabels F R a x).length :=
-    fun x hx => ground.length_eq_of_countOf _ _
-      (fun lab => incident_perm F R hw t s v w h a x hx lab)
   have hvm : ∀ x, x < R.verts →
       carrier.vmult F R (permConf F t s R.links a) (v x) = carrier.vmult F R a x :=
     fun x hx => vmult_perm F R hw t s v w h P hunit hdual hrowP hcomm
@@ -1188,18 +1227,10 @@ theorem occupied_perm {L : Type} [DecidableEq L] (F : Data L)
       carrier.occupied F R a = true := by
     intro hocc
     refine ground.all_of_getAt 0 _ _ (fun k hk => ?_)
-    have hf := ground.mem_filter_of _ _ _ (ground.mem_getAt 0 _ k hk)
+    have hf := ground.mem_getAt 0 _ k hk
     have hxv : ground.getAt 0 (carrier.touched F R a) k < R.verts :=
-      ground.ltOfMem (ground.countOf_pos_of_mem hf.1)
-    have hmem' : v (ground.getAt 0 (carrier.touched F R a) k)
-        ∈ carrier.touched F R (permConf F t s R.links a) := by
-      refine ground.mem_filter_to _
-        (ground.memRange (vertIso_all R v w h.2.1 _ hxv).2.2.1) ?_
-      show ((carrier.incidentLabels F R (permConf F t s R.links a)
-        (v (ground.getAt 0 (carrier.touched F R a) k))).length != 0) = true
-      rw [hlen _ hxv]
-      exact hf.2
-    have hv1 := ground.all_of_mem _ _ hocc _ hmem'
+      ground.ltOfMem (ground.countOf_pos_of_mem (ground.mem_filter_of _ _ _ hf).1)
+    have hv1 := ground.all_of_mem _ _ hocc _ ((touched_perm F R hw t s v w h a _ hxv).2 hf)
     show decide (0 < carrier.vmult F R a
       (ground.getAt 0 (carrier.touched F R a) k)) = true
     rw [← hvm _ hxv]
@@ -1208,10 +1239,10 @@ theorem occupied_perm {L : Type} [DecidableEq L] (F : Data L)
       carrier.occupied F R (permConf F t s R.links a) = true := by
     intro hocc
     refine ground.all_of_getAt 0 _ _ (fun k hk => ?_)
-    have hf := ground.mem_filter_of _ _ _ (ground.mem_getAt 0 _ k hk)
+    have hf := ground.mem_getAt 0 _ k hk
     have hyv : ground.getAt 0 (carrier.touched F R (permConf F t s R.links a)) k
         < R.verts :=
-      ground.ltOfMem (ground.countOf_pos_of_mem hf.1)
+      ground.ltOfMem (ground.countOf_pos_of_mem (ground.mem_filter_of _ _ _ hf).1)
     have hxv : w (ground.getAt 0 (carrier.touched F R (permConf F t s R.links a)) k)
         < R.verts := (vertIso_all R v w h.2.1 _ hyv).2.2.2
     have hvw : v (w (ground.getAt 0
@@ -1220,12 +1251,9 @@ theorem occupied_perm {L : Type} [DecidableEq L] (F : Data L)
       (vertIso_all R v w h.2.1 _ hyv).2.1
     have hmem' : w (ground.getAt 0 (carrier.touched F R (permConf F t s R.links a)) k)
         ∈ carrier.touched F R a := by
-      refine ground.mem_filter_to _ (ground.memRange hxv) ?_
-      show ((carrier.incidentLabels F R a
-        (w (ground.getAt 0 (carrier.touched F R (permConf F t s R.links a)) k))).length
-          != 0) = true
-      rw [← hlen _ hxv, hvw]
-      exact hf.2
+      refine (touched_perm F R hw t s v w h a _ hxv).1 ?_
+      rw [hvw]
+      exact hf
     have hv1 := ground.all_of_mem _ _ hocc _ hmem'
     show decide (0 < carrier.vmult F R (permConf F t s R.links a)
       (ground.getAt 0 (carrier.touched F R (permConf F t s R.links a)) k)) = true
@@ -1460,13 +1488,13 @@ def statesTransport {L : Type} [DecidableEq L] (F : Data L) (R : Region)
       | some l, some l' =>
         (l.members.list.length == l'.members.list.length)
           && l.members.list.all (fun m =>
-            slotpower.spanMemberT F.pres.table l'.members.list
-              (pairpencil.moveMember F R R s rev a x a' (v x) (m, l.clear)).1)
+            slotpower.spanMemberW F.pres.table l'.members.list
+              (pairpencil.moveMember F R R s rev a x a' (v x) (⟨_, m⟩, l.clear)).1)
       | none, none => true
       | none, some _ => false
       | some _, none => false))) = true
 
-instance {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+instance instFiberdec15 {L : Type} [DecidableEq L] (F : Data L) (R : Region)
     (ix : List (List L)) (t s v : Nat → Nat) (rev : Nat → Bool) :
     Decidable (statesTransport F R ix t s v rev) :=
   inferInstanceAs (Decidable (_ = _))
@@ -1495,7 +1523,7 @@ def termsTransport {L : Type} [DecidableEq L] (F : Data L) (R : Region)
               (getAt ([], []) mv i).1 (getAt ([], []) mv j).1
               (getAt ([], []) mv i).2 (getAt ([], []) mv j).2)))) = true
 
-instance {L : Type} [DecidableEq L] (F : Data L) (R : Region) (n : Nat)
+instance instFiberdec16 {L : Type} [DecidableEq L] (F : Data L) (R : Region) (n : Nat)
     (ix : List (List L)) (t s v w : Nat → Nat) (rev : Nat → Bool)
     (pm pm' : Nat → Nat) :
     Decidable (termsTransport F R n ix t s v w rev pm pm') :=
@@ -1523,7 +1551,7 @@ def transportMat {L : Type} [DecidableEq L] (F : Data L) (R : Region)
       match pairpencil.vertListAt F R ix (carrier.incidentEnds F R a' y),
         getAt none ms y with
       | some l, some m =>
-        let c := slotpower.spanCoeffsT F.pres.table l.members.list m.1
+        let c := slotpower.spanCoeffsW F.pres.table l.members.list m.1
         (c.1.map (fun x => x * BPair.ofPos l.clear), c.2 * m.2)
       | none, _ => ([], Pos.one)
       | some _, none => ([], Pos.one))
@@ -1549,7 +1577,7 @@ def transportCongr (T : Mat) (D : List BPair) (P : Mat) : Prop :=
   matOneValue (matMul (transposeM T) (matMul P T))
     (matMul (diagO bpairOps D) (matMul P (diagO bpairOps D)))
 
-instance (T : Mat) (D : List BPair) (P : Mat) : Decidable (transportCongr T D P) :=
+instance instFiberdec17 (T : Mat) (D : List BPair) (P : Mat) : Decidable (transportCongr T D P) :=
   inferInstanceAs (Decidable (matOneValue _ _))
 
 /-- The translation's transpose is its witness's matrix
@@ -1634,7 +1662,7 @@ private theorem chordOp_pow_comm (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
         (transposeM (permMatAt n t)) (inertia.matPow (permMatAt n t) n k)
         hTtr (matPow_shape n (permMatAt n t) hTl k).1
         (length_transposeM (permMatAt n t) hTr (by rw [hTl]; exact hn))
-        (matPow_shape n (permMatAt n t) hTl k).2 hn
+        (matPow_shape n (permMatAt n t) hTl k).2
         (transpose_as_pow n k t s hn ht hst hts hcyc)) ?_
     rw [Nat.add_comm k m] at hskm ⊢
     exact inertia.matPow_add n (permMatAt n t) hTl hTr hn m k
@@ -1684,7 +1712,7 @@ private theorem clearW_pow (n : Nat) (t s : Nat → Nat) (hn : 0 < n)
     (matMul_congrR (n := n) (k := n) (permMatAt n (iterAt s m))
       (inertia.matPow (permMatAt n t) n m) (permMatAt n (iterAt t m))
       hsk.1 (rowsLen_permMatAt n (iterAt t m)) hsk.2
-      (length_permMatAt n (iterAt t m)) hn
+      (length_permMatAt n (iterAt t m))
       (permMatAt_pow n t hn ht m)) ?_
   refine matOne_trans
     (permMatAt_mul n (iterAt s m) (iterAt t m)
@@ -1887,7 +1915,7 @@ private theorem evalM_unitTail (n : Nat) (M : Mat) (hMl : M.length = n)
       refine matOne_trans
         (matMul_congrR (n := n) (k := n) M (polyEvalM p M n)
           (elim.nullMat n n) hep.1 (elim.rowsLen_nullMat n n)
-          hep.2 (elim.length_nullMat n n) hn
+          hep.2 (elim.length_nullMat n n)
           (evalM_unitTail n M hMl hMr hn p hp.2)) ?_
       exact elim.matMul_nullMat n M hMl
     refine matOne_trans
@@ -1932,7 +1960,7 @@ private theorem evalM_congr (n : Nat) (M : Mat) (hMl : M.length = n)
          (fun _ => (by rw [heq.2]; exact hn)) heq.1)
       (inertia.matScaleB_congr h.1 (elim.idMat n)) ?_
     exact matMul_congrR (n := n) (k := n) M (polyEvalM p M n)
-      (polyEvalM q M n) hep.1 heq.1 hep.2 heq.2 hn
+      (polyEvalM q M n) hep.1 heq.1 hep.2 heq.2
       (evalM_congr n M hMl hMr hn p q h.2)
 
 /-- The evaluation is additive over the symbols' sum. -/
@@ -2026,7 +2054,7 @@ private theorem evalM_add (n : Nat) (M : Mat) (hMl : M.length = n)
         (polyEvalM (poly.add p q) M n)
         (matAdd (polyEvalM p M n) (polyEvalM q M n))
         hea.1 (rowsLen_matAdd n _ _ hep.1 heq.1)
-        hea.2 hlen hn
+        hea.2 hlen
         (evalM_add n M hMl hMr hn p q))
       (matMul_addR (n := n) (polyEvalM p M n) (polyEvalM q M n)
         hep.1 heq.1 (hep.2.trans heq.2.symm)
@@ -2094,7 +2122,7 @@ private theorem evalM_const (n : Nat) (M : Mat) (hMl : M.length = n)
         (elim.rowsLen_nullMat n n)
         ((inertia.length_scaleB BPair.unit (elim.idMat n)).trans
           (elim.length_idMat n))
-        (elim.length_nullMat n n) hn
+        (elim.length_nullMat n n)
         (by
           have h := scaleB_unit_null (n := n) (elim.idMat n)
             (elim.rowsLen_idMat n)
@@ -2171,7 +2199,7 @@ theorem fixedWord_of (n m : Nat) (M : Mat) (hM : rowsLen n M)
   have hfix : matOneValue (matMul M (chordWord M n m)) (chordWord M n m) := by
     refine matOne_trans
       (matMul_congrR (n := n) (k := n) M (chordWord M n m)
-        (wordSum M n (2 * m + 1)) hX.1 hWs.1 hX.2 hWs.2 hn
+        (wordSum M n (2 * m + 1)) hX.1 hWs.1 hX.2 hWs.2
         (matOne_symm hword)) ?_
     exact matOne_trans (wordSum_fixed n (2 * m + 1) M hM hMl hn hcyc) hword
   exact ⟨hfix,
@@ -2284,7 +2312,7 @@ private theorem plus_read (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
         (elim.rowsLen_idMat n)
         (evalM_shape n (chordOp (permMatAt n t)) hSr hSl hn
           [BPair.ofPos .one]).2
-        (elim.length_idMat n) hn hone) ?_
+        (elim.length_idMat n) hone) ?_
     refine matOne_trans
       (inertia.matMul_idR n (chordOp (permMatAt n t)) hSr hSl hn hn) ?_
     refine matAdd_cong2 n _ _ (inertia.matPow (permMatAt n t) n 1)
@@ -2346,8 +2374,7 @@ private theorem plus_read (n k : Nat) (t s : Nat → Nat) (hn : 0 < n)
           (rowsLen_matAdd n _ _ (hshape (j + 1)).1 (hshape (b + 1)).1)
           (hev (deck.pFamN (j + 1))).2
           ((elim.length_matAdd _ _ ((hshape (j + 1)).2.trans
-            (hshape (b + 1)).2.symm)).trans (hshape (j + 1)).2)
-          hn ih2) ?_
+            (hshape (b + 1)).2.symm)).trans (hshape (j + 1)).2) ih2) ?_
       refine matOne_trans
         (matMul_addR (n := n) (inertia.matPow (permMatAt n t) n (j + 1))
           (inertia.matPow (permMatAt n t) n (b + 1))
@@ -2475,7 +2502,7 @@ private theorem seg_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
         (elim.rowsLen_idMat n)
         (evalM_shape n (chordOp (permMatAt n t)) hSr hSl hn
           (deck.pSum 0)).2
-        (elim.length_idMat n) hn hone) ?_
+        (elim.length_idMat n) hone) ?_
     refine matOne_trans
       (inertia.matMul_idR n (inertia.matPow (permMatAt n t) n m)
         hsm.1 hsm.2 hn hn) ?_
@@ -2544,7 +2571,6 @@ private theorem seg_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
           (hev (deck.pFamN (r + 1))).2
           ((elim.length_matAdd _ _ ((hshape (r + 1)).2.trans
             (hshape (m + c + 1)).2.symm)).trans (hshape (r + 1)).2)
-          hn
           (plus_read n (2 * m) t s hn ht hst hts hcyc (r + 1)
             (m + c + 1) hjb)) ?_
       refine matOne_trans
@@ -2604,7 +2630,6 @@ private theorem seg_read (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
           ((elim.length_matAdd _ _ ((hev (deck.pSum r)).2.trans
             (hev (deck.pFam (ground.posOfSucc r))).2.symm)).trans
             (hev (deck.pSum r)).2)
-          hn
           (evalM_add n (chordOp (permMatAt n t)) hSl hSr hn
             (deck.pSum r) (deck.pFam (ground.posOfSucc r)))) ?_
       refine matOne_trans
@@ -2976,7 +3001,7 @@ def identRead (Pm : Mat) (n : Nat) : Prop :=
       (chordOp Pm))
     (inertia.matScaleB (BPair.ofNat 2) (elim.idMat n))
 
-instance (Pm : Mat) (n : Nat) : Decidable (identRead Pm n) :=
+instance instFiberdec18 (Pm : Mat) (n : Nat) : Decidable (identRead Pm n) :=
   inferInstanceAs (Decidable (matOneValue _ _))
 
 /-- A stated list's members sit in a datum's kernel, the action
@@ -2984,7 +3009,7 @@ reading the unit family at each. -/
 def kerList (D : Mat) (vs : Mat) : Prop :=
   (vs.all (fun v => decide (poly.unitTail (matVec D v)))) = true
 
-instance (D : Mat) (vs : Mat) : Decidable (kerList D vs) :=
+instance instFiberdec19 (D : Mat) (vs : Mat) : Decidable (kerList D vs) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- A stated list's members read the translation's fixed line,
@@ -2992,7 +3017,7 @@ instance (D : Mat) (vs : Mat) : Decidable (kerList D vs) :=
 def fixedList (Pm : Mat) (vs : Mat) : Prop :=
   (vs.all (fun v => decide (poly.oneValue (matVec Pm v) v))) = true
 
-instance (Pm : Mat) (vs : Mat) : Decidable (fixedList Pm vs) :=
+instance instFiberdec20 (Pm : Mat) (vs : Mat) : Decidable (fixedList Pm vs) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The unit fiber at a stated window: an independent list whose
@@ -3002,7 +3027,7 @@ read the fixed line `T v = v`, the two identified at
 def unitFiberRead (Pm : Mat) (n : Nat) (vs : Mat) : Prop :=
   indepRows n vs ∧ kerList (unitDatum Pm n) vs ∧ fixedList Pm vs
 
-instance (Pm : Mat) (n : Nat) (vs : Mat) :
+instance instFiberdec21 (Pm : Mat) (n : Nat) (vs : Mat) :
     Decidable (unitFiberRead Pm n vs) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
@@ -3013,7 +3038,7 @@ def rootBlockRead (Pm : Mat) (n m : Nat) (vs : Mat) : Prop :=
   indepRows n vs
   ∧ kerList (polyEvalM (deck.pSum m) (chordOp Pm) n) vs
 
-instance (Pm : Mat) (n m : Nat) (vs : Mat) :
+instance instFiberdec22 (Pm : Mat) (n m : Nat) (vs : Mat) :
     Decidable (rootBlockRead Pm n m vs) :=
   inferInstanceAs (Decidable (_ ∧ _))
 
@@ -3026,7 +3051,7 @@ def blockCongrRead (D vs P Q : Mat) (k m : Nat) : Prop :=
     (inertia.blockJoin P
       (List.replicate k (List.replicate m BPair.unit)) Q)
 
-instance (D vs P Q : Mat) (k m : Nat) :
+instance instFiberdec23 (D vs P Q : Mat) (k m : Nat) :
     Decidable (blockCongrRead D vs P Q k m) :=
   inferInstanceAs (Decidable (matOneValue _ _))
 
@@ -3039,7 +3064,7 @@ def baseSplitRead (Pm D : Mat) (n m : Nat) (Lu Lk P Q : Mat) : Prop :=
   ∧ indepRows n (Lu ++ Lk)
   ∧ blockCongrRead D (Lu ++ Lk) P Q Lu.length Lk.length
 
-instance (Pm D : Mat) (n m : Nat) (Lu Lk P Q : Mat) :
+instance instFiberdec24 (Pm D : Mat) (n m : Nat) (Lu Lk P Q : Mat) :
     Decidable (baseSplitRead Pm D n m Lu Lk P Q) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
 
@@ -3066,7 +3091,7 @@ def momentaRead (m : Nat) (Es : List stage.Ext) (wn wd : Pos) : Prop :=
       = true
   ∧ bracketsApart Es = true
 
-instance (m : Nat) (Es : List stage.Ext) (wn wd : Pos) :
+instance instFiberdec25 (m : Nat) (Es : List stage.Ext) (wn wd : Pos) :
     Decidable (momentaRead m Es wn wd) :=
   inferInstanceAs (Decidable (¬ _ ∧ _ ∧ _ = _ ∧ _ = _))
 
@@ -3099,7 +3124,7 @@ def splitRead (m : Nat) (fs : List poly.Poly)
       && decide ((jE.2.1 + ⟨BPair.ofPos wn, wd⟩).oneValue jE.2.2))) = true
   ∧ bracketsApart (rE.map (extAt fs)) = true
 
-instance (m : Nat) (fs : List poly.Poly)
+instance instFiberdec26 (m : Nat) (fs : List poly.Poly)
     (rE : List (Nat × (CPair × CPair))) (wn wd : Pos) :
     Decidable (splitRead m fs rE wn wd) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ = _ ∧ _ = _ ∧ _ = _))
@@ -3286,7 +3311,7 @@ def colMemberRead (m : Nat) (S : Mat) (u : List poly.Poly) : Prop :=
   split.prowOneValue (redVec m (pmatVec S u))
     (redVec m (u.map (fun p => poly.mul deck.wPoly p)))
 
-instance (m : Nat) (S : Mat) (u : List poly.Poly) :
+instance instFiberdec27 (m : Nat) (S : Mat) (u : List poly.Poly) :
     Decidable (colMemberRead m S u) :=
   inferInstanceAs (Decidable (split.prowOneValue _ _))
 
@@ -3297,7 +3322,7 @@ def perpRead (m : Nat) (A : Mat) (u : List poly.Poly) : Prop :=
   poly.oneValue (deck.redP m (pdotVec u (pmatVec A u)))
     (deck.redP m (poly.neg (pdotVec u (pmatVec A u))))
 
-instance (m : Nat) (A : Mat) (u : List poly.Poly) :
+instance instFiberdec28 (m : Nat) (A : Mat) (u : List poly.Poly) :
     Decidable (perpRead m A u) :=
   poly.decOneValue _ _
 
@@ -3319,7 +3344,7 @@ def gramUnitRead (m : Nat) (A : Mat) (u : List poly.Poly)
   c.offUnit
   ∧ poly.oneValue (deck.redP m (poly.mul (gramDet m A u) a)) [c]
 
-instance (m : Nat) (A : Mat) (u : List poly.Poly) (a : poly.Poly)
+instance instFiberdec29 (m : Nat) (A : Mat) (u : List poly.Poly) (a : poly.Poly)
     (c : BPair) : Decidable (gramUnitRead m A u a c) :=
   inferInstanceAs (Decidable (¬ _ ∧ _))
 
@@ -5328,7 +5353,7 @@ private theorem ident_of (n : Nat) (Pm : Mat) (hP : rowsLen n Pm)
     show transposeM (matAdd Pm (matSwap (elim.idMat n))) = _
     rw [transposeM_matAdd Pm (matSwap (elim.idMat n)) hP hSwI
         (hPl.trans hSwIl.symm) (by rw [hPl]; exact hn),
-      transposeM_swap (elim.idMat n), inertia.transposeM_idMat n]
+      transposeM_swap (elim.idMat n), elim.transposeM_idMat n]
   -- the datum's square at the two products
   have hleft : matOneValue
       (matMul (transposeM Pm) (inertia.siteDatum Pm (elim.idMat n)))
@@ -6491,7 +6516,7 @@ private theorem evalM_comm (n : Nat) (M X : Mat) (hMl : M.length = n)
       matOne_trans
         (matMul_congrR (n := n) (k := n) X (polyEvalM ([] : poly.Poly) M n)
           (elim.nullMat n n) hz.1 (elim.rowsLen_nullMat n n) hz.2
-          (elim.length_nullMat n n) hn h0)
+          (elim.length_nullMat n n) h0)
         (elim.matMul_nullMat n X hXl)
     have hright : matOneValue (matMul (polyEvalM ([] : poly.Poly) M n) X)
         (elim.nullMat n n) := by
@@ -6551,7 +6576,7 @@ private theorem evalM_comm (n : Nat) (M X : Mat) (hMl : M.length = n)
           (rowsLen_matMul_of (polyEvalM p M n) X
              (fun _ => (by rw [hXl]; exact hn)) hXr)
           ((length_matMul X (polyEvalM p M n)).trans hXl)
-          ((length_matMul (polyEvalM p M n) X).trans hep.2) hn ih) ?_
+          ((length_matMul (polyEvalM p M n) X).trans hep.2) ih) ?_
       exact matOne_symm (matMul_assoc (n := n) (k := n) (s := n) M
         (polyEvalM p M n) X hMr hep.1 hXr hep.2 hXl hn hn)
     show matOneValue
@@ -7176,7 +7201,7 @@ private theorem evalM_datum_comm (n : Nat) (Pm : Mat)
           (rowsLen_cast hAtl (rowsLen_matMul _ _))
           (rowsLen_cast hEt (rowsLen_matMul _ _))
           ((length_matMul _ _).trans hE.2)
-          ((length_matMul _ _).trans hAl) hn
+          ((length_matMul _ _).trans hAl)
           (evalM_datum_comm n Pm hP hPl hn horth t)) ?_
       refine matOne_trans
         (matOne_symm (matMul_assoc (chordOp Pm) (bandDatum Pm)
@@ -8189,7 +8214,7 @@ private theorem imageKill (m : Nat) (cs : List BPair)
           (matPow_shape (2 * m + 1) _ hTl (2 * m + 1)).1
           (elim.rowsLen_idMat _)
           (matPow_shape (2 * m + 1) _ hTl (2 * m + 1)).2
-          (elim.length_idMat _) hn hcyc) ?_
+          (elim.length_idMat _) hcyc) ?_
       exact inertia.matMul_idR (2 * m + 1) _ hTr hTl hn hn
     refine poly.oneValue_trans
       (poly.oneValue_symm (elim.matVec_matOne _ _ w hTP)) ?_
@@ -8997,7 +9022,7 @@ def bandRootRead (tn sqn : BPair) (c : Pos) : Prop :=
   ∧ sqn.offUnit
   ∧ BPair.unit ≤ sqn
 
-instance (tn sqn : BPair) (c : Pos) : Decidable (bandRootRead tn sqn c) :=
+instance instFiberdec30 (tn sqn : BPair) (c : Pos) : Decidable (bandRootRead tn sqn c) :=
   inferInstanceAs (Decidable (_ ∧ ¬ _ ∧ _ ≤ _))
 
 /-- The band congruence at a doubled block: the block's level
@@ -9010,7 +9035,7 @@ def bandCongrRead {o : Nat} (Z : split.PMat) (T Tw : SqMat o)
   inertia.clearedCongr T Tw
   ∧ split.pmatOneValue (split.congrZ T.val Z) S
 
-instance {o : Nat} (Z : split.PMat) (T Tw : SqMat o) (S : split.PMat) :
+instance instFiberdec31 {o : Nat} (Z : split.PMat) (T Tw : SqMat o) (S : split.PMat) :
     Decidable (bandCongrRead Z T Tw S) :=
   inferInstanceAs (Decidable (_ ∧ _))
 
@@ -9032,7 +9057,7 @@ def fiberPencilRead {o : Nat} (n : Nat) (H G L : Mat) (T Tw : SqMat o)
         (matMul L (matMul G (transposeM L)))) T Tw S
   ∧ cellcount.pShapeAt S o K
 
-instance {o : Nat} (n : Nat) (H G L : Mat) (T Tw : SqMat o) (S : split.PMat)
+instance instFiberdec32 {o : Nat} (n : Nat) (H G L : Mat) (T Tw : SqMat o) (S : split.PMat)
     (K : Nat) (tn sqn : BPair) (c : Pos) :
     Decidable (fiberPencilRead n H G L T Tw S K tn sqn c) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _))
@@ -9231,8 +9256,7 @@ theorem annih_of (n m : Nat) (t s : Nat → Nat) (hn : 0 < n)
            (polyEvalM (deck.pSum m) (chordOp (permMatAt n t)) n))
          (fun _ => (by rw [h2Pl]; exact hn)) h2P)
       ((length_matMul _ _).trans hsm.2)
-      ((length_matMul _ _).trans hsm.2)
-      hn f1) ?_
+      ((length_matMul _ _).trans hsm.2) f1) ?_
   exact hclear
     (inertia.matScaleB (BPair.ofNat 2)
       (polyEvalM (deck.pSum m) (chordOp (permMatAt n t)) n))

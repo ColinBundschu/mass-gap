@@ -39,25 +39,6 @@ head's squares against the tail's self-pairings with the doubled
 swapped cross fold, so the row is a closed form in the tail's
 three pairings (`rowForm`) and the assembly reads it once. -/
 
-/-- The six-member reshuffle the row's expansion collects at: the
-head's terms and the tail's terms each land once. -/
-private theorem addShuffle (A B C D E F : BPair) :
-    A + B + (C + D) + ((E + F) + (E + F))
-      = A + C + (E + E) + (B + D + (F + F)) := by
-  rw [BPair.add_add_comm A B C D, BPair.add_add_comm E F E F,
-    BPair.add_add_comm (A + C) (B + D) (E + E) (F + F)]
-
-/-- The seven-member reshuffle the assembly collects at: the two
-squares' cross terms pair off, the tail's square joins the tail's
-cross fold, and the head's terms stand together. -/
-private theorem addShuffle7 (E F G H I J K : BPair) :
-    E + F + G + (H + I + J + K)
-      = E + H + I + (F + K) + (G + J) := by
-  rw [BPair.add_assoc (H + I) J K, BPair.add_comm J K,
-    ← BPair.add_assoc (H + I) K J,
-    BPair.add_add_comm (E + F) G (H + I + K) J,
-    BPair.add_add_comm E F (H + I) K, ← BPair.add_assoc E H I]
-
 /-- The row's closed form: the head's squares against the tail's
 self-pairings with the doubled swapped cross fold. -/
 private def rowForm (a b : BPair) (u v : List BPair) : BPair :=
@@ -67,25 +48,32 @@ private def rowForm (a b : BPair) (u v : List BPair) : BPair :=
 /-- The closed form's head split: one place's cross square peels
 off the closed form exactly. -/
 private theorem rowForm_cons (a b x y : BPair) (u v : List BPair) :
-    rowForm a b (x :: u) (y :: v)
-      = (a * y + (x * b).swap) * (a * y + (x * b).swap)
-        + rowForm a b u v := by
-  show a * a * (y * y + dotP v v) + (x * x + dotP u u) * (b * b)
+    (rowForm a b (x :: u) (y :: v)).oneValue
+      ((a * y + (x * b).swap) * (a * y + (x * b).swap)
+        + rowForm a b u v) := by
+  show (a * a * (y * y + dotP v v) + (x * x + dotP u u) * (b * b)
       + ((a * b * (x * y + dotP u v)).swap
-        + (a * b * (x * y + dotP u v)).swap)
-    = (a * y + (x * b).swap) * (a * y + (x * b).swap)
+        + (a * b * (x * y + dotP u v)).swap)).oneValue
+    ((a * y + (x * b).swap) * (a * y + (x * b).swap)
       + (a * a * dotP v v + dotP u u * (b * b)
-        + ((a * b * dotP u v).swap + (a * b * dotP u v).swap))
-  rw [BPair.left_distrib (a * a) (y * y) (dotP v v),
-    BPair.right_distrib (x * x) (dotP u u) (b * b),
-    BPair.left_distrib (a * b) (x * y) (dotP u v),
-    ← BPair.swap_add (a * b * (x * y)) (a * b * dotP u v),
-    BPair.sq_expand_swap (a * y) (x * b),
-    BPair.mul_mul_mul_comm a y a y, BPair.mul_mul_mul_comm x b x b,
-    BPair.mul_comm x b, BPair.mul_mul_mul_comm a y b x, BPair.mul_comm y x]
-  exact addShuffle (a * a * (y * y)) (a * a * dotP v v)
-    (x * x * (b * b)) (dotP u u * (b * b))
-    (a * b * (x * y)).swap (a * b * dotP u v).swap
+        + ((a * b * dotP u v).swap + (a * b * dotP u v).swap)))
+  rw [BPair.sq_expand_swap (a * y) (x * b)]
+  have hS : ((a * b * (x * y + dotP u v)).swap).oneValue
+      ((a * y * (x * b)).swap + (a * b * dotP u v).swap) := by
+    rw [BPair.left_distrib (a * b) (x * y) (dotP u v),
+      ← BPair.swap_add (a * b * (x * y)) (a * b * dotP u v)]
+    exact BPair.add_congr (swap_congr (polEqB [a, b, x, y]
+        (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1))) (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 3))))
+        (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 3))) (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 1))))
+        (by decide +kernel)))
+      (BPair.oneValue_refl _)
+  refine BPair.oneValue_trans
+    (BPair.add_congr (BPair.oneValue_refl _) (BPair.add_congr hS hS)) ?_
+  exact polEqB [a, b, x, y, dotP v v, dotP u u, (a * y * (x * b)).swap,
+      (a * b * dotP u v).swap]
+    (Pol.add (Pol.add (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.add (Pol.mul (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 3))) (Pol.mon (Mon.var 4)))) (Pol.mul (Pol.add (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 2))) (Pol.mon (Mon.var 5))) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 1))))) (Pol.add (Pol.add (Pol.mon (Mon.var 6)) (Pol.mon (Mon.var 7))) (Pol.add (Pol.mon (Mon.var 6)) (Pol.mon (Mon.var 7)))))
+    (Pol.add (Pol.add (Pol.add (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 3))) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 3)))) (Pol.mul (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 1))) (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 1))))) (Pol.add (Pol.mon (Mon.var 6)) (Pol.mon (Mon.var 6)))) (Pol.add (Pol.add (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.mon (Mon.var 4))) (Pol.mul (Pol.mon (Mon.var 5)) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 1))))) (Pol.add (Pol.mon (Mon.var 7)) (Pol.mon (Mon.var 7)))))
+    (by decide +kernel)
 
 /-- The row's fold against its seed: the accumulating fold reads
 the seed joined to the closed form, the place counts matched. -/
@@ -126,11 +114,10 @@ private theorem crossRow_fold (a b : BPair) : ∀ (u v : List BPair),
     refine BPair.oneValue_trans
       (crossRow_fold a b u v hst
         (acc + (a * y + (x * b).swap) * (a * y + (x * b).swap))) ?_
-    rw [rowForm_cons a b x y u v,
-      ← BPair.add_assoc acc
-        ((a * y + (x * b).swap) * (a * y + (x * b).swap))
-        (rowForm a b u v)]
-    exact BPair.oneValue_refl _
+    refine BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.add_assoc acc
+      ((a * y + (x * b).swap) * (a * y + (x * b).swap)) (rowForm a b u v))) ?_
+    exact BPair.add_congr (BPair.oneValue_refl acc)
+      (BPair.oneValue_symm (rowForm_cons a b x y u v))
 
 /-! The sides: the cross fold is a fold of squares, so its second
 member sits at or below its first at every list pair, and the fold
@@ -182,22 +169,21 @@ private theorem sq_step (a b S P Q Cr K : BPair)
         (BPair.add_swap_null (a * b * S))
         (BPair.add_swap_null (a * b * S)))
       (BPair.unit_add BPair.unit)
-  rw [BPair.sq_expand (a * b) S, BPair.mul_mul_mul_comm a b a b,
-    BPair.right_distrib (a * a) P (b * b + Q),
-    BPair.left_distrib (a * a) (b * b) Q,
-    BPair.left_distrib P (b * b) Q,
-    ← BPair.add_assoc (a * a * (b * b) + a * a * Q) (P * (b * b))
-      (P * Q)]
   refine BPair.oneValue_trans
     (BPair.add_congr (BPair.oneValue_refl _)
       (BPair.add_congr hrow (BPair.oneValue_refl K))) ?_
-  rw [addShuffle7 (a * a * (b * b)) (S * S) (a * b * S + a * b * S)
-    (a * a * Q) (P * (b * b))
-    ((a * b * S).swap + (a * b * S).swap) K]
+  refine BPair.oneValue_trans (polEqB [a, b, S, P, Q, K, (a * b * S).swap]
+    (Pol.add (Pol.mul (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1))) (Pol.mon (Mon.var 2))) (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1))) (Pol.mon (Mon.var 2)))) (Pol.add (Pol.add (Pol.add (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.mon (Mon.var 4))) (Pol.mul (Pol.mon (Mon.var 3)) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 1))))) (Pol.add (Pol.mon (Mon.var 6)) (Pol.mon (Mon.var 6)))) (Pol.mon (Mon.var 5))))
+    (Pol.add (Pol.add (Pol.add (Pol.add (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 1)))) (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.mon (Mon.var 4)))) (Pol.mul (Pol.mon (Mon.var 3)) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 1))))) (Pol.add (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 2))) (Pol.mon (Mon.var 5)))) (Pol.add (Pol.add (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1))) (Pol.mon (Mon.var 2))) (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1))) (Pol.mon (Mon.var 2)))) (Pol.add (Pol.mon (Mon.var 6)) (Pol.mon (Mon.var 6)))))
+    (by decide +kernel)) ?_
   refine BPair.oneValue_trans
     (BPair.add_congr
       (BPair.add_congr (BPair.oneValue_refl _) hcar) hnull) ?_
-  exact BPair.add_unit _
+  refine BPair.oneValue_trans (BPair.add_unit _) ?_
+  exact polEqB [a, b, P, Q]
+    (Pol.add (Pol.add (Pol.add (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 1)))) (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.mon (Mon.var 3)))) (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 1))))) (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 3))))
+    (Pol.mul (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.mon (Mon.var 2))) (Pol.add (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 1))) (Pol.mon (Mon.var 3))))
+    (by decide +kernel)
 
 /-- The display: the squared pairing joined to the cross squares'
 fold reads the self-pairings' product, the cross monomials
@@ -225,6 +211,65 @@ theorem dotP_sq_le (u v : List BPair) (h : u.length = v.length) :
     (leB_congr_left (BPair.add_unit (dotP u v * dotP u v))
       (leB_add (leB_refl (dotP u v * dotP u v))
         (unitLeOfSide (crossSq_side u v)))))
+
+/-- The squared Cauchy--Schwarz at the count: a weighted range fold's
+square sits at or below its occupancy fold, one per weight off the
+sum's unit, against the products' squares' fold, the pairing's read
+at the indicator list against the products' list. -/
+theorem bsum_sq_le_count (P : Nat) (k w : Nat → BPair) :
+    bsum (fun p => k p * w p) (List.range P) * bsum (fun p => k p * w p) (List.range P)
+      ≤ bsum (fun p => if (k p).oneValue BPair.unit then BPair.unit else BPair.ofNat 1)
+          (List.range P)
+        * bsum (fun p => (k p * w p) * (k p * w p)) (List.range P) := by
+  let u : List BPair := (List.range P).map (fun p =>
+    if (k p).oneValue BPair.unit then BPair.unit else BPair.ofNat 1)
+  let v : List BPair := (List.range P).map (fun p => k p * w p)
+  have hul : u.length = P := by
+    show ((List.range P).map _).length = P
+    rw [ground.length_map, ground.length_range]
+  have hvl : v.length = P := by
+    show ((List.range P).map _).length = P
+    rw [ground.length_map, ground.length_range]
+  have hu : ∀ p, p < P → getAt BPair.unit u p
+      = (if (k p).oneValue BPair.unit then BPair.unit else BPair.ofNat 1) := by
+    intro p hp
+    show getAt BPair.unit ((List.range P).map _) p = _
+    rw [ground.getAt_map 0 BPair.unit _ (List.range P) p (by rw [ground.length_range]; exact hp),
+      ground.getAt_range P p hp]
+  have hv : ∀ p, p < P → getAt BPair.unit v p = k p * w p := by
+    intro p hp
+    show getAt BPair.unit ((List.range P).map _) p = _
+    rw [ground.getAt_map 0 BPair.unit _ (List.range P) p (by rw [ground.length_range]; exact hp),
+      ground.getAt_range P p hp]
+  have huv : (dotP u v).oneValue (bsum (fun p => k p * w p) (List.range P)) := by
+    rw [dotP_fold P u v hul hvl]
+    refine bsum_congr_range_ov _ _ P (fun p hp => ?_)
+    rw [hu p hp, hv p hp]
+    by_cases hk : (k p).oneValue BPair.unit
+    · rw [if_pos hk]
+      exact BPair.oneValue_trans (BPair.unit_mul _)
+        (BPair.oneValue_symm (BPair.oneValue_trans (BPair.mul_congr_left hk) (BPair.unit_mul _)))
+    · rw [if_neg hk]
+      exact BPair.ofNat_one_mul _
+  have huu : (dotP u u).oneValue
+      (bsum (fun p => if (k p).oneValue BPair.unit then BPair.unit else BPair.ofNat 1)
+        (List.range P)) := by
+    rw [dotP_fold P u u hul hul]
+    refine bsum_congr_range_ov _ _ P (fun p hp => ?_)
+    rw [hu p hp]
+    by_cases hk : (k p).oneValue BPair.unit
+    · rw [if_pos hk]
+      exact BPair.unit_mul _
+    · rw [if_neg hk]
+      exact BPair.ofNat_one_mul _
+  have hvv : (dotP v v).oneValue
+      (bsum (fun p => (k p * w p) * (k p * w p)) (List.range P)) := by
+    rw [dotP_fold P v v hvl hvl]
+    refine bsum_congr_range_ov _ _ P (fun p hp => ?_)
+    rw [hv p hp]
+    exact BPair.oneValue_refl _
+  have hcs := leB_of_not_lt (dotP_sq_le u v (hul.trans hvl.symm))
+  exact leB_congr (BPair.mul_congr huv huv) (BPair.mul_congr huu hvv) hcs
 
 /-- The squared pairing at the fold read: two matched lists' squared
 pairing sits at or below their self-pairings' product, `dotP_sq_le`

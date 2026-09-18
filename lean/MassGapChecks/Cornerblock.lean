@@ -1,6 +1,6 @@
 import MassGap.Cornerblock
 /-!
-The check module for `lem:cornerpivot` (vii)'s ball tier, the
+The check module for `lem:cornerblock`'s ball tier, the
 center family the battery's shared certificate datum: the constant
 families at the center three, witness a third and image
 eight-thirds over the unit bond and gram, the ratio pairs
@@ -55,17 +55,22 @@ order-four chain at the order-two crossing `diag(-1, 2)` each
 close the assembled datum's count at one through the theorem,
 decided raw beside it, the walked segment the boundary slab at
 the family's own read.
+
+The evaluated glue's battery runs the magnitude price at three
+profiles beside their theorem routes and the dominance glue at two
+sites, the scale-carrying `−500η` off entry and the depth-carrying
+`−100u` one, the box membership's isolation at the second — its
+own section's account.
 -/
+
+namespace cornerblock
 set_option maxHeartbeats 4000000
 
 open ground poly elim inertia greenprod spectator cornerpivot
 
 private def gW : Mat := [[⟨2, 1⟩]]
 private def spK : Split 1 := ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [], 1, rfl⟩
-private def spOne (a : BPair) : Split 1 :=
-  ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [.one a], 0, rfl⟩
-
-/-! Clause (vii)'s center family, the battery's shared certificate
+/-! `lem:cornerblock`'s center family, the battery's shared certificate
 datum: the constant families at the center three (the matrix
 twenty-four hundred at the clearing eight hundred), the witness a
 third and the image eight-thirds, the ratio pairs `λ = 1/2`,
@@ -98,7 +103,7 @@ private def wFam : CenterFam :=
    [bx1 1 1], [bx1 1 1], [bx1 1 1], [bx1 1 1],
    bx1 1 0, bx1 1 0, bx1 1 0⟩
 
-example : famRead wFam wB wG := by decide +kernel
+theorem pin1 : famRead wFam wB wG := by decide +kernel
 
 /-! The chain's data: the slabs `A = 3` at the bonds `B = 1` and
 the pivots `(21/8, 8/3, 3)` with the witnesses `(3/8, 1/3)` — the
@@ -117,7 +122,7 @@ private def chDiag : List Mat := [aC, aC, aC]
 private def chOff : List Mat := [bC, bC]
 private def chXs : List MatQ := [x0C, xmC, ycC]
 private def chRs : List MatQ := [cxC, ccC]
-example : tailRead chDiag chOff chXs chRs [1, 1, 1] := by decide +kernel
+theorem pin2 : tailRead chDiag chOff chXs chRs [1, 1, 1] := by decide +kernel
 
 /-! The one-depth transport at the chain's slab `0 → 1` step: the
 member `8/3` about the center `3` at the radius one carries to the
@@ -125,16 +130,16 @@ deeper pivot `21/8` about the same center, the contraction `λ = 1/3`
 at the modulus `λ∘ = 1/2` — the deviation `-3/8` priced at minus
 three against eight and minus eight against minus three. -/
 
-example : capQ (devQ xmC ycC) gW 1 1 (spOne ⟨5, 1⟩) (spOne ⟨3, 1⟩) := by
+theorem pin3 : capQ (devQ xmC ycC) gW 1 1 (inertia.oneSplit [⟨5, 1⟩]) (inertia.oneSplit [⟨3, 1⟩]) := by
   decide +kernel
 
-example : (quadForm (devQ x0C ycC).1 [⟨2, 1⟩]).scale 1
+theorem pin4 : (quadForm (devQ x0C ycC).1 [⟨2, 1⟩]).scale 1
     ≤ (quadForm gW [⟨2, 1⟩]).scale (1 * (devQ x0C ycC).2) := by
   decide +kernel
-example : ((quadForm gW [⟨2, 1⟩]).scale (1 * (devQ x0C ycC).2)).swap
+theorem pin5 : ((quadForm gW [⟨2, 1⟩]).scale (1 * (devQ x0C ycC).2)).swap
     ≤ (quadForm (devQ x0C ycC).1 [⟨2, 1⟩]).scale 1 := by decide +kernel
 
-example : (∀ w : List BPair, w.length = 1 →
+theorem pin6 : (∀ w : List BPair, w.length = 1 →
       (quadForm (devQ x0C ycC).1 w).scale 1
         ≤ (quadForm gW w).scale (1 * (devQ x0C ycC).2))
     ∧ (∀ w : List BPair, w.length = 1 →
@@ -148,19 +153,19 @@ example : (∀ w : List BPair, w.length = 1 →
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
-    (fun w hw => cap_hi (devQ xmC ycC) gW 1 1 (spOne ⟨5, 1⟩)
-      (spOne ⟨3, 1⟩) (by decide +kernel) w hw)
-    (fun w hw => cap_lo (devQ xmC ycC) gW 1 1 (spOne ⟨5, 1⟩)
-      (spOne ⟨3, 1⟩) (by decide +kernel) w hw)
+    (fun w hw => cap_hi (devQ xmC ycC) gW 1 1 (inertia.oneSplit [⟨5, 1⟩])
+      (inertia.oneSplit [⟨3, 1⟩]) (by decide +kernel) w hw)
+    (fun w hw => cap_lo (devQ xmC ycC) gW 1 1 (inertia.oneSplit [⟨5, 1⟩])
+      (inertia.oneSplit [⟨3, 1⟩]) (by decide +kernel) w hw)
     (floor_all ycC gW 2 1 1 1 spK (by decide +kernel)
       (by decide +kernel) (by decide +kernel))
     (contract_all (transfer ccC) gW gW 1 3 spK (by decide +kernel))
     (by decide +kernel)
     (fun h => Nat.noConfusion h)
-    (fun w hw => cap_hi (devQ xmC ycC) gW 1 2 (spOne ⟨6, 1⟩)
-      (spOne ⟨2, 1⟩) (by decide +kernel) w hw)
-    (fun w hw => cap_lo (devQ xmC ycC) gW 1 2 (spOne ⟨6, 1⟩)
-      (spOne ⟨2, 1⟩) (by decide +kernel) w hw)
+    (fun w hw => cap_hi (devQ xmC ycC) gW 1 2 (inertia.oneSplit [⟨6, 1⟩])
+      (inertia.oneSplit [⟨2, 1⟩]) (by decide +kernel) w hw)
+    (fun w hw => cap_lo (devQ xmC ycC) gW 1 2 (inertia.oneSplit [⟨6, 1⟩])
+      (inertia.oneSplit [⟨2, 1⟩]) (by decide +kernel) w hw)
     (by decide +kernel) (by decide +kernel)
 
 /-! The transport's modulus binder, isolated at the deepened center
@@ -170,11 +175,11 @@ eight against minus twenty-seven. -/
 
 private def ycdF : MatQ := ([[⟨7, 1⟩]], 1)
 
-example : capQ (devQ xmC ycdF) gW 4 1 (spOne ⟨23, 1⟩)
-    (spOne ⟨3, 1⟩) := by decide +kernel
-example : ¬ (4 * ((2 * 2) * 1) + (1 * 1) * (1 * 1)
+theorem pin7 : capQ (devQ xmC ycdF) gW 4 1 (inertia.oneSplit [⟨23, 1⟩])
+    (inertia.oneSplit [⟨3, 1⟩]) := by decide +kernel
+theorem pin8 : ¬ (4 * ((2 * 2) * 1) + (1 * 1) * (1 * 1)
     ≤ 1 * (1 * (2 * 2))) := by decide +kernel
-example : ¬ (((quadForm gW [⟨2, 1⟩]).scale
+theorem pin9 : ¬ (((quadForm gW [⟨2, 1⟩]).scale
       (1 * (devQ x0C ycdF).2)).swap
     ≤ (quadForm (devQ x0C ycdF).1 [⟨2, 1⟩]).scale 1) := by
   decide +kernel
@@ -258,33 +263,33 @@ private theorem devVLo : ∀ w : List BPair, w.length = 2 →
           (ground.leB_congr_right (BPair.oneValue_symm (qDV w))
             (dKVUnitLe w hw)) 1000))
 
-example : matOneValue (transposeM ycV.1) ycV.1 := by decide +kernel
-example : oneValueQ (mulQ xV cxV) (ofM (transposeM bV)) := by
+theorem pin10 : matOneValue (transposeM ycV.1) ycV.1 := by decide +kernel
+theorem pin11 : oneValueQ (mulQ xV cxV) (ofM (transposeM bV)) := by
   decide +kernel
-example : oneValueQ (addQ xdpV (mulQ (ofM bV) cxV)) (ofM aV) := by
+theorem pin12 : oneValueQ (addQ xdpV (mulQ (ofM bV) cxV)) (ofM aV) := by
   decide +kernel
-example : oneValueQ (mulQ ycV ccV) (ofM (transposeM bV)) := by
+theorem pin13 : oneValueQ (mulQ ycV ccV) (ofM (transposeM bV)) := by
   decide +kernel
-example : oneValueQ (addQ ymidV (mulQ (ofM bV) ccV)) (ofM aV) := by
+theorem pin14 : oneValueQ (addQ ymidV (mulQ (ofM bV) ccV)) (ofM aV) := by
   decide +kernel
-example : floorRead ycV gI2 1 1 1 1000 spFV := by decide +kernel
-example : contractRead (transfer ccV) gI2 g4C 1 2 spK := by
+theorem pin15 : floorRead ycV gI2 1 1 1 1000 spFV := by decide +kernel
+theorem pin16 : contractRead (transfer ccV) gI2 g4C 1 2 spK := by
   decide +kernel
-example : capQ (devQ ymidV ymidV) g4C 1 2000 (spOne ⟨5, 1⟩)
-    (spOne ⟨5, 1⟩) := by decide +kernel
-example : (1 : Pos) * (1001 * (2 * 1000))
+theorem pin17 : capQ (devQ ymidV ymidV) g4C 1 2000 (inertia.oneSplit [⟨5, 1⟩])
+    (inertia.oneSplit [⟨5, 1⟩]) := by decide +kernel
+theorem pin18 : (1 : Pos) * (1001 * (2 * 1000))
     = 1 * ((1 * 1000 + 1 * 1) * 2000) := by decide +kernel
-example : (1 : Pos) * ((2000 * 2000) * 1000)
+theorem pin19 : (1 : Pos) * ((2000 * 2000) * 1000)
       + (1001 * 1001) * (1 * 2000)
     ≤ 1 * (2000 * (2000 * 2000)) := by decide +kernel
-example : ∀ w : List BPair, w.length = 2 →
+theorem pin20 : ∀ w : List BPair, w.length = 2 →
     (quadForm (devQ xV ycV).1 w).scale 1000
       ≤ (quadForm gI2 w).scale (1 * (devQ xV ycV).2) := devVHi
-example : ∀ w : List BPair, w.length = 2 →
+theorem pin21 : ∀ w : List BPair, w.length = 2 →
     ((quadForm gI2 w).scale (1 * (devQ xV ycV).2)).swap
       ≤ (quadForm (devQ xV ycV).1 w).scale 1000 := devVLo
-example : ¬ matOneValue (transposeM xV.1) xV.1 := by decide +kernel
-example : ¬ ((quadForm (devQ xdpV ymidV).1 [⟨2, 1⟩]).scale 1000
+theorem pin22 : ¬ matOneValue (transposeM xV.1) xV.1 := by decide +kernel
+theorem pin23 : ¬ ((quadForm (devQ xdpV ymidV).1 [⟨2, 1⟩]).scale 1000
     ≤ (quadForm g4C [⟨2, 1⟩]).scale
       (1 * (devQ xdpV ymidV).2)) := by decide +kernel
 
@@ -295,10 +300,10 @@ slab fold of the reversal counts is the count's unit — the fold
 decided raw, the theorem route the family walk below. -/
 
 private def chSps : List ((k : Nat) × Split k) :=
-  [⟨1, spOne ⟨22, 1⟩⟩, ⟨1, spOne ⟨9, 1⟩⟩, ⟨1, spOne ⟨4, 1⟩⟩]
+  [⟨1, inertia.oneSplit [⟨22, 1⟩]⟩, ⟨1, inertia.oneSplit [⟨9, 1⟩]⟩, ⟨1, inertia.oneSplit [⟨4, 1⟩]⟩]
 
-example : revListRead chXs chSps := by decide +kernel
-example : revFold chSps = 0 := by decide +kernel
+theorem pin24 : revListRead chXs chSps := by decide +kernel
+theorem pin25 : revFold chSps = 0 := by decide +kernel
 
 /-! The compression lifts at the identity congruence
 (`strict_lift`, `cap_lift`): the strict lift's datum is the mixed
@@ -336,12 +341,12 @@ private def liSpNeg : Split 2 :=
 private def liSpMxd : Split 2 :=
   ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [.one ⟨1, 2⟩, .one ⟨3, 1⟩], 0, rfl⟩
 
-example : splitRead liMix liSpMix := by decide +kernel
-example : matOneValue (matMul (transposeM liCol) (matMul liMix liCol))
+theorem pin26 : splitRead liMix liSpMix := by decide +kernel
+theorem pin27 : matOneValue (matMul (transposeM liCol) (matMul liMix liCol))
     liWn := by decide +kernel
-example : quadForm liWn liX1 < BPair.unit := by decide +kernel
-example : (1 : Nat) ≤ revAt liSpMix := by decide +kernel
-example : (1 : Nat) ≤ revAt liSpMix :=
+theorem pin28 : quadForm liWn liX1 < BPair.unit := by decide +kernel
+theorem pin29 : (1 : Nat) ≤ revAt liSpMix := by decide +kernel
+theorem pin30 : (1 : Nat) ≤ revAt liSpMix :=
   strict_lift (n := 2) (m := 1) liMix liCol liWn liSpMix liX1
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -349,29 +354,29 @@ example : (1 : Nat) ≤ revAt liSpMix :=
 /-- Refusal naming `strict_lift`'s tie: at the identity datum the
 column's compression reads two, so the forged compression minus two
 parts, and the count parts beside it at the vacant fold. -/
-example : splitRead liId liSpId := by decide +kernel
-example : ¬ matOneValue (matMul (transposeM liCol) (matMul liId liCol))
+theorem pin31 : splitRead liId liSpId := by decide +kernel
+theorem pin32 : ¬ matOneValue (matMul (transposeM liCol) (matMul liId liCol))
     liWn := by decide +kernel
-example : quadForm liWn liX1 < BPair.unit := by decide +kernel
-example : ¬ ((1 : Nat) ≤ revAt liSpId) := by decide +kernel
+theorem pin33 : quadForm liWn liX1 < BPair.unit := by decide +kernel
+theorem pin34 : ¬ ((1 : Nat) ≤ revAt liSpId) := by decide +kernel
 
 /-- Refusal naming `strict_lift`'s strict read: the exact
 compression at the identity datum reads two, at or above the sum's
 unit, and the count parts beside it. -/
-example : matOneValue (matMul (transposeM liCol) (matMul liId liCol))
+theorem pin35 : matOneValue (matMul (transposeM liCol) (matMul liId liCol))
     liWp := by decide +kernel
-example : ¬ (quadForm liWp liX1 < BPair.unit) := by decide +kernel
+theorem pin36 : ¬ (quadForm liWp liX1 < BPair.unit) := by decide +kernel
 
-example : splitRead liNeg liSpNeg := by decide +kernel
-example : matOneValue (matMul (transposeM liId) (matMul liNeg liId))
+theorem pin37 : splitRead liNeg liSpNeg := by decide +kernel
+theorem pin38 : matOneValue (matMul (transposeM liId) (matMul liNeg liId))
     liNeg := by decide +kernel
-example : quadForm liNeg liXa < BPair.unit := by decide +kernel
-example : (dotN liXa (matVec liNeg liXb) + dotN liXb (matVec liNeg liXa))
+theorem pin39 : quadForm liNeg liXa < BPair.unit := by decide +kernel
+theorem pin40 : (dotN liXa (matVec liNeg liXb) + dotN liXb (matVec liNeg liXa))
       * (dotN liXa (matVec liNeg liXb) + dotN liXb (matVec liNeg liXa))
     < BPair.ofNat 4 * (quadForm liNeg liXa * quadForm liNeg liXb) := by
   decide +kernel
-example : (2 : Nat) ≤ revAt liSpNeg := by decide +kernel
-example : (2 : Nat) ≤ revAt liSpNeg :=
+theorem pin41 : (2 : Nat) ≤ revAt liSpNeg := by decide +kernel
+theorem pin42 : (2 : Nat) ≤ revAt liSpNeg :=
   cap_lift (n := 2) (m := 2) liNeg liId liNeg liSpNeg liXa liXb
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -380,43 +385,43 @@ example : (2 : Nat) ≤ revAt liSpNeg :=
 /-- Refusal naming `cap_lift`'s discriminant: at the datum
 `diag(-1, 2)` the vacant cross reads the sum's unit against the
 product's quadruple minus eight, and the count parts at one. -/
-example : splitRead liMxd liSpMxd := by decide +kernel
-example : matOneValue (matMul (transposeM liId) (matMul liMxd liId))
+theorem pin43 : splitRead liMxd liSpMxd := by decide +kernel
+theorem pin44 : matOneValue (matMul (transposeM liId) (matMul liMxd liId))
     liMxd := by decide +kernel
-example : quadForm liMxd liXa < BPair.unit := by decide +kernel
-example : ¬ ((dotN liXa (matVec liMxd liXb)
+theorem pin45 : quadForm liMxd liXa < BPair.unit := by decide +kernel
+theorem pin46 : ¬ ((dotN liXa (matVec liMxd liXb)
         + dotN liXb (matVec liMxd liXa))
       * (dotN liXa (matVec liMxd liXb)
         + dotN liXb (matVec liMxd liXa))
     < BPair.ofNat 4 * (quadForm liMxd liXa * quadForm liMxd liXb)) := by
   decide +kernel
-example : ¬ ((2 : Nat) ≤ revAt liSpMxd) := by decide +kernel
+theorem pin47 : ¬ ((2 : Nat) ≤ revAt liSpMxd) := by decide +kernel
 
 /-- Refusal naming `cap_lift`'s strict read: at the identity datum
 the leading member reads the sum's unit's upper side while the
 discriminant stands, and the count parts at the vacant fold. -/
-example : matOneValue (matMul (transposeM liId) (matMul liId liId))
+theorem pin48 : matOneValue (matMul (transposeM liId) (matMul liId liId))
     liId := by decide +kernel
-example : ¬ (quadForm liId liXa < BPair.unit) := by decide +kernel
-example : (dotN liXa (matVec liId liXb) + dotN liXb (matVec liId liXa))
+theorem pin49 : ¬ (quadForm liId liXa < BPair.unit) := by decide +kernel
+theorem pin50 : (dotN liXa (matVec liId liXb) + dotN liXb (matVec liId liXa))
       * (dotN liXa (matVec liId liXb) + dotN liXb (matVec liId liXa))
     < BPair.ofNat 4 * (quadForm liId liXa * quadForm liId liXb) := by
   decide +kernel
-example : ¬ ((2 : Nat) ≤ revAt liSpId) := by decide +kernel
+theorem pin51 : ¬ ((2 : Nat) ≤ revAt liSpId) := by decide +kernel
 
 /-- Refusal naming `cap_lift`'s tie: at the identity datum the
 identity compression reads the identity, so the forged compression
 `diag(-1, -2)` parts while its own two reads stand, and the count
 parts at the vacant fold. -/
-example : ¬ matOneValue (matMul (transposeM liId) (matMul liId liId))
+theorem pin52 : ¬ matOneValue (matMul (transposeM liId) (matMul liId liId))
     liNeg := by decide +kernel
-example : quadForm liNeg liXa < BPair.unit := by decide +kernel
-example : (dotN liXa (matVec liNeg liXb) + dotN liXb (matVec liNeg liXa))
+theorem pin53 : quadForm liNeg liXa < BPair.unit := by decide +kernel
+theorem pin54 : (dotN liXa (matVec liNeg liXb) + dotN liXb (matVec liNeg liXa))
       * (dotN liXa (matVec liNeg liXb) + dotN liXb (matVec liNeg liXa))
     < BPair.ofNat 4 * (quadForm liNeg liXa * quadForm liNeg liXb) := by
   decide +kernel
 
-/-! Clause (vii)'s rebound at the order-one crossing: the crossing
+/-! `lem:cornerblock`'s rebound at the order-one crossing: the crossing
 pivot `-2` at its split's one lower unit, the bond `1`, the
 recursion witness `-1/2`, the following diagonal `1` and pivot
 `3/2` — the witness and join identities decided, the crossing's
@@ -425,20 +430,20 @@ theorem, the positive part the withdrawn vacant read at eight
 against twelve. -/
 
 private def crXc : MatQ := ([[⟨1, 3⟩]], 1)
-private def crSp : Split 1 := spOne ⟨1, 3⟩
+private def crSp : Split 1 := inertia.oneSplit [⟨1, 3⟩]
 private def crB : Mat := [[⟨2, 1⟩]]
 private def crR : MatQ := ([[⟨1, 2⟩]], 2)
 private def crA : Mat := [[⟨2, 1⟩]]
 private def crXf : MatQ := ([[⟨4, 1⟩]], 2)
 
-example : oneValueQ (mulQ crXc crR) (ofM (transposeM crB)) := by
+theorem pin55 : oneValueQ (mulQ crXc crR) (ofM (transposeM crB)) := by
   decide +kernel
-example : oneValueQ (addQ crXf (mulQ (ofM crB) crR)) (ofM crA) := by
+theorem pin56 : oneValueQ (addQ crXf (mulQ (ofM crB) crR)) (ofM crA) := by
   decide +kernel
-example : splitRead crXc.1 crSp := by decide +kernel
-example : revAt crSp = 1 := by decide +kernel
+theorem pin57 : splitRead crXc.1 crSp := by decide +kernel
+theorem pin58 : revAt crSp = 1 := by decide +kernel
 
-example : minor crSp.T.val * minor crSp.T.val
+theorem pin59 : minor crSp.T.val * minor crSp.T.val
       * ((quadForm crA [⟨2, 1⟩]).scale
           (crXc.2 * (crXf.2 * (crR.2 * crR.2))))
     ≤ minor crSp.T.val * minor crSp.T.val
@@ -448,7 +453,7 @@ example : minor crSp.T.val * minor crSp.T.val
           (matVec crSp.Tw.val (matVec crR.1 [⟨2, 1⟩]))).scale
           crXf.2 := by decide +kernel
 
-example : ∀ u : List BPair, u.length = 1 →
+theorem pin60 : ∀ u : List BPair, u.length = 1 →
     minor crSp.T.val * minor crSp.T.val
         * ((quadForm crA u).scale
             (crXc.2 * (crXf.2 * (crR.2 * crR.2))))
@@ -468,11 +473,11 @@ untransported. -/
 private def crR5 : MatQ := ([[⟨3, 1⟩]], 1)
 private def crXf5 : MatQ := ([[⟨1, 2⟩]], 1)
 
-example : ¬ oneValueQ (mulQ crXc crR5) (ofM (transposeM crB)) := by
+theorem pin61 : ¬ oneValueQ (mulQ crXc crR5) (ofM (transposeM crB)) := by
   decide +kernel
-example : oneValueQ (addQ crXf5 (mulQ (ofM crB) crR5)) (ofM crA) := by
+theorem pin62 : oneValueQ (addQ crXf5 (mulQ (ofM crB) crR5)) (ofM crA) := by
   decide +kernel
-example : ¬ (minor crSp.T.val * minor crSp.T.val
+theorem pin63 : ¬ (minor crSp.T.val * minor crSp.T.val
       * ((quadForm crA [⟨2, 1⟩]).scale
           (crXc.2 * (crXf5.2 * (crR5.2 * crR5.2))))
     ≤ minor crSp.T.val * minor crSp.T.val
@@ -485,9 +490,9 @@ example : ¬ (minor crSp.T.val * minor crSp.T.val
 /-- Refusal naming the join: the exact witness with the following
 pivot forged at `-1` parts the join's sum at minus three halves
 against one and the display at four against minus four. -/
-example : ¬ oneValueQ (addQ crXf5 (mulQ (ofM crB) crR)) (ofM crA) := by
+theorem pin64 : ¬ oneValueQ (addQ crXf5 (mulQ (ofM crB) crR)) (ofM crA) := by
   decide +kernel
-example : ¬ (minor crSp.T.val * minor crSp.T.val
+theorem pin65 : ¬ (minor crSp.T.val * minor crSp.T.val
       * ((quadForm crA [⟨2, 1⟩]).scale
           (crXc.2 * (crXf5.2 * (crR.2 * crR.2))))
     ≤ minor crSp.T.val * minor crSp.T.val
@@ -505,12 +510,12 @@ private def crXc7 : MatQ := ([[⟨3, 1⟩]], 1)
 private def crR7 : MatQ := ([[⟨2, 1⟩]], 2)
 private def crXf7 : MatQ := ([[⟨2, 1⟩]], 2)
 
-example : oneValueQ (mulQ crXc7 crR7) (ofM (transposeM crB)) := by
+theorem pin66 : oneValueQ (mulQ crXc7 crR7) (ofM (transposeM crB)) := by
   decide +kernel
-example : oneValueQ (addQ crXf7 (mulQ (ofM crB) crR7)) (ofM crA) := by
+theorem pin67 : oneValueQ (addQ crXf7 (mulQ (ofM crB) crR7)) (ofM crA) := by
   decide +kernel
-example : ¬ splitRead crXc7.1 crSp := by decide +kernel
-example : ¬ (minor crSp.T.val * minor crSp.T.val
+theorem pin68 : ¬ splitRead crXc7.1 crSp := by decide +kernel
+theorem pin69 : ¬ (minor crSp.T.val * minor crSp.T.val
       * ((quadForm crA [⟨2, 1⟩]).scale
           (crXc7.2 * (crXf7.2 * (crR7.2 * crR7.2))))
     ≤ minor crSp.T.val * minor crSp.T.val
@@ -530,19 +535,19 @@ recursion tier's, the asymmetric one-slab seed at the tail walk's
 battery. -/
 
 private def spsL : List ((k : Nat) × Split k) :=
-  [⟨1, spOne ⟨1, 3⟩⟩, ⟨1, spOne ⟨9, 1⟩⟩, ⟨1, spOne ⟨4, 1⟩⟩]
+  [⟨1, inertia.oneSplit [⟨1, 3⟩]⟩, ⟨1, inertia.oneSplit [⟨9, 1⟩]⟩, ⟨1, inertia.oneSplit [⟨4, 1⟩]⟩]
 
-example : ¬ revListRead chXs spsL := by decide +kernel
-example : revFold spsL = 1 := by decide +kernel
+theorem pin70 : ¬ revListRead chXs spsL := by decide +kernel
+theorem pin71 : revFold spsL = 1 := by decide +kernel
 
 private def xsT : List MatQ := [([[⟨1, 3⟩]], 1), xmC, ycC]
 
-example : revListRead xsT spsL := by decide +kernel
-example : ¬ tailRead chDiag chOff xsT chRs [1, 1, 1] := by
+theorem pin72 : revListRead xsT spsL := by decide +kernel
+theorem pin73 : ¬ tailRead chDiag chOff xsT chRs [1, 1, 1] := by
   decide +kernel
-example : symRead chDiag := by decide +kernel
+theorem pin74 : symRead chDiag := by decide +kernel
 
-/-! Clause (vii)'s rebound at the order-two crossing, the transfer
+/-! `lem:cornerblock`'s rebound at the order-two crossing, the transfer
 occupied and the display tight: the crossing pivot `diag(-2, 3)`
 at its split's one lower unit, the identity witness, the bond the
 pivot's own read, the following pivot `diag(5, 1)` and diagonal
@@ -566,14 +571,14 @@ private def c2Xf : MatQ :=
   ([[⟨6, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]], 1)
 private def c2U : List BPair := [⟨1, 1⟩, ⟨2, 1⟩]
 
-example : oneValueQ (mulQ c2Xc c2R) (ofM (transposeM c2B)) := by
+theorem pin75 : oneValueQ (mulQ c2Xc c2R) (ofM (transposeM c2B)) := by
   decide +kernel
-example : oneValueQ (addQ c2Xf (mulQ (ofM c2B) c2R)) (ofM c2A) := by
+theorem pin76 : oneValueQ (addQ c2Xf (mulQ (ofM c2B) c2R)) (ofM c2A) := by
   decide +kernel
-example : splitRead c2Xc.1 c2Sp := by decide +kernel
-example : revAt c2Sp = 1 := by decide +kernel
+theorem pin77 : splitRead c2Xc.1 c2Sp := by decide +kernel
+theorem pin78 : revAt c2Sp = 1 := by decide +kernel
 
-example : minor c2Sp.T.val * minor c2Sp.T.val
+theorem pin79 : minor c2Sp.T.val * minor c2Sp.T.val
       * ((quadForm c2A c2U).scale (c2Xc.2 * (c2Xf.2 * (c2R.2 * c2R.2))))
     ≤ minor c2Sp.T.val * minor c2Sp.T.val
         * ((quadForm c2Xf.1 c2U).scale (c2Xc.2 * (c2R.2 * c2R.2)))
@@ -581,13 +586,13 @@ example : minor c2Sp.T.val * minor c2Sp.T.val
           (matVec c2Sp.Tw.val (matVec c2R.1 c2U))).scale c2Xf.2 := by
   decide +kernel
 
-example : ¬ (minor c2Sp.T.val * minor c2Sp.T.val
+theorem pin80 : ¬ (minor c2Sp.T.val * minor c2Sp.T.val
       * ((quadForm c2A c2U).scale (c2Xc.2 * (c2Xf.2 * (c2R.2 * c2R.2))))
     ≤ minor c2Sp.T.val * minor c2Sp.T.val
         * ((quadForm c2Xf.1 c2U).scale (c2Xc.2 * (c2R.2 * c2R.2)))) := by
   decide +kernel
 
-example : ∀ u : List BPair, u.length = 2 →
+theorem pin81 : ∀ u : List BPair, u.length = 2 →
     minor c2Sp.T.val * minor c2Sp.T.val
         * ((quadForm c2A u).scale (c2Xc.2 * (c2Xf.2 * (c2R.2 * c2R.2))))
       ≤ minor c2Sp.T.val * minor c2Sp.T.val
@@ -599,7 +604,7 @@ example : ∀ u : List BPair, u.length = 2 →
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
-/-! Clause (vii)'s dominance tail at the three-slab chain
+/-! `lem:cornerblock`'s dominance tail at the three-slab chain
 `tridiag(3, 1, 2; 1, 2)`: the recursion's pivots `(4, -1, 2)` with
 the witnesses `(-1, 1)`, the crossing at the middle pivot `-1` and
 the dominance tail one depth deep — the diagonal's floor `(3, 1)`
@@ -634,7 +639,7 @@ private def bR1 : MatQ := ([[⟨2, 1⟩]], 1)
 private def bRs : List MatQ := [bR0, bR1]
 
 private def bSps : List ((k : Nat) × Split k) :=
-  [⟨1, spOne ⟨5, 1⟩⟩, ⟨1, spOne ⟨1, 2⟩⟩, ⟨1, spOne ⟨3, 1⟩⟩]
+  [⟨1, inertia.oneSplit [⟨5, 1⟩]⟩, ⟨1, inertia.oneSplit [⟨1, 2⟩]⟩, ⟨1, inertia.oneSplit [⟨3, 1⟩]⟩]
 
 /-- The assembled chain's congruence at the columns
 `e₀ + e₁ - e₂`, `e₁ - e₂`, `e₂`, the images the recursion's own
@@ -651,18 +656,18 @@ private def bSP : Split 3 :=
   ⟨⟨bT, rfl⟩, ⟨bTw, rfl⟩,
    [.one ⟨5, 1⟩, .one ⟨1, 2⟩, .one ⟨3, 1⟩], 0, rfl⟩
 
-private def bSpc : (k : Nat) × Split k := ⟨1, spOne ⟨1, 2⟩⟩
-private def bSpT : (k : Nat) × Split k := ⟨1, spOne ⟨2, 1⟩⟩
+private def bSpc : (k : Nat) × Split k := ⟨1, inertia.oneSplit [⟨1, 2⟩]⟩
+private def bSpT : (k : Nat) × Split k := ⟨1, inertia.oneSplit [⟨2, 1⟩]⟩
 private def bD : DomStep := ⟨1, (3, 1), (2, 1), spK⟩
 private def bDs : List DomStep := [bD]
 private def bCs : List ((k : Nat) × (Pos × Pos) × Split k) := []
 
 
-example : tailRead bDiag bOff bXs bRs bNs := by decide +kernel
-example : revListRead bXs bSps := by decide +kernel
-example : splitRead (assemble bDiag bOff) bSP := by decide +kernel
-example : revAt bSP = 1 := by decide +kernel
-example : domRead bSpc bSpT 1 1 bDiag bOff bXs bRs bNs bDs bCs := by
+theorem pin82 : tailRead bDiag bOff bXs bRs bNs := by decide +kernel
+theorem pin83 : revListRead bXs bSps := by decide +kernel
+theorem pin84 : splitRead (assemble bDiag bOff) bSP := by decide +kernel
+theorem pin85 : revAt bSP = 1 := by decide +kernel
+theorem pin86 : domRead bSpc bSpT 1 1 bDiag bOff bXs bRs bNs bDs bCs := by
   decide +kernel
 
 /-! The tier's two theorems at the certificate: the tail's stated
@@ -670,16 +675,16 @@ splits read the upper side throughout and the crossing's split sits
 at the floor list's own position — each decided raw beside its
 theorem route; the count's close is the family tier's below. -/
 
-example : ∀ i, i < bDs.length → ∀ s : (k : Nat) × Split k,
+theorem pin87 : ∀ i, i < bDs.length → ∀ s : (k : Nat) × Split k,
     splitRead (ground.getAt dM bXs i).1 s.2 → psdAt s.2 :=
   domTail_psd bSpc bSpT 1 1 bDiag bOff bXs bRs bNs bDs bCs
     (by decide +kernel) (by decide +kernel)
-example : psdAt (spOne ⟨5, 1⟩) := by decide +kernel
+theorem pin88 : psdAt (inertia.oneSplit [⟨5, 1⟩]) := by decide +kernel
 
-example : splitRead (ground.getAt dM bXs bDs.length).1 bSpc.2 :=
+theorem pin89 : splitRead (ground.getAt dM bXs bDs.length).1 bSpc.2 :=
   domTail_cross bSpc bSpT 1 1 bDiag bOff bXs bRs bNs bDs bCs
     (by decide +kernel)
-example : splitRead bX1.1 (spOne ⟨1, 2⟩) := by decide +kernel
+theorem pin90 : splitRead bX1.1 (inertia.oneSplit [⟨1, 2⟩]) := by decide +kernel
 
 /-! The rebound's seed floor (`rebound_floor`) at the chain's own
 crossing: the diagonal's floor `(3, 1)` reads the slab three
@@ -746,10 +751,10 @@ private theorem bTcapR : ∀ u : List BPair, u.length = 1 →
         bSpT.2 (by decide +kernel) (by decide +kernel)
         (by decide +kernel) u hu)
 
-example : (dotN bU bU).scale (2 * bX0.2)
+theorem pin91 : (dotN bU bU).scale (2 * bX0.2)
     ≤ (quadForm bX0.1 bU).scale 1 := by decide +kernel
 
-example : ∀ u : List BPair, u.length = 1 →
+theorem pin92 : ∀ u : List BPair, u.length = 1 →
     (dotN u u).scale (2 * bX0.2) ≤ (quadForm bX0.1 u).scale 1 :=
   rebound_floor (o := 1) (o' := 1) bX0 bX1 bR0 bA0 bB0 bSpc.2
     3 1 1 1 2 1 (by decide +kernel) (by decide +kernel)
@@ -788,54 +793,54 @@ private def rB : Mat := [[⟨1, 1⟩, ⟨3, 1⟩]]
 private def rA : Mat := [[⟨6, 1⟩]]
 private def rXf : MatQ := ([[⟨4, 1⟩]], 1)
 
-example : oneValueQ (mulQ rXc rR) (ofM (transposeM rB)) := by
+theorem pin93 : oneValueQ (mulQ rXc rR) (ofM (transposeM rB)) := by
   decide +kernel
-example : oneValueQ (addQ rXf (mulQ (ofM rB) rR)) (ofM rA) := by
+theorem pin94 : oneValueQ (addQ rXf (mulQ (ofM rB) rR)) (ofM rA) := by
   decide +kernel
-example : splitRead rXc.1 rSp := by decide +kernel
+theorem pin95 : splitRead rXc.1 rSp := by decide +kernel
 
-example : (dotN bU bU).scale 5 ≤ (quadForm rA bU).scale 1 := by
+theorem pin96 : (dotN bU bU).scale 5 ≤ (quadForm rA bU).scale 1 := by
   decide +kernel
-example : ((4 : Pos) * 1 + 1 * 1) * 1 ≤ 5 * (1 * 1) := by decide +kernel
-example : ¬ ((quadForm (blockMat (posBlocks rSp.blocks) rSp.kern)
+theorem pin97 : ((4 : Pos) * 1 + 1 * 1) * 1 ≤ 5 * (1 * 1) := by decide +kernel
+theorem pin98 : ¬ ((quadForm (blockMat (posBlocks rSp.blocks) rSp.kern)
       (matVec (matMul rSp.Tw.val rR.1) bU)).scale 1
     ≤ minor rSp.T.val * minor rSp.T.val
         * ((dotN bU bU).scale (1 * (rXc.2 * (rR.2 * rR.2))))) := by
   decide +kernel
-example : ¬ ((dotN bU bU).scale (4 * rXf.2)
+theorem pin99 : ¬ ((dotN bU bU).scale (4 * rXf.2)
     ≤ (quadForm rXf.1 bU).scale 1) := by decide +kernel
 
-example : (quadForm (blockMat (posBlocks rSp.blocks) rSp.kern)
+theorem pin100 : (quadForm (blockMat (posBlocks rSp.blocks) rSp.kern)
       (matVec (matMul rSp.Tw.val rR.1) bU)).scale 1
     ≤ minor rSp.T.val * minor rSp.T.val
         * ((dotN bU bU).scale (2 * (rXc.2 * (rR.2 * rR.2)))) := by
   decide +kernel
-example : ¬ (((4 : Pos) * 1 + 2 * 1) * 1 ≤ 5 * (1 * 1)) := by
+theorem pin101 : ¬ (((4 : Pos) * 1 + 2 * 1) * 1 ≤ 5 * (1 * 1)) := by
   decide +kernel
 
-example : ¬ ((dotN bU bU).scale 9 ≤ (quadForm bA0 bU).scale 1) := by
+theorem pin102 : ¬ ((dotN bU bU).scale 9 ≤ (quadForm bA0 bU).scale 1) := by
   decide +kernel
-example : (quadForm (blockMat (posBlocks bSpc.2.blocks) bSpc.2.kern)
+theorem pin103 : (quadForm (blockMat (posBlocks bSpc.2.blocks) bSpc.2.kern)
       (matVec (matMul bSpc.2.Tw.val bR0.1) bU)).scale 1
     ≤ minor bSpc.2.T.val * minor bSpc.2.T.val
         * ((dotN bU bU).scale (1 * (bX1.2 * (bR0.2 * bR0.2)))) := by
   decide +kernel
-example : ((8 : Pos) * 1 + 1 * 1) * 1 ≤ 9 * (1 * 1) := by decide +kernel
-example : ¬ ((dotN bU bU).scale (8 * bX0.2)
+theorem pin104 : ((8 : Pos) * 1 + 1 * 1) * 1 ≤ 9 * (1 * 1) := by decide +kernel
+theorem pin105 : ¬ ((dotN bU bU).scale (8 * bX0.2)
     ≤ (quadForm bX0.1 bU).scale 1) := by decide +kernel
 
-example : (dotN bU bU).scale 1 ≤ (quadForm crA bU).scale 1 := by
+theorem pin106 : (dotN bU bU).scale 1 ≤ (quadForm crA bU).scale 1 := by
   decide +kernel
-example : (quadForm (blockMat (posBlocks crSp.blocks) crSp.kern)
+theorem pin107 : (quadForm (blockMat (posBlocks crSp.blocks) crSp.kern)
       (matVec (matMul crSp.Tw.val crR5.1) bU)).scale 4
     ≤ minor crSp.T.val * minor crSp.T.val
         * ((dotN bU bU).scale (1 * (crXc.2 * (crR5.2 * crR5.2)))) := by
   decide +kernel
-example : ((1 : Pos) * 4 + 1 * 2) * 1 ≤ 1 * (2 * 4) := by
+theorem pin108 : ((1 : Pos) * 4 + 1 * 2) * 1 ≤ 1 * (2 * 4) := by
   decide +kernel
-example : ¬ ((dotN bU bU).scale (1 * crXf5.2)
+theorem pin109 : ¬ ((dotN bU bU).scale (1 * crXf5.2)
     ≤ (quadForm crXf5.1 bU).scale 2) := by decide +kernel
-example : (quadForm (blockMat (posBlocks crSp.blocks) crSp.kern)
+theorem pin110 : (quadForm (blockMat (posBlocks crSp.blocks) crSp.kern)
       (matVec (matMul crSp.Tw.val crR.1) bU)).scale 4
     ≤ minor crSp.T.val * minor crSp.T.val
         * ((dotN bU bU).scale (1 * (crXc.2 * (crR.2 * crR.2)))) := by
@@ -859,7 +864,7 @@ private def hnDiag : List Mat := [hnA, hnA, hnA]
 private def hnXs : List MatQ := [hnX0, hnX1, ofM hnA]
 private def hnRs : List MatQ := [([[⟨4, 1⟩]], 5), ([[⟨3, 1⟩]], 3)]
 private def hnSps : List ((k : Nat) × Split k) :=
-  [⟨1, spOne ⟨13, 1⟩⟩, ⟨1, spOne ⟨6, 1⟩⟩, ⟨1, spOne ⟨4, 1⟩⟩]
+  [⟨1, inertia.oneSplit [⟨13, 1⟩]⟩, ⟨1, inertia.oneSplit [⟨6, 1⟩]⟩, ⟨1, inertia.oneSplit [⟨4, 1⟩]⟩]
 
 private def hnT : Mat :=
   [[⟨6, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
@@ -873,23 +878,23 @@ private def hnSP : Split 3 :=
   ⟨⟨hnT, rfl⟩, ⟨hnTw, rfl⟩,
    [.one ⟨61, 1⟩, .one ⟨16, 1⟩, .one ⟨4, 1⟩], 0, rfl⟩
 
-private def hnSpc : (k : Nat) × Split k := ⟨1, spOne ⟨6, 1⟩⟩
-private def hnSpT : (k : Nat) × Split k := ⟨1, spOne ⟨31, 1⟩⟩
+private def hnSpc : (k : Nat) × Split k := ⟨1, inertia.oneSplit [⟨6, 1⟩]⟩
+private def hnSpT : (k : Nat) × Split k := ⟨1, inertia.oneSplit [⟨31, 1⟩]⟩
 private def hnDs : List DomStep := [⟨1, (3, 1), (2, 1), spK⟩]
 private def dSp : (k : Nat) × Split k := ⟨1, spK⟩
 
-example : tailRead hnDiag bOff hnXs hnRs bNs := by decide +kernel
-example : revListRead hnXs hnSps := by decide +kernel
-example : splitRead (assemble hnDiag bOff) hnSP := by decide +kernel
-example : domRead hnSpc hnSpT 1 1 hnDiag bOff hnXs hnRs bNs hnDs
+theorem pin111 : tailRead hnDiag bOff hnXs hnRs bNs := by decide +kernel
+theorem pin112 : revListRead hnXs hnSps := by decide +kernel
+theorem pin113 : splitRead (assemble hnDiag bOff) hnSP := by decide +kernel
+theorem pin114 : domRead hnSpc hnSpT 1 1 hnDiag bOff hnXs hnRs bNs hnDs
     bCs := by decide +kernel
-example : famChainRead wFam wB 1 200 1 12 (hnDiag.drop (hnDs.length + 1))
+theorem pin115 : famChainRead wFam wB 1 200 1 12 (hnDiag.drop (hnDs.length + 1))
     (bOff.drop (hnDs.length + 1)) (bNs.drop (hnDs.length + 1)) := by
   decide +kernel
-example : symRead (hnDiag.drop (hnDs.length + 1)) := by decide +kernel
-example : ¬ (revAt (ground.getAt dSp hnSps hnDs.length).2 = 1) := by
+theorem pin116 : symRead (hnDiag.drop (hnDs.length + 1)) := by decide +kernel
+theorem pin117 : ¬ (revAt (ground.getAt dSp hnSps hnDs.length).2 = 1) := by
   decide +kernel
-example : ¬ (revAt hnSP = 1) := by decide +kernel
+theorem pin118 : ¬ (revAt hnSP = 1) := by decide +kernel
 
 /-! The assembled datum's split is load-bearing: the chain's own
 congruence with the crossing's lower unit forged to its upper
@@ -901,8 +906,8 @@ private def bSPf : Split 3 :=
   ⟨⟨bT, rfl⟩, ⟨bTw, rfl⟩,
    [.one ⟨5, 1⟩, .one ⟨2, 1⟩, .one ⟨3, 1⟩], 0, rfl⟩
 
-example : ¬ splitRead (assemble bDiag bOff) bSPf := by decide +kernel
-example : ¬ (revAt bSPf = 1) := by decide +kernel
+theorem pin119 : ¬ splitRead (assemble bDiag bOff) bSPf := by decide +kernel
+theorem pin120 : ¬ (revAt bSPf = 1) := by decide +kernel
 
 /-! The dominance tail's floors are load-bearing: four slabs at the
 diagonals `(0, 1, 2, 3)` and the bonds `(1, 1, 3)`, whose recursion
@@ -928,8 +933,8 @@ private def hdXs : List MatQ :=
 private def hdRs : List MatQ :=
   [([[⟨2, 1⟩]], (2 : Pos)), ([[⟨1, 2⟩]], 1), ([[⟨2, 1⟩]], 1)]
 private def hdSps : List ((k : Nat) × Split k) :=
-  [⟨1, spOne ⟨1, 3⟩⟩, ⟨1, spOne ⟨3, 1⟩⟩, ⟨1, spOne ⟨1, 2⟩⟩,
-   ⟨1, spOne ⟨4, 1⟩⟩]
+  [⟨1, inertia.oneSplit [⟨1, 3⟩]⟩, ⟨1, inertia.oneSplit [⟨3, 1⟩]⟩, ⟨1, inertia.oneSplit [⟨1, 2⟩]⟩,
+   ⟨1, inertia.oneSplit [⟨4, 1⟩]⟩]
 
 private def hdT : Mat :=
   [[⟨3, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
@@ -945,36 +950,36 @@ private def hdSP : Split 4 :=
   ⟨⟨hdT, rfl⟩, ⟨hdTw, rfl⟩,
    [.one ⟨1, 3⟩, .one ⟨3, 1⟩, .one ⟨1, 2⟩, .one ⟨4, 1⟩], 0, rfl⟩
 
-private def hdSpc : (k : Nat) × Split k := ⟨1, spOne ⟨1, 2⟩⟩
-private def hdSpT : (k : Nat) × Split k := ⟨1, spOne ⟨2, 1⟩⟩
+private def hdSpc : (k : Nat) × Split k := ⟨1, inertia.oneSplit [⟨1, 2⟩]⟩
+private def hdSpT : (k : Nat) × Split k := ⟨1, inertia.oneSplit [⟨2, 1⟩]⟩
 private def hdDs : List DomStep :=
-  [⟨1, (9, 1), (1, 4), spOne ⟨1, 10⟩⟩, ⟨1, (1, 1), (1, 2), spK⟩]
+  [⟨1, (9, 1), (1, 4), inertia.oneSplit [⟨1, 10⟩]⟩, ⟨1, (1, 1), (1, 2), spK⟩]
 private def hdCs : List ((k : Nat) × (Pos × Pos) × Split k) := [⟨1, (1, 1), spK⟩]
 
-example : tailRead hdDiag hdOff hdXs hdRs hdNs := by decide +kernel
-example : revListRead hdXs hdSps := by decide +kernel
-example : revFold hdSps = 2 := by decide +kernel
-example : splitRead (assemble hdDiag hdOff) hdSP := by decide +kernel
-example : leAt (matScale (1 : Pos) (matMul bB0 (transposeM bB0)))
+theorem pin121 : tailRead hdDiag hdOff hdXs hdRs hdNs := by decide +kernel
+theorem pin122 : revListRead hdXs hdSps := by decide +kernel
+theorem pin123 : revFold hdSps = 2 := by decide +kernel
+theorem pin124 : splitRead (assemble hdDiag hdOff) hdSP := by decide +kernel
+theorem pin125 : leAt (matScale (1 : Pos) (matMul bB0 (transposeM bB0)))
     (matScale (1 : Pos) (idMat 1)) spK := by decide +kernel
-example : (1 : Pos) * (1 * (1 * 1)) + 1 * (2 * (1 * 4))
+theorem pin126 : (1 : Pos) * (1 * (1 * 1)) + 1 * (2 * (1 * 4))
     ≤ 9 * (4 * (1 * 1)) := by decide +kernel
-example : ((1 : Pos) * 2 + 1 * 2) * 1 ≤ 1 * (2 * 2) := by
+theorem pin127 : ((1 : Pos) * 2 + 1 * 2) * 1 ≤ 1 * (2 * 2) := by
   decide +kernel
-example : revAt (ground.getAt dSp hdSps hdDs.length).2 = 1 := by
+theorem pin128 : revAt (ground.getAt dSp hdSps hdDs.length).2 = 1 := by
   decide +kernel
-example : famChainRead wFam wB 1 200 1 12 (hdDiag.drop (hdDs.length + 1))
+theorem pin129 : famChainRead wFam wB 1 200 1 12 (hdDiag.drop (hdDs.length + 1))
     (hdOff.drop (hdDs.length + 1)) (hdNs.drop (hdDs.length + 1)) := by
   decide +kernel
-example : symRead (hdDiag.drop (hdDs.length + 1)) := by decide +kernel
-example : ¬ leAt (matScale (9 : Pos) (idMat 1))
-    (matScale (1 : Pos) [[⟨1, 1⟩]]) (spOne ⟨1, 10⟩) := by
+theorem pin130 : symRead (hdDiag.drop (hdDs.length + 1)) := by decide +kernel
+theorem pin131 : ¬ leAt (matScale (9 : Pos) (idMat 1))
+    (matScale (1 : Pos) [[⟨1, 1⟩]]) (inertia.oneSplit [⟨1, 10⟩]) := by
   decide +kernel
-example : ¬ domRead hdSpc hdSpT 1 2 hdDiag hdOff hdXs hdRs hdNs
+theorem pin132 : ¬ domRead hdSpc hdSpT 1 2 hdDiag hdOff hdXs hdRs hdNs
     hdDs hdCs := by decide +kernel
-example : ¬ (revAt hdSP = 1) := by decide +kernel
+theorem pin133 : ¬ (revAt hdSP = 1) := by decide +kernel
 
-/-! Clause (vii)'s whole chain at the mixed crossing: three slabs
+/-! `lem:cornerblock`'s whole chain at the mixed crossing: three slabs
 at the orders `(1, 2, 1)`, the diagonals `(5, diag(1, 2), 2)` at
 the bonds `(0, 2)` and `(2, 0)ᵀ`, whose tail recursion runs the
 pivots `(3, diag(-1, 2), 2)` at the witnesses `(0, 1)ᵀ` and
@@ -1007,7 +1012,7 @@ private def mxSpTw_ : Mat := [[⟨3, 1⟩, ⟨1, 5⟩], [⟨1, 2⟩, ⟨2, 1⟩]
 private def mxSp : Split 2 :=
   ⟨⟨mxSpT_, rfl⟩, ⟨mxSpTw_, rfl⟩, [.one ⟨2, 1⟩, .one ⟨1, 9⟩], 0, rfl⟩
 private def mxSps : List ((k : Nat) × Split k) :=
-  [⟨1, spOne ⟨4, 1⟩⟩, ⟨2, mxSp⟩, ⟨1, spOne ⟨3, 1⟩⟩]
+  [⟨1, inertia.oneSplit [⟨4, 1⟩]⟩, ⟨2, mxSp⟩, ⟨1, inertia.oneSplit [⟨3, 1⟩]⟩]
 
 /-- The assembled chain's congruence at the columns
 `e₀ - e₂`, `e₁ - e₃`, `e₂`, `e₃`, the images the recursion's own
@@ -1031,14 +1036,14 @@ private def mxSpT : (k : Nat) × Split k := ⟨1, spK⟩
 private def mxD : DomStep := ⟨1, (5, 1), (1, 1), spK⟩
 private def mxDs : List DomStep := [mxD]
 
-example : tailRead mxDiag mxOff mxXs mxRs mxNs := by decide +kernel
-example : revListRead mxXs mxSps := by decide +kernel
-example : revFold mxSps = 1 := by decide +kernel
-example : splitRead (assemble mxDiag mxOff) mxSP := by decide +kernel
-example : revAt mxSP = 1 := by decide +kernel
-example : domRead mxSpc mxSpT 4 1 mxDiag mxOff mxXs mxRs mxNs mxDs
+theorem pin134 : tailRead mxDiag mxOff mxXs mxRs mxNs := by decide +kernel
+theorem pin135 : revListRead mxXs mxSps := by decide +kernel
+theorem pin136 : revFold mxSps = 1 := by decide +kernel
+theorem pin137 : splitRead (assemble mxDiag mxOff) mxSP := by decide +kernel
+theorem pin138 : revAt mxSP = 1 := by decide +kernel
+theorem pin139 : domRead mxSpc mxSpT 4 1 mxDiag mxOff mxXs mxRs mxNs mxDs
     bCs := by decide +kernel
-example : leAt
+theorem pin140 : leAt
     (matScale (1 : Pos) (matMul
       (transposeM (matMul mxSp.Tw.val rR.1))
       (matMul (blockMat (posBlocks mxSp.blocks) mxSp.kern)
@@ -1046,13 +1051,13 @@ example : leAt
     (matScaleB ((minor mxSp.T.val * minor mxSp.T.val)
       * BPair.ofPos (4 * (rXc.2 * (rR.2 * rR.2)))) (idMat 1))
     spK := by decide +kernel
-example : ((1 : Pos) * 1 + 4 * 1) * 1 ≤ 5 * (1 * 1) := by
+theorem pin141 : ((1 : Pos) * 1 + 4 * 1) * 1 ≤ 5 * (1 * 1) := by
   decide +kernel
-example : revAt (ground.getAt dSp mxSps mxDs.length).2 = 1 := by
+theorem pin142 : revAt (ground.getAt dSp mxSps mxDs.length).2 = 1 := by
   decide +kernel
 
 
-/-! Clause (vii)'s center family at the order-two bulk: the diagonal
+/-! `lem:cornerblock`'s center family at the order-two bulk: the diagonal
 family `diag(3) + eta` at unit bonds and gram, the constant center
 `5/2` at the clearing four with its witness `2/5` at the clearing
 five and the image `13/5 + eta`, the pairs `lam = 1/2`, `y0 = 2`,
@@ -1115,36 +1120,36 @@ private def bfFix : CenterFam :=
    [bx1 3 1, bx1 3 1], [bx1 3 1, bx1 3 1],
    bx1 1 0, bx1 1 0, bx1 1 0⟩
 
-example : pfmOneValue (contrSiteF bfWf (idMat 2) 1 2)
+theorem pin143 : pfmOneValue (contrSiteF bfWf (idMat 2) 1 2)
     [[([[BPair.ofNat 9]], ([] : poly.PPoly)), vacProf],
      [vacProf, ([[BPair.ofNat 9]], ([] : poly.PPoly))]] := by
   decide +kernel
-example : pfmOneValue (floorSiteF bfCf (idMat 2) 2 1 1 5)
+theorem pin144 : pfmOneValue (floorSiteF bfCf (idMat 2) 2 1 1 5)
     [[c6P, vacProf], [vacProf, c6P]] := by decide +kernel
-example : pfmOneValue (dcapHiSiteF bfCf bfIf (idMat 2) 3 25)
+theorem pin145 : pfmOneValue (dcapHiSiteF bfCf bfIf (idMat 2) 3 25)
     [[c10P, ([[BPair.unit, (BPair.ofNat 500).swap]], ([] : poly.PPoly))],
      [([[BPair.unit, (BPair.ofNat 500).swap]], ([] : poly.PPoly)),
       c10P]] := by decide +kernel
-example : pfmOneValue (dcapLoSiteF bfCf bfIf (idMat 2) 3 25)
+theorem pin146 : pfmOneValue (dcapLoSiteF bfCf bfIf (idMat 2) 3 25)
     [[([[BPair.ofNat 110]], ([] : poly.PPoly)),
       ([[BPair.unit, BPair.ofNat 500]], ([] : poly.PPoly))],
      [([[BPair.unit, BPair.ofNat 500]], ([] : poly.PPoly)),
       ([[BPair.ofNat 110]], ([] : poly.PPoly))]] := by decide +kernel
 
-example : famRead bfFix (idMat 2) (idMat 2) := by decide +kernel
+theorem pin147 : famRead bfFix (idMat 2) (idMat 2) := by decide +kernel
 
 private def bfFixR0 : CenterFam :=
   { bfFix with Af := [[c3P, pEta, c3P], [pEta, c3P]] }
-example : ¬ famRead bfFixR0 (idMat 2) (idMat 2) := by decide +kernel
-example : pfmQOneValue bfFixR0.If
+theorem pin148 : ¬ famRead bfFixR0 (idMat 2) (idMat 2) := by decide +kernel
+theorem pin149 : pfmQOneValue bfFixR0.If
     (pfmQadd (ofPfm bfFixR0.Af)
       (pfmQmul (ofPfm (ofMatProf (idMat 2)))
         (pfmQswap bfFixR0.Wf))) := by decide +kernel
 
 private def bfFixRL : CenterFam :=
   { bfFix with Af := [[c3P, pEta], [pEta, c3P], [pEta, c3P]] }
-example : ¬ famRead bfFixRL (idMat 2) (idMat 2) := by decide +kernel
-example : elim.rowsLen bfFixRL.o bfFixRL.Af
+theorem pin150 : ¬ famRead bfFixRL (idMat 2) (idMat 2) := by decide +kernel
+theorem pin151 : elim.rowsLen bfFixRL.o bfFixRL.Af
     ∧ pfmQOneValue bfFixRL.If
       (pfmQadd (ofPfm bfFixRL.Af)
         (pfmQmul (ofPfm (ofMatProf (idMat 2)))
@@ -1152,19 +1157,19 @@ example : elim.rowsLen bfFixRL.o bfFixRL.Af
 
 private def bfFixR1 : CenterFam :=
   { bfFix with Wf := ([[c2P, vacProf], [vacProf, c2P]], c6P) }
-example : ¬ famRead bfFixR1 (idMat 2) (idMat 2) := by decide +kernel
-example : domCertGo (BPair.ofNat 1) 200 0
+theorem pin152 : ¬ famRead bfFixR1 (idMat 2) (idMat 2) := by decide +kernel
+theorem pin153 : domCertGo (BPair.ofNat 1) 200 0
     (contrSiteF bfFixR1.Wf (idMat 2) 1 2) [bx1 1 1, bx1 1 1] := by
   decide +kernel
-example : boxRead c6P (BPair.ofNat 1) 200 (bx1 1 0) := by decide +kernel
+theorem pin154 : boxRead c6P (BPair.ofNat 1) 200 (bx1 1 0) := by decide +kernel
 
 private def bfFixR2 : CenterFam :=
   { { bfFix with dft := (1, 100) } with bxL := [bx1 11 1, bx1 11 1] }
-example : ¬ famRead bfFixR2 (idMat 2) (idMat 2) := by decide +kernel
-example : domCertGo (BPair.ofNat 1) 200 0
+theorem pin155 : ¬ famRead bfFixR2 (idMat 2) (idMat 2) := by decide +kernel
+theorem pin156 : domCertGo (BPair.ofNat 1) 200 0
     (dcapLoSiteF bfCf bfIf (idMat 2) 1 100) [bx1 11 1, bx1 11 1] := by
   decide +kernel
-example : (1 : Pos) * ((20 * 20) * 5) + (11 * 11) * (1 * 100)
+theorem pin157 : (1 : Pos) * ((20 * 20) * 5) + (11 * 11) * (1 * 100)
     ≤ 1 * (100 * (20 * 20)) := by decide +kernel
 
 private def bfFixR4 : CenterFam :=
@@ -1175,41 +1180,41 @@ private def bfFixR4 : CenterFam :=
         poly.PPoly × poly.PPoly)]],
       (⟨[[(⟨1, 6⟩ : BPair)]], ([] : poly.PPoly)⟩ :
         poly.PPoly × poly.PPoly)) }
-example : ¬ famRead bfFixR4 (idMat 2) (idMat 2) := by decide +kernel
-example : pfmQOneValue (pfmQmul bfFixR4.Cf (pfmQshift bfFixR4.Wf))
+theorem pin158 : ¬ famRead bfFixR4 (idMat 2) (idMat 2) := by decide +kernel
+theorem pin159 : pfmQOneValue (pfmQmul bfFixR4.Cf (pfmQshift bfFixR4.Wf))
     (ofPfm (ofMatProf (transposeM (idMat 2)))) := by decide +kernel
-example : domCertGo (BPair.ofNat 1) 200 0
+theorem pin160 : domCertGo (BPair.ofNat 1) 200 0
     (contrSiteF bfFixR4.Wf (idMat 2) 1 2) [bx1 1 1, bx1 1 1] := by
   decide +kernel
 
 private def bfFixR5 : CenterFam := { bfFix with lc := (12, 20) }
-example : ¬ famRead bfFixR5 (idMat 2) (idMat 2) := by decide +kernel
-example : (3 : Pos) * ((20 * 20) * 5) + (12 * 12) * (1 * 25)
+theorem pin161 : ¬ famRead bfFixR5 (idMat 2) (idMat 2) := by decide +kernel
+theorem pin162 : (3 : Pos) * ((20 * 20) * 5) + (12 * 12) * (1 * 25)
     ≤ 1 * (25 * (20 * 20)) := by decide +kernel
 
 private def bfFixR6 : CenterFam := { bfFix with dft := (30, 2) }
-example : ¬ famRead bfFixR6 (idMat 2) (idMat 2) := by decide +kernel
-example : domCertGo (BPair.ofNat 1) 200 0
+theorem pin163 : ¬ famRead bfFixR6 (idMat 2) (idMat 2) := by decide +kernel
+theorem pin164 : domCertGo (BPair.ofNat 1) 200 0
     (dcapHiSiteF bfCf bfIf (idMat 2) 30 2) [bx1 3 1, bx1 3 1] := by
   decide +kernel
-example : domCertGo (BPair.ofNat 1) 200 0
+theorem pin165 : domCertGo (BPair.ofNat 1) 200 0
     (dcapLoSiteF bfCf bfIf (idMat 2) 30 2) [bx1 3 1, bx1 3 1] := by
   decide +kernel
 
 private def bfFixR7 : CenterFam :=
   { bfFix with lam := (1, 3), lc := (11, 30) }
-example : ¬ famRead bfFixR7 (idMat 2) (idMat 2) := by decide +kernel
-example : (2 : Pos) * (11 * (3 * 5)) = 1 * ((2 * 5 + 1 * 1) * 30) := by
+theorem pin166 : ¬ famRead bfFixR7 (idMat 2) (idMat 2) := by decide +kernel
+theorem pin167 : (2 : Pos) * (11 * (3 * 5)) = 1 * ((2 * 5 + 1 * 1) * 30) := by
   decide +kernel
-example : (3 : Pos) * ((30 * 30) * 5) + (11 * 11) * (1 * 25)
+theorem pin168 : (3 : Pos) * ((30 * 30) * 5) + (11 * 11) * (1 * 25)
     ≤ 1 * (25 * (30 * 30)) := by decide +kernel
 
 private def bfFixR8 : CenterFam :=
   { bfFix with y0 := (12, 5), lc := (13, 24) }
-example : ¬ famRead bfFixR8 (idMat 2) (idMat 2) := by decide +kernel
-example : (12 : Pos) * (13 * (2 * 5)) = 1 * ((12 * 5 + 1 * 5) * 24) := by
+theorem pin169 : ¬ famRead bfFixR8 (idMat 2) (idMat 2) := by decide +kernel
+theorem pin170 : (12 : Pos) * (13 * (2 * 5)) = 1 * ((12 * 5 + 1 * 5) * 24) := by
   decide +kernel
-example : (3 : Pos) * ((24 * 24) * 5) + (13 * 13) * (1 * 25)
+theorem pin171 : (3 : Pos) * ((24 * 24) * 5) + (13 * 13) * (1 * 25)
     ≤ 1 * (25 * (24 * 24)) := by decide +kernel
 
 /-! The two stated matrices' shape reads: the bond widened at its
@@ -1221,17 +1226,17 @@ datum's truncated folds. -/
 
 private def bfBW : elim.Mat :=
   [[BPair.ofNat 1, BPair.unit], [BPair.unit, BPair.ofNat 1, BPair.ofNat 7]]
-example : ¬ famRead bfFix bfBW (idMat 2) := by decide +kernel
-example : pfmQOneValue (pfmQmul bfFix.Cf (pfmQshift bfFix.Wf))
+theorem pin172 : ¬ famRead bfFix bfBW (idMat 2) := by decide +kernel
+theorem pin173 : pfmQOneValue (pfmQmul bfFix.Cf (pfmQshift bfFix.Wf))
       (ofPfm (ofMatProf (transposeM bfBW)))
     ∧ pfmQOneValue bfFix.If
       (pfmQadd (ofPfm bfFix.Af)
         (pfmQmul (ofPfm (ofMatProf bfBW)) (pfmQswap bfFix.Wf))) := by
   decide +kernel
-example : ¬ famRead bfFix (idMat 2) bfBW := by decide +kernel
-example : ¬ elim.matOneValue (elim.transposeM bfBW) bfBW := by
+theorem pin174 : ¬ famRead bfFix (idMat 2) bfBW := by decide +kernel
+theorem pin175 : ¬ elim.matOneValue (elim.transposeM bfBW) bfBW := by
   decide +kernel
-example : domCertGo bfFix.e0.1 bfFix.e0.2 0
+theorem pin176 : domCertGo bfFix.e0.1 bfFix.e0.2 0
     (contrSiteF bfFix.Wf bfBW 1 2) bfFix.bxC := by decide +kernel
 
 /-! The gram's exchange conjunct isolated: a family at the
@@ -1258,10 +1263,10 @@ private def bfNS : CenterFam :=
    [bx1 1 1, bx1 1 1], [bx1 1 1, bx1 1 1],
    [bx1 1 2, bx1 1 2], [bx1 1 2, bx1 1 2],
    bx1 1 0, bx1 1 0, bx1 1 0⟩
-example : ¬ famRead bfNS bfB3 bfGns := by decide +kernel
-example : ¬ elim.matOneValue (elim.transposeM bfGns) bfGns := by
+theorem pin177 : ¬ famRead bfNS bfB3 bfGns := by decide +kernel
+theorem pin178 : ¬ elim.matOneValue (elim.transposeM bfGns) bfGns := by
   decide +kernel
-example : domCertGo bfNS.e0.1 bfNS.e0.2 0
+theorem pin179 : domCertGo bfNS.e0.1 bfNS.e0.2 0
       (contrSiteF bfNS.Wf bfGns 1 2) bfNS.bxC
     ∧ domCertGo bfNS.e0.1 bfNS.e0.2 0
       (floorSiteF bfNS.Cf bfGns 2 1 1 5) bfNS.bxF := by decide +kernel
@@ -1298,18 +1303,18 @@ private def bfCS : CenterFam :=
    [bxS 4 1 2, bxS 4 1 2], [bx1 1 1, bx1 1 1],
    [bxS 40 1 1, bxS 51 1 1], [bxS 40 1 1, bxS 51 1 1],
    bx1 1 0, bx1 1 0, bx1 1 0⟩
-example : ¬ famRead bfCS (idMat 2) (idMat 2) := by decide +kernel
-example : ¬ pfmOneValue (pfmTr bfCS.Cf.1) bfCS.Cf.1
+theorem pin180 : ¬ famRead bfCS (idMat 2) (idMat 2) := by decide +kernel
+theorem pin181 : ¬ pfmOneValue (pfmTr bfCS.Cf.1) bfCS.Cf.1
     ∧ ¬ pfmOneValue (pfmTr bfCS.If.1) bfCS.If.1 := by decide +kernel
-example : boxRead bfCS.If.2 bfCS.e0.1 bfCS.e0.2 bfCS.bxClI := by
+theorem pin182 : boxRead bfCS.If.2 bfCS.e0.1 bfCS.e0.2 bfCS.bxClI := by
   decide +kernel
-example : pfmQOneValue (pfmQmul bfCS.Cf (pfmQshift bfCS.Wf))
+theorem pin183 : pfmQOneValue (pfmQmul bfCS.Cf (pfmQshift bfCS.Wf))
       (ofPfm (ofMatProf (transposeM (idMat 2))))
     ∧ pfmQOneValue bfCS.If
       (pfmQadd (ofPfm bfCS.Af)
         (pfmQmul (ofPfm (ofMatProf (idMat 2))) (pfmQswap bfCS.Wf))) := by
   decide +kernel
-example : domCertGo bfCS.e0.1 bfCS.e0.2 0
+theorem pin184 : domCertGo bfCS.e0.1 bfCS.e0.2 0
       (dcapHiSiteF bfCS.Cf bfCS.If (idMat 2) 3 25) bfCS.bxU
     ∧ domCertGo bfCS.e0.1 bfCS.e0.2 0
       (dcapLoSiteF bfCS.Cf bfCS.If (idMat 2) 3 25) bfCS.bxL := by
@@ -1326,8 +1331,8 @@ the truncated folds. -/
 
 private def bfRCsh : CenterFam :=
   { bfFix with Cf := ([[c10P, vacProf, c10P], [vacProf, c10P, c10P]], c4P) }
-example : ¬ famRead bfRCsh (idMat 2) (idMat 2) := by decide +kernel
-example : pfmQOneValue (pfmQmul bfRCsh.Cf (pfmQshift bfRCsh.Wf))
+theorem pin185 : ¬ famRead bfRCsh (idMat 2) (idMat 2) := by decide +kernel
+theorem pin186 : pfmQOneValue (pfmQmul bfRCsh.Cf (pfmQshift bfRCsh.Wf))
       (ofPfm (ofMatProf (transposeM (idMat 2))))
     ∧ domCertGo bfRCsh.e0.1 bfRCsh.e0.2 0
       (floorSiteF bfRCsh.Cf (idMat 2) 2 1 1 5) bfRCsh.bxF := by
@@ -1335,18 +1340,18 @@ example : pfmQOneValue (pfmQmul bfRCsh.Cf (pfmQshift bfRCsh.Wf))
 
 private def bfRWsh : CenterFam :=
   { bfFix with Wf := ([[c2P, vacProf, c2P], [vacProf, c2P, c2P]], c5P) }
-example : ¬ famRead bfRWsh (idMat 2) (idMat 2) := by decide +kernel
-example : ¬ pfmQOneValue (pfmQmul bfRWsh.Cf (pfmQshift bfRWsh.Wf))
+theorem pin187 : ¬ famRead bfRWsh (idMat 2) (idMat 2) := by decide +kernel
+theorem pin188 : ¬ pfmQOneValue (pfmQmul bfRWsh.Cf (pfmQshift bfRWsh.Wf))
     (ofPfm (ofMatProf (transposeM (idMat 2)))) := by decide +kernel
 
 private def bfRIsh : CenterFam :=
   { bfFix with If := ([[c13P, p5Eta, c2P], [p5Eta, c13P, c2P]], c5P) }
-example : ¬ famRead bfRIsh (idMat 2) (idMat 2) := by decide +kernel
-example : ¬ pfmQOneValue bfRIsh.If
+theorem pin189 : ¬ famRead bfRIsh (idMat 2) (idMat 2) := by decide +kernel
+theorem pin190 : ¬ pfmQOneValue bfRIsh.If
     (pfmQadd (ofPfm bfRIsh.Af)
       (pfmQmul (ofPfm (ofMatProf (idMat 2))) (pfmQswap bfRIsh.Wf))) := by
   decide +kernel
-example : domCertGo bfRIsh.e0.1 bfRIsh.e0.2 0
+theorem pin191 : domCertGo bfRIsh.e0.1 bfRIsh.e0.2 0
     (dcapHiSiteF bfRIsh.Cf bfRIsh.If (idMat 2) 3 25) bfRIsh.bxU := by
   decide +kernel
 
@@ -1355,10 +1360,10 @@ forged at five over the clearing four, the witness clearing's read
 standing. -/
 
 private def bfR11 : CenterFam := { bfFix with bxClC := bx1 5 0 }
-example : ¬ famRead bfR11 (idMat 2) (idMat 2) := by decide +kernel
-example : ¬ boxRead bfR11.Cf.2 bfR11.e0.1 bfR11.e0.2 bfR11.bxClC := by
+theorem pin192 : ¬ famRead bfR11 (idMat 2) (idMat 2) := by decide +kernel
+theorem pin193 : ¬ boxRead bfR11.Cf.2 bfR11.e0.1 bfR11.e0.2 bfR11.bxClC := by
   decide +kernel
-example : boxRead bfR11.Wf.2 bfR11.e0.1 bfR11.e0.2 bfR11.bxClW := by
+theorem pin194 : boxRead bfR11.Wf.2 bfR11.e0.1 bfR11.e0.2 bfR11.bxClW := by
   decide +kernel
 
 /-! The image family's exchange conjunct isolated: the diagonal
@@ -1381,14 +1386,14 @@ private def bfFixIS : CenterFam :=
     If := ([[c13P, p5Eta], [p10Eta, c13P]], c5P),
     bxU := [bx1 3 1, bx1 6 1],
     bxL := [bx1 3 1, bx1 6 1] }
-example : pfmOneValue (dcapHiSiteF bfFixIS.Cf bfFixIS.If (idMat 2) 3 25)
+theorem pin195 : pfmOneValue (dcapHiSiteF bfFixIS.Cf bfFixIS.If (idMat 2) 3 25)
     [[c10P, ([[BPair.unit, (BPair.ofNat 500).swap]], ([] : poly.PPoly))],
      [([[BPair.unit, (BPair.ofNat 1000).swap]], ([] : poly.PPoly)),
       c10P]] := by decide +kernel
-example : ¬ famRead bfFixIS (idMat 2) (idMat 2) := by decide +kernel
-example : ¬ pfmOneValue (pfmTr bfFixIS.If.1) bfFixIS.If.1 := by
+theorem pin196 : ¬ famRead bfFixIS (idMat 2) (idMat 2) := by decide +kernel
+theorem pin197 : ¬ pfmOneValue (pfmTr bfFixIS.If.1) bfFixIS.If.1 := by
   decide +kernel
-example : bfFixIS.Af.length = bfFixIS.o ∧ elim.rowsLen bfFixIS.o bfFixIS.Af
+theorem pin198 : bfFixIS.Af.length = bfFixIS.o ∧ elim.rowsLen bfFixIS.o bfFixIS.Af
     ∧ bfFixIS.Cf.1.length = bfFixIS.o ∧ elim.rowsLen bfFixIS.o bfFixIS.Cf.1
     ∧ bfFixIS.Wf.1.length = bfFixIS.o ∧ elim.rowsLen bfFixIS.o bfFixIS.Wf.1
     ∧ bfFixIS.If.1.length = bfFixIS.o ∧ elim.rowsLen bfFixIS.o bfFixIS.If.1
@@ -1430,10 +1435,10 @@ forged at five against the image's clearing five, the center's and
 the witness's reads standing. -/
 
 private def bfR12 : CenterFam := { bfFix with bxClI := bx1 5 0 }
-example : ¬ famRead bfR12 (idMat 2) (idMat 2) := by decide +kernel
-example : ¬ boxRead bfR12.If.2 bfR12.e0.1 bfR12.e0.2 bfR12.bxClI := by
+theorem pin199 : ¬ famRead bfR12 (idMat 2) (idMat 2) := by decide +kernel
+theorem pin200 : ¬ boxRead bfR12.If.2 bfR12.e0.1 bfR12.e0.2 bfR12.bxClI := by
   decide +kernel
-example : boxRead bfR12.Cf.2 bfR12.e0.1 bfR12.e0.2 bfR12.bxClC
+theorem pin201 : boxRead bfR12.Cf.2 bfR12.e0.1 bfR12.e0.2 bfR12.bxClC
     ∧ boxRead bfR12.Wf.2 bfR12.e0.1 bfR12.e0.2 bfR12.bxClW := by
   decide +kernel
 
@@ -1463,15 +1468,15 @@ private def bfNG : CenterFam :=
    [bx1 1 1], [bx1 1 1], [bx1 1 1], [bx1 1 1],
    bx1 1 0, bx1 1 0, bx1 1 0⟩
 
-example : pfmOneValue (contrSiteF ngWf ngG 1 3)
+theorem pin202 : pfmOneValue (contrSiteF ngWf ngG 1 3)
     [[([[BPair.ofNat 11]], ([] : poly.PPoly))]] := by decide +kernel
-example : pfmOneValue (floorSiteF ngCf ngG 2 1 1 5)
+theorem pin203 : pfmOneValue (floorSiteF ngCf ngG 2 1 1 5)
     [[([[BPair.ofNat 94]], ([] : poly.PPoly))]] := by decide +kernel
-example : pfmOneValue (dcapHiSiteF ngCf ngIf ngG 3 25)
+theorem pin204 : pfmOneValue (dcapHiSiteF ngCf ngIf ngG 3 25)
     [[([[BPair.ofNat 110]], ([] : poly.PPoly))]] := by decide +kernel
-example : pfmOneValue (dcapLoSiteF ngCf ngIf ngG 3 25)
+theorem pin205 : pfmOneValue (dcapLoSiteF ngCf ngIf ngG 3 25)
     [[([[BPair.ofNat 10]], ([] : poly.PPoly))]] := by decide +kernel
-example : bfNG.Af.length = bfNG.o ∧ elim.rowsLen bfNG.o bfNG.Af
+theorem pin206 : bfNG.Af.length = bfNG.o ∧ elim.rowsLen bfNG.o bfNG.Af
     ∧ bfNG.Cf.1.length = bfNG.o ∧ elim.rowsLen bfNG.o bfNG.Cf.1
     ∧ bfNG.Wf.1.length = bfNG.o ∧ elim.rowsLen bfNG.o bfNG.Wf.1
     ∧ bfNG.If.1.length = bfNG.o ∧ elim.rowsLen bfNG.o bfNG.If.1
@@ -1502,9 +1507,9 @@ example : bfNG.Af.length = bfNG.o ∧ elim.rowsLen bfNG.o bfNG.Af
           + (bfNG.lc.1 * bfNG.lc.1) * (bfNG.rho.1 * bfNG.dft.2)
         ≤ bfNG.rho.1 * (bfNG.dft.2 * (bfNG.lc.2 * bfNG.lc.2)) := by
   decide +kernel
-example : ¬ boxRead ngIf.2 bfNG.e0.1 bfNG.e0.2 bfNG.bxClI := by
+theorem pin207 : ¬ boxRead ngIf.2 bfNG.e0.1 bfNG.e0.2 bfNG.bxClI := by
   decide +kernel
-example : ¬ famRead bfNG ngB ngG := by decide +kernel
+theorem pin208 : ¬ famRead bfNG ngB ngG := by decide +kernel
 
 /-! The center's exchange at its own isolation: the bond at the
 sum's unit forces the witness family's vacant read through the
@@ -1531,17 +1536,17 @@ private def bfCX : CenterFam :=
    [bx1 3 1, bx1 3 1], [bx1 3 1, bx1 3 1],
    bx1 1 0, bx1 1 0, bx1 1 0⟩
 
-example : pfmOneValue (floorSiteF cxCf (idMat 2) 9 10 3 2)
+theorem pin209 : pfmOneValue (floorSiteF cxCf (idMat 2) 9 10 3 2)
     [[([[BPair.ofNat 8]], ([] : poly.PPoly)),
       ([[BPair.unit, BPair.ofNat 20]], ([] : poly.PPoly))],
      [vacProf, ([[BPair.ofNat 8]], ([] : poly.PPoly))]] := by
   decide +kernel
-example : pfmOneValue (dcapHiSiteF cxCf cxIf (idMat 2) 4 5)
+theorem pin210 : pfmOneValue (dcapHiSiteF cxCf cxIf (idMat 2) 4 5)
     [[([[BPair.ofNat 24]], ([] : poly.PPoly)),
       ([[BPair.unit, (BPair.ofNat 60).swap]], ([] : poly.PPoly))],
      [([[BPair.unit, (BPair.ofNat 80).swap]], ([] : poly.PPoly)),
       ([[BPair.ofNat 24]], ([] : poly.PPoly))]] := by decide +kernel
-example : bfCX.Af.length = bfCX.o ∧ elim.rowsLen bfCX.o bfCX.Af
+theorem pin211 : bfCX.Af.length = bfCX.o ∧ elim.rowsLen bfCX.o bfCX.Af
     ∧ bfCX.Cf.1.length = bfCX.o ∧ elim.rowsLen bfCX.o bfCX.Cf.1
     ∧ bfCX.Wf.1.length = bfCX.o ∧ elim.rowsLen bfCX.o bfCX.Wf.1
     ∧ bfCX.If.1.length = bfCX.o ∧ elim.rowsLen bfCX.o bfCX.If.1
@@ -1574,8 +1579,8 @@ example : bfCX.Af.length = bfCX.o ∧ elim.rowsLen bfCX.o bfCX.Af
           + (bfCX.lc.1 * bfCX.lc.1) * (bfCX.rho.1 * bfCX.dft.2)
         ≤ bfCX.rho.1 * (bfCX.dft.2 * (bfCX.lc.2 * bfCX.lc.2)) := by
   decide +kernel
-example : ¬ pfmOneValue (pfmTr cxCf.1) cxCf.1 := by decide +kernel
-example : ¬ famRead bfCX cxB (idMat 2) := by decide +kernel
+theorem pin212 : ¬ pfmOneValue (pfmTr cxCf.1) cxCf.1 := by decide +kernel
+theorem pin213 : ¬ famRead bfCX cxB (idMat 2) := by decide +kernel
 
 /-! The image tie's spelling pinned at a non-symmetric bond: the
 witness solves its tie at the bond's exchange, the image joins the
@@ -1591,20 +1596,20 @@ private def m2P : poly.PPoly × poly.PPoly :=
   ([[(⟨1, 3⟩ : BPair)]], ([] : poly.PPoly))
 private def bfWfB : PfMQ := ([[c2P, vacProf], [c2P, c2P]], c5P)
 private def bfIfB : PfMQ := ([[c11P, m2P], [m2P, c13P]], c5P)
-example : pfmQOneValue (pfmQmul ([[c10P, vacProf],
+theorem pin214 : pfmQOneValue (pfmQmul ([[c10P, vacProf],
       [vacProf, c10P]], c4P) (pfmQshift bfWfB))
     (ofPfm (ofMatProf (transposeM bfBns))) := by decide +kernel
-example : pfmQOneValue bfIfB
+theorem pin215 : pfmQOneValue bfIfB
     (pfmQadd (ofPfm bfAfD)
       (pfmQmul (ofPfm (ofMatProf bfBns)) (pfmQswap bfWfB))) := by
   decide +kernel
-example : ¬ pfmQOneValue bfIfB
+theorem pin216 : ¬ pfmQOneValue bfIfB
     (pfmQadd (ofPfm bfAfD)
       (pfmQmul (ofPfm (ofMatProf (transposeM bfBns)))
         (pfmQswap bfWfB))) := by decide +kernel
 
 
-/-! Clause (vii)'s four count reshapes at the evaluated data: each
+/-! `lem:cornerblock`'s four count reshapes at the evaluated data: each
 site datum's dominance certificate walk prices its evaluated form
 at or above the sum's unit, and the form's decomposition reads that
 price as the pointwise count the tex states — the floor's center
@@ -1638,22 +1643,22 @@ private def bfMC : elim.Mat := evalPfm bfCf.1 12 1 200 1
 private def bfMW : elim.Mat := evalPfm bfWf.1 12 1 200 1
 private def bfMI : elim.Mat := evalPfm bfIf.1 12 1 200 1
 
-example : (BPair.ofPos 800).oneValue (evalProf bfCf.2 12 1 200 1)
+theorem pin217 : (BPair.ofPos 800).oneValue (evalProf bfCf.2 12 1 200 1)
     ∧ (BPair.ofPos 1000).oneValue (evalProf bfWf.2 12 1 200 1)
     ∧ (BPair.ofPos 1000).oneValue (evalProf bfIf.2 12 1 200 1)
     ∧ (BPair.ofPos 800).oneValue (evalProf bfCf.2 13 1 200 1) := by
   decide +kernel
-example : elim.matOneValue bfMC
+theorem pin218 : elim.matOneValue bfMC
     [[BPair.ofNat 2000, BPair.unit], [BPair.unit, BPair.ofNat 2000]] := by
   decide +kernel
-example : elim.matOneValue bfMI
+theorem pin219 : elim.matOneValue bfMI
     [[BPair.ofNat 2600, BPair.ofNat 5],
      [BPair.ofNat 5, BPair.ofNat 2600]] := by decide +kernel
-example : elim.matOneValue (devQ (bfMI, 1000) (bfMC, 800)).1
+theorem pin220 : elim.matOneValue (devQ (bfMI, 1000) (bfMC, 800)).1
     [[BPair.ofNat 80000, BPair.ofNat 4000],
      [BPair.ofNat 4000, BPair.ofNat 80000]] := by decide +kernel
 
-example : (quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
+theorem pin221 : (quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
       (800 * (2 * 5 + 1 * 1))
     ≤ (quadForm bfMC
         [BPair.ofNat 1, BPair.unit]).scale (1 * 5) :=
@@ -1666,7 +1671,7 @@ example : (quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
     (by decide +kernel)
     [BPair.ofNat 1, BPair.unit] rfl
 
-example : (quadForm (idMat 2)
+theorem pin222 : (quadForm (idMat 2)
       (elim.matVec (elim.matSwap bfMW)
         [BPair.ofNat 1, BPair.unit])).scale (2 * 2)
     ≤ (quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
@@ -1680,7 +1685,7 @@ example : (quadForm (idMat 2)
     (by decide +kernel)
     [BPair.ofNat 1, BPair.unit] rfl
 
-example : (quadForm (devQ (bfMI, 1000)
+theorem pin223 : (quadForm (devQ (bfMI, 1000)
         (bfMC, 800)).1
       [BPair.ofNat 1, BPair.unit]).scale 25
     ≤ (quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
@@ -1697,7 +1702,7 @@ example : (quadForm (devQ (bfMI, 1000)
     (by decide +kernel) (by decide +kernel)
     [BPair.ofNat 1, BPair.unit] rfl
 
-example : ((quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
+theorem pin224 : ((quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
         (3 * (devQ (bfMI, 1000)
           (bfMC, 800)).2)).swap
     ≤ (quadForm (devQ (bfMI, 1000)
@@ -1714,45 +1719,45 @@ example : ((quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
     (by decide +kernel) (by decide +kernel)
     [BPair.ofNat 1, BPair.unit] rfl
 
-example : (quadForm (idMat 2)
+theorem pin225 : (quadForm (idMat 2)
       [BPair.ofNat 2, (BPair.ofNat 3).swap]).scale (800 * (2 * 5 + 1 * 1))
     ≤ (quadForm bfMC [BPair.ofNat 2, (BPair.ofNat 3).swap]).scale
         (1 * 5) := by decide +kernel
-example : (quadForm (idMat 2)
+theorem pin226 : (quadForm (idMat 2)
       (elim.matVec (elim.matSwap bfMW)
         [BPair.ofNat 2, (BPair.ofNat 3).swap])).scale (2 * 2)
     ≤ (quadForm (idMat 2)
         [BPair.ofNat 2, (BPair.ofNat 3).swap]).scale
         (1 * 1 * (1000 * 1000)) := by decide +kernel
-example : (quadForm (devQ (bfMI, 1000) (bfMC, 800)).1
+theorem pin227 : (quadForm (devQ (bfMI, 1000) (bfMC, 800)).1
       [BPair.ofNat 1, BPair.ofNat 1]).scale 25
     ≤ (quadForm (idMat 2) [BPair.ofNat 1, BPair.ofNat 1]).scale
         (3 * (devQ (bfMI, 1000) (bfMC, 800)).2) := by decide +kernel
 
-example : ¬ ((quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
+theorem pin228 : ¬ ((quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
       (800 * (12 * 5 + 1 * 5))
     ≤ (quadForm bfMC [BPair.ofNat 1, BPair.unit]).scale (5 * 5)) := by
   decide +kernel
-example : ¬ ((quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
+theorem pin229 : ¬ ((quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
       (1600 * 11)
     ≤ (quadForm bfMC [BPair.ofNat 1, BPair.unit]).scale (1 * 5)) := by
   decide +kernel
-example : ¬ ((quadForm (idMat 2)
+theorem pin230 : ¬ ((quadForm (idMat 2)
       (elim.matVec (elim.matSwap bfMW) [BPair.ofNat 1, BPair.unit])).scale
         (26 * 26)
     ≤ (quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
         (1 * 1 * (1000 * 1000))) := by decide +kernel
-example : ¬ ((quadForm (devQ (bfMI, 1000) (bfMC, 800)).1
+theorem pin231 : ¬ ((quadForm (devQ (bfMI, 1000) (bfMC, 800)).1
       [BPair.ofNat 1, BPair.unit]).scale 100
     ≤ (quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
         (1 * (devQ (bfMI, 1000) (bfMC, 800)).2)) := by decide +kernel
 
-example : (quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
+theorem pin232 : (quadForm (idMat 2) [BPair.ofNat 1, BPair.unit]).scale
       (800 * (2 * 5 + 1 * 1))
     ≤ (quadForm (evalPfm bfCf.1 21 1 200 1)
         [BPair.ofNat 1, BPair.unit]).scale (1 * 5) := by decide +kernel
 
-example : ¬ (poly.evalClear
+theorem pin233 : ¬ (poly.evalClear
       (poly.mul [BPair.ofNat 1, BPair.ofNat 1]
         [BPair.ofNat 1, BPair.ofNat 1]) (BPair.ofNat 1) 2
       (1 + 0)).oneValue
@@ -1766,15 +1771,15 @@ private def lvIf : PfMQ := ([[c2P]], c5P)
 private def lvMI : elim.Mat := evalPfm lvIf.1 12 1 200 1
 private def lvMC : elim.Mat := evalPfm lvCf.1 12 1 200 1
 
-example : elim.matOneValue (devQ (lvMI, 1000) (lvMC, 800)).1
+theorem pin234 : elim.matOneValue (devQ (lvMI, 1000) (lvMC, 800)).1
     [[(BPair.ofNat 1680000).swap]] := by decide +kernel
-example : pfmOneValue (dcapLoSiteF lvCf lvIf [[BPair.ofNat 1]] 22 10)
+theorem pin235 : pfmOneValue (dcapLoSiteF lvCf lvIf [[BPair.ofNat 1]] 22 10)
     [[([[BPair.ofNat 20]], ([] : poly.PPoly))]] := by decide +kernel
-example : domCertGo (BPair.ofNat 1) 200 0
+theorem pin236 : domCertGo (BPair.ofNat 1) 200 0
     (dcapLoSiteF lvCf lvIf [[BPair.ofNat 1]] 22 10) [bx1 1 1] := by
   decide +kernel
 
-example : ((quadForm [[BPair.ofNat 1]] [BPair.ofNat 1]).scale
+theorem pin237 : ((quadForm [[BPair.ofNat 1]] [BPair.ofNat 1]).scale
       (22 * (devQ (lvMI, 1000) (lvMC, 800)).2)).swap
     ≤ (quadForm (devQ (lvMI, 1000) (lvMC, 800)).1
         [BPair.ofNat 1]).scale 10 :=
@@ -1789,12 +1794,12 @@ example : ((quadForm [[BPair.ofNat 1]] [BPair.ofNat 1]).scale
     (by decide +kernel) (by decide +kernel)
     [BPair.ofNat 1] rfl
 
-example : ((quadForm [[BPair.ofNat 1]] [BPair.ofNat 1]).scale
+theorem pin238 : ((quadForm [[BPair.ofNat 1]] [BPair.ofNat 1]).scale
       (22 * (devQ (lvMI, 1000) (lvMC, 800)).2)).swap
     ≤ (quadForm (devQ (lvMI, 1000) (lvMC, 800)).1
         [BPair.ofNat 1]).scale 10 := by decide +kernel
 
-example : ¬ (((quadForm [[BPair.ofNat 1]] [BPair.ofNat 1]).scale
+theorem pin239 : ¬ (((quadForm [[BPair.ofNat 1]] [BPair.ofNat 1]).scale
       (20 * (devQ (lvMI, 1000) (lvMC, 800)).2)).swap
     ≤ (quadForm (devQ (lvMI, 1000) (lvMC, 800)).1
         [BPair.ofNat 1]).scale 10) := by decide +kernel
@@ -1806,20 +1811,20 @@ defect's evaluated datum reads the deeper center's transfer image
 against the slab's own center, the balance partner of 64000 at the
 depth twelve, with the read at the shifted center (the partner of
 89000) refused: the centers' consecutive drift is the defect's own
-summand (`lem:cornerpivot`(vii)). -/
+summand (`lem:cornerblock`). -/
 
 private def cS : poly.PPoly × poly.PPoly :=
   ([[BPair.ofNat 2], [BPair.ofNat 1]], ([] : poly.PPoly))
 private def dvCf : PfMQ := ([[cS]], c4P)
 private def dvIf : PfMQ := ([[c3P]], c5P)
 
-example : elim.matOneValue (evalPfm dvCf.1 12 1 200 1)
+theorem pin240 : elim.matOneValue (evalPfm dvCf.1 12 1 200 1)
       [[BPair.ofNat 544]]
     ∧ elim.matOneValue (evalPfm dvCf.1 13 1 200 1)
       [[BPair.ofNat 569]] := by decide +kernel
-example : elim.matOneValue (evalPfm (devFam dvCf dvIf).1 12 1 200 2)
+theorem pin241 : elim.matOneValue (evalPfm (devFam dvCf dvIf).1 12 1 200 2)
     [[(BPair.ofNat 64000).swap]] := by decide +kernel
-example : ¬ elim.matOneValue (evalPfm (devFam dvCf dvIf).1 12 1 200 2)
+theorem pin242 : ¬ elim.matOneValue (evalPfm (devFam dvCf dvIf).1 12 1 200 2)
     [[(BPair.ofNat 89000).swap]] := by decide +kernel
 
 /-! The walked segment's certificate at the family, deep-first: the
@@ -1850,13 +1855,13 @@ private def wXs : List MatQ :=
   [([[BPair.ofNat 8]], (3 : Pos)), ofM [[BPair.ofNat 3]]]
 private def wRs : List MatQ := [([[BPair.ofNat 1]], (3 : Pos))]
 
-example : tailRead wDiag wOff wXs wRs wNs := by decide +kernel
-example : greenprod.symRead wDiag := by decide +kernel
-example : elim.matOneValue (inertia.matScale (Pos.powC 200 1) [[BPair.ofNat 3]])
+theorem pin243 : tailRead wDiag wOff wXs wRs wNs := by decide +kernel
+theorem pin244 : greenprod.symRead wDiag := by decide +kernel
+theorem pin245 : elim.matOneValue (inertia.matScale (Pos.powC 200 1) [[BPair.ofNat 3]])
       (evalPfm wAf 12 1 200 1)
     ∧ elim.matOneValue (inertia.matScale (Pos.powC 200 1) [[BPair.ofNat 3]])
       (evalPfm wAf 13 1 200 1) := by decide +kernel
-example : famChainRead wFam wB 1 200 1 12 wDiag wOff wNs := by
+theorem pin246 : famChainRead wFam wB 1 200 1 12 wDiag wOff wNs := by
   decide +kernel
 
 /-! The seed pivot's deviation at the boundary end, depth twelve the
@@ -1865,16 +1870,16 @@ eight hundred, the diagonal three, so the deviation is the sum's
 unit and the cap holds at the radius two-thirds, the two splits the
 unit congruence at sixteen hundred. -/
 
-example : elim.matOneValue (evalPfm wCf.1 12 1 200 1)
+theorem pin247 : elim.matOneValue (evalPfm wCf.1 12 1 200 1)
     [[BPair.ofNat 2400]] := by decide +kernel
-example : (BPair.ofPos (800 : Pos)).oneValue
+theorem pin248 : (BPair.ofPos (800 : Pos)).oneValue
     (evalProf wCf.2 12 1 200 1) := by decide +kernel
-example : elim.matOneValue
+theorem pin249 : elim.matOneValue
     (devQ (ofM [[BPair.ofNat 3]]) (famYc wFam 1 200 1 12)).1
     [[BPair.unit]] := by decide +kernel
 
 private def wYcS : MatQ := famYc wFam 1 200 1 12
-private def wSp : Split 1 := spOne (BPair.ofNat 1600)
+private def wSp : Split 1 := inertia.oneSplit [(BPair.ofNat 1600)]
 
 private theorem wCap : capQ (devQ (ofM [[BPair.ofNat 3]]) wYcS) wG 2 3
     wSp wSp := by decide +kernel
@@ -1886,12 +1891,12 @@ count's unit — the fold decided raw and the conclusion landed
 through the theorem at the family's own evaluated reads. -/
 
 private def wSps : List ((n : Nat) × Split n) :=
-  [⟨1, spOne (BPair.ofNat 8)⟩, ⟨1, spOne (BPair.ofNat 3)⟩]
+  [⟨1, inertia.oneSplit [(BPair.ofNat 8)]⟩, ⟨1, inertia.oneSplit [(BPair.ofNat 3)]⟩]
 
-example : revListRead wXs wSps := by decide +kernel
-example : revFold wSps = 0 := by decide +kernel
+theorem pin250 : revListRead wXs wSps := by decide +kernel
+theorem pin251 : revFold wSps = 0 := by decide +kernel
 
-example : revFold wSps = 0 :=
+theorem pin252 : revFold wSps = 0 :=
   famChain_psd wFam wB wG 1 200 1 12 wDiag wOff wXs wRs wNs
     wSps wSp wSp (by decide +kernel) (by decide +kernel)
     (fun d => pfmShape_le (by decide +kernel) d)
@@ -1919,29 +1924,29 @@ private def wFam0 : CenterFam :=
    [bx1 1 1], [bx1 1 1], [bx1 1 1], [bx1 1 1],
    bx1 1 1, bx1 1 1, bx1 1 1⟩
 
-example : ¬ famChainRead wFam wB 1 200 1 12 wDiag wOff [1, 2] := by
+theorem pin253 : ¬ famChainRead wFam wB 1 200 1 12 wDiag wOff [1, 2] := by
   decide +kernel
-example : ¬ famChainRead wFam wB 1 200 1 12 wFgDiag wOff wNs := by
+theorem pin254 : ¬ famChainRead wFam wB 1 200 1 12 wFgDiag wOff wNs := by
   decide +kernel
-example : ¬ famChainRead wFam wB 1 200 1 12 wDiag
+theorem pin255 : ¬ famChainRead wFam wB 1 200 1 12 wDiag
     [[[BPair.ofNat 2]]] wNs := by decide +kernel
-example : ¬ famChainRead wFam wB 1 200 1 300 wDiag wOff wNs := by
+theorem pin256 : ¬ famChainRead wFam wB 1 200 1 300 wDiag wOff wNs := by
   decide +kernel
-example : ¬ famChainRead wFam0 wB 1 200 0 12 wDiag wOff wNs := by
+theorem pin257 : ¬ famChainRead wFam0 wB 1 200 0 12 wDiag wOff wNs := by
   decide +kernel
-example : ¬ famChainRead { wFam with bxC := [bx1 1 3] } wB 1 200 1 12
+theorem pin258 : ¬ famChainRead { wFam with bxC := [bx1 1 3] } wB 1 200 1 12
     wDiag wOff wNs := by decide +kernel
-example : ¬ famChainRead { wFam with bxF := [bx1 1 3] } wB 1 200 1 12
+theorem pin259 : ¬ famChainRead { wFam with bxF := [bx1 1 3] } wB 1 200 1 12
     wDiag wOff wNs := by decide +kernel
-example : ¬ famChainRead { wFam with bxU := [bx1 1 3] } wB 1 200 1 12
+theorem pin260 : ¬ famChainRead { wFam with bxU := [bx1 1 3] } wB 1 200 1 12
     wDiag wOff wNs := by decide +kernel
-example : ¬ famChainRead { wFam with bxL := [bx1 1 3] } wB 1 200 1 12
+theorem pin261 : ¬ famChainRead { wFam with bxL := [bx1 1 3] } wB 1 200 1 12
     wDiag wOff wNs := by decide +kernel
-example : ¬ famChainRead { wFam with bxClC := bx1 1 2 } wB 1 200 1 12
+theorem pin262 : ¬ famChainRead { wFam with bxClC := bx1 1 2 } wB 1 200 1 12
     wDiag wOff wNs := by decide +kernel
-example : ¬ famChainRead { wFam with bxClW := bx1 1 2 } wB 1 200 1 12
+theorem pin263 : ¬ famChainRead { wFam with bxClW := bx1 1 2 } wB 1 200 1 12
     wDiag wOff wNs := by decide +kernel
-example : ¬ famChainRead { wFam with bxClI := bx1 1 2 } wB 1 200 1 12
+theorem pin264 : ¬ famChainRead { wFam with bxClI := bx1 1 2 } wB 1 200 1 12
     wDiag wOff wNs := by decide +kernel
 
 /-! The depth orientation pinned at a depth-varying diagonal family:
@@ -1963,13 +1968,13 @@ private def vFam : CenterFam :=
 private def vDiag : List elim.Mat :=
   [[[BPair.ofNat 169]], [[BPair.ofNat 144]]]
 
-example : elim.matOneValue (evalPfm vAf 12 1 200 1)
+theorem pin265 : elim.matOneValue (evalPfm vAf 12 1 200 1)
       [[BPair.ofNat 28800]]
     ∧ elim.matOneValue (evalPfm vAf 13 1 200 1)
       [[BPair.ofNat 33800]] := by decide +kernel
-example : famChainRead vFam wB 1 200 1 12 vDiag wOff wNs := by
+theorem pin266 : famChainRead vFam wB 1 200 1 12 vDiag wOff wNs := by
   decide +kernel
-example : ¬ famChainRead vFam wB 1 200 1 12
+theorem pin267 : ¬ famChainRead vFam wB 1 200 1 12
     [[[BPair.ofNat 144]], [[BPair.ofNat 169]]] wOff wNs := by
   decide +kernel
 
@@ -1994,26 +1999,26 @@ the datum's own two sides' pins. -/
 
 private def wFgYc : MatQ := (([[BPair.ofNat 4800]] : elim.Mat), (800 : Pos))
 
-example : elim.matOneValue (devQ (ofM [[BPair.ofNat 3]]) wFgYc).1
+theorem pin268 : elim.matOneValue (devQ (ofM [[BPair.ofNat 3]]) wFgYc).1
     [[(BPair.ofNat 2400).swap]] := by decide +kernel
-example : (quadForm (devQ (ofM [[BPair.ofNat 3]]) wFgYc).1
+theorem pin269 : (quadForm (devQ (ofM [[BPair.ofNat 3]]) wFgYc).1
       [BPair.ofNat 1]).scale 3
     ≤ (quadForm wG [BPair.ofNat 1]).scale
         (2 * (devQ (ofM [[BPair.ofNat 3]]) wFgYc).2) := by decide +kernel
-example : ¬ (((quadForm wG [BPair.ofNat 1]).scale
+theorem pin270 : ¬ (((quadForm wG [BPair.ofNat 1]).scale
       (2 * (devQ (ofM [[BPair.ofNat 3]]) wFgYc).2)).swap
     ≤ (quadForm (devQ (ofM [[BPair.ofNat 3]]) wFgYc).1
         [BPair.ofNat 1]).scale 3) := by decide +kernel
 
 private def wFgYc2 : MatQ := (([[BPair.ofNat 1600]] : elim.Mat), (800 : Pos))
 
-example : elim.matOneValue (devQ (ofM [[BPair.ofNat 3]]) wFgYc2).1
+theorem pin271 : elim.matOneValue (devQ (ofM [[BPair.ofNat 3]]) wFgYc2).1
     [[BPair.ofNat 800]] := by decide +kernel
-example : ¬ ((quadForm (devQ (ofM [[BPair.ofNat 3]]) wFgYc2).1
+theorem pin272 : ¬ ((quadForm (devQ (ofM [[BPair.ofNat 3]]) wFgYc2).1
       [BPair.ofNat 1]).scale 3
     ≤ (quadForm wG [BPair.ofNat 1]).scale
         (2 * (devQ (ofM [[BPair.ofNat 3]]) wFgYc2).2)) := by decide +kernel
-example : ((quadForm wG [BPair.ofNat 1]).scale
+theorem pin273 : ((quadForm wG [BPair.ofNat 1]).scale
       (2 * (devQ (ofM [[BPair.ofNat 3]]) wFgYc2).2)).swap
     ≤ (quadForm (devQ (ofM [[BPair.ofNat 3]]) wFgYc2).1
         [BPair.ofNat 1]).scale 3 := by decide +kernel
@@ -2025,10 +2030,10 @@ block, all above the sum's unit, and the slab fold of the reversal
 counts is the count's unit — the conclusion landed through the
 family walk at the chain's own stated data. -/
 
-example : famChainRead wFam wB 1 200 1 12 chDiag chOff [1, 1, 1] := by
+theorem pin274 : famChainRead wFam wB 1 200 1 12 chDiag chOff [1, 1, 1] := by
   decide +kernel
 
-example : revFold chSps = 0 :=
+theorem pin275 : revFold chSps = 0 :=
   famChain_psd wFam wB wG 1 200 1 12 chDiag chOff chXs chRs [1, 1, 1]
     chSps wSp wSp (by decide +kernel) (by decide +kernel)
     (fun d => pfmShape_le (by decide +kernel) d)
@@ -2042,7 +2047,7 @@ example : revFold chSps = 0 :=
     wCap
     (by decide +kernel)
 
-/-! Clause (vii)'s whole chain at the family: the three-slab chain
+/-! `lem:cornerblock`'s whole chain at the family: the three-slab chain
 `tridiag(3, 2, 3; 1, 3)` runs the pivots `(4, -1, 3)` at the
 witnesses `(-1, 1)`, the crossing at the middle pivot with one
 depth of dominance tail — the diagonal's floor `(3, 1)` tight at
@@ -2064,7 +2069,7 @@ private def fXs : List MatQ :=
   [([[⟨5, 1⟩]], 1), ([[⟨1, 2⟩]], 1), ofM fA0]
 private def fRs : List MatQ := [([[⟨1, 2⟩]], 1), ([[⟨2, 1⟩]], 1)]
 private def fSps : List ((k : Nat) × Split k) :=
-  [⟨1, spOne ⟨5, 1⟩⟩, ⟨1, spOne ⟨1, 2⟩⟩, ⟨1, spOne ⟨4, 1⟩⟩]
+  [⟨1, inertia.oneSplit [⟨5, 1⟩]⟩, ⟨1, inertia.oneSplit [⟨1, 2⟩]⟩, ⟨1, inertia.oneSplit [⟨4, 1⟩]⟩]
 
 /-- The assembled chain's congruence at the columns
 `e₀ + e₁ - e₂`, `e₁ - e₂`, `e₂`, the images the recursion's own
@@ -2081,22 +2086,22 @@ private def fSP : Split 3 :=
   ⟨⟨fT, rfl⟩, ⟨fTw, rfl⟩,
    [.one ⟨5, 1⟩, .one ⟨1, 2⟩, .one ⟨4, 1⟩], 0, rfl⟩
 
-private def fSpc : (k : Nat) × Split k := ⟨1, spOne ⟨1, 2⟩⟩
-private def fSpT : (k : Nat) × Split k := ⟨1, spOne ⟨2, 1⟩⟩
+private def fSpc : (k : Nat) × Split k := ⟨1, inertia.oneSplit [⟨1, 2⟩]⟩
+private def fSpT : (k : Nat) × Split k := ⟨1, inertia.oneSplit [⟨2, 1⟩]⟩
 private def fDs : List DomStep := [⟨1, (3, 1), (2, 1), spK⟩]
 private def fCs : List ((k : Nat) × (Pos × Pos) × Split k) := []
 
-example : tailRead fDiag fOff fXs fRs fNs := by decide +kernel
-example : revListRead fXs fSps := by decide +kernel
-example : splitRead (assemble fDiag fOff) fSP := by decide +kernel
-example : revAt fSP = 1 := by decide +kernel
-example : domRead fSpc fSpT 1 1 fDiag fOff fXs fRs fNs fDs fCs := by
+theorem pin276 : tailRead fDiag fOff fXs fRs fNs := by decide +kernel
+theorem pin277 : revListRead fXs fSps := by decide +kernel
+theorem pin278 : splitRead (assemble fDiag fOff) fSP := by decide +kernel
+theorem pin279 : revAt fSP = 1 := by decide +kernel
+theorem pin280 : domRead fSpc fSpT 1 1 fDiag fOff fXs fRs fNs fDs fCs := by
   decide +kernel
-example : famChainRead wFam wB 1 200 1 12 (fDiag.drop (fDs.length + 1))
+theorem pin281 : famChainRead wFam wB 1 200 1 12 (fDiag.drop (fDs.length + 1))
     (fOff.drop (fDs.length + 1)) (fNs.drop (fDs.length + 1)) := by
   decide +kernel
 
-example : revAt fSP = 1 :=
+theorem pin282 : revAt fSP = 1 :=
   famChainCount wFam wB wG 1 200 1 12 fSpc fSpT 1 1 fDiag fOff fNs
     fXs fRs fDs fCs fSps fSP wSp wSp
     (by decide +kernel) (by decide +kernel)
@@ -2109,11 +2114,11 @@ example : revAt fSP = 1 :=
     (fun d => poly.capOfLen (depthPoly_ble (by decide +kernel) d))
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
-    (fun _ => show revAt (spOne ⟨1, 2⟩) = 1 by decide +kernel)
+    (fun _ => show revAt (inertia.oneSplit [⟨1, 2⟩]) = 1 by decide +kernel)
     (by decide +kernel)
     wCap
 
-/-! Clause (vii)'s whole chain at the order-two crossing: three
+/-! `lem:cornerblock`'s whole chain at the order-two crossing: three
 slabs at the orders `(1, 2, 1)`, the diagonals
 `(4, diag(2, 2), 3)` at the bonds `(1, 0)` and `(3, 0)ᵀ`, whose
 recursion runs the pivots `(5, diag(-1, 2), 3)` at the witnesses
@@ -2141,7 +2146,7 @@ private def m2Sp : Split 2 :=
   ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩,
    [.one ⟨1, 2⟩, .one ⟨3, 1⟩], 0, rfl⟩
 private def m2Sps : List ((k : Nat) × Split k) :=
-  [⟨1, spOne ⟨6, 1⟩⟩, ⟨2, m2Sp⟩, ⟨1, spOne ⟨4, 1⟩⟩]
+  [⟨1, inertia.oneSplit [⟨6, 1⟩]⟩, ⟨2, m2Sp⟩, ⟨1, inertia.oneSplit [⟨4, 1⟩]⟩]
 
 /-- The assembled chain's congruence at the columns `e₀ + e₁ - e₃`,
 `e₁ - e₃`, `e₂`, `e₃`, the images the recursion's own pivots. -/
@@ -2160,22 +2165,22 @@ private def m2SP : Split 4 :=
    [.one ⟨6, 1⟩, .one ⟨1, 2⟩, .one ⟨3, 1⟩, .one ⟨4, 1⟩], 0, rfl⟩
 
 private def m2Spc : (k : Nat) × Split k := ⟨2, m2Sp⟩
-private def m2SpT : (k : Nat) × Split k := ⟨1, spOne ⟨4, 1⟩⟩
+private def m2SpT : (k : Nat) × Split k := ⟨1, inertia.oneSplit [⟨4, 1⟩]⟩
 private def m2Ds : List DomStep := [⟨1, (4, 1), (1, 1), spK⟩]
 
-example : tailRead m2Diag m2Off m2Xs m2Rs m2Ns := by decide +kernel
-example : revListRead m2Xs m2Sps := by decide +kernel
-example : splitRead (assemble m2Diag m2Off) m2SP := by decide +kernel
-example : revAt m2SP = 1 := by decide +kernel
-example : domRead m2Spc m2SpT 3 1 m2Diag m2Off m2Xs m2Rs m2Ns m2Ds
+theorem pin283 : tailRead m2Diag m2Off m2Xs m2Rs m2Ns := by decide +kernel
+theorem pin284 : revListRead m2Xs m2Sps := by decide +kernel
+theorem pin285 : splitRead (assemble m2Diag m2Off) m2SP := by decide +kernel
+theorem pin286 : revAt m2SP = 1 := by decide +kernel
+theorem pin287 : domRead m2Spc m2SpT 3 1 m2Diag m2Off m2Xs m2Rs m2Ns m2Ds
     fCs := by decide +kernel
-example : revAt (ground.getAt dSp m2Sps m2Ds.length).2 = 1 := by
+theorem pin288 : revAt (ground.getAt dSp m2Sps m2Ds.length).2 = 1 := by
   decide +kernel
-example : famChainRead wFam wB 1 200 1 12
+theorem pin289 : famChainRead wFam wB 1 200 1 12
     (m2Diag.drop (m2Ds.length + 1)) (m2Off.drop (m2Ds.length + 1))
     (m2Ns.drop (m2Ds.length + 1)) := by decide +kernel
 
-example : revAt m2SP = 1 :=
+theorem pin290 : revAt m2SP = 1 :=
   famChainCount wFam wB wG 1 200 1 12 m2Spc m2SpT 3 1 m2Diag m2Off
     m2Ns m2Xs m2Rs m2Ds fCs m2Sps m2SP wSp wSp
     (by decide +kernel) (by decide +kernel)
@@ -2191,3 +2196,245 @@ example : revAt m2SP = 1 :=
     (fun _ => show revAt m2Sp = 1 by decide +kernel)
     (by decide +kernel)
     wCap
+
+/-! The evaluated glue runs at the ceiling `[1 : 200]`, the scale
+`[1 : 200]` and the shared clearing power two.  The magnitude price
+is read at three profiles at the depth three, the scale `[1 : 2]`
+and the clearing two: the constant `10`, whose collapse `40` is its
+own magnitude; the mixed-sign scale profile `−2 + 4η`, whose
+collapse cancels at the sum's unit against the magnitude profile's
+`16`; and the u-carrying profile `−2 + u`, whose collapse `−2`
+prices at the magnitude profile's `14` — each decided raw beside
+its theorem route.  The glue reads two sites, the diagonal `10`
+against a scale-carrying and against a depth-carrying off entry.
+At the off entry `−500η` the rows certify at the box
+`(3, 0, 1, 0; 2)` on `[[1 : 2], [2 : 1]]` and the depth-twelve
+composite point `144/200` sits inside it, the row comparison
+`100000 ≤ 400000` with the evaluated form closing at the
+replicate-unit slack.  At the off entry `−100u` the off-row fold
+grows with the depth, the rows certify at the box on
+`[[1 : 2], [5 : 4]]` with the u-slab floor eight at its squared
+price — the device's second-slab arms occupied — and the box
+membership is the load-bearing binder: at the depth twelve the
+comparison reads `240000 ≤ 400000` and the evaluated datum is
+dominant, while at the depth twenty-one the composite point
+`441/200` runs past the box top, the membership read decides false
+with the certificate walk standing, and the evaluated conclusion
+parts, `420000` past the diagonal's `400000`. -/
+
+private def bl2Diag : poly.PPoly × poly.PPoly :=
+  ([[BPair.ofNat 10]], ([] : poly.PPoly))
+private def bl2Mix : poly.PPoly × poly.PPoly :=
+  ([[(⟨1, 3⟩ : BPair), BPair.ofNat 4]], ([] : poly.PPoly))
+private def bl2MixU : poly.PPoly × poly.PPoly :=
+  ([[(⟨1, 3⟩ : BPair)]], [[BPair.ofNat 1]])
+
+theorem pin291 : windowsep.mag (evalProf bl2Diag 3 1 2 2)
+    ≤ evalProf (magProf bl2Diag) 3 1 2 2 := by decide +kernel
+
+theorem pin292 : windowsep.mag (evalProf bl2Diag 3 1 2 2)
+    ≤ evalProf (magProf bl2Diag) 3 1 2 2 :=
+  evalProf_mag bl2Diag 3 1 2 2
+
+theorem pin293 : windowsep.mag (evalProf bl2Mix 3 1 2 2)
+    ≤ evalProf (magProf bl2Mix) 3 1 2 2 := by decide +kernel
+
+theorem pin294 : windowsep.mag (evalProf bl2Mix 3 1 2 2)
+    ≤ evalProf (magProf bl2Mix) 3 1 2 2 :=
+  evalProf_mag bl2Mix 3 1 2 2
+
+theorem pin295 : windowsep.mag (evalProf bl2MixU 3 1 2 2)
+    ≤ evalProf (magProf bl2MixU) 3 1 2 2 := by decide +kernel
+
+theorem pin296 : windowsep.mag (evalProf bl2MixU 3 1 2 2)
+    ≤ evalProf (magProf bl2MixU) 3 1 2 2 :=
+  evalProf_mag bl2MixU 3 1 2 2
+
+-- the three collapses and their magnitude profiles' own
+theorem pin297 : poly.oneValue (depthPoly bl2Mix 3) [(⟨1, 3⟩ : BPair), BPair.ofNat 4]
+    ∧ poly.oneValue (depthPoly bl2MixU 3) [(⟨1, 3⟩ : BPair), BPair.ofNat 3] := by
+  decide +kernel
+
+private def bl2Off : poly.PPoly × poly.PPoly :=
+  ([[BPair.unit, (BPair.ofNat 500).swap]], ([] : poly.PPoly))
+
+private def bl2Bx : BoxCert :=
+  ⟨⟨BPair.ofNat 1, 2⟩, ⟨BPair.ofNat 2, 1⟩, [], [], [],
+   BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 4,
+   BPair.ofNat 3, BPair.unit, BPair.ofNat 1, BPair.unit, 2⟩
+
+private def bl2Row : List (poly.PPoly × poly.PPoly) := [bl2Diag, bl2Off]
+
+private def bl2Site : List (List (poly.PPoly × poly.PPoly)) :=
+  [[bl2Diag, bl2Off], [bl2Off, bl2Diag]]
+
+theorem pin298 : domRowRead (BPair.ofNat 1) 200 0 bl2Row bl2Bx := by decide +kernel
+
+theorem pin299 : decimation.offFold 0
+      (bl2Row.map (fun e => evalProf e 12 1 200 2))
+    ≤ ground.getAt BPair.unit
+      (bl2Row.map (fun e => evalProf e 12 1 200 2)) 0 := by decide +kernel
+
+theorem pin300 : decimation.offFold 0
+      (bl2Row.map (fun e => evalProf e 12 1 200 2))
+    ≤ ground.getAt BPair.unit
+      (bl2Row.map (fun e => evalProf e 12 1 200 2)) 0 :=
+  domRow_le (BPair.ofNat 1) 200 0 12 2 1 200 bl2Row bl2Bx
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+
+theorem pin301 : domCertGo (BPair.ofNat 1) 200 0 bl2Site [bl2Bx, bl2Bx] := by
+  decide +kernel
+
+theorem pin302 : decimation.domAt (evalPfm bl2Site 12 1 200 2) := by decide +kernel
+
+theorem pin303 : decimation.domAt (evalPfm bl2Site 12 1 200 2) :=
+  domCert_domAt (BPair.ofNat 1) 200 12 2 1 200 bl2Site [bl2Bx, bl2Bx]
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+
+theorem pin304 : elim.sqAt (evalPfm bl2Site 12 1 200 2) bl2Site.length := by
+  decide +kernel
+
+theorem pin305 : elim.matOneValue (evalPfm bl2Site 12 1 200 2)
+    (elim.transposeM (evalPfm bl2Site 12 1 200 2)) := by decide +kernel
+
+theorem pin306 : ∀ v : List BPair, v.length = bl2Site.length →
+    BPair.unit ≤ inertia.quadForm (evalPfm bl2Site 12 1 200 2) v :=
+  domCert_form (BPair.ofNat 1) 200 12 2 1 200 bl2Site [bl2Bx, bl2Bx]
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+
+-- the depth-carrying site: the off entry `−100u`, the fold growing
+-- with the depth
+private def bl2OffU : poly.PPoly × poly.PPoly :=
+  (([] : poly.PPoly), [[(BPair.ofNat 100).swap]])
+
+private def bl2BxU : BoxCert :=
+  ⟨⟨BPair.ofNat 1, 2⟩, ⟨BPair.ofNat 5, 4⟩, [], [], [],
+   BPair.ofNat 8, BPair.ofNat 2, BPair.ofNat 2,
+   BPair.ofNat 1, BPair.unit, BPair.ofNat 8, BPair.unit, 1⟩
+
+private def bl2RowU : List (poly.PPoly × poly.PPoly) := [bl2Diag, bl2OffU]
+
+private def bl2SiteU : List (List (poly.PPoly × poly.PPoly)) :=
+  [[bl2Diag, bl2OffU], [bl2OffU, bl2Diag]]
+
+theorem pin307 : domRowRead (BPair.ofNat 1) 200 0 bl2RowU bl2BxU := by
+  decide +kernel
+
+theorem pin308 : domCertGo (BPair.ofNat 1) 200 0 bl2SiteU [bl2BxU, bl2BxU] := by
+  decide +kernel
+
+theorem pin309 : decimation.domAt (evalPfm bl2SiteU 12 1 200 2) := by
+  decide +kernel
+
+theorem pin310 : decimation.domAt (evalPfm bl2SiteU 12 1 200 2) :=
+  domCert_domAt (BPair.ofNat 1) 200 12 2 1 200 bl2SiteU [bl2BxU, bl2BxU]
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+
+theorem pin311 : elim.sqAt (evalPfm bl2SiteU 12 1 200 2) bl2SiteU.length := by
+  decide +kernel
+
+theorem pin312 : elim.matOneValue (evalPfm bl2SiteU 12 1 200 2)
+    (elim.transposeM (evalPfm bl2SiteU 12 1 200 2)) := by decide +kernel
+
+theorem pin313 : ∀ v : List BPair, v.length = bl2SiteU.length →
+    BPair.unit ≤ inertia.quadForm (evalPfm bl2SiteU 12 1 200 2) v :=
+  domCert_form (BPair.ofNat 1) 200 12 2 1 200 bl2SiteU [bl2BxU, bl2BxU]
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+
+-- the box membership load-bearing at the depth twenty-one: the
+-- composite point past the box top, the certificate walk standing,
+-- and the evaluated conclusion parted
+theorem pin314 : ¬ (([bl2BxU, bl2BxU].all (fun g =>
+      decide (g.lo ≤ (⟨BPair.ofNat (21 * 21) * BPair.ofPos 1, 200⟩
+        : CPair))
+      && decide ((⟨BPair.ofNat (21 * 21) * BPair.ofPos 1, 200⟩
+        : CPair) ≤ g.hi)
+      && Nat.ble (g.K + 1) (2 + 1))) = true) := by decide +kernel
+
+theorem pin315 : ¬ decimation.domAt (evalPfm bl2SiteU 21 1 200 2) := by
+  decide +kernel
+
+/-! The profile-matrix stage runs at the two-key center family
+`[[1, u], [u, s]]`, the constant one and the kernel's two generators
+at the corners: the collapse values at the depth three read the
+scale's own powers — the u-slab's `3`, the square scale's `9`, and
+the kernel's `u · u = ηs` at the square key `9` — with the constant
+one's product returning the u-slab unchanged.  Each of the six
+collapse bridges is decided raw at that family and beside its
+theorem route, the constant family's at the stated matrix
+`[[2, 1], [1, 3]]`. -/
+
+private def blU : poly.PPoly × poly.PPoly :=
+  (([] : poly.PPoly), [[BPair.ofNat 1]])
+private def blOne : poly.PPoly × poly.PPoly :=
+  ([[BPair.ofNat 1]], ([] : poly.PPoly))
+private def blS : poly.PPoly × poly.PPoly :=
+  ([([] : poly.Poly), [BPair.ofNat 1]], ([] : poly.PPoly))
+private def blA : List (List (poly.PPoly × poly.PPoly)) :=
+  [[blOne, blU], [blU, blS]]
+
+theorem pin316 : poly.oneValue (depthPoly blU 3) [BPair.unit, BPair.ofNat 3] := by
+  decide +kernel
+
+theorem pin317 : poly.oneValue (depthPoly blS 3) [BPair.unit, BPair.ofNat 9] := by
+  decide +kernel
+
+-- the kernel's u · u = ηs read
+theorem pin318 : poly.oneValue (depthPoly (profMul blU blU) 3)
+    [BPair.unit, BPair.unit, BPair.ofNat 9] := by decide +kernel
+
+theorem pin319 : poly.oneValue
+    (depthPoly (profMul ([poly.one], ([] : poly.PPoly)) blU) 3)
+    (depthPoly blU 3) := by decide +kernel
+
+theorem pin320 : split.pmatOneValue (pfmDepth 3 (pfmMul blA blA))
+    (split.pmatMul (pfmDepth 3 blA) (pfmDepth 3 blA)) := by decide +kernel
+
+theorem pin321 : split.pmatOneValue (pfmDepth 3 (pfmMul blA blA))
+    (split.pmatMul (pfmDepth 3 blA) (pfmDepth 3 blA)) :=
+  pfmDepth_mul blA blA 3
+
+theorem pin322 : split.pmatOneValue (pfmDepth 3 (pfmAdd blA blA))
+    (split.pmatAdd (pfmDepth 3 blA) (pfmDepth 3 blA)) := by decide +kernel
+
+theorem pin323 : split.pmatOneValue (pfmDepth 3 (pfmAdd blA blA))
+    (split.pmatAdd (pfmDepth 3 blA) (pfmDepth 3 blA)) :=
+  pfmDepth_add blA blA 3
+
+theorem pin324 : split.pmatOneValue (pfmDepth 3 (pfmSwap blA))
+    (split.pswapM (pfmDepth 3 blA)) := by decide +kernel
+
+theorem pin325 : split.pmatOneValue (pfmDepth 3 (pfmSwap blA))
+    (split.pswapM (pfmDepth 3 blA)) := pfmDepth_swap blA 3
+
+theorem pin326 : split.pmatOneValue (pfmDepth 3 (pfmShift blA))
+    (pfmDepth (3 + 1) blA) := by decide +kernel
+
+theorem pin327 : split.pmatOneValue (pfmDepth 3 (pfmShift blA))
+    (pfmDepth (3 + 1) blA) := pfmDepth_shift blA 3
+
+theorem pin328 : split.pmatOneValue (pfmDepth 3 (pfmTr blA))
+    (elim.transposeO poly.polyOps (pfmDepth 3 blA)) := by decide +kernel
+
+theorem pin329 : split.pmatOneValue (pfmDepth 3 (pfmTr blA))
+    (elim.transposeO poly.polyOps (pfmDepth 3 blA)) := pfmDepth_tr blA 3
+
+theorem pin330 : split.pmatOneValue
+    (pfmDepth 3 (ofMatProf [[BPair.ofNat 2, BPair.unit],
+      [BPair.unit, BPair.ofNat 3]]))
+    (([[BPair.ofNat 2, BPair.unit], [BPair.unit, BPair.ofNat 3]] :
+        elim.Mat).map (fun r => r.map (fun c => ([c] : poly.Poly)))) := by
+  decide +kernel
+
+theorem pin331 : split.pmatOneValue
+    (pfmDepth 3 (ofMatProf [[BPair.ofNat 2, BPair.unit],
+      [BPair.unit, BPair.ofNat 3]]))
+    (([[BPair.ofNat 2, BPair.unit], [BPair.unit, BPair.ofNat 3]] :
+        elim.Mat).map (fun r => r.map (fun c => ([c] : poly.Poly)))) :=
+  pfmDepth_ofMat [[BPair.ofNat 2, BPair.unit],
+    [BPair.unit, BPair.ofNat 3]] 3
+
+end cornerblock

@@ -1,4 +1,4 @@
-import MassGap.Chaininstances
+import MassGap.Genericlift
 import MassGap.Serstable
 /-!
 `lem:serdivisors` — the rank divisors of the chain's comparisons at
@@ -60,7 +60,7 @@ carries a gap's `r`-display `(m, cu, cd)` to its `ℓ`-polynomial at
 the series' fold, scaled by the tier's own `k`.
 
 Per sector the records are the family gaps and the
-*frontier-binding comparisons*, the balance pairs
+*binding comparisons*, the balance pairs
 `⟨gap_i : gap_j⟩` over the sector's family pairs (`places.pairsOf`
 at the family count), six per unit list and twenty-eight per
 charged sector; and per member the stencil cap `3 d_θ` at the
@@ -85,12 +85,12 @@ leading-term radius' least clearing point where that sits past the
 clearances — the two merged levels' comparisons with the eight
 constant-heavy divisors of the settled-point tables — and the
 raised windows' cleared ranks read the divisor's own leading side
-at `chaininstances.rootsCert`'s cleared arm.
+at `genericlift.rootsCert`'s cleared arm.
 
-Each record carries `lem:chaininstances`' two reads:
-`chaininstances.sideCert`, `lem:genericlift`'s side theorems'
+Each record holds `lem:genericlift`'s two reads:
+`genericlift.sideCert`, `lem:genericlift`'s side theorems'
 hypothesis pair at the record's settled point, and
-`chaininstances.rootsCert`, the window from the domain's floor
+`genericlift.rootsCert`, the window from the domain's floor
 where the divisor's evaluation ties the sum's unit exactly at the
 record's roots.  `recsReadB`, `recsReadC` and `recsReadD` join the
 record count, the sectors' gap identities, and both certificates
@@ -144,11 +144,6 @@ open ground
 
 /-! ## The rank polynomials -/
 
-/-- A linear rank polynomial `[⟨cu : cd⟩, slope]`. -/
-def linP (cu cd s : Nat) : poly.Poly :=
-  [⟨ground.posOfSucc cu, ground.posOfSucc cd⟩,
-   ⟨ground.posOfSucc s, ground.posOfSucc 0⟩]
-
 /-- The `B` adjoint clearing, `θ`'s own Casimir polynomial
 `C₂(θ) = 2(2ℓ − 1)` at the word `(1,1)`. -/
 def denB : poly.Poly := serstable.casPolyB [1, 1]
@@ -162,7 +157,7 @@ def denD : poly.Poly := serstable.casPolyD [1, 1]
 /-- A gap's `ℓ`-polynomial from its `r`-display `(m, cu, cd)` at
 the series' residue fold `r = rA·ℓ − rB`, scaled by `k`. -/
 def gapL (k m cu cd rA rB : Nat) : poly.Poly :=
-  linP (k * cu) (k * (cd + m * rB)) (k * (m * rA))
+  poly.linP (k * cu) (k * (cd + m * rB)) (k * (m * rA))
 
 /-! ## The charged tier's three folds -/
 
@@ -394,7 +389,7 @@ def unitRead (cas : List Nat → poly.Poly) (den : poly.Poly)
   poly.oneValue (cas F.word)
     (poly.add den (gapL k F.m F.cu F.cd rA rB))
 
-instance (cas : List Nat → poly.Poly) (den : poly.Poly)
+instance instSerdivisors1 (cas : List Nat → poly.Poly) (den : poly.Poly)
     (k rA rB : Nat) (F : SFam) :
     Decidable (unitRead cas den k rA rB F) :=
   inferInstanceAs (Decidable (poly.oneValue _ _))
@@ -406,7 +401,7 @@ def chargedRead (mk : List Nat → List Nat) (b : List Nat)
   poly.oneValue (bfold (mk F.word) b w s)
     (gapL k F.m F.cu F.cd rA rB)
 
-instance (mk : List Nat → List Nat) (b : List Nat) (w : Nat → Nat)
+instance instSerdivisors2 (mk : List Nat → List Nat) (b : List Nat) (w : Nat → Nat)
     (s k rA rB : Nat) (F : SFam) :
     Decidable (chargedRead mk b w s k rA rB F) :=
   inferInstanceAs (Decidable (poly.oneValue _ _))
@@ -422,42 +417,32 @@ fold. -/
 private def gd (F : SFam) (rA rB : Nat) : poly.Poly :=
   gapL 1 F.m F.cu F.cd rA rB
 
-/-- A sector's classification lookup at a record's places. -/
-private def rootsAt (T : List (Nat × Nat × Nat)) (i j : Nat) :
-    List Nat :=
-  (T.filter
-    (fun t => decide (t.1 = i) && decide (t.2.1 = j))).map
-    (fun t => t.2.2)
-
-/-- The upper of two counts. -/
-private def maxNat (x y : Nat) : Nat := if x ≤ y then y else x
-
 /-- A comparison's settled point: the upper of the compared
 clearances raised to the sector's settled-point table's entry, so
 a table entry can only lift the point. -/
 private def anAt (S : List (Nat × Nat × Nat)) (i j cl : Nat) : Nat :=
-  maxNat cl
+  Nat.max cl
     (ground.getAt 0
       ((S.filter
         (fun t => decide (t.1 = i) && decide (t.2.1 = j))).map
         (fun t => t.2.2)) 0)
 
 /-- A sector's records: the family gaps at their own clearances,
-then the frontier-binding comparisons over `places.pairsOf` at the
+then the binding comparisons over `places.pairsOf` at the
 family count. -/
 private def sectorRecs (L : List SFam) (T S : List (Nat × Nat × Nat))
-    (rA rB lo : Nat) : List chaininstances.Rec :=
+    (rA rB lo : Nat) : List genericlift.Rec :=
   (List.range L.length).map
       (fun i =>
         let F := famAt L i
-        ⟨gd F rA rB, lo, F.cl, anAt S i i F.cl, rootsAt T i i⟩)
+        ⟨gd F rA rB, lo, F.cl, anAt S i i F.cl, genericlift.rootsAt T i i⟩)
     ++ (places.pairsOf L.length).map
       (fun pr =>
         let Fi := famAt L pr.1
         let Fj := famAt L pr.2
         ⟨poly.add (gd Fi rA rB) (poly.neg (gd Fj rA rB)),
-         lo, maxNat Fi.cl Fj.cl,
-         anAt S pr.1 pr.2 (maxNat Fi.cl Fj.cl), rootsAt T pr.1 pr.2⟩)
+         lo, Nat.max Fi.cl Fj.cl,
+         anAt S pr.1 pr.2 (Nat.max Fi.cl Fj.cl), genericlift.rootsAt T pr.1 pr.2⟩)
 
 /-- The stencil cap at `B_ℓ`, the member's dimension fold
 `3·d_θ = 3ℓ(2ℓ + 1)` at `d_θ = [(r+2)(r+3):2]` over the residue
@@ -527,7 +512,7 @@ def settCO : List (Nat × Nat × Nat) :=
 /-- The 47 records at `B_ℓ`: the unit sector's four gaps and six
 comparisons, the spinor sector's eight and twenty-eight, and the
 stencil cap settled from the domain floor two. -/
-def recsB : List chaininstances.Rec :=
+def recsB : List genericlift.Rec :=
   sectorRecs unitB [] [] 2 2 2
     ++ sectorRecs spinFams classBS settBS 2 2 2
     ++ [⟨capB, 2, 2, 2, []⟩]
@@ -535,14 +520,14 @@ def recsB : List chaininstances.Rec :=
 /-- The 47 records at `C_ℓ`, the classification vacant: the
 `ω₁` list's one tie sits at the rank two, below the domain floor
 three. -/
-def recsC : List chaininstances.Rec :=
+def recsC : List genericlift.Rec :=
   sectorRecs unitC [] settCU 1 0 3
     ++ sectorRecs omegaC [] settCO 1 0 3
     ++ [⟨capC, 3, 3, 3, []⟩]
 
 /-- The 83 records at `D_ℓ`: the unit sector, the vector sector,
 the spinor sector's one displayed list, and the stencil cap. -/
-def recsD : List chaininstances.Rec :=
+def recsD : List genericlift.Rec :=
   sectorRecs unitD classDU [] 2 3 4
     ++ sectorRecs vecD classDV settDV 2 3 4
     ++ sectorRecs spinFams classDS settDS 2 3 4
@@ -559,10 +544,10 @@ def recsReadB : Prop :=
       decide (unitRead serstable.casPolyB denB 1 2 2 F))) = true
   ∧ (spinFams.all (fun F =>
       decide (chargedRead vS basOnes wB 4 4 2 2 F))) = true
-  ∧ (recsB.all (fun R => decide (chaininstances.sideCert R))) = true
-  ∧ (recsB.all (fun R => decide (chaininstances.rootsCert R))) = true
+  ∧ (recsB.all (fun R => decide (genericlift.sideCert R))) = true
+  ∧ (recsB.all (fun R => decide (genericlift.rootsCert R))) = true
 
-instance : Decidable recsReadB :=
+instance instSerdivisors3 : Decidable recsReadB :=
   inferInstanceAs (Decidable (_ ∧ _))
 
 /-- `C_ℓ`'s whole read, the unit tier's identity at the doubled
@@ -573,10 +558,10 @@ def recsReadC : Prop :=
       decide (unitRead serstable.casPolyC denC 2 1 0 F))) = true
   ∧ (omegaC.all (fun F =>
       decide (chargedRead vC basC wC 2 2 1 0 F))) = true
-  ∧ (recsC.all (fun R => decide (chaininstances.sideCert R))) = true
-  ∧ (recsC.all (fun R => decide (chaininstances.rootsCert R))) = true
+  ∧ (recsC.all (fun R => decide (genericlift.sideCert R))) = true
+  ∧ (recsC.all (fun R => decide (genericlift.rootsCert R))) = true
 
-instance : Decidable recsReadC :=
+instance instSerdivisors4 : Decidable recsReadC :=
   inferInstanceAs (Decidable (_ ∧ _))
 
 /-- `D_ℓ`'s whole read, the vector and spinor sectors both. -/
@@ -588,10 +573,10 @@ def recsReadD : Prop :=
       decide (chargedRead vV basV wD 4 4 2 3 F))) = true
   ∧ (spinFams.all (fun F =>
       decide (chargedRead vS basOnes wD 4 4 2 3 F))) = true
-  ∧ (recsD.all (fun R => decide (chaininstances.sideCert R))) = true
-  ∧ (recsD.all (fun R => decide (chaininstances.rootsCert R))) = true
+  ∧ (recsD.all (fun R => decide (genericlift.sideCert R))) = true
+  ∧ (recsD.all (fun R => decide (genericlift.rootsCert R))) = true
 
-instance : Decidable recsReadD :=
+instance instSerdivisors5 : Decidable recsReadD :=
   inferInstanceAs (Decidable (_ ∧ _))
 
 /-! ## The `B` edge evaluations: the displayed families at the
@@ -1710,28 +1695,28 @@ private theorem mulCounts (c p q : Nat) :
 
 /-- The `B` Cartan row's diagonal entry as a count pair. -/
 private theorem cartDiag (l i : Nat) :
-    (serstable.cartB l i i).oneValue (BPair.ofCounts 2 0) := by
-  rw [serstable.cartBd l i]
+    (sertables.cartB l i i).oneValue (BPair.ofCounts 2 0) := by
+  rw [sertables.cartBd l i]
   exact (by decide +kernel)
 
 /-- The `B` Cartan row's upper neighbour away from the short
 edge. -/
 private theorem cartUp1 (l i : Nat) (h : ¬ i + 2 = l) :
-    (serstable.cartB l i (i + 1)).oneValue (BPair.ofCounts 0 1) := by
-  rw [serstable.cartBup1 l i h]
+    (sertables.cartB l i (i + 1)).oneValue (BPair.ofCounts 0 1) := by
+  rw [sertables.cartBup1 l i h]
   exact (by decide +kernel)
 
 /-- The `B` Cartan row's lower neighbour. -/
 private theorem cartDn (l i : Nat) :
-    (serstable.cartB l (i + 1) i).oneValue (BPair.ofCounts 0 1) := by
-  rw [serstable.cartBdn l i]
+    (sertables.cartB l (i + 1) i).oneValue (BPair.ofCounts 0 1) := by
+  rw [sertables.cartBdn l i]
   exact (by decide +kernel)
 
 /-- The `B` Cartan row is vacant off the letter's three keys. -/
 private theorem cartOff (l i j : Nat) (h1 : ¬ j = i) (h2 : ¬ j = i + 1)
     (h3 : ¬ j + 1 = i) :
-    (serstable.cartB l i j).oneValue (BPair.ofCounts 0 0) := by
-  rw [serstable.cartBoff l i j h1 h2 h3]
+    (sertables.cartB l i j).oneValue (BPair.ofCounts 0 0) := by
+  rw [sertables.cartBoff l i j h1 h2 h3]
   exact (by decide +kernel)
 
 /-- A letter's raised content at any table: the moved content
@@ -1788,20 +1773,20 @@ private theorem raisedCountG (t : gentable.Table) (u v : Nat → Nat)
 counts raised by the scaled Cartan entry's. -/
 private theorem raisedCount (l : Nat) (u v : Nat → Nat) (c i y : Nat)
     (hi : i < l) (hy : y < l) (p q : Nat)
-    (hcart : (serstable.cartB l i y).oneValue (BPair.ofCounts p q)) :
+    (hcart : (sertables.cartB l i y).oneValue (BPair.ofCounts p q)) :
     (ground.getAt BPair.unit
       (raisedG (sertables.tableB l) (nuOf l (fun k => BPair.ofCounts (u k) (v k))) c i) y).oneValue
       (BPair.ofCounts (u y + c * p) (v y + c * q)) := by
   refine raisedCountG (sertables.tableB l) u v c i y hy ?_ p q ?_
-  · rw [serstable.cartB_eq l]
+  · rw [sertables.cartB_eq l]
     exact ground.matOf_rowLength [] l l
-      (fun p q => serstable.cartB l p q) i hi
+      (fun p q => sertables.cartB l p q) i hi
   · have hcent : ground.getAt BPair.unit
         (ground.getAt [] (sertables.tableB l).cartan i) y
-        = serstable.cartB l i y := by
-      rw [serstable.cartB_eq l]
+        = sertables.cartB l i y := by
+      rw [sertables.cartB_eq l]
       exact ground.matOf_entry [] BPair.unit l l
-        (fun p q => serstable.cartB l p q) i y hi hy
+        (fun p q => sertables.cartB l p q) i y hi hy
     rw [hcent]
     exact hcart
 
@@ -3494,8 +3479,8 @@ private theorem strayTailPos (l q c : Nat) (hq : q + 2 = l)
       (elim.vecScale (BPair.ofNat c)
         (ground.getAt [] (sertables.tableB l).cartan (q + 1)))).length = l := by
     refine elim.length_vecAdd _ _ l (nuOf_length l _) ?_
-    rw [elim.length_vecScale, serstable.cartB_eq l]
-    exact ground.matOf_rowLength [] l l (fun i j => serstable.cartB l i j)
+    rw [elim.length_vecScale, sertables.cartB_eq l]
+    exact ground.matOf_rowLength [] l l (fun i j => sertables.cartB l i j)
       (q + 1) hq1l
   refine thetaOnePnorm l F _ hzl hmem (fun k hk => ?_) (q + 1) hq1l ?_
   · match keySplit q k (by rw [hq]; exact hk) with
@@ -3550,8 +3535,8 @@ private theorem strayTailNeg (l q c : Nat) (hq : q + 2 = l)
       (elim.vecScale (BPair.ofNat c)
         (ground.getAt [] (sertables.tableB l).cartan (q + 1)))).length = l := by
     refine elim.length_vecAdd _ _ l (nuOf_length l _) ?_
-    rw [elim.length_vecScale, serstable.cartB_eq l]
-    exact ground.matOf_rowLength [] l l (fun i j => serstable.cartB l i j)
+    rw [elim.length_vecScale, sertables.cartB_eq l]
+    exact ground.matOf_rowLength [] l l (fun i j => sertables.cartB l i j)
       (q + 1) hq1l
   refine thetaOnePnormNeg l F _ hzl hmem (fun k hk => ?_) (q + 1) hq1l ?_
   · match keySplit q k (by rw [hq]; exact hk) with
@@ -4668,46 +4653,46 @@ private theorem termVanishMagC (l k : Nat) (hk : k < l) (x : List BPair)
 content's counts raised by the scaled Cartan entry's. -/
 private theorem raisedCountC (l : Nat) (u v : Nat → Nat) (c i y : Nat)
     (hi : i < l) (hy : y < l) (p q : Nat)
-    (hcart : (serstable.cartC l i y).oneValue (BPair.ofCounts p q)) :
+    (hcart : (sertables.cartC l i y).oneValue (BPair.ofCounts p q)) :
     (ground.getAt BPair.unit
       (raisedG (sertables.tableC l) (nuOf l (fun k => BPair.ofCounts (u k) (v k))) c i) y).oneValue
       (BPair.ofCounts (u y + c * p) (v y + c * q)) := by
   refine raisedCountG (sertables.tableC l) u v c i y hy ?_ p q ?_
-  · rw [serstable.cartC_eq l]
+  · rw [sertables.cartC_eq l]
     exact ground.matOf_rowLength [] l l
-      (fun p q => serstable.cartC l p q) i hi
+      (fun p q => sertables.cartC l p q) i hi
   · have hcent : ground.getAt BPair.unit
         (ground.getAt [] (sertables.tableC l).cartan i) y
-        = serstable.cartC l i y := by
-      rw [serstable.cartC_eq l]
+        = sertables.cartC l i y := by
+      rw [sertables.cartC_eq l]
       exact ground.matOf_entry [] BPair.unit l l
-        (fun p q => serstable.cartC l p q) i y hi hy
+        (fun p q => sertables.cartC l p q) i y hi hy
     rw [hcent]
     exact hcart
 
 /-- The `C` Cartan row's diagonal entry as a count pair. -/
 private theorem cartDiagC (l i : Nat) :
-    (serstable.cartC l i i).oneValue (BPair.ofCounts 2 0) := by
-  rw [serstable.cartCd l i]
+    (sertables.cartC l i i).oneValue (BPair.ofCounts 2 0) := by
+  rw [sertables.cartCd l i]
   exact (by decide +kernel)
 
 /-- The `C` Cartan row's upper neighbour. -/
 private theorem cartUpC (l i : Nat) :
-    (serstable.cartC l i (i + 1)).oneValue (BPair.ofCounts 0 1) := by
-  rw [serstable.cartCup l i]
+    (sertables.cartC l i (i + 1)).oneValue (BPair.ofCounts 0 1) := by
+  rw [sertables.cartCup l i]
   exact (by decide +kernel)
 
 /-- The `C` Cartan row's lower neighbour off the long last edge. -/
 private theorem cartDn1C (l i : Nat) (h : ¬ i + 2 = l) :
-    (serstable.cartC l (i + 1) i).oneValue (BPair.ofCounts 0 1) := by
-  rw [serstable.cartCdn1 l i h]
+    (sertables.cartC l (i + 1) i).oneValue (BPair.ofCounts 0 1) := by
+  rw [sertables.cartCdn1 l i h]
   exact (by decide +kernel)
 
 /-- The `C` Cartan row is vacant off the letter's three keys. -/
 private theorem cartOffC (l i j : Nat) (h1 : ¬ j = i) (h2 : ¬ j + 1 = i)
     (h3 : ¬ j = i + 1) :
-    (serstable.cartC l i j).oneValue (BPair.ofCounts 0 0) := by
-  rw [serstable.cartCoff l i j h1 h2 h3]
+    (sertables.cartC l i j).oneValue (BPair.ofCounts 0 0) := by
+  rw [sertables.cartCoff l i j h1 h2 h3]
   exact (by decide +kernel)
 
 /-! ### The `C` sources' shifted keys -/
@@ -5331,25 +5316,25 @@ private theorem termTailSubC (l m k0 p0 q0 : Nat) (hm : m + 5 = l)
 the moved content's counts against the scaled Cartan entry's. -/
 private theorem rawAtC (l : Nat) (u v : Nat → Nat) (c i y : Nat)
     (hi : i < l) (hy : y < l) (p q : Nat)
-    (hcart : (serstable.cartC l i y).oneValue (BPair.ofCounts p q)) :
+    (hcart : (sertables.cartC l i y).oneValue (BPair.ofCounts p q)) :
     (ground.getAt BPair.unit
       (elim.vecAdd (nuOf l (fun k => BPair.ofCounts (u k) (v k)))
         (elim.vecScale (BPair.ofNat c)
           (ground.getAt [] (sertables.tableC l).cartan i))) y).oneValue
       (BPair.ofCounts (u y + c * p) (v y + c * q)) := by
   have hcl : (ground.getAt [] (sertables.tableC l).cartan i).length = l := by
-    rw [serstable.cartC_eq l]
-    exact ground.matOf_rowLength [] l l (fun p q => serstable.cartC l p q) i hi
+    rw [sertables.cartC_eq l]
+    exact ground.matOf_rowLength [] l l (fun p q => sertables.cartC l p q) i hi
   have hsl : (elim.vecScale (BPair.ofNat c)
       (ground.getAt [] (sertables.tableC l).cartan i)).length = l := by
     rw [elim.length_vecScale]
     exact hcl
   have hcent : ground.getAt BPair.unit
       (ground.getAt [] (sertables.tableC l).cartan i) y
-      = serstable.cartC l i y := by
-    rw [serstable.cartC_eq l]
+      = sertables.cartC l i y := by
+    rw [sertables.cartC_eq l]
     exact ground.matOf_entry [] BPair.unit l l
-      (fun p q => serstable.cartC l p q) i y hi hy
+      (fun p q => sertables.cartC l p q) i y hi hy
   rw [elim.getAt_vecAdd _ _ y (by rw [nuOf_length]; exact hy)
       (by rw [hsl]; exact hy),
     elim.getAt_vecScale _ _ y (by rw [hcl]; exact hy), hcent,
@@ -5380,9 +5365,9 @@ private theorem hitLongOne (k : Nat) :
         (ground.getAt [] (sertables.tableC (k + 6)).cartan 1))).length
       = k + 6 := by
     refine elim.length_vecAdd _ _ (k + 6) (nuOf_length _ _) ?_
-    rw [elim.length_vecScale, serstable.cartC_eq (k + 6)]
+    rw [elim.length_vecScale, sertables.cartC_eq (k + 6)]
     exact ground.matOf_rowLength [] (k + 6) (k + 6)
-      (fun p q => serstable.cartC (k + 6) p q) 1 h1l
+      (fun p q => sertables.cartC (k + 6) p q) 1 h1l
   refine thetaOneNormC (k + 6) (serstable.fLong (k + 5) 1) _ hlen
     (memLongC (k + 5) 1 h1l) (fun y hy => ?_) 1 h1l
     (fun hc => absurd (BPair.ofCounts_unit.mp (BPair.oneValue_trans
@@ -5478,9 +5463,9 @@ private theorem hitLongTwo (k : Nat) :
         (ground.getAt [] (sertables.tableC (k + 7)).cartan 2))).length
       = k + 7 := by
     refine elim.length_vecAdd _ _ (k + 7) (nuOf_length _ _) ?_
-    rw [elim.length_vecScale, serstable.cartC_eq (k + 7)]
+    rw [elim.length_vecScale, sertables.cartC_eq (k + 7)]
     exact ground.matOf_rowLength [] (k + 7) (k + 7)
-      (fun p q => serstable.cartC (k + 7) p q) 2 h2l
+      (fun p q => sertables.cartC (k + 7) p q) 2 h2l
   refine thetaOneNormC (k + 7) (serstable.fLong (k + 6) 2) _ hlen
     (memLongC (k + 6) 2 h2l) (fun y hy => ?_) 2 h2l
     (fun hc => absurd (BPair.ofCounts_unit.mp (BPair.oneValue_trans
@@ -7811,47 +7796,47 @@ private theorem pickOff3 (l : Nat) (x : List BPair) (G : Nat → BPair)
 content's counts raised by the scaled Cartan entry's. -/
 private theorem raisedCountD (l : Nat) (u v : Nat → Nat) (c i y : Nat)
     (hi : i < l) (hy : y < l) (p q : Nat)
-    (hcart : (serstable.cartD l i y).oneValue (BPair.ofCounts p q)) :
+    (hcart : (sertables.cartD l i y).oneValue (BPair.ofCounts p q)) :
     (ground.getAt BPair.unit
       (raisedG (sertables.tableD l)
         (nuOf l (fun k => BPair.ofCounts (u k) (v k))) c i) y).oneValue
       (BPair.ofCounts (u y + c * p) (v y + c * q)) := by
   refine raisedCountG (sertables.tableD l) u v c i y hy ?_ p q ?_
-  · rw [serstable.cartD_eq l]
+  · rw [sertables.cartD_eq l]
     exact ground.matOf_rowLength [] l l
-      (fun p q => serstable.cartD l p q) i hi
+      (fun p q => sertables.cartD l p q) i hi
   · have hcent : ground.getAt BPair.unit
         (ground.getAt [] (sertables.tableD l).cartan i) y
-        = serstable.cartD l i y := by
-      rw [serstable.cartD_eq l]
+        = sertables.cartD l i y := by
+      rw [sertables.cartD_eq l]
       exact ground.matOf_entry [] BPair.unit l l
-        (fun p q => serstable.cartD l p q) i y hi hy
+        (fun p q => sertables.cartD l p q) i y hi hy
     rw [hcent]
     exact hcart
 
 /-- The `D` Cartan row's diagonal entry as a count pair. -/
 private theorem cartDiagD (l i : Nat) :
-    (serstable.cartD l i i).oneValue (BPair.ofCounts 2 0) := by
-  rw [serstable.cartDd l i]
+    (sertables.cartD l i i).oneValue (BPair.ofCounts 2 0) := by
+  rw [sertables.cartDd l i]
   exact (by decide +kernel)
 
 /-- The `D` Cartan row's upper neighbour along the chain. -/
 private theorem cartUpD (l i : Nat) (h2 : ¬ i + 1 = l) (h3 : ¬ i + 2 = l) :
-    (serstable.cartD l i (i + 1)).oneValue (BPair.ofCounts 0 1) := by
-  rw [serstable.cartDup l i h2 h3]
+    (sertables.cartD l i (i + 1)).oneValue (BPair.ofCounts 0 1) := by
+  rw [sertables.cartDup l i h2 h3]
   exact (by decide +kernel)
 
 /-- The `D` Cartan row's lower neighbour along the chain. -/
 private theorem cartDnD (l i : Nat) (h2 : ¬ i + 2 = l) (h3 : ¬ i + 1 = l) :
-    (serstable.cartD l (i + 1) i).oneValue (BPair.ofCounts 0 1) := by
-  rw [serstable.cartDdn l i h2 h3]
+    (sertables.cartD l (i + 1) i).oneValue (BPair.ofCounts 0 1) := by
+  rw [sertables.cartDdn l i h2 h3]
   exact (by decide +kernel)
 
 /-- The `D` Cartan row at the fork key against the last key. -/
 private theorem cartForkTD (l i j : Nat) (h1 : ¬ j = i) (h2 : ¬ i + 1 = l)
     (h3 : j + 1 = l) (h4 : i + 3 = l) :
-    (serstable.cartD l i j).oneValue (BPair.ofCounts 0 1) := by
-  rw [serstable.cartDforkT l i j h1 h2 h3 h4]
+    (sertables.cartD l i j).oneValue (BPair.ofCounts 0 1) := by
+  rw [sertables.cartDforkT l i j h1 h2 h3 h4]
   exact (by decide +kernel)
 
 /-- The `D` Cartan row is vacant off the letter's joined keys. -/
@@ -7860,8 +7845,8 @@ private theorem cartOffD (l i j : Nat) (h1 : ¬ j = i)
     (h3 : ¬ i + 1 = l → j + 1 = l → ¬ i + 3 = l)
     (h4 : ¬ i + 1 = l → ¬ j + 1 = l → ¬ j + 1 = i)
     (h5 : ¬ i + 1 = l → ¬ j + 1 = l → ¬ j = i + 1) :
-    (serstable.cartD l i j).oneValue (BPair.ofCounts 0 0) := by
-  rw [serstable.cartDoff l i j h1 h2 h3 h4 h5]
+    (sertables.cartD l i j).oneValue (BPair.ofCounts 0 0) := by
+  rw [sertables.cartDoff l i j h1 h2 h3 h4 h5]
   exact (by decide +kernel)
 
 /-! ### The `D` families' caps and window steps -/
@@ -8267,7 +8252,7 @@ private theorem dtLow (e a k j : Nat) (hk : k < e)
 keys. -/
 private theorem cartTailOff (k i j : Nat) (h4i : k + 4 ≤ i)
     (hj3 : j + 3 ≤ k + 4) :
-    (serstable.cartD (k + 7) i j).oneValue (BPair.ofCounts 0 0) := by
+    (sertables.cartD (k + 7) i j).oneValue (BPair.ofCounts 0 0) := by
   have hj14 : j + 1 < k + 4 :=
     Nat.lt_of_lt_of_le (Nat.lt_of_lt_of_le (Nat.lt_succ_self (j + 1))
       (Nat.le_succ (j + 2))) hj3

@@ -51,89 +51,91 @@ vacant while the fast row reads its junk members, and at the
 width one the definitional row is occupied at the vacuum while
 the fast row is vacant.
 -/
+
+namespace rankstable
 set_option maxHeartbeats 4000000
 
-open ground places rankstable
+open ground places
 
 /-! The carrier ties: the member against the committed shapes. -/
 
-example : member [1] [1] 6 = adjchar.theta 6 := by decide +kernel
+theorem pin1 : member [1] [1] 6 = adjchar.theta 6 := by decide +kernel
 
-example : member [2] [2] 6 = channels.rowTwoTheta 6 := by decide +kernel
+theorem pin2 : member [2] [2] 6 = channels.rowTwoTheta 6 := by decide +kernel
 
-example : ground.bumpAt 5 (member [1] [1] 6) = channels.rowTheta 6 := by
+theorem pin3 : ground.bumpAt 5 (member [1] [1] 6) = channels.rowTheta 6 := by
   decide +kernel
 
-example : member [] [] 5 = List.replicate 5 0 := by decide +kernel
+theorem pin4 : member [] [] 5 = List.replicate 5 0 := by decide +kernel
 
 /-! The bottom block's prefix sums and the successor-weighted fold
 at a padded word, each at its own public spelling. -/
 
-example : (places.rowList ([4, 0, 2].reverse ++ [0])).tail = [4, 4, 0] := by
+theorem pin5 : (places.rowList ([4, 0, 2].reverse ++ [0])).tail = [4, 4, 0] := by
   decide +kernel
 
-example : ground.sumNat (places.rowList [4, 0, 2]) = 10 := by decide +kernel
+theorem pin6 : ground.sumNat (places.rowList [4, 0, 2]) = 10 := by decide +kernel
 
 /-! The evaluation at the adjoint's family, the decided value
 beside the theorem's route. -/
 
-example : (poly.eval (casPoly [1] [1]) (ground.BPair.ofNat 6)).oneValue
+theorem pin7 : (poly.eval (casPoly [1] [1]) (ground.BPair.ofNat 6)).oneValue
     (ground.BPair.ofNat 72) := by decide +kernel
 
-example : (poly.eval (casPoly [1] [1]) (ground.BPair.ofNat 6)).oneValue
+theorem pin8 : (poly.eval (casPoly [1] [1]) (ground.BPair.ofNat 6)).oneValue
     (ground.BPair.ofNat (c2hat.dfQ (member [1] [1] 6))) :=
   casPoly_eval [1] [1] 6 (by decide +kernel)
 
-example : c2hat.dfQ (member [1] [1] 6) = 72 := by decide +kernel
+theorem pin9 : c2hat.dfQ (member [1] [1] 6) = 72 := by decide +kernel
 
 /-! A padded family and an asymmetric one. -/
 
-example : (poly.eval (casPoly [0, 1] [0, 1]) (ground.BPair.ofNat 9)).oneValue
+theorem pin10 : (poly.eval (casPoly [0, 1] [0, 1]) (ground.BPair.ofNat 9)).oneValue
     (ground.BPair.ofNat (c2hat.dfQ (member [0, 1] [0, 1] 9))) := by decide +kernel
 
-example : (poly.eval (casPoly [2, 1, 1] [1, 2])
+theorem pin11 : (poly.eval (casPoly [2, 1, 1] [1, 2])
     (ground.BPair.ofNat 11)).oneValue
     (ground.BPair.ofNat (c2hat.dfQ (member [2, 1, 1] [1, 2] 11))) :=
   casPoly_eval [2, 1, 1] [1, 2] 11 (by decide +kernel)
 
-example : c2hat.dfQ (member [2, 1, 1] [1, 2] 11) = 1558 := by decide +kernel
+theorem pin12 : c2hat.dfQ (member [2, 1, 1] [1, 2] 11) = 1558 := by decide +kernel
 
 /-! The floor is load-bearing: below it the reads part. -/
 
-example : ¬ (poly.eval (casPoly [1] [1]) (ground.BPair.ofNat 2)).oneValue
+theorem pin13 : ¬ (poly.eval (casPoly [1] [1]) (ground.BPair.ofNat 2)).oneValue
     (ground.BPair.ofNat (c2hat.dfQ (member [1] [1] 2))) := by decide +kernel
 
 /-! The vacuum's whole-domain read at its own floor. -/
 
-example : (poly.eval (casPoly [] []) (ground.BPair.ofNat 1)).oneValue
+theorem pin14 : (poly.eval (casPoly [] []) (ground.BPair.ofNat 1)).oneValue
     (ground.BPair.ofNat (c2hat.dfQ (member [] [] 1))) :=
   casPoly_eval [] [] 1 (by decide +kernel)
 
-example : c2hat.dfQ (member [] [] 1) = 0 := by decide +kernel
+theorem pin15 : c2hat.dfQ (member [] [] 1) = 0 := by decide +kernel
 
 /-! The dimension pair at the adjoint's family and at the padded
 one, each decided value beside the theorem's own route. -/
 
-example : weyldim.dimOf (member [1] [1] 6) = 35 := by decide +kernel
+theorem pin16 : weyldim.dimOf (member [1] [1] 6) = 35 := by decide +kernel
 
-example : (poly.eval (dimNum [1] [1]) (ground.BPair.ofNat 6)).oneValue
+theorem pin17 : (poly.eval (dimNum [1] [1]) (ground.BPair.ofNat 6)).oneValue
     (ground.BPair.ofNat 35
       * poly.eval (dimDen [1] [1]) (ground.BPair.ofNat 6)) := by decide +kernel
 
-example : (poly.eval (dimNum [1] [1]) (ground.BPair.ofNat 6)).oneValue
+theorem pin18 : (poly.eval (dimNum [1] [1]) (ground.BPair.ofNat 6)).oneValue
     (ground.BPair.ofNat (weyldim.dimOf (member [1] [1] 6))
       * poly.eval (dimDen [1] [1]) (ground.BPair.ofNat 6)) :=
   dimPair_eval [1] [1] 6 (by decide +kernel)
 
-example : weyldim.dimOf (member [0, 1] [0, 1] 7) = 392 := by decide +kernel
+theorem pin19 : weyldim.dimOf (member [0, 1] [0, 1] 7) = 392 := by decide +kernel
 
-example : (poly.eval (dimNum [0, 1] [0, 1])
+theorem pin20 : (poly.eval (dimNum [0, 1] [0, 1])
     (ground.BPair.ofNat 7)).oneValue
     (ground.BPair.ofNat 392
       * poly.eval (dimDen [0, 1] [0, 1]) (ground.BPair.ofNat 7)) := by
   decide +kernel
 
-example : (poly.eval (dimNum [0, 1] [0, 1])
+theorem pin21 : (poly.eval (dimNum [0, 1] [0, 1])
     (ground.BPair.ofNat 7)).oneValue
     (ground.BPair.ofNat (weyldim.dimOf (member [0, 1] [0, 1] 7))
       * poly.eval (dimDen [0, 1] [0, 1]) (ground.BPair.ofNat 7)) :=
@@ -141,7 +143,7 @@ example : (poly.eval (dimNum [0, 1] [0, 1])
 
 /-! An asymmetric family's route. -/
 
-example : (poly.eval (dimNum [2, 1, 1] [1, 2])
+theorem pin22 : (poly.eval (dimNum [2, 1, 1] [1, 2])
     (ground.BPair.ofNat 9)).oneValue
     (ground.BPair.ofNat (weyldim.dimOf (member [2, 1, 1] [1, 2] 9))
       * poly.eval (dimDen [2, 1, 1] [1, 2]) (ground.BPair.ofNat 9)) :=
@@ -149,13 +151,13 @@ example : (poly.eval (dimNum [2, 1, 1] [1, 2])
 
 /-! The floor is load-bearing: below it the pair parts. -/
 
-example : ¬ (poly.eval (dimNum [1] [1]) (ground.BPair.ofNat 2)).oneValue
+theorem pin23 : ¬ (poly.eval (dimNum [1] [1]) (ground.BPair.ofNat 2)).oneValue
     (ground.BPair.ofNat (weyldim.dimOf (member [1] [1] 2))
       * poly.eval (dimDen [1] [1]) (ground.BPair.ofNat 2)) := by decide +kernel
 
 /-! The vacuum's pair at its own floor. -/
 
-example : (poly.eval (dimNum [] []) (ground.BPair.ofNat 1)).oneValue
+theorem pin24 : (poly.eval (dimNum [] []) (ground.BPair.ofNat 1)).oneValue
     (ground.BPair.ofNat (weyldim.dimOf (member [] [] 1))
       * poly.eval (dimDen [] []) (ground.BPair.ofNat 1)) :=
   dimPair_eval [] [] 1 (by decide +kernel)
@@ -164,12 +166,12 @@ example : (poly.eval (dimNum [] []) (ground.BPair.ofNat 1)).oneValue
 member with the display's unit-gap count beside them, the join
 through the general theorem, and the width binder's refusal. -/
 
-example : steinberg.sumsWith (adjchar.multRead 6) 6 (member [1] [1] 6)
+theorem pin25 : steinberg.sumsWith (adjchar.multRead 6) 6 (member [1] [1] 6)
     (ground.bumpAt (6 - 1) (member [1] [1] 6)) = (5, 3) := by decide +kernel
 
-example : clearGaps (places.display (member [1] [1] 6)) = 3 := by decide +kernel
+theorem pin26 : clearGaps (places.display (member [1] [1] 6)) = 3 := by decide +kernel
 
-example : (steinberg.sumsWith (adjchar.multRead 6) 6 (member [1] [1] 6)
+theorem pin27 : (steinberg.sumsWith (adjchar.multRead 6) 6 (member [1] [1] 6)
       (ground.bumpAt (6 - 1) (member [1] [1] 6))).1
     + clearGaps (places.display (member [1] [1] 6))
   = (steinberg.sumsWith (adjchar.multRead 6) 6 (member [1] [1] 6)
@@ -180,7 +182,7 @@ example : (steinberg.sumsWith (adjchar.multRead 6) 6 (member [1] [1] 6)
 /-! The width is load-bearing: at a shape off the stated width both
 sums read the fold's unit while the join demands the residue. -/
 
-example : ¬ ((steinberg.sumsWith (adjchar.multRead 3) 3 [1, 0]
+theorem pin28 : ¬ ((steinberg.sumsWith (adjchar.multRead 3) 3 [1, 0]
       (ground.bumpAt (3 - 1) [1, 0])).1 + clearGaps (places.display [1, 0])
     = (steinberg.sumsWith (adjchar.multRead 3) 3 [1, 0]
       (ground.bumpAt (3 - 1) [1, 0])).2 + 2) := by decide +kernel
@@ -189,18 +191,18 @@ example : ¬ ((steinberg.sumsWith (adjchar.multRead 3) 3 [1, 0]
 one and at the floor, each route beside its own decided key
 count. -/
 
-example : suppCount [1] + suppCount [1] = 2 := by decide +kernel
+theorem pin29 : suppCount [1] + suppCount [1] = 2 := by decide +kernel
 
-example : (steinberg.sumsWith (adjchar.multRead 6) 6 (member [1] [1] 6)
+theorem pin30 : (steinberg.sumsWith (adjchar.multRead 6) 6 (member [1] [1] 6)
       (ground.bumpAt (6 - 1) (member [1] [1] 6))).1
     = (steinberg.sumsWith (adjchar.multRead 6) 6 (member [1] [1] 6)
         (ground.bumpAt (6 - 1) (member [1] [1] 6))).2
       + (suppCount [1] + suppCount [1]) :=
   rowDiag [1] [1] 6 (by decide +kernel)
 
-example : suppCount [2, 1, 1] + suppCount [1, 2] = 5 := by decide +kernel
+theorem pin31 : suppCount [2, 1, 1] + suppCount [1, 2] = 5 := by decide +kernel
 
-example : (steinberg.sumsWith (adjchar.multRead 9) 9
+theorem pin32 : (steinberg.sumsWith (adjchar.multRead 9) 9
       (member [2, 1, 1] [1, 2] 9)
       (ground.bumpAt (9 - 1) (member [2, 1, 1] [1, 2] 9))).1
     = (steinberg.sumsWith (adjchar.multRead 9) 9
@@ -209,10 +211,10 @@ example : (steinberg.sumsWith (adjchar.multRead 9) 9
       + (suppCount [2, 1, 1] + suppCount [1, 2]) :=
   rowDiag [2, 1, 1] [1, 2] 9 (by decide +kernel)
 
-example : steinberg.sumsWith (adjchar.multRead 3) 3 (member [1] [1] 3)
+theorem pin33 : steinberg.sumsWith (adjchar.multRead 3) 3 (member [1] [1] 3)
     (ground.bumpAt (3 - 1) (member [1] [1] 3)) = (2, 0) := by decide +kernel
 
-example : (steinberg.sumsWith (adjchar.multRead 3) 3 (member [1] [1] 3)
+theorem pin34 : (steinberg.sumsWith (adjchar.multRead 3) 3 (member [1] [1] 3)
       (ground.bumpAt (3 - 1) (member [1] [1] 3))).1
     = (steinberg.sumsWith (adjchar.multRead 3) 3 (member [1] [1] 3)
         (ground.bumpAt (3 - 1) (member [1] [1] 3))).2
@@ -222,10 +224,10 @@ example : (steinberg.sumsWith (adjchar.multRead 3) 3 (member [1] [1] 3)
 /-! The vacuum's own read: the two sums agree and the diagonal is
 vacant, the member's defect. -/
 
-example : steinberg.sumsWith (adjchar.multRead 5) 5 (member [] [] 5)
+theorem pin35 : steinberg.sumsWith (adjchar.multRead 5) 5 (member [] [] 5)
     (ground.bumpAt (5 - 1) (member [] [] 5)) = (4, 4) := by decide +kernel
 
-example : (steinberg.sumsWith (adjchar.multRead 5) 5 (member [] [] 5)
+theorem pin36 : (steinberg.sumsWith (adjchar.multRead 5) 5 (member [] [] 5)
       (ground.bumpAt (5 - 1) (member [] [] 5))).1
     = (steinberg.sumsWith (adjchar.multRead 5) 5 (member [] [] 5)
         (ground.bumpAt (5 - 1) (member [] [] 5))).2
@@ -234,9 +236,9 @@ example : (steinberg.sumsWith (adjchar.multRead 5) 5 (member [] [] 5)
 
 /-! The two counts' own reads. -/
 
-example : suppCount [2, 0, 1] = 2 := by decide +kernel
+theorem pin37 : suppCount [2, 0, 1] = 2 := by decide +kernel
 
-example : clearGaps [5, 4, 2, 1] = 2 := by decide +kernel
+theorem pin38 : clearGaps [5, 4, 2, 1] = 2 := by decide +kernel
 
 /-! The off-diagonal tier: the two sums at an occupied off-diagonal
 target and at a vacant one, each decided beside the theorem's own
@@ -244,19 +246,19 @@ route — the adjoint's member against `2θ`'s row at the width, a
 padded family at width four — with the diagonal's exclusion and the
 width binder each isolated by its own refusal. -/
 
-example : steinberg.sumsWith (adjchar.multRead 6) 6 (member [1] [1] 6)
+theorem pin39 : steinberg.sumsWith (adjchar.multRead 6) 6 (member [1] [1] 6)
     (member [2] [2] 6) = (1, 0) := by decide +kernel
 
-example : (steinberg.sumsWith (adjchar.multRead 6) 6 (member [1] [1] 6)
+theorem pin40 : (steinberg.sumsWith (adjchar.multRead 6) 6 (member [1] [1] 6)
       (member [2] [2] 6)).1
     ≤ (steinberg.sumsWith (adjchar.multRead 6) 6 (member [1] [1] 6)
         (member [2] [2] 6)).2 + 1 :=
   rowOffOne 6 (member [1] [1] 6) (member [2] [2] 6) (by decide +kernel) (by decide +kernel)
 
-example : steinberg.sumsWith (adjchar.multRead 4) 4 (member [1] [] 4)
+theorem pin41 : steinberg.sumsWith (adjchar.multRead 4) 4 (member [1] [] 4)
     [2, 0, 1, 0] = (1, 0) := by decide +kernel
 
-example : (steinberg.sumsWith (adjchar.multRead 4) 4 (member [1] [] 4)
+theorem pin42 : (steinberg.sumsWith (adjchar.multRead 4) 4 (member [1] [] 4)
       [2, 0, 1, 0]).1
     ≤ (steinberg.sumsWith (adjchar.multRead 4) 4 (member [1] [] 4)
         [2, 0, 1, 0]).2 + 1 :=
@@ -265,10 +267,10 @@ example : (steinberg.sumsWith (adjchar.multRead 4) 4 (member [1] [] 4)
 /-! A vacant off-diagonal target: both sums read the fold's unit and
 the theorem's route stands there too. -/
 
-example : steinberg.sumsWith (adjchar.multRead 4) 4 (member [1] [] 4)
+theorem pin43 : steinberg.sumsWith (adjchar.multRead 4) 4 (member [1] [] 4)
     [1, 2, 0, 0] = (0, 0) := by decide +kernel
 
-example : (steinberg.sumsWith (adjchar.multRead 4) 4 (member [1] [] 4)
+theorem pin44 : (steinberg.sumsWith (adjchar.multRead 4) 4 (member [1] [] 4)
       [1, 2, 0, 0]).1
     ≤ (steinberg.sumsWith (adjchar.multRead 4) 4 (member [1] [] 4)
         [1, 2, 0, 0]).2 + 1 :=
@@ -277,10 +279,10 @@ example : (steinberg.sumsWith (adjchar.multRead 4) 4 (member [1] [] 4)
 /-! The diagonal's exclusion is load-bearing: at the full-column
 bump the residue's count parts the two sums by more than one. -/
 
-example : steinberg.sumsWith (adjchar.multRead 5) 5 (member [1] [1] 5)
+theorem pin45 : steinberg.sumsWith (adjchar.multRead 5) 5 (member [1] [1] 5)
     (ground.bumpAt (5 - 1) (member [1] [1] 5)) = (4, 2) := by decide +kernel
 
-example : ¬ ((steinberg.sumsWith (adjchar.multRead 5) 5 (member [1] [1] 5)
+theorem pin46 : ¬ ((steinberg.sumsWith (adjchar.multRead 5) 5 (member [1] [1] 5)
       (ground.bumpAt (5 - 1) (member [1] [1] 5))).1
     ≤ (steinberg.sumsWith (adjchar.multRead 5) 5 (member [1] [1] 5)
         (ground.bumpAt (5 - 1) (member [1] [1] 5))).2 + 1) := by decide +kernel
@@ -289,12 +291,12 @@ example : ¬ ((steinberg.sumsWith (adjchar.multRead 5) 5 (member [1] [1] 5)
 width the permuted display still ties, and the even sum runs away
 from the odd — the target off the shape's own bump. -/
 
-example : ground.bumpAt (3 - 1) [1, 1] = [1, 1] := by decide +kernel
+theorem pin47 : ground.bumpAt (3 - 1) [1, 1] = [1, 1] := by decide +kernel
 
-example : steinberg.sumsWith (adjchar.multRead 3) 3 [1, 1] [1, 1, 0]
+theorem pin48 : steinberg.sumsWith (adjchar.multRead 3) 3 [1, 1] [1, 1, 0]
     = (2, 0) := by decide +kernel
 
-example : ¬ ((steinberg.sumsWith (adjchar.multRead 3) 3 [1, 1] [1, 1, 0]).1
+theorem pin49 : ¬ ((steinberg.sumsWith (adjchar.multRead 3) 3 [1, 1] [1, 1, 0]).1
     ≤ (steinberg.sumsWith (adjchar.multRead 3) 3 [1, 1] [1, 1, 0]).2 + 1) := by
   decide +kernel
 
@@ -305,27 +307,27 @@ one key at the adjoint's — and the window's two margins are load-
 bearing, the same occupied target carrying occupancy at the key just
 below the floor and at the key just above the ceiling. -/
 
-example : steinberg.sumsWith (adjchar.multRead 5) 5 (member [] [] 5)
+theorem pin50 : steinberg.sumsWith (adjchar.multRead 5) 5 (member [] [] 5)
     (member [1] [1] 5) = (1, 0) := by decide +kernel
 
-example : ground.getAt 0 (member [1] [1] 5) 1 = 0 := by decide +kernel
+theorem pin51 : ground.getAt 0 (member [1] [1] 5) 1 = 0 := by decide +kernel
 
-example : ground.getAt 0 (member [1] [1] 5) 2 = 0 := by decide +kernel
+theorem pin52 : ground.getAt 0 (member [1] [1] 5) 2 = 0 := by decide +kernel
 
-example : ∀ k, ([] : List Nat).length + 1 ≤ k →
+theorem pin53 : ∀ k, ([] : List Nat).length + 1 ≤ k →
     k + ([] : List Nat).length + 3 ≤ 5 →
     ground.getAt 0 (member [1] [1] 5) k = 0 :=
   rowConfined [] [] 5 (member [1] [1] 5) (by decide +kernel)
 
-example : ¬ ground.getAt 0 (member [1] [1] 5) 0 = 0 := by decide +kernel
+theorem pin54 : ¬ ground.getAt 0 (member [1] [1] 5) 0 = 0 := by decide +kernel
 
-example : ¬ ground.getAt 0 (member [1] [1] 5) 3 = 0 := by decide +kernel
+theorem pin55 : ¬ ground.getAt 0 (member [1] [1] 5) 3 = 0 := by decide +kernel
 
 /-! The adjoint's own member at its single window key. -/
 
-example : ground.getAt 0 (member [2] [2] 6) 2 = 0 := by decide +kernel
+theorem pin56 : ground.getAt 0 (member [2] [2] 6) 2 = 0 := by decide +kernel
 
-example : ground.getAt 0 (member [2] [2] 6) 2 = 0 :=
+theorem pin57 : ground.getAt 0 (member [2] [2] 6) 2 = 0 :=
   rowConfined [1] [1] 6 (member [2] [2] 6) (by decide +kernel) 2
     (by decide +kernel) (by decide +kernel)
 
@@ -333,7 +335,7 @@ example : ground.getAt 0 (member [2] [2] 6) 2 = 0 :=
 member's structural floor the sums part from the key count, and at
 a vacant gap the window read fails. -/
 
-example : ¬ ((steinberg.sumsWith (adjchar.multRead 2) 2
+theorem pin58 : ¬ ((steinberg.sumsWith (adjchar.multRead 2) 2
       (member [1] [1] 2)
       (ground.bumpAt (2 - 1) (member [1] [1] 2))).1
     = (steinberg.sumsWith (adjchar.multRead 2) 2
@@ -341,12 +343,12 @@ example : ¬ ((steinberg.sumsWith (adjchar.multRead 2) 2
       (ground.bumpAt (2 - 1) (member [1] [1] 2))).2
       + (suppCount [1] + suppCount [1])) := by decide +kernel
 
-example : ¬ ((steinberg.sumsWith (adjchar.multRead 5) 5
+theorem pin59 : ¬ ((steinberg.sumsWith (adjchar.multRead 5) 5
       (member [] [] 5) [1, 1, 0, 0, 0]).2
     < (steinberg.sumsWith (adjchar.multRead 5) 5
       (member [] [] 5) [1, 1, 0, 0, 0]).1) := by decide +kernel
 
-example : ¬ ground.getAt 0 ([1, 1, 0, 0, 0] : places.Shape) 1 = 0 := by
+theorem pin60 : ¬ ground.getAt 0 ([1, 1, 0, 0, 0] : places.Shape) 1 = 0 := by
   decide +kernel
 
 /-! The adjoint fusion row: the word list at the unit label and at
@@ -354,24 +356,24 @@ the adjoint itself, at the two counts, and at a one-box shape.
 The count agreement runs both ways at the one-box shape — through
 the theorem's own route and decided. -/
 
-example : adjRow 2 (labels.unitL 2) = [[2, 0]] := by decide +kernel
+theorem pin61 : adjRow 2 (labels.unitL 2) = [[2, 0]] := by decide +kernel
 
-example : adjRow 3 (labels.unitL 3) = [[1, 1, 0]] := by decide +kernel
+theorem pin62 : adjRow 3 (labels.unitL 3) = [[1, 1, 0]] := by decide +kernel
 
-example : adjRow 2 (adjchar.theta 2) = [[2, 0], [4, 0], [0, 0]] := by decide +kernel
+theorem pin63 : adjRow 2 (adjchar.theta 2) = [[2, 0], [4, 0], [0, 0]] := by decide +kernel
 
-example : adjRow 3 (adjchar.theta 3)
+theorem pin64 : adjRow 3 (adjchar.theta 3)
     = [[1, 1, 0], [3, 0, 0], [2, 2, 0], [0, 3, 0], [0, 0, 0]] := by decide +kernel
 
-example : adjRow 3 ([1, 0, 0] : Shape)
+theorem pin65 : adjRow 3 ([1, 0, 0] : Shape)
     = [[1, 0, 0], [2, 1, 0], [0, 2, 0]] := by decide +kernel
 
-example : steinberg.count ([1, 0, 0] : Shape) (adjchar.theta 3) [2, 1, 0]
+theorem pin66 : steinberg.count ([1, 0, 0] : Shape) (adjchar.theta 3) [2, 1, 0]
     = channels.adjCount 3 [1, 0, 0] [2, 1, 0] :=
   adjCount_eq 3 [1, 0, 0] [2, 1, 0] (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : steinberg.count ([1, 0, 0] : Shape) (adjchar.theta 3) [2, 1, 0]
+theorem pin67 : steinberg.count ([1, 0, 0] : Shape) (adjchar.theta 3) [2, 1, 0]
     = channels.adjCount 3 [1, 0, 0] [2, 1, 0] := by decide +kernel
 
 /-! The whole row against the definitional enumeration: the
@@ -380,7 +382,7 @@ there, at a second label and at a label off the row, and the
 definitional side's own list value.  The width binder's frame:
 off the stated width both rows are vacant. -/
 
-example : ground.countOf ([2, 1, 0] : Shape)
+theorem pin68 : ground.countOf ([2, 1, 0] : Shape)
       ((places.allShapes 3 (places.degree ([1, 0, 0] : Shape)
           + places.degree (adjchar.theta 3))).filterMap
         (fun c => if 0 < steinberg.count [1, 0, 0] (adjchar.theta 3) c
@@ -388,43 +390,43 @@ example : ground.countOf ([2, 1, 0] : Shape)
     = ground.countOf ([2, 1, 0] : Shape) (adjRow 3 [1, 0, 0]) :=
   adjRow_eq 3 [1, 0, 0] (by decide +kernel) (by decide +kernel) [2, 1, 0]
 
-example : ground.countOf ([2, 1, 0] : Shape)
+theorem pin69 : ground.countOf ([2, 1, 0] : Shape)
       ((places.allShapes 3 (places.degree ([1, 0, 0] : Shape)
           + places.degree (adjchar.theta 3))).filterMap
         (fun c => if 0 < steinberg.count [1, 0, 0] (adjchar.theta 3) c
           then some (labels.reduce c) else none))
     = ground.countOf ([2, 1, 0] : Shape) (adjRow 3 [1, 0, 0]) := by decide +kernel
 
-example : ground.countOf ([0, 2, 0] : Shape)
+theorem pin70 : ground.countOf ([0, 2, 0] : Shape)
       ((places.allShapes 3 (places.degree ([1, 0, 0] : Shape)
           + places.degree (adjchar.theta 3))).filterMap
         (fun c => if 0 < steinberg.count [1, 0, 0] (adjchar.theta 3) c
           then some (labels.reduce c) else none))
     = ground.countOf ([0, 2, 0] : Shape) (adjRow 3 [1, 0, 0]) := by decide +kernel
 
-example : ground.countOf ([3, 0, 0] : Shape)
+theorem pin71 : ground.countOf ([3, 0, 0] : Shape)
       ((places.allShapes 3 (places.degree ([1, 0, 0] : Shape)
           + places.degree (adjchar.theta 3))).filterMap
         (fun c => if 0 < steinberg.count [1, 0, 0] (adjchar.theta 3) c
           then some (labels.reduce c) else none)) = 0 := by decide +kernel
 
-example : ground.countOf ([3, 0, 0] : Shape) (adjRow 3 [1, 0, 0]) = 0 := by
+theorem pin72 : ground.countOf ([3, 0, 0] : Shape) (adjRow 3 [1, 0, 0]) = 0 := by
   decide +kernel
 
-example : (places.allShapes 3 (places.degree ([1, 0, 0] : Shape)
+theorem pin73 : (places.allShapes 3 (places.degree ([1, 0, 0] : Shape)
       + places.degree (adjchar.theta 3))).filterMap
     (fun c => if 0 < steinberg.count [1, 0, 0] (adjchar.theta 3) c
       then some (labels.reduce c) else none)
     = [[2, 1, 0], [0, 2, 0], [1, 0, 0]] := by decide +kernel
 
-example : ¬ ([1, 0] : Shape).length = 3 := by decide +kernel
+theorem pin74 : ¬ ([1, 0] : Shape).length = 3 := by decide +kernel
 
-example : (places.allShapes 3 (places.degree ([1, 0] : Shape)
+theorem pin75 : (places.allShapes 3 (places.degree ([1, 0] : Shape)
       + places.degree (adjchar.theta 3))).filterMap
     (fun c => if 0 < steinberg.count [1, 0] (adjchar.theta 3) c
       then some (labels.reduce c) else none) = [] := by decide +kernel
 
-example : ¬ ground.countOf ([2, 0] : Shape)
+theorem pin76 : ¬ ground.countOf ([2, 0] : Shape)
       ((places.allShapes 3 (places.degree ([1, 0] : Shape)
           + places.degree (adjchar.theta 3))).filterMap
         (fun c => if 0 < steinberg.count [1, 0] (adjchar.theta 3) c
@@ -434,7 +436,7 @@ example : ¬ ground.countOf ([2, 0] : Shape)
 /-! The floor binder's refusal: at the width one the definitional
 row is occupied at the vacuum while the fast row is vacant. -/
 
-example : ¬ ground.countOf ([0] : Shape)
+theorem pin77 : ¬ ground.countOf ([0] : Shape)
       ((places.allShapes 1 (places.degree ([0] : Shape)
           + places.degree (adjchar.theta 1))).filterMap
         (fun c => if 0 < steinberg.count [0] (adjchar.theta 1) c
@@ -444,8 +446,10 @@ example : ¬ ground.countOf ([0] : Shape)
 /-! The count agreement's width and floor refusals at their
 recorded data. -/
 
-example : ¬ steinberg.count ([1, 0] : Shape) (adjchar.theta 3)
+theorem pin78 : ¬ steinberg.count ([1, 0] : Shape) (adjchar.theta 3)
     [1, 0, 0] = channels.adjCount 3 [1, 0] [1, 0, 0] := by decide +kernel
 
-example : ¬ steinberg.count ([0] : Shape) (adjchar.theta 1) [2]
+theorem pin79 : ¬ steinberg.count ([0] : Shape) (adjchar.theta 1) [2]
     = channels.adjCount 1 [0] [2] := by decide +kernel
+
+end rankstable

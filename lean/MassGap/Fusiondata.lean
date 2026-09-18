@@ -291,7 +291,7 @@ closure run at the stored descents (`blockOf_eq` its read at the
 fresh walk). -/
 def blockOf (d : Nat) (w : HVec) : List HVec :=
   (closeSpanS d (lowerspan.ht w.content)
-    (elim.seedK HVec.content dotC w) [w]).1
+    (elim.seedK HVec.content dotC w) [w]).1.reverse
 
 /-- The block at a top off the unit tail is the seed's closure pool
 at the content's height at the fresh walk (`closeSpanS_eq`). -/
@@ -3789,14 +3789,14 @@ private theorem exhaust_regroup (d : Nat) (P : List HVec)
       settledAt P (act i j x)) (F : List Nat → Nat) :
     ground.famFold Nat.add 0 (fun w => F w.content) (exhaust d P)
       = ground.famFold Nat.add 0 (fun nu => countAt P nu * F nu)
-          (ground.dedupL ((exhaust d P).map HVec.content)) := by
+          (ground.dedupF ((exhaust d P).map HVec.content)) := by
   rw [← ground.famFold_map Nat.add 0 F HVec.content (exhaust d P),
     ground.famFold_partition F ((exhaust d P).map HVec.content)
-      (ground.dedupL ((exhaust d P).map HVec.content))
-      (fun x _ => ground.countOf_dedupL_le x _)
-      (fun x hx => ground.mem_dedupL hx)]
+      (ground.dedupF ((exhaust d P).map HVec.content))
+      (fun x _ => ground.countOf_dedupF_le x _)
+      (fun x hx => ground.mem_dedupF hx)]
   refine ground.famFold_congr_all Nat.add 0 _ _ ?_
-    (ground.dedupL ((exhaust d P).map HVec.content))
+    (ground.dedupF ((exhaust d P).map HVec.content))
   intro nu
   rw [← occ_eq_countOf nu (exhaust d P),
     ← countAt_exhaust d P hsz hwid hcl nu]
@@ -3814,7 +3814,7 @@ fold over the occupied contents, each the collection's count
 (`lem:lowerspan`'s joined-collection read). -/
 def dimOf (pool : List HVec) : Nat :=
   ground.famFold Nat.add 0 (fun mu => dimAt pool mu)
-    (ground.dedupL (pool.map HVec.content))
+    (ground.dedupF (pool.map HVec.content))
 
 /-- A member's content is occupied in its own carrier, the
 structural count's head read. -/
@@ -3894,7 +3894,7 @@ theorem dimOf_countAt (d : Nat) (P : List HVec)
       settledAt P (act i j x)) :
     dimOf P = ground.famFold Nat.add 0
       (fun mu => countAt P mu * (blockSpan (shapeOf mu)).length)
-      (ground.dedupL ((exhaust d P).map HVec.content)) := by
+      (ground.dedupF ((exhaust d P).map HVec.content)) := by
   -- the collections' counts at the produced join's groups
   have hstep1 : ∀ mu : List Nat,
       dimAt P mu
@@ -3923,26 +3923,26 @@ theorem dimOf_countAt (d : Nat) (P : List HVec)
       rw [h0] at hpos
       exact absurd hpos (Nat.lt_irrefl 0)
   have hcovD : ∀ x ∈ (blockJoin d (exhaust d P)).map HVec.content,
-      x ∈ ground.dedupL (P.map HVec.content) := by
+      x ∈ ground.dedupF (P.map HVec.content) := by
     intro x hx
     match ground.mem_map_of HVec.content _ x hx with
     | ⟨y, hy, hyc⟩ =>
       rw [← hyc]
-      exact ground.mem_dedupL (hcov y hy)
+      exact ground.mem_dedupF (hcov y hy)
   -- the join's length partitions over the occupied contents
   have hstep2 : ground.famFold Nat.add 0
       (fun mu => (groupAt (blockJoin d (exhaust d P)) mu).length)
-      (ground.dedupL (P.map HVec.content))
+      (ground.dedupF (P.map HVec.content))
       = (blockJoin d (exhaust d P)).length := by
     rw [ground.famFold_congr_all Nat.add 0 _
       (fun mu => ground.countOf mu
         ((blockJoin d (exhaust d P)).map HVec.content))
       (fun mu => by rw [length_groupAt, occ_eq_countOf])
-      (ground.dedupL (P.map HVec.content)),
+      (ground.dedupF (P.map HVec.content)),
       ground.countOf_partition
         ((blockJoin d (exhaust d P)).map HVec.content)
-        (ground.dedupL (P.map HVec.content))
-        (fun x _ => ground.countOf_dedupL_le x _) hcovD,
+        (ground.dedupF (P.map HVec.content))
+        (fun x _ => ground.countOf_dedupF_le x _) hcovD,
       ground.length_map HVec.content (blockJoin d (exhaust d P))]
   -- the join's length as the per-top blocks' fold
   have hstep3 : (blockJoin d (exhaust d P)).length
@@ -3970,10 +3970,10 @@ theorem dimOf_countAt (d : Nat) (P : List HVec)
     exact seedBlock_dim d w hszw hwidw hoffw htopw
       (lowerspan.ht w.content) (Nat.le_refl _)
   show ground.famFold Nat.add 0 (fun mu => dimAt P mu)
-    (ground.dedupL (P.map HVec.content)) = _
+    (ground.dedupF (P.map HVec.content)) = _
   rw [ground.famFold_congr_all Nat.add 0 _
       (fun mu => (groupAt (blockJoin d (exhaust d P)) mu).length)
-      hstep1 (ground.dedupL (P.map HVec.content)),
+      hstep1 (ground.dedupF (P.map HVec.content)),
     hstep2, hstep3, hstep4,
     exhaust_regroup d P hsz hwid hcl
       (fun nu => (blockSpan (shapeOf nu)).length)]
@@ -3996,7 +3996,7 @@ theorem gradedDim_countAt (d : Nat) (P : List HVec)
       = ground.famFold Nat.add 0
           (fun nu => countAt P nu
             * occ mu (blockSpan (shapeOf nu)))
-          (ground.dedupL ((exhaust d P).map HVec.content)) := by
+          (ground.dedupF ((exhaust d P).map HVec.content)) := by
   -- each produced block reads its shape's own occupancy
   have hstep4 : ground.famFold Nat.add 0
       (fun w => occ mu (blockOf d w)) (exhaust d P)
@@ -4769,7 +4769,7 @@ theorem countAt_fused_exhaust (d kP : Nat) (P : List HVec)
           (fun mu => countAt P mu
             * countAt (fusedAt (blockSpan (places.shapeOf mu)) C)
               dd)
-          (ground.dedupL ((exhaust d P).map HVec.content)) := by
+          (ground.dedupF ((exhaust d P).map HVec.content)) := by
   have hts := exhaust_top d P hsz hwid hcl
   have hstl := exhaust_settle d P hsz hwid hcl
   have hszBJ : ∀ y ∈ blockJoin d (exhaust d P), sized y :=
@@ -4966,7 +4966,7 @@ graded display is a lower bound on the content's dimension, and an
 independent pool's dimension is its occupancy. -/
 theorem channel_content (a b : Shape) (hba : b.length = a.length)
     (nu : List Nat)
-    (hnu : nu ∈ ground.dedupL ((exhaust a.length
+    (hnu : nu ∈ ground.dedupF ((exhaust a.length
       (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
     (hcp : 0 < countAt (fusedAt (blockSpan a) (blockSpan b)) nu)
     (m : List Nat) (hm : 0 < occ m (blockSpan (places.shapeOf nu))) :
@@ -4976,7 +4976,7 @@ theorem channel_content (a b : Shape) (hba : b.length = a.length)
   have hle := ground.famFold_mem_le
     (fun nu' => countAt (fusedAt (blockSpan a) (blockSpan b)) nu'
       * occ m (blockSpan (places.shapeOf nu')))
-    (ground.dedupL ((exhaust a.length
+    (ground.dedupF ((exhaust a.length
       (fusedAt (blockSpan a) (blockSpan b))).map HVec.content)) nu hnu
   rw [← gradedDim_countAt a.length
     (fusedAt (blockSpan a) (blockSpan b)) hszP hwidP hclP m] at hle
@@ -5009,7 +5009,7 @@ theorem exhaust_degree (a b : Shape) (hba : b.length = a.length) :
   have hoccS : 0 < occ mu (blockSpan (places.shapeOf mu)) := by
     rw [occ_eq_countOf, htop]
     exact Nat.succ_pos 0
-  have hposc := channel_content a b hba mu (ground.mem_dedupL hmu)
+  have hposc := channel_content a b hba mu (ground.mem_dedupF hmu)
     hcnt mu hoccS
   obtain ⟨x, hx, hxc⟩ := ground.mem_map_of HVec.content
     (fusedAt (blockSpan a) (blockSpan b)) mu
@@ -5058,7 +5058,7 @@ theorem fusionCount_dim (a b : Shape)
     ground.famFold Nat.add 0
       (fun mu => fusionCount a b (places.shapeOf mu)
         * (blockSpan (places.shapeOf mu)).length)
-      (ground.dedupL
+      (ground.dedupF
         ((exhaust a.length
           (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
     = (blockSpan a).length * (blockSpan b).length := by
@@ -5069,18 +5069,18 @@ theorem fusionCount_dim (a b : Shape)
   have hcount : ground.famFold Nat.add 0
       (fun mu => countAt (fusedAt (blockSpan a) (blockSpan b)) mu
         * (blockSpan (shapeOf mu)).length)
-      (ground.dedupL ((exhaust a.length
+      (ground.dedupF ((exhaust a.length
         (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
       = ground.famFold Nat.add 0
         (fun mu => fusionCount a b (shapeOf mu)
           * (blockSpan (shapeOf mu)).length)
-        (ground.dedupL ((exhaust a.length
+        (ground.dedupF ((exhaust a.length
           (fusedAt (blockSpan a) (blockSpan b))).map
           HVec.content)) := by
     refine ground.famFold_congr_members Nat.add 0 _ _ _ ?_
     intro mu hmu
     rw [fusionCount_countAt a b (shapeOf mu) hba,
-      hrl mu (ground.mem_of_dedupL
+      hrl mu (ground.mem_of_dedupF
         (ground.mem_of_countOf_pos mu _ hmu))]
   -- the dimension reads the pool's own count
   have hprod : dimOf (fusedAt (blockSpan a) (blockSpan b))
@@ -5088,7 +5088,7 @@ theorem fusionCount_dim (a b : Shape)
     show ground.famFold Nat.add 0
       (fun mu => (elim.collectW (places.monomialsAt mu).length
         (groupAt (fusedAt (blockSpan a) (blockSpan b)) mu)).length)
-      (ground.dedupL
+      (ground.dedupF
         ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content))
       = _
     rw [ground.famFold_congr_members Nat.add 0 _
@@ -5102,10 +5102,10 @@ theorem fusionCount_dim (a b : Shape)
             occ_eq_countOf]),
       ground.countOf_partition
         ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content)
-        (ground.dedupL
+        (ground.dedupF
           ((fusedAt (blockSpan a) (blockSpan b)).map HVec.content))
-        (fun x _ => ground.countOf_dedupL_le x _)
-        (fun x hx => ground.mem_dedupL hx),
+        (fun x _ => ground.countOf_dedupF_le x _)
+        (fun x hx => ground.mem_dedupF hx),
       ground.length_map HVec.content
         (fusedAt (blockSpan a) (blockSpan b)),
       length_fusedAt (blockSpan b) (blockSpan a)]
@@ -5150,13 +5150,13 @@ theorem fusionCount_assoc (a b c e : Shape)
     ground.famFold Nat.add 0
       (fun mu => fusionCount a b (places.shapeOf mu)
         * fusionCount (places.shapeOf mu) c e)
-      (ground.dedupL
+      (ground.dedupF
         ((exhaust a.length
           (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
     = ground.famFold Nat.add 0
       (fun mu => fusionCount b c (places.shapeOf mu)
         * fusionCount a (places.shapeOf mu) e)
-      (ground.dedupL
+      (ground.dedupF
         ((exhaust a.length
           (fusedAt (blockSpan b) (blockSpan c))).map
           HVec.content)) := by
@@ -5208,7 +5208,7 @@ theorem fusionCount_assoc (a b c e : Shape)
   have hL : ground.famFold Nat.add 0
       (fun mu => fusionCount a b (places.shapeOf mu)
         * fusionCount (places.shapeOf mu) c e)
-      (ground.dedupL
+      (ground.dedupF
         ((exhaust a.length
           (fusedAt (blockSpan a) (blockSpan b))).map HVec.content))
       = countAt (fusedAt (fusedAt (blockSpan a) (blockSpan b))
@@ -5229,7 +5229,7 @@ theorem fusionCount_assoc (a b c e : Shape)
             w hw)
         (lowerspan.spanReads c).2.1 (rowList e)).symm
     · intro mu hmu
-      have hmem := ground.mem_of_dedupL
+      have hmem := ground.mem_of_dedupF
         (ground.mem_of_countOf_pos mu _ hmu)
       have hlen : (places.shapeOf mu).length = a.length := by
         rw [length_shapeOf]
@@ -5241,7 +5241,7 @@ theorem fusionCount_assoc (a b c e : Shape)
   have hR : ground.famFold Nat.add 0
       (fun mu => fusionCount b c (places.shapeOf mu)
         * fusionCount a (places.shapeOf mu) e)
-      (ground.dedupL
+      (ground.dedupF
         ((exhaust a.length
           (fusedAt (blockSpan b) (blockSpan c))).map HVec.content))
       = countAt (fusedAt (fusedAt (blockSpan b) (blockSpan c))
@@ -5260,7 +5260,7 @@ theorem fusionCount_assoc (a b c e : Shape)
           lowerspan.act_closed_def a i j hi hj hij w hw)
         (lowerspan.spanReads a).2.1 (rowList e)).symm
     · intro mu hmu
-      have hmem := ground.mem_of_dedupL
+      have hmem := ground.mem_of_dedupF
         (ground.mem_of_countOf_pos mu _ hmu)
       have hlen : (places.shapeOf mu).length = a.length := by
         rw [length_shapeOf]

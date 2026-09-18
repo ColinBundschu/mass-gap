@@ -30,7 +30,7 @@ def read : Nat → Nat → Prop
   | 0, _ => False
   | _ + 1, 0 => False
 
-instance : (c1 r : Nat) → Decidable (read c1 r)
+instance instClosing1 : (c1 r : Nat) → Decidable (read c1 r)
   | _ + 1, _ + 1 => inferInstanceAs (Decidable (_ ∧ _))
   | 0, _ => inferInstanceAs (Decidable False)
   | _ + 1, 0 => inferInstanceAs (Decidable False)

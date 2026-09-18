@@ -23,34 +23,36 @@ tier at the load-bearing binders.  The fixtures' spelling follows
 the shifted alternant's eight-member orbit are the self-contained
 copies the check-module convention takes.
 -/
+
+namespace weyldim
 set_option maxHeartbeats 4000000
 
-open ground places weyldim
+open ground places
 
 /-! The gap products on the displays. -/
 
-example : gapProd [3, 1] = 2 := rfl
-example : gapProd [5, 3, 1] = 16 := rfl
-example : gapProd [3, 2, 1] = 2 := rfl
+theorem pin1 : gapProd [3, 1] = 2 := rfl
+theorem pin2 : gapProd [5, 3, 1] = 16 := rfl
+theorem pin3 : gapProd [3, 2, 1] = 2 := rfl
 
 /-! The dimension values at the pinned span dimensions. -/
 
-example : dimOf [1] = 1 := by decide +kernel
-example : dimOf [1, 1] = 2 := by decide +kernel
-example : dimOf [1, 0] = 2 := by decide +kernel
-example : dimOf [2, 0] = 3 := by decide +kernel
-example : dimOf [0, 1] = 1 := by decide +kernel
-example : dimOf [2, 1] = 3 := by decide +kernel
-example : dimOf [1, 0, 0] = 3 := by decide +kernel
-example : dimOf [1, 1, 0] = 8 := by decide +kernel
+theorem pin4 : dimOf [1] = 1 := by decide +kernel
+theorem pin5 : dimOf [1, 1] = 2 := by decide +kernel
+theorem pin6 : dimOf [1, 0] = 2 := by decide +kernel
+theorem pin7 : dimOf [2, 0] = 3 := by decide +kernel
+theorem pin8 : dimOf [0, 1] = 1 := by decide +kernel
+theorem pin9 : dimOf [2, 1] = 3 := by decide +kernel
+theorem pin10 : dimOf [1, 0, 0] = 3 := by decide +kernel
+theorem pin11 : dimOf [1, 1, 0] = 8 := by decide +kernel
 
 /-! The naming read, the division's per-instance exactness
 certificate. -/
 
-example : weyldim.read [1, 0] := by decide +kernel
-example : weyldim.read [1, 1, 0] := by decide +kernel
-example : weyldim.read [0, 0, 1] := by decide +kernel
-example : weyldim.read [2, 2, 0] := by decide +kernel
+theorem pin12 : weyldim.read [1, 0] := by decide +kernel
+theorem pin13 : weyldim.read [1, 1, 0] := by decide +kernel
+theorem pin14 : weyldim.read [0, 0, 1] := by decide +kernel
+theorem pin15 : weyldim.read [2, 2, 0] := by decide +kernel
 
 /-! The count identity tier (`cor:weyldim`'s A-series half): the
 span's count against the unit display's gap product reads the
@@ -64,41 +66,41 @@ forge tier pins the coherence face instead: a forged span count,
 one off the true count, refusing the product identity, the
 identity's own discrimination. -/
 
-example : (blockcount.blockSpan ([1] : Shape)).length
+theorem pin16 : (blockcount.blockSpan ([1] : Shape)).length
     * gapProd (display (List.replicate 1 0))
   = gapProd (display ([1] : Shape)) := spanProd [1]
-example : (blockcount.blockSpan ([1] : Shape)).length
+theorem pin17 : (blockcount.blockSpan ([1] : Shape)).length
     * gapProd (display (List.replicate 1 0))
   = gapProd (display ([1] : Shape)) := by decide +kernel
 
-example : (blockcount.blockSpan ([1, 1] : Shape)).length
+theorem pin18 : (blockcount.blockSpan ([1, 1] : Shape)).length
     * gapProd (display (List.replicate 2 0))
   = gapProd (display ([1, 1] : Shape)) := spanProd [1, 1]
-example : (blockcount.blockSpan ([1, 1] : Shape)).length
+theorem pin19 : (blockcount.blockSpan ([1, 1] : Shape)).length
     * gapProd (display (List.replicate 2 0))
   = gapProd (display ([1, 1] : Shape)) := by decide +kernel
 
-example : (blockcount.blockSpan ([1, 1, 0] : Shape)).length
+theorem pin20 : (blockcount.blockSpan ([1, 1, 0] : Shape)).length
     * gapProd (display (List.replicate 3 0))
   = gapProd (display ([1, 1, 0] : Shape)) := spanProd [1, 1, 0]
-example : (blockcount.blockSpan ([1, 1, 0] : Shape)).length
+theorem pin21 : (blockcount.blockSpan ([1, 1, 0] : Shape)).length
     * gapProd (display (List.replicate 3 0))
   = gapProd (display ([1, 1, 0] : Shape)) := by decide +kernel
 
-example : dimOf [1] = (blockcount.blockSpan ([1] : Shape)).length :=
+theorem pin22 : dimOf [1] = (blockcount.blockSpan ([1] : Shape)).length :=
   dimOf_spanLen [1]
-example : dimOf [1, 1]
+theorem pin23 : dimOf [1, 1]
     = (blockcount.blockSpan ([1, 1] : Shape)).length :=
   dimOf_spanLen [1, 1]
-example : dimOf [1, 1, 0]
+theorem pin24 : dimOf [1, 1, 0]
     = (blockcount.blockSpan ([1, 1, 0] : Shape)).length :=
   dimOf_spanLen [1, 1, 0]
 
-example : weyldim.read [1] := readAll [1]
-example : weyldim.read [1, 1] := readAll [1, 1]
-example : weyldim.read [1, 1, 0] := readAll [1, 1, 0]
+theorem pin25 : weyldim.read [1] := readAll [1]
+theorem pin26 : weyldim.read [1, 1] := readAll [1, 1]
+theorem pin27 : weyldim.read [1, 1, 0] := readAll [1, 1, 0]
 
-example : weyldim.read [1, 1, 1, 0] := by apply readAll
+theorem pin28 : weyldim.read [1, 1, 1, 0] := by apply readAll
 
 /-! The coherence face: the span count one off the true count
 refuses the product identity, at the shape whose unit gap
@@ -107,7 +109,7 @@ span producer the module budget admits; the four-place face is
 `readAll`'s instance above, the display whole through the
 theorem route. -/
 
-example : ¬ (((blockcount.blockSpan ([1, 1, 0] : Shape)).length + 1)
+theorem pin29 : ¬ (((blockcount.blockSpan ([1, 1, 0] : Shape)).length + 1)
       * gapProd (display (List.replicate 3 0))
     = gapProd (display ([1, 1, 0] : Shape))) := by decide +kernel
 
@@ -128,27 +130,27 @@ private def mTwo : List (List BPair) :=
   [[BPair.ofNat 1, BPair.unit],
    [(BPair.ofNat 1).swap, BPair.ofNat 2]]
 
-example : (List.range tB2.posFolds.length).map
+theorem pin30 : (List.range tB2.posFolds.length).map
     (gapsAt tB2 fundB2 (rhoV tB2)) = [2, 4, 3, 1] := by decide +kernel
 
-example : (List.range tB2.posFolds.length).map
+theorem pin31 : (List.range tB2.posFolds.length).map
     (gapsAt tB2 fundB2 (lamrho tB2 lamB2)) = [4, 6, 5, 1] := by decide +kernel
 
-example : poly.oneValue
+theorem pin32 : poly.oneValue
     (pfold fundB2 (rhoV tB2) (dotB fundB2 (rhoV tB2) (rhoV tB2)) wTwo)
     (poly.add (poly.smono false 10) (poly.smono true 8)) := by decide +kernel
 
-example : poly.oneValue
+theorem pin33 : poly.oneValue
     (lfold fundB2 (rhoV tB2) (dotB fundB2 lamB2 (rhoV tB2)) mTwo)
     (poly.add (poly.smono false 6) (poly.smono false 4)) := by decide +kernel
 
-example : poly.oneValue (prodPos tB2 fundB2 (rhoV tB2))
+theorem pin34 : poly.oneValue (prodPos tB2 fundB2 (rhoV tB2))
     (poly.mul (poly.powOf (poly.tpair 1) 4)
       (ground.famFold poly.mul poly.one
         (fun j => poly.gword (gapsAt tB2 fundB2 (rhoV tB2) j))
         (List.range 4))) := by decide +kernel
 
-example : poly.oneValue (prodPos tB2 fundB2 (rhoV tB2))
+theorem pin35 : poly.oneValue (prodPos tB2 fundB2 (rhoV tB2))
     (pfold fundB2 (rhoV tB2)
       (dotB fundB2 (rhoV tB2) (rhoV tB2)) wB2) :=
   prodPos_pfold tB2 fundB2 wB2 witsB2 (by decide +kernel) (by decide +kernel)
@@ -156,7 +158,7 @@ example : poly.oneValue (prodPos tB2 fundB2 (rhoV tB2))
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (rhoV tB2) (by decide +kernel)
 
-example : (poly.eval (lfold fundB2 (rhoV tB2)
+theorem pin36 : (poly.eval (lfold fundB2 (rhoV tB2)
     (dotB fundB2 lamB2 (rhoV tB2)) mTwo) (BPair.ofNat 1)).oneValue
     (BPair.ofNat mTwo.length) := by decide +kernel
 
@@ -175,18 +177,18 @@ the exchange's own face — with the crossed count clauses `hexch1`
 and `hexch2` beside them, each occupied degree pair at one count in
 both maps. -/
 
-example : weyldim.dmap fundB2
+theorem pin37 : weyldim.dmap fundB2
     (dotB fundB2 (lamrho tB2 lamB2) (rhoV tB2)) (rhoV tB2) wpB2
   = [(16, false), (12, true), (15, true), (7, false),
      (9, false), (1, true), (4, true), (0, false)] := by decide +kernel
 
-example : weyldim.dmap fundB2
+theorem pin38 : weyldim.dmap fundB2
     (dotB fundB2 (rhoV tB2) (lamrho tB2 lamB2))
     (lamrho tB2 lamB2) wB2
   = [(16, false), (12, true), (15, true), (7, false),
      (4, true), (0, false), (1, true), (9, false)] := by decide +kernel
 
-example : ∀ p ∈ weyldim.dmap fundB2
+theorem pin39 : ∀ p ∈ weyldim.dmap fundB2
       (dotB fundB2 (lamrho tB2 lamB2) (rhoV tB2)) (rhoV tB2) wpB2,
     ground.countOf p (weyldim.dmap fundB2
         (dotB fundB2 (lamrho tB2 lamB2) (rhoV tB2)) (rhoV tB2) wpB2)
@@ -194,7 +196,7 @@ example : ∀ p ∈ weyldim.dmap fundB2
           (dotB fundB2 (rhoV tB2) (lamrho tB2 lamB2))
           (lamrho tB2 lamB2) wB2) := by decide +kernel
 
-example : ∀ p ∈ weyldim.dmap fundB2
+theorem pin40 : ∀ p ∈ weyldim.dmap fundB2
       (dotB fundB2 (rhoV tB2) (lamrho tB2 lamB2))
       (lamrho tB2 lamB2) wB2,
     ground.countOf p (weyldim.dmap fundB2
@@ -210,17 +212,17 @@ stated data, every binder at kernel `decide`, with the display's
 computed twin beside it, the member count against the `ρ`-product
 the `λ+ρ`-product. -/
 
-example : ground.famFold Nat.mul 1
+theorem pin41 : ground.famFold Nat.mul 1
     (fun j => BPair.marginN
       (dotB fundB2 (posCorootV tB2 j) (rhoV tB2)))
     (List.range tB2.posFolds.length) = 24 := by decide +kernel
 
-example : ground.famFold Nat.mul 1
+theorem pin42 : ground.famFold Nat.mul 1
     (fun j => BPair.marginN
       (dotB fundB2 (posCorootV tB2 j) (lamrho tB2 lamB2)))
     (List.range tB2.posFolds.length) = 120 := by decide +kernel
 
-example : mB2.length * ground.famFold Nat.mul 1
+theorem pin43 : mB2.length * ground.famFold Nat.mul 1
       (fun j => BPair.marginN
         (dotB fundB2 (posCorootV tB2 j) (rhoV tB2)))
       (List.range tB2.posFolds.length)
@@ -237,7 +239,7 @@ example : mB2.length * ground.famFold Nat.mul 1
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : mB2.length * ground.famFold Nat.mul 1
+theorem pin44 : mB2.length * ground.famFold Nat.mul 1
       (fun j => BPair.marginN
         (dotB fundB2 (posCorootV tB2 j) (rhoV tB2)))
       (List.range tB2.posFolds.length)
@@ -250,14 +252,14 @@ example : mB2.length * ground.famFold Nat.mul 1
 `λ+ρ` at or beyond its gap at `ρ`, by the theorem route with the
 computed twin beside it. -/
 
-example : ∀ j, j < tB2.posFolds.length →
+theorem pin45 : ∀ j, j < tB2.posFolds.length →
     BPair.marginN (dotB fundB2 (posCorootV tB2 j) (rhoV tB2))
       ≤ BPair.marginN
           (dotB fundB2 (posCorootV tB2 j) (lamrho tB2 lamB2)) :=
   weyldim.memberGap_le tB2 fundB2 (by decide +kernel) (by decide +kernel) lamB2
     (by decide +kernel)
 
-example : ∀ j, j < tB2.posFolds.length →
+theorem pin46 : ∀ j, j < tB2.posFolds.length →
     BPair.marginN (dotB fundB2 (posCorootV tB2 j) (rhoV tB2))
       ≤ BPair.marginN
           (dotB fundB2 (posCorootV tB2 j) (lamrho tB2 lamB2)) := by
@@ -319,7 +321,7 @@ doubled counts, the refusal entangled with the top count's
 
 private def wpDbl : List (List BPair × Bool) := wpB2 ++ wpB2
 
-example : ¬ ∀ p ∈ weyldim.dmap fundB2
+theorem pin47 : ¬ ∀ p ∈ weyldim.dmap fundB2
       (dotB fundB2 (lamrho tB2 lamB2) (rhoV tB2)) (rhoV tB2) wpDbl,
     ground.countOf p (weyldim.dmap fundB2
         (dotB fundB2 (lamrho tB2 lamB2) (rhoV tB2)) (rhoV tB2) wpDbl)
@@ -327,7 +329,7 @@ example : ¬ ∀ p ∈ weyldim.dmap fundB2
           (dotB fundB2 (rhoV tB2) (lamrho tB2 lamB2))
           (lamrho tB2 lamB2) wB2) := by decide +kernel
 
-example : ¬ ∀ p ∈ weyldim.dmap fundB2
+theorem pin48 : ¬ ∀ p ∈ weyldim.dmap fundB2
       (dotB fundB2 (rhoV tB2) (lamrho tB2 lamB2))
       (lamrho tB2 lamB2) wB2,
     ground.countOf p (weyldim.dmap fundB2
@@ -348,13 +350,13 @@ private def wpPadWits : List (List Nat) :=
   wpwitsB2 ++ witsB2.map (fun w => w.map (fun c => c + 1))
     ++ witsB2.map (fun w => w.map (fun c => c + 1))
 
-example : wShapeRead tB2 wpPad := by decide +kernel
-example : wCloseRead tB2 wpPad := by decide +kernel
-example : wTopAt wpPad (lamrho tB2 lamB2) := by decide +kernel
-example : wDomAt tB2 wpPad wpPadWits (lamrho tB2 lamB2) := by decide +kernel
-example : wRegRead tB2 wpPad (lamrho tB2 lamB2) := by decide +kernel
+theorem pin49 : wShapeRead tB2 wpPad := by decide +kernel
+theorem pin50 : wCloseRead tB2 wpPad := by decide +kernel
+theorem pin51 : wTopAt wpPad (lamrho tB2 lamB2) := by decide +kernel
+theorem pin52 : wDomAt tB2 wpPad wpPadWits (lamrho tB2 lamB2) := by decide +kernel
+theorem pin53 : wRegRead tB2 wpPad (lamrho tB2 lamB2) := by decide +kernel
 
-example : ¬ ∀ p ∈ weyldim.dmap fundB2
+theorem pin54 : ¬ ∀ p ∈ weyldim.dmap fundB2
       (dotB fundB2 (lamrho tB2 lamB2) (rhoV tB2)) (rhoV tB2) wpPad,
     ground.countOf p (weyldim.dmap fundB2
         (dotB fundB2 (lamrho tB2 lamB2) (rhoV tB2)) (rhoV tB2) wpPad)
@@ -362,7 +364,7 @@ example : ¬ ∀ p ∈ weyldim.dmap fundB2
           (dotB fundB2 (rhoV tB2) (lamrho tB2 lamB2))
           (lamrho tB2 lamB2) wB2) := by decide +kernel
 
-example : ¬ ∀ p ∈ weyldim.dmap fundB2
+theorem pin55 : ¬ ∀ p ∈ weyldim.dmap fundB2
       (dotB fundB2 (rhoV tB2) (lamrho tB2 lamB2))
       (lamrho tB2 lamB2) wB2,
     ground.countOf p (weyldim.dmap fundB2
@@ -371,7 +373,7 @@ example : ¬ ∀ p ∈ weyldim.dmap fundB2
           (dotB fundB2 (rhoV tB2) (lamrho tB2 lamB2))
           (lamrho tB2 lamB2) wB2) := by decide +kernel
 
-example : poly.oneValue
+theorem pin56 : poly.oneValue
     (pfold fundB2 (rhoV tB2)
       (dotB fundB2 (lamrho tB2 lamB2) (rhoV tB2)) wpPad)
     (pfold fundB2 (rhoV tB2)
@@ -384,7 +386,7 @@ committed refusal. -/
 
 private def mDbl : List (List BPair) := mB2 ++ mB2
 
-example : ¬ (mDbl.length * ground.famFold Nat.mul 1
+theorem pin57 : ¬ (mDbl.length * ground.famFold Nat.mul 1
       (fun j => BPair.marginN
         (dotB fundB2 (posCorootV tB2 j) (rhoV tB2)))
       (List.range tB2.posFolds.length)
@@ -404,15 +406,15 @@ private def wDeep : List (List BPair × Bool) :=
   wB2 ++ wB2.map (fun vp =>
     ((vp.1.map (BPair.mul (BPair.ofNat 2))).map BPair.norm, vp.2))
 
-example : wShapeRead tB2 wDeep := by decide +kernel
-example : wCloseRead tB2 wDeep := by decide +kernel
-example : wTopRead tB2 wDeep := by decide +kernel
+theorem pin58 : wShapeRead tB2 wDeep := by decide +kernel
+theorem pin59 : wCloseRead tB2 wDeep := by decide +kernel
+theorem pin60 : wTopRead tB2 wDeep := by decide +kernel
 
 -- The recursion read survives the deep padding — the attempt's
 -- refusal does not entangle with `hrec`.
-example : recRead tB2 fundB2 wDeep mB2 lamB2 := by decide +kernel
-example : ¬ wDomRead tB2 wDeep (witsB2 ++ witsB2) := by decide +kernel
-example : ¬ ∀ vp ∈ wDeep, BPair.unit ≤ BPair.add
+theorem pin61 : recRead tB2 fundB2 wDeep mB2 lamB2 := by decide +kernel
+theorem pin62 : ¬ wDomRead tB2 wDeep (witsB2 ++ witsB2) := by decide +kernel
+theorem pin63 : ¬ ∀ vp ∈ wDeep, BPair.unit ≤ BPair.add
     (dotB fundB2 (rhoV tB2) (rhoV tB2))
     (dotB fundB2 vp.1 (rhoV tB2)) := by decide +kernel
 
@@ -429,12 +431,12 @@ private def mDeep : List (List BPair) := mB2 ++ [deepNu]
 
 private def mDeepWits : List (List Nat) := mwitsB2 ++ [[4, 5]]
 
-example : mShapeRead tB2 mDeep := by decide +kernel
-example : supportRead tB2 mDeep mDeepWits lamB2 := by decide +kernel
-example : topRead mDeep lamB2 := by decide +kernel
-example : recRead tB2 fundB2 wB2 mDeep lamB2 := by decide +kernel
-example : ¬ symRead tB2 mDeep := by decide +kernel
-example : ¬ ∀ nu ∈ mDeep, BPair.unit ≤ BPair.add
+theorem pin64 : mShapeRead tB2 mDeep := by decide +kernel
+theorem pin65 : supportRead tB2 mDeep mDeepWits lamB2 := by decide +kernel
+theorem pin66 : topRead mDeep lamB2 := by decide +kernel
+theorem pin67 : recRead tB2 fundB2 wB2 mDeep lamB2 := by decide +kernel
+theorem pin68 : ¬ symRead tB2 mDeep := by decide +kernel
+theorem pin69 : ¬ ∀ nu ∈ mDeep, BPair.unit ≤ BPair.add
     (dotB fundB2 lamB2 (rhoV tB2))
     (dotB fundB2 nu (rhoV tB2)) := by decide +kernel
 
@@ -445,8 +447,8 @@ dominance read and the comparison refusing together. -/
 private def lamNeg : List BPair :=
   poly.pnorm (elim.vecScale ((BPair.ofNat 1).swap) (rhoV tB2))
 
-example : ¬ lamRead tB2 lamNeg := by decide +kernel
-example : ¬ ∀ j, j < tB2.posFolds.length →
+theorem pin70 : ¬ lamRead tB2 lamNeg := by decide +kernel
+theorem pin71 : ¬ ∀ j, j < tB2.posFolds.length →
     BPair.marginN (dotB fundB2 (posCorootV tB2 j) (rhoV tB2))
       ≤ BPair.marginN
           (dotB fundB2 (posCorootV tB2 j) (lamrho tB2 lamNeg)) := by
@@ -457,47 +459,80 @@ the head's gap fold with the falling-product law, the run's
 floor-free gap product, and the unit display as the run at floor
 one. -/
 
-example : weyldim.descRun 4 3 = [6, 5, 4] := by decide +kernel
-example : weyldim.descRun 1 4 = [4, 3, 2, 1] := by decide +kernel
-example : (weyldim.descRun 5 7).length = 7 := weyldim.length_descRun 5 7
-example : weyldim.gapHead 9 [6, 5, 4] = 60 := by decide +kernel
-example : weyldim.gapHead 9 ([6, 5] ++ [4])
+theorem pin72 : weyldim.descRun 4 3 = [6, 5, 4] := by decide +kernel
+theorem pin73 : weyldim.descRun 1 4 = [4, 3, 2, 1] := by decide +kernel
+theorem pin74 : (weyldim.descRun 5 7).length = 7 := weyldim.length_descRun 5 7
+theorem pin75 : weyldim.gapHead 9 [6, 5, 4] = 60 := by decide +kernel
+theorem pin76 : weyldim.gapHead 9 ([6, 5] ++ [4])
     = weyldim.gapHead 9 [6, 5] * weyldim.gapHead 9 [4] :=
   weyldim.gapHead_append 9 [6, 5] [4]
-example : weyldim.gapHead 7 (3 :: [2]) = (7 - 3) * weyldim.gapHead 7 [2] :=
+theorem pin77 : weyldim.gapHead 7 (3 :: [2]) = (7 - 3) * weyldim.gapHead 7 [2] :=
   weyldim.gapHead_cons 7 3 [2]
-example : weyldim.gapProd [6, 5, 4]
+theorem pin78 : weyldim.gapProd [6, 5, 4]
     = weyldim.gapHead 6 [5, 4] * weyldim.gapProd [5, 4] :=
   weyldim.gapProd_cons 6 [5, 4]
-example : weyldim.gapHead (3 + 2 + 4) (weyldim.descRun 4 3)
+theorem pin79 : weyldim.gapHead (3 + 2 + 4) (weyldim.descRun 4 3)
     * ground.factorial 2 = ground.factorial (3 + 2) :=
   weyldim.gapHead_descRun 4 3 2
-example : weyldim.gapProd (weyldim.descRun 4 5)
+theorem pin80 : weyldim.gapProd (weyldim.descRun 4 5)
     = weyldim.gapProd (weyldim.descRun 9 5) :=
   weyldim.gapProd_descRun 4 9 5
-example : weyldim.gapProd (weyldim.descRun 4 5) = 288 := by decide +kernel
-example : weyldim.gapProd (weyldim.descRun 3 4)
+theorem pin81 : weyldim.gapProd (weyldim.descRun 4 5) = 288 := by decide +kernel
+theorem pin82 : weyldim.gapProd (weyldim.descRun 3 4)
     = ground.factorial 3 * weyldim.gapProd (weyldim.descRun 3 3) :=
   weyldim.gapProd_descRun_succ 3 3
-example : weyldim.gapProd (weyldim.descRun 4 2 ++ [2, 1])
+theorem pin83 : weyldim.gapProd (weyldim.descRun 4 2 ++ [2, 1])
     = weyldim.gapProd (weyldim.descRun 4 2)
       * (weyldim.gapProd [2, 1] * weyldim.gapRun [2, 1] 4 2) :=
   weyldim.gapProd_descRun_app [2, 1] 4 2
-example : weyldim.gapRun [2, 1] 4 2 = 72 := by decide +kernel
-example : weyldim.descRun 4 3 = weyldim.descRun (4 + 1) 2 ++ [4] :=
+theorem pin84 : weyldim.gapRun [2, 1] 4 2 = 72 := by decide +kernel
+theorem pin85 : weyldim.descRun 4 3 = weyldim.descRun (4 + 1) 2 ++ [4] :=
   weyldim.descRun_snoc 4 2
-example : List.zipWith (fun l u => l + u) (List.replicate 3 2)
+theorem pin86 : List.zipWith (fun l u => l + u) (List.replicate 3 2)
     (weyldim.descRun 1 3) = weyldim.descRun 3 3 :=
   weyldim.zipWith_descRun 2 1 3
-example : places.unitDisp 5 = weyldim.descRun 1 5 :=
+theorem pin87 : places.unitDisp 5 = weyldim.descRun 1 5 :=
   weyldim.unitDisp_descRun 5
-example : 0 < weyldim.gapProd (places.display (List.replicate 4 0)) :=
+theorem pin88 : 0 < weyldim.gapProd (places.display (List.replicate 4 0)) :=
   weyldim.gapProdU_pos ([2, 0, 1, 0] : places.Shape)
 
 /-! The class read: the dimension is blind to the full-column
 key's occupancy. -/
 
-example : weyldim.dimOf [1, 2] = weyldim.dimOf [1, 0] := by decide +kernel
-example : weyldim.dimOf [2, 1, 3] = weyldim.dimOf [2, 1, 0] := by decide +kernel
-example : weyldim.dimOf [2, 1, 3] = weyldim.dimOf [2, 1, 0] :=
+theorem pin89 : weyldim.dimOf [1, 2] = weyldim.dimOf [1, 0] := by decide +kernel
+theorem pin90 : weyldim.dimOf [2, 1, 3] = weyldim.dimOf [2, 1, 0] := by decide +kernel
+theorem pin91 : weyldim.dimOf [2, 1, 3] = weyldim.dimOf [2, 1, 0] :=
   weyldim.dimOf_snoc [2, 1] 3
+
+
+-- the run's head gap fold at the falling product: `6 · 5 = 30` at the count two
+-- from the natural five, decided and through the theorem
+theorem pin92 : weyldim.gapHead (2 + 3 + 1) (weyldim.descRun 1 2) = ffall (2 + 3) 2 := by decide +kernel
+theorem pin93 : weyldim.gapHead (2 + 3 + 1) (weyldim.descRun 1 2) = ffall (2 + 3) 2 :=
+  weyldim.gapHead_descRun_ffall 1 2 3
+
+/-! The gap product at its place-pair fold. -/
+
+theorem pin94 : weyldim.gapProd [6, 3, 1] = famFold Nat.mul 1
+    (fun p => getAt 0 [6, 3, 1] p.1 - getAt 0 [6, 3, 1] p.2)
+    (places.pairsOf 3) := weyldim.gapProd_pairs [6, 3, 1]
+theorem pin95 : weyldim.gapProd [6, 3, 1] = 30 := by decide +kernel
+
+/-- Principal specialization exchanges at symbolic coroot data,
+including singular seeds and every queried graded degree. -/
+theorem pin96 (x y : List BPair) (hx : x.length = 2) (hy : y.length = 2) (p : Nat × Bool) :
+    ground.countOf p (dmap sertables.fundG2 (sertables.dotB sertables.fundG2 x y) y (sertables.weylG2 x))
+      = ground.countOf p (dmap sertables.fundG2 (sertables.dotB sertables.fundG2 y x) x (sertables.weylG2 y)) :=
+  dmap_exchange_G2 x y hx hy p
+
+/-- Relisting keeps repeated occurrences at their original counts. -/
+theorem pin97 (F : sertables.FundData) (s : BPair) (v : List BPair)
+    (W : List (List BPair × Bool)) (p : Nat × Bool) :
+    ground.countOf p (dmap F s v W.reverse) = ground.countOf p (dmap F s v W) :=
+  dmap_counts F s v W.reverse W (fun q => ground.countOf_reverse q W) p
+
+theorem pin98 (s : Shape) : 0 < dimOf s := dimOf_pos s
+
+theorem pin99 (n : Nat) : dimOf (List.replicate n 0) = 1 := dimOf_unit n
+
+end weyldim

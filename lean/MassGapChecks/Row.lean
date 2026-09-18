@@ -38,89 +38,91 @@ count nought beside them.  The forge tier carries one committed
 refusal per load-bearing binder, and the binder classification
 sits at its head.
 -/
+
+namespace row
 set_option maxHeartbeats 4000000
 
-open ground gentable sertables row
+open ground gentable sertables
 
 /-! The support count: one at every member off the `A`-series. -/
 
-example : supportCount (tableB 2) = 1 := by decide +kernel
-example : supportCount (tableB 3) = 1 := by decide +kernel
-example : supportCount (tableB 4) = 1 := by decide +kernel
-example : supportCount (tableC 3) = 1 := by decide +kernel
-example : supportCount (tableC 4) = 1 := by decide +kernel
-example : supportCount (tableD 4) = 1 := by decide +kernel
-example : supportCount (tableD 5) = 1 := by decide +kernel
-example : supportCount tableG2 = 1 := by decide +kernel
-example : supportCount tableF4 = 1 := by decide +kernel
-example : supportCount tableE6 = 1 := by decide +kernel
-example : supportCount tableE7 = 1 := by decide +kernel
-example : supportCount tableE8 = 1 := by decide +kernel
+theorem pin1 : supportCount (tableB 2) = 1 := by decide +kernel
+theorem pin2 : supportCount (tableB 3) = 1 := by decide +kernel
+theorem pin3 : supportCount (tableB 4) = 1 := by decide +kernel
+theorem pin4 : supportCount (tableC 3) = 1 := by decide +kernel
+theorem pin5 : supportCount (tableC 4) = 1 := by decide +kernel
+theorem pin6 : supportCount (tableD 4) = 1 := by decide +kernel
+theorem pin7 : supportCount (tableD 5) = 1 := by decide +kernel
+theorem pin8 : supportCount tableG2 = 1 := by decide +kernel
+theorem pin9 : supportCount tableF4 = 1 := by decide +kernel
+theorem pin10 : supportCount tableE6 = 1 := by decide +kernel
+theorem pin11 : supportCount tableE7 = 1 := by decide +kernel
+theorem pin12 : supportCount tableE8 = 1 := by decide +kernel
 
 /-! The `A`-series: two at `r ≥ 2`, one at the first member. -/
 
-example : supportCount (tableA 1) = 1 := by decide +kernel
-example : supportCount (tableA 2) = 2 := by decide +kernel
-example : supportCount (tableA 3) = 2 := by decide +kernel
-example : supportCount (tableA 5) = 2 := by decide +kernel
+theorem pin13 : supportCount (tableA 1) = 1 := by decide +kernel
+theorem pin14 : supportCount (tableA 2) = 2 := by decide +kernel
+theorem pin15 : supportCount (tableA 3) = 2 := by decide +kernel
+theorem pin16 : supportCount (tableA 5) = 2 := by decide +kernel
 
 /-! The two routes' one value at the shared instances: the fast
 fusion count against the support count, the crown pattern. -/
 
-example : xfusion.c1 2 = supportCount (tableA 1) := by decide +kernel
-example : xfusion.c1 3 = supportCount (tableA 2) := by decide +kernel
-example : xfusion.c1 4 = supportCount (tableA 3) := by decide +kernel
-example : xfusion.c1 6 = supportCount (tableA 5) := by decide +kernel
+theorem pin17 : xfusion.c1 2 = supportCount (tableA 1) := by decide +kernel
+theorem pin18 : xfusion.c1 3 = supportCount (tableA 2) := by decide +kernel
+theorem pin19 : xfusion.c1 4 = supportCount (tableA 3) := by decide +kernel
+theorem pin20 : xfusion.c1 6 = supportCount (tableA 5) := by decide +kernel
 
 /-! The dimension fold at the displayed member formulas. -/
 
-example : 2 * dTheta (tableB 2)
+theorem pin21 : 2 * dTheta (tableB 2)
     = (residue (tableB 2) + 2) * (residue (tableB 2) + 3) := by decide +kernel
-example : 2 * dTheta (tableB 3)
+theorem pin22 : 2 * dTheta (tableB 3)
     = (residue (tableB 3) + 2) * (residue (tableB 3) + 3) := by decide +kernel
-example : 2 * dTheta (tableB 4)
+theorem pin23 : 2 * dTheta (tableB 4)
     = (residue (tableB 4) + 2) * (residue (tableB 4) + 3) := by decide +kernel
-example : dTheta (tableC 3)
+theorem pin24 : dTheta (tableC 3)
     = residue (tableC 3) * (2 * residue (tableC 3) + 1) := by decide +kernel
-example : dTheta (tableC 4)
+theorem pin25 : dTheta (tableC 4)
     = residue (tableC 4) * (2 * residue (tableC 4) + 1) := by decide +kernel
-example : 2 * dTheta (tableD 4)
+theorem pin26 : 2 * dTheta (tableD 4)
     = (residue (tableD 4) + 2) * (residue (tableD 4) + 3) := by decide +kernel
-example : 2 * dTheta (tableD 5)
+theorem pin27 : 2 * dTheta (tableD 5)
     = (residue (tableD 5) + 2) * (residue (tableD 5) + 3) := by decide +kernel
-example : dTheta (tableA 4)
+theorem pin28 : dTheta (tableA 4)
     = residue (tableA 4) * (residue (tableA 4) + 2) := by decide +kernel
-example : dTheta tableG2 = 14 := by decide +kernel
-example : dTheta tableF4 = 52 := by decide +kernel
-example : dTheta tableE6 = 78 := by decide +kernel
-example : dTheta tableE7 = 133 := by decide +kernel
-example : dTheta tableE8 = 248 := by decide +kernel
+theorem pin29 : dTheta tableG2 = 14 := by decide +kernel
+theorem pin30 : dTheta tableF4 = 52 := by decide +kernel
+theorem pin31 : dTheta tableE6 = 78 := by decide +kernel
+theorem pin32 : dTheta tableE7 = 133 := by decide +kernel
+theorem pin33 : dTheta tableE8 = 248 := by decide +kernel
 
 /-! The dimension fold against `cor:weyldim`'s gap-product route
 at the shared `A`-instances, the adjoint's reduced shape. -/
 
-example : weyldim.dimOf (adjchar.theta 3) = dTheta (tableA 2) := by decide +kernel
-example : weyldim.dimOf (adjchar.theta 4) = dTheta (tableA 3) := by decide +kernel
+theorem pin34 : weyldim.dimOf (adjchar.theta 3) = dTheta (tableA 2) := by decide +kernel
+theorem pin35 : weyldim.dimOf (adjchar.theta 4) = dTheta (tableA 3) := by decide +kernel
 
 /-! The member join `Σ_α ⟨α,α⟩ = ℓ(r+1)` at the displayed length
 folds, the `E_7` and `E_8` reads the module's heavy pins. -/
 
-example : lenFoldRead (tableB 2) 6 := by decide +kernel
-example : lenFoldRead (tableB 3) 15 := by decide +kernel
-example : lenFoldRead (tableB 4) 28 := by decide +kernel
-example : lenFoldRead (tableC 3) 12 := by decide +kernel
-example : lenFoldRead (tableC 4) 20 := by decide +kernel
-example : lenFoldRead (tableD 4) 24 := by decide +kernel
-example : lenFoldRead (tableD 5) 40 := by decide +kernel
-example : lenFoldRead tableG2 8 := by decide +kernel
-example : lenFoldRead tableF4 36 := by decide +kernel
-example : lenFoldRead tableE6 72 := by decide +kernel
+theorem pin36 : lenFoldRead (tableB 2) 6 := by decide +kernel
+theorem pin37 : lenFoldRead (tableB 3) 15 := by decide +kernel
+theorem pin38 : lenFoldRead (tableB 4) 28 := by decide +kernel
+theorem pin39 : lenFoldRead (tableC 3) 12 := by decide +kernel
+theorem pin40 : lenFoldRead (tableC 4) 20 := by decide +kernel
+theorem pin41 : lenFoldRead (tableD 4) 24 := by decide +kernel
+theorem pin42 : lenFoldRead (tableD 5) 40 := by decide +kernel
+theorem pin43 : lenFoldRead tableG2 8 := by decide +kernel
+theorem pin44 : lenFoldRead tableF4 36 := by decide +kernel
+theorem pin45 : lenFoldRead tableE6 72 := by decide +kernel
 
 set_option maxHeartbeats 16000000 in
-example : lenFoldRead tableE7 126 := by decide +kernel
+theorem pin46 : lenFoldRead tableE7 126 := by decide +kernel
 
 set_option maxHeartbeats 16000000 in
-example : lenFoldRead tableE8 240 := by decide +kernel
+theorem pin47 : lenFoldRead tableE8 240 := by decide +kernel
 
 /-! The diagonal tier's data at `B_2` and `G_2`: the θ content list
 at the adjoint dimension's own count — the vacant content at the
@@ -185,15 +187,15 @@ the adjoint dimension against the θ content list's own count.  The
 occupied support and the length folds stand at the member tier's
 pins above, the diagonal tier reading them where they sit. -/
 
-example : zCount tB2 = 1 := by decide +kernel
-example : zCount tableG2 = 1 := by decide +kernel
-example : supportCount tB2 + zCount tB2 = tB2.rank := by decide +kernel
-example : supportCount tableG2 + zCount tableG2 = tableG2.rank := by
+theorem pin48 : zCount tB2 = 1 := by decide +kernel
+theorem pin49 : zCount tableG2 = 1 := by decide +kernel
+theorem pin50 : supportCount tB2 + zCount tB2 = tB2.rank := by decide +kernel
+theorem pin51 : supportCount tableG2 + zCount tableG2 = tableG2.rank := by
   decide +kernel
-example : dTheta tB2 = 10 := by decide +kernel
-example : dTheta tB2 = thFamB2.length := by decide +kernel
-example : dTheta tableG2 = thFamG2.length := by decide +kernel
-example : cVsB2
+theorem pin52 : dTheta tB2 = 10 := by decide +kernel
+theorem pin53 : dTheta tB2 = thFamB2.length := by decide +kernel
+theorem pin54 : dTheta tableG2 = thFamG2.length := by decide +kernel
+theorem pin55 : cVsB2
     = [poly.pnorm (elim.vecScale (BPair.ofNat 1) (thetaV tB2))] := by
   decide +kernel
 
@@ -203,29 +205,29 @@ three clauses with the matched-list carrier at both members, the
 shape, closure and top reads with the tie's kept square at each of
 the three tower keys. -/
 
-example : thetaFamRead tB2 thFamB2 := by decide +kernel
-example : memberchar.mShapeRead tB2 thFamB2 := by decide +kernel
-example : thetaFamRead tableG2 thFamG2 := by decide +kernel
-example : memberchar.mShapeRead tableG2 thFamG2 := by decide +kernel
-example : rhoLenRead tB2 fundB2 := by decide +kernel
-example : rhoLenRead tableG2 fundG2 := by decide +kernel
-example : memberchar.lamRead tB2 (thetaV tB2) := by decide +kernel
-example : memberchar.lamRead tableG2 (thetaV tableG2) := by decide +kernel
+theorem pin56 : thetaFamRead tB2 thFamB2 := by decide +kernel
+theorem pin57 : memberchar.mShapeRead tB2 thFamB2 := by decide +kernel
+theorem pin58 : thetaFamRead tableG2 thFamG2 := by decide +kernel
+theorem pin59 : memberchar.mShapeRead tableG2 thFamG2 := by decide +kernel
+theorem pin60 : rhoLenRead tB2 fundB2 := by decide +kernel
+theorem pin61 : rhoLenRead tableG2 fundG2 := by decide +kernel
+theorem pin62 : memberchar.lamRead tB2 (thetaV tB2) := by decide +kernel
+theorem pin63 : memberchar.lamRead tableG2 (thetaV tableG2) := by decide +kernel
 
-example : wShapeRead tB2 wKap1B2 := by decide +kernel
-example : assembly.wCloseRead tB2 wKap1B2 := by decide +kernel
-example : assembly.wTopAt wKap1B2 (kappaV tB2 1) := by decide +kernel
-example : sqAtRead fundB2 wKap1B2 (kappaV tB2 1) := by decide +kernel
+theorem pin64 : wShapeRead tB2 wKap1B2 := by decide +kernel
+theorem pin65 : assembly.wCloseRead tB2 wKap1B2 := by decide +kernel
+theorem pin66 : assembly.wTopAt wKap1B2 (kappaV tB2 1) := by decide +kernel
+theorem pin67 : sqAtRead fundB2 wKap1B2 (kappaV tB2 1) := by decide +kernel
 
-example : wShapeRead tB2 wKap2B2 := by decide +kernel
-example : assembly.wCloseRead tB2 wKap2B2 := by decide +kernel
-example : assembly.wTopAt wKap2B2 (kappaV tB2 2) := by decide +kernel
-example : sqAtRead fundB2 wKap2B2 (kappaV tB2 2) := by decide +kernel
+theorem pin68 : wShapeRead tB2 wKap2B2 := by decide +kernel
+theorem pin69 : assembly.wCloseRead tB2 wKap2B2 := by decide +kernel
+theorem pin70 : assembly.wTopAt wKap2B2 (kappaV tB2 2) := by decide +kernel
+theorem pin71 : sqAtRead fundB2 wKap2B2 (kappaV tB2 2) := by decide +kernel
 
-example : wShapeRead tB2 wB2 := by decide +kernel
-example : assembly.wCloseRead tB2 wB2 := by decide +kernel
-example : assembly.wTopAt wB2 (kappaV tB2 0) := by decide +kernel
-example : sqAtRead fundB2 wB2 (kappaV tB2 0) := by decide +kernel
+theorem pin72 : wShapeRead tB2 wB2 := by decide +kernel
+theorem pin73 : assembly.wCloseRead tB2 wB2 := by decide +kernel
+theorem pin74 : assembly.wTopAt wB2 (kappaV tB2 0) := by decide +kernel
+theorem pin75 : sqAtRead fundB2 wB2 (kappaV tB2 0) := by decide +kernel
 
 /-! The core by the theorem route at `m = 1` and `m = 2`, every
 binder at kernel `decide`, with the display's computed twin beside
@@ -233,7 +235,7 @@ each: the even count the coordinate count and the odd count θ's
 vacant coroot support, one at both keys — the `m`-constancy the
 second key's own read. -/
 
-example : memberchar.convCount wKap1B2 thFamB2 (kappaV tB2 1) false
+theorem pin76 : memberchar.convCount wKap1B2 thFamB2 (kappaV tB2 1) false
       = tB2.rank
     ∧ memberchar.convCount wKap1B2 thFamB2 (kappaV tB2 1) true
       = zCount tB2 :=
@@ -242,11 +244,11 @@ example : memberchar.convCount wKap1B2 thFamB2 (kappaV tB2 1) false
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : memberchar.convCount wKap1B2 thFamB2 (kappaV tB2 1) false = 2
+theorem pin77 : memberchar.convCount wKap1B2 thFamB2 (kappaV tB2 1) false = 2
     ∧ memberchar.convCount wKap1B2 thFamB2 (kappaV tB2 1) true = 1 := by
   decide +kernel
 
-example : memberchar.convCount wKap2B2 thFamB2 (kappaV tB2 2) false
+theorem pin78 : memberchar.convCount wKap2B2 thFamB2 (kappaV tB2 2) false
       = tB2.rank
     ∧ memberchar.convCount wKap2B2 thFamB2 (kappaV tB2 2) true
       = zCount tB2 :=
@@ -255,14 +257,14 @@ example : memberchar.convCount wKap2B2 thFamB2 (kappaV tB2 2) false
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : memberchar.convCount wKap2B2 thFamB2 (kappaV tB2 2) false = 2
+theorem pin79 : memberchar.convCount wKap2B2 thFamB2 (kappaV tB2 2) false = 2
     ∧ memberchar.convCount wKap2B2 thFamB2 (kappaV tB2 2) true = 1 := by
   decide +kernel
 
 /-! The vacuum by the theorem route with its twin: both counts the
 coordinate count, `prop:row`'s defect at the shared `ρ`-orbit. -/
 
-example : memberchar.convCount wB2 thFamB2 (kappaV tB2 0) false
+theorem pin80 : memberchar.convCount wB2 thFamB2 (kappaV tB2 0) false
       = tB2.rank
     ∧ memberchar.convCount wB2 thFamB2 (kappaV tB2 0) true = tB2.rank :=
   defectValues tB2 fundB2 wB2 thFamB2
@@ -270,7 +272,7 @@ example : memberchar.convCount wB2 thFamB2 (kappaV tB2 0) false
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : memberchar.convCount wB2 thFamB2 (kappaV tB2 0) false = 2
+theorem pin81 : memberchar.convCount wB2 thFamB2 (kappaV tB2 0) false = 2
     ∧ memberchar.convCount wB2 thFamB2 (kappaV tB2 0) true = 2 := by
   decide +kernel
 
@@ -279,7 +281,7 @@ channel list at `mθ`, its `memberAt` read the landed counts two and
 one — with the computed twin beside it: the diagonal's value θ's
 occupied coroot support. -/
 
-example : ground.countOf
+theorem pin82 : ground.countOf
       (poly.pnorm (elim.vecScale (BPair.ofNat 1) (thetaV tB2))) cVsB2
     = supportCount tB2 :=
   diagRead tB2 fundB2 wKap1B2 thFamB2 cVsB2 1
@@ -288,11 +290,11 @@ example : ground.countOf
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : steinberg.memberAt tB2 wKap1B2 thFamB2 cVsB2
+theorem pin83 : steinberg.memberAt tB2 wKap1B2 thFamB2 cVsB2
     (poly.pnorm (elim.vecScale (BPair.ofNat 1) (thetaV tB2))) := by
   decide +kernel
 
-example : ground.countOf
+theorem pin84 : ground.countOf
       (poly.pnorm (elim.vecScale (BPair.ofNat 1) (thetaV tB2))) cVsB2
     = 1 := by decide +kernel
 
@@ -303,18 +305,18 @@ at `m = 1` and `m = 2`, at `r = 1` and `r = 2` — and the vacuum's
 count nought beside them, the display's own separation at the
 tower's foot. -/
 
-example : steinberg.count (adjchar.theta 2) (adjchar.theta 2) [2, 1]
+theorem pin85 : steinberg.count (adjchar.theta 2) (adjchar.theta 2) [2, 1]
     = supportCount (tableA 1) := by decide +kernel
-example : steinberg.count (adjchar.theta 2) [4, 0] [4, 1]
+theorem pin86 : steinberg.count (adjchar.theta 2) [4, 0] [4, 1]
     = supportCount (tableA 1) := by decide +kernel
-example : steinberg.count (adjchar.theta 3) (adjchar.theta 3) [1, 1, 1]
+theorem pin87 : steinberg.count (adjchar.theta 3) (adjchar.theta 3) [1, 1, 1]
     = supportCount (tableA 2) := by decide +kernel
-example : steinberg.count (adjchar.theta 3) [2, 2, 0] [2, 2, 1]
+theorem pin88 : steinberg.count (adjchar.theta 3) [2, 2, 0] [2, 2, 1]
     = supportCount (tableA 2) := by decide +kernel
 
-example : steinberg.count (adjchar.theta 2) (List.replicate 2 0) [0, 1]
+theorem pin89 : steinberg.count (adjchar.theta 2) (List.replicate 2 0) [0, 1]
     = 0 := by decide +kernel
-example : steinberg.count (adjchar.theta 3) (List.replicate 3 0) [0, 0, 1]
+theorem pin90 : steinberg.count (adjchar.theta 3) (List.replicate 3 0) [0, 0, 1]
     = 0 := by decide +kernel
 
 /-! The forge tier, and the binder classification of the three
@@ -393,11 +395,11 @@ conclusion. -/
 
 private def thFamThird : List (List BPair) := thFamB2 ++ [zeroV]
 
-example : ¬ thetaFamRead tB2 thFamThird := by decide +kernel
-example : ground.countOf (List.replicate tB2.rank BPair.unit) thFamThird
+theorem pin91 : ¬ thetaFamRead tB2 thFamThird := by decide +kernel
+theorem pin92 : ground.countOf (List.replicate tB2.rank BPair.unit) thFamThird
     = 3 := by decide +kernel
-example : memberchar.mShapeRead tB2 thFamThird := by decide +kernel
-example : ¬ (memberchar.convCount wKap1B2 thFamThird (kappaV tB2 1) false
+theorem pin93 : memberchar.mShapeRead tB2 thFamThird := by decide +kernel
+theorem pin94 : ¬ (memberchar.convCount wKap1B2 thFamThird (kappaV tB2 1) false
     = tB2.rank) := by decide +kernel
 
 /-- The θ content list less the first positive member's coroot
@@ -412,22 +414,22 @@ private def thFamOffSimple : List (List BPair) :=
    [(BPair.ofNat 1).swap, BPair.unit],
    [BPair.ofNat 1, (BPair.ofNat 2).swap]]
 
-example : ¬ thetaFamRead tB2 thFamOffSimple := by decide +kernel
-example : ground.countOf (poly.pnorm (posCorootV tB2 0)) thFamOffSimple
+theorem pin95 : ¬ thetaFamRead tB2 thFamOffSimple := by decide +kernel
+theorem pin96 : ground.countOf (poly.pnorm (posCorootV tB2 0)) thFamOffSimple
     = 0 := by decide +kernel
-example : memberchar.mShapeRead tB2 thFamOffSimple := by decide +kernel
-example : ¬ (memberchar.convCount wKap1B2 thFamOffSimple (kappaV tB2 1)
+theorem pin97 : memberchar.mShapeRead tB2 thFamOffSimple := by decide +kernel
+theorem pin98 : ¬ (memberchar.convCount wKap1B2 thFamOffSimple (kappaV tB2 1)
     true = zCount tB2) := by decide +kernel
 
 private def thFamTie : List (List BPair) :=
   thFamB2 ++ [[(BPair.ofNat 3).swap, BPair.ofNat 6]]
 
-example : [(BPair.ofNat 3).swap, BPair.ofNat 6]
+theorem pin99 : [(BPair.ofNat 3).swap, BPair.ofNat 6]
     = poly.pnorm (elim.vecAdd (kappaV tB2 1)
         (poly.neg [BPair.ofNat 4, (BPair.ofNat 3).swap])) := by decide +kernel
-example : ¬ thetaFamRead tB2 thFamTie := by decide +kernel
-example : memberchar.mShapeRead tB2 thFamTie := by decide +kernel
-example : ¬ (memberchar.convCount wKap1B2 thFamTie (kappaV tB2 1) true
+theorem pin100 : ¬ thetaFamRead tB2 thFamTie := by decide +kernel
+theorem pin101 : memberchar.mShapeRead tB2 thFamTie := by decide +kernel
+theorem pin102 : ¬ (memberchar.convCount wKap1B2 thFamTie (kappaV tB2 1) true
     = zCount tB2) := by decide +kernel
 
 /-! `htop`'s isolating face at the doubled orbit, and the parity
@@ -435,23 +437,23 @@ flip's entangled refusal beside it. -/
 
 private def wKapDbl : List (List BPair × Bool) := wKap1B2 ++ wKap1B2
 
-example : ¬ assembly.wTopAt wKapDbl (kappaV tB2 1) := by decide +kernel
-example : wShapeRead tB2 wKapDbl := by decide +kernel
-example : assembly.wCloseRead tB2 wKapDbl := by decide +kernel
-example : sqAtRead fundB2 wKapDbl (kappaV tB2 1) := by decide +kernel
-example : ¬ (memberchar.convCount wKapDbl thFamB2 (kappaV tB2 1) false
+theorem pin103 : ¬ assembly.wTopAt wKapDbl (kappaV tB2 1) := by decide +kernel
+theorem pin104 : wShapeRead tB2 wKapDbl := by decide +kernel
+theorem pin105 : assembly.wCloseRead tB2 wKapDbl := by decide +kernel
+theorem pin106 : sqAtRead fundB2 wKapDbl (kappaV tB2 1) := by decide +kernel
+theorem pin107 : ¬ (memberchar.convCount wKapDbl thFamB2 (kappaV tB2 1) false
     = tB2.rank) := by decide +kernel
-example : ¬ (memberchar.convCount wKapDbl thFamB2 (kappaV tB2 1) true
+theorem pin108 : ¬ (memberchar.convCount wKapDbl thFamB2 (kappaV tB2 1) true
     = zCount tB2) := by decide +kernel
 
 private def wKapFlip : List (List BPair × Bool) :=
   ([BPair.ofNat 1, BPair.ofNat 3], true) :: wKap1B2.tail
 
-example : ¬ assembly.wTopAt wKapFlip (kappaV tB2 1) := by decide +kernel
-example : ¬ assembly.wCloseRead tB2 wKapFlip := by decide +kernel
-example : wShapeRead tB2 wKapFlip := by decide +kernel
-example : sqAtRead fundB2 wKapFlip (kappaV tB2 1) := by decide +kernel
-example : ¬ (memberchar.convCount wKapFlip thFamB2 (kappaV tB2 1) false
+theorem pin109 : ¬ assembly.wTopAt wKapFlip (kappaV tB2 1) := by decide +kernel
+theorem pin110 : ¬ assembly.wCloseRead tB2 wKapFlip := by decide +kernel
+theorem pin111 : wShapeRead tB2 wKapFlip := by decide +kernel
+theorem pin112 : sqAtRead fundB2 wKapFlip (kappaV tB2 1) := by decide +kernel
+theorem pin113 : ¬ (memberchar.convCount wKapFlip thFamB2 (kappaV tB2 1) false
     = tB2.rank) := by decide +kernel
 
 /-! `hclose`'s face: the qualifying letter's image of the top
@@ -466,13 +468,13 @@ private def wKapDrop : List (List BPair × Bool) :=
    ([BPair.ofNat 1, (BPair.ofNat 5).swap], true),
    ([(BPair.ofNat 1).swap, (BPair.ofNat 3).swap], false)]
 
-example : reflAt tB2 0 (kappaV tB2 1)
+theorem pin114 : reflAt tB2 0 (kappaV tB2 1)
     = [(BPair.ofNat 1).swap, BPair.ofNat 5] := by decide +kernel
-example : ¬ assembly.wCloseRead tB2 wKapDrop := by decide +kernel
-example : wShapeRead tB2 wKapDrop := by decide +kernel
-example : assembly.wTopAt wKapDrop (kappaV tB2 1) := by decide +kernel
-example : sqAtRead fundB2 wKapDrop (kappaV tB2 1) := by decide +kernel
-example : ¬ (memberchar.convCount wKapDrop thFamB2 (kappaV tB2 1) true
+theorem pin115 : ¬ assembly.wCloseRead tB2 wKapDrop := by decide +kernel
+theorem pin116 : wShapeRead tB2 wKapDrop := by decide +kernel
+theorem pin117 : assembly.wTopAt wKapDrop (kappaV tB2 1) := by decide +kernel
+theorem pin118 : sqAtRead fundB2 wKapDrop (kappaV tB2 1) := by decide +kernel
+theorem pin119 : ¬ (memberchar.convCount wKapDrop thFamB2 (kappaV tB2 1) true
     = zCount tB2) := by decide +kernel
 
 /-! `hksq`'s face: the orbit of the tower key joined to the third
@@ -489,20 +491,20 @@ private def wKapStray : List (List BPair × Bool) :=
    ([BPair.ofNat 2, (BPair.ofNat 7).swap], true),
    ([(BPair.ofNat 2).swap, (BPair.ofNat 3).swap], false)]
 
-example : [BPair.ofNat 2, BPair.ofNat 3]
+theorem pin120 : [BPair.ofNat 2, BPair.ofNat 3]
     = poly.pnorm (elim.vecAdd (kappaV tB2 1)
         (poly.pnorm (posCorootV tB2 2))) := by decide +kernel
-example : ¬ sqAtRead fundB2 wKapStray (kappaV tB2 1) := by decide +kernel
-example : wShapeRead tB2 wKapStray := by decide +kernel
-example : assembly.wCloseRead tB2 wKapStray := by decide +kernel
-example : assembly.wTopAt wKapStray (kappaV tB2 1) := by decide +kernel
-example : ¬ (memberchar.convCount wKapStray thFamB2 (kappaV tB2 1) false
+theorem pin121 : ¬ sqAtRead fundB2 wKapStray (kappaV tB2 1) := by decide +kernel
+theorem pin122 : wShapeRead tB2 wKapStray := by decide +kernel
+theorem pin123 : assembly.wCloseRead tB2 wKapStray := by decide +kernel
+theorem pin124 : assembly.wTopAt wKapStray (kappaV tB2 1) := by decide +kernel
+theorem pin125 : ¬ (memberchar.convCount wKapStray thFamB2 (kappaV tB2 1) false
     = tB2.rank) := by decide +kernel
 
 /-! `hm`'s face: the vacuum's own key, where the odd count reads the
 coordinate count against θ's vacant coroot support. -/
 
-example : ¬ (memberchar.convCount wB2 thFamB2 (kappaV tB2 0) true
+theorem pin126 : ¬ (memberchar.convCount wB2 thFamB2 (kappaV tB2 0) true
     = zCount tB2) := by decide +kernel
 
 /-! The `hrho` records, two axes.  The Gram box: the symmetric
@@ -520,17 +522,17 @@ private def gramAt (a b c s : Nat) : FundData :=
   ⟨[[BPair.ofNat a, BPair.ofNat b], [BPair.ofNat b, BPair.ofNat c]],
    s + 1, fundB2.simplePos, fundB2.perms⟩
 
-example : ∀ a, a < 7 → ∀ b, b < 7 → ∀ c, c < 7 → ∀ s, s < 3 →
+theorem pin127 : ∀ a, a < 7 → ∀ b, b < 7 → ∀ c, c < 7 → ∀ s, s < 3 →
     gramRead tB2 (gramAt a b c s) → rhoLenRead tB2 (gramAt a b c s) := by
   decide +kernel
 
-example : ¬ rhoLenRead tB2 (gramAt 2 2 1 0) := by decide +kernel
-example : ¬ gramRead tB2 (gramAt 2 2 1 0) := by decide +kernel
-example : fundShape tB2 (gramAt 2 2 1 0) := by decide +kernel
-example : gramSymRead (gramAt 2 2 1 0) := by decide +kernel
-example : rhoDotRead tB2 (gramAt 2 2 1 0) := by decide +kernel
-example : gramRead tB2 (gramAt 2 1 1 0) := by decide +kernel
-example : rhoLenRead tB2 (gramAt 2 1 1 0) := by decide +kernel
+theorem pin128 : ¬ rhoLenRead tB2 (gramAt 2 2 1 0) := by decide +kernel
+theorem pin129 : ¬ gramRead tB2 (gramAt 2 2 1 0) := by decide +kernel
+theorem pin130 : fundShape tB2 (gramAt 2 2 1 0) := by decide +kernel
+theorem pin131 : gramSymRead (gramAt 2 2 1 0) := by decide +kernel
+theorem pin132 : rhoDotRead tB2 (gramAt 2 2 1 0) := by decide +kernel
+theorem pin133 : gramRead tB2 (gramAt 2 1 1 0) := by decide +kernel
+theorem pin134 : rhoLenRead tB2 (gramAt 2 1 1 0) := by decide +kernel
 
 /-! The `hrho` isolating face, the positive-list axis: one member's
 fold respelled off the root list parts the ρ-length cap — the
@@ -548,31 +550,31 @@ private def LF : List (List BPair) :=
         [poly.pnorm (posCorootV tF j),
          poly.pnorm (poly.neg (posCorootV tF j))])
 
-example : ¬ rhoLenRead tF fundB2 := by decide +kernel
-example : ∀ j, j < tF.posFolds.length →
+theorem pin135 : ¬ rhoLenRead tF fundB2 := by decide +kernel
+theorem pin136 : ∀ j, j < tF.posFolds.length →
     BPair.unit ≤ dotB fundB2 (posCorootV tF j) (posCorootV tF j) := by
   decide +kernel
-example : ∀ j, j < tF.posFolds.length →
+theorem pin137 : ∀ j, j < tF.posFolds.length →
     ((dotB fundB2 (posCorootV tF j) (rhoV tF)
         + dotB fundB2 (posCorootV tF j) (rhoV tF)).oneValue
       (dotB fundB2 (posCorootV tF j) (posCorootV tF j))
     → ∃ i, i + 1 < tF.rank + 1
         ∧ j = ground.getAt 0 fundB2.simplePos i) := by decide +kernel
-example : fundShape tF fundB2 ∧ gramRead tF fundB2
+theorem pin138 : fundShape tF fundB2 ∧ gramRead tF fundB2
     ∧ gramSymRead fundB2 ∧ reflSquareRead tF
     ∧ simplePosRead tF fundB2 ∧ rhoDotRead tF fundB2 := by decide +kernel
-example : ∀ k, k < tF.rank →
+theorem pin139 : ∀ k, k < tF.rank →
     BPair.unit ≤ ground.getAt BPair.unit (thetaV tF) k := by decide +kernel
-example : wShapeRead tF wKap1B2 ∧ assembly.wCloseRead tF wKap1B2
+theorem pin140 : wShapeRead tF wKap1B2 ∧ assembly.wCloseRead tF wKap1B2
     ∧ assembly.wTopAt wKap1B2 (kappaV tF 1)
     ∧ sqAtRead fundB2 wKap1B2 (kappaV tF 1) := by decide +kernel
-example : memberchar.mShapeRead tF LF ∧ thetaFamRead tF LF := by
+theorem pin141 : memberchar.mShapeRead tF LF ∧ thetaFamRead tF LF := by
   decide +kernel
-example : memberchar.convCount wKap1B2 LF (kappaV tF 1) false
+theorem pin142 : memberchar.convCount wKap1B2 LF (kappaV tF 1) false
     = tF.rank := by decide +kernel
-example : ¬ (memberchar.convCount wKap1B2 LF (kappaV tF 1) true
+theorem pin143 : ¬ (memberchar.convCount wKap1B2 LF (kappaV tF 1) true
     = zCount tF) := by decide +kernel
-example : memberchar.convCount wKap1B2 LF (kappaV tF 1) true = 2 := by
+theorem pin144 : memberchar.convCount wKap1B2 LF (kappaV tF 1) true = 2 := by
   decide +kernel
 
 /-! The simples clause's own record: a duplicated simple fold parts
@@ -584,14 +586,14 @@ the clause the general table's own bound. -/
 private def tFc3 : Table :=
   { tB2 with posFolds := tB2.posFolds ++ [[1, 0]] }
 
-example : ¬ rhoLenRead tFc3 fundB2 := by decide +kernel
-example : ∀ j, j < tFc3.posFolds.length →
+theorem pin145 : ¬ rhoLenRead tFc3 fundB2 := by decide +kernel
+theorem pin146 : ∀ j, j < tFc3.posFolds.length →
     BPair.unit ≤ dotB fundB2 (posCorootV tFc3 j) (posCorootV tFc3 j)
     ∧ dotB fundB2 (posCorootV tFc3 j) (posCorootV tFc3 j)
       ≤ dotB fundB2 (posCorootV tFc3 j) (rhoV tFc3)
         + dotB fundB2 (posCorootV tFc3 j) (rhoV tFc3) := by decide +kernel
-example : thetaFamRead tFc3 thFamB2 := by decide +kernel
-example : memberchar.convCount wKap1B2 thFamB2 (kappaV tFc3 1) false
+theorem pin147 : thetaFamRead tFc3 thFamB2 := by decide +kernel
+theorem pin148 : memberchar.convCount wKap1B2 thFamB2 (kappaV tFc3 1) false
       = tFc3.rank
     ∧ memberchar.convCount wKap1B2 thFamB2 (kappaV tFc3 1) true
       = zCount tFc3 := by decide +kernel
@@ -602,31 +604,31 @@ conclusion standing — the shape reads' own no-isolation record. -/
 
 private def thFamShort : List (List BPair) := thFamB2 ++ [[BPair.unit]]
 
-example : ¬ memberchar.mShapeRead tB2 thFamShort := by decide +kernel
-example : ¬ thetaFamRead tB2 thFamShort := by decide +kernel
-example : memberchar.convCount wKap1B2 thFamShort (kappaV tB2 1) false
+theorem pin149 : ¬ memberchar.mShapeRead tB2 thFamShort := by decide +kernel
+theorem pin150 : ¬ thetaFamRead tB2 thFamShort := by decide +kernel
+theorem pin151 : memberchar.convCount wKap1B2 thFamShort (kappaV tB2 1) false
     = tB2.rank := by decide +kernel
-example : memberchar.convCount wKap1B2 thFamShort (kappaV tB2 1) true
+theorem pin152 : memberchar.convCount wKap1B2 thFamShort (kappaV tB2 1) true
     = zCount tB2 := by decide +kernel
 
 private def wKapShort : List (List BPair × Bool) :=
   wKap1B2 ++ [([BPair.unit], false)]
 
-example : ¬ wShapeRead tB2 wKapShort := by decide +kernel
-example : ¬ assembly.wCloseRead tB2 wKapShort := by decide +kernel
-example : ¬ sqAtRead fundB2 wKapShort (kappaV tB2 1) := by decide +kernel
-example : assembly.wTopAt wKapShort (kappaV tB2 1) := by decide +kernel
-example : memberchar.convCount wKapShort thFamB2 (kappaV tB2 1) false
+theorem pin153 : ¬ wShapeRead tB2 wKapShort := by decide +kernel
+theorem pin154 : ¬ assembly.wCloseRead tB2 wKapShort := by decide +kernel
+theorem pin155 : ¬ sqAtRead fundB2 wKapShort (kappaV tB2 1) := by decide +kernel
+theorem pin156 : assembly.wTopAt wKapShort (kappaV tB2 1) := by decide +kernel
+theorem pin157 : memberchar.convCount wKapShort thFamB2 (kappaV tB2 1) false
     = tB2.rank := by decide +kernel
-example : memberchar.convCount wKapShort thFamB2 (kappaV tB2 1) true
+theorem pin158 : memberchar.convCount wKapShort thFamB2 (kappaV tB2 1) true
     = zCount tB2 := by decide +kernel
 
 /-! `diagRead`'s exhaustion at the vacant channel list: the display's
 count reads nought against θ's occupied coroot support. -/
 
-example : ¬ steinberg.memberAt tB2 wKap1B2 thFamB2 []
+theorem pin159 : ¬ steinberg.memberAt tB2 wKap1B2 thFamB2 []
     (poly.pnorm (elim.vecScale (BPair.ofNat 1) (thetaV tB2))) := by decide +kernel
-example : ¬ (ground.countOf
+theorem pin160 : ¬ (ground.countOf
       (poly.pnorm (elim.vecScale (BPair.ofNat 1) (thetaV tB2)))
       ([] : List (List BPair)) = supportCount tB2) := by decide +kernel
 
@@ -634,7 +636,7 @@ example : ¬ (ground.countOf
 member-side read, the channel count nought by the theorem route
 with its twin. -/
 
-example : ground.countOf
+theorem pin161 : ground.countOf
       (poly.pnorm (elim.vecScale (BPair.ofNat 0) (thetaV tB2)))
       ([] : List (List BPair)) = 0 :=
   defectRead tB2 fundB2 wB2 thFamB2 []
@@ -642,7 +644,7 @@ example : ground.countOf
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : steinberg.memberAt tB2 wB2 thFamB2 []
+theorem pin162 : steinberg.memberAt tB2 wB2 thFamB2 []
     (poly.pnorm (elim.vecScale (BPair.ofNat 0) (thetaV tB2))) := by
   decide +kernel
 
@@ -652,19 +654,21 @@ support count is vacant, the fold walking its rank alone. -/
 
 private def rankFreeT : Table := ⟨0, [], 1, [[BPair.ofNat 2]], [], [1]⟩
 
-example : ¬ (corootAt rankFreeT rankFreeT.thetaFold 0).oneValue
+theorem pin163 : ¬ (corootAt rankFreeT rankFreeT.thetaFold 0).oneValue
     BPair.unit := by decide +kernel
-example : ¬ 0 < supportCount rankFreeT := by decide +kernel
+theorem pin164 : ¬ 0 < supportCount rankFreeT := by decide +kernel
 
 /-! The `A` support's occupancy at a fresh rank, the theorem
 route. -/
 
-example : 0 < supportCount (tableA 9) :=
+theorem pin165 : 0 < supportCount (tableA 9) :=
   supportCount_tableA_pos 9 (Nat.succ_pos 8)
 
-example : 0 < supportCount (sertables.tableB 9) :=
+theorem pin166 : 0 < supportCount (sertables.tableB 9) :=
   supportCount_tableB_pos 7
-example : 0 < supportCount (sertables.tableC 9) :=
+theorem pin167 : 0 < supportCount (sertables.tableC 9) :=
   supportCount_tableC_pos 6
-example : 0 < supportCount (sertables.tableD 9) :=
+theorem pin168 : 0 < supportCount (sertables.tableD 9) :=
   supportCount_tableD_pos 5
+
+end row

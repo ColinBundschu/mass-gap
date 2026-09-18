@@ -79,14 +79,14 @@ private def corootB (t : Table) (E : EndFold) : Bool :=
 `Σ_k b_k α_k(α_j^∨) = e μ(α_j^∨)` at every key. -/
 def corootRead (t : Table) (E : EndFold) : Prop := corootB t E = true
 
-instance (t : Table) (E : EndFold) : Decidable (corootRead t E) :=
+instance instCasfloor1 (t : Table) (E : EndFold) : Decidable (corootRead t E) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- A member list's witness read, one coroot witness per entry. -/
 def endsRead (t : Table) (ends : List EndFold) : Prop :=
   (ends.all (corootB t)) = true
 
-instance (t : Table) (ends : List EndFold) :
+instance instCasfloor2 (t : Table) (ends : List EndFold) :
     Decidable (endsRead t ends) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -108,7 +108,7 @@ cross-multiplied identity. -/
 def c2Read (t : Table) (E : EndFold) (p q : Nat) : Prop :=
   q * c2Num t E = p * c2Den t E
 
-instance (t : Table) (E : EndFold) (p q : Nat) :
+instance instCasfloor3 (t : Table) (E : EndFold) (p q : Nat) :
     Decidable (c2Read t E p q) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -119,7 +119,7 @@ def floorRead (t : Table) (ends : List EndFold) (p q : Nat) : Prop :=
    (vals.all (fun v => p * v.2 ≤ q * v.1))
      && (vals.any (fun v => p * v.2 == q * v.1))) = true
 
-instance (t : Table) (ends : List EndFold) (p q : Nat) :
+instance instCasfloor4 (t : Table) (ends : List EndFold) (p q : Nat) :
     Decidable (floorRead t ends p q) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -180,7 +180,7 @@ def fundShape (j g : Nat) : places.Shape :=
 def endpointRead (j g : Nat) : Prop :=
   c2hat.dfQ (fundShape j g) = j * g * (j + g + 1)
 
-instance (j g : Nat) : Decidable (endpointRead j g) :=
+instance instCasfloor5 (j g : Nat) : Decidable (endpointRead j g) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-! The descent's row-level kit (`lem:casfloor`'s proof): the walk

@@ -52,9 +52,11 @@ branch at `d_f = 5` on `con:res`'s adjoint-site instances.  The
 module's cost is the coherence pin's two symbolic `wg.pairPhi wg.evalPhi`
 reads at the six-factor site, the `padj (gramWg 3)` adjugate under
 kernel reduction. -/
+
+namespace kernel
 set_option maxHeartbeats 16000000
 
-open ground poly genericlift states kernel
+open ground poly genericlift states
 
 private def f4 : FList :=
   [(0, false), (0, false), (0, true), (0, true)]
@@ -65,36 +67,36 @@ private def f3 : FList :=
 /-! The canonical rotation, and the word multisets at
 `[U, U, U†, U†]`: exchanged repeated positions one state. -/
 
-example : canonRot [2, 0, 1] = [0, 1, 2] := by decide +kernel
-example : wordsOf f4 [2, 3, 0, 1] = [[0, 1], [0, 1]] := by decide +kernel
-example : oneState f4 [2, 3, 0, 1] [3, 2, 1, 0] := by decide +kernel
-example : ¬ oneState f4 [2, 3, 0, 1] [1, 2, 3, 0] := by decide +kernel
+theorem pin1 : canonRot [2, 0, 1] = [0, 1, 2] := by decide +kernel
+theorem pin2 : wordsOf f4 [2, 3, 0, 1] = [[0, 1], [0, 1]] := by decide +kernel
+theorem pin3 : oneState f4 [2, 3, 0, 1] [3, 2, 1, 0] := by decide +kernel
+theorem pin4 : ¬ oneState f4 [2, 3, 0, 1] [1, 2, 3, 0] := by decide +kernel
 
 /-! The combination equality at the word keys: the gauge pair one
 state at every coefficient, the doubled coefficient and the zero
 second member refused. -/
 
-example : combEqRead f4 [([2, 3, 0, 1], pOne)]
+theorem pin5 : combEqRead f4 [([2, 3, 0, 1], pOne)]
     [([3, 2, 1, 0], pOne)] := by decide +kernel
-example : ¬ combEqRead f4 [([2, 3, 0, 1], pOne)]
+theorem pin6 : ¬ combEqRead f4 [([2, 3, 0, 1], pOne)]
     [([3, 2, 1, 0], ([⟨3, 1⟩], [⟨2, 1⟩]))] := by decide +kernel
-example : ¬ combEqRead [(0, false)]
+theorem pin7 : ¬ combEqRead [(0, false)]
     [([0], ([⟨2, 1⟩], [])), ([0], ([⟨2, 1⟩], []))]
     [([0], ([⟨6, 1⟩], [⟨2, 1⟩]))] := by decide +kernel
 
 /-! The kernel read's refusals: the three forged shapes and the
 off-kernel vector. -/
 
-example : ¬ kernelRead f2 [[0, 1], [1, 0]]
+theorem pin8 : ¬ kernelRead f2 [[0, 1], [1, 0]]
     [(poly.one, []), (poly.one, [])]
     ⟨4, 1⟩ := by decide +kernel
-example : ¬ kernelRead f2 [[0, 1], [1, 0]]
+theorem pin9 : ¬ kernelRead f2 [[0, 1], [1, 0]]
     [([⟨1, 2⟩, ⟨2, 1⟩], [⟨2, 1⟩]), ([⟨1, 2⟩, ⟨2, 1⟩], [⟨2, 1⟩])]
     ⟨4, 1⟩ := by decide +kernel
-example : ¬ kernelRead
+theorem pin10 : ¬ kernelRead
     [(0, false), (0, false)] [[0, 1], [0, 1]]
     [([⟨2, 1⟩], [⟨2, 1⟩]), ([⟨1, 2⟩], [⟨2, 1⟩])] ⟨4, 1⟩ := by decide +kernel
-example : ¬ kernelRead f2 [[0, 1], [1, 0]]
+theorem pin11 : ¬ kernelRead f2 [[0, 1], [1, 0]]
     [([⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩]), ([⟨1, 2⟩], [⟨2, 1⟩])]
     ⟨4, 1⟩ := by decide +kernel
 
@@ -104,7 +106,7 @@ dependent, the shared determinant vanishing), so the symbolic
 checker refuses the record — its genuine null-ness is the direct
 tag's, the read here the boundary's own committed pin. -/
 
-example : ¬ kernelRead f3 [[0, 1, 2], [1, 0, 2], [1, 2, 0]]
+theorem pin12 : ¬ kernelRead f3 [[0, 1, 2], [1, 0, 2], [1, 2, 0]]
     [([⟨2, 1⟩], [⟨2, 1⟩]), ([⟨1, 4⟩], [⟨2, 1⟩]),
      ([⟨3, 1⟩], [⟨2, 1⟩])] ⟨2, 1⟩ := by decide +kernel
 
@@ -112,27 +114,27 @@ example : ¬ kernelRead f3 [[0, 1, 2], [1, 0, 2], [1, 2, 0]]
 three variables, the shapes as row lists against the cycle
 types. -/
 
-example : (charAt 3 [2] [1, 1]).oneValue (BPair.ofNat 1) := by decide +kernel
-example : (charAt 3 [2] [2]).oneValue (BPair.ofNat 1) := by decide +kernel
-example : (charAt 3 [1, 1] [1, 1]).oneValue (BPair.ofNat 1) := by
+theorem pin13 : (charAt 3 [2] [1, 1]).oneValue (BPair.ofNat 1) := by decide +kernel
+theorem pin14 : (charAt 3 [2] [2]).oneValue (BPair.ofNat 1) := by decide +kernel
+theorem pin15 : (charAt 3 [1, 1] [1, 1]).oneValue (BPair.ofNat 1) := by
   decide +kernel
-example : (charAt 3 [1, 1] [2]).oneValue ((BPair.ofNat 1).swap) := by
+theorem pin16 : (charAt 3 [1, 1] [2]).oneValue ((BPair.ofNat 1).swap) := by
   decide +kernel
 
-example : (charAt 3 [3] [1, 1, 1]).oneValue (BPair.ofNat 1) := by
+theorem pin17 : (charAt 3 [3] [1, 1, 1]).oneValue (BPair.ofNat 1) := by
   decide +kernel
-example : (charAt 3 [3] [2, 1]).oneValue (BPair.ofNat 1) := by decide +kernel
-example : (charAt 3 [3] [3]).oneValue (BPair.ofNat 1) := by decide +kernel
-example : (charAt 3 [2, 1] [1, 1, 1]).oneValue (BPair.ofNat 2) := by
+theorem pin18 : (charAt 3 [3] [2, 1]).oneValue (BPair.ofNat 1) := by decide +kernel
+theorem pin19 : (charAt 3 [3] [3]).oneValue (BPair.ofNat 1) := by decide +kernel
+theorem pin20 : (charAt 3 [2, 1] [1, 1, 1]).oneValue (BPair.ofNat 2) := by
   decide +kernel
-example : (charAt 3 [2, 1] [2, 1]).oneValue BPair.unit := by decide +kernel
-example : (charAt 3 [2, 1] [3]).oneValue ((BPair.ofNat 1).swap) := by
+theorem pin21 : (charAt 3 [2, 1] [2, 1]).oneValue BPair.unit := by decide +kernel
+theorem pin22 : (charAt 3 [2, 1] [3]).oneValue ((BPair.ofNat 1).swap) := by
   decide +kernel
-example : (charAt 3 [1, 1, 1] [1, 1, 1]).oneValue (BPair.ofNat 1) := by
+theorem pin23 : (charAt 3 [1, 1, 1] [1, 1, 1]).oneValue (BPair.ofNat 1) := by
   decide +kernel
-example : (charAt 3 [1, 1, 1] [2, 1]).oneValue
+theorem pin24 : (charAt 3 [1, 1, 1] [2, 1]).oneValue
     ((BPair.ofNat 1).swap) := by decide +kernel
-example : (charAt 3 [1, 1, 1] [3]).oneValue (BPair.ofNat 1) := by
+theorem pin25 : (charAt 3 [1, 1, 1] [3]).oneValue (BPair.ofNat 1) := by
   decide +kernel
 
 /-! The at-residue pairing at the three-box wirings and `d_f = 2`,
@@ -140,17 +142,17 @@ the six-value Gram whose singularity the committed refusal above
 records; and the coherence pin at `d_f = 4`, the direct read
 against the symbolic pairing's Horner evaluation. -/
 
-example : ((pairAt f3 [0, 1, 2] [0, 1, 2] 2).getD BPair.unit).oneValue
+theorem pin26 : ((pairAt f3 [0, 1, 2] [0, 1, 2] 2).getD BPair.unit).oneValue
     (BPair.ofNat 5) := by decide +kernel
-example : ((pairAt f3 [0, 1, 2] [1, 0, 2] 2).getD BPair.unit).oneValue
+theorem pin27 : ((pairAt f3 [0, 1, 2] [1, 0, 2] 2).getD BPair.unit).oneValue
     (BPair.ofNat 1) := by decide +kernel
-example : ((pairAt f3 [0, 1, 2] [1, 2, 0] 2).getD BPair.unit).oneValue
+theorem pin28 : ((pairAt f3 [0, 1, 2] [1, 2, 0] 2).getD BPair.unit).oneValue
     ((BPair.ofNat 1).swap) := by decide +kernel
-example : ((pairAt f3 [1, 0, 2] [1, 0, 2] 2).getD BPair.unit).oneValue
+theorem pin29 : ((pairAt f3 [1, 0, 2] [1, 0, 2] 2).getD BPair.unit).oneValue
     (BPair.ofNat 1) := by decide +kernel
-example : ((pairAt f3 [1, 0, 2] [1, 2, 0] 2).getD BPair.unit).oneValue
+theorem pin30 : ((pairAt f3 [1, 0, 2] [1, 2, 0] 2).getD BPair.unit).oneValue
     (BPair.ofNat 1) := by decide +kernel
-example : ((pairAt f3 [1, 2, 0] [1, 2, 0] 2).getD BPair.unit).oneValue
+theorem pin31 : ((pairAt f3 [1, 2, 0] [1, 2, 0] 2).getD BPair.unit).oneValue
     (BPair.ofNat 2) := by decide +kernel
 
 /-! The winding data keyed by variable: the two-variable site at
@@ -162,19 +164,19 @@ symbolic pairing's Horner evaluation. -/
 private def f02 : FList := [(0, false), (2, false), (0, true), (2, true)]
 private def f01 : FList := [(0, false), (1, false), (0, true), (1, true)]
 
-example : ((pairAt f02 [0, 1, 2, 3] [0, 1, 2, 3] 2).getD BPair.unit).oneValue
+theorem pin32 : ((pairAt f02 [0, 1, 2, 3] [0, 1, 2, 3] 2).getD BPair.unit).oneValue
     ((pairAt f01 [0, 1, 2, 3] [0, 1, 2, 3] 2).getD BPair.unit) := by
   decide +kernel
-example : ((pairAt f02 [0, 1, 2, 3] [0, 1, 2, 3] 2).getD BPair.unit).oneValue
+theorem pin33 : ((pairAt f02 [0, 1, 2, 3] [0, 1, 2, 3] 2).getD BPair.unit).oneValue
     (BPair.ofNat 4) := by decide +kernel
-example : BPair.oneValue
+theorem pin34 : BPair.oneValue
     (poly.eval (wg.pairPhi wg.evalPhi f02 f02 [0, 1, 2, 3] [0, 1, 2, 3]).1
       (BPair.ofNat 2))
     ((pairAt f02 [0, 1, 2, 3] [0, 1, 2, 3] 2).getD BPair.unit
       * poly.eval (wg.pairPhi wg.evalPhi f02 f02 [0, 1, 2, 3] [0, 1, 2, 3]).2
         (BPair.ofNat 2)) := by decide +kernel
 
-example : BPair.oneValue
+theorem pin35 : BPair.oneValue
     (poly.eval (wg.pairPhi wg.evalPhi f3 f3 [0, 1, 2] [0, 1, 2]).1
       (BPair.ofNat 4))
     ((pairAt f3 [0, 1, 2] [0, 1, 2] 4).getD BPair.unit
@@ -188,15 +190,15 @@ its own pin — `|tr U|⁴` at two, the pure null-cycle square
 mixed entries — with the crossing wiring's refusal the `Option`'s
 own. -/
 
-example : ((pairAt f2 [0, 1] [0, 1] 2).getD BPair.unit).oneValue
+theorem pin36 : ((pairAt f2 [0, 1] [0, 1] 2).getD BPair.unit).oneValue
     (BPair.ofNat 2) := by decide +kernel
-example : ((pairAt f2 [1, 0] [1, 0] 2).getD BPair.unit).oneValue
+theorem pin37 : ((pairAt f2 [1, 0] [1, 0] 2).getD BPair.unit).oneValue
     (BPair.ofNat 4) := by decide +kernel
-example : ((pairAt f4 [0, 1, 2, 3] [0, 1, 2, 3] 2).getD
+theorem pin38 : ((pairAt f4 [0, 1, 2, 3] [0, 1, 2, 3] 2).getD
     BPair.unit).oneValue (BPair.ofNat 14) := by decide +kernel
-example : ((pairAt f4 [1, 0, 2, 3] [0, 1, 3, 2] 2).getD
+theorem pin39 : ((pairAt f4 [1, 0, 2, 3] [0, 1, 3, 2] 2).getD
     BPair.unit).oneValue (BPair.ofNat 2) := by decide +kernel
-example : pairAt [(0, false), (1, false)] [1, 0] [1, 0] 2
+theorem pin40 : pairAt [(0, false), (1, false)] [1, 0] [1, 0] 2
     = none := by decide +kernel
 
 /-! The landing site's closure: the six-wiring antisymmetrizer is
@@ -214,9 +216,9 @@ private def aSym : Comb :=
    ([2, 1, 0], ([⟨1, 2⟩], [⟨2, 1⟩])),
    ([1, 2, 0], pOne), ([2, 0, 1], pOne)]
 
-example : directRead f3 aSym 1 := by decide +kernel
-example : directRead f3 aSym 2 := by decide +kernel
-example : ¬ directRead f3 aSym 3 := by decide +kernel
+theorem pin41 : directRead f3 aSym 1 := by decide +kernel
+theorem pin42 : directRead f3 aSym 2 := by decide +kernel
+theorem pin43 : ¬ directRead f3 aSym 3 := by decide +kernel
 
 /-! The one-variable read at a key off `0`: the direct member read
 at the keys `1` and `2`. -/
@@ -224,13 +226,13 @@ at the keys `1` and `2`. -/
 private def f3k1 : FList := [(1, false), (1, false), (1, false)]
 private def f3k2 : FList := [(2, false), (2, false), (2, false)]
 
-example : directRead f3k1 aSym 2 := by decide +kernel
-example : directRead f3k2 aSym 2 := by decide +kernel
+theorem pin44 : directRead f3k1 aSym 2 := by decide +kernel
+theorem pin45 : directRead f3k2 aSym 2 := by decide +kernel
 
 private def fUV : FList := [(0, false), (1, false)]
 
-example : ¬ directRead fUV [([1, 0], pOne)] 2 := by decide +kernel
-example : ¬ directRead fUV [([1, 0], pOne)] 5 := by decide +kernel
+theorem pin46 : ¬ directRead fUV [([1, 0], pOne)] 2 := by decide +kernel
+theorem pin47 : ¬ directRead fUV [([1, 0], pOne)] 5 := by decide +kernel
 
 /-! The relation members beyond the daggerless site, the row
 read's own reach: `4 |det U|² - d_f²` on `[U, U, U†, U†]` and
@@ -254,11 +256,11 @@ private def cTie : Comb :=
   [([0, 1, 2], pOne), ([1, 0, 2], ([⟨1, 2⟩], [⟨2, 1⟩])),
    ([0, 2, 1], ([⟨1, 2⟩], [⟨2, 1⟩]))]
 
-example : directRead f4 cDet 2 := by decide +kernel
-example : ¬ directRead f4 cDet 3 := by decide +kernel
-example : directRead f21 cTie 2 := by decide +kernel
-example : ¬ directRead f21 cTie 3 := by decide +kernel
-example : ¬ directRead f3
+theorem pin48 : directRead f4 cDet 2 := by decide +kernel
+theorem pin49 : ¬ directRead f4 cDet 3 := by decide +kernel
+theorem pin50 : directRead f21 cTie 2 := by decide +kernel
+theorem pin51 : ¬ directRead f21 cTie 3 := by decide +kernel
+theorem pin52 : ¬ directRead f3
     [([0, 1, 2], ([⟨1, 3⟩, ⟨2, 1⟩], [⟨1, 3⟩, ⟨2, 1⟩])),
      ([0, 1, 2], pOne)] 2 := by decide +kernel
 
@@ -267,6 +269,8 @@ example : ¬ directRead f3
 adjoint-site instances — the vacant member against the occupied
 `|tr U|²`. -/
 
-example : memberAt f3 aSym 2 := by decide +kernel
-example : memberAt f2 ([] : Comb) 5 := by decide +kernel
-example : ¬ memberAt f2 [([0, 1], pOne)] 5 := by decide +kernel
+theorem pin53 : memberAt f3 aSym 2 := by decide +kernel
+theorem pin54 : memberAt f2 ([] : Comb) 5 := by decide +kernel
+theorem pin55 : ¬ memberAt f2 [([0, 1], pOne)] 5 := by decide +kernel
+
+end kernel

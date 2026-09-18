@@ -39,7 +39,9 @@ cap refusal, and the bridge at the `ρ`-membership count with the
 long-keyed, doubled and flipped families' refusals.
 -/
 
-open ground places gentable sertables assembly
+namespace assembly
+
+open ground places gentable sertables
 
 /-! The stated data per member: the graded image list of `ρ` with
 its witness list over the simples — `G_2`'s here, `B_2`'s the
@@ -52,32 +54,32 @@ private def witsG2 : List (List Nat) := [[0, 0], [1, 0], [0, 1], [4, 1], [4, 4],
 closure at the letters, the support at the stated witnesses, and
 the regular read at `ρ`. -/
 
-example : wCloseRead tB2 wB2 := by decide +kernel
-example : wDomRead tB2 wB2 witsB2 := by decide +kernel
-example : wTopRead tB2 wB2 := by decide +kernel
+theorem pin1 : wCloseRead tB2 wB2 := by decide +kernel
+theorem pin2 : wDomRead tB2 wB2 witsB2 := by decide +kernel
+theorem pin3 : wTopRead tB2 wB2 := by decide +kernel
 
-example : wCloseRead tableG2 wG2 := by decide +kernel
-example : wDomRead tableG2 wG2 witsG2 := by decide +kernel
-example : wTopRead tableG2 wG2 := by decide +kernel
+theorem pin4 : wCloseRead tableG2 wG2 := by decide +kernel
+theorem pin5 : wDomRead tableG2 wG2 witsG2 := by decide +kernel
+theorem pin6 : wTopRead tableG2 wG2 := by decide +kernel
 
 /-! The general theorem applied whole: `balanceRead` at the stated
 fundamental data, every hypothesis read discharged by kernel
 decide, at the top key of both members and at a key off both
 folds. -/
 
-example : balanceAt tB2 wB2 (poly.pnorm (rhoV tB2)) :=
+theorem pin7 : balanceAt tB2 wB2 (poly.pnorm (rhoV tB2)) :=
   balanceRead tB2 fundB2 wB2 witsB2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (poly.pnorm (rhoV tB2)) (by decide +kernel) (by decide +kernel)
 
-example : balanceAt tB2 wB2 [BPair.ofNat 5, BPair.ofNat 5] :=
+theorem pin8 : balanceAt tB2 wB2 [BPair.ofNat 5, BPair.ofNat 5] :=
   balanceRead tB2 fundB2 wB2 witsB2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     [BPair.ofNat 5, BPair.ofNat 5] (by decide +kernel) (by decide +kernel)
 
-example : balanceAt tableG2 wG2 (poly.pnorm (rhoV tableG2)) :=
+theorem pin9 : balanceAt tableG2 wG2 (poly.pnorm (rhoV tableG2)) :=
   balanceRead tableG2 fundG2 wG2 witsG2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -85,13 +87,13 @@ example : balanceAt tableG2 wG2 (poly.pnorm (rhoV tableG2)) :=
 
 /- the walk's raise branch: a list member at a lower-side first
 entry, the reflection walking it to its dominant image -/
-example : balanceAt tB2 wB2 [(BPair.ofNat 1).swap, BPair.ofNat 3] :=
+theorem pin10 : balanceAt tB2 wB2 [(BPair.ofNat 1).swap, BPair.ofNat 3] :=
   balanceRead tB2 fundB2 wB2 witsB2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     [(BPair.ofNat 1).swap, BPair.ofNat 3] (by decide +kernel) (by decide +kernel)
 
-example : balanceAt tableG2 wG2 [(BPair.ofNat 4).swap, BPair.ofNat 3] :=
+theorem pin11 : balanceAt tableG2 wG2 [(BPair.ofNat 4).swap, BPair.ofNat 3] :=
   balanceRead tableG2 fundG2 wG2 witsG2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -99,9 +101,9 @@ example : balanceAt tableG2 wG2 [(BPair.ofNat 4).swap, BPair.ofNat 3] :=
 
 /- pin (a): an occupied dominant key at a simple coroot pair the
 unit, the letter's own fix pairing each fold's sides -/
-example : subsetCount tB2 [BPair.unit, BPair.ofNat 1] false = 1 := by
+theorem pin12 : subsetCount tB2 [BPair.unit, BPair.ofNat 1] false = 1 := by
   decide +kernel
-example : balanceAt tB2 wB2 [BPair.unit, BPair.ofNat 1] :=
+theorem pin13 : balanceAt tB2 wB2 [BPair.unit, BPair.ofNat 1] :=
   balanceRead tB2 fundB2 wB2 witsB2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -129,13 +131,13 @@ private def witsPad : List (List Nat) :=
   witsB2 ++ [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],
     [0, 0], [0, 0]]
 
-example : wCloseRead tB2 wBad := by decide +kernel
-example : wTopRead tB2 wBad := by decide +kernel
-example : wShapeRead tB2 wBad := by decide +kernel
-example : ¬ wDomRead tB2 wBad witsPad := by decide +kernel
-example : ¬ balanceAt tB2 wBad (poly.pnorm muBad) := by decide +kernel
-example : wCount wBad (poly.pnorm muBad) false = 1 := by decide +kernel
-example : subsetCount tB2 (poly.pnorm muBad) false = 0 := by decide +kernel
+theorem pin14 : wCloseRead tB2 wBad := by decide +kernel
+theorem pin15 : wTopRead tB2 wBad := by decide +kernel
+theorem pin16 : wShapeRead tB2 wBad := by decide +kernel
+theorem pin17 : ¬ wDomRead tB2 wBad witsPad := by decide +kernel
+theorem pin18 : ¬ balanceAt tB2 wBad (poly.pnorm muBad) := by decide +kernel
+theorem pin19 : wCount wBad (poly.pnorm muBad) false = 1 := by decide +kernel
+theorem pin20 : subsetCount tB2 (poly.pnorm muBad) false = 0 := by decide +kernel
 
 private def wFlip : List (List BPair × Bool) :=
   [([(BPair.ofNat 1), (BPair.ofNat 1)], false),
@@ -147,19 +149,19 @@ private def wFlip : List (List BPair × Bool) :=
    ([(BPair.ofNat 2).swap, (BPair.ofNat 1)], true),
    ([(BPair.ofNat 2), (BPair.ofNat 3).swap], false)]
 
-example : ¬ wCloseRead tB2 wFlip := by decide +kernel
-example : wTopRead tB2 wFlip := by decide +kernel
-example : wDomRead tB2 wFlip witsB2 := by decide +kernel
-example : ¬ balanceAt tB2 wFlip
+theorem pin21 : ¬ wCloseRead tB2 wFlip := by decide +kernel
+theorem pin22 : wTopRead tB2 wFlip := by decide +kernel
+theorem pin23 : wDomRead tB2 wFlip witsB2 := by decide +kernel
+theorem pin24 : ¬ balanceAt tB2 wFlip
     [(BPair.ofNat 1).swap, BPair.ofNat 3] := by decide +kernel
 
 private def wDbl : List (List BPair × Bool) := wB2 ++ wB2
 private def witsDbl : List (List Nat) := witsB2 ++ witsB2
 
-example : wCloseRead tB2 wDbl := by decide +kernel
-example : wDomRead tB2 wDbl witsDbl := by decide +kernel
-example : ¬ wTopRead tB2 wDbl := by decide +kernel
-example : ¬ balanceAt tB2 wDbl (poly.pnorm (rhoV tB2)) := by decide +kernel
+theorem pin25 : wCloseRead tB2 wDbl := by decide +kernel
+theorem pin26 : wDomRead tB2 wDbl witsDbl := by decide +kernel
+theorem pin27 : ¬ wTopRead tB2 wDbl := by decide +kernel
+theorem pin28 : ¬ balanceAt tB2 wDbl (poly.pnorm (rhoV tB2)) := by decide +kernel
 
 /-! The committed refusals at the graded image list, each
 isolating one datum with the reads it leaves untouched pinned
@@ -171,7 +173,7 @@ beside it. -/
 private def forgedWitsB2 : List (List Nat) :=
   [[1, 0], [1, 0], [0, 1], [2, 1], [2, 4], [3, 4], [3, 3], [1, 3]]
 
-example : ¬ wDomRead tB2 wB2 forgedWitsB2 := by decide +kernel
+theorem pin29 : ¬ wDomRead tB2 wB2 forgedWitsB2 := by decide +kernel
 
 -- the top member's side forged odd: the closure refuses at the
 -- flipped counts, the regular read at `ρ`'s own count and the
@@ -180,12 +182,12 @@ example : ¬ wDomRead tB2 wB2 forgedWitsB2 := by decide +kernel
 private def forgedWB2 : List (List BPair × Bool) :=
   [([(BPair.ofNat 1), (BPair.ofNat 1)], true), ([(BPair.ofNat 1).swap, (BPair.ofNat 3)], true), ([(BPair.ofNat 2), (BPair.ofNat 1).swap], true), ([(BPair.ofNat 2).swap, (BPair.ofNat 3)], false), ([(BPair.ofNat 1), (BPair.ofNat 3).swap], true), ([(BPair.ofNat 1).swap, (BPair.ofNat 1).swap], false), ([(BPair.ofNat 2).swap, (BPair.ofNat 1)], true), ([(BPair.ofNat 2), (BPair.ofNat 3).swap], false)]
 
-example : ¬ wCloseRead tB2 forgedWB2 := by decide +kernel
-example : ¬ wTopRead tB2 forgedWB2 := by decide +kernel
-example : ¬ balanceAt tB2 forgedWB2
+theorem pin30 : ¬ wCloseRead tB2 forgedWB2 := by decide +kernel
+theorem pin31 : ¬ wTopRead tB2 forgedWB2 := by decide +kernel
+theorem pin32 : ¬ balanceAt tB2 forgedWB2
     [BPair.ofNat 1, BPair.ofNat 1] := by decide +kernel
-example : wDomRead tB2 forgedWB2 witsB2 := by decide +kernel
-example : ¬ (wCount forgedWB2
+theorem pin33 : wDomRead tB2 forgedWB2 witsB2 := by decide +kernel
+theorem pin34 : ¬ (wCount forgedWB2
       (reflAt tB2 0 (poly.pnorm (rhoV tB2))) false
     = wCount forgedWB2 (poly.pnorm (rhoV tB2)) true) := by decide +kernel
 
@@ -194,11 +196,11 @@ member's key at the rank, normed — with the refusal at a key off
 the rank's order, the closure refusing with it at the shapeless
 member's own count. -/
 
-example : wShapeRead tB2 wB2 := by decide +kernel
-example : wShapeRead tableG2 wG2 := by decide +kernel
+theorem pin35 : wShapeRead tB2 wB2 := by decide +kernel
+theorem pin36 : wShapeRead tableG2 wG2 := by decide +kernel
 
-example : ¬ wShapeRead tB2 (wB2 ++ [([BPair.ofNat 1], false)]) := by decide +kernel
-example : ¬ wCloseRead tB2 (wB2 ++ [([BPair.ofNat 1], false)]) := by decide +kernel
+theorem pin37 : ¬ wShapeRead tB2 (wB2 ++ [([BPair.ofNat 1], false)]) := by decide +kernel
+theorem pin38 : ¬ wCloseRead tB2 (wB2 ++ [([BPair.ofNat 1], false)]) := by decide +kernel
 
 /-! The Weyl fold's transport at its own conclusion: the graded
 count at a reflected key against the count at the key on the other
@@ -206,12 +208,12 @@ side, read at both letters of `B_2` at the top key and once at a
 normed key the list misses entirely (both counts the sum's
 unit). -/
 
-example : wCount wB2 (reflAt tB2 0 (poly.pnorm (rhoV tB2))) false
+theorem pin39 : wCount wB2 (reflAt tB2 0 (poly.pnorm (rhoV tB2))) false
     = wCount wB2 (poly.pnorm (rhoV tB2)) true := by decide +kernel
-example : wCount wB2 (reflAt tB2 1 (poly.pnorm (rhoV tB2))) true
+theorem pin40 : wCount wB2 (reflAt tB2 1 (poly.pnorm (rhoV tB2))) true
     = wCount wB2 (poly.pnorm (rhoV tB2)) false := by decide +kernel
 
-example : wCount wB2
+theorem pin41 : wCount wB2
       (reflAt tB2 0 (poly.pnorm [BPair.ofNat 5, BPair.ofNat 5])) false
     = wCount wB2 (poly.pnorm [BPair.ofNat 5, BPair.ofNat 5]) true := by decide +kernel
 
@@ -224,16 +226,16 @@ theorem route; the key's order binder is isolated at a short key,
 where the join read truncates at the key and the matrix action
 reads the rank's order. -/
 
-example : reflF tB2 0 (poly.pnorm (rhoV tB2))
+theorem pin42 : reflF tB2 0 (poly.pnorm (rhoV tB2))
     = reflAt tB2 0 (poly.pnorm (rhoV tB2)) := by decide +kernel
-example : reflF tB2 1 (poly.pnorm (rhoV tB2))
+theorem pin43 : reflF tB2 1 (poly.pnorm (rhoV tB2))
     = reflAt tB2 1 (poly.pnorm (rhoV tB2)) := by decide +kernel
-example : reflF tB2 1 (poly.pnorm (rhoV tB2))
+theorem pin44 : reflF tB2 1 (poly.pnorm (rhoV tB2))
     = reflAt tB2 1 (poly.pnorm (rhoV tB2)) :=
   reflF_eq tB2 1 _ (by decide +kernel)
-example : reflF tB2 5 (poly.pnorm (rhoV tB2))
+theorem pin45 : reflF tB2 5 (poly.pnorm (rhoV tB2))
     = reflAt tB2 5 (poly.pnorm (rhoV tB2)) := by decide +kernel
-example : ¬ (reflF tB2 0 [BPair.ofNat 3] = reflAt tB2 0 [BPair.ofNat 3]) := by
+theorem pin46 : ¬ (reflF tB2 0 [BPair.ofNat 3] = reflAt tB2 0 [BPair.ofNat 3]) := by
   decide +kernel
 
 /-! The subset fold's transport at its own conclusion: the graded
@@ -242,12 +244,12 @@ side, read at both letters of `B_2` at the top key and once at a
 normed key off every family's read (both counts the sum's
 unit). -/
 
-example : subsetCount tB2 (reflAt tB2 0 (poly.pnorm (rhoV tB2))) false
+theorem pin47 : subsetCount tB2 (reflAt tB2 0 (poly.pnorm (rhoV tB2))) false
     = subsetCount tB2 (poly.pnorm (rhoV tB2)) true := by decide +kernel
-example : subsetCount tB2 (reflAt tB2 1 (poly.pnorm (rhoV tB2))) true
+theorem pin48 : subsetCount tB2 (reflAt tB2 1 (poly.pnorm (rhoV tB2))) true
     = subsetCount tB2 (poly.pnorm (rhoV tB2)) false := by decide +kernel
 
-example : subsetCount tB2
+theorem pin49 : subsetCount tB2
       (reflAt tB2 0 (poly.pnorm [BPair.ofNat 5, BPair.ofNat 5])) false
     = subsetCount tB2 (poly.pnorm [BPair.ofNat 5, BPair.ofNat 5]) true := by
   decide +kernel
@@ -261,20 +263,20 @@ five-hundred-family enumeration. -/
 
 private def tB3 : gentable.Table := tableB 3
 
-example : ground.tabRead (fun k => decide
+theorem pin50 : ground.tabRead (fun k => decide
       (k = [BPair.unit, BPair.ofNat 1, (BPair.ofNat 1).swap])) false
     (subsetTable tB3) = 7 := by decide +kernel
-example : subsetCount tB3
+theorem pin51 : subsetCount tB3
     [BPair.unit, BPair.ofNat 1, (BPair.ofNat 1).swap] false = 7 := by
   decide +kernel
-example : subsetCount tB3
+theorem pin52 : subsetCount tB3
     [BPair.unit, BPair.ofNat 1, (BPair.ofNat 1).swap] true = 7 := by
   decide +kernel
 
-example : ground.tabRead (fun k => decide
+theorem pin53 : ground.tabRead (fun k => decide
       (k = poly.pnorm (rhoV tableG2))) false
     (subsetTable tableG2) = 1 := by decide +kernel
-example : subsetCount tableG2 (poly.pnorm (rhoV tableG2)) false
+theorem pin54 : subsetCount tableG2 (poly.pnorm (rhoV tableG2)) false
     = 1 := by decide +kernel
 
 /-! The transport's table refusals: the conclusion binds no field of
@@ -292,20 +294,20 @@ private def rhoForgeT : gentable.Table :=
    [1]⟩
 private def rhoForgeF : FundData := ⟨[[BPair.ofNat 1]], 1, [0], [[1, 0]]⟩
 
-example : fundShape rhoForgeT rhoForgeF := by decide +kernel
-example : simplePosRead rhoForgeT rhoForgeF := by decide +kernel
-example : reflSquareRead rhoForgeT := by decide +kernel
-example : permSquareRead rhoForgeT rhoForgeF := by decide +kernel
-example : permImageRead rhoForgeT rhoForgeF := by decide +kernel
-example : ¬ rhoDotRead rhoForgeT rhoForgeF := by decide +kernel
-example : ¬ (subsetCount rhoForgeT
+theorem pin55 : fundShape rhoForgeT rhoForgeF := by decide +kernel
+theorem pin56 : simplePosRead rhoForgeT rhoForgeF := by decide +kernel
+theorem pin57 : reflSquareRead rhoForgeT := by decide +kernel
+theorem pin58 : permSquareRead rhoForgeT rhoForgeF := by decide +kernel
+theorem pin59 : permImageRead rhoForgeT rhoForgeF := by decide +kernel
+theorem pin60 : ¬ rhoDotRead rhoForgeT rhoForgeF := by decide +kernel
+theorem pin61 : ¬ (subsetCount rhoForgeT
       (reflAt rhoForgeT 0 (poly.pnorm (rhoV rhoForgeT))) true
     = subsetCount rhoForgeT (poly.pnorm (rhoV rhoForgeT)) false) := by decide +kernel
-example : subsetCount rhoForgeT
+theorem pin62 : subsetCount rhoForgeT
     (reflAt rhoForgeT 0 (poly.pnorm (rhoV rhoForgeT))) true = 1 := by decide +kernel
-example : subsetCount rhoForgeT
+theorem pin63 : subsetCount rhoForgeT
     (poly.pnorm (rhoV rhoForgeT)) false = 2 := by decide +kernel
-example : subsetCount rhoForgeT
+theorem pin64 : subsetCount rhoForgeT
       (reflAt rhoForgeT 0 (poly.pnorm (rhoV rhoForgeT))) false
     = subsetCount rhoForgeT (poly.pnorm (rhoV rhoForgeT)) true := by decide +kernel
 
@@ -324,22 +326,22 @@ private def permForgeF : FundData :=
   ⟨[[BPair.ofNat 4, BPair.ofNat 2], [BPair.ofNat 2, BPair.ofNat 4]], 3,
    [0, 1], [[0, 2, 1, 1], [2, 1, 0, 0]]⟩
 
-example : fundShape permForgeT permForgeF := by decide +kernel
-example : simplePosRead permForgeT permForgeF := by decide +kernel
-example : reflSquareRead permForgeT := by decide +kernel
-example : permImageRead permForgeT permForgeF := by decide +kernel
-example : rhoDotRead permForgeT permForgeF := by decide +kernel
-example : gramRead permForgeT permForgeF := by decide +kernel
-example : gramSymRead permForgeF := by decide +kernel
-example : ¬ permSquareRead permForgeT permForgeF := by decide +kernel
-example : (poly.pnorm [BPair.unit, BPair.unit] : List BPair)
+theorem pin65 : fundShape permForgeT permForgeF := by decide +kernel
+theorem pin66 : simplePosRead permForgeT permForgeF := by decide +kernel
+theorem pin67 : reflSquareRead permForgeT := by decide +kernel
+theorem pin68 : permImageRead permForgeT permForgeF := by decide +kernel
+theorem pin69 : rhoDotRead permForgeT permForgeF := by decide +kernel
+theorem pin70 : gramRead permForgeT permForgeF := by decide +kernel
+theorem pin71 : gramSymRead permForgeF := by decide +kernel
+theorem pin72 : ¬ permSquareRead permForgeT permForgeF := by decide +kernel
+theorem pin73 : (poly.pnorm [BPair.unit, BPair.unit] : List BPair)
     = [BPair.unit, BPair.unit] := by decide +kernel
-example : ¬ (subsetCount permForgeT
+theorem pin74 : ¬ (subsetCount permForgeT
       (reflAt permForgeT 0 [BPair.unit, BPair.unit]) true
     = subsetCount permForgeT [BPair.unit, BPair.unit] false) := by decide +kernel
-example : subsetCount permForgeT
+theorem pin75 : subsetCount permForgeT
     (reflAt permForgeT 0 [BPair.unit, BPair.unit]) true = 2 := by decide +kernel
-example : subsetCount permForgeT
+theorem pin76 : subsetCount permForgeT
     [BPair.unit, BPair.unit] false = 1 := by decide +kernel
 
 /-! The withdrawn-index subset fold and its split
@@ -350,23 +352,23 @@ representative spelling — where the moved key still lands on an
 occupied family while the key itself lands on none, so the
 identity's normed-key binder is load-bearing. -/
 
-example : subsetCountOff tB2 0 (poly.pnorm (rhoV tB2)) false = 1 := by
+theorem pin77 : subsetCountOff tB2 0 (poly.pnorm (rhoV tB2)) false = 1 := by
   decide +kernel
-example : subsetCountOff tB2 0 (poly.pnorm (rhoV tB2)) true = 0 := by
+theorem pin78 : subsetCountOff tB2 0 (poly.pnorm (rhoV tB2)) true = 0 := by
   decide +kernel
-example : subsetCountOff tB2 1 [BPair.unit, BPair.ofNat 1] false = 1 := by
+theorem pin79 : subsetCountOff tB2 1 [BPair.unit, BPair.ofNat 1] false = 1 := by
   decide +kernel
-example : subsetCountOff tB2 1 [BPair.unit, BPair.ofNat 1] true = 1 := by
+theorem pin80 : subsetCountOff tB2 1 [BPair.unit, BPair.ofNat 1] true = 1 := by
   decide +kernel
 
-example : subsetCount tB2 (poly.pnorm (rhoV tB2)) false
+theorem pin81 : subsetCount tB2 (poly.pnorm (rhoV tB2)) false
     = subsetCountOff tB2 0 (poly.pnorm (rhoV tB2)) false
       + subsetCountOff tB2 0 (poly.pnorm (elim.vecAdd
           (poly.pnorm (rhoV tB2)) (posCorootV tB2 0))) true :=
   subsetCount_off_split tB2 0 (by decide +kernel) (poly.pnorm (rhoV tB2))
     (by decide +kernel) (by decide +kernel) false
 
-example : subsetCount tB2 (eKey tB2 [2]) true
+theorem pin82 : subsetCount tB2 (eKey tB2 [2]) true
     = subsetCountOff tB2 1 (eKey tB2 [2]) true
       + subsetCountOff tB2 1 (poly.pnorm (elim.vecAdd
           (eKey tB2 [2]) (posCorootV tB2 1))) false :=
@@ -377,10 +379,10 @@ private def yUnn : List BPair :=
   elim.vecAdd (eKey tB2 [2])
     (elim.vecAdd (posCorootV tB2 0) (poly.neg (posCorootV tB2 0)))
 
-example : ¬ poly.pnorm yUnn = yUnn := by decide +kernel
-example : yUnn.length = tB2.rank := by decide +kernel
-example : subsetCount tB2 yUnn false = 0 := by decide +kernel
-example : subsetCountOff tB2 0 yUnn false
+theorem pin83 : ¬ poly.pnorm yUnn = yUnn := by decide +kernel
+theorem pin84 : yUnn.length = tB2.rank := by decide +kernel
+theorem pin85 : subsetCount tB2 yUnn false = 0 := by decide +kernel
+theorem pin86 : subsetCountOff tB2 0 yUnn false
     + subsetCountOff tB2 0 (poly.pnorm (elim.vecAdd yUnn
         (posCorootV tB2 0))) true = 1 := by decide +kernel
 
@@ -389,7 +391,7 @@ Weyl fold: every member's two graded counts part there, so each key
 carries `ρ`'s own dot square — read at the top key and at a member
 whose first entry sits on its lower side. -/
 
-example : BPair.oneValue
+theorem pin87 : BPair.oneValue
     (dotB fundB2 [BPair.ofNat 1, BPair.ofNat 1]
       [BPair.ofNat 1, BPair.ofNat 1])
     (dotB fundB2 (rhoV tB2) (rhoV tB2)) :=
@@ -399,7 +401,7 @@ example : BPair.oneValue
     [BPair.ofNat 1, BPair.ofNat 1] false (List.Mem.head _)
     (by decide +kernel)
 
-example : BPair.oneValue
+theorem pin88 : BPair.oneValue
     (dotB fundB2 [(BPair.ofNat 1).swap, BPair.ofNat 3]
       [(BPair.ofNat 1).swap, BPair.ofNat 3])
     (dotB fundB2 (rhoV tB2) (rhoV tB2)) :=
@@ -409,7 +411,7 @@ example : BPair.oneValue
     [(BPair.ofNat 1).swap, BPair.ofNat 3] true
     (List.Mem.tail _ (List.Mem.head _)) (by decide +kernel)
 
-example : ground.countOf ([BPair.ofNat 1, BPair.ofNat 1], true) wB2
+theorem pin89 : ground.countOf ([BPair.ofNat 1, BPair.ofNat 1], true) wB2
     ≠ ground.countOf ([BPair.ofNat 1, BPair.ofNat 1], false) wB2 := by
   decide +kernel
 
@@ -418,7 +420,7 @@ per-root fold of dots against withdrawn-fold count pairs reads the
 key's dot joined to `ρ`'s own at the subset counts, at an occupied
 key and at `ρ` itself. -/
 
-example : (ground.famFold BPair.add BPair.unit (fun j =>
+theorem pin90 : (ground.famFold BPair.add BPair.unit (fun j =>
       BPair.mul (dotB fundB2 (rhoV tB2) (posCorootV tB2 j))
         (BPair.ofCounts (subsetCountOff tB2 j (eKey tB2 [0]) false)
           (subsetCountOff tB2 j (eKey tB2 [0]) true)))
@@ -433,7 +435,7 @@ example : (ground.famFold BPair.add BPair.unit (fun j =>
 
 private def tG2 : gentable.Table := tableG2
 
-example : (ground.famFold BPair.add BPair.unit (fun j =>
+theorem pin91 : (ground.famFold BPair.add BPair.unit (fun j =>
       BPair.mul (dotB fundG2 (rhoV tG2) (posCorootV tG2 j))
         (BPair.ofCounts
           (subsetCountOff tG2 j (poly.pnorm (rhoV tG2)) false)
@@ -453,16 +455,16 @@ refuse the split's display. -/
 
 private def yLong : List BPair := eKey tB2 [2] ++ [BPair.unit]
 
-example : ¬ yLong.length = tB2.rank := by decide +kernel
-example : poly.pnorm yLong = yLong := by decide +kernel
-example : ¬ (subsetCount tB2 yLong false
+theorem pin92 : ¬ yLong.length = tB2.rank := by decide +kernel
+theorem pin93 : poly.pnorm yLong = yLong := by decide +kernel
+theorem pin94 : ¬ (subsetCount tB2 yLong false
     = subsetCountOff tB2 0 yLong false
       + subsetCountOff tB2 0
           (poly.pnorm (elim.vecAdd yLong (posCorootV tB2 0)))
           true) := by decide +kernel
 
-example : ¬ (4 < tB2.posFolds.length) := by decide +kernel
-example : ¬ (subsetCount tB2 (eKey tB2 [2]) true
+theorem pin95 : ¬ (4 < tB2.posFolds.length) := by decide +kernel
+theorem pin96 : ¬ (subsetCount tB2 (eKey tB2 [2]) true
     = subsetCountOff tB2 4 (eKey tB2 [2]) true
       + subsetCountOff tB2 4
           (poly.pnorm (elim.vecAdd (eKey tB2 [2])
@@ -474,7 +476,7 @@ stepped key collects the subset pairs along the line at an occupied
 first key, the decide twin beside the theorem route, and a cap
 short of the height refuses. -/
 
-example : (BPair.ofCounts
+theorem pin97 : (BPair.ofCounts
       (subsetCountOff tB2 0 (poly.pnorm (elim.vecAdd (eKey tB2 [0])
         (posCorootV tB2 0))) false)
       (subsetCountOff tB2 0 (poly.pnorm (elim.vecAdd (eKey tB2 [0])
@@ -491,7 +493,7 @@ example : (BPair.ofCounts
   subsetCountOff_line tB2 fundB2 (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (eKey tB2 [0]) (by decide +kernel) 2 (by decide +kernel)
 
-example : (BPair.ofCounts
+theorem pin98 : (BPair.ofCounts
       (subsetCountOff tB2 0 (poly.pnorm (elim.vecAdd (eKey tB2 [0])
         (posCorootV tB2 0))) false)
       (subsetCountOff tB2 0 (poly.pnorm (elim.vecAdd (eKey tB2 [0])
@@ -506,12 +508,12 @@ example : (BPair.ofCounts
             (posCorootV tB2 0)))) true))
       (List.range 2)) := by decide +kernel
 
-example : ¬ (dotB fundB2 (rhoV tB2) (rhoV tB2)
+theorem pin99 : ¬ (dotB fundB2 (rhoV tB2) (rhoV tB2)
     < dotB fundB2 (rhoV tB2) (poly.pnorm (elim.vecAdd (eKey tB2 [0])
         (elim.vecScale (BPair.ofNat (0 + 1))
           (posCorootV tB2 0)))))  := by decide +kernel
 
-example : ¬ (BPair.ofCounts
+theorem pin100 : ¬ (BPair.ofCounts
       (subsetCountOff tB2 0 (poly.pnorm (elim.vecAdd (eKey tB2 [0])
         (posCorootV tB2 0))) false)
       (subsetCountOff tB2 0 (poly.pnorm (elim.vecAdd (eKey tB2 [0])
@@ -532,7 +534,7 @@ occupied key, and the alternant fold against the subset fold at
 the `ρ`-membership count, the value off the unit with its refusal
 pinned beside it. -/
 
-example : (ground.famFold BPair.add BPair.unit (fun j =>
+theorem pin101 : (ground.famFold BPair.add BPair.unit (fun j =>
       BPair.mul (dotB fundB2 (rhoV tB2) (posCorootV tB2 j))
         (BPair.ofCounts
           (subsetCountOff tB2 j (poly.pnorm (elim.vecAdd
@@ -549,7 +551,7 @@ example : (ground.famFold BPair.add BPair.unit (fun j =>
     (by decide +kernel) (rhoV tB2) (eKey tB2 [0]) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : (ground.famFold BPair.add BPair.unit
+theorem pin102 : (ground.famFold BPair.add BPair.unit
       (fun vp => ground.signedAt vp.2
         (BPair.ofNat (ground.countOf vp.1 [rhoV tB2])))
       wB2).oneValue
@@ -562,7 +564,7 @@ example : (ground.famFold BPair.add BPair.unit
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (fun k => BPair.ofNat (ground.countOf k [rhoV tB2]))
 
-example : ¬ (ground.famFold BPair.add BPair.unit
+theorem pin103 : ¬ (ground.famFold BPair.add BPair.unit
     (fun S => ground.signedAt (sideOf S)
       (BPair.ofNat (ground.countOf (eKey tB2 S) [rhoV tB2])))
     (sublistsOf (List.range tB2.posFolds.length))).oneValue
@@ -576,9 +578,9 @@ family, the doubled list, and the flipped grading. -/
 private def kU : List BPair := [(⟨2, 3⟩ : BPair), ⟨5, 2⟩]
 private def kL : List BPair := eKey tB2 [0] ++ [BPair.unit]
 
-example : kU.length = tB2.rank := by decide +kernel
-example : ¬ poly.pnorm kU = kU := by decide +kernel
-example : ¬ (ground.famFold BPair.add BPair.unit (fun j =>
+theorem pin104 : kU.length = tB2.rank := by decide +kernel
+theorem pin105 : ¬ poly.pnorm kU = kU := by decide +kernel
+theorem pin106 : ¬ (ground.famFold BPair.add BPair.unit (fun j =>
       BPair.mul (dotB fundB2 (rhoV tB2) (posCorootV tB2 j))
         (BPair.ofCounts
           (subsetCountOff tB2 j (poly.pnorm (elim.vecAdd
@@ -592,9 +594,9 @@ example : ¬ (ground.famFold BPair.add BPair.unit (fun j =>
       (BPair.ofCounts (subsetCount tB2 kU false)
         (subsetCount tB2 kU true))) := by decide +kernel
 
-example : poly.pnorm kL = kL := by decide +kernel
-example : ¬ kL.length = tB2.rank := by decide +kernel
-example : ¬ (ground.famFold BPair.add BPair.unit (fun j =>
+theorem pin107 : poly.pnorm kL = kL := by decide +kernel
+theorem pin108 : ¬ kL.length = tB2.rank := by decide +kernel
+theorem pin109 : ¬ (ground.famFold BPair.add BPair.unit (fun j =>
       BPair.mul (dotB fundB2 (rhoV tB2) (posCorootV tB2 j))
         (BPair.ofCounts
           (subsetCountOff tB2 j (poly.pnorm (elim.vecAdd
@@ -612,11 +614,11 @@ private def wLong : List (List BPair × Bool) :=
   wB2 ++ [([BPair.ofNat 1, BPair.ofNat 1, BPair.unit], false)]
 private def witsLong : List (List Nat) := witsB2 ++ [[0, 0]]
 
-example : ¬ wShapeRead tB2 wLong := by decide +kernel
-example : wCloseRead tB2 wLong := by decide +kernel
-example : wDomRead tB2 wLong witsLong := by decide +kernel
-example : wTopRead tB2 wLong := by decide +kernel
-example : ¬ (ground.famFold BPair.add BPair.unit
+theorem pin110 : ¬ wShapeRead tB2 wLong := by decide +kernel
+theorem pin111 : wCloseRead tB2 wLong := by decide +kernel
+theorem pin112 : wDomRead tB2 wLong witsLong := by decide +kernel
+theorem pin113 : wTopRead tB2 wLong := by decide +kernel
+theorem pin114 : ¬ (ground.famFold BPair.add BPair.unit
     (fun vp => ground.signedAt vp.2
       (dotB fundB2 vp.1 vp.1)) wLong).oneValue
     (ground.famFold BPair.add BPair.unit
@@ -624,8 +626,8 @@ example : ¬ (ground.famFold BPair.add BPair.unit
         (dotB fundB2 (eKey tB2 S) (eKey tB2 S)))
       (sublistsOf (List.range tB2.posFolds.length))) := by decide +kernel
 
-example : wShapeRead tB2 wDbl := by decide +kernel
-example : ¬ (ground.famFold BPair.add BPair.unit
+theorem pin115 : wShapeRead tB2 wDbl := by decide +kernel
+theorem pin116 : ¬ (ground.famFold BPair.add BPair.unit
     (fun vp => ground.signedAt vp.2
       (BPair.ofNat (ground.countOf vp.1 [rhoV tB2]))) wDbl).oneValue
     (ground.famFold BPair.add BPair.unit
@@ -633,8 +635,8 @@ example : ¬ (ground.famFold BPair.add BPair.unit
         (BPair.ofNat (ground.countOf (eKey tB2 S) [rhoV tB2])))
       (sublistsOf (List.range tB2.posFolds.length))) := by decide +kernel
 
-example : wShapeRead tB2 wFlip := by decide +kernel
-example : ¬ (ground.famFold BPair.add BPair.unit
+theorem pin117 : wShapeRead tB2 wFlip := by decide +kernel
+theorem pin118 : ¬ (ground.famFold BPair.add BPair.unit
     (fun vp => ground.signedAt vp.2
       (BPair.ofNat (ground.countOf vp.1
         [[(BPair.ofNat 1).swap, BPair.ofNat 3]]))) wFlip).oneValue
@@ -651,7 +653,7 @@ the sum's unit a family's degree fold solves to the shifted key's
 own margin — read here at the two-member index and at `B_2`'s
 `ρ`-weight against the family holding the second positive member. -/
 
-example : poly.oneValue
+theorem pin119 : poly.oneValue
     (ground.famFold poly.mul poly.one
       (fun j => poly.tpair (j + 1)) (List.range 2))
     (ground.famFold poly.add []
@@ -661,7 +663,7 @@ example : poly.oneValue
           (List.range 2)))
       (sublistsOf (List.range 2))) := by decide +kernel
 
-example : ground.famFold Nat.add 0
+theorem pin120 : ground.famFold Nat.add 0
       (fun j => if 0 < ground.countOf j [1] then 0
         else gapsAt tB2 fundB2 (rhoV tB2) j)
       (List.range tB2.posFolds.length)
@@ -669,3 +671,172 @@ example : ground.famFold Nat.add 0
         (dotB fundB2 (eKey tB2 [1]) (rhoV tB2))) :=
   gapFold_eKey tB2 fundB2 (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (rhoV tB2) (by decide +kernel) [1] (by decide +kernel)
+
+/-! Concrete coordinate actions, their grading, and the separation
+condition required by the actual orbit queues. -/
+
+theorem pin121 (l i : Nat) (D : List BPair) (hD : D.length = l) (hi : i + 1 < l) :
+    reflF (tableC l) i (corootsC D) = poly.pnorm (corootsC (ground.adjSwap i D)) :=
+  reflF_C_adjSwap l i D hD hi
+theorem pin122 (l i : Nat) (D : List BPair) (hD : D.length = l) (hi : i + 1 = l) :
+    reflF (tableC l) i (corootsC D)
+      = poly.pnorm (corootsC (D.set i (ground.getAt BPair.unit D i).swap)) :=
+  reflF_C_last l i D hD hi
+theorem pin123 (l : Nat) (v : List BPair) (w : List BPair × Bool)
+    (hw : w ∈ serWeylC l v) (i : Nat) (hi : i < l) :
+    (reflF (tableC l) i w.1, !w.2) ∈ serWeylC l v := serWeylC_closed l v w hw i hi
+theorem pin124 (l : Nat) (v : List BPair) (hv : v.length = l) (w : List BPair × Bool)
+    (hw : w ∈ serWeylB l v) (i : Nat) (hi : i < l) :
+    (reflF (tableB l) i w.1, !w.2) ∈ serWeylB l v := serWeylB_closed l v hv w hw i hi
+theorem pin125 : reflF (tableC 3) 1 (corootsC [BPair.ofNat 3, BPair.unit, (BPair.ofNat 2).swap])
+    = [BPair.ofNat 5, (BPair.ofNat 2).swap, BPair.unit] := by decide +kernel
+theorem pin126 : reflF (tableB 2) 0 (corootsB [BPair.ofNat 5, BPair.ofNat 1])
+    = [(BPair.ofNat 2).swap, BPair.ofNat 5] := by decide +kernel
+theorem pin127 : reflF (tableB 2) 1 (corootsB [BPair.ofNat 5, BPair.ofNat 1])
+    = [BPair.ofNat 3, (BPair.ofNat 1).swap] := by decide +kernel
+
+/-! Odd gaps refuse transport through B's halved coordinates. -/
+theorem pin128 : reflF (tableB 2) 0 (corootsB [BPair.ofNat 2, BPair.ofNat 1])
+    ≠ poly.pnorm (corootsB [BPair.ofNat 1, BPair.ofNat 2]) := by decide +kernel
+
+theorem pin129 (l : Nat) (v : List BPair) (hv : v.length = l) (hn : poly.pnorm v = v)
+    (i j : Nat) (hi : i < l) (hj : j < l)
+    (h : reflF (tableD l) i v = reflF (tableD l) j v) :
+    i = j ∨ reflF (tableD l) i v = v := reflF_D_separate l v hv hn i j hi hj h
+
+/-! The separation claim needs canonical inputs and the occupied
+Cartan minor; these two refusals isolate those requirements. -/
+theorem pin130 : reflF (tableC 2) 0 [⟨2, 2⟩, ⟨2, 2⟩]
+      = reflF (tableC 2) 1 [⟨2, 2⟩, ⟨2, 2⟩]
+    ∧ reflF (tableC 2) 0 [⟨2, 2⟩, ⟨2, 2⟩] ≠ [⟨2, 2⟩, ⟨2, 2⟩] := by decide +kernel
+theorem pin131 : let t := { tableC 2 with cartan :=
+      [[BPair.ofNat 2, BPair.ofNat 2], [BPair.ofNat 2, BPair.ofNat 2]] }
+    reflF t 0 [BPair.ofNat 1, BPair.ofNat 1] = reflF t 1 [BPair.ofNat 1, BPair.ofNat 1]
+      ∧ reflF t 0 [BPair.ofNat 1, BPair.ofNat 1] ≠ [BPair.ofNat 1, BPair.ofNat 1] := by decide +kernel
+
+/-! D's fork letter keeps the sign-code parity while exchanging
+the grading; the half reads require common coordinate parity. -/
+
+theorem pin132 (l : Nat) (hl : 2 ≤ l) (v : List BPair) (hv : v.length = l)
+    (w : List BPair × Bool) (hw : w ∈ serWeylD l v) (i : Nat) (hi : i < l) :
+    (reflF (tableD l) i w.1, !w.2) ∈ serWeylD l v := serWeylD_closed l hl v hv w hw i hi
+theorem pin133 (k i : Nat) (D : List BPair) (hD : D.length = k + 2) (hi : i < k + 1)
+    (hp : ∀ a b, a < k + 2 → b < k + 2 →
+      (ground.getAt BPair.unit D a).marginN % 2 = (ground.getAt BPair.unit D b).marginN % 2) :
+    reflF (tableD (k + 2)) i (corootsD D) = poly.pnorm (corootsD (ground.adjSwap i D)) :=
+  reflF_D_adjSwap k i D hD hi hp
+theorem pin134 (k : Nat) (D : List BPair) (hD : D.length = k + 2)
+    (hp : ∀ a b, a < k + 2 → b < k + 2 →
+      (ground.getAt BPair.unit D a).marginN % 2 = (ground.getAt BPair.unit D b).marginN % 2) :
+    reflF (tableD (k + 2)) (k + 1) (corootsD D)
+      = poly.pnorm (corootsD ((D.set k (ground.getAt BPair.unit D (k + 1)).swap).set (k + 1)
+        (ground.getAt BPair.unit D k).swap)) := reflF_D_last k D hD hp
+theorem pin135 : reflF (tableD 3) 2 (corootsD [BPair.ofNat 5, BPair.ofNat 3, (BPair.ofNat 1).swap])
+    = [BPair.ofNat 2, BPair.ofNat 2, (BPair.ofNat 1).swap] := by decide +kernel
+theorem pin136 : reflF (tableD 3) 2 (corootsD [BPair.ofNat 2, BPair.ofNat 1, BPair.unit])
+    ≠ poly.pnorm (corootsD [BPair.ofNat 2, BPair.unit, (BPair.ofNat 1).swap]) := by decide +kernel
+
+/-! The three coordinate pairings strictly rise at every selected
+lower-side coroot. -/
+
+theorem pin137 (l : Nat) (v : List BPair) (hv : v.length = l) (i : Nat) (hi : i < l)
+    (h : ground.getAt BPair.unit v i < BPair.unit) :
+    elim.dotP (coordsB v) (coordsB (rhoV (tableB l)))
+      < elim.dotP (coordsB (reflF (tableB l) i v)) (coordsB (rhoV (tableB l))) := reflF_B_rho_rise l v hv i hi h
+theorem pin138 (l : Nat) (v : List BPair) (hv : v.length = l) (i : Nat) (hi : i < l)
+    (h : ground.getAt BPair.unit v i < BPair.unit) :
+    elim.dotP (coordsC v) (coordsC (rhoV (tableC l)))
+      < elim.dotP (coordsC (reflF (tableC l) i v)) (coordsC (rhoV (tableC l))) := reflF_C_rho_rise l v hv i hi h
+theorem pin139 (l : Nat) (hl : 2 ≤ l) (v : List BPair) (hv : v.length = l) (i : Nat) (hi : i < l)
+    (h : ground.getAt BPair.unit v i < BPair.unit) :
+    elim.dotP (coordsD v) (coordsD (rhoV (tableD l)))
+      < elim.dotP (coordsD (reflF (tableD l) i v)) (coordsD (rhoV (tableD l))) := reflF_D_rho_rise l hl v hv i hi h
+theorem pin140 : ¬ (elim.dotP (coordsD [BPair.ofNat 1, BPair.ofNat 1, BPair.unit])
+      (coordsD (rhoV (tableD 3)))
+    < elim.dotP (coordsD (reflF (tableD 3) 2 [BPair.ofNat 1, BPair.ofNat 1, BPair.unit]))
+      (coordsD (rhoV (tableD 3)))) := by decide +kernel
+
+/-! Distinct projected keys make a closed graded orbit regular:
+a zero coroot would fix a key while exchanging its grade. -/
+
+theorem pin141 (t : gentable.Table) (W : List (List BPair × Bool))
+    (hshape : wShapeRead t W) (hkeys : ground.distinctList (W.map Prod.fst))
+    (hclose : wCloseRead t W) (w : List BPair × Bool) (hw : w ∈ W)
+    (hdom : ∀ i, i < t.rank → BPair.unit ≤ ground.getAt BPair.unit w.1 i) :
+    ∀ i, i < t.rank → BPair.unit < ground.getAt BPair.unit w.1 i :=
+  wClose_strict t W hshape hkeys hclose w hw hdom
+theorem pin142 : wCloseRead (tableB 1) [([BPair.unit], false), ([BPair.unit], true)]
+    ∧ ¬ ground.distinctList (([([BPair.unit], false), ([BPair.unit], true)] : List (List BPair × Bool)).map Prod.fst)
+    ∧ ¬ BPair.unit < BPair.unit := by decide +kernel
+
+/-! The negative-root measure reaches each fixed member's full
+positive count at negative rho, and each selected reflection
+removes one root from that count. -/
+
+theorem pin143 : rootNegCount tableG2 fundG2 (poly.neg (rhoV tableG2)) = 6 := by decide +kernel
+theorem pin144 : rootNegCount tableF4 fundF4 (poly.neg (rhoV tableF4)) = 24 := by decide +kernel
+theorem pin145 : rootNegCount tableE6 fundE6 (poly.neg (rhoV tableE6)) = 36 := by decide +kernel
+theorem pin146 : rootNegCount tableE7 fundE7 (poly.neg (rhoV tableE7)) = 63 := by decide +kernel
+theorem pin147 : rootNegCount tableE8 fundE8 (poly.neg (rhoV tableE8)) = 120 := by decide +kernel
+theorem pin148 : rootNegCount tableE8 fundE8 (rhoV tableE8) = 0
+    ∧ rootNegCount tableG2 fundG2 [BPair.unit, BPair.unit] = 0 := by decide +kernel
+theorem pin149 (v : List BPair) (hv : v.length = 8) (i : Nat) (hi : i < 8)
+    (hn : ground.getAt BPair.unit v i < BPair.unit) :
+    rootNegCount tableE8 fundE8 (reflF tableE8 i v) + 1 = rootNegCount tableE8 fundE8 v :=
+  rootNegCount_step tableE8 fundE8 fundShape_E8 gramRead_E8 simplePosRead_E8 reflSquareRead_E8
+    permSquareRead_E8 permImageRead_E8 rhoDotRead_E8 reflFormRead_E8 v hv i hi hn
+theorem pin150 : ¬ rootNegCount tableG2 fundG2 (reflF tableG2 0 [BPair.ofNat 1, BPair.ofNat 1]) + 1
+    = rootNegCount tableG2 fundG2 [BPair.ofNat 1, BPair.ofNat 1] := by decide +kernel
+
+/-- Coefficients beyond the simple-key width have no effect on
+the fold, and a missing coefficient is read as zero. -/
+theorem pin151 : poly.oneValue (cartanFold tableG2 [2, 1, 999]) (cartanFold tableG2 [2, 1]) :=
+  cartanFold_congr tableG2 sertables.cartanSolve_G2.1 _ _ (by decide +kernel)
+theorem pin152 : poly.oneValue (cartanFold tableG2 [2]) (cartanFold tableG2 [2, 0]) :=
+  cartanFold_congr tableG2 sertables.cartanSolve_G2.1 _ _ (by decide +kernel)
+
+/-- A closed distinct graded orbit reads its dominant keys at
+the top's even singleton, including a wall key outside the orbit. -/
+theorem pin153 (v : List BPair) (hv : ∀ i, i < 2 → BPair.unit ≤ ground.getAt BPair.unit v i) (side : Bool) :
+    wCount (sertables.weylG2 (sertables.rhoV sertables.tableG2)) v side
+      = if v = sertables.rhoV sertables.tableG2 then (if side then 0 else 1) else 0 := by
+  apply wCount_dominant sertables.tableG2 _ (sertables.weylG2_shape _)
+    (sertables.weylG2_regular _ rfl (by decide +kernel)) (weylG2_close _ rfl (by decide +kernel))
+    (sertables.rhoV sertables.tableG2) (by decide +kernel) _ v hv side
+  intro p hp hpos
+  have h := sertables.weylG2_dominant_top (sertables.rhoV sertables.tableG2) p.1 rfl
+    (by decide +kernel) (fun i hi => ground.leB_of_lt (hpos i hi)) p.2 hp
+  rw [(sertables.weylG2_shape _ p hp).2, pnorm_rhoV] at h
+  exact h
+
+/-- Repeated top keys change the graded count; an unclosed
+singleton cannot supply reflection transport. -/
+theorem pin154 : wCount [(sertables.rhoV sertables.tableG2, false), (sertables.rhoV sertables.tableG2, false)]
+      (sertables.rhoV sertables.tableG2) false = 2
+    ∧ ¬ wCloseRead sertables.tableG2 [(sertables.rhoV sertables.tableG2, false)] := by decide +kernel
+
+
+/-- Noncanonical or wrong-width keys have no graded occurrence. -/
+theorem pin155 (t : gentable.Table) (W : List (List BPair × Bool))
+    (hw : sertables.wShapeRead t W) (v : List BPair)
+    (hv : ¬ (v.length = t.rank ∧ poly.pnorm v = v)) (s : Bool) :
+    wCount W v s = 0 := wCount_offFrame t W hw v hv s
+
+theorem pin156 (c : List Nat) (hc : c.length = 2) (i : Nat) (hi : i < 2) :
+    poly.oneValue (cartanFold tableG2 (ground.bumpAt i c))
+      (elim.vecAdd (cartanFold tableG2 c) (ground.getAt [] tableG2.cartan i)) :=
+  cartanFold_bump tableG2 sertables.cartanSolve_G2.1 c hc i hi
+
+theorem pin157 (lam nu : List BPair) (hn : nu.length = 2) (hcanon : poly.pnorm nu = nu)
+    (c : List Nat) (hc : c.length = 2) (i : Nat) (hi : i < 2)
+    (hjoin : poly.pnorm (elim.vecAdd nu (cartanFold tableG2 c)) = lam) :
+    poly.pnorm (elim.vecAdd (poly.pnorm (elim.vecAdd nu (poly.neg (ground.getAt [] tableG2.cartan i))))
+      (cartanFold tableG2 (ground.bumpAt i c))) = lam :=
+  cartanFold_lower_join tableG2 sertables.cartanSolve_G2.1 lam nu hn hcanon c hc i hi hjoin
+
+/-- A coefficient list too short for its selected simple key
+cannot add the selected root at that bump. -/
+theorem pin158 : ¬ poly.oneValue (cartanFold tableG2 (ground.bumpAt 1 [0]))
+    (elim.vecAdd (cartanFold tableG2 [0]) (ground.getAt [] tableG2.cartan 1)) := by decide +kernel
+
+end assembly

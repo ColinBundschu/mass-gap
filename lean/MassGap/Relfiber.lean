@@ -51,7 +51,7 @@ every bracket with top at or below `ϱℓ` (`bottomClear`).  Clause
 matrix, the batteries pinning the split counts' sum at stated
 splittings.
 
-Clause (iv) closes the calculus at the roots.  A tensor sum's roots
+Clause (iv) reads the full product at the roots. A tensor sum's roots
 are the two factors' roots' sums (`pairRoots`, a pair's summed root
 `(n_a d_b + n_b d_a + y d_a d_b : d_a d_b)` at the level's second
 member): the factors' congruences' tensor maps the tensor sum's
@@ -61,10 +61,13 @@ congruated reads, two diagonals' tensor the diagonal at the
 entries' products, `tensorM_diagM`), and the count at a level is
 the root pairs' count below it (`tensorSum_count`, `lem:inertia`'s
 congruence read at the diagonal, the scales' product a positive
-factor keeping each entry's side).  The joined sector's ground is
+factor keeping each entry's side). The full product's ground is
 the two grounds' sum: a root at or beyond each list's stated floor
 sums to a pair at or beyond the floors' sum (`pairRoots_least`), and
 two roots' summed root is the pair list's member (`pairRoots_mem`).
+At a total-content cutoff the admitted list is the product selection
+at the sum of the two contents. The root-pair declarations below
+read the full product before that selection.
 
 Clause (i) reads at the index layer beneath that calculus.  A
 class of band components joins to one configuration in the
@@ -81,8 +84,8 @@ parts' incident labels would meet there, and the vertex-disjoint
 read refuses that.  And a plaquette meets at most one
 component's reach: at supports separated beyond the locality
 band no boundary word of the region reads both neighborhoods
-(`sepPlaq`), a vertex shared by the two reaches sitting in both
-reach lists against the separation.  The reads close over a
+(`sepPlaq`), a word meeting a vertex neighborhood meeting its band
+neighborhood against the separation.  The reads close over a
 class: the content adds member by member (`contentN_joinAll`)
 and the fiber dimensions multiply (`fibProd_joinAll`), each at
 the unit's own equality read, the interface's `eqLRefl` field at
@@ -238,8 +241,11 @@ private theorem getAt_pairMap {α β γ : Type} (dg : γ) (da : α) (db : β)
       = f (ground.getAt da t i) (ground.getAt db lb k)
     have hidx : (i + 1) * lb.length + k
         = (lb.map (f a)).length + (i * lb.length + k) := by
-      rw [ground.length_map, Nat.succ_mul, Nat.add_right_comm,
-        Nat.add_comm (i * lb.length + k) lb.length]
+      rw [ground.length_map]
+      exact polEq [i, lb.length, k]
+        (Pol.add (Pol.mul (Pol.add (Pol.mon (Mon.var 0)) (Pol.mon (Mon.cst 1))) (Pol.mon (Mon.var 1))) (Pol.mon (Mon.var 2)))
+        (Pol.add (Pol.mon (Mon.var 1)) (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1))) (Pol.mon (Mon.var 2))))
+        (by decide +kernel)
     rw [hidx, ground.getAt_append_add dg (lb.map (f a))
         (t.flatMap (fun a => lb.map (f a))) (i * lb.length + k),
       getAt_pairMap dg da db f t lb i k (Nat.lt_of_succ_lt_succ hi) hk]
@@ -1125,7 +1131,7 @@ theorem comm_shift (nX L : Nat) (X P : Mat) (hX : sqAt X nX)
         rowsLen_cast hPt (rowsLen_matMul (elim.idMat (l0 + 1)) P)
       have hPI : rowsLen (l0 + 1) (matMul P (elim.idMat (l0 + 1))) :=
         rowsLen_cast
-          (by rw [inertia.transposeM_idMat (l0 + 1), elim.length_idMat])
+          (by rw [elim.transposeM_idMat (l0 + 1), elim.length_idMat])
           (rowsLen_matMul P (elim.idMat (l0 + 1)))
       have hLeft : matOneValue
           (matMul (tensorM X (elim.idMat (l0 + 1)))
@@ -1280,7 +1286,7 @@ private theorem tensorRow_head (a : BPair) (m : Nat)
       ++ tensorV (List.replicate m BPair.unit) rb) (c1 ++ c2)).oneValue
     (a * dotN rb c1)
   refine BPair.oneValue_trans
-    (inertia.dotN_app _ _ _ _ (by rw [ground.length_map, hrb])) ?_
+    (elim.dotN_app _ _ _ _ (by rw [ground.length_map, hrb])) ?_
   refine BPair.oneValue_trans
     (BPair.add_congr (inertia.dotN_scaleRow a rb c1)
       (elim.dotN_nullL _ c2
@@ -1296,7 +1302,7 @@ private theorem tensorRow_pad (r rb c1 c2 : List BPair)
   show (dotN (rb.map (fun y => (BPair.unit * y).norm) ++ tensorV r rb)
       (c1 ++ c2)).oneValue (dotN (tensorV r rb) c2)
   refine BPair.oneValue_trans
-    (inertia.dotN_app _ _ _ _ (by rw [ground.length_map, hrb])) ?_
+    (elim.dotN_app _ _ _ _ (by rw [ground.length_map, hrb])) ?_
   refine BPair.oneValue_trans
     (BPair.add_congr
       (elim.dotN_nullL _ c1
@@ -1396,7 +1402,7 @@ private theorem tensorL_fold (X : Mat) (N : Nat) (hXl : X.length = N)
           + inertia.quadForm (tensorM (inertia.blockMat bs k) X) c2)
       rw [matVec_append]
       refine BPair.oneValue_trans
-        (inertia.dotN_app _ _ _ _
+        (elim.dotN_app _ _ _ _
           (by rw [hc1, matVec_length, ground.length_map, hXl])) ?_
       refine BPair.add_congr ?_ ?_
       · refine BPair.oneValue_trans
@@ -1468,7 +1474,7 @@ theorem tensor_form_left {n : Nat} (G : Mat) (sp : inertia.Split n)
         rowsLen_tensorM n N G X hGrows hXrows
       have hSsq : sqAt (tensorM G X) (n * N) := sqAt_of hSl hSr
       have hIt : (transposeM (elim.idMat N)).length = N := by
-        rw [inertia.transposeM_idMat N, hidl]
+        rw [elim.transposeM_idMat N, hidl]
       have hIIr : rowsLen N (matMul (elim.idMat N) (elim.idMat N)) :=
         rowsLen_cast hIt (rowsLen_matMul _ _)
       have hcl : (matVec (tensorM sp.Tw.val (elim.idMat N)) u).length
@@ -1505,7 +1511,7 @@ theorem tensor_form_left {n : Nat} (G : Mat) (sp : inertia.Split n)
       have hXI : matOneValue
           (matMul (transposeM (elim.idMat N))
             (matMul X (elim.idMat N))) X := by
-        rw [inertia.transposeM_idMat N]
+        rw [elim.transposeM_idMat N]
         refine matOne_trans (elim.matMul_congrR_of (elim.idMat N) _ _
           (elim.transposeM_congrM N _ _ hXIr hXrows (by rw [hXIl, hXlen])
             (inertia.matMul_idR N X hXrows hXlen hN hN))) ?_
@@ -1633,7 +1639,7 @@ private theorem tensorRowR_head (a : BPair) (m : Nat) :
           ((h :: t) ++ elim.flatCat cs)).oneValue
         (a * dotN (x :: rx) (h :: cs.map hdU))
       refine BPair.oneValue_trans
-        (inertia.dotN_app _ _ _ _
+        (elim.dotN_app _ _ _ _
           (by
             rw [ground.length_map]
             show (List.replicate m BPair.unit).length + 1 = (h :: t).length
@@ -1646,7 +1652,7 @@ private theorem tensorRowR_head (a : BPair) (m : Nat) :
               (a :: List.replicate m BPair.unit) (h :: t))
             (BPair.mul_congr (BPair.oneValue_refl x)
               (BPair.oneValue_trans
-                (inertia.dotN_app [a] (List.replicate m BPair.unit)
+                (elim.dotN_app [a] (List.replicate m BPair.unit)
                   [h] t rfl)
                 (BPair.oneValue_trans
                   (BPair.add_congr (inertia.dotN_single a h)
@@ -1686,12 +1692,12 @@ private theorem tensorRowR_pad (r : List BPair) :
         (dotN (r.map (fun y => (x * y).norm) ++ tensorV rx r)
           (t ++ elim.flatCat (cs.map List.tail)))
       refine BPair.oneValue_trans
-        (inertia.dotN_app _ _ _ _
+        (elim.dotN_app _ _ _ _
           (by rw [ground.length_map]; exact hcs.1.symm)) ?_
       refine BPair.oneValue_trans
         (BPair.add_congr
           (BPair.oneValue_trans
-            (inertia.dotN_app [(x * BPair.unit).norm]
+            (elim.dotN_app [(x * BPair.unit).norm]
               (r.map (fun y => (x * y).norm)) [h] t rfl)
             (BPair.oneValue_trans
               (BPair.add_congr
@@ -1702,7 +1708,7 @@ private theorem tensorRowR_pad (r : List BPair) :
               (BPair.unit_add _)))
           (tensorRowR_pad r rx cs (Nat.succ.inj hl) hcs.2)) ?_
       exact BPair.oneValue_symm
-        (inertia.dotN_app _ _ _ _ (by rw [ground.length_map, ht]))
+        (elim.dotN_app _ _ _ _ (by rw [ground.length_map, ht]))
 
 private theorem padRowsR (rx : List BPair) (cs0 : List (List BPair))
     (hl : rx.length = cs0.length) (m : Nat)
@@ -1765,11 +1771,11 @@ private theorem quadR_step (a : BPair) (m : Nat) (D : Mat)
         rw [matVec_length, ground.length_map]
         show t.length + 1 = (D.map (fun r => BPair.unit :: r)).length + 1
         rw [htl, ground.length_map, hDl]
-      refine BPair.oneValue_trans (inertia.dotN_app _ _ _ _ hlenblk) ?_
+      refine BPair.oneValue_trans (elim.dotN_app _ _ _ _ hlenblk) ?_
       refine BPair.oneValue_trans
         (BPair.add_congr
           (BPair.oneValue_trans
-            (inertia.dotN_app [h] t
+            (elim.dotN_app [h] t
               [dotN (tensorV rx (a :: List.replicate m BPair.unit))
                 (elim.flatCat cs0)] _ rfl)
             (BPair.add_congr
@@ -1790,11 +1796,11 @@ private theorem quadR_step (a : BPair) (m : Nat) (D : Mat)
           (dotN (cs.map hdU) (matVec X (cs0.map hdU)))]
         refine BPair.mul_congr (BPair.oneValue_refl a) ?_
         exact BPair.oneValue_symm (BPair.oneValue_trans
-          (inertia.dotN_app [h] (cs.map hdU) [dotN rx (cs0.map hdU)]
+          (elim.dotN_app [h] (cs.map hdU) [dotN rx (cs0.map hdU)]
             (matVec X (cs0.map hdU)) rfl)
           (BPair.add_congr (inertia.dotN_single h (dotN rx (cs0.map hdU)))
             (BPair.oneValue_refl _)))
-      · exact BPair.oneValue_symm (inertia.dotN_app _ _ _ _
+      · exact BPair.oneValue_symm (elim.dotN_app _ _ _ _
           (by rw [matVec_length, ground.length_map, htl, hDl]))
 
 
@@ -1893,7 +1899,7 @@ theorem tensor_form_right {n : Nat} (G : Mat) (sp : inertia.Split n)
         rowsLen_tensorM N n X G hXrows hGrows
       have hSsq : sqAt (tensorM X G) (N * n) := sqAt_of hSl hSr
       have hIt : (transposeM (elim.idMat N)).length = N := by
-        rw [inertia.transposeM_idMat N, hidl]
+        rw [elim.transposeM_idMat N, hidl]
       have hTwt : (transposeM sp.Tw.val).length = n :=
         length_transposeM _ hTwrows (by rw [hTwlen]; exact hn)
       have hTt : (transposeM sp.T.val).length = n :=
@@ -1933,7 +1939,7 @@ theorem tensor_form_right {n : Nat} (G : Mat) (sp : inertia.Split n)
       have hXI : matOneValue
           (matMul (transposeM (elim.idMat N))
             (matMul X (elim.idMat N))) X := by
-        rw [inertia.transposeM_idMat N]
+        rw [elim.transposeM_idMat N]
         refine matOne_trans (elim.matMul_congrR_of (elim.idMat N) _ _
           (elim.transposeM_congrM N _ _ hXIr hXrows (by rw [hXIl, hXlen])
             (inertia.matMul_idR N X hXrows hXlen hN hN))) ?_
@@ -2437,16 +2443,22 @@ theorem bottomClear {n : Nat} (H G : Mat) (hH : sqAt H n) (hG : sqAt G n)
     refine site_of_order _ _ u (by rw [hu']; exact hAl)
       (by rw [hu']; exact hAr) (by rw [hu']; exact hpPl)
       (by rw [hu']; exact hpPr) ?_
-    have hlevW := ground.leB_mulR (hW u hu') hlev
-    rw [BPair.left_distrib, BPair.left_distrib,
-      BPair.mul_comm (inertia.quadForm (tensorPow G rho) u)
-        (BPair.ofPos p),
-      BPair.mul_comm (inertia.quadForm (tensorPow G rho) u)
-        (BPair.ofNat rho * BPair.ofPos y),
-      BPair.mul_comm (inertia.quadForm (tensorPow G rho) u)
-        (BPair.ofNat rho * BPair.ofPos x),
-      BPair.mul_comm (inertia.quadForm (tensorPow G rho) u)
-        (BPair.ofPos q)] at hlevW
+    have hlevW : BPair.ofPos p * inertia.quadForm (tensorPow G rho) u
+          + BPair.ofNat rho * BPair.ofPos y
+            * inertia.quadForm (tensorPow G rho) u
+        ≤ BPair.ofNat rho * BPair.ofPos x
+            * inertia.quadForm (tensorPow G rho) u
+          + BPair.ofPos q * inertia.quadForm (tensorPow G rho) u :=
+      ground.leB_congr
+        (BPair.oneValue_of_eq (by
+          rw [BPair.mul_comm (inertia.quadForm (tensorPow G rho) u)
+              (BPair.ofPos p + BPair.ofNat rho * BPair.ofPos y),
+            BPair.right_distrib]))
+        (BPair.oneValue_of_eq (by
+          rw [BPair.mul_comm (inertia.quadForm (tensorPow G rho) u)
+              (BPair.ofNat rho * BPair.ofPos x + BPair.ofPos q),
+            BPair.right_distrib]))
+        (ground.leB_mulR (hW u hu') hlev)
     have hchain := ground.leB_trans hlevW
       (ground.leB_add (sector_floor H G hH hG x y spF hF hFpsd spG hGsp
           hGpsd hGord rho u hu')
@@ -2794,8 +2806,11 @@ private theorem entryAlg (x y : Pos) (na ga nb gb : BPair) (da db : Pos) :
                   (BPair.ofPos_mul x (da * db))))))))
   refine BPair.oneValue_trans
     (BPair.add_congr (BPair.add_congr (BPair.add_congr h1 h2) h3) h4) ?_
-  refine BPair.oneValue_of_eq (Eq.symm ?_)
-  rw [BPair.left_distrib, BPair.left_distrib, BPair.left_distrib]
+  exact polEqB [ga * gb, na.scale db, nb.scale da, BPair.ofPos (y * (da * db)),
+    (BPair.ofPos (x * (da * db))).swap]
+    (Pol.add (Pol.add (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1))) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 2)))) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 3)))) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 4))))
+    (Pol.mul (Pol.mon (Mon.var 0)) (Pol.add (Pol.add (Pol.add (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 2))) (Pol.mon (Mon.var 3))) (Pol.mon (Mon.var 4))))
+    (by decide +kernel)
 
 /-- A root pair's diagonal entry sits below the sum's unit exactly
 where the summed root sits below the level, the scales' product a
@@ -3272,7 +3287,7 @@ private theorem notDecide_of_not {p : Prop} [Decidable p] (hn : ¬ p) :
   rw [decide_eq_false hn]
   rfl
 
-/-- The joined sector's ground is the two grounds' sum, the floor
+/-- The full product's ground is the two grounds' sum, the floor
 half: a root at or beyond each list's stated floor sums to a pair at
 or beyond the floors' sum. -/
 theorem pairRoots_least (lA lB : List (BPair × Pos × BPair)) (y : Pos)
@@ -3331,7 +3346,7 @@ theorem pairRoots_least (lA lB : List (BPair × Pos × BPair)) (y : Pos)
   exact ground.leB_add (ground.leB_add t1 t2) t3
 
 
-/-- The joined sector's ground is the two grounds' sum, the attainment
+/-- The full product's ground is the two grounds' sum, the attainment
 half: a root of each list joins the pair list at their summed root
 (`lem:relfiber`(iv)). -/
 theorem pairRoots_mem (lA lB : List (BPair × Pos × BPair)) (y : Pos)
@@ -3390,7 +3405,7 @@ def decAllDisj {L : Type} (F : fusion.Data L) (R : lattice.Region)
   | [] => isTrue trivial
   | _ :: ds => @instDecidableAnd _ _ inferInstance (decAllDisj F R c ds)
 
-instance {L : Type} (F : fusion.Data L) (R : lattice.Region)
+instance instRelfiber1 {L : Type} (F : fusion.Data L) (R : lattice.Region)
     (c : List L) (ds : List (List L)) : Decidable (allDisj F R c ds) :=
   decAllDisj F R c ds
 
@@ -3401,7 +3416,7 @@ def decDisjAll {L : Type} (F : fusion.Data L) (R : lattice.Region) :
   | [] => isTrue trivial
   | _ :: cs => @instDecidableAnd _ _ inferInstance (decDisjAll F R cs)
 
-instance {L : Type} (F : fusion.Data L) (R : lattice.Region)
+instance instRelfiber2 {L : Type} (F : fusion.Data L) (R : lattice.Region)
     (cs : List (List L)) : Decidable (disjAll F R cs) :=
   decDisjAll F R cs
 
@@ -3418,31 +3433,6 @@ private theorem filterMap_occ {α β : Type} [DecidableEq α]
 
 /-! ### The incidence reads at an occupied key -/
 
-/-- An occupied link reads incident labels at its tail: the key's
-own entry sits in the vertex's incident list at the forward
-orientation. -/
-private theorem incid_occ {L : Type} (F : fusion.Data L)
-    (R : lattice.Region) (c : List L) (k : Nat) (hk : k < R.links)
-    (hc : F.eqL (getAt F.unit c k) F.unit = false) :
-    ¬ (carrier.incidentLabels F R c (getAt 0 R.tail k)).length = 0 := by
-  have hinc : 0 < countOf (k, true)
-      (lattice.incident R (getAt 0 R.tail k)) := by
-    rw [lattice.incident_read R (getAt 0 R.tail k)]
-    refine countOf_pos_of_mem
-      (ground.mem_flatMap_to _ (ground.memRange hk) ?_)
-    show (k, true) ∈
-      (if getAt 0 R.tail k == getAt 0 R.tail k then [(k, true)] else [])
-        ++ (if getAt 0 R.head k == getAt 0 R.tail k then [(k, false)]
-            else [])
-    rw [if_pos (eqBeqOf rfl)]
-    exact ground.mem_append_left _ (List.Mem.head [])
-  refine filterMap_occ _ (lattice.incident R (getAt 0 R.tail k))
-    (k, true) (getAt F.unit c k) hinc ?_
-  show (if F.eqL (getAt F.unit c k) F.unit then none
-        else if true then some (getAt F.unit c k)
-        else some (F.dual (getAt F.unit c k))) = some (getAt F.unit c k)
-  rw [if_neg (boolNe hc), if_pos rfl]
-
 /-- The vertex-disjoint read at the link level: at a key occupied
 by the first configuration the second reads the unit, both parts'
 incident labels meeting at the key's tail otherwise. -/
@@ -3458,41 +3448,10 @@ private theorem link_disj {L : Type} (F : fusion.Data L)
         || ((carrier.incidentLabels F R b (getAt 0 R.tail k)).length == 0))
         = true := all_range_read R.verts hd _ (lattice.endLt R hw k hk).1
     cases orSplitB hall with
-    | inl h => exact absurd (beqEqOf h) (incid_occ F R a k hk ha)
-    | inr h => exact absurd (beqEqOf h) (incid_occ F R b k hk hb)
+    | inl h => exact absurd (beqEqOf h) (carrier.incidentLabels_occ F R a k hk ha).1
+    | inr h => exact absurd (beqEqOf h) (carrier.incidentLabels_occ F R b k hk hb).1
 
 /-! ### The content at a separated pair -/
-
-/-- The content at its additive spelling: the fold over the
-configuration's own keys, an occupied key at its Casimir and the
-unit key at the sum's unit. -/
-private theorem contentN_fam {L : Type} (F : fusion.Data L) (x : List L) :
-    carrier.contentN F x
-      = famFold Nat.add 0
-        (fun l => if F.eqL l F.unit then 0 else F.c2N l) x := by
-  show x.foldl (fun acc l =>
-      if F.eqL l F.unit then acc else acc + F.c2N l) 0 = _
-  rw [foldl_congr (fun acc l => if F.eqL l F.unit then acc else acc + F.c2N l)
-      (fun acc l => acc + (if F.eqL l F.unit then 0 else F.c2N l))
-      (fun acc l => by cases F.eqL l F.unit <;> rfl) x 0,
-    foldlSum (fun l => if F.eqL l F.unit then 0 else F.c2N l) x 0,
-    Nat.zero_add]
-
-/-- The content over the key range at a stated width: the fold at
-the entries the keys read. -/
-private theorem contentN_range {L : Type} (F : fusion.Data L) (n : Nat)
-    (x : List L) (hx : x.length = n) :
-    carrier.contentN F x
-      = famFold Nat.add 0
-        (fun k => if F.eqL (getAt F.unit x k) F.unit then 0
-          else F.c2N (getAt F.unit x k)) (List.range n) := by
-  have h : x = (List.range n).map (getAt F.unit x) := by
-    rw [← hx]
-    exact (ground.range_map_getAt F.unit x.length x rfl).symm
-  exact ((contentN_fam F x).trans
-    (congrArg (famFold Nat.add 0
-      (fun l => if F.eqL l F.unit then 0 else F.c2N l)) h)).trans
-    (famFold_map Nat.add 0 _ _ (List.range n))
 
 /-- The content adds over a vertex-disjoint pair
 (`lem:relfiber`(i)'s electric read): the join's Casimir fold is
@@ -3511,9 +3470,9 @@ theorem contentN_join {L : Type} (F : fusion.Data L) (R : lattice.Region)
           else F.c2N (if F.eqL (getAt F.unit a k) F.unit
               then getAt F.unit b k else getAt F.unit a k))
         (List.range R.links) :=
-    (contentN_fam F (stableentries.joinConf F R a b)).trans
+    (carrier.contentN_fam F (stableentries.joinConf F R a b)).trans
       (famFold_map Nat.add 0 _ _ (List.range R.links))
-  rw [hj, contentN_range F R.links a ha, contentN_range F R.links b hb,
+  rw [hj, carrier.contentN_range F a, ha, carrier.contentN_range F b, hb,
     ← famFold_add_split
       (fun k => if F.eqL (getAt F.unit a k) F.unit then 0
         else F.c2N (getAt F.unit a k))
@@ -3544,8 +3503,8 @@ theorem contentN_join {L : Type} (F : fusion.Data L) (R : lattice.Region)
 /-- A plaquette meets at most one separated component's reach
 (`lem:relfiber`(i) at `lem:stableentries`' neighborhood read): at
 supports separated beyond the locality band no boundary word of
-the region reads both neighborhoods, its shared vertex sitting in
-both reach lists otherwise. -/
+the region reads both vertex neighborhoods, a word meeting one
+meeting its band neighborhood. -/
 theorem sepPlaq {L : Type} (F : fusion.Data L) (R : lattice.Region)
     (a b : List L) (hs : grading.sepBeyond F R a b) (i : Nat) :
     ¬ (stableentries.nearPlaq F R a (getAt [] R.plaqs i) = true
@@ -3560,24 +3519,8 @@ theorem sepPlaq {L : Type} (F : fusion.Data L) (R : lattice.Region)
     exact Bool.noConfusion hvp
   | inl hi =>
   intro h
-  obtain ⟨v, hvm, hvp⟩ := mem_of_any _ (carrier.touched F R a) h.1
-  have hvv : v < R.verts :=
-    ground.ltOfMemRange (mem_filter_of _ (List.range R.verts) v hvm).1
-  have hband : ∀ c : List L,
-      stableentries.nearPlaq F R c (getAt [] R.plaqs i) = true →
-      v ∈ (List.range R.verts).filter (fun w =>
-        R.plaqs.any (fun p =>
-          stableentries.nearPlaq F R c p
-            && p.any (fun e =>
-              lattice.startOf R e == w || lattice.endOf R e == w))) := by
-    intro c hc
-    refine mem_filter_to _ (ground.memRange hvv) ?_
-    refine any_of_mem _ (mem_getAt [] R.plaqs i hi) ?_
-    rw [hc, hvp]
-    rfl
-  have h1 := any_of_mem (fun w => w == v) (hband b h.2) (eqBeqOf rfl)
-  have h2 := all_of_mem _ _ hs _ (hband a h.1)
-  exact Bool.noConfusion (h1.symm.trans (ground.boolFalseOfNot h2))
+  exact grading.sepBeyond_read F R a b hs _ (mem_getAt [] R.plaqs i hi)
+    ⟨grading.meetsB_of_near F R a _ h.1, grading.meetsB_of_near F R b _ h.2⟩
 
 /-! ### The folds over a separated class -/
 
@@ -3802,54 +3745,6 @@ theorem fibProd_joinAll {L : Type} (F : fusion.Data L)
 
 /-! ### The stencil row at a separated spectator -/
 
-/-- The separated spectator reads the unit's class on the
-boundary's own keys. -/
-private theorem far_unit {L : Type} (F : fusion.Data L)
-    (R : lattice.Region) (p : List (Nat × Bool)) (b : List L)
-    (hw : lattice.wellRead R)
-    (hfar : stableentries.nearPlaq F R b p = false)
-    (k : Nat) (hk : k < R.links)
-    (hkp : (p.any (fun e => e.1 == k)) = true) :
-    F.eqL (getAt F.unit b k) F.unit = true := by
-  cases hb : F.eqL (getAt F.unit b k) F.unit with
-  | true => rfl
-  | false =>
-    obtain ⟨e, hep, hek⟩ := mem_of_any _ p hkp
-    have hek' : e.1 = k := beqEqOf hek
-    have hvv : getAt 0 R.tail k < R.verts := (lattice.endLt R hw k hk).1
-    have htch : getAt 0 R.tail k ∈ carrier.touched F R b := by
-      refine mem_filter_to _ (ground.memRange hvv) ?_
-      show (!((carrier.incidentLabels F R b
-          (getAt 0 R.tail k)).length == 0)) = true
-      rw [ground.neBeqOf (incid_occ F R b k hk hb)]
-      rfl
-    have hcov : (p.any (fun e' =>
-        lattice.startOf R e' == getAt 0 R.tail k
-          || lattice.endOf R e' == getAt 0 R.tail k)) = true := by
-      refine any_of_mem _ hep ?_
-      cases he2 : e.2 with
-      | true =>
-        show (lattice.startOf R e == getAt 0 R.tail k
-          || lattice.endOf R e == getAt 0 R.tail k) = true
-        have hst : lattice.startOf R e = getAt 0 R.tail k := by
-          show (if e.2 then getAt 0 R.tail e.1
-                else getAt 0 R.head e.1) = getAt 0 R.tail k
-          rw [if_pos he2, hek']
-        rw [hst, eqBeqOf rfl]
-        rfl
-      | false =>
-        show (lattice.startOf R e == getAt 0 R.tail k
-          || lattice.endOf R e == getAt 0 R.tail k) = true
-        have hen : lattice.endOf R e = getAt 0 R.tail k := by
-          show (if e.2 then getAt 0 R.head e.1
-                else getAt 0 R.tail e.1) = getAt 0 R.tail k
-          rw [if_neg (boolNe he2), hek']
-        rw [hen, eqBeqOf rfl]
-        cases lattice.startOf R e == getAt 0 R.tail k <;> rfl
-    have hnear : stableentries.nearPlaq F R b p = true :=
-      any_of_mem _ htch hcov
-    exact Bool.noConfusion (hfar.symm.trans hnear)
-
 /-- The join reads the moved part alone on the boundary's keys, the
 spectator's labels the unit's own there. -/
 private theorem join_far {L : Type} (F : fusion.Data L)
@@ -3868,7 +3763,7 @@ private theorem join_far {L : Type} (F : fusion.Data L)
   cases ha : F.eqL (getAt F.unit a k) F.unit with
   | false => rw [if_neg (fun h => Bool.noConfusion h)]
   | true =>
-    rw [if_pos rfl, hsb (far_unit F R p b hw hfar k hk hkp), hsa ha]
+    rw [if_pos rfl, hsb (stableentries.far_unit F R p b hw hfar k hk hkp), hsa ha]
 
 /-- One key's overlay against the spectator: the moved entry where
 occupied, the spectator's read at the vacant key. -/
@@ -3904,7 +3799,7 @@ private theorem targets_join {L : Type} [DecidableEq L]
     rw [hkp, if_pos rfl, if_pos rfl,
       join_far F R p a b hw hfar k hk hkp hsa hsb]
     have hbk : getAt F.unit b k = F.unit :=
-      hsb (far_unit F R p b hw hfar k hk hkp)
+      hsb (stableentries.far_unit F R p b hw hfar k hk hkp)
     have hsr' : ∀ c, 0 < countOf c (F.row (getAt F.unit a k) F.theta) →
         F.eqL c F.unit = true → c = F.unit := by
       intro c hc
@@ -4360,7 +4255,7 @@ theorem plaqRow_join {L : Type} [DecidableEq L] (F : fusion.Data L)
               rw [if_pos htq]] at h3
         have hbu : getAt F.unit b j = F.unit := by
           cases hkp : (p.any (fun e => e.1 == j)) with
-          | true => exact hsB j hjl (far_unit F R p b hw hfar j hjl hkp)
+          | true => exact hsB j hjl (stableentries.far_unit F R p b hw hfar j hjl hkp)
           | false => exact hsB j hjl (hbunit hkp hyq)
         rw [h3, hbu, hsT j hjl htq]
     | true =>

@@ -73,46 +73,48 @@ at a two-by-three rectangle, and the entrywise binder at one
 doubled entry.
 -/
 
+namespace elim
 
-open ground poly elim
+
+open ground poly
 
 /-! The first-row fold. -/
 
-example : BPair.oneValue
+theorem pin1 : BPair.oneValue
     (minor [[⟨2, 1⟩, ⟨3, 1⟩], [⟨4, 1⟩, ⟨5, 1⟩]]) ⟨1, 3⟩ := by decide +kernel
 
-example : BPair.oneValue
+theorem pin2 : BPair.oneValue
     (minor [[⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩],
             [⟨5, 1⟩, ⟨6, 1⟩, ⟨7, 1⟩],
             [⟨8, 1⟩, ⟨9, 1⟩, ⟨11, 1⟩]]) ⟨1, 4⟩ := by decide +kernel
 
 /-- A repeated row reads equal members. -/
-example : BPair.oneValue
+theorem pin3 : BPair.oneValue
     (minor [[⟨2, 1⟩, ⟨3, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]) BPair.unit := by decide +kernel
 
 /-! Sylvester's identity at the pivot-bordered minors of one 4x4:
 the displayed first naming `b(1)_ij + a_i1 a_1j = a_11 a_ij` at the
 empty leading lists, then the first and the second step. -/
 
-example : sylvesterRead
+theorem pin4 : sylvesterRead
     [[⟨2, 1⟩, ⟨3, 1⟩, ⟨1, 2⟩, ⟨4, 1⟩],
      [⟨5, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩, ⟨1, 3⟩],
      [⟨1, 2⟩, ⟨6, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩],
      [⟨4, 1⟩, ⟨1, 4⟩, ⟨5, 1⟩, ⟨1, 1⟩]] 0 2 3 := by decide +kernel
 
-example : sylvesterRead
+theorem pin5 : sylvesterRead
     [[⟨2, 1⟩, ⟨3, 1⟩, ⟨1, 2⟩, ⟨4, 1⟩],
      [⟨5, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩, ⟨1, 3⟩],
      [⟨1, 2⟩, ⟨6, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩],
      [⟨4, 1⟩, ⟨1, 4⟩, ⟨5, 1⟩, ⟨1, 1⟩]] 1 2 3 := by decide +kernel
 
-example : sylvesterRead
+theorem pin6 : sylvesterRead
     [[⟨2, 1⟩, ⟨3, 1⟩, ⟨1, 2⟩, ⟨4, 1⟩],
      [⟨5, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩, ⟨1, 3⟩],
      [⟨1, 2⟩, ⟨6, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩],
      [⟨4, 1⟩, ⟨1, 4⟩, ⟨5, 1⟩, ⟨1, 1⟩]] 2 2 3 := by decide +kernel
 
-example : sylvesterRead
+theorem pin7 : sylvesterRead
     [[⟨2, 1⟩, ⟨3, 1⟩, ⟨1, 2⟩, ⟨4, 1⟩],
      [⟨5, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩, ⟨1, 3⟩],
      [⟨1, 2⟩, ⟨6, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩],
@@ -121,10 +123,10 @@ example : sylvesterRead
 /-! The resultant: `Res(z - 2, z - 3)` reads the balance partner of
 one, and `Res(z^2 - 1, z - 2) = q(1) q(-1) = 3`. -/
 
-example : BPair.oneValue
+theorem pin8 : BPair.oneValue
     (resultant [⟨1, 3⟩, ⟨2, 1⟩] [⟨1, 4⟩, ⟨2, 1⟩]) ⟨1, 2⟩ := by decide +kernel
 
-example : BPair.oneValue
+theorem pin9 : BPair.oneValue
     (resultant [⟨1, 2⟩, ⟨1, 1⟩, ⟨2, 1⟩] [⟨1, 3⟩, ⟨2, 1⟩]) ⟨4, 1⟩ := by
   decide +kernel
 
@@ -138,29 +140,29 @@ private def zMinusTwo : poly.Poly := [⟨1, 3⟩, ⟨2, 1⟩]
 private def zMinusThree : poly.Poly := [⟨1, 4⟩, ⟨2, 1⟩]
 private def zSqMinusOne : poly.Poly := [⟨1, 2⟩, ⟨1, 1⟩, ⟨2, 1⟩]
 
-example : poly.oneValue
+theorem pin10 : poly.oneValue
     (poly.add (poly.mul (bezoutA zMinusTwo zMinusThree) zMinusTwo)
       (poly.mul (bezoutB zMinusTwo zMinusThree) zMinusThree))
     [resultant zMinusTwo zMinusThree] := by decide +kernel
 
-example : poly.oneValue
+theorem pin11 : poly.oneValue
     (poly.add (poly.mul (bezoutA zMinusTwo zMinusThree) zMinusTwo)
       (poly.mul (bezoutB zMinusTwo zMinusThree) zMinusThree))
     [resultant zMinusTwo zMinusThree] :=
   bezout_all zMinusTwo zMinusThree (by decide +kernel)
 
-example : poly.oneValue
+theorem pin12 : poly.oneValue
     (poly.add (poly.mul (bezoutA zSqMinusOne zMinusTwo) zSqMinusOne)
       (poly.mul (bezoutB zSqMinusOne zMinusTwo) zMinusTwo))
     [resultant zSqMinusOne zMinusTwo] := by decide +kernel
 
-example : poly.oneValue
+theorem pin13 : poly.oneValue
     (poly.add (poly.mul (bezoutA zSqMinusOne zMinusTwo) zSqMinusOne)
       (poly.mul (bezoutB zSqMinusOne zMinusTwo) zMinusTwo))
     [resultant zSqMinusOne zMinusTwo] :=
   bezout_all zSqMinusOne zMinusTwo (by decide +kernel)
 
-example : ¬ poly.oneValue
+theorem pin14 : ¬ poly.oneValue
     (poly.add (poly.mul (bezoutA [⟨3, 1⟩] [⟨4, 1⟩]) [⟨3, 1⟩])
       (poly.mul (bezoutB [⟨3, 1⟩] [⟨4, 1⟩]) [⟨4, 1⟩]))
     [resultant [⟨3, 1⟩] [⟨4, 1⟩]] := by decide +kernel
@@ -169,11 +171,11 @@ example : ¬ poly.oneValue
 row at the value, decided and read through the theorem's route at
 the decided square frame. -/
 
-example : poly.oneValue
+theorem pin15 : poly.oneValue
     (bezoutBD [⟨1, 2⟩, ⟨1, 1⟩, ⟨2, 1⟩] [⟨1, 3⟩, ⟨2, 1⟩])
     (bezoutB [⟨1, 2⟩, ⟨1, 1⟩, ⟨2, 1⟩] [⟨1, 3⟩, ⟨2, 1⟩]) := by decide +kernel
 
-example : poly.oneValue
+theorem pin16 : poly.oneValue
     (bezoutBD [⟨1, 2⟩, ⟨1, 1⟩, ⟨2, 1⟩] [⟨1, 3⟩, ⟨2, 1⟩])
     (bezoutB [⟨1, 2⟩, ⟨1, 1⟩, ⟨2, 1⟩] [⟨1, 3⟩, ⟨2, 1⟩]) :=
   bezoutBD_eq _ _ (by decide +kernel)
@@ -187,16 +189,16 @@ private def qM : List (List poly.PPair) :=
   [[(poly.one, poly.one), ([⟨1, 3⟩], poly.one)],
    [([⟨2, 1⟩], [⟨3, 1⟩]), (poly.one, [⟨2, 1⟩])]]
 
-example : elim.matOcc qM = true := by decide +kernel
-example : elim.matOcc [[(poly.one, [])]] = false := by decide +kernel
+theorem pin17 : elim.matOcc qM = true := by decide +kernel
+theorem pin18 : elim.matOcc [[(poly.one, [])]] = false := by decide +kernel
 
-example : poly.oneValue
+theorem pin19 : poly.oneValue
     (poly.mul (elim.pairDetD qM).1
       (elim.minorO poly.ppairOps poly.pnormPair id qM).2)
     (poly.mul (elim.minorO poly.ppairOps poly.pnormPair id qM).1
       (elim.pairDetD qM).2) := by decide +kernel
 
-example : poly.oneValue
+theorem pin20 : poly.oneValue
     (poly.mul (elim.pairDetD qM).1
       (elim.minorO poly.ppairOps poly.pnormPair id qM).2)
     (poly.mul (elim.minorO poly.ppairOps poly.pnormPair id qM).1
@@ -211,8 +213,8 @@ private def qRag : List (List poly.PPair) :=
   [[(poly.one, poly.one), ([⟨1, 3⟩], poly.one)],
    [([⟨2, 1⟩], [⟨3, 1⟩])]]
 
-example : elim.matOcc qRag = true := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin21 : elim.matOcc qRag = true := by decide +kernel
+theorem pin22 : ¬ poly.oneValue
     (poly.mul (elim.pairDetD qRag).1
       (elim.minorO poly.ppairOps poly.pnormPair id qRag).2)
     (poly.mul (elim.minorO poly.ppairOps poly.pnormPair id qRag).1
@@ -223,37 +225,37 @@ private def qM3 : List (List poly.PPair) :=
    [([⟨3, 1⟩], [⟨2, 1⟩]), (poly.one, [⟨3, 1⟩]), (poly.pZero)],
    [([⟨1, 3⟩], poly.one), (poly.pZero), ([⟨2, 1⟩], [⟨2, 1⟩])]]
 
-example : elim.matOcc qM3 = true := by decide +kernel
-example : poly.oneValue
+theorem pin23 : elim.matOcc qM3 = true := by decide +kernel
+theorem pin24 : poly.oneValue
     (poly.mul (elim.pairDetD qM3).1
       (elim.minorO poly.ppairOps poly.pnormPair id qM3).2)
     (poly.mul (elim.minorO poly.ppairOps poly.pnormPair id qM3).1
       (elim.pairDetD qM3).2) := by decide +kernel
 
-example : poly.unitTail (elim.pairDetD [[(poly.one, [])]]).2 := by
+theorem pin25 : poly.unitTail (elim.pairDetD [[(poly.one, [])]]).2 := by
   decide +kernel
 
 /-! The resultant's stated site. -/
 
-example : topsUnequal [⟨1, 2⟩, ⟨1, 1⟩, ⟨2, 1⟩] [⟨1, 3⟩, ⟨2, 1⟩] := by
+theorem pin26 : topsUnequal [⟨1, 2⟩, ⟨1, 1⟩, ⟨2, 1⟩] [⟨1, 3⟩, ⟨2, 1⟩] := by
   decide +kernel
-example : ¬ topsUnequal [⟨1, 2⟩, ⟨2, 1⟩, ⟨5, 5⟩] [⟨1, 3⟩, ⟨2, 1⟩] := by
+theorem pin27 : ¬ topsUnequal [⟨1, 2⟩, ⟨2, 1⟩, ⟨5, 5⟩] [⟨1, 3⟩, ⟨2, 1⟩] := by
   decide +kernel
 
 /-! The descent's rank and kernel reads: pivot exchanges, the
 fraction-free steps' exact cofactors (the second pivot's division
 exercised), and the kernel dimension at the stated column count. -/
 
-example : rank [[⟨2, 1⟩, ⟨3, 1⟩], [⟨3, 1⟩, ⟨5, 1⟩]] = 1 := by decide +kernel
-example : rank [[⟨2, 1⟩, ⟨3, 1⟩], [⟨4, 1⟩, ⟨5, 1⟩]] = 2 := by decide +kernel
-example : rank [[⟨1, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨1, 1⟩]] = 2 := by decide +kernel
-example : rank [[⟨3, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩],
+theorem pin28 : rank [[⟨2, 1⟩, ⟨3, 1⟩], [⟨3, 1⟩, ⟨5, 1⟩]] = 1 := by decide +kernel
+theorem pin29 : rank [[⟨2, 1⟩, ⟨3, 1⟩], [⟨4, 1⟩, ⟨5, 1⟩]] = 2 := by decide +kernel
+theorem pin30 : rank [[⟨1, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨1, 1⟩]] = 2 := by decide +kernel
+theorem pin31 : rank [[⟨3, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩],
                 [⟨2, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩],
                 [⟨2, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩]] = 3 := by decide +kernel
-example : rank [[⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩],
+theorem pin32 : rank [[⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩],
                 [⟨5, 1⟩, ⟨6, 1⟩, ⟨7, 1⟩],
                 [⟨6, 1⟩, ⟨8, 1⟩, ⟨10, 1⟩]] = 2 := by decide +kernel
-example : kernelDim 3 [[⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩],
+theorem pin33 : kernelDim 3 [[⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩],
                        [⟨5, 1⟩, ⟨6, 1⟩, ⟨7, 1⟩],
                        [⟨6, 1⟩, ⟨8, 1⟩, ⟨10, 1⟩]] = 1 := by decide +kernel
 
@@ -262,15 +264,15 @@ kernel case: the rank pins alone are blind to the cofactor's
 values (the count reads the zero pattern), so the values pin
 here. -/
 
-example : cofactorAt ⟨1, 9⟩ ⟨1, 3⟩ = ⟨5, 1⟩ := rfl
-example : cofactorAt ⟨9, 1⟩ ⟨1, 3⟩ = ⟨1, 5⟩ := rfl
-example : cofactorAt ⟨1, 9⟩ ⟨5, 1⟩ = ⟨1, 3⟩ := rfl
-example : cofactorAt ⟨13, 1⟩ ⟨4, 1⟩ = ⟨5, 1⟩ := rfl
-example : cofactorAt ⟨7, 7⟩ ⟨4, 1⟩ = BPair.unit := rfl
+theorem pin34 : cofactorAt ⟨1, 9⟩ ⟨1, 3⟩ = ⟨5, 1⟩ := rfl
+theorem pin35 : cofactorAt ⟨9, 1⟩ ⟨1, 3⟩ = ⟨1, 5⟩ := rfl
+theorem pin36 : cofactorAt ⟨1, 9⟩ ⟨5, 1⟩ = ⟨1, 3⟩ := rfl
+theorem pin37 : cofactorAt ⟨13, 1⟩ ⟨4, 1⟩ = ⟨5, 1⟩ := rfl
+theorem pin38 : cofactorAt ⟨7, 7⟩ ⟨4, 1⟩ = BPair.unit := rfl
 
 /-- Dependent rows proportional rather than equal: the descent's
 per-entry arithmetic keeps the dependence. -/
-example : rank [[⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩],
+theorem pin39 : rank [[⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩],
                 [⟨3, 1⟩, ⟨5, 1⟩, ⟨7, 1⟩],
                 [⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩]] = 2 := by decide +kernel
 
@@ -279,33 +281,33 @@ unit under each disjunct beside the value it answers, and the
 general form (`step_unit_gen`) at an equal-membered datum the
 canonical-unit read refuses. -/
 
-example : cofactorAt (⟨5, 1⟩ * BPair.unit + (BPair.unit * ⟨4, 1⟩).swap) ⟨3, 1⟩
+theorem pin40 : cofactorAt (⟨5, 1⟩ * BPair.unit + (BPair.unit * ⟨4, 1⟩).swap) ⟨3, 1⟩
     = BPair.unit :=
   step_unit ⟨3, 1⟩ ⟨5, 1⟩ ⟨4, 1⟩ BPair.unit BPair.unit rfl (Or.inl rfl)
 
-example : cofactorAt (⟨5, 1⟩ * BPair.unit + (⟨1, 4⟩ * BPair.unit).swap) ⟨3, 1⟩
+theorem pin41 : cofactorAt (⟨5, 1⟩ * BPair.unit + (⟨1, 4⟩ * BPair.unit).swap) ⟨3, 1⟩
     = BPair.unit :=
   step_unit ⟨3, 1⟩ ⟨5, 1⟩ BPair.unit ⟨1, 4⟩ BPair.unit rfl (Or.inr rfl)
 
 /-- An occupied row entry with both partners occupied reaches the
 descent's arithmetic, the guard's own refusal. -/
-example : cofactorAt ((⟨5, 1⟩ : BPair) * ⟨3, 1⟩
+theorem pin42 : cofactorAt ((⟨5, 1⟩ : BPair) * ⟨3, 1⟩
     + ((⟨1, 4⟩ : BPair) * ⟨1, 3⟩).swap) ⟨3, 1⟩ = ⟨2, 1⟩ := rfl
 
 /-- The datum `⟨4:4⟩` sits at equal members off the canonical unit:
 `isUnitRep` refuses it, so the landed `step_unit`'s hypotheses are
 unavailable here and the general form alone discharges. -/
-example : (⟨4, 4⟩ : BPair).isUnitRep = false := by decide +kernel
+theorem pin43 : (⟨4, 4⟩ : BPair).isUnitRep = false := by decide +kernel
 
 /-- The general guard at that datum, the row entry and the pivot
 row's entry both there: the step answers the sum's unit. -/
-example : cofactorAt ((⟨5, 1⟩ : BPair) * ⟨4, 4⟩
+theorem pin44 : cofactorAt ((⟨5, 1⟩ : BPair) * ⟨4, 4⟩
     + ((⟨1, 4⟩ : BPair) * ⟨4, 4⟩).swap) ⟨3, 1⟩ = BPair.unit :=
   step_unit_gen ⟨3, 1⟩ ⟨5, 1⟩ ⟨4, 4⟩ ⟨1, 4⟩ ⟨4, 4⟩ rfl (Or.inr rfl)
 
 /-- The general guard's other disjunct at the same datum, the pivot
 column at equal members instead. -/
-example : cofactorAt ((⟨5, 1⟩ : BPair) * ⟨4, 4⟩
+theorem pin45 : cofactorAt ((⟨5, 1⟩ : BPair) * ⟨4, 4⟩
     + ((⟨4, 4⟩ : BPair) * ⟨1, 3⟩).swap) ⟨3, 1⟩ = BPair.unit :=
   step_unit_gen ⟨3, 1⟩ ⟨5, 1⟩ ⟨1, 3⟩ ⟨4, 4⟩ ⟨4, 4⟩ rfl (Or.inl rfl)
 
@@ -323,17 +325,17 @@ exactly those reductions at data whose cofactors are occupied, and
 each of the three keys pins beside them at a shape whose pivot
 count moves when its case is withdrawn. -/
 
-example : cofactorAt ((⟨5, 1⟩ : BPair) * ⟨1, 4⟩
+theorem pin46 : cofactorAt ((⟨5, 1⟩ : BPair) * ⟨1, 4⟩
     + ((⟨2, 1⟩ : BPair) * BPair.unit).swap) ⟨3, 1⟩
     = cofactorAt ((⟨5, 1⟩ : BPair) * ⟨1, 4⟩) ⟨3, 1⟩ := rfl
 
-example : cofactorAt ((⟨5, 1⟩ : BPair) * ⟨1, 4⟩) ⟨3, 1⟩ = ⟨1, 7⟩ := rfl
+theorem pin47 : cofactorAt ((⟨5, 1⟩ : BPair) * ⟨1, 4⟩) ⟨3, 1⟩ = ⟨1, 7⟩ := rfl
 
-example : cofactorAt ((⟨5, 1⟩ : BPair) * BPair.unit
+theorem pin48 : cofactorAt ((⟨5, 1⟩ : BPair) * BPair.unit
     + ((⟨1, 4⟩ : BPair) * ⟨3, 1⟩).swap) ⟨3, 1⟩
     = cofactorAt (((⟨1, 4⟩ : BPair) * ⟨3, 1⟩).swap) ⟨3, 1⟩ := rfl
 
-example : cofactorAt (((⟨1, 4⟩ : BPair) * ⟨3, 1⟩).swap) ⟨3, 1⟩
+theorem pin49 : cofactorAt (((⟨1, 4⟩ : BPair) * ⟨3, 1⟩).swap) ⟨3, 1⟩
     = ⟨4, 1⟩ := rfl
 
 /-- A key of the pivot row alone at an occupied pivot column: the
@@ -341,31 +343,31 @@ second row is occupied in the pivot column and reads the sum's unit
 at the second key, where the pivot row is occupied, so the fill-in
 is the whole of what the second pivot reads.  Withdrawing the
 fill-in reads the count 1 here. -/
-example : rank [[⟨3, 1⟩, ⟨4, 1⟩], [⟨6, 1⟩, ⟨1, 1⟩]] = 2 := by decide +kernel
+theorem pin50 : rank [[⟨3, 1⟩, ⟨4, 1⟩], [⟨6, 1⟩, ⟨1, 1⟩]] = 2 := by decide +kernel
 
 /-- A key of the row alone: the second row reads the sum's unit in
 the pivot column, so its own key scales by the pivot against
 `prev`'s cofactor and survives as the second pivot.  Withdrawing
 the scaling reads the count 1 here. -/
-example : rank [[⟨3, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨4, 1⟩]] = 2 := by decide +kernel
+theorem pin51 : rank [[⟨3, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨4, 1⟩]] = 2 := by decide +kernel
 
 /-- A key of both rows: the step's arithmetic read whole answers
 the sum's unit at a dependent pair, so the second pivot is absent.
 The swapped product entering at the join's other side reads the
 count 2 here. -/
-example : rank [[⟨3, 1⟩, ⟨4, 1⟩], [⟨5, 1⟩, ⟨7, 1⟩]] = 1 := by decide +kernel
+theorem pin52 : rank [[⟨3, 1⟩, ⟨4, 1⟩], [⟨5, 1⟩, ⟨7, 1⟩]] = 1 := by decide +kernel
 
 /-- The joint key at three keys and two descent rounds, its
 cofactor exact against the prior pivot.  The join's other side
 reads the count 3 here. -/
-example : rank [[⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩],
+theorem pin53 : rank [[⟨3, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩],
                 [⟨5, 1⟩, ⟨7, 1⟩, ⟨6, 1⟩],
                 [⟨1, 1⟩, ⟨1, 1⟩, ⟨3, 1⟩]] = 2 := by decide +kernel
 
 /-- A row reading the sum's unit in the pivot column meets
 `step_unit`'s discharge at every key of the pivot row, so its
 update is a scaling of its own keys alone. -/
-example : rank [[⟨3, 1⟩, ⟨4, 1⟩], [⟨1, 1⟩, ⟨6, 1⟩]] = 2 := by decide +kernel
+theorem pin54 : rank [[⟨3, 1⟩, ⟨4, 1⟩], [⟨1, 1⟩, ⟨6, 1⟩]] = 2 := by decide +kernel
 
 /-! The per-round truncation width, at ragged shapes.  Each round
 reads its key count as the lesser of the pivot row's and the row's,
@@ -380,16 +382,16 @@ count alone reads 2 at the first, and `sPeel`'s count guard at
 
 /-- The pivot row narrower than the row: the row's surviving key
 sits at the pivot row's withdrawn count and drops. -/
-example : rank [[⟨2, 1⟩], [BPair.unit, ⟨2, 1⟩]] = 1 := by decide +kernel
+theorem pin55 : rank [[⟨2, 1⟩], [BPair.unit, ⟨2, 1⟩]] = 1 := by decide +kernel
 
 /-- The pivot column at the narrower row's own count, so outside
 it: that count stands unmoved through the peel and the row's key
 survives as the second pivot. -/
-example : rank [[BPair.unit, ⟨2, 1⟩], [⟨2, 1⟩]] = 2 := by decide +kernel
+theorem pin56 : rank [[BPair.unit, ⟨2, 1⟩], [⟨2, 1⟩]] = 2 := by decide +kernel
 
 /-- The row narrower than the pivot row: the pivot row's fill-in
 sits at the row's withdrawn count and drops. -/
-example : rank [[⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩]] = 1 := by decide +kernel
+theorem pin57 : rank [[⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩]] = 1 := by decide +kernel
 
 /-! The descent at the stacked raisings' own scale.  The committed
 matrix is the `B_2` pair count's stacked simple-raising images over
@@ -751,29 +753,29 @@ private def stackedC : Mat :=
   [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨3, 2⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨3, 2⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩],
   [⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨3, 2⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨3, 2⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩, ⟨3, 2⟩]]
 
-example : rank stackedB8 = 7 := by decide +kernel
-example : rank stackedB16 = 14 := by decide +kernel
-example : rank stackedB24 = 15 := by decide +kernel
-example : rank stackedB32 = 23 := by decide +kernel
-example : rank stackedB48 = 38 := by decide +kernel
+theorem pin58 : rank stackedB8 = 7 := by decide +kernel
+theorem pin59 : rank stackedB16 = 14 := by decide +kernel
+theorem pin60 : rank stackedB24 = 15 := by decide +kernel
+theorem pin61 : rank stackedB32 = 23 := by decide +kernel
+theorem pin62 : rank stackedB48 = 38 := by decide +kernel
 
 /-- A row of the block replaced by its own doubling: the pivot count
 drops by one at the dependent row, the descent's exact cofactors
 keeping the dependence across every step. -/
-example : rank (stackedB16.set 3 ((ground.getAt [] stackedB16 5).map
+theorem pin63 : rank (stackedB16.set 3 ((ground.getAt [] stackedB16 5).map
     (fun x => x * ⟨3, 1⟩))) = 13 := by decide +kernel
 
 /-- The whole shape's pivot count and its invariant count at one
 descent, the heavy pin: kernel `decide` at the committed 76-by-61
 matrix, the kernel dimension the column count's gap at the rank's
 own read. -/
-example : rank stackedB = 58 ∧ kernelDim 61 stackedB = 3 := by
+theorem pin64 : rank stackedB = 58 ∧ kernelDim 61 stackedB = 3 := by
   have h : rank stackedB = 58 := by decide +kernel
   exact ⟨h, kernelDim_at 61 58 3 stackedB h (by decide +kernel)⟩
 
 /-- The larger partner's two counts at one descent, the heavy pin
 at the committed 124-by-90 matrix. -/
-example : rank stackedC = 87 ∧ kernelDim 90 stackedC = 3 := by
+theorem pin65 : rank stackedC = 87 ∧ kernelDim 90 stackedC = 3 := by
   have h : rank stackedC = 87 := by decide +kernel
   exact ⟨h, kernelDim_at 90 87 3 stackedC h (by decide +kernel)⟩
 
@@ -782,7 +784,7 @@ list's member count at scale with one committed member annihilated
 at scale, the tier's own heavy pin beside the rank's — the read
 prices the forward descent a second time, the two walks one
 recursion at two seeds (`descGo`). -/
-example : (kernelList 61 stackedB).length = 3
+theorem pin66 : (kernelList 61 stackedB).length = 3
     ∧ poly.unitTail (matVec stackedB
       (ground.getAt [] (kernelList 61 stackedB) 0)) := by
   decide +kernel
@@ -790,14 +792,14 @@ example : (kernelList 61 stackedB).length = 3
 /-- The back solve at the committed 124-by-90 shape: the kernel
 list's member count at scale with one committed member annihilated
 at scale, the larger partner's own walk. -/
-example : (kernelList 90 stackedC).length = 3
+theorem pin67 : (kernelList 90 stackedC).length = 3
     ∧ poly.unitTail (matVec stackedC
       (ground.getAt [] (kernelList 90 stackedC) 0)) := by
   decide +kernel
 
 /-! The matrix product's fold. -/
 
-example : matOneValue
+theorem pin68 : matOneValue
     (matMul [[⟨2, 1⟩, ⟨3, 1⟩], [⟨4, 1⟩, ⟨5, 1⟩]]
       [[⟨6, 1⟩, ⟨7, 1⟩], [⟨8, 1⟩, ⟨9, 1⟩]])
     [[⟨20, 1⟩, ⟨23, 1⟩], [⟨44, 1⟩, ⟨51, 1⟩]] := by decide +kernel
@@ -807,24 +809,24 @@ the first-row fold at shared instances, the equal-rows alternation
 as a theorem instance beside its decided value, and the expansion's
 cofactor reads. -/
 
-example : BPair.oneValue
+theorem pin69 : BPair.oneValue
     (detL [[⟨2, 1⟩, ⟨3, 1⟩], [⟨4, 1⟩, ⟨5, 1⟩]]) ⟨1, 3⟩ := by decide +kernel
 
-example : assignRead [[⟨2, 1⟩, ⟨3, 1⟩], [⟨4, 1⟩, ⟨5, 1⟩]] := by
+theorem pin70 : assignRead [[⟨2, 1⟩, ⟨3, 1⟩], [⟨4, 1⟩, ⟨5, 1⟩]] := by
   decide +kernel
-example : assignRead [[⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩],
+theorem pin71 : assignRead [[⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩],
     [⟨5, 1⟩, ⟨7, 1⟩, ⟨11, 1⟩],
     [⟨13, 1⟩, ⟨17, 1⟩, ⟨19, 1⟩]] := by decide +kernel
-example : assignRead [[⟨2, 1⟩, ⟨1, 3⟩, ⟨1, 4⟩, ⟨5, 1⟩],
+theorem pin72 : assignRead [[⟨2, 1⟩, ⟨1, 3⟩, ⟨1, 4⟩, ⟨5, 1⟩],
     [⟨1, 1⟩, ⟨6, 1⟩, ⟨1, 7⟩, ⟨2, 1⟩],
     [⟨3, 1⟩, ⟨1, 2⟩, ⟨8, 1⟩, ⟨1, 5⟩],
     [⟨1, 6⟩, ⟨4, 1⟩, ⟨1, 1⟩, ⟨9, 1⟩]] := by decide +kernel
 
-example : BPair.oneValue
+theorem pin73 : BPair.oneValue
     (detL [[⟨2, 1⟩, ⟨3, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]) BPair.unit := by
   decide +kernel
 
-example : BPair.oneValue
+theorem pin74 : BPair.oneValue
     (detL [[⟨2, 1⟩, ⟨3, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]) BPair.unit :=
   detL_rows_equal (Nat.lt_succ_self 0) (Nat.lt_succ_self 1) rfl
 
@@ -832,20 +834,20 @@ example : BPair.oneValue
 identity's decided instance, a span member's passing residual, and
 an outside vector's refusal. -/
 
-example : BPair.oneValue
+theorem pin75 : BPair.oneValue
     (dotP (ground.getAt [] [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨4, 1⟩]] 0)
       (adjP [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨4, 1⟩]]
         [⟨5, 1⟩, ⟨6, 1⟩]))
     (⟨5, 1⟩ * detL [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨4, 1⟩]]) := by
   decide +kernel
 
-example : poly.unitTail
+theorem pin76 : poly.unitTail
     (residV 2 [[⟨2, 1⟩, ⟨1, 1⟩]] [⟨3, 1⟩, ⟨1, 1⟩]) := by decide +kernel
 
-example : ¬ poly.unitTail
+theorem pin77 : ¬ poly.unitTail
     (residV 2 [[⟨2, 1⟩, ⟨1, 1⟩]] [⟨1, 1⟩, ⟨2, 1⟩]) := by decide +kernel
 
-example : poly.unitTail
+theorem pin78 : poly.unitTail
     (residV 2 [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
       [⟨4, 1⟩, ⟨3, 1⟩]) := by decide +kernel
 
@@ -853,7 +855,7 @@ example : poly.unitTail
 its residual joined to the projection combination, decided outright
 and read again off `residV_expand` applied whole. -/
 
-example : poly.oneValue
+theorem pin79 : poly.oneValue
     (vecScale (detL (gramM [[BPair.ofNat 1, BPair.unit]]))
       [BPair.unit, BPair.ofNat 1])
     (vecAdd (residV 2 [[BPair.ofNat 1, BPair.unit]]
@@ -863,7 +865,7 @@ example : poly.oneValue
             (fun r => dotP r [BPair.unit, BPair.ofNat 1])))
         [[BPair.ofNat 1, BPair.unit]])) := by decide +kernel
 
-example : poly.oneValue
+theorem pin80 : poly.oneValue
     (vecScale (detL (gramM [[BPair.ofNat 1, BPair.unit]]))
       [BPair.unit, BPair.ofNat 1])
     (vecAdd (residV 2 [[BPair.ofNat 1, BPair.unit]]
@@ -891,40 +893,40 @@ coefficients at two representatives of one list
 
 private def rV1 : Mat := [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
 
-example : poly.oneValue (residW 2 rV1 [⟨4, 1⟩, ⟨3, 1⟩])
+theorem pin81 : poly.oneValue (residW 2 rV1 [⟨4, 1⟩, ⟨3, 1⟩])
     (residV 2 rV1 [⟨4, 1⟩, ⟨3, 1⟩]) := by decide +kernel
-example : poly.oneValue (residW 2 rV1 [⟨4, 1⟩, ⟨3, 1⟩])
+theorem pin82 : poly.oneValue (residW 2 rV1 [⟨4, 1⟩, ⟨3, 1⟩])
     (residV 2 rV1 [⟨4, 1⟩, ⟨3, 1⟩]) :=
   elim.residW_eq 2 rV1 _ (by decide +kernel)
-example : poly.oneValue (residW 2 [[⟨2, 1⟩, ⟨1, 1⟩]] [⟨1, 1⟩, ⟨2, 1⟩])
+theorem pin83 : poly.oneValue (residW 2 [[⟨2, 1⟩, ⟨1, 1⟩]] [⟨1, 1⟩, ⟨2, 1⟩])
     (residV 2 [[⟨2, 1⟩, ⟨1, 1⟩]] [⟨1, 1⟩, ⟨2, 1⟩]) := by decide +kernel
-example : poly.oneValue (residW 2 [[⟨2, 1⟩, ⟨1, 1⟩], [⟨3, 1⟩]] [⟨1, 1⟩])
+theorem pin84 : poly.oneValue (residW 2 [[⟨2, 1⟩, ⟨1, 1⟩], [⟨3, 1⟩]] [⟨1, 1⟩])
     (residV 2 [[⟨2, 1⟩, ⟨1, 1⟩], [⟨3, 1⟩]] [⟨1, 1⟩]) := by decide +kernel
 private def rDep : Mat := [[⟨2, 1⟩, ⟨2, 1⟩], [⟨3, 1⟩, ⟨3, 1⟩]]
-example : ¬ indepRows 2 rDep ∧ (detD (gramM rDep)).oneValue BPair.unit
+theorem pin85 : ¬ indepRows 2 rDep ∧ (detD (gramM rDep)).oneValue BPair.unit
     ∧ poly.oneValue (residW 2 rDep [⟨2, 1⟩, ⟨1, 1⟩])
         (residV 2 rDep [⟨2, 1⟩, ⟨1, 1⟩]) := by decide +kernel
-example : poly.oneValue (residW 2 rDep [⟨2, 1⟩, ⟨1, 1⟩])
+theorem pin86 : poly.oneValue (residW 2 rDep [⟨2, 1⟩, ⟨1, 1⟩])
     (residV 2 rDep [⟨2, 1⟩, ⟨1, 1⟩]) :=
   elim.residW_eq 2 rDep _ (by decide +kernel)
-example : poly.unitTail (residW 2 rDep [⟨2, 1⟩, ⟨1, 1⟩]) := by decide +kernel
+theorem pin87 : poly.unitTail (residW 2 rDep [⟨2, 1⟩, ⟨1, 1⟩]) := by decide +kernel
 private def rRag : Mat := [[⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]]
-example : ¬ rowsLen 2 rRag ∧ poly.oneValue (residW 2 rRag [⟨2, 1⟩, ⟨1, 1⟩])
+theorem pin88 : ¬ rowsLen 2 rRag ∧ poly.oneValue (residW 2 rRag [⟨2, 1⟩, ⟨1, 1⟩])
     (residV 2 rRag [⟨2, 1⟩, ⟨1, 1⟩]) := by decide +kernel
-example : poly.unitTail (residW 2 rV1 [⟨4, 1⟩, ⟨3, 1⟩]) := by decide +kernel
-example : ¬ poly.unitTail
+theorem pin89 : poly.unitTail (residW 2 rV1 [⟨4, 1⟩, ⟨3, 1⟩]) := by decide +kernel
+theorem pin90 : ¬ poly.unitTail
     (residW 2 [[⟨2, 1⟩, ⟨1, 1⟩]] [⟨1, 1⟩, ⟨2, 1⟩]) := by decide +kernel
 
 private def rC1 : Mat := [[⟨2, 1⟩, ⟨1, 1⟩], [⟨4, 1⟩, ⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
 
-example : collectW 2 rC1 = collectOf 2 rC1 := by decide +kernel
-example : collectW 2 rC1 = collectOf 2 rC1 :=
+theorem pin91 : collectW 2 rC1 = collectOf 2 rC1 := by decide +kernel
+theorem pin92 : collectW 2 rC1 = collectOf 2 rC1 :=
   elim.collectW_eq 2 rC1 (by decide +kernel)
-example : collectW 2 rC1 = [[⟨2, 1⟩, ⟨1, 1⟩], [⟨4, 1⟩, ⟨2, 1⟩]] := by decide +kernel
-example : collectW 2 [[⟨2, 1⟩, ⟨1, 1⟩], [⟨3, 1⟩, ⟨1, 1⟩]]
+theorem pin93 : collectW 2 rC1 = [[⟨2, 1⟩, ⟨1, 1⟩], [⟨4, 1⟩, ⟨2, 1⟩]] := by decide +kernel
+theorem pin94 : collectW 2 [[⟨2, 1⟩, ⟨1, 1⟩], [⟨3, 1⟩, ⟨1, 1⟩]]
     = [[⟨2, 1⟩, ⟨1, 1⟩]] := by decide +kernel
 
-example : poly.oneValue
+theorem pin95 : poly.oneValue
     (vecScale (detL (gramM [[BPair.ofNat 1, BPair.unit]]))
       [BPair.unit, BPair.ofNat 1])
     (vecAdd (residW 2 [[BPair.ofNat 1, BPair.unit]]
@@ -933,7 +935,7 @@ example : poly.oneValue
           ([[BPair.ofNat 1, BPair.unit]].map
             (fun r => dotP r [BPair.unit, BPair.ofNat 1])))
         [[BPair.ofNat 1, BPair.unit]])) := by decide +kernel
-example : poly.oneValue
+theorem pin96 : poly.oneValue
     (vecScale (detL (gramM [[BPair.ofNat 1, BPair.unit]]))
       [BPair.unit, BPair.ofNat 1])
     (vecAdd (residW 2 [[BPair.ofNat 1, BPair.unit]]
@@ -945,19 +947,19 @@ example : poly.oneValue
   elim.residW_expand 2 [[BPair.ofNat 1, BPair.unit]]
     [BPair.unit, BPair.ofNat 1] (by decide +kernel) (by decide +kernel)
 
-example : poly.oneValue (combo 2 [⟨2, 1⟩, ⟨1, 1⟩] rV1)
+theorem pin97 : poly.oneValue (combo 2 [⟨2, 1⟩, ⟨1, 1⟩] rV1)
     (combo 2 [⟨3, 2⟩, ⟨5, 5⟩] rV1) := by decide +kernel
-example : poly.oneValue (combo 2 [⟨2, 1⟩, ⟨1, 1⟩] rV1)
+theorem pin98 : poly.oneValue (combo 2 [⟨2, 1⟩, ⟨1, 1⟩] rV1)
     (combo 2 [⟨3, 2⟩, ⟨5, 5⟩] rV1) :=
   elim.combo_congr 2 _ _ rV1 rfl (by decide +kernel)
-example : ¬ poly.oneValue (combo 2 [⟨2, 1⟩, ⟨1, 1⟩] rV1)
+theorem pin99 : ¬ poly.oneValue (combo 2 [⟨2, 1⟩, ⟨1, 1⟩] rV1)
     (combo 2 [⟨3, 1⟩, ⟨1, 1⟩] rV1) := by decide +kernel
 
 /-- The count binder on `combo_congr` is load-bearing at a ragged
 family: two coefficient lists of one value at unequal counts, one
 padded by the sum's unit, read the combination at the first row's
 width against the truncation at the short second row. -/
-example : poly.oneValue [⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 1⟩]
+theorem pin100 : poly.oneValue [⟨2, 1⟩] [⟨2, 1⟩, ⟨1, 1⟩]
     ∧ ¬ ([⟨2, 1⟩] : List BPair).length = ([⟨2, 1⟩, ⟨1, 1⟩] : List BPair).length
     ∧ ¬ poly.oneValue (combo 2 [⟨2, 1⟩] [[⟨2, 1⟩, ⟨3, 1⟩], [⟨2, 1⟩]])
       (combo 2 [⟨2, 1⟩, ⟨1, 1⟩] [[⟨2, 1⟩, ⟨3, 1⟩], [⟨2, 1⟩]]) := by
@@ -978,13 +980,13 @@ private def a3 : Mat :=
   [[⟨2, 1⟩, ⟨1, 1⟩, ⟨3, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩],
     [⟨3, 1⟩, ⟨2, 1⟩, ⟨1, 1⟩]]
 
-example : indepRows 3 a3 := by decide +kernel
-example : ((List.range 3).all (fun j => (List.range 3).all (fun k =>
+theorem pin101 : indepRows 3 a3 := by decide +kernel
+theorem pin102 : ((List.range 3).all (fun j => (List.range 3).all (fun k =>
     decide ((ground.getAt BPair.unit
         (ground.getAt [] (adjMD (gramM a3)) j) k).oneValue
       (ground.getAt BPair.unit (cofVec (gramM a3) k) j))))) = true := by
   decide +kernel
-example : (ground.getAt BPair.unit
+theorem pin103 : (ground.getAt BPair.unit
     (ground.getAt [] (adjMD (gramM a3)) 1) 2).oneValue
     (ground.getAt BPair.unit (cofVec (gramM a3) 2) 1) :=
   elim.adjMD_cofVec 3 a3 (by decide +kernel) 1 2 (by decide +kernel)
@@ -994,28 +996,28 @@ private def jL : Mat := [[⟨2, 1⟩, ⟨1, 1⟩]]
 private def jDep : Mat := [[⟨2, 1⟩, ⟨1, 1⟩], [⟨3, 1⟩, ⟨1, 1⟩]]
 private def jRag : Mat := [[⟨2, 1⟩, ⟨1, 1⟩, ⟨3, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
 
-example : joinIndep dotP jL [⟨1, 1⟩, ⟨2, 1⟩] = true := by decide +kernel
-example : indepRows 2 (jL ++ [[⟨1, 1⟩, ⟨2, 1⟩]]) := by decide +kernel
-example : indepRows 2 (jL ++ [[⟨1, 1⟩, ⟨2, 1⟩]]) :=
+theorem pin104 : joinIndep dotP jL [⟨1, 1⟩, ⟨2, 1⟩] = true := by decide +kernel
+theorem pin105 : indepRows 2 (jL ++ [[⟨1, 1⟩, ⟨2, 1⟩]]) := by decide +kernel
+theorem pin106 : indepRows 2 (jL ++ [[⟨1, 1⟩, ⟨2, 1⟩]]) :=
   (elim.joinIndep_indep 2 jL _ (by decide +kernel) rfl).1 (by decide +kernel)
-example : joinIndep dotP jL [⟨3, 1⟩, ⟨1, 1⟩] = false := by decide +kernel
-example : spanRel 2 jL [⟨3, 1⟩, ⟨1, 1⟩] := by decide +kernel
-example : spanRel 2 jL [⟨3, 1⟩, ⟨1, 1⟩] :=
+theorem pin107 : joinIndep dotP jL [⟨3, 1⟩, ⟨1, 1⟩] = false := by decide +kernel
+theorem pin108 : spanRel 2 jL [⟨3, 1⟩, ⟨1, 1⟩] := by decide +kernel
+theorem pin109 : spanRel 2 jL [⟨3, 1⟩, ⟨1, 1⟩] :=
   (elim.joinIndep_span 2 jL _ rfl (by decide +kernel)).1
     (by decide +kernel)
-example : ¬ spanRel 2 jL [⟨1, 1⟩, ⟨2, 1⟩] :=
+theorem pin110 : ¬ spanRel 2 jL [⟨1, 1⟩, ⟨2, 1⟩] :=
   elim.indep_refuse 2 jL _ (by decide +kernel)
-example : joinIndep dotP jL [⟨2, 1⟩] = false
+theorem pin111 : joinIndep dotP jL [⟨2, 1⟩] = false
     ∧ ¬ spanRel 2 jL [⟨2, 1⟩] := by decide +kernel
-example : joinIndep dotP jDep [⟨1, 1⟩, ⟨2, 1⟩] = false
+theorem pin112 : joinIndep dotP jDep [⟨1, 1⟩, ⟨2, 1⟩] = false
     ∧ ¬ spanRel 2 jDep [⟨1, 1⟩, ⟨2, 1⟩] := by decide +kernel
-example : joinIndep dotP jL [⟨1, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩] = true
+theorem pin113 : joinIndep dotP jL [⟨1, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩] = true
     ∧ ¬ indepRows 2 (jL ++ [[⟨1, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩]]) := by decide +kernel
-example : joinIndep dotP jRag [⟨1, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩] = true
+theorem pin114 : joinIndep dotP jRag [⟨1, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩] = true
     ∧ ¬ indepRows 3 (jRag ++ [[⟨1, 1⟩, ⟨2, 1⟩, ⟨3, 1⟩]]) := by decide +kernel
-example : ¬ indepRows 2 (jL ++ [[⟨3, 1⟩, ⟨1, 1⟩]])
+theorem pin115 : ¬ indepRows 2 (jL ++ [[⟨3, 1⟩, ⟨1, 1⟩]])
     ∧ spanRel 2 jL [⟨3, 1⟩, ⟨1, 1⟩] := by decide +kernel
-example : ¬ indepRows 2 jDep
+theorem pin116 : ¬ indepRows 2 jDep
     ∧ ¬ (ground.getAt BPair.unit
       (ground.getAt [] (adjMD (gramM jDep)) 0) 0).oneValue
       (ground.getAt BPair.unit (cofVec (gramM jDep) 0) 0) := by
@@ -1026,11 +1028,11 @@ bound composed through the one-member independence read, the
 transports' instances, and the span's combination read at listed
 rows. -/
 
-example : ([[BPair.ofNat 1, BPair.unit]] : elim.Mat).length ≤ 2 :=
+theorem pin117 : ([[BPair.ofNat 1, BPair.unit]] : elim.Mat).length ≤ 2 :=
   elim.indep_bound 2 [[BPair.ofNat 1, BPair.unit]] ⟨rfl, trivial⟩
     (elim.indep_single 2 [BPair.ofNat 1, BPair.unit] rfl (by decide +kernel))
 
-example : elim.indepRows 2
+theorem pin118 : elim.indepRows 2
     (ground.adjSwap 0 [[BPair.ofNat 1, BPair.unit],
       [BPair.unit, BPair.ofNat 1]]) :=
   elim.indep_swapAdj 2 0 _
@@ -1042,18 +1044,18 @@ example : elim.indepRows 2
           [BPair.unit, BPair.ofNat 1] ⟨rfl, trivial⟩ rfl hsp
         exact absurd this (by decide +kernel)))
 
-example : elim.spanRel 1 [[BPair.ofNat 1]]
+theorem pin119 : elim.spanRel 1 [[BPair.ofNat 1]]
     (elim.vecAdd [BPair.ofNat 1] [BPair.ofNat 1]) :=
   elim.spanRel_add 1 [[BPair.ofNat 1]] [BPair.ofNat 1]
     [BPair.ofNat 1] ⟨rfl, trivial⟩ rfl rfl
     (elim.spanRel_getAt 1 _ 0 (by decide +kernel) ⟨rfl, trivial⟩)
     (elim.spanRel_getAt 1 _ 0 (by decide +kernel) ⟨rfl, trivial⟩)
 
-example : elim.spanRel 1 [[BPair.ofNat 1]] [BPair.unit] :=
+theorem pin120 : elim.spanRel 1 [[BPair.ofNat 1]] [BPair.unit] :=
   elim.spanRel_null 1 [[BPair.ofNat 1]] [BPair.unit] (by decide +kernel)
     ⟨rfl, trivial⟩ rfl
 
-example : elim.spanRel 1 [[BPair.ofNat 1]]
+theorem pin121 : elim.spanRel 1 [[BPair.ofNat 1]]
     (elim.vecScale (BPair.ofNat 2) [BPair.ofNat 1]) :=
   elim.spanRel_scale 1 [[BPair.ofNat 1]] [BPair.ofNat 1]
     (BPair.ofNat 2) ⟨rfl, trivial⟩ rfl
@@ -1062,7 +1064,7 @@ example : elim.spanRel 1 [[BPair.ofNat 1]]
 /-- The bound's bite: a family longer than its width refuses
 independence outright, and the two-member instance reads the bound
 tight. -/
-example : ¬ elim.indepRows 2
+theorem pin122 : ¬ elim.indepRows 2
     [[BPair.ofNat 1, BPair.unit], [BPair.unit, BPair.ofNat 1],
       [BPair.ofNat 1, BPair.ofNat 1]] := fun h =>
   absurd (elim.indep_bound 2
@@ -1070,7 +1072,7 @@ example : ¬ elim.indepRows 2
       [BPair.ofNat 1, BPair.ofNat 1]] ⟨rfl, rfl, rfl, trivial⟩ h)
     (by decide +kernel)
 
-example : ([[BPair.ofNat 1, BPair.unit],
+theorem pin123 : ([[BPair.ofNat 1, BPair.unit],
       [BPair.unit, BPair.ofNat 1]] : elim.Mat).length ≤ 2 :=
   elim.indep_bound 2 _ ⟨rfl, rfl, trivial⟩
     (elim.indep_extend 2 [[BPair.ofNat 1, BPair.unit]]
@@ -1086,13 +1088,13 @@ front, and the join splits back at a perpendicular tail — the
 member perpendicular to the tail's rows with the head's rows
 perpendicular to them as well sits in the head's span alone. -/
 
-example : elim.spanRel 2 ([[BPair.ofNat 1, BPair.unit]]
+theorem pin124 : elim.spanRel 2 ([[BPair.ofNat 1, BPair.unit]]
     ++ [[BPair.unit, BPair.ofNat 1]]) [BPair.unit, BPair.ofNat 1] :=
   elim.spanRel_mono_left 2 [[BPair.ofNat 1, BPair.unit]]
     [[BPair.unit, BPair.ofNat 1]] [BPair.unit, BPair.ofNat 1]
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : elim.spanRel 2 [[BPair.ofNat 1, BPair.unit]]
+theorem pin125 : elim.spanRel 2 [[BPair.ofNat 1, BPair.unit]]
     [BPair.ofNat 1, BPair.unit] :=
   elim.span_perp_split 2 [[BPair.ofNat 1, BPair.unit]]
     [[BPair.unit, BPair.ofNat 1]] [BPair.ofNat 1, BPair.unit]
@@ -1102,7 +1104,7 @@ example : elim.spanRel 2 [[BPair.ofNat 1, BPair.unit]]
 pairing off the unit against the tail's row, every surviving
 co-binder holds, the binder refuses, and the head's span refuses
 with it. -/
-example : (elim.rowsLen 2 [[BPair.ofNat 1, BPair.unit]]
+theorem pin126 : (elim.rowsLen 2 [[BPair.ofNat 1, BPair.unit]]
       ∧ elim.rowsLen 2 [[BPair.unit, BPair.ofNat 1]]
       ∧ (∀ j, j < [[BPair.ofNat 1, BPair.unit]].length →
         ∀ k, k < [[BPair.unit, BPair.ofNat 1]].length →
@@ -1124,7 +1126,7 @@ example : (elim.rowsLen 2 [[BPair.ofNat 1, BPair.unit]]
 pairing off the unit against the tail's row, every surviving
 co-binder holds, the binder refuses, and the head's span refuses
 with it. -/
-example : (elim.rowsLen 2 [[BPair.ofNat 1, BPair.ofNat 1]]
+theorem pin127 : (elim.rowsLen 2 [[BPair.ofNat 1, BPair.ofNat 1]]
       ∧ elim.rowsLen 2 [[BPair.unit, BPair.ofNat 1]]
       ∧ (∀ k, k < [[BPair.unit, BPair.ofNat 1]].length →
         (elim.dotP [BPair.ofNat 1, BPair.unit]
@@ -1147,7 +1149,7 @@ plane read one count, each member of either solved in the other's
 span through the residual's decided pass, and a one-member list
 inside the plane reads the count's bound. -/
 
-example : ([[BPair.ofNat 1, BPair.unit],
+theorem pin128 : ([[BPair.ofNat 1, BPair.unit],
       [BPair.unit, BPair.ofNat 1]] : elim.Mat).length
     = ([[⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨1, 2⟩]] : elim.Mat).length :=
   elim.span_count_eq 2
@@ -1171,7 +1173,7 @@ example : ([[BPair.ofNat 1, BPair.unit],
     (by decide +kernel)
     (by decide +kernel)
 
-example : ([[⟨3, 1⟩, ⟨1, 1⟩]] : elim.Mat).length
+theorem pin129 : ([[⟨3, 1⟩, ⟨1, 1⟩]] : elim.Mat).length
     ≤ ([[⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨1, 2⟩]] : elim.Mat).length :=
   elim.span_count_le 2 [[⟨3, 1⟩, ⟨1, 1⟩]]
     [[⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨1, 2⟩]]
@@ -1186,7 +1188,7 @@ count, and the composed actions against the matrix product. -/
 sits in the longer list's span, so `span_count_le` closes, while
 the counts themselves differ — `span_count_eq`'s reverse
 hypothesis `hBA` is what carries the equality. -/
-example : ([[⟨2, 1⟩, ⟨1, 1⟩]] : elim.Mat).length
+theorem pin130 : ([[⟨2, 1⟩, ⟨1, 1⟩]] : elim.Mat).length
     ≤ ([[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]] : elim.Mat).length :=
   elim.span_count_le 2 [[⟨2, 1⟩, ⟨1, 1⟩]]
     [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
@@ -1194,13 +1196,13 @@ example : ([[⟨2, 1⟩, ⟨1, 1⟩]] : elim.Mat).length
     (elim.indep_single 2 _ rfl (by decide +kernel))
     (by decide +kernel)
 
-example : ¬ (([[⟨2, 1⟩, ⟨1, 1⟩]] : elim.Mat).length
+theorem pin131 : ¬ (([[⟨2, 1⟩, ⟨1, 1⟩]] : elim.Mat).length
     = ([[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]] : elim.Mat).length) := by
   decide +kernel
 
 /-- The composed actions at the product's own action, the decided
 value beside `matVec_comp`'s instance. -/
-example : poly.oneValue
+theorem pin132 : poly.oneValue
     (elim.matVec [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
       (elim.matVec [[⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨1, 2⟩]]
         [⟨3, 1⟩, ⟨1, 2⟩]))
@@ -1208,7 +1210,7 @@ example : poly.oneValue
         [[⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨1, 2⟩]])
       [⟨3, 1⟩, ⟨1, 2⟩]) := by decide +kernel
 
-example : poly.oneValue
+theorem pin133 : poly.oneValue
     (elim.matVec [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
       (elim.matVec [[⟨2, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨1, 2⟩]]
         [⟨3, 1⟩, ⟨1, 2⟩]))
@@ -1240,31 +1242,31 @@ private theorem lenB : ∀ k, (famB k).length = 2 := fun _ => rfl
 
 private theorem lenF : ∀ a b, (famF a b).length = 2 := fun _ _ => rfl
 
-example : (elim.vsum 2 famA (List.range 2)).length = 2 := by decide +kernel
+theorem pin134 : (elim.vsum 2 famA (List.range 2)).length = 2 := by decide +kernel
 
-example : (elim.vsum 2 famA (List.range 2)).length = 2 :=
+theorem pin135 : (elim.vsum 2 famA (List.range 2)).length = 2 :=
   elim.length_vsum 2 famA (List.range 2) (fun k _ => lenA k)
 
 /-! The fold's own value: the unit seed against the two members. -/
 
-example : poly.oneValue (elim.vsum 2 famA (List.range 2))
+theorem pin136 : poly.oneValue (elim.vsum 2 famA (List.range 2))
     [BPair.ofNat 3, BPair.ofNat 1] := by decide +kernel
 
-example : poly.oneValue (elim.vsum 2 famA (List.range 3))
+theorem pin137 : poly.oneValue (elim.vsum 2 famA (List.range 3))
     [BPair.ofNat 6, BPair.ofNat 3] := by decide +kernel
 
 /-! The head split. -/
 
-example : poly.oneValue (elim.vsum 2 famA (List.range 2))
+theorem pin138 : poly.oneValue (elim.vsum 2 famA (List.range 2))
     (elim.vecAdd (famA 0) (elim.vsum 2 famA [1])) := by decide +kernel
 
-example : poly.oneValue (elim.vsum 2 famA (0 :: [1]))
+theorem pin139 : poly.oneValue (elim.vsum 2 famA (0 :: [1]))
     (elim.vecAdd (famA 0) (elim.vsum 2 famA [1])) :=
   elim.vsum_cons 2 famA lenA 0 [1]
 
 /-! The pointwise congruence at a family reading one value. -/
 
-example : poly.oneValue (elim.vsum 2 famA (List.range 2))
+theorem pin140 : poly.oneValue (elim.vsum 2 famA (List.range 2))
     (elim.vsum 2 (fun k => (famA k).map (fun z => z + BPair.unit))
       (List.range 2)) :=
   elim.vsum_congr 2 famA
@@ -1276,13 +1278,13 @@ example : poly.oneValue (elim.vsum 2 famA (List.range 2))
 
 /-! The pointwise split. -/
 
-example : poly.oneValue
+theorem pin141 : poly.oneValue
     (elim.vsum 2 (fun k => elim.vecAdd (famA k) (famB k))
       (List.range 2))
     (elim.vecAdd (elim.vsum 2 famA (List.range 2))
       (elim.vsum 2 famB (List.range 2))) := by decide +kernel
 
-example : poly.oneValue
+theorem pin142 : poly.oneValue
     (elim.vsum 2 (fun k => elim.vecAdd (famA k) (famB k))
       (List.range 2))
     (elim.vecAdd (elim.vsum 2 famA (List.range 2))
@@ -1291,26 +1293,26 @@ example : poly.oneValue
 
 /-! The pairing and the action against the fold. -/
 
-example : (elim.dotP [BPair.ofNat 1, BPair.ofNat 2]
+theorem pin143 : (elim.dotP [BPair.ofNat 1, BPair.ofNat 2]
       (elim.vsum 2 famA (List.range 2))).oneValue
     (ground.bsum (fun k => elim.dotP [BPair.ofNat 1, BPair.ofNat 2]
       (famA k)) (List.range 2)) := by decide +kernel
 
-example : (elim.dotP [BPair.ofNat 1, BPair.ofNat 2]
+theorem pin144 : (elim.dotP [BPair.ofNat 1, BPair.ofNat 2]
       (elim.vsum 2 famA (List.range 2))).oneValue
     (ground.bsum (fun k => elim.dotP [BPair.ofNat 1, BPair.ofNat 2]
       (famA k)) (List.range 2)) :=
   elim.dotP_vsum 2 famA lenA [BPair.ofNat 1, BPair.ofNat 2] rfl
     (List.range 2)
 
-example : poly.oneValue
+theorem pin145 : poly.oneValue
     (elim.matVec [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
       (elim.vsum 2 famA (List.range 2)))
     (elim.vsum 2 (fun k =>
       elim.matVec [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]] (famA k))
       (List.range 2)) := by decide +kernel
 
-example : poly.oneValue
+theorem pin146 : poly.oneValue
     (elim.matVec [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
       (elim.vsum 2 famA (List.range 2)))
     (elim.vsum
@@ -1324,13 +1326,13 @@ example : poly.oneValue
 
 /-! The double range's exchange. -/
 
-example : poly.oneValue
+theorem pin147 : poly.oneValue
     (elim.vsum 2 (fun a => elim.vsum 2 (fun b => famF a b)
       (List.range 2)) (List.range 3))
     (elim.vsum 2 (fun b => elim.vsum 2 (fun a => famF a b)
       (List.range 3)) (List.range 2)) := by decide +kernel
 
-example : poly.oneValue
+theorem pin148 : poly.oneValue
     (elim.vsum 2 (fun a => elim.vsum 2 (fun b => famF a b)
       (List.range 2)) (List.range 3))
     (elim.vsum 2 (fun b => elim.vsum 2 (fun a => famF a b)
@@ -1339,12 +1341,12 @@ example : poly.oneValue
 
 /-! The delta pick at a guarded family. -/
 
-example : poly.oneValue
+theorem pin149 : poly.oneValue
     (elim.vsum 2 (fun k => if 1 = k then famA k
       else List.replicate 2 BPair.unit) (List.range 3)) (famA 1) := by
   decide +kernel
 
-example : poly.oneValue
+theorem pin150 : poly.oneValue
     (elim.vsum 2 (fun k => if 1 = k then famA k
       else List.replicate 2 BPair.unit) (List.range 3)) (famA 1) :=
   elim.vsum_pick 2 famA lenA (List.range 3) 1 (by decide +kernel)
@@ -1352,7 +1354,7 @@ example : poly.oneValue
 /-! The refusal: a guarded family off its key reads the unit
 family, not the member. -/
 
-example : ¬ poly.oneValue
+theorem pin151 : ¬ poly.oneValue
     (elim.vsum 2 (fun k => if 2 = k then famA k
       else List.replicate 2 BPair.unit) (List.range 2)) (famA 2) := by
   decide +kernel
@@ -1377,48 +1379,48 @@ private def mC : Mat :=
   [[BPair.ofNat 1, (BPair.ofNat 2).swap],
    [BPair.ofNat 5, BPair.ofNat 1]]
 
-example : transposeM (transposeM mA) = mA :=
+theorem pin152 : transposeM (transposeM mA) = mA :=
   elim.transposeM_transposeM (n := 3) mA (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : transposeM (matAdd mA mA) = matAdd (transposeM mA) (transposeM mA) :=
+theorem pin153 : transposeM (matAdd mA mA) = matAdd (transposeM mA) (transposeM mA) :=
   elim.transposeM_matAdd (n := 3) mA mA (by decide +kernel) (by decide +kernel) rfl (by decide +kernel)
 
-example : matOneValue (transposeM (matMul mB mC))
+theorem pin154 : matOneValue (transposeM (matMul mB mC))
     (matMul (transposeM mC) (transposeM mB)) :=
   elim.transposeM_matMul (r := 3) (n := 2) (k := 2) mB mC (by decide +kernel)
     (by decide +kernel) rfl rfl (by decide +kernel) (by decide +kernel)
 
-example : matOneValue (matMul (matMul mA mB) mC)
+theorem pin155 : matOneValue (matMul (matMul mA mB) mC)
     (matMul mA (matMul mB mC)) :=
   elim.matMul_assoc (n := 3) (k := 2) (s := 2) mA mB mC (by decide +kernel)
     (by decide +kernel) (by decide +kernel) rfl rfl (by decide +kernel) (by decide +kernel)
 
-example : matOneValue (matMul (matMul mA mB) mC)
+theorem pin156 : matOneValue (matMul (matMul mA mB) mC)
     (matMul mA (matMul mB mC)) := by decide +kernel
 
-example : matOneValue (matMul mC (matAdd mA mA))
+theorem pin157 : matOneValue (matMul mC (matAdd mA mA))
     (matAdd (matMul mC mA) (matMul mC mA)) :=
   elim.matMul_addR (n := 3) mA mA (by decide +kernel) (by decide +kernel) rfl (by decide +kernel) mC
     (by decide +kernel)
 
-example : matOneValue (matMul (matAdd mB mB) mC)
+theorem pin158 : matOneValue (matMul (matAdd mB mB) mC)
     (matAdd (matMul mB mC) (matMul mB mC)) :=
   elim.matMul_addL 2 mC (by decide +kernel) mB mB (by decide +kernel) (by decide +kernel)
 
-example : matSwap (matSwap mA) = mA := elim.matSwap_matSwap mA
-example : matMul (matSwap mA) mB = matSwap (matMul mA mB) :=
+theorem pin159 : matSwap (matSwap mA) = mA := elim.matSwap_matSwap mA
+theorem pin160 : matMul (matSwap mA) mB = matSwap (matMul mA mB) :=
   elim.matMul_swapL mA mB
-example : matOneValue (matAdd (matSwap mC) (matAdd mC mC)) mC :=
+theorem pin161 : matOneValue (matAdd (matSwap mC) (matAdd mC mC)) mC :=
   elim.matSwap_double mC
 
 /-! The refusals: the association fails at a mismatched inner
 shape — the product read against the wrong factor order — and the
 exchange's reversal is not the unreversed product. -/
 
-example : ¬ matOneValue (transposeM (matMul mB mC)) (matMul (transposeM mB)
+theorem pin162 : ¬ matOneValue (transposeM (matMul mB mC)) (matMul (transposeM mB)
     (transposeM mC)) := by decide +kernel
 
-example : ¬ matOneValue (matMul (matMul mA mB) mC)
+theorem pin163 : ¬ matOneValue (matMul (matMul mA mB) mC)
     (matMul mA (matMul mB (matSwap mC))) := by decide +kernel
 
 /-! The matrix-valued index fold at a stated family: the head and
@@ -1451,33 +1453,33 @@ private theorem hShape : ∀ k, elim.rowsLen 2 (hFam k)
       rw [h]
       exact ⟨by decide +kernel, by decide +kernel⟩
 
-example : elim.msum 2 gFam [0, 1]
+theorem pin164 : elim.msum 2 gFam [0, 1]
     = matAdd (gFam 0) (matAdd (gFam 1) (elim.nullMat 2 2)) :=
   (elim.msum_cons 2 gFam 0 [1]).trans
     (congrArg (matAdd (gFam 0)) (elim.msum_cons 2 gFam 1 []))
 
-example : elim.msum 2 gFam ([0] ++ [1])
+theorem pin165 : elim.msum 2 gFam ([0] ++ [1])
     = matAdd (elim.msum 2 gFam [0]) (gFam 1) :=
   elim.msum_append 2 gFam [0] 1
 
-example : matOneValue (elim.msum 2 gFam [0, 1]) (matAdd mC (matSwap mC)) := by
+theorem pin166 : matOneValue (elim.msum 2 gFam [0, 1]) (matAdd mC (matSwap mC)) := by
   decide +kernel
 
-example : matOneValue (matMul mC (elim.msum 2 gFam [0, 1]))
+theorem pin167 : matOneValue (matMul mC (elim.msum 2 gFam [0, 1]))
     (elim.msum 2 (fun k => matMul mC (gFam k)) [0, 1]) :=
   elim.matMul_msum 2 mC (by decide +kernel) rfl (by decide +kernel) gFam gShape [0, 1]
 
-example : matOneValue (matMul mC (elim.nullMat 2 2)) (elim.nullMat 2 2) :=
+theorem pin168 : matOneValue (matMul mC (elim.nullMat 2 2)) (elim.nullMat 2 2) :=
   elim.matMul_nullMat 2 mC rfl
 
-example : matOneValue (matMul (matSwap (matSwap mC)) mC) (matMul mC mC) :=
+theorem pin169 : matOneValue (matMul (matSwap (matSwap mC)) mC) (matMul mC mC) :=
   elim.matMul_congrL (matSwap (matSwap mC)) mC mC (by decide +kernel)
 
-example : matAdd (gFam 0) (elim.msum 2 (fun b => gFam (b + 1)) (List.range 2))
+theorem pin170 : matAdd (gFam 0) (elim.msum 2 (fun b => gFam (b + 1)) (List.range 2))
     = matAdd (elim.msum 2 gFam (List.range 2)) (gFam 2) :=
   elim.msum_shift 2 gFam 2
 
-example : matOneValue (elim.msum 2 (fun b => hFam (b + 1)) (List.range 2))
+theorem pin171 : matOneValue (elim.msum 2 (fun b => hFam (b + 1)) (List.range 2))
     (elim.msum 2 hFam (List.range 2)) :=
   elim.msum_wrap 2 hFam hShape 2 (by decide +kernel)
 
@@ -1486,8 +1488,8 @@ family `gFam` reads its swap at every key beyond the head, so its
 key at the range's length is off equal members with the head and
 the shifted fold is not the family's. -/
 
-example : ¬ matOneValue (gFam 2) (gFam 0) := by decide +kernel
-example : ¬ matOneValue (elim.msum 2 (fun b => gFam (b + 1)) (List.range 2))
+theorem pin172 : ¬ matOneValue (gFam 2) (gFam 0) := by decide +kernel
+theorem pin173 : ¬ matOneValue (elim.msum 2 (fun b => gFam (b + 1)) (List.range 2))
     (elim.msum 2 gFam (List.range 2)) := by decide +kernel
 
 /-! The joined span's order read and the perpendicular
@@ -1496,17 +1498,17 @@ direct pin, and the unit-tail sum's two perpendicular parts read
 the unit tail each, the crossed pairing's binder at its isolating
 refusal. -/
 
-example : elim.spanRel 2 ([[⟨2, 1⟩, ⟨1, 1⟩]] ++ [[⟨1, 1⟩, ⟨3, 1⟩]])
+theorem pin174 : elim.spanRel 2 ([[⟨2, 1⟩, ⟨1, 1⟩]] ++ [[⟨1, 1⟩, ⟨3, 1⟩]])
       [⟨5, 1⟩, ⟨6, 2⟩]
     ∧ elim.spanRel 2 ([[⟨1, 1⟩, ⟨3, 1⟩]] ++ [[⟨2, 1⟩, ⟨1, 1⟩]])
       [⟨5, 1⟩, ⟨6, 2⟩] := by decide +kernel
 
-example : elim.spanRel 2 ([[⟨1, 1⟩, ⟨3, 1⟩]] ++ [[⟨2, 1⟩, ⟨1, 1⟩]])
+theorem pin175 : elim.spanRel 2 ([[⟨1, 1⟩, ⟨3, 1⟩]] ++ [[⟨2, 1⟩, ⟨1, 1⟩]])
     [⟨5, 1⟩, ⟨6, 2⟩] :=
   elim.spanRel_append_comm 2 [[⟨2, 1⟩, ⟨1, 1⟩]] [[⟨1, 1⟩, ⟨3, 1⟩]]
     [⟨5, 1⟩, ⟨6, 2⟩] (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : poly.unitTail [(⟨2, 2⟩ : BPair), ⟨1, 1⟩]
+theorem pin176 : poly.unitTail [(⟨2, 2⟩ : BPair), ⟨1, 1⟩]
     ∧ poly.unitTail [(⟨3, 3⟩ : BPair), ⟨4, 4⟩] :=
   elim.vecAdd_perp_null [(⟨2, 2⟩ : BPair), ⟨1, 1⟩]
     [(⟨3, 3⟩ : BPair), ⟨4, 4⟩] rfl (by decide +kernel) (by decide +kernel)
@@ -1514,7 +1516,7 @@ example : poly.unitTail [(⟨2, 2⟩ : BPair), ⟨1, 1⟩]
 /-- The crossed pairing's binder is load-bearing: two off-unit
 parts summing to the unit tail cross at an occupied pairing, and
 the parts read off the unit tail. -/
-example : poly.unitTail (elim.vecAdd [BPair.ofNat 1]
+theorem pin177 : poly.unitTail (elim.vecAdd [BPair.ofNat 1]
       [(BPair.ofNat 1).swap])
     ∧ ¬ (elim.dotP [BPair.ofNat 1]
       [(BPair.ofNat 1).swap]).oneValue BPair.unit
@@ -1524,7 +1526,7 @@ example : poly.unitTail (elim.vecAdd [BPair.ofNat 1]
 at the shorter list, so an unmatched off-unit part reads the
 summed unit tail and the crossed unit pairing with its own tail
 off the unit — both orientations forged. -/
-example : (poly.unitTail (elim.vecAdd [BPair.ofNat 1]
+theorem pin178 : (poly.unitTail (elim.vecAdd [BPair.ofNat 1]
         ([] : List BPair))
       ∧ (elim.dotP [BPair.ofNat 1]
         ([] : List BPair)).oneValue BPair.unit
@@ -1541,11 +1543,11 @@ the kernel's own pins at orders three and four, and the squareness
 binder at its isolating refusals in both non-square orientations
 with the ragged shape beside them. -/
 
-example : detL (transposeM [[⟨2, 1⟩, ⟨3, 1⟩], [⟨1, 2⟩, ⟨5, 1⟩]])
+theorem pin179 : detL (transposeM [[⟨2, 1⟩, ⟨3, 1⟩], [⟨1, 2⟩, ⟨5, 1⟩]])
     = detL [[⟨2, 1⟩, ⟨3, 1⟩], [⟨1, 2⟩, ⟨5, 1⟩]] :=
   detL_transpose [[⟨2, 1⟩, ⟨3, 1⟩], [⟨1, 2⟩, ⟨5, 1⟩]] (by decide +kernel)
 
-example : detL (transposeM
+theorem pin180 : detL (transposeM
       [[⟨3, 1⟩, ⟨1, 4⟩, ⟨2, 1⟩],
        [⟨1, 1⟩, ⟨2, 5⟩, ⟨7, 1⟩],
        [⟨5, 2⟩, ⟨1, 1⟩, ⟨1, 3⟩]])
@@ -1558,7 +1560,7 @@ example : detL (transposeM
      [⟨1, 1⟩, ⟨2, 5⟩, ⟨7, 1⟩],
      [⟨5, 2⟩, ⟨1, 1⟩, ⟨1, 3⟩]] (by decide +kernel)
 
-example : detL (transposeM
+theorem pin181 : detL (transposeM
       [[⟨2, 1⟩, ⟨1, 3⟩, ⟨4, 1⟩, ⟨1, 1⟩],
        [⟨1, 2⟩, ⟨3, 1⟩, ⟨1, 5⟩, ⟨2, 1⟩],
        [⟨5, 1⟩, ⟨2, 3⟩, ⟨1, 1⟩, ⟨3, 2⟩],
@@ -1574,7 +1576,7 @@ example : detL (transposeM
      [⟨5, 1⟩, ⟨2, 3⟩, ⟨1, 1⟩, ⟨3, 2⟩],
      [⟨1, 4⟩, ⟨6, 1⟩, ⟨2, 2⟩, ⟨1, 7⟩]] (by decide +kernel)
 
-example : detL (transposeM
+theorem pin182 : detL (transposeM
       [[⟨2, 1⟩, ⟨3, 1⟩, ⟨1, 1⟩],
        [⟨1, 2⟩, ⟨5, 1⟩, ⟨2, 3⟩],
        [⟨4, 1⟩, ⟨1, 3⟩, ⟨2, 2⟩]])
@@ -1583,7 +1585,7 @@ example : detL (transposeM
        [⟨1, 2⟩, ⟨5, 1⟩, ⟨2, 3⟩],
        [⟨4, 1⟩, ⟨1, 3⟩, ⟨2, 2⟩]] := by decide +kernel
 
-example : detL (transposeM
+theorem pin183 : detL (transposeM
       [[⟨2, 1⟩, ⟨1, 3⟩, ⟨4, 1⟩, ⟨1, 1⟩],
        [⟨1, 2⟩, ⟨3, 1⟩, ⟨1, 5⟩, ⟨2, 1⟩],
        [⟨5, 1⟩, ⟨2, 3⟩, ⟨1, 1⟩, ⟨3, 2⟩],
@@ -1598,7 +1600,7 @@ example : detL (transposeM
 width two the transpose's determinant reads the sum's unit over
 its two-row fold while the row's own reads its first entry, the
 two off equal members. -/
-example : (¬ rowsLen ([[(⟨2, 1⟩ : BPair), ⟨3, 1⟩]] : Mat).length
+theorem pin184 : (¬ rowsLen ([[(⟨2, 1⟩ : BPair), ⟨3, 1⟩]] : Mat).length
       [[(⟨2, 1⟩ : BPair), ⟨3, 1⟩]])
     ∧ ¬ ((detL (transposeM [[(⟨2, 1⟩ : BPair), ⟨3, 1⟩]])).oneValue
       (detL [[(⟨2, 1⟩ : BPair), ⟨3, 1⟩]])) := by decide +kernel
@@ -1606,7 +1608,7 @@ example : (¬ rowsLen ([[(⟨2, 1⟩ : BPair), ⟨3, 1⟩]] : Mat).length
 /-- The other orientation's refusal: at three rows of width two
 the row count exceeds the width, the shape read refusing with the
 two determinants off one value. -/
-example : (¬ rowsLen
+theorem pin185 : (¬ rowsLen
       ([[(⟨2, 1⟩ : BPair), ⟨3, 1⟩], [⟨1, 2⟩, ⟨5, 1⟩],
         [⟨4, 1⟩, ⟨1, 3⟩]] : Mat).length
       [[(⟨2, 1⟩ : BPair), ⟨3, 1⟩], [⟨1, 2⟩, ⟨5, 1⟩],
@@ -1619,7 +1621,7 @@ example : (¬ rowsLen
 
 /-- The ragged shape's refusal: rows of differing widths sit off
 the shape read. -/
-example : ¬ rowsLen
+theorem pin186 : ¬ rowsLen
     ([[(⟨2, 1⟩ : BPair), ⟨3, 1⟩],
       [⟨1, 2⟩, ⟨5, 1⟩, ⟨4, 1⟩]] : Mat).length
     [[(⟨2, 1⟩ : BPair), ⟨3, 1⟩],
@@ -1655,7 +1657,7 @@ private def sylRead (m : Mat) (k i j : Nat) : Prop :=
         (detL (borderAt k k j m)))).oneValue
     (BPair.mul (detL (borderAt k k k m)) (detL (borderAt k i j m)))
 
-private instance (m : Mat) (k i j : Nat) : Decidable (sylRead m k i j) :=
+private instance instElimChk1 (m : Mat) (k i j : Nat) : Decidable (sylRead m k i j) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The exact-cofactor display at a key triple: the leading minor
@@ -1673,44 +1675,44 @@ private def divExactRead (m : Mat) (k i j : Nat) : Prop :=
       (BPair.swap (BPair.mul (detL (borderAt k i k m))
         (detL (borderAt k k j m)))))
 
-private instance (m : Mat) (k i j : Nat) :
+private instance instElimChk2 (m : Mat) (k i j : Nat) :
     Decidable (divExactRead m k i j) :=
   inferInstanceAs (Decidable (_ = _))
 
-example : sylRead sylM3 1 2 2 :=
+theorem pin187 : sylRead sylM3 1 2 2 :=
   sylvester sylM3 (by decide +kernel) 1 2 2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
-example : sylRead sylM4 1 2 2 :=
+theorem pin188 : sylRead sylM4 1 2 2 :=
   sylvester sylM4 (by decide +kernel) 1 2 2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
 /-- The three-by-three's whole key sweep, each triple inside the
 pivot's range. -/
-example : sylRead sylM3 0 1 1 ∧ sylRead sylM3 0 1 2
+theorem pin189 : sylRead sylM3 0 1 1 ∧ sylRead sylM3 0 1 2
     ∧ sylRead sylM3 0 2 1 ∧ sylRead sylM3 0 2 2
     ∧ sylRead sylM3 1 2 2 := by decide +kernel
 
 /-- The four-by-four's whole key sweep at the second and third
 steps. -/
-example : sylRead sylM4 1 2 2 ∧ sylRead sylM4 1 2 3
+theorem pin190 : sylRead sylM4 1 2 2 ∧ sylRead sylM4 1 2 3
     ∧ sylRead sylM4 1 3 2 ∧ sylRead sylM4 1 3 3
     ∧ sylRead sylM4 2 3 3 := by decide +kernel
 
 /-- The exact-cofactor display at the three-by-three's own
 step. -/
-example : divExactRead sylM3 1 2 2 := by decide +kernel
+theorem pin191 : divExactRead sylM3 1 2 2 := by decide +kernel
 
 /-- The theorem read whole at the three-by-three's own step: the
 shape, range and off-unit binders discharged at the datum, the
 conclusion `divExactRead`'s own display. -/
-example : divExactRead sylM3 1 2 2 :=
+theorem pin192 : divExactRead sylM3 1 2 2 :=
   divExact sylM3 (by decide +kernel) 1 2 2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
 /-- The exact-cofactor display over the four-by-four's key
 sweep. -/
-example : divExactRead sylM4 1 2 2 ∧ divExactRead sylM4 1 2 3
+theorem pin193 : divExactRead sylM4 1 2 2 ∧ divExactRead sylM4 1 2 3
     ∧ divExactRead sylM4 1 3 2 ∧ divExactRead sylM4 1 3 3
     ∧ divExactRead sylM4 2 3 3 := by decide +kernel
 
@@ -1726,12 +1728,12 @@ private def sylMS : Mat :=
    [⟨1, 1⟩, ⟨2, 5⟩, ⟨7, 1⟩],
    [⟨5, 2⟩, ⟨1, 1⟩, ⟨1, 3⟩]]
 
-example : ((detL (leadAt 1 sylMS)).oneValue BPair.unit)
+theorem pin194 : ((detL (leadAt 1 sylMS)).oneValue BPair.unit)
     ∧ divExactRead sylMS 1 2 2 := by decide +kernel
 
 /-- The exactness at an equal-membered pivot, the theorem applied
 whole where the identity's both members read the sum's unit. -/
-example : divExactRead sylMS 1 2 2 :=
+theorem pin195 : divExactRead sylMS 1 2 2 :=
   divExact sylMS (by decide +kernel) 1 2 2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
@@ -1743,25 +1745,25 @@ private def sylNM : Mat :=
    [⟨4, 1⟩, ⟨5, 1⟩, ⟨6, 1⟩],
    [⟨7, 1⟩, ⟨8, 1⟩, ⟨10, 1⟩]]
 
-example : ((detL (leadAt 1 sylNM)).oneValue BPair.unit)
+theorem pin196 : ((detL (leadAt 1 sylNM)).oneValue BPair.unit)
     ∧ (¬ (detL (borderAt 1 1 1 sylNM)).oneValue BPair.unit)
     ∧ (¬ (detL (borderAt 1 2 2 sylNM)).oneValue BPair.unit)
     ∧ (¬ (detL (borderAt 1 1 2 sylNM)).oneValue BPair.unit)
     ∧ (¬ (detL (borderAt 1 2 1 sylNM)).oneValue BPair.unit) := by
   decide +kernel
 
-example : divExactRead sylNM 1 2 2 :=
+theorem pin197 : divExactRead sylNM 1 2 2 :=
   divExact sylNM (by decide +kernel) 1 2 2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
 /-- The first-row fold's own read discharged whole: the minor
 collects to the assignment fold and the identity reads at the
 collected determinants. -/
-example : sylvesterRead sylM3 1 2 2 :=
+theorem pin198 : sylvesterRead sylM3 1 2 2 :=
   sylvesterRead_holds sylM3 (by decide +kernel) 1 2 2 (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
-example : sylvesterRead sylM4 2 3 3 :=
+theorem pin199 : sylvesterRead sylM4 2 3 3 :=
   sylvesterRead_holds sylM4 (by decide +kernel) 2 3 3 (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
@@ -1769,20 +1771,20 @@ example : sylvesterRead sylM4 2 3 3 :=
 widened read's own instance, the repeated row collapsing both
 sides (the former `k < i` binder derivable, its refusal
 unconstructible). -/
-example : sylvesterRead sylM4 2 1 3 :=
+theorem pin200 : sylvesterRead sylM4 2 1 3 :=
   sylvesterRead_holds sylM4 (by decide +kernel) 2 1 3 (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
 /-- The identity at a border column among the leading keys, the
 column repeat's collapse. -/
-example : sylvesterRead sylM4 2 3 0 :=
+theorem pin201 : sylvesterRead sylM4 2 3 0 :=
   sylvesterRead_holds sylM4 (by decide +kernel) 2 3 0 (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
 
 /-- The join at the singular pivot reads the sum's unit, the
 identity's own consequence read at the datum. -/
-example : (BPair.add
+theorem pin202 : (BPair.add
       (BPair.mul (detL (borderAt 1 1 1 sylMS))
         (detL (borderAt 1 2 2 sylMS)))
       (BPair.swap (BPair.mul (detL (borderAt 1 2 1 sylMS))
@@ -1867,40 +1869,40 @@ private def vR : List BPair :=
 
 private def vwide : List BPair := [BPair.ofNat 1, BPair.ofNat 1]
 
-example : perpAll LP ∧ perpAll LM ∧ perpAll LZ := by decide +kernel
-example : ¬ perpAll LN := by decide +kernel
+theorem pin203 : perpAll LP ∧ perpAll LM ∧ perpAll LZ := by decide +kernel
+theorem pin204 : ¬ perpAll LN := by decide +kernel
 
-example : rowsLen 3 LP ∧ rowsLen 3 LM ∧ rowsLen 3 LZ := by decide +kernel
+theorem pin205 : rowsLen 3 LP ∧ rowsLen 3 LM ∧ rowsLen 3 LZ := by decide +kernel
 
 /-! The two spellings' verdicts agree: the member passes at both
 and the vector off the span refuses at both. -/
 
-example : poly.unitTail (residV 3 LP vin)
+theorem pin206 : poly.unitTail (residV 3 LP vin)
     ∧ poly.unitTail (residD LP vin) := by decide +kernel
 
-example : ¬ poly.unitTail (residV 3 LP vout)
+theorem pin207 : ¬ poly.unitTail (residV 3 LP vout)
     ∧ ¬ poly.unitTail (residD LP vout) := by decide +kernel
 
-example : poly.unitTail (residV 3 LZ vZ)
+theorem pin208 : poly.unitTail (residV 3 LZ vZ)
     ∧ poly.unitTail (residD LZ vZ) := by decide +kernel
 
-example : poly.unitTail (residV 3 LM vin)
+theorem pin209 : poly.unitTail (residV 3 LM vin)
     ∧ poly.unitTail (residD LM vin) := by decide +kernel
 
 /-! The entrywise bridge itself, at the member, at the vector off
 the span, and at the two degenerate families — with the
 perpendicularity binder's refusal beside them. -/
 
-example : poly.oneValue (residV 3 LP vin) (residD LP vin) := by decide +kernel
-example : poly.oneValue (residV 3 LP vout) (residD LP vout) := by decide +kernel
-example : poly.oneValue (residV 3 LM vin) (residD LM vin) := by decide +kernel
-example : poly.oneValue (residV 3 LZ vZ) (residD LZ vZ) := by decide +kernel
+theorem pin210 : poly.oneValue (residV 3 LP vin) (residD LP vin) := by decide +kernel
+theorem pin211 : poly.oneValue (residV 3 LP vout) (residD LP vout) := by decide +kernel
+theorem pin212 : poly.oneValue (residV 3 LM vin) (residD LM vin) := by decide +kernel
+theorem pin213 : poly.oneValue (residV 3 LZ vZ) (residD LZ vZ) := by decide +kernel
 
 /-- The perpendicularity binder is load-bearing: at a family whose
 rows pair off the unit every surviving co-binder holds — the width
 reads decide — and the entrywise bridge refuses, the determinant
 parting from the product with it. -/
-example : (rowsLen 2 LN ∧ vN.length = 2)
+theorem pin214 : (rowsLen 2 LN ∧ vN.length = 2)
     ∧ ¬ perpAll LN
     ∧ ¬ poly.oneValue (residV 2 LN vN) (residD LN vN)
     ∧ ¬ (detL (gramM LN)).oneValue (selfProd LN) := by decide +kernel
@@ -1909,10 +1911,10 @@ example : (rowsLen 2 LN ∧ vN.length = 2)
 surviving co-binders decide at the stated width one, and a vector
 two wide parts the two spellings. -/
 
-example : perpAll ([] : elim.Mat) := by decide +kernel
-example : rowsLen 1 ([] : elim.Mat) := by decide +kernel
+theorem pin215 : perpAll ([] : elim.Mat) := by decide +kernel
+theorem pin216 : rowsLen 1 ([] : elim.Mat) := by decide +kernel
 
-example : ¬ (vwide.length = 1)
+theorem pin217 : ¬ (vwide.length = 1)
     ∧ ¬ poly.oneValue (residV 1 [] vwide) (residD [] vwide) := by
   decide +kernel
 
@@ -1921,12 +1923,12 @@ the family reads the stated width and pairs perpendicularly while
 the vector is two wide, and at `LR` the vector reads that width
 while the family runs ragged below it — the head row's own pairing
 against the residual off the sum's unit at both. -/
-example : (rowsLen 3 LW ∧ perpAll LW ∧ 0 < LW.length)
+theorem pin218 : (rowsLen 3 LW ∧ perpAll LW ∧ 0 < LW.length)
     ∧ ¬ (vshort.length = 3)
     ∧ ¬ (dotP (ground.getAt [] LW 0) (residD LW vshort)).oneValue
       BPair.unit := by decide +kernel
 
-example : (vR.length = 3 ∧ perpAll LR ∧ 0 < LR.length)
+theorem pin219 : (vR.length = 3 ∧ perpAll LR ∧ 0 < LR.length)
     ∧ ¬ rowsLen 3 LR
     ∧ ¬ (dotP (ground.getAt [] LR 0) (residD LR vR)).oneValue
       BPair.unit := by decide +kernel
@@ -1935,7 +1937,7 @@ example : (vR.length = 3 ∧ perpAll LR ∧ 0 < LR.length)
 both width reads decide, the family sits below its row count, and
 each row's pairing against the residual reads off the sum's
 unit. -/
-example : (rowsLen 2 LN ∧ vN.length = 2 ∧ 0 < LN.length)
+theorem pin220 : (rowsLen 2 LN ∧ vN.length = 2 ∧ 0 < LN.length)
     ∧ ¬ perpAll LN
     ∧ ¬ (dotP (ground.getAt [] LN 0) (residD LN vN)).oneValue
       BPair.unit
@@ -1946,41 +1948,41 @@ example : (rowsLen 2 LN ∧ vN.length = 2 ∧ 0 < LN.length)
 family both spellings truncate to the family's own shorter row and
 read one value there, the refusal above sitting at `residD_perp`
 alone. -/
-example : poly.oneValue (residV 3 LR vR) (residD LR vR) := by decide +kernel
+theorem pin221 : poly.oneValue (residV 3 LR vR) (residD LR vR) := by decide +kernel
 
 /-! The determinant's own read at the perpendicular families,
 kernel twin beside theorem route. -/
 
-example : (detL (gramM LP)).oneValue (selfProd LP) := by decide +kernel
-example : (detL (gramM LP)).oneValue (selfProd LP) :=
+theorem pin222 : (detL (gramM LP)).oneValue (selfProd LP) := by decide +kernel
+theorem pin223 : (detL (gramM LP)).oneValue (selfProd LP) :=
   elim.detL_perp LP (by decide +kernel)
 
-example : (detL (gramM LM)).oneValue (selfProd LM) := by decide +kernel
-example : (detL (gramM LM)).oneValue (selfProd LM) :=
+theorem pin224 : (detL (gramM LM)).oneValue (selfProd LM) := by decide +kernel
+theorem pin225 : (detL (gramM LM)).oneValue (selfProd LM) :=
   elim.detL_perp LM (by decide +kernel)
 
-example : (detL (gramM LZ)).oneValue (selfProd LZ) :=
+theorem pin226 : (detL (gramM LZ)).oneValue (selfProd LZ) :=
   elim.detL_perp LZ (by decide +kernel)
 
 /-! The residual's perpendicularity and the bridge, each kernel
 twin beside its theorem route at `LP`. -/
 
-example : (dotP (ground.getAt [] LP 0) (residD LP vin)).oneValue
+theorem pin227 : (dotP (ground.getAt [] LP 0) (residD LP vin)).oneValue
     BPair.unit := by decide +kernel
-example : (dotP (ground.getAt [] LP 0) (residD LP vin)).oneValue
+theorem pin228 : (dotP (ground.getAt [] LP 0) (residD LP vin)).oneValue
     BPair.unit :=
   elim.residD_perp 3 LP vin (by decide +kernel) rfl (by decide +kernel) 0 (by decide +kernel)
 
-example : (dotP (ground.getAt [] LP 1) (residD LP vout)).oneValue
+theorem pin229 : (dotP (ground.getAt [] LP 1) (residD LP vout)).oneValue
     BPair.unit := by decide +kernel
-example : (dotP (ground.getAt [] LP 1) (residD LP vout)).oneValue
+theorem pin230 : (dotP (ground.getAt [] LP 1) (residD LP vout)).oneValue
     BPair.unit :=
   elim.residD_perp 3 LP vout (by decide +kernel) rfl (by decide +kernel) 1 (by decide +kernel)
 
-example : poly.oneValue (residV 3 LP vin) (residD LP vin) :=
+theorem pin231 : poly.oneValue (residV 3 LP vin) (residD LP vin) :=
   elim.residD_residV 3 LP vin (by decide +kernel) rfl (by decide +kernel)
 
-example : poly.oneValue (residV 3 LP vout) (residD LP vout) :=
+theorem pin232 : poly.oneValue (residV 3 LP vout) (residD LP vout) :=
   elim.residD_residV 3 LP vout (by decide +kernel) rfl (by decide +kernel)
 
 /-! The degenerate families' bridge, kernel twin above and theorem
@@ -1988,10 +1990,10 @@ route here: the unit self-pairing rows read the binder set the
 statement carries, so the theorem itself pins what the kernel
 decides. -/
 
-example : poly.oneValue (residV 3 LM vin) (residD LM vin) :=
+theorem pin233 : poly.oneValue (residV 3 LM vin) (residD LM vin) :=
   elim.residD_residV 3 LM vin (by decide +kernel) rfl (by decide +kernel)
 
-example : poly.oneValue (residV 3 LZ vZ) (residD LZ vZ) :=
+theorem pin234 : poly.oneValue (residV 3 LZ vZ) (residD LZ vZ) :=
   elim.residD_residV 3 LZ vZ (by decide +kernel) rfl (by decide +kernel)
 
 /-! The measured shape: seven mutually perpendicular rows at width
@@ -2018,11 +2020,11 @@ private def v7 : List BPair :=
   [BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1,
    BPair.ofNat 2, BPair.ofNat 2, BPair.unit]
 
-example : perpAll L7 ∧ rowsLen 7 L7 ∧ v7.length = 7 := by decide +kernel
+theorem pin235 : perpAll L7 ∧ rowsLen 7 L7 ∧ v7.length = 7 := by decide +kernel
 
-example : poly.unitTail (residD L7 v7) := by decide +kernel
+theorem pin236 : poly.unitTail (residD L7 v7) := by decide +kernel
 
-example : (dotP (ground.getAt [] L7 3) (residD L7 v7)).oneValue
+theorem pin237 : (dotP (ground.getAt [] L7 3) (residD L7 v7)).oneValue
     BPair.unit :=
   elim.residD_perp 7 L7 v7 (by decide +kernel) rfl (by decide +kernel) 3 (by decide +kernel)
 
@@ -2048,22 +2050,22 @@ private def w2 : List BPair := [BPair.ofNat 1, BPair.ofNat 1]
 
 private def e2 : List BPair := [BPair.unit, BPair.ofNat 1]
 
-example : elim.spanRel 2 F2 w2 := by decide +kernel
+theorem pin238 : elim.spanRel 2 F2 w2 := by decide +kernel
 
-example : elim.spanRel 2 F2 w2 :=
+theorem pin239 : elim.spanRel 2 F2 w2 :=
   elim.span_of_full 2 F2 w2 (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : elim.spanRel 2 F2 (List.replicate 2 BPair.unit) :=
+theorem pin240 : elim.spanRel 2 F2 (List.replicate 2 BPair.unit) :=
   elim.span_of_full 2 F2 (List.replicate 2 BPair.unit)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : elim.indepRows 2 F2short ∧ ¬ (F2short.length = 2) := by decide +kernel
+theorem pin241 : elim.indepRows 2 F2short ∧ ¬ (F2short.length = 2) := by decide +kernel
 
-example : ¬ elim.spanRel 2 F2short e2 := by decide +kernel
+theorem pin242 : ¬ elim.spanRel 2 F2short e2 := by decide +kernel
 
-example : F2dep.length = 2 ∧ ¬ elim.indepRows 2 F2dep := by decide +kernel
+theorem pin243 : F2dep.length = 2 ∧ ¬ elim.indepRows 2 F2dep := by decide +kernel
 
-example : ¬ elim.spanRel 2 F2dep e2 := by decide +kernel
+theorem pin244 : ¬ elim.spanRel 2 F2dep e2 := by decide +kernel
 
 /-! The kernel list at the back solve: value and instance pins at
 committed matrices, the reads the decidable instances' own.  The
@@ -2119,95 +2121,95 @@ private def kerRag : elim.Mat :=
 
 /-- The dependent square's kernel counts one member, the
 pivot-free column's own. -/
-example : (elim.kernelList 2 kerM1).length = 1 := by decide +kernel
+theorem pin245 : (elim.kernelList 2 kerM1).length = 1 := by decide +kernel
 
 /-- Its pivot count beside the member count. -/
-example : elim.rank kerM1 = 1 := by decide +kernel
+theorem pin246 : elim.rank kerM1 = 1 := by decide +kernel
 
 /-- The member is annihilated: the action reads the sum's unit at
 every row. -/
-example : poly.unitTail (elim.matVec kerM1
+theorem pin247 : poly.unitTail (elim.matVec kerM1
     (ground.getAt [] (elim.kernelList 2 kerM1) 0)) := by decide +kernel
 
 /-- The one-member family is independent, the Gram determinant off
 the sum's unit. -/
-example : elim.indepRows 2 (elim.kernelList 2 kerM1) := by decide +kernel
+theorem pin248 : elim.indepRows 2 (elim.kernelList 2 kerM1) := by decide +kernel
 
 /-- The hand kernel `(-2, 1)` sits in the member's span. -/
-example : elim.spanRel 2 (elim.kernelList 2 kerM1)
+theorem pin249 : elim.spanRel 2 (elim.kernelList 2 kerM1)
     [(BPair.ofNat 2).swap, BPair.ofNat 1] := by decide +kernel
 
 /-- A vector off that line is refused, the span read discriminating
 rather than accepting outright. -/
-example : ¬ elim.spanRel 2 (elim.kernelList 2 kerM1)
+theorem pin250 : ¬ elim.spanRel 2 (elim.kernelList 2 kerM1)
     [BPair.ofNat 1, BPair.unit] := by decide +kernel
 
 /-- Full column rank empties the kernel list outright. -/
-example : elim.kernelList 2 kerId = [] := by decide +kernel
+theorem pin251 : elim.kernelList 2 kerId = [] := by decide +kernel
 
 /-- Its pivot count reads the column-key count. -/
-example : elim.rank kerId = 2 := by decide +kernel
+theorem pin252 : elim.rank kerId = 2 := by decide +kernel
 
 /-- The matrix at the sum's unit pivots nowhere, so the terminal
 seed stands whole: one member per column key. -/
-example : (elim.kernelList 3 kerZ).length = 3 := by decide +kernel
+theorem pin253 : (elim.kernelList 3 kerZ).length = 3 := by decide +kernel
 
 /-- Its pivot count is nought. -/
-example : elim.rank kerZ = 0 := by decide +kernel
+theorem pin254 : elim.rank kerZ = 0 := by decide +kernel
 
 /-- The seed's first member is annihilated. -/
-example : poly.unitTail (elim.matVec kerZ
+theorem pin255 : poly.unitTail (elim.matVec kerZ
     (ground.getAt [] (elim.kernelList 3 kerZ) 0)) := by decide +kernel
 
 /-- The seed's second member is annihilated. -/
-example : poly.unitTail (elim.matVec kerZ
+theorem pin256 : poly.unitTail (elim.matVec kerZ
     (ground.getAt [] (elim.kernelList 3 kerZ) 1)) := by decide +kernel
 
 /-- The seed's third member is annihilated. -/
-example : poly.unitTail (elim.matVec kerZ
+theorem pin257 : poly.unitTail (elim.matVec kerZ
     (ground.getAt [] (elim.kernelList 3 kerZ) 2)) := by decide +kernel
 
 /-- The seed is independent, the unit family at each column's own
 key. -/
-example : elim.indepRows 3 (elim.kernelList 3 kerZ) := by decide +kernel
+theorem pin258 : elim.indepRows 3 (elim.kernelList 3 kerZ) := by decide +kernel
 
 /-- The tall shape's kernel is empty. -/
-example : (elim.kernelList 2 kerT).length = 0 := by decide +kernel
+theorem pin259 : (elim.kernelList 2 kerT).length = 0 := by decide +kernel
 
 /-- Its pivot count reads the column-key count. -/
-example : elim.rank kerT = 2 := by decide +kernel
+theorem pin260 : elim.rank kerT = 2 := by decide +kernel
 
 /-- The wide shape's kernel counts one member. -/
-example : (elim.kernelList 3 kerW).length = 1 := by decide +kernel
+theorem pin261 : (elim.kernelList 3 kerW).length = 1 := by decide +kernel
 
 /-- Its pivot count sits one below the column-key count. -/
-example : elim.rank kerW = 2 := by decide +kernel
+theorem pin262 : elim.rank kerW = 2 := by decide +kernel
 
 /-- The wide shape's member is annihilated. -/
-example : poly.unitTail (elim.matVec kerW
+theorem pin263 : poly.unitTail (elim.matVec kerW
     (ground.getAt [] (elim.kernelList 3 kerW) 0)) := by decide +kernel
 
 /-- The rank-one square's kernel counts two members. -/
-example : (elim.kernelList 3 kerR1).length = 2 := by decide +kernel
+theorem pin264 : (elim.kernelList 3 kerR1).length = 2 := by decide +kernel
 
 /-- Its pivot count is one. -/
-example : elim.rank kerR1 = 1 := by decide +kernel
+theorem pin265 : elim.rank kerR1 = 1 := by decide +kernel
 
 /-- The two members are independent, the two rounds' extensions
 separating them. -/
-example : elim.indepRows 3 (elim.kernelList 3 kerR1) := by decide +kernel
+theorem pin266 : elim.indepRows 3 (elim.kernelList 3 kerR1) := by decide +kernel
 
 /-- The first member is annihilated. -/
-example : poly.unitTail (elim.matVec kerR1
+theorem pin267 : poly.unitTail (elim.matVec kerR1
     (ground.getAt [] (elim.kernelList 3 kerR1) 0)) := by decide +kernel
 
 /-- The second member is annihilated. -/
-example : poly.unitTail (elim.matVec kerR1
+theorem pin268 : poly.unitTail (elim.matVec kerR1
     (ground.getAt [] (elim.kernelList 3 kerR1) 1)) := by decide +kernel
 
 /-- The dropped-frame probe: the members sit at the stated width at
 ragged data, `kernelList_rowsLen` stating it hypothesis-free. -/
-example : elim.rowsLen 2 (elim.kernelList 2 kerRag) := by decide +kernel
+theorem pin269 : elim.rowsLen 2 (elim.kernelList 2 kerRag) := by decide +kernel
 
 /-! The length bridge: the dimension read hypothesis-free with the
 sum form's frame refusal — an under-stated width over-counts
@@ -2221,34 +2223,34 @@ private def kerNS : elim.Mat :=
 
 /-- Under-stated width: the back solve's terminal seed is already
 empty, so the member count is nought. -/
-example : (elim.kernelList 1 kerNS).length = 0 := by decide +kernel
+theorem pin270 : (elim.kernelList 1 kerNS).length = 0 := by decide +kernel
 
 /-- Its pivot count reads two, past the under-stated width. -/
-example : elim.rank kerNS = 2 := by decide +kernel
+theorem pin271 : elim.rank kerNS = 2 := by decide +kernel
 
 /-- The frame refusal for `kernelList_length`'s `hm`: at the
 under-stated width the sum form fails outright, the pivot count
 over-running the width the rows do not carry. -/
-example : ¬ ((elim.kernelList 1 kerNS).length + elim.rank kerNS
+theorem pin272 : ¬ ((elim.kernelList 1 kerNS).length + elim.rank kerNS
     = 1) := by decide +kernel
 
 /-- The dropped binder's probe: the dimension read holds at that
 same forgery, the truncation absorbing the over-run. -/
-example : (elim.kernelList 1 kerNS).length
+theorem pin273 : (elim.kernelList 1 kerNS).length
     = elim.kernelDim 1 kerNS := by decide +kernel
 
 /-- Over-stated width: the extra column is a genuine kernel
 direction and the dimension read counts it. -/
-example : (elim.kernelList 3 kerNS).length
+theorem pin274 : (elim.kernelList 3 kerNS).length
     = elim.kernelDim 3 kerNS := by decide +kernel
 
 /-- The over-stated width's member is annihilated. -/
-example : poly.unitTail (elim.matVec kerNS
+theorem pin275 : poly.unitTail (elim.matVec kerNS
     (ground.getAt [] (elim.kernelList 3 kerNS) 0)) := by decide +kernel
 
 /-- The frame instance at the committed singular matrix: the sum
 form reads the stated width whole. -/
-example : (elim.kernelList 2 kerM1).length + elim.rank kerM1 = 2 :=
+theorem pin276 : (elim.kernelList 2 kerM1).length + elim.rank kerM1 = 2 :=
   by decide +kernel
 
 /-! The kernel tier's reads applied whole, with the frame's
@@ -2261,35 +2263,35 @@ nothing is duplicated here. -/
 
 /-- The dependent square's member annihilated by the theorem, the
 value pin's own read at its proof. -/
-example : poly.unitTail (elim.matVec kerM1
+theorem pin277 : poly.unitTail (elim.matVec kerM1
     (ground.getAt [] (elim.kernelList 2 kerM1) 0)) :=
   elim.kernelList_members 2 kerM1 (by decide +kernel) 0 (by decide +kernel)
 
 /-- The rank-one square's first member at the theorem. -/
-example : poly.unitTail (elim.matVec kerR1
+theorem pin278 : poly.unitTail (elim.matVec kerR1
     (ground.getAt [] (elim.kernelList 3 kerR1) 0)) :=
   elim.kernelList_members 3 kerR1 (by decide +kernel) 0 (by decide +kernel)
 
 /-- Its second member at the theorem, the two rounds' extensions
 both annihilated. -/
-example : poly.unitTail (elim.matVec kerR1
+theorem pin279 : poly.unitTail (elim.matVec kerR1
     (ground.getAt [] (elim.kernelList 3 kerR1) 1)) :=
   elim.kernelList_members 3 kerR1 (by decide +kernel) 1 (by decide +kernel)
 
 /-- The wide shape's member at the theorem. -/
-example : poly.unitTail (elim.matVec kerW
+theorem pin280 : poly.unitTail (elim.matVec kerW
     (ground.getAt [] (elim.kernelList 3 kerW) 0)) :=
   elim.kernelList_members 3 kerW (by decide +kernel) 0 (by decide +kernel)
 
 /-- The rank-one square's kernel list independent at the theorem,
 the two members separated at their own pivot-free columns. -/
-example : elim.indepRows 3 (elim.kernelList 3 kerR1) :=
+theorem pin281 : elim.indepRows 3 (elim.kernelList 3 kerR1) :=
   elim.kernelList_indep 3 kerR1 (by decide +kernel)
 
 /-- The hand kernel `(-2, 1)` joins the member's span at the
 theorem, the decided hypotheses discharging the frame, the width
 and the annihilation. -/
-example : elim.spanRel 2 (elim.kernelList 2 kerM1)
+theorem pin282 : elim.spanRel 2 (elim.kernelList 2 kerM1)
     [(BPair.ofNat 2).swap, BPair.ofNat 1] :=
   elim.kernelList_span 2 kerM1 (by decide +kernel)
     [(BPair.ofNat 2).swap, BPair.ofNat 1] (by decide +kernel) (by decide +kernel)
@@ -2299,7 +2301,7 @@ at the ragged matrix the computed member reads `2` against the
 second row, so the action carries an off-unit entry and the
 theorem's conclusion fails outright where the stated width is
 withdrawn. -/
-example : ¬ poly.unitTail (elim.matVec kerRag
+theorem pin283 : ¬ poly.unitTail (elim.matVec kerRag
     (ground.getAt [] (elim.kernelList 2 kerRag) 0)) := by decide +kernel
 
 /-- The over-long row: one occupied key past the stated width, the
@@ -2309,7 +2311,7 @@ private def kerLong : elim.Mat :=
 
 /-- The `(unit, 1)` line is annihilated at that shape, the action
 truncating at the stated width. -/
-example : poly.unitTail (elim.matVec kerLong
+theorem pin284 : poly.unitTail (elim.matVec kerLong
     [BPair.unit, BPair.ofNat 1]) := by decide +kernel
 
 /-- The span frame refusal, `kernelList_span`'s `hm` binder: the
@@ -2317,7 +2319,7 @@ descent pivots at the occupied key past the stated width, burning a
 pivot the stated frame does not carry, so the back solve under-counts
 and the annihilated line above sits outside the kernel list's span
 — the hypothesis withdrawn, the conclusion false. -/
-example : ¬ elim.spanRel 2 (elim.kernelList 2 kerLong)
+theorem pin285 : ¬ elim.spanRel 2 (elim.kernelList 2 kerLong)
     [BPair.unit, BPair.ofNat 1] := by decide +kernel
 /-! `def:elim`'s pivot descent read against the assignment fold
 (`detD_eq`): the coherence pins at committed square lists with
@@ -2365,15 +2367,15 @@ private def Dcyc : Mat :=
    [BPair.ofNat 1, BPair.unit, BPair.unit],
    [BPair.unit, BPair.ofNat 1, BPair.unit]]
 
-example : (detL (borderAt 1 0 1 Dcyc)).oneValue BPair.unit
+theorem pin286 : (detL (borderAt 1 0 1 Dcyc)).oneValue BPair.unit
     ∧ (detL (borderAt 1 1 1 Dcyc)).oneValue BPair.unit
     ∧ (detL (borderAt 1 2 1 Dcyc)).oneValue BPair.unit := by decide +kernel
 
-example : (detL (leadAt 1 Dcyc)).oneValue BPair.unit := by decide +kernel
+theorem pin287 : (detL (leadAt 1 Dcyc)).oneValue BPair.unit := by decide +kernel
 
-example : ¬ (detL Dcyc).oneValue BPair.unit := by decide +kernel
+theorem pin288 : ¬ (detL Dcyc).oneValue BPair.unit := by decide +kernel
 
-example : (detD Dcyc).oneValue (detL Dcyc) := by decide +kernel
+theorem pin289 : (detD Dcyc).oneValue (detL Dcyc) := by decide +kernel
 
 /-- The square frame's refusal: a ragged list, the border row
 short of the width.  A uniform-width rectangle satisfies the
@@ -2382,17 +2384,17 @@ block; the refusal is raggedness. -/
 private def Dshort : Mat :=
   [[BPair.ofNat 1, BPair.ofNat 2], [BPair.ofNat 3]]
 
-example : (detD Dsq2).oneValue (detL Dsq2) := by decide +kernel
+theorem pin290 : (detD Dsq2).oneValue (detL Dsq2) := by decide +kernel
 
-example : (detD Dsq2).oneValue (BPair.ofNat 2).swap := by decide +kernel
+theorem pin291 : (detD Dsq2).oneValue (BPair.ofNat 2).swap := by decide +kernel
 
-example : (detD Dsq3).oneValue (detL Dsq3) := by decide +kernel
+theorem pin292 : (detD Dsq3).oneValue (detL Dsq3) := by decide +kernel
 
-example : (detD Dsq3).oneValue (BPair.ofNat 211) := by decide +kernel
+theorem pin293 : (detD Dsq3).oneValue (BPair.ofNat 211) := by decide +kernel
 
-example : (detD Dsq3).oneValue (detL Dsq3) := detD_eq Dsq3 (by decide +kernel)
+theorem pin294 : (detD Dsq3).oneValue (detL Dsq3) := detD_eq Dsq3 (by decide +kernel)
 
-example : (detD Dexch).oneValue (detL Dexch) := by decide +kernel
+theorem pin295 : (detD Dexch).oneValue (detL Dexch) := by decide +kernel
 
 /-! The adjugate solve's descent read (`adjD`, `adjD_eq`): the
 bordered walk's cofactors against the cofactor family's solve at a
@@ -2418,19 +2420,19 @@ off the pairing data. -/
 private def pSq3 : List BPair :=
   [BPair.ofNat 1, (BPair.ofNat 2).swap, BPair.ofNat 3]
 
-example : ∀ k, k < Dsq3.length →
+theorem pin296 : ∀ k, k < Dsq3.length →
     ¬ (leadMinor Dsq3 (k + 1)).oneValue BPair.unit := by decide +kernel
-example : poly.oneValue (adjD Dsq3 pSq3) (adjP Dsq3 pSq3) := by
+theorem pin297 : poly.oneValue (adjD Dsq3 pSq3) (adjP Dsq3 pSq3) := by
   decide +kernel
-example : poly.oneValue (adjD Dsq3 pSq3) (adjP Dsq3 pSq3) :=
+theorem pin298 : poly.oneValue (adjD Dsq3 pSq3) (adjP Dsq3 pSq3) :=
   adjD_eq Dsq3 (by decide +kernel) (by decide +kernel) pSq3 rfl
-example : poly.oneValue (adjD Dsq3 pSq3)
+theorem pin299 : poly.oneValue (adjD Dsq3 pSq3)
     [(BPair.ofNat 17).swap, BPair.ofNat 90, BPair.ofNat 16] := by
   decide +kernel
-example : (solveK Dsq3 pSq3).length = 4 := by decide +kernel
-example : ¬ (ground.getAt BPair.unit (solveK Dsq3 pSq3) 3).oneValue
+theorem pin300 : (solveK Dsq3 pSq3).length = 4 := by decide +kernel
+theorem pin301 : ¬ (ground.getAt BPair.unit (solveK Dsq3 pSq3) 3).oneValue
     BPair.unit := by decide +kernel
-example : ¬ poly.oneValue (adjD Dsq3 [BPair.ofNat 1, BPair.ofNat 1])
+theorem pin302 : ¬ poly.oneValue (adjD Dsq3 [BPair.ofNat 1, BPair.ofNat 1])
     (adjP Dsq3 [BPair.ofNat 1, BPair.ofNat 1]) := by decide +kernel
 private def Dwide : Mat :=
   [[BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3],
@@ -2438,51 +2440,51 @@ private def Dwide : Mat :=
 private def Dtall : Mat :=
   [[BPair.ofNat 1, BPair.ofNat 2], [BPair.ofNat 3, BPair.ofNat 4],
    [BPair.ofNat 5, BPair.ofNat 6]]
-example : ¬ poly.oneValue (adjD Dwide [BPair.ofNat 1, BPair.ofNat 1])
+theorem pin303 : ¬ poly.oneValue (adjD Dwide [BPair.ofNat 1, BPair.ofNat 1])
     (adjP Dwide [BPair.ofNat 1, BPair.ofNat 1]) := by decide +kernel
-example : poly.oneValue (adjD Dtall [BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1])
+theorem pin304 : poly.oneValue (adjD Dtall [BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1])
     (adjP Dtall [BPair.ofNat 1, BPair.ofNat 1, BPair.ofNat 1]) := by decide +kernel
-example : ¬ (∀ k, k < Dexch.length →
+theorem pin305 : ¬ (∀ k, k < Dexch.length →
     ¬ (leadMinor Dexch (k + 1)).oneValue BPair.unit) := by decide +kernel
-example : poly.oneValue (adjD Dexch [BPair.ofNat 2, BPair.ofNat 3])
+theorem pin306 : poly.oneValue (adjD Dexch [BPair.ofNat 2, BPair.ofNat 3])
     (adjP Dexch [BPair.ofNat 2, BPair.ofNat 3]) := by decide +kernel
 private def Dsing : Mat :=
   [[BPair.ofNat 1, BPair.ofNat 1], [BPair.ofNat 1, BPair.ofNat 1]]
-example : rowsLen Dsing.length Dsing ∧ ¬ (∀ k, k < Dsing.length →
+theorem pin307 : rowsLen Dsing.length Dsing ∧ ¬ (∀ k, k < Dsing.length →
     ¬ (leadMinor Dsing (k + 1)).oneValue BPair.unit) := by decide +kernel
-example : ¬ poly.oneValue (adjD Dsing [BPair.ofNat 1, BPair.ofNat 2])
+theorem pin308 : ¬ poly.oneValue (adjD Dsing [BPair.ofNat 1, BPair.ofNat 2])
     (adjP Dsing [BPair.ofNat 1, BPair.ofNat 2]) := by decide +kernel
-example : poly.unitTail (adjD Dsing [BPair.ofNat 1, BPair.ofNat 2]) := by
+theorem pin309 : poly.unitTail (adjD Dsing [BPair.ofNat 1, BPair.ofNat 2]) := by
   decide +kernel
-example : poly.unitTail (adjD Dsing [BPair.ofNat 1, BPair.ofNat 2]) :=
+theorem pin310 : poly.unitTail (adjD Dsing [BPair.ofNat 1, BPair.ofNat 2]) :=
   elim.adjD_of_detUnit Dsing _ (by decide +kernel)
-example : ¬ poly.unitTail (adjP Dsing [BPair.ofNat 1, BPair.ofNat 2]) := by
+theorem pin311 : ¬ poly.unitTail (adjP Dsing [BPair.ofNat 1, BPair.ofNat 2]) := by
   decide +kernel
-example : ¬ indepRows 2 rDep ∧ ¬ poly.oneValue
+theorem pin312 : ¬ indepRows 2 rDep ∧ ¬ poly.oneValue
     (adjD (gramM rDep) [BPair.ofNat 1, BPair.unit])
     (adjP (gramM rDep) [BPair.ofNat 1, BPair.unit]) := by decide +kernel
 
-example : (detD Dexch).oneValue (BPair.ofNat 1).swap := by decide +kernel
+theorem pin313 : (detD Dexch).oneValue (BPair.ofNat 1).swap := by decide +kernel
 
-example : (detD Dstall).oneValue (detL Dstall) := by decide +kernel
+theorem pin314 : (detD Dstall).oneValue (detL Dstall) := by decide +kernel
 
-example : (detD Dstall).oneValue BPair.unit := by decide +kernel
+theorem pin315 : (detD Dstall).oneValue BPair.unit := by decide +kernel
 
-example : (detD Dstall3).oneValue (detL Dstall3) := by decide +kernel
+theorem pin316 : (detD Dstall3).oneValue (detL Dstall3) := by decide +kernel
 
-example : (detD Dstall3).oneValue BPair.unit := by decide +kernel
+theorem pin317 : (detD Dstall3).oneValue BPair.unit := by decide +kernel
 
-example : rowsLen (gramM Dsq3).length (gramM Dsq3) := by decide +kernel
+theorem pin318 : rowsLen (gramM Dsq3).length (gramM Dsq3) := by decide +kernel
 
-example : rowsLen (gramM Dsq3).length (gramM Dsq3) := gramM_sq Dsq3
+theorem pin319 : rowsLen (gramM Dsq3).length (gramM Dsq3) := gramM_sq Dsq3
 
-example : ¬ rowsLen Dshort.length Dshort := by decide +kernel
+theorem pin320 : ¬ rowsLen Dshort.length Dshort := by decide +kernel
 
-example : (detL Dshort).oneValue (BPair.ofNat 6).swap := by decide +kernel
+theorem pin321 : (detL Dshort).oneValue (BPair.ofNat 6).swap := by decide +kernel
 
-example : (detD Dshort).oneValue BPair.unit := by decide +kernel
+theorem pin322 : (detD Dshort).oneValue BPair.unit := by decide +kernel
 
-example : ¬ (detD Dshort).oneValue (detL Dshort) := by decide +kernel
+theorem pin323 : ¬ (detD Dshort).oneValue (detL Dshort) := by decide +kernel
 
 /-! The kernel-join tier (`lem:blockcount`(ii)'s arriving sum): the
 two sides' kernel dimensions and the joined datum's own, the
@@ -2495,12 +2497,12 @@ the split hypothesis itself.  The basis-freedom pin closes it,
 /-- The sides' kernel dimensions at the committed pair: the
 occupied row at two column keys carries one pivot, the unit row
 none. -/
-example : elim.kernelDim 2 [[BPair.ofNat 1, BPair.unit]] = 1 := by decide +kernel
+theorem pin324 : elim.kernelDim 2 [[BPair.ofNat 1, BPair.unit]] = 1 := by decide +kernel
 
-example : elim.kernelDim 1 [[BPair.unit]] = 1 := by decide +kernel
+theorem pin325 : elim.kernelDim 1 [[BPair.unit]] = 1 := by decide +kernel
 
 /-- The sum's dimension is the sides' sum at the joined datum. -/
-example : elim.kernelDim 3
+theorem pin326 : elim.kernelDim 3
     (elim.rowJoin [[BPair.ofNat 1, BPair.unit]] [[BPair.unit]])
     = 2 := by decide +kernel
 
@@ -2511,7 +2513,7 @@ row's pairing at the seam (`dotP_append` at the first side's own
 width), reads the second summand off the unit row
 (`dotP_null_tail_left`, the ROW the left argument), and returns the
 first side's fold by the sum's unit law. -/
-example : elim.kernelDim 2 [[BPair.ofNat 1, BPair.unit]]
+theorem pin327 : elim.kernelDim 2 [[BPair.ofNat 1, BPair.unit]]
     + elim.kernelDim 1 [[BPair.unit]]
     = elim.kernelDim 3
       (elim.rowJoin [[BPair.ofNat 1, BPair.unit]] [[BPair.unit]]) :=
@@ -2538,14 +2540,14 @@ join, the joined datum reads empty at two column keys against the
 sides' one, and the dimensions do not add — while the split
 hypothesis survives at the empty first side, pinned beside, so the
 refusal isolates the tie alone. -/
-example : ¬ (elim.kernelDim 1 ([] : elim.Mat)
+theorem pin328 : ¬ (elim.kernelDim 1 ([] : elim.Mat)
     + elim.kernelDim 1 [[BPair.ofNat 1]]
     = elim.kernelDim 2
       (elim.rowJoin ([] : elim.Mat) [[BPair.ofNat 1]])) := by decide +kernel
 
 /-- The split hypothesis's survival at the refusal's shape: the
 first side's action is the vacant fold. -/
-example : ∀ v w : List BPair, v.length = 1 → w.length = 1 →
+theorem pin329 : ∀ v w : List BPair, v.length = 1 → w.length = 1 →
     poly.unitTail (elim.matVec
       (elim.rowJoin ([] : elim.Mat) [[BPair.ofNat 1]]) (v ++ w)) →
     poly.unitTail (elim.matVec ([] : elim.Mat) v) :=
@@ -2555,7 +2557,7 @@ example : ∀ v w : List BPair, v.length = 1 → w.length = 1 →
 binder: a coupled row's kernel mixes the sides — each side alone
 carries its own pivot while the joined row carries one — and the
 dimensions do not add. -/
-example : ¬ (elim.kernelDim 1 [[BPair.ofNat 1]]
+theorem pin330 : ¬ (elim.kernelDim 1 [[BPair.ofNat 1]]
     + elim.kernelDim 1 [[BPair.ofNat 1]]
     = elim.kernelDim 2
       (elim.rowJoin [[BPair.ofNat 1]] [[BPair.ofNat 1]])) := by decide +kernel
@@ -2565,7 +2567,7 @@ row, `kernelDim_congr`'s display: the committed basis and its
 column-added partner span one plane, the two cross data differ —
 pinned beside — and the kernel counts one at both, so the pin
 discriminates the bases while the count reads through them. -/
-example : elim.kernelDim 2
+theorem pin331 : elim.kernelDim 2
       (elim.crossM [[BPair.ofNat 1, BPair.ofNat 1]]
         [[BPair.ofNat 1, BPair.unit], [BPair.unit, BPair.ofNat 1]])
     = elim.kernelDim 2
@@ -2575,14 +2577,14 @@ example : elim.kernelDim 2
 
 /-- The two cross data differ at the stacked row, the pin's own
 discrimination. -/
-example : ¬ (elim.crossM [[BPair.ofNat 1, BPair.ofNat 1]]
+theorem pin332 : ¬ (elim.crossM [[BPair.ofNat 1, BPair.ofNat 1]]
       [[BPair.ofNat 1, BPair.unit], [BPair.unit, BPair.ofNat 1]]
     = elim.crossM [[BPair.ofNat 1, BPair.ofNat 1]]
       [[BPair.ofNat 1, BPair.ofNat 1],
         [BPair.unit, BPair.ofNat 1]]) := by decide +kernel
 
 /-- Both committed bases are independent, the display's frame. -/
-example : elim.indepRows 2
+theorem pin333 : elim.indepRows 2
       [[BPair.ofNat 1, BPair.unit], [BPair.unit, BPair.ofNat 1]]
     ∧ elim.indepRows 2
       [[BPair.ofNat 1, BPair.ofNat 1],
@@ -2594,29 +2596,29 @@ truncating folds, the rank's hypothesis at one occupied entry. -/
 
 /-- Refusal at `collect_single`'s width frame: off the stated width
 the residual truncates and the collection drops the member. -/
-example : ¬ (elim.collectOf 0 [[BPair.ofNat 1]]
+theorem pin334 : ¬ (elim.collectOf 0 [[BPair.ofNat 1]]
     = [[BPair.ofNat 1]]) := by decide +kernel
 
 /-- Refusal at `matVec_idMat`'s width frame: the identity at a
 narrower width truncates the vector. -/
-example : ¬ (poly.oneValue (elim.matVec (elim.idMat 1)
+theorem pin335 : ¬ (poly.oneValue (elim.matVec (elim.idMat 1)
     [BPair.ofNat 1, BPair.ofNat 2])
     [BPair.ofNat 1, BPair.ofNat 2]) := by decide +kernel
 
 /-- Refusal at `rank_null`'s hypothesis: one off-unit entry reads
 one pivot. -/
-example : elim.rank [[BPair.unit, BPair.ofNat 1]] = 1 := by decide +kernel
+theorem pin336 : elim.rank [[BPair.unit, BPair.ofNat 1]] = 1 := by decide +kernel
 
 /-- The value pins beside the refusals: the unit-tailed rows'
 rank, the kept one-member collection, the identity's action at
 the stated width. -/
-example : elim.rank [[BPair.unit, BPair.unit],
+theorem pin337 : elim.rank [[BPair.unit, BPair.unit],
     [BPair.unit, BPair.unit]] = 0 := by decide +kernel
 
-example : elim.collectOf 2 [[BPair.ofNat 1, BPair.unit]]
+theorem pin338 : elim.collectOf 2 [[BPair.ofNat 1, BPair.unit]]
     = [[BPair.ofNat 1, BPair.unit]] := by decide +kernel
 
-example : poly.oneValue (elim.matVec (elim.idMat 2)
+theorem pin339 : poly.oneValue (elim.matVec (elim.idMat 2)
     [BPair.ofNat 1, BPair.ofNat 2])
     [BPair.ofNat 1, BPair.ofNat 2] := by decide +kernel
 
@@ -2629,22 +2631,22 @@ and the refusal isolating the stacked family's width binder. -/
 
 /-- The identity family at three column keys is independent, the
 Gram determinant the self-pairings' product. -/
-example : elim.indepRows 3 (elim.idMat 3) := by decide +kernel
+theorem pin340 : elim.indepRows 3 (elim.idMat 3) := by decide +kernel
 
-example : elim.indepRows 3 (elim.idMat 3) := elim.indepRows_idMat 3
+theorem pin341 : elim.indepRows 3 (elim.idMat 3) := elim.indepRows_idMat 3
 
 /-- The cross datum at the identity family is the stacked row
 itself, entry by entry at the representatives. -/
-example : elim.crossM [[BPair.ofNat 1, BPair.ofNat 2]]
+theorem pin342 : elim.crossM [[BPair.ofNat 1, BPair.ofNat 2]]
     (elim.idMat 2) = [[BPair.ofNat 1, BPair.ofNat 2]] := by decide +kernel
 
 /-- The two kernel dimensions are one count at a committed stacked
 row. -/
-example : elim.kernelDim 2
+theorem pin343 : elim.kernelDim 2
     (elim.crossM [[BPair.ofNat 1, BPair.ofNat 1]] (elim.idMat 2))
     = elim.kernelDim 2 [[BPair.ofNat 1, BPair.ofNat 1]] := by decide +kernel
 
-example : elim.kernelDim 2
+theorem pin344 : elim.kernelDim 2
     (elim.crossM [[BPair.ofNat 1, BPair.ofNat 1]] (elim.idMat 2))
     = elim.kernelDim 2 [[BPair.ofNat 1, BPair.ofNat 1]] :=
   elim.kernelDim_idMat 2 _ ⟨rfl, trivial⟩
@@ -2653,7 +2655,7 @@ example : elim.kernelDim 2
 wider than the stated key count meets the identity family at a
 truncating fold, the cross row reads the sum's unit throughout and
 loses the row's own pivot, so the counts part. -/
-example : ¬ (elim.kernelDim 1
+theorem pin345 : ¬ (elim.kernelDim 1
     (elim.crossM [[BPair.unit, BPair.ofNat 1]] (elim.idMat 1))
     = elim.kernelDim 1 [[BPair.unit, BPair.ofNat 1]]) := by decide +kernel
 
@@ -2678,11 +2680,11 @@ private def adjD3 : Mat :=
    [BPair.unit, BPair.ofNat 8, BPair.unit],
    [BPair.unit, BPair.unit, BPair.ofNat 8]]
 
-example : (detL adjG3).oneValue (BPair.ofNat 8) := by decide +kernel
+theorem pin346 : (detL adjG3).oneValue (BPair.ofNat 8) := by decide +kernel
 
-example : matOneValue (matMul adjG3 (adjM adjG3)) adjD3 := by decide +kernel
+theorem pin347 : matOneValue (matMul adjG3 (adjM adjG3)) adjD3 := by decide +kernel
 
-example : matOneValue (matMul (adjM adjG3) adjG3) adjD3 := by decide +kernel
+theorem pin348 : matOneValue (matMul (adjM adjG3) adjG3) adjD3 := by decide +kernel
 
 /-- The singular committed square: its rows are proportional. -/
 private def adjG2s : Mat :=
@@ -2694,36 +2696,36 @@ key. -/
 private def adjD2s : Mat :=
   [[BPair.unit, BPair.unit], [BPair.unit, BPair.unit]]
 
-example : (detL adjG2s).oneValue BPair.unit := by decide +kernel
+theorem pin349 : (detL adjG2s).oneValue BPair.unit := by decide +kernel
 
-example : matOneValue (matMul adjG2s (adjM adjG2s)) adjD2s := by decide +kernel
+theorem pin350 : matOneValue (matMul adjG2s (adjM adjG2s)) adjD2s := by decide +kernel
 
-example : matOneValue (matMul (adjM adjG2s) adjG2s) adjD2s := by decide +kernel
+theorem pin351 : matOneValue (matMul (adjM adjG2s) adjG2s) adjD2s := by decide +kernel
 
-example : indepRows 3 adjG3 := by decide +kernel
+theorem pin352 : indepRows 3 adjG3 := by decide +kernel
 
-example : (detL adjG3).offUnit := by decide +kernel
+theorem pin353 : (detL adjG3).offUnit := by decide +kernel
 
 /-! The theorem routes: each identity applied whole at the occupied
 square, every binder decided bare. -/
 
-example : (ground.getAt BPair.unit
+theorem pin354 : (ground.getAt BPair.unit
     (ground.getAt [] (matMul adjG3 (adjM adjG3)) 1) 1).oneValue
     (detL adjG3) :=
   adjM_row_diag adjG3 (n := 3) (by decide +kernel) 1 (by decide +kernel)
 
-example : (ground.getAt BPair.unit
+theorem pin355 : (ground.getAt BPair.unit
     (ground.getAt [] (matMul adjG3 (adjM adjG3)) 0) 2).oneValue
     BPair.unit :=
   adjM_row_off adjG3 (n := 3) (by decide +kernel) 0 2 (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : (ground.getAt BPair.unit
+theorem pin356 : (ground.getAt BPair.unit
     (ground.getAt [] (matMul (adjM adjG3) adjG3) 2) 2).oneValue
     (detL adjG3) :=
   adjM_col_diag adjG3 (n := 3) (by decide +kernel) 2 (by decide +kernel)
 
-example : (ground.getAt BPair.unit
+theorem pin357 : (ground.getAt BPair.unit
     (ground.getAt [] (matMul (adjM adjG3) adjG3) 2) 0).oneValue
     BPair.unit :=
   adjM_col_off adjG3 (n := 3) (by decide +kernel) 2 0 (by decide +kernel)
@@ -2732,14 +2734,14 @@ example : (ground.getAt BPair.unit
 /-- The column side at the singular square, applied whole: the
 identity with every binder decided bare and the diagonal the
 determinant's own unit read. -/
-example : (ground.getAt BPair.unit
+theorem pin358 : (ground.getAt BPair.unit
     (ground.getAt [] (matMul (adjM adjG2s) adjG2s) 1) 1).oneValue
     (detL adjG2s) :=
   adjM_col_diag adjG2s (n := 2) (by decide +kernel) 1 (by decide +kernel)
 
 /-- The row side at the singular square, applied whole: the
 determinant's read at the diagonal with no independence binder. -/
-example : (ground.getAt BPair.unit
+theorem pin359 : (ground.getAt BPair.unit
     (ground.getAt [] (matMul adjG2s (adjM adjG2s)) 0) 0).oneValue
     (detL adjG2s) :=
   adjM_row_diag adjG2s (n := 2) (by decide +kernel) 0 (by decide +kernel)
@@ -2752,37 +2754,37 @@ single off-unit row carrying itself. -/
 
 /-- The collection at a two-row unit matrix of width two is
 vacant, the theorem's instance with the value beside it. -/
-example : elim.collectOf 2
+theorem pin360 : elim.collectOf 2
     [[BPair.unit, BPair.unit], [BPair.unit, BPair.unit]] = [] :=
   elim.collect_nil_of_units 2
     [[BPair.unit, BPair.unit], [BPair.unit, BPair.unit]] (by decide +kernel)
 
-example : elim.collectOf 2
+theorem pin361 : elim.collectOf 2
     [[BPair.unit, BPair.unit], [BPair.unit, BPair.unit]] = [] := by decide +kernel
 
 /-- Refusal isolating `collect_nil_of_units`' rows binder: one
 off-unit row joins the collection and the read parts from the
 vacant list. -/
-example : ¬ (elim.collectOf 2
+theorem pin362 : ¬ (elim.collectOf 2
     [[BPair.ofNat 1, BPair.unit], [BPair.unit, BPair.unit]] = []) := by
   decide +kernel
 
 /-- Refusal isolating `spanRel_unit_of_units`' rows binder: an
 off-unit single row sits in its own span while its tail reads off
 the sum's unit, so the conclusion parts at the dropped binder. -/
-example : elim.spanRel 2 [[BPair.ofNat 1, BPair.unit]]
+theorem pin363 : elim.spanRel 2 [[BPair.ofNat 1, BPair.unit]]
     [BPair.ofNat 1, BPair.unit] := by decide +kernel
 
-example : ¬ poly.unitTail [BPair.ofNat 1, BPair.unit] := by decide +kernel
+theorem pin364 : ¬ poly.unitTail [BPair.ofNat 1, BPair.unit] := by decide +kernel
 /-! The Gram's two reads, applied whole: the row at an occupied key
 is the stated row's pairings against every row, and the entry at
 two occupied keys is the two rows' own pairing. -/
 
-example : ground.getAt [] (gramM Dsq2) 1
+theorem pin365 : ground.getAt [] (gramM Dsq2) 1
     = Dsq2.map (fun c => dotP (ground.getAt [] Dsq2 1) c) :=
   gramM_row Dsq2 1 (by decide +kernel)
 
-example : ground.getAt BPair.unit
+theorem pin366 : ground.getAt BPair.unit
     (ground.getAt [] (gramM Dsq2) 1) 0
     = dotP (ground.getAt [] Dsq2 1) (ground.getAt [] Dsq2 0) :=
   gramM_entry Dsq2 1 0 (by decide +kernel) (by decide +kernel)
@@ -2810,38 +2812,38 @@ private def fwide : List BPair := [BPair.unit, BPair.ofNat 2]
 /-- The unit family's combination pairs both rows of an independent
 pair at the sum's unit, so the coefficients read at the unit family
 — the theorem applied whole beside its conclusion's own value. -/
-example : poly.unitTail fperp :=
+theorem pin367 : poly.unitTail fperp :=
   indep_perp_null 2 Lperp (by decide +kernel) fperp (by decide +kernel) (by decide +kernel)
 
-example : (combo 2 fperp Lperp).map BPair.norm
+theorem pin368 : (combo 2 fperp Lperp).map BPair.norm
     = [BPair.unit, BPair.unit] := by decide +kernel
 
 /-- Refusal isolating `indep_perp_null`'s independence binder: at a
 doubled row the balanced coefficient family's combination pairs
 every row at the sum's unit while the family itself sits off the
 unit tail. -/
-example : ¬ indepRows 1 Ldbl := by decide +kernel
+theorem pin369 : ¬ indepRows 1 Ldbl := by decide +kernel
 
-example : fdbl.length = Ldbl.length := by decide +kernel
+theorem pin370 : fdbl.length = Ldbl.length := by decide +kernel
 
-example : ∀ l, l < Ldbl.length →
+theorem pin371 : ∀ l, l < Ldbl.length →
     (dotP (combo 1 fdbl Ldbl)
       (ground.getAt [] Ldbl l)).oneValue BPair.unit := by decide +kernel
 
-example : ¬ poly.unitTail fdbl := by decide +kernel
+theorem pin372 : ¬ poly.unitTail fdbl := by decide +kernel
 
 /-- Refusal isolating `indep_perp_null`'s count binder: a
 coefficient family one past the rows' count pairs the single row at
 the sum's unit while the family sits off the unit tail. -/
-example : indepRows 1 Lone := by decide +kernel
+theorem pin373 : indepRows 1 Lone := by decide +kernel
 
-example : ¬ (fwide.length = Lone.length) := by decide +kernel
+theorem pin374 : ¬ (fwide.length = Lone.length) := by decide +kernel
 
-example : ∀ l, l < Lone.length →
+theorem pin375 : ∀ l, l < Lone.length →
     (dotP (combo 1 fwide Lone)
       (ground.getAt [] Lone l)).oneValue BPair.unit := by decide +kernel
 
-example : ¬ poly.unitTail fwide := by decide +kernel
+theorem pin376 : ¬ poly.unitTail fwide := by decide +kernel
 
 /-- Refusal isolating `indep_perp_null`'s perpendicularity binder:
 an off-unit coefficient at an independent one-row family pairs the
@@ -2851,28 +2853,28 @@ private def Lone2 : Mat := [[BPair.ofNat 2]]
 
 private def fbad : List BPair := [BPair.ofNat 1]
 
-example : indepRows 1 Lone2 := by decide +kernel
+theorem pin377 : indepRows 1 Lone2 := by decide +kernel
 
-example : fbad.length = Lone2.length := by decide +kernel
+theorem pin378 : fbad.length = Lone2.length := by decide +kernel
 
-example : ¬ (∀ l, l < Lone2.length →
+theorem pin379 : ¬ (∀ l, l < Lone2.length →
     (dotP (combo 1 fbad Lone2)
       (ground.getAt [] Lone2 l)).oneValue BPair.unit) := by decide +kernel
 
-example : ¬ poly.unitTail fbad := by decide +kernel
+theorem pin380 : ¬ poly.unitTail fbad := by decide +kernel
 
 /-- An independent pair stands as its own collection, every row
 refused by the accumulator's residual — the theorem applied whole
 beside the collection's own value. -/
-example : collectOf 2 Lperp = Lperp :=
+theorem pin381 : collectOf 2 Lperp = Lperp :=
   collect_keep 2 Lperp (by decide +kernel)
 
-example : collectOf 2 Lperp = Lperp := by decide +kernel
+theorem pin382 : collectOf 2 Lperp = Lperp := by decide +kernel
 
 /-- Refusal isolating `collect_keep`'s independence binder: the
 doubled row passes the accumulator's residual and the collection
 parts from the listed rows. -/
-example : ¬ (collectOf 1 Ldbl = Ldbl) := by decide +kernel
+theorem pin383 : ¬ (collectOf 1 Ldbl = Ldbl) := by decide +kernel
 
 /-! The matched-Gram kernel engine's own data (`kernelDim_gram`):
 one stacked family at width two, the plain pair beside the turned
@@ -2908,14 +2910,14 @@ private def gramShort : Mat := [[BPair.ofNat 1, BPair.unit]]
 /-- The engine applied whole: the turned pair's Gram against the
 plain pair's at the scales two and one, one kernel dimension across
 the two families. -/
-example : kernelDim gramTurn.length (crossM gramStack gramTurn)
+theorem pin384 : kernelDim gramTurn.length (crossM gramStack gramTurn)
     = kernelDim gramStack.length (crossM gramStack gramStack) :=
   kernelDim_gram 2 gramStack gramStack gramTurn
     (BPair.ofNat 2) (BPair.ofNat 1)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
-example : kernelDim gramTurn.length (crossM gramStack gramTurn)
+theorem pin385 : kernelDim gramTurn.length (crossM gramStack gramTurn)
     = kernelDim gramStack.length (crossM gramStack gramStack) := by
   decide +kernel
 
@@ -2923,28 +2925,28 @@ example : kernelDim gramTurn.length (crossM gramStack gramTurn)
 sum's unit the scaled read collapses, the unit family answers the
 displayed agreement at every key pair, and the two counts part at
 two against nought. -/
-example : BPair.unit.oneValue BPair.unit := by decide +kernel
+theorem pin386 : BPair.unit.oneValue BPair.unit := by decide +kernel
 
-example : ∀ k, k < gramStack.length → ∀ l, l < gramStack.length →
+theorem pin387 : ∀ k, k < gramStack.length → ∀ l, l < gramStack.length →
     (BPair.ofNat 1 * dotP (matVec gramStack (ground.getAt [] gramNull k))
         (matVec gramStack (ground.getAt [] gramNull l))).oneValue
       (BPair.unit * dotP (matVec gramStack (ground.getAt [] gramStack k))
         (matVec gramStack (ground.getAt [] gramStack l))) := by decide +kernel
 
-example : ¬ (kernelDim gramNull.length (crossM gramStack gramNull)
+theorem pin388 : ¬ (kernelDim gramNull.length (crossM gramStack gramNull)
     = kernelDim gramStack.length (crossM gramStack gramStack)) := by
   decide +kernel
 
 /-- Refusal isolating `kernelDim_gram`'s second scale binder: the
 mirror of the first, the unit family now the read-against family,
 and the two counts part at nought against two. -/
-example : ∀ k, k < gramNull.length → ∀ l, l < gramNull.length →
+theorem pin389 : ∀ k, k < gramNull.length → ∀ l, l < gramNull.length →
     (BPair.unit * dotP (matVec gramStack (ground.getAt [] gramStack k))
         (matVec gramStack (ground.getAt [] gramStack l))).oneValue
       (BPair.ofNat 1 * dotP (matVec gramStack (ground.getAt [] gramNull k))
         (matVec gramStack (ground.getAt [] gramNull l))) := by decide +kernel
 
-example : ¬ (kernelDim gramStack.length (crossM gramStack gramStack)
+theorem pin390 : ¬ (kernelDim gramStack.length (crossM gramStack gramStack)
     = kernelDim gramNull.length (crossM gramStack gramNull)) := by
   decide +kernel
 
@@ -2962,13 +2964,13 @@ example : ¬ (kernelDim gramStack.length (crossM gramStack gramStack)
 /-- Refusal isolating `kernelDim_gram`'s Gram binder: the withdrawn
 row parts the self-pairing at the second key, and the counts part
 at one against nought. -/
-example : ¬ (∀ k, k < gramStack.length → ∀ l, l < gramStack.length →
+theorem pin391 : ¬ (∀ k, k < gramStack.length → ∀ l, l < gramStack.length →
     (BPair.ofNat 1 * dotP (matVec gramStack (ground.getAt [] gramDrop k))
         (matVec gramStack (ground.getAt [] gramDrop l))).oneValue
       (BPair.ofNat 1 * dotP (matVec gramStack (ground.getAt [] gramStack k))
         (matVec gramStack (ground.getAt [] gramStack l)))) := by decide +kernel
 
-example : ¬ (kernelDim gramDrop.length (crossM gramStack gramDrop)
+theorem pin392 : ¬ (kernelDim gramDrop.length (crossM gramStack gramDrop)
     = kernelDim gramStack.length (crossM gramStack gramStack)) := by
   decide +kernel
 
@@ -2976,15 +2978,15 @@ example : ¬ (kernelDim gramDrop.length (crossM gramStack gramDrop)
 family answers the displayed Gram agreement at every key pair of
 the two-row family — the withdrawn row reads the sum's unit on both
 sides — while the kernel counts part at nought against one. -/
-example : ¬ (gramShort.length = gramDrop.length) := by decide +kernel
+theorem pin393 : ¬ (gramShort.length = gramDrop.length) := by decide +kernel
 
-example : ∀ k, k < gramDrop.length → ∀ l, l < gramDrop.length →
+theorem pin394 : ∀ k, k < gramDrop.length → ∀ l, l < gramDrop.length →
     (BPair.ofNat 1 * dotP (matVec gramStack (ground.getAt [] gramShort k))
         (matVec gramStack (ground.getAt [] gramShort l))).oneValue
       (BPair.ofNat 1 * dotP (matVec gramStack (ground.getAt [] gramDrop k))
         (matVec gramStack (ground.getAt [] gramDrop l))) := by decide +kernel
 
-example : ¬ (kernelDim gramShort.length (crossM gramStack gramShort)
+theorem pin395 : ¬ (kernelDim gramShort.length (crossM gramStack gramShort)
     = kernelDim gramDrop.length (crossM gramStack gramDrop)) := by
   decide +kernel
 
@@ -3008,29 +3010,29 @@ cross datum against `kerR'` is `kerL`'s against `kerR`, entry for
 entry, at the same coefficient count. -/
 private def kerL' : Mat := [[BPair.ofNat 1], [BPair.ofNat 1]]
 
-example : crossM kerR kerL = crossM kerR' kerL' := by decide +kernel
+theorem pin396 : crossM kerR kerL = crossM kerR' kerL' := by decide +kernel
 
 /-- The engine applied whole: the two cross data one matrix, so
 every coefficient family reads the two kernels together, and the
 two counts read one dimension. -/
-example : kernelDim kerL.length (crossM kerR kerL)
+theorem pin397 : kernelDim kerL.length (crossM kerR kerL)
     = kernelDim kerL'.length (crossM kerR' kerL') :=
   kernelDim_kerIff kerR kerL kerR' kerL' rfl (fun _ _ => Iff.rfl)
 
-example : kernelDim kerL.length (crossM kerR kerL) = 1 := by decide +kernel
-example : kernelDim kerL'.length (crossM kerR' kerL') = 1 := by decide +kernel
+theorem pin398 : kernelDim kerL.length (crossM kerR kerL) = 1 := by decide +kernel
+theorem pin399 : kernelDim kerL'.length (crossM kerR' kerL') = 1 := by decide +kernel
 
 /-- Refusal isolating `kernelDim_kerIff`'s count binder: at the
 vacant stacked family both cross data are vacant, so the kernel
 reads agree at every coefficient family, while the one-member basis
 and the vacant basis part the counts at one against nought. -/
-example : (∀ x : List BPair, x.length = ([[]] : Mat).length →
+theorem pin400 : (∀ x : List BPair, x.length = ([[]] : Mat).length →
       (poly.unitTail (matVec (crossM [] [[]]) x)
         ↔ poly.unitTail (matVec (crossM [] ([] : Mat)) x)))
     ∧ ¬ ([[]] : Mat).length = ([] : Mat).length :=
   ⟨fun _ _ => Iff.rfl, by decide +kernel⟩
 
-example : ¬ (kernelDim ([[]] : Mat).length (crossM [] [[]])
+theorem pin401 : ¬ (kernelDim ([[]] : Mat).length (crossM [] [[]])
     = kernelDim ([] : Mat).length (crossM [] ([] : Mat))) := by
   decide +kernel
 
@@ -3041,31 +3043,31 @@ iterated carrier's pin one level up.  The two-key list reads the
 constant determinant `2·3 − 1·1`, the chord-entried list the
 symbol `z² − 1`, and the iterated list its outer mirror. -/
 
-example : poly.oneValue
+theorem pin402 : poly.oneValue
     (elim.pdetD [[[⟨3, 1⟩], [⟨2, 1⟩]], [[⟨2, 1⟩], [⟨4, 1⟩]]])
     [⟨6, 1⟩] := by decide +kernel
 
-example : ¬ poly.oneValue
+theorem pin403 : ¬ poly.oneValue
     (elim.pdetD [[[⟨3, 1⟩], [⟨2, 1⟩]], [[⟨2, 1⟩], [⟨4, 1⟩]]])
     [⟨5, 1⟩] := by decide +kernel
 
-example : poly.oneValue
+theorem pin404 : poly.oneValue
     (elim.pdetD [[[⟨1, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩]],
       [[⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]])
     [⟨1, 2⟩, ⟨1, 1⟩, ⟨2, 1⟩] := by decide +kernel
 
-example : poly.oneValue
+theorem pin405 : poly.oneValue
     (elim.pdetD [[[⟨3, 1⟩], [⟨2, 1⟩]], [[⟨2, 1⟩], [⟨4, 1⟩]]])
     (elim.minorO poly.polyOps poly.pnorm id
       [[[⟨3, 1⟩], [⟨2, 1⟩]], [[⟨2, 1⟩], [⟨4, 1⟩]]]) :=
   elim.pdetD_eq _ (by decide +kernel)
 
-example : poly.ppOneValue
+theorem pin406 : poly.ppOneValue
     (elim.ppdetD [[[[], [⟨2, 1⟩]], [[⟨2, 1⟩]]],
       [[[⟨2, 1⟩]], [[], [⟨2, 1⟩]]]])
     [[⟨1, 2⟩], [], [⟨2, 1⟩]] := by decide +kernel
 
-example : poly.ppOneValue
+theorem pin407 : poly.ppOneValue
     (elim.ppdetD [[[[], [⟨2, 1⟩]], [[⟨2, 1⟩]]],
       [[[⟨2, 1⟩]], [[], [⟨2, 1⟩]]]])
     (elim.minorO (poly.polyO poly.polyOps) poly.pnormP id
@@ -3078,13 +3080,13 @@ second pivot at a degree-one divisor, an off-one pivot top, the
 pivot-free column's stall, a scan at trailing unit coefficients,
 and the ragged refusal pair isolating the square binder. -/
 
-example : poly.oneValue
+theorem pin408 : poly.oneValue
     (elim.pdetD [[[⟨1, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩], []],
       [[⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩]],
       [[], [⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]])
     [⟨1, 1⟩, ⟨1, 3⟩, ⟨1, 1⟩, ⟨2, 1⟩] := by decide +kernel
 
-example : poly.oneValue
+theorem pin409 : poly.oneValue
     (elim.pdetD [[[⟨1, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩], []],
       [[⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩]],
       [[], [⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]])
@@ -3094,16 +3096,16 @@ example : poly.oneValue
         [[], [⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]]) :=
   elim.pdetD_eq _ (by decide +kernel)
 
-example : poly.oneValue
+theorem pin410 : poly.oneValue
     (elim.pdetD [[[⟨1, 1⟩, ⟨3, 1⟩], [⟨2, 1⟩], []],
       [[⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩]],
       [[], [⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]])
     [⟨1, 1⟩, ⟨1, 4⟩, ⟨1, 1⟩, ⟨3, 1⟩] := by decide +kernel
 
-example : poly.oneValue
+theorem pin411 : poly.oneValue
     (elim.pdetD [[[], [⟨2, 1⟩]], [[], [⟨2, 1⟩]]]) [] := by decide +kernel
 
-example : poly.oneValue
+theorem pin412 : poly.oneValue
     (elim.pdetD [[[⟨3, 1⟩, ⟨1, 1⟩], [⟨2, 1⟩]],
       [[⟨2, 1⟩], [⟨4, 1⟩, ⟨1, 1⟩, ⟨1, 1⟩]]])
     [⟨6, 1⟩] := by decide +kernel
@@ -3111,11 +3113,11 @@ example : poly.oneValue
 private def raggedP : List (List poly.Poly) :=
   [[[⟨1, 1⟩, ⟨2, 1⟩]], [[⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]]
 
-example : (¬ elim.rowsLen raggedP.length raggedP)
+theorem pin413 : (¬ elim.rowsLen raggedP.length raggedP)
     ∧ ¬ poly.oneValue (elim.pdetD raggedP)
       (elim.minorO poly.polyOps poly.pnorm id raggedP) := by decide +kernel
 
-example : ¬ poly.ppOneValue
+theorem pin414 : ¬ poly.ppOneValue
     (elim.ppdetD [[[[], [⟨2, 1⟩]], [[⟨2, 1⟩]]],
       [[[⟨2, 1⟩]], [[], [⟨2, 1⟩]]]])
     [[⟨1, 2⟩], [], [⟨3, 1⟩]] := by decide +kernel
@@ -3123,9 +3125,9 @@ example : ¬ poly.ppOneValue
 /-! The dot against the indicator reads the key's own entry, the
 off-key read refusing. -/
 
-example : (elim.dotP [⟨3,1⟩, ⟨1,4⟩, ⟨5,2⟩] (elim.idRow 3 1)).oneValue
+theorem pin415 : (elim.dotP [⟨3,1⟩, ⟨1,4⟩, ⟨5,2⟩] (elim.idRow 3 1)).oneValue
     (ground.getAt BPair.unit [⟨3,1⟩, ⟨1,4⟩, ⟨5,2⟩] 1) := by decide +kernel
-example : ¬ (elim.dotP [⟨3,1⟩, ⟨1,4⟩, ⟨5,2⟩] (elim.idRow 3 1)).oneValue
+theorem pin416 : ¬ (elim.dotP [⟨3,1⟩, ⟨1,4⟩, ⟨5,2⟩] (elim.idRow 3 1)).oneValue
     (ground.getAt BPair.unit [⟨3,1⟩, ⟨1,4⟩, ⟨5,2⟩] 0) := by decide +kernel
 
 /-! The combination's coefficient laws at stated data: the
@@ -3140,30 +3142,30 @@ private def eC1 : List ground.BPair :=
 private def eC2 : List ground.BPair :=
   [ground.BPair.ofNat 3, ground.BPair.ofNat 1]
 
-example : poly.oneValue (elim.combo 1 (elim.vecAdd eC1 eC2) eL1)
+theorem pin417 : poly.oneValue (elim.combo 1 (elim.vecAdd eC1 eC2) eL1)
     (elim.vecAdd (elim.combo 1 eC1 eL1) (elim.combo 1 eC2 eL1)) :=
   elim.combo_vecAdd 1 eC1 eC2 eL1 rfl
-example : poly.oneValue (elim.combo 1 (elim.vecAdd eC1 eC2) eL1)
+theorem pin418 : poly.oneValue (elim.combo 1 (elim.vecAdd eC1 eC2) eL1)
     (elim.vecAdd (elim.combo 1 eC1 eL1) (elim.combo 1 eC2 eL1)) := by
   decide +kernel
-example : ¬ poly.oneValue
+theorem pin419 : ¬ poly.oneValue
     (elim.combo 1 (elim.vecAdd [ground.BPair.ofNat 1] eC1) eL1)
     (elim.vecAdd (elim.combo 1 [ground.BPair.ofNat 1] eL1)
       (elim.combo 1 eC1 eL1)) := by decide +kernel
-example : poly.oneValue
+theorem pin420 : poly.oneValue
     (elim.vecScale (ground.BPair.ofNat 2) (elim.combo 1 eC1 eL1))
     (elim.combo 1 (elim.vecScale (ground.BPair.ofNat 2) eC1) eL1) :=
   elim.vecScale_combo _ 1 eC1 eL1
-example : poly.oneValue
+theorem pin421 : poly.oneValue
     (elim.vecScale (ground.BPair.ofNat 2) (elim.combo 1 eC1 eL1))
     (elim.combo 1 (elim.vecScale (ground.BPair.ofNat 2) eC1) eL1) := by
   decide +kernel
-example : elim.combo 1 (eC1.map ground.BPair.swap) eL1
+theorem pin422 : elim.combo 1 (eC1.map ground.BPair.swap) eL1
     = (elim.combo 1 eC1 eL1).map ground.BPair.swap := rfl
-example : (elim.vecAdd eC1 eC2).map ground.BPair.swap
+theorem pin423 : (elim.vecAdd eC1 eC2).map ground.BPair.swap
     = elim.vecAdd (eC1.map ground.BPair.swap)
       (eC2.map ground.BPair.swap) := rfl
-example : elim.vecAdd (elim.vecAdd [ground.BPair.ofNat 1]
+theorem pin424 : elim.vecAdd (elim.vecAdd [ground.BPair.ofNat 1]
       [ground.BPair.ofNat 2])
     (elim.vecAdd [ground.BPair.ofNat 3] [ground.BPair.ofNat 4])
     = elim.vecAdd (elim.vecAdd [ground.BPair.ofNat 1]
@@ -3178,9 +3180,9 @@ private def dkM : elim.Mat :=
   [[ground.BPair.ofNat 1, ground.BPair.ofNat 2],
    [ground.BPair.ofNat 3, ground.BPair.ofNat 4]]
 
-example : (elim.detL (dkM.map (elim.vecScale (ground.BPair.ofNat 2)))).oneValue
+theorem pin425 : (elim.detL (dkM.map (elim.vecScale (ground.BPair.ofNat 2)))).oneValue
     (ground.bpow (ground.BPair.ofNat 2) 2 * elim.detL dkM) := by decide +kernel
-example : (elim.detL (dkM.map (elim.vecScale (ground.BPair.ofNat 2)))).oneValue
+theorem pin426 : (elim.detL (dkM.map (elim.vecScale (ground.BPair.ofNat 2)))).oneValue
     ⟨1, 9⟩ := by decide +kernel
 
 private def dkP : elim.Mat :=
@@ -3189,17 +3191,17 @@ private def dkP : elim.Mat :=
 private def dkB : elim.Mat := [[ground.BPair.ofNat 1], [ground.BPair.ofNat 2]]
 private def dkR : elim.Mat := [[ground.BPair.ofNat 5]]
 
-example : (elim.detL (elim.rowJoin dkP dkB
+theorem pin427 : (elim.detL (elim.rowJoin dkP dkB
     ++ elim.rowJoin (List.replicate 1 (List.replicate 2 ground.BPair.unit))
       dkR)).oneValue (elim.detL dkP * elim.detL dkR) := by decide +kernel
-example : (elim.detL (elim.rowJoin dkP dkB
+theorem pin428 : (elim.detL (elim.rowJoin dkP dkB
     ++ elim.rowJoin (List.replicate 1 (List.replicate 2 ground.BPair.unit))
       dkR)).oneValue (ground.BPair.ofNat 30) := by decide +kernel
 
 private def dkO : elim.Mat := [[ground.BPair.ofNat 1]]
 private def dkT : elim.Mat := [[ground.BPair.ofNat 2]]
 
-example : (ground.bpow (ground.BPair.ofNat 2) 1
+theorem pin429 : (ground.bpow (ground.BPair.ofNat 2) 1
     * elim.detL (elim.rowJoin dkT dkO ++ elim.rowJoin dkO dkO)).oneValue
     (elim.detL (elim.rowJoin dkT dkO
       ++ elim.rowJoin
@@ -3208,10 +3210,10 @@ example : (ground.bpow (ground.BPair.ofNat 2) 1
         (elim.matAdd (dkO.map (elim.vecScale (ground.BPair.ofNat 2)))
           (elim.matSwap (elim.matMul (elim.transposeM dkO) dkO))))) := by
   decide +kernel
-example : (ground.bpow (ground.BPair.ofNat 2) 1
+theorem pin430 : (ground.bpow (ground.BPair.ofNat 2) 1
     * elim.detL (elim.rowJoin dkT dkO ++ elim.rowJoin dkO dkO)).oneValue
     (ground.BPair.ofNat 2) := by decide +kernel
-example : ¬ (ground.bpow (ground.BPair.ofNat 2) 1
+theorem pin431 : ¬ (ground.bpow (ground.BPair.ofNat 2) 1
     * elim.detL (elim.rowJoin [] [] ++ elim.rowJoin [[]] dkT)).oneValue
     (elim.detL (elim.rowJoin [] []
       ++ elim.rowJoin
@@ -3232,13 +3234,13 @@ private def kL : elim.Mat :=
 private def kR2 : elim.Mat :=
   [[BPair.ofNat 1, BPair.unit], [BPair.unit, BPair.ofNat 1]]
 
-example : ¬ (∀ x : List BPair, x.length = kL.length →
+theorem pin432 : ¬ (∀ x : List BPair, x.length = kL.length →
     (poly.unitTail (elim.matVec (elim.crossM kR kL) x)
       ↔ poly.unitTail (elim.matVec (elim.crossM kR2 kL) x))) := by
   intro h
   exact absurd ((h [BPair.ofNat 1, (BPair.ofNat 1).swap] rfl).mp
     (by decide +kernel)) (by decide +kernel)
-example : ¬ (elim.kernelDim kL.length (elim.crossM kR kL)
+theorem pin433 : ¬ (elim.kernelDim kL.length (elim.crossM kR kL)
     = elim.kernelDim kL.length (elim.crossM kR2 kL)) := by decide +kernel
 
 /-! The pivot's places: the selection at stated row and column key
@@ -3252,26 +3254,26 @@ private def pS3 : elim.Mat :=
    [BPair.ofNat 2, BPair.ofNat 4, BPair.ofNat 5],
    [BPair.ofNat 3, BPair.ofNat 5, BPair.ofNat 6]]
 
-example : elim.selM [2, 0] [2, 0] pS3
+theorem pin434 : elim.selM [2, 0] [2, 0] pS3
     = [[BPair.ofNat 6, BPair.ofNat 3],
        [BPair.ofNat 3, BPair.ofNat 1]] := by decide +kernel
 
-example : elim.selM ([1] ++ [2, 0]) ([1] ++ [2, 0]) pS3
+theorem pin435 : elim.selM ([1] ++ [2, 0]) ([1] ++ [2, 0]) pS3
     = List.zipWith (· ++ ·) (elim.selM [1] [1] pS3)
         (elim.selM [1] [2, 0] pS3)
       ++ List.zipWith (· ++ ·) (elim.selM [2, 0] [1] pS3)
         (elim.selM [2, 0] [2, 0] pS3) := by decide +kernel
-example : elim.selM ([1] ++ [2, 0]) ([1] ++ [2, 0]) pS3
+theorem pin436 : elim.selM ([1] ++ [2, 0]) ([1] ++ [2, 0]) pS3
     = List.zipWith (· ++ ·) (elim.selM [1] [1] pS3)
         (elim.selM [1] [2, 0] pS3)
       ++ List.zipWith (· ++ ·) (elim.selM [2, 0] [1] pS3)
         (elim.selM [2, 0] [2, 0] pS3) := elim.selM_append [1] [2, 0] pS3
 
-example : elim.matOneValue
+theorem pin437 : elim.matOneValue
     (elim.matMul (elim.permM 3 [2, 0])
       (elim.matMul pS3 (elim.transposeM (elim.permM 3 [2, 0]))))
     (elim.selM [2, 0] [2, 0] pS3) := by decide +kernel
-example : elim.matOneValue
+theorem pin438 : elim.matOneValue
     (elim.matMul (elim.permM 3 [2, 0])
       (elim.matMul pS3 (elim.transposeM (elim.permM 3 [2, 0]))))
     (elim.selM [2, 0] [2, 0] pS3) :=
@@ -3286,24 +3288,24 @@ binder of the transposed order is implied at a distinct full list
 inside the order, its refusal off the theorem's reach: the frame's
 own read. -/
 
-example : elim.matOneValue
+theorem pin439 : elim.matOneValue
     (elim.matMul (elim.permM 3 [2, 0, 1])
       (elim.transposeM (elim.permM 3 [2, 0, 1])))
     (elim.permM 3 (List.range 3)) := by decide +kernel
 
-example : elim.matOneValue
+theorem pin440 : elim.matOneValue
     (elim.matMul (elim.permM 3 [2, 0, 1])
       (elim.transposeM (elim.permM 3 [2, 0, 1])))
     (elim.permM 3 (List.range 3)) :=
   elim.permM_orthL 3 [2, 0, 1] (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : elim.matOneValue
+theorem pin441 : elim.matOneValue
     (elim.matMul (elim.transposeM (elim.permM 3 [2, 0, 1]))
       (elim.permM 3 [2, 0, 1]))
     (elim.permM 3 (List.range 3)) := by decide +kernel
 
-example : elim.matOneValue
+theorem pin442 : elim.matOneValue
     (elim.matMul (elim.transposeM (elim.permM 3 [2, 0, 1]))
       (elim.permM 3 [2, 0, 1]))
     (elim.permM 3 (List.range 3)) :=
@@ -3314,14 +3316,14 @@ example : elim.matOneValue
         (f := fun j => Nat.blt 0 (ground.countOf j [2, 0, 1]))
         3 (by decide +kernel) j hj))
 
-example : ground.distinctList ([0] : List Nat)
+theorem pin443 : ground.distinctList ([0] : List Nat)
     ∧ (([0] : List Nat).all (fun i => Nat.blt i 2)) = true
     ∧ ¬ elim.matOneValue
       (elim.matMul (elim.permM 2 [0])
         (elim.transposeM (elim.permM 2 [0])))
       (elim.permM 2 (List.range 2)) := by decide +kernel
 
-example : ([0, 0] : List Nat).length = 2
+theorem pin444 : ([0, 0] : List Nat).length = 2
     ∧ (([0, 0] : List Nat).all (fun i => Nat.blt i 2)) = true
     ∧ ¬ elim.matOneValue
       (elim.matMul (elim.permM 2 [0, 0])
@@ -3329,10 +3331,10 @@ example : ([0, 0] : List Nat).length = 2
       (elim.permM 2 (List.range 2)) := by decide +kernel
 
 
-example : elim.matOneValue
+theorem pin445 : elim.matOneValue
     (elim.transposeM (elim.selM [2, 0] [1] pS3)) (elim.selM [1] [2, 0] pS3) := by
   decide +kernel
-example : elim.matOneValue
+theorem pin446 : elim.matOneValue
     (elim.transposeM (elim.selM [2, 0] [1] pS3)) (elim.selM [1] [2, 0] pS3) :=
   elim.transposeM_selM [2, 0] [1] pS3 3 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -3342,14 +3344,14 @@ datum every other hypothesis reads true and the exchange still
 parts, the vacant row key list leaving the transpose no column
 count to read. -/
 
-example : sqAt [[BPair.unit]] 1 := by decide +kernel
-example : matOneValue (transposeM [[BPair.unit]]) [[BPair.unit]] := by
+theorem pin447 : sqAt [[BPair.unit]] 1 := by decide +kernel
+theorem pin448 : matOneValue (transposeM [[BPair.unit]]) [[BPair.unit]] := by
   decide +kernel
-example : (([] : List Nat).all (fun i => Nat.blt i 1)) = true := by
+theorem pin449 : (([] : List Nat).all (fun i => Nat.blt i 1)) = true := by
   decide +kernel
-example : (([0] : List Nat).all (fun j => Nat.blt j 1)) = true := by
+theorem pin450 : (([0] : List Nat).all (fun j => Nat.blt j 1)) = true := by
   decide +kernel
-example : ¬ matOneValue (transposeM (selM [] [0] [[BPair.unit]]))
+theorem pin451 : ¬ matOneValue (transposeM (selM [] [0] [[BPair.unit]]))
     (selM [0] [] [[BPair.unit]]) := by decide +kernel
 
 /-! The determinant product tier at committed data: two square
@@ -3371,38 +3373,38 @@ private def bFix : elim.Mat := [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨2, 1�
 private theorem saFix : elim.sqAt aFix 2 := by decide +kernel
 private theorem sbFix : elim.sqAt bFix 2 := by decide +kernel
 
-example : (elim.detL (elim.matMul aFix bFix)).oneValue
+theorem pin452 : (elim.detL (elim.matMul aFix bFix)).oneValue
     (elim.detL aFix * elim.detL bFix) := by decide +kernel
 
-example : (elim.detL (elim.matMul aFix bFix)).oneValue
+theorem pin453 : (elim.detL (elim.matMul aFix bFix)).oneValue
     (elim.detL aFix * elim.detL bFix) :=
   elim.detL_mul aFix bFix 2 saFix sbFix
 
 private def dFix : List BPair := [⟨3, 1⟩, ⟨1, 2⟩, ⟨4, 1⟩]
 
-example : (elim.detL (elim.diagO ground.bpairOps dFix)).oneValue
+theorem pin454 : (elim.detL (elim.diagO ground.bpairOps dFix)).oneValue
     (dFix.foldl (fun a d => a * d) (BPair.ofNat 1)) := by decide +kernel
 
-example : (elim.detL (elim.diagO ground.bpairOps dFix)).oneValue
+theorem pin455 : (elim.detL (elim.diagO ground.bpairOps dFix)).oneValue
     (dFix.foldl (fun a d => a * d) (BPair.ofNat 1)) :=
   elim.detL_diag dFix
 
 private def pdFix : List poly.Poly := [[⟨1, 2⟩, ⟨2, 1⟩], [⟨3, 1⟩, ⟨2, 1⟩]]
 
-example : poly.oneValue
+theorem pin456 : poly.oneValue
     (elim.minorO poly.polyOps poly.pnorm id (elim.diagO poly.polyOps pdFix))
     (poly.prodFold pdFix) := by decide +kernel
 
-example : poly.oneValue
+theorem pin457 : poly.oneValue
     (elim.minorO poly.polyOps poly.pnorm id (elim.diagO poly.polyOps pdFix))
     (poly.prodFold pdFix) :=
   elim.pminor_diag pdFix
 
-example : poly.oneValue
+theorem pin458 : poly.oneValue
     (elim.minorO poly.polyOps poly.pnorm id (elim.embedP aFix))
     [elim.detL aFix] := by decide +kernel
 
-example : poly.oneValue
+theorem pin459 : poly.oneValue
     (elim.minorO poly.polyOps poly.pnorm id (elim.embedP aFix))
     [elim.detL aFix] :=
   elim.pminor_embed aFix 2 saFix
@@ -3415,12 +3417,12 @@ private def pmB : List (List poly.Poly) :=
 private theorem pmAl : pmA.length = 2 := by decide +kernel
 private theorem pmAr : elim.rowsLen 2 pmA := by decide +kernel
 
-example : poly.oneValue
+theorem pin460 : poly.oneValue
     (elim.minorO poly.polyOps poly.pnorm id (elim.matMulO poly.polyOps pmA pmB))
     (poly.mul (elim.minorO poly.polyOps poly.pnorm id pmA)
       (elim.minorO poly.polyOps poly.pnorm id pmB)) := by decide +kernel
 
-example : poly.oneValue
+theorem pin461 : poly.oneValue
     (elim.minorO poly.polyOps poly.pnorm id (elim.matMulO poly.polyOps pmA pmB))
     (poly.mul (elim.minorO poly.polyOps poly.pnorm id pmA)
       (elim.minorO poly.polyOps poly.pnorm id pmB)) :=
@@ -3431,10 +3433,10 @@ private def pmPad : List (List poly.Poly) :=
   [[[BPair.unit, ⟨2, 1⟩, BPair.unit], [⟨2, 1⟩]],
    [[BPair.unit], [BPair.unit, ⟨2, 1⟩]]]
 
-example : poly.oneValue (elim.minorO poly.polyOps poly.pnorm id pmA)
+theorem pin462 : poly.oneValue (elim.minorO poly.polyOps poly.pnorm id pmA)
     (elim.minorO poly.polyOps poly.pnorm id pmPad) := by decide +kernel
 
-example : poly.oneValue (elim.minorO poly.polyOps poly.pnorm id pmA)
+theorem pin463 : poly.oneValue (elim.minorO poly.polyOps poly.pnorm id pmA)
     (elim.minorO poly.polyOps poly.pnorm id pmPad) := by
   have hent : ((List.range 2).all (fun a => (List.range 2).all
       (fun b => decide (poly.oneValue
@@ -3467,17 +3469,17 @@ fold exactly as the unit padding reads it. -/
 
 private def aOne : elim.Mat := [[⟨3, 1⟩]]
 
-example : elim.sqAt aOne 1 := by decide +kernel
-example : ¬ elim.sqAt aOne 2 := by decide +kernel
-example : ¬ elim.sqAt bFix 1 := by decide +kernel
-example : ¬ (elim.detL (elim.matMul aOne bFix)).oneValue
+theorem pin464 : elim.sqAt aOne 1 := by decide +kernel
+theorem pin465 : ¬ elim.sqAt aOne 2 := by decide +kernel
+theorem pin466 : ¬ elim.sqAt bFix 1 := by decide +kernel
+theorem pin467 : ¬ (elim.detL (elim.matMul aOne bFix)).oneValue
     (elim.detL aOne * elim.detL bFix) := by decide +kernel
 
 private def pmOne : List (List poly.Poly) := [[[⟨3, 1⟩]]]
 
-example : pmOne.length = 1 := by decide +kernel
-example : elim.rowsLen 1 pmOne := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin468 : pmOne.length = 1 := by decide +kernel
+theorem pin469 : elim.rowsLen 1 pmOne := by decide +kernel
+theorem pin470 : ¬ poly.oneValue
     (elim.minorO poly.polyOps poly.pnorm id (elim.matMulO poly.polyOps pmOne pmA))
     (poly.mul (elim.minorO poly.polyOps poly.pnorm id pmOne)
       (elim.minorO poly.polyOps poly.pnorm id pmA)) := by decide +kernel
@@ -3485,38 +3487,38 @@ example : ¬ poly.oneValue
 private def mRect : elim.Mat :=
   [[⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩], [⟨1, 2⟩, ⟨2, 1⟩, ⟨3, 1⟩]]
 
-example : mRect.length = 2 := by decide +kernel
-example : ¬ elim.sqAt mRect 2 := by decide +kernel
-example : ¬ elim.sqAt mRect 3 := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin471 : mRect.length = 2 := by decide +kernel
+theorem pin472 : ¬ elim.sqAt mRect 2 := by decide +kernel
+theorem pin473 : ¬ elim.sqAt mRect 3 := by decide +kernel
+theorem pin474 : ¬ poly.oneValue
     (elim.minorO poly.polyOps poly.pnorm id (elim.embedP mRect))
     [elim.detL mRect] := by decide +kernel
 
 private def pmOff : List (List poly.Poly) :=
   [[[BPair.unit, ⟨2, 1⟩], [⟨2, 1⟩]], [[BPair.unit], [BPair.unit, ⟨3, 1⟩]]]
 
-example : pmOff.length = 2 := by decide +kernel
-example : elim.rowsLen 2 pmOff := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin475 : pmOff.length = 2 := by decide +kernel
+theorem pin476 : elim.rowsLen 2 pmOff := by decide +kernel
+theorem pin477 : ¬ poly.oneValue
     (ground.getAt ([] : poly.Poly) (ground.getAt [] pmA 1) 1)
     (ground.getAt ([] : poly.Poly) (ground.getAt [] pmOff 1) 1) := by
   decide +kernel
-example : ¬ poly.oneValue (elim.minorO poly.polyOps poly.pnorm id pmA)
+theorem pin478 : ¬ poly.oneValue (elim.minorO poly.polyOps poly.pnorm id pmA)
     (elim.minorO poly.polyOps poly.pnorm id pmOff) := by decide +kernel
 
 private def rShort : elim.Mat := [[⟨2, 1⟩], [⟨1, 2⟩, ⟨4, 1⟩]]
 
-example : rShort.length = 2 := by decide +kernel
-example : ¬ elim.rowsLen 2 rShort := by decide +kernel
-example : ¬ (elim.detL (elim.matMul bFix rShort)).oneValue
+theorem pin479 : rShort.length = 2 := by decide +kernel
+theorem pin480 : ¬ elim.rowsLen 2 rShort := by decide +kernel
+theorem pin481 : ¬ (elim.detL (elim.matMul bFix rShort)).oneValue
     (elim.detL bFix * elim.detL rShort) := by decide +kernel
 
 private def pmRShort : List (List poly.Poly) :=
   [[[⟨2, 1⟩, ⟨2, 1⟩]], [[⟨2, 1⟩], [⟨2, 1⟩]]]
 
-example : pmRShort.length = 2 := by decide +kernel
-example : ¬ elim.rowsLen 2 pmRShort := by decide +kernel
-example : ¬ poly.oneValue
+theorem pin482 : pmRShort.length = 2 := by decide +kernel
+theorem pin483 : ¬ elim.rowsLen 2 pmRShort := by decide +kernel
+theorem pin484 : ¬ poly.oneValue
     (elim.minorO poly.polyOps poly.pnorm id
       (elim.matMulO poly.polyOps pmA pmRShort))
     (poly.mul (elim.minorO poly.polyOps poly.pnorm id pmA)
@@ -3527,22 +3529,22 @@ private def mRag : List (List poly.Poly) :=
 private def mSq : List (List poly.Poly) :=
   [[[⟨2, 1⟩], [⟨3, 1⟩]], [[⟨1, 2⟩], [⟨4, 1⟩]]]
 
-example : mSq.length = 2 := by decide +kernel
-example : mRag.length = 2 := by decide +kernel
-example : elim.rowsLen 2 mSq := by decide +kernel
-example : ¬ elim.rowsLen 2 mRag := by decide +kernel
-example : ((List.range 2).all (fun a => (List.range 2).all (fun b =>
+theorem pin485 : mSq.length = 2 := by decide +kernel
+theorem pin486 : mRag.length = 2 := by decide +kernel
+theorem pin487 : elim.rowsLen 2 mSq := by decide +kernel
+theorem pin488 : ¬ elim.rowsLen 2 mRag := by decide +kernel
+theorem pin489 : ((List.range 2).all (fun a => (List.range 2).all (fun b =>
     decide (poly.oneValue
       (ground.getAt ([] : poly.Poly) (ground.getAt [] mSq a) b)
       (ground.getAt ([] : poly.Poly) (ground.getAt [] mRag a) b))))) = true := by
   decide +kernel
-example : ¬ poly.oneValue (elim.minorO poly.polyOps poly.pnorm id mSq)
+theorem pin490 : ¬ poly.oneValue (elim.minorO poly.polyOps poly.pnorm id mSq)
     (elim.minorO poly.polyOps poly.pnorm id mRag) := by decide +kernel
 
 /-! The dot polarization's constant, pinned tight: at the crossed
 pair the display reads equality, and the widened weight refuses. -/
 
-example : (((⟨3, 1⟩ : BPair) * (⟨2, 1⟩ : BPair))
+theorem pin491 : (((⟨3, 1⟩ : BPair) * (⟨2, 1⟩ : BPair))
       * dotN [(⟨2, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)]).scale 2
     ≤ ((⟨3, 1⟩ : BPair) * (⟨3, 1⟩ : BPair))
         * dotN [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]
@@ -3550,7 +3552,7 @@ example : (((⟨3, 1⟩ : BPair) * (⟨2, 1⟩ : BPair))
         * dotN [(⟨3, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)] := by
   decide +kernel
 
-example : ¬ ((((⟨3, 1⟩ : BPair) * (⟨2, 1⟩ : BPair))
+theorem pin492 : ¬ ((((⟨3, 1⟩ : BPair) * (⟨2, 1⟩ : BPair))
       * dotN [(⟨2, 1⟩ : BPair)] [(⟨3, 1⟩ : BPair)]).scale 3
     ≤ ((⟨3, 1⟩ : BPair) * (⟨3, 1⟩ : BPair))
         * dotN [(⟨2, 1⟩ : BPair)] [(⟨2, 1⟩ : BPair)]
@@ -3580,25 +3582,25 @@ private def gSt2 : elim.DState :=
 private def gSt3 : elim.DState :=
   (elim.growS gSt2 [(⟨1, 1⟩ : BPair), ⟨2, 1⟩, ⟨3, 1⟩]).1
 
-example : elim.traceOf gSt1 [[(⟨3, 1⟩ : BPair)]]
+theorem pin493 : elim.traceOf gSt1 [[(⟨3, 1⟩ : BPair)]]
     ∧ elim.traceOf gSt2 [[(⟨3, 1⟩ : BPair), ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
     ∧ elim.traceOf gSt3 gS := by decide +kernel
 
-example : (elim.growS gSt3 gRow4).2.oneValue (BPair.ofNat 9)
+theorem pin494 : (elim.growS gSt3 gRow4).2.oneValue (BPair.ofNat 9)
     ∧ (elim.growS gSt3 gRow4).2.oneValue (elim.detL (elim.grownBy gS gRow4))
     ∧ elim.traceOf (elim.growS gSt3 gRow4).1 (elim.grownBy gS gRow4) := by
   decide +kernel
 
-example : (elim.growS gSt3 gRow4).2.oneValue (elim.detL (elim.grownBy gS gRow4)) :=
+theorem pin495 : (elim.growS gSt3 gRow4).2.oneValue (elim.detL (elim.grownBy gS gRow4)) :=
   (elim.growS_read gS gRow4 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) gSt3 (by decide +kernel)).1
 
-example : elim.traceOf (elim.growS gSt3 gRow4).1 (elim.grownBy gS gRow4) :=
+theorem pin496 : elim.traceOf (elim.growS gSt3 gRow4).1 (elim.grownBy gS gRow4) :=
   (elim.growS_read gS gRow4 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) gSt3 (by decide +kernel)).2 (by decide +kernel)
 
 /-- The trace refuses a unit pivot. -/
-example : ¬ elim.traceOf [(BPair.unit, [])] [[BPair.unit]] := by decide +kernel
+theorem pin497 : ¬ elim.traceOf [(BPair.unit, [])] [[BPair.unit]] := by decide +kernel
 
 /-- The list off the symmetry binder at its own descent's data:
 the trace holds and every further hypothesis, and the terminal
@@ -3608,7 +3610,7 @@ private def gNRow : List BPair := [⟨2, 1⟩, ⟨1, 1⟩, ⟨2, 1⟩]
 private def gNSt : elim.DState :=
   [((⟨2, 1⟩ : BPair), [(⟨3, 1⟩ : BPair)]), ((⟨2, 1⟩ : BPair), [])]
 
-example : elim.traceOf gNSt gN ∧ elim.rowsLen gN.length gN
+theorem pin498 : elim.traceOf gNSt gN ∧ elim.rowsLen gN.length gN
     ∧ gNRow.length = gN.length + 1
     ∧ ¬ elim.symmRead gN
     ∧ ¬ (elim.growS gNSt gNRow).2.oneValue
@@ -3622,7 +3624,7 @@ private def gWSt : elim.DState :=
   [((⟨3, 1⟩ : BPair), [(⟨2, 1⟩ : BPair)]), ((⟨4, 1⟩ : BPair), [])]
 private def gWRow : List BPair := [⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩]
 
-example : ¬ elim.rowsLen gW.length gW ∧ elim.traceOf gWSt gW
+theorem pin499 : ¬ elim.rowsLen gW.length gW ∧ elim.traceOf gWSt gW
     ∧ gWRow.length = gW.length + 1 ∧ elim.symmRead gW
     ∧ ¬ (elim.growS gWSt gWRow).2.oneValue
         (elim.detL (elim.grownBy gW gWRow)) := by decide +kernel
@@ -3632,7 +3634,7 @@ square list reads a terminal entry off the grown determinant. -/
 private def gQ : elim.Mat := [[⟨3, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨3, 1⟩]]
 private def gQRow : List BPair := [⟨2, 1⟩, ⟨2, 1⟩]
 
-example : elim.traceOf gWSt gQ ∧ elim.rowsLen gQ.length gQ
+theorem pin500 : elim.traceOf gWSt gQ ∧ elim.rowsLen gQ.length gQ
     ∧ elim.symmRead gQ ∧ ¬ gQRow.length = gQ.length + 1
     ∧ ¬ (elim.growS gWSt gQRow).2.oneValue
         (elim.detL (elim.grownBy gQ gQRow)) := by decide +kernel
@@ -3642,36 +3644,37 @@ a passing member and a refused one, decided and through the
 theorem. -/
 private def jU1 : List BPair := [⟨2, 1⟩, ⟨2, 1⟩]
 private def jU2 : List BPair := [⟨2, 1⟩, ⟨3, 1⟩]
-private def jS1 : elim.DState × Bool := elim.joinS elim.dotP [] [] jU1
+private def jS1 : List BPair × elim.DState × BPair := elim.joinS elim.dotP [] [] jU1
 
-example : jS1.2 = true
-    ∧ (elim.joinS elim.dotP jS1.1 [jU1] jU2).2 = true
-    ∧ (elim.joinS elim.dotP jS1.1 [jU1] jU2).2
-      = elim.joinIndep elim.dotP [jU1] jU2
-    ∧ (elim.joinS elim.dotP jS1.1 [jU1] [(⟨3, 1⟩ : BPair), ⟨3, 1⟩]).2 = false
-    ∧ (elim.joinS elim.dotP jS1.1 [jU1] [(⟨3, 1⟩ : BPair), ⟨3, 1⟩]).2
-      = elim.joinIndep elim.dotP [jU1] [(⟨3, 1⟩ : BPair), ⟨3, 1⟩] := by
+theorem pin501 : ¬ jS1.2.2.oneValue BPair.unit
+    ∧ ¬ (elim.joinS elim.dotP jS1.2.1 [jU1] jU2).2.2.oneValue BPair.unit
+    ∧ elim.joinIndep elim.dotP [jU1] jU2 = true
+    ∧ ((elim.joinS elim.dotP jS1.2.1 [jU1] jU2).2.2).oneValue
+      (elim.detL (elim.gramBy elim.dotP [jU1, jU2]))
+    ∧ (elim.joinS elim.dotP jS1.2.1 [jU1] [(⟨3, 1⟩ : BPair), ⟨3, 1⟩]).2.2.oneValue BPair.unit
+    ∧ elim.joinIndep elim.dotP [jU1] [(⟨3, 1⟩ : BPair), ⟨3, 1⟩] = false := by
   decide +kernel
 
-example : (elim.joinS elim.dotP jS1.1 [jU1] jU2).2
-    = elim.joinIndep elim.dotP [jU1] jU2 :=
-  (elim.joinS_read elim.dotP
-    (fun u w => BPair.oneValue_of_eq (elim.dotP_comm u w)) jS1.1 [jU1] jU2
-    (by decide +kernel)).1
+theorem pin502 : elim.joinIndep elim.dotP [jU1] jU2
+      = !(decide ((elim.joinS elim.dotP jS1.2.1 [jU1] jU2).2.2.oneValue BPair.unit))
+    ∧ ((elim.joinS elim.dotP jS1.2.1 [jU1] jU2).2.2).oneValue
+      (elim.detL (elim.gramBy elim.dotP [jU1, jU2])) :=
+  ⟨(elim.joinS_read elim.dotP elim.dotP_comm jS1.2.1 [jU1] jU2 (by decide +kernel)).1,
+   (elim.joinS_read elim.dotP elim.dotP_comm jS1.2.1 [jU1] jU2 (by decide +kernel)).2.1⟩
 
 /-- The trace binder of the joined read: stored data off the list's
 Gram read a passing join at a refused member. -/
-example : ¬ elim.traceOf [((⟨2, 1⟩ : BPair), [])]
+theorem pin503 : ¬ elim.traceOf [((⟨2, 1⟩ : BPair), [])]
       (elim.gramBy elim.dotP [[(⟨3, 1⟩ : BPair)]])
-    ∧ (elim.joinS elim.dotP [((⟨2, 1⟩ : BPair), [])] [[(⟨3, 1⟩ : BPair)]]
-        [(⟨2, 1⟩ : BPair)]).2 = true
+    ∧ ¬ (elim.joinS elim.dotP [((⟨2, 1⟩ : BPair), [])] [[(⟨3, 1⟩ : BPair)]]
+        [(⟨2, 1⟩ : BPair)]).2.2.oneValue BPair.unit
     ∧ elim.joinIndep elim.dotP [[(⟨3, 1⟩ : BPair)]] [(⟨2, 1⟩ : BPair)]
         = false := by decide +kernel
 
 /-- The trace binder: stored data off the list's own descent read a
 terminal entry off the grown determinant, every further hypothesis
 holding. -/
-example : ¬ elim.traceOf [((⟨2, 1⟩ : BPair), [])] [[(⟨3, 1⟩ : BPair)]]
+theorem pin504 : ¬ elim.traceOf [((⟨2, 1⟩ : BPair), [])] [[(⟨3, 1⟩ : BPair)]]
     ∧ elim.rowsLen 1 [[(⟨3, 1⟩ : BPair)]]
     ∧ elim.symmRead [[(⟨3, 1⟩ : BPair)]]
     ∧ ¬ (elim.growS [((⟨2, 1⟩ : BPair), [])] [⟨2, 1⟩, ⟨6, 1⟩]).2.oneValue
@@ -3688,7 +3691,360 @@ private def dotA (u w : List BPair) : BPair :=
 private def aU : List BPair := [⟨2, 1⟩, ⟨1, 1⟩]
 private def aV : List BPair := [⟨2, 1⟩, ⟨2, 1⟩]
 
-example : ¬ (dotA aU aV).oneValue (dotA aV aU)
+theorem pin505 : ¬ (dotA aU aV).oneValue (dotA aV aU)
     ∧ elim.traceOf [((⟨2, 1⟩ : BPair), [])] (elim.gramBy dotA [aU])
-    ∧ (elim.joinS dotA [((⟨2, 1⟩ : BPair), [])] [aU] aV).2 = true
+    ∧ ¬ (elim.joinS dotA [((⟨2, 1⟩ : BPair), [])] [aU] aV).2.2.oneValue BPair.unit
     ∧ elim.joinIndep dotA [aU] aV = false := by decide +kernel
+
+/-! The pool at its keyed groups (`elim.PoolS`, `groupAtK`,
+`tryAddK`): at three candidates joined from the vacant pool at the
+length key with a dependent fourth refused, each key's stored group
+is the collection's members at the key, the group off the stored
+keys vacant, the members stored head first, and the collection the
+fresh walk's own. -/
+
+private def kCands : List (List BPair) :=
+  [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩], [⟨3, 1⟩], [⟨4, 1⟩, ⟨2, 1⟩]]
+private def kPool : elim.PoolS (List BPair) Nat :=
+  kCands.foldl
+    (elim.tryAddK (fun a b : Nat => a == b) List.length dotP (fun _ => false))
+    ([], [])
+
+theorem pin506 : (elim.groupAtK (fun a b : Nat => a == b) kPool 2).1
+      = [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
+    ∧ (elim.groupAtK (fun a b : Nat => a == b) kPool 1).1 = [[⟨3, 1⟩]]
+    ∧ (elim.groupAtK (fun a b : Nat => a == b) kPool 5).1 = []
+    ∧ kPool.1 = [[⟨3, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩], [⟨2, 1⟩, ⟨1, 1⟩]]
+    ∧ kPool.1.reverse = kCands.foldl
+        (elim.tryAddL (fun a b : Nat => a == b) List.length dotP (fun _ => false))
+        [] := by decide +kernel
+
+/-! The symmetric Gram (`gramSym`): at the pairing fold, one value
+at the exchange, the mirrored read is the Gram and the theorem's
+instance reads it; at a pairing off the exchange the two part at
+the lower triangle, the read's hypothesis isolated, the mirrored
+entries the upper walks' own; and the vacant list reads the vacant
+Gram. -/
+
+private def gsL : List (List BPair) :=
+  [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨3, 1⟩], [⟨2, 1⟩, ⟨2, 1⟩]]
+private def asymDot (a b : Nat) : BPair := BPair.ofNat (a + 2 * b)
+
+theorem pin507 : elim.gramSym dotP gsL = elim.gramBy dotP gsL
+    ∧ elim.gramSym asymDot [1, 2]
+      = [[BPair.ofNat 3, BPair.ofNat 5], [BPair.ofNat 5, BPair.ofNat 6]]
+    ∧ elim.gramBy asymDot [1, 2]
+      = [[BPair.ofNat 3, BPair.ofNat 5], [BPair.ofNat 4, BPair.ofNat 6]]
+    ∧ ¬ (elim.gramSym asymDot [1, 2] = elim.gramBy asymDot [1, 2])
+    ∧ elim.gramSym dotP ([] : List (List BPair)) = [] := by decide +kernel
+theorem pin508 : elim.gramSym dotP gsL = elim.gramBy dotP gsL :=
+  elim.gramSym_eq dotP gsL dotP_comm
+
+/-! `def:elim`'s blockwise adjugate at a partition (`blockAdj`,
+`blockDetProd`, `blockDetOthers`; `placesBy` the keys grouped at a
+read in the order of first appearance): a three-key list split at
+the groups of the parity read, the
+cross entries at the unit, reads its cofactor family and its
+determinant blockwise, decided and read through `blockAdj_read` at
+the partition's own reads; the further blocks' determinants against
+the block's own read the whole product, at a key beyond the blocks
+the whole product; the read refused at an occupied cross entry (the
+orthogonality binder) and at a group whose Gram is singular (the
+leading minors' binder); at a list off the exchange the assembled
+adjugate reads the cofactor family at its own orientation, the
+exchanged list refused; and the key's group reads its place, the
+groups' count off every group. -/
+
+private def bG : elim.Mat :=
+  [[BPair.ofNat 3, BPair.unit, BPair.ofNat 1],
+   [BPair.unit, BPair.ofNat 5, BPair.unit],
+   [BPair.ofNat 1, BPair.unit, BPair.ofNat 2]]
+private def bGroups : List (List Nat) := elim.placesBy (fun i => i % 2) 3
+private def bGs : List elim.Mat := bGroups.map (fun g => elim.selM g g bG)
+private def bGx : elim.Mat :=
+  [[BPair.ofNat 3, BPair.ofNat 1, BPair.ofNat 1],
+   [BPair.ofNat 1, BPair.ofNat 5, BPair.unit],
+   [BPair.ofNat 1, BPair.unit, BPair.ofNat 2]]
+private def bGd : elim.Mat :=
+  [[BPair.ofNat 1, BPair.unit, BPair.ofNat 1],
+   [BPair.unit, BPair.ofNat 5, BPair.unit],
+   [BPair.ofNat 1, BPair.unit, BPair.ofNat 1]]
+private def bGn : elim.Mat :=
+  [[BPair.ofNat 3, BPair.unit, BPair.ofNat 1],
+   [BPair.unit, BPair.ofNat 5, BPair.unit],
+   [BPair.ofNat 2, BPair.unit, BPair.ofNat 2]]
+
+theorem pin509 : bGroups = [[0, 2], [1]]
+    ∧ elim.matOneValue (elim.blockAdj 3 bGroups bGs) (elim.adjM bG)
+    ∧ (elim.blockDetProd bGs).oneValue (elim.detL bG)
+    ∧ (elim.blockDetProd bGs).oneValue (BPair.ofNat 25)
+    ∧ (elim.blockDetOthers bGs 1 * elim.detD (ground.getAt [] bGs 1)).oneValue (BPair.ofNat 25)
+    ∧ (elim.blockDetOthers bGs 0).oneValue (BPair.ofNat 5)
+    ∧ (elim.blockDetOthers bGs 2).oneValue (BPair.ofNat 25)
+    ∧ elim.groupOf 2 bGroups = 0 ∧ elim.groupOf 1 bGroups = 1 ∧ elim.groupOf 7 bGroups = 2
+    ∧ elim.placesBy (fun i => i % 2) 5 = [[0, 2, 4], [1, 3]]
+    ∧ ¬ elim.matOneValue (elim.blockAdj 3 bGroups (bGroups.map (fun g => elim.selM g g bGx)))
+        (elim.adjM bGx)
+    ∧ ¬ elim.matOneValue (elim.blockAdj 3 bGroups (bGroups.map (fun g => elim.selM g g bGd)))
+        (elim.adjM bGd)
+    ∧ elim.matOneValue (elim.blockAdj 3 bGroups (bGroups.map (fun g => elim.selM g g bGn)))
+        (elim.adjM bGn)
+    ∧ ¬ elim.matOneValue (elim.transposeM
+          (elim.blockAdj 3 bGroups (bGroups.map (fun g => elim.selM g g bGn))))
+        (elim.adjM bGn) := by
+  decide +kernel
+theorem pin510 : elim.matOneValue (elim.blockAdj 3 bGroups bGs) (elim.adjM bG)
+    ∧ (elim.blockDetProd bGs).oneValue (elim.detL bG) :=
+  elim.blockAdj_read 3 bG (by decide) bGroups
+    (elim.placesBy_partition (fun i => i % 2) 3).1
+    (elim.placesBy_partition (fun i => i % 2) 3).2.1
+    (elim.placesBy_partition (fun i => i % 2) 3).2.2.1
+    (elim.placesBy_partition (fun i => i % 2) 3).2.2.2
+    (by decide +kernel) (by decide +kernel)
+
+/-! The determinants' product and the further determinants at a
+stated determinant list (`detsProd`, `detsOthers`): the withdrawn
+determinant rejoins the further ones at the whole product, a key
+beyond the list reads the whole product, and the further
+determinants read one value at two lists one value key by key. -/
+
+theorem pin511 : (detsProd [BPair.ofNat 2, BPair.ofNat 3, BPair.ofNat 5]).oneValue (BPair.ofNat 30)
+    ∧ (detsOthers [BPair.ofNat 2, BPair.ofNat 3, BPair.ofNat 5] 1).oneValue (BPair.ofNat 10)
+    ∧ (detsOthers [BPair.ofNat 2, BPair.ofNat 3, BPair.ofNat 5] 1 * BPair.ofNat 3).oneValue
+        (BPair.ofNat 30)
+    ∧ (detsOthers [BPair.ofNat 2, BPair.ofNat 3, BPair.ofNat 5] 5).oneValue (BPair.ofNat 30)
+    ∧ (detsOthers [BPair.ofNat 2, ⟨6, 3⟩, BPair.ofNat 5] 0).oneValue
+        (detsOthers [⟨5, 3⟩, BPair.ofNat 3, ⟨8, 3⟩] 0) := by decide +kernel
+theorem pin512 : (detsOthers [BPair.ofNat 2, ⟨6, 3⟩, BPair.ofNat 5] 0).oneValue
+      (detsOthers [⟨5, 3⟩, BPair.ofNat 3, ⟨8, 3⟩] 0)
+    ∧ (detsProd [BPair.ofNat 2, ⟨6, 3⟩, BPair.ofNat 5]).oneValue
+      (detsProd [⟨5, 3⟩, BPair.ofNat 3, ⟨8, 3⟩]) :=
+  ⟨detsOthers_congr [BPair.ofNat 2, ⟨6, 3⟩, BPair.ofNat 5] [⟨5, 3⟩, BPair.ofNat 3, ⟨8, 3⟩] rfl
+      (by decide +kernel) 0,
+    detsProd_congr [BPair.ofNat 2, ⟨6, 3⟩, BPair.ofNat 5] [⟨5, 3⟩, BPair.ofNat 3, ⟨8, 3⟩] rfl
+      (by decide +kernel)⟩
+
+/-! A stated list's collection at the stored descents (`collectK`,
+`lem:lowerspan`'s collection): at three rows in one key group, the
+third the second's less the first's triple, the collection joins the
+first two, its members the keyed collection at the fresh walk, and the
+one group reads its two members, its Gram their pairings, its
+descent tracing the Gram and its determinant the Gram's. -/
+
+private def cK := collectK (fun a b : Nat => a == b) (fun _ => (0 : Nat)) dotP rC1
+
+theorem pin513 : cK.1.reverse = [getAt [] rC1 0, getAt [] rC1 1]
+    ∧ (groupAtK (fun a b : Nat => a == b) cK 0).mems = cK.1.reverse
+    ∧ (groupAtK (fun a b : Nat => a == b) cK 0).gram = gramBy dotP cK.1.reverse
+    ∧ traceOf (groupAtK (fun a b : Nat => a == b) cK 0).st
+        (groupAtK (fun a b : Nat => a == b) cK 0).gram
+    ∧ ((groupAtK (fun a b : Nat => a == b) cK 0).det).oneValue
+        (detL (groupAtK (fun a b : Nat => a == b) cK 0).gram)
+    ∧ (groupsK cK).length = 1 ∧ cK.2.map Prod.fst = [0] := by
+  decide +kernel
+theorem pin514 : cK.1.reverse
+    = rC1.foldl (tryAddL (fun a b : Nat => a == b) (fun _ => (0 : Nat)) dotP (fun _ => false)) [] :=
+  collectK_eq _ _ _ (fun _ _ h => ground.beqEqOf h) (fun _ => ground.eqBeqOf rfl) dotP_comm rC1
+
+/-! The further determinants at every key at once (`ground.othersAll`
+at the determinant list, `detsOthers_ov`, `blockDetOthers_ov`): the
+one-pass list reads the skipping products at every key of the
+three-member list, decided, and reads the further blocks'
+determinants at the parity blocks through the theorem. -/
+
+theorem pin515 : (∀ i : Nat, i < 3 →
+      (getAt BPair.unit (ground.othersAll (fun a b : BPair => a * b) (BPair.ofNat 1)
+        [BPair.ofNat 2, ⟨6, 3⟩, BPair.ofNat 5]) i).oneValue
+        (detsOthers [BPair.ofNat 2, ⟨6, 3⟩, BPair.ofNat 5] i))
+    ∧ (getAt BPair.unit (ground.othersAll (fun a b : BPair => a * b) (BPair.ofNat 1)
+        [BPair.ofNat 2, ⟨6, 3⟩, BPair.ofNat 5]) 1).oneValue (BPair.ofNat 10)
+    ∧ (ground.othersAll (fun a b : BPair => a * b) (BPair.ofNat 1)
+        [BPair.ofNat 2, ⟨6, 3⟩, BPair.ofNat 5]).length = 3 := by
+  decide +kernel
+theorem pin516 : (getAt BPair.unit (ground.othersAll (fun a b : BPair => a * b) (BPair.ofNat 1)
+      (bGs.map elim.detD)) 1).oneValue (elim.blockDetOthers bGs 1) :=
+  elim.blockDetOthers_ov bGs 1 (by decide)
+
+/-! The coordinate-pairing comparisons used by the dominance
+walk: the exchanged keys and the partnered final pair. -/
+
+theorem pin517 (i : Nat) (D R : List BPair) (hw : D.length = R.length)
+    (hi : i + 1 < D.length) (hd : getAt BPair.unit D i < getAt BPair.unit D (i + 1))
+    (hr : getAt BPair.unit R (i + 1) < getAt BPair.unit R i) :
+    dotP D R < dotP (ground.adjSwap i D) R := dotP_adjSwap_lt i D R hw hi hd hr
+theorem pin518 (i : Nat) (D R : List BPair) (hw : D.length = R.length)
+    (hi : i < D.length) (hd : getAt BPair.unit D i < BPair.unit)
+    (hr : BPair.unit < getAt BPair.unit R i) :
+    dotP D R < dotP (D.set i (getAt BPair.unit D i).swap) R := dotP_flip_lt i D R hw hi hd hr
+theorem pin519 (i : Nat) (D R : List BPair) (hw : D.length = R.length)
+    (hi : i + 1 < D.length)
+    (hd : getAt BPair.unit D i + getAt BPair.unit D (i + 1) < BPair.unit)
+    (hr : BPair.unit < getAt BPair.unit R i + getAt BPair.unit R (i + 1)) :
+    dotP D R < dotP ((D.set i (getAt BPair.unit D (i + 1)).swap).set (i + 1)
+      (getAt BPair.unit D i).swap) R := dotP_pairFlip_lt i D R hw hi hd hr
+
+/-! Computed adjugate solves commute with a simultaneous adjacent
+symmetry. The determinant and leading-minor hypotheses are tested
+separately by a singular matrix and by an invertible matrix with
+a vacant first diagonal entry. -/
+
+theorem pin520 (G : Mat) (hG : rowsLen G.length G)
+    (hd : ¬ (detL G).oneValue BPair.unit) (x y : List BPair)
+    (hx : x.length = G.length) (hy : y.length = G.length)
+    (h : poly.oneValue (matVec G x) (matVec G y)) : poly.oneValue x y :=
+  matVec_inj G hG hd x y hx hy h
+theorem pin521 (G : Mat) (hG : rowsLen G.length G)
+    (hlead : ∀ k, k < G.length → ¬ (leadMinor G (k + 1)).oneValue BPair.unit)
+    (t : Nat) (ht : t + 1 < G.length)
+    (hs : ∀ i, i < G.length → poly.oneValue
+      (ground.adjSwap t (ground.getAt [] G i)) (ground.getAt [] G (ground.swapIx t (t + 1) i)))
+    (p : List BPair) (hp : p.length = G.length) :
+    poly.oneValue (adjD G (ground.adjSwap t p)) (ground.adjSwap t (adjD G p)) :=
+  adjD_adjSwap G hG hlead t ht hs p hp
+theorem pin522 (n : Nat) (L : Mat) (h : indepRows n L) (k : Nat) (hk : k < L.length) :
+    ¬ (leadMinor (gramM L) (k + 1)).oneValue BPair.unit := gram_leadMinor n L h k hk
+theorem pin523 : poly.oneValue
+      (matVec [[BPair.unit, BPair.unit], [BPair.unit, BPair.unit]] [BPair.ofNat 1, BPair.unit])
+      (matVec [[BPair.unit, BPair.unit], [BPair.unit, BPair.unit]] [BPair.unit, BPair.unit])
+    ∧ ¬ poly.oneValue [BPair.ofNat 1, BPair.unit] [BPair.unit, BPair.unit] := by decide +kernel
+theorem pin524 : ¬ (detL [[BPair.unit, BPair.ofNat 1], [BPair.ofNat 1, BPair.unit]]).oneValue BPair.unit
+    ∧ (leadMinor [[BPair.unit, BPair.ofNat 1], [BPair.ofNat 1, BPair.unit]] 1).oneValue BPair.unit := by
+  decide +kernel
+theorem pin525 : poly.oneValue
+      (adjD [[BPair.ofNat 3, (BPair.ofNat 1).swap], [(BPair.ofNat 1).swap, BPair.ofNat 3]] [BPair.ofNat 2, BPair.ofNat 5])
+      [BPair.ofNat 11, BPair.ofNat 17] := by decide +kernel
+theorem pin526 : ¬ poly.oneValue
+      (adjD [[BPair.ofNat 2, BPair.unit], [BPair.unit, BPair.ofNat 3]] [BPair.ofNat 2, BPair.ofNat 1])
+      (ground.adjSwap 0 (adjD [[BPair.ofNat 2, BPair.unit], [BPair.unit, BPair.ofNat 3]] [BPair.ofNat 1, BPair.ofNat 2])) := by
+  decide +kernel
+
+/-- The descent adjugate recovers an arbitrary stated solution
+at the determinant's scale on a two-coordinate square list. -/
+theorem pin527 (z : List BPair) (hz : z.length = 2) :
+    poly.oneValue
+      (adjD [[BPair.ofNat 2, BPair.ofNat 1], [BPair.ofNat 1, BPair.ofNat 2]]
+        (matVec [[BPair.ofNat 2, BPair.ofNat 1], [BPair.ofNat 1, BPair.ofNat 2]] z))
+      (vecScale (BPair.ofNat 3) z) := by
+  refine poly.oneValue_trans (adjD_solve _ (by decide +kernel) (by decide +kernel)
+    z _ hz (matVec_length _ _) (poly.oneValue_refl _)) ?_
+  exact vecScale_congr (by decide +kernel) z
+
+/-- A negative row coefficient forces its coordinate to zero
+when the whole row pairs nonnegatively with a nonnegative vector. -/
+theorem pin528 (v : List BPair) (hv : v.length = 2)
+    (hp : ∀ i, i < 2 → BPair.unit ≤ ground.getAt BPair.unit v i)
+    (hd : BPair.unit ≤ dotP [(BPair.ofNat 2).swap, BPair.unit] v) :
+    (ground.getAt BPair.unit v 0).oneValue BPair.unit :=
+  dotP_nonpositive_zero [(BPair.ofNat 2).swap, BPair.unit] v hv.symm (by decide +kernel)
+    (fun i hi => hp i (by rw [← hv]; exact hi)) hd 0 (by decide +kernel) (by decide +kernel)
+
+/-- A positive coefficient can offset a negative one; the
+nonpositive-row condition is needed. -/
+theorem pin529 : BPair.unit ≤ dotP [(BPair.ofNat 1).swap, BPair.ofNat 1] [BPair.ofNat 1, BPair.ofNat 1]
+    ∧ ¬ (BPair.ofNat 1).oneValue BPair.unit := by decide +kernel
+
+/-- A lower-side vector can offset a second lower-side entry. -/
+theorem pin530 : BPair.unit ≤ dotP [(BPair.ofNat 1).swap, (BPair.ofNat 1).swap]
+    [BPair.ofNat 1, (BPair.ofNat 1).swap] ∧ ¬ (BPair.ofNat 1).oneValue BPair.unit := by decide +kernel
+
+/-- The reflection in one coordinate fixes every vector whose
+seed and image both lie in the upper closed chamber. -/
+theorem pin531 (v : List BPair) (hv : v.length = 2)
+    (hp : ∀ i, i < 2 → BPair.unit ≤ ground.getAt BPair.unit v i)
+    (hi : ∀ i, i < 2 → BPair.unit ≤ ground.getAt BPair.unit
+      (matVec [[(BPair.ofNat 1).swap, BPair.unit], [BPair.unit, BPair.ofNat 1]] v) i) :
+    poly.oneValue (matVec [[(BPair.ofNat 1).swap, BPair.unit], [BPair.unit, BPair.ofNat 1]] v) v :=
+  matVec_nonnegative_fixed _ 2 (by decide +kernel) (by decide +kernel) v hv hp hi
+
+/-- A dilation has positive input and output without the column
+certificate, and changes the vector. -/
+theorem pin532 : ¬ poly.oneValue (matVec [[BPair.ofNat 2]] [BPair.ofNat 1]) [BPair.ofNat 1] := by decide +kernel
+
+/-- An extra input coordinate is truncated by the matrix read;
+the matched-width premise prevents this change of list. -/
+theorem pin533 : ¬ poly.oneValue
+    (matVec [[(BPair.ofNat 1).swap, BPair.unit], [BPair.unit, BPair.ofNat 1]]
+      [BPair.unit, BPair.ofNat 1, BPair.ofNat 2])
+    [BPair.unit, BPair.ofNat 1, BPair.ofNat 2] := by decide +kernel
+
+/-- An extra output row likewise refuses the square frame. -/
+theorem pin534 : ¬ poly.oneValue (matVec [[BPair.ofNat 1], [BPair.ofNat 1]] [BPair.ofNat 1])
+    [BPair.ofNat 1] := by decide +kernel
+
+/-- Positivity of the seed alone does not imply it is fixed by
+a reflection: the reflected coordinate can lie below the unit. -/
+theorem pin535 : ¬ poly.oneValue
+    (matVec [[(BPair.ofNat 1).swap, BPair.unit], [BPair.unit, BPair.ofNat 1]] [BPair.ofNat 1, BPair.ofNat 1])
+    [BPair.ofNat 1, BPair.ofNat 1] := by decide +kernel
+
+/-- A strict entry in ordered rows separates their pairings
+against a strictly positive vector at a shared width. -/
+theorem pin536 (v : List BPair) (hv : v.length = 2)
+    (hp : ∀ i, i < 2 → BPair.unit < ground.getAt BPair.unit v i) :
+    ¬ (dotP [BPair.ofNat 1, BPair.ofNat 2] v).oneValue (dotP [BPair.ofNat 1, BPair.ofNat 3] v) :=
+  dotP_ne_of_row_le _ _ v hv.symm hv.symm
+    (fun i hi => (by decide +kernel : ∀ i, i < 2 → ground.getAt BPair.unit [BPair.ofNat 1, BPair.ofNat 2] i
+      ≤ ground.getAt BPair.unit [BPair.ofNat 1, BPair.ofNat 3] i) i (by rw [← hv]; exact hi))
+    (fun i hi => hp i (by rw [← hv]; exact hi)) 1 (by rw [hv]; decide +kernel) (by decide +kernel)
+
+/-- A zero coordinate can conceal a strict row difference. -/
+theorem pin537 : (dotP [BPair.ofNat 1, BPair.ofNat 2] [BPair.ofNat 1, BPair.unit]).oneValue
+    (dotP [BPair.ofNat 1, BPair.ofNat 3] [BPair.ofNat 1, BPair.unit]) := by decide +kernel
+
+/-- Opposing row differences can give one pairing even with
+strictly positive vector coordinates. -/
+theorem pin538 : (dotP [BPair.ofNat 1, BPair.ofNat 2] [BPair.ofNat 1, BPair.ofNat 1]).oneValue
+    (dotP [BPair.ofNat 2, BPair.ofNat 1] [BPair.ofNat 1, BPair.ofNat 1]) := by decide +kernel
+
+
+/-- The family outside the stated index may have another
+width; the entries read only the indexed members. -/
+theorem pin539 : (getAt BPair.unit (vsum 2 (fun k => if k = 0 then [BPair.ofNat 3, BPair.ofNat 4] else []) [0]) 1).oneValue
+    (ground.bsum (fun k => getAt BPair.unit (if k = 0 then [BPair.ofNat 3, BPair.ofNat 4] else []) 1) [0]) :=
+  vsum_entry_members 2 _ [0]
+    (fun k hk => of_decide_eq_true (ground.all_of_mem
+      (fun j : Nat => decide ((if j = 0 then [BPair.ofNat 3, BPair.ofNat 4] else []).length = 2))
+      [0] (by decide +kernel) k (ground.mem_of_countOf_pos k [0] hk)))
+    1 (by decide +kernel)
+
+/-- An indexed member at the wrong width truncates the vector
+fold and parts its entry from the scalar fold. -/
+theorem pin540 : ¬ (getAt BPair.unit (vsum 2 (fun k => if k = 0 then [BPair.ofNat 3, BPair.ofNat 4] else []) [0, 1]) 0).oneValue
+    (ground.bsum (fun k => getAt BPair.unit (if k = 0 then [BPair.ofNat 3, BPair.ofNat 4] else []) 0) [0, 1]) := by
+  decide +kernel
+
+/-- Gram joins transport across a pairing-preserving coordinate map. -/
+theorem pin541 {α β : Type} (dot : α → α → ground.BPair) (dot' : β → β → ground.BPair)
+    (f : α → β) (L : List α) (v : α)
+    (hdot : ∀ a ∈ L ++ [v], ∀ b ∈ L ++ [v], (dot a b).oneValue (dot' (f a) (f b))) :
+    joinIndep dot L v = joinIndep dot' (L.map f) (f v) := joinIndep_map dot dot' f L v hdot
+
+/-- A map without the pairing identity can change the Gram join. -/
+theorem pin542 : joinIndep (fun _ _ : Nat => ground.BPair.unit) [] 1
+    ≠ joinIndep dotP [] [ground.BPair.ofNat 1] := by decide +kernel
+
+/-- Independent interleaved groups join at their cross-pairing read. -/
+theorem pin543 {α κ : Type} [DecidableEq κ]
+    (key : α → κ) (coords : α → List ground.BPair) (n : Nat) (L : List α)
+    (hr : ∀ v ∈ L, (coords v).length = n)
+    (hg : ∀ mu ∈ L.map key,
+      indepRows n ((L.filter (fun v => decide (key v = mu))).map coords))
+    (hc : ∀ u ∈ L, ∀ v ∈ L, key u ≠ key v →
+      (dotP (coords u) (coords v)).oneValue ground.BPair.unit) :
+    indepRows n (L.map coords) := indep_groups key coords n L hr hg hc
+
+/-- Interleaved orthogonal grades are independent; repeated rows
+within one grade fail, and assigning two grades to one row does
+not make the concatenated family independent. -/
+theorem pin544 :
+    indepRows 3 [[ground.BPair.ofNat 1, ground.BPair.unit, ground.BPair.unit],
+      [ground.BPair.unit, ground.BPair.unit, ground.BPair.ofNat 1],
+      [ground.BPair.unit, ground.BPair.ofNat 1, ground.BPair.unit]]
+    ∧ ¬ indepRows 1 [[ground.BPair.ofNat 1], [ground.BPair.ofNat 1]]
+    ∧ (∀ mu ∈ [0, 1], indepRows 1
+      (([(0, [ground.BPair.ofNat 1]), (1, [ground.BPair.ofNat 1])].filter
+        (fun p => decide (p.1 = mu))).map Prod.snd))
+    ∧ ¬ (dotP [ground.BPair.ofNat 1] [ground.BPair.ofNat 1]).oneValue ground.BPair.unit := by
+  decide +kernel
+
+end elim

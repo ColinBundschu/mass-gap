@@ -53,8 +53,10 @@ consumers.
 naming frames: every matrix satisfies them at its own row count.
 -/
 
+namespace relfiber
 
-open ground elim relfiber fiberdec
+
+open ground elim fiberdec
 
 private def q1 : BPair := BPair.ofNat 2
 private def q2 : BPair := BPair.ofNat 1
@@ -75,84 +77,84 @@ private def vZ : List BPair := [q3, q1]
 
 /-! ### The shape and the entry reads -/
 
-example : (tensorV vU vV).length = vU.length * vV.length := by decide +kernel
+theorem pin1 : (tensorV vU vV).length = vU.length * vV.length := by decide +kernel
 
-example : (tensorM mA mB).length = mA.length * mB.length := by decide +kernel
+theorem pin2 : (tensorM mA mB).length = mA.length * mB.length := by decide +kernel
 
-example : rowsLen (2 * 2) (tensorM mA mB) := by decide +kernel
+theorem pin3 : rowsLen (2 * 2) (tensorM mA mB) := by decide +kernel
 
-example : rowsLen (mA.length ^ 2) (tensorPow mA 2)
+theorem pin4 : rowsLen (mA.length ^ 2) (tensorPow mA 2)
     ∧ (tensorPow mA 2).length = mA.length ^ 2 := by decide +kernel
 
-example : ground.getAt BPair.unit (tensorV vU vV) (1 * vV.length + 0)
+theorem pin5 : ground.getAt BPair.unit (tensorV vU vV) (1 * vV.length + 0)
     = (ground.getAt BPair.unit vU 1
       * ground.getAt BPair.unit vV 0).norm := by decide +kernel
 
-example : ground.getAt BPair.unit (tensorV vU vV) (0 * vV.length + 1)
+theorem pin6 : ground.getAt BPair.unit (tensorV vU vV) (0 * vV.length + 1)
     = (ground.getAt BPair.unit vU 0
       * ground.getAt BPair.unit vV 1).norm := by decide +kernel
 
-example : ground.getAt [] (tensorM mA mB) (1 * mB.length + 1)
+theorem pin7 : ground.getAt [] (tensorM mA mB) (1 * mB.length + 1)
     = tensorV (ground.getAt [] mA 1) (ground.getAt [] mB 1) := by decide +kernel
 
-example : ground.getAt [] (tensorM mA mB) (0 * mB.length + 1)
+theorem pin8 : ground.getAt [] (tensorM mA mB) (0 * mB.length + 1)
     = tensorV (ground.getAt [] mA 0) (ground.getAt [] mB 1) := by decide +kernel
 
 /-! ### The pairing, the action and the product -/
 
-example : (dotP (tensorV vU vV) (tensorV vW vZ)).oneValue
+theorem pin9 : (dotP (tensorV vU vV) (tensorV vW vZ)).oneValue
     (dotP vU vW * dotP vV vZ) := by decide +kernel
 
-example : (dotN (tensorV vU vV) (tensorV vW vZ)).oneValue
+theorem pin10 : (dotN (tensorV vU vV) (tensorV vW vZ)).oneValue
     ((dotN vU vW * dotN vV vZ).norm) := by decide +kernel
 
-example : poly.oneValue (matVec (tensorM mA mB) (tensorV vU vV))
+theorem pin11 : poly.oneValue (matVec (tensorM mA mB) (tensorV vU vV))
     (tensorV (matVec mA vU) (matVec mB vV)) := by decide +kernel
 
-example : matOneValue (matMul (tensorM mA mB) (tensorM mC mD))
+theorem pin12 : matOneValue (matMul (tensorM mA mB) (tensorM mC mD))
     (tensorM (matMul mA mC) (matMul mB mD)) := by decide +kernel
 
 /-! ### The equations: the exchange, the weighting, the swap,
 associativity and the identity -/
 
-example : transposeM (tensorM mA mB)
+theorem pin13 : transposeM (tensorM mA mB)
     = tensorM (transposeM mA) (transposeM mB) := by decide +kernel
 
-example : tensorM (inertia.matScaleB q4 mA) mB
+theorem pin14 : tensorM (inertia.matScaleB q4 mA) mB
     = inertia.matScaleB q4 (tensorM mA mB) := by decide +kernel
 
-example : tensorM mA (inertia.matScaleB q4 mB)
+theorem pin15 : tensorM mA (inertia.matScaleB q4 mB)
     = inertia.matScaleB q4 (tensorM mA mB) := by decide +kernel
 
-example : tensorM (matSwap mA) mB = matSwap (tensorM mA mB) := by decide +kernel
+theorem pin16 : tensorM (matSwap mA) mB = matSwap (tensorM mA mB) := by decide +kernel
 
-example : tensorM mA (matSwap mB) = matSwap (tensorM mA mB) := by decide +kernel
+theorem pin17 : tensorM mA (matSwap mB) = matSwap (tensorM mA mB) := by decide +kernel
 
-example : tensorV (tensorV vU vV) vW = tensorV vU (tensorV vV vW) := by
+theorem pin18 : tensorV (tensorV vU vV) vW = tensorV vU (tensorV vV vW) := by
   decide +kernel
 
-example : tensorM (tensorM mA mB) mC = tensorM mA (tensorM mB mC) := by
+theorem pin19 : tensorM (tensorM mA mB) mC = tensorM mA (tensorM mB mC) := by
   decide +kernel
 
-example : tensorM (elim.idMat 2) (elim.idMat 3)
+theorem pin20 : tensorM (elim.idMat 2) (elim.idMat 3)
     = elim.idMat (2 * 3) := by decide +kernel
 
 /-! ### Linearity in each slot -/
 
-example : matOneValue (tensorM (matAdd mA mC) mB)
+theorem pin21 : matOneValue (tensorM (matAdd mA mC) mB)
     (matAdd (tensorM mA mB) (tensorM mC mB)) := by decide +kernel
 
-example : matOneValue (tensorM mA (matAdd mB mD))
+theorem pin22 : matOneValue (tensorM mA (matAdd mB mD))
     (matAdd (tensorM mA mB) (tensorM mA mD)) := by decide +kernel
 
 /-! ### The tensor-sum pencil at the splittings -/
 
-example : matOneValue (sumPencil mA mB 1) mA := by decide +kernel
+theorem pin23 : matOneValue (sumPencil mA mB 1) mA := by decide +kernel
 
-example : matOneValue (sumPencil mA mB 2)
+theorem pin24 : matOneValue (sumPencil mA mB 2)
     (matAdd (tensorM mA mB) (tensorM mB mA)) := by decide +kernel
 
-example : matOneValue (sumPencil mA mB 3)
+theorem pin25 : matOneValue (sumPencil mA mB 3)
     (matAdd (tensorM mA (tensorM mB mB))
       (matAdd (tensorM mB (tensorM mA mB))
         (tensorM mB (tensorM mB mA)))) := by decide +kernel
@@ -162,138 +164,138 @@ example : matOneValue (sumPencil mA mB 3)
 private def ragL : Mat := [[q1], [q2, q3]]
 private def sqW : Mat := [[q1, q2]]
 
-example : ¬ rowsLen (1 * 2) (tensorM ragL sqW) := by decide +kernel
-example : rowsLen 2 sqW := by decide +kernel
+theorem pin26 : ¬ rowsLen (1 * 2) (tensorM ragL sqW) := by decide +kernel
+theorem pin27 : rowsLen 2 sqW := by decide +kernel
 
-example : ¬ rowsLen (1 * 1) (tensorM [[q1]] ragL) := by decide +kernel
-example : rowsLen 1 ([[q1]] : Mat) := by decide +kernel
+theorem pin28 : ¬ rowsLen (1 * 1) (tensorM [[q1]] ragL) := by decide +kernel
+theorem pin29 : rowsLen 1 ([[q1]] : Mat) := by decide +kernel
 
-example : ¬ (rowsLen (sqW.length ^ 1) (tensorPow sqW 1)
+theorem pin30 : ¬ (rowsLen (sqW.length ^ 1) (tensorPow sqW 1)
     ∧ (tensorPow sqW 1).length = sqW.length ^ 1) := by decide +kernel
 
-example : ¬ (ground.getAt BPair.unit (tensorV [q1, q2] [q3, q4])
+theorem pin31 : ¬ (ground.getAt BPair.unit (tensorV [q1, q2] [q3, q4])
       (0 * ([q3, q4] : List BPair).length + 2)
     = (ground.getAt BPair.unit [q1, q2] 0
       * ground.getAt BPair.unit [q3, q4] 2).norm) := by decide +kernel
-example : 0 < ([q1, q2] : List BPair).length := by decide +kernel
+theorem pin32 : 0 < ([q1, q2] : List BPair).length := by decide +kernel
 
-example : ¬ (ground.getAt [] (tensorM [[q1], [q2]] [[q3]])
+theorem pin33 : ¬ (ground.getAt [] (tensorM [[q1], [q2]] [[q3]])
       (0 * ([[q3]] : Mat).length + 1)
     = tensorV (ground.getAt [] [[q1], [q2]] 0)
       (ground.getAt [] [[q3]] 1)) := by decide +kernel
-example : 0 < ([[q1], [q2]] : Mat).length := by decide +kernel
+theorem pin34 : 0 < ([[q1], [q2]] : Mat).length := by decide +kernel
 
-example : ¬ (dotP (tensorV [q1, q2] [q3, q4]) (tensorV [q5, q6] [q1])).oneValue
+theorem pin35 : ¬ (dotP (tensorV [q1, q2] [q3, q4]) (tensorV [q5, q6] [q1])).oneValue
     (dotP [q1, q2] [q5, q6] * dotP [q3, q4] [q1]) := by decide +kernel
 
-example : ¬ (dotN (tensorV [q1, q2] [q3, q4]) (tensorV [q5, q6] [q1])).oneValue
+theorem pin36 : ¬ (dotN (tensorV [q1, q2] [q3, q4]) (tensorV [q5, q6] [q1])).oneValue
     ((dotN [q1, q2] [q5, q6] * dotN [q3, q4] [q1]).norm) := by decide +kernel
 
-example : ¬ poly.oneValue
+theorem pin37 : ¬ poly.oneValue
     (matVec (tensorM [[q1, q2]] [[q3, q4]]) (tensorV [q5, q6] [q1]))
     (tensorV (matVec [[q1, q2]] [q5, q6]) (matVec [[q3, q4]] [q1])) := by
   decide +kernel
 
 private def ragR : Mat := [[q3], [q4, q5]]
 
-example : ¬ (transposeM (tensorM sqW ragR)
+theorem pin38 : ¬ (transposeM (tensorM sqW ragR)
     = tensorM (transposeM sqW) (transposeM ragR)) := by decide +kernel
-example : sqW.length = 1 := by decide +kernel
-example : rowsLen 2 sqW := by decide +kernel
+theorem pin39 : sqW.length = 1 := by decide +kernel
+theorem pin40 : rowsLen 2 sqW := by decide +kernel
 
 private def aRow : Mat := [[q1, q2]]
 private def cSq : Mat := [[q4, q1], [q5, q6]]
 
-example : ¬ matOneValue
+theorem pin41 : ¬ matOneValue
     (matMul (tensorM aRow [[q1, q4]]) (tensorM cSq [[q2]]))
     (tensorM (matMul aRow cSq) (matMul [[q1, q4]] [[q2]])) := by decide +kernel
-example : rowsLen 2 ([[q1, q4]] : Mat) := by decide +kernel
-example : rowsLen 2 cSq := by decide +kernel
-example : rowsLen 1 ([[q2]] : Mat) := by decide +kernel
+theorem pin42 : rowsLen 2 ([[q1, q4]] : Mat) := by decide +kernel
+theorem pin43 : rowsLen 2 cSq := by decide +kernel
+theorem pin44 : rowsLen 1 ([[q2]] : Mat) := by decide +kernel
 
-example : ¬ matOneValue
+theorem pin45 : ¬ matOneValue
     (matMul (tensorM aRow [[q1], [q4, q5]]) (tensorM cSq [[q2]]))
     (tensorM (matMul aRow cSq) (matMul [[q1], [q4, q5]] [[q2]])) := by decide +kernel
-example : ([[q2]] : Mat).length = 1 := by decide +kernel
+theorem pin46 : ([[q2]] : Mat).length = 1 := by decide +kernel
 
-example : ¬ matOneValue
+theorem pin47 : ¬ matOneValue
     (matMul (tensorM aRow [[q1, q4]]) (tensorM cSq [[q2], [q3, q5]]))
     (tensorM (matMul aRow cSq) (matMul [[q1, q4]] [[q2], [q3, q5]])) := by
   decide +kernel
-example : ([[q2], [q3, q5]] : Mat).length = 2 := by decide +kernel
+theorem pin48 : ([[q2], [q3, q5]] : Mat).length = 2 := by decide +kernel
 
-example : ¬ matOneValue
+theorem pin49 : ¬ matOneValue
     (tensorM [[q1], [q2]] (matAdd [[q3], [q4]] [[q5]]))
     (matAdd (tensorM [[q1], [q2]] [[q3], [q4]])
       (tensorM [[q1], [q2]] [[q5]])) := by decide +kernel
-example : rowsLen 1 ([[q3], [q4]] : Mat) := by decide +kernel
-example : rowsLen 1 ([[q5]] : Mat) := by decide +kernel
+theorem pin50 : rowsLen 1 ([[q3], [q4]] : Mat) := by decide +kernel
+theorem pin51 : rowsLen 1 ([[q5]] : Mat) := by decide +kernel
 
-example : ¬ matOneValue
+theorem pin52 : ¬ matOneValue
     (tensorM aRow (matAdd [[q3], [q4]] [[q5, q6], [q1, q2]]))
     (matAdd (tensorM aRow [[q3], [q4]])
       (tensorM aRow [[q5, q6], [q1, q2]])) := by decide +kernel
-example : ([[q3], [q4]] : Mat).length = ([[q5, q6], [q1, q2]] : Mat).length := by
+theorem pin53 : ([[q3], [q4]] : Mat).length = ([[q5, q6], [q1, q2]] : Mat).length := by
   decide +kernel
 
-example : ¬ matOneValue
+theorem pin54 : ¬ matOneValue
     (tensorM aRow (matAdd [[q5, q6], [q1, q2]] [[q3], [q4]]))
     (matAdd (tensorM aRow [[q5, q6], [q1, q2]])
       (tensorM aRow [[q3], [q4]])) := by decide +kernel
 
 /-! ### The frame records: the reads standing off their binders -/
 
-example : ground.getAt BPair.unit (tensorV [q1] [q3, q4])
+theorem pin55 : ground.getAt BPair.unit (tensorV [q1] [q3, q4])
       (1 * ([q3, q4] : List BPair).length + 0)
     = (ground.getAt BPair.unit [q1] 1
       * ground.getAt BPair.unit [q3, q4] 0).norm := by decide +kernel
 
-example : ground.getAt BPair.unit (tensorV [q1, q2] [q3, q4])
+theorem pin56 : ground.getAt BPair.unit (tensorV [q1, q2] [q3, q4])
       (3 * ([q3, q4] : List BPair).length + 1)
     = (ground.getAt BPair.unit [q1, q2] 3
       * ground.getAt BPair.unit [q3, q4] 1).norm := by decide +kernel
 
-example : ground.getAt BPair.unit (tensorV [q1, q2] [])
+theorem pin57 : ground.getAt BPair.unit (tensorV [q1, q2] [])
       (2 * ([] : List BPair).length + 0)
     = (ground.getAt BPair.unit [q1, q2] 2
       * ground.getAt BPair.unit ([] : List BPair) 0).norm := by decide +kernel
 
-example : ground.getAt [] (tensorM [[q1]] [[q3], [q4]])
+theorem pin58 : ground.getAt [] (tensorM [[q1]] [[q3], [q4]])
       (1 * ([[q3], [q4]] : Mat).length + 0)
     = tensorV (ground.getAt [] [[q1]] 1)
       (ground.getAt [] [[q3], [q4]] 0) := by decide +kernel
 
-example : ground.getAt [] (tensorM [[q1], [q2]] [[q3], [q4]])
+theorem pin59 : ground.getAt [] (tensorM [[q1], [q2]] [[q3], [q4]])
       (2 * ([[q3], [q4]] : Mat).length + 1)
     = tensorV (ground.getAt [] [[q1], [q2]] 2)
       (ground.getAt [] [[q3], [q4]] 1) := by decide +kernel
 
-example : transposeM (tensorM ragL [[q4, q5]])
+theorem pin60 : transposeM (tensorM ragL [[q4, q5]])
     = tensorM (transposeM ragL) (transposeM [[q4, q5]]) := by decide +kernel
 
-example : transposeM (tensorM [[q1, q2], [q3]] [[q4, q5]])
+theorem pin61 : transposeM (tensorM [[q1, q2], [q3]] [[q4, q5]])
     = tensorM (transposeM [[q1, q2], [q3]]) (transposeM [[q4, q5]]) := by
   decide +kernel
 
-example : transposeM (tensorM [[q1, q2], [q3]] [[q4], [q5]])
+theorem pin62 : transposeM (tensorM [[q1, q2], [q3]] [[q4], [q5]])
     = tensorM (transposeM [[q1, q2], [q3]]) (transposeM [[q4], [q5]]) := by
   decide +kernel
 
-example : transposeM (tensorM [[q1], [q2, q3], [q4]] [[q5, q6]])
+theorem pin63 : transposeM (tensorM [[q1], [q2, q3], [q4]] [[q5, q6]])
     = tensorM (transposeM [[q1], [q2, q3], [q4]])
       (transposeM [[q5, q6]]) := by decide +kernel
 
-example : matOneValue
+theorem pin64 : matOneValue
     (matMul (tensorM aRow [[q1, q4]]) (tensorM [[q4], [q5, q6]] [[q2, q1], [q4, q3]]))
     (tensorM (matMul aRow [[q4], [q5, q6]])
       (matMul [[q1, q4]] [[q2, q1], [q4, q3]])) := by decide +kernel
 
-example : matOneValue
+theorem pin65 : matOneValue
     (matMul (tensorM aRow [[q1, q4]]) (tensorM [[q4, q1], [q5]] [[q2, q1], [q4, q3]]))
     (tensorM (matMul aRow [[q4, q1], [q5]])
       (matMul [[q1, q4]] [[q2, q1], [q4, q3]])) := by decide +kernel
 
-example : matOneValue
+theorem pin66 : matOneValue
     (matMul (tensorM [[q1, q2], [q4, q5]] [[q1, q4]])
       (tensorM [[q4], [q5, q6]] [[q2, q1], [q4, q3]]))
     (tensorM (matMul [[q1, q2], [q4, q5]] [[q4], [q5, q6]])
@@ -358,16 +360,16 @@ private def gTw : Mat := [[w1, w1], [w0, w1]]
 private def spG : inertia.Split 2 :=
   ⟨⟨gT, rfl⟩, ⟨gTw, rfl⟩, [.one w1, .one w1], 0, rfl⟩
 
-example : inertia.splitRead gG spG := by decide +kernel
-example : inertia.psdAt spG := by decide +kernel
-example : (spG.blocks.all (fun b => b.order == 1)) = true := by decide +kernel
+theorem pin67 : inertia.splitRead gG spG := by decide +kernel
+theorem pin68 : inertia.psdAt spG := by decide +kernel
+theorem pin69 : (spG.blocks.all (fun b => b.order == 1)) = true := by decide +kernel
 
 /-! The single-component head at the level `⟨2 : 1⟩`: the site datum
 is the gram itself. -/
 
 private def hH : Mat := [[w2, w2], [w2, w4]]
 
-example : inertia.splitRead (inertia.siteDatum
+theorem pin70 : inertia.splitRead (inertia.siteDatum
     (matAdd hH (inertia.matScale 1 gG)) (inertia.matScale 2 gG)) spG := by
   decide +kernel
 
@@ -381,23 +383,23 @@ private def gTw4 : Mat :=
   [[w1, w1, w1, w1], [w0, w1, w0, w1],
    [w0, w0, w1, w1], [w0, w0, w0, w1]]
 
-example : gT4 = tensorM gT gT := by decide +kernel
-example : gTw4 = tensorM gTw gTw := by decide +kernel
+theorem pin71 : gT4 = tensorM gT gT := by decide +kernel
+theorem pin72 : gTw4 = tensorM gTw gTw := by decide +kernel
 
 private def spSec : inertia.Split 4 :=
   ⟨⟨gT4, rfl⟩, ⟨gTw4, rfl⟩, [.one w2, .one w2, .one w2, .one w2], 0, rfl⟩
 
-example : inertia.splitRead (inertia.siteDatum
+theorem pin73 : inertia.splitRead (inertia.siteDatum
     (matAdd (sumPencil hH gG 2) (inertia.matScale 1 (tensorPow gG 2)))
     (inertia.matScale 3 (tensorPow gG 2))) spSec := by decide +kernel
 
-example : inertia.psdAt spSec := by decide +kernel
+theorem pin74 : inertia.psdAt spSec := by decide +kernel
 
-example : BPair.ofPos 3 + BPair.ofNat 2 * BPair.ofPos 1
+theorem pin75 : BPair.ofPos 3 + BPair.ofNat 2 * BPair.ofPos 1
     ≤ BPair.ofNat 2 * BPair.ofPos 2 + BPair.ofPos 1 := by decide +kernel
 
 /-- The clearing through the theorem at the committed instance. -/
-example : inertia.psdAt spSec :=
+theorem pin76 : inertia.psdAt spSec :=
   bottomClear hH gG (by decide +kernel) (by decide +kernel) 2 1 spG (by decide +kernel)
     (by decide +kernel) spG (by decide +kernel) (by decide +kernel) (by decide +kernel) 2
     (by decide +kernel) 3 1 (by decide +kernel) spSec (by decide +kernel)
@@ -412,14 +414,14 @@ private def spSecNeg : inertia.Split 4 :=
   ⟨⟨gT4, rfl⟩, ⟨gTw4, rfl⟩, [.one wm1, .one wm1, .one wm1, .one wm1],
    0, rfl⟩
 
-example : inertia.splitRead (inertia.siteDatum
+theorem pin77 : inertia.splitRead (inertia.siteDatum
     (matAdd (sumPencil hH gG 2) (inertia.matScale 1 (tensorPow gG 2)))
     (inertia.matScale 6 (tensorPow gG 2))) spSecNeg := by decide +kernel
 
-example : inertia.revAt spSecNeg = 4 := by decide +kernel
-example : ¬ inertia.psdAt spSecNeg := by decide +kernel
+theorem pin78 : inertia.revAt spSecNeg = 4 := by decide +kernel
+theorem pin79 : ¬ inertia.psdAt spSecNeg := by decide +kernel
 
-example : ¬ (BPair.ofPos 6 + BPair.ofNat 2 * BPair.ofPos 1
+theorem pin80 : ¬ (BPair.ofPos 6 + BPair.ofNat 2 * BPair.ofPos 1
     ≤ BPair.ofNat 2 * BPair.ofPos 2 + BPair.ofPos 1) := by decide +kernel
 
 /-! The floor's `psdAt`: at `H = 0` the site datum is `-G`, two
@@ -430,21 +432,21 @@ private def hZero : Mat := [[w0, w0], [w0, w0]]
 private def spFloorNeg : inertia.Split 2 :=
   ⟨⟨gT, rfl⟩, ⟨gTw, rfl⟩, [.one wm1, .one wm1], 0, rfl⟩
 
-example : inertia.splitRead (inertia.siteDatum
+theorem pin81 : inertia.splitRead (inertia.siteDatum
     (matAdd hZero (inertia.matScale 1 gG)) (inertia.matScale 2 gG))
     spFloorNeg := by decide +kernel
 
-example : ¬ inertia.psdAt spFloorNeg := by decide +kernel
+theorem pin82 : ¬ inertia.psdAt spFloorNeg := by decide +kernel
 
 private def spSecNeg2 : inertia.Split 4 :=
   ⟨⟨gT4, rfl⟩, ⟨gTw4, rfl⟩, [.one wm2, .one wm2, .one wm2, .one wm2],
    0, rfl⟩
 
-example : inertia.splitRead (inertia.siteDatum
+theorem pin83 : inertia.splitRead (inertia.siteDatum
     (matAdd (sumPencil hZero gG 2) (inertia.matScale 1 (tensorPow gG 2)))
     (inertia.matScale 3 (tensorPow gG 2))) spSecNeg2 := by decide +kernel
 
-example : ¬ inertia.psdAt spSecNeg2 := by decide +kernel
+theorem pin84 : ¬ inertia.psdAt spSecNeg2 := by decide +kernel
 
 /-! ### The frame records -/
 
@@ -458,22 +460,22 @@ private def spTwoBlk : inertia.Split 2 :=
   ⟨⟨elim.idMat 2, rfl⟩, ⟨elim.idMat 2, rfl⟩,
    [.two w2 w1 w2], 0, rfl⟩
 
-example : inertia.splitRead gTwoBlk spTwoBlk := by decide +kernel
-example : inertia.psdAt spTwoBlk := by decide +kernel
-example : (spTwoBlk.blocks.all (fun b => b.order == 1)) = false := by decide +kernel
+theorem pin85 : inertia.splitRead gTwoBlk spTwoBlk := by decide +kernel
+theorem pin86 : inertia.psdAt spTwoBlk := by decide +kernel
+theorem pin87 : (spTwoBlk.blocks.all (fun b => b.order == 1)) = false := by decide +kernel
 
 private def v1 : List BPair := [w1, w0, w0, w0]
 private def v2 : List BPair := [w1, wm1, w1, wm1]
 private def v3 : List BPair := [w2, w1, wm1, w1]
 private def v4 : List BPair := [wm2, w1, w2, wm1]
 
-example : ¬ (inertia.quadForm (tensorM gTwoBlk gG) v1 < BPair.unit) := by
+theorem pin88 : ¬ (inertia.quadForm (tensorM gTwoBlk gG) v1 < BPair.unit) := by
   decide +kernel
-example : ¬ (inertia.quadForm (tensorM gTwoBlk gG) v2 < BPair.unit) := by
+theorem pin89 : ¬ (inertia.quadForm (tensorM gTwoBlk gG) v2 < BPair.unit) := by
   decide +kernel
-example : ¬ (inertia.quadForm (tensorM gTwoBlk gG) v3 < BPair.unit) := by
+theorem pin90 : ¬ (inertia.quadForm (tensorM gTwoBlk gG) v3 < BPair.unit) := by
   decide +kernel
-example : ¬ (inertia.quadForm (tensorM gG gTwoBlk) v4 < BPair.unit) := by
+theorem pin91 : ¬ (inertia.quadForm (tensorM gG gTwoBlk) v4 < BPair.unit) := by
   decide +kernel
 
 /-! `1 ≤ rho`: at the vacant factor count the sector's datum is the
@@ -483,28 +485,28 @@ one-by-one bracket difference, and the level comparison reads
 private def spZeroSec : inertia.Split 1 :=
   ⟨⟨[[w1]], rfl⟩, ⟨[[w1]], rfl⟩, [.one w1], 0, rfl⟩
 
-example : BPair.ofPos 1 + BPair.ofNat 0 * BPair.ofPos 1
+theorem pin92 : BPair.ofPos 1 + BPair.ofNat 0 * BPair.ofPos 1
     ≤ BPair.ofNat 0 * BPair.ofPos 2 + BPair.ofPos 2 := by decide +kernel
 
-example : inertia.splitRead (inertia.siteDatum
+theorem pin93 : inertia.splitRead (inertia.siteDatum
     (matAdd (sumPencil hH gG 0) (inertia.matScale 2 (tensorPow gG 0)))
     (inertia.matScale 1 (tensorPow gG 0))) spZeroSec := by decide +kernel
 
-example : inertia.psdAt spZeroSec := by decide +kernel
+theorem pin94 : inertia.psdAt spZeroSec := by decide +kernel
 
 /-! ### The two form theorems at committed vectors -/
 
-example : ¬ (inertia.quadForm (tensorM gG gG) v1 < BPair.unit) := by decide +kernel
-example : ¬ (inertia.quadForm (tensorM gG gG) v2 < BPair.unit) := by decide +kernel
-example : ¬ (inertia.quadForm (tensorM gG gG) v3 < BPair.unit) := by decide +kernel
-example : ¬ (inertia.quadForm (tensorM gG gG) v4 < BPair.unit) := by decide +kernel
+theorem pin95 : ¬ (inertia.quadForm (tensorM gG gG) v1 < BPair.unit) := by decide +kernel
+theorem pin96 : ¬ (inertia.quadForm (tensorM gG gG) v2 < BPair.unit) := by decide +kernel
+theorem pin97 : ¬ (inertia.quadForm (tensorM gG gG) v3 < BPair.unit) := by decide +kernel
+theorem pin98 : ¬ (inertia.quadForm (tensorM gG gG) v4 < BPair.unit) := by decide +kernel
 
-example : ¬ (inertia.quadForm (tensorM gG gG) v3 < BPair.unit) :=
+theorem pin99 : ¬ (inertia.quadForm (tensorM gG gG) v3 < BPair.unit) :=
   tensor_form_left gG spG (by decide +kernel) (by decide +kernel) (by decide +kernel) gG 2
     (by decide +kernel) (inertia.psd_all gG spG (by decide +kernel) (by decide +kernel)) v3
     (by decide +kernel)
 
-example : ¬ (inertia.quadForm (tensorM gG gG) v4 < BPair.unit) :=
+theorem pin100 : ¬ (inertia.quadForm (tensorM gG gG) v4 < BPair.unit) :=
   tensor_form_right gG spG (by decide +kernel) (by decide +kernel) (by decide +kernel) gG 2
     (by decide +kernel) (inertia.psd_all gG spG (by decide +kernel) (by decide +kernel)) v4
     (by decide +kernel)
@@ -513,26 +515,26 @@ example : ¬ (inertia.quadForm (tensorM gG gG) v4 < BPair.unit) :=
 
 private def mP : Mat := [[w2, w1], [w1, w2]]
 
-example : matOneValue
+theorem pin101 : matOneValue
     (matMul (tensorM gG (elim.idMat 2))
       (tensorM (elim.idMat 2) mP))
     (matMul (tensorM (elim.idMat 2) mP)
       (tensorM gG (elim.idMat 2))) := by decide +kernel
 
-example : matOneValue
+theorem pin102 : matOneValue
     (matMul (tensorM gG (elim.idMat 2))
       (tensorM (elim.idMat 2) mP))
     (matMul (tensorM (elim.idMat 2) mP)
       (tensorM gG (elim.idMat 2))) :=
   comm_shift 2 2 gG mP (by decide +kernel) (by decide +kernel)
 
-example : matOneValue
+theorem pin103 : matOneValue
     (matMul (transposeM (tensorM gT gTw))
       (matMul (tensorM gG mP) (tensorM gT gTw)))
     (tensorM (matMul (transposeM gT) (matMul gG gT))
       (matMul (transposeM gTw) (matMul mP gTw))) := by decide +kernel
 
-example : matOneValue
+theorem pin104 : matOneValue
     (matMul (transposeM (tensorM gT gTw))
       (matMul (tensorM gG mP) (tensorM gT gTw)))
     (tensorM (matMul (transposeM gT) (matMul gG gT))
@@ -588,7 +590,7 @@ private def FA : fusion.Data places.Shape := fusion.dataA 3
 
 -- the interface's equality-read law at an occupied label, the
 -- field's read off the unit
-example : FA.eqL [2, 1, 0] [2, 1, 0] = true := FA.eqLRefl [2, 1, 0]
+theorem pin105 : FA.eqL [2, 1, 0] [2, 1, 0] = true := FA.eqLRefl [2, 1, 0]
 
 private def cls3 : List (List places.Shape) :=
   [loopAt 9 0, loopAt 9 3, loopAt 9 6]
@@ -597,31 +599,31 @@ private def clsW : List (List places.Shape) :=
 
 /-! ### The class's separation and its join -/
 
-example : stableentries.disjSupp FA R9 (loopAt 9 0) (loopAt 9 4) := by
+theorem pin106 : stableentries.disjSupp FA R9 (loopAt 9 0) (loopAt 9 4) := by
   decide +kernel
-example : ¬ stableentries.disjSupp FA R9 (loopAt 9 0) (loopAt 9 8) := by
-  decide +kernel
-
-example : allDisj FA R9 (loopAt 9 0) [loopAt 9 3, loopAt 9 6] := by decide +kernel
-example : ¬ allDisj FA R9 (loopAt 9 0) [loopAt 9 4, loopAt 9 8] := by
+theorem pin107 : ¬ stableentries.disjSupp FA R9 (loopAt 9 0) (loopAt 9 8) := by
   decide +kernel
 
-example : disjAll FA R9 cls3 := by decide +kernel
-example : ¬ disjAll FA R9 clsW := by decide +kernel
-
-example : (carrier.support FA R9 (joinAll FA R9 cls3)).length = 12 := by
+theorem pin108 : allDisj FA R9 (loopAt 9 0) [loopAt 9 3, loopAt 9 6] := by decide +kernel
+theorem pin109 : ¬ allDisj FA R9 (loopAt 9 0) [loopAt 9 4, loopAt 9 8] := by
   decide +kernel
-example : carrier.contentN FA (joinAll FA R9 cls3) = 96 := by decide +kernel
-example : carrier.contentN FA (loopAt 9 0) = 32 := by decide +kernel
+
+theorem pin110 : disjAll FA R9 cls3 := by decide +kernel
+theorem pin111 : ¬ disjAll FA R9 clsW := by decide +kernel
+
+theorem pin112 : (carrier.support FA R9 (joinAll FA R9 cls3)).length = 12 := by
+  decide +kernel
+theorem pin113 : carrier.contentN FA (joinAll FA R9 cls3) = 96 := by decide +kernel
+theorem pin114 : carrier.contentN FA (loopAt 9 0) = 32 := by decide +kernel
 
 /-! ### The content at a separated pair -/
 
-example : carrier.contentN FA
+theorem pin115 : carrier.contentN FA
       (stableentries.joinConf FA R9 (loopAt 9 0) (loopAt 9 4))
     = carrier.contentN FA (loopAt 9 0)
       + carrier.contentN FA (loopAt 9 4) := by decide +kernel
 
-example : carrier.contentN FA
+theorem pin116 : carrier.contentN FA
       (stableentries.joinConf FA R9 (loopAt 9 0) (loopAt 9 4))
     = carrier.contentN FA (loopAt 9 0)
       + carrier.contentN FA (loopAt 9 4) :=
@@ -632,14 +634,14 @@ example : carrier.contentN FA
 a rung, the join keeps one copy of it and the parts' sum prices it
 twice. -/
 
-example : ¬ stableentries.disjSupp FA R9 (loopAt 9 0) (loopAt 9 1) := by
+theorem pin117 : ¬ stableentries.disjSupp FA R9 (loopAt 9 0) (loopAt 9 1) := by
   decide +kernel
-example : ¬ (carrier.contentN FA
+theorem pin118 : ¬ (carrier.contentN FA
       (stableentries.joinConf FA R9 (loopAt 9 0) (loopAt 9 1))
     = carrier.contentN FA (loopAt 9 0)
       + carrier.contentN FA (loopAt 9 1)) := by decide +kernel
-example : lattice.wellRead R9 := by decide +kernel
-example : (loopAt 9 0).length = R9.links
+theorem pin119 : lattice.wellRead R9 := by decide +kernel
+theorem pin120 : (loopAt 9 0).length = R9.links
     ∧ (loopAt 9 1).length = R9.links := by decide +kernel
 
 /-! The shape read's refusal: at the vacant vertex count the
@@ -648,11 +650,11 @@ loop meets itself at every link. -/
 
 private def R9v : lattice.Region := { R9 with verts := 0 }
 
-example : ¬ lattice.wellRead R9v := by decide +kernel
-example : stableentries.disjSupp FA R9v (loopAt 9 0) (loopAt 9 0) := by
+theorem pin121 : ¬ lattice.wellRead R9v := by decide +kernel
+theorem pin122 : stableentries.disjSupp FA R9v (loopAt 9 0) (loopAt 9 0) := by
   decide +kernel
-example : (loopAt 9 0).length = R9v.links := by decide +kernel
-example : ¬ (carrier.contentN FA
+theorem pin123 : (loopAt 9 0).length = R9v.links := by decide +kernel
+theorem pin124 : ¬ (carrier.contentN FA
       (stableentries.joinConf FA R9v (loopAt 9 0) (loopAt 9 0))
     = carrier.contentN FA (loopAt 9 0)
       + carrier.contentN FA (loopAt 9 0)) := by decide +kernel
@@ -664,60 +666,67 @@ reads the key range alone. -/
 private def wideA : List places.Shape := loopAt 9 0 ++ [[1, 0, 0]]
 private def wideB : List places.Shape := loopAt 9 4 ++ [[1, 0, 0]]
 
-example : ¬ (wideA.length = R9.links) := by decide +kernel
-example : stableentries.disjSupp FA R9 wideA (loopAt 9 4)
+theorem pin125 : ¬ (wideA.length = R9.links) := by decide +kernel
+theorem pin126 : stableentries.disjSupp FA R9 wideA (loopAt 9 4)
     ∧ (loopAt 9 4).length = R9.links := by decide +kernel
-example : ¬ (carrier.contentN FA
+theorem pin127 : ¬ (carrier.contentN FA
       (stableentries.joinConf FA R9 wideA (loopAt 9 4))
     = carrier.contentN FA wideA
       + carrier.contentN FA (loopAt 9 4)) := by decide +kernel
 
-example : ¬ (wideB.length = R9.links) := by decide +kernel
-example : stableentries.disjSupp FA R9 (loopAt 9 0) wideB
+theorem pin128 : ¬ (wideB.length = R9.links) := by decide +kernel
+theorem pin129 : stableentries.disjSupp FA R9 (loopAt 9 0) wideB
     ∧ (loopAt 9 0).length = R9.links := by decide +kernel
-example : ¬ (carrier.contentN FA
+theorem pin130 : ¬ (carrier.contentN FA
       (stableentries.joinConf FA R9 (loopAt 9 0) wideB)
     = carrier.contentN FA (loopAt 9 0)
       + carrier.contentN FA wideB) := by decide +kernel
 
 /-! ### The reach at one plaquette -/
 
-example : grading.sepBeyond FA R9 (loopAt 9 0) (loopAt 9 4) := by decide +kernel
+private def R11 : lattice.Region := fiberdec.chainRegion 11
 
-example : ((List.range R9.plaqs.length).all (fun i =>
-    !(stableentries.nearPlaq FA R9 (loopAt 9 0)
-        (ground.getAt [] R9.plaqs i)
-      && stableentries.nearPlaq FA R9 (loopAt 9 4)
-        (ground.getAt [] R9.plaqs i)))) = true := by decide +kernel
+theorem pin246 : grading.sepBeyond FA R11 (loopAt 11 0) (loopAt 11 5) := by decide +kernel
 
-example : ¬ (stableentries.nearPlaq FA R9 (loopAt 9 0)
-      (ground.getAt [] R9.plaqs 0) = true
-    ∧ stableentries.nearPlaq FA R9 (loopAt 9 4)
-      (ground.getAt [] R9.plaqs 0) = true) :=
-  sepPlaq FA R9 (loopAt 9 0) (loopAt 9 4) (by decide +kernel) 0
+theorem pin247 : ((List.range R11.plaqs.length).all (fun i =>
+    !(stableentries.nearPlaq FA R11 (loopAt 11 0)
+        (ground.getAt [] R11.plaqs i)
+      && stableentries.nearPlaq FA R11 (loopAt 11 5)
+        (ground.getAt [] R11.plaqs i)))) = true := by decide +kernel
 
-example : ¬ (stableentries.nearPlaq FA R9 (loopAt 9 0)
-      (ground.getAt [] R9.plaqs 4) = true
-    ∧ stableentries.nearPlaq FA R9 (loopAt 9 4)
-      (ground.getAt [] R9.plaqs 4) = true) :=
-  sepPlaq FA R9 (loopAt 9 0) (loopAt 9 4) (by decide +kernel) 4
+theorem pin248 : ¬ (stableentries.nearPlaq FA R11 (loopAt 11 0)
+      (ground.getAt [] R11.plaqs 0) = true
+    ∧ stableentries.nearPlaq FA R11 (loopAt 11 5)
+      (ground.getAt [] R11.plaqs 0) = true) :=
+  sepPlaq FA R11 (loopAt 11 0) (loopAt 11 5) (by decide +kernel) 0
+
+theorem pin249 : ¬ (stableentries.nearPlaq FA R11 (loopAt 11 0)
+      (ground.getAt [] R11.plaqs 4) = true
+    ∧ stableentries.nearPlaq FA R11 (loopAt 11 5)
+      (ground.getAt [] R11.plaqs 4) = true) :=
+  sepPlaq FA R11 (loopAt 11 0) (loopAt 11 5) (by decide +kernel) 4
+
+/-! On the nine-square chain the four-apart pair sits within the
+band: the square between them meets both band neighborhoods. -/
+
+theorem pin250 : ¬ grading.sepBeyond FA R9 (loopAt 9 0) (loopAt 9 4) := by decide +kernel
 
 /-! The separation's refusal: the once-interposed pair, whose
-interposed square reads both loops' neighborhoods. -/
+interposed square reads both loops' vertex neighborhoods. -/
 
-example : ¬ grading.sepBeyond FA R9 (loopAt 9 0) (loopAt 9 2) := by decide +kernel
-example : stableentries.nearPlaq FA R9 (loopAt 9 0)
+theorem pin135 : ¬ grading.sepBeyond FA R9 (loopAt 9 0) (loopAt 9 2) := by decide +kernel
+theorem pin136 : stableentries.nearPlaq FA R9 (loopAt 9 0)
       (ground.getAt [] R9.plaqs 1) = true
     ∧ stableentries.nearPlaq FA R9 (loopAt 9 2)
       (ground.getAt [] R9.plaqs 1) = true := by decide +kernel
-example : 1 < R9.plaqs.length := by decide +kernel
+theorem pin137 : 1 < R9.plaqs.length := by decide +kernel
 
 /-! The key binder's frame record: at the plaquette count the read
 is the vacant boundary word and no neighborhood meets it. -/
 
-example : ground.getAt [] R9.plaqs R9.plaqs.length
+theorem pin138 : ground.getAt [] R9.plaqs R9.plaqs.length
     = ([] : List (Nat × Bool)) := by decide +kernel
-example : ¬ (stableentries.nearPlaq FA R9 (loopAt 9 0)
+theorem pin139 : ¬ (stableentries.nearPlaq FA R9 (loopAt 9 0)
       (ground.getAt [] R9.plaqs R9.plaqs.length) = true
     ∧ stableentries.nearPlaq FA R9 (loopAt 9 4)
       (ground.getAt [] R9.plaqs R9.plaqs.length) = true) := by decide +kernel
@@ -757,20 +766,20 @@ private def dD : Mat := [[n3, n0, n0], [n0, n6, n0], [n0, n0, n18]]
 private def tT : Mat := [[n1, nm1], [n0, n2]]
 private def tTw : Mat := [[n2, n1], [n0, n1]]
 
-example : matOneValue (matMul fibV (transposeM fibV)) dD := by decide +kernel
+theorem pin140 : matOneValue (matMul fibV (transposeM fibV)) dD := by decide +kernel
 
-example : matOneValue
+theorem pin141 : matOneValue
     (matMul (tensorM xX (elim.idMat 3)) (tensorM (elim.idMat 2) pP))
     (matMul (tensorM (elim.idMat 2) pP)
       (tensorM xX (elim.idMat 3))) :=
   comm_shift 2 3 xX pP (by decide +kernel) (by decide +kernel)
 
-example : matOneValue
+theorem pin142 : matOneValue
     (matMul (tensorM xX (elim.idMat 3)) (tensorM (elim.idMat 2) pP))
     (matMul (tensorM (elim.idMat 2) pP)
       (tensorM xX (elim.idMat 3))) := by decide +kernel
 
-example : matOneValue
+theorem pin143 : matOneValue
     (matMul (transposeM (tensorM (elim.idMat 2) (transposeM fibV)))
       (matMul (tensorM xX (elim.idMat 3))
         (tensorM (elim.idMat 2) (transposeM fibV))))
@@ -781,7 +790,7 @@ example : matOneValue
     (transposeM fibV) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel)
 
-example : matOneValue
+theorem pin144 : matOneValue
     (matMul (transposeM (tensorM (elim.idMat 2) (transposeM fibV)))
       (matMul (tensorM xX (elim.idMat 3))
         (tensorM (elim.idMat 2) (transposeM fibV))))
@@ -799,16 +808,16 @@ private def spF2 : inertia.Split 2 :=
 private def spF3 : inertia.Split 2 :=
   ⟨⟨tT, rfl⟩, ⟨tTw, rfl⟩, [.one n36, .one n180], 0, rfl⟩
 
-example : inertia.splitRead (tensorM xX dD) spWhole := by decide +kernel
-example : inertia.splitRead (inertia.matScaleB n3 xX) spF1 := by decide +kernel
-example : inertia.splitRead (inertia.matScaleB n6 xX) spF2 := by decide +kernel
-example : inertia.splitRead (inertia.matScaleB n18 xX) spF3 := by decide +kernel
+theorem pin145 : inertia.splitRead (tensorM xX dD) spWhole := by decide +kernel
+theorem pin146 : inertia.splitRead (inertia.matScaleB n3 xX) spF1 := by decide +kernel
+theorem pin147 : inertia.splitRead (inertia.matScaleB n6 xX) spF2 := by decide +kernel
+theorem pin148 : inertia.splitRead (inertia.matScaleB n18 xX) spF3 := by decide +kernel
 
-example : inertia.revAt spWhole
+theorem pin149 : inertia.revAt spWhole
     = inertia.revAt spF1 + inertia.revAt spF2 + inertia.revAt spF3 := by
   decide +kernel
 
-example : inertia.psdAt spWhole := by decide +kernel
+theorem pin150 : inertia.psdAt spWhole := by decide +kernel
 
 /-! ### The folds over a separated class
 
@@ -822,28 +831,28 @@ The unit's own equality read is the interface's `eqLRefl` field,
 so an interface refusing a label against itself admits no
 instantiation, the forged datum off the carrier. -/
 
-example : carrier.contentN FA (joinAll FA R9 cls3)
+theorem pin151 : carrier.contentN FA (joinAll FA R9 cls3)
     = ground.sumNat (cls3.map (carrier.contentN FA)) := by decide +kernel
 
-example : carrier.contentN FA (joinAll FA R9 cls3)
+theorem pin152 : carrier.contentN FA (joinAll FA R9 cls3)
     = ground.sumNat (cls3.map (carrier.contentN FA)) :=
   contentN_joinAll FA R9 (by decide +kernel) cls3 (by decide +kernel)
     (by decide +kernel)
 
-example : windowfinite.fibProd FA R9 (joinAll FA R9 cls3)
+theorem pin153 : windowfinite.fibProd FA R9 (joinAll FA R9 cls3)
     = (cls3.map (windowfinite.fibProd FA R9)).foldl (· * ·) 1 := by
   decide +kernel
 
-example : windowfinite.fibProd FA R9 (joinAll FA R9 cls3)
+theorem pin154 : windowfinite.fibProd FA R9 (joinAll FA R9 cls3)
     = (cls3.map (windowfinite.fibProd FA R9)).foldl (· * ·) 1 :=
   fibProd_joinAll FA R9 cls3 (by decide +kernel)
 
-example : ¬ (carrier.contentN FA (joinAll FA R9 clsW)
+theorem pin155 : ¬ (carrier.contentN FA (joinAll FA R9 clsW)
     = ground.sumNat (clsW.map (carrier.contentN FA))) := by decide +kernel
-example : ¬ (windowfinite.fibProd FA R9 (joinAll FA R9 clsW)
+theorem pin156 : ¬ (windowfinite.fibProd FA R9 (joinAll FA R9 clsW)
     = (clsW.map (windowfinite.fibProd FA R9)).foldl (· * ·) 1) := by
   decide +kernel
-example : (clsW.all (fun c => c.length == R9.links)) = true := by
+theorem pin157 : (clsW.all (fun c => c.length == R9.links)) = true := by
   decide +kernel
 
 private def RD : lattice.Region :=
@@ -851,7 +860,7 @@ private def RD : lattice.Region :=
     plaqs := [[(0,true),(1,true),(2,true),(3,true)]],
     color := [true,false,true,false] , tailLen := rfl, headLen := rfl }
 
-example : lattice.wellRead RD := by decide +kernel
+theorem pin158 : lattice.wellRead RD := by decide +kernel
 
 /-! ### The stencil row at a separated spectator
 
@@ -904,7 +913,7 @@ private def row00 : List (List places.Shape) :=
 private theorem row00_pin :
     algebra.plaqRow FA R9 p0R (loopAt 9 0) = row00 := by decide +kernel
 
-example : tGood
+theorem pin159 : tGood
     = ground.getAt [] (algebra.plaqRow FA R9 p0R (loopAt 9 0)) 0 := by
   rw [row00_pin]; decide +kernel
 
@@ -932,14 +941,14 @@ private theorem rowThJ_pin :
       (stableentries.joinConf FA R9 thetaLoop (loopAt 9 4))
     = rowThJ := by decide +kernel
 
-example : ground.countOf
+theorem pin160 : ground.countOf
       (stableentries.joinConf FA R9 tGood (loopAt 9 4))
       (algebra.plaqRow FA R9 p0R
         (stableentries.joinConf FA R9 (loopAt 9 0) (loopAt 9 4)))
     = ground.countOf tGood (algebra.plaqRow FA R9 p0R (loopAt 9 0)) := by
   rw [rowJ0_pin, row00_pin]; decide +kernel
 
-example : ground.countOf
+theorem pin161 : ground.countOf
       (stableentries.joinConf FA R9 tGood (loopAt 9 4))
       (algebra.plaqRow FA R9 p0R
         (stableentries.joinConf FA R9 (loopAt 9 0) (loopAt 9 4)))
@@ -951,19 +960,19 @@ example : ground.countOf
 /-! The adjoint loop's border target: the one-move annihilation
 exists there, the join's row exceeding the moved part's by one. -/
 
-example : (algebra.plaqRow FA R9 p0R thetaLoop).length = 4 := by
+theorem pin162 : (algebra.plaqRow FA R9 p0R thetaLoop).length = 4 := by
   rw [rowTh_pin]; decide +kernel
-example : (algebra.plaqRow FA R9 p0R
+theorem pin163 : (algebra.plaqRow FA R9 p0R
     (stableentries.joinConf FA R9 thetaLoop (loopAt 9 4))).length = 5 := by
   rw [rowThJ_pin]; decide +kernel
 
 /-! The spectator-occupancy refusal (`hob`). -/
 
-example : ¬ (carrier.occupied FA R9 bU = true) := by decide +kernel
-example : stableentries.disjSupp FA R9 (loopAt 9 0) bU := by decide +kernel
-example : stableentries.disjSupp FA R9 tGood bU := by decide +kernel
-example : stableentries.nearPlaq FA R9 bU p0R = false := by decide +kernel
-example : ¬ (ground.countOf (stableentries.joinConf FA R9 tGood bU)
+theorem pin164 : ¬ (carrier.occupied FA R9 bU = true) := by decide +kernel
+theorem pin165 : stableentries.disjSupp FA R9 (loopAt 9 0) bU := by decide +kernel
+theorem pin166 : stableentries.disjSupp FA R9 tGood bU := by decide +kernel
+theorem pin167 : stableentries.nearPlaq FA R9 bU p0R = false := by decide +kernel
+theorem pin168 : ¬ (ground.countOf (stableentries.joinConf FA R9 tGood bU)
       (algebra.plaqRow FA R9 p0R
         (stableentries.joinConf FA R9 (loopAt 9 0) bU))
     = ground.countOf tGood
@@ -972,10 +981,10 @@ example : ¬ (ground.countOf (stableentries.joinConf FA R9 tGood bU)
 
 /-! The target-occupancy refusal (`htn`) at the adjoint loop. -/
 
-example : ¬ ((tVac.any (fun m => !(FA.eqL m FA.unit))) = true) := by
+theorem pin169 : ¬ ((tVac.any (fun m => !(FA.eqL m FA.unit))) = true) := by
   decide +kernel
-example : stableentries.disjSupp FA R9 tVac (loopAt 9 4) := by decide +kernel
-example : ¬ (ground.countOf
+theorem pin170 : stableentries.disjSupp FA R9 tVac (loopAt 9 4) := by decide +kernel
+theorem pin171 : ¬ (ground.countOf
       (stableentries.joinConf FA R9 tVac (loopAt 9 4))
       (algebra.plaqRow FA R9 p0R
         (stableentries.joinConf FA R9 thetaLoop (loopAt 9 4)))
@@ -985,13 +994,13 @@ example : ¬ (ground.countOf
 
 /-! The separation refusal (`hd2`): the copy of one spectator link. -/
 
-example : ¬ stableentries.disjSupp FA R9 tAdv (loopAt 9 4) := by decide +kernel
-example : (tAdv.any (fun m => !(FA.eqL m FA.unit))) = true := by decide +kernel
-example : ((thetaLoop ++ loopAt 9 4 ++ tAdv
+theorem pin172 : ¬ stableentries.disjSupp FA R9 tAdv (loopAt 9 4) := by decide +kernel
+theorem pin173 : (tAdv.any (fun m => !(FA.eqL m FA.unit))) = true := by decide +kernel
+theorem pin174 : ((thetaLoop ++ loopAt 9 4 ++ tAdv
     ++ (List.range R9.links).flatMap
       (fun k => algebra.linkTargets FA p0R thetaLoop k)).all
   (fun m => (!(FA.eqL m FA.unit)) || (m == FA.unit))) = true := by decide +kernel
-example : ¬ (ground.countOf
+theorem pin175 : ¬ (ground.countOf
       (stableentries.joinConf FA R9 tAdv (loopAt 9 4))
       (algebra.plaqRow FA R9 p0R
         (stableentries.joinConf FA R9 thetaLoop (loopAt 9 4)))
@@ -1008,22 +1017,22 @@ private def FD : fusion.Data Nat :=
    (fun _ => ground.eqBeqOf rfl),
    0, (fun x => x), (fun x y => x + y), 1,
    (fun _ _ _ => 1), (fun x _ => if x == 5 then [7] else [3]),
-   (fun _ => 1), (fun _ => 1), 1, 1, (fun _ => []),
+   (fun _ => 1), (fun _ => 1), 1, 1, 1, (fun _ => []),
    (fun _ => 0), (fun _ _ => 0), (fun _ => 0), (fiber.presNone _)⟩
 
-example : ¬ fusion.oneUnit FD (([0,0,0,0] : List Nat) ++ [5,5,5,5]
+theorem pin176 : ¬ fusion.oneUnit FD (([0,0,0,0] : List Nat) ++ [5,5,5,5]
     ++ [3,3,3,3] ++ (List.range RD.links).flatMap
       (fun k => algebra.linkTargets FD (ground.getAt [] RD.plaqs 0)
         [0,0,0,0] k)) := by
   decide +kernel
-example : stableentries.disjSupp FD RD [0,0,0,0] [5,5,5,5] := by decide +kernel
-example : stableentries.disjSupp FD RD [3,3,3,3] [5,5,5,5] := by decide +kernel
-example : stableentries.nearPlaq FD RD [5,5,5,5]
+theorem pin177 : stableentries.disjSupp FD RD [0,0,0,0] [5,5,5,5] := by decide +kernel
+theorem pin178 : stableentries.disjSupp FD RD [3,3,3,3] [5,5,5,5] := by decide +kernel
+theorem pin179 : stableentries.nearPlaq FD RD [5,5,5,5]
     (ground.getAt [] RD.plaqs 0) = false := by decide +kernel
-example : carrier.occupied FD RD [5,5,5,5] = true := by decide +kernel
-example : (([3,3,3,3] : List Nat).any
+theorem pin180 : carrier.occupied FD RD [5,5,5,5] = true := by decide +kernel
+theorem pin181 : (([3,3,3,3] : List Nat).any
     (fun m => !(FD.eqL m FD.unit))) = true := by decide +kernel
-example : ¬ (ground.countOf
+theorem pin182 : ¬ (ground.countOf
       (stableentries.joinConf FD RD [3,3,3,3] [5,5,5,5])
       (algebra.plaqRow FD RD (ground.getAt [] RD.plaqs 0)
         (stableentries.joinConf FD RD [0,0,0,0] [5,5,5,5]))
@@ -1033,20 +1042,20 @@ example : ¬ (ground.countOf
 
 /-! The width refusal (`htl`) and the two frame records. -/
 
-example : ¬ (ground.countOf
+theorem pin183 : ¬ (ground.countOf
       (stableentries.joinConf FA R9 (tGood ++ [[1,0,0]]) (loopAt 9 4))
       (algebra.plaqRow FA R9 p0R
         (stableentries.joinConf FA R9 (loopAt 9 0) (loopAt 9 4)))
     = ground.countOf (tGood ++ [[1,0,0]])
         (algebra.plaqRow FA R9 p0R (loopAt 9 0))) := by
   rw [rowJ0_pin, row00_pin]; decide +kernel
-example : ground.countOf
+theorem pin184 : ground.countOf
       (stableentries.joinConf FA R9 tGood (loopAt 9 4))
       (algebra.plaqRow FA R9 p0R (stableentries.joinConf FA R9
         (loopAt 9 0 ++ [[1,0,0]]) (loopAt 9 4)))
     = ground.countOf tGood (algebra.plaqRow FA R9 p0R
         (loopAt 9 0 ++ [[1,0,0]])) := by decide +kernel
-example : ground.countOf
+theorem pin185 : ground.countOf
       (stableentries.joinConf FA R9v tGood (loopAt 9 4))
       (algebra.plaqRow FA R9v p0R
         (stableentries.joinConf FA R9v (loopAt 9 0) (loopAt 9 4)))
@@ -1064,14 +1073,14 @@ private def tG4 : List places.Shape :=
 private theorem row4_pin :
     algebra.plaqRow FA R9 p4R (loopAt 9 0) = [tG4] := by decide +kernel
 
-example : tG4
+theorem pin186 : tG4
     = ground.getAt [] (algebra.plaqRow FA R9 p4R (loopAt 9 0)) 0 := by
   rw [row4_pin]; decide +kernel
 
-example : stableentries.nearPlaq FA R9 (loopAt 9 4) p4R = true := by
+theorem pin187 : stableentries.nearPlaq FA R9 (loopAt 9 4) p4R = true := by
   decide +kernel
-example : ¬ stableentries.disjSupp FA R9 tG4 (loopAt 9 4) := by decide +kernel
-example : ¬ (ground.countOf
+theorem pin188 : ¬ stableentries.disjSupp FA R9 tG4 (loopAt 9 4) := by decide +kernel
+theorem pin189 : ¬ (ground.countOf
       (stableentries.joinConf FA R9 tG4 (loopAt 9 4))
       (algebra.plaqRow FA R9 p4R
         (stableentries.joinConf FA R9 (loopAt 9 0) (loopAt 9 4)))
@@ -1097,26 +1106,26 @@ private def aOv : List places.Shape :=
 private theorem rowJ0a_pin :
     algebra.plaqRow FA R9 p0R aOv = rowJ0 := rowJ0_pin
 
-example : ¬ lattice.wellRead R9k := by decide +kernel
-example : stableentries.disjSupp FA R9k aOv (loopAt 9 4) := by decide +kernel
-example : stableentries.disjSupp FA R9k tGood (loopAt 9 4) := by decide +kernel
-example : stableentries.nearPlaq FA R9k (loopAt 9 4) p0R = false := by
+theorem pin190 : ¬ lattice.wellRead R9k := by decide +kernel
+theorem pin191 : stableentries.disjSupp FA R9k aOv (loopAt 9 4) := by decide +kernel
+theorem pin192 : stableentries.disjSupp FA R9k tGood (loopAt 9 4) := by decide +kernel
+theorem pin193 : stableentries.nearPlaq FA R9k (loopAt 9 4) p0R = false := by
   decide +kernel
-example : carrier.occupied FA R9k (loopAt 9 4) = true := by decide +kernel
-example : ¬ (ground.countOf
+theorem pin194 : carrier.occupied FA R9k (loopAt 9 4) = true := by decide +kernel
+theorem pin195 : ¬ (ground.countOf
       (stableentries.joinConf FA R9k tGood (loopAt 9 4))
       (algebra.plaqRow FA R9k p0R
         (stableentries.joinConf FA R9k aOv (loopAt 9 4)))
     = ground.countOf tGood
         (algebra.plaqRow FA R9k p0R aOv)) := by decide +kernel
 
-example : ¬ stableentries.disjSupp FA R9 aOv (loopAt 9 4) := by decide +kernel
-example : ((aOv ++ loopAt 9 4 ++ tGood
+theorem pin196 : ¬ stableentries.disjSupp FA R9 aOv (loopAt 9 4) := by decide +kernel
+theorem pin197 : ((aOv ++ loopAt 9 4 ++ tGood
     ++ (List.range R9.links).flatMap
       (fun k => algebra.linkTargets FA p0R aOv k)).all
   (fun m => (!(FA.eqL m FA.unit)) || (m == FA.unit))) = true := by
   decide +kernel
-example : ¬ (ground.countOf
+theorem pin198 : ¬ (ground.countOf
       (stableentries.joinConf FA R9 tGood (loopAt 9 4))
       (algebra.plaqRow FA R9 p0R
         (stableentries.joinConf FA R9 aOv (loopAt 9 4)))
@@ -1126,7 +1135,7 @@ example : ¬ (ground.countOf
 
 private def bWide : List places.Shape := loopAt 9 4 ++ [[1,0,0]]
 
-example : ground.countOf
+theorem pin199 : ground.countOf
       (stableentries.joinConf FA R9 tGood bWide)
       (algebra.plaqRow FA R9 p0R
         (stableentries.joinConf FA R9 (loopAt 9 0) bWide))
@@ -1146,17 +1155,17 @@ private def csW : List (List places.Shape) :=
 private def csV : List (List places.Shape) :=
   [loopAt 9 0, loopAt 9 0]
 
-example : disjAll FA R9 csW := by decide +kernel
-example : ¬ ((csW.all (fun c => c.length == R9.links)) = true) := by
+theorem pin200 : disjAll FA R9 csW := by decide +kernel
+theorem pin201 : ¬ ((csW.all (fun c => c.length == R9.links)) = true) := by
   decide +kernel
-example : ¬ (carrier.contentN FA (joinAll FA R9 csW)
+theorem pin202 : ¬ (carrier.contentN FA (joinAll FA R9 csW)
     = ground.sumNat (csW.map (carrier.contentN FA))) := by decide +kernel
 
-example : disjAll FA R9v csV := by decide +kernel
-example : (csV.all (fun c => c.length == R9v.links)) = true := by decide +kernel
-example : ¬ (carrier.contentN FA (joinAll FA R9v csV)
+theorem pin203 : disjAll FA R9v csV := by decide +kernel
+theorem pin204 : (csV.all (fun c => c.length == R9v.links)) = true := by decide +kernel
+theorem pin205 : ¬ (carrier.contentN FA (joinAll FA R9v csV)
     = ground.sumNat (csV.map (carrier.contentN FA))) := by decide +kernel
-example : windowfinite.fibProd FA R9v (joinAll FA R9v csV)
+theorem pin206 : windowfinite.fibProd FA R9v (joinAll FA R9v csV)
     = (csV.map (windowfinite.fibProd FA R9v)).foldl (· * ·) 1 := by
   decide +kernel
 
@@ -1184,30 +1193,30 @@ private def spSi : inertia.Split 4 :=
   ⟨⟨elim.idMat 4, by decide +kernel⟩, ⟨elim.idMat 4, by decide +kernel⟩,
    [.one w3p, .one wm1, .one wm1, .one wm1], 0, rfl⟩
 
-example : inertia.splitRead gI spGi := by decide +kernel
-example : (spGi.blocks.all (fun b => b.order == 1)) = true := by decide +kernel
-example : ¬ inertia.psdAt spGi := by decide +kernel
-example : inertia.splitRead (inertia.siteDatum
+theorem pin207 : inertia.splitRead gI spGi := by decide +kernel
+theorem pin208 : (spGi.blocks.all (fun b => b.order == 1)) = true := by decide +kernel
+theorem pin209 : ¬ inertia.psdAt spGi := by decide +kernel
+theorem pin210 : inertia.splitRead (inertia.siteDatum
     (matAdd hI (inertia.matScale 1 gI)) (inertia.matScale 2 gI))
     spFi := by decide +kernel
-example : inertia.psdAt spFi := by decide +kernel
-example : inertia.splitRead (inertia.siteDatum
+theorem pin211 : inertia.psdAt spFi := by decide +kernel
+theorem pin212 : inertia.splitRead (inertia.siteDatum
     (matAdd (sumPencil hI gI 2) (inertia.matScale 1 (tensorPow gI 2)))
     (inertia.matScale 2 (tensorPow gI 2))) spSi := by decide +kernel
-example : ¬ inertia.psdAt spSi := by decide +kernel
-example : inertia.revAt spSi = 3 := by decide +kernel
+theorem pin213 : ¬ inertia.psdAt spSi := by decide +kernel
+theorem pin214 : inertia.revAt spSi = 3 := by decide +kernel
 
 private def spOne : inertia.Split 1 :=
   ⟨⟨[[w1]], rfl⟩, ⟨[[w1]], rfl⟩, [.one w1], 0, rfl⟩
 private def spNegOne : inertia.Split 1 :=
   ⟨⟨[[w1]], rfl⟩, ⟨[[w1]], rfl⟩, [.one wm1], 0, rfl⟩
 
-example : inertia.splitRead [[w1]] spOne := by decide +kernel
-example : inertia.splitRead [[wm1]] spNegOne := by decide +kernel
-example : ¬ inertia.psdAt spNegOne := by decide +kernel
-example : ¬ (¬ (inertia.quadForm (tensorM [[w1]] [[wm1]]) [w1]
+theorem pin215 : inertia.splitRead [[w1]] spOne := by decide +kernel
+theorem pin216 : inertia.splitRead [[wm1]] spNegOne := by decide +kernel
+theorem pin217 : ¬ inertia.psdAt spNegOne := by decide +kernel
+theorem pin218 : ¬ (¬ (inertia.quadForm (tensorM [[w1]] [[wm1]]) [w1]
     < BPair.unit)) := by decide +kernel
-example : ¬ (¬ (inertia.quadForm (tensorM [[wm1]] [[w1]]) [w1]
+theorem pin219 : ¬ (¬ (inertia.quadForm (tensorM [[wm1]] [[w1]]) [w1]
     < BPair.unit)) := by decide +kernel
 
 /-! The fibering pin at an indefinite internal datum: the whole's
@@ -1232,17 +1241,17 @@ private def spI3 : inertia.Split 2 :=
   ⟨⟨elim.idMat 2, by decide +kernel⟩, ⟨elim.idMat 2, by decide +kernel⟩,
    [.one w18p, .one ⟨1, 19⟩], 0, rfl⟩
 
-example : inertia.splitRead (tensorM gI dD3) spWI := by decide +kernel
-example : inertia.splitRead
+theorem pin220 : inertia.splitRead (tensorM gI dD3) spWI := by decide +kernel
+theorem pin221 : inertia.splitRead
     (inertia.matScaleB (BPair.ofNat 3) gI) spI1 := by decide +kernel
-example : inertia.splitRead
+theorem pin222 : inertia.splitRead
     (inertia.matScaleB (BPair.ofNat 6) gI) spI2 := by decide +kernel
-example : inertia.splitRead
+theorem pin223 : inertia.splitRead
     (inertia.matScaleB (BPair.ofNat 18) gI) spI3 := by decide +kernel
-example : inertia.revAt spWI
+theorem pin224 : inertia.revAt spWI
     = inertia.revAt spI1 + inertia.revAt spI2 + inertia.revAt spI3 := by
   decide +kernel
-example : inertia.revAt spWI = 3 := by decide +kernel
+theorem pin225 : inertia.revAt spWI = 3 := by decide +kernel
 
 /-! `lem:relfiber`(iv)'s tier: the tensor sum's roots.  Two
 one-dimensional factors at the roots `1` and `2` join at the summed
@@ -1270,10 +1279,10 @@ private theorem rfdA : split.diagRead rfA rfI (⟨rfI, rfl⟩ : SqMat 1)
 private theorem rfdB : split.diagRead rfB rfI (⟨rfI, rfl⟩ : SqMat 1)
     (⟨rfI, rfl⟩ : SqMat 1) rfLB := by decide +kernel
 
-example : pairRoots rfLA rfLB 1 = [(⟨7, 3⟩, 1)] := by decide +kernel
-example : split.rootsBelow (pairRoots rfLA rfLB 1) 5 Pos.one = 1 := by
+theorem pin226 : pairRoots rfLA rfLB 1 = [(⟨7, 3⟩, 1)] := by decide +kernel
+theorem pin227 : split.rootsBelow (pairRoots rfLA rfLB 1) 5 Pos.one = 1 := by
   decide +kernel
-example : split.rootsBelow (pairRoots rfLA rfLB 1) 4 Pos.one = 0 := by
+theorem pin228 : split.rootsBelow (pairRoots rfLA rfLB 1) 4 Pos.one = 0 := by
   decide +kernel
 
 private theorem rfC5 : certconstruct.countAtPair
@@ -1282,7 +1291,7 @@ private theorem rfC5 : certconstruct.countAtPair
       (matAdd (matAdd (tensorM rfA rfI) (tensorM rfI rfB))
         (inertia.matScale 1 (tensorM rfI rfI)))
       (inertia.matScale 5 (tensorM rfI rfI)))) := by decide +kernel
-example : (1 : Nat) = split.rootsBelow (pairRoots rfLA rfLB 1) 5 Pos.one :=
+theorem pin229 : (1 : Nat) = split.rootsBelow (pairRoots rfLA rfLB 1) 5 Pos.one :=
   tensorSum_count rfA rfI (⟨rfI, rfl⟩ : SqMat 1) (⟨rfI, rfl⟩ : SqMat 1)
     rfLA rfdA rfB rfI (⟨rfI, rfl⟩ : SqMat 1) (⟨rfI, rfl⟩ : SqMat 1)
     rfLB rfdB 5 1 1
@@ -1297,7 +1306,7 @@ private theorem rfC4 : certconstruct.countAtPair
       (matAdd (matAdd (tensorM rfA rfI) (tensorM rfI rfB))
         (inertia.matScale 1 (tensorM rfI rfI)))
       (inertia.matScale 4 (tensorM rfI rfI)))) := by decide +kernel
-example : (0 : Nat) = split.rootsBelow (pairRoots rfLA rfLB 1) 4 Pos.one :=
+theorem pin230 : (0 : Nat) = split.rootsBelow (pairRoots rfLA rfLB 1) 4 Pos.one :=
   tensorSum_count rfA rfI (⟨rfI, rfl⟩ : SqMat 1) (⟨rfI, rfl⟩ : SqMat 1)
     rfLA rfdA rfB rfI (⟨rfI, rfl⟩ : SqMat 1) (⟨rfI, rfl⟩ : SqMat 1)
     rfLB rfdB 4 1 0
@@ -1320,9 +1329,9 @@ private theorem rfdA2 : split.diagRead rfA2 rfI2 (⟨rfI2, rfl⟩ : SqMat 2)
 private theorem rfdB2 : split.diagRead rfB2 rfI (⟨rfI, rfl⟩ : SqMat 1)
     (⟨rfI, rfl⟩ : SqMat 1) rfLB2 := by decide +kernel
 
-example : pairRoots rfLA2 rfLB2 1 = [(⟨6, 3⟩, 1), (⟨7, 3⟩, 1)] := by
+theorem pin231 : pairRoots rfLA2 rfLB2 1 = [(⟨6, 3⟩, 1), (⟨7, 3⟩, 1)] := by
   decide +kernel
-example : split.rootsBelow (pairRoots rfLA2 rfLB2 1) 4 Pos.one = 1 := by
+theorem pin232 : split.rootsBelow (pairRoots rfLA2 rfLB2 1) 4 Pos.one = 1 := by
   decide +kernel
 private theorem rfC42 : certconstruct.countAtPair
     (matAdd (tensorM rfA2 rfI) (tensorM rfI2 rfB2)) (tensorM rfI2 rfI) 4 1 1
@@ -1330,7 +1339,7 @@ private theorem rfC42 : certconstruct.countAtPair
       (matAdd (matAdd (tensorM rfA2 rfI) (tensorM rfI2 rfB2))
         (inertia.matScale 1 (tensorM rfI2 rfI)))
       (inertia.matScale 4 (tensorM rfI2 rfI)))) := by decide +kernel
-example : (1 : Nat) = split.rootsBelow (pairRoots rfLA2 rfLB2 1) 4 Pos.one :=
+theorem pin233 : (1 : Nat) = split.rootsBelow (pairRoots rfLA2 rfLB2 1) 4 Pos.one :=
   tensorSum_count rfA2 rfI2 (⟨rfI2, rfl⟩ : SqMat 2) (⟨rfI2, rfl⟩ : SqMat 2)
     rfLA2 rfdA2 rfB2 rfI (⟨rfI, rfl⟩ : SqMat 1) (⟨rfI, rfl⟩ : SqMat 1)
     rfLB2 rfdB2 4 1 1
@@ -1342,11 +1351,11 @@ example : (1 : Nat) = split.rootsBelow (pairRoots rfLA2 rfLB2 1) 4 Pos.one :=
 /-! The joined ground at the two floors: every summed root sits at or
 beyond the floors' sum, the read decided beside its theorem route. -/
 
-example : ((pairRoots rfLA rfLB 1).all (fun r =>
+theorem pin234 : ((pairRoots rfLA rfLB 1).all (fun r =>
     !decide (r.1.scale (1 * 1)
       < ((⟨2, 1⟩ : BPair).scale 1 + (⟨3, 1⟩ : BPair).scale 1
         + BPair.ofPos (1 * (1 * 1))).scale r.2))) = true := by decide +kernel
-example : ((pairRoots rfLA2 rfLB2 1).all (fun r =>
+theorem pin235 : ((pairRoots rfLA2 rfLB2 1).all (fun r =>
     !decide (r.1.scale (1 * 1)
       < ((⟨2, 1⟩ : BPair).scale 1 + (⟨2, 1⟩ : BPair).scale 1
         + BPair.ofPos (1 * (1 * 1))).scale r.2))) = true :=
@@ -1358,9 +1367,9 @@ the count identity parts at the level five. -/
 
 private def rfBad : List (BPair × Pos × BPair) := [(⟨4, 1⟩, 1, ⟨2, 1⟩)]
 
-example : ¬ split.diagRead rfA rfI (⟨rfI, rfl⟩ : SqMat 1)
+theorem pin236 : ¬ split.diagRead rfA rfI (⟨rfI, rfl⟩ : SqMat 1)
     (⟨rfI, rfl⟩ : SqMat 1) rfBad := by decide +kernel
-example : ¬ ((1 : Nat)
+theorem pin237 : ¬ ((1 : Nat)
     = split.rootsBelow (pairRoots rfBad rfLB 1) 5 Pos.one) := by
   decide +kernel
 
@@ -1368,13 +1377,13 @@ example : ¬ ((1 : Nat)
 nought refuses the split's read and parts the identity, the summed
 root's count one. -/
 
-example : ¬ certconstruct.countAtPair
+theorem pin238 : ¬ certconstruct.countAtPair
     (matAdd (tensorM rfA rfI) (tensorM rfI rfB)) (tensorM rfI rfI) 5 1 0
     (inertia.mkSplit 1 (inertia.siteDatum
       (matAdd (matAdd (tensorM rfA rfI) (tensorM rfI rfB))
         (inertia.matScale 1 (tensorM rfI rfI)))
       (inertia.matScale 5 (tensorM rfI rfI)))) := by decide +kernel
-example : ¬ ((0 : Nat)
+theorem pin239 : ¬ ((0 : Nat)
     = split.rootsBelow (pairRoots rfLA rfLB 1) 5 Pos.one) := by
   decide +kernel
 
@@ -1382,18 +1391,18 @@ example : ¬ ((0 : Nat)
 root refuses its binder, and the floors' sum then prices the pair
 list above its own root. -/
 
-example : ¬ ((rfLA.all (fun r =>
+theorem pin240 : ¬ ((rfLA.all (fun r =>
     !decide (r.1.scale 1 < (⟨4, 1⟩ : BPair).scale r.2.1))) = true) := by
   decide +kernel
-example : ¬ (((pairRoots rfLA rfLB 1).all (fun r =>
+theorem pin241 : ¬ (((pairRoots rfLA rfLB 1).all (fun r =>
     !decide (r.1.scale (1 * 1)
       < ((⟨4, 1⟩ : BPair).scale 1 + (⟨3, 1⟩ : BPair).scale 1
         + BPair.ofPos (1 * (1 * 1))).scale r.2))) = true) := by
   decide +kernel
-example : ¬ ((rfLB.all (fun r =>
+theorem pin242 : ¬ ((rfLB.all (fun r =>
     !decide (r.1.scale 1 < (⟨5, 1⟩ : BPair).scale r.2.1))) = true) := by
   decide +kernel
-example : ¬ (((pairRoots rfLA rfLB 1).all (fun r =>
+theorem pin243 : ¬ (((pairRoots rfLA rfLB 1).all (fun r =>
     !decide (r.1.scale (1 * 1)
       < ((⟨2, 1⟩ : BPair).scale 1 + (⟨5, 1⟩ : BPair).scale 1
         + BPair.ofPos (1 * (1 * 1))).scale r.2))) = true) := by
@@ -1402,8 +1411,10 @@ example : ¬ (((pairRoots rfLA rfLB 1).all (fun r =>
 /-! The attainment half: the two roots' summed root is the pair
 list's member, its value pinned. -/
 
-example : pairRoot 1 (⟨2, 1⟩, 1, ⟨2, 1⟩) (⟨3, 1⟩, 1, ⟨2, 1⟩)
+theorem pin244 : pairRoot 1 (⟨2, 1⟩, 1, ⟨2, 1⟩) (⟨3, 1⟩, 1, ⟨2, 1⟩)
     = (⟨7, 3⟩, 1) := by decide +kernel
-example : pairRoot 1 (⟨2, 1⟩, 1, ⟨2, 1⟩) (⟨3, 1⟩, 1, ⟨2, 1⟩)
+theorem pin245 : pairRoot 1 (⟨2, 1⟩, 1, ⟨2, 1⟩) (⟨3, 1⟩, 1, ⟨2, 1⟩)
     ∈ pairRoots rfLA rfLB 1 :=
   pairRoots_mem rfLA rfLB 1 (List.Mem.head _) (List.Mem.head _)
+
+end relfiber

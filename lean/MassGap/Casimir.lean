@@ -324,44 +324,6 @@ off-unit cancellation are the tier's own plumbing; the crossed
 fold pairs the display against a further vector, and the operator
 crossed fold rides the pairing's transpose adjoint. -/
 
-/-- The six-factor product's shuffle: the double fold's term at
-the second list's crossed pairing. -/
-private theorem mulSix (o ya oa yb ob c : BPair) :
-    o * (ya * oa * (yb * ob * c))
-      = oa * ob * c * (ya * o * yb) := by
-  rw [BPair.mul_assoc ya oa (yb * ob * c),
-    BPair.mul_assoc yb ob c,
-    BPair.mul_assoc oa ob c,
-    BPair.mul_assoc ya o yb,
-    BPair.mul_assoc oa (ob * c) (ya * (o * yb)),
-    BPair.mul_assoc ob c (ya * (o * yb)),
-    BPair.mul_left_comm ya oa (yb * (ob * c)),
-    BPair.mul_left_comm o oa (ya * (yb * (ob * c))),
-    BPair.mul_left_comm yb ob c,
-    BPair.mul_left_comm ya ob (yb * c),
-    BPair.mul_left_comm o ob (ya * (yb * c)),
-    BPair.mul_comm yb c,
-    BPair.mul_left_comm ya c yb,
-    BPair.mul_left_comm o c (ya * yb),
-    BPair.mul_left_comm o ya yb]
-
-/-- The diagonal term's shuffle: the picked key's own self-pairing
-against its withdrawn product. -/
-private theorem mulFive (oa c d B : BPair) :
-    oa * oa * c * (d * B) = d * oa * B * (c * oa) := by
-  rw [BPair.mul_assoc oa oa c,
-    BPair.mul_assoc oa (oa * c) (d * B),
-    BPair.mul_assoc oa c (d * B),
-    BPair.mul_assoc d oa B,
-    BPair.mul_assoc d (oa * B) (c * oa),
-    BPair.mul_assoc oa B (c * oa),
-    BPair.mul_left_comm c d B,
-    BPair.mul_left_comm oa d (c * B),
-    BPair.mul_left_comm oa d (oa * (c * B)),
-    BPair.mul_comm c B,
-    BPair.mul_left_comm oa B c,
-    BPair.mul_comm oa c]
-
 /-- The projection's coefficients: a vector's own pairing against
 each member, cleared by the further members' self-pairings. -/
 private def projCoef (X : elim.Mat) (v : List BPair) : List BPair :=
@@ -650,9 +612,12 @@ theorem trace_eq (n : Nat) (T X Y : elim.Mat)
     · refine BPair.oneValue_trans
         (ground.bsum_pick _ (List.range X.length) a ?_) ?_
       · rw [ground.countOf_range_one ha]
-      · rw [mulFive (prodOff X a)
-          (elim.dotP (getAt [] X a) (elim.matVec T (getAt [] X a)))
-          (elim.dotP (getAt [] X a) (getAt [] X a)) (prodAll Y)]
+      · refine BPair.oneValue_trans (polEqB [prodOff X a,
+          elim.dotP (getAt [] X a) (elim.matVec T (getAt [] X a)),
+          elim.dotP (getAt [] X a) (getAt [] X a), prodAll Y]
+          (Pol.mul (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 0))) (Pol.mon (Mon.var 1))) (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 3))))
+          (Pol.mul (Pol.mul (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 0))) (Pol.mon (Mon.var 3))) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 0))))
+          (by decide +kernel)) ?_
         exact BPair.mul_congr_left
           (BPair.mul_congr_left (prodOff_mul_self X a ha))
   have hJ : ∀ j, j < Y.length →
@@ -711,14 +676,11 @@ theorem trace_eq (n : Nat) (T X Y : elim.Mat)
           (ground.foldB_mul_left _ _ (List.range X.length))) ?_
       exact ground.foldB_congr_members _ _ (List.range X.length)
         (fun a ha => hin a (ground.ltOfMem ha))
-    rw [BPair.mul_comm (elim.dotP (getAt [] Y j)
-          (elim.matVec T (getAt [] Y j))) (prodOff Y j),
-      BPair.mul_left_comm (prodAll X) (prodOff Y j)
-        (elim.dotP (getAt [] Y j)
-          (elim.matVec T (getAt [] Y j))),
-      BPair.mul_left_comm (prodAll X) (prodOff Y j)
-        (prodAll X * elim.dotP (getAt [] Y j)
-          (elim.matVec T (getAt [] Y j)))]
+    refine BPair.oneValue_trans (polEqB [prodAll X,
+      elim.dotP (getAt [] Y j) (elim.matVec T (getAt [] Y j)), prodOff Y j]
+      (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 2)))))
+      (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1)))))
+      (by decide +kernel)) ?_
     refine BPair.oneValue_trans (BPair.mul_congr
       (BPair.oneValue_refl _) hAAs) ?_
     refine BPair.oneValue_trans
@@ -733,21 +695,25 @@ theorem trace_eq (n : Nat) (T X Y : elim.Mat)
     refine ground.foldB_congr_members _ _
       (List.range X.length) ?_
     intro b _
-    refine BPair.oneValue_of_eq ?_
-    show prodOff Y j * (elim.dotP (getAt [] Y j) (getAt [] X a)
+    show (prodOff Y j * (elim.dotP (getAt [] Y j) (getAt [] X a)
           * prodOff X a
           * (elim.dotP (getAt [] Y j) (getAt [] X b)
             * prodOff X b
             * elim.dotP (getAt [] X a)
-              (elim.matVec T (getAt [] X b))))
-        = prodOff X a * prodOff X b
+              (elim.matVec T (getAt [] X b))))).oneValue
+        (prodOff X a * prodOff X b
             * elim.dotP (getAt [] X a)
               (elim.matVec T (getAt [] X b))
           * (elim.dotP (getAt [] X a) (getAt [] Y j)
             * prodOff Y j
-            * elim.dotP (getAt [] Y j) (getAt [] X b))
+            * elim.dotP (getAt [] Y j) (getAt [] X b)))
     rw [elim.dotP_comm (getAt [] X a) (getAt [] Y j)]
-    exact mulSix _ _ _ _ _ _
+    exact polEqB [prodOff Y j, elim.dotP (getAt [] Y j) (getAt [] X a), prodOff X a,
+      elim.dotP (getAt [] Y j) (getAt [] X b), prodOff X b,
+      elim.dotP (getAt [] X a) (elim.matVec T (getAt [] X b))]
+      (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mul (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 2))) (Pol.mul (Pol.mul (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 4))) (Pol.mon (Mon.var 5)))))
+      (Pol.mul (Pol.mul (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 4))) (Pol.mon (Mon.var 5))) (Pol.mul (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 0))) (Pol.mon (Mon.var 3))))
+      (by decide +kernel)
   have hkey : (prodAll X * (prodAll X * trFold T Y)).oneValue
       (prodAll X * (trFold T X * prodAll Y)) := by
     refine BPair.oneValue_trans
@@ -3586,14 +3552,11 @@ identity is the list's alone, so the display's `λ`-side and its
 
 /-- The per-letter read at the positional identity. -/
 private theorem posArith (t a g : Nat) :
-    (a + 1 + g + 1) * t + t * g = t * a + 2 * (t * (1 + g)) := by
-  rw [Nat.mul_comm (a + 1 + g + 1) t,
-    ← Nat.left_distrib t (a + 1 + g + 1) g,
-    Nat.two_mul (t * (1 + g)),
-    ← Nat.left_distrib t (1 + g) (1 + g),
-    ← Nat.left_distrib t a (1 + g + (1 + g)),
-    Nat.add_assoc a 1 g, Nat.add_assoc (a + (1 + g)) 1 g,
-    Nat.add_assoc a (1 + g) (1 + g)]
+    (a + 1 + g + 1) * t + t * g = t * a + 2 * (t * (1 + g)) :=
+  polEq [t, a, g]
+    (Pol.add (Pol.mul (Pol.add (Pol.add (Pol.add (Pol.mon (Mon.var 1)) (Pol.mon (Mon.cst 1))) (Pol.mon (Mon.var 2))) (Pol.mon (Mon.cst 1))) (Pol.mon (Mon.var 0))) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 2))))
+    (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1))) (Pol.mul (Pol.mon (Mon.cst 2)) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.add (Pol.mon (Mon.cst 1)) (Pol.mon (Mon.var 2))))))
+    (by decide +kernel)
 
 /-- `thm:weylchar`'s positional identity at a stated letter count:
 the letter pairs' first entries against their second entries close
@@ -4418,17 +4381,19 @@ private theorem acA (a s w o : Nat) :
 
 /-- The crossed pair's shuffle at the same withdrawal. -/
 private theorem acB (q s m z n : Nat) :
-    q + (s + m) + (z + n) = q + m + z + n + s := by
-  rw [← Nat.add_assoc q s m, ← Nat.add_assoc (q + s + m) z n,
-    Nat.add_right_comm q s m, Nat.add_right_comm (q + m) s z,
-    Nat.add_right_comm (q + m + z) s n]
+    q + (s + m) + (z + n) = q + m + z + n + s :=
+  polEq [q, s, m, z, n]
+    (Pol.add (Pol.add (Pol.mon (Mon.var 0)) (Pol.add (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 2)))) (Pol.add (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 4))))
+    (Pol.add (Pol.add (Pol.add (Pol.add (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 2))) (Pol.mon (Mon.var 3))) (Pol.mon (Mon.var 4))) (Pol.mon (Mon.var 1)))
+    (by decide +kernel)
 
 /-- The joined summand exchanges with the standing one. -/
 private theorem acD (b n o y : Nat) :
-    b + n + (o + y) = b + y + (o + n) := by
-  rw [← Nat.add_assoc (b + n) o y,
-    Nat.add_right_comm (b + n) o y, Nat.add_right_comm b n y,
-    Nat.add_right_comm (b + y) n o, Nat.add_assoc (b + y) o n]
+    b + n + (o + y) = b + y + (o + n) :=
+  polEq [b, n, o, y]
+    (Pol.add (Pol.add (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1))) (Pol.add (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 3))))
+    (Pol.add (Pol.add (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 3))) (Pol.add (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 1))))
+    (by decide +kernel)
 
 /-- The join's members spread to the left-associated sum. -/
 private theorem acE (p l w k : Nat) :
@@ -4479,10 +4444,11 @@ private theorem mulTwo (c t : Nat) : c * (2 * t) = 2 * (c * t) := by
 
 /-- The display's product read: the split square against a count. -/
 private theorem distC (c A B C : Nat) :
-    (A + 2 * B + C) * c = c * A + 2 * (c * B) + c * C := by
-  rw [ground.mulAddR (A + 2 * B) C c, ground.mulAddR A (2 * B) c,
-    Nat.mul_comm A c, Nat.mul_comm C c, ground.mulAssoc 2 B c,
-    Nat.mul_comm B c]
+    (A + 2 * B + C) * c = c * A + 2 * (c * B) + c * C :=
+  polEq [c, A, B, C]
+    (Pol.mul (Pol.add (Pol.add (Pol.mon (Mon.var 1)) (Pol.mul (Pol.mon (Mon.cst 2)) (Pol.mon (Mon.var 2)))) (Pol.mon (Mon.var 3))) (Pol.mon (Mon.var 0)))
+    (Pol.add (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1))) (Pol.mul (Pol.mon (Mon.cst 2)) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 2))))) (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 3))))
+    (by decide +kernel)
 
 /-! The keys' degree: every span content carries the shape's own
 box total, the exhibit's row list at the base and the adjacent

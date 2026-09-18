@@ -27,9 +27,11 @@ off-root refusal at `3`.  The tower at
 `K(√2)(√3)` — the two-extension arithmetic's read
 `(√2·√3)² = 6` with the level-one instance `√2² = 2`, the
 equal-members read by reduction. -/
+
+namespace stagesplit
 set_option maxHeartbeats 4000000
 
-open ground poly stagesplit
+open ground poly
 
 private def u : BPair := BPair.unit
 
@@ -40,11 +42,11 @@ private def gG : Poly := [⟨1, 2⟩]
 private def aG : Poly := [⟨1, 3⟩, ⟨2, 1⟩, ⟨2, 1⟩]
 private def bG : Poly := [⟨4, 1⟩, ⟨4, 1⟩]
 
-example : facRead pG gG aG 1 1 := by decide +kernel
-example : facRead (poly.deriv pG) gG bG 1 1 := by decide +kernel
-example : bezRead pG (poly.deriv pG) gG [⟨4, 1⟩] [u, ⟨1, 2⟩]
+theorem pin1 : facRead pG gG aG 1 1 := by decide +kernel
+theorem pin2 : facRead (poly.deriv pG) gG bG 1 1 := by decide +kernel
+theorem pin3 : bezRead pG (poly.deriv pG) gG [⟨4, 1⟩] [u, ⟨1, 2⟩]
     1 ⟨1, 7⟩ := by decide +kernel
-example : sqfreeRead pG gG aG bG aG [⟨4, 1⟩] [u, ⟨1, 2⟩]
+theorem pin4 : sqfreeRead pG gG aG bG aG [⟨4, 1⟩] [u, ⟨1, 2⟩]
     [⟨5, 1⟩] [⟨1, 2⟩, ⟨1, 3⟩] 1 1 1 1 ⟨1, 7⟩ ⟨1, 10⟩ := by decide +kernel
 
 /-! The cleared-top class: the divisor whose rescaled monic form
@@ -56,18 +58,18 @@ unit-top spelling refused.  `W = 2z - 1` against itself, and
 private def wG : Poly := [⟨1, 2⟩, ⟨3, 1⟩]
 private def w2G : Poly := [⟨2, 1⟩, ⟨1, 5⟩, ⟨5, 1⟩]
 
-example : facRead wG [⟨1, 2⟩] [⟨2, 1⟩] 2 1 := by decide +kernel
-example : gcdRead wG wG [⟨1, 2⟩] [⟨2, 1⟩] [⟨2, 1⟩] [⟨2, 1⟩] []
+theorem pin5 : facRead wG [⟨1, 2⟩] [⟨2, 1⟩] 2 1 := by decide +kernel
+theorem pin6 : gcdRead wG wG [⟨1, 2⟩] [⟨2, 1⟩] [⟨2, 1⟩] [⟨2, 1⟩] []
     2 1 1 ⟨2, 1⟩ := by decide +kernel
-example : sqfreeRead w2G [⟨1, 2⟩] wG [⟨5, 1⟩] wG [] [⟨2, 1⟩]
+theorem pin7 : sqfreeRead w2G [⟨1, 2⟩] wG [⟨5, 1⟩] wG [] [⟨2, 1⟩]
     [] [⟨2, 1⟩] 2 1 1 1 ⟨5, 1⟩ ⟨3, 1⟩ := by decide +kernel
 
 /-! The multiplicities by iterated divisions: `2` at `z - 1`, `1`
 at `z + 2`, and the off-root read. -/
 
-example : multAt [⟨1, 2⟩] pG = 2 := by decide +kernel
-example : multAt [⟨3, 1⟩] pG = 1 := by decide +kernel
-example : multAt [⟨1, 6⟩] pG = 0 := by decide +kernel
+theorem pin8 : multAt [⟨1, 2⟩] pG = 2 := by decide +kernel
+theorem pin9 : multAt [⟨3, 1⟩] pG = 1 := by decide +kernel
+theorem pin10 : multAt [⟨1, 6⟩] pG = 0 := by decide +kernel
 
 /-! The multiplicity tier's theorems at `P = (z-1)²(z-2)
 = z³ - 4z² + 5z - 2`, the located root one entered as its balance
@@ -94,41 +96,41 @@ private def sqM : Poly := [⟨2, 1⟩, ⟨1, 3⟩, ⟨2, 1⟩]
 private def cofM : Poly := [⟨1, 3⟩, ⟨2, 1⟩]
 private def badM : Poly := [⟨3, 1⟩, ⟨1, 4⟩, ⟨2, 1⟩]
 
-example : poly.oneValue pM (poly.mul sqM cofM) := by decide +kernel
-example : multAt [⟨1, 2⟩] pM = 2 := by decide +kernel
-example : poly.oneValue pM
+theorem pin11 : poly.oneValue pM (poly.mul sqM cofM) := by decide +kernel
+theorem pin12 : multAt [⟨1, 2⟩] pM = 2 := by decide +kernel
+theorem pin13 : poly.oneValue pM
     (poly.mul (poly.powOf (linFacM ⟨2, 1⟩) 2) cofM) := by decide +kernel
-example : ¬ poly.isRoot cofM ⟨2, 1⟩ := by decide +kernel
-example : multAt [⟨1, 2⟩] pM = 2 :=
+theorem pin14 : ¬ poly.isRoot cofM ⟨2, 1⟩ := by decide +kernel
+theorem pin15 : multAt [⟨1, 2⟩] pM = 2 :=
   multAt_of ⟨2, 1⟩ pM cofM 2 (by decide +kernel) (by decide +kernel)
 
-example : multAt [⟨1, 2⟩] (poly.mul sqM cofM)
+theorem pin16 : multAt [⟨1, 2⟩] (poly.mul sqM cofM)
     = multAt [⟨1, 2⟩] sqM + multAt [⟨1, 2⟩] cofM :=
   multAt_mul ⟨2, 1⟩ sqM cofM (by decide +kernel) (by decide +kernel)
-example : multAt [⟨1, 2⟩] (poly.mul sqM cofM) = 2 := by decide +kernel
-example : ¬ (multAt [⟨1, 2⟩] (poly.mul [u, u] cofM)
+theorem pin17 : multAt [⟨1, 2⟩] (poly.mul sqM cofM) = 2 := by decide +kernel
+theorem pin18 : ¬ (multAt [⟨1, 2⟩] (poly.mul [u, u] cofM)
     = multAt [⟨1, 2⟩] [u, u] + multAt [⟨1, 2⟩] cofM) := by decide +kernel
-example : poly.oneValue [u, u] [u] := by decide +kernel
-example : ¬ multAt [⟨1, 2⟩] [u, u] = multAt [⟨1, 2⟩] [u] := by decide +kernel
+theorem pin19 : poly.oneValue [u, u] [u] := by decide +kernel
+theorem pin20 : ¬ multAt [⟨1, 2⟩] [u, u] = multAt [⟨1, 2⟩] [u] := by decide +kernel
 
-example : 0 < multAt [⟨1, 2⟩] pM :=
+theorem pin21 : 0 < multAt [⟨1, 2⟩] pM :=
   (multAt_pos ⟨2, 1⟩ pM (by decide +kernel)).mp (by decide +kernel)
-example : poly.isRoot pM ⟨3, 1⟩ :=
+theorem pin22 : poly.isRoot pM ⟨3, 1⟩ :=
   (multAt_pos ⟨3, 1⟩ pM (by decide +kernel)).mpr (by decide +kernel)
-example : multAt [⟨1, 3⟩] pM = 1 := by decide +kernel
-example : multAt [⟨1, 4⟩] pM = 0 := by decide +kernel
-example : ¬ poly.isRoot pM ⟨4, 1⟩ := by decide +kernel
+theorem pin23 : multAt [⟨1, 3⟩] pM = 1 := by decide +kernel
+theorem pin24 : multAt [⟨1, 4⟩] pM = 0 := by decide +kernel
+theorem pin25 : ¬ poly.isRoot pM ⟨4, 1⟩ := by decide +kernel
 
-example : poly.oneValue (poly.deriv pM) [⟨6, 1⟩, ⟨1, 9⟩, ⟨4, 1⟩] := by decide +kernel
-example : poly.isRoot (poly.deriv pM) ⟨2, 1⟩ :=
+theorem pin26 : poly.oneValue (poly.deriv pM) [⟨6, 1⟩, ⟨1, 9⟩, ⟨4, 1⟩] := by decide +kernel
+theorem pin27 : poly.isRoot (poly.deriv pM) ⟨2, 1⟩ :=
   multAt_deriv ⟨2, 1⟩ pM (by decide +kernel) (by decide +kernel)
-example : poly.isRoot (poly.deriv pM) ⟨2, 1⟩ := by decide +kernel
-example : ¬ poly.isRoot (poly.deriv pM) ⟨3, 1⟩ := by decide +kernel
+theorem pin28 : poly.isRoot (poly.deriv pM) ⟨2, 1⟩ := by decide +kernel
+theorem pin29 : ¬ poly.isRoot (poly.deriv pM) ⟨3, 1⟩ := by decide +kernel
 
-example : poly.oneValue pM
+theorem pin30 : poly.oneValue pM
     (poly.mul (poly.powOf (linFacM ⟨2, 1⟩) 1) badM) := by decide +kernel
-example : poly.isRoot badM ⟨2, 1⟩ := by decide +kernel
-example : ¬ multAt [⟨1, 2⟩] pM = 1 := by decide +kernel
+theorem pin31 : poly.isRoot badM ⟨2, 1⟩ := by decide +kernel
+theorem pin32 : ¬ multAt [⟨1, 2⟩] pM = 1 := by decide +kernel
 
 /-! The proper-factor value arithmetic at the isolated `√2`
 bracket `(1448/1024, 1449/1024)` of `S = (z-1)(z²-2)`, the doubled
@@ -139,39 +141,39 @@ the unit witness at `p = z-1` with the divisor keeping its side. -/
 private def e3 : stage.Ext :=
   ⟨[⟨3, 1⟩, ⟨1, 3⟩, ⟨1, 2⟩], ⟨⟨1449, 1⟩, 1024⟩, ⟨⟨1450, 1⟩, 1024⟩⟩
 
-example : valueNullRead e3 [⟨3, 1⟩, ⟨1, 3⟩, ⟨1, 2⟩, ⟨2, 1⟩]
+theorem pin33 : valueNullRead e3 [⟨3, 1⟩, ⟨1, 3⟩, ⟨1, 2⟩, ⟨2, 1⟩]
     [⟨1, 3⟩, u] [⟨1, 2⟩, ⟨2, 1⟩] [⟨1, 2⟩, ⟨2, 1⟩] 1 1024 := by
   decide +kernel
-example : valueUnitRead e3 [⟨1, 2⟩, ⟨2, 1⟩] [⟨1, 2⟩]
+theorem pin34 : valueUnitRead e3 [⟨1, 2⟩, ⟨2, 1⟩] [⟨1, 2⟩]
     [⟨1, 3⟩, u, ⟨2, 1⟩] [⟨2, 1⟩, ⟨2, 1⟩] [⟨1, 2⟩] ⟨2, 1⟩ 1
     1024 := by decide +kernel
 
 /-! The quadratic tier: the definite datum, the discriminant, the
 root relations, the conjugation, and the square root. -/
 
-example : defRead ⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩ := by decide +kernel
-example : ¬ defRead ⟨u, ⟨2, 1⟩, ⟨4, 1⟩⟩ := by decide +kernel
-example : discRead ⟨6, 1⟩ ⟨7, 1⟩ ⟨2, 1⟩ := by decide +kernel
-example : rootRead ⟨6, 1⟩ ⟨7, 1⟩ ⟨3, 1⟩ := by decide +kernel
-example : rootRead ⟨6, 1⟩ ⟨7, 1⟩ ⟨4, 1⟩ := by decide +kernel
-example : ¬ rootRead ⟨6, 1⟩ ⟨7, 1⟩ ⟨5, 1⟩ := by decide +kernel
-example : rootReadI u ⟨2, 1⟩ u ⟨2, 1⟩ := by decide +kernel
-example : poly.oneValue (keySwap ⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩ [u, ⟨2, 1⟩])
+theorem pin35 : defRead ⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩ := by decide +kernel
+theorem pin36 : ¬ defRead ⟨u, ⟨2, 1⟩, ⟨4, 1⟩⟩ := by decide +kernel
+theorem pin37 : discRead ⟨6, 1⟩ ⟨7, 1⟩ ⟨2, 1⟩ := by decide +kernel
+theorem pin38 : rootRead ⟨6, 1⟩ ⟨7, 1⟩ ⟨3, 1⟩ := by decide +kernel
+theorem pin39 : rootRead ⟨6, 1⟩ ⟨7, 1⟩ ⟨4, 1⟩ := by decide +kernel
+theorem pin40 : ¬ rootRead ⟨6, 1⟩ ⟨7, 1⟩ ⟨5, 1⟩ := by decide +kernel
+theorem pin41 : rootReadI u ⟨2, 1⟩ u ⟨2, 1⟩ := by decide +kernel
+theorem pin42 : poly.oneValue (keySwap ⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩ [u, ⟨2, 1⟩])
     [u, ⟨1, 2⟩] := by decide +kernel
-example : poly.oneValue
+theorem pin43 : poly.oneValue
     (poly.remMul iList [u, ⟨2, 1⟩]
       (keySwap ⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩ [u, ⟨2, 1⟩]))
     [⟨2, 1⟩] := by decide +kernel
-example : sqrtRead ⟨4, 1⟩ ⟨5, 1⟩ ⟨6, 1⟩ ⟨3, 1⟩ ⟨2, 1⟩ := by decide +kernel
+theorem pin44 : sqrtRead ⟨4, 1⟩ ⟨5, 1⟩ ⟨6, 1⟩ ⟨3, 1⟩ ⟨2, 1⟩ := by decide +kernel
 
 /-! The splitting data at `2(z-1)(z-2)(z²+1)`, with the
 forged-root refusal. -/
 
 private def pF : Poly := [⟨5, 1⟩, ⟨1, 7⟩, ⟨7, 1⟩, ⟨1, 7⟩, ⟨3, 1⟩]
 
-example : factorsRead pF 1 ⟨3, 1⟩ [⟨2, 1⟩, ⟨3, 1⟩]
+theorem pin45 : factorsRead pF 1 ⟨3, 1⟩ [⟨2, 1⟩, ⟨3, 1⟩]
     [⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩] := by decide +kernel
-example : ¬ factorsRead pF 1 ⟨3, 1⟩ [⟨2, 1⟩, ⟨4, 1⟩]
+theorem pin46 : ¬ factorsRead pF 1 ⟨3, 1⟩ [⟨2, 1⟩, ⟨4, 1⟩]
     [⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩] := by decide +kernel
 
 /-! The split certificate's reads at the same data.  The definite
@@ -181,17 +183,17 @@ off-root refusal at `3`. -/
 
 private def qD : QDatum := ⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩
 
-example : BPair.unit < poly.eval (quadFacM qD) ⟨4, 1⟩ := by decide +kernel
-example : BPair.unit < poly.eval (quadFacM qD) ⟨4, 1⟩ :=
+theorem pin47 : BPair.unit < poly.eval (quadFacM qD) ⟨4, 1⟩ := by decide +kernel
+theorem pin48 : BPair.unit < poly.eval (quadFacM qD) ⟨4, 1⟩ :=
   quadFacM_pos qD (by decide +kernel) ⟨4, 1⟩
 
-example : ([⟨2, 1⟩, ⟨3, 1⟩] : List BPair).any
+theorem pin49 : ([⟨2, 1⟩, ⟨3, 1⟩] : List BPair).any
     (fun r => decide ((⟨3, 1⟩ : BPair).oneValue r)) = true := by decide +kernel
-example : ([⟨2, 1⟩, ⟨3, 1⟩] : List BPair).any
+theorem pin50 : ([⟨2, 1⟩, ⟨3, 1⟩] : List BPair).any
     (fun r => decide ((⟨3, 1⟩ : BPair).oneValue r)) = true :=
   root_of_factors pF 1 ⟨3, 1⟩ [⟨2, 1⟩, ⟨3, 1⟩] [qD] (by decide +kernel)
     ⟨3, 1⟩ (by decide +kernel)
-example : ¬ poly.isRoot pF ⟨4, 1⟩ := by decide +kernel
+theorem pin51 : ¬ poly.isRoot pF ⟨4, 1⟩ := by decide +kernel
 
 /-! The tower at `K(√2)(√3)`: the level-one read `√2² = 2` and the
 two-extension read `(√2·√3)² = 6`, the equal-members test by
@@ -202,29 +204,31 @@ private def tw2 : TowerData 2 := (tw1, [[⟨1, 4⟩], []])
 private def rt2 : TE 1 := [u, ⟨2, 1⟩]
 private def x23 : TE 2 := [[], [u, ⟨2, 1⟩]]
 
-example : (opsAt 1 tw1).isNull
+theorem pin52 : (opsAt 1 tw1).isNull
     ((opsAt 1 tw1).add ((opsAt 1 tw1).mul rt2 rt2)
       ((opsAt 1 tw1).swap [⟨3, 1⟩])) = true := by decide +kernel
-example : (opsAt 2 tw2).isNull
+theorem pin53 : (opsAt 2 tw2).isNull
     ((opsAt 2 tw2).add ((opsAt 2 tw2).mul x23 x23)
       ((opsAt 2 tw2).swap [[⟨7, 1⟩]])) = true := by decide +kernel
-example : (opsAt 2 tw2).isNull x23 = false := by decide +kernel
+theorem pin54 : (opsAt 2 tw2).isNull x23 = false := by decide +kernel
 
 /-! The tower unit witness at the side-five factor `t² + t − 1`:
 `t (t + 1) = 1` at the remainder arithmetic, with the refusals at
 the unit constant and at a wrong witness. -/
 
-example : stagesplit.gWitnessRead 1
+theorem pin55 : stagesplit.gWitnessRead 1
     ((), [(BPair.ofNat 1).swap, BPair.ofNat 1])
     [BPair.unit, BPair.ofNat 1] [BPair.ofNat 1, BPair.ofNat 1]
     (BPair.ofNat 1) := by decide +kernel
 
-example : ¬ stagesplit.gWitnessRead 1
+theorem pin56 : ¬ stagesplit.gWitnessRead 1
     ((), [(BPair.ofNat 1).swap, BPair.ofNat 1])
     [BPair.unit, BPair.ofNat 1] [BPair.ofNat 1, BPair.ofNat 1]
     BPair.unit := by decide +kernel
 
-example : ¬ stagesplit.gWitnessRead 1
+theorem pin57 : ¬ stagesplit.gWitnessRead 1
     ((), [(BPair.ofNat 1).swap, BPair.ofNat 1])
     [BPair.unit, BPair.ofNat 1] [BPair.unit, BPair.ofNat 1]
     (BPair.ofNat 1) := by decide +kernel
+
+end stagesplit

@@ -45,7 +45,7 @@ at the terms' own joins (`msum_cross`), and the gram with the
 electric member's form at the fibers' orthogonal sum
 (`memberDiag_cross`).
 The fusion walk's return read closes the chain at the label window
-(`walk_reach`, `lem:corner`'s near mass): a walk vector off the
+(`walk_reach`, `lem:cornerkey`'s near mass): a walk vector off the
 sum's unit at a key is reached from the unit letters' keys within
 the step count, the walk's scaled part keeping a key reached and
 its acted part joining a key to the keys the walk reads off the
@@ -69,7 +69,7 @@ private theorem pos_lt (pos : List (List Nat)) (o : Nat)
 
 /-- The `X`-sector's alphabet: the fusion data with the labels below
 a cutoff read at the unit's class alone, the adjoint's fusion
-keeping every link's label class (`lem:chargedcell`(i)). -/
+keeping every link's label class (`lem:adjchar`; `con:labels`). -/
 def xData {L : Type} (F : fusion.Data L) : fusion.Data L :=
   { F with below := fun C =>
       (F.below C).filter (fun l => F.cls l == F.cls F.unit) }
@@ -494,21 +494,6 @@ private theorem reach_closed (terms : List Mat) (pos : List (List Nat))
       exact ⟨fun ha => mem_of_countOf_pos a _
           (of_decide_eq_true (all_of_mem _ _ h a ha)),
         fun ha => reach_mono terms pos n base k a (hlt a ha) ha⟩)]
-
-/-- A list whose every-read fails holds a member failing the read. -/
-private theorem exists_of_all_false {α : Type} (f : α → Bool) :
-    ∀ l : List α, l.all f = false → ∃ x, x ∈ l ∧ f x = false
-  | [], h => Bool.noConfusion h
-  | z :: t, h => by
-    cases hz : f z with
-    | false => exact ⟨z, List.Mem.head _, hz⟩
-    | true =>
-      have ht : t.all f = false := by
-        have h' : (f z && t.all f) = false := h
-        rw [hz, Bool.true_and] at h'
-        exact h'
-      obtain ⟨x, hx, hxv⟩ := exists_of_all_false f t ht
-      exact ⟨x, List.Mem.tail _ hx, hxv⟩
 
 /-- At an open count the reach grows by at least one member. -/
 private theorem reach_grow (terms : List Mat) (pos : List (List Nat))
@@ -1146,7 +1131,7 @@ private theorem dotN_off : ∀ (r v : List BPair),
         | ⟨j, hj, hr, hv⟩ => exact ⟨j + 1, Nat.succ_lt_succ hj, hr, hv⟩
       · exact ⟨0, Nat.succ_pos _, ha, hb⟩
 
-/-- The fusion walk's return read (`lem:corner`'s near mass): a walk
+/-- The fusion walk's return read (`lem:cornerkey`'s near mass): a walk
 vector off the sum's unit at a key is reached from the unit letters'
 keys within the step count, the positions the keys' own singletons.
 The seed reads the unit letters alone; at a step the scaled part

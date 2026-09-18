@@ -29,6 +29,13 @@ def nearPlaq {L : Type} (F : Data L) (R : Region) (a : List L)
   (carrier.touched F R a).any (fun v =>
     p.any (fun e => startOf R e == v || endOf R e == v))
 
+/-- The far row's one target: the `θ`-loop on the boundary with
+the configuration kept. -/
+def farConf {L : Type} (F : Data L) (R : Region) (a : List L)
+    (p : List (Nat × Bool)) : List L :=
+  (List.range R.links).map (fun l =>
+    if p.any (fun e => e.1 == l) then F.theta else getAt F.unit a l)
+
 /-- The far row's factorization: at a plaquette off the vertex
 neighborhood the row is one concatenation, the `θ`-loop on the
 boundary with the configuration kept, the unit law's row at every
@@ -37,12 +44,10 @@ def farRead {L : Type} (F : Data L) (R : Region) (a : List L)
     (p : List (Nat × Bool)) : Prop :=
   (match algebra.plaqRow F R p a with
    | [] => false
-   | [b] => carrier.eqConf F b ((List.range R.links).map (fun l =>
-       if p.any (fun e => e.1 == l) then F.theta
-       else getAt F.unit a l))
+   | [b] => carrier.eqConf F b (farConf F R a p)
    | _ :: _ :: _ => false) = true
 
-instance {L : Type} (F : Data L) (R : Region) (a : List L)
+instance instStableentries1 {L : Type} (F : Data L) (R : Region) (a : List L)
     (p : List (Nat × Bool)) : Decidable (farRead F R a p) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -69,7 +74,7 @@ def disjSupp {L : Type} (F : Data L) (R : Region) (a b : List L) :
     ((carrier.incidentLabels F R a v).length == 0)
       || ((carrier.incidentLabels F R b v).length == 0))) = true
 
-instance {L : Type} (F : Data L) (R : Region) (a b : List L) :
+instance instStableentries2 {L : Type} (F : Data L) (R : Region) (a b : List L) :
     Decidable (disjSupp F R a b) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -81,25 +86,89 @@ def joinConf {L : Type} (F : Data L) (R : Region) (a b : List L) :
     let x := getAt F.unit a l
     if F.eqL x F.unit then getAt F.unit b l else x)
 
-/-- The keyed image reads through maps agreeing at every occupied
-key. -/
-private theorem filterMap_congr {α β : Type} [DecidableEq α]
-    (f g : α → Option β) : ∀ l : List α,
-    (∀ e, 0 < countOf e l → f e = g e) →
-    l.filterMap f = l.filterMap g
-  | [], _ => rfl
-  | e :: t, h => by
-    have he : f e = g e :=
-      h e (by rw [countOf_head]; exact Nat.succ_pos _)
-    have ht : t.filterMap f = t.filterMap g :=
-      filterMap_congr f g t (fun x hx => h x (countOf_cons_pos hx))
-    show (match f e with
-          | none => t.filterMap f
-          | some c => c :: t.filterMap f)
-       = (match g e with
-          | none => t.filterMap g
-          | some c => c :: t.filterMap g)
-    rw [he, ht]
+/-- Off the vertex neighborhood the configuration reads the unit's
+class on the boundary's keys: an occupied boundary key puts its
+tail in the touched set at the plaquette's own boundary. -/
+theorem far_unit {L : Type} (F : Data L) (R : Region)
+    (p : List (Nat × Bool)) (b : List L) (hw : wellRead R)
+    (hfar : nearPlaq F R b p = false) (k : Nat) (hk : k < R.links)
+    (hkp : (p.any (fun e => e.1 == k)) = true) :
+    F.eqL (getAt F.unit b k) F.unit = true := by
+  cases hb : F.eqL (getAt F.unit b k) F.unit with
+  | true => rfl
+  | false =>
+    obtain ⟨e, hep, hek⟩ := ground.mem_of_any _ p hkp
+    have hek' : e.1 = k := ground.beqEqOf hek
+    have htch := (carrier.end_touched F R hw b k hk hb).1
+    have hcov : (p.any (fun e' =>
+        startOf R e' == getAt 0 R.tail k
+          || endOf R e' == getAt 0 R.tail k)) = true := by
+      refine ground.any_of_mem _ hep ?_
+      cases edge_ends R e with
+      | inl h => rw [h.1, hek', ground.eqBeqOf rfl]; exact Bool.true_or _
+      | inr h => rw [h.2, hek', ground.eqBeqOf rfl]; exact Bool.or_true _
+    have hnear : nearPlaq F R b p = true :=
+      ground.any_of_mem _ htch hcov
+    exact Bool.noConfusion (hfar.symm.trans hnear)
+
+/-- The far row's targets: at a plaquette off the vertex
+neighborhood every target on the plaquette's row is the far target,
+the `θ`-loop on the boundary with the configuration kept, since
+every boundary link's label is the unit and the unit's row at `θ` is
+the one member `θ` at the interface's unit row law (`lem:grading`'s
+border row at `def:algebra`'s changed-edge clause); the far target's
+own place on the row is the cutoff's read (`carrier.mem_idx`). -/
+theorem farRow {L : Type} [DecidableEq L] (F : Data L) (R : Region)
+    (hw : wellRead R) (hrow : unitRowLaw F F.theta)
+    (a : List L) (hlen : a.length = R.links) (hun : oneUnit F a)
+    (p : List (Nat × Bool)) (hfar : nearPlaq F R a p = false)
+    (b : List L) (hb : 0 < countOf b (algebra.plaqRow F R p a)) :
+    b = farConf F R a p := by
+  have hrow' : F.row F.unit F.theta = [F.theta] := hrow
+  have hb' : 0 < countOf b (ground.prodLists ((List.range R.links).map (algebra.linkTargets F p a))) := by
+    have h : 0 < countOf b ((ground.prodLists ((List.range R.links).map (algebra.linkTargets F p a))).filter
+      (fun t => (t.any (fun m => !(F.eqL m F.unit))) && carrier.occupied F R t)) := hb
+    rw [countOf_filter] at h
+    cases hf : ((b.any (fun m => !(F.eqL m F.unit))) && carrier.occupied F R b) with
+    | false => rw [if_neg (fun h' => Bool.noConfusion (hf.symm.trans h'))] at h; exact absurd h (Nat.lt_irrefl 0)
+    | true => rw [if_pos hf] at h; exact h
+  obtain ⟨hblen, hall⟩ := mem_prodLists_of F.unit _ b (mem_of_countOf_pos b _ hb')
+  have hDs : ((List.range R.links).map (algebra.linkTargets F p a)).length = R.links := by
+    rw [length_map, length_range]
+  have hflen : (farConf F R a p).length = R.links := by
+    show ((List.range R.links).map _).length = R.links
+    rw [length_map, length_range]
+  refine getAt_ext F.unit b (farConf F R a p) (hblen.trans (hDs.trans hflen.symm)) (fun i hi => ?_)
+  have hi' : i < R.links := by rw [← hDs, ← hblen]; exact hi
+  have hmem := hall i (by rw [hDs]; exact hi')
+  rw [getAt_map 0 [] _ (List.range R.links) i (by rw [length_range]; exact hi'), getAt_range R.links i hi'] at hmem
+  have hfar' : getAt F.unit (farConf F R a p) i
+      = if p.any (fun e => e.1 == i) then F.theta else getAt F.unit a i := by
+    show getAt F.unit ((List.range R.links).map (fun l =>
+      if p.any (fun e => e.1 == l) then F.theta else getAt F.unit a l)) i = _
+    rw [getAt_map 0 F.unit _ (List.range R.links) i (by rw [length_range]; exact hi'),
+      getAt_range R.links i hi']
+  rw [hfar']
+  cases hkp : (p.any (fun e => e.1 == i)) with
+  | true =>
+    have hunit : getAt F.unit a i = F.unit :=
+      oneUnit_read F a hun _ (countOf_pos_of_mem (mem_getAt F.unit a i (by rw [hlen]; exact hi')))
+        (far_unit F R p a hw hfar i hi' hkp)
+    have hsing : algebra.linkTargets F p a i = [F.theta] := by
+      show (if p.any (fun e => e.1 == i) then F.row (getAt F.unit a i) F.theta
+        else [getAt F.unit a i]) = [F.theta]
+      rw [hkp, if_pos rfl, hunit, hrow']
+    rw [hsing] at hmem
+    rw [if_pos rfl]
+    exact ground.eq_of_mem_single hmem
+  | false =>
+    have hsing : algebra.linkTargets F p a i = [getAt F.unit a i] := by
+      show (if p.any (fun e => e.1 == i) then F.row (getAt F.unit a i) F.theta
+        else [getAt F.unit a i]) = [getAt F.unit a i]
+      rw [hkp, if_neg (fun h' => Bool.noConfusion h')]
+    rw [hsing] at hmem
+    rw [if_neg (fun h' => Bool.noConfusion h')]
+    exact ground.eq_of_mem_single hmem
 
 /-- Every incident entry keys a link of the region. -/
 theorem incident_lt (R : Region) (v : Nat) (e : Nat × Bool)
@@ -173,7 +242,7 @@ private theorem incid_join_left {L : Type} (F : Data L) (R : Region)
       let l := getAt F.unit b d.1
       if F.eqL l F.unit then none
       else if d.2 then some l else some (F.dual l))).length = 0 := hb
-  refine filterMap_congr _ _ (incident R v) (fun e he => ?_)
+  refine filterMap_congr_members _ _ (incident R v) (fun e he => ?_)
   have hlt : e.1 < R.links := incident_lt R v e he
   have hnb := filterMap_none _ (incident R v) hb' e he
   have hbu : F.eqL (getAt F.unit b e.1) F.unit = true := by
@@ -237,7 +306,7 @@ private theorem incid_join_right {L : Type} (F : Data L) (R : Region)
       let l := getAt F.unit a d.1
       if F.eqL l F.unit then none
       else if d.2 then some l else some (F.dual l))).length = 0 := ha
-  refine filterMap_congr _ _ (incident R v) (fun e he => ?_)
+  refine filterMap_congr_members _ _ (incident R v) (fun e he => ?_)
   have hlt : e.1 < R.links := incident_lt R v e he
   have hna := filterMap_none _ (incident R v) ha' e he
   have hau : F.eqL (getAt F.unit a e.1) F.unit = true := by
@@ -332,5 +401,75 @@ theorem fibProd_join {L : Type} (F : Data L) (R : Region)
   rw [hcongr]
   exact ground.famFold_mul_split (carrier.vmult F R a)
     (carrier.vmult F R b) (List.range R.verts)
+
+
+/-! The reach at a link read at the entries' keys: one value across
+a plaquette's cyclic readings, and moved along a region action. -/
+
+/-- A plaquette's reach at a link, read at the entries' keys
+alone. -/
+private def keyNear (R : Region) (k l : Nat) : Bool :=
+  (getAt 0 R.tail k == getAt 0 R.tail l)
+    || (getAt 0 R.tail k == getAt 0 R.head l)
+    || (getAt 0 R.head k == getAt 0 R.tail l)
+    || (getAt 0 R.head k == getAt 0 R.head l)
+
+private theorem nearLink_keys (R : Region) (p : List (Nat × Bool)) (l : Nat) :
+    nearLink R p l = p.any (fun e => keyNear R e.1 l) := by
+  refine any_congr_all _ _ (fun e => ?_) p
+  cases e with
+  | mk k b =>
+    cases b with
+    | true => rfl
+    | false =>
+      show ((getAt 0 R.head k == getAt 0 R.tail l)
+          || (getAt 0 R.head k == getAt 0 R.head l)
+          || (getAt 0 R.tail k == getAt 0 R.tail l)
+          || (getAt 0 R.tail k == getAt 0 R.head l))
+        = ((getAt 0 R.tail k == getAt 0 R.tail l)
+          || (getAt 0 R.tail k == getAt 0 R.head l)
+          || (getAt 0 R.head k == getAt 0 R.tail l)
+          || (getAt 0 R.head k == getAt 0 R.head l))
+      cases (getAt 0 R.head k == getAt 0 R.tail l) <;>
+        cases (getAt 0 R.head k == getAt 0 R.head l) <;>
+        cases (getAt 0 R.tail k == getAt 0 R.tail l) <;>
+        cases (getAt 0 R.tail k == getAt 0 R.head l) <;> rfl
+
+/-- The reach at a link is one value across a plaquette's cyclic
+readings. -/
+theorem nearLink_cyc (R : Region) (w w' : List (Nat × Bool))
+    (hc : cycEq w w' = true) (l : Nat) : nearLink R w l = nearLink R w' l := by
+  rw [nearLink_keys, nearLink_keys]
+  exact cycEq_any_keys (fun k => keyNear R k l) w w' hc
+
+private theorem keyNear_move (R : Region) (hw : wellRead R) (t s v w : Nat → Nat)
+    (h : isoRead R R t s v w (fun _ => false)) (k l : Nat)
+    (hk : k < R.links) (hl : l < R.links) :
+    keyNear R (t k) (t l) = keyNear R k l := by
+  show ((getAt 0 R.tail (t k) == getAt 0 R.tail (t l))
+    || (getAt 0 R.tail (t k) == getAt 0 R.head (t l))
+    || (getAt 0 R.head (t k) == getAt 0 R.tail (t l))
+    || (getAt 0 R.head (t k) == getAt 0 R.head (t l))) = _
+  rw [(endsMoved_vac R t v h.2.2 k hk).1, (endsMoved_vac R t v h.2.2 k hk).2,
+    (endsMoved_vac R t v h.2.2 l hl).1, (endsMoved_vac R t v h.2.2 l hl).2,
+    vertIso_beq R v w h.2.1 _ _ (endLt R hw k hk).1 (endLt R hw l hl).1,
+    vertIso_beq R v w h.2.1 _ _ (endLt R hw k hk).1 (endLt R hw l hl).2,
+    vertIso_beq R v w h.2.1 _ _ (endLt R hw k hk).2 (endLt R hw l hl).1,
+    vertIso_beq R v w h.2.1 _ _ (endLt R hw k hk).2 (endLt R hw l hl).2]
+  rfl
+
+/-- The reach at a link transports along a region action: the moved
+plaquette's reach at the moved link is the plaquette's at the
+link. -/
+theorem nearLink_move (R : Region) (hw : wellRead R) (t s v w : Nat → Nat)
+    (h : isoRead R R t s v w (fun _ => false)) (p : List (Nat × Bool))
+    (hp : (p.all (fun e => e.1 < R.links)) = true) (l : Nat) (hl : l < R.links) :
+    nearLink R (moveWord t (fun _ => false) p) (t l) = nearLink R p l := by
+  rw [nearLink_keys, nearLink_keys]
+  show (p.map (fun e => (t e.1, xor e.2 ((fun _ => false) e.1)))).any
+      (fun e => keyNear R e.1 (t l)) = _
+  rw [any_map]
+  refine any_congr_of_mem _ _ p (fun e he => ?_)
+  exact keyNear_move R hw t s v w h e.1 l (of_decide_eq_true (all_of_mem _ p hp e he)) hl
 
 end stableentries

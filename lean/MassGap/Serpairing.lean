@@ -250,7 +250,7 @@ def invRead (n : Nat) (rs : List elim.Mat) (v : List BPair) : Prop :=
            (actVecGo R mons mons v (mons.map (fun _ => BPair.unit)))
        then true else false)) = true
 
-instance (n : Nat) (rs : List elim.Mat) (v : List BPair) :
+instance instSerpairing1 (n : Nat) (rs : List elim.Mat) (v : List BPair) :
     Decidable (invRead n rs v) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -288,7 +288,7 @@ def gramReadB (l k : Nat) : Prop :=
            (s * poly.eval (getAt [] (getAt [] g i) j) r)
        then true else false))) = true
 
-instance (l k : Nat) : Decidable (gramReadB l k) :=
+instance instSerpairing2 (l k : Nat) : Decidable (gramReadB l k) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The `C` in-carrier Gram identity at a rank and a pair count:
@@ -305,7 +305,7 @@ def gramReadC (l k : Nat) : Prop :=
            (poly.eval (getAt [] (getAt [] g i) j) r)
        then true else false))) = true
 
-instance (l k : Nat) : Decidable (gramReadC l k) :=
+instance instSerpairing3 (l k : Nat) : Decidable (gramReadC l k) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The `D` in-carrier Gram identity at a rank and a pair count:
@@ -322,7 +322,7 @@ def gramReadD (l k : Nat) : Prop :=
            (poly.eval (getAt [] (getAt [] g i) j) r)
        then true else false))) = true
 
-instance (l k : Nat) : Decidable (gramReadD l k) :=
+instance instSerpairing4 (l k : Nat) : Decidable (gramReadD l k) :=
   inferInstanceAs (Decidable (_ = _))
 
 end serpairing

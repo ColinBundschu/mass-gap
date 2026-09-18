@@ -22,17 +22,15 @@ strict off the crossing values, and the interior margin squares to
 the crossing read, `⟨1 : z²⟩² = z² ⟨w² : 4⟩` cleared at the shared
 clearing (`marginRead`, the walk's `[9 : 4]` at base two
 `thm:channeldiv`'s own instance; the identity is the relation's own
-square, the tex display `z⁴ + 1 + 4z² = w²z² + 2z²`, its general
-derivation riding at the corner margin's consumers, `lem:corner`'s
-deck family, the read the display's verification).  The
+square, the tex display `z⁴ + 1 + 4z² = w²z² + 2z²`, the read the
+display's verification at `lem:corner`'s deck family).  The
 factorization
 `p = c · p_int · p_ext` reads at the cleared root-pair quadratics,
 one per chord datum with the interior clause per pair
 (`intExtRead`, `lem:stagesplit`'s factor folds); a definite chord
-datum's roots enter over its pair's quadratic extensions and the
-stored-tower instances land with the emitted certificates' tier at
-their recorded consumers (`thm:decimation`(iii)'s deck divisors,
-`lem:spectator`(iii)'s solvent), the reads here their displays. -/
+datum's roots enter over its pair's quadratic extensions, the
+stored-tower instances `thm:decimation`(iii)'s deck divisors and
+`lem:spectator`(iii)'s solvent, the reads here their displays. -/
 
 namespace deckfactor
 open ground poly elim inertia
@@ -48,7 +46,7 @@ def deckSymRead (p : Poly) (m : Nat) : Prop :=
       ((ground.getAt BPair.unit p i).oneValue
         (ground.getAt BPair.unit p (2 * m - i))))) = true
 
-instance (p : Poly) (m : Nat) : Decidable (deckSymRead p m) :=
+instance instDeckfactor1 (p : Poly) (m : Nat) : Decidable (deckSymRead p m) :=
   inferInstanceAs (Decidable (¬ _ ∧ _ ∧ _ = _))
 
 /-- The deck monomial's plus factor at a power, `(z² + 1)^j`. -/
@@ -88,7 +86,7 @@ polynomial exactly at the deck-symmetric data. -/
 def symbolRead (p : Poly) (m : Nat) : Prop :=
   poly.oneValue p (assembleSym (symbolOf p m) m)
 
-instance (p : Poly) (m : Nat) : Decidable (symbolRead p m) :=
+instance instDeckfactor2 (p : Poly) (m : Nat) : Decidable (symbolRead p m) :=
   poly.decOneValue _ _
 
 /-- The interior member at a chord datum, the shared clearing's
@@ -98,7 +96,7 @@ def interiorRead (zn wn : BPair) (c : Pos) : Prop :=
   BPair.oneValue (zn * zn + BPair.ofPos (c * c)) (wn * zn)
   ∧ zn * zn ≤ BPair.ofPos (c * c)
 
-instance (zn wn : BPair) (c : Pos) : Decidable (interiorRead zn wn c) :=
+instance instDeckfactor3 (zn wn : BPair) (c : Pos) : Decidable (interiorRead zn wn c) :=
   inferInstanceAs (Decidable (_ ∧ _ ≤ _))
 
 /-- The interior margin squares to the crossing read,
@@ -111,7 +109,7 @@ def marginRead (zn wn : BPair) (c : Pos) : Prop :=
         * (BPair.ofPos (c * c) + (zn * zn).swap))
       ((zn * zn) * (wn * wn + (BPair.ofPos (4 * (c * c))).swap))
 
-instance (zn wn : BPair) (c : Pos) : Decidable (marginRead zn wn c) :=
+instance instDeckfactor4 (zn wn : BPair) (c : Pos) : Decidable (marginRead zn wn c) :=
   inferInstanceAs (Decidable (_ ∧ _))
 
 /-- The factorization `p = c · p_int · p_ext` at cleared root-pair
@@ -133,7 +131,7 @@ def intExtRead (p : Poly) (cl : BPair)
       (poly.mul [cl] (poly.prodFold (pairs.map (fun r =>
         [BPair.ofPos r.2.2, (r.1 + r.2.1).swap, BPair.ofPos r.2.2]))))
 
-instance (p : Poly) (cl : BPair)
+instance instDeckfactor5 (p : Poly) (cl : BPair)
     (pairs : List (BPair × BPair × Pos)) :
     Decidable (intExtRead p cl pairs) :=
   inferInstanceAs (Decidable (¬ _ ∧ _ = _ ∧ _))
@@ -176,7 +174,7 @@ def bandClear {o1 o2 : Nat} (p : Poly) (spH : Split o1)
   hermitesign.segCountRead (clearVarBT p)
     (clearAt p ⟨1, 3⟩) (clearAt p ⟨3, 1⟩) Pos.one 0 spH spB
 
-instance {o1 o2 : Nat} (p : Poly) (spH : Split o1) (spB : Split o2) :
+instance instDeckfactor6 {o1 o2 : Nat} (p : Poly) (spH : Split o1) (spB : Split o2) :
     Decidable (bandClear p spH spB) :=
   inferInstanceAs (Decidable (hermitesign.segCountRead _ _ _ _ _ _ _))
 

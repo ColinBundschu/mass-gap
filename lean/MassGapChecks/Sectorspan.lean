@@ -45,7 +45,9 @@ certificate Props' standing shape convention and carry no refusal
 of their own.
 -/
 
-open ground elim sectorspan
+namespace sectorspan
+
+open ground elim
 
 private def u : BPair := BPair.unit
 
@@ -70,18 +72,18 @@ private theorem rankRot : elim.rank rot3 = 3 := by decide +kernel
 private theorem rankSing : elim.rank sing3 = 2 := by decide +kernel
 private theorem rankRect : elim.rank rect32 = 2 := by decide +kernel
 
-example : spanRead 3 rot3 := ⟨by decide +kernel, rankRot⟩
-example : spanRead 2 rect32 := ⟨by decide +kernel, rankRect⟩
+theorem pin1 : spanRead 3 rot3 := ⟨by decide +kernel, rankRot⟩
+theorem pin2 : spanRead 2 rect32 := ⟨by decide +kernel, rankRect⟩
 
 /-- The refusal isolating the pivot count: the shape holds at the
 order while the count falls one short. -/
-example : elim.rowsLen 3 sing3 := by decide +kernel
-example : ¬ spanRead 3 sing3 := fun h =>
+theorem pin3 : elim.rowsLen 3 sing3 := by decide +kernel
+theorem pin4 : ¬ spanRead 3 sing3 := fun h =>
   absurd (rankSing.symm.trans h.2) (by decide +kernel)
 
-example : ¬ (elim.pivotProd rot3).oneValue BPair.unit :=
+theorem pin5 : ¬ (elim.pivotProd rot3).oneValue BPair.unit :=
   elim.pivotProd_off rot3
-example : ¬ (elim.pivotProd sing3).oneValue BPair.unit :=
+theorem pin6 : ¬ (elim.pivotProd sing3).oneValue BPair.unit :=
   elim.pivotProd_off sing3
 
 /-! The adjoint display at a two-key window and at the rectangular
@@ -96,22 +98,22 @@ private def x2 : List BPair := [⟨4, 1⟩, u]
 
 /-- The fixture's frame: the transpose is off the matrix, so the
 transposed multiplication is load-bearing in the pairing below. -/
-example : ¬ matOneValue (transposeM P2) P2 := by decide +kernel
+theorem pin7 : ¬ matOneValue (transposeM P2) P2 := by decide +kernel
 
-example : (dotP w2 (matVec P2 x2)).oneValue
+theorem pin8 : (dotP w2 (matVec P2 x2)).oneValue
     (dotP (matVec (transposeM P2) w2) x2) := by decide +kernel
 
-example : (dotP w2 (matVec P2 x2)).oneValue
+theorem pin9 : (dotP w2 (matVec P2 x2)).oneValue
     (dotP (matVec (transposeM P2) w2) x2) :=
   adj_read 2 2 P2 (by decide +kernel) (by decide +kernel) w2 x2
     (by decide +kernel) (by decide +kernel)
 
 private def w3 : List BPair := [⟨2, 1⟩, u, ⟨3, 1⟩]
 
-example : (dotP w3 (matVec rect32 x2)).oneValue
+theorem pin10 : (dotP w3 (matVec rect32 x2)).oneValue
     (dotP (matVec (transposeM rect32) w3) x2) := by decide +kernel
 
-example : (dotP w3 (matVec rect32 x2)).oneValue
+theorem pin11 : (dotP w3 (matVec rect32 x2)).oneValue
     (dotP (matVec (transposeM rect32) w3) x2) :=
   adj_read 3 2 rect32 (by decide +kernel) (by decide +kernel) w3 x2
     (by decide +kernel) (by decide +kernel)
@@ -129,12 +131,12 @@ private def J3 : Mat := [[u, ⟨2, 1⟩, u], [⟨2, 1⟩, u, u], [u, u, ⟨2, 1�
 /-- The first coordinate's unit vector. -/
 private def e0 : List BPair := [⟨2, 1⟩, u, u]
 
-example : matOneValue (matMul Et3 J3) (matMul J3 Et3) := by decide +kernel
-example : poly.unitTail (matVec Et3 e0) := by decide +kernel
+theorem pin12 : matOneValue (matMul Et3 J3) (matMul J3 Et3) := by decide +kernel
+theorem pin13 : poly.unitTail (matVec Et3 e0) := by decide +kernel
 
-example : poly.unitTail (matVec Et3 (matVec J3 e0)) := by decide +kernel
+theorem pin14 : poly.unitTail (matVec Et3 (matVec J3 e0)) := by decide +kernel
 
-example : poly.unitTail (matVec Et3 (matVec J3 e0)) :=
+theorem pin15 : poly.unitTail (matVec Et3 (matVec J3 e0)) :=
   invol_ground 3 Et3 J3 (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) e0
     (by decide +kernel) (by decide +kernel)
@@ -145,9 +147,9 @@ longer commute, and the image leaves the sum's unit while the
 ground read at the vector itself still holds. -/
 private def Et3o : Mat := [[u, u, u], [u, ⟨6, 1⟩, u], [u, u, ⟨8, 1⟩]]
 
-example : ¬ matOneValue (matMul Et3o J3) (matMul J3 Et3o) := by decide +kernel
-example : poly.unitTail (matVec Et3o e0) := by decide +kernel
-example : ¬ poly.unitTail (matVec Et3o (matVec J3 e0)) := by decide +kernel
+theorem pin16 : ¬ matOneValue (matMul Et3o J3) (matMul J3 Et3o) := by decide +kernel
+theorem pin17 : poly.unitTail (matVec Et3o e0) := by decide +kernel
+theorem pin18 : ¬ poly.unitTail (matVec Et3o (matVec J3 e0)) := by decide +kernel
 
 /-! The filling at the full pivot count, and the perpendicular
 element off the unit family below it. -/
@@ -155,22 +157,22 @@ element off the unit family below it. -/
 /-- The unit family at the order. -/
 private def vU : List BPair := [u, u, u]
 
-example : (∀ i, i < rot3.length →
+theorem pin19 : (∀ i, i < rot3.length →
     (dotP vU (ground.getAt ([] : List BPair) rot3 i)).oneValue
       BPair.unit) := by decide +kernel
 
-example : poly.unitTail (matVec rot3 vU) :=
+theorem pin20 : poly.unitTail (matVec rot3 vU) :=
   perp_kernel rot3 vU (by decide +kernel)
 
-example : poly.unitTail (matVec rot3 vU) := by decide +kernel
+theorem pin21 : poly.unitTail (matVec rot3 vU) := by decide +kernel
 
-example : poly.unitTail vU :=
+theorem pin22 : poly.unitTail vU :=
   fills 3 rot3 ⟨by decide +kernel, rankRot⟩ vU
     (by decide +kernel) (by decide +kernel)
 
 private def vU2 : List BPair := [u, u]
 
-example : poly.unitTail vU2 :=
+theorem pin23 : poly.unitTail vU2 :=
   fills 2 rect32 ⟨by decide +kernel, rankRect⟩ vU2
     (by decide +kernel) (by decide +kernel)
 
@@ -179,10 +181,10 @@ word images' perpendicular set at the full pivot count, the
 conclusion off with it. -/
 private def v1 : List BPair := [⟨2, 1⟩, u, u]
 
-example : ¬ (∀ i, i < rot3.length →
+theorem pin24 : ¬ (∀ i, i < rot3.length →
     (dotP v1 (ground.getAt ([] : List BPair) rot3 i)).oneValue
       BPair.unit) := by decide +kernel
-example : ¬ poly.unitTail v1 := by decide +kernel
+theorem pin25 : ¬ poly.unitTail v1 := by decide +kernel
 
 /-- The kernel list's first member at the singular window: a
 perpendicular element of the order whose pivot-free coordinate is
@@ -193,13 +195,15 @@ private def wK : List BPair :=
 /-- The refusal isolating the pivot count in the fill: the shape
 holds, the member is of the order and perpendicular, and the count
 alone fails — the member sits off the unit family. -/
-example : ¬ (elim.rank sing3 = 3) := fun h =>
+theorem pin26 : ¬ (elim.rank sing3 = 3) := fun h =>
   absurd (rankSing.symm.trans h) (by decide +kernel)
-example : wK.length = 3 := by decide +kernel
-example : poly.unitTail (matVec sing3 wK) := by decide +kernel
-example : ¬ poly.unitTail wK := by decide +kernel
+theorem pin27 : wK.length = 3 := by decide +kernel
+theorem pin28 : poly.unitTail (matVec sing3 wK) := by decide +kernel
+theorem pin29 : ¬ poly.unitTail wK := by decide +kernel
 
-example : ∃ v : List BPair, v.length = 3
+theorem pin30 : ∃ v : List BPair, v.length = 3
     ∧ poly.unitTail (matVec sing3 v) ∧ ¬ poly.unitTail v :=
   occupied_off 3 sing3 (by decide +kernel)
     (by rw [rankSing]; exact Nat.lt_succ_self 2)
+
+end sectorspan

@@ -28,7 +28,7 @@ together and the count is unchanged (`countAtPair_scale`,
 representative; and the count is monotone at a positive-semidefinite
 site difference with the pencil and the level each free to move
 (`countAtPair_mono`), `lem:inertia`'s monotone read at the
-count carrier.  `lem:corner`'s join read rides that monotonicity:
+count carrier.  `lem:contactdrift`'s join read rides that monotonicity:
 the two levels' difference site is one pencil at two balance-pair
 levels and reads the gram's scalar copy, the cross-added level
 order's margin the scalar (`siteDiff_scalar`), so a level whose
@@ -56,18 +56,24 @@ def countRead {o : Nat} (H G : Mat) (an ad : Pos) (n : Nat) (sp : Split o) : Pro
   ∧ splitRead (siteDatum (matScale ad H) (matScale an G)) sp
   ∧ revAt sp = n
 
-instance {o : Nat} (H G : Mat) (an ad : Pos) (n : Nat) (sp : Split o) :
+instance instCertconstruct1 {o : Nat} (H G : Mat) (an ad : Pos) (n : Nat) (sp : Split o) :
     Decidable (countRead H G an ad n sp) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
+
+/-- The level datum at a balance-pair level `⟨x : y⟩`: the pencil's
+site datum joined to the level pair's gram copies, the pair
+`(H + yG : xG)`'s site datum. -/
+def levelDatum (H G : Mat) (x y : Pos) : Mat :=
+  siteDatum (matAdd H (matScale y G)) (matScale x G)
 
 /-- The count at a balance-pair level `⟨x : y⟩`: the second member
 cross-added onto the pencil's own side, `rev(H + yG : xG)`. -/
 def countAtPair {o : Nat} (H G : Mat) (x y : Pos) (n : Nat) (sp : Split o) : Prop :=
   sqAt H o ∧ sqAt G o
-  ∧ splitRead (siteDatum (matAdd H (matScale y G)) (matScale x G)) sp
+  ∧ splitRead (levelDatum H G x y) sp
   ∧ revAt sp = n
 
-instance {o : Nat} (H G : Mat) (x y : Pos) (n : Nat) (sp : Split o) :
+instance instCertconstruct2 {o : Nat} (H G : Mat) (x y : Pos) (n : Nat) (sp : Split o) :
     Decidable (countAtPair H G x y n sp) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
 
@@ -94,6 +100,7 @@ theorem countAtPair_shift {o : Nat} (H G : Mat) (c x y : Pos)
     match h with
     | ⟨_, hG, hsplit, hrev⟩ =>
       refine ⟨hH, hG, ?_, hrev⟩
+      show splitRead (siteDatum (matAdd H (matScale (y + c) G)) (matScale x G)) sp
       rw [← siteShift H G c y]
       exact hsplit
   · intro h
@@ -101,6 +108,8 @@ theorem countAtPair_shift {o : Nat} (H G : Mat) (c x y : Pos)
     | ⟨_, hG, hsplit, hrev⟩ =>
       refine ⟨elim.sqAt_matAdd o (matScale c G) H
         (sqAt_matScale o c G hG) hH, hG, ?_, hrev⟩
+      show splitRead (siteDatum (matAdd (matAdd (matScale c G) H) (matScale y G))
+        (matScale x G)) sp
       rw [siteShift H G c y]
       exact hsplit
 
@@ -236,7 +245,7 @@ theorem countAtPair_mono {o : Nat} (H H' G : Mat) (x y x' y' : Pos)
 
 /-- The two levels' difference site reads the gram's scalar copy:
 one pencil at two balance-pair levels, the cross-added level order's
-margin the scalar (`lem:corner`'s join read, the difference site at
+margin the scalar (`lem:contactdrift`'s join read, the difference site at
 the monotone count read). -/
 theorem siteDiff_scalar {o : Nat} (H G : Mat) (hH : sqAt H o)
     (hG : sqAt G o) (lx ly gx gy c : Pos)
@@ -295,6 +304,30 @@ theorem siteDiff_scalar {o : Nat} (H G : Mat) (hH : sqAt H o)
     ((elim.sqAt_len hN2).trans (elim.sqAt_len hcG).symm)
     (elim.rowsLen_of_sqAt hN2) (elim.rowsLen_of_sqAt hcG)
 
+/-- The two levels' difference site at an ordered pair of levels
+reads the gram's scalar copy (`siteDiff_scalar`), so a
+positive-semidefinite gram gives the monotone read its split, the
+gram's split scaled at the margin's weight, positive semidefinite
+with it. -/
+theorem levelDiff_split {o : Nat} (H G : Mat) (hH : sqAt H o) (hG : sqAt G o)
+    (spG : Split o) (hGr : splitRead G spG) (hGp : psdAt spG)
+    (lx ly gx gy c : Pos) (hc : lx + gy + c = gx + ly) :
+    splitRead (siteDatum (levelDatum H G lx ly) (levelDatum H G gx gy))
+        (scaleSplit (BPair.ofPos c) spG)
+      ∧ psdAt (scaleSplit (BPair.ofPos c) spG) := by
+  have hoff : ¬ (BPair.ofPos c).oneValue BPair.unit :=
+    ground.offOfUnitLt (ground.unitLtOfPos c)
+  have h0 := scaleSplit_read (BPair.ofPos c) hoff G spG hGr
+  have hsq : ∀ x y : Pos, sqAt (levelDatum H G x y) o := fun x y =>
+    sqAt_siteDatum o _ _ (sqAt_matAdd o H _ hH (sqAt_matScale o y G hG))
+      (sqAt_matScale o x G hG)
+  refine ⟨splitRead_congr _ _ (sqAt_siteDatum o _ _ (hsq lx ly) (hsq gx gy)) ?_ _ h0, ?_⟩
+  · exact matOne_trans (matOne_symm (matScale_scaleB c G))
+      (matOne_symm (siteDiff_scalar H G hH hG lx ly gx gy c hc))
+  · show revAt (scaleSplit (BPair.ofPos c) spG) = 0
+    rw [scaleSplit_rev (BPair.ofPos c) (ground.unitLtOfPos c) spG]
+    exact hGp
+
 /-- The two levels' difference site at equal cross-added levels is
 null: the pencil's balanced double against the collected weights'
 balanced double, every entry at the sum's unit. -/
@@ -335,7 +368,7 @@ theorem siteDiff_null (H G : Mat) (lx ly gx gy : Pos)
 gram: a level whose count is vacant reads strictly below a level
 whose count is occupied — the cross-added order at the difference
 site's scalar certificate, the equal-level reading refused at the
-vacant certificate (`lem:corner`'s join read; `lem:inertia`'s
+vacant certificate (`lem:contactdrift`'s join read; `lem:inertia`'s
 monotone count read). -/
 theorem count_below_occupied {o : Nat} (H : Mat) (gx gy lx ly : Pos)
     (n : Nat) (spg spl : Split o)
@@ -345,27 +378,11 @@ theorem count_below_occupied {o : Nat} (H : Mat) (gx gy lx ly : Pos)
     gx + ly < lx + gy := by
   match ground.trich (lx + gy) (gx + ly) with
   | .lt c hc =>
-    have hd : splitRead
-        (siteDatum
-          (siteDatum (matAdd H (matScale ly (idMat o)))
-            (matScale lx (idMat o)))
-          (siteDatum (matAdd H (matScale gy (idMat o)))
-            (matScale gx (idMat o))))
-        (inertia.scalarSplit o c) :=
-      inertia.scalarSplit_read c _
-        (sqAt_siteDatum o _ _
-          (sqAt_siteDatum o _ _
-            (elim.sqAt_matAdd o H _ hocc.1
-              (sqAt_matScale o ly (idMat o) hocc.2.1))
-            (sqAt_matScale o lx (idMat o) hocc.2.1))
-          (sqAt_siteDatum o _ _
-            (elim.sqAt_matAdd o H _ hocc.1
-              (sqAt_matScale o gy (idMat o) hocc.2.1))
-            (sqAt_matScale o gx (idMat o) hocc.2.1)))
-        (siteDiff_scalar H (idMat o) hocc.1 hocc.2.1 lx ly gx gy c hc)
+    have hd := levelDiff_split H (idMat o) hocc.1 hocc.2.1 (inertia.scalarSplit o Pos.one)
+      (inertia.scalarSplit_read_idMat o) (inertia.scalarSplit_psd o Pos.one)
+      lx ly gx gy c hc
     have hmono := countAtPair_mono H H (idMat o) lx ly gx gy n 0
-      spl spg (inertia.scalarSplit o c) hd
-      (inertia.scalarSplit_psd o c) hocc hvac
+      spl spg _ hd.1 hd.2 hocc hvac
     exact absurd (Nat.le_trans hn hmono) (Nat.not_succ_le_zero 0)
   | .eq he =>
     have hd : splitRead
@@ -404,7 +421,7 @@ def desigRead {o : Nat} (H G : Mat) (ln ld hn hd : Pos) (g : Nat)
   ∧ revAt spl + g = revAt sph
   ∧ 1 ≤ g
 
-instance {o : Nat} (H G : Mat) (ln ld hn hd : Pos) (g : Nat)
+instance instCertconstruct3 {o : Nat} (H G : Mat) (ln ld hn hd : Pos) (g : Nat)
     (spl sph : Split o) :
     Decidable (desigRead H G ln ld hn hd g spl sph) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
@@ -424,7 +441,7 @@ def desigWhole {o : Nat} (H G : Mat) (ln ld hn hd wn wd : Pos)
   ∧ hn * (ld * wd) = ln * (hd * wd) + wn * (ld * hd)
   ∧ windowsep.sepRead (split.charPoly H G) wn wd
 
-instance {o : Nat} (H G : Mat) (ln ld hn hd wn wd : Pos) (g : Nat)
+instance instCertconstruct4 {o : Nat} (H G : Mat) (ln ld hn hd wn wd : Pos) (g : Nat)
     (spl sph : Split o) :
     Decidable (desigWhole H G ln ld hn hd wn wd g spl sph) :=
   let Z := split.zMat H G
@@ -458,7 +475,7 @@ def leastRead {o : Nat} (H G : Mat) (ln ld hn hd : Pos)
   ∧ splitRead (siteDatum (matScale hd H) (matScale hn G)) sph
   ∧ 1 ≤ revAt sph
 
-instance {o : Nat} (H G : Mat) (ln ld hn hd : Pos) (spl sph : Split o) :
+instance instCertconstruct5 {o : Nat} (H G : Mat) (ln ld hn hd : Pos) (spl sph : Split o) :
     Decidable (leastRead H G ln ld hn hd spl sph) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
 
@@ -471,7 +488,7 @@ so the bare witness under-claims at worst. -/
 def witnessRead (A B : Mat) (u : List BPair) : Prop :=
   quadForm A u < quadForm B u
 
-instance (A B : Mat) (u : List BPair) :
+instance instCertconstruct6 (A B : Mat) (u : List BPair) :
     Decidable (witnessRead A B u) :=
   inferInstanceAs (Decidable (_ < _))
 

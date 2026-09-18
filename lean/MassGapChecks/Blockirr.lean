@@ -28,42 +28,44 @@ one and the conclusion's failure.  Clause (iv)'s tier pins
 its four isolating refusals.
 -/
 
+namespace blockirr
+
 open ground places blockcount
 
 /-! The committed block: the fundamental's span at two letters is
 the exhibit with its one lowering, and the lowering equation is
 the provenance read the clause consumes. -/
 
-example : blockSpan [1, 0]
+theorem pin1 : blockSpan [1, 0]
     = [⟨[1, 0], [BPair.ofNat 1]⟩, ⟨[0, 1], [BPair.ofNat 1]⟩] := rfl
 
-example : (blockSpan [1, 0]).length = 2 := by decide +kernel
+theorem pin2 : (blockSpan [1, 0]).length = 2 := by decide +kernel
 
-example : lowerH 0 (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin3 : lowerH 0 (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
     = some ⟨[0, 1], [BPair.ofNat 1]⟩ := rfl
 
 /-! The whole pool as the stated list: every decidable hypothesis
 decided, the clause's own instance, and the left disjunct
 attained. -/
 
-example : ∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin4 : ∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
     ⟨[0, 1], [BPair.ofNat 1]⟩], sized w := by decide +kernel
 
-example : ∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin5 : ∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
     ⟨[0, 1], [BPair.ofNat 1]⟩], w.content.length = 2 := by decide +kernel
 
-example : ∀ x ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin6 : ∀ x ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
       ⟨[0, 1], [BPair.ofNat 1]⟩],
     settledAt [⟨[1, 0], [BPair.ofNat 1]⟩,
       ⟨[0, 1], [BPair.ofNat 1]⟩] x := by decide +kernel
 
-example : ∀ x ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin7 : ∀ x ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
       ⟨[0, 1], [BPair.ofNat 1]⟩],
     ∀ i < 2, ∀ j < 2, ¬ i = j →
       settledAt [⟨[1, 0], [BPair.ofNat 1]⟩,
         ⟨[0, 1], [BPair.ofNat 1]⟩] (act i j x) := by decide +kernel
 
-example : (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin8 : (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
       settledAt [⟨[1, 0], [BPair.ofNat 1]⟩,
         ⟨[0, 1], [BPair.ofNat 1]⟩] w)
@@ -78,18 +80,18 @@ example : (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
 /-! The unit list at the head's content: the right disjunct
 attained with the left one refused. -/
 
-example : ∀ x ∈ [(⟨[1, 0], [BPair.unit]⟩ : HVec)], sized x := by
+theorem pin9 : ∀ x ∈ [(⟨[1, 0], [BPair.unit]⟩ : HVec)], sized x := by
   decide +kernel
 
-example : ∀ x ∈ [(⟨[1, 0], [BPair.unit]⟩ : HVec)],
+theorem pin10 : ∀ x ∈ [(⟨[1, 0], [BPair.unit]⟩ : HVec)],
     settledAt [⟨[1, 0], [BPair.ofNat 1]⟩,
       ⟨[0, 1], [BPair.ofNat 1]⟩] x := by decide +kernel
 
-example : ∀ x ∈ [(⟨[1, 0], [BPair.unit]⟩ : HVec)],
+theorem pin11 : ∀ x ∈ [(⟨[1, 0], [BPair.unit]⟩ : HVec)],
     ∀ i < 2, ∀ j < 2, ¬ i = j →
       settledAt [⟨[1, 0], [BPair.unit]⟩] (act i j x) := by decide +kernel
 
-example : (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin12 : (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
       settledAt [⟨[1, 0], [BPair.unit]⟩] w)
     ∨ (∀ x ∈ [(⟨[1, 0], [BPair.unit]⟩ : HVec)],
@@ -99,10 +101,10 @@ example : (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : ∀ x ∈ [(⟨[1, 0], [BPair.unit]⟩ : HVec)],
+theorem pin13 : ∀ x ∈ [(⟨[1, 0], [BPair.unit]⟩ : HVec)],
     poly.unitTail x.coords := by decide +kernel
 
-example : ¬ (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin14 : ¬ (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
     :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     settledAt [⟨[1, 0], [BPair.unit]⟩] w) := by decide +kernel
 
@@ -110,15 +112,15 @@ example : ¬ (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
 at the pool's own reads but is not closed — its lowering leaves
 the list — and both disjuncts fail. -/
 
-example : ∀ x ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)],
+theorem pin15 : ∀ x ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)],
     sized x ∧ settledAt [⟨[1, 0], [BPair.ofNat 1]⟩,
       ⟨[0, 1], [BPair.ofNat 1]⟩] x := by decide +kernel
 
-example : ¬ (∀ x ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)],
+theorem pin16 : ¬ (∀ x ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)],
     ∀ i < 2, ∀ j < 2, ¬ i = j →
       settledAt [⟨[1, 0], [BPair.ofNat 1]⟩] (act i j x)) := by decide +kernel
 
-example : ¬ ((∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin17 : ¬ ((∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
       settledAt [⟨[1, 0], [BPair.ofNat 1]⟩] w)
     ∨ (∀ x ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)],
@@ -128,15 +130,15 @@ example : ¬ ((∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
 is killed by both letter pairs — the closure holds — but it is no
 member of the pool's span, and both disjuncts fail. -/
 
-example : ∀ x ∈ [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)],
+theorem pin18 : ∀ x ∈ [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)],
     sized x ∧ ∀ i < 2, ∀ j < 2, ¬ i = j →
       settledAt [⟨[0, 0], [BPair.ofNat 1]⟩] (act i j x) := by decide +kernel
 
-example : ¬ (∀ x ∈ [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)],
+theorem pin19 : ¬ (∀ x ∈ [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)],
     settledAt [⟨[1, 0], [BPair.ofNat 1]⟩,
       ⟨[0, 1], [BPair.ofNat 1]⟩] x) := by decide +kernel
 
-example : ¬ ((∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin20 : ¬ ((∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
       settledAt [⟨[0, 0], [BPair.ofNat 1]⟩] w)
     ∨ (∀ x ∈ [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)],
@@ -147,20 +149,20 @@ pool's second member sits at a content the head cannot lower to —
 the head's letter is unoccupied, so the only interior lowering is
 absent — while every other read holds, and both disjuncts fail. -/
 
-example : lowerH 0 (⟨[0, 0], [BPair.ofNat 1]⟩ : HVec) = none := rfl
+theorem pin21 : lowerH 0 (⟨[0, 0], [BPair.ofNat 1]⟩ : HVec) = none := rfl
 
-example : ∀ w ∈ [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin22 : ∀ w ∈ [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec),
       ⟨[0, 1], [BPair.ofNat 1]⟩],
     sized w ∧ w.content.length = 2 := by decide +kernel
 
-example : ∀ x ∈ [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)],
+theorem pin23 : ∀ x ∈ [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)],
     settledAt [⟨[0, 0], [BPair.ofNat 1]⟩,
         ⟨[0, 1], [BPair.ofNat 1]⟩] x
       ∧ ∀ i < 2, ∀ j < 2, ¬ i = j →
           settledAt [⟨[0, 0], [BPair.ofNat 1]⟩] (act i j x) := by
   decide +kernel
 
-example : ¬ ((∀ w ∈ (⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin24 : ¬ ((∀ w ∈ (⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
       settledAt [⟨[0, 0], [BPair.ofNat 1]⟩] w)
     ∨ (∀ x ∈ [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)],
@@ -173,12 +175,12 @@ own group — so every other read holds while the second member can
 carry no provenance at all, the height descent placing every
 word's fold strictly below the head's.  Both disjuncts fail. -/
 
-example : ∀ w ∈ [(⟨[1, 1],
+theorem pin25 : ∀ w ∈ [(⟨[1, 1],
         [BPair.ofNat 1, (BPair.ofNat 1).swap]⟩ : HVec),
       ⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩],
     sized w ∧ w.content.length = 2 := by decide +kernel
 
-example : ∀ x ∈ [(⟨[1, 1],
+theorem pin26 : ∀ x ∈ [(⟨[1, 1],
       [BPair.ofNat 1, (BPair.ofNat 1).swap]⟩ : HVec)],
     settledAt [⟨[1, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap]⟩,
         ⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩] x
@@ -187,9 +189,9 @@ example : ∀ x ∈ [(⟨[1, 1],
             [⟨[1, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap]⟩]
             (act i j x) := by decide +kernel
 
-example : lowerspan.ht [1, 1] = 1 := by decide +kernel
+theorem pin27 : lowerspan.ht [1, 1] = 1 := by decide +kernel
 
-example : ¬ ((∀ w ∈ (⟨[1, 1],
+theorem pin28 : ¬ ((∀ w ∈ (⟨[1, 1],
         [BPair.ofNat 1, (BPair.ofNat 1).swap]⟩ : HVec)
       :: [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
       settledAt [⟨[1, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap]⟩] w)
@@ -205,7 +207,7 @@ the display with it, and a family sending the head off its own
 line breaks the value's settled read while the intertwining
 survives — the moved contents' one-entry matrices absorb it. -/
 
-example : ∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin29 : ∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     poly.oneValue
       (elim.vecScale
@@ -223,7 +225,7 @@ example : ∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : ∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin30 : ∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     poly.oneValue
       (elim.vecScale
@@ -246,18 +248,18 @@ head's content and two below it is square with its value settled,
 but it fails the moved read at the lowering pair, and the display
 fails with it. -/
 
-example : ∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin31 : ∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     elim.sqAt ((fun mu => if mu = [1, 0] then [[BPair.ofNat 1]]
       else [[BPair.ofNat 2]]) w.content) w.coords.length := by decide +kernel
 
-example : settledAt ((⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin32 : settledAt ((⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)])
     ⟨[1, 0], elim.matVec ((fun mu => if mu = [1, 0]
       then [[BPair.ofNat 1]] else [[BPair.ofNat 2]]) [1, 0])
       [BPair.ofNat 1]⟩ := by decide +kernel
 
-example : ¬ (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin33 : ¬ (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     ∀ i < 2, ∀ j < 2, ¬ i = j →
       poly.oneValue
@@ -273,7 +275,7 @@ example : ¬ (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
             (units.matUnitAt (moveAt i j w.content) w.content i j)
             w.coords))) := by decide +kernel
 
-example : ¬ (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin34 : ¬ (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     poly.oneValue
       (elim.vecScale
@@ -295,14 +297,14 @@ line still intertwines — the moved contents' one-entry matrices
 take up the slack — but the head's value leaves the pool's group
 span, and the display fails. -/
 
-example : ∀ k, k < ([] : List HVec).length →
+theorem pin35 : ∀ k, k < ([] : List HVec).length →
     ∃ i, i ≤ k ∧ ∃ j, j + 1 < 2 ∧
       lowerH j (getAt (⟨[], []⟩ : HVec)
           ((⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec) :: []) i)
         = some (getAt (⟨[], []⟩ : HVec) ([] : List HVec) k) := by
   decide +kernel
 
-example : ∀ w ∈ [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
+theorem pin36 : ∀ w ∈ [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
     sized w ∧ w.content.length = 2
       ∧ elim.sqAt ((fun mu => if mu = [1, 1]
           then [[BPair.ofNat 1, BPair.unit],
@@ -310,7 +312,7 @@ example : ∀ w ∈ [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
           else [[BPair.ofNat 2]]) w.content) w.coords.length := by
   decide +kernel
 
-example : ∀ w ∈ [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
+theorem pin37 : ∀ w ∈ [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
     ∀ i < 2, ∀ j < 2, ¬ i = j →
       poly.oneValue
         (elim.matVec
@@ -327,7 +329,7 @@ example : ∀ w ∈ [(⟨[1, 1], [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
             (units.matUnitAt (moveAt i j w.content) w.content i j)
             w.coords)) := by decide +kernel
 
-example : ¬ settledAt [(⟨[1, 1],
+theorem pin38 : ¬ settledAt [(⟨[1, 1],
       [BPair.ofNat 1, BPair.unit]⟩ : HVec)]
     ⟨[1, 1], elim.matVec ((fun mu => if mu = [1, 1]
       then [[BPair.ofNat 1, BPair.unit],
@@ -335,7 +337,7 @@ example : ¬ settledAt [(⟨[1, 1],
       else [[BPair.ofNat 2]]) [1, 1])
       [BPair.ofNat 1, BPair.unit]⟩ := by decide +kernel
 
-example : ¬ (∀ w ∈ [(⟨[1, 1],
+theorem pin39 : ¬ (∀ w ∈ [(⟨[1, 1],
       [BPair.ofNat 1, BPair.unit]⟩ : HVec)],
     poly.oneValue
       (elim.vecScale
@@ -359,7 +361,7 @@ example : ¬ (∀ w ∈ [(⟨[1, 1],
 the fundamental into its own doubled copy — a genuinely different
 list at the same top content — and every hypothesis decides. -/
 
-example : (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec).content
+theorem pin40 : (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec).content
     = (⟨[1, 0], [BPair.ofNat 2]⟩ : HVec).content :=
   blockirr.hom_content 2 ⟨[1, 0], [BPair.ofNat 1]⟩
     [⟨[0, 1], [BPair.ofNat 1]⟩] ⟨[1, 0], [BPair.ofNat 2]⟩
@@ -368,7 +370,7 @@ example : (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec).content
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
 
-example : lowerH 0 (⟨[1, 0], [BPair.ofNat 2]⟩ : HVec)
+theorem pin41 : lowerH 0 (⟨[1, 0], [BPair.ofNat 2]⟩ : HVec)
     = some ⟨[0, 1], [BPair.ofNat 2]⟩ := rfl
 
 /-! The off-unit-value refusal (`hoff`): the unit family carries
@@ -376,14 +378,14 @@ the fundamental into the symmetric square's span — every other
 read holds — but no value is off the sum's unit, and the top
 contents differ. -/
 
-example : ∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin42 : ∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     elim.sqAt ((fun _ => [[BPair.unit]]) w.content) w.coords.length
       ∧ settledAt (blockSpan [2, 0])
         ⟨w.content, elim.matVec ((fun _ => [[BPair.unit]]) w.content)
           w.coords⟩ := by decide +kernel
 
-example : ∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin43 : ∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     ∀ i < 2, ∀ j < 2, ¬ i = j →
       poly.oneValue
@@ -397,28 +399,28 @@ example : ∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
             (units.matUnitAt (moveAt i j w.content) w.content i j)
             w.coords)) := by decide +kernel
 
-example : ∀ w ∈ blockSpan [2, 0], sized w ∧ w.content.length = 2 := by
+theorem pin44 : ∀ w ∈ blockSpan [2, 0], sized w ∧ w.content.length = 2 := by
   decide +kernel
 
-example : ∀ k, k < (blockSpan [2, 0]).tail.length →
+theorem pin45 : ∀ k, k < (blockSpan [2, 0]).tail.length →
     ∃ i, i ≤ k ∧ ∃ j, j + 1 < 2 ∧
       lowerH j (getAt (⟨[], []⟩ : HVec) (blockSpan [2, 0]) i)
         = some (getAt (⟨[], []⟩ : HVec) (blockSpan [2, 0]).tail k) := by
   decide +kernel
 
-example : ¬ poly.unitTail
+theorem pin46 : ¬ poly.unitTail
     (⟨[2, 0], [BPair.ofNat 1]⟩ : HVec).coords := by decide +kernel
 
-example : ¬ (∃ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin47 : ¬ (∃ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
     :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     ¬ poly.unitTail
       (elim.matVec ((fun _ => [[BPair.unit]]) w.content)
         w.coords)) := by decide +kernel
 
-example : ¬ ((⟨[1, 0], [BPair.ofNat 1]⟩ : HVec).content
+theorem pin48 : ¬ ((⟨[1, 0], [BPair.ofNat 1]⟩ : HVec).content
     = (⟨[2, 0], [BPair.ofNat 1]⟩ : HVec).content) := by decide +kernel
 
-example : blockSpan [2, 0]
+theorem pin49 : blockSpan [2, 0]
     = [⟨[2, 0], [BPair.ofNat 1]⟩,
        ⟨[1, 1], [BPair.ofNat 1, BPair.ofNat 1]⟩,
        ⟨[0, 2], [BPair.ofNat 2]⟩] := rfl
@@ -435,22 +437,22 @@ refusing those same settled reads — the two ways the clause's
 hypotheses can meet a unit head.  The top contents differ
 throughout. -/
 
-example : poly.unitTail (⟨[2, 0], [BPair.unit]⟩ : HVec).coords := by
+theorem pin50 : poly.unitTail (⟨[2, 0], [BPair.unit]⟩ : HVec).coords := by
   decide +kernel
 
-example : ∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin51 : ∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
       :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     settledAt [(⟨[2, 0], [BPair.unit]⟩ : HVec)]
       ⟨w.content, elim.matVec ((fun _ => [[BPair.unit]]) w.content)
         w.coords⟩ := by decide +kernel
 
-example : ¬ (∃ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin52 : ¬ (∃ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
     :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     ¬ poly.unitTail
       (elim.matVec ((fun _ => [[BPair.unit]]) w.content)
         w.coords)) := by decide +kernel
 
-example : ¬ (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
+theorem pin53 : ¬ (∀ w ∈ (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
     :: [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     settledAt [(⟨[2, 0], [BPair.unit]⟩ : HVec)]
       ⟨w.content, elim.matVec ((fun _ => [[BPair.ofNat 1]]) w.content)
@@ -461,23 +463,23 @@ member alone is a target-span member with its value settled and
 its own provenance vacuous, but its raising leaves the one-member
 source pool, and the top contents differ. -/
 
-example : ∀ w ∈ [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
+theorem pin54 : ∀ w ∈ [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     sized w ∧ w.content.length = 2
       ∧ elim.sqAt ((fun _ => [[BPair.ofNat 1]]) w.content)
         w.coords.length := by decide +kernel
 
-example : ∀ k, k < ([] : List HVec).length →
+theorem pin55 : ∀ k, k < ([] : List HVec).length →
     ∃ i, i ≤ k ∧ ∃ j, j + 1 < 2 ∧
       lowerH j (getAt (⟨[], []⟩ : HVec)
           ((⟨[0, 1], [BPair.ofNat 1]⟩ : HVec) :: []) i)
         = some (getAt (⟨[], []⟩ : HVec) ([] : List HVec) k) := by
   decide +kernel
 
-example : ∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin56 : ∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
     ⟨[0, 1], [BPair.ofNat 1]⟩], sized w ∧ w.content.length = 2 := by
   decide +kernel
 
-example : ∀ k, k < [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)].length →
+theorem pin57 : ∀ k, k < [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)].length →
     ∃ i, i ≤ k ∧ ∃ j, j + 1 < 2 ∧
       lowerH j (getAt (⟨[], []⟩ : HVec)
           ((⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
@@ -485,7 +487,7 @@ example : ∀ k, k < [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)].length →
         = some (getAt (⟨[], []⟩ : HVec)
           [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)] k) := by decide +kernel
 
-example : ∀ w ∈ [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
+theorem pin58 : ∀ w ∈ [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     settledAt [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[0, 1], [BPair.ofNat 1]⟩]
       ⟨w.content, elim.matVec ((fun _ => [[BPair.ofNat 1]]) w.content)
@@ -502,17 +504,17 @@ example : ∀ w ∈ [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
               (units.matUnitAt (moveAt i j w.content) w.content i j)
               w.coords)) := by decide +kernel
 
-example : ∃ w ∈ [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
+theorem pin59 : ∃ w ∈ [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     ¬ poly.unitTail
       (elim.matVec ((fun _ => [[BPair.ofNat 1]]) w.content)
         w.coords) := by decide +kernel
 
-example : ¬ (∀ w ∈ [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
+theorem pin60 : ¬ (∀ w ∈ [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)],
     ∀ i < 2, ∀ j < 2, ¬ i = j →
       settledAt [(⟨[0, 1], [BPair.ofNat 1]⟩ : HVec)]
         (act i j w)) := by decide +kernel
 
-example : ¬ ((⟨[0, 1], [BPair.ofNat 1]⟩ : HVec).content
+theorem pin61 : ¬ ((⟨[0, 1], [BPair.ofNat 1]⟩ : HVec).content
     = (⟨[1, 0], [BPair.ofNat 1]⟩ : HVec).content) := by decide +kernel
 
 /-! The target-provenance refusal (`hprovu`): the identity family
@@ -522,24 +524,24 @@ settled in the target's own groups — but the target's second
 member is no lowering image of its head, and the top contents
 differ. -/
 
-example : ∀ w ∈ [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin62 : ∀ w ∈ [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
     ⟨[1, 0], [BPair.ofNat 1]⟩, ⟨[0, 1], [BPair.ofNat 1]⟩],
     sized w ∧ w.content.length = 2 := by decide +kernel
 
-example : ∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin63 : ∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
       ⟨[0, 1], [BPair.ofNat 1]⟩],
     settledAt [(⟨[2, 0], [BPair.ofNat 1]⟩ : HVec),
         ⟨[1, 0], [BPair.ofNat 1]⟩, ⟨[0, 1], [BPair.ofNat 1]⟩]
       ⟨w.content, elim.matVec ((fun _ => [[BPair.ofNat 1]]) w.content)
         w.coords⟩ := by decide +kernel
 
-example : ∃ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin64 : ∃ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
       ⟨[0, 1], [BPair.ofNat 1]⟩],
     ¬ poly.unitTail
       (elim.matVec ((fun _ => [[BPair.ofNat 1]]) w.content)
         w.coords) := by decide +kernel
 
-example : ¬ (∀ k, k < [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin65 : ¬ (∀ k, k < [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
       ⟨[0, 1], [BPair.ofNat 1]⟩].length →
     ∃ i, i ≤ k ∧ ∃ j, j + 1 < 2 ∧
       lowerH j (getAt (⟨[], []⟩ : HVec)
@@ -550,7 +552,7 @@ example : ¬ (∀ k, k < [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
           [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
            ⟨[0, 1], [BPair.ofNat 1]⟩] k)) := by decide +kernel
 
-example : ¬ ((⟨[1, 0], [BPair.ofNat 1]⟩ : HVec).content
+theorem pin66 : ¬ ((⟨[1, 0], [BPair.ofNat 1]⟩ : HVec).content
     = (⟨[2, 0], [BPair.ofNat 1]⟩ : HVec).content) := by decide +kernel
 
 /-! The provenance refusal at clause (ii) (`hprov`): a pool
@@ -563,20 +565,20 @@ member is what makes the refusal reachable: on a provenance-linked
 pool the intertwining forces one scalar throughout, which is the
 clause itself. -/
 
-example : ∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin67 : ∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
       ⟨[0, 0], [BPair.ofNat 1]⟩],
     sized w ∧ w.content.length = 2
       ∧ elim.sqAt ((fun mu => if mu = [0, 0] then [[BPair.ofNat 2]]
           else [[BPair.ofNat 1]]) w.content) w.coords.length := by
   decide +kernel
 
-example : settledAt [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin68 : settledAt [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
       ⟨[0, 0], [BPair.ofNat 1]⟩]
     ⟨[1, 0], elim.matVec ((fun mu => if mu = [0, 0]
       then [[BPair.ofNat 2]] else [[BPair.ofNat 1]]) [1, 0])
       [BPair.ofNat 1]⟩ := by decide +kernel
 
-example : ∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin69 : ∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
       ⟨[0, 0], [BPair.ofNat 1]⟩],
     ∀ i < 2, ∀ j < 2, ¬ i = j →
       poly.oneValue
@@ -592,7 +594,7 @@ example : ∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
             (units.matUnitAt (moveAt i j w.content) w.content i j)
             w.coords)) := by decide +kernel
 
-example : ¬ (∀ k, k < [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)].length →
+theorem pin70 : ¬ (∀ k, k < [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)].length →
     ∃ i, i ≤ k ∧ ∃ j, j + 1 < 2 ∧
       lowerH j (getAt (⟨[], []⟩ : HVec)
           ((⟨[1, 0], [BPair.ofNat 1]⟩ : HVec)
@@ -600,7 +602,7 @@ example : ¬ (∀ k, k < [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)].length →
         = some (getAt (⟨[], []⟩ : HVec)
           [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)] k)) := by decide +kernel
 
-example : ¬ (∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
+theorem pin71 : ¬ (∀ w ∈ [(⟨[1, 0], [BPair.ofNat 1]⟩ : HVec),
       ⟨[0, 0], [BPair.ofNat 1]⟩],
     poly.oneValue
       (elim.vecScale
@@ -629,20 +631,20 @@ height fold refuses every word, so the frame is derivable at the
 stated data and refusals cannot isolate it. -/
 
 /-- The committed pair: sized and width at both pools. -/
-example : ∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
+theorem pin72 : ∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
       BPair.unit]⟩ : HVec),
     act 1 0 ⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
       BPair.unit]⟩],
     sized w ∧ w.content.length = 2 := by decide +kernel
 
-example : ∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, BPair.unit,
+theorem pin73 : ∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, BPair.unit,
       (BPair.ofNat 1).swap]⟩ : HVec),
     act 1 0 ⟨[2, 1], [BPair.ofNat 1, BPair.unit,
       (BPair.ofNat 1).swap]⟩],
     sized w ∧ w.content.length = 2 := by decide +kernel
 
 /-- The committed pair: the provenance at both pools. -/
-example : ∀ k, k < [act 1 0 (⟨[2, 1], [BPair.ofNat 1,
+theorem pin74 : ∀ k, k < [act 1 0 (⟨[2, 1], [BPair.ofNat 1,
       (BPair.ofNat 1).swap, BPair.unit]⟩ : HVec)].length →
     ∃ i, i ≤ k ∧ ∃ j, j + 1 < 2 ∧
       lowerH j (getAt (⟨[], []⟩ : HVec)
@@ -654,7 +656,7 @@ example : ∀ k, k < [act 1 0 (⟨[2, 1], [BPair.ofNat 1,
           [act 1 0 (⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
             BPair.unit]⟩ : HVec)] k) := by decide +kernel
 
-example : ∀ k, k < [act 1 0 (⟨[2, 1], [BPair.ofNat 1, BPair.unit,
+theorem pin75 : ∀ k, k < [act 1 0 (⟨[2, 1], [BPair.ofNat 1, BPair.unit,
       (BPair.ofNat 1).swap]⟩ : HVec)].length →
     ∃ i, i ≤ k ∧ ∃ j, j + 1 < 2 ∧
       lowerH j (getAt (⟨[], []⟩ : HVec)
@@ -667,18 +669,18 @@ example : ∀ k, k < [act 1 0 (⟨[2, 1], [BPair.ofNat 1, BPair.unit,
             (BPair.ofNat 1).swap]⟩ : HVec)] k) := by decide +kernel
 
 /-- The committed pair: the group independence at both pools. -/
-example : indepAll [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
+theorem pin76 : indepAll [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
       BPair.unit]⟩ : HVec),
     act 1 0 ⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
       BPair.unit]⟩] := by decide +kernel
 
-example : indepAll [(⟨[2, 1], [BPair.ofNat 1, BPair.unit,
+theorem pin77 : indepAll [(⟨[2, 1], [BPair.ofNat 1, BPair.unit,
       (BPair.ofNat 1).swap]⟩ : HVec),
     act 1 0 ⟨[2, 1], [BPair.ofNat 1, BPair.unit,
       (BPair.ofNat 1).swap]⟩] := by decide +kernel
 
 /-- The committed pair: the closure at both pools. -/
-example : ∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
+theorem pin78 : ∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
       BPair.unit]⟩ : HVec),
     act 1 0 ⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
       BPair.unit]⟩],
@@ -688,7 +690,7 @@ example : ∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
         act 1 0 ⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
           BPair.unit]⟩] (act i j w) := by decide +kernel
 
-example : ∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, BPair.unit,
+theorem pin79 : ∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, BPair.unit,
       (BPair.ofNat 1).swap]⟩ : HVec),
     act 1 0 ⟨[2, 1], [BPair.ofNat 1, BPair.unit,
       (BPair.ofNat 1).swap]⟩],
@@ -699,7 +701,7 @@ example : ∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, BPair.unit,
           (BPair.ofNat 1).swap]⟩] (act i j w) := by decide +kernel
 
 /-- The committed pair: the two heads' top reads. -/
-example : ∀ j, j < 2 → ∀ i, i < j →
+theorem pin80 : ∀ j, j < 2 → ∀ i, i < j →
     poly.unitTail (act i j (⟨[2, 1], [BPair.ofNat 1,
       (BPair.ofNat 1).swap, BPair.unit]⟩ : HVec)).coords
       ∧ poly.unitTail (act i j (⟨[2, 1], [BPair.ofNat 1,
@@ -708,7 +710,7 @@ example : ∀ j, j < 2 → ∀ i, i < j →
 
 /-- The committed pair: the counts' equality, `dim_eq`'s display at
 two genuinely independent tops. -/
-example : [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
+theorem pin81 : [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
       BPair.unit]⟩ : HVec),
     act 1 0 ⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
       BPair.unit]⟩].length
@@ -721,7 +723,7 @@ example : [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
 partner pool every further hypothesis holds — sized, width, the
 vacuous provenance, independence, closure and the top read — and
 the counts differ. -/
-example : (∀ w ∈ [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)],
+theorem pin82 : (∀ w ∈ [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)],
       sized w ∧ w.content.length = 2)
     ∧ (∀ k, k < ([] : List HVec).length →
       ∃ i, i ≤ k ∧ ∃ j, j + 1 < 2 ∧
@@ -737,7 +739,7 @@ example : (∀ w ∈ [(⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)],
         (act i j (⟨[0, 0], [BPair.ofNat 1]⟩ : HVec)).coords)
     := by decide +kernel
 
-example : ¬ ([2, 1] = [0, 0])
+theorem pin83 : ¬ ([2, 1] = [0, 0])
     ∧ ¬ ([(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
         BPair.unit]⟩ : HVec),
       act 1 0 ⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
@@ -747,14 +749,14 @@ example : ¬ ([2, 1] = [0, 0])
 /-- The independence binder is load-bearing: the duplicated
 lowering's pool keeps sized, width, provenance, closure and the
 top read, refuses the independence, and the counts differ. -/
-example : ¬ indepAll [(⟨[2, 1], [BPair.ofNat 1,
+theorem pin84 : ¬ indepAll [(⟨[2, 1], [BPair.ofNat 1,
       (BPair.ofNat 1).swap, BPair.unit]⟩ : HVec),
     act 1 0 ⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
       BPair.unit]⟩,
     act 1 0 ⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
       BPair.unit]⟩] := by decide +kernel
 
-example : (∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
+theorem pin85 : (∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
         BPair.unit]⟩ : HVec),
       act 1 0 ⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
         BPair.unit]⟩,
@@ -806,13 +808,13 @@ example : (∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
 keeps sized, width, the vacuous provenance, independence and the
 top read, refuses the closure at the adjacent lowering, and the
 counts differ. -/
-example : ¬ (∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1,
+theorem pin86 : ¬ (∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1,
       (BPair.ofNat 1).swap, BPair.unit]⟩ : HVec)],
     ∀ i, i < 2 → ∀ j, j < 2 → ¬ i = j →
       settledAt [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
         BPair.unit]⟩ : HVec)] (act i j w)) := by decide +kernel
 
-example : (∀ k, k < ([] : List HVec).length →
+theorem pin87 : (∀ k, k < ([] : List HVec).length →
       ∃ i, i ≤ k ∧ ∃ j, j + 1 < 2 ∧
         lowerH j (getAt (⟨[], []⟩ : HVec)
             [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
@@ -831,7 +833,7 @@ example : (∀ k, k < ([] : List HVec).length →
 pool keeps sized, width, independence, closure and the top read,
 refuses the provenance at the second head, and the counts
 differ. -/
-example : ¬ (∀ k, k < [act 1 0 (⟨[2, 1], [BPair.ofNat 1,
+theorem pin88 : ¬ (∀ k, k < [act 1 0 (⟨[2, 1], [BPair.ofNat 1,
       (BPair.ofNat 1).swap, BPair.unit]⟩ : HVec),
     (⟨[2, 1], [BPair.ofNat 1, BPair.unit,
       (BPair.ofNat 1).swap]⟩ : HVec),
@@ -855,7 +857,7 @@ example : ¬ (∀ k, k < [act 1 0 (⟨[2, 1], [BPair.ofNat 1,
           act 1 0 ⟨[2, 1], [BPair.ofNat 1, BPair.unit,
             (BPair.ofNat 1).swap]⟩] k)) := by decide +kernel
 
-example : (∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
+theorem pin89 : (∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
         BPair.unit]⟩ : HVec),
       act 1 0 ⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
         BPair.unit]⟩,
@@ -900,7 +902,7 @@ example : (∀ w ∈ [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
 
 /-- The committed pair reads `dim_eq` applied whole, every
 hypothesis its own decided instance. -/
-example : [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
+theorem pin90 : [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
       BPair.unit]⟩ : HVec),
     act 1 0 ⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
       BPair.unit]⟩].length
@@ -918,3 +920,5 @@ example : [(⟨[2, 1], [BPair.ofNat 1, (BPair.ofNat 1).swap,
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
+
+end blockirr

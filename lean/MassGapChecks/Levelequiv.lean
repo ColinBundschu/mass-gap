@@ -11,9 +11,11 @@ requirement outright, `thm:certconstruct`(2)'s read paired with
 the requirement's own refusal.  The occupancy hypothesis is
 isolated at the edge's split: its count is unoccupied and no
 vector witnesses the pair's failure there. -/
+
+namespace levelequiv
 set_option maxHeartbeats 4000000
 
-open ground elim inertia levelequiv
+open ground elim inertia
 
 private def u : BPair := BPair.unit
 
@@ -47,28 +49,28 @@ private def sp16 : Split 3 :=
 /-! The operator read at the edge `γ = 12`, with the requirement
 carried onto the coordinate probes and each read decided raw. -/
 
-example : opRead (matMul et3 et3) et3 12 1 sp12 := by decide +kernel
-example : psdAt sp12 := by decide +kernel
+theorem pin1 : opRead (matMul et3 et3) et3 12 1 sp12 := by decide +kernel
+theorem pin2 : psdAt sp12 := by decide +kernel
 
-example : reqReadAt esq3 et3s ⟨[u, ⟨2, 1⟩, u], rfl⟩ 12 1 :=
+theorem pin3 : reqReadAt esq3 et3s ⟨[u, ⟨2, 1⟩, u], rfl⟩ 12 1 :=
   probe_intro esq3 et3s 12 1 sp12 (by decide +kernel) ⟨[u, ⟨2, 1⟩, u], rfl⟩
-example : reqReadAt esq3 et3s ⟨[u, ⟨2, 1⟩, u], rfl⟩ 12 1 := by decide +kernel
-example : reqReadAt esq3 et3s ⟨[u, ⟨2, 1⟩, ⟨2, 1⟩], rfl⟩ 12 1 :=
+theorem pin4 : reqReadAt esq3 et3s ⟨[u, ⟨2, 1⟩, u], rfl⟩ 12 1 := by decide +kernel
+theorem pin5 : reqReadAt esq3 et3s ⟨[u, ⟨2, 1⟩, ⟨2, 1⟩], rfl⟩ 12 1 :=
   probe_intro esq3 et3s 12 1 sp12 (by decide +kernel)
     ⟨[u, ⟨2, 1⟩, ⟨2, 1⟩], rfl⟩
-example : reqReadAt esq3 et3s ⟨[u, ⟨2, 1⟩, ⟨2, 1⟩], rfl⟩ 12 1 := by
+theorem pin6 : reqReadAt esq3 et3s ⟨[u, ⟨2, 1⟩, ⟨2, 1⟩], rfl⟩ 12 1 := by
   decide +kernel
-example : reqReadAt esq3 et3s ⟨[⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩], rfl⟩
+theorem pin7 : reqReadAt esq3 et3s ⟨[⟨2, 1⟩, ⟨2, 1⟩, ⟨2, 1⟩], rfl⟩
     12 1 := by decide +kernel
-example : momentform.reqRead et3s ⟨[u, ⟨2, 1⟩, u], rfl⟩ 12 1 := by
+theorem pin8 : momentform.reqRead et3s ⟨[u, ⟨2, 1⟩, u], rfl⟩ 12 1 := by
   decide +kernel
 
 /-! The occupancy hypothesis at the edge: the split's count is
 unoccupied, and the pair's lower-side read is refused at the
 fundamental loop's vector — the edge admits no witness. -/
 
-example : ¬ (1 ≤ revAt sp12) := by decide +kernel
-example : ¬ certconstruct.witnessRead (matScale 1 (matMul et3 et3))
+theorem pin9 : ¬ (1 ≤ revAt sp12) := by decide +kernel
+theorem pin10 : ¬ certconstruct.witnessRead (matScale 1 (matMul et3 et3))
     (matScale 12 et3) [u, ⟨2, 1⟩, u] := by decide +kernel
 
 /-! Beyond the edge at `γ = 16`: the occupied count's split carries
@@ -76,14 +78,16 @@ a witness vector, and the fundamental loop's own probe fails the
 requirement, the count's read off the elimination paired with the
 refusal. -/
 
-example : splitRead (siteDatum (matScale 1 (matMul et3 et3))
+theorem pin11 : splitRead (siteDatum (matScale 1 (matMul et3 et3))
     (matScale 16 et3)) sp16 := by decide +kernel
-example : 1 ≤ revAt sp16 := by decide +kernel
+theorem pin12 : 1 ≤ revAt sp16 := by decide +kernel
 
-example : ∃ y : Vec 3, ¬ reqReadAt esq3 et3s y 16 1 :=
+theorem pin13 : ∃ y : Vec 3, ¬ reqReadAt esq3 et3s y 16 1 :=
   probe_elim esq3 et3s 16 1 sp16 (by decide +kernel) (by decide +kernel)
 
-example : certconstruct.witnessRead (matScale 1 (matMul et3 et3))
+theorem pin14 : certconstruct.witnessRead (matScale 1 (matMul et3 et3))
     (matScale 16 et3) [u, ⟨2, 1⟩, u] := by decide +kernel
-example : ¬ reqReadAt esq3 et3s ⟨[u, ⟨2, 1⟩, u], rfl⟩ 16 1 := by
+theorem pin15 : ¬ reqReadAt esq3 et3s ⟨[u, ⟨2, 1⟩, u], rfl⟩ 16 1 := by
   decide +kernel
+
+end levelequiv

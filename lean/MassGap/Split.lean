@@ -89,15 +89,9 @@ def zMat (H G : Mat) : PMat :=
   List.zipWith (List.zipWith (fun h g => [BPair.swap h, g])) H G
 
 /-- The site datum's row count is the level pair's own. -/
-theorem zMat_len : ∀ (H G : Mat) (n : Nat),
-    H.length = n → G.length = n → (zMat H G).length = n
-  | [], _, _, h, _ => h
-  | _ :: _, [], _, _, hg => hg
-  | _ :: H, _ :: G, n, hH, hG => by
-    match n, hH, hG with
-    | n' + 1, hH, hG =>
-      show (zMat H G).length + 1 = n' + 1
-      rw [zMat_len H G n' (Nat.succ.inj hH) (Nat.succ.inj hG)]
+theorem zMat_len (H G : Mat) (n : Nat) (hH : H.length = n)
+    (hG : G.length = n) : (zMat H G).length = n :=
+  ground.length_zipWith _ H G n hH hG
 
 /-- The pencil polynomial `χ`, the site datum's determinant. -/
 def charPoly (H G : Mat) : Poly := pminor (zMat H G)
@@ -167,7 +161,7 @@ private theorem chiRead_walk (H G : Mat) (roots : List (BPair × Pos))
     exact poly.oneValue_trans (poly.oneValue_symm h1)
       (poly.oneValue_trans h h2)
 
-instance (H G : Mat) (roots : List (BPair × Pos)) :
+instance instSplit1 (H G : Mat) (roots : List (BPair × Pos)) :
     Decidable (chiRead H G roots) :=
   match elim.decRowsLen (zMat H G).length (zMat H G),
         elim.decRowsLen G.length G with
@@ -253,7 +247,7 @@ def countRead {o : Nat} (H G : Mat) (roots : List (BPair × Pos))
   ∧ splitRead (siteDatum (matScale ad H) (matScale an G)) sp
   ∧ revAt sp = rootsBelow roots an ad
 
-instance {o : Nat} (H G : Mat) (roots : List (BPair × Pos))
+instance instSplit2 {o : Nat} (H G : Mat) (roots : List (BPair × Pos))
     (an ad : Pos) (sp : Split o) :
     Decidable (countRead H G roots an ad sp) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ = _ ∧ _ ∧ _ = _))
@@ -317,26 +311,13 @@ theorem getAt_pselM (I J : List Nat) (S : PMat) (p q : Nat)
   elim.getAt_selMO ([] : poly.Poly) I J S p q hp hq
 
 /-- The symmetry read at a stated order, entry against exchanged
-entry over the key square. -/
+entry over the key square: the bundle's symmetry read at the
+polynomial carrier's own read. -/
 def pSymAt (S : PMat) (o : Nat) : Prop :=
-  ((List.range o).all (fun i => (List.range o).all (fun j =>
-    decide (poly.oneValue
-      (ground.getAt ([] : poly.Poly) (ground.getAt [] S i) j)
-      (ground.getAt ([] : poly.Poly) (ground.getAt [] S j) i))))) = true
+  elim.symAtO poly.polyRead [] S o
 
-instance (S : PMat) (o : Nat) : Decidable (pSymAt S o) :=
-  inferInstanceAs (Decidable (_ = _))
-
-/-- The symmetry read assembled entrywise: the entry against its
-exchanged entry at every key pair below the order, a key beyond the
-datum reading the vacant list. -/
-theorem pSymAt_of (S : PMat) (o : Nat)
-    (h : ∀ i j, i < o → j < o → poly.oneValue
-      (ground.getAt [] (ground.getAt [] S i) j)
-      (ground.getAt [] (ground.getAt [] S j) i)) :
-    pSymAt S o :=
-  ground.all_range_intro o (fun i hi =>
-    ground.all_range_intro o (fun j hj => decide_eq_true (h i j hi hj)))
+instance instSplit3 (S : PMat) (o : Nat) : Decidable (pSymAt S o) :=
+  inferInstanceAs (Decidable (elim.symAtO _ _ _ _))
 
 /-- Two polynomial rows read one value entrywise over shared key
 lists — the matrix read's own recursion at the coefficient rows
@@ -346,7 +327,7 @@ def prowOneValue : List Poly → List Poly → Prop := elim.matOneValue
 def decProwOneValue : ∀ a b, Decidable (prowOneValue a b) :=
   elim.decMatOneValue
 
-instance (a b : List Poly) : Decidable (prowOneValue a b) :=
+instance instSplit4 (a b : List Poly) : Decidable (prowOneValue a b) :=
   decProwOneValue a b
 
 /-- Two polynomial matrices read one value entrywise. -/
@@ -356,7 +337,7 @@ def pmatOneValue : PMat → PMat → Prop :=
 def decPmatOneValue : ∀ a b, Decidable (pmatOneValue a b) :=
   ground.decMatchedOV (ground.matchedRead poly.polyRead)
 
-instance (a b : PMat) : Decidable (pmatOneValue a b) :=
+instance instSplit5 (a b : PMat) : Decidable (pmatOneValue a b) :=
   decPmatOneValue a b
 
 /-- A polynomial row reads itself. -/
@@ -379,7 +360,7 @@ def diagRead {o : Nat} (H G : Mat) (T Tw : SqMat o)
       (pdiag (l.map (fun r => poly.scaleP r.2.2 (linFac r.1 r.2.1))))
   ∧ (l.all (fun r => decide (BPair.unit < r.2.2))) = true
 
-instance {o : Nat} (H G : Mat) (T Tw : SqMat o)
+instance instSplit6 {o : Nat} (H G : Mat) (T Tw : SqMat o)
     (l : List (BPair × Pos × BPair)) :
     Decidable (diagRead H G T Tw l) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ = _))
@@ -799,48 +780,23 @@ private theorem pcf_congrZ (k : Nat) (T : Mat) (Z : PMat) :
 /-! The site datum's two coefficients: the linear the second datum
 outright, the constant the first's memberwise swap. -/
 
-private theorem zRow_lin : ∀ r s : List BPair, r.length = s.length →
-    (List.zipWith (fun h g => [BPair.swap h, g]) r s).map (cf 1) = s
-  | [], [], _ => rfl
-  | [], _ :: _, hl => Nat.noConfusion hl
-  | _ :: _, [], hl => Nat.noConfusion hl
-  | _ :: r, b :: s, hl => by
-    show b :: (List.zipWith (fun h g => [BPair.swap h, g]) r s).map (cf 1)
-      = b :: s
-    rw [zRow_lin r s (Nat.succ.inj hl)]
+private theorem pcf_zMat_lin (H G : Mat) (o : Nat) (hH : rowsLen o H)
+    (hG : rowsLen o G) (hl : H.length = G.length) : pcf 1 (zMat H G) = G := by
+  show (List.zipWith (List.zipWith (fun h g => [BPair.swap h, g])) H G).map
+    (fun r => r.map (fun p => ground.getAt BPair.unit p 1)) = G
+  rw [ground.map2_getAt_zipWith BPair.unit _ 1 (fun _ g => g) (fun _ _ => rfl)]
+  exact ground.zipWith2_right H G (Nat.le_of_eq hl.symm)
+    (elim.rowsLen_widths_le G H hG hH (Nat.le_of_eq hl.symm))
 
-private theorem zRow_const : ∀ r s : List BPair, r.length = s.length →
-    (List.zipWith (fun h g => [BPair.swap h, g]) r s).map (cf 0)
-      = r.map BPair.swap
-  | [], [], _ => rfl
-  | [], _ :: _, hl => Nat.noConfusion hl
-  | _ :: _, [], hl => Nat.noConfusion hl
-  | a :: r, _ :: s, hl => by
-    show a.swap :: (List.zipWith (fun h g => [BPair.swap h, g]) r s).map (cf 0)
-      = a.swap :: r.map BPair.swap
-    rw [zRow_const r s (Nat.succ.inj hl)]
-
-private theorem pcf_zMat_lin : ∀ (H G : Mat) (o : Nat), rowsLen o H →
-    rowsLen o G → H.length = G.length → pcf 1 (zMat H G) = G
-  | [], [], _, _, _, _ => rfl
-  | [], _ :: _, _, _, _, hl => Nat.noConfusion hl
-  | _ :: _, [], _, _, _, hl => Nat.noConfusion hl
-  | r :: H, s :: G, o, hH, hG, hl => by
-    show (List.zipWith (fun h g => [BPair.swap h, g]) r s).map (cf 1)
-        :: pcf 1 (zMat H G) = s :: G
-    rw [zRow_lin r s (hH.1.trans hG.1.symm),
-      pcf_zMat_lin H G o hH.2 hG.2 (Nat.succ.inj hl)]
-
-private theorem pcf_zMat_const : ∀ (H G : Mat) (o : Nat), rowsLen o H →
-    rowsLen o G → H.length = G.length → pcf 0 (zMat H G) = matSwap H
-  | [], [], _, _, _, _ => rfl
-  | [], _ :: _, _, _, _, hl => Nat.noConfusion hl
-  | _ :: _, [], _, _, _, hl => Nat.noConfusion hl
-  | r :: H, s :: G, o, hH, hG, hl => by
-    show (List.zipWith (fun h g => [BPair.swap h, g]) r s).map (cf 0)
-        :: pcf 0 (zMat H G) = r.map BPair.swap :: matSwap H
-    rw [zRow_const r s (hH.1.trans hG.1.symm),
-      pcf_zMat_const H G o hH.2 hG.2 (Nat.succ.inj hl)]
+private theorem pcf_zMat_const (H G : Mat) (o : Nat) (hH : rowsLen o H)
+    (hG : rowsLen o G) (hl : H.length = G.length) :
+    pcf 0 (zMat H G) = matSwap H := by
+  show (List.zipWith (List.zipWith (fun h g => [BPair.swap h, g])) H G).map
+    (fun r => r.map (fun p => ground.getAt BPair.unit p 0)) = matSwap H
+  rw [ground.map2_getAt_zipWith BPair.unit _ 0 (fun h _ => BPair.swap h)
+    (fun _ _ => rfl)]
+  exact ground.zipWith2_leftMap BPair.swap H G (Nat.le_of_eq hl)
+    (elim.rowsLen_widths_le H G hH hG (Nat.le_of_eq hl))
 
 /-- The congruence's linear coefficient: the site's second datum
 carried by the congruence, `Tᵀ G T` at the stated order. -/
@@ -1247,15 +1203,6 @@ private theorem getAt_embedP (M : Mat) (i j : Nat) (hi : i < M.length)
     ground.getAt_map BPair.unit ([] : Poly) _ _ j hj]
 
 
-/-- The site datum's rows read the level pair's own order. -/
-private theorem zMat_rows : ∀ (H G : Mat) (o : Nat),
-    rowsLen o H → rowsLen o G → rowsLen o (zMat H G)
-  | [], _, _, _, _ => trivial
-  | _ :: _, [], _, _, _ => trivial
-  | r :: H, s :: G, o, hH, hG =>
-    ⟨ground.length_zipWith (fun h g => [BPair.swap h, g]) r s o hH.1 hG.1,
-     zMat_rows H G o hH.2 hG.2⟩
-
 /-- The congruence's entry is the exchanged lists' product's own:
 `Tᵀ Z T` entry by entry at the polynomial carrier, the scalar
 factors entering as their one-member polynomials. -/
@@ -1400,7 +1347,9 @@ theorem pminor_congrZ {o : Nat} (H G : Mat) (T : SqMat o)
   have hZl : (zMat H G).length = o :=
     zMat_len H G o (sqAt_len hH) (sqAt_len hG)
   have hZr : rowsLen o (zMat H G) :=
-    zMat_rows H G o (rowsLen_of_sqAt hH) (rowsLen_of_sqAt hG)
+    elim.rowsLen_zipWith (List.zipWith (fun h g => [BPair.swap h, g])) o o o
+      (fun r s hr hs => ground.length_zipWith _ r s o hr hs) H G
+      (rowsLen_of_sqAt hH) (rowsLen_of_sqAt hG)
   have hEl : (elim.embedP T.val).length = o :=
     (ground.length_map _ T.val).trans hTl
   have hEr : rowsLen o (elim.embedP T.val) :=
@@ -2904,7 +2853,7 @@ def crossRead (p q A B : Poly) : Prop :=
   ∧ ¬ (poly.unitTail A ∧ poly.unitTail B)
   ∧ A.length + 1 ≤ q.length ∧ B.length + 1 ≤ p.length
 
-instance (p q A B : Poly) : Decidable (crossRead p q A B) :=
+instance instSplit7 (p q A B : Poly) : Decidable (crossRead p q A B) :=
   @instDecidableAnd _ _ (poly.decUnitTail _)
     (@instDecidableAnd _ _
       (@instDecidableNot _
@@ -2929,5 +2878,389 @@ def ppzMat (H G : PMat) : PPMat :=
 representative map entrywise with the collected sum untouched. -/
 def ppminor (m : PPMat) : poly.PPoly :=
   elim.minorO (poly.polyO polyOps) poly.pnormP id m
+
+/-- The adjugate at the iterated carrier, every order: the cofactor
+family at the iterated minor with the memberwise swap, `def:elim`'s
+adjugate at the polynomials as the entry carrier. -/
+def ppadj (m : PPMat) : PPMat :=
+  elim.adjO ppminor poly.pnegP m
+
+/-! The outer site datum's shape and leading reads: the rows at the
+level pair's width, each entry two outer keys — the pencil entry's
+balance partner at the constant key and the gram's entry at the
+linear key — so the pencil polynomial's outer top is the gram's
+determinant at the coefficient carrier (`elim.linTop_minorPP`,
+`elim.length_minorPP_lin`), `thm:divisorid`(ii)'s leading
+x-coefficient and `thm:trigpencil`'s symbol at its leading key. -/
+
+/-- The outer site datum's row count at a level pair of one
+order. -/
+theorem ppzMat_len (H G : PMat) (n : Nat) (hH : H.length = n)
+    (hG : G.length = n) : (ppzMat H G).length = n :=
+  ground.length_zipWith _ H G n hH hG
+
+/-- The outer site datum's rows at the level pair's width. -/
+theorem rowsLen_ppzMat (n : Nat) (H G : PMat) (hH : elim.rowsLen n H)
+    (hG : elim.rowsLen n G) : elim.rowsLen n (ppzMat H G) :=
+  elim.rowsLen_zipWith (List.zipWith (fun h g => [poly.neg h, g])) n n n
+    (fun r s hr hs => ground.length_zipWith _ r s n hr hs) H G hH hG
+
+/-- The outer site datum's entry inside the square: the pencil
+entry's balance partner at the constant key and the gram's entry at
+the linear key. -/
+theorem ppzMat_entry (H G : PMat) (n : Nat) (hH : H.length = n)
+    (hHr : elim.rowsLen n H) (hG : G.length = n) (hGr : elim.rowsLen n G)
+    (a b : Nat) (ha : a < n) (hb : b < n) :
+    ground.getAt [] (ground.getAt [] (ppzMat H G) a) b
+      = [poly.neg (ground.getAt [] (ground.getAt [] H a) b),
+        ground.getAt [] (ground.getAt [] G a) b] := by
+  show ground.getAt [] (ground.getAt []
+    (List.zipWith (List.zipWith (fun h g => [poly.neg h, g])) H G) a) b = _
+  rw [ground.getAt_zipWith ([] : List Poly) ([] : List Poly)
+      ([] : List poly.PPoly) _ H G a (by rw [hH]; exact ha)
+      (by rw [hG]; exact ha),
+    ground.getAt_zipWith ([] : Poly) ([] : Poly) ([] : poly.PPoly) _ _ _ b
+      (by rw [elim.rowsLen_getAt H a hHr (by rw [hH]; exact ha)]; exact hb)
+      (by rw [elim.rowsLen_getAt G a hGr (by rw [hG]; exact ha)]; exact hb)]
+
+/-- Every entry of the outer site datum inside the square holds two
+outer keys. -/
+theorem ppzMat_lin (H G : PMat) (n : Nat) (hH : H.length = n)
+    (hHr : elim.rowsLen n H) (hG : G.length = n) (hGr : elim.rowsLen n G)
+    (a b : Nat) (ha : a < n) (hb : b < n) :
+    (ground.getAt [] (ground.getAt [] (ppzMat H G) a) b).length = 2 := by
+  rw [ppzMat_entry H G n hH hHr hG hGr a b ha hb]
+  rfl
+
+/-- The outer site datum's linear-key entries are the gram's own. -/
+theorem ppzMat_linMap (n : Nat) (H G : PMat) (hH : elim.rowsLen n H)
+    (hG : elim.rowsLen n G) (hl : H.length = G.length) :
+    (ppzMat H G).map (fun row => row.map (fun P => ground.getAt [] P 1)) = G := by
+  show (List.zipWith (List.zipWith (fun h g => [poly.neg h, g])) H G).map
+    (fun row => row.map (fun P => ground.getAt [] P 1)) = G
+  rw [ground.map2_getAt_zipWith ([] : Poly) _ 1 (fun _ g => g) (fun _ _ => rfl)]
+  exact ground.zipWith2_right H G (Nat.le_of_eq hl.symm)
+    (elim.rowsLen_widths_le G H hG hH (Nat.le_of_eq hl.symm))
+
+/-- The pencil polynomial's coefficient at the order's key is the
+gram's determinant at the coefficient carrier, the assignment fold's
+outer top at the site datum's two-key entries. -/
+theorem ppminor_ppzMat_top (H G : PMat) (n : Nat) (hH : H.length = n)
+    (hHr : elim.rowsLen n H) (hG : G.length = n) (hGr : elim.rowsLen n G) :
+    poly.oneValue (ground.getAt [] (ppminor (ppzMat H G)) n) (pminor G) := by
+  have hl : (ppzMat H G).length = n := ppzMat_len H G n hH hG
+  have h := elim.linTop_minorPP (ppzMat H G)
+    (by rw [hl]; exact rowsLen_ppzMat n H G hHr hGr)
+    (fun a ha b hb => ppzMat_lin H G n hH hHr hG hGr a b
+      (by rw [← hl]; exact ha) (by rw [← hl]; exact hb))
+  rw [hl, ppzMat_linMap n H G hHr hGr (hH.trans hG.symm)] at h
+  exact h
+
+/-- The pencil polynomial holds the order's successor outer keys. -/
+theorem ppminor_ppzMat_len (H G : PMat) (n : Nat) (hH : H.length = n)
+    (hHr : elim.rowsLen n H) (hG : G.length = n) (hGr : elim.rowsLen n G) :
+    (ppminor (ppzMat H G)).length = n + 1 := by
+  have hl : (ppzMat H G).length = n := ppzMat_len H G n hH hG
+  have h := elim.length_minorPP_lin (ppzMat H G)
+    (by rw [hl]; exact rowsLen_ppzMat n H G hHr hGr)
+    (fun a ha b hb => ppzMat_lin H G n hH hHr hG hGr a b
+      (by rw [← hl]; exact ha) (by rw [← hl]; exact hb))
+  rw [hl] at h
+  exact h
+
+/-- The leading read: the pencil polynomial's outer top is the
+gram's determinant at the coefficient carrier, the leading
+x-coefficient of `χ = det G · Π ⟨x : ε_j⟩` at the level pair's
+site datum over polynomial entries. -/
+theorem ptop_ppzMat (H G : PMat) (n : Nat) (hH : H.length = n)
+    (hHr : elim.rowsLen n H) (hG : G.length = n) (hGr : elim.rowsLen n G) :
+    poly.oneValue (poly.ptop (ppminor (ppzMat H G))) (pminor G) := by
+  rw [poly.ptop_getAt _ n (ppminor_ppzMat_len H G n hH hHr hG hGr)]
+  exact ppminor_ppzMat_top H G n hH hHr hG hGr
+
+/-! The iterated carrier's selected block and symmetry read, the
+balance-pair polynomials the entry bundle (`elim.selMO` and
+`elim.symAtO` at `poly.polyO poly.polyOps`). -/
+
+/-- The selected block at stated row and column key lists, at the
+two-variable entries. -/
+def ppselM (I J : List Nat) (S : PPMat) : PPMat :=
+  elim.selMO ([] : poly.PPoly) I J S
+
+/-- The symmetry read at a stated order over the two-variable
+entries, entry against exchanged entry over the key square: the
+bundle's symmetry read at the iterated carrier's own read. -/
+def ppSymAt (S : PPMat) (o : Nat) : Prop :=
+  elim.symAtO poly.ppolyRead [] S o
+
+instance instSplit8 (S : PPMat) (o : Nat) : Decidable (ppSymAt S o) :=
+  inferInstanceAs (Decidable (elim.symAtO _ _ _ _))
+
+/-- The polynomial cofactor at a struck row and column, the side
+the key sum's. -/
+def pcofac (m : split.PMat) (i j : Nat) : Poly :=
+  elim.cofO split.pminor poly.neg m i j
+
+/-- The adjugate, the transposed cofactors. -/
+def padj (m : split.PMat) : split.PMat :=
+  elim.adjO split.pminor poly.neg m
+
+/-- Clause (ii)'s solved witness, whole:
+`M adj(M) = det(M) 1`. -/
+def adjRead (m : split.PMat) : Prop :=
+  split.pmatOneValue (split.pmatMul m (padj m))
+    (split.pdiag (List.replicate m.length (split.pminor m)))
+
+/-- The adjugate at the descent, the transposed cofactors entry by
+entry the erased frames' walks. -/
+def padjD (m : split.PMat) : split.PMat :=
+  elim.adjO elim.pdetD poly.neg m
+
+/-- The walk adjugate reads the fold adjugate at a square frame,
+entry by entry. -/
+theorem padjD_eq (m : split.PMat) (hsq : elim.rowsLen m.length m) :
+    split.pmatOneValue (padjD m) (padj m) := by
+  unfold padjD padj elim.adjO
+  refine split.pmatOne_ofGetAt
+    (by rw [ground.matOf_length, ground.matOf_length]) (fun i hi => ?_)
+  have him : i < m.length := by
+    rw [ground.matOf_length] at hi
+    exact hi
+  rw [ground.matOf_row _ m.length m.length _ i him,
+    ground.matOf_row _ m.length m.length _ i him]
+  refine elim.matOne_getAt _ _
+    (by rw [ground.length_map, ground.length_map]) (fun j hj => ?_)
+  have hjm : j < m.length := by
+    rw [ground.length_mapRange] at hj
+    exact hj
+  have hjr : j < (List.range m.length).length := by
+    rw [ground.length_range]
+    exact hjm
+  rw [ground.getAt_map 0 [] _ (List.range m.length) j hjr,
+    ground.getAt_map 0 [] _ (List.range m.length) j hjr,
+    ground.getAt_range m.length j hjm]
+  have hje : (m.eraseIdx j).length + 1 = m.length :=
+    ground.length_eraseIdx m j hjm
+  have hr0 : elim.rowsLen m.length (m.eraseIdx j) :=
+    elim.rowsLen_eraseIdx m.length m j hsq
+  have hr1 : elim.rowsLen ((m.eraseIdx j).length + 1)
+      (m.eraseIdx j) := by
+    rw [hje]
+    exact hr0
+  have hicol : i < (m.eraseIdx j).length + 1 := by
+    rw [hje]
+    exact him
+  have hE0 : elim.rowsLen (m.eraseIdx j).length
+      ((m.eraseIdx j).map (fun r => r.eraseIdx i)) :=
+    elim.rowsLen_eraseCol _ i hicol _ hr1
+  have hE : elim.rowsLen
+      (((m.eraseIdx j).map (fun r => r.eraseIdx i)).length)
+      ((m.eraseIdx j).map (fun r => r.eraseIdx i)) := by
+    rw [ground.length_map]
+    exact hE0
+  have hDV : poly.oneValue
+      (elim.pdetD ((m.eraseIdx j).map (fun r => r.eraseIdx i)))
+      (split.pminor ((m.eraseIdx j).map (fun r => r.eraseIdx i))) :=
+    elim.pdetD_eq _ hE
+  show poly.oneValue
+    (elim.cofO elim.pdetD poly.neg m j i)
+    (elim.cofO split.pminor poly.neg m j i)
+  unfold elim.cofO
+  cases places.parityOf (j + i) with
+  | true => exact poly.swapMap_oneValue hDV
+  | false => exact hDV
+
+instance instSplit9 (m : split.PMat) : Decidable (adjRead m) :=
+  match elim.decRowsLen m.length m with
+  | isTrue hsq =>
+    have hMul : split.pmatOneValue (split.pmatMul m (padjD m))
+        (split.pmatMul m (padj m)) :=
+      split.pmatMul_congr_right (padjD_eq m hsq) m
+    have hD : split.pmatOneValue
+        (split.pdiag (List.replicate m.length (elim.pdetD m)))
+        (split.pdiag (List.replicate m.length (split.pminor m))) :=
+      split.pdiag_repl_congr (elim.pdetD_eq m hsq) m.length
+    decidable_of_iff
+      (split.pmatOneValue (split.pmatMul m (padjD m))
+        (split.pdiag (List.replicate m.length (elim.pdetD m))))
+      ⟨fun x => split.pmatOne_trans (split.pmatOne_trans
+          (split.pmatOne_symm hMul) x) hD,
+       fun x => split.pmatOne_trans (split.pmatOne_trans hMul x)
+          (split.pmatOne_symm hD)⟩
+  | isFalse _ => split.decPmatOneValue _ _
+
+/-- Clause (ii)'s solved witness as a theorem: at a square frame
+the list against its adjugate reads the determinant's diagonal,
+`def:elim`'s adjugate identity at the polynomial carrier. -/
+theorem adjRead_all (m : split.PMat)
+    (hsq : elim.rowsLen m.length m) : adjRead m := by
+  have hAh : ((padj m).headD []).length = m.length :=
+    elim.headD_len_of (padj m) m.length
+      (ground.matOf_length m.length m.length _)
+      (elim.rowsLen_matOf m.length m.length _)
+  have hAl : (split.pmatMul m (padj m)).length = m.length :=
+    ground.length_map _ m
+  have hAr : elim.rowsLen m.length (split.pmatMul m (padj m)) :=
+    elim.rowsLen_matMulO poly.polyOps m (padj m) m.length hAh
+  have hrepl : (List.replicate m.length (split.pminor m)).length
+      = m.length := ground.length_replicate _ m.length
+  have hDl : (split.pdiag
+      (List.replicate m.length (split.pminor m))).length
+      = m.length := by
+    rw [show (split.pdiag
+        (List.replicate m.length (split.pminor m))).length
+        = (List.replicate m.length (split.pminor m)).length from
+      ground.matOf_length _ _ _]
+    exact hrepl
+  refine split.pmatOne_ofGetAt (by rw [hAl, hDl]) (fun i hi => ?_)
+  rw [hAl] at hi
+  have hiA : i < (split.pmatMul m (padj m)).length := by
+    rw [hAl]
+    exact hi
+  have hrowA : (ground.getAt ([] : List poly.Poly)
+      (split.pmatMul m (padj m)) i).length = m.length :=
+    elim.rowsLen_getAt _ i hAr hiA
+  have hrowD : (ground.getAt ([] : List poly.Poly) (split.pdiag
+      (List.replicate m.length (split.pminor m))) i).length
+      = m.length := by
+    rw [show (ground.getAt ([] : List poly.Poly) (split.pdiag
+        (List.replicate m.length (split.pminor m))) i).length
+        = (List.replicate m.length (split.pminor m)).length from
+      ground.matOf_rowLength ([] : List poly.Poly) _ _ _ i
+        (by rw [hrepl]; exact hi)]
+    exact hrepl
+  refine elim.matOne_getAt _ _ (hrowA.trans hrowD.symm)
+    (fun j hj => ?_)
+  rw [hrowA] at hj
+  rw [show ground.getAt ([] : poly.Poly)
+      (ground.getAt ([] : List poly.Poly) (split.pdiag
+        (List.replicate m.length (split.pminor m))) i) j
+      = if j = i then ground.getAt ([] : poly.Poly)
+          (List.replicate m.length (split.pminor m)) i
+        else ([] : poly.Poly) from
+    ground.matOf_entry ([] : List poly.Poly) ([] : poly.Poly) _ _ _
+      i j (by rw [hrepl]; exact hi) (by rw [hrepl]; exact hj)]
+  by_cases hji : j = i
+  · rw [if_pos hji, ground.getAt_replicate ([] : poly.Poly)
+      (split.pminor m) m.length i hi, hji]
+    exact elim.adjO_row_diag (R := poly.polyRead) elim.polyLaws
+      split.pminor poly.neg elim.minorP_detP
+      (fun _ => poly.oneValue_refl _) m hsq i hi
+  · rw [if_neg hji]
+    exact elim.adjO_row_off (R := poly.polyRead) elim.polyLaws
+      split.pminor poly.neg elim.minorP_detP
+      (fun _ => poly.oneValue_refl _) m hsq i j hi hj
+      (fun he => hji he.symm)
+
+/-- Clause (ii)'s solved witness at the exchanged product order:
+the adjugate against the list reads that diagonal as well, the
+column side of `def:elim`'s adjugate identity. -/
+theorem adjColRead_all (m : split.PMat)
+    (hsq : elim.rowsLen m.length m) :
+    split.pmatOneValue (split.pmatMul (padj m) m)
+      (split.pdiag (List.replicate m.length (split.pminor m))) := by
+  have hMh : (m.headD []).length = m.length :=
+    elim.headD_len_of m m.length rfl hsq
+  have hAdjl : (padj m).length = m.length :=
+    ground.matOf_length m.length m.length _
+  have hAl : (split.pmatMul (padj m) m).length = m.length := by
+    rw [show (split.pmatMul (padj m) m).length = (padj m).length from
+      ground.length_map _ (padj m)]
+    exact hAdjl
+  have hAr : elim.rowsLen m.length (split.pmatMul (padj m) m) :=
+    elim.rowsLen_matMulO poly.polyOps (padj m) m m.length hMh
+  have hrepl : (List.replicate m.length (split.pminor m)).length
+      = m.length := ground.length_replicate _ m.length
+  have hDl : (split.pdiag
+      (List.replicate m.length (split.pminor m))).length
+      = m.length := by
+    rw [show (split.pdiag
+        (List.replicate m.length (split.pminor m))).length
+        = (List.replicate m.length (split.pminor m)).length from
+      ground.matOf_length _ _ _]
+    exact hrepl
+  refine split.pmatOne_ofGetAt (by rw [hAl, hDl]) (fun i hi => ?_)
+  rw [hAl] at hi
+  have hiA : i < (split.pmatMul (padj m) m).length := by
+    rw [hAl]
+    exact hi
+  have hrowA : (ground.getAt ([] : List poly.Poly)
+      (split.pmatMul (padj m) m) i).length = m.length :=
+    elim.rowsLen_getAt _ i hAr hiA
+  have hrowD : (ground.getAt ([] : List poly.Poly) (split.pdiag
+      (List.replicate m.length (split.pminor m))) i).length
+      = m.length := by
+    rw [show (ground.getAt ([] : List poly.Poly) (split.pdiag
+        (List.replicate m.length (split.pminor m))) i).length
+        = (List.replicate m.length (split.pminor m)).length from
+      ground.matOf_rowLength ([] : List poly.Poly) _ _ _ i
+        (by rw [hrepl]; exact hi)]
+    exact hrepl
+  refine elim.matOne_getAt _ _ (hrowA.trans hrowD.symm)
+    (fun j hj => ?_)
+  rw [hrowA] at hj
+  rw [show ground.getAt ([] : poly.Poly)
+      (ground.getAt ([] : List poly.Poly) (split.pdiag
+        (List.replicate m.length (split.pminor m))) i) j
+      = if j = i then ground.getAt ([] : poly.Poly)
+          (List.replicate m.length (split.pminor m)) i
+        else ([] : poly.Poly) from
+    ground.matOf_entry ([] : List poly.Poly) ([] : poly.Poly) _ _ _
+      i j (by rw [hrepl]; exact hi) (by rw [hrepl]; exact hj)]
+  by_cases hji : j = i
+  · rw [if_pos hji, ground.getAt_replicate ([] : poly.Poly)
+      (split.pminor m) m.length i hi, hji]
+    exact elim.adjO_col_diag (R := poly.polyRead) elim.polyLaws
+      split.pminor poly.neg elim.minorP_detP
+      (fun _ => poly.oneValue_refl _) m hsq i hi
+  · rw [if_neg hji]
+    exact elim.adjO_col_off (R := poly.polyRead) elim.polyLaws
+      split.pminor poly.neg elim.minorP_detP
+      (fun _ => poly.oneValue_refl _) m hsq i j hi hj
+      (fun he => hji he.symm)
+
+/-- The polynomial minor's degree: every entry inside the cap puts
+the minor inside the order's multiple of the cap. -/
+theorem pminor_len (S : split.PMat) (K : Nat)
+    (h : ∀ i j, (ground.getAt ([] : Poly)
+      (ground.getAt ([] : List Poly) S i) j).length ≤ K + 1) :
+    (split.pminor S).length ≤ S.length * K + 1 :=
+  elim.deg_minorO poly.polyOps poly.pnorm id (fun p K => p.length ≤ K + 1)
+    (fun _ _ _ hK hx => Nat.le_trans hx (Nat.succ_le_succ hK))
+    (fun K x y hx hy => poly.add_len_le x y (K + 1) hx hy)
+    (fun K1 K2 x y hx hy => poly.mul_len_le x y K1 K2 hx hy)
+    (fun _ x h => by rw [show (poly.polyOps.swap x).length = x.length from
+      poly.length_neg x]; exact h)
+    (fun _ x h => by rw [poly.pnorm_length]; exact h)
+    (fun _ _ h => h) (fun _ => Nat.zero_le _) (Nat.le_refl 1) K S h
+
+/-- The polynomial adjugate's row count is the frame's. -/
+theorem length_padj (P : split.PMat) :
+    (padj P).length = P.length :=
+  elim.length_adjO _ _ P
+
+/-- The polynomial adjugate's rows sit at the frame's count. -/
+theorem rowsLen_padj (P : split.PMat) :
+    elim.rowsLen P.length (padj P) :=
+  elim.rowsLen_matOf P.length P.length _
+
+/-- The polynomial adjugate's entries one order below: each entry a
+cofactor, the erased frame's minor at the key pair's side, inside the
+erased order's multiple of the cap (`elim.deg_adjO` at the polynomial
+carrier's degree). -/
+theorem padj_len (P : split.PMat) (K m : Nat) (hlen : P.length = m + 1)
+    (h : ∀ i j, (ground.getAt ([] : Poly)
+      (ground.getAt ([] : List Poly) P i) j).length ≤ K + 1) :
+    ∀ i j, (ground.getAt ([] : Poly)
+      (ground.getAt ([] : List Poly) (padj P) i) j).length
+        ≤ m * K + 1 :=
+  elim.deg_adjO poly.polyOps poly.pnorm id (fun p K => p.length ≤ K + 1)
+    (fun _ _ _ hK hx => Nat.le_trans hx (Nat.succ_le_succ hK))
+    (fun K x y hx hy => poly.add_len_le x y (K + 1) hx hy)
+    (fun K1 K2 x y hx hy => poly.mul_len_le x y K1 K2 hx hy)
+    (fun _ x h => by rw [show (poly.polyOps.swap x).length = x.length from
+      poly.length_neg x]; exact h)
+    (fun _ x h => by rw [poly.pnorm_length]; exact h)
+    (fun _ _ h => h) (fun _ => Nat.zero_le _) (Nat.le_refl 1) K m P hlen h
 
 end split

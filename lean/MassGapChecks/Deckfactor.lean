@@ -17,32 +17,34 @@ displays, and the vanishing top's collapsed endpoints refusing.
 The walk's chord instance at base two,
 `z* = 1/2` at `w = 5/2` — the interior member with the exterior
 refusal, and the margin's `[9 : 4]` crossing square. -/
+
+namespace deckfactor
 set_option maxHeartbeats 4000000
 
-open ground poly elim inertia deckfactor
+open ground poly elim inertia
 
 /-! The deck-symmetric `p = (2z²-5z+2)(3z²-10z+3)` at `m = 2`: the
 symmetry, the symbol, the assembly, and the factorization. -/
 
 private def pD : Poly := [⟨7, 1⟩, ⟨1, 36⟩, ⟨63, 1⟩, ⟨1, 36⟩, ⟨7, 1⟩]
 
-example : deckSymRead pD 2 := by decide +kernel
+theorem pin1 : deckSymRead pD 2 := by decide +kernel
 
 /-! The deck read at the value: a trailing unit coefficient rides
 beyond the doubled degree and the read sees the value's own
 symmetry. -/
 
-example : deckSymRead
+theorem pin2 : deckSymRead
     [⟨2, 1⟩, ⟨3, 1⟩, ⟨4, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩, ⟨1, 1⟩] 2 := by decide +kernel
 
-example : ¬ deckSymRead [⟨2, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] 2 := by
+theorem pin3 : ¬ deckSymRead [⟨2, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩, ⟨4, 1⟩, ⟨2, 1⟩] 2 := by
   decide +kernel
-example : poly.oneValue (symbolOf pD 2) [⟨51, 1⟩, ⟨1, 36⟩, ⟨7, 1⟩] := by
+theorem pin4 : poly.oneValue (symbolOf pD 2) [⟨51, 1⟩, ⟨1, 36⟩, ⟨7, 1⟩] := by
   decide +kernel
-example : symbolRead pD 2 := by decide +kernel
-example : intExtRead pD ⟨7, 1⟩
+theorem pin5 : symbolRead pD 2 := by decide +kernel
+theorem pin6 : intExtRead pD ⟨7, 1⟩
     [(⟨2, 1⟩, ⟨5, 1⟩, 2), (⟨2, 1⟩, ⟨10, 1⟩, 3)] := by decide +kernel
-example : ¬ intExtRead pD ⟨7, 1⟩
+theorem pin7 : ¬ intExtRead pD ⟨7, 1⟩
     [(⟨2, 1⟩, ⟨5, 1⟩, 2), (⟨3, 1⟩, ⟨10, 1⟩, 3)] := by decide +kernel
 
 /-! The band read at the display `(w-3)(w-4) = w² - 7w + 12`: the
@@ -59,16 +61,16 @@ private def spB34 : Split 2 :=
    ⟨[[⟨18, 1⟩, ⟨64, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]], rfl⟩,
    [.one ⟨18, 1⟩, .one ⟨1021, 1⟩], 0, rfl⟩
 
-example : bandClear sB spH34 spB34 := by decide +kernel
+theorem pin8 : bandClear sB spH34 spB34 := by decide +kernel
 
 /-! The walk's chord instance at base two: the interior member
 `z* = 1/2` at `w = 5/2`, the exterior partner's refusal, and the
 margin's crossing square `9 = 1 · 9`, the `[9 : 4]` read. -/
 
-example : interiorRead ⟨2, 1⟩ ⟨6, 1⟩ 2 := by decide +kernel
-example : ¬ interiorRead ⟨5, 1⟩ ⟨6, 1⟩ 2 := by decide +kernel
-example : marginRead ⟨2, 1⟩ ⟨6, 1⟩ 2 := by decide +kernel
-example : marginRead ⟨2, 1⟩ ⟨3, 1⟩ 1 := by decide +kernel
+theorem pin9 : interiorRead ⟨2, 1⟩ ⟨6, 1⟩ 2 := by decide +kernel
+theorem pin10 : ¬ interiorRead ⟨5, 1⟩ ⟨6, 1⟩ 2 := by decide +kernel
+theorem pin11 : marginRead ⟨2, 1⟩ ⟨6, 1⟩ 2 := by decide +kernel
+theorem pin12 : marginRead ⟨2, 1⟩ ⟨3, 1⟩ 1 := by decide +kernel
 
 /-! The cleared-variable display at the walk's symbol `2w - 5`: the
 below-top list reads `-5` (the monic `y - 5` at `y = 2w`), the
@@ -76,27 +78,25 @@ segment count at the doubled magnitude's endpoints `(-4, 4)` reads
 the root `5` outside, and at the symbol `2w - 3` the cleared root
 `3` sits inside, the count one with the vacancy's refusal. -/
 
-private def spOne (a : BPair) : Split 1 :=
-  ⟨⟨elim.idMat 1, rfl⟩, ⟨elim.idMat 1, rfl⟩,
-   [.one a], 0, rfl⟩
-
-example : poly.oneValue (clearVarBT [⟨1, 6⟩, ⟨3, 1⟩]) [⟨1, 6⟩] := by
+theorem pin13 : poly.oneValue (clearVarBT [⟨1, 6⟩, ⟨3, 1⟩]) [⟨1, 6⟩] := by
   decide +kernel
-example : bandClear [⟨1, 6⟩, ⟨3, 1⟩] (spOne ⟨2, 1⟩)
-    (spOne ⟨10, 1⟩) := by decide +kernel
-example : hermitesign.segCountRead (clearVarBT [⟨1, 4⟩, ⟨3, 1⟩])
-    ⟨2, 6⟩ ⟨6, 2⟩ 1 1 (spOne ⟨2, 1⟩) (spOne ⟨1, 8⟩) := by decide +kernel
-example : ¬ bandClear [⟨1, 4⟩, ⟨3, 1⟩] (spOne ⟨2, 1⟩)
-    (spOne ⟨1, 8⟩) := by decide +kernel
+theorem pin14 : bandClear [⟨1, 6⟩, ⟨3, 1⟩] (inertia.oneSplit [⟨2, 1⟩])
+    (inertia.oneSplit [⟨10, 1⟩]) := by decide +kernel
+theorem pin15 : hermitesign.segCountRead (clearVarBT [⟨1, 4⟩, ⟨3, 1⟩])
+    ⟨2, 6⟩ ⟨6, 2⟩ 1 1 (inertia.oneSplit [⟨2, 1⟩]) (inertia.oneSplit [⟨1, 8⟩]) := by decide +kernel
+theorem pin16 : ¬ bandClear [⟨1, 4⟩, ⟨3, 1⟩] (inertia.oneSplit [⟨2, 1⟩])
+    (inertia.oneSplit [⟨1, 8⟩]) := by decide +kernel
 
 /-! The sign normalization: a lower-side top swaps the members —
 `-2w - 3` clears to `y + 3` and `-2w² + 3w + 2` to
 `y² - 3y - 4`, one display per case — and a vanishing top
 collapses the endpoints, the ordered-endpoint read refusing. -/
 
-example : poly.oneValue (clearVarBT [⟨1, 4⟩, ⟨1, 3⟩]) [⟨4, 1⟩] := by
+theorem pin17 : poly.oneValue (clearVarBT [⟨1, 4⟩, ⟨1, 3⟩]) [⟨4, 1⟩] := by
   decide +kernel
-example : poly.oneValue (clearVarBT [⟨3, 1⟩, ⟨4, 1⟩, ⟨1, 3⟩])
+theorem pin18 : poly.oneValue (clearVarBT [⟨3, 1⟩, ⟨4, 1⟩, ⟨1, 3⟩])
     [⟨1, 5⟩, ⟨1, 4⟩] := by decide +kernel
-example : ¬ bandClear [⟨3, 1⟩, ⟨1, 1⟩] (spOne ⟨2, 1⟩)
-    (spOne ⟨2, 1⟩) := by decide +kernel
+theorem pin19 : ¬ bandClear [⟨3, 1⟩, ⟨1, 1⟩] (inertia.oneSplit [⟨2, 1⟩])
+    (inertia.oneSplit [⟨2, 1⟩]) := by decide +kernel
+
+end deckfactor

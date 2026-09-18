@@ -42,7 +42,7 @@ open ground places
 `def:blockcount`'s kernel-dimension count. -/
 def read (s : Shape) : Prop := blockcount.countPower s = pathsquare.pathCount s
 
-instance (s : Shape) : Decidable (read s) :=
+instance instMixedinv1 (s : Shape) : Decidable (read s) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-! The power's monomial pool (`con:places`' composition of the
@@ -699,34 +699,34 @@ private theorem readGo (d : Nat) (hd : 0 < d) :
                   (blockcount.blockSpan (places.shapeOf mu))
                   (blockcount.blockSpan (pieri.oneBox d)))
                 (rowList s))
-            (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+            (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
               blockcount.HVec.content)) :=
       blockcount.countAt_fused_exhaust d k (monPool d k) hpack.1
         hpack.2.1 hpack.2.2.1 hpack.2.2.2
         (blockcount.blockSpan (pieri.oneBox d)) hszB hwidB hclB hiC
         (rowList s)
     have hmemD : ∀ mu, 0 < ground.countOf mu
-        (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+        (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
           blockcount.HVec.content)) →
         mu ∈ (blockcount.exhaust d (monPool d k)).map
           blockcount.HVec.content := by
       intro mu hmu
-      exact ground.mem_of_dedupL (ground.mem_of_countOf_pos _ _ hmu)
+      exact ground.mem_of_dedupF (ground.mem_of_countOf_pos _ _ hmu)
     have hrlD : ∀ mu, 0 < ground.countOf mu
-        (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+        (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
           blockcount.HVec.content)) →
         rowList (places.shapeOf mu) = mu := by
       intro mu hmu
       exact blockcount.exhaust_rowList_shapeOf d (monPool d k) hpack.1
         hpack.2.1 hpack.2.2.2 mu (hmemD mu hmu)
     have hwidD : ∀ mu, 0 < ground.countOf mu
-        (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+        (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
           blockcount.HVec.content)) → mu.length = d := by
       intro mu hmu
       exact blockcount.exhaust_width d (monPool d k) hpack.1
         hpack.2.1 hpack.2.2.2 mu (hmemD mu hmu)
     have hpoint : ∀ mu, 0 < ground.countOf mu
-        (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+        (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
           blockcount.HVec.content)) →
         blockcount.countAt (monPool d k) mu
             * blockcount.countAt (blockcount.fusedAt
@@ -754,9 +754,9 @@ private theorem readGo (d : Nat) (hd : 0 < d) :
       have hmir := pathsquare.row_removals (places.shapeOf mu) s
       rw [← hfc, hpr', hmir]
     have hcol := fold_collapse (blockcount.countAt (monPool d k))
-      (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+      (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
         blockcount.HVec.content))
-      (fun mu => ground.countOf_dedupL_le mu _)
+      (fun mu => ground.countOf_dedupF_le mu _)
       (by
         intro mu hz
         rw [blockcount.countAt_exhaust d (monPool d k) hpack.1 hpack.2.1
@@ -769,10 +769,10 @@ private theorem readGo (d : Nat) (hd : 0 < d) :
         | .inl h0 => exact h0
         | .inr hp =>
           have hcc : 0 < ground.countOf mu
-              (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+              (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
                 blockcount.HVec.content)) :=
             ground.countOf_pos_of_mem
-              (ground.mem_dedupL (ground.mem_of_countOf_pos mu _ hp))
+              (ground.mem_dedupF (ground.mem_of_countOf_pos mu _ hp))
           rw [hz] at hcc
           exact absurd hcc (Nat.lt_irrefl 0))
       hrlD (units.removals s)
@@ -3048,7 +3048,7 @@ private theorem content_occ (d k : Nat) (mu : List Nat)
 
 /-- The injectivity walk's block half: at null values on the
 exhaust's tops, every member of the produced blocks' join reads a
-null value — `lem:blockirr`(ii)'s induction at the block's
+null value — `lem:blockirr`(ii)'s cleared line at the block's
 provenance, each lowering's value the moved read at the prior
 null. -/
 private theorem join_null (d k : Nat) (hd : 0 < d)
@@ -4277,21 +4277,21 @@ private theorem kers_count (d k : Nat) (hd : 0 < d) (hk : k ≤ d) :
       ← blockcount.countAt_exhaust d (monPool d k) hpack.1
         hpack.2.1 hpack.2.2.2 mu]
   have hrlD : ∀ mu, 0 < ground.countOf mu
-      (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+      (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
         blockcount.HVec.content)) →
       places.rowList (places.shapeOf mu) = mu := by
     intro mu hmu
     exact blockcount.exhaust_rowList_shapeOf d (monPool d k)
       hpack.1 hpack.2.1 hpack.2.2.2 mu
-      (ground.mem_of_dedupL (ground.mem_of_countOf_pos _ _ hmu))
+      (ground.mem_of_dedupF (ground.mem_of_countOf_pos _ _ hmu))
   have hreads : ∀ mu, 0 < ground.countOf mu
-      (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+      (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
         blockcount.HVec.content)) →
       (places.shapeOf mu).length = d
         ∧ places.degree (places.shapeOf mu) = k := by
     intro mu hmu
     match ground.mem_map_of blockcount.HVec.content _ mu
-        (ground.mem_of_dedupL
+        (ground.mem_of_dedupF
           (ground.mem_of_countOf_pos _ _ hmu)) with
     | ⟨t, ht, htc⟩ =>
       obtain ⟨hw, hs, _⟩ := exhaust_reads d k hd t ht
@@ -4308,7 +4308,7 @@ private theorem kers_count (d k : Nat) (hd : 0 < d) (hk : k ≤ d) :
             blockcount.HVec.content)
         * elim.kernelDim (places.monomialsAt mu).length
           (units.stackedRaise mu))
-      (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+      (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
         blockcount.HVec.content))
       = ground.famFold Nat.add 0
         (fun mu => (blockcount.countAt (monPool d k) mu
@@ -4316,7 +4316,7 @@ private theorem kers_count (d k : Nat) (hd : 0 < d) (hk : k ≤ d) :
               (units.stackedRaise mu))
           * ground.countOf (places.shapeOf mu)
             (places.allShapes d k))
-        (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+        (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
           blockcount.HVec.content)) := by
     refine ground.famFold_congr_members Nat.add 0 _ _ _ ?_
     intro mu hmu
@@ -4330,7 +4330,7 @@ private theorem kers_count (d k : Nat) (hd : 0 < d) (hk : k ≤ d) :
       exact hm
     rw [hcnt mu, hsm, Nat.mul_one]
   have hoff : ∀ mu, ground.countOf mu
-      (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+      (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
         blockcount.HVec.content)) = 0 →
       blockcount.countAt (monPool d k) mu
         * elim.kernelDim (places.monomialsAt mu).length
@@ -4343,10 +4343,10 @@ private theorem kers_count (d k : Nat) (hd : 0 < d) (hk : k ≤ d) :
       rw [← hcnt mu, h0, Nat.zero_mul]
     | .inr hp =>
       have hcc : 0 < ground.countOf mu
-          (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+          (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
             blockcount.HVec.content)) :=
         ground.countOf_pos_of_mem
-          (ground.mem_dedupL (ground.mem_of_countOf_pos mu _ hp))
+          (ground.mem_dedupF (ground.mem_of_countOf_pos mu _ hp))
       rw [hz] at hcc
       exact absurd hcc (Nat.lt_irrefl 0)
   have hcongr2 : ground.famFold Nat.add 0
@@ -4384,18 +4384,18 @@ private theorem kers_count (d k : Nat) (hd : 0 < d) (hk : k ≤ d) :
     ground.famFold_partition _
       ((blockcount.exhaust d (monPool d k)).map
         blockcount.HVec.content)
-      (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+      (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
         blockcount.HVec.content))
-      (fun x _ => ground.countOf_dedupL_le x _)
-      (fun x hx => ground.mem_dedupL hx),
+      (fun x _ => ground.countOf_dedupF_le x _)
+      (fun x hx => ground.mem_dedupF hx),
     hcongr1,
     fold_collapse
       (fun mu => blockcount.countAt (monPool d k) mu
         * elim.kernelDim (places.monomialsAt mu).length
           (units.stackedRaise mu))
-      (ground.dedupL ((blockcount.exhaust d (monPool d k)).map
+      (ground.dedupF ((blockcount.exhaust d (monPool d k)).map
         blockcount.HVec.content))
-      (fun mu => ground.countOf_dedupL_le mu _) hoff hrlD
+      (fun mu => ground.countOf_dedupF_le mu _) hoff hrlD
       (places.allShapes d k),
     hcongr2]
   exact pathsquare.squareSum d k hk

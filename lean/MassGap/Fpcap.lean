@@ -2,34 +2,52 @@ import MassGap.Fusion
 import MassGap.Certconstruct
 import MassGap.Coeff
 /-!
-`lem:fpcap` — the fusion form's two-sided dimension cap at the
+`lem:fpcap` — the fusion form's two-sided dimension caps at the
 eigen-identity's rows.  The multiplication's matrix at a stated
-window index is `fusionMat`, its entry `M[x, y] = N^x_{λ y}` against
-the orthonormal characters, the count entries the interface's own;
-the symmetry read (`symAt`) and the eigen row's window read
-(`rowCap`) are the hypotheses the interface supplies, the tex's
-`prop:repring` third read and the dimension identity's window
-comparison.  Every window hypothesis here is spelled as its own
-decidable read — the Boolean fold over the window's key range,
-`def:ground`'s reads being decidable at every argument — so `symAt`,
-`rowCap`, `compRead` and the window's two further reads (`dimPos`,
-the letters' occupied dimensions; `distinctAt`, the letters
-pairwise distinct at the index's equality, `lem:loopcap`'s
-consumer) are one datum apiece, decided at a stated window, with
-`ground.all_range_read` the pointwise decode the proofs consume.
-The two caps are the quadratic form's sides at the
-window's vectors: `capUpper` the form at or below `d_λ` against the
-gram, `capLower` the summed form at or above the sum's unit.  The
-composition read (`compRead`) is the display's window carrier — the
-squared fundamental's entry identity
-`Σ_c N^c_{f x} N^c_{f y} = N^x_{θ y} + δ_{xy}` — its Gram the
-shifted term's lower side at `lem:loopcap`, which reads the form's
-double index fold off `quadFold` here.
+window index is `fusionMat`, the count matrix `countMat` at the
+label's counts, its entry `M[x, y] = N^x_{λ y}` against the
+orthonormal characters; every window hypothesis is spelled as its
+own decidable read — the Boolean fold over the window's key range,
+`def:ground`'s reads being decidable at every argument — so the
+symmetry read (`symAtC`, `symAt` at a label), the eigen row's
+window read (`rowCapC` at a stated cap, `rowCap` at a label's
+dimension), the window's occupied dimensions (`dimPos`) and the
+letters' distinctness (`distinctAt`) are one datum apiece, decided
+at a stated window, with `ground.all_range_read` the pointwise
+decode the proofs consume.  The two caps are the quadratic form's
+sides at the window's vectors at a stated count function
+(`capUpperC`, `capLowerC`), the self-dual label's cap their
+instance (`capUpper`, `capLower`).
+
+The dual pair's fold `N_λ + N_λ̄` (`dualCount`, `dualMat`) is
+symmetric at the involution's window read `involAt`
+(`prop:repring`'s fourth read; `dualSym`) and reads the eigen row
+at twice the dimension from the two labels' row reads with the
+dual's dimension the label's own (`fusion.dimDualLaw`; `dualRow`),
+so its caps are the count-function caps at `2 d_λ`
+(`dualCapUpper`, `dualCapLower`).  The closure fold
+`N_L = Σ_{λ ∈ L̄} N_λ` enters at the closure's self-dual members
+and one representative per dual pair (`closureCount`,
+`closureMat`, the closure list `closureList` with
+`closureCount_list` the fold over it), its dimension fold `d_L`
+(`dimFold`, `dimFold_list` the dimensions' fold over the closure
+list at the dual dimension read `dimDualAll`), its symmetry the
+members' (`closureSym` at the list reads `symAll`, `involAll`), its
+form the members' forms summed (`closureForm`, the form's additivity
+at the count matrices, `quadAddC`, `lem:inertia`'s read), and its
+caps the members' caps summed at the list reads `rowAll`,
+`dualRowAll` (`closureCapUpper`, `closureCapLower`), a sum of
+two-sided caps a two-sided cap of the sum.  The squared fundamental
+(`sqCount`, `sqMat`) reads the adjoint's form joined to the gram at
+the composition read `compRead` (`sqForm`) and sits under
+`1 + d_θ` at the adjoint's cap (`sqCap`), the display
+`M†M = M_{1 + χ_θ} ⪯ 1 + r (r + 2) = d_f²`.
 
 The layers this proof rides live at their owners.  `def:ground`
 carries the balance carrier's index fold `bsum` with its scalar
 passes, pointwise splits, nested exchange, memberwise swap and
-delta pick, the additive left fold `foldlSum`, and the balance
+delta pick, the additive left fold `foldlSum`, the delta and sum
+folds `deltaFold`, `sumFold`, and the balance
 order `≤` with its `leB_*` kit and the comparison fold `bsum_le`;
 `con:places` carries the key-range reads (`range_map_getAt`,
 `famFold_getAt`, `ltOfMem`); `def:elim` carries the pairing's own —
@@ -39,7 +57,7 @@ which closes on the same tier's one-sided read `dotN_self_side`.
 `def:ground` carries besides the square's own
 at-or-above-the-unit read (`unitLeSq`, off `sq_side`).  What stays
 here is everything the fusion matrix shapes.  The fusion walk
-rides on that matrix (`lem:corner`'s near mass, the return read):
+rides on that matrix (`lem:cornerkey`'s near mass, the return read):
 `walkVec` the walk's vector at a step count, `dimVec` the window's
 dimensions and `suppDims` the walk's supported dimensions, with
 `walk_dim` the walk's flat read at the eigen row's window identity
@@ -58,7 +76,7 @@ its withdrawn-key read, `ground.prodOver_pick`), the weight `D_i D_j`
 an integer at every pair, the diagonal included.  The first halves
 collect over the second index at the row read; the second halves
 collect over the first index through the folds' exchange at the
-symmetry, so each side reads `d_λ D² Σ x_i²` and the comparison
+symmetry, so each side reads `dl D² Σ x_i²` and the comparison
 divides by the co-product's square.  The zero-dimension corner
 genuinely breaks the cap — a vanishing window dimension carries an
 off-diagonal count past the bound — and `hdim`, the tex's own exact
@@ -69,40 +87,65 @@ comes from.
 namespace fpcap
 open ground fusion elim
 
-/-- The multiplication's matrix at a stated window index:
-`M[x, y] = N^x_{λ y}` against the orthonormal characters, the
-count entries the interface's own. -/
+/-- The count matrix at a stated window index and a stated count
+function: `M[x, y] = c(y, x)` against the orthonormal characters,
+the count entries the interface's own and the matrix row-finite at
+the window (`prop:fusionfinite`). -/
+def countMat {L : Type} (c : L → L → Nat) (ls : List L) : Mat :=
+  ls.map (fun x => ls.map (fun y => BPair.ofNat (c y x)))
+
+/-- The multiplication's matrix at a label and a window index:
+`M[x, y] = N^x_{λ y}`, the count matrix at the label's fusion
+counts. -/
 def fusionMat {L : Type} (F : Data L) (lam : L) (ls : List L) :
     Mat :=
-  ls.map (fun x => ls.map (fun y => BPair.ofNat (F.count lam y x)))
+  countMat (F.count lam) ls
 
-/-- The window's symmetry read at a self-dual letter, the
-hypothesis `prop:repring`'s third read supplies: the count fold's
-own datum over the window's key pairs. -/
-def symAt {L : Type} (F : Data L) (lam : L) (ls : List L) : Prop :=
+/-- A count function's window symmetry read: the count fold's own
+datum over the window's key pairs. -/
+def symAtC {L : Type} (F : Data L) (c : L → L → Nat) (ls : List L) :
+    Prop :=
   ((List.range ls.length).all (fun i =>
     (List.range ls.length).all (fun j =>
-      F.count lam (ground.getAt F.unit ls i)
-          (ground.getAt F.unit ls j)
-        == F.count lam (ground.getAt F.unit ls j)
-          (ground.getAt F.unit ls i)))) = true
+      c (ground.getAt F.unit ls i) (ground.getAt F.unit ls j)
+        == c (ground.getAt F.unit ls j) (ground.getAt F.unit ls i)))) = true
 
-instance {L : Type} (F : Data L) (lam : L) (ls : List L) :
-    Decidable (symAt F lam ls) :=
+instance instFpcap9 {L : Type} (F : Data L) (c : L → L → Nat) (ls : List L) :
+    Decidable (symAtC F c ls) :=
   inferInstanceAs (Decidable (_ = _))
 
-/-- The eigen row's window read: the compression's partial fold at
-or below the row's read, the dimension identity's window comparison,
-one comparison per window key. -/
-def rowCap {L : Type} (F : Data L) (lam : L) (ls : List L) : Prop :=
+/-- The window's symmetry read at a self-dual letter, the
+hypothesis `prop:repring`'s third read supplies: the count
+function's symmetry read at the label. -/
+def symAt {L : Type} (F : Data L) (lam : L) (ls : List L) : Prop :=
+  symAtC F (F.count lam) ls
+
+instance instFpcap1 {L : Type} (F : Data L) (lam : L) (ls : List L) :
+    Decidable (symAt F lam ls) :=
+  inferInstanceAs (Decidable (symAtC F (F.count lam) ls))
+
+/-- A count function's eigen row window read at a stated cap: the
+compression's partial fold at or below the cap against the row
+letter's dimension, one comparison per window key. -/
+def rowCapC {L : Type} (F : Data L) (c : L → L → Nat) (dl : Nat)
+    (ls : List L) : Prop :=
   ((List.range ls.length).all (fun i =>
     ls.foldl (fun acc x =>
-        acc + F.count lam (ground.getAt F.unit ls i) x * F.dim x) 0
-      ≤ F.dim lam * F.dim (ground.getAt F.unit ls i))) = true
+        acc + c (ground.getAt F.unit ls i) x * F.dim x) 0
+      ≤ dl * F.dim (ground.getAt F.unit ls i))) = true
 
-instance {L : Type} (F : Data L) (lam : L) (ls : List L) :
-    Decidable (rowCap F lam ls) :=
+instance instFpcap10 {L : Type} (F : Data L) (c : L → L → Nat) (dl : Nat)
+    (ls : List L) : Decidable (rowCapC F c dl ls) :=
   inferInstanceAs (Decidable (_ = _))
+
+/-- The eigen row's window read at a label: the dimension
+identity's window comparison at the label's own dimension. -/
+def rowCap {L : Type} (F : Data L) (lam : L) (ls : List L) : Prop :=
+  rowCapC F (F.count lam) (F.dim lam) ls
+
+instance instFpcap2 {L : Type} (F : Data L) (lam : L) (ls : List L) :
+    Decidable (rowCap F lam ls) :=
+  inferInstanceAs (Decidable (rowCapC F (F.count lam) (F.dim lam) ls))
 
 /-- The window's dimension read: every window letter's dimension
 occupied, the tex's exact positive eigenvector clause. -/
@@ -110,7 +153,7 @@ def dimPos {L : Type} (F : Data L) (ls : List L) : Prop :=
   ((List.range ls.length).all (fun i =>
     0 < F.dim (ground.getAt F.unit ls i))) = true
 
-instance {L : Type} (F : Data L) (ls : List L) :
+instance instFpcap3 {L : Type} (F : Data L) (ls : List L) :
     Decidable (dimPos F ls) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -122,25 +165,90 @@ def distinctAt {L : Type} (F : Data L) (ls : List L) : Prop :=
       F.eqL (ground.getAt F.unit ls i) (ground.getAt F.unit ls j)
         == (i == j)))) = true
 
-instance {L : Type} (F : Data L) (ls : List L) :
+instance instFpcap4 {L : Type} (F : Data L) (ls : List L) :
     Decidable (distinctAt F ls) :=
   inferInstanceAs (Decidable (_ = _))
 
+/-- A window pair read's pointwise decode: the Boolean fold over the
+key range's pairs reads its equality at every key pair. -/
+private theorem pairRead {α : Type} [DecidableEq α] {n : Nat}
+    {f g : Nat → Nat → α}
+    (h : ((List.range n).all (fun i =>
+      (List.range n).all (fun j => f i j == g i j))) = true)
+    (i j : Nat) (hi : i < n) (hj : j < n) : f i j = g i j :=
+  ground.beqEqOf (ground.all_range_read n
+    (ground.all_range_read n h i hi) j hj)
+
 /-- The symmetry read's pointwise decode at a window key pair. -/
-private theorem symRead {L : Type} {F : Data L} {lam : L}
-    {ls : List L} (h : symAt F lam ls) (i j : Nat)
+theorem symRead {L : Type} {F : Data L} {c : L → L → Nat}
+    {ls : List L} (h : symAtC F c ls) (i j : Nat)
     (hi : i < ls.length) (hj : j < ls.length) :
-    F.count lam (ground.getAt F.unit ls i) (ground.getAt F.unit ls j)
-      = F.count lam (ground.getAt F.unit ls j)
-        (ground.getAt F.unit ls i) :=
-  ground.beqEqOf (ground.all_range_read ls.length
-    (ground.all_range_read ls.length h i hi) j hj)
+    c (ground.getAt F.unit ls i) (ground.getAt F.unit ls j)
+      = c (ground.getAt F.unit ls j) (ground.getAt F.unit ls i) :=
+  pairRead h i j hi hj
+
+/-- The index read's pointwise decode: at a window key pair the label
+equality reads the key equality, both ways (`lem:loopcap`'s Gram
+route the further consumer). -/
+theorem distinctAt_read {L : Type} {F : Data L} {ls : List L}
+    (h : distinctAt F ls) (i j : Nat)
+    (hi : i < ls.length) (hj : j < ls.length) :
+    (F.eqL (ground.getAt F.unit ls i) (ground.getAt F.unit ls j) = true
+      ↔ i = j) := by
+  rw [pairRead h i j hi hj]
+  exact ⟨fun he => ground.beqEqOf he, fun he => ground.eqBeqOf he⟩
+
+/-- The symmetry read from its pointwise data. -/
+theorem symIntro {L : Type} (F : Data L) (c : L → L → Nat)
+    (ls : List L)
+    (h : ∀ i j, i < ls.length → j < ls.length →
+      c (ground.getAt F.unit ls i) (ground.getAt F.unit ls j)
+        = c (ground.getAt F.unit ls j) (ground.getAt F.unit ls i)) :
+    symAtC F c ls :=
+  ground.all_range_intro ls.length (fun i hi =>
+    ground.all_range_intro ls.length (fun j hj =>
+      ground.eqBeqOf (h i j hi hj)))
 
 /-- The dimension read's pointwise decode at a window key. -/
 private theorem dimRead {L : Type} {F : Data L} {ls : List L}
     (h : dimPos F ls) (i : Nat) (hi : i < ls.length) :
     0 < F.dim (ground.getAt F.unit ls i) :=
   of_decide_eq_true (ground.all_range_read ls.length h i hi)
+
+/-- The eigen row's read decoded at a window key, the row's fold
+over the window's keys. -/
+private theorem rowRead {L : Type} {F : Data L} {c : L → L → Nat}
+    {dl : Nat} {ls : List L} (h : rowCapC F c dl ls) (i : Nat)
+    (hi : i < ls.length) :
+    ground.famFold Nat.add 0
+      (fun j => c (ground.getAt F.unit ls i) (ground.getAt F.unit ls j)
+        * F.dim (ground.getAt F.unit ls j)) (List.range ls.length)
+      ≤ dl * F.dim (ground.getAt F.unit ls i) := by
+  have h0 := of_decide_eq_true
+    (ground.all_range_read ls.length h i hi)
+  rw [foldlSum (fun x => c (ground.getAt F.unit ls i) x
+      * F.dim x) ls 0, Nat.zero_add,
+    ← ground.famFold_getAt Nat.add 0 _ F.unit ls ls.length rfl]
+    at h0
+  exact h0
+
+/-- The eigen row's read from its pointwise folds. -/
+private theorem rowIntro {L : Type} (F : Data L) (c : L → L → Nat)
+    (dl : Nat) (ls : List L)
+    (h : ∀ i, i < ls.length → ground.famFold Nat.add 0
+      (fun j => c (ground.getAt F.unit ls i) (ground.getAt F.unit ls j)
+        * F.dim (ground.getAt F.unit ls j)) (List.range ls.length)
+      ≤ dl * F.dim (ground.getAt F.unit ls i)) :
+    rowCapC F c dl ls := by
+  refine ground.all_range_intro ls.length (fun i hi => ?_)
+  show decide (ls.foldl (fun acc x =>
+      acc + c (ground.getAt F.unit ls i) x * F.dim x) 0
+    ≤ dl * F.dim (ground.getAt F.unit ls i)) = true
+  refine decide_eq_true ?_
+  rw [foldlSum (fun x => c (ground.getAt F.unit ls i) x
+      * F.dim x) ls 0, Nat.zero_add,
+    ← ground.famFold_getAt Nat.add 0 _ F.unit ls ls.length rfl]
+  exact h i hi
 
 /-! The window's co-products: the full product over the index
 family and the product with one key's factor withdrawn — the
@@ -566,41 +674,41 @@ read-back `range_map_getAt`, the family fold `famFold_getAt`) and
 `def:ground`'s reading of the interface's own left folds
 (`foldlSum`). -/
 
-/-- The form as the double index fold at the window's counts, the
-loop window's Gram route the further consumer (`lem:loopcap`). -/
-theorem quadFold {L : Type} (F : Data L) (lam : L)
+/-- The form as the double index fold at the window's counts at a
+stated count function. -/
+theorem quadFoldC {L : Type} (F : Data L) (c : L → L → Nat)
     (ls : List L) (u : List BPair) (hu : u.length = ls.length) :
-    (inertia.quadForm (fusionMat F lam ls) u).oneValue
+    (inertia.quadForm (countMat c ls) u).oneValue
       (bsum (fun i => bsum (fun j =>
-        BPair.ofNat (F.count lam (ground.getAt F.unit ls j)
+        BPair.ofNat (c (ground.getAt F.unit ls j)
             (ground.getAt F.unit ls i))
           * (ground.getAt BPair.unit u i
             * ground.getAt BPair.unit u j)) (List.range ls.length))
         (List.range ls.length)) := by
   have hrows : ∀ x : L,
-      (ls.map (fun y => BPair.ofNat (F.count lam y x))).length
+      (ls.map (fun y => BPair.ofNat (c y x))).length
         = ls.length := fun x => ground.length_map _ ls
-  have hvec : (elim.matVec (fusionMat F lam ls) u).length
+  have hvec : (elim.matVec (countMat c ls) u).length
       = ls.length := by
-    show ((fusionMat F lam ls).map
+    show ((countMat c ls).map
       (fun r => elim.dotN r u)).length = ls.length
     rw [ground.length_map]
     exact ground.length_map _ ls
   refine BPair.oneValue_trans
-    (elim.dotN_read u (elim.matVec (fusionMat F lam ls) u)) ?_
-  rw [dotP_fold ls.length u (elim.matVec (fusionMat F lam ls) u)
+    (elim.dotN_read u (elim.matVec (countMat c ls) u)) ?_
+  rw [dotP_fold ls.length u (elim.matVec (countMat c ls) u)
     hu hvec]
   refine foldB_congr_members _ _ (List.range ls.length) (fun i hi => ?_)
   have hin : i < ls.length := ground.ltOfMem hi
   have hgi : ground.getAt BPair.unit
-        (elim.matVec (fusionMat F lam ls) u) i
+        (elim.matVec (countMat c ls) u) i
       = elim.dotN (ls.map (fun y => BPair.ofNat
-          (F.count lam y (ground.getAt F.unit ls i)))) u := by
-    show ground.getAt BPair.unit ((fusionMat F lam ls).map
+          (c y (ground.getAt F.unit ls i)))) u := by
+    show ground.getAt BPair.unit ((countMat c ls).map
       (fun r => elim.dotN r u)) i = _
-    rw [show (fusionMat F lam ls).map (fun r => elim.dotN r u)
+    rw [show (countMat c ls).map (fun r => elim.dotN r u)
         = ls.map (fun x => elim.dotN
-          (ls.map (fun y => BPair.ofNat (F.count lam y x))) u) from
+          (ls.map (fun y => BPair.ofNat (c y x))) u) from
       ground.map_map _ _ ls]
     exact ground.getAt_map F.unit BPair.unit _ ls i hin
   rw [hgi]
@@ -615,31 +723,60 @@ theorem quadFold {L : Type} (F : Data L) (lam : L)
   refine foldB_congr_members _ _ (List.range ls.length) (fun j hj => ?_)
   rw [ground.getAt_map F.unit BPair.unit
     (fun y => BPair.ofNat
-      (F.count lam y (ground.getAt F.unit ls i))) ls j (ground.ltOfMem hj)]
+      (c y (ground.getAt F.unit ls i))) ls j (ground.ltOfMem hj)]
   exact BPair.oneValue_of_eq (BPair.mul_left_comm _ _ _)
 
+/-- The form as the double index fold at the window's counts at a
+label, the loop window's Gram route the further consumer
+(`lem:loopcap`). -/
+theorem quadFold {L : Type} (F : Data L) (lam : L)
+    (ls : List L) (u : List BPair) (hu : u.length = ls.length) :
+    (inertia.quadForm (fusionMat F lam ls) u).oneValue
+      (bsum (fun i => bsum (fun j =>
+        BPair.ofNat (F.count lam (ground.getAt F.unit ls j)
+            (ground.getAt F.unit ls i))
+          * (ground.getAt BPair.unit u i
+            * ground.getAt BPair.unit u j)) (List.range ls.length))
+        (List.range ls.length)) :=
+  quadFoldC F (F.count lam) ls u hu
+
+/-- The form at two count functions' sum is the two forms' sum: the
+form's additivity at the count matrices, `lem:inertia`'s read at a
+stated window. -/
+theorem quadAddC {L : Type} (F : Data L) (c1 c2 : L → L → Nat)
+    (ls : List L) (u : List BPair) (hu : u.length = ls.length) :
+    (inertia.quadForm (countMat (fun y x => c1 y x + c2 y x) ls) u).oneValue
+      (inertia.quadForm (countMat c1 ls) u
+        + inertia.quadForm (countMat c2 ls) u) := by
+  refine BPair.oneValue_trans (quadFoldC F _ ls u hu) ?_
+  refine BPair.oneValue_trans ?_ (BPair.oneValue_symm
+    (BPair.add_congr (quadFoldC F c1 ls u hu) (quadFoldC F c2 ls u hu)))
+  refine BPair.oneValue_trans ?_ (foldB_add _ _ (List.range ls.length))
+  refine foldB_congr_members _ _ (List.range ls.length) (fun i _ => ?_)
+  refine BPair.oneValue_trans ?_ (foldB_add _ _ (List.range ls.length))
+  refine foldB_congr_members _ _ (List.range ls.length) (fun j _ => ?_)
+  refine BPair.oneValue_trans
+    (BPair.mul_congr_left (BPair.ofNat_add _ _)) ?_
+  exact BPair.oneValue_of_eq (BPair.right_distrib _ _ _)
+
 /-- The eigen row's window read as the index fold at the
-symmetry. -/
-private theorem rowFold {L : Type} (F : Data L) (lam : L)
-    (ls : List L) (hsym : symAt F lam ls) (hrow : rowCap F lam ls) :
+symmetry, the count's arguments exchanged. -/
+private theorem rowFold {L : Type} (F : Data L) (c : L → L → Nat)
+    (dl : Nat) (ls : List L) (hsym : symAtC F c ls)
+    (hrow : rowCapC F c dl ls) :
     ∀ i, i < ls.length → ground.famFold Nat.add 0
-      (fun j => F.count lam (ground.getAt F.unit ls j)
+      (fun j => c (ground.getAt F.unit ls j)
           (ground.getAt F.unit ls i)
         * F.dim (ground.getAt F.unit ls j)) (List.range ls.length)
-      ≤ F.dim lam * F.dim (ground.getAt F.unit ls i) := by
+      ≤ dl * F.dim (ground.getAt F.unit ls i) := by
   intro i hi
-  have h0 := of_decide_eq_true
-    (ground.all_range_read ls.length hrow i hi)
-  rw [foldlSum (fun x => F.count lam (ground.getAt F.unit ls i) x
-      * F.dim x) ls 0, Nat.zero_add,
-    ← ground.famFold_getAt Nat.add 0 _ F.unit ls ls.length rfl]
-    at h0
+  have h0 := rowRead hrow i hi
   have hcongr : ground.famFold Nat.add 0
-      (fun j => F.count lam (ground.getAt F.unit ls j)
+      (fun j => c (ground.getAt F.unit ls j)
           (ground.getAt F.unit ls i)
         * F.dim (ground.getAt F.unit ls j)) (List.range ls.length)
       = ground.famFold Nat.add 0
-      (fun j => F.count lam (ground.getAt F.unit ls i)
+      (fun j => c (ground.getAt F.unit ls i)
           (ground.getAt F.unit ls j)
         * F.dim (ground.getAt F.unit ls j))
         (List.range ls.length) :=
@@ -648,28 +785,64 @@ private theorem rowFold {L : Type} (F : Data L) (lam : L)
   rw [hcongr]
   exact h0
 
+/-- The cap's upper side at a stated count function: the form at or
+below the cap against the gram at the symmetry, the eigen row's
+window read and the occupied dimensions. -/
+theorem capUpperC {L : Type} (F : Data L) (c : L → L → Nat) (dl : Nat)
+    (ls : List L) (hsym : symAtC F c ls) (hrow : rowCapC F c dl ls)
+    (hdim : dimPos F ls)
+    (u : List BPair) (hu : u.length = ls.length) :
+    ¬ (BPair.ofNat dl * dotN u u
+        < inertia.quadForm (countMat c ls) u) :=
+  fun hlt => coreUpper ls.length dl
+    (fun i j => c (ground.getAt F.unit ls j)
+      (ground.getAt F.unit ls i))
+    (fun i => F.dim (ground.getAt F.unit ls i))
+    (fun i => ground.getAt BPair.unit u i)
+    (fun i j hi hj => (symRead hsym i j hi hj).symm)
+    (rowFold F c dl ls hsym hrow) (dimRead hdim)
+    (BPair.lt_congr
+      (BPair.mul_congr (BPair.oneValue_refl _)
+        (selfFold u ls.length hu))
+      (quadFoldC F c ls u hu) hlt)
+
+/-- The cap's lower side at a stated count function: the summed
+form at or above the sum's unit. -/
+theorem capLowerC {L : Type} (F : Data L) (c : L → L → Nat) (dl : Nat)
+    (ls : List L) (hsym : symAtC F c ls) (hrow : rowCapC F c dl ls)
+    (hdim : dimPos F ls)
+    (u : List BPair) (hu : u.length = ls.length) :
+    ¬ (BPair.ofNat dl * dotN u u
+          + inertia.quadForm (countMat c ls) u
+        < BPair.unit) :=
+  fun hlt => coreLower ls.length dl
+    (fun i j => c (ground.getAt F.unit ls j)
+      (ground.getAt F.unit ls i))
+    (fun i => F.dim (ground.getAt F.unit ls i))
+    (fun i => ground.getAt BPair.unit u i)
+    (fun i j hi hj => (symRead hsym i j hi hj).symm)
+    (rowFold F c dl ls hsym hrow) (dimRead hdim)
+    (BPair.lt_congr
+      (BPair.add_congr
+        (BPair.mul_congr (BPair.oneValue_refl _)
+          (selfFold u ls.length hu))
+        (quadFoldC F c ls u hu))
+      (BPair.oneValue_refl BPair.unit) hlt)
+
 /-- The fusion form at or below the dimension against the gram:
-`N_λ ⪯ d_λ` at the eigen-identity's rows (`lem:fpcap`). -/
+`N_λ ⪯ d_λ` at the eigen-identity's rows at a self-dual label
+(`lem:fpcap`). -/
 theorem capUpper {L : Type} (F : Data L) (lam : L) (ls : List L)
     (hsym : symAt F lam ls) (hrow : rowCap F lam ls)
     (hdim : dimPos F ls)
     (u : List BPair) (hu : u.length = ls.length) :
     ¬ (BPair.ofNat (F.dim lam) * dotN u u
         < inertia.quadForm (fusionMat F lam ls) u) :=
-  fun hlt => coreUpper ls.length (F.dim lam)
-    (fun i j => F.count lam (ground.getAt F.unit ls j)
-      (ground.getAt F.unit ls i))
-    (fun i => F.dim (ground.getAt F.unit ls i))
-    (fun i => ground.getAt BPair.unit u i)
-    (fun i j hi hj => (symRead hsym i j hi hj).symm)
-    (rowFold F lam ls hsym hrow) (dimRead hdim)
-    (BPair.lt_congr
-      (BPair.mul_congr (BPair.oneValue_refl _)
-        (selfFold u ls.length hu))
-      (quadFold F lam ls u hu) hlt)
+  capUpperC F (F.count lam) (F.dim lam) ls hsym hrow hdim u hu
 
 /-- The summed form at or above the sum's unit:
-`d_λ + N_λ` positive semidefinite (`lem:fpcap`). -/
+`d_λ + N_λ` positive semidefinite at a self-dual label
+(`lem:fpcap`). -/
 theorem capLower {L : Type} (F : Data L) (lam : L) (ls : List L)
     (hsym : symAt F lam ls) (hrow : rowCap F lam ls)
     (hdim : dimPos F ls)
@@ -677,24 +850,464 @@ theorem capLower {L : Type} (F : Data L) (lam : L) (ls : List L)
     ¬ (BPair.ofNat (F.dim lam) * dotN u u
           + inertia.quadForm (fusionMat F lam ls) u
         < BPair.unit) :=
-  fun hlt => coreLower ls.length (F.dim lam)
-    (fun i j => F.count lam (ground.getAt F.unit ls j)
-      (ground.getAt F.unit ls i))
-    (fun i => F.dim (ground.getAt F.unit ls i))
-    (fun i => ground.getAt BPair.unit u i)
-    (fun i j hi hj => (symRead hsym i j hi hj).symm)
-    (rowFold F lam ls hsym hrow) (dimRead hdim)
-    (BPair.lt_congr
-      (BPair.add_congr
-        (BPair.mul_congr (BPair.oneValue_refl _)
-          (selfFold u ls.length hu))
-        (quadFold F lam ls u hu))
-      (BPair.oneValue_refl BPair.unit) hlt)
+  capLowerC F (F.count lam) (F.dim lam) ls hsym hrow hdim u hu
+
+/-! The dual pair's fold `N_λ + N_λ̄`: symmetric at the involution's
+read `N^μ_{λν} = N^ν_{λ̄μ}` (`prop:repring`'s fourth read) and
+capped two-sidedly at twice the dimension, the two weighted folds
+reading the eigen-identity at the two labels with the dual's
+dimension the label's own (`lem:dualread`(ii)); the self-dual cap
+its one-member instance. -/
+
+/-- The involution's window read at a label: `N^μ_{λν} = N^ν_{λ̄μ}`
+at every window pair, `prop:repring`'s fourth read at the
+window. -/
+def involAt {L : Type} (F : Data L) (lam : L) (ls : List L) : Prop :=
+  ((List.range ls.length).all (fun i =>
+    (List.range ls.length).all (fun j =>
+      F.count lam (ground.getAt F.unit ls i) (ground.getAt F.unit ls j)
+        == F.count (F.dual lam) (ground.getAt F.unit ls j)
+          (ground.getAt F.unit ls i)))) = true
+
+instance instFpcap11 {L : Type} (F : Data L) (lam : L) (ls : List L) :
+    Decidable (involAt F lam ls) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The dual pair's fold's count: the label's count joined to its
+dual's, the entry of `N_λ + N_λ̄`. -/
+def dualCount {L : Type} (F : Data L) (lam : L) (y x : L) : Nat :=
+  F.count lam y x + F.count (F.dual lam) y x
+
+/-- The dual pair's fold's matrix at a window. -/
+def dualMat {L : Type} (F : Data L) (lam : L) (ls : List L) : Mat :=
+  countMat (dualCount F lam) ls
+
+/-- The involution read's pointwise decode at a window key pair. -/
+private theorem involRead {L : Type} {F : Data L} {lam : L}
+    {ls : List L} (h : involAt F lam ls) (i j : Nat)
+    (hi : i < ls.length) (hj : j < ls.length) :
+    F.count lam (ground.getAt F.unit ls i) (ground.getAt F.unit ls j)
+      = F.count (F.dual lam) (ground.getAt F.unit ls j)
+        (ground.getAt F.unit ls i) :=
+  pairRead h i j hi hj
+
+/-- The dual pair's fold exchanges at a window key pair: each count
+against its exchange reads the other label's, the involution read
+at both orders. -/
+private theorem dualCount_exch {L : Type} {F : Data L} {lam : L}
+    {ls : List L} (h : involAt F lam ls) (i j : Nat)
+    (hi : i < ls.length) (hj : j < ls.length) :
+    dualCount F lam (ground.getAt F.unit ls i) (ground.getAt F.unit ls j)
+      = dualCount F lam (ground.getAt F.unit ls j)
+        (ground.getAt F.unit ls i) := by
+  show F.count lam (ground.getAt F.unit ls i) (ground.getAt F.unit ls j)
+      + F.count (F.dual lam) (ground.getAt F.unit ls i)
+        (ground.getAt F.unit ls j)
+    = F.count lam (ground.getAt F.unit ls j) (ground.getAt F.unit ls i)
+      + F.count (F.dual lam) (ground.getAt F.unit ls j)
+        (ground.getAt F.unit ls i)
+  rw [involRead h i j hi hj, involRead h j i hj hi]
+  exact Nat.add_comm _ _
+
+/-- The dual pair's fold is symmetric at the involution's read
+(`lem:fpcap`). -/
+theorem dualSym {L : Type} (F : Data L) (lam : L) (ls : List L)
+    (h : involAt F lam ls) : symAtC F (dualCount F lam) ls :=
+  symIntro F _ ls (fun i j hi hj => dualCount_exch h i j hi hj)
+
+/-- The dual pair's fold reads the eigen row at twice the
+dimension: the two labels' row reads joined, the dual's dimension
+the label's own (`lem:fpcap`; `lem:dualread`(ii)). -/
+theorem dualRow {L : Type} (F : Data L) (lam : L) (ls : List L)
+    (h1 : rowCap F lam ls) (h2 : rowCap F (F.dual lam) ls)
+    (hd : fusion.dimDualLaw F lam) :
+    rowCapC F (dualCount F lam) (2 * F.dim lam) ls := by
+  refine rowIntro F _ _ ls (fun i hi => ?_)
+  have e1 := rowRead h1 i hi
+  have e2 := rowRead h2 i hi
+  have hdd : F.dim (F.dual lam) = F.dim lam := hd
+  rw [hdd] at e2
+  have hsplit : ground.famFold Nat.add 0
+      (fun j => dualCount F lam (ground.getAt F.unit ls i)
+          (ground.getAt F.unit ls j)
+        * F.dim (ground.getAt F.unit ls j)) (List.range ls.length)
+      = ground.famFold Nat.add 0
+        (fun j => F.count lam (ground.getAt F.unit ls i)
+            (ground.getAt F.unit ls j)
+          * F.dim (ground.getAt F.unit ls j)) (List.range ls.length)
+      + ground.famFold Nat.add 0
+        (fun j => F.count (F.dual lam) (ground.getAt F.unit ls i)
+            (ground.getAt F.unit ls j)
+          * F.dim (ground.getAt F.unit ls j)) (List.range ls.length) := by
+    rw [← ground.famFold_add_split]
+    exact ground.famFold_congr_all Nat.add 0 _ _
+      (fun j => ground.mulAddR _ _ _) (List.range ls.length)
+  rw [hsplit, Nat.two_mul, ground.mulAddR]
+  exact Nat.add_le_add e1 e2
+
+/-- The dual pair's fold at or below twice the dimension against the
+gram: `N_λ + N_λ̄ ⪯ 2 d_λ` (`lem:fpcap`). -/
+theorem dualCapUpper {L : Type} (F : Data L) (lam : L) (ls : List L)
+    (hinv : involAt F lam ls) (h1 : rowCap F lam ls)
+    (h2 : rowCap F (F.dual lam) ls) (hd : fusion.dimDualLaw F lam)
+    (hdim : dimPos F ls)
+    (u : List BPair) (hu : u.length = ls.length) :
+    ¬ (BPair.ofNat (2 * F.dim lam) * dotN u u
+        < inertia.quadForm (dualMat F lam ls) u) :=
+  capUpperC F (dualCount F lam) (2 * F.dim lam) ls
+    (dualSym F lam ls hinv) (dualRow F lam ls h1 h2 hd) hdim u hu
+
+/-- The dual pair's fold's summed form at or above the sum's unit:
+`2 d_λ + N_λ + N_λ̄` positive semidefinite (`lem:fpcap`). -/
+theorem dualCapLower {L : Type} (F : Data L) (lam : L) (ls : List L)
+    (hinv : involAt F lam ls) (h1 : rowCap F lam ls)
+    (h2 : rowCap F (F.dual lam) ls) (hd : fusion.dimDualLaw F lam)
+    (hdim : dimPos F ls)
+    (u : List BPair) (hu : u.length = ls.length) :
+    ¬ (BPair.ofNat (2 * F.dim lam) * dotN u u
+          + inertia.quadForm (dualMat F lam ls) u
+        < BPair.unit) :=
+  capLowerC F (dualCount F lam) (2 * F.dim lam) ls
+    (dualSym F lam ls hinv) (dualRow F lam ls h1 h2 hd) hdim u hu
+
+/-! The closure fold `N_L = Σ_{λ ∈ L̄} N_λ` at the closure stated as
+its self-dual members `sd` and one representative `pr` per dual
+pair, the closure list `sd ++ pr ++ pr.map dual`: the fold is the
+self-dual members' counts joined to the dual pairs' folds, its
+dimension fold `d_L = Σ_{λ ∈ L̄} d_λ` the members' dimensions with
+each pair's doubled, and the cap is the members' caps summed, a sum
+of two-sided caps a two-sided cap of the sum (`lem:fpcap`;
+`lem:inertia`). -/
+
+/-- The closure fold's count at a self-dual list and a dual-pair
+representative list: the self-dual members' counts joined to the
+pairs' folds. -/
+def closureCount {L : Type} (F : Data L) (sd pr : List L) (y x : L) :
+    Nat :=
+  ground.famFold Nat.add 0 (fun l => F.count l y x) sd
+    + ground.famFold Nat.add 0 (fun l => dualCount F l y x) pr
+
+/-- The closure fold's matrix at a window. -/
+def closureMat {L : Type} (F : Data L) (sd pr : List L) (ls : List L) :
+    Mat :=
+  countMat (closureCount F sd pr) ls
+
+/-- The closure's dimension fold `d_L`: the self-dual members'
+dimensions joined to each dual pair's doubled. -/
+def dimFold {L : Type} (F : Data L) (sd pr : List L) : Nat :=
+  ground.famFold Nat.add 0 F.dim sd
+    + ground.famFold Nat.add 0 (fun l => 2 * F.dim l) pr
+
+/-- The closure list: the self-dual members, the representatives and
+their duals. -/
+def closureList {L : Type} (F : Data L) (sd pr : List L) : List L :=
+  sd ++ pr ++ pr.map F.dual
+
+/-- The closure fold's count is the counts' fold over the closure
+list, `Σ_{λ ∈ L̄} N^x_{λ y}`. -/
+theorem closureCount_list {L : Type} (F : Data L) (sd pr : List L)
+    (y x : L) :
+    closureCount F sd pr y x
+      = ground.famFold Nat.add 0 (fun l => F.count l y x)
+        (closureList F sd pr) := by
+  show _ = ground.famFold Nat.add 0 (fun l => F.count l y x)
+    ((sd ++ pr) ++ pr.map F.dual)
+  rw [ground.famFold_append Nat.add 0 Nat.add_assoc Nat.zero_add,
+    ground.famFold_append Nat.add 0 Nat.add_assoc Nat.zero_add,
+    ground.famFold_map]
+  show _ = ground.famFold Nat.add 0 (fun l => F.count l y x) sd
+    + ground.famFold Nat.add 0 (fun l => F.count l y x) pr
+    + ground.famFold Nat.add 0 (fun l => F.count (F.dual l) y x) pr
+  rw [Nat.add_assoc, ← ground.famFold_add_split]
+  rfl
+
+/-- The dual dimension read over a list: every member's dual at its
+own dimension, `fusion.dimDualLaw` at the members
+(`lem:dualread`(ii)). -/
+def dimDualAll {L : Type} (F : Data L) (pr : List L) : Prop :=
+  (pr.all (fun l => decide (fusion.dimDualLaw F l))) = true
+
+instance instFpcap12 {L : Type} (F : Data L) (pr : List L) :
+    Decidable (dimDualAll F pr) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- A pair representative's doubled dimension is its own joined to
+its dual's, over the list. -/
+private theorem dimFold_pr {L : Type} (F : Data L) :
+    ∀ pr : List L, dimDualAll F pr →
+      ground.famFold Nat.add 0 (fun l => 2 * F.dim l) pr
+        = ground.famFold Nat.add 0 (fun l => F.dim l + F.dim (F.dual l)) pr
+  | [], _ => rfl
+  | a :: t, h => by
+    obtain ⟨ha, ht⟩ := ground.andSplitB h
+    have hda : F.dim (F.dual a) = F.dim a :=
+      (of_decide_eq_true ha : fusion.dimDualLaw F a)
+    show 2 * F.dim a + ground.famFold Nat.add 0 (fun l => 2 * F.dim l) t
+      = (F.dim a + F.dim (F.dual a))
+        + ground.famFold Nat.add 0 (fun l => F.dim l + F.dim (F.dual l)) t
+    rw [dimFold_pr F t ht, Nat.two_mul, hda]
+
+/-- The closure's dimension fold is the dimensions' fold over the
+closure list, `d_L = Σ_{λ ∈ L̄} d_λ`, at the dual dimension read. -/
+theorem dimFold_list {L : Type} (F : Data L) (sd pr : List L)
+    (h : dimDualAll F pr) :
+    dimFold F sd pr
+      = ground.famFold Nat.add 0 F.dim (closureList F sd pr) := by
+  show _ = ground.famFold Nat.add 0 F.dim ((sd ++ pr) ++ pr.map F.dual)
+  rw [ground.famFold_append Nat.add 0 Nat.add_assoc Nat.zero_add,
+    ground.famFold_append Nat.add 0 Nat.add_assoc Nat.zero_add,
+    ground.famFold_map]
+  show ground.famFold Nat.add 0 F.dim sd
+      + ground.famFold Nat.add 0 (fun l => 2 * F.dim l) pr
+    = ground.famFold Nat.add 0 F.dim sd + ground.famFold Nat.add 0 F.dim pr
+      + ground.famFold Nat.add 0 (fun l => F.dim (F.dual l)) pr
+  rw [Nat.add_assoc, ← ground.famFold_add_split, dimFold_pr F pr h]
+
+/-- The self-dual members' symmetry reads over the list. -/
+def symAll {L : Type} (F : Data L) (sd ls : List L) : Prop :=
+  (sd.all (fun l => decide (symAt F l ls))) = true
+
+instance instFpcap13 {L : Type} (F : Data L) (sd ls : List L) :
+    Decidable (symAll F sd ls) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The representatives' involution reads over the list. -/
+def involAll {L : Type} (F : Data L) (pr ls : List L) : Prop :=
+  (pr.all (fun l => decide (involAt F l ls))) = true
+
+instance instFpcap14 {L : Type} (F : Data L) (pr ls : List L) :
+    Decidable (involAll F pr ls) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The self-dual members' eigen row reads over the list. -/
+def rowAll {L : Type} (F : Data L) (sd ls : List L) : Prop :=
+  (sd.all (fun l => decide (rowCap F l ls))) = true
+
+instance instFpcap15 {L : Type} (F : Data L) (sd ls : List L) :
+    Decidable (rowAll F sd ls) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The representatives' eigen row reads at both labels of each
+pair with the dual dimension read, over the list. -/
+def dualRowAll {L : Type} (F : Data L) (pr ls : List L) : Prop :=
+  (pr.all (fun l => decide (rowCap F l ls)
+    && decide (rowCap F (F.dual l) ls)
+    && decide (fusion.dimDualLaw F l))) = true
+
+instance instFpcap16 {L : Type} (F : Data L) (pr ls : List L) :
+    Decidable (dualRowAll F pr ls) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The closure fold is symmetric at its members' reads
+(`lem:fpcap`). -/
+theorem closureSym {L : Type} (F : Data L) (sd pr ls : List L)
+    (hs : symAll F sd ls) (hp : involAll F pr ls) :
+    symAtC F (closureCount F sd pr) ls :=
+  symIntro F _ ls (fun i j hi hj => by
+    show ground.famFold Nat.add 0
+        (fun l => F.count l (ground.getAt F.unit ls i)
+          (ground.getAt F.unit ls j)) sd
+      + ground.famFold Nat.add 0
+        (fun l => dualCount F l (ground.getAt F.unit ls i)
+          (ground.getAt F.unit ls j)) pr
+      = ground.famFold Nat.add 0
+        (fun l => F.count l (ground.getAt F.unit ls j)
+          (ground.getAt F.unit ls i)) sd
+      + ground.famFold Nat.add 0
+        (fun l => dualCount F l (ground.getAt F.unit ls j)
+          (ground.getAt F.unit ls i)) pr
+    rw [ground.famFold_congr_mem Nat.add 0
+        (fun l => F.count l (ground.getAt F.unit ls i)
+          (ground.getAt F.unit ls j))
+        (fun l => F.count l (ground.getAt F.unit ls j)
+          (ground.getAt F.unit ls i)) sd
+        (fun l hl => symRead
+          (of_decide_eq_true (ground.all_of_mem _ sd hs l hl) : symAt F l ls)
+          i j hi hj),
+      ground.famFold_congr_mem Nat.add 0
+        (fun l => dualCount F l (ground.getAt F.unit ls i)
+          (ground.getAt F.unit ls j))
+        (fun l => dualCount F l (ground.getAt F.unit ls j)
+          (ground.getAt F.unit ls i)) pr
+        (fun l hl => dualCount_exch
+          (of_decide_eq_true (ground.all_of_mem _ pr hp l hl) : involAt F l ls)
+          i j hi hj)])
+
+/-- The form at the vacant count function is the sum's unit. -/
+private theorem quadNullC {L : Type} (F : Data L) (ls : List L)
+    (u : List BPair) (hu : u.length = ls.length) :
+    (inertia.quadForm (countMat (fun _ _ => 0) ls) u).oneValue BPair.unit := by
+  refine BPair.oneValue_trans (quadFoldC F (fun _ _ => 0) ls u hu) ?_
+  refine foldB_null _ (List.range ls.length) (fun i _ => ?_)
+  refine foldB_null _ (List.range ls.length) (fun j _ => ?_)
+  exact BPair.oneValue_trans (BPair.mul_congr_left BPair.ofNat_zero)
+    (BPair.unit_mul _)
+
+/-- The self-dual members' counts' fold's form is their forms' sum,
+member by member. -/
+private theorem sdForm {L : Type} (F : Data L) (ls : List L)
+    (u : List BPair) (hu : u.length = ls.length) :
+    ∀ sd : List L,
+      (inertia.quadForm (countMat (fun y x =>
+        ground.famFold Nat.add 0 (fun l => F.count l y x) sd) ls) u).oneValue
+        (bsum (fun l => inertia.quadForm (fusionMat F l ls) u) sd)
+  | [] => quadNullC F ls u hu
+  | a :: t => by
+    show (inertia.quadForm (countMat (fun y x => F.count a y x
+        + ground.famFold Nat.add 0 (fun l => F.count l y x) t) ls) u).oneValue
+      (inertia.quadForm (fusionMat F a ls) u
+        + bsum (fun l => inertia.quadForm (fusionMat F l ls) u) t)
+    exact BPair.oneValue_trans (quadAddC F (F.count a) _ ls u hu)
+      (BPair.add_congr (BPair.oneValue_refl _) (sdForm F ls u hu t))
+
+/-- The dual pairs' folds' fold's form is their forms' sum, pair by
+pair. -/
+private theorem prForm {L : Type} (F : Data L) (ls : List L)
+    (u : List BPair) (hu : u.length = ls.length) :
+    ∀ pr : List L,
+      (inertia.quadForm (countMat (fun y x =>
+        ground.famFold Nat.add 0 (fun l => dualCount F l y x) pr) ls) u).oneValue
+        (bsum (fun l => inertia.quadForm (dualMat F l ls) u) pr)
+  | [] => quadNullC F ls u hu
+  | a :: t => by
+    show (inertia.quadForm (countMat (fun y x => dualCount F a y x
+        + ground.famFold Nat.add 0 (fun l => dualCount F l y x) t) ls) u).oneValue
+      (inertia.quadForm (dualMat F a ls) u
+        + bsum (fun l => inertia.quadForm (dualMat F l ls) u) t)
+    exact BPair.oneValue_trans (quadAddC F (dualCount F a) _ ls u hu)
+      (BPair.add_congr (BPair.oneValue_refl _) (prForm F ls u hu t))
+
+/-- The closure fold's form is the members' forms summed, the
+self-dual members' at their matrices and the dual pairs' at their
+folds' (`lem:inertia`'s additivity at `lem:fpcap`'s closure). -/
+theorem closureForm {L : Type} (F : Data L) (sd pr ls : List L)
+    (u : List BPair) (hu : u.length = ls.length) :
+    (inertia.quadForm (closureMat F sd pr ls) u).oneValue
+      (bsum (fun l => inertia.quadForm (fusionMat F l ls) u) sd
+        + bsum (fun l => inertia.quadForm (dualMat F l ls) u) pr) := by
+  show (inertia.quadForm (countMat (fun y x =>
+      ground.famFold Nat.add 0 (fun l => F.count l y x) sd
+        + ground.famFold Nat.add 0 (fun l => dualCount F l y x) pr) ls) u).oneValue _
+  exact BPair.oneValue_trans (quadAddC F _ _ ls u hu)
+    (BPair.add_congr (sdForm F ls u hu sd) (prForm F ls u hu pr))
+
+/-- The members' caps summed: the summed forms at or below the
+dimension fold against the gram, each member's cap at its list
+read. -/
+private theorem closureSum {L : Type} (F : Data L) (sd pr ls : List L)
+    (hs : symAll F sd ls) (hi : involAll F pr ls)
+    (hr : rowAll F sd ls) (hp : dualRowAll F pr ls)
+    (hdim : dimPos F ls)
+    (u : List BPair) (hu : u.length = ls.length) :
+    bsum (fun l => inertia.quadForm (fusionMat F l ls) u) sd
+        + bsum (fun l => inertia.quadForm (dualMat F l ls) u) pr
+      ≤ BPair.ofNat (dimFold F sd pr) * dotN u u := by
+  have h1 : bsum (fun l => inertia.quadForm (fusionMat F l ls) u) sd
+      ≤ bsum (fun l => BPair.ofNat (F.dim l) * dotN u u) sd :=
+    bsum_le_of_mem _ _ sd (fun l hl => leB_of_not_lt (capUpper F l ls
+      (of_decide_eq_true (ground.all_of_mem _ sd hs l hl) : symAt F l ls)
+      (of_decide_eq_true (ground.all_of_mem _ sd hr l hl) : rowCap F l ls)
+      hdim u hu))
+  have h2 : bsum (fun l => inertia.quadForm (dualMat F l ls) u) pr
+      ≤ bsum (fun l => BPair.ofNat (2 * F.dim l) * dotN u u) pr :=
+    bsum_le_of_mem _ _ pr (fun l hl => by
+      obtain ⟨hab, hd⟩ := ground.andSplitB (ground.all_of_mem _ pr hp l hl)
+      obtain ⟨hr1, hr2⟩ := ground.andSplitB hab
+      exact leB_of_not_lt (dualCapUpper F l ls
+        (of_decide_eq_true (ground.all_of_mem _ pr hi l hl) : involAt F l ls)
+        (of_decide_eq_true hr1) (of_decide_eq_true hr2) (of_decide_eq_true hd)
+        hdim u hu))
+  refine leB_congr_right ?_ (leB_add h1 h2)
+  refine BPair.oneValue_trans
+    (BPair.add_congr (bsum_scalar F.dim (dotN u u) sd)
+      (bsum_scalar (fun l => 2 * F.dim l) (dotN u u) pr)) ?_
+  rw [← BPair.right_distrib]
+  exact BPair.mul_congr_left (BPair.oneValue_symm (BPair.ofNat_add _ _))
+
+/-- The closure fold at or below its dimension fold against the
+gram: `N_L ⪯ d_L`, the members' caps summed (`lem:fpcap`;
+`lem:inertia`). -/
+theorem closureCapUpper {L : Type} (F : Data L) (sd pr ls : List L)
+    (hs : symAll F sd ls) (hi : involAll F pr ls)
+    (hr : rowAll F sd ls) (hp : dualRowAll F pr ls)
+    (hdim : dimPos F ls)
+    (u : List BPair) (hu : u.length = ls.length) :
+    ¬ (BPair.ofNat (dimFold F sd pr) * dotN u u
+        < inertia.quadForm (closureMat F sd pr ls) u) :=
+  leB_not_lt (leB_congr_left
+    (BPair.oneValue_symm (closureForm F sd pr ls u hu))
+    (closureSum F sd pr ls hs hi hr hp hdim u hu))
+
+/-- The closure fold's summed form at or above the sum's unit:
+`d_L + N_L` positive semidefinite, the members' summed forms each
+at or above the unit (`lem:fpcap`; `lem:inertia`). -/
+theorem closureCapLower {L : Type} (F : Data L) (sd pr ls : List L)
+    (hs : symAll F sd ls) (hi : involAll F pr ls)
+    (hr : rowAll F sd ls) (hp : dualRowAll F pr ls)
+    (hdim : dimPos F ls)
+    (u : List BPair) (hu : u.length = ls.length) :
+    ¬ (BPair.ofNat (dimFold F sd pr) * dotN u u
+          + inertia.quadForm (closureMat F sd pr ls) u
+        < BPair.unit) := by
+  refine leB_not_lt ?_
+  have hsd : BPair.unit ≤ bsum (fun l => BPair.ofNat (F.dim l) * dotN u u
+      + inertia.quadForm (fusionMat F l ls) u) sd :=
+    foldB_nonneg_mem _ sd (fun l hl => leB_of_not_lt (capLower F l ls
+      (of_decide_eq_true (ground.all_of_mem _ sd hs l hl) : symAt F l ls)
+      (of_decide_eq_true (ground.all_of_mem _ sd hr l hl) : rowCap F l ls)
+      hdim u hu))
+  have hpr : BPair.unit ≤ bsum (fun l => BPair.ofNat (2 * F.dim l) * dotN u u
+      + inertia.quadForm (dualMat F l ls) u) pr :=
+    foldB_nonneg_mem _ pr (fun l hl => by
+      obtain ⟨hab, hd⟩ := ground.andSplitB (ground.all_of_mem _ pr hp l hl)
+      obtain ⟨hr1, hr2⟩ := ground.andSplitB hab
+      exact leB_of_not_lt (dualCapLower F l ls
+        (of_decide_eq_true (ground.all_of_mem _ pr hi l hl) : involAt F l ls)
+        (of_decide_eq_true hr1) (of_decide_eq_true hr2) (of_decide_eq_true hd)
+        hdim u hu))
+  have hsplit : (BPair.ofNat (dimFold F sd pr) * dotN u u
+      + inertia.quadForm (closureMat F sd pr ls) u).oneValue
+      (bsum (fun l => BPair.ofNat (F.dim l) * dotN u u
+          + inertia.quadForm (fusionMat F l ls) u) sd
+        + bsum (fun l => BPair.ofNat (2 * F.dim l) * dotN u u
+          + inertia.quadForm (dualMat F l ls) u) pr) := by
+    refine BPair.oneValue_trans (BPair.add_congr
+      (BPair.mul_congr_left (BPair.ofNat_add
+        (ground.famFold Nat.add 0 F.dim sd)
+        (ground.famFold Nat.add 0 (fun l => 2 * F.dim l) pr)))
+      (closureForm F sd pr ls u hu)) ?_
+    rw [BPair.right_distrib, BPair.add_add_comm]
+    refine BPair.add_congr ?_ ?_
+    · exact BPair.oneValue_trans
+        (BPair.add_congr (BPair.oneValue_symm (bsum_scalar F.dim (dotN u u) sd))
+          (BPair.oneValue_refl _))
+        (BPair.oneValue_symm (foldB_add _ _ sd))
+    · exact BPair.oneValue_trans
+        (BPair.add_congr (BPair.oneValue_symm
+          (bsum_scalar (fun l => 2 * F.dim l) (dotN u u) pr))
+          (BPair.oneValue_refl _))
+        (BPair.oneValue_symm (foldB_add _ _ pr))
+  exact leB_congr_right (BPair.oneValue_symm hsplit) (unitLeAdd hsd hpr)
+
+/-! The fundamental's square at the `A`-series: the multiplication's
+pairing-adjoint is the dual's, so the squared fundamental reads
+`M†M = M_{1 + χ_θ}` at the composition read, and the adjoint's cap
+puts it at or below `1 + d_θ = d_f²` (`lem:fpcap`). -/
+
+/-- The squared fundamental's count over an intermediate list:
+`Σ_c N^c_{f x} N^c_{f y}`. -/
+def sqCount {L : Type} (F : Data L) (f : L) (cs : List L) (y x : L) :
+    Nat :=
+  ground.famFold Nat.add 0 (fun c => F.count f x c * F.count f y c) cs
+
+/-- The squared fundamental's matrix at a window. -/
+def sqMat {L : Type} (F : Data L) (f : L) (cs ls : List L) : Mat :=
+  countMat (sqCount F f cs) ls
 
 /-- The fusion walk's vector at a step count: the unit letter's
 seed at the window's unit key, then at each step the dimension of
 `θ` against the walk joined to the matrix's action on it
-(`lem:corner`'s near mass, the fusion walk's return read). -/
+(`lem:cornerkey`'s near mass, the fusion walk's return read). -/
 def walkVec {L : Type} (F : Data L) (ls : List L) : Nat → List BPair
   | 0 => ls.map (fun x => if F.eqL x F.unit then BPair.ofPos .one else BPair.unit)
   | k + 1 => vecAdd (vecScale (BPair.ofNat (F.dim F.theta)) (walkVec F ls k))
@@ -707,18 +1320,18 @@ def dimVec {L : Type} (F : Data L) (ls : List L) : List BPair :=
 
 /-- The seed's flat read one: the unit label's coordinate vector
 against the window's dimensions reads one, the vacuum's term
-(`lem:corner`'s near mass, the return read's flat read). -/
+(`lem:cornerkey`'s near mass, the return read's flat read). -/
 def seedFlat {L : Type} (F : Data L) (ls : List L) : Prop :=
   (dotN (walkVec F ls 0) (dimVec F ls)).oneValue (BPair.ofPos .one)
 
-instance {L : Type} (F : Data L) (ls : List L) : Decidable (seedFlat F ls) :=
+instance instFpcap5 {L : Type} (F : Data L) (ls : List L) : Decidable (seedFlat F ls) :=
   inferInstanceAs (Decidable (BPair.oneValue _ _))
 
 /-- The eigen row's window identity on the walk's support: at every
 step below the count and every window key the walk reads off the
 sum's unit there, the compression's fold reads the row's own,
 `Σ_x N^x_{θ ν} d_x = d_θ d_ν` at the window's labels (`lem:fpcap`'s
-eigen-identity at the labels the walk reaches, `lem:corner`'s near
+eigen-identity at the labels the walk reaches, `lem:cornerkey`'s near
 mass at the fusion depth within the window). -/
 def walkExact {L : Type} (F : Data L) (ls : List L) (k : Nat) : Prop :=
   ((List.range k).all (fun j => (List.range ls.length).all (fun i =>
@@ -727,13 +1340,13 @@ def walkExact {L : Type} (F : Data L) (ls : List L) (k : Nat) : Prop :=
             acc + F.count F.theta (ground.getAt F.unit ls i) x * F.dim x) 0
           == F.dim F.theta * F.dim (ground.getAt F.unit ls i))))) = true
 
-instance {L : Type} (F : Data L) (ls : List L) (k : Nat) :
+instance instFpcap6 {L : Type} (F : Data L) (ls : List L) (k : Nat) :
     Decidable (walkExact F ls k) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The walk's supported dimensions: the letter's dimension at every
 key the walk reads off the sum's unit, the sum's unit at the keys
-the walk sits there (`lem:corner`'s pairing side). -/
+the walk sits there (`lem:cornerkey`'s pairing side). -/
 def suppDims {L : Type} (F : Data L) (ls : List L) (v : List BPair) : List BPair :=
   (List.range ls.length).map (fun i =>
     if (getAt BPair.unit v i).oneValue BPair.unit then BPair.unit
@@ -790,7 +1403,7 @@ private theorem supp_read {L : Type} (F : Data L) (ls : List L) (k : Nat) :
     rw [hsi, hdi]
     exact BPair.oneValue_refl _
 
-/-- `lem:corner`'s Cauchy--Schwarz at the fusion walk: the walk's
+/-- `lem:cornerkey`'s Cauchy--Schwarz at the fusion walk: the walk's
 dimension pairing is its supported pairing, and the squared pairing
 sits at or below the walk's self-pairing against the supported
 dimensions' own (`coeff.dotN_sq_le` at the two lists). -/
@@ -923,7 +1536,7 @@ private theorem actFold {L : Type} (F : Data L) (ls : List L)
 dimensions reads `(2 d_θ)^k` at the step count, the seed's flat read
 one and each step's read the dimension eigen-identity's window
 instance twice, at the scaled part and at the action
-(`lem:corner`'s near mass: the return read's flat read one at
+(`lem:cornerkey`'s near mass: the return read's flat read one at
 `lem:fpcap`'s eigen-identity). -/
 private theorem walk_dim_go {L : Type} (F : Data L) (ls : List L)
     (hseed : seedFlat F ls) :
@@ -987,7 +1600,7 @@ private theorem walkExact_read {L : Type} (F : Data L) (ls : List L)
 dimensions reads `(2 d_θ)^k` at the step count, the seed's flat read
 one and each step's read the dimension eigen-identity's window
 instance twice, at the scaled part and at the action, on the walk's
-support (`lem:corner`'s near mass: the return read's flat read one at
+support (`lem:cornerkey`'s near mass: the return read's flat read one at
 `lem:fpcap`'s eigen-identity at the labels the walk reaches). -/
 theorem walk_dim {L : Type} (F : Data L) (ls : List L) (k : Nat)
     (hrow : walkExact F ls k) (hseed : seedFlat F ls) :
@@ -1012,9 +1625,91 @@ def compRead {L : Type} (F : Data L) (f : L) (ls cs : List L) :
           + (if F.eqL (ground.getAt F.unit ls i)
                 (ground.getAt F.unit ls j) then 1 else 0)))) = true
 
-instance {L : Type} (F : Data L) (f : L) (ls cs : List L) :
+instance instFpcap7 {L : Type} (F : Data L) (f : L) (ls cs : List L) :
     Decidable (compRead F f ls cs) :=
   inferInstanceAs (Decidable (_ = _))
+
+/-- The composition read's pointwise decode at a window key pair:
+the squared count's fold over the intermediate list reads the
+adjoint's count joined to the label delta (`lem:loopcap`'s Gram
+route the further consumer). -/
+theorem compRead_read {L : Type} {F : Data L} {f : L} {ls cs : List L}
+    (h : compRead F f ls cs) (i j : Nat)
+    (hi : i < ls.length) (hj : j < ls.length) :
+    ground.famFold Nat.add 0 (fun c => F.count f (ground.getAt F.unit ls i) c
+        * F.count f (ground.getAt F.unit ls j) c) cs
+      = F.count F.theta (ground.getAt F.unit ls j) (ground.getAt F.unit ls i)
+        + (if F.eqL (ground.getAt F.unit ls i) (ground.getAt F.unit ls j)
+            then 1 else 0) := by
+  have h1 := pairRead h i j hi hj
+  rw [ground.foldlSum (fun c => F.count f (ground.getAt F.unit ls i) c
+      * F.count f (ground.getAt F.unit ls j) c) cs 0, Nat.zero_add] at h1
+  exact h1
+
+/-- The composition read decoded at a window key pair: the squared
+count is the adjoint's count joined to the key delta, the window's
+labels pairwise distinct. -/
+private theorem compReadAt {L : Type} {F : Data L} {f : L}
+    {ls cs : List L} (h : compRead F f ls cs) (hdist : distinctAt F ls)
+    (i j : Nat) (hi : i < ls.length) (hj : j < ls.length) :
+    sqCount F f cs (ground.getAt F.unit ls j) (ground.getAt F.unit ls i)
+      = F.count F.theta (ground.getAt F.unit ls j) (ground.getAt F.unit ls i)
+        + (if i = j then 1 else 0) := by
+  show ground.famFold Nat.add 0 (fun c =>
+      F.count f (ground.getAt F.unit ls i) c
+        * F.count f (ground.getAt F.unit ls j) c) cs = _
+  rw [compRead_read h i j hi hj]
+  by_cases hij : i = j
+  · rw [if_pos ((distinctAt_read hdist i j hi hj).mpr hij), if_pos hij]
+  · rw [if_neg (fun he => hij ((distinctAt_read hdist i j hi hj).mp he)),
+      if_neg hij]
+
+/-- The squared fundamental's form is the adjoint's form joined to
+the gram: `M†M = M_{1 + χ_θ}` at the composition read on a window
+of pairwise distinct labels (`lem:fpcap`). -/
+theorem sqForm {L : Type} (F : Data L) (f : L) (ls cs : List L)
+    (u : List BPair) (hu : u.length = ls.length)
+    (hc : compRead F f ls cs) (hdist : distinctAt F ls) :
+    (inertia.quadForm (sqMat F f cs ls) u).oneValue
+      (dotN u u + inertia.quadForm (fusionMat F F.theta ls) u) := by
+  refine BPair.oneValue_trans (quadFoldC F (sqCount F f cs) ls u hu) ?_
+  refine BPair.oneValue_trans ?_ (BPair.oneValue_symm
+    (BPair.add_congr (selfFold u ls.length hu)
+      (quadFoldC F (F.count F.theta) ls u hu)))
+  exact BPair.oneValue_symm (ground.sumFold ls.length
+    (fun i j => if i = j then 1 else 0)
+    (fun i j => F.count F.theta (ground.getAt F.unit ls j)
+      (ground.getAt F.unit ls i))
+    (fun i j => sqCount F f cs (ground.getAt F.unit ls j)
+      (ground.getAt F.unit ls i))
+    (fun i => ground.getAt BPair.unit u i)
+    (fun _ _ _ _ => rfl)
+    (fun i j hi hj => compReadAt hc hdist i j hi hj))
+
+/-- The squared fundamental at or below `1 + d_θ` against the gram,
+`M†M = M_{1 + χ_θ} ⪯ 1 + r (r + 2) = d_f²` at the adjoint's cap
+(`lem:fpcap`). -/
+theorem sqCap {L : Type} (F : Data L) (f : L) (ls cs : List L)
+    (hc : compRead F f ls cs) (hdist : distinctAt F ls)
+    (hsym : symAt F F.theta ls) (hrow : rowCap F F.theta ls)
+    (hdim : dimPos F ls)
+    (u : List BPair) (hu : u.length = ls.length) :
+    ¬ (BPair.ofNat (F.dim F.theta + 1) * dotN u u
+        < inertia.quadForm (sqMat F f cs ls) u) := by
+  intro hlt
+  have hcap : inertia.quadForm (fusionMat F F.theta ls) u
+      ≤ BPair.ofNat (F.dim F.theta) * dotN u u :=
+    leB_of_not_lt (capUpper F F.theta ls hsym hrow hdim u hu)
+  have hA : (BPair.ofNat (F.dim F.theta + 1) * dotN u u).oneValue
+      (dotN u u + BPair.ofNat (F.dim F.theta) * dotN u u) := by
+    refine BPair.oneValue_trans
+      (BPair.mul_congr_left (BPair.ofNat_add (F.dim F.theta) 1)) ?_
+    rw [BPair.right_distrib]
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl _) (BPair.ofNat_one_mul _)) ?_
+    exact BPair.oneValue_of_eq (BPair.add_comm _ _)
+  exact leB_not_lt (leB_add (leB_refl (dotN u u)) hcap)
+    (BPair.lt_congr hA (sqForm F f ls cs u hu hc hdist) hlt)
 
 /-! The window commutation at the source's reach: two labels'
 multiplication matrices compose at one value on a vector whose
@@ -1062,7 +1757,7 @@ def commReach {L : Type} [DecidableEq L] (F : Data L) (b a : L)
               decide (assocLaw F b a p.1 xl)
               && decide (assocLaw F a b p.1 xl))))) = true
 
-instance {L : Type} [DecidableEq L] (F : Data L) (b a : L)
+instance instFpcap8 {L : Type} [DecidableEq L] (F : Data L) (b a : L)
     (ix : List L) (psi : List ground.BPair) :
     Decidable (commReach F b a ix psi) :=
   inferInstanceAs (Decidable (_ = _))

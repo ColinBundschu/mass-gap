@@ -75,9 +75,11 @@ pivots' splits close at a two-member list: the pivots `2` and `−2`
 at their order-one splits, the fold's head split, the paired
 certificate read at each member, and the prefix's read at the
 leading pivot. -/
+
+namespace greenprod
 set_option maxHeartbeats 4000000
 
-open ground elim inertia greenprod
+open ground elim inertia
 
 private def u : BPair := BPair.unit
 
@@ -95,10 +97,10 @@ private def us3 : List VecQ :=
   [⟨[⟨1, 2⟩], 7⟩, ⟨[⟨4, 1⟩], 7⟩, ⟨[⟨1, 2⟩], 7⟩]
 private def ws3 : List VecQ := [⟨[u], 1⟩, ⟨[⟨2, 1⟩], 1⟩, ⟨[u], 1⟩]
 
-example : slabShape diag3 off3 [1, 1, 1] := by decide +kernel
-example : tailRead diag3 off3 xs3 rs3 [1, 1, 1] := by decide +kernel
-example : headRead diag3 off3 ys3 cs3 [1, 1, 1] := by decide +kernel
-example : greenRead diag3 off3 xs3 rs3 ys3 cs3 us3 ws3 1 [1, 1, 1] := by
+theorem pin1 : slabShape diag3 off3 [1, 1, 1] := by decide +kernel
+theorem pin2 : tailRead diag3 off3 xs3 rs3 [1, 1, 1] := by decide +kernel
+theorem pin3 : headRead diag3 off3 ys3 cs3 [1, 1, 1] := by decide +kernel
+theorem pin4 : greenRead diag3 off3 xs3 rs3 ys3 cs3 us3 ws3 1 [1, 1, 1] := by
   decide +kernel
 
 /-! The descending telescope's occupancy arm at vacant sides: every
@@ -107,24 +109,24 @@ refuses. -/
 
 private def usZ : List VecQ := [⟨[u], 1⟩, ⟨[u], 1⟩, ⟨[u], 1⟩]
 
-example : teleDown cs3 usZ 2 [1, 1, 1] := by decide +kernel
+theorem pin5 : teleDown cs3 usZ 2 [1, 1, 1] := by decide +kernel
 -- the walk's own occupancy arm, the shape reads and every step below
 -- the key standing beside it
-example : ¬ teleDown cs3 usZ 3 [1, 1, 1] := by decide +kernel
+theorem pin6 : ¬ teleDown cs3 usZ 3 [1, 1, 1] := by decide +kernel
 
 /-! The ascending telescope's occupancy arm: the source at the last
 slab reads vacuously, and a source key past the slabs refuses at
 the walk's own descent with both shape reads standing. -/
 
-example : teleUp rs3 us3 2 [1, 1, 1] := by decide +kernel
-example : ¬ teleUp rs3 us3 3 [1, 1, 1] := by decide +kernel
+theorem pin7 : teleUp rs3 us3 2 [1, 1, 1] := by decide +kernel
+theorem pin8 : ¬ teleUp rs3 us3 3 [1, 1, 1] := by decide +kernel
 
 /-! The source support's key: the occupied middle slab passes at
 its own key alone, either further key leaving it unskipped. -/
 
-example : supportAt ws3 1 := by decide +kernel
-example : ¬ supportAt ws3 0 := by decide +kernel
-example : ¬ supportAt ws3 2 := by decide +kernel
+theorem pin9 : supportAt ws3 1 := by decide +kernel
+theorem pin10 : ¬ supportAt ws3 0 := by decide +kernel
+theorem pin11 : ¬ supportAt ws3 2 := by decide +kernel
 
 /-! The head recursion's isolating refusals: the seed at a forged
 leading diagonal with every step read standing, and the first
@@ -134,8 +136,8 @@ reads standing. -/
 private def diagF : List Mat := [[[⟨5, 1⟩]], [[⟨4, 1⟩]], [[⟨4, 1⟩]]]
 private def csF : List MatQ := [⟨[[⟨3, 1⟩]], 3⟩, ⟨[[⟨4, 1⟩]], 8⟩]
 
-example : ¬ headRead diagF off3 ys3 cs3 [1, 1, 1] := by decide +kernel
-example : ¬ headRead diag3 off3 ys3 csF [1, 1, 1] := by decide +kernel
+theorem pin12 : ¬ headRead diagF off3 ys3 cs3 [1, 1, 1] := by decide +kernel
+theorem pin13 : ¬ headRead diag3 off3 ys3 csF [1, 1, 1] := by decide +kernel
 
 /-! The row walk's isolating refusal: one forged solution block
 parts the middle row with the shape reads standing. -/
@@ -143,26 +145,26 @@ parts the middle row with the shape reads standing. -/
 private def usF : List VecQ :=
   [⟨[⟨1, 2⟩], 7⟩, ⟨[⟨5, 1⟩], 7⟩, ⟨[⟨1, 2⟩], 7⟩]
 
-example : ¬ solveRead diag3 off3 usF ws3 [1, 1, 1] := by decide +kernel
+theorem pin14 : ¬ solveRead diag3 off3 usF ws3 [1, 1, 1] := by decide +kernel
 
 /-! The two remaining shape walks' standalone refusals, each at the
 member read with the count standing. -/
 
-example : ¬ wShapeC [⟨[[⟨2, 1⟩, ⟨9, 1⟩]], 3⟩, ⟨[[⟨4, 1⟩]], 8⟩]
+theorem pin15 : ¬ wShapeC [⟨[[⟨2, 1⟩, ⟨9, 1⟩]], 3⟩, ⟨[[⟨4, 1⟩]], 8⟩]
     [1, 1, 1] := by decide +kernel
-example : ¬ vShape [⟨[u, u], 1⟩] [1] := by decide +kernel
+theorem pin16 : ¬ vShape [⟨[u, u], 1⟩] [1] := by decide +kernel
 
 /-! The transfer join's unit read at the first head witness,
 `Y₁ T₁ + B₁` the sum's unit. -/
 
-example : matNull
+theorem pin17 : matNull
     (addQ (mulQ ([[⟨4, 1⟩]], 1) (transfer ([[⟨2, 1⟩]], 3)))
       (ofM [[⟨2, 1⟩]])).1 := by decide +kernel
 
 /-! The forged witness refuses: the tail recursion at `R₂ = 1`
 against the solved `1/3`. -/
 
-example : ¬ tailRead diag3 off3 xs3
+theorem pin18 : ¬ tailRead diag3 off3 xs3
     [⟨[[⟨4, 1⟩]], 8⟩, ⟨[[⟨2, 1⟩]], 1⟩] [1, 1, 1] := by decide +kernel
 
 /-! The signed two-slab `tridiag(1,-1; 1)`: the count split's
@@ -182,26 +184,26 @@ private def sp2 : Split 2 :=
    ⟨[[⟨2, 1⟩, ⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]], rfl⟩,
    [.one ⟨2, 1⟩, .one ⟨1, 3⟩], 0, rfl⟩
 
-example : matOneValue s2 (assemble diag2 off2) := by decide +kernel
-example : tailRead diag2 off2 xs2 rs2 [1, 1] := by decide +kernel
-example : revListRead xs2 sps2 := by decide +kernel
-example : revFold sps2 = 1 := by decide +kernel
-example : countSplitRead s2 diag2 off2 xs2 rs2 sps2 sp2 [1, 1] := by
+theorem pin19 : matOneValue s2 (assemble diag2 off2) := by decide +kernel
+theorem pin20 : tailRead diag2 off2 xs2 rs2 [1, 1] := by decide +kernel
+theorem pin21 : revListRead xs2 sps2 := by decide +kernel
+theorem pin22 : revFold sps2 = 1 := by decide +kernel
+theorem pin23 : countSplitRead s2 diag2 off2 xs2 rs2 sps2 sp2 [1, 1] := by
   decide +kernel
-example : detProdRead diag2 off2 xs2 [1, 1] := by decide +kernel
+theorem pin24 : detProdRead diag2 off2 xs2 [1, 1] := by decide +kernel
 
 /-! The coherence bundle through the theorem at the signed pair, the
 four hypothesis reads decided at the committed data. -/
 
-example : countSplitRead s2 diag2 off2 xs2 rs2 sps2 sp2 [1, 1] :=
+theorem pin25 : countSplitRead s2 diag2 off2 xs2 rs2 sps2 sp2 [1, 1] :=
   countSplit_read s2 diag2 off2 xs2 rs2 [1, 1] sps2 sp2
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 /-! The off-order shapes refuse: a short order list, and a ragged
 off-diagonal block. -/
 
-example : ¬ slabShape diag2 off2 [1] := by decide +kernel
-example : ¬ slabShape diag2 [[[⟨2, 1⟩, ⟨2, 1⟩]]] [1, 1] := by decide +kernel
+theorem pin26 : ¬ slabShape diag2 off2 [1] := by decide +kernel
+theorem pin27 : ¬ slabShape diag2 [[[⟨2, 1⟩, ⟨2, 1⟩]]] [1, 1] := by decide +kernel
 
 /-! The certificate list's own read refuses at an exchanged pair:
 the two slabs' certificates traded, each pivot against the other
@@ -211,7 +213,7 @@ private def sps2Ex : List ((n : Nat) × Split n) :=
   [⟨1, ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [.one ⟨1, 2⟩], 0, rfl⟩⟩,
    ⟨1, ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [.one ⟨3, 1⟩], 0, rfl⟩⟩]
 
-example : ¬ revListRead xs2 sps2Ex := by decide +kernel
+theorem pin28 : ¬ revListRead xs2 sps2Ex := by decide +kernel
 
 /-! The two-by-two block slab `tridiag(2I, 3I; I)`: the rectangular
 shape read, the tail recursion at block witnesses, and the
@@ -225,17 +227,17 @@ private def xsB : List MatQ :=
   [⟨[[⟨6, 1⟩, u], [u, ⟨6, 1⟩]], 3⟩, ⟨a2, 1⟩]
 private def rsB : List MatQ := [⟨b1, 3⟩]
 
-example : slabShape [a1, a2] [b1] [2, 2] := by decide +kernel
-example : ¬ tailRead [a1, a2] [b1] xsB
+theorem pin29 : slabShape [a1, a2] [b1] [2, 2] := by decide +kernel
+theorem pin30 : ¬ tailRead [a1, a2] [b1] xsB
     [⟨[[⟨2, 1⟩], [u, ⟨2, 1⟩]], 3⟩] [2, 2] := by decide +kernel
-example : tailRead [a1, a2] [b1] xsB rsB [2, 2] := by decide +kernel
-example : detProdRead [a1, a2] [b1] xsB [2, 2] := by decide +kernel
+theorem pin31 : tailRead [a1, a2] [b1] xsB rsB [2, 2] := by decide +kernel
+theorem pin32 : detProdRead [a1, a2] [b1] xsB [2, 2] := by decide +kernel
 
 -- the cleared minor at the descent's read, decided and through the
 -- theorem at the two-by-two block
-example : (minorQ (⟨a2, 1⟩ : MatQ)).oneValue (minorQD ⟨a2, 1⟩) := by
+theorem pin33 : (minorQ (⟨a2, 1⟩ : MatQ)).oneValue (minorQD ⟨a2, 1⟩) := by
   decide +kernel
-example : (minorQ (⟨a2, 1⟩ : MatQ)).oneValue (minorQD ⟨a2, 1⟩) :=
+theorem pin34 : (minorQ (⟨a2, 1⟩ : MatQ)).oneValue (minorQD ⟨a2, 1⟩) :=
   minorQD_eq ⟨a2, 1⟩ (by decide +kernel)
 
 /-! The count split at the scalar three-slab chain: the three pivots
@@ -260,19 +262,19 @@ private def sp3 : Split 3 :=
    ⟨[[⟨25, 1⟩, ⟨9, 1⟩, u], [u, ⟨9, 1⟩, ⟨4, 1⟩], [u, u, ⟨4, 1⟩]], rfl⟩,
    [.one ⟨4, 1⟩, .one ⟨25, 1⟩, .one ⟨169, 1⟩], 0, rfl⟩
 
-example : matOneValue s3 (assemble diag3 off3) := by decide +kernel
-example : revListRead xs3 sps3 := by decide +kernel
-example : splitRead s3 sp3 := by decide +kernel
-example : revFold sps3 = 0 := by decide +kernel
-example : revAt sp3 = 0 := by decide +kernel
+theorem pin35 : matOneValue s3 (assemble diag3 off3) := by decide +kernel
+theorem pin36 : revListRead xs3 sps3 := by decide +kernel
+theorem pin37 : splitRead s3 sp3 := by decide +kernel
+theorem pin38 : revFold sps3 = 0 := by decide +kernel
+theorem pin39 : revAt sp3 = 0 := by decide +kernel
 
-example : revAt sp3 = revFold sps3 :=
+theorem pin40 : revAt sp3 = revFold sps3 :=
   countSplit diag3 off3 xs3 rs3 [1, 1, 1] sps3 sp3
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : revAt sp3 = revFold sps3 := by decide +kernel
+theorem pin41 : revAt sp3 = revFold sps3 := by decide +kernel
 
-example : countSplitRead s3 diag3 off3 xs3 rs3 sps3 sp3 [1, 1, 1] :=
+theorem pin42 : countSplitRead s3 diag3 off3 xs3 rs3 sps3 sp3 [1, 1, 1] :=
   countSplit_read s3 diag3 off3 xs3 rs3 [1, 1, 1] sps3 sp3
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
@@ -295,13 +297,13 @@ private def spsV : List ((n : Nat) × Split n) :=
   [⟨1, ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [.one ⟨1, 2⟩], 0, rfl⟩⟩,
    ⟨0, ⟨⟨[], rfl⟩, ⟨[], rfl⟩, [], 0, rfl⟩⟩]
 
-example : ¬ slabShape dgV ogV nsV := by decide +kernel
-example : ¬ tailRead dgV ogV xsV rsV nsV := by decide +kernel
+theorem pin43 : ¬ slabShape dgV ogV nsV := by decide +kernel
+theorem pin44 : ¬ tailRead dgV ogV xsV rsV nsV := by decide +kernel
 
-example : assemble dgV ogV = sV := by decide +kernel
-example : revListRead xsV spsV := by decide +kernel
-example : splitRead sV spV := by decide +kernel
-example : revAt spV = 0 ∧ revFold spsV = 1 := by decide +kernel
+theorem pin45 : assemble dgV ogV = sV := by decide +kernel
+theorem pin46 : revListRead xsV spsV := by decide +kernel
+theorem pin47 : splitRead sV spV := by decide +kernel
+theorem pin48 : revAt spV = 0 ∧ revFold spsV = 1 := by decide +kernel
 
 /-! The count split's further binder records.  The certificate read
 `hl` at the conclusion: a split list of the wrong reversal fold —
@@ -316,17 +318,17 @@ private def sps2W : List ((n : Nat) × Split n) :=
   [⟨1, ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [], 1, rfl⟩⟩,
    ⟨1, ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [.one ⟨3, 1⟩], 0, rfl⟩⟩]
 
-example : ¬ revListRead xs2 sps2W := by decide +kernel
-example : ¬ (revAt sp2 = revFold sps2W) := by decide +kernel
+theorem pin49 : ¬ revListRead xs2 sps2W := by decide +kernel
+theorem pin50 : ¬ (revAt sp2 = revFold sps2W) := by decide +kernel
 
 private def spK2 : Split 2 := ⟨⟨idMat 2, rfl⟩, ⟨idMat 2, rfl⟩, [], 2, rfl⟩
 
-example : ¬ splitRead (assemble diag2 off2) spK2 := by decide +kernel
-example : ¬ (revAt spK2 = revFold sps2) := by decide +kernel
+theorem pin51 : ¬ splitRead (assemble diag2 off2) spK2 := by decide +kernel
+theorem pin52 : ¬ (revAt spK2 = revFold sps2) := by decide +kernel
 
-example : ¬ revListRead xs2 [⟨1, ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩,
+theorem pin53 : ¬ revListRead xs2 [⟨1, ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩,
     [.one ⟨3, 1⟩], 0, rfl⟩⟩] := by decide +kernel
-example : ¬ revListRead ([] : List MatQ) sps2 := by decide +kernel
+theorem pin54 : ¬ revListRead ([] : List MatQ) sps2 := by decide +kernel
 
 /-! The decimated head at the two-slab instance `tridiag(4,2;0)`
 cleared at the pivot `(5/2)`: the head's own entries, its square
@@ -346,10 +348,10 @@ private theorem hjH : 1 < nsH.length := by decide +kernel
 private theorem sqXH : sqAt XH.1 (ground.getAt 0 nsH 1) := by
   decide +kernel
 
-example : matOneValue (headM diagH offH XH 1)
+theorem pin55 : matOneValue (headM diagH offH XH 1)
     [[⟨10, 2⟩, ⟨2, 2⟩], [⟨2, 2⟩, ⟨7, 2⟩]] := by decide +kernel
 
-example : sqAt (headM diagH offH XH 1)
+theorem pin56 : sqAt (headM diagH offH XH 1)
     (ground.sumNat (List.take 1 nsH) + ground.getAt 0 nsH 1) :=
   headM_sq diagH offH XH 1 nsH shpH hjH sqXH
 
@@ -380,7 +382,7 @@ private theorem hoffT : ∀ i, i < 1 →
   | 0, _ => by decide +kernel
   | _ + 1, h => absurd (Nat.lt_of_succ_lt_succ h) (Nat.not_lt_zero _)
 
-example : matOneValue (matScale XH.2 (headM diagT offH XT 1))
+theorem pin57 : matOneValue (matScale XH.2 (headM diagT offH XT 1))
     (matAdd (matScale XT.2 (headM diagH offH XH 1))
       (matAdd
         (matScaleB (dnT.scale (XH.2 * XT.2))
@@ -389,7 +391,7 @@ example : matOneValue (matScale XH.2 (headM diagT offH XT 1))
         (inertia.trailPad (ground.sumNat (List.take 1 nsH))
           (addQ XT (swapQ XH)).1))) := by decide +kernel
 
-example : matOneValue (matScale XH.2 (headM diagT offH XT 1))
+theorem pin58 : matOneValue (matScale XH.2 (headM diagT offH XT 1))
     (matAdd (matScale XT.2 (headM diagH offH XH 1))
       (matAdd
         (matScaleB (dnT.scale (XH.2 * XT.2))
@@ -404,7 +406,7 @@ example : matOneValue (matScale XH.2 (headM diagT offH XT 1))
 identity at the vacant leading order, and the deviation the whole
 pad — the display decided and landed through `headM_tie`. -/
 
-example : matOneValue (matScale XH.2 (headM diagH offH XT 0))
+theorem pin59 : matOneValue (matScale XH.2 (headM diagH offH XT 0))
     (matAdd (matScale XT.2 (headM diagH offH XH 0))
       (matAdd
         (matScaleB (dnT.scale (XH.2 * XT.2))
@@ -413,7 +415,7 @@ example : matOneValue (matScale XH.2 (headM diagH offH XT 0))
         (inertia.trailPad (ground.sumNat (List.take 0 nsH))
           (addQ XT (swapQ XH)).1))) := by decide +kernel
 
-example : matOneValue (matScale XH.2 (headM diagH offH XT 0))
+theorem pin60 : matOneValue (matScale XH.2 (headM diagH offH XT 0))
     (matAdd (matScale XT.2 (headM diagH offH XH 0))
       (matAdd
         (matScaleB (dnT.scale (XH.2 * XT.2))
@@ -432,11 +434,11 @@ with it. -/
 
 private def diagW : List Mat := [[[⟨7, 1⟩]], [[⟨3, 1⟩]]]
 
-example : ¬ matOneValue (ground.getAt [] diagW 0)
+theorem pin61 : ¬ matOneValue (ground.getAt [] diagW 0)
     (matAdd (ground.getAt [] diagH 0)
       (matScaleB dnT (idMat (ground.getAt 0 nsH 0)))) := by decide +kernel
 
-example : ¬ matOneValue (matScale XH.2 (headM diagW offH XT 1))
+theorem pin62 : ¬ matOneValue (matScale XH.2 (headM diagW offH XT 1))
     (matAdd (matScale XT.2 (headM diagH offH XH 1))
       (matAdd
         (matScaleB (dnT.scale (XH.2 * XT.2))
@@ -453,7 +455,7 @@ equal-couplings hypothesis isolated at an occupied instance. -/
 private def offO : List Mat := [[[⟨3, 1⟩]]]
 private def offO2 : List Mat := [[[⟨4, 1⟩]]]
 
-example : matOneValue (matScale XH.2 (headM diagT offO XT 1))
+theorem pin63 : matOneValue (matScale XH.2 (headM diagT offO XT 1))
     (matAdd (matScale XT.2 (headM diagH offO XH 1))
       (matAdd
         (matScaleB (dnT.scale (XH.2 * XT.2))
@@ -462,10 +464,10 @@ example : matOneValue (matScale XH.2 (headM diagT offO XT 1))
         (inertia.trailPad (ground.sumNat (List.take 1 nsH))
           (addQ XT (swapQ XH)).1))) := by decide +kernel
 
-example : ¬ matOneValue (ground.getAt [] offO2 0)
+theorem pin64 : ¬ matOneValue (ground.getAt [] offO2 0)
     (ground.getAt [] offO 0) := by decide +kernel
 
-example : ¬ matOneValue (matScale XH.2 (headM diagT offO2 XT 1))
+theorem pin65 : ¬ matOneValue (matScale XH.2 (headM diagT offO2 XT 1))
     (matAdd (matScale XT.2 (headM diagH offO XH 1))
       (matAdd
         (matScaleB (dnT.scale (XH.2 * XT.2))
@@ -478,7 +480,7 @@ example : ¬ matOneValue (matScale XH.2 (headM diagT offO2 XT 1))
 at one diagonal, the leading identity's term at the unit scale and
 the cleared pivot difference the whole parting. -/
 
-example : matOneValue (matScale XH.2 (headM diagH offH XT 1))
+theorem pin66 : matOneValue (matScale XH.2 (headM diagH offH XT 1))
     (matAdd (matScale XT.2 (headM diagH offH XH 1))
       (matAdd
         (matScaleB (BPair.unit.scale (XH.2 * XT.2))
@@ -506,10 +508,10 @@ private def cqRead (d o v : List BPair) : BPair :=
             * ground.getAt BPair.unit v (k + 1)))
       (List.range o.length)
 
-example : (quadForm
+theorem pin67 : (quadForm
     (assemble (cqD.map (fun a => [[a]])) (cqO.map (fun b => [[b]])))
     cqU).oneValue (BPair.ofNat 10) := by decide +kernel
-example : (quadForm
+theorem pin68 : (quadForm
     (assemble (cqD.map (fun a => [[a]])) (cqO.map (fun b => [[b]])))
     cqU).oneValue (cqRead cqD cqO cqU) :=
   chainQuad cqD cqO cqU rfl rfl
@@ -520,41 +522,41 @@ jointly refuse; the two one-direction partings beside them, the
 walked vector beyond the diagonal and the bond list at the
 diagonal's own count, satisfy the display at the padded reads. -/
 
-example : ¬ ((quadForm
+theorem pin69 : ¬ ((quadForm
     (assemble
       ([BPair.ofNat 2, BPair.ofNat 1, BPair.ofNat 3].map (fun a => [[a]]))
       (cqO.map (fun b => [[b]])))
     [BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3]).oneValue
     (cqRead [BPair.ofNat 2, BPair.ofNat 1, BPair.ofNat 3] cqO
       [BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3])) := by decide +kernel
-example : ¬ ((quadForm
+theorem pin70 : ¬ ((quadForm
     (assemble (cqD.map (fun a => [[a]]))
       ([BPair.ofNat 1, BPair.ofNat 5].map (fun b => [[b]])))
     [BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3]).oneValue
     (cqRead cqD [BPair.ofNat 1, BPair.ofNat 5]
       [BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3])) := by decide +kernel
 
-example : (quadForm
+theorem pin71 : (quadForm
     (assemble (cqD.map (fun a => [[a]])) (cqO.map (fun b => [[b]])))
     [BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3]).oneValue
     (cqRead cqD cqO [BPair.ofNat 1, BPair.ofNat 2, BPair.ofNat 3]) := by
   decide +kernel
-example : (quadForm
+theorem pin72 : (quadForm
     (assemble (cqD.map (fun a => [[a]]))
       ([BPair.ofNat 1, BPair.ofNat 5].map (fun b => [[b]])))
     cqU).oneValue
     (cqRead cqD [BPair.ofNat 1, BPair.ofNat 5] cqU) := by decide +kernel
 
-example : (assemble (cqD.map (fun a => [[a]]))
+theorem pin73 : (assemble (cqD.map (fun a => [[a]]))
       (cqO.map (fun b => [[b]]))).length = 2
     ∧ ((assemble (cqD.map (fun a => [[a]]))
       (cqO.map (fun b => [[b]]))).headD []).length = 2 := by decide +kernel
-example : (assemble (cqD.map (fun a => [[a]]))
+theorem pin74 : (assemble (cqD.map (fun a => [[a]]))
       (cqO.map (fun b => [[b]]))).length = 2
     ∧ ((assemble (cqD.map (fun a => [[a]]))
       (cqO.map (fun b => [[b]]))).headD []).length = 2 :=
   chainLen cqD cqO rfl
-example : ¬ ((assemble ([BPair.ofNat 2].map (fun a => [[a]]))
+theorem pin75 : ¬ ((assemble ([BPair.ofNat 2].map (fun a => [[a]]))
       ([BPair.ofNat 1, BPair.ofNat 5].map (fun b => [[b]]))).length = 1
     ∧ ((assemble ([BPair.ofNat 2].map (fun a => [[a]]))
       ([BPair.ofNat 1, BPair.ofNat 5].map (fun b => [[b]]))).headD
@@ -565,13 +567,13 @@ fold at the symmetric diagonal reads every tail pivot symmetric
 down the recursion, the theorem route beside the seed pivot's own
 decided read. -/
 
-example : ∀ i, i < xs3.length →
+theorem pin76 : ∀ i, i < xs3.length →
     matOneValue (transposeM (ground.getAt dM xs3 i).1)
       (ground.getAt dM xs3 i).1 :=
   greenprod.tailSym diag3 off3 xs3 rs3 [1, 1, 1]
     (by decide +kernel) (by decide +kernel)
 
-example : matOneValue (transposeM (ground.getAt dM xs3 0).1)
+theorem pin77 : matOneValue (transposeM (ground.getAt dM xs3 0).1)
     (ground.getAt dM xs3 0).1 := by decide +kernel
 
 /-! The symmetry fold's own refusal: the one-slab seed
@@ -581,12 +583,12 @@ pivot. -/
 
 private def asymA : Mat := [[⟨2, 1⟩, ⟨2, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
 
-example : tailRead [asymA] [] [(asymA, 1)] [] [2] := by decide +kernel
-example : ¬ (((List.range ([asymA] : List Mat).length).all
+theorem pin78 : tailRead [asymA] [] [(asymA, 1)] [] [2] := by decide +kernel
+theorem pin79 : ¬ (((List.range ([asymA] : List Mat).length).all
     (fun i => decide (matOneValue
       (transposeM (ground.getAt [] [asymA] i))
       (ground.getAt [] [asymA] i)))) = true) := by decide +kernel
-example : ¬ matOneValue
+theorem pin80 : ¬ matOneValue
     (transposeM (ground.getAt dM [((asymA, 1) : MatQ)] 0).1)
     (ground.getAt dM [((asymA, 1) : MatQ)] 0).1 := by decide +kernel
 
@@ -597,8 +599,8 @@ parting above. -/
 
 private def symA : Mat := [[⟨2, 1⟩, u], [u, ⟨2, 1⟩]]
 
-example : ¬ tailRead [symA] [] [(asymA, 1)] [] [2] := by decide +kernel
-example : ((List.range ([symA] : List Mat).length).all
+theorem pin81 : ¬ tailRead [symA] [] [(asymA, 1)] [] [2] := by decide +kernel
+theorem pin82 : ((List.range ([symA] : List Mat).length).all
     (fun i => decide (matOneValue
       (transposeM (ground.getAt [] [symA] i))
       (ground.getAt [] [symA] i)))) = true := by decide +kernel
@@ -614,14 +616,14 @@ private def wsXp : MatQ := ([[⟨3, 1⟩]], 1)
 private def wsB : Mat := [[⟨2, 1⟩]]
 private def wsR : MatQ := ([[⟨2, 1⟩]], 2)
 
-example : oneValueQ (mulQ wsXp wsR) (ofM (transposeM wsB)) := by
+theorem pin83 : oneValueQ (mulQ wsXp wsR) (ofM (transposeM wsB)) := by
   decide +kernel
 
-example : matOneValue (matScale (wsXp.2 * wsR.2) (matMul wsB wsR.1))
+theorem pin84 : matOneValue (matScale (wsXp.2 * wsR.2) (matMul wsB wsR.1))
     (matMul (matMul (transposeM wsR.1) wsXp.1) wsR.1) := by
   decide +kernel
 
-example : matOneValue (matScale (wsXp.2 * wsR.2) (matMul wsB wsR.1))
+theorem pin85 : matOneValue (matScale (wsXp.2 * wsR.2) (matMul wsB wsR.1))
     (matMul (matMul (transposeM wsR.1) wsXp.1) wsR.1) :=
   withdrawn_sandwich (k := 1) (k' := 1) wsXp wsR wsB
     (by decide +kernel) (by decide +kernel) (by decide +kernel)
@@ -640,10 +642,10 @@ private def waXp : MatQ := ([[⟨2, 1⟩, ⟨3, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
 private def waB : Mat := [[⟨2, 1⟩, ⟨1, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]]
 private def waR : MatQ := ([[⟨2, 1⟩, ⟨1, 3⟩], [⟨1, 1⟩, ⟨2, 1⟩]], 1)
 
-example : oneValueQ (mulQ waXp waR) (ofM (transposeM waB)) := by
+theorem pin86 : oneValueQ (mulQ waXp waR) (ofM (transposeM waB)) := by
   decide +kernel
-example : ¬ matOneValue (transposeM waXp.1) waXp.1 := by decide +kernel
-example : ¬ matOneValue (matScale (waXp.2 * waR.2) (matMul waB waR.1))
+theorem pin87 : ¬ matOneValue (transposeM waXp.1) waXp.1 := by decide +kernel
+theorem pin88 : ¬ matOneValue (matScale (waXp.2 * waR.2) (matMul waB waR.1))
     (matMul (matMul (transposeM waR.1) waXp.1) waR.1) := by
   decide +kernel
 
@@ -654,10 +656,10 @@ and the sandwich's two sides part at one against two. -/
 
 private def wwR : MatQ := ([[⟨2, 1⟩]], 1)
 
-example : ¬ oneValueQ (mulQ wsXp wwR) (ofM (transposeM wsB)) := by
+theorem pin89 : ¬ oneValueQ (mulQ wsXp wwR) (ofM (transposeM wsB)) := by
   decide +kernel
-example : matOneValue (transposeM wsXp.1) wsXp.1 := by decide +kernel
-example : ¬ matOneValue (matScale (wsXp.2 * wwR.2) (matMul wsB wwR.1))
+theorem pin90 : matOneValue (transposeM wsXp.1) wsXp.1 := by decide +kernel
+theorem pin91 : ¬ matOneValue (matScale (wsXp.2 * wwR.2) (matMul wsB wwR.1))
     (matMul (matMul (transposeM wwR.1) wsXp.1) wwR.1) := by
   decide +kernel
 
@@ -675,15 +677,15 @@ private def jqB : Mat := [[⟨3, 1⟩]]
 private def jqA : Mat := [[⟨5, 1⟩]]
 private def jqV : List BPair := [⟨2, 1⟩]
 
-example : oneValueQ (addQ jqX (mulQ (ofM jqB) jqR)) (ofM jqA) := by
+theorem pin92 : oneValueQ (addQ jqX (mulQ (ofM jqB) jqR)) (ofM jqA) := by
   decide +kernel
 
-example : ((quadForm jqA jqV).scale (jqX.2 * jqR.2)).oneValue
+theorem pin93 : ((quadForm jqA jqV).scale (jqX.2 * jqR.2)).oneValue
     ((quadForm jqX.1 jqV).scale jqR.2
       + (quadForm (matMul jqB jqR.1) jqV).scale jqX.2) := by
   decide +kernel
 
-example : ∀ w : List BPair, w.length = 1 →
+theorem pin94 : ∀ w : List BPair, w.length = 1 →
     ((quadForm jqA w).scale (jqX.2 * jqR.2)).oneValue
       ((quadForm jqX.1 w).scale jqR.2
         + (quadForm (matMul jqB jqR.1) w).scale jqX.2) :=
@@ -697,9 +699,9 @@ five against the pivot's two joined to the withdrawn term's two. -/
 
 private def jqA' : Mat := [[⟨6, 1⟩]]
 
-example : ¬ oneValueQ (addQ jqX (mulQ (ofM jqB) jqR)) (ofM jqA') := by
+theorem pin95 : ¬ oneValueQ (addQ jqX (mulQ (ofM jqB) jqR)) (ofM jqA') := by
   decide +kernel
-example : ¬ ((quadForm jqA' jqV).scale (jqX.2 * jqR.2)).oneValue
+theorem pin96 : ¬ ((quadForm jqA' jqV).scale (jqX.2 * jqR.2)).oneValue
     ((quadForm jqX.1 jqV).scale jqR.2
       + (quadForm (matMul jqB jqR.1) jqV).scale jqX.2) := by
   decide +kernel
@@ -725,13 +727,13 @@ tight comparisons' shared certificate. -/
 private def scKsp : Split 1 :=
   ⟨⟨idMat 1, rfl⟩, ⟨idMat 1, rfl⟩, [], 1, rfl⟩
 
-example : oneValueQ (mulQ scXd scR) (ofM (transposeM scB)) := by
+theorem pin97 : oneValueQ (mulQ scXd scR) (ofM (transposeM scB)) := by
   decide +kernel
 
-example : leAt (matScale (2 * scXd.2) (idMat 1))
+theorem pin98 : leAt (matScale (2 * scXd.2) (idMat 1))
     (matScale 1 scXd.1) scKsp := by decide +kernel
 
-example : leAt (matScale 1 (matMul scB (transposeM scB)))
+theorem pin99 : leAt (matScale 1 (matMul scB (transposeM scB)))
     (matScale 1 (idMat 1)) scKsp := by decide +kernel
 
 private theorem scFloor : ∀ w : List BPair, w.length = 1 →
@@ -759,10 +761,10 @@ private theorem scBond : ∀ w : List BPair, w.length = 1 →
         (matScale 1 (idMat 1)) scKsp (by decide +kernel)
         (by decide +kernel) (by decide +kernel) w hw)
 
-example : (quadForm (matMul scB scR.1) scV).scale (2 * 1)
+theorem pin100 : (quadForm (matMul scB scR.1) scV).scale (2 * 1)
     ≤ (dotN scV scV).scale (1 * (1 * scR.2)) := by decide +kernel
 
-example : ∀ w : List BPair, w.length = 1 →
+theorem pin101 : ∀ w : List BPair, w.length = 1 →
     (quadForm (matMul scB scR.1) w).scale (2 * 1)
       ≤ (dotN w w).scale (1 * (1 * scR.2)) :=
   sandwich_cap (o := 1) (o' := 1) scXd scR scB 2 1 1 1
@@ -778,13 +780,13 @@ the conclusion parts beside it, four against one. -/
 private def sfXd : MatQ := ([[⟨2, 1⟩]], 2)
 private def sfR : MatQ := ([[⟨3, 1⟩]], 1)
 
-example : oneValueQ (mulQ sfXd sfR) (ofM (transposeM scB)) := by
+theorem pin102 : oneValueQ (mulQ sfXd sfR) (ofM (transposeM scB)) := by
   decide +kernel
-example : (quadForm (matMul scB (transposeM scB)) scV).scale 1
+theorem pin103 : (quadForm (matMul scB (transposeM scB)) scV).scale 1
     ≤ (dotN scV scV).scale 1 := by decide +kernel
-example : ¬ ((dotN scV scV).scale (2 * sfXd.2)
+theorem pin104 : ¬ ((dotN scV scV).scale (2 * sfXd.2)
     ≤ (quadForm sfXd.1 scV).scale 1) := by decide +kernel
-example : ¬ ((quadForm (matMul scB sfR.1) scV).scale (2 * 1)
+theorem pin105 : ¬ ((quadForm (matMul scB sfR.1) scV).scale (2 * 1)
     ≤ (dotN scV scV).scale (1 * (1 * sfR.2))) := by decide +kernel
 
 /-- Refusal isolating the bond's square cap: at the bond `B = 2`
@@ -795,13 +797,13 @@ conclusion parts beside it, four against one. -/
 private def scRu : MatQ := ([[⟨2, 1⟩]], 1)
 private def sbB : Mat := [[⟨3, 1⟩]]
 
-example : oneValueQ (mulQ scXd scRu) (ofM (transposeM sbB)) := by
+theorem pin106 : oneValueQ (mulQ scXd scRu) (ofM (transposeM sbB)) := by
   decide +kernel
-example : (dotN scV scV).scale (2 * scXd.2)
+theorem pin107 : (dotN scV scV).scale (2 * scXd.2)
     ≤ (quadForm scXd.1 scV).scale 1 := by decide +kernel
-example : ¬ ((quadForm (matMul sbB (transposeM sbB)) scV).scale 1
+theorem pin108 : ¬ ((quadForm (matMul sbB (transposeM sbB)) scV).scale 1
     ≤ (dotN scV scV).scale 1) := by decide +kernel
-example : ¬ ((quadForm (matMul sbB scRu.1) scV).scale (2 * 1)
+theorem pin109 : ¬ ((quadForm (matMul sbB scRu.1) scV).scale (2 * 1)
     ≤ (dotN scV scV).scale (1 * (1 * scRu.2))) := by decide +kernel
 
 /-- Refusal isolating the witness identity: at the pass fixture's
@@ -810,11 +812,11 @@ stand, while the witness identity reads two against the bond's
 transpose one and the conclusion parts beside it, two against
 one. -/
 
-example : ¬ oneValueQ (mulQ scXd scRu) (ofM (transposeM scB)) := by
+theorem pin110 : ¬ oneValueQ (mulQ scXd scRu) (ofM (transposeM scB)) := by
   decide +kernel
-example : (quadForm (matMul scB (transposeM scB)) scV).scale 1
+theorem pin111 : (quadForm (matMul scB (transposeM scB)) scV).scale 1
     ≤ (dotN scV scV).scale 1 := by decide +kernel
-example : ¬ ((quadForm (matMul scB scRu.1) scV).scale (2 * 1)
+theorem pin112 : ¬ ((quadForm (matMul scB scRu.1) scV).scale (2 * 1)
     ≤ (dotN scV scV).scale (1 * (1 * scRu.2))) := by decide +kernel
 
 /-! The pivots' splits at the two-member list: the pivots `2` and
@@ -828,21 +830,21 @@ private def rlXs : List MatQ := [([[⟨3, 1⟩]], 1), ([[⟨1, 3⟩]], 1)]
 private def rlSps : List ((k : Nat) × Split k) :=
   [⟨1, rlSp ⟨3, 1⟩⟩, ⟨1, rlSp ⟨1, 3⟩⟩]
 
-example : revListRead rlXs rlSps := by decide +kernel
-example : revFold rlSps = 1 := by decide +kernel
-example : revFold rlSps
+theorem pin113 : revListRead rlXs rlSps := by decide +kernel
+theorem pin114 : revFold rlSps = 1 := by decide +kernel
+theorem pin115 : revFold rlSps
     = revAt (rlSp ⟨3, 1⟩) + revFold [⟨1, rlSp ⟨1, 3⟩⟩] :=
   revFold_cons ⟨1, rlSp ⟨3, 1⟩⟩ [⟨1, rlSp ⟨1, 3⟩⟩]
 
-example : splitRead (ground.getAt dM rlXs 1).1
+theorem pin116 : splitRead (ground.getAt dM rlXs 1).1
     (ground.getAt ⟨1, rlSp ⟨3, 1⟩⟩ rlSps 1).2 := by decide +kernel
-example : ∀ i, i < rlXs.length →
+theorem pin117 : ∀ i, i < rlXs.length →
     ∀ d : (k : Nat) × Split k,
       splitRead (ground.getAt dM rlXs i).1 (ground.getAt d rlSps i).2 :=
   revListRead_at rlXs rlSps (by decide +kernel)
 
-example : revListRead (rlXs.take 1) (rlSps.take 1) := by decide +kernel
-example : revListRead (rlXs.take 1) (rlSps.take 1) :=
+theorem pin118 : revListRead (rlXs.take 1) (rlSps.take 1) := by decide +kernel
+theorem pin119 : revListRead (rlXs.take 1) (rlSps.take 1) :=
   revListRead_take rlXs rlSps 1 (by decide +kernel)
 
 /-! The withdrawn term's cap at two orders: the deeper pivot
@@ -875,13 +877,13 @@ private def q2BSp : Split 2 :=
    ⟨[[⟨2, 1⟩, ⟨1, 2⟩], [⟨1, 1⟩, ⟨2, 1⟩]], rfl⟩,
    [.one ⟨2, 1⟩, .one ⟨2, 1⟩], 0, rfl⟩
 
-example : oneValueQ (mulQ q2Xd q2R) (ofM (transposeM q2B)) := by
+theorem pin120 : oneValueQ (mulQ q2Xd q2R) (ofM (transposeM q2B)) := by
   decide +kernel
 
-example : leAt (matScale (1 * q2Xd.2) (idMat 2))
+theorem pin121 : leAt (matScale (1 * q2Xd.2) (idMat 2))
     (matScale 1 q2Xd.1) q2FSp := by decide +kernel
 
-example : leAt (matScale 1 (matMul q2B (transposeM q2B)))
+theorem pin122 : leAt (matScale 1 (matMul q2B (transposeM q2B)))
     (matScale 3 (idMat 2)) q2BSp := by decide +kernel
 
 private theorem q2Floor : ∀ w : List BPair, w.length = 2 →
@@ -909,16 +911,16 @@ private theorem q2Bond : ∀ w : List BPair, w.length = 2 →
         (matScale 3 (idMat 2)) q2BSp (by decide +kernel)
         (by decide +kernel) (by decide +kernel) w hw)
 
-example : (dotN (matVec q2R.1 q2V) (matVec (transposeM q2B) q2V))
+theorem pin123 : (dotN (matVec q2R.1 q2V) (matVec (transposeM q2B) q2V))
       * (dotN (matVec q2R.1 q2V) (matVec (transposeM q2B) q2V))
     < (dotN (matVec q2R.1 q2V) (matVec q2R.1 q2V))
       * (dotN (matVec (transposeM q2B) q2V)
           (matVec (transposeM q2B) q2V)) := by decide +kernel
 
-example : (quadForm (matMul q2B q2R.1) q2V).scale (1 * 1)
+theorem pin124 : (quadForm (matMul q2B q2R.1) q2V).scale (1 * 1)
     ≤ (dotN q2V q2V).scale (3 * (1 * q2R.2)) := by decide +kernel
 
-example : ∀ w : List BPair, w.length = 2 →
+theorem pin125 : ∀ w : List BPair, w.length = 2 →
     (quadForm (matMul q2B q2R.1) w).scale (1 * 1)
       ≤ (dotN w w).scale (3 * (1 * q2R.2)) :=
   sandwich_cap (o := 2) (o' := 2) q2Xd q2R q2B 1 1 3 1
@@ -942,24 +944,24 @@ private def co : List BPair := [⟨5, 1⟩, ⟨6, 1⟩]
 private def coShort : List BPair := [⟨5, 1⟩]
 private def coLong : List BPair := [⟨5, 1⟩, ⟨6, 1⟩, ⟨7, 1⟩]
 
-example : chainAt cd co 1 1 = ⟨3, 1⟩ := by decide +kernel
-example : chainAt cd co 1 2 = ⟨6, 1⟩ := by decide +kernel
-example : chainAt cd co 2 1 = ⟨6, 1⟩ := by decide +kernel
-example : chainAt cd co 0 2 = BPair.unit := by decide +kernel
-example : chainAt cd co 1 1 = ⟨3, 1⟩ :=
+theorem pin126 : chainAt cd co 1 1 = ⟨3, 1⟩ := by decide +kernel
+theorem pin127 : chainAt cd co 1 2 = ⟨6, 1⟩ := by decide +kernel
+theorem pin128 : chainAt cd co 2 1 = ⟨6, 1⟩ := by decide +kernel
+theorem pin129 : chainAt cd co 0 2 = BPair.unit := by decide +kernel
+theorem pin130 : chainAt cd co 1 1 = ⟨3, 1⟩ :=
   (chainAt_diag cd co 1).trans (by decide +kernel)
-example : chainAt cd co 1 2 = ⟨6, 1⟩ :=
+theorem pin131 : chainAt cd co 1 2 = ⟨6, 1⟩ :=
   (chainAt_up cd co 1 2 (by decide +kernel) (by decide +kernel) rfl).trans
     (by decide +kernel)
 
-example : ground.getAt BPair.unit (ground.getAt []
+theorem pin132 : ground.getAt BPair.unit (ground.getAt []
     (assemble (cd.map (fun x => [[x]])) (co.map (fun x => [[x]]))) 1) 2
     = chainAt cd co 1 2 := by decide +kernel
-example : ground.getAt BPair.unit (ground.getAt []
+theorem pin133 : ground.getAt BPair.unit (ground.getAt []
     (assemble (cd.map (fun x => [[x]])) (co.map (fun x => [[x]]))) 1) 2
     = chainAt cd co 1 2 :=
   chainEntry cd co rfl 1 2 (by decide +kernel) (by decide +kernel)
-example : ground.getAt BPair.unit (ground.getAt []
+theorem pin134 : ground.getAt BPair.unit (ground.getAt []
     (assemble (cd.map (fun x => [[x]])) (co.map (fun x => [[x]]))) 2) 2
     = chainAt cd co 2 2 :=
   chainEntry cd co rfl 2 2 (by decide +kernel) (by decide +kernel)
@@ -967,13 +969,15 @@ example : ground.getAt BPair.unit (ground.getAt []
 /-- The bond count's short side is load-bearing: at one bond the
 assembled chain drops its last slab and the corner entry reads the
 sum's unit against the chart's `4`. -/
-example : ¬ (ground.getAt BPair.unit (ground.getAt []
+theorem pin135 : ¬ (ground.getAt BPair.unit (ground.getAt []
     (assemble (cd.map (fun x => [[x]])) (coShort.map (fun x => [[x]]))) 2) 2
     = chainAt cd coShort 2 2) := by decide +kernel
 
 /-- The long side is the padded read: at three bonds the entries
 inside the order stay the chart's own. -/
-example : ground.getAt BPair.unit (ground.getAt []
+theorem pin136 : ground.getAt BPair.unit (ground.getAt []
     (assemble (cd.map (fun x => [[x]])) (coLong.map (fun x => [[x]]))) 2) 1
     = chainAt cd coLong 2 1 := by decide +kernel
-example : ¬ (coLong.length + 1 = cd.length) := by decide +kernel
+theorem pin137 : ¬ (coLong.length + 1 = cd.length) := by decide +kernel
+
+end greenprod

@@ -30,6 +30,8 @@ pair's product and `wSqP` its first place's square, so `[2, 1, 0]`
 reads `2` against `9` while the two-place content `[3, 1]`, whose
 one pair holds the whole content, reads `3` against `9`.
 -/
+
+namespace drift
 open ground
 
 /-! ## The row read at committed labels
@@ -40,28 +42,28 @@ The display applied whole at labels of the data's own width — the
 binding no reduction, with the same unreduced instance decided
 beside its route. -/
 
-example : fusion.driftLaw (fusion.dataA 2) [1, 0] :=
+theorem pin1 : fusion.driftLaw (fusion.dataA 2) [1, 0] :=
   drift.readAll 2 (by decide +kernel) [1, 0] rfl
 
-example : fusion.driftLaw (fusion.dataA 3) [1, 1, 0] :=
+theorem pin2 : fusion.driftLaw (fusion.dataA 3) [1, 1, 0] :=
   drift.readAll 3 (by decide +kernel) [1, 1, 0] rfl
 
-example : fusion.driftLaw (fusion.dataA 3) [2, 1, 0] :=
+theorem pin3 : fusion.driftLaw (fusion.dataA 3) [2, 1, 0] :=
   drift.readAll 3 (by decide +kernel) [2, 1, 0] rfl
 
-example : fusion.driftLaw (fusion.dataA 2) [1, 2] :=
+theorem pin4 : fusion.driftLaw (fusion.dataA 2) [1, 2] :=
   drift.readAll 2 (by decide +kernel) [1, 2] rfl
 
-example : fusion.driftLaw (fusion.dataA 2) [1, 2] := by decide +kernel
+theorem pin5 : fusion.driftLaw (fusion.dataA 2) [1, 2] := by decide +kernel
 
 /-! ## The binder refusals
 
 The width binder at a label short of the data's rank, and the
 width floor at the one-letter data at both of its small labels. -/
 
-example : ¬ fusion.driftLaw (fusion.dataA 3) [1, 0] := by decide +kernel
-example : ¬ fusion.driftLaw (fusion.dataA 1) [0] := by decide +kernel
-example : ¬ fusion.driftLaw (fusion.dataA 1) [1] := by decide +kernel
+theorem pin6 : ¬ fusion.driftLaw (fusion.dataA 3) [1, 0] := by decide +kernel
+theorem pin7 : ¬ fusion.driftLaw (fusion.dataA 1) [0] := by decide +kernel
+theorem pin8 : ¬ fusion.driftLaw (fusion.dataA 1) [1] := by decide +kernel
 
 /-! ## The summed recursion
 
@@ -73,7 +75,7 @@ and at the vacant shape, where both sides collapse to the unit
 span's own read, with one value-level twin pinning the identity
 independently of the theorem. -/
 
-example : weylchar.stdSq (places.display [1, 0])
+theorem pin9 : weylchar.stdSq (places.display [1, 0])
       * (blockcount.blockSpan [1, 0]).length
     + 2 * ground.famFold Nat.add 0 (fun v => drift.wCross v.content)
         (blockcount.blockSpan [1, 0])
@@ -84,7 +86,7 @@ example : weylchar.stdSq (places.display [1, 0])
     + 2 * ground.famFold Nat.add 0 (fun v => drift.wSqP v.content)
         (blockcount.blockSpan [1, 0]) := drift.sumRec [1, 0]
 
-example : weylchar.stdSq (places.display [1, 0])
+theorem pin10 : weylchar.stdSq (places.display [1, 0])
       * (blockcount.blockSpan [1, 0]).length
     + 2 * ground.famFold Nat.add 0 (fun v => drift.wCross v.content)
         (blockcount.blockSpan [1, 0])
@@ -95,7 +97,7 @@ example : weylchar.stdSq (places.display [1, 0])
     + 2 * ground.famFold Nat.add 0 (fun v => drift.wSqP v.content)
         (blockcount.blockSpan [1, 0]) := by decide +kernel
 
-example : weylchar.stdSq (places.display [2, 0])
+theorem pin11 : weylchar.stdSq (places.display [2, 0])
       * (blockcount.blockSpan [2, 0]).length
     + 2 * ground.famFold Nat.add 0 (fun v => drift.wCross v.content)
         (blockcount.blockSpan [2, 0])
@@ -106,7 +108,7 @@ example : weylchar.stdSq (places.display [2, 0])
     + 2 * ground.famFold Nat.add 0 (fun v => drift.wSqP v.content)
         (blockcount.blockSpan [2, 0]) := drift.sumRec [2, 0]
 
-example : weylchar.stdSq (places.display ([] : List Nat))
+theorem pin12 : weylchar.stdSq (places.display ([] : List Nat))
       * (blockcount.blockSpan []).length
     + 2 * ground.famFold Nat.add 0 (fun v => drift.wCross v.content)
         (blockcount.blockSpan [])
@@ -124,11 +126,11 @@ fundamental and at the two-letter-gap shape, with both binders
 refused at the dimension-one shapes: the unreduced unit-class
 label and the unit shape. -/
 
-example : 2 ≤ weyldim.dimOf [1, 0] := drift.strict [1, 0] rfl (by decide +kernel)
-example : 2 ≤ weyldim.dimOf [2, 1, 0] := drift.strict [2, 1, 0] rfl (by decide +kernel)
+theorem pin13 : 2 ≤ weyldim.dimOf [1, 0] := drift.strict [1, 0] rfl (by decide +kernel)
+theorem pin14 : 2 ≤ weyldim.dimOf [2, 1, 0] := drift.strict [2, 1, 0] rfl (by decide +kernel)
 
-example : ¬ 2 ≤ weyldim.dimOf [0, 2] := by decide +kernel
-example : ¬ 2 ≤ weyldim.dimOf [0, 0, 0] := by decide +kernel
+theorem pin15 : ¬ 2 ≤ weyldim.dimOf [0, 2] := by decide +kernel
+theorem pin16 : ¬ 2 ≤ weyldim.dimOf [0, 0, 0] := by decide +kernel
 
 /-! ## The reindexed pair weights
 
@@ -136,7 +138,17 @@ The pair's product and its first place's square, each folded over
 the width's strictly ordered place pairs, at a two-place and a
 three-place content. -/
 
-example : drift.wCross [3, 1] = 3 := by decide +kernel
-example : drift.wSqP [3, 1] = 9 := by decide +kernel
-example : drift.wCross [2, 1, 0] = 2 := by decide +kernel
-example : drift.wSqP [2, 1, 0] = 9 := by decide +kernel
+theorem pin17 : drift.wCross [3, 1] = 3 := by decide +kernel
+theorem pin18 : drift.wSqP [3, 1] = 9 := by decide +kernel
+theorem pin19 : drift.wCross [2, 1, 0] = 2 := by decide +kernel
+theorem pin20 : drift.wSqP [2, 1, 0] = 9 := by decide +kernel
+
+/-- Full-column classes read the strict dimension bound at
+arbitrary representatives, not only the reduced spelling. -/
+theorem pin21 (s : places.Shape) (hne : labels.reduce s ≠ labels.unitL s.length) :
+    2 ≤ weyldim.dimOf s := strict_class s hne
+
+theorem pin22 : weyldim.dimOf [0, 3] = 1
+    ∧ labels.reduce [0, 3] = labels.unitL 2 := by decide +kernel
+
+end drift

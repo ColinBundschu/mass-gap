@@ -131,7 +131,7 @@ beyond its own radius, so the divisors' rank roots read against the
 compared families' reach clearances, one symbolic count at every
 cleared rank with the below-clearance ranks read directly.  The
 `B` column kit stands public at that read: the Cartan entries
-`cartB` with their square `cartB_eq`, the window and sum entries
+`sertables.cartB` with their square `sertables.cartB_eq`, the window and sum entries
 `fDiff`, `fSumB` at their value reads, the neighbour fold `nbB`,
 the column's count-pair read `colB` and the range-presented fold's
 `colValue`, the positive list's case read `foldsB_cases` — a fold
@@ -150,9 +150,9 @@ vanish: at an interior letter with the moved content vacant on its
 three keys and occupied at a witness off them, the raised content
 reads the vacant θ count (`runVanishB`), clause (iii)'s symbolic
 count at the alignment's interior.  The `C` column kit stands
-public at the same read — the Cartan entries `cartC` with their
-square `cartC_eq` and the long last edge's own reads (`cartCd`,
-`cartCdn2`, `cartCdn1`, `cartCup`, `cartCoff`), the sum and long
+public at the same read — the Cartan entries `sertables.cartC` with their
+square `sertables.cartC_eq` and the long last edge's own reads (`sertables.cartCd`,
+`sertables.cartCdn2`, `sertables.cartCdn1`, `sertables.cartCup`, `sertables.cartCoff`), the sum and long
 entries `fSumC`, `fLong` at their value reads, the neighbour fold
 `nbC`, the column's count-pair read `colC`, the positive list's
 case read `foldsC_cases` at the rank's successor presentation, the
@@ -167,9 +167,9 @@ below it, a dipole at two poles the witness kills at either sign —
 with the columns' magnitude cap (`colC_magLe`, every column within
 two of its neighbour fold) and the coroot vectors' entrywise column
 reads (`posCorootV_entryC`).  The `D` column kit stands public at
-the fork geometry: the Cartan entries `cartD` with their square
-`cartD_eq` and the fork's own reads (`cartDd`, `cartDup`,
-`cartDdn`, `cartDforkT`, `cartDoff`), the neighbour
+the fork geometry: the Cartan entries `sertables.cartD` with their square
+`sertables.cartD_eq` and the fork's own reads (`sertables.cartDd`, `sertables.cartDup`,
+`sertables.cartDdn`, `sertables.cartDforkT`, `sertables.cartDoff`), the neighbour
 fold `nbD` at its four arms (`nbD_eq`) — the last tip reading the
 key two below it (`pv2D`), the tip beside it and the chain the key
 one below (`pvD`), and the fork key its three joined keys — and
@@ -195,6 +195,14 @@ read the column values entrywise (`posCorootV_entryD`,
 letter with the moved content vacant at the letter's own key and
 occupied at a witness off its three keys, the raised content reads
 the vacant θ count (`runVanishD`).
+
+The concrete root gaps increase with the natural coroot list
+(`gapAt_mono`, `gapAt_shift_le`). Occupied root folds at positive
+lengths have positive rho gaps (`gapAt_rho_pos`), at all B/C/D
+ranks and at every positive fundamental-form read
+(`gapAt_rho_pos_B`, `gapAt_rho_pos_C`, `gapAt_rho_pos_D`,
+`gapAt_rho_pos_of_fund`). A simple-root factor is the coordinate's
+length-weighted entry (`gapAt_simple`).
 -/
 
 namespace serstable
@@ -374,91 +382,9 @@ private theorem pickR (T w L : Nat) :
     exact if_neg (fun he : (T == x) = true =>
       hT (ground.beqEqOf he ▸ hx))
 
-/-! ## Boolean and order helpers -/
-
-private theorem andT (b : Bool) : (b && true) = b := by cases b <;> rfl
-private theorem andF (b : Bool) : (b && false) = false := by
-  cases b <;> rfl
-private theorem orT (b : Bool) : (b || true) = true := by cases b <;> rfl
-private theorem orF (b : Bool) : (b || false) = b := by cases b <;> rfl
+/-! ## The order helper -/
 
 private theorem neAdd (a d : Nat) : ¬ a = a + (d + 1) := Nat.ne_of_lt (ground.ltAddSucc a d)
-
-/-! ## The `B` Cartan column entries -/
-
-/-- The `B` Cartan entry at a row and a column, the chain with the
-doubled edge into the short last key. -/
-def cartB (l i j : Nat) : BPair :=
-  if j == i then BPair.ofNat 2
-  else if j == i + 1 then
-    (if i + 2 == l then (BPair.ofNat 2).swap else (BPair.ofNat 1).swap)
-  else if j + 1 == i then (BPair.ofNat 1).swap
-  else BPair.unit
-
-private theorem cartB_cell (l i j : Nat) :
-    (if j == i then BPair.ofNat 2
-      else if (i + 2 == l && j == i + 1) then (BPair.ofNat 2).swap
-      else if (j + 1 == i || j == i + 1) then (BPair.ofNat 1).swap
-      else BPair.unit) = cartB l i j := by
-  show _ = (if (j == i) = true then _ else _)
-  cases h1 : (j == i) with
-  | true => rfl
-  | false =>
-    cases h2 : (j == i + 1) with
-    | true =>
-      rw [andT, orT]
-      rfl
-    | false =>
-      rw [andF, orF]
-      rfl
-
-/-- The `B` table's Cartan list is the entry function's square. -/
-theorem cartB_eq (l : Nat) :
-    (sertables.tableB l).cartan
-      = ground.matOf l l (fun i j => cartB l i j) :=
-  ground.map_congr_all _ _ (fun i =>
-    ground.map_congr_all _ _ (fun j => cartB_cell l i j) (List.range l))
-    (List.range l)
-
-/-- The `B` Cartan's diagonal entry is two. -/
-theorem cartBd (l i : Nat) : cartB l i i = BPair.ofNat 2 := by
-  show (if (i == i) = true then _ else _) = _
-  rw [ground.eqBeqOf (rfl : i = i)]
-  rfl
-
-/-- The `B` Cartan's entry one key up, off the short last edge, is
-the swapped one. -/
-theorem cartBup1 (l i : Nat) (h : ¬ i + 2 = l) :
-    cartB l i (i + 1) = (BPair.ofNat 1).swap := by
-  show (if (i + 1 == i) = true then _ else _) = _
-  rw [ground.neBeqOf (fun he => neAdd i 0 he.symm),
-    ground.eqBeqOf (rfl : i + 1 = i + 1), ground.neBeqOf h]
-  rfl
-
-/-- The `B` Cartan's entry one key up at the short last edge is the
-swapped two. -/
-private theorem cartBup2 (l i : Nat) (h : i + 2 = l) :
-    cartB l i (i + 1) = (BPair.ofNat 2).swap := by
-  show (if (i + 1 == i) = true then _ else _) = _
-  rw [ground.neBeqOf (fun he => neAdd i 0 he.symm),
-    ground.eqBeqOf (rfl : i + 1 = i + 1), ground.eqBeqOf h]
-  rfl
-
-/-- The `B` Cartan's entry one key down is the swapped one. -/
-theorem cartBdn (l i : Nat) :
-    cartB l (i + 1) i = (BPair.ofNat 1).swap := by
-  show (if (i == i + 1) = true then _ else _) = _
-  rw [ground.neBeqOf (neAdd i 0), ground.neBeqOf (neAdd i 1),
-    ground.eqBeqOf (rfl : i + 1 = i + 1)]
-  rfl
-
-/-- The `B` Cartan's entry off the diagonal and its two chain
-neighbours is vacant. -/
-theorem cartBoff (l i j : Nat) (h1 : ¬ j = i) (h2 : ¬ j = i + 1)
-    (h3 : ¬ j + 1 = i) : cartB l i j = BPair.unit := by
-  show (if (j == i) = true then _ else _) = _
-  rw [ground.neBeqOf h1, ground.neBeqOf h2, ground.neBeqOf h3]
-  rfl
 
 /-! ## The `B` column reads -/
 
@@ -466,20 +392,20 @@ private theorem colB0c (l : Nat) (h0 : 0 < l) (F : Nat → Nat) :
     (corootAt (sertables.tableB l) ((List.range l).map F) 0).oneValue
       (BPair.ofCounts (2 * F 0) (if 1 < l then F 1 else 0)) := by
   refine BPair.oneValue_trans
-    (colValue (sertables.tableB l) (cartB l) l 0 F
+    (colValue (sertables.tableB l) (sertables.cartB l) l 0 F
       (fun k => if 0 == k then 2 * F 0 else 0)
       (fun k => if 1 == k then F 1 else 0)
-      (cartB_eq l) h0 ?_) ?_
+      (sertables.cartB_eq l) h0 ?_) ?_
   · intro k
     match k with
     | 0 =>
-      rw [cartBd l 0]
+      rw [sertables.cartBd l 0]
       exact cellTwo (F 0)
     | 1 =>
-      rw [cartBdn l 0]
+      rw [sertables.cartBdn l 0]
       exact cellOneNeg (F 1)
     | m + 2 =>
-      rw [cartBoff l (m + 2) 0 (fun he => Nat.noConfusion he)
+      rw [sertables.cartBoff l (m + 2) 0 (fun he => Nat.noConfusion he)
         (fun he => Nat.noConfusion he)
         (fun he => Nat.noConfusion (Nat.succ.inj he))]
       exact cellNull (F (m + 2))
@@ -502,32 +428,32 @@ private theorem colBmidc (l m : Nat) (hm : m + 2 < l) (F : Nat → Nat) :
   have hj : m + 1 < l := Nat.lt_trans (Nat.lt_succ_self (m + 1)) hm
   have hml : m < l := Nat.lt_trans (Nat.lt_succ_self m) hj
   refine BPair.oneValue_trans
-    (colValue (sertables.tableB l) (cartB l) l (m + 1) F
+    (colValue (sertables.tableB l) (sertables.cartB l) l (m + 1) F
       (fun k => if m + 1 == k then 2 * F (m + 1) else 0)
       (fun k => (if m == k then F m else 0)
         + (if m + 2 == k then F (m + 2) else 0))
-      (cartB_eq l) hj ?_) ?_
+      (sertables.cartB_eq l) hj ?_) ?_
   · intro k
     by_cases e1 : k = m
-    · rw [e1, cartBup1 l m (Nat.ne_of_lt hm),
+    · rw [e1, sertables.cartBup1 l m (Nat.ne_of_lt hm),
         ground.neBeqOf (fun he : m + 1 = m => neAdd m 0 he.symm),
         ground.eqBeqOf (rfl : m = m),
         ground.neBeqOf (fun he : m + 2 = m => neAdd m 1 he.symm)]
       exact cellOneNeg (F m)
     · by_cases e2 : k = m + 1
-      · rw [e2, cartBd l (m + 1), ground.eqBeqOf (rfl : m + 1 = m + 1),
+      · rw [e2, sertables.cartBd l (m + 1), ground.eqBeqOf (rfl : m + 1 = m + 1),
           ground.neBeqOf (neAdd m 0),
           ground.neBeqOf (fun he : m + 2 = m + 1 =>
             neAdd m 0 (Nat.succ.inj he).symm)]
         exact cellTwo (F (m + 1))
       · by_cases e3 : k = m + 2
-        · rw [e3, cartBdn l (m + 1),
+        · rw [e3, sertables.cartBdn l (m + 1),
             ground.neBeqOf (fun he : m + 1 = m + 2 => neAdd m 0
               (Nat.succ.inj he)),
             ground.neBeqOf (neAdd m 1),
             ground.eqBeqOf (rfl : m + 2 = m + 2)]
           exact cellOneNegZ (F (m + 2))
-        · rw [cartBoff l k (m + 1) (fun he => e2 he.symm)
+        · rw [sertables.cartBoff l k (m + 1) (fun he => e2 he.symm)
             (fun he => e1 (Nat.succ.inj he).symm)
             (fun he => e3 he.symm),
             ground.neBeqOf (fun he => e2 he.symm),
@@ -556,32 +482,32 @@ private theorem colBtopc (l m : Nat) (hm : m + 2 = l) (F : Nat → Nat) :
   have hml : m < l := Nat.lt_trans (Nat.lt_succ_self m) hj
   have hno : ¬ m + 2 < l := hm ▸ Nat.lt_irrefl (m + 2)
   refine BPair.oneValue_trans
-    (colValue (sertables.tableB l) (cartB l) l (m + 1) F
+    (colValue (sertables.tableB l) (sertables.cartB l) l (m + 1) F
       (fun k => if m + 1 == k then 2 * F (m + 1) else 0)
       (fun k => (if m == k then 2 * F m else 0)
         + (if m + 2 == k then F (m + 2) else 0))
-      (cartB_eq l) hj ?_) ?_
+      (sertables.cartB_eq l) hj ?_) ?_
   · intro k
     by_cases e1 : k = m
-    · rw [e1, cartBup2 l m hm,
+    · rw [e1, sertables.cartBup2 l m hm,
         ground.neBeqOf (fun he : m + 1 = m => neAdd m 0 he.symm),
         ground.eqBeqOf (rfl : m = m),
         ground.neBeqOf (fun he : m + 2 = m => neAdd m 1 he.symm)]
       exact cellTwoNeg (F m)
     · by_cases e2 : k = m + 1
-      · rw [e2, cartBd l (m + 1), ground.eqBeqOf (rfl : m + 1 = m + 1),
+      · rw [e2, sertables.cartBd l (m + 1), ground.eqBeqOf (rfl : m + 1 = m + 1),
           ground.neBeqOf (neAdd m 0),
           ground.neBeqOf (fun he : m + 2 = m + 1 =>
             neAdd m 0 (Nat.succ.inj he).symm)]
         exact cellTwo (F (m + 1))
       · by_cases e3 : k = m + 2
-        · rw [e3, cartBdn l (m + 1),
+        · rw [e3, sertables.cartBdn l (m + 1),
             ground.neBeqOf (fun he : m + 1 = m + 2 => neAdd m 0
               (Nat.succ.inj he)),
             ground.neBeqOf (neAdd m 1),
             ground.eqBeqOf (rfl : m + 2 = m + 2)]
           exact cellOneNegZ (F (m + 2))
-        · rw [cartBoff l k (m + 1) (fun he => e2 he.symm)
+        · rw [sertables.cartBoff l k (m + 1) (fun he => e2 he.symm)
             (fun he => e1 (Nat.succ.inj he).symm)
             (fun he => e3 he.symm),
             ground.neBeqOf (fun he => e2 he.symm),
@@ -717,78 +643,6 @@ theorem corootRead_B : ∀ (W : List Nat) (l : Nat),
         (ground.getAt 0 W (m + 1) - ground.getAt 0 W (m + 2))
         (ground.subAdd (hsa (m + 1)))
 
-/-! ## The `C` Cartan column entries -/
-
-/-- The `C` Cartan entry at a row and a column, the chain with the
-doubled edge out of the long last key. -/
-def cartC (l i j : Nat) : BPair :=
-  if j == i then BPair.ofNat 2
-  else if i + 1 == l && j + 2 == l then (BPair.ofNat 2).swap
-  else if j + 1 == i || j == i + 1 then (BPair.ofNat 1).swap
-  else BPair.unit
-
-/-- The `C` table's Cartan list is the entry function's square. -/
-theorem cartC_eq (l : Nat) :
-    (sertables.tableC l).cartan
-      = ground.matOf l l (fun i j => cartC l i j) :=
-  rfl
-
-/-- The `C` Cartan's diagonal entry is two. -/
-theorem cartCd (l i : Nat) : cartC l i i = BPair.ofNat 2 := by
-  show (if (i == i) = true then _ else _) = _
-  rw [ground.eqBeqOf (rfl : i = i)]
-  rfl
-
-/-- The `C` Cartan's entry one key down at the long last edge is
-the swapped two. -/
-private theorem cartCdn2 (l i : Nat) (h : i + 2 = l) :
-    cartC l (i + 1) i = (BPair.ofNat 2).swap := by
-  show (if (i == i + 1) = true then _ else _) = _
-  rw [ground.neBeqOf (neAdd i 0),
-    ground.eqBeqOf (show i + 1 + 1 = l from h)]
-  rfl
-
-/-- The `C` Cartan's entry one key down, off the long last edge, is
-the swapped one. -/
-theorem cartCdn1 (l i : Nat) (h : ¬ i + 2 = l) :
-    cartC l (i + 1) i = (BPair.ofNat 1).swap := by
-  show (if (i == i + 1) = true then _ else _) = _
-  rw [ground.neBeqOf (neAdd i 0),
-    ground.neBeqOf (show ¬ i + 1 + 1 = l from h),
-    ground.eqBeqOf (rfl : i + 1 = i + 1)]
-  rfl
-
-/-- The `C` Cartan's entry one key up is the swapped one. -/
-theorem cartCup (l i : Nat) :
-    cartC l i (i + 1) = (BPair.ofNat 1).swap := by
-  show (if (i + 1 == i) = true then _ else _) = _
-  rw [ground.neBeqOf (fun he => neAdd i 0 he.symm)]
-  cases hb : (i + 1 == l) with
-  | true =>
-    rw [ground.neBeqOf (fun he : i + 1 + 2 = l =>
-        neAdd (i + 1) 1 (he.trans (ground.beqEqOf hb).symm).symm),
-      ground.eqBeqOf (rfl : i + 1 = i + 1), orT]
-    rfl
-  | false =>
-    rw [ground.eqBeqOf (rfl : i + 1 = i + 1), orT]
-    rfl
-
-/-- The `C` Cartan's entry off the diagonal and its two chain
-neighbours is vacant. -/
-theorem cartCoff (l i j : Nat) (h1 : ¬ j = i) (h2 : ¬ j + 1 = i)
-    (h3 : ¬ j = i + 1) : cartC l i j = BPair.unit := by
-  show (if (j == i) = true then _ else _) = _
-  rw [ground.neBeqOf h1]
-  cases hb : (i + 1 == l) with
-  | true =>
-    rw [ground.neBeqOf (fun he : j + 2 = l =>
-        h2 (Nat.succ.inj (he.trans (ground.beqEqOf hb).symm))),
-      ground.neBeqOf h2, ground.neBeqOf h3]
-    rfl
-  | false =>
-    rw [ground.neBeqOf h2, ground.neBeqOf h3]
-    rfl
-
 /-! ## The `C` column reads -/
 
 private theorem colC0dc (l : Nat) (h0 : 0 < l) (hne : ¬ 0 + 2 = l)
@@ -796,20 +650,20 @@ private theorem colC0dc (l : Nat) (h0 : 0 < l) (hne : ¬ 0 + 2 = l)
     (corootAt (sertables.tableC l) ((List.range l).map F) 0).oneValue
       (BPair.ofCounts (2 * F 0) (if 1 < l then F 1 else 0)) := by
   refine BPair.oneValue_trans
-    (colValue (sertables.tableC l) (cartC l) l 0 F
+    (colValue (sertables.tableC l) (sertables.cartC l) l 0 F
       (fun k => if 0 == k then 2 * F 0 else 0)
       (fun k => if 1 == k then F 1 else 0)
-      (cartC_eq l) h0 ?_) ?_
+      (sertables.cartC_eq l) h0 ?_) ?_
   · intro k
     match k with
     | 0 =>
-      rw [cartCd l 0]
+      rw [sertables.cartCd l 0]
       exact cellTwo (F 0)
     | 1 =>
-      rw [cartCdn1 l 0 hne]
+      rw [sertables.cartCdn1 l 0 hne]
       exact cellOneNeg (F 1)
     | m + 2 =>
-      rw [cartCoff l (m + 2) 0 (fun he => Nat.noConfusion he)
+      rw [sertables.cartCoff l (m + 2) 0 (fun he => Nat.noConfusion he)
         (fun he => Nat.noConfusion (Nat.succ.inj he))
         (fun he => Nat.noConfusion he)]
       exact cellNull (F (m + 2))
@@ -833,20 +687,20 @@ private theorem colC0ec (l : Nat) (he : 2 = l) (F : Nat → Nat) :
   have h1 : 1 < l := he ▸ Nat.lt_succ_self 1
   have h0 : 0 < l := Nat.lt_trans (Nat.lt_succ_self 0) h1
   refine BPair.oneValue_trans
-    (colValue (sertables.tableC l) (cartC l) l 0 F
+    (colValue (sertables.tableC l) (sertables.cartC l) l 0 F
       (fun k => if 0 == k then 2 * F 0 else 0)
       (fun k => if 1 == k then 2 * F 1 else 0)
-      (cartC_eq l) h0 ?_) ?_
+      (sertables.cartC_eq l) h0 ?_) ?_
   · intro k
     match k with
     | 0 =>
-      rw [cartCd l 0]
+      rw [sertables.cartCd l 0]
       exact cellTwo (F 0)
     | 1 =>
-      rw [cartCdn2 l 0 (show 0 + 2 = l from he)]
+      rw [sertables.cartCdn2 l 0 (show 0 + 2 = l from he)]
       exact cellTwoNeg (F 1)
     | m + 2 =>
-      rw [cartCoff l (m + 2) 0 (fun hx => Nat.noConfusion hx)
+      rw [sertables.cartCoff l (m + 2) 0 (fun hx => Nat.noConfusion hx)
         (fun hx => Nat.noConfusion (Nat.succ.inj hx))
         (fun hx => Nat.noConfusion hx)]
       exact cellNull (F (m + 2))
@@ -861,7 +715,7 @@ private theorem colC0e (l : Nat) (he : 2 = l) (F : Nat → Nat) (v : Nat)
     (countsRead (2 * F 0) (2 * F 1) v h)
 
 private theorem colCgenc (l m : Nat) (hj : m + 1 < l) (F : Nat → Nat)
-    (w n : Nat) (hup : cartC l (m + 2) (m + 1) = (BPair.ofNat w).swap)
+    (w n : Nat) (hup : sertables.cartC l (m + 2) (m + 1) = (BPair.ofNat w).swap)
     (hw : ∀ c : Nat, (BPair.ofNat c * (BPair.ofNat w).swap).oneValue
       (BPair.ofCounts 0 (0 + w * c)))
     (hfold : ground.famFold Nat.add 0
@@ -871,20 +725,20 @@ private theorem colCgenc (l m : Nat) (hj : m + 1 < l) (F : Nat → Nat)
     (corootAt (sertables.tableC l) ((List.range l).map F)
       (m + 1)).oneValue (BPair.ofCounts (2 * F (m + 1)) n) := by
   refine BPair.oneValue_trans
-    (colValue (sertables.tableC l) (cartC l) l (m + 1) F
+    (colValue (sertables.tableC l) (sertables.cartC l) l (m + 1) F
       (fun k => if m + 1 == k then 2 * F (m + 1) else 0)
       (fun k => (if m == k then F m else 0)
         + (if m + 2 == k then w * F (m + 2) else 0))
-      (cartC_eq l) hj ?_) ?_
+      (sertables.cartC_eq l) hj ?_) ?_
   · intro k
     by_cases e1 : k = m
-    · rw [e1, cartCup l m,
+    · rw [e1, sertables.cartCup l m,
         ground.neBeqOf (fun hx : m + 1 = m => neAdd m 0 hx.symm),
         ground.eqBeqOf (rfl : m = m),
         ground.neBeqOf (fun hx : m + 2 = m => neAdd m 1 hx.symm)]
       exact cellOneNeg (F m)
     · by_cases e2 : k = m + 1
-      · rw [e2, cartCd l (m + 1),
+      · rw [e2, sertables.cartCd l (m + 1),
           ground.eqBeqOf (rfl : m + 1 = m + 1),
           ground.neBeqOf (neAdd m 0),
           ground.neBeqOf (fun hx : m + 2 = m + 1 =>
@@ -897,7 +751,7 @@ private theorem colCgenc (l m : Nat) (hj : m + 1 < l) (F : Nat → Nat)
             ground.neBeqOf (neAdd m 1),
             ground.eqBeqOf (rfl : m + 2 = m + 2)]
           exact hw (F (m + 2))
-        · rw [cartCoff l k (m + 1) (fun hx => e2 hx.symm)
+        · rw [sertables.cartCoff l k (m + 1) (fun hx => e2 hx.symm)
             (fun hx => e3 hx.symm)
             (fun hx => e1 (Nat.succ.inj hx).symm),
             ground.neBeqOf (fun hx => e2 hx.symm),
@@ -925,7 +779,7 @@ private theorem colCmdc (l m : Nat) (hm : m + 3 < l) (F : Nat → Nat) :
   have h1 : m + 1 < l := Nat.lt_trans (Nat.lt_succ_self (m + 1)) h2
   have h0 : m < l := Nat.lt_trans (Nat.lt_succ_self m) h1
   refine colCgenc l m h1 F 1 (F m + F (m + 2))
-    (cartCdn1 l (m + 1) (show ¬ m + 1 + 2 = l from Nat.ne_of_lt hm))
+    (sertables.cartCdn1 l (m + 1) (show ¬ m + 1 + 2 = l from Nat.ne_of_lt hm))
     (fun c => by rw [Nat.zero_add, Nat.one_mul]; exact cellOneNeg c) ?_
   rw [cfold l m F 1 h0, if_pos h2, Nat.one_mul]
 
@@ -945,7 +799,7 @@ private theorem colCmec (l m : Nat) (he : m + 3 = l) (F : Nat → Nat) :
   have h1 : m + 1 < l := Nat.lt_trans (Nat.lt_succ_self (m + 1)) h2
   have h0 : m < l := Nat.lt_trans (Nat.lt_succ_self m) h1
   refine colCgenc l m h1 F 2 (F m + 2 * F (m + 2))
-    (cartCdn2 l (m + 1) (show m + 1 + 2 = l from he))
+    (sertables.cartCdn2 l (m + 1) (show m + 1 + 2 = l from he))
     (fun c => by rw [Nat.zero_add]; exact cellTwoNeg c) ?_
   rw [cfold l m F 2 h0, if_pos h2]
 
@@ -963,7 +817,7 @@ private theorem colCtopc (l m : Nat) (ht : m + 2 = l) (F : Nat → Nat) :
   have h0 : m < l := Nat.lt_trans (Nat.lt_succ_self m) h1
   have hno : ¬ m + 2 < l := ht ▸ Nat.lt_irrefl (m + 2)
   refine colCgenc l m h1 F 1 (F m)
-    (cartCdn1 l (m + 1)
+    (sertables.cartCdn1 l (m + 1)
       (show ¬ m + 1 + 2 = l from fun hx => neAdd (m + 2) 0 (ht.trans hx.symm)))
     (fun c => by rw [Nat.zero_add, Nat.one_mul]; exact cellOneNeg c) ?_
   rw [cfold l m F 1 h0, if_neg hno, Nat.add_zero]
@@ -1125,109 +979,19 @@ theorem corootRead_C : ∀ (W : List Nat) (l : Nat),
             (ground.getAt 0 W (m + 1) - ground.getAt 0 W (m + 2))
             (ground.subAdd (hsa (m + 1)))]
 
-/-! ## The `D` Cartan column entries -/
-
-/-- The `D` Cartan entry at a row and a column, the fork joining
-the last two keys to the key before them. -/
-def cartD (l i j : Nat) : BPair :=
-  if j == i then BPair.ofNat 2
-  else if i + 1 == l then
-    (if j + 3 == l then (BPair.ofNat 1).swap else BPair.unit)
-  else if j + 1 == l then
-    (if i + 3 == l then (BPair.ofNat 1).swap else BPair.unit)
-  else if j + 1 == i || j == i + 1 then (BPair.ofNat 1).swap
-  else BPair.unit
-
-/-- The `D` table's Cartan list is the entry function's square. -/
-theorem cartD_eq (l : Nat) :
-    (sertables.tableD l).cartan
-      = ground.matOf l l (fun i j => cartD l i j) :=
-  rfl
-
-/-- The `D` Cartan's diagonal entry is two. -/
-theorem cartDd (l i : Nat) : cartD l i i = BPair.ofNat 2 := by
-  show (if (i == i) = true then _ else _) = _
-  rw [ground.eqBeqOf (rfl : i = i)]
-  rfl
-
-/-- The `D` Cartan's entry one key up, along the chain below the
-fork, is the swapped one. -/
-theorem cartDup (l i : Nat) (h2 : ¬ i + 1 = l)
-    (h3 : ¬ i + 2 = l) : cartD l i (i + 1) = (BPair.ofNat 1).swap := by
-  show (if (i + 1 == i) = true then _ else _) = _
-  rw [ground.neBeqOf (fun he => neAdd i 0 he.symm),
-    ground.neBeqOf h2, ground.neBeqOf (show ¬ i + 1 + 1 = l from h3),
-    ground.eqBeqOf (rfl : i + 1 = i + 1), orT]
-  rfl
-
-/-- The `D` Cartan's entry one key down, along the chain below the
-fork, is the swapped one. -/
-theorem cartDdn (l i : Nat) (h2 : ¬ i + 2 = l)
-    (h3 : ¬ i + 1 = l) : cartD l (i + 1) i = (BPair.ofNat 1).swap := by
-  show (if (i == i + 1) = true then _ else _) = _
-  rw [ground.neBeqOf (neAdd i 0),
-    ground.neBeqOf (show ¬ i + 1 + 1 = l from h2), ground.neBeqOf h3,
-    ground.eqBeqOf (rfl : i + 1 = i + 1)]
-  rfl
-
-/-- The `D` Cartan's entry at the last key against the key three
-below the rank is the swapped one. -/
-private theorem cartDfork (l i j : Nat) (h1 : ¬ j = i) (h2 : i + 1 = l)
-    (h3 : j + 3 = l) : cartD l i j = (BPair.ofNat 1).swap := by
-  show (if (j == i) = true then _ else _) = _
-  rw [ground.neBeqOf h1, ground.eqBeqOf h2, ground.eqBeqOf h3]
-  rfl
-
-/-- The `D` Cartan's entry at the key three below the rank against
-the last key is the swapped one. -/
-theorem cartDforkT (l i j : Nat) (h1 : ¬ j = i) (h2 : ¬ i + 1 = l)
-    (h3 : j + 1 = l) (h4 : i + 3 = l) :
-    cartD l i j = (BPair.ofNat 1).swap := by
-  show (if (j == i) = true then _ else _) = _
-  rw [ground.neBeqOf h1, ground.neBeqOf h2, ground.eqBeqOf h3,
-    ground.eqBeqOf h4]
-  rfl
-
-/-- The `D` Cartan's entry off the diagonal, off the fork's two
-edges and off the chain's two neighbours is vacant. -/
-theorem cartDoff (l i j : Nat) (h1 : ¬ j = i)
-    (h2 : i + 1 = l → ¬ j + 3 = l)
-    (h3 : ¬ i + 1 = l → j + 1 = l → ¬ i + 3 = l)
-    (h4 : ¬ i + 1 = l → ¬ j + 1 = l → ¬ j + 1 = i)
-    (h5 : ¬ i + 1 = l → ¬ j + 1 = l → ¬ j = i + 1) :
-    cartD l i j = BPair.unit := by
-  show (if (j == i) = true then _ else _) = _
-  rw [ground.neBeqOf h1]
-  cases hb : (i + 1 == l) with
-  | true =>
-    rw [ground.neBeqOf (h2 (ground.beqEqOf hb))]
-    rfl
-  | false =>
-    have hbn : ¬ i + 1 = l := fun he =>
-      Bool.noConfusion (hb.symm.trans (ground.eqBeqOf he))
-    cases hc : (j + 1 == l) with
-    | true =>
-      rw [ground.neBeqOf (h3 hbn (ground.beqEqOf hc))]
-      rfl
-    | false =>
-      have hcn : ¬ j + 1 = l := fun he =>
-        Bool.noConfusion (hc.symm.trans (ground.eqBeqOf he))
-      rw [ground.neBeqOf (h4 hbn hcn), ground.neBeqOf (h5 hbn hcn)]
-      rfl
-
 /-! ## The `D` column reads -/
 
 private theorem colDsimplec (l j : Nat) (hj : j < l) (F : Nat → Nat)
-    (hoff : ∀ k, ¬ k = j → cartD l k j = BPair.unit) :
+    (hoff : ∀ k, ¬ k = j → sertables.cartD l k j = BPair.unit) :
     (corootAt (sertables.tableD l) ((List.range l).map F) j).oneValue
       (BPair.ofCounts (2 * F j) 0) := by
   refine BPair.oneValue_trans
-    (colValue (sertables.tableD l) (cartD l) l j F
+    (colValue (sertables.tableD l) (sertables.cartD l) l j F
       (fun k => if j == k then 2 * F j else 0) (fun _ => 0)
-      (cartD_eq l) hj ?_) ?_
+      (sertables.cartD_eq l) hj ?_) ?_
   · intro k
     by_cases e : k = j
-    · rw [e, cartDd l j, ground.eqBeqOf (rfl : j = j)]
+    · rw [e, sertables.cartDd l j, ground.eqBeqOf (rfl : j = j)]
       exact cellTwo (F j)
     · rw [hoff k e, ground.neBeqOf (fun he => e he.symm)]
       exact cellNull (F k)
@@ -1236,7 +1000,7 @@ private theorem colDsimplec (l j : Nat) (hj : j < l) (F : Nat → Nat)
     exact BPair.oneValue_refl _
 
 private theorem colDsimple (l j : Nat) (hj : j < l) (F : Nat → Nat)
-    (v : Nat) (hoff : ∀ k, ¬ k = j → cartD l k j = BPair.unit)
+    (v : Nat) (hoff : ∀ k, ¬ k = j → sertables.cartD l k j = BPair.unit)
     (h : 2 * F j = v + 0) :
     (corootAt (sertables.tableD l) ((List.range l).map F) j).oneValue
       (BPair.ofNat v) :=
@@ -1245,25 +1009,25 @@ private theorem colDsimple (l j : Nat) (hj : j < l) (F : Nat → Nat)
 
 private theorem colDzeroc (l : Nat) (h1 : 1 < l) (F : Nat → Nat)
     (c1 c2 : Nat)
-    (hE1 : ∀ c : Nat, (BPair.ofNat c * cartD l 1 0).oneValue
+    (hE1 : ∀ c : Nat, (BPair.ofNat c * sertables.cartD l 1 0).oneValue
       (BPair.ofCounts 0 (c1 * c)))
-    (hE2 : ∀ c : Nat, (BPair.ofNat c * cartD l 2 0).oneValue
+    (hE2 : ∀ c : Nat, (BPair.ofNat c * sertables.cartD l 2 0).oneValue
       (BPair.ofCounts 0 (0 + c2 * c)))
-    (hoff : ∀ q : Nat, cartD l (q + 3) 0 = BPair.unit) :
+    (hoff : ∀ q : Nat, sertables.cartD l (q + 3) 0 = BPair.unit) :
     (corootAt (sertables.tableD l) ((List.range l).map F) 0).oneValue
       (BPair.ofCounts (2 * F 0) ((if 1 < l then c1 * F 1 else 0)
         + (if 2 < l then c2 * F 2 else 0))) := by
   have h0 : 0 < l := Nat.lt_trans (Nat.lt_succ_self 0) h1
   refine BPair.oneValue_trans
-    (colValue (sertables.tableD l) (cartD l) l 0 F
+    (colValue (sertables.tableD l) (sertables.cartD l) l 0 F
       (fun k => if 0 == k then 2 * F 0 else 0)
       (fun k => (if 1 == k then c1 * F 1 else 0)
         + (if 2 == k then c2 * F 2 else 0))
-      (cartD_eq l) h0 ?_) ?_
+      (sertables.cartD_eq l) h0 ?_) ?_
   · intro k
     match k with
     | 0 =>
-      rw [cartDd l 0]
+      rw [sertables.cartDd l 0]
       exact cellTwo (F 0)
     | 1 => exact hE1 (F 1)
     | 2 => exact hE2 (F 2)
@@ -1275,11 +1039,11 @@ private theorem colDzeroc (l : Nat) (h1 : 1 < l) (F : Nat → Nat)
 
 private theorem colDzero (l : Nat) (h1 : 1 < l) (F : Nat → Nat)
     (c1 c2 v : Nat)
-    (hE1 : ∀ c : Nat, (BPair.ofNat c * cartD l 1 0).oneValue
+    (hE1 : ∀ c : Nat, (BPair.ofNat c * sertables.cartD l 1 0).oneValue
       (BPair.ofCounts 0 (c1 * c)))
-    (hE2 : ∀ c : Nat, (BPair.ofNat c * cartD l 2 0).oneValue
+    (hE2 : ∀ c : Nat, (BPair.ofNat c * sertables.cartD l 2 0).oneValue
       (BPair.ofCounts 0 (0 + c2 * c)))
-    (hoff : ∀ q : Nat, cartD l (q + 3) 0 = BPair.unit)
+    (hoff : ∀ q : Nat, sertables.cartD l (q + 3) 0 = BPair.unit)
     (h : 2 * F 0 = v + ((if 1 < l then c1 * F 1 else 0)
       + (if 2 < l then c2 * F 2 else 0))) :
     (corootAt (sertables.tableD l) ((List.range l).map F) 0).oneValue
@@ -1289,9 +1053,9 @@ private theorem colDzero (l : Nat) (h1 : 1 < l) (F : Nat → Nat)
 
 private theorem colDmidc (l m : Nat) (hj2 : m + 2 < l) (F : Nat → Nat)
     (c1 c2 : Nat)
-    (hE1 : ∀ c : Nat, (BPair.ofNat c * cartD l (m + 2) (m + 1)).oneValue
+    (hE1 : ∀ c : Nat, (BPair.ofNat c * sertables.cartD l (m + 2) (m + 1)).oneValue
       (BPair.ofCounts 0 (0 + c1 * c)))
-    (hE2 : ∀ c : Nat, (BPair.ofNat c * cartD l (m + 3) (m + 1)).oneValue
+    (hE2 : ∀ c : Nat, (BPair.ofNat c * sertables.cartD l (m + 3) (m + 1)).oneValue
       (BPair.ofCounts 0 (0 + (0 + c2 * c)))) :
     (corootAt (sertables.tableD l) ((List.range l).map F)
       (m + 1)).oneValue
@@ -1300,15 +1064,15 @@ private theorem colDmidc (l m : Nat) (hj2 : m + 2 < l) (F : Nat → Nat)
           + (if m + 3 < l then c2 * F (m + 3) else 0)))) := by
   have hj : m + 1 < l := Nat.lt_trans (Nat.lt_succ_self (m + 1)) hj2
   refine BPair.oneValue_trans
-    (colValue (sertables.tableD l) (cartD l) l (m + 1) F
+    (colValue (sertables.tableD l) (sertables.cartD l) l (m + 1) F
       (fun k => if m + 1 == k then 2 * F (m + 1) else 0)
       (fun k => (if m == k then F m else 0)
         + ((if m + 2 == k then c1 * F (m + 2) else 0)
           + (if m + 3 == k then c2 * F (m + 3) else 0)))
-      (cartD_eq l) hj ?_) ?_
+      (sertables.cartD_eq l) hj ?_) ?_
   · intro k
     by_cases e1 : k = m
-    · rw [e1, cartDup l m
+    · rw [e1, sertables.cartDup l m
         (fun he => Nat.lt_irrefl (m + 1) (Nat.lt_trans
           (Nat.lt_succ_self (m + 1))
           (Nat.lt_of_lt_of_le hj2 (Nat.le_of_eq he.symm))))
@@ -1319,7 +1083,7 @@ private theorem colDmidc (l m : Nat) (hj2 : m + 2 < l) (F : Nat → Nat)
         ground.neBeqOf (fun hx : m + 3 = m => neAdd m 2 hx.symm)]
       exact cellOneNeg (F m)
     · by_cases e2 : k = m + 1
-      · rw [e2, cartDd l (m + 1), ground.eqBeqOf (rfl : m + 1 = m + 1),
+      · rw [e2, sertables.cartDd l (m + 1), ground.eqBeqOf (rfl : m + 1 = m + 1),
           ground.neBeqOf (neAdd m 0),
           ground.neBeqOf (fun hx : m + 2 = m + 1 =>
             neAdd m 0 (Nat.succ.inj hx).symm),
@@ -1342,7 +1106,7 @@ private theorem colDmidc (l m : Nat) (hj2 : m + 2 < l) (F : Nat → Nat)
                 neAdd m 0 (Nat.succ.inj (Nat.succ.inj hx))),
               ground.eqBeqOf (rfl : m + 3 = m + 3)]
             exact hE2 (F (m + 3))
-          · rw [cartDoff l k (m + 1) (fun hx => e2 hx.symm)
+          · rw [sertables.cartDoff l k (m + 1) (fun hx => e2 hx.symm)
               (fun hk hx => e4 (Nat.succ.inj (hk.trans hx.symm)))
               (fun _ hx => absurd (show m + 2 = l from hx)
                 (fun he => Nat.lt_irrefl l (he ▸ hj2)))
@@ -1359,9 +1123,9 @@ private theorem colDmidc (l m : Nat) (hj2 : m + 2 < l) (F : Nat → Nat)
 
 private theorem colDmid (l m : Nat) (hj2 : m + 2 < l) (F : Nat → Nat)
     (c1 c2 v : Nat)
-    (hE1 : ∀ c : Nat, (BPair.ofNat c * cartD l (m + 2) (m + 1)).oneValue
+    (hE1 : ∀ c : Nat, (BPair.ofNat c * sertables.cartD l (m + 2) (m + 1)).oneValue
       (BPair.ofCounts 0 (0 + c1 * c)))
-    (hE2 : ∀ c : Nat, (BPair.ofNat c * cartD l (m + 3) (m + 1)).oneValue
+    (hE2 : ∀ c : Nat, (BPair.ofNat c * sertables.cartD l (m + 3) (m + 1)).oneValue
       (BPair.ofCounts 0 (0 + (0 + c2 * c))))
     (h : 2 * F (m + 1) = v + ((if m < l then F m else 0)
       + ((if m + 2 < l then c1 * F (m + 2) else 0)
@@ -1378,22 +1142,22 @@ private theorem colDtopc (l m : Nat) (ht : m + 3 = l) (F : Nat → Nat) :
   have hj : m + 2 < l := ht ▸ Nat.lt_succ_self (m + 2)
   have hne : ¬ m + 2 + 1 = l → False := fun hc => hc ht
   refine BPair.oneValue_trans
-    (colValue (sertables.tableD l) (cartD l) l (m + 2) F
+    (colValue (sertables.tableD l) (sertables.cartD l) l (m + 2) F
       (fun k => if m + 2 == k then 2 * F (m + 2) else 0)
       (fun k => if m == k then F m else 0)
-      (cartD_eq l) hj ?_) ?_
+      (sertables.cartD_eq l) hj ?_) ?_
   · intro k
     by_cases e1 : k = m
-    · rw [e1, cartDforkT l m (m + 2) (fun hx => neAdd m 1 hx.symm)
+    · rw [e1, sertables.cartDforkT l m (m + 2) (fun hx => neAdd m 1 hx.symm)
         (fun hx => neAdd (m + 1) 1 (hx.trans ht.symm)) ht ht,
         ground.neBeqOf (fun hx : m + 2 = m => neAdd m 1 hx.symm),
         ground.eqBeqOf (rfl : m = m)]
       exact cellOneNeg (F m)
     · by_cases e2 : k = m + 2
-      · rw [e2, cartDd l (m + 2), ground.eqBeqOf (rfl : m + 2 = m + 2),
+      · rw [e2, sertables.cartDd l (m + 2), ground.eqBeqOf (rfl : m + 2 = m + 2),
           ground.neBeqOf (neAdd m 1)]
         exact cellTwo (F (m + 2))
-      · rw [cartDoff l k (m + 2) (fun hx => e2 hx.symm)
+      · rw [sertables.cartDoff l k (m + 2) (fun hx => e2 hx.symm)
           (fun hk => absurd (Nat.succ.inj (hk.trans ht.symm)) e2)
           (fun _ hx => fun hc => e1 (Nat.succ.inj (Nat.succ.inj
             (Nat.succ.inj (hc.trans ht.symm)))))
@@ -1436,7 +1200,7 @@ theorem corootRead_D : ∀ (W : List Nat) (l : Nat),
         (fun k => if l ≤ k + 2 then ground.sumNat W
           else 2 * ground.sumNat (List.take (k + 1) W)) _ ?_ ?_
       · intro k hk
-        exact cartDoff l k 0 (fun hx => hk hx.symm)
+        exact sertables.cartDoff l k 0 (fun hx => hk hx.symm)
           (fun _ hx => absurd ((show (3 : Nat) = l from hx).trans hl2.symm)
             (by decide +kernel))
           (fun _ hx _ => absurd
@@ -1464,15 +1228,15 @@ theorem corootRead_D : ∀ (W : List Nat) (l : Nat),
           (fun k => if l ≤ k + 2 then ground.sumNat W
             else 2 * ground.sumNat (List.take (k + 1) W)) 1 1 _
           (fun c => by
-            rw [cartDdn l 0 (show ¬ 0 + 2 = l from hne2)
+            rw [sertables.cartDdn l 0 (show ¬ 0 + 2 = l from hne2)
               (show ¬ 0 + 1 = l from hne1), Nat.one_mul]
             exact cellOneNeg c)
           (fun c => by
-            rw [cartDfork l 2 0 (by decide +kernel)
+            rw [sertables.cartDfork l 2 0 (by decide +kernel)
               (show 2 + 1 = l from he3) (show 0 + 3 = l from he3),
               Nat.zero_add, Nat.one_mul]
             exact cellOneNeg c)
-          (fun q => cartDoff l (q + 3) 0 (fun hx => Nat.noConfusion hx)
+          (fun q => sertables.cartDoff l (q + 3) 0 (fun hx => Nat.noConfusion hx)
             (fun hk _ => absurd (hk.trans he3.symm)
               (fun hc => Nat.noConfusion (Nat.succ.inj
                 (Nat.succ.inj (Nat.succ.inj hc)))))
@@ -1501,17 +1265,17 @@ theorem corootRead_D : ∀ (W : List Nat) (l : Nat),
           (fun k => if l ≤ k + 2 then ground.sumNat W
             else 2 * ground.sumNat (List.take (k + 1) W)) 1 0 _
           (fun c => by
-            rw [cartDdn l 0 (show ¬ 0 + 2 = l from hne2)
+            rw [sertables.cartDdn l 0 (show ¬ 0 + 2 = l from hne2)
               (show ¬ 0 + 1 = l from hne1), Nat.one_mul]
             exact cellOneNeg c)
           (fun c => by
-            rw [cartDoff l 2 0 (by decide +kernel)
+            rw [sertables.cartDoff l 2 0 (by decide +kernel)
               (fun _ hx => absurd (show (3 : Nat) = l from hx) (Nat.ne_of_lt hl4))
               (fun _ hx _ => absurd (show (1 : Nat) = l from hx) hne1)
               (fun _ _ hx => Nat.noConfusion (Nat.succ.inj hx))
               (fun _ _ hx => Nat.noConfusion hx), Nat.zero_mul]
             exact cellNull c)
-          (fun q => cartDoff l (q + 3) 0 (fun hx => Nat.noConfusion hx)
+          (fun q => sertables.cartDoff l (q + 3) 0 (fun hx => Nat.noConfusion hx)
             (fun _ hx => absurd (show (3 : Nat) = l from hx) (Nat.ne_of_lt hl4))
             (fun _ hx _ => absurd (show (1 : Nat) = l from hx) hne1)
             (fun _ _ hx => Nat.noConfusion (Nat.succ.inj hx))
@@ -1544,7 +1308,7 @@ theorem corootRead_D : ∀ (W : List Nat) (l : Nat),
           (fun k => if l ≤ k + 2 then ground.sumNat W
             else 2 * ground.sumNat (List.take (k + 1) W)) _ ?_ ?_
         · intro k hk
-          exact cartDoff l k 1 (fun hx => hk hx.symm)
+          exact sertables.cartDoff l k 1 (fun hx => hk hx.symm)
             (fun _ hx => absurd
               ((show (4 : Nat) = l from hx).trans htop.symm) (by decide +kernel))
             (fun _ _ hx => absurd (hx.trans htop.symm)
@@ -1592,7 +1356,7 @@ theorem corootRead_D : ∀ (W : List Nat) (l : Nat),
           (fun k => if l ≤ k + 2 then ground.sumNat W
             else 2 * ground.sumNat (List.take (k + 1) W)) 0 0 _
           (fun c => by
-            rw [cartDoff l (m + 2) (m + 1) (neAdd (m + 1) 0)
+            rw [sertables.cartDoff l (m + 2) (m + 1) (neAdd (m + 1) 0)
               (fun _ hx => (neAdd (m + 3) 0
                 (hx.trans he3.symm).symm))
               (fun hb _ => absurd (show m + 2 + 1 = l from he3) hb)
@@ -1601,7 +1365,7 @@ theorem corootRead_D : ∀ (W : List Nat) (l : Nat),
               Nat.zero_mul]
             exact cellNull c)
           (fun c => by
-            rw [cartDoff l (m + 3) (m + 1) (neAdd (m + 1) 1)
+            rw [sertables.cartDoff l (m + 3) (m + 1) (neAdd (m + 1) 1)
               (fun hk _ => absurd (hk.trans he3.symm).symm
                 (neAdd (m + 3) 0))
               (fun _ hx => absurd (hx.trans he3.symm) (neAdd (m + 2) 0))
@@ -1646,10 +1410,10 @@ theorem corootRead_D : ∀ (W : List Nat) (l : Nat),
             (fun k => if l ≤ k + 2 then ground.sumNat W
               else 2 * ground.sumNat (List.take (k + 1) W)) 1 1 _
             (fun c => by
-              rw [cartDdn l (m + 1) hne3 hne2, Nat.zero_add, Nat.one_mul]
+              rw [sertables.cartDdn l (m + 1) hne3 hne2, Nat.zero_add, Nat.one_mul]
               exact cellOneNeg c)
             (fun c => by
-              rw [cartDfork l (m + 3) (m + 1) (neAdd (m + 1) 1)
+              rw [sertables.cartDfork l (m + 3) (m + 1) (neAdd (m + 1) 1)
                 (show m + 3 + 1 = l from he4)
                 (show m + 1 + 3 = l from he4),
                 Nat.zero_add, Nat.zero_add, Nat.one_mul]
@@ -1694,10 +1458,10 @@ theorem corootRead_D : ∀ (W : List Nat) (l : Nat),
             (fun k => if l ≤ k + 2 then ground.sumNat W
               else 2 * ground.sumNat (List.take (k + 1) W)) 1 0 _
             (fun c => by
-              rw [cartDdn l (m + 1) hne3 hne2, Nat.zero_add, Nat.one_mul]
+              rw [sertables.cartDdn l (m + 1) hne3 hne2, Nat.zero_add, Nat.one_mul]
               exact cellOneNeg c)
             (fun c => by
-              rw [cartDoff l (m + 3) (m + 1) (neAdd (m + 1) 1)
+              rw [sertables.cartDoff l (m + 3) (m + 1) (neAdd (m + 1) 1)
                 (fun hk => absurd (show m + 4 = l from hk) (Nat.ne_of_lt hj4))
                 (fun _ hx => absurd (show m + 2 = l from hx) (Nat.ne_of_lt hj2))
                 (fun _ _ => neAdd (m + 2) 0)
@@ -1900,23 +1664,17 @@ private theorem dotIndex : ∀ (X Y : List Nat),
 
 /-! ## The occupancy windows of the root families -/
 
-private theorem iteB {α : Type} (P : Prop) [Decidable P] (x y : α) :
-    (if decide P = true then x else y) = if P then x else y := by
-  by_cases h : P
-  · rw [if_pos (decide_eq_true h), if_pos h]
-  · rw [if_neg (fun hc => h (of_decide_eq_true hc)), if_neg h]
-
 private theorem indValIn (a b k : Nat) (h : k < b) :
     (if a ≤ k && k < b then (1 : Nat) else 0) = if a ≤ k then 1 else 0 := by
   show (if (decide (a ≤ k) && decide (k < b)) = true then (1 : Nat) else 0)
     = _
-  rw [decide_eq_true h, andT, iteB (a ≤ k) (1 : Nat) 0]
+  rw [decide_eq_true h, Bool.and_true, ite_decide (a ≤ k) (1 : Nat) 0]
 
 private theorem indValOut (a b k : Nat) (h : ¬ k < b) :
     (if a ≤ k && k < b then (1 : Nat) else 0) = 0 := by
   show (if (decide (a ≤ k) && decide (k < b)) = true then (1 : Nat) else 0)
     = _
-  rw [decide_eq_false h, andF]
+  rw [decide_eq_false h, Bool.and_false]
   rfl
 
 private theorem indValLo (a b k : Nat) (h : ¬ a ≤ k) :
@@ -3401,6 +3159,78 @@ def memberRho (W : List Nat) (l : Nat) : List Nat :=
 def gapAt (t : gentable.Table) (v : List Nat) (j : Nat) : Nat :=
   ground.dotNat (ground.getAt [] t.posFolds j)
     (List.zipWith Nat.mul t.lenNums v)
+
+/-- Every root gap increases with its natural coroot entries,
+the fold's coefficients and length weights natural throughout. -/
+theorem gapAt_mono (t : gentable.Table) (hlen : t.lenNums.length = t.rank)
+    (v w : List Nat) (hv : v.length = t.rank) (hw : w.length = t.rank)
+    (hle : ∀ i, i < t.rank → ground.getAt 0 v i ≤ ground.getAt 0 w i) (j : Nat) :
+    gapAt t v j ≤ gapAt t w j := by
+  apply ground.dotNat_mono_right
+  · rw [ground.length_zipWith Nat.mul t.lenNums v t.rank hlen hv,
+      ground.length_zipWith Nat.mul t.lenNums w t.rank hlen hw]
+  · intro i hi
+    rw [ground.length_zipWith Nat.mul t.lenNums v t.rank hlen hv] at hi
+    rw [ground.getAt_zipWith 0 0 0 Nat.mul t.lenNums v i (by rw [hlen]; exact hi)
+      (by rw [hv]; exact hi),
+      ground.getAt_zipWith 0 0 0 Nat.mul t.lenNums w i (by rw [hlen]; exact hi)
+      (by rw [hw]; exact hi)]
+    exact Nat.mul_le_mul_left _ (hle i hi)
+
+/-- The rho gap of an occupied positive-root fold is positive
+at positive simple-length weights and the rank's matched lists. -/
+theorem gapAt_rho_pos (t : gentable.Table) (hlen : t.lenNums.length = t.rank)
+    (hlens : ∀ i, i < t.rank → 0 < ground.getAt 0 t.lenNums i)
+    (j : Nat) (hf : (ground.getAt [] t.posFolds j).length = t.rank)
+    (ho : 0 < ground.sumNat (ground.getAt [] t.posFolds j)) :
+    0 < gapAt t (List.replicate t.rank 1) j := by
+  refine Nat.lt_of_lt_of_le ho (ground.sumNat_le_dotNat _ _ ?_ ?_)
+  · rw [ground.length_zipWith Nat.mul t.lenNums (List.replicate t.rank 1)
+      t.rank hlen (ground.length_replicate _ _), hf]
+    exact Nat.le_refl _
+  · intro i hi
+    rw [hf] at hi
+    rw [ground.getAt_zipWith 0 0 0 Nat.mul t.lenNums (List.replicate t.rank 1) i
+      (by rw [hlen]; exact hi) (by rw [ground.length_replicate]; exact hi),
+      ground.getAt_replicate 0 1 t.rank i hi]
+    change 1 ≤ ground.getAt 0 t.lenNums i * 1
+    rw [Nat.mul_one]
+    exact hlens i hi
+
+/-- The shifted label's positive-root gaps dominate the rho
+gaps, one comparison per factor of the dimension product. -/
+theorem gapAt_shift_le (t : gentable.Table) (hlen : t.lenNums.length = t.rank)
+    (m : List Nat) (hm : m.length = t.rank) (j : Nat) :
+    gapAt t (List.replicate t.rank 1) j ≤ gapAt t (m.map (fun n => n + 1)) j := by
+  apply gapAt_mono t hlen _ _ (ground.length_replicate _ _) ((ground.length_map _ m).trans hm)
+  intro i hi
+  rw [ground.getAt_replicate 0 1 t.rank i hi,
+    ground.getAt_map 0 0 (fun n => n + 1) m i (by rw [hm]; exact hi)]
+  exact Nat.succ_pos _
+
+/-- A simple-root factor is its length weight times the key's
+coroot entry, the one-key fold read of the dimension product. -/
+theorem gapAt_simple (t : gentable.Table) (hlen : t.lenNums.length = t.rank)
+    (i j : Nat) (hi : i < t.rank)
+    (hf : ground.getAt [] t.posFolds j = (List.range t.rank).map (fun k => if k == i then 1 else 0))
+    (v : List Nat) (hv : v.length = t.rank) :
+    gapAt t v j = ground.getAt 0 t.lenNums i * ground.getAt 0 v i := by
+  have hfl : (ground.getAt [] t.posFolds j).length = t.rank := by
+    rw [hf, ground.length_mapRange]
+  have hent (k : Nat) (hk : k < t.rank) :
+      ground.getAt 0 (ground.getAt [] t.posFolds j) k = if k == i then 1 else 0 := by
+    rw [hf, ground.getAt_map_range 0 _ t.rank k, if_pos hk]
+  unfold gapAt
+  rw [ground.dotNat_index _ _
+    ((ground.length_zipWith Nat.mul t.lenNums v t.rank hlen hv).trans hfl.symm), hfl]
+  rw [ground.famFold_pick_of _ i (List.range t.rank) (ground.countOf_range_one hi)
+    (fun k hk hne => by
+      rw [hent k (ground.ltOfMem hk), ground.neBeqOf hne]
+      change 0 * _ = 0
+      exact Nat.zero_mul _)]
+  rw [hent i hi, ground.eqBeqOf rfl, if_pos rfl, Nat.one_mul,
+    ground.getAt_zipWith 0 0 0 Nat.mul t.lenNums v i (by rw [hlen]; exact hi) (by rw [hv]; exact hi)]
+  rfl
 
 /-- The `B` member's dimension numerator: the word-against-word
 difference and sum factors, the short factors, and the two
@@ -7856,42 +7686,6 @@ private theorem letterFold_vacuum (t : gentable.Table)
   exact ground.famFold_getAt Nat.add 0
     (fun x => if 1 = x then 1 else 0) 0 ρv t.rank hρl
 
-/-! The series' Cartan rows at the reflecting key: each row sits at
-the rank's order and carries the coroot pair two on its own key. -/
-
-/-- The `B` rows' own coroot pair, the stored Cartan row's
-diagonal two. -/
-theorem cartanBDiag (l i : Nat) (hi : i < l) :
-    (ground.getAt BPair.unit
-      (ground.getAt [] (sertables.cartanB l) i) i).oneValue
-      (BPair.ofNat 2) := by
-  unfold sertables.cartanB
-  rw [ground.matOf_entry ([] : List BPair) BPair.unit l l _ i i hi hi,
-    if_pos (ground.eqBeqOf rfl)]
-  exact BPair.oneValue_refl _
-
-/-- The `C` rows' own coroot pair, the stored Cartan row's
-diagonal two. -/
-private theorem cartanCDiag (l i : Nat) (hi : i < l) :
-    (ground.getAt BPair.unit
-      (ground.getAt [] (sertables.cartanC l) i) i).oneValue
-      (BPair.ofNat 2) := by
-  unfold sertables.cartanC
-  rw [ground.matOf_entry ([] : List BPair) BPair.unit l l _ i i hi hi,
-    if_pos (ground.eqBeqOf rfl)]
-  exact BPair.oneValue_refl _
-
-/-- The `D` rows' own coroot pair, the stored Cartan row's
-diagonal two. -/
-theorem cartanDDiag (l i : Nat) (hi : i < l) :
-    (ground.getAt BPair.unit
-      (ground.getAt [] (sertables.cartanD l) i) i).oneValue
-      (BPair.ofNat 2) := by
-  unfold sertables.cartanD
-  rw [ground.matOf_entry ([] : List BPair) BPair.unit l l _ i i hi hi,
-    if_pos (ground.eqBeqOf rfl)]
-  exact BPair.oneValue_refl _
-
 /-- `lem:serstable`(ii)'s diagonal evaluation at the `B` series: at
 the vacant target the letter fold reads the member's vacant-key
 count (the diagonal's odd fold at the key's unit coroot pairs). -/
@@ -7911,7 +7705,7 @@ theorem letterFold_vac_B : ∀ (W : List Nat) (l : Nat)
     (memberRho W l) (memberRhoLen W l)
     (fun k hk => memberRhoPos W l k hk)
     (fun i hi => ground.matOf_rowLength ([] : List BPair) l l _ i hi)
-    (fun i hi => cartanBDiag l i hi)
+    (fun i hi => sertables.cartanBDiag l i hi)
     hshape hgram hsp hrd hrho hfam) (memberRhoCount W l)
 
 /-- `lem:serstable`(ii)'s diagonal evaluation at the `C` series. -/
@@ -7931,7 +7725,7 @@ theorem letterFold_vac_C : ∀ (W : List Nat) (l : Nat)
     (memberRho W l) (memberRhoLen W l)
     (fun k hk => memberRhoPos W l k hk)
     (fun i hi => ground.matOf_rowLength ([] : List BPair) l l _ i hi)
-    (fun i hi => cartanCDiag l i hi)
+    (fun i hi => sertables.cartanCDiag l i hi)
     hshape hgram hsp hrd hrho hfam) (memberRhoCount W l)
 
 /-- `lem:serstable`(ii)'s diagonal evaluation at the `D` series. -/
@@ -7951,7 +7745,7 @@ theorem letterFold_vac_D : ∀ (W : List Nat) (l : Nat)
     (memberRho W l) (memberRhoLen W l)
     (fun k hk => memberRhoPos W l k hk)
     (fun i hi => ground.matOf_rowLength ([] : List BPair) l l _ i hi)
-    (fun i hi => cartanDDiag l i hi)
+    (fun i hi => sertables.cartanDDiag l i hi)
     hshape hgram hsp hrd hrho hfam) (memberRhoCount W l)
 
 /-! ## The row tier's tie walk: the target's own key
@@ -9453,7 +9247,7 @@ private theorem tieWalk (t : gentable.Table) (F : sertables.FundData)
 /-- The letter's image at a coordinate: the key's own entry
 withdrawn by the letter's Cartan row, read at a key whose own
 coordinate is the natural one. -/
-private theorem reflEntry (t : gentable.Table) {i : Nat} (hi : i < t.rank)
+private theorem reflEntry (t : gentable.Table) {i : Nat}
     (v : List BPair) (hvl : v.length = t.rank)
     (hvi : (ground.getAt BPair.unit v i).oneValue (BPair.ofNat 1))
     {q : Nat} (hq : q < t.rank) :
@@ -9461,19 +9255,10 @@ private theorem reflEntry (t : gentable.Table) {i : Nat} (hi : i < t.rank)
       (ground.getAt BPair.unit v q
         + (ground.getAt BPair.unit
             (ground.getAt [] t.cartan i) q).swap) := by
-  have hcr : (poly.neg (assembly.cartRowV t i)).length = t.rank :=
-    (ground.length_map BPair.swap _).trans (assembly.cartRowV_length t i)
-  rw [assembly.reflAt_shift t i hi v hvl hvi]
-  refine BPair.oneValue_trans
-    (poly.oneValue_getAt q (poly.pnorm_oneValue _)) ?_
-  rw [elim.getAt_vecAdd _ _ q (by rw [hvl]; exact hq)
-      (by rw [hcr]; exact hq),
-    show ground.getAt BPair.unit (poly.neg (assembly.cartRowV t i)) q
-      = (ground.getAt BPair.unit (assembly.cartRowV t i) q).swap
-      from ground.getAt_map BPair.unit BPair.unit BPair.swap _ q
-        (by rw [assembly.cartRowV_length t i]; exact hq),
-    assembly.cartRowV_getAt t i q hq]
-  exact BPair.oneValue_refl _
+  have h := assembly.reflF_getAt t i v hvl q hq
+  rw [assembly.reflF_eq t i v hvl] at h
+  exact BPair.oneValue_trans h (BPair.add_congr (BPair.oneValue_refl _)
+    (BPair.oneValue_trans (BPair.mul_congr_left hvi) (BPair.ofNat_one_mul _)))
 
 /-- A datum at or below the sum's unit reads its swap at or above
 it. -/
@@ -9524,12 +9309,12 @@ private theorem reflDistinct (t : gentable.Table)
   have hAi : (ground.getAt BPair.unit (sertables.reflAt t i
       (poly.pnorm (elim.vecAdd μ (sertables.rhoV t))))
       i).oneValue (BPair.ofNat 1 + (BPair.ofNat 2).swap) :=
-    BPair.oneValue_trans (reflEntry t hi _ hkl hki hi)
+    BPair.oneValue_trans (reflEntry t _ hkl hki hi)
       (BPair.add_congr hki (ground.swap_congr (hdg i hi)))
   have hAq : BPair.unit ≤ ground.getAt BPair.unit (sertables.reflAt t q
       (poly.pnorm (elim.vecAdd μ (sertables.rhoV t)))) i := by
     refine ground.leB_congr_right
-      (BPair.oneValue_symm (reflEntry t hq _ hkl hkq hi)) ?_
+      (BPair.oneValue_symm (reflEntry t _ hkl hkq hi)) ?_
     refine ground.unitLeAdd ?_ (leSwapUnit (hoff q i hq hi hiq))
     exact ground.leB_congr_right (BPair.oneValue_symm hki)
       (ground.unitLeOfNat 1)
@@ -9627,7 +9412,7 @@ private theorem letterKey (t : gentable.Table) (F : sertables.FundData)
             (poly.pnorm (elim.vecAdd μ (sertables.rhoV t))) q
             + (ground.getAt BPair.unit
                 (ground.getAt [] t.cartan i) q).swap) := by
-        exact reflEntry t hi _ hkl hki hqr
+        exact reflEntry t _ hkl hki hqr
       have hB : (ground.getAt BPair.unit
           (poly.pnorm (elim.vecAdd nu0
             (elim.vecScale
@@ -9935,7 +9720,7 @@ theorem fDiff_hi (a b k : Nat) (h : ¬ k < b) :
     fDiff a b k = 0 := by
   show (if (decide (a ≤ k) && decide (k < b)) = true then (1 : Nat)
     else 0) = 0
-  rw [decide_eq_false h, andF]
+  rw [decide_eq_false h, Bool.and_false]
   rfl
 
 
@@ -11279,7 +11064,7 @@ private theorem colD (l : Nat) (h1l : 1 < l) (F : Nat → Nat) :
     by_cases he2 : (2 : Nat) = l
     · rw [if_pos (ground.eqBeqOf he2)]
       refine colDsimplec l 0 hj F (fun k hk => ?_)
-      exact cartDoff l k 0 (fun hx => hk hx.symm)
+      exact sertables.cartDoff l k 0 (fun hx => hk hx.symm)
         (fun _ hx => absurd ((show (3 : Nat) = l from hx).trans he2.symm)
           (by decide +kernel))
         (fun _ hx _ => absurd
@@ -11294,15 +11079,15 @@ private theorem colD (l : Nat) (h1l : 1 < l) (F : Nat → Nat) :
         refine BPair.oneValue_trans
           (colDzeroc l h1l F 1 1
             (fun c => by
-              rw [cartDdn l 0 (show ¬ 0 + 2 = l from he2)
+              rw [sertables.cartDdn l 0 (show ¬ 0 + 2 = l from he2)
                 (show ¬ 0 + 1 = l from hne1), Nat.one_mul]
               exact cellOneNeg c)
             (fun c => by
-              rw [cartDfork l 2 0 (by decide +kernel)
+              rw [sertables.cartDfork l 2 0 (by decide +kernel)
                 (show 2 + 1 = l from he3) (show 0 + 3 = l from he3),
                 Nat.zero_add, Nat.one_mul]
               exact cellOneNeg c)
-            (fun q => cartDoff l (q + 3) 0 (fun hx => Nat.noConfusion hx)
+            (fun q => sertables.cartDoff l (q + 3) 0 (fun hx => Nat.noConfusion hx)
               (fun hk _ => absurd (hk.trans he3.symm)
                 (fun hc => Nat.noConfusion (Nat.succ.inj
                   (Nat.succ.inj (Nat.succ.inj hc)))))
@@ -11320,18 +11105,18 @@ private theorem colD (l : Nat) (h1l : 1 < l) (F : Nat → Nat) :
         refine BPair.oneValue_trans
           (colDzeroc l h1l F 1 0
             (fun c => by
-              rw [cartDdn l 0 (show ¬ 0 + 2 = l from he2)
+              rw [sertables.cartDdn l 0 (show ¬ 0 + 2 = l from he2)
                 (show ¬ 0 + 1 = l from hne1), Nat.one_mul]
               exact cellOneNeg c)
             (fun c => by
-              rw [cartDoff l 2 0 (by decide +kernel)
+              rw [sertables.cartDoff l 2 0 (by decide +kernel)
                 (fun _ hx => absurd (show (3 : Nat) = l from hx)
                   (Nat.ne_of_lt h3l))
                 (fun _ hx _ => absurd (show (1 : Nat) = l from hx) hne1)
                 (fun _ _ hx => Nat.noConfusion (Nat.succ.inj hx))
                 (fun _ _ hx => Nat.noConfusion hx), Nat.zero_mul]
               exact cellNull c)
-            (fun q => cartDoff l (q + 3) 0 (fun hx => Nat.noConfusion hx)
+            (fun q => sertables.cartDoff l (q + 3) 0 (fun hx => Nat.noConfusion hx)
               (fun _ hx => absurd (show (3 : Nat) = l from hx)
                 (Nat.ne_of_lt h3l))
               (fun _ hx _ => absurd (show (1 : Nat) = l from hx) hne1)
@@ -11347,7 +11132,7 @@ private theorem colD (l : Nat) (h1l : 1 < l) (F : Nat → Nat) :
       match m, ht, hj with
       | 0, ht, hj =>
         refine colDsimplec l 1 hj F (fun k hk => ?_)
-        exact cartDoff l k 1 (fun hx => hk hx.symm)
+        exact sertables.cartDoff l k 1 (fun hx => hk hx.symm)
           (fun _ hx => absurd
             ((show (4 : Nat) = l from hx).trans ht.symm) (by decide +kernel))
           (fun _ _ hx => absurd (hx.trans ht.symm)
@@ -11371,7 +11156,7 @@ private theorem colD (l : Nat) (h1l : 1 < l) (F : Nat → Nat) :
         refine BPair.oneValue_trans
           (colDmidc l m hj2 F 0 0
             (fun c => by
-              rw [cartDoff l (m + 2) (m + 1) (neAdd (m + 1) 0)
+              rw [sertables.cartDoff l (m + 2) (m + 1) (neAdd (m + 1) 0)
                 (fun _ hx => (neAdd (m + 3) 0 (hx.trans he3'.symm).symm))
                 (fun hb _ => absurd (show m + 2 + 1 = l from he3') hb)
                 (fun hb _ => absurd (show m + 2 + 1 = l from he3') hb)
@@ -11379,7 +11164,7 @@ private theorem colD (l : Nat) (h1l : 1 < l) (F : Nat → Nat) :
                 Nat.zero_mul]
               exact cellNull c)
             (fun c => by
-              rw [cartDoff l (m + 3) (m + 1) (neAdd (m + 1) 1)
+              rw [sertables.cartDoff l (m + 3) (m + 1) (neAdd (m + 1) 1)
                 (fun hk _ => absurd (hk.trans he3'.symm).symm
                   (neAdd (m + 3) 0))
                 (fun _ hx => absurd (hx.trans he3'.symm) (neAdd (m + 2) 0))
@@ -11403,11 +11188,11 @@ private theorem colD (l : Nat) (h1l : 1 < l) (F : Nat → Nat) :
           refine BPair.oneValue_trans
             (colDmidc l m hj2 F 1 1
               (fun c => by
-                rw [cartDdn l (m + 1) hne3 hne2, Nat.zero_add,
+                rw [sertables.cartDdn l (m + 1) hne3 hne2, Nat.zero_add,
                   Nat.one_mul]
                 exact cellOneNeg c)
               (fun c => by
-                rw [cartDfork l (m + 3) (m + 1) (neAdd (m + 1) 1)
+                rw [sertables.cartDfork l (m + 3) (m + 1) (neAdd (m + 1) 1)
                   (show m + 3 + 1 = l from he4')
                   (show m + 1 + 3 = l from he4'),
                   Nat.zero_add, Nat.zero_add, Nat.one_mul]
@@ -11422,11 +11207,11 @@ private theorem colD (l : Nat) (h1l : 1 < l) (F : Nat → Nat) :
           refine BPair.oneValue_trans
             (colDmidc l m hj2 F 1 0
               (fun c => by
-                rw [cartDdn l (m + 1) hne3 hne2, Nat.zero_add,
+                rw [sertables.cartDdn l (m + 1) hne3 hne2, Nat.zero_add,
                   Nat.one_mul]
                 exact cellOneNeg c)
               (fun c => by
-                rw [cartDoff l (m + 3) (m + 1) (neAdd (m + 1) 1)
+                rw [sertables.cartDoff l (m + 3) (m + 1) (neAdd (m + 1) 1)
                   (fun hk => absurd (show m + 4 = l from hk)
                     (Nat.ne_of_lt hj4))
                   (fun _ hx => absurd (show m + 2 = l from hx)
@@ -12493,75 +12278,6 @@ theorem contentCap_D : ∀ (l : Nat) (F : sertables.FundData)
     contentCapGen (sertables.tableD l) F hshape hgram L hfam
       (foldsD_data l) z hz
 
-/-- The `B` rows off their own key: every further coroot pair of
-the stored Cartan row sits at or below the sum's unit. -/
-theorem cartanBOff (l i j : Nat) (hi : i < l) (hj : j < l)
-    (hij : ¬ j = i) :
-    ground.getAt BPair.unit
-      (ground.getAt [] (sertables.cartanB l) i) j ≤ BPair.unit := by
-  unfold sertables.cartanB
-  rw [ground.matOf_entry ([] : List BPair) BPair.unit l l _ i j hi hj,
-    if_neg (fun hb : (j == i) = true => hij (ground.beqEqOf hb))]
-  by_cases h1 : (i + 2 == l && j == i + 1) = true
-  · rw [if_pos h1]
-    decide +kernel
-  · rw [if_neg h1]
-    by_cases h2 : (j + 1 == i || j == i + 1) = true
-    · rw [if_pos h2]
-      decide +kernel
-    · rw [if_neg h2]
-      exact ground.leB_refl _
-
-/-- The `C` rows off their own key: every further coroot pair of
-the stored Cartan row sits at or below the sum's unit. -/
-private theorem cartanCOff (l i j : Nat) (hi : i < l) (hj : j < l)
-    (hij : ¬ j = i) :
-    ground.getAt BPair.unit
-      (ground.getAt [] (sertables.cartanC l) i) j ≤ BPair.unit := by
-  unfold sertables.cartanC
-  rw [ground.matOf_entry ([] : List BPair) BPair.unit l l _ i j hi hj,
-    if_neg (fun hb : (j == i) = true => hij (ground.beqEqOf hb))]
-  by_cases h1 : (i + 1 == l && j + 2 == l) = true
-  · rw [if_pos h1]
-    decide +kernel
-  · rw [if_neg h1]
-    by_cases h2 : (j + 1 == i || j == i + 1) = true
-    · rw [if_pos h2]
-      decide +kernel
-    · rw [if_neg h2]
-      exact ground.leB_refl _
-
-/-- The `D` rows off their own key: every further coroot pair of
-the stored Cartan row sits at or below the sum's unit. -/
-theorem cartanDOff (l i j : Nat) (hi : i < l) (hj : j < l)
-    (hij : ¬ j = i) :
-    ground.getAt BPair.unit
-      (ground.getAt [] (sertables.cartanD l) i) j ≤ BPair.unit := by
-  unfold sertables.cartanD
-  rw [ground.matOf_entry ([] : List BPair) BPair.unit l l _ i j hi hj,
-    if_neg (fun hb : (j == i) = true => hij (ground.beqEqOf hb))]
-  by_cases h1 : (i + 1 == l) = true
-  · rw [if_pos h1]
-    by_cases h2 : (j + 3 == l) = true
-    · rw [if_pos h2]
-      decide +kernel
-    · rw [if_neg h2]
-      exact ground.leB_refl _
-  · rw [if_neg h1]
-    by_cases h2 : (j + 1 == l) = true
-    · rw [if_pos h2]
-      by_cases h3 : (i + 3 == l) = true
-      · rw [if_pos h3]
-        decide +kernel
-      · rw [if_neg h3]
-        exact ground.leB_refl _
-    · rw [if_neg h2]
-      by_cases h3 : (j + 1 == i || j == i + 1) = true
-      · rw [if_pos h3]
-        decide +kernel
-      · rw [if_neg h3]
-        exact ground.leB_refl _
-
 /-- `lem:serstable`(ii)'s row values at the `B` series: at a
 dominant target the even count is the target content's own
 multiplicity and the odd count the letter fold. -/
@@ -12611,8 +12327,8 @@ theorem rowValues_B : ∀ (l : Nat)
   exact rowValuesAt (sertables.tableB l) F Wl wits L mv ρv nu0
     hml hkap hpos
     (fun q hq => ground.matOf_rowLength ([] : List BPair) l l _ q hq)
-    (fun q hq => cartanBDiag l q hq)
-    (fun p q hp hq hqp => cartanBOff l p q hp hq hqp)
+    (fun q hq => sertables.cartanBDiag l q hq)
+    (fun p q hp hq hqp => sertables.cartanBOff l p q hp hq hqp)
     hshape hgram hgsym hsqr hsp hrd hrho hwsh hclose hdom htop hksq
     hmsh hfam hn0pos hdomin
     (contentCap_B l F L hshape hgram hfam)
@@ -12664,8 +12380,8 @@ theorem rowValues_C : ∀ (l : Nat)
   exact rowValuesAt (sertables.tableC l) F Wl wits L mv ρv nu0
     hml hkap hpos
     (fun q hq => ground.matOf_rowLength ([] : List BPair) l l _ q hq)
-    (fun q hq => cartanCDiag l q hq)
-    (fun p q hp hq hqp => cartanCOff l p q hp hq hqp)
+    (fun q hq => sertables.cartanCDiag l q hq)
+    (fun p q hp hq hqp => sertables.cartanCOff l p q hp hq hqp)
     hshape hgram hgsym hsqr hsp hrd hrho hwsh hclose hdom htop hksq
     hmsh hfam hn0pos hdomin
     (contentCap_C l F L hshape hgram hfam)
@@ -12717,8 +12433,8 @@ theorem rowValues_D : ∀ (l : Nat)
   exact rowValuesAt (sertables.tableD l) F Wl wits L mv ρv nu0
     hml hkap hpos
     (fun q hq => ground.matOf_rowLength ([] : List BPair) l l _ q hq)
-    (fun q hq => cartanDDiag l q hq)
-    (fun p q hp hq hqp => cartanDOff l p q hp hq hqp)
+    (fun q hq => sertables.cartanDDiag l q hq)
+    (fun p q hp hq hqp => sertables.cartanDOff l p q hp hq hqp)
     hshape hgram hgsym hsqr hsp hrd hrho hwsh hclose hdom htop hksq
     hmsh hfam hn0pos hdomin
     (contentCap_D l F L hshape hgram hfam)
@@ -15947,9 +15663,9 @@ private theorem raisedEntry (l m : Nat) (nu0 : List BPair)
         (elim.vecScale (BPair.ofNat 1)
           (ground.getAt [] (sertables.tableB l).cartan (m + 1)))))
       y).oneValue
-      (ground.getAt BPair.unit nu0 y + cartB l (m + 1) y) :=
-  raisedEntryG (sertables.tableB l) (fun i j => cartB l i j)
-    (cartB_eq l) nu0 hlen (m + 1) hm1l y hy
+      (ground.getAt BPair.unit nu0 y + sertables.cartB l (m + 1) y) :=
+  raisedEntryG (sertables.tableB l) (fun i j => sertables.cartB l i j)
+    (sertables.cartB_eq l) nu0 hlen (m + 1) hm1l y hy
 
 
 /-- An interior plus-two column read at a `B` family pins the
@@ -16008,7 +15724,7 @@ theorem runVanishB (l m : Nat) (nu0 : List ground.BPair)
           (ground.getAt [] (sertables.tableB l).cartan (m + 1)))))
       (m + 1)).oneValue (BPair.ofNat 2) := by
     refine BPair.oneValue_trans (raisedEntry l m nu0 hlen hm1l (m + 1) hm1l) ?_
-    rw [cartBd l (m + 1)]
+    rw [sertables.cartBd l (m + 1)]
     exact BPair.oneValue_trans
       (BPair.add_congr hv1 (BPair.oneValue_refl _)) (BPair.unit_add _)
   have hxw : (ground.getAt BPair.unit
@@ -16017,7 +15733,7 @@ theorem runVanishB (l m : Nat) (nu0 : List ground.BPair)
           (ground.getAt [] (sertables.tableB l).cartan (m + 1)))))
       w).oneValue (ground.getAt BPair.unit nu0 w) := by
     refine BPair.oneValue_trans (raisedEntry l m nu0 hlen hm1l w hw) ?_
-    rw [cartBoff l (m + 1) w hwne.2.1 hwne.2.2
+    rw [sertables.cartBoff l (m + 1) w hwne.2.1 hwne.2.2
       (fun he => hwne.1 (Nat.succ.inj he))]
     exact BPair.add_unit _
   refine thetaCountZero (sertables.tableB l) _ ?_ ?_
@@ -16593,9 +16309,9 @@ private theorem raisedEntryC (l m : Nat) (nu0 : List BPair)
         (elim.vecScale (BPair.ofNat 1)
           (ground.getAt [] (sertables.tableC l).cartan (m + 1)))))
       y).oneValue
-      (ground.getAt BPair.unit nu0 y + cartC l (m + 1) y) :=
-  raisedEntryG (sertables.tableC l) (fun i j => cartC l i j)
-    (cartC_eq l) nu0 hlen (m + 1) hm1l y hy
+      (ground.getAt BPair.unit nu0 y + sertables.cartC l (m + 1) y) :=
+  raisedEntryG (sertables.tableC l) (fun i j => sertables.cartC l i j)
+    (sertables.cartC_eq l) nu0 hlen (m + 1) hm1l y hy
 
 /-- The `C` positive list's coroot vectors read their column
 values entrywise: the fold's coroot read at a key is the count
@@ -16721,7 +16437,7 @@ theorem runVanishC (l m : Nat) (nu0 : List ground.BPair)
       (m + 1)).oneValue (BPair.ofNat 2) := by
     refine BPair.oneValue_trans
       (raisedEntryC l m nu0 hlen hm1l (m + 1) hm1l) ?_
-    rw [cartCd l (m + 1)]
+    rw [sertables.cartCd l (m + 1)]
     exact BPair.oneValue_trans
       (BPair.add_congr hv1 (BPair.oneValue_refl _)) (BPair.unit_add _)
   have hxw : (ground.getAt BPair.unit
@@ -16730,7 +16446,7 @@ theorem runVanishC (l m : Nat) (nu0 : List ground.BPair)
           (ground.getAt [] (sertables.tableC l).cartan (m + 1)))))
       w).oneValue (ground.getAt BPair.unit nu0 w) := by
     refine BPair.oneValue_trans (raisedEntryC l m nu0 hlen hm1l w hw) ?_
-    rw [cartCoff l (m + 1) w hwne.2.1
+    rw [sertables.cartCoff l (m + 1) w hwne.2.1
       (fun he => hwne.1 (Nat.succ.inj he)) hwne.2.2]
     exact BPair.add_unit _
   refine thetaCountZero (sertables.tableC l) _ ?_ ?_
@@ -17759,9 +17475,9 @@ private theorem raisedEntryD (l m : Nat) (nu0 : List BPair)
         (elim.vecScale (BPair.ofNat 1)
           (ground.getAt [] (sertables.tableD l).cartan (m + 1)))))
       y).oneValue
-      (ground.getAt BPair.unit nu0 y + cartD l (m + 1) y) :=
-  raisedEntryG (sertables.tableD l) (fun i j => cartD l i j)
-    (cartD_eq l) nu0 hlen (m + 1) hm1l y hy
+      (ground.getAt BPair.unit nu0 y + sertables.cartD l (m + 1) y) :=
+  raisedEntryG (sertables.tableD l) (fun i j => sertables.cartD l i j)
+    (sertables.cartD_eq l) nu0 hlen (m + 1) hm1l y hy
 
 /-- An interior plus-two column read at a `D` family pins the
 narrow window: the doubled entry exceeding the neighbour fold by
@@ -17856,7 +17572,7 @@ theorem runVanishD (l m : Nat) (nu0 : List ground.BPair)
       (m + 1)).oneValue (BPair.ofNat 2) := by
     refine BPair.oneValue_trans
       (raisedEntryD l m nu0 hlen hm1l (m + 1) hm1l) ?_
-    rw [cartDd l (m + 1)]
+    rw [sertables.cartDd l (m + 1)]
     exact BPair.oneValue_trans
       (BPair.add_congr hv1 (BPair.oneValue_refl _)) (BPair.unit_add _)
   have hxw : (ground.getAt BPair.unit
@@ -17865,7 +17581,7 @@ theorem runVanishD (l m : Nat) (nu0 : List ground.BPair)
           (ground.getAt [] (sertables.tableD l).cartan (m + 1)))))
       w).oneValue (ground.getAt BPair.unit nu0 w) := by
     refine BPair.oneValue_trans (raisedEntryD l m nu0 hlen hm1l w hw) ?_
-    rw [cartDoff l (m + 1) w hwne.2.1 (fun he => absurd he hmne2)
+    rw [sertables.cartDoff l (m + 1) w hwne.2.1 (fun he => absurd he hmne2)
       (fun _ _ => hmne4) (fun _ _ he => hwne.1 (Nat.succ.inj he))
       (fun _ _ => hwne.2.2)]
     exact BPair.add_unit _
@@ -17915,5 +17631,168 @@ theorem runVanishD (l m : Nat) (nu0 : List ground.BPair)
         pvD_succ] at hnat
       exact colD_notNegTwo l m F hml hcase hnat
 
+
+private theorem diffForkSwapD (k a b : Nat) (hab : a < b) (hb : b < k + 2) :
+    ground.adjSwap k (sertables.diffFold (k + 2) a b)
+      = if b = k + 1 then sertables.sumFoldD (k + 2) a b else sertables.diffFold (k + 2) a b := by
+  have hk : k + 1 < (sertables.diffFold (k + 2) a b).length := by rw [diffLen]; exact Nat.lt_succ_self _
+  by_cases hlast : b = k + 1
+  · rw [hlast] at hk
+    rw [if_pos hlast, hlast]
+    have hak : a ≤ k := Nat.le_of_lt_succ (show a < k + 1 from by rw [← hlast]; exact hab)
+    refine ground.getAt_ext 0 _ _ (by rw [ground.length_adjSwap, diffLen, sumDLen]) ?_
+    intro j hj
+    rw [ground.length_adjSwap, diffLen] at hj
+    rw [sumDAtTop (k + 2) a (k + 1) j hj rfl, ground.addSubSelfR k 2,
+      show k + 2 - 1 = k + 1 from rfl]
+    by_cases hjk : j = k
+    · rw [hjk, ground.getAt_adjSwap_fst 0 k _ hk, diffAt _ a (k + 1) (k + 1) (Nat.lt_succ_self _),
+        indValOut a (k + 1) (k + 1) (Nat.lt_irrefl _), indValOut a k k (Nat.lt_irrefl _),
+        indValLo (k + 1) (k + 2) k (Nat.not_succ_le_self k)]
+    · by_cases hjk' : j = k + 1
+      · rw [hjk', ground.getAt_adjSwap_snd 0 k _ hk,
+          diffAt _ a (k + 1) k (Nat.lt_trans (Nat.lt_succ_self k) (Nat.lt_succ_self (k + 1))),
+          indValIn a (k + 1) k (Nat.lt_succ_self k), if_pos hak,
+          indValOut a k (k + 1) (Nat.not_lt_of_ge (Nat.le_succ k)),
+          indValIn (k + 1) (k + 2) (k + 1) (Nat.lt_succ_self _), if_pos (Nat.le_refl _)]
+      · have hjklt : j < k := Nat.lt_of_le_of_ne
+          (Nat.le_of_lt_succ (Nat.lt_of_le_of_ne (Nat.le_of_lt_succ hj) hjk')) hjk
+        rw [ground.getAt_adjSwap_ne 0 k _ j hjk hjk', diffAt _ a (k + 1) j hj,
+          indValIn a (k + 1) j (Nat.lt_trans hjklt (Nat.lt_succ_self k)), indValIn a k j hjklt,
+          indValLo (k + 1) (k + 2) j (Nat.not_le_of_lt (Nat.lt_trans hjklt (Nat.lt_succ_self k))), Nat.add_zero]
+  · rw [if_neg hlast]
+    apply ground.adjSwap_of_eq 0
+    have hbk : b ≤ k := Nat.le_of_lt_succ (Nat.lt_of_le_of_ne (Nat.le_of_lt_succ hb) hlast)
+    rw [diffAt _ a b k (Nat.lt_trans (Nat.lt_succ_self k) (Nat.lt_succ_self (k + 1))),
+      diffAt _ a b (k + 1) (Nat.lt_succ_self _), indValOut a b k (Nat.not_lt_of_ge hbk),
+      indValOut a b (k + 1) (Nat.not_lt_of_ge (Nat.le_trans hbk (Nat.le_succ k)))]
+
+private theorem sumForkSwapD (k a b : Nat) (hab : a < b) (hb : b < k + 2) :
+    ground.adjSwap k (sertables.sumFoldD (k + 2) a b)
+      = if b = k + 1 then sertables.diffFold (k + 2) a b else sertables.sumFoldD (k + 2) a b := by
+  by_cases hlast : b = k + 1
+  · rw [if_pos hlast]
+    have h := diffForkSwapD k a b hab hb
+    rw [if_pos hlast] at h
+    rw [← h, ground.adjSwap_adjSwap]
+  · rw [if_neg hlast]
+    apply ground.adjSwap_of_eq 0
+    have hbk : b ≤ k := Nat.le_of_lt_succ (Nat.lt_of_le_of_ne (Nat.le_of_lt_succ hb) hlast)
+    have hb' : ¬ b + 1 = k + 2 := fun h => hlast (Nat.succ.inj h)
+    rw [sumDAtGen (k + 2) a b k (Nat.lt_trans (Nat.lt_succ_self k) (Nat.lt_succ_self (k + 1))) hb',
+      sumDAtGen (k + 2) a b (k + 1) (Nat.lt_succ_self _) hb', ground.addSubSelfR k 2,
+      indValOut a b k (Nat.not_lt_of_ge hbk),
+      indValOut a b (k + 1) (Nat.not_lt_of_ge (Nat.le_trans hbk (Nat.le_succ k))),
+      indValOut b k k (Nat.lt_irrefl _), indValOut b k (k + 1) (Nat.not_lt_of_ge (Nat.le_succ k)),
+      indValIn k (k + 2) k (Nat.lt_trans (Nat.lt_succ_self k) (Nat.lt_succ_self (k + 1))),
+      indValIn k (k + 2) (k + 1) (Nat.lt_succ_self _), if_pos (Nat.le_refl _), if_pos (Nat.le_succ k)]
+
+/-- D's gap product is fixed by exchanging the final two coroot
+coordinates: each final-coordinate difference and sum exchange
+their factors, and every further factor is fixed. -/
+theorem gapProd_forkSwap_D (k : Nat) (v : List Nat) (hv : v.length = k + 2) :
+    ground.prodOver (gapAt (sertables.tableD (k + 2)) (ground.adjSwap k v))
+        (List.range (sertables.tableD (k + 2)).posFolds.length)
+      = ground.prodOver (gapAt (sertables.tableD (k + 2)) v)
+        (List.range (sertables.tableD (k + 2)).posFolds.length) := by
+  let W := List.zipWith Nat.mul (sertables.tableD (k + 2)).lenNums v
+  have hW : W.length = k + 2 := ground.length_zipWith Nat.mul _ _ _ (lensDLen _) hv
+  have hswap : List.zipWith Nat.mul (sertables.tableD (k + 2)).lenNums (ground.adjSwap k v)
+      = ground.adjSwap k W := by
+    have hs : (ground.adjSwap k v).length = k + 2 := (ground.length_adjSwap k v).trans hv
+    refine ground.getAt_ext 0 _ _ (by
+      rw [ground.length_zipWith Nat.mul _ _ _ (lensDLen _) hs, ground.length_adjSwap, hW]) ?_
+    intro i hi
+    rw [ground.length_zipWith Nat.mul _ _ _ (lensDLen _) hs] at hi
+    rw [ground.getAt_zipWith 0 0 0 Nat.mul _ _ i (by rw [lensDLen]; exact hi) (by rw [hs]; exact hi),
+      sertables.lensD_at (k + 2) i hi,
+      ground.getAt_adjSwap 0 k v (by rw [hv]; exact Nat.lt_succ_self _) i,
+      ground.getAt_adjSwap 0 k W (by rw [hW]; exact Nat.lt_succ_self _) i]
+    have hix := ground.swapIx_lt
+      (Nat.lt_trans (Nat.lt_succ_self k) (Nat.lt_succ_self (k + 1))) (Nat.lt_succ_self (k + 1)) i hi
+    change 2 * ground.getAt 0 v (ground.swapIx k (k + 1) i)
+      = ground.getAt 0 (List.zipWith Nat.mul (sertables.tableD (k + 2)).lenNums v) (ground.swapIx k (k + 1) i)
+    rw [ground.getAt_zipWith 0 0 0 Nat.mul _ _ _ (by rw [lensDLen]; exact hix)
+      (by rw [hv]; exact hix), sertables.lensD_at (k + 2) _ hix]
+    rfl
+  have hprod : ∀ u : List Nat,
+      ground.prodOver (gapAt (sertables.tableD (k + 2)) u)
+          (List.range (sertables.tableD (k + 2)).posFolds.length)
+        = ground.famFold Nat.mul 1 (fun p : Nat × Nat =>
+          ground.dotNat (sertables.diffFold (k + 2) p.1 p.2) (List.zipWith Nat.mul (sertables.tableD (k + 2)).lenNums u)
+            * ground.dotNat (sertables.sumFoldD (k + 2) p.1 p.2) (List.zipWith Nat.mul (sertables.tableD (k + 2)).lenNums u))
+          (places.pairsOf (k + 2)) := by
+    intro u
+    refine Eq.trans (ground.famFold_getAt Nat.mul 1
+      (fun fd => ground.dotNat fd (List.zipWith Nat.mul (sertables.tableD (k + 2)).lenNums u))
+      ([] : List Nat) (sertables.tableD (k + 2)).posFolds _ rfl) ?_
+    change ground.famFold Nat.mul 1 _ ((places.pairsOf (k + 2)).map _ ++ (places.pairsOf (k + 2)).map _) = _
+    rw [ground.famFold_append Nat.mul 1 ground.mulAssoc Nat.one_mul,
+      ground.famFold_map, ground.famFold_map]
+    exact (ground.famFold_add_ov ground.natMulFoldLaws _ _ _).symm
+  rw [hprod, hprod, hswap]
+  apply ground.famFold_congr_members
+  intro p hp
+  have hpair := places.pairs_mem (k + 2) p hp
+  rw [ground.dotNat_adjSwap k _ W (by rw [diffLen, hW]),
+    ground.dotNat_adjSwap k _ W (by rw [sumDLen, hW]),
+    diffForkSwapD k p.1 p.2 hpair.1 hpair.2, sumForkSwapD k p.1 p.2 hpair.1 hpair.2]
+  by_cases hb : p.2 = k + 1
+  · rw [if_pos hb, if_pos hb]
+    exact Nat.mul_comm _ _
+  · rw [if_neg hb, if_neg hb]
+
+/-- Positive root pairings at the fundamental form give positive
+rho gaps at the concrete natural fold, with the scale cleared. -/
+theorem gapAt_rho_pos_of_fund (t : gentable.Table) (F : sertables.FundData)
+    (hshape : sertables.fundShape t F) (hgram : sertables.gramRead t F)
+    (hrho : sertables.rhoDotRead t F) (j : Nat) (hj : j < t.posFolds.length) :
+    0 < gapAt t (List.replicate t.rank 1) j := by
+  have he := gapAt_dotB t F hshape hgram j hj (List.replicate t.rank 1) (ground.length_replicate _ _)
+  rw [ground.map_replicate] at he
+  have hp := ground.BPair.marginN_pos (hrho j hj)
+  change 0 < ground.BPair.marginN
+    (sertables.dotB F (sertables.posCorootV t j) (List.replicate t.rank (ground.BPair.ofNat 1))) at hp
+  rw [ground.BPair.marginN_congr he, ground.BPair.marginN_ofNat] at hp
+  cases hz : gapAt t (List.replicate t.rank 1) j with
+  | zero =>
+    rw [hz, Nat.mul_zero] at hp
+    exact absurd hp (Nat.lt_irrefl 0)
+  | succ n => exact Nat.succ_pos n
+
+/-- Every B rho factor is positive at every rank, from the
+three occupied root families and the positive length weights. -/
+theorem gapAt_rho_pos_B (l j : Nat) (hj : j < (sertables.tableB l).posFolds.length) :
+    0 < gapAt (sertables.tableB l) (List.replicate l 1) j := by
+  have hf := sertables.foldsB_occupied l _ (ground.mem_getAt [] (sertables.foldsB l) j hj)
+  apply gapAt_rho_pos (sertables.tableB l) (ground.length_mapRange _ l) _ j hf.1 hf.2
+  intro i hi
+  rw [sertables.lensB_at l i hi]
+  by_cases he : i + 1 = l
+  · rw [ground.eqBeqOf he]; exact Nat.succ_pos 0
+  · rw [ground.neBeqOf he]; exact Nat.succ_pos 1
+
+/-- Every C rho factor is positive at every rank, including the
+long-root factor at the last simple coordinate. -/
+theorem gapAt_rho_pos_C (l j : Nat) (hj : j < (sertables.tableC l).posFolds.length) :
+    0 < gapAt (sertables.tableC l) (List.replicate l 1) j := by
+  have hf := sertables.foldsC_occupied l _ (ground.mem_getAt [] (sertables.foldsC l) j hj)
+  apply gapAt_rho_pos (sertables.tableC l) (ground.length_mapRange _ l) _ j hf.1 hf.2
+  intro i hi
+  rw [sertables.lensC_at l i hi]
+  by_cases he : i + 1 = l
+  · rw [ground.eqBeqOf he]; exact Nat.succ_pos 1
+  · rw [ground.neBeqOf he]; exact Nat.succ_pos 0
+
+/-- Every D rho factor is positive at every rank, the fork's
+last-coordinate roots occupied at their last simple key. -/
+theorem gapAt_rho_pos_D (l j : Nat) (hj : j < (sertables.tableD l).posFolds.length) :
+    0 < gapAt (sertables.tableD l) (List.replicate l 1) j := by
+  have hf := sertables.foldsD_occupied l _ (ground.mem_getAt [] (sertables.foldsD l) j hj)
+  apply gapAt_rho_pos (sertables.tableD l) (ground.length_replicate _ _) _ j hf.1 hf.2
+  intro i hi
+  change 0 < ground.getAt 0 (List.replicate l 2) i
+  rw [ground.getAt_replicate 0 2 l i hi]
+  exact Nat.succ_pos 1
 
 end serstable

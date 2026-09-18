@@ -61,7 +61,7 @@ def deflateRead (F : states.FList) (mods : List states.Comb)
       (wg.pairFull wg.evalPhi F F m (deflate F mods y))
       poly.pZero))) = true
 
-instance (F : states.FList) (mods : List states.Comb)
+instance instRes1 (F : states.FList) (mods : List states.Comb)
     (y : states.Comb) : Decidable (deflateRead F mods y) :=
   inferInstanceAs (Decidable (_ = _ ∧ _ = _))
 
@@ -86,7 +86,7 @@ def closedE (act : List Nat → states.Comb)
   (ws.all (fun w => (act w).all (fun e =>
     ws.any (fun v => v == e.1)))) = true
 
-instance (act : List Nat → states.Comb) (ws : List (List Nat)) :
+instance instRes2 (act : List Nat → states.Comb) (ws : List (List Nat)) :
     Decidable (closedE act ws) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -94,7 +94,7 @@ instance (act : List Nat → states.Comb) (ws : List (List Nat)) :
 def covers (ws : List (List Nat)) (c : states.Comb) : Prop :=
   (c.all (fun e => ws.any (fun v => v == e.1))) = true
 
-instance (ws : List (List Nat)) (c : states.Comb) :
+instance instRes3 (ws : List (List Nat)) (c : states.Comb) :
     Decidable (covers ws c) :=
   inferInstanceAs (Decidable (_ = _))
 
@@ -128,7 +128,7 @@ def solveRead (act : List Nat → states.Comb)
           (states.coeffAtW k w)))
       (states.coeffAtW y' w)))) = true
 
-instance (act : List Nat → states.Comb) (lvl : poly.PPair)
+instance instRes4 (act : List Nat → states.Comb) (lvl : poly.PPair)
     (ws : List (List Nat)) (x k y' : states.Comb) :
     Decidable (solveRead act lvl ws x k y') :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ = _))
@@ -144,7 +144,7 @@ def resRead (F : states.FList) (act : List Nat → states.Comb)
   ∧ solveRead act lvl ws x k (deflate F mods y)
   ∧ deflateRead F mods x
 
-instance (F : states.FList) (act : List Nat → states.Comb)
+instance instRes5 (F : states.FList) (act : List Nat → states.Comb)
     (lvl : poly.PPair) (mods : List states.Comb)
     (ws : List (List Nat)) (y x k : states.Comb) :
     Decidable (resRead F act lvl mods ws y x k) :=

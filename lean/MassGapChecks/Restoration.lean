@@ -80,9 +80,11 @@ the transposition, the relabeled square's minor reading the
 source's, a square one coefficient off refusing the entrywise
 reading (`lem:split`'s symbol).
 -/
+
+namespace restoration
 set_option maxHeartbeats 16000000
 
-open ground lattice fusion carrier fiberdec restoration elim inertia
+open ground lattice fusion carrier fiberdec elim inertia
 open pairpencil (dualConf permConf)
 
 /-! The committed members: the direction swap at the vacant flip
@@ -101,28 +103,28 @@ private def FA : Data places.Shape := dataA 3
 /-! Each member permutes the link keys at itself, and a member of
 order four refuses that reading at its own witness. -/
 
-example : linkIso (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
+theorem pin1 : linkIso (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
     (bdLink 2 3 pSwap fNone) := by decide +kernel
-example : linkIso (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 (fun e => e) fZero)
+theorem pin2 : linkIso (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 (fun e => e) fZero)
     (bdLink 2 3 (fun e => e) fZero) := by decide +kernel
-example : ¬ linkIso (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fZero)
+theorem pin3 : ¬ linkIso (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fZero)
     (bdLink 2 3 pSwap fZero) := by decide +kernel
 
 /-! The conjugation reads: each direction's translation carried to
 the permuted direction's own, a flipped direction's to the
 backward step. -/
 
-example : intertwineRead (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
+theorem pin4 : intertwineRead (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
     (torusTransl 2 3 0) (torusTransl 2 3 1) := by decide +kernel
-example : intertwineRead (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
+theorem pin5 : intertwineRead (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
     (torusTransl 2 3 1) (torusTransl 2 3 0) := by decide +kernel
-example : intertwineRead (torusRegion 2 3)
+theorem pin6 : intertwineRead (torusRegion 2 3)
     (bdLink 2 3 (fun e => e) fZero)
     (torusTransl 2 3 0) (torusTranslInv 2 3 0) := by decide +kernel
-example : intertwineRead (torusRegion 2 3)
+theorem pin7 : intertwineRead (torusRegion 2 3)
     (bdLink 2 3 (fun e => e) fZero)
     (torusTransl 2 3 1) (torusTransl 2 3 1) := by decide +kernel
-example : ¬ intertwineRead (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
+theorem pin8 : ¬ intertwineRead (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
     (torusTransl 2 3 0) (torusTransl 2 3 0) := by decide +kernel
 
 /-! The committed family of elementary loops: one builder at the
@@ -154,32 +156,32 @@ private def twIx : List (List places.Shape) :=
 squares at the plaquette level and the windings at the side's own
 count. -/
 
-example : twIx.length = 30 := by decide +kernel
-example : (twIx.all (fun a => occupied FA (torusRegion 2 3) a)) = true := by
+theorem pin9 : twIx.length = 30 := by decide +kernel
+theorem pin10 : (twIx.all (fun a => occupied FA (torusRegion 2 3) a)) = true := by
   decide +kernel
-example : (twIx.map (fun a => contentN FA a)).all (fun c => c == 32 || c == 24)
+theorem pin11 : (twIx.map (fun a => contentN FA a)).all (fun c => c == 32 || c == 24)
     = true := by decide +kernel
-example : contentN FA (ground.getAt [] twIx 0) = 32 := by decide +kernel
-example : contentN FA (ground.getAt [] twIx 18) = 24 := by decide +kernel
+theorem pin12 : contentN FA (ground.getAt [] twIx 0) = 32 := by decide +kernel
+theorem pin13 : contentN FA (ground.getAt [] twIx 18) = 24 := by decide +kernel
 
 /-! The three dualizing index reads at both members. -/
 
-example : fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
+theorem pin14 : fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
     (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone) (bdRev 2 3 fNone) := by
   decide +kernel
-example : dualOccFixed FA (torusRegion 2 3) twIx
+theorem pin15 : dualOccFixed FA (torusRegion 2 3) twIx
     (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone) (bdRev 2 3 fNone) := by
   decide +kernel
-example : dualIdxFixed FA (torusRegion 2 3) twIx
+theorem pin16 : dualIdxFixed FA (torusRegion 2 3) twIx
     (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone) (bdRev 2 3 fNone) := by
   decide +kernel
-example : fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
+theorem pin17 : fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
     (bdLink 2 3 (fun e => e) fZero) (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) := by
   decide +kernel
-example : dualOccFixed FA (torusRegion 2 3) twIx
+theorem pin18 : dualOccFixed FA (torusRegion 2 3) twIx
     (bdLink 2 3 (fun e => e) fZero) (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) := by
   decide +kernel
-example : dualIdxFixed FA (torusRegion 2 3) twIx
+theorem pin19 : dualIdxFixed FA (torusRegion 2 3) twIx
     (bdLink 2 3 (fun e => e) fZero) (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) := by
   decide +kernel
 
@@ -189,25 +191,25 @@ the content read stays true at both forgeries — the Casimir's own
 blindness to the dualization — while a collapsing link map, every
 link at the origin's own, refuses the content read itself. -/
 
-example : ¬ dualOccFixed FA (torusRegion 2 3) twIx
+theorem pin20 : ¬ dualOccFixed FA (torusRegion 2 3) twIx
     (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone) (bdRev 2 3 fZero) := by
   decide +kernel
-example : ¬ dualIdxFixed FA (torusRegion 2 3) twIx
+theorem pin21 : ¬ dualIdxFixed FA (torusRegion 2 3) twIx
     (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone) (bdRev 2 3 fZero) := by
   decide +kernel
-example : ¬ dualOccFixed FA (torusRegion 2 3) twIx
+theorem pin22 : ¬ dualOccFixed FA (torusRegion 2 3) twIx
     (bdLink 2 3 (fun e => e) fZero) (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fNone) := by
   decide +kernel
-example : ¬ dualIdxFixed FA (torusRegion 2 3) twIx
+theorem pin23 : ¬ dualIdxFixed FA (torusRegion 2 3) twIx
     (bdLink 2 3 (fun e => e) fZero) (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fNone) := by
   decide +kernel
-example : fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
+theorem pin24 : fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
     (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone) (bdRev 2 3 fZero) := by
   decide +kernel
-example : fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
+theorem pin25 : fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
     (bdLink 2 3 (fun e => e) fZero) (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fNone) := by
   decide +kernel
-example : ¬ fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
+theorem pin26 : ¬ fiberdec.dualContentFixed FA (torusRegion 2 3) twIx
     (fun _ => 0) (fun _ => 0) (bdRev 2 3 fNone) := by decide +kernel
 
 /-! The plaquette set permuted at the cyclic reading
@@ -227,15 +229,15 @@ private def pmFlip : Nat → Nat := fun q => ground.getAt 0 [2, 1, 0, 5, 4, 3, 8
 private def pmT0 : Nat → Nat := fun q => ground.getAt 0 [1, 2, 0, 4, 5, 3, 7, 8, 6] q
 private def pmT0' : Nat → Nat := fun q => ground.getAt 0 [2, 0, 1, 5, 3, 4, 8, 6, 7] q
 
-example : plaqPermRead (fiberdec.torusRegion 2 3)
+theorem pin27 : plaqPermRead (fiberdec.torusRegion 2 3)
     (bdLink 2 3 pSwap fNone) (bdRev 2 3 fNone) pmSwap pmSwap := by decide +kernel
-example : plaqPermRead (fiberdec.torusRegion 2 3)
+theorem pin28 : plaqPermRead (fiberdec.torusRegion 2 3)
     (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) pmFlip pmFlip := by
   decide +kernel
-example : plaqPermRead (fiberdec.torusRegion 2 3)
+theorem pin29 : plaqPermRead (fiberdec.torusRegion 2 3)
     (fiberdec.torusTransl 2 3 0) (bdRev 2 3 fNone) pmT0 pmT0' := by
   decide +kernel
-example : ¬ plaqPermRead (fiberdec.torusRegion 2 3)
+theorem pin30 : ¬ plaqPermRead (fiberdec.torusRegion 2 3)
     (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fNone) pmFlip pmFlip := by
   decide +kernel
 
@@ -250,14 +252,14 @@ the direction-zero links alone. -/
 
 private def fOne : Nat → Bool := fun e => e == 1
 
-example : linkIso (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fZero)
+theorem pin31 : linkIso (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fZero)
     (bdLink 2 3 pSwap fOne) := by decide +kernel
-example : eqConf FA (dualConf FA (bdLink 2 3 pSwap fZero) (bdLink 2 3 pSwap fOne) (bdRev 2 3 fZero) 18
+theorem pin32 : eqConf FA (dualConf FA (bdLink 2 3 pSwap fZero) (bdLink 2 3 pSwap fOne) (bdRev 2 3 fZero) 18
       (torWind 0 0 [1, 0, 0])) (torWind 1 0 [0, 1, 0]) = true
     ∧ eqConf FA (dualConf FA (bdLink 2 3 pSwap fZero) (bdLink 2 3 pSwap fOne) (bdRev 2 3 fZero) 18
       (torWind 0 0 [1, 0, 0])) (torWind 1 0 [1, 0, 0]) = false := by
   decide +kernel
-example : moveWord (bdLink 2 3 pSwap fZero) (bdRev 2 3 fZero) [(0, true), (9, true)]
+theorem pin33 : moveWord (bdLink 2 3 pSwap fZero) (bdRev 2 3 fZero) [(0, true), (9, true)]
     = [(15, false), (0, true)] := by decide +kernel
 
 /-! The transport at the committed members: the two signed members
@@ -276,20 +278,20 @@ private def vSwap : Nat → Nat := bdSite 2 3 pSwap fNone
 /-- The flip's induced vertex map, an involution. -/
 private def vFlip : Nat → Nat := bdSite 2 3 (fun e => e) fZero
 
-example : endsMoved (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
+theorem pin34 : endsMoved (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
       (fun _ => false) vSwap
     ∧ vertIso (torusRegion 2 3) (torusRegion 2 3) vSwap vSwap := by decide +kernel
-example : vertIso (torusRegion 2 3) (torusRegion 2 3) vFlip vFlip := by decide +kernel
-example : ¬ endsMoved (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
+theorem pin35 : vertIso (torusRegion 2 3) (torusRegion 2 3) vFlip vFlip := by decide +kernel
+theorem pin36 : ¬ endsMoved (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
     (fun _ => false) vFlip := by decide +kernel
 
-example : isoRead (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
+theorem pin37 : isoRead (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 pSwap fNone)
     (bdLink 2 3 pSwap fNone) vSwap vSwap (bdRev 2 3 fNone) := by decide +kernel
-example : isoRead (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 (fun e => e) fZero)
+theorem pin38 : isoRead (torusRegion 2 3) (torusRegion 2 3) (bdLink 2 3 (fun e => e) fZero)
     (bdLink 2 3 (fun e => e) fZero) vFlip vFlip (bdRev 2 3 fZero) := by decide +kernel
-example : statesTransport FA (torusRegion 2 3) twIx (bdLink 2 3 pSwap fNone)
+theorem pin39 : statesTransport FA (torusRegion 2 3) twIx (bdLink 2 3 pSwap fNone)
     (bdLink 2 3 pSwap fNone) vSwap (bdRev 2 3 fNone) := by decide +kernel
-example : statesTransport FA (torusRegion 2 3) twIx (bdLink 2 3 (fun e => e) fZero)
+theorem pin40 : statesTransport FA (torusRegion 2 3) twIx (bdLink 2 3 (fun e => e) fZero)
     (bdLink 2 3 (fun e => e) fZero) vFlip (bdRev 2 3 fZero) := by decide +kernel
 
 /-- Every moved member is the moved vertex's own list's member, one
@@ -297,9 +299,9 @@ coevaluation member per fiber at this window. -/
 private def membersFixed (s v w : Nat → Nat) (rev : Nat → Bool) : Bool :=
   twIx.all (fun a =>
     let a' := dualConf FA s s rev 18 a
-    (List.zipWith (fun (m m' : Option (slotpower.SVec × Pos)) =>
+    (List.zipWith (fun (m m' : Option (slotpower.WVec × Pos)) =>
         match m, m' with
-        | some x, some y => slotpower.oneValueV x.1 y.1 && decide (x.2 = y.2)
+        | some x, some y => slotpower.oneValueW x.1 y.1 && decide (x.2 = y.2)
         | none, none => true
         | none, some _ => false
         | some _, none => false)
@@ -308,7 +310,7 @@ private def membersFixed (s v w : Nat → Nat) (rev : Nat → Bool) : Bool :=
       (pairpencil.stateMembers FA (torusRegion 2 3) twIx a' (List.replicate 9 0))).all
         (fun b => b))
 
-example : membersFixed (bdLink 2 3 pSwap fNone) vSwap vSwap (bdRev 2 3 fNone) = true
+theorem pin41 : membersFixed (bdLink 2 3 pSwap fNone) vSwap vSwap (bdRev 2 3 fNone) = true
     ∧ membersFixed (bdLink 2 3 (fun e => e) fZero) vFlip vFlip (bdRev 2 3 fZero) = true := by
   decide +kernel
 
@@ -327,14 +329,14 @@ private def bdFlipT : Mat × List BPair :=
 private def bdSwapM : Mat := bdSwapT.1
 private def bdFlipM : Mat := bdFlipT.1
 
-example : (bdSwapT.2.all (fun x => decide (x.oneValue (BPair.ofNat 1)))) = true
+theorem pin42 : (bdSwapT.2.all (fun x => decide (x.oneValue (BPair.ofNat 1)))) = true
     ∧ (bdFlipT.2.all (fun x => decide (x.oneValue (BPair.ofNat 1)))) = true := by
   decide +kernel
 private theorem bdSwapSq : sqAt bdSwapM 31 := by decide +kernel
 private theorem bdFlipSq : sqAt bdFlipM 31 := by decide +kernel
-example : matOneValue (matMul (transposeM bdSwapM) bdSwapM) (idMat 31) := by
+theorem pin43 : matOneValue (matMul (transposeM bdSwapM) bdSwapM) (idMat 31) := by
   decide +kernel
-example : matOneValue (matMul (transposeM bdFlipM) bdFlipM) (idMat 31) := by
+theorem pin44 : matOneValue (matMul (transposeM bdFlipM) bdFlipM) (idMat 31) := by
   decide +kernel
 
 /-! The flip at the adjoint loop, the reversed ends' columns
@@ -363,9 +365,9 @@ private def loopTh3 : List places.Shape :=
 private def loopTh3' : List places.Shape := dualConf FA sF sF rF 18 loopTh3
 private def ixTh3 : List (List places.Shape) := [loopTh3, loopTh3']
 
-example : statesTransport (dataA 2) (torusRegion 2 3) ixTh2 sF sF vFlip rF := by
+theorem pin45 : statesTransport (dataA 2) (torusRegion 2 3) ixTh2 sF sF vFlip rF := by
   decide +kernel
-example : ¬ statesTransport (dataA 2) (torusRegion 2 3) ixTh2 sF sF vFlip (fun _ => false) := by
+theorem pin46 : ¬ statesTransport (dataA 2) (torusRegion 2 3) ixTh2 sF sF vFlip (fun _ => false) := by
   decide +kernel
 /-- The flip's term entry at the adjoint loop over two letters,
 stated data: the contraction, the determinants' product and the
@@ -389,14 +391,14 @@ private theorem flMov : pairpencil.termEntryAt (dataA 2) (torusRegion 2 3) ixTh2
         (pairpencil.stateMembers (dataA 2) (torusRegion 2 3) ixTh2 loopTh2 (List.replicate 9 0))))
     = flE := by decide +kernel
 
-example : pairpencil.termTransport (dataA 2) (torusRegion 2 3) (torusRegion 2 3) ixTh2 ixTh2
+theorem pin47 : pairpencil.termTransport (dataA 2) (torusRegion 2 3) (torusRegion 2 3) ixTh2 ixTh2
     sF sF vFlip vFlip rF torP0 loopTh2 (List.replicate 9 0) loopTh2 (List.replicate 9 0)
     = true := by
   unfold pairpencil.termTransport
   exact pairpencil.termTransportAt_of _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ flSrc flMov
     (by decide +kernel)
-example : statesTransport FA (torusRegion 2 3) ixTh3 sF sF vFlip rF := by decide +kernel
-example : ¬ statesTransport FA (torusRegion 2 3) ixTh3 sF sF vFlip (fun _ => false) := by
+theorem pin48 : statesTransport FA (torusRegion 2 3) ixTh3 sF sF vFlip rF := by decide +kernel
+theorem pin49 : ¬ statesTransport FA (torusRegion 2 3) ixTh3 sF sF vFlip (fun _ => false) := by
   decide +kernel
 
 /-! The electric member's diagonal at the window, `thm:restoration`'s
@@ -408,12 +410,12 @@ the diagonal off orthogonality itself. -/
 
 private def bdDiag : List Nat := 0 :: twIx.map (contentN FA)
 
-example : bdDiag = 0 :: (List.replicate 18 32 ++ List.replicate 12 24) := by
+theorem pin50 : bdDiag = 0 :: (List.replicate 18 32 ++ List.replicate 12 24) := by
   decide +kernel
 
 private def bdE : Mat := pairpencil.pencilE bdDiag
 
-example : ¬ matOneValue (matMul (transposeM bdE) bdE) (idMat 31) := by
+theorem pin51 : ¬ matOneValue (matMul (transposeM bdE) bdE) (idMat 31) := by
   decide +kernel
 
 /-! The ground line at the same window (`thm:SO`'s character
@@ -426,17 +428,17 @@ the occupied line off itself. -/
 private def bdPsi : List BPair :=
   BPair.ofPos 1 :: twIx.map (fun _ => BPair.unit)
 
-example : SO.symRead (⟨bdE, by decide +kernel⟩ : SqMat 31)
+theorem pin52 : SO.symRead (⟨bdE, by decide +kernel⟩ : SqMat 31)
     (⟨bdSwapM, bdSwapSq⟩ : SqMat 31)
     (⟨bdPsi, by decide +kernel⟩ : Vec 31) := by decide +kernel
-example : SO.symRead (⟨bdE, by decide +kernel⟩ : SqMat 31)
+theorem pin53 : SO.symRead (⟨bdE, by decide +kernel⟩ : SqMat 31)
     (⟨bdFlipM, bdFlipSq⟩ : SqMat 31)
     (⟨bdPsi, by decide +kernel⟩ : Vec 31) := by decide +kernel
 
 private def bdPsiBad : List BPair :=
   BPair.unit :: BPair.ofPos 1 :: List.replicate 29 BPair.unit
 
-example : ¬ SO.symRead (⟨bdE, by decide +kernel⟩ : SqMat 31)
+theorem pin54 : ¬ SO.symRead (⟨bdE, by decide +kernel⟩ : SqMat 31)
     (⟨bdSwapM, bdSwapSq⟩ : SqMat 31)
     (⟨bdPsiBad, by decide +kernel⟩ : Vec 31) := by decide +kernel
 
@@ -446,11 +448,11 @@ argument its own, and the moved key at the two members — the swap
 reading the exponents at the permuted directions, the flip reading
 a key to its balance partner at the wrap. -/
 
-example : (places.keyBox 2 3).length = 9 := by decide +kernel
-example : (argBox 2 3 1).length = 9 := by decide +kernel
-example : bdKey 2 3 (fun e => 1 - e) (fun _ => false) [1, 2] = [2, 1] := by
+theorem pin55 : (places.keyBox 2 3).length = 9 := by decide +kernel
+theorem pin56 : (argBox 2 3 1).length = 9 := by decide +kernel
+theorem pin57 : bdKey 2 3 (fun e => 1 - e) (fun _ => false) [1, 2] = [2, 1] := by
   decide +kernel
-example : bdKey 2 3 (fun e => e) (fun e => e == 0) [1, 2] = [2, 2] := by
+theorem pin58 : bdKey 2 3 (fun e => e) (fun e => e == 0) [1, 2] = [2, 2] := by
   decide +kernel
 
 /-! The transform at a committed probe: the shift at a key list
@@ -473,16 +475,16 @@ private def torShiftInv (ks : List (List Nat)) : Nat → Nat :=
 private def windD0 : List places.Shape := torWind 0 0 [1, 0, 0]
 private def windD1 : List places.Shape := torWind 1 0 [1, 0, 0]
 
-example : eqConf FA windD0 (ground.getAt [] twIx 18) = true := by
+theorem pin59 : eqConf FA windD0 (ground.getAt [] twIx 18) = true := by
   decide +kernel
-example : eqConf FA windD1 (ground.getAt [] twIx 24) = true := by
+theorem pin60 : eqConf FA windD1 (ground.getAt [] twIx 24) = true := by
   decide +kernel
-example : eqConf FA (dualConf FA (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone)
+theorem pin61 : eqConf FA (dualConf FA (bdLink 2 3 pSwap fNone) (bdLink 2 3 pSwap fNone)
     (bdRev 2 3 fNone) 18 windD0) windD1 = true := by decide +kernel
-example : eqConf FA (dualConf FA (bdLink 2 3 (fun e => e) fZero)
+theorem pin62 : eqConf FA (dualConf FA (bdLink 2 3 (fun e => e) fZero)
     (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) 18 windD1) windD1 = true := by
   decide +kernel
-example : eqConf FA (dualConf FA (bdLink 2 3 (fun e => e) fZero)
+theorem pin63 : eqConf FA (dualConf FA (bdLink 2 3 (fun e => e) fZero)
     (bdLink 2 3 (fun e => e) fZero) (bdRev 2 3 fZero) 18 windD0) windD0 = false := by
   decide +kernel
 
@@ -503,9 +505,9 @@ direction-one family outright; and the diagonal at the swap is
 refused for the direction-zero family, the member moving the probe
 so the forged read parts from the moved family's own. -/
 
-example : transformMoved 2 3 1 wD0 wD1 pSwap fNone := by decide +kernel
-example : transformFixed 2 3 1 wD1 (fun e => e) fZero := by decide +kernel
-example : ¬ transformFixed 2 3 1 wD0 pSwap fNone := by decide +kernel
+theorem pin64 : transformMoved 2 3 1 wD0 wD1 pSwap fNone := by decide +kernel
+theorem pin65 : transformFixed 2 3 1 wD1 (fun e => e) fZero := by decide +kernel
+theorem pin66 : ¬ transformFixed 2 3 1 wD0 pSwap fNone := by decide +kernel
 
 /-! The polynomial carrier's own instance (`lem:split`'s symbol):
 a committed two-by-two polynomial square at the transposition, its
@@ -528,22 +530,22 @@ private def pzbad : split.PMat :=
   [[[BPair.ofNat 6], [BPair.ofNat 4, BPair.ofNat 5]],
    [[BPair.ofNat 3], [BPair.ofNat 1, BPair.ofNat 3]]]
 
-example : pz' = (List.range 2).map (fun i => (List.range 2).map
+theorem pin67 : pz' = (List.range 2).map (fun i => (List.range 2).map
     (fun j => ground.getAt []
       (ground.getAt [] pz (ground.getAt 0 qT i))
       (ground.getAt 0 qT j))) := by decide +kernel
 
-example : ((List.range 2).all (fun i => (List.range 2).all
+theorem pin68 : ((List.range 2).all (fun i => (List.range 2).all
     (fun j => decide (poly.oneValue
       (ground.getAt [] (ground.getAt [] pzbad i) j)
       (ground.getAt []
         (ground.getAt [] pz (ground.getAt 0 qT i))
         (ground.getAt 0 qT j)))))) = false := by decide +kernel
 
-example : poly.oneValue (split.pminor pz') (split.pminor pz) := by
+theorem pin69 : poly.oneValue (split.pminor pz') (split.pminor pz) := by
   decide +kernel
 
-example : poly.oneValue (split.pminor pz') (split.pminor pz) := by
+theorem pin70 : poly.oneValue (split.pminor pz') (split.pminor pz) := by
   have hent : ((List.range 2).all (fun i => (List.range 2).all
       (fun j => decide (poly.oneValue
         (ground.getAt [] (ground.getAt [] pz' i) j)
@@ -563,18 +565,18 @@ decides at each member's own witness, and at a three-direction
 cycle the tie holds at the cycle's witness alone, the forward map
 refused. -/
 
-example : keyMoveRead (torusRegion 2 3) 2 3
+theorem pin71 : keyMoveRead (torusRegion 2 3) 2 3
     (bdLink 2 3 pSwap fNone) pSwap fNone := by decide +kernel
-example : keyMoveRead (torusRegion 2 3) 2 3
+theorem pin72 : keyMoveRead (torusRegion 2 3) 2 3
     (bdLink 2 3 (fun e => e) fZero) (fun e => e) fZero := by
   decide +kernel
 
 private def pCyc : Nat → Nat := fun e => if e == 2 then 0 else e + 1
 private def pCycInv : Nat → Nat := fun e => if e == 0 then 2 else e - 1
 
-example : keyMoveRead (torusRegion 3 3) 3 3
+theorem pin73 : keyMoveRead (torusRegion 3 3) 3 3
     (bdLink 3 3 pCyc fNone) pCycInv fNone := by decide +kernel
-example : ¬ keyMoveRead (torusRegion 3 3) 3 3
+theorem pin74 : ¬ keyMoveRead (torusRegion 3 3) 3 3
     (bdLink 3 3 pCyc fNone) pCyc fNone := by decide +kernel
 
 
@@ -618,17 +620,17 @@ at degree two, since no member of the box and no transposition of
 one reaches a grid of another degree, while the span's identity at
 that grid is decided false. -/
 
-example : (momBox 1 2 2).length = 3 := by decide +kernel
-example : (momBox 2 2 2).length = 10 := by decide +kernel
-example : (momBox 1 2 4).length = 5 := by decide +kernel
-example : momBox 0 2 0 = [[]] := by decide +kernel
-example : momBox 0 2 3 = [] := by decide +kernel
+theorem pin75 : (momBox 1 2 2).length = 3 := by decide +kernel
+theorem pin76 : (momBox 2 2 2).length = 10 := by decide +kernel
+theorem pin77 : (momBox 1 2 4).length = 5 := by decide +kernel
+theorem pin78 : momBox 0 2 0 = [[]] := by decide +kernel
+theorem pin79 : momBox 0 2 3 = [] := by decide +kernel
 
-example : bdInvAt 1 2 2 (ipFam 1 2 0 0) := by decide +kernel
-example : bdInvAt 2 2 2 (ipFam 2 2 0 1) := by decide +kernel
-example : bdInvAt 1 2 4 (quFam 1 2 0) := by decide +kernel
-example : bdInvAt 1 3 4 (prodIP 1 3 0 0 0 0) := by decide +kernel
-example : bdInvAt 2 3 2 (ipFam 2 3 0 1) := by decide +kernel
+theorem pin80 : bdInvAt 1 2 2 (ipFam 1 2 0 0) := by decide +kernel
+theorem pin81 : bdInvAt 2 2 2 (ipFam 2 2 0 1) := by decide +kernel
+theorem pin82 : bdInvAt 1 2 4 (quFam 1 2 0) := by decide +kernel
+theorem pin83 : bdInvAt 1 3 4 (prodIP 1 3 0 0 0 0) := by decide +kernel
+theorem pin84 : bdInvAt 2 3 2 (ipFam 2 3 0 1) := by decide +kernel
 
 /-- A family forged occupied at `[[1, 1]]`, a grid of odd total at
 both coordinates and fixed by the transposition. -/
@@ -641,45 +643,45 @@ the family reads at the sum's unit. -/
 private def swapForge (g : List (List Nat)) : BPair :=
   if g == [[2, 0]] then BPair.ofNat 1 else BPair.unit
 
-example : ¬ bdInvAt 1 2 2 oddForge := by decide +kernel
+theorem pin85 : ¬ bdInvAt 1 2 2 oddForge := by decide +kernel
 
-example : ((momBox 1 2 2).all (fun g => (List.range 2).all (fun i =>
+theorem pin86 : ((momBox 1 2 2).all (fun g => (List.range 2).all (fun i =>
     dirTot i g % 2 == 0
       || decide ((oddForge g).oneValue BPair.unit)))) = false := by
   decide +kernel
 
-example : ((momBox 1 2 2).all (fun g => (List.range 2).all (fun i =>
+theorem pin87 : ((momBox 1 2 2).all (fun g => (List.range 2).all (fun i =>
     (List.range 2).all (fun j => !decide (i < j)
       || decide ((oddForge (swapDirs i j g)).oneValue (oddForge g))))))
     = true := by decide +kernel
 
-example : ¬ bdInvAt 1 2 2 swapForge := by decide +kernel
+theorem pin88 : ¬ bdInvAt 1 2 2 swapForge := by decide +kernel
 
-example : ((momBox 1 2 2).all (fun g => (List.range 2).all (fun i =>
+theorem pin89 : ((momBox 1 2 2).all (fun g => (List.range 2).all (fun i =>
     dirTot i g % 2 == 0
       || decide ((swapForge g).oneValue BPair.unit)))) = true := by
   decide +kernel
 
-example : ((momBox 1 2 2).all (fun g => (List.range 2).all (fun i =>
+theorem pin90 : ((momBox 1 2 2).all (fun g => (List.range 2).all (fun i =>
     (List.range 2).all (fun j => !decide (i < j)
       || decide ((swapForge (swapDirs i j g)).oneValue (swapForge g))))))
     = false := by decide +kernel
 
-example : (ipFam 1 2 0 0 [[1, 1]]).oneValue BPair.unit :=
+theorem pin91 : (ipFam 1 2 0 0 [[1, 1]]).oneValue BPair.unit :=
   bdInv_vanish 1 2 2 (ipFam 1 2 0 0) (by decide +kernel) [[1, 1]]
     (by decide +kernel) 0 (by decide +kernel) (by decide +kernel)
 
-example : (ipFam 2 2 0 1 (swapDirs 0 1 [[1, 0], [1, 0]])).oneValue
+theorem pin92 : (ipFam 2 2 0 1 (swapDirs 0 1 [[1, 0], [1, 0]])).oneValue
     (ipFam 2 2 0 1 [[1, 0], [1, 0]]) :=
   bdInv_swap 2 2 2 (ipFam 2 2 0 1) (by decide +kernel) [[1, 0], [1, 0]]
     (by decide +kernel) 0 1 (by decide +kernel) (by decide +kernel)
 
-example : bdInvAt 2 3 2 (ipFam 2 3 1 1) := ipFam_inv 2 3 1 1
-example : bdInvAt 1 3 4 (quFam 1 3 0) := quFam_inv 1 3 0
-example : bdInvAt 2 2 4 (prodIP 2 2 0 1 0 1) := prodIP_inv 2 2 0 1 0 1
+theorem pin93 : bdInvAt 2 3 2 (ipFam 2 3 1 1) := ipFam_inv 2 3 1 1
+theorem pin94 : bdInvAt 1 3 4 (quFam 1 3 0) := quFam_inv 1 3 0
+theorem pin95 : bdInvAt 2 2 4 (prodIP 2 2 0 1 0 1) := prodIP_inv 2 2 0 1 0 1
 
-example : bdInvAt 1 2 2 (ipFam 1 2 5 7) := ipFam_inv 1 2 5 7
-example : bdInvAt 1 2 2 (ipFam 1 2 5 7) := by decide +kernel
+theorem pin96 : bdInvAt 1 2 2 (ipFam 1 2 5 7) := ipFam_inv 1 2 5 7
+theorem pin97 : bdInvAt 1 2 2 (ipFam 1 2 5 7) := by decide +kernel
 
 /-- A strict combination of the pairwise inner products at two
 arguments and two directions: each ordered argument pair's family
@@ -689,9 +691,9 @@ private def cDemo (g : List (List Nat)) : BPair :=
     (List.range 2).flatMap (fun s =>
       if r ≤ s then [BPair.ofNat (r + s + 1) * ipFam 2 2 r s g] else [])))
 
-example : bdInvAt 2 2 2 cDemo := by decide +kernel
+theorem pin98 : bdInvAt 2 2 2 cDemo := by decide +kernel
 
-example : (cDemo [[1, 0], [1, 0]]).oneValue
+theorem pin99 : (cDemo [[1, 0], [1, 0]]).oneValue
     (BPair.sum ((List.range 2).flatMap (fun r =>
       (List.range 2).flatMap (fun s =>
         if r ≤ s then
@@ -700,7 +702,7 @@ example : (cDemo [[1, 0], [1, 0]]).oneValue
   deg2_span 2 2 cDemo (by decide +kernel) [[1, 0], [1, 0]]
     (by decide +kernel)
 
-example : (cDemo [[1, 0], [1, 0]]).oneValue
+theorem pin100 : (cDemo [[1, 0], [1, 0]]).oneValue
     (BPair.sum ((List.range 2).flatMap (fun r =>
       (List.range 2).flatMap (fun s =>
         if r ≤ s then
@@ -718,11 +720,11 @@ identity there. -/
 private def offBoxForge (g : List (List Nat)) : BPair :=
   if g == offBoxGrid then BPair.ofNat 5 else cDemo g
 
-example : ground.countOf offBoxGrid (momBox 2 2 2) = 0 := by decide +kernel
+theorem pin101 : ground.countOf offBoxGrid (momBox 2 2 2) = 0 := by decide +kernel
 
-example : bdInvAt 2 2 2 offBoxForge := by decide +kernel
+theorem pin102 : bdInvAt 2 2 2 offBoxForge := by decide +kernel
 
-example : ¬ (offBoxForge offBoxGrid).oneValue
+theorem pin103 : ¬ (offBoxForge offBoxGrid).oneValue
     (BPair.sum ((List.range 2).flatMap (fun r =>
       (List.range 2).flatMap (fun s =>
         if r ≤ s then
@@ -748,13 +750,13 @@ joined with the quartic family scaled by two. -/
 private def cQuart (g : List (List Nat)) : BPair :=
   BPair.ofNat 3 * prodIP 1 2 0 0 0 0 g + BPair.ofNat 2 * quFam 1 2 0 g
 
-example : bdInvAt 1 2 4 cQuart := by decide +kernel
+theorem pin104 : bdInvAt 1 2 4 cQuart := by decide +kernel
 
-example : ground.countOf [[2, 2]] (momBox 1 2 4) = 1 := by decide +kernel
+theorem pin105 : ground.countOf [[2, 2]] (momBox 1 2 4) = 1 := by decide +kernel
 
-example : ground.countOf [[4, 0]] (momBox 1 2 4) = 1 := by decide +kernel
+theorem pin106 : ground.countOf [[4, 0]] (momBox 1 2 4) = 1 := by decide +kernel
 
-example : (cQuart [[2, 2]] + cQuart [[2, 2]]).oneValue
+theorem pin107 : (cQuart [[2, 2]] + cQuart [[2, 2]]).oneValue
     (cQuart (crossG 2 0 1)
         * prodIP 1 2 0 0 0 0 [[2, 2]]
       + (cQuart (quGrid 1 2 0 0) + cQuart (quGrid 1 2 0 0)
@@ -762,14 +764,14 @@ example : (cQuart [[2, 2]] + cQuart [[2, 2]]).oneValue
         * quFam 1 2 0 [[2, 2]]) :=
   deg4_span 2 cQuart (by decide +kernel) [[2, 2]] (by decide +kernel)
 
-example : (cQuart [[2, 2]] + cQuart [[2, 2]]).oneValue
+theorem pin108 : (cQuart [[2, 2]] + cQuart [[2, 2]]).oneValue
     (cQuart (crossG 2 0 1)
         * prodIP 1 2 0 0 0 0 [[2, 2]]
       + (cQuart (quGrid 1 2 0 0) + cQuart (quGrid 1 2 0 0)
           + (cQuart (crossG 2 0 1)).swap)
         * quFam 1 2 0 [[2, 2]]) := by decide +kernel
 
-example : (cQuart [[4, 0]] + cQuart [[4, 0]]).oneValue
+theorem pin109 : (cQuart [[4, 0]] + cQuart [[4, 0]]).oneValue
     (cQuart (crossG 2 0 1)
         * prodIP 1 2 0 0 0 0 [[4, 0]]
       + (cQuart (quGrid 1 2 0 0) + cQuart (quGrid 1 2 0 0)
@@ -777,7 +779,7 @@ example : (cQuart [[4, 0]] + cQuart [[4, 0]]).oneValue
         * quFam 1 2 0 [[4, 0]]) :=
   deg4_span 2 cQuart (by decide +kernel) [[4, 0]] (by decide +kernel)
 
-example : (cQuart [[4, 0]] + cQuart [[4, 0]]).oneValue
+theorem pin110 : (cQuart [[4, 0]] + cQuart [[4, 0]]).oneValue
     (cQuart (crossG 2 0 1)
         * prodIP 1 2 0 0 0 0 [[4, 0]]
       + (cQuart (quGrid 1 2 0 0) + cQuart (quGrid 1 2 0 0)
@@ -789,16 +791,16 @@ scaled by seven. -/
 private def cQuart1 (g : List (List Nat)) : BPair :=
   BPair.ofNat 7 * quFam 1 1 0 g
 
-example : bdInvAt 1 1 4 cQuart1 := by decide +kernel
+theorem pin111 : bdInvAt 1 1 4 cQuart1 := by decide +kernel
 
-example : momBox 1 1 4 = [[[4]]] := by decide +kernel
+theorem pin112 : momBox 1 1 4 = [[[4]]] := by decide +kernel
 
-example : crossG 1 0 1 = [[2]] := by
+theorem pin113 : crossG 1 0 1 = [[2]] := by
   decide +kernel
 
-example : ground.countOf [[2]] (momBox 1 1 4) = 0 := by decide +kernel
+theorem pin114 : ground.countOf [[2]] (momBox 1 1 4) = 0 := by decide +kernel
 
-example : (cQuart1 [[4]] + cQuart1 [[4]]).oneValue
+theorem pin115 : (cQuart1 [[4]] + cQuart1 [[4]]).oneValue
     (cQuart1 (crossG 1 0 1)
         * prodIP 1 1 0 0 0 0 [[4]]
       + (cQuart1 (quGrid 1 1 0 0) + cQuart1 (quGrid 1 1 0 0)
@@ -806,14 +808,14 @@ example : (cQuart1 [[4]] + cQuart1 [[4]]).oneValue
         * quFam 1 1 0 [[4]]) :=
   deg4_span 1 cQuart1 (by decide +kernel) [[4]] (by decide +kernel)
 
-example : (cQuart1 [[4]] + cQuart1 [[4]]).oneValue
+theorem pin116 : (cQuart1 [[4]] + cQuart1 [[4]]).oneValue
     (cQuart1 (crossG 1 0 1)
         * prodIP 1 1 0 0 0 0 [[4]]
       + (cQuart1 (quGrid 1 1 0 0) + cQuart1 (quGrid 1 1 0 0)
           + (cQuart1 (crossG 1 0 1)).swap)
         * quFam 1 1 0 [[4]]) := by decide +kernel
 
-example : ∀ g : List (List Nat),
+theorem pin117 : ∀ g : List (List Nat),
     0 < ground.countOf g (momBox 1 1 4) →
     ((BPair.ofNat 1) * quFam 1 1 0 g
       + (BPair.ofNat 1).swap * prodIP 1 1 0 0 0 0 g).oneValue
@@ -825,23 +827,23 @@ example : ∀ g : List (List Nat),
   | head => decide +kernel
   | tail _ hh => cases hh
 
-example : ¬ (BPair.ofNat 1).oneValue BPair.unit := by decide +kernel
+theorem pin118 : ¬ (BPair.ofNat 1).oneValue BPair.unit := by decide +kernel
 
-example : ¬ (∀ g : List (List Nat),
+theorem pin119 : ¬ (∀ g : List (List Nat),
     0 < ground.countOf g (momBox 1 2 4) →
     ((BPair.ofNat 1) * quFam 1 2 0 g
       + BPair.unit * prodIP 1 2 0 0 0 0 g).oneValue
       BPair.unit) := fun H =>
   absurd (H (quGrid 1 2 0 0) (by decide +kernel)) (by decide +kernel)
 
-example : BPair.unit.oneValue BPair.unit
+theorem pin120 : BPair.unit.oneValue BPair.unit
     ∧ BPair.unit.oneValue BPair.unit :=
   deg4_indep 2 (by decide +kernel) BPair.unit BPair.unit
     (fun _ _ => BPair.oneValue_trans
       (BPair.add_congr (BPair.unit_mul _) (BPair.unit_mul _))
       (BPair.add_unit BPair.unit))
 
-example : ¬ ((BPair.ofNat 3).oneValue BPair.unit
+theorem pin121 : ¬ ((BPair.ofNat 3).oneValue BPair.unit
     ∧ (BPair.ofNat 3).oneValue BPair.unit) := by decide +kernel
 
 /-! The quartic's break at every argument count: the two witness
@@ -867,36 +869,36 @@ private def wFirst (r s t u : Nat) : BPair :=
   if r == 0 && s == 0 && t == 0 && u == 0 then BPair.ofNat 1
   else BPair.unit
 
-example : ground.countOf (quGrid 2 2 0 0) (momBox 2 2 4) = 1 := by
+theorem pin122 : ground.countOf (quGrid 2 2 0 0) (momBox 2 2 4) = 1 := by
   decide +kernel
 
-example : ground.countOf (addG (ipGrid 2 2 0 0 0) (ipGrid 2 2 0 0 1))
+theorem pin123 : ground.countOf (addG (ipGrid 2 2 0 0 0) (ipGrid 2 2 0 0 1))
     (momBox 2 2 4) = 1 := by decide +kernel
 
-example : quFam 2 2 0 (quGrid 2 2 0 0) = BPair.ofNat 1 := by decide +kernel
+theorem pin124 : quFam 2 2 0 (quGrid 2 2 0 0) = BPair.ofNat 1 := by decide +kernel
 
-example : quFam 2 2 0 (addG (ipGrid 2 2 0 0 0) (ipGrid 2 2 0 0 1))
+theorem pin125 : quFam 2 2 0 (addG (ipGrid 2 2 0 0 0) (ipGrid 2 2 0 0 1))
     = BPair.unit := by decide +kernel
 
-example : prodIP 2 2 0 0 0 0 (quGrid 2 2 0 0) = BPair.ofNat 1 := by
+theorem pin126 : prodIP 2 2 0 0 0 0 (quGrid 2 2 0 0) = BPair.ofNat 1 := by
   decide +kernel
 
-example : prodIP 2 2 0 0 0 0 (addG (ipGrid 2 2 0 0 0) (ipGrid 2 2 0 0 1))
+theorem pin127 : prodIP 2 2 0 0 0 0 (addG (ipGrid 2 2 0 0 0) (ipGrid 2 2 0 0 1))
     = BPair.ofNat 2 := by decide +kernel
 
-example : prodIP 2 2 0 1 0 0 (quGrid 2 2 0 0) = BPair.unit := by
+theorem pin128 : prodIP 2 2 0 1 0 0 (quGrid 2 2 0 0) = BPair.unit := by
   decide +kernel
 
-example : prodIP 2 2 1 1 1 1 (quGrid 2 2 0 0) = BPair.unit := by
+theorem pin129 : prodIP 2 2 1 1 1 1 (quGrid 2 2 0 0) = BPair.unit := by
   decide +kernel
 
-example : prodIP 2 2 0 0 0 1 (addG (ipGrid 2 2 0 0 0) (ipGrid 2 2 0 0 1))
+theorem pin130 : prodIP 2 2 0 0 0 1 (addG (ipGrid 2 2 0 0 0) (ipGrid 2 2 0 0 1))
     = BPair.unit := by decide +kernel
 
-example : prodIP 2 2 1 0 1 0 (addG (ipGrid 2 2 0 0 0) (ipGrid 2 2 0 0 1))
+theorem pin131 : prodIP 2 2 1 0 1 0 (addG (ipGrid 2 2 0 0 0) (ipGrid 2 2 0 0 1))
     = BPair.unit := by decide +kernel
 
-example : (BPair.sum ((List.range 2).flatMap (fun r =>
+theorem pin132 : (BPair.sum ((List.range 2).flatMap (fun r =>
       (List.range 2).flatMap (fun s =>
         (List.range 2).flatMap (fun t =>
           (List.range 2).map (fun u =>
@@ -904,7 +906,7 @@ example : (BPair.sum ((List.range 2).flatMap (fun r =>
               * prodIP 2 2 r s t u (quGrid 2 2 0 0))))))).oneValue
     (wFirst 0 0 0 0 * BPair.ofNat 1) := by decide +kernel
 
-example : (BPair.sum ((List.range 2).flatMap (fun r =>
+theorem pin133 : (BPair.sum ((List.range 2).flatMap (fun r =>
       (List.range 2).flatMap (fun s =>
         (List.range 2).flatMap (fun t =>
           (List.range 2).map (fun u =>
@@ -912,9 +914,9 @@ example : (BPair.sum ((List.range 2).flatMap (fun r =>
               (addG (ipGrid 2 2 0 0 0) (ipGrid 2 2 0 0 1)))))))).oneValue
     (wFirst 0 0 0 0 * BPair.ofNat 2) := by decide +kernel
 
-example : momBox 0 2 4 = [] := by decide +kernel
+theorem pin134 : momBox 0 2 4 = [] := by decide +kernel
 
-example : ∀ g : List (List Nat),
+theorem pin135 : ∀ g : List (List Nat),
     0 < ground.countOf g (momBox 0 2 4) →
     (quFam 0 2 0 g).oneValue
       (BPair.sum ((List.range 0).flatMap (fun r =>
@@ -924,7 +926,7 @@ example : ∀ g : List (List Nat),
               wFirst r s t u * prodIP 0 2 r s t u g)))))) :=
   fun _ hg => absurd hg (Nat.lt_irrefl 0)
 
-example : ∀ g : List (List Nat),
+theorem pin136 : ∀ g : List (List Nat),
     0 < ground.countOf g (momBox 1 1 4) →
     (quFam 1 1 0 g).oneValue
       (BPair.sum ((List.range 1).flatMap (fun r =>
@@ -939,7 +941,7 @@ example : ∀ g : List (List Nat),
   | head => decide +kernel
   | tail _ hh => cases hh
 
-example : ¬ (∀ g : List (List Nat),
+theorem pin137 : ¬ (∀ g : List (List Nat),
     0 < ground.countOf g (momBox 2 2 4) →
     (quFam 2 2 0 g).oneValue
       (BPair.sum ((List.range 2).flatMap (fun r =>
@@ -949,7 +951,7 @@ example : ¬ (∀ g : List (List Nat),
               wFirst r s t u * prodIP 2 2 r s t u g)))))))  :=
   quartic_breaks 2 2 (by decide +kernel) (by decide +kernel) wFirst
 
-example : ¬ (∀ g : List (List Nat),
+theorem pin138 : ¬ (∀ g : List (List Nat),
     0 < ground.countOf g (momBox 3 3 4) →
     (quFam 3 3 0 g).oneValue
       (BPair.sum ((List.range 3).flatMap (fun r =>
@@ -969,24 +971,24 @@ invariance-free family refuses each span identity at a moved
 monomial, and a degree-three grid off the box refuses the
 degree-four identity's membership read. -/
 
-example : ((momBox 1 2 3).all (fun g => (List.range 2).any (fun i =>
+theorem pin139 : ((momBox 1 2 3).all (fun g => (List.range 2).any (fun i =>
     !(restoration.dirTot i g % 2 == 0)))) = true := by decide +kernel
-example : ((momBox 2 3 3).all (fun g => (List.range 3).any (fun i =>
+theorem pin140 : ((momBox 2 3 3).all (fun g => (List.range 3).any (fun i =>
     !(restoration.dirTot i g % 2 == 0)))) = true := by decide +kernel
-example : ((momBox 3 2 1).all (fun g => (List.range 2).any (fun i =>
+theorem pin141 : ((momBox 3 2 1).all (fun g => (List.range 2).any (fun i =>
     !(restoration.dirTot i g % 2 == 0)))) = true := by decide +kernel
-example : ((momBox 2 3 3).all (fun g =>
+theorem pin142 : ((momBox 2 3 3).all (fun g =>
     ground.sumNat ((List.range 3).map (fun i => restoration.dirTot i g))
       == 3)) = true := by decide +kernel
 
-example : (ipFam 1 2 0 0 [[1, 2]]).oneValue BPair.unit :=
+theorem pin143 : (ipFam 1 2 0 0 [[1, 2]]).oneValue BPair.unit :=
   oddDeg_vanish 1 2 3 (by decide +kernel) (ipFam 1 2 0 0)
     (by decide +kernel) [[1, 2]] (by decide +kernel)
-example : (ipFam 1 2 0 0 [[1, 2]]).oneValue BPair.unit := by
+theorem pin144 : (ipFam 1 2 0 0 [[1, 2]]).oneValue BPair.unit := by
   decide +kernel
 
-example : ¬ bdInvAt 1 2 2 swapForge := by decide +kernel
-example : ¬ ((swapForge [[0, 2]]).oneValue
+theorem pin145 : ¬ bdInvAt 1 2 2 swapForge := by decide +kernel
+theorem pin146 : ¬ ((swapForge [[0, 2]]).oneValue
     (BPair.sum ((List.range 1).flatMap (fun r =>
       (List.range 1).flatMap (fun s =>
         if r ≤ s then
@@ -996,8 +998,8 @@ example : ¬ ((swapForge [[0, 2]]).oneValue
 private def quartForge (g : List (List Nat)) : BPair :=
   if g == [[4, 0]] then BPair.ofNat 1 else BPair.unit
 
-example : ¬ bdInvAt 1 2 4 quartForge := by decide +kernel
-example : ¬ ((quartForge [[0, 4]] + quartForge [[0, 4]]).oneValue
+theorem pin147 : ¬ bdInvAt 1 2 4 quartForge := by decide +kernel
+theorem pin148 : ¬ ((quartForge [[0, 4]] + quartForge [[0, 4]]).oneValue
     (quartForge (crossG 2 0 1) * prodIP 1 2 0 0 0 0 [[0, 4]]
       + (quartForge (quGrid 1 2 0 0) + quartForge (quGrid 1 2 0 0)
           + (quartForge (crossG 2 0 1)).swap)
@@ -1006,11 +1008,13 @@ example : ¬ ((quartForge [[0, 4]] + quartForge [[0, 4]]).oneValue
 private def cubeForge (g : List (List Nat)) : BPair :=
   if g == [[3, 0]] then BPair.ofNat 1 else BPair.unit
 
-example : bdInvAt 1 2 4 cubeForge := by decide +kernel
-example : ground.countOf ([[3, 0]] : List (List Nat))
+theorem pin149 : bdInvAt 1 2 4 cubeForge := by decide +kernel
+theorem pin150 : ground.countOf ([[3, 0]] : List (List Nat))
     (momBox 1 2 4) = 0 := by decide +kernel
-example : ¬ ((cubeForge [[3, 0]] + cubeForge [[3, 0]]).oneValue
+theorem pin151 : ¬ ((cubeForge [[3, 0]] + cubeForge [[3, 0]]).oneValue
     (cubeForge (crossG 2 0 1) * prodIP 1 2 0 0 0 0 [[3, 0]]
       + (cubeForge (quGrid 1 2 0 0) + cubeForge (quGrid 1 2 0 0)
           + (cubeForge (crossG 2 0 1)).swap)
         * quFam 1 2 0 [[3, 0]])) := by decide +kernel
+
+end restoration

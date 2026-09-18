@@ -164,7 +164,7 @@ def prodReadAt (G : genericlift.PPMat) (m : poly.PPair)
   genericlift.pprowEq (genericlift.ppmatVec G x)
     (rhs.map (fun e => poly.pMul m e))
 
-instance (G : genericlift.PPMat) (m : poly.PPair)
+instance instAlgebra1 (G : genericlift.PPMat) (m : poly.PPair)
     (rhs x : List poly.PPair) :
     Decidable (prodReadAt G m rhs x) :=
   genericlift.decPprowEq _ _
@@ -249,7 +249,7 @@ private theorem prodRow_iff {m W : poly.PPair}
      fun x => ⟨(slot_congr hm hmden hWden v e).mpr x.1,
       (prodRow_iff hm hmden hWden l rhs).mpr x.2⟩⟩
 
-instance (F Fa Fu : states.FList) (ws : List states.Comb)
+instance instAlgebra2 (F Fa Fu : states.FList) (ws : List states.Comb)
     (a u : states.Comb) (x : List poly.PPair) :
     Decidable (prodRead F Fa Fu ws a u x) :=
   let G := windowGram F ws

@@ -28,37 +28,39 @@ transitive read alone, and an upward equality refusing the unit
 labels' read alone, each held law swept at the exhibit's label
 window — beside the three occupancy binders' own refusals.
 -/
-open ground fusion network
+
+namespace network
+open ground fusion
 
 /-! The theta region's lattice reads. -/
 
-example : lattice.wellRead lattice.thetaG := by decide +kernel
-example : lattice.colorRead lattice.thetaG := by decide +kernel
-example : lattice.simpleRead lattice.thetaG := by decide +kernel
-example : lattice.plaqRead lattice.thetaG := by decide +kernel
+theorem pin1 : lattice.wellRead lattice.thetaG := by decide +kernel
+theorem pin2 : lattice.colorRead lattice.thetaG := by decide +kernel
+theorem pin3 : lattice.simpleRead lattice.thetaG := by decide +kernel
+theorem pin4 : lattice.plaqRead lattice.thetaG := by decide +kernel
 
 /-! The weight numerators at the committed residues: the `r = 1`
 row's `m_k d_k` at the three channels against `d_θ² = 9`
 (`fusion.dimLaw` the completeness's read), and the `r = 2` `θ`
 weight at the base `c₁ = 2`. -/
 
-example : weightN (dataA 2) [0, 0] = 1 := by decide +kernel
-example : weightN (dataA 2) [2, 0] = 3 := by decide +kernel
-example : weightN (dataA 2) [4, 0] = 5 := by decide +kernel
-example : dimLaw (dataA 2) (adjchar.theta 2) (adjchar.theta 2) := by
+theorem pin5 : weightN (dataA 2) [0, 0] = 1 := by decide +kernel
+theorem pin6 : weightN (dataA 2) [2, 0] = 3 := by decide +kernel
+theorem pin7 : weightN (dataA 2) [4, 0] = 5 := by decide +kernel
+theorem pin8 : dimLaw (dataA 2) (adjchar.theta 2) (adjchar.theta 2) := by
   decide +kernel
-example : weightN (dataA 3) (adjchar.theta 3) = 16 := by decide +kernel
+theorem pin9 : weightN (dataA 3) (adjchar.theta 3) = 16 := by decide +kernel
 
 /-! The resolvent factors and the self-energy at `r = 1`: the
 factors `[8 : 16 + dfQ]` at the three channels and the fold's
 value `[5 : 18]`, the vacant interface's factor `none`. -/
 
-example : (match resFactor (dataA 2) (adjchar.theta 2) with
+theorem pin10 : (match resFactor (dataA 2) (adjchar.theta 2) with
     | some p => decide (p.oneValue
         (Pair.mk (posOfSucc 0) (posOfSucc 2)))
     | none => false) = true := by decide +kernel
 
-example : (match selfEnergy (dataA 2) with
+theorem pin11 : (match selfEnergy (dataA 2) with
     | some p => decide (p.oneValue
         (Pair.mk (posOfSucc 4) (posOfSucc 17)))
     | none => false) = true := by decide +kernel
@@ -67,31 +69,31 @@ example : (match selfEnergy (dataA 2) with
 interpolant at a withdrawn node one degree-four coefficient list,
 and the projected states' sites. -/
 
-example : network.nodes.length = 5 := by decide +kernel
-example : (network.lagNum 0).length = 5 := by decide +kernel
-example : (network.lagNum 1).length = 5 := by decide +kernel
-example : network.siteQ12.length = 4 := by decide +kernel
-example : (twoplaq.extSite 0 network.siteQ12).length = 6 := by
+theorem pin12 : network.nodes.length = 5 := by decide +kernel
+theorem pin13 : (network.lagNum 0).length = 5 := by decide +kernel
+theorem pin14 : (network.lagNum 1).length = 5 := by decide +kernel
+theorem pin15 : network.siteQ12.length = 4 := by decide +kernel
+theorem pin16 : (twoplaq.extSite 0 network.siteQ12).length = 6 := by
   decide +kernel
 
 /-! The weight displays' theorem routes at each row's own floor
 width, the label calculus's first residues. -/
 
-example : ((poly.eval wUnit.1 (BPair.ofNat (0 + 1))).mul
+theorem pin17 : ((poly.eval wUnit.1 (BPair.ofNat (0 + 1))).mul
       (BPair.ofNat
         (4 * (((0 + 2) * (0 + 2) - 1) * ((0 + 2) * (0 + 2) - 1))))).oneValue
     ((poly.eval wUnit.2 (BPair.ofNat (0 + 1))).mul
       (BPair.ofNat (1 * (4 * weyldim.dimOf (channels.rowUnit (0 + 2)))))) :=
   wUnit_read 0
 
-example : ((poly.eval wTheta.1 (BPair.ofNat (0 + 2))).mul
+theorem pin18 : ((poly.eval wTheta.1 (BPair.ofNat (0 + 2))).mul
       (BPair.ofNat
         (4 * (((0 + 3) * (0 + 3) - 1) * ((0 + 3) * (0 + 3) - 1))))).oneValue
     ((poly.eval wTheta.2 (BPair.ofNat (0 + 2))).mul
       (BPair.ofNat (2 * (4 * weyldim.dimOf (channels.rowTheta (0 + 3)))))) :=
   wTheta_read 0
 
-example : ((poly.eval wTwoTheta.1 (BPair.ofNat (0 + 1))).mul
+theorem pin19 : ((poly.eval wTwoTheta.1 (BPair.ofNat (0 + 1))).mul
       (BPair.ofNat
         (4 * (((0 + 2) * (0 + 2) - 1) * ((0 + 2) * (0 + 2) - 1))))).oneValue
     ((poly.eval wTwoTheta.2 (BPair.ofNat (0 + 1))).mul
@@ -99,21 +101,21 @@ example : ((poly.eval wTwoTheta.1 (BPair.ofNat (0 + 1))).mul
         (1 * (4 * weyldim.dimOf (channels.rowTwoTheta (0 + 2)))))) :=
   wTwoTheta_read 0
 
-example : ((poly.eval wDual.1 (BPair.ofNat (0 + 2))).mul
+theorem pin20 : ((poly.eval wDual.1 (BPair.ofNat (0 + 2))).mul
       (BPair.ofNat
         (4 * (((0 + 3) * (0 + 3) - 1) * ((0 + 3) * (0 + 3) - 1))))).oneValue
     ((poly.eval wDual.2 (BPair.ofNat (0 + 2))).mul
       (BPair.ofNat (1 * (4 * weyldim.dimOf (channels.rowDualA (0 + 3)))))) :=
   wDual_read 0
 
-example : ((poly.eval wDual.1 (BPair.ofNat (0 + 2))).mul
+theorem pin21 : ((poly.eval wDual.1 (BPair.ofNat (0 + 2))).mul
       (BPair.ofNat
         (4 * (((0 + 3) * (0 + 3) - 1) * ((0 + 3) * (0 + 3) - 1))))).oneValue
     ((poly.eval wDual.2 (BPair.ofNat (0 + 2))).mul
       (BPair.ofNat (1 * (4 * weyldim.dimOf (channels.rowDualB (0 + 3)))))) :=
   wDualB_read 0
 
-example : ((poly.eval wOmega.1 (BPair.ofNat (0 + 3))).mul
+theorem pin22 : ((poly.eval wOmega.1 (BPair.ofNat (0 + 3))).mul
       (BPair.ofNat
         (4 * (((0 + 4) * (0 + 4) - 1) * ((0 + 4) * (0 + 4) - 1))))).oneValue
     ((poly.eval wOmega.2 (BPair.ofNat (0 + 3))).mul
@@ -123,21 +125,21 @@ example : ((poly.eval wOmega.1 (BPair.ofNat (0 + 3))).mul
 /-! The middle values' ties routed at their floors, with the ten
 pairwise gaps' first reads off the bundled theorem. -/
 
-example : ((poly.eval (ground.getAt poly.pZero nodes 1).1
+theorem pin23 : ((poly.eval (ground.getAt poly.pZero nodes 1).1
       (BPair.ofNat (0 + 1))).mul (BPair.ofNat (2 * (0 + 2)))).oneValue
     ((poly.eval (ground.getAt poly.pZero nodes 1).2
       (BPair.ofNat (0 + 1))).mul
       (BPair.ofNat (c2hat.dfQ (channels.rowTheta (0 + 2))))) :=
   nodeTheta_read 0
 
-example : ((poly.eval (ground.getAt poly.pZero nodes 3).1
+theorem pin24 : ((poly.eval (ground.getAt poly.pZero nodes 3).1
       (BPair.ofNat (0 + 2))).mul (BPair.ofNat (2 * (0 + 3)))).oneValue
     ((poly.eval (ground.getAt poly.pZero nodes 3).2
       (BPair.ofNat (0 + 2))).mul
       (BPair.ofNat (c2hat.dfQ (channels.rowDualB (0 + 3))))) :=
   nodeDualB_read 0
 
-example : ¬ genericlift.agreeAt (ground.getAt poly.pZero nodes 0)
+theorem pin25 : ¬ genericlift.agreeAt (ground.getAt poly.pZero nodes 0)
     (ground.getAt poly.pZero nodes 1) (BPair.ofNat (0 + 2)) :=
   (nodes_gap 0).1
 
@@ -145,8 +147,8 @@ example : ¬ genericlift.agreeAt (ground.getAt poly.pZero nodes 0)
 value representative, so the degree and top reads run at the
 stored coefficients. -/
 
-example : wList.length = 6 := by decide +kernel
-example : (wList.all (fun w =>
+theorem pin26 : wList.length = 6 := by decide +kernel
+theorem pin27 : (wList.all (fun w =>
     decide (poly.vnorm w.1 = w.1) && decide (poly.vnorm w.2 = w.2)))
       = true := by decide +kernel
 
@@ -155,21 +157,21 @@ example : (wList.all (fun w =>
 there — the table's count at the width two is one at that row
 against the display's two. -/
 
-example : ((poly.eval wUnit.1 (BPair.ofNat 1)).mul
+theorem pin28 : ((poly.eval wUnit.1 (BPair.ofNat 1)).mul
       (BPair.ofNat
         ((dataA 2).dim (adjchar.theta 2)
           * (dataA 2).dim (adjchar.theta 2)))).oneValue
     ((poly.eval wUnit.2 (BPair.ofNat 1)).mul
       (BPair.ofNat (weightN (dataA 2) (channels.rowUnit 2)))) := by decide +kernel
 
-example : ((poly.eval wTwoTheta.1 (BPair.ofNat 1)).mul
+theorem pin29 : ((poly.eval wTwoTheta.1 (BPair.ofNat 1)).mul
       (BPair.ofNat
         ((dataA 2).dim (adjchar.theta 2)
           * (dataA 2).dim (adjchar.theta 2)))).oneValue
     ((poly.eval wTwoTheta.2 (BPair.ofNat 1)).mul
       (BPair.ofNat (weightN (dataA 2) (channels.rowTwoTheta 2)))) := by decide +kernel
 
-example : ¬ ((poly.eval wTheta.1 (BPair.ofNat 1)).mul
+theorem pin30 : ¬ ((poly.eval wTheta.1 (BPair.ofNat 1)).mul
       (BPair.ofNat
         ((dataA 2).dim (adjchar.theta 2)
           * (dataA 2).dim (adjchar.theta 2)))).oneValue
@@ -180,35 +182,35 @@ example : ¬ ((poly.eval wTheta.1 (BPair.ofNat 1)).mul
 the width three tie at `[m_k d_k : d_θ²]`, the dual pair's display
 entering at each of its two rows. -/
 
-example : ((poly.eval wUnit.1 (BPair.ofNat 2)).mul
+theorem pin31 : ((poly.eval wUnit.1 (BPair.ofNat 2)).mul
       (BPair.ofNat
         ((dataA 3).dim (adjchar.theta 3)
           * (dataA 3).dim (adjchar.theta 3)))).oneValue
     ((poly.eval wUnit.2 (BPair.ofNat 2)).mul
       (BPair.ofNat (weightN (dataA 3) (channels.rowUnit 3)))) := by decide +kernel
 
-example : ((poly.eval wTheta.1 (BPair.ofNat 2)).mul
+theorem pin32 : ((poly.eval wTheta.1 (BPair.ofNat 2)).mul
       (BPair.ofNat
         ((dataA 3).dim (adjchar.theta 3)
           * (dataA 3).dim (adjchar.theta 3)))).oneValue
     ((poly.eval wTheta.2 (BPair.ofNat 2)).mul
       (BPair.ofNat (weightN (dataA 3) (adjchar.theta 3)))) := by decide +kernel
 
-example : ((poly.eval wTwoTheta.1 (BPair.ofNat 2)).mul
+theorem pin33 : ((poly.eval wTwoTheta.1 (BPair.ofNat 2)).mul
       (BPair.ofNat
         ((dataA 3).dim (adjchar.theta 3)
           * (dataA 3).dim (adjchar.theta 3)))).oneValue
     ((poly.eval wTwoTheta.2 (BPair.ofNat 2)).mul
       (BPair.ofNat (weightN (dataA 3) (channels.rowTwoTheta 3)))) := by decide +kernel
 
-example : ((poly.eval wDual.1 (BPair.ofNat 2)).mul
+theorem pin34 : ((poly.eval wDual.1 (BPair.ofNat 2)).mul
       (BPair.ofNat
         ((dataA 3).dim (adjchar.theta 3)
           * (dataA 3).dim (adjchar.theta 3)))).oneValue
     ((poly.eval wDual.2 (BPair.ofNat 2)).mul
       (BPair.ofNat (weightN (dataA 3) (channels.rowDualA 3)))) := by decide +kernel
 
-example : ((poly.eval wDual.1 (BPair.ofNat 2)).mul
+theorem pin35 : ((poly.eval wDual.1 (BPair.ofNat 2)).mul
       (BPair.ofNat
         ((dataA 3).dim (adjchar.theta 3)
           * (dataA 3).dim (adjchar.theta 3)))).oneValue
@@ -219,22 +221,22 @@ example : ((poly.eval wDual.1 (BPair.ofNat 2)).mul
 interface's completeness at the adjoint square and the fold's value
 `[349 : 1344]`. -/
 
-example : dimLaw (dataA 3) (adjchar.theta 3) (adjchar.theta 3) := by decide +kernel
+theorem pin36 : dimLaw (dataA 3) (adjchar.theta 3) (adjchar.theta 3) := by decide +kernel
 
-example : (match selfEnergy (dataA 3) with
+theorem pin37 : (match selfEnergy (dataA 3) with
     | some p => decide (p.oneValue
         (Pair.mk (posOfSucc 348) (posOfSucc 1343)))
     | none => false) = true := by decide +kernel
 
 /-! The middle values at `r = 1`: the first three pairwise apart. -/
 
-example : ¬ genericlift.agreeAt (ground.getAt poly.pZero nodes 0)
+theorem pin38 : ¬ genericlift.agreeAt (ground.getAt poly.pZero nodes 0)
     (ground.getAt poly.pZero nodes 1) (BPair.ofNat 1) := by decide +kernel
 
-example : ¬ genericlift.agreeAt (ground.getAt poly.pZero nodes 0)
+theorem pin39 : ¬ genericlift.agreeAt (ground.getAt poly.pZero nodes 0)
     (ground.getAt poly.pZero nodes 2) (BPair.ofNat 1) := by decide +kernel
 
-example : ¬ genericlift.agreeAt (ground.getAt poly.pZero nodes 1)
+theorem pin40 : ¬ genericlift.agreeAt (ground.getAt poly.pZero nodes 1)
     (ground.getAt poly.pZero nodes 2) (BPair.ofNat 1) := by decide +kernel
 
 /-! The reduction (`thm:network`(i)) at the label calculus's width
@@ -242,30 +244,30 @@ two: the all-`θ` network's occupancy with its content `56` and its
 two three-valent multiplicities, and a path-broken configuration
 refused at the vertex where its two links read apart. -/
 
-example : carrier.occupied (dataA 2) lattice.thetaG
+theorem pin41 : carrier.occupied (dataA 2) lattice.thetaG
     (netConf [2, 0] [2, 0] [2, 0]) = true := by decide +kernel
 
-example : carrier.contentN (dataA 2) (netConf [2, 0] [2, 0] [2, 0])
+theorem pin42 : carrier.contentN (dataA 2) (netConf [2, 0] [2, 0] [2, 0])
     = 56 := by decide +kernel
 
-example : carrier.vmult (dataA 2) lattice.thetaG
+theorem pin43 : carrier.vmult (dataA 2) lattice.thetaG
     (netConf [2, 0] [2, 0] [2, 0]) 0 = 1 := by decide +kernel
 
-example : carrier.vmult (dataA 2) lattice.thetaG
+theorem pin44 : carrier.vmult (dataA 2) lattice.thetaG
     (netConf [2, 0] [2, 0] [2, 0]) 3 = 1 := by decide +kernel
 
-example : carrier.occupied (dataA 2) lattice.thetaG
+theorem pin45 : carrier.occupied (dataA 2) lattice.thetaG
     [[2, 0], [2, 0], [4, 0], [2, 0], [2, 0], [2, 0], [2, 0]]
       = false := by decide +kernel
 
-example : carrier.vmult (dataA 2) lattice.thetaG
+theorem pin46 : carrier.vmult (dataA 2) lattice.thetaG
     [[2, 0], [2, 0], [4, 0], [2, 0], [2, 0], [2, 0], [2, 0]] 2
       = 0 := by decide +kernel
 
 /-! The energy and multiplicity theorems routed at the width two's
 committed labels, the display's own count `56` beside the first. -/
 
-example : carrier.contentN (dataA 2) (netConf [2, 0] [2, 0] [2, 0])
+theorem pin47 : carrier.contentN (dataA 2) (netConf [2, 0] [2, 0] [2, 0])
     = 3 * (if (dataA 2).eqL [2, 0] (dataA 2).unit then 0
         else (dataA 2).c2N [2, 0])
       + (if (dataA 2).eqL [2, 0] (dataA 2).unit then 0
@@ -274,14 +276,14 @@ example : carrier.contentN (dataA 2) (netConf [2, 0] [2, 0] [2, 0])
         else (dataA 2).c2N [2, 0]) :=
   netConf_energy (dataA 2) [2, 0] [2, 0] [2, 0]
 
-example : (3 * (if (dataA 2).eqL [2, 0] (dataA 2).unit then 0
+theorem pin48 : (3 * (if (dataA 2).eqL [2, 0] (dataA 2).unit then 0
       else (dataA 2).c2N [2, 0])
     + (if (dataA 2).eqL [2, 0] (dataA 2).unit then 0
       else (dataA 2).c2N [2, 0])
     + 3 * (if (dataA 2).eqL [2, 0] (dataA 2).unit then 0
       else (dataA 2).c2N [2, 0])) = 56 := by decide +kernel
 
-example : carrier.vmult (dataA 2) lattice.thetaG
+theorem pin49 : carrier.vmult (dataA 2) lattice.thetaG
       (netConf [2, 0] [2, 0] [2, 0]) 0
       = carrier.invCount (dataA 2)
           [[2, 0], (dataA 2).dual [2, 0], (dataA 2).dual [2, 0]]
@@ -298,7 +300,7 @@ two-valent vertex's pair read, one of the four the network reads
 at one label over its six path links, and the index at its own
 spread. -/
 
-example :
+theorem pin50 :
     (((dataA 2).eqL
           (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 0)
           (dataA 2).unit = true
@@ -318,7 +320,7 @@ example :
             (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 1))
           = true)) := by decide +kernel
 
-example : carrier.eqConf (dataA 2) (netConf [2, 0] [2, 0] [2, 0])
+theorem pin51 : carrier.eqConf (dataA 2) (netConf [2, 0] [2, 0] [2, 0])
     (netConf
       (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 1)
       (ground.getAt (dataA 2).unit (netConf [2, 0] [2, 0] [2, 0]) 0)
@@ -330,13 +332,13 @@ unit coordinate, the all-unit spread reads it, and a mixed spread at
 one unit label reads off — the evaluation's split at the three
 labels, decided and through the theorem. -/
 
-example : ((netConf [2, 0] [2, 0] [2, 0]).all
+theorem pin52 : ((netConf [2, 0] [2, 0] [2, 0]).all
     (fun x => (dataA 2).eqL x (dataA 2).unit)) = false := by decide +kernel
-example : ((netConf [0, 0] [0, 0] [0, 0]).all
+theorem pin53 : ((netConf [0, 0] [0, 0] [0, 0]).all
     (fun x => (dataA 2).eqL x (dataA 2).unit)) = true := by decide +kernel
-example : ((netConf [2, 0] [0, 0] [0, 0]).all
+theorem pin54 : ((netConf [2, 0] [0, 0] [0, 0]).all
     (fun x => (dataA 2).eqL x (dataA 2).unit)) = false := by decide +kernel
-example : ((netConf [2, 0] [0, 0] [4, 0]).all
+theorem pin55 : ((netConf [2, 0] [0, 0] [4, 0]).all
     (fun x => (dataA 2).eqL x (dataA 2).unit))
     = ((dataA 2).eqL [0, 0] (dataA 2).unit && (dataA 2).eqL [2, 0] (dataA 2).unit
       && (dataA 2).eqL [4, 0] (dataA 2).unit) :=
@@ -351,7 +353,7 @@ private def trivF (e : Nat → Nat → Bool) (d : Nat → Nat)
   { eqL := e, eqLRefl := hr, unit := 0, dual := d,
     add := fun x y => x + y, theta := 1,
     count := fun _ _ _ => 1, row := fun _ _ => [0, 1],
-    dim := fun _ => 1, c2N := fun _ => 1, c2D := 1, c1 := 1,
+    dim := fun _ => 1, c2N := fun _ => 1, c2D := 1, c1 := 1, residue := 1,
     below := fun _ => [], cls := fun _ => 0,
     clsAdd := fun x y => x + y, clsFloorN := fun _ => 0,
     pres := fiber.presNone Nat }
@@ -421,7 +423,7 @@ private theorem htrF : ∀ x y z, Fid.eqL x y = true →
 label reads: the network at the count `1` is occupied, its four
 two-valent pair reads hold, and the index is its own spread. -/
 
-example :
+theorem pin56 :
     ((Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 0) Fid.unit = true
         ∧ Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 1) Fid.unit = true)
       ∨ (Fid.eqL (ground.getAt Fid.unit (netConf 1 1 1) 0) Fid.unit = false
@@ -448,7 +450,7 @@ example :
             (Fid.dual (ground.getAt Fid.unit (netConf 1 1 1) 6)) = true)) :=
   pathReads Fid hduF (netConf 1 1 1) (by decide +kernel)
 
-example : carrier.eqConf Fid (netConf 1 1 1)
+theorem pin57 : carrier.eqConf Fid (netConf 1 1 1)
     (netConf (ground.getAt Fid.unit (netConf 1 1 1) 0)
       (ground.getAt Fid.unit (netConf 1 1 1) 3)
       (ground.getAt Fid.unit (netConf 1 1 1) 4)) = true :=
@@ -461,12 +463,12 @@ configuration `[1, 0, 0, 1, 2, 2, 2]` reads its first path's first
 two links at one occupied link beside a link at the unit, the pair
 read refused there. -/
 
-example : Fdu.eqL (Fdu.dual 1) Fdu.unit = true := by decide +kernel
-example : Fdu.eqL 1 Fdu.unit = false := by decide +kernel
-example : carrier.occupied Fdu lattice.thetaG [1, 0, 0, 1, 2, 2, 2] = true := by
+theorem pin58 : Fdu.eqL (Fdu.dual 1) Fdu.unit = true := by decide +kernel
+theorem pin59 : Fdu.eqL 1 Fdu.unit = false := by decide +kernel
+theorem pin60 : carrier.occupied Fdu lattice.thetaG [1, 0, 0, 1, 2, 2, 2] = true := by
   decide +kernel
 
-example : ¬
+theorem pin61 : ¬
   ((Fdu.eqL
         (ground.getAt Fdu.unit [1, 0, 0, 1, 2, 2, 2] 0)
         Fdu.unit = true
@@ -491,11 +493,11 @@ configuration `[1, 1, 2, 1, 1, 1, 1]` reads its third link at a
 label apart from its second's, and the index refuses its own
 spread. -/
 
-example : Fdc.eqL (Fdc.dual 1) (Fdc.dual 2) = true := by decide +kernel
-example : Fdc.eqL 2 1 = false := by decide +kernel
-example : carrier.occupied Fdc lattice.thetaG [1, 1, 2, 1, 1, 1, 1] = true := by
+theorem pin62 : Fdc.eqL (Fdc.dual 1) (Fdc.dual 2) = true := by decide +kernel
+theorem pin63 : Fdc.eqL 2 1 = false := by decide +kernel
+theorem pin64 : carrier.occupied Fdc lattice.thetaG [1, 1, 2, 1, 1, 1, 1] = true := by
   decide +kernel
-example : carrier.eqConf Fdc [1, 1, 2, 1, 1, 1, 1]
+theorem pin65 : carrier.eqConf Fdc [1, 1, 2, 1, 1, 1, 1]
     (netConf (ground.getAt Fdc.unit [1, 1, 2, 1, 1, 1, 1] 0)
       (ground.getAt Fdc.unit [1, 1, 2, 1, 1, 1, 1] 3)
       (ground.getAt Fdc.unit [1, 1, 2, 1, 1, 1, 1] 4))
@@ -508,14 +510,14 @@ every vertex and the configuration is occupied, while its third
 link and its second read apart and the index refuses its own
 spread. -/
 
-example : Fuu.eqL 3 Fuu.unit = true := by decide +kernel
-example : Fuu.eqL 4 Fuu.unit = true := by decide +kernel
-example : Fuu.eqL 4 3 = false := by decide +kernel
-example : Fuu.eqL 3 Fuu.unit = true ∧ Fuu.eqL Fuu.unit 4 = true
+theorem pin66 : Fuu.eqL 3 Fuu.unit = true := by decide +kernel
+theorem pin67 : Fuu.eqL 4 Fuu.unit = true := by decide +kernel
+theorem pin68 : Fuu.eqL 4 3 = false := by decide +kernel
+theorem pin69 : Fuu.eqL 3 Fuu.unit = true ∧ Fuu.eqL Fuu.unit 4 = true
     ∧ Fuu.eqL 3 4 = false := by decide +kernel
-example : carrier.occupied Fuu lattice.thetaG [3, 3, 4, 3, 3, 3, 3] = true := by
+theorem pin70 : carrier.occupied Fuu lattice.thetaG [3, 3, 4, 3, 3, 3, 3] = true := by
   decide +kernel
-example : carrier.eqConf Fuu [3, 3, 4, 3, 3, 3, 3]
+theorem pin71 : carrier.eqConf Fuu [3, 3, 4, 3, 3, 3, 3]
     (netConf (ground.getAt Fuu.unit [3, 3, 4, 3, 3, 3, 3] 0)
       (ground.getAt Fuu.unit [3, 3, 4, 3, 3, 3, 3] 3)
       (ground.getAt Fuu.unit [3, 3, 4, 3, 3, 3, 3] 4))
@@ -526,19 +528,19 @@ label the unit both three-valent vertices read `0` while the
 three-label counts read `1`, the unit label entering the count's own
 row fold and withdrawn from the incident list. -/
 
-example : Fid.eqL 0 Fid.unit = true := by decide +kernel
-example : Fid.eqL 2 Fid.unit = false ∧ Fid.eqL 1 Fid.unit = false := by
+theorem pin72 : Fid.eqL 0 Fid.unit = true := by decide +kernel
+theorem pin73 : Fid.eqL 2 Fid.unit = false ∧ Fid.eqL 1 Fid.unit = false := by
   decide +kernel
-example : carrier.vmult Fid lattice.thetaG (netConf 2 0 1) 0 = 0 := by decide +kernel
-example : carrier.invCount Fid [2, Fid.dual 0, Fid.dual 1] = 1 := by decide +kernel
-example : carrier.vmult Fid lattice.thetaG (netConf 2 0 1) 3 = 0 := by decide +kernel
-example : carrier.invCount Fid [Fid.dual 2, 0, 1] = 1 := by decide +kernel
+theorem pin74 : carrier.vmult Fid lattice.thetaG (netConf 2 0 1) 0 = 0 := by decide +kernel
+theorem pin75 : carrier.invCount Fid [2, Fid.dual 0, Fid.dual 1] = 1 := by decide +kernel
+theorem pin76 : carrier.vmult Fid lattice.thetaG (netConf 2 0 1) 3 = 0 := by decide +kernel
+theorem pin77 : carrier.invCount Fid [Fid.dual 2, 0, 1] = 1 := by decide +kernel
 
 /-! The resolvent factor's composition at the `θ` channel of the
 width two: the weight pair against the factor reads the
 self-energy's own term, the products' display. -/
 
-example : (match resFactor (dataA 2) (adjchar.theta 2) with
+theorem pin78 : (match resFactor (dataA 2) (adjchar.theta 2) with
     | some f => decide ((Pair.mk (posOfSucc 2) (posOfSucc 8) * f).oneValue
         (Pair.mk (posOfSucc 23) (posOfSucc 215)))
     | none => false) = true := by decide +kernel
@@ -547,13 +549,13 @@ example : (match resFactor (dataA 2) (adjchar.theta 2) with
 state twenty-four wirings, the magnetic image forty-eight, and the
 identity wiring's coefficient occupied. -/
 
-example : (chanState 0).length = 24 := by decide +kernel
+theorem pin79 : (chanState 0).length = 24 := by decide +kernel
 
-example : (chanState 1).length = 24 := by decide +kernel
+theorem pin80 : (chanState 1).length = 24 := by decide +kernel
 
-example : (twoplaq.mulAdj (chanState 0)).length = 48 := by decide +kernel
+theorem pin81 : (twoplaq.mulAdj (chanState 0)).length = 48 := by decide +kernel
 
-example : genericlift.pairOcc
+theorem pin82 : genericlift.pairOcc
     (states.coeffAtW (chanState 1) [0, 1, 2, 3]) := by decide +kernel
 
 /-! Two further label equalities, one per remaining law read.  The
@@ -575,20 +577,20 @@ private theorem eqChainRefl (l : Nat) : eqChain l l = true := by
 
 private def Fch : fusion.Data Nat := trivF eqChain (fun x => x) eqChainRefl
 
-example : Fch.eqL 3 4 = true ∧ Fch.eqL 4 5 = true
+theorem pin83 : Fch.eqL 3 4 = true ∧ Fch.eqL 4 5 = true
     ∧ Fch.eqL 3 5 = false := by decide +kernel
-example : ((List.range 7).all (fun x =>
+theorem pin84 : ((List.range 7).all (fun x =>
     !(Fch.eqL (Fch.dual x) Fch.unit) || Fch.eqL x Fch.unit))
       = true := by decide +kernel
-example : ((List.range 7).all (fun x => (List.range 7).all (fun y =>
+theorem pin85 : ((List.range 7).all (fun x => (List.range 7).all (fun y =>
     !(Fch.eqL (Fch.dual x) (Fch.dual y)) || Fch.eqL y x)))
       = true := by decide +kernel
-example : ((List.range 7).all (fun x => (List.range 7).all (fun y =>
+theorem pin86 : ((List.range 7).all (fun x => (List.range 7).all (fun y =>
     !(Fch.eqL x Fch.unit) || (!(Fch.eqL y Fch.unit)
       || Fch.eqL y x)))) = true := by decide +kernel
-example : carrier.occupied Fch lattice.thetaG [3, 4, 5, 1, 1, 1, 1] = true := by
+theorem pin87 : carrier.occupied Fch lattice.thetaG [3, 4, 5, 1, 1, 1, 1] = true := by
   decide +kernel
-example : carrier.eqConf Fch [3, 4, 5, 1, 1, 1, 1]
+theorem pin88 : carrier.eqConf Fch [3, 4, 5, 1, 1, 1, 1]
     (netConf (ground.getAt Fch.unit [3, 4, 5, 1, 1, 1, 1] 0)
       (ground.getAt Fch.unit [3, 4, 5, 1, 1, 1, 1] 3)
       (ground.getAt Fch.unit [3, 4, 5, 1, 1, 1, 1] 4))
@@ -611,21 +613,21 @@ private theorem eqUpRefl (l : Nat) : eqUp l l = true := by
 
 private def Fup : fusion.Data Nat := trivF eqUp (fun x => x + 6) eqUpRefl
 
-example : Fup.eqL 3 Fup.unit = true ∧ Fup.eqL 4 Fup.unit = true
+theorem pin89 : Fup.eqL 3 Fup.unit = true ∧ Fup.eqL 4 Fup.unit = true
     ∧ Fup.eqL 4 3 = false := by decide +kernel
-example : ((List.range 17).all (fun x =>
+theorem pin90 : ((List.range 17).all (fun x =>
     !(Fup.eqL (Fup.dual x) Fup.unit) || Fup.eqL x Fup.unit))
       = true := by decide +kernel
-example : ((List.range 17).all (fun x => (List.range 17).all (fun y =>
+theorem pin91 : ((List.range 17).all (fun x => (List.range 17).all (fun y =>
     !(Fup.eqL (Fup.dual x) (Fup.dual y)) || Fup.eqL y x)))
       = true := by decide +kernel
-example : ((List.range 7).all (fun x => (List.range 7).all (fun y =>
+theorem pin92 : ((List.range 7).all (fun x => (List.range 7).all (fun y =>
     (List.range 7).all (fun z =>
       !(Fup.eqL x y) || (!(Fup.eqL y z) || Fup.eqL x z)))))
       = true := by decide +kernel
-example : carrier.occupied Fup lattice.thetaG [3, 3, 4, 3, 3, 3, 3] = true := by
+theorem pin93 : carrier.occupied Fup lattice.thetaG [3, 3, 4, 3, 3, 3, 3] = true := by
   decide +kernel
-example : carrier.eqConf Fup [3, 3, 4, 3, 3, 3, 3]
+theorem pin94 : carrier.eqConf Fup [3, 3, 4, 3, 3, 3, 3]
     (netConf (ground.getAt Fup.unit [3, 3, 4, 3, 3, 3, 3] 0)
       (ground.getAt Fup.unit [3, 3, 4, 3, 3, 3, 3] 3)
       (ground.getAt Fup.unit [3, 3, 4, 3, 3, 3, 3] 4))
@@ -636,7 +638,9 @@ at a unit first or second path label the three-valent counts part
 from the three-label reads, one exhibit each beside the middle
 label's own above. -/
 
-example : carrier.vmult Fid lattice.thetaG (netConf 0 2 1) 0 = 0 := by decide +kernel
-example : carrier.invCount Fid [0, Fid.dual 2, Fid.dual 1] = 1 := by decide +kernel
-example : carrier.vmult Fid lattice.thetaG (netConf 1 2 0) 0 = 0 := by decide +kernel
-example : carrier.invCount Fid [1, Fid.dual 2, Fid.dual 0] = 1 := by decide +kernel
+theorem pin95 : carrier.vmult Fid lattice.thetaG (netConf 0 2 1) 0 = 0 := by decide +kernel
+theorem pin96 : carrier.invCount Fid [0, Fid.dual 2, Fid.dual 1] = 1 := by decide +kernel
+theorem pin97 : carrier.vmult Fid lattice.thetaG (netConf 1 2 0) 0 = 0 := by decide +kernel
+theorem pin98 : carrier.invCount Fid [1, Fid.dual 2, Fid.dual 0] = 1 := by decide +kernel
+
+end network

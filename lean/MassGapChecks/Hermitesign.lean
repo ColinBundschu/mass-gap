@@ -10,9 +10,11 @@ additive identity at `z² + 1`, settled at the three remainders `1`,
 `√`-free bracket `(351/352, 353/352)` of the root `1` — `p = z` on
 its upper side and `p = z - 3` on its lower, each at its two splits
 and closing identity, with the exchanged-identity refusals. -/
+
+namespace hermitesign
 set_option maxHeartbeats 4000000
 
-open ground poly elim inertia hermitesign
+open ground poly elim inertia
 
 private def u : BPair := BPair.unit
 
@@ -22,18 +24,18 @@ private def sQ : Poly := [⟨3, 1⟩, ⟨1, 4⟩]
 /-! The pairing `H₁ = [[2,3],[3,5]]`, and the trace routes'
 coherence at `x³`. -/
 
-example : matOneValue (hermite sQ poly.one)
+theorem pin1 : matOneValue (hermite sQ poly.one)
     [[⟨3, 1⟩, ⟨4, 1⟩], [⟨4, 1⟩, ⟨6, 1⟩]] := by decide +kernel
-example : (traceM (remMulMat sQ [u, u, u, ⟨2, 1⟩])).oneValue
+theorem pin2 : (traceM (remMulMat sQ [u, u, u, ⟨2, 1⟩])).oneValue
     (traceRem sQ [u, u, u, ⟨2, 1⟩]) := by decide +kernel
 
 /-! The definite block's identity at `z² + 1` (gap `4`): the three
 remainders and a general fourth. -/
 
-example : defBlockRead ⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩ ⟨2, 1⟩ u := by decide +kernel
-example : defBlockRead ⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩ u ⟨2, 1⟩ := by decide +kernel
-example : defBlockRead ⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩ ⟨2, 1⟩ ⟨2, 1⟩ := by decide +kernel
-example : defBlockRead ⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩ ⟨3, 1⟩ ⟨4, 1⟩ := by decide +kernel
+theorem pin3 : defBlockRead ⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩ ⟨2, 1⟩ u := by decide +kernel
+theorem pin4 : defBlockRead ⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩ u ⟨2, 1⟩ := by decide +kernel
+theorem pin5 : defBlockRead ⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩ ⟨2, 1⟩ ⟨2, 1⟩ := by decide +kernel
+theorem pin6 : defBlockRead ⟨u, ⟨2, 1⟩, ⟨5, 1⟩⟩ ⟨3, 1⟩ ⟨4, 1⟩ := by decide +kernel
 
 /-! The segment count `2` on `[0, 3]`: `H₁` positive definite at
 `diag(2, 2)`, the pencil at `diag(-4, -16)`. -/
@@ -47,7 +49,7 @@ private def spB03 : Split 2 :=
    ⟨[[⟨1, 5⟩, ⟨1, 7⟩], [⟨1, 1⟩, ⟨2, 1⟩]], rfl⟩,
    [.one ⟨1, 5⟩, .one ⟨1, 17⟩], 0, rfl⟩
 
-example : segCountRead sQ u ⟨4, 1⟩ 1 2 spH1 spB03 := by decide +kernel
+theorem pin7 : segCountRead sQ u ⟨4, 1⟩ 1 2 spH1 spB03 := by decide +kernel
 
 /-! The located sign at the bracket `(351/352, 353/352)` of the
 root `1`, width `[2 : 352]` at half the separation: `p = z` on its
@@ -65,9 +67,9 @@ private def spBx : Split 2 :=
    ⟨[[⟨247806, 1⟩, ⟨495612, 1⟩], [⟨1, 1⟩, ⟨2, 1⟩]], rfl⟩,
    [.one ⟨247806, 1⟩, .one ⟨1, 61407565831⟩], 0, rfl⟩
 
-example : sideUpperRead sQ [u, ⟨2, 1⟩] ⟨352, 1⟩ ⟨354, 1⟩ 352 2 352
+theorem pin8 : sideUpperRead sQ [u, ⟨2, 1⟩] ⟨352, 1⟩ ⟨354, 1⟩ 352 2 352
     spHx spBx := by decide +kernel
-example : ¬ sideLowerRead sQ [u, ⟨2, 1⟩] ⟨352, 1⟩ ⟨354, 1⟩ 352 2 352
+theorem pin9 : ¬ sideLowerRead sQ [u, ⟨2, 1⟩] ⟨352, 1⟩ ⟨354, 1⟩ 352 2 352
     spHx spBx := by decide +kernel
 
 private def spHm : Split 2 :=
@@ -79,7 +81,9 @@ private def spBm : Split 2 :=
    ⟨[[⟨1, 123902⟩, ⟨1, 247805⟩], [⟨1, 1⟩, ⟨2, 1⟩]], rfl⟩,
    [.one ⟨1, 123902⟩, .one ⟨30703411207, 1⟩], 0, rfl⟩
 
-example : sideLowerRead sQ [⟨1, 4⟩, ⟨2, 1⟩] ⟨352, 1⟩ ⟨354, 1⟩ 352
+theorem pin10 : sideLowerRead sQ [⟨1, 4⟩, ⟨2, 1⟩] ⟨352, 1⟩ ⟨354, 1⟩ 352
     2 352 spHm spBm := by decide +kernel
-example : ¬ sideUpperRead sQ [⟨1, 4⟩, ⟨2, 1⟩] ⟨352, 1⟩ ⟨354, 1⟩ 352
+theorem pin11 : ¬ sideUpperRead sQ [⟨1, 4⟩, ⟨2, 1⟩] ⟨352, 1⟩ ⟨354, 1⟩ 352
     2 352 spHm spBm := by decide +kernel
+
+end hermitesign

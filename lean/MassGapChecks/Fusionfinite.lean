@@ -19,21 +19,23 @@ guard while the guard-free spelling refuses — the unit member of
 every row inside every ball outright.
 -/
 
+namespace fusionfinite
+
 open ground places lattice fusion
 
 /-! The content ball's rows at the label calculus's instantiation:
 the adjoint square, the fundamental against `θ`, the fundamental
 against its dual, and the unit source's row. -/
 
-example : fusionfinite.rowBall (dataA 2) (adjchar.theta 2)
+theorem pin1 : fusionfinite.rowBall (dataA 2) (adjchar.theta 2)
     (adjchar.theta 2) := by decide +kernel
-example : fusionfinite.rowBall (dataA 3) (adjchar.theta 3)
+theorem pin2 : fusionfinite.rowBall (dataA 3) (adjchar.theta 3)
     (adjchar.theta 3) := by decide +kernel
-example : fusionfinite.rowBall (dataA 2) [1, 0]
+theorem pin3 : fusionfinite.rowBall (dataA 2) [1, 0]
     (adjchar.theta 2) := by decide +kernel
-example : fusionfinite.rowBall (dataA 3) [1, 0, 0]
+theorem pin4 : fusionfinite.rowBall (dataA 3) [1, 0, 0]
     (labels.dualL [1, 0, 0]) := by decide +kernel
-example : fusionfinite.rowBall (dataA 2) (labels.unitL 2)
+theorem pin5 : fusionfinite.rowBall (dataA 2) (labels.unitL 2)
     (adjchar.theta 2) := by decide +kernel
 
 /-! The rows' exact cleared Casimirs, the ball attained at the
@@ -41,13 +43,13 @@ Cartan product: 24 at two letters and 48 at three, the row's
 maximum reading the product's own value with the unit member's zero
 at the row's end. -/
 
-example : ((dataA 2).row (adjchar.theta 2) (adjchar.theta 2)).map
+theorem pin6 : ((dataA 2).row (adjchar.theta 2) (adjchar.theta 2)).map
     (dataA 2).c2N = [24, 8, 0] := by decide +kernel
-example : (dataA 2).c2N (places.addS (adjchar.theta 2)
+theorem pin7 : (dataA 2).c2N (places.addS (adjchar.theta 2)
     (adjchar.theta 2)) = 24 := by decide +kernel
-example : ((dataA 3).row (adjchar.theta 3) (adjchar.theta 3)).map
+theorem pin8 : ((dataA 3).row (adjchar.theta 3) (adjchar.theta 3)).map
     (dataA 3).c2N = [48, 36, 36, 18, 0] := by decide +kernel
-example : (dataA 3).c2N (places.addS (adjchar.theta 3)
+theorem pin9 : (dataA 3).c2N (places.addS (adjchar.theta 3)
     (adjchar.theta 3)) = 48 := by decide +kernel
 
 /-! The multiplication window bound at the square's `θ`-loop pool:
@@ -55,15 +57,15 @@ the pool's window content at or below the summed per-link ball, and
 the summed ball 96 = 4 · 24 attained exactly, the source's own
 content 32 beside it. -/
 
-example : leastwindow.windowContent (dataA 2)
+theorem pin10 : leastwindow.windowContent (dataA 2)
     (algebra.plaqRow (dataA 2) square sqPlaq
       (List.replicate 4 (adjchar.theta 2)))
     ≤ 4 * (dataA 2).c2N (places.addS (adjchar.theta 2)
       (adjchar.theta 2)) := by decide +kernel
-example : leastwindow.windowContent (dataA 2)
+theorem pin11 : leastwindow.windowContent (dataA 2)
     (algebra.plaqRow (dataA 2) square sqPlaq
       (List.replicate 4 (adjchar.theta 2))) = 96 := by decide +kernel
-example : carrier.contentN (dataA 2)
+theorem pin12 : carrier.contentN (dataA 2)
     (List.replicate 4 (adjchar.theta 2)) = 32 := by decide +kernel
 
 /-! The refusals.  The comparison conjunct is load-bearing: a
@@ -74,7 +76,7 @@ private def forged : Data Shape :=
   { dataA 2 with
     row := fun a b => (dataA 2).row a b ++ [[5, 0]] }
 
-example : ¬ fusionfinite.rowBall forged (adjchar.theta 2)
+theorem pin13 : ¬ fusionfinite.rowBall forged (adjchar.theta 2)
     (adjchar.theta 2) := by decide +kernel
 
 /-! The unit guard is load-bearing: a forged interface reading the
@@ -87,10 +89,12 @@ private def forged2 : Data Shape :=
       if (dataA 2).eqL s (labels.unitL 2) then 100
       else (dataA 2).c2N s }
 
-example : fusionfinite.rowBall forged2 (adjchar.theta 2)
+theorem pin14 : fusionfinite.rowBall forged2 (adjchar.theta 2)
     (adjchar.theta 2) := by decide +kernel
-example : ¬ (((forged2.row (adjchar.theta 2)
+theorem pin15 : ¬ (((forged2.row (adjchar.theta 2)
     (adjchar.theta 2)).all (fun c =>
       decide (forged2.c2N c
         ≤ forged2.c2N (forged2.add (adjchar.theta 2)
           (adjchar.theta 2))))) = true) := by decide +kernel
+
+end fusionfinite

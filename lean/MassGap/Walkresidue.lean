@@ -12,13 +12,9 @@ at the successor spelling `r = g + 1`; and the value read
 `excessRead` at `def:excess`'s evaluation against the ground's
 harmonic fold.  The recursions `R' = 1 + u R'` and
 `F' = u^r + u F'` read coefficientwise as `def:excess`'s
-`geomRead` at their occupied degrees; the general telescope over
-every `M` is the stated read's quantifier, its instances the
-check module's pins, the induction landing with the restatement's
-consumers — where the divisor pair's list reads (`F'`'s least
-occupied degree at the residue with the pole order one) and the
-`r = 1` discrimination sentence (the exponent's integrality with
-the two agreeing objects separating at `r = 2`) land beside it.
+`geomRead` at their occupied degrees; the telescope's read
+`teleRead` is stated at one `M`, its instances the check module's
+pins.
 -/
 
 namespace walkresidue
@@ -35,7 +31,7 @@ def psi (r m : Pos) : Pair := ⟨m, m + r⟩
 def pairRead (r m : Pos) : Prop :=
   (phi r m + psi r m).oneValue (Pair.ofPos Pos.one)
 
-instance (r m : Pos) : Decidable (pairRead r m) :=
+instance instWalkresidue1 (r m : Pos) : Decidable (pairRead r m) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The Casimir split `φ_m = [m r : m (m + r)]`, the square part
@@ -43,14 +39,14 @@ against the whole. -/
 def splitRead (r m : Pos) : Prop :=
   (phi r m).oneValue ⟨m * r, m * (m + r)⟩
 
-instance (r m : Pos) : Decidable (splitRead r m) :=
+instance instWalkresidue2 (r m : Pos) : Decidable (splitRead r m) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The summand identity `[1:m] = [1:m+r] + [r : m(m+r)]`. -/
 def summandRead (r m : Pos) : Prop :=
   (⟨Pos.one, m⟩ : Pair).oneValue (⟨Pos.one, m + r⟩ + ⟨r, m * (m + r)⟩)
 
-instance (r m : Pos) : Decidable (summandRead r m) :=
+instance instWalkresidue3 (r m : Pos) : Decidable (summandRead r m) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The finite telescope at a stated `M`, exact:
@@ -65,7 +61,7 @@ def teleRead (g M : Nat) : Prop :=
       (⟨Pos.one, posOfSucc M⟩ : Pair)))).oneValue
     (harmonic (posOfSucc g))
 
-instance (g M : Nat) : Decidable (teleRead g M) :=
+instance instWalkresidue4 (g M : Nat) : Decidable (teleRead g M) :=
   inferInstanceAs (Decidable (_ = _))
 
 /-- The value read `A(1) = H_r`: the ruler's excess over the walk
@@ -74,7 +70,7 @@ the successor spelling `r = g + 1`. -/
 def excessRead (g : Nat) : Prop :=
   (excess.evalOne g).oneValue (harmonic (posOfSucc g))
 
-instance (g : Nat) : Decidable (excessRead g) :=
+instance instWalkresidue5 (g : Nat) : Decidable (excessRead g) :=
   inferInstanceAs (Decidable (_ = _))
 
 end walkresidue

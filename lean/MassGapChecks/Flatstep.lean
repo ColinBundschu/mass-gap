@@ -47,9 +47,11 @@ at a nonunit denominator with its interior forge refused; and
 `countAtPair_roots` ties the fiber's top count to the root list's
 below count at the count identity's certificate.
 -/
+
+namespace flatstep
 set_option maxHeartbeats 4000000
 
-open ground elim inertia certconstruct flatstep
+open ground elim inertia certconstruct
 
 private def u : BPair := BPair.unit
 
@@ -72,7 +74,7 @@ private def sp2 (a b : BPair) : Split 2 :=
 `⟨4 : 1⟩ < ⟨6 : 1⟩`: the site data are the levels `-1` and `-3`,
 one count each. -/
 
-example : vacFlat hV (idMat 1) 4 1 6 1 1 (sp1 ⟨1, 2⟩) (sp1 ⟨1, 4⟩) := by
+theorem pin1 : vacFlat hV (idMat 1) 4 1 6 1 1 (sp1 ⟨1, 2⟩) (sp1 ⟨1, 4⟩) := by
   decide +kernel
 
 /-! The window at the rescaling two (`vacFlat_scale`): the pencil
@@ -81,36 +83,36 @@ each, through the theorem beside its own `decide`; the scaled
 anchor split's binder refuses at a forged block, the read parting
 from the doubled site. -/
 
-example : vacFlat (matScale 2 hV) (idMat 1) (2 * 4) (2 * 1) (2 * 6) (2 * 1) 1
+theorem pin2 : vacFlat (matScale 2 hV) (idMat 1) (2 * 4) (2 * 1) (2 * 6) (2 * 1) 1
     (sp1 ⟨1, 3⟩) (sp1 ⟨1, 7⟩) :=
   vacFlat_scale 2 hV (idMat 1) 4 1 6 1 1 (sp1 ⟨1, 2⟩) (sp1 ⟨1, 4⟩)
     (sp1 ⟨1, 3⟩) (sp1 ⟨1, 7⟩) (by decide +kernel) (by decide +kernel)
     (by decide +kernel)
-example : vacFlat (matScale 2 hV) (idMat 1) (2 * 4) (2 * 1) (2 * 6) (2 * 1) 1
+theorem pin3 : vacFlat (matScale 2 hV) (idMat 1) (2 * 4) (2 * 1) (2 * 6) (2 * 1) 1
     (sp1 ⟨1, 3⟩) (sp1 ⟨1, 7⟩) := by decide +kernel
-example : ¬ splitRead (siteDatum (matAdd (matScale 2 hV) (matScale (2 * 1) (idMat 1)))
+theorem pin4 : ¬ splitRead (siteDatum (matAdd (matScale 2 hV) (matScale (2 * 1) (idMat 1)))
     (matScale (2 * 4) (idMat 1))) (sp1 ⟨1, 2⟩) := by decide +kernel
-example : ¬ vacFlat (matScale 2 hV) (idMat 1) (2 * 4) (2 * 1) (2 * 6) (2 * 1) 1
+theorem pin5 : ¬ vacFlat (matScale 2 hV) (idMat 1) (2 * 4) (2 * 1) (2 * 6) (2 * 1) 1
     (sp1 ⟨1, 2⟩) (sp1 ⟨1, 7⟩) := by decide +kernel
 
 /-! The clear sector at the same pair: the site data are `3` and
 `1`, the sum's unit at both counts. -/
 
-example : countAtPair hC (idMat 1) 4 1 0 (sp1 ⟨4, 1⟩) := by decide +kernel
-example : countAtPair hC (idMat 1) 6 1 0 (sp1 ⟨2, 1⟩) := by decide +kernel
+theorem pin6 : countAtPair hC (idMat 1) 4 1 0 (sp1 ⟨4, 1⟩) := by decide +kernel
+theorem pin7 : countAtPair hC (idMat 1) 6 1 0 (sp1 ⟨2, 1⟩) := by decide +kernel
 
 /-! The occupancy binder's own record: at the clear sector both
 counts hold at the sum's unit and the pair is ordered, while the
 window's count conjunct refuses the vacant ground. -/
 
-example : ¬ vacFlat hC (idMat 1) 4 1 6 1 0
+theorem pin8 : ¬ vacFlat hC (idMat 1) 4 1 6 1 0
     (sp1 ⟨4, 1⟩) (sp1 ⟨2, 1⟩) := by decide +kernel
 
 /-! The fiber's own window: the joined count is the vacuum block's
 alone, by the theorem route at the two site ties and then by the
 kernel's own `decide`. -/
 
-example : vacFlat hJ (idMat 2) 4 1 6 1 1
+theorem pin9 : vacFlat hJ (idMat 2) 4 1 6 1 1
     (sp2 ⟨1, 2⟩ ⟨4, 1⟩) (sp2 ⟨1, 4⟩ ⟨2, 1⟩) :=
   flat_window hV (idMat 1) hC (idMat 1) hJ (idMat 2) 4 1 6 1 1
     (sp1 ⟨1, 2⟩) (sp1 ⟨1, 4⟩) (sp1 ⟨4, 1⟩) (sp1 ⟨2, 1⟩)
@@ -118,7 +120,7 @@ example : vacFlat hJ (idMat 2) 4 1 6 1 1
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
     (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
-example : vacFlat hJ (idMat 2) 4 1 6 1 1
+theorem pin10 : vacFlat hJ (idMat 2) 4 1 6 1 1
     (sp2 ⟨1, 2⟩ ⟨4, 1⟩) (sp2 ⟨1, 4⟩ ⟨2, 1⟩) := by decide +kernel
 
 /-! The vacuum sector's own binder: the vacuum forged to the level
@@ -130,31 +132,31 @@ the joined window both refuse. -/
 private def hVf : Mat := [[⟨5, 1⟩]]
 private def hJv : Mat := [[⟨5, 1⟩, u], [u, ⟨7, 1⟩]]
 
-example : ¬ vacFlat hVf (idMat 1) 4 1 6 1 1
+theorem pin11 : ¬ vacFlat hVf (idMat 1) 4 1 6 1 1
     (sp1 ⟨2, 1⟩) (sp1 ⟨1, 2⟩) := by decide +kernel
-example : countAtPair hC (idMat 1) 4 1 0 (sp1 ⟨4, 1⟩) := by decide +kernel
-example : countAtPair hC (idMat 1) 6 1 0 (sp1 ⟨2, 1⟩) := by decide +kernel
-example : matOneValue
+theorem pin12 : countAtPair hC (idMat 1) 4 1 0 (sp1 ⟨4, 1⟩) := by decide +kernel
+theorem pin13 : countAtPair hC (idMat 1) 6 1 0 (sp1 ⟨2, 1⟩) := by decide +kernel
+theorem pin14 : matOneValue
     (siteDatum (matAdd hJv (matScale 1 (idMat 2))) (matScale 4 (idMat 2)))
     (blockJoin
       (siteDatum (matAdd hVf (matScale 1 (idMat 1))) (matScale 4 (idMat 1)))
       (elim.nullMat 1 1)
       (siteDatum (matAdd hC (matScale 1 (idMat 1))) (matScale 4 (idMat 1))))
   := by decide +kernel
-example : matOneValue
+theorem pin15 : matOneValue
     (siteDatum (matAdd hJv (matScale 1 (idMat 2))) (matScale 6 (idMat 2)))
     (blockJoin
       (siteDatum (matAdd hVf (matScale 1 (idMat 1))) (matScale 6 (idMat 1)))
       (elim.nullMat 1 1)
       (siteDatum (matAdd hC (matScale 1 (idMat 1))) (matScale 6 (idMat 1))))
   := by decide +kernel
-example : splitRead
+theorem pin16 : splitRead
     (siteDatum (matAdd hJv (matScale 1 (idMat 2))) (matScale 4 (idMat 2)))
     (sp2 ⟨2, 1⟩ ⟨4, 1⟩) := by decide +kernel
-example : splitRead
+theorem pin17 : splitRead
     (siteDatum (matAdd hJv (matScale 1 (idMat 2))) (matScale 6 (idMat 2)))
     (sp2 ⟨1, 2⟩ ⟨2, 1⟩) := by decide +kernel
-example : ¬ vacFlat hJv (idMat 2) 4 1 6 1 1
+theorem pin18 : ¬ vacFlat hJv (idMat 2) 4 1 6 1 1
     (sp2 ⟨2, 1⟩ ⟨4, 1⟩) (sp2 ⟨1, 2⟩ ⟨2, 1⟩) := by decide +kernel
 
 /-! The site tie's refusal: the fiber `diag(2, 4)` against the same
@@ -165,15 +167,15 @@ fiber's four) and the joined top count moves to two. -/
 
 private def hJf : Mat := [[⟨3, 1⟩, u], [u, ⟨5, 1⟩]]
 
-example : splitRead
+theorem pin19 : splitRead
     (siteDatum (matAdd hJf (matScale 1 (idMat 2))) (matScale 4 (idMat 2)))
     (sp2 ⟨1, 2⟩ ⟨2, 1⟩) := by decide +kernel
 
-example : splitRead
+theorem pin20 : splitRead
     (siteDatum (matAdd hJf (matScale 1 (idMat 2))) (matScale 6 (idMat 2)))
     (sp2 ⟨1, 4⟩ ⟨1, 2⟩) := by decide +kernel
 
-example : ¬ matOneValue
+theorem pin21 : ¬ matOneValue
     (siteDatum (matAdd hJf (matScale 1 (idMat 2))) (matScale 4 (idMat 2)))
     (blockJoin
       (siteDatum (matAdd hV (matScale 1 (idMat 1))) (matScale 4 (idMat 1)))
@@ -181,7 +183,7 @@ example : ¬ matOneValue
       (siteDatum (matAdd hC (matScale 1 (idMat 1))) (matScale 4 (idMat 1))))
   := by decide +kernel
 
-example : ¬ matOneValue
+theorem pin22 : ¬ matOneValue
     (siteDatum (matAdd hJf (matScale 1 (idMat 2))) (matScale 6 (idMat 2)))
     (blockJoin
       (siteDatum (matAdd hV (matScale 1 (idMat 1))) (matScale 6 (idMat 1)))
@@ -189,7 +191,7 @@ example : ¬ matOneValue
       (siteDatum (matAdd hC (matScale 1 (idMat 1))) (matScale 6 (idMat 1))))
   := by decide +kernel
 
-example : ¬ vacFlat hJf (idMat 2) 4 1 6 1 1
+theorem pin23 : ¬ vacFlat hJf (idMat 2) 4 1 6 1 1
     (sp2 ⟨1, 2⟩ ⟨2, 1⟩) (sp2 ⟨1, 4⟩ ⟨1, 2⟩) := by decide +kernel
 
 /-! The clear sector's own binder at the top: at `H_q = [4]` the
@@ -199,11 +201,11 @@ top count moves to two. -/
 
 private def hCf : Mat := [[⟨5, 1⟩]]
 
-example : countAtPair hCf (idMat 1) 4 1 0 (sp1 ⟨2, 1⟩) := by decide +kernel
-example : ¬ countAtPair hCf (idMat 1) 6 1 0 (sp1 ⟨1, 2⟩) := by decide +kernel
-example : countAtPair hCf (idMat 1) 6 1 1 (sp1 ⟨1, 2⟩) := by decide +kernel
+theorem pin24 : countAtPair hCf (idMat 1) 4 1 0 (sp1 ⟨2, 1⟩) := by decide +kernel
+theorem pin25 : ¬ countAtPair hCf (idMat 1) 6 1 0 (sp1 ⟨1, 2⟩) := by decide +kernel
+theorem pin26 : countAtPair hCf (idMat 1) 6 1 1 (sp1 ⟨1, 2⟩) := by decide +kernel
 
-example : matOneValue
+theorem pin27 : matOneValue
     (siteDatum (matAdd hJf (matScale 1 (idMat 2))) (matScale 4 (idMat 2)))
     (blockJoin
       (siteDatum (matAdd hV (matScale 1 (idMat 1))) (matScale 4 (idMat 1)))
@@ -211,7 +213,7 @@ example : matOneValue
       (siteDatum (matAdd hCf (matScale 1 (idMat 1))) (matScale 4 (idMat 1))))
   := by decide +kernel
 
-example : matOneValue
+theorem pin28 : matOneValue
     (siteDatum (matAdd hJf (matScale 1 (idMat 2))) (matScale 6 (idMat 2)))
     (blockJoin
       (siteDatum (matAdd hV (matScale 1 (idMat 1))) (matScale 6 (idMat 1)))
@@ -223,9 +225,9 @@ example : matOneValue
 Both counts stand at one and every other conjunct holds, while the
 cross-added order `hx + ty < tx + hy` refuses. -/
 
-example : countAtPair hJ (idMat 2) 6 1 1 (sp2 ⟨1, 4⟩ ⟨2, 1⟩) := by decide +kernel
-example : countAtPair hJ (idMat 2) 4 1 1 (sp2 ⟨1, 2⟩ ⟨4, 1⟩) := by decide +kernel
-example : ¬ vacFlat hJ (idMat 2) 6 1 4 1 1
+theorem pin29 : countAtPair hJ (idMat 2) 6 1 1 (sp2 ⟨1, 4⟩ ⟨2, 1⟩) := by decide +kernel
+theorem pin30 : countAtPair hJ (idMat 2) 4 1 1 (sp2 ⟨1, 2⟩ ⟨4, 1⟩) := by decide +kernel
+theorem pin31 : ¬ vacFlat hJ (idMat 2) 6 1 4 1 1
     (sp2 ⟨1, 4⟩ ⟨2, 1⟩) (sp2 ⟨1, 2⟩ ⟨4, 1⟩) := by decide +kernel
 
 /-! The spectral tie at the located roots `0` and `4`, the edge
@@ -235,13 +237,13 @@ beside its own `decide`. -/
 
 private def rts : List (BPair × Pos) := [(u, 1), (⟨5, 1⟩, 1)]
 
-example : split.rootsBelow rts (4 * 1) 2 = 1 := by decide +kernel
-example : split.rootsAtKernel rts = 1 := by decide +kernel
+theorem pin32 : split.rootsBelow rts (4 * 1) 2 = 1 := by decide +kernel
+theorem pin33 : split.rootsAtKernel rts = 1 := by decide +kernel
 
-example : speccut.specRead rts 4 1 2 :=
+theorem pin34 : speccut.specRead rts 4 1 2 :=
   flat_spec rts 4 1 2 1 (by decide +kernel) (by decide +kernel)
 
-example : speccut.specRead rts 4 1 2 := by decide +kernel
+theorem pin35 : speccut.specRead rts 4 1 2 := by decide +kernel
 
 /-! The below count's own binder: an interior root at the level one
 sits off the kernel point and below the edge, so the below count
@@ -250,24 +252,24 @@ failing there. -/
 
 private def rtsF : List (BPair × Pos) := [(u, 1), (⟨2, 1⟩, 1), (⟨5, 1⟩, 1)]
 
-example : ¬ split.rootsBelow rtsF (4 * 1) 2 = 1 := by decide +kernel
-example : split.rootsAtKernel rtsF = 1 := by decide +kernel
-example : ¬ speccut.specRead rtsF 4 1 2 := by decide +kernel
+theorem pin36 : ¬ split.rootsBelow rtsF (4 * 1) 2 = 1 := by decide +kernel
+theorem pin37 : split.rootsAtKernel rtsF = 1 := by decide +kernel
+theorem pin38 : ¬ speccut.specRead rtsF 4 1 2 := by decide +kernel
 
 /-! The kernel count's own binder at the same forge: at the jump two
 the below count reads the jump exactly while the kernel count refuses
 it. -/
 
-example : split.rootsBelow rtsF (4 * 1) 2 = 2 := by decide +kernel
-example : ¬ split.rootsAtKernel rtsF = 2 := by decide +kernel
+theorem pin39 : split.rootsBelow rtsF (4 * 1) 2 = 2 := by decide +kernel
+theorem pin40 : ¬ split.rootsAtKernel rtsF = 2 := by decide +kernel
 
 /-! The least edge: at `E₀ = p = q = 1` a root at the kernel point
 still sits below the edge — the sited edge strictly above the sum's
 unit at every positive datum — and the tie reads there through the
 theorem's own route. -/
 
-example : split.rootsBelow rts (1 * 1) 1 = 1 := by decide +kernel
-example : speccut.specRead rts 1 1 1 :=
+theorem pin41 : split.rootsBelow rts (1 * 1) 1 = 1 := by decide +kernel
+theorem pin42 : speccut.specRead rts 1 1 1 :=
   flat_spec rts 1 1 1 1 (by decide +kernel) (by decide +kernel)
 
 /-! The roots' weights: a root enters at its cleared pair, the
@@ -278,17 +280,17 @@ three-halves refusing. -/
 
 private def rtsD : List (BPair × Pos) := [(u, 3), (⟨5, 1⟩, 2)]
 
-example : split.rootsBelow rtsD (4 * 1) 2 = 1 := by decide +kernel
-example : split.rootsAtKernel rtsD = 1 := by decide +kernel
-example : speccut.specRead rtsD 4 1 2 :=
+theorem pin43 : split.rootsBelow rtsD (4 * 1) 2 = 1 := by decide +kernel
+theorem pin44 : split.rootsAtKernel rtsD = 1 := by decide +kernel
+theorem pin45 : speccut.specRead rtsD 4 1 2 :=
   flat_spec rtsD 4 1 2 1 (by decide +kernel) (by decide +kernel)
 
 private def rtsDF : List (BPair × Pos) :=
   [(u, 3), (⟨4, 1⟩, 2), (⟨5, 1⟩, 2)]
 
-example : split.rootsBelow rtsDF (4 * 1) 2 = 2 := by decide +kernel
-example : split.rootsAtKernel rtsDF = 1 := by decide +kernel
-example : ¬ speccut.specRead rtsDF 4 1 2 := by decide +kernel
+theorem pin46 : split.rootsBelow rtsDF (4 * 1) 2 = 2 := by decide +kernel
+theorem pin47 : split.rootsAtKernel rtsDF = 1 := by decide +kernel
+theorem pin48 : ¬ speccut.specRead rtsDF 4 1 2 := by decide +kernel
 
 /-! The two carriers tied: the fiber's top count at the level six
 is the root list's below count at the site pencil's own level-one
@@ -298,9 +300,11 @@ the level. -/
 
 private def rtsJ : List (BPair × Pos) := [(⟨4, 1⟩, 1), (⟨8, 1⟩, 1)]
 
-example : split.countRead (matAdd hJ (matScale 1 (idMat 2))) (idMat 2)
+theorem pin49 : split.countRead (matAdd hJ (matScale 1 (idMat 2))) (idMat 2)
     rtsJ 6 Pos.one (sp2 ⟨1, 4⟩ ⟨2, 1⟩) := by decide +kernel
-example : split.rootsBelow rtsJ 6 Pos.one = 1 :=
+theorem pin50 : split.rootsBelow rtsJ 6 Pos.one = 1 :=
   countAtPair_roots hJ (idMat 2) rtsJ 6 1 1
     (sp2 ⟨1, 4⟩ ⟨2, 1⟩) (sp2 ⟨1, 4⟩ ⟨2, 1⟩) (by decide +kernel) (by decide +kernel)
-example : split.rootsBelow rtsJ 6 Pos.one = 1 := by decide +kernel
+theorem pin51 : split.rootsBelow rtsJ 6 Pos.one = 1 := by decide +kernel
+
+end flatstep

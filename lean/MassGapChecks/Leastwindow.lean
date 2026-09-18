@@ -10,9 +10,11 @@ plaquette row's targets sit in the union region at the fused
 content, the far row at the two contents' sum and the shared-link
 row at its computed largest.
 -/
+
+namespace leastwindow
 set_option maxHeartbeats 16000000
 
-open ground lattice fusion leastwindow
+open ground lattice fusion
 
 private def twoSq : Region :=
   ⟨8, 8, [0, 1, 2, 3, 4, 5, 6, 7], [1, 2, 3, 0, 5, 6, 7, 4],
@@ -35,24 +37,26 @@ private def fLoop7 : List places.Shape :=
 /-! The index supports: the support links, the window links and
 vertices over an element's members, and the largest content. -/
 
-example : suppLinks (dataA 2) fLoop8 = [0, 1, 2, 3] := by decide +kernel
-example : windowLinks (dataA 2) twoSq [fLoop8] = [0, 1, 2, 3] := by decide +kernel
-example : windowVerts (dataA 2) twoSq [fLoop8] = [0, 1, 2, 3] := by decide +kernel
-example : windowVerts (dataA 2) thetaG [fLoop7] = [0, 1, 2, 3] := by decide +kernel
-example : windowContent (dataA 2)
+theorem pin1 : suppLinks (dataA 2) fLoop8 = [0, 1, 2, 3] := by decide +kernel
+theorem pin2 : windowLinks (dataA 2) twoSq [fLoop8] = [0, 1, 2, 3] := by decide +kernel
+theorem pin3 : windowVerts (dataA 2) twoSq [fLoop8] = [0, 1, 2, 3] := by decide +kernel
+theorem pin4 : windowVerts (dataA 2) thetaG [fLoop7] = [0, 1, 2, 3] := by decide +kernel
+theorem pin5 : windowContent (dataA 2)
     [List.replicate 4 [1, 0], List.replicate 4 [2, 0]] = 32 := by decide +kernel
 
 /-! The multiplication window bound's instances at the plaquette
 row: the far row's target at the two contents' sum on the union
 region, and the shared-link row at its computed largest. -/
 
-example : windowContent (dataA 2)
+theorem pin6 : windowContent (dataA 2)
     (algebra.plaqRow (dataA 2) twoSq plaqB fLoop8) = 44 := by decide +kernel
-example : windowLinks (dataA 2) twoSq
+theorem pin7 : windowLinks (dataA 2) twoSq
     (algebra.plaqRow (dataA 2) twoSq plaqB fLoop8)
     = [0, 1, 2, 3, 4, 5, 6, 7] := by decide +kernel
-example : windowContent (dataA 2)
+theorem pin8 : windowContent (dataA 2)
     (algebra.plaqRow (dataA 2) thetaG plaqBT fLoop7) = 48 := by decide +kernel
-example : windowLinks (dataA 2) thetaG
+theorem pin9 : windowLinks (dataA 2) thetaG
     (algebra.plaqRow (dataA 2) thetaG plaqBT fLoop7)
     = [0, 1, 2, 3, 4, 5, 6] := by decide +kernel
+
+end leastwindow

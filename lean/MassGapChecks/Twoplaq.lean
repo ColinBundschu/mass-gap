@@ -64,9 +64,11 @@ factorial route's recorded cost, and the ceiling on any battery
 here (nothing beyond three pairs per variable), the reduction at
 the bilinear fold's seam carried and the Weingarten solve the
 floor beneath. -/
+
+namespace twoplaq
 set_option maxHeartbeats 4000000
 
-open ground poly genericlift states kernel lap res fiber twoplaq
+open ground poly genericlift states kernel lap res fiber
 
 /-- The four-factor site, one pair per variable. -/
 private def f4 : FList :=
@@ -91,14 +93,14 @@ private def wsE : List (List Nat) := [[0, 1], [1, 0]]
 /-! The sites and the level: the extension at a variable's pair, the
 word fold's order, and `4 d_f` at its own value. -/
 
-example : extSite 1 siteQ1 = f4 := by decide +kernel
-example : wordSite [0]
+theorem pin1 : extSite 1 siteQ1 = f4 := by decide +kernel
+theorem pin2 : wordSite [0]
     = [(0, false), (0, true), (0, false), (0, true)] := by
   decide +kernel
-example : wordSite [0, 1]
+theorem pin3 : wordSite [0, 1]
     = [(0, false), (0, true), (0, false), (0, true),
        (1, false), (1, true)] := by decide +kernel
-example : crossNull lvlE ([⟨5, 1⟩, ⟨5, 1⟩], [⟨2, 1⟩]) := by decide +kernel
+theorem pin4 : crossNull lvlE ([⟨5, 1⟩, ⟨5, 1⟩], [⟨2, 1⟩]) := by decide +kernel
 
 /-! The module presentation at the bare pair: the adjoint's
 presentation at the values, the literal list identity refused at
@@ -106,19 +108,19 @@ the representative gauge — the closed coefficient is
 `pMul (-[1 : d_f]) [1 : 1]`, one value at a different pair of
 polynomials. -/
 
-example : crossNull (coeffAtW (modPres siteQ1 0 1 []) [0, 1]) pOne := by
+theorem pin5 : crossNull (coeffAtW (modPres siteQ1 0 1 []) [0, 1]) pOne := by
   decide +kernel
-example : crossNull (coeffAtW (modPres siteQ1 0 1 []) [1, 0])
+theorem pin6 : crossNull (coeffAtW (modPres siteQ1 0 1 []) [1, 0])
     ([⟨1, 2⟩], [⟨2, 1⟩, ⟨2, 1⟩]) := by decide +kernel
-example : ¬ (modPres siteQ1 0 1 [] = phiAdj) := by decide +kernel
+theorem pin7 : ¬ (modPres siteQ1 0 1 [] = phiAdj) := by decide +kernel
 
 /-! The presentation with one contraction at `[U, U†, V, V†]`: the
 pairing `(2, 3)`'s base wiring at `[1 : d_f]`, the open pair's
 exchange at `-[1 : d_f]²`. -/
 
-example : crossNull (coeffAtW (modPres f4 0 1 [(2, 3)]) [0, 1, 3, 2]) uC := by
+theorem pin8 : crossNull (coeffAtW (modPres f4 0 1 [(2, 3)]) [0, 1, 3, 2]) uC := by
   decide +kernel
-example : crossNull (coeffAtW (modPres f4 0 1 [(2, 3)]) [1, 0, 3, 2])
+theorem pin9 : crossNull (coeffAtW (modPres f4 0 1 [(2, 3)]) [1, 0, 3, 2])
     ([⟨1, 2⟩], [⟨2, 1⟩, ⟨3, 1⟩, ⟨2, 1⟩]) := by decide +kernel
 
 /-! The presentation's stated data read for itself: the bare pair
@@ -127,50 +129,50 @@ list colliding at `(1, 0)`, the daggers entered out of order, a
 place past the site's top, and the chosen pair crossing variables
 at the four-letter list. -/
 
-example : modPresOk siteQ1 0 1 [] := by decide +kernel
-example : modPresOk f4 0 1 [(2, 3)] := by decide +kernel
-example : ¬ modPresOk siteQ1 0 1 [(1, 0)] := by decide +kernel
-example : ¬ modPresOk siteQ1 1 0 [] := by decide +kernel
-example : ¬ modPresOk siteQ1 0 3 [] := by decide +kernel
-example : ¬ modPresOk f4 0 1 [] := by decide +kernel
-example : ¬ modPresOk
+theorem pin10 : modPresOk siteQ1 0 1 [] := by decide +kernel
+theorem pin11 : modPresOk f4 0 1 [(2, 3)] := by decide +kernel
+theorem pin12 : ¬ modPresOk siteQ1 0 1 [(1, 0)] := by decide +kernel
+theorem pin13 : ¬ modPresOk siteQ1 1 0 [] := by decide +kernel
+theorem pin14 : ¬ modPresOk siteQ1 0 3 [] := by decide +kernel
+theorem pin15 : ¬ modPresOk f4 0 1 [] := by decide +kernel
+theorem pin16 : ¬ modPresOk
     [(0, false), (1, true), (1, false), (1, true)]
     0 1 [(2, 3)] := by decide +kernel
 
 /-! The electric action's eigen-read at the module level, both
 components: `E Φ_q1 = 4 d_f Φ_q1` at the open and the closed key. -/
 
-example : crossNull (pAdd (coeffAtW (extComb (eAct siteQ1) phiAdj) [0, 1])
+theorem pin17 : crossNull (pAdd (coeffAtW (extComb (eAct siteQ1) phiAdj) [0, 1])
     (pMul negP (pMul lvlE (coeffAtW phiAdj [0, 1])))) pZero := by decide +kernel
-example : crossNull (pAdd (coeffAtW (extComb (eAct siteQ1) phiAdj) [1, 0])
+theorem pin18 : crossNull (pAdd (coeffAtW (extComb (eAct siteQ1) phiAdj) [1, 0])
     (pMul negP (pMul lvlE (coeffAtW phiAdj [1, 0])))) pZero := by decide +kernel
 
 /-! The resolvent step at the graph's own datum: the deflated
 side's coefficients, the insertion's kernel point at the unit
 presentation, the support's closure, and the four steps whole. -/
 
-example : crossNull (coeffAtW (deflate siteQ1 [phiAdj] sqC) [0, 1]) pZero := by
+theorem pin19 : crossNull (coeffAtW (deflate siteQ1 [phiAdj] sqC) [0, 1]) pZero := by
   decide +kernel
-example : crossNull (coeffAtW (deflate siteQ1 [phiAdj] sqC) [1, 0]) uC := by
+theorem pin20 : crossNull (coeffAtW (deflate siteQ1 [phiAdj] sqC) [1, 0]) uC := by
   decide +kernel
-example : crossNull (coeffAtW (extComb (eAct siteQ1) unitC) [0, 1]) pZero := by
+theorem pin21 : crossNull (coeffAtW (extComb (eAct siteQ1) unitC) [0, 1]) pZero := by
   decide +kernel
-example : crossNull (coeffAtW (extComb (eAct siteQ1) unitC) [1, 0]) pZero := by
+theorem pin22 : crossNull (coeffAtW (extComb (eAct siteQ1) unitC) [1, 0]) pZero := by
   decide +kernel
-example : closedE (eAct siteQ1) wsE := by decide +kernel
-example : ¬ closedE (eAct siteQ1) [[0, 1]] := by decide +kernel
+theorem pin23 : closedE (eAct siteQ1) wsE := by decide +kernel
+theorem pin24 : ¬ closedE (eAct siteQ1) [[0, 1]] := by decide +kernel
 
 /-! The step's whole certificate at the two deflation
 certificates' reduced cofactors — `con:res`' shape doubled by
 step 4, the reduction carrying both. -/
 
-example : stepRead siteQ1 [phiAdj] wsE sqC xC [] := by decide +kernel
+theorem pin25 : stepRead siteQ1 [phiAdj] wsE sqC xC [] := by decide +kernel
 
 /-! The step's refusals: the degenerate module at the sum's unit
 self-pairing, and the solve at the undeflated scale. -/
 
-example : ¬ stepRead siteQ1 [([] : Comb)] wsE sqC xC [] := by decide +kernel
-example : ¬ solveRead (eAct siteQ1) lvlE wsE unitC [] unitC := by decide +kernel
+theorem pin26 : ¬ stepRead siteQ1 [([] : Comb)] wsE sqC xC [] := by decide +kernel
+theorem pin27 : ¬ solveRead (eAct siteQ1) lvlE wsE unitC [] unitC := by decide +kernel
 
 /-! The magnetic multiplication's coefficient at one plaquette word:
 the same-plaquette cubic count `Eval(χ_adj³) = N^adj_{adj,adj} = 2`
@@ -178,8 +180,10 @@ at the three-box tier's six-permutation Weingarten solve per
 generator — the module's heaviest read — and the cross-plaquette
 sum's unit beside it. -/
 
-example : crossNull (pairP siteQ1 (wordSite [0]) phiAdj (mulAdj phiAdj))
+theorem pin28 : crossNull (pairP siteQ1 (wordSite [0]) phiAdj (mulAdj phiAdj))
     ([⟨3, 1⟩], [⟨2, 1⟩]) := by decide +kernel
 
-example : crossNull (coeffP (wordSite [0]) (mulAdj phiAdj)) pZero := by
+theorem pin29 : crossNull (coeffP (wordSite [0]) (mulAdj phiAdj)) pZero := by
   decide +kernel
+
+end twoplaq

@@ -60,7 +60,7 @@ def rayEq : Coupling → Coupling → Prop
   | .contact, .free => False
   | .contact, .mid _ _ => False
 
-instance : (c c' : Coupling) → Decidable (rayEq c c')
+instance instSegment1 : (c c' : Coupling) → Decidable (rayEq c c')
   | .free, .free => inferInstanceAs (Decidable True)
   | .contact, .contact => inferInstanceAs (Decidable True)
   | .mid _ _, .mid _ _ =>

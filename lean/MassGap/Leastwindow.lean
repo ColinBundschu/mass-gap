@@ -8,12 +8,14 @@ support links over the member configurations (`windowLinks`), their
 touched vertices (`windowVerts`), and the members' largest content
 (`windowContent`, the max fold).  A probe is an element of the
 carrier, and its window is this one.  The multiplication window
-bound `A · Sect(Λ, C) ⊆ Sect(Λ_A ∪ Λ, Φ(C_A, C))` reads at the
+bound `A · Sect(Λ, C) ⊆ Sect(Λ_A ∪ Λ, Φ(C_A, C))` (`prop:algebra`'s
+clause at the least windows) reads at the
 changed edge's targets (`def:algebra`'s row), its instances the
-check module's pins; the attained maximum `Φ` over a fusion row
-lands at `prop:fusionfinite`'s layer with the content-ball
-comparison, and the colimit's summand injections stay at the prose,
-the reads the counts above.
+check module's pins; the tex's `prop:fusionfinite` defines the
+attained maximum `Φ`, the module reading a product pool's window
+content in its place, and
+the colimit's summand injections are `def:carrier`'s, the reads
+here the counts above.
 -/
 
 namespace leastwindow

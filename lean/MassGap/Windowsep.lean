@@ -19,7 +19,15 @@ the height and the radius pair `B = [c + H : c]`
 (`height`, `radiusN`/`radiusD`; the leading-term bound is the
 theorem tier's own, `lead_upper` and `lead_lower`: beyond the radius
 the tail's magnitude sits below the leading term's at the geometric
-telescope, so the evaluation reads the term's side), the
+telescope, so the evaluation reads the term's side; the bound's
+cleared reads beside them, the leading margin at the radius
+`leadMargin` with its display `leadMargin_read` and its positivity
+`unitLt_leadMargin` at an occupied top, the leading term's
+magnitude at a natural clearing the radius against the margin
+`leadTerm_ge`, an evaluation's magnitude under the coefficient fold
+at the bound one against the point's power `magEval_le` with that
+fold's read `magFold_one_read`, and the leading magnitude's
+positivity `unitLt_radiusD`), the
 curvature fold `Λ` at the splitting count `(i choose 2)`
 (`curvFold`, cleared), and the separation's width read (`sepRead`):
 a width sits at or below the display `2 max{Λ V, 1} δ = 1`'s `δ`
@@ -58,22 +66,9 @@ verifies the tuple whole — the produced data is decided, never
 trusted — and `genericlift.pReduce` is the recorded consumer, a pair
 moving to its reduced representative exactly where the certificate
 decides.  The separation theorem itself — distinct
-real roots at `Λ V G ≥ 1` — is the general tier at its recorded
+roots at `Λ V G ≥ 1` — is the general tier at its recorded
 consumers (`lem:stage`'s isolating brackets, `lem:split`'s
 designations), the arithmetic below its stated data.
-
-The subresultant walk is refuted at this producer, the measured dead
-end: at every swept input (390,625 grid pairs with a six-rung
-magnitude ladder at margins to `10^6`, at the exactness guard silent
-throughout) the subresultant and primitive walks produce the
-identical certified tuple, so the interior is gauge at the output;
-the primitive walk's coefficients sit entrywise at or below the
-subresultant's among fraction-free walks (the subresultant's
-classical framing priced against 1970s bignum arithmetic, where the
-kernel's `Nat.gcd` is GMP-accelerated); and the subresultant
-spelling's landing price is Collins' exactness theorem derived
-standalone in the tex.  The walk as landed is the minimal
-fraction-free spelling, the decided object.
 -/
 
 namespace windowsep
@@ -91,7 +86,7 @@ def height (P : Poly) : BPair :=
     BPair.unit
 
 /-- The radius pair's first member `c + H`, at `c` the leading
-coefficient's magnitude and `H` the height: every real root sits in
+coefficient's magnitude and `H` the height: every located root sits in
 the radius segment between `B`'s balance partner and `B` at
 `B = [c + H : c]`, the leading-term bound. -/
 def radiusN (P : Poly) : BPair :=
@@ -640,6 +635,373 @@ theorem unitLe_magFold (P : Poly) {n d : BPair}
         (ground.unitLeMul (unitLe_mag _) (ground.unitLeBpow hn i))
         (ground.unitLeBpow hd _)))
 
+/-- The coefficient fold at the bound one is the coefficients'
+magnitudes' fold, every power of the bound the unit's. -/
+theorem magFold_one_read (P : Poly) :
+    (magFold P (BPair.ofPos .one) (BPair.ofPos .one)).oneValue
+      (ground.famFold BPair.add BPair.unit
+        (fun i => mag (ground.getAt BPair.unit (poly.vnorm P) i))
+        (List.range (poly.vnorm P).length)) := by
+  refine BPair.oneValue_trans (magFold_read P _ _) ?_
+  refine ground.foldB_congr_members _ _ _ (fun i _ => ?_)
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.mul_congr (BPair.oneValue_refl _) (ground.bpow_one i))
+      (ground.bpow_one _)) ?_
+  exact BPair.oneValue_trans (BPair.mul_congr_left (BPair.mul_one_read _))
+    (BPair.mul_one_read _)
+
+/-- A comparison at every counted key folds to the folds'
+comparison over a range. -/
+theorem leB_famFold_range (l : List Nat) {f g : Nat → BPair}
+    (h : ∀ x, 0 < countOf x l → f x ≤ g x) :
+    ground.famFold BPair.add BPair.unit f l
+      ≤ ground.famFold BPair.add BPair.unit g l := by
+  induction l with
+  | nil => exact leB_refl _
+  | cons a t ih =>
+    refine leB_add (h a ?_) (ih (fun x hx => h x ?_))
+    · rw [countOf_cons, if_pos rfl]; exact Nat.lt_of_lt_of_le (Nat.succ_pos 0) (Nat.le_add_right 1 _)
+    · exact Nat.lt_of_lt_of_le hx (countOf_cons_le x a t)
+
+/-- The radius' second member at an occupied polynomial sits
+strictly above the sum's unit, the leading magnitude's read. -/
+theorem unitLt_radiusD (P : Poly) (h : ¬ poly.unitTail P) :
+    BPair.unit < radiusD P :=
+  ground.ltOfLeOff (unitLe_mag _)
+    (fun hu => poly.vnorm_top h (unit_of_mag hu))
+
+/-- The reverse triangle at the magnitude carrier: a sum's magnitude
+sits at or beyond the first summand's less the second's. -/
+private theorem mag_add_ge (u v : BPair) :
+    mag u + (mag v).swap ≤ mag (u + v) := by
+  have h0 : (u + v + v.swap).oneValue u := by
+    rw [BPair.add_right_comm]
+    exact BPair.add_swap_self u v
+  have h1 : mag u ≤ mag (u + v) + mag v := by
+    refine ground.leB_congr_left (mag_congr h0) ?_
+    refine ground.leB_trans (mag_add_le (u + v) v.swap) ?_
+    rw [mag_swap]
+    exact ground.leB_refl _
+  refine ground.leB_congr_right ?_ (ground.leB_add h1 (ground.leB_refl _))
+  rw [BPair.add_right_comm]
+  exact BPair.add_swap_self _ _
+
+/-- The geometric telescope at the pair carrier: at `x ≡ y + H`,
+`H Σ_{i<d} x^i y^{d-i} + y^{d+1} ≡ y x^d`. -/
+private theorem geo_telescope (x y H : BPair) (hx : x.oneValue (y + H)) : ∀ d : Nat,
+    (H * ground.famFold BPair.add BPair.unit
+        (fun i => ground.bpow x i * ground.bpow y (d - i)) (List.range d)
+      + ground.bpow y (d + 1)).oneValue (y * ground.bpow x d)
+  | 0 =>
+    BPair.oneValue_trans (BPair.add_congr (BPair.mul_unit H) (ground.bpow_one_read y))
+      (BPair.oneValue_trans (BPair.unit_add y) (BPair.oneValue_symm (BPair.mul_one_read y)))
+  | d + 1 => by
+    have hG : (ground.famFold BPair.add BPair.unit
+        (fun i => ground.bpow x i * ground.bpow y (d + 1 - i)) (List.range (d + 1))).oneValue
+        (y * ground.famFold BPair.add BPair.unit
+          (fun i => ground.bpow x i * ground.bpow y (d - i)) (List.range d)
+          + ground.bpow x d * y) := by
+      refine BPair.oneValue_trans (ground.foldB_range_snoc _ d) ?_
+      refine BPair.add_congr ?_ ?_
+      · refine BPair.oneValue_trans
+          (ground.foldB_congr_members _ (fun i => y * (ground.bpow x i * ground.bpow y (d - i))) _
+            (fun i hi => ?_)) (ground.foldB_mul_left y _ _)
+        have hid : d + 1 - i = d - i + 1 := by
+          have h := ground.subSuccAdd (k := i) (n := d + 1)
+            (Nat.succ_le_succ (Nat.le_of_lt (ground.ltOfCountRange hi)))
+          rw [Nat.succ_sub_succ] at h
+          exact h.symm
+        rw [hid]
+        refine BPair.oneValue_trans
+          (BPair.mul_congr (BPair.oneValue_refl _) (ground.bpow_succ_read y (d - i))) ?_
+        exact BPair.oneValue_of_eq (BPair.mul_left_comm _ _ _)
+      · rw [ground.addSubSelfL d 1]
+        exact BPair.mul_congr (BPair.oneValue_refl _) (ground.bpow_one_read y)
+    have ih := geo_telescope x y H hx d
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.mul_congr (BPair.oneValue_refl H) hG)
+        (ground.bpow_succ_read y (d + 1))) ?_
+    generalize ground.famFold BPair.add BPair.unit
+      (fun i => ground.bpow x i * ground.bpow y (d - i)) (List.range d) = G at ih ⊢
+    generalize hC : ground.bpow x d = C at ih ⊢
+    generalize ground.bpow y (d + 1) = B at ih ⊢
+    refine BPair.oneValue_trans (ground.polEqB [H, y, G, C, B]
+      (Pol.add (Pol.mul (Pol.mon (Mon.var 0))
+          (Pol.add (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 2)))
+            (Pol.mul (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 1)))))
+        (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 4))))
+      (Pol.add (Pol.mul (Pol.mon (Mon.var 1))
+          (Pol.add (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 2))) (Pol.mon (Mon.var 4))))
+        (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mul (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 1)))))
+      (by decide +kernel)) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.mul_congr (BPair.oneValue_refl y) ih) (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans (ground.polEqB [H, y, C]
+      (Pol.add (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 2))))
+        (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mon (Mon.var 1)))))
+      (Pol.mul (Pol.mon (Mon.var 1))
+        (Pol.mul (Pol.add (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 0))) (Pol.mon (Mon.var 2))))
+      (by decide +kernel)) ?_
+    refine BPair.mul_congr (BPair.oneValue_refl y) ?_
+    rw [← hC]
+    exact BPair.oneValue_trans (BPair.mul_congr_left (BPair.oneValue_symm hx))
+      (BPair.oneValue_symm (ground.bpow_succ_read x d))
+
+/-- The leading margin at the radius, cleared at the radius' second
+member's power: the leading term's magnitude at the radius against
+the further terms' magnitudes' fold there, `|a_d| rN^d` against
+`Σ_{i<d} |a_i| rN^i rD^{d-i}` at the radius `[rN : rD]` and the top
+key `d`, the further terms' fold the coefficient fold's pass at
+the below-top magnitudes with one further second-member factor. -/
+def leadMargin (P : Poly) : BPair :=
+  radiusD P * ground.bpow (radiusN P) ((poly.vnorm P).length - 1)
+  + (radiusD P * foldPow (((poly.vnorm P).map mag).take ((poly.vnorm P).length - 1))
+      (radiusN P) (radiusD P)).swap
+
+/-- The index identity of the further terms' fold: one second-member
+factor joined to the pass's power reads the display's. -/
+private theorem subPredIdx {d i : Nat} (h : i < d) : d - 1 - i + 1 = d - i := by
+  rw [ground.subSub d 1 i, Nat.add_comm 1 i]
+  exact ground.subSuccAdd h
+
+/-- The leading margin reads its display: the leading magnitude's
+power against the further terms' magnitudes at the radius' powers. -/
+theorem leadMargin_read (P : Poly) :
+    (leadMargin P).oneValue
+      (radiusD P * ground.bpow (radiusN P) ((poly.vnorm P).length - 1)
+      + (ground.famFold BPair.add BPair.unit
+          (fun i => mag (ground.getAt BPair.unit (poly.vnorm P) i)
+            * ground.bpow (radiusN P) i
+            * ground.bpow (radiusD P) ((poly.vnorm P).length - 1 - i))
+          (List.range ((poly.vnorm P).length - 1))).swap) := by
+  refine BPair.add_congr (BPair.oneValue_refl _) ?_
+  refine ground.swap_congr ?_
+  have hlen : (((poly.vnorm P).map mag).take ((poly.vnorm P).length - 1)).length
+      = (poly.vnorm P).length - 1 := by
+    rw [ground.length_take _ _ (by rw [ground.length_map]; exact Nat.sub_le _ _)]
+  refine BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _) (foldPow_read _ _ _)) ?_
+  rw [hlen]
+  refine BPair.oneValue_trans (BPair.oneValue_symm (ground.foldB_mul_left _ _ _)) ?_
+  refine ground.foldB_congr_members _ _ _ (fun i hi => ?_)
+  have hi' : i < (poly.vnorm P).length - 1 := ground.ltOfCountRange hi
+  rw [ground.getAt_take BPair.unit _ _ i hi', getAt_map_mag, ← subPredIdx hi']
+  refine BPair.oneValue_symm ?_
+  refine BPair.oneValue_trans
+    (BPair.mul_congr (BPair.oneValue_refl _) (ground.bpow_succ_read _ _)) ?_
+  exact BPair.oneValue_of_eq (BPair.mul_left_comm _ _ _)
+
+/-- The margin is a margin: at an occupied polynomial the leading
+term's magnitude at the radius exceeds the further terms' fold
+there, the leading term dominating at every point of margin at or
+beyond the radius (the geometric telescope at the radius' two
+members). -/
+theorem unitLt_leadMargin (P : Poly) (h : ¬ poly.unitTail P) :
+    BPair.unit < leadMargin P := by
+  have hy : BPair.unit < radiusD P := unitLt_radiusD P h
+  have hx : (radiusN P).oneValue (radiusD P + height P) := BPair.norm_oneValue _
+  have hS : ground.famFold BPair.add BPair.unit
+      (fun i => mag (ground.getAt BPair.unit (poly.vnorm P) i)
+        * ground.bpow (radiusN P) i
+        * ground.bpow (radiusD P) ((poly.vnorm P).length - 1 - i))
+      (List.range ((poly.vnorm P).length - 1))
+    ≤ height P * ground.famFold BPair.add BPair.unit
+      (fun i => ground.bpow (radiusN P) i
+        * ground.bpow (radiusD P) ((poly.vnorm P).length - 1 - i))
+      (List.range ((poly.vnorm P).length - 1)) := by
+    refine ground.leB_congr_right (ground.foldB_mul_left (height P)
+      (fun i => ground.bpow (radiusN P) i
+        * ground.bpow (radiusD P) ((poly.vnorm P).length - 1 - i))
+      (List.range ((poly.vnorm P).length - 1))) ?_
+    refine leB_famFold_range _ (fun i hi => ?_)
+    have hi' : i < (poly.vnorm P).length :=
+      Nat.lt_of_lt_of_le (ground.ltOfCountRange hi) (Nat.sub_le _ _)
+    have hH : mag (ground.getAt BPair.unit (poly.vnorm P) i) ≤ height P :=
+      mag_le_height (ground.mem_getAt BPair.unit _ i hi')
+    refine ground.leB_congr_right (BPair.oneValue_of_eq (BPair.mul_assoc _ _ _)) ?_
+    exact ground.leB_mulL (ground.unitLeBpow (unitLe_radiusD P) _)
+      (ground.leB_mulL (ground.unitLeBpow (unitLe_radiusN P) i) hH)
+  have ht := geo_telescope (radiusN P) (radiusD P) (height P) hx ((poly.vnorm P).length - 1)
+  refine BPair.lt_congr (BPair.oneValue_refl _) (BPair.oneValue_symm (leadMargin_read P)) ?_
+  generalize ground.famFold BPair.add BPair.unit
+      (fun i => ground.bpow (radiusN P) i
+        * ground.bpow (radiusD P) ((poly.vnorm P).length - 1 - i))
+      (List.range ((poly.vnorm P).length - 1)) = G at hS ht
+  generalize ground.famFold BPair.add BPair.unit
+      (fun i => mag (ground.getAt BPair.unit (poly.vnorm P) i)
+        * ground.bpow (radiusN P) i
+        * ground.bpow (radiusD P) ((poly.vnorm P).length - 1 - i))
+      (List.range ((poly.vnorm P).length - 1)) = S at hS ⊢
+  generalize (poly.vnorm P).length - 1 = d at ht ⊢
+  generalize radiusD P = y at hy ht hS ⊢
+  generalize radiusN P = x at ht ⊢
+  generalize height P = H at ht hS ⊢
+  have hval : (y * ground.bpow x d + (H * G).swap).oneValue (ground.bpow y (d + 1)) := by
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_symm ht) (BPair.oneValue_refl _)) ?_
+    rw [BPair.add_comm (H * G) (ground.bpow y (d + 1)), BPair.add_right_comm]
+    exact BPair.add_swap_self _ _
+  have hpos : BPair.unit < ground.bpow y (d + 1) := ground.unitLtBpow hy _
+  refine ground.ltB_trans_le (BPair.lt_congr (BPair.oneValue_refl _)
+    (BPair.oneValue_symm hval) hpos) ?_
+  exact ground.leB_add (ground.leB_refl _) (ground.leB_swap hS)
+
+/-- A polynomial's evaluation's magnitude sits at or below its
+coefficients' magnitudes' fold against the point's magnitude's power
+at any key at or beyond its top, the point at or beyond one. -/
+theorem magEval_le (p : Poly) (x : BPair) (m : Nat)
+    (hm : (poly.vnorm p).length ≤ m + 1) (hx : BPair.ofPos .one ≤ mag x) :
+    mag (poly.eval p x)
+      ≤ magFold p (BPair.ofPos .one) (BPair.ofPos .one) * ground.bpow (mag x) m := by
+  have hq : (poly.eval p x).oneValue
+      (ground.famFold BPair.add BPair.unit
+        (fun k => ground.getAt BPair.unit (poly.vnorm p) k * ground.bpow x k)
+        (List.range (poly.vnorm p).length)) :=
+    BPair.oneValue_trans (poly.eval_congr (poly.oneValue_symm (poly.vnorm_ov p)) x)
+      (poly.eval_famFold _ x)
+  refine ground.leB_congr_left (BPair.oneValue_symm (mag_congr hq)) ?_
+  refine ground.leB_trans (mag_famFold_le _ _) ?_
+  refine ground.leB_congr_right (BPair.oneValue_symm (BPair.oneValue_trans
+    (BPair.mul_congr_left (magFold_one_read p))
+    (ground.foldB_mul_right _ _ _))) ?_
+  refine leB_famFold_range _ (fun i hi => ?_)
+  have him : i ≤ m := Nat.le_of_lt_succ (Nat.lt_of_lt_of_le (ground.ltOfCountRange hi) hm)
+  refine ground.leB_congr_left (BPair.oneValue_symm (BPair.oneValue_trans
+    (mag_mul _ _)
+    (BPair.mul_congr (BPair.oneValue_refl _) (mag_bpow x i)))) ?_
+  exact ground.leB_mulR (unitLe_mag _) (ground.bpow_le_exp hx him)
+
+/-- The leading term's magnitude at a natural at or beyond the
+radius, cleared at the radius' first member's power: at or beyond the
+leading margin against the natural's power at the top key, the tail
+priced at the radius' powers. -/
+theorem leadTerm_ge (P : Poly) (hP : ¬ poly.unitTail P) (l : Nat)
+    (hcl : radiusN P ≤ BPair.ofNat l * radiusD P) :
+    leadMargin P * ground.bpow (BPair.ofNat l) ((poly.vnorm P).length - 1)
+      ≤ mag (poly.eval P (BPair.ofNat l))
+        * ground.bpow (radiusN P) ((poly.vnorm P).length - 1) := by
+  have hlen := poly.len_of_top_off (poly.vnorm_top hP)
+  have hlu : BPair.unit ≤ BPair.ofNat l := ground.unitLeOfNat l
+  have hmagl : mag (BPair.ofNat l) = BPair.ofNat l := mag_unitLe hlu
+  refine ground.leB_congr_left (BPair.mul_congr_left (BPair.oneValue_symm (leadMargin_read P))) ?_
+  generalize hd : (poly.vnorm P).length - 1 = d at hlen ⊢
+  have hgetd : ground.getAt BPair.unit (poly.vnorm P) d = poly.top (poly.vnorm P) :=
+    (poly.topO_getAt ground.bpairOps _ d hlen).symm
+  have hq : (poly.eval P (BPair.ofNat l)).oneValue
+      (ground.famFold BPair.add BPair.unit
+        (fun k => ground.getAt BPair.unit (poly.vnorm P) k * ground.bpow (BPair.ofNat l) k)
+        (List.range d)
+      + poly.top (poly.vnorm P) * ground.bpow (BPair.ofNat l) d) := by
+    refine BPair.oneValue_trans (poly.eval_congr (poly.oneValue_symm (poly.vnorm_ov P)) _) ?_
+    have hf := poly.eval_famFold (poly.vnorm P) (BPair.ofNat l)
+    rw [hlen] at hf
+    refine BPair.oneValue_trans hf ?_
+    rw [← hgetd]
+    exact ground.foldB_range_snoc _ d
+  have hTcap : mag (ground.famFold BPair.add BPair.unit
+      (fun k => ground.getAt BPair.unit (poly.vnorm P) k * ground.bpow (BPair.ofNat l) k)
+      (List.range d)) ≤ ground.famFold BPair.add BPair.unit
+      (fun k => mag (ground.getAt BPair.unit (poly.vnorm P) k) * ground.bpow (BPair.ofNat l) k)
+      (List.range d) := by
+    refine ground.leB_trans (mag_famFold_le _ _) ?_
+    refine leB_famFold_range _ (fun i _ => ?_)
+    refine ground.leB_congr_left (BPair.oneValue_symm (BPair.oneValue_trans
+      (mag_mul _ _)
+      (BPair.mul_congr (BPair.oneValue_refl _) (mag_bpow _ i)))) ?_
+    rw [hmagl]
+    exact ground.leB_refl _
+  have htop : (mag (poly.top (poly.vnorm P) * ground.bpow (BPair.ofNat l) d)).oneValue
+      (radiusD P * ground.bpow (BPair.ofNat l) d) := by
+    refine BPair.oneValue_trans (mag_mul _ _) ?_
+    refine BPair.mul_congr (BPair.oneValue_refl _) ?_
+    refine BPair.oneValue_trans (mag_bpow _ d) ?_
+    rw [hmagl]
+    exact BPair.oneValue_refl _
+  have hrev : radiusD P * ground.bpow (BPair.ofNat l) d
+      + (ground.famFold BPair.add BPair.unit
+        (fun k => mag (ground.getAt BPair.unit (poly.vnorm P) k)
+          * ground.bpow (BPair.ofNat l) k) (List.range d)).swap
+      ≤ mag (poly.eval P (BPair.ofNat l)) := by
+    refine ground.leB_congr_right (mag_congr (BPair.oneValue_trans
+      (BPair.oneValue_of_eq (BPair.add_comm _ _)) (BPair.oneValue_symm hq))) ?_
+    refine ground.leB_trans ?_ (mag_add_ge _ _)
+    exact ground.leB_add (ground.leB_congr_left htop (ground.leB_refl _)) (ground.leB_swap hTcap)
+  have hterm : ∀ i, i < d →
+      mag (ground.getAt BPair.unit (poly.vnorm P) i) * ground.bpow (BPair.ofNat l) i
+          * ground.bpow (radiusN P) d
+        ≤ mag (ground.getAt BPair.unit (poly.vnorm P) i)
+          * ground.bpow (radiusN P) i * ground.bpow (radiusD P) (d - i)
+          * ground.bpow (BPair.ofNat l) d := by
+    intro i hi
+    have hid : i + (d - i) = d := by
+      rw [Nat.add_comm]
+      exact ground.subAdd (Nat.le_of_lt hi)
+    have hxd : (ground.bpow (radiusN P) (i + (d - i))).oneValue
+        (ground.bpow (radiusN P) d) := by
+      rw [hid]
+      exact BPair.oneValue_refl _
+    have hli : (ground.bpow (BPair.ofNat l) i * ground.bpow (BPair.ofNat l) (d - i)).oneValue
+        (ground.bpow (BPair.ofNat l) d) := by
+      have h := ground.bpow_add (BPair.ofNat l) i (d - i)
+      rw [hid] at h
+      exact BPair.oneValue_symm h
+    have hxN : ground.bpow (radiusN P) d ≤ ground.bpow (radiusN P) i
+        * (ground.bpow (BPair.ofNat l) (d - i) * ground.bpow (radiusD P) (d - i)) := by
+      refine ground.leB_congr_left hxd ?_
+      refine ground.leB_congr_left (BPair.oneValue_symm (ground.bpow_add (radiusN P) i (d - i))) ?_
+      refine ground.leB_mulR (ground.unitLeBpow (unitLe_radiusN P) i) ?_
+      refine ground.leB_congr_right (ground.bpow_mul (BPair.ofNat l) (radiusD P) (d - i)) ?_
+      exact ground.bpow_mono (unitLe_radiusN P) hcl (d - i)
+    have hA : BPair.unit ≤ mag (ground.getAt BPair.unit (poly.vnorm P) i) := unitLe_mag _
+    have hLi : BPair.unit ≤ ground.bpow (BPair.ofNat l) i := ground.unitLeBpow hlu i
+    generalize mag (ground.getAt BPair.unit (poly.vnorm P) i) = A at hA ⊢
+    generalize ground.bpow (BPair.ofNat l) i = Li at hLi hli ⊢
+    generalize ground.bpow (radiusN P) d = Xd at hxN ⊢
+    generalize ground.bpow (radiusN P) i = Xi at hxN ⊢
+    generalize ground.bpow (BPair.ofNat l) (d - i) = Lr at hxN hli ⊢
+    generalize ground.bpow (radiusD P) (d - i) = Yr at hxN ⊢
+    generalize ground.bpow (BPair.ofNat l) d = Ld at hli ⊢
+    refine ground.leB_trans (ground.leB_mulR (ground.unitLeMul hA hLi) hxN) ?_
+    refine ground.leB_congr_left (BPair.oneValue_symm (ground.polEqB [A, Li, Xi, Lr, Yr]
+        (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1)))
+          (Pol.mul (Pol.mon (Mon.var 2)) (Pol.mul (Pol.mon (Mon.var 3)) (Pol.mon (Mon.var 4)))))
+        (Pol.mul (Pol.mul (Pol.mul (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 2))) (Pol.mon (Mon.var 4)))
+          (Pol.mul (Pol.mon (Mon.var 1)) (Pol.mon (Mon.var 3))))
+        (by decide +kernel))) ?_
+    exact ground.leB_congr_right (BPair.mul_congr (BPair.oneValue_refl _) hli) (ground.leB_refl _)
+  have hSS : ground.famFold BPair.add BPair.unit
+      (fun k => mag (ground.getAt BPair.unit (poly.vnorm P) k)
+        * ground.bpow (BPair.ofNat l) k) (List.range d) * ground.bpow (radiusN P) d
+    ≤ ground.famFold BPair.add BPair.unit
+      (fun i => mag (ground.getAt BPair.unit (poly.vnorm P) i)
+        * ground.bpow (radiusN P) i
+        * ground.bpow (radiusD P) (d - i)) (List.range d) * ground.bpow (BPair.ofNat l) d := by
+    refine ground.leB_congr (BPair.oneValue_symm (ground.foldB_mul_right (ground.bpow (radiusN P) d)
+        (fun k => mag (ground.getAt BPair.unit (poly.vnorm P) k)
+          * ground.bpow (BPair.ofNat l) k) (List.range d)))
+      (BPair.oneValue_symm (ground.foldB_mul_right (ground.bpow (BPair.ofNat l) d)
+        (fun i => mag (ground.getAt BPair.unit (poly.vnorm P) i)
+          * ground.bpow (radiusN P) i
+          * ground.bpow (radiusD P) (d - i)) (List.range d))) ?_
+    exact leB_famFold_range (List.range d)
+      (fun i hi => hterm i (ground.ltOfCountRange hi))
+  refine ground.leB_trans ?_ (ground.leB_mulL (ground.unitLeBpow (unitLe_radiusN P) d) hrev)
+  generalize ground.famFold BPair.add BPair.unit
+      (fun k => mag (ground.getAt BPair.unit (poly.vnorm P) k)
+        * ground.bpow (BPair.ofNat l) k) (List.range d) = Sl at hSS ⊢
+  generalize ground.famFold BPair.add BPair.unit
+      (fun i => mag (ground.getAt BPair.unit (poly.vnorm P) i)
+        * ground.bpow (radiusN P) i
+        * ground.bpow (radiusD P) (d - i)) (List.range d) = Sx at hSS ⊢
+  generalize radiusD P = A
+  generalize ground.bpow (BPair.ofNat l) d = Ld at hSS ⊢
+  generalize ground.bpow (radiusN P) d = Xd at hSS ⊢
+  refine ground.leB_congr (BPair.oneValue_symm (BPair.oneValue_of_eq (BPair.right_distrib _ _ _)))
+    (BPair.oneValue_symm (BPair.oneValue_of_eq (BPair.right_distrib _ _ _))) ?_
+  refine ground.leB_add (ground.leB_congr_left (BPair.oneValue_of_eq (BPair.mul_right_comm A Ld Xd))
+    (ground.leB_refl _)) ?_
+  rw [BPair.swap_mul, BPair.swap_mul]
+  exact ground.leB_swap hSS
+
 /-- The coefficient fold at the memberwise swap, the magnitudes
 unchanged. -/
 private theorem map_neg_mag : ∀ l : Poly,
@@ -797,13 +1159,6 @@ private theorem top_off_of_lead {q : Poly} {x : BPair} {n : Nat}
   ground.leB_not_lt (ground.leB_refl BPair.unit)
     (BPair.lt_congr (BPair.oneValue_refl BPair.unit)
       ((BPair.mul_unit_iff (top q) (ground.bpow x n)).mpr (Or.inl h)) hl)
-
-/-- A top off the sum's unit puts the carrier's length at the top
-key's successor. -/
-private theorem len_of_top_off : ∀ {q : Poly},
-    ¬ (top q).oneValue BPair.unit → q.length = (q.length - 1) + 1
-  | [], h => absurd (BPair.oneValue_refl BPair.unit) h
-  | _ :: _, _ => rfl
 
 /-- The telescope's price at the balance carrier: with the scale's
 product against the leading magnitude at or above that magnitude
@@ -975,7 +1330,7 @@ theorem lead_upper (p : Poly) (x : BPair)
   BPair.lt_congr (BPair.oneValue_refl BPair.unit)
     (poly.eval_congr (poly.vnorm_ov p) x)
     (lead_core (poly.vnorm p) x (height p) ((poly.vnorm p).length - 1)
-      (len_of_top_off (top_off_of_lead hl)) (unitLe_height p)
+      (poly.len_of_top_off (top_off_of_lead hl)) (unitLe_height p)
       (fun _ hz => mag_le_height hz) hx hl)
 
 /-- The lower side's read, the memberwise swap's. -/
@@ -1059,7 +1414,7 @@ private theorem sepRead_walk (S : Poly) (wn wd : Pos)
       (BPair.mul_congr (BPair.oneValue_refl _)
         (BPair.mul_congr (mag_congr hR) (BPair.oneValue_refl _))) x2
 
-instance (S : Poly) (wn wd : Pos) : Decidable (sepRead S wn wd) :=
+instance instWindowsep1 (S : Poly) (wn wd : Pos) : Decidable (sepRead S wn wd) :=
   let T := poly.vnorm S
   let M := elim.shiftMat T (deriv T)
   match elim.decRowsLen M.length M with
@@ -1181,5 +1536,685 @@ def gcdD (P Q : Poly) : GcdData :=
   let dB := pdiv (poly.topped g tp) Q
   ⟨g, tp, dA.1, dB.1, ans.u, ans.v,
    Pos.powC tp dA.2.2, Pos.powC tp dB.2.2, ans.m⟩
+
+/-! The coefficient fold at a stated power: `Σ_{i≤K} |p_i| n^i d^(K-i)`,
+the magnitudes at every key through the power with the vacant keys
+at the sum's unit, cleared at `d^K` (`foldK`, its family instance
+`foldAt`); it recurs on the power (`foldAt_succ`), reads the
+coefficient fold at the polynomial's own top with the further
+powers' clearing (`foldK_magFold`, `magFold` at `Σ_i |s_i| n^i
+d^(k-i)`, the fold's read at a further power its computing form),
+and caps a cleared evaluation at a point inside the bound at the
+bound's read (`foldK_cap`, the evaluations-at-magnitude-below-a-bound
+clause), with the sum's and the rescaling's reads and the
+congruence. -/
+
+/-- The fold's step, the running pair at one coefficient: the first
+member's bound multiple joined to the coefficient's multiple of the
+second, and the second's clearing multiple. -/
+private def stepAt (n d : BPair) (s : BPair × BPair) (c : BPair) :
+    BPair × BPair :=
+  (((s.1 * n).norm + (c * s.2).norm).norm, (s.2 * d).norm)
+
+/-- The running pair's regrouping, one collected display at seven
+pairs. -/
+private theorem lin_shuffle (a n c b d N F : BPair) :
+    (a * (n * N) + b * (c * N + d * F)).oneValue
+      ((a * n + c * b) * N + b * d * F) :=
+  polEqB [a, n, c, b, d, N, F]
+    (Pol.add (Pol.mon (Mon.mul (Mon.var 0) (Mon.mul (Mon.var 1) (Mon.var 5))))
+      (Pol.mul (Pol.mon (Mon.var 3))
+        (Pol.add (Pol.mon (Mon.mul (Mon.var 2) (Mon.var 5)))
+          (Pol.mon (Mon.mul (Mon.var 4) (Mon.var 6))))))
+    (Pol.add (Pol.mul (Pol.add (Pol.mon (Mon.mul (Mon.var 0) (Mon.var 1)))
+        (Pol.mon (Mon.mul (Mon.var 2) (Mon.var 3)))) (Pol.mon (Mon.var 5)))
+      (Pol.mon (Mon.mul (Mon.mul (Mon.var 3) (Mon.var 4)) (Mon.var 6))))
+    (by decide +kernel)
+
+/-- A sum's multiple joined to a multiple of a sum, regrouped at the
+two summands' own pairs. -/
+private theorem distrib_shuffle (x y N d u v : BPair) :
+    ((x + y) * N + d * (u + v)).oneValue (x * N + d * u + (y * N + d * v)) :=
+  polEqB [x, y, N, d, u, v]
+    (Pol.add (Pol.mul (Pol.add (Pol.mon (Mon.var 0)) (Pol.mon (Mon.var 1)))
+        (Pol.mon (Mon.var 2)))
+      (Pol.mul (Pol.mon (Mon.var 3))
+        (Pol.add (Pol.mon (Mon.var 4)) (Pol.mon (Mon.var 5)))))
+    (Pol.add (Pol.add (Pol.mon (Mon.mul (Mon.var 0) (Mon.var 2)))
+        (Pol.mon (Mon.mul (Mon.var 3) (Mon.var 4))))
+      (Pol.add (Pol.mon (Mon.mul (Mon.var 1) (Mon.var 2)))
+        (Pol.mon (Mon.mul (Mon.var 3) (Mon.var 5)))))
+    (by decide +kernel)
+
+/-- A scale across the recursion's two summands. -/
+private theorem scale_shuffle (c x N d F : BPair) :
+    (c * x * N + d * (c * F)).oneValue (c * (x * N + d * F)) :=
+  polEqB [c, x, N, d, F]
+    (Pol.add (Pol.mon (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2)))
+      (Pol.mon (Mon.mul (Mon.var 3) (Mon.mul (Mon.var 0) (Mon.var 4)))))
+    (Pol.mul (Pol.mon (Mon.var 0))
+      (Pol.add (Pol.mon (Mon.mul (Mon.var 1) (Mon.var 2)))
+        (Pol.mon (Mon.mul (Mon.var 3) (Mon.var 4)))))
+    (by decide +kernel)
+
+/-- The fold from a stated running pair is linear in it: the first
+member's power multiple joined to the second member's multiple of
+the fold from the units. -/
+private theorem foldFrom_lin (n d : BPair) : ∀ (m : List BPair) (a b : BPair),
+    ((m.foldl (stepAt n d) (a, b)).1).oneValue
+      (a * bpow n m.length
+        + b * (m.foldl (stepAt n d) (BPair.unit, BPair.ofPos .one)).1)
+  | [], a, b => by
+    show a.oneValue (a * BPair.ofPos .one + b * BPair.unit)
+    exact BPair.oneValue_symm (BPair.oneValue_trans
+      (BPair.add_congr (BPair.mul_one_read a) (BPair.mul_unit b))
+      (BPair.add_unit a))
+  | c :: m, a, b => by
+    show ((m.foldl (stepAt n d) (stepAt n d (a, b) c)).1).oneValue
+      (a * bpow n (m.length + 1)
+        + b * (m.foldl (stepAt n d) (stepAt n d (BPair.unit, BPair.ofPos .one) c)).1)
+    have hA : (((a * n).norm + (c * b).norm).norm).oneValue (a * n + c * b) :=
+      BPair.oneValue_trans (BPair.norm_oneValue _)
+        (BPair.add_congr (BPair.norm_oneValue _) (BPair.norm_oneValue _))
+    have hB : ((b * d).norm).oneValue (b * d) := BPair.norm_oneValue _
+    have hA0 : (((BPair.unit * n).norm + (c * BPair.ofPos .one).norm).norm).oneValue c :=
+      BPair.oneValue_trans (BPair.norm_oneValue _)
+        (BPair.oneValue_trans
+          (BPair.add_congr
+            (BPair.oneValue_trans (BPair.norm_oneValue _) (BPair.unit_mul n))
+            (BPair.oneValue_trans (BPair.norm_oneValue _) (BPair.mul_one_read c)))
+          (BPair.unit_add c))
+    have hB0 : ((BPair.ofPos .one * d).norm).oneValue d :=
+      BPair.oneValue_trans (BPair.norm_oneValue _)
+        (BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.mul_comm _ d))
+          (BPair.mul_one_read d))
+    refine BPair.oneValue_trans (foldFrom_lin n d m _ _) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.mul_congr_left hA)
+        (BPair.mul_congr_left hB)) ?_
+    refine BPair.oneValue_symm ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.mul_congr (BPair.oneValue_refl a) (bpow_succ_read n m.length))
+        (BPair.mul_congr (BPair.oneValue_refl b)
+          (BPair.oneValue_trans (foldFrom_lin n d m _ _)
+            (BPair.add_congr (BPair.mul_congr_left hA0)
+              (BPair.mul_congr_left hB0))))) ?_
+    exact lin_shuffle a n c b d _ _
+
+/-- A list grown by one member at its top folds to the member's power
+joined to the bound's second datum's multiple of the fold below. -/
+private theorem foldPow_snoc (l : List BPair) (x n d : BPair) :
+    (foldPow (l ++ [x]) n d).oneValue (x * bpow n l.length + d * foldPow l n d) := by
+  show ((((l ++ [x]).reverse).foldl (stepAt n d) (BPair.unit, BPair.ofPos .one)).1).oneValue
+    (x * bpow n l.length + d * ((l.reverse.foldl (stepAt n d) (BPair.unit, BPair.ofPos .one)).1))
+  rw [reverse_append l [x]]
+  show ((l.reverse.foldl (stepAt n d) (stepAt n d (BPair.unit, BPair.ofPos .one) x)).1).oneValue _
+  refine BPair.oneValue_trans (foldFrom_lin n d l.reverse _ _) ?_
+  rw [length_reverse l]
+  refine BPair.add_congr (BPair.mul_congr_left ?_) (BPair.mul_congr_left ?_)
+  · exact BPair.oneValue_trans (BPair.norm_oneValue _)
+      (BPair.oneValue_trans
+        (BPair.add_congr
+          (BPair.oneValue_trans (BPair.norm_oneValue _) (BPair.unit_mul n))
+          (BPair.oneValue_trans (BPair.norm_oneValue _) (BPair.mul_one_read x)))
+        (BPair.unit_add x))
+  · exact BPair.oneValue_trans (BPair.norm_oneValue _)
+      (BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.mul_comm _ d))
+        (BPair.mul_one_read d))
+
+/-- A coefficient family's fold at a stated power: `Σ_{i≤K} f_i n^i d^(K-i)`,
+the family's reads at every key through the power, cleared at
+`d^K`. -/
+def foldAt (f : Nat → BPair) (n d : BPair) (K : Nat) : BPair :=
+  foldPow ((List.range (K + 1)).map f) n d
+
+/-- The fold at the power nought is the family's read at the
+constant key. -/
+theorem foldAt_zero (f : Nat → BPair) (n d : BPair) :
+    (foldAt f n d 0).oneValue (f 0) := by
+  show ((([f 0]).reverse.foldl (stepAt n d)
+      (BPair.unit, BPair.ofPos .one)).1).oneValue _
+  show ((((BPair.unit * n).norm + (f 0 * BPair.ofPos .one).norm).norm)).oneValue _
+  exact BPair.oneValue_trans (BPair.norm_oneValue _)
+    (BPair.oneValue_trans
+      (BPair.add_congr
+        (BPair.oneValue_trans (BPair.norm_oneValue _) (BPair.unit_mul n))
+        (BPair.oneValue_trans (BPair.norm_oneValue _) (BPair.mul_one_read _)))
+      (BPair.unit_add _))
+
+/-- The fold recurs on the power: the top key's read at the bound's
+power joined to the second datum's multiple of the fold below. -/
+theorem foldAt_succ (f : Nat → BPair) (n d : BPair) (K : Nat) :
+    (foldAt f n d (K + 1)).oneValue
+      (f (K + 1) * bpow n (K + 1) + d * foldAt f n d K) := by
+  show (foldPow ((List.range (K + 1 + 1)).map f) n d).oneValue _
+  rw [range_succ (K + 1), map_append]
+  refine BPair.oneValue_trans (foldPow_snoc _ _ n d) ?_
+  rw [length_map, length_range]
+  exact BPair.oneValue_refl _
+
+/-- The fold's family read: the family's reads at the powers over the
+keys through the power, `thm:windowsep`'s coefficient fold at a
+stated family. -/
+theorem foldAt_read (f : Nat → BPair) (n d : BPair) (K : Nat) :
+    (foldAt f n d K).oneValue
+      (ground.famFold BPair.add BPair.unit
+        (fun i => f i * bpow n i * bpow d (K - i)) (List.range (K + 1))) := by
+  refine BPair.oneValue_trans (foldPow_read _ n d) ?_
+  rw [length_map, length_range]
+  refine ground.famFold_congr_members_ov BPair.oneValue BPair.add BPair.unit
+    BPair.oneValue_refl (fun h1 h2 => BPair.add_congr h1 h2) _ _
+    (List.range (K + 1)) (fun i hi => ?_)
+  have hlt : i < K + 1 := by
+    have h := countOf_range i (K + 1)
+    cases hd : decide (i < K + 1) with
+    | true => exact of_decide_eq_true hd
+    | false =>
+      rw [if_neg (of_decide_eq_false hd)] at h
+      rw [h] at hi
+      exact absurd hi (Nat.lt_irrefl 0)
+  rw [getAt_map_range BPair.unit f (K + 1) i, if_pos hlt]
+  exact BPair.oneValue_refl _
+
+/-- The fold passes a pointwise one-value read of the family. -/
+theorem foldAt_congr {f g : Nat → BPair} (h : ∀ i, (f i).oneValue (g i))
+    (n d : BPair) : ∀ K : Nat, (foldAt f n d K).oneValue (foldAt g n d K)
+  | 0 => BPair.oneValue_trans (foldAt_zero f n d)
+      (BPair.oneValue_trans (h 0) (BPair.oneValue_symm (foldAt_zero g n d)))
+  | K + 1 => BPair.oneValue_trans (foldAt_succ f n d K)
+      (BPair.oneValue_trans
+        (BPair.add_congr (BPair.mul_congr_left (h (K + 1)))
+          (BPair.mul_congr (BPair.oneValue_refl d) (foldAt_congr h n d K)))
+        (BPair.oneValue_symm (foldAt_succ g n d K)))
+
+/-- The fold sits at or beyond the sum's unit at a family and bounds
+at or beyond it. -/
+theorem unitLe_foldAt {f : Nat → BPair} (hf : ∀ i, BPair.unit ≤ f i)
+    {n d : BPair} (hn : BPair.unit ≤ n) (hd : BPair.unit ≤ d) :
+    ∀ K : Nat, BPair.unit ≤ foldAt f n d K
+  | 0 => leB_congr_right (BPair.oneValue_symm (foldAt_zero f n d)) (hf 0)
+  | K + 1 => leB_congr_right (BPair.oneValue_symm (foldAt_succ f n d K))
+      (unitLeAdd (unitLeMul (hf _) (unitLeBpow hn (K + 1)))
+        (unitLeMul hd (unitLe_foldAt hf hn hd K)))
+
+/-- The fold of a family's sum sits at or below the folds' sum at
+bounds at or beyond the sum's unit. -/
+theorem foldAt_add_le {f g h : Nat → BPair} {n d : BPair}
+    (hn : BPair.unit ≤ n) (hd : BPair.unit ≤ d)
+    (hle : ∀ i, h i ≤ f i + g i) :
+    ∀ K : Nat, foldAt h n d K ≤ foldAt f n d K + foldAt g n d K
+  | 0 => leB_congr (BPair.oneValue_symm (foldAt_zero h n d))
+      (BPair.oneValue_symm (BPair.add_congr (foldAt_zero f n d) (foldAt_zero g n d)))
+      (hle 0)
+  | K + 1 => by
+    refine leB_congr (BPair.oneValue_symm (foldAt_succ h n d K))
+      (BPair.oneValue_symm (BPair.add_congr (foldAt_succ f n d K) (foldAt_succ g n d K))) ?_
+    refine leB_trans (leB_add
+      (leB_mulL (unitLeBpow hn (K + 1)) (hle (K + 1)))
+      (leB_mulR hd (foldAt_add_le hn hd hle K))) ?_
+    exact Or.inl (distrib_shuffle (f (K + 1)) (g (K + 1)) (bpow n (K + 1)) d
+      (foldAt f n d K) (foldAt g n d K))
+
+/-- A scaled family folds at the scale's multiple. -/
+theorem foldAt_scale (c : BPair) (f : Nat → BPair) (n d : BPair) :
+    ∀ K : Nat, (foldAt (fun i => c * f i) n d K).oneValue (c * foldAt f n d K)
+  | 0 => BPair.oneValue_trans (foldAt_zero _ n d)
+      (BPair.mul_congr (BPair.oneValue_refl c) (BPair.oneValue_symm (foldAt_zero f n d)))
+  | K + 1 => by
+    refine BPair.oneValue_trans (foldAt_succ _ n d K) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.oneValue_refl _)
+        (BPair.mul_congr (BPair.oneValue_refl d) (foldAt_scale c f n d K))) ?_
+    refine BPair.oneValue_trans (scale_shuffle c (f (K + 1)) (bpow n (K + 1)) d (foldAt f n d K)) ?_
+    exact BPair.mul_congr (BPair.oneValue_refl c) (BPair.oneValue_symm (foldAt_succ f n d K))
+
+/-- The coefficient fold at a stated power: `Σ_{i≤K} |p_i| n^i d^(K-i)`,
+the magnitudes at every key through the power with the vacant keys
+at the sum's unit, cleared at `d^K`. -/
+def foldK (p : poly.Poly) (n d : BPair) (K : Nat) : BPair :=
+  foldAt (fun i => mag (ground.getAt BPair.unit p i)) n d K
+
+/-- The fold at the power nought is the constant key's magnitude. -/
+theorem foldK_zero (p : poly.Poly) (n d : BPair) :
+    (foldK p n d 0).oneValue (mag (ground.getAt BPair.unit p 0)) :=
+  foldAt_zero _ n d
+
+/-- The fold recurs on the power: the top key's magnitude at the
+bound's power joined to the second datum's multiple of the fold
+below. -/
+theorem foldK_succ (p : poly.Poly) (n d : BPair) (K : Nat) :
+    (foldK p n d (K + 1)).oneValue
+      (mag (ground.getAt BPair.unit p (K + 1)) * bpow n (K + 1)
+        + d * foldK p n d K) :=
+  foldAt_succ _ n d K
+
+/-- The vacant list's fold is the sum's unit at every power. -/
+theorem foldK_nil (n d : BPair) : ∀ K : Nat,
+    (foldK [] n d K).oneValue BPair.unit
+  | 0 => BPair.oneValue_trans (foldK_zero [] n d)
+      (BPair.oneValue_of_eq (mag_unitLe (leB_refl _)))
+  | K + 1 => by
+    refine BPair.oneValue_trans (foldK_succ [] n d K) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr
+        (BPair.mul_congr_left (BPair.oneValue_of_eq (mag_unitLe (leB_refl _))))
+        (BPair.mul_congr (BPair.oneValue_refl d) (foldK_nil n d K))) ?_
+    exact BPair.oneValue_trans (BPair.add_congr (BPair.unit_mul _) (BPair.mul_unit d))
+      (BPair.unit_add _)
+
+/-- The fold passes the one-value read. -/
+theorem foldK_congr {p q : poly.Poly} (h : poly.oneValue p q) (n d : BPair)
+    (K : Nat) : (foldK p n d K).oneValue (foldK q n d K) :=
+  foldAt_congr (fun i => mag_congr (poly.oneValue_getAt i h)) n d K
+
+/-- The fold sits at or beyond the sum's unit at bounds at or beyond
+it. -/
+theorem unitLe_foldK (p : poly.Poly) {n d : BPair}
+    (hn : BPair.unit ≤ n) (hd : BPair.unit ≤ d) (K : Nat) :
+    BPair.unit ≤ foldK p n d K :=
+  unitLe_foldAt (fun _ => unitLe_mag _) hn hd K
+
+/-- The sum's fold sits at or below the folds' sum. -/
+theorem foldK_add_le (p q : poly.Poly) {n d : BPair}
+    (hn : BPair.unit ≤ n) (hd : BPair.unit ≤ d) (K : Nat) :
+    foldK (poly.add p q) n d K ≤ foldK p n d K + foldK q n d K :=
+  foldAt_add_le hn hd (fun i =>
+    leB_congr_left (BPair.oneValue_symm (mag_congr (poly.getAt_add p q i)))
+      (mag_add_le _ _)) K
+
+/-- A rescaled polynomial's fold is the scale's magnitude against
+the fold. -/
+theorem foldK_scaleP (c : BPair) (p : poly.Poly) (n d : BPair) (K : Nat) :
+    (foldK (poly.scaleP c p) n d K).oneValue (mag c * foldK p n d K) :=
+  BPair.oneValue_trans
+    (foldAt_congr (fun i =>
+      BPair.oneValue_trans (mag_congr (poly.getAt_scaleP c p i)) (mag_mul c _)) n d K)
+    (foldAt_scale (mag c) _ n d K)
+
+/-- The fold at the polynomial's own top's predecessor joined to a
+further power is that power's clearing of the coefficient fold:
+`thm:windowsep`'s `magFold` at `Σ_i |s_i| n^i d^(k-i)` with the
+further keys' magnitudes at the sum's unit. -/
+theorem foldK_magFold (p : poly.Poly) (n d : BPair) : ∀ g : Nat,
+    (foldK p n d ((poly.vnorm p).length - 1 + g)).oneValue
+      (bpow d g * magFold p n d)
+  | 0 => by
+    match hv : poly.vnorm p with
+    | [] =>
+      have hp : poly.oneValue p [] := by
+        rw [← hv]; exact poly.oneValue_symm (poly.vnorm_ov p)
+      show (foldK p n d 0).oneValue (bpow d 0 * magFold p n d)
+      refine BPair.oneValue_trans (foldK_congr hp n d 0) ?_
+      refine BPair.oneValue_trans (foldK_nil n d 0) ?_
+      rw [show magFold p n d = foldPow ((poly.vnorm p).map mag) n d from rfl, hv]
+      exact BPair.oneValue_symm (BPair.oneValue_trans
+        (BPair.oneValue_of_eq (BPair.mul_comm _ _)) (BPair.mul_one_read _))
+    | c :: cs =>
+      show (foldK p n d ((c :: cs).length - 1 + 0)).oneValue (bpow d 0 * magFold p n d)
+      refine BPair.oneValue_symm ?_
+      refine BPair.oneValue_trans
+        (BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.mul_comm _ _))
+          (BPair.mul_one_read _)) ?_
+      show (foldPow ((poly.vnorm p).map mag) n d).oneValue (foldK p n d (cs.length + 0))
+      refine BPair.oneValue_trans (foldPow_read _ n d) ?_
+      refine BPair.oneValue_trans ?_ (BPair.oneValue_symm (foldAt_read _ n d _))
+      rw [hv, length_map]
+      show (ground.famFold BPair.add BPair.unit
+        (fun i => ground.getAt BPair.unit ((c :: cs).map mag) i * bpow n i
+          * bpow d (cs.length - i)) (List.range (cs.length + 1))).oneValue
+        (ground.famFold BPair.add BPair.unit
+          (fun i => mag (ground.getAt BPair.unit p i) * bpow n i
+            * bpow d (cs.length - i)) (List.range (cs.length + 1)))
+      refine ground.famFold_congr_members_ov BPair.oneValue BPair.add BPair.unit
+        BPair.oneValue_refl (fun h1 h2 => BPair.add_congr h1 h2) _ _
+        (List.range (cs.length + 1)) (fun i _ => ?_)
+      rw [getAt_mapT BPair.unit BPair.unit mag (mag_unitLe (leB_refl _))]
+      refine BPair.mul_congr_left (BPair.mul_congr_left ?_)
+      have h1 : (ground.getAt BPair.unit (c :: cs) i).oneValue
+          (ground.getAt BPair.unit p i) := by
+        rw [← hv]; exact poly.oneValue_getAt i (poly.vnorm_ov p)
+      exact mag_congr h1
+  | g + 1 => by
+    have hge : (poly.vnorm p).length ≤ (poly.vnorm p).length - 1 + g + 1 := by
+      match hv : (poly.vnorm p).length with
+      | 0 => exact Nat.zero_le _
+      | m + 1 => exact Nat.add_le_add_right (Nat.le_add_right m g) 1
+    have hbeyond : (ground.getAt BPair.unit p ((poly.vnorm p).length - 1 + g + 1)).oneValue
+        BPair.unit := by
+      refine BPair.oneValue_trans
+        (BPair.oneValue_symm (poly.oneValue_getAt _ (poly.vnorm_ov p))) ?_
+      rw [getAt_over BPair.unit (poly.vnorm p) _ hge]
+      exact BPair.oneValue_refl _
+    refine BPair.oneValue_trans (foldK_succ p n d _) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr
+        (BPair.mul_congr_left (BPair.oneValue_trans (mag_congr hbeyond)
+          (BPair.oneValue_of_eq (mag_unitLe (leB_refl _)))))
+        (BPair.mul_congr (BPair.oneValue_refl d) (foldK_magFold p n d g))) ?_
+    refine BPair.oneValue_trans
+      (BPair.add_congr (BPair.unit_mul _) (BPair.oneValue_refl _)) ?_
+    refine BPair.oneValue_trans (BPair.unit_add _) ?_
+    refine BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.mul_assoc d _ _).symm) ?_
+    exact BPair.mul_congr_left (BPair.oneValue_symm (bpow_succ_read d g))
+
+/-- The cap's term: a coefficient against the point's power against
+the clearing's power, its magnitude against the bound's clearing
+power, regrouped at the point's cleared power. -/
+private theorem capL_shuffle (m M C dk dg : BPair) :
+    (m * M * C * (dk * dg)).oneValue (m * C * dg * (M * dk)) :=
+  polEqB [m, M, C, dk, dg]
+    (Pol.mon (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2))
+      (Mon.mul (Mon.var 3) (Mon.var 4))))
+    (Pol.mon (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 2)) (Mon.var 4))
+      (Mon.mul (Mon.var 1) (Mon.var 3))))
+    (by decide +kernel)
+
+/-- The cap's term on the bound's side, regrouped at the bound's
+cleared power. -/
+private theorem capR_shuffle (m nk dg C ck : BPair) :
+    (m * nk * dg * (ck * C)).oneValue (m * C * dg * (nk * ck)) :=
+  polEqB [m, nk, dg, C, ck]
+    (Pol.mon (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 1)) (Mon.var 2))
+      (Mon.mul (Mon.var 4) (Mon.var 3))))
+    (Pol.mon (Mon.mul (Mon.mul (Mon.mul (Mon.var 0) (Mon.var 3)) (Mon.var 2))
+      (Mon.mul (Mon.var 1) (Mon.var 4))))
+    (by decide +kernel)
+
+/-- The cap's one term: a coefficient's cleared monomial at a point
+inside the bound, its magnitude at the bound's clearing power, sits
+at or below the coefficient's magnitude at the bound's monomial at
+the point's clearing power. -/
+private theorem cap_term (p : poly.Poly) (tn : BPair) (tc : Pos) (n d : BPair)
+    (K k : Nat) (hd : BPair.unit ≤ d)
+    (ht : mag tn * d ≤ n * BPair.ofPos tc) (hk : k ≤ K) :
+    mag (ground.getAt BPair.unit p k * bpow tn k * bpow (BPair.ofPos tc) (K - k))
+        * bpow d K
+      ≤ mag (ground.getAt BPair.unit p k) * bpow n k * bpow d (K - k)
+        * bpow (BPair.ofPos tc) K := by
+  have hcU : BPair.unit ≤ BPair.ofPos tc := leB_of_lt (unitLtOfPos tc)
+  have hsplit : k + (K - k) = K := natAddSubCancel hk
+  have hdK : (bpow d K).oneValue (bpow d k * bpow d (K - k)) := by
+    have h := bpow_add d k (K - k)
+    rw [hsplit] at h
+    exact h
+  have hcK : (bpow (BPair.ofPos tc) K).oneValue
+      (bpow (BPair.ofPos tc) k * bpow (BPair.ofPos tc) (K - k)) := by
+    have h := bpow_add (BPair.ofPos tc) k (K - k)
+    rw [hsplit] at h
+    exact h
+  have hmag : (mag (ground.getAt BPair.unit p k * bpow tn k * bpow (BPair.ofPos tc) (K - k))).oneValue
+      (mag (ground.getAt BPair.unit p k) * bpow (mag tn) k * bpow (BPair.ofPos tc) (K - k)) :=
+    BPair.oneValue_trans (mag_mul _ _)
+      (BPair.mul_congr
+        (BPair.oneValue_trans (mag_mul _ _)
+          (BPair.mul_congr (BPair.oneValue_refl _) (mag_bpow tn k)))
+        (BPair.oneValue_of_eq (mag_unitLe (unitLeBpow hcU (K - k)))))
+  have hpow : bpow (mag tn) k * bpow d k ≤ bpow n k * bpow (BPair.ofPos tc) k :=
+    leB_congr (bpow_mul (mag tn) d k) (bpow_mul n (BPair.ofPos tc) k)
+      (bpow_mono (unitLeMul (unitLe_mag tn) hd) ht k)
+  have hL : (mag (ground.getAt BPair.unit p k * bpow tn k * bpow (BPair.ofPos tc) (K - k))
+        * bpow d K).oneValue
+      (mag (ground.getAt BPair.unit p k) * bpow (BPair.ofPos tc) (K - k) * bpow d (K - k)
+        * (bpow (mag tn) k * bpow d k)) :=
+    BPair.oneValue_trans (BPair.mul_congr hmag hdK)
+      (capL_shuffle (mag (ground.getAt BPair.unit p k)) (bpow (mag tn) k)
+        (bpow (BPair.ofPos tc) (K - k)) (bpow d k) (bpow d (K - k)))
+  have hR : (mag (ground.getAt BPair.unit p k) * bpow n k * bpow d (K - k)
+        * bpow (BPair.ofPos tc) K).oneValue
+      (mag (ground.getAt BPair.unit p k) * bpow (BPair.ofPos tc) (K - k) * bpow d (K - k)
+        * (bpow n k * bpow (BPair.ofPos tc) k)) :=
+    BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _) hcK)
+      (capR_shuffle (mag (ground.getAt BPair.unit p k)) (bpow n k)
+        (bpow d (K - k)) (bpow (BPair.ofPos tc) (K - k)) (bpow (BPair.ofPos tc) k))
+  exact leB_congr (BPair.oneValue_symm hL) (BPair.oneValue_symm hR)
+    (leB_mulR
+      (unitLeMul (unitLeMul (unitLe_mag _) (unitLeBpow hcU (K - k))) (unitLeBpow hd (K - k)))
+      hpow)
+
+/-- The cap: a cleared evaluation at a point inside the bound, its
+magnitude at the bound's clearing power, sits at or below the fold
+at the point's clearing power, `thm:windowsep`'s evaluations capped
+by the coefficient fold. -/
+theorem foldK_cap (p : poly.Poly) (tn : BPair) (tc : Pos) (n d : BPair) (K : Nat)
+    (hd : BPair.unit ≤ d) (hp : p.length ≤ K + 1)
+    (ht : mag tn * d ≤ n * BPair.ofPos tc) :
+    mag (poly.evalClear p tn tc K) * bpow d K
+      ≤ foldK p n d K * bpow (BPair.ofPos tc) K := by
+  have hext : (ground.famFold BPair.add BPair.unit
+      (fun k => ground.getAt BPair.unit p k * bpow tn k
+        * bpow (BPair.ofPos tc) (K - k)) (List.range (K + 1))).oneValue
+      (ground.famFold BPair.add BPair.unit
+        (fun k => ground.getAt BPair.unit p k * bpow tn k
+          * bpow (BPair.ofPos tc) (K - k)) (List.range p.length)) := by
+    refine foldRange_le _ p.length (K + 1) hp (fun j hj => ?_)
+    rw [getAt_over BPair.unit p j hj]
+    exact BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.mul_comm _ _))
+      (BPair.oneValue_trans (BPair.mul_congr (BPair.oneValue_refl _)
+        (BPair.oneValue_trans (BPair.oneValue_of_eq (BPair.mul_comm _ _))
+          (BPair.mul_unit _))) (BPair.mul_unit _))
+  have hval : (poly.evalClear p tn tc K).oneValue
+      (ground.famFold BPair.add BPair.unit
+        (fun k => ground.getAt BPair.unit p k * bpow tn k
+          * bpow (BPair.ofPos tc) (K - k)) (List.range (K + 1))) :=
+    BPair.oneValue_trans (poly.evalClear_read p tn tc K) (BPair.oneValue_symm hext)
+  refine leB_congr_left
+    (BPair.oneValue_symm (BPair.mul_congr_left (mag_congr hval))) ?_
+  refine leB_trans (leB_mulL (unitLeBpow hd K) (mag_famFold_le _ _)) ?_
+  refine leB_congr (BPair.oneValue_symm (foldB_mul_right _ _ _))
+    (BPair.oneValue_symm (BPair.oneValue_trans
+      (BPair.mul_congr_left (foldAt_read _ n d K)) (foldB_mul_right _ _ _))) ?_
+  refine leB_famFold_range (List.range (K + 1)) (fun k hk => ?_)
+  exact cap_term p tn tc n d K k hd ht
+    (Nat.le_of_lt_succ (ground.ltOfCountRange hk))
+
+/-- The unit's domination by a list: every coefficient at or beyond
+the sum's unit, the walk past the left list's end. -/
+def unitDomB : Poly → Bool
+  | [] => true
+  | y :: q => decide (BPair.unit ≤ y) && unitDomB q
+
+/-- Coefficientwise magnitude domination, the two lists walked
+together: at every shared key the left's magnitude sits at or below
+the right, a key past the right list reading the left's magnitude
+against the sum's unit and a key past the left list the unit
+against the right's coefficient (`thm:windowsep`'s carrier at the
+coefficient lists). -/
+def magDomB : Poly → Poly → Bool
+  | [], q => unitDomB q
+  | x :: p, [] => decide (mag x ≤ BPair.unit) && magDomB p []
+  | x :: p, y :: q => decide (mag x ≤ y) && magDomB p q
+
+/-- The domination read. -/
+def magDom (p q : Poly) : Prop := magDomB p q = true
+
+instance instWindowsep2 (p q : Poly) : Decidable (magDom p q) :=
+  inferInstanceAs (Decidable (_ = _))
+
+/-- The unit's domination at every key: the walk's member at a key
+of the list and the unit against unit beyond it. -/
+private theorem unitDomB_at : ∀ (q : Poly) (j : Nat), unitDomB q = true →
+    mag (ground.getAt BPair.unit ([] : Poly) j) ≤ ground.getAt BPair.unit q j
+  | [], _, _ => by
+    show mag BPair.unit ≤ BPair.unit
+    rw [mag_unitLe (ground.leB_refl BPair.unit)]
+    exact ground.leB_refl _
+  | y :: q, 0, h => by
+    have h' : (decide (BPair.unit ≤ y) && unitDomB q) = true := h
+    show mag BPair.unit ≤ y
+    rw [mag_unitLe (ground.leB_refl BPair.unit)]
+    exact of_decide_eq_true (ground.andSplitB h').1
+  | y :: q, j + 1, h => by
+    have h' : (decide (BPair.unit ≤ y) && unitDomB q) = true := h
+    exact unitDomB_at q j (ground.andSplitB h').2
+
+/-- The domination read at every key, the walk's own member at a
+key of either list and the unit against unit beyond both. -/
+private theorem magDomB_at : ∀ (p q : Poly) (j : Nat), magDomB p q = true →
+    mag (ground.getAt BPair.unit p j) ≤ ground.getAt BPair.unit q j
+  | [], q, j, h => unitDomB_at q j h
+  | x :: p, [], 0, h => by
+    have h' : (decide (mag x ≤ BPair.unit) && magDomB p []) = true := h
+    exact of_decide_eq_true (ground.andSplitB h').1
+  | x :: p, [], j + 1, h => by
+    have h' : (decide (mag x ≤ BPair.unit) && magDomB p []) = true := h
+    exact magDomB_at p [] j (ground.andSplitB h').2
+  | x :: p, y :: q, 0, h => by
+    have h' : (decide (mag x ≤ y) && magDomB p q) = true := h
+    exact of_decide_eq_true (ground.andSplitB h').1
+  | x :: p, y :: q, j + 1, h => by
+    have h' : (decide (mag x ≤ y) && magDomB p q) = true := h
+    exact magDomB_at p q j (ground.andSplitB h').2
+
+private theorem magDom_at {p q : Poly} (h : magDom p q) (j : Nat) :
+    mag (ground.getAt BPair.unit p j) ≤ ground.getAt BPair.unit q j :=
+  magDomB_at p q j h
+
+/-- The unit's domination from every key's read. -/
+private theorem unitDomB_of : ∀ (q : Poly),
+    (∀ j, mag (ground.getAt BPair.unit ([] : Poly) j) ≤ ground.getAt BPair.unit q j) →
+    unitDomB q = true
+  | [], _ => rfl
+  | y :: q, h => by
+    show (decide (BPair.unit ≤ y) && unitDomB q) = true
+    have h0 : mag BPair.unit ≤ y := h 0
+    rw [mag_unitLe (ground.leB_refl BPair.unit)] at h0
+    rw [decide_eq_true h0, unitDomB_of q (fun j => h (j + 1))]
+    rfl
+
+/-- The walk from every key's read. -/
+private theorem magDomB_of : ∀ (p q : Poly),
+    (∀ j, mag (ground.getAt BPair.unit p j) ≤ ground.getAt BPair.unit q j) →
+    magDomB p q = true
+  | [], q, h => unitDomB_of q h
+  | x :: p, [], h => by
+    show (decide (mag x ≤ BPair.unit) && magDomB p []) = true
+    have h0 : mag x ≤ BPair.unit := h 0
+    rw [decide_eq_true h0, magDomB_of p [] (fun j => h (j + 1))]
+    rfl
+  | x :: p, y :: q, h => by
+    show (decide (mag x ≤ y) && magDomB p q) = true
+    have h0 : mag x ≤ y := h 0
+    rw [decide_eq_true h0, magDomB_of p q (fun j => h (j + 1))]
+    rfl
+
+/-- The domination read from every key. -/
+theorem magDom_of {p q : Poly}
+    (h : ∀ j, mag (ground.getAt BPair.unit p j) ≤ ground.getAt BPair.unit q j) :
+    magDom p q :=
+  magDomB_of p q h
+
+/-- The magnitude map dominates its own source. -/
+theorem magDom_map (p : Poly) : magDom p (p.map mag) :=
+  magDom_of (fun j => by
+    rw [getAt_map_mag p j]
+    exact ground.leB_refl _)
+
+/-- Domination sums, the magnitudes' own sum law. -/
+theorem magDom_add {p1 q1 p2 q2 : Poly}
+    (h1 : magDom p1 q1) (h2 : magDom p2 q2) :
+    magDom (poly.add p1 p2) (poly.add q1 q2) :=
+  magDom_of (fun j => by
+    refine ground.leB_congr_left
+      (mag_congr (BPair.oneValue_symm (poly.getAt_add p1 p2 j))) ?_
+    refine ground.leB_congr_right
+      (BPair.oneValue_symm (poly.getAt_add q1 q2 j)) ?_
+    exact ground.leB_trans (mag_add_le _ _)
+      (ground.leB_add (magDom_at h1 j) (magDom_at h2 j)))
+
+/-- Domination rides the key shift, the shifted keys vacant on both
+sides below the shift. -/
+theorem magDom_shiftUp (b : Nat) {p q : Poly}
+    (h : magDom p q) :
+    magDom (poly.shiftUp b p) (poly.shiftUp b q) :=
+  magDom_of (fun j =>
+    match Nat.lt_or_ge j b with
+    | Or.inl hlt => by
+      rw [poly.getAt_shiftUp_lt b p j hlt, poly.getAt_shiftUp_lt b q j hlt,
+        mag_unitLe (ground.leB_refl BPair.unit)]
+      exact ground.leB_refl _
+    | Or.inr hge => by
+      obtain ⟨k, hk⟩ := Nat.le.dest hge
+      rw [← hk, poly.getAt_shiftUp_add b p k, poly.getAt_shiftUp_add b q k]
+      exact magDom_at h k)
+
+/-- Domination rides a rescaling at its own magnitude. -/
+theorem magDom_scaleP {a : BPair} (ha : mag a = a)
+    {p q : Poly} (h : magDom p q) :
+    magDom (poly.scaleP a p) (poly.scaleP a q) := by
+  have hau : BPair.unit ≤ a := by
+    rw [← ha]
+    exact unitLe_mag a
+  refine magDom_of (fun j => ?_)
+  refine ground.leB_congr_left
+    (mag_congr
+      (BPair.oneValue_symm (poly.getAt_scaleP a p j))) ?_
+  refine ground.leB_congr_right
+    (BPair.oneValue_symm (poly.getAt_scaleP a q j)) ?_
+  refine ground.leB_congr_left
+    (BPair.oneValue_symm
+      (mag_mul a (ground.getAt BPair.unit p j))) ?_
+  rw [ha]
+  exact ground.leB_mulR hau (magDom_at h j)
+
+/-- A dominated coefficient against two factors at or beyond the
+sum's unit keeps the domination at the product. -/
+private theorem magTerm_le {A B : BPair} (hA : mag A ≤ B)
+    (x y : BPair) (hx : BPair.unit ≤ x) (hy : BPair.unit ≤ y) :
+    mag (A * x * y) ≤ B * x * y := by
+  have hB : BPair.unit ≤ B := ground.leB_trans (unitLe_mag A) hA
+  refine ground.leB_congr_left
+    (BPair.oneValue_symm
+      (BPair.oneValue_trans (mag_mul (A * x) y)
+        (BPair.mul_congr (mag_mul A x)
+          (BPair.oneValue_refl _)))) ?_
+  rw [mag_unitLe hx, mag_unitLe hy]
+  exact ground.leB_mul_mono hy (ground.unitLeMul hB hx)
+    (ground.leB_mul_mono hx hB hA (ground.leB_refl x))
+    (ground.leB_refl y)
+
+/-- Coefficientwise domination prices the cleared evaluation at a
+point at or beyond the sum's unit: the evaluation's magnitude sits at or below the
+dominating list's own, both folds extended to the shared key
+range. -/
+theorem evalClear_magDom {p q : Poly} (zn : BPair) (hzn : BPair.unit ≤ zn)
+    (ed : Pos) (K : Nat) (h : magDom p q) :
+    mag (poly.evalClear p zn ed K) ≤ poly.evalClear q zn ed K := by
+  have hEd : BPair.unit ≤ BPair.ofPos ed :=
+    ground.leB_of_lt (ground.unitLtOfPos ed)
+  have hoff : ∀ (l : Poly) (j : Nat), l.length ≤ j →
+      (ground.getAt BPair.unit l j * ground.bpow zn j
+        * ground.bpow (BPair.ofPos ed) (K - j)).oneValue BPair.unit := by
+    intro l j hj
+    rw [ground.getAt_over BPair.unit l j hj]
+    exact BPair.oneValue_trans (BPair.mul_congr_left (BPair.unit_mul _))
+      (BPair.unit_mul _)
+  have hP : (poly.evalClear p zn ed K).oneValue
+      (ground.famFold BPair.add BPair.unit
+        (fun k => ground.getAt BPair.unit p k
+          * ground.bpow zn k
+          * ground.bpow (BPair.ofPos ed) (K - k))
+        (List.range (p.length + q.length))) :=
+    BPair.oneValue_trans (poly.evalClear_read p zn ed K)
+      (BPair.oneValue_symm
+        (ground.foldRange_le _ p.length (p.length + q.length)
+          (Nat.le_add_right _ _) (hoff p)))
+  have hQ : (poly.evalClear q zn ed K).oneValue
+      (ground.famFold BPair.add BPair.unit
+        (fun k => ground.getAt BPair.unit q k
+          * ground.bpow zn k
+          * ground.bpow (BPair.ofPos ed) (K - k))
+        (List.range (p.length + q.length))) :=
+    BPair.oneValue_trans (poly.evalClear_read q zn ed K)
+      (BPair.oneValue_symm
+        (ground.foldRange_le _ q.length (p.length + q.length)
+          (Nat.le_add_left _ _) (hoff q)))
+  refine ground.leB_congr_left
+    (mag_congr (BPair.oneValue_symm hP)) ?_
+  refine ground.leB_congr_right (BPair.oneValue_symm hQ) ?_
+  refine ground.leB_trans (mag_famFold_le _ _) ?_
+  exact ground.bsum_le _ _ (List.range (p.length + q.length))
+    (fun i _ => magTerm_le (magDom_at h i) _ _ (ground.unitLeBpow hzn i)
+      (ground.unitLeBpow hEd (K - i)))
+
 
 end windowsep
