@@ -1,9 +1,9 @@
-# The mass gap over the simply connected compact simple groups
+# The mass gap over the compact simple groups
 
 [![lean](https://github.com/ColinBundschu/mass-gap/actions/workflows/lean.yml/badge.svg)](https://github.com/ColinBundschu/mass-gap/actions/workflows/lean.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22018060.svg)](https://doi.org/10.5281/zenodo.22018060)
 
-This repository consists of a manuscript, [docs/theory.tex](docs/theory.tex) ([PDF](docs/theory.pdf)), and its in-progress Lean 4 formalization, [lean/](lean/). The manuscript develops a constructive approach to the lattice mass gap over every simply connected compact simple group (`thm:main`). The intended relativistic continuum conclusion includes the Jaffe–Witten formulation of the Yang–Mills problem; the conventional requirements are described in `rem:dictionary`. The construction builds only on the positive naturals with addition and multiplication. This restriction was chosen explicitly to keep the Lean transcription constructive and eventually emit certified brackets for physical quantities directly comparable with Monte Carlo and experimental results. The Lean development is also a substantial constructive representation theory library in its own right, with exact results on highest-weight representations, tensor-product multiplicities, Weyl characters and dimensions, and Casimir eigenvalues.
+This repository consists of a manuscript, [docs/theory.tex](docs/theory.tex) ([PDF](docs/theory.pdf)), and its in-progress Lean 4 formalization, [lean/](lean/). The manuscript develops a constructive approach to the lattice mass gap over every compact simple group (`thm:main`). The intended relativistic continuum conclusion includes the Jaffe–Witten formulation of the Yang–Mills problem; the conventional requirements are described in `rem:dictionary`. The construction builds only on the positive naturals with addition and multiplication. This restriction was chosen explicitly to keep the Lean transcription constructive and eventually emit certified brackets for physical quantities directly comparable with Monte Carlo and experimental results. The Lean development is also a substantial constructive representation theory library in its own right, with exact results on highest-weight representations, tensor-product multiplicities, Weyl characters and dimensions, and Casimir eigenvalues.
 
 In order to ensure strict compliance with the constructive criteria during development and transcription, the TeX and Lean are formulated in what could be described as a carefully designed domain-specific language (or less charitably described as an unconventional idiolect). This presentation makes the work difficult to engage with in its current form, which is a known and considered limitation, and the conventional presentation is a planned deliverable. Because of this, the repository should not be taken to be ready for a general audience, nor should the current form be considered publication-ready by the author's own standard.
 
@@ -11,7 +11,7 @@ The TeX is authoritative, and the Lean is its transcription. To enforce this str
 
 ## Status
 
-The main goals are a positive mass gap for the full lattice theory, uniform in volume and representation cutoff, and a continuum construction with a fixed physical mass gap. The formalization covers the simply connected classical and exceptional compact simple groups.
+The main goals are a positive mass gap for the full lattice theory, uniform in volume and representation cutoff, and a continuum construction with a fixed physical mass gap.
 
 **Fully Formalized in Lean.**
 
@@ -115,7 +115,7 @@ The manuscript also addresses the standard weak-coupling picture directly. The w
 
 ### "Wouldn't this argument also 'prove' a mass gap for $U(1)$? If yes, it proves too much."
 
-No. The theorem ranges over simply connected compact simple groups, so $U(1)$ is not a member of its domain. More importantly, the gap mechanism requires simple-group data that have no literal $U(1)$ specialization: a highest-root adjoint label $\theta$, its self-fusion channel, and the associated fusion-strictness parameter. Since $U(1)$ has no root system and hence no such $\theta$, $c_1$ is not a $U(1)$ multiplicity that can simply be evaluated as zero.
+No. The theorem ranges over the compact simple groups, so $U(1)$ is not a member of its domain. More importantly, the gap mechanism requires simple-group data that have no literal $U(1)$ specialization: a highest-root adjoint label $\theta$, its self-fusion channel, and the associated fusion-strictness parameter. Since $U(1)$ has no root system and hence no such $\theta$, $c_1$ is not a $U(1)$ multiplicity that can simply be evaluated as zero.
 
 The abelian comparison nevertheless identifies two precise failures. If the absent non-abelian channel is represented by zero channel weight, the boundary resolvent
 
